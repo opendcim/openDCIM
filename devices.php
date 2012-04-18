@@ -207,23 +207,11 @@ IE work around
 http://stackoverflow.com/questions/5227088/creating-style-node-adding-innerhtml-add-to-dom-and-ie-headaches
 */
 
-function setCookie(c_name, value, exdays) {
+function setCookie(c_name, value) {
 	var exdate=new Date();
-	exdate.setDate(exdate.getDate() + exdays);
-	var c_value=escape(value) + ((exdays==null) ? "" : ";expires="+exdate.toUTCString());
+	exdate.setDate(exdate.getDate() + 365);
+	var c_value=escape(value) + ";expires="+exdate.toUTCString();
 	document.cookie=c_name + "=" + c_value;
-}
-
-function getCookie(c_name) {
-	var i,x,y,ARRcookies=document.cookie.split(";");
-	for (i=0; i<ARRcookies.length; i++) {
-		x=ARRcookies[i].substr(0, ARRcookies[i].indexOf("="));
-		y=ARRcookies[i].substr(ARRcookies[i].indexOf("=")+1);
-		x=x.replace(/^s+|\s+$/g,"");
-		if (x==c_name) {
-			return unescape(y);
-		}
-	}
 }
 
 function swaplayout(){
@@ -232,37 +220,27 @@ function swaplayout(){
 	if (sheet.styleSheet) { // IE
 		sheet.styleSheet.cssText = ".device div.left { display: block; }";
 		document.getElementById('layout').innerHTML = "Landscape";
-		setCookie("layout","Portrait",365);
 	} else {
 		sheet.innerHTML = ".device div.left { display: block; }";
 		document.getElementById('layout').innerHTML = "Landscape";
-		setCookie("layout","Portrait",365);
 	}
 	var s = document.getElementsByTagName('style')[0];
 	if (s.innerHTML == sheet.innerHTML){
 		if (sheet.styleSheet){ //IE
 			document.getElementsByTagName('style')[0].styleSheet.cssText = "";
 			document.getElementById('layout').innerHTML = "Portrait";
-			setCookie("layout","Landscape",365);
 		}else{
 			document.getElementsByTagName('style')[0].innerHTML = "";
 			document.getElementById('layout').innerHTML = "Portrait";
-			setCookie("layout","Landscape",365);
 		}
+		setCookie("layout","Landscape");
 	}else{
 		s.parentNode.insertBefore(sheet, s);
+		setCookie("layout","Portrait");
 	}
 }
 	
-function setPreferredLayout() {
-	var p=getCookie("layout");
-	if (p=="Portrait") {
-		swaplayout();
-	}
-	
-	/* Renew the cookie, no matter which preference is chosen */
-	setCookie("layout",p,365);
-}
+function setPreferredLayout() {<?php if(isset($_COOKIE["layout"]) && strtolower($_COOKIE["layout"])==="portrait"){echo 'swaplayout();setCookie("layout","Portrait");';}else{echo 'setCookie("layout","Landscape");';} ?>}
 </script>
 
 </head>
