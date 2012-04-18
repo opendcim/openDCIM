@@ -414,7 +414,7 @@ div.page.device {
 	padding: 0.25em;
 }
 .device div.left, .device div.right {
-	max-width: 685px;
+	max-width: 485px;
 	margin-bottom: 1.5em;
 	display: inline-block;
 	vertical-align: top;
