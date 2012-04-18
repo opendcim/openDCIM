@@ -1,0 +1,45 @@
+#sidebar {
+	float: left;
+}
+#infopanel {
+	text-align: center;
+}
+#infopanel fieldset {
+	background-color: transparent;
+	padding-top: 0px;
+	margin-left: 10px;
+	text-align: left;
+}
+#infopanel legend {
+	margin-bottom: 1em;
+}
+div.cabinet {
+	float: left;
+	max-width: 250px;
+}
+.device fieldset {
+	background-color: transparent;
+}
+.mapmaker div{
+	width: 77%;
+}
+.mapmaker div + div{
+	width: 19%;
+}
+.canvas img {
+	z-index: 10;
+}
+.canvas map {
+	z-index: 20;
+}
+#centeriehack {
+	margin-left: auto; 
+	margin-right: auto; 
+	max-width: 600px;
+}
+/* search button image was loading strange */
+#sidebar textarea + button {
+	border-style: solid solid solid none;
+	border-width: 1px 1px 1px 0px;
+	border-color: black;
+}

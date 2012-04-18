@@ -1,0 +1,61 @@
+openDCIM System Requirements
+-------------------------------
+
+LAMP server (Linux / Apache / MySQL / PHP)
+
+Windows with PHP on IIS or Apache should work fine as well, but has not been tested.  If you
+set up such a system, please report back on the viability and any specific configuration steps
+that you had to complete before the software would work properly.
+
+You will see the acronym DCIM throughout this documentation - this stands for Data Center
+Inventory Management.
+
+
+1.  Prepare the database
+
+Create a database on the mysql server and create a separate username and password for the
+software to use.  This user will need full access to the database.  For example, we will use
+username "dcim" with password "dcim" on the localhost based mysql server.
+
+From a shell prompt:
+
+$ mysql -h localhost
+mysql>  CREATE DATABASE dcim;
+mysql>  GRANT ALL ON dcim.* TO 'dcim'@'localhost' IDENTIFIED BY 'dcim';
+
+Once you have created the database, you will need to import the script which creates tables
+for you.  There is a file named create.sql as part of this distribution that will perform
+this duty.
+
+From a shell prompt:
+
+$ mysql -h localhost -u dcim -pdcim dcim < create.sql
+
+This script should only take a sub-second to process, as the table structure is not overly
+complicated.  At this point you have prepped the database and are ready to configure the web site.
+
+$ cp db.inc.php-dist to db.inc.php
+$ vi db.inc.php
+
+Fill in the blanks for user, pass, database, server.
+
+2.  Configure Apache
+
+It is suggested that you run openDCIM under SSL, preferably on its own IP address and server
+name.  This is because the system relies upon the web server to authenticate users and pass that
+information to the scripts.  Refer to the Apache (or other web server software) documenation on
+how exactly to accomplish this.  It is recommended that you configure the server as
+
+https://dcim.yourdomain.com
+
+You can choose to either authenticate against a local password file, LDAP, or anything else
+supported by your web server software.  The main thing is to authenticate users before entering
+the site.
+
+
+3.  Log in to the site
+
+Whoever logs in to the website first automatically becomes the site administrator!  This can be
+changed later, but in order to work at all the system has to define at least one administrator.  It
+is suggested that the first link you click on is "Manage Users" so that you can add some additional
+users and administrators of the system.

@@ -1,0 +1,16 @@
+<?php
+
+	
+	$dbhost = 'localhost';
+	$dbname = 'dcim';
+	$dbuser = 'dcim';
+	$dbpass = 'dcim';
+
+	$facDB = mysql_connect( $dbhost, $dbuser, $dbpass );
+
+	mysql_select_db( $dbname, $facDB );
+	
+	require_once( 'config.inc.php');
+	$config=new Config($facDB);
+	
+?>

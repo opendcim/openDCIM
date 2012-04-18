@@ -1,0 +1,257 @@
+<?php
+	require_once( "db.inc.php" );
+	require_once( "facilities.inc.php" );
+
+	$user=new User();
+	$user->UserID=$_SERVER["REMOTE_USER"];
+	$user->GetUserRights($facDB);
+
+	if(!$user->ReadAccess){
+		// No soup for you.
+		header('Location: '.redirect());
+		exit;
+	}
+
+	$cab=new Cabinet();
+	$audit=new CabinetAudit();
+	$pdu=new PowerDistribution();
+	$dev=new Device();
+	$templ=new DeviceTemplate();
+	$tempPDU = new PowerDistribution();
+
+	if(!isset($_REQUEST["cabinetid"])){
+		// Not sure how you got here without a cabinet id set
+		// GTFO!
+		header("Location: ".redirect());
+		exit;
+	}
+
+	$cab->CabinetID=$_REQUEST["cabinetid"];
+	$cab->GetCabinet($facDB);
+	$audit->CabinetID=$cab->CabinetID;
+
+	// Checking for site admin rights here ensures that they didn't submit this from someplace else.
+	if(isset($_REQUEST["audit"]) && $_REQUEST["audit"]=="yes" && !$user->SiteAdmin){
+		$audit->UserID=$user->UserID;
+		$audit->CertifyAudit($facDB);
+	}
+
+	$audit->AuditStamp="Never";
+	$audit->GetLastAudit($facDB);
+	if($audit->UserID != ""){
+		$tmpUser=new User();
+		$tmpUser->UserID=$audit->UserID;
+		$tmpUser->GetUserRights($facDB);
+		$AuditorName=$tmpUser->Name;
+	}else{
+		//If no audit has been completed $AuditorName will return an error
+		$AuditorName="";
+	}
+
+	$pdu->CabinetID=$cab->CabinetID;
+	$PDUList=$pdu->GetPDUbyCabinet($facDB);
+
+	$dev->Cabinet=$cab->CabinetID;
+	$devList=$dev->ViewDevicesByCabinet($facDB);
+
+	$currentHeight=$cab->CabinetHeight;
+	$totalWatts=0;
+	$totalWeight=0;
+	$totalMoment=0;
+
+?>
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=windows-1252">
+  <title>Facilities Cabinet Maintenance</title>
+  <link rel="stylesheet" href="css/inventory.css" type="text/css">
+  <!--[if lt IE 9]>
+  <link rel="stylesheet"  href="css/ie.css" type="text/css" />
+  <![endif]-->
+  
+  <script type="text/javascript" src="scripts/jquery.min.js"></script>
+  <script type="text/javascript">
+	function verifyAudit(formname){
+		if(confirm("Do you certify that you have completed an audit of the selected cabinet?"))
+			formname.submit();
+	}
+  </script>
+</head>
+<body>
+<div id="header"></div>
+<div class="page">
+<?php
+	include( "sidebar.inc.php" );
+?>
+<div class="main">
+<h2><?php print $config->ParameterArray["OrgName"]; ?></h2>
+<h3>Data Center Cabinet Inventory</h3>
+<div class="center"><div>
+<div id="centeriehack">
+<div class="cabinet">
+<table>
+	<tr><th colspan=2>Cabinet <?php print $cab->Location; ?></th></tr>
+	<tr><td width="10%">Pos</td><td width="90%">Device</td></tr>
+<?php
+	while ( list( $devID, $device ) = each( $devList ) ) {
+		$devTop = $device->Position + $device->Height - 1;
+		
+		$templ->TemplateID = $device->TemplateID;
+		$templ->GetTemplateByID( $facDB );
+
+		if ( $device->NominalWatts > 0 )
+			$totalWatts += $device->NominalWatts;
+		else
+			$totalWatts += $templ->Wattage;
+
+		$totalWeight += $templ->Weight;
+		$totalMoment += ( $templ->Weight * ( $device->Position + ( $device->Height / 2 ) ) );
+
+		if ( $devTop < $currentHeight ) {
+			for ( $i = $currentHeight; $i > $devTop; $i-- ) {
+				if ( $i == $currentHeight ) {
+					$blankHeight = $currentHeight - $devTop;
+
+					print "<tr><td>$i</td><td rowspan=$blankHeight>&nbsp;</td></tr>\n";
+				} else {
+					print "<tr><td>$i</td></tr>\n";
+				}
+			}
+		} 
+
+		for($i = $devTop; $i >= $device->Position; $i--){
+			if($i==$devTop){
+				$highlight="<blink><font color=red>";
+				if($device->TemplateID==0){$highlight.="(T)";}
+				if($device->Owner==0){$highlight.="(O)";}
+				$highlight.="</font></blink>";
+				print "<tr><td>$i</td><td class=\"device\" rowspan=$device->Height><a href=\"devices.php?deviceid=$devID\">$highlight$device->Label</a></td></tr>\n";
+			}else{
+				print "<tr><td>$i</td></tr>\n";
+			}
+		}
+
+		$currentHeight = $device->Position - 1;
+	}
+
+	// Fill in to the bottom
+	for ( $i = $currentHeight; $i > 0; $i-- ) {
+		if ( $i == $currentHeight ) {
+			$blankHeight = $currentHeight + 1;
+
+			print "<tr><td>$i</td><td rowspan=$blankHeight>&nbsp;</td></tr>\n";
+		} else {
+			print "<tr><td>$i</td></tr>\n";
+		}
+	}
+
+	$CenterofGravity = @round( $totalMoment / $totalWeight );
+
+	$used = $cab->CabinetOccupancy( $cab->CabinetID, $facDB );
+	$SpacePercent = number_format( $used / $cab->CabinetHeight * 100, 0 );
+	@$WeightPercent = number_format( $totalWeight / $cab->MaxWeight * 100, 0 );
+	@$PowerPercent = number_format( ( $totalWatts / 1000 ) / $cab->MaxKW * 100, 0 );
+	$CriticalColor=$config->ParameterArray["CriticalColor"];
+	$CautionColor=$config->ParameterArray["CautionColor"];
+	$GoodColor=$config->ParameterArray["GoodColor"];
+	
+	if($SpacePercent>100){$SpacePercent=100;}
+	if($WeightPercent>100){$WeightPercent=100;}
+	if($PowerPercent>100){$PowerPercent=100;}
+
+	$SpaceColor=($SpacePercent>intval($config->ParameterArray["SpaceRed"])?$CriticalColor:($SpacePercent >intval($config->ParameterArray["SpaceYellow"])?$CautionColor:$GoodColor));
+	$WeightColor=($WeightPercent>intval($config->ParameterArray["WeightRed"])?$CriticalColor:($WeightPercent>intval($config->ParameterArray["WeightYellow"])?$CautionColor:$GoodColor));
+	$PowerColor=($PowerPercent>intval($config->ParameterArray["PowerRed"])?$CriticalColor:($PowerPercent>intval($config->ParameterArray["PowerYellow"])?$CautionColor:$GoodColor));
+
+?>
+</table>
+</div>
+<div id="infopanel">
+	<fieldset>
+		<legend>Markup Key</legend>
+		<font color=red>(O)</font> - Owner Unassigned<p>
+		<font color=red>(T)</font> - Template Unassigned<p>
+	</fieldset>
+	<fieldset>
+		<legend>Cabinet Metrics</legend>
+		<table style="background: white;" border=1>
+		<tr>
+			<td>Space
+				<div class="meter-wrap">
+					<div class="meter-value" style="<?php print "background-color: $SpaceColor; width: $SpacePercent%;";?>">
+						<div class="meter-text"><?php print $SpacePercent; ?>%</div>
+					</div>
+				</div>
+			</td>
+		</tr>
+		<tr>
+			<td>Weight
+				<div class="meter-wrap">
+					<div class="meter-value" style="<?php print "background-color: $WeightColor; width: $WeightPercent%;";?>">
+						<div class="meter-text"><?php print $WeightPercent; ?>%</div>
+					</div>
+				</div>
+			</td>
+		</tr>
+		<tr>
+			<td>Power
+				<div class="meter-wrap">
+					<div class="meter-value" style="<?php print "background-color: $PowerColor; width: $PowerPercent%;";?>">
+						<div class="meter-text"><?php printf("%d kW / %d kW",round($totalWatts/1000),$cab->MaxKW);?></div>
+					</div>
+				</div>
+			</td>
+		</tr>
+		</table>
+		<p>Approximate Center of Gravity: <?php print $CenterofGravity; ?> U</p>
+	</fieldset>
+	<fieldset>
+		<legend>Power Distribution</legend>
+<?php	
+	while(list($PDUid,$PDUdev)=each($PDUList)){
+		$tempPDU->PDUID=$PDUid;
+		$tempPDU->GetPDU($facDB);
+
+		if($tempPDU->IPAddress!=""){
+			$pduDraw=$tempPDU->GetAmperage($facDB);
+		}else{
+			$pduDraw=0;
+		}
+		print "			<a href=\"pduinfo.php?pduid=$PDUid\">CDU $PDUdev->Label ($pduDraw A)</font></a><br>\n";
+	}
+	if($user->WriteAccess){
+		print "			<br><br><input type=\"button\" value=\"Add CDU\" onclick=\"location='pduinfo.php?pduid=0&cabinetid=$cab->CabinetID'\">\n";
+	}
+?>
+	</fieldset>
+<fieldset>
+<?php
+
+	printf( "<form method=\"post\" action=\"%s\">", $_SERVER["PHP_SELF"] );
+	printf( "<input type=\"hidden\" name=\"cabinetid\" value=\"%d\">", $cab->CabinetID );
+	printf( "<input type=\"hidden\" name=\"audit\" value=\"yes\">" );
+	printf( "<p>Last Audit: %s (%s)</p>\n", $audit->AuditStamp, $AuditorName );
+	
+	if ( $user->SiteAdmin ) {
+		printf( "<input type=\"button\" value=\"Certify Audit\" style=\"width:120;\" onclick=\"javascript:verifyAudit(this.form)\"><br>\n" );
+		printf( "<input type=\"button\" value=\"Add Device\" style=\"width:120;\" onclick=\"location='devices.php?action=new&cabinet=%d'\"><br>\n", $cab->CabinetID );
+		printf( "<input type=\"button\" value=\"Audit Report\" style=\"width:120;\" onclick=\"location='audit_report.php?cabinetid=%d'\"><br>\n", $cab->CabinetID );
+		printf( "<input type=\"button\" value=\"Map Coordinates\" style=\"width:120;\" onclick=\"location='mapmaker.php?cabinetid=%d'\"><br>\n", $cab->CabinetID );
+		printf( "<input type=\"button\" value=\"Edit Cabinet\" style=\"width:120;\" onclick=\"location='cabinets.php?cabinetid=%s'\"><br>\n", $cab->CabinetID );
+	}
+	printf( "</form>" );
+
+?>
+</fieldset>
+
+</div> <!-- END div#infopanel -->
+</div> <!-- END div#centeriehack -->
+</div></div>
+</div>  <!-- END div.main -->
+
+<div class="clear"></div>
+
+</div>
+</body>
+</html>
