@@ -31,7 +31,7 @@
 	$audit->CabinetID=$cab->CabinetID;
 
 	// Checking for site admin rights here ensures that they didn't submit this from someplace else.
-	if(isset($_REQUEST["audit"]) && $_REQUEST["audit"]=="yes" && $user->RackAdmin){
+	if(isset($_REQUEST["audit"]) && $_REQUEST["audit"]=="yes" && $user->SiteAdmin){
 		$audit->UserID=$user->UserID;
 		$audit->CertifyAudit($facDB);
 	}
