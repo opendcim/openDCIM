@@ -1300,6 +1300,11 @@ class RackRequest {
     mysql_query( $sql, $db );
   }
   
+  function DeleteRequest( $db ) {
+    $sql = "delete from fac_RackRequest where RequestID=\"" . intval( $this->RequestID ) . "\"";
+    mysql_query( $sql, $db );
+  }
+
   function UpdateRequest( $db ) {
     $sql = "update fac_RackRequest set 
         Label=\"" . addslashes( $this->Label ) . "\", 
