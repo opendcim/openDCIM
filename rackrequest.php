@@ -1,16 +1,19 @@
 <?php
 	require_once( 'db.inc.php' );
 	require_once( 'facilities.inc.php' );
-	require_once( 'Rmail/Rmail.php' );
+	require_once( 'swiftmailer/swift_required.php' );
 	
 	$dev = new Device();
 	$req = new RackRequest();
 	$user = new User();
+	$contact = new Contact();
+	
+	$contactList = $contact->GetContactList( $facDB );
 	
 	$user->UserID = $_SERVER['REMOTE_USER'];
 	$user->GetUserRights( $facDB );
 	
-	if(!$user->RackRequest){
+	if ( !$user->RackRequest ){
 		// No soup for you.
 		header('Location: '.redirect());
 		exit;
@@ -97,133 +100,150 @@ function checkdata(formname) {
 <h3>Data Center Rack Request</h3>
 <div class="center"><div>
 <?php
-	$message = "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.01 Transitional//EN\">
+
+
+	$tmpContact = new Contact();
+	$tmpContact->ContactID = intval( $_REQUEST["requestorid"] );
+	$tmpContact->GetContactByID( $facDB );
+	$email = $tmpContact->Email;
+
+	// If any port other than 25 is specified, assume encryption and authentication
+	if ( $config->ParameterArray['SMTPPort'] != 25 ) {
+		$transport = Swift_SmtpTransport::newInstance()
+			->setHost( $config->ParameterArray['SMTPServer'] )
+			->setPort( $config->ParameterArray['SMTPPort'] )
+			->setEncryption( 'ssl' )
+			->setUsername( $config->ParameterArray['SMTPUser'] )
+			->setPassword( $config->ParameterArray['SMTPPassword'] );
+	} else {
+		$transport = Swift_SmtpTransport::newInstance()
+			->setHost( $config->ParameterArray['SMTPServer'] )
+			->setPort( $config->ParameterArray['SMTPPort'] );
+	}
+
+	$mailer = Swift_Mailer::newInstance( $transport );
+		
+	$message = Swift_Message::NewInstance()
+		->setSubject( $config->ParameterArray['MailSubject'] )
+		->setFrom( $config->ParameterArray['MailFromAddr'] )
+		->setTo( $email )
+		;
+
+	$message->attach( Swift_EmbeddedFile::fromPath('css/inventory.css')->setFilename('inventory.css') );
+	
+	$htmlMessage = "
 <html>
 <head>
 <meta http-equiv=\"Content-Type\" content=\"text/html; charset=windows-1252\">
-<title>ORNL ITS Data Center Inventory</title>
+<title>ITS Data Center Inventory</title>
+<link rel=\"stylesheet\" href=\"inventory.css\" type=\"text/css\">
 <body>
-<div style=\"height: 66px;\" id=\"header\"><img src='masthead3.png'></div>
-<div style=\"position: absolute; top: 100px; left: 3px; width: 200px; height: auto;\">
-<p>";
+<div id=\"header\"></div>
+<div class=\"page\">
+<p>
+<h3>ITS Facilities Rack Request</h3>";
 
-	$message .= '<h3>ITS Facilities Rack Request</h3>';
-
-  $mail = new Rmail();
-  $mail->setSMTPParams( 'smtp.vanderbilt.edu', 25, 'its.vanderbilt.edu' );
-  $mail->setFrom( 'ITS Network Operations Center <noc@vanderbilt.edu>' );
-  $mail->setSubject( 'ITS Facilities Rack Request' );
-
-	$tmpUser = new User();
-	
 	if(isset($_REQUEST['action'])&& ($user->WriteAccess && ($_REQUEST['action'] == 'Create'))){
-  	$req->RequestorID = $user->UserID;
-    $req->Label = $_REQUEST['label'];
-    $req->SerialNo = $_REQUEST['serialno'];
-    $req->MfgDate = $_REQUEST['mfgdate'];
-    $req->AssetTag = $_REQUEST['assettag'];
-    $req->ESX = $_REQUEST['esx'];
-    $req->Owner = $_REQUEST['owner'];
-    $req->DeviceHeight = $_REQUEST['deviceheight'];
-    $req->EthernetCount = $_REQUEST['ethernetcount'];
-    $req->VLANList = $_REQUEST['vlanlist'];
-    $req->SANCount = $_REQUEST['sancount'];
-    $req->SANList = $_REQUEST['sanlist'];
-    $req->DeviceClass = $_REQUEST['deviceclass'];
-    $req->DeviceType = $_REQUEST['devicetype'];
-    $req->LabelColor = $_REQUEST['labelcolor'];
-    $req->CurrentLocation = $_REQUEST['currentlocation'];
-    $req->SpecialInstructions = $_REQUEST['specialinstructions'];
-    
-    $req->CreateRequest( $facDB );
-    
-    $message .= '<p>Your request for racking up the device labeled ' . $req->Label . ' has been received.
-        The Network Operations Center will examine the request and contact you if more information is needed
-        before the request can be processed.  You will receive a notice when this request has been completed.
-				Please allow up to 2 business days for requests to be completed.</p>';
+		$req->RequestorID = $_REQUEST['requestorid'];
+		$req->Label = $_REQUEST['label'];
+		$req->SerialNo = $_REQUEST['serialno'];
+		$req->MfgDate = $_REQUEST['mfgdate'];
+		$req->AssetTag = $_REQUEST['assettag'];
+		$req->ESX = $_REQUEST['esx'];
+		$req->Owner = $_REQUEST['owner'];
+		$req->DeviceHeight = $_REQUEST['deviceheight'];
+		$req->EthernetCount = $_REQUEST['ethernetcount'];
+		$req->VLANList = $_REQUEST['vlanlist'];
+		$req->SANCount = $_REQUEST['sancount'];
+		$req->SANList = $_REQUEST['sanlist'];
+		$req->DeviceClass = $_REQUEST['deviceclass'];
+		$req->DeviceType = $_REQUEST['devicetype'];
+		$req->LabelColor = $_REQUEST['labelcolor'];
+		$req->CurrentLocation = $_REQUEST['currentlocation'];
+		$req->SpecialInstructions = $_REQUEST['specialinstructions'];
 
-		$message .= '<p>Your Request ID is ' . $req->RequestID . ' and you may view the request online at
+		$req->CreateRequest( $facDB );
+
+		$htmlMessage .= '<p>Your request for racking up the device labeled ' . $req->Label . ' has been received.
+		The Network Operations Center will examine the request and contact you if more information is needed
+		before the request can be processed.  You will receive a notice when this request has been completed.
+				Please allow up to 2 business days for requests to be completed.</p>';
+				
+
+		$htmlMessage .= '<p>Your Request ID is ' . $req->RequestID . ' and you may view the request online at
 				<a href=\'https://' . $_SERVER['SERVER_NAME'] . $_SERVER['PHP_SELF'] . '?requestid=' . $req->RequestID . '\'>
 				this link</a>.';
-    
-    $tmpUser->UserID = $req->RequestorID;
-    $email = $tmpUser->GetBCA( $facDB );
 
-  	$mail->setHtml( $message );
-    $mail->send( array( $email, 'noc@vanderbilt.edu' ), 'smtp' );
+		$message->setBody( $htmlMessage, 'text/html' );
 
-  }elseif(isset($_REQUEST['action']) && ($user->WriteAccess && ($_REQUEST['action'] == 'Update Request'))){
-	  $req->RequestID = $_REQUEST['requestid'];
+		$result = $mailer->send( $message );
+	} elseif ( isset($_REQUEST['action'] ) && ( $user->WriteAccess && ($_REQUEST['action'] == 'Update Request' ))) {
+		$req->RequestID = $_REQUEST['requestid'];
 	  
-    $req->Label = $_REQUEST['label'];
-    $req->SerialNo = $_REQUEST['serialno'];
-    $req->MfgDate = $_REQUEST['mfgdate'];
-    $req->AssetTag = $_REQUEST['assettag'];
-    $req->ESX = $_REQUEST['esx'];
-    $req->Owner = $_REQUEST['owner'];
-    $req->DeviceHeight = $_REQUEST['deviceheight'];
-    $req->EthernetCount = $_REQUEST['ethernetcount'];
-    $req->VLANList = $_REQUEST['vlanlist'];
-    $req->SANCount = $_REQUEST['sancount'];
-    $req->SANList = $_REQUEST['sanlist'];
-    $req->DeviceClass = $_REQUEST['deviceclass'];
-    $req->DeviceType = $_REQUEST['devicetype'];
-    $req->LabelColor = $_REQUEST['labelcolor'];
-    $req->CurrentLocation = $_REQUEST['currentlocation'];
-    $req->SpecialInstructions = $_REQUEST['specialinstructions'];
+		$req->Label = $_REQUEST['label'];
+		$req->SerialNo = $_REQUEST['serialno'];
+		$req->MfgDate = $_REQUEST['mfgdate'];
+		$req->AssetTag = $_REQUEST['assettag'];
+		$req->ESX = $_REQUEST['esx'];
+		$req->Owner = $_REQUEST['owner'];
+		$req->DeviceHeight = $_REQUEST['deviceheight'];
+		$req->EthernetCount = $_REQUEST['ethernetcount'];
+		$req->VLANList = $_REQUEST['vlanlist'];
+		$req->SANCount = $_REQUEST['sancount'];
+		$req->SANList = $_REQUEST['sanlist'];
+		$req->DeviceClass = $_REQUEST['deviceclass'];
+		$req->DeviceType = $_REQUEST['devicetype'];
+		$req->LabelColor = $_REQUEST['labelcolor'];
+		$req->CurrentLocation = $_REQUEST['currentlocation'];
+		$req->SpecialInstructions = $_REQUEST['specialinstructions'];
 
-    $req->UpdateRequest( $facDB );
-	}elseif(isset($_REQUEST['action']) && ($user->RackAdmin && ($_REQUEST['action'] == 'Move to Rack'))){
+		$req->UpdateRequest( $facDB );
+   } elseif ( isset($_REQUEST['action']) && ( $user->RackAdmin && ($_REQUEST['action'] == 'Move to Rack' ))) {
 		$req->RequestID = $_REQUEST['requestid'];
 		$req->GetRequest( $facDB );
 		
 		$req->CompleteRequest( $facDB );
 		
-		$dev->Label = $req->Label;
-		$dev->SerialNo = $req->SerialNo;
-		if ( $req->MfgDate > '0000-00-00 00:00:00' )
-		  $dev->MfgDate = $req->MfgDate;
+		$dev->Label = $_REQUEST["label"];
+		$dev->SerialNo = $_REQUEST["serialno"];
+		if ( $_REQUEST["mfgdate"] > '' )
+			$dev->MfgDate = date( 'Y-m-d', strtotime( $_REQUEST["mfgdate"] ) );
 		
 		$dev->InstallDate = date( 'Y-m-d' );
-		$dev->AssetTag = $req->AssetTag;
-		$dev->ESX = $req->ESX;
-		$dev->Owner = $req->Owner;
+		$dev->AssetTag = $_REQUEST["assettag"];
+		$dev->ESX = $_REQUEST["esx"];
+		$dev->Owner = $_REQUEST["owner"];
 		$dev->Cabinet = $_REQUEST['cabinetid'];
 		$dev->Position = $_REQUEST['position'];
-		$dev->Height = $req->DeviceHeight;
-		$dev->Ports = $req->EthernetCount;
-		$dev->DeviceType = $req->DeviceType;
-		$dev->TemplateID = $req->DeviceClass;
+		$dev->Height = $_REQUEST["deviceheight"];
+		$dev->Ports = $_REQUEST["ethernetcount"];
+		$dev->DeviceType = $_REQUEST["devicetype"];
+		$dev->TemplateID = $_REQUEST["deviceclass"];
 		
-		$dev->UpdateWattageFromTemplate( $facDB );
-
 		$dev->CreateDevice( $facDB );
 		
-    $message .= '<p>Your request for racking up the device labeled ' . $req->Label . ' has been completed.</p>';
+		$htmlMessage .= '<p>Your request for racking up the device labeled ' . $req->Label . ' has been completed.</p>';
 
-		$message .= '<p>To view your device in its final location
+		$htmlMessage .= '<p>To view your device in its final location
 				<a href=\'https://' . $_SERVER['SERVER_NAME'] . '/devices.php?deviceid=' . $dev->DeviceID . '\'>
 				this link</a>.';
 
-    $tmpUser->UserID = $req->RequestorID;
-    $email = $tmpUser->GetBCA( $facDB );
+		$message->setBody( $htmlMessage, 'text/html' );
 
-  	$mail->setHtml( $message, dirname(__FILE__) . '/css/' );
-    $mail->send( array( $email ), 'smtp' );
-
-		printf( "<meta http-equiv=\"refresh\" content=\"0; url=devices.php?deviceid=%d\">\n", $dev->DeviceID );
+		$result = $mailer->send( $message );
 		
+		printf( "<meta http-equiv=\"refresh\" content=\"0; url=devices.php?deviceid=%d\">\n", $dev->DeviceID );		
 		exit;
-  }elseif(isset($_REQUEST['action']) && ($_REQUEST['action'] == 'Delete Request' )){
-    $req->RequestID = $_REQUEST['requestid'];
-    $req->GetRequest( $facDB );
+  } elseif ( isset($_REQUEST['action'] ) && ( $_REQUEST['action'] == 'Delete Request' )) {
+    	$req->RequestID = $_REQUEST['requestid'];
+    	$req->GetRequest( $facDB );
     
-    if ( $user->UserID == $req->RequestorID ) {
-      $req->DeleteRequest( $facDB );
-		}
-
-		printf( "<meta http-equiv=\"refresh\" content=\"0; url=index.php\">\n" );
+    	if ( $user->RackAdmin ) {
+    		$req->DeleteRequest( $facDB );
 	}
+
+	printf( "<meta http-equiv=\"refresh\" content=\"0; url=index.php\">\n" );
+   }
 	
   if ( @$_REQUEST['requestid'] > 0 ) {
     $req->RequestID = $_REQUEST['requestid'];
@@ -236,7 +256,18 @@ function checkdata(formname) {
 <div class="table">
 <div>
    <div><label for="requestor">Requestor</label></div>
-   <div><input type="text" name="requestor" id="requestor" size="50" value="<?php echo $user->Name; ?>" readonly></div>
+   <div><select name="requestorid" id="requestorid">
+<?php
+	foreach ( $contactList as $tmpContact ) {
+		if ( $tmpContact->UserID == $user->UserID )
+			$selected = "SELECTED";
+		else
+			$selected = "";
+		
+		printf( "<option value=\"%s\" %s>%s, %s</option>\n", $tmpContact->ContactID, $selected, $tmpContact->LastName, $tmpContact->FirstName );
+	}
+?>
+	</select></div>
 </div>
 <div>
    <div><label for="label">Label</label></div>
@@ -247,7 +278,7 @@ function checkdata(formname) {
    <div>
       <select name="labelcolor" id="labelcolor">
 <?php
-  foreach ( array( 'Black', 'Yellow', 'Orange' ) as $colorCode ) {
+  foreach ( array( 'White', 'Yellow', 'Red' ) as $colorCode ) {
     if ( $req->LabelColor == $colorCode )
       $selected = 'SELECTED';
     else
@@ -379,7 +410,7 @@ function checkdata(formname) {
 			}
 			echo '<input type="submit" name="action" value="Update Request" onclick="return(checkdata(deviceform))">';
 			if ( $user->DeleteAccess ) {
-				echo '<input type="submit" name="action" value="Delete Request" onclick="deviceform.submit()">';
+				echo '<input type="submit" name="action" value="Delete Request">';
 			}
 		}else{
 			echo '<input type="submit" name="action" value="Create" onclick="return(checkdata(deviceform))">';
