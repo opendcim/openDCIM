@@ -39,3 +39,7 @@ $ mysql dev_openDCIM < db-1.0-to-1.1.sql
 
 5.  Pull up the test site in your browser and check to see if everything looks ok.
 
+
+== The Cowboy Way ==
+
+Just drop the archive onto the existing install and hope for the best.
