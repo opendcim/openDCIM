@@ -124,7 +124,7 @@ function showgroup(obj){
 </div>
 </div> <!-- END div.table -->
 </form>
-<iframe name="groupadmin" id="groupadmin" frameborder=0></iframe>
+<iframe name="groupadmin" id="groupadmin" frameborder=0 scrolling="no"></iframe>
 <br>
 </div></div>
 <a href="index.php">[ Return to Main Menu ]</a>
