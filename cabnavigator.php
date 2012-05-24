@@ -26,12 +26,23 @@
 		exit;
 	}
 
+	// Even if we're deleting the cabinet, it's helpful to know which data center to go back to displaying afterwards
 	$cab->CabinetID=$_REQUEST["cabinetid"];
 	$cab->GetCabinet($facDB);
+	
+	$dcID = $cab->DataCenterID;
+
+	// If you're deleting the cabinet, no need to pull in the rest of the information, so get it out of the way //
+	if ( isset( $_REQUEST["delete"] ) && $_REQUEST["delete"]=="yes" && $user->SiteAdmin ) {
+		$cab->DeleteCabinet( $facDB );
+		header("Location: dc_stats.php?dc=" . $dcID );
+	}
+
+	
 	$audit->CabinetID=$cab->CabinetID;
 
 	// Checking for site admin rights here ensures that they didn't submit this from someplace else.
-	if(isset($_REQUEST["audit"]) && $_REQUEST["audit"]=="yes" && $user->SiteAdmin){
+	if ( isset($_REQUEST["audit"]) && $_REQUEST["audit"]=="yes" && $user->SiteAdmin) {
 		$audit->UserID=$user->UserID;
 		$audit->CertifyAudit($facDB);
 	}
@@ -43,7 +54,7 @@
 		$tmpUser->UserID=$audit->UserID;
 		$tmpUser->GetUserRights($facDB);
 		$AuditorName=$tmpUser->Name;
-	}else{
+	} else {
 		//If no audit has been completed $AuditorName will return an error
 		$AuditorName="";
 	}
@@ -75,6 +86,13 @@
 	function verifyAudit(formname){
 		if(confirm("Do you certify that you have completed an audit of the selected cabinet?"))
 			formname.submit();
+	}
+	
+	function verifyDelete(formname) {
+		if ( confirm( "Are you sure that you want to delete this cabinet, including all devices, power strips, and connections?\nTHIS ACTION CAN NOT BE UNDONE!" ) ) {
+			formname.delete.value="yes";
+			formname.submit();
+		}
 	}
   </script>
 </head>
@@ -208,20 +226,19 @@
 	</fieldset>
 	<fieldset>
 		<legend>Power Distribution</legend>
-<?php	
-	while(list($PDUid,$PDUdev)=each($PDUList)){
-		$tempPDU->PDUID=$PDUid;
-		$tempPDU->GetPDU($facDB);
-
-		if($tempPDU->IPAddress!=""){
-			$pduDraw=$tempPDU->GetAmperage($facDB);
-		}else{
+<?php
+	foreach ( $PDUList as $PDUdev ) {
+		if( $PDUdev->IPAddress != "" ) {
+			$pduDraw = $PDUdev->GetAmperage( $facDB );
+		} else {
 			$pduDraw=0;
 		}
-		print "			<a href=\"pduinfo.php?pduid=$PDUid\">CDU $PDUdev->Label ($pduDraw A)</font></a><br>\n";
+		
+		printf( "			<a href=\"pduinfo.php?pduid=%d\">CDU %s (%d A)</font></a><br>\n", $PDUdev->PDUID, $PDUdev->Label, $pduDraw );
 	}
+	
 	if($user->WriteAccess){
-		print "			<br><br><input type=\"button\" value=\"Add CDU\" onclick=\"location='pduinfo.php?pduid=0&cabinetid=$cab->CabinetID'\">\n";
+		sprintf( "			<br><br><input type=\"button\" value=\"Add CDU\" onclick=\"location='pduinfo.php?pduid=0&cabinetid=%d'\">\n", $cab->CabinetID );
 	}
 ?>
 	</fieldset>
@@ -231,6 +248,7 @@
 	printf( "<form method=\"post\" action=\"%s\">", $_SERVER["PHP_SELF"] );
 	printf( "<input type=\"hidden\" name=\"cabinetid\" value=\"%d\">", $cab->CabinetID );
 	printf( "<input type=\"hidden\" name=\"audit\" value=\"yes\">" );
+	printf( "<input type=\"hidden\" name=\"delete\" value=\"no\">" );
 	printf( "<p>Last Audit: %s (%s)</p>\n", $audit->AuditStamp, $AuditorName );
 	
 	if ( $user->SiteAdmin ) {
@@ -239,6 +257,7 @@
 		printf( "<input type=\"button\" value=\"Audit Report\" style=\"width:120;\" onclick=\"location='audit_report.php?cabinetid=%d'\"><br>\n", $cab->CabinetID );
 		printf( "<input type=\"button\" value=\"Map Coordinates\" style=\"width:120;\" onclick=\"location='mapmaker.php?cabinetid=%d'\"><br>\n", $cab->CabinetID );
 		printf( "<input type=\"button\" value=\"Edit Cabinet\" style=\"width:120;\" onclick=\"location='cabinets.php?cabinetid=%s'\"><br>\n", $cab->CabinetID );
+		printf( "<input type=\"button\" value=\"Delete Cabinet\" style=\"width:120;\" onclick=\"javascript:verifyDelete(this.form)\"<br>\n" );
 	}
 	printf( "</form>" );
 
