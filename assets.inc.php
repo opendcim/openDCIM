@@ -282,6 +282,26 @@ class Cabinet {
 	}
 
 	function DeleteCabinet( $db ) {
+		/* Need to delete all devices and CDUs first */
+		$tmpDev = new Device();
+		$tmpCDU = new PowerDistribution();
+		
+		$tmpDev->Cabinet = $this->CabinetID;
+		$devList = $tmpDev->ViewDevicesByCabinet( $db );
+		
+		foreach ( $devList as &$delDev ) {
+			$delDev->DeleteDevice( $db );
+		}
+		
+		$tmpCDU->CabinetID = $this->CabinetID;
+		$cduList = $tmpCDU->GetPDUbyCabinet( $db );
+		
+		foreach ( $cduList as &$delCDU ) {
+			$delCDU->DeletePDU( $db );
+		}
+		
+		$sql = sprintf( "delete from fac_Cabinet where CabinetID=\"%d\"", intval( $this->CabinetID ) );
+		mysql_query( $sql, $db );
 	}
 }
 
@@ -574,12 +594,12 @@ class Device {
 	}
 	
 	function DeleteDevice( $db ) {
-		// Delete all connections first
-    		$tmpConn = new SwitchConnection();
-    		$tmpConn->SwitchDeviceID = $this->DeviceID;
-    		$tmpConn->EndpointDeviceID = $this->DeviceID;
-    		$tmpConn->DropSwitchConnections( $db );
-    		$tmpConn->DropEndpointConnections( $db );
+		// Delete all network connections first
+		$tmpConn = new SwitchConnection();
+		$tmpConn->SwitchDeviceID = $this->DeviceID;
+		$tmpConn->EndpointDeviceID = $this->DeviceID;
+		$tmpConn->DropSwitchConnections( $db );
+		$tmpConn->DropEndpointConnections( $db );
 
 		// Delete power connections next
 		$powercon = new PowerConnection();

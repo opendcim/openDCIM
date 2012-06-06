@@ -136,7 +136,7 @@ class PowerDistribution {
 	var $CabinetID;
 	var $InputVoltage;
 	var $InputAmperage;
-	var $ManagmentType;
+	var $ManagementType;
 	var $Model;
 	var $NumOutputs;
 	var $IPAddress;
@@ -222,7 +222,41 @@ class PowerDistribution {
 	}
 
 	function GetPDUbyCabinet( $db ) {
-		$select_sql = "select * from fac_PowerDistribution where CabinetID=\"" . intval($this->CabinetID) . "\"";
+		$select_sql = sprintf( "select * from fac_PowerDistribution where CabinetID=\"%d\"", intval( $this->CabinetID ) );
+
+		if ( ! $result = mysql_query( $select_sql, $db ) ) {
+			return 0;
+		}
+
+		$PDUList = array();
+
+		while ( $PDUrow = mysql_fetch_array( $result ) ) {
+			$PDUID = sizeof( $PDUList );
+			$PDUList[$PDUID] = new PowerDistribution();
+
+			$PDUList[$PDUID]->PDUID = $PDUrow["PDUID"];
+			$PDUList[$PDUID]->Label = stripslashes($PDUrow["Label"]);
+			$PDUList[$PDUID]->CabinetID = $PDUrow["CabinetID"];
+			$PDUList[$PDUID]->InputVoltage = $PDUrow["InputVoltage"];
+			$PDUList[$PDUID]->InputAmperage = $PDUrow["InputAmperage"];
+			$PDUList[$PDUID]->ManagementType=$PDUrow["ManagementType"];
+			$PDUList[$PDUID]->Model = stripslashes($PDUrow["Model"]);
+			$PDUList[$PDUID]->NumOutputs = $PDUrow["NumOutputs"];
+			$PDUList[$PDUID]->IPAddress = stripslashes($PDUrow["IPAddress"]);
+			$PDUList[$PDUID]->SNMPCommunity = stripslashes($PDUrow["SNMPCommunity"]);
+			$PDUList[$PDUID]->FirmwareVersion = $PDUrow["FirmwareVersion"];
+			$PDUList[$PDUID]->PanelID = $PDUrow["PanelID"];
+			$PDUList[$PDUID]->PanelPole = $PDUrow["PanelPole"];
+			$PDUList[$PDUID]->FailSafe = $PDUrow["FailSafe"];
+			$PDUList[$PDUID]->PanelID2 = $PDUrow["PanelID2"];
+			$PDUList[$PDUID]->PanelPole2 = $PDUrow["PanelPole2"];
+		}
+
+		return $PDUList;
+	}
+	
+	function GetPDUbyPanel( $db ) {
+		$select_sql = "select * from fac_PowerDistribution where PanelID=\"" . intval($this->PanelID) . "\" or PanelID2=\"" . intval( $this->PanelID ) . "\" order by PanelPole ASC";
 
 		if ( ! $result = mysql_query( $select_sql, $db ) ) {
 			return 0;
@@ -254,40 +288,6 @@ class PowerDistribution {
 
 		return $PDUList;
 	}
-	
-		function GetPDUbyPanel( $db ) {
-			$select_sql = "select * from fac_PowerDistribution where PanelID=\"" . intval($this->PanelID) . "\" or PanelID2=\"" . intval( $this->PanelID ) . "\" order by PanelPole ASC";
-
-			if ( ! $result = mysql_query( $select_sql, $db ) ) {
-				return 0;
-			}
-
-			$PDUList = array();
-
-			while ( $PDUrow = mysql_fetch_array( $result ) ) {
-				$PDUID = $PDUrow["PDUID"];
-				$PDUlist[$PDUID] = new PowerDistribution();
-
-				$PDUList[$PDUID]->PDUID = $PDUID;
-				$PDUList[$PDUID]->Label = stripslashes($PDUrow["Label"]);
-				$PDUList[$PDUID]->CabinetID = $PDUrow["CabinetID"];
-				$PDUList[$PDUID]->InputVoltage = $PDUrow["InputVoltage"];
-				$PDUList[$PDUID]->InputAmperage = $PDUrow["InputAmperage"];
-				$PDUList[$PDUID]->ManagementType=$PDUrow["ManagementType"];
-				$PDUList[$PDUID]->Model = stripslashes($PDUrow["Model"]);
-				$PDUList[$PDUID]->NumOutputs = $PDUrow["NumOutputs"];
-				$PDUList[$PDUID]->IPAddress = stripslashes($PDUrow["IPAddress"]);
-				$PDUList[$PDUID]->SNMPCommunity = stripslashes($PDUrow["SNMPCommunity"]);
-				$PDUList[$PDUID]->FirmwareVersion = $PDUrow["FirmwareVersion"];
-				$PDUList[$PDUID]->PanelID = $PDUrow["PanelID"];
-				$PDUList[$PDUID]->PanelPole = $PDUrow["PanelPole"];
-				$PDUList[$PDUID]->FailSafe = $PDUrow["FailSafe"];
-				$PDUList[$PDUID]->PanelID2 = $PDUrow["PanelID2"];
-				$PDUList[$PDUID]->PanelPole2 = $PDUrow["PanelPole2"];
-			}
-
-			return $PDUList;
-		}
 
 	function BuildVoltageList() {
 		$select = "<select name=\"inputvoltage\" id=\"inputvoltage\">";
@@ -306,130 +306,114 @@ class PowerDistribution {
 		return $select;
 	}
 
-  function GetAmperage( $db ) {
-    $selectSQL = "select * from fac_PDUStats where PDUID=\"" . intval($this->PDUID) . "\"";
-    if ( $result = mysql_query( $selectSQL, $db ) ) {
-      $pduRow = mysql_fetch_array( $result );
-      if ($pduRow["TotalAmps"]!='')
-	return $pduRow["TotalAmps"];
-      else
-        return 0;
-    }
-  }
+	function GetAmperage( $db ) {
+		$selectSQL = "select * from fac_PDUStats where PDUID=\"" . intval($this->PDUID) . "\"";
+		if ( $result = mysql_query( $selectSQL, $db ) ) {
+		  $pduRow = mysql_fetch_array( $result );
+		  if ($pduRow["TotalAmps"]!='')
+			return $pduRow["TotalAmps"];
+		  else
+			return 0;
+		}
+	}
   
-  function UpdateStats( $db ) {
-    // Automatically pull the current amperage per phase from a Server Technologies SmartCDU
-    $selectSQL = "select * from fac_PowerDistribution where IPAddress<>'' and SNMPCommunity<>''";
-    $result = mysql_query( $selectSQL, $db );
-    
-    while ( $pduRow = mysql_fetch_array( $result ) ) {
-      $statsOutput = "";
-      $PDUID = $pduRow["PDUID"];
-      $serverIP = $pduRow["IPAddress"];
-      $community = $pduRow["SNMPCommunity"];
-      
-      // Find out if this unit is single-phase or three-phase
-      // $pollCommand = "/usr/bin/snmpget -v 2c -c $community $serverIP .1.3.6.1.4.1.1718.3.2.1.1.8.1 | /bin/cut -d: -f4";
-      // exec( $pollCommand, $unitCapabilities );
-      
-			/*
-			// Bit 0010 0000 is for three phase
-      if ( hexdec( $unitCapabilities[0] ) & hexdec ( 10 ) ) {
-        $threePhase = true;
-      }else {
-       	$threePhase = false;
-      }
-      */
+	function UpdateStats( $db ) {
+		// Automatically pull the current amperage per phase from a Server Technologies SmartCDU
+		$selectSQL = "select * from fac_PowerDistribution where IPAddress<>'' and SNMPCommunity<>''";
+		$result = mysql_query( $selectSQL, $db );
 
+		while ( $pduRow = mysql_fetch_array( $result ) ) {
+			$statsOutput = "";
+			$PDUID = $pduRow["PDUID"];
+			$serverIP = $pduRow["IPAddress"];
+			$community = $pduRow["SNMPCommunity"];
+		  
 			if ( $pduRow["InputVoltage"] == "208VAC 2-Pole" )
 			  $threePhase = false;
 			else
 			  $threePhase = true;
-      if (strtoupper(substr($pduRow["ManagementType"],0,5))==='GEIST'){
-      	$pollCommand = "/usr/bin/snmpget -v 2c -c $community $serverIP .1.3.6.1.4.1.21239.2.25.1.8.1 .1.3.6.1.4.1.21239.2.25.1.16.1 .1.3.6.1.4.1.21239.2.25.1.24.1 | /bin/cut -d: -f4";
-	$conversionRatio=10;
-	}
-	else if(strtoupper(substr($pduRow["ManagementType"],0,6))==='SERVER'){
-      		$pollCommand = "/usr/bin/snmpget -v 2c -c $community $serverIP .1.3.6.1.4.1.1718.3.2.2.1.7.1.1 .1.3.6.1.4.1.1718.3.2.2.1.7.1.2 .1.3.6.1.4.1.1718.3.2.2.1.7.1.3 | /bin/cut -d: -f4";
-		$conversionRatio=100;
-	}
-	else if(strtoupper(substr($pduRow["ManagementType"],0,3))==='APC'){
-      		$pollCommand = "/usr/bin/snmpget -v 2c -c $community $serverIP .1.3.6.1.4.1.318.1.1.12.2.3.1.1.2.1 | /bin/cut -d: -f4";
-		$conversionRatio = 10;
-	}
-	else
-		continue;
-	
-      
-	exec( $pollCommand, $statsOutput );
-      
-      if ( count( $statsOutput ) > 0 ) {
-        $phaseA = $statsOutput[0] / $conversionRatio;
-        $phaseB=$phaseC=0;
-        
-        if ( $threePhase && (strtoupper(substr($pduRow["ManagementType"],0,3))!='APC')){
-	  $phaseB = $statsOutput[1] / $conversionRatio;
-          $phaseC = $statsOutput[2] / $conversionRatio;
-          $TotalAmps = (( $phaseA + $phaseB + $phaseC ) / 3) * 1.732;
-	}
-        else
-          $TotalAmps = $phaseA + $phaseB + $phaseC;
-      
-        $clearSQL = "delete from fac_PDUStats where PDUID=$PDUID";
-        $updateSQL = "insert into fac_PDUStats set PDUID=$PDUID, PhaseA=$phaseA, PhaseB=$phaseB, PhaseC=$phaseC, TotalAmps=$TotalAmps";
-        
-        mysql_query( $clearSQL, $db );
-        mysql_query( $updateSQL, $db );
-      }
 
-      $this->PDUID = $PDUID;      
-      $FirmwareVersion = $this->GetSmartCDUVersion( $db );
-      $updateSQL = "update fac_PowerDistribution set FirmwareVersion=\"$FirmwareVersion\" where PDUID=\"$PDUID\"";
-      mysql_query( $updateSQL, $db );
-    }
-  }
-  
-  function GetSmartCDUUptime( $db ) {
-    $this->GetPDU( $db );
+			if (strtoupper(substr($pduRow["ManagementType"],0,5))==='GEIST') {
+				$pollCommand = "/usr/bin/snmpget -v 2c -c $community $serverIP .1.3.6.1.4.1.21239.2.25.1.8.1 .1.3.6.1.4.1.21239.2.25.1.16.1 .1.3.6.1.4.1.21239.2.25.1.24.1 | /bin/cut -d: -f4";
+				$conversionRatio=10;
+			} elseif (strtoupper(substr($pduRow["ManagementType"],0,6))==='SERVER') {
+				$pollCommand = "/usr/bin/snmpget -v 2c -c $community $serverIP .1.3.6.1.4.1.1718.3.2.2.1.7.1.1 .1.3.6.1.4.1.1718.3.2.2.1.7.1.2 .1.3.6.1.4.1.1718.3.2.2.1.7.1.3 | /bin/cut -d: -f4";
+				$conversionRatio=100;
+			} elseif (strtoupper(substr($pduRow["ManagementType"],0,3))==='APC') {
+				$pollCommand = "/usr/bin/snmpget -v 2c -c $community $serverIP .1.3.6.1.4.1.318.1.1.12.2.3.1.1.2.1 | /bin/cut -d: -f4";
+				$conversionRatio = 10;
+			} else
+				continue;
 
-	if(!($this->IPAddress)||!($this->SNMPCommunity)){
-		return "Not Configured";
-	}else{
-	    $serverIP = $this->IPAddress;
-    	$community = $this->SNMPCommunity;
-	    $pollCommand = "/usr/bin/snmpget -v 2c -c $community $serverIP sysUpTimeInstance";
-    
-    	exec($pollCommand, $statsOutput);
-		// need error checking here
-	
-	    $upTime=end(explode(")",$statsOutput[0]));
-    	return $upTime;
-	}
-  }
-  
-  function GetSmartCDUVersion( $db ) {
-    $this->GetPDU( $db );
+		  
+			exec( $pollCommand, $statsOutput );
+		  
+			if ( count( $statsOutput ) > 0 ) {
+				$phaseA = $statsOutput[0] / $conversionRatio;
+				$phaseB=$phaseC=0;
 
-	if(!($this->IPAddress)||!($this->SNMPCommunity)){
-		return "Not Configured";
-	}else{
-    	$serverIP = $this->IPAddress;
-	    $community = $this->SNMPCommunity;
-    	if(strtoupper(substr($this->ManagementType,0,5))==='GEIST'){
-    		$pollCommand = "/usr/bin/snmpget -v 2c -c $community $serverIP .1.3.6.1.4.1.21239.2.1.2.0";
-	    }elseif(strtoupper(substr($this->ManagementType,0,6))==='SERVER'){
-			$pollCommand = "/usr/bin/snmpget -v 2c -c $community $serverIP .1.3.6.1.4.1.1718.3.1.1.0";
-		}else{
-    	   	$pollCommand = "/usr/bin/snmpget -v 2c -c $community $serverIP .1.3.6.1.4.1.318.1.1.4.1.2.0";
+				if ( $threePhase && (strtoupper(substr($pduRow["ManagementType"],0,3))!='APC')) {
+					$phaseB = $statsOutput[1] / $conversionRatio;
+					$phaseC = $statsOutput[2] / $conversionRatio;
+					$TotalAmps = (( $phaseA + $phaseB + $phaseC ) / 3) * 1.732;
+				} else
+					$TotalAmps = $phaseA + $phaseB + $phaseC;
+		  
+				$clearSQL = "delete from fac_PDUStats where PDUID=$PDUID";
+				$updateSQL = "insert into fac_PDUStats set PDUID=$PDUID, PhaseA=$phaseA, PhaseB=$phaseB, PhaseC=$phaseC, TotalAmps=$TotalAmps";
+				
+				mysql_query( $clearSQL, $db );
+				mysql_query( $updateSQL, $db );
+			}
+
+			$this->PDUID = $PDUID;      
+			$FirmwareVersion = $this->GetSmartCDUVersion( $db );
+			$updateSQL = "update fac_PowerDistribution set FirmwareVersion=\"$FirmwareVersion\" where PDUID=\"$PDUID\"";
+			mysql_query( $updateSQL, $db );
 		}
-   
-	    exec( $pollCommand, $statsOutput );
-		// need error checking here
-
-		$version = str_replace( "\"", "", end( explode( " ", $statsOutput[0] ) ) );
-	    return $version;
 	}
-  }
+  
+	function GetSmartCDUUptime( $db ) {
+		$this->GetPDU( $db );
+
+		if (!($this->IPAddress)||!($this->SNMPCommunity)) {
+			return "Not Configured";
+		} else {
+			$serverIP = $this->IPAddress;
+			$community = $this->SNMPCommunity;
+			$pollCommand = "/usr/bin/snmpget -v 2c -c $community $serverIP sysUpTimeInstance";
+
+			exec($pollCommand, $statsOutput);
+			// need error checking here
+
+			$upTime=end(explode(")",$statsOutput[0]));
+			return $upTime;
+		}
+	}
+  
+	function GetSmartCDUVersion( $db ) {
+		$this->GetPDU( $db );
+
+		if (!($this->IPAddress)||!($this->SNMPCommunity)) {
+			return "Not Configured";
+		} else {
+			$serverIP = $this->IPAddress;
+			$community = $this->SNMPCommunity;
+			if(strtoupper(substr($this->ManagementType,0,5))==='GEIST'){
+				$pollCommand = "/usr/bin/snmpget -v 2c -c $community $serverIP .1.3.6.1.4.1.21239.2.1.2.0";
+			} elseif (strtoupper(substr($this->ManagementType,0,6))==='SERVER') {
+				$pollCommand = "/usr/bin/snmpget -v 2c -c $community $serverIP .1.3.6.1.4.1.1718.3.1.1.0";
+			} else {
+				$pollCommand = "/usr/bin/snmpget -v 2c -c $community $serverIP .1.3.6.1.4.1.318.1.1.4.1.2.0";
+			}
+
+			exec( $pollCommand, $statsOutput );
+			// need error checking here
+
+			$version = str_replace( "\"", "", end( explode( " ", $statsOutput[0] ) ) );
+			return $version;
+		}
+	}
     
 	function GetManagementTypeSelectList( $db ) {
 		$select_sql = "select DISTINCT ManagementType from fac_PowerDistribution where ManagementType!='Unmanaged'";
@@ -455,6 +439,17 @@ class PowerDistribution {
 	}
 
 	function DeletePDU( $db ) {
+		// First, remove any connections to the PDU
+		$tmpConn = new PowerConnection();
+		$tmpConn->PDUID = $this->PDUID;
+		$connList = $tmpConn->GetConnectionsByPDU( $db );
+		
+		foreach ( $connList as $delConn ) {
+			$delConn->RemoveConnections( $db );
+		}
+		
+		$sql = sprintf( "delete from fac_PowerDistribution where PDUID=\"%d\"", intval( $this->PDUID ) );
+		mysql_query( $sql, $db );
 	}
 }
 
