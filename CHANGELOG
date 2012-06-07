@@ -1,0 +1,21 @@
+openDCIM is an Open Source Software alternative for Data Center Infrastructure Management.
+
+This is a list of changes made from version to version.  This is not intended to be a
+comprehensive bug tracking list.  Issues (bugs, enhancements, etc) are tracked on
+GitHub, at http://github.com/samilliken/openDCIM/issues, where you can also download
+the latest development version.  However, it is not advised to pull from GitHub unless you
+are simply testing, as some functionality can break between releases.
+
+
+Changes in 1.2
+--------------
+* Added a version number to the database, which is displayed in the Configuration screen
+* Enhanced the Device Templates to include more fields to fill in as default values
+
+
+Changes in 1.1
+--------------
+* Corrected a bug that kept the Certify Audit button from working
+* Replaced Rmail library (no longer supported) with SwiftMail, and added fields to the
+  configuration table that allow for SMTPS authentication for sending messages
+* Added the ability to delete a cabinet
