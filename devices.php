@@ -62,12 +62,10 @@
 					$dev->InstallDate=date('Y-m-d',strtotime($_REQUEST['installdate']));
 					$dev->Notes=$_REQUEST['notes'];
 					$dev->Reservation = ( $_REQUEST['reservation'] == "on" ) ? 1 : 0;
+					$dev->NominalWatts=$_REQUEST['nominalwatts'];
 
-					if($dev->TemplateID >0){
+					if (( $dev->TemplateID > 0 ) && ( intval( $dev->NominalWatts == 0 )))
 						$dev->UpdateWattageFromTemplate($facDB);
-					}else{
-						$dev->NominalWatts=$_REQUEST['nominalwatts'];
-					}
 			
 					if($dev->Cabinet <0){
 						$dev->MoveToStorage($facDB);
@@ -185,13 +183,30 @@ function showDeptContacts(formname) {
 
 function updateFromTemplate(formname) {
 	var tmplHeight=new Array();
-<?php
-	foreach($templateList as $tmpl){
-		print "	tmplHeight[$tmpl->TemplateID]=$tmpl->Height;";
-	}
-?>	
+
 	var sel=formname.elements['templateid'];
-	formname.elements['height'].value=tmplHeight[sel.options[sel.selectedIndex].value];
+
+	var xmlhttp;
+	var template;
+	if (window.XMLHttpRequest) {
+		// code for IE7+, Firefox, Chrome, Opera, Safari
+		xmlhttp=new XMLHttpRequest();
+	} else {
+		// code for IE6, IE5
+		xmlhttp=new ActiveXObject("Microsoft.XMLHTTP");
+	}
+
+	xmlhttp.onreadystatechange=function() {
+		if (xmlhttp.readyState==4 && xmlhttp.status==200) {
+			template=eval("("+xmlhttp.responseText+")");
+			formname.elements['height'].value=template.Height;
+			formname.elements['nominalwatts'].value=template.Wattage;
+		}
+	}
+
+	xmlhttp.open("GET","scripts/ajax_template.php?q="+sel.options[sel.selectedIndex].value,true);
+	xmlhttp.send();
+
 }
 
 $(function(){
