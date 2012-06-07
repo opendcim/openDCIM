@@ -148,6 +148,9 @@ CREATE TABLE fac_DeviceTemplate (
   Height int(11) NOT NULL,
   Weight int(11) NOT NULL,
   Wattage int(11) NOT NULL,
+  DeviceType enum('Server','Appliance','Storage Array','Switch','Routing Chassis','Patch Panel','Physical Infrastructure') NOT NULL,
+  PSCount int(11) NOT NULL,
+  NumPorts int(11) NOT NULL,
   PRIMARY KEY (TemplateID),
   KEY ManufacturerID (ManufacturerID)
 ) ENGINE=MyISAM AUTO_INCREMENT=1 DEFAULT CHARSET=latin1;

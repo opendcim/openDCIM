@@ -27,10 +27,13 @@
 		$template->Height = $_REQUEST['height'];
 		$template->Weight = $_REQUEST['weight'];
 		$template->Wattage = $_REQUEST['wattage'];
+		$template->DeviceType = $_REQUEST['devicetype'];
+		$template->PSCount = $_REQUEST['pscount'];
+		$template->NumPorts = $_REQUEST['numports'];
 
-		if($_REQUEST['action']=='Create'){
+		if ( $_REQUEST['action']=='Create' ) {
 			$template->CreateTemplate($facDB);
-		}else{
+		} else {
 			$status='Updated';
 			$template->UpdateTemplate($facDB);
 		}
@@ -108,6 +111,30 @@
 <div>
    <div><label for="wattage">Wattage</label></div>
    <div><input type="text" name="wattage" id="wattage" value="<?php echo $template->Wattage; ?>"></div>
+</div>
+<div>
+   <div><label for="devicetype">Device Type</label></div>
+   <div><select name="devicetype" id="select">
+<?php
+	foreach ( array( 'Server', 'Appliance', 'Storage Array', 'Switch', 'Routing Chassis', 'Patch Panel', 'Physical Infrastructure' ) as $DevType ) {
+		if ( $DevType == $template->DeviceType )
+			$selected = "SELECTED";
+		else
+			$selected = "";
+			
+		printf( "<option value=\"%s\" %s>%s</option>\n", $DevType, $selected, $DevType );
+	}
+?>
+	</select>
+   </div>
+</div>
+<div>
+   <div><label for="pscount">No. Power Supplies</label></div>
+   <div><input type="text" name="pscount" id="pscount" value="<?php echo $template->PSCount; ?>"></div>
+</div>
+<div>
+   <div><label for="numports">No. Ports</label></div>
+   <div><input type="text" name="numports" id="numports" value="<?php echo $template->NumPorts; ?>"></div>
 </div>
 <div class="caption">
 <?php

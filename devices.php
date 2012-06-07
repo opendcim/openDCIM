@@ -201,6 +201,31 @@ function updateFromTemplate(formname) {
 			template=eval("("+xmlhttp.responseText+")");
 			formname.elements['height'].value=template.Height;
 			formname.elements['nominalwatts'].value=template.Wattage;
+			formname.elements['powersupplycount'].value=template.PSCount;
+			formname.elements['ports'].value=template.NumPorts;
+			
+			switch ( template.DeviceType ) {
+				case "Server":
+					formname.elements['devicetype'].selectedIndex = 1;
+					break;
+				case "Appliance":
+					formname.elements['devicetype'].selectedIndex = 2;
+					break;
+				case "Storage Array":
+					formname.elements['devicetype'].selectedIndex = 3;
+					break;
+				case "Switch":
+					formname.elements['devicetype'].selectedIndex = 4;
+					break;
+				case "Routing Chassis":
+					formname.elements['devicetype'].selectedIndex = 5;
+					break;
+				case "Patch Panel":
+					formname.elements['devicetype'].selectedIndex = 6;
+					break;
+				default:
+					formname.elements['devicetype'].selectedIndex = 7;
+			}
 		}
 	}
 

@@ -313,16 +313,19 @@ class DeviceTemplate {
   var $Height;
   var $Weight;
   var $Wattage;
+  var $DeviceType;
+  var $PSCount;
+  var $NumPorts;
   
   function CreateTemplate( $db ) {
-    $insertSQL = "insert into fac_DeviceTemplate set ManufacturerID=\"" . intval($this->ManufacturerID) . "\", Model=\"" . addslashes($this->Model) . "\", Height=\"" . intval($this->Height) . "\", Weight=\"" . intval($this->Weight) . "\", Wattage=\"" . intval($this->Wattage) . "\"";
+    $insertSQL = "insert into fac_DeviceTemplate set ManufacturerID=\"" . intval($this->ManufacturerID) . "\", Model=\"" . addslashes($this->Model) . "\", Height=\"" . intval($this->Height) . "\", Weight=\"" . intval($this->Weight) . "\", Wattage=\"" . intval($this->Wattage) . "\", DeviceType=\"" . addslashes( $this->DeviceType ) . "\", PSCount=\"" . intval( $this->PSCount ) . "\", NumPorts=\"" . intval( $this->NumPorts ) . "\"";
     $result = mysql_query( $insertSQL, $db );
     
     $this->TemplateID = mysql_insert_id( $db );     
   }
   
   function UpdateTemplate( $db ) {
-    $updateSQL = "update fac_DeviceTemplate set ManufacturerID=\"" . intval($this->ManufacturerID) . "\", Model=\"" . addslashes($this->Model) . "\", Height=\"" . intval($this->Height) . "\", Weight=\"" . intval($this->Weight) . "\", Wattage=\"" . intval($this->Wattage) . "\" where TemplateID=\"" . intval($this->TemplateID) . "\"";
+    $updateSQL = "update fac_DeviceTemplate set ManufacturerID=\"" . intval($this->ManufacturerID) . "\", Model=\"" . addslashes($this->Model) . "\", Height=\"" . intval($this->Height) . "\", Weight=\"" . intval($this->Weight) . "\", Wattage=\"" . intval($this->Wattage) . "\", DeviceType=\"" . addslashes( $this->DeviceType ) . "\", PSCount=\"" . intval( $this->PSCount ) . "\", NumPorts=\"" . intval( $this->NumPorts ) . "\" where TemplateID=\"" . intval($this->TemplateID) . "\"";
     $result = mysql_query( $updateSQL, $db );
   }
   
@@ -342,6 +345,9 @@ class DeviceTemplate {
       $this->Height = $tempRow["Height"];
       $this->Weight = $tempRow["Weight"];
       $this->Wattage = $tempRow["Wattage"];
+	  $this->DeviceType = $tempRow["DeviceType"];
+	  $this->PSCount = $tempRow["PSCount"];
+	  $this->NumPorts = $tempRow["NumPorts"];
       
       return true;
     } else {
@@ -365,7 +371,10 @@ class DeviceTemplate {
       $templateList[$templateNum]->Model = $tempRow["Model"];
       $templateList[$templateNum]->Height = $tempRow["Height"];
       $templateList[$templateNum]->Weight = $tempRow["Weight"];
-      $templateList[$templateNum]->Wattage = $tempRow["Wattage"];     
+      $templateList[$templateNum]->Wattage = $tempRow["Wattage"];
+	  $templateList[$templateNum]->DeviceType = $tempRow["DeviceType"];
+	  $templateList[$templateNum]->PSCount = $tempRow["PSCount"];
+	  $templateList[$templateNum]->NumPorts = $tempRow["NumPorts"];
     }
     
     return $templateList;
