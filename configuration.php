@@ -74,6 +74,7 @@
 <div class="main">
 <h2><?php print $config->ParameterArray["OrgName"]; ?></h2>
 <h3>Data Center Configuration</h3>
+<h3>Database Version:  <?php print $config->ParameterArray["Version"]; ?></h3>
 <div class="center"><div>
 <form action="<?php print $_SERVER["PHP_SELF"]; ?>" method="POST">
    <input type="hidden" name="Revert" id="Revert" value="no">
@@ -83,7 +84,14 @@
 <?php
 	foreach ($config->ParameterArray as $key=>$value){
 	
-		if(strpos($key, "Color")){$class='class="color-picker"';$cssfix1='<div class="cp">';$cssfix2='</div>';}else{$cssfix1=$cssfix2=$class='';}
+		if ( strpos( $key, "Color" ) ) {
+			$class='class="color-picker"';
+			$cssfix1='<div class="cp">';
+			$cssfix2='</div>';
+		} else { 
+			$cssfix1=$cssfix2=$class='';
+		}
+		
 		if ($key =="ClassList"){
 			$numItems=count($config->ParameterArray[$key]);
 			$i=0;
@@ -101,7 +109,7 @@
 			print "<div><input type=\"button\" value=\"Revert To Default\" onclick=\"javascript:verifyRevert(this.form,'$key')\"></div>\n";
 			print "<div>{$config->defaults[$key]}</div>\n";
 			print "</div>\n";
-		}else{
+		} elseif ( $key != "Version" ) {
 			print "<div>\n";
 			print "<div>$key:</div>\n";
 			print "<div>$cssfix1<input type=\"text\" $class maxlength=\"200\" name=\"$key\" value=\"{$config->ParameterArray[$key]}\">$cssfix2</div>\n";
