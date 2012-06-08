@@ -6,7 +6,7 @@
 -- First and foremost, we are now setting a version number in the database
 --
 
-insert into fac_Config values( 'Version','1.2' );
+insert into fac_Config values( 'Version','1.2', '', '', '' );
 
 
 --
