@@ -88,10 +88,11 @@ If found then force the user into only running that function.
 */
 
 if(file_exists("upgrade.php")||file_exists("install.php")){
-	if(file_exists("upgrade.php")){
-		header("Location: ".redirect('upgrade.php'));
-	}else{
+	if(file_exists("install.php")){
+		// new installs need to run the install first.
 		header("Location: ".redirect('install.php'));
+	}else{
+		header("Location: ".redirect('upgrade.php'));
 	}
 }
 ?>
