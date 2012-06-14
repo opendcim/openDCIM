@@ -26,7 +26,6 @@
 	if(isset($_REQUEST['action']) && (($_REQUEST['action']=='Create') || ($_REQUEST['action']=='Update')) && $user->WriteAccess) {
 		$pdu->Label=$_REQUEST['label'];
 		$pdu->CabinetID=$_REQUEST['cabinetid'];
-		$pdu->InputVoltage=$_REQUEST['inputvoltage'];
 		$pdu->InputAmperage=$_REQUEST['inputamperage'];
 		$pdu->ManagementType=$_REQUEST['managementtype'];
 		$pdu->Model=$_REQUEST['model'];
@@ -35,6 +34,7 @@
 		$pdu->SNMPCommunity=$_REQUEST['snmpcommunity'];
 		$pdu->FirmwareVersion=$_REQUEST['firmwareversion'];
 		$pdu->PanelID=$_REQUEST['panelid'];
+		$pdu->BreakerSize=$_REQUEST['breakersize'];
 		$pdu->PanelPole=$_REQUEST['panelpole'];
 		// If failsafe is unset clear auto transfer switch panel information
 		if(isset($_REQUEST['failsafe'])){
@@ -83,8 +83,43 @@
   <!--[if lt IE 9]>
   <link rel="stylesheet"  href="css/ie.css" type="text/css">
   <![endif]-->
+
+<script type="text/javascript"> 
+function updateVoltage(formname) {
+	var sel=formname.elements['panelid'];
+
+	var xmlhttp;
+	var panel;
+	var HighVoltage;
+
+	if (window.XMLHttpRequest) {
+		// code for IE7+, Firefox, Chrome, Opera, Safari
+		xmlhttp=new XMLHttpRequest();
+	} else {
+		// code for IE6, IE5
+		xmlhttp=new ActiveXObject("Microsoft.XMLHTTP");
+	}
+
+	xmlhttp.onreadystatechange=function() {
+		if (xmlhttp.readyState==4 && xmlhttp.status==200) {
+			panel=eval("("+xmlhttp.responseText+")");
+
+			HighVoltage=panel.PanelVoltage;
+			var LowVoltage=Math.floor( HighVoltage/1.73 );
+			
+			var labelDiv = document.getElementById('voltage');
+			labelDiv.innerHTML = HighVoltage+" / "+LowVoltage;
+		}
+	}
+
+	xmlhttp.open("GET","scripts/ajax_panel.php?q="+sel.options[sel.selectedIndex].value,true);
+	xmlhttp.send();
+
+}
+</script>
   
   <script type="text/javascript" src="scripts/jquery.min.js"></script>
+
 </head>
 <body>
 <div id="header"></div>
@@ -96,7 +131,7 @@
 <h2><?php echo $config->ParameterArray['OrgName']; ?></h2>
 <h3>Data Center PDU Detail</h3>
 <div class="center"><div>
-<form action="<?php echo $_SERVER['PHP_SELF']; ?>" method="POST">
+<form name="pduform" id="pduform" action="<?php echo $_SERVER['PHP_SELF']; ?>" method="POST">
 <div class="table">
 <div>
    <div><label for="pduid">PDU ID</label></div>
@@ -109,10 +144,6 @@
 <div>
    <div><label for="cabinetid">Cabinet</label></div>
    <div><?php echo $cab->GetCabinetSelectList( $facDB ); ?></div>
-</div>
-<div>
-   <div><label for="inputvoltage">Input Voltage</label></div>
-   <div><?php echo $pdu->BuildVoltageList(); ?></div>
 </div>
 <div>
    <div><label for="inputamperage">Input Amperage</label></div>
@@ -148,7 +179,7 @@
 </div>
 <div>
    <div><label for="panelid">Source Panel</label></div>
-   <div><select name="panelid" id="panelid"><option value=0>Select Panel</option>
+   <div><select name="panelid" id="panelid" onchange="updateVoltage(pduform);"><option value=0>Select Panel</option>
 <?php
 foreach($PanelList as $key=>$value){
 	echo "<option value=\"$value->PanelID\"";
@@ -157,6 +188,37 @@ foreach($PanelList as $key=>$value){
   }
 ?>
    </select></div>
+</div>
+<div>
+	<div><label for="voltage">Voltages:</label></div>
+	<div id="voltage">
+<?php
+	if ( $pdu->PanelID > 0 ) {
+		$pnl = new PowerPanel();
+		$pnl->PanelID = $pdu->PanelID;
+		$pnl->GetPanel( $facDB );
+		
+		printf( "%d / %d", $pnl->PanelVoltage, intval( $pnl->PanelVoltage / 1.73 ) );
+	}
+?>
+	</div>
+</div>
+<div>
+  <div><label for="breakersize">Breaker Size (# of Poles)</label></div>
+  <div>
+	<select name="breakersize">
+<?php
+	for ( $i = 1; $i < 4; $i++ ) {
+		if ( $i == $pdu->BreakerSize )
+			$selected = "SELECTED";
+		else
+			$selected = "";
+			
+		printf( "<option value=\"%d\" %s>%d</option>\n", $i, $selected, $i );
+	}
+?>
+	</select>
+  </div>
 </div>
 <div>
   <div><label for="panelpole">Panel Pole Number</label></div>

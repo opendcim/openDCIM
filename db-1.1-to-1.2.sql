@@ -20,3 +20,20 @@ alter table fac_DeviceTemplate add column PSCount int(11) not null;
 alter table fac_DeviceTemplate add column NumPorts int(11) not null;
 
 
+--
+-- Major change - automate the transition from InputVoltage to BreakerSize in the fac_PowerDistribution table
+--
+
+alter table fac_PowerDistribution add column BreakerSize int(11) not null after PanelID;
+
+update fac_PowerDistribution set BreakerSize=1 where InputVoltage='110VAC';
+
+update fac_PowerDistribution set BreakerSize=2 where InputVoltage='208VAC 2-Pole';
+
+update fac_PowerDistribution set BreakerSize=3 where InputVoltage='208VAC 3-Pole';
+
+alter table fac_PowerDistribution drop column InputVoltage;
+
+alter table fac_PowerPanel add column PanelVoltage int(11) not null after MainBreakerSize;
+
+

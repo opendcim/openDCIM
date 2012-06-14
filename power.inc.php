@@ -134,7 +134,6 @@ class PowerDistribution {
 	var $PDUID;
 	var $Label;
 	var $CabinetID;
-	var $InputVoltage;
 	var $InputAmperage;
 	var $ManagementType;
 	var $Model;
@@ -143,13 +142,14 @@ class PowerDistribution {
 	var $SNMPCommunity;
 	var $FirmwareVersion;
   	var $PanelID;
+	var $BreakerSize;
 	var $PanelPole;
 	var $FailSafe;
 	var $PanelID2;
 	var $PanelPole2;
 
 	function CreatePDU( $db ) {
-		$insert_sql = "insert into fac_PowerDistribution set Label=\"" . addslashes($this->Label) . "\", CabinetID=\"" . intval($this->CabinetID) . "\", InputVoltage=\"" . $this->InputVoltage . "\", InputAmperage=\"" . intval( $this->InputAmperage ) . "\", ManagementType=\"" . $this->ManagementType . "\", Model=\"" . addslashes($this->Model) . "\", NumOutputs=\"" . intval($this->NumOutputs) . "\", IPAddress=\"" . addslashes($this->IPAddress) . "\", SNMPCommunity=\"" . addslashes($this->SNMPCommunity) . "\", PanelID=\"" . intval($this->PanelID) . "\", PanelPole=\"" . intval($this->PanelPole) . "\", FailSafe=\"" . intval($this->FailSafe) . "\", PanelID2=\"" . intval($this->PanelID2) . "\", PanelPole2=\"" . intval($this->PanelPole2) . "\"";
+		$insert_sql = "insert into fac_PowerDistribution set Label=\"" . addslashes($this->Label) . "\", CabinetID=\"" . intval($this->CabinetID) . "\",  InputAmperage=\"" . intval( $this->InputAmperage ) . "\", ManagementType=\"" . $this->ManagementType . "\", Model=\"" . addslashes($this->Model) . "\", NumOutputs=\"" . intval($this->NumOutputs) . "\", IPAddress=\"" . addslashes($this->IPAddress) . "\", SNMPCommunity=\"" . addslashes($this->SNMPCommunity) . "\", PanelID=\"" . intval($this->PanelID) . "\", BreakerSize=\"" . intval( $this->BreakerSize ) . "\", PanelPole=\"" . intval($this->PanelPole) . "\", FailSafe=\"" . intval($this->FailSafe) . "\", PanelID2=\"" . intval($this->PanelID2) . "\", PanelPole2=\"" . intval($this->PanelPole2) . "\"";
 
 		if ( ! $result = mysql_query( $insert_sql, $db ) ) {
 			return -1;
@@ -161,7 +161,7 @@ class PowerDistribution {
 	}
 
 	function UpdatePDU( $db ) {
-		$update_sql = "update fac_PowerDistribution set Label=\"" . addslashes($this->Label) . "\", CabinetID=\"" . intval($this->CabinetID) . "\", InputVoltage=\"" . $this->InputVoltage . "\", InputAmperage=\"" . intval( $this->InputAmperage ) . "\", ManagementType=\"" . $this->ManagementType . "\", Model=\"" . addslashes($this->Model) . "\", NumOutputs=\"" . intval($this->NumOutputs) . "\", IPAddress=\"" . addslashes($this->IPAddress) . "\", SNMPCommunity=\"" . addslashes($this->SNMPCommunity) . "\", PanelID=\"" . intval($this->PanelID) . "\", PanelPole=\"" . intval($this->PanelPole) . "\", FailSafe=\"" . intval($this->FailSafe) . "\", PanelID2=\"" . intval($this->PanelID2) . "\", PanelPole2=\"" . intval($this->PanelPole2) . "\" where PDUID=\"" . intval($this->PDUID) . "\"";
+		$update_sql = "update fac_PowerDistribution set Label=\"" . addslashes($this->Label) . "\", CabinetID=\"" . intval($this->CabinetID) . "\", InputAmperage=\"" . intval( $this->InputAmperage ) . "\", ManagementType=\"" . $this->ManagementType . "\", Model=\"" . addslashes($this->Model) . "\", NumOutputs=\"" . intval($this->NumOutputs) . "\", IPAddress=\"" . addslashes($this->IPAddress) . "\", SNMPCommunity=\"" . addslashes($this->SNMPCommunity) . "\", PanelID=\"" . intval($this->PanelID) . "\", BreakerSize=\"" . intval( $this->BreakerSize ) . "\", PanelPole=\"" . intval($this->PanelPole) . "\", FailSafe=\"" . intval($this->FailSafe) . "\", PanelID2=\"" . intval($this->PanelID2) . "\", PanelPole2=\"" . intval($this->PanelPole2) . "\" where PDUID=\"" . intval($this->PDUID) . "\"";
 
 		return mysql_query( $update_sql, $db );
 	}
@@ -187,7 +187,6 @@ class PowerDistribution {
 		if ( $PDUrow = mysql_fetch_array( $result ) ) {
 			$this->CabinetID = $PDUrow["CabinetID"];
 			$this->Label = stripslashes($PDUrow["Label"]);
-			$this->InputVoltage = $PDUrow["InputVoltage"];
 			$this->InputAmperage = $PDUrow["InputAmperage"];
 			$this->ManagementType = $PDUrow["ManagementType"];
 			$this->Model = stripslashes($PDUrow["Model"]);
@@ -196,6 +195,7 @@ class PowerDistribution {
 			$this->SNMPCommunity = stripslashes($PDUrow["SNMPCommunity"]);
 			$this->FirmwareVersion = $PDUrow["FirmwareVersion"];
 			$this->PanelID = $PDUrow["PanelID"];
+			$this->BreakerSize = $PDUrow["BreakerSize"];
 			$this->PanelPole = $PDUrow["PanelPole"];
 			$this->FailSafe = $PDUrow["FailSafe"];
 			$this->PanelID2 = $PDUrow["PanelID2"];
@@ -203,7 +203,6 @@ class PowerDistribution {
 		} else {
 			$this->CabinetID = null;
 			$this->Label = null;
-			$this->InputVoltage = null;
 			$this->InputAmperage = null;
 			$this->ManagementType = null;
 			$this->Model = null;
@@ -212,6 +211,7 @@ class PowerDistribution {
 			$this->SNMPCommunity = null;
 			$this->FirmwareVersion = null;
 			$this->PanelID = null;
+			$this->BreakerSize = null;
 			$this->PanelPole = null;
 			$this->FailSafe = null;
 			$this->PanelID2 = null;
@@ -237,7 +237,6 @@ class PowerDistribution {
 			$PDUList[$PDUID]->PDUID = $PDUrow["PDUID"];
 			$PDUList[$PDUID]->Label = stripslashes($PDUrow["Label"]);
 			$PDUList[$PDUID]->CabinetID = $PDUrow["CabinetID"];
-			$PDUList[$PDUID]->InputVoltage = $PDUrow["InputVoltage"];
 			$PDUList[$PDUID]->InputAmperage = $PDUrow["InputAmperage"];
 			$PDUList[$PDUID]->ManagementType=$PDUrow["ManagementType"];
 			$PDUList[$PDUID]->Model = stripslashes($PDUrow["Model"]);
@@ -246,6 +245,7 @@ class PowerDistribution {
 			$PDUList[$PDUID]->SNMPCommunity = stripslashes($PDUrow["SNMPCommunity"]);
 			$PDUList[$PDUID]->FirmwareVersion = $PDUrow["FirmwareVersion"];
 			$PDUList[$PDUID]->PanelID = $PDUrow["PanelID"];
+			$PDUList[$PDUID]->BreakerSize = $PDUrow["BreakerSize"];
 			$PDUList[$PDUID]->PanelPole = $PDUrow["PanelPole"];
 			$PDUList[$PDUID]->FailSafe = $PDUrow["FailSafe"];
 			$PDUList[$PDUID]->PanelID2 = $PDUrow["PanelID2"];
@@ -271,7 +271,6 @@ class PowerDistribution {
 			$PDUList[$PDUID]->PDUID = $PDUID;
 			$PDUList[$PDUID]->Label = stripslashes($PDUrow["Label"]);
 			$PDUList[$PDUID]->CabinetID = $PDUrow["CabinetID"];
-			$PDUList[$PDUID]->InputVoltage = $PDUrow["InputVoltage"];
 			$PDUList[$PDUID]->InputAmperage = $PDUrow["InputAmperage"];
 			$PDUList[$PDUID]->ManagementType=$PDUrow["ManagementType"];
 			$PDUList[$PDUID]->Model = stripslashes($PDUrow["Model"]);
@@ -280,6 +279,7 @@ class PowerDistribution {
 			$PDUList[$PDUID]->SNMPCommunity = stripslashes($PDUrow["SNMPCommunity"]);
 			$PDUList[$PDUID]->FirmwareVersion = $PDUrow["FirmwareVersion"];
 			$PDUList[$PDUID]->PanelID = $PDUrow["PanelID"];
+			$PDUList[$PDUID]->BreakerSize = $PDUrow["BreakerSize"];
 			$PDUList[$PDUID]->PanelPole = $PDUrow["PanelPole"];
 			$PDUList[$PDUID]->FailSafe = $PDUrow["FailSafe"];
 			$PDUList[$PDUID]->PanelID2 = $PDUrow["PanelID2"];
@@ -287,23 +287,6 @@ class PowerDistribution {
 		}
 
 		return $PDUList;
-	}
-
-	function BuildVoltageList() {
-		$select = "<select name=\"inputvoltage\" id=\"inputvoltage\">";
-
-		foreach( array( "208VAC 2-Pole", "208VAC 3-Pole", "110VAC" ) as $voltage ) {
-			if ( $this->InputVoltage == $voltage )
-				$selected = "selected";
-			else
-				$selected = "";
-
-			$select .= "<option value=\"$voltage\" $selected>$voltage</option>";
-		}
-
-		$select .= "</select>";
-
-		return $select;
 	}
 
 	function GetAmperage( $db ) {
@@ -328,7 +311,7 @@ class PowerDistribution {
 			$serverIP = $pduRow["IPAddress"];
 			$community = $pduRow["SNMPCommunity"];
 		  
-			if ( $pduRow["InputVoltage"] == "208VAC 2-Pole" )
+			if ( $pduRow["BreakerSize"] == "208VAC 2-Pole" )
 			  $threePhase = false;
 			else
 			  $threePhase = true;
@@ -465,6 +448,7 @@ class PowerPanel {
   var $PanelLabel;
   var $NumberOfPoles;
   var $MainBreakerSize;
+  var $PanelVoltage;
   var $NumberScheme;
   
   function GetPanelsByDataCenter( $DataCenterID, $db ) {
@@ -481,6 +465,7 @@ class PowerPanel {
       $PanelList[$PanelID]->PanelLabel = stripslashes($row["PanelLabel"]);
       $PanelList[$PanelID]->NumberOfPoles = $row["NumberOfPoles"];
       $PanelList[$PanelID]->MainBreakerSize = $row["MainBreakerSize"];
+	  $PanelList[$PanelID]->PanelVoltage = $row["PanelVoltage"];
       $PanelList[$PanelID]->NumberScheme = $row["NumberScheme"];
     }
     
@@ -501,6 +486,7 @@ class PowerPanel {
       $PanelList[$PanelID]->PanelLabel = stripslashes($row["PanelLabel"]);
       $PanelList[$PanelID]->NumberOfPoles = $row["NumberOfPoles"];
       $PanelList[$PanelID]->MainBreakerSize = $row["MainBreakerSize"];
+	  $PanelList[$PanelID]->PanelVoltage = $row["PanelVoltage"];
       $PanelList[$PanelID]->NumberScheme = $row["NumberScheme"];
     }
 
@@ -521,6 +507,7 @@ class PowerPanel {
       $PanelList[$PanelID]->PanelLabel = stripslashes($row["PanelLabel"]);
       $PanelList[$PanelID]->NumberOfPoles = $row["NumberOfPoles"];
       $PanelList[$PanelID]->MainBreakerSize = $row["MainBreakerSize"];
+	  $PanelList[$PanelID]->PanelVoltage = $row["PanelVoltage"];
       $PanelList[$PanelID]->NumberScheme = $row["NumberScheme"];
     }
 
@@ -537,6 +524,7 @@ class PowerPanel {
 		$this->PanelLabel = $row["PanelLabel"];
 		$this->NumberOfPoles = $row["NumberOfPoles"];
 		$this->MainBreakerSize = $row["MainBreakerSize"];
+		$this->PanelVoltage = $row["PanelVoltage"];
 		$this->NumberScheme = $row["NumberScheme"];
 	}
   }
@@ -547,7 +535,7 @@ class PowerPanel {
 	if ( ! $this->NumberScheme == "Sequential" )
 		$this->NumberScheme = "Odd/Even";
 
-	$sql = "insert into fac_PowerPanel set PowerSourceID=\"" . intval( $this->PowerSourceID ) . "\", PanelLabel=\"" . addslashes( $this->PanelLabel ) . "\", NumberOfPoles=\"" . intval( $this->NumberOfPoles ) . "\", MainBreakerSize=\"" . intval( $this->MainBreakerSize ) . "\", NumberScheme=\"" . $this->NumberScheme . "\"";
+	$sql = "insert into fac_PowerPanel set PowerSourceID=\"" . intval( $this->PowerSourceID ) . "\", PanelLabel=\"" . addslashes( $this->PanelLabel ) . "\", NumberOfPoles=\"" . intval( $this->NumberOfPoles ) . "\", MainBreakerSize=\"" . intval( $this->MainBreakerSize ) . "\", PanelVoltage=\"" . intval( $this->PanelVoltage ) . "\", NumberScheme=\"" . $this->NumberScheme . "\"";
 
 	$result = mysql_query( $sql, $db );
 
@@ -561,7 +549,7 @@ class PowerPanel {
         if ( ! $this->NumberScheme == "Sequential" )
                 $this->NumberScheme = "Odd/Even";
 
-        $sql = "update fac_PowerPanel set PowerSourceID=\"" . intval( $this->PowerSourceID ) . "\", PanelLabel=\"" . addslashes( $this->PanelLabel ) . "\", NumberOfPoles=\"" . intval( $this->NumberOfPoles ) . "\", MainBreakerSize=\"" . intval( $this->MainBreakerSize ) . "\", NumberScheme=\"" . $this->NumberScheme . "\" where PanelID=\"" . intval( $this->PanelID ) . "\"";
+        $sql = "update fac_PowerPanel set PowerSourceID=\"" . intval( $this->PowerSourceID ) . "\", PanelLabel=\"" . addslashes( $this->PanelLabel ) . "\", NumberOfPoles=\"" . intval( $this->NumberOfPoles ) . "\", MainBreakerSize=\"" . intval( $this->MainBreakerSize ) . "\", PanelVoltage=\"" . intval( $this->PanelVoltage ) . "\", NumberScheme=\"" . $this->NumberScheme . "\" where PanelID=\"" . intval( $this->PanelID ) . "\"";
 
         $result = mysql_query( $sql, $db );
 

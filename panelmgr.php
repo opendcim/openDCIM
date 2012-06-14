@@ -21,6 +21,7 @@
 		$panel->PanelLabel = $_REQUEST["panellabel"];
 		$panel->NumberOfPoles = $_REQUEST["numberofpoles"];
 		$panel->MainBreakerSize = $_REQUEST["mainbreakersize"];
+		$panel->PanelVoltage = $_REQUEST["panelvoltage"];
 		$panel->NumberScheme = $_REQUEST["numberscheme"];
 		
 		if($_REQUEST["action"]=="Create"){
@@ -110,6 +111,10 @@
    <div><input type="number" name="mainbreakersize" id="mainbreakersize" size="4" value="<?php echo $panel->MainBreakerSize; ?>"></div>
 </div>
 <div>
+   <div><label for="panelvoltage">Panel Voltage</label></div>
+   <div><input type="number" name="panelvoltage" id="panelvoltage" size="4" value="<?php echo $panel->PanelVoltage; ?>"></div>
+</div>
+<div>
    <div><label for="numberscheme">Numbering Scheme</label></div>
    <div><select name="numberscheme" id="numberscheme">
 <?php
@@ -162,7 +167,7 @@
 		$odd=$even=0;
 		
 		if($panel->NumberScheme=="Sequential"){
-			while($nextPole < $panel->NumberOfPoles){
+			while($nextPole <= $panel->NumberOfPoles){
 				print "<tr><td class=\"polenumber\">$nextPole</td>";
 				// Someone input a pole number wrong and this one would have been skipped
 				// store the value and deal with it later.
@@ -177,9 +182,9 @@
 						$pn="";
 						foreach($pduarray[$nextPole] as $pduvar){
 							$pn.="<a href=\"pduinfo.php?pduid=$pduvar->PDUID\">$pduvar->Label</a>";
-							switch($pduvar->InputVoltage){
-								case '208VAC 3-Pole': $odd=3; break;
-								case '208VAC 2-Pole': $odd=2; break;
+							switch($pduvar->BreakerSize){
+								case '3': $odd=3; break;
+								case '2': $odd=2; break;
 								default: $odd=0;
 							}
 						}
@@ -200,7 +205,7 @@
 		}else{
 			// Build single table with four colums to represent an odd/even panel layout
 			// $odd and $even will be travel counters to ensure the table is built in a sane manner
-			while($nextPole < $panel->NumberOfPoles){
+			while($nextPole <= $panel->NumberOfPoles){
 				print "<tr><td class=\"polenumber\">$nextPole</td>";
 				// Someone input a pole number wrong and this one would have been skipped
 				// store the value and deal with it later.
@@ -215,9 +220,9 @@
 						$pn="";
 						foreach($pduarray[$nextPole] as $pduvar){
 							$pn.="<a href=\"pduinfo.php?pduid=$pduvar->PDUID\">$pduvar->Label</a>";
-							switch($pduvar->InputVoltage){
-								case '208VAC 3-Pole': $odd=3; break;
-								case '208VAC 2-Pole': $odd=2; break;
+							switch($pduvar->BreakerSize){
+								case '3': $odd=3; break;
+								case '2': $odd=2; break;
 								default: $odd=0;
 							}
 						}
@@ -248,9 +253,9 @@
 						$pn="";
 						foreach($pduarray[$nextPole] as $pduvar){
 							$pn.="<a href=\"pduinfo.php?pduid=".$pduvar->PDUID."\">".$pduvar->Label."</a>";
-							switch($pduvar->InputVoltage){
-								case '208VAC 3-Pole': $even=3; break;
-								case '208VAC 2-Pole': $even=2; break;
+							switch($pduvar->BreakerSize){
+								case '3': $even=3; break;
+								case '2': $even=2; break;
 								default: $even=0;
 							}
 						}
