@@ -13,7 +13,7 @@ select {
 /*  Header/logo */
 #header {
 	padding: 5px 0;
-	background: #006633 url(logo.png) no-repeat center center;
+	background: #006633 url(../images/logo.png) no-repeat center center;
 	height: 66px;
 }
 /* Configuration Page */
@@ -561,3 +561,41 @@ div.page.device {
     text-align: center;
     width: 100%;
 }
+
+/* Installer */
+.installer ul li{
+	display: block;
+	padding: 1.5em;
+	background-color: lightGray;
+	border: 1px dashed darkGray;
+}
+.installer #sidebar a {
+	text-decoration: none;
+}
+.installer #sidebar a:hover li {
+	background-color: darkGray;
+	border-color: lightGray;
+}
+.installer #sidebar a:hover li.active {
+	background-color: white;
+	border-color: lightGray;
+}
+.installer .active {
+	background-color: white;
+}
+.installer .active:after {
+	content:">>";
+	float: right;
+}
+.installer div.table > div > div + div {
+	width: 300px;
+}
+.installer .rights > div:nth-last-child(2) div {
+	padding-top: 0;
+	padding-bottom: 2em;
+	text-align: left;
+}
+.installer .center input {
+	width: 97%;
+}
+/* END - Installer */

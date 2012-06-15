@@ -37,7 +37,8 @@ function applyupdate ($updatefile){
 		unset($sql[count($sql)-1]);
 		$result=0;
 		foreach($sql as $key => $value){
-			echo $value."<br>\n";
+// uncomment to debug sql injection
+//			echo $value."<br>\n";
 			if(!mysql_query($value)){
 				//something broke log it
 				@$errormsg.=mysql_error();

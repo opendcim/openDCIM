@@ -148,7 +148,7 @@ CREATE TABLE fac_DeviceTemplate (
   Height int(11) NOT NULL,
   Weight int(11) NOT NULL,
   Wattage int(11) NOT NULL,
-  DeviceType enum('Server','Appliance','Storage Array','Switch','Routing Chassis','Patch Panel','Physical Infrastructure') NOT NULL,
+  DeviceType enum('Server','Appliance','Storage Array','Switch','Routing Chassis','Patch Panel','Physical Infrastructure') NOT NULL default 'Server',
   PSCount int(11) NOT NULL,
   NumPorts int(11) NOT NULL,
   PRIMARY KEY (TemplateID),
@@ -238,7 +238,6 @@ CREATE TABLE fac_PowerDistribution (
   PDUID int(11) NOT NULL AUTO_INCREMENT,
   Label varchar(40) NOT NULL,
   CabinetID int(11) NOT NULL,
-  InputVoltage enum('110VAC','208VAC 2-Pole','208VAC 3-Pole') NOT NULL,
   InputAmperage int(11) NOT NULL,
   ManagementType enum('Unmanaged','Geist','ServerTech','APC') NOT NULL,
   Model varchar(80) NOT NULL,
@@ -247,6 +246,7 @@ CREATE TABLE fac_PowerDistribution (
   SNMPCommunity varchar(50) NOT NULL,
   FirmwareVersion varchar(40) NOT NULL,
   PanelID int(11) NOT NULL,
+  BreakerSize int(11) NOT NULL,
   PanelPole int(11) NOT NULL,
   FailSafe tinyint(1) NOT NULL,
   PanelID2 int(11) NOT NULL,
@@ -265,6 +265,7 @@ CREATE TABLE fac_PowerPanel (
   PanelLabel varchar(20) NOT NULL,
   NumberOfPoles int(11) NOT NULL,
   MainBreakerSize int(11) NOT NULL,
+  PanelVoltage int(11) NOT NULL,
   NumberScheme enum('Odd/Even','Sequential') NOT NULL,
   PRIMARY KEY (PanelID)
 ) ENGINE=MyISAM AUTO_INCREMENT=1 DEFAULT CHARSET=latin1;
@@ -388,8 +389,7 @@ CREATE TABLE fac_Config (
  DefaultVal varchar(200) NOT NULL
 ) ENGINE=MyISAM AUTO_INCREMENT=1 DEFAULT CHARSET=latin1;
 
-INSERT INTO fac_Config
- VALUES
+INSERT INTO fac_Config VALUES
         ('OrgName','openDCIM Computer Facilities','Name','string','openDCIM Computer Facilities'),
         ('ClassList','ITS, Internal, Customer','List','string','ITS, Internal, Customer'),
         ('SpaceRed','80','percentage','float','80'),
@@ -416,5 +416,6 @@ INSERT INTO fac_Config
         ('MailToAddr','DataCenterTeamAddr@your.domain','Email','string','DataCenterTeamAddr@your.domain'),
         ('ComputerFacMgr','DataCenterMgr Name','Name','string','DataCenterMgr Name'),
         ('FacMgrMail','DataCenterMgr@your.domain','Email','string','DataCenterMgr@your.domain'),
+        ('Version','1.2','','',''),
 		("UserLookupURL","https://","URL","string","https://");
 
