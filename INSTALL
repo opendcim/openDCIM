@@ -23,16 +23,7 @@ $ mysql -h localhost
 mysql>  CREATE DATABASE dcim;
 mysql>  GRANT ALL ON dcim.* TO 'dcim'@'localhost' IDENTIFIED BY 'dcim';
 
-Once you have created the database, you will need to import the script which creates tables
-for you.  There is a file named create.sql as part of this distribution that will perform
-this duty.
-
-From a shell prompt:
-
-$ mysql -h localhost -u dcim -pdcim dcim < create.sql
-
-This script should only take a sub-second to process, as the table structure is not overly
-complicated.  At this point you have prepped the database and are ready to configure the web site.
+At this point you have prepped the database and are ready to configure the web site.
 
 $ cp db.inc.php-dist to db.inc.php
 $ vi db.inc.php
@@ -53,9 +44,15 @@ supported by your web server software.  The main thing is to authenticate users 
 the site.
 
 
-3.  Log in to the site
+3.  Log in to the site and run the setup.php script
 
 Whoever logs in to the website first automatically becomes the site administrator!  This can be
-changed later, but in order to work at all the system has to define at least one administrator.  It
-is suggested that the first link you click on is "Manage Users" so that you can add some additional
-users and administrators of the system.
+changed later, but in order to work at all the system has to define at least one administrator.
+
+Browse to the URL that you set up for your installation, to the setup.php script.  For instance:
+
+https://dcim.yourdomain.com/setup.php
+
+If you have set up the database permissions correctly, it will handle the installation for you.
+
+It is recommended that you delete the setup.php file after configuration is complete.

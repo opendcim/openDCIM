@@ -10,10 +10,12 @@ are simply testing, as some functionality can break between releases.
 Changes in 1.2
 --------------
 * Added a version number to the database, which is displayed in the Configuration screen
+* Installation and Upgrading are now done through a wizard type of interface. (setup.php)
 * Enhanced the Device Templates to include more fields to fill in as default values
 * Corrected the calculation of Allocated space to use the Reservation field
 * Changed the power distribution to allow for user input of panel voltages, and calculate the 1-pole voltage from there
 * Added color coding to the Cabinet Navigator to show reservations with a cyan background
+* Corrected the permissions check on the Rack Request Form
 
 
 Changes in 1.1

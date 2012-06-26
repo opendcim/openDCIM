@@ -34,22 +34,17 @@ production drawings/ folder to the test drawings/ folder.  Copy any
 custom logo that you may have set up to the images/ folder of the 
 test folder.
 
-4.  Look for any migration SQL files included in the archive!  For 
-instance, there is a file called db-1.0-to-1.1.sql file that will make 
-changes from a version 1.0 install to a version 1.1 install.  The 
-migration files are not cumulative, so if you are migrating more than 
-one version, it is possible that you will have to apply multiple files.  
-The migration files are commented, so check to see if the changes will 
-appear to break any functionality that you are currently using.  To 
-apply the files you would simply execute them like you executed the 
-create.sql file:
-
-$ mysql dev_openDCIM < db-1.0-to-1.1.sql
-
-5.  Pull up the test site in your browser and check to see if everything 
-looks ok.
-
+4.  Proceed to "The Cowboy Way"
 
 == The Cowboy Way ==
 
-Just drop the archive onto the existing install and hope for the best.
+Just drop the archive onto the existing install and browse to the appropriate
+URL for your installation, and specifying the setup.php script:
+
+https://dcim.yourdomain.com/setup.php
+
+The setup script will automatically determine the current version and make any
+database structural changes that are required to be up to date.
+
+It is recommended that you delete the setup.php file after performing the
+upgrade.
