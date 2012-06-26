@@ -11,6 +11,8 @@ Changes in 1.2
 --------------
 * Added a version number to the database, which is displayed in the Configuration screen
 * Enhanced the Device Templates to include more fields to fill in as default values
+* Corrected the calculation of Allocated space to use the Reservation field
+* Changed the power distribution to allow for user input of panel voltages, and calculate the 1-pole voltage from there
 
 
 Changes in 1.1
