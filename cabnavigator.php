@@ -125,13 +125,18 @@
 
 		$totalWeight += $templ->Weight;
 		$totalMoment += ( $templ->Weight * ( $device->Position + ( $device->Height / 2 ) ) );
+		
+		if ( $device->Reservation )
+			$bgColor = "white";
+		else
+			$bgColor = "#00CCB4";
 
 		if ( $devTop < $currentHeight ) {
 			for ( $i = $currentHeight; $i > $devTop; $i-- ) {
 				if ( $i == $currentHeight ) {
 					$blankHeight = $currentHeight - $devTop;
 
-					print "<tr><td>$i</td><td rowspan=$blankHeight>&nbsp;</td></tr>\n";
+					printf( "<tr><td>%d</td><td rowspan=%d bgcolor=\"white\">&nbsp;</td></tr>\n", $i, $blankHeight );
 				} else {
 					print "<tr><td>$i</td></tr>\n";
 				}
@@ -144,9 +149,9 @@
 				if($device->TemplateID==0){$highlight.="(T)";}
 				if($device->Owner==0){$highlight.="(O)";}
 				$highlight.="</font></blink>";
-				print "<tr><td>$i</td><td class=\"device\" rowspan=$device->Height><a href=\"devices.php?deviceid=$devID\">$highlight$device->Label</a></td></tr>\n";
+				printf( "<tr><td>%d</td><td class=\"device\" rowspan=%d bgcolor=\"%s\"><a href=\"devices.php?deviceid=%d\">%s%s</a></td></tr>\n", $i, $device->Height, $bgColor, $devID, $highlight, $device->Label );
 			}else{
-				print "<tr><td>$i</td></tr>\n";
+				printf( "<tr><td>$i</td></tr>\n" );
 			}
 		}
 
@@ -190,6 +195,8 @@
 		<legend>Markup Key</legend>
 		<font color=red>(O)</font> - Owner Unassigned<p>
 		<font color=red>(T)</font> - Template Unassigned<p>
+		Cyan Background - Reservation<p>
+		White Background - Normal
 	</fieldset>
 	<fieldset>
 		<legend>Cabinet Metrics</legend>

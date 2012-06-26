@@ -13,6 +13,7 @@ Changes in 1.2
 * Enhanced the Device Templates to include more fields to fill in as default values
 * Corrected the calculation of Allocated space to use the Reservation field
 * Changed the power distribution to allow for user input of panel voltages, and calculate the 1-pole voltage from there
+* Added color coding to the Cabinet Navigator to show reservations with a cyan background
 
 
 Changes in 1.1
