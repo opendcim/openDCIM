@@ -271,7 +271,7 @@ class DataCenter {
 		$statsRow = mysql_fetch_array( $result );
 		$dcStats["Occupied"] = $statsRow[0];
 
-        $selectSQL = "select sum(a.Height) from fac_Device a,fac_Cabinet b where a.Cabinet=b.CabinetID and b.DataCenterID=\"" . intval($this->DataCenterID) . "\" and a.Reservation=false and a.DeviceType not in ('Server','Storage Array')";
+        $selectSQL = "select sum(a.Height) from fac_Device a,fac_Cabinet b where a.Cabinet=b.CabinetID and b.DataCenterID=\"" . intval($this->DataCenterID) . "\" and a.Reservation=true";
 
         $result = mysql_query( $selectSQL, $db );
 
