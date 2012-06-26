@@ -403,7 +403,7 @@ function checkdata(formname) {
 ?>
 <div class="caption">
 <?php
-	if ( $user->WriteAccess ) {
+	if ( $user->RackRequest ) {
 		if ( $req->RequestID > 0 ) {
 			if($user->RackAdmin && ($req->RequestID>0)){
 				echo '<input type="submit" name="action" value="Move to Rack">';
