@@ -126,7 +126,7 @@
 		$totalWeight += $templ->Weight;
 		$totalMoment += ( $templ->Weight * ( $device->Position + ( $device->Height / 2 ) ) );
 		
-		if ( $device->Reservation )
+		if ( $device->Reservation == false )
 			$bgColor = "white";
 		else
 			$bgColor = "#00CCB4";
@@ -146,9 +146,14 @@
 		for($i = $devTop; $i >= $device->Position; $i--){
 			if($i==$devTop){
 				$highlight="<blink><font color=red>";
-				if($device->TemplateID==0){$highlight.="(T)";}
-				if($device->Owner==0){$highlight.="(O)";}
-				$highlight.="</font></blink>";
+				if ($device->TemplateID==0) {
+					$highlight.="(T)";
+				}
+				if ($device->Owner==0) {
+					$highlight.="(O)";
+				}
+				
+				$highlight .= "</font></blink>";
 				printf( "<tr><td>%d</td><td class=\"device\" rowspan=%d bgcolor=\"%s\"><a href=\"devices.php?deviceid=%d\">%s%s</a></td></tr>\n", $i, $device->Height, $bgColor, $devID, $highlight, $device->Label );
 			}else{
 				printf( "<tr><td>$i</td></tr>\n" );
