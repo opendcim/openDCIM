@@ -3,19 +3,19 @@
 <br>
 <form action="search.php" method="post">
 <input type="hidden" name="key" value="label">
-<label form="searchname">Search by Name:</label><br>
+<label for="searchname">Search by Name:</label><br>
 <textarea id="searchname" name="search" rows=1></textarea><button class="iebug" type="submit"><img src="css/searchbutton.png"></button>
 </form>
 <br>
 <form action="search.php" method="post">
 <input type="hidden" name="key" value="serial">
-<label form="searchsn">Search by SN:</label><br>
+<label for="searchsn">Search by SN:</label><br>
 <textarea id="searchsn" name="search" rows=1></textarea><button class="iebug" type="submit"><img src="css/searchbutton.png"></button>
 </form>
 <br>
 <form action="search.php" method="post">
 <input type="hidden" name="key" value="asset">
-<label form="searchtag">Search by Asset Tag:</label><br>
+<label for="searchtag">Search by Asset Tag:</label><br>
 <textarea id="searchtag" name="search" rows=1></textarea><button class="iebug" type="submit"><img src="css/searchbutton.png"></button>
 </form>
   <script type="text/javascript" src="scripts/jquery.TextExt.js"></script>

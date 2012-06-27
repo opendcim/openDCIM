@@ -12,12 +12,13 @@
 		exit;
 	}
 
+	$head="";
 	$cab=new Cabinet();
 	$audit=new CabinetAudit();
 	$pdu=new PowerDistribution();
 	$dev=new Device();
 	$templ=new DeviceTemplate();
-	$tempPDU = new PowerDistribution();
+	$tempPDU=new PowerDistribution();
 
 	if(!isset($_REQUEST["cabinetid"])){
 		// Not sure how you got here without a cabinet id set
@@ -33,9 +34,10 @@
 	$dcID = $cab->DataCenterID;
 
 	// If you're deleting the cabinet, no need to pull in the rest of the information, so get it out of the way //
-	if ( isset( $_REQUEST["delete"] ) && $_REQUEST["delete"]=="yes" && $user->SiteAdmin ) {
-		$cab->DeleteCabinet( $facDB );
-		header("Location: dc_stats.php?dc=" . $dcID );
+	if(isset($_REQUEST["delete"]) && $_REQUEST["delete"]=="yes" && $user->SiteAdmin){
+		$cab->DeleteCabinet($facDB);
+		$url=redirect("dc_stats.php?dc=$dcID");
+		header("Location: $url");
 	}
 
 	
@@ -70,17 +72,24 @@
 	$totalWeight=0;
 	$totalMoment=0;
 
+	if($config->ParameterArray["ReservedColor"] != "#FFFFFF"){
+		$head.="<style type=\"text/css\">.reserved{background-color: {$config->ParameterArray['ReservedColor']};</style>";
+	}
+
 ?>
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html>
 <head>
   <meta http-equiv="Content-Type" content="text/html; charset=windows-1252">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <title>Facilities Cabinet Maintenance</title>
   <link rel="stylesheet" href="css/inventory.css" type="text/css">
   <!--[if lt IE 9]>
   <link rel="stylesheet"  href="css/ie.css" type="text/css" />
   <![endif]-->
-  
+ 
+<?php echo $head ?>
+
   <script type="text/javascript" src="scripts/jquery.min.js"></script>
   <script type="text/javascript">
 	function verifyAudit(formname){
@@ -126,17 +135,17 @@
 		$totalWeight += $templ->Weight;
 		$totalMoment += ( $templ->Weight * ( $device->Position + ( $device->Height / 2 ) ) );
 		
-		if ( $device->Reservation == false )
-			$bgColor = "white";
-		else
-			$bgColor = "#00CCB4";
+		if($device->Reservation==false){
+			$reserved="";
+		}else{
+			$reserved="reserved";
+		}
 
-		if ( $devTop < $currentHeight ) {
-			for ( $i = $currentHeight; $i > $devTop; $i-- ) {
-				if ( $i == $currentHeight ) {
-					$blankHeight = $currentHeight - $devTop;
-
-					printf( "<tr><td>%d</td><td rowspan=%d bgcolor=\"white\">&nbsp;</td></tr>\n", $i, $blankHeight );
+		if($devTop < $currentHeight){
+			for($i=$currentHeight;$i > $devTop;$i--){
+				if($i==$currentHeight){
+					$blankHeight=$currentHeight-$devTop;
+					print "<tr><td>$i</td><td rowspan=$blankHeight>&nbsp;</td></tr>\n";
 				} else {
 					print "<tr><td>$i</td></tr>\n";
 				}
@@ -154,9 +163,9 @@
 				}
 				
 				$highlight .= "</font></blink>";
-				printf( "<tr><td>%d</td><td class=\"device\" rowspan=%d bgcolor=\"%s\"><a href=\"devices.php?deviceid=%d\">%s%s</a></td></tr>\n", $i, $device->Height, $bgColor, $devID, $highlight, $device->Label );
+				print "<tr><td>$i</td><td class=\"device $reserved\" rowspan=$device->Height><a href=\"devices.php?deviceid=$devID\">$highlight $device->Label</a></td></tr>\n";
 			}else{
-				printf( "<tr><td>$i</td></tr>\n" );
+				print "<tr><td>$i</td></tr>\n";
 			}
 		}
 
@@ -198,10 +207,14 @@
 <div id="infopanel">
 	<fieldset>
 		<legend>Markup Key</legend>
-		<font color=red>(O)</font> - Owner Unassigned<p>
-		<font color=red>(T)</font> - Template Unassigned<p>
-		Cyan Background - Reservation<p>
-		White Background - Normal
+		<p><font color=red>(O)</font> - Owner Unassigned</p>
+		<p><font color=red>(T)</font> - Template Unassigned</p>
+<?php
+	if($config->ParameterArray["ReservedColor"] != "#FFFFFF"){
+		echo '		<p><span class="reserved border">&nbsp;&nbsp;&nbsp;&nbsp;</span> - Reservation</p>
+		<p><span class="border">&nbsp;&nbsp;&nbsp;&nbsp;</span> - Normal</p>';
+	}
+?>
 	</fieldset>
 	<fieldset>
 		<legend>Cabinet Metrics</legend>
@@ -250,30 +263,28 @@
 	}
 	
 	if($user->WriteAccess){
-		sprintf( "			<br><br><input type=\"button\" value=\"Add CDU\" onclick=\"location='pduinfo.php?pduid=0&cabinetid=%d'\">\n", $cab->CabinetID );
+		print "			<br><br><input type=\"button\" value=\"Add CDU\" onclick=\"location='pduinfo.php?pduid=0&cabinetid=$cab->CabinetID'\">\n";
 	}
 ?>
 	</fieldset>
 <fieldset>
 <?php
-
-	printf( "<form method=\"post\" action=\"%s\">", $_SERVER["PHP_SELF"] );
-	printf( "<input type=\"hidden\" name=\"cabinetid\" value=\"%d\">", $cab->CabinetID );
-	printf( "<input type=\"hidden\" name=\"audit\" value=\"yes\">" );
-	printf( "<input type=\"hidden\" name=\"delete\" value=\"no\">" );
-	printf( "<p>Last Audit: %s (%s)</p>\n", $audit->AuditStamp, $AuditorName );
+	print "	<form method=\"post\" action=\"{$_SERVER['PHP_SELF']}\">
+	<input type=\"hidden\" name=\"cabinetid\" value=\"$cab->CabinetID\">
+	<input type=\"hidden\" name=\"audit\" value=\"yes\">
+	<input type=\"hidden\" name=\"delete\" value=\"no\">
+	<p>Last Audit: $audit->AuditStamp ($AuditorName)</p>\n";
 	
 	if ( $user->SiteAdmin ) {
-		printf( "<input type=\"button\" value=\"Certify Audit\" style=\"width:120;\" onclick=\"javascript:verifyAudit(this.form)\"><br>\n" );
-		printf( "<input type=\"button\" value=\"Add Device\" style=\"width:120;\" onclick=\"location='devices.php?action=new&cabinet=%d'\"><br>\n", $cab->CabinetID );
-		printf( "<input type=\"button\" value=\"Audit Report\" style=\"width:120;\" onclick=\"location='audit_report.php?cabinetid=%d'\"><br>\n", $cab->CabinetID );
-		printf( "<input type=\"button\" value=\"Map Coordinates\" style=\"width:120;\" onclick=\"location='mapmaker.php?cabinetid=%d'\"><br>\n", $cab->CabinetID );
-		printf( "<input type=\"button\" value=\"Edit Cabinet\" style=\"width:120;\" onclick=\"location='cabinets.php?cabinetid=%s'\"><br>\n", $cab->CabinetID );
-		printf( "<input type=\"button\" value=\"Delete Cabinet\" style=\"width:120;\" onclick=\"javascript:verifyDelete(this.form)\"<br>\n" );
+		print "<input type=\"button\" value=\"Certify Audit\" style=\"width:120;\" onclick=\"javascript:verifyAudit(this.form)\"><br>
+		<input type=\"button\" value=\"Add Device\" style=\"width:120;\" onclick=\"location='devices.php?action=new&cabinet=$cab->CabinetID'\"><br>
+		<input type=\"button\" value=\"Audit Report\" style=\"width:120;\" onclick=\"location='audit_report.php?cabinetid=$cab->CabinetID'\"><br>
+		<input type=\"button\" value=\"Map Coordinates\" style=\"width:120;\" onclick=\"location='mapmaker.php?cabinetid=$cab->CabinetID'\"><br>
+		<input type=\"button\" value=\"Edit Cabinet\" style=\"width:120;\" onclick=\"location='cabinets.php?cabinetid=$cab->CabinetID'\"><br>
+		<input type=\"button\" value=\"Delete Cabinet\" style=\"width:120;\" onclick=\"javascript:verifyDelete(this.form)\"<br>\n";
 	}
-	printf( "</form>" );
-
 ?>
+	</form>
 </fieldset>
 
 </div> <!-- END div#infopanel -->

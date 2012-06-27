@@ -7,6 +7,11 @@ the latest development version.  However, it is not advised to pull from GitHub 
 are simply testing, as some functionality can break between releases.
 
 
+Changes in 1.3
+--------------
+* Added an optional reservation color to the configuration options
+
+
 Changes in 1.2
 --------------
 * Added a version number to the database, which is displayed in the Configuration screen

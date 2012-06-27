@@ -41,10 +41,10 @@ test folder.
 Just drop the archive onto the existing install and browse to the appropriate
 URL for your installation, and specifying the setup.php script:
 
-https://dcim.yourdomain.com/setup.php
+https://dcim.yourdomain.com/
 
 The setup script will automatically determine the current version and make any
 database structural changes that are required to be up to date.
 
-It is recommended that you delete the setup.php file after performing the
-upgrade.
+You will have to delete install.php after the upgrade is complete before you
+will be able to continue.
