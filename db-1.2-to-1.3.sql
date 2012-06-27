@@ -19,3 +19,16 @@ INSERT INTO fac_Config VALUES ( 'ReservedColor', '#00FFFF', 'HexColor', 'string'
 --
 
 ALTER TABLE fac_Department ADD DeptColor VARCHAR( 7 ) NOT NULL DEFAULT '#FFFFFF';
+
+--
+-- Add field in fac_Cabinet for the Key (Lock) Information
+--
+
+ALTER TABLE fac_Cabinet ADD Keylock VARCHAR( 30 ) NOT NULL AFTER Model;
+
+--
+-- Add field in fac_Device for the Warranty Expiration and Warranty Holder
+--
+
+ALTER TABLE fac_Device ADD WarrantyCo VARCHAR(80) NOT NULL AFTER InstallDate;
+ALTER TABLE fac_Device ADD WarrantyExpire DATE NULL AFTER WarrantyCo;

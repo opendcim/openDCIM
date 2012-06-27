@@ -38,6 +38,7 @@ class Cabinet {
 	var $ZoneID;
 	var $CabinetHeight;
 	var $Model;
+	var $Keylock;
 	var $MaxKW;
 	var $MaxWeight;
 	var $InstallationDate;
@@ -47,7 +48,7 @@ class Cabinet {
 	var $MapY2;
 
 	function CreateCabinet( $db ) {
-		$insert_sql = "insert into fac_Cabinet set DataCenterID=\"" . intval($this->DataCenterID) . "\", Location=\"" . addslashes($this->Location) . "\", AssignedTo=\"" . intval($this->AssignedTo) . "\", ZoneID=\"" . intval($this->ZoneID) . "\", CabinetHeight=\"" . intval($this->CabinetHeight) . "\", Model=\"" . addslashes($this->Model) . "\", MaxKW=\"" . floatval($this->MaxKW) . "\", MaxWeight=\"" . intval( $this->MaxWeight ). "\", InstallationDate=\"" . date( "Y-m-d", strtotime( $this->InstallationDate ) ) . "\", MapX1=\"" . intval($this->MapX1) . "\", MapY1=\"" . intval($this->MapY1) . "\", MapX2=\"" . intval($this->MapX2) . "\", MapY2=\"" . intval($this->MapY2) . "\"";
+		$insert_sql = "insert into fac_Cabinet set DataCenterID=\"" . intval($this->DataCenterID) . "\", Location=\"" . addslashes($this->Location) . "\", AssignedTo=\"" . intval($this->AssignedTo) . "\", ZoneID=\"" . intval($this->ZoneID) . "\", CabinetHeight=\"" . intval($this->CabinetHeight) . "\", Model=\"" . addslashes($this->Model) . "\", Keylock=\"" . addslashes( $this->Keylock ) . "\", MaxKW=\"" . floatval($this->MaxKW) . "\", MaxWeight=\"" . intval( $this->MaxWeight ). "\", InstallationDate=\"" . date( "Y-m-d", strtotime( $this->InstallationDate ) ) . "\", MapX1=\"" . intval($this->MapX1) . "\", MapY1=\"" . intval($this->MapY1) . "\", MapX2=\"" . intval($this->MapX2) . "\", MapY2=\"" . intval($this->MapY2) . "\"";
 
 		if ( ! $result = mysql_query( $insert_sql, $db ) ) {
 			// Error in inserting record
@@ -60,7 +61,7 @@ class Cabinet {
 	}
 
 	function UpdateCabinet( $db ) {
-		$update_sql = "update fac_Cabinet set DataCenterID=\"" . intval($this->DataCenterID) . "\", Location=\"" . addslashes($this->Location) . "\", AssignedTo=\"" . intval($this->AssignedTo) . "\", ZoneID=\"" . intval($this->ZoneID) . "\", CabinetHeight=\"" . intval($this->CabinetHeight) . "\", Model=\"" . addslashes($this->Model) . "\", MaxKW=\"" . floatval($this->MaxKW) . "\", MaxWeight=\"" . intval( $this->MaxWeight ) . "\", InstallationDate=\"" . date( "Y-m-d", strtotime( $this->InstallationDate ) ) . "\", MapX1=\"" . intval($this->MapX1) . "\", MapY1=\"" . intval($this->MapY1) . "\", MapX2=\"" . intval($this->MapX2) . "\", MapY2=\"" . intval($this->MapY2) . "\" where CabinetID=\"" . intval($this->CabinetID) . "\"";
+		$update_sql = "update fac_Cabinet set DataCenterID=\"" . intval($this->DataCenterID) . "\", Location=\"" . addslashes($this->Location) . "\", AssignedTo=\"" . intval($this->AssignedTo) . "\", ZoneID=\"" . intval($this->ZoneID) . "\", CabinetHeight=\"" . intval($this->CabinetHeight) . "\", Model=\"" . addslashes($this->Model) . "\", Keylock=\"" . addslashes( $this->Keylock ) . "\", MaxKW=\"" . floatval($this->MaxKW) . "\", MaxWeight=\"" . intval( $this->MaxWeight ) . "\", InstallationDate=\"" . date( "Y-m-d", strtotime( $this->InstallationDate ) ) . "\", MapX1=\"" . intval($this->MapX1) . "\", MapY1=\"" . intval($this->MapY1) . "\", MapX2=\"" . intval($this->MapX2) . "\", MapY2=\"" . intval($this->MapY2) . "\" where CabinetID=\"" . intval($this->CabinetID) . "\"";
 
 		if ( ! $result = mysql_query( $update_sql, $db ) ) {
 			return -1;
@@ -81,6 +82,7 @@ class Cabinet {
 			$this->ZoneID = null;
 			$this->CabinetHeight = null;
 			$this->Model = null;
+			$this->Keylock = null;
 			$this->MaxKW = null;
 			$this->MaxWeight = null;
 			$this->InstallationDate = null;
@@ -99,8 +101,9 @@ class Cabinet {
 		$this->AssignedTo = $cabinetRow["AssignedTo"];
 		$this->ZoneID = $cabinetRow["ZoneID"];
 		$this->CabinetHeight = $cabinetRow[ "CabinetHeight" ];
-		$this->Model = $cabinetRow[ "Model" ];
-		$this->MaxKW = $cabinetRow["MaxKW" ];
+		$this->Model = $cabinetRow["Model"];
+		$this->Keylock = $cabinetRow["Keylock"];
+		$this->MaxKW = $cabinetRow["MaxKW"];
 		$this->MaxWeight = $cabinetRow["MaxWeight"];
 		$this->InstallationDate = $cabinetRow[ "InstallationDate" ];
 		$this->MapX1 = $cabinetRow["MapX1"];
@@ -131,6 +134,7 @@ class Cabinet {
 			$cabinetList[ $cabID ]->ZoneID = $cabinetRow["ZoneID"];
 			$cabinetList[ $cabID ]->CabinetHeight = $cabinetRow[ "CabinetHeight" ];
 			$cabinetList[ $cabID ]->Model = $cabinetRow[ "Model" ];
+			$cabinetList[ $cabID ]->Keylock = $cabinetRow["Keylock"];
 			$cabinetList[ $cabID ]->MaxKW = $cabinetRow[ "MaxKW" ];
 			$cabinetList[ $cabID ]->MaxWeight = $cabinetRow[ "MaxWeight" ];
 			$cabinetList[ $cabID ]->InstallationDate = $cabinetRow[ "InstallationDate" ];
@@ -163,6 +167,7 @@ class Cabinet {
 			$cabinetList[ $cabID ]->ZoneID = $cabinetRow[ "ZoneID" ];
 			$cabinetList[ $cabID ]->CabinetHeight = $cabinetRow[ "CabinetHeight" ];
 			$cabinetList[ $cabID ]->Model = $cabinetRow[ "Model" ];
+			$cabinetList[ $cabID ]->Keylock = $cabinetRow[ "Keylock" ];
 			$cabinetList[ $cabID ]->MaxKW = $cabinetRow[ "MaxKW" ];
 			$cabinetList[ $cabID ]->MaxWeight = $cabinetRow[ "MaxWeight" ];
 			$cabinetList[ $cabID ]->InstallationDate = $cabinetRow[ "InstallationDate" ];
@@ -367,6 +372,8 @@ class Device {
 	var $DeviceType;
 	var $MfgDate;
 	var $InstallDate;
+	var $WarrantyCo;
+	var $WarrantyExpire;
 	var $Notes;
 	var $Reservation;
 
@@ -387,6 +394,7 @@ class Device {
 			"\", Cabinet=\"" . intval($this->Cabinet) . "\", Position=\"" . intval($this->Position) . "\", Height=\"" . intval($this->Height) . "\", Ports=\"" . intval($this->Ports) . 
 			"\", TemplateID=\"" . intval($this->TemplateID) . "\", NominalWatts=\"" . intval($this->NominalWatts) . "\", PowerSupplyCount=\"" . intval($this->PowerSupplyCount) . 
 			"\", DeviceType=\"" . $this->DeviceType . "\", MfgDate=\"" . date("Y-m-d",strtotime($this->MfgDate)) . "\", InstallDate=\"" . date("Y-m-d",strtotime($this->InstallDate)) . 
+			"\", WarrantyCo=\"" . addslashes( $this->WarrantyCo ) . "\", WarrantyExpire=\"" . date( "Y-m-d",strtotime($this->WarrantyExpire)) . 
 			"\", Notes=\"" . addslashes( $this->Notes ) . "\", Reservation=\"" . intval($this->Reservation) . "\"";
 
 		if ( ! $result = mysql_query( $insert_sql, $db ) ) {
@@ -451,8 +459,9 @@ class Device {
 			"\", PrimaryContact=\"" . intval( $this->PrimaryContact ) . "\", Cabinet=\"" . intval($this->Cabinet) . "\", Position=\"" . intval($this->Position) . 
 			"\", Height=\"" . intval($this->Height) . "\", Ports=\"" . intval($this->Ports) . "\", TemplateID=\"" . intval($this->TemplateID) . 
 			"\", NominalWatts=\"" . intval($this->NominalWatts) . "\", PowerSupplyCount=\"" . intval($this->PowerSupplyCount) . "\", DeviceType=\"" . $this->DeviceType . 
-			"\", MfgDate=\"" . date("Y-m-d",strtotime($this->MfgDate)) . "\", InstallDate=\"" . date("Y-m-d",strtotime($this->InstallDate)) . "\", Notes=\"" . addslashes( $this->Notes ) . 
-			"\", Reservation=\"" . intval($this->Reservation) . "\" where DeviceID=\"" . intval($this->DeviceID) . "\"";
+			"\", MfgDate=\"" . date("Y-m-d",strtotime($this->MfgDate)) . "\", InstallDate=\"" . date("Y-m-d",strtotime($this->InstallDate)) . 
+			"\", WarrantyCo=\"" . addslashes( $this->WarrantyCo ) . "\", WarrantyExpire=\"" . date("Y-m-d", strtotime($this->WarrantyExpire)) . 
+			"\", Notes=\"" . addslashes( $this->Notes ) . "\", Reservation=\"" . intval($this->Reservation) . "\" where DeviceID=\"" . intval($this->DeviceID) . "\"";
     }
 
 		if ( ! $result = mysql_query( $update_sql, $db ) ) {
@@ -494,6 +503,8 @@ class Device {
 		$this->DeviceType = $devRow["DeviceType"];
 		$this->MfgDate = $devRow["MfgDate"];
 		$this->InstallDate = $devRow["InstallDate"];
+		$this->WarrantyCo = $devRow["WarrantyCo"];
+		@$this->WarrantyExpire = $devRow["WarrantyExpire"];
 		$this->Notes = $devRow["Notes"];
 		$this->Reservation = $devRow["Reservation"];
 
@@ -536,6 +547,8 @@ class Device {
 			$deviceList[$devID]->DeviceType = $deviceRow["DeviceType"];
 			$deviceList[$devID]->MfgDate = $deviceRow["MfgDate"];
 			$deviceList[$devID]->InstallDate = $deviceRow["InstallDate"];
+			$deviceList[$devID]->WarrantyCo = $deviceRow["WarrantyCo"];
+			@$deviceList[$devID]->WarrantyExpire = $deviceRow["WarrantyExpire"];
 			$deviceList[$devID]->Notes = $deviceRow["Notes"];
 			$deviceList[$devID]->Reservation = $deviceRow["Reservation"];
 		}
@@ -586,6 +599,8 @@ class Device {
 			$deviceList[$devID]->DeviceType = $deviceRow["DeviceType"];
 			$deviceList[$devID]->MfgDate = $deviceRow["MfgDate"];
 			$deviceList[$devID]->InstallDate = $deviceRow["InstallDate"];
+			$deviceList[$devID]->WarrantyCo = $deviceRow["WarrantyCo"];
+			@$deviceList[$devID]->WarrantyExpire = $deviceRow["WarrantyExpire"];
 			$deviceList[$devID]->Notes = $deviceRow["Notes"];
 			$deviceList[$devID]->Reservation = $deviceRow["Reservation"];
 		}
@@ -652,6 +667,8 @@ class Device {
 			$deviceList[$devID]->DeviceType = $deviceRow["DeviceType"];
 			$deviceList[$devID]->MfgDate = $deviceRow["MfgDate"];
 			$deviceList[$devID]->InstallDate = $deviceRow["InstallDate"];
+			$deviceList[$devID]->WarrantyCo = $deviceRow["WarrantyCo"];
+			@$deviceList[$devID]->WarrantyExpire = $deviceRow["WarrantyExpire"];
 			$deviceList[$devID]->Notes = $deviceRow["Notes"];
 			$deviceList[$devID]->Reservation = $deviceRow["Reservation"];
 		}
@@ -695,6 +712,8 @@ class Device {
 			$deviceList[$devID]->DeviceType = $deviceRow["DeviceType"];
 			$deviceList[$devID]->MfgDate = $deviceRow["MfgDate"];
 			$deviceList[$devID]->InstallDate = $deviceRow["InstallDate"];
+			$deviceList[$devID]->WarrantyCo = $deviceRow["WarrantyCo"];
+			@$deviceList[$devID]->WarrantyExpire = $deviceRow["WarrantyExpire"];
 			$deviceList[$devID]->Notes = $deviceRow["Notes"];
 			$deviceList[$devID]->Reservation = $deviceRow["Reservation"];
 		}
@@ -738,6 +757,8 @@ class Device {
 			$deviceList[$devID]->DeviceType = $deviceRow["DeviceType"];
 			$deviceList[$devID]->MfgDate = $deviceRow["MfgDate"];
 			$deviceList[$devID]->InstallDate = $deviceRow["InstallDate"];
+			$deviceList[$devID]->WarrantyCo = $deviceRow["WarrantyCo"];
+			@$deviceList[$devID]->WarrantyExpire = $deviceRow["WarrantyExpire"];			
 			$deviceList[$devID]->Notes = $deviceRow["Notes"];
 			$deviceList[$devID]->Reservation = $deviceRow["Reservation"];
 		}
@@ -756,33 +777,35 @@ class Device {
           $deviceList = array();
 
           while ( $deviceRow = mysql_fetch_array( $result ) ) {
-                  $devID = $deviceRow["DeviceID"];
+				$devID = $deviceRow["DeviceID"];
 
-                  $deviceList[$devID] = new Device();
+				$deviceList[$devID] = new Device();
 
-                  $deviceList[$devID]->DeviceID = $deviceRow["DeviceID"];
-                  $deviceList[$devID]->Label = $deviceRow["Label"];
-                  $deviceList[$devID]->SerialNo = $deviceRow["SerialNo"];
-                  $deviceList[$devID]->AssetTag = $deviceRow["AssetTag"];
-				  $deviceList[$devID]->PrimaryIP = $deviceRow["PrimaryIP"];
-            	  $deviceList[$devID]->SNMPCommunity = $deviceRow["SNMPCommunity"];
-            	  $deviceList[$devID]->ESX = $deviceRow["ESX"];
-            	  $deviceList[$devID]->Owner = $deviceRow["Owner"];
-				  $deviceList[$devID]->EscalationTimeID = $deviceRow["EscalationTimeID"];
-				  $deviceList[$devID]->EscalationID = $deviceRow["EscalationID"];
-            	  $deviceList[$devID]->PrimaryContact = $deviceRow["PrimaryContact"];
-                  $deviceList[$devID]->Cabinet = $deviceRow["Cabinet"];
-                  $deviceList[$devID]->Position = $deviceRow["Position"];
-                  $deviceList[$devID]->Height = $deviceRow["Height"];
-                  $deviceList[$devID]->Ports = $deviceRow["Ports"];
-                  $deviceList[$devID]->TemplateID = $deviceRow["TemplateID"];
-                  $deviceList[$devID]->NominalWatts = $deviceRow["NominalWatts"];
-                  $deviceList[$devID]->PowerSupplyCount = $deviceRow["PowerSupplyCount"];
-                  $deviceList[$devID]->DeviceType = $deviceRow["DeviceType"];
-            	  $deviceList[$devID]->MfgDate = $deviceRow["MfgDate"];
-            	  $deviceList[$devID]->InstallDate = $deviceRow["InstallDate"];
-		  $deviceList[$devID]->Notes = $deviceRow["Notes"];
-		  $deviceList[$devID]->Reservation = $deviceRow["Reservation"];
+				$deviceList[$devID]->DeviceID = $deviceRow["DeviceID"];
+				$deviceList[$devID]->Label = $deviceRow["Label"];
+				$deviceList[$devID]->SerialNo = $deviceRow["SerialNo"];
+				$deviceList[$devID]->AssetTag = $deviceRow["AssetTag"];
+				$deviceList[$devID]->PrimaryIP = $deviceRow["PrimaryIP"];
+				$deviceList[$devID]->SNMPCommunity = $deviceRow["SNMPCommunity"];
+				$deviceList[$devID]->ESX = $deviceRow["ESX"];
+				$deviceList[$devID]->Owner = $deviceRow["Owner"];
+				$deviceList[$devID]->EscalationTimeID = $deviceRow["EscalationTimeID"];
+				$deviceList[$devID]->EscalationID = $deviceRow["EscalationID"];
+				$deviceList[$devID]->PrimaryContact = $deviceRow["PrimaryContact"];
+				$deviceList[$devID]->Cabinet = $deviceRow["Cabinet"];
+				$deviceList[$devID]->Position = $deviceRow["Position"];
+				$deviceList[$devID]->Height = $deviceRow["Height"];
+				$deviceList[$devID]->Ports = $deviceRow["Ports"];
+				$deviceList[$devID]->TemplateID = $deviceRow["TemplateID"];
+				$deviceList[$devID]->NominalWatts = $deviceRow["NominalWatts"];
+				$deviceList[$devID]->PowerSupplyCount = $deviceRow["PowerSupplyCount"];
+				$deviceList[$devID]->DeviceType = $deviceRow["DeviceType"];
+				$deviceList[$devID]->MfgDate = $deviceRow["MfgDate"];
+				$deviceList[$devID]->InstallDate = $deviceRow["InstallDate"];
+				$deviceList[$devID]->WarrantyCo = $deviceRow["WarrantyCo"];
+				@$deviceList[$devID]->WarrantyExpire = $deviceRow["WarrantyExpire"];				  
+				$deviceList[$devID]->Notes = $deviceRow["Notes"];
+				$deviceList[$devID]->Reservation = $deviceRow["Reservation"];
           }
 
           return $deviceList;
@@ -824,6 +847,8 @@ class Device {
                 $deviceList[$devID]->DeviceType = $deviceRow["DeviceType"];
             	$deviceList[$devID]->MfgDate = $deviceRow["MfgDate"];
             	$deviceList[$devID]->InstallDate = $deviceRow["InstallDate"];
+				$deviceList[$devID]->WarrantyCo = $deviceRow["WarrantyCo"];
+				@$deviceList[$devID]->WarrantyExpire = $deviceRow["WarrantyExpire"];
 				$deviceList[$devID]->Notes = $deviceRow["Notes"];
 				$deviceList[$devID]->Reservation = $deviceRow["Reservation"];
           }
@@ -935,6 +960,8 @@ class Device {
         $devList[$currSize]->DeviceType = $devRow->DeviceType;
 		$devList[$currSize]->MfgDate = $devRow->MfgDate;
 		$devList[$currSize]->InstallDate = $devRow->InstallDate;
+		$devList[$currSize]->WarrantyCo = $deviceRow["WarrantyCo"];
+		@$devList[$currSize]->WarrantyExpire = $deviceRow["WarrantyExpire"];
 		$devList[$currSize]->Notes = $devRow->Notes;
 		$devList[$currSize]->Reservation = $devRow->Reservation;
       }

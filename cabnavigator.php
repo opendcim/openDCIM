@@ -250,6 +250,12 @@
 		<p>Approximate Center of Gravity: <?php print $CenterofGravity; ?> U</p>
 	</fieldset>
 	<fieldset>
+		<legend>Key/Lock Information</legend>
+		<div id="keylock">
+<?php printf( "%s\n", $cab->Keylock ); ?>
+		</div>
+	</fieldset>
+	<fieldset>
 		<legend>Power Distribution</legend>
 <?php
 	foreach ( $PDUList as $PDUdev ) {
