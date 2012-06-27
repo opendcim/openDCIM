@@ -61,7 +61,7 @@
 					$dev->MfgDate=date('Y-m-d',strtotime($_REQUEST['mfgdate']));
 					$dev->InstallDate=date('Y-m-d',strtotime($_REQUEST['installdate']));
 					$dev->Notes=$_REQUEST['notes'];
-					$dev->Reservation = ( $_REQUEST['reservation'] == "on" ) ? 1 : 0;
+					$dev->Reservation =(isset($_REQUEST['reservation']))?1:0;
 					$dev->NominalWatts=$_REQUEST['nominalwatts'];
 
 					if (( $dev->TemplateID > 0 ) && ( intval( $dev->NominalWatts == 0 )))
