@@ -3,6 +3,12 @@
 --
 
 --
+-- Bump version number up
+--
+
+UPDATE fac_Config SET Value = '1.3' WHERE fac_Config.Parameter = 'Version';
+
+--
 -- Adding a color option to reserved devices. Default will be white like any other device.
 --
 
