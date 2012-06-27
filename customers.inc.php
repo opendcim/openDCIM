@@ -149,9 +149,10 @@ class Department {
 	var $ExecSponsor;
 	var $SDM;
 	var $Classification;
+	var $DeptColor;
 
 	function CreateDepartment( $db ) {
-		$insertSQL = "insert into fac_Department set Name=\"" . addslashes($this->Name) . "\", ExecSponsor=\"" . addslashes($this->ExecSponsor) . "\", SDM=\"" . addslashes($this->SDM) . "\", Classification=\"" . addslashes($this->Classification) . "\"";
+		$insertSQL = "insert into fac_Department set Name=\"" . addslashes($this->Name) . "\", ExecSponsor=\"" . addslashes($this->ExecSponsor) . "\", SDM=\"" . addslashes($this->SDM) . "\", Classification=\"" . addslashes($this->Classification) . "\", DeptColor=\"" . addslashes($this->DeptColor) . "\"";
 		$result = mysql_query( $insertSQL, $db );
 
 		$this->DeptID = mysql_insert_id( $db );
@@ -160,7 +161,7 @@ class Department {
 	}
 
 	function UpdateDepartment( $db ) {
-		$updateSQL = "update fac_Department set Name=\"" . addslashes($this->Name) . "\", ExecSponsor=\"" . addslashes($this->ExecSponsor) . "\", SDM=\"" . addslashes($this->SDM) . "\", Classification=\"" . addslashes($this->Classification) . "\" where DeptID=\"" . intval($this->DeptID) . "\"";
+		$updateSQL = "update fac_Department set Name=\"" . addslashes($this->Name) . "\", ExecSponsor=\"" . addslashes($this->ExecSponsor) . "\", SDM=\"" . addslashes($this->SDM) . "\", Classification=\"" . addslashes($this->Classification) . "\" , DeptColor=\"" . addslashes($this->DeptColor) . "\"where DeptID=\"" . intval($this->DeptID) . "\"";
 
 		$result = mysql_query( $updateSQL, $db );
 	}
@@ -175,6 +176,7 @@ class Department {
 		$this->ExecSponsor = $deptRow["ExecSponsor"];
 		$this->SDM = $deptRow["SDM"];
 		$this->Classification = $deptRow["Classification"];
+		$this->DeptColor = $deptRow["DeptColor"];
 	}
 
 	function GetDepartmentList( $db ) {
@@ -192,6 +194,7 @@ class Department {
 			$deptList[$deptID]->ExecSponsor = $deptRow["ExecSponsor"];
 			$deptList[$deptID]->SDM = $deptRow["SDM"];
 			$deptList[$deptID]->Classification = $deptRow["Classification"];
+			$deptList[$deptID]->DeptColor = $deptRow["DeptColor"];
 		}
 
 		return $deptList;

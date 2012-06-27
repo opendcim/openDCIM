@@ -25,10 +25,13 @@
 		$dept->ExecSponsor = $_REQUEST['execsponsor'];
 		$dept->SDM = $_REQUEST['sdm'];
 		$dept->Classification = $_REQUEST['classification'];
+		$dept->DeptColor = $_REQUEST['deptcolor'];
 
 		if($_REQUEST['action']=='Create'){
-		  if($dept->Name != '' && $dept->Name != null)
-			 $dept->CreateDepartment($facDB);
+			// This data check should be moved up so that someone can't update a department to have an empty name either. Will leave as is until we have a delete department option.
+			if($dept->Name != '' && $dept->Name != null){
+				$dept->CreateDepartment($facDB);
+			}
 		}else{
 			$dept->UpdateDepartment($facDB);
 		}
@@ -42,11 +45,13 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <title>openDCIM Department Information</title>
   <link rel="stylesheet" href="css/inventory.css" type="text/css">
+  <link rel="stylesheet" href="css/jquery.miniColors.css" type="text/css">
   <!--[if lt IE 9]>
   <link rel="stylesheet"  href="css/ie.css" type="text/css">
   <![endif]-->
   
   <script type="text/javascript" src="scripts/jquery.min.js"></script>
+  <script type="text/javascript" src="scripts/jquery.miniColors.js"></script>
 <script type="text/javascript">
 function showgroup(obj){
 	self.frames['groupadmin'].location.href='dept_groups.php?deptid='+obj;
@@ -57,6 +62,14 @@ function showgroup(obj){
 	document.getElementById('deptclass').disabled = true
 	document.getElementById('controls').id = "displaynone";
 }
+	$(document).ready( function() {
+		$(".color-picker").miniColors({
+			letterCase: 'uppercase',
+			change: function(hex, rgb) {
+				logData(hex, rgb);
+			}
+		});
+	});
 </script>
 </head>
 <body>
@@ -97,6 +110,10 @@ function showgroup(obj){
 <div>
    <div><label for="deptmgr">Account Manager</label></div>
    <div><input type="text" size="50" name="sdm" id="deptmgr" value="<?php echo $dept->SDM; ?>"></div>
+</div>
+<div>
+   <div><label for="deptcolor">Department Color</label></div>
+   <div><div class="cp"><input type="text" class="color-picker" size="50" name="deptcolor" id="deptcolor" value="<?php echo $dept->DeptColor; ?>"></div></div>
 </div>
 <div>
    <div><label for="deptclass">Classification</label></div>
