@@ -241,7 +241,7 @@ class Cabinet {
 		$dcList = $dc->GetDCList( $db );
 
 		if ( count( $dcList ) > 0 ) {
-			$tree = "<ul class=\"mktree\" id=\"datacenters\">";
+			$tree = "<ul class=\"mktree\" id=\"datacenters\">\n";
 			
 			$zoneInfo = new Zone();
 
@@ -251,7 +251,7 @@ class Cabinet {
 				else
 					$classType = "liClosed";
 
-				$tree .= "<li class=\"$classType\" id=\"$dcID\"><a href=\"dc_stats.php?dc=" . $datacenter->DataCenterID . "\">" . $datacenter->Name . "</a>/<ul>";
+				$tree .= "	<li class=\"$classType\" id=\"dc$dcID\"><a href=\"dc_stats.php?dc=" . $datacenter->DataCenterID . "\">" . $datacenter->Name . "</a>/\n		<ul>\n";
 
 				$cab_sql = "select * from fac_Cabinet where DataCenterID=\"$dcID\" order by Location ASC";
 
@@ -267,13 +267,13 @@ class Cabinet {
 				  else
 				    $dept->GetDeptByID( $db );
 				    
-					$tree .= "<li><a href=\"cabnavigator.php?cabinetid=" . $cabRow["CabinetID"] . "\">" . $cabRow["Location"] . " [" . $dept->Name . "]</a></li>";
+					$tree .= "			<li id=\"cab{$cabRow['CabinetID']}\"><a href=\"cabnavigator.php?cabinetid={$cabRow['CabinetID']}\">{$cabRow['Location']} [$dept->Name]</a></li>\n";
 				}
 
-				$tree .= "</ul></li>";
+				$tree .= "		</ul>\n	</li>\n";
 			}
 			
-			$tree .= "<li class=\"liOpen\" id=\"-1\"><a href=\"storageroom.php\">Storage Room</a></li>";
+			$tree .= "<li class=\"liOpen\" id=\"dc-1\"><a href=\"storageroom.php\">Storage Room</a></li>";
 
 			$tree .= "</ul>";
 		}

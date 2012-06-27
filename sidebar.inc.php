@@ -53,36 +53,45 @@
   </script>
   <script type="text/javascript" src="scripts/mktree.js"></script> 
 	<hr>
-	<form action="" method="POST">
-	<input type=BUTTON onClick="location='reports.php'" value="Reports" style="height: 25px; width: 160px;">
+	<ul class="nav">
+	<a href="reports.php"><li>Reports</li></a>
 <?php
 	if ( $user->RackRequest ) {
-		print "		<input type=BUTTON onClick=\"location='rackrequest.php'\" value=\"Rack Request Form\" style=\"height: 25px; width: 160px;\">\n";
+		echo '		<a href="rackrequest.php"><li>Rack Request Form</li></a>';
 	}
 
 	if ( $user->ContactAdmin ) {
-		print "		<input type=BUTTON onClick=\"location='contacts.php'\" value=\"Contact Administration\" style=\"height: 25px; width: 160px;\">\n
-		<input type=BUTTON onClick=\"location='departments.php'\" value=\"Dept. Administration\" style=\"height: 25px; width: 160px;\">\n
-		<input type=BUTTON onClick=\"location='timeperiods.php'\" value=\"Time Periods\" style=\"height: 25px; width: 160px;\">\n
-		<input type=BUTTON onClick=\"location='escalations.php'\" value=\"Escalation Rules\" style=\"height: 25px; width: 160px;\">\n";
+		echo '		<a href="contacts.php"><li>Contact Administration</li></a>
+		<a href="departments.php"><li>Dept. Administration</li></a>
+		<a href="timeperiods.php"><li>Time Periods</li></a>
+		<a href="escalations.php"><li>Escalation Rules</li></a>';
 	}
 
 	if ( $user->SiteAdmin ) {
-		print "		<input type=BUTTON onClick=\"location='usermgr.php'\" value=\"Manage Users\" style=\"height: 25px; width: 160px;\">
-	  	<input type=BUTTON onClick=\"location='datacenter.php'\" value=\"Edit Data Centers\" style=\"height: 25px; width: 160px;\">
-	  	<input type=BUTTON onClick=\"location='cabinets.php'\" value=\"Edit Cabinets\" style=\"height: 25px; width: 160px;\">
-	  	<input type=BUTTON onClick=\"location='powersource.php'\" value=\"Edit Power Sources\" style=\"height: 25px; width: 160px;\">
-	  	<input type=BUTTON onClick=\"location='panelmgr.php'\" value=\"Edit Power Panels\" style=\"height: 25px; width: 160px;\">
-	  	<input type=BUTTON onClick=\"location='device_classes.php'\" value=\"Edit Templates\" style=\"height: 25px; width: 160px;\">
-	  	<input type=BUTTON onClick=\"location='manufacturers.php'\" value=\"Edit Manufacturers\" style=\"height: 25px; width: 160px;\">
-		<input type=BUTTON onClick=\"location='configuration.php'\" value=\"Edit Configuration\" style=\"height: 25px; width: 160px;\">\n";
+		echo '		<a href="usermgr.php"><li>Manage Users</li></a>
+		<a href="datacenter.php"><li>Edit Data Centers</li></a>
+		<a href="cabinets.php"><li>Edit Cabinets</li></a>
+		<a href="powersource.php"><li>Edit Power Sources</li></a>
+		<a href="panelmgr.php"><li>Edit Power Panels</li></a>
+		<a href="device_classes.php"><li>Edit Templates</li></a>
+		<a href="manufacturers.php"><li>Edit Manufacturers</li></a>
+		<a href="configuration.php"><li>Edit Configuration</li></a>';
 	}
 
-	print "	</form>
+	print "	</ul>
 	<hr>
 	<a href=\"index.php\">Home</a>\n";
 	
 	$menucab = new Cabinet();
 	echo $menucab->BuildCabinetTree( $facDB );
 ?>
+<script type="text/javascript">
+$("#sidebar .nav a").each(function(){
+	if($(this).attr("href")=="<?php echo basename($_SERVER['PHP_SELF']);?>"){
+		$(this).children().addClass("active");
+	}
+});
+
+</script>
+
 </div>

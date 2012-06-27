@@ -293,7 +293,14 @@
 </div>  <!-- END div.main -->
 
 <div class="clear"></div>
-
 </div>
+<script type="text/javascript">
+$(document).ready(function() {
+	// wait half a second after the page loads then open the tree
+	setTimeout(function(){
+		expandToItem('datacenters','cab<?php echo $cab->CabinetID;?>');
+	},500);
+});
+</script>
 </body>
 </html>

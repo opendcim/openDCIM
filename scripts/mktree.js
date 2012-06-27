@@ -1,32 +1,15 @@
-// ===================================================================
-// Author: Matt Kruse <matt@mattkruse.com>
-// WWW: http://www.mattkruse.com/
-//
-// NOTICE: You may use this code for any purpose, commercial or
-// private, without any further permission from the author. You may
-// remove this notice from your final code if you wish, however it is
-// appreciated by the author if at least my web site address is kept.
-//
-// You may *NOT* re-distribute this code in any way except through its
-// use. That means, you can include it in your product, or your web
-// site, or any other form where the code is actually being used. You
-// may not put the plain javascript up on your site for download or
-// include it in your javascript libraries for download. 
-// If you wish to share this code with others, please just point them
-// to the URL instead.
-// Please DO NOT link directly to my .js files from your site. Copy
-// the files to your server and use them there. Thank you.
-// ===================================================================
-
-// HISTORY
-// ------------------------------------------------------------------
-// December 9, 2003: Added script to the Javascript Toolbox
-// December 10, 2003: Added the preProcessTrees variable to allow user
-//      to turn off automatic conversion of UL's onLoad
-// March 1, 2004: Changed it so if a <li> has a class already attached
-//      to it, that class won't be erased when initialized. This allows
-//      you to set the state of the tree when painting the page simply
-//      by setting some <li>'s class name as being "liOpen" (see example)
+/**
+ * Copyright (c)2005-2009 Matt Kruse (javascripttoolbox.com)
+ * 
+ * Dual licensed under the MIT and GPL licenses. 
+ * This basically means you can use this code however you want for
+ * free, but don't claim to have written it yourself!
+ * Donations always accepted: http://www.JavascriptToolbox.com/donate/
+ * 
+ * Please do not link to the .js files on javascripttoolbox.com from
+ * your site. Copy the files locally to your server instead.
+ * 
+ */
 /*
 This code is inspired by and extended from Stuart Langridge's aqlist code:
 		http://www.kryogenix.org/code/browser/aqlists/
@@ -41,7 +24,7 @@ addEvent(window,"load",convertTrees);
 
 // Utility function to add an event listener
 function addEvent(o,e,f){
-	if (o.addEventListener){ o.addEventListener(e,f,true); return true; }
+	if (o.addEventListener){ o.addEventListener(e,f,false); return true; }
 	else if (o.attachEvent){ return o.attachEvent("on"+e,f); }
 	else { return false; }
 }
@@ -74,9 +57,9 @@ function expandToItem(treeId,itemId) {
 	var ret = expandCollapseList(ul,nodeOpenClass,itemId);
 	if (ret) {
 		var o = document.getElementById(itemId);
-		if (o.scrollIntoView) {
+/*		if (o.scrollIntoView) {
 			o.scrollIntoView(false);
-		}
+		}*/
 	}
 }
 
@@ -121,8 +104,10 @@ function convertTrees() {
 	setDefault("preProcessTrees",true);
 	if (preProcessTrees) {
 		if (!document.createElement) { return; } // Without createElement, we can't do anything
-		uls = document.getElementsByTagName("ul");
-		for (var uli=0;uli<uls.length;uli++) {
+		var uls = document.getElementsByTagName("ul");
+		if (uls==null) { return; }
+		var uls_length = uls.length;
+		for (var uli=0;uli<uls_length;uli++) {
 			var ul=uls[uli];
 			if (ul.nodeName=="UL" && ul.className==treeClass) {
 				processList(ul);
@@ -131,16 +116,25 @@ function convertTrees() {
 	}
 }
 
+function treeNodeOnclick() {
+	this.parentNode.className = (this.parentNode.className==nodeOpenClass) ? nodeClosedClass : nodeOpenClass;
+	return false;
+}
+function retFalse() {
+	return false;
+}
 // Process a UL tag and all its children, to convert to a tree
 function processList(ul) {
 	if (!ul.childNodes || ul.childNodes.length==0) { return; }
 	// Iterate LIs
-	for (var itemi=0;itemi<ul.childNodes.length;itemi++) {
+	var childNodesLength = ul.childNodes.length;
+	for (var itemi=0;itemi<childNodesLength;itemi++) {
 		var item = ul.childNodes[itemi];
 		if (item.nodeName == "LI") {
 			// Iterate things in this LI
 			var subLists = false;
-			for (var sitemi=0;sitemi<item.childNodes.length;sitemi++) {
+			var itemChildNodesLength = item.childNodes.length;
+			for (var sitemi=0;sitemi<itemChildNodesLength;sitemi++) {
 				var sitem = item.childNodes[sitemi];
 				if (sitem.nodeName=="UL") {
 					subLists = true;
@@ -160,15 +154,12 @@ function processList(ul) {
 					t = t+item.firstChild.nodeValue;
 					item.removeChild(item.firstChild);
 				}
-				s.onclick = function () {
-					this.parentNode.className = (this.parentNode.className==nodeOpenClass) ? nodeClosedClass : nodeOpenClass;
-					return false;
-				}
+				s.onclick = treeNodeOnclick;
 			}
 			else {
 				// No sublists, so it's just a bullet node
 				item.className = nodeBulletClass;
-				s.onclick = function () { return false; }
+				s.onclick = retFalse;
 			}
 			s.appendChild(document.createTextNode(t));
 			item.insertBefore(s,item.firstChild);

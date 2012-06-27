@@ -603,5 +603,14 @@ function setPreferredLayout() {<?php if(isset($_COOKIE["layout"]) && strtolower(
 ?>
 </div><!-- END div.main -->
 </div><!-- END div.page -->
+<script type="text/javascript">
+	$(document).ready(function() {
+		// wait half a second after the page loads then open the tree
+		setTimeout(function(){
+			expandToItem('datacenters','cab<?php echo $cab->CabinetID;?>');
+		},500);
+	});
+</script>
+
 </body>
 </html>

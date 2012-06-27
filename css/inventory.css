@@ -490,7 +490,7 @@ div.page.device {
 	-moz-user-select: none;
 	-webkit-user-select: none;
 }
-.button, .button:after, button, button:after, input[type=submit], input[type=button] {
+.button, .button:after, button, button:after, input[type=submit], input[type=button], ul.nav li {
 	-moz-border-radius:4px;
 	-webkit-border-radius:4px;
 	border-radius:4px;
@@ -520,7 +520,7 @@ div.page.device {
 	-o-transition: all .1s linear;
 	transition: all .1s linear;
 }
-.button.bg, .button.bg:hover, .button.bg:focus {
+.button.bg, .button.bg:hover, .button.bg:focus, ul.nav li {
 	background-image: -moz-linear-gradient(top, rgba(255,255,255,.75), rgba(255,255,255,0));
 	background-image: -webkit-gradient(linear, 0% 0%, 0% 100%, from(rgba(255,255,255,.75)), to(rgba(255,255,255,0)));
 }
@@ -563,27 +563,37 @@ div.page.device {
 }
 
 /* Installer */
-.installer ul li{
+.installer ul li, ul.nav li{
 	display: block;
 	padding: 1.5em;
 	background-color: lightGray;
+	border: 0px dashed darkGray;
+}
+.installer ul li{
 	border: 1px dashed darkGray;
 }
-.installer #sidebar a {
+ul.nav li {
+	padding: .5em;
+}
+.nav a:visited {
+	color: #000000;
+}
+.installer #sidebar a, #sidebar .nav a {
 	text-decoration: none;
 }
-.installer #sidebar a:hover li {
+.installer #sidebar a:hover li, #sidebar .nav a:hover li {
 	background-color: darkGray;
 	border-color: lightGray;
 }
-.installer #sidebar a:hover li.active {
+.installer #sidebar a:hover li.active, #sidebar .nav a:hover li.active {
 	background-color: white;
 	border-color: lightGray;
 }
-.installer .active {
+.installer .active, .nav .active {
 	background-color: white;
+	border: 1px solid darkGray;
 }
-.installer .active:after {
+.installer .active:after, .nav .active:after {
 	content:">>";
 	float: right;
 }
