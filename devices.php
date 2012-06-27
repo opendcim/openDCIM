@@ -60,6 +60,8 @@
 					$dev->DeviceType=$_REQUEST['devicetype'];
 					$dev->MfgDate=date('Y-m-d',strtotime($_REQUEST['mfgdate']));
 					$dev->InstallDate=date('Y-m-d',strtotime($_REQUEST['installdate']));
+					$dev->WarrantyCo=$_REQUEST['warrantyco'];
+					$dev->WarrantyExpire=date('Y-m-d',strtotime($_REQUEST['warrantyexpire']));
 					$dev->Notes=$_REQUEST['notes'];
 					$dev->Reservation =(isset($_REQUEST['reservation']))?1:0;
 					$dev->NominalWatts=$_REQUEST['nominalwatts'];
@@ -92,6 +94,8 @@
 					$dev->DeviceType=$_REQUEST['devicetype'];
 					$dev->MfgDate=date('Y-m-d',strtotime($_REQUEST['mfgdate']));
 					$dev->InstallDate=date('Y-m-d',strtotime($_REQUEST['installdate']));
+					$dev->WarrantyCo=$_REQUEST['warrantyco'];
+					$dev->WarrantyExpire=date('Y-m-d',strtotime($_REQUEST['warrantyexpire']));
 					$dev->Notes=$_REQUEST['notes'];
 					$dev->Reservation = ( $_REQUEST['reservation'] == "on" ) ? 1 : 0;
 					$dev->CreateDevice($facDB);
@@ -124,7 +128,18 @@
 			}
 		}
 		$cab->CabinetID=$dev->Cabinet;
+	} else {
+		$dev->InstallDate = date( "m/d/Y" );
 	}
+	
+	if ( $dev->MfgDate <= "1970-01-01" )
+		$dev->MfgDate = date( "Y-m-d" );
+		
+	if ( $dev->InstallDate <= "1970-01-01" )
+		$dev->InstallDate = date( "Y-m-d" );
+		
+	if ( $dev->WarrantyExpire <= "1970-01-01" )
+		$dev->WarrantyExpire = date( "Y-m-d" );
 
 	$templateList=$templ->GetTemplateList($facDB);
 	$escTimeList=$escTime->GetEscalationTimeList($facDB);
@@ -329,6 +344,14 @@ function setPreferredLayout() {<?php if(isset($_COOKIE["layout"]) && strtolower(
 		   <div><label for="installdate">Install Date</label></div>
 		   <div><input type="date" class="validate[required,custom[date]] datepicker" name="installdate" id="installdate" value="<?php if ( $dev->InstallDate > '0000-00-00 00:00:00' ) echo date( 'm/d/Y', strtotime( $dev->InstallDate ) ); ?>"></div>
 		</div>
+		<div>
+		   <div><label for="warrantyco">Warranty Company</label></div>
+		   <div><input type="text" name="warrantyco" id="warrantyco" value="<?php printf( "%s", $dev->WarrantyCo ); ?>"></div>
+		</div>
+		<div>
+		   <div><label for="installdate">Warranty Expiration</label></div>
+		   <div><input type="date" class="validate[custom[date]] datepicker" name="warrantyexpire" id="warrantyexpire" value="<?php printf( "%s", date( 'm/d/Y', strtotime( $dev->WarrantyExpire ))); ?>"></div>
+		</div>		
 		<div>
 		   <div><label for="owner">Departmental Owner</label></div>
 		   <div>
