@@ -77,6 +77,7 @@ CREATE TABLE fac_Department (
   ExecSponsor varchar(80) NOT NULL,
   SDM varchar(80) NOT NULL,
   Classification varchar(80) NOT NULL,
+  DeptColor VARCHAR( 7 ) NOT NULL DEFAULT '#FFFFFF',
   PRIMARY KEY (DeptID)
 ) ENGINE=MyISAM AUTO_INCREMENT=1 DEFAULT CHARSET=latin1;
 

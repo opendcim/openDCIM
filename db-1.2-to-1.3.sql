@@ -13,3 +13,9 @@ UPDATE fac_Config SET Value = '1.3' WHERE fac_Config.Parameter = 'Version';
 --
 
 INSERT INTO fac_Config VALUES ( 'ReservedColor', '#00FFFF', 'HexColor', 'string', '#FFFFFF');
+
+--
+-- Extend the departments table to add a new color field
+--
+
+ALTER TABLE fac_Department ADD DeptColor VARCHAR( 7 ) NOT NULL DEFAULT '#FFFFFF';
