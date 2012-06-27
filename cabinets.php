@@ -21,25 +21,19 @@
 	}
 
 	if(isset($_REQUEST['action']) && $user->WriteAccess){
+		$cab->DataCenterID=$_REQUEST['datacenterid'];
+		$cab->Location=$_REQUEST['location'];
+		$cab->AssignedTo=$_REQUEST['assignedto'];
+		$cab->CabinetHeight=$_REQUEST['cabinetheight'];
+		$cab->Model=$_REQUEST['model'];
+		$cab->Keylock=$_REQUEST['keylock'];
+		$cab->MaxKW=$_REQUEST['maxkw'];
+		$cab->MaxWeight=$_REQUEST['maxweight'];
+		$cab->InstallationDate=$_REQUEST['installationdate'];
+
 		if(($cab->CabinetID >0)&&($_REQUEST['action']=='Update')){
-			$cab->DataCenterID=$_REQUEST['datacenterid'];
-			$cab->Location=$_REQUEST['location'];
-			$cab->AssignedTo=$_REQUEST['assignedto'];
-			$cab->CabinetHeight=$_REQUEST['cabinetheight'];
-			$cab->Model=$_REQUEST['model'];
-			$cab->MaxKW=$_REQUEST['maxkw'];
-			$cab->MaxWeight=$_REQUEST['maxweight'];
-			$cab->InstallationDate=$_REQUEST['installationdate'];
 			$cab->UpdateCabinet($facDB);
 		}elseif($_REQUEST['action']=='Create'){
-			$cab->DataCenterID=$_REQUEST['datacenterid'];
-			$cab->Location=$_REQUEST['location'];
-			$cab->AssignedTo=$_REQUEST['assignedto'];
-			$cab->CabinetHeight=$_REQUEST['cabinetheight'];
-			$cab->Model=$_REQUEST['model'];
-			$cab->MaxKW=$_REQUEST['maxkw'];
-			$cab->MaxWeight=$_REQUEST['maxweight'];
-			$cab->InstallationDate=$_REQUEST['installationdate'];
 			$cab->CreateCabinet($facDB);
 		}
 	}
@@ -52,6 +46,7 @@
 		$cab->Location=null;
 		$cab->CabinetHeight=null;
 		$cab->Model=null;
+		$cab->Keylock=null;
 		$cab->MaxKW=null;
 		$cab->MaxWeight=null;
 		$cab->InstallationDate=date('m/d/Y');
@@ -128,6 +123,10 @@
 <div>
    <div>Model</div>
    <div><input type='text' name='model' size='30' value='<?php echo $cab->Model; ?>'></div>
+</div>
+<div>
+   <div>Key/Lock Information</div>
+   <div><input type='text' name='keylock' size='30' value='<?php echo $cab->Keylock; ?>'></div>
 </div>
 <div>
    <div>Maximum kW</div>
