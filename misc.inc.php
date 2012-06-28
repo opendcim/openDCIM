@@ -82,6 +82,42 @@ function redirect($target = null) {
 	return $url;
 }
 
+// search haystack for needle and return an array of the key path,
+// FALSE otherwise.
+// if NeedleKey is given, return only for this key
+// mixed ArraySearchRecursive(mixed Needle,array Haystack[,NeedleKey[,bool Strict[,array Path]]])
+
+function ArraySearchRecursive($Needle,$Haystack,$NeedleKey="",$Strict=false,$Path=array()) {
+	if(!is_array($Haystack))
+		return false;
+	foreach($Haystack as $Key => $Val) {
+		if(is_array($Val)&&$SubPath=ArraySearchRecursive($Needle,$Val,$NeedleKey,$Strict,$Path)) {
+			$Path=array_merge($Path,Array($Key),$SubPath);
+			return $Path;
+		}elseif((!$Strict&&$Val==$Needle&&$Key==(strlen($NeedleKey)>0?$NeedleKey:$Key))||($Strict&&$Val===$Needle&&$Key==(strlen($NeedleKey)>0?$NeedleKey:$Key))) {
+			$Path[]=$Key;
+			return $Path;
+		}
+	}
+	return false;
+}
+
+/*
+ * Sort multidimentional array
+ *
+ * $array = sort2d ( $array, 'key to sort on')
+ */
+function sort2d ($array, $index){
+	//Create array of key and label to sort on.
+	foreach(array_keys($array) as $key){$temp[$key]=$array[$key][$index];}
+	//Case insensative natural sorting of temp array.
+	natcasesort($temp);
+	//Rebuild original array using the newly sorted order.
+	foreach(array_keys($temp) as $key){$sorted[$key]=$array[$key];}
+	return $sorted;
+}  
+
+
 /*
 Check if we are doing a new install or an upgrade has been applied.  
 If found then force the user into only running that function.

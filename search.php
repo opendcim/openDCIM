@@ -37,31 +37,35 @@
 		$devList='';
 	}
 
+	$x=0;
 	$temp=array();
 	while(list($devID,$device)=each($devList)){
-		$temp[$devID]['label']=$device->Label;
-		$temp[$devID]['type']='srv';
+		$temp[$x]['devid']=$devID;
+		$temp[$x]['label']=$device->Label;
+		$temp[$x]['type']='srv';
+		++$x;
 	}
 	if(isset($vmList)){
 		foreach($vmList as $vmRow){
 			$dev->DeviceID=$vmRow->DeviceID;
 			$dev->GetDevice($facDB);
-			$temp[$vmRow->DeviceID]['label']=$dev->Label;
-			$temp[$vmRow->DeviceID]['type']='vm';
+			$a=ArraySearchRecursive($vmRow->DeviceID,$temp,'devid');
+			// if we find a matching server in the exisiting list set it to type vm so it will nest in the results
+			if(is_array($a)){
+				$temp[$a[0]]['label']=$dev->Label;
+				$temp[$a[0]]['type']='vm';
+			}else{
+				// We didn't find the host server of this vm so we're gonna add it to the list
+				$temp[$x]['devid']=$dev->DeviceID;
+				$temp[$x]['label']=$dev->Label;
+				$temp[$x]['type']='vm';
+				++$x;
+			}
 		}
 	}
 
-    function sort2d ($array, $index){
-		//Create array of key and label to sort on.
-		foreach(array_keys($array) as $key){$temp[$key]=$array[$key][$index];}
-		//Case insensative natural sorting of temp array.
-		natcasesort($temp);
-		//Rebuild original array using the newly sorted order.
-		foreach(array_keys($temp) as $key){$sorted[$key]=$array[$key];}
-		return $sorted;
-	}  
+	// Sort array based on device label
 	$devList=sort2d($temp,'label');
-//	print_r($temp);
 
 ?>
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
@@ -89,16 +93,17 @@
 <div class="center"><div>
 <ol>
 <?php
+//print_r($devList);
 //print_r($vmList);
 	foreach ($devList as $key => $row){
 		//In case of VMHost missing from inventory, this shouldn't ever happen
 		if($row['label']=='' || is_null($row['label'])){$row['label']='VM Host Missing From Inventory';}
-		echo "<li><a href=\"devices.php?deviceid=$key\">".$row['label']."</a>";
+		echo "<li><a href=\"devices.php?deviceid={$row['devid']}\">{$row['label']}</a>";
 		// Create a nested list showing all VMs residing on this host.
 		if($row['type']=='vm'){
 			echo '<ul>';
 			foreach($vmList as $vm){
-				if($vm->DeviceID==$key){
+				if($vm->DeviceID==$row['devid']){
 					echo "<li><div><img src=\"images/vmcube.png\" alt=\"vm icon\"></div>$vm->vmName</li>";
 				}
 			}
