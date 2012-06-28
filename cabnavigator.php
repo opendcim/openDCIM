@@ -12,7 +12,7 @@
 		exit;
 	}
 
-	$head="";
+	$head=$legend="";
 	$cab=new Cabinet();
 	$audit=new CabinetAudit();
 	$pdu=new PowerDistribution();
@@ -39,7 +39,6 @@
 		$url=redirect("dc_stats.php?dc=$dcID");
 		header("Location: $url");
 	}
-
 	
 	$audit->CabinetID=$cab->CabinetID;
 
@@ -72,8 +71,16 @@
 	$totalWeight=0;
 	$totalMoment=0;
 
-	if($config->ParameterArray["ReservedColor"] != "#FFFFFF"){
-		$head.="<style type=\"text/css\">.reserved{background-color: {$config->ParameterArray['ReservedColor']};</style>";
+	if($config->ParameterArray["ReservedColor"] != "#FFFFFF" || $config->ParameterArray["FreeSpaceColor"] != "#FFFFFF"){
+		$head.="<style type=\"text/css\">\n.reserved{background-color: {$config->ParameterArray['ReservedColor']};}\n.freespace{background-color: {$config->ParameterArray['FreeSpaceColor']};}\n</style>\n";
+
+		if($config->ParameterArray["ReservedColor"] != "#FFFFFF"){
+			$legend.='<p><span class="reserved border">&nbsp;&nbsp;&nbsp;&nbsp;</span> - Reservation</p>';
+		}
+		if($config->ParameterArray["FreeSpaceColor"] != "#FFFFFF"){
+			$legend.='<p><span class="freespace border">&nbsp;&nbsp;&nbsp;&nbsp;</span> - FreeSpace</p>';
+		}
+		$legend.='<p><span class="border">&nbsp;&nbsp;&nbsp;&nbsp;</span> - Normal</p>';
 	}
 
 ?>
@@ -145,7 +152,7 @@
 			for($i=$currentHeight;$i > $devTop;$i--){
 				if($i==$currentHeight){
 					$blankHeight=$currentHeight-$devTop;
-					print "<tr><td>$i</td><td rowspan=$blankHeight>&nbsp;</td></tr>\n";
+					print "<tr><td>$i</td><td class=\"freespace\" rowspan=$blankHeight>&nbsp;</td></tr>\n";
 				} else {
 					print "<tr><td>$i</td></tr>\n";
 				}
@@ -177,7 +184,7 @@
 		if ( $i == $currentHeight ) {
 			$blankHeight = $currentHeight + 1;
 
-			print "<tr><td>$i</td><td rowspan=$blankHeight>&nbsp;</td></tr>\n";
+			print "<tr><td>$i</td><td class=\"freespace\" rowspan=$blankHeight>&nbsp;</td></tr>\n";
 		} else {
 			print "<tr><td>$i</td></tr>\n";
 		}
@@ -210,10 +217,7 @@
 		<p><font color=red>(O)</font> - Owner Unassigned</p>
 		<p><font color=red>(T)</font> - Template Unassigned</p>
 <?php
-	if($config->ParameterArray["ReservedColor"] != "#FFFFFF"){
-		echo '		<p><span class="reserved border">&nbsp;&nbsp;&nbsp;&nbsp;</span> - Reservation</p>
-		<p><span class="border">&nbsp;&nbsp;&nbsp;&nbsp;</span> - Normal</p>';
-	}
+	echo $legend;
 ?>
 	</fieldset>
 	<fieldset>
