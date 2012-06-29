@@ -20,6 +20,7 @@
 
 	$dev=new Device();
 	$esx=new ESX();
+	$cab=new Cabinet();
 
 	if($searchKey=='serial'){
 		$dev->SerialNo=$searchTerm;
@@ -30,6 +31,8 @@
 		//Virtual machines will never be search via asset tags or serial numbers
 		$esx->vmName=$dev->Label;
 		$vmList=$esx->SearchByVMName($facDB);
+		$cab->Location=$searchTerm;
+		$cabList=$cab->SearchByCabinetName($facDB);
 	}elseif($searchKey=='asset'){
 		$dev->AssetTag=$searchTerm;
 		$devList=$dev->SearchDevicebyAssetTag($facDB);
@@ -38,11 +41,14 @@
 	}
 
 	$x=0;
-	$temp=array();
+	$temp=array(); // Store all devices for display
+	$cabtemp=array(); // List of all cabinet ids for outerloop
 	while(list($devID,$device)=each($devList)){
 		$temp[$x]['devid']=$devID;
 		$temp[$x]['label']=$device->Label;
 		$temp[$x]['type']='srv';
+		$temp[$x]['cabinet']=$device->Cabinet;
+		$cabtemp[$device->Cabinet]="";
 		++$x;
 	}
 	if(isset($vmList)){
@@ -59,9 +65,25 @@
 				$temp[$x]['devid']=$dev->DeviceID;
 				$temp[$x]['label']=$dev->Label;
 				$temp[$x]['type']='vm';
+				$temp[$x]['cabinet']=$dev->Cabinet;
+				$cabtemp[$dev->Cabinet]="";
 				++$x;
 			}
 		}
+	}
+
+	// Add racks that matched the search term to the rack list
+	if(isset($cabList)&&is_array($cabList)){
+		foreach($cabList as $CabinetID => $row){
+			$cabtemp[$CabinetID]=$row->Location;
+		}
+	}
+
+	// Add Rack Names To Temp Cabinet Array
+	foreach($cabtemp as $key => $row){
+		$cab->CabinetID=$key;
+		$cab->GetCabinet($facDB);
+		$cabtemp[$key]=$cab->Location;
 	}
 
 	// Sort array based on device label
@@ -91,28 +113,38 @@
 <h2><?php echo $config->ParameterArray['OrgName']; ?></h2>
 <h3>Search Results</h3>
 <div class="center"><div>
-<ol>
+	<ol>
 <?php
 //print_r($devList);
 //print_r($vmList);
-	foreach ($devList as $key => $row){
-		//In case of VMHost missing from inventory, this shouldn't ever happen
-		if($row['label']=='' || is_null($row['label'])){$row['label']='VM Host Missing From Inventory';}
-		echo "<li><a href=\"devices.php?deviceid={$row['devid']}\">{$row['label']}</a>";
-		// Create a nested list showing all VMs residing on this host.
-		if($row['type']=='vm'){
-			echo '<ul>';
-			foreach($vmList as $vm){
-				if($vm->DeviceID==$row['devid']){
-					echo "<li><div><img src=\"images/vmcube.png\" alt=\"vm icon\"></div>$vm->vmName</li>";
-				}
+
+	foreach ($cabtemp as $cabID => $cabLocation){
+		print "		<li class=\"cabinet\"><div><img src=\"images/serverrack.png\" alt=\"rack icon\"></div><a href=\"cabnavigator.php?cabinetid=$cabID\">$cabLocation</a>\n			<ol>\n";
+		if(count($devList > 0)){
+			foreach ($devList as $key => $row){
+				if($cabID == $row['cabinet']){
+					//In case of VMHost missing from inventory, this shouldn't ever happen
+					if($row['label']=='' || is_null($row['label'])){$row['label']='VM Host Missing From Inventory';}
+					echo "				<li><a href=\"devices.php?deviceid={$row['devid']}\">{$row['label']}</a>\n";
+					// Create a nested list showing all VMs residing on this host.
+					if($row['type']=='vm'){
+						echo "					<ul>\n";
+						foreach($vmList as $vm){
+							if($vm->DeviceID==$row['devid']){
+								echo "						<li><div><img src=\"images/vmcube.png\" alt=\"vm icon\"></div>$vm->vmName</li>";
+							}
+						}
+						echo "					</ul>\n";
+					}
+					echo "				</li>\n";
+				} 
 			}
-			echo '</ul>';
 		}
-		echo '</li>'."\n";
-	} 
+		print "			</ol>\n		</li>\n";
+	}
+
 ?>
-</ol>
+	</ol>
 <p>Search complete.</p>
 </div></div>
 </div><!-- END div.main -->

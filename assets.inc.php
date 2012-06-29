@@ -308,6 +308,40 @@ class Cabinet {
 		$sql = sprintf( "delete from fac_Cabinet where CabinetID=\"%d\"", intval( $this->CabinetID ) );
 		mysql_query( $sql, $db );
 	}
+
+	function SearchByCabinetName($db){
+		$select_sql="select * from fac_Cabinet where ucase(Location) like \"%" . strtoupper($this->Location) . "%\" order by Location;";
+		$result=mysql_query($select_sql,$db);
+
+		$cabinetList=array();
+		$cabCount=0;
+
+		if(!$result=mysql_query($select_sql,$db)){
+			return 0;
+		}
+
+		while($cabinetRow=mysql_fetch_array($result)){
+			$cabID=$cabinetRow["CabinetID"];
+			$cabinetList[$cabID]=new Cabinet();
+			$cabinetList[$cabID]->CabinetID=$cabinetRow["CabinetID"];
+			$cabinetList[$cabID]->DataCenterID=$cabinetRow["DataCenterID"];
+			$cabinetList[$cabID]->Location=$cabinetRow["Location"];
+			$cabinetList[$cabID]->AssignedTo=$cabinetRow["AssignedTo"];
+			$cabinetList[$cabID]->ZoneID=$cabinetRow["ZoneID"];
+			$cabinetList[$cabID]->CabinetHeight=$cabinetRow["CabinetHeight"];
+			$cabinetList[$cabID]->Model=$cabinetRow["Model"];
+			$cabinetList[$cabID]->Keylock=$cabinetRow["Keylock"];
+			$cabinetList[$cabID]->MaxKW=$cabinetRow["MaxKW"];
+			$cabinetList[$cabID]->MaxWeight=$cabinetRow["MaxWeight"];
+			$cabinetList[$cabID]->InstallationDate=$cabinetRow["InstallationDate"];
+			$cabinetList[$cabID]->MapX1=$cabinetRow["MapX1"];
+			$cabinetList[$cabID]->MapY1=$cabinetRow["MapY1"];
+			$cabinetList[$cabID]->MapX2=$cabinetRow["MapX2"];
+			$cabinetList[$cabID]->MapY2=$cabinetRow["MapY2"];
+		}
+
+		return $cabinetList;
+	}
 }
 
 class CabinetAudit {
@@ -1148,7 +1182,7 @@ class ESX {
     return $vmList; 
   }
   
-  function SearchByvmName( $db ) {
+  function SearchByVMName( $db ) {
     $selectSQL = "select * from fac_VMInventory where ucase(vmName) like \"%" . strtoupper($this->vmName) . "%\"";
     $result = mysql_query( $selectSQL, $db );
     
