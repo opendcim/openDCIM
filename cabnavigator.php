@@ -288,7 +288,7 @@
 	if ( $user->SiteAdmin ) {
 		print "<input type=\"button\" value=\"Certify Audit\" style=\"width:120;\" onclick=\"javascript:verifyAudit(this.form)\"><br>
 		<input type=\"button\" value=\"Add Device\" style=\"width:120;\" onclick=\"location='devices.php?action=new&cabinet=$cab->CabinetID'\"><br>
-		<input type=\"button\" value=\"Audit Report\" style=\"width:120;\" onclick=\"location='audit_report.php?cabinetid=$cab->CabinetID'\"><br>
+		<input type=\"button\" value=\"Audit Report\" style=\"width:120;\" onclick=\"location='cabaudit.php?cabinetid=$cab->CabinetID'\"><br>
 		<input type=\"button\" value=\"Map Coordinates\" style=\"width:120;\" onclick=\"location='mapmaker.php?cabinetid=$cab->CabinetID'\"><br>
 		<input type=\"button\" value=\"Edit Cabinet\" style=\"width:120;\" onclick=\"location='cabinets.php?cabinetid=$cab->CabinetID'\"><br>
 		<input type=\"button\" value=\"Delete Cabinet\" style=\"width:120;\" onclick=\"javascript:verifyDelete(this.form)\"<br>\n";
