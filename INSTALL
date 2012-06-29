@@ -44,15 +44,16 @@ supported by your web server software.  The main thing is to authenticate users 
 the site.
 
 
-3.  Log in to the site and run the setup.php script
+3.  Log in to the site
 
 Whoever logs in to the website first automatically becomes the site administrator!  This can be
 changed later, but in order to work at all the system has to define at least one administrator.
 
-Browse to the URL that you set up for your installation, to the setup.php script.  For instance:
+Browse to the URL that you set up for your installation.  For instance:
 
-https://dcim.yourdomain.com/setup.php
+https://dcim.yourdomain.com/
 
 If you have set up the database permissions correctly, it will handle the installation for you.
 
-It is recommended that you delete the setup.php file after configuration is complete.
+You will have to delete the install.php file after configuration is configuration is complete
+in order to continue.

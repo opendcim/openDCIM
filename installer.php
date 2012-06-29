@@ -79,7 +79,8 @@ function applyupdate ($updatefile){
 		$version=mysql_result($result,0);//sets version number
 	}
 	if($version=="1.2"){ // Do 1.2 to 1.3 Update
-//		$upgrade=true;
+		$results[]=applyupdate("db-1.2-to-1.3.sql");
+		$upgrade=true;
 	}
 	if($upgrade==true){ //If we're doing an upgrade don't call the rest of the installer.
 ?>

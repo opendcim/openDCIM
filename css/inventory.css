@@ -221,8 +221,11 @@ div.table > div > div span {display: block;font-size: 0.75em;}
 	list-style-type: none;
 	margin-left: 1em;
 }
+.search ol {
+	margin-top: .35em;
+}
 .search ol li {
-	margin-bottom: .5em;
+	margin-bottom: .35em;
 }
 .search ol ul li {
 	margin-left: 1em;
@@ -234,6 +237,7 @@ div.table > div > div span {display: block;font-size: 0.75em;}
 .search ol ul li div img, .search ol li.cabinet div img {
 	vertical-align: middle;
 	height: 1em;
+	margin-right: .25em;
 }
 /* User Rights */
 .rights > div:nth-last-child(2) div {

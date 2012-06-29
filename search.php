@@ -81,9 +81,13 @@
 
 	// Add Rack Names To Temp Cabinet Array
 	foreach($cabtemp as $key => $row){
-		$cab->CabinetID=$key;
-		$cab->GetCabinet($facDB);
-		$cabtemp[$key]=$cab->Location;
+		if($key!=-1){
+			$cab->CabinetID=$key;
+			$cab->GetCabinet($facDB);
+			$cabtemp[$key]=$cab->Location;
+		}else{
+			$cabtemp[$key]="Storage Room";
+		}
 	}
 
 	// Sort array based on device label
@@ -115,9 +119,6 @@
 <div class="center"><div>
 	<ol>
 <?php
-//print_r($devList);
-//print_r($vmList);
-
 	foreach ($cabtemp as $cabID => $cabLocation){
 		print "		<li class=\"cabinet\"><div><img src=\"images/serverrack.png\" alt=\"rack icon\"></div><a href=\"cabnavigator.php?cabinetid=$cabID\">$cabLocation</a>\n			<ol>\n";
 		if(count($devList > 0)){
