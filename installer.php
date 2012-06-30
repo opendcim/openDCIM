@@ -1,18 +1,18 @@
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <?php
 /*
-	Generic first time installer.  Makes assumption that the db.inc.php has been created and that the
-	db has been populated with the install script.
+	Generic first time installer.  Makes assumption that the db.inc.php has been created
 
 */
 
 // Make sure that a db.inc.php has been created
 	if(!file_exists("db.inc.php")){
 		print "Please copy db.inc.php-dist to db.inc.php.<br>\nOpen db.inc.php with a text editor and fill in the blanks for user, pass, database, and server.";
-	exit;
+		exit;
+	}else{
+		require_once("db.inc.php");
 	}
 
-	require_once( "db.inc.php" );
 // Functions for upgrade / installing db objects
 	$successlog="";
 
@@ -41,16 +41,17 @@ function applyupdate ($updatefile){
 //			echo $value."<br>\n";
 			if(!mysql_query($value)){
 				//something broke log it
-				@$errormsg.=mysql_error();
+				$errormsg.=mysql_error();
+				$errormsg.="<br>\n";
 				$result=1;
 			}
 		}
 		if($result){
 			if(!isset($errormsg)){
-				$errormsg="An error has occured while applying $updatefile. Please consult the server logs for more details.";
+				$errormsg="An error has occured while applying $updatefile. Please consult the server logs for more details.<br>\n";
 			}
 		}else{
-			$successlog="$updatefile: Database updates applied.\n<br>";
+			$successlog="$updatefile: Database updates applied.<br>\n";
 		}
 	}else{
 		$errormsg="Seems you're at 1.0 but you're missing the db updates to goto 1.1. Are you sure that db-1.0-to-1.1.sql unpacked from the archive?";
@@ -64,12 +65,34 @@ function applyupdate ($updatefile){
 	return $temp;
 }
 	$upgrade=false;
+
 // Check to see if we are doing an upgrade or an install
 	$result=mysql_query("SHOW TABLES;");
 	if(mysql_num_rows($result)==0){ // No tables in the DB so try to install.
 		$results[]=applyupdate("create.sql");
 		$upgrade=true;
 	}
+// Check to see if we have any users in the database.
+	if(mysql_num_rows(mysql_query("SELECT * FROM fac_User WHERE SiteAdmin=1;"))<1){
+		// no users in the system or no users with site admin rights, either way we're missing the class of people we need
+		// put stuff here like correcting for a missing site admin
+
+		$rightserror=1;
+	}else{ // so we have users and at least one site admin
+		require_once("customers.inc.php");
+
+		$user=new User();
+		$user->UserID=$_SERVER['REMOTE_USER'];
+		$user->GetUserRights($facDB);
+
+		if(!$user->SiteAdmin){
+			// dolemite says you aren't an admin so you can't apply the update
+			print "An update has been applied to the system but the system hasn't been taken out of maintenance mode. Please contact a site Administrator to correct this issue.";
+			exit;
+		}
+		$rightserror=0;
+	}
+
 //  test for openDCIM version
 	$result=mysql_query("SELECT Value FROM fac_Config WHERE Parameter='Version' LIMIT 1;");
 	if(mysql_num_rows($result)==0){// Empty result set means this is either 1.0 or 1.1. Surely the check above caught all 1.0 instances.
@@ -102,9 +125,9 @@ if(isset($results)){
 			print "<h1 class=\"$class\">$message</h1>";
 		}
 	}
-	print "<p class=\"$class\">If all updates have completed.  Please remove upgrade.php to return to normal functionality</p>";
+	print "<p class=\"$class\">If all updates have completed.  Please remove install.php to return to normal functionality.</p><p>Reload the page to try loading sql updates again or to go on to the installer</p>";
 }else{
-	echo '<p class="success">All is well.  Please remove upgrade.php to return to normal functionality</p>';
+	echo '<p class="success">All is well.  Please remove install.php to return to normal functionality</p>';
 }
 ?>
 </body>

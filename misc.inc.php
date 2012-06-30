@@ -123,12 +123,8 @@ Check if we are doing a new install or an upgrade has been applied.
 If found then force the user into only running that function.
 */
 
-if(file_exists("upgrade.php")||file_exists("install.php")){
-	if(file_exists("install.php")){
-		// new installs need to run the install first.
-		header("Location: ".redirect('install.php'));
-	}else{
-		header("Location: ".redirect('upgrade.php'));
-	}
+if(file_exists("install.php") && basename($_SERVER['PHP_SELF'])!="install.php" ){
+	// new installs need to run the install first.
+	header("Location: ".redirect('install.php'));
 }
 ?>

@@ -446,7 +446,7 @@ class Device {
     if ( ! $this->GetDevice( $db ) )
       die( "Can't find device " . $this->DeviceID . " to decommission!" );
     
-    $insert_sql = "insert into fac_Decommission values ( now(), \"" . $this->Label . "\", \"" . $this->SerialNo . "\", \"" . $this->AssetTag . "\", \"" . $_SERVER["REMOTE_USER"] . "\" )";
+    $insert_sql = "insert into fac_Decommission values ( now(), \"$this->Label\", \"$this->SerialNo\", \"$this->AssetTag\", \"{$_SERVER['REMOTE_USER']}\" )";
     if ( ! $result = mysql_query( $insert_sql, $db ) )
       die( "Unable to create log of decommissioning.  $insert_sql" );
   
