@@ -21,6 +21,7 @@
 	$dev=new Device();
 	$esx=new ESX();
 	$cab=new Cabinet();
+	$pdu=new PowerDistribution();
 
 	if($searchKey=='serial'){
 		$dev->SerialNo=$searchTerm;
@@ -33,6 +34,8 @@
 		$vmList=$esx->SearchByVMName($facDB);
 		$cab->Location=$searchTerm;
 		$cabList=$cab->SearchByCabinetName($facDB);
+		$pdu->Label=$searchTerm;
+		$pduList=$pdu->SearchByPDUName($facDB);
 	}elseif($searchKey=='asset'){
 		$dev->AssetTag=$searchTerm;
 		$devList=$dev->SearchDevicebyAssetTag($facDB);
@@ -79,6 +82,15 @@
 		}
 	}
 
+	// Add racks that are parents of the PDU devices to the rack list
+	if(isset($pduList)&&is_array($pduList)){
+		foreach($pduList as $key => $row){
+			if(!isset($cabtemp[$row->CabinetID])){
+				$cabtemp[$row->CabinetID]="";
+			}
+		}
+	}
+
 	// Add Rack Names To Temp Cabinet Array
 	foreach($cabtemp as $key => $row){
 		if($key!=-1){
@@ -91,8 +103,9 @@
 	}
 
 	// Sort array based on device label
-	$devList=sort2d($temp,'label');
-
+	if(!empty($devList)){
+		$devList=sort2d($temp,'label');
+	}
 ?>
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html>
@@ -121,7 +134,17 @@
 <?php
 	foreach ($cabtemp as $cabID => $cabLocation){
 		print "		<li class=\"cabinet\"><div><img src=\"images/serverrack.png\" alt=\"rack icon\"></div><a href=\"cabnavigator.php?cabinetid=$cabID\">$cabLocation</a>\n			<ol>\n";
-		if(count($devList > 0)){
+		//Always list PDUs directly after the cabinet device IF they exist
+		if(is_array($pduList)){
+			// In theory this should be a short list so just parse the entire thing each time we read a cabinet.
+			// if this ends up being a huge time sink, optimize this above then fix logic
+			foreach($pduList as $key => $row){
+				if($cabID == $row->CabinetID){
+					print "					<li class=\"pdu\"><a href=\"pduinfo.php?pduid=$row->PDUID\">$row->Label</a>\n";
+				}
+			}
+		}
+		if(!empty($devList)){
 			foreach ($devList as $key => $row){
 				if($cabID == $row['cabinet']){
 					//In case of VMHost missing from inventory, this shouldn't ever happen
