@@ -13,6 +13,7 @@ Changes in 1.3
 * Changed out button interface for a more tab friendly click interface
 * Added Warranty Company and Warranty Expiration to devices
 * Added Key/Lock Information field to Cabinets
+* PDUs and Racks are now included in the search results
 
 Changes in 1.2
 --------------

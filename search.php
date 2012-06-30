@@ -135,7 +135,7 @@
 	foreach ($cabtemp as $cabID => $cabLocation){
 		print "		<li class=\"cabinet\"><div><img src=\"images/serverrack.png\" alt=\"rack icon\"></div><a href=\"cabnavigator.php?cabinetid=$cabID\">$cabLocation</a>\n			<ol>\n";
 		//Always list PDUs directly after the cabinet device IF they exist
-		if(is_array($pduList)){
+		if(isset($pduList)&&is_array($pduList)){
 			// In theory this should be a short list so just parse the entire thing each time we read a cabinet.
 			// if this ends up being a huge time sink, optimize this above then fix logic
 			foreach($pduList as $key => $row){
