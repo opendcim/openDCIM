@@ -253,6 +253,7 @@ $(function(){
 	$('#deviceform').validationEngine({});
 	$('#mfgdate').datepicker({});
 	$('#installdate').datepicker({});
+	$('#warrantyexpire').datepicker({});
 });
 
 </script>
@@ -350,7 +351,7 @@ function setPreferredLayout() {<?php if(isset($_COOKIE["layout"]) && strtolower(
 		</div>
 		<div>
 		   <div><label for="installdate">Warranty Expiration</label></div>
-		   <div><input type="date" class="validate[custom[date]] datepicker" name="warrantyexpire" id="warrantyexpire" value="<?php printf( "%s", date( 'm/d/Y', strtotime( $dev->WarrantyExpire ))); ?>"></div>
+		   <div><input type="text" class="validate[custom[date]] datepicker" name="warrantyexpire" id="warrantyexpire" value="<?php printf( "%s", date( 'm/d/Y', strtotime( $dev->WarrantyExpire ))); ?>"></div>
 		</div>		
 		<div>
 		   <div><label for="owner">Departmental Owner</label></div>
