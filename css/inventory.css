@@ -406,7 +406,7 @@ textarea {
 }
 /* devices.php  Device Detail */
 div.page.device {
-	min-width: 1150px; /* 1030 */
+	min-width: 1350px; /* 1030 */
 }
 .device fieldset {
 	display: inline-block;
