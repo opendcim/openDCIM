@@ -255,6 +255,40 @@ class PowerDistribution {
 		return $PDUList;
 	}
 	
+	function SearchByPDUName($db){
+		$select_sql="select * from fac_PowerDistribution where ucase(Label) like \"%".strtoupper($this->Label)."%\";";
+
+		if(!$result=mysql_query($select_sql,$db)){
+			return 0;
+		}
+
+		$PDUList = array();
+
+		while($PDUrow=mysql_fetch_array($result)){
+			$PDUID=sizeof($PDUList);
+			$PDUList[$PDUID]=new PowerDistribution();
+
+			$PDUList[$PDUID]->PDUID=$PDUrow["PDUID"];
+			$PDUList[$PDUID]->Label=stripslashes($PDUrow["Label"]);
+			$PDUList[$PDUID]->CabinetID=$PDUrow["CabinetID"];
+			$PDUList[$PDUID]->InputAmperage=$PDUrow["InputAmperage"];
+			$PDUList[$PDUID]->ManagementType=$PDUrow["ManagementType"];
+			$PDUList[$PDUID]->Model=stripslashes($PDUrow["Model"]);
+			$PDUList[$PDUID]->NumOutputs=$PDUrow["NumOutputs"];
+			$PDUList[$PDUID]->IPAddress=stripslashes($PDUrow["IPAddress"]);
+			$PDUList[$PDUID]->SNMPCommunity=stripslashes($PDUrow["SNMPCommunity"]);
+			$PDUList[$PDUID]->FirmwareVersion=$PDUrow["FirmwareVersion"];
+			$PDUList[$PDUID]->PanelID=$PDUrow["PanelID"];
+			$PDUList[$PDUID]->BreakerSize=$PDUrow["BreakerSize"];
+			$PDUList[$PDUID]->PanelPole=$PDUrow["PanelPole"];
+			$PDUList[$PDUID]->FailSafe=$PDUrow["FailSafe"];
+			$PDUList[$PDUID]->PanelID2=$PDUrow["PanelID2"];
+			$PDUList[$PDUID]->PanelPole2=$PDUrow["PanelPole2"];
+		}
+
+		return $PDUList;
+	}
+
 	function GetPDUbyPanel( $db ) {
 		$select_sql = "select * from fac_PowerDistribution where PanelID=\"" . intval($this->PanelID) . "\" or PanelID2=\"" . intval( $this->PanelID ) . "\" order by PanelPole ASC";
 

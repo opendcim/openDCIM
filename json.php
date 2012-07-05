@@ -24,7 +24,12 @@
 			
 		//This will ensure that an empty json record set is returned if this is called directly or in some strange manner
 		if($field!=""){
-			$sql="SELECT DISTINCT $field FROM fac_Device WHERE $field LIKE '%" . mysql_real_escape_string( $searchTerm ) . "%';";
+			$searchTerm=mysql_real_escape_string($searchTerm);
+			if($field=="Label"){
+				$sql="SELECT DISTINCT Label FROM fac_Device WHERE Label LIKE '%$searchTerm%' UNION SELECT DISTINCT Location AS Label FROM fac_Cabinet WHERE Location LIKE '%$searchTerm%' UNION SELECT DISTINCT Label FROM fac_PowerDistribution WHERE Label LIKE '%$searchTerm%';";
+			}else{
+				$sql="SELECT DISTINCT $field FROM fac_Device WHERE $field LIKE '%$searchTerm%';";
+			}
 			$result=mysql_query($sql,$facDB);
 			$x=0;
 			while($devrow=mysql_fetch_row($result)){

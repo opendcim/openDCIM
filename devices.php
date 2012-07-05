@@ -177,6 +177,7 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <title>openDCIM Device Maintenance</title>
   <link rel="stylesheet" href="css/inventory.css" type="text/css">
+  <link rel="stylesheet" href="css/print.css" type="text/css" media="print">
   <link rel="stylesheet" href="css/jquery-ui-1.8.18.custom.css" type="text/css">
   <link rel="stylesheet" href="css/validationEngine.jquery.css" type="text/css">
   <!--[if lt IE 9]>
@@ -253,6 +254,7 @@ $(function(){
 	$('#deviceform').validationEngine({});
 	$('#mfgdate').datepicker({});
 	$('#installdate').datepicker({});
+	$('#warrantyexpire').datepicker({});
 });
 
 </script>
@@ -337,12 +339,12 @@ function setPreferredLayout() {<?php if(isset($_COOKIE["layout"]) && strtolower(
 		</div>
 		<div>
 		   <div><label for="mfgdate">Manufacture Date</label></div>
-		   <div><input type="date" class="validate[optional,custom[date]] datepicker" name="mfgdate" id="mfgdate" value="<?php if ( $dev->MfgDate > '0000-00-00 00:00:00' ) echo date( 'm/d/Y', strtotime( $dev->MfgDate ) ); ?>">
+		   <div><input type="text" class="validate[optional,custom[date]] datepicker" name="mfgdate" id="mfgdate" value="<?php if ( $dev->MfgDate > '0000-00-00 00:00:00' ) echo date( 'm/d/Y', strtotime( $dev->MfgDate ) ); ?>">
 		   </div>
 		</div>
 		<div>
 		   <div><label for="installdate">Install Date</label></div>
-		   <div><input type="date" class="validate[required,custom[date]] datepicker" name="installdate" id="installdate" value="<?php if ( $dev->InstallDate > '0000-00-00 00:00:00' ) echo date( 'm/d/Y', strtotime( $dev->InstallDate ) ); ?>"></div>
+		   <div><input type="text" class="validate[required,custom[date]] datepicker" name="installdate" id="installdate" value="<?php if ( $dev->InstallDate > '0000-00-00 00:00:00' ) echo date( 'm/d/Y', strtotime( $dev->InstallDate ) ); ?>"></div>
 		</div>
 		<div>
 		   <div><label for="warrantyco">Warranty Company</label></div>
@@ -350,7 +352,7 @@ function setPreferredLayout() {<?php if(isset($_COOKIE["layout"]) && strtolower(
 		</div>
 		<div>
 		   <div><label for="installdate">Warranty Expiration</label></div>
-		   <div><input type="date" class="validate[custom[date]] datepicker" name="warrantyexpire" id="warrantyexpire" value="<?php printf( "%s", date( 'm/d/Y', strtotime( $dev->WarrantyExpire ))); ?>"></div>
+		   <div><input type="text" class="validate[custom[date]] datepicker" name="warrantyexpire" id="warrantyexpire" value="<?php printf( "%s", date( 'm/d/Y', strtotime( $dev->WarrantyExpire ))); ?>"></div>
 		</div>		
 		<div>
 		   <div><label for="owner">Departmental Owner</label></div>
@@ -457,7 +459,7 @@ function setPreferredLayout() {<?php if(isset($_COOKIE["layout"]) && strtolower(
 		</div>
 		<div>
 		   <div><label for="position">Position</label></div>
-		   <div><input type="number" class="required,validate[custom[onlyNumberSp]]" name="position" id="position" size="4" value="<?php echo $dev->Position; ?>"></div>
+		   <div><input type="number" class="required,validate[custom[onlyNumberSp],min[1]]" name="position" id="position" size="4" value="<?php echo $dev->Position; ?>"></div>
 		</div>
 		<div>
 		   <div><label for="height">Height</label></div>
@@ -495,7 +497,8 @@ function setPreferredLayout() {<?php if(isset($_COOKIE["layout"]) && strtolower(
 </fieldset>
 <?php
 	// Do not display ESX block if device isn't a virtual server and the user doesn't have write access
-	if($user->WriteAccess || $dev->ESX){
+//	if($user->WriteAccess || $dev->ESX){
+	if(($user->WriteAccess || $dev->ESX) && ($dev->DeviceType=="Server" || $dev->DeviceType=="")){
 		echo "<fieldset>\n	<legend>VMWare ESX Server Information</legend>";
 	// If the user doesn't have write access display the list of VMs but not the configuration information.
 		if($user->WriteAccess){
