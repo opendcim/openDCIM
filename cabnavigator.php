@@ -91,6 +91,7 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <title>Facilities Cabinet Maintenance</title>
   <link rel="stylesheet" href="css/inventory.css" type="text/css">
+  <link rel="stylesheet" href="css/print.css" type="text/css" media="print">
   <!--[if lt IE 9]>
   <link rel="stylesheet"  href="css/ie.css" type="text/css" />
   <![endif]-->
@@ -144,16 +145,14 @@
 		}else{
 			$totalWatts+=$templ->Wattage;
 		}
-
 		$totalWeight += $templ->Weight;
 		$totalMoment += ( $templ->Weight * ( $device->Position + ( $device->Height / 2 ) ) );
-		
+
 		if($device->Reservation==false){
 			$reserved="";
 		}else{
 			$reserved="reserved";
 		}
-
 		if($devTop < $currentHeight){
 			for($i=$currentHeight;$i > $devTop;$i--){
 				if($i==$currentHeight){
@@ -164,28 +163,16 @@
 				}
 			}
 		} 
-
 		if($device->Height<1){
 			$zeroheight.="				<a href=\"devices.php?deviceid=$devID\">$highlight $device->Label</a>\n";
 		}
 		for($i = $devTop; $i >= $device->Position; $i--){
 			if($i==$devTop){
-				$highlight="<blink><font color=red>";
-				if ($device->TemplateID==0) {
-					$highlight.="(T)";
-				}
-				if ($device->Owner==0) {
-					$highlight.="(O)";
-				}
-				$highlight .= "</font></blink>";
 				print "<tr><td>$i</td><td class=\"device $reserved\" rowspan=$device->Height><a href=\"devices.php?deviceid=$devID\">$highlight $device->Label</a></td></tr>\n";
-
-
 			}else{
 				print "<tr><td>$i</td></tr>\n";
 			}
 		}
-
 		$currentHeight = $device->Position - 1;
 	}
 
