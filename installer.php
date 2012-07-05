@@ -76,7 +76,8 @@ function applyupdate ($updatefile){
 	if(mysql_num_rows(mysql_query("SELECT * FROM fac_User WHERE SiteAdmin=1;"))<1){
 		// no users in the system or no users with site admin rights, either way we're missing the class of people we need
 		// put stuff here like correcting for a missing site admin
-
+		print "There are no users in the database with sufficient privileges to perform this update";
+		exit;
 		$rightserror=1;
 	}else{ // so we have users and at least one site admin
 		require_once("customers.inc.php");
