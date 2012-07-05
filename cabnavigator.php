@@ -12,7 +12,7 @@
 		exit;
 	}
 
-	$head=$legend="";
+	$head=$legend=$zeroheight="";
 	$cab=new Cabinet();
 	$audit=new CabinetAudit();
 	$pdu=new PowerDistribution();
@@ -78,9 +78,9 @@
 			$legend.='<p><span class="reserved border">&nbsp;&nbsp;&nbsp;&nbsp;</span> - Reservation</p>';
 		}
 		if($config->ParameterArray["FreeSpaceColor"] != "#FFFFFF"){
-			$legend.='<p><span class="freespace border">&nbsp;&nbsp;&nbsp;&nbsp;</span> - FreeSpace</p>';
+			$legend.='<p><span class="freespace border">&nbsp;&nbsp;&nbsp;&nbsp;</span> - Free Space</p>';
 		}
-		$legend.='<p><span class="border">&nbsp;&nbsp;&nbsp;&nbsp;</span> - Normal</p>';
+		$legend.='<p><span class="border">&nbsp;&nbsp;&nbsp;&nbsp;</span> - Occupied Space</p>';
 	}
 
 ?>
@@ -128,16 +128,22 @@
 	<tr><th colspan=2>Cabinet <?php print $cab->Location; ?></th></tr>
 	<tr><td width="10%">Pos</td><td width="90%">Device</td></tr>
 <?php
-	while ( list( $devID, $device ) = each( $devList ) ) {
-		$devTop = $device->Position + $device->Height - 1;
+	while(list($devID,$device)=each($devList)){
+		$devTop=$device->Position + $device->Height - 1;
 		
 		$templ->TemplateID = $device->TemplateID;
-		$templ->GetTemplateByID( $facDB );
+		$templ->GetTemplateByID($facDB);
 
-		if ( $device->NominalWatts > 0 )
-			$totalWatts += $device->NominalWatts;
-		else
-			$totalWatts += $templ->Wattage;
+		$highlight="<blink><font color=red>";
+		if($device->TemplateID==0){$highlight.="(T)";}
+		if($device->Owner==0){$highlight.="(O)";}
+		$highlight.= "</font></blink>";
+
+		if($device->NominalWatts >0){
+			$totalWatts+=$device->NominalWatts;
+		}else{
+			$totalWatts+=$templ->Wattage;
+		}
 
 		$totalWeight += $templ->Weight;
 		$totalMoment += ( $templ->Weight * ( $device->Position + ( $device->Height / 2 ) ) );
@@ -159,6 +165,9 @@
 			}
 		} 
 
+		if($device->Height<1){
+			$zeroheight.="				<a href=\"devices.php?deviceid=$devID\">$highlight $device->Label</a>\n";
+		}
 		for($i = $devTop; $i >= $device->Position; $i--){
 			if($i==$devTop){
 				$highlight="<blink><font color=red>";
@@ -168,9 +177,10 @@
 				if ($device->Owner==0) {
 					$highlight.="(O)";
 				}
-				
 				$highlight .= "</font></blink>";
 				print "<tr><td>$i</td><td class=\"device $reserved\" rowspan=$device->Height><a href=\"devices.php?deviceid=$devID\">$highlight $device->Label</a></td></tr>\n";
+
+
 			}else{
 				print "<tr><td>$i</td></tr>\n";
 			}
@@ -259,6 +269,16 @@
 <?php printf( "%s\n", $cab->Keylock ); ?>
 		</div>
 	</fieldset>
+<?php
+	if($zeroheight!=""){
+		print "	<fieldset>
+		<legend>Zero-U Devices</legend>
+		<div id=\"zerou\">
+			$zeroheight
+		</div>
+	</fieldset>\n";
+	}
+?>
 	<fieldset>
 		<legend>Power Distribution</legend>
 <?php

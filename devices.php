@@ -458,7 +458,7 @@ function setPreferredLayout() {<?php if(isset($_COOKIE["layout"]) && strtolower(
 		</div>
 		<div>
 		   <div><label for="position">Position</label></div>
-		   <div><input type="number" class="required,validate[custom[onlyNumberSp]]" name="position" id="position" size="4" value="<?php echo $dev->Position; ?>"></div>
+		   <div><input type="number" class="required,validate[custom[onlyNumberSp],min[1]]" name="position" id="position" size="4" value="<?php echo $dev->Position; ?>"></div>
 		</div>
 		<div>
 		   <div><label for="height">Height</label></div>
@@ -496,7 +496,8 @@ function setPreferredLayout() {<?php if(isset($_COOKIE["layout"]) && strtolower(
 </fieldset>
 <?php
 	// Do not display ESX block if device isn't a virtual server and the user doesn't have write access
-	if($user->WriteAccess || $dev->ESX){
+//	if($user->WriteAccess || $dev->ESX){
+	if(($user->WriteAccess || $dev->ESX) && ($dev->DeviceType=="Server" || $dev->DeviceType=="")){
 		echo "<fieldset>\n	<legend>VMWare ESX Server Information</legend>";
 	// If the user doesn't have write access display the list of VMs but not the configuration information.
 		if($user->WriteAccess){

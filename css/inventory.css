@@ -404,6 +404,9 @@ textarea {
 	white-space: pre;
 	word-wrap: break-word;
 }
+#zerou a{
+	display: block;
+}
 /* devices.php  Device Detail */
 div.page.device {
 	min-width: 1350px; /* 1030 */
