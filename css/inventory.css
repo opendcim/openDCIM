@@ -381,6 +381,13 @@ div.error {
 		border: 1px green solid;
 		background-color: white;
 }
+#infopanel fieldset > p > span + span {
+	display: inline-block;
+	vertical-align: middle;
+	height: 1.1em;
+	width: 150px;
+	overflow: hidden;
+}
 fieldset table, table {
 		border: 1px solid grey;
 }
@@ -394,6 +401,7 @@ div.cabinet {
 .cabinet td + td {
 	vertical-align: middle;
 	padding: 0.25em 0.5em;
+	width: 90%;
 }
 .cabinet th{
 	font-size: 1.5em;

@@ -25,6 +25,9 @@ div.main .center {
 	margin-left: 60px;
 	margin-right: 60px;
 }
+#infopanel > fieldset > p + p ~ p {
+	display: none;
+}
 #layout { display: none; }
 .meter-value {
 	border: 1px solid black;
@@ -38,3 +41,5 @@ div.main .center {
 .device div.left {
 	display: block;
 }
+
+
