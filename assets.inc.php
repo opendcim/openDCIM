@@ -373,6 +373,20 @@ class CabinetAudit {
 			$this->AuditStamp = date( "M d, Y H:i", strtotime( $row["AuditStamp"] ) );
 		}
 	}
+	
+	function GetLastAuditByUser( $db ) {
+		$sql = "select * from fac_CabinetAudit where UserID=\"" . addslashes( $this->UserID ) . "\" order by AuditStamp DESC Limit 1";
+
+        if(!$result = mysql_query($sql,$db)){
+			echo mysql_errno().": ".mysql_error()."\n";
+		}
+
+		if ( $row = mysql_fetch_array( $result ) ) {
+			$this->CabinetID = $row["CabinetID"];
+			$this->UserID = $row["UserID"];
+			$this->AuditStamp = date( "M d, Y H:i", strtotime( $row["AuditStamp"] ) );
+		}
+	}
 }
 
 class Device {
