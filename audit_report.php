@@ -142,53 +142,79 @@ if ( @$_REQUEST['action'] != 'Generate' ) {
 	$dc = new DataCenter();
 	$dcList = $dc->GetDCList( $facDB );
 ?>
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html>
 <head>
   <meta http-equiv="Content-Type" content="text/html; charset=windows-1252">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <title>openDCIM Inventory Reporting</title>
   <link rel="stylesheet" href="css/inventory.css" type="text/css">
+  <link rel="stylesheet" href="css/jquery-ui-1.8.18.custom.css" type="text/css">
+  <link rel="stylesheet" href="css/validationEngine.jquery.css" type="text/css">
+  <!--[if lt IE 9]>
+  <link rel="stylesheet"  href="css/ie.css" type="text/css" />
+  <![endif]-->
+  <script type="text/javascript" src="scripts/jquery.min.js"></script>
+  <script type="text/javascript" src="scripts/jquery-ui-1.8.18.custom.min.js"></script>
+  <script type="text/javascript" src="scripts/jquery.timepicker.js"></script>
+  <script type="text/javascript" src="scripts/jquery.validationEngine-en.js"></script>
+  <script type="text/javascript" src="scripts/jquery.validationEngine.js"></script>
+
+<script type="text/javascript">
+$(function(){
+	$('#auditform').validationEngine({});
+	$('#startdate').datepicker({});
+	$('#enddate').datepicker({});
+});
+</script>
+
 </head>
 <body>
-<div style="height: 66px;" id="header"></div>
+<div id="header"></div>
+<div class="page">
 <?php
-
 	include( 'sidebar.inc.php' );
-	
 ?>
-</div>
 <div class="main">
-<h2>openDCIM</h2>
+<h2><?php echo $config->ParameterArray['OrgName']; ?></h2>
 <h3>Cabinet Audit Reporting</h3>
-<form action="<?php printf( "%s", $_SERVER['PHP_SELF'] ); ?>" method="post">
-<table align="center" border=0>
-<tr>
-	<td>Data Center:</td>
-	<td>
+<div class="center"><div>
+<form action="<?php echo $_SERVER['PHP_SELF']; ?>" method="post" id="auditform">
+<div class="table">
+	<div>
+		<div>Data Center:</div>
+		<div>
+			<select name="datacenterid">
+				<option value="">Select data center</option>
 <?php
-		printf( "<select name=\"datacenterid\"\">\n" );
-		printf( "<option value=\"\">Select data center</option>\n" );
-		
-		foreach ( $dcList as $dc )
-			printf( "<option value=\"%d\">%s</option>\n", $dc->DataCenterID, $dc->Name );
+	foreach($dcList as $dc){
+		print "				<option value=\"$dc->DataCenterID\">$dc->Name</option>\n";
+	}
 ?>
-	</td>
-<tr>
-	<td>Start Date:</td>
-	<td><input type="date" name="startdate"></td>
-</tr>
-<tr>
-	<td>End Date:</td>
-	<td><input type="date" name="enddate"></td>
-</tr>
-<tr>
-	<td>&nbsp;</td>
-	<td><input type="submit" value="Generate" name="action"></td>
-</tr>
-</table>
+			</select>
+		</div>
+	</div>
+	<div>
+		<div>Start Date:</div>
+		<div><input type="text" id="startdate" name="startdate"></div>
+	</div>
+	<div>
+		<div>End Date:</div>
+		<div><input type="text" id="enddate" name="enddate"></div>
+	</div>
+	<div class="caption">
+		<input type="submit" value="Generate" name="action">
+	</div>
+</div>
 </form>
+
+</div></div>
+</div><!-- END div.main -->
+</div><!-- END div.page -->
+</body>
+</html>
 <?php
-} else {
+}else{
 
 	//
 	//
@@ -196,8 +222,8 @@ if ( @$_REQUEST['action'] != 'Generate' ) {
 	//
 	//
 
-	$cabAudit = new CabinetAudit();
-	$dc = new DataCenter();
+	$cabAudit=new CabinetAudit();
+	$dc=new DataCenter();
 	
 	if ( $_REQUEST["startdate"] > "" )
 		$startDate = date( "Y-m-d", strtotime( $_REQUEST["startdate"] ));
@@ -288,3 +314,4 @@ if ( @$_REQUEST['action'] != 'Generate' ) {
 	
 }
 ?>
+
