@@ -222,6 +222,7 @@ $(function(){
 	//
 	//
 
+	$cab = new Cabinet();
 	$cabAudit=new CabinetAudit();
 	$dc=new DataCenter();
 	
@@ -242,9 +243,14 @@ $(function(){
 		$dcLimit = sprintf( "CabinetID in (select CabinetID from fac_Cabinet where DataCenterID=%d) and", intval( $_REQUEST["datacenterid"] ));
 		$dc->DataCenterID = $_REQUEST["datacenterid"];
 		$dc->GetDataCenter( $facDB );
+		
+		$cab->DataCenterID = $dc->DataCenterID;
+		$cabList = $cab->ListCabinetsByDC( $facDB );
 	} else {
 		$dcLimit = "";
 		$dc->Name = "All Data Centers";
+		
+		$cabList = $cab->ListCabinets( $facDB );
 	}
 	
 	// First query - Summary of all auditors, including the total within the selected period and the date of the last audit
@@ -256,10 +262,6 @@ $(function(){
 	
 	$sql = sprintf( "select count(*) as TotalCabinets, date(a.AuditStamp) as AuditDate from fac_CabinetAudit a where %s AuditStamp>='%s' and AuditStamp<='%s' group by date(a.AuditStamp) order by a.AuditStamp ASC", $dcLimit, $startDate, $endDate );
 	$dateSumResult = mysql_query( $sql, $facDB );
-	
-	$sql = sprintf( "select a.CabinetID, date(a.AuditStamp) as AuditDate, b.Name from fac_CabinetAudit a, fac_User b where a.UserID=b.UserID and %s AuditStamp>='%s' and AuditStamp<='%s' group by date(a.AuditStamp) order by a.AuditStamp ASC", $dcLimit, $startDate, $endDate );
-	$dateDetailResult = mysql_query( $sql, $facDB );
-	
 	
 	$pdf=new PDF($facDB);
 	$pdf->AliasNbPages();
@@ -278,6 +280,7 @@ $(function(){
 	
 	$pdf->SetLeftMargin( 10 );
 	$pdf->AddPage();
+	$pdf->Bookmark( "Auditor Summary" );
 	
 	$pdf->Cell( 80, 5, "Auditor Summary" );
 	$pdf->Ln();
@@ -309,6 +312,143 @@ $(function(){
 	}	
 
 	$pdf->Cell( array_sum( $cellWidths ), 0, '', 'T' );
+	
+	$pdf->AddPage();
+	$pdf->Bookmark( "Activity by Date" );
+	
+	$pdf->Cell( 80, 5, "Activity by Date" );
+	$pdf->Ln();
+	
+	$headerTags = array( "Date", "Location", "Auditor" );
+	$cellWidths = array( 40, 40, 50 );
+	
+	$fill = 0;
+	
+	$maxval = count( $headerTags );
+
+	for ( $col = 0; $col < $maxval; $col++ )
+		$pdf->Cell( $cellWidths[$col], 7, $headerTags[$col], 1, 0, 'C', 1 );
+		
+	$pdf->Ln();
+	
+	$dowCount = array( "Sun"=>0, "Mon"=>0, "Tue"=>0, "Wed"=>0, "Thu"=>0, "Fri"=>0, "Sat"=>0 );
+
+	while ( $row = mysql_fetch_array( $dateSumResult ) ) {
+		$auditDate = date( "D, M d, Y", strtotime( $row["AuditDate"] ) );
+		$dow = date( "D", strtotime( $row["AuditDate"] ) );
+		$showDate = true;
+		$pdf->Bookmark( $auditDate, 1, 0 );
+		
+		$sql = sprintf( "select b.Location, c.Name as Auditor from fac_CabinetAudit a, fac_Cabinet b, fac_User c where a.UserID=c.UserID and a.CabinetID=b.CabinetID and date(a.AuditStamp)=\"%s\"", $row["AuditDate"] );
+		$res = mysql_query( $sql, $facDB );
+		
+		while ( $resRow = mysql_fetch_array( $res ) ) {
+			if ( $showDate ) {
+				$pdf->Cell( array_sum( $cellWidths ), 0, '', 'B' );
+				$pdf->Ln(4);
+				$pdf->Cell( $cellWidths[0], 6, $auditDate, 'LR', 0, 'L', $fill );
+			} else {
+				$pdf->Cell( $cellWidths[0], 6, "", 'LR', 0, 'L', $fill );
+			}
+			
+			$dowCount[$dow]++;
+			
+			// Only show the date on the first row of consecutive audits
+			$showDate = false;
+			
+			$pdf->Cell( $cellWidths[1], 6, $resRow["Location"], 'LR', 0, 'L', $fill );
+			$pdf->Cell( $cellWidths[2], 6, $resRow["Auditor"], 'LR', 0, 'L', $fill );
+		
+			$pdf->Ln();
+			
+			$fill =! $fill;
+		}
+
+		$pdf->Cell( array_sum( $cellWidths ), 0, '', 'T' );
+		$pdf->Ln();
+
+	}
+	
+	$totalAudits = array_sum( $dowCount );
+	
+	$pdf->AddPage();
+	$pdf->Cell( 80, 5, "Day of Week Frequency" );
+	$pdf->Ln();
+	$pdf->Bookmark( "Day of Week Frequency" );
+	
+	$headerTags = array( "Day of Week", "Audits", "Percentage" );
+	$cellWidths = array( 50, 30, 30 );
+	
+	$fill = 0;
+	
+	$maxval = count( $headerTags );
+
+	for ( $col = 0; $col < $maxval; $col++ )
+		$pdf->Cell( $cellWidths[$col], 7, $headerTags[$col], 1, 0, 'C', 1 );
+		
+	$pdf->Ln();
+	
+	foreach ( $dowCount as $dayName => $value ) {
+		$pdf->Cell( $cellWidths[0], 7, $dayName, 'LR', 0, 'L', $fill );
+		$pdf->Cell( $cellWidths[1], 7, $value, 'LR', 0, 'L', $fill );
+		$pdf->Cell( $cellWidths[2], 7, sprintf( "%d%%", intval( $value / $totalAudits * 100 ) ), 'LR', 0, 'L', $fill );
+		$pdf->Ln();
+		
+		$fill =! $fill;
+	}
+	
+	$pdf->Cell( array_sum( $cellWidths ), 0, '', 'T' );
+
+	$pdf->AddPage();
+	$pdf->Bookmark( "Activity by Location" );
+	
+	$pdf->Cell( 80, 5, "Activity by Location" );
+	$pdf->Ln();
+	
+	$headerTags = array( "Location", "Date", "Auditor" );
+	$cellWidths = array( 40, 40, 50 );
+	
+	$fill = 0;
+	
+	$maxval = count( $headerTags );
+
+	for ( $col = 0; $col < $maxval; $col++ )
+		$pdf->Cell( $cellWidths[$col], 7, $headerTags[$col], 1, 0, 'C', 1 );
+		
+	$pdf->Ln();
+	
+	foreach ( $cabList as $tmpCab ) {
+		$sql = sprintf( "select a.AuditStamp as AuditDate, b.Name as Auditor from fac_CabinetAudit a, fac_User b where a.UserID=b.UserID and CabinetID='%d' order by AuditStamp DESC", $tmpCab->CabinetID );
+		$res = mysql_query( $sql, $facDB );
+
+		$showCab = true;
+		
+		while ( $resRow = mysql_fetch_array( $res ) ) {
+			if ( $showCab ) {
+				$pdf->Bookmark( $tmpCab->Location, 1, 0 );
+				$pdf->Ln(4);
+				$pdf->Cell( $cellWidths[0], 6, $tmpCab->Location, 'TLR', 0, 'L', $fill );
+				$borders = "TLR";
+			} else {
+				$pdf->Cell( $cellWidths[0], 6, "", 'LR', 0, 'L', $fill );
+				$borders = "LR";
+			}
+			
+			// Only show the location on the first row of consecutive audits
+			$showCab = false;
+			
+			$pdf->Cell( $cellWidths[1], 6, $resRow["AuditDate"], $borders, 0, 'L', $fill );
+			$pdf->Cell( $cellWidths[2], 6, $resRow["Auditor"], $borders, 0, 'L', $fill );
+		
+			$pdf->Ln();
+			
+			$fill =! $fill;
+		}
+				
+		$pdf->Cell( array_sum( $cellWidths ), 0, '', 'T' );
+		$pdf->Ln();
+
+	}
 	
 	$pdf->Output();
 	

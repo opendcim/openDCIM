@@ -117,7 +117,7 @@ class Cabinet {
 	function ListCabinets( $db ) {
 		$cabinetList = array();
 
-		$select_sql = "select * from fac_Cabinet order by Location";
+		$select_sql = "select * from fac_Cabinet order by DataCenterID, Location";
 
 		if ( ! $result = mysql_query( $select_sql, $db ) ) {
 			return 0;
