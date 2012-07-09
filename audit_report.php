@@ -344,11 +344,12 @@ $(function(){
 		
 		while ( $resRow = mysql_fetch_array( $res ) ) {
 			if ( $showDate ) {
-				$pdf->Cell( array_sum( $cellWidths ), 0, '', 'B' );
 				$pdf->Ln(4);
-				$pdf->Cell( $cellWidths[0], 6, $auditDate, 'LR', 0, 'L', $fill );
+				$pdf->Cell( $cellWidths[0], 6, $auditDate, 'TLR', 0, 'L', $fill );
+				$borders = "TLR";
 			} else {
 				$pdf->Cell( $cellWidths[0], 6, "", 'LR', 0, 'L', $fill );
+				$borders = "LR";
 			}
 			
 			$dowCount[$dow]++;
@@ -356,8 +357,8 @@ $(function(){
 			// Only show the date on the first row of consecutive audits
 			$showDate = false;
 			
-			$pdf->Cell( $cellWidths[1], 6, $resRow["Location"], 'LR', 0, 'L', $fill );
-			$pdf->Cell( $cellWidths[2], 6, $resRow["Auditor"], 'LR', 0, 'L', $fill );
+			$pdf->Cell( $cellWidths[1], 6, $resRow["Location"], $borders, 0, 'L', $fill );
+			$pdf->Cell( $cellWidths[2], 6, $resRow["Auditor"], $borders, 0, 'L', $fill );
 		
 			$pdf->Ln();
 			
@@ -418,7 +419,7 @@ $(function(){
 	$pdf->Ln();
 	
 	foreach ( $cabList as $tmpCab ) {
-		$sql = sprintf( "select a.AuditStamp as AuditDate, b.Name as Auditor from fac_CabinetAudit a, fac_User b where a.UserID=b.UserID and CabinetID='%d' order by AuditStamp DESC", $tmpCab->CabinetID );
+		$sql = sprintf( "select a.AuditStamp as AuditDate, b.Name as Auditor from fac_CabinetAudit a, fac_User b where a.UserID=b.UserID and CabinetID='%d' and AuditStamp>='%s' and AuditStamp<='%s' order by AuditStamp DESC", $tmpCab->CabinetID, $startDate, $endDate );
 		$res = mysql_query( $sql, $facDB );
 
 		$showCab = true;
