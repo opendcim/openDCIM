@@ -36,11 +36,16 @@
 <div class="center"><div id="reports">
 <div>
 <fieldset>
+	<legend>Contact Reports</legend>
+		<a href="department_report.php">Department/Contact Report</a>
+</fieldset>
+<fieldset>
 <legend>Asset Reports</legend>
-	<a href="contact_report.php">Contact and Asset Report by Owner</a>
+	<a href="contact_report.php">Asset Report by Owner</a>
 	<a href="asset_report.php">Data Center Asset Report</a>
-	<a href="cost_report.php">Data Center Asset and Contact Report</a>
+	<a href="cost_report.php">Data Center Asset Costing Report</a>
 	<a href="assets_by_department.php">Data Center Assets By Department</a>
+	<a href="aging_report.php">Asset Aging Report</a>
 </fieldset>
 </div>
 
@@ -52,7 +57,12 @@
 	<a href="outage_simulator.php">Simulated Power Outage Report</a>
 	<a href="power_distribution_report.php">Power Distribution by Data Center</a>
 	<a href="power_utilization_report.php">Server Tier Classification Report</a>
-	<a href="aging_report.php">Asset Aging Report</a>
+</fieldset>
+<fieldset>
+	<legend>Auditing Reports</legend>
+		<a href="audit_report.php">Cabinet Audit Logs</a>
+		<a href="audit_frequency.php">Cabinet Audit Frequency</a>
+		<a href="surplus_report.php">Surplus/Salvage Audit Report</a>
 </fieldset>
 </div>
 

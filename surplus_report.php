@@ -17,6 +17,16 @@ class PDF extends FPDF {
 	}
   
 	function Header() {
+		if ( $_REQUEST["startdate"] > "" )
+			$startDate = date( "M d, Y", strtotime( $_REQUEST["startdate"] ));
+		else
+			$startDate = date( "M d, Y", strtotime( "1/1/2010"));
+			
+		if ( $_REQUEST["enddate"] > "" )
+			$endDate = date( "M d, Y", strtotime( $_REQUEST["enddate"] ));
+		else
+			$endDate = date( "M d, Y" );
+		
 		$this->pdfconfig = new Config($this->pdfDB);
 		$this->Link( 10, 8, 100, 20, 'https://' . $_SERVER['SERVER_NAME'] . $_SERVER['PHP_SELF'] );
     	$this->Image( 'images/' . $this->pdfconfig->ParameterArray['PDFLogoFile'],10,8,100);
@@ -25,8 +35,8 @@ class PDF extends FPDF {
     	$this->Cell(30,20,'Information Technology Services',0,0,'C');
     	$this->Ln(20);
 		$this->SetFont( $this->pdfconfig->ParameterArray['PDFfont'],'',10 );
-		$this->Cell( 50, 6, 'Cabinet Audit Frequency Report', 0, 1, 'L' );
-		$this->Cell( 50, 6, 'Date: ' . date( "l, M d, Y" ), 0, 1, 'L' );
+		$this->Cell( 50, 6, 'Surplus/Salvage Devices Report', 0, 1, 'L' );
+		$this->Cell( 50, 6, 'Dates: ' . $startDate . ' - ' . $endDate, 0, 1, 'L' );
 		$this->Ln(10);
 	}
 
@@ -120,6 +130,7 @@ class PDF extends FPDF {
 
 if ( @$_REQUEST['action'] != 'Generate' ) {
 
+
 	$user = new User();
 	$user->UserID = $_SERVER['REMOTE_USER'];
 	$user->GetUserRights( $facDB );
@@ -167,22 +178,17 @@ $(function(){
 ?>
 <div class="main">
 <h2><?php echo $config->ParameterArray['OrgName']; ?></h2>
-<h3>Cabinet Audit Frequency Report</h3>
+<h3>Surplus/Salvage Device Reporting</h3>
 <div class="center"><div>
 <form action="<?php echo $_SERVER['PHP_SELF']; ?>" method="post" id="auditform">
 <div class="table">
 	<div>
-		<div><label for="datacenterid">Data Center:</label></div>
-		<div>
-			<select id="datacenterid" name="datacenterid">
-				<option value="">Select data center</option>
-<?php
-	foreach($dcList as $dc){
-		print "				<option value=\"$dc->DataCenterID\">$dc->Name</option>\n";
-	}
-?>
-			</select>
-		</div>
+		<div><label for="startdate">Start Date:</label></div>
+		<div><input type="text" id="startdate" name="startdate"></div>
+	</div>
+	<div>
+		<div><label for="enddate">End Date:</label></div>
+		<div><input type="text" id="enddate" name="enddate"></div>
 	</div>
 	<div class="caption">
 		<input type="submit" value="Generate" name="action">
@@ -204,25 +210,7 @@ $(function(){
 	//
 	//
 
-	$cab = new Cabinet();
-	$cabAudit=new CabinetAudit();
-	$dc=new DataCenter();
-	
-	// If no data center was selected, then show all data centers, otherwise, add in a SQL clause
-		
-	if ( @intval($_REQUEST["datacenterid"]) > 0 ) {
-		$dcLimit = sprintf( "CabinetID in (select CabinetID from fac_Cabinet where DataCenterID=%d) and", intval( $_REQUEST["datacenterid"] ));
-		$dc->DataCenterID = $_REQUEST["datacenterid"];
-		$dc->GetDataCenter( $facDB );
-		
-		$cab->DataCenterID = $dc->DataCenterID;
-		$cabList = $cab->ListCabinetsByDC( $facDB );
-	} else {
-		$dcLimit = "";
-		$dc->Name = "All Data Centers";
-		
-		$cabList = $cab->ListCabinets( $facDB );
-	}
+
 	
 	$pdf=new PDF($facDB);
 	$pdf->AliasNbPages();
@@ -241,129 +229,57 @@ $(function(){
 	
 	$pdf->SetLeftMargin( 10 );
 	$pdf->AddPage();
-	$pdf->Bookmark( "Activity by Location" );
+	$pdf->Bookmark( "Surplus/Salvage by Date" );
 	
-	$pdf->Cell( 80, 5, "Activity by Location" );
+	$pdf->Cell( 80, 5, "Surplus/Salvage by Date" );
 	$pdf->Ln();
 	
-	$headerTags = array( "Location", "Last Audit", "Times Audited", "Installation Date", "Days Since Last Audit" );
-	$cellWidths = array( 40, 30, 30, 30, 60 );
+	$headerTags = array( "Surplus Date", "Name", "Serial Number", "Property Number", "Surplused By" );
+	$cellWidths = array( 30, 40, 40, 30, 30 );
 	
 	$fill = 0;
-	
-	$freqCount = array( "30"=>0, "90"=>0, "180"=>0, "365"=>0, "Year"=>0 );
 	
 	$maxval = count( $headerTags );
 
 	for ( $col = 0; $col < $maxval; $col++ )
 		$pdf->Cell( $cellWidths[$col], 7, $headerTags[$col], 1, 0, 'C', 1 );
-		
+	
 	$pdf->Ln();
-	
-	$currDate = new DateTime( "now" );
-	$borders = "TLR";
-	
-	foreach ( $cabList as $tmpCab ) {
-		$sql = sprintf( "select count(a.AuditStamp) as Frequency, a.AuditStamp as AuditDate, b.Name as Auditor, c.Location, c.InstallationDate from fac_CabinetAudit a, fac_User b, fac_Cabinet c where a.UserID=b.UserID and a.CabinetID=c.CabinetID and c.CabinetID='%d' order by a.AuditStamp DESC limit 1", $tmpCab->CabinetID );
-		$res = mysql_query( $sql, $facDB );
 
-		while ( $resRow = mysql_fetch_array( $res ) ) {
-			$pdf->Cell( $cellWidths[0], 6, $tmpCab->Location, $borders, 0, 'L', $fill );
-			
-			if ( $resRow["Frequency"] == 0 ) {
-				$auditDate = "Never";
-				$lastAudit = new DateTime( $resRow["InstallationDate"] );
-			} else {
-				$auditDate = date( "D, M d, Y", strtotime( $resRow["AuditDate"] ) );
-				$lastAudit = new DateTime( $resRow["AuditDate"] );
-			}
-			
-			$interval = $currDate->diff($lastAudit);
-			
-			if ( $interval->days < 31 ) {
-				$freqCount["30"]++;
-				$period = "0-30 Days";
-			} elseif ( $interval->days < 91 ) {
-				$freqCount["90"]++;
-				$period = "31-90 Days";
-			} elseif ($interval->days < 181 ) {
-				$freqCount["180"]++;
-				$period = "91-180 Days";
-			} elseif ($interval->days < 366 ) {
-				$freqCount["365"]++;
-				$period = "181-365 Days";
-			} else {
-				$freqCount["Year"]++;
-				$period = "1 Year or Longer";
-			}
-			
-			$installDate = date( "M d, Y", strtotime( $resRow["InstallationDate"] ) );
-			
-			$pdf->Cell( $cellWidths[1], 6, $auditDate, $borders, 0, 'L', $fill );
-			$pdf->Cell( $cellWidths[2], 6, $resRow["Frequency"], $borders, 0, 'L', $fill );
-			$pdf->Cell( $cellWidths[3], 6, $installDate, $borders, 0, 'L', $fill );
-			$pdf->Cell( $cellWidths[4], 6, $period, $borders, 0, 'L', $fill );
+	if ( $_REQUEST["startdate"] > "" )
+		$startDate = date( "Y-m-d", strtotime( $_REQUEST["startdate"] ));
+	else
+		$startDate = "2010-01-01";
+	
+	if ( $_REQUEST["enddate"] > "" )
+		$endDate = date( "Y-m-d", strtotime( $_REQUEST["enddate"] ));
+	else
+		$endDate = date( "Y-m-d" );
+	
+	$sql = sprintf( "select a.*, b.Name from fac_Decommission a, fac_User b where a.UserID=b.UserID and SurplusDate>='%s' and SurplusDate<='%s' order by SurplusDate DESC", $startDate, $endDate );
+	$result = mysql_query( $sql, $facDB );
+	
+	$currDate = "";
+	$borders = "LR";
+	
+	while ( $resRow = mysql_fetch_array( $result ) ) {
+		if ( $currDate != $resRow["SurplusDate"] )
+			$pdf->Cell( $cellWidths[0], 6, date( "D, M d, Y", strtotime( $resRow["SurplusDate"] ) ), $borders, 0, 'L', $fill );
+		else
+			$pdf->Cell( $cellWidths[0], 6, "", $borders, 0, 'L', $fill );
 		
-			$pdf->Ln();
-			
-			$fill =! $fill;
-		}
-				
-		$pdf->Cell( array_sum( $cellWidths ), 0, '', 'T' );
-		$pdf->Ln();
-	}
-	
-	$pdf->AddPage();
-	
-	$pdf->Bookmark( "Summary by Period" );
-	
-	$pdf->Cell( 80, 5, "Summary by Period" );
-	$pdf->Ln();
-	
-	$headerTags = array( "Days Since Last Audit", "Number of Cabinets", "Percentage" );
-	$cellWidths = array( 40, 40, 40 );
-	
-	$fill = 0;
-	$borders = "TLR";
-	
-	$totalAudits = array_sum( $freqCount );
-	
-	$maxval = count( $headerTags );
-
-	for ( $col = 0; $col < $maxval; $col++ )
-
-		$pdf->Cell( $cellWidths[$col], 7, $headerTags[$col], 1, 0, 'C', 1 );
+		$currDate = $resRow["SurplusDate"];
 		
-	$pdf->Ln();
+		$pdf->Cell( $cellWidths[1], 6, $resRow["Label"], $borders, 0, 'L', $fill );
+		$pdf->Cell( $cellWidths[2], 6, $resRow["SerialNo"], $borders, 0, 'L', $fill );
+		$pdf->Cell( $cellWidths[3], 6, $resRow["AssetTag"], $borders, 0, 'L', $fill );
+		$pdf->Cell( $cellWidths[4], 6, $resRow["Name"], $borders, 0, 'L', $fill );
 	
-	foreach ( $freqCount as $key => $value ) {
-		switch ( $key ) {
-			case "30":
-				$period = "0-30 Days";
-				break;
-			case "90":
-				$period = "31-90 Days";
-				break;
-			case "180":
-				$period = "91-180 Days";
-				break;
-			case "365":
-				$period = "181-365 Days";
-				break;
-			default:
-				$period = "1 Year or Longer";
-				break;
-		}
-
-
-		$pdf->Cell( $cellWidths[0], 6, $period, $borders, 0, 'L', $fill );
-		$pdf->Cell( $cellWidths[1], 6, $value, $borders, 0, 'C', $fill );
-		$pdf->Cell( $cellWidths[2], 6, sprintf( "%.2f%%", $value / $totalAudits * 100 ), $borders, 0, 'C', $fill );
 		$pdf->Ln();
 		
 		$fill =! $fill;
 	}
-	
+
 	$pdf->Cell( array_sum( $cellWidths ), 0, '', 'T' );
 	$pdf->Ln();
 	
