@@ -278,7 +278,7 @@ $body.='</table>
 	<input type=\"hidden\" name=\"delete\" value=\"no\">
 	<p>Last Audit: $audit->AuditStamp ($AuditorName)</p>\n";
 	
-	if($user->SiteAdmin){
+	if($user->WriteAccess){
 		$body.="<input type=\"button\" value=\"Certify Audit\" style=\"width:120;\" onclick=\"javascript:verifyAudit(this.form)\"><br>
 		<input type=\"button\" value=\"Add Device\" style=\"width:120;\" onclick=\"location='devices.php?action=new&cabinet=$cab->CabinetID'\"><br>
 		<input type=\"button\" value=\"Audit Report\" style=\"width:120;\" onclick=\"location='cabaudit.php?cabinetid=$cab->CabinetID'\"><br>

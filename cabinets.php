@@ -6,7 +6,7 @@
 	$user->UserID=$_SERVER['REMOTE_USER'];
 	$user->GetUserRights( $facDB );
 
-	if(!$user->SiteAdmin){
+	if(!$user->WriteAccess){
 		// No soup for you.
 		header('Location: '.redirect());
 		exit;
