@@ -81,7 +81,7 @@
 <div class="main">
 <div class="heading">
   <div>
-	<h2>openDCIM</h2>
+	<h2><?php print $config->ParameterArray["OrgName"]; ?></h2>
 	<h3>Data Center Statistics</h3>
   </div>
   <div>

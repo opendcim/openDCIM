@@ -31,7 +31,7 @@
 	include( "sidebar.inc.php" );
 ?>
 <div class="main">
-<h2>openDCIM</h2>
+<h2><?php print $config->ParameterArray["OrgName"]; ?></h2>
 <h3>Inventory Reports</h3>
 <div class="center"><div id="reports">
 <div>
