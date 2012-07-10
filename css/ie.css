@@ -43,3 +43,7 @@ div.cabinet {
 	border-width: 1px 1px 1px 0px;
 	border-color: black;
 }
+
+#reports > div fieldset {
+	background-color: transparent;
+}

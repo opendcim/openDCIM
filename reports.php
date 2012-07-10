@@ -26,7 +26,7 @@
 </head>
 <body>
 <div id="header"></div>
-<div class="page">
+<div class="page reports">
 <?php
 	include( "sidebar.inc.php" );
 ?>
@@ -34,48 +34,28 @@
 <h2>openDCIM</h2>
 <h3>Inventory Reports</h3>
 <div class="center"><div id="reports">
-<table bgcolor="white" border="1" align="center">
-  <tr>
-	<td align="center" bgcolor="#7f7f7f"><font color="white"><b>Asset Reports</b></font></td>
-  </tr>
-  <tr>
-    <td><a href="contact_report.php">Contact and Asset Report by Owner</a></td>
-  </tr>
-  <tr>
-    <td><a href="asset_report.php">Data Center Asset Report</a></td>
-  </tr>
-  <tr>
-    <td><a href="cost_report.php">Data Center Asset and Contact Report</a></td>
-  </tr>
-  <tr>
-    <td><a href="assets_by_department.php">Data Center Assets By Department</a></td>
-  </tr>
-  
-</table>
-<p>
-<table bgcolor="white" border="1" align="center">
-  <tr>
-	<td align="center" bgcolor="#7f7f7f"><font color="white"><b>Operational Reports</b></font></td>
-  </tr>
-  <tr>
-    <td><a href="exception_report.php">Data Exceptions Report</a></td>
-  </tr>
-  <tr>
-    <td><a href="diverse_power_exceptions_report.php">Diverse Power Exceptions Report</a></td>
-  </tr>  
-  <tr>
-    <td><a href="outage_simulator.php">Simulated Power Outage Report</a></td>
-  </tr>  
-  <tr>
-    <td><a href="power_distribution_report.php">Power Distribution by Data Center</a></td>
-  </tr>
-  <tr>
-    <td><a href="power_utilization_report.php">Server Tier Classification Report</a></td>
-  </tr>
-  <tr>
-    <td><a href="aging_report.php">Asset Aging Report</a></td>
-  </tr>
-</table>
+<div>
+<fieldset>
+<legend>Asset Reports</legend>
+	<a href="contact_report.php">Contact and Asset Report by Owner</a>
+	<a href="asset_report.php">Data Center Asset Report</a>
+	<a href="cost_report.php">Data Center Asset and Contact Report</a>
+	<a href="assets_by_department.php">Data Center Assets By Department</a>
+</fieldset>
+</div>
+
+<div>
+<fieldset>
+<legend>Operational Reports</legend>
+	<a href="exception_report.php">Data Exceptions Report</a>
+	<a href="diverse_power_exceptions_report.php">Diverse Power Exceptions Report</a>
+	<a href="outage_simulator.php">Simulated Power Outage Report</a>
+	<a href="power_distribution_report.php">Power Distribution by Data Center</a>
+	<a href="power_utilization_report.php">Server Tier Classification Report</a>
+	<a href="aging_report.php">Asset Aging Report</a>
+</fieldset>
+</div>
+
 
 </div></div>
 

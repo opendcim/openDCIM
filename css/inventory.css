@@ -252,6 +252,13 @@ div#reports table {
 		margin-left: auto;
 		margin-right: auto;
 }
+#reports > div {
+	display: inline-block;
+	vertical-align: top;
+}
+#reports > div a {
+	display: block;
+}
 /* PDU Info */
 .pdu .center > div + div > .table > div > div{
 	padding: 3px;
@@ -368,16 +375,17 @@ div.error {
 		display: inline-block;
 		min-width: 200px;
 }
-#infopanel fieldset {
+#infopanel fieldset, .reports fieldset {
 		background-color: white;
 		border: 1px solid grey;
 		padding: 10px;
 		margin-bottom: 8px;
 }
-#infopanel fieldset button, #infopanel fieldset input[type=submit], #infopanel fieldset input[type=button] {
+#infopanel fieldset button, #infopanel fieldset input[type=submit], #infopanel fieldset input[type=button],
+.reports fieldset button, .reports fieldset input[type=submit], .reports fieldset input[type=button] {
 	width: 100%;
 }
-#infopanel legend, .device legend {
+#infopanel legend, .device legend, .reports legend {
 		border: 1px green solid;
 		background-color: white;
 }
@@ -536,6 +544,7 @@ div.page.device {
 	transition: all .1s linear;
 }
 .button.bg, .button.bg:hover, .button.bg:focus, ul.nav li {
+	background-image:url(gradient.png);
 	background-image: -moz-linear-gradient(top, rgba(255,255,255,.75), rgba(255,255,255,0));
 	background-image: -webkit-gradient(linear, 0% 0%, 0% 100%, from(rgba(255,255,255,.75)), to(rgba(255,255,255,0)));
 }

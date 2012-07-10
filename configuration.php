@@ -78,7 +78,8 @@
 <div class="center"><div>
 <form action="<?php print $_SERVER["PHP_SELF"]; ?>" method="POST">
    <input type="hidden" name="Revert" id="Revert" value="no">
-   <input type="hidden" name="Single" id="Single" value = "none">
+   <input type="hidden" name="Single" id="Single" value="none">
+   <input type="hidden" name="Version" value="<?php print $config->ParameterArray["Version"]; ?>">
 <div class="table rights">
 <div><div><h3>Parameter</h3></div><div><h3>Value</h3></div><div></div><div><h3>Default Value</h3></div></div>
 <?php
