@@ -1303,12 +1303,14 @@ class RackRequest {
   var $LabelColor;
   var $CurrentLocation;
   var $SpecialInstructions;
+  var $MfgDate;
   
   function CreateRequest( $db ) {
     $sql = "insert into fac_RackRequest set RequestTime=now(), 
         RequestorID=\"" . intval($this->RequestorID) . "\",
         Label=\"" . addslashes( strtoupper($this->Label )) . "\", 
         SerialNo=\"" . addslashes( strtoupper($this->SerialNo )) . "\",
+		MfgDate=\"" . date("Y-m-d",strtotime($this->MfgDate)) . "\",
         AssetTag=\"" . addslashes( strtoupper($this->AssetTag )) . "\",
         ESX=\"" . intval($this->ESX) . "\",
         Owner=\"" . intval($this->Owner) . "\",
@@ -1375,6 +1377,7 @@ class RackRequest {
     $this->CompleteTime = $row["CompleteTime"];
     $this->Label = $row["Label"];
     $this->SerialNo = $row["SerialNo"];
+    $this->MfgDate = $row["MfgDate"];
     $this->AssetTag = $row["AssetTag"];
     $this->ESX = $row["ESX"];
     $this->Owner = $row["Owner"];

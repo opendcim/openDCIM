@@ -46,15 +46,15 @@
 	if($user->RackAdmin){
 		$rackrequest="<h3>Pending Rack Requests</h3>\n<div class=\"table whiteborder rackrequest\">\n<div>\n  <div>Submit Time</div>\n  <div>Requestor</div>\n  <div>System Name</div>\n  <div>Department</div>\n  <div>Due By</div>\n</div>\n";
 
-		$rack = new RackRequest();
-		$tmpUser = new User;
-		$dept = new Department();
+		$rack=new RackRequest();
+		$tmpContact=new Contact();
+		$dept=new Department();
   
 		$rackList=$rack->GetOpenRequests($facDB);
   
 		foreach($rackList as $request){
-			$tmpUser->UserID=$request->RequestorID;
-			$tmpUser->GetUserRights($facDB);
+			$tmpContact->ContactID=$request->RequestorID;
+			$tmpContact->GetContactByID($facDB);
     
 			$dept->DeptID=$request->Owner;
 			$dept->GetDeptByID($facDB);
@@ -69,7 +69,7 @@
 			}else{
 				$colorCode='clear';
 			}
-			$rackrequest.="<div class=\"$colorCode\"><div>".date("M j Y H:i:s",strtotime($request->RequestTime))."</div><div>$tmpUser->Name</div><div><a href=\"rackrequest.php?requestid=$request->RequestID\">$request->Label</a></div><div>$dept->Name</div><div>$dueDate</div></div>\n";
+			$rackrequest.="<div class=\"$colorCode\"><div>".date("M j Y H:i:s",strtotime($request->RequestTime))."</div><div>$tmpContact->FirstName $tmpContact->LastName</div><div><a href=\"rackrequest.php?requestid=$request->RequestID\">$request->Label</a></div><div>$dept->Name</div><div>$dueDate</div></div>\n";
 		}
 		$rackrequest.='</div><!-- END div.table -->';
 	}
