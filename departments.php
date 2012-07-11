@@ -59,8 +59,11 @@ function showgroup(obj){
 	document.getElementById('deptname').readOnly = true
 	document.getElementById('deptsponsor').readOnly = true
 	document.getElementById('deptmgr').readOnly = true
+	document.getElementById('deptcolor').readOnly = true
 	document.getElementById('deptclass').disabled = true
 	document.getElementById('controls').id = "displaynone";
+	$('.color-picker ~ a').remove();
+	$('.color-picker').unbind();
 }
 	$(document).ready( function() {
 		$(".color-picker").miniColors({
