@@ -20,6 +20,7 @@ Changes in 1.3
 * Added report for showing the Surplus/Salvage logs
 * Added report for Departments and Contacts
 * Added a Default Panel Voltage to the configuration directives
+* Any devices entered with a height of zero are now shown in a section for Zero-U devices (Cabinet Navigator)
 
 Changes in 1.2
 --------------
