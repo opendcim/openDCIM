@@ -123,8 +123,17 @@ Check if we are doing a new install or an upgrade has been applied.
 If found then force the user into only running that function.
 */
 
-if(file_exists("install.php") && basename($_SERVER['PHP_SELF'])!="install.php" ){
-	// new installs need to run the install first.
-	header("Location: ".redirect('install.php'));
-}
+/* 
+	To bypass the installer check from running, simply add
+	
+	$devMode = true;
+	
+	to the db.inc.php file.
+*/
+
+if ( ! $devMode )
+	if(file_exists("install.php") && basename($_SERVER['PHP_SELF'])!="install.php" ){
+		// new installs need to run the install first.
+		header("Location: ".redirect('install.php'));
+	}
 ?>
