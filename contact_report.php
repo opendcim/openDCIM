@@ -444,7 +444,7 @@ class PDF_Diag extends PDF_Sector {
 
 		$pdf->SetFont( $config->ParameterArray['PDFfont'], '', 8 );
 
-		$headerTags = array( 'Name', 'VUnetID', 'Phone1', 'Phone2', 'Phone3', 'Email' );
+		$headerTags = array( 'Name', 'UserID', 'Phone1', 'Phone2', 'Phone3', 'Email' );
 		$cellWidths = array( 50, 20, 25, 25, 25, 50 );
 		$maxval = count( $headerTags );
 		for ( $col = 0; $col < $maxval; $col++ )
