@@ -7,49 +7,51 @@ html {
 	padding-left: .9em;
 	padding-right: .9em;
 }
-select {
-	padding: .05em;
-}
+select {padding: .05em;}
+fieldset table, table {border: 1px solid grey;}
+textarea {white-space: pre;word-wrap: break-word;}
+
+[readonly],[disabled] {
+	background-color: #dcdcdc;
+	border: 1px dotted grey;
+	padding: 1px;
+	color: #000000;
+	cursor: default;
+} 
+
+/* css for timepicker */
+.ui-timepicker-div .ui-widget-header {margin-bottom: 8px;}
+.ui-timepicker-div dl {text-align: left;}
+.ui-timepicker-div dl dt {height: 25px; margin-bottom: -25px;}
+.ui-timepicker-div dl dd {margin: 0 10px 10px 65px;}
+.ui-timepicker-div td {font-size: 90%;}
+.ui-tpicker-grid-label {background: none; border: none; margin: 0; padding: 0;}
+
 /*  Header/logo */
-#header {
-	padding: 5px 0;
-	background: #006633 url(../images/logo.png) no-repeat center center;
-	height: 66px;
+#header{
+	padding:5px 0;
+	background:#006633 url(../images/logo.png) no-repeat center center;
+	height:66px;
 }
+
 /* Configuration Page */
 div.cp { position: relative;}
 .miniColors-trigger { position: absolute; top: 0; right: 0;}
 .config .center input { width: 95%; }
 
 /* index */
-.overdue { background-color: #FFE6F4; }
-.soon { background-color: #FFFFAA; }
-.clear { background-color: white; }
-
-.index .table, .index .table .title { background-color: white; }
-.index .table .title { font-weight: bold; font-size: 1.25em; }
+.index .table, .index .table .title {background-color: white;}
+.index .table .title {font-weight: bold; font-size: 1.25em;}
 .index .table div {padding: 3px;}
-.rackrequest div:first-child div { 
-	background-color: gray; 
-	text-align: center;
-	color: white;
-	font-weight: bold;
-}
+.rackrequest div:first-child div {background-color: gray;text-align: center;color: white;font-weight: bold;}
+.overdue {background-color:#FFE6F4;}
+.soon {background-color:#FFFFAA;}
+.clear {background-color:white;}
+
 /* Datacenter Stats */
-
-.dcstats .heading > div{
-	width: 89%;
-	display: inline-block;
-	vertical-align: middle;
-}
-.dcstats .heading > div + div {
-	width: 10%;
-}
-.dcstats .heading > div + div button {
-	display: block;
-	width: 100%;
-}
-
+.dcstats .heading > div{width: 89%;display: inline-block;vertical-align: middle;}
+.dcstats .heading > div + div {width: 10%;}
+.dcstats .heading > div + div button {display: block;width: 100%;}
 .dcstats .table, .dcstats .table .title { background-color: white; }
 .dcstats .table .title { font-weight: bold; font-size: 1.25em; }
 .dcstats .table div {padding: 3px;}
@@ -58,30 +60,21 @@ div#dcstats > div{ width: 100%;}
 div#dcstats .table + .table > div > div + div{white-space: pre; text-align: right;}
 .canvas {position: relative; margin-top: 2em;}
 .canvas img {position: absolute; top: 0; left: 0;}
+
 /* Storage Room */
 .storage .table, .storage .table #title { background: white; }
 .storage .table #title {filter: none;}
 .storage .table .title { font-weight: bold; font-size: 1.25em; }
 .storage .table div {padding: 3px;}
-.storage .tables > div:nth-child(2n+1) {
-/* .storage .table > div:nth-child(2n+1) { */
-	background: rgb(119,119,119); /* Old browsers */
-	background: -moz-linear-gradient(left, rgba(119,119,119,1) 0%, rgba(242,242,242,1) 100%); /* FF3.6+ */
-	background: -webkit-gradient(linear, left top, right top, color-stop(0%,rgba(119,119,119,1)), color-stop(100%,rgba(242,242,242,1))); /* Chrome,Safari4+ */
-	background: -webkit-linear-gradient(left, rgba(119,119,119,1) 0%,rgba(242,242,242,1) 100%); /* Chrome10+,Safari5.1+ */
-	background: -o-linear-gradient(left, rgba(119,119,119,1) 0%,rgba(242,242,242,1) 100%); /* Opera 11.10+ */
-	background: -ms-linear-gradient(left, rgba(119,119,119,1) 0%,rgba(242,242,242,1) 100%); /* IE10+ */
-	background: linear-gradient(left, rgba(119,119,119,1) 0%,rgba(242,242,242,1) 100%); /* W3C */
-	filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#777777', endColorstr='#f2f2f2',GradientType=1 ); /* IE6-9 */
-}
 .storage .table {min-width: 400px; max-width: 600px; margin-top: 2em;}
+
 /* Sidebar Menu */
 #sidebar {
-		position: relative;
-		min-width: 200px;
-		width: 210px;
-		display: inline-block;
-		vertical-align: top;
+	position: relative;
+	min-width: 200px;
+	width: 210px;
+	display: inline-block;
+	vertical-align: top;
 }
 #sidebar input, #sidebar textarea {
 	height: 27px;
@@ -118,47 +111,22 @@ div#dcstats .table + .table > div > div + div{white-space: pre; text-align: righ
 	-webkit-border-radius: 0px;
 	border-radius: 0px;
 }
-#sidebar input + button img, #sidebar .text-core + button img, #sidebar textarea + button img {
-	height: 27px;
-}
+#sidebar input + button img, #sidebar .text-core + button img, #sidebar textarea + button img {height: 27px;}
 #sidebar div.text-core {width: 150px; height: 27px;}
 #sidebar div.text-core textarea{ width: 151px; height: 27px;}
 .text-core { display: inline-block; }
 
 /* Mapmaker */
-.mapmaker > div{
-	width: 77%;
-	display: inline-block;
-	vertical-align: middle;
-}
-.mapmaker > div + div {
-	width: 19%;
-}
-.mapmaker .table .table {
-	margin-left: auto;
-}
-.mapmaker + .center div{
-	position: relative;
-	width: 100%;
-	}
-.mapmaker + .center > div > div.container {
-	position: absolute;
-	top: 0px;
-	left: 0px;
-}
+.mapmaker > div{width: 77%;display: inline-block;vertical-align: middle;}
+.mapmaker > div + div {width: 19%;}
+.mapmaker .table .table {margin-left: auto;}
+.mapmaker + .center div{position: relative;width: 100%;}
+.mapmaker + .center > div > div.container {position: absolute;top: 0px;left: 0px;}
+
 /* Basic Page Layout */
-.page {
-		position: relative;
-		min-width: 1030px; /* 1030 */
-		width: 100%;
-}
-.clear {
-		clear: both;
-}
-p, h2, h3, h1 {
-		margin-top: 1em;
-		margin-bottom: 1em;
-}
+.page {position: relative;min-width: 1030px;width: 100%;}
+.clear {clear: both;}
+p, h2, h3, h1 {margin-top: 1em;margin-bottom: 1em;}
 h2 {font-size: 1.5em;text-align: center;}
 h3 {font-size: 1.16em;text-align: center;}
 h3 + h3 {color: red;font-weight: bold;}
@@ -177,100 +145,44 @@ div.main {
 	border: 1px dotted #333;
 	padding: 5px;
 }
-div.center > div {
-  display: inline-block;
-  text-align: left;
-}
-.center {
-	text-align: center;
-	min-height: 400px;
-}
-.centermargin {
-	margin-left: auto;
-	margin-right: auto;
-}
-.table {
-	display: table;
-	text-align: left;
-	border-collapse: collapse;
-}
+div.center > div {display: inline-block;text-align: left;}
+.center {text-align: center;min-height: 400px;}
+.centermargin {margin-left: auto;margin-right: auto;}
+
+.table {display: table;text-align: left;border-collapse: collapse;}
 .caption {caption-side: bottom; text-align: center; display: table-caption !important;}
 .title {caption-side: top; text-align: center; display: table-caption !important;}
 div.table > div {display: table-row;}
 div.table > div > div {display: table-cell;vertical-align: middle; /* padding-bottom: .75em; */}
 div.table > div > div span {display: block;font-size: 0.75em;}
 .table label{width:130px;}
-.whiteborder, .whiteborder div {
-	border: 1px solid white;
-}
-.border, .border div {
-	border: 1px solid gray;
-}
-[readonly],[disabled] {
-	background-color: #dcdcdc;
-	border: 1px dotted grey;
-	padding: 1px;
-	color: #000000;
-	cursor: default;
-} 
+.whiteborder, .whiteborder div {border: 1px solid white;}
+.border, .border div {border: 1px solid gray;}
+
 /* Search Results */
-.search .center {
-	text-align: left;
-}
-.search ol, .search ul{
-	list-style-type: none;
-	margin-left: 1em;
-}
-.search ol {
-	margin-top: .35em;
-}
-.search ol li {
-	margin-bottom: .35em;
-}
-.search ol ul li {
-	margin-left: 1em;
-	margin-bottom: 0em;
-}
-.search ol ul li div, .search ol li.cabinet div {
-	display: inline;
-}
-.search ol ul li div img, .search ol li.cabinet div img {
-	vertical-align: middle;
-	height: 1em;
-	margin-right: .25em;
-}
+.search .center {text-align: left;}
+.search ol, .search ul{list-style-type: none;margin-left: 1em;}
+.search ol {margin-top: .35em;}
+.search ol li {margin-bottom: .35em;}
+.search ol ul li {margin-left: 1em;margin-bottom: 0em;}
+.search ol ul li div, .search ol li.cabinet div {display: inline;}
+.search ol ul li div img, .search ol li.cabinet div img {vertical-align: middle;height: 1em;margin-right: .25em;}
+
 /* User Rights */
-.rights > div:nth-last-child(2) div {
-	text-align: center;
-	padding-top: .75em;
-	padding-bottom: .75em;
-}
+.rights > div:nth-last-child(2) div {text-align: center;padding-top: .75em;padding-bottom: .75em;}
 div.table > div + div + div + div > div + div label {float: none;}
 
 /* Inventory Reports */
-div#reports table {
-		margin-left: auto;
-		margin-right: auto;
-}
-#reports > div {
-	display: inline-block;
-	vertical-align: top;
-}
-#reports > div a {
-	display: block;
-}
+.reports fieldset {margin-right: 20px;}
+#reports > div {display: inline-block;vertical-align: top;}
+#reports > div a {display: block;}
+
 /* PDU Info */
-.pdu .center > div + div > .table > div > div{
-	padding: 3px;
-}
+.pdu .center > div + div > .table > div > div{padding: 3px;}
+
 /* Power Panels */
-div.center > div + div {
-	vertical-align: top;
-	padding-left: 1em;
-}
-div.center > div + div div.table {
-	background-color: white;
-}
+div.center > div + div {vertical-align: top;padding-left: 1em;}
+div.center > div + div div.table {background-color: white;}
 div.center div table {
 	background-color: white;
 	border-collapse: collapse;
@@ -278,60 +190,26 @@ div.center div table {
 	margin-right: auto;
 	max-width: 400px;
 }
-div.center div table table{
-	min-width: 150px;
-}
-div.center div table, div.center div tr, div.center div td {
-	border: 1px solid gray;
-}
-div.center div td:first-child, .panelmgr .polenumber {
-	padding: 0.25em 0.5em;
-	text-align: center;
-}
+div.center div table table{min-width: 150px;}
+div.center div table, div.center div tr, div.center div td {border: 1px solid gray;}
+div.center div td:first-child, .panelmgr .polenumber {padding: 0.25em 0.5em;text-align: center;}
 .panelmgr .polelabel {
 	min-width: 150px;
 	max-width: 400px;
 	padding: 0.25em 0.5em 0.25em 1em;
 	vertical-align: middle;
 }
-.polelabel a {
-	display: block;
-	margin-bottom: 0.35em;
-}
-td#oddeven {
-	padding: 0px;
-	text-align: left;
-	width: 150px;
-}
-.caption h3 {
-	margin-bottom: 0px;
-	font-size: 1.25em;
-}
-#powerinfo {
-	margin-top: 0em;
-}
-#powerinfo .table {
-	background-color: white;
-}
-#powerinfo .caption {
-	border: 0px !important;
-}
-div.error {
-	margin-top: 2em;
-	margin-bottom: 2em;
-	border: 1px dotted gray;
-}
-.error legend {
-	color: red;
-	font-weight: bold;
-}
-.error > div > div {
-	width: 200px;
-	vertical-align: top !important;
-}
-.error > div > div + div {
-	font-style: italic;
-}
+.polelabel a {display: block;margin-bottom: 0.35em;}
+td#oddeven {padding: 0px;text-align: left;width: 150px;}
+.caption h3 {margin-bottom: 0px;font-size: 1.25em;}
+#powerinfo {margin-top: 0em;}
+#powerinfo .table {background-color: white;}
+#powerinfo .caption {border: 0px !important;}
+div.error {margin-top: 2em;margin-bottom: 2em;border: 1px dotted gray;}
+.error legend {color: red;font-weight: bold;}
+.error > div > div {width: 200px;vertical-align: top !important;}
+.error > div > div + div {font-style: italic;}
+
 /* Department Administration */
 #groupadmin {
 	overflow: hidden;
@@ -341,63 +219,35 @@ div.error {
 	margin-top: 20px;
 	border: 1px solid gray;
 }
-#deptgroup {
-	background-color: #F0E0B2;
-}
-#deptgroup > div {
-	padding: 5px 10px;
-	width: 580px;
-}
-#deptgroup > div h3 {
-	margin-top: 0;
-	margin-bottom: 10px;
-}
-#deptgroup > div div {
-	display: inline-block;
-	max-width: 200px;
-	vertical-align: middle;
-}
-#deptgroup h3 + div {
-	margin-left: 42.5px;
-}
-#deptgroup h3 + div + div {
-	text-align: center;
-}
-#deptgroup select {
-	width: 200px;
-}
-#displaynone {
-	display: none !important;
-}
+#deptgroup {background-color: #F0E0B2;}
+#deptgroup > div {padding: 5px 10px;width: 580px;}
+#deptgroup > div h3 {margin-top: 0;margin-bottom: 10px;}
+#deptgroup > div div {display: inline-block;max-width: 200px;vertical-align: middle;}
+#deptgroup h3 + div {margin-left: 42.5px;}
+#deptgroup h3 + div + div {text-align: center;}
+#deptgroup select {width: 200px;}
+#displaynone {display: none !important;}
+
 /* Rack Content */
 #infopanel {
 		position: relative;
 		display: inline-block;
 		min-width: 200px;
 }
-#infopanel fieldset {
+#infopanel fieldset, .reports fieldset {
 		background-color: white;
 		border: 1px solid grey;
 		padding: 10px;
 		margin-bottom: 8px;
 }
-#infopanel fieldset button, #infopanel fieldset input[type=submit], #infopanel fieldset input[type=button],
-.reports fieldset button, .reports fieldset input[type=submit], .reports fieldset input[type=button] {
-	width: 100%;
-}
-#infopanel legend, .device legend, .reports legend {
-		border: 1px green solid;
-		background-color: white;
-}
+#infopanel fieldset button, #infopanel fieldset input[type=submit], #infopanel fieldset input[type=button],.reports fieldset button, .reports fieldset input[type=submit], .reports fieldset input[type=button] {width: 100%;}
+#infopanel legend, .device legend, .reports legend {border: 1px green solid;background-color: white;}
 #infopanel fieldset > p > span + span {
 	display: inline-block;
 	vertical-align: middle;
 	height: 1.1em;
 	width: 150px;
 	overflow: hidden;
-}
-fieldset table, table {
-		border: 1px solid grey;
 }
 div.cabinet {
 	display: inline-block;
@@ -406,23 +256,10 @@ div.cabinet {
 	max-width: 250px;
 	margin-right: 20px;
 }
-.cabinet td + td {
-	vertical-align: middle;
-	padding: 0.25em 0.5em;
-	width: 90%;
-}
-.cabinet th{
-	font-size: 1.5em;
-	padding: 0.25em;
-	text-align: center;
-}
-textarea {
-	white-space: pre;
-	word-wrap: break-word;
-}
-#zerou a{
-	display: block;
-}
+.cabinet td + td {vertical-align: middle;padding: 0.25em 0.5em;width: 90%;}
+.cabinet th{font-size: 1.5em;padding: 0.25em;text-align: center;}
+#zerou a{display: block;}
+
 /* devices.php  Device Detail */
 div.page.device {
 	min-width: 1350px; /* 1030 */
@@ -443,40 +280,14 @@ div.page.device {
 	vertical-align: top;
 	text-align: left;
 }
-.device .table {
-	width: 100%;
-}
-.device .table.style > div:nth-child(2n+1) > div {
-	border-top: 1px solid grey;
-	vertical-align: top;
-}
-.device .table.style > div:nth-child(2n+1) > div:first-child {
-	background-color: lightGray;
-	border-left: 1px solid grey;
-}
-.device .table > div > div {
-	min-width: 100px;
-}
-.device .caption {
-	margin-top: 3em;
-}
-.device .table .table .table, .right .table + .table {
-	background-color: white;
-	width: 100%;
-}
-.device .table .table .table > div > div {
-	padding: 3px;
-}
-.right .table + .table {
-	margin-top: 1em;
-}
-/* css for timepicker */
-.ui-timepicker-div .ui-widget-header { margin-bottom: 8px; }
-.ui-timepicker-div dl { text-align: left; }
-.ui-timepicker-div dl dt { height: 25px; margin-bottom: -25px; }
-.ui-timepicker-div dl dd { margin: 0 10px 10px 65px; }
-.ui-timepicker-div td { font-size: 90%; }
-.ui-tpicker-grid-label { background: none; border: none; margin: 0; padding: 0; }
+.device .table {width: 100%;}
+.device .table.style > div:nth-child(2n+1) > div {border-top: 1px solid grey;vertical-align: top;}
+.device .table.style > div:nth-child(2n+1) > div:first-child {background-color: lightGray;border-left: 1px solid grey;}
+.device .table > div > div {min-width: 100px;}
+.device .caption {margin-top: 3em;}
+.device .table .table .table, .right .table + .table {background-color: white;width: 100%;}
+.device .table .table .table > div > div {padding: 3px;}
+.right .table + .table {margin-top: 1em;}
 
 /* Button code primarily from http://somadesign.ca */
 /* Button */
@@ -570,13 +381,8 @@ div.page.device {
 	ul.mktree  li ul li ul li { font-family: arial, helvetica; font-size: 8pt; }
 	ul.mktree  li ul li ul li ul li { font-family: arial, helvetica; font-size: 6pt; }
 }
-.meter-wrap{
-    position: relative;
-}
-.meter-wrap, .meter-value, .meter-text {
-    /* The width and height of your image */
-    width: 155px; height: 30px;
-}
+.meter-wrap{position: relative;}
+.meter-wrap, .meter-value, .meter-text {width: 155px; height: 30px;}
 .meter-text {
     position: absolute;
     top:0; left:0;
@@ -586,17 +392,6 @@ div.page.device {
     width: 100%;
 }
 
-/* Reports */
-.reports fieldset {
-		background-color: white;
-		border: 1px solid grey;
-		padding: 10px;
-		margin-bottom: 8px;
-		margin-right: 20px;
-}
-
-/* Reports */
-
 /* Installer */
 .installer ul li, ul.nav li{
 	display: block;
@@ -604,43 +399,16 @@ div.page.device {
 	background-color: lightGray;
 	border: 0px dashed darkGray;
 }
-.installer ul li{
-	border: 1px dashed darkGray;
-}
-ul.nav li {
-	padding: .5em;
-}
-.nav a:visited {
-	color: #000000;
-}
-.installer #sidebar a, #sidebar .nav a {
-	text-decoration: none;
-}
-.installer #sidebar a:hover li, #sidebar .nav a:hover li {
-	background-color: darkGray;
-	border-color: lightGray;
-}
-.installer #sidebar a:hover li.active, #sidebar .nav a:hover li.active {
-	background-color: white;
-	border-color: lightGray;
-}
-.installer .active, .nav .active {
-	background-color: white;
-	border: 1px solid darkGray;
-}
-.installer .active:after, .nav .active:after {
-	content:">>";
-	float: right;
-}
-.installer div.table > div > div + div {
-	width: 300px;
-}
-.installer .rights > div:nth-last-child(2) div {
-	padding-top: 0;
-	padding-bottom: 2em;
-	text-align: left;
-}
-.installer .center input {
-	width: 97%;
-}
-/* END - Installer */
+.installer ul li{border: 1px dashed darkGray;}
+.installer #sidebar a, #sidebar .nav a {text-decoration: none;}
+.installer #sidebar a:hover li, #sidebar .nav a:hover li {background-color: darkGray;border-color: lightGray;}
+.installer #sidebar a:hover li.active, #sidebar .nav a:hover li.active {background-color: white;border-color: lightGray;}
+.installer .active, .nav .active {background-color: white;border: 1px solid darkGray;}
+.installer .active:after, .nav .active:after {content:">>";float: right;}
+.installer div.table > div > div + div {width: 300px;}
+.installer .rights > div:nth-last-child(2) div {padding-top: 0;padding-bottom: 2em;text-align: left;}
+.installer .center input {width: 97%;}
+
+/* Menu */
+ul.nav li {padding: .5em;}
+.nav a:visited {color: #000000;}
