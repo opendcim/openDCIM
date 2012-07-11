@@ -137,7 +137,7 @@ class PDF extends FPDF {
   }
 }
 
-if(isset($_REQUEST['action']) && $_REQUEST['action']!='Generate'){
+if(@$_REQUEST['action']!='Generate'){
 	$dc = new DataCenter();
 	$dcList = $dc->GetDCList($facDB);
 ?>
