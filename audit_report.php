@@ -254,12 +254,12 @@ $(function(){
 	
 	// First query - Summary of all auditors, including the total within the selected period and the date of the last audit
 	
-	$sql = sprintf( "select count(*) as TotalCabinets, a.*, b.Name from fac_CabinetAudit a, fac_User b where a.UserID=b.UserID and %s AuditStamp>='%s' and AuditStamp<='%s' group by UserID order by count(*) ASC", $dcLimit, $startDate, $endDate );
+	$sql = sprintf( "select count(*) as TotalCabinets, a.*, b.Name from fac_CabinetAudit a, fac_User b where a.UserID=b.UserID and %s date(AuditStamp)>='%s' and date(AuditStamp)<='%s' group by UserID order by count(*) ASC", $dcLimit, $startDate, $endDate );
 	$summaryResult = mysql_query( $sql, $facDB );
 	
 	// Second query - List of all cabinets audits in the time period, sorted and grouped by date
 	
-	$sql = sprintf( "select count(*) as TotalCabinets, date(a.AuditStamp) as AuditDate from fac_CabinetAudit a where %s AuditStamp>='%s' and AuditStamp<='%s' group by date(a.AuditStamp) order by a.AuditStamp ASC", $dcLimit, $startDate, $endDate );
+	$sql = sprintf( "select count(*) as TotalCabinets, date(a.AuditStamp) as AuditDate from fac_CabinetAudit a where %s date(AuditStamp)>='%s' and date(AuditStamp)<='%s' group by date(a.AuditStamp) order by a.AuditStamp ASC", $dcLimit, $startDate, $endDate );
 	$dateSumResult = mysql_query( $sql, $facDB );
 	
 	$pdf=new PDF($facDB);
@@ -371,6 +371,10 @@ $(function(){
 	
 	$totalAudits = array_sum( $dowCount );
 	
+	// Just to avoid any division by zero
+	if ( $totalAudits < 1 )
+		$totalAudits = 1;
+	
 	$pdf->AddPage();
 	$pdf->Cell( 80, 5, "Day of Week Frequency" );
 	$pdf->Ln();
@@ -418,7 +422,7 @@ $(function(){
 	$pdf->Ln();
 	
 	foreach ( $cabList as $tmpCab ) {
-		$sql = sprintf( "select a.AuditStamp as AuditDate, b.Name as Auditor from fac_CabinetAudit a, fac_User b where a.UserID=b.UserID and CabinetID='%d' and AuditStamp>='%s' and AuditStamp<='%s' order by AuditStamp DESC", $tmpCab->CabinetID, $startDate, $endDate );
+		$sql = sprintf( "select a.AuditStamp as AuditDate, b.Name as Auditor from fac_CabinetAudit a, fac_User b where a.UserID=b.UserID and CabinetID='%d' and date(AuditStamp)>='%s' and date(AuditStamp)<='%s' order by AuditStamp DESC", $tmpCab->CabinetID, $startDate, $endDate );
 		$res = mysql_query( $sql, $facDB );
 
 		$showCab = true;
