@@ -55,5 +55,4 @@ https://dcim.yourdomain.com/
 
 If you have set up the database permissions correctly, it will handle the installation for you.
 
-You will have to delete the install.php file after configuration is configuration is complete
-in order to continue.
+You will have to delete the install.php file after configuration is complete in order to continue.
