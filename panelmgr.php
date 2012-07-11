@@ -14,6 +14,9 @@
 
 	$panel=new PowerPanel();
 	$pdu=new PowerDistribution();
+	
+	// Set a default panel voltage based upon the configuration screen
+	$panel->PanelVoltage = $config->ParameterArray["DefaultPanelVoltage"];
   
 	if(isset($_REQUEST["action"]) && (($_REQUEST["action"]=="Create")||($_REQUEST["action"]=="Update"))){
 		$panel->PanelID = $_REQUEST["panelid"];

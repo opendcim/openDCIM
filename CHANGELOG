@@ -9,11 +9,17 @@ are simply testing, as some functionality can break between releases.
 
 Changes in 1.3
 --------------
-* Added an optional reservation color to the configuration options
+* Added an optional reservation color for the cabinet view to the configuration options
+* Added the ability to color code the cabinet view by department (default is no colorization)
 * Changed out button interface for a more tab friendly click interface
 * Added Warranty Company and Warranty Expiration to devices
 * Added Key/Lock Information field to Cabinets
 * PDUs and Racks are now included in the search results
+* Added report for Cabinet Audit frequency
+* Added report for Cabinet Audit by data center
+* Added report for showing the Surplus/Salvage logs
+* Added report for Departments and Contacts
+* Added a Default Panel Voltage to the configuration directives
 
 Changes in 1.2
 --------------

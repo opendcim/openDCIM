@@ -16,6 +16,12 @@ INSERT INTO fac_Config VALUES ( 'ReservedColor', '#00FFFF', 'HexColor', 'string'
 INSERT INTO fac_Config VALUES ( 'FreeSpaceColor', '#FFFFFF', 'HexColor', 'string', '#FFFFFF');
 
 --
+-- Adding a default panel voltage for new panels being created.
+--
+
+INSERT INTO fac_Config VALUES ('DefaultPanelVoltage', '208', 'Volts', 'int', '208' );
+
+--
 -- Extend the departments table to add a new color field
 --
 

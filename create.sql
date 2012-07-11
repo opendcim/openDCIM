@@ -405,6 +405,7 @@ INSERT INTO fac_Config VALUES
         ('CriticalColor','#cc0000','HexColor','string','#cc0000'),
         ('CautionColor','#cccc00','HexColor','string','#cccc00'),
         ('GoodColor','#0a0','HexColor','string','#0a0'),
+		('DefaultPanelVoltage','208','Volts','int','208'),
         ('annualCostPerUYear','200','Dollars','float','200'),
         ('annualCostPerWattYear','0.7884','Dollars','float','0.7884'),
         ('Locale','en_US.utf8','TextLocale','string','en_US.utf8'),
