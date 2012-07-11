@@ -2,6 +2,15 @@
 	require_once( 'db.inc.php' );
 	require_once( 'facilities.inc.php' );
 
+	$user=new User();
+	$user->UserID=$_SERVER['REMOTE_USER'];
+	$user->GetUserRights($facDB);
+
+	if(!$user->ReadAccess){
+		header( "Location: ".redirect());
+		exit;
+	}
+
 	define('FPDF_FONTPATH','font/');
 	require('fpdf.php');
 
@@ -128,19 +137,9 @@ class PDF extends FPDF {
   }
 }
 
-if ( @$_REQUEST['action'] != 'Generate' ) {
-
-	$user = new User();
-	$user->UserID = $_SERVER['REMOTE_USER'];
-	$user->GetUserRights( $facDB );
-
-	if ( ! $user->ReadAccess ) {
-		header( "Location: ".redirect());
-		exit;
-	}
-
-	$dc = new DataCenter();
-	$dcList = $dc->GetDCList( $facDB );
+if(isset($_REQUEST['action']) && $_REQUEST['action']!='Generate'){
+	$dc=new DataCenter();
+	$dcList=$dc->GetDCList($facDB);
 ?>
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html>
