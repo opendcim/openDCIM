@@ -166,7 +166,7 @@
 			if($user->RackAdmin){
 				$req->DeleteRequest($facDB);
 			}
-		header('Location: '.redirect());
+		header('Location: '.redirect('index.php'));
 		exit;
 	   }
 	}
@@ -197,26 +197,32 @@
   <script type="text/javascript" src="scripts/jquery.validationEngine.js"></script>
 
   <script type="text/javascript">
-	$(function(){
-		$('#deviceform').validationEngine({'custom_error_messages' : {
-				'#vlanlist' : {
-					'required': {
-						'message': "You must specify the VLAN information for the ethernet connections."
+  	$(document).ready(function() {
+		$(function(){
+			$('#deviceform').validationEngine({'custom_error_messages' : {
+					'#vlanlist' : {
+						'required': {
+							'message': "You must specify the VLAN information for the ethernet connections."
+						}
+					},
+					'#sanlist' : {
+						'condRequired': {
+							'message': "You must specify the SAN port information to continue."
+						}
+					},
+					'#currentlocation' : {
+						'required': {
+							'message': "You must specify the current location of the equipment."
+						}
 					}
-				},
-				'#sanlist' : {
-					'condRequired[]': {
-						'message': "You must specify the SAN port information to continue."
-					}
-				},
-				'#currentlocation' : {
-					'required': {
-						'message': "You must specify the current location of the equipment."
-					}
-				}
-			}	
+				}	
+			});
+			$('#mfgdate').datepicker({});
 		});
-		$('#mfgdate').datepicker({});
+		// Disabled the form validation so that the delete button will work
+		$('input[value|="Delete Request"]').click(function(){
+			$('#deviceform').validationEngine('detach');
+		});
 	});
   </script>
 
