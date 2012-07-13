@@ -1541,5 +1541,81 @@ class SwitchConnection {
   }  
 }
 
+class SupplyBin {
+	var $BinID;
+	var $Location;
+	
+	function GetBin( $db ) {
+		$sql = sprintf( "select * from fac_SupplyBin where BinID='%d'", intval( $this->BinID ) );
+		$result = mysql_query( $sql, $db );
+		
+		if ( $row = mysql_fetch_array( $result ) ) {
+			$this->Location = $row["Location"];
+		}
+	}
+	
+	function AddBin( $db ) {
+		$sql = sprintf( "insert into fac_SupplyBin set Location=\"%s\"", addslashes( $this->Location ) );
+		mysql_query( $sql, $db );
+		
+		$this->BinID = mysql_insert_id( $db );
+	}
+	
+	function UpdateBin( $db ) {
+		$sql = sprintf( "update fac_SupplyBin set Location=\"%s\" where BinID='%d'", addslashes( $this->Location ), intval( $this->BinID ) );
+		mysql_query( $sql, $db );	
+	}
+	
+	function DeleteBin( $db ) {
+		$sql = sprintf( "delete from fac_SupplyBin where BinID='%d'; delete from fac_BinContents where BinID='%d'; delete from fac_BinAudits where BinID='%d'", intval( $this->BinID ), intval( $this->BinID ), intval( $this->BinID ) );
+		mysql_query( $sql, $db );
+	}
+}
 
+class Supplies {
+	var $SupplyID;
+	var $PartNum;
+	var $PartName;
+	var $MinQty;
+	var $MaxQty;
+	
+	function AddSupplies( $db ) {
+	}
+	
+	function GetSupplies( $db ) {
+	}
+	
+	function UpdateSupplies( $db ) {
+	}
+	
+	function DeleteSupplies( $db ) {
+	}
+}
+
+class BinContents {
+	var $BinID;
+	var $SupplyID;
+	var $Count;
+	
+	function AddContents( $db ) {
+	}
+	
+	function UpdateContents( $db ) {
+	}
+	
+	function RemoveContents( $db ) {
+	}
+	
+	function EmptyBin( $db ) {
+	}
+}
+
+class BinAudits {
+	var $BinID;
+	var $UserID;
+	var $AuditStamp;
+	
+	function AddAudit( $db ) {
+	}
+}
 ?>
