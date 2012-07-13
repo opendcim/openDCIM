@@ -246,7 +246,7 @@
 				print "<td class=\"polenumber\">$nextPole</td>";
 				// Someone input a pole number wrong and this one would have been skipped
 				// store the value and deal with it later.
-				if(isset($pduarray[$nextPole])&&$odd!=0){ 
+				if(isset($pduarray[$nextPole])&&$even!=0){ 
 					foreach($pduarray[$nextPole] as $pduvar){
 					$errors[]="<a href=\"pduinfo.php?pduid=".$pduvar->PDUID."\">".$pduvar->Label."</a>";
 					}
