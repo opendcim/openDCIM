@@ -68,7 +68,7 @@
     <script src="scripts/excanvas.js"></script>
   <![endif]-->
   <?php if(isset($screenadjustment)){print $screenadjustment;} ?>
-  <link rel="stylesheet" href="css/inventory.css" type="text/css">
+  <link rel="stylesheet" href="css/inventory.php" type="text/css">
   <?php print $dc->DrawCanvas($facDB);?>
   <script type="text/javascript" src="scripts/jquery.min.js"></script>
 </head>

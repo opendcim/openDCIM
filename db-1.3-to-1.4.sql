@@ -51,3 +51,13 @@ CREATE TABLE fac_BinAudits (
   UserID int(11) NOT NULL,
   AuditStamp datetime NOT NULL
 ) ENGINE=MyISAM AUTO_INCREMENT=1 DEFAULT CHARSET=latin1;
+
+--
+-- Style Customization
+--
+INSERT INTO `fac_Config` (`Parameter`, `Value`, `UnitOfMeasure`, `ValType`, `DefaultVal`) VALUES
+('HeaderColor', '#006633', 'HexColor', 'string', '#006633'),
+('BodyColor', '#F0E0B2', 'HexColor', 'string', '#F0E0B2'),
+('LinkColor', '#000000', 'HexColor', 'string', '#000000'),
+('VisitedLinkColor', '#8D90B3', 'HexColor', 'string', '#8D90B3');
+

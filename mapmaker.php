@@ -69,7 +69,7 @@
   <meta http-equiv="Content-Type" content="text/html; charset=windows-1252">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <title>openDCIM Data Center Information Management</title>
-  <link rel="stylesheet" href="css/inventory.css" type="text/css">
+  <link rel="stylesheet" href="css/inventory.php" type="text/css">
   <link rel="stylesheet" href="css/imgareaselect-default.css" type="text/css">
   <script type="text/javascript" src="scripts/jquery.min.js"></script>
   <script type="text/javascript" src="scripts/jquery.imgareaselect.pack.js"></script>

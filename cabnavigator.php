@@ -283,8 +283,10 @@ $body.='</table>
 		<input type=\"button\" value=\"Add Device\" style=\"width:120;\" onclick=\"location='devices.php?action=new&cabinet=$cab->CabinetID'\"><br>
 		<input type=\"button\" value=\"Audit Report\" style=\"width:120;\" onclick=\"location='cabaudit.php?cabinetid=$cab->CabinetID'\"><br>
 		<input type=\"button\" value=\"Map Coordinates\" style=\"width:120;\" onclick=\"location='mapmaker.php?cabinetid=$cab->CabinetID'\"><br>
-		<input type=\"button\" value=\"Edit Cabinet\" style=\"width:120;\" onclick=\"location='cabinets.php?cabinetid=$cab->CabinetID'\"><br>
-		<input type=\"button\" value=\"Delete Cabinet\" style=\"width:120;\" onclick=\"javascript:verifyDelete(this.form)\"<br>\n";
+		<input type=\"button\" value=\"Edit Cabinet\" style=\"width:120;\" onclick=\"location='cabinets.php?cabinetid=$cab->CabinetID'\"><br>\n";
+	}
+	if($user->SiteAdmin){
+		$body.="<input type=\"button\" value=\"Delete Cabinet\" style=\"width:120;\" onclick=\"javascript:verifyDelete(this.form)\"<br>\n";
 	}
 
 	$body.='	</form>
@@ -308,7 +310,7 @@ $body.='</table>
   <meta http-equiv="Content-Type" content="text/html; charset=windows-1252">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <title>Facilities Cabinet Maintenance</title>
-  <link rel="stylesheet" href="css/inventory.css" type="text/css">
+  <link rel="stylesheet" href="css/inventory.php" type="text/css">
   <link rel="stylesheet" href="css/print.css" type="text/css" media="print">
   <!--[if lt IE 9]>
   <link rel="stylesheet"  href="css/ie.css" type="text/css" />

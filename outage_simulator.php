@@ -125,7 +125,7 @@ if ( $_REQUEST['action'] != 'Generate' ) {
 <head>
   <meta http-equiv="Content-Type" content="text/html; charset=windows-1252">
   <title>openDCIM Inventory Reporting</title>
-  <link rel="stylesheet" href="css/inventory.css" type="text/css">
+  <link rel="stylesheet" href="css/inventory.php" type="text/css">
 </head>
 <body>
 <div style="height: 66px;" id="header"></div>

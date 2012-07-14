@@ -147,7 +147,7 @@ if(!isset($_REQUEST['action'])){
   <meta http-equiv="Content-Type" content="text/html; charset=windows-1252">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <title>openDCIM Inventory Reporting</title>
-  <link rel="stylesheet" href="css/inventory.css" type="text/css">
+  <link rel="stylesheet" href="css/inventory.php" type="text/css">
   <link rel="stylesheet" href="css/jquery-ui-1.8.18.custom.css" type="text/css">
   <link rel="stylesheet" href="css/validationEngine.jquery.css" type="text/css">
   <!--[if lt IE 9]>

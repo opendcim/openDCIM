@@ -1,3 +1,9 @@
+<?php
+	require_once( '../db.inc.php' );
+	header("Content-type: text/css");
+?>
+
+
 /* Reset All Broswers to Nothing */
 @import url('reset.css');
 
@@ -30,7 +36,7 @@ textarea {white-space: pre;word-wrap: break-word;}
 /*  Header/logo */
 #header{
 	padding:5px 0;
-	background:#006633 url(../images/logo.png) no-repeat center center;
+	background:<?php echo $config->ParameterArray['HeaderColor']; ?> url(../images/<?php echo $config->ParameterArray['PDFLogoFile']; ?>) no-repeat center center;
 	height:66px;
 }
 
@@ -130,8 +136,8 @@ p, h2, h3, h1 {margin-top: 1em;margin-bottom: 1em;}
 h2 {font-size: 1.5em;text-align: center;}
 h3 {font-size: 1.16em;text-align: center;}
 h3 + h3 {color: red;font-weight: bold;}
-a:link, a:hover, a:visited:hover {color:#000;}
-a:visited {color: #8d90b3;}
+a:link, a:hover, a:visited:hover {color:<?php echo $config->ParameterArray['LinkColor']; ?>;}
+a:visited {color: <?php echo $config->ParameterArray['VisitedLinkColor']; ?>;}
 
 div.main {
 	position: relative;
@@ -141,7 +147,7 @@ div.main {
 	min-width: 800px;
 	margin-left: 0px;
 	margin-right: auto;
-	background-color: #f0e0b2;
+	background-color: <?php echo $config->ParameterArray['BodyColor']; ?>;
 	border: 1px dotted #333;
 	padding: 5px;
 }
@@ -219,7 +225,7 @@ div.error {margin-top: 2em;margin-bottom: 2em;border: 1px dotted gray;}
 	margin-top: 20px;
 	border: 1px solid gray;
 }
-#deptgroup {background-color: #F0E0B2;}
+#deptgroup {background-color: <?php echo $config->ParameterArray['BodyColor']; ?>;}
 #deptgroup > div {padding: 5px 10px;width: 580px;}
 #deptgroup > div h3 {margin-top: 0;margin-bottom: 10px;}
 #deptgroup > div div {display: inline-block;max-width: 200px;vertical-align: middle;}
@@ -241,7 +247,7 @@ div.error {margin-top: 2em;margin-bottom: 2em;border: 1px dotted gray;}
 		margin-bottom: 8px;
 }
 #infopanel fieldset button, #infopanel fieldset input[type=submit], #infopanel fieldset input[type=button],.reports fieldset button, .reports fieldset input[type=submit], .reports fieldset input[type=button] {width: 100%;}
-#infopanel legend, .device legend, .reports legend {border: 1px green solid;background-color: white;}
+#infopanel legend, .device legend, .reports legend {border: 1px <?php echo $config->ParameterArray['HeaderColor']; ?> solid;background-color: white;}
 #infopanel fieldset > p > span + span {
 	display: inline-block;
 	vertical-align: middle;

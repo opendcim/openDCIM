@@ -51,7 +51,7 @@
   <meta http-equiv="Content-Type" content="text/html; charset=windows-1252">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <title>openDCIM Department Contact Maintenance</title>
-  <link rel="stylesheet" href="css/inventory.css" type="text/css">
+  <link rel="stylesheet" href="css/inventory.php" type="text/css">
 <script type="text/javascript">
 function addToList()
 {
