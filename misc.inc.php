@@ -132,6 +132,7 @@ If found then force the user into only running that function.
 */
 
 if ( isset( $devMode ) && $devMode ) {
+	// Development mode, so don't apply the upgrades
 } else {
 	if(file_exists("install.php") && basename($_SERVER['PHP_SELF'])!="install.php" ){
 		// new installs need to run the install first.
