@@ -131,7 +131,7 @@ If found then force the user into only running that function.
 	to the db.inc.php file.
 */
 
-if ( ! $devMode )
+if ( ! isset( $devMode ) && ! $devMode )
 	if(file_exists("install.php") && basename($_SERVER['PHP_SELF'])!="install.php" ){
 		// new installs need to run the install first.
 		header("Location: ".redirect('install.php'));

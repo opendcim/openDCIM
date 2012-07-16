@@ -20,6 +20,6 @@
 			$pnl->GetPanel( $facDB );
 		}
 	}
-	header('Content-Type', 'application/json');
+	header('Content-Type: application/json');
 	echo json_encode($pnl);  
 ?>
