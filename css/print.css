@@ -1,4 +1,4 @@
-@import url("inventory.css");
+@import url("inventory.php");
 
 body {font-size: 12px;}
 p, h2, h3, h1 { margin-bottom: .25em; margin-top: .25em; }

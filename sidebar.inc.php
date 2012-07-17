@@ -24,7 +24,7 @@
 		.textext({
 			plugins : 'autocomplete ajax arrow',
 			ajax : {
-				url : 'json.php?name',
+				url : 'scripts/ajax_search.php?name',
 				dataType : 'json',
 				cacheResults : false,
 			}
@@ -34,7 +34,7 @@
 		.textext({
 			plugins : 'autocomplete ajax arrow',
 			ajax : {
-				url : 'json.php?serial',
+				url : 'scripts/ajax_search.php?serial',
 				dataType : 'json',
 				cacheResults : false,
 			}
@@ -44,7 +44,7 @@
 		.textext({
 			plugins : 'autocomplete ajax arrow',
 			ajax : {
-				url : 'json.php?tag',
+				url : 'scripts/ajax_search.php?tag',
 				dataType : 'json',
 				cacheResults : false,
 			}
