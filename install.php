@@ -70,8 +70,17 @@ function applyupdate ($updatefile){
 	$result=mysql_query("SHOW TABLES;");
 	if(mysql_num_rows($result)==0){ // No tables in the DB so try to install.
 		$results[]=applyupdate("create.sql");
-		$upgrade=true;
+		$upgrade=false;
 	}
+	// New install so create a user
+	require_once("customers.inc.php");
+
+	$user=new User();
+	$user->UserID=$_SERVER['REMOTE_USER'];
+	$user->GetUserRights($facDB);
+
+	// Re-read the config
+	$config->Config($facDB);
 // Check to see if we have any users in the database.
 	if(mysql_num_rows(mysql_query("SELECT * FROM fac_User WHERE SiteAdmin=1;"))<1){
 		// no users in the system or no users with site admin rights, either way we're missing the class of people we need
