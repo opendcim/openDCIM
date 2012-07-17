@@ -312,6 +312,7 @@ function setPreferredLayout() {<?php if(isset($_COOKIE["layout"]) && strtolower(
 <h2><?php echo $config->ParameterArray['OrgName']; ?></h2>
 <h3>Data Center Device Detail</h3>
 <div class="center"><div>
+<div id="positionselector"></div>
 <form name="deviceform" id="deviceform" action="<?php echo $_SERVER['PHP_SELF']; ?>" method="POST">
 <div class="left">
 <fieldset>
