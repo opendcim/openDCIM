@@ -16,6 +16,8 @@ html {
 select {padding: .05em;}
 fieldset table, table {border: 1px solid grey;}
 textarea {white-space: pre;word-wrap: break-word;}
+.hide {display: none;}
+.show {display: block;}
 
 [readonly],[disabled] {
 	background-color: #dcdcdc;
@@ -294,6 +296,19 @@ div.page.device {
 .device .table .table .table, .right .table + .table {background-color: white;width: 100%;}
 .device .table .table .table > div > div {padding: 3px;}
 .right .table + .table {margin-top: 1em;}
+
+.positionselector {font-size: .7em; background-color: white;}
+.positionselector > div > div > div {width: 1em; height: 1em; padding-left: .5em; padding-right: .5em; text-align: right;}
+.positionselector > div > div + div > div {width: 3em; padding-right: 1em; padding-right: 1em;}
+.notavail {background-color: black; border-color: black !important;}
+/* borders were too thick looking */
+.positionselector > div > div > div{ border-top: 0px; border-left: 0px;}
+.positionselector > div > div + div > div{ border-top: 0px; border-right: 0px;}
+.positionselector > div { border-width: 1px;}
+.positionselector, .positionselector > div > div {border-width: 0px;}
+#positionselector .positionselector > div > div {min-width: 0;}
+#positionselector {padding: 10px; position: absolute; left: -1000px; background-color: white; border: 1px solid black;}
+
 
 /* Button code primarily from http://somadesign.ca */
 /* Button */

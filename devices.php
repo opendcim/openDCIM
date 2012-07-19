@@ -296,6 +296,68 @@ function swaplayout(){
 		setCookie("layout","Portrait");
 	}
 }
+$(document).ready(function() {
+	$('#position').focus(function()	{
+		var cab=$("select#cabinetid").val();
+		$.get('scripts/ajax_cabinetuse.php?cabinet='+cab, function(data) {
+			var rackhtmlleft='';
+			var rackhtmlright='';
+			$.each(data, function(i,inuse){
+				if(inuse){var cssclass='notavail'}else{var cssclass=''};
+				rackhtmlleft+='<div>'+i+'</div>';
+				rackhtmlright+='<div val='+i+' class="'+cssclass+'"></div>';
+			});
+			var rackhtml='<div class="table border positionselector"><div><div>'+rackhtmlleft+'</div><div>'+rackhtmlright+'</div></div></div>';
+			$('#positionselector').html(rackhtml);
+			setTimeout(function(){
+				var divwidth=$('.positionselector').width();
+				$('#positionselector').width(divwidth);
+				$('#height').focus(function(){$('#positionselector').css({'left': '-1000px'});});
+				$('#positionselector').css({'left':(($('.right').position().left)-(divwidth+20))});
+				$('#positionselector').mouseleave(function(){
+					$('#positionselector').css({'left': '-1000px'});
+				});
+				$('.positionselector > div > div + div > div').mouseover(function(){
+					$('.positionselector > div > div + div > div').each(function(){
+						$(this).removeAttr('style');
+					});
+					var unum=$("#height").val();
+					if(unum>=1 && $(this).attr('class')!='notavail'){
+						var test='';
+						var background='green';
+						// check each element start with pointer
+						for (var x=0; x<unum; x++){
+							if(x!=0){
+								test+='.prev()';
+								eval("if($(this)"+test+".attr('class')=='notavail' || $(this)"+test+".length ==0){background='red';}");
+								eval("console.log($(this)"+test+".attr('val')+' '+$(this)"+test+".attr('class'))");
+							}else{
+								if($(this).attr('class')=='notavail'){background='red';}
+							}
+						}
+						test='';
+						if(background=='red'){var pointer='default'}else{var pointer='pointer'}
+						for (x=0; x<unum; x++){
+							if(x!=0){
+								test+='.prev()';
+								eval("$(this)"+test+".css({'background-color': '"+background+"'})");
+								eval("console.log($(this)"+test+".attr('val'))");
+							}else{
+								$(this).css({'background-color': background, 'cursor': pointer});
+								if(background=='green'){
+									$(this).click(function(){
+										$('#position').val($(this).attr('val'));
+										$('#positionselector').css({'left': '-1000px'});
+									});
+								}
+							}
+						}
+					}
+				});
+			},100);
+		});
+	});
+});
 	
 function setPreferredLayout() {<?php if(isset($_COOKIE["layout"]) && strtolower($_COOKIE["layout"])==="portrait"){echo 'swaplayout();setCookie("layout","Portrait");';}else{echo 'setCookie("layout","Landscape");';} ?>}
 </script>
@@ -313,7 +375,7 @@ function setPreferredLayout() {<?php if(isset($_COOKIE["layout"]) && strtolower(
 <h3>Data Center Device Detail</h3>
 <div class="center"><div>
 <div id="positionselector"></div>
-<form name="deviceform" id="deviceform" action="<?php echo $_SERVER['PHP_SELF']; ?>" method="POST">
+<form name="deviceform" id="deviceform" action="<?php echo $_SERVER['PHP_SELF']; if(isset($dev->DeviceID) && $dev->DeviceID>0){print "?deviceid=$dev->DeviceID";} ?>" method="POST">
 <div class="left">
 <fieldset>
 	<legend>Asset Tracking</legend>

@@ -339,7 +339,7 @@
 		if($req->DeviceClass==$tempRow->TemplateID){$selected = 'selected';}else{$selected = '';}
 		$mfg->ManufacturerID=$tempRow->ManufacturerID;
 		$mfg->GetManufacturerByID($facDB);
-		print "				<option value=\"$tempRow->TemplateID\" $selected>$mfg->Name - $tempRow->Model>\n";
+		print "				<option value=\"$tempRow->TemplateID\" $selected>$mfg->Name - $tempRow->Model</option>\n";
 	}
 ?>
 			</select>
