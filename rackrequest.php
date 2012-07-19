@@ -244,6 +244,73 @@
 		$('input[value|="Delete Request"]').click(function(){
 			$('#deviceform').validationEngine('detach');
 		});
+<?php
+	if($user->RackAdmin && ($req->RequestID>0)){
+?>
+		$('#position').focus(function()	{
+			var cab=$("select#cabinetid").val();
+			$.get('scripts/ajax_cabinetuse.php?cabinet='+cab, function(data) {
+				var rackhtmlleft='';
+				var rackhtmlright='';
+				$.each(data, function(i,inuse){
+					if(inuse){var cssclass='notavail'}else{var cssclass=''};
+					rackhtmlleft+='<div>'+i+'</div>';
+					rackhtmlright+='<div val='+i+' class="'+cssclass+'"></div>';
+				});
+				var rackhtml='<div class="table border positionselector"><div><div>'+rackhtmlleft+'</div><div>'+rackhtmlright+'</div></div></div>';
+				$('#positionselector').html(rackhtml);
+				setTimeout(function(){
+					var divwidth=$('.positionselector').width();
+					$('#positionselector').width(divwidth);
+					$('#cabinetid').focus(function(){$('#positionselector').css({'left': '-1000px'});});
+					$('#specialinstructions').focus(function(){$('#positionselector').css({'left': '-1000px'});});
+					$('#positionselector').css({'left':(($('#position').position().left)+(divwidth+20))});
+					$('#positionselector').mouseleave(function(){
+						$('#positionselector').css({'left': '-1000px'});
+					});
+					$('.positionselector > div > div + div > div').mouseover(function(){
+						$('.positionselector > div > div + div > div').each(function(){
+							$(this).removeAttr('style');
+						});
+						var unum=$("#deviceheight").val();
+						if(unum>=1 && $(this).attr('class')!='notavail'){
+							var test='';
+							var background='green';
+							// check each element start with pointer
+							for (var x=0; x<unum; x++){
+								if(x!=0){
+									test+='.prev()';
+									eval("if($(this)"+test+".attr('class')=='notavail' || $(this)"+test+".length ==0){background='red';}");
+									eval("console.log($(this)"+test+".attr('val')+' '+$(this)"+test+".attr('class'))");
+								}else{
+									if($(this).attr('class')=='notavail'){background='red';}
+								}
+							}
+							test='';
+							if(background=='red'){var pointer='default'}else{var pointer='pointer'}
+							for (x=0; x<unum; x++){
+								if(x!=0){
+									test+='.prev()';
+									eval("$(this)"+test+".css({'background-color': '"+background+"'})");
+									eval("console.log($(this)"+test+".attr('val'))");
+								}else{
+									$(this).css({'background-color': background, 'cursor': pointer});
+									if(background=='green'){
+										$(this).click(function(){
+											$('#position').val($(this).attr('val'));
+											$('#positionselector').css({'left': '-1000px'});
+										});
+									}
+								}
+							}
+						}
+					});
+				},100);
+			});
+		});
+<?php
+	}
+?>
 	});
   </script>
 
@@ -260,6 +327,7 @@
 <h3>Data Center Rack Request</h3>
 <?php if($error!=""){echo '<fieldset class="exception border error"><legend>Errors</legend>'.$error.'</fieldset>';} ?>
 <div class="center"><div>
+<div id="positionselector"></div>
 <?php
 	print "<form name=\"deviceform\" id=\"deviceform\" action=\"{$_SERVER["PHP_SELF"]}\" method=\"POST\">
 	<input type=\"hidden\" name=\"requestid\" value=\"$req->RequestID\">\n";
@@ -391,8 +459,7 @@
 	</div>
 <?php
 	if($user->RackAdmin && ($req->RequestID>0)){
-		$rackHTML=$cab->GetCabinetSelectList($facDB)." Position: <input type=\"text\" name=\"position\" size=5>";
-		echo "<div><div><label for=\"cabinetid\">Select Rack Location:</label></div><div>$rackHTML</div></div>\n";
+		echo '<div><div><label for="cabinetid">Select Rack Location:</label></div><div>'.$cab->GetCabinetSelectList($facDB).'&nbsp;&nbsp;<label for="position">Position:</label> <input type="text" name="position" id="position" size=5></div></div>';
 	}
 ?>
 	<div class="caption">
