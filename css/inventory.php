@@ -56,6 +56,16 @@ div.cp { position: relative;}
 .soon {background-color:#FFFFAA;}
 .clear {background-color:white;}
 
+/* Rack Request Page */
+.request fieldset {
+		background-color: white;
+		border: 1px solid grey;
+		padding: 10px;
+		margin-bottom: 8px;
+}
+.request legend {border: 1px <?php echo $config->ParameterArray['HeaderColor']; ?> solid;background-color: white; padding: .15em;}
+
+
 /* Datacenter Stats */
 .dcstats .heading > div{width: 89%;display: inline-block;vertical-align: middle;}
 .dcstats .heading > div + div {width: 10%;}

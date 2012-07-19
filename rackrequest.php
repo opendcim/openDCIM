@@ -20,7 +20,7 @@
 	$req=new RackRequest();
 	$contact=new Contact();
 	$tmpContact=new Contact();
-	
+	$error='';	
 	$contactList=$contact->GetContactList($facDB);
 
 	//We only need to worry about sending email in the event this is a new submission and no other time.
@@ -44,11 +44,24 @@
 		}
 
 		$mailer=Swift_Mailer::newInstance($transport);
-			
-		$message=Swift_Message::NewInstance()
-			->setSubject($config->ParameterArray['MailSubject'])
-			->setFrom($config->ParameterArray['MailFromAddr'])
-			->setTo($email);
+		$message=Swift_Message::NewInstance()->setSubject($config->ParameterArray['MailSubject']);
+		try{		
+			$message->setFrom($config->ParameterArray['MailFromAddr']);
+		}catch(Swift_RfcComplianceException $e){
+			$error.="MailFrom: ".$e->getMessage()."<br>\n";
+		}
+		// Add rack requestor to the list of recipients
+		try{		
+			$message->addTo($email);
+		}catch(Swift_RfcComplianceException $e){
+			$error.="Equipment requestor address: ".$e->getMessage()."<br>\n";
+		}
+		// Add data center team to the list of recipients
+		try{		
+			$message->addTo($config->ParameterArray['MailToAddr']);
+		}catch(Swift_RfcComplianceException $e){
+			$error.="Data center team address: ".$e->getMessage()."<br>\n";
+		}
 
 		$logo='images/'.$config->ParameterArray["PDFLogoFile"];
 		$logo=$message->embed(Swift_Image::fromPath($logo)
@@ -63,7 +76,7 @@
 	<title>ITS Data Center Inventory</title>
 	</head>
 	<body>
-	<div id="header" style="padding: 5px 0;background: #006633;"><center><img src="'.$logo.'"></center></div>
+	<div id="header" style="padding: 5px 0;background: '.$config->ParameterArray["HeaderColor"].';"><center><img src="'.$logo.'"></center></div>
 	<div class="page">
 	<p>
 	<h3>ITS Facilities Rack Request</h3>'."\n";
@@ -101,7 +114,11 @@
 			</body></html>";
 
 			$message->setBody($htmlMessage,'text/html');
-			$result=$mailer->send($message);
+			try{
+				$result=$mailer->send($message);
+			}catch(Swift_RfcComplianceException $e){
+				$error.="Send: ".$e->getMessage()."<br>\n";
+			}
 		}elseif(isset($_REQUEST['action']) && ($user->WriteAccess && ($_REQUEST['action']=='Update Request'))){
 			$req->RequestID=$_REQUEST['requestid'];
 		  
@@ -155,7 +172,11 @@
 			</body></html>";
 
 			$message->setBody($htmlMessage,'text/html');
-			$result=$mailer->send($message);
+			try{
+				$result=$mailer->send($message);
+			}catch(Swift_RfcComplianceException $e){
+				$error.="Send: ".$e->getMessage()."<br>\n";
+			}
 		
 			header('Location: '.redirect("devices.php?deviceid=$dev->DeviceID"));
 			exit;
@@ -230,13 +251,14 @@
 </head>
 <body>
 <div id="header"></div>
-<div class="page">
+<div class="page request">
 <?php
     include('sidebar.inc.php');
 ?>
 <div class="main">
 <h2><?php echo $config->ParameterArray['OrgName']; ?></h2>
 <h3>Data Center Rack Request</h3>
+<?php if($error!=""){echo '<fieldset class="exception border error"><legend>Errors</legend>'.$error.'</fieldset>';} ?>
 <div class="center"><div>
 <?php
 	print "<form name=\"deviceform\" id=\"deviceform\" action=\"{$_SERVER["PHP_SELF"]}\" method=\"POST\">
