@@ -71,7 +71,16 @@ class Config{
 
 		// Build array of unique config parameters
 		while ($row=mysql_fetch_array($result)){
-			$uniqueconfig[$row['Parameter']]['Value']=$row['Value'];
+			if(isset($uniqueconfig[$row['Parameter']]['Value'])){
+				// if value in the array is equal to the default value AND the current value is different from the value in the array update the value in the array
+				if($uniqueconfig[$row['Parameter']]['Value']==$row['DefaultVal'] && $uniqueconfig[$row['Parameter']]['Value']!=$row['Value']){
+					$uniqueconfig[$row['Parameter']]['Value']=$row['Value'];
+				}
+			}else{
+				// value wasn't set in the array so we'll take whatever we're given even if it is the default value
+				$uniqueconfig[$row['Parameter']]['Value']=$row['Value'];
+			}
+			// the following aren't user configurable so no need to check for differences
 			$uniqueconfig[$row['Parameter']]['UnitOfMeasure']=$row['UnitOfMeasure'];
 			$uniqueconfig[$row['Parameter']]['ValType']=$row['ValType'];
 			$uniqueconfig[$row['Parameter']]['DefaultVal']=$row['DefaultVal'];
