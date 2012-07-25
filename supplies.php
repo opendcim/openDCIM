@@ -13,7 +13,11 @@
 	}
 
 	$sup = new Supplies();
-		
+	$bc = new BinContents();
+	$sb = new SupplyBin();
+	
+	$binList = $sb->GetBinList();
+	
 	if(isset($_REQUEST["supplyid"]) && $_REQUEST["supplyid"]>0) {
 		$sup->SupplyID = $_REQUEST["supplyid"];
 		$sup->GetSupplies( $facDB );
