@@ -1570,6 +1570,23 @@ class SupplyBin {
 		$sql = sprintf( "delete from fac_SupplyBin where BinID='%d'; delete from fac_BinContents where BinID='%d'; delete from fac_BinAudits where BinID='%d'", intval( $this->BinID ), intval( $this->BinID ), intval( $this->BinID ) );
 		mysql_query( $sql, $db );
 	}
+	
+	function GetBinList( $db ) {
+		$sql = sprintf( "select * from fac_SupplyBin order by Location ASC" );
+		$result = mysql_query( $sql, $db );
+		
+		$binList = array();
+		
+		while ( $row = mysql_fetch_array( $result ) ) {
+			$binNum = sizeof( $binList );
+			$binList[$binNum] = new SupplyBin();
+			
+			$binList[$binNum]->BinID = $row["BinID"];
+			$binList[$binNum]->Location = $row["Location"];
+		}
+		
+		return $binList;
+	}
 }
 
 class Supplies {
@@ -1580,7 +1597,7 @@ class Supplies {
 	var $MaxQty;
 	
 	function AddSupplies( $db ) {
-		$sql = sprintf( "insert into fac_Supplies set PartNum=\"%s\", PartName=\"%s\%, MinQty='%d', MaxQty='%d'", addslashes( $this->PartNum ), addslashes( $this->PartName ), intval( $this->MinQty ), intval( $this->MaxQty ) );
+		$sql = sprintf( "insert into fac_Supplies set PartNum=\"%s\", PartName=\"%s\", MinQty='%d', MaxQty='%d'", addslashes( $this->PartNum ), addslashes( $this->PartName ), intval( $this->MinQty ), intval( $this->MaxQty ) );
 		mysql_query( $sql, $db );
 		
 		$this->SupplyID = mysql_insert_id( $db );
@@ -1615,6 +1632,8 @@ class Supplies {
 			$supplyList[$num]->MinQty = $row["MinQty"];
 			$supplyList[$num]->MaxQty = $row["MaxQty"];
 		}
+		
+		return $supplyList;
 	}
 	
 	function UpdateSupplies( $db ) {
@@ -1639,6 +1658,7 @@ class BinContents {
 	}
 	
 	function GetBinContents( $db ) {
+		/* Return all of the supplies found in this bin */
 		$sql = sprintf( "select * from fac_BinContents where BinID='%d'", intval( $this->BinID ) );
 		$result = mysql_query( $sql, $db );
 		
@@ -1652,6 +1672,27 @@ class BinContents {
 			$binList[$num]->SupplyID = $row["SupplyID"];
 			$binList[$num]->Count = $row["Count"];
 		}
+		
+		return $binList;
+	}
+	
+	function FindSupplies( $db ) {
+		/* Return all of the bins where this SupplyID is found */
+		$sql = sprintf( "select a.* from fac_BinContents a, fac_SupplyBin b where a.SupplyID='%d' and a.BinID=b.BinID order by b.Location ASC", intval( $this->SupplyID ) );
+		$result = mysql_query( $sql, $db );
+
+		$binList = array();
+		
+		while ( $row = mysql_fetch_array( $result ) ) {
+			$num = sizeof( $binList );
+			$binList[$num] = new BinContents();
+			
+			$binList[$num]->BinID = $row["BinID"];
+			$binList[$num]->SupplyID = $row["SupplyID"];
+			$binList[$num]->Count = $row["Count"];
+		}
+		
+		return $binList;		
 	}
 	
 	function UpdateCount( $db ) {

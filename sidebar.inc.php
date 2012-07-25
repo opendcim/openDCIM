@@ -71,6 +71,8 @@
 	}
 	if ( $user->SiteAdmin ) {
 		echo '		<a href="usermgr.php"><li>Manage Users</li></a>
+		<a href="supplybin.php"><li>Manage Supply Bins</li></a>
+		<a href="supplies.php"><li>Manage Supplies</li></a>
 		<a href="datacenter.php"><li>Edit Data Centers</li></a>
 		<a href="powersource.php"><li>Edit Power Sources</li></a>
 		<a href="panelmgr.php"><li>Edit Power Panels</li></a>
