@@ -465,7 +465,7 @@ INSERT INTO fac_Config VALUES
         ('ComputerFacMgr','DataCenterMgr Name','Name','string','DataCenterMgr Name'),
         ('FacMgrMail','DataCenterMgr@your.domain','Email','string','DataCenterMgr@your.domain'),
         ('Version','1.4','','',''),
-        ("UserLookupURL","https://","URL","string","https://"),
+        ('UserLookupURL','https://','URL','string','https://'),
         ('ReservedColor','#00FFFF','HexColor','string','#FFFFFF'),
         ('HeaderColor', '#006633', 'HexColor', 'string', '#006633'),
         ('BodyColor', '#F0E0B2', 'HexColor', 'string', '#F0E0B2'),
