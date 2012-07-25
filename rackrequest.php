@@ -48,19 +48,19 @@
 		try{		
 			$message->setFrom($config->ParameterArray['MailFromAddr']);
 		}catch(Swift_RfcComplianceException $e){
-			$error.="MailFrom: ".$e->getMessage()."<br>\n";
+			$error.="MailFrom: <span class=\"errmsg\">".$e->getMessage()."</span><br>\n";
 		}
 		// Add rack requestor to the list of recipients
 		try{		
 			$message->addTo($email);
 		}catch(Swift_RfcComplianceException $e){
-			$error.="Equipment requestor address: ".$e->getMessage()."<br>\n";
+			$error.="Check contact details for <a href=\"contacts.php?contactid=$tmpContact->ContactID\">$tmpContact->LastName, $tmpContact->FirstName</a>: <span class=\"errmsg\">".$e->getMessage()."</span><br>\n";
 		}
 		// Add data center team to the list of recipients
 		try{		
 			$message->addTo($config->ParameterArray['MailToAddr']);
 		}catch(Swift_RfcComplianceException $e){
-			$error.="Data center team address: ".$e->getMessage()."<br>\n";
+			$error.="Data center team address: <span class=\"errmsg\">".$e->getMessage()."</span><br>\n";
 		}
 
 		$logo='images/'.$config->ParameterArray["PDFLogoFile"];
@@ -401,7 +401,7 @@
 	</div>
 	<div>
 		<div><label for="ethernetcount">Number of Ethernet Connections</label></div>
-		<div><input type="text" name="ethernetcount" id="ethernetcount" class="validate[optional,custom[onlyNumberSp]]" size="15" value="<?php echo $req->EthernetCount; ?>"></div>
+		<div><input type="text" name="ethernetcount" id="ethernetcount" class="validate[optional,custom[onlyNumberSp],min[1]]" size="15" value="<?php echo ($req->EthernetCount!=0) ? $req->EthernetCount : ''; ?>"></div>
 	</div>
 	<div>
 		<div><label for="vlanlist">VLAN Settings<span>(ie - eth0 on 973, eth1 on 600)</span></label></div>
@@ -409,7 +409,7 @@
 	</div>
 	<div>
 		<div><label for="sancount">Number of SAN Connections</label></div>
-		<div><input type="text" name="sancount" id="sancount" class="validate[optional,custom[onlyNumberSp]]" size="15" value="<?php echo $req->SANCount; ?>"></div>
+		<div><input type="text" name="sancount" id="sancount" class="validate[optional,custom[onlyNumberSp],min[1]]" size="15" value="<?php echo ($req->SANCount!=0) ? $req->SANCount : ''; ?>"></div>
 	</div>
 	<div>
 		<div><label for="sanlist">SAN Port Assignments</label></div>

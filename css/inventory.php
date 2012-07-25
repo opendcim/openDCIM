@@ -64,7 +64,7 @@ div.cp { position: relative;}
 		margin-bottom: 8px;
 }
 .request legend {border: 1px <?php echo $config->ParameterArray['HeaderColor']; ?> solid;background-color: white; padding: .15em;}
-
+.errmsg {display:block;font-style:italic;margin-left:2em;}
 
 /* Datacenter Stats */
 .dcstats .heading > div{width: 89%;display: inline-block;vertical-align: middle;}
