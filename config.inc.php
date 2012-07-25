@@ -56,8 +56,34 @@ class Config{
 		$result=mysql_query($sql,$db);
 		return;
 	}
-		
-				
-}
+	function Rebuild ($db){
+/* Rebuild: This function should only be needed after something like the version erasing glitch from 1.1 and 1.2.
+			At this time it is possible to get unwanted duplicate configuration parameters and this will clean
+			them.
 
+			I am not sanitizing input here because it should have no user interaction.  Read from the db, flush
+			db, write unique values back to the db.
+*/
+		$sql='select * from fac_Config';
+		$result=mysql_query($sql,$db);
+
+		$uniqueconfig=array();
+
+		// Build array of unique config parameters
+		while ($row=mysql_fetch_array($result)){
+			$uniqueconfig[$row['Parameter']]['Value']=$row['Value'];
+			$uniqueconfig[$row['Parameter']]['UnitOfMeasure']=$row['UnitOfMeasure'];
+			$uniqueconfig[$row['Parameter']]['ValType']=$row['ValType'];
+			$uniqueconfig[$row['Parameter']]['DefaultVal']=$row['DefaultVal'];
+		}
+
+		// Empty config table
+		mysql_query('TRUNCATE TABLE fac_Config;',$db);
+
+		// Rebuild config table from cleaned array
+		foreach($uniqueconfig as $key => $row){
+			mysql_query("INSERT INTO fac_Config VALUES ('$key','{$row['Value']}','{$row['UnitOfMeasure']}','{$row['ValType']}','{$row['DefaultVal']}');",$db); 
+		}
+	}
+}
 ?>

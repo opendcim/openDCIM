@@ -115,6 +115,12 @@ function applyupdate ($updatefile){
 		$results[]=applyupdate("db-1.2-to-1.3.sql");
 		$upgrade=true;
 	}
+	if($version=="1.3"){ // Do 1.3 to 1.4 Update
+		// Clean the configuration table of any duplicate values that might have been added.
+		$config->rebuild($facDB);
+		$results[]=applyupdate("db-1.3-to-1.4.sql");
+		$upgrade=true;
+	}
 	if($upgrade==true){ //If we're doing an upgrade don't call the rest of the installer.
 ?>
 <!doctype html>
