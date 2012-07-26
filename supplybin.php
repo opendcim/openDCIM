@@ -14,7 +14,10 @@
 
 	$bin = new SupplyBin();
 	$bc = new BinContents();
-		
+	$sup = new Supplies();
+	
+	$supList= $sup->GetSuppliesList( $facDB );
+	
 	if(isset($_REQUEST["binid"]) && $_REQUEST["binid"]>0) {
 		$bin->BinID = $_REQUEST["binid"];
 		$bin->GetBin( $facDB );
@@ -46,16 +49,25 @@
 <head>
   <meta http-equiv="Content-Type" content="text/html; charset=windows-1252">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
-  <title>openDCIM Stockroom Supply Bins</title>
+  <title>openDCIM Stockroom Supplies</title>
   <link rel="stylesheet" href="css/inventory.php" type="text/css">
   <!--[if lt IE 9]>
   <link rel="stylesheet"  href="css/ie.css" type="text/css">
   <![endif]-->
   <script type="text/javascript" src="scripts/jquery.min.js"></script>
+  <script type="text/javascript">
+	$(document).ready(function() {
+		$('#newline').click(function (){
+			$(this).parent().prev().clone().insertBefore($(this).parent()).children('div:first-child').html('<img src="images/del.gif">').click(function() {
+				$(this).parent().remove();
+			});
+		});
+	});
+  </script>
 </head>
 <body>
 <div id="header"></div>
-<div class="page">
+<div class="page supply">
 <?php
 	include( "sidebar.inc.php" );
 ?>
@@ -92,6 +104,51 @@
 ?>
 </div>
 </div><!-- END div.table -->
+<div class="table">
+	<div>
+		<div></div>
+		<div>Part Number</div>
+		<div>Count</div>
+	</div>
+<?php
+	foreach ( $binContents as $cnt ) {
+		printf( "<div>\n\t<div></div>\n" );
+		printf( "\t<div><select name=\"supplyid[]\"><option value=\"0\">Select parts to add...</option>\n" );
+		
+		foreach ( $supList as $tmpSup ) {
+			if ( $cnt->SupplyID == $tmpSup->SupplyID )
+				$selected = "SELECTED";
+			else
+				$selected = "";
+				
+			printf( "\t<option value=\"%d\" %s>%s (%s)</option>\n", $tmpSup->SupplyID, $selected, $tmpSup->PartNum, $tmpSup->PartName );
+		}
+		
+		printf( "\t</select></div>\n" );
+		printf( "\t<div><input name=\"count[]\" type=\"text\" value=\"%d\"></div>\n", $cnt->Count );
+		printf( "</div>\n" );
+	}
+?>
+	<div>
+		<div></div>
+		<div><select name="supplyid[]"><option value="0">Select parts to add...</option>
+<?php
+	foreach ( $supList as $tmpSup ) {
+		printf( "<option value=\"%d\">%s (%s)</option>\n", $tmpSup->SupplyID, $tmpSup->PartNum, $tmpSup->PartName );
+	}
+?>
+			</select></div>
+		<div><input name="count[]" type="text"></div>
+	</div>
+  	<div>
+		<div id="newline"><img src="images/add.gif" alt="add new row"></div>
+		<div></div>
+		<div></div>
+	</div>
+	<div class="caption">
+		<button type="submit" name="action" value="submit">Submit</button>
+	</div>
+</div>
 </form>
 </div></div>
 <a href="index.php">[ Return to Main Menu ]</a>
