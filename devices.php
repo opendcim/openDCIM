@@ -129,17 +129,25 @@
 		}
 		$cab->CabinetID=$dev->Cabinet;
 	} else {
-		$dev->InstallDate = date( "m/d/Y" );
+		// sets install date to today when a new device is being created
+		$dev->InstallDate=date("m/d/Y");
 	}
-	
-	if ( $dev->MfgDate <= "1970-01-01" )
-		$dev->MfgDate = date( "Y-m-d" );
+
+/*	
+/ uncomment if you want empty dates to be filled with today's date instead of epoch
+/
+/ unset mfgdates will show up on the asset aging report as unknown
+/*
+
+/*	
+	if($dev->MfgDate <= "1970-01-01"){
+		$dev->MfgDate=date("Y-m-d");
+	}
 		
-	if ( $dev->InstallDate <= "1970-01-01" )
-		$dev->InstallDate = date( "Y-m-d" );
-		
-	if ( $dev->WarrantyExpire <= "1970-01-01" )
-		$dev->WarrantyExpire = date( "Y-m-d" );
+	if($dev->WarrantyExpire <= "1970-01-01"){
+		$dev->WarrantyExpire= date("Y-m-d");
+	}
+*/
 
 	$templateList=$templ->GetTemplateList($facDB);
 	$escTimeList=$escTime->GetEscalationTimeList($facDB);
