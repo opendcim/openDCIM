@@ -422,6 +422,10 @@ div.page.device {
     text-align: center;
     width: 100%;
 }
+/* Supplies */
+.supply .table > div:first-child > div {padding-bottom:0.5em;font-weight: bold;}
+.supply .table > div > div {padding-right: 0.25em;}
+.supply .table #quantity {text-align: center;}
 
 /* Installer */
 .installer ul li, ul.nav li{
