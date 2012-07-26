@@ -38,12 +38,9 @@
   <script type="text/javascript">
 	$(document).ready(function() {
 		$('#newline').click(function (){
-			$(this).parent().prev().clone().insertBefore($(this).parent());
-			$(this).parent().prev().children('div:first-child').html('<img src="images/del.gif">');
-			$(this).parent().prev().children('div:first-child').click(function() {
+			$(this).parent().prev().clone().insertBefore($(this).parent()).children('div:first-child').html('<img src="images/del.gif">').click(function() {
 				$(this).parent().remove();
 			});
-//			$(this).parent().prev($(this).children('div').addClass('innertest')).addClass('test');
 		});
 	});
   </script>
