@@ -1,10 +1,10 @@
 <?php
-	require_once( "db.inc.php" );
-	require_once( "facilities.inc.php" );
+	require_once("db.inc.php");
+	require_once("facilities.inc.php");
 
-	$user = new User();
-	$user->UserID = $_SERVER["REMOTE_USER"];
-	$user->GetUserRights( $facDB );
+	$user=new User();
+	$user->UserID=$_SERVER["REMOTE_USER"];
+	$user->GetUserRights($facDB);
 
 	if(!$user->SiteAdmin){
 		// No soup for you.
@@ -12,30 +12,24 @@
 		exit;
 	}
 
-	$sup = new Supplies();
-	$bc = new BinContents();
-	$sb = new SupplyBin();
-	
-	$binList = $sb->GetBinList();
+	$sup=new Supplies();
+	$bc=new BinContents();
 	
 	if(isset($_REQUEST["supplyid"]) && $_REQUEST["supplyid"]>0) {
-		$sup->SupplyID = $_REQUEST["supplyid"];
-		$sup->GetSupplies( $facDB );
-		
-		$bc->BinID = $bin->BinID;
-		$binContents = $bc->FindSupplies( $facDB );
+		$sup->SupplyID=$_REQUEST["supplyid"];
+		$sup->GetSupplies($facDB);
 	}
 
 	$status="";
-	if(isset($_REQUEST["action"])&&(($_REQUEST["action"]=="Create")||($_REQUEST["action"]=="Update"))){
-		$sup->SupplyID = $_REQUEST["supplyid"];
-		$sup->PartNum = $_REQUEST["partnum"];
-		$sup->PartName = $_REQUEST["partname"];
-		$sup->MinQty = $_REQUEST["minqty"];
-		$sup->MaxQty = $_REQUEST["maxqty"];
+	if(isset($_POST["action"])&&(($_POST["action"]=="Create")||($_POST["action"]=="Update"))){
+		$sup->SupplyID=$_REQUEST["supplyid"];
+		$sup->PartNum=$_REQUEST["partnum"];
+		$sup->PartName=$_REQUEST["partname"];
+		$sup->MinQty=$_REQUEST["minqty"];
+		$sup->MaxQty=$_REQUEST["maxqty"];
 
 		if($_REQUEST["action"]=="Create"){
-			if($sup->PartNum != null && $sup->PartNum != "") {
+			if($sup->PartNum!=null && $sup->PartNum!=""){
   				$sup->AddSupplies($facDB);
 			}
 		}else{
@@ -44,7 +38,7 @@
 		}
 	}
 	
-	$supplyList = $sup->GetSuppliesList( $facDB );
+	$supplyList=$sup->GetSuppliesList($facDB);
 
 ?>
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
