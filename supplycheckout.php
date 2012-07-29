@@ -13,15 +13,29 @@
 	}
 
 	$dept=new Department();
-	$bin=new SupplyBin();
 	$sup=new Supplies();
-	$bc=new BinContents();
-	$sb=new SupplyBin();
 	
-	$binList=$sb->GetBinList();
 	$supplyList=$sup->GetSuppliesList($facDB);
 	$deptList=$dept->GetDepartmentList($facDB);
 
+	// Check to make sure this was a form submission
+	if(isset($_POST['action']) && $_POST['action']=="submit"){
+		// The submission looks like our form and has something.
+		if(isset($_POST['deptid']) && count($_POST['deptid']>0)){
+			foreach($_POST['deptid'] as $key => $value){
+				/* use the $key to pull the value from each line.
+				   only process if there is some form of data in each field */
+				if($_POST['supplyid'][$key]>0 && $_POST['quantity'][$key]>0 && $_POST['deptid'][$key]>0){
+					// print is a placeholder to verify information while testing
+					print "{$_POST['deptid'][$key]}\n";
+					print "{$_POST['supplyid'][$key]}\n";
+					print "{$_POST['quantity'][$key]}\n";
+
+					// hand off dept, supplyid and amount to deduct to non-existent function that will log, bill, track, whatever
+				}
+			}
+		}
+	}
 
 ?>
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
@@ -66,25 +80,23 @@
 	<div>
 		<div></div>
 		<div><select name="deptid[]" id="deptid">
+			<option value="0" selected>Select Department...</option>
 <?php
 	foreach($deptList as $deptRow){
-		echo "			<option value=\"$deptRow->DeptID\"";
-		if($dept->DeptID == $deptRow->DeptID){echo ' selected';}
-		echo ">$deptRow->Name</option>\n";
+		echo "			<option value=\"$deptRow->DeptID\">$deptRow->Name</option>\n";
 	}
 
 	echo '		</select></div>
 		<div><select name="supplyid[]" id="supplyid">
+			<option value="0" selected>Select part...</option>
 ';
 
 	foreach($supplyList as $supplyRow){
-		echo "			<option value=\"$supplyRow->SupplyID\"";
-		if($sup->SupplyID == $supplyRow->SupplyID){echo " selected";}
-		echo ">$supplyRow->PartNum ($supplyRow->PartName)</option>\n";
+		echo "			<option value=\"$supplyRow->SupplyID\">$supplyRow->PartNum ($supplyRow->PartName)</option>\n";
 	}
 ?>
 		</select></div>
-		<div><input type="text" name="quantity[]" id="quantity" size=5 maxlength=5></div>
+		<div><input type="text" name="quantity[]" class="quantity" size=5 maxlength=5></div>
 	</div>
 	<div>
 		<div id="newline"><img src="images/add.gif" alt="add new row"></div>

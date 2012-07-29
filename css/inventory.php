@@ -425,7 +425,14 @@ div.page.device {
 /* Supplies */
 .supply .table > div:first-child > div {padding-bottom:0.5em;font-weight: bold;}
 .supply .table > div > div {padding-right: 0.25em;}
-.supply .table #quantity {text-align: center;}
+.supply .table > div > div:first-child {width: 22px;}
+.supply .table .quantity {text-align: center;}
+.supply .table { margin-bottom: 2em; width: 100%;}
+.supply .table select { width: 100%; }
+.supply .table:first-child { margin-left: 25px; width: auto;}
+.supply .table:first-child > div > div:first-child {width: auto;}
+.supply #location {width: 97%;}
+
 
 /* Installer */
 .installer ul li, ul.nav li{

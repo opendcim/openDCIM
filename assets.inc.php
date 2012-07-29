@@ -1616,29 +1616,28 @@ class Supplies {
 		}
 	}
 	
-	function GetSuppliesList( $db ) {
-		$sql = "select * from fac_Supplies order by PartNum ASC";
-		$result = mysql_query( $sql, $db );
+	function GetSuppliesList($db){
+		$sql="select * from fac_Supplies order by PartNum ASC";
+		$result=mysql_query($sql,$db);
 		
-		$supplyList = array();
+		$supplyList=array();
 		
-		while ( $row = mysql_fetch_array( $result ) ) {
-			$num = sizeof( $supplyList );
-			$supplyList[$num] = new Supplies();
+		while($row=mysql_fetch_array($result)){
+			$supplyList[$row["SupplyID"]]=new Supplies();
 			
-			$supplyList[$num]->SupplyID = $row["SupplyID"];
-			$supplyList[$num]->PartNum = $row["PartNum"];
-			$supplyList[$num]->PartName = $row["PartName"];
-			$supplyList[$num]->MinQty = $row["MinQty"];
-			$supplyList[$num]->MaxQty = $row["MaxQty"];
+			$supplyList[$row["SupplyID"]]->SupplyID=$row["SupplyID"];
+			$supplyList[$row["SupplyID"]]->PartNum=$row["PartNum"];
+			$supplyList[$row["SupplyID"]]->PartName=$row["PartName"];
+			$supplyList[$row["SupplyID"]]->MinQty=$row["MinQty"];
+			$supplyList[$row["SupplyID"]]->MaxQty=$row["MaxQty"];
 		}
 		
 		return $supplyList;
 	}
 	
-	function UpdateSupplies( $db ) {
-		$sql = sprintf( "update fac_Supplies set PartNum=\"%s\", PartName=\"%s\", MinQty='%d', MaxQty='%d' where SupplyID='%d'", addslashes( $this->PartNum ), addslashes( $this->PartName ), intval( $this->MinQty ), intval( $this->MaxQty ), intval( $this->SupplyID ) );
-		mysql_query( $sql, $db );
+	function UpdateSupplies($db){
+		$sql=sprintf( "update fac_Supplies set PartNum=\"%s\", PartName=\"%s\", MinQty='%d', MaxQty='%d' where SupplyID='%d'", addslashes( $this->PartNum ), addslashes( $this->PartName ), intval( $this->MinQty ), intval( $this->MaxQty ), intval( $this->SupplyID ) );
+		mysql_query($sql,$db);
 	}
 	
 	function DeleteSupplies( $db ) {
