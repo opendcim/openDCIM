@@ -61,7 +61,12 @@
 							foreach($binContents as $key => $contents){
 								if($contents->SupplyID==$SupplyID){
 									$contents->Count=$count;
-									$contents->updateCount($facDB);
+									// if we manually set supply to zero remove it from the bin?
+									if($count==0){
+										$contents->RemoveContents($facDB);
+									}else{
+										$contents->UpdateCount($facDB);
+									}
 									$ins=false;
 								}
 							}
