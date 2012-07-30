@@ -81,7 +81,7 @@
 	<p>
 	<h3>ITS Facilities Rack Request</h3>'."\n";
 
-		if(isset($_REQUEST['action'])&& ($user->WriteAccess && ($_REQUEST['action'] == 'Create'))){
+		if(isset($_REQUEST['action'])&& ($user->RackRequest && ($_REQUEST['action'] == 'Create'))){
 			$req->RequestorID=$_REQUEST['requestorid'];
 			$req->Label=$_REQUEST['label'];
 			$req->SerialNo=$_REQUEST['serialno'];
