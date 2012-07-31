@@ -61,3 +61,7 @@ INSERT INTO `fac_Config` (`Parameter`, `Value`, `UnitOfMeasure`, `ValType`, `Def
 ('LinkColor', '#000000', 'HexColor', 'string', '#000000'),
 ('VisitedLinkColor', '#8D90B3', 'HexColor', 'string', '#8D90B3');
 
+--
+-- Not sure how this got overlooked for several releases
+-- 
+ALTER TABLE fac_RackRequest ADD MfgDate DATE NOT NULL AFTER SerialNo; 

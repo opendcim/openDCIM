@@ -303,6 +303,7 @@ CREATE TABLE fac_RackRequest (
   CompleteTime datetime NOT NULL,
   Label varchar(40) NOT NULL,
   SerialNo varchar(40) NOT NULL,
+  MfgDate date NOT NULL,
   AssetTag varchar(40) NOT NULL,
   ESX tinyint(1) NOT NULL,
   Owner int(11) NOT NULL,
