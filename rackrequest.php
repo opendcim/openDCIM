@@ -3,10 +3,10 @@
 	require_once( 'facilities.inc.php' );
 	require_once( 'swiftmailer/swift_required.php' );
 	
-	$user = new User();
+	$user=new User();
 	
-	$user->UserID = $_SERVER['REMOTE_USER'];
-	$user->GetUserRights( $facDB );
+	$user->UserID=$_SERVER['REMOTE_USER'];
+	$user->GetUserRights($facDB);
 	
 	if(!$user->RackRequest){
 		// No soup for you.
@@ -20,14 +20,23 @@
 	$req=new RackRequest();
 	$contact=new Contact();
 	$tmpContact=new Contact();
-	$error='';	
+	$formfix=$error='';	
 	$contactList=$contact->GetContactList($facDB);
+	$contact->UserID=$user->UserID;
+	$contact->GetContactByUserID($facDB);
 
 	//We only need to worry about sending email in the event this is a new submission and no other time.
-	if(isset($_REQUEST["action"])){
-		$tmpContact->ContactID=intval($_REQUEST["requestorid"]);
+	if(isset($_POST["action"])){
+		if(isset($_REQUEST['requestid']) && $_REQUEST['requestid'] >0){
+			$req->RequestID=$_REQUEST['requestid'];
+			$req->GetRequest($facDB);
+
+			$contact->ContactID=$req->RequestorID;
+			$contact->GetContactByID($facDB);
+		}
+
+		$tmpContact->ContactID=$_POST["requestorid"];
 		$tmpContact->GetContactByID($facDB);
-		$email=$tmpContact->Email;
 
 		// If any port other than 25 is specified, assume encryption and authentication
 		if($config->ParameterArray['SMTPPort']!= 25){
@@ -45,17 +54,21 @@
 
 		$mailer=Swift_Mailer::newInstance($transport);
 		$message=Swift_Message::NewInstance()->setSubject($config->ParameterArray['MailSubject']);
+
+		// Set from address
 		try{		
 			$message->setFrom($config->ParameterArray['MailFromAddr']);
 		}catch(Swift_RfcComplianceException $e){
 			$error.="MailFrom: <span class=\"errmsg\">".$e->getMessage()."</span><br>\n";
 		}
+
 		// Add rack requestor to the list of recipients
 		try{		
-			$message->addTo($email);
+			$message->addTo($tmpContact->Email);
 		}catch(Swift_RfcComplianceException $e){
 			$error.="Check contact details for <a href=\"contacts.php?contactid=$tmpContact->ContactID\">$tmpContact->LastName, $tmpContact->FirstName</a>: <span class=\"errmsg\">".$e->getMessage()."</span><br>\n";
 		}
+
 		// Add data center team to the list of recipients
 		try{		
 			$message->addTo($config->ParameterArray['MailToAddr']);
@@ -64,41 +77,28 @@
 		}
 
 		$logo='images/'.$config->ParameterArray["PDFLogoFile"];
-		$logo=$message->embed(Swift_Image::fromPath($logo)
-			->setFilename('logo.png')
-		);
+		$logo=$message->embed(Swift_Image::fromPath($logo)->setFilename('logo.png'));
 
-		$htmlMessage='<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
-	<html>
-	<head>
-	<meta http-equiv="Content-Type" content="text/html; charset=windows-1252">
-	<meta http-equiv="X-UA-Compatible" content="IE=edge">
-	<title>ITS Data Center Inventory</title>
-	</head>
-	<body>
-	<div id="header" style="padding: 5px 0;background: '.$config->ParameterArray["HeaderColor"].';"><center><img src="'.$logo.'"></center></div>
-	<div class="page">
-	<p>
-	<h3>ITS Facilities Rack Request</h3>'."\n";
+		$htmlMessage='<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd"><html><head><meta http-equiv="Content-Type" content="text/html; charset=windows-1252"><meta http-equiv="X-UA-Compatible" content="IE=edge"><title>ITS Data Center Inventory</title></head><body><div id="header" style="padding: 5px 0;background: '.$config->ParameterArray["HeaderColor"].';"><center><img src="'.$logo.'"></center></div><div class="page"><p><h3>ITS Facilities Rack Request</h3>'."\n";
 
-		if(isset($_REQUEST['action'])&& ($user->RackRequest && ($_REQUEST['action'] == 'Create'))){
-			$req->RequestorID=$_REQUEST['requestorid'];
-			$req->Label=$_REQUEST['label'];
-			$req->SerialNo=$_REQUEST['serialno'];
-			$req->MfgDate=$_REQUEST['mfgdate'];
-			$req->AssetTag=$_REQUEST['assettag'];
-			$req->ESX=$_REQUEST['esx'];
-			$req->Owner=$_REQUEST['owner'];
-			$req->DeviceHeight=$_REQUEST['deviceheight'];
-			$req->EthernetCount=$_REQUEST['ethernetcount'];
-			$req->VLANList=$_REQUEST['vlanlist'];
-			$req->SANCount=$_REQUEST['sancount'];
-			$req->SANList=$_REQUEST['sanlist'];
-			$req->DeviceClass=$_REQUEST['deviceclass'];
-			$req->DeviceType=$_REQUEST['devicetype'];
-			$req->LabelColor=$_REQUEST['labelcolor'];
-			$req->CurrentLocation=$_REQUEST['currentlocation'];
-			$req->SpecialInstructions=$_REQUEST['specialinstructions'];
+		if($_POST['action'] == 'Create'){
+			$req->RequestorID=$_POST['requestorid'];
+			$req->Label=$_POST['label'];
+			$req->SerialNo=$_POST['serialno'];
+			$req->MfgDate=$_POST['mfgdate'];
+			$req->AssetTag=$_POST['assettag'];
+			$req->ESX=$_POST['esx'];
+			$req->Owner=$_POST['owner'];
+			$req->DeviceHeight=$_POST['deviceheight'];
+			$req->EthernetCount=$_POST['ethernetcount'];
+			$req->VLANList=$_POST['vlanlist'];
+			$req->SANCount=$_POST['sancount'];
+			$req->SANList=$_POST['sanlist'];
+			$req->DeviceClass=$_POST['deviceclass'];
+			$req->DeviceType=$_POST['devicetype'];
+			$req->LabelColor=$_POST['labelcolor'];
+			$req->CurrentLocation=$_POST['currentlocation'];
+			$req->SpecialInstructions=$_POST['specialinstructions'];
 
 			$req->CreateRequest($facDB);
 
@@ -119,82 +119,79 @@
 			}catch(Swift_RfcComplianceException $e){
 				$error.="Send: ".$e->getMessage()."<br>\n";
 			}
-		}elseif(isset($_REQUEST['action']) && ($user->WriteAccess && ($_REQUEST['action']=='Update Request'))){
-			$req->RequestID=$_REQUEST['requestid'];
-		  
-			$req->Label=$_REQUEST['label'];
-			$req->SerialNo=$_REQUEST['serialno'];
-			$req->MfgDate=$_REQUEST['mfgdate'];
-			$req->AssetTag=$_REQUEST['assettag'];
-			$req->ESX=$_REQUEST['esx'];
-			$req->Owner=$_REQUEST['owner'];
-			$req->DeviceHeight=$_REQUEST['deviceheight'];
-			$req->EthernetCount=$_REQUEST['ethernetcount'];
-			$req->VLANList=$_REQUEST['vlanlist'];
-			$req->SANCount=$_REQUEST['sancount'];
-			$req->SANList=$_REQUEST['sanlist'];
-			$req->DeviceClass=$_REQUEST['deviceclass'];
-			$req->DeviceType=$_REQUEST['devicetype'];
-			$req->LabelColor=$_REQUEST['labelcolor'];
-			$req->CurrentLocation=$_REQUEST['currentlocation'];
-			$req->SpecialInstructions=$_REQUEST['specialinstructions'];
+		}elseif(($_POST['action']=='Update Request'||$_POST['action']=='Move to Rack') && (($user->RackRequest && $user->UserID==$contact->UserID)||$user->RackAdmin)){
+			$req->RequestorID=$_POST['requestorid'];
+			$req->Label=$_POST['label'];
+			$req->SerialNo=$_POST['serialno'];
+			$req->MfgDate=date('Y-m-d',strtotime($_POST["mfgdate"]));
+			$req->AssetTag=$_POST['assettag'];
+			$req->ESX=$_POST['esx'];
+			$req->Owner=$_POST['owner'];
+			$req->DeviceHeight=$_POST['deviceheight'];
+			$req->EthernetCount=$_POST['ethernetcount'];
+			$req->VLANList=$_POST['vlanlist'];
+			$req->SANCount=$_POST['sancount'];
+			$req->SANList=$_POST['sanlist'];
+			$req->DeviceClass=$_POST['deviceclass'];
+			$req->DeviceType=$_POST['devicetype'];
+			$req->LabelColor=$_POST['labelcolor'];
+			$req->CurrentLocation=$_POST['currentlocation'];
+			$req->SpecialInstructions=$_POST['specialinstructions'];
 
 			$req->UpdateRequest($facDB);
-	   }elseif(isset($_REQUEST['action']) && ($user->RackAdmin && ($_REQUEST['action']=='Move to Rack'))){
-			$req->RequestID=$_REQUEST['requestid'];
-			$req->GetRequest($facDB);
-			
-			$req->CompleteRequest( $facDB );
-			
-			$dev->Label=$_REQUEST["label"];
-			$dev->SerialNo=$_REQUEST["serialno"];
-			if($_REQUEST["mfgdate"] >''){
-				$dev->MfgDate=date('Y-m-d',strtotime($_REQUEST["mfgdate"]));
-			}
-			
-			$dev->InstallDate=date('Y-m-d');
-			$dev->AssetTag=$_REQUEST["assettag"];
-			$dev->ESX=$_REQUEST["esx"];
-			$dev->Owner=$_REQUEST["owner"];
-			$dev->Cabinet=$_REQUEST['cabinetid'];
-			$dev->Position=$_REQUEST['position'];
-			$dev->Height=$_REQUEST["deviceheight"];
-			$dev->Ports=$_REQUEST["ethernetcount"];
-			$dev->DeviceType=$_REQUEST["devicetype"];
-			$dev->TemplateID=$_REQUEST["deviceclass"];
-			
-			$dev->CreateDevice($facDB);
-			
-			$htmlMessage.="<p>Your request for racking up the device labeled $req->Label has been completed.</p>
 
-			<p>To view your device in its final location <a href=\"https://{$_SERVER['SERVER_NAME']}/devices.php?deviceid=$dev->DeviceID\"> this link</a>.</p>
-			
-			</body></html>";
+			if($user->RackAdmin && $_POST['action']=='Move to Rack'){
+				$req->CompleteRequest($facDB);
+				
+				$dev->Label=$req->Label;
+				$dev->SerialNo=$req->SerialNo;
+				$dev->MfgDate=$req->MfgDate;
+				$dev->InstallDate=date('Y-m-d');
+				$dev->AssetTag=$req->AssetTag;
+				$dev->ESX=$req->ESX;
+				$dev->Owner=$req->Owner;
+				$dev->Cabinet=$_POST['cabinetid'];
+				$dev->Position=$_POST['position'];
+				$dev->Height=$req->DeviceHeight;
+				$dev->Ports=$req->EthernetCount;
+				$dev->DeviceType=$req->DeviceType;
+				$dev->TemplateID=$req->DeviceClass;
+				
+				$dev->CreateDevice($facDB);
+				
+				$htmlMessage.="<p>Your request for racking up the device labeled $req->Label has been completed.</p>
+				<p>To view your device in its final location <a href=\"https://{$_SERVER['SERVER_NAME']}{$_SERVER['PHP_SELF']}/devices.php?deviceid=$dev->DeviceID\"> this link</a>.</p>
+				</body></html>";
 
-			$message->setBody($htmlMessage,'text/html');
-			try{
-				$result=$mailer->send($message);
-			}catch(Swift_RfcComplianceException $e){
-				$error.="Send: ".$e->getMessage()."<br>\n";
+				$message->setBody($htmlMessage,'text/html');
+				try{
+					$result=$mailer->send($message);
+				}catch(Swift_RfcComplianceException $e){
+					$error.="Send: ".$e->getMessage()."<br>\n";
+				}
+			
+				header('Location: '.redirect("devices.php?deviceid=$dev->DeviceID"));
+				exit;
 			}
-		
-			header('Location: '.redirect("devices.php?deviceid=$dev->DeviceID"));
+	  }elseif($_POST['action']=='Delete Request'){
+		  if($user->RackAdmin||$user->UserID==$contact->UserID){
+			$req->DeleteRequest($facDB);
+			header('Location: '.redirect('index.php'));
 			exit;
-	  }elseif(isset($_REQUEST['action']) && ($_REQUEST['action']=='Delete Request')){
-			$req->RequestID=$_REQUEST['requestid'];
-			$req->GetRequest($facDB);
-		
-			if($user->RackAdmin){
-				$req->DeleteRequest($facDB);
-			}
-		header('Location: '.redirect('index.php'));
-		exit;
+		  }else{
+			// This should never be hit under normal circumstatnces.
+			$error.="You do not have permission to delete this request";
+		  }
 	   }
 	}
 	// If requestid is set we are either looking up a request or performing an action on one already. Refresh the object from the DB
 	if(isset($_REQUEST['requestid']) && $_REQUEST['requestid']>0){
 		$req->RequestID=$_REQUEST['requestid'];
 		$req->GetRequest($facDB);
+		$formfix="?requestid=$req->RequestID";
+
+		$contact->ContactID=$req->RequestorID;
+		$contact->GetContactByID($facDB);
 	}
 ?>
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
@@ -240,7 +237,7 @@
 			});
 			$('#mfgdate').datepicker({});
 		});
-		// Disabled the form validation so that the delete button will work
+		// Disable the form validation so that the delete button will work
 		$('input[value|="Delete Request"]').click(function(){
 			$('#deviceform').validationEngine('detach');
 		});
@@ -329,7 +326,7 @@
 <div class="center"><div>
 <div id="positionselector"></div>
 <?php
-	print "<form name=\"deviceform\" id=\"deviceform\" action=\"{$_SERVER["PHP_SELF"]}\" method=\"POST\">
+	print "<form name=\"deviceform\" id=\"deviceform\" action=\"{$_SERVER["PHP_SELF"]}$formfix\" method=\"POST\">
 	<input type=\"hidden\" name=\"requestid\" value=\"$req->RequestID\">\n";
 ?>
 <div class="table">
@@ -339,7 +336,7 @@
 			<select name="requestorid" id="requestorid">
 <?php
 	foreach($contactList as $tmpContact){
-		if($tmpContact->UserID==$user->UserID){$selected="SELECTED";}else{$selected="";}
+		if($tmpContact->UserID==$contact->UserID){$selected="SELECTED";}else{$selected="";}
 		print "				<option value=\"$tmpContact->ContactID\" $selected>$tmpContact->LastName, $tmpContact->FirstName</option>";
 	}
 ?>
@@ -464,14 +461,14 @@
 ?>
 	<div class="caption">
 <?php
-	if($user->RackRequest){
+	if($user->RackRequest||$user->RackAdmin){
 		if($req->RequestID >0){
-			if($user->RackAdmin && ($req->RequestID>0)){
-				echo '<input type="submit" name="action" value="Move to Rack">';
-			}
-			echo '<input type="submit" name="action" value="Update Request">';
-			if($user->DeleteAccess){
+			if($user->RackAdmin||($user->UserID==$contact->UserID)){
+				echo '<input type="submit" name="action" value="Update Request">';
 				echo '<input type="submit" name="action" value="Delete Request">';
+			}
+			if($user->RackAdmin){
+				echo '<input type="submit" name="action" value="Move to Rack">';
 			}
 		}else{
 			echo '<input type="submit" name="action" value="Create">';

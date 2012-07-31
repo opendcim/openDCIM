@@ -1405,6 +1405,7 @@ class RackRequest {
 
   function UpdateRequest( $db ) {
     $sql = "update fac_RackRequest set 
+        RequestorID=\"" . intval( $this->RequestorID ) . "\", 
         Label=\"" . addslashes( $this->Label ) . "\", 
         SerialNo=\"" . addslashes( $this->SerialNo ) . "\",
         AssetTag=\"" . addslashes( $this->AssetTag ) . "\",
@@ -1420,7 +1421,7 @@ class RackRequest {
         LabelColor=\"" . $this->LabelColor . "\", 
         CurrentLocation=\"" . addslashes( $this->CurrentLocation ) . "\", 
         SpecialInstructions=\"" . addslashes( $this->SpecialInstructions ) . "\"
-        where RequestID=\"" . $this->RequestID . "\"";
+        where RequestID=\"" . intval($this->RequestID) . "\"";
     
     $result = mysql_query( $sql, $db );
   }  
