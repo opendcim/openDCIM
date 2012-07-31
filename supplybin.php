@@ -19,7 +19,8 @@
 	$supList=$sup->GetSuppliesList($facDB);
 	$formpatch="";
 	$status="";
-	
+
+
 	if(isset($_REQUEST["binid"])) {
 		$bin->BinID=$_REQUEST["binid"];
 		$bin->GetBin($facDB);
@@ -50,8 +51,16 @@
 								if(!isset($cleansupplies[$_POST['supplyid'][$key]])){
 									$cleansupplies[$_POST['supplyid'][$key]]=$_POST['count'][$key];
 								}else{
-									// Some prankster is trying to add the same part type multiple times so just add the values up
-									$cleansupplies[$_POST['supplyid'][$key]]+=$_POST['count'][$key];
+									// we're using -1 to remove an item from the bin.
+									if($_POST['count'][$key]!=-1 && $cleansupplies[$_POST['supplyid'][$key]]!=-1){
+										// Some prankster is trying to add the same part type multiple times so just add the values up
+										$cleansupplies[$_POST['supplyid'][$key]]+=$_POST['count'][$key];
+									}elseif($cleansupplies[$_POST['supplyid'][$key]]==-1){
+										// Smart ass clicked the x to remove the part from the bin the added it back with a line below that.
+										$cleansupplies[$_POST['supplyid'][$key]]+=$_POST['count'][$key]+1;
+									}else{
+										$cleansupplies[$_POST['supplyid'][$key]]=-1;
+									}
 								}
 							}
 						}
@@ -62,7 +71,7 @@
 								if($contents->SupplyID==$SupplyID){
 									$contents->Count=$count;
 									// if we manually set supply to zero remove it from the bin?
-									if($count==0){
+									if($count==-1){
 										$contents->RemoveContents($facDB);
 									}else{
 										$contents->UpdateCount($facDB);
@@ -109,6 +118,22 @@
 			$(this).parent().prev().clone().insertBefore($(this).parent()).children('div:first-child').html('<img src="images/del.gif">').click(function() {
 				$(this).parent().remove();
 			});
+		});
+		$('.remove').click(function (){
+			if(!$(this).next().next().children('input').attr('oldcount')){
+				$(this).children('img').after('<input type="hidden" name="'+$(this).next().children("select").attr("name")+'" value="'+$(this).next().children("select").val()+'">');
+				$(this).children('img').after('<input type="hidden" name="'+$(this).next().next().children("input").attr("name")+'" value="-1">');
+				$(this).next().children('select').attr('disabled','disabled');
+				$(this).next().next().children('input').attr({
+					'oldcount': $(this).next().next().children('input').val(),
+					'value': '-1',
+					'disabled': 'disabled'
+				});
+			}else{
+				$(this).children('input').remove();
+				$(this).next().children('select').removeAttr('disabled');
+				$(this).next().next().children('input').val($(this).next().next().children('input').attr('oldcount')).removeAttr('oldcount').removeAttr('disabled');
+			}
 		});
 	});
   </script>
@@ -165,7 +190,7 @@
 <?php
 	foreach($binContents as $cnt){
 		print "	<div>
-		<div></div>
+		<div class=\"remove\"><img src=\"images/x.gif\" alt=\"Remove this item from the bin\"></div>
 		<div><select name=\"supplyid[]\">
 			<option value=\"$cnt->SupplyID\">{$supList[$cnt->SupplyID]->PartNum} ({$supList[$cnt->SupplyID]->PartName})</option>
 		</select></div>
