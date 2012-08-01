@@ -65,3 +65,10 @@ INSERT INTO `fac_Config` (`Parameter`, `Value`, `UnitOfMeasure`, `ValType`, `Def
 -- Not sure how this got overlooked for several releases
 -- 
 ALTER TABLE fac_RackRequest ADD MfgDate DATE NOT NULL AFTER SerialNo; 
+
+--
+-- Add database structure changes for Parent/Child relationships of Chassis / Slots
+--
+
+ALTER TABLE fac_Device add column ChassisSlots smallint(6) NOT NULL AFTER DeviceType;
+ALTER TABLE fac_Device add column ParentDevice int(11) NOT NULL AFTER ChassisSlots;

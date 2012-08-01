@@ -130,6 +130,8 @@ CREATE TABLE fac_Device (
   NominalWatts int(11) NOT NULL,
   PowerSupplyCount int(11) NOT NULL,
   DeviceType enum('Server','Appliance','Storage Array','Switch','Routing Chassis','Patch Panel','Physical Infrastructure') NOT NULL,
+  ChassisSlots smallint(6) NOT NULL,
+  ParentDevice int(11) NOT NULL,
   MfgDate date NOT NULL,
   InstallDate date NOT NULL,
   WarrantyCo VARCHAR(80) NOT NULL,
