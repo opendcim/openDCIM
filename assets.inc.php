@@ -418,6 +418,8 @@ class Device {
 	var $NominalWatts;
 	var $PowerSupplyCount;
 	var $DeviceType;
+	var $ChassisSlots;
+	var $ParentDevice;
 	var $MfgDate;
 	var $InstallDate;
 	var $WarrantyCo;
@@ -441,7 +443,8 @@ class Device {
 			"\", EscalationTimeID=\"" . intval( $this->EscalationTimeID ) . "\", EscalationID=\"" . intval( $this->EscalationID ) . "\", PrimaryContact=\"" . intval( $this->PrimaryContact ) . 
 			"\", Cabinet=\"" . intval($this->Cabinet) . "\", Position=\"" . intval($this->Position) . "\", Height=\"" . intval($this->Height) . "\", Ports=\"" . intval($this->Ports) . 
 			"\", TemplateID=\"" . intval($this->TemplateID) . "\", NominalWatts=\"" . intval($this->NominalWatts) . "\", PowerSupplyCount=\"" . intval($this->PowerSupplyCount) . 
-			"\", DeviceType=\"" . $this->DeviceType . "\", MfgDate=\"" . date("Y-m-d",strtotime($this->MfgDate)) . "\", InstallDate=\"" . date("Y-m-d",strtotime($this->InstallDate)) . 
+			"\", DeviceType=\"" . $this->DeviceType . "\", ChassisSlots=\"" . intval( $this->ChassisSlots) . "\", ParentDevice=\"" . intval( $this->ParentDevice) . 
+			"\", MfgDate=\"" . date("Y-m-d",strtotime($this->MfgDate)) . "\", InstallDate=\"" . date("Y-m-d",strtotime($this->InstallDate)) . 
 			"\", WarrantyCo=\"" . addslashes( $this->WarrantyCo ) . "\", WarrantyExpire=\"" . date( "Y-m-d",strtotime($this->WarrantyExpire)) . 
 			"\", Notes=\"" . addslashes( $this->Notes ) . "\", Reservation=\"" . intval($this->Reservation) . "\"";
 
@@ -507,6 +510,7 @@ class Device {
 			"\", PrimaryContact=\"" . intval( $this->PrimaryContact ) . "\", Cabinet=\"" . intval($this->Cabinet) . "\", Position=\"" . intval($this->Position) . 
 			"\", Height=\"" . intval($this->Height) . "\", Ports=\"" . intval($this->Ports) . "\", TemplateID=\"" . intval($this->TemplateID) . 
 			"\", NominalWatts=\"" . intval($this->NominalWatts) . "\", PowerSupplyCount=\"" . intval($this->PowerSupplyCount) . "\", DeviceType=\"" . $this->DeviceType . 
+			"\", ChassisSlots=\"" . intval($this->ChassisSlots) . "\", ParentDevice=\"" . intval($this->ParentDevice) .
 			"\", MfgDate=\"" . date("Y-m-d",strtotime($this->MfgDate)) . "\", InstallDate=\"" . date("Y-m-d",strtotime($this->InstallDate)) . 
 			"\", WarrantyCo=\"" . addslashes( $this->WarrantyCo ) . "\", WarrantyExpire=\"" . date("Y-m-d", strtotime($this->WarrantyExpire)) . 
 			"\", Notes=\"" . addslashes( $this->Notes ) . "\", Reservation=\"" . intval($this->Reservation) . "\" where DeviceID=\"" . intval($this->DeviceID) . "\"";
@@ -549,6 +553,8 @@ class Device {
 		$this->NominalWatts = $devRow["NominalWatts"];
 		$this->PowerSupplyCount = $devRow["PowerSupplyCount"];
 		$this->DeviceType = $devRow["DeviceType"];
+		$this->ChassisSlots = $devRow["ChassisSlots"];
+		$this->ParentDevice = $devRow["ParentDevice"];
 		$this->MfgDate = $devRow["MfgDate"];
 		$this->InstallDate = $devRow["InstallDate"];
 		$this->WarrantyCo = $devRow["WarrantyCo"];
@@ -558,6 +564,48 @@ class Device {
 
 		return true;
 	}
+	
+	function GetDeviceChildren( $db ) {
+		$sql = sprintf( "select * from fac_Device where ParentDevice='%d'", intval( $this->DeviceID ) );
+		$result = mysql_query( $sql, $db );
+		
+		$childList = array();
+		while ( $row = mysql_fetch_array( $result ) ) {
+			$childNum = sizeof( $childList );
+			
+			$childList[$childNum] = new Device();
+			$childList->DeviceID = $row["DeviceID"];
+			$childList->Label = $row["Label"];
+			$childList->SerialNo = $row["SerialNo"];
+			$childList->AssetTag = $row["AssetTag"];
+			$childList->PrimaryIP = $row["PrimaryIP"];
+			$childList->SNMPCommunity = $row["SNMPCommunity"];
+			$childList->ESX = $row["ESX"];
+			$childList->Owner = $row["Owner"];
+			// Suppressing errors on the following two because they can be null and that generates an apache error
+			@$childList->EscalationTimeID = $row["EscalationTimeID"];
+			@$childList->EscalationID = $row["EscalationID"];
+			$childList->PrimaryContact = $row["PrimaryContact"];
+			$childList->Cabinet = $row["Cabinet"];
+			$childList->Position = $row["Position"];
+			$childList->Height = $row["Height"];
+			$childList->Ports = $row["Ports"];
+			$childList->TemplateID = $row["TemplateID"];
+			$childList->NominalWatts = $row["NominalWatts"];
+			$childList->PowerSupplyCount = $row["PowerSupplyCount"];
+			$childList->DeviceType = $row["DeviceType"];
+			$childList->ChassisSlots = $row["ChassisSlots"];
+			$childList->ParentDevice = $row["ParentDevice"];
+			$childList->MfgDate = $row["MfgDate"];
+			$childList->InstallDate = $row["InstallDate"];
+			$childList->WarrantyCo = $row["WarrantyCo"];
+			@$childList->WarrantyExpire = $row["WarrantyExpire"];
+			$childList->Notes = $row["Notes"];
+			$childList->Reservation = $row["Reservation"];
+		}
+		
+		return $childList;
+	}	
 
 	function ViewDevicesByCabinet( $db ) {
 		$select_sql = "select * from fac_Device where Cabinet=\"" . intval($this->Cabinet) . "\" order by Position DESC";
@@ -593,6 +641,8 @@ class Device {
 			$deviceList[$devID]->NominalWatts = $deviceRow["NominalWatts"];
 			$deviceList[$devID]->PowerSupplyCount = $deviceRow["PowerSupplyCount"];
 			$deviceList[$devID]->DeviceType = $deviceRow["DeviceType"];
+			$deviceList[$devID]->ChassisSlots = $deviceRow["ChassisSlots"];
+			$deviceList[$devID]->ParentDevice = $deviceRow["ParentDevice"];
 			$deviceList[$devID]->MfgDate = $deviceRow["MfgDate"];
 			$deviceList[$devID]->InstallDate = $deviceRow["InstallDate"];
 			$deviceList[$devID]->WarrantyCo = $deviceRow["WarrantyCo"];
@@ -645,6 +695,8 @@ class Device {
 			$deviceList[$devID]->NominalWatts = $deviceRow["NominalWatts"];
 			$deviceList[$devID]->PowerSupplyCount = $deviceRow["PowerSupplyCount"];
 			$deviceList[$devID]->DeviceType = $deviceRow["DeviceType"];
+			$deviceList[$devID]->ChassisSlots = $deviceRow["ChassisSlots"];
+			$deviceList[$devID]->ParentDevice = $deviceRow["ParentDevice"];
 			$deviceList[$devID]->MfgDate = $deviceRow["MfgDate"];
 			$deviceList[$devID]->InstallDate = $deviceRow["InstallDate"];
 			$deviceList[$devID]->WarrantyCo = $deviceRow["WarrantyCo"];
@@ -657,6 +709,15 @@ class Device {
 	}
 	
 	function DeleteDevice( $db ) {
+		// First, see if this is a chassis that has children, if so, delete all of the children first
+		if ( $this->ChassisSlots > 0 ) {
+			$childList = $this->GetDeviceChildren( $db );
+			
+			foreach ( $childList as $tmpDev ) {
+				$tmpDev->DeleteDevice( $db );
+			}
+		}
+		
 		// Delete all network connections first
 		$tmpConn = new SwitchConnection();
 		$tmpConn->SwitchDeviceID = $this->DeviceID;
@@ -713,6 +774,8 @@ class Device {
 			$deviceList[$devID]->NominalWatts = $deviceRow["NominalWatts"];
 			$deviceList[$devID]->PowerSupplyCount = $deviceRow["PowerSupplyCount"];
 			$deviceList[$devID]->DeviceType = $deviceRow["DeviceType"];
+			$deviceList[$devID]->ChassisSlots = $deviceRow["ChassisSlots"];
+			$deviceList[$devID]->ParentDevice = $deviceRow["ParentDevice"];
 			$deviceList[$devID]->MfgDate = $deviceRow["MfgDate"];
 			$deviceList[$devID]->InstallDate = $deviceRow["InstallDate"];
 			$deviceList[$devID]->WarrantyCo = $deviceRow["WarrantyCo"];
@@ -758,6 +821,8 @@ class Device {
 			$deviceList[$devID]->NominalWatts = $deviceRow["NominalWatts"];
 			$deviceList[$devID]->PowerSupplyCount = $deviceRow["PowerSupplyCount"];
 			$deviceList[$devID]->DeviceType = $deviceRow["DeviceType"];
+			$deviceList[$devID]->ChassisSlots = $deviceRow["ChassisSlots"];
+			$deviceList[$devID]->ParentDevice = $deviceRow["ParentDevice"];
 			$deviceList[$devID]->MfgDate = $deviceRow["MfgDate"];
 			$deviceList[$devID]->InstallDate = $deviceRow["InstallDate"];
 			$deviceList[$devID]->WarrantyCo = $deviceRow["WarrantyCo"];
@@ -803,6 +868,8 @@ class Device {
 			$deviceList[$devID]->NominalWatts = $deviceRow["NominalWatts"];
 			$deviceList[$devID]->PowerSupplyCount = $deviceRow["PowerSupplyCount"];
 			$deviceList[$devID]->DeviceType = $deviceRow["DeviceType"];
+			$deviceList[$devID]->ChassisSlots = $deviceRow["ChassisSlots"];
+			$deviceList[$devID]->ParentDevice = $deviceRow["ParentDevice"];
 			$deviceList[$devID]->MfgDate = $deviceRow["MfgDate"];
 			$deviceList[$devID]->InstallDate = $deviceRow["InstallDate"];
 			$deviceList[$devID]->WarrantyCo = $deviceRow["WarrantyCo"];
@@ -848,6 +915,8 @@ class Device {
 				$deviceList[$devID]->NominalWatts = $deviceRow["NominalWatts"];
 				$deviceList[$devID]->PowerSupplyCount = $deviceRow["PowerSupplyCount"];
 				$deviceList[$devID]->DeviceType = $deviceRow["DeviceType"];
+				$deviceList[$devID]->ChassisSlots = $deviceRow["ChassisSlots"];
+				$deviceList[$devID]->ParentDevice = $deviceRow["ParentDevice"];
 				$deviceList[$devID]->MfgDate = $deviceRow["MfgDate"];
 				$deviceList[$devID]->InstallDate = $deviceRow["InstallDate"];
 				$deviceList[$devID]->WarrantyCo = $deviceRow["WarrantyCo"];
@@ -893,6 +962,8 @@ class Device {
                 $deviceList[$devID]->NominalWatts = $deviceRow["NominalWatts"];
                 $deviceList[$devID]->PowerSupplyCount = $deviceRow["PowerSupplyCount"];
                 $deviceList[$devID]->DeviceType = $deviceRow["DeviceType"];
+				$deviceList[$devID]->ChassisSlots = $deviceRow["ChassisSlots"];
+				$deviceList[$devID]->ParentDevice = $deviceRow["ParentDevice"];
             	$deviceList[$devID]->MfgDate = $deviceRow["MfgDate"];
             	$deviceList[$devID]->InstallDate = $deviceRow["InstallDate"];
 				$deviceList[$devID]->WarrantyCo = $deviceRow["WarrantyCo"];
@@ -945,21 +1016,29 @@ class Device {
   function GetDeviceDiversity( $db ) {
     $pc = new PowerConnection();
     $PDU = new PowerDistribution();
-    
-    $pc->DeviceID = $this->DeviceID;
-    $pcList = $pc->GetConnectionsByDevice( $db );
-    
-    $sourceList = array();
-    $sourceCount = 0;
-    
-    foreach ( $pcList as $pcRow ) {
-		$PDU->PDUID = $pcRow->PDUID;
-		$powerSource = $PDU->GetSourceForPDU( $db );
+	
+	// If this is a child (card slot) device, then only the parent will have power connections defined
+	if ( $this->ParentDevice > 0 ) {
+		$tmpDev = new Device();
+		$tmpDev->DeviceID = $this->ParentDevice;
+		
+		$sourceList = $tmpDev->GetDeviceDiversity( $db );
+	} else {
+		$pc->DeviceID = $this->DeviceID;
+		$pcList = $pc->GetConnectionsByDevice( $db );
+		
+		$sourceList = array();
+		$sourceCount = 0;
+		
+		foreach ( $pcList as $pcRow ) {
+			$PDU->PDUID = $pcRow->PDUID;
+			$powerSource = $PDU->GetSourceForPDU( $db );
 
-		if ( ! in_array( $powerSource, $sourceList ) )
-			$sourceList[$sourceCount++] = $powerSource;
-    }
-    
+			if ( ! in_array( $powerSource, $sourceList ) )
+				$sourceList[$sourceCount++] = $powerSource;
+		}
+	}
+	
     return $sourceList;
   }
 
@@ -975,7 +1054,7 @@ class Device {
     $devList = array();
     
     foreach ( $sourceList as $devRow ) {    
-      if ( ( $devRow->DeviceType == 'Patch Panel' || $devRow->DeviceType == 'Physical Infrastructure' ) && ( $devRow->PowerSupplyCount == 0 ) )
+      if ( ( $devRow->DeviceType == 'Patch Panel' || $devRow->DeviceType == 'Physical Infrastructure' || $devRow->ParentDevice > 0 ) && ( $devRow->PowerSupplyCount == 0 ) )
         continue;
 
       $pc->DeviceID = $devRow->DeviceID;
