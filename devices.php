@@ -34,6 +34,14 @@
 				$dev->Cabinet = $_REQUEST['cabinet'];
 			}
 		}
+		
+		// If creating a new child device (slot within a chassis), the ParentDevice is passed
+		if ( isset($_REQUEST['action']) && $_REQUEST['action']=='child') {
+			if ( isset( $_REQUEST['parentdevice'] )) {
+				$dev->ParentDevice = $_REQUEST["parentdevice"];
+			}
+		}
+		
 		// if no device id requested then we must be making a new device so skip all data lookups.
 		if(isset($_REQUEST['deviceid'])){
 			$dev->DeviceID=$_REQUEST['deviceid'];
@@ -58,6 +66,8 @@
 					$dev->TemplateID=$_REQUEST['templateid'];
 					$dev->PowerSupplyCount=$_REQUEST['powersupplycount'];
 					$dev->DeviceType=$_REQUEST['devicetype'];
+					$dev->ChassisSlots=$_REQUEST['chassisslots'];
+					$dev->ParentDevice=$_REQUEST['parentdevice'];
 					$dev->MfgDate=date('Y-m-d',strtotime($_REQUEST['mfgdate']));
 					$dev->InstallDate=date('Y-m-d',strtotime($_REQUEST['installdate']));
 					$dev->WarrantyCo=$_REQUEST['warrantyco'];
@@ -92,6 +102,8 @@
 					$dev->TemplateID=$_REQUEST['templateid'];
 					$dev->PowerSupplyCount=$_REQUEST['powersupplycount'];
 					$dev->DeviceType=$_REQUEST['devicetype'];
+					$dev->ChassisSlots=$_REQUEST['chassisslots'];
+					$dev->ParentDevice=$_REQUEST['parentdevice'];
 					$dev->MfgDate=date('Y-m-d',strtotime($_REQUEST['mfgdate']));
 					$dev->InstallDate=date('Y-m-d',strtotime($_REQUEST['installdate']));
 					$dev->WarrantyCo=$_REQUEST['warrantyco'];
@@ -131,6 +143,21 @@
 	} else {
 		// sets install date to today when a new device is being created
 		$dev->InstallDate=date("m/d/Y");
+	}
+	
+	if ( $dev->ParentDevice > 0 ) {
+		$pDev = new Device();
+		$pDev->DeviceID = $dev->ParentDevice;
+		$pDev->GetDevice( $facDB );
+		
+		$parentList = $pDev->GetParentDevices( $facDB );
+		
+		$cab->CabinetID = $pDev->Cabinet;
+		$cab->GetCabinet( $facDB );
+	}
+	
+	if ( $dev->ChassisSlots > 0 ) {
+		$childList = $dev->GetDeviceChildren( $facDB );
 	}
 
 /*	
@@ -510,19 +537,45 @@ function setPreferredLayout() {<?php if(isset($_COOKIE["layout"]) && strtolower(
 	<div class="table">
 		<div>
 			<div><label for="cabinet">Cabinet</label></div>
-			<div><?php echo $cab->GetCabinetSelectList($facDB);?></div>
+
+<?php
+	if ( $dev->ParentDevice == 0 ) {
+		printf( "\t\t\t<div>%s</div>\n", $cab->GetCabinetSelectList( $facDB ) );
+	} else {
+		printf( "\t\t\t<div>%s</div>\n", $cab->Location );
+		printf( "\t\t</div>\n" );
+		printf( "\t\t<div>\n" );
+		printf( "\t\t\t<div><label for=\"parentdevice\">Parent Device</label></div>\n" );
+		printf( "\t\t\t<div><select name=\"parentdevice\">\n" );
+		
+		foreach ( $parentList as $parDev ) {
+			if ( $pDev->DeviceID == $parDev->DeviceID )
+				$selected = "SELECTED";
+			else
+				$selected = "";
+			
+			printf( "<option value=\"%d\" %s>%s</option>\n", $parDev->DeviceID, $selected, $parDev->Label );
+		}
+		
+		printf( "\t\t\t</select></div>\n" );
+	}
+?>
 		</div>
 		<div>
 			<div><label for="templateid">Device Class</label></div>
 			<div><select name="templateid" id="templateid" onchange="updateFromTemplate(deviceform)">
 			<option value=0>Select a template...</option>
 <?php
-			foreach($templateList as $tempRow){
-				print "			<option value=\"$tempRow->TemplateID\"";
-				if($dev->TemplateID==$tempRow->TemplateID){echo ' selected="selected"';}
+			foreach($templateList as $tempRow) {
+				if ( $dev->TemplateID == $tempRow->TemplateID )
+					$selected = "SELECTED";
+				else
+					$selected = "";
+
 				$mfg->ManufacturerID=$tempRow->ManufacturerID;
 				$mfg->GetManufacturerByID( $facDB );
-				print ">$mfg->Name - $tempRow->Model</option>";
+	
+				printf( "\t\t\t<option value=\"%d\" %s>%s - %s</option>\n", $tempRow->TemplateID, $selected, $mfg->Name, $tempRow->Model );
 			}
 ?>
 			</select>
@@ -567,6 +620,44 @@ function setPreferredLayout() {<?php if(isset($_COOKIE["layout"]) && strtolower(
 	</div> <!-- END div.table -->
 </fieldset>
 <?php
+	//
+	// Do not display the chassis contents block if this is a child device (ParentDevice > 0)
+	//
+	if ( $dev->ParentDevice == 0 ) {
+?>
+<fieldset>
+	<legend>Chassis Contents</legend>
+	<div class="table">
+		<div>
+			<div><label for="chassisslots">Number of Slots in Chassis:</label></div>
+			<div><input type="text" name="chassisslots" size="4" value="<?php print $dev->ChassisSlots; ?>"></div>
+		</div>
+	</div>
+	<div class="table">
+		<div>
+			<div><label>Slot #</label></div>
+			<div><label>Height</label></div>
+			<div><label>Device Name</label></div>
+		</div>
+<?php
+	foreach ( $childList as $chDev ) {
+		printf( "\t<div>\n" );
+		printf( "\t\t<div>%d</div>\n", $chDev->Position );
+		printf( "\t\t<div>%d</div>\n", $chDev->Height );
+		printf( "\t\t<div><a href=\"devices.php?deviceid=%d\">%s</a></div>\n", $chDev->DeviceID, $chDev->Label );
+		printf( "\t</div>\n" );
+	}
+?>
+		<div>
+			<div></div>
+			<div><label><a href="devices.php?action=child&parentdevice=<?php print $dev->DeviceID; ?>"><input type="button" value="Add Device"></a></label></div>
+			<div></div>
+		</div>
+	</div>
+</fieldset>
+<?php
+	}
+	
 	// Do not display ESX block if device isn't a virtual server and the user doesn't have write access
 //	if($user->WriteAccess || $dev->ESX){
 	if(($user->WriteAccess || $dev->ESX) && ($dev->DeviceType=="Server" || $dev->DeviceType=="")){
@@ -692,9 +783,11 @@ function setPreferredLayout() {<?php if(isset($_COOKIE["layout"]) && strtolower(
 </form>
 </div></div>
 <?php
-	if($dev->Cabinet >0){
+	if ( $dev->ParentDevice > 0 ) {
+		printf( "<a href=\"devices.php?deviceid=%d\">[Return to Parent Device]</a>\n", $pDev->DeviceID );
+	} elseif ($dev->Cabinet >0) {
 		echo "   <a href=\"cabnavigator.php?cabinetid=$cab->CabinetID\">[Return to Navigator]</a>";
-	}else{
+	} else {
 		echo '   <div><a href="storageroom.php">[Return to Navigator]</a></div>';
 	}
 ?>

@@ -566,7 +566,7 @@ class Device {
 	}
 	
 	function GetDeviceChildren( $db ) {
-		$sql = sprintf( "select * from fac_Device where ParentDevice='%d'", intval( $this->DeviceID ) );
+		$sql = sprintf( "select * from fac_Device where ParentDevice='%d' order by Position ASC", intval( $this->DeviceID ) );
 		$result = mysql_query( $sql, $db );
 		
 		$childList = array();
@@ -574,38 +574,80 @@ class Device {
 			$childNum = sizeof( $childList );
 			
 			$childList[$childNum] = new Device();
-			$childList->DeviceID = $row["DeviceID"];
-			$childList->Label = $row["Label"];
-			$childList->SerialNo = $row["SerialNo"];
-			$childList->AssetTag = $row["AssetTag"];
-			$childList->PrimaryIP = $row["PrimaryIP"];
-			$childList->SNMPCommunity = $row["SNMPCommunity"];
-			$childList->ESX = $row["ESX"];
-			$childList->Owner = $row["Owner"];
+			$childList[$childNum]->DeviceID = $row["DeviceID"];
+			$childList[$childNum]->Label = $row["Label"];
+			$childList[$childNum]->SerialNo = $row["SerialNo"];
+			$childList[$childNum]->AssetTag = $row["AssetTag"];
+			$childList[$childNum]->PrimaryIP = $row["PrimaryIP"];
+			$childList[$childNum]->SNMPCommunity = $row["SNMPCommunity"];
+			$childList[$childNum]->ESX = $row["ESX"];
+			$childList[$childNum]->Owner = $row["Owner"];
 			// Suppressing errors on the following two because they can be null and that generates an apache error
-			@$childList->EscalationTimeID = $row["EscalationTimeID"];
-			@$childList->EscalationID = $row["EscalationID"];
-			$childList->PrimaryContact = $row["PrimaryContact"];
-			$childList->Cabinet = $row["Cabinet"];
-			$childList->Position = $row["Position"];
-			$childList->Height = $row["Height"];
-			$childList->Ports = $row["Ports"];
-			$childList->TemplateID = $row["TemplateID"];
-			$childList->NominalWatts = $row["NominalWatts"];
-			$childList->PowerSupplyCount = $row["PowerSupplyCount"];
-			$childList->DeviceType = $row["DeviceType"];
-			$childList->ChassisSlots = $row["ChassisSlots"];
-			$childList->ParentDevice = $row["ParentDevice"];
-			$childList->MfgDate = $row["MfgDate"];
-			$childList->InstallDate = $row["InstallDate"];
-			$childList->WarrantyCo = $row["WarrantyCo"];
-			@$childList->WarrantyExpire = $row["WarrantyExpire"];
-			$childList->Notes = $row["Notes"];
-			$childList->Reservation = $row["Reservation"];
+			@$childList[$childNum]->EscalationTimeID = $row["EscalationTimeID"];
+			@$childList[$childNum]->EscalationID = $row["EscalationID"];
+			$childList[$childNum]->PrimaryContact = $row["PrimaryContact"];
+			$childList[$childNum]->Cabinet = $row["Cabinet"];
+			$childList[$childNum]->Position = $row["Position"];
+			$childList[$childNum]->Height = $row["Height"];
+			$childList[$childNum]->Ports = $row["Ports"];
+			$childList[$childNum]->TemplateID = $row["TemplateID"];
+			$childList[$childNum]->NominalWatts = $row["NominalWatts"];
+			$childList[$childNum]->PowerSupplyCount = $row["PowerSupplyCount"];
+			$childList[$childNum]->DeviceType = $row["DeviceType"];
+			$childList[$childNum]->ChassisSlots = $row["ChassisSlots"];
+			$childList[$childNum]->ParentDevice = $row["ParentDevice"];
+			$childList[$childNum]->MfgDate = $row["MfgDate"];
+			$childList[$childNum]->InstallDate = $row["InstallDate"];
+			$childList[$childNum]->WarrantyCo = $row["WarrantyCo"];
+			@$childList[$childNum]->WarrantyExpire = $row["WarrantyExpire"];
+			$childList[$childNum]->Notes = $row["Notes"];
+			$childList[$childNum]->Reservation = $row["Reservation"];
 		}
 		
 		return $childList;
-	}	
+	}
+	
+	function GetParentDevices( $db ) {
+		$sql = sprintf( "select * from fac_Device where ChassisSlots>0 order by Label ASC" );
+		$result = mysql_query( $sql, $db );
+		
+		$parentList = array();
+		while ( $row = mysql_fetch_array( $result ) ) {
+			$parentNum = sizeof( $parentList );
+			
+			$parentList[$parentNum] = new Device();
+			$parentList[$parentNum]->DeviceID = $row["DeviceID"];
+			$parentList[$parentNum]->Label = $row["Label"];
+			$parentList[$parentNum]->SerialNo = $row["SerialNo"];
+			$parentList[$parentNum]->AssetTag = $row["AssetTag"];
+			$parentList[$parentNum]->PrimaryIP = $row["PrimaryIP"];
+			$parentList[$parentNum]->SNMPCommunity = $row["SNMPCommunity"];
+			$parentList[$parentNum]->ESX = $row["ESX"];
+			$parentList[$parentNum]->Owner = $row["Owner"];
+			// Suppressing errors on the following two because they can be null and that generates an apache error
+			@$parentList[$parentNum]->EscalationTimeID = $row["EscalationTimeID"];
+			@$parentList[$parentNum]->EscalationID = $row["EscalationID"];
+			$parentList[$parentNum]->PrimaryContact = $row["PrimaryContact"];
+			$parentList[$parentNum]->Cabinet = $row["Cabinet"];
+			$parentList[$parentNum]->Position = $row["Position"];
+			$parentList[$parentNum]->Height = $row["Height"];
+			$parentList[$parentNum]->Ports = $row["Ports"];
+			$parentList[$parentNum]->TemplateID = $row["TemplateID"];
+			$parentList[$parentNum]->NominalWatts = $row["NominalWatts"];
+			$parentList[$parentNum]->PowerSupplyCount = $row["PowerSupplyCount"];
+			$parentList[$parentNum]->DeviceType = $row["DeviceType"];
+			$parentList[$parentNum]->ChassisSlots = $row["ChassisSlots"];
+			$parentList[$parentNum]->ParentDevice = $row["ParentDevice"];
+			$parentList[$parentNum]->MfgDate = $row["MfgDate"];
+			$parentList[$parentNum]->InstallDate = $row["InstallDate"];
+			$parentList[$parentNum]->WarrantyCo = $row["WarrantyCo"];
+			@$parentList[$parentNum]->WarrantyExpire = $row["WarrantyExpire"];
+			$parentList[$parentNum]->Notes = $row["Notes"];
+			$parentList[$parentNum]->Reservation = $row["Reservation"];
+		}
+		
+		return $parentList;
+	}
 
 	function ViewDevicesByCabinet( $db ) {
 		$select_sql = "select * from fac_Device where Cabinet=\"" . intval($this->Cabinet) . "\" order by Position DESC";
