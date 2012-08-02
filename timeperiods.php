@@ -13,27 +13,33 @@
 		exit;
 	}
 
-	$period = new EscalationTimes();
+	$period=new EscalationTimes();
+	$status='';
 
-	if(isset($_REQUEST['escalationtimeid'])&& $_REQUEST['escalationtimeid']>0){
-		$period->EscalationTimeID = $_REQUEST['escalationtimeid'];
+	if(isset($_REQUEST['escalationtimeid'])){
+		$period->EscalationTimeID=$_REQUEST['escalationtimeid'];
+		if(isset($_POST['action'])){
+			if($_POST['timeperiod']!=null && $_POST['timeperiod']!=''){
+				switch($_POST['action']){
+					case 'Create':
+						$period->TimePeriod=$_POST['timeperiod'];
+						$period->CreatePeriod($facDB);
+						break;
+					case 'Update':
+						$period->TimePeriod=$_POST['timeperiod'];
+						$status='Updated';
+						$period->UpdatePeriod($facDB);
+						break;
+					case 'Delete':
+						$period->DeletePeriod($facDB);
+						header('Location: '.redirect("timeperiods.php"));
+						exit;
+				}
+			}
+		}
 		$period->GetEscalationTime($facDB);
 	}
-
-	$status='';
-	if(isset($_REQUEST['action'])&&(($_REQUEST['action']=='Create')||($_REQUEST['action']=='Update'))){
-		$period->EscalationTimeID = @$_REQUEST['escalationtimeid'];
-		$period->TimePeriod = $_REQUEST['timeperiod'];
-
-		if($_REQUEST['action'] == 'Create'){
-		  if($period->TimePeriod != null && $period->TimePeriod != '')
-  			$period->CreatePeriod($facDB);
-		}else{
-			$status='Updated';
-			$period->UpdatePeriod($facDB);
-		}
-	}
-	$periodList = $period->GetEscalationTimeList( $facDB );
+	$periodList=$period->GetEscalationTimeList($facDB);
 ?>
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html>
@@ -66,11 +72,9 @@
    <option value=0>New Time Period</option>
 <?php
 	foreach( $periodList as $periodRow ) {
-		echo "<option value=\"$periodRow->EscalationTimeID\"";
-		if($period->EscalationTimeID == $periodRow->EscalationTimeID){
-			echo ' selected';
-		}
-		echo ">$periodRow->TimePeriod</option>\n";
+		print_r($periodRow);
+		if($period->EscalationTimeID == $periodRow->EscalationTimeID){$selected=' selected';}else{$selected="";}
+		print "<option value=\"$periodRow->EscalationTimeID\"$selected>$periodRow->TimePeriod</option>\n";
 	}
 ?>
 	</select></div>
@@ -80,10 +84,12 @@
    <div><input type="text" name="timeperiod" id="timeperiod" size="80" value="<?php echo $period->TimePeriod; ?>"></div>
 </div>
 <div class="caption">
-   <input type="submit" name="action" value="Create">
 <?php
 	if($period->EscalationTimeID >0){
-		echo '   <input type="submit" name="action" value="Update">';
+		echo '   <input type="submit" name="action" value="Update">
+	 <input type="submit" name="action" value="Delete">';
+	}else{
+		echo '	 <input type="submit" name="action" value="Create">';
 	}
 ?>
 </div>

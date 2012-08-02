@@ -14,30 +14,33 @@
 		exit;
 	}
 
+	$formfix="";
 	if(isset($_REQUEST['contactid']) && ($_REQUEST['contactid']>0)) {
-		$contact->ContactID = $_REQUEST['contactid'];
-		$contact->GetContactByID( $facDB );
+		$contact->ContactID=(isset($_POST['contactid']) ? $_POST['contactid'] : $_GET['contactid']);
+		$contact->GetContactByID($facDB);
+
+		$formfix="?contactid=$contact->ContactID";
 	}
 
-	if(isset($_REQUEST['action']) && (($_REQUEST['action']=='Create') || ($_REQUEST['action']=='Update'))){
-		$contact->ContactID = $_REQUEST['contactid'];
-		$contact->UserID = $_REQUEST['UserID'];
-		$contact->LastName = $_REQUEST['lastname'];
-		$contact->FirstName = $_REQUEST['firstname'];
-		$contact->Phone1 = $_REQUEST['phone1'];
-		$contact->Phone2 = $_REQUEST['phone2'];
-		$contact->Phone3 = $_REQUEST['phone3'];
-		$contact->Email = $_REQUEST['email'];
+	if(isset($_POST['action']) && (($_POST['action']=='Create') || ($_POST['action']=='Update'))){
+		$contact->ContactID=$_POST['contactid'];
+		$contact->UserID=$_POST['UserID'];
+		$contact->LastName=$_POST['lastname'];
+		$contact->FirstName=$_POST['firstname'];
+		$contact->Phone1=$_POST['phone1'];
+		$contact->Phone2=$_POST['phone2'];
+		$contact->Phone3=$_POST['phone3'];
+		$contact->Email=$_POST['email'];
 
-		if($_REQUEST['action'] == 'Create'){
+		if($_POST['action'] == 'Create'){
 			if($contact->LastName != null && $contact->LastName != ''){
   				$contact->CreateContact($facDB);
 			}
 		}else{
-			$contact->UpdateContact( $facDB );
+			$contact->UpdateContact($facDB);
 		}
 	}
-	$contactList = $contact->GetContactList( $facDB );
+	$contactList=$contact->GetContactList($facDB);
 ?>
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html>
@@ -61,7 +64,7 @@
 <h2><?php print $config->ParameterArray['OrgName']; ?></h2>
 <h3>Data Center Contact Detail</h3>
 <div class="center"><div>
-<form action="<?php print $_SERVER['PHP_SELF']; ?>" method="POST">
+<form action="<?php print $_SERVER['PHP_SELF'].$formfix; ?>" method="POST">
 <div class="table">
 <div>
    <div><label for="contactid">Contact</label></div>
@@ -69,10 +72,8 @@
    <option value=0>New Contact</option>
 <?php
 	foreach($contactList as $contactRow ) {
-		//print "<option value=\"$contactRow->ContactID\" selected>$contactRow->LastName, $contactRow->FirstName</option>";
-		print "<option value=\"$contactRow->ContactID\"";
-		if($contact->ContactID == $contactRow->ContactID){print ' selected="selected"';}
-		print ">$contactRow->LastName, $contactRow->FirstName</option>";
+		if($contact->ContactID == $contactRow->ContactID){$selected=' selected="selected"';}else{$selected='';}
+		print "<option value=\"$contactRow->ContactID\"$selected>$contactRow->LastName, $contactRow->FirstName</option>";
 	}
 ?>
 	</select></div>

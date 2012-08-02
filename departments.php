@@ -1,9 +1,9 @@
 <?php
-	require_once( 'db.inc.php' );
-	require_once( 'facilities.inc.php' );
+	require_once('db.inc.php');
+	require_once('facilities.inc.php');
 
-	$dept = new Department();
-	$user = new User();
+	$dept=new Department();
+	$user=new User();
 
 	$user->UserID=$_SERVER['REMOTE_USER'];
 	$user->GetUserRights($facDB);
@@ -15,28 +15,25 @@
 	}
 
 	if(isset($_REQUEST['deptid'])&&($_REQUEST['deptid']>0)){
-		$dept->DeptID = $_REQUEST['deptid'];
+		$dept->DeptID=(isset($_POST['deptid']) ? $_POST['deptid'] : $_GET['deptid']);
 		$dept->GetDeptByID( $facDB );
 	}
 
-	if(isset($_REQUEST['action'])&& (($_REQUEST['action']=='Create') || ($_REQUEST['action']=='Update'))){
-		$dept->DeptID = $_REQUEST['deptid'];
-		$dept->Name = $_REQUEST['name'];
-		$dept->ExecSponsor = $_REQUEST['execsponsor'];
-		$dept->SDM = $_REQUEST['sdm'];
-		$dept->Classification = $_REQUEST['classification'];
-		$dept->DeptColor = $_REQUEST['deptcolor'];
+	if(isset($_POST['action'])&& (($_POST['action']=='Create') || ($_POST['action']=='Update'))){
+		$dept->DeptID=$_POST['deptid'];
+		$dept->Name=$_POST['name'];
+		$dept->ExecSponsor=$_POST['execsponsor'];
+		$dept->SDM=$_POST['sdm'];
+		$dept->Classification=$_POST['classification'];
+		$dept->DeptColor=$_POST['deptcolor'];
 
-		if($_REQUEST['action']=='Create'){
-			// This data check should be moved up so that someone can't update a department to have an empty name either. Will leave as is until we have a delete department option.
-			if($dept->Name != '' && $dept->Name != null){
-				$dept->CreateDepartment($facDB);
-			}
+		if($_REQUEST['action']=='Create' && ($dept->Name != '' && $dept->Name != null)){
+			$dept->CreateDepartment($facDB);
 		}else{
 			$dept->UpdateDepartment($facDB);
 		}
 	}
-	$deptList = $dept->GetDepartmentList( $facDB );
+	$deptList=$dept->GetDepartmentList($facDB);
 ?>
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html>
@@ -93,11 +90,8 @@ function showgroup(obj){
    <option value=0>New Department</option>
 <?php
 	foreach($deptList as $deptRow){
-		echo "<option value=\"$deptRow->DeptID\"";
-		if($dept->DeptID == $deptRow->DeptID){
-			echo ' selected';
-		}
-		echo ">$deptRow->Name</option>\n";
+		if($dept->DeptID == $deptRow->DeptID){$selected=" selected";}else{$selected="";}
+		print "   <option value=\"$deptRow->DeptID\"$selected>$deptRow->Name</option>\n";
 	}
 ?>
 	</select></div>
@@ -123,9 +117,8 @@ function showgroup(obj){
    <div><select name="classification" id="deptclass">
 <?php
   foreach($config->ParameterArray['ClassList'] as $className){
-	  echo "<option value=\"$className\"";
-	  if($dept->Classification==$className){echo ' selected';}
-      echo ">$className</option>";
+	  if($dept->Classification==$className){$selected=" selected";}else{$selected="";}
+	  print "   <option value=\"$className\"$selected>$className</option>\n";
   }
 ?>
     </select>
@@ -135,10 +128,7 @@ function showgroup(obj){
     <input type="submit" name="action" value="Create">
 <?php
 	if($dept->DeptID > 0){
-		echo '<input type="submit" name="action" value="Update">';
-		echo "<input type=\"button\" onClick=\"showgroup($dept->DeptID)\" value=\"Assign Contacts\">";
-//		print "<input type=\"button\" onClick=\"self.frames['groupadmin'].location.href='dept_groups.php?deptid=$dept->DeptID'\" value=\"Assign Contacts\">";
-//		print "<input type=\"button\" onClick=\"window.open('dept_groups.php?deptid=$dept->DeptID', 'popup')\" value=\"Assign Contacts\">";
+		print "<input type=\"submit\" name=\"action\" value=\"Update\">\n<input type=\"button\" onClick=\"showgroup($dept->DeptID)\" value=\"Assign Contacts\">";
 	}
 ?>
 </div>

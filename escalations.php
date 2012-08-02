@@ -13,26 +13,32 @@
 	}
 
 	$esc=new Escalations();
+	$status="";
 
-	if(isset($_REQUEST["escalationid"]) && $_REQUEST["escalationid"] >0){
-		$esc->EscalationID = $_REQUEST["escalationid"];
+	if(isset($_REQUEST['escalationid'])){
+		$esc->EscalationID=$_REQUEST['escalationid'];
+		if(isset($_POST['action'])){
+			if($_POST['details']!=null && $_POST['details']!=''){
+				switch($_POST['action']){
+					case 'Create':
+						$esc->Details=$_POST['details'];
+						$esc->CreateEscalation($facDB);
+						break;
+					case 'Update':
+						$esc->Details=$_POST['details'];
+						$status='Updated';
+						$esc->UpdateEscalation($facDB);
+						break;
+					case 'Delete':
+						$esc->DeleteEscalation($facDB);
+						header('Location: '.redirect("escalations.php"));
+						exit;
+				}
+			}
+		}
 		$esc->GetEscalation($facDB);
 	}
-
-	$status="";
-	if(isset($_REQUEST["action"])&&(($_REQUEST["action"]=="Create")||($_REQUEST["action"]=="Update"))){
-		$esc->EscalationID = $_REQUEST["escalationid"];
-		$esc->Details = $_REQUEST["details"];
-
-		if($_REQUEST["action"] == "Create"){
-		  if($esc->Details != null && $esc->Details != "")
-  			$esc->CreateEscalation($facDB);
-		}else{
-			$status="Updated";
-			$esc->UpdateEscalation($facDB);
-		}
-	}
-	$escList = $esc->GetEscalationList( $facDB );
+	$escList=$esc->GetEscalationList($facDB);
 ?>
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html>
@@ -65,11 +71,8 @@
    <option value=0>New Escalation Rule</option>
 <?php
 	foreach( $escList as $escRow ) {
-		echo "<option value=\"$escRow->EscalationID\"";
-		if($esc->EscalationID == $escRow->EscalationID){
-			echo " selected";
-		}
-		echo ">$escRow->Details</option>\n";
+		if($esc->EscalationID == $escRow->EscalationID){$selected=" selected";}else{$selected="";}
+		print "<option value=\"$escRow->EscalationID\"$selected>$escRow->Details</option>\n";
 	}
 ?>
 	</select></div>
@@ -79,10 +82,12 @@
    <div><input type="text" name="details" id="details" size="80" value="<?php echo $esc->Details; ?>"></div>
 </div>
 <div class="caption">
-   <input type="submit" name="action" value="Create">
 <?php
 	if($esc->EscalationID >0){
-		echo '   <input type="submit" name="action" value="Update">';
+		echo '   <input type="submit" name="action" value="Update">
+	 <input type="submit" name="action" value="Delete">';
+	}else{
+		echo '   <input type="submit" name="action" value="Create">';
 	}
 ?>
 </div>

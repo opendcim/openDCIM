@@ -7,9 +7,9 @@
 	$user=new User();
 
 	$user->UserID=$_SERVER['REMOTE_USER'];
-	$user->GetUserRights( $facDB );
+	$user->GetUserRights($facDB);
 
-	if(!$user->ReadAccess){
+	if(!$user->ContactAdmin){
 		// No soup for you.
 		header('Location: '.redirect());
 		exit;
@@ -20,17 +20,13 @@
 		echo "How'd you get here without a referral?";
 		exit;
 	}
-	$dept->DeptID=$_REQUEST['deptid'];
+	$dept->DeptID=(isset($_POST['deptid']) ? $_POST['deptid'] : $_GET['deptid']);
 	$dept->GetDeptByID($facDB);
 
 	// Update if form was submitted and action is set
-	if(isset($_REQUEST['action'])){
-		$action=$_REQUEST['action'];
-
-		if($action=="Submit"){
-			$grpMembers=$_REQUEST['chosen'];
-			$dept->AssignContacts($grpMembers,$facDB);
-		}
+	if(isset($_POST['action']) && $_POST['action']=="Submit"){
+		$grpMembers=$_POST['chosen'];
+		$dept->AssignContacts($grpMembers,$facDB);
 	}
 
 	$deptList=$contact->GetContactsForDepartment($dept->DeptID,$facDB);

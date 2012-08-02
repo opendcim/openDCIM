@@ -6,7 +6,8 @@
 	$user->UserID = $_SERVER['REMOTE_USER'];
 	$user->GetUserRights( $facDB );
 
-	if(!isset($_REQUEST['pdu']) && !isset($_REQUEST['conn']) && !$user->SiteAdmin){
+	// There is no need to access this screen if you don't have at least write rights.
+	if(!isset($_REQUEST['pdu']) && !isset($_REQUEST['conn']) && !$user->WriteAccess){
 		// No soup for you.
 		header('Location: '.redirect());
 		exit;
@@ -94,9 +95,10 @@
   <div><input type="text" name="inputnum" id="inputnum" value="<?php echo $connection->DeviceConnNumber; ?>"></div>
 </div>
 <div class="caption">
+  <input name="action" type="submit" value="Save">
 <?php
 	if($user->SiteAdmin){
-		echo '	<input name="action" type="submit" value="Save"><input name="action" type="submit" value="Delete">';
+		echo '	<input name="action" type="submit" value="Delete">';
 	}
 ?>
 	<button type="reset" onclick="document.location.href='pduinfo.php?pduid=<?php echo $connection->PDUID; ?>'; return false;">Cancel</button>

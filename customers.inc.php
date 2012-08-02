@@ -207,23 +207,23 @@ class Department {
 
     if ( is_array( $MemberList ) ) {
       foreach( $MemberList as $ContactID ) {
-  			$insertSQL = "insert into fac_DeptContacts set DeptID=\"" . intval($this->DeptID) . "\", ContactID=\"" . $ContactID . "\"";
+  			$insertSQL = "insert into fac_DeptContacts set DeptID=\"" . intval($this->DeptID) . "\", ContactID=\"" . intval($ContactID) . "\"";
   
   			mysql_query( $insertSQL, $db );
   		}
   	}
 	}
 	
-	function GetDepartmentByContact( $VUnetID, $db ) {
-	 $searchSQL = "select a.* from fac_Department a, fac_DeptContacts b, fac_Contact c where a.DeptID=b.DeptID and b.ContactID=c.ContactID and c.UserID=\"" . $VUnetID . "\"";
+	function GetDepartmentByContact($UserID,$db){
+		$searchSQL="select a.* from fac_Department a, fac_DeptContacts b, fac_Contact c where a.DeptID=b.DeptID and b.ContactID=c.ContactID and c.UserID=\"".addslashes($UserID)."\"";
 	 
-   // If someone is assigned to more than one department, just return the first hit
-   if ( $result = mysql_query( $searchSQL, $db ) ) {
-	   $deptRow = mysql_fetch_array( $result );
-	   
-	   $this->DeptID = $deptRow["DeptID"];
-	   $this->GetDeptByID( $db );
-	  }
+		// If someone is assigned to more than one department, just return the first hit
+		if($result=mysql_query($searchSQL,$db)){
+			$deptRow=mysql_fetch_array($result);
+				   
+			$this->DeptID=$deptRow["DeptID"];
+			$this->GetDeptByID($db);
+		}
 	}
 }
 
