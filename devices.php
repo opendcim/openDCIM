@@ -647,12 +647,17 @@ function setPreferredLayout() {<?php if(isset($_COOKIE["layout"]) && strtolower(
 		printf( "\t\t<div><a href=\"devices.php?deviceid=%d\">%s</a></div>\n", $chDev->DeviceID, $chDev->Label );
 		printf( "\t</div>\n" );
 	}
+	
+	if ( $dev->ChassisSlots > 0 ) {
 ?>
 		<div>
 			<div></div>
 			<div><label><a href="devices.php?action=child&parentdevice=<?php print $dev->DeviceID; ?>"><input type="button" value="Add Device"></a></label></div>
 			<div></div>
 		</div>
+<?php
+	}
+?>
 	</div>
 </fieldset>
 <?php
