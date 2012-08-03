@@ -19,6 +19,7 @@
 	$searchTerm=str_replace(array("'",'"'),"",$searchTerm);
 
 	$dev=new Device();
+	$parDev = new Device();
 	$esx=new ESX();
 	$cab=new Cabinet();
 	$pdu=new PowerDistribution();
@@ -46,31 +47,86 @@
 	$x=0;
 	$temp=array(); // Store all devices for display
 	$cabtemp=array(); // List of all cabinet ids for outerloop
+	$childList = array();
 	while(list($devID,$device)=each($devList)){
-		$temp[$x]['devid']=$devID;
-		$temp[$x]['label']=$device->Label;
-		$temp[$x]['type']='srv';
-		$temp[$x]['cabinet']=$device->Cabinet;
-		$cabtemp[$device->Cabinet]="";
-		++$x;
+		// Child devices don't have cabinet assignments
+		if ( $device->ParentDevice == 0 ) {
+			$temp[$x]['devid']=$devID;
+			$temp[$x]['label']=$device->Label;
+			if ( $device->DeviceType == "Chassis" )
+				$temp[$x]['type'] = 'chassis';
+			else
+				$temp[$x]['type']='srv';
+				
+			$temp[$x]['cabinet']=$device->Cabinet;
+			$cabtemp[$device->Cabinet]="";
+			++$x;
+		// But the parents of child devices do
+		} else {
+			$parDev->DeviceID = $device->ParentDevice;
+			$parDev->GetDevice( $facDB );
+			
+			// See if the parent device is already in the array
+			$a = ArraySearchRecursive( $device->ParentDevice, $temp, 'devid' );
+			if ( ! is_array($a)) {
+				$temp[$x]['devid'] = $parDev->DeviceID;
+				$temp[$x]['label'] = $parDev->Label;
+				$temp[$x]['type'] = 'chassis';
+				$temp[$x]['cabinet'] = $parDev->Cabinet;
+				$cabtemp[$device->Cabinet]="";
+				$x++;
+			}	
+
+			$childNum = sizeof( $childList );
+			$childList[$childNum] = new Device();
+			$childList[$childNum]->DeviceID = $device->DeviceID;
+			$childList[$childNum]->GetDevice( $facDB );
+		}
+		
 	}
+	
 	if(isset($vmList)){
 		foreach($vmList as $vmRow){
 			$dev->DeviceID=$vmRow->DeviceID;
 			$dev->GetDevice($facDB);
-			$a=ArraySearchRecursive($vmRow->DeviceID,$temp,'devid');
-			// if we find a matching server in the exisiting list set it to type vm so it will nest in the results
-			if(is_array($a)){
-				$temp[$a[0]]['label']=$dev->Label;
-				$temp[$a[0]]['type']='vm';
-			}else{
-				// We didn't find the host server of this vm so we're gonna add it to the list
-				$temp[$x]['devid']=$dev->DeviceID;
-				$temp[$x]['label']=$dev->Label;
-				$temp[$x]['type']='vm';
-				$temp[$x]['cabinet']=$dev->Cabinet;
-				$cabtemp[$dev->Cabinet]="";
-				++$x;
+			// $dev is an object for the ESX host, but that could be a blade on a chassis, so we need to check that, too
+			if ( $dev->ParentDevice > 0 ) {
+				// We have a ParentDevice, so we must be a child
+				$parDev->DeviceID = $dev->ParentDevice;
+				$parDev->GetDevice( $facDB );
+				
+				$a = ArraySearchRecursive( $parDev->DeviceID, $temp, 'devid' );
+				if ( ! is_array( $a ) ) {
+					// We need to add the parent device to the list
+					$temp[$x]['devid'] = $parDev->DeviceID;
+					$temp[$x]['label'] = $parDev->Label;
+					$temp[$x]['type'] = 'chassis';
+					$temp[$x]['cabinet'] = $parDev->Cabinet;
+					
+					$cabtemp[$parDev->Cabinet]="";
+					$x++;
+				}
+				
+				$childNum = sizeof( $childList );
+				$childList[$childNum] = new Device();
+				$childList[$childNum]->DeviceID = $vmRow->DeviceID;
+				$childList[$childNum]->GetDevice( $facDB );				
+			} else {
+				$a=ArraySearchRecursive($vmRow->DeviceID,$temp,'devid');
+				// if we find a matching server in the existing list set it to type vm so it will nest in the results
+				if(is_array($a)){
+					$temp[$a[0]]['label']=$dev->Label;
+					$temp[$a[0]]['type']='vm';
+				}else{
+					// We didn't find the host server of this vm so we're gonna add it to the list
+					$temp[$x]['devid']=$dev->DeviceID;
+					$temp[$x]['label']=$dev->Label;
+					$temp[$x]['type']='vm';
+					
+					$temp[$x]['cabinet']=$dev->Cabinet;
+					$cabtemp[$dev->Cabinet]="";
+					++$x;
+				}
 			}
 		}
 	}
@@ -103,7 +159,7 @@
 	}
 
 	// Sort array based on device label
-	if(!empty($devList)){
+	if(!empty($temp)){
 		$devList=sort2d($temp,'label');
 	}
 ?>
@@ -150,6 +206,29 @@
 					//In case of VMHost missing from inventory, this shouldn't ever happen
 					if($row['label']=='' || is_null($row['label'])){$row['label']='VM Host Missing From Inventory';}
 					echo "				<li><a href=\"devices.php?deviceid={$row['devid']}\">{$row['label']}</a>\n";
+					// Created a nested list showing all blades residing in this chassis
+					if ( $row['type'] == 'chassis' ) {
+						printf( "\t\t\t<ul>\n" );
+						foreach ( $childList as $chDev ) {
+							if ( $chDev->ParentDevice == $row['devid'] ) {
+								printf( "\t\t\t\t<li><div><img src=\"images/blade.png\" alt=\"blade icon\"></div><a href=\"devices.php?deviceid=%d\">%s</a></li>\n", $chDev->DeviceID, $chDev->Label );
+								
+								// A blade can easily be an ESX server, too, so display any matching VMs
+								if ( $chDev->ESX == true ) {
+									printf( "\t\t\t\t\t<ul>\n" );
+									foreach ( $vmList as $vm ) {
+										if ( $vm->DeviceID == $chDev->DeviceID ) {
+											printf( "\t\t\t\t\t<li><div><img src=\"images/vmcube.png\" alt=\"vm icon\"></div>$vm->vmName</li>\n" );
+										}
+									}
+									printf( "\t\t\t\t\t</ul>\n" );
+								}
+								printf( "\t\t\t\t</li>\n" );
+							}
+						}
+						printf( "\t\t\t</ul>\n" );
+					}
+					
 					// Create a nested list showing all VMs residing on this host.
 					if($row['type']=='vm'){
 						echo "					<ul>\n";
@@ -169,6 +248,7 @@
 
 ?>
 	</ol>
+
 <p>Search complete.</p>
 </div></div>
 </div><!-- END div.main -->
