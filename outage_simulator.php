@@ -142,6 +142,7 @@ if ( $_REQUEST['action'] != 'Generate' ) {
 	
 	$pwrSource = new PowerSource();
 	$pwrPanel = new PowerPanel();
+	$cab = new Cabinet();
 	
 ?>
 </div>
@@ -339,7 +340,7 @@ if ( $_REQUEST['action'] != 'Generate' ) {
 	$pdf->AddPage();
 	
 	$headerTags = array( 'Cabinet', 'Device Name', 'Status', 'Position', 'Owner' );
-	$cellWidths = array( 15, 50, 30, 15, 60 );
+	$cellWidths = array( 25, 50, 30, 15, 65 );
 
 	$fill = 0;
 		

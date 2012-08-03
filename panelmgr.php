@@ -14,6 +14,7 @@
 
 	$panel=new PowerPanel();
 	$pdu=new PowerDistribution();
+	$cab = new Cabinet();
 	
 	// Set a default panel voltage based upon the configuration screen
 	$panel->PanelVoltage = $config->ParameterArray["DefaultPanelVoltage"];
@@ -183,8 +184,11 @@
 				if($odd==0){
 					if(isset($pduarray[$nextPole])){
 						$pn="";
-						foreach($pduarray[$nextPole] as $pduvar){
-							$pn.="<a href=\"pduinfo.php?pduid=$pduvar->PDUID\">$pduvar->Label</a>";
+						foreach($pduarray[$nextPole] as $pduvar) {
+							$cab->CabinetID = $pduvar->CabinetID;
+							$cab->GetCabinet( $facDB );
+							
+							$pn.="<a href=\"pduinfo.php?pduid=$pduvar->PDUID\">" . $cab->Location . " / " . $pduvar->Label . "</a>";
 							switch($pduvar->BreakerSize){
 								case '3': $odd=3; break;
 								case '2': $odd=2; break;
@@ -221,8 +225,11 @@
 				if($odd==0){
 					if(isset($pduarray[$nextPole])){
 						$pn="";
-						foreach($pduarray[$nextPole] as $pduvar){
-							$pn.="<a href=\"pduinfo.php?pduid=$pduvar->PDUID\">$pduvar->Label</a>";
+						foreach($pduarray[$nextPole] as $pduvar) {
+							$cab->CabinetID = $pduvar->CabinetID;
+							$cab->GetCabinet( $facDB );
+							
+							$pn.="<a href=\"pduinfo.php?pduid=$pduvar->PDUID\">" . $cab->Location . " / " . $pduvar->Label . "</a>";
 							switch($pduvar->BreakerSize){
 								case '3': $odd=3; break;
 								case '2': $odd=2; break;
@@ -254,8 +261,11 @@
 				if($even==0){
 					if(isset($pduarray[$nextPole])){
 						$pn="";
-						foreach($pduarray[$nextPole] as $pduvar){
-							$pn.="<a href=\"pduinfo.php?pduid=".$pduvar->PDUID."\">".$pduvar->Label."</a>";
+						foreach($pduarray[$nextPole] as $pduvar) {
+							$cab->CabinetID = $pduvar->CabinetID;
+							$cab->GetCabinet( $facDB );
+							
+							$pn.="<a href=\"pduinfo.php?pduid=".$pduvar->PDUID."\">".$cab->Location." / ".$pduvar->Label."</a>";
 							switch($pduvar->BreakerSize){
 								case '3': $even=3; break;
 								case '2': $even=2; break;
