@@ -35,13 +35,6 @@
 			}
 		}
 		
-		// If creating a new child device (slot within a chassis), the ParentDevice is passed
-		if ( isset($_REQUEST['action']) && $_REQUEST['action']=='child') {
-			if ( isset( $_REQUEST['parentdevice'] )) {
-				$dev->ParentDevice = $_REQUEST["parentdevice"];
-			}
-		}
-		
 		// if no device id requested then we must be making a new device so skip all data lookups.
 		if(isset($_REQUEST['deviceid'])){
 			$dev->DeviceID=$_REQUEST['deviceid'];
@@ -52,9 +45,6 @@
 					$dev->Label=$_REQUEST['label'];
 					$dev->SerialNo=$_REQUEST['serialno'];
 					$dev->AssetTag=$_REQUEST['assettag'];
-					$dev->PrimaryIP=$_REQUEST['primaryip'];
-					$dev->SNMPCommunity=$_REQUEST['snmpcommunity'];
-					$dev->ESX=$_REQUEST['esx'];
 					$dev->Owner=$_REQUEST['owner'];
 					$dev->EscalationTimeID=$_REQUEST['escalationtimeid'];
 					$dev->EscalationID=$_REQUEST['escalationid'];
@@ -73,7 +63,10 @@
 					$dev->WarrantyCo=$_REQUEST['warrantyco'];
 					$dev->WarrantyExpire=date('Y-m-d',strtotime($_REQUEST['warrantyexpire']));
 					$dev->Notes=$_REQUEST['notes'];
-					$dev->Reservation =(isset($_REQUEST['reservation']))?1:0;
+					$dev->PrimaryIP=(isset($_REQUEST['primaryip']))?$_REQUEST['primaryip']:"";
+					$dev->SNMPCommunity=(isset($_REQUEST['snmpcommunity']))?$_REQUEST['snmpcommunity']:"";
+					$dev->ESX=(isset($_REQUEST['esx']))?1:0;
+					$dev->Reservation=(isset($_REQUEST['reservation']))?1:0;
 					$dev->NominalWatts=$_REQUEST['nominalwatts'];
 
 					if (( $dev->TemplateID > 0 ) && ( intval( $dev->NominalWatts == 0 )))
@@ -88,9 +81,6 @@
 					$dev->Label=$_REQUEST['label'];
 					$dev->SerialNo=$_REQUEST['serialno'];
 					$dev->AssetTag=$_REQUEST['assettag'];
-					$dev->PrimaryIP=$_REQUEST['primaryip'];
-					$dev->SNMPCommunity=$_REQUEST['snmpcommunity'];
-					$dev->ESX=$_REQUEST['esx'];
 					$dev->Owner=$_REQUEST['owner'];
 					$dev->EscalationTimeID=$_REQUEST['escalationtimeid'];
 					$dev->EscalationID=$_REQUEST['escalationid'];
@@ -109,13 +99,23 @@
 					$dev->WarrantyCo=$_REQUEST['warrantyco'];
 					$dev->WarrantyExpire=date('Y-m-d',strtotime($_REQUEST['warrantyexpire']));
 					$dev->Notes=$_REQUEST['notes'];
-					$dev->Reservation = ( $_REQUEST['reservation'] == "on" ) ? 1 : 0;
+					$dev->PrimaryIP=(isset($_REQUEST['primaryip']))?$_REQUEST['primaryip']:"";
+					$dev->SNMPCommunity=(isset($_REQUEST['snmpcommunity']))?$_REQUEST['snmpcommunity']:"";
+					$dev->ESX=(isset($_REQUEST['esx']))?1:0;
+					$dev->Reservation=(isset($_REQUEST['reservation']))?1:0;
 					$dev->CreateDevice($facDB);
 				}elseif($user->DeleteAccess&&($_REQUEST['action']=='Delete')){
 					$dev->GetDevice($facDB);
 					$dev->DeleteDevice($facDB);
 					header('Location: '.redirect("cabnavigator.php?cabinetid=$dev->Cabinet"));
 					exit;
+				}elseif($user->WriteAccess&&$_REQUEST['action']=='child'){
+					if(isset($_REQUEST['parentdevice'])){
+						$dev->DeviceID=null;
+						$dev->ParentDevice=$_REQUEST["parentdevice"];
+					}
+					// sets install date to today when a new device is being created
+					$dev->InstallDate=date("m/d/Y");
 				}
 			}
 
@@ -123,19 +123,20 @@
 			$dev->GetDevice($facDB);
 
 			// Since a device exists we're gonna need some additional info
-			$pwrConnection = new PowerConnection();
-			$pdu = new PowerDistribution();
-			$panel = new PowerPanel();
-			$networkPatches = new SwitchConnection();
+			$pwrConnection=new PowerConnection();
+			$pdu=new PowerDistribution();
+			$panel=new PowerPanel();
+			$networkPatches=new SwitchConnection();
 
-			$pwrConnection->DeviceID=$dev->DeviceID;
+
+			$pwrConnection->DeviceID=($dev->ParentDevice>0)?$dev->ParentDevice:$dev->DeviceID;
 			$pwrCords=$pwrConnection->GetConnectionsByDevice($facDB);
 
 			if($dev->DeviceType=='Switch'){
 				$networkPatches->SwitchDeviceID=$dev->DeviceID;
 				$patchList=$networkPatches->GetSwitchConnections($facDB);
 			}else{
-				$networkPatches->EndpointDeviceID=$dev->DeviceID;
+				$networkPatches->EndpointDeviceID=($dev->ParentDevice>0)?$dev->ParentDevice:$dev->DeviceID;
 				$patchList=$networkPatches->GetEndpointConnections($facDB);
 			}
 		}
@@ -156,8 +157,9 @@
 		$cab->GetCabinet( $facDB );
 	}
 	
-	if ( $dev->ChassisSlots > 0 ) {
-		$childList = $dev->GetDeviceChildren( $facDB );
+	$childList=array();
+	if($dev->ChassisSlots>0){
+		$childList=$dev->GetDeviceChildren($facDB);
 	}
 
 /*	
@@ -332,6 +334,16 @@ function swaplayout(){
 	}
 }
 $(document).ready(function() {
+	$('#adddevice').click(function() {
+		$(":input").attr("disabled","disabled");
+		$('#parentdevice').removeAttr("disabled");
+		$('#adddevice').removeAttr("disabled");
+		$(this).submit();
+	});
+<?php
+	// hide cabinet slot picker from child devices
+	if($dev->ParentDevice==0){
+?>
 	$('#position').focus(function()	{
 		var cab=$("select#cabinetid").val();
 		$.get('scripts/ajax_cabinetuse.php?cabinet='+cab, function(data) {
@@ -392,6 +404,9 @@ $(document).ready(function() {
 			},100);
 		});
 	});
+<?php
+	}
+?>
 });
 	
 function setPreferredLayout() {<?php if(isset($_COOKIE["layout"]) && strtolower($_COOKIE["layout"])==="portrait"){echo 'swaplayout();setCookie("layout","Portrait");';}else{echo 'setCookie("layout","Landscape");';} ?>}
@@ -541,26 +556,22 @@ function setPreferredLayout() {<?php if(isset($_COOKIE["layout"]) && strtolower(
 <?php
 	if ( $dev->ParentDevice == 0 ) {
 		printf( "\t\t\t<div>%s</div>\n", $cab->GetCabinetSelectList( $facDB ) );
-	} else {
-		printf( "\t\t\t<div>%s</div>\n", $cab->Location );
-		printf( "\t\t</div>\n" );
-		printf( "\t\t<div>\n" );
-		printf( "\t\t\t<div><label for=\"parentdevice\">Parent Device</label></div>\n" );
-		printf( "\t\t\t<div><select name=\"parentdevice\">\n" );
-		
-		foreach ( $parentList as $parDev ) {
-			if ( $pDev->DeviceID == $parDev->DeviceID )
-				$selected = "SELECTED";
-			else
-				$selected = "";
+		} else {
+			print "\t\t\t<div>$cab->Location<input type=\"hidden\" name=\"cabinetid\" value=\"0\"></div>\n\t\t</div>\t\t<div>\t\t\t<div><label for=\"parentdevice\">Parent Device</label></div>\t\t\t<div><select name=\"parentdevice\">\n";
 			
-			printf( "<option value=\"%d\" %s>%s</option>\n", $parDev->DeviceID, $selected, $parDev->Label );
+			foreach ( $parentList as $parDev ) {
+				if ( $pDev->DeviceID == $parDev->DeviceID )
+					$selected = "SELECTED";
+				else
+					$selected = "";
+				
+				printf( "<option value=\"%d\" %s>%s</option>\n", $parDev->DeviceID, $selected, $parDev->Label );
+			}
+			
+			printf( "\t\t\t</select></div>\n" );
 		}
-		
-		printf( "\t\t\t</select></div>\n" );
-	}
-?>
-		</div>
+	?>
+			</div>
 		<div>
 			<div><label for="templateid">Device Class</label></div>
 			<div><select name="templateid" id="templateid" onchange="updateFromTemplate(deviceform)">
@@ -625,7 +636,7 @@ function setPreferredLayout() {<?php if(isset($_COOKIE["layout"]) && strtolower(
 	//
 	if ( $dev->ParentDevice == 0 ) {
 ?>
-<fieldset>
+<fieldset class="chassis">
 	<legend>Chassis Contents</legend>
 	<div class="table">
 		<div>
@@ -635,25 +646,26 @@ function setPreferredLayout() {<?php if(isset($_COOKIE["layout"]) && strtolower(
 	</div>
 	<div class="table">
 		<div>
-			<div><label>Slot #</label></div>
-			<div><label>Height</label></div>
-			<div><label>Device Name</label></div>
+			<div>Slot #</div>
+			<div>Height</div>
+			<div>Device Name</div>
+			<div>Device Type</div>
 		</div>
 <?php
 	foreach ( $childList as $chDev ) {
-		printf( "\t<div>\n" );
-		printf( "\t\t<div>%d</div>\n", $chDev->Position );
-		printf( "\t\t<div>%d</div>\n", $chDev->Height );
-		printf( "\t\t<div><a href=\"devices.php?deviceid=%d\">%s</a></div>\n", $chDev->DeviceID, $chDev->Label );
-		printf( "\t</div>\n" );
+		print "\t<div>
+		<div>$chDev->Position</div>
+		<div>$chDev->Height</div>
+		<div><a href=\"devices.php?deviceid=$chDev->DeviceID\">$chDev->Label</a></div>
+		<div>$chDev->DeviceType</div>
+	</div>\n";
 	}
 	
 	if ( $dev->ChassisSlots > 0 ) {
 ?>
-		<div>
-			<div></div>
-			<div><label><a href="devices.php?action=child&parentdevice=<?php print $dev->DeviceID; ?>"><input type="button" value="Add Device"></a></label></div>
-			<div></div>
+		<div class="caption">
+			<button type="submit" id="adddevice" value="child" name="action">Add Device</button>
+			<input type="hidden" id="parentdevice" name="parentdevice" disabled value="<?php print $dev->DeviceID; ?>">
 		</div>
 <?php
 	}
@@ -661,6 +673,8 @@ function setPreferredLayout() {<?php if(isset($_COOKIE["layout"]) && strtolower(
 	</div>
 </fieldset>
 <?php
+	}else{
+		echo '<input type="hidden" name="chassisslots" value=0>';
 	}
 	
 	// Do not display ESX block if device isn't a virtual server and the user doesn't have write access
@@ -717,8 +731,8 @@ function setPreferredLayout() {<?php if(isset($_COOKIE["layout"]) && strtolower(
 <div class="table style">
 <?php
 	//HTML content condensed for PHP logic clarity.
-	if(!is_null($pwrCords)){
-		// If $pwrCords is null then we're creating a device record. Skip power checking.
+	// If $pwrCords is null then we're creating a device record. Skip power checking.
+	if(!is_null($pwrCords)&&((isset($_POST['action'])&&$_POST['action']!='child')||!isset($_POST['action']))){
 		if(count($pwrCords)==0){
 			// We have no power information. Display links to PDU's in cabinet?
 			echo '		<div>		<div><a name="power"></a></div>		<div>No power connections defined.  You can add connections from the power strip screen.</div></div><div><div>&nbsp;</div><div></div></div>';
@@ -755,13 +769,12 @@ function setPreferredLayout() {<?php if(isset($_COOKIE["layout"]) && strtolower(
 	if($dev->DeviceType=='Switch'){
 		echo "		<div>\n		  <div><a name=\"net\">Connections</a></div>\n		  <div>\n			<div class=\"table border\">\n				<div><div>Switch Port</div><div>Device</div><div>Device Port</div><div>Notes</div></div>\n";
 		if(sizeof($patchList) >0){
-			$tmpDev=new Device();
-			  
 			foreach($patchList as $patchConn){
-				$tmpDev->DeviceID = $patchConn->EndpointDeviceID;
-				$tmpDev->GetDevice( $facDB );
+				$tmpDev=new Device();
+				$tmpDev->DeviceID=$patchConn->EndpointDeviceID;
+				$tmpDev->GetDevice($facDB);
 				
-				printf( "				<div><div><a href=\"changepatch.php?switchid=%s&portid=%s\">%s</a></div><div><a href=\"devices.php?deviceid=%s\">%s</a></div><div>%s</div><div>%s</div></div>\n", $patchConn->SwitchDeviceID, $patchConn->SwitchPortNumber, $patchConn->SwitchPortNumber, $patchConn->EndpointDeviceID, $tmpDev->Label, $patchConn->EndpointPort, $patchConn->Notes );
+				print "\t\t\t\t<div><div><a href=\"changepatch.php?switchid=$patchConn->SwitchDeviceID&portid=$patchConn->SwitchPortNumber\">$patchConn->SwitchPortNumber</a></div><div><a href=\"devices.php?deviceid=$patchConn->EndpointDeviceID\">$tmpDev->Label</a></div><div>$patchConn->EndpointPort</div><div>$patchConn->Notes</div></div>\n";
 			}
 		}      
 		echo "			</div><!-- END div.table -->\n		  </div>\n		</div>";

@@ -527,7 +527,8 @@ class Device {
 	function GetDevice( $db ) {
 		$select_sql = "select * from fac_Device where DeviceID=\"" . intval($this->DeviceID) . "\"";
 
-		if ( ! $result = mysql_query( $select_sql, $db ) ) {
+		$result=mysql_query($select_sql,$db);
+		if(!$result || mysql_num_rows($result)==0){
 			return false;
 		}
 
@@ -700,8 +701,8 @@ class Device {
 	  // This will generate a list of all devices capable of being plugged into a switch
 	  // or patch panel - meaning that you set the DeviceID field to the target device and it will
 	  // generate a list of all candidates that are in the same Data Center.
-	  
-	  $selectSQL = "select b.DataCenterID from fac_Device a, fac_Cabinet b where a.DeviceID=\"" . intval($this->DeviceID) . "\" and a.Cabinet=b.CabinetID";
+	  $dev=($this->ParentDevice>0)?intval($this->ParentDevice):intval($this->DeviceID);
+	  $selectSQL = "select b.DataCenterID from fac_Device a, fac_Cabinet b where a.DeviceID=\"$dev\" and a.Cabinet=b.CabinetID";
 	  $result = mysql_query( $selectSQL, $db );
 	  
 	  $row = mysql_fetch_array( $result );
