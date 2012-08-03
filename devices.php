@@ -641,7 +641,7 @@ function setPreferredLayout() {<?php if(isset($_COOKIE["layout"]) && strtolower(
 	<div class="table">
 		<div>
 			<div><label for="chassisslots">Number of Slots in Chassis:</label></div>
-			<div><input type="text" name="chassisslots" size="4" value="<?php print $dev->ChassisSlots; ?>"></div>
+			<div><input type="text" id="chassisslots" class="optional,validate[custom[onlyNumberSp]]" name="chassisslots" size="4" value="<?php print $dev->ChassisSlots; ?>"></div>
 		</div>
 	</div>
 	<div class="table">
