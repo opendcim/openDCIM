@@ -263,13 +263,18 @@ $(function(){
 	$borders = "TLR";
 	
 	foreach ( $cabList as $tmpCab ) {
-		$sql = sprintf( "select count(a.AuditStamp) as Frequency, a.AuditStamp as AuditDate, b.Name as Auditor, c.Location, c.InstallationDate from fac_CabinetAudit a, fac_User b, fac_Cabinet c where a.UserID=b.UserID and a.CabinetID=c.CabinetID and c.CabinetID='%d' order by a.AuditStamp DESC limit 1", $tmpCab->CabinetID );
+		$sql = sprintf( "select a.AuditStamp as AuditDate, b.Name as Auditor, c.Location, c.InstallationDate from fac_CabinetAudit a, fac_User b, fac_Cabinet c where a.UserID=b.UserID and a.CabinetID=c.CabinetID and c.CabinetID='%d' order by a.AuditStamp DESC limit 1", $tmpCab->CabinetID );
 		$res = mysql_query( $sql, $facDB );
 
 		while ( $resRow = mysql_fetch_array( $res ) ) {
 			$pdf->Cell( $cellWidths[0], 6, $tmpCab->Location, $borders, 0, 'L', $fill );
 			
-			if ( $resRow["Frequency"] == 0 ) {
+			$sql = sprintf( "select count(AuditStamp) as Frequency from fac_CabinetAudit where CabinetID=\"%d\"", $tmpCab->CabinetID );
+			$countRes = mysql_query( $sql, $facDB );
+			
+			$freqRow = mysql_fetch_array( $countRes );
+			
+			if ( $freqRow["Frequency"] == 0 ) {
 				$auditDate = "Never";
 				$lastAudit = new DateTime( $resRow["InstallationDate"] );
 			} else {
@@ -299,7 +304,7 @@ $(function(){
 			$installDate = date( "M d, Y", strtotime( $resRow["InstallationDate"] ) );
 			
 			$pdf->Cell( $cellWidths[1], 6, $auditDate, $borders, 0, 'L', $fill );
-			$pdf->Cell( $cellWidths[2], 6, $resRow["Frequency"], $borders, 0, 'L', $fill );
+			$pdf->Cell( $cellWidths[2], 6, $freqRow["Frequency"], $borders, 0, 'L', $fill );
 			$pdf->Cell( $cellWidths[3], 6, $installDate, $borders, 0, 'L', $fill );
 			$pdf->Cell( $cellWidths[4], 6, $period, $borders, 0, 'L', $fill );
 		
