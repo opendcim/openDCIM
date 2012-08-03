@@ -9,8 +9,10 @@ are simply testing, as some functionality can break between releases.
 Changes in 1.4
 --------------
 * Style sheet colors are now configuration items
+* Added a visual placement picker for devices when putting into a cabinet.  Displays available spaces rather than simply allowing an arbitrary number to be entered.
 * Added database structure for a very rudimentary spare stock inventory
-
+* Added in support for chassis devices in a parent/child relationship.  Renamed the the device type of 'Routing Chassis' to simply 'Chassis' in support of this.
+* Additional bug fixes and security auditing of the code
 
 Changes in 1.3
 --------------
