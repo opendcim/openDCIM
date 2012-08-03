@@ -270,7 +270,7 @@ function updateFromTemplate(formname) {
 				case "Switch":
 					formname.elements['devicetype'].selectedIndex = 4;
 					break;
-				case "Routing Chassis":
+				case "Chassis":
 					formname.elements['devicetype'].selectedIndex = 5;
 					break;
 				case "Patch Panel":
@@ -618,7 +618,7 @@ function setPreferredLayout() {<?php if(isset($_COOKIE["layout"]) && strtolower(
 			<option value=0>Select...</option>
 <?php
 			
-		foreach(array('Server','Appliance','Storage Array','Switch','Routing Chassis','Patch Panel','Physical Infrastructure') as $devType){
+		foreach(array('Server','Appliance','Storage Array','Switch','Chassis','Patch Panel','Physical Infrastructure') as $devType){
 			echo "			<option value=\"$devType\"";
 			if($devType==$dev->DeviceType){
 				echo ' selected="selected"';

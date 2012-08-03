@@ -116,7 +116,7 @@
    <div><label for="devicetype">Device Type</label></div>
    <div><select name="devicetype" id="select">
 <?php
-	foreach ( array( 'Server', 'Appliance', 'Storage Array', 'Switch', 'Routing Chassis', 'Patch Panel', 'Physical Infrastructure' ) as $DevType ) {
+	foreach ( array( 'Server', 'Appliance', 'Storage Array', 'Switch', 'Chassis', 'Patch Panel', 'Physical Infrastructure' ) as $DevType ) {
 		if ( $DevType == $template->DeviceType )
 			$selected = "SELECTED";
 		else

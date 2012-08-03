@@ -72,3 +72,13 @@ ALTER TABLE fac_RackRequest ADD MfgDate DATE NOT NULL AFTER SerialNo;
 
 ALTER TABLE fac_Device add column ChassisSlots smallint(6) NOT NULL AFTER DeviceType;
 ALTER TABLE fac_Device add column ParentDevice int(11) NOT NULL AFTER ChassisSlots;
+
+--
+-- Change the DeviceType enumeration from having 'Routing Chassis' to just plain 'Chassis'
+--
+
+ALTER TABLE fac_Device ADD COLUMN TmpChassis int(1) NOT NULL DEFAULT 0;
+UPDATE fac_Device SET TmpChassis=1 WHERE DeviceType='Routing Chassis';
+ALTER TABLE fac_Device MODIFY COLUMN DeviceType enum('Server','Appliance','Storage Array','Switch','Chassis','Patch Panel','Physical Infrastructure');
+UPDATE fac_Device SET DeviceType='Chassis' WHERE TmpChassis=1;
+ALTER TABLE fac_Device DROP COLUMN TmpChassis;

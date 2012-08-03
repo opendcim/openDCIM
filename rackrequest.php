@@ -438,7 +438,7 @@
 			<select name="devicetype" id="devicetype" class="validate[required]">
 				<option value=0>Select...</option>
 <?php
-	foreach(array('Server','Appliance','Storage Array','Switch','Routing Chassis','Patch Panel','Physical Infrastructure') as $devType){
+	foreach(array('Server','Appliance','Storage Array','Switch','Chassis','Patch Panel','Physical Infrastructure') as $devType){
 		if($devType==$req->DeviceType){$selected = 'SELECTED';}else{$selected = '';}
 		print "				<option value=\"$devType\" $selected>$devType</option>\n";
 	}

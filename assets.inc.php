@@ -435,7 +435,7 @@ class Device {
 		$this->SerialNo = strtoupper( $this->SerialNo );
 		$this->AssetTag = strtoupper( $this->AssetTag );
 		
-		if ( ! in_array( $this->DeviceType, array( 'Server', 'Appliance', 'Storage Array', 'Switch', 'Routing Chassis', 'Patch Panel', 'Physical Infrastructure' ) ) )
+		if ( ! in_array( $this->DeviceType, array( 'Server', 'Appliance', 'Storage Array', 'Switch', 'Chassis', 'Patch Panel', 'Physical Infrastructure' ) ) )
 		  $this->DeviceType = "Server";
 
 		$insert_sql = "insert into fac_Device set Label=\"" . addslashes($this->Label) . "\", SerialNo=\"" . addslashes($this->SerialNo) . "\", AssetTag=\"" . addslashes($this->AssetTag) . 
@@ -490,7 +490,7 @@ class Device {
 		$this->SerialNo = strtoupper( $this->SerialNo );
 		$this->AssetTag = strtoupper( $this->AssetTag );
 
-		if ( ! in_array( $this->DeviceType, array( 'Server', 'Appliance', 'Storage Array', 'Switch', 'Routing Chassis', 'Patch Panel', 'Physical Infrastructure' ) ) )
+		if ( ! in_array( $this->DeviceType, array( 'Server', 'Appliance', 'Storage Array', 'Switch', 'Chassis', 'Patch Panel', 'Physical Infrastructure' ) ) )
 		  $this->DeviceType = "Server";
 
 		// You can't update what doesn't exist, so check for existing record first and retrieve the current location
@@ -708,7 +708,7 @@ class Device {
 	  $row = mysql_fetch_array( $result );
 	  $targetDC = $row["DataCenterID"];
 	  
-	  $selectSQL = "select * from fac_Device a, fac_Cabinet b where a.Cabinet=b.CabinetID and b.DataCenterID=\"" . intval($targetDC) . "\" and a.DeviceType in (\"Server\",\"Appliance\",\"Switch\",\"Routing Chassis\") order by a.Label";
+	  $selectSQL = "select * from fac_Device a, fac_Cabinet b where a.Cabinet=b.CabinetID and b.DataCenterID=\"" . intval($targetDC) . "\" and a.DeviceType in (\"Server\",\"Appliance\",\"Switch\",\"Chassis\") order by a.Label";
 	  $result = mysql_query( $selectSQL, $db );
 	  
 	  $deviceList = array();
