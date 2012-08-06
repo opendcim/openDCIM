@@ -232,7 +232,8 @@ CREATE TABLE fac_PowerConnection (
   PDUPosition int(11) NOT NULL,
   DeviceID int(11) NOT NULL,
   DeviceConnNumber int(11) NOT NULL,
-  KEY PDUID (PDUID,`DeviceID`)
+  UNIQUE KEY `PDUID` (`PDUID`,`PDUPosition`),
+  UNIQUE KEY `DeviceID` (`DeviceID`,`DeviceConnNumber`)
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1;
 
 --
@@ -334,7 +335,8 @@ CREATE TABLE fac_SwitchConnection (
   EndpointDeviceID int(11) NOT NULL,
   EndpointPort int(11) NOT NULL,
   Notes varchar(80) NOT NULL,
-  KEY SwitchDeviceID (SwitchDeviceID,`EndpointDeviceID`)
+  UNIQUE KEY `EndpointDeviceID` (`EndpointDeviceID`,`EndpointPort`),
+  UNIQUE KEY `SwitchDeviceID` (`SwitchDeviceID`,`SwitchPortNumber`)
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1;
 
 --

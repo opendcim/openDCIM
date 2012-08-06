@@ -74,6 +74,22 @@ ALTER TABLE fac_Device add column ChassisSlots smallint(6) NOT NULL AFTER Device
 ALTER TABLE fac_Device add column ParentDevice int(11) NOT NULL AFTER ChassisSlots;
 
 --
+-- Add restraints to the Power Connections to prevent accidental duplicates
+--
+
+ALTER TABLE fac_PowerConnection DROP INDEX PDUID;
+ALTER TABLE fac_PowerConnection ADD UNIQUE KEY (PDUID,PDUPosition);
+ALTER TABLE fac_PowerConnection ADD UNIQUE KEY (DeviceID,DeviceConnNumber);
+
+--
+-- Add constraints to the Switch Connections to prevent accidental duplicates
+--
+
+ALTER TABLE fac_SwitchConnection ADD UNIQUE KEY (EndpointDeviceID,EndpointPort);
+ALTER TABLE fac_SwitchConnection drop index SwitchDeviceID;
+ALTER TABLE fac_SwitchConnection ADD UNIQUE KEY (SwitchDeviceID,SwitchPortNumber);
+
+--
 -- Change the DeviceType enumeration from having 'Routing Chassis' to just plain 'Chassis'
 --
 
