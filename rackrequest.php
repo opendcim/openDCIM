@@ -215,6 +215,58 @@
   <script type="text/javascript" src="scripts/jquery.validationEngine.js"></script>
 
   <script type="text/javascript">
+  
+	function updateFromTemplate(formname) {
+		var tmplHeight=new Array();
+
+		var sel=formname.elements['deviceclass'];
+
+		var xmlhttp;
+		var template;
+		if (window.XMLHttpRequest) {
+			// code for IE7+, Firefox, Chrome, Opera, Safari
+			xmlhttp=new XMLHttpRequest();
+		} else {
+			// code for IE6, IE5
+			xmlhttp=new ActiveXObject("Microsoft.XMLHTTP");
+		}
+
+		xmlhttp.onreadystatechange=function() {
+			if (xmlhttp.readyState==4 && xmlhttp.status==200) {
+				template=eval("("+xmlhttp.responseText+")");
+				formname.elements['deviceheight'].value=template.Height;
+				formname.elements['ethernetcount'].value=template.NumPorts;
+				
+				switch ( template.DeviceType ) {
+					case "Server":
+						formname.elements['devicetype'].selectedIndex = 1;
+						break;
+					case "Appliance":
+						formname.elements['devicetype'].selectedIndex = 2;
+						break;
+					case "Storage Array":
+						formname.elements['devicetype'].selectedIndex = 3;
+						break;
+					case "Switch":
+						formname.elements['devicetype'].selectedIndex = 4;
+						break;
+					case "Chassis":
+						formname.elements['devicetype'].selectedIndex = 5;
+						break;
+					case "Patch Panel":
+						formname.elements['devicetype'].selectedIndex = 6;
+						break;
+					default:
+						formname.elements['devicetype'].selectedIndex = 7;
+				}
+			}
+		}
+
+		xmlhttp.open("GET","scripts/ajax_template.php?q="+sel.options[sel.selectedIndex].value,true);
+		xmlhttp.send();
+
+	}
+
   	$(document).ready(function() {
 		$(function(){
 			$('#deviceform').validationEngine({'custom_error_messages' : {
@@ -397,6 +449,26 @@
 		</div>
 	</div>
 	<div>
+		<div><label for="deviceclass">Device Class</label></div>
+		<div>
+			<select name="deviceclass" id="deviceclass" onchange="updateFromTemplate(deviceform)">
+				<option value=0>Select a template...</option>
+<?php
+	$templ=new DeviceTemplate();
+	$templateList=$templ->GetTemplateList($facDB);
+	$mfg=new Manufacturer();
+  
+	foreach($templateList as $tempRow){
+		if($req->DeviceClass==$tempRow->TemplateID){$selected = 'selected';}else{$selected = '';}
+		$mfg->ManufacturerID=$tempRow->ManufacturerID;
+		$mfg->GetManufacturerByID($facDB);
+		print "				<option value=\"$tempRow->TemplateID\" $selected>$mfg->Name - $tempRow->Model</option>\n";
+	}
+?>
+			</select>
+		</div>
+	</div>
+	<div>
 		<div><label for="deviceheight">Height</label></div>
 		<div><input type="text" name="deviceheight" id="deviceheight" class="validate[required,custom[onlyNumberSp]]" size="15" value="<?php echo $req->DeviceHeight; ?>"></div>
 	</div>
@@ -416,26 +488,7 @@
 		<div><label for="sanlist">SAN Port Assignments</label></div>
 		<div><input type="text" name="sanlist" id="sanlist" class="validate[condRequired[sancount]]" size="50" value="<?php echo $req->SANList; ?>"></div>
 	</div>
-	<div>
-		<div><label for="deviceclass">Device Class</label></div>
-		<div>
-			<select name="deviceclass" id="deviceclass">
-				<option value=0>Select a template...</option>
-<?php
-	$templ=new DeviceTemplate();
-	$templateList=$templ->GetTemplateList($facDB);
-	$mfg=new Manufacturer();
-  
-	foreach($templateList as $tempRow){
-		if($req->DeviceClass==$tempRow->TemplateID){$selected = 'selected';}else{$selected = '';}
-		$mfg->ManufacturerID=$tempRow->ManufacturerID;
-		$mfg->GetManufacturerByID($facDB);
-		print "				<option value=\"$tempRow->TemplateID\" $selected>$mfg->Name - $tempRow->Model</option>\n";
-	}
-?>
-			</select>
-		</div>
-	</div>
+
 	<div>
 		<div><label for="devicetype">Device Type</label></div>
 		<div>
