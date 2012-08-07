@@ -179,7 +179,7 @@ div.table > div > div span {display: block;font-size: 0.75em;}
 
 /* Search Results */
 .search .center {text-align: left;}
-.search ol, .search ul{list-style-type: none;margin-left: 1em;}
+.search .main ol, .search .main ul{list-style-type: none;margin-left: 1em;}
 .search ol {margin-top: .35em;}
 .search ol li {margin-bottom: .35em;}
 .search ol ul li {margin-left: 1em;margin-bottom: 0em;}

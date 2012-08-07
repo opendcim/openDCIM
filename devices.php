@@ -642,7 +642,7 @@ function setPreferredLayout() {<?php if(isset($_COOKIE["layout"]) && strtolower(
 	//
 	// Do not display the chassis contents block if this is a child device (ParentDevice > 0)
 	//
-	if ( $dev->ParentDevice == 0 ) {
+	if($dev->DeviceType=='Chassis'){
 ?>
 <fieldset class="chassis">
 	<legend>Chassis Contents</legend>
@@ -660,7 +660,7 @@ function setPreferredLayout() {<?php if(isset($_COOKIE["layout"]) && strtolower(
 			<div>Device Type</div>
 		</div>
 <?php
-	foreach ( $childList as $chDev ) {
+	foreach($childList as $chDev){
 		print "\t<div>
 		<div>$chDev->Position</div>
 		<div>$chDev->Height</div>
@@ -669,7 +669,7 @@ function setPreferredLayout() {<?php if(isset($_COOKIE["layout"]) && strtolower(
 	</div>\n";
 	}
 	
-	if ( $dev->ChassisSlots > 0 ) {
+	if($dev->ChassisSlots >0){
 ?>
 		<div class="caption">
 			<button type="submit" id="adddevice" value="child" name="action">Add Device</button>
