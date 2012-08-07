@@ -346,21 +346,29 @@ $(document).ready(function() {
 ?>
 	$('#position').focus(function()	{
 		var cab=$("select#cabinetid").val();
-		$.get('scripts/ajax_cabinetuse.php?cabinet='+cab, function(data) {
+		$.getJSON('scripts/ajax_cabinetuse.php?cabinet='+cab, function(data) {
+			var ucount=0;
+			$.each(data, function(i,inuse){
+				ucount++;
+			});
 			var rackhtmlleft='';
 			var rackhtmlright='';
-			$.each(data, function(i,inuse){
-				if(inuse){var cssclass='notavail'}else{var cssclass=''};
-				rackhtmlleft+='<div>'+i+'</div>';
-				rackhtmlright+='<div val='+i+' class="'+cssclass+'"></div>';
-			});
+			for(ucount=ucount; ucount>0; ucount--){
+				if(data[ucount]){var cssclass='notavail'}else{var cssclass=''};
+				rackhtmlleft+='<div>'+ucount+'</div>';
+				rackhtmlright+='<div val='+ucount+' class="'+cssclass+'"></div>';
+			}
 			var rackhtml='<div class="table border positionselector"><div><div>'+rackhtmlleft+'</div><div>'+rackhtmlright+'</div></div></div>';
 			$('#positionselector').html(rackhtml);
 			setTimeout(function(){
 				var divwidth=$('.positionselector').width();
+				var divheight=$('.positionselector').height();
 				$('#positionselector').width(divwidth);
 				$('#height').focus(function(){$('#positionselector').css({'left': '-1000px'});});
-				$('#positionselector').css({'left':(($('.right').position().left)-(divwidth+20))});
+				$('#positionselector').css({
+					'left':(($('.right').position().left)-(divwidth+40)),
+					'top':(($('.right').position().top))
+				});
 				$('#positionselector').mouseleave(function(){
 					$('#positionselector').css({'left': '-1000px'});
 				});
@@ -402,7 +410,7 @@ $(document).ready(function() {
 					}
 				});
 			},100);
-		});
+		}, 'json');
 	});
 <?php
 	}

@@ -1,5 +1,5 @@
 /*
- * Inline Form Validation Engine 2.5.4, jQuery plugin
+ * Inline Form Validation Engine 2.5.5.1, jQuery plugin
  *
  * Copyright(c) 2010, Cedric Dugas
  * http://www.position-absolute.com
@@ -250,8 +250,8 @@
 			}
 
 			if(options.onValidationComplete) {
-				options.onValidationComplete(form, r);
-				return false;
+				// !! ensures that an undefined return is interpreted as return false but allows a onValidationComplete() to possibly return true and have form continue processing
+				return !!options.onValidationComplete(form, r);
 			}
 			return r;
 		},
@@ -451,7 +451,7 @@
 				++$.validationEngine.fieldIdCounter;
 			}
 
-			if (field.is(":hidden") && !options.prettySelect || field.parents().is(":hidden"))
+			if (field.is(":hidden") && !options.prettySelect || field.parent().is(":hidden"))
 				return false;
 
 			var rulesParsing = field.attr(options.validateAttribute);
@@ -519,19 +519,19 @@
 						errorMsg = methods._getErrorMessage(form, field, rules[i], rules, i, options, methods._max);
 						break;
 					case "past":
-						errorMsg = methods._past(form, field, rules, i, options);
+						errorMsg = methods._getErrorMessage(form, field,rules[i], rules, i, options, methods._past);
 						break;
 					case "future":
-						errorMsg = methods._future(form, field, rules, i, options);
+						errorMsg = methods._getErrorMessage(form, field,rules[i], rules, i, options, methods._future);
 						break;
 					case "dateRange":
 						var classGroup = "["+options.validateAttribute+"*=" + rules[i + 1] + "]";
-						var firstOfGroup = form.find(classGroup).eq(0);
-						var secondOfGroup = form.find(classGroup).eq(1);
+						options.firstOfGroup = form.find(classGroup).eq(0);
+						options.secondOfGroup = form.find(classGroup).eq(1);
 
 						//if one entry out of the pair has value then proceed to run through validation
-						if (firstOfGroup[0].value || secondOfGroup[0].value) {
-							errorMsg = methods._dateRange(firstOfGroup, secondOfGroup, rules, i, options);
+						if (options.firstOfGroup[0].value || options.secondOfGroup[0].value) {
+							errorMsg = methods._getErrorMessage(form, field,rules[i], rules, i, options, methods._dateRange);
 						}
 						if (errorMsg) required = true;
 						options.showArrow = false;
@@ -539,12 +539,12 @@
 
 					case "dateTimeRange":
 						var classGroup = "["+options.validateAttribute+"*=" + rules[i + 1] + "]";
-						var firstOfGroup = form.find(classGroup).eq(0);
-						var secondOfGroup = form.find(classGroup).eq(1);
+						options.firstOfGroup = form.find(classGroup).eq(0);
+						options.secondOfGroup = form.find(classGroup).eq(1);
 
 						//if one entry out of the pair has value then proceed to run through validation
-						if (firstOfGroup[0].value || secondOfGroup[0].value) {
-							errorMsg = methods._dateTimeRange(firstOfGroup, secondOfGroup, rules, i, options);
+						if (options.firstOfGroup[0].value || options.secondOfGroup[0].value) {
+							errorMsg = methods._getErrorMessage(form, field,rules[i], rules, i, options, methods._dateTimeRange);
 						}
 						if (errorMsg) required = true;
 						options.showArrow = false;
@@ -567,7 +567,7 @@
 						errorMsg = methods._getErrorMessage(form, field, rules[i], rules, i, options, methods._creditCard);
 						break;
 					case "condRequired":
-						errorMsg = methods._condRequired(field, rules, i, options);
+						errorMsg = methods._getErrorMessage(form, field, rules[i], rules, i, options, methods._condRequired);
 						if (errorMsg !== undefined) {
 							required = true;
 						}
@@ -581,7 +581,7 @@
 				}
 			}
 			// If the rules required is not added, an empty field is not validated
-			if(!required && field.val() == "" && !errorMsg) options.isError = false;
+			if(!required && field.val().length < 1) options.isError = false;
 
 			// Hack for radio/checkbox group button, the validation go into the
 			// first radio/checkbox of the group
@@ -634,15 +634,14 @@
 			 // If we are using the custon validation type, build the index for the rule.
 			 // Otherwise if we are doing a function call, make the call and return the object
 			 // that is passed back.
+			 var beforeChangeRule = rule;
 			 if (rule == "custom") {
-				 var custom_validation_type_index = rules.indexOf(rule) + 1;
+				 var custom_validation_type_index = jQuery.inArray(rule, rules)+ 1;
 				 var custom_validation_type = rules[custom_validation_type_index];
 				 rule = "custom[" + custom_validation_type + "]";
 			 }
-			 var id = field.context.attributes.id.nodeValue;
-			 var element_classes = field.context.attributes['class'].nodeValue;
+			 var element_classes = (field.attr("data-validation-engine")) ? field.attr("data-validation-engine") : field.attr("class");
 			 var element_classes_array = element_classes.split(" ");
-			 var custom_message = methods._getCustomErrorMessage(id, element_classes_array, rule, options);
 
 			 // Call the original validation method. If we are dealing with dates, also pass the form
 			 var errorMsg;
@@ -654,15 +653,25 @@
 
 			 // If the original validation method returned an error and we have a custom error message,
 			 // return the custom message instead. Otherwise return the original error message.
-			 if (errorMsg != undefined && custom_message) {
-				 return custom_message;
+			 if (errorMsg != undefined) {
+				 var custom_message = methods._getCustomErrorMessage($(field), element_classes_array, beforeChangeRule, options);
+				 if (custom_message) return custom_message;
 			 }
 			 return errorMsg;
 
 		 },
-		 _getCustomErrorMessage:function (id, classes, rule, options) {
+		 _getCustomErrorMessage:function (field, classes, rule, options) {
 			var custom_message = false;
-			id = '#' + id;
+			var validityProp = methods._validityProp[rule];
+			if (validityProp != undefined) {
+				custom_message = field.attr("data-errormessage-"+validityProp);
+				if (custom_message != undefined) 
+					return custom_message;
+			}
+			custom_message = field.attr("data-errormessage");
+			if (custom_message != undefined) 
+				return custom_message;
+			var id = '#' + field.attr("id");
 			// If we have custom messages for the element's id, get the message for the rule from the id.
 			// Otherwise, if we have custom messages for the element's classes, use the first class message we find instead.
 			if (typeof options.custom_error_messages[id] != "undefined" &&
@@ -685,6 +694,26 @@
 			 }
 			 return custom_message;
 		 },
+		 _validityProp: {
+			 "required": "value-missing",
+			 "custom": "custom-error",
+			 "groupRequired": "value-missing",
+			 "ajax": "custom-error",
+			 "minSize": "range-underflow",
+			 "maxSize": "range-overflow",
+			 "min": "range-underflow",
+			 "max": "range-overflow",
+			 "past": "type-mismatch",
+			 "future": "type-mismatch",
+			 "dateRange": "type-mismatch",
+			 "dateTimeRange": "type-mismatch",
+			 "maxCheckbox": "range-overflow",
+			 "minCheckbox": "range-underflow",
+			 "equals": "pattern-mismatch",
+			 "funcCall": "custom-error",
+			 "creditCard": "pattern-mismatch",
+			 "condRequired": "value-missing",
+		 },
 		/**
 		* Required validation
 		*
@@ -704,7 +733,8 @@
 				case "select-one":
 				case "select-multiple":
 				default:
-					if (! $.trim(field.val()) || field.val() == field.attr("data-validation-placeholder"))
+
+					if (! $.trim(field.val()) || field.val() == field.attr("data-validation-placeholder") || field.val() == field.attr("placeholder"))
 						return options.allrules[rules[i]].alertText;
 					break;
 				case "radio":
@@ -802,7 +832,7 @@
 		_funcCall: function(field, rules, i, options) {
 			var functionName = rules[i + 1];
 			var fn;
-			if(functionName.indexOf('.')>-1)
+			if(functionName.indexOf('.') >-1)
 			{
 				var namespaces = functionName.split('.');
 				var scope = window;
@@ -1012,19 +1042,19 @@
 		* @param {jqObject} second field name
 		* @return an error string if validation failed
 		*/
-		_dateRange: function (first, second, rules, i, options) {
+		_dateRange: function (field, rules, i, options) {
 			//are not both populated
-			if ((!first[0].value && second[0].value) || (first[0].value && !second[0].value)) {
+			if ((!options.firstOfGroup[0].value && options.secondOfGroup[0].value) || (options.firstOfGroup[0].value && !options.secondOfGroup[0].value)) {
 				return options.allrules[rules[i]].alertText + options.allrules[rules[i]].alertText2;
 			}
 
 			//are not both dates
-			if (!methods._isDate(first[0].value) || !methods._isDate(second[0].value)) {
+			if (!methods._isDate(options.firstOfGroup[0].value) || !methods._isDate(options.secondOfGroup[0].value)) {
 				return options.allrules[rules[i]].alertText + options.allrules[rules[i]].alertText2;
 			}
 
 			//are both dates but range is off
-			if (!methods._dateCompare(first[0].value, second[0].value)) {
+			if (!methods._dateCompare(options.firstOfGroup[0].value, options.secondOfGroup[0].value)) {
 				return options.allrules[rules[i]].alertText + options.allrules[rules[i]].alertText2;
 			}
 		},
@@ -1035,17 +1065,17 @@
 		* @param {jqObject} second field name
 		* @return an error string if validation failed
 		*/
-		_dateTimeRange: function (first, second, rules, i, options) {
+		_dateTimeRange: function (field, rules, i, options) {
 			//are not both populated
-			if ((!first[0].value && second[0].value) || (first[0].value && !second[0].value)) {
+			if ((!options.firstOfGroup[0].value && options.secondOfGroup[0].value) || (options.firstOfGroup[0].value && !options.secondOfGroup[0].value)) {
 				return options.allrules[rules[i]].alertText + options.allrules[rules[i]].alertText2;
 			}
 			//are not both dates
-			if (!methods._isDateTime(first[0].value) || !methods._isDateTime(second[0].value)) {
+			if (!methods._isDateTime(options.firstOfGroup[0].value) || !methods._isDateTime(options.secondOfGroup[0].value)) {
 				return options.allrules[rules[i]].alertText + options.allrules[rules[i]].alertText2;
 			}
 			//are both dates but range is off
-			if (!methods._dateCompare(first[0].value, second[0].value)) {
+			if (!methods._dateCompare(options.firstOfGroup[0].value, options.secondOfGroup[0].value)) {
 				return options.allrules[rules[i]].alertText + options.allrules[rules[i]].alertText2;
 			}
 		},
@@ -1537,8 +1567,8 @@
 					//for now we use simple parseInt()
 
 					//do we have second parameter?
-					if (shift1.indexOf(",")!=-1) {
-						shift2=shift1.substring(shift1.indexOf(",")+1);
+					if (shift1.indexOf(",") !=-1) {
+						shift2=shift1.substring(shift1.indexOf(",") +1);
 						shift1=shift1.substring(0,shift1.indexOf(","));
 						shiftY=parseInt(shift2);
 						if (isNaN(shiftY)) shiftY=0;
@@ -1674,7 +1704,7 @@
 	 $.fn.validationEngine = function(method) {
 
 		 var form = $(this);
-		 if(!form[0]) return false;  // stop here if the form does not exist
+		 if(!form[0]) return form;  // stop here if the form does not exist
 
 		 if (typeof(method) == 'string' && method.charAt(0) != '_' && methods[method]) {
 

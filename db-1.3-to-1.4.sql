@@ -92,9 +92,6 @@ ALTER TABLE fac_SwitchConnection ADD UNIQUE KEY (SwitchDeviceID,SwitchPortNumber
 --
 -- Change the DeviceType enumeration from having 'Routing Chassis' to just plain 'Chassis'
 --
-
-ALTER TABLE fac_Device ADD COLUMN TmpChassis int(1) NOT NULL DEFAULT 0;
-UPDATE fac_Device SET TmpChassis=1 WHERE DeviceType='Routing Chassis';
-ALTER TABLE fac_Device MODIFY COLUMN DeviceType enum('Server','Appliance','Storage Array','Switch','Chassis','Patch Panel','Physical Infrastructure');
-UPDATE fac_Device SET DeviceType='Chassis' WHERE TmpChassis=1;
-ALTER TABLE fac_Device DROP COLUMN TmpChassis;
+ALTER TABLE fac_Device MODIFY COLUMN DeviceType enum('Server','Appliance','Storage Array','Switch','Routing Chassis','Patch Panel','Physical Infrastructure','Chassis');
+UPDATE fac_Device SET DeviceType='Chassis' WHERE DeviceType = 'Routing Chassis';
+ALTER TABLE fac_Device MODIFY COLUMN DeviceType enum('Server','Appliance','Storage Array','Switch','Patch Panel','Physical Infrastructure','Chassis');
