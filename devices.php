@@ -346,7 +346,7 @@ $(document).ready(function() {
 ?>
 	$('#position').focus(function()	{
 		var cab=$("select#cabinetid").val();
-		$.getJSON('scripts/ajax_cabinetuse.php?cabinet='+cab, function(data) {
+		$.getJSON('scripts/ajax_cabinetuse.php?cabinet='+cab+'&deviceid='+$("#deviceid").val(), function(data) {
 			var ucount=0;
 			$.each(data, function(i,inuse){
 				ucount++;
@@ -440,7 +440,7 @@ function setPreferredLayout() {<?php if(isset($_COOKIE["layout"]) && strtolower(
 	<div class="table">
 		<div>
 		   <div>Device ID</div>
-		   <div><input type="text" name="deviceid" value="<?php echo $dev->DeviceID; ?>" size="6" readonly></div>
+		   <div><input type="text" name="deviceid" id="deviceid" value="<?php echo $dev->DeviceID; ?>" size="6" readonly></div>
 		</div>
 		<div>
 			<div><label for="reservation">Reservation?</label></div>
