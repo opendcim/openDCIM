@@ -232,8 +232,7 @@ CREATE TABLE fac_PowerConnection (
   PDUPosition int(11) NOT NULL,
   DeviceID int(11) NOT NULL,
   DeviceConnNumber int(11) NOT NULL,
-  UNIQUE KEY `PDUID` (`PDUID`,`PDUPosition`),
-  UNIQUE KEY `DeviceID` (`DeviceID`,`DeviceConnNumber`)
+  KEY PDUID (PDUID,`DeviceID`)
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1;
 
 --
@@ -335,8 +334,7 @@ CREATE TABLE fac_SwitchConnection (
   EndpointDeviceID int(11) NOT NULL,
   EndpointPort int(11) NOT NULL,
   Notes varchar(80) NOT NULL,
-  UNIQUE KEY `EndpointDeviceID` (`EndpointDeviceID`,`EndpointPort`),
-  UNIQUE KEY `SwitchDeviceID` (`SwitchDeviceID`,`SwitchPortNumber`)
+  KEY SwitchDeviceID (SwitchDeviceID,`EndpointDeviceID`)
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1;
 
 --
@@ -476,4 +474,3 @@ INSERT INTO fac_Config VALUES
         ('BodyColor', '#F0E0B2', 'HexColor', 'string', '#F0E0B2'),
         ('LinkColor', '#000000', 'HexColor', 'string', '#000000'),
         ('VisitedLinkColor', '#8D90B3', 'HexColor', 'string', '#8D90B3');
-
