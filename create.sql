@@ -448,6 +448,8 @@ INSERT INTO fac_Config VALUES
         ('WeightYellow','60','percentage','float','60'),
         ('PowerRed','80','percentage','float','80'),
         ('PowerYellow','60','percentage','float','60'),
+		('RackWarningHours', 4, 'Hours', 'integer', '4'),
+		('RackOverdueHours', 1, 'Hours', 'integer', '1'),
         ('CriticalColor','#cc0000','HexColor','string','#cc0000'),
         ('CautionColor','#cccc00','HexColor','string','#cccc00'),
         ('GoodColor','#0a0','HexColor','string','#0a0'),
