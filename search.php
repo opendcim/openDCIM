@@ -23,10 +23,12 @@
 	$esx=new ESX();
 	$cab=new Cabinet();
 	$pdu=new PowerDistribution();
+	$resultcount=0;
 
 	if($searchKey=='serial'){
 		$dev->SerialNo=$searchTerm;
 		$devList=$dev->SearchDevicebySerialNo($facDB);
+		$resultcount=count($devList);
 	}elseif($searchKey=='label'){
 		$dev->Label=$searchTerm;
 		$devList=$dev->SearchDevicebyLabel($facDB);
@@ -37,9 +39,11 @@
 		$cabList=$cab->SearchByCabinetName($facDB);
 		$pdu->Label=$searchTerm;
 		$pduList=$pdu->SearchByPDUName($facDB);
+		$resultcount=count($devList)+count($cabList)+count($pduList)+count($vmList);
 	}elseif($searchKey=='asset'){
 		$dev->AssetTag=$searchTerm;
 		$devList=$dev->SearchDevicebyAssetTag($facDB);
+		$resultcount=count($devList);
 	} else {
 		$devList='';
 	}
@@ -47,86 +51,64 @@
 	$x=0;
 	$temp=array(); // Store all devices for display
 	$cabtemp=array(); // List of all cabinet ids for outerloop
-	$childList = array();
+	$childList=array(); // List of all blade devices
 	while(list($devID,$device)=each($devList)){
-		// Child devices don't have cabinet assignments
-		if ( $device->ParentDevice == 0 ) {
-			$temp[$x]['devid']=$devID;
-			$temp[$x]['label']=$device->Label;
-			if ( $device->DeviceType == "Chassis" )
-				$temp[$x]['type'] = 'chassis';
-			else
-				$temp[$x]['type']='srv';
-				
-			$temp[$x]['cabinet']=$device->Cabinet;
-			$cabtemp[$device->Cabinet]="";
-			++$x;
-		// But the parents of child devices do
-		} else {
-			$parDev->DeviceID = $device->ParentDevice;
-			$parDev->GetDevice( $facDB );
-			
-			// See if the parent device is already in the array
-			$a = ArraySearchRecursive( $device->ParentDevice, $temp, 'devid' );
-			if ( ! is_array($a)) {
-				$temp[$x]['devid'] = $parDev->DeviceID;
-				$temp[$x]['label'] = $parDev->Label;
-				$temp[$x]['type'] = 'chassis';
-				$temp[$x]['cabinet'] = $parDev->Cabinet;
-				$cabtemp[$device->Cabinet]="";
-				$x++;
-			}	
-
-			$childNum = sizeof( $childList );
-			$childList[$childNum] = new Device();
-			$childList[$childNum]->DeviceID = $device->DeviceID;
-			$childList[$childNum]->GetDevice( $facDB );
+		$temp[$x]['devid']=$devID;
+		$temp[$x]['label']=$device->Label;
+		$temp[$x]['type']='srv'; // empty chassis devices need no special treatment leave them as a server
+		$temp[$x]['cabinet']=$device->Cabinet;
+		$temp[$x]['parent']=$device->ParentDevice;
+		$cabtemp[$device->Cabinet]="";
+		++$x;
+		if($device->ParentDevice!=0){
+			$childList[$device->ParentDevice]=""; // Create a list of chassis devices based on children present
 		}
-		
 	}
 	
 	if(isset($vmList)){
 		foreach($vmList as $vmRow){
 			$dev->DeviceID=$vmRow->DeviceID;
 			$dev->GetDevice($facDB);
-			// $dev is an object for the ESX host, but that could be a blade on a chassis, so we need to check that, too
-			if ( $dev->ParentDevice > 0 ) {
-				// We have a ParentDevice, so we must be a child
-				$parDev->DeviceID = $dev->ParentDevice;
-				$parDev->GetDevice( $facDB );
-				
-				$a = ArraySearchRecursive( $parDev->DeviceID, $temp, 'devid' );
-				if ( ! is_array( $a ) ) {
-					// We need to add the parent device to the list
-					$temp[$x]['devid'] = $parDev->DeviceID;
-					$temp[$x]['label'] = $parDev->Label;
-					$temp[$x]['type'] = 'chassis';
-					$temp[$x]['cabinet'] = $parDev->Cabinet;
-					
-					$cabtemp[$parDev->Cabinet]="";
-					$x++;
+			$a=ArraySearchRecursive($vmRow->DeviceID,$temp,'devid');
+			// if we find a matching server in the existing list set it to type vm so it will nest in the results
+			if(is_array($a)){
+				$temp[$a[0]]['label']=$dev->Label;
+				$temp[$a[0]]['type']='vm';
+			}else{
+				// We didn't find the host server of this vm so we're gonna add it to the list
+				$temp[$x]['devid']=$dev->DeviceID;
+				$temp[$x]['label']=$dev->Label;
+				$temp[$x]['type']='vm';
+				$temp[$x]['cabinet']=$dev->Cabinet;
+				$temp[$x]['parent']=$dev->ParentDevice;
+				$cabtemp[$dev->Cabinet]="";
+				++$x;
+				if($dev->ParentDevice!=0){
+					$childList[$dev->ParentDevice]=""; // Create a list of chassis devices based on children present
 				}
-				
-				$childNum = sizeof( $childList );
-				$childList[$childNum] = new Device();
-				$childList[$childNum]->DeviceID = $vmRow->DeviceID;
-				$childList[$childNum]->GetDevice( $facDB );				
-			} else {
-				$a=ArraySearchRecursive($vmRow->DeviceID,$temp,'devid');
-				// if we find a matching server in the existing list set it to type vm so it will nest in the results
-				if(is_array($a)){
-					$temp[$a[0]]['label']=$dev->Label;
-					$temp[$a[0]]['type']='vm';
-				}else{
-					// We didn't find the host server of this vm so we're gonna add it to the list
-					$temp[$x]['devid']=$dev->DeviceID;
-					$temp[$x]['label']=$dev->Label;
-					$temp[$x]['type']='vm';
-					
-					$temp[$x]['cabinet']=$dev->Cabinet;
-					$cabtemp[$dev->Cabinet]="";
-					++$x;
-				}
+			}
+		}
+	}
+
+	// Anything in the childList is assumed to be chassis device with children present.
+	// Change type to chassis
+	if(isset($childList)){
+		foreach($childList as $key => $blank){
+			$a=ArraySearchRecursive($key,$temp,'devid');
+			if(is_array($a)){
+				$temp[$a[0]]['type']='chassis'; // Device already in the list so set it to chassis
+			}else{
+				// Device doesn't exist so we need to add it to the list for display purposes
+				$dev->DeviceID=$key;
+				$dev->GetDevice($facDB);
+
+				$temp[$x]['devid']=$dev->DeviceID;
+				$temp[$x]['label']=$dev->Label;
+				$temp[$x]['type']='chassis';
+				$temp[$x]['cabinet']=$dev->Cabinet;
+				$temp[$x]['parent']=$dev->ParentDevice;
+				$cabtemp[$dev->Cabinet]="";
+				++$x;
 			}
 		}
 	}
@@ -147,6 +129,9 @@
 		}
 	}
 
+	// Since children have empty cabinet identifiers we'll have an empty row get rid of it
+	if(isset($cabtemp[0])){unset($cabtemp[0]);}
+
 	// Add Rack Names To Temp Cabinet Array
 	foreach($cabtemp as $key => $row){
 		if($key!=-1){
@@ -162,6 +147,13 @@
 	if(!empty($temp)){
 		$devList=sort2d($temp,'label');
 	}
+
+	if(!empty($devList)){
+		$searchresults="Search complete. ($resultcount) results.";
+	}else{
+		$searchresults="No matching devices found.";
+	}
+
 ?>
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html>
@@ -196,60 +188,66 @@
 			// if this ends up being a huge time sink, optimize this above then fix logic
 			foreach($pduList as $key => $row){
 				if($cabID == $row->CabinetID){
-					print "					<li class=\"pdu\"><a href=\"pduinfo.php?pduid=$row->PDUID\">$row->Label</a>\n";
+					print "\t\t\t\t<li class=\"pdu\"><a href=\"pduinfo.php?pduid=$row->PDUID\">$row->Label</a>\n";
 				}
 			}
 		}
 		if(!empty($devList)){
-			foreach ($devList as $key => $row){
-				if($cabID == $row['cabinet']){
+			foreach($devList as $key => $row){
+				if($cabID==$row['cabinet']){
 					//In case of VMHost missing from inventory, this shouldn't ever happen
 					if($row['label']=='' || is_null($row['label'])){$row['label']='VM Host Missing From Inventory';}
-					echo "				<li><a href=\"devices.php?deviceid={$row['devid']}\">{$row['label']}</a>\n";
+					print "\t\t\t\t<li><a href=\"devices.php?deviceid={$row['devid']}\">{$row['label']}</a>\n";
 					// Created a nested list showing all blades residing in this chassis
-					if ( $row['type'] == 'chassis' ) {
-						printf( "\t\t\t<ul>\n" );
-						foreach ( $childList as $chDev ) {
-							if ( $chDev->ParentDevice == $row['devid'] ) {
-								printf( "\t\t\t\t<li><div><img src=\"images/blade.png\" alt=\"blade icon\"></div><a href=\"devices.php?deviceid=%d\">%s</a></li>\n", $chDev->DeviceID, $chDev->Label );
-								
-								// A blade can easily be an ESX server, too, so display any matching VMs
-								if ( $chDev->ESX == true ) {
-									printf( "\t\t\t\t\t<ul>\n" );
-									foreach ( $vmList as $vm ) {
-										if ( $vm->DeviceID == $chDev->DeviceID ) {
-											printf( "\t\t\t\t\t<li><div><img src=\"images/vmcube.png\" alt=\"vm icon\"></div>$vm->vmName</li>\n" );
+					if($row['type']=='chassis'){
+						print "\t\t\t\t\t<ul>\n";
+						foreach($devList as $chKey => $chRow){
+							if($chRow['parent']==$row['devid']){
+								//In case of VMHost missing from inventory, this shouldn't ever happen
+								if($chRow['label']=='' || is_null($chRow['label'])){$chRow['label']='VM Host Missing From Inventory';}
+								print "\t\t\t\t\t\t<li><div><img src=\"images/blade.png\" alt=\"blade icon\"></div><a href=\"devices.php?deviceid={$chRow['devid']}\">{$chRow['label']}</a>\n";
+								// Create a nested list showing all VMs residing on this host.
+								if($chRow['type']=='vm'){
+									print "\t\t\t\t\t\t\t<ul>\n";
+									foreach($vmList as $usedkey => $vm){
+										if($vm->DeviceID==$chRow['devid']){
+											print "\t\t\t\t\t\t\t\t<li><div><img src=\"images/vmcube.png\" alt=\"vm icon\"></div>$vm->vmName</li>\n";
+											// Remove VMs that have already been processed
+											unset($vmList[$usedkey]);
 										}
 									}
-									printf( "\t\t\t\t\t</ul>\n" );
+									print "\t\t\t\t\t\t\t</ul>\n";
 								}
-								printf( "\t\t\t\t</li>\n" );
+								// Remove devices that we have already processed.
+								unset($devList[$chKey]);
+								print "\t\t\t\t\t\t</li>\n"; // Close out current list item
 							}
 						}
-						printf( "\t\t\t</ul>\n" );
+						print "\t\t\t\t\t</ul>\n";
 					}
-					
 					// Create a nested list showing all VMs residing on this host.
 					if($row['type']=='vm'){
-						echo "					<ul>\n";
-						foreach($vmList as $vm){
+						echo "\t\t\t\t\t<ul>\n";
+						foreach($vmList as $usedkey => $vm){
 							if($vm->DeviceID==$row['devid']){
-								echo "						<li><div><img src=\"images/vmcube.png\" alt=\"vm icon\"></div>$vm->vmName</li>";
+								echo "\t\t\t\t\t\t<li><div><img src=\"images/vmcube.png\" alt=\"vm icon\"></div>$vm->vmName</li>\n";
+								// Remove VMs that have already been processed
+								unset($vmList[$usedkey]);
 							}
 						}
-						echo "					</ul>\n";
+						echo "\t\t\t\t\t</ul>\n";
 					}
-					echo "				</li>\n";
+					echo "\t\t\t\t</li>\n";
 				} 
 			}
 		}
-		print "			</ol>\n		</li>\n";
+		print "\t\t\t</ol>\n\t\t</li>\n";
 	}
 
 ?>
 	</ol>
 
-<p>Search complete.</p>
+<p><?php print $searchresults; ?></p>
 </div></div>
 </div><!-- END div.main -->
 </div><!-- END div.page -->

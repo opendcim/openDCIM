@@ -26,7 +26,7 @@
 		if($field!=""){
 			$searchTerm=mysql_real_escape_string($searchTerm);
 			if($field=="Label"){
-				$sql="SELECT DISTINCT Label FROM fac_Device WHERE Label LIKE '%$searchTerm%' UNION SELECT DISTINCT Location AS Label FROM fac_Cabinet WHERE Location LIKE '%$searchTerm%' UNION SELECT DISTINCT Label FROM fac_PowerDistribution WHERE Label LIKE '%$searchTerm%';";
+				$sql="SELECT DISTINCT Label FROM fac_Device WHERE Label LIKE '%$searchTerm%' UNION SELECT DISTINCT Location AS Label FROM fac_Cabinet WHERE Location LIKE '%$searchTerm%' UNION SELECT DISTINCT Label FROM fac_PowerDistribution WHERE Label LIKE '%$searchTerm%'	UNION SELECT DISTINCT vmName AS Label FROM fac_VMInventory WHERE vmName LIKE '%$searchTerm%';";
 			}else{
 				$sql="SELECT DISTINCT $field FROM fac_Device WHERE $field LIKE '%$searchTerm%';";
 			}
