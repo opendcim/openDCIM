@@ -1,5 +1,6 @@
 <?php
 
+// sidebar
 $txt['searchbyname']="Search by Name";
 $txt['searchbysn']="Search by SN";
 $txt['searchbyassettag']="Search by Asset Tag";
@@ -26,4 +27,19 @@ $txt['manuf']="Edit Manufacturers";
 $txt['conf']="Edit Configuration";
 
 $txt['home']="Home";
+$txt['storageroom']="Storage Room";
+
+// general usage
+$txt['error']="Error";
+$txt['errors']="Errors";
+$txt['updated']="Updated";
+
+$txt['upd']="Update";
+$txt['crt']="Create";
+$txt['del']="Delete";
+
+$txt['backcab']="Return to Navigator";
+$txt['backmain']="Return to Main Menu";
+$txt['backdev']="Return to Device";
+
 ?>

@@ -117,23 +117,38 @@ function sort2d ($array, $index){
 	return $sorted;
 }  
 
+/*
+ * Language internationalization slated for v2.0
+ *
+ */
+if(isset($lang)){
+	// the menu is included into every page so it will never get called directly
+	include_once("languages/english/sidebar.inc.php");
+	// test to see if we have added internationalization for a particular page at load and load english first
+	if(file_exists("languages/english/".basename($_SERVER['PHP_SELF']))){
+		include_once("languages/english/".basename($_SERVER['PHP_SELF']));
+	}
+	// if language is set to something other than english check for lang files for it then load after
+	// this will allow only the values that need to be updated to be done so
+	if($lang!="english"){
+		if(file_exists("languages/$lang/".basename($_SERVER['PHP_SELF']))){
+			include_once("languages/$lang/".basename($_SERVER['PHP_SELF']));
+		}
+	}
+}
 
 /*
-Check if we are doing a new install or an upgrade has been applied.  
-If found then force the user into only running that function.
-*/
+	Check if we are doing a new install or an upgrade has been applied.  
+	If found then force the user into only running that function.
 
-/* 
 	To bypass the installer check from running, simply add
-	
 	$devMode = true;
-	
 	to the db.inc.php file.
 */
 
-if ( isset( $devMode ) && $devMode ) {
+if(isset($devMode)&&$devMode){
 	// Development mode, so don't apply the upgrades
-} else {
+}else{
 	if(file_exists("install.php") && basename($_SERVER['PHP_SELF'])!="install.php" ){
 		// new installs need to run the install first.
 		header("Location: ".redirect('install.php'));
