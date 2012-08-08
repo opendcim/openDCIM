@@ -1,0 +1,88 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: openDCIM\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2012-08-08 13:25-0500\n"
+"PO-Revision-Date: 2012-08-08 13:25-0500\n"
+"Last-Translator: Scott Milliken <scott@themillikens.com>\n"
+"Language-Team: openDCIM <discussion@list.opendcim.org>\n"
+"Language: English\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Poedit-KeywordsList: _;gettext;gettext_noop\n"
+"X-Poedit-Basepath: c:\\users\\sjk\\Documents\\openDCIM\\openDCIM\n"
+"X-Poedit-SourceCharset: UTF-8\n"
+"X-Poedit-SearchPath-0: c:\\users\\sjk\\Documents\\openDCIM\\openDCIM\n"
+
+#: c:\users\sjk\Documents\openDCIM\openDCIM/sidebar.inc.php:6
+msgid "Search by Name:"
+msgstr "Search by Name:"
+
+#: c:\users\sjk\Documents\openDCIM\openDCIM/sidebar.inc.php:12
+msgid "Search by SN:"
+msgstr "Search by SN:"
+
+#: c:\users\sjk\Documents\openDCIM\openDCIM/sidebar.inc.php:18
+msgid "Search by Asset Tag:"
+msgstr "Search by Asset Tag:"
+
+#: c:\users\sjk\Documents\openDCIM\openDCIM/sidebar.inc.php:60
+msgid "Rack Request Form"
+msgstr "Rack Request Form"
+
+#: c:\users\sjk\Documents\openDCIM\openDCIM/sidebar.inc.php:63
+msgid "Contact Administration"
+msgstr "Contact Administration"
+
+#: c:\users\sjk\Documents\openDCIM\openDCIM/sidebar.inc.php:64
+msgid "Dept. Administration"
+msgstr "Dept. Administration"
+
+#: c:\users\sjk\Documents\openDCIM\openDCIM/sidebar.inc.php:65
+msgid "Time Periods"
+msgstr "Time Periods"
+
+#: c:\users\sjk\Documents\openDCIM\openDCIM/sidebar.inc.php:66
+msgid "Escalation Rules"
+msgstr "Escalation Rules"
+
+#: c:\users\sjk\Documents\openDCIM\openDCIM/sidebar.inc.php:69
+msgid "Edit Cabinets"
+msgstr "Edit Cabinets"
+
+#: c:\users\sjk\Documents\openDCIM\openDCIM/sidebar.inc.php:70
+msgid "Edit Templates"
+msgstr "Edit Templates"
+
+#: c:\users\sjk\Documents\openDCIM\openDCIM/sidebar.inc.php:73
+msgid "Manage Users"
+msgstr "Manage Users"
+
+#: c:\users\sjk\Documents\openDCIM\openDCIM/sidebar.inc.php:74
+msgid "Manage Supply Bins"
+msgstr "Manage Supply Bins"
+
+#: c:\users\sjk\Documents\openDCIM\openDCIM/sidebar.inc.php:75
+msgid "Manage Supplies"
+msgstr "Manage Supplies"
+
+#: c:\users\sjk\Documents\openDCIM\openDCIM/sidebar.inc.php:76
+msgid "Edit Data Centers"
+msgstr "Edit Data Centers"
+
+#: c:\users\sjk\Documents\openDCIM\openDCIM/sidebar.inc.php:77
+msgid "Edit Power Sources"
+msgstr "Edit Power Sources"
+
+#: c:\users\sjk\Documents\openDCIM\openDCIM/sidebar.inc.php:78
+msgid "Edit Power Panels"
+msgstr "Edit Power Panels"
+
+#: c:\users\sjk\Documents\openDCIM\openDCIM/sidebar.inc.php:79
+msgid "Edit Manufacturers"
+msgstr "Edit Manufacturers"
+
+#: c:\users\sjk\Documents\openDCIM\openDCIM/sidebar.inc.php:80
+msgid "Edit Configuration"
+msgstr "Edit Configuration"
