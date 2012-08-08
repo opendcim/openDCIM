@@ -444,12 +444,11 @@ function setPreferredLayout() {<?php if(isset($_COOKIE["layout"]) && strtolower(
 		   <div><label for="owner">Departmental Owner</label></div>
 		   <div>
 			<select name="owner" id="owner">
-			<option value=0>Unassigned</option>
+				<option value=0>Unassigned</option>
 <?php
 			foreach($deptList as $deptRow){
-				echo "			<option value=\"$deptRow->DeptID\"";
-				if($dev->Owner == $deptRow->DeptID){echo ' selected="selected"';}
-				echo ">$deptRow->Name</option>\n";
+				if($dev->Owner==$deptRow->DeptID){$selected=" selected";}else{$selected="";}
+				print "\t\t\t\t<option value=\"$deptRow->DeptID\"$selected>$deptRow->Name</option>\n";
 			}
 ?>
 			</select>
@@ -464,12 +463,11 @@ function setPreferredLayout() {<?php if(isset($_COOKIE["layout"]) && strtolower(
 			<div>
 				<div><label for="escaltationtimeid">Time Period</label></div>
 				<div><select name="escalationtimeid" id="escalationtimeid">
-				<option value="">Select...</option>
+					<option value="">Select...</option>
 <?php
 				foreach($escTimeList as $escTime){
-					print "				<option value=\"$escTime->EscalationTimeID\"";
-					if($escTime->EscalationTimeID==$dev->EscalationTimeID){	echo ' selected="selected"';}
-					print ">$escTime->TimePeriod</option>\n";
+					if($escTime->EscalationTimeID==$dev->EscalationTimeID){$selected=" selected";}else{$selected="";}
+					print "\t\t\t\t\t<option value=\"$escTime->EscalationTimeID\"$selected>$escTime->TimePeriod</option>\n";
 				}
 ?>
 				</select></div>
@@ -477,12 +475,11 @@ function setPreferredLayout() {<?php if(isset($_COOKIE["layout"]) && strtolower(
 			<div>
 				<div><label for="escalationid">Details</label></div>
 				<div><select name="escalationid" id="escalationid">
-				<option value="">Select...</option>
+					<option value="">Select...</option>
 <?php
 				foreach($escList as $esc){
-					print "				<option value=\"$esc->EscalationID\"";
-					if($esc->EscalationID==$dev->EscalationID){	echo ' selected="selected"';}
-					print ">$esc->Details</option>\n";
+					if($esc->EscalationID==$dev->EscalationID){$selected="selected";}else{$selected="";}
+					print "\t\t\t\t\t<option value=\"$esc->EscalationID\"$selected>$esc->Details</option>\n";
 				}
 ?>
 				</select></div>
@@ -493,18 +490,17 @@ function setPreferredLayout() {<?php if(isset($_COOKIE["layout"]) && strtolower(
 		<div>
 		   <div><label for="primarycontact">Primary Contact</label></div>
 		   <div><select name="primarycontact" id="primarycontact">
-			<option value=0>Unassigned</option>
+				<option value=0>Unassigned</option>
 <?php
 			foreach($contactList as $contactRow){
-				print "			<option value=\"$contactRow->ContactID\"";
-				if($contactRow->ContactID==$dev->PrimaryContact){$contactUserID=$contactRow->UserID;echo ' selected="selected"';}
-				print ">$contactRow->LastName, $contactRow->FirstName</option>\n";
+				if($contactRow->ContactID==$dev->PrimaryContact){$contactUserID=$contactRow->UserID;$selected="selected";}else{$selected="";}
+				print "\t\t\t\t<option value=\"$contactRow->ContactID\"$selected>$contactRow->LastName, $contactRow->FirstName</option>\n";
 			}
 			
-			echo '			</select>';
+			print "\t\t\t</select>\n";
 
 			if(isset($config->ParameterArray['UserLookupURL']) && eregi($urlregex, $config->ParameterArray['UserLookupURL']) && isset($contactUserID)){
-				echo "<input type=\"button\" value=\"Contact Lookup\" onclick=\"window.open( '".$config->ParameterArray["UserLookupURL"]."$contactUserID', 'UserLookup')\">\n";
+				print "<input type=\"button\" value=\"Contact Lookup\" onclick=\"window.open( '".$config->ParameterArray["UserLookupURL"]."$contactUserID', 'UserLookup')\">\n";
 			}
 ?>
 		   </div>
@@ -526,39 +522,33 @@ function setPreferredLayout() {<?php if(isset($_COOKIE["layout"]) && strtolower(
 			<div><label for="cabinet">Cabinet</label></div>
 
 <?php
-	if ( $dev->ParentDevice == 0 ) {
-		printf( "\t\t\t<div>%s</div>\n", $cab->GetCabinetSelectList( $facDB ) );
-		} else {
-			print "\t\t\t<div>$cab->Location<input type=\"hidden\" name=\"cabinetid\" value=\"0\"></div>\n\t\t</div>\t\t<div>\t\t\t<div><label for=\"parentdevice\">Parent Device</label></div>\t\t\t<div><select name=\"parentdevice\">\n";
+	if($dev->ParentDevice==0){
+		print "\t\t\t<div>".$cab->GetCabinetSelectList($facDB)."</div>\n";
+		}else{
+			print "\t\t\t<div>$cab->Location<input type=\"hidden\" name=\"cabinetid\" value=\"0\"></div>
+		</div>
+		<div>
+			<div><label for=\"parentdevice\">Parent Device</label></div>
+			<div><select name=\"parentdevice\">\n";
 			
-			foreach ( $parentList as $parDev ) {
-				if ( $pDev->DeviceID == $parDev->DeviceID )
-					$selected = "SELECTED";
-				else
-					$selected = "";
-				
-				printf( "<option value=\"%d\" %s>%s</option>\n", $parDev->DeviceID, $selected, $parDev->Label );
+			foreach($parentList as $parDev){
+				if($pDev->DeviceID==$parDev->DeviceID){$selected=" selected";}else{$selected="";}
+				print "\t\t\t\t<option value=\"$parDev->DeviceID\"$selected>$parDev->Label</option>\n";
 			}
-			
-			printf( "\t\t\t</select></div>\n" );
+			print "\t\t\t</select></div>\n";
 		}
-	?>
-			</div>
+?>
+		</div>
 		<div>
 			<div><label for="templateid">Device Class</label></div>
 			<div><select name="templateid" id="templateid">
-			<option value=0>Select a template...</option>
+				<option value=0>Select a template...</option>
 <?php
-			foreach($templateList as $tempRow) {
-				if ( $dev->TemplateID == $tempRow->TemplateID )
-					$selected = "SELECTED";
-				else
-					$selected = "";
-
+			foreach($templateList as $tempRow){
+				if($dev->TemplateID==$tempRow->TemplateID){$selected=" selected";}else{$selected="";}
 				$mfg->ManufacturerID=$tempRow->ManufacturerID;
-				$mfg->GetManufacturerByID( $facDB );
-	
-				printf( "\t\t\t<option value=\"%d\" %s>%s - %s</option>\n", $tempRow->TemplateID, $selected, $mfg->Name, $tempRow->Model );
+				$mfg->GetManufacturerByID($facDB);
+				print "\t\t\t\t<option value=\"$tempRow->TemplateID\"$selected>$mfg->Name - $tempRow->Model</option>\n";
 			}
 ?>
 			</select>
@@ -638,12 +628,12 @@ function setPreferredLayout() {<?php if(isset($_COOKIE["layout"]) && strtolower(
 		</div>
 <?php
 	foreach($childList as $chDev){
-		print "\t<div>
-		<div>$chDev->Position</div>
-		<div>$chDev->Height</div>
-		<div><a href=\"devices.php?deviceid=$chDev->DeviceID\">$chDev->Label</a></div>
-		<div>$chDev->DeviceType</div>
-	</div>\n";
+		print "\t\t<div>
+			<div>$chDev->Position</div>
+			<div>$chDev->Height</div>
+			<div><a href=\"devices.php?deviceid=$chDev->DeviceID\">$chDev->Label</a></div>
+			<div>$chDev->DeviceType</div>
+		</div>\n";
 	}
 	
 	if($dev->ChassisSlots >0){
