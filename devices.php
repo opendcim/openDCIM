@@ -57,20 +57,19 @@
 					$dev->PowerSupplyCount=$_REQUEST['powersupplycount'];
 					$dev->DeviceType=$_REQUEST['devicetype'];
 					$dev->ChassisSlots=$_REQUEST['chassisslots'];
-					$dev->ParentDevice=$_REQUEST['parentdevice'];
 					$dev->MfgDate=date('Y-m-d',strtotime($_REQUEST['mfgdate']));
 					$dev->InstallDate=date('Y-m-d',strtotime($_REQUEST['installdate']));
 					$dev->WarrantyCo=$_REQUEST['warrantyco'];
 					$dev->WarrantyExpire=date('Y-m-d',strtotime($_REQUEST['warrantyexpire']));
 					$dev->Notes=$_REQUEST['notes'];
+					$dev->ParentDevice=(isset($_REQUEST['parentdevice']))?$_REQUEST['parentdevice']:"";
 					$dev->PrimaryIP=(isset($_REQUEST['primaryip']))?$_REQUEST['primaryip']:"";
 					$dev->SNMPCommunity=(isset($_REQUEST['snmpcommunity']))?$_REQUEST['snmpcommunity']:"";
 					$dev->ESX=(isset($_REQUEST['esx']))?1:0;
 					$dev->Reservation=(isset($_REQUEST['reservation']))?1:0;
 					$dev->NominalWatts=$_REQUEST['nominalwatts'];
 
-					if (( $dev->TemplateID > 0 ) && ( intval( $dev->NominalWatts == 0 )))
-						$dev->UpdateWattageFromTemplate($facDB);
+					if(($dev->TemplateID >0)&&(intval($dev->NominalWatts==0))){$dev->UpdateWattageFromTemplate($facDB);}
 			
 					if($dev->Cabinet <0){
 						$dev->MoveToStorage($facDB);
@@ -93,12 +92,12 @@
 					$dev->PowerSupplyCount=$_REQUEST['powersupplycount'];
 					$dev->DeviceType=$_REQUEST['devicetype'];
 					$dev->ChassisSlots=$_REQUEST['chassisslots'];
-					$dev->ParentDevice=$_REQUEST['parentdevice'];
 					$dev->MfgDate=date('Y-m-d',strtotime($_REQUEST['mfgdate']));
 					$dev->InstallDate=date('Y-m-d',strtotime($_REQUEST['installdate']));
 					$dev->WarrantyCo=$_REQUEST['warrantyco'];
 					$dev->WarrantyExpire=date('Y-m-d',strtotime($_REQUEST['warrantyexpire']));
 					$dev->Notes=$_REQUEST['notes'];
+					$dev->ParentDevice=(isset($_REQUEST['parentdevice']))?$_REQUEST['parentdevice']:"";
 					$dev->PrimaryIP=(isset($_REQUEST['primaryip']))?$_REQUEST['primaryip']:"";
 					$dev->SNMPCommunity=(isset($_REQUEST['snmpcommunity']))?$_REQUEST['snmpcommunity']:"";
 					$dev->ESX=(isset($_REQUEST['esx']))?1:0;
