@@ -181,6 +181,10 @@
 	$WeightColor=($WeightPercent>intval($config->ParameterArray["WeightRed"])?$CriticalColor:($WeightPercent>intval($config->ParameterArray["WeightYellow"])?$CautionColor:$GoodColor));
 	$PowerColor=($PowerPercent>intval($config->ParameterArray["PowerRed"])?$CriticalColor:($PowerPercent>intval($config->ParameterArray["PowerYellow"])?$CautionColor:$GoodColor));
 
+	// I don't feel like fixing the check properly to not add in a dept with id of 0 so just remove it at the last second
+	// 0 is when a dept owner hasn't been assigned, just for the record
+	if(isset($deptswithcolor[0])){unset($deptswithcolor[0]);}
+
 	// We're done processing devices so build the legend and style blocks
 	if(!empty($deptswithcolor)){
 		foreach($deptswithcolor as $deptid => $row){
