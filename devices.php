@@ -148,15 +148,23 @@
 		$dev->InstallDate=date("m/d/Y");
 	}
 	
-	if ( $dev->ParentDevice > 0 ) {
-		$pDev = new Device();
-		$pDev->DeviceID = $dev->ParentDevice;
-		$pDev->GetDevice( $facDB );
+	if($dev->ParentDevice >0){
+		$pDev=new Device();
+		$pDev->DeviceID=$dev->ParentDevice;
+		$pDev->GetDevice($facDB);
 		
-		$parentList = $pDev->GetParentDevices( $facDB );
+		$parentList=$pDev->GetParentDevices($facDB);
 		
-		$cab->CabinetID = $pDev->Cabinet;
-		$cab->GetCabinet( $facDB );
+		$cab->CabinetID=$pDev->Cabinet;
+		$cab->GetCabinet($facDB);
+
+		// This is a child device and if the action of new is set let's assume the departmental owner, primary contact, etc are the same as the parent
+		if(isset($_REQUEST['action'])&&$_REQUEST['action']=='new'){
+			$dev->Owner=$pDev->Owner;
+			$dev->EscalationTimeID=$pDev->EscalationTimeID;
+			$dev->EscalationID=$pDev->EscalationID;
+			$dev->PrimaryContact=$pDev->PrimaryContact;
+		}
 	}
 	
 	$childList=array();
