@@ -159,7 +159,7 @@
 		$cab->GetCabinet($facDB);
 
 		// This is a child device and if the action of new is set let's assume the departmental owner, primary contact, etc are the same as the parent
-		if(isset($_REQUEST['action'])&&$_REQUEST['action']=='new'){
+		if(isset($_REQUEST['action'])&&$_REQUEST['action']=='child'){
 			$dev->Owner=$pDev->Owner;
 			$dev->EscalationTimeID=$pDev->EscalationTimeID;
 			$dev->EscalationID=$pDev->EscalationID;
