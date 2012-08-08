@@ -52,9 +52,7 @@
 					$dev->Cabinet=$_REQUEST['cabinetid'];
 					$dev->Position=$_REQUEST['position'];
 					$dev->Height=$_REQUEST['height'];
-					$dev->Ports=$_REQUEST['ports'];
 					$dev->TemplateID=$_REQUEST['templateid'];
-					$dev->PowerSupplyCount=$_REQUEST['powersupplycount'];
 					$dev->DeviceType=$_REQUEST['devicetype'];
 					$dev->ChassisSlots=$_REQUEST['chassisslots'];
 					$dev->MfgDate=date('Y-m-d',strtotime($_REQUEST['mfgdate']));
@@ -62,6 +60,9 @@
 					$dev->WarrantyCo=$_REQUEST['warrantyco'];
 					$dev->WarrantyExpire=date('Y-m-d',strtotime($_REQUEST['warrantyexpire']));
 					$dev->Notes=$_REQUEST['notes'];
+					// All of the values below here are optional based on the type of device being dealt with
+					$dev->Ports=(isset($_REQUEST['ports']))?$_REQUEST['ports']:"";
+					$dev->PowerSupplyCount=(isset($_REQUEST['powersupplycount']))?$_REQUEST['powersupplycount']:"";
 					$dev->ParentDevice=(isset($_REQUEST['parentdevice']))?$_REQUEST['parentdevice']:"";
 					$dev->PrimaryIP=(isset($_REQUEST['primaryip']))?$_REQUEST['primaryip']:"";
 					$dev->SNMPCommunity=(isset($_REQUEST['snmpcommunity']))?$_REQUEST['snmpcommunity']:"";
@@ -89,7 +90,6 @@
 					$dev->Height=$_REQUEST['height'];
 					$dev->Ports=$_REQUEST['ports'];
 					$dev->TemplateID=$_REQUEST['templateid'];
-					$dev->PowerSupplyCount=$_REQUEST['powersupplycount'];
 					$dev->DeviceType=$_REQUEST['devicetype'];
 					$dev->ChassisSlots=$_REQUEST['chassisslots'];
 					$dev->MfgDate=date('Y-m-d',strtotime($_REQUEST['mfgdate']));
@@ -97,6 +97,9 @@
 					$dev->WarrantyCo=$_REQUEST['warrantyco'];
 					$dev->WarrantyExpire=date('Y-m-d',strtotime($_REQUEST['warrantyexpire']));
 					$dev->Notes=$_REQUEST['notes'];
+					// All of the values below here are optional based on the type of device being dealt with
+					$dev->Ports=(isset($_REQUEST['ports']))?$_REQUEST['ports']:"";
+					$dev->PowerSupplyCount=(isset($_REQUEST['powersupplycount']))?$_REQUEST['powersupplycount']:"";
 					$dev->ParentDevice=(isset($_REQUEST['parentdevice']))?$_REQUEST['parentdevice']:"";
 					$dev->PrimaryIP=(isset($_REQUEST['primaryip']))?$_REQUEST['primaryip']:"";
 					$dev->SNMPCommunity=(isset($_REQUEST['snmpcommunity']))?$_REQUEST['snmpcommunity']:"";
@@ -277,6 +280,7 @@ $(document).ready(function() {
 		$('#parentdevice').removeAttr("disabled");
 		$('#adddevice').removeAttr("disabled");
 		$(this).submit();
+		$(":input").removeAttr("disabled"); // if they hit back it makes sure the fields aren't disabled
 	});
 	$('#templateid').change( function(){
 		$.get('scripts/ajax_template.php?q='+$(this).val(), function(data) {
@@ -288,6 +292,20 @@ $(document).ready(function() {
 		});
 	});
 <?php
+	// if they switch device type to switch for a child blade add the dataports field
+	if($dev->ParentDevice>0){
+?>
+	$('select[name=devicetype]').change(function(){
+		var dphtml='<div id="dphtml"><div><label for="ports">Number of Data Ports</label></div><div><input class="optional,validate[custom[onlyNumberSp]]" name="ports" id="ports" size="4" value="" type="number"></div></div>';
+		if($(this).val()=='Switch' && $('#dphtml').length==0){
+			$('#nominalwatts').parent().parent().before(dphtml);
+		}else{
+			$('#dphtml').remove();
+		}
+	});
+<?php
+	}
+	
 	// hide cabinet slot picker from child devices
 	if($dev->ParentDevice==0){
 ?>
@@ -554,30 +572,43 @@ function setPreferredLayout() {<?php if(isset($_COOKIE["layout"]) && strtolower(
 		   <div><label for="height">Height</label></div>
 		   <div><input type="number" class="required,validate[custom[onlyNumberSp]]" name="height" id="height" size="4" value="<?php echo $dev->Height; ?>"></div>
 		</div>
-		<div>
+<?php
+		// Blade devices don't have data ports unless they're a switch
+		if($dev->ParentDevice==0||($dev->ParentDevice>0&&$dev->DeviceType=='Switch')){
+			echo '		<div id="dphtml">
 		   <div><label for="ports">Number of Data Ports</label></div>
-		   <div><input type="number" class="optional,validate[custom[onlyNumberSp]]" name="ports" id="ports" size="4" value="<?php echo $dev->Ports; ?>"></div>
-		</div>
+		   <div><input type="number" class="optional,validate[custom[onlyNumberSp]]" name="ports" id="ports" size="4" value="',$dev->Ports,'"></div>
+		</div>';
+		}
+?>
 		<div>
 		   <div><label for="nominalwatts">Nominal Draw (Watts)</label></div>
 		   <div><input type="text" class="optional,validate[custom[onlyNumberSp]]" name="nominalwatts" id="nominalwatts" size=6 value="<?php echo $dev->NominalWatts; ?>"></div>
 		</div>
-		<div>
+<?php
+		// Blade devices don't have power supplies
+		if($dev->ParentDevice==0){
+			echo '		<div>
 		   <div><label for="powersupplycount">Number of Power Supplies</label></div>
-		   <div><input type="number" class="optional,validate[custom[onlyNumberSp]]" name="powersupplycount" id="powersupplycount" size=4 value="<?php echo $dev->PowerSupplyCount; ?>"></div>
-		</div>
+		   <div><input type="number" class="optional,validate[custom[onlyNumberSp]]" name="powersupplycount" id="powersupplycount" size=4 value="',$dev->PowerSupplyCount,'"></div>
+		</div>';
+		}
+?>
 		<div>
 		   <div>Device Type</div>
 		   <div><select name="devicetype">
 			<option value=0>Select...</option>
 <?php
-			
-		foreach(array('Server','Appliance','Storage Array','Switch','Chassis','Patch Panel','Physical Infrastructure') as $devType){
-			echo "			<option value=\"$devType\"";
-			if($devType==$dev->DeviceType){
-				echo ' selected="selected"';
-			}
-			echo ">$devType</option>\n";  
+		// We don't want someone accidentally adding a chassis device inside of a chassis slot.
+		if($dev->ParentDevice>0){
+			$devarray=array('Server','Appliance','Storage Array','Switch');
+		}else{
+			$devarray=array('Server','Appliance','Storage Array','Switch','Chassis','Patch Panel','Physical Infrastructure');
+		}
+
+		foreach($devarray as $devType){
+			if($devType==$dev->DeviceType){$selected=" selected";}else{$selected="";}
+			print "\t\t\t<option value=\"$devType\"$selected>$devType</option>\n";  
 		}
 ?>
 		   </select></div>
