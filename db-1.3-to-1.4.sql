@@ -94,4 +94,4 @@ ALTER TABLE fac_Device MODIFY COLUMN DeviceType enum('Server','Appliance','Stora
 
 ALTER TABLE fac_DeviceTemplate MODIFY COLUMN DeviceType enum('Server','Appliance','Storage Array','Switch','Routing Chassis','Patch Panel','Physical Infrastructure','Chassis');
 UPDATE fac_DeviceTemplate set DeviceType='Chassis' WHERE DeviceType = 'Routing Chassis';
-ALTER TABLE fac_Device MODIFY COLUMN DeviceType enum('Server','Appliance','Storage Array','Switch','Patch Panel','Physical Infrastructure','Chassis');
+ALTER TABLE fac_DeviceTemplate MODIFY COLUMN DeviceType enum('Server','Appliance','Storage Array','Switch','Patch Panel','Physical Infrastructure','Chassis');

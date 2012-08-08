@@ -228,74 +228,6 @@
   <script type="text/javascript" src="scripts/jquery.validationEngine.js"></script>
 
 <script type="text/javascript">
-function showDeptContacts(formname) {
-	var deptid=formname.elements['owner'];
-	var popurl="contactpopup.php?deptid="+deptid.value;
-	window.open( popurl, "window", "width=800, height=700, resizable=no, toolbar=no" );
-}
-
-function updateFromTemplate(formname) {
-	var tmplHeight=new Array();
-
-	var sel=formname.elements['templateid'];
-
-	var xmlhttp;
-	var template;
-	if (window.XMLHttpRequest) {
-		// code for IE7+, Firefox, Chrome, Opera, Safari
-		xmlhttp=new XMLHttpRequest();
-	} else {
-		// code for IE6, IE5
-		xmlhttp=new ActiveXObject("Microsoft.XMLHTTP");
-	}
-
-	xmlhttp.onreadystatechange=function() {
-		if (xmlhttp.readyState==4 && xmlhttp.status==200) {
-			template=eval("("+xmlhttp.responseText+")");
-			formname.elements['height'].value=template.Height;
-			formname.elements['nominalwatts'].value=template.Wattage;
-			formname.elements['powersupplycount'].value=template.PSCount;
-			formname.elements['ports'].value=template.NumPorts;
-			
-			switch ( template.DeviceType ) {
-				case "Server":
-					formname.elements['devicetype'].selectedIndex = 1;
-					break;
-				case "Appliance":
-					formname.elements['devicetype'].selectedIndex = 2;
-					break;
-				case "Storage Array":
-					formname.elements['devicetype'].selectedIndex = 3;
-					break;
-				case "Switch":
-					formname.elements['devicetype'].selectedIndex = 4;
-					break;
-				case "Chassis":
-					formname.elements['devicetype'].selectedIndex = 5;
-					break;
-				case "Patch Panel":
-					formname.elements['devicetype'].selectedIndex = 6;
-					break;
-				default:
-					formname.elements['devicetype'].selectedIndex = 7;
-			}
-		}
-	}
-
-	xmlhttp.open("GET","scripts/ajax_template.php?q="+sel.options[sel.selectedIndex].value,true);
-	xmlhttp.send();
-
-}
-
-$(function(){
-	$('#deviceform').validationEngine({});
-	$('#mfgdate').datepicker({});
-	$('#installdate').datepicker({});
-	$('#warrantyexpire').datepicker({});
-});
-
-</script>
-<script type="text/javascript">
 /* 
 IE work around
 http://stackoverflow.com/questions/5227088/creating-style-node-adding-innerhtml-add-to-dom-and-ie-headaches
@@ -307,7 +239,6 @@ function setCookie(c_name, value) {
 	var c_value=escape(value) + ";expires="+exdate.toUTCString();
 	document.cookie=c_name + "=" + c_value;
 }
-
 function swaplayout(){
 	var sheet = document.createElement('style');
 	sheet.type = 'text/css';
@@ -334,11 +265,28 @@ function swaplayout(){
 	}
 }
 $(document).ready(function() {
+	$('#deviceform').validationEngine({});
+	$('#mfgdate').datepicker({});
+	$('#installdate').datepicker({});
+	$('#warrantyexpire').datepicker({});
+	$('#owner').next('button').click(function(){
+		window.open('contactpopup.php?deptid='+$('#owner').val(), 'Contacts Lookup', 'width=800, height=700, resizable=no, toolbar=no');
+		return false;
+	});
 	$('#adddevice').click(function() {
 		$(":input").attr("disabled","disabled");
 		$('#parentdevice').removeAttr("disabled");
 		$('#adddevice').removeAttr("disabled");
 		$(this).submit();
+	});
+	$('#templateid').change( function(){
+		$.get('scripts/ajax_template.php?q='+$(this).val(), function(data) {
+			$('#height').val(data['Height']);
+			$('#ports').val(data['NumPorts']);
+			$('#nominalwatts').val(data['Wattage']);
+			$('#powersupplycount').val(data['PSCount']);
+			$('select[name=devicetype]').val(data['DeviceType']);
+		});
 	});
 <?php
 	// hide cabinet slot picker from child devices
@@ -488,8 +436,7 @@ function setPreferredLayout() {<?php if(isset($_COOKIE["layout"]) && strtolower(
 			}
 ?>
 			</select>
-<!--			<input type="button" value="Show Contacts" onclick="showDeptContacts(this.form);"> -->
-			<button type="button" onclick="showDeptContacts(this.form);">Show Contacts</button>
+			<button type="button">Show Contacts</button>
 		   </div>
 		</div>
 		<div>
@@ -582,7 +529,7 @@ function setPreferredLayout() {<?php if(isset($_COOKIE["layout"]) && strtolower(
 			</div>
 		<div>
 			<div><label for="templateid">Device Class</label></div>
-			<div><select name="templateid" id="templateid" onchange="updateFromTemplate(deviceform)">
+			<div><select name="templateid" id="templateid">
 			<option value=0>Select a template...</option>
 <?php
 			foreach($templateList as $tempRow) {
