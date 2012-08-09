@@ -507,7 +507,7 @@ function setPreferredLayout() {<?php if(isset($_COOKIE["layout"]) && strtolower(
 			
 			print "\t\t\t</select>\n";
 
-			if(isset($config->ParameterArray['UserLookupURL']) && eregi($urlregex, $config->ParameterArray['UserLookupURL']) && isset($contactUserID)){
+			if(isset($config->ParameterArray['UserLookupURL']) && isValidURL($config->ParameterArray['UserLookupURL']) && isset($contactUserID)){
 				print "<input type=\"button\" value=\"Contact Lookup\" onclick=\"window.open( '".$config->ParameterArray["UserLookupURL"]."$contactUserID', 'UserLookup')\">\n";
 			}
 ?>

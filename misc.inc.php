@@ -3,14 +3,23 @@
 
 /* 
 Regex to make sure a valid URL is in the config before offering options for contact lookups
-http://phpcentral.com/208-url-validation-in-php.html
+http://www.php.net/manual/en/function.preg-match.php#93824
 
 Example Usage:
-	if(eregi($urlregex, "url to test")){ echo "Yup it's a URL"; }else{ echo "fail"; }
+	if(isValidURL("http://test.com"){//do something}
 
 */
 
-$urlregex = "^(https?|ftp)\:\/\/([a-z0-9+!*(),;?&=\$_.-]+(\:[a-z0-9+!*(),;?&=\$_.-]+)?@)?[a-z0-9+\$_-]+(\.[a-z0-9+\$_-]+)*(\:[0-9]{2,5})?(\/([a-z0-9+\$_-]\.?)+)*\/?(\?[a-z+&\$_.-][a-z0-9;:@/&%=+\$_.-]*)?(#[a-z_.-][a-z0-9+\$_.-]*)?\$";
+function isValidURL($url){
+	$urlregex="((https?|ftp)\:\/\/)?"; // SCHEME
+	$urlregex.="([a-z0-9+!*(),;?&=\$_.-]+(\:[a-z0-9+!*(),;?&=\$_.-]+)?@)?"; // User and Pass
+	$urlregex.="([a-z0-9-.]*)\.([a-z]{2,3})"; // Host or IP
+	$urlregex.="(\:[0-9]{2,5})?"; // Port
+	$urlregex.="(\/([a-z0-9+\$_-]\.?)+)*\/?"; // Path
+	$urlregex.="(\?[a-z+&\$_.-][a-z0-9;:@&%=+\/\$_.-]*)?"; // GET Query
+	$urlregex.="(#[a-z_.-][a-z0-9+\$_.-]*)?"; // Anchor 
+	if(preg_match("/^$urlregex$/",$url)){return true;}
+}
 
 //Convert hex color codes to rgb values
 function html2rgb($color){

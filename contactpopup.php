@@ -20,7 +20,7 @@
 	$dept->DeptID=$deptID;
 	$dept->GetDeptByID($facDB);
 
-	if(isset($config->ParameterArray['UserLookupURL']) && eregi($urlregex, $config->ParameterArray['UserLookupURL'])){
+	if(isset($config->ParameterArray['UserLookupURL']) && isValidURL($config->ParameterArray['UserLookupURL'])){
 		$el=1; //enable displaying lookup options
 	}else{
 		$el=0; //default to not showing lookup options
