@@ -34,7 +34,7 @@
 		if ( $_REQUEST['action']=='Create' ) {
 			$template->CreateTemplate($facDB);
 		} else {
-			$status='Updated';
+			$status=_('Updated');
 			$template->UpdateTemplate($facDB);
 		}
 	}
@@ -45,7 +45,7 @@
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html>
 <head>
-  <meta http-equiv="Content-Type" content="text/html; charset=windows-1252">
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <title>openDCIM Device Class Templates</title>
   <link rel="stylesheet" href="css/inventory.php" type="text/css">
@@ -60,94 +60,89 @@
 <div class="page">
 <?php
 	include( 'sidebar.inc.php' );
-?>
-<div class="main">
-<h2><?php echo $config->ParameterArray['OrgName']; ?></h2>
-<h3>Data Center Device Templates</h3>
-<h3><?php echo $status; ?></h3>
+
+echo '<div class="main">
+<h2>',$config->ParameterArray["OrgName"],'</h2>
+<h3>',_("Data Center Device Templates"),'</h3>
+<h3>',$status,'</h3>
 <div class="center"><div>
-<form action="<?php echo $_SERVER['PHP_SELF']; ?>" method="POST">
+<form action="',$_SERVER["PHP_SELF"],'" method="POST">
 <div class="table">
 	<div>
-		<div><label for="templateid">Template</label></div>
+		<div><label for="templateid">',_("Template"),'</label></div>
 		<div><input type="hidden" name="action" value="query"><select name="templateid" id="templateid" onChange="form.submit()">
-		<option value=0>New Template</option>
-<?php
+		<option value=0>',_("New Template"),'</option>';
+
 	foreach($templateList as $templateRow){
 		$manufacturer->ManufacturerID=$templateRow->ManufacturerID;
 		$manufacturer->GetManufacturerByID($facDB);
-		print "<option value=\"$templateRow->TemplateID\"";
-		if($template->TemplateID==$templateRow->TemplateID){echo ' selected="selected"';}
-		print ">[$manufacturer->Name] $templateRow->Model</option>\n";
+		if($template->TemplateID==$templateRow->TemplateID){$selected=" selected";}else{$selected="";}
+		print "		<option value=\"$templateRow->TemplateID\"$selected>[$manufacturer->Name] $templateRow->Model</option>\n";
 	}
-?>
-	</select></div>
+
+echo '	</select></div>
 </div>
 <div>
-	<div><label for="manufacturerid">Manufacturer</label></div>
-	<div><select name="manufacturerid" id="manufacturerid">
-<?php
+	<div><label for="manufacturerid">',_("Manufacturer"),'</label></div>
+	<div><select name="manufacturerid" id="manufacturerid">';
+
 	foreach($ManufacturerList as $ManufacturerRow){
-		print "<option value=\"$ManufacturerRow->ManufacturerID\"";
-		if($template->ManufacturerID==$ManufacturerRow->ManufacturerID){echo ' selected="selected"';}
-		print ">$ManufacturerRow->Name</option>\n";
+		if($template->ManufacturerID==$ManufacturerRow->ManufacturerID){$selected="selected";}else{$selected="";}
+		print "		<option value=\"$ManufacturerRow->ManufacturerID\"$selected>$ManufacturerRow->Name</option>\n";
 	}
-?>
-    </select>    
+
+echo '    </select>    
    </div>
 </div>
 <div>
-   <div><label for="model">Model</label></div>
-   <div><input type="text" name="model" id="model" value="<?php echo $template->Model; ?>"></div>
+   <div><label for="model">',_("Model"),'</label></div>
+   <div><input type="text" name="model" id="model" value="',$template->Model,'"></div>
 </div>
 <div>
-   <div><label for="height">Height</label></div>
-   <div><input type="text" name="height" id="height" value="<?php echo $template->Height; ?>"></div>
+   <div><label for="height">',_("Height"),'</label></div>
+   <div><input type="text" name="height" id="height" value="',$template->Height,'"></div>
 </div>
 <div>
-   <div><label for="weight">Weight</label></div>
-   <div><input type="text" name="weight" id="weight" value="<?php echo $template->Weight; ?>"></div>
+   <div><label for="weight">',_("Weight"),'</label></div>
+   <div><input type="text" name="weight" id="weight" value="',$template->Weight,'"></div>
 </div>
 <div>
-   <div><label for="wattage">Wattage</label></div>
-   <div><input type="text" name="wattage" id="wattage" value="<?php echo $template->Wattage; ?>"></div>
+   <div><label for="wattage">',_("Wattage"),'</label></div>
+   <div><input type="text" name="wattage" id="wattage" value="',$template->Wattage,'"></div>
 </div>
 <div>
-   <div><label for="devicetype">Device Type</label></div>
-   <div><select name="devicetype" id="select">
-<?php
-	foreach ( array( 'Server', 'Appliance', 'Storage Array', 'Switch', 'Chassis', 'Patch Panel', 'Physical Infrastructure' ) as $DevType ) {
-		if ( $DevType == $template->DeviceType )
-			$selected = "SELECTED";
-		else
-			$selected = "";
-			
-		printf( "<option value=\"%s\" %s>%s</option>\n", $DevType, $selected, $DevType );
+   <div><label for="devicetype">',_("Device Type"),'</label></div>
+   <div><select name="devicetype" id="select">';
+
+	foreach(array('Server','Appliance','Storage Array','Switch','Chassis','Patch Panel','Physical Infrastructure') as $DevType){
+		if($DevType==$template->DeviceType){$selected=" selected";}else{$selected="";}
+		print "		<option value=\"$DevType\"$selected>$DevType</option>\n";
 	}
-?>
-	</select>
+
+echo '	</select>
    </div>
 </div>
 <div>
-   <div><label for="pscount">No. Power Supplies</label></div>
-   <div><input type="text" name="pscount" id="pscount" value="<?php echo $template->PSCount; ?>"></div>
+   <div><label for="pscount">',_("No. Power Supplies"),'</label></div>
+   <div><input type="text" name="pscount" id="pscount" value="',$template->PSCount,'"></div>
 </div>
 <div>
-   <div><label for="numports">No. Ports</label></div>
-   <div><input type="text" name="numports" id="numports" value="<?php echo $template->NumPorts; ?>"></div>
+   <div><label for="numports">',_("No. Ports"),'</label></div>
+   <div><input type="text" name="numports" id="numports" value="',$template->NumPorts,'"></div>
 </div>
-<div class="caption">
-<?php
+<div class="caption">';
+
 	if($template->TemplateID >0){
-		echo '   <input type="submit" name="action" value="Update">';
+		echo '   <button type="submit" name="action" value="Update">',_("Update"),'</button>';
+	}else{
+		echo '	 <button type="submit" name="action" value="Create">',_("Create"),'</button>';
 	}
 ?>
-   <input type="submit" name="action" value="Create">
 </div>
 </div><!-- END div.table -->
 </form>
 </div></div>
-<a href="index.php">[ Return to Main Menu ]</a>
+<?php echo '<a href="index.php">[ ',_("Return to Main Menu"),' ]</a>'; ?>
 </div><!-- END div.main -->
 </div><!-- END div.page -->
 </body>

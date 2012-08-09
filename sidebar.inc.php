@@ -1,5 +1,4 @@
 <div id="sidebar">
-<input type="hidden" name="server" value="<?php echo $_SERVER['SERVER_ADDR']; ?>">
 <br>
 <form action="search.php" method="post">
 <input type="hidden" name="key" value="label">
@@ -57,27 +56,27 @@
 	<a href="reports.php"><li>Reports</li></a>
 <?php
 	if ( $user->RackRequest ) {
-		echo '		<a href="rackrequest.php"><li>' . _("Rack Request Form") . '</li></a>';
+		echo '		<a href="rackrequest.php"><li>',_("Rack Request Form"),'</li></a>';
 	}
 	if ( $user->ContactAdmin ) {
-		echo '		<a href="contacts.php"><li>' . _("Contact Administration") . '</li></a>
-		<a href="departments.php"><li>' . _("Dept. Administration") . '</li></a>
-		<a href="timeperiods.php"><li>' . _("Time Periods") . '</li></a>
-		<a href="escalations.php"><li>' . _("Escalation Rules") . '</li></a>';
+		echo '		<a href="contacts.php"><li>',_("Contact Administration"),'</li></a>
+		<a href="departments.php"><li>',_("Dept. Administration"),'</li></a>
+		<a href="timeperiods.php"><li>',_("Time Periods"),'</li></a>
+		<a href="escalations.php"><li>',_("Escalation Rules"),'</li></a>';
 	}
 	if ( $user->WriteAccess ) {
-		echo '<a href="cabinets.php"><li>' . _("Edit Cabinets") . '</li></a>
-		<a href="device_classes.php"><li>' . _("Edit Templates") . '</li></a>';
+		echo '<a href="cabinets.php"><li>',_("Edit Cabinets"),'</li></a>
+		<a href="device_classes.php"><li>',_("Edit Templates"),'</li></a>';
 	}
 	if ( $user->SiteAdmin ) {
-		echo '		<a href="usermgr.php"><li>' . _("Manage Users") . '</li></a>
-		<a href="supplybin.php"><li>' . _("Manage Supply Bins") . '</li></a>
-		<a href="supplies.php"><li>' . _("Manage Supplies") . '</li></a>
-		<a href="datacenter.php"><li>' . _("Edit Data Centers") . '</li></a>
-		<a href="powersource.php"><li>' . _("Edit Power Sources") . '</li></a>
-		<a href="panelmgr.php"><li>' . _("Edit Power Panels") . '</li></a>
-		<a href="manufacturers.php"><li>' . _("Edit Manufacturers") . '</li></a>
-		<a href="configuration.php"><li>' . _("Edit Configuration") . '</li></a>';
+		echo '		<a href="usermgr.php"><li>',_("Manage Users"),'</li></a>
+		<a href="supplybin.php"><li>',_("Manage Supply Bins"),'</li></a>
+		<a href="supplies.php"><li>',_("Manage Supplies"),'</li></a>
+		<a href="datacenter.php"><li>',_("Edit Data Centers"),'</li></a>
+		<a href="powersource.php"><li>',_("Edit Power Sources"),'</li></a>
+		<a href="panelmgr.php"><li>',_("Edit Power Panels"),'</li></a>
+		<a href="manufacturers.php"><li>',_("Edit Manufacturers"),'</li></a>
+		<a href="configuration.php"><li>',_("Edit Configuration"),'</li></a>';
 	}
 
 	print "	</ul>

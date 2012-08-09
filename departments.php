@@ -38,7 +38,7 @@
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html>
 <head>
-  <meta http-equiv="Content-Type" content="text/html; charset=windows-1252">
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <title>openDCIM Department Information</title>
   <link rel="stylesheet" href="css/inventory.php" type="text/css">
@@ -77,45 +77,44 @@ function showgroup(obj){
 <div class="page">
 <?php
 	include( 'sidebar.inc.php' );
-?>
-<div class="main">
-<h2><?php echo $config->ParameterArray['OrgName']; ?></h2>
-<h3>Data Center Department Detail</h3>
+	echo '<div class="main">
+<h2>',$config->ParameterArray["OrgName"],'</h2>
+<h3>',_("Data Center Department Detail"),'</h3>
 <div class="center"><div>
-<form action="<?php echo $_SERVER['PHP_SELF']; ?>" method="POST">
+<form action="',$_SERVER["PHP_SELF"],'" method="POST">
 <div class="table centermargin">
 <div>
-   <div>Department</div>
+   <div>',_("Department"),'</div>
    <div><input type="hidden" name="action" value="query"><select name="deptid" onChange="form.submit()">
-   <option value=0>New Department</option>
-<?php
+   <option value=0>',_("New Department"),'</option>';
+
 	foreach($deptList as $deptRow){
 		if($dept->DeptID == $deptRow->DeptID){$selected=" selected";}else{$selected="";}
 		print "   <option value=\"$deptRow->DeptID\"$selected>$deptRow->Name</option>\n";
 	}
-?>
-	</select></div>
+
+	echo '	</select></div>
 </div>
 <div>
-   <div><label for="deptname">Department Name</label></div>
-   <div><input type="text" size="50" name="name" id="deptname" value="<?php echo $dept->Name; ?>"></div>
+   <div><label for="deptname">',_("Department Name"),'</label></div>
+   <div><input type="text" size="50" name="name" id="deptname" value="',$dept->Name,'"></div>
 </div>
 <div>
-   <div><label for="deptsponsor">Executive Sponsor</label></div>
-   <div><input type="text" size="50" name="execsponsor" id="deptsponsor" value="<?php echo $dept->ExecSponsor; ?>"></div>
+   <div><label for="deptsponsor">',_("Executive Sponsor"),'</label></div>
+   <div><input type="text" size="50" name="execsponsor" id="deptsponsor" value="',$dept->ExecSponsor,'"></div>
 </div>
 <div>
-   <div><label for="deptmgr">Account Manager</label></div>
-   <div><input type="text" size="50" name="sdm" id="deptmgr" value="<?php echo $dept->SDM; ?>"></div>
+   <div><label for="deptmgr">',_("Account Manager"),'</label></div>
+   <div><input type="text" size="50" name="sdm" id="deptmgr" value="',$dept->SDM,'"></div>
 </div>
 <div>
-   <div><label for="deptcolor">Department Color</label></div>
-   <div><div class="cp"><input type="text" class="color-picker" size="50" name="deptcolor" id="deptcolor" value="<?php echo $dept->DeptColor; ?>"></div></div>
+   <div><label for="deptcolor">',_("Department Color"),'</label></div>
+   <div><div class="cp"><input type="text" class="color-picker" size="50" name="deptcolor" id="deptcolor" value="',$dept->DeptColor,'"></div></div>
 </div>
 <div>
-   <div><label for="deptclass">Classification</label></div>
-   <div><select name="classification" id="deptclass">
-<?php
+   <div><label for="deptclass">',_("Classification"),'</label></div>
+   <div><select name="classification" id="deptclass">';
+
   foreach($config->ParameterArray['ClassList'] as $className){
 	  if($dept->Classification==$className){$selected=" selected";}else{$selected="";}
 	  print "   <option value=\"$className\"$selected>$className</option>\n";
@@ -125,10 +124,11 @@ function showgroup(obj){
    </div>
 </div>
 <div class="caption" id="controls">
-    <input type="submit" name="action" value="Create">
 <?php
 	if($dept->DeptID > 0){
-		print "<input type=\"submit\" name=\"action\" value=\"Update\">\n<input type=\"button\" onClick=\"showgroup($dept->DeptID)\" value=\"Assign Contacts\">";
+		echo '<button type="submit" name="action" value="Update">',_("Update"),'</button><button type="button" onClick="showgroup(',$dept->DeptID,')">',_("Assign Contacts"),'</button>';
+	}else{
+    	echo '<button type="submit" name="action" value="Create">',_("Create"),'</button>';
 	}
 ?>
 </div>
@@ -137,7 +137,7 @@ function showgroup(obj){
 <iframe name="groupadmin" id="groupadmin" frameborder=0 scrolling="no"></iframe>
 <br>
 </div></div>
-<a href="index.php">[ Return to Main Menu ]</a>
+<?php echo '<a href="index.php">[ ',_("Return to Main Menu"),' ]</a>'; ?>
 </div> <!-- END div.main -->
 </div> <!-- END div.page -->
 </body>

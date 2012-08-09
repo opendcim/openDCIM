@@ -44,7 +44,7 @@
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html>
 <head>
-  <meta http-equiv="Content-Type" content="text/html; charset=windows-1252">
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <title>openDCIM Department Contact Maintenance</title>
   <link rel="stylesheet" href="css/inventory.php" type="text/css">
@@ -136,28 +136,29 @@ function allSelect()
 </head>
 <body id="deptgroup">
 <div class="centermargin">
-<form action="<?php print $_SERVER['PHP_SELF']; ?>" method="POST" onSubmit="allSelect()">
-<input type="hidden" name="deptid" value="<?php print $dept->DeptID; ?>">
-<h3>Group to Administer: <?php print $dept->Name; ?></h3>
-<div>
-Possible Contacts
-<select name="possible" id="possibleList" size="6" multiple="multiple">
 <?php
+echo '<form action="',$_SERVER["PHP_SELF"],'" method="POST" onSubmit="allSelect()">
+<input type="hidden" name="deptid" value="',$dept->DeptID,'">
+<h3>',_("Group to Administer"),': ',$dept->Name,'</h3>
+<div>
+',_("Possible Contacts"),'
+<select name="possible" id="possibleList" size="6" multiple="multiple">';
+
 	foreach($possibleList as $contactRow){
 		print "<option value=\"$contactRow->ContactID\">$contactRow->LastName, $contactRow->FirstName</option>\n";
 	}
-?>
-</select>
+
+echo '</select>
 </div>
 <div>
 <input type="button" value="-->" onClick="javascript:addToList()" /><br>
 <input type="button" value="<--" onClick="javascript:removeFromList()" /><br>
-<input type="submit" value="Submit" name="action">
+<button type="submit" value="Submit" name="action">',_("Submit"),'</button>
 </div>
 <div>
-Assigned Contacts
-<select name="chosen[]" id="chosenList" size="6" multiple="multiple">
-<?php
+',_("Assigned Contacts"),'
+<select name="chosen[]" id="chosenList" size="6" multiple="multiple">';
+
 	if(count($deptList)==0){print "<option value=\"temp\" />\n";}
 	foreach($deptList as $contactRow){
 		print "<option value=\"$contactRow->ContactID\">$contactRow->LastName, $contactRow->FirstName</option>\n";

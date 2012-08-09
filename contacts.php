@@ -45,7 +45,7 @@
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html>
 <head>
-  <meta http-equiv="Content-Type" content="text/html; charset=windows-1252">
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <title>openDCIM Data Center Inventory</title>
   <link rel="stylesheet" href="css/inventory.php" type="text/css">
@@ -62,63 +62,63 @@
 ?>
 <div class="main">
 <h2><?php print $config->ParameterArray['OrgName']; ?></h2>
-<h3>Data Center Contact Detail</h3>
+<?php
+echo '<h3>',_("Data Center Contact Detail"),'</h3>
 <div class="center"><div>
-<form action="<?php print $_SERVER['PHP_SELF'].$formfix; ?>" method="POST">
+<form action="',$_SERVER['PHP_SELF'].$formfix,'" method="POST">
 <div class="table">
 <div>
-   <div><label for="contactid">Contact</label></div>
+   <div><label for="contactid">',_("Contact"),'</label></div>
    <div><input type="hidden" name="action" value="query"><select name="contactid" id="contactid" onChange="form.submit()">
-   <option value=0>New Contact</option>
-<?php
+   <option value=0>',_("New Contact"),'</option>';
+
 	foreach($contactList as $contactRow ) {
 		if($contact->ContactID == $contactRow->ContactID){$selected=' selected="selected"';}else{$selected='';}
 		print "<option value=\"$contactRow->ContactID\"$selected>$contactRow->LastName, $contactRow->FirstName</option>";
 	}
-?>
-	</select></div>
+echo '	</select></div>
 </div>
 <div>
-   <div><label for="UserID">UserID</label></div>
-   <div><input type="text" name="UserID" id="UserID" value="<?php print $contact->UserID; ?>"></div>
+   <div><label for="UserID">',_("UserID"),'</label></div>
+   <div><input type="text" name="UserID" id="UserID" value="',$contact->UserID,'"></div>
 </div>
 <div>
-   <div><label for="lastname">Last Name</label></div>
-   <div><input type="text" name="lastname" id="lastname" value="<?php print $contact->LastName; ?>"></div>
+   <div><label for="lastname">',_("Last Name"),'</label></div>
+   <div><input type="text" name="lastname" id="lastname" value="',$contact->LastName,'"></div>
 </div>
 <div>
-   <div><label for="firstname">First Name</label></div>
-   <div><input type="text" name="firstname" id="firstname" value="<?php print $contact->FirstName; ?>"></div>
+   <div><label for="firstname">',_("First Name"),'</label></div>
+   <div><input type="text" name="firstname" id="firstname" value="',$contact->FirstName,'"></div>
 </div>
 <div>
-   <div><label for="phone1">Phone 1</label></div>
-   <div><input type="text" name="phone1" id="phone1" value="<?php print $contact->Phone1; ?>"></div>
+   <div><label for="phone1">',_("Phone 1"),'</label></div>
+   <div><input type="text" name="phone1" id="phone1" value="',$contact->Phone1,'"></div>
 </div>
 <div>
-   <div><label for="phone2">Phone 2</label></div>
-   <div><input type="text" name="phone2" id="phone2" value="<?php print $contact->Phone2; ?>"></div>
+   <div><label for="phone2">',_("Phone 2"),'</label></div>
+   <div><input type="text" name="phone2" id="phone2" value="',$contact->Phone2,'"></div>
 </div>
 <div>
-   <div><label for="phone3">Phone 3</label></div>
-   <div><input type="text" name="phone3" id="phone3" value="<?php print $contact->Phone3; ?>"></div>
+   <div><label for="phone3">',_("Phone 3"),'</label></div>
+   <div><input type="text" name="phone3" id="phone3" value="',$contact->Phone3,'"></div>
 </div>
 <div>
-   <div><label for="email">Email</label></div>
-   <div><input type="text" size="50" name="email" id="email" value="<?php print $contact->Email; ?>"></div>
+   <div><label for="email">',_("Email"),'</label></div>
+   <div><input type="text" size="50" name="email" id="email" value="',$contact->Email,'"></div>
 </div>
-<div class="caption">
-<?php
+<div class="caption">';
+
 	if($contact->ContactID >0){
-		echo '   <input type="submit" name="action" value="Update">';
+		echo '   <button type="submit" name="action" value="Update">',_("Update"),'</button>';
 	}else{
-		echo '   <input type="submit" name="action" value="Create">';
+		echo '   <button type="submit" name="action" value="Create">',_("Create"),'</button>';
 	}
 ?>
 </div>
 </div> <!-- END div.table -->
 </form>
 </div></div>
-<a href="index.php">[ Return to Main Menu ]</a>
+<?php echo '<a href="index.php">[ ',_("Return to Main Menu"),' ]</a>'; ?>
 </div> <!-- END div.main -->
 </div> <!-- END div.page -->
 </body>
