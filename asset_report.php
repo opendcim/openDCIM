@@ -79,7 +79,7 @@ class PDF extends FPDF {
 	if ( $DataCenterID > 0 )
 		$Criteria .= 'b.DataCenterID=\'' . intval( $DataCenterID ) . '\' and ';
 		
-    $searchSQL = 'select a.Name,b.Location,c.Position,c.Label,c.SerialNo,c.AssetTag from fac_DataCenter a, fac_Cabinet b, fac_Device c where ' . $Criteria . 'c.Cabinet=b.CabinetID and b.DataCenterID=a.DataCenterID and c.Reservation=false order by a.Name,b.Location,c.Position';
+    $searchSQL = 'select a.Name,b.Location,c.Position,c.Label,c.SerialNo,c.AssetTag,c.DeviceID,c.DeviceType from fac_DataCenter a, fac_Cabinet b, fac_Device c where ' . $Criteria . 'c.Cabinet=b.CabinetID and b.DataCenterID=a.DataCenterID and c.Reservation=false order by a.Name,b.Location,c.Position';
 
 	$result = mysql_query( $searchSQL, $facDB );
 
@@ -111,6 +111,24 @@ class PDF extends FPDF {
 		$pdf->Ln();
 
 		$fill =! $fill;
+		
+		if ( $reportRow["DeviceType"] == "Chassis" ) {
+			$chDev = new Device();
+			$chDev->DeviceID = $reportRow["DeviceID"];
+			$chList = $chDev->GetDeviceChildren( $facDB );
+			
+			foreach ( $chList as $chRow ) {
+				$pdf->Cell( $cellWidths[0], 6, '', 'LR', 0, 'L', $fill );
+				$pdf->Cell( $cellWidths[1], 6, '', 'LR', 0, 'L', $fill );
+				$pdf->Cell( $cellWidths[2], 6, '(blade)', 'LR', 0, 'L', $fill );
+				$pdf->Cell( $cellWidths[3], 6, $chRow->Label, 'LR', 0, 'L', $fill );
+				$pdf->Cell( $cellWidths[4], 6, $chRow->SerialNo, 'LR', 0, 'L', $fill );
+				$pdf->Cell( $cellWidths[5], 6, $chRow->AssetTag, 'LR', 0, 'L', $fill );
+				$pdf->Ln();
+
+				$fill =! $fill;				
+			}
+		}
 
 		$lastDC = $DataCenter;
 		$lastCab = $Location;
