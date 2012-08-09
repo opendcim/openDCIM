@@ -118,15 +118,14 @@ function applyupdate ($updatefile){
 	if($version=="1.3"){ // Do 1.3 to 1.4 Update
 		// Clean the configuration table of any duplicate values that might have been added.
 		$config->rebuild($facDB);
+		$results[]=applyupdate("db-1.3-to-1.4.sql");
+		$upgrade=true;
+	}
+	if($version=="1.4"){ // Do 1.4 to 1.5 Update
 		// A few of the database changes require some tests to ensure that they will be able to apply.
 		// Both of these need to return 0 results before we continue or the database schema update will not complete.
 		$sql="SELECT PDUID, CONCAT(PDUID,'-',PDUPosition) AS KEY1, COUNT(PDUID) AS Count  FROM fac_PowerConnection GROUP BY KEY1 HAVING (COUNT(KEY1)>1) ORDER BY PDUID ASC;";
 		$sql="SELECT DeviceID, CONCAT(DeviceID,'-',DeviceConnNumber) AS KEY2, COUNT(DeviceID) AS Count FROM fac_PowerConnection GROUP BY KEY2 HAVING (COUNT(KEY2)>1) ORDER BY DeviceID ASC;";
-
-
-
-		$results[]=applyupdate("db-1.3-to-1.4.sql");
-		$upgrade=true;
 	}
 	if($upgrade==true){ //If we're doing an upgrade don't call the rest of the installer.
 ?>
