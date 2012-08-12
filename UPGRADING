@@ -39,12 +39,13 @@ test folder.
 == The Cowboy Way ==
 
 Just drop the archive onto the existing install and browse to the appropriate
-URL for your installation, and specifying the setup.php script:
+URL for your installation:
 
 https://dcim.yourdomain.com/
 
-The setup script will automatically determine the current version and make any
-database structural changes that are required to be up to date.
+If an install script exists (which it does when you've just unpacked the archive)
+it will automatically be run and apply any database updates that go along with
+the new version.
 
 You will have to delete install.php after the upgrade is complete before you
 will be able to continue.
