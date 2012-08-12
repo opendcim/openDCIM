@@ -1,88 +1,483 @@
 msgid ""
 msgstr ""
-"Project-Id-Version: openDCIM\n"
+"Project-Id-Version: openDCIM.po\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2012-08-08 13:25-0500\n"
-"PO-Revision-Date: 2012-08-08 13:25-0500\n"
-"Last-Translator: Scott Milliken <scott@themillikens.com>\n"
+"POT-Creation-Date: 2012-08-10 20:34-0500\n"
+"PO-Revision-Date: 2012-08-10 20:34-0500\n"
+"Last-Translator: Wilbur Longwisch <wilbur@wilpig.org>\n"
 "Language-Team: openDCIM <discussion@list.opendcim.org>\n"
 "Language: English\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Poedit-KeywordsList: _;gettext;gettext_noop\n"
-"X-Poedit-Basepath: c:\\users\\sjk\\Documents\\openDCIM\\openDCIM\n"
-"X-Poedit-SourceCharset: UTF-8\n"
-"X-Poedit-SearchPath-0: c:\\users\\sjk\\Documents\\openDCIM\\openDCIM\n"
 
-#: c:\users\sjk\Documents\openDCIM\openDCIM/sidebar.inc.php:6
+#: openDCIM/cabinets.php:78
+msgid "Data Center Cabinet Inventory"
+msgstr ""
+
+#: openDCIM/cabinets.php:83
+msgid "Cabinet"
+msgstr ""
+
+#: openDCIM/cabinets.php:85
+msgid "New Cabinet"
+msgstr ""
+
+#: openDCIM/cabinets.php:95
+msgid "Data Center"
+msgstr ""
+
+#: openDCIM/cabinets.php:99
+#: openDCIM/supplybin.php:161
+msgid "Location"
+msgstr ""
+
+#: openDCIM/cabinets.php:103
+msgid "Assigned To"
+msgstr ""
+
+#: openDCIM/cabinets.php:105
+msgid "General Use"
+msgstr ""
+
+#: openDCIM/cabinets.php:116
+msgid "Cabinet Height"
+msgstr ""
+
+#: openDCIM/cabinets.php:120
+#: openDCIM/device_classes.php:98
+msgid "Model"
+msgstr ""
+
+#: openDCIM/cabinets.php:124
+msgid "Key/Lock Information"
+msgstr ""
+
+#: openDCIM/cabinets.php:128
+msgid "Maximum"
+msgstr ""
+
+#: openDCIM/cabinets.php:132
+msgid "Maximum Weight"
+msgstr ""
+
+#: openDCIM/cabinets.php:136
+msgid "Date of Installation"
+msgstr ""
+
+#: openDCIM/cabinets.php:142
+#: openDCIM/contacts.php:112
+#: openDCIM/departments.php:129
+#: openDCIM/device_classes.php:136
+#: openDCIM/escalations.php:87
+#: openDCIM/timeperiods.php:88
+#: openDCIM/usermgr.php:117
+msgid "Update"
+msgstr ""
+
+#: openDCIM/cabinets.php:144
+#: openDCIM/contacts.php:114
+#: openDCIM/departments.php:131
+#: openDCIM/device_classes.php:138
+#: openDCIM/escalations.php:90
+#: openDCIM/supplybin.php:167
+#: openDCIM/timeperiods.php:91
+#: openDCIM/usermgr.php:119
+msgid "Create"
+msgstr ""
+
+#: openDCIM/cabinets.php:152
+msgid "Return to Navigator"
+msgstr ""
+
+#: openDCIM/cabinets.php:154
+#: openDCIM/contacts.php:121
+#: openDCIM/departments.php:140
+#: openDCIM/device_classes.php:145
+#: openDCIM/escalations.php:97
+#: openDCIM/supplybin.php:216
+#: openDCIM/timeperiods.php:98
+#: openDCIM/usermgr.php:126
+msgid "Return to Main Menu"
+msgstr ""
+
+#: openDCIM/contacts.php:66
+#: openDCIM/usermgr.php:76
+msgid "Data Center Contact Detail"
+msgstr ""
+
+#: openDCIM/contacts.php:71
+msgid "Contact"
+msgstr ""
+
+#: openDCIM/contacts.php:73
+msgid "New Contact"
+msgstr ""
+
+#: openDCIM/contacts.php:82
+#: openDCIM/usermgr.php:95
+msgid "UserID"
+msgstr ""
+
+#: openDCIM/contacts.php:86
+msgid "Last Name"
+msgstr ""
+
+#: openDCIM/contacts.php:90
+msgid "First Name"
+msgstr ""
+
+#: openDCIM/contacts.php:94
+msgid "Phone 1"
+msgstr ""
+
+#: openDCIM/contacts.php:98
+msgid "Phone 2"
+msgstr ""
+
+#: openDCIM/contacts.php:102
+msgid "Phone 3"
+msgstr ""
+
+#: openDCIM/contacts.php:106
+msgid "Email"
+msgstr ""
+
+#: openDCIM/departments.php:82
+msgid "Data Center Department Detail"
+msgstr ""
+
+#: openDCIM/departments.php:87
+#: openDCIM/index.php:47
+msgid "Department"
+msgstr ""
+
+#: openDCIM/departments.php:89
+msgid "New Department"
+msgstr ""
+
+#: openDCIM/departments.php:99
+msgid "Department Name"
+msgstr ""
+
+#: openDCIM/departments.php:103
+msgid "Executive Sponsor"
+msgstr ""
+
+#: openDCIM/departments.php:107
+msgid "Account Manager"
+msgstr ""
+
+#: openDCIM/departments.php:111
+msgid "Department Color"
+msgstr ""
+
+#: openDCIM/departments.php:115
+msgid "Classification"
+msgstr ""
+
+#: openDCIM/departments.php:129
+msgid "Assign Contacts"
+msgstr ""
+
+#: openDCIM/dept_groups.php:142
+msgid "Group to Administer"
+msgstr ""
+
+#: openDCIM/dept_groups.php:144
+msgid "Possible Contacts"
+msgstr ""
+
+#: openDCIM/dept_groups.php:156
+#: openDCIM/supplybin.php:209
+msgid "Submit"
+msgstr ""
+
+#: openDCIM/dept_groups.php:159
+msgid "Assigned Contacts"
+msgstr ""
+
+#: openDCIM/device_classes.php:37
+#: openDCIM/escalations.php:29
+#: openDCIM/supplybin.php:39
+#: openDCIM/timeperiods.php:30
+#: openDCIM/usermgr.php:37
+msgid "Updated"
+msgstr ""
+
+#: openDCIM/device_classes.php:66
+msgid "Data Center Device Templates"
+msgstr ""
+
+#: openDCIM/device_classes.php:72
+msgid "Template"
+msgstr ""
+
+#: openDCIM/device_classes.php:74
+msgid "New Template"
+msgstr ""
+
+#: openDCIM/device_classes.php:86
+msgid "Manufacturer"
+msgstr ""
+
+#: openDCIM/device_classes.php:102
+msgid "Height"
+msgstr ""
+
+#: openDCIM/device_classes.php:106
+msgid "Weight"
+msgstr ""
+
+#: openDCIM/device_classes.php:110
+msgid "Wattage"
+msgstr ""
+
+#: openDCIM/device_classes.php:114
+msgid "Device Type"
+msgstr ""
+
+#: openDCIM/device_classes.php:126
+msgid "No. Power Supplies"
+msgstr ""
+
+#: openDCIM/device_classes.php:130
+msgid "No. Ports"
+msgstr ""
+
+#: openDCIM/escalations.php:63
+msgid "Data Center Escalation Rules"
+msgstr ""
+
+#: openDCIM/escalations.php:69
+msgid "Escalation Rule"
+msgstr ""
+
+#: openDCIM/escalations.php:71
+msgid "New Escalation Rule"
+msgstr ""
+
+#: openDCIM/escalations.php:81
+msgid "Details"
+msgstr ""
+
+#: openDCIM/escalations.php:88
+#: openDCIM/timeperiods.php:89
+msgid "Delete"
+msgstr ""
+
+#: openDCIM/index.php:47
+msgid "Pending Rack Requests"
+msgstr ""
+
+#: openDCIM/index.php:47
+msgid "Submit Time"
+msgstr ""
+
+#: openDCIM/index.php:47
+msgid "Requestor"
+msgstr ""
+
+#: openDCIM/index.php:47
+msgid "System Name"
+msgstr ""
+
+#: openDCIM/index.php:47
+msgid "Due By"
+msgstr ""
+
+#: openDCIM/index.php:98
+msgid "Data Center Operations Metrics"
+msgstr ""
+
+#: openDCIM/index.php:101
+msgid "Data Center Inventory"
+msgstr ""
+
+#: openDCIM/index.php:101
+msgid "View as Excel"
+msgstr ""
+
+#: openDCIM/index.php:104
+msgid "Hosted Systems"
+msgstr ""
+
+#: openDCIM/index.php:107
+msgid "Server Count"
+msgstr ""
+
+#: openDCIM/index.php:111
+msgid "Other Device Count"
+msgstr ""
+
+#: openDCIM/index.php:115
+msgid "Space"
+msgstr ""
+
+#: openDCIM/index.php:119
+msgid "Power Consumption"
+msgstr ""
+
+#: openDCIM/index.php:123
+msgid "Heat Produced"
+msgstr ""
+
+#: openDCIM/index.php:127
+msgid "Virtual Machines"
+msgstr ""
+
+#: openDCIM/sidebar.inc.php:5
 msgid "Search by Name:"
-msgstr "Search by Name:"
+msgstr ""
 
-#: c:\users\sjk\Documents\openDCIM\openDCIM/sidebar.inc.php:12
+#: openDCIM/sidebar.inc.php:11
 msgid "Search by SN:"
-msgstr "Search by SN:"
+msgstr ""
 
-#: c:\users\sjk\Documents\openDCIM\openDCIM/sidebar.inc.php:18
+#: openDCIM/sidebar.inc.php:17
 msgid "Search by Asset Tag:"
-msgstr "Search by Asset Tag:"
+msgstr ""
 
-#: c:\users\sjk\Documents\openDCIM\openDCIM/sidebar.inc.php:60
+#: openDCIM/sidebar.inc.php:59
 msgid "Rack Request Form"
-msgstr "Rack Request Form"
+msgstr ""
 
-#: c:\users\sjk\Documents\openDCIM\openDCIM/sidebar.inc.php:63
+#: openDCIM/sidebar.inc.php:62
 msgid "Contact Administration"
-msgstr "Contact Administration"
+msgstr ""
 
-#: c:\users\sjk\Documents\openDCIM\openDCIM/sidebar.inc.php:64
+#: openDCIM/sidebar.inc.php:63
 msgid "Dept. Administration"
-msgstr "Dept. Administration"
+msgstr ""
 
-#: c:\users\sjk\Documents\openDCIM\openDCIM/sidebar.inc.php:65
+#: openDCIM/sidebar.inc.php:64
 msgid "Time Periods"
-msgstr "Time Periods"
+msgstr ""
 
-#: c:\users\sjk\Documents\openDCIM\openDCIM/sidebar.inc.php:66
+#: openDCIM/sidebar.inc.php:65
 msgid "Escalation Rules"
-msgstr "Escalation Rules"
+msgstr ""
 
-#: c:\users\sjk\Documents\openDCIM\openDCIM/sidebar.inc.php:69
+#: openDCIM/sidebar.inc.php:68
 msgid "Edit Cabinets"
-msgstr "Edit Cabinets"
+msgstr ""
 
-#: c:\users\sjk\Documents\openDCIM\openDCIM/sidebar.inc.php:70
+#: openDCIM/sidebar.inc.php:69
 msgid "Edit Templates"
-msgstr "Edit Templates"
+msgstr ""
 
-#: c:\users\sjk\Documents\openDCIM\openDCIM/sidebar.inc.php:73
+#: openDCIM/sidebar.inc.php:72
 msgid "Manage Users"
-msgstr "Manage Users"
+msgstr ""
 
-#: c:\users\sjk\Documents\openDCIM\openDCIM/sidebar.inc.php:74
+#: openDCIM/sidebar.inc.php:73
 msgid "Manage Supply Bins"
-msgstr "Manage Supply Bins"
+msgstr ""
 
-#: c:\users\sjk\Documents\openDCIM\openDCIM/sidebar.inc.php:75
+#: openDCIM/sidebar.inc.php:74
 msgid "Manage Supplies"
-msgstr "Manage Supplies"
+msgstr ""
 
-#: c:\users\sjk\Documents\openDCIM\openDCIM/sidebar.inc.php:76
+#: openDCIM/sidebar.inc.php:75
 msgid "Edit Data Centers"
-msgstr "Edit Data Centers"
+msgstr ""
 
-#: c:\users\sjk\Documents\openDCIM\openDCIM/sidebar.inc.php:77
+#: openDCIM/sidebar.inc.php:76
 msgid "Edit Power Sources"
-msgstr "Edit Power Sources"
+msgstr ""
 
-#: c:\users\sjk\Documents\openDCIM\openDCIM/sidebar.inc.php:78
+#: openDCIM/sidebar.inc.php:77
 msgid "Edit Power Panels"
-msgstr "Edit Power Panels"
+msgstr ""
 
-#: c:\users\sjk\Documents\openDCIM\openDCIM/sidebar.inc.php:79
+#: openDCIM/sidebar.inc.php:78
 msgid "Edit Manufacturers"
-msgstr "Edit Manufacturers"
+msgstr ""
 
-#: c:\users\sjk\Documents\openDCIM\openDCIM/sidebar.inc.php:80
+#: openDCIM/sidebar.inc.php:79
 msgid "Edit Configuration"
-msgstr "Edit Configuration"
+msgstr ""
+
+#: openDCIM/supplybin.php:143
+msgid "Data Center Stockroom Supply Bins"
+msgstr ""
+
+#: openDCIM/supplybin.php:149
+msgid "Bin Location"
+msgstr ""
+
+#: openDCIM/supplybin.php:151
+msgid "New Bin"
+msgstr ""
+
+#: openDCIM/supplybin.php:178
+msgid "Part Number"
+msgstr ""
+
+#: openDCIM/supplybin.php:179
+msgid "Count"
+msgstr ""
+
+#: openDCIM/supplybin.php:194
+msgid "Select parts to add..."
+msgstr ""
+
+#: openDCIM/timeperiods.php:64
+msgid "Data Center Time Periods Listing"
+msgstr ""
+
+#: openDCIM/timeperiods.php:70
+msgid "Escalation Time Period"
+msgstr ""
+
+#: openDCIM/timeperiods.php:72
+msgid "New Time Period"
+msgstr ""
+
+#: openDCIM/timeperiods.php:82
+msgid "Description"
+msgstr ""
+
+#: openDCIM/usermgr.php:83
+msgid "User"
+msgstr ""
+
+#: openDCIM/usermgr.php:85
+msgid "New User"
+msgstr ""
+
+#: openDCIM/usermgr.php:99
+msgid "Name"
+msgstr ""
+
+#: openDCIM/usermgr.php:103
+msgid "Rights"
+msgstr ""
+
+#: openDCIM/usermgr.php:105
+msgid "Read/Report Access"
+msgstr ""
+
+#: openDCIM/usermgr.php:106
+msgid "Modify/Enter Devices"
+msgstr ""
+
+#: openDCIM/usermgr.php:107
+msgid "Delete Devices"
+msgstr ""
+
+#: openDCIM/usermgr.php:108
+msgid "Enter/Modify Contacts and Departments"
+msgstr ""
+
+#: openDCIM/usermgr.php:109
+msgid "Enter Rack Requests"
+msgstr ""
+
+#: openDCIM/usermgr.php:110
+msgid "Complete Rack Requests"
+msgstr ""
+
+#: openDCIM/usermgr.php:111
+msgid "Manage Site and Users"
+msgstr ""
