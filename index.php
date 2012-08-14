@@ -117,11 +117,11 @@ echo '
 </div>
 <div>
   <div>',_("Power Consumption"),'</div>
-  <div>',printf("%.2f kiloWatts/hour",$ITSpower/1000),'</div>
+  <div>',sprintf("%.2f kiloWatts/hour",$ITSpower/1000),'</div>
 </div>
 <div>
   <div>',_("Heat Produced"),'</div>
-  <div>',printf("%.2f Tons",$ITSheat),'</div>
+  <div>',sprintf("%.2f Tons",$ITSheat),'</div>
 </div>
 <div>
   <div>',_("Virtual Machines"),'</div>
