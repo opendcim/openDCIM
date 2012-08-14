@@ -52,6 +52,7 @@
 		$cab->InstallationDate=date('m/d/Y');
 	}
 
+
 	$deptList=$dept->GetDepartmentList($facDB);
 	$cabList=$cab->ListCabinets($facDB);
 ?>
@@ -85,7 +86,7 @@ echo '<div class="main">
    <option value=0>',_("New Cabinet"),'</option>';
 
 	foreach($cabList as $cabRow){
-		if($cabRow->CabinetID == $cab->CabinetID){$select=' selected';}else{$selected="";}
+		if($cabRow->CabinetID == $cab->CabinetID){$selected=' selected';}else{$selected="";}
 		print "<option value=\"$cabRow->CabinetID\"$selected>$cabRow->Location</option>\n";
 	}
 
