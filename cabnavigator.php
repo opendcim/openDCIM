@@ -6,7 +6,7 @@
 	$user->UserID=$_SERVER["REMOTE_USER"];
 	$user->GetUserRights($facDB);
 
-	if(!$user->ReadAccess){
+	if(!$user->ReadAccess || !isset($_REQUEST["cabinetid"])){
 		// No soup for you.
 		header('Location: '.redirect());
 		exit;
@@ -21,13 +21,6 @@
 	$tempPDU=new PowerDistribution();
 	$tempDept=new Department();
 
-	if(!isset($_REQUEST["cabinetid"])){
-		// Not sure how you got here without a cabinet id set
-		// GTFO!
-		header("Location: ".redirect());
-		exit;
-	}
-
 	// Even if we're deleting the cabinet, it's helpful to know which data center to go back to displaying afterwards
 	$cab->CabinetID=$_REQUEST["cabinetid"];
 	$cab->GetCabinet($facDB);
@@ -39,24 +32,25 @@
 		$cab->DeleteCabinet($facDB);
 		$url=redirect("dc_stats.php?dc=$dcID");
 		header("Location: $url");
+		exit;
 	}
 	
 	$audit->CabinetID=$cab->CabinetID;
 
-	// Checking for site admin rights here ensures that they didn't submit this from someplace else.
-	if ( isset($_REQUEST["audit"]) && $_REQUEST["audit"]=="yes" && $user->WriteAccess) {
+	// You just have WriteAccess in order to perform/certify a rack audit 
+	if(isset($_REQUEST["audit"]) && $_REQUEST["audit"]=="yes" && $user->WriteAccess){
 		$audit->UserID=$user->UserID;
 		$audit->CertifyAudit($facDB);
 	}
 
 	$audit->AuditStamp="Never";
 	$audit->GetLastAudit($facDB);
-	if($audit->UserID != ""){
+	if($audit->UserID!=""){
 		$tmpUser=new User();
 		$tmpUser->UserID=$audit->UserID;
 		$tmpUser->GetUserRights($facDB);
 		$AuditorName=$tmpUser->Name;
-	} else {
+	}else{
 		//If no audit has been completed $AuditorName will return an error
 		$AuditorName="";
 	}
@@ -91,8 +85,8 @@
 
 	$body.="<div class=\"cabinet\">
 <table>
-	<tr><th colspan=2>Cabinet $cab->Location</th></tr>
-	<tr><td>Pos</td><td>Device</td></tr>\n";
+	<tr><th colspan=2>"._("Cabinet")." $cab->Location</th></tr>
+	<tr><td>"._("Pos")."</td><td>"._("Device")."</td></tr>\n";
 
 	$deptswithcolor=array();
 	while(list($devID,$device)=each($devList)){
@@ -121,16 +115,16 @@
 		}else{
 			$totalWatts+=$templ->Wattage;
 		}
-		$totalWeight += $templ->Weight;
-		$totalMoment += ( $templ->Weight * ( $device->Position + ( $device->Height / 2 ) ) );
+		$totalWeight+=$templ->Weight;
+		$totalMoment+=($templ->Weight*($device->Position+($device->Height/2)));
 
 		if($device->Reservation==false){
 			$reserved="";
 		}else{
 			$reserved=" reserved";
 		}
-		if($devTop < $currentHeight){
-			for($i=$currentHeight;$i > $devTop;$i--){
+		if($devTop<$currentHeight){
+			for($i=$currentHeight;$i>$devTop;$i--){
 				if($i==$currentHeight){
 					$blankHeight=$currentHeight-$devTop;
 					$body.="<tr><td>$i</td><td class=\"freespace\" rowspan=$blankHeight>&nbsp;</td></tr>\n";
@@ -142,33 +136,33 @@
 		if($device->Height<1){
 			$zeroheight.="				<a href=\"devices.php?deviceid=$devID\">$highlight $device->Label</a>\n";
 		}
-		for($i = $devTop; $i >= $device->Position; $i--){
+		for($i=$devTop;$i>=$device->Position;$i--){
 			if($i==$devTop){
 				$body.="<tr><td>$i</td><td class=\"device$reserved dept$device->Owner\" rowspan=$device->Height><a href=\"devices.php?deviceid=$devID\">$highlight $device->Label</a></td></tr>\n";
 			}else{
 				$body.="<tr><td>$i</td></tr>\n";
 			}
 		}
-		$currentHeight = $device->Position - 1;
+		$currentHeight=$device->Position - 1;
 	}
 
 	// Fill in to the bottom
-	for ( $i = $currentHeight; $i > 0; $i-- ) {
-		if ( $i == $currentHeight ) {
-			$blankHeight = $currentHeight + 1;
+	for($i=$currentHeight;$i>0;$i--){
+		if($i==$currentHeight){
+			$blankHeight=$currentHeight+1;
 
 			$body.="<tr><td>$i</td><td class=\"freespace\" rowspan=$blankHeight>&nbsp;</td></tr>\n";
-		} else {
+		}else{
 			$body.="<tr><td>$i</td></tr>\n";
 		}
 	}
 
-	$CenterofGravity = @round( $totalMoment / $totalWeight );
+	$CenterofGravity=@round($totalMoment/$totalWeight);
 
-	$used = $cab->CabinetOccupancy( $cab->CabinetID, $facDB );
-	$SpacePercent = number_format( $used / $cab->CabinetHeight * 100, 0 );
-	@$WeightPercent = number_format( $totalWeight / $cab->MaxWeight * 100, 0 );
-	@$PowerPercent = number_format( ( $totalWatts / 1000 ) / $cab->MaxKW * 100, 0 );
+	$used=$cab->CabinetOccupancy($cab->CabinetID,$facDB);
+	$SpacePercent=number_format($used/$cab->CabinetHeight*100,0);
+	@$WeightPercent=number_format($totalWeight/$cab->MaxWeight*100,0);
+	@$PowerPercent=number_format(($totalWatts/1000)/$cab->MaxKW*100,0);
 	$CriticalColor=$config->ParameterArray["CriticalColor"];
 	$CautionColor=$config->ParameterArray["CautionColor"];
 	$GoodColor=$config->ParameterArray["GoodColor"];
@@ -204,16 +198,16 @@ $body.='</table>
 </div>
 <div id="infopanel">
 	<fieldset>
-		<legend>Markup Key</legend>
-		<p><font color=red>(O)</font> - Owner Unassigned</p>
-		<p><font color=red>(T)</font> - Template Unassigned</p>
+		<legend>'._("Markup Key").'</legend>
+		<p><font color=red>(O)</font> - '._("Owner Unassigned").'</p>
+		<p><font color=red>(T)</font> - '._("Template Unassigned").'</p>
 '.$legend.'
 	</fieldset>
 	<fieldset>
-		<legend>Cabinet Metrics</legend>
+		<legend>'._("Cabinet Metrics").'</legend>
 		<table style="background: white;" border=1>
 		<tr>
-			<td>Space
+			<td>'._("Space").'
 				<div class="meter-wrap">
 					<div class="meter-value" style="background-color: '.$SpaceColor.'; width: '.$SpacePercent.'%;">
 						<div class="meter-text">'.$SpacePercent.'%</div>
@@ -222,7 +216,7 @@ $body.='</table>
 			</td>
 		</tr>
 		<tr>
-			<td>Weight
+			<td>'._("Weight").'
 				<div class="meter-wrap">
 					<div class="meter-value" style="background-color: '.$WeightColor.'; width: '.$WeightPercent.'%;">
 						<div class="meter-text">'.$WeightPercent.'%</div>
@@ -231,7 +225,7 @@ $body.='</table>
 			</td>
 		</tr>
 		<tr>
-			<td>Power
+			<td>'._("Power").'
 				<div class="meter-wrap">
 					<div class="meter-value" style="background-color: '.$PowerColor.'; width: '.$PowerPercent.'%;">
 						<div class="meter-text">'; $body.=sprintf("%d kW / %d kW",round($totalWatts/1000),$cab->MaxKW);$body.='</div>
@@ -240,10 +234,10 @@ $body.='</table>
 			</td>
 		</tr>
 		</table>
-		<p>Approximate Center of Gravity: '.$CenterofGravity.' U</p>
+		<p>'._("Approximate Center of Gravity").': '.$CenterofGravity.' U</p>
 	</fieldset>
 	<fieldset>
-		<legend>Key/Lock Information</legend>
+		<legend>'._("Key/Lock Information").'</legend>
 		<div id="keylock">
 			'.$cab->Keylock.'
 		</div>
@@ -251,14 +245,14 @@ $body.='</table>
 
 	if($zeroheight!=""){
 		$body.='	<fieldset>
-		<legend>Zero-U Devices</legend>
+		<legend>'._("Zero-U Devices").'</legend>
 		<div id="zerou">
 			'.$zeroheight.'
 		</div>
 	</fieldset>';
 	}
 	$body.='	<fieldset>
-		<legend>Power Distribution</legend>';
+		<legend>'._("Power Distribution").'</legend>';
 
 	foreach($PDUList as $PDUdev){
 		if($PDUdev->IPAddress!=""){
@@ -271,48 +265,41 @@ $body.='</table>
 	}
 	
 	if($user->WriteAccess){
-		$body.="			<br><br><input type=\"button\" value=\"Add CDU\" onclick=\"location='pduinfo.php?pduid=0&cabinetid=$cab->CabinetID'\">\n";
+		$body.="			<br><br><ul class=\"nav\"><a href=\"pduinfo.php?pduid=0&cabinetid=$cab->CabinetID\"><li>"._("Add CDU")."</li></a></ul>\n";
 	}
 
 	$body.="	</fieldset>
 <fieldset>
-	<form method=\"post\" action=\"{$_SERVER['PHP_SELF']}\">
-	<input type=\"hidden\" name=\"cabinetid\" value=\"$cab->CabinetID\">
-	<input type=\"hidden\" name=\"audit\" value=\"yes\">
-	<input type=\"hidden\" name=\"delete\" value=\"no\">
-	<p>Last Audit: $audit->AuditStamp ($AuditorName)</p>\n";
-	
+	<p>"._("Last Audit").": $audit->AuditStamp<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;($AuditorName)</p>
+	<ul class=\"nav\">\n";
 	if($user->WriteAccess){
-		$body.="<input type=\"button\" value=\"Certify Audit\" style=\"width:120;\" onclick=\"javascript:verifyAudit(this.form)\"><br>
-		<input type=\"button\" value=\"Add Device\" style=\"width:120;\" onclick=\"location='devices.php?action=new&cabinet=$cab->CabinetID'\"><br>
-		<input type=\"button\" value=\"Audit Report\" style=\"width:120;\" onclick=\"location='cabaudit.php?cabinetid=$cab->CabinetID'\"><br>
-		<input type=\"button\" value=\"Map Coordinates\" style=\"width:120;\" onclick=\"location='mapmaker.php?cabinetid=$cab->CabinetID'\"><br>
-		<input type=\"button\" value=\"Edit Cabinet\" style=\"width:120;\" onclick=\"location='cabinets.php?cabinetid=$cab->CabinetID'\"><br>\n";
+		$body.="
+		<a href=\"#\" onclick=\"javascript:verifyAudit(this.form)\"><li>"._("Certify Audit")."</li></a>
+		<a href=\"devices.php?action=new&cabinet=$cab->CabinetID\"><li>"._("Add Device")."</li></a>
+		<a href=\"cabaudit.php?cabinetid=$cab->CabinetID\"><li>"._("Audit Report")."</li></a>
+		<a href=\"mapmaker.php?cabinetid=$cab->CabinetID\"><li>"._("Map Coordinates")."</li></a>
+		<a href=\"cabinets.php?cabinetid=$cab->CabinetID\"><li>"._("Edit Cabinet")."</li></a>\n";
 	}
 	if($user->SiteAdmin){
-		$body.="<input type=\"button\" value=\"Delete Cabinet\" style=\"width:120;\" onclick=\"javascript:verifyDelete(this.form)\"<br>\n";
+		$body.="<a href=\"#\" onclick=\"javascript:verifyDelete(this.form)\"><li>"._("Delete Cabinet")."</li></a>";
 	}
 
-	$body.='	</form>
+	$body.='	</ul>
 </fieldset>
 
 </div> <!-- END div#infopanel -->';
-
-
 
 	// If $head isn't empty then we must have added some style information so close the tag up.
 	if($head!=""){
 		$head.='		</style>';
 	}
 
-
-
 ?>
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<!doctype html>
 <html>
 <head>
   <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  
   <title>Facilities Cabinet Maintenance</title>
   <link rel="stylesheet" href="css/inventory.php" type="text/css">
   <link rel="stylesheet" href="css/print.css" type="text/css" media="print">
@@ -320,32 +307,40 @@ $body.='</table>
   <link rel="stylesheet"  href="css/ie.css" type="text/css" />
   <![endif]-->
  
-<?php echo $head ?>
+<?php 
 
-  <script type="text/javascript" src="scripts/jquery.min.js"></script>
+echo $head,'  <script type="text/javascript" src="scripts/jquery.min.js"></script>
   <script type="text/javascript">
+	var form=$("<form>").attr({ method: "post", action: "cabnavigator.php" });
+	$("<input>").attr({ type: "hidden", name: "cabinetid", value: "',$cab->CabinetID,'"}).appendTo(form);
 	function verifyAudit(formname){
-		if(confirm("Do you certify that you have completed an audit of the selected cabinet?"))
-			formname.submit();
+		if(confirm("',_("Do you certify that you have completed an audit of the selected cabinet?"),'")){
+			$("<input>").attr({ type: "hidden", name: "audit", value: "yes"}).appendTo(form);
+			form.appendTo("body");
+			form.submit();
+		}
 	}
 	
-	function verifyDelete(formname) {
-		if ( confirm( "Are you sure that you want to delete this cabinet, including all devices, power strips, and connections?\nTHIS ACTION CAN NOT BE UNDONE!" ) ) {
-			formname.delete.value="yes";
-			formname.submit();
+	function verifyDelete(formname){
+		if(confirm("',_("Are you sure that you want to delete this cabinet, including all devices, power strips, and connections?"),'\n',_("THIS ACTION CAN NOT BE UNDONE!"),'")){
+			$("<input>").attr({ type: "hidden", name: "delete", value: "yes"}).appendTo(form);
+			form.appendTo("body");
+			form.submit();
 		}
 	}
   </script>
-</head>
+</head>';
+
+?>
 <body>
 <div id="header"></div>
 <div class="page">
 <?php
 	include( "sidebar.inc.php" );
 ?>
-<div class="main">
+<div class="main cabnavigator">
 <h2><?php print $config->ParameterArray["OrgName"]; ?></h2>
-<h3>Data Center Cabinet Inventory</h3>
+<h3><?php print _("Data Center Cabinet Inventory"); ?></h3>
 <div class="center"><div>
 <div id="centeriehack">
 <?php

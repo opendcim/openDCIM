@@ -18,39 +18,39 @@
 	$connDev=new Device();
 	
 	if(isset($_REQUEST['pduid'])){
-		$pdu->PDUID = $_REQUEST['pduid'];
+		$pdu->PDUID=(isset($_POST['pduid']) ? $_POST['pduid'] : $_GET['pduid']);
 	}else{
 		echo 'Do not call this file directly';
 		exit;
 	}
-	if(isset($_REQUEST['action']) && (($_REQUEST['action']=='Create') || ($_REQUEST['action']=='Update')) && $user->WriteAccess) {
-		$pdu->Label=$_REQUEST['label'];
-		$pdu->CabinetID=$_REQUEST['cabinetid'];
-		$pdu->InputAmperage=$_REQUEST['inputamperage'];
-		$pdu->ManagementType=$_REQUEST['managementtype'];
-		$pdu->Model=$_REQUEST['model'];
-		$pdu->NumOutputs=$_REQUEST['numoutputs'];
-		$pdu->IPAddress=$_REQUEST['ipaddress'];
-		$pdu->SNMPCommunity=$_REQUEST['snmpcommunity'];
-		$pdu->FirmwareVersion=$_REQUEST['firmwareversion'];
-		$pdu->PanelID=$_REQUEST['panelid'];
-		$pdu->BreakerSize=$_REQUEST['breakersize'];
-		$pdu->PanelPole=$_REQUEST['panelpole'];
+	if(isset($_POST['action']) && (($_POST['action']=='Create') || ($_POST['action']=='Update')) && $user->WriteAccess) {
+		$pdu->Label=$_POST['label'];
+		$pdu->CabinetID=$_POST['cabinetid'];
+		$pdu->InputAmperage=$_POST['inputamperage'];
+		$pdu->ManagementType=$_POST['managementtype'];
+		$pdu->Model=$_POST['model'];
+		$pdu->NumOutputs=$_POST['numoutputs'];
+		$pdu->IPAddress=$_POST['ipaddress'];
+		$pdu->SNMPCommunity=$_POST['snmpcommunity'];
+		$pdu->FirmwareVersion=$_POST['firmwareversion'];
+		$pdu->PanelID=$_POST['panelid'];
+		$pdu->BreakerSize=$_POST['breakersize'];
+		$pdu->PanelPole=$_POST['panelpole'];
 		// If failsafe is unset clear auto transfer switch panel information
-		if(isset($_REQUEST['failsafe'])){
+		if(isset($_POST['failsafe'])){
 			$pdu->FailSafe=1;
-			$pdu->PanelID2=$_REQUEST['panelid2'];
-			$pdu->PanelPole2=$_REQUEST['panelpole2'];
+			$pdu->PanelID2=$_POST['panelid2'];
+			$pdu->PanelPole2=$_POST['panelpole2'];
 		}else{
 			$pdu->FailSafe=0;
 			$pdu->PanelID2="";
 			$pdu->PanelPole2="";
 		}
 
-		if($_REQUEST['action']=='Create'){
+		if($_POST['action']=='Create'){
 			$ret=$pdu->CreatePDU($facDB);
 		}else{
-			$pdu->PDUID = $_REQUEST['pduid'];
+			$pdu->PDUID = $_POST['pduid'];
 			$pdu->UpdatePDU( $facDB );
 		}
 	}
@@ -59,7 +59,7 @@
 		$pdu->GetPDU($facDB);
 		$upTime=$pdu->GetSmartCDUUptime($facDB);
 	} else {
-		$pdu->CabinetID=$_REQUEST['cabinetid'];
+		$pdu->CabinetID=$_POST['cabinetid'];
 	}
 
 	$cab->CabinetID=$pdu->CabinetID;
@@ -73,11 +73,11 @@
 	$powerConn->PDUID=$pdu->PDUID;
 	$connList=$powerConn->GetConnectionsByPDU($facDB);
 ?>
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<!doctype html>
 <html>
 <head>
   <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  
   <title>Facilities Cabinet Maintenance</title>
   <link rel="stylesheet" href="css/inventory.php" type="text/css">
   <link rel="stylesheet" href="css/print.css" type="text/css" media="print">

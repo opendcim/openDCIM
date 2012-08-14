@@ -63,11 +63,11 @@
 		$screenadjustment="<style type=\"text/css\">div#mapadjust { width:".($offset+1030)."px;} .mapmaker > div { width:".($offset+580)."px;} .mapmaker div + div { width:206px;}</style>\n";
 	}
 ?>
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<!doctype html>
 <html>
 <head>
   <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  
   <title>openDCIM Data Center Information Management</title>
   <link rel="stylesheet" href="css/inventory.php" type="text/css">
   <link rel="stylesheet" href="css/imgareaselect-default.css" type="text/css">
@@ -109,11 +109,11 @@ $(document).ready(function() {
 <div class="mapmaker">
 <div>
 <h2><?php echo $config->ParameterArray["OrgName"]; ?></h2>
-<h3>Map Selector</h3>
+<h3><?php echo _("Map Selector"); ?></h3>
 </div>
 
 	<div class="table">
-        <div class="title">Coordinates</div> 
+        <div class="title"><?php echo _("Coordinates"); ?></div> 
 	<form action="<?php echo $_SERVER["PHP_SELF"]; ?>" method="POST">
     <div class="table"> 
 	<input type="hidden" name="cabinetid" value="<?php printf( "%d", $cab->CabinetID ); ?>">
@@ -150,7 +150,7 @@ $(document).ready(function() {
 <?php echo "<img src=\"css/blank.gif\" height=$height width=$width>"; ?>
 <div class="container demo"> 
   <div style="float: left; width: 70%;"> 
-    <p class="instructions">Click and drag on the image to select an area for cabinet <?php echo $cab->Location; ?>.</p> 
+    <p class="instructions"><?php echo _("Click and drag on the image to select an area for cabinet"),' ',$cab->Location; ?>.</p> 
  
     <div class="frame" style="margin: 0 0.3em; width: 300px; height: 300px;"> 
       <img id="map" src="<?php echo "drawings/$dc->DrawingFileName"; ?>" /> 
@@ -158,7 +158,7 @@ $(document).ready(function() {
   </div> 
  
   <div style="float: left; width: 30%;"> 
-    <p style="font-size: 110%; font-weight: bold; padding-left: 0.1em;">Selection Preview</p> 
+    <p style="font-size: 110%; font-weight: bold; padding-left: 0.1em;"><?php echo _("Selection Preview"); ?></p> 
   
   </div> 
 </div> 

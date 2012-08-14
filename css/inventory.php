@@ -278,6 +278,12 @@ div.cabinet {
 .cabinet th{font-size: 1.5em;padding: 0.25em;text-align: center;}
 #zerou a{display: block;}
 
+.cabnavigator .nav { text-align: center; }
+.cabnavigator .nav li { margin-top: 0.1em; border: 1px solid darkGray;}
+.cabnavigator .nav a:hover li { border-color: black; }
+
+
+
 /* devices.php  Device Detail */
 div.page.device {
 	min-width: 1350px; /* 1030 */
@@ -446,9 +452,9 @@ div.page.device {
 	border: 0px dashed darkGray;
 }
 .installer ul li{border: 1px dashed darkGray;}
-.installer #sidebar a, #sidebar .nav a {text-decoration: none;}
-.installer #sidebar a:hover li, #sidebar .nav a:hover li {background-color: darkGray;border-color: lightGray;}
-.installer #sidebar a:hover li.active, #sidebar .nav a:hover li.active {background-color: white;border-color: lightGray;}
+.installer #sidebar a, .nav a {text-decoration: none;}
+.installer #sidebar a:hover li, .nav a:hover li {background-color: darkGray;border-color: lightGray;}
+.installer #sidebar a:hover li.active, .nav a:hover li.active {background-color: white;border-color: lightGray;}
 .installer .active, .nav .active {background-color: white;border: 1px solid darkGray;}
 .installer .active:after, .nav .active:after {content:">>";float: right;}
 .installer div.table > div > div + div {width: 300px;}

@@ -30,10 +30,10 @@ class PDF extends FPDF {
     	$this->Image( 'images/' . $this->pdfconfig->ParameterArray['PDFLogoFile'],10,8,100);
     	$this->SetFont($this->pdfconfig->ParameterArray['PDFfont'],'B',12);
     	$this->Cell(120);
-    	$this->Cell(30,20,'Information Technology Services',0,0,'C');
+    	$this->Cell(30,20,_("Information Technology Services"),0,0,'C');
     	$this->Ln(20);
 		$this->SetFont( $this->pdfconfig->ParameterArray['PDFfont'],'',10 );
-		$this->Cell( 50, 6, 'Cabinet Audit Report', 0, 1, 'L' );
+		$this->Cell( 50, 6, _("Cabinet Audit Report"), 0, 1, 'L' );
 		$this->Cell( 50, 6, 'Date: ' . date( 'm/d/y' ), 0, 1, 'L' );
 		$this->Ln(10);
 	}
@@ -377,12 +377,12 @@ class PDF_Diag extends PDF_Sector {
 	$fill=0;
 	
 	$pdf->SetLeftMargin(2);	
-	$cabmessage='Cabinet Location: '.$cab->Location;
+	$cabmessage=_("Cabinet Location").': '.$cab->Location;
 	$pdf->SetFont($config->ParameterArray['PDFfont'],'B',10);
 	$pdf->Cell(0,5,$cabmessage,0,1,'C',0);
 	$pdf->SetFont($config->ParameterArray['PDFfont'],'',10);
 	$deviceList = $device->ViewDevicesByCabinet( $facDB );
-	$headerTags = array( 'Label', 'SerialNo', 'AssetTag', 'Position', 'Rack Units', '#Ports', 'PowerSupplyCount', 'PowerConnection1', 'PowerConnection2' );
+	$headerTags = array( _('Label'), _('SerialNo'), _('AssetTag'), _('Position'), _('Rack Units'), _('#Ports'), _('PowerSupplyCount'), _('PowerConnection1'), _('PowerConnection2') );
 	$cellWidths = array( 45, 40, 20,18, 20, 15, 35, 35, 35 );
 	$maxval = count( $headerTags );
 	for ( $col = 0; $col < $maxval; $col++ )
@@ -445,13 +445,13 @@ class PDF_Diag extends PDF_Sector {
 	$fill=0;
 	
 	$pdu->CabinetID=$cab->CabinetID;
-        $cabmessage='PDUs at '.$cabmessage;
+        $cabmessage=_("PDUs at").' '.$cabmessage;
 	$pdf->SetFont($config->ParameterArray['PDFfont'],'B',10);
 	$pdf->Cell(0,5,$cabmessage,0,1,'C',0);
 	$pdf->SetFont($config->ParameterArray['PDFfont'],'',10);
 	$PDUList=$pdu->GetPDUbyCabinet($facDB);
 	
-	$headerTags = array( 'Label', 'NumOutputs','Model','PanelLabel', 'PanelPole' );
+	$headerTags = array( _('Label'), _('NumOutputs'),_('Model'),_('PanelLabel'), _('PanelPole') );
 	$cellWidths = array( 40, 30,35, 25, 20);
 	$maxval = count( $headerTags );
 	for ( $col = 0; $col < $maxval; $col++ )
