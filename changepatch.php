@@ -16,7 +16,7 @@
 	$switchDev=new Device();
 	$switchDev->DeviceID=$_REQUEST['switchid'];
 	$switchDev->GetDevice($facDB);
-	  
+
 	$connect=new SwitchConnection();
 	$connect->SwitchDeviceID=$switchDev->DeviceID;
 	$connect->SwitchPortNumber=$_REQUEST['portid'];
@@ -95,11 +95,10 @@
 		<div><select name="endpointdeviceid" id="endpointdeviceid"><option value=-1>No Connection</option>
 <?php
 		foreach($patchCandidates as $key=>$devRow){
-			print "		<option value=$devRow->DeviceID";
-			if($connect->EndpointDeviceID==$devRow->DeviceID){
-				echo ' selected="selected"';
-			}
-			print ">$devRow->Label</option>\n";
+			if($connect->EndpointDeviceID==$devRow->DeviceID){$selected=" selected";}else{$selected="";}
+			// Don't allow a child switch device to connect a patch to the parent chassis
+			if($switchDev->ParentDevice>0 && $switchDev->ParentDevice==$devRow->DeviceID){$selected=" disabled";}
+			print "		<option value=$devRow->DeviceID$selected>$devRow->Label</option>\n";
 		}
 ?>
 		</select></div>

@@ -768,7 +768,7 @@ function setPreferredLayout() {<?php if(isset($_COOKIE["layout"]) && strtolower(
 	}
 
 	// If device is s switch or appliance show what the heck it is connected to.
-	if($dev->DeviceType=='Server' || $dev->DeviceType=='Appliance'){
+	if($dev->DeviceType=='Server' || $dev->DeviceType=='Appliance' || $dev->DeviceType=='Chassis'){
 		if(count($patchList)==0){
 			// We have no network information. Display links to switches in cabinet?
 			echo '		<div>		<div><a name="power"></a></div>		<div>No network connections defined.  You can add connections from a switch device.</div></div>';
