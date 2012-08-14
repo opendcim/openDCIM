@@ -1,6 +1,6 @@
 <?php
-	require_once( 'db.inc.php' );
-	require_once( 'facilities.inc.php' );
+	require_once('db.inc.php');
+	require_once('facilities.inc.php');
 
 	$user=new User();
 
@@ -14,13 +14,13 @@
 	}
 
 	$dc=new DataCenter();
-	if(isset($_REQUEST['action']) && (($_REQUEST['action']=='Create')||($_REQUEST['action']=='Update'))){
-		$dc->DataCenterID = $_REQUEST['datacenterid'];
-		$dc->Name = $_REQUEST['name'];
-		$dc->SquareFootage = $_REQUEST['squarefootage'];
-		$dc->DeliveryAddress = $_REQUEST['deliveryaddress'];
-		$dc->Administrator = $_REQUEST['administrator'];
-		$dc->DrawingFileName = $_REQUEST['drawingfilename'];
+	if(isset($_REQUEST['action'])&&(($_REQUEST['action']=='Create')||($_REQUEST['action']=='Update'))){
+		$dc->DataCenterID=$_REQUEST['datacenterid'];
+		$dc->Name=$_REQUEST['name'];
+		$dc->SquareFootage=$_REQUEST['squarefootage'];
+		$dc->DeliveryAddress=$_REQUEST['deliveryaddress'];
+		$dc->Administrator=$_REQUEST['administrator'];
+		$dc->DrawingFileName=$_REQUEST['drawingfilename'];
 		
 		if($_REQUEST['action']=='Create'){
 			$dc->CreateDataCenter($facDB);
@@ -29,7 +29,7 @@
 		}
 	}
 
-	if(isset($_REQUEST['datacenterid']) && $_REQUEST['datacenterid'] >0){
+	if(isset($_REQUEST['datacenterid'])&&$_REQUEST['datacenterid'] >0){
 		$dc->DataCenterID=$_REQUEST['datacenterid'];
 		$dc->GetDataCenter($facDB);
 	}
@@ -52,61 +52,58 @@
 <div class="page">
 <?php
 	include( 'sidebar.inc.php' );
-?>
-<div class="main">
-<h2><?php echo $config->ParameterArray['OrgName']; ?></h2>
-<h3>Data Center Detail</h3>
+
+echo '<div class="main">
+<h2>',$config->ParameterArray["OrgName"],'</h2>
+<h3>',_("Data Center Detail"),'</h3>
 <div class="center"><div>
-<form action="<?php echo $_SERVER['PHP_SELF']; ?>" method="POST">
+<form action="',$_SERVER["PHP_SELF"],'" method="POST">
 <div class="table">
 <div>
-   <div><label for="datacenterid">Data Center ID</label></div>
+   <div><label for="datacenterid">',_("Data Center ID"),'</label></div>
    <div><select name="datacenterid" id="datacenterid" onChange="form.submit()">
-      <option value="0">New Data Center</option>
-<?php
+      <option value="0">',_("New Data Center"),'</option>';
+
 	foreach($dcList as $dcRow){
-		echo "<option value=\"$dcRow->DataCenterID\"";
-		if($dcRow->DataCenterID == $dc->DataCenterID){
-			echo ' selected="selected"';
-		}
-		echo ">$dcRow->Name</option>\n";
+		if($dcRow->DataCenterID == $dc->DataCenterID){$selected=" selected";}else{$selected="";}
+		print "<option value=\"$dcRow->DataCenterID\"$seelcted>$dcRow->Name</option>\n";
 	}
-?>
-	</select></div>
+
+echo '	</select></div>
 </div>
 <div>
-   <div><label for="dcname">Name</label></div>
-   <div><input type="text" name="name" id="dcname" size="50" value="<?php echo $dc->Name; ?>"></div>
+   <div><label for="dcname">',_("Name"),'</label></div>
+   <div><input type="text" name="name" id="dcname" size="50" value="',$dc->Name,'"></div>
 </div>
 <div>
-   <div><label for="sqfootage">Square Footage</label></div>
-   <div><input type="text" name="squarefootage" id="sqfootage" size="10" value="<?php echo $dc->SquareFootage; ?>"></div>
+   <div><label for="sqfootage">',_("Square Footage"),'</label></div>
+   <div><input type="text" name="squarefootage" id="sqfootage" size="10" value="',$dc->SquareFootage,'"></div>
 </div>
 <div>
-   <div><label for="deliveryaddress">Delivery Address</label></div>
-   <div><input type="text" name="deliveryaddress" id="deliveryaddress" size="60" value="<?php echo $dc->DeliveryAddress; ?>"></div>
+   <div><label for="deliveryaddress">',_("Delivery Address"),'</label></div>
+   <div><input type="text" name="deliveryaddress" id="deliveryaddress" size="60" value="',$dc->DeliveryAddress,'"></div>
 </div>
 <div>
-   <div><label for="administrator">Administrator</label></div>
-   <div><input type="text" name="administrator" id="administrator" size=60 value="<?php echo $dc->Administrator; ?>"></div>
+   <div><label for="administrator">',_("Administrator"),'</label></div>
+   <div><input type="text" name="administrator" id="administrator" size=60 value="',$dc->Administrator,'"></div>
 </div>
 <div>
-   <div><label for="drawingfilename">Drawing URL</label></div>
-   <div><input type="text" name="drawingfilename" id="drawingfilename" size=60 value="<?php echo $dc->DrawingFileName; ?>"></div>
+   <div><label for="drawingfilename">',_("Drawing URL"),'</label></div>
+   <div><input type="text" name="drawingfilename" id="drawingfilename" size=60 value="',$dc->DrawingFileName,'"></div>
 </div>
-<div class="caption">
-<?php
+<div class="caption">';
+
 	if($dc->DataCenterID >0){
-		echo '   <input type="submit" name="action" value="Update">';
+		echo '   <button type="submit" name="action" value="Update">',_("Update"),'</button>';
 	}else{
-		echo '   <input type="submit" name="action" value="Create">';
+		echo '   <button type="submit" name="action" value="Create">',_("Create"),'</button>';
 	}
 ?>
 </div>
 </div> <!-- END div.table -->
 </form>
 </div></div>
-<a href="index.php">[ Return to Main Menu ]</a>
+<?php echo '<a href="index.php">[ ',_("Return to Main Menu"),' ]</a>'; ?>
 </div><!-- END div.main -->
 </div><!-- END div.page -->
 </body>

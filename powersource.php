@@ -1,10 +1,10 @@
 <?php
-	require_once( 'db.inc.php' );
-	require_once( 'facilities.inc.php' );
+	require_once('db.inc.php');
+	require_once('facilities.inc.php');
 
-	$user = new User();
-	$user->UserID = $_SERVER['REMOTE_USER'];
-	$user->GetUserRights( $facDB );
+	$user=new User();
+	$user->UserID=$_SERVER['REMOTE_USER'];
+	$user->GetUserRights($facDB);
 
 	if(!$user->SiteAdmin){
 		// No soup for you.
@@ -12,16 +12,16 @@
 		exit;
 	}
 
-	$ps = new PowerSource();
-  
+	$ps=new PowerSource();
+
 	if(isset($_REQUEST['action']) && (($_REQUEST['action']=='Create')||($_REQUEST['action']=='Update'))){
-		$ps->PowerSourceID = $_REQUEST['powersourceid'];
-		$ps->SourceName = $_REQUEST['sourcename'];
-		$ps->DataCenterID = $_REQUEST['datacenterid'];
-		$ps->IPAddress = $_REQUEST['ipaddress'];
-		$ps->Community = $_REQUEST['community'];
-		$ps->LoadOID = $_REQUEST['loadoid'];
-		$ps->Capacity = $_REQUEST['capacity'];
+		$ps->PowerSourceID=$_REQUEST['powersourceid'];
+		$ps->SourceName=$_REQUEST['sourcename'];
+		$ps->DataCenterID=$_REQUEST['datacenterid'];
+		$ps->IPAddress=$_REQUEST['ipaddress'];
+		$ps->Community=$_REQUEST['community'];
+		$ps->LoadOID=$_REQUEST['loadoid'];
+		$ps->Capacity=$_REQUEST['capacity'];
 		
 		if($_REQUEST['action']=='Create'){
 			$ps->CreatePowerSource($facDB);
@@ -31,103 +31,97 @@
 	}
 
 	if(isset($_REQUEST['powersourceid']) && $_REQUEST['powersourceid'] >0){
-		$ps->PowerSourceID = $_REQUEST['powersourceid'];
-		$ps->GetSource( $facDB );
+		$ps->PowerSourceID=$_REQUEST['powersourceid'];
+		$ps->GetSource($facDB);
 	}
-	$psList = $ps->GetPSList($facDB);
+	$psList=$ps->GetPSList($facDB);
 
-	$dc = new DataCenter();
-	$dcList = $dc->GetDCList($facDB);
+	$dc=new DataCenter();
+	$dcList=$dc->GetDCList($facDB);
 
 ?>
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html>
 <head>
-  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-  <meta http-equiv="X-UA-Compatible" content="IE=edge">
-  <title>Facilities Cabinet Maintenance</title>
-  <link rel="stylesheet" href="css/inventory.php" type="text/css">
-  <!--[if lt IE 9]>
-  <link rel="stylesheet"  href="css/ie.css" type="text/css">
-  <![endif]-->
-  <script type="text/javascript" src="scripts/jquery.min.js"></script>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<title>openDCIM Data Center Mangement</title>
+	<link rel="stylesheet" href="css/inventory.php" type="text/css">
+	<!--[if lt IE 9]>
+	<link rel="stylesheet"  href="css/ie.css" type="text/css">
+	<![endif]-->
+	<script type="text/javascript" src="scripts/jquery.min.js"></script>
 </head>
 <body>
-<div id="header"></div>
-<div class="page">
+	<div id="header"></div>
+	<div class="page">
 <?php
 	include( 'sidebar.inc.php' );
-?>
-<div class="main">
-<h2><?php echo $config->ParameterArray['OrgName']; ?> Power Sources</h2>
-<h3>Data Center Detail</h3>
-<div class="center"><div>
-<form action="<?php echo $_SERVER['PHP_SELF']; ?>" method="POST">
-<div class="table">
-<div>
-   <div><label for="powersourceid">Power Source ID</label></div>
-   <div><select name="powersourceid" id="powersourceid" onChange="form.submit()">
-      <option value="0">New Power Source</option>
-<?php
-      foreach ( $psList as $psRow ) {
-        if ( $psRow->PowerSourceID == $ps->PowerSourceID )
-          $selected = 'selected';
-        else
-          $selected = '';
 
-        printf( "<option value=\"%d\" %s>%s</option>\n", $psRow->PowerSourceID, $selected, $psRow->SourceName );
-      }
-?>
-	</select></div>
-</div>
-<div>
-   <div><label for="sourcename">Name</label></div>
-   <div><input type="text" name="sourcename" id="sourcename" size="50" value="<?php echo $ps->SourceName; ?>"></div>
-</div>
-<div>
-   <div><label for="datacenterid">Data Center</label></div>
-   <div><select name="datacenterid" id="datacenterid">
-	<?php
-		foreach($dcList as $dcRow){
-			echo "<option value=\"$dcRow->DataCenterID\"";
-			if($dcRow->DataCenterID == $ps->DataCenterID){
-				echo ' selected';
-			}
-			echo ">$dcRow->Name</option>\n";
-		}
-	?>
-   </select></div>
-</div>
-<div>
-   <div><label for="ipaddress">IP Address</label></div>
-   <div><input type="text" name="ipaddress" id="ipaddress" size="20" value="<?php echo $ps->IPAddress; ?>"></div>
-</div>
-<div>
-   <div><label for="community">SNMP Community</label></div>
-   <div><input type="text" name="community" id="community" size=40 value="<?php echo $ps->Community; ?>"></div>
-</div>
-<div>
-   <div><label for="loadoid">Load OID</label></div>
-   <div><input type="text" name="loadoid" id="loadoid" size=60 value="<?php echo $ps->LoadOID; ?>"></div>
-</div>
-<div>
-  <div><label for="capacity">Capacity (kW)</label></div>
-  <div><input type="numeric" name="capacity" id="capacity" size=8 value="<?php echo $ps->Capacity; ?>"></div>
-</div>
-<div class="caption">
-<?php
+echo '		<div class="main">
+			<h2>',$config->ParameterArray['OrgName'],' Power Sources</h2>
+			<h3>',_("Data Center Detail"),'</h3>
+			<div class="center"><div>
+				<form action="',$_SERVER['PHP_SELF'],'" method="POST">
+					<div class="table">
+						<div>
+							<div><label for="powersourceid">',_("Power Source ID"),'</label></div>
+							<div><select name="powersourceid" id="powersourceid" onChange="form.submit()">
+								<option value="0">',_("New Power Source"),'</option>';
+
+	foreach($psList as $psRow){
+		if($psRow->PowerSourceID==$ps->PowerSourceID){$selected=' selected';}else{$selected='';}
+		print "\t\t\t\t\t\t\t\t<option value=\"$psRow->PowerSourceID\"$selected>$psRow->SourceName</option>\n";
+	}
+
+echo '							</select></div>
+						</div>
+						<div>
+							<div><label for="sourcename">'._("Name"),'</label></div>
+							<div><input type="text" name="sourcename" id="sourcename" size="50" value="',$ps->SourceName,'"></div>
+						</div>
+						<div>
+							<div><label for="datacenterid">',_("Data Center"),'</label></div>
+							<div><select name="datacenterid" id="datacenterid">';
+
+	foreach($dcList as $dcRow){
+		if($dcRow->DataCenterID==$ps->DataCenterID){$selected=' selected';}else{$selected='';}
+		print "\t\t\t\t\t\t\t\t<option value=\"$dcRow->DataCenterID\"$selected>$dcRow->Name</option>\n";
+	}
+
+echo '							</select></div>
+						</div>
+						<div>
+							<div><label for="ipaddress">',_("IP Address"),'</label></div>
+							<div><input type="text" name="ipaddress" id="ipaddress" size="20" value="',$ps->IPAddress,'"></div>
+						</div>
+						<div>
+							<div><label for="community">',_("SNMP Community"),'</label></div>
+							<div><input type="text" name="community" id="community" size=40 value="',$ps->Community,'"></div>
+						</div>
+						<div>
+							<div><label for="loadoid">',_("Load OID"),'</label></div>
+							<div><input type="text" name="loadoid" id="loadoid" size=60 value="',$ps->LoadOID,'"></div>
+						</div>
+						<div>
+							<div><label for="capacity">',_("Capacity"),' (kW)</label></div>
+							<div><input type="number" name="capacity" id="capacity" size=8 value="',$ps->Capacity,'"></div>
+						</div>
+						<div class="caption">';
+
 	if($ps->PowerSourceID >0){
-		echo '   <input type="submit" name="action" value="Update">';
+		echo '							<button type="submit" name="action" value="Update">',_("Update"),'</button>';
 	} else {
-		echo '   <input type="submit" name="action" value="Create">';
-  }
+		echo '							<button type="submit" name="action" value="Create">',_("Create"),'</button>';
+}
 ?>
-</div>
-</div> <!-- END div.table -->
-</form>
-</div></div>
-<a href="index.php">[ Return to Main Menu ]</a>
-</div><!-- END div.main -->
-</div><!-- END div.page -->
+
+						</div>
+					</div> <!-- END div.table -->
+				</form>
+			</div></div>
+<?php echo '			<a href="index.php">[ ',_("Return to Main Menu"),' ]</a>'; ?>
+		</div><!-- END div.main -->
+	</div><!-- END div.page -->
 </body>
 </html>

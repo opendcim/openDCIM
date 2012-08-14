@@ -1,4 +1,12 @@
 --
+-- Change the DeviceType enumeration from having 'Routing Chassis' to just plain 'Chassis'
+--
+
+ALTER TABLE fac_RackRequest MODIFY COLUMN DeviceType enum('Server','Appliance','Storage Array','Switch','Routing Chassis','Patch Panel','Physical Infrastructure','Chassis');
+UPDATE fac_RackRequest SET DeviceType='Chassis' WHERE DeviceType = 'Routing Chassis';
+ALTER TABLE fac_RackRequest MODIFY COLUMN DeviceType enum('Server','Appliance','Storage Array','Switch','Patch Panel','Physical Infrastructure','Chassis');
+
+--
 -- Add restraints to the Power Connections to prevent accidental duplicates
 --
 

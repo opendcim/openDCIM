@@ -2,8 +2,8 @@
 	require_once( "db.inc.php" );
 	require_once( "facilities.inc.php" );
 
-	$user = new User();
-	$user->UserID = $_SERVER["REMOTE_USER"];
+	$user=new User();
+	$user->UserID=$_SERVER["REMOTE_USER"];
 	$user->GetUserRights( $facDB );
 
 	if(!$user->SiteAdmin){
@@ -12,19 +12,19 @@
 		exit;
 	}
 
-	$mfg = new Manufacturer();
+	$mfg=new Manufacturer();
 
 	if(isset($_REQUEST["manufacturerid"]) && $_REQUEST["manufacturerid"] >0){
-		$mfg->ManufacturerID = $_REQUEST["manufacturerid"];
-		$mfg->GetManufacturerByID( $facDB );
+		$mfg->ManufacturerID=(isset($_POST['manufacturerid']) ? $_POST['manufacturerid'] : $_GET['manufacturerid']);
+		$mfg->GetManufacturerByID($facDB);
 	}
 
 	$status="";
-	if(isset($_REQUEST["action"])&&(($_REQUEST["action"]=="Create")||($_REQUEST["action"]=="Update"))){
-		$mfg->ManufacturerID=$_REQUEST["manufacturerid"];
-		$mfg->Name=$_REQUEST["name"];
+	if(isset($_POST["action"])&&(($_POST["action"]=="Create")||($_POST["action"]=="Update"))){
+		$mfg->ManufacturerID=$_POST["manufacturerid"];
+		$mfg->Name=$_POST["name"];
 
-		if($_REQUEST["action"]=="Create"){
+		if($_POST["action"]=="Create"){
 			if($mfg->Name != null && $mfg->Name != ""){
   				$mfg->AddManufacturer($facDB);
 			}
@@ -33,7 +33,7 @@
 			$mfg->UpdateManufacturer($facDB);
 		}
 	}
-	$mfgList = $mfg->GetManufacturerList($facDB);
+	$mfgList=$mfg->GetManufacturerList($facDB);
 ?>
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html>
@@ -52,43 +52,43 @@
 <div class="page">
 <?php
 	include( "sidebar.inc.php" );
-?>
-<div class="main">
-<h2><?php echo $config->ParameterArray["OrgName"]; ?></h2>
-<h3>Data Center Manufacturer Listing</h3>
-<h3><?php echo $status; ?></h3>
+
+echo '<div class="main">
+<h2>',$config->ParameterArray["OrgName"],'</h2>
+<h3>',_("Data Center Manufacturer Listing"),'</h3>
+<h3>',$status,'</h3>
 <div class="center"><div>
-<form action="<?php echo $_SERVER["PHP_SELF"]; ?>" method="POST">
+<form action="',$_SERVER["PHP_SELF"],'" method="POST">
 <div class="table">
 <div>
-   <div><label for="manufacturerid">Manufacturer</label></div>
+   <div><label for="manufacturerid">',_("Manufacturer"),'</label></div>
    <div><input type="hidden" name="action" value="query"><select name="manufacturerid" id="manufacturerid" onChange="form.submit()">
-   <option value=0>New Manufacturer</option>
-<?php
+   <option value=0>',_("New Manufacturer"),'</option>';
+
 	foreach($mfgList as $mfgRow){
-		echo "<option value=\"$mfgRow->ManufacturerID\"";
-		if($mfg->ManufacturerID == $mfgRow->ManufacturerID){echo " selected";}
-		echo ">$mfgRow->Name</option>\n";
+		if($mfg->ManufacturerID==$mfgRow->ManufacturerID){$selected=" selected";}else{$selected="";}
+		echo "<option value=\"$mfgRow->ManufacturerID\"$selected>$mfgRow->Name</option>\n";
 	}
-?>
-	</select></div>
+
+echo '	</select></div>
 </div>
 <div>
-   <div><label for="name">Name</label></div>
-   <div><input type="text" name="name" id="name" value="<?php echo $mfg->Name; ?>"></div>
+   <div><label for="name">',_("Name"),'</label></div>
+   <div><input type="text" name="name" id="name" value="',$mfg->Name,'"></div>
 </div>
-<div class="caption">
-   <input type="submit" name="action" value="Create">
-<?php
+<div class="caption">';
+
 	if($mfg->ManufacturerID >0){
-		echo '   <input type="submit" name="action" value="Update">';
+		echo '   <button type="submit" name="action" value="Update">',_("Update"),'</button>';
+	}else{
+		echo '   <button type="submit" name="action" value="Create">',_("Create"),'</button>';
 	}
 ?>
 </div>
 </div><!-- END div.table -->
 </form>
 </div></div>
-<a href="index.php">[ Return to Main Menu ]</a>
+<?php echo '<a href="index.php">[ ',_("Return to Main Menu"),' ]</a>'; ?>
 </div><!-- END div.main -->
 </div><!-- END div.page -->
 </body>

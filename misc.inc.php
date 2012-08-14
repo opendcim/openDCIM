@@ -130,33 +130,14 @@ function sort2d ($array, $index){
  * Language internationalization slated for v2.0
  *
  */
-if( isset( $locale ) ) {
-/*
-	// the menu is included into every page so it will never get called directly
-	include_once("languages/english/sidebar.inc.php");
-	// test to see if we have added internationalization for a particular page at load and load english first
-	if(file_exists("languages/english/".basename($_SERVER['PHP_SELF']))){
-		include_once("languages/english/".basename($_SERVER['PHP_SELF']));
+if(isset($locale)){
+	setlocale(LC_ALL,$locale);
+	bindtextdomain("openDCIM","./locale");
+	
+	if(isset($codeset)){
+		bind_textdomain_codeset("openDCIM",$codeset);
 	}
-	// if language is set to something other than english check for lang files for it then load after
-	// this will allow only the values that need to be updated to be done so
-	if($lang!="english"){
-		if(file_exists("languages/$lang/".basename($_SERVER['PHP_SELF']))){
-			include_once("languages/$lang/".basename($_SERVER['PHP_SELF']));
-		}
-	}
-*/
-
-/*	Replacing the above section with gettext compatible locales
-*/
-	setlocale( LC_ALL, $locale );
-	
-	bindtextdomain( "openDCIM", "./locale" );
-	
-	if ( isset( $codeset ) )
-		bind_textdomain_codeset( "openDCIM", $codeset );
-	
-	textdomain( "openDCIM" );
+	textdomain("openDCIM");
 }
 
 /*

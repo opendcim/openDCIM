@@ -53,8 +53,9 @@
   <script type="text/javascript" src="scripts/mktree.js"></script> 
 	<hr>
 	<ul class="nav">
-	<a href="reports.php"><li>Reports</li></a>
 <?php
+echo '	<a href="reports.php"><li>',_("Reports"),'</li></a>';
+
 	if ( $user->RackRequest ) {
 		echo '		<a href="rackrequest.php"><li>',_("Rack Request Form"),'</li></a>';
 	}

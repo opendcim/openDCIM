@@ -59,21 +59,21 @@
 		try{		
 			$message->setFrom($config->ParameterArray['MailFromAddr']);
 		}catch(Swift_RfcComplianceException $e){
-			$error.="MailFrom: <span class=\"errmsg\">".$e->getMessage()."</span><br>\n";
+			$error.=_("MailFrom").": <span class=\"errmsg\">".$e->getMessage()."</span><br>\n";
 		}
 
 		// Add rack requestor to the list of recipients
 		try{		
 			$message->addTo($tmpContact->Email);
 		}catch(Swift_RfcComplianceException $e){
-			$error.="Check contact details for <a href=\"contacts.php?contactid=$tmpContact->ContactID\">$tmpContact->LastName, $tmpContact->FirstName</a>: <span class=\"errmsg\">".$e->getMessage()."</span><br>\n";
+			$error.=_("Check contact details for")." <a href=\"contacts.php?contactid=$tmpContact->ContactID\">$tmpContact->LastName, $tmpContact->FirstName</a>: <span class=\"errmsg\">".$e->getMessage()."</span><br>\n";
 		}
 
 		// Add data center team to the list of recipients
 		try{		
 			$message->addTo($config->ParameterArray['MailToAddr']);
 		}catch(Swift_RfcComplianceException $e){
-			$error.="Data center team address: <span class=\"errmsg\">".$e->getMessage()."</span><br>\n";
+			$error.=_("Data center team address").": <span class=\"errmsg\">".$e->getMessage()."</span><br>\n";
 		}
 
 		$logo='images/'.$config->ParameterArray["PDFLogoFile"];
@@ -102,14 +102,14 @@
 
 			$req->CreateRequest($facDB);
 
-			$htmlMessage.="<p>Your request for racking up the device labeled $req->Label has been received.
+			$htmlMessage.="<p>"._("Your request for racking up the device labeled")." $req->Label "._("has been received.
 			The Network Operations Center will examine the request and contact you if more information is needed
 			before the request can be processed.  You will receive a notice when this request has been completed.
-			Please allow up to 2 business days for requests to be completed.</p>
+			Please allow up to 2 business days for requests to be completed.")."</p>
 
-			<p>Your Request ID is $req->RequestID and you may view the request online at
+			<p>"._("Your Request ID is")." $req->RequestID "._("and you may view the request online at")."
 			<a href=\"https://{$_SERVER['SERVER_NAME']}{$_SERVER['PHP_SELF']}?requestid=$req->RequestID\">
-			this link</a>.</p>
+			"._("this link")."</a>.</p>
 			
 			</body></html>";
 
@@ -159,8 +159,8 @@
 				
 				$dev->CreateDevice($facDB);
 				
-				$htmlMessage.="<p>Your request for racking up the device labeled $req->Label has been completed.</p>
-				<p>To view your device in its final location <a href=\"https://{$_SERVER['SERVER_NAME']}{$_SERVER['PHP_SELF']}/devices.php?deviceid=$dev->DeviceID\"> this link</a>.</p>
+				$htmlMessage.="<p>"._("Your request for racking up the device labeled")." $req->Label "._("has been completed").".</p>
+				<p>"._("To view your device in its final location click")." <a href=\"https://{$_SERVER['SERVER_NAME']}{$_SERVER['PHP_SELF']}/devices.php?deviceid=$dev->DeviceID\"> "._("this link")."</a>.</p>
 				</body></html>";
 
 				$message->setBody($htmlMessage,'text/html');
@@ -180,7 +180,7 @@
 			exit;
 		  }else{
 			// This should never be hit under normal circumstatnces.
-			$error.="You do not have permission to delete this request";
+			$error.=_("You do not have permission to delete this request");
 		  }
 	   }
 	}
@@ -217,24 +217,26 @@
   <script type="text/javascript">
   	$(document).ready(function() {
 		$(function(){
-			$('#deviceform').validationEngine({'custom_error_messages' : {
+<?php			
+print "			$('#deviceform').validationEngine({'custom_error_messages' : {
 					'#vlanlist' : {
 						'condRequired': {
-							'message': "You must specify the VLAN information for the ethernet connections."
+							'message': '"._("You must specify the VLAN information for the ethernet connections").".'
 						}
 					},
 					'#sanlist' : {
 						'condRequired': {
-							'message': "You must specify the SAN port information to continue."
+							'message': '"._("You must specify the SAN port information to continue").".'
 						}
 					},
 					'#currentlocation' : {
 						'required': {
-							'message': "You must specify the current location of the equipment."
+							'message': '"._("You must specify the current location of the equipment").".'
 						}
 					}
 				}	
-			});
+			});";
+?>
 			$('#mfgdate').datepicker({});
 			$('#deviceclass').change( function(){
 				$.get('scripts/ajax_template.php?q='+$(this).val(), function(data) {
@@ -328,86 +330,90 @@
 <div class="page request">
 <?php
     include('sidebar.inc.php');
-?>
-<div class="main">
-<h2><?php echo $config->ParameterArray['OrgName']; ?></h2>
-<h3>Data Center Rack Request</h3>
-<?php if($error!=""){echo '<fieldset class="exception border error"><legend>Errors</legend>'.$error.'</fieldset>';} ?>
-<div class="center"><div>
+
+echo '<div class="main">
+<h2>',$config->ParameterArray['OrgName'],'</h2>
+<h3>',_("Data Center Rack Request"),'</h3>';
+
+if($error!=""){echo '<fieldset class="exception border error"><legend>Errors</legend>'.$error.'</fieldset>';}
+
+echo '<div class="center"><div>
 <div id="positionselector"></div>
-<?php
-	print "<form name=\"deviceform\" id=\"deviceform\" action=\"{$_SERVER["PHP_SELF"]}$formfix\" method=\"POST\">
-	<input type=\"hidden\" name=\"requestid\" value=\"$req->RequestID\">\n";
-?>
-<div class="table">
+<form name="deviceform" id="deviceform" action="',$_SERVER["PHP_SELF"],$formfix,'" method="POST">
+	<input type="hidden" name="requestid" value="',$req->RequestID,'">';
+
+echo '<div class="table">
 	<div>
-		<div><label for="requestorid">Requestor</label></div>
+		<div><label for="requestorid">',_("Requestor"),'</label></div>
 		<div>
-			<select name="requestorid" id="requestorid">
-<?php
+			<select name="requestorid" id="requestorid">';
+
 	foreach($contactList as $tmpContact){
-		if($tmpContact->UserID==$contact->UserID){$selected="SELECTED";}else{$selected="";}
-		print "				<option value=\"$tmpContact->ContactID\" $selected>$tmpContact->LastName, $tmpContact->FirstName</option>";
+		if($tmpContact->UserID==$contact->UserID){$selected=" selected";}else{$selected="";}
+		print "				<option value=\"$tmpContact->ContactID\"$selected>$tmpContact->LastName, $tmpContact->FirstName</option>";
 	}
-?>
-			</select>
+
+echo '			</select>
 		</div>
 	</div>
 	<div>
-		<div><label for="label">Label</label></div>
-		<div><input type="text" name="label" id="label" class="validate[required,minSize[3],maxSize[50]]" size="50" value="<?php echo $req->Label; ?>"></div>
+		<div><label for="label">',_("Label").'</label></div>
+		<div><input type="text" name="label" id="label" class="validate[required,minSize[3],maxSize[50]]" size="50" value="',$req->Label,'"></div>
 	</div>
 	<div>
-		<div><label for="labelcolor">Label Color</label></div>
+		<div><label for="labelcolor">',_("Label Color").'</label></div>
 		<div>
-			<select name="labelcolor" id="labelcolor">
-<?php
-	foreach(array('White','Yellow','Red') as $colorCode){
-		if($req->LabelColor==$colorCode){$selected='SELECTED';}else{$selected='';}
-		print "				<option value=\"$colorCode\" $selected>$colorCode</option>\n";
+			<select name="labelcolor" id="labelcolor">';
+
+	foreach(array(_("White"),_("Yellow"),_("Red")) as $colorCode){
+		if($req->LabelColor==$colorCode){$selected=' selected';}else{$selected='';}
+		print "				<option value=\"$colorCode\"$selected>$colorCode</option>\n";
 	}
-?>
-			</select>
+
+echo '			</select>
 		</div>
 	</div>
 	<div>
-		<div><label for="serialno">Serial Number</label></div>
-		<div><input type="text" name="serialno" id="serialno" class="validate[required]" size="50" value="<?php echo $req->SerialNo; ?>"></div>
+		<div><label for="serialno">',_("Serial Number"),'</label></div>
+		<div><input type="text" name="serialno" id="serialno" class="validate[required]" size="50" value="',$req->SerialNo,'"></div>
 	</div>
 	<div>
-		<div><label for="mfgdate">Manufacture Date</label></div>
-		<div><input type="text" name="mfgdate" id="mfgdate" size="20" value="<?php echo date( 'm/d/Y', strtotime( $req->MfgDate ) ); ?>"></div>
+		<div><label for="mfgdate">',_("Manufacture Date"),'</label></div>
+		<div><input type="text" name="mfgdate" id="mfgdate" size="20" value="',date('m/d/Y',strtotime($req->MfgDate)),'"></div>
 	</div>
 	<div>
-		<div><label for="assettag">Asset Tag</label></div>
-		<div><input type="text" name="assettag" id="assettag" size="20" value="<?php echo $req->AssetTag; ?>"></div>
+		<div><label for="assettag">',_("Asset Tag"),'</label></div>
+		<div><input type="text" name="assettag" id="assettag" size="20" value="',$req->AssetTag,'"></div>
 	</div>
 	<div>
-		<div><label for="esx">ESX Server?</label></div>
-		<div><select name="esx" id="esx"><option value="1" <?php echo ($req->ESX == 1) ? 'SELECTED' : ''; ?>>True</option><option value="0" <?php echo ($dev->ESX == 0) ? 'SELECTED' : ''; ?>>False</option></select></div>
+		<div><label for="esx">',_("ESX Server?"),'</label></div>
+		<div><select name="esx" id="esx">
+			<option value="1"'.(($req->ESX)?' selected':'').'>',_("True"),'</option>
+			<option value="0"'.((!$req->ESX)?' selected':'').'>',_("False"),'</option>
+		</select></div>
 	</div>
 	<div>
-		<div><label for="owner">Departmental Owner</label></div>
+		<div><label for="owner">',_("Departmental Owner"),'</label></div>
 		<div>
 			<select name="owner" id="owner" class="validate[required]">
-				<option value=0>Unassigned</option>
-<?php
+				<option value=0>',_("Unassigned"),'</option>';
+
 	$deptList = $Dept->GetDepartmentList( $facDB );
 
 	foreach($deptList as $deptRow){
-		if($req->Owner==$deptRow->DeptID){$selected='selected';}else{$selected='';}
-		print "				<option value=\"$deptRow->DeptID\" $selected>$deptRow->Name</option>\n";
+		if($req->Owner==$deptRow->DeptID){$selected=' selected';}else{$selected='';}
+		print "				<option value=\"$deptRow->DeptID\"$selected>$deptRow->Name</option>\n";
 	}
-?>
-			</select>
+
+echo '			</select>
 		</div>
 	</div>
 	<div>
-		<div><label for="deviceclass">Device Class</label></div>
+		<div><label for="deviceclass">',_("Device Class"),'</label></div>
 		<div>
 			<select name="deviceclass" id="deviceclass">
-				<option value=0>Select a template...</option>
-<?php
+				<option value=0>',_("Select a template"),'...</option>';
+
 	$templ=new DeviceTemplate();
 	$templateList=$templ->GetTemplateList($facDB);
 	$mfg=new Manufacturer();
@@ -418,56 +424,57 @@
 		$mfg->GetManufacturerByID($facDB);
 		print "				<option value=\"$tempRow->TemplateID\"$selected>$mfg->Name - $tempRow->Model</option>\n";
 	}
-?>
-			</select>
+
+echo '			</select>
 		</div>
 	</div>
 	<div>
-		<div><label for="deviceheight">Height</label></div>
-		<div><input type="text" name="deviceheight" id="deviceheight" class="validate[required,custom[onlyNumberSp]]" size="15" value="<?php echo $req->DeviceHeight; ?>"></div>
+		<div><label for="deviceheight">',_("Height"),'</label></div>
+		<div><input type="text" name="deviceheight" id="deviceheight" class="validate[required,custom[onlyNumberSp]]" size="15" value="',$req->DeviceHeight,'"></div>
 	</div>
 	<div>
-		<div><label for="ethernetcount">Number of Ethernet Connections</label></div>
-		<div><input type="text" name="ethernetcount" id="ethernetcount" class="validate[optional,custom[onlyNumberSp],min[1]]" size="15" value="<?php echo ($req->EthernetCount!=0) ? $req->EthernetCount : ''; ?>"></div>
+		<div><label for="ethernetcount">',_("Number of Ethernet Connections"),'</label></div>
+		<div><input type="text" name="ethernetcount" id="ethernetcount" class="validate[optional,custom[onlyNumberSp],min[1]]" size="15" value="'.(($req->EthernetCount!=0) ? $req->EthernetCount : '').'"></div>
 	</div>
 	<div>
-		<div><label for="vlanlist">VLAN Settings<span>(ie - eth0 on 973, eth1 on 600)</span></label></div>
-		<div><input type="text" name="vlanlist" id="vlanlist" class="validate[condRequired[ethernetcount]]" size="50" value="<?php echo $req->VLANList; ?>"></div>
+		<div><label for="vlanlist">',_("VLAN Settings"),'<span>(ie - eth0 on 973, eth1 on 600)</span></label></div>
+		<div><input type="text" name="vlanlist" id="vlanlist" class="validate[condRequired[ethernetcount]]" size="50" value="',$req->VLANList,'"></div>
 	</div>
 	<div>
-		<div><label for="sancount">Number of SAN Connections</label></div>
-		<div><input type="text" name="sancount" id="sancount" class="validate[optional,custom[onlyNumberSp],min[1]]" size="15" value="<?php echo ($req->SANCount!=0) ? $req->SANCount : ''; ?>"></div>
+		<div><label for="sancount">',_("Number of SAN Connections"),'</label></div>
+		<div><input type="text" name="sancount" id="sancount" class="validate[optional,custom[onlyNumberSp],min[1]]" size="15" value="'.(($req->SANCount!=0) ? $req->SANCount : '').'"></div>
 	</div>
 	<div>
-		<div><label for="sanlist">SAN Port Assignments</label></div>
-		<div><input type="text" name="sanlist" id="sanlist" class="validate[condRequired[sancount]]" size="50" value="<?php echo $req->SANList; ?>"></div>
+		<div><label for="sanlist">',_("SAN Port Assignments"),'</label></div>
+		<div><input type="text" name="sanlist" id="sanlist" class="validate[condRequired[sancount]]" size="50" value="',$req->SANList,'"></div>
 	</div>
 
 	<div>
-		<div><label for="devicetype">Device Type</label></div>
+		<div><label for="devicetype">',_("Device Type"),'</label></div>
 		<div>
 			<select name="devicetype" id="devicetype" class="validate[required]">
-				<option value=0>Select...</option>
-<?php
-	foreach(array('Server','Appliance','Storage Array','Switch','Chassis','Patch Panel','Physical Infrastructure') as $devType){
-		if($devType==$req->DeviceType){$selected = 'SELECTED';}else{$selected = '';}
-		print "				<option value=\"$devType\" $selected>$devType</option>\n";
-	}
-?>
+				<option value=0>',_("Select"),'...</option>
+				<option value="Server"'.(($req->DeviceType=="Server")?' selected':'').'>',_("Server"),'</option>
+				<option value="Appliance"'.(($req->DeviceType=="Appliance")?' selected':'').'>',_("Appliance"),'</option>
+				<option value="Storage Array"'.(($req->DeviceType=="Storage Array")?' selected':'').'>',_("Storage Array"),'</option>
+				<option value="Switch"'.(($req->DeviceType=="Switch")?' selected':'').'>',_("Switch"),'</option>
+				<option value="Chassis"'.(($req->DeviceType=="Chassis")?' selected':'').'>',_("Chassis"),'</option>
+				<option value="Patch Panel"'.(($req->DeviceType=="Patch Panel")?' selected':'').'>',_("Patch Panel"),'</option>
+				<option value="Physical Infrastructure"'.(($req->DeviceType=="Physical Infrastructure")?' selected':'').'>',_("Physical Infrastructure"),'</option>
 			</select>
 		</div>
 	</div>
 	<div>
-		<div><label for="currentlocation">Current Location</label></div>
-		<div><input type="text" name="currentlocation" id="currentlocation" class="validate[required]" size="50" value="<?php echo $req->CurrentLocation; ?>"></div>
+		<div><label for="currentlocation">',_("Current Location"),'</label></div>
+		<div><input type="text" name="currentlocation" id="currentlocation" class="validate[required]" size="50" value="',$req->CurrentLocation,'"></div>
 	</div>
 	<div>
-		<div><label for="specialinstructions">Special Instructions</label></div>
-		<div><textarea name="specialinstructions" id="specialinstructions" cols=50 rows=5><?php echo $req->SpecialInstructions; ?></textarea></div>
-	</div>
-<?php
+		<div><label for="specialinstructions">',_("Special Instructions"),'</label></div>
+		<div><textarea name="specialinstructions" id="specialinstructions" cols=50 rows=5>',$req->SpecialInstructions,'</textarea></div>
+	</div>';
+
 	if($user->RackAdmin && ($req->RequestID>0)){
-		echo '<div><div><label for="cabinetid">Select Rack Location:</label></div><div>'.$cab->GetCabinetSelectList($facDB).'&nbsp;&nbsp;<label for="position">Position:</label> <input type="text" name="position" id="position" size=5></div></div>';
+		echo '<div><div><label for="cabinetid">',_("Select Rack Location"),':</label></div><div>'.$cab->GetCabinetSelectList($facDB).'&nbsp;&nbsp;<label for="position">',_("Position"),':</label> <input type="text" name="position" id="position" size=5></div></div>';
 	}
 ?>
 	<div class="caption">
@@ -475,14 +482,14 @@
 	if($user->RackRequest||$user->RackAdmin){
 		if($req->RequestID >0){
 			if($user->RackAdmin||($user->UserID==$contact->UserID)){
-				echo '<input type="submit" name="action" value="Update Request">';
-				echo '<input type="submit" name="action" value="Delete Request">';
+				echo '<button type="submit" name="action" value="Update Request">',_("Update Request"),'</button>';
+				echo '<button type="submit" name="action" value="Delete Request">',_("Delete Request"),'</button>';
 			}
 			if($user->RackAdmin){
-				echo '<input type="submit" name="action" value="Move to Rack">';
+				echo '<button type="submit" name="action" value="Move to Rack">',_("Move to Rack"),'</button>';
 			}
 		}else{
-			echo '<input type="submit" name="action" value="Create">';
+			echo '<button type="submit" name="action" value="Create">',_("Create"),'</button>';
 		}
 	}
 ?>
@@ -490,7 +497,7 @@
 </div> <!-- END div.table -->
 </form>
 </div></div>
-<a href="index.php">[ Return to Main Menu ]</a>
+<?php echo '<a href="index.php">[ ',_("Return to Main Menu"),' ]</a>'; ?>
 </div> <!-- END div.main -->
 </div> <!-- END div.page -->
 </body>

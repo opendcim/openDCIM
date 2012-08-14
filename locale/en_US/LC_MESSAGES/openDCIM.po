@@ -2,8 +2,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: openDCIM.po\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2012-08-10 20:34-0500\n"
-"PO-Revision-Date: 2012-08-10 20:34-0500\n"
+"POT-Creation-Date: 2012-08-14 03:11-0500\n"
+"PO-Revision-Date: 2012-08-14 03:11-0500\n"
 "Last-Translator: Wilbur Longwisch <wilbur@wilpig.org>\n"
 "Language-Team: openDCIM <discussion@list.opendcim.org>\n"
 "Language: English\n"
@@ -24,6 +24,7 @@ msgid "New Cabinet"
 msgstr ""
 
 #: openDCIM/cabinets.php:95
+#: openDCIM/powersource.php:84
 msgid "Data Center"
 msgstr ""
 
@@ -67,9 +68,13 @@ msgstr ""
 
 #: openDCIM/cabinets.php:142
 #: openDCIM/contacts.php:112
+#: openDCIM/datacenter.php:97
 #: openDCIM/departments.php:129
 #: openDCIM/device_classes.php:136
 #: openDCIM/escalations.php:87
+#: openDCIM/manufacturers.php:82
+#: openDCIM/panelmgr.php:136
+#: openDCIM/powersource.php:113
 #: openDCIM/timeperiods.php:88
 #: openDCIM/usermgr.php:117
 msgid "Update"
@@ -77,9 +82,14 @@ msgstr ""
 
 #: openDCIM/cabinets.php:144
 #: openDCIM/contacts.php:114
+#: openDCIM/datacenter.php:99
 #: openDCIM/departments.php:131
 #: openDCIM/device_classes.php:138
 #: openDCIM/escalations.php:90
+#: openDCIM/manufacturers.php:84
+#: openDCIM/panelmgr.php:138
+#: openDCIM/powersource.php:115
+#: openDCIM/rackrequest.php:492
 #: openDCIM/supplybin.php:167
 #: openDCIM/timeperiods.php:91
 #: openDCIM/usermgr.php:119
@@ -92,9 +102,14 @@ msgstr ""
 
 #: openDCIM/cabinets.php:154
 #: openDCIM/contacts.php:121
+#: openDCIM/datacenter.php:106
 #: openDCIM/departments.php:140
 #: openDCIM/device_classes.php:145
 #: openDCIM/escalations.php:97
+#: openDCIM/manufacturers.php:91
+#: openDCIM/panelmgr.php:298
+#: openDCIM/powersource.php:123
+#: openDCIM/rackrequest.php:500
 #: openDCIM/supplybin.php:216
 #: openDCIM/timeperiods.php:98
 #: openDCIM/usermgr.php:126
@@ -141,6 +156,43 @@ msgstr ""
 
 #: openDCIM/contacts.php:106
 msgid "Email"
+msgstr ""
+
+#: openDCIM/datacenter.php:58
+#: openDCIM/panelmgr.php:70
+#: openDCIM/powersource.php:63
+msgid "Data Center Detail"
+msgstr ""
+
+#: openDCIM/datacenter.php:63
+msgid "Data Center ID"
+msgstr ""
+
+#: openDCIM/datacenter.php:65
+msgid "New Data Center"
+msgstr ""
+
+#: openDCIM/datacenter.php:75
+#: openDCIM/manufacturers.php:76
+#: openDCIM/powersource.php:80
+#: openDCIM/usermgr.php:99
+msgid "Name"
+msgstr ""
+
+#: openDCIM/datacenter.php:79
+msgid "Square Footage"
+msgstr ""
+
+#: openDCIM/datacenter.php:83
+msgid "Delivery Address"
+msgstr ""
+
+#: openDCIM/datacenter.php:87
+msgid "Administrator"
+msgstr ""
+
+#: openDCIM/datacenter.php:91
+msgid "Drawing URL"
 msgstr ""
 
 #: openDCIM/departments.php:82
@@ -218,10 +270,12 @@ msgid "New Template"
 msgstr ""
 
 #: openDCIM/device_classes.php:86
+#: openDCIM/manufacturers.php:64
 msgid "Manufacturer"
 msgstr ""
 
 #: openDCIM/device_classes.php:102
+#: openDCIM/rackrequest.php:432
 msgid "Height"
 msgstr ""
 
@@ -234,6 +288,7 @@ msgid "Wattage"
 msgstr ""
 
 #: openDCIM/device_classes.php:114
+#: openDCIM/rackrequest.php:453
 msgid "Device Type"
 msgstr ""
 
@@ -275,6 +330,7 @@ msgid "Submit Time"
 msgstr ""
 
 #: openDCIM/index.php:47
+#: openDCIM/rackrequest.php:347
 msgid "Requestor"
 msgstr ""
 
@@ -326,6 +382,297 @@ msgstr ""
 msgid "Virtual Machines"
 msgstr ""
 
+#: openDCIM/manufacturers.php:58
+msgid "Data Center Manufacturer Listing"
+msgstr ""
+
+#: openDCIM/manufacturers.php:66
+msgid "New Manufacturer"
+msgstr ""
+
+#: openDCIM/panelmgr.php:75
+msgid "Power Panel ID"
+msgstr ""
+
+#: openDCIM/panelmgr.php:77
+msgid "New Panel"
+msgstr ""
+
+#: openDCIM/panelmgr.php:88
+msgid "Power Source"
+msgstr ""
+
+#: openDCIM/panelmgr.php:102
+msgid "Panel Name"
+msgstr ""
+
+#: openDCIM/panelmgr.php:106
+msgid "Number of Poles"
+msgstr ""
+
+#: openDCIM/panelmgr.php:110
+msgid "Main Breaker Amperage"
+msgstr ""
+
+#: openDCIM/panelmgr.php:114
+msgid "Panel Voltage"
+msgstr ""
+
+#: openDCIM/panelmgr.php:118
+msgid "Numbering Scheme"
+msgstr ""
+
+#: openDCIM/panelmgr.php:124
+msgid "Odd/Even"
+msgstr ""
+
+#: openDCIM/panelmgr.php:127
+msgid "Sequential"
+msgstr ""
+
+#: openDCIM/panelmgr.php:163
+msgid "Panel Schedule"
+msgstr ""
+
+#: openDCIM/panelmgr.php:290
+msgid "Errors"
+msgstr ""
+
+#: openDCIM/panelmgr.php:294
+msgid ""
+"PDUs displayed here could not be drawn on the panel because of an "
+"overlapping circuit ID assignment. Please check the pole positions on the "
+"panels again."
+msgstr ""
+
+#: openDCIM/powersource.php:68
+msgid "Power Source ID"
+msgstr ""
+
+#: openDCIM/powersource.php:70
+msgid "New Power Source"
+msgstr ""
+
+#: openDCIM/powersource.php:95
+msgid "IP Address"
+msgstr ""
+
+#: openDCIM/powersource.php:99
+msgid "SNMP Community"
+msgstr ""
+
+#: openDCIM/powersource.php:103
+msgid "Load OID"
+msgstr ""
+
+#: openDCIM/powersource.php:107
+msgid "Capacity"
+msgstr ""
+
+#: openDCIM/rackrequest.php:62
+msgid "MailFrom"
+msgstr ""
+
+#: openDCIM/rackrequest.php:69
+msgid "Check contact details for"
+msgstr ""
+
+#: openDCIM/rackrequest.php:76
+msgid "Data center team address"
+msgstr ""
+
+#: openDCIM/rackrequest.php:105
+#: openDCIM/rackrequest.php:162
+msgid "Your request for racking up the device labeled"
+msgstr ""
+
+#: openDCIM/rackrequest.php:105
+msgid ""
+"has been received.\n"
+"\t\t\tThe Network Operations Center will examine the request and contact you "
+"if more information is needed\n"
+"\t\t\tbefore the request can be processed.  You will receive a notice when "
+"this request has been completed.\n"
+"\t\t\tPlease allow up to 2 business days for requests to be completed."
+msgstr ""
+
+#: openDCIM/rackrequest.php:110
+msgid "Your Request ID is"
+msgstr ""
+
+#: openDCIM/rackrequest.php:110
+msgid "and you may view the request online at"
+msgstr ""
+
+#: openDCIM/rackrequest.php:112
+#: openDCIM/rackrequest.php:163
+msgid "this link"
+msgstr ""
+
+#: openDCIM/rackrequest.php:162
+msgid "has been completed"
+msgstr ""
+
+#: openDCIM/rackrequest.php:163
+msgid "To view your device in its final location click"
+msgstr ""
+
+#: openDCIM/rackrequest.php:183
+msgid "You do not have permission to delete this request"
+msgstr ""
+
+#: openDCIM/rackrequest.php:224
+msgid "You must specify the VLAN information for the ethernet connections"
+msgstr ""
+
+#: openDCIM/rackrequest.php:229
+msgid "You must specify the SAN port information to continue"
+msgstr ""
+
+#: openDCIM/rackrequest.php:234
+msgid "You must specify the current location of the equipment"
+msgstr ""
+
+#: openDCIM/rackrequest.php:336
+msgid "Data Center Rack Request"
+msgstr ""
+
+#: openDCIM/rackrequest.php:360
+msgid "Label"
+msgstr ""
+
+#: openDCIM/rackrequest.php:364
+msgid "Label Color"
+msgstr ""
+
+#: openDCIM/rackrequest.php:368
+msgid "White"
+msgstr ""
+
+#: openDCIM/rackrequest.php:368
+msgid "Yellow"
+msgstr ""
+
+#: openDCIM/rackrequest.php:368
+msgid "Red"
+msgstr ""
+
+#: openDCIM/rackrequest.php:377
+msgid "Serial Number"
+msgstr ""
+
+#: openDCIM/rackrequest.php:381
+msgid "Manufacture Date"
+msgstr ""
+
+#: openDCIM/rackrequest.php:385
+msgid "Asset Tag"
+msgstr ""
+
+#: openDCIM/rackrequest.php:389
+msgid "ESX Server?"
+msgstr ""
+
+#: openDCIM/rackrequest.php:391
+msgid "True"
+msgstr ""
+
+#: openDCIM/rackrequest.php:392
+msgid "False"
+msgstr ""
+
+#: openDCIM/rackrequest.php:396
+msgid "Departmental Owner"
+msgstr ""
+
+#: openDCIM/rackrequest.php:399
+msgid "Unassigned"
+msgstr ""
+
+#: openDCIM/rackrequest.php:412
+msgid "Device Class"
+msgstr ""
+
+#: openDCIM/rackrequest.php:415
+msgid "Select a template"
+msgstr ""
+
+#: openDCIM/rackrequest.php:436
+msgid "Number of Ethernet Connections"
+msgstr ""
+
+#: openDCIM/rackrequest.php:440
+msgid "VLAN Settings"
+msgstr ""
+
+#: openDCIM/rackrequest.php:444
+msgid "Number of SAN Connections"
+msgstr ""
+
+#: openDCIM/rackrequest.php:448
+msgid "SAN Port Assignments"
+msgstr ""
+
+#: openDCIM/rackrequest.php:456
+msgid "Select"
+msgstr ""
+
+#: openDCIM/rackrequest.php:457
+msgid "Server"
+msgstr ""
+
+#: openDCIM/rackrequest.php:458
+msgid "Appliance"
+msgstr ""
+
+#: openDCIM/rackrequest.php:459
+msgid "Storage Array"
+msgstr ""
+
+#: openDCIM/rackrequest.php:460
+msgid "Switch"
+msgstr ""
+
+#: openDCIM/rackrequest.php:461
+msgid "Chassis"
+msgstr ""
+
+#: openDCIM/rackrequest.php:462
+msgid "Patch Panel"
+msgstr ""
+
+#: openDCIM/rackrequest.php:463
+msgid "Physical Infrastructure"
+msgstr ""
+
+#: openDCIM/rackrequest.php:468
+msgid "Current Location"
+msgstr ""
+
+#: openDCIM/rackrequest.php:472
+msgid "Special Instructions"
+msgstr ""
+
+#: openDCIM/rackrequest.php:477
+msgid "Select Rack Location"
+msgstr ""
+
+#: openDCIM/rackrequest.php:477
+msgid "Position"
+msgstr ""
+
+#: openDCIM/rackrequest.php:485
+msgid "Update Request"
+msgstr ""
+
+#: openDCIM/rackrequest.php:486
+msgid "Delete Request"
+msgstr ""
+
+#: openDCIM/rackrequest.php:489
+msgid "Move to Rack"
+msgstr ""
+
 #: openDCIM/sidebar.inc.php:5
 msgid "Search by Name:"
 msgstr ""
@@ -338,63 +685,67 @@ msgstr ""
 msgid "Search by Asset Tag:"
 msgstr ""
 
-#: openDCIM/sidebar.inc.php:59
+#: openDCIM/sidebar.inc.php:57
+msgid "Reports"
+msgstr ""
+
+#: openDCIM/sidebar.inc.php:60
 msgid "Rack Request Form"
 msgstr ""
 
-#: openDCIM/sidebar.inc.php:62
+#: openDCIM/sidebar.inc.php:63
 msgid "Contact Administration"
 msgstr ""
 
-#: openDCIM/sidebar.inc.php:63
+#: openDCIM/sidebar.inc.php:64
 msgid "Dept. Administration"
 msgstr ""
 
-#: openDCIM/sidebar.inc.php:64
+#: openDCIM/sidebar.inc.php:65
 msgid "Time Periods"
 msgstr ""
 
-#: openDCIM/sidebar.inc.php:65
+#: openDCIM/sidebar.inc.php:66
 msgid "Escalation Rules"
 msgstr ""
 
-#: openDCIM/sidebar.inc.php:68
+#: openDCIM/sidebar.inc.php:69
 msgid "Edit Cabinets"
 msgstr ""
 
-#: openDCIM/sidebar.inc.php:69
+#: openDCIM/sidebar.inc.php:70
 msgid "Edit Templates"
 msgstr ""
 
-#: openDCIM/sidebar.inc.php:72
+#: openDCIM/sidebar.inc.php:73
 msgid "Manage Users"
 msgstr ""
 
-#: openDCIM/sidebar.inc.php:73
+#: openDCIM/sidebar.inc.php:74
 msgid "Manage Supply Bins"
 msgstr ""
 
-#: openDCIM/sidebar.inc.php:74
+#: openDCIM/sidebar.inc.php:75
 msgid "Manage Supplies"
 msgstr ""
 
-#: openDCIM/sidebar.inc.php:75
+#: openDCIM/sidebar.inc.php:76
 msgid "Edit Data Centers"
 msgstr ""
 
-#: openDCIM/sidebar.inc.php:76
+#: openDCIM/sidebar.inc.php:77
 msgid "Edit Power Sources"
 msgstr ""
 
-#: openDCIM/sidebar.inc.php:77
+#: openDCIM/sidebar.inc.php:78
 msgid "Edit Power Panels"
 msgstr ""
 
-#: openDCIM/sidebar.inc.php:78
+#: openDCIM/sidebar.inc.php:79
 msgid "Edit Manufacturers"
 msgstr ""
 
-#: openDCIM/sidebar.inc.php:79
+#: openDCIM/sidebar.inc.php:80
 msgid "Edit Configuration"
 msgstr ""
 
@@ -444,10 +795,6 @@ msgstr ""
 
 #: openDCIM/usermgr.php:85
 msgid "New User"
-msgstr ""
-
-#: openDCIM/usermgr.php:99
-msgid "Name"
 msgstr ""
 
 #: openDCIM/usermgr.php:103

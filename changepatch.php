@@ -5,9 +5,9 @@
 	$user=new User();
 
 	$user->UserID=$_SERVER['REMOTE_USER'];
-	$user->GetUserRights( $facDB );
+	$user->GetUserRights($facDB);
 
-	if(!$user->WriteAccess || ((!isset($_REQUEST['switchid']) && !isset($_REQUEST['portid'])))){
+	if(!$user->WriteAccess && ((!isset($_REQUEST['switchid']) && !isset($_REQUEST['portid'])))){
 		// No soup for you.
 		header('Location: '.redirect());
 		exit;
