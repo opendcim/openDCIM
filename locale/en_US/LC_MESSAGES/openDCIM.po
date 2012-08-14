@@ -2,8 +2,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: openDCIM.po\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2012-08-14 03:11-0500\n"
-"PO-Revision-Date: 2012-08-14 03:11-0500\n"
+"POT-Creation-Date: 2012-08-14 07:32-0500\n"
+"PO-Revision-Date: 2012-08-14 07:32-0500\n"
 "Last-Translator: Wilbur Longwisch <wilbur@wilpig.org>\n"
 "Language-Team: openDCIM <discussion@list.opendcim.org>\n"
 "Language: English\n"
@@ -11,11 +11,86 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
+#: openDCIM/cabaudit.php:33
+msgid "Information Technology Services"
+msgstr ""
+
+#: openDCIM/cabaudit.php:36
+msgid "Cabinet Audit Report"
+msgstr ""
+
+#: openDCIM/cabaudit.php:380
+msgid "Cabinet Location"
+msgstr ""
+
+#: openDCIM/cabaudit.php:385
+#: openDCIM/cabaudit.php:454
+#: openDCIM/rackrequest.php:360
+msgid "Label"
+msgstr ""
+
+#: openDCIM/cabaudit.php:385
+msgid "SerialNo"
+msgstr ""
+
+#: openDCIM/cabaudit.php:385
+msgid "AssetTag"
+msgstr ""
+
+#: openDCIM/cabaudit.php:385
+#: openDCIM/rackrequest.php:477
+msgid "Position"
+msgstr ""
+
+#: openDCIM/cabaudit.php:385
+msgid "Rack Units"
+msgstr ""
+
+#: openDCIM/cabaudit.php:385
+msgid "#Ports"
+msgstr ""
+
+#: openDCIM/cabaudit.php:385
+msgid "PowerSupplyCount"
+msgstr ""
+
+#: openDCIM/cabaudit.php:385
+msgid "PowerConnection1"
+msgstr ""
+
+#: openDCIM/cabaudit.php:385
+msgid "PowerConnection2"
+msgstr ""
+
+#: openDCIM/cabaudit.php:448
+msgid "PDUs at"
+msgstr ""
+
+#: openDCIM/cabaudit.php:454
+msgid "NumOutputs"
+msgstr ""
+
+#: openDCIM/cabaudit.php:454
+#: openDCIM/cabinets.php:120
+#: openDCIM/device_classes.php:98
+msgid "Model"
+msgstr ""
+
+#: openDCIM/cabaudit.php:454
+msgid "PanelLabel"
+msgstr ""
+
+#: openDCIM/cabaudit.php:454
+msgid "PanelPole"
+msgstr ""
+
 #: openDCIM/cabinets.php:78
+#: openDCIM/cabnavigator.php:343
 msgid "Data Center Cabinet Inventory"
 msgstr ""
 
 #: openDCIM/cabinets.php:83
+#: openDCIM/cabnavigator.php:88
 msgid "Cabinet"
 msgstr ""
 
@@ -45,12 +120,8 @@ msgstr ""
 msgid "Cabinet Height"
 msgstr ""
 
-#: openDCIM/cabinets.php:120
-#: openDCIM/device_classes.php:98
-msgid "Model"
-msgstr ""
-
 #: openDCIM/cabinets.php:124
+#: openDCIM/cabnavigator.php:240
 msgid "Key/Lock Information"
 msgstr ""
 
@@ -114,6 +185,103 @@ msgstr ""
 #: openDCIM/timeperiods.php:98
 #: openDCIM/usermgr.php:126
 msgid "Return to Main Menu"
+msgstr ""
+
+#: openDCIM/cabnavigator.php:89
+msgid "Pos"
+msgstr ""
+
+#: openDCIM/cabnavigator.php:89
+msgid "Device"
+msgstr ""
+
+#: openDCIM/cabnavigator.php:201
+msgid "Markup Key"
+msgstr ""
+
+#: openDCIM/cabnavigator.php:202
+msgid "Owner Unassigned"
+msgstr ""
+
+#: openDCIM/cabnavigator.php:203
+msgid "Template Unassigned"
+msgstr ""
+
+#: openDCIM/cabnavigator.php:207
+msgid "Cabinet Metrics"
+msgstr ""
+
+#: openDCIM/cabnavigator.php:210
+#: openDCIM/index.php:115
+msgid "Space"
+msgstr ""
+
+#: openDCIM/cabnavigator.php:219
+#: openDCIM/device_classes.php:106
+msgid "Weight"
+msgstr ""
+
+#: openDCIM/cabnavigator.php:228
+msgid "Power"
+msgstr ""
+
+#: openDCIM/cabnavigator.php:237
+msgid "Approximate Center of Gravity"
+msgstr ""
+
+#: openDCIM/cabnavigator.php:248
+msgid "Zero-U Devices"
+msgstr ""
+
+#: openDCIM/cabnavigator.php:255
+msgid "Power Distribution"
+msgstr ""
+
+#: openDCIM/cabnavigator.php:268
+msgid "Add CDU"
+msgstr ""
+
+#: openDCIM/cabnavigator.php:273
+msgid "Last Audit"
+msgstr ""
+
+#: openDCIM/cabnavigator.php:277
+msgid "Certify Audit"
+msgstr ""
+
+#: openDCIM/cabnavigator.php:278
+msgid "Add Device"
+msgstr ""
+
+#: openDCIM/cabnavigator.php:279
+msgid "Audit Report"
+msgstr ""
+
+#: openDCIM/cabnavigator.php:280
+msgid "Map Coordinates"
+msgstr ""
+
+#: openDCIM/cabnavigator.php:281
+msgid "Edit Cabinet"
+msgstr ""
+
+#: openDCIM/cabnavigator.php:284
+msgid "Delete Cabinet"
+msgstr ""
+
+#: openDCIM/cabnavigator.php:317
+msgid ""
+"Do you certify that you have completed an audit of the selected cabinet?"
+msgstr ""
+
+#: openDCIM/cabnavigator.php:325
+msgid ""
+"Are you sure that you want to delete this cabinet, including all devices, "
+"power strips, and connections?"
+msgstr ""
+
+#: openDCIM/cabnavigator.php:325
+msgid "THIS ACTION CAN NOT BE UNDONE!"
 msgstr ""
 
 #: openDCIM/contacts.php:66
@@ -279,10 +447,6 @@ msgstr ""
 msgid "Height"
 msgstr ""
 
-#: openDCIM/device_classes.php:106
-msgid "Weight"
-msgstr ""
-
 #: openDCIM/device_classes.php:110
 msgid "Wattage"
 msgstr ""
@@ -366,10 +530,6 @@ msgstr ""
 msgid "Other Device Count"
 msgstr ""
 
-#: openDCIM/index.php:115
-msgid "Space"
-msgstr ""
-
 #: openDCIM/index.php:119
 msgid "Power Consumption"
 msgstr ""
@@ -388,6 +548,22 @@ msgstr ""
 
 #: openDCIM/manufacturers.php:66
 msgid "New Manufacturer"
+msgstr ""
+
+#: openDCIM/mapmaker.php:112
+msgid "Map Selector"
+msgstr ""
+
+#: openDCIM/mapmaker.php:116
+msgid "Coordinates"
+msgstr ""
+
+#: openDCIM/mapmaker.php:153
+msgid "Click and drag on the image to select an area for cabinet"
+msgstr ""
+
+#: openDCIM/mapmaker.php:161
+msgid "Selection Preview"
 msgstr ""
 
 #: openDCIM/panelmgr.php:75
@@ -537,10 +713,6 @@ msgstr ""
 msgid "Data Center Rack Request"
 msgstr ""
 
-#: openDCIM/rackrequest.php:360
-msgid "Label"
-msgstr ""
-
 #: openDCIM/rackrequest.php:364
 msgid "Label Color"
 msgstr ""
@@ -655,10 +827,6 @@ msgstr ""
 
 #: openDCIM/rackrequest.php:477
 msgid "Select Rack Location"
-msgstr ""
-
-#: openDCIM/rackrequest.php:477
-msgid "Position"
 msgstr ""
 
 #: openDCIM/rackrequest.php:485
