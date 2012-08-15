@@ -8,6 +8,7 @@
 
 	$facDB = mysql_connect( $dbhost, $dbuser, $dbpass );
 
+	mysql_set_charset('utf8',$facDB);
 	mysql_select_db( $dbname, $facDB );
 	
 	require_once( 'config.inc.php');

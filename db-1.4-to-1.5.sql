@@ -21,3 +21,9 @@ ALTER TABLE fac_PowerConnection ADD UNIQUE KEY (DeviceID,DeviceConnNumber);
 ALTER TABLE fac_SwitchConnection ADD UNIQUE KEY (EndpointDeviceID,EndpointPort);
 ALTER TABLE fac_SwitchConnection drop index SwitchDeviceID;
 ALTER TABLE fac_SwitchConnection ADD UNIQUE KEY (SwitchDeviceID,SwitchPortNumber);
+
+--
+-- Expansion to allow for blade chassis to track front and back slots
+--
+
+ALTER TABLE fac_Device ADD RearChassisSlots SMALLINT(6) NOT NULL AFTER ChassisSlots;

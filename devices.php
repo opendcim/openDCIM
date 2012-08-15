@@ -16,6 +16,8 @@
 		exit;
 	}
 
+
+
 	// These objects are used no matter what operation we're performing
 	$templ=new DeviceTemplate();
 	$mfg=new Manufacturer();
@@ -24,6 +26,7 @@
 	$contactList=$contact->GetContactList($facDB);
 	$Dept=new Department();
 	$pwrCords=null;
+	$chassis="";
 
 	// This page was called from somewhere so let's do stuff.
 	// If this page wasn't called then present a blank record for device creation.
@@ -54,13 +57,14 @@
 					$dev->Height=$_REQUEST['height'];
 					$dev->TemplateID=$_REQUEST['templateid'];
 					$dev->DeviceType=$_REQUEST['devicetype'];
-					$dev->ChassisSlots=$_REQUEST['chassisslots'];
 					$dev->MfgDate=date('Y-m-d',strtotime($_REQUEST['mfgdate']));
 					$dev->InstallDate=date('Y-m-d',strtotime($_REQUEST['installdate']));
 					$dev->WarrantyCo=$_REQUEST['warrantyco'];
 					$dev->WarrantyExpire=date('Y-m-d',strtotime($_REQUEST['warrantyexpire']));
 					$dev->Notes=$_REQUEST['notes'];
 					// All of the values below here are optional based on the type of device being dealt with
+					$dev->ChassisSlots=(isset($_REQUEST['chassisslots']))?$_REQUEST['chassisslots']:0;
+					$dev->RearChassisSlots=(isset($_REQUEST['rearchassisslots']))?$_REQUEST['rearchassisslots']:0;
 					$dev->Ports=(isset($_REQUEST['ports']))?$_REQUEST['ports']:"";
 					$dev->PowerSupplyCount=(isset($_REQUEST['powersupplycount']))?$_REQUEST['powersupplycount']:"";
 					$dev->ParentDevice=(isset($_REQUEST['parentdevice']))?$_REQUEST['parentdevice']:"";
@@ -91,13 +95,14 @@
 					$dev->Ports=$_REQUEST['ports'];
 					$dev->TemplateID=$_REQUEST['templateid'];
 					$dev->DeviceType=$_REQUEST['devicetype'];
-					$dev->ChassisSlots=$_REQUEST['chassisslots'];
 					$dev->MfgDate=date('Y-m-d',strtotime($_REQUEST['mfgdate']));
 					$dev->InstallDate=date('Y-m-d',strtotime($_REQUEST['installdate']));
 					$dev->WarrantyCo=$_REQUEST['warrantyco'];
 					$dev->WarrantyExpire=date('Y-m-d',strtotime($_REQUEST['warrantyexpire']));
 					$dev->Notes=$_REQUEST['notes'];
 					// All of the values below here are optional based on the type of device being dealt with
+					$dev->ChassisSlots=(isset($_REQUEST['chassisslots']))?$_REQUEST['chassisslots']:0;
+					$dev->RearChassisSlots=(isset($_REQUEST['rearchassisslots']))?$_REQUEST['rearchassisslots']:0;
 					$dev->Ports=(isset($_REQUEST['ports']))?$_REQUEST['ports']:"";
 					$dev->PowerSupplyCount=(isset($_REQUEST['powersupplycount']))?$_REQUEST['powersupplycount']:"";
 					$dev->ParentDevice=(isset($_REQUEST['parentdevice']))?$_REQUEST['parentdevice']:"";
@@ -157,6 +162,7 @@
 		
 		$cab->CabinetID=$pDev->Cabinet;
 		$cab->GetCabinet($facDB);
+		$chassis="Chassis";
 
 		// This is a child device and if the action of new is set let's assume the departmental owner, primary contact, etc are the same as the parent
 		if(isset($_REQUEST['action'])&&$_REQUEST['action']=='child'){
@@ -168,7 +174,7 @@
 	}
 	
 	$childList=array();
-	if($dev->ChassisSlots>0){
+	if($dev->ChassisSlots>0 || $dev->RearChassisSlots>0){
 		$childList=$dev->GetDeviceChildren($facDB);
 	}
 
@@ -619,11 +625,19 @@ function setPreferredLayout() {<?php if(isset($_COOKIE["layout"]) && strtolower(
 		   <div><input type="text" class="optional,validate[custom[onlyNumberSp]]" name="nominalwatts" id="nominalwatts" size=6 value="<?php echo $dev->NominalWatts; ?>"></div>
 		</div>
 <?php
-		// Blade devices don't have power supplies
+		// Blade devices don't have power supplies but they do have a front or back designation
 		if($dev->ParentDevice==0){
 			echo '		<div>
 		   <div><label for="powersupplycount">Number of Power Supplies</label></div>
 		   <div><input type="number" class="optional,validate[custom[onlyNumberSp]]" name="powersupplycount" id="powersupplycount" size=4 value="',$dev->PowerSupplyCount,'"></div>
+		</div>';
+		}else{
+			echo '		<div>
+			<div><label for="powersupplycount">Front / Back</label></div>
+			<div><select id="chassisslots" name="chassisslots">
+		   		<option value=0'.(($dev->ChassisSlots==0)?' selected':'').'>Front</option>
+				<option value=1'.(($dev->ChassisSlots==1)?' selected':'').'>Back</option>
+			</select></div>
 		</div>';
 		}
 ?>
@@ -658,8 +672,14 @@ function setPreferredLayout() {<?php if(isset($_COOKIE["layout"]) && strtolower(
 	<legend>Chassis Contents</legend>
 	<div class="table">
 		<div>
+			<div>&nbsp;</div>
+			<div>Front</div>
+			<div>Rear</div>
+		</div>
+		<div>
 			<div><label for="chassisslots">Number of Slots in Chassis:</label></div>
 			<div><input type="text" id="chassisslots" class="optional,validate[custom[onlyNumberSp]]" name="chassisslots" size="4" value="<?php print $dev->ChassisSlots; ?>"></div>
+			<div><input type="text" id="rearchassisslots" class="optional,validate[custom[onlyNumberSp]]" name="rearchassisslots" size="4" value="<?php print $dev->RearChassisSlots; ?>"></div>
 		</div>
 	</div>
 	<div class="table">
@@ -691,8 +711,6 @@ function setPreferredLayout() {<?php if(isset($_COOKIE["layout"]) && strtolower(
 	</div>
 </fieldset>
 <?php
-	}else{
-		echo '<input type="hidden" name="chassisslots" value=0>';
 	}
 	
 	// Do not display ESX block if device isn't a virtual server and the user doesn't have write access
@@ -755,7 +773,7 @@ function setPreferredLayout() {<?php if(isset($_COOKIE["layout"]) && strtolower(
 			// We have no power information. Display links to PDU's in cabinet?
 			echo '		<div>		<div><a name="power"></a></div>		<div>No power connections defined.  You can add connections from the power strip screen.</div></div><div><div>&nbsp;</div><div></div></div>';
 		}else{
-			echo "		<div>\n		  <div><a name=\"power\">Power Connections</a></div>\n		  <div><div class=\"table border\">\n			<div><div>Panel</div><div>Power Strip</div><div>Plug #</div><div>Power Supply</div></div>";
+			echo "		<div>\n		  <div><a name=\"power\">$chassis Power Connections</a></div>\n		  <div><div class=\"table border\">\n			<div><div>Panel</div><div>Power Strip</div><div>Plug #</div><div>Power Supply</div></div>";
 			foreach($pwrCords as $cord){
 				$pdu->PDUID=$cord->PDUID;
 				$pdu->GetPDU($facDB);
@@ -773,7 +791,7 @@ function setPreferredLayout() {<?php if(isset($_COOKIE["layout"]) && strtolower(
 			// We have no network information. Display links to switches in cabinet?
 			echo '		<div>		<div><a name="power"></a></div>		<div>No network connections defined.  You can add connections from a switch device.</div></div>';
 		}else{
-			echo "		<div>\n		  <div><a name=\"net\">Connections</a><br>(Managed at Switch)</div>\n		  <div><div class=\"table border\"><div><div>Device Port</div><div>Switch</div><div>Switch Port</div><div>Notes</div></div>\n";
+			echo "		<div>\n		  <div><a name=\"net\">$chassis Connections</a><br>(Managed at Switch)</div>\n		  <div><div class=\"table border\"><div><div>Device Port</div><div>Switch</div><div>Switch Port</div><div>Notes</div></div>\n";
 			$tmpDev = new Device();
 			foreach($patchList as $patchConn){
 				$tmpDev->DeviceID = $patchConn->SwitchDeviceID;

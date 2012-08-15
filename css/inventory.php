@@ -313,9 +313,12 @@ div.page.device {
 .device .table .table .table > div > div {padding: 3px;}
 .right .table + .table {margin-top: 1em;}
 
-.chassis .table + .table > div:first-child > div{font-weight:bold;padding-bottom:0.5em;}
+.chassis .table input{text-align:center;}
+.chassis .table > div > div{text-align:center;}
+.chassis .table + .table > div > div{text-align:left;}
+.chassis .table > div:first-child > div, .chassis label{font-weight:bold;padding-bottom:0.5em;}
 .chassis .table + .table > div > div{min-width:0px;padding-right:0.75em;padding-bottom:0.25em;}
-#chassisslots{text-align:center;}
+.chassis .table + .table > div > div:first-child, .chassis .table + .table > div > div:nth-child(2){text-align: center;}
 
 .positionselector {font-size: .7em; background-color: white;}
 .positionselector > div > div > div {width: 1em; height: 1em; padding-left: .5em; padding-right: .5em; text-align: right;}

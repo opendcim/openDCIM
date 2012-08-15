@@ -419,6 +419,7 @@ class Device {
 	var $PowerSupplyCount;
 	var $DeviceType;
 	var $ChassisSlots;
+	var $RearChassisSlots;
 	var $ParentDevice;
 	var $MfgDate;
 	var $InstallDate;
@@ -443,7 +444,7 @@ class Device {
 			"\", EscalationTimeID=\"" . intval( $this->EscalationTimeID ) . "\", EscalationID=\"" . intval( $this->EscalationID ) . "\", PrimaryContact=\"" . intval( $this->PrimaryContact ) . 
 			"\", Cabinet=\"" . intval($this->Cabinet) . "\", Position=\"" . intval($this->Position) . "\", Height=\"" . intval($this->Height) . "\", Ports=\"" . intval($this->Ports) . 
 			"\", TemplateID=\"" . intval($this->TemplateID) . "\", NominalWatts=\"" . intval($this->NominalWatts) . "\", PowerSupplyCount=\"" . intval($this->PowerSupplyCount) . 
-			"\", DeviceType=\"" . $this->DeviceType . "\", ChassisSlots=\"" . intval( $this->ChassisSlots) . "\", ParentDevice=\"" . intval( $this->ParentDevice) . 
+			"\", DeviceType=\"" . $this->DeviceType . "\", ChassisSlots=\"" . intval($this->ChassisSlots) . "\", RearChassisSlots=\"" . intval($this->RearChassisSlots) . "\", ParentDevice=\"" . intval( $this->ParentDevice) . 
 			"\", MfgDate=\"" . date("Y-m-d",strtotime($this->MfgDate)) . "\", InstallDate=\"" . date("Y-m-d",strtotime($this->InstallDate)) . 
 			"\", WarrantyCo=\"" . addslashes( $this->WarrantyCo ) . "\", WarrantyExpire=\"" . date( "Y-m-d",strtotime($this->WarrantyExpire)) . 
 			"\", Notes=\"" . addslashes( $this->Notes ) . "\", Reservation=\"" . intval($this->Reservation) . "\"";
@@ -510,7 +511,7 @@ class Device {
 			"\", PrimaryContact=\"" . intval( $this->PrimaryContact ) . "\", Cabinet=\"" . intval($this->Cabinet) . "\", Position=\"" . intval($this->Position) . 
 			"\", Height=\"" . intval($this->Height) . "\", Ports=\"" . intval($this->Ports) . "\", TemplateID=\"" . intval($this->TemplateID) . 
 			"\", NominalWatts=\"" . intval($this->NominalWatts) . "\", PowerSupplyCount=\"" . intval($this->PowerSupplyCount) . "\", DeviceType=\"" . $this->DeviceType . 
-			"\", ChassisSlots=\"" . intval($this->ChassisSlots) . "\", ParentDevice=\"" . intval($this->ParentDevice) .
+			"\", ChassisSlots=\"" . intval($this->ChassisSlots) . "\", RearChassisSlots=\"" . intval($this->RearChassisSlots) . "\", ParentDevice=\"" . intval($this->ParentDevice) .
 			"\", MfgDate=\"" . date("Y-m-d",strtotime($this->MfgDate)) . "\", InstallDate=\"" . date("Y-m-d",strtotime($this->InstallDate)) . 
 			"\", WarrantyCo=\"" . addslashes( $this->WarrantyCo ) . "\", WarrantyExpire=\"" . date("Y-m-d", strtotime($this->WarrantyExpire)) . 
 			"\", Notes=\"" . addslashes( $this->Notes ) . "\", Reservation=\"" . intval($this->Reservation) . "\" where DeviceID=\"" . intval($this->DeviceID) . "\"";
@@ -555,6 +556,7 @@ class Device {
 		$this->PowerSupplyCount = $devRow["PowerSupplyCount"];
 		$this->DeviceType = $devRow["DeviceType"];
 		$this->ChassisSlots = $devRow["ChassisSlots"];
+		$this->RearChassisSlots = $devRow["RearChassisSlots"];
 		$this->ParentDevice = $devRow["ParentDevice"];
 		$this->MfgDate = $devRow["MfgDate"];
 		$this->InstallDate = $devRow["InstallDate"];
@@ -567,7 +569,7 @@ class Device {
 	}
 	
 	function GetDeviceChildren( $db ) {
-		$sql = sprintf( "select * from fac_Device where ParentDevice='%d' order by Position ASC", intval( $this->DeviceID ) );
+		$sql = sprintf( "select * from fac_Device where ParentDevice='%d' order by ChassisSlots, Position ASC", intval( $this->DeviceID ) );
 		$result = mysql_query( $sql, $db );
 		
 		$childList = array();
@@ -596,6 +598,7 @@ class Device {
 			$childList[$childNum]->PowerSupplyCount = $row["PowerSupplyCount"];
 			$childList[$childNum]->DeviceType = $row["DeviceType"];
 			$childList[$childNum]->ChassisSlots = $row["ChassisSlots"];
+			$childList[$childNum]->RearChassisSlots = $row["RearChassisSlots"];
 			$childList[$childNum]->ParentDevice = $row["ParentDevice"];
 			$childList[$childNum]->MfgDate = $row["MfgDate"];
 			$childList[$childNum]->InstallDate = $row["InstallDate"];
@@ -609,7 +612,7 @@ class Device {
 	}
 	
 	function GetParentDevices( $db ) {
-		$sql = sprintf( "select * from fac_Device where ChassisSlots>0 order by Label ASC" );
+		$sql = sprintf( "select * from fac_Device where ChassisSlots>0 and ParentDevice=0 order by Label ASC" );
 		$result = mysql_query( $sql, $db );
 		
 		$parentList = array();
@@ -638,6 +641,7 @@ class Device {
 			$parentList[$parentNum]->PowerSupplyCount = $row["PowerSupplyCount"];
 			$parentList[$parentNum]->DeviceType = $row["DeviceType"];
 			$parentList[$parentNum]->ChassisSlots = $row["ChassisSlots"];
+			$parentList[$parentNum]->RearChassisSlots = $row["RearChassisSlots"];
 			$parentList[$parentNum]->ParentDevice = $row["ParentDevice"];
 			$parentList[$parentNum]->MfgDate = $row["MfgDate"];
 			$parentList[$parentNum]->InstallDate = $row["InstallDate"];
@@ -685,6 +689,7 @@ class Device {
 			$deviceList[$devID]->PowerSupplyCount = $deviceRow["PowerSupplyCount"];
 			$deviceList[$devID]->DeviceType = $deviceRow["DeviceType"];
 			$deviceList[$devID]->ChassisSlots = $deviceRow["ChassisSlots"];
+			$deviceList[$devID]->RearChassisSlots = $deviceRow["RearChassisSlots"];
 			$deviceList[$devID]->ParentDevice = $deviceRow["ParentDevice"];
 			$deviceList[$devID]->MfgDate = $deviceRow["MfgDate"];
 			$deviceList[$devID]->InstallDate = $deviceRow["InstallDate"];
@@ -739,6 +744,7 @@ class Device {
 			$deviceList[$devID]->PowerSupplyCount = $deviceRow["PowerSupplyCount"];
 			$deviceList[$devID]->DeviceType = $deviceRow["DeviceType"];
 			$deviceList[$devID]->ChassisSlots = $deviceRow["ChassisSlots"];
+			$deviceList[$devID]->RearChassisSlots = $deviceRow["RearChassisSlots"];
 			$deviceList[$devID]->ParentDevice = $deviceRow["ParentDevice"];
 			$deviceList[$devID]->MfgDate = $deviceRow["MfgDate"];
 			$deviceList[$devID]->InstallDate = $deviceRow["InstallDate"];
@@ -818,6 +824,7 @@ class Device {
 			$deviceList[$devID]->PowerSupplyCount = $deviceRow["PowerSupplyCount"];
 			$deviceList[$devID]->DeviceType = $deviceRow["DeviceType"];
 			$deviceList[$devID]->ChassisSlots = $deviceRow["ChassisSlots"];
+			$deviceList[$devID]->RearChassisSlots = $deviceRow["RearChassisSlots"];
 			$deviceList[$devID]->ParentDevice = $deviceRow["ParentDevice"];
 			$deviceList[$devID]->MfgDate = $deviceRow["MfgDate"];
 			$deviceList[$devID]->InstallDate = $deviceRow["InstallDate"];
@@ -865,6 +872,7 @@ class Device {
 			$deviceList[$devID]->PowerSupplyCount = $deviceRow["PowerSupplyCount"];
 			$deviceList[$devID]->DeviceType = $deviceRow["DeviceType"];
 			$deviceList[$devID]->ChassisSlots = $deviceRow["ChassisSlots"];
+			$deviceList[$devID]->RearChassisSlots = $deviceRow["RearChassisSlots"];
 			$deviceList[$devID]->ParentDevice = $deviceRow["ParentDevice"];
 			$deviceList[$devID]->MfgDate = $deviceRow["MfgDate"];
 			$deviceList[$devID]->InstallDate = $deviceRow["InstallDate"];
@@ -912,6 +920,7 @@ class Device {
 			$deviceList[$devID]->PowerSupplyCount = $deviceRow["PowerSupplyCount"];
 			$deviceList[$devID]->DeviceType = $deviceRow["DeviceType"];
 			$deviceList[$devID]->ChassisSlots = $deviceRow["ChassisSlots"];
+			$deviceList[$devID]->RearChassisSlots = $deviceRow["RearChassisSlots"];
 			$deviceList[$devID]->ParentDevice = $deviceRow["ParentDevice"];
 			$deviceList[$devID]->MfgDate = $deviceRow["MfgDate"];
 			$deviceList[$devID]->InstallDate = $deviceRow["InstallDate"];
@@ -959,6 +968,7 @@ class Device {
 				$deviceList[$devID]->PowerSupplyCount = $deviceRow["PowerSupplyCount"];
 				$deviceList[$devID]->DeviceType = $deviceRow["DeviceType"];
 				$deviceList[$devID]->ChassisSlots = $deviceRow["ChassisSlots"];
+				$deviceList[$devID]->RearChassisSlots = $deviceRow["RearChassisSlots"];
 				$deviceList[$devID]->ParentDevice = $deviceRow["ParentDevice"];
 				$deviceList[$devID]->MfgDate = $deviceRow["MfgDate"];
 				$deviceList[$devID]->InstallDate = $deviceRow["InstallDate"];
@@ -1006,6 +1016,7 @@ class Device {
                 $deviceList[$devID]->PowerSupplyCount = $deviceRow["PowerSupplyCount"];
                 $deviceList[$devID]->DeviceType = $deviceRow["DeviceType"];
 				$deviceList[$devID]->ChassisSlots = $deviceRow["ChassisSlots"];
+				$deviceList[$devID]->RearChassisSlots = $deviceRow["RearChassisSlots"];
 				$deviceList[$devID]->ParentDevice = $deviceRow["ParentDevice"];
             	$deviceList[$devID]->MfgDate = $deviceRow["MfgDate"];
             	$deviceList[$devID]->InstallDate = $deviceRow["InstallDate"];
