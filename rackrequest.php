@@ -290,7 +290,6 @@ print "			$('#deviceform').validationEngine({'custom_error_messages' : {
 								if(x!=0){
 									test+='.prev()';
 									eval("if($(this)"+test+".attr('class')=='notavail' || $(this)"+test+".length ==0){background='red';}");
-									eval("console.log($(this)"+test+".attr('val')+' '+$(this)"+test+".attr('class'))");
 								}else{
 									if($(this).attr('class')=='notavail'){background='red';}
 								}
@@ -301,7 +300,6 @@ print "			$('#deviceform').validationEngine({'custom_error_messages' : {
 								if(x!=0){
 									test+='.prev()';
 									eval("$(this)"+test+".css({'background-color': '"+background+"'})");
-									eval("console.log($(this)"+test+".attr('val'))");
 								}else{
 									$(this).css({'background-color': background, 'cursor': pointer});
 									if(background=='green'){
