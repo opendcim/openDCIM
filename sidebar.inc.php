@@ -82,8 +82,20 @@ echo '	<a href="reports.php"><li>',_("Reports"),'</li></a>';
 
 	print "	</ul>
 	<hr>
-	<a href=\"index.php\">Home</a>\n";
-	
+	<a href=\"index.php\">"._("Home")."</a>\n";
+
+	$lang=GetValidTranslations();
+	echo '	<div class="langselect">
+		<label for="language">Language</label>
+		<select name="language" id="language" current="'.$locale.'">';
+		foreach($lang as $cc => $translatedname){
+			// This is for later. For now just display list
+			$selected=""; //if($locale==$cc){$selected=" selected";}else{$selected="";}
+			print "\t\t\t<option value=\"$cc\"$selected>$translatedname</option>";
+		}
+	echo '		</select>
+	</div>';
+
 	$menucab = new Cabinet();
 	echo $menucab->BuildCabinetTree( $facDB );
 ?>
@@ -92,6 +104,22 @@ $("#sidebar .nav a").each(function(){
 	if($(this).attr("href")=="<?php echo basename($_SERVER['PHP_SELF']);?>"){
 		$(this).children().addClass("active");
 	}
+});
+$(document).ready(function(){
+	var top = (($("#header").height() / 2)-($(".langselect").height() / 2));
+	$(".langselect").css({"top": top+"px", "right": "40px", "z-index": "99", "left": "auto"}).appendTo("#header");
+	$("#language").change(function(){
+		$.ajax({
+			type: 'POST',
+			url: 'scripts/ajax_language.php',
+			data: 'sl='+$("#language").val(),
+			success: function(){
+				// new cookie was set. reload the page for the translation.
+				document.location.href=$(location).attr('href');
+			}
+		});
+
+	});
 });
 
 </script>

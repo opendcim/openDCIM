@@ -239,7 +239,6 @@
   <?php echo $css; ?>
   <script type="text/javascript" src="scripts/jquery.min.js"></script>
   <script type="text/javascript" src="scripts/jquery-ui-1.8.18.custom.min.js"></script>
-  <script type="text/javascript" src="scripts/jquery.timepicker.js"></script>
   <script type="text/javascript" src="scripts/jquery.validationEngine-en.js"></script>
   <script type="text/javascript" src="scripts/jquery.validationEngine.js"></script>
 
@@ -525,7 +524,7 @@ function setPreferredLayout() {<?php if(isset($_COOKIE["layout"]) && strtolower(
 					<option value="">Select...</option>
 <?php
 				foreach($escList as $esc){
-					if($esc->EscalationID==$dev->EscalationID){$selected="selected";}else{$selected="";}
+					if($esc->EscalationID==$dev->EscalationID){$selected=" selected";}else{$selected="";}
 					print "\t\t\t\t\t<option value=\"$esc->EscalationID\"$selected>$esc->Details</option>\n";
 				}
 ?>

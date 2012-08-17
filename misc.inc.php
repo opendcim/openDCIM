@@ -140,6 +140,25 @@ if(isset($locale)){
 	textdomain("openDCIM");
 }
 
+function GetValidTranslations() {
+	$path='./locale';
+	$dir=scandir($path);
+	$lang=array();
+	global $locale;
+
+	foreach($dir as $i => $d){
+		// get list of directories in locale that aren't . or ..
+		if(is_dir($path.DIRECTORY_SEPARATOR.$d) && $d!=".." && $d!="."){
+			// check the list of valid directories above to see if there is an openDCIM translation file present
+			if(file_exists($path.DIRECTORY_SEPARATOR.$d.DIRECTORY_SEPARATOR."LC_MESSAGES".DIRECTORY_SEPARATOR."openDCIM.mo")){
+				// build array of valid language choices
+				$lang[$d]=$d;
+			}
+		}
+	}
+	return $lang;
+}
+
 /*
 	Check if we are doing a new install or an upgrade has been applied.  
 	If found then force the user into only running that function.

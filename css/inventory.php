@@ -134,6 +134,8 @@ div#dcstats .table + .table > div > div + div{white-space: pre; text-align: righ
 #sidebar div.text-core textarea{ width: 151px; height: 27px;}
 .text-core { display: inline-block; }
 
+.langselect { position: absolute; left: -1000px; }
+
 /* Mapmaker */
 .mapmaker > div{width: 77%;display: inline-block;vertical-align: middle;}
 .mapmaker > div + div {width: 19%;}
