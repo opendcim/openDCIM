@@ -220,6 +220,7 @@ div.center div td:first-child, .panelmgr .polenumber {padding: 0.25em 0.5em;text
 	vertical-align: middle;
 }
 .polelabel a {display: block;margin-bottom: 0.35em;}
+.polelabel a span {display: block;margin-left: 1.5em;}
 td#oddeven {padding: 0px;text-align: left;width: 150px;}
 .caption h3 {margin-bottom: 0px;font-size: 1.25em;}
 #powerinfo {margin-top: 0em;}

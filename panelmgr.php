@@ -183,7 +183,7 @@ echo '</select></div>
 							$cab->CabinetID=$pduvar->CabinetID;
 							$cab->GetCabinet( $facDB );
 							
-							$pn.="<a href=\"pduinfo.php?pduid=$pduvar->PDUID\">" . $cab->Location . " / " . $pduvar->Label . "</a>";
+							$pn.="<a href=\"pduinfo.php?pduid=$pduvar->PDUID\">$cab->Location<span>$pduvar->Label</span></a>";
 							switch($pduvar->BreakerSize){
 								case '3': $odd=3; break;
 								case '2': $odd=2; break;
@@ -224,7 +224,7 @@ echo '</select></div>
 							$cab->CabinetID=$pduvar->CabinetID;
 							$cab->GetCabinet( $facDB );
 							
-							$pn.="<a href=\"pduinfo.php?pduid=$pduvar->PDUID\">" . $cab->Location . " / " . $pduvar->Label . "</a>";
+							$pn.="<a href=\"pduinfo.php?pduid=$pduvar->PDUID\">$cab->Location<span>$pduvar->Label</span></a>";
 							switch($pduvar->BreakerSize){
 								case '3': $odd=3; break;
 								case '2': $odd=2; break;
@@ -260,7 +260,7 @@ echo '</select></div>
 							$cab->CabinetID=$pduvar->CabinetID;
 							$cab->GetCabinet( $facDB );
 							
-							$pn.="<a href=\"pduinfo.php?pduid=".$pduvar->PDUID."\">".$cab->Location." / ".$pduvar->Label."</a>";
+							$pn.="<a href=\"pduinfo.php?pduid=".$pduvar->PDUID."\">$cab->Location<span>$pduvar->Label</span></a>";
 							switch($pduvar->BreakerSize){
 								case '3': $even=3; break;
 								case '2': $even=2; break;

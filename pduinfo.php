@@ -85,41 +85,18 @@
   <link rel="stylesheet"  href="css/ie.css" type="text/css">
   <![endif]-->
 
-<script type="text/javascript"> 
-function updateVoltage(formname) {
-	var sel=formname.elements['panelid'];
-
-	var xmlhttp;
-	var panel;
-	var HighVoltage;
-
-	if (window.XMLHttpRequest) {
-		// code for IE7+, Firefox, Chrome, Opera, Safari
-		xmlhttp=new XMLHttpRequest();
-	} else {
-		// code for IE6, IE5
-		xmlhttp=new ActiveXObject("Microsoft.XMLHTTP");
-	}
-
-	xmlhttp.onreadystatechange=function() {
-		if (xmlhttp.readyState==4 && xmlhttp.status==200) {
-			panel=eval("("+xmlhttp.responseText+")");
-
-			HighVoltage=panel.PanelVoltage;
-			var LowVoltage=Math.floor( HighVoltage/1.73 );
-			
-			var labelDiv = document.getElementById('voltage');
-			labelDiv.innerHTML = HighVoltage+" / "+LowVoltage;
-		}
-	}
-
-	xmlhttp.open("GET","scripts/ajax_panel.php?q="+sel.options[sel.selectedIndex].value,true);
-	xmlhttp.send();
-
-}
-</script>
-  
   <script type="text/javascript" src="scripts/jquery.min.js"></script>
+  <script type="text/javascript">
+
+	$(document).ready(function() {
+		$('#panelid').change( function(){
+			$.get('scripts/ajax_panel.php?q='+$(this).val(), function(data) {
+				$('#voltage').html(data['PanelVoltage'] +'/'+ Math.floor(data['PanelVoltage']/1.73));
+			});
+		});
+	});
+  </script>
+
 
 </head>
 <body>
@@ -180,7 +157,7 @@ function updateVoltage(formname) {
 </div>
 <div>
    <div><label for="panelid">Source Panel</label></div>
-   <div><select name="panelid" id="panelid" onchange="updateVoltage(pduform);"><option value=0>Select Panel</option>
+   <div><select name="panelid" id="panelid" ><option value=0>Select Panel</option>
 <?php
 foreach($PanelList as $key=>$value){
 	echo "<option value=\"$value->PanelID\"";

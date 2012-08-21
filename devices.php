@@ -259,19 +259,19 @@ function swaplayout(){
 	sheet.type = 'text/css';
 	if (sheet.styleSheet) { // IE
 		sheet.styleSheet.cssText = ".device div.left { display: block; }";
-		document.getElementById('layout').innerHTML = "Landscape";
+<?php echo '		document.getElementById(\'layout\').innerHTML = "',_("Landscape"),'";
 	} else {
 		sheet.innerHTML = ".device div.left { display: block; }";
-		document.getElementById('layout').innerHTML = "Landscape";
+		document.getElementById(\'layout\').innerHTML = "',_("Landscape"),'";'; ?>
 	}
 	var s = document.getElementsByTagName('style')[0];
 	if (s.innerHTML == sheet.innerHTML){
 		if (sheet.styleSheet){ //IE
 			document.getElementsByTagName('style')[0].styleSheet.cssText = "";
-			document.getElementById('layout').innerHTML = "Portrait";
+<?php echo '			document.getElementById(\'layout\').innerHTML = "',_("Portrait"),'";
 		}else{
-			document.getElementsByTagName('style')[0].innerHTML = "";
-			document.getElementById('layout').innerHTML = "Portrait";
+			document.getElementsByTagName(\'style\')[0].innerHTML = "";
+			document.getElementById(\'layout\').innerHTML = "',_("Portrait"),'";'; ?>
 		}
 		setCookie("layout","Landscape");
 	}else{
@@ -287,10 +287,10 @@ $(document).ready(function() {
 	(function(a){jQuery.browser.mobile=/android.+mobile|avantgo|bada\/|blackberry|blazer|compal|elaine|fennec|hiptop|iemobile|ip(hone|od)|iris|kindle|lge |maemo|midp|mmp|netfront|opera m(ob|in)i|palm( os)?|phone|p(ixi|re)\/|plucker|pocket|psp|symbian|treo|up\.(browser|link)|vodafone|wap|windows (ce|phone)|xda|xiino/i.test(a)||/1207|6310|6590|3gso|4thp|50[1-6]i|770s|802s|a wa|abac|ac(er|oo|s\-)|ai(ko|rn)|al(av|ca|co)|amoi|an(ex|ny|yw)|aptu|ar(ch|go)|as(te|us)|attw|au(di|\-m|r |s )|avan|be(ck|ll|nq)|bi(lb|rd)|bl(ac|az)|br(e|v)w|bumb|bw\-(n|u)|c55\/|capi|ccwa|cdm\-|cell|chtm|cldc|cmd\-|co(mp|nd)|craw|da(it|ll|ng)|dbte|dc\-s|devi|dica|dmob|do(c|p)o|ds(12|\-d)|el(49|ai)|em(l2|ul)|er(ic|k0)|esl8|ez([4-7]0|os|wa|ze)|fetc|fly(\-|_)|g1 u|g560|gene|gf\-5|g\-mo|go(\.w|od)|gr(ad|un)|haie|hcit|hd\-(m|p|t)|hei\-|hi(pt|ta)|hp( i|ip)|hs\-c|ht(c(\-| |_|a|g|p|s|t)|tp)|hu(aw|tc)|i\-(20|go|ma)|i230|iac( |\-|\/)|ibro|idea|ig01|ikom|im1k|inno|ipaq|iris|ja(t|v)a|jbro|jemu|jigs|kddi|keji|kgt( |\/)|klon|kpt |kwc\-|kyo(c|k)|le(no|xi)|lg( g|\/(k|l|u)|50|54|e\-|e\/|\-[a-w])|libw|lynx|m1\-w|m3ga|m50\/|ma(te|ui|xo)|mc(01|21|ca)|m\-cr|me(di|rc|ri)|mi(o8|oa|ts)|mmef|mo(01|02|bi|de|do|t(\-| |o|v)|zz)|mt(50|p1|v )|mwbp|mywa|n10[0-2]|n20[2-3]|n30(0|2)|n50(0|2|5)|n7(0(0|1)|10)|ne((c|m)\-|on|tf|wf|wg|wt)|nok(6|i)|nzph|o2im|op(ti|wv)|oran|owg1|p800|pan(a|d|t)|pdxg|pg(13|\-([1-8]|c))|phil|pire|pl(ay|uc)|pn\-2|po(ck|rt|se)|prox|psio|pt\-g|qa\-a|qc(07|12|21|32|60|\-[2-7]|i\-)|qtek|r380|r600|raks|rim9|ro(ve|zo)|s55\/|sa(ge|ma|mm|ms|ny|va)|sc(01|h\-|oo|p\-)|sdk\/|se(c(\-|0|1)|47|mc|nd|ri)|sgh\-|shar|sie(\-|m)|sk\-0|sl(45|id)|sm(al|ar|b3|it|t5)|so(ft|ny)|sp(01|h\-|v\-|v )|sy(01|mb)|t2(18|50)|t6(00|10|18)|ta(gt|lk)|tcl\-|tdg\-|tel(i|m)|tim\-|t\-mo|to(pl|sh)|ts(70|m\-|m3|m5)|tx\-9|up(\.b|g1|si)|utst|v400|v750|veri|vi(rg|te)|vk(40|5[0-3]|\-v)|vm40|voda|vulc|vx(52|53|60|61|70|80|81|83|85|98)|w3c(\-| )|webc|whit|wi(g |nc|nw)|wmlb|wonu|x700|xda(\-|2|g)|yas\-|your|zeto|zte\-/i.test(a.substr(0,4))})(navigator.userAgent||navigator.vendor||window.opera);
 	if(jQuery.browser.mobile){
 		$('.left > fieldset ~ .table').each(function(){
-			$(this).before($('<h3><a href="#">Notes</a></h3>'));
+<?php print "			$(this).before($('<h3><a href=\"#\">"._('Notes')."</a></h3>'));"; ?>
 		});
 		$('.right').contents().appendTo($('.left'));
-		$('.left').append('<h3><a href="#">Network & Power</a></h3>');
+<?php print "		$('.left').append('<h3><a href=\"#\">"._('Network & Power')."</a></h3>');"; ?>
 		$('.right').next('div.table').appendTo($('.left'));
 		$('.left legend').each(function(){
 			$(this).parent('fieldset').before($('<h3><a href="#">'+$(this).text()+'</a></h3>'));
@@ -344,7 +344,7 @@ $(document).ready(function() {
 	if($dev->ParentDevice>0){
 ?>
 	$('select[name=devicetype]').change(function(){
-		var dphtml='<div id="dphtml"><div><label for="ports">Number of Data Ports</label></div><div><input class="optional,validate[custom[onlyNumberSp]]" name="ports" id="ports" size="4" value="" type="number"></div></div>';
+<?php echo '		var dphtml=\'<div id="dphtml"><div><label for="ports">',_("Number of Data Ports"),'</label></div><div><input class="optional,validate[custom[onlyNumberSp]]" name="ports" id="ports" size="4" value="" type="number"></div></div>\';'; ?>
 		if($(this).val()=='Switch' && $('#dphtml').length==0){
 			$('#nominalwatts').parent().parent().before(dphtml);
 		}else{
@@ -437,144 +437,143 @@ function setPreferredLayout() {<?php if(isset($_COOKIE["layout"]) && strtolower(
 <div class="page device">
 <?php
 	include( 'sidebar.inc.php' );
-?>
-<div class="main">
-<button id="layout" onClick="swaplayout()">Portrait</button>
-<h2><?php echo $config->ParameterArray['OrgName']; ?></h2>
-<h3>Data Center Device Detail</h3>
+
+echo '<div class="main">
+<button id="layout" onClick="swaplayout()">'._("Portrait").'</button>
+<h2>'.$config->ParameterArray['OrgName'].'</h2>
+<h3>'._("Data Center Device Detail").'</h3>
 <div class="center"><div>
 <div id="positionselector"></div>
-<form name="deviceform" id="deviceform" action="<?php echo $_SERVER['PHP_SELF']; if(isset($dev->DeviceID) && $dev->DeviceID>0){print "?deviceid=$dev->DeviceID";} ?>" method="POST">
+<form name="deviceform" id="deviceform" action="'.$_SERVER['PHP_SELF'].((isset($dev->DeviceID) && $dev->DeviceID>0)?"?deviceid=$dev->DeviceID":"").'" method="POST">
 <div class="left">
 <fieldset>
-	<legend>Asset Tracking</legend>
+	<legend>'._("Asset Tracking").'</legend>
 	<div class="table">
 		<div>
-		   <div>Device ID</div>
-		   <div><input type="text" name="deviceid" id="deviceid" value="<?php echo $dev->DeviceID; ?>" size="6" readonly></div>
+		   <div>'._("Device ID").'</div>
+		   <div><input type="text" name="deviceid" id="deviceid" value="'.$dev->DeviceID.'" size="6" readonly></div>
 		</div>
 		<div>
-			<div><label for="reservation">Reservation?</label></div>
-			<div><input type="checkbox" name="reservation" id="reservation"<?php if($dev->Reservation){echo " checked";}?>></div>
+			<div><label for="reservation">'._("Reservation?").'</label></div>
+			<div><input type="checkbox" name="reservation" id="reservation"'.(($dev->Reservation)?" checked":"").'></div>
 		</div>
 		<div>
-		   <div><label for="label">Label</label></div>
-		   <div><input type="text" class="validate[required,minSize[3],maxSize[50]]" name="label" id="label" size="40" value="<?php echo $dev->Label; ?>"></div>
+		   <div><label for="label">'._("Label").'</label></div>
+		   <div><input type="text" class="validate[required,minSize[3],maxSize[50]]" name="label" id="label" size="40" value="'.$dev->Label.'"></div>
 		</div>
 		<div>
-		   <div><label for="serialno">Serial Number</label></div>
-		   <div><input type="text" name="serialno" id="serialno" size="40" value="<?php echo $dev->SerialNo; ?>"></div>
+		   <div><label for="serialno">'._("Serial Number").'</label></div>
+		   <div><input type="text" name="serialno" id="serialno" size="40" value="'.$dev->SerialNo.'"></div>
 		</div>
 		<div>
-		   <div><label for="assettag">Asset Tag</label></div>
-		   <div><input type="text" name="assettag" id="assettag" size="20" value="<?php echo $dev->AssetTag; ?>"></div>
+		   <div><label for="assettag">'._("Asset Tag").'</label></div>
+		   <div><input type="text" name="assettag" id="assettag" size="20" value="'.$dev->AssetTag.'"></div>
 		</div>
 		<div>
-		   <div><label for="mfgdate">Manufacture Date</label></div>
-		   <div><input type="text" class="validate[optional,custom[date]] datepicker" name="mfgdate" id="mfgdate" value="<?php if ( $dev->MfgDate > '0000-00-00 00:00:00' ) echo date( 'm/d/Y', strtotime( $dev->MfgDate ) ); ?>">
+		   <div><label for="mfgdate">'._("Manufacture Date").'</label></div>
+		   <div><input type="text" class="validate[optional,custom[date]] datepicker" name="mfgdate" id="mfgdate" value="'.(($dev->MfgDate>'0000-00-00 00:00:00')?date('m/d/Y',strtotime($dev->MfgDate)):"").'">
 		   </div>
 		</div>
 		<div>
-		   <div><label for="installdate">Install Date</label></div>
-		   <div><input type="text" class="validate[required,custom[date]] datepicker" name="installdate" id="installdate" value="<?php if ( $dev->InstallDate > '0000-00-00 00:00:00' ) echo date( 'm/d/Y', strtotime( $dev->InstallDate ) ); ?>"></div>
+		   <div><label for="installdate">'._("Install Date").'</label></div>
+		   <div><input type="text" class="validate[required,custom[date]] datepicker" name="installdate" id="installdate" value="'.(($dev->InstallDate>'0000-00-00 00:00:00')?date('m/d/Y',strtotime($dev->InstallDate)):"").'"></div>
 		</div>
 		<div>
-		   <div><label for="warrantyco">Warranty Company</label></div>
-		   <div><input type="text" name="warrantyco" id="warrantyco" value="<?php printf( "%s", $dev->WarrantyCo ); ?>"></div>
+		   <div><label for="warrantyco">'._("Warranty Company").'</label></div>
+		   <div><input type="text" name="warrantyco" id="warrantyco" value="'.$dev->WarrantyCo.'"></div>
 		</div>
 		<div>
-		   <div><label for="installdate">Warranty Expiration</label></div>
-		   <div><input type="text" class="validate[custom[date]] datepicker" name="warrantyexpire" id="warrantyexpire" value="<?php printf( "%s", date( 'm/d/Y', strtotime( $dev->WarrantyExpire ))); ?>"></div>
+		   <div><label for="installdate">'._("Warranty Expiration").'</label></div>
+		   <div><input type="text" class="validate[custom[date]] datepicker" name="warrantyexpire" id="warrantyexpire" value="'.date('m/d/Y',strtotime($dev->WarrantyExpire)).'"></div>
 		</div>		
 		<div>
-		   <div><label for="owner">Departmental Owner</label></div>
+		   <div><label for="owner">'._("Departmental Owner").'</label></div>
 		   <div>
 			<select name="owner" id="owner">
-				<option value=0>Unassigned</option>
-<?php
+				<option value=0>'._("Unassigned").'</option>';
+
 			foreach($deptList as $deptRow){
 				if($dev->Owner==$deptRow->DeptID){$selected=" selected";}else{$selected="";}
 				print "\t\t\t\t<option value=\"$deptRow->DeptID\"$selected>$deptRow->Name</option>\n";
 			}
-?>
-			</select>
-			<button type="button">Show Contacts</button>
+
+echo '			</select>
+			<button type="button">',_("Show Contacts"),'</button>
 		   </div>
 		</div>
 		<div>
 		   <div>&nbsp;</div>
 		   <div><fieldset>
-		   <legend>Escalation Information</legend>
+		   <legend>',_("Escalation Information"),'</legend>
 		   <div class="table">
 			<div>
-				<div><label for="escaltationtimeid">Time Period</label></div>
+				<div><label for="escaltationtimeid">',_("Time Period"),'</label></div>
 				<div><select name="escalationtimeid" id="escalationtimeid">
-					<option value="">Select...</option>
-<?php
+					<option value="">',_("Select..."),'</option>';
+
 				foreach($escTimeList as $escTime){
 					if($escTime->EscalationTimeID==$dev->EscalationTimeID){$selected=" selected";}else{$selected="";}
 					print "\t\t\t\t\t<option value=\"$escTime->EscalationTimeID\"$selected>$escTime->TimePeriod</option>\n";
 				}
-?>
-				</select></div>
+
+echo '				</select></div>
 			</div>
 			<div>
-				<div><label for="escalationid">Details</label></div>
+				<div><label for="escalationid">',_("Details"),'</label></div>
 				<div><select name="escalationid" id="escalationid">
-					<option value="">Select...</option>
-<?php
+					<option value="">',_("Select..."),'</option>';
+
 				foreach($escList as $esc){
 					if($esc->EscalationID==$dev->EscalationID){$selected=" selected";}else{$selected="";}
 					print "\t\t\t\t\t<option value=\"$esc->EscalationID\"$selected>$esc->Details</option>\n";
 				}
-?>
-				</select></div>
+
+echo '				</select></div>
 			</div>
 		   </div> <!-- END div.table -->
 		   </fieldset></div>
 		</div>
 		<div>
-		   <div><label for="primarycontact">Primary Contact</label></div>
+		   <div><label for="primarycontact">',_("Primary Contact"),'</label></div>
 		   <div><select name="primarycontact" id="primarycontact">
-				<option value=0>Unassigned</option>
-<?php
+				<option value=0>',_("Unassigned"),'</option>';
+
 			foreach($contactList as $contactRow){
-				if($contactRow->ContactID==$dev->PrimaryContact){$contactUserID=$contactRow->UserID;$selected="selected";}else{$selected="";}
+				if($contactRow->ContactID==$dev->PrimaryContact){$contactUserID=$contactRow->UserID;$selected=" selected";}else{$selected="";}
 				print "\t\t\t\t<option value=\"$contactRow->ContactID\"$selected>$contactRow->LastName, $contactRow->FirstName</option>\n";
 			}
 			
 			print "\t\t\t</select>\n";
 
 			if(isset($config->ParameterArray['UserLookupURL']) && isValidURL($config->ParameterArray['UserLookupURL']) && isset($contactUserID)){
-				print "<input type=\"button\" value=\"Contact Lookup\" onclick=\"window.open( '".$config->ParameterArray["UserLookupURL"]."$contactUserID', 'UserLookup')\">\n";
+				print "<button type=\"button\" onclick=\"window.open( '".$config->ParameterArray["UserLookupURL"]."$contactUserID', 'UserLookup')\">"._('Contact Lookup')."</button>\n";
 			}
-?>
-		   </div>
+
+echo '		   </div>
 		</div>	
 	</div> <!-- END div.table -->
 </fieldset>	
 	<div class="table">
 		<div>
-		  <div><label for="notes">Notes</label></div>
-		  <div><textarea name="notes" id="notes" cols="40" rows="8"><?php echo $dev->Notes; ?></textarea></div>
+		  <div><label for="notes">',_("Notes"),'</label></div>
+		  <div><textarea name="notes" id="notes" cols="40" rows="8">',$dev->Notes,'</textarea></div>
 		</div>
 	</div> <!-- END div.table -->
 </div><!-- END div.left -->
 <div class="right">
 <fieldset>
-	<legend>Physical Infrastructure</legend>
+	<legend>',_("Physical Infrastructure"),'</legend>
 	<div class="table">
 		<div>
-			<div><label for="cabinet">Cabinet</label></div>
+			<div><label for="cabinet">',_("Cabinet"),'</label></div>';
 
-<?php
 	if($dev->ParentDevice==0){
 		print "\t\t\t<div>".$cab->GetCabinetSelectList($facDB)."</div>\n";
 		}else{
 			print "\t\t\t<div>$cab->Location<input type=\"hidden\" name=\"cabinetid\" value=\"0\"></div>
 		</div>
 		<div>
-			<div><label for=\"parentdevice\">Parent Device</label></div>
+			<div><label for=\"parentdevice\">"._('Parent Device')."</label></div>
 			<div><select name=\"parentdevice\">\n";
 			
 			foreach($parentList as $parDev){
@@ -583,76 +582,85 @@ function setPreferredLayout() {<?php if(isset($_COOKIE["layout"]) && strtolower(
 			}
 			print "\t\t\t</select></div>\n";
 		}
-?>
-		</div>
+
+echo '		</div>
 		<div>
-			<div><label for="templateid">Device Class</label></div>
+			<div><label for="templateid">',_("Device Class"),'</label></div>
 			<div><select name="templateid" id="templateid">
-				<option value=0>Select a template...</option>
-<?php
+				<option value=0>',_("Select a template..."),'</option>';
+
 			foreach($templateList as $tempRow){
 				if($dev->TemplateID==$tempRow->TemplateID){$selected=" selected";}else{$selected="";}
 				$mfg->ManufacturerID=$tempRow->ManufacturerID;
 				$mfg->GetManufacturerByID($facDB);
 				print "\t\t\t\t<option value=\"$tempRow->TemplateID\"$selected>$mfg->Name - $tempRow->Model</option>\n";
 			}
-?>
-			</select>
+
+echo '			</select>
 			</div>
 		</div>
 		<div>
-		   <div><label for="position">Position</label></div>
-		   <div><input type="number" class="required,validate[custom[onlyNumberSp],min[1]]" name="position" id="position" size="4" value="<?php echo $dev->Position; ?>"></div>
+		   <div><label for="position">',_("Position"),'</label></div>
+		   <div><input type="number" class="required,validate[custom[onlyNumberSp],min[1]]" name="position" id="position" size="4" value="',$dev->Position,'"></div>
 		</div>
 		<div>
-		   <div><label for="height">Height</label></div>
-		   <div><input type="number" class="required,validate[custom[onlyNumberSp]]" name="height" id="height" size="4" value="<?php echo $dev->Height; ?>"></div>
-		</div>
-<?php
+		   <div><label for="height">',_("Height"),'</label></div>
+		   <div><input type="number" class="required,validate[custom[onlyNumberSp]]" name="height" id="height" size="4" value="',$dev->Height,'"></div>
+		</div>';
+
 		// Blade devices don't have data ports unless they're a switch
 		if($dev->ParentDevice==0||($dev->ParentDevice>0&&$dev->DeviceType=='Switch')){
 			echo '		<div id="dphtml">
-		   <div><label for="ports">Number of Data Ports</label></div>
+		   <div><label for="ports">',_("Number of Data Ports"),'</label></div>
 		   <div><input type="number" class="optional,validate[custom[onlyNumberSp]]" name="ports" id="ports" size="4" value="',$dev->Ports,'"></div>
 		</div>';
 		}
-?>
-		<div>
-		   <div><label for="nominalwatts">Nominal Draw (Watts)</label></div>
-		   <div><input type="text" class="optional,validate[custom[onlyNumberSp]]" name="nominalwatts" id="nominalwatts" size=6 value="<?php echo $dev->NominalWatts; ?>"></div>
-		</div>
-<?php
+
+echo '		<div>
+		   <div><label for="nominalwatts">',_("Nominal Draw (Watts)"),'</label></div>
+		   <div><input type="text" class="optional,validate[custom[onlyNumberSp]]" name="nominalwatts" id="nominalwatts" size=6 value="',$dev->NominalWatts,'"></div>
+		</div>';
+
 		// Blade devices don't have power supplies but they do have a front or back designation
 		if($dev->ParentDevice==0){
 			echo '		<div>
-		   <div><label for="powersupplycount">Number of Power Supplies</label></div>
+		   <div><label for="powersupplycount">',_("Number of Power Supplies"),'</label></div>
 		   <div><input type="number" class="optional,validate[custom[onlyNumberSp]]" name="powersupplycount" id="powersupplycount" size=4 value="',$dev->PowerSupplyCount,'"></div>
 		</div>';
 		}else{
 			echo '		<div>
-			<div><label for="powersupplycount">Front / Back</label></div>
+			<div><label for="powersupplycount">',_("Front / Back"),'</label></div>
 			<div><select id="chassisslots" name="chassisslots">
-		   		<option value=0'.(($dev->ChassisSlots==0)?' selected':'').'>Front</option>
-				<option value=1'.(($dev->ChassisSlots==1)?' selected':'').'>Back</option>
+		   		<option value=0'.(($dev->ChassisSlots==0)?' selected':'').'>',_("Front"),'</option>
+				<option value=1'.(($dev->ChassisSlots==1)?' selected':'').'>',_("Back"),'</option>
 			</select></div>
 		</div>';
 		}
-?>
-		<div>
-		   <div>Device Type</div>
+
+echo '		<div>
+		   <div>',_("Device Type"),'</div>
 		   <div><select name="devicetype">
-			<option value=0>Select...</option>
-<?php
+			<option value=0>',_("Select..."),'</option>';
+
 		// We don't want someone accidentally adding a chassis device inside of a chassis slot.
 		if($dev->ParentDevice>0){
-			$devarray=array('Server','Appliance','Storage Array','Switch');
+			$devarray=array('Server' => _("Server"),
+							'Appliance' => _("Appliance"),
+							'Storage Array' => _("Storage Array"),
+							'Switch' => _("Switch"));
 		}else{
-			$devarray=array('Server','Appliance','Storage Array','Switch','Chassis','Patch Panel','Physical Infrastructure');
+			$devarray=array('Server' => _("Server"),
+							'Appliance' => _("Appliance"),
+							'Storage Array' => _("Storage Array"),
+							'Switch' => _("Switch"),
+							'Chassis' => _("Chassis"),
+							'Patch Panel' => _("Patch Panel"),
+							'Physical Infrastructure' => _("Physical Infrastructure"));
 		}
 
-		foreach($devarray as $devType){
+		foreach($devarray as $devType => $translation){
 			if($devType==$dev->DeviceType){$selected=" selected";}else{$selected="";}
-			print "\t\t\t<option value=\"$devType\"$selected>$devType</option>\n";  
+			print "\t\t\t<option value=\"$devType\"$selected>$translation</option>\n";  
 		}
 ?>
 		   </select></div>
@@ -664,29 +672,29 @@ function setPreferredLayout() {<?php if(isset($_COOKIE["layout"]) && strtolower(
 	// Do not display the chassis contents block if this is a child device (ParentDevice > 0)
 	//
 	if($dev->DeviceType=='Chassis'){
-?>
-<fieldset class="chassis">
-	<legend>Chassis Contents</legend>
+
+echo '<fieldset class="chassis">
+	<legend>',_("Chassis Contents"),'</legend>
 	<div class="table">
 		<div>
 			<div>&nbsp;</div>
-			<div>Front</div>
-			<div>Rear</div>
+			<div>',_("Front"),'</div>
+			<div>',_("Rear"),'</div>
 		</div>
 		<div>
-			<div><label for="chassisslots">Number of Slots in Chassis:</label></div>
-			<div><input type="text" id="chassisslots" class="optional,validate[custom[onlyNumberSp]]" name="chassisslots" size="4" value="<?php print $dev->ChassisSlots; ?>"></div>
-			<div><input type="text" id="rearchassisslots" class="optional,validate[custom[onlyNumberSp]]" name="rearchassisslots" size="4" value="<?php print $dev->RearChassisSlots; ?>"></div>
+			<div><label for="chassisslots">',_("Number of Slots in Chassis:"),'</label></div>
+			<div><input type="text" id="chassisslots" class="optional,validate[custom[onlyNumberSp]]" name="chassisslots" size="4" value="',$dev->ChassisSlots,'"></div>
+			<div><input type="text" id="rearchassisslots" class="optional,validate[custom[onlyNumberSp]]" name="rearchassisslots" size="4" value="',$dev->RearChassisSlots,'"></div>
 		</div>
 	</div>
 	<div class="table">
 		<div>
-			<div>Slot #</div>
-			<div>Height</div>
-			<div>Device Name</div>
-			<div>Device Type</div>
-		</div>
-<?php
+			<div>',_("Slot #"),'</div>
+			<div>',_("Height"),'</div>
+			<div>',_("Device Name"),'</div>
+			<div>',_("Device Type"),'</div>
+		</div>';
+
 	foreach($childList as $chDev){
 		print "\t\t<div>
 			<div>$chDev->Position</div>
@@ -697,12 +705,11 @@ function setPreferredLayout() {<?php if(isset($_COOKIE["layout"]) && strtolower(
 	}
 	
 	if($dev->ChassisSlots >0){
-?>
-		<div class="caption">
-			<button type="submit" id="adddevice" value="child" name="action">Add Device</button>
-			<input type="hidden" id="parentdevice" name="parentdevice" disabled value="<?php print $dev->DeviceID; ?>">
-		</div>
-<?php
+
+echo '		<div class="caption">
+			<button type="submit" id="adddevice" value="child" name="action">',_("Add Device"),'</button>
+			<input type="hidden" id="parentdevice" name="parentdevice" disabled value="',$dev->DeviceID,'">
+		</div>';
 	}
 ?>
 	</div>
@@ -711,34 +718,33 @@ function setPreferredLayout() {<?php if(isset($_COOKIE["layout"]) && strtolower(
 	}
 	
 	// Do not display ESX block if device isn't a virtual server and the user doesn't have write access
-//	if($user->WriteAccess || $dev->ESX){
 	if(($user->WriteAccess || $dev->ESX) && ($dev->DeviceType=="Server" || $dev->DeviceType=="")){
-		echo "<fieldset>\n	<legend>VMWare ESX Server Information</legend>";
+		echo '<fieldset>\n	<legend>',_("VMWare ESX Server Information"),'</legend>';
 	// If the user doesn't have write access display the list of VMs but not the configuration information.
 		if($user->WriteAccess){
-?>
-	<div class="table">
+
+echo '	<div class="table">
 		<div>
-		   <div><label for="esx">ESX Server?</label></div>
-		   <div><select name="esx" id="esx"><option value="1"<?php if($dev->ESX==1){echo' selected="selected"';}?>>True</option><option value="0" <?php if($dev->ESX==0){echo' selected="selected"';}?>>False</option></select></div>
+		   <div><label for="esx">'._("ESX Server?").'</label></div>
+		   <div><select name="esx" id="esx"><option value="1"'.(($dev->ESX==1)?" selected":"").'>'._("True").'</option><option value="0"'.(($dev->ESX==0)?" selected":"").'>'._("False").'</option></select></div>
 		</div>
 		<div>
-		  <div><label for="primaryip">Primary IP</label></div>
-		  <div><input type="text" name="primaryip" id="primaryip" size="20" value="<?php echo $dev->PrimaryIP; ?>"></div>
+		  <div><label for="primaryip">'._("Primary IP").'</label></div>
+		  <div><input type="text" name="primaryip" id="primaryip" size="20" value="'.$dev->PrimaryIP.'"></div>
 		</div>
 		<div>
-		  <div><label for="snmpcommunity">SNMP Read Only Community</label></div>
-		  <div><input type="text" name="snmpcommunity" id="snmpcommunity" size="40" value="<?php echo $dev->SNMPCommunity; ?>"></div>
+		  <div><label for="snmpcommunity">'._("SNMP Read Only Community").'</label></div>
+		  <div><input type="text" name="snmpcommunity" id="snmpcommunity" size="40" value="'.$dev->SNMPCommunity.'"></div>
 		</div>
-	</div><!-- END div.table -->
-<?php
+	</div><!-- END div.table -->';
+
 		}
 		if($dev->ESX){
 			$esx=new ESX();
 			$esx->DeviceID=$dev->DeviceID;
 			$vmList=$esx->GetDeviceInventory($facDB);
     
-			echo "\n<div class=\"table border\"><div><div>VM Name</div><div>Status</div><div>Owner</div><div>Last Updated</div></div>\n";
+			print "\n<div class=\"table border\"><div><div>"._('VM Name')."</div><div>"._('Status')."</div><div>"._('Owner')."</div><div>"._('Last Updated')."</div></div>\n";
 			foreach($vmList as $vmRow){
 				if($vmRow->vmState=='poweredOff'){
 					$statColor='red';
@@ -749,13 +755,13 @@ function setPreferredLayout() {<?php if(isset($_COOKIE["layout"]) && strtolower(
 				if($Dept->DeptID >0){
 					$Dept->GetDeptByID($facDB);
 				}else{
-					$Dept->Name='Unknown';
+					$Dept->Name=_('Unknown');
 				}
-				echo "<div><div>$vmRow->vmName</div><div><font color=$statColor>$vmRow->vmState</font></div><div><a href=\"updatevmowner.php?vmindex=$vmRow->VMIndex\">$Dept->Name</a></div><div>$vmRow->LastUpdated</div></div>\n";
+				print "<div><div>$vmRow->vmName</div><div><font color=$statColor>$vmRow->vmState</font></div><div><a href=\"updatevmowner.php?vmindex=$vmRow->VMIndex\">$Dept->Name</a></div><div>$vmRow->LastUpdated</div></div>\n";
 			}
 			echo '</div> <!-- END div.table -->';
 		}
-		echo '</fieldset>'."\n";
+		print "</fieldset>\n";
 	}
 ?>
 </div><!-- END div.right -->
@@ -768,17 +774,17 @@ function setPreferredLayout() {<?php if(isset($_COOKIE["layout"]) && strtolower(
 	if(!is_null($pwrCords)&&((isset($_POST['action'])&&$_POST['action']!='child')||!isset($_POST['action']))){
 		if(count($pwrCords)==0){
 			// We have no power information. Display links to PDU's in cabinet?
-			echo '		<div>		<div><a name="power"></a></div>		<div>No power connections defined.  You can add connections from the power strip screen.</div></div><div><div>&nbsp;</div><div></div></div>';
+			echo '		<div>		<div><a name="power"></a></div>		<div>',_("No power connections defined.  You can add connections from the power strip screen."),'</div></div><div><div>&nbsp;</div><div></div></div>';
 		}else{
-			echo "		<div>\n		  <div><a name=\"power\">$chassis Power Connections</a></div>\n		  <div><div class=\"table border\">\n			<div><div>Panel</div><div>Power Strip</div><div>Plug #</div><div>Power Supply</div></div>";
+			print "		<div>\n		  <div><a name=\"power\">$chassis "._('Power Connections')."</a></div>\n		  <div><div class=\"table border\">\n			<div><div>"._('Panel')."</div><div>"._('Power Strip')."</div><div>"._('Plug #')."</div><div>"._('Power Supply')."</div></div>";
 			foreach($pwrCords as $cord){
 				$pdu->PDUID=$cord->PDUID;
 				$pdu->GetPDU($facDB);
 				$panel->PanelID=$pdu->PanelID;
 				$panel->GetPanel($facDB);
-				echo "			<div><div><a href=\"panelmgr.php?panelid=$pdu->PanelID\">$panel->PanelLabel</a></div><div><a href=\"pduinfo.php?pduid=$pdu->PDUID\">$pdu->Label</a></div><div><a href=\"power_connection.php?pdu=$pdu->PDUID&conn=$cord->PDUPosition\">$cord->PDUPosition</a></div><div>$cord->DeviceConnNumber</div></div>\n";
+				print "			<div><div><a href=\"panelmgr.php?panelid=$pdu->PanelID\">$panel->PanelLabel</a></div><div><a href=\"pduinfo.php?pduid=$pdu->PDUID\">$pdu->Label</a></div><div><a href=\"power_connection.php?pdu=$pdu->PDUID&conn=$cord->PDUPosition\">$cord->PDUPosition</a></div><div>$cord->DeviceConnNumber</div></div>\n";
 			}
-			echo "			</div><!-- END div.table --></div>\n		</div>\n		<div>\n			<div>&nbsp;</div><div></div>\n		</div>\n";
+			print "			</div><!-- END div.table --></div>\n		</div>\n		<div>\n			<div>&nbsp;</div><div></div>\n		</div>\n";
 		}
 	}
 
@@ -786,21 +792,21 @@ function setPreferredLayout() {<?php if(isset($_COOKIE["layout"]) && strtolower(
 	if($dev->DeviceType=='Server' || $dev->DeviceType=='Appliance' || $dev->DeviceType=='Chassis'){
 		if(count($patchList)==0){
 			// We have no network information. Display links to switches in cabinet?
-			echo '		<div>		<div><a name="power"></a></div>		<div>No network connections defined.  You can add connections from a switch device.</div></div>';
+			echo '		<div>		<div><a name="power"></a></div>		<div>',("No network connections defined.  You can add connections from a switch device."),'</div></div>';
 		}else{
-			echo "		<div>\n		  <div><a name=\"net\">$chassis Connections</a><br>(Managed at Switch)</div>\n		  <div><div class=\"table border\"><div><div>Device Port</div><div>Switch</div><div>Switch Port</div><div>Notes</div></div>\n";
+			print "		<div>\n		  <div><a name=\"net\">$chassis "._('Connections')."</a><br>("._('Managed at Switch').")</div>\n		  <div><div class=\"table border\"><div><div>"._('Device Port')."</div><div>"._('Switch')."</div><div>"._('Switch Port')."</div><div>"._('Notes')."</div></div>\n";
 			$tmpDev = new Device();
 			foreach($patchList as $patchConn){
 				$tmpDev->DeviceID = $patchConn->SwitchDeviceID;
 				$tmpDev->GetDevice( $facDB );
-				echo "			<div><div>$patchConn->EndpointPort</div><div><a href=\"devices.php?deviceid=$patchConn->SwitchDeviceID#net\">$tmpDev->Label</a></div><div><a href=\"changepatch.php?switchid=$patchConn->SwitchDeviceID&portid=$patchConn->SwitchPortNumber\">$patchConn->SwitchPortNumber</a></div><div>$patchConn->Notes</div></div>\n";
+				print "			<div><div>$patchConn->EndpointPort</div><div><a href=\"devices.php?deviceid=$patchConn->SwitchDeviceID#net\">$tmpDev->Label</a></div><div><a href=\"changepatch.php?switchid=$patchConn->SwitchDeviceID&portid=$patchConn->SwitchPortNumber\">$patchConn->SwitchPortNumber</a></div><div>$patchConn->Notes</div></div>\n";
 			}
-			echo "			</div><!-- END div.table -->\n		  </div>\n		</div>\n";
+			print "			</div><!-- END div.table -->\n		  </div>\n		</div>\n";
 		}      
 	}
 		  
 	if($dev->DeviceType=='Switch'){
-		echo "		<div>\n		  <div><a name=\"net\">Connections</a></div>\n		  <div>\n			<div class=\"table border\">\n				<div><div>Switch Port</div><div>Device</div><div>Device Port</div><div>Notes</div></div>\n";
+		print "		<div>\n		  <div><a name=\"net\">"._('Connections')."</a></div>\n		  <div>\n			<div class=\"table border\">\n				<div><div>"._('Switch Port')."</div><div>"._('Device')."</div><div>"._('Device Port')."</div><div>"._('Notes')."</div></div>\n";
 		if(sizeof($patchList) >0){
 			foreach($patchList as $patchConn){
 				$tmpDev=new Device();
@@ -817,14 +823,14 @@ function setPreferredLayout() {<?php if(isset($_COOKIE["layout"]) && strtolower(
 <?php
 	if($user->WriteAccess){
 		if($dev->DeviceID >0){
-			echo "		  <input type=\"submit\" name=\"action\" value=\"Update\" default>\n";
+			echo '		  <button type="submit" name="action" value="Update">',_("Update"),'</button>';
 		}else{
-			echo '		  <input type="submit" name="action" value="Create">';
+			echo '		  <button type="submit" name="action" value="Create">',_("Create"),'</button>';
 		}
 	}
 	// Delete rights are seperate from write rights
 	if($user->DeleteAccess && $dev->DeviceID >0){
-		echo "		  <input type=\"submit\" name=\"action\" value=\"Delete\">\n";
+		echo '		  <button type="submit" name="action" value="Delete">',_("Delete"),'</button>';
 	}
 ?>
 		</div>
@@ -834,12 +840,12 @@ function setPreferredLayout() {<?php if(isset($_COOKIE["layout"]) && strtolower(
 </form>
 </div></div>
 <?php
-	if ( $dev->ParentDevice > 0 ) {
-		printf( "<a href=\"devices.php?deviceid=%d\">[Return to Parent Device]</a>\n", $pDev->DeviceID );
-	} elseif ($dev->Cabinet >0) {
-		echo "   <a href=\"cabnavigator.php?cabinetid=$cab->CabinetID\">[Return to Navigator]</a>";
-	} else {
-		echo '   <div><a href="storageroom.php">[Return to Navigator]</a></div>';
+	if($dev->ParentDevice >0){
+		print "   <a href=\"devices.php?deviceid=$pDev->DeviceID\">["._('Return to Parent Device')."]</a>\n";
+	}elseif($dev->Cabinet >0){
+		echo "   <a href=\"cabnavigator.php?cabinetid=$cab->CabinetID\">[".('Return to Navigator')."]</a>";
+	}else{
+		echo '   <div><a href="storageroom.php">[',_("Return to Navigator"),']</a></div>';
 	}
 ?>
 </div><!-- END div.main -->

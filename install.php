@@ -108,18 +108,21 @@ function applyupdate ($updatefile){
 	if(mysql_num_rows($result)==0){// Empty result set means this is either 1.0 or 1.1. Surely the check above caught all 1.0 instances.
 		$results[]=applyupdate("db-1.1-to-1.2.sql");
 		$upgrade=true;
+		$version="1.2";
 	}else{
 		$version=mysql_result($result,0);//sets version number
 	}
 	if($version=="1.2"){ // Do 1.2 to 1.3 Update
 		$results[]=applyupdate("db-1.2-to-1.3.sql");
 		$upgrade=true;
+		$version="1.3";
 	}
 	if($version=="1.3"){ // Do 1.3 to 1.4 Update
 		// Clean the configuration table of any duplicate values that might have been added.
 		$config->rebuild($facDB);
 		$results[]=applyupdate("db-1.3-to-1.4.sql");
 		$upgrade=true;
+		$version="1.4";
 	}
 	if($version=="1.4"){ // Do 1.4 to 1.5 Update
 		// A few of the database changes require some tests to ensure that they will be able to apply.
