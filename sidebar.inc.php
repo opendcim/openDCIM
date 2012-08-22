@@ -67,7 +67,7 @@ echo '	<a href="reports.php"><li>',_("Reports"),'</li></a>';
 	}
 	if ( $user->WriteAccess ) {
 		echo '<a href="cabinets.php"><li>',_("Edit Cabinets"),'</li></a>
-		<a href="device_classes.php"><li>',_("Edit Templates"),'</li></a>';
+		<a href="device_templates.php"><li>',_("Edit Templates"),'</li></a>';
 	}
 	if ( $user->SiteAdmin ) {
 		echo '		<a href="usermgr.php"><li>',_("Manage Users"),'</li></a>
@@ -76,7 +76,7 @@ echo '	<a href="reports.php"><li>',_("Reports"),'</li></a>';
 		<a href="datacenter.php"><li>',_("Edit Data Centers"),'</li></a>
 		<a href="power_source.php"><li>',_("Edit Power Sources"),'</li></a>
 		<a href="power_panel.php"><li>',_("Edit Power Panels"),'</li></a>
-		<a href="manufacturers.php"><li>',_("Edit Manufacturers"),'</li></a>
+		<a href="device_manufacturers.php"><li>',_("Edit Manufacturers"),'</li></a>
 		<a href="configuration.php"><li>',_("Edit Configuration"),'</li></a>';
 	}
 
