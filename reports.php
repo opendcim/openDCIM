@@ -54,7 +54,7 @@ echo '<div class="main">
 <legend>Operational Reports</legend>
 	<a href="report_exception.php">',_("Data Exceptions Report"),'</a>
 	<a href="report_diverse_power_exceptions.php">',_("Diverse Power Exceptions Report"),'</a>
-	<a href="outage_simulator.php">',_("Simulated Power Outage Report"),'</a>
+	<a href="report_outage_simulator.php">',_("Simulated Power Outage Report"),'</a>
 	<a href="report_power_distribution.php">',_("Power Distribution by Data Center"),'</a>
 	<a href="report_power_utilization.php">',_("Server Tier Classification Report"),'</a>
 </fieldset>
