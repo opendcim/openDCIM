@@ -32,12 +32,12 @@
 			$connection->DeviceConnNumber = $_REQUEST['inputnum'];
 			$connection->CreateConnection( $facDB );
 			
-			$url=redirect("pduinfo.php?pduid=$connection->PDUID");
+			$url=redirect("power_pdu.php?pduid=$connection->PDUID");
 			header("Location: $url");
 			exit;
 		}elseif($_REQUEST['action']=='Delete'){
 			$connection->RemoveConnection($facDB);
-			$url=redirect("pduinfo.php?pduid=$connection->PDUID");
+			$url=redirect("power_pdu.php?pduid=$connection->PDUID");
 			header("Location: $url");
 			exit;
 		}
@@ -101,7 +101,7 @@
 		echo '	<input name="action" type="submit" value="Delete">';
 	}
 ?>
-	<button type="reset" onclick="document.location.href='pduinfo.php?pduid=<?php echo $connection->PDUID; ?>'; return false;">Cancel</button>
+	<button type="reset" onclick="document.location.href='power_pdu.php?pduid=<?php echo $connection->PDUID; ?>'; return false;">Cancel</button>
 </div>
 </div><!-- END div.table -->
 </form>

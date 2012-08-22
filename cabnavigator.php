@@ -261,11 +261,11 @@ $body.='</table>
 			$pduDraw=0;
 		}
 		
-		$body.=sprintf( "			<a href=\"pduinfo.php?pduid=%d\">CDU %s (%d A)</font></a><br>\n", $PDUdev->PDUID, $PDUdev->Label, $pduDraw );
+		$body.=sprintf( "			<a href=\"power_pdu.php?pduid=%d\">CDU %s (%d A)</font></a><br>\n", $PDUdev->PDUID, $PDUdev->Label, $pduDraw );
 	}
 	
 	if($user->WriteAccess){
-		$body.="			<br><br><ul class=\"nav\"><a href=\"pduinfo.php?pduid=0&cabinetid=$cab->CabinetID\"><li>"._("Add CDU")."</li></a></ul>\n";
+		$body.="			<br><br><ul class=\"nav\"><a href=\"power_pdu.php?pduid=0&cabinetid=$cab->CabinetID\"><li>"._("Add CDU")."</li></a></ul>\n";
 	}
 
 	$body.="	</fieldset>

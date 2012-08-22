@@ -172,7 +172,7 @@ echo '</select></div>
 				// store the value and deal with it later.
 				if(isset($pduarray[$nextPole])&&$odd!=0){
 					foreach($pduarray[$nextPole] as $pduvar){
-					$errors[]="<a href=\"pduinfo.php?pduid=$pduvar->PDUID\">$pduvar->Label</a>";
+					$errors[]="<a href=\"power_pdu.php?pduid=$pduvar->PDUID\">$pduvar->Label</a>";
 					}
 				}
 				// Get info for pdu on this pole if it is populated.
@@ -183,7 +183,7 @@ echo '</select></div>
 							$cab->CabinetID=$pduvar->CabinetID;
 							$cab->GetCabinet( $facDB );
 							
-							$pn.="<a href=\"pduinfo.php?pduid=$pduvar->PDUID\">$cab->Location<span>$pduvar->Label</span></a>";
+							$pn.="<a href=\"power_pdu.php?pduid=$pduvar->PDUID\">$cab->Location<span>$pduvar->Label</span></a>";
 							switch($pduvar->BreakerSize){
 								case '3': $odd=3; break;
 								case '2': $odd=2; break;
@@ -213,7 +213,7 @@ echo '</select></div>
 				// store the value and deal with it later.
 				if(isset($pduarray[$nextPole])&&$odd!=0){
 					foreach($pduarray[$nextPole] as $pduvar){
-					$errors[]="<a href=\"pduinfo.php?pduid=$pduvar->PDUID\">$pduvar->Label</a>";
+					$errors[]="<a href=\"power_pdu.php?pduid=$pduvar->PDUID\">$pduvar->Label</a>";
 					}
 				}
 				// Get info for pdu on this pole if it is populated.
@@ -224,7 +224,7 @@ echo '</select></div>
 							$cab->CabinetID=$pduvar->CabinetID;
 							$cab->GetCabinet( $facDB );
 							
-							$pn.="<a href=\"pduinfo.php?pduid=$pduvar->PDUID\">$cab->Location<span>$pduvar->Label</span></a>";
+							$pn.="<a href=\"power_pdu.php?pduid=$pduvar->PDUID\">$cab->Location<span>$pduvar->Label</span></a>";
 							switch($pduvar->BreakerSize){
 								case '3': $odd=3; break;
 								case '2': $odd=2; break;
@@ -250,7 +250,7 @@ echo '</select></div>
 				// store the value and deal with it later.
 				if(isset($pduarray[$nextPole])&&$even!=0){ 
 					foreach($pduarray[$nextPole] as $pduvar){
-					$errors[]="<a href=\"pduinfo.php?pduid=".$pduvar->PDUID."\">".$pduvar->Label."</a>";
+					$errors[]="<a href=\"power_pdu.php?pduid=".$pduvar->PDUID."\">".$pduvar->Label."</a>";
 					}
 				}
 				if($even==0){
@@ -260,7 +260,7 @@ echo '</select></div>
 							$cab->CabinetID=$pduvar->CabinetID;
 							$cab->GetCabinet( $facDB );
 							
-							$pn.="<a href=\"pduinfo.php?pduid=".$pduvar->PDUID."\">$cab->Location<span>$pduvar->Label</span></a>";
+							$pn.="<a href=\"power_pdu.php?pduid=".$pduvar->PDUID."\">$cab->Location<span>$pduvar->Label</span></a>";
 							switch($pduvar->BreakerSize){
 								case '3': $even=3; break;
 								case '2': $even=2; break;
