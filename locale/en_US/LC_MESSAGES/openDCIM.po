@@ -2,8 +2,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: openDCIM.po\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2012-08-21 06:02-0500\n"
-"PO-Revision-Date: 2012-08-21 06:02-0500\n"
+"POT-Creation-Date: 2012-08-22 05:30-0500\n"
+"PO-Revision-Date: 2012-08-22 05:30-0500\n"
 "Last-Translator: Wilbur Longwisch <wilbur@wilpig.org>\n"
 "Language-Team: openDCIM <discussion@list.opendcim.org>\n"
 "Language: English\n"
@@ -26,6 +26,7 @@ msgstr ""
 #: openDCIM/cabaudit.php:385
 #: openDCIM/cabaudit.php:454
 #: openDCIM/devices.php:461
+#: openDCIM/pduinfo.php:119
 #: openDCIM/rackrequest.php:358
 msgid "Label"
 msgstr ""
@@ -75,6 +76,7 @@ msgstr ""
 #: openDCIM/cabaudit.php:454
 #: openDCIM/cabinets.php:121
 #: openDCIM/device_classes.php:98
+#: openDCIM/pduinfo.php:135
 msgid "Model"
 msgstr ""
 
@@ -94,6 +96,7 @@ msgstr ""
 #: openDCIM/cabinets.php:84
 #: openDCIM/cabnavigator.php:88
 #: openDCIM/devices.php:568
+#: openDCIM/pduinfo.php:123
 msgid "Cabinet"
 msgstr ""
 
@@ -149,6 +152,7 @@ msgstr ""
 #: openDCIM/escalations.php:87
 #: openDCIM/manufacturers.php:82
 #: openDCIM/panelmgr.php:136
+#: openDCIM/pduinfo.php:227
 #: openDCIM/powersource.php:113
 #: openDCIM/timeperiods.php:88
 #: openDCIM/usermgr.php:117
@@ -164,6 +168,7 @@ msgstr ""
 #: openDCIM/escalations.php:90
 #: openDCIM/manufacturers.php:84
 #: openDCIM/panelmgr.php:138
+#: openDCIM/pduinfo.php:229
 #: openDCIM/powersource.php:115
 #: openDCIM/rackrequest.php:490
 #: openDCIM/supplybin.php:167
@@ -173,7 +178,9 @@ msgid "Create"
 msgstr ""
 
 #: openDCIM/cabinets.php:153
+#: openDCIM/devices.php:846
 #: openDCIM/devices.php:848
+#: openDCIM/pduinfo.php:260
 msgid "Return to Navigator"
 msgstr ""
 
@@ -680,6 +687,7 @@ msgid "Slot #"
 msgstr ""
 
 #: openDCIM/devices.php:694
+#: openDCIM/pduinfo.php:244
 msgid "Device Name"
 msgstr ""
 
@@ -933,20 +941,95 @@ msgid ""
 "panels again."
 msgstr ""
 
+#: openDCIM/pduinfo.php:110
+msgid "Data Center PDU Detail"
+msgstr ""
+
+#: openDCIM/pduinfo.php:115
+msgid "PDU ID"
+msgstr ""
+
+#: openDCIM/pduinfo.php:127
+msgid "Input Amperage"
+msgstr ""
+
+#: openDCIM/pduinfo.php:131
+msgid "ManagementType"
+msgstr ""
+
+#: openDCIM/pduinfo.php:139
+msgid "Number of Outputs"
+msgstr ""
+
+#: openDCIM/pduinfo.php:143
+#: openDCIM/powersource.php:95
+msgid "IP Address"
+msgstr ""
+
+#: openDCIM/pduinfo.php:147
+msgid "Uptime"
+msgstr ""
+
+#: openDCIM/pduinfo.php:151
+msgid "Firmware Version"
+msgstr ""
+
+#: openDCIM/pduinfo.php:155
+#: openDCIM/powersource.php:99
+msgid "SNMP Community"
+msgstr ""
+
+#: openDCIM/pduinfo.php:159
+msgid "Source Panel"
+msgstr ""
+
+#: openDCIM/pduinfo.php:160
+#: openDCIM/pduinfo.php:210
+msgid "Select Panel"
+msgstr ""
+
+#: openDCIM/pduinfo.php:170
+msgid "Voltages:"
+msgstr ""
+
+#: openDCIM/pduinfo.php:184
+msgid "Breaker Size (# of Poles)"
+msgstr ""
+
+#: openDCIM/pduinfo.php:197
+msgid "Panel Pole Number"
+msgstr ""
+
+#: openDCIM/pduinfo.php:201
+msgid "Automatic Transfer Switch"
+msgstr ""
+
+#: openDCIM/pduinfo.php:205
+msgid "Fail Safe Switch?"
+msgstr ""
+
+#: openDCIM/pduinfo.php:209
+msgid "Source Panel (Secondary Source)"
+msgstr ""
+
+#: openDCIM/pduinfo.php:220
+msgid "Panel Pole Number (Secondary Source)"
+msgstr ""
+
+#: openDCIM/pduinfo.php:243
+msgid "Output No."
+msgstr ""
+
+#: openDCIM/pduinfo.php:245
+msgid "Dev Input No"
+msgstr ""
+
 #: openDCIM/powersource.php:68
 msgid "Power Source ID"
 msgstr ""
 
 #: openDCIM/powersource.php:70
 msgid "New Power Source"
-msgstr ""
-
-#: openDCIM/powersource.php:95
-msgid "IP Address"
-msgstr ""
-
-#: openDCIM/powersource.php:99
-msgid "SNMP Community"
 msgstr ""
 
 #: openDCIM/powersource.php:103
@@ -1087,6 +1170,70 @@ msgstr ""
 
 #: openDCIM/rackrequest.php:487
 msgid "Move to Rack"
+msgstr ""
+
+#: openDCIM/reports.php:35
+msgid "Inventory Reports"
+msgstr ""
+
+#: openDCIM/reports.php:39
+msgid "Contact Reports"
+msgstr ""
+
+#: openDCIM/reports.php:40
+msgid "Department/Contact Report"
+msgstr ""
+
+#: openDCIM/reports.php:44
+msgid "Asset Report by Owner"
+msgstr ""
+
+#: openDCIM/reports.php:45
+msgid "Data Center Asset Report"
+msgstr ""
+
+#: openDCIM/reports.php:46
+msgid "Data Center Asset Costing Report"
+msgstr ""
+
+#: openDCIM/reports.php:47
+msgid "Data Center Assets By Department"
+msgstr ""
+
+#: openDCIM/reports.php:48
+msgid "Asset Aging Report"
+msgstr ""
+
+#: openDCIM/reports.php:55
+msgid "Data Exceptions Report"
+msgstr ""
+
+#: openDCIM/reports.php:56
+msgid "Diverse Power Exceptions Report"
+msgstr ""
+
+#: openDCIM/reports.php:57
+msgid "Simulated Power Outage Report"
+msgstr ""
+
+#: openDCIM/reports.php:58
+msgid "Power Distribution by Data Center"
+msgstr ""
+
+#: openDCIM/reports.php:59
+msgid "Server Tier Classification Report"
+msgstr ""
+
+#: openDCIM/reports.php:63
+msgid "Cabinet Audit Logs"
+msgstr ""
+
+#: openDCIM/reports.php:64
+msgid "Cabinet Audit Frequency"
+msgstr ""
+
+#: openDCIM/reports.php:65
+msgid "Surplus/Salvage Audit Report"
 msgstr ""
 
 #: openDCIM/sidebar.inc.php:5

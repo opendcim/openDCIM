@@ -29,42 +29,44 @@
 <div class="page reports">
 <?php
 	include( "sidebar.inc.php" );
-?>
-<div class="main">
-<h2><?php print $config->ParameterArray["OrgName"]; ?></h2>
-<h3>Inventory Reports</h3>
+
+echo '<div class="main">
+<h2>',$config->ParameterArray["OrgName"],'</h2>
+<h3>',_("Inventory Reports"),'</h3>
 <div class="center"><div id="reports">
 <div>
 <fieldset>
-	<legend>Contact Reports</legend>
-		<a href="department_report.php">Department/Contact Report</a>
+	<legend>',_("Contact Reports"),'</legend>
+		<a href="report_department.php">',_("Department/Contact Report"),'</a>
 </fieldset>
 <fieldset>
 <legend>Asset Reports</legend>
-	<a href="contact_report.php">Asset Report by Owner</a>
-	<a href="asset_report.php">Data Center Asset Report</a>
-	<a href="cost_report.php">Data Center Asset Costing Report</a>
-	<a href="assets_by_department.php">Data Center Assets By Department</a>
-	<a href="aging_report.php">Asset Aging Report</a>
+	<a href="report_contact.php">',_("Asset Report by Owner"),'</a>
+	<a href="report_asset.php">',_("Data Center Asset Report"),'</a>
+	<a href="report_cost.php">',_("Data Center Asset Costing Report"),'</a>
+	<a href="assets_by_department.php">',_("Data Center Assets By Department"),'</a>  <!-- Where is this? -->
+	<a href="report_aging.php">',_("Asset Aging Report"),'</a>
 </fieldset>
 </div>
 
 <div>
 <fieldset>
 <legend>Operational Reports</legend>
-	<a href="exception_report.php">Data Exceptions Report</a>
-	<a href="diverse_power_exceptions_report.php">Diverse Power Exceptions Report</a>
-	<a href="outage_simulator.php">Simulated Power Outage Report</a>
-	<a href="power_distribution_report.php">Power Distribution by Data Center</a>
-	<a href="power_utilization_report.php">Server Tier Classification Report</a>
+	<a href="report_exception.php">',_("Data Exceptions Report"),'</a>
+	<a href="report_diverse_power_exceptions.php">',_("Diverse Power Exceptions Report"),'</a>
+	<a href="outage_simulator.php">',_("Simulated Power Outage Report"),'</a>
+	<a href="report_power_distribution.php">',_("Power Distribution by Data Center"),'</a>
+	<a href="report_power_utilization.php">',_("Server Tier Classification Report"),'</a>
 </fieldset>
 <fieldset>
 	<legend>Auditing Reports</legend>
-		<a href="audit_report.php">Cabinet Audit Logs</a>
-		<a href="audit_frequency.php">Cabinet Audit Frequency</a>
-		<a href="surplus_report.php">Surplus/Salvage Audit Report</a>
+		<a href="report_audit.php">',_("Cabinet Audit Logs"),'</a>
+		<a href="report_audit_frequency.php">',_("Cabinet Audit Frequency"),'</a>
+		<a href="report_surplus.php">',_("Surplus/Salvage Audit Report"),'</a>
 </fieldset>
-</div>
+</div>';
+
+?>
 
 
 </div></div>

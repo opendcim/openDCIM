@@ -841,11 +841,11 @@ echo '	<div class="table">
 </div></div>
 <?php
 	if($dev->ParentDevice >0){
-		print "   <a href=\"devices.php?deviceid=$pDev->DeviceID\">["._('Return to Parent Device')."]</a>\n";
+		print "   <a href=\"devices.php?deviceid=$pDev->DeviceID\">[ "._('Return to Parent Device')." ]</a>\n";
 	}elseif($dev->Cabinet >0){
-		echo "   <a href=\"cabnavigator.php?cabinetid=$cab->CabinetID\">[".('Return to Navigator')."]</a>";
+		print "   <a href=\"cabnavigator.php?cabinetid=$cab->CabinetID\">[ "._('Return to Navigator')." ]</a>";
 	}else{
-		echo '   <div><a href="storageroom.php">[',_("Return to Navigator"),']</a></div>';
+		echo '   <div><a href="storageroom.php">[ ',_("Return to Navigator"),' ]</a></div>';
 	}
 ?>
 </div><!-- END div.main -->

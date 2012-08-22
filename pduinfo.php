@@ -104,141 +104,133 @@
 <div class="page pdu">
 <?php
 	include( 'sidebar.inc.php' );
-?>
-<div class="main">
-<h2><?php echo $config->ParameterArray['OrgName']; ?></h2>
-<h3>Data Center PDU Detail</h3>
+
+echo '<div class="main">
+<h2>',$config->ParameterArray["OrgName"],'</h2>
+<h3>',_("Data Center PDU Detail"),'</h3>
 <div class="center"><div>
-<form name="pduform" id="pduform" action="<?php echo $_SERVER['PHP_SELF']; ?>" method="POST">
+<form name="pduform" id="pduform" action="',$_SERVER["PHP_SELF"],'" method="POST">
 <div class="table">
 <div>
-   <div><label for="pduid">PDU ID</label></div>
-   <div><input type="text" name="pduid" id="pduid" value="<?php echo $pdu->PDUID; ?>" size="6" readonly></div>
+   <div><label for="pduid">',_("PDU ID"),'</label></div>
+   <div><input type="text" name="pduid" id="pduid" value="',$pdu->PDUID,'" size="6" readonly></div>
 </div>
 <div>
-   <div><label for="label">Label</label></div>
-   <div><input type="text" name="label" id="label" size="50" value="<?php echo $pdu->Label; ?>"></div>
+   <div><label for="label">',_("Label"),'</label></div>
+   <div><input type="text" name="label" id="label" size="50" value="',$pdu->Label,'"></div>
 </div>
 <div>
-   <div><label for="cabinetid">Cabinet</label></div>
-   <div><?php echo $cab->GetCabinetSelectList( $facDB ); ?></div>
+   <div><label for="cabinetid">',_("Cabinet"),'</label></div>
+   <div>',$cab->GetCabinetSelectList($facDB),'</div>
 </div>
 <div>
-   <div><label for="inputamperage">Input Amperage</label></div>
-   <div><input type="text" name="inputamperage" id="inputamperage" size=5 value="<?php echo $pdu->InputAmperage; ?>"></div>
+   <div><label for="inputamperage">',_("Input Amperage"),'</label></div>
+   <div><input type="text" name="inputamperage" id="inputamperage" size=5 value="',$pdu->InputAmperage,'"></div>
 </div>
 <div>
-   <div><label for="managementtype">ManagementType</label></div>
-   <div><?php echo $pdu->GetManagementTypeSelectList($facDB); ?></div>
+   <div><label for="managementtype">',_("ManagementType"),'</label></div>
+   <div>',$pdu->GetManagementTypeSelectList($facDB),'</div>
 </div>
 <div>
-   <div><label for="model">Model</label></div>
-   <div><input type="text" name="model" id="model" size=25 value="<?php echo $pdu->Model; ?>"></div>
+   <div><label for="model">',_("Model"),'</label></div>
+   <div><input type="text" name="model" id="model" size=25 value="',$pdu->Model,'"></div>
 </div>
 <div>
-   <div><label for="numoutputs">Number of Outputs</label></div>
-   <div><input type="text" name="numoutputs" id="numoutputs" size=5 value="<?php echo $pdu->NumOutputs; ?>"></div>
+   <div><label for="numoutputs">',_("Number of Outputs"),'</label></div>
+   <div><input type="text" name="numoutputs" id="numoutputs" size=5 value="',$pdu->NumOutputs,'"></div>
 </div>
 <div>
-   <div><label for="ipaddress">IP Address</label></div>
-   <div><input type="text" name="ipaddress" id="ipaddress" size=15 value="<?php echo $pdu->IPAddress; ?>"> <?php if ( strlen( $pdu->IPAddress ) > 0 ) printf( "<a href=\"http://%s\" target=\"new\">http://%s</a>", $pdu->IPAddress, $pdu->IPAddress ); ?></div>
+   <div><label for="ipaddress">',_("IP Address"),'</label></div>
+   <div><input type="text" name="ipaddress" id="ipaddress" size=15 value="',$pdu->IPAddress,'">',((strlen($pdu->IPAddress)>0)?"<a href=\"http://$pdu->IPAddress\" target=\"new\">http://$pdu->IPAddress</a>":""),'</div>
 </div>
 <div>
-    <div>Uptime</div>
-    <div><?php echo $upTime; ?></div>
+    <div>',_("Uptime"),'</div>
+    <div>',$upTime,'</div>
 </div>
 <div>
-    <div>Firmware Version</div>
-    <div><?php echo $pdu->FirmwareVersion; ?></div>
+    <div>',_("Firmware Version"),'</div>
+    <div>',$pdu->FirmwareVersion,'</div>
 </div>
 <div>
-   <div><label for="snmpcommunity">SNMP Community</label></div>
-   <div><input type="text" name="snmpcommunity" id="snmpcommunity" size=15 value="<?php echo $pdu->SNMPCommunity; ?>"></div>
+   <div><label for="snmpcommunity">',_("SNMP Community"),'</label></div>
+   <div><input type="text" name="snmpcommunity" id="snmpcommunity" size=15 value="',$pdu->SNMPCommunity,'"></div>
 </div>
 <div>
-   <div><label for="panelid">Source Panel</label></div>
-   <div><select name="panelid" id="panelid" ><option value=0>Select Panel</option>
-<?php
+   <div><label for="panelid">',_("Source Panel"),'</label></div>
+   <div><select name="panelid" id="panelid" ><option value=0>',_("Select Panel"),'</option>';
+
 foreach($PanelList as $key=>$value){
-	echo "<option value=\"$value->PanelID\"";
-	if($value->PanelID == $pdu->PanelID){ echo ' selected';}
-	echo ">$value->PanelLabel</option>\n"; 
-  }
-?>
-   </select></div>
+	if($value->PanelID == $pdu->PanelID){$selected=' selected';}else{$selected="";}
+	print "<option value=\"$value->PanelID\"$selected>$value->PanelLabel</option>\n"; 
+}
+
+echo '   </select></div>
 </div>
 <div>
-	<div><label for="voltage">Voltages:</label></div>
-	<div id="voltage">
-<?php
-	if ( $pdu->PanelID > 0 ) {
-		$pnl = new PowerPanel();
-		$pnl->PanelID = $pdu->PanelID;
-		$pnl->GetPanel( $facDB );
-		
-		printf( "%d / %d", $pnl->PanelVoltage, intval( $pnl->PanelVoltage / 1.73 ) );
+	<div><label for="voltage">',_("Voltages:"),'</label></div>
+	<div id="voltage">';
+
+	if($pdu->PanelID >0){
+		$pnl=new PowerPanel();
+		$pnl->PanelID=$pdu->PanelID;
+		$pnl->GetPanel($facDB);
+	
+		print $pnl->PanelVoltage." / ".intval($pnl->PanelVoltage/1.73);
 	}
-?>
-	</div>
+
+echo '	</div>
 </div>
 <div>
-  <div><label for="breakersize">Breaker Size (# of Poles)</label></div>
+  <div><label for="breakersize">',_("Breaker Size (# of Poles)"),'</label></div>
   <div>
-	<select name="breakersize">
-<?php
-	for ( $i = 1; $i < 4; $i++ ) {
-		if ( $i == $pdu->BreakerSize )
-			$selected = "SELECTED";
-		else
-			$selected = "";
-			
-		printf( "<option value=\"%d\" %s>%d</option>\n", $i, $selected, $i );
+	<select name="breakersize">';
+
+	for($i=1;$i<4;$i++){
+		if($i==$pdu->BreakerSize){$selected=" selected";}else{$selected="";}
+		print "<option value=\"$i\"$selected>$i</option>";
 	}
-?>
-	</select>
+
+echo '	</select>
   </div>
 </div>
 <div>
-  <div><label for="panelpole">Panel Pole Number</label></div>
-  <div><input type="text" name="panelpole" id="panelpole" size=4 value="<?php echo $pdu->PanelPole; ?>"></div>
+  <div><label for="panelpole">',_("Panel Pole Number"),'</label></div>
+  <div><input type="text" name="panelpole" id="panelpole" size=4 value="',$pdu->PanelPole,'"></div>
 </div>
 <div class="caption">
-
-
-<h3>Automatic Transfer Switch</h3>
+<h3>',_("Automatic Transfer Switch"),'</h3>
 <fieldset id="powerinfo">
 <div class="table centermargin border">
 <div>
-  <div><label for="failsafe">Fail Safe Switch?</label></div>
-  <div><input type="checkbox" name="failsafe" id="failsafe" <?php if($pdu->FailSafe){echo ' checked';}?>></div>
+  <div><label for="failsafe">',_("Fail Safe Switch?"),'</label></div>
+  <div><input type="checkbox" name="failsafe" id="failsafe"',(($pdu->FailSafe)?" checked":""),'></div>
 </div>
 <div>
-   <div><label for="panelid2">Source Panel (Secondary Source)</label></div>
-   <div><select name="panelid2" id="panelid2"><option value=0>Select Panel</option>
-<?php
+   <div><label for="panelid2">',_("Source Panel (Secondary Source)"),'</label></div>
+   <div><select name="panelid2" id="panelid2"><option value=0>',_("Select Panel"),'</option>';
+
 	foreach($PanelList as $key=>$value){
-		print "		<option value=$value->PanelID";
-		if($value->PanelID==$pdu->PanelID2){echo' selected="selected"';}
-		print ">$value->PanelLabel</option>\n";
+		if($value->PanelID==$pdu->PanelID2){$selected=" selected";}else{$selected="";}
+		print "		<option value=$value->PanelID$selected>$value->PanelLabel</option>\n";
 	}
-?>
-   </select></div>
+
+echo '   </select></div>
 </div>
 <div>
-  <div><label for="panelpole2">Panel Pole Number (Secondary Source)</label></div>
-  <div><input type="text" name="panelpole2" id="panelpole2" size=4 value="<?php echo $pdu->PanelPole2; ?>"></div>
+  <div><label for="panelpole2">',_("Panel Pole Number (Secondary Source)"),'</label></div>
+  <div><input type="text" name="panelpole2" id="panelpole2" size=4 value="',$pdu->PanelPole2,'"></div>
 </div>
-<div class="caption">
-<?php
+<div class="caption">';
+
 	if($user->WriteAccess){
 		if($pdu->PDUID >0){
-			echo '   <input type="submit" name="action" value="Update">';
+			echo '   <button type="submit" name="action" value="Update">',_("Update"),'</button>';
 		} else {
-			echo '   <input type="submit" name="action" value="Create">';
+			echo '   <button type="submit" name="action" value="Create">',_("Create"),'</button>';
 		}
 	}
-?>
-</div>
+
+echo '</div>
 </div> <!-- END div.table -->
 </div>
 </div> <!-- END div.table -->
@@ -248,11 +240,11 @@ foreach($PanelList as $key=>$value){
 
 <div class="table border">
 	<div>
-		<div>Output No.</div>
-		<div>Device Name</div>
-		<div>Dev Input No</div>
-	</div>
-<?php
+		<div>',_("Output No."),'</div>
+		<div>',_("Device Name"),'</div>
+		<div>',_("Dev Input No"),'</div>
+	</div>';
+
 	for($connNumber=1;$connNumber<$pdu->NumOutputs+1;$connNumber++){
 		if(isset($connList[$connNumber])){
 			$connDev->DeviceID=$connList[$connNumber]->DeviceID;
@@ -265,7 +257,7 @@ foreach($PanelList as $key=>$value){
 ?>  
     </div> <!-- END div.table -->
 </div></div>
-<a href="cabnavigator.php?cabinetid=<?php echo $cab->CabinetID; ?>">[ Return to Navigator ]</a>
+<?php echo '<a href="cabnavigator.php?cabinetid=',$cab->CabinetID,'">[ ',_("Return to Navigator"),' ]</a>'; ?>
 </div><!-- END div.main -->
 </div><!-- END div.page -->
 </body>
