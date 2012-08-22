@@ -66,7 +66,7 @@ echo '<div class="main">
 
 	foreach($dcList as $dcRow){
 		if($dcRow->DataCenterID == $dc->DataCenterID){$selected=" selected";}else{$selected="";}
-		print "<option value=\"$dcRow->DataCenterID\"$seelcted>$dcRow->Name</option>\n";
+		print "<option value=\"$dcRow->DataCenterID\"$selected>$dcRow->Name</option>\n";
 	}
 
 echo '	</select></div>
