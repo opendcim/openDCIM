@@ -719,7 +719,7 @@ echo '		<div class="caption">
 	
 	// Do not display ESX block if device isn't a virtual server and the user doesn't have write access
 	if(($user->WriteAccess || $dev->ESX) && ($dev->DeviceType=="Server" || $dev->DeviceType=="")){
-		echo '<fieldset>\n	<legend>',_("VMWare ESX Server Information"),'</legend>';
+		echo '<fieldset>	<legend>',_("VMWare ESX Server Information"),'</legend>';
 	// If the user doesn't have write access display the list of VMs but not the configuration information.
 		if($user->WriteAccess){
 
