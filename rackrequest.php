@@ -118,6 +118,8 @@
 				$result=$mailer->send($message);
 			}catch(Swift_RfcComplianceException $e){
 				$error.="Send: ".$e->getMessage()."<br>\n";
+			}catch(Swift_TransportException $e){
+				$error.="Server: <span class=\"errmsg\">".$e->getMessage()."</span><br>\n";
 			}
 		}elseif(($_POST['action']=='Update Request'||$_POST['action']=='Move to Rack') && (($user->RackRequest && $user->UserID==$contact->UserID)||$user->RackAdmin)){
 			$req->RequestorID=$_POST['requestorid'];
@@ -168,6 +170,8 @@
 					$result=$mailer->send($message);
 				}catch(Swift_RfcComplianceException $e){
 					$error.="Send: ".$e->getMessage()."<br>\n";
+				}catch(Swift_TransportException $e){
+					$error.="Server: <span class=\"errmsg\">".$e->getMessage()."</span><br>\n";
 				}
 			
 				header('Location: '.redirect("devices.php?deviceid=$dev->DeviceID"));
