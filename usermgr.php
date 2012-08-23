@@ -113,7 +113,7 @@ echo '	</select></div>
 </div>
 <div class="caption">';
 
-	if(strlen($user->UserID) >0){
+	if(strlen($userRights->UserID) >0){
 		echo '   <button type="submit" name="action" value="Update">',_("Update"),'</button>';
 	}else{
 		echo '	 <button type="submit" name="action" value="Create">',_("Create"),'</button>';
