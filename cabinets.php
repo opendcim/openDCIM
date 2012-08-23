@@ -29,7 +29,7 @@
 		$cab->Keylock=$_REQUEST['keylock'];
 		$cab->MaxKW=$_REQUEST['maxkw'];
 		$cab->MaxWeight=$_REQUEST['maxweight'];
-		$cab->InstallationDate=$_REQUEST['installationdate'];
+		$cab->InstallationDate=date( "Y-m-d", strtotime($_REQUEST['installationdate']) );
 
 		if(($cab->CabinetID >0)&&($_REQUEST['action']=='Update')){
 			$cab->UpdateCabinet($facDB);
