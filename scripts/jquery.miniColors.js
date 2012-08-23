@@ -31,10 +31,12 @@ if(jQuery) (function($) {
 					.addClass('miniColors')
 					.data('original-maxlength', input.attr('maxlength') || null)
 					.data('original-autocomplete', input.attr('autocomplete') || null)
-					.data('letterCase', 'uppercase')
+					.data('letterCase', o.letterCase ? o.letterCase : 'uppercase')
 					.data('trigger', trigger)
 					.data('hsb', hsb)
 					.data('change', o.change ? o.change : null)
+					.data('close', o.close ? o.close : null)
+					.data('open', o.open ? o.open : null)
 					.attr('maxlength', 7)
 					.attr('autocomplete', 'off')
 					.val('#' + convertCase(color, o.letterCase));
@@ -44,7 +46,7 @@ if(jQuery) (function($) {
 				if( o.disabled ) disable(input);
 				
 				// Show selector when trigger is clicked
-				trigger.bind('click.miniColors', function(event) {
+				trigger.on('click.miniColors', function(event) {
 					event.preventDefault();
 					if( input.val() === '' ) input.val('#');
 					show(input);
@@ -52,29 +54,29 @@ if(jQuery) (function($) {
 				});
 				
 				// Show selector when input receives focus
-				input.bind('focus.miniColors', function(event) {
+				input.on('focus.miniColors', function(event) {
 					if( input.val() === '' ) input.val('#');
 					show(input);
 				});
 				
 				// Hide on blur
-				input.bind('blur.miniColors', function(event) {
-					var hex = expandHex(input.val());
+				input.on('blur.miniColors', function(event) {
+					var hex = expandHex( hsb2hex(input.data('hsb')) );
 					input.val( hex ? '#' + convertCase(hex, input.data('letterCase')) : '' );
 				});
 				
 				// Hide when tabbing out of the input
-				input.bind('keydown.miniColors', function(event) {
+				input.on('keydown.miniColors', function(event) {
 					if( event.keyCode === 9 ) hide(input);
 				});
 				
 				// Update when color is typed in
-				input.bind('keyup.miniColors', function(event) {
+				input.on('keyup.miniColors', function(event) {
 					setColorFromInput(input);
 				});
 				
 				// Handle pasting
-				input.bind('paste.miniColors', function(event) {
+				input.on('paste.miniColors', function(event) {
 					// Short pause to wait for paste to complete
 					setTimeout( function() {
 						setColorFromInput(input);
@@ -98,8 +100,8 @@ if(jQuery) (function($) {
 					.attr('maxlength', input.data('original-maxlength'))
 					.removeData()
 					.removeClass('miniColors')
-					.unbind('.miniColors');
-				$(document).unbind('.miniColors');
+					.off('.miniColors');
+				$(document).off('.miniColors');
 			};
 			
 			var enable = function(input) {
@@ -131,17 +133,13 @@ if(jQuery) (function($) {
 				
 				// Hide all other instances 
 				hide();				
-				
+                
 				// Generate the selector
 				var selector = $('<div class="miniColors-selector"></div>');
 				selector
-					.append('<div class="miniColors-colors" style="background-color: #FFF;"><div class="miniColors-colorPicker"></div></div>')
+					.append('<div class="miniColors-colors" style="background-color: #FFF;"><div class="miniColors-colorPicker"><div class="miniColors-colorPicker-inner"></div></div>')
 					.append('<div class="miniColors-hues"><div class="miniColors-huePicker"></div></div>')
-					.css({
-						top: input.is(':visible') ? input.offset().top + input.outerHeight() : input.data('trigger').offset().top + input.data('trigger').outerHeight(),
-						left: input.is(':visible') ? input.offset().left : input.data('trigger').offset().left,
-						display: 'none'
-					})
+					.css('display', 'none')
 					.addClass( input.attr('class') );
 				
 				// Set background for colors
@@ -168,51 +166,87 @@ if(jQuery) (function($) {
 					.data('huePicker', selector.find('.miniColors-huePicker'))
 					.data('colorPicker', selector.find('.miniColors-colorPicker'))
 					.data('mousebutton', 0);
-					
+				
 				$('BODY').append(selector);
-				selector.fadeIn(100);
+				
+				// Position the selector
+				var trigger = input.data('trigger'),
+					hidden = !input.is(':visible'),
+					top = hidden ? trigger.offset().top + trigger.outerHeight() : input.offset().top + input.outerHeight(),
+					left = hidden ? trigger.offset().left : input.offset().left,
+					selectorWidth = selector.outerWidth(),
+					selectorHeight = selector.outerHeight(),
+					triggerWidth = trigger.outerWidth(),
+					triggerHeight = trigger.outerHeight(),
+					windowHeight = $(window).height(),
+					windowWidth = $(window).width(),
+					scrollTop = $(window).scrollTop(),
+					scrollLeft = $(window).scrollLeft();
+				
+				// Adjust based on viewport
+				if( (top + selectorHeight) > windowHeight + scrollTop ) top = top - selectorHeight - triggerHeight;
+				if( (left + selectorWidth) > windowWidth + scrollLeft ) left = left - selectorWidth + triggerWidth;
+				
+				// Set position and show
+				selector.css({
+					top: top,
+					left: left
+				}).fadeIn(100);
 				
 				// Prevent text selection in IE
-				selector.bind('selectstart', function() { return false; });
+				selector.on('selectstart', function() { return false; });
 				
-				$(document).bind('mousedown.miniColors touchstart.miniColors', function(event) {
+				// Hide on resize (IE7/8 trigger this when any element is resized...)
+				if( !$.browser.msie || ($.browser.msie && $.browser.version >= 9) ) {
+					$(window).on('resize.miniColors', function(event) {
+						hide(input);
+					});
+				}
+				
+				$(document).on('mousedown.miniColors touchstart.miniColors', function(event) {
 					
 					input.data('mousebutton', 1);
+					var testSubject = $(event.target).parents().andSelf();
 					
-					if( $(event.target).parents().andSelf().hasClass('miniColors-colors') ) {
+					if( testSubject.hasClass('miniColors-colors') ) {
 						event.preventDefault();
 						input.data('moving', 'colors');
 						moveColor(input, event);
 					}
 					
-					if( $(event.target).parents().andSelf().hasClass('miniColors-hues') ) {
+					if( testSubject.hasClass('miniColors-hues') ) {
 						event.preventDefault();
 						input.data('moving', 'hues');
 						moveHue(input, event);
 					}
 					
-					if( $(event.target).parents().andSelf().hasClass('miniColors-selector') ) {
+					if( testSubject.hasClass('miniColors-selector') ) {
 						event.preventDefault();
 						return;
 					}
 					
-					if( $(event.target).parents().andSelf().hasClass('miniColors') ) return;
+					if( testSubject.hasClass('miniColors') ) return;
 					
 					hide(input);
 				});
 				
 				$(document)
-					.bind('mouseup.miniColors touchend.miniColors', function(event) {
+					.on('mouseup.miniColors touchend.miniColors', function(event) {
 					    event.preventDefault();
 						input.data('mousebutton', 0).removeData('moving');
 					})
-					.bind('mousemove.miniColors touchmove.miniColors', function(event) {
+					.on('mousemove.miniColors touchmove.miniColors', function(event) {
 						event.preventDefault();
 						if( input.data('mousebutton') === 1 ) {
 							if( input.data('moving') === 'colors' ) moveColor(input, event);
 							if( input.data('moving') === 'hues' ) moveHue(input, event);
 						}
 					});
+				
+				// Fire open callback
+				if( input.data('open') ) {
+					input.data('open').call(input.get(0), '#' + hsb2hex(hsb), hsb2rgb(hsb));
+				}
 				
 			};
 			
@@ -223,17 +257,22 @@ if(jQuery) (function($) {
 				//
 				
 				// Hide all other instances if input isn't specified
-				if( !input ) input = '.miniColors';
+				if( !input ) input = $('.miniColors');
 				
-				$(input).each( function() {
+				input.each( function() {
 					var selector = $(this).data('selector');
 					$(this).removeData('selector');
 					$(selector).fadeOut(100, function() {
+						// Fire close callback
+						if( input.data('close') ) {
+							var hsb = input.data('hsb'), hex = hsb2hex(hsb);	
+							input.data('close').call(input.get(0), '#' + hex, hsb2rgb(hsb));
+						}
 						$(this).remove();
 					});
 				});
 				
-				$(document).unbind('.miniColors');
+				$(document).off('.miniColors');
 				
 			};
 			
@@ -327,7 +366,7 @@ if(jQuery) (function($) {
 				// Fire change callback
 				if( input.data('change') ) {
 					if( hex === input.data('lastChange') ) return;
-					input.data('change').call(input, '#' + hex, hsb2rgb(hsb));
+					input.data('change').call(input.get(0), '#' + hex, hsb2rgb(hsb));
 					input.data('lastChange', hex);
 				}
 				
