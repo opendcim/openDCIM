@@ -130,6 +130,11 @@ function sort2d ($array, $index){
  * Language internationalization slated for v2.0
  *
  */
+if(isset($_COOKIE["lang"])){
+	$locale=$_COOKIE["lang"];
+}else{
+	$locale=$config->ParameterArray['Locale'];
+}
 if(isset($locale)){
 	setlocale(LC_ALL,$locale);
 	bindtextdomain("openDCIM","./locale");

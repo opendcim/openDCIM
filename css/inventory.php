@@ -47,6 +47,14 @@ div.cp { position: relative;}
 .miniColors-trigger { position: absolute; top: 0; right: 0;}
 .config .center input { width: 95%; }
 
+/* #configtabs label {display: block;}
+#configtabs label + input {display: inline-block; } */
+#configtabs button { margin-left: 0.5em; margin-right: 0.5em;}
+#configtabs span { font-style: italic; font-size: -1;}
+#configtabs label:after {content:":";}
+#configtabs div:first-child + div > input {width: 20em; }
+#configtabs #reporting div:first-child + div > input {width: 4.5em; }
+
 /* index */
 .index .table, .index .table .title {background-color: white;}
 .index .table .title {font-weight: bold; font-size: 1.25em;}
