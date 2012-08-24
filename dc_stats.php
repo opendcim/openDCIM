@@ -77,72 +77,70 @@
 <div class="page dcstats" id="mapadjust">
 <?php
 	include( "sidebar.inc.php" );
-?>
-<div class="main">
+
+echo '<div class="main">
 <div class="heading">
   <div>
-	<h2><?php print $config->ParameterArray["OrgName"]; ?></h2>
-	<h3>Data Center Statistics</h3>
+	<h2>',$config->ParameterArray["OrgName"],'</h2>
+	<h3>',_("Data Center Statistics"),'</h3>
   </div>
   <div>
-	<button onclick="loadCanvas()">Overview</button>
-	<button onclick="space()">Space</button>
-	<button onclick="weight()">Weight</button>
-	<button onclick="power()">Power</button>
+	<button onclick="loadCanvas()">',_("Overview"),'</button>
+	<button onclick="space()">',_("Space"),'</button>
+	<button onclick="weight()">',_("Weight"),'</button>
+	<button onclick="power()">',_("Power"),'</button>
   </div>
 </div>
 <div class="center"><div>
 <div class="centermargin" id="dcstats">
 <div class="table border">
-  <div class="title">
-	<?php print $dc->Name; ?>
-  </div>
+  <div class="title">',$dc->Name,'</div>
   <div>
 	<div></div>
-	<div>Infrastructure</div>
-	<div>Occupied</div>
-	<div>Allocated</div>
-	<div>Available</div>
+	<div>',_("Infrastructure"),'</div>
+	<div>',_("Occupied"),'</div>
+	<div>',_("Allocated"),'</div>
+	<div>',_("Available"),'</div>
   </div>
   <div>
-	<div><?php printf( "Total U %5d", $dcStats["TotalU"] ); ?></div>
-	<div><?php printf( "%3d", $dcStats["Infrastructure"] ); ?></div>
-	<div><?php printf( "%3d", $dcStats["Occupied"] ); ?></div>
-	<div><?php printf( "%3d", $dcStats["Allocated"] ); ?></div>
-	<div><?php printf( "%3d", $dcStats["Available"] ); ?></div>
+	<div>',sprintf(_("Total U")." %5d",$dcStats["TotalU"]),'</div>
+	<div>',sprintf("%3d",$dcStats["Infrastructure"]),'</div>
+	<div>',sprintf("%3d",$dcStats["Occupied"]),'</div>
+	<div>',sprintf("%3d",$dcStats["Allocated"]),'</div>
+	<div>',sprintf("%3d",$dcStats["Available"]),'</div>
   </div>
   <div>
-	<div>Percentage</div>
-	<div><?php @printf( "%3.1f%%", $dcStats["Infrastructure"] / $dcStats["TotalU"] * 100 ); ?></div>
-	<div><?php @printf( "%3.1f%%", $dcStats["Occupied"] / $dcStats["TotalU"] * 100 ); ?></div>
-	<div><?php @printf( "%3.1f%%", $dcStats["Allocated"] / $dcStats["TotalU"] * 100 ); ?></div>
-	<div><?php @printf( "%3.1f%%", $dcStats["Available"] / $dcStats["TotalU"] * 100 ); ?></div>
+	<div>',_("Percentage"),'</div>
+	<div>',(($dcStats["TotalU"])?sprintf("%3.1f%%",$dcStats["Infrastructure"]/$dcStats["TotalU"]*100):"0"),'</div>
+	<div>',(($dcStats["TotalU"])?sprintf("%3.1f%%",$dcStats["Occupied"]/$dcStats["TotalU"]*100):"0"),'</div>
+	<div>',(($dcStats["TotalU"])?sprintf("%3.1f%%",$dcStats["Allocated"]/$dcStats["TotalU"]*100):"0"),'</div>
+	<div>',(($dcStats["TotalU"])?sprintf("%3.1f%%",$dcStats["Available"]/$dcStats["TotalU"]*100):"0"),'</div>
   </div>
   </div> <!-- END div.table -->
   <div class="table border">
   <div>
-        <div>Raw Wattage</div>
-        <div><?php printf( "%7d Watts", $dcStats["TotalWatts"] ); ?></div>
+        <div>',_("Raw Wattage"),'</div>
+        <div>',sprintf("%7d "._("Watts"),$dcStats["TotalWatts"]),'</div>
   </div>
   <div>
-        <div>BTU Computation from Watts</div>
-        <div><?php printf( "%8d BTU", $dcStats["TotalWatts"] * 3.412 ); ?></div>
+        <div>',_("BTU Computation from Watts"),'</div>
+        <div>',sprintf("%8d "._("BTU"),$dcStats["TotalWatts"]*3.412 ),'</div>
   </div>
   <div>
-        <div>Data Center Size</div>
-        <div><?php printf( "%8d Square Feet", $dc->SquareFootage ); ?></div>
+        <div>',_("Data Center Size"),'</div>
+        <div>',sprintf("%8d "._("Square Feet"),$dc->SquareFootage),'</div>
   </div>
   <div>
-        <div>Watts per Square Foot</div>
-        <div><?php printf( "%8d Watts", $dcStats["TotalWatts"] / $dc->SquareFootage ); ?></div>
+        <div>',_("Watts per Square Foot"),'</div>
+        <div>',(($dc->SquareFootage)?sprintf("%8d "._("Watts"),$dcStats["TotalWatts"]/$dc->SquareFootage):"0 "._("Watts")),'</div>
   </div>
   <div>
-        <div>Minimum Cooling Tonnage Required</div>
-        <div><?php printf( "%7d Tons", $dcStats["TotalWatts"] * 3.412  * 1.15 / 12000 ); ?></div>
+        <div>',_("Minimum Cooling Tonnage Required"),'</div>
+        <div>',sprintf("%7d "._("Tons"),$dcStats["TotalWatts"]*3.412*1.15/12000),'</div>
   </div>
 </div> <!-- END div.table -->
-</div>
-<?php
+</div>';
+
   print $dc->MakeImageMap( $facDB );
 ?>
 </div></div>

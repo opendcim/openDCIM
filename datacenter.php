@@ -22,7 +22,7 @@
 		$dc->Administrator=$_REQUEST['administrator'];
 		$dc->DrawingFileName=$_REQUEST['drawingfilename'];
 		
-		if($_REQUEST['action']=='Create'){
+		if($_REQUEST['action']=='Create' && $dc->Name!=""){
 			$dc->CreateDataCenter($facDB);
 		}else{
 			$dc->UpdateDataCenter($facDB);
@@ -42,10 +42,20 @@
   <title>openDCIM Data Center Inventory</title>
   
   <link rel="stylesheet" href="css/inventory.php" type="text/css">
+  <link rel="stylesheet" href="css/validationEngine.jquery.css" type="text/css">
   <!--[if lt IE 9]>
   <link rel="stylesheet"  href="css/ie.css" type="text/css">
   <![endif]-->
   <script type="text/javascript" src="scripts/jquery.min.js"></script>
+  <script type="text/javascript" src="scripts/jquery.validationEngine-en.js"></script>
+  <script type="text/javascript" src="scripts/jquery.validationEngine.js"></script>
+
+  <script type="text/javascript">
+	$(document).ready(function() {
+		$('#datacenterform').validationEngine({});
+	});
+  </script>
+
 </head>
 <body>
 <div id="header"></div>
@@ -57,7 +67,7 @@ echo '<div class="main">
 <h2>',$config->ParameterArray["OrgName"],'</h2>
 <h3>',_("Data Center Detail"),'</h3>
 <div class="center"><div>
-<form action="',$_SERVER["PHP_SELF"],'" method="POST">
+<form id="datacenterform" action="',$_SERVER["PHP_SELF"],'" method="POST">
 <div class="table">
 <div>
    <div><label for="datacenterid">',_("Data Center ID"),'</label></div>
@@ -73,19 +83,19 @@ echo '	</select></div>
 </div>
 <div>
    <div><label for="dcname">',_("Name"),'</label></div>
-   <div><input type="text" name="name" id="dcname" size="50" value="',$dc->Name,'"></div>
+   <div><input class="validate[required,minSize[3],maxSize[80]]" type="text" name="name" id="dcname" size="50" maxlength="80" value="',$dc->Name,'"></div>
 </div>
 <div>
    <div><label for="sqfootage">',_("Square Footage"),'</label></div>
-   <div><input type="text" name="squarefootage" id="sqfootage" size="10" value="',$dc->SquareFootage,'"></div>
+   <div><input class="validate[optional,custom[onlyNumberSp]]" type="text" name="squarefootage" id="sqfootage" size="10" maxlength="11" value="',$dc->SquareFootage,'"></div>
 </div>
 <div>
    <div><label for="deliveryaddress">',_("Delivery Address"),'</label></div>
-   <div><input type="text" name="deliveryaddress" id="deliveryaddress" size="60" value="',$dc->DeliveryAddress,'"></div>
+   <div><input class="validate[optional,minSize[1],maxSize[200]]" type="text" name="deliveryaddress" id="deliveryaddress" size="60" maxlength="200" value="',$dc->DeliveryAddress,'"></div>
 </div>
 <div>
    <div><label for="administrator">',_("Administrator"),'</label></div>
-   <div><input type="text" name="administrator" id="administrator" size=60 value="',$dc->Administrator,'"></div>
+   <div><input class="validate[optional,minSize[1],maxSize[80]]" type="text" type="text" name="administrator" id="administrator" size=60 maxlength="80" value="',$dc->Administrator,'"></div>
 </div>
 <div>
    <div><label for="drawingfilename">',_("Drawing URL"),'</label></div>
