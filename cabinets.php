@@ -29,12 +29,14 @@
 		$cab->Keylock=$_REQUEST['keylock'];
 		$cab->MaxKW=$_REQUEST['maxkw'];
 		$cab->MaxWeight=$_REQUEST['maxweight'];
-		$cab->InstallationDate=date( "Y-m-d", strtotime($_REQUEST['installationdate']) );
+		$cab->InstallationDate=$_REQUEST['installationdate'];
 
-		if(($cab->CabinetID >0)&&($_REQUEST['action']=='Update')){
-			$cab->UpdateCabinet($facDB);
-		}elseif($_REQUEST['action']=='Create'){
-			$cab->CreateCabinet($facDB);
+		if($cab->Location!=""){
+			if(($cab->CabinetID >0)&&($_REQUEST['action']=='Update')){
+				$cab->UpdateCabinet($facDB);
+			}elseif($_REQUEST['action']=='Create'){
+				$cab->CreateCabinet($facDB);
+			}
 		}
 	}
 
@@ -63,10 +65,19 @@
   
   <title>Facilities Cabinet Maintenance</title>
   <link rel="stylesheet" href="css/inventory.php" type="text/css">
+  <link rel="stylesheet" href="css/validationEngine.jquery.css" type="text/css">
   <!--[if lt IE 9]>
   <link rel="stylesheet"  href="css/ie.css" type="text/css">
   <![endif]-->
   <script type="text/javascript" src="scripts/jquery.min.js"></script>
+  <script type="text/javascript" src="scripts/jquery.validationEngine-en.js"></script>
+  <script type="text/javascript" src="scripts/jquery.validationEngine.js"></script>
+
+  <script type="text/javascript">
+	$(document).ready(function() {
+		$('#rackform').validationEngine({});
+	});
+  </script>
 </head>
 <body>
 <div id="header"></div>
@@ -78,7 +89,7 @@ echo '<div class="main">
 <h2>',$config->ParameterArray["OrgName"],'</h2>
 <h3>',_("Data Center Cabinet Inventory"),'</h3>
 <div class="center"><div>
-<form action="',$_SERVER["PHP_SELF"],'" method="POST">
+<form id="rackform" action="',$_SERVER["PHP_SELF"],'" method="POST">
 <div class="table">
 <div>
    <div>',_("Cabinet"),'</div>
@@ -98,7 +109,7 @@ echo '   </select></div>
 </div>
 <div>
    <div>',_("Location"),'</div>
-   <div><input type="text" name="location" size=8 value="',$cab->Location,'"></div>
+   <div><input type="text" class="validate[required,minSize[1],maxSize[8]]" name="location" size=8 maxlength=8 value="',$cab->Location,'"></div>
 </div>
 <div>
   <div>',_("Assigned To"),':</div>
@@ -115,23 +126,23 @@ echo '  </select>
 </div>
 <div>
    <div>',_("Cabinet Height"),' (U)</div>
-   <div><input type="text" name="cabinetheight" size=4 value="',$cab->CabinetHeight,'"></div>
+   <div><input type="text" class="validate[optional,custom[onlyNumberSp]]" name="cabinetheight" size=4 maxlength=4 value="',$cab->CabinetHeight,'"></div>
 </div>
 <div>
    <div>',_("Model"),'</div>
-   <div><input type="text" name="model" size=30 value="',$cab->Model,'"></div>
+   <div><input type="text" name="model" size=30 maxlength=80 value="',$cab->Model,'"></div>
 </div>
 <div>
    <div>',_("Key/Lock Information"),'</div>
-   <div><input type="text" name="keylock" size=30 value="',$cab->Keylock,'"></div>
+   <div><input type="text" name="keylock" size=30 maxlength=30 value="',$cab->Keylock,'"></div>
 </div>
 <div>
    <div>',_("Maximum"),' kW</div>
-   <div><input type="text" name="maxkw" size=30 value="',$cab->MaxKW,'"></div>
+   <div><input type="text" class="validate[optional,custom[onlyNumberSp]]" name="maxkw" size=30 maxlength=11 value="',$cab->MaxKW,'"></div>
 </div>
 <div>
    <div>',_("Maximum Weight"),'</div>
-   <div><input type="text" name="maxweight" size=30 value="',$cab->MaxWeight,'"></div>
+   <div><input type="text" class="validate[optional,custom[onlyNumberSp]]" name="maxweight" size=30 maxlength=11 value="',$cab->MaxWeight,'"></div>
 </div>
 <div>
    <div>',_("Date of Installation"),'</div>

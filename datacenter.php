@@ -21,11 +21,13 @@
 		$dc->DeliveryAddress=$_REQUEST['deliveryaddress'];
 		$dc->Administrator=$_REQUEST['administrator'];
 		$dc->DrawingFileName=$_REQUEST['drawingfilename'];
-		
-		if($_REQUEST['action']=='Create' && $dc->Name!=""){
-			$dc->CreateDataCenter($facDB);
-		}else{
-			$dc->UpdateDataCenter($facDB);
+
+		if($dc->Name!=""){
+			if($_REQUEST['action']=='Create'){
+				$dc->CreateDataCenter($facDB);
+			}else{
+				$dc->UpdateDataCenter($facDB);
+			}
 		}
 	}
 
