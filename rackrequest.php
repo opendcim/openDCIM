@@ -214,7 +214,6 @@
   
   <script type="text/javascript" src="scripts/jquery.min.js"></script>
   <script type="text/javascript" src="scripts/jquery-ui-1.8.18.custom.min.js"></script>
-  <script type="text/javascript" src="scripts/jquery.timepicker.js"></script>
   <script type="text/javascript" src="scripts/jquery.validationEngine-en.js"></script>
   <script type="text/javascript" src="scripts/jquery.validationEngine.js"></script>
 
