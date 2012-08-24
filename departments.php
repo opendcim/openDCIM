@@ -16,22 +16,26 @@
 
 	if(isset($_REQUEST['deptid'])&&($_REQUEST['deptid']>0)){
 		$dept->DeptID=(isset($_POST['deptid']) ? $_POST['deptid'] : $_GET['deptid']);
-		$dept->GetDeptByID( $facDB );
+		$dept->GetDeptByID($facDB);
 	}
 
 	if(isset($_POST['action'])&& (($_POST['action']=='Create') || ($_POST['action']=='Update'))){
 		$dept->DeptID=$_POST['deptid'];
-		$dept->Name=$_POST['name'];
+		$dept->Name=trim($_POST['name']);
 		$dept->ExecSponsor=$_POST['execsponsor'];
 		$dept->SDM=$_POST['sdm'];
 		$dept->Classification=$_POST['classification'];
 		$dept->DeptColor=$_POST['deptcolor'];
 
-		if($_REQUEST['action']=='Create' && ($dept->Name != '' && $dept->Name != null)){
-			$dept->CreateDepartment($facDB);
-		}else{
-			$dept->UpdateDepartment($facDB);
+		if($dept->Name!=''){
+			if($_POST['action']=='Create'){
+				$dept->CreateDepartment($facDB);
+			}else{
+				$dept->UpdateDepartment($facDB);
+			}
 		}
+		// Refresh object
+		$dept->GetDeptByID($facDB);
 	}
 	$deptList=$dept->GetDepartmentList($facDB);
 ?>
@@ -97,19 +101,19 @@ function showgroup(obj){
 </div>
 <div>
    <div><label for="deptname">',_("Department Name"),'</label></div>
-   <div><input type="text" size="50" name="name" id="deptname" value="',$dept->Name,'"></div>
+   <div><input type="text" size="50" name="name" id="deptname" maxlength="80" value="',$dept->Name,'"></div>
 </div>
 <div>
    <div><label for="deptsponsor">',_("Executive Sponsor"),'</label></div>
-   <div><input type="text" size="50" name="execsponsor" id="deptsponsor" value="',$dept->ExecSponsor,'"></div>
+   <div><input type="text" size="50" name="execsponsor" id="deptsponsor" maxlength="80" value="',$dept->ExecSponsor,'"></div>
 </div>
 <div>
    <div><label for="deptmgr">',_("Account Manager"),'</label></div>
-   <div><input type="text" size="50" name="sdm" id="deptmgr" value="',$dept->SDM,'"></div>
+   <div><input type="text" size="50" name="sdm" id="deptmgr" maxlength="80" value="',$dept->SDM,'"></div>
 </div>
 <div>
    <div><label for="deptcolor">',_("Department Color"),'</label></div>
-   <div><div class="cp"><input type="text" class="color-picker" size="50" name="deptcolor" id="deptcolor" value="',$dept->DeptColor,'"></div></div>
+   <div><div class="cp"><input type="text" class="color-picker" size="50" name="deptcolor" id="deptcolor" maxlength="7" value="',$dept->DeptColor,'"></div></div>
 </div>
 <div>
    <div><label for="deptclass">',_("Classification"),'</label></div>
