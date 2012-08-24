@@ -22,16 +22,18 @@
 	$status="";
 	if(isset($_POST["action"])&&(($_POST["action"]=="Create")||($_POST["action"]=="Update"))){
 		$mfg->ManufacturerID=$_POST["manufacturerid"];
-		$mfg->Name=$_POST["name"];
+		$mfg->Name=trim($_POST["name"]);
 
-		if($_POST["action"]=="Create"){
-			if($mfg->Name != null && $mfg->Name != ""){
-  				$mfg->AddManufacturer($facDB);
+		if($mfg->Name != null && $mfg->Name != ""){
+			if($_POST["action"]=="Create"){
+					$mfg->AddManufacturer($facDB);
+			}else{
+				$status="Updated";
+				$mfg->UpdateManufacturer($facDB);
 			}
-		}else{
-			$status="Updated";
-			$mfg->UpdateManufacturer($facDB);
 		}
+		//We either just created a manufacturer or updated it so reload from the db
+		$mfg->GetManufacturerByID($facDB);
 	}
 	$mfgList=$mfg->GetManufacturerList($facDB);
 ?>
@@ -42,10 +44,19 @@
   
   <title>openDCIM Device Class Templates</title>
   <link rel="stylesheet" href="css/inventory.php" type="text/css">
+  <link rel="stylesheet" href="css/validationEngine.jquery.css" type="text/css">
   <!--[if lt IE 9]>
   <link rel="stylesheet"  href="css/ie.css" type="text/css">
   <![endif]-->
   <script type="text/javascript" src="scripts/jquery.min.js"></script>
+  <script type="text/javascript" src="scripts/jquery.validationEngine-en.js"></script>
+  <script type="text/javascript" src="scripts/jquery.validationEngine.js"></script>
+
+  <script type="text/javascript">
+	$(document).ready(function() {
+		$('#mform').validationEngine({});
+	});
+  </script>
 </head>
 <body>
 <div id="header"></div>
@@ -58,7 +69,7 @@ echo '<div class="main">
 <h3>',_("Data Center Manufacturer Listing"),'</h3>
 <h3>',$status,'</h3>
 <div class="center"><div>
-<form action="',$_SERVER["PHP_SELF"],'" method="POST">
+<form id="mform" action="',$_SERVER["PHP_SELF"],'" method="POST">
 <div class="table">
 <div>
    <div><label for="manufacturerid">',_("Manufacturer"),'</label></div>
@@ -74,7 +85,7 @@ echo '	</select></div>
 </div>
 <div>
    <div><label for="name">',_("Name"),'</label></div>
-   <div><input type="text" name="name" id="name" value="',$mfg->Name,'"></div>
+   <div><input type="text" class="validate[required,minSize[1],maxSize[40]]" name="name" id="name" maxlength="40" value="',$mfg->Name,'"></div>
 </div>
 <div class="caption">';
 

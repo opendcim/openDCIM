@@ -14,16 +14,16 @@
 	}
 
 	$dc=new DataCenter();
-	if(isset($_REQUEST['action'])&&(($_REQUEST['action']=='Create')||($_REQUEST['action']=='Update'))){
-		$dc->DataCenterID=$_REQUEST['datacenterid'];
-		$dc->Name=$_REQUEST['name'];
-		$dc->SquareFootage=$_REQUEST['squarefootage'];
-		$dc->DeliveryAddress=$_REQUEST['deliveryaddress'];
-		$dc->Administrator=$_REQUEST['administrator'];
-		$dc->DrawingFileName=$_REQUEST['drawingfilename'];
+	if(isset($_POST['action'])&&(($_POST['action']=='Create')||($_POST['action']=='Update'))){
+		$dc->DataCenterID=$_POST['datacenterid'];
+		$dc->Name=trim($_POST['name']);
+		$dc->SquareFootage=$_POST['squarefootage'];
+		$dc->DeliveryAddress=$_POST['deliveryaddress'];
+		$dc->Administrator=$_POST['administrator'];
+		$dc->DrawingFileName=$_POST['drawingfilename'];
 
 		if($dc->Name!=""){
-			if($_REQUEST['action']=='Create'){
+			if($_POST['action']=='Create'){
 				$dc->CreateDataCenter($facDB);
 			}else{
 				$dc->UpdateDataCenter($facDB);
@@ -32,7 +32,7 @@
 	}
 
 	if(isset($_REQUEST['datacenterid'])&&$_REQUEST['datacenterid'] >0){
-		$dc->DataCenterID=$_REQUEST['datacenterid'];
+		$dc->DataCenterID=(isset($_POST['datacenterid']) ? $_POST['datacenterid'] : $_GET['datacenterid']);
 		$dc->GetDataCenter($facDB);
 	}
 	$dcList=$dc->GetDCList($facDB);

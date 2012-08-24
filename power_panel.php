@@ -22,7 +22,7 @@
 	if(isset($_POST["action"])&&(($_POST["action"]=="Create")||($_POST["action"]=="Update"))){
 		$panel->PanelID=$_POST["panelid"];
 		$panel->PowerSourceID=$_POST["powersourceid"];
-		$panel->PanelLabel=$_POST["panellabel"];
+		$panel->PanelLabel=trim($_POST["panellabel"]);
 		$panel->NumberOfPoles=$_POST["numberofpoles"];
 		$panel->MainBreakerSize=$_POST["mainbreakersize"];
 		$panel->PanelVoltage=$_POST["panelvoltage"];

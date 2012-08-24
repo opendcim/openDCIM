@@ -4,7 +4,7 @@
 
 	$user=new User();
 	$user->UserID=$_SERVER['REMOTE_USER'];
-	$user->GetUserRights( $facDB );
+	$user->GetUserRights($facDB);
 
 	if(!$user->WriteAccess){
 		// No soup for you.
@@ -16,25 +16,25 @@
 	$dept=new Department();
 
 	if(isset($_REQUEST['cabinetid'])){
-		$cab->CabinetID=$_REQUEST['cabinetid'];
+		$cab->CabinetID=(isset($_POST['cabinetid'])?$_POST['cabinetid']:$_GET['cabinetid']);
 		$cab->GetCabinet($facDB);
 	}
 
-	if(isset($_REQUEST['action'])){
-		$cab->DataCenterID=$_REQUEST['datacenterid'];
-		$cab->Location=$_REQUEST['location'];
-		$cab->AssignedTo=$_REQUEST['assignedto'];
-		$cab->CabinetHeight=$_REQUEST['cabinetheight'];
-		$cab->Model=$_REQUEST['model'];
-		$cab->Keylock=$_REQUEST['keylock'];
-		$cab->MaxKW=$_REQUEST['maxkw'];
-		$cab->MaxWeight=$_REQUEST['maxweight'];
-		$cab->InstallationDate=$_REQUEST['installationdate'];
+	if(isset($_POST['action'])){
+		$cab->DataCenterID=$_POST['datacenterid'];
+		$cab->Location=trim($_POST['location']);
+		$cab->AssignedTo=$_POST['assignedto'];
+		$cab->CabinetHeight=$_POST['cabinetheight'];
+		$cab->Model=$_POST['model'];
+		$cab->Keylock=$_POST['keylock'];
+		$cab->MaxKW=$_POST['maxkw'];
+		$cab->MaxWeight=$_POST['maxweight'];
+		$cab->InstallationDate=$_POST['installationdate'];
 
 		if($cab->Location!=""){
-			if(($cab->CabinetID >0)&&($_REQUEST['action']=='Update')){
+			if(($cab->CabinetID >0)&&($_POST['action']=='Update')){
 				$cab->UpdateCabinet($facDB);
-			}elseif($_REQUEST['action']=='Create'){
+			}elseif($_POST['action']=='Create'){
 				$cab->CreateCabinet($facDB);
 			}
 		}
