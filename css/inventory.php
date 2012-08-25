@@ -18,6 +18,7 @@ fieldset table, table {border: 1px solid grey;}
 textarea {white-space: pre;word-wrap: break-word;}
 .hide {display: none;}
 .show {display: block;}
+.greybg {background-color: lightGrey;}
 
 [readonly],[disabled] {
 	background-color: #dcdcdc;

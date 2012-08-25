@@ -629,10 +629,10 @@ echo '		<div>
 		</div>';
 		}else{
 			echo '		<div>
-			<div><label for="powersupplycount">',_("Front / Back"),'</label></div>
+			<div><label for="powersupplycount">',_("Front / Rear"),'</label></div>
 			<div><select id="chassisslots" name="chassisslots">
 		   		<option value=0'.(($dev->ChassisSlots==0)?' selected':'').'>',_("Front"),'</option>
-				<option value=1'.(($dev->ChassisSlots==1)?' selected':'').'>',_("Back"),'</option>
+				<option value=1'.(($dev->ChassisSlots==1)?' selected':'').'>',_("Rear"),'</option>
 			</select></div>
 		</div>';
 		}
@@ -679,12 +679,12 @@ echo '<fieldset class="chassis">
 		<div>
 			<div>&nbsp;</div>
 			<div>',_("Front"),'</div>
-			<div>',_("Rear"),'</div>
+			<div class="greybg">',_("Rear"),'</div>
 		</div>
 		<div>
 			<div><label for="chassisslots">',_("Number of Slots in Chassis:"),'</label></div>
 			<div><input type="text" id="chassisslots" class="optional,validate[custom[onlyNumberSp]]" name="chassisslots" size="4" value="',$dev->ChassisSlots,'"></div>
-			<div><input type="text" id="rearchassisslots" class="optional,validate[custom[onlyNumberSp]]" name="rearchassisslots" size="4" value="',$dev->RearChassisSlots,'"></div>
+			<div class="greybg"><input type="text" id="rearchassisslots" class="optional,validate[custom[onlyNumberSp]]" name="rearchassisslots" size="4" value="',$dev->RearChassisSlots,'"></div>
 		</div>
 	</div>
 	<div class="table">
@@ -696,7 +696,7 @@ echo '<fieldset class="chassis">
 		</div>';
 
 	foreach($childList as $chDev){
-		print "\t\t<div>
+		print "\t\t<div".(($chDev->ChassisSlots)?' class="greybg"':'').">
 			<div>$chDev->Position</div>
 			<div>$chDev->Height</div>
 			<div><a href=\"devices.php?deviceid=$chDev->DeviceID\">$chDev->Label</a></div>
