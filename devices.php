@@ -830,7 +830,7 @@ echo '	<div class="table">
 	}
 	// Delete rights are seperate from write rights
 	if($user->DeleteAccess && $dev->DeviceID >0){
-		echo '		  <button type="submit" name="action" value="Delete">',_("Delete"),'</button>';
+		echo '		  <button type="button" name="action" value="Delete">',_("Delete"),'</button>';
 	}
 ?>
 		</div>
@@ -848,6 +848,10 @@ echo '	<div class="table">
 		echo '   <div><a href="storageroom.php">[ ',_("Return to Navigator"),' ]</a></div>';
 	}
 ?>
+<div id="dialog-confirm" title="Verify Delete Device" class="hide">
+	<p><span class="ui-icon ui-icon-alert" style="float:left; margin:0 7px 20px 0;"></span>This device will be deleted and there is no undo. Are you sure?</p>
+</div>
+
 </div><!-- END div.main -->
 </div><!-- END div.page -->
 <script type="text/javascript">
@@ -856,6 +860,25 @@ echo '	<div class="table">
 		setTimeout(function(){
 			expandToItem('datacenters','cab<?php echo $cab->CabinetID;?>');
 		},500);
+		$('button[value="Delete"]').click(function(e){
+			var form=$(this).parents('form');
+			var btn=$(this);
+			$( "#dialog-confirm" ).dialog({
+				resizable: false,
+				height:150,
+				modal: true,
+				buttons: {
+					"Yes": function() {
+						$( this ).dialog( "close" );
+						form.append('<input type="hidden" name="'+btn.attr("name")+'" value="'+btn.val()+'">');
+						form.submit();
+					},
+					"No": function() {
+						$( this ).dialog( "close" );
+					}
+				}
+			});
+		});
 	});
 </script>
 

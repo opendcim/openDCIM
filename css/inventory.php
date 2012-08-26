@@ -50,6 +50,7 @@ div.cp { position: relative;}
 
 /* #configtabs label {display: block;}
 #configtabs label + input {display: inline-block; } */
+#configtabs { min-width: 670px; }
 #configtabs button { margin-left: 0.5em; margin-right: 0.5em;}
 #configtabs span { font-style: italic; font-size: -1;}
 #configtabs label:after {content:":"; margin-right: 0.5em;}
