@@ -65,6 +65,10 @@
 		$("#configtabs input[defaultvalue]").each(function(){
 			$(this).parent().after('<div><button type="button">&lt;--</button></div><div><span>'+$(this).attr('defaultvalue')+'</span></div>');
 		});
+		$("#configtabs input").each(function(){
+			$(this).attr('id', $(this).attr('name'));
+			$(this).removeAttr('defaultvalue');
+		});
 		$("#configtabs button").each(function(){
 			var a = $(this).parent().prev().find('input');
 			$(this).click(function(){
