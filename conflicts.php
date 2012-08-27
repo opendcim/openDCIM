@@ -95,7 +95,7 @@
 			$(this).click(function(){
 				$.ajax({
 					type: 'POST',
-					url: 'test.php',
+					url: 'conflicts.php',
 					data: 'DeviceID='+devid+'&power='+ps,
 					success: function(edit){
 						editbox.unbind('click');
@@ -124,7 +124,7 @@
 									con=p.prev().text();
 									$.ajax({
 										type: 'POST',
-										url: 'test.php',
+										url: 'conflicts.php',
 										data: 'DeviceID='+devid+'&power='+ps+'&pduid='+pduid+'&con='+con,
 										success: function(data){
 											if(data=='ok'){
