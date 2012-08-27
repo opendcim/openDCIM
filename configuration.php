@@ -276,8 +276,8 @@ echo '<div class="main">
 					<div><input type="text" defaultvalue="',$config->defaults["SMTPUser"],'" name="SMTPUser" value="',$config->ParameterArray["SMTPUser"],'"></div>
 				</div>
 				<div>
-					<div><label for="SMTPPass">',_("SMTP Password"),'</label></div>
-					<div><input type="text" defaultvalue="',$config->defaults["SMTPPass"],'" name="SMTPPass" value="',$config->ParameterArray["SMTPPass"],'"></div>
+					<div><label for="SMTPPassword">',_("SMTP Password"),'</label></div>
+					<div><input type="text" defaultvalue="',$config->defaults["SMTPPassword"],'" name="SMTPPassword" value="',$config->ParameterArray["SMTPPassword"],'"></div>
 				</div>
 				<div>
 					<div><label for="MailToAddr">',_("Mail To"),'</label></div>
