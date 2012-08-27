@@ -15,9 +15,15 @@
 	if(isset($_POST['DeviceID']) && isset($_POST['power'])){
 		if(isset($_POST['con']) && isset($_POST['pduid'])){
 			$pwrConnection=new PowerConnection();
+			$pwrConnection->DeviceID=$_POST['DeviceID'];
 			$pwrConnection->PDUID=$_POST['pduid'];
 			$pwrConnection->PDUPosition=$_POST['con'];
-			$pwrConnection->RemoveConnection($facDB);
+			$pwrConnection->DeviceConnNumber=$_POST['power'];
+			if(isset($_POST['e'])){
+				$pwrConnection->CreateConnection($facDB);
+			}else{
+				$pwrConnection->RemoveConnection($facDB);
+			}
 			echo 'ok';
 		}else{
 			$dev=new Device();
@@ -105,13 +111,30 @@
 						editbox.html(edit);
 						editbox.find('.table > div:first-child ~ div > div:last-child').each(function(){
 							if($(this).hasClass('bold')){
+								var p=$(this).prev();
 								var row=$(this).parent();
 								$(this).after('<div>Edit</div>');
 								$(this).next().click(function(){
 									$(this).prev().html('<input value="'+$(this).prev().text()+'"></input>');
-								});
-								$(this).children('input').change(function(){
-									// issue ajax update command then change this back from an input to plain text
+									$(this).prev().children('input').change(function(){
+										// issue ajax update command then change this back from an input to plain text
+										var par=$(this).parent();
+										pduid=p.prev().attr('data');
+										con=p.text();
+										ps=$(this).val();
+										console.log('DeviceID='+devid+'&power='+ps+'&pduid='+pduid+'&con='+con+'&e=1');
+										$.ajax({
+											type: 'POST',
+											url: 'conflicts.php',
+											data: 'DeviceID='+devid+'&power='+ps+'&pduid='+pduid+'&con='+con+'&e=1',
+											success: function(data){
+												if(data=='ok'){
+													par.text(ps);
+												//	row.remove();
+												}
+											}
+										}); 
+									});
 								});
 							}
 						});
