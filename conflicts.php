@@ -117,6 +117,7 @@
 						});
 						editbox.find('.table > div:first-child ~ div > div:last-child').each(function(){
 							if($(this).prev().hasClass('bold')){
+								var p=$(this).prev();
 								var row=$(this).parent();
 								$(this).after('<div>Delete</div>');
 								$(this).next().click(function(){
