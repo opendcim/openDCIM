@@ -72,8 +72,8 @@ class Cabinet {
 
 	function GetCabinet( $db ) {
 		$select_sql = "select * from fac_Cabinet where CabinetID=\"" . intval($this->CabinetID) . "\"";
-
-		if ( ! $result = mysql_query( $select_sql, $db ) ) {
+		$result=mysql_query($select_sql,$db);
+		if (mysql_num_rows($result)==0 || !$result){
 			// Error retrieving record
 			$this->CabinetID = null;
 			$this->DataCenterID = null;
