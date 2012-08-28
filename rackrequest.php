@@ -162,7 +162,7 @@
 				$dev->CreateDevice($facDB);
 				
 				$htmlMessage.="<p>"._("Your request for racking up the device labeled")." $req->Label "._("has been completed").".</p>
-				<p>"._("To view your device in its final location click")." <a href=\"https://{$_SERVER['SERVER_NAME']}{$_SERVER['PHP_SELF']}/devices.php?deviceid=$dev->DeviceID\"> "._("this link")."</a>.</p>
+				<p>"._("To view your device in its final location click")." <a href=\"".redirect("devices.php?deviceid=$dev->DeviceID")."\"> "._("this link")."</a>.</p>
 				</body></html>";
 
 				$message->setBody($htmlMessage,'text/html');
