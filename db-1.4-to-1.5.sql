@@ -27,3 +27,9 @@ ALTER TABLE fac_SwitchConnection ADD UNIQUE KEY (SwitchDeviceID,SwitchPortNumber
 --
 
 ALTER TABLE fac_Device ADD RearChassisSlots SMALLINT(6) NOT NULL AFTER ChassisSlots;
+
+--
+-- Added an attribute for users to disable accounts
+--
+
+ALTER TABLE fac_User ADD COLUMN Disabled tinyint(1) NOT NULL;

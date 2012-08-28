@@ -30,6 +30,7 @@
 			$userRights->RackRequest=(isset($_POST['rackrequest']))?1:0;
 			$userRights->RackAdmin=(isset($_POST['rackadmin']))?1:0;
 			$userRights->SiteAdmin=(isset($_POST['siteadmin']))?1:0;
+			$userRights->Disabled=(isset($_POST['disabled']))?1:0;
 
 			if($_POST['action']=='Create'){
   				$userRights->CreateUser($facDB);
@@ -49,6 +50,7 @@
 	$request=($userRights->RackRequest)?"checked":"";
 	$rackadmin=($userRights->RackAdmin)?"checked":"";
 	$admin=($userRights->SiteAdmin)?"checked":"";
+	$disabled=($userRights->Disabled)?"checked":"";
 
 ?>
 <!doctype html>
@@ -109,6 +111,7 @@ echo '	</select></div>
 	<input name="rackrequest" id="rackrequest" type="checkbox"',$request,'><label for="rackrequest">',_("Enter Rack Requests"),'</label><br>
 	<input name="rackadmin" id="rackadmin" type="checkbox"',$rackadmin,'><label for="rackadmin">',_("Complete Rack Requests"),'</label><br>
 	<input name="siteadmin" id="siteadmin" type="checkbox"',$admin,'><label for="siteadmin">',_("Manage Site and Users"),'</label><br>
+	<input name="disabled" id="disabled" type="checkbox"',$disabled,'><label for="disabled">',_("Disabled"),'</label><br>	
    </div>
 </div>
 <div class="caption">';

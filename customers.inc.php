@@ -370,6 +370,7 @@ class User {
 	var $RackRequest;
 	var $RackAdmin;
 	var $SiteAdmin;
+	var $Disabled;
 
 	function GetUserRights( $db ) {
 		/* Check the table to see if there are any users
@@ -390,19 +391,10 @@ class User {
 			$this->RackRequest = true;
 			$this->RackAdmin = true;
 			$this->SiteAdmin = true;
+			$this->Disabled = false;
 
 			$this->CreateUser( $db );
 		}
-
-		/* Set object attributes based upon database values for supplied UserID */
-		$this->Name = "";
-		$this->ReadAccess = false;
-		$this->WriteAccess = false;
-		$this->DeleteAccess = false;
-		$this->ContactAdmin = false;
-		$this->RackRequest = false;
-		$this->RackAdmin = false;
-		$this->SiteAdmin = false;
 
 		$selectSQL = "select * from fac_User where UserID=\"" . addslashes($this->UserID) . "\"";
 
@@ -420,13 +412,25 @@ class User {
 		$this->RackRequest = $userRow["RackRequest"];
 		$this->RackAdmin = $userRow["RackAdmin"];
 		$this->SiteAdmin = $userRow["SiteAdmin"];
+		$this->Disabled = $userRow["Disabled"];
 
+		/* Just in case someone disabled a user, but didn't remove all of their individual rights */
+		if ( $this->Disabled ) {
+			$this->ReadAccess = false;
+			$this->WriteAccess = false;
+			$this->DeleteAccess = false;
+			$this->ContactAdmin = false;
+			$this->RackRequest = false;
+			$this->RackAdmin = false;
+			$this->SiteAdmin = false;
+		}
+		
 		return;
 	}
 
 	function GetUserList( $db ) {
 		/* Return an array of objects relating to all defined users. */
-		$sql = "select * from fac_User order by UserID";
+		$sql = "select * from fac_User order by Name ASC";
 		$result = mysql_query( $sql, $db );
 
 		$userList = array();
@@ -444,6 +448,7 @@ class User {
 			$userList[$userNum]->RackRequest = $userRow["RackRequest"];
 			$userList[$userNum]->RackAdmin = $userRow["RackAdmin"];
 			$userList[$userNum]->SiteAdmin = $userRow["SiteAdmin"];
+			$userList[$userNum]->Disabled = $userRow["Disabled"];
 		}
 
 		return $userList;
@@ -451,7 +456,7 @@ class User {
 
 	function CreateUser( $db ) {
 		/* Create a user record based upon the current object attribute values. */
-		$sql = sprintf( "insert into fac_User values (\"%s\", \"%s\", %d, %d, %d, %d, %d, %d, %d )", addslashes( $this->UserID ), addslashes( $this->Name ), $this->ReadAccess, $this->WriteAccess, $this->DeleteAccess, $this->ContactAdmin, $this->RackRequest, $this->RackAdmin, $this->SiteAdmin );
+		$sql = sprintf( "insert into fac_User values (\"%s\", \"%s\", %d, %d, %d, %d, %d, %d, %d, %d )", addslashes( $this->UserID ), addslashes( $this->Name ), $this->ReadAccess, $this->WriteAccess, $this->DeleteAccess, $this->ContactAdmin, $this->RackRequest, $this->RackAdmin, $this->SiteAdmin, $this->Disabled );
 		$result = mysql_query( $sql, $db );
 
 		return $result;
@@ -459,7 +464,7 @@ class User {
 
 	function UpdateUser( $db ) {
 		/* Update a user record based upon the vurrent object attribute values, with UserID as key. */
-		$sql = sprintf( "update fac_User set Name=\"%s\", ReadAccess=%d, WriteAccess=%d, DeleteAccess=%d, ContactAdmin=%d, RackRequest=%d, RackAdmin=%d, SiteAdmin=%d where UserID=\"%s\"", addslashes( $this->Name ), $this->ReadAccess, $this->WriteAccess, $this->DeleteAccess, $this->ContactAdmin, $this->RackRequest, $this->RackAdmin, $this->SiteAdmin, addslashes( $this->UserID ) );
+		$sql = sprintf( "update fac_User set Name=\"%s\", ReadAccess=%d, WriteAccess=%d, DeleteAccess=%d, ContactAdmin=%d, RackRequest=%d, RackAdmin=%d, SiteAdmin=%d, Disabled=%d where UserID=\"%s\"", addslashes( $this->Name ), $this->ReadAccess, $this->WriteAccess, $this->DeleteAccess, $this->ContactAdmin, $this->RackRequest, $this->RackAdmin, $this->SiteAdmin, $this->Disabled, addslashes( $this->UserID ) );
 
 		$result = mysql_query( $sql, $db );
 

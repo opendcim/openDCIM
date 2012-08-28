@@ -352,6 +352,7 @@ CREATE TABLE fac_User (
   RackRequest tinyint(1) NOT NULL,
   RackAdmin tinyint(1) NOT NULL,
   SiteAdmin tinyint(1) NOT NULL,
+  Disabled tinyint(1) NOT NULL,
   PRIMARY KEY (UserID)
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1;
 
