@@ -794,12 +794,12 @@ echo '	<div class="table">
 			// We have no network information. Display links to switches in cabinet?
 			echo '		<div>		<div><a name="power"></a></div>		<div>',("No network connections defined.  You can add connections from a switch device."),'</div></div>';
 		}else{
-			print "		<div>\n		  <div><a name=\"net\">$chassis "._('Connections')."</a><br>("._('Managed at Switch').")</div>\n		  <div><div class=\"table border\"><div><div>"._('Device Port')."</div><div>"._('Switch')."</div><div>"._('Switch Port')."</div><div>"._('Notes')."</div></div>\n";
+			print "		<div>\n		  <div><a name=\"net\">$chassis "._('Connections')."</a><br>("._('Managed at Switch').")</div>\n		  <div><div class=\"table border\"><div><div>"._('Switch')."</div><div>"._('Switch Port')."</div><div>"._('Device Port')."</div><div>"._('Notes')."</div></div>\n";
 			$tmpDev = new Device();
 			foreach($patchList as $patchConn){
 				$tmpDev->DeviceID = $patchConn->SwitchDeviceID;
 				$tmpDev->GetDevice( $facDB );
-				print "			<div><div>$patchConn->EndpointPort</div><div><a href=\"devices.php?deviceid=$patchConn->SwitchDeviceID#net\">$tmpDev->Label</a></div><div><a href=\"changepatch.php?switchid=$patchConn->SwitchDeviceID&portid=$patchConn->SwitchPortNumber\">$patchConn->SwitchPortNumber</a></div><div>$patchConn->Notes</div></div>\n";
+				print "			<div><div><a href=\"devices.php?deviceid=$patchConn->SwitchDeviceID#net\">$tmpDev->Label</a></div><div><a href=\"changepatch.php?switchid=$patchConn->SwitchDeviceID&portid=$patchConn->SwitchPortNumber\">$patchConn->SwitchPortNumber</a></div><div>$patchConn->EndpointPort</div><div>$patchConn->Notes</div></div>\n";
 			}
 			print "			</div><!-- END div.table -->\n		  </div>\n		</div>\n";
 		}      

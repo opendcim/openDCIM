@@ -48,6 +48,41 @@
 	}
 
 
+	if(isset($_POST['EndpointDeviceID'])){
+		$networkPatches=new SwitchConnection();
+		$networkPatches->EndpointDeviceID=$_POST['EndpointDeviceID'];
+		if(isset($_POST['SwitchDeviceID']) && isset($_POST['SwitchPortNumber'])){
+			$networkPatches->SwitchDeviceID=$_POST['SwitchDeviceID'];
+			$networkPatches->SwitchPortNumber=$_POST['SwitchPortNumber'];
+			if(isset($_POST['EndpointPort'])){ // Update Connection
+				$networkPatches->GetSwitchPortConnector($facDB);
+				$networkPatches->EndpointPort=$_POST['EndpointPort'];
+				$networkPatches->UpdateConnection($facDB);
+				print "ok";
+			}else{ // Delete Connection
+				$networkPatches->RemoveConnection($facDB);
+				print "ok";
+			}
+		}else{
+			$patchList=$networkPatches->GetEndpointConnections($facDB);
+			$tmpDev=new Device();
+			$tmpDev->DeviceID=$networkPatches->EndpointDeviceID;
+			$tmpDev->GetDevice($facDB);
+
+			print "<span>Server Name: <a href=\"devices.php?deviceid=$tmpDev->DeviceID\">$tmpDev->Label</a></span><span># Data Ports: $tmpDev->Ports</span><div class=\"table border\">\n				<div><div>"._('Switch')."</div><div>"._('Switch Port')."</div><div>"._('Device Port')."</div><div>"._('Notes')."</div></div>\n";
+
+				foreach($patchList as $patchConn){
+					$tmpDev->DeviceID=$patchConn->SwitchDeviceID;
+					$tmpDev->GetDevice($facDB);
+					print "\t\t\t\t<div><div data=\"$patchConn->SwitchDeviceID\"><a href=\"devices.php?deviceid=$patchConn->SwitchDeviceID\">$tmpDev->Label</a></div><div><a href=\"changepatch.php?switchid=$patchConn->SwitchDeviceID&portid=$patchConn->SwitchPortNumber\">$patchConn->SwitchPortNumber</a></div><div>$patchConn->EndpointPort</div><div>$patchConn->Notes</div></div>\n";
+				}
+			print "</div><!-- END div.table -->\n";
+		}
+		exit;
+	}
+
+
+
 	$body="";
 
 	// This will only have a conflict if someone hand entered data.  These will be unique cases that we should look at by hand.
@@ -59,7 +94,7 @@
 			$body.=print_r($row, TRUE);
 		}
 	}else{
-		$body.="No collisions detected for Power Connections (PDUID,PDUPosition)<br>\n";
+		$body.="<p>No collisions detected for Power Connections (PDUID,PDUPosition)</p>\n";
 	}
 
 	$sql="SELECT DeviceID, CONCAT(DeviceID,'-',DeviceConnNumber) AS KEY2, DeviceConnNumber, COUNT(DeviceID) AS Count FROM fac_PowerConnection GROUP BY KEY2 HAVING (COUNT(KEY2)>1) ORDER BY DeviceID ASC;";
@@ -76,6 +111,34 @@
 		$body.="No collisions detected for Power Connections (DeviceID,DeviceConnNumber)<br>\n";
 	}
 
+	// Check for duplicated switch ports same as initial power check this should only have a conflict and hand altered data.
+	$sql="SELECT SwitchDeviceID, CONCAT(SwitchDeviceID,'-',SwitchPortNumber) AS KEY1, COUNT(SwitchDeviceID) AS Count FROM fac_SwitchConnection GROUP BY KEY1 HAVING (COUNT(KEY1)>1) ORDER BY SwitchDeviceID ASC;";
+	$results=mysql_query($sql, $facDB);
+	if(mysql_num_rows($results)>0){
+		$body.="<p>This is a problem that will need a custom fix.  Please email the output below to wilbur@wilpig.org</p>";
+		while($row=mysql_fetch_array($results)){
+			$body.=print_r($row, TRUE);
+		}
+	}else{
+		$body.="<p>No collisions detected for Switch Connections (SwitchDeviceID,SwitchPortNumber)</p>\n";
+	}
+
+
+	$sql="SELECT SwitchDeviceID, SwitchPortNumber, EndpointDeviceID, EndpointPort, CONCAT(EndpointDeviceID,'-',EndpointPort) AS KEY2, COUNT(EndpointDeviceID) AS Count FROM fac_SwitchConnection GROUP BY KEY2 HAVING (COUNT(KEY2)>1) ORDER BY EndpointDeviceID ASC;";
+	$results=mysql_query($sql, $facDB);
+	if(mysql_num_rows($results)>0){
+		$body.="<p>The list below are devices that have multiple connections to the same network card.</p>";
+		$body.='<div class="table border network"><div><div>DeviceID</div><div>KEY2</div><div>Count</div></div>';
+		while($row=mysql_fetch_array($results)){
+			$body.="<div><div>{$row['EndpointDeviceID']}</div><div>{$row['KEY2']}</div><div data=\"{$row['EndpointPort']}\">{$row['Count']}</div></div>";
+		}
+		$body.='</div>';
+	}else{
+		$body.="<p>No collisions detected for Switch Connections (EndpointDeviceID,EndpointPort)</p>\n";
+	}
+
+
+
 ?>
 <!doctype html>
 <html>
@@ -91,7 +154,7 @@
   <script type="text/javascript" src="scripts/jquery.min.js"></script>
 <script type="text/javascript">
 	$(document).ready(function() {
-		$('.power > div:first-child ~ div').each(function(){
+		$('.power > div:first-child ~ div, .network > div:first-child ~ div').each(function(){
 			$(this).append('<div>edit</div>');
 		});
 		$('.power > div:first-child ~ div > div:last-child').each(function(){
@@ -122,7 +185,6 @@
 										pduid=p.prev().attr('data');
 										con=p.text();
 										ps=$(this).val();
-										console.log('DeviceID='+devid+'&power='+ps+'&pduid='+pduid+'&con='+con+'&e=1');
 										$.ajax({
 											type: 'POST',
 											url: 'conflicts.php',
@@ -150,6 +212,70 @@
 										type: 'POST',
 										url: 'conflicts.php',
 										data: 'DeviceID='+devid+'&power='+ps+'&pduid='+pduid+'&con='+con,
+										success: function(data){
+											if(data=='ok'){
+												row.remove();
+											}
+										}
+									});
+								});
+							}
+						});
+					}
+				});
+			});
+		});
+		$('.network > div:first-child ~ div > div:last-child').each(function(){
+			var editbox=$(this);
+			var devid=$(this).prev().prev().prev().text();
+			var dp=$(this).prev().attr('data');
+			$(this).click(function(){
+				$.ajax({
+					type: 'POST',
+					url: 'conflicts.php',
+					data: 'EndpointDeviceID='+devid,
+					success: function(edit){
+						editbox.unbind('click');
+						var sw;
+						var sp;
+						// get an edit form
+						editbox.html(edit);
+						editbox.find('.table > div:first-child ~ div > div:nth-child(3)').each(function(){
+							var nic=$(this);
+							if(nic.text()==dp){
+								var row=$(this).parent();
+								row.append('<div>Edit</div>');
+								$(this).next().next().click(function(){
+									sw=row.find('div:first-child').attr('data');
+									sp=$(this).prev().prev().prev().text();
+									nic.html('<input value="'+nic.text()+'"></input>');
+									nic.children('input').change(function(){
+										var change=$(this).val();
+										$.ajax({
+											type: 'POST',
+											url: 'conflicts.php',
+											data: 'EndpointDeviceID='+devid+'&SwitchDeviceID='+sw+'&SwitchPortNumber='+sp+'&EndpointPort='+$(this).val(),
+											success: function(data){
+												if(data=='ok'){
+													nic.text(change);
+												}
+											}
+										});
+									});
+								});
+							}
+						});
+						editbox.find('.table > div:first-child ~ div > div:nth-child(3)').each(function(){
+							if($(this).text()==dp){
+								var row=$(this).parent();
+								row.append('<div>Delete</div>');
+								row.find('div:last-child').click(function(){
+									sw=row.find('div:first-child').attr('data');
+									sp=row.find('div:nth-child(2)').text();
+									$.ajax({
+										type: 'POST',
+										url: 'conflicts.php',
+										data: 'EndpointDeviceID='+devid+'&SwitchDeviceID='+sw+'&SwitchPortNumber='+sp,
 										success: function(data){
 											if(data=='ok'){
 												row.remove();
