@@ -1,4 +1,6 @@
 <?php
+	$devMode = true;
+
 	require_once('db.inc.php');
 	require_once('facilities.inc.php');
 
@@ -93,8 +95,10 @@
 		while($row=mysql_fetch_array($results)){
 			$body.=print_r($row, TRUE);
 		}
+		$conflicts+=0;
 	}else{
 		$body.="<p>No collisions detected for Power Connections (PDUID,PDUPosition)</p>\n";
+		$conflicts+=1;
 	}
 
 	$sql="SELECT DeviceID, CONCAT(DeviceID,'-',DeviceConnNumber) AS KEY2, DeviceConnNumber, COUNT(DeviceID) AS Count FROM fac_PowerConnection GROUP BY KEY2 HAVING (COUNT(KEY2)>1) ORDER BY DeviceID ASC;";
@@ -107,8 +111,10 @@
 			$body.="<div><div>{$row['DeviceID']}</div><div data={$row['DeviceConnNumber']}>{$row['KEY2']}</div><div>{$row['Count']}</div></div>";
 		}
 		$body.='</div>';
+		$conflicts+=0;
 	}else{
 		$body.="No collisions detected for Power Connections (DeviceID,DeviceConnNumber)<br>\n";
+		$conflicts+=1;
 	}
 
 	// Check for duplicated switch ports same as initial power check this should only have a conflict and hand altered data.
@@ -119,8 +125,10 @@
 		while($row=mysql_fetch_array($results)){
 			$body.=print_r($row, TRUE);
 		}
+		$conflicts+=0;
 	}else{
 		$body.="<p>No collisions detected for Switch Connections (SwitchDeviceID,SwitchPortNumber)</p>\n";
+		$conflicts+=1;
 	}
 
 
@@ -133,11 +141,16 @@
 			$body.="<div><div>{$row['EndpointDeviceID']}</div><div>{$row['KEY2']}</div><div data=\"{$row['EndpointPort']}\">{$row['Count']}</div></div>";
 		}
 		$body.='</div>';
+		$conflicts+=0;
 	}else{
 		$body.="<p>No collisions detected for Switch Connections (EndpointDeviceID,EndpointPort)</p>\n";
+		$conflicts+=1;
 	}
 
-
+	if($conflicts==4){
+			header('Location: '.redirect("install.php"));
+			exit;
+	}
 
 ?>
 <!doctype html>
@@ -298,6 +311,8 @@ div.table > div > div {vertical-align: top;}
 .disabled:after {
 	content: " - ok";
 }
+.center > div > p { max-width: 400px;}
+.center > div > hr ~ p { display: list-item; }
 </style>
 
 </head>
@@ -310,7 +325,11 @@ div.table > div > div {vertical-align: top;}
 <div class="main">
 <h2><?php echo $config->ParameterArray['OrgName']; ?></h2>
 <div class="center"><div>
-
+<p>The tables below show devices that are currently sharing resources and will need to be resolved before the new database update can be applied.</p>
+<p>The Key in each table is made up of the DeviceID and the ID of resource that is currently being shared incorrectly.</p>
+<p>Click &quot;edit&quot; in each row to display the records that are in conflict.  Either use the word &quot;Delete&quot; to remove the connection outright or use the &quot;Edit&quot; option to change the value in the box.</p>
+<p>After you have finished making changes <a href="conflicts.php">reload this page</a> until there are no conflicts remaing.  It will then automatically put you back to the installer and finish applying the update.</p>
+<hr>
 
 
 <?php echo $body; ?>
