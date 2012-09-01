@@ -141,6 +141,36 @@ class DataCenter {
 	 }
 	 return $mapHTML;
 	}
+
+	function MakeImageMapNoLinks( $db ) {
+	 $mapHTML = "";
+	 
+	 if ( strlen($this->DrawingFileName) > 0 ) {
+	   $mapfile = "drawings/" . $this->DrawingFileName;
+	   
+	   if ( file_exists( $mapfile ) ) {
+	     list($width, $height, $type, $attr)=getimagesize($mapfile);
+	     $mapHTML.="<div class=\"canvas\">\n";
+		 $mapHTML.="<img src=\"css/blank.gif\" usemap=\"#datacenter\" width=\"$width\" height=\"$height\" alt=\"clearmap over canvas\">\n";
+	     $mapHTML.="<map name=\"datacenter\">\n";
+	     
+	     $selectSQL="select * from fac_Cabinet where DataCenterID=\"" . intval($this->DataCenterID) . "\"";
+		 $result = mysql_query( $selectSQL, $db );
+	     
+	     while ( $cabRow = mysql_fetch_array( $result ) ) {
+	       $mapHTML.="<area href=\"#\" shape=\"rect\" coords=\"" . $cabRow["MapX1"] . ", " . $cabRow["MapY1"] . ", " . $cabRow["MapX2"] . ", " . $cabRow["MapY2"] . "\" alt=\"".$cabRow["Location"]."\" title=\"".$cabRow["Location"]."\">\n";
+	     }
+	     
+	     $mapHTML.="</map>\n";
+	     $mapHTML.="<canvas id=\"mapCanvas\" width=\"$width\" height=\"$height\"></canvas>\n";
+             
+	     
+	     $mapHTML .= "</div>\n";
+	    }
+	 }
+	 return $mapHTML;
+	}
+
 	function DrawCanvas($db){
 		$script="";	
 		// check to see if map was set
