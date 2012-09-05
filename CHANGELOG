@@ -6,6 +6,18 @@ GitHub, at http://github.com/samilliken/openDCIM/issues, where you can also down
 the latest development version.  However, it is not advised to pull from GitHub unless you
 are simply testing, as some functionality can break between releases.
 
+Changes in 1.5
+--------------
+* Better error-checking
+* Ability to disable users (don't delete them since they are foreign keys for auditing)
+* Chassis/Blade tracking for front and rear slots
+* Ability to enter SNMP temperature sensor information with each cabinet
+* Barcode scanning for Serial # and Asset Tag in devices
+-- Requires the ZXing app on mobile device
+-- Does not work correctly with Chrome Browser on Android
+-- Works perfectly with Dolphin Browser on Android
+-- Need testers for other platforms
+
 Changes in 1.4
 --------------
 * Style sheet colors are now configuration items
