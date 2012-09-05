@@ -241,6 +241,37 @@
   <script type="text/javascript" src="scripts/jquery-ui-1.8.18.custom.min.js"></script>
   <script type="text/javascript" src="scripts/jquery.validationEngine-en.js"></script>
   <script type="text/javascript" src="scripts/jquery.validationEngine.js"></script>
+<SCRIPT type="text/javascript" >
+var nextField;
+function getScan(fieldName){
+    var href=window.location.href;
+    var ptr=href.lastIndexOf("#");
+    if(ptr>0){
+        href=href.substr(0,ptr);
+    }
+	nextField=fieldName;
+    window.location.href="zxing://scan/?ret="+escape(href+"#{CODE}");
+}
+var changingHash=false;
+function getHash(){
+	if ( !changingHash ) {
+		changingHash=true;
+		var hash=window.location.hash.substr(1);
+		switch (nextField) {
+			case "serialno":
+				$('#serialno').val(unescape(hash));
+				break;
+			case "assettag":
+				$('#assettag').val(unescape(hash));
+				break;
+			default:
+				break;
+		}
+		// window.location.hash="";
+		changingHash=false;
+	}
+}
+</SCRIPT>
 
 <script type="text/javascript">
 /* 
@@ -432,7 +463,7 @@ function setPreferredLayout() {<?php if(isset($_COOKIE["layout"]) && strtolower(
 </script>
 
 </head>
-<body onLoad="setPreferredLayout()">
+<body onLoad="setPreferredLayout()" onhashchange="getHash()">
 <div id="header"></div>
 <div class="page device">
 <?php
@@ -463,11 +494,13 @@ echo '<div class="main">
 		</div>
 		<div>
 		   <div><label for="serialno">'._("Serial Number").'</label></div>
-		   <div><input type="text" name="serialno" id="serialno" size="40" value="'.$dev->SerialNo.'"></div>
+		   <div><input type="text" name="serialno" id="serialno" size="40" value="'.$dev->SerialNo.'">
+		   <button type="button" onclick="getScan(\'serialno\')">',_("Scan Barcode"),'</button></div>
 		</div>
 		<div>
 		   <div><label for="assettag">'._("Asset Tag").'</label></div>
-		   <div><input type="text" name="assettag" id="assettag" size="20" value="'.$dev->AssetTag.'"></div>
+		   <div><input type="text" name="assettag" id="assettag" size="20" value="'.$dev->AssetTag.'">
+		   <button type="button" onclick="getScan(\'assettag\')">',_("Scan Barcode"),'</button></div>
 		</div>
 		<div>
 		   <div><label for="mfgdate">'._("Manufacture Date").'</label></div>
