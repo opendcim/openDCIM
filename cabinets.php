@@ -141,7 +141,7 @@ echo '  </select>
 </div>
 <div>
    <div>',_("Maximum"),' kW</div>
-   <div><input type="text" class="validate[optional,custom[onlyNumberSp]]" name="maxkw" size=30 maxlength=11 value="',$cab->MaxKW,'"></div>
+   <div><input type="text" class="validate[optional,custom[number]]" name="maxkw" size=30 maxlength=11 value="',$cab->MaxKW,'"></div>
 </div>
 <div>
    <div>',_("Maximum Weight"),'</div>
