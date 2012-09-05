@@ -403,7 +403,11 @@ class PowerDistribution {
 			exec($pollCommand, $statsOutput);
 			// need error checking here
 
-			$upTime=end(explode(")",$statsOutput[0]));
+			if ( count( $statsOutput ) > 0 )
+				$upTime=end(explode(")",$statsOutput[0]));
+			else
+				$upTime = "Unknown";
+	
 			return $upTime;
 		}
 	}
@@ -427,7 +431,10 @@ class PowerDistribution {
 			exec( $pollCommand, $statsOutput );
 			// need error checking here
 
-			$version = str_replace( "\"", "", end( explode( " ", $statsOutput[0] ) ) );
+			if ( count( $statsOutput ) > 0 )
+				$version = str_replace( "\"", "", end( explode( " ", $statsOutput[0] ) ) );
+			else
+				$version = "Unknown";
 			return $version;
 		}
 	}

@@ -33,3 +33,23 @@ ALTER TABLE fac_Device ADD RearChassisSlots SMALLINT(6) NOT NULL AFTER ChassisSl
 --
 
 ALTER TABLE fac_User ADD COLUMN Disabled tinyint(1) NOT NULL;
+
+--
+-- Add fields for tracking temperature in the cabinets via SNMP sensors
+--
+
+ALTER TABLE fac_Cabinet ADD COLUMN SensorIPAddress varchar(20) NOT NULL AFTER InstallationDate;
+ALTER TABLE fac_Cabinet ADD COLUMN SensorCommunity varchar(40) NOT NULL AFTER SensorIPAddress;
+ALTER TABLE fac_Cabinet ADD COLUMN SensorOID varchar(80) NOT NULL AFTER SensorCommunity;
+
+--
+-- Add a table for tracking the cabinet temperatures
+--
+
+DROP TABLE IF EXISTS fac_CabinetTemps;
+CREATE TABLE fac_CabinetTemps (
+  CabinetID int(11) NOT NULL,
+  LastRead datetime NOT NULL,
+  Temp int(11) NOT NULL,
+  PRIMARY KEY (CabinetID)
+) ENGINE=MyISAM AUTO_INCREMENT=1 DEFAULT CHARSET=latin1;

@@ -15,10 +15,25 @@ CREATE TABLE fac_Cabinet (
   MaxKW float(11) NOT NULL,
   MaxWeight int(11) NOT NULL,
   InstallationDate date NOT NULL,
+  SensorIPAddress varchar(20) NOT NULL,
+  SensorCommunity varchar(40) NOT NULL,
+  SensorOID varchar(80) NOT NULL,
   MapX1 int(11) NOT NULL,
   MapX2 int(11) NOT NULL,
   MapY1 int(11) NOT NULL,
   MapY2 int(11) NOT NULL,
+  PRIMARY KEY (CabinetID)
+) ENGINE=MyISAM AUTO_INCREMENT=1 DEFAULT CHARSET=latin1;
+
+--
+-- Table structure for table `fac_CabinetTemps`
+--
+
+DROP TABLE IF EXISTS fac_CabinetTemps;
+CREATE TABLE fac_CabinetTemps (
+  CabinetID int(11) NOT NULL,
+  LastRead datetime NOT NULL,
+  Temp int(11) NOT NULL,
   PRIMARY KEY (CabinetID)
 ) ENGINE=MyISAM AUTO_INCREMENT=1 DEFAULT CHARSET=latin1;
 

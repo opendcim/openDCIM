@@ -30,6 +30,9 @@
 		$cab->MaxKW=$_POST['maxkw'];
 		$cab->MaxWeight=$_POST['maxweight'];
 		$cab->InstallationDate=$_POST['installationdate'];
+		$cab->SensorIPAddress=$_POST['sensoripaddress'];
+		$cab->SensorCommunity=$_POST['sensorcommunity'];
+		$cab->SensorOID=$_POST['sensoroid'];
 
 		if($cab->Location!=""){
 			if(($cab->CabinetID >0)&&($_POST['action']=='Update')){
@@ -112,7 +115,7 @@ echo '   </select></div>
 </div>
 <div>
    <div>',_("Location"),'</div>
-   <div><input type="text" class="validate[required,minSize[1],maxSize[8]]" name="location" size=8 maxlength=8 value="',$cab->Location,'"></div>
+   <div><input type="text" class="validate[required,minSize[1],maxSize[20]]" name="location" size=10 maxlength=20 value="',$cab->Location,'"></div>
 </div>
 <div>
   <div>',_("Assigned To"),':</div>
@@ -150,6 +153,18 @@ echo '  </select>
 <div>
    <div>',_("Date of Installation"),'</div>
    <div><input type="text" name="installationdate" size=15 value="',date('m/d/Y', strtotime($cab->InstallationDate)),'"></div>
+</div>
+<div>
+	<div>',_("Sensor IP Address"),'</div>
+	<div><input type="text" name="sensoripaddress" size=15 value="',$cab->SensorIPAddress,'"></div>
+</div>
+<div>
+	<div>',_("Sensor SNMP Community"),'</div>
+	<div><input type="text" name="sensorcommunity" size=30 value="',$cab->SensorCommunity,'"></div>
+</div>
+<div>
+	<div>',_("Temperature Sensor OID"),'</div>
+	<div><input type="text" name="sensoroid" size=30 value="',$cab->SensorOID,'"></div>
 </div>
 <div class="caption">';
 

@@ -42,13 +42,25 @@ class Cabinet {
 	var $MaxKW;
 	var $MaxWeight;
 	var $InstallationDate;
+	var $SensorIPAddress;
+	var $SensorCommunity;
+	var $SensorOID;
 	var $MapX1;
 	var $MapY1;
 	var $MapX2;
 	var $MapY2;
 
 	function CreateCabinet( $db ) {
-		$insert_sql = "insert into fac_Cabinet set DataCenterID=\"" . intval($this->DataCenterID) . "\", Location=\"" . addslashes($this->Location) . "\", AssignedTo=\"" . intval($this->AssignedTo) . "\", ZoneID=\"" . intval($this->ZoneID) . "\", CabinetHeight=\"" . intval($this->CabinetHeight) . "\", Model=\"" . addslashes($this->Model) . "\", Keylock=\"" . addslashes( $this->Keylock ) . "\", MaxKW=\"" . floatval($this->MaxKW) . "\", MaxWeight=\"" . intval( $this->MaxWeight ). "\", InstallationDate=\"" . date( "Y-m-d", strtotime( $this->InstallationDate ) ) . "\", MapX1=\"" . intval($this->MapX1) . "\", MapY1=\"" . intval($this->MapY1) . "\", MapX2=\"" . intval($this->MapX2) . "\", MapY2=\"" . intval($this->MapY2) . "\"";
+		$insert_sql = "insert into fac_Cabinet set DataCenterID=\"" . intval($this->DataCenterID) . "\", Location=\"" . addslashes($this->Location) 
+			. "\", AssignedTo=\"" . intval($this->AssignedTo) . "\", ZoneID=\"" . intval($this->ZoneID) 
+			. "\", CabinetHeight=\"" . intval($this->CabinetHeight) . "\", Model=\"" . addslashes($this->Model) 
+			. "\", Keylock=\"" . addslashes( $this->Keylock ) . "\", MaxKW=\"" . floatval($this->MaxKW) 
+			. "\", MaxWeight=\"" . intval( $this->MaxWeight ) 
+			. "\", InstallationDate=\"" . date( "Y-m-d", strtotime( $this->InstallationDate ) ) 
+			. "\", SensorIPAddress=\"" . addslashes( $this->SensorIPAddress ) . "\", SensorCommunity=\"" . addslashes( $this->SensorCommunity )
+			. "\", SensorOID=\"" . addslashes( $this->SensorOID )
+			. "\", MapX1=\"" . intval($this->MapX1) . "\", MapY1=\"" . intval($this->MapY1) 
+			. "\", MapX2=\"" . intval($this->MapX2) . "\", MapY2=\"" . intval($this->MapY2) . "\"";
 
 		if ( ! $result = mysql_query( $insert_sql, $db ) ) {
 			// Error in inserting record
@@ -61,7 +73,16 @@ class Cabinet {
 	}
 
 	function UpdateCabinet( $db ) {
-		$update_sql = "update fac_Cabinet set DataCenterID=\"" . intval($this->DataCenterID) . "\", Location=\"" . addslashes($this->Location) . "\", AssignedTo=\"" . intval($this->AssignedTo) . "\", ZoneID=\"" . intval($this->ZoneID) . "\", CabinetHeight=\"" . intval($this->CabinetHeight) . "\", Model=\"" . addslashes($this->Model) . "\", Keylock=\"" . addslashes( $this->Keylock ) . "\", MaxKW=\"" . floatval($this->MaxKW) . "\", MaxWeight=\"" . intval( $this->MaxWeight ) . "\", InstallationDate=\"" . date( "Y-m-d", strtotime( $this->InstallationDate ) ) . "\", MapX1=\"" . intval($this->MapX1) . "\", MapY1=\"" . intval($this->MapY1) . "\", MapX2=\"" . intval($this->MapX2) . "\", MapY2=\"" . intval($this->MapY2) . "\" where CabinetID=\"" . intval($this->CabinetID) . "\"";
+		$update_sql = "update fac_Cabinet set DataCenterID=\"" . intval($this->DataCenterID) . "\", Location=\"" . addslashes($this->Location) 
+		. "\", AssignedTo=\"" . intval($this->AssignedTo) . "\", ZoneID=\"" . intval($this->ZoneID) 
+		. "\", CabinetHeight=\"" . intval($this->CabinetHeight) . "\", Model=\"" . addslashes($this->Model) 
+		. "\", Keylock=\"" . addslashes( $this->Keylock ) . "\", MaxKW=\"" . floatval($this->MaxKW) 
+		. "\", MaxWeight=\"" . intval( $this->MaxWeight ) . "\", InstallationDate=\"" . date( "Y-m-d", strtotime( $this->InstallationDate ) )
+		. "\", SensorIPAddress=\"" . addslashes( $this->SensorIPAddress ) . "\", SensorCommunity=\"" . addslashes( $this->SensorCommunity )
+		. "\", SensorOID=\"" . addslashes( $this->SensorOID ) 
+		. "\", MapX1=\"" . intval($this->MapX1) . "\", MapY1=\"" . intval($this->MapY1) 
+		. "\", MapX2=\"" . intval($this->MapX2) . "\", MapY2=\"" . intval($this->MapY2) 
+		. "\" where CabinetID=\"" . intval($this->CabinetID) . "\"";
 
 		if ( ! $result = mysql_query( $update_sql, $db ) ) {
 			return -1;
@@ -86,6 +107,9 @@ class Cabinet {
 			$this->MaxKW = null;
 			$this->MaxWeight = null;
 			$this->InstallationDate = null;
+			$this->SensorIPAddress = null;
+			$this->SensorCommunity = null;
+			$this->SensorOID = null;
 			$this->MapX1 = null;
 			$this->MapY1 = null;
 			$this->MapX2 = null;
@@ -106,6 +130,9 @@ class Cabinet {
 		$this->MaxKW = $cabinetRow["MaxKW"];
 		$this->MaxWeight = $cabinetRow["MaxWeight"];
 		$this->InstallationDate = $cabinetRow[ "InstallationDate" ];
+		$this->SensorIPAddress = $cabinetRow["SensorIPAddress"];
+		$this->SensorCommunity = $cabinetRow["SensorCommunity"];
+		$this->SensorOID = $cabinetRow["SensorOID"];
 		$this->MapX1 = $cabinetRow["MapX1"];
 		$this->MapY1 = $cabinetRow["MapY1"];
 		$this->MapX2 = $cabinetRow["MapX2"];
@@ -138,6 +165,9 @@ class Cabinet {
 			$cabinetList[ $cabID ]->MaxKW = $cabinetRow[ "MaxKW" ];
 			$cabinetList[ $cabID ]->MaxWeight = $cabinetRow[ "MaxWeight" ];
 			$cabinetList[ $cabID ]->InstallationDate = $cabinetRow[ "InstallationDate" ];
+			$cabinetList[ $cabID ]->SensorIPAddress = $cabinetRow["SensorIPAddress"];
+			$cabinetList[ $cabID ]->SensorCommunity = $cabinetRow["SensorCommunity"];
+			$cabinetList[ $cabID ]->SensorOID = $cabinetRow["SensorOID"];
 			$cabinetList[ $cabID ]->MapX1 = $cabinetRow[ "MapX1" ];
 			$cabinetList[ $cabID ]->MapY1 = $cabinetRow[ "MapY1" ];
 			$cabinetList[ $cabID ]->MapX2 = $cabinetRow[ "MapX2" ];
@@ -171,6 +201,9 @@ class Cabinet {
 			$cabinetList[ $cabID ]->MaxKW = $cabinetRow[ "MaxKW" ];
 			$cabinetList[ $cabID ]->MaxWeight = $cabinetRow[ "MaxWeight" ];
 			$cabinetList[ $cabID ]->InstallationDate = $cabinetRow[ "InstallationDate" ];
+			$cabinetList[ $cabID ]->SensorIPAddress = $cabinetRow["SensorIPAddress"];
+			$cabinetList[ $cabID ]->SensorCommunity = $cabinetRow["SensorCommunity"];
+			$cabinetList[ $cabID ]->SensorOID = $cabinetRow["SensorOID"];
 			$cabinetList[ $cabID ]->MapX1 = $cabinetRow[ "MapX1" ];
 			$cabinetList[ $cabID ]->MapY1 = $cabinetRow[ "MapY1" ];
 			$cabinetList[ $cabID ]->MapX2 = $cabinetRow[ "MapX2" ];
@@ -334,6 +367,9 @@ class Cabinet {
 			$cabinetList[$cabID]->MaxKW=$cabinetRow["MaxKW"];
 			$cabinetList[$cabID]->MaxWeight=$cabinetRow["MaxWeight"];
 			$cabinetList[$cabID]->InstallationDate=$cabinetRow["InstallationDate"];
+			$cabinetList[$cabID]->SensorIPAddress = $cabinetRow["SensorIPAddress"];
+			$cabinetList[$cabID]->SensorCommunity = $cabinetRow["SensorCommunity"];
+			$cabinetList[$cabID]->SensorOID = $cabinetRow["SensorOID"];
 			$cabinetList[$cabID]->MapX1=$cabinetRow["MapX1"];
 			$cabinetList[$cabID]->MapY1=$cabinetRow["MapY1"];
 			$cabinetList[$cabID]->MapX2=$cabinetRow["MapX2"];
@@ -387,6 +423,49 @@ class CabinetAudit {
 			$this->AuditStamp = date( "M d, Y H:i", strtotime( $row["AuditStamp"] ) );
 		}
 	}
+}
+
+class CabinetTemps {
+	/* CabinetTemps:	Temperature sensor readings from intelligent, SNMP readable temperature sensors */
+	
+	var $CabinetID;
+	var $LastRead;
+	var $Temp;
+
+	function GetReading( $db ) {
+		$sql = sprintf( "select * from fac_CabinetTemps where CabinetID=%d", $this->CabinetID );
+		
+		$result = mysql_query( $sql, $db );
+		
+		if ( $row = mysql_fetch_array( $result ) ) {
+			$this->LastRead = date( "m-d-Y H:i:s", strtotime($row["LastRead"]) );
+			$Temp = $row["Temp"];
+		}
+		
+		return;
+	}
+	
+	function UpdateReading( $db ) {
+		$cab = new Cabinet();
+		$cab->CabinetID = $this->CabinetID;
+		$cab->GetCabinet( $db );
+		
+		if ( ( strlen( $cab->SensorIPAddress ) == 0 ) || ( strlen( $cab->SensorCommunity ) == 0 ) || ( strlen( $cab->SensorOID ) == 0 ) )
+			return;
+
+		$pollCommand = sprintf( "/usr/bin/snmpget -v 2c -c %s %s %s | /bin/cut -d: -f4", $cab->SensorCommunity, $cab->SensorIPAddress, $cab->SensorOID );
+		
+		exec( $pollCommand, $statsOutput );
+		
+		if ( count( $statsOutput ) > 0 ) {
+			$this->Temp = intval( $statsOutput[0] );
+			// Delete any existing record and then add in a new one
+			$sql = sprintf( "delete from fac_CabinetTemps where CabinetID=%d", $this->CabinetID );
+			mysql_query( $sql, $db );
+			$sql = sprintF( "insert into fac_CabinetTemps set CabinetID=%d, Temp=%d, LastRead=now()", $this->CabinetID, $this->Temp );
+			mysql_query( $sql, $db );
+		}
+	}	
 }
 
 class Device {
