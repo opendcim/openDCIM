@@ -109,7 +109,7 @@
 <head>
   <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
   
-  <title>Facilities Cabinet Maintenance</title>
+  <title>Data Center PDU Detail</title>
   <link rel="stylesheet" href="css/inventory.php" type="text/css">
   <link rel="stylesheet" href="css/print.css" type="text/css" media="print">
   <!--[if lt IE 9]>
@@ -147,7 +147,7 @@
 					}
 				});
 			}).css({'cursor': 'pointer', 'text-decoration': 'underline'});
-			row.find('div:nth-child(2) > select, div:last-child > input').live('change', function(){
+			row.find('div:nth-child(2) > select, div:last-child > input').live('change focusout', function(){
 				var device=$(this).parent('div').parent('div').children('div > div:nth-child(2)');
 				var output=device.prev().text();
 				var devinput=device.next();
@@ -156,7 +156,6 @@
 				device.attr('alt', devid);
 				var link='<a href="devices.php?deviceid='+devid+'">'+device.find('option:selected').text()+'</a>';
 				if(device.find('select').val()!="" && devinput.find('input').val()!=""){
-					console.log('first if(add connection) \nselect val: '+device.find('select').val()+' input val: '+devinput.find('input').val());
 					$.ajax({
 						type: 'POST',
 						url: 'power_pdu.php',
@@ -189,7 +188,6 @@
 					});
 					$(this).unbind('change');
 				}else if(device.find('select').val()=="" && devinput.find('input').val()==""){
-					console.log('second if(remove inputs)');
 					device.html('').removeAttr('style');
 					devinput.html('').removeAttr('style');
 
@@ -201,7 +199,6 @@
 					},1500);
 					$(this).unbind('change');
 				}else{
-					console.log('third if(remove connection)');
 					$.ajax({
 						type: 'POST',
 						url: 'power_pdu.php',
