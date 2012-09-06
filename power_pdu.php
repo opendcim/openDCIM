@@ -18,7 +18,7 @@
 	$connDev=new Device();
 
 	// Ajax actions
-	if(isset($_POST['d']) || isset($_POST['c']) || isset($_POST['pduid'])){
+	if(isset($_POST['d']) || isset($_POST['c']) || isset($_POST['pid'])){
 		// Build drop down list of devices for this cabinet
 		if(isset($_POST['c'])){
 			$connDev->Cabinet=$_POST['c'];
@@ -28,8 +28,8 @@
 				echo '<option value="',$device->DeviceID,'"',((isset($_POST['d'])&&$_POST['d']==$device->DeviceID)?" selected":""),'>',$device->Label,'</option>';
 			}
 			echo '</select>';
-		}elseif(isset($_POST['pduid'])){
-			$powerConn->PDUID=$_POST['pduid'];
+		}elseif(isset($_POST['pid'])){
+			$powerConn->PDUID=$_POST['pid'];
 			$powerConn->PDUPosition=$_POST['output'];
 			if((isset($_POST['d']) && ($_POST['d']!="" || $_POST['d']!="undefined")) || (isset($_POST['devinput']) && ($_POST['devinput']!="" || $_POST['devinput']!="undefined" ))){
 				$powerConn->DeviceID=$_POST['d'];
@@ -45,7 +45,6 @@
 				$powerConn->RemoveConnection($facDB);
 			}
 		}
-
 		// This is for ajax actions so make sure not to call the rest of the page
 		exit;
 	}
@@ -65,7 +64,6 @@
 		$pdu->NumOutputs=$_POST['numoutputs'];
 		$pdu->IPAddress=$_POST['ipaddress'];
 		$pdu->SNMPCommunity=$_POST['snmpcommunity'];
-		$pdu->FirmwareVersion=$_POST['firmwareversion'];
 		$pdu->PanelID=$_POST['panelid'];
 		$pdu->BreakerSize=$_POST['breakersize'];
 		$pdu->PanelPole=$_POST['panelpole'];
@@ -162,7 +160,7 @@
 					$.ajax({
 						type: 'POST',
 						url: 'power_pdu.php',
-						data: 'd='+devid+'&pduid='+pduid.val()+'&output='+output+'&devinput='+psnum,
+						data: 'd='+devid+'&pid='+pduid.val()+'&output='+output+'&devinput='+psnum,
 						success: function(data){
 							if(data=='ok'){
 								device.html(link).removeAttr('style');
@@ -207,7 +205,7 @@
 					$.ajax({
 						type: 'POST',
 						url: 'power_pdu.php',
-						data: 'pduid='+pduid.val()+'&output='+output,
+						data: 'pid='+pduid.val()+'&output='+output,
 						success: function(data){
 
 						}
