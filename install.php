@@ -127,6 +127,7 @@ function applyupdate ($updatefile){
 	if($version=="1.4"){ // Do 1.4 to 1.5 Update
 		// A few of the database changes require some tests to ensure that they will be able to apply.
 		// Both of these need to return 0 results before we continue or the database schema update will not complete.
+		$conflicts=0;
 		$sql="SELECT PDUID, CONCAT(PDUID,'-',PDUPosition) AS KEY1, COUNT(PDUID) AS Count  FROM fac_PowerConnection GROUP BY KEY1 HAVING (COUNT(KEY1)>1) ORDER BY PDUID ASC;";
 		$conflicts+=(mysql_num_rows(mysql_query($sql, $facDB))>0)?1:0;
 		$sql="SELECT DeviceID, CONCAT(DeviceID,'-',DeviceConnNumber) AS KEY2, COUNT(DeviceID) AS Count FROM fac_PowerConnection GROUP BY KEY2 HAVING (COUNT(KEY2)>1) ORDER BY DeviceID ASC;";
@@ -137,7 +138,7 @@ function applyupdate ($updatefile){
 		$conflicts+=(mysql_num_rows(mysql_query($sql, $facDB))>0)?1:0;
 
 		require_once("facilities.inc.php");
-		if($conflicts!=4){
+		if($conflicts!=0){
 			header('Location: '.redirect("conflicts.php"));
 			exit;
 		}

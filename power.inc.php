@@ -36,20 +36,17 @@ class PowerConnection {
 	var $DeviceID;
 	var $DeviceConnNumber;
 
-	function CreateConnection( $db ) {
+	function CreateConnection($db){
 		// Clear out any existing connections first
-		$sql = "delete from fac_PowerConnection where PDUID=\"" . intval( $this->PDUID ) . "\" and PDUPosition=\"" . intval( $this->PDUPosition ) . "\"";
-		mysql_query( $sql, $db );
+		$sql="delete from fac_PowerConnection where PDUID=\"".intval($this->PDUID)."\" and PDUPosition=\"".intval($this->PDUPosition)."\"";
+		mysql_query($sql,$db);
 
-		$insert_sql = "insert into fac_PowerConnection set DeviceID=\"" . intval($this->DeviceID) . "\", DeviceConnNumber=\"" . intval($this->DeviceConnNumber) . "\", PDUID=\"" . intval($this->PDUID) . "\", PDUPosition=\"" . intval($this->PDUPosition) . "\" on duplicate key update DeviceID=\"" . intval($this->DeviceID) . "\", DeviceConnNumber=\"" . intval($this->DeviceConnNumber) . "\"";
-
-		if ( ! $result = mysql_query( $insert_sql, $db ) ) {
+		$insert_sql="insert into fac_PowerConnection set DeviceID=\"".intval($this->DeviceID)."\", DeviceConnNumber=\"".intval($this->DeviceConnNumber)."\", PDUID=\"".intval($this->PDUID)."\", PDUPosition=\"".intval($this->PDUPosition)."\"";
+		if(!$result=mysql_query($insert_sql,$db)){
 			return -1;
 		}
 
-		$this->ConnectionID = mysql_insert_id( $db );
-
-		return $this->ConnectionID;
+		return 0;
 	}
 	
 	function DeleteConnections( $db ) {

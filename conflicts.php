@@ -86,7 +86,7 @@
 
 
 	$body="";
-
+	$conflicts=0;
 	// This will only have a conflict if someone hand entered data.  These will be unique cases that we should look at by hand.
 	$sql="SELECT PDUID, CONCAT(PDUID,'-',PDUPosition) AS KEY1, COUNT(PDUID) AS Count  FROM fac_PowerConnection GROUP BY KEY1 HAVING (COUNT(KEY1)>1) ORDER BY PDUID ASC;";
 	$results=mysql_query($sql, $facDB);

@@ -16,7 +16,40 @@
 	$cab=new Cabinet();
 	$powerConn=new PowerConnection();
 	$connDev=new Device();
-	
+
+	// Ajax actions
+	if(isset($_POST['d']) || isset($_POST['c']) || isset($_POST['pduid'])){
+		// Build drop down list of devices for this cabinet
+		if(isset($_POST['c'])){
+			$connDev->Cabinet=$_POST['c'];
+			$devlist=$connDev->ViewDevicesByCabinet($facDB);
+			echo '<select name="d"><option value=""></option>';
+			foreach($devlist as $device){
+				echo '<option value="',$device->DeviceID,'"',((isset($_POST['d'])&&$_POST['d']==$device->DeviceID)?" selected":""),'>',$device->Label,'</option>';
+			}
+			echo '</select>';
+		}elseif(isset($_POST['pduid'])){
+			$powerConn->PDUID=$_POST['pduid'];
+			$powerConn->PDUPosition=$_POST['output'];
+			if((isset($_POST['d']) && ($_POST['d']!="" || $_POST['d']!="undefined")) || (isset($_POST['devinput']) && ($_POST['devinput']!="" || $_POST['devinput']!="undefined" ))){
+				$powerConn->DeviceID=$_POST['d'];
+				$powerConn->DeviceConnNumber=$_POST['devinput'];
+				$check=$powerConn->CreateConnection($facDB);
+				// check for valid creation 
+				if($check==0){
+					echo 'ok';
+				}else{
+					echo 'no';
+				}
+			}else{
+				$powerConn->RemoveConnection($facDB);
+			}
+		}
+
+		// This is for ajax actions so make sure not to call the rest of the page
+		exit;
+	}
+
 	if(isset($_REQUEST['pduid'])){
 		$pdu->PDUID=(isset($_POST['pduid']) ? $_POST['pduid'] : $_GET['pduid']);
 	}else{
@@ -92,6 +125,94 @@
 		$('#panelid').change( function(){
 			$.get('scripts/ajax_panel.php?q='+$(this).val(), function(data) {
 				$('#voltage').html(data['PanelVoltage'] +'/'+ Math.floor(data['PanelVoltage']/1.73));
+			});
+		});
+		$('.center > div + div > .table > div:first-child ~ div').each(function(){
+			var row=$(this);
+			var pduid=$('#pduid');
+			var cabid=$('#cabinetid').val();
+			row.find('div:first-child').click(function(){
+				var output=$(this).text();
+				var device=$(this).next();
+				var devid=device.attr('alt');
+				if(devid!=""){var selected='&d='+devid;}else{var selected='';}
+				var devinput=device.next();
+				var width=devinput.width();
+				$.ajax({
+					type: 'POST',
+					url: 'power_pdu.php',
+					data: 'c='+cabid+selected,
+					success: function(data){
+						device.html(data).css('padding', '0px');
+						devinput.html('<input name="DeviceConnNumber" value="'+devinput.text()+'"></input>').css('padding', '0px');
+						devinput.children('input').css({'width': width+'px', 'text-align': 'center'});
+					}
+				});
+			}).css({'cursor': 'pointer', 'text-decoration': 'underline'});
+			row.find('div:nth-child(2) > select, div:last-child > input').live('change', function(){
+				var device=$(this).parent('div').parent('div').children('div > div:nth-child(2)');
+				var output=device.prev().text();
+				var devinput=device.next();
+				var devid=device.find('select').val();
+				var psnum=devinput.find('input').val();
+				device.attr('alt', devid);
+				var link='<a href="devices.php?deviceid='+devid+'">'+device.find('option:selected').text()+'</a>';
+				if(device.find('select').val()!="" && devinput.find('input').val()!=""){
+					console.log('first if(add connection) \nselect val: '+device.find('select').val()+' input val: '+devinput.find('input').val());
+					$.ajax({
+						type: 'POST',
+						url: 'power_pdu.php',
+						data: 'd='+devid+'&pduid='+pduid.val()+'&output='+output+'&devinput='+psnum,
+						success: function(data){
+							if(data=='ok'){
+								device.html(link).removeAttr('style');
+								devinput.html(psnum).removeAttr('style');
+								
+								device.css('background-color', 'lightgreen');
+								devinput.css('background-color', 'lightgreen');
+								setTimeout(function() {
+									device.css('background-color', 'white');
+									devinput.css('background-color', 'white');
+								},1500);
+							}else{
+								device.css('background-color', 'salmon');
+								device.find('select').css('background-color', 'salmon');
+								devinput.css('background-color', 'salmon');
+								devinput.find('input').css('background-color', 'salmon');
+								setTimeout(function() {
+									device.css('background-color', 'white');
+									device.find('select').css('background-color', 'white');
+									devinput.css('background-color', 'white');
+									devinput.find('input').css('background-color', 'white');
+								},1500);
+
+							}
+						}
+					});
+					$(this).unbind('change');
+				}else if(device.find('select').val()=="" && devinput.find('input').val()==""){
+					console.log('second if(remove inputs)');
+					device.html('').removeAttr('style');
+					devinput.html('').removeAttr('style');
+
+					device.css('background-color', 'lightgreen');
+					devinput.css('background-color', 'lightgreen');
+					setTimeout(function() {
+						device.css('background-color', 'white');
+						devinput.css('background-color', 'white');
+					},1500);
+					$(this).unbind('change');
+				}else{
+					console.log('third if(remove connection)');
+					$.ajax({
+						type: 'POST',
+						url: 'power_pdu.php',
+						data: 'pduid='+pduid.val()+'&output='+output,
+						success: function(data){
+
+						}
+					});
+				}
 			});
 		});
 	});
@@ -249,9 +370,9 @@ echo '</div>
 		if(isset($connList[$connNumber])){
 			$connDev->DeviceID=$connList[$connNumber]->DeviceID;
 			$connDev->GetDevice($facDB);
-			print "	<div>\n		<div><a href=\"power_connection.php?pdu=$pdu->PDUID"."&conn=$connNumber\">$connNumber</a></div>\n		<div><a href=\"devices.php?deviceid=".$connList[$connNumber]->DeviceID."\">$connDev->Label</a></div>\n		<div>".$connList[$connNumber]->DeviceConnNumber."</div>\n	</div>\n";
+			print "	<div>\n		<div>$connNumber</div>\n		<div alt=\"{$connList[$connNumber]->DeviceID}\"><a href=\"devices.php?deviceid={$connList[$connNumber]->DeviceID}\">$connDev->Label</a></div>\n		<div>".$connList[$connNumber]->DeviceConnNumber."</div>\n	</div>\n";
 		}else{
-			print "	<div>\n		<div><a href=\"power_connection.php?pdu=$pdu->PDUID"."&conn=$connNumber\">$connNumber</a></div>\n		<div></div>\n		<div></div>\n	</div>\n";
+			print "	<div>\n		<div>$connNumber</div>\n		<div alt=\"\"></div>\n		<div></div>\n	</div>\n";
 		}
 	}
 ?>  
