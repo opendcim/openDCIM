@@ -130,24 +130,51 @@
 			var pduid=$('#pduid');
 			var cabid=$('#cabinetid').val();
 			row.find('div:first-child').click(function(){
-				var output=$(this).text();
-				var device=$(this).next();
-				var devid=device.attr('alt');
-				if(devid!=""){var selected='&d='+devid;}else{var selected='';}
-				var devinput=device.next();
-				var width=devinput.width();
-				$.ajax({
-					type: 'POST',
-					url: 'power_pdu.php',
-					data: 'c='+cabid+selected,
-					success: function(data){
-						device.html(data).css('padding', '0px');
-						devinput.html('<input name="DeviceConnNumber" value="'+devinput.text()+'"></input>').css('padding', '0px');
-						devinput.children('input').css({'width': width+'px', 'text-align': 'center'});
-					}
-				});
+				if($(this).attr('edit')=='yes'){
+
+				}else{
+					$(this).attr('edit', 'yes');
+					var output=$(this).text();
+					var device=$(this).next();
+					var devid=device.attr('alt');
+					if(devid!=""){var selected='&d='+devid;}else{var selected='';}
+					var devinput=device.next();
+					var width=devinput.width();
+					var height=devinput.innerHeight();
+					$.ajax({
+						type: 'POST',
+						url: 'power_pdu.php',
+						data: 'c='+cabid+selected,
+						success: function(data){
+							device.html(data).css('padding', '0px');
+							devinput.html('<input name="DeviceConnNumber" value="'+devinput.text()+'"></input>').css('padding', '0px');
+							devinput.children('input').css({'width': width+'px', 'text-align': 'center'});
+							row.append('<div style="padding: 0px;"><button name="delete">Delete</button><button name="cancel">Cancel</button></div>');
+							row.find('div > button').css({'height': height+'px', 'line-height': '1'});
+							row.find('div > button').each(function(){
+								var a=devinput.find('input');
+								var b=device.find('select');
+								if($(this).attr('name')=="delete"){
+									$(this).click(function(){
+										b.val("");
+										a.val("");
+										a.focus();
+										b.focus();
+									});
+								}else if($(this).attr('name')=="cancel"){
+									$(this).click(function(){
+										b.val(device.attr('data'));
+										a.val(devinput.attr('data'));
+										a.focus();
+										b.focus();
+									});
+								}
+							});
+						}
+					});
+				}
 			}).css({'cursor': 'pointer', 'text-decoration': 'underline'});
-			row.find('div:nth-child(2) > select, div:last-child > input').live('change focusout', function(){
+			row.find('div:nth-child(2) > select, div:nth-child(3) > input').live('focusout', function(){
 				var device=$(this).parent('div').parent('div').children('div > div:nth-child(2)');
 				var output=device.prev().text();
 				var devinput=device.next();
@@ -171,6 +198,8 @@
 									device.css('background-color', 'white');
 									devinput.css('background-color', 'white');
 								},1500);
+								row.find('div:first-child').removeAttr('edit');
+								row.find('div:last-child').remove();
 							}else{
 								device.css('background-color', 'salmon');
 								device.find('select').css('background-color', 'salmon');
@@ -186,7 +215,6 @@
 							}
 						}
 					});
-					$(this).unbind('change');
 				}else if(device.find('select').val()=="" && devinput.find('input').val()==""){
 					device.html('').removeAttr('style');
 					devinput.html('').removeAttr('style');
@@ -197,16 +225,8 @@
 						device.css('background-color', 'white');
 						devinput.css('background-color', 'white');
 					},1500);
-					$(this).unbind('change');
-				}else{
-					$.ajax({
-						type: 'POST',
-						url: 'power_pdu.php',
-						data: 'pid='+pduid.val()+'&output='+output,
-						success: function(data){
-
-						}
-					});
+					row.find('div:first-child').removeAttr('edit');
+					row.find('div:last-child').remove();
 				}
 			});
 		});
@@ -365,7 +385,7 @@ echo '</div>
 		if(isset($connList[$connNumber])){
 			$connDev->DeviceID=$connList[$connNumber]->DeviceID;
 			$connDev->GetDevice($facDB);
-			print "	<div>\n		<div>$connNumber</div>\n		<div alt=\"{$connList[$connNumber]->DeviceID}\"><a href=\"devices.php?deviceid={$connList[$connNumber]->DeviceID}\">$connDev->Label</a></div>\n		<div>".$connList[$connNumber]->DeviceConnNumber."</div>\n	</div>\n";
+			print "	<div>\n		<div>$connNumber</div>\n		<div alt=\"{$connList[$connNumber]->DeviceID}\" data=\"{$connList[$connNumber]->DeviceID}\"><a href=\"devices.php?deviceid={$connList[$connNumber]->DeviceID}\">$connDev->Label</a></div>\n		<div data=\"{$connList[$connNumber]->DeviceConnNumber}\">{$connList[$connNumber]->DeviceConnNumber}</div>\n	</div>\n";
 		}else{
 			print "	<div>\n		<div>$connNumber</div>\n		<div alt=\"\"></div>\n		<div></div>\n	</div>\n";
 		}
