@@ -377,13 +377,15 @@ CREATE TABLE fac_User (
 
 DROP TABLE IF EXISTS fac_VMInventory;
 CREATE TABLE fac_VMInventory (
-  VMIndex int(11) NOT NULL,
+  VMIndex int(11) NOT NULL AUTO_INCREMENT,
   DeviceID int(11) NOT NULL,
   LastUpdated datetime NOT NULL,
   vmID int(11) NOT NULL,
   vmName varchar(80) NOT NULL,
   vmState varchar(80) NOT NULL,
-  Owner int(11) NOT NULL
+  Owner int(11) NOT NULL,
+  PRIMARY KEY (VMIndex),
+  KEY ValidDevice (DeviceID)
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1;
 
 --

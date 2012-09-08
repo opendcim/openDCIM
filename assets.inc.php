@@ -1253,24 +1253,25 @@ class ESX {
   var $vmState;
   var $Owner;
   
-  function EnumerateVMs( $dev, $debug ) {
-    $community = $dev->SNMPCommunity;
-    $serverIP = $dev->PrimaryIP;
+  function EnumerateVMs($dev,$debug=false){
+    $community=$dev->SNMPCommunity;
+    $serverIP=$dev->PrimaryIP;
 
-    $vmList = array();
+    $vmList=array();
 
-    $pollCommand = "/usr/bin/snmpwalk -v 2c -c $community $serverIP .1.3.6.1.4.1.6876.2.1.1.2 | /bin/cut -d: -f4 | /bin/cut -d\\\" -f2";
-    @exec( $pollCommand, $namesOutput );
+    $pollCommand="/usr/bin/snmpwalk -v 2c -c $community $serverIP .1.3.6.1.4.1.6876.2.1.1.2 | /bin/cut -d: -f4 | /bin/cut -d\\\" -f2";
+    exec($pollCommand,$namesOutput);
 
-    $pollCommand = "/usr/bin/snmpwalk -v 2c -c $community $serverIP .1.3.6.1.4.1.6876.2.1.1.6 | /bin/cut -d: -f4 | /bin/cut -d\\\" -f2";
-    @exec( $pollCommand, $statesOutput );
+    $pollCommand="/usr/bin/snmpwalk -v 2c -c $community $serverIP .1.3.6.1.4.1.6876.2.1.1.6 | /bin/cut -d: -f4 | /bin/cut -d\\\" -f2";
+    exec($pollCommand,$statesOutput);
 
-    if ( count( $namesOutput ) == count( $statesOutput) )
-      $tempVMs = array_combine( $namesOutput, $statesOutput );
-    else
-      $tempVMs = array();
+    if(count($namesOutput)==count($statesOutput)&&count($namesOutput)>0){
+      $tempVMs=array_combine($namesOutput,$statesOutput);
+    }else{
+      $tempVMs=array();
+	}
 
-    $vmID = 0;
+    $vmID=0;
 
     if ( @count( $tempVMs ) > 0 ) {
       if ( $debug )
@@ -1291,7 +1292,7 @@ class ESX {
     return $vmList;
   }
   
-  function UpdateInventory( $db, $debug ) {
+  function UpdateInventory( $db, $debug=false ) {
     $dev = new Device();
     
     $devList = $dev->GetESXDevices( $db );

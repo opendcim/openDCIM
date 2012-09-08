@@ -1,3 +1,10 @@
+
+--
+-- Bump version number up
+--
+
+UPDATE fac_Config SET Value = '1.5' WHERE fac_Config.Parameter = 'Version';
+
 --
 -- Change the DeviceType enumeration from having 'Routing Chassis' to just plain 'Chassis'
 --
@@ -53,3 +60,10 @@ CREATE TABLE fac_CabinetTemps (
   Temp int(11) NOT NULL,
   PRIMARY KEY (CabinetID)
 ) ENGINE=MyISAM AUTO_INCREMENT=1 DEFAULT CHARSET=latin1;
+
+--
+-- Correction to the VMInventory tables
+--
+ALTER TABLE `fac_VMInventory` ADD PRIMARY KEY ( `VMIndex` );
+ALTER TABLE `fac_VMInventory` ADD KEY `ValidDevice` (`DeviceID`);
+ALTER TABLE `fac_VMInventory` CHANGE `VMIndex` `VMIndex` INT( 11 ) NOT NULL AUTO_INCREMENT;

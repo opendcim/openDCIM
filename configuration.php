@@ -162,7 +162,7 @@ echo '<div class="main">
 				</div>
 			</div> <!-- end table -->
 			<h3>Rack Usage</h3>
-			<div class="table">
+			<div class="table" id="rackusage">
 				<div>
 					<div><label for="SpaceRed">',_("Space Critical"),'</label></div>
 					<div><input type="text" defaultvalue="',$config->defaults["SpaceRed"],'" name="SpaceRed" value="',$config->ParameterArray["SpaceRed"],'"></div>
