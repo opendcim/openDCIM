@@ -149,7 +149,7 @@
 							device.html(data).css('padding', '0px');
 							devinput.html('<input name="DeviceConnNumber" value="'+devinput.text()+'"></input>').css('padding', '0px');
 							devinput.children('input').css({'width': width+'px', 'text-align': 'center'});
-							row.append('<div style="padding: 0px;"><button name="delete">Delete</button><button name="cancel">Cancel</button></div>');
+<?php echo '							row.append(\'<div style="padding: 0px;"><button name="delete">',_("Delete"),'</button><button name="cancel">',_("Cancel"),'</button></div>\');'; ?>
 							row.find('div > button').css({'height': height+'px', 'line-height': '1'});
 							row.find('div > button').each(function(){
 								var a=devinput.find('input');

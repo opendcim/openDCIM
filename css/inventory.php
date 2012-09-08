@@ -48,8 +48,6 @@ div.cp { position: relative;}
 .miniColors-trigger { position: absolute; top: 0; right: 0;}
 .config .center input { width: 95%; }
 
-/* #configtabs label {display: block;}
-#configtabs label + input {display: inline-block; } */
 #configtabs { min-width: 670px; }
 #configtabs button { margin-left: 0.5em; margin-right: 0.5em;}
 #configtabs span { font-style: italic; font-size: -1;}
@@ -60,6 +58,11 @@ div.cp { position: relative;}
 #configtabs #email div > input {width: 20em; }
 
 #configtabs #reporting div:first-child + div > input {width: 4.5em; }
+
+div#imageselection { display: none;}
+#imageselection span { display: block; padding: 0.25em 0 0.5em 0.5em; cursor: pointer; text-decoration: underline; border: 1px solid white;}
+#imageselection #preview { position: absolute; top: 0; right: 0; height: 200px; width: 200px; margin: 0.1em 0 0 0; padding: 0; border: 0px solid black;}
+#imageselection #filelist { position: absolute; top: 0; left: 1em; height: 210px; width: 175px; overflow-y: scroll; overflow-x: hidden; }
 
 /* index */
 .index .table, .index .table .title {background-color: white;}

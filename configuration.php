@@ -37,6 +37,19 @@
 		$i++;
 	}
 
+	$imageselect='<div id="preview"></div><div id="filelist">';
+
+	$path='./images';
+	$dir=scandir($path);
+	foreach($dir as $i => $f){
+		if(is_file($path.DIRECTORY_SEPARATOR.$f) && round(filesize($path.DIRECTORY_SEPARATOR.$f) / 1024, 2)>=4 && $f!="serverrack.png" && $f!="gradient.png"){
+			$imageinfo=getimagesize($path.DIRECTORY_SEPARATOR.$f);
+			if(preg_match('/^image/i', $imageinfo['mime'])){
+				$imageselect.="<span>$f</span>\n";
+			}
+		}
+	}
+	$imageselect.="</div>";
 
 
 ?>
@@ -59,7 +72,13 @@
 	$(document).ready( function() {
 		$(".color-picker").miniColors({
 			letterCase: 'uppercase',
-			change: function(hex, rgb){}
+			change: function(hex, rgb){
+				if($(this).attr('id')==='HeaderColor'){
+					$('#header').css('background-color',$(this).val());
+				}else if($(this).attr('id')==='BodyColor'){
+					$('.main').css('background-color',$(this).val());
+				}
+			}
 		});
 		$("#configtabs").tabs();
 		$("#configtabs input[defaultvalue]").each(function(){
@@ -72,28 +91,47 @@
 		$("#configtabs button").each(function(){
 			var a = $(this).parent().prev().find('input');
 			$(this).click(function(){
-				a.triggerHandler("focus");
 				a.val($(this).parent().next().children('span').text());
 				a.triggerHandler("paste");
 				a.focus();
-				a.setSelectionRange(a.val().length, a.val().length);
 				$('input[name="OrgName"]').focus();
-				$('input[name="OrgName"]').setSelectionRange(0, 0);
-//				setTimeout(function () {$(this).parent().next().children('span').triggerHandler('click');}, 50);
-//				$(this).parent().prev().find('input').blur();
 			});
-		});
-		$('input[name="HeaderColor"]').blur(function(){
-			$('#header').css('background-color',$(this).val());
-		});
-		$('input[name="BodyColor"]').blur(function(){
-			$('.main').css('background-color',$(this).val());
 		});
 		$('input[name="LinkColor"]').blur(function(){
 			$("head").append("<style type=\"text/css\">a:link, a:hover, a:visited:hover {color: "+$(this).val()+";}</style>");
 		});
 		$('input[name="VisitedLinkColor"]').blur(function(){
 			$("head").append("<style type=\"text/css\">a:visited {color: "+$(this).val()+";}</style>");
+		});
+		$("#imageselection span").each(function(){
+			var preview=$('#imageselection #preview');
+			$(this).click(function(){
+				preview.html('<img src="images/'+$(this).text()+'" alt="preview" width="'+preview.innerHeight()+'px">').attr('image',$(this).text()).css('border-width', '5px').children('img').css('margin-top', preview.innerHeight()/2-preview.children('img').height()/2+'px');
+				$("#imageselection span").each(function(){
+					$(this).removeAttr('style');
+				});
+				$(this).css('border','1px dotted black')
+				$('#header').css('background-image', 'url("images/'+$(this).text()+'")');
+			});
+			if($('#PDFLogoFile').val()==$(this).text()){
+				$(this).click();
+			}
+		});
+		$('#PDFLogoFile').click(function(){
+			$("#imageselection").dialog({
+				resizable: false,
+				height:300,
+				width: 400,
+				modal: true,
+				buttons: {
+<?php echo '					',_("Select"),': function() {'; ?>
+						if($('#imageselection #preview').attr('image')!=""){
+							$('#PDFLogoFile').val($('#imageselection #preview').attr('image'));
+						}
+						$(this).dialog("close");
+					}
+				}
+			});
 		});
 	});
 
@@ -135,18 +173,18 @@ echo '<div class="main">
 					<div><input type="text" defaultvalue="',$config->defaults["DefaultPanelVoltage"],'" name="DefaultPanelVoltage" value="',$config->ParameterArray["DefaultPanelVoltage"],'"></div>
 				</div>
 			</div> <!-- end table -->
-			<h3>Users</h3>
+			<h3>',_("Users"),'</h3>
 			<div class="table">
 				<div>
 					<div><label for="ClassList">',_("Department Types"),'</label></div>
-					<div><input type="text" defaultvalue="',$classlist,'" name="ClassList" value="',$classlist,'"></div>
+					<div><input type="text" defaultvalue="',$config->defaults["ClassList"],'" name="ClassList" value="',$classlist,'"></div>
 				</div>
 				<div>
 					<div><label for="UserLookupURL">',_("User Lookup URL"),'</label></div>
 					<div><input type="text" defaultvalue="',$config->defaults["UserLookupURL"],'" name="UserLookupURL" value="',$config->ParameterArray["UserLookupURL"],'"></div>
 				</div>
 			</div> <!-- end table -->
-			<h3>Rack Requests</h3>
+			<h3>',_("Rack Requests"),'</h3>
 			<div class="table">
 				<div>
 					<div><label for="MailSubject">',_("Mail Subject"),'</label></div>
@@ -161,7 +199,7 @@ echo '<div class="main">
 					<div><input type="text" defaultvalue="',$config->defaults["RackOverdueHours"],'" name="RackOverdueHours" value="',$config->ParameterArray["RackOverdueHours"],'"></div>
 				</div>
 			</div> <!-- end table -->
-			<h3>Rack Usage</h3>
+			<h3>',_("Rack Usage"),'</h3>
 			<div class="table" id="rackusage">
 				<div>
 					<div><label for="SpaceRed">',_("Space Critical"),'</label></div>
@@ -190,7 +228,7 @@ echo '<div class="main">
 			</div> <!-- end table -->
 		</div>
 		<div id="style">
-			<h3>Racks & Maps</h3>
+			<h3>',_("Racks & Maps"),'</h3>
 			<div class="table">
 				<div>
 					<div><label for="CriticalColor">',_("Critical Color"),'</label></div>
@@ -229,7 +267,7 @@ echo '<div class="main">
 					<div><span>',strtoupper($config->defaults["FreeSpaceColor"]),'</span></div>
 				</div>
 			</div> <!-- end table -->
-			<h3>Site</h3>
+			<h3>',_("Site"),'</h3>
 			<div class="table">
 				<div>
 					<div><label for="HeaderColor">',_("Header Color"),'</label></div>
@@ -298,6 +336,9 @@ echo '<div class="main">
 			</div> <!-- end table -->
 		</div>
 		<div id="reporting">
+			<div id="imageselection" title="Image file selector">
+				',$imageselect,'
+			</div>
 			<div class="table">
 				<div>
 					<div><label for="annualCostPerUYear">',_("Annual Cost Per Rack Unit (Year)"),'</label></div>
