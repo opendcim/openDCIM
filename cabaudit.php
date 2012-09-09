@@ -368,17 +368,18 @@ class PDF_Diag extends PDF_Sector {
 //	Begin Report Generation
 //
 //
+	$pdf=new PDF($facDB);
+	$pdf->SetLeftMargin(5);	
+	$pdf->SetRightMargin(5);
 
 	$cab->CabinetID=$_REQUEST['cabinetid'];
 	$cab->GetCabinet($facDB);
 	$device->Cabinet=$cab->CabinetID;
-	$pdf=new PDF($facDB);
 	$pdf->AliasNbPages();
 	$pdf->AddPage();
 	$pdf->SetFillColor(224,235,255);
 	$fill=0;
 	
-	$pdf->SetLeftMargin(2);	
 	$cabmessage=_("Cabinet Location").': '.$cab->Location;
 	$pdf->SetFont($config->ParameterArray['PDFfont'],'B',10);
 	$pdf->Cell(0,5,$cabmessage,0,1,'C',0);
