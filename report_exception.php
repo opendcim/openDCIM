@@ -246,7 +246,7 @@ class PDF extends FPDF {
 		$fill = 0;
 
 		foreach( $devList as $devRow ) {
-		  if ( ( $devRow->TemplateID > 0 ) && ( ( $devRow->PowerSupplyCount > 0 ) || ( $devRow->Infrastructure == 1 ) ) )
+		  if ( ( $devRow->TemplateID > 0 ) && ($devRow->PowerSupplyCount > 0 ))
 		    continue;
 		    
 			if ( $devRow->Cabinet != $cab->CabinetID ) {

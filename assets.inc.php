@@ -1210,7 +1210,7 @@ class Device {
 		$devList[$currSize]->EscalationTimeID = $devRow->EscalationTimeID;
 		$devList[$currSize]->EscalationID = $devRow->EscalationID;
 		$devList[$currSize]->PrimaryContact = $devRow->PrimaryContact;
-        $devList[$currSize]->Cabinet = $devRow0>Cabinet;
+        $devList[$currSize]->Cabinet = $devRow->Cabinet;
         $devList[$currSize]->Position = $devRow->Position;
         $devList[$currSize]->Height = $devRow->Height;
         $devList[$currSize]->Ports = $devRow->Ports;
@@ -1220,8 +1220,8 @@ class Device {
         $devList[$currSize]->DeviceType = $devRow->DeviceType;
 		$devList[$currSize]->MfgDate = $devRow->MfgDate;
 		$devList[$currSize]->InstallDate = $devRow->InstallDate;
-		$devList[$currSize]->WarrantyCo = $deviceRow["WarrantyCo"];
-		@$devList[$currSize]->WarrantyExpire = $deviceRow["WarrantyExpire"];
+		$devList[$currSize]->WarrantyCo = $devRow->WarrantyCo;
+		@$devList[$currSize]->WarrantyExpire = $devRow->WarrantyExpire;
 		$devList[$currSize]->Notes = $devRow->Notes;
 		$devList[$currSize]->Reservation = $devRow->Reservation;
       }
