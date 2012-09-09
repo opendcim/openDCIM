@@ -199,13 +199,17 @@ class PDF extends FPDF {
       } else {
         foreach ( $devList as $devRow ) {
           $sourceList = $devRow->GetDeviceDiversity( $facDB );
-          $source->PowerSourceID = $sourceList[0];
+          @$source->PowerSourceID = $sourceList[0];
           if ( $source->PowerSourceID > 0 ) {
             $source->GetSource( $facDB );
           } else {
             $source->SourceName = 'Unknown';
           }
-          
+
+/*
+
+WTF was this supposed to be doing?
+
           foreach ( $sourceList as $sourceID ) {
             $source->PowerSourceID = $sourceID;
             if ( $sourceID < 1 ) {
@@ -215,7 +219,8 @@ class PDF extends FPDF {
               $sources .= $source->SourceName . ' ';
             }
           }
-            
+*/
+
           $pdf->Cell( $cellWidths[0], 6, $cabRow->Location, 'LBRT', 0, 'L', $fill );
           $pdf->Cell( $cellWidths[1], 6, $devRow->Label, 'LBRT', 0, 'L', $fill );
           $pdf->Cell( $cellWidths[2], 6, $source->SourceName, 'LBRT', 0, 'L', $fill ); 

@@ -118,7 +118,7 @@ class PDF extends FPDF {
   }
 }
 
-if ( $_REQUEST['action'] != 'Generate' ) {
+if (!isset($_REQUEST['action'])){
 ?>
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
 <html>
@@ -223,8 +223,12 @@ if ( $_REQUEST['action'] != 'Generate' ) {
 	$dc->DataCenterID = intval( $_REQUEST['datacenterid'] );
 	$dc->GetDataCenter( $facDB );
 
-	$srcArray = $_REQUEST['sourceid'];
-	$pnlArray = $_REQUEST['panelid'];
+	if(isset($_POST['sourceid'])){
+		$srcArray=$_POST['sourceid'];
+	}
+	if(isset($_POST['panelid'])){
+		$pnlArray=$_POST['panelid'];
+	}
 	
 	if ( count( $srcArray ) > 0 ) {
 		// Build an array of the Panels affected when the entire source goes down.

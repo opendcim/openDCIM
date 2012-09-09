@@ -255,6 +255,7 @@ $(function(){
 		$endDate = date( "Y-m-d" );
 	
 	$sql = sprintf( "select a.*, b.Name from fac_Decommission a, fac_User b where a.UserID=b.UserID and SurplusDate>='%s' and SurplusDate<='%s' order by SurplusDate DESC", $startDate, $endDate );
+
 	$result = mysql_query( $sql, $facDB );
 	
 	$currDate = "";
