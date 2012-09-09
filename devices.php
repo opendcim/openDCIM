@@ -15,8 +15,40 @@
 		header('Location: '.redirect());
 		exit;
 	}
-
-
+	// Ajax functions and we only want these exposed to people with write access
+	if($user->WriteAccess){
+		if(isset($_POST['swdev'])){
+			$dev->DeviceID=$_POST['swdev'];
+			$dev->GetDevice($facDB);
+			$patchCandidates=$dev->CreatePatchCandidateList($facDB);
+			$connect=new SwitchConnection();
+			$connect->SwitchDeviceID=$dev->DeviceID;
+			$connect->SwitchPortNumber=$_POST['sp'];
+			if(isset($_POST['devid'])){
+				$connect->EndpointDeviceID=$_POST['devid'];
+				$connect->EndpointPort=$_POST['dp'];
+				$connect->Notes=$_POST['n'];
+				if($connect->EndpointDeviceID==-1){
+					echo $connect->RemoveConnection($facDB);
+				}else{
+					// Since I can't be bothered to put in an actual update, just remove the existing connection first.
+					$connect->RemoveConnection($facDB);
+					// should kick back -1 if the insert fails and 1 if it is successful
+					echo $connect->CreateConnection($facDB);
+				}
+			}else{
+				$connect->GetSwitchPortConnector($facDB);
+				echo '<select name="endpointdeviceid" id="endpointdeviceid"><option value=-1>No Connection</option>';
+				foreach($patchCandidates as $key=>$devRow){
+					if($connect->EndpointDeviceID==$devRow->DeviceID){$selected=" selected";}else{$selected="";}
+					if($dev->ParentDevice>0 && $dev->ParentDevice==$devRow->DeviceID){$selected=" disabled";}
+					print "<option value=$devRow->DeviceID$selected>$devRow->Label</option>\n";
+				}
+				echo '</select>';
+			}
+			exit;
+		}
+	}
 
 	// These objects are used no matter what operation we're performing
 	$templ=new DeviceTemplate();
@@ -316,8 +348,8 @@ $(document).ready(function() {
 	 * jQuery.browser.mobile will be true if the browser is a mobile device
 	 **/
 	(function(a){jQuery.browser.mobile=/android.+mobile|avantgo|bada\/|blackberry|blazer|compal|elaine|fennec|hiptop|iemobile|ip(hone|od)|iris|kindle|lge |maemo|midp|mmp|netfront|opera m(ob|in)i|palm( os)?|phone|p(ixi|re)\/|plucker|pocket|psp|symbian|treo|up\.(browser|link)|vodafone|wap|windows (ce|phone)|xda|xiino/i.test(a)||/1207|6310|6590|3gso|4thp|50[1-6]i|770s|802s|a wa|abac|ac(er|oo|s\-)|ai(ko|rn)|al(av|ca|co)|amoi|an(ex|ny|yw)|aptu|ar(ch|go)|as(te|us)|attw|au(di|\-m|r |s )|avan|be(ck|ll|nq)|bi(lb|rd)|bl(ac|az)|br(e|v)w|bumb|bw\-(n|u)|c55\/|capi|ccwa|cdm\-|cell|chtm|cldc|cmd\-|co(mp|nd)|craw|da(it|ll|ng)|dbte|dc\-s|devi|dica|dmob|do(c|p)o|ds(12|\-d)|el(49|ai)|em(l2|ul)|er(ic|k0)|esl8|ez([4-7]0|os|wa|ze)|fetc|fly(\-|_)|g1 u|g560|gene|gf\-5|g\-mo|go(\.w|od)|gr(ad|un)|haie|hcit|hd\-(m|p|t)|hei\-|hi(pt|ta)|hp( i|ip)|hs\-c|ht(c(\-| |_|a|g|p|s|t)|tp)|hu(aw|tc)|i\-(20|go|ma)|i230|iac( |\-|\/)|ibro|idea|ig01|ikom|im1k|inno|ipaq|iris|ja(t|v)a|jbro|jemu|jigs|kddi|keji|kgt( |\/)|klon|kpt |kwc\-|kyo(c|k)|le(no|xi)|lg( g|\/(k|l|u)|50|54|e\-|e\/|\-[a-w])|libw|lynx|m1\-w|m3ga|m50\/|ma(te|ui|xo)|mc(01|21|ca)|m\-cr|me(di|rc|ri)|mi(o8|oa|ts)|mmef|mo(01|02|bi|de|do|t(\-| |o|v)|zz)|mt(50|p1|v )|mwbp|mywa|n10[0-2]|n20[2-3]|n30(0|2)|n50(0|2|5)|n7(0(0|1)|10)|ne((c|m)\-|on|tf|wf|wg|wt)|nok(6|i)|nzph|o2im|op(ti|wv)|oran|owg1|p800|pan(a|d|t)|pdxg|pg(13|\-([1-8]|c))|phil|pire|pl(ay|uc)|pn\-2|po(ck|rt|se)|prox|psio|pt\-g|qa\-a|qc(07|12|21|32|60|\-[2-7]|i\-)|qtek|r380|r600|raks|rim9|ro(ve|zo)|s55\/|sa(ge|ma|mm|ms|ny|va)|sc(01|h\-|oo|p\-)|sdk\/|se(c(\-|0|1)|47|mc|nd|ri)|sgh\-|shar|sie(\-|m)|sk\-0|sl(45|id)|sm(al|ar|b3|it|t5)|so(ft|ny)|sp(01|h\-|v\-|v )|sy(01|mb)|t2(18|50)|t6(00|10|18)|ta(gt|lk)|tcl\-|tdg\-|tel(i|m)|tim\-|t\-mo|to(pl|sh)|ts(70|m\-|m3|m5)|tx\-9|up(\.b|g1|si)|utst|v400|v750|veri|vi(rg|te)|vk(40|5[0-3]|\-v)|vm40|voda|vulc|vx(52|53|60|61|70|80|81|83|85|98)|w3c(\-| )|webc|whit|wi(g |nc|nw)|wmlb|wonu|x700|xda(\-|2|g)|yas\-|your|zeto|zte\-/i.test(a.substr(0,4))})(navigator.userAgent||navigator.vendor||window.opera);
+	// Mobile devices get a scan barcode button and an accordian interface
 	if(jQuery.browser.mobile){
-		// We only need scan barcode buttons for MOBILE DEVICES
 		$('.main button').each(function(){
 			if($(this).text()=='Scan Barcode'){
 				$(this).css('display', 'inline');
@@ -352,14 +384,15 @@ $(document).ready(function() {
 		}).removeClass('left');  
 	}
 
-	$('#deviceform').validationEngine({});
-	$('#mfgdate').datepicker({});
-	$('#installdate').datepicker({});
-	$('#warrantyexpire').datepicker({});
+	$('#deviceform').validationEngine();
+	$('#mfgdate').datepicker();
+	$('#installdate').datepicker();
+	$('#warrantyexpire').datepicker();
 	$('#owner').next('button').click(function(){
 		window.open('contactpopup.php?deptid='+$('#owner').val(), 'Contacts Lookup', 'width=800, height=700, resizable=no, toolbar=no');
 		return false;
 	});
+	// This is for adding blades to chassis devices
 	$('#adddevice').click(function() {
 		$(":input").attr("disabled","disabled");
 		$('#parentdevice').removeAttr("disabled");
@@ -367,6 +400,7 @@ $(document).ready(function() {
 		$(this).submit();
 		$(":input").removeAttr("disabled"); // if they hit back it makes sure the fields aren't disabled
 	});
+	// Auto-Populate fields based on device templates
 	$('#templateid').change( function(){
 		$.get('scripts/ajax_template.php?q='+$(this).val(), function(data) {
 			$('#height').val(data['Height']);
@@ -463,6 +497,107 @@ $(document).ready(function() {
 <?php
 	}
 ?>
+	$('.switch > div:first-child ~ div').each(function(){
+		var row=$(this);
+		var height=row.height();
+		$(this).find('div:first-child').click(function(){
+			$(this).css({'min-width': '35px','width': '35px'});
+			var swdev=$('#deviceid').val();
+			var sp=$(this).text();
+			if($(this).attr('edit')=='yes'){
+
+			}else{
+				$(this).attr('edit','yes');
+				var device=$(this).next();
+				var devid=device.attr('alt');
+				var devport=device.next();
+				devport.css({'min-width': '35px','width': '35px'});
+				var devportwidth=devport.width();
+				var notes=devport.next();
+				$.ajax({
+					type: 'POST',
+					url: 'devices.php',
+					data: 'swdev='+swdev+'&sp='+sp,
+					success: function(data){
+						device.html(data).css({'width': device.children('select').width()+'px', 'padding': '0px'});
+						device.children('select').css({'background-color': 'transparent'});
+						devport.html('<input type="text" name="dp" value="'+devport.text()+'">').css({'width': devportwidth+'px', 'padding': '0px'}).children('input').css({'width': devportwidth+'px', 'background-color': 'transparent'});
+						notes.html('<input type="text" name="n" value="'+notes.text()+'">').css({'width': notes.width()+'px', 'padding': '0px'}).children('input').css({'width': notes.width()+'px', 'background-color': 'transparent'});
+<?php echo '							row.append(\'<div style="padding: 0px;"><button type="button" value="save">',_("Save"),'</button><button type="button" value="delete">',_("Delete"),'</button><button type="button" value="cancel">',_("Cancel"),'</button></div>\');'; ?>
+						row.find('div > button').css({'height': height+'px', 'line-height': '1'});
+						var buttonwidth=15;
+						row.find('div > button').each(function(){
+							buttonwidth+=$(this).outerWidth();
+							var a=device.find('select');
+							var b=devport.find('input');
+							var c=notes.find('input');
+							if($(this).val()=="delete"){
+								$(this).click(function(e){
+									a.val("");
+									b.val("");
+									c.val("");
+									row.find('div > button[value="save"]').focus();
+									row.find('div > button[value="save"]').click();
+								});
+							}else if($(this).val()=="cancel"){
+								$(this).click(function(){
+									a.val(device.attr('alt'));
+									b.val(devport.attr('data'));
+									c.val(notes.attr('data'));
+									row.find('div > button[value="save"]').focus();
+									row.find('div > button[value="save"]').click();
+								});
+							}else if($(this).val()=="save"){
+								$(this).click(function(){
+									$.ajax({
+										type: 'POST',
+										url: 'devices.php',
+										data: 'swdev='+swdev+'&sp='+sp+'&devid='+a.val()+'&dp='+b.val()+'&n='+c.val(),
+										success: function(data){
+											if(data=="-1"){
+												//error
+												device.css('background-color', 'salmon');
+												devport.css('background-color', 'salmon');
+												notes.css('background-color', 'salmon');
+												setTimeout(function() {
+													device.css('background-color', 'white');
+													devport.css('background-color', 'white');
+													notes.css('background-color', 'white');
+												},1500);
+											}else if(data=="1"){
+												row.find('div:first-child').removeAttr('edit').css('width','auto');
+												// set the fields back to table cells
+												row.find('div:last-child').remove();
+												if(a.val()!='-1'){
+													device.html('<a href="devices.php?deviceid='+a.val()+'">'+a.find('option:selected').text()+'</a>').removeAttr('style');
+												}else{
+													device.html('').removeAttr('style');
+												}
+												devport.html(b.val()).removeAttr('style');
+												notes.html(c.val()).removeAttr('style');
+												device.css('background-color', 'lightgreen');
+												devport.css('background-color', 'lightgreen');
+												notes.css('background-color', 'lightgreen');
+												setTimeout(function() {
+													device.css('background-color', 'white');
+													devport.css('background-color', 'white');
+													notes.css('background-color', 'white');
+												},1500);
+											}else{
+												// something unexpected has happened
+											}
+										}
+									});
+								});
+							}
+							$(this).parent('div').css({'width': buttonwidth+'px', 'text-align': 'center'});
+						});
+						$('div.page').css('width', ($('#deviceform').outerWidth(true)+$('#sidebar').outerWidth(true)+22)+'px');
+					}
+				});
+			}
+		}).css({'cursor': 'pointer','text-decoration': 'underline'});
+	});
 });
 	
 function setPreferredLayout() {<?php if(isset($_COOKIE["layout"]) && strtolower($_COOKIE["layout"])==="portrait"){echo 'swaplayout();setCookie("layout","Portrait");';}else{echo 'setCookie("layout","Landscape");';} ?>}
@@ -821,7 +956,7 @@ echo '	<div class="table">
 				$pdu->GetPDU($facDB);
 				$panel->PanelID=$pdu->PanelID;
 				$panel->GetPanel($facDB);
-				print "			<div><div><a href=\"power_panel.php?panelid=$pdu->PanelID\">$panel->PanelLabel</a></div><div><a href=\"power_pdu.php?pduid=$pdu->PDUID\">$pdu->Label</a></div><div><a href=\"power_connection.php?pdu=$pdu->PDUID&conn=$cord->PDUPosition\">$cord->PDUPosition</a></div><div>$cord->DeviceConnNumber</div></div>\n";
+				print "			<div><div><a href=\"power_panel.php?panelid=$pdu->PanelID\">$panel->PanelLabel</a></div><div><a href=\"power_pdu.php?pduid=$pdu->PDUID\">$pdu->Label</a></div><div>$cord->PDUPosition</div><div>$cord->DeviceConnNumber</div></div>\n";
 			}
 			print "			</div><!-- END div.table --></div>\n		</div>\n		<div>\n			<div>&nbsp;</div><div></div>\n		</div>\n";
 		}
@@ -845,14 +980,14 @@ echo '	<div class="table">
 	}
 		  
 	if($dev->DeviceType=='Switch'){
-		print "		<div>\n		  <div><a name=\"net\">"._('Connections')."</a></div>\n		  <div>\n			<div class=\"table border\">\n				<div><div>"._('Switch Port')."</div><div>"._('Device')."</div><div>"._('Device Port')."</div><div>"._('Notes')."</div></div>\n";
+		print "		<div>\n		  <div><a name=\"net\">"._('Connections')."</a></div>\n		  <div>\n			<div class=\"table border switch\">\n				<div><div>"._('Switch Port')."</div><div>"._('Device')."</div><div>"._('Device Port')."</div><div>"._('Notes')."</div></div>\n";
 		if(sizeof($patchList) >0){
 			foreach($patchList as $patchConn){
 				$tmpDev=new Device();
 				$tmpDev->DeviceID=$patchConn->EndpointDeviceID;
 				$tmpDev->GetDevice($facDB);
 				
-				print "\t\t\t\t<div><div><a href=\"changepatch.php?switchid=$patchConn->SwitchDeviceID&portid=$patchConn->SwitchPortNumber\">$patchConn->SwitchPortNumber</a></div><div><a href=\"devices.php?deviceid=$patchConn->EndpointDeviceID\">$tmpDev->Label</a></div><div>$patchConn->EndpointPort</div><div>$patchConn->Notes</div></div>\n";
+				print "\t\t\t\t<div><div>$patchConn->SwitchPortNumber</div><div alt=\"$patchConn->EndpointDeviceID\"><a href=\"devices.php?deviceid=$patchConn->EndpointDeviceID\">$tmpDev->Label</a></div><div data=\"$patchConn->EndpointPort\">$patchConn->EndpointPort</div><div data=\"$patchConn->Notes\">$patchConn->Notes</div></div>\n";
 			}
 		}      
 		echo "			</div><!-- END div.table -->\n		  </div>\n		</div>";

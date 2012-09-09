@@ -1652,12 +1652,15 @@ class SwitchConnection {
   var $EndpointPort;
   var $Notes;
 
-  function CreateConnection( $db ) {
-    $insertSQL = "insert into fac_SwitchConnection set SwitchDeviceID=\"" . $this->SwitchDeviceID . "\", SwitchPortNumber=\"" . $this->SwitchPortNumber . "\", EndpointDeviceID=\"" . $this->EndpointDeviceID . "\", EndpointPort=\"" . $this->EndpointPort . "\", Notes=\"" . addslashes( $this->Notes ) . "\" on duplicate key update EndpointDeviceID=\"" . $this->EndpointDeviceID . "\", EndpointPort=\"" . $this->EndpointPort . "\", Notes=\"" . addslashes( $this->Notes ) . "\"";
-    
-    $result = mysql_query( $insertSQL, $db );
-    
-    return $result;
+  function CreateConnection($db){
+    $insertSQL="insert into fac_SwitchConnection set SwitchDeviceID=\"".intval($this->SwitchDeviceID)."\", SwitchPortNumber=\"".intval($this->SwitchPortNumber)."\", EndpointDeviceID=\"".intval($this->EndpointDeviceID)."\", EndpointPort=\"".intval($this->EndpointPort)."\", Notes=\"".addslashes(strip_tags($this->Notes))."\""; 
+
+    $result=mysql_query($insertSQL,$db);
+	if(!$result){
+		return -1;
+	}else{
+		return $result;
+	}
   }
   
   function UpdateConnection( $db ) {
