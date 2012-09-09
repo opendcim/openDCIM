@@ -13,6 +13,8 @@
 	$pdu=new PowerDistribution();
 	$panel= new PowerPanel();
 	$connection=new PowerConnection();
+	$mfg=new Manufacturer();
+	$templ=new DeviceTemplate();
 
 class PDF extends FPDF {
   var $outlines=array();
@@ -382,8 +384,8 @@ class PDF_Diag extends PDF_Sector {
 	$pdf->Cell(0,5,$cabmessage,0,1,'C',0);
 	$pdf->SetFont($config->ParameterArray['PDFfont'],'',10);
 	$deviceList = $device->ViewDevicesByCabinet( $facDB );
-	$headerTags = array( _('Label'), _('SerialNo'), _('AssetTag'), _('Position'), _('Rack Units'), _('#Ports'), _('PowerSupplyCount'), _('PowerConnection1'), _('PowerConnection2') );
-	$cellWidths = array( 45, 40, 20,18, 20, 15, 35, 35, 35 );
+	$headerTags = array( _('Label'), _('SerialNo'), _('AssetTag'), _('Position'), _('Rack Units'), _('#Ports'), _('#PS'), _('PowerConnection1'), _('PowerConnection2'), _('DeviceType') );
+	$cellWidths = array( 45, 40, 20, 18, 20, 15, 10, 35, 35, 50 );
 	$maxval = count( $headerTags );
 	for ( $col = 0; $col < $maxval; $col++ )
 		$pdf->Cell( $cellWidths[$col], 7, $headerTags[$col], 1, 0, 'C', 1 );
@@ -421,12 +423,17 @@ class PDF_Diag extends PDF_Sector {
 			$pdf->Cell( $cellWidths[4], 6, $devRow->Height, 'LBRT', 0, 'L', $fill );
 			$pdf->Cell( $cellWidths[5], 6, $devRow->Ports, 'LBRT', 0, 'L', $fill );
 			$pdf->Cell( $cellWidths[6], 6, $devRow->PowerSupplyCount, 'LBRT', 0, 'L', $fill );
-			$pdu->PDUID=$connList[0]->PDUID;
+			@$pdu->PDUID=$connList[0]->PDUID;
 			$pdu->GetPDU($facDB);
-			$pdf->Cell( $cellWidths[7], 6, $pdu->Label.$connList[0]->PDUPosition, 'LBRT', 0, 'L', $fill );
-			$pdu->PDUID=$connList[1]->PDUID;
+			$pdf->Cell( $cellWidths[7], 6, (isset($connList[0]))?$pdu->Label.$connList[0]->PDUPosition:"", 'LBRT', 0, 'L', $fill );
+			@$pdu->PDUID=$connList[1]->PDUID;
 			$pdu->GetPDU($facDB);
-			$pdf->Cell( $cellWidths[8], 6, $pdu->Label.$connList[1]->PDUPosition, 'LBRT', 1, 'L', $fill );
+			$pdf->Cell( $cellWidths[8], 6, (isset($connList[1]))?$pdu->Label.$connList[1]->PDUPosition:"", 'LBRT', 0, 'L', $fill );
+			$templ->TemplateID=$devRow->TemplateID;
+			$templ->GetTemplateByID($facDB);
+			$mfg->ManufacturerID=$templ->ManufacturerID;
+			$mfg->GetManufacturerByID($facDB);
+			$pdf->Cell( $cellWidths[9], 6, $mfg->Name." ".$templ->Model, 'LBRT', 1, 'L', $fill );
 
 			
 			$pdf->Cell( $cellWidths[0], 6, '', 'LBRT', 0, 'L', $fill );
@@ -437,7 +444,8 @@ class PDF_Diag extends PDF_Sector {
 			$pdf->Cell( $cellWidths[5], 6, '', 'LBRT', 0, 'L', $fill );
 			$pdf->Cell( $cellWidths[6], 6, '', 'LBRT', 0, 'L', $fill );
 			$pdf->Cell( $cellWidths[7], 6, '', 'LBRT', 0, 'L', $fill );
-			$pdf->Cell( $cellWidths[8], 6, '', 'LBRT', 1, 'L', $fill );
+			$pdf->Cell( $cellWidths[8], 6, '', 'LBRT', 0, 'L', $fill );
+			$pdf->Cell( $cellWidths[9], 6, '', 'LBRT', 1, 'L', $fill );
 			
 			$fill =! $fill;
 		}
@@ -452,7 +460,7 @@ class PDF_Diag extends PDF_Sector {
 	$PDUList=$pdu->GetPDUbyCabinet($facDB);
 	
 	$headerTags = array( _('Label'), _('NumOutputs'),_('Model'),_('PanelLabel'), _('PanelPole') );
-	$cellWidths = array( 40, 30,35, 25, 20);
+	$cellWidths = array( 50, 30,35, 50, 20);
 	$maxval = count( $headerTags );
 	for ( $col = 0; $col < $maxval; $col++ )
 		$pdf->Cell( $cellWidths[$col], 7, $headerTags[$col], 1, 0, 'C', 1 );
