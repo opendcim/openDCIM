@@ -44,8 +44,8 @@ echo '<div class="main">
 	<a href="report_contact.php">',_("Asset Report by Owner"),'</a>
 	<a href="report_asset.php">',_("Data Center Asset Report"),'</a>
 	<a href="report_cost.php">',_("Data Center Asset Costing Report"),'</a>
-	<a href="assets_by_department.php">',_("Data Center Assets By Department"),'</a>  <!-- Where is this? -->
 	<a href="report_aging.php">',_("Asset Aging Report"),'</a>
+	<a href="report_vm_by_department.php">',_("Virtual Machines by Department"),'</a>
 </fieldset>
 </div>
 
