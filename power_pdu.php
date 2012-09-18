@@ -111,12 +111,14 @@
   
   <title>Data Center PDU Detail</title>
   <link rel="stylesheet" href="css/inventory.php" type="text/css">
+  <link rel="stylesheet" href="css/jquery-ui-1.8.18.custom.css" type="text/css">
   <link rel="stylesheet" href="css/print.css" type="text/css" media="print">
   <!--[if lt IE 9]>
   <link rel="stylesheet"  href="css/ie.css" type="text/css">
   <![endif]-->
 
   <script type="text/javascript" src="scripts/jquery.min.js"></script>
+  <script type="text/javascript" src="scripts/jquery-ui-1.8.18.custom.min.js"></script>
   <script type="text/javascript">
 
 	$(document).ready(function() {

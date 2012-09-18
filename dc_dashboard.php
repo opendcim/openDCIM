@@ -52,15 +52,17 @@
   <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
   
   <title>openDCIM Data Center Information Management</title>
+  <link rel="stylesheet" href="css/inventory.php" type="text/css">
+  <link rel="stylesheet" href="css/jquery-ui-1.8.18.custom.css" type="text/css">
   <!--[if lte IE 8]>
     <link rel="stylesheet"  href="css/ie.css" type="text/css">
     <?php if(isset($ie8fix)){print $ie8fix;} ?>
     <script src="scripts/excanvas.js"></script>
   <![endif]-->
   <?php if(isset($screenadjustment)){print $screenadjustment;} ?>
-  <link rel="stylesheet" href="css/inventory.php" type="text/css">
   <?php print $dc->DrawCanvas($facDB);?>
   <script type="text/javascript" src="scripts/jquery.min.js"></script>
+  <script type="text/javascript" src="scripts/jquery-ui-1.8.18.custom.min.js"></script>
 </head>
 <body onload="loadCanvas(),uselessie()">
 <div id="header"></div>

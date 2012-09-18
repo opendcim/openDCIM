@@ -129,6 +129,7 @@ div#dcstats .table + .table > div > div + div{white-space: pre; text-align: righ
 	border-style: solid none solid solid;
 	border-width: 1px 0 1px 1px;
 	border-color: black;
+	resize: none;
 }
 #sidebar input + button, #sidebar .text-core + button, button.iebug, #sidebar textarea + button {
 	height: 27px;
@@ -146,12 +147,30 @@ div#dcstats .table + .table > div > div + div{white-space: pre; text-align: righ
 	-webkit-border-radius: 0px;
 	border-radius: 0px;
 }
+#sidebar input.search { height: 15px; padding: 5px; width: 141px; border: 1px solid black; border-right: 0; vertical-align: top;}
 #sidebar input + button img, #sidebar .text-core + button img, #sidebar textarea + button img {height: 27px;}
 #sidebar div.text-core {width: 150px; height: 27px;}
 #sidebar div.text-core textarea{ width: 151px; height: 27px;}
+
+.text-arrow {
+	-moz-box-sizing: border-box;
+	background: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAkAAAAOAQMAAADHWqTrAAAAA3NCSVQICAjb4U/gAAAABlBMVEX///8yXJnt8Ns4AAAACXBIWXMAAAsSAAALEgHS3X78AAAAHHRFWHRTb2Z0d2FyZQBBZG9iZSBGaXJld29ya3MgQ1MzmNZGAwAAABpJREFUCJljYEAF/xsY6hkY7BgYZBgYOFBkADkdAmFDagYFAAAAAElFTkSuQmCC") no-repeat scroll 50% 50% transparent;
+	cursor: pointer;
+	height: 22px;
+	position: absolute;
+	right: 0;
+	top: 0;
+	width: 22px;
+	z-index: 2;
+}
 .text-core { display: inline-block; }
 
 .langselect { position: absolute; left: -1000px; }
+
+.ui-autocomplete { max-height: 100px; overflow-y: auto; overflow-x: hidden; padding-right: 20px;}
+* html .ui-autocomplete {height: 100px;}
+.ui-menu .ui-menu-item a { line-height: 1 !important; white-space: nowrap !important; overflow: hidden;}
+
 
 /* Mapmaker */
 .mapmaker > div{width: 77%;display: inline-block;vertical-align: middle;}

@@ -3,52 +3,76 @@
 <form action="search.php" method="post">
 <input type="hidden" name="key" value="label">
 <label for="searchname"><?php print _("Search by Name:"); ?></label><br>
-<textarea id="searchname" name="search" rows=1 cols=30></textarea><button class="iebug" type="submit"><img src="css/searchbutton.png" alt="search"></button>
+<input class="search" id="searchname" name="search"><button class="iebug" type="submit"><img src="css/searchbutton.png" alt="search"></button>
 </form>
 <br>
 <form action="search.php" method="post">
 <input type="hidden" name="key" value="serial">
 <label for="searchsn"><?php print _("Search by SN:"); ?></label><br>
-<textarea id="searchsn" name="search" rows=1 cols=30></textarea><button class="iebug" type="submit"><img src="css/searchbutton.png" alt="search"></button>
+<input class="search" id="searchsn" name="search"><button class="iebug" type="submit"><img src="css/searchbutton.png" alt="search"></button>
 </form>
 <br>
 <form action="search.php" method="post">
 <input type="hidden" name="key" value="asset">
 <label for="searchtag"><?php print _("Search by Asset Tag:"); ?></label><br>
-<textarea id="searchtag" name="search" rows=1 cols=30></textarea><button class="iebug" type="submit"><img src="css/searchbutton.png" alt="search"></button>
+<input class="search" id="searchtag" name="search"><button class="iebug" type="submit"><img src="css/searchbutton.png" alt="search"></button>
 </form>
-  <script type="text/javascript" src="scripts/jquery.TextExt.js"></script>
   <script type="text/javascript">
-	$('#searchname')
-		.textext({
-			plugins : 'autocomplete ajax arrow',
-			ajax : {
-				url : 'scripts/ajax_search.php?name',
-				dataType : 'json',
-				cacheResults : false,
-			}
-		})
-	;
-	$('#searchsn')
-		.textext({
-			plugins : 'autocomplete ajax arrow',
-			ajax : {
-				url : 'scripts/ajax_search.php?serial',
-				dataType : 'json',
-				cacheResults : false,
-			}
-		})
-	;
-	$('#searchtag')
-		.textext({
-			plugins : 'autocomplete ajax arrow',
-			ajax : {
-				url : 'scripts/ajax_search.php?tag',
-				dataType : 'json',
-				cacheResults : false,
-			}
-		})
-	;
+	$('#searchname').autocomplete({
+		minLength: 0,
+		autoFocus: true,
+		source: function(req, add){
+			$.getJSON('scripts/ajax_search.php?name', {q: req.term}, function(data){
+				var suggestions=[];
+				$.each(data, function(i,val){
+					suggestions.push(val);
+				});
+				add(suggestions);
+			});
+		},
+		open: function(){
+			$(this).autocomplete("widget").css({'width': $('#searchname').width()+6+'px'});
+		}
+	}).next().after('<div class="text-arrow"></div>');
+	$('#searchsn').autocomplete({
+		minLength: 0,
+		autoFocus: true,
+		source: function(req, add){
+			$.getJSON('scripts/ajax_search.php?serial', {q: req.term}, function(data){
+				var suggestions=[];
+				$.each(data, function(i,val){
+					suggestions.push(val);
+				});
+				add(suggestions);
+			});
+		},
+		open: function(){
+			$(this).autocomplete("widget").css({'width': $('#searchname').width()+6+'px'});
+		}
+	}).next().after('<div class="text-arrow"></div>');
+	$('#searchtag').autocomplete({
+		minLength: 0,
+		autoFocus: true,
+		source: function(req, add){
+			$.getJSON('scripts/ajax_search.php?tag', {q: req.term}, function(data){
+				var suggestions=[];
+				$.each(data, function(i,val){
+					suggestions.push(val);
+				});
+				add(suggestions);
+			});
+		},
+		open: function(){
+			$(this).autocomplete("widget").css({'width': $('#searchname').width()+6+'px'});
+		}
+	}).next().after('<div class="text-arrow"></div>');
+	$('.text-arrow').each(function(){
+		var inputpos=$(this).prev().prev().position();
+		$(this).css({'top': inputpos.top+'px', 'left': inputpos.left+$(this).prev().prev().width()-($(this).width()/2)});
+		$(this).click(function(){
+			$(this).prev().prev().autocomplete("search", "");
+		});
+	});
   </script>
   <script type="text/javascript" src="scripts/mktree.js"></script> 
 	<hr>
