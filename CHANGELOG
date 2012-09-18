@@ -8,6 +8,7 @@ are simply testing, as some functionality can break between releases.
 
 Changes in 1.5
 --------------
+* Database charset changed from latin1 to utf8 to better support localization/internationalization
 * Better error-checking
 * Ability to disable users (don't delete them since they are foreign keys for auditing)
 * Chassis/Blade tracking for front and rear slots
