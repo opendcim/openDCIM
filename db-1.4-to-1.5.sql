@@ -59,7 +59,7 @@ CREATE TABLE fac_CabinetTemps (
   LastRead datetime NOT NULL,
   Temp int(11) NOT NULL,
   PRIMARY KEY (CabinetID)
-) ENGINE=MyISAM AUTO_INCREMENT=1 DEFAULT CHARSET=latin1;
+) ENGINE=MyISAM AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
 
 --
 -- Correction to the VMInventory tables

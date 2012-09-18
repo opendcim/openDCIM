@@ -23,7 +23,7 @@ CREATE TABLE fac_Cabinet (
   MapY1 int(11) NOT NULL,
   MapY2 int(11) NOT NULL,
   PRIMARY KEY (CabinetID)
-) ENGINE=MyISAM AUTO_INCREMENT=1 DEFAULT CHARSET=latin1;
+) ENGINE=MyISAM AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
 
 --
 -- Table structure for table `fac_CabinetTemps`
@@ -35,7 +35,7 @@ CREATE TABLE fac_CabinetTemps (
   LastRead datetime NOT NULL,
   Temp int(11) NOT NULL,
   PRIMARY KEY (CabinetID)
-) ENGINE=MyISAM AUTO_INCREMENT=1 DEFAULT CHARSET=latin1;
+) ENGINE=MyISAM AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
 
 --
 -- Table structure for table `fac_CabinetAudit`
@@ -47,7 +47,7 @@ CREATE TABLE `fac_CabinetAudit` (
   UserID varchar(80) NOT NULL,
   AuditStamp datetime NOT NULL,
   PRIMARY KEY (`CabinetID`)
-) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
 --
 -- Table structure for table `fac_Contact`
@@ -64,7 +64,7 @@ CREATE TABLE fac_Contact (
   Phone3 varchar(20) NOT NULL,
   Email varchar(80) NOT NULL,
   PRIMARY KEY (ContactID)
-) ENGINE=MyISAM AUTO_INCREMENT=1 DEFAULT CHARSET=latin1;
+) ENGINE=MyISAM AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
 
 --
 -- Table structure for table fac_DataCenter
@@ -80,7 +80,7 @@ CREATE TABLE fac_DataCenter (
   DrawingFileName varchar(255) NOT NULL,
   EntryLogging tinyint(1) NOT NULL,
   PRIMARY KEY (DataCenterID)
-) ENGINE=MyISAM AUTO_INCREMENT=1 DEFAULT CHARSET=latin1;
+) ENGINE=MyISAM AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
 
 --
 -- Table structure for table fac_Department
@@ -95,7 +95,7 @@ CREATE TABLE fac_Department (
   Classification varchar(80) NOT NULL,
   DeptColor VARCHAR( 7 ) NOT NULL DEFAULT '#FFFFFF',
   PRIMARY KEY (DeptID)
-) ENGINE=MyISAM AUTO_INCREMENT=1 DEFAULT CHARSET=latin1;
+) ENGINE=MyISAM AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
 
 --
 -- Table structure for table fac_DeptContacts
@@ -105,7 +105,7 @@ DROP TABLE IF EXISTS fac_DeptContacts;
 CREATE TABLE fac_DeptContacts (
   DeptID int(11) NOT NULL,
   ContactID int(11) NOT NULL
-) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
 --
 -- Table structure for table fac_Decommission
@@ -118,7 +118,7 @@ CREATE TABLE fac_Decommission (
   SerialNo varchar(40) NOT NULL,
   AssetTag varchar(20) NOT NULL,
   UserID varchar(80) NOT NULL
-) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
 --
 -- Table structure for table fac_Device
@@ -155,7 +155,7 @@ CREATE TABLE fac_Device (
   Reservation tinyint(1) NOT NULL,
   PRIMARY KEY (DeviceID),
   KEY SerialNo (SerialNo,`AssetTag`,`PrimaryIP`)
-) ENGINE=MyISAM AUTO_INCREMENT=1 DEFAULT CHARSET=latin1;
+) ENGINE=MyISAM AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
 
 --
 -- Table structure for table fac_DeviceTemplate
@@ -174,7 +174,7 @@ CREATE TABLE fac_DeviceTemplate (
   NumPorts int(11) NOT NULL,
   PRIMARY KEY (TemplateID),
   KEY ManufacturerID (ManufacturerID)
-) ENGINE=MyISAM AUTO_INCREMENT=1 DEFAULT CHARSET=latin1;
+) ENGINE=MyISAM AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
 
 --
 -- Table structure for table fac_EscalationTimes
@@ -185,7 +185,7 @@ CREATE TABLE fac_EscalationTimes (
 	EscalationTimeID int(11) NOT NULL AUTO_INCREMENT,
 	TimePeriod varchar(80) NOT NULL,
 	PRIMARY KEY (EscalationTimeID)
-) ENGINE=MyISAM AUTO_INCREMENT=1 DEFAULT CHARSET=latin1;
+) ENGINE=MyISAM AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
 
 --
 -- Table structure for table fac_Escalations
@@ -196,7 +196,7 @@ CREATE TABLE fac_Escalations (
 	EscalationID int(11) NOT NULL AUTO_INCREMENT,
 	Details varchar(80) NULL,
 	PRIMARY KEY (EscalationID)
-) ENGINE=MyISAM AUTO_INCREMENT=1 DEFAULT CHARSET=latin1;
+) ENGINE=MyISAM AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
 
 --
 -- Table structure for table fac_Manufacturer
@@ -207,7 +207,7 @@ CREATE TABLE fac_Manufacturer (
   ManufacturerID int(11) NOT NULL AUTO_INCREMENT,
   Name varchar(80) NOT NULL,
   PRIMARY KEY (ManufacturerID)
-) ENGINE=MyISAM AUTO_INCREMENT=1 DEFAULT CHARSET=latin1;
+) ENGINE=MyISAM AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
 
 --
 -- Table structure for table fac_PanelSchedule
@@ -220,7 +220,7 @@ CREATE TABLE fac_PanelSchedule (
   NumPoles int(11) NOT NULL,
   Label varchar(80) NOT NULL,
   PRIMARY KEY (PanelID)
-) ENGINE=MyISAM AUTO_INCREMENT=1 DEFAULT CHARSET=latin1;
+) ENGINE=MyISAM AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
 
 
 --
@@ -235,7 +235,7 @@ create table fac_PDUStats(
   PhaseC float(6,2) NOT NULL,
   TotalAmps float(6,2) NOT NULL,
   PRIMARY KEY (PDUID)
-) ENGINE=MyISAM AUTO_INCREMENT=1 DEFAULT CHARSET=latin1;
+) ENGINE=MyISAM AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
 
 --
 -- Table structure for table fac_PowerConnection
@@ -248,7 +248,7 @@ CREATE TABLE fac_PowerConnection (
   DeviceID int(11) NOT NULL,
   DeviceConnNumber int(11) NOT NULL,
   KEY PDUID (PDUID,`DeviceID`)
-) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
 --
 -- Table structure for table fac_PowerDistribution
@@ -273,7 +273,7 @@ CREATE TABLE fac_PowerDistribution (
   PanelID2 int(11) NOT NULL,
   PanelPole2 int(11) NOT NULL,
   PRIMARY KEY (PDUID)
-) ENGINE=MyISAM AUTO_INCREMENT=1 DEFAULT CHARSET=latin1;
+) ENGINE=MyISAM AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
 
 --
 -- Table structure for table fac_PowerPanel
@@ -289,7 +289,7 @@ CREATE TABLE fac_PowerPanel (
   PanelVoltage int(11) NOT NULL,
   NumberScheme enum('Odd/Even','Sequential') NOT NULL,
   PRIMARY KEY (PanelID)
-) ENGINE=MyISAM AUTO_INCREMENT=1 DEFAULT CHARSET=latin1;
+) ENGINE=MyISAM AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
 
 --
 -- Table structure for table fac_PowerSource
@@ -306,7 +306,7 @@ CREATE TABLE fac_PowerSource (
   Capacity int(11) NOT NULL,
   PRIMARY KEY (PowerSourceID),
   KEY DataCenterID (DataCenterID)
-) ENGINE=MyISAM AUTO_INCREMENT=1 DEFAULT CHARSET=latin1;
+) ENGINE=MyISAM AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
 
 --
 -- Table structure for table fac_RackRequest
@@ -336,7 +336,7 @@ CREATE TABLE fac_RackRequest (
   SpecialInstructions text NOT NULL,
   PRIMARY KEY (RequestID),
   KEY RequestorID (RequestorID)
-) ENGINE=MyISAM AUTO_INCREMENT=1 DEFAULT CHARSET=latin1;
+) ENGINE=MyISAM AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
 
 --
 -- Table structure for table fac_SwitchConnection
@@ -350,7 +350,7 @@ CREATE TABLE fac_SwitchConnection (
   EndpointPort int(11) NOT NULL,
   Notes varchar(80) NOT NULL,
   KEY SwitchDeviceID (SwitchDeviceID,`EndpointDeviceID`)
-) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
 --
 -- Table structure for table fac_User
@@ -369,7 +369,7 @@ CREATE TABLE fac_User (
   SiteAdmin tinyint(1) NOT NULL,
   Disabled tinyint(1) NOT NULL,
   PRIMARY KEY (UserID)
-) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
 --
 -- Table structure for table fac_VMInventory
@@ -386,7 +386,7 @@ CREATE TABLE fac_VMInventory (
   Owner int(11) NOT NULL,
   PRIMARY KEY (VMIndex),
   KEY ValidDevice (DeviceID)
-) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
 --
 -- Table structure for table fac_Zone
@@ -399,7 +399,7 @@ CREATE TABLE fac_Zone (
   Description varchar(120) NOT NULL,
   PRIMARY KEY (ZoneID),
   KEY DataCenterID (DataCenterID)
-) ENGINE=MyISAM AUTO_INCREMENT=1 DEFAULT CHARSET=latin1;
+) ENGINE=MyISAM AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
 
 --
 -- Table structure for fac_SupplyBin
@@ -409,7 +409,7 @@ CREATE TABLE fac_SupplyBin (
   BinID int(11) NOT NULL AUTO_INCREMENT,
   Location varchar(40) NOT NULL,
   PRIMARY KEY (BinID)
-) ENGINE=MyISAM AUTO_INCREMENT=1 DEFAULT CHARSET=latin1;
+) ENGINE=MyISAM AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
 
 --
 -- Table structure for fac_Supplies
@@ -422,7 +422,7 @@ CREATE TABLE fac_Supplies (
   MinQty int(11) NOT NULL,
   MaxQty int(11) NOT NULL,
   PRIMARY KEY (SupplyID)
-) ENGINE=MyISAM AUTO_INCREMENT=1 DEFAULT CHARSET=latin1;
+) ENGINE=MyISAM AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
 
 --
 -- Table structure for fac_BinContents
@@ -432,7 +432,7 @@ CREATE TABLE fac_BinContents (
   BinID int(11) NOT NULL,
   SupplyID int(11) NOT NULL,
   Count int(11) NOT NULL
-) ENGINE=MyISAM AUTO_INCREMENT=1 DEFAULT CHARSET=latin1;
+) ENGINE=MyISAM AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
 
 --
 -- Table structure for fac_BinAudits
@@ -442,7 +442,7 @@ CREATE TABLE fac_BinAudits (
   BinID int(11) NOT NULL,
   UserID int(11) NOT NULL,
   AuditStamp datetime NOT NULL
-) ENGINE=MyISAM AUTO_INCREMENT=1 DEFAULT CHARSET=latin1;
+) ENGINE=MyISAM AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
 
 --
 -- Table structure and insert script for table fac_Config
@@ -455,7 +455,7 @@ CREATE TABLE fac_Config (
  UnitOfMeasure varchar(40) NOT NULL,
  ValType varchar(40) NOT NULL,
  DefaultVal varchar(200) NOT NULL
-) ENGINE=MyISAM AUTO_INCREMENT=1 DEFAULT CHARSET=latin1;
+) ENGINE=MyISAM AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
 
 INSERT INTO fac_Config VALUES
         ('OrgName','openDCIM Computer Facilities','Name','string','openDCIM Computer Facilities'),
