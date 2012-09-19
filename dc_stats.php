@@ -74,6 +74,12 @@
   <?php print $dc->DrawCanvas($facDB);?>
   <script type="text/javascript" src="scripts/jquery.min.js"></script>
   <script type="text/javascript" src="scripts/jquery-ui-1.8.18.custom.min.js"></script>
+  <script type="text/javascript">
+	$(document).ready(function(){
+		$('#mapCanvas').css('width', $('.canvas > img[alt="clearmap over canvas"]').width()+'px');
+		$('#mapCanvas').parent('.canvas').css('width', $('.canvas > img[alt="clearmap over canvas"]').width()+'px');
+	});
+  </script>
 </head>
 <body onload="loadCanvas(),uselessie()">
 <div id="header"></div>
