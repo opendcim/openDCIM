@@ -123,6 +123,7 @@ if (!isset($_REQUEST['action'])){
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
 <html>
 <head>
+  <meta http-equiv="X-UA-Compatible" content="IE=Edge">
   <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
   <title>openDCIM Inventory Reporting</title>
   <link rel="stylesheet" href="css/inventory.php" type="text/css">
