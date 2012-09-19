@@ -38,8 +38,11 @@
 				$status=_("Updated");
 				$userRights->UpdateUser($facDB);
 			}
-		}
+		}else{
 		//Should we ever add a delete user function it will go here
+		}
+		// Reload rights because actions like disable reset other rights
+		$userRights->GetUserRights($facDB);
 	}
 
 	$userList=$userRights->GetUserList($facDB);
