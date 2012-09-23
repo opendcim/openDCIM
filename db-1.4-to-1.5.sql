@@ -67,3 +67,10 @@ CREATE TABLE fac_CabinetTemps (
 ALTER TABLE `fac_VMInventory` ADD PRIMARY KEY ( `VMIndex` );
 ALTER TABLE `fac_VMInventory` ADD KEY `ValidDevice` (`DeviceID`);
 ALTER TABLE `fac_VMInventory` CHANGE `VMIndex` `VMIndex` INT( 11 ) NOT NULL AUTO_INCREMENT;
+
+--
+-- Add a configuration item for how long a virtual server should be missing before it is removed
+--
+INSERT INTO `fac_Config` (`Parameter`, `Value`, `UnitOfMeasure`, `ValType`, `DefaultVal`) VALUES
+('VMExpirationTime', '7', 'Days', 'int', '7');
+

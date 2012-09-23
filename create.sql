@@ -493,4 +493,5 @@ INSERT INTO fac_Config VALUES
         ('HeaderColor', '#006633', 'HexColor', 'string', '#006633'),
         ('BodyColor', '#F0E0B2', 'HexColor', 'string', '#F0E0B2'),
         ('LinkColor', '#000000', 'HexColor', 'string', '#000000'),
-        ('VisitedLinkColor', '#8D90B3', 'HexColor', 'string', '#8D90B3');
+        ('VisitedLinkColor', '#8D90B3', 'HexColor', 'string', '#8D90B3'),
+		('VMExpirationTime','7','Days','int','7');

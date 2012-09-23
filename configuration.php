@@ -227,6 +227,13 @@ echo '<div class="main">
 					<div><input type="text" defaultvalue="',$config->defaults["PowerYellow"],'" name="PowerYellow" value="',$config->ParameterArray["PowerYellow"],'"></div>
 				</div>
 			</div> <!-- end table -->
+			<h3>',_("Virtual Machines"),'</h3>
+			<div class="table" id="rackusage">
+				<div>
+					<div><lable for="VMExpirationTime">',_("Expiration Time (Days)"),'</label></div>
+					<div><input type="text" defaultvalue="',$config->defaults["VMExpirationTime"],'" name="VMExpirationTime" value="',$config->ParameterArray["VMExpirationTime"],'"></div>
+				</div>
+			</div> <!-- end table -->
 		</div>
 		<div id="style">
 			<h3>',_("Racks & Maps"),'</h3>
