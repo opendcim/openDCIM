@@ -437,21 +437,17 @@ class PowerDistribution {
 	}
     
 	function GetManagementTypeSelectList( $db ) {
-		$select_sql = "select DISTINCT ManagementType from fac_PowerDistribution where ManagementType!='Unmanaged'";
-
-		if ( ! $result = mysql_query( $select_sql, $db ) ) {
-			return "";
-		}
+		$MgmtList = array( "Unmanaged", "Geist", "ServerTech", "APC");
 
 		$selectList = "<select name=\"managementtype\" id=\"managementtype\"><option value=\"Unmanaged\">Unmanaged</option>";
 
-		while ( $selectRow = mysql_fetch_array( $result ) ) {
-			if ( $selectRow[ "ManagementType" ] == $this->ManagementType )
+		foreach ( $MgmtList as $MgmtType ) {
+			if ( $MgmtType == $this->ManagementType )
 				$selected = "selected";
 			else
 				$selected = "";
 
-			$selectList .= "<option value=\"" . $selectRow[ "ManagementType" ] . "\" $selected>". $selectRow["ManagementType"]."</option>";
+			$selectList .= "<option value=\"" . $MgmtType . "\" $selected>". $MgmtType ."</option>";
 		}
 
 		$selectList .= "</select>";
