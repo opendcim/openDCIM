@@ -343,7 +343,7 @@ class Cabinet {
 	}
 
 	function SearchByCabinetName($db){
-		$select_sql="select * from fac_Cabinet where ucase(Location) like \"%" . strtoupper($this->Location) . "%\" order by Location;";
+		$select_sql="select * from fac_Cabinet where ucase(Location) like \"%" . mb_strtoupper($this->Location) . "%\" order by Location;";
 		$result=mysql_query($select_sql,$db);
 
 		$cabinetList=array();
@@ -511,9 +511,9 @@ class Device {
 		// Force all uppercase for labels
 		//
 
-		$this->Label = strtoupper( $this->Label );
-		$this->SerialNo = strtoupper( $this->SerialNo );
-		$this->AssetTag = strtoupper( $this->AssetTag );
+		$this->Label = mb_strtoupper( $this->Label );
+		$this->SerialNo = mb_strtoupper( $this->SerialNo );
+		$this->AssetTag = mb_strtoupper( $this->AssetTag );
 		
 		if ( ! in_array( $this->DeviceType, array( 'Server', 'Appliance', 'Storage Array', 'Switch', 'Chassis', 'Patch Panel', 'Physical Infrastructure' ) ) )
 		  $this->DeviceType = "Server";
