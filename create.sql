@@ -490,6 +490,7 @@ INSERT INTO fac_Config VALUES
         ('Version','1.5','','',''),
         ('UserLookupURL','https://','URL','string','https://'),
         ('ReservedColor','#00FFFF','HexColor','string','#FFFFFF'),
+		('FreeSpaceColor','#FFFFFF','HexColor','string','#FFFFFF'),
         ('HeaderColor', '#006633', 'HexColor', 'string', '#006633'),
         ('BodyColor', '#F0E0B2', 'HexColor', 'string', '#F0E0B2'),
         ('LinkColor', '#000000', 'HexColor', 'string', '#000000'),
