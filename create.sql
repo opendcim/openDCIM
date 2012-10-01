@@ -146,6 +146,7 @@ CREATE TABLE fac_Device (
   PowerSupplyCount int(11) NOT NULL,
   DeviceType enum('Server','Appliance','Storage Array','Switch','Chassis','Patch Panel','Physical Infrastructure') NOT NULL,
   ChassisSlots smallint(6) NOT NULL,
+  RearChassisSlots smallint(6) NOT NULL,
   ParentDevice int(11) NOT NULL,
   MfgDate date NOT NULL,
   InstallDate date NOT NULL,
@@ -247,7 +248,8 @@ CREATE TABLE fac_PowerConnection (
   PDUPosition int(11) NOT NULL,
   DeviceID int(11) NOT NULL,
   DeviceConnNumber int(11) NOT NULL,
-  KEY PDUID (PDUID,`DeviceID`)
+  UNIQUE KEY PDUID (PDUID,DeviceID),
+  UNIQUE KEY DeviceID (DeviceID,DeviceConnNumber)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
 --
@@ -330,7 +332,7 @@ CREATE TABLE fac_RackRequest (
   SANCount int(11) NOT NULL,
   SANList varchar(80) NOT NULL,
   DeviceClass varchar(80) NOT NULL,
-  DeviceType varchar(80) NOT NULL,
+  DeviceType enum('Server','Appliance','Storage Array','Switch','Chassis','Patch Panel','Physical Infrastructure') NOT NULL,
   LabelColor varchar(80) NOT NULL,
   CurrentLocation varchar(120) NOT NULL,
   SpecialInstructions text NOT NULL,
@@ -349,7 +351,9 @@ CREATE TABLE fac_SwitchConnection (
   EndpointDeviceID int(11) NOT NULL,
   EndpointPort int(11) NOT NULL,
   Notes varchar(80) NOT NULL,
-  KEY SwitchDeviceID (SwitchDeviceID,`EndpointDeviceID`)
+  PRIMARY KEY (SwitchDeviceID,SwitchPortNumber),
+  UNIQUE KEY EndpointDeviceID (EndpointDeviceID,EndpointPort),
+  UNIQUE KEY SwitchDeviceID (SwitchDeviceID,SwitchPortNumber)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
 --
