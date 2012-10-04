@@ -170,6 +170,10 @@ echo '<div class="main">
 					<div><input type="text" defaultvalue="',$config->defaults["Locale"],'" name="Locale" value="',$config->ParameterArray["Locale"],'"></div>
 				</div>
 				<div>
+					<div><label for="MultiByteSupport">',_("MultiByte Support"),'</label></div>
+					<div><input type="text" defaultvalue="',$config->defaults["MultiByteSupport"],'" name="MultiByteSupport" value="',$config->ParameterArray["MultiByteSupport"],'"></div>
+				</div>
+				<div>
 					<div><label for="DefaultPanelVoltage">',_("Default Panel Voltage"),'</label></div>
 					<div><input type="text" defaultvalue="',$config->defaults["DefaultPanelVoltage"],'" name="DefaultPanelVoltage" value="',$config->ParameterArray["DefaultPanelVoltage"],'"></div>
 				</div>
