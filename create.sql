@@ -479,7 +479,6 @@ INSERT INTO fac_Config VALUES
         ('annualCostPerUYear','200','Dollars','float','200'),
         ('annualCostPerWattYear','0.7884','Dollars','float','0.7884'),
         ('Locale','en_US.utf8','TextLocale','string','en_US.utf8'),
-		('MultiByteSupport',0,'Boolean','integer',0),
         ('PDFLogoFile','logo.png','Filename','string','logo.png'),
         ('PDFfont','Arial','Font','string','Arial'),
         ('SMTPServer','smtp.your.domain','Server','string','smtp.your.domain'),

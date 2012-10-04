@@ -15,10 +15,3 @@ UPDATE fac_Config SET Value = '2.0' WHERE fac_Config.Parameter = 'Version';
 
 INSERT INTO `fac_Config` (`Parameter`, `Value`, `UnitOfMeasure`, `ValType`, `DefaultVal`) VALUES
 ('FreeSpaceColor', '#FFFFFF', 'HexColor', 'string', '#FFFFFF') ON DUPLICATE KEY UPDATE ValType='string';
-
---
--- New configuration parameter for MultiByte support - since mbstring is not compiled in to PHP by default, assume no
---
-
-INSERT INTO `fac_Config` (`Parameter`, `Value`, `UnitOfMeasure`, `ValType`, `DefaultVal`) VALUES
-('MultiByteSupport', 0, 'Boolean', 'integer', 0);

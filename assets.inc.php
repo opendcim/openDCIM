@@ -343,7 +343,7 @@ class Cabinet {
 	}
 
 	function SearchByCabinetName($db){
-		if ( $config->ParameterArray["MultiByteSupport"] == true )
+		if ( function_exists(mb_strtoupper) )
 			$select_sql="select * from fac_Cabinet where ucase(Location) like \"%" . mb_strtoupper($this->Location) . "%\" order by Location;";
 		else
 			$select_sql="select * from fac_Cabinet where ucase(Location) like \"%" . strtoupper($this->Location) . "%\" order by Location;";
@@ -515,7 +515,7 @@ class Device {
 		// Force all uppercase for labels
 		//
 
-		if ( $config->ParameterArray["MultiByteSupport"] == true ) {
+		if ( function_exists(mb_strtoupper) ) {
 			$this->Label = mb_strtoupper( $this->Label );
 			$this->SerialNo = mb_strtoupper( $this->SerialNo );
 			$this->AssetTag = mb_strtoupper( $this->AssetTag );
