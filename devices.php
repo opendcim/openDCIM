@@ -977,7 +977,7 @@ echo '	<div class="table">
 			foreach($patchList as $patchConn){
 				$tmpDev->DeviceID = $patchConn->SwitchDeviceID;
 				$tmpDev->GetDevice( $facDB );
-				print "			<div><div><a href=\"devices.php?deviceid=$patchConn->SwitchDeviceID#net\">$tmpDev->Label</a></div><div><a href=\"changepatch.php?switchid=$patchConn->SwitchDeviceID&portid=$patchConn->SwitchPortNumber\">$patchConn->SwitchPortNumber</a></div><div>$patchConn->EndpointPort</div><div>$patchConn->Notes</div></div>\n";
+				print "			<div><div><a href=\"devices.php?deviceid=$patchConn->SwitchDeviceID#net\">$tmpDev->Label</a></div><div>$patchConn->SwitchPortNumber</div><div>$patchConn->EndpointPort</div><div>$patchConn->Notes</div></div>\n";
 			}
 			print "			</div><!-- END div.table -->\n		  </div>\n		</div>\n";
 		}      
