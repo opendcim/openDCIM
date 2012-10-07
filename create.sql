@@ -94,7 +94,8 @@ CREATE TABLE fac_Department (
   SDM varchar(80) NOT NULL,
   Classification varchar(80) NOT NULL,
   DeptColor VARCHAR( 7 ) NOT NULL DEFAULT '#FFFFFF',
-  PRIMARY KEY (DeptID)
+  PRIMARY KEY (DeptID),
+  UNIQUE KEY Name (Name)
 ) ENGINE=MyISAM AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
 
 --
@@ -494,7 +495,7 @@ INSERT INTO fac_Config VALUES
         ('Version','1.5','','',''),
         ('UserLookupURL','https://','URL','string','https://'),
         ('ReservedColor','#00FFFF','HexColor','string','#FFFFFF'),
-		('FreeSpaceColor','#FFFFFF','HexColor','string','#FFFFFF'),
+        ('FreeSpaceColor','#FFFFFF','HexColor','string','#FFFFFF'),
         ('HeaderColor', '#006633', 'HexColor', 'string', '#006633'),
         ('BodyColor', '#F0E0B2', 'HexColor', 'string', '#F0E0B2'),
         ('LinkColor', '#000000', 'HexColor', 'string', '#000000'),
