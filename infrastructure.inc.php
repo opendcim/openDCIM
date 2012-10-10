@@ -217,7 +217,8 @@ class DataCenter {
 				while($cabRow=mysql_fetch_array($result)){
 					$cab->CabinetID=$cabRow["CabinetID"];
 					$cab->GetCabinet($db);
-	        		$dev->Cabinet=$cab->CabinetID;
+					$dev->Cabinet=$cab->CabinetID;
+					$dev->Location=$cab->Location;
     	    		$devList=$dev->ViewDevicesByCabinet( $db );
 					$currentHeight = $cab->CabinetHeight;
         			$totalWatts = $totalWeight = $totalMoment =0;
@@ -251,11 +252,22 @@ class DataCenter {
 
 					$width=$cab->MapX2-$cab->MapX1;
 					$height=$cab->MapY2-$cab->MapY1;
-					
-					$script.="		context.fillStyle=\"rgba(".$color[0].", ".$color[1].", ".$color[2].", 0.35)\";\n		context.fillRect($cab->MapX1,$cab->MapY1,$width,$height);\n";
-					$space.="		context.fillStyle=\"rgba(".$scolor[0].", ".$scolor[1].", ".$scolor[2].", 0.35)\";\n		context.fillRect($cab->MapX1,$cab->MapY1,$width,$height);\n";
-					$weight.="		context.fillStyle=\"rgba(".$wcolor[0].", ".$wcolor[1].", ".$wcolor[2].", 0.35)\";\n		context.fillRect($cab->MapX1,$cab->MapY1,$width,$height);\n";
-					$power.="		context.fillStyle=\"rgba(".$pcolor[0].", ".$pcolor[1].", ".$pcolor[2].", 0.35)\";\n		context.fillRect($cab->MapX1,$cab->MapY1,$width,$height);\n";
+					$textstrlen=strlen($dev->Location);
+					$textXcoord=$cab->MapX1+3;
+					$textYcoord=$cab->MapY1+floor($height/2);
+
+					$border="\n\t\tcontext.strokeStyle='#000000';\n\t\tcontext.lineWidth=1;\n\t\tcontext.strokeRect($cab->MapX1,$cab->MapY1,$width,$height);";
+					$statuscolor="\n\t\tcontext.fillRect($cab->MapX1,$cab->MapY1,$width,$height);";
+					$label="\n\t\tcontext.fillStyle='#000000';\n\t\tcontext.font='bold 7px sans-serif';\n\t\tcontext.fillText('$dev->Location',$textXcoord,$textYcoord);";
+
+					// Uncomment this to add borders and rack labels to the canvas drawing of the data center.
+					// Discuss moving this into a configuration item for the future.
+					$border=$label="";
+
+					$script.="\t\tcontext.fillStyle=\"rgba({$color[0]}, {$color[1]}, {$color[2]}, 0.35)\";$border$statuscolor$label\n";
+					$space.="\t\tcontext.fillStyle=\"rgba({$scolor[0]}, {$scolor[1]}, {$scolor[2]}, 0.35)\";$border$statuscolor$label\n";
+					$weight.="\t\tcontext.fillStyle=\"rgba({$wcolor[0]}, {$wcolor[1]}, {$wcolor[2]}, 0.35)\";$border$statuscolor$label\n";
+					$power.="\t\tcontext.fillStyle=\"rgba({$pcolor[0]}, {$pcolor[1]}, {$pcolor[2]}, 0.35)\";$border$statuscolor$label\n";
 				}
 			}
 			$space.="	}\n";
