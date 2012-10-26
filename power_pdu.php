@@ -219,6 +219,7 @@
 						}
 					});
 				}else if(device.find('select').val()=="" && devinput.find('input').val()==""){
+					$.post('power_pdu.php', {pid: pduid.val(), output: output});
 					device.html('').removeAttr('style');
 					devinput.html('').removeAttr('style');
 
