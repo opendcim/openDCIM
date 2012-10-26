@@ -249,7 +249,7 @@ CREATE TABLE fac_PowerConnection (
   PDUPosition int(11) NOT NULL,
   DeviceID int(11) NOT NULL,
   DeviceConnNumber int(11) NOT NULL,
-  UNIQUE KEY PDUID (PDUID,DeviceID),
+  UNIQUE KEY PDUID (PDUID,PDUPosition),
   UNIQUE KEY DeviceID (DeviceID,DeviceConnNumber)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 

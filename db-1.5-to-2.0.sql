@@ -27,3 +27,12 @@ ALTER TABLE fac_Department ADD UNIQUE (Name);
 --
 
 ALTER TABLE fac_DeviceTemplate ADD UNIQUE KEY (ManufacturerID,Model);
+
+--
+-- Correction for typo in create.sql for v1.5, won't have an effect on 
+-- existing installations will just recreate the same index after it removes it
+--
+
+ALTER TABLE fac_PowerConnection DROP INDEX PDUID;
+ALTER TABLE fac_PowerConnection ADD UNIQUE KEY (PDUID,PDUPosition);
+
