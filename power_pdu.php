@@ -90,7 +90,7 @@
 		$pdu->GetPDU($facDB);
 		$upTime=$pdu->GetSmartCDUUptime($facDB);
 	} else {
-		$pdu->CabinetID=$_POST['cabinetid'];
+		$pdu->CabinetID=$_GET['cabinetid'];
 	}
 
 	$cab->CabinetID=$pdu->CabinetID;
