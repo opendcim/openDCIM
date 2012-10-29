@@ -50,6 +50,28 @@ CREATE TABLE `fac_CabinetAudit` (
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
 --
+-- Table structure for table `fac_CDUTemplate`
+--
+
+DROP TABLE IF EXISTS fac_CDUTemplate;
+CREATE TABLE fac_CDUTemplate (
+  TemplateID int(11) NOT NULL AUTO_INCREMENT,
+  ManufacturerID int(11) NOT NULL,
+  Model varchar(80) NOT NULL,
+  UnitOfMeasure enum( 'Watts', 'deciAmperes' ),
+  OID1 varchar(80) NOT NULL,
+  OID2 varchar(80) NOT NULL,
+  OID3 varchar(80) NOT NULL,
+  ProcessingProfile enum('SingleOIDWatts','SingleOIDAmperes','Combine3OIDAmperes','Convert3PhAmperes'),
+  Voltage int(11) NOT NULL,
+  Amperage int(11) NOT NULL,
+  NumOutlets int(11) NOT NULL,
+  PRIMARY KEY (TemplateID),
+  KEY ManufacturerID (ManufacturerID),
+  UNIQUE KEY (ManufacturerID, Model)
+) ENGINE=MyISAM AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
+
+--
 -- Table structure for table `fac_Contact`
 --
 
@@ -262,10 +284,7 @@ CREATE TABLE fac_PowerDistribution (
   PDUID int(11) NOT NULL AUTO_INCREMENT,
   Label varchar(40) NOT NULL,
   CabinetID int(11) NOT NULL,
-  InputAmperage int(11) NOT NULL,
-  ManagementType enum('Unmanaged','Geist','ServerTech','APC') NOT NULL,
-  Model varchar(80) NOT NULL,
-  NumOutputs int(11) NOT NULL,
+  TemplateID int(11) NOT NULL,
   IPAddress varchar(16) NOT NULL,
   SNMPCommunity varchar(50) NOT NULL,
   FirmwareVersion varchar(40) NOT NULL,
