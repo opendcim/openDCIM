@@ -58,11 +58,11 @@ CREATE TABLE fac_CDUTemplate (
   TemplateID int(11) NOT NULL AUTO_INCREMENT,
   ManufacturerID int(11) NOT NULL,
   Model varchar(80) NOT NULL,
-  UnitOfMeasure enum( 'Watts', 'deciAmperes' ),
+  Multipler enum( '1', '10', '100' ),
   OID1 varchar(80) NOT NULL,
   OID2 varchar(80) NOT NULL,
   OID3 varchar(80) NOT NULL,
-  ProcessingProfile enum('SingleOIDWatts','SingleOIDAmperes','Combine3OIDAmperes','Convert3PhAmperes'),
+  ProcessingProfile enum('SingleOIDWatts','SingleOIDAmperes','Combine3OIDWatts','Combine3OIDAmperes','Convert3PhAmperes'),
   Voltage int(11) NOT NULL,
   Amperage int(11) NOT NULL,
   NumOutlets int(11) NOT NULL,
@@ -254,12 +254,9 @@ CREATE TABLE fac_PanelSchedule (
 DROP TABLE IF EXISTS fac_PDUStats;
 create table fac_PDUStats(
   PDUID int(11) NOT NULL,
-  PhaseA float(6,2) NOT NULL,
-  PhaseB float(6,2) NOT NULL,
-  PhaseC float(6,2) NOT NULL,
-  TotalAmps float(6,2) NOT NULL,
+  Wattage int(11) NOT NULL,
   PRIMARY KEY (PDUID)
-) ENGINE=MyISAM AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
 --
 -- Table structure for table fac_PowerConnection

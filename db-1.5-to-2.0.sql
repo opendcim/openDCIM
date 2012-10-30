@@ -52,11 +52,11 @@ CREATE TABLE fac_CDUTemplate (
   ManufacturerID int(11) NOT NULL,
   Model varchar(80) NOT NULL,
   Managed int(1) NOT NULL,
-  UnitOfMeasure enum( 'Watts', 'deciAmperes', 'milliAmperes' ) NOT NULL,
+  Multiplier enum( '1', '10', '100' ) NOT NULL,
   OID1 varchar(80) NOT NULL,
   OID2 varchar(80) NOT NULL,
   OID3 varchar(80) NOT NULL,
-  ProcessingProfile enum('SingleOIDWatts','SingleOIDAmperes','Combine3OIDAmperes','Convert3PhAmperes'),
+  ProcessingProfile enum('SingleOIDWatts','SingleOIDAmperes','Combine3OIDWatts','Combine3OIDAmperes','Convert3PhAmperes'),
   Voltage int(11) NOT NULL,
   Amperage int(11) NOT NULL,
   NumOutlets int(11) NOT NULL,
@@ -69,6 +69,17 @@ CREATE TABLE fac_CDUTemplate (
 -- Create templates equivalent to the three management types (really 6, since we had single v. three phase) that we had before
 --
 
+
+--
+-- Recreate the PDU_Stats table - all existing stats will be LOST, but since it only holds the last value, it's a minor inconvenience
+--
+
+DROP TABLE IF EXISTS fac_PDUStats;
+CREATE TABLE fac_PDUStats(
+  PDUID int(11) NOT NULL,
+  Wattage int(11) NOT NULL,
+  PRIMARY KEY (PDUID)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
 --
 -- Update the existing fac_PowerDistribution table to reference the new templates

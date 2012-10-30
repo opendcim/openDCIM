@@ -235,10 +235,7 @@ class PowerDistribution {
 	var $PDUID;
 	var $Label;
 	var $CabinetID;
-	var $InputAmperage;
-	var $ManagementType;
-	var $Model;
-	var $NumOutputs;
+	var $TemplateID;
 	var $IPAddress;
 	var $SNMPCommunity;
 	var $FirmwareVersion;
@@ -286,12 +283,9 @@ class PowerDistribution {
 		}
 
 		if ( $PDUrow = mysql_fetch_array( $result ) ) {
-			$this->CabinetID = $PDUrow["CabinetID"];
 			$this->Label = stripslashes($PDUrow["Label"]);
-			$this->InputAmperage = $PDUrow["InputAmperage"];
-			$this->ManagementType = $PDUrow["ManagementType"];
-			$this->Model = stripslashes($PDUrow["Model"]);
-			$this->NumOutputs = $PDUrow["NumOutputs"];
+			$this->CabinetID = $PDUrow["CabinetID"];
+			$this->TemplateID = $PDUrow["TemplateID"];
 			$this->IPAddress = stripslashes($PDUrow["IPAddress"]);
 			$this->SNMPCommunity = stripslashes($PDUrow["SNMPCommunity"]);
 			$this->FirmwareVersion = $PDUrow["FirmwareVersion"];
@@ -302,12 +296,9 @@ class PowerDistribution {
 			$this->PanelID2 = $PDUrow["PanelID2"];
 			$this->PanelPole2 = $PDUrow["PanelPole2"];
 		} else {
-			$this->CabinetID = null;
 			$this->Label = null;
-			$this->InputAmperage = null;
-			$this->ManagementType = null;
-			$this->Model = null;
-			$this->NumOutputs = null;
+			$this->CabinetID = null;
+			$this->TemplateID = null;
 			$this->IPAddress = null;
 			$this->SNMPCommunity = null;
 			$this->FirmwareVersion = null;
@@ -338,10 +329,7 @@ class PowerDistribution {
 			$PDUList[$PDUID]->PDUID = $PDUrow["PDUID"];
 			$PDUList[$PDUID]->Label = stripslashes($PDUrow["Label"]);
 			$PDUList[$PDUID]->CabinetID = $PDUrow["CabinetID"];
-			$PDUList[$PDUID]->InputAmperage = $PDUrow["InputAmperage"];
-			$PDUList[$PDUID]->ManagementType=$PDUrow["ManagementType"];
-			$PDUList[$PDUID]->Model = stripslashes($PDUrow["Model"]);
-			$PDUList[$PDUID]->NumOutputs = $PDUrow["NumOutputs"];
+			$PDUList[$PDUIF]->TemplateID = $PDUrow["TemplateID"];
 			$PDUList[$PDUID]->IPAddress = stripslashes($PDUrow["IPAddress"]);
 			$PDUList[$PDUID]->SNMPCommunity = stripslashes($PDUrow["SNMPCommunity"]);
 			$PDUList[$PDUID]->FirmwareVersion = $PDUrow["FirmwareVersion"];
@@ -372,10 +360,7 @@ class PowerDistribution {
 			$PDUList[$PDUID]->PDUID=$PDUrow["PDUID"];
 			$PDUList[$PDUID]->Label=stripslashes($PDUrow["Label"]);
 			$PDUList[$PDUID]->CabinetID=$PDUrow["CabinetID"];
-			$PDUList[$PDUID]->InputAmperage=$PDUrow["InputAmperage"];
-			$PDUList[$PDUID]->ManagementType=$PDUrow["ManagementType"];
-			$PDUList[$PDUID]->Model=stripslashes($PDUrow["Model"]);
-			$PDUList[$PDUID]->NumOutputs=$PDUrow["NumOutputs"];
+			$PDUList[$PDUID]->TemplateID=$PDUrow["TemplateID"];
 			$PDUList[$PDUID]->IPAddress=stripslashes($PDUrow["IPAddress"]);
 			$PDUList[$PDUID]->SNMPCommunity=stripslashes($PDUrow["SNMPCommunity"]);
 			$PDUList[$PDUID]->FirmwareVersion=$PDUrow["FirmwareVersion"];
@@ -406,10 +391,7 @@ class PowerDistribution {
 			$PDUList[$PDUID]->PDUID = $PDUID;
 			$PDUList[$PDUID]->Label = stripslashes($PDUrow["Label"]);
 			$PDUList[$PDUID]->CabinetID = $PDUrow["CabinetID"];
-			$PDUList[$PDUID]->InputAmperage = $PDUrow["InputAmperage"];
-			$PDUList[$PDUID]->ManagementType=$PDUrow["ManagementType"];
-			$PDUList[$PDUID]->Model = stripslashes($PDUrow["Model"]);
-			$PDUList[$PDUID]->NumOutputs = $PDUrow["NumOutputs"];
+			$PDUList[$PDUID]->TemplateID = $PDUrow["TemplateID"];
 			$PDUList[$PDUID]->IPAddress = stripslashes($PDUrow["IPAddress"]);
 			$PDUList[$PDUID]->SNMPCommunity = stripslashes($PDUrow["SNMPCommunity"]);
 			$PDUList[$PDUID]->FirmwareVersion = $PDUrow["FirmwareVersion"];
@@ -434,8 +416,51 @@ class PowerDistribution {
 			return 0;
 		}
 	}
+	
+	function GetWattage( $db ) {
+
+	}
   
 	function UpdateStats( $db ) {
+		$sql = "select PDUID, IPAddress, SNMPCommunity, Multiplier, OID1, OID2, OID3, ProcessingProfile, Voltage from fac_PowerDistribution a, fac_CDUTemplate b where a.TemplateID=b.TemplateID and b.Managed=true and IPAddress>'' and SNMPCommunity>''";
+		$result = mysql_query( $sql, $db );
+		
+		// The result set should have no PDU's with blank IP Addresses or SNMP Community, so we can forge ahead with processing them all
+		$command = "/usr/bin/snmpget";
+		
+		while ( $row = mysql_fetch_array( $result ) ) {
+			// If only one OID is used, the OID2 and OID3 should be blank, so no harm in just making one string
+			$OIDString = $row["OID1"] . " " . $row["OID2"] . " " . $row["OID3"];
+			
+			$pollCommand = sprintf( "%s -v 2c -c %s %s %s | /bin/cut -d: -f4", $command, $row["SNMPCommunity"], $row["IPAddress"], $OIDString );
+			
+			exec( $pollCommand, $statsOutput );
+			
+			switch ( $row["ProcessingProfile"] ) {
+				case "SingleOIDAmperes":
+					$amps = intval( $statsOutput[0] ) * intval( $row["Multiplier"] );
+					$watts = $amps * intval( $row["Voltage"] );
+					break;
+				case "Combine3OIDAmperes":
+					$amps = ( intval( $statsOutput[0] ) + intval( $statsOutput[1] ) + intval( $statsOutput[2] ) ) * intval( $row["Multiplier"] );
+					$watts = $amps * intval( $row["Voltage"] );
+					break;
+				case "Convert3PhAmperes":
+					$amps = ( intval( $statsOutput[0] ) + intval( $statsOutput[1] ) + intval( $statsOutput[2] ) ) * intval( $row["Multiplier"] ) / 3;
+					$watts = $amps * 1.732 * intval( $row["Voltage"] );
+					break;
+				case "Combine3OIDWatts":
+					$watts = ( intval( $statsOutput[0] ) + intval( $statsOutput[1] ) + intval( $statsOutput[2] ) ) * intval( $row["Multiplier"] );
+				default:
+					$watts = intval( $statsOutput[0] ) * intval( $row["Multiplier"] );
+					break;
+			}
+			
+			$sql = sprintf( "insert into fac_PDUStats set PDUID=%s, Wattage=%s ON DUPLICATE KEY UPDATE Wattage=%s", $row["PDUID"], $watts, $watts );
+			$result = mysql_query( $sql );
+		}
+		
+		/*
 		// Automatically pull the current amperage per phase from a Server Technologies SmartCDU
 		$selectSQL = "select * from fac_PowerDistribution where IPAddress<>'' and SNMPCommunity<>''";
 		$result = mysql_query( $selectSQL, $db );
@@ -489,6 +514,7 @@ class PowerDistribution {
 			$updateSQL = "update fac_PowerDistribution set FirmwareVersion=\"$FirmwareVersion\" where PDUID=\"$PDUID\"";
 			mysql_query( $updateSQL, $db );
 		}
+		*/
 	}
   
 	function GetSmartCDUUptime( $db ) {
