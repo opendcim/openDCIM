@@ -23,6 +23,110 @@
 	For further details on the license, see http://www.gnu.org/licenses
 */
 
+class CDUTemplate {
+	var $TemplateID;
+	var $ManufacturerID;
+	var $Model;
+	var $Managed;
+	var $UnitOfMeasure;
+	var $OID1;
+	var $OID2;
+	var $OID3;
+	var $ProcessingProfile;
+	var $Voltage;
+	var $Amperage;
+	var $NumOutlets;
+	
+	function GetTemplateList( $db ) {
+		$sql = "select a.* from fac_CDUTemplate a, fac_Manufacturer b where a.ManufacturerID=b.ManufacturerID order by b.Name ASC,a.Model ASC";
+		$result = mysql_query( $sql, $db );
+		
+		$tmpList = array();
+		
+		while ( $row = mysql_fetch_array( $result ) ) {
+			$n = sizeof( $tmpList );
+			$tmpList[$n] = new CDUTemplate();
+			$tmpList[$n]->TemplateID = $row["TemplateID"];
+			$tmpList[$n]->ManufacturerID = $row["ManufacturerID"];
+			$tmpList[$n]->Model = $row["Model"];
+			$tmpList[$n]->Managed = $row["Managed"];
+			$tmpList[$n]->UnitOfMeasure = $row["UnitOfMeasure"];
+			$tmpList[$n]->OID1 = $row["OID1"];
+			$tmpList[$n]->OID2 = $row["OID2"];
+			$tmpList[$n]->OID3 = $row["OID3"];
+			$tmpList[$n]->ProcessingProfile = $row["ProcessingProfile"];
+			$tmpList[$n]->Voltage = $row["Voltage"];
+			$tmpList[$n]->Amperage = $row["Amperage"];
+			$tmpList[$n]->NumOutlets = $row["NumOutlets"];
+		}
+		
+		return $tmpList;
+	}
+	
+	function GetTemplate( $db ) {
+		$sql = sprintf( "select * from fac_CDUTemplate where TemplateID='%d'", intval( $this->TemplateID ) );
+		$result = mysql_query( $sql, $db );
+		
+		if ( mysql_num_rows( $result ) > 0 ) {
+			$row = mysql_fetch_array( $result );
+			
+			$this->ManufacturerID = $row["ManufacturerID"];
+			$this->Model = $row["Model"];
+			$this->Managed = $row["Managed"];
+			$this->UnitOfMeasure = $row["UnitOfMeasure"];
+			$this->OID1 = $row["OID1"];
+			$this->OID2 = $row["OID2"];
+			$this->OID3 = $row["OID3"];
+			$this->ProcessingProfile = $row["ProcessingProfile"];
+			$this->Voltage = $row["Voltage"];
+			$this->Amperage = $row["Amperage"];
+			$this->NumOutlets = $row["NumOutlets"];
+		}
+		
+		return;
+	}
+	
+	function AddTemplate( $db ) {
+		$sql = sprintf( "select * from fac_CDUTemplate where ManufacturerID=%d and Model=\"%s\"", intval( $this->ManufacturerID ), addslashes( $this->Model ) );
+		$result = mysql_query( $sql, $db );
+		
+		if ( mysql_num_rows( $result ) > 0 ) {
+			// A combination of this Mfg + Model already exists
+			return false;
+		}
+		
+		$sql = sprintf( "insert into fac_CDUTemplate set ManufacturerID=%d, Model=\"%s\", Managed=%d, UnitOfMeasure=\"%s\", OID1=\"%s\", OID2=\"%s\", OID3=\"%s\", ProcessingProfile=\"%s\", Voltage=%d, Amperage=%d, NumOutlets=%d",
+			intval( $this->ManufacturerID ), addslashes( $this->Model ), intval( $this->Managed ), addslashes( $this->UnitOfMeasure ),
+			addslashes( $this->OID1 ), addslashes( $this->OID2 ), addslashes( $this->OID3 ), addslashes( $this->ProcessingProfile ),
+			intval( $this->Voltage ), intval( $this->Amperage ), intval( $this->NumOutlets ) );
+		$result = mysql_query( $sql, $db );
+		
+		$this->TemplateID = mysql_insert_id( $db );
+		
+		return $this->TemplateID;
+	}
+	
+	function UpdateTemplate( $db ) {
+		$sql = sprintf( "update fac_CDUTemplate set ManufacturerID=%d, Model=\"%s\", Managed=%d, UnitOfMeasure=\"%s\", OID1=\"%s\", OID2=\"%s\", OID3=\"%s\", ProcessingProfile=\"%s\", Voltage=%d, Amperage=%d, NumOutlets=%d where TemplateID=%d",
+			intval( $this->ManufacturerID ), addslashes( $this->Model ), intval( $this->Managed ), addslashes( $this->UnitOfMeasure ),
+			addslashes( $this->OID1 ), addslashes( $this->OID2 ), addslashes( $this->OID3 ), addslashes( $this->ProcessingProfile ),
+			intval( $this->Voltage ), intval( $this->Amperage ), intval( $this->NumOutlets ), intval( $this->TemplateID ) );
+		$result = mysql_query( $sql, $db );
+		
+		return;
+	}
+	
+	function DeleteTemplate( $db ) {
+		// First step is to clear any power strips referencing this template
+		$sql = sprintf( "update fac_PowerDistribution set CDUTemplateID=\"\" where TemplateID=%d", intval( $this->TemplateID ) );
+		$result = mysql_query( $sql, $db );
+		
+		$sql = sprintf( "delete from fac_CDUTemplate where TemplateID=%d", intval( $this->TemplateID ) );
+		$result = mysql_query( $sql, $db );
+		
+		return;
+	}
+}
 
 class PowerConnection {
 	/* PowerConnection:		A mapping of power strip (PDU) ports to the devices connected to them.
