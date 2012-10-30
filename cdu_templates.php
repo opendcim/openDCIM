@@ -24,7 +24,7 @@
 	if(isset($_REQUEST['action'])&&(($_REQUEST['action']=='Create')||($_REQUEST['action']=='Update'))){
 		$template->ManufacturerID = $_REQUEST['manufacturerid'];
 		$template->Model = strtoupper( $_REQUEST['model'] );
-		$template->Managed = $_REQUEST['managed'];
+		$template->Managed = isset($_REQUEST['managed'])?1:0;
 		$template->UnitOfMeasure = $_REQUEST['unitofmeasure'];
 		$template->OID1 = $_REQUEST['oid1'];
 		$template->OID2 = $_REQUEST['oid2'];
@@ -108,7 +108,7 @@ echo '    </select>
 </div>
 <div>
    <div><label for="model">',_("Model"),'</label></div>
-   <div><input type="text" name="model" id="model" value="',$template->Model,'"></div>
+   <div><input type="text" name="model" id="model" value="',$template->Model,'" size=40></div>
 </div>
 <div>
    <div><label for="managed">',_("Managed"),'</label></div>
@@ -140,15 +140,15 @@ echo '   </select>
 </div>
 <div>
    <div><label for="oid1">',_("OID1"),'</label></div>
-   <div><input type="text" name="oid1" id="oid1" value="',$template->OID1,'"></div>
+   <div><input type="text" name="oid1" id="oid1" value="',$template->OID1,'" size=40></div>
 </div>
 <div>
    <div><label for="oid2">',_("OID2"),'</label></div>
-   <div><input type="text" name="oid2" id="oid2" value="',$template->OID2,'"></div>
+   <div><input type="text" name="oid2" id="oid2" value="',$template->OID2,'" size=40></div>
 </div>
 <div>
    <div><label for="oid3">',_("OID3"),'</label></div>
-   <div><input type="text" name="oid3" id="oid3" value="',$template->OID3,'"></div>
+   <div><input type="text" name="oid3" id="oid3" value="',$template->OID3,'" size=40></div>
 </div>
 <div>
    <div><label for="processingprofile">',_("Processing Scheme"),'</label></div>
