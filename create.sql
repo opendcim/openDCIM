@@ -58,7 +58,7 @@ CREATE TABLE fac_CDUTemplate (
   TemplateID int(11) NOT NULL AUTO_INCREMENT,
   ManufacturerID int(11) NOT NULL,
   Model varchar(80) NOT NULL,
-  Multipler enum( '1', '10', '100' ),
+  Multiplier enum( '1', '10', '100' ),
   OID1 varchar(80) NOT NULL,
   OID2 varchar(80) NOT NULL,
   OID3 varchar(80) NOT NULL,

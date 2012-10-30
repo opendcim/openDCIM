@@ -95,7 +95,7 @@ ALTER TABLE fac_PowerDistribution ADD COLUMN TemplateID int(11) NOT NULL AFTER C
 -- Delete the columns no longer needed in the PowerDistribution table
 --
 
-ALTER TABLE fac_PowerDistribution DELETE COLUMN InputAmperage;
-ALTER TABLE fac_PowerDistribution DELETE COLUMN ManagementType;
-ALTER TABLE fac_PowerDistribution DELETE COLUMN Model;
-ALTER TABLE fac_PowerDistribution DELETE COLUMN NumInputs;
+ALTER TABLE fac_PowerDistribution DROP COLUMN InputAmperage;
+ALTER TABLE fac_PowerDistribution DROP COLUMN ManagementType;
+ALTER TABLE fac_PowerDistribution DROP COLUMN Model;
+ALTER TABLE fac_PowerDistribution DROP COLUMN NumOutputs;

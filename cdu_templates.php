@@ -25,7 +25,7 @@
 		$template->ManufacturerID = $_REQUEST['manufacturerid'];
 		$template->Model = strtoupper( $_REQUEST['model'] );
 		$template->Managed = isset($_REQUEST['managed'])?1:0;
-		$template->UnitOfMeasure = $_REQUEST['unitofmeasure'];
+		$template->Multiplier = $_REQUEST['multiplier'];
 		$template->OID1 = $_REQUEST['oid1'];
 		$template->OID2 = $_REQUEST['oid2'];
 		$template->OID3 = $_REQUEST['oid3'];
@@ -69,7 +69,7 @@
 
 echo '<div class="main">
 <h2>',$config->ParameterArray["OrgName"],'</h2>
-<h3>',_("Data Center Device Templates"),'</h3>
+<h3>',_("Data Center Cabinet Distribution Unit Templates"),'</h3>
 <h3>',$status,'</h3>
 <div class="center"><div>
 <form action="',$_SERVER["PHP_SELF"],'" method="POST">
@@ -122,12 +122,12 @@ echo '    </select>
 echo '   </div>
 </div>
 <div>
-   <div><label for="unitofmeasure">',_("Unit of Measure"),'</label></div>
-   <div><select name="unitofmeasure" id="unitofmeasure">';
+   <div><label for="multiplier">',_("Multiplier"),'</label></div>
+   <div><select name="multiplier" id="multiplier">';
    
-	$UoM = array( "Watts", "deciAmperes", "milliAmperes" );
-	foreach ( $UoM as $unit ) {
-		if ( $unit == $template->UnitOfMeasure )
+	$Multi = array( "1", "10", "100" );
+	foreach ( $Multi as $unit ) {
+		if ( $unit == $template->Multiplier )
 			$selected = "SELECTED";
 		else
 			$selected = "";
@@ -154,7 +154,7 @@ echo '   </select>
    <div><label for="processingprofile">',_("Processing Scheme"),'</label></div>
    <div><select name="processingprofile" id="processingprofile">';
 
-	$ProfileList = array( "SingleOIDWatts", "SingleOIDAmperes", "Combine3OIDAmperes", "Convert3PhAmperes" );
+	$ProfileList = array( "SingleOIDWatts", "SingleOIDAmperes", "Combine3OIDWatts", "Combine3OIDAmperes", "Convert3PhAmperes" );
 	foreach ( $ProfileList as $prof ) {
 		if ( $prof == $template->ProcessingProfile )
 			$selected = "SELECTED";
