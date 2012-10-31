@@ -28,7 +28,7 @@ class CDUTemplate {
 	var $ManufacturerID;
 	var $Model;
 	var $Managed;
-	var $FirmwareOID;
+	var $VersionOID;
 	var $Multiplier;
 	var $OID1;
 	var $OID2;
@@ -51,7 +51,7 @@ class CDUTemplate {
 			$tmpList[$n]->ManufacturerID = $row["ManufacturerID"];
 			$tmpList[$n]->Model = $row["Model"];
 			$tmpList[$n]->Managed = $row["Managed"];
-			$tmpList[$n]->FirmwareOID = $row["FirmwareOID"];
+			$tmpList[$n]->VersionOID = $row["VersionOID"];
 			$tmpList[$n]->Multiplier = $row["Multiplier"];
 			$tmpList[$n]->OID1 = $row["OID1"];
 			$tmpList[$n]->OID2 = $row["OID2"];
@@ -75,7 +75,7 @@ class CDUTemplate {
 			$this->ManufacturerID = $row["ManufacturerID"];
 			$this->Model = $row["Model"];
 			$this->Managed = $row["Managed"];
-			$this->FirmwareOID = $row["FirmwareOID"];
+			$this->VersionOID = $row["VersionOID"];
 			$this->Multiplier = $row["Multiplier"];
 			$this->OID1 = $row["OID1"];
 			$this->OID2 = $row["OID2"];
@@ -98,8 +98,8 @@ class CDUTemplate {
 			return false;
 		}
 		
-		$sql = sprintf( "insert into fac_CDUTemplate set ManufacturerID=%d, Model=\"%s\", Managed=%d, FirmwareOID=\"%s\", Multiplier=%d, OID1=\"%s\", OID2=\"%s\", OID3=\"%s\", ProcessingProfile=\"%s\", Voltage=%d, Amperage=%d, NumOutlets=%d",
-			intval( $this->ManufacturerID ), addslashes( $this->Model ), intval( $this->Managed ), addslashes( $this->FirmwareOID ), 
+		$sql = sprintf( "insert into fac_CDUTemplate set ManufacturerID=%d, Model=\"%s\", Managed=%d, VersionOID=\"%s\", Multiplier=%d, OID1=\"%s\", OID2=\"%s\", OID3=\"%s\", ProcessingProfile=\"%s\", Voltage=%d, Amperage=%d, NumOutlets=%d",
+			intval( $this->ManufacturerID ), addslashes( $this->Model ), intval( $this->Managed ), addslashes( $this->VersionOID ), 
 			intval( $this->Multiplier ), addslashes( $this->OID1 ), addslashes( $this->OID2 ), addslashes( $this->OID3 ), 
 			addslashes( $this->ProcessingProfile ), intval( $this->Voltage ), intval( $this->Amperage ), intval( $this->NumOutlets ) );
 		$result = mysql_query( $sql, $db );
@@ -110,8 +110,8 @@ class CDUTemplate {
 	}
 	
 	function UpdateTemplate( $db ) {
-		$sql = sprintf( "update fac_CDUTemplate set ManufacturerID=%d, Model=\"%s\", Managed=%d, FirmwareOID=\"%s\", Multiplier=%d, OID1=\"%s\", OID2=\"%s\", OID3=\"%s\", ProcessingProfile=\"%s\", Voltage=%d, Amperage=%d, NumOutlets=%d where TemplateID=%d",
-			intval( $this->ManufacturerID ), addslashes( $this->Model ), intval( $this->Managed ), addslashes( $this->FirmwareOID ), intval( $this->Multiplier ),
+		$sql = sprintf( "update fac_CDUTemplate set ManufacturerID=%d, Model=\"%s\", Managed=%d, VersionOID=\"%s\", Multiplier=%d, OID1=\"%s\", OID2=\"%s\", OID3=\"%s\", ProcessingProfile=\"%s\", Voltage=%d, Amperage=%d, NumOutlets=%d where TemplateID=%d",
+			intval( $this->ManufacturerID ), addslashes( $this->Model ), intval( $this->Managed ), addslashes( $this->VersionOID ), intval( $this->Multiplier ),
 			addslashes( $this->OID1 ), addslashes( $this->OID2 ), addslashes( $this->OID3 ), addslashes( $this->ProcessingProfile ),
 			intval( $this->Voltage ), intval( $this->Amperage ), intval( $this->NumOutlets ), intval( $this->TemplateID ) );
 		$result = mysql_query( $sql, $db );
@@ -462,7 +462,7 @@ class PowerDistribution {
 			}
 			
 			$sql = sprintf( "insert into fac_PDUStats set PDUID=%s, Wattage=%s ON DUPLICATE KEY UPDATE Wattage=%s", $row["PDUID"], $watts, $watts );
-			$result = mysql_query( $sql );
+			mysql_query( $sql );
 		}
 		
 		/*
