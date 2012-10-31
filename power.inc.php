@@ -441,87 +441,38 @@ class PowerDistribution {
 			
 			exec( $pollCommand, $statsOutput );
 			
-			switch ( $row["ProcessingProfile"] ) {
-				case "SingleOIDAmperes":
-					$amps = intval( $statsOutput[0] ) * intval( $row["Multiplier"] );
-					$watts = $amps * intval( $row["Voltage"] );
-					break;
-				case "Combine3OIDAmperes":
-					$amps = ( intval( $statsOutput[0] ) + intval( $statsOutput[1] ) + intval( $statsOutput[2] ) ) * intval( $row["Multiplier"] );
-					$watts = $amps * intval( $row["Voltage"] );
-					break;
-				case "Convert3PhAmperes":
-					$amps = ( intval( $statsOutput[0] ) + intval( $statsOutput[1] ) + intval( $statsOutput[2] ) ) * intval( $row["Multiplier"] ) / 3;
-					$watts = $amps * 1.732 * intval( $row["Voltage"] );
-					break;
-				case "Combine3OIDWatts":
-					$watts = ( intval( $statsOutput[0] ) + intval( $statsOutput[1] ) + intval( $statsOutput[2] ) ) * intval( $row["Multiplier"] );
-				default:
-					$watts = intval( $statsOutput[0] ) * intval( $row["Multiplier"] );
-					break;
+			if ( count( $statsOutput ) > 0 ) {
+				switch ( $row["ProcessingProfile"] ) {
+					case "SingleOIDAmperes":
+						$amps = intval( $statsOutput[0] ) * intval( $row["Multiplier"] );
+						$watts = $amps * intval( $row["Voltage"] );
+						break;
+					case "Combine3OIDAmperes":
+						$amps = ( intval( $statsOutput[0] ) + intval( $statsOutput[1] ) + intval( $statsOutput[2] ) ) * intval( $row["Multiplier"] );
+						$watts = $amps * intval( $row["Voltage"] );
+						break;
+					case "Convert3PhAmperes":
+						$amps = ( intval( $statsOutput[0] ) + intval( $statsOutput[1] ) + intval( $statsOutput[2] ) ) * intval( $row["Multiplier"] ) / 3;
+						$watts = $amps * 1.732 * intval( $row["Voltage"] );
+						break;
+					case "Combine3OIDWatts":
+						$watts = ( intval( $statsOutput[0] ) + intval( $statsOutput[1] ) + intval( $statsOutput[2] ) ) * intval( $row["Multiplier"] );
+					default:
+						$watts = intval( $statsOutput[0] ) * intval( $row["Multiplier"] );
+						break;
+				}
 			}
 			
 			$sql = sprintf( "insert into fac_PDUStats set PDUID=%s, Wattage=%s ON DUPLICATE KEY UPDATE Wattage=%s", $row["PDUID"], $watts, $watts );
 			mysql_query( $sql );
-		}
-		
-		/*
-		// Automatically pull the current amperage per phase from a Server Technologies SmartCDU
-		$selectSQL = "select * from fac_PowerDistribution where IPAddress<>'' and SNMPCommunity<>''";
-		$result = mysql_query( $selectSQL, $db );
-
-		while ( $pduRow = mysql_fetch_array( $result ) ) {
-			$statsOutput = "";
-			$PDUID = $pduRow["PDUID"];
-			$serverIP = $pduRow["IPAddress"];
-			$community = $pduRow["SNMPCommunity"];
-		  
-			if ( $pduRow["BreakerSize"] == "208VAC 2-Pole" )
-			  $threePhase = false;
-			else
-			  $threePhase = true;
-
-			if (strtoupper(substr($pduRow["ManagementType"],0,5))==='GEIST') {
-				$pollCommand = "/usr/bin/snmpget -v 2c -c $community $serverIP .1.3.6.1.4.1.21239.2.25.1.8.1 .1.3.6.1.4.1.21239.2.25.1.16.1 .1.3.6.1.4.1.21239.2.25.1.24.1 | /bin/cut -d: -f4";
-				$conversionRatio=10;
-			} elseif (strtoupper(substr($pduRow["ManagementType"],0,6))==='SERVER') {
-				$pollCommand = "/usr/bin/snmpget -v 2c -c $community $serverIP .1.3.6.1.4.1.1718.3.2.2.1.7.1.1 .1.3.6.1.4.1.1718.3.2.2.1.7.1.2 .1.3.6.1.4.1.1718.3.2.2.1.7.1.3 | /bin/cut -d: -f4";
-				$conversionRatio=100;
-			} elseif (strtoupper(substr($pduRow["ManagementType"],0,3))==='APC') {
-				$pollCommand = "/usr/bin/snmpget -v 2c -c $community $serverIP .1.3.6.1.4.1.318.1.1.12.2.3.1.1.2.1 | /bin/cut -d: -f4";
-				$conversionRatio = 10;
-			} else
-				continue;
-
-		  
-			exec( $pollCommand, $statsOutput );
-		  
-			if ( count( $statsOutput ) > 0 ) {
-				$phaseA = $statsOutput[0] / $conversionRatio;
-				$phaseB=$phaseC=0;
-
-				if ( $threePhase && (strtoupper(substr($pduRow["ManagementType"],0,3))!='APC')) {
-					$phaseB = $statsOutput[1] / $conversionRatio;
-					$phaseC = $statsOutput[2] / $conversionRatio;
-					$TotalAmps = (( $phaseA + $phaseB + $phaseC ) / 3) * 1.732;
-				} else
-					$TotalAmps = $phaseA + $phaseB + $phaseC;
-		  
-				$clearSQL = "delete from fac_PDUStats where PDUID=$PDUID";
-				$updateSQL = "insert into fac_PDUStats set PDUID=$PDUID, PhaseA=$phaseA, PhaseB=$phaseB, PhaseC=$phaseC, TotalAmps=$TotalAmps";
-				
-				mysql_query( $clearSQL, $db );
-				mysql_query( $updateSQL, $db );
-			}
-
-			$this->PDUID = $PDUID;      
+			
+			$this->PDUID = $row["PDUID"];      
 			$FirmwareVersion = $this->GetSmartCDUVersion( $db );
-			$updateSQL = "update fac_PowerDistribution set FirmwareVersion=\"$FirmwareVersion\" where PDUID=\"$PDUID\"";
+			$updateSQL = sprintf( "update fac_PowerDistribution set FirmwareVersion=\"%s\" where PDUID=%d", $FirmwareVersion, $this->PDUID );
 			mysql_query( $updateSQL, $db );
 		}
-		*/
 	}
-  
+	
 	function GetSmartCDUUptime( $db ) {
 		$this->GetPDU( $db );
 
@@ -546,19 +497,20 @@ class PowerDistribution {
   
 	function GetSmartCDUVersion( $db ) {
 		$this->GetPDU( $db );
+		
+		$template = new CDUTemplate();
+		$template->TemplateID = $this->TemplateID;
+		$template->GetTemplate( $db );
 
 		if (!($this->IPAddress)||!($this->SNMPCommunity)) {
 			return "Not Configured";
 		} else {
 			$serverIP = $this->IPAddress;
 			$community = $this->SNMPCommunity;
-			if(strtoupper(substr($this->ManagementType,0,5))==='GEIST'){
-				$pollCommand = "/usr/bin/snmpget -v 2c -c $community $serverIP .1.3.6.1.4.1.21239.2.1.2.0";
-			} elseif (strtoupper(substr($this->ManagementType,0,6))==='SERVER') {
-				$pollCommand = "/usr/bin/snmpget -v 2c -c $community $serverIP .1.3.6.1.4.1.1718.3.1.1.0";
-			} else {
-				$pollCommand = "/usr/bin/snmpget -v 2c -c $community $serverIP .1.3.6.1.4.1.318.1.1.4.1.2.0";
-			}
+
+			$command = "/usr/bin/snmpget";
+			
+			$pollCommand = sprintf( "%s -v 2c -c %s %s %s", $command, $this->SNMPCommunity, $this->IPAddress, $template->VersionOID );
 
 			exec( $pollCommand, $statsOutput );
 			// need error checking here
@@ -569,25 +521,6 @@ class PowerDistribution {
 				$version = "Unknown";
 			return $version;
 		}
-	}
-    
-	function GetManagementTypeSelectList( $db ) {
-		$MgmtList = array( "Unmanaged", "Geist", "ServerTech", "APC");
-
-		$selectList = "<select name=\"managementtype\" id=\"managementtype\"><option value=\"Unmanaged\">Unmanaged</option>";
-
-		foreach ( $MgmtList as $MgmtType ) {
-			if ( $MgmtType == $this->ManagementType )
-				$selected = "selected";
-			else
-				$selected = "";
-
-			$selectList .= "<option value=\"" . $MgmtType . "\" $selected>". $MgmtType ."</option>";
-		}
-
-		$selectList .= "</select>";
-
-		return $selectList;
 	}
 
 	function DeletePDU( $db ) {
