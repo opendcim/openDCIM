@@ -261,12 +261,12 @@ $body.='</table>
 
 	foreach($PDUList as $PDUdev){
 		if($PDUdev->IPAddress!=""){
-			$pduDraw=$PDUdev->GetAmperage($facDB);
+			$pduDraw=$PDUdev->GetWattage($facDB);
 		}else{
 			$pduDraw=0;
 		}
 		
-		$body.=sprintf( "			<a href=\"power_pdu.php?pduid=%d\">CDU %s (%d A)</font></a><br>\n", $PDUdev->PDUID, $PDUdev->Label, $pduDraw );
+		$body.=sprintf( "			<a href=\"power_pdu.php?pduid=%d\">CDU %s (%.2f kW)</font></a><br>\n", $PDUdev->PDUID, $PDUdev->Label, $pduDraw / 1000 );
 	}
 	
 	if($user->WriteAccess){

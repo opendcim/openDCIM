@@ -16,24 +16,27 @@
 	$cab=new Cabinet();
 	$powerConn=new PowerConnection();
 	$connDev=new Device();
+	$template = new CDUTemplate();
+	$templateList = $template->GetTemplateList( $facDB );
+	$manufacturer = new Manufacturer();
 
 	// Ajax actions
-	if(isset($_POST['d']) || isset($_POST['c']) || isset($_POST['pid'])){
+	if(isset($_REQUEST['d']) || isset($_REQUEST['c']) || isset($_REQUEST['pid'])){
 		// Build drop down list of devices for this cabinet
-		if(isset($_POST['c'])){
-			$connDev->Cabinet=$_POST['c'];
+		if(isset($_REQUEST['c'])){
+			$connDev->Cabinet=$_REQUEST['c'];
 			$devlist=$connDev->ViewDevicesByCabinet($facDB);
 			echo '<select name="d"><option value=""></option>';
 			foreach($devlist as $device){
-				echo '<option value="',$device->DeviceID,'"',((isset($_POST['d'])&&$_POST['d']==$device->DeviceID)?" selected":""),'>',$device->Label,'</option>';
+				echo '<option value="',$device->DeviceID,'"',((isset($_REQUEST['d'])&&$_REQUEST['d']==$device->DeviceID)?" selected":""),'>',$device->Label,'</option>';
 			}
 			echo '</select>';
-		}elseif(isset($_POST['pid'])){
-			$powerConn->PDUID=$_POST['pid'];
-			$powerConn->PDUPosition=$_POST['output'];
-			if((isset($_POST['d']) && ($_POST['d']!="" || $_POST['d']!="undefined")) || (isset($_POST['devinput']) && ($_POST['devinput']!="" || $_POST['devinput']!="undefined" ))){
-				$powerConn->DeviceID=$_POST['d'];
-				$powerConn->DeviceConnNumber=$_POST['devinput'];
+		}elseif(isset($_REQUEST['pid'])){
+			$powerConn->PDUID=$_REQUEST['pid'];
+			$powerConn->PDUPosition=$_REQUEST['output'];
+			if((isset($_REQUEST['d']) && ($_REQUEST['d']!="" || $_REQUEST['d']!="undefined")) || (isset($_REQUEST['devinput']) && ($_REQUEST['devinput']!="" || $_REQUEST['devinput']!="undefined" ))){
+				$powerConn->DeviceID=$_REQUEST['d'];
+				$powerConn->DeviceConnNumber=$_REQUEST['devinput'];
 				$check=$powerConn->CreateConnection($facDB);
 				// check for valid creation 
 				if($check==0){
@@ -50,38 +53,36 @@
 	}
 
 	if(isset($_REQUEST['pduid'])){
-		$pdu->PDUID=(isset($_POST['pduid']) ? $_POST['pduid'] : $_GET['pduid']);
+		$pdu->PDUID=(isset($_REQUEST['pduid']) ? $_REQUEST['pduid'] : $_GET['pduid']);
 	}else{
 		echo 'Do not call this file directly';
 		exit;
 	}
-	if(isset($_POST['action']) && (($_POST['action']=='Create') || ($_POST['action']=='Update')) && $user->WriteAccess) {
-		$pdu->Label=$_POST['label'];
-		$pdu->CabinetID=$_POST['cabinetid'];
-		$pdu->InputAmperage=$_POST['inputamperage'];
-		$pdu->ManagementType=$_POST['managementtype'];
-		$pdu->Model=$_POST['model'];
-		$pdu->NumOutputs=$_POST['numoutputs'];
-		$pdu->IPAddress=$_POST['ipaddress'];
-		$pdu->SNMPCommunity=$_POST['snmpcommunity'];
-		$pdu->PanelID=$_POST['panelid'];
-		$pdu->BreakerSize=$_POST['breakersize'];
-		$pdu->PanelPole=$_POST['panelpole'];
+	if(isset($_REQUEST['action']) && (($_REQUEST['action']=='Create') || ($_REQUEST['action']=='Update')) && $user->WriteAccess) {
+		$pdu->Label=$_REQUEST['label'];
+		$pdu->CabinetID=$_REQUEST['cabinetid'];
+		$pdu->TemplateID=$_REQUEST['templateid'];
+		$pdu->IPAddress=$_REQUEST['ipaddress'];
+		$pdu->SNMPCommunity=$_REQUEST['snmpcommunity'];
+		$pdu->PanelID=$_REQUEST['panelid'];
+		$pdu->BreakerSize=$_REQUEST['breakersize'];
+		$pdu->PanelPole=$_REQUEST['panelpole'];
+		$pdu->InputAmperage=$_REQUEST['inputamperage'];
 		// If failsafe is unset clear auto transfer switch panel information
-		if(isset($_POST['failsafe'])){
+		if(isset($_REQUEST['failsafe'])){
 			$pdu->FailSafe=1;
-			$pdu->PanelID2=$_POST['panelid2'];
-			$pdu->PanelPole2=$_POST['panelpole2'];
+			$pdu->PanelID2=$_REQUEST['panelid2'];
+			$pdu->PanelPole2=$_REQUEST['panelpole2'];
 		}else{
 			$pdu->FailSafe=0;
 			$pdu->PanelID2="";
 			$pdu->PanelPole2="";
 		}
 
-		if($_POST['action']=='Create'){
+		if($_REQUEST['action']=='Create'){
 			$ret=$pdu->CreatePDU($facDB);
 		}else{
-			$pdu->PDUID = $_POST['pduid'];
+			$pdu->PDUID = $_REQUEST['pduid'];
 			$pdu->UpdatePDU( $facDB );
 		}
 	}
@@ -89,6 +90,9 @@
 	if($pdu->PDUID >0){
 		$pdu->GetPDU($facDB);
 		$upTime=$pdu->GetSmartCDUUptime($facDB);
+		
+		$template->TemplateID = $pdu->TemplateID;
+		$template->GetTemplate( $facDB );
 	} else {
 		$pdu->CabinetID=$_GET['cabinetid'];
 	}
@@ -264,38 +268,6 @@ echo '<div class="main">
    <div>',$cab->GetCabinetSelectList($facDB),'</div>
 </div>
 <div>
-   <div><label for="inputamperage">',_("Input Amperage"),'</label></div>
-   <div><input type="text" name="inputamperage" id="inputamperage" size=5 value="',$pdu->InputAmperage,'"></div>
-</div>
-<div>
-   <div><label for="managementtype">',_("ManagementType"),'</label></div>
-   <div>',$pdu->GetManagementTypeSelectList($facDB),'</div>
-</div>
-<div>
-   <div><label for="model">',_("Model"),'</label></div>
-   <div><input type="text" name="model" id="model" size=25 value="',$pdu->Model,'"></div>
-</div>
-<div>
-   <div><label for="numoutputs">',_("Number of Outputs"),'</label></div>
-   <div><input type="text" name="numoutputs" id="numoutputs" size=5 value="',$pdu->NumOutputs,'"></div>
-</div>
-<div>
-   <div><label for="ipaddress">',_("IP Address"),'</label></div>
-   <div><input type="text" name="ipaddress" id="ipaddress" size=15 value="',$pdu->IPAddress,'">',((strlen($pdu->IPAddress)>0)?"<a href=\"http://$pdu->IPAddress\" target=\"new\">http://$pdu->IPAddress</a>":""),'</div>
-</div>
-<div>
-    <div>',_("Uptime"),'</div>
-    <div>',$upTime,'</div>
-</div>
-<div>
-    <div>',_("Firmware Version"),'</div>
-    <div>',$pdu->FirmwareVersion,'</div>
-</div>
-<div>
-   <div><label for="snmpcommunity">',_("SNMP Community"),'</label></div>
-   <div><input type="text" name="snmpcommunity" id="snmpcommunity" size=15 value="',$pdu->SNMPCommunity,'"></div>
-</div>
-<div>
    <div><label for="panelid">',_("Source Panel"),'</label></div>
    <div><select name="panelid" id="panelid" ><option value=0>',_("Select Panel"),'</option>';
 
@@ -335,7 +307,46 @@ echo '	</select>
 </div>
 <div>
   <div><label for="panelpole">',_("Panel Pole Number"),'</label></div>
-  <div><input type="text" name="panelpole" id="panelpole" size=4 value="',$pdu->PanelPole,'"></div>
+  <div><input type="text" name="panelpole" id="panelpole" size=5 value="',$pdu->PanelPole,'"></div>
+</div>
+<div>
+   <div><label for="inputamperage">',_("Input Amperage"),'</label></div>
+   <div><input type="text" name="inputamperage" id="inputamperage" size=5 value="',$pdu->InputAmperage,'"></div>
+</div>
+<div>
+	<div><label for="templateid">',_("CDU Template"),'</label></div>
+	<div><select name="templateid" id="templateid">';
+
+	foreach($templateList as $templateRow){
+		$manufacturer->ManufacturerID=$templateRow->ManufacturerID;
+		$manufacturer->GetManufacturerByID($facDB);
+		
+		if($pdu->TemplateID==$templateRow->TemplateID) {
+			$selected=" selected";
+		} else {
+			$selected="";
+		}
+		
+		printf( "		<option value=%d %s>[%s] %s</option>\n", $templateRow->TemplateID, $selected, $manufacturer->Name, $templateRow->Model );
+	}
+	
+echo '   </select></div>
+</div>
+<div>
+   <div><label for="ipaddress">',_("IP Address"),'</label></div>
+   <div><input type="text" name="ipaddress" id="ipaddress" size=15 value="',$pdu->IPAddress,'">',((strlen($pdu->IPAddress)>0)?"<a href=\"http://$pdu->IPAddress\" target=\"new\">http://$pdu->IPAddress</a>":""),'</div>
+</div>
+<div>
+    <div>',_("Uptime"),'</div>
+    <div>',$upTime,'</div>
+</div>
+<div>
+    <div>',_("Firmware Version"),'</div>
+    <div>',$pdu->FirmwareVersion,'</div>
+</div>
+<div>
+   <div><label for="snmpcommunity">',_("SNMP Community"),'</label></div>
+   <div><input type="text" name="snmpcommunity" id="snmpcommunity" size=15 value="',$pdu->SNMPCommunity,'"></div>
 </div>
 <div class="caption">
 <h3>',_("Automatic Transfer Switch"),'</h3>
@@ -385,13 +396,22 @@ echo '</div>
 		<div>',_("Dev Input No"),'</div>
 	</div>';
 
-	for($connNumber=1;$connNumber<$pdu->NumOutputs+1;$connNumber++){
+	for($connNumber=1; $connNumber<$template->NumOutlets+1; $connNumber++){
 		if(isset($connList[$connNumber])){
 			$connDev->DeviceID=$connList[$connNumber]->DeviceID;
 			$connDev->GetDevice($facDB);
 			print "	<div>\n		<div>$connNumber</div>\n		<div alt=\"{$connList[$connNumber]->DeviceID}\" data=\"{$connList[$connNumber]->DeviceID}\"><a href=\"devices.php?deviceid={$connList[$connNumber]->DeviceID}\">$connDev->Label</a></div>\n		<div data=\"{$connList[$connNumber]->DeviceConnNumber}\">{$connList[$connNumber]->DeviceConnNumber}</div>\n	</div>\n";
 		}else{
 			print "	<div>\n		<div>$connNumber</div>\n		<div alt=\"\"></div>\n		<div></div>\n	</div>\n";
+		}
+	}
+	
+	// If there are any connections > NumOutlets, print them as ghosts
+	foreach ( $connList as $ghostConnection ) {
+		if ( $ghostConnection->PDUPosition > $template->NumOutlets ) {
+			$connDev->DeviceID=$ghostConnection->DeviceID;
+			$connDev->GetDevice($facDB);
+			print "	<div>\n		<div>$ghostConnection->PDUPosition</div>\n		<div alt=\"{$ghostConnection->DeviceID}\" data=\"{$ghostConnection->DeviceID}\"><a href=\"devices.php?deviceid={$ghostConnection->DeviceID}\">$connDev->Label</a></div>\n		<div data=\"{$ghostConnection->DeviceConnNumber}\">{$ghostConnection->DeviceConnNumber}</div>\n	</div>\n";
 		}
 	}
 ?>  

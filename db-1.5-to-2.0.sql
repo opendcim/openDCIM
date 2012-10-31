@@ -52,6 +52,7 @@ CREATE TABLE fac_CDUTemplate (
   ManufacturerID int(11) NOT NULL,
   Model varchar(80) NOT NULL,
   Managed int(1) NOT NULL,
+  VersionOID varchar(80) NOT NULL,
   Multiplier enum( '1', '10', '100' ) NOT NULL,
   OID1 varchar(80) NOT NULL,
   OID2 varchar(80) NOT NULL,
@@ -95,7 +96,6 @@ ALTER TABLE fac_PowerDistribution ADD COLUMN TemplateID int(11) NOT NULL AFTER C
 -- Delete the columns no longer needed in the PowerDistribution table
 --
 
-ALTER TABLE fac_PowerDistribution DROP COLUMN InputAmperage;
 ALTER TABLE fac_PowerDistribution DROP COLUMN ManagementType;
 ALTER TABLE fac_PowerDistribution DROP COLUMN Model;
 ALTER TABLE fac_PowerDistribution DROP COLUMN NumOutputs;

@@ -25,6 +25,7 @@
 		$template->ManufacturerID = $_REQUEST['manufacturerid'];
 		$template->Model = strtoupper( $_REQUEST['model'] );
 		$template->Managed = isset($_REQUEST['managed'])?1:0;
+		$template->VersionOID = $_REQUEST['versionoid'];
 		$template->Multiplier = $_REQUEST['multiplier'];
 		$template->OID1 = $_REQUEST['oid1'];
 		$template->OID2 = $_REQUEST['oid2'];
@@ -120,6 +121,10 @@ echo '    </select>
 		printf( "<input type=\"checkbox\" name=\"managed\" id=\"managed\">" );
 	
 echo '   </div>
+</div>
+<div>
+	<div><label for="versionoid">',_("Firmware Version OID"),'</label></div>
+	<div><input type="text" name="versionoid" id="versionoid" value="',$template->VersionOID,'" size=40></div>
 </div>
 <div>
    <div><label for="multiplier">',_("Multiplier"),'</label></div>
