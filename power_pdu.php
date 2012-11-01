@@ -346,7 +346,7 @@ echo '   </select></div>
 </div>
 <div>
    <div><label for="snmpcommunity">',_("SNMP Community"),'</label></div>
-   <div><input type="text" name="snmpcommunity" id="snmpcommunity" size=15 value="',$pdu->SNMPCommunity,'"></div>
+   <div><input type="text" name="snmpcommunity" id="snmpcommunity" size=15 value="',$pdu->SNMPCommunity,'"><a href="power_testsmartcdu.php?PDUID=', $pdu->PDUID, '" target="new">', _("Test Communications"), '</a></div>
 </div>
 <div class="caption">
 <h3>',_("Automatic Transfer Switch"),'</h3>

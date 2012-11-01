@@ -465,11 +465,11 @@ div.page.device {
 	ul.mktree  li ul li ul li ul li { font-family: arial, helvetica; font-size: 6pt; }
 }
 .meter-wrap{position: relative;}
-.meter-wrap, .meter-value, .meter-text {width: 155px; height: 30px;}
+.meter-wrap, .meter-value, .meter-text {width: 155px; height: 1em;}
 .meter-text {
     position: absolute;
     top:0; left:0;
-    padding-top: 5px;
+    padding-top: 0px;
     color: #000;
     text-align: center;
     width: 100%;
