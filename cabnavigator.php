@@ -16,6 +16,7 @@
 	$cab=new Cabinet();
 	$audit=new CabinetAudit();
 	$pdu=new PowerDistribution();
+	$pan = new PowerPanel();
 	$dev=new Device();
 	$templ=new DeviceTemplate();
 	$tempPDU=new PowerDistribution();
@@ -260,13 +261,30 @@ $body.='</table>
 		<legend>'._("Power Distribution").'</legend>';
 
 	foreach($PDUList as $PDUdev){
-		if($PDUdev->IPAddress!=""){
+		if( $PDUdev->IPAddress<>"" ) {
 			$pduDraw=$PDUdev->GetWattage($facDB);
 		}else{
 			$pduDraw=0;
 		}
+
+		$pan->PanelID = $PDUdev->PanelID;
+		$pan->GetPanel( $facDB );
 		
-		$body.=sprintf( "			<a href=\"power_pdu.php?pduid=%d\">CDU %s (%.2f kW)</font></a><br>\n", $PDUdev->PDUID, $PDUdev->Label, $pduDraw / 1000 );
+		if ( $PDUdev->BreakerSize == 1 )
+			$maxDraw = $PDUdev->InputAmperage * $pan->PanelVoltage / 1.732;
+		elseif ( $PDUdev->BreakerSize == 2 )
+			$maxDraw = $PDUdev->InputAmperage * $pan->PanelVoltage;
+		else
+			$maxDraw = $PDUdev->InputAmperage * $pan->PanelVoltage * 1.732;
+		
+		// De-rate all breakers to 80% sustained load
+		$maxDraw *= 0.8;
+		
+		$PDUPercent = $pduDraw / $maxDraw * 100;
+		$PDUColor=($PDUPercent>intval($config->ParameterArray["PowerRed"])?$CriticalColor:($PDUPercent>intval($config->ParameterArray["PowerYellow"])?$CautionColor:$GoodColor));
+		
+		$body .= sprintf( "			<a href=\"power_pdu.php?pduid=%d\">CDU %s (%.2f kW) / (%.2f kW Max)</font></a><br>\n", $PDUdev->PDUID, $PDUdev->Label, $pduDraw / 1000, $maxDraw / 1000 );
+		$body .= sprintf( "				<div class=\"meter-wrap\">\n\t<div class=\"meter-value\" style=\"background-color: %s; width: %d%%;\">\n\t\t<div class=\"meter-text\">%d%%</div>\n\t</div>\n</div>", $PDUColor, $PDUPercent, $PDUPercent );
 	}
 	
 	if($user->WriteAccess){
