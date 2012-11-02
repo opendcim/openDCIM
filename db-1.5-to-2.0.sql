@@ -67,11 +67,6 @@ CREATE TABLE fac_CDUTemplate (
 ) ENGINE=MyISAM AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
 
 --
--- Create templates equivalent to the three management types (really 6, since we had single v. three phase) that we had before
---
-
-
---
 -- Recreate the PDU_Stats table - all existing stats will be LOST, but since it only holds the last value, it's a minor inconvenience
 --
 
@@ -89,8 +84,30 @@ CREATE TABLE fac_PDUStats(
 ALTER TABLE fac_PowerDistribution ADD COLUMN TemplateID int(11) NOT NULL AFTER CabinetID;
 
 --
+-- Attempt to insert manufacturers of APC, Geist, and ServerTech.  If they already exist, fine.
+--
+
+INSERT INTO fac_Manufacturer set Name="Generic" ON DUPLICATE KEY UPDATE Name="Generic";
+INSERT INTO fac_Manufacturer set Name="APC" ON DUPLICATE KEY UPDATE Name="APC";
+INSERT INTO fac_Manufacturer set Name="Geist" ON DUPLICATE KEY UPDATE Name="Geist";
+INSERT INTO fac_Manufacturer set Name="ServerTech" ON DUPLICATE KEY UPDATE Name="ServerTech";
+
+INSERT INTO fac_CDUTemplate set ManufacturerID=(select ManufacturerID from fac_Manufacturer where Name='Generic'), Model="Unmanaged CDU", Managed=FALSE, VersionOID="", Multiplier=1, OID1="", OID2="", OID3="", ProcessingProfile="SingleOIDAmperes", Voltage="", Amperage="", NumOutlets="";
+INSERT INTO fac_CDUTemplate set ManufacturerID=(select ManufacturerID from fac_Manufacturer where Name='APC'), Model="Generic Single-Phase CDU", Managed=TRUE, VersionOID=".1.3.6.1.4.1.318.1.1.4.1.2.0", Multiplier=10, OID1=".1.3.6.1.4.1.318.1.1.12.2.3.1.1.2.1", OID2="", OID3="", ProcessingProfile="SingleOIDAmperes", Voltage="", Amperage="", NumOutlets="";
+INSERT INTO fac_CDUTemplate set ManufacturerID=(select ManufacturerID from fac_Manufacturer where Name='Geist'), Model="Generic Delta/Single-Phase CDU", Managed=TRUE, VersionOID=".1.3.6.1.4.1.21239.2.1.2.0", Multiplier=10, OID1=".1.3.6.1.4.1.21239.2.25.1.10.1", OID2="", OID3="", ProcessingProfile="SingleOIDWatts", Voltage="", Amperage="", NumOutlets="";
+INSERT INTO fac_CDUTemplate set ManufacturerID=(select ManufacturerID from fac_Manufacturer where Name='Geist'), Model="Generic Wye 3-Phase CDU", Managed=TRUE, VersionOID=".1.3.6.1.4.1.21239.2.1.2.0", Multiplier=10, OID1=".1.3.6.1.4.1.21239.2.6.1.10.1", OID2="", OID3="", ProcessingProfile="SingleOIDWatts", Voltage="", Amperage="", NumOutlets="";
+INSERT INTO fac_CDUTemplate set ManufacturerID=(select ManufacturerID from fac_Manufacturer where Name='ServerTech'), Model="Generic Single-Phase CDU", Managed=TRUE, VersionOID=".1.3.6.1.4.1.1718.3.1.1.0", Multiplier=100, OID1=".1.3.6.1.4.1.1718.3.2.2.1.7.1.1", OID2="", OID3="", ProcessingProfile="SingleOIDAmperes", Voltage="", Amperage="", NumOutlets="";
+INSERT INTO fac_CDUTemplate set ManufacturerID=(select ManufacturerID from fac_Manufacturer where Name='ServerTech'), Model="Generic 3-Phase CDU", Managed=TRUE, VersionOID=".1.3.6.1.4.1.1718.3.1.1.0", Multiplier=100, OID1=".1.3.6.1.4.1.1718.3.2.2.1.7.1.1", OID2=".1.3.6.1.4.1.1718.3.2.2.1.7.1.2", OID3=".1.3.6.1.4.1.1718.3.2.2.1.7.1.3", ProcessingProfile="Convert3PhAmperes", Voltage="", Amperage="", NumOutlets="";
+
+--
 -- Set the TemplateID for the three types of management as a means of preserving as much data as possible
 --
+
+UPDATE fac_PowerDistribution SET TemplateID=(select TemplateID from fac_CDUTemplate a, fac_Manufacturer b where a.ManufacturerID=b.ManufacturerID and b.Name="APC" and a.Model="Generic Single-Phase CDU") where ManagementType="APC";
+UPDATE fac_PowerDistribution SET TemplateID=(select TemplateID from fac_CDUTemplate a, fac_Manufacturer b where a.ManufacturerID=b.ManufacturerID and b.Name="Geist" and a.Model="Generic Delta/Single-Phase CDU") where ManagementType="Geist" and BreakerSize<3;
+UPDATE fac_PowerDistribution SET TemplateID=(select TemplateID from fac_CDUTemplate a, fac_Manufacturer b where a.ManufacturerID=b.ManufacturerID and b.Name="Geist" and a.Model="Generic Wye 3-Phase CDU") where ManagementType="Geist" and BreakerSize=3;
+UPDATE fac_PowerDistribution SET TemplateID=(select TemplateID from fac_CDUTemplate a, fac_Manufacturer b where a.ManufacturerID=b.ManufacturerID and b.Name="ServerTech" and a.Model="Generic Single-Phase CDU") where ManagementType="ServerTech" and BreakerSize<3;
+UPDATE fac_PowerDistribution SET TemplateID=(select TemplateID from fac_CDUTemplate a, fac_Manufacturer b where a.ManufacturerID=b.ManufacturerID and b.Name="ServerTech" and a.Model="Generic 3-Phase CDU") where ManagementType="ServerTech" and BreakerSize=3;
 
 -- 
 -- Delete the columns no longer needed in the PowerDistribution table
