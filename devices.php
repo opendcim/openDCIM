@@ -59,6 +59,7 @@
 	$Dept=new Department();
 	$pwrCords=null;
 	$chassis="";
+	$copy = false;
 
 	// This page was called from somewhere so let's do stuff.
 	// If this page wasn't called then present a blank record for device creation.
@@ -148,7 +149,10 @@
 					$dev->DeleteDevice($facDB);
 					header('Location: '.redirect("cabnavigator.php?cabinetid=$dev->Cabinet"));
 					exit;
-				}elseif($user->WriteAccess&&$_REQUEST['action']=='child'){
+				} elseif ( $user->WriteAccess && $_REQUEST["action"] == "Copy" ) {
+					$dev->CopyDevice( $facDB );
+					$copy = true;
+				} elseif($user->WriteAccess&&$_REQUEST['action']=='child') {
 					if(isset($_REQUEST['parentdevice'])){
 						$dev->DeviceID=null;
 						$dev->ParentDevice=$_REQUEST["parentdevice"];
@@ -161,22 +165,24 @@
 			// Finished updating devices or creating them.  Refresh the object with data from the DB
 			$dev->GetDevice($facDB);
 
-			// Since a device exists we're gonna need some additional info
-			$pwrConnection=new PowerConnection();
-			$pdu=new PowerDistribution();
-			$panel=new PowerPanel();
-			$networkPatches=new SwitchConnection();
+			// Since a device exists we're gonna need some additional info, but only if it's not a copy
+			if ( ! $copy ) {
+				$pwrConnection=new PowerConnection();
+				$pdu=new PowerDistribution();
+				$panel=new PowerPanel();
+				$networkPatches=new SwitchConnection();
 
 
-			$pwrConnection->DeviceID=($dev->ParentDevice>0)?$dev->ParentDevice:$dev->DeviceID;
-			$pwrCords=$pwrConnection->GetConnectionsByDevice($facDB);
+				$pwrConnection->DeviceID=($dev->ParentDevice>0)?$dev->ParentDevice:$dev->DeviceID;
+				$pwrCords=$pwrConnection->GetConnectionsByDevice($facDB);
 
-			if($dev->DeviceType=='Switch'){
-				$networkPatches->SwitchDeviceID=$dev->DeviceID;
-				$patchList=$networkPatches->GetSwitchConnections($facDB);
-			}else{
-				$networkPatches->EndpointDeviceID=($dev->ParentDevice>0)?$dev->ParentDevice:$dev->DeviceID;
-				$patchList=$networkPatches->GetEndpointConnections($facDB);
+				if($dev->DeviceType=='Switch'){
+					$networkPatches->SwitchDeviceID=$dev->DeviceID;
+					$patchList=$networkPatches->GetSwitchConnections($facDB);
+				}else{
+					$networkPatches->EndpointDeviceID=($dev->ParentDevice>0)?$dev->ParentDevice:$dev->DeviceID;
+					$patchList=$networkPatches->GetEndpointConnections($facDB);
+				}
 			}
 		}
 		$cab->CabinetID=$dev->Cabinet;
@@ -617,8 +623,12 @@ function setPreferredLayout() {<?php if(isset($_COOKIE["layout"]) && strtolower(
 echo '<div class="main">
 <button id="layout" onClick="swaplayout()">'._("Portrait").'</button>
 <h2>'.$config->ParameterArray['OrgName'].'</h2>
-<h3>'._("Data Center Device Detail").'</h3>
-<div class="center"><div>
+<h3>'._("Data Center Device Detail").'</h3>';
+
+if ( $copy )
+	printf( "\n<h3>%s</h3>\n", _("This device is a copy of an existing device.  Remember to set the new location before saving.") );
+	
+echo '<div class="center"><div>
 <div id="positionselector"></div>
 <form name="deviceform" id="deviceform" action="'.$_SERVER['PHP_SELF'].((isset($dev->DeviceID) && $dev->DeviceID>0)?"?deviceid=$dev->DeviceID":"").'" method="POST">
 <div class="left">
@@ -631,7 +641,7 @@ echo '<div class="main">
 		</div>
 		<div>
 			<div><label for="reservation">'._("Reservation?").'</label></div>
-			<div><input type="checkbox" name="reservation" id="reservation"'.(($dev->Reservation)?" checked":"").'></div>
+			<div><input type="checkbox" name="reservation" id="reservation"'.((($dev->Reservation) || $copy )?" checked":"").'></div>
 		</div>
 		<div>
 		   <div><label for="label">'._("Label").'</label></div>
@@ -1001,8 +1011,9 @@ echo '	<div class="table">
 <?php
 	if($user->WriteAccess){
 		if($dev->DeviceID >0){
-			echo '		  <button type="submit" name="action" value="Update">',_("Update"),'</button>';
-		}else{
+			echo '		  <button type="submit" name="action" value="Update">',_("Update"),'</button>
+        <button type="submit" name="action" value="Copy">', _("Copy"), '</button>';
+		} else {
 			echo '		  <button type="submit" name="action" value="Create">',_("Create"),'</button>';
 		}
 	}

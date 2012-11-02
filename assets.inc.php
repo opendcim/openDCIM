@@ -540,6 +540,7 @@ class Device {
 
 		if ( ! $result = mysql_query( $insert_sql, $db ) ) {
 			// Error occurred
+			printf( "<h3>MySQL Error.  SQL = \"%s\"</h3>\n", $insert_sql );
 			return 0;
 		}
 
@@ -548,30 +549,56 @@ class Device {
 		return $this->DeviceID;
 	}
 
-  function Surplus( $db ) {
-    // Make sure we're not trying to decommission a device that doesn't exist
-    if ( ! $this->GetDevice( $db ) )
-      die( "Can't find device " . $this->DeviceID . " to decommission!" );
-    
-    $insert_sql = "insert into fac_Decommission values ( now(), \"$this->Label\", \"$this->SerialNo\", \"$this->AssetTag\", \"{$_SERVER['REMOTE_USER']}\" )";
-    if ( ! $result = mysql_query( $insert_sql, $db ) )
-      die( "Unable to create log of decommissioning.  $insert_sql" );
+	function CopyDevice( $db ) {
+		// Need to make a copy of a device for the purpose of assigning a reservation during a move
+		// The copy itself is easy, but you need to make a copy of any children if this is a parent device
+		// You can not copy a child device, only a parent
+		// Also do not copy any power or network connections!
+		
+		// Get the device being copied
+		$this->GetDevice( $db );
+		
+		if ( $this->ParentDevice > 0 )
+			return false;
+		
+		// Now set it as being in storage
+		$this->Cabinet = -1;
+
+		// And finally create a new device based on the exact same info
+		$this->CreateDevice( $db );
+	}
+	
+	function Surplus( $db ) {
+		// Make sure we're not trying to decommission a device that doesn't exist
+		if ( ! $this->GetDevice( $db ) )
+		  die( "Can't find device " . $this->DeviceID . " to decommission!" );
+
+		$insert_sql = "insert into fac_Decommission values ( now(), \"$this->Label\", \"$this->SerialNo\", \"$this->AssetTag\", \"{$_SERVER['REMOTE_USER']}\" )";
+		if ( ! $result = mysql_query( $insert_sql, $db ) )
+		  die( "Unable to create log of decommissioning.  $insert_sql" );
+
+		// Ok, we have the transaction of decommissioning, now tidy up the database.
+		$this->DeleteDevice( $db );
+	}
   
-    // Ok, we have the transaction of decommissioning, now tidy up the database.
-    $this->DeleteDevice( $db );
-  }
-  
-  function MoveToStorage( $db ) {
-    // Cabinet ID of -1 means that the device is in the storage area
-    $this->Cabinet = -1;
-    $this->UpdateDevice( $db );
-    
-    $tmpConn = new SwitchConnection();
-    $tmpConn->SwitchDeviceID = $this->DeviceID;
-    $tmpConn->EndpointDeviceID = $this->DeviceID;
-    $tmpConn->DropSwitchConnections( $db );
-    $tmpConn->DropEndpointConnections( $db );
-  }
+	function MoveToStorage( $db ) {
+		// Cabinet ID of -1 means that the device is in the storage area
+		$this->Cabinet = -1;
+		$this->UpdateDevice( $db );
+		
+		// While the child devices will automatically get moved to storage as part of the UpdateDevice() call above, it won't sever their network connections
+		if ( $this->DeviceType == "Chassis" ) {
+			$childList = $this->GetDeviceChildren( $db );
+			foreach ( $childList as $child )
+				$child->MoveToStorage( $db );
+		}
+
+		$tmpConn = new SwitchConnection();
+		$tmpConn->SwitchDeviceID = $this->DeviceID;
+		$tmpConn->EndpointDeviceID = $this->DeviceID;
+		$tmpConn->DropSwitchConnections( $db );
+		$tmpConn->DropEndpointConnections( $db );
+	}
   
 	function UpdateDevice( $db ) {
 		// Force all uppercase for labels
@@ -610,7 +637,16 @@ class Device {
 			// Error occurred
 			return -1;
 		}
-
+		
+		// If this device has children, they should all be updated with the cabinet (in case it moved)
+		if ( $this->DeviceType == "Chassis" ) {
+			$childList = $this->GetDeviceChildren( $db );
+			foreach ( $childList as $child ) {
+				$child->Cabinet = $this->Cabinet;
+				$child->UpdateDevice( $db );
+			}
+		}
+		
 		return 0;
 	}
 
