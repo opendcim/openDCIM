@@ -437,6 +437,9 @@ class PowerDistribution {
 			// If only one OID is used, the OID2 and OID3 should be blank, so no harm in just making one string
 			$OIDString = $row["OID1"] . " " . $row["OID2"] . " " . $row["OID3"];
 			
+			// Have to reset this every time, otherwise the exec() will append
+			unset( $statsOutput );
+			
 			$pollCommand = sprintf( "%s -v 2c -c %s %s %s | /bin/cut -d: -f4", $command, $row["SNMPCommunity"], $row["IPAddress"], $OIDString );
 			
 			exec( $pollCommand, $statsOutput );
