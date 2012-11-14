@@ -440,7 +440,7 @@ class PowerDistribution {
 			// Have to reset this every time, otherwise the exec() will append
 			unset( $statsOutput );
 			
-			$pollCommand = sprintf( "%s -v 2c -c %s %s %s | /bin/cut -d: -f4", $command, $row["SNMPCommunity"], $row["IPAddress"], $OIDString );
+			$pollCommand = sprintf( "%s -v 2c -t 0.5 -r 2 -c %s %s %s | /bin/cut -d: -f4", $command, $row["SNMPCommunity"], $row["IPAddress"], $OIDString );
 			
 			exec( $pollCommand, $statsOutput );
 			
@@ -484,7 +484,7 @@ class PowerDistribution {
 		} else {
 			$serverIP = $this->IPAddress;
 			$community = $this->SNMPCommunity;
-			$pollCommand = "/usr/bin/snmpget -v 2c -c $community $serverIP sysUpTimeInstance";
+			$pollCommand = "/usr/bin/snmpget -v 2c -t 0.5 -r 2 -c $community $serverIP sysUpTimeInstance";
 
 			exec($pollCommand, $statsOutput);
 			// need error checking here
@@ -513,7 +513,7 @@ class PowerDistribution {
 
 			$command = "/usr/bin/snmpget";
 			
-			$pollCommand = sprintf( "%s -v 2c -c %s %s %s", $command, $this->SNMPCommunity, $this->IPAddress, $template->VersionOID );
+			$pollCommand = sprintf( "%s -v 2c -t 0.5 -r 2 -c %s %s %s", $command, $this->SNMPCommunity, $this->IPAddress, $template->VersionOID );
 
 			exec( $pollCommand, $statsOutput );
 			// need error checking here
