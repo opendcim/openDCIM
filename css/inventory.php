@@ -464,7 +464,7 @@ div.page.device {
 	ul.mktree  li ul li ul li { font-family: arial, helvetica; font-size: 8pt; }
 	ul.mktree  li ul li ul li ul li { font-family: arial, helvetica; font-size: 6pt; }
 }
-.meter-wrap{position: relative;}
+.meter-wrap{position: relative;background-color: lightgrey;}
 .meter-wrap, .meter-value, .meter-text {width: 155px; height: 1em;}
 .meter-text {
     position: absolute;

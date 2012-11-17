@@ -107,6 +107,9 @@
 
 	$powerConn->PDUID=$pdu->PDUID;
 	$connList=$powerConn->GetConnectionsByPDU($facDB);
+
+	$title=($pdu->Label!='')?"$pdu->Label :: $pdu->PDUID":'Data Center PDU Detail';
+
 ?>
 <!doctype html>
 <html>
@@ -114,7 +117,7 @@
   <meta http-equiv="X-UA-Compatible" content="IE=Edge">
   <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
   
-  <title>Data Center PDU Detail</title>
+  <title><?php echo $title; ?></title>
   <link rel="stylesheet" href="css/inventory.php" type="text/css">
   <link rel="stylesheet" href="css/jquery-ui-1.8.18.custom.css" type="text/css">
   <link rel="stylesheet" href="css/print.css" type="text/css" media="print">

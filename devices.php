@@ -260,6 +260,9 @@
 	$widthfix=(($widthfix2*2)+18);
 	$css="<style type=\"text/css\">div.page.device {min-width:{$widthfix}em;}.device div.left, .device div.right {max-width:{$widthfix2}em;}</style>\n";}else{$css="";}
 
+
+	$title=($dev->Label!='')?"$dev->Label :: $dev->DeviceID":"openDCIM Device Maintenance";
+
 ?>
 <!doctype html>
 <html>
@@ -267,7 +270,7 @@
   <meta http-equiv="X-UA-Compatible" content="IE=Edge">
   <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
   
-  <title>openDCIM Device Maintenance</title>
+  <title><?php echo $title; ?></title>
   <link rel="stylesheet" href="css/inventory.php" type="text/css">
   <link rel="stylesheet" href="css/print.css" type="text/css" media="print">
   <link rel="stylesheet" href="css/jquery-ui-1.8.18.custom.css" type="text/css">

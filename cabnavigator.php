@@ -267,28 +267,29 @@ $body.='</table>
 			$pduDraw=0;
 		}
 
-		$pan->PanelID = $PDUdev->PanelID;
-		$pan->GetPanel( $facDB );
+		$pan->PanelID=$PDUdev->PanelID;
+		$pan->GetPanel($facDB);
 		
-		if ( $PDUdev->BreakerSize == 1 )
+		if($PDUdev->BreakerSize==1){
 			$maxDraw = $PDUdev->InputAmperage * $pan->PanelVoltage / 1.732;
-		elseif ( $PDUdev->BreakerSize == 2 )
+		}elseif($PDUdev->BreakerSize==2){
 			$maxDraw = $PDUdev->InputAmperage * $pan->PanelVoltage;
-		else
+		}else{
 			$maxDraw = $PDUdev->InputAmperage * $pan->PanelVoltage * 1.732;
-		
+		}
+
 		// De-rate all breakers to 80% sustained load
-		$maxDraw *= 0.8;
+		$maxDraw*=0.8;
 		
-		$PDUPercent = $pduDraw / $maxDraw * 100;
+		$PDUPercent=$pduDraw/$maxDraw*100;
 		$PDUColor=($PDUPercent>intval($config->ParameterArray["PowerRed"])?$CriticalColor:($PDUPercent>intval($config->ParameterArray["PowerYellow"])?$CautionColor:$GoodColor));
 		
-		$body .= sprintf( "			<a href=\"power_pdu.php?pduid=%d\">CDU %s</a><br>(%.2f kW) / (%.2f kW Max)</font><br>\n", $PDUdev->PDUID, $PDUdev->Label, $pduDraw / 1000, $maxDraw / 1000 );
-		$body .= sprintf( "				<div class=\"meter-wrap\">\n\t<div class=\"meter-value\" style=\"background-color: %s; width: %d%%;\">\n\t\t<div class=\"meter-text\">%d%%</div>\n\t</div>\n</div>", $PDUColor, $PDUPercent, $PDUPercent );
+		$body.=sprintf("			<a href=\"power_pdu.php?pduid=%d\">CDU %s</a><br>(%.2f kW) / (%.2f kW Max)</font><br>\n", $PDUdev->PDUID, $PDUdev->Label, $pduDraw / 1000, $maxDraw / 1000 );
+		$body.=sprintf("				<div class=\"meter-wrap\">\n\t<div class=\"meter-value\" style=\"background-color: %s; width: %d%%;\">\n\t\t<div class=\"meter-text\">%d%%</div>\n\t</div>\n</div><br>", $PDUColor, $PDUPercent, $PDUPercent );
 	}
 	
 	if($user->WriteAccess){
-		$body.="			<br><br><ul class=\"nav\"><a href=\"power_pdu.php?pduid=0&cabinetid=$cab->CabinetID\"><li>"._("Add CDU")."</li></a></ul>\n";
+		$body.="			<ul class=\"nav\"><a href=\"power_pdu.php?pduid=0&cabinetid=$cab->CabinetID\"><li>"._("Add CDU")."</li></a></ul>\n";
 	}
 
 	$body.="	</fieldset>
@@ -317,6 +318,8 @@ $body.='</table>
 		$head.='		</style>';
 	}
 
+	$title=($cab->Location!='')?"$cab->Location":'Facilities Cabinet Maintenance';
+
 ?>
 <!doctype html>
 <html>
@@ -324,7 +327,7 @@ $body.='</table>
   <meta http-equiv="X-UA-Compatible" content="IE=Edge">
   <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
   
-  <title>Facilities Cabinet Maintenance</title>
+  <title><?php echo $title; ?></title>
   <link rel="stylesheet" href="css/inventory.php" type="text/css">
   <link rel="stylesheet" href="css/print.css" type="text/css" media="print">
   <link rel="stylesheet" href="css/jquery-ui-1.8.18.custom.css" type="text/css">
