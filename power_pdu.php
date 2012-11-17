@@ -52,6 +52,90 @@
 		exit;
 	}
 
+	if(isset($_POST['test'])){
+		$pdu->PDUID=$_POST["test"];
+		$pdu->GetPDU($facDB);
+		
+		$template=new CDUTemplate();
+		$template->TemplateID=$pdu->TemplateID;
+		$template->GetTemplate($facDB);
+		
+		printf( "<p>%s %s.<br>\n", _("Testing SNMP communication to CDU"), $pdu->Label );
+		printf( "%s %s.<br>\n", _("Connecting to IP address"), $pdu->IPAddress );
+		printf( "%s %s.</p>\n", _("Using SNMP Community string"), $pdu->SNMPCommunity );
+		
+		print "<div id=\"infopanel\"><fieldset><legend>"._("Results")."</legend>\n";
+		
+		$command="/usr/bin/snmpget";
+		
+		$upTime=$pdu->GetSmartCDUUptime($facDB);
+		if($upTime!=""){
+			printf("<p>%s: %s</p>\n", _("SNMP Uptime"),$upTime);
+		}else{
+			print "<p>"._("SNMP Uptime did not return a valid value.")."</p>\n";
+		}
+		
+		$pollCommand=sprintf( "%s -v 2c -c %s %s %s | /bin/cut -d: -f4", $command, $pdu->SNMPCommunity, $pdu->IPAddress, $template->VersionOID );
+		exec($pollCommand,$verOutput);
+		
+		if(count($verOutput) >0){
+			printf( "<p>%s %s.  %s</p>\n", _("VersionOID returned a value of"), $verOutput[0], _("Please check to see if it makes sense.") );
+		}else{
+			print "<p>"._("The OID for Firmware Version did not return a value.  Please check your MIB table.")."</p>\n";
+		}
+		
+		$OIDString=$template->OID1." ".$template->OID2." ".$template->OID3;
+		$pollCommand=sprintf( "%s -v 2c -c %s %s %s | /bin/cut -d: -f4", $command, $pdu->SNMPCommunity, $pdu->IPAddress, $OIDString );
+		
+		exec($pollCommand,$statsOutput);
+		
+		if(count($statsOutput) >0){
+			if($statsOutput[0]!=""){
+				printf( "<p>%s %s.  %s</p>\n", _("OID1 returned a value of"), $statsOutput[0], _("Please check to see if it makes sense.") );
+			}else{
+				print "<p>"._("OID1 did not return any data.  Please check your MIB table.")."</p>\n";
+			}
+			
+			if((strlen($template->OID2) >0)&&(strlen($statsOutput[1]) >0)){
+				printf( "<p>%s %s.  %s</p>\n", _("OID2 returned a value of"), $statsOutput[1], _("Please check to see if it makes sense.") );
+			}elseif(strlen($template->OID2) >0){
+				print "<p>"._("OID2 did not return any data.  Please check your MIB table.")."</p>\n";
+			}
+
+			if((strlen($template->OID3) >0)&&(strlen($statsOutput[2]) >0)){
+				printf( "<p>%s %s.  %s</p>\n", _("OID3 returned a value of"), $statsOutput[2], _("Please check to see if it makes sense.") );
+			}elseif(strlen($template->OID3)){
+				print "<p>"._("OID3 did not return any data.  Please check your MIB table.")."</p>\n";
+			}
+			
+			switch($template->ProcessingProfile){
+				case "SingleOIDAmperes":
+					$amps=intval($statsOutput[0])*intval($template->Multiplier);
+					$watts=$amps*intval($row["Voltage"]);
+					break;
+				case "Combine3OIDAmperes":
+					$amps=(intval($statsOutput[0])+intval($statsOutput[1])+intval($statsOutput[2]))*intval($template->Multiplier);
+					$watts=$amps*intval($row["Voltage"]);
+					break;
+				case "Convert3PhAmperes":
+					$amps=(intval($statsOutput[0])+intval($statsOutput[1])+intval($statsOutput[2]))*intval($template->Multiplier)/3;
+					$watts=$amps*1.732*intval($row["Voltage"]);
+					break;
+				case "Combine3OIDWatts":
+					$watts=(intval($statsOutput[0])+intval($statsOutput[1])+intval($statsOutput[2]))*intval($template->Multiplier);
+				default:
+					$watts=intval($statsOutput[0])*intval($template->Multiplier);
+					break;
+			}
+			
+			printf( "<p>%s %.2fkW</p>", _("Resulting kW from this test is"), $watts / 1000 );
+		}
+		echo '	</fieldset></div>';
+		exit;
+	}
+
+
+
 	if(isset($_REQUEST['pduid'])){
 		$pdu->PDUID=(isset($_REQUEST['pduid']) ? $_REQUEST['pduid'] : $_GET['pduid']);
 	}else{
@@ -134,6 +218,13 @@
 			$.get('scripts/ajax_panel.php?q='+$(this).val(), function(data) {
 				$('#voltage').html(data['PanelVoltage'] +'/'+ Math.floor(data['PanelVoltage']/1.73));
 			});
+		});
+		$('#pdutestlink').click(function(e){
+			e.preventDefault();
+			$.post('power_pdu.php', {test: $('#pduid').val()}, function(data){
+				$('#pdutest').html(data);
+			});
+			$('#pdutest').dialog();
 		});
 		$('.center > div + div > .table > div:first-child ~ div').each(function(){
 			var row=$(this);
@@ -349,7 +440,7 @@ echo '   </select></div>
 </div>
 <div>
    <div><label for="snmpcommunity">',_("SNMP Community"),'</label></div>
-   <div><input type="text" name="snmpcommunity" id="snmpcommunity" size=15 value="',$pdu->SNMPCommunity,'"><a href="power_testsmartcdu.php?PDUID=', $pdu->PDUID, '" target="new">', _("Test Communications"), '</a></div>
+   <div><input type="text" name="snmpcommunity" id="snmpcommunity" size=15 value="',$pdu->SNMPCommunity,'"><a id="pdutestlink" href="power_testsmartcdu.php?PDUID=', $pdu->PDUID, '">', _("Test Communications"), '</a></div>
 </div>
 <div class="caption">
 <h3>',_("Automatic Transfer Switch"),'</h3>
@@ -420,6 +511,9 @@ echo '</div>
 ?>  
     </div> <!-- END div.table -->
 </div></div>
+
+<div id="pdutest" title="Testing SNMP Communications"></div>
+
 <?php echo '<a href="cabnavigator.php?cabinetid=',$cab->CabinetID,'">[ ',_("Return to Navigator"),' ]</a>'; ?>
 </div><!-- END div.main -->
 </div><!-- END div.page -->

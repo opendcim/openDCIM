@@ -266,6 +266,8 @@ div.error {margin-top: 2em;margin-bottom: 2em;border: 1px dotted gray;}
 .error legend {color: red;font-weight: bold;}
 .error > div > div {width: 200px;vertical-align: top !important;}
 .error > div > div + div {font-style: italic;}
+#pdutest {display: none;}
+
 
 /* Department Administration */
 #groupadmin {
