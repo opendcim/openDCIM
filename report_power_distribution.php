@@ -189,8 +189,8 @@ class PDF extends FPDF {
 				$pdf->Cell( 80, 5, 'Panel: ' . $panRow->PanelLabel );
 				$pdf->SetFont( $config->ParameterArray['PDFfont'], '', 8 );
 				$pdf->Ln();
-				$pdu->PanelID=$panRow->PanelID;
-				$pduList = $pdu->GetPDUbyPanel( $facDB );
+				$pan->PanelID=$panRow->PanelID;
+				$pduList = $pan->GetPDUbyPanel( $facDB );
 				
 				foreach ( $pduList as $pduRow ){
 					$pdf->BookMark( $pduRow->Label, 4 );

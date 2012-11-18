@@ -38,8 +38,7 @@
 	if(isset($_REQUEST["panelid"])&&($_REQUEST["panelid"] >0)){
 		$panel->PanelID=(isset($_POST['panelid']) ? $_POST['panelid'] : $_GET['panelid']);
 		$panel->GetPanel($facDB);
-		$pdu->PanelID=$panel->PanelID;
-		$pduList=$pdu->GetPDUbyPanel($facDB);
+		$pduList=$panel->GetPDUbyPanel($facDB);
 	}
 
 	$panelList=$panel->GetPanelList($facDB);

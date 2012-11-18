@@ -98,24 +98,17 @@ class CDUTemplate {
 			return false;
 		}
 		
-		$sql = sprintf( "insert into fac_CDUTemplate set ManufacturerID=%d, Model=\"%s\", Managed=%d, VersionOID=\"%s\", Multiplier=%d, OID1=\"%s\", OID2=\"%s\", OID3=\"%s\", ProcessingProfile=\"%s\", Voltage=%d, Amperage=%d, NumOutlets=%d",
-			intval( $this->ManufacturerID ), addslashes( $this->Model ), intval( $this->Managed ), addslashes( $this->VersionOID ), 
-			intval( $this->Multiplier ), addslashes( $this->OID1 ), addslashes( $this->OID2 ), addslashes( $this->OID3 ), 
-			addslashes( $this->ProcessingProfile ), intval( $this->Voltage ), intval( $this->Amperage ), intval( $this->NumOutlets ) );
-		$result = mysql_query( $sql, $db );
+		$sql="INSERT fac_CDUTemplate SET ManufacturerID=".intval($this->ManufacturerID).", Model=\"".addslashes($this->Model)."\", Managed=".intval($this->Managed).", VersionOID=\"".addslashes($this->VersionOID)."\", Multiplier=\"".intval($this->Multiplier)."\", OID1=\"".addslashes($this->OID1)."\", OID2=\"".addslashes($this->OID2)."\", OID3=\"".addslashes($this->OID3)."\", ProcessingProfile=\"".addslashes($this->ProcessingProfile)."\", Voltage=".intval($this->Voltage).", Amperage=".intval($this->Amperage).", NumOutlets=".intval($this->NumOutlets).";";
+		$result=mysql_query($sql,$db);
 		
-		$this->TemplateID = mysql_insert_id( $db );
+		$this->TemplateID=mysql_insert_id($db);
 		
 		return $this->TemplateID;
 	}
 	
-	function UpdateTemplate( $db ) {
-		$sql = sprintf( "update fac_CDUTemplate set ManufacturerID=%d, Model=\"%s\", Managed=%d, VersionOID=\"%s\", Multiplier=%d, OID1=\"%s\", OID2=\"%s\", OID3=\"%s\", ProcessingProfile=\"%s\", Voltage=%d, Amperage=%d, NumOutlets=%d where TemplateID=%d",
-			intval( $this->ManufacturerID ), addslashes( $this->Model ), intval( $this->Managed ), addslashes( $this->VersionOID ), intval( $this->Multiplier ),
-			addslashes( $this->OID1 ), addslashes( $this->OID2 ), addslashes( $this->OID3 ), addslashes( $this->ProcessingProfile ),
-			intval( $this->Voltage ), intval( $this->Amperage ), intval( $this->NumOutlets ), intval( $this->TemplateID ) );
-		$result = mysql_query( $sql, $db );
-		
+	function UpdateTemplate($db){
+		$sql="UPDATE fac_CDUTemplate SET ManufacturerID=".intval($this->ManufacturerID).", Model=\"".addslashes($this->Model)."\", Managed=".intval($this->Managed).", VersionOID=\"".addslashes($this->VersionOID)."\", Multiplier=\"".intval($this->Multiplier)."\", OID1=\"".addslashes($this->OID1)."\", OID2=\"".addslashes($this->OID2)."\", OID3=\"".addslashes($this->OID3)."\", ProcessingProfile=\"".addslashes($this->ProcessingProfile)."\", Voltage=".intval($this->Voltage).", Amperage=".intval($this->Amperage).", NumOutlets=".intval($this->NumOutlets)." where TemplateID=".intval($this->TemplateID).";";
+		$result=mysql_query($sql,$db);
 		return;
 	}
 	
@@ -383,38 +376,6 @@ class PowerDistribution {
 		return $PDUList;
 	}
 
-	function GetPDUbyPanel( $db ) {
-		$select_sql = "select * from fac_PowerDistribution where PanelID=\"" . intval($this->PanelID) . "\" or PanelID2=\"" . intval( $this->PanelID ) . "\" order by PanelPole ASC";
-
-		if ( ! $result = mysql_query( $select_sql, $db ) ) {
-			return 0;
-		}
-
-		$PDUList = array();
-
-		while ( $PDUrow = mysql_fetch_array( $result ) ) {
-			$PDUID = $PDUrow["PDUID"];
-			$PDUlist[$PDUID] = new PowerDistribution();
-
-			$PDUList[$PDUID]->PDUID = $PDUID;
-			$PDUList[$PDUID]->Label = stripslashes($PDUrow["Label"]);
-			$PDUList[$PDUID]->CabinetID = $PDUrow["CabinetID"];
-			$PDUList[$PDUID]->TemplateID = $PDUrow["TemplateID"];
-			$PDUList[$PDUID]->IPAddress = stripslashes($PDUrow["IPAddress"]);
-			$PDUList[$PDUID]->SNMPCommunity = stripslashes($PDUrow["SNMPCommunity"]);
-			$PDUList[$PDUID]->FirmwareVersion = $PDUrow["FirmwareVersion"];
-			$PDUList[$PDUID]->PanelID = $PDUrow["PanelID"];
-			$PDUList[$PDUID]->BreakerSize = $PDUrow["BreakerSize"];
-			$PDUList[$PDUID]->PanelPole = $PDUrow["PanelPole"];
-			$PDUList[$PDUID]->InputAmerage = $PDUrow["InputAmperage"];
-			$PDUList[$PDUID]->FailSafe = $PDUrow["FailSafe"];
-			$PDUList[$PDUID]->PanelID2 = $PDUrow["PanelID2"];
-			$PDUList[$PDUID]->PanelPole2 = $PDUrow["PanelPole2"];
-		}
-
-		return $PDUList;
-	}
-	
 	function GetWattage( $db ) {
 		$sql = sprintf( "select Wattage from fac_PDUStats where PDUID=%d", $this->PDUID );
 		$result = mysql_query( $sql, $db );
@@ -489,11 +450,12 @@ class PowerDistribution {
 			exec($pollCommand, $statsOutput);
 			// need error checking here
 
-			if ( count( $statsOutput ) > 0 )
-				$upTime=end(explode(")",$statsOutput[0]));
-			else
+			if(count($statsOutput) >0){
+				$statsOutput=explode(")",$statsOutput[0]);
+				$upTime=end($statsOutput);
+			}else{
 				$upTime = "Unknown";
-	
+			}
 			return $upTime;
 		}
 	}
@@ -586,6 +548,7 @@ class PowerPanel {
     while ( $row = mysql_fetch_array( $result ) ) {
       $PanelID = $row["PanelID"];
 
+      $PanelList[$PanelID]=new PowerPanel();
       $PanelList[$PanelID]->PanelID = $row["PanelID"];
       $PanelList[$PanelID]->PowerSourceID = $row["PowerSourceID"];
       $PanelList[$PanelID]->PanelLabel = stripslashes($row["PanelLabel"]);
@@ -660,6 +623,38 @@ class PowerPanel {
 
 	return $result;
   }
+
+	function GetPDUbyPanel($db){
+		$select_sql = "select * from fac_PowerDistribution where PanelID=\"" . intval($this->PanelID) . "\" or PanelID2=\"" . intval( $this->PanelID ) . "\" order by PanelPole ASC";
+		if ( ! $result = mysql_query( $select_sql, $db ) ) {
+			return 0;
+		}
+
+		$PDUList = array();
+
+		while ( $PDUrow = mysql_fetch_array( $result ) ) {
+			$PDUID = $PDUrow["PDUID"];
+
+			$PDUList[$PDUID]=new PowerDistribution();
+			$PDUList[$PDUID]->PDUID = $PDUrow["PDUID"];
+			$PDUList[$PDUID]->Label = stripslashes($PDUrow["Label"]);
+			$PDUList[$PDUID]->CabinetID = $PDUrow["CabinetID"];
+			$PDUList[$PDUID]->TemplateID = $PDUrow["TemplateID"];
+			$PDUList[$PDUID]->IPAddress = stripslashes($PDUrow["IPAddress"]);
+			$PDUList[$PDUID]->SNMPCommunity = stripslashes($PDUrow["SNMPCommunity"]);
+			$PDUList[$PDUID]->FirmwareVersion = $PDUrow["FirmwareVersion"];
+			$PDUList[$PDUID]->PanelID = $PDUrow["PanelID"];
+			$PDUList[$PDUID]->BreakerSize = $PDUrow["BreakerSize"];
+			$PDUList[$PDUID]->PanelPole = $PDUrow["PanelPole"];
+			$PDUList[$PDUID]->InputAmerage = $PDUrow["InputAmperage"];
+			$PDUList[$PDUID]->FailSafe = $PDUrow["FailSafe"];
+			$PDUList[$PDUID]->PanelID2 = $PDUrow["PanelID2"];
+			$PDUList[$PDUID]->PanelPole2 = $PDUrow["PanelPole2"];
+		}
+
+		return $PDUList;
+	}
+	
 }
 
 class PanelSchedule {

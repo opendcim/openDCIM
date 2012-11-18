@@ -111,15 +111,15 @@
 			switch($template->ProcessingProfile){
 				case "SingleOIDAmperes":
 					$amps=intval($statsOutput[0])*intval($template->Multiplier);
-					$watts=$amps*intval($row["Voltage"]);
+					$watts=$amps*intval($template->Voltage);
 					break;
 				case "Combine3OIDAmperes":
 					$amps=(intval($statsOutput[0])+intval($statsOutput[1])+intval($statsOutput[2]))*intval($template->Multiplier);
-					$watts=$amps*intval($row["Voltage"]);
+					$watts=$amps*intval($template->Voltage);
 					break;
 				case "Convert3PhAmperes":
 					$amps=(intval($statsOutput[0])+intval($statsOutput[1])+intval($statsOutput[2]))*intval($template->Multiplier)/3;
-					$watts=$amps*1.732*intval($row["Voltage"]);
+					$watts=$amps*1.732*intval($template->Voltage);
 					break;
 				case "Combine3OIDWatts":
 					$watts=(intval($statsOutput[0])+intval($statsOutput[1])+intval($statsOutput[2]))*intval($template->Multiplier);
@@ -128,7 +128,7 @@
 					break;
 			}
 			
-			printf( "<p>%s %.2fkW</p>", _("Resulting kW from this test is"), $watts / 1000 );
+			printf("<p>%s %.2f kW</p>", _("Resulting kW from this test is"),$watts/1000);
 		}
 		echo '	</fieldset></div>';
 		exit;
