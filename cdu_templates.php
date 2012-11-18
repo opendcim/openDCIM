@@ -45,6 +45,8 @@
 
 	$templateList=$template->GetTemplateList($facDB);
 	$ManufacturerList=$manufacturer->GetManufacturerList($facDB);
+
+	$checked=($template->Managed)?" checked":"";
 ?>
 <!doctype html>
 <html>
@@ -54,13 +56,13 @@
   
   <title>openDCIM Cabinet Distribution Unit Templates</title>
   <link rel="stylesheet" href="css/inventory.php" type="text/css">
-  <link rel="stylesheet" href="css/jquery-ui-1.8.18.custom.css" type="text/css">
+  <link rel="stylesheet" href="css/jquery-ui.css" type="text/css">
   <!--[if lt IE 9]>
   <link rel="stylesheet"  href="css/ie.css" type="text/css">
   <![endif]-->
   
   <script type="text/javascript" src="scripts/jquery.min.js"></script>
-  <script type="text/javascript" src="scripts/jquery-ui-1.8.18.custom.min.js"></script>
+  <script type="text/javascript" src="scripts/jquery-ui.min.js"></script>
 </head>
 <body>
 <div id="header"></div>
@@ -83,13 +85,7 @@ echo '<div class="main">
 	foreach($templateList as $templateRow){
 		$manufacturer->ManufacturerID=$templateRow->ManufacturerID;
 		$manufacturer->GetManufacturerByID($facDB);
-		
-		if($template->TemplateID==$templateRow->TemplateID) {
-			$selected=" selected";
-		} else {
-			$selected="";
-		}
-		
+		$selected=($template->TemplateID==$templateRow->TemplateID)?' selected':'';
 		print "		<option value=\"$templateRow->TemplateID\"$selected>[$manufacturer->Name] $templateRow->Model</option>\n";
 	}
 
@@ -100,7 +96,7 @@ echo '	</select></div>
 	<div><select name="manufacturerid" id="manufacturerid">';
 
 	foreach($ManufacturerList as $ManufacturerRow){
-		if($template->ManufacturerID==$ManufacturerRow->ManufacturerID){$selected="selected";}else{$selected="";}
+		$selected=($template->ManufacturerID==$ManufacturerRow->ManufacturerID)?' selected':'';
 		print "		<option value=\"$ManufacturerRow->ManufacturerID\"$selected>$ManufacturerRow->Name</option>\n";
 	}
 
@@ -113,14 +109,9 @@ echo '    </select>
 </div>
 <div>
    <div><label for="managed">',_("Managed"),'</label></div>
-   <div>';
-   
-	if ( $template->Managed )
-		printf( "<input type=\"checkbox\" name=\"managed\" id=\"managed\" checked>" );
-	else
-		printf( "<input type=\"checkbox\" name=\"managed\" id=\"managed\">" );
-	
-echo '   </div>
+   <div>
+		<input type="checkbox" name="managed" id="managed"',$checked,'>
+   </div>
 </div>
 <div>
 	<div><label for="versionoid">',_("Firmware Version OID"),'</label></div>
@@ -130,14 +121,10 @@ echo '   </div>
    <div><label for="multiplier">',_("Multiplier"),'</label></div>
    <div><select name="multiplier" id="multiplier">';
    
-	$Multi = array( "1", "10", "100" );
-	foreach ( $Multi as $unit ) {
-		if ( $unit == $template->Multiplier )
-			$selected = "SELECTED";
-		else
-			$selected = "";
-		
-		printf( "<option value=\"%s\" %s>%s</option>\n", $unit, $selected, $unit );
+	$Multi=array("1","10","100");
+	foreach($Multi as $unit){
+		$selected=($unit==$template->Multiplier)?' selected':'';
+		print "\t\t<option value=\"$unit\"$selected>$unit</option>\n";
 	}
 	
 echo '   </select>
@@ -159,14 +146,10 @@ echo '   </select>
    <div><label for="processingprofile">',_("Processing Scheme"),'</label></div>
    <div><select name="processingprofile" id="processingprofile">';
 
-	$ProfileList = array( "SingleOIDWatts", "SingleOIDAmperes", "Combine3OIDWatts", "Combine3OIDAmperes", "Convert3PhAmperes" );
-	foreach ( $ProfileList as $prof ) {
-		if ( $prof == $template->ProcessingProfile )
-			$selected = "SELECTED";
-		else
-			$selected = "";
-		
-		printf( "<option value=\"%s\" %s>%s</option>", $prof, $selected, $prof );
+	$ProfileList=array("SingleOIDWatts","SingleOIDAmperes","Combine3OIDWatts","Combine3OIDAmperes","Convert3PhAmperes");
+	foreach($ProfileList as $prof){
+		$selected=($prof == $template->ProcessingProfile)?' selected':'';
+		print "<option value=\"$prof\"$selected>$prof</option>";
 	}
 	
 echo '   </select></div>

@@ -224,7 +224,7 @@
 			$.post('power_pdu.php', {test: $('#pduid').val()}, function(data){
 				$('#pdutest').html(data);
 			});
-			$('#pdutest').dialog();
+			$('#pdutest').dialog({minWidth: 450, maxWidth: 450, closeOnEscape: true });
 		});
 		$('.center > div + div > .table > div:first-child ~ div').each(function(){
 			var row=$(this);
