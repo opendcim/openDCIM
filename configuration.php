@@ -51,6 +51,49 @@
 	}
 	$imageselect.="</div>";
 
+	function formatOffset($offset) {
+			$hours = $offset / 3600;
+			$remainder = $offset % 3600;
+			$sign = $hours > 0 ? '+' : '-';
+			$hour = (int) abs($hours);
+			$minutes = (int) abs($remainder / 60);
+
+			if ($hour == 0 AND $minutes == 0) {
+				$sign = ' ';
+			}
+			return 'GMT' . $sign . str_pad($hour, 2, '0', STR_PAD_LEFT) 
+					.':'. str_pad($minutes,2, '0');
+
+	}
+
+	static $regions = array(
+		'Africa' => DateTimeZone::AFRICA,
+		'America' => DateTimeZone::AMERICA,
+		'Antarctica' => DateTimeZone::ANTARCTICA,
+		'Asia' => DateTimeZone::ASIA,
+		'Atlantic' => DateTimeZone::ATLANTIC,
+		'Europe' => DateTimeZone::EUROPE,
+		'Indian' => DateTimeZone::INDIAN,
+		'Pacific' => DateTimeZone::PACIFIC
+	);
+
+	foreach($regions as $name => $mask){
+		$tzlist[$name]=DateTimeZone::listIdentifiers($mask);
+	}
+
+	$tzmenu='<ul id="tzmenu">';
+	foreach($tzlist as $country => $cityarray){
+		$tzmenu.="\t<li>$country\n\t\t<ul>";
+		foreach($cityarray as $key => $city){
+			$z=new DateTimeZone($city);
+			$c=new DateTime(null, $z);
+			$adjustedtime=$c->format('H:i a');
+			$offset=formatOffset($z->getOffset($c));
+			$tzmenu.="\t\t\t<li><a href=\"#\" data=\"$city\">$adjustedtime - $offset $city</a></li>\n";
+		}
+		$tzmenu.="\t\t</ul>\t</li>";
+	}
+	$tzmenu.='</ul>';
 
 ?>
 <html>
@@ -134,6 +177,40 @@
 				}
 			});
 		});
+		$("#tzmenu").menu();
+		$("#tzmenu ul > li").click(function(e){
+			e.preventDefault();
+			$("#timezone").val($(this).children('a').attr('data'));
+			$("#tzmenu").toggle();
+		});
+		$("#tzmenu").focusout(function(){
+			$("#tzmenu").toggle();
+		});
+		$('<button type="button">').attr({
+				id: 'btn_tzmenu'
+		}).appendTo("body");
+		$('#btn_tzmenu').each(function(){
+			var input=$("#timezone");
+			var offset=input.offset();
+			var height=input.innerHeight();
+			$(this).css({
+				'height': height+'px',
+				'width': height+'px',
+				'position': 'absolute',
+				'left': offset.left+input.innerWidth()-height+'px',
+				'top': offset.top+'px'
+			}).click(function(){
+				$("#tzmenu").toggle();
+				$("#tzmenu").focus().click();
+			});
+			offset=$(this).offset();
+			$("#tzmenu").css({
+				'position': 'absolute',
+				'left': offset.left+'px',
+				'top': offset.top+height+'px'
+			});
+			$(this).addClass('text-arrow');
+		});
 	});
 
   </script>
@@ -172,6 +249,13 @@ echo '<div class="main">
 				<div>
 					<div><label for="DefaultPanelVoltage">',_("Default Panel Voltage"),'</label></div>
 					<div><input type="text" defaultvalue="',$config->defaults["DefaultPanelVoltage"],'" name="DefaultPanelVoltage" value="',$config->ParameterArray["DefaultPanelVoltage"],'"></div>
+				</div>
+			</div> <!-- end table -->
+			<h3>',_("Time and Measurements"),'</h3>
+			<div class="table" id="timeandmeasurements">
+				<div>
+					<div><lable for="timezone">',_("Time Zone"),'</label></div>
+					<div><input type="text" id="timezone" defaultvalue="',$config->defaults["timezone"],'" name="timezone" value="',$config->ParameterArray["timezone"],'"></div>
 				</div>
 			</div> <!-- end table -->
 			<h3>',_("Users"),'</h3>
@@ -384,5 +468,7 @@ echo '<div class="main">
    <a href="index.php">Return to Main Menu</a>
   </div>
   </div>
+
+<?php echo $tzmenu; ?>
 </body>
 </html>

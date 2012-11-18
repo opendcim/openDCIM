@@ -116,3 +116,10 @@ UPDATE fac_PowerDistribution SET TemplateID=(select TemplateID from fac_CDUTempl
 ALTER TABLE fac_PowerDistribution DROP COLUMN ManagementType;
 ALTER TABLE fac_PowerDistribution DROP COLUMN Model;
 ALTER TABLE fac_PowerDistribution DROP COLUMN NumOutputs;
+
+--
+-- Add a new configurable timezone parameter 
+--
+
+INSERT INTO `fac_Config` (`Parameter`, `Value`, `UnitOfMeasure`, `ValType`, `DefaultVal`) VALUES
+('timezone', 'America/Chicago', 'string', 'string', 'America/Chicago');

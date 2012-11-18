@@ -64,6 +64,9 @@ div#imageselection { display: none;}
 #imageselection #preview { position: absolute; top: 0; right: 0; height: 200px; width: 200px; margin: 0.1em 0 0 0; padding: 0; border: 0px solid black;}
 #imageselection #filelist { position: absolute; top: 0; left: 1em; height: 210px; width: 175px; overflow-y: scroll; overflow-x: hidden; }
 
+.ui-menu-item ul { max-height: 200px; overflow: auto; }
+#tzmenu {display: none;}
+
 /* index */
 .index .table, .index .table .title {background-color: white;}
 .index .table .title {font-weight: bold; font-size: 1.25em;}
