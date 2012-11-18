@@ -16,6 +16,22 @@
 	$mfg=new Manufacturer();
 	$templ=new DeviceTemplate();
 
+	$audit=new CabinetAudit();
+	$audit->CabinetID=$_REQUEST['cabinetid'];
+	$audit->AuditStamp="Never";
+	$audit->GetLastAudit($facDB);
+	if($audit->UserID!=""){
+		$tmpUser=new User();
+		$tmpUser->UserID=$audit->UserID;
+		$tmpUser->GetUserRights($facDB);
+		$AuditorName=$tmpUser->Name;
+	}else{
+		//If no audit has been completed $AuditorName will return an error
+		$AuditorName="";
+	}
+	$_SESSION['AuditorName']=$AuditorName;
+	$_SESSION['AuditStamp']=$audit->AuditStamp;
+
 class PDF extends FPDF {
   var $outlines=array();
   var $OutlineRoot;
@@ -36,9 +52,11 @@ class PDF extends FPDF {
     	$this->Ln(20);
 		$this->SetFont( $this->pdfconfig->ParameterArray['PDFfont'],'',10 );
 		$this->Cell( 50, 6, _("Cabinet Audit Report"), 0, 1, 'L' );
-		$this->Cell( 50, 6, 'Date: ' . date( 'm/d/y' ), 0, 1, 'L' );
+		$this->Cell( 50, 6, 'Date: ' . date( 'm/d/y' ), 0, 0, 'L' );
+		$this->Cell( 0, 6, _("Last Audit").": {$_SESSION['AuditStamp']} ({$_SESSION['AuditorName']})", 0, 1, 'R' );
 		$this->Ln(10);
 	}
+
 
 	function Footer() {
 	    	$this->SetY(-15);
@@ -459,9 +477,9 @@ class PDF_Diag extends PDF_Sector {
 	$pdf->Cell(0,5,$cabmessage,0,1,'C',0);
 	$pdf->SetFont($config->ParameterArray['PDFfont'],'',10);
 	$PDUList=$pdu->GetPDUbyCabinet($facDB);
-	
+
 	$headerTags = array( _('Label'), _('NumOutputs'),_('Model'),_('PanelLabel'), _('PanelPole') );
-	$cellWidths = array( 50, 30,35, 50, 20);
+	$cellWidths = array(50,30,118,70,20);
 	$maxval = count( $headerTags );
 	for ( $col = 0; $col < $maxval; $col++ )
 		$pdf->Cell( $cellWidths[$col], 7, $headerTags[$col], 1, 0, 'C', 1 );
@@ -470,9 +488,16 @@ class PDF_Diag extends PDF_Sector {
 			$panel->PanelID=$PDUrow->PanelID;
 			$panel->GetPanel($facDB);
 
+			$pdutemp=new CDUTemplate();
+			$pdutemp->TemplateID=$PDUrow->TemplateID;
+			$pdutemp->GetTemplate($facDB);
+
+			$mfg->ManufacturerID=$pdutemp->ManufacturerID;
+			$mfg->GetManufacturerByID($facDB);
+	
 			$pdf->Cell( $cellWidths[0], 6, $PDUrow->Label, 'LBRT', 0, 'L', $fill );
-			$pdf->Cell( $cellWidths[1], 6, $PDUrow->NumOutputs, 'LBRT', 0, 'L', $fill );
-			$pdf->Cell( $cellWidths[2], 6, $PDUrow->Model, 'LBRT', 0, 'L', $fill );
+			$pdf->Cell( $cellWidths[1], 6, $pdutemp->NumOutlets, 'LBRT', 0, 'L', $fill );
+			$pdf->Cell( $cellWidths[2], 6, "[$mfg->Name] $pdutemp->Model", 'LBRT', 0, 'L', $fill );
 			$pdf->Cell( $cellWidths[3], 6, $panel->PanelLabel, 'LBRT', 0, 'L', $fill );
 			$pdf->Cell( $cellWidths[4], 6, $PDUrow->PanelPole, 'LBRT', 1, 'L', $fill );
 

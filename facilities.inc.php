@@ -28,7 +28,7 @@
 	developers, functions have been split out into more granular groupings.
 */
 
-date_default_timezone_set('America/Chicago');
+date_default_timezone_set($config->ParameterArray['timezone']);
 
 require_once( "assets.inc.php" );
 require_once( "customers.inc.php" );

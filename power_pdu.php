@@ -415,13 +415,8 @@ echo '	</select>
 		$manufacturer->ManufacturerID=$templateRow->ManufacturerID;
 		$manufacturer->GetManufacturerByID($facDB);
 		
-		if($pdu->TemplateID==$templateRow->TemplateID) {
-			$selected=" selected";
-		} else {
-			$selected="";
-		}
-		
-		printf( "		<option value=%d %s>[%s] %s</option>\n", $templateRow->TemplateID, $selected, $manufacturer->Name, $templateRow->Model );
+		$selected=($pdu->TemplateID==$templateRow->TemplateID)?" selected":"";		
+		print "		<option value=$templateRow->TemplateID$selected>[$manufacturer->Name] $templateRow->Model</option>\n";
 	}
 	
 echo '   </select></div>
