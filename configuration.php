@@ -254,7 +254,7 @@ echo '<div class="main">
 			<h3>',_("Time and Measurements"),'</h3>
 			<div class="table" id="timeandmeasurements">
 				<div>
-					<div><lable for="timezone">',_("Time Zone"),'</label></div>
+					<div><label for="timezone">',_("Time Zone"),'</label></div>
 					<div><input type="text" id="timezone" defaultvalue="',$config->defaults["timezone"],'" name="timezone" value="',$config->ParameterArray["timezone"],'"></div>
 				</div>
 			</div> <!-- end table -->
