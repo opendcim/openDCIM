@@ -148,7 +148,7 @@ div#dcstats .table + .table > div > div + div{white-space: pre; text-align: righ
 	border-radius: 0px;
 }
 #sidebar input.search { height: 15px; padding: 5px; width: 141px; border: 1px solid black; border-right: 0; vertical-align: top;}
-#sidebar input + button img, #sidebar .text-core + button img, #sidebar textarea + button img {height: 27px;}
+#sidebar input + button img, #sidebar .text-arrow + button img {height: 27px;}
 #sidebar div.text-core {width: 150px; height: 27px;}
 #sidebar div.text-core textarea{ width: 151px; height: 27px;}
 

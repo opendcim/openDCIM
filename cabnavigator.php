@@ -330,7 +330,7 @@ $body.='</table>
   <title><?php echo $title; ?></title>
   <link rel="stylesheet" href="css/inventory.php" type="text/css">
   <link rel="stylesheet" href="css/print.css" type="text/css" media="print">
-  <link rel="stylesheet" href="css/jquery-ui-1.8.18.custom.css" type="text/css">
+  <link rel="stylesheet" href="css/jquery-ui.css" type="text/css">
   <!--[if lt IE 9]>
   <link rel="stylesheet"  href="css/ie.css" type="text/css" />
   <![endif]-->
@@ -338,7 +338,7 @@ $body.='</table>
 <?php 
 
 echo $head,'  <script type="text/javascript" src="scripts/jquery.min.js"></script>
-  <script type="text/javascript" src="scripts/jquery-ui-1.8.18.custom.min.js"></script>
+  <script type="text/javascript" src="scripts/jquery-ui.min.js"></script>
   <script type="text/javascript">
 	var form=$("<form>").attr({ method: "post", action: "cabnavigator.php" });
 	$("<input>").attr({ type: "hidden", name: "cabinetid", value: "',$cab->CabinetID,'"}).appendTo(form);

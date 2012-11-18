@@ -71,10 +71,10 @@
   
   <title>openDCIM Data Center Information Management</title>
   <link rel="stylesheet" href="css/inventory.php" type="text/css">
-  <link rel="stylesheet" href="css/jquery-ui-1.8.18.custom.css" type="text/css">
+  <link rel="stylesheet" href="css/jquery-ui.css" type="text/css">
   <link rel="stylesheet" href="css/imgareaselect-default.css" type="text/css">
   <script type="text/javascript" src="scripts/jquery.min.js"></script>
-  <script type="text/javascript" src="scripts/jquery-ui-1.8.18.custom.min.js"></script>
+  <script type="text/javascript" src="scripts/jquery-ui.min.js"></script>
   <script type="text/javascript" src="scripts/jquery.imgareaselect.pack.js"></script>
   <!--[if lt IE 9]>
   <link rel="stylesheet"  href="css/ie.css" type="text/css">
