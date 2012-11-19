@@ -104,7 +104,7 @@
 					$dev->PrimaryIP=(isset($_REQUEST['primaryip']))?$_REQUEST['primaryip']:"";
 					$dev->SNMPCommunity=(isset($_REQUEST['snmpcommunity']))?$_REQUEST['snmpcommunity']:"";
 					$dev->ESX=(isset($_REQUEST['esx']))?$_REQUEST['esx']:0;
-					$dev->Reservation=(isset($_REQUEST['reservation']))?$_REQUEST['reservation']:0;
+					$dev->Reservation=(isset($_REQUEST['reservation']))?($_REQUEST['reservation']=="on")?1:0:0;
 					$dev->NominalWatts=$_REQUEST['nominalwatts'];
 
 					if(($dev->TemplateID >0)&&(intval($dev->NominalWatts==0))){$dev->UpdateWattageFromTemplate($facDB);}
@@ -142,7 +142,7 @@
 					$dev->PrimaryIP=(isset($_REQUEST['primaryip']))?$_REQUEST['primaryip']:"";
 					$dev->SNMPCommunity=(isset($_REQUEST['snmpcommunity']))?$_REQUEST['snmpcommunity']:"";
 					$dev->ESX=(isset($_REQUEST['esx']))?$_REQUEST['esx']:0;
-					$dev->Reservation=(isset($_REQUEST['reservation']))?$_REQUEST['reservation']:0;
+					$dev->Reservation=(isset($_REQUEST['reservation']))?($_REQUEST['reservation']=="on")?1:0:0;
 					$dev->CreateDevice($facDB);
 				}elseif($user->DeleteAccess&&($_REQUEST['action']=='Delete')){
 					$dev->GetDevice($facDB);
