@@ -412,15 +412,15 @@ class PowerDistribution {
 						$watts = $amps * intval( $row["Voltage"] );
 						break;
 					case "Combine3OIDAmperes":
-						$amps = ( intval( $statsOutput[0] ) + intval( $statsOutput[1] ) + intval( $statsOutput[2] ) ) * intval( $row["Multiplier"] );
+						$amps = ( intval( $statsOutput[0] ) + intval( $statsOutput[1] ) + intval( $statsOutput[2] ) ) / intval( $row["Multiplier"] );
 						$watts = $amps * intval( $row["Voltage"] );
 						break;
 					case "Convert3PhAmperes":
-						$amps = ( intval( $statsOutput[0] ) + intval( $statsOutput[1] ) + intval( $statsOutput[2] ) ) * intval( $row["Multiplier"] ) / 3;
+						$amps = ( intval( $statsOutput[0] ) + intval( $statsOutput[1] ) + intval( $statsOutput[2] ) ) / intval( $row["Multiplier"] ) / 3;
 						$watts = $amps * 1.732 * intval( $row["Voltage"] );
 						break;
 					case "Combine3OIDWatts":
-						$watts = ( intval( $statsOutput[0] ) + intval( $statsOutput[1] ) + intval( $statsOutput[2] ) ) * intval( $row["Multiplier"] );
+						$watts = ( intval( $statsOutput[0] ) + intval( $statsOutput[1] ) + intval( $statsOutput[2] ) ) / intval( $row["Multiplier"] );
 					default:
 						$watts = intval( $statsOutput[0] ) * intval( $row["Multiplier"] );
 						break;
