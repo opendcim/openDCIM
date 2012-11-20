@@ -232,6 +232,24 @@
 	}
 */
 
+	/* Process the Notes field (what has been saved already) for any bbcode URL or IMG strings */
+	$NotesLinks = array();
+	$matches = array();
+	if (preg_match_all('`\[(url|img)=?(.*?)\](.+?)\[/\1\]`', $dev->Notes, $matches)) {
+		foreach ($matches[0] as $key => $match) { 
+			list($tag, $param, $innertext) = array($matches[1][$key], $matches[2][$key], $matches[3][$key]); 
+			switch ($tag) { 
+				case 'url': $replacement = '<a href="' . ($param? $param : $innertext) . "\">$innertext</a>"; break; 
+				case 'img': 
+					list($width, $height) = preg_split('`[Xx]`', $param); 
+					$replacement = "<img src=\"$innertext\" " . (is_numeric($width)? "width=\"$width\" " : '') . (is_numeric($height)? "height=\"$height\" " : '') . '/>'; 
+				break; 
+			}
+			
+			array_push( $NotesLinks, $replacement );
+		}
+	}
+	
 	$templateList=$templ->GetTemplateList($facDB);
 	$escTimeList=$escTime->GetEscalationTimeList($facDB);
 	$escList=$esc->GetEscalationList($facDB);
@@ -750,6 +768,12 @@ echo '		   </div>
 		  <div><textarea name="notes" id="notes" cols="40" rows="8">',$dev->Notes,'</textarea></div>
 		</div>
 	</div> <!-- END div.table -->
+	<div class="table">';
+
+foreach ( $NotesLinks as $link )
+	printf( "<div>%s</div>\n", $link );
+	
+echo '	</div> <!-- END div.table -->
 </div><!-- END div.left -->
 <div class="right">
 <fieldset>
