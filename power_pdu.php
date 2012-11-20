@@ -110,21 +110,21 @@
 			
 			switch($template->ProcessingProfile){
 				case "SingleOIDAmperes":
-					$amps=intval($statsOutput[0])*intval($template->Multiplier);
+					$amps=intval(@$statsOutput[0])/intval($template->Multiplier);
 					$watts=$amps*intval($template->Voltage);
 					break;
 				case "Combine3OIDAmperes":
-					$amps=(intval($statsOutput[0])+intval($statsOutput[1])+intval($statsOutput[2]))*intval($template->Multiplier);
+					$amps=(intval(@$statsOutput[0])+intval(@$statsOutput[1])+intval(@$statsOutput[2]))/intval($template->Multiplier);
 					$watts=$amps*intval($template->Voltage);
 					break;
 				case "Convert3PhAmperes":
-					$amps=(intval($statsOutput[0])+intval($statsOutput[1])+intval($statsOutput[2]))*intval($template->Multiplier)/3;
+					$amps=(intval(@$statsOutput[0])+intval(@$statsOutput[1])+intval(@$statsOutput[2]))/intval($template->Multiplier)/3;
 					$watts=$amps*1.732*intval($template->Voltage);
 					break;
 				case "Combine3OIDWatts":
-					$watts=(intval($statsOutput[0])+intval($statsOutput[1])+intval($statsOutput[2]))*intval($template->Multiplier);
+					$watts=(intval(@$statsOutput[0])+intval(@$statsOutput[1])+intval(@$statsOutput[2]))/intval($template->Multiplier);
 				default:
-					$watts=intval($statsOutput[0])*intval($template->Multiplier);
+					$watts=intval(@$statsOutput[0])/intval($template->Multiplier);
 					break;
 			}
 			
@@ -435,7 +435,7 @@ echo '   </select></div>
 </div>
 <div>
    <div><label for="snmpcommunity">',_("SNMP Community"),'</label></div>
-   <div><input type="text" name="snmpcommunity" id="snmpcommunity" size=15 value="',$pdu->SNMPCommunity,'"><a id="pdutestlink" href="power_testsmartcdu.php?PDUID=', $pdu->PDUID, '">', _("Test Communications"), '</a></div>
+   <div><input type="text" name="snmpcommunity" id="snmpcommunity" size=15 value="',$pdu->SNMPCommunity,'"><a id="pdutestlink" href="#">', _("Test Communications"), '</a></div>
 </div>
 <div class="caption">
 <h3>',_("Automatic Transfer Switch"),'</h3>
