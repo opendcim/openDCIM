@@ -76,36 +76,37 @@
 			$dev->DeviceID=$_REQUEST['deviceid'];
 			// If no action is requested then we must be just querying a device info.
 			// Skip all modification checks
-			if(isset($_REQUEST['action'])){
-				if($user->WriteAccess&&(($dev->DeviceID >0)&&($_REQUEST['action']=='Update'))){
-					$dev->Label=$_REQUEST['label'];
-					$dev->SerialNo=$_REQUEST['serialno'];
-					$dev->AssetTag=$_REQUEST['assettag'];
-					$dev->Owner=$_REQUEST['owner'];
-					$dev->EscalationTimeID=$_REQUEST['escalationtimeid'];
-					$dev->EscalationID=$_REQUEST['escalationid'];
-					$dev->PrimaryContact=$_REQUEST['primarycontact'];
-					$dev->Cabinet=$_REQUEST['cabinetid'];
-					$dev->Position=$_REQUEST['position'];
-					$dev->Height=$_REQUEST['height'];
-					$dev->TemplateID=$_REQUEST['templateid'];
-					$dev->DeviceType=$_REQUEST['devicetype'];
-					$dev->MfgDate=date('Y-m-d',strtotime($_REQUEST['mfgdate']));
-					$dev->InstallDate=date('Y-m-d',strtotime($_REQUEST['installdate']));
-					$dev->WarrantyCo=$_REQUEST['warrantyco'];
-					$dev->WarrantyExpire=date('Y-m-d',strtotime($_REQUEST['warrantyexpire']));
-					$dev->Notes=$_REQUEST['notes'];
+			if(isset($_POST['action'])){
+				if($user->WriteAccess&&(($dev->DeviceID >0)&&($_POST['action']=='Update'))){
+					$dev->Label=$_POST['label'];
+					$dev->SerialNo=$_POST['serialno'];
+					$dev->AssetTag=$_POST['assettag'];
+					$dev->Owner=$_POST['owner'];
+					$dev->EscalationTimeID=$_POST['escalationtimeid'];
+					$dev->EscalationID=$_POST['escalationid'];
+					$dev->PrimaryContact=$_POST['primarycontact'];
+					$dev->Cabinet=$_POST['cabinetid'];
+					$dev->Position=$_POST['position'];
+					$dev->Height=$_POST['height'];
+					$dev->TemplateID=$_POST['templateid'];
+					$dev->DeviceType=$_POST['devicetype'];
+					$dev->MfgDate=date('Y-m-d',strtotime($_POST['mfgdate']));
+					$dev->InstallDate=date('Y-m-d',strtotime($_POST['installdate']));
+					$dev->WarrantyCo=$_POST['warrantyco'];
+					$dev->WarrantyExpire=date('Y-m-d',strtotime($_POST['warrantyexpire']));
+					$dev->Notes=trim($_POST['notes']);
+					$dev->Notes=($dev->Notes=="<br>")?"":$dev->Notes;
 					// All of the values below here are optional based on the type of device being dealt with
-					$dev->ChassisSlots=(isset($_REQUEST['chassisslots']))?$_REQUEST['chassisslots']:0;
-					$dev->RearChassisSlots=(isset($_REQUEST['rearchassisslots']))?$_REQUEST['rearchassisslots']:0;
-					$dev->Ports=(isset($_REQUEST['ports']))?$_REQUEST['ports']:"";
-					$dev->PowerSupplyCount=(isset($_REQUEST['powersupplycount']))?$_REQUEST['powersupplycount']:"";
-					$dev->ParentDevice=(isset($_REQUEST['parentdevice']))?$_REQUEST['parentdevice']:"";
-					$dev->PrimaryIP=(isset($_REQUEST['primaryip']))?$_REQUEST['primaryip']:"";
-					$dev->SNMPCommunity=(isset($_REQUEST['snmpcommunity']))?$_REQUEST['snmpcommunity']:"";
-					$dev->ESX=(isset($_REQUEST['esx']))?$_REQUEST['esx']:0;
-					$dev->Reservation=(isset($_REQUEST['reservation']))?($_REQUEST['reservation']=="on")?1:0:0;
-					$dev->NominalWatts=$_REQUEST['nominalwatts'];
+					$dev->ChassisSlots=(isset($_POST['chassisslots']))?$_POST['chassisslots']:0;
+					$dev->RearChassisSlots=(isset($_POST['rearchassisslots']))?$_POST['rearchassisslots']:0;
+					$dev->Ports=(isset($_POST['ports']))?$_POST['ports']:"";
+					$dev->PowerSupplyCount=(isset($_POST['powersupplycount']))?$_POST['powersupplycount']:"";
+					$dev->ParentDevice=(isset($_POST['parentdevice']))?$_POST['parentdevice']:"";
+					$dev->PrimaryIP=(isset($_POST['primaryip']))?$_POST['primaryip']:"";
+					$dev->SNMPCommunity=(isset($_POST['snmpcommunity']))?$_POST['snmpcommunity']:"";
+					$dev->ESX=(isset($_POST['esx']))?$_POST['esx']:0;
+					$dev->Reservation=(isset($_POST['reservation']))?($_POST['reservation']=="on")?1:0:0;
+					$dev->NominalWatts=$_POST['nominalwatts'];
 
 					if(($dev->TemplateID >0)&&(intval($dev->NominalWatts==0))){$dev->UpdateWattageFromTemplate($facDB);}
 			
@@ -114,35 +115,36 @@
 					}else{
 						$dev->UpdateDevice($facDB);
 					}
-				}elseif($user->WriteAccess&&($_REQUEST['action']=='Create')){
-					$dev->Label=$_REQUEST['label'];
-					$dev->SerialNo=$_REQUEST['serialno'];
-					$dev->AssetTag=$_REQUEST['assettag'];
-					$dev->Owner=$_REQUEST['owner'];
-					$dev->EscalationTimeID=$_REQUEST['escalationtimeid'];
-					$dev->EscalationID=$_REQUEST['escalationid'];
-					$dev->PrimaryContact=$_REQUEST['primarycontact'];
-					$dev->Cabinet=$_REQUEST['cabinetid'];
-					$dev->Position=$_REQUEST['position'];
-					$dev->Height=$_REQUEST['height'];
-					$dev->Ports=$_REQUEST['ports'];
-					$dev->TemplateID=$_REQUEST['templateid'];
-					$dev->DeviceType=$_REQUEST['devicetype'];
-					$dev->MfgDate=date('Y-m-d',strtotime($_REQUEST['mfgdate']));
-					$dev->InstallDate=date('Y-m-d',strtotime($_REQUEST['installdate']));
-					$dev->WarrantyCo=$_REQUEST['warrantyco'];
-					$dev->WarrantyExpire=date('Y-m-d',strtotime($_REQUEST['warrantyexpire']));
-					$dev->Notes=$_REQUEST['notes'];
+				}elseif($user->WriteAccess&&($_POST['action']=='Create')){
+					$dev->Label=$_POST['label'];
+					$dev->SerialNo=$_POST['serialno'];
+					$dev->AssetTag=$_POST['assettag'];
+					$dev->Owner=$_POST['owner'];
+					$dev->EscalationTimeID=$_POST['escalationtimeid'];
+					$dev->EscalationID=$_POST['escalationid'];
+					$dev->PrimaryContact=$_POST['primarycontact'];
+					$dev->Cabinet=$_POST['cabinetid'];
+					$dev->Position=$_POST['position'];
+					$dev->Height=$_POST['height'];
+					$dev->Ports=$_POST['ports'];
+					$dev->TemplateID=$_POST['templateid'];
+					$dev->DeviceType=$_POST['devicetype'];
+					$dev->MfgDate=date('Y-m-d',strtotime($_POST['mfgdate']));
+					$dev->InstallDate=date('Y-m-d',strtotime($_POST['installdate']));
+					$dev->WarrantyCo=$_POST['warrantyco'];
+					$dev->WarrantyExpire=date('Y-m-d',strtotime($_POST['warrantyexpire']));
+					$dev->Notes=trim($_POST['notes']);
+					$dev->Notes=($dev->Notes=="<br>")?"":$dev->Notes;
 					// All of the values below here are optional based on the type of device being dealt with
-					$dev->ChassisSlots=(isset($_REQUEST['chassisslots']))?$_REQUEST['chassisslots']:0;
-					$dev->RearChassisSlots=(isset($_REQUEST['rearchassisslots']))?$_REQUEST['rearchassisslots']:0;
-					$dev->Ports=(isset($_REQUEST['ports']))?$_REQUEST['ports']:"";
-					$dev->PowerSupplyCount=(isset($_REQUEST['powersupplycount']))?$_REQUEST['powersupplycount']:"";
-					$dev->ParentDevice=(isset($_REQUEST['parentdevice']))?$_REQUEST['parentdevice']:"";
-					$dev->PrimaryIP=(isset($_REQUEST['primaryip']))?$_REQUEST['primaryip']:"";
-					$dev->SNMPCommunity=(isset($_REQUEST['snmpcommunity']))?$_REQUEST['snmpcommunity']:"";
-					$dev->ESX=(isset($_REQUEST['esx']))?$_REQUEST['esx']:0;
-					$dev->Reservation=(isset($_REQUEST['reservation']))?($_REQUEST['reservation']=="on")?1:0:0;
+					$dev->ChassisSlots=(isset($_POST['chassisslots']))?$_POST['chassisslots']:0;
+					$dev->RearChassisSlots=(isset($_POST['rearchassisslots']))?$_POST['rearchassisslots']:0;
+					$dev->Ports=(isset($_POST['ports']))?$_POST['ports']:"";
+					$dev->PowerSupplyCount=(isset($_POST['powersupplycount']))?$_POST['powersupplycount']:"";
+					$dev->ParentDevice=(isset($_POST['parentdevice']))?$_POST['parentdevice']:"";
+					$dev->PrimaryIP=(isset($_POST['primaryip']))?$_POST['primaryip']:"";
+					$dev->SNMPCommunity=(isset($_POST['snmpcommunity']))?$_POST['snmpcommunity']:"";
+					$dev->ESX=(isset($_POST['esx']))?$_POST['esx']:0;
+					$dev->Reservation=(isset($_POST['reservation']))?($_POST['reservation']=="on")?1:0:0;
 					$dev->CreateDevice($facDB);
 				}elseif($user->DeleteAccess&&($_REQUEST['action']=='Delete')){
 					$dev->GetDevice($facDB);
@@ -232,24 +234,6 @@
 	}
 */
 
-	/* Process the Notes field (what has been saved already) for any bbcode URL or IMG strings */
-	$NotesLinks = array();
-	$matches = array();
-	if (preg_match_all('`\[(url|img)=?(.*?)\](.+?)\[/\1\]`', $dev->Notes, $matches)) {
-		foreach ($matches[0] as $key => $match) { 
-			list($tag, $param, $innertext) = array($matches[1][$key], $matches[2][$key], $matches[3][$key]); 
-			switch ($tag) { 
-				case 'url': $replacement = '<a href="' . ($param? $param : $innertext) . "\">$innertext</a>"; break; 
-				case 'img': 
-					list($width, $height) = preg_split('`[Xx]`', $param); 
-					$replacement = "<img src=\"$innertext\" " . (is_numeric($width)? "width=\"$width\" " : '') . (is_numeric($height)? "height=\"$height\" " : '') . '/>'; 
-				break; 
-			}
-			
-			array_push( $NotesLinks, $replacement );
-		}
-	}
-	
 	$templateList=$templ->GetTemplateList($facDB);
 	$escTimeList=$escTime->GetEscalationTimeList($facDB);
 	$escList=$esc->GetEscalationList($facDB);
@@ -293,6 +277,7 @@
   <link rel="stylesheet" href="css/print.css" type="text/css" media="print">
   <link rel="stylesheet" href="css/jquery-ui.css" type="text/css">
   <link rel="stylesheet" href="css/validationEngine.jquery.css" type="text/css">
+  <link rel="stylesheet" href="css/jHtmlArea.css" type="text/css">
   <style type="text/css"></style>
   <!--[if lt IE 9]>
   <link rel="stylesheet"  href="css/ie.css" type="text/css" />
@@ -302,6 +287,7 @@
   <script type="text/javascript" src="scripts/jquery-ui.min.js"></script>
   <script type="text/javascript" src="scripts/jquery.validationEngine-en.js"></script>
   <script type="text/javascript" src="scripts/jquery.validationEngine.js"></script>
+  <script type="text/javascript" src="scripts/jHtmlArea-0.7.5.min.js"></script>
 <SCRIPT type="text/javascript" >
 var nextField;
 function getScan(fieldName){
@@ -414,6 +400,60 @@ $(document).ready(function() {
 			collapsible: true
 		}).removeClass('left');  
 	}
+
+	$('#notes').each(function(){
+		$(this).before('<button type="button" id="editbtn"></button>');
+		if($(this).val()!=''){
+			rendernotes($('#editbtn'));
+		}else{
+			editnotes($('#editbtn'));
+		}
+	});
+	function editnotes(button){
+		button.val('preview').text('Preview');
+		var a=button.next('div');
+		button.next('div').remove();
+		button.next('textarea').htmlarea({
+			toolbar: [
+			"link", "unlink", "image"
+			],
+			css: 'css/jHtmlArea.Editor.css'
+		});
+		$('.jHtmlArea div iframe').height(a.innerHeight());
+	}
+
+	function rendernotes(button){
+		button.val('edit').text('Edit');
+		var w=button.next('div').outerWidth();
+		var h=$('.jHtmlArea').outerHeight();
+		if(h>0){
+			h=h+'px';
+		}else{
+			h="auto";
+		}
+		$('#notes').htmlarea('dispose');
+		button.after('<div id="preview">'+$('#notes').val()+'</div>');
+		button.next('div').css({'width': w+'px', 'height' : h}).find('a').each(function(){
+			$(this).attr('target', '_new');
+		});
+		$('#notes').html($('#notes').val()).hide(); // we still need this field to submit it with the form
+		h=0; // recalculate height in case they added an image that is gonna hork the layout
+		// need a slight delay here to allow the load of large images before the height calculations are done
+		setTimeout(function(){
+			$('#preview').find("*").each(function(){
+				h+=$(this).outerHeight();
+			});
+			$('#preview').height(h);
+		},2000);
+	}
+	$('#editbtn').click(function(){
+		var button=$(this);
+		if($(this).val()=='edit'){
+			editnotes(button);
+		}else{
+			rendernotes(button);
+		}
+	});
 
 	$('#deviceform').validationEngine();
 	$('#mfgdate').datepicker();
@@ -768,12 +808,6 @@ echo '		   </div>
 		  <div><textarea name="notes" id="notes" cols="40" rows="8">',$dev->Notes,'</textarea></div>
 		</div>
 	</div> <!-- END div.table -->
-	<div class="table">';
-
-foreach ( $NotesLinks as $link )
-	printf( "<div>%s</div>\n", $link );
-	
-echo '	</div> <!-- END div.table -->
 </div><!-- END div.left -->
 <div class="right">
 <fieldset>

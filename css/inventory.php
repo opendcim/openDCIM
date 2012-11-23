@@ -376,6 +376,11 @@ div.page.device {
 #positionselector .positionselector > div > div {min-width: 0;}
 #positionselector {padding: 10px; position: absolute; left: -1000px; background-color: white; border: 1px solid black;}
 
+#editbtn { display: block; margin-bottom: 5px;}
+#preview { width: 340px; min-height: 130px;}
+#preview img { display: block; border: 0px; max-width: 330px;}
+.jHtmlArea iframe { background-color: white; border: 1px inset; min-height: 100px;}
+
 
 /* Button code primarily from http://somadesign.ca */
 /* Button */
