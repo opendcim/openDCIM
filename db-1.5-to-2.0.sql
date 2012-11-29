@@ -123,3 +123,18 @@ ALTER TABLE fac_PowerDistribution DROP COLUMN NumOutputs;
 
 INSERT INTO `fac_Config` (`Parameter`, `Value`, `UnitOfMeasure`, `ValType`, `DefaultVal`) VALUES
 ('timezone', 'America/Chicago', 'string', 'string', 'America/Chicago');
+
+--
+-- Add new table for Patch Panel Connections
+--
+
+DROP TABLE IF EXISTS fac_PatchConnection;
+CREATE TABLE fac_PatchConnection (
+  PanelDeviceID int(11) NOT NULL,
+  PanelPortNumber int(11) NOT NULL,
+  PanelSide enum('Front','Rear') default 'Front',
+  EndpointDeviceID int(11) NOT NULL,
+  EndpointPort int(11) NOT NULL,
+  Notes varchar(80) NOT NULL,
+  PRIMARY KEY (PanelDeviceID,PanelPortNumber,PanelSide)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;

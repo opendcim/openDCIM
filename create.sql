@@ -248,6 +248,20 @@ CREATE TABLE fac_PanelSchedule (
   PRIMARY KEY (PanelID)
 ) ENGINE=MyISAM AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
 
+--
+-- Table structure for table fac_PatchConnection
+--
+
+DROP TABLE IF EXISTS fac_PatchConnection;
+CREATE TABLE fac_PatchConnection (
+  PanelDeviceID int(11) NOT NULL,
+  PanelPortNumber int(11) NOT NULL,
+  PanelSide enum('Front','Rear') default 'Front',
+  EndpointDeviceID int(11) NOT NULL,
+  EndpointPort int(11) NOT NULL,
+  Notes varchar(80) NOT NULL,
+  PRIMARY KEY (PanelDeviceID,PanelPortNumber,PanelSide)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
 --
 -- Table structure for table fac_PDUStats
