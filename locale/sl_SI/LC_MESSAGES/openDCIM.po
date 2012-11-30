@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: openDCIM.po\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2012-11-17 20:42-0600\n"
-"PO-Revision-Date: 2012-11-30 12:29-0500\n"
+"PO-Revision-Date: 2012-11-30 15:37-0500\n"
 "Last-Translator: Scott Milliken <scott@themillikens.com>\n"
 "Language-Team: openDCIM <discussion@list.opendcim.org>\n"
 "Language: English\n"
@@ -1020,7 +1020,7 @@ msgstr "VM Ime"
 #: openDCIM/devices.php:938 openDCIM/vmnamecheck.php:71
 #: openDCIM/vmnamecheck.php:115
 msgid "Status"
-msgstr ""
+msgstr "Status"
 
 #: openDCIM/devices.php:938
 msgid "Owner"
@@ -1102,115 +1102,115 @@ msgstr "Dokler se zahteva Rack"
 
 #: openDCIM/index.php:47
 msgid "Submit Time"
-msgstr ""
+msgstr "Pošljite čas"
 
 #: openDCIM/index.php:47 openDCIM/rackrequest.php:349
 msgid "Requestor"
-msgstr ""
+msgstr "Requestor"
 
 #: openDCIM/index.php:47
 msgid "System Name"
-msgstr ""
+msgstr "sistem Ime"
 
 #: openDCIM/index.php:47
 msgid "Due By"
-msgstr ""
+msgstr "Zaradi S"
 
 #: openDCIM/index.php:101
 msgid "Data Center Operations Metrics"
-msgstr ""
+msgstr "Data Center Operations Metrics"
 
 #: openDCIM/index.php:104
 msgid "Data Center Inventory"
-msgstr ""
+msgstr "Data Center Popis"
 
 #: openDCIM/index.php:104
 msgid "View as Excel"
-msgstr ""
+msgstr "Prikaži kot Excel"
 
 #: openDCIM/index.php:107
 msgid "Hosted Systems"
-msgstr ""
+msgstr "Hosted sistemi"
 
 #: openDCIM/index.php:110
 msgid "Server Count"
-msgstr ""
+msgstr "strežnik Count"
 
 #: openDCIM/index.php:114
 msgid "Other Device Count"
-msgstr ""
+msgstr "Ostale naprave Count"
 
 #: openDCIM/index.php:122
 msgid "Power Consumption"
-msgstr ""
+msgstr "Poraba"
 
 #: openDCIM/index.php:126
 msgid "Heat Produced"
-msgstr ""
+msgstr "proizvedeno toploto"
 
 #: openDCIM/mapmaker.php:115
 msgid "Map Selector"
-msgstr ""
+msgstr "zemljevid Selector"
 
 #: openDCIM/mapmaker.php:119
 msgid "Coordinates"
-msgstr ""
+msgstr "Koordinate"
 
 #: openDCIM/mapmaker.php:156
 msgid "Click and drag on the image to select an area for cabinet"
-msgstr ""
+msgstr "Kliknite in povlecite na sliki, da izberete področje, za omaro"
 
 #: openDCIM/mapmaker.php:164
 msgid "Selection Preview"
-msgstr ""
+msgstr "Izbor Predogled"
 
 #: openDCIM/power_panel.php:78
 msgid "Power Panel ID"
-msgstr ""
+msgstr "Moč plošča ID"
 
 #: openDCIM/power_panel.php:80
 msgid "New Panel"
-msgstr ""
+msgstr "nova plošča"
 
 #: openDCIM/power_panel.php:91
 msgid "Power Source"
-msgstr ""
+msgstr "Napajanje"
 
 #: openDCIM/power_panel.php:105
 msgid "Panel Name"
-msgstr ""
+msgstr "Panel Ime"
 
 #: openDCIM/power_panel.php:109
 msgid "Number of Poles"
-msgstr ""
+msgstr "Število polov"
 
 #: openDCIM/power_panel.php:113
 msgid "Main Breaker Amperage"
-msgstr ""
+msgstr "Glavna Breaker Amperage"
 
 #: openDCIM/power_panel.php:117
 msgid "Panel Voltage"
-msgstr ""
+msgstr "Panel Napetost"
 
 #: openDCIM/power_panel.php:121
 msgid "Numbering Scheme"
-msgstr ""
+msgstr "Številčenje shema"
 
 #: openDCIM/power_panel.php:127
 msgid "Odd/Even"
-msgstr ""
+msgstr "Liho / Sodo"
 
 #: openDCIM/power_panel.php:130
 msgid "Sequential"
-msgstr ""
+msgstr "zaporedno"
 
 #: openDCIM/power_panel.php:166
 msgid "Panel Schedule"
-msgstr ""
+msgstr "Panel Urnik"
 
 #: openDCIM/power_panel.php:293
 msgid "Errors"
-msgstr ""
+msgstr "Napake"
 
 #: openDCIM/power_panel.php:297
 msgid ""
@@ -1218,185 +1218,189 @@ msgid ""
 "overlapping circuit ID assignment. Please check the pole positions on the "
 "panels again."
 msgstr ""
+"PDUS prikazane tukaj, ni bilo mogoče določiti na plošči, ker prekrivajo "
+"kroga nalogo ID. Prosimo, preverite pole pozicije na ploščah znova."
 
 #: openDCIM/power_pdu.php:63
 msgid "Testing SNMP communication to CDU"
-msgstr ""
+msgstr "Testiranje SNMP komunikacijo s CDU"
 
 #: openDCIM/power_pdu.php:64
 msgid "Connecting to IP address"
-msgstr ""
+msgstr "Priključitev IP naslov"
 
 #: openDCIM/power_pdu.php:65
 msgid "Using SNMP Community string"
-msgstr ""
+msgstr "Uporaba SNMP Skupnosti niz"
 
 #: openDCIM/power_pdu.php:67
 msgid "Results"
-msgstr ""
+msgstr "rezultati"
 
 #: openDCIM/power_pdu.php:73
 msgid "SNMP Uptime"
-msgstr ""
+msgstr "SNMP Uptime"
 
 #: openDCIM/power_pdu.php:75
 msgid "SNMP Uptime did not return a valid value."
-msgstr ""
+msgstr "SNMP Uptime ni vrnil veljavno vrednost."
 
 #: openDCIM/power_pdu.php:82
 msgid "VersionOID returned a value of"
-msgstr ""
+msgstr "VersionOID vrne vrednost"
 
 #: openDCIM/power_pdu.php:82 openDCIM/power_pdu.php:94
 #: openDCIM/power_pdu.php:100 openDCIM/power_pdu.php:106
 msgid "Please check to see if it makes sense."
-msgstr ""
+msgstr "Prosimo, da preverite, če je smiselno."
 
 #: openDCIM/power_pdu.php:84
 msgid ""
 "The OID for Firmware Version did not return a value.  Please check your MIB "
 "table."
 msgstr ""
+"OID za različico vdelane programske opreme ni vrnila vrednost. Preverite "
+"svoj MIB mizo."
 
 #: openDCIM/power_pdu.php:94
 msgid "OID1 returned a value of"
-msgstr ""
+msgstr "OID1 vrne vrednost"
 
 #: openDCIM/power_pdu.php:96
 msgid "OID1 did not return any data.  Please check your MIB table."
-msgstr ""
+msgstr "OID1 ni vrnil nobenih podatkov. Preverite svoj MIB mizo."
 
 #: openDCIM/power_pdu.php:100
 msgid "OID2 returned a value of"
-msgstr ""
+msgstr "OID2 vrne vrednost"
 
 #: openDCIM/power_pdu.php:102
 msgid "OID2 did not return any data.  Please check your MIB table."
-msgstr ""
+msgstr "OID2 ni vrnil nobenih podatkov. Preverite svoj MIB mizo."
 
 #: openDCIM/power_pdu.php:106
 msgid "OID3 returned a value of"
-msgstr ""
+msgstr "OID3 vrne vrednost"
 
 #: openDCIM/power_pdu.php:108
 msgid "OID3 did not return any data.  Please check your MIB table."
-msgstr ""
+msgstr "OID3 ni vrnil nobenih podatkov. Preverite svoj MIB mizo."
 
 #: openDCIM/power_pdu.php:131
 msgid "Resulting kW from this test is"
-msgstr ""
+msgstr "Posledični kW od tega preskusa je"
 
 #: openDCIM/power_pdu.php:348
 msgid "Data Center PDU Detail"
-msgstr ""
+msgstr "Data Center PDU Podrobnosti"
 
 #: openDCIM/power_pdu.php:353
 msgid "PDU ID"
-msgstr ""
+msgstr "PDU ID"
 
 #: openDCIM/power_pdu.php:365
 msgid "Source Panel"
-msgstr ""
+msgstr "vir plošča"
 
 #: openDCIM/power_pdu.php:366 openDCIM/power_pdu.php:455
 msgid "Select Panel"
-msgstr ""
+msgstr "Izberite ploščo"
 
 #: openDCIM/power_pdu.php:376
 msgid "Voltages:"
-msgstr ""
+msgstr "napetosti:"
 
 #: openDCIM/power_pdu.php:390
 msgid "Breaker Size (# of Poles)"
-msgstr ""
+msgstr "Varovalka (# Poljakov)"
 
 #: openDCIM/power_pdu.php:403
 msgid "Panel Pole Number"
-msgstr ""
+msgstr "Panel Pole številka"
 
 #: openDCIM/power_pdu.php:407
 msgid "Input Amperage"
-msgstr ""
+msgstr "Vhod Amperage"
 
 #: openDCIM/power_pdu.php:411
 msgid "CDU Template"
-msgstr ""
+msgstr "CDU Predloga"
 
 #: openDCIM/power_pdu.php:430 openDCIM/power_source.php:98
 msgid "IP Address"
-msgstr ""
+msgstr "IP naslov"
 
 #: openDCIM/power_pdu.php:434
 msgid "Uptime"
-msgstr ""
+msgstr "Uptime"
 
 #: openDCIM/power_pdu.php:438
 msgid "Firmware Version"
-msgstr ""
+msgstr "Firmware Version"
 
 #: openDCIM/power_pdu.php:442 openDCIM/power_source.php:102
 msgid "SNMP Community"
-msgstr ""
+msgstr "SNMP Skupnosti"
 
 #: openDCIM/power_pdu.php:443
 msgid "Test Communications"
-msgstr ""
+msgstr "Testna komunikacije"
 
 #: openDCIM/power_pdu.php:446
 msgid "Automatic Transfer Switch"
-msgstr ""
+msgstr "Samodejno Transfer Switch"
 
 #: openDCIM/power_pdu.php:450
 msgid "Fail Safe Switch?"
-msgstr ""
+msgstr "Fail Safe Switch?"
 
 #: openDCIM/power_pdu.php:454
 msgid "Source Panel (Secondary Source)"
-msgstr ""
+msgstr "Vir plošča (sekundarnega vira)"
 
 #: openDCIM/power_pdu.php:465
 msgid "Panel Pole Number (Secondary Source)"
-msgstr ""
+msgstr "Panel Pole Število (sekundarnega vira)"
 
 #: openDCIM/power_pdu.php:488
 msgid "Output No."
-msgstr ""
+msgstr "Izhod #"
 
 #: openDCIM/power_pdu.php:490
 msgid "Dev Input No"
-msgstr ""
+msgstr "Naprava vhod #"
 
 #: openDCIM/power_source.php:71
 msgid "Power Source ID"
-msgstr ""
+msgstr "Napajanje ID"
 
 #: openDCIM/power_source.php:73
 msgid "New Power Source"
-msgstr ""
+msgstr "Nov vir napajanja"
 
 #: openDCIM/power_source.php:106
 msgid "Load OID"
-msgstr ""
+msgstr "Nalaganje OID"
 
 #: openDCIM/power_source.php:110
 msgid "Capacity"
-msgstr ""
+msgstr "zmogljivost"
 
 #: openDCIM/rackrequest.php:62 openDCIM/vmnamecheck.php:34
 msgid "MailFrom"
-msgstr ""
+msgstr "E-pošta Iz"
 
 #: openDCIM/rackrequest.php:69
 msgid "Check contact details for"
-msgstr ""
+msgstr "Preverite kontaktne podatke za"
 
 #: openDCIM/rackrequest.php:76 openDCIM/vmnamecheck.php:47
 msgid "Data center team address"
-msgstr ""
+msgstr "Podatkovni center ekipa naslov"
 
 #: openDCIM/rackrequest.php:105 openDCIM/rackrequest.php:164
 msgid "Your request for racking up the device labeled"
-msgstr ""
+msgstr "Vaša zahteva za polic do naprave z oznako"
 
 #: openDCIM/rackrequest.php:105
 msgid ""
@@ -1407,346 +1411,352 @@ msgid ""
 "this request has been completed.\n"
 "\t\t\tPlease allow up to 2 business days for requests to be completed."
 msgstr ""
+"je prejel. \n"
+"\t\t\tbo mreža Operations Center zahtevo preuči in vas obvestil, če je "
+"potrebnih več informacij \n"
+"\t\t\tpreden se lahko obdelajo zahtevek. Prejeli boste obvestilo, ko je "
+"izpolnjen ta zahteva. \n"
+"\t\t\tProsimo, počakajte do 2 delovnih dni za zahteve je treba izpolniti."
 
 #: openDCIM/rackrequest.php:110
 msgid "Your Request ID is"
-msgstr ""
+msgstr "Vaša zahteva je ID"
 
 #: openDCIM/rackrequest.php:110
 msgid "and you may view the request online at"
-msgstr ""
+msgstr "in lahko si ogledate na spletu na zahtevo"
 
 #: openDCIM/rackrequest.php:112 openDCIM/rackrequest.php:165
 msgid "this link"
-msgstr ""
+msgstr "ta povezava"
 
 #: openDCIM/rackrequest.php:164
 msgid "has been completed"
-msgstr ""
+msgstr "je bila končana"
 
 #: openDCIM/rackrequest.php:165
 msgid "To view your device in its final location click"
-msgstr ""
+msgstr "Če želite videti mobilno napravo v svoji končni klik lokaciji"
 
 #: openDCIM/rackrequest.php:187
 msgid "You do not have permission to delete this request"
-msgstr ""
+msgstr "Nimaš dovoljenja za brisanje te zahteve"
 
 #: openDCIM/rackrequest.php:228
 msgid "You must specify the VLAN information for the ethernet connections"
-msgstr ""
+msgstr "Navesti morate podatke VLAN za ethernet povezave"
 
 #: openDCIM/rackrequest.php:233
 msgid "You must specify the SAN port information to continue"
-msgstr ""
+msgstr "Navesti morate podatke vrat SAN še naprej"
 
 #: openDCIM/rackrequest.php:238
 msgid "You must specify the current location of the equipment"
-msgstr ""
+msgstr "Določiti morate trenutne lokacije opreme"
 
 #: openDCIM/rackrequest.php:338
 msgid "Data Center Rack Request"
-msgstr ""
+msgstr "Data Center Rack zahteva"
 
 #: openDCIM/rackrequest.php:366
 msgid "Label Color"
-msgstr ""
+msgstr "Oznaka Barva"
 
 #: openDCIM/rackrequest.php:370
 msgid "White"
-msgstr ""
+msgstr "Bela"
 
 #: openDCIM/rackrequest.php:370
 msgid "Yellow"
-msgstr ""
+msgstr "Rumena"
 
 #: openDCIM/rackrequest.php:370
 msgid "Red"
-msgstr ""
+msgstr "Rdeča"
 
 #: openDCIM/rackrequest.php:417
 msgid "Select a template"
-msgstr ""
+msgstr "Izberite predlogo"
 
 #: openDCIM/rackrequest.php:438
 msgid "Number of Ethernet Connections"
-msgstr ""
+msgstr "Število povezav Ethernet"
 
 #: openDCIM/rackrequest.php:442
 msgid "VLAN Settings"
-msgstr ""
+msgstr "Nastavitve VLAN"
 
 #: openDCIM/rackrequest.php:446
 msgid "Number of SAN Connections"
-msgstr ""
+msgstr "Število povezav SAN"
 
 #: openDCIM/rackrequest.php:450
 msgid "SAN Port Assignments"
-msgstr ""
+msgstr "SAN Port Naloge"
 
 #: openDCIM/rackrequest.php:470
 msgid "Current Location"
-msgstr ""
+msgstr "Trenutna lokacija"
 
 #: openDCIM/rackrequest.php:474
 msgid "Special Instructions"
-msgstr ""
+msgstr "Posebna navodila"
 
 #: openDCIM/rackrequest.php:479
 msgid "Select Rack Location"
-msgstr ""
+msgstr "Izberite lokacijo Rack"
 
 #: openDCIM/rackrequest.php:487
 msgid "Update Request"
-msgstr ""
+msgstr "zahtevek za posodobitev"
 
 #: openDCIM/rackrequest.php:488
 msgid "Delete Request"
-msgstr ""
+msgstr "Brisanje Zahteva"
 
 #: openDCIM/rackrequest.php:491
 msgid "Move to Rack"
-msgstr ""
+msgstr "Premik na Rack"
 
 #: openDCIM/reports.php:38
 msgid "Inventory Reports"
-msgstr ""
+msgstr "Poročila o oglasnem"
 
 #: openDCIM/reports.php:42
 msgid "Contact Reports"
-msgstr ""
+msgstr "Kontakt poročila"
 
 #: openDCIM/reports.php:43
 msgid "Department/Contact Report"
-msgstr ""
+msgstr "Oddelek / Kontakt Poročilo"
 
 #: openDCIM/reports.php:47
 msgid "Asset Report by Owner"
-msgstr ""
+msgstr "Asset Poročilo Lastnik"
 
 #: openDCIM/reports.php:48
 msgid "Data Center Asset Report"
-msgstr ""
+msgstr "Data Center premoženja Poročilo"
 
 #: openDCIM/reports.php:49
 msgid "Data Center Asset Costing Report"
-msgstr ""
+msgstr "Data Center sredstev Costing poročilo"
 
 #: openDCIM/reports.php:50
 msgid "Asset Aging Report"
-msgstr ""
+msgstr "Asset Aging Poročilo"
 
 #: openDCIM/reports.php:51
 msgid "Virtual Machines by Department"
-msgstr ""
+msgstr "Virtualni stroji z ministrstva"
 
 #: openDCIM/reports.php:58
 msgid "Data Exceptions Report"
-msgstr ""
+msgstr "Podatki Izjeme Poročilo"
 
 #: openDCIM/reports.php:59
 msgid "Diverse Power Exceptions Report"
-msgstr ""
+msgstr "Raznolika Izjeme Moč Poročilo"
 
 #: openDCIM/reports.php:60
 msgid "Simulated Power Outage Report"
-msgstr ""
+msgstr "Simulirana izpada napajanja Poročilo"
 
 #: openDCIM/reports.php:61
 msgid "Power Distribution by Data Center"
-msgstr ""
+msgstr "Power Distribution jih Data Center"
 
 #: openDCIM/reports.php:62
 msgid "Server Tier Classification Report"
-msgstr ""
+msgstr "Strežnik Stopnja Razvrstitev Poročilo"
 
 #: openDCIM/reports.php:66
 msgid "Cabinet Audit Logs"
-msgstr ""
+msgstr "Kabinet Revizijski dnevniki"
 
 #: openDCIM/reports.php:67
 msgid "Cabinet Audit Frequency"
-msgstr ""
+msgstr "Kabinet Revizija Frekvenca"
 
 #: openDCIM/reports.php:68
 msgid "Surplus/Salvage Audit Report"
-msgstr ""
+msgstr "Presežek / Salvage Revizijsko poročilo"
 
 #: openDCIM/sidebar.inc.php:5
 msgid "Search by Name:"
-msgstr ""
+msgstr "Iskanje po imenu:"
 
 #: openDCIM/sidebar.inc.php:11
 msgid "Search by SN:"
-msgstr ""
+msgstr "Iskanje po SN:"
 
 #: openDCIM/sidebar.inc.php:17
 msgid "Search by Asset Tag:"
-msgstr ""
+msgstr "Iskanje po Asset Tag:"
 
 #: openDCIM/sidebar.inc.php:81
 msgid "Reports"
-msgstr ""
+msgstr "Poročila"
 
 #: openDCIM/sidebar.inc.php:84
 msgid "Rack Request Form"
-msgstr ""
+msgstr "Rack Obrazec"
 
 #: openDCIM/sidebar.inc.php:87
 msgid "Contact Administration"
-msgstr ""
+msgstr "Stik z upravo"
 
 #: openDCIM/sidebar.inc.php:88
 msgid "Dept. Administration"
-msgstr ""
+msgstr "Oddelek uprava"
 
 #: openDCIM/sidebar.inc.php:89
 msgid "Time Periods"
-msgstr ""
+msgstr "časovnih obdobij"
 
 #: openDCIM/sidebar.inc.php:90
 msgid "Escalation Rules"
-msgstr ""
+msgstr "zviševanje Pravila"
 
 #: openDCIM/sidebar.inc.php:93
 msgid "Edit Cabinets"
-msgstr ""
+msgstr "Urejanje Omare"
 
 #: openDCIM/sidebar.inc.php:94
 msgid "Edit Device Templates"
-msgstr ""
+msgstr "Urejanje Device Predloge"
 
 #: openDCIM/sidebar.inc.php:97
 msgid "Manage Users"
-msgstr ""
+msgstr "upravljanje uporabnikov"
 
 #: openDCIM/sidebar.inc.php:98
 msgid "Manage Supply Bins"
-msgstr ""
+msgstr "Uredi Supply Bins"
 
 #: openDCIM/sidebar.inc.php:99
 msgid "Manage Supplies"
-msgstr ""
+msgstr "upravljanje potrošnega materiala"
 
 #: openDCIM/sidebar.inc.php:100
 msgid "Edit Data Centers"
-msgstr ""
+msgstr "Urejanje podatkovnih centrov"
 
 #: openDCIM/sidebar.inc.php:101
 msgid "Edit Power Sources"
-msgstr ""
+msgstr "Urejanje Viri napajanja"
 
 #: openDCIM/sidebar.inc.php:102
 msgid "Edit Power Panels"
-msgstr ""
+msgstr "Urejanje moči plošče"
 
 #: openDCIM/sidebar.inc.php:103
 msgid "Edit Manufacturers"
-msgstr ""
+msgstr "Proizvajalci Uredi"
 
 #: openDCIM/sidebar.inc.php:104
 msgid "Edit CDU Templates"
-msgstr ""
+msgstr "Urejanje CDU Predloge"
 
 #: openDCIM/sidebar.inc.php:105
 msgid "Edit Configuration"
-msgstr ""
+msgstr "Urejanje konfiguracije"
 
 #: openDCIM/sidebar.inc.php:110
 msgid "Home"
-msgstr ""
+msgstr "Domov"
 
 #: openDCIM/supplybin.php:146
 msgid "Data Center Stockroom Supply Bins"
-msgstr ""
+msgstr "Data Center skladišču Dobava košar"
 
 #: openDCIM/supplybin.php:152
 msgid "Bin Location"
-msgstr ""
+msgstr "bin Lokacija"
 
 #: openDCIM/supplybin.php:154
 msgid "New Bin"
-msgstr ""
+msgstr "nova Bin"
 
 #: openDCIM/supplybin.php:181
 msgid "Part Number"
-msgstr ""
+msgstr "številka dela"
 
 #: openDCIM/supplybin.php:182
 msgid "Count"
-msgstr ""
+msgstr "Štetje"
 
 #: openDCIM/supplybin.php:197
 msgid "Select parts to add..."
-msgstr ""
+msgstr "Izberite dele dodati ..."
 
 #: openDCIM/timeperiods.php:67
 msgid "Data Center Time Periods Listing"
-msgstr ""
+msgstr "Data Center časovnih obdobij objavo"
 
 #: openDCIM/timeperiods.php:73
 msgid "Escalation Time Period"
-msgstr ""
+msgstr "Stopnjevanje Časovno obdobje"
 
 #: openDCIM/timeperiods.php:75
 msgid "New Time Period"
-msgstr ""
+msgstr "Nova Časovno obdobje"
 
 #: openDCIM/timeperiods.php:85
 msgid "Description"
-msgstr ""
+msgstr "Opis"
 
 #: openDCIM/usermgr.php:91
 msgid "User"
-msgstr ""
+msgstr "Uporabnik"
 
 #: openDCIM/usermgr.php:93
 msgid "New User"
-msgstr ""
+msgstr "Nov uporabnik"
 
 #: openDCIM/usermgr.php:111
 msgid "Rights"
-msgstr ""
+msgstr "pravice"
 
 #: openDCIM/usermgr.php:113
 msgid "Read/Report Access"
-msgstr ""
+msgstr "Preberite / Prijavi dostop"
 
 #: openDCIM/usermgr.php:114
 msgid "Modify/Enter Devices"
-msgstr ""
+msgstr "Spremeni / Enter naprave"
 
 #: openDCIM/usermgr.php:115
 msgid "Delete Devices"
-msgstr ""
+msgstr "Brisanje naprave"
 
 #: openDCIM/usermgr.php:116
 msgid "Enter/Modify Contacts and Departments"
-msgstr ""
+msgstr "Vnesite / spremenite stike in oddelki"
 
 #: openDCIM/usermgr.php:117
 msgid "Enter Rack Requests"
-msgstr ""
+msgstr "Vpišite Rack Zahteve"
 
 #: openDCIM/usermgr.php:118
 msgid "Complete Rack Requests"
-msgstr ""
+msgstr "Izpolnite Rack Zahteve"
 
 #: openDCIM/usermgr.php:119
 msgid "Manage Site and Users"
-msgstr ""
+msgstr "Upravljanje spletnih mest in uporabniki"
 
 #: openDCIM/usermgr.php:120
 msgid "Disabled"
-msgstr ""
+msgstr "onemogočeno"
 
 #: openDCIM/vmnamecheck.php:27 openDCIM/vmnamecheck.php:58
 msgid "Virtual Machine Inventory Exception Report"
-msgstr ""
+msgstr "Virtual Machine Popis Izjema Poročilo"
 
 #: openDCIM/vmnamecheck.php:61 openDCIM/vmnamecheck.php:109
 msgid "This is an automated message from the"
-msgstr ""
+msgstr "To je samodejno sporočilo"
 
 #: openDCIM/vmnamecheck.php:61
 msgid ""
@@ -1755,6 +1765,10 @@ msgid ""
 "p>\n"
 "\t\t\t<p>The following"
 msgstr ""
+"Popis \n"
+"\t\t\t procesa. Ta postopek je predviden za obdobje, ko vsak delovni dan. </"
+"p> \n"
+"\t\t\t<p> naslednji"
 
 #: openDCIM/vmnamecheck.php:63
 msgid ""
@@ -1764,6 +1778,11 @@ msgid ""
 "update\n"
 "\t\t\townership information."
 msgstr ""
+"Virtualni stroji so odkrili v okolju \n"
+"\t\t\t in nimajo s tem povezano evidenco lastnika. Domneva se, da \n"
+"\t\t\t so to nove virtualne stroje. Prosimo, kliknite na spodnje povezave za "
+"posodobitev \n"
+"\t\t\t podatkov o lastništvu."
 
 #: openDCIM/vmnamecheck.php:67
 msgid ""
@@ -1771,37 +1790,45 @@ msgid ""
 "please\n"
 "\t\t\tsend an email to"
 msgstr ""
+"Če je primerno, oddelek ni navedena kot možnost za lastništvo, prosim \n"
+"\t\t\tpošljite email"
 
 #: openDCIM/vmnamecheck.php:68
 msgid "to have it added."
-msgstr ""
+msgstr "da so je dodal."
 
 #: openDCIM/vmnamecheck.php:71 openDCIM/vmnamecheck.php:115
 msgid "Server Name"
-msgstr ""
+msgstr "Ime strežnika"
 
 #: openDCIM/vmnamecheck.php:106
 msgid "Virtual Machine Inventory Expiration Report"
-msgstr ""
+msgstr "Virtual Machine Popis poteka Poročilo"
 
 #: openDCIM/vmnamecheck.php:109
 msgid ""
 "Virtual Machine Inventory\n"
 "\t\t\tProcess.  This process is scheduled to run once each business day."
 msgstr ""
+"Virtual Machine Popis \n"
+"\t\t\t procesa. Ta postopek je predviden za obdobje, ko vsak delovni dan."
 
 #: openDCIM/vmnamecheck.php:111
 msgid "The following"
-msgstr ""
+msgstr "naslednji"
 
 #: openDCIM/vmnamecheck.php:111
 msgid ""
 "Virtual Machines have not been detected within the\n"
 "\t\t\tpast"
 msgstr ""
+"Virtualni stroji niso bile odkrite v \n"
+"\t\t\tpreteklosti"
 
 #: openDCIM/vmnamecheck.php:112
 msgid ""
 "days and are assumed to be expired.  They are being removed from the\n"
 "\t\t\tinventory system."
 msgstr ""
+"dni, se šteje, da je potekel. So se odstrani iz \n"
+"\t\t\tSistem evidenc."
