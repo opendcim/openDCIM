@@ -72,8 +72,8 @@
 		}
 		
 		// if no device id requested then we must be making a new device so skip all data lookups.
-		if(isset($_REQUEST['deviceid']) && is_numeric( $_REQUEST["deviceid"] )){
-			$dev->DeviceID=$_REQUEST['deviceid'];
+		if(isset($_REQUEST['deviceid'])){
+			$dev->DeviceID=intval($_REQUEST['deviceid']);
 			// If no action is requested then we must be just querying a device info.
 			// Skip all modification checks
 			if(isset($_POST['action'])){
