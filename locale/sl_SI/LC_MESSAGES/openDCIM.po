@@ -3,8 +3,8 @@ msgstr ""
 "Project-Id-Version: openDCIM.po\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2012-11-17 20:42-0600\n"
-"PO-Revision-Date: 2012-11-17 20:42-0600\n"
-"Last-Translator: Wilbur Longwisch <wilbur@wilpig.org>\n"
+"PO-Revision-Date: 2012-11-30 12:29-0500\n"
+"Last-Translator: Scott Milliken <scott@themillikens.com>\n"
 "Language-Team: openDCIM <discussion@list.opendcim.org>\n"
 "Language: English\n"
 "MIME-Version: 1.0\n"
@@ -13,1218 +13,1098 @@ msgstr ""
 
 #: openDCIM/cabaudit.php:35
 msgid "Information Technology Services"
-msgstr ""
+msgstr "Informacijska tehnologija"
 
 #: openDCIM/cabaudit.php:38
 msgid "Cabinet Audit Report"
-msgstr ""
+msgstr "Kabinet Revizijsko poročilo"
 
 #: openDCIM/cabaudit.php:383
 msgid "Cabinet Location"
-msgstr ""
+msgstr "Kabinet Lokacija"
 
-#: openDCIM/cabaudit.php:388
-#: openDCIM/cabaudit.php:463
-#: openDCIM/devices.php:650
-#: openDCIM/power_pdu.php:357
+#: openDCIM/cabaudit.php:388 openDCIM/cabaudit.php:463
+#: openDCIM/devices.php:650 openDCIM/power_pdu.php:357
 #: openDCIM/rackrequest.php:362
 msgid "Label"
-msgstr ""
+msgstr "Oznaka"
 
 #: openDCIM/cabaudit.php:388
 msgid "SerialNo"
-msgstr ""
+msgstr "SerialNo"
 
 #: openDCIM/cabaudit.php:388
 msgid "AssetTag"
-msgstr ""
+msgstr "AssetTag"
 
-#: openDCIM/cabaudit.php:388
-#: openDCIM/devices.php:794
+#: openDCIM/cabaudit.php:388 openDCIM/devices.php:794
 #: openDCIM/rackrequest.php:479
 msgid "Position"
-msgstr ""
+msgstr "položaj"
 
 #: openDCIM/cabaudit.php:388
 msgid "Rack Units"
-msgstr ""
+msgstr "Rack Units"
 
 #: openDCIM/cabaudit.php:388
 msgid "#Ports"
-msgstr ""
+msgstr "#Ports"
 
 #: openDCIM/cabaudit.php:388
 msgid "#PS"
-msgstr ""
+msgstr "#PS"
 
 #: openDCIM/cabaudit.php:388
 msgid "PowerConnection1"
-msgstr ""
+msgstr "PowerConnection1"
 
 #: openDCIM/cabaudit.php:388
 msgid "PowerConnection2"
-msgstr ""
+msgstr "PowerConnection2"
 
 #: openDCIM/cabaudit.php:388
 msgid "DeviceType"
-msgstr ""
+msgstr "DeviceType"
 
 #: openDCIM/cabaudit.php:457
 msgid "PDUs at"
-msgstr ""
+msgstr "PDUs at"
 
 #: openDCIM/cabaudit.php:463
 msgid "NumOutputs"
-msgstr ""
+msgstr "NumOutputs"
 
-#: openDCIM/cabaudit.php:463
-#: openDCIM/cabinets.php:139
-#: openDCIM/cdu_templates.php:107
-#: openDCIM/device_templates.php:101
+#: openDCIM/cabaudit.php:463 openDCIM/cabinets.php:139
+#: openDCIM/cdu_templates.php:107 openDCIM/device_templates.php:101
 msgid "Model"
-msgstr ""
+msgstr "Model"
 
 #: openDCIM/cabaudit.php:463
 msgid "PanelLabel"
-msgstr ""
+msgstr "PanelLabel"
 
 #: openDCIM/cabaudit.php:463
 msgid "PanelPole"
-msgstr ""
+msgstr "PanelPole"
 
-#: openDCIM/cabinets.php:97
-#: openDCIM/cabnavigator.php:372
+#: openDCIM/cabinets.php:97 openDCIM/cabnavigator.php:372
 msgid "Data Center Cabinet Inventory"
-msgstr ""
+msgstr "Data Center kabinet Popis"
 
-#: openDCIM/cabinets.php:102
-#: openDCIM/cabnavigator.php:94
-#: openDCIM/devices.php:759
-#: openDCIM/power_pdu.php:361
+#: openDCIM/cabinets.php:102 openDCIM/cabnavigator.php:94
+#: openDCIM/devices.php:759 openDCIM/power_pdu.php:361
 msgid "Cabinet"
-msgstr ""
+msgstr "Kabinet"
 
 #: openDCIM/cabinets.php:104
 msgid "New Cabinet"
-msgstr ""
+msgstr "Novi kabinet"
 
-#: openDCIM/cabinets.php:114
-#: openDCIM/power_source.php:87
+#: openDCIM/cabinets.php:114 openDCIM/power_source.php:87
 msgid "Data Center"
-msgstr ""
+msgstr "Data Center"
 
-#: openDCIM/cabinets.php:118
-#: openDCIM/supplybin.php:164
+#: openDCIM/cabinets.php:118 openDCIM/supplybin.php:164
 msgid "Location"
-msgstr ""
+msgstr "Kraj"
 
 #: openDCIM/cabinets.php:122
 msgid "Assigned To"
-msgstr ""
+msgstr "dodeljena"
 
 #: openDCIM/cabinets.php:124
 msgid "General Use"
-msgstr ""
+msgstr "Splošna uporaba"
 
 #: openDCIM/cabinets.php:135
 msgid "Cabinet Height"
-msgstr ""
+msgstr "Višina omare"
 
-#: openDCIM/cabinets.php:143
-#: openDCIM/cabnavigator.php:246
+#: openDCIM/cabinets.php:143 openDCIM/cabnavigator.php:246
 msgid "Key/Lock Information"
-msgstr ""
+msgstr "Ključni / zaklepanje informacije"
 
 #: openDCIM/cabinets.php:147
 msgid "Maximum"
-msgstr ""
+msgstr "Največja"
 
 #: openDCIM/cabinets.php:151
 msgid "Maximum Weight"
-msgstr ""
+msgstr "Največja teža"
 
 #: openDCIM/cabinets.php:155
 msgid "Date of Installation"
-msgstr ""
+msgstr "Datum namestitve"
 
 #: openDCIM/cabinets.php:159
 msgid "Sensor IP Address"
-msgstr ""
+msgstr "Senzor IP naslov"
 
 #: openDCIM/cabinets.php:163
 msgid "Sensor SNMP Community"
-msgstr ""
+msgstr "Senzor SNMP Skupnosti"
 
 #: openDCIM/cabinets.php:167
 msgid "Temperature Sensor OID"
-msgstr ""
+msgstr "Senzor temperature OID"
 
-#: openDCIM/cabinets.php:173
-#: openDCIM/cdu_templates.php:172
-#: openDCIM/contacts.php:126
-#: openDCIM/datacenter.php:112
-#: openDCIM/departments.php:136
-#: openDCIM/device_manufacturers.php:96
-#: openDCIM/devices.php:1017
-#: openDCIM/device_templates.php:139
-#: openDCIM/escalations.php:90
-#: openDCIM/power_panel.php:139
-#: openDCIM/power_pdu.php:472
-#: openDCIM/power_source.php:116
-#: openDCIM/timeperiods.php:91
-#: openDCIM/usermgr.php:126
+#: openDCIM/cabinets.php:173 openDCIM/cdu_templates.php:172
+#: openDCIM/contacts.php:126 openDCIM/datacenter.php:112
+#: openDCIM/departments.php:136 openDCIM/device_manufacturers.php:96
+#: openDCIM/devices.php:1017 openDCIM/device_templates.php:139
+#: openDCIM/escalations.php:90 openDCIM/power_panel.php:139
+#: openDCIM/power_pdu.php:472 openDCIM/power_source.php:116
+#: openDCIM/timeperiods.php:91 openDCIM/usermgr.php:126
 msgid "Update"
-msgstr ""
+msgstr "Posodobiti"
 
-#: openDCIM/cabinets.php:175
-#: openDCIM/cdu_templates.php:174
-#: openDCIM/contacts.php:128
-#: openDCIM/datacenter.php:114
-#: openDCIM/departments.php:138
-#: openDCIM/device_manufacturers.php:98
-#: openDCIM/devices.php:1020
-#: openDCIM/device_templates.php:141
-#: openDCIM/escalations.php:93
-#: openDCIM/power_panel.php:141
-#: openDCIM/power_pdu.php:474
-#: openDCIM/power_source.php:118
-#: openDCIM/rackrequest.php:494
-#: openDCIM/supplybin.php:170
-#: openDCIM/timeperiods.php:94
-#: openDCIM/usermgr.php:128
+#: openDCIM/cabinets.php:175 openDCIM/cdu_templates.php:174
+#: openDCIM/contacts.php:128 openDCIM/datacenter.php:114
+#: openDCIM/departments.php:138 openDCIM/device_manufacturers.php:98
+#: openDCIM/devices.php:1020 openDCIM/device_templates.php:141
+#: openDCIM/escalations.php:93 openDCIM/power_panel.php:141
+#: openDCIM/power_pdu.php:474 openDCIM/power_source.php:118
+#: openDCIM/rackrequest.php:494 openDCIM/supplybin.php:170
+#: openDCIM/timeperiods.php:94 openDCIM/usermgr.php:128
 msgid "Create"
-msgstr ""
+msgstr "Ustvarjanje"
 
-#: openDCIM/cabinets.php:183
-#: openDCIM/devices.php:1038
-#: openDCIM/devices.php:1040
-#: openDCIM/power_pdu.php:517
+#: openDCIM/cabinets.php:183 openDCIM/devices.php:1038
+#: openDCIM/devices.php:1040 openDCIM/power_pdu.php:517
 msgid "Return to Navigator"
-msgstr ""
+msgstr "Nazaj na Navigator"
 
-#: openDCIM/cabinets.php:185
-#: openDCIM/cdu_templates.php:181
-#: openDCIM/contacts.php:135
-#: openDCIM/datacenter.php:121
-#: openDCIM/departments.php:147
-#: openDCIM/device_manufacturers.php:105
-#: openDCIM/device_templates.php:148
-#: openDCIM/escalations.php:100
-#: openDCIM/power_panel.php:301
-#: openDCIM/power_source.php:126
-#: openDCIM/rackrequest.php:502
-#: openDCIM/supplybin.php:219
-#: openDCIM/timeperiods.php:101
-#: openDCIM/usermgr.php:135
+#: openDCIM/cabinets.php:185 openDCIM/cdu_templates.php:181
+#: openDCIM/contacts.php:135 openDCIM/datacenter.php:121
+#: openDCIM/departments.php:147 openDCIM/device_manufacturers.php:105
+#: openDCIM/device_templates.php:148 openDCIM/escalations.php:100
+#: openDCIM/power_panel.php:301 openDCIM/power_source.php:126
+#: openDCIM/rackrequest.php:502 openDCIM/supplybin.php:219
+#: openDCIM/timeperiods.php:101 openDCIM/usermgr.php:135
 msgid "Return to Main Menu"
-msgstr ""
+msgstr "Nazaj na Glavni Meni"
 
 #: openDCIM/cabnavigator.php:95
 msgid "Pos"
-msgstr ""
+msgstr "Pos"
 
-#: openDCIM/cabnavigator.php:95
-#: openDCIM/devices.php:1000
+#: openDCIM/cabnavigator.php:95 openDCIM/devices.php:1000
 msgid "Device"
-msgstr ""
+msgstr "Naprava"
 
 #: openDCIM/cabnavigator.php:207
 msgid "Markup Key"
-msgstr ""
+msgstr "Oznaka ključne"
 
 #: openDCIM/cabnavigator.php:208
 msgid "Owner Unassigned"
-msgstr ""
+msgstr "Lastnik Nedodeljen"
 
 #: openDCIM/cabnavigator.php:209
 msgid "Template Unassigned"
-msgstr ""
+msgstr "Predloga Nedodeljen"
 
 #: openDCIM/cabnavigator.php:213
 msgid "Cabinet Metrics"
-msgstr ""
+msgstr "Kabinet Metrics"
 
-#: openDCIM/cabnavigator.php:216
-#: openDCIM/dc_dashboard.php:81
-#: openDCIM/dc_stats.php:98
-#: openDCIM/index.php:118
+#: openDCIM/cabnavigator.php:216 openDCIM/dc_dashboard.php:81
+#: openDCIM/dc_stats.php:98 openDCIM/index.php:118
 msgid "Space"
-msgstr ""
+msgstr "Vesolje"
 
-#: openDCIM/cabnavigator.php:225
-#: openDCIM/dc_dashboard.php:82
-#: openDCIM/dc_stats.php:99
-#: openDCIM/device_templates.php:109
+#: openDCIM/cabnavigator.php:225 openDCIM/dc_dashboard.php:82
+#: openDCIM/dc_stats.php:99 openDCIM/device_templates.php:109
 msgid "Weight"
-msgstr ""
+msgstr "Teža"
 
-#: openDCIM/cabnavigator.php:234
-#: openDCIM/dc_dashboard.php:83
+#: openDCIM/cabnavigator.php:234 openDCIM/dc_dashboard.php:83
 #: openDCIM/dc_stats.php:100
 msgid "Power"
-msgstr ""
+msgstr "Moč"
 
 #: openDCIM/cabnavigator.php:243
 msgid "Approximate Center of Gravity"
-msgstr ""
+msgstr "Približna težišča"
 
 #: openDCIM/cabnavigator.php:254
 msgid "Zero-U Devices"
-msgstr ""
+msgstr "Zero-U Naprave"
 
 #: openDCIM/cabnavigator.php:261
 msgid "Power Distribution"
-msgstr ""
+msgstr "Power Distribution"
 
 #: openDCIM/cabnavigator.php:292
 msgid "Add CDU"
-msgstr ""
+msgstr "Dodaj CDU"
 
 #: openDCIM/cabnavigator.php:297
 msgid "Last Audit"
-msgstr ""
+msgstr "Zadnja revizija"
 
 #: openDCIM/cabnavigator.php:301
 msgid "Certify Audit"
-msgstr ""
+msgstr "Potrdite revizije"
 
-#: openDCIM/cabnavigator.php:302
-#: openDCIM/devices.php:901
+#: openDCIM/cabnavigator.php:302 openDCIM/devices.php:901
 msgid "Add Device"
-msgstr ""
+msgstr "Dodaj napravo"
 
 #: openDCIM/cabnavigator.php:303
 msgid "Audit Report"
-msgstr ""
+msgstr "revizijsko poročilo"
 
 #: openDCIM/cabnavigator.php:304
 msgid "Map Coordinates"
-msgstr ""
+msgstr "zemljevid Koordinate"
 
 #: openDCIM/cabnavigator.php:305
 msgid "Edit Cabinet"
-msgstr ""
+msgstr "Uredi kabinet"
 
 #: openDCIM/cabnavigator.php:308
 msgid "Delete Cabinet"
-msgstr ""
+msgstr "Brisanje kabinet"
 
 #: openDCIM/cabnavigator.php:346
 msgid ""
 "Do you certify that you have completed an audit of the selected cabinet?"
-msgstr ""
+msgstr "Ali potrjujete, da ste zaključili revizijo izbrane omari?"
 
 #: openDCIM/cabnavigator.php:354
 msgid ""
 "Are you sure that you want to delete this cabinet, including all devices, "
 "power strips, and connections?"
 msgstr ""
+"Ali ste prepričani, da želite izbrisati to kabinet, vključno z vsemi "
+"napravami, moč trakovi in povezav?"
 
 #: openDCIM/cabnavigator.php:354
 msgid "THIS ACTION CAN NOT BE UNDONE!"
-msgstr ""
+msgstr "Ta ukrep se ni mogoče razveljaviti!"
 
-#: openDCIM/cdu_templates.php:41
-#: openDCIM/device_templates.php:37
-#: openDCIM/escalations.php:29
-#: openDCIM/supplybin.php:39
-#: openDCIM/timeperiods.php:30
-#: openDCIM/usermgr.php:38
+#: openDCIM/cdu_templates.php:41 openDCIM/device_templates.php:37
+#: openDCIM/escalations.php:29 openDCIM/supplybin.php:39
+#: openDCIM/timeperiods.php:30 openDCIM/usermgr.php:38
 msgid "Updated"
-msgstr ""
+msgstr "Popravljeno"
 
 #: openDCIM/cdu_templates.php:75
 msgid "Data Center Cabinet Distribution Unit Templates"
-msgstr ""
+msgstr "Data Center Kabinet Distribucijska enota Predloge"
 
-#: openDCIM/cdu_templates.php:81
-#: openDCIM/device_templates.php:75
+#: openDCIM/cdu_templates.php:81 openDCIM/device_templates.php:75
 msgid "Template"
-msgstr ""
+msgstr "Predloga"
 
-#: openDCIM/cdu_templates.php:83
-#: openDCIM/device_templates.php:77
+#: openDCIM/cdu_templates.php:83 openDCIM/device_templates.php:77
 msgid "New Template"
-msgstr ""
+msgstr "Nove predloge"
 
-#: openDCIM/cdu_templates.php:95
-#: openDCIM/device_manufacturers.php:78
+#: openDCIM/cdu_templates.php:95 openDCIM/device_manufacturers.php:78
 #: openDCIM/device_templates.php:89
 msgid "Manufacturer"
-msgstr ""
+msgstr "Proizvajalec"
 
 #: openDCIM/cdu_templates.php:111
 msgid "Managed"
-msgstr ""
+msgstr "Upravljavec"
 
 #: openDCIM/cdu_templates.php:117
 msgid "Firmware Version OID"
-msgstr ""
+msgstr "Firmware Version OID"
 
 #: openDCIM/cdu_templates.php:121
 msgid "Multiplier"
-msgstr ""
+msgstr "Množilnik"
 
 #: openDCIM/cdu_templates.php:134
 msgid "OID1"
-msgstr ""
+msgstr "OID1"
 
 #: openDCIM/cdu_templates.php:138
 msgid "OID2"
-msgstr ""
+msgstr "OID2"
 
 #: openDCIM/cdu_templates.php:142
 msgid "OID3"
-msgstr ""
+msgstr "OID3"
 
 #: openDCIM/cdu_templates.php:146
 msgid "Processing Scheme"
-msgstr ""
+msgstr "Predelava shema"
 
 #: openDCIM/cdu_templates.php:158
 msgid "Voltage"
-msgstr ""
+msgstr "Napetost"
 
 #: openDCIM/cdu_templates.php:162
 msgid "Amperage"
-msgstr ""
+msgstr "Amperage"
 
 #: openDCIM/cdu_templates.php:166
 msgid "No. of Outlets"
-msgstr ""
+msgstr "Količina Prodajna mesta"
 
-#: openDCIM/configuration.php:128
-#: openDCIM/rackrequest.php:458
+#: openDCIM/configuration.php:128 openDCIM/rackrequest.php:458
 msgid "Select"
-msgstr ""
+msgstr "Izberite"
 
 #: openDCIM/configuration.php:149
 msgid "Data Center Configuration"
-msgstr ""
+msgstr "Data Center Configuration"
 
 #: openDCIM/configuration.php:150
 msgid "Database Version"
-msgstr ""
+msgstr "Database različice"
 
 #: openDCIM/configuration.php:157
 msgid "General"
-msgstr ""
+msgstr "Splošno"
 
 #: openDCIM/configuration.php:158
 msgid "Style"
-msgstr ""
+msgstr "Slog"
 
-#: openDCIM/configuration.php:159
-#: openDCIM/contacts.php:120
+#: openDCIM/configuration.php:159 openDCIM/contacts.php:120
 msgid "Email"
-msgstr ""
+msgstr "E-pošta"
 
 #: openDCIM/configuration.php:160
 msgid "Reporting"
-msgstr ""
+msgstr "Poročanje"
 
 #: openDCIM/configuration.php:165
 msgid "Organization Name"
-msgstr ""
+msgstr "Ime organizacije"
 
 #: openDCIM/configuration.php:169
 msgid "Locale"
-msgstr ""
+msgstr "Locale"
 
 #: openDCIM/configuration.php:173
 msgid "Default Panel Voltage"
-msgstr ""
+msgstr "Privzeto plošča Napetost"
 
 #: openDCIM/configuration.php:177
 msgid "Users"
-msgstr ""
+msgstr "uporabniki"
 
 #: openDCIM/configuration.php:180
 msgid "Department Types"
-msgstr ""
+msgstr "Oddelek Vrste"
 
 #: openDCIM/configuration.php:184
 msgid "User Lookup URL"
-msgstr ""
+msgstr "Navodila za iskanje URL"
 
 #: openDCIM/configuration.php:188
 msgid "Rack Requests"
-msgstr ""
+msgstr "rack Prošnje"
 
 #: openDCIM/configuration.php:191
 msgid "Mail Subject"
-msgstr ""
+msgstr "e-poštnega sporočila"
 
 #: openDCIM/configuration.php:195
 msgid "Warning (Hours)"
-msgstr ""
+msgstr "Opozorilo (ur)"
 
 #: openDCIM/configuration.php:199
 msgid "Critical (Hours)"
-msgstr ""
+msgstr "Kritična (ur)"
 
 #: openDCIM/configuration.php:203
 msgid "Rack Usage"
-msgstr ""
+msgstr "Rack Uporaba"
 
 #: openDCIM/configuration.php:206
 msgid "Space Critical"
-msgstr ""
+msgstr "Vesolje Kritično"
 
 #: openDCIM/configuration.php:210
 msgid "Space Warning"
-msgstr ""
+msgstr "Opozorilo prostor"
 
 #: openDCIM/configuration.php:214
 msgid "Weight Critical"
-msgstr ""
+msgstr "Teža Kritično"
 
 #: openDCIM/configuration.php:218
 msgid "Weight Warning"
-msgstr ""
+msgstr "Teža Opozorilo"
 
 #: openDCIM/configuration.php:222
 msgid "Power Critical"
-msgstr ""
+msgstr "Moč Kritično"
 
 #: openDCIM/configuration.php:226
 msgid "Power Warning"
-msgstr ""
+msgstr "Moč Opozorilo"
 
-#: openDCIM/configuration.php:230
-#: openDCIM/index.php:130
+#: openDCIM/configuration.php:230 openDCIM/index.php:130
 msgid "Virtual Machines"
-msgstr ""
+msgstr "Virtualni stroji"
 
 #: openDCIM/configuration.php:233
 msgid "Expiration Time (Days)"
-msgstr ""
+msgstr "Veljavno Čas (dnevi)"
 
 #: openDCIM/configuration.php:239
 msgid "Racks & Maps"
-msgstr ""
+msgstr "Racks & Zemljevidi"
 
 #: openDCIM/configuration.php:242
 msgid "Critical Color"
-msgstr ""
+msgstr "kritično Barva"
 
 #: openDCIM/configuration.php:248
 msgid "Caution Color"
-msgstr ""
+msgstr "Opozorilo Barva"
 
 #: openDCIM/configuration.php:254
 msgid "Good Color"
-msgstr ""
+msgstr "Dobro Barva"
 
 #: openDCIM/configuration.php:266
 msgid "Reserved Devices"
-msgstr ""
+msgstr "Rezervirano naprave"
 
 #: openDCIM/configuration.php:272
 msgid "Unused Spaces"
-msgstr ""
+msgstr "prazne prostore"
 
 #: openDCIM/configuration.php:278
 msgid "Site"
-msgstr ""
+msgstr "stran"
 
 #: openDCIM/configuration.php:281
 msgid "Header Color"
-msgstr ""
+msgstr "Barva glave"
 
 #: openDCIM/configuration.php:287
 msgid "Body Color"
-msgstr ""
+msgstr "Barva telesa"
 
 #: openDCIM/configuration.php:293
 msgid "Link Color"
-msgstr ""
+msgstr "Barva povezave"
 
 #: openDCIM/configuration.php:299
 msgid "Viewed Link Color"
-msgstr ""
+msgstr "Videno Barva povezave"
 
 #: openDCIM/configuration.php:309
 msgid "SMTP Server"
-msgstr ""
+msgstr "SMTP Server"
 
 #: openDCIM/configuration.php:313
 msgid "SMTP Port"
-msgstr ""
+msgstr "SMTP Port"
 
 #: openDCIM/configuration.php:317
 msgid "SMTP Helo"
-msgstr ""
+msgstr "SMTP Helo"
 
 #: openDCIM/configuration.php:321
 msgid "SMTP Username"
-msgstr ""
+msgstr "SMTP Username"
 
 #: openDCIM/configuration.php:325
 msgid "SMTP Password"
-msgstr ""
+msgstr "SMTP Password"
 
 #: openDCIM/configuration.php:329
 msgid "Mail To"
-msgstr ""
+msgstr "Mail Če želite"
 
 #: openDCIM/configuration.php:333
 msgid "Mail From"
-msgstr ""
+msgstr "Od Mail"
 
 #: openDCIM/configuration.php:337
 msgid "Facility Manager"
-msgstr ""
+msgstr "Sklad Manager"
 
 #: openDCIM/configuration.php:341
 msgid "Facility Manager Email"
-msgstr ""
+msgstr "Sklad Manager E-mail"
 
 #: openDCIM/configuration.php:352
 msgid "Annual Cost Per Rack Unit (Year)"
-msgstr ""
+msgstr "Letni stroški na enoto Rack (leto)"
 
 #: openDCIM/configuration.php:356
 msgid "Annual Cost Per Watt (Year)"
-msgstr ""
+msgstr "Letni stroški na Watt (leto)"
 
 #: openDCIM/configuration.php:360
 msgid "Logo file for headers"
-msgstr ""
+msgstr "Datoteka z logotipom za glave"
 
 #: openDCIM/configuration.php:364
 msgid "Font"
-msgstr ""
+msgstr "pisava"
 
-#: openDCIM/conflicts.php:41
-#: openDCIM/devices.php:970
+#: openDCIM/conflicts.php:41 openDCIM/devices.php:970
 msgid "Power Strip"
-msgstr ""
+msgstr "Moč Strip"
 
-#: openDCIM/conflicts.php:41
-#: openDCIM/devices.php:970
+#: openDCIM/conflicts.php:41 openDCIM/devices.php:970
 msgid "Plug #"
-msgstr ""
+msgstr "Outlet Zaporedje"
 
-#: openDCIM/conflicts.php:41
-#: openDCIM/devices.php:970
+#: openDCIM/conflicts.php:41 openDCIM/devices.php:970
 msgid "Power Supply"
-msgstr ""
+msgstr "Napajanje"
 
-#: openDCIM/conflicts.php:74
-#: openDCIM/devices.php:841
-#: openDCIM/devices.php:846
-#: openDCIM/devices.php:988
-#: openDCIM/rackrequest.php:462
+#: openDCIM/conflicts.php:74 openDCIM/devices.php:841 openDCIM/devices.php:846
+#: openDCIM/devices.php:988 openDCIM/rackrequest.php:462
 msgid "Switch"
-msgstr ""
+msgstr "preklopite"
 
-#: openDCIM/conflicts.php:74
-#: openDCIM/devices.php:988
+#: openDCIM/conflicts.php:74 openDCIM/devices.php:988
 #: openDCIM/devices.php:1000
 msgid "Switch Port"
-msgstr ""
+msgstr "Switch Port"
 
-#: openDCIM/conflicts.php:74
-#: openDCIM/devices.php:988
+#: openDCIM/conflicts.php:74 openDCIM/devices.php:988
 #: openDCIM/devices.php:1000
 msgid "Device Port"
-msgstr ""
+msgstr "naprava Port"
 
-#: openDCIM/conflicts.php:74
-#: openDCIM/devices.php:372
-#: openDCIM/devices.php:749
-#: openDCIM/devices.php:988
-#: openDCIM/devices.php:1000
+#: openDCIM/conflicts.php:74 openDCIM/devices.php:372 openDCIM/devices.php:749
+#: openDCIM/devices.php:988 openDCIM/devices.php:1000
 msgid "Notes"
-msgstr ""
+msgstr "Opombe"
 
-#: openDCIM/contacts.php:80
-#: openDCIM/usermgr.php:84
+#: openDCIM/contacts.php:80 openDCIM/usermgr.php:84
 msgid "Data Center Contact Detail"
-msgstr ""
+msgstr "Data Center Kontakt Podrobnosti"
 
 #: openDCIM/contacts.php:85
 msgid "Contact"
-msgstr ""
+msgstr "Kontakt"
 
 #: openDCIM/contacts.php:87
 msgid "New Contact"
-msgstr ""
+msgstr "nova oseba"
 
-#: openDCIM/contacts.php:96
-#: openDCIM/usermgr.php:103
+#: openDCIM/contacts.php:96 openDCIM/usermgr.php:103
 msgid "UserID"
-msgstr ""
+msgstr "UserID"
 
 #: openDCIM/contacts.php:100
 msgid "Last Name"
-msgstr ""
+msgstr "priimek"
 
 #: openDCIM/contacts.php:104
 msgid "First Name"
-msgstr ""
+msgstr "Glede Ime"
 
 #: openDCIM/contacts.php:108
 msgid "Phone 1"
-msgstr ""
+msgstr "Telefon 1"
 
 #: openDCIM/contacts.php:112
 msgid "Phone 2"
-msgstr ""
+msgstr "Telefon 2"
 
 #: openDCIM/contacts.php:116
 msgid "Phone 3"
-msgstr ""
+msgstr "Telefon 3"
 
-#: openDCIM/datacenter.php:73
-#: openDCIM/power_panel.php:73
+#: openDCIM/datacenter.php:73 openDCIM/power_panel.php:73
 #: openDCIM/power_source.php:66
 msgid "Data Center Detail"
-msgstr ""
+msgstr "Data Center Podrobnosti"
 
 #: openDCIM/datacenter.php:78
 msgid "Data Center ID"
-msgstr ""
+msgstr "Data Center ID"
 
 #: openDCIM/datacenter.php:80
 msgid "New Data Center"
-msgstr ""
+msgstr "Nov podatkovni center"
 
-#: openDCIM/datacenter.php:90
-#: openDCIM/device_manufacturers.php:90
-#: openDCIM/power_source.php:83
-#: openDCIM/usermgr.php:107
+#: openDCIM/datacenter.php:90 openDCIM/device_manufacturers.php:90
+#: openDCIM/power_source.php:83 openDCIM/usermgr.php:107
 msgid "Name"
-msgstr ""
+msgstr "Ime"
 
 #: openDCIM/datacenter.php:94
 msgid "Square Footage"
-msgstr ""
+msgstr "kvadratni metri"
 
 #: openDCIM/datacenter.php:98
 msgid "Delivery Address"
-msgstr ""
+msgstr "Naslov za dostavo"
 
 #: openDCIM/datacenter.php:102
 msgid "Administrator"
-msgstr ""
+msgstr "Administrator"
 
 #: openDCIM/datacenter.php:106
 msgid "Drawing URL"
-msgstr ""
+msgstr "Risba URL"
 
-#: openDCIM/dc_dashboard.php:77
-#: openDCIM/dc_stats.php:94
+#: openDCIM/dc_dashboard.php:77 openDCIM/dc_stats.php:94
 msgid "Data Center Statistics"
-msgstr ""
+msgstr "Data Center Statistika"
 
-#: openDCIM/dc_dashboard.php:80
-#: openDCIM/dc_stats.php:97
+#: openDCIM/dc_dashboard.php:80 openDCIM/dc_stats.php:97
 msgid "Overview"
-msgstr ""
+msgstr "Pregled"
 
-#: openDCIM/dc_dashboard.php:92
-#: openDCIM/dc_stats.php:109
+#: openDCIM/dc_dashboard.php:92 openDCIM/dc_stats.php:109
 msgid "Infrastructure"
-msgstr ""
+msgstr "Infrastruktura"
 
-#: openDCIM/dc_dashboard.php:93
-#: openDCIM/dc_stats.php:110
+#: openDCIM/dc_dashboard.php:93 openDCIM/dc_stats.php:110
 msgid "Occupied"
-msgstr ""
+msgstr "Zasedeno"
 
-#: openDCIM/dc_dashboard.php:94
-#: openDCIM/dc_stats.php:111
+#: openDCIM/dc_dashboard.php:94 openDCIM/dc_stats.php:111
 msgid "Allocated"
-msgstr ""
+msgstr "Razporejeni"
 
-#: openDCIM/dc_dashboard.php:95
-#: openDCIM/dc_stats.php:112
+#: openDCIM/dc_dashboard.php:95 openDCIM/dc_stats.php:112
 msgid "Available"
-msgstr ""
+msgstr "Na voljo"
 
-#: openDCIM/dc_dashboard.php:98
-#: openDCIM/dc_stats.php:115
+#: openDCIM/dc_dashboard.php:98 openDCIM/dc_stats.php:115
 #, php-format
 msgid "Total U"
-msgstr ""
+msgstr "Skupaj U"
 
-#: openDCIM/dc_dashboard.php:105
-#: openDCIM/dc_stats.php:122
+#: openDCIM/dc_dashboard.php:105 openDCIM/dc_stats.php:122
 msgid "Percentage"
-msgstr ""
+msgstr "odstotek"
 
-#: openDCIM/dc_dashboard.php:114
-#: openDCIM/dc_stats.php:131
+#: openDCIM/dc_dashboard.php:114 openDCIM/dc_stats.php:131
 msgid "Raw Wattage"
-msgstr ""
+msgstr "Surovi Moč"
 
-#: openDCIM/dc_dashboard.php:115
-#: openDCIM/dc_dashboard.php:127
-#: openDCIM/dc_stats.php:132
-#: openDCIM/dc_stats.php:144
+#: openDCIM/dc_dashboard.php:115 openDCIM/dc_dashboard.php:127
+#: openDCIM/dc_stats.php:132 openDCIM/dc_stats.php:144
 #, php-format
 msgid "Watts"
-msgstr ""
+msgstr "Watts"
 
-#: openDCIM/dc_dashboard.php:118
-#: openDCIM/dc_stats.php:135
+#: openDCIM/dc_dashboard.php:118 openDCIM/dc_stats.php:135
 msgid "BTU Computation from Watts"
-msgstr ""
+msgstr "Izračun BTU od Watts"
 
-#: openDCIM/dc_dashboard.php:119
-#: openDCIM/dc_stats.php:136
+#: openDCIM/dc_dashboard.php:119 openDCIM/dc_stats.php:136
 #, php-format
 msgid "BTU"
-msgstr ""
+msgstr "BTU"
 
-#: openDCIM/dc_dashboard.php:122
-#: openDCIM/dc_stats.php:139
+#: openDCIM/dc_dashboard.php:122 openDCIM/dc_stats.php:139
 msgid "Data Center Size"
-msgstr ""
+msgstr "Data Center Velikost"
 
-#: openDCIM/dc_dashboard.php:123
-#: openDCIM/dc_stats.php:140
+#: openDCIM/dc_dashboard.php:123 openDCIM/dc_stats.php:140
 #, php-format
 msgid "Square Feet"
-msgstr ""
+msgstr "kvadratni metri"
 
-#: openDCIM/dc_dashboard.php:126
-#: openDCIM/dc_stats.php:143
+#: openDCIM/dc_dashboard.php:126 openDCIM/dc_stats.php:143
 msgid "Watts per Square Foot"
-msgstr ""
+msgstr "Vatih na kvadratni meter"
 
-#: openDCIM/dc_dashboard.php:130
-#: openDCIM/dc_stats.php:147
+#: openDCIM/dc_dashboard.php:130 openDCIM/dc_stats.php:147
 msgid "Minimum Cooling Tonnage Required"
-msgstr ""
+msgstr "Minimalna Hlajenje tonažo obvezno"
 
-#: openDCIM/dc_dashboard.php:131
-#: openDCIM/dc_stats.php:148
+#: openDCIM/dc_dashboard.php:131 openDCIM/dc_stats.php:148
 #, php-format
 msgid "Tons"
-msgstr ""
+msgstr "Tone"
 
 #: openDCIM/departments.php:89
 msgid "Data Center Department Detail"
-msgstr ""
+msgstr "Data Center Oddelek Podrobnosti"
 
-#: openDCIM/departments.php:94
-#: openDCIM/index.php:47
+#: openDCIM/departments.php:94 openDCIM/index.php:47
 msgid "Department"
-msgstr ""
+msgstr "Oddelek"
 
 #: openDCIM/departments.php:96
 msgid "New Department"
-msgstr ""
+msgstr "Nov oddelek"
 
 #: openDCIM/departments.php:106
 msgid "Department Name"
-msgstr ""
+msgstr "Oddelek Ime"
 
 #: openDCIM/departments.php:110
 msgid "Executive Sponsor"
-msgstr ""
+msgstr "Izvršni Sponzor"
 
 #: openDCIM/departments.php:114
 msgid "Account Manager"
-msgstr ""
+msgstr "račun Manager"
 
 #: openDCIM/departments.php:118
 msgid "Department Color"
-msgstr ""
+msgstr "Oddelek Barva"
 
 #: openDCIM/departments.php:122
 msgid "Classification"
-msgstr ""
+msgstr "Uvrstitev"
 
 #: openDCIM/departments.php:136
 msgid "Assign Contacts"
-msgstr ""
+msgstr "Določi Imenik"
 
 #: openDCIM/dept_groups.php:143
 msgid "Group to Administer"
-msgstr ""
+msgstr "Skupina za upravljanje"
 
 #: openDCIM/dept_groups.php:145
 msgid "Possible Contacts"
-msgstr ""
+msgstr "Možni Kontakti"
 
-#: openDCIM/dept_groups.php:157
-#: openDCIM/supplybin.php:212
+#: openDCIM/dept_groups.php:157 openDCIM/supplybin.php:212
 msgid "Submit"
-msgstr ""
+msgstr "Pošlji"
 
 #: openDCIM/dept_groups.php:160
 msgid "Assigned Contacts"
-msgstr ""
+msgstr "Namenski Kontakti"
 
 #: openDCIM/device_manufacturers.php:72
 msgid "Data Center Manufacturer Listing"
-msgstr ""
+msgstr "Data Center Proizvajalec objavo"
 
 #: openDCIM/device_manufacturers.php:80
 msgid "New Manufacturer"
-msgstr ""
+msgstr "New Proizvajalec"
 
-#: openDCIM/devices.php:336
-#: openDCIM/devices.php:339
+#: openDCIM/devices.php:336 openDCIM/devices.php:339
 msgid "Landscape"
-msgstr ""
+msgstr "Pokrajina"
 
-#: openDCIM/devices.php:345
-#: openDCIM/devices.php:348
-#: openDCIM/devices.php:627
+#: openDCIM/devices.php:345 openDCIM/devices.php:348 openDCIM/devices.php:627
 msgid "Portrait"
-msgstr ""
+msgstr "Portret"
 
 #: openDCIM/devices.php:375
 msgid "Network & Power"
-msgstr ""
+msgstr "Mreža & Power"
 
-#: openDCIM/devices.php:431
-#: openDCIM/devices.php:805
+#: openDCIM/devices.php:431 openDCIM/devices.php:805
 msgid "Number of Data Ports"
-msgstr ""
+msgstr "Število Data Ports"
 
 #: openDCIM/devices.php:539
 msgid "Save"
-msgstr ""
+msgstr "Shrani"
 
-#: openDCIM/devices.php:539
-#: openDCIM/devices.php:1025
-#: openDCIM/escalations.php:91
-#: openDCIM/power_pdu.php:253
+#: openDCIM/devices.php:539 openDCIM/devices.php:1025
+#: openDCIM/escalations.php:91 openDCIM/power_pdu.php:253
 #: openDCIM/timeperiods.php:92
 msgid "Delete"
-msgstr ""
+msgstr "Izbriši"
 
-#: openDCIM/devices.php:539
-#: openDCIM/power_pdu.php:253
+#: openDCIM/devices.php:539 openDCIM/power_pdu.php:253
 msgid "Cancel"
-msgstr ""
+msgstr "Prekliči"
 
 #: openDCIM/devices.php:629
 msgid "Data Center Device Detail"
-msgstr ""
+msgstr "Data Center Device Podrobnosti"
 
 #: openDCIM/devices.php:632
 msgid ""
 "This device is a copy of an existing device.  Remember to set the new "
 "location before saving."
 msgstr ""
+"Ta naprava je kopija obstoječe naprave. Ne pozabite nastaviti novo lokacijo "
+"pred shranjevanjem."
 
 #: openDCIM/devices.php:639
 msgid "Asset Tracking"
-msgstr ""
+msgstr "Asset Tracking"
 
 #: openDCIM/devices.php:642
 msgid "Device ID"
-msgstr ""
+msgstr "ID naprave"
 
 #: openDCIM/devices.php:646
 msgid "Reservation?"
-msgstr ""
+msgstr "Rezervacija?"
 
-#: openDCIM/devices.php:654
-#: openDCIM/rackrequest.php:379
+#: openDCIM/devices.php:654 openDCIM/rackrequest.php:379
 msgid "Serial Number"
-msgstr ""
+msgstr "Serijska številka"
 
-#: openDCIM/devices.php:656
-#: openDCIM/devices.php:661
+#: openDCIM/devices.php:656 openDCIM/devices.php:661
 msgid "Scan Barcode"
-msgstr ""
+msgstr "Scan Barcode"
 
-#: openDCIM/devices.php:659
-#: openDCIM/rackrequest.php:387
+#: openDCIM/devices.php:659 openDCIM/rackrequest.php:387
 msgid "Asset Tag"
-msgstr ""
+msgstr "Asset Tag"
 
-#: openDCIM/devices.php:664
-#: openDCIM/rackrequest.php:383
+#: openDCIM/devices.php:664 openDCIM/rackrequest.php:383
 msgid "Manufacture Date"
-msgstr ""
+msgstr "Izdelava Datum"
 
 #: openDCIM/devices.php:669
 msgid "Install Date"
-msgstr ""
+msgstr "Namestite Datum"
 
 #: openDCIM/devices.php:673
 msgid "Warranty Company"
-msgstr ""
+msgstr "Garancija Podjetje"
 
 #: openDCIM/devices.php:677
 msgid "Warranty Expiration"
-msgstr ""
+msgstr "Garancija poteka"
 
-#: openDCIM/devices.php:681
-#: openDCIM/rackrequest.php:398
+#: openDCIM/devices.php:681 openDCIM/rackrequest.php:398
 msgid "Departmental Owner"
-msgstr ""
+msgstr "Lastnik oddelčni"
 
-#: openDCIM/devices.php:684
-#: openDCIM/devices.php:730
+#: openDCIM/devices.php:684 openDCIM/devices.php:730
 #: openDCIM/rackrequest.php:401
 msgid "Unassigned"
-msgstr ""
+msgstr "Prosti"
 
 #: openDCIM/devices.php:692
 msgid "Show Contacts"
-msgstr ""
+msgstr "Prikaži Imenik"
 
 #: openDCIM/devices.php:698
 msgid "Escalation Information"
-msgstr ""
+msgstr "stopnjevanje informacije"
 
 #: openDCIM/devices.php:701
 msgid "Time Period"
-msgstr ""
+msgstr "časovno obdobje"
 
-#: openDCIM/devices.php:703
-#: openDCIM/devices.php:715
-#: openDCIM/devices.php:834
+#: openDCIM/devices.php:703 openDCIM/devices.php:715 openDCIM/devices.php:834
 msgid "Select..."
-msgstr ""
+msgstr "Izberite ..."
 
-#: openDCIM/devices.php:713
-#: openDCIM/escalations.php:84
+#: openDCIM/devices.php:713 openDCIM/escalations.php:84
 msgid "Details"
-msgstr ""
+msgstr "Podrobnosti"
 
 #: openDCIM/devices.php:728
 msgid "Primary Contact"
-msgstr ""
+msgstr "Primarni Kontakt"
 
 #: openDCIM/devices.php:740
 msgid "Contact Lookup"
-msgstr ""
+msgstr "Kontakt Iskanje"
 
-#: openDCIM/devices.php:756
-#: openDCIM/devices.php:849
+#: openDCIM/devices.php:756 openDCIM/devices.php:849
 #: openDCIM/rackrequest.php:465
 msgid "Physical Infrastructure"
-msgstr ""
+msgstr "Fizična infrastruktura"
 
 #: openDCIM/devices.php:767
 msgid "Parent Device"
-msgstr ""
+msgstr "Matično naprave"
 
-#: openDCIM/devices.php:779
-#: openDCIM/rackrequest.php:414
+#: openDCIM/devices.php:779 openDCIM/rackrequest.php:414
 msgid "Device Class"
-msgstr ""
+msgstr "razred naprave"
 
 #: openDCIM/devices.php:781
 msgid "Select a template..."
-msgstr ""
+msgstr "Izberite predlogo..."
 
-#: openDCIM/devices.php:798
-#: openDCIM/devices.php:884
-#: openDCIM/device_templates.php:105
-#: openDCIM/rackrequest.php:434
+#: openDCIM/devices.php:798 openDCIM/devices.php:884
+#: openDCIM/device_templates.php:105 openDCIM/rackrequest.php:434
 msgid "Height"
-msgstr ""
+msgstr "Višina"
 
 #: openDCIM/devices.php:811
 msgid "Nominal Draw (Watts)"
-msgstr ""
+msgstr "Nominalna Draw (W)"
 
 #: openDCIM/devices.php:818
 msgid "Number of Power Supplies"
-msgstr ""
+msgstr "Število napajalniki"
 
 #: openDCIM/devices.php:823
 msgid "Front / Rear"
-msgstr ""
+msgstr "Spredaj / zadaj"
 
-#: openDCIM/devices.php:825
-#: openDCIM/devices.php:872
+#: openDCIM/devices.php:825 openDCIM/devices.php:872
 msgid "Front"
-msgstr ""
+msgstr "Spredaj"
 
-#: openDCIM/devices.php:826
-#: openDCIM/devices.php:873
+#: openDCIM/devices.php:826 openDCIM/devices.php:873
 msgid "Rear"
-msgstr ""
+msgstr "Zadaj"
 
-#: openDCIM/devices.php:832
-#: openDCIM/devices.php:886
-#: openDCIM/device_templates.php:117
-#: openDCIM/rackrequest.php:455
+#: openDCIM/devices.php:832 openDCIM/devices.php:886
+#: openDCIM/device_templates.php:117 openDCIM/rackrequest.php:455
 msgid "Device Type"
-msgstr ""
+msgstr "Device Type"
 
-#: openDCIM/devices.php:838
-#: openDCIM/devices.php:843
+#: openDCIM/devices.php:838 openDCIM/devices.php:843
 #: openDCIM/rackrequest.php:459
 msgid "Server"
-msgstr ""
+msgstr "strežnik"
 
-#: openDCIM/devices.php:839
-#: openDCIM/devices.php:844
+#: openDCIM/devices.php:839 openDCIM/devices.php:844
 #: openDCIM/rackrequest.php:460
 msgid "Appliance"
-msgstr ""
+msgstr "Aparati"
 
-#: openDCIM/devices.php:840
-#: openDCIM/devices.php:845
+#: openDCIM/devices.php:840 openDCIM/devices.php:845
 #: openDCIM/rackrequest.php:461
 msgid "Storage Array"
-msgstr ""
+msgstr "Storage Array"
 
-#: openDCIM/devices.php:847
-#: openDCIM/rackrequest.php:463
+#: openDCIM/devices.php:847 openDCIM/rackrequest.php:463
 msgid "Chassis"
-msgstr ""
+msgstr "Šasija"
 
-#: openDCIM/devices.php:848
-#: openDCIM/rackrequest.php:464
+#: openDCIM/devices.php:848 openDCIM/rackrequest.php:464
 msgid "Patch Panel"
-msgstr ""
+msgstr "Patch Panel"
 
 #: openDCIM/devices.php:868
 msgid "Chassis Contents"
-msgstr ""
+msgstr "šasija Vsebina"
 
 #: openDCIM/devices.php:876
 msgid "Number of Slots in Chassis:"
-msgstr ""
+msgstr "Število slotov šasije:"
 
 #: openDCIM/devices.php:883
 msgid "Slot #"
-msgstr ""
+msgstr "Slot #"
 
-#: openDCIM/devices.php:885
-#: openDCIM/power_pdu.php:489
+#: openDCIM/devices.php:885 openDCIM/power_pdu.php:489
 msgid "Device Name"
-msgstr ""
+msgstr "Ime naprave"
 
 #: openDCIM/devices.php:913
 msgid "VMWare ESX Server Information"
-msgstr ""
+msgstr "VMWare ESX Server Information"
 
-#: openDCIM/devices.php:919
-#: openDCIM/rackrequest.php:391
+#: openDCIM/devices.php:919 openDCIM/rackrequest.php:391
 msgid "ESX Server?"
-msgstr ""
+msgstr "ESX Server?"
 
-#: openDCIM/devices.php:920
-#: openDCIM/rackrequest.php:393
+#: openDCIM/devices.php:920 openDCIM/rackrequest.php:393
 msgid "True"
-msgstr ""
+msgstr "True"
 
-#: openDCIM/devices.php:920
-#: openDCIM/rackrequest.php:394
+#: openDCIM/devices.php:920 openDCIM/rackrequest.php:394
 msgid "False"
-msgstr ""
+msgstr "False"
 
 #: openDCIM/devices.php:923
 msgid "Primary IP"
-msgstr ""
+msgstr "Primarni IP"
 
 #: openDCIM/devices.php:927
 msgid "SNMP Read Only Community"
-msgstr ""
+msgstr "SNMP bralni skupnosti"
 
-#: openDCIM/devices.php:938
-#: openDCIM/vmnamecheck.php:71
+#: openDCIM/devices.php:938 openDCIM/vmnamecheck.php:71
 #: openDCIM/vmnamecheck.php:115
 msgid "VM Name"
-msgstr ""
+msgstr "VM Ime"
 
-#: openDCIM/devices.php:938
-#: openDCIM/vmnamecheck.php:71
+#: openDCIM/devices.php:938 openDCIM/vmnamecheck.php:71
 #: openDCIM/vmnamecheck.php:115
 msgid "Status"
 msgstr ""
 
 #: openDCIM/devices.php:938
 msgid "Owner"
-msgstr ""
+msgstr "Lastnik"
 
-#: openDCIM/devices.php:938
-#: openDCIM/vmnamecheck.php:71
+#: openDCIM/devices.php:938 openDCIM/vmnamecheck.php:71
 #: openDCIM/vmnamecheck.php:115
 msgid "Last Updated"
-msgstr ""
+msgstr "v"
 
-#: openDCIM/devices.php:949
-#: openDCIM/vmnamecheck.php:81
+#: openDCIM/devices.php:949 openDCIM/vmnamecheck.php:81
 #: openDCIM/vmnamecheck.php:125
 msgid "Unknown"
-msgstr ""
+msgstr "neznano"
 
 #: openDCIM/devices.php:968
 msgid ""
 "No power connections defined.  You can add connections from the power strip "
 "screen."
 msgstr ""
+"Brez električne povezave opredeliti. Dodate lahko povezave z zaslona "
+"električnega podaljška."
 
 #: openDCIM/devices.php:970
 msgid "Power Connections"
-msgstr ""
+msgstr "Motorni Povezave"
 
 #: openDCIM/devices.php:970
 msgid "Panel"
-msgstr ""
+msgstr "Panel"
 
-#: openDCIM/devices.php:988
-#: openDCIM/devices.php:1000
+#: openDCIM/devices.php:988 openDCIM/devices.php:1000
 msgid "Connections"
-msgstr ""
+msgstr "Povezave"
 
 #: openDCIM/devices.php:988
 msgid "Managed at Switch"
-msgstr ""
+msgstr "Upravljavec na preklop"
 
 #: openDCIM/devices.php:1018
 msgid "Copy"
-msgstr ""
+msgstr "Kopiraj"
 
 #: openDCIM/devices.php:1036
 msgid "Return to Parent Device"
-msgstr ""
+msgstr "Vrni se na napravo obvladujoče"
 
 #: openDCIM/device_templates.php:69
 msgid "Data Center Device Templates"
-msgstr ""
+msgstr "Data Center Device Predloge"
 
 #: openDCIM/device_templates.php:113
 msgid "Wattage"
-msgstr ""
+msgstr "moč"
 
 #: openDCIM/device_templates.php:129
 msgid "No. Power Supplies"
-msgstr ""
+msgstr "Ne Napajalniki"
 
 #: openDCIM/device_templates.php:133
 msgid "No. Ports"
-msgstr ""
+msgstr "Ne Ports"
 
 #: openDCIM/escalations.php:66
 msgid "Data Center Escalation Rules"
-msgstr ""
+msgstr "Data Center Zviševanje Pravila"
 
 #: openDCIM/escalations.php:72
 msgid "Escalation Rule"
-msgstr ""
+msgstr "stopnjevanje člen"
 
 #: openDCIM/escalations.php:74
 msgid "New Escalation Rule"
-msgstr ""
+msgstr "Novo pravilo Stopnjevanje"
 
 #: openDCIM/index.php:47
 msgid "Pending Rack Requests"
-msgstr ""
+msgstr "Dokler se zahteva Rack"
 
 #: openDCIM/index.php:47
 msgid "Submit Time"
 msgstr ""
 
-#: openDCIM/index.php:47
-#: openDCIM/rackrequest.php:349
+#: openDCIM/index.php:47 openDCIM/rackrequest.php:349
 msgid "Requestor"
 msgstr ""
 
@@ -1367,10 +1247,8 @@ msgstr ""
 msgid "VersionOID returned a value of"
 msgstr ""
 
-#: openDCIM/power_pdu.php:82
-#: openDCIM/power_pdu.php:94
-#: openDCIM/power_pdu.php:100
-#: openDCIM/power_pdu.php:106
+#: openDCIM/power_pdu.php:82 openDCIM/power_pdu.php:94
+#: openDCIM/power_pdu.php:100 openDCIM/power_pdu.php:106
 msgid "Please check to see if it makes sense."
 msgstr ""
 
@@ -1420,8 +1298,7 @@ msgstr ""
 msgid "Source Panel"
 msgstr ""
 
-#: openDCIM/power_pdu.php:366
-#: openDCIM/power_pdu.php:455
+#: openDCIM/power_pdu.php:366 openDCIM/power_pdu.php:455
 msgid "Select Panel"
 msgstr ""
 
@@ -1445,8 +1322,7 @@ msgstr ""
 msgid "CDU Template"
 msgstr ""
 
-#: openDCIM/power_pdu.php:430
-#: openDCIM/power_source.php:98
+#: openDCIM/power_pdu.php:430 openDCIM/power_source.php:98
 msgid "IP Address"
 msgstr ""
 
@@ -1458,8 +1334,7 @@ msgstr ""
 msgid "Firmware Version"
 msgstr ""
 
-#: openDCIM/power_pdu.php:442
-#: openDCIM/power_source.php:102
+#: openDCIM/power_pdu.php:442 openDCIM/power_source.php:102
 msgid "SNMP Community"
 msgstr ""
 
@@ -1507,8 +1382,7 @@ msgstr ""
 msgid "Capacity"
 msgstr ""
 
-#: openDCIM/rackrequest.php:62
-#: openDCIM/vmnamecheck.php:34
+#: openDCIM/rackrequest.php:62 openDCIM/vmnamecheck.php:34
 msgid "MailFrom"
 msgstr ""
 
@@ -1516,13 +1390,11 @@ msgstr ""
 msgid "Check contact details for"
 msgstr ""
 
-#: openDCIM/rackrequest.php:76
-#: openDCIM/vmnamecheck.php:47
+#: openDCIM/rackrequest.php:76 openDCIM/vmnamecheck.php:47
 msgid "Data center team address"
 msgstr ""
 
-#: openDCIM/rackrequest.php:105
-#: openDCIM/rackrequest.php:164
+#: openDCIM/rackrequest.php:105 openDCIM/rackrequest.php:164
 msgid "Your request for racking up the device labeled"
 msgstr ""
 
@@ -1544,8 +1416,7 @@ msgstr ""
 msgid "and you may view the request online at"
 msgstr ""
 
-#: openDCIM/rackrequest.php:112
-#: openDCIM/rackrequest.php:165
+#: openDCIM/rackrequest.php:112 openDCIM/rackrequest.php:165
 msgid "this link"
 msgstr ""
 
@@ -1869,13 +1740,11 @@ msgstr ""
 msgid "Disabled"
 msgstr ""
 
-#: openDCIM/vmnamecheck.php:27
-#: openDCIM/vmnamecheck.php:58
+#: openDCIM/vmnamecheck.php:27 openDCIM/vmnamecheck.php:58
 msgid "Virtual Machine Inventory Exception Report"
 msgstr ""
 
-#: openDCIM/vmnamecheck.php:61
-#: openDCIM/vmnamecheck.php:109
+#: openDCIM/vmnamecheck.php:61 openDCIM/vmnamecheck.php:109
 msgid "This is an automated message from the"
 msgstr ""
 
@@ -1907,8 +1776,7 @@ msgstr ""
 msgid "to have it added."
 msgstr ""
 
-#: openDCIM/vmnamecheck.php:71
-#: openDCIM/vmnamecheck.php:115
+#: openDCIM/vmnamecheck.php:71 openDCIM/vmnamecheck.php:115
 msgid "Server Name"
 msgstr ""
 
