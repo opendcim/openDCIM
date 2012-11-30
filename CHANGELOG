@@ -6,6 +6,17 @@ GitHub, at http://github.com/samilliken/openDCIM/issues, where you can also down
 the latest development version.  However, it is not advised to pull from GitHub unless you
 are simply testing, as some functionality can break between releases.
 
+Changes in 2.0
+--------------
+* Inclusion of locale files for several areas represented by our known install base
+* Better error-checking - eliminating duplicates in several tables
+* Complete re-write of the Cabinet Distribution Unit code
+-- Now uses templates to define each model of CDU
+-- Graphs the last read load value in kW on the Cabinet Navigator
+-- Support for various means of calculating kW, including 3-phase
+* Support for hyperlinks and images in Notes for devices
+* Support for front and back connections on patch panels
+
 Changes in 1.5
 --------------
 * Database charset changed from latin1 to utf8 to better support localization/internationalization
