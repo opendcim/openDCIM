@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: openDCIM.po\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2012-11-17 20:42-0600\n"
-"PO-Revision-Date: 2012-11-30 09:24-0500\n"
+"PO-Revision-Date: 2012-11-30 09:32-0500\n"
 "Last-Translator: Scott Milliken <scott@themillikens.com>\n"
 "Language-Team: openDCIM <discussion@list.opendcim.org>\n"
 "Language: English\n"
@@ -13,88 +13,88 @@ msgstr ""
 
 #: openDCIM/cabaudit.php:35
 msgid "Information Technology Services"
-msgstr ""
+msgstr "Servicios de Tecnología de la información"
 
 #: openDCIM/cabaudit.php:38
 msgid "Cabinet Audit Report"
-msgstr ""
+msgstr "Gabinete Informe de Auditoría"
 
 #: openDCIM/cabaudit.php:383
 msgid "Cabinet Location"
-msgstr ""
+msgstr "Posición de gabinete"
 
 #: openDCIM/cabaudit.php:388 openDCIM/cabaudit.php:463
 #: openDCIM/devices.php:650 openDCIM/power_pdu.php:357
 #: openDCIM/rackrequest.php:362
 msgid "Label"
-msgstr ""
+msgstr "Etiqueta"
 
 #: openDCIM/cabaudit.php:388
 msgid "SerialNo"
-msgstr ""
+msgstr "SerialNo"
 
 #: openDCIM/cabaudit.php:388
 msgid "AssetTag"
-msgstr ""
+msgstr "AssetTag"
 
 #: openDCIM/cabaudit.php:388 openDCIM/devices.php:794
 #: openDCIM/rackrequest.php:479
 msgid "Position"
-msgstr ""
+msgstr "Posición"
 
 #: openDCIM/cabaudit.php:388
 msgid "Rack Units"
-msgstr ""
+msgstr "Rack Units"
 
 #: openDCIM/cabaudit.php:388
 msgid "#Ports"
-msgstr ""
+msgstr "#Ports"
 
 #: openDCIM/cabaudit.php:388
 msgid "#PS"
-msgstr ""
+msgstr "#PS"
 
 #: openDCIM/cabaudit.php:388
 msgid "PowerConnection1"
-msgstr ""
+msgstr "PowerConnection1"
 
 #: openDCIM/cabaudit.php:388
 msgid "PowerConnection2"
-msgstr ""
+msgstr "PowerConnection2"
 
 #: openDCIM/cabaudit.php:388
 msgid "DeviceType"
-msgstr ""
+msgstr "De tipo dispositivo"
 
 #: openDCIM/cabaudit.php:457
 msgid "PDUs at"
-msgstr ""
+msgstr "PDUs at"
 
 #: openDCIM/cabaudit.php:463
 msgid "NumOutputs"
-msgstr ""
+msgstr "NumOutputs"
 
 #: openDCIM/cabaudit.php:463 openDCIM/cabinets.php:139
 #: openDCIM/cdu_templates.php:107 openDCIM/device_templates.php:101
 msgid "Model"
-msgstr ""
+msgstr "Modelo"
 
 #: openDCIM/cabaudit.php:463
 msgid "PanelLabel"
-msgstr ""
+msgstr "Etiqueta"
 
 #: openDCIM/cabaudit.php:463
 msgid "PanelPole"
-msgstr ""
+msgstr "Asta"
 
 #: openDCIM/cabinets.php:97 openDCIM/cabnavigator.php:372
 msgid "Data Center Cabinet Inventory"
-msgstr ""
+msgstr "Inventario de Gabinete de Centro de datos"
 
 #: openDCIM/cabinets.php:102 openDCIM/cabnavigator.php:94
 #: openDCIM/devices.php:759 openDCIM/power_pdu.php:361
 msgid "Cabinet"
-msgstr ""
+msgstr "Gabinete"
 
 #: openDCIM/cabinets.php:104
 msgid "New Cabinet"
