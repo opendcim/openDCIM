@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: openDCIM.po\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2012-11-17 20:42-0600\n"
-"PO-Revision-Date: 2012-11-30 09:32-0500\n"
+"PO-Revision-Date: 2012-11-30 09:39-0500\n"
 "Last-Translator: Scott Milliken <scott@themillikens.com>\n"
 "Language-Team: openDCIM <discussion@list.opendcim.org>\n"
 "Language: English\n"
@@ -98,15 +98,15 @@ msgstr "Gabinete"
 
 #: openDCIM/cabinets.php:104
 msgid "New Cabinet"
-msgstr ""
+msgstr "Nuevo Gabinete"
 
 #: openDCIM/cabinets.php:114 openDCIM/power_source.php:87
 msgid "Data Center"
-msgstr ""
+msgstr "Centro de datos"
 
 #: openDCIM/cabinets.php:118 openDCIM/supplybin.php:164
 msgid "Location"
-msgstr ""
+msgstr "Posición"
 
 #: openDCIM/cabinets.php:122
 msgid "Assigned To"
