@@ -10,7 +10,7 @@
 	$user->UserID=$_SERVER['REMOTE_USER'];
 	$user->GetUserRights( $facDB );
 
-	if(!$user->ReadAccess){
+	if(!$user->ReadAccess or !is_numeric($_REQUEST['deviceid'])){
 		// No soup for you.
 		header('Location: '.redirect());
 		exit;
