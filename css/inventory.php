@@ -174,6 +174,21 @@ div#dcstats .table + .table > div > div + div{white-space: pre; text-align: righ
 * html .ui-autocomplete {height: 100px;}
 .ui-menu .ui-menu-item a { line-height: 1 !important; white-space: nowrap !important; overflow: hidden;}
 
+#gandalf {
+	height: 100%;
+	width: 100%;
+	z-index: 99;
+	background-color: white;
+	position: absolute;
+	top: 0;
+}
+#gandalf div {
+	font-family: monospace;
+	white-space: pre;
+	width: 400px;
+	margin-left: auto;
+	margin-right: auto;
+}
 
 /* Mapmaker */
 .mapmaker > div{width: 77%;display: inline-block;vertical-align: middle;}
