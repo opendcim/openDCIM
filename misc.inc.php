@@ -138,7 +138,8 @@ if(isset($_COOKIE["lang"])){
 if(isset($locale)){
 	setlocale(LC_ALL,$locale);
 	bindtextdomain("openDCIM","./locale");
-	
+
+	$codeset='utf8';	
 	if(isset($codeset)){
 		bind_textdomain_codeset("openDCIM",$codeset);
 	}
