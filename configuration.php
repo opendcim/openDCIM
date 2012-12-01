@@ -192,12 +192,12 @@
 		$('#btn_tzmenu').each(function(){
 			var input=$("#timezone");
 			var offset=input.position();
-			var height=input.innerHeight();
+			var height=input.outerHeight();
 			$(this).css({
 				'height': height+'px',
 				'width': height+'px',
 				'position': 'absolute',
-				'left': offset.left+input.width()-height+'px',
+				'left': offset.left+input.width()-height-((input.outerHeight()-input.height())/2)+'px',
 				'top': offset.top+'px'
 			}).click(function(){
 				$("#tzmenu").toggle();
@@ -255,7 +255,7 @@ echo '<div class="main">
 			<div class="table" id="timeandmeasurements">
 				<div>
 					<div><label for="timezone">',_("Time Zone"),'</label></div>
-					<div><input type="text" id="timezone" defaultvalue="',$config->defaults["timezone"],'" name="timezone" value="',$config->ParameterArray["timezone"],'"></div>
+					<div><input type="text" readonly="readonly" id="timezone" defaultvalue="',$config->defaults["timezone"],'" name="timezone" value="',$config->ParameterArray["timezone"],'"></div>
 				</div>
 			</div> <!-- end table -->
 			<h3>',_("Users"),'</h3>

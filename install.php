@@ -5,6 +5,38 @@
 
 */
 
+// Pre-Flight check
+	if(!isset($_SERVER['REMOTE_USER']) || !extension_loaded('mbstring') || !extension_loaded('gettext') || !function_exists("mysql_query") || !function_exists("json_encode")){
+		$tests=array();
+		$tests['Remote User']['errtxt']='<a href="http://httpd.apache.org/docs/2.2/howto/auth.html">http://httpd.apache.org/docs/2.2/howto/auth.html</a>';
+		$tests['Remote User']['goodtxt']='';
+		$tests['Remote User']['state']=(isset($_SERVER['REMOTE_USER']))?"good":"fail";
+		$tests['mbstring']['errtxt']='PHP is missing the <a href="http://php.net/mbstring">mbstring extension</a>';
+		$tests['mbstring']['goodtxt']='';
+		$tests['mbstring']['state']=(extension_loaded('mbstring'))?"good":"fail";
+		$tests['gettext']['errtxt']='PHP is missing the <a href="http://php.net/manual/book.gettext.php">Gettext extension</a>. Please install it.';
+		$tests['gettext']['goodtxt']='';
+		$tests['gettext']['state']=(extension_loaded('gettext'))?"good":"fail";
+		$tests['mysql']['errtxt']='openDCIM requires a MySQL database, but PHP doesn\'t have the <a href="http://php.net/mysql">MySQL</a> extension.';
+		$tests['mysql']['goodtxt']='';
+		$tests['mysql']['state']=(function_exists("mysql_query"))?"good":"fail";
+		$tests['json']['errtxt']='PHP is missing the <a href="http://php.net/manual/book.json.php">JavaScript Object Notation (JSON) extension</a>.  Please install it.';
+		$tests['json']['goodtxt']='';
+		$tests['json']['state']=(function_exists("json_encode"))?"good":"fail";
+
+        echo '<!doctype html><html><head><title>openDCIM :: pre-flight environment sanity check</title><script type="text/javascript" src="scripts/jquery.min.js"></script><script type="text/javascript">$(document).ready(function(){$("tr").each(function(){if($(this).find("td:last-child").text()=="fail"){$(this).addClass("fail");}});});</script><style type="text/css">table{width:80%;border-collapse:collapse;border:3px solid black;}th{text-align:left;text-transform:uppercase;border-right: 1px solid black;}th,td{padding:5px;}tr:nth-child(even){background-color:#d1e1f1;}td:last-child{text-align:center;text-transform:uppercase;border:2px solid;background-color:green;}.fail td:last-child{font-weight: bold;background-color: red;}</style></head><body><h2>Pre-flight environment checks</h2><table>';
+		foreach($tests as $test => $text){
+			$desc=($text['state']=='good')?$text['goodtxt']:$text['errtxt'];
+			print "<tr><th>$test</th><td>$desc</td><td>{$text['state']}</td></tr>";
+		}
+		echo '<tr><th>javascript</th><td>Javascript is used heavily for data validation and a more polished user experience.</td><td><script>document.write("good")</script><noscript>fail</noscript></td></tr>
+			</table>
+		<p>If you are seeing this page then you must correct any issues shown above before the installer will continue.</p>
+
+		</body></html>';
+		exit;
+	}
+
 // Make sure that a db.inc.php has been created
 	if(!file_exists("db.inc.php")){
 		print "Please copy db.inc.php-dist to db.inc.php.<br>\nOpen db.inc.php with a text editor and fill in the blanks for user, pass, database, and server.";
