@@ -188,25 +188,25 @@
 		});
 		$('<button type="button">').attr({
 				id: 'btn_tzmenu'
-		}).appendTo("body");
+		}).appendTo("#general");
 		$('#btn_tzmenu').each(function(){
 			var input=$("#timezone");
-			var offset=input.offset();
+			var offset=input.position();
 			var height=input.innerHeight();
 			$(this).css({
 				'height': height+'px',
 				'width': height+'px',
 				'position': 'absolute',
-				'left': offset.left+input.innerWidth()-height+'px',
+				'left': offset.left+input.width()-height+'px',
 				'top': offset.top+'px'
 			}).click(function(){
 				$("#tzmenu").toggle();
 				$("#tzmenu").focus().click();
 			});
-			offset=$(this).offset();
+			offset=$(this).position();
 			$("#tzmenu").css({
 				'position': 'absolute',
-				'left': offset.left+'px',
+				'left': offset.left+(($(this).outerWidth()-$(this).width())/2)+'px',
 				'top': offset.top+height+'px'
 			});
 			$(this).addClass('text-arrow');
@@ -318,6 +318,7 @@ echo '<div class="main">
 					<div><input type="text" defaultvalue="',$config->defaults["VMExpirationTime"],'" name="VMExpirationTime" value="',$config->ParameterArray["VMExpirationTime"],'"></div>
 				</div>
 			</div> <!-- end table -->
+			',$tzmenu,'
 		</div>
 		<div id="style">
 			<h3>',_("Racks & Maps"),'</h3>
@@ -468,7 +469,5 @@ echo '<div class="main">
    <a href="index.php">Return to Main Menu</a>
   </div>
   </div>
-
-<?php echo $tzmenu; ?>
 </body>
 </html>

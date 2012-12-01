@@ -54,7 +54,7 @@ div.cp { position: relative;}
 #configtabs label:after {content:":"; margin-right: 0.5em;}
 #configtabs #general div > input {width: 20em; }
 #configtabs #general #rackusage input {width: 2em; }
-#configtabs #style .cp > input {width: 6.25em; }
+#configtabs #style .cp > input {width: 7em; }
 #configtabs #email div > input {width: 20em; }
 
 #configtabs #reporting div:first-child + div > input {width: 4.5em; }
