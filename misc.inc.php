@@ -127,6 +127,21 @@ function sort2d ($array, $index){
 }  
 
 /*
+ * Define multibyte string functions in case they aren't present
+ *
+ */
+
+if(!extension_loaded('mbstring')){
+	function mb_strtoupper($text,$encoding=null){
+		return strtoupper($text);
+	}
+	function mb_strtolower($text,$encoding=null){
+		return strtolower($text);
+	}
+}
+
+
+/*
  * Language internationalization slated for v2.0
  *
  */

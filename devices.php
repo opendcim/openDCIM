@@ -1115,7 +1115,6 @@ echo '	<div class="table">
 			var btn=$(this);
 			$( "#dialog-confirm" ).dialog({
 				resizable: false,
-				height:150,
 				modal: true,
 				buttons: {
 					"Yes": function() {

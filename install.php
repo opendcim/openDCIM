@@ -6,7 +6,7 @@
 */
 
 // Pre-Flight check
-	if(!isset($_SERVER['REMOTE_USER']) || !extension_loaded('mbstring') || !extension_loaded('gettext') || !function_exists("mysql_query") || !function_exists("json_encode")){
+	if(!isset($_SERVER['REMOTE_USER']) || !extension_loaded('gettext') || !function_exists("mysql_query") || !function_exists("json_encode")){
 		$tests=array();
 		$tests['Remote User']['errtxt']='<a href="http://httpd.apache.org/docs/2.2/howto/auth.html">http://httpd.apache.org/docs/2.2/howto/auth.html</a>';
 		$tests['Remote User']['goodtxt']='';

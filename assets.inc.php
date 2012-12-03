@@ -343,10 +343,7 @@ class Cabinet {
 	}
 
 	function SearchByCabinetName($db){
-		if ( function_exists(mb_strtoupper) )
-			$select_sql="select * from fac_Cabinet where ucase(Location) like \"%" . mb_strtoupper($this->Location) . "%\" order by Location;";
-		else
-			$select_sql="select * from fac_Cabinet where ucase(Location) like \"%" . strtoupper($this->Location) . "%\" order by Location;";
+		$select_sql="select * from fac_Cabinet where ucase(Location) like \"%" . mb_strtoupper($this->Location) . "%\" order by Location;";
 			
 		$result=mysql_query($select_sql,$db);
 
@@ -515,15 +512,9 @@ class Device {
 		// Force all uppercase for labels
 		//
 
-		if ( function_exists(mb_strtoupper) ) {
-			$this->Label = mb_strtoupper( $this->Label );
-			$this->SerialNo = mb_strtoupper( $this->SerialNo );
-			$this->AssetTag = mb_strtoupper( $this->AssetTag );
-		} else {
-			$this->Label = strtoupper( $this->Label );
-			$this->SerialNo = strtoupper( $this->SerialNo );
-			$this->AssetTag = strtoupper( $this->AssetTag );
-		}
+		$this->Label = mb_strtoupper( $this->Label );
+		$this->SerialNo = mb_strtoupper( $this->SerialNo );
+		$this->AssetTag = mb_strtoupper( $this->AssetTag );
 		
 		if ( ! in_array( $this->DeviceType, array( 'Server', 'Appliance', 'Storage Array', 'Switch', 'Chassis', 'Patch Panel', 'Physical Infrastructure' ) ) )
 		  $this->DeviceType = "Server";
@@ -545,6 +536,8 @@ class Device {
 		}
 
 		$this->DeviceID = mysql_insert_id( $db );
+
+		(class_exists('LogActions'))?LogActions::LogThis($this):'';
 
 		return $this->DeviceID;
 	}
@@ -911,6 +904,7 @@ class Device {
 			return -1;
 		}
 
+		(class_exists('LogActions'))?LogActions::LogThis($this):'';
 		return 0;
 	}
 
