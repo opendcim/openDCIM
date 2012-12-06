@@ -1811,7 +1811,7 @@ class SupplyBin {
 		}
 	}
 	
-	function AddBin( $db ) {
+	function CreateBin( $db ) {
 		$sql = sprintf( "insert into fac_SupplyBin set Location=\"%s\"", addslashes( $this->Location ) );
 		mysql_query( $sql, $db );
 		
@@ -1853,7 +1853,7 @@ class Supplies {
 	var $MinQty;
 	var $MaxQty;
 	
-	function AddSupplies( $db ) {
+	function CreateSupplies( $db ) {
 		$sql = sprintf( "insert into fac_Supplies set PartNum=\"%s\", PartName=\"%s\", MinQty='%d', MaxQty='%d'", addslashes( $this->PartNum ), addslashes( $this->PartName ), intval( $this->MinQty ), intval( $this->MaxQty ) );
 		mysql_query( $sql, $db );
 		

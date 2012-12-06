@@ -32,18 +32,33 @@ class LogActions {
 
 	// Generic catch all logging function
 	static function LogThis($object){
+		$userid=$_SERVER['REMOTE_USER'];
 		$trace=debug_backtrace();
-		$caller=array_shift($trace);
-		$caller=array_shift($trace);
-//		$caller['function']  <-- regex this to get action create, delete, etc
-		$action='unknown';
+		// we're only concerned with the 2nd record $trace can be read for a full debug if something calls for it
+		$caller=$trace[1];
+		$action=$caller['function'];
 		if(preg_match("/create/i", $caller['function'])){$action='1';}
 		if(preg_match("/delete/i", $caller['function'])){$action='2';}
+		if(preg_match("/update/i", $caller['function'])){$action='3';}
 		switch(get_class($object)){
 			case "Device":
-				$sql="INSERT INTO fac_DeviceLog set UserID='{$_SERVER['remote_user']}', DeviceID='$object->DeviceID', Action=$action, Time=NOW();";
+				$sql="INSERT INTO fac_DeviceLog set UserID='$userid', DeviceID='$object->DeviceID', Action=$action, Time=NOW();";
 				break;
+			case "Cabinet":
+			case "SwitchConnection":
+				// not sure what should be logged here exactly if anything, probably just create, update and remove
+				//create connection
+				//remove connection
+				//drop endpoint connections?
+				//drop switch connections?
+			case "SupplyBin":
+			case "Supplies":
+			case "Config":
+				// do we want to track when the default system config has been updated?
+			case "Contact":
 			default:
+				// default action to keep it from doing anything if it doesn't match a known logging option
+				// $caller['class'] :: object's owning class
 				$sql="";
 		}
 		mysql_query($sql);

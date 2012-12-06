@@ -14,6 +14,66 @@
 		exit;
 	}
 
+	// AJAX
+	if(isset($_POST['deletecheck'])){
+		$contactid=intval($_POST['contactid']);
+		$sql="SELECT * FROM fac_Device WHERE PrimaryContact = $contactid";
+		$results=mysql_query($sql, $facDB);
+		if(mysql_num_rows($results)>0){
+			echo "<p>{$_POST['contact']} is currently the primary contact listed for the following equipment:</p><ul>";
+			while($devices=mysql_fetch_assoc($results)){
+				echo "<li>{$devices['Label']}</li>";
+			}
+			echo "</ul>";
+		}else{
+			return 0;
+		}
+		exit;
+	}
+	if(isset($_POST['deptcheck'])){
+		$contactid=intval($_POST['contactid']);
+		$sql="SELECT * FROM fac_DeptContacts WHERE ContactID = $contactid";
+		$results=mysql_query($sql, $facDB);
+		if(mysql_num_rows($results)>0){
+			$dept=new Department();
+			$emptydept=array();
+			echo "<p>Member of the following departments</p><ul>";
+			while($depts=mysql_fetch_assoc($results)){
+				$dept->DeptID=$depts['DeptID'];
+				$dept->GetDeptByID($facDB);
+				$subresults=mysql_fetch_row(mysql_query("SELECT COUNT(*) FROM fac_DeptContacts WHERE DeptID = $dept->DeptID;",$facDB));
+				$subresults=$subresults[0];
+				if($subresults<2){
+					$emptydept[$dept->DeptID]=$dept->Name;
+				}
+				print "<li>$dept->Name ($subresults)</li>";
+			}
+			echo "</ul>";
+			$dev=new Device();
+			if(count($emptydept)){
+				echo "<p>The following departments will be empty after this user is removed</p><ul>";
+				foreach($emptydept as $deptid => $deptname){
+					print "<li>$deptname";
+					$dev->Owner=$deptid;
+					$devices=$dev->GetDevicesbyOwner($facDB);
+					if(count($devices)>0){
+						print "<p>The following devices will be orphaned if $deptname is deleted</p><ul>";
+						foreach($devices as $dev){
+							print "<li>$dev->Label</li>";
+						}
+						print "</ul>";
+					}
+					print "</li>";
+				}
+				print "</ul>";
+			}
+		}else{
+			return 0;
+		}
+		exit;
+	}
+	// END - AJAX
+
 	$formfix="";
 	if(isset($_REQUEST['contactid']) && ($_REQUEST['contactid']>0)) {
 		$contact->ContactID=(isset($_POST['contactid']) ? $_POST['contactid'] : $_GET['contactid']);
@@ -65,6 +125,21 @@
   <script type="text/javascript">
   	$(document).ready(function() {
 		$('#cform').validationEngine({});
+		$('button[name=deletecheck]').click(function(){
+			$.post('', {contactid: $('#contactid').val(), deletecheck:'', contact: $('#contactid option:selected').text()}, function(data){
+				$('#deletedialog').html('');
+				if(data!=''){
+					$('#deletedialog').html(data);
+					$('#deletedialog').dialog({minWidth: 450, maxWidth: 450, closeOnEscape: true });
+				}
+				$.post('', {contactid: $('#contactid').val(), deptcheck:''}, function(data){
+					if(data!=''){
+						$('#deletedialog').append(data);
+						$('#deletedialog').dialog({minWidth: 450, maxWidth: 450, closeOnEscape: true });
+					}
+				});
+			});
+		});
 	});
   </script>
 </head>
@@ -123,7 +198,7 @@ echo '	</select></div>
 <div class="caption">';
 
 	if($contact->ContactID >0){
-		echo '   <button type="submit" name="action" value="Update">',_("Update"),'</button>';
+		echo '   <button type="submit" name="action" value="Update">',_("Update"),'</button><button type="button" name="deletecheck">',_("Delete"),'</button>';
 	}else{
 		echo '   <button type="submit" name="action" value="Create">',_("Create"),'</button>';
 	}
@@ -132,6 +207,9 @@ echo '	</select></div>
 </div> <!-- END div.table -->
 </form>
 </div></div>
+
+<div id="deletedialog" title="Removing contact"></div>
+
 <?php echo '<a href="index.php">[ ',_("Return to Main Menu"),' ]</a>'; ?>
 </div> <!-- END div.main -->
 </div> <!-- END div.page -->

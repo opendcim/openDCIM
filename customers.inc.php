@@ -90,6 +90,16 @@ class Contact {
         
 		$result = mysql_query( $updateSQL, $db );
 	}
+	function DeleteContact($db){
+		/*
+		  check for equipment owned by contact
+			if equipment found give a list of alternate contacts in group or no contact?
+		  check to see if this is the last person in a group
+			offer to remove the group if there is no equipment owned by the group
+		*/
+
+
+	}
 
 	function GetContactList( $db ) {
 		$selectSQL = "select * from fac_Contact order by LastName ASC";

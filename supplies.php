@@ -30,7 +30,7 @@
 
 		if($_REQUEST["action"]=="Create"){
 			if($sup->PartNum!=null && $sup->PartNum!=""){
-  				$sup->AddSupplies($facDB);
+  				$sup->CreateSupplies($facDB);
 			}
 		}else{
 			$status="Updated";

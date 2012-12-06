@@ -246,6 +246,11 @@ div.table > div > div span {display: block;font-size: 0.75em;}
 .rights > div:nth-last-child(2) div {text-align: center;padding-top: .75em;padding-bottom: .75em;}
 div.table > div + div + div + div > div + div label {float: none;}
 
+/* Contact Editor */
+#deletedialog {display: none;}
+#deletedialog p {font-weight: bold;}
+#deletedialog li {margin-left: 1em; list-style: disc outside none;}
+
 /* Inventory Reports */
 .reports fieldset {margin-right: 20px;}
 #reports > div {display: inline-block;vertical-align: top;}
