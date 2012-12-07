@@ -15,16 +15,30 @@
 	}
 
 	// AJAX
+	if(isset($_POST['n']) && isset($_POST['o'])){
+		mysql_query("UPDATE fac_Device SET PrimaryContact=".intval($_POST['n'])." WHERE PrimaryContact=".intval($_POST['o']).";", $facDB);
+		if(mysql_affected_rows($facDB)>0){
+			return "yes";
+		}else{
+			return "no";
+		}
+	}
 	if(isset($_POST['deletecheck'])){
 		$contactid=intval($_POST['contactid']);
 		$sql="SELECT * FROM fac_Device WHERE PrimaryContact = $contactid";
 		$results=mysql_query($sql, $facDB);
 		if(mysql_num_rows($results)>0){
-			echo "<p>{$_POST['contact']} is currently the primary contact listed for the following equipment:</p><ul>";
+			echo "<p>{$_POST['contact']} is currently the primary contact listed for the following equipment:</p><div><ul>";
 			while($devices=mysql_fetch_assoc($results)){
 				echo "<li><a href=\"devices.php?deviceid={$devices['DeviceID']}\">{$devices['Label']}</a></li>";
 			}
-			echo "</ul>";
+			$contacts=Contact::GetContactList($facDB);
+			$contlist='<select id="primarycontact" name="primarycontact"><option value="0">Unassigned</option>';
+			foreach($contacts as $contactid => $contact){
+				$contlist.="<option value=\"$contact->ContactID\">$contact->LastName, $contact->FirstName</option>";
+			}
+			$contlist.='</select>';
+			echo "</ul></div><div class=\"middle\"><button>=></button></div><div>Transfer primary contact to: $contlist</div>";
 		}else{
 			return 0;
 		}
@@ -143,7 +157,6 @@
 					closeOnEscape: true,
 					position: { my: "center", at: "center", of: window },
 					autoOpen: false,
-					hide: "drop",
 					buttons: {
 						"Yes": function(){
 							alert ('user clicked yes, submit something to remove the contact');

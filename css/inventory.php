@@ -250,6 +250,8 @@ div.table > div + div + div + div > div + div label {float: none;}
 #deletedialog {display: none;}
 #deletedialog p {font-weight: bold;}
 #deletedialog li {margin-left: 1em; list-style: disc outside none;}
+#deletedialog div {width: 45%; display: inline-block; vertical-align: top;}
+#deletedialog .middle {width: 9%;}
 
 /* Inventory Reports */
 .reports fieldset {margin-right: 20px;}

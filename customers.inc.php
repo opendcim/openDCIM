@@ -101,7 +101,7 @@ class Contact {
 
 	}
 
-	function GetContactList( $db ) {
+	static function GetContactList( $db ) {
 		$selectSQL = "select * from fac_Contact order by LastName ASC";
 		$result = mysql_query( $selectSQL, $db );
 
