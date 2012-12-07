@@ -89,7 +89,7 @@ class CDUTemplate {
 		return;
 	}
 	
-	function AddTemplate( $db ) {
+	function CreateTemplate( $db ) {
 		$sql = sprintf( "select * from fac_CDUTemplate where ManufacturerID=%d and Model=\"%s\"", intval( $this->ManufacturerID ), addslashes( $this->Model ) );
 		$result = mysql_query( $sql, $db );
 		

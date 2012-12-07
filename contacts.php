@@ -143,6 +143,7 @@
 					closeOnEscape: true,
 					position: { my: "center", at: "center", of: window },
 					autoOpen: false,
+					hide: "drop",
 					buttons: {
 						"Yes": function(){
 							alert ('user clicked yes, submit something to remove the contact');

@@ -21,10 +21,12 @@
 	GNU General Public License for more details.
 
 	For further details on the license, see http://www.gnu.org/licenses
-*/
 
-class DataCenter {
-	/* DataCenter:	A logical/physical container for assets.  This may be a room, or
+
+
+	Contains:
+
+		DataCenter:	A logical/physical container for assets.  This may be a room, or
 					even just a portion of a room.  It does need to be a contiguous
 					space for mapping purposes.  Large data centers may want to break
 					up the space into quadrants for easier management, but it can
@@ -32,7 +34,15 @@ class DataCenter {
 					Any mappings for larger than approximately 2500 SF become difficult
 					to see on a laptop screen, because each cabinet takes up such a small
 					portion of the overall map.
-	*/
+
+		DeviceTemplate
+		Manufacturer
+		Zone
+
+
+*/
+
+class DataCenter {
 	
 	var $DataCenterID;
 	var $Name;

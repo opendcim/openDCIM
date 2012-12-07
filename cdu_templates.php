@@ -36,7 +36,7 @@
 		$template->NumOutlets = $_REQUEST["numoutlets"];
 
 		if ( $_REQUEST['action']=='Create' ) {
-			$template->AddTemplate($facDB);
+			$template->CreateTemplate($facDB);
 		} else {
 			$status=_('Updated');
 			$template->UpdateTemplate($facDB);

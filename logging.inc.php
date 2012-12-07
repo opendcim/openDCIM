@@ -21,6 +21,17 @@
 	GNU General Public License for more details.
 
 	For further details on the license, see http://www.gnu.org/licenses
+
+
+	=====================================================================
+
+
+	Logging is designed to be object agnostic.  On any function you want
+	logged add the following line to the function.
+
+	LogActions::LogThis($this);
+
+
 */
 
 class LogActions {
@@ -56,10 +67,18 @@ class LogActions {
 			case "Config":
 				// do we want to track when the default system config has been updated?
 			case "Contact":
+			case "PowerDistribution":
+			case "PowerConnection":
+				// similar questions as to the switch connections. are we going to track this?
+			case "CDUTemplate":
+			case "PowerPanel":
+				// only has create and update. should changes here be logged or figure out what changed and log that?
+			case "PowerSource":
+				// same as PowerPanel
+			case "DeviceTemplate":
 			default:
-				// default action to keep it from doing anything if it doesn't match a known logging option
-				// $caller['class'] :: object's owning class
-				$sql="";
+				// default action to keep log anything we don't understand
+				$sql="INSERT INTO fac_GenericLog set UserID='$userid', Object='{$caller['class']}', Action='{$caller['function']}', Time=NOW();";
 		}
 		mysql_query($sql);
 	}
