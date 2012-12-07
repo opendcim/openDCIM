@@ -141,16 +141,21 @@ class Cabinet {
 		return 0;
 	}
 
-	function ListCabinets( $db ) {
-		$cabinetList = array();
+	static function ListCabinets($db,$deptid=null){
+		$cabinetList=array();
 
-		$select_sql = "select * from fac_Cabinet order by DataCenterID, Location";
+		$sql='';
+		if(!is_null($deptid)){
+			$sql=" WHERE AssignedTo=".intval($deptid);
+		}
 
-		if ( ! $result = mysql_query( $select_sql, $db ) ) {
+		$select_sql="SELECT * FROM fac_Cabinet$sql ORDER BY DataCenterID, Location;";
+
+		if(!$result=mysql_query($select_sql,$db)){
 			return 0;
 		}
 
-		while ( $cabinetRow = mysql_fetch_array( $result ) ) {
+		while($cabinetRow=mysql_fetch_array($result)){
 			$cabID = $cabinetRow[ "CabinetID" ];
 			$cabinetList[ $cabID ] = new Cabinet();
 

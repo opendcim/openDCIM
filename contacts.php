@@ -22,7 +22,7 @@
 		if(mysql_num_rows($results)>0){
 			echo "<p>{$_POST['contact']} is currently the primary contact listed for the following equipment:</p><ul>";
 			while($devices=mysql_fetch_assoc($results)){
-				echo "<li>{$devices['Label']}</li>";
+				echo "<li><a href=\"devices.php?deviceid={$devices['DeviceID']}\">{$devices['Label']}</a></li>";
 			}
 			echo "</ul>";
 		}else{
@@ -37,7 +37,7 @@
 		if(mysql_num_rows($results)>0){
 			$dept=new Department();
 			$emptydept=array();
-			echo "<p>Member of the following departments</p><ul>";
+			echo "<p>Contact will be removed from the following departments</p><ul>";
 			while($depts=mysql_fetch_assoc($results)){
 				$dept->DeptID=$depts['DeptID'];
 				$dept->GetDeptByID($facDB);
@@ -57,9 +57,18 @@
 					$dev->Owner=$deptid;
 					$devices=$dev->GetDevicesbyOwner($facDB);
 					if(count($devices)>0){
-						print "<p>The following devices will be orphaned if $deptname is deleted</p><ul>";
+						print "<p>The following devices belong to $deptname:</p><ul>";
 						foreach($devices as $dev){
-							print "<li>$dev->Label</li>";
+							print "<li><a href=\"devices.php?deviceid=$dev->DeviceID\">$dev->Label</a></li>";
+						}
+						print "</ul>";
+					}
+					// check for racks owned by the soon to be deleted department
+					$cablist=Cabinet::ListCabinets($facDB, $deptid);
+					if(count($cablist)>0){
+						print "<p>The following racks are assigned to $deptname:</p><ul>";
+						foreach($cablist as $cab){
+							print "<li><a href=\"cabinets.php?cabinetid=$cab->CabinetID\">$cab->Location</a></li>";
 						}
 						print "</ul>";
 					}
@@ -127,15 +136,32 @@
 		$('#cform').validationEngine({});
 		$('button[name=deletecheck]').click(function(){
 			$.post('', {contactid: $('#contactid').val(), deletecheck:'', contact: $('#contactid option:selected').text()}, function(data){
+				$('#deletedialog').dialog({
+					modal: true,
+					minWidth: 600,
+					maxWidth: 600,
+					closeOnEscape: true,
+					position: { my: "center", at: "center", of: window },
+					autoOpen: false,
+					buttons: {
+						"Yes": function(){
+							alert ('user clicked yes, submit something to remove the contact');
+						},
+						"No": function(){
+							$(this).dialog("close");
+						}
+					}
+				});
 				$('#deletedialog').html('');
 				if(data!=''){
 					$('#deletedialog').html(data);
-					$('#deletedialog').dialog({minWidth: 450, maxWidth: 450, closeOnEscape: true });
+					$('#deletedialog').dialog("open");
 				}
 				$.post('', {contactid: $('#contactid').val(), deptcheck:''}, function(data){
 					if(data!=''){
 						$('#deletedialog').append(data);
-						$('#deletedialog').dialog({minWidth: 450, maxWidth: 450, closeOnEscape: true });
+						$('#deletedialog').dialog("close");
+						$('#deletedialog').dialog("open");
 					}
 				});
 			});
@@ -208,7 +234,7 @@ echo '	</select></div>
 </form>
 </div></div>
 
-<div id="deletedialog" title="Removing contact"></div>
+<div id="deletedialog" title="Continue removing contact?"></div>
 
 <?php echo '<a href="index.php">[ ',_("Return to Main Menu"),' ]</a>'; ?>
 </div> <!-- END div.main -->
