@@ -348,7 +348,7 @@ class Cabinet {
 	}
 
 	function SearchByCabinetName($db){
-		$select_sql="select * from fac_Cabinet where ucase(Location) like \"%" . mb_strtoupper($this->Location) . "%\" order by Location;";
+		$select_sql="select * from fac_Cabinet where ucase(Location) like \"%".  $this->Location . "%\" order by Location;";
 			
 		$result=mysql_query($select_sql,$db);
 
@@ -514,12 +514,6 @@ class Device {
 	var $Reservation;
 
 	function CreateDevice( $db ) {
-		// Force all uppercase for labels
-		//
-
-		$this->Label = mb_strtoupper( $this->Label );
-		$this->SerialNo = mb_strtoupper( $this->SerialNo );
-		$this->AssetTag = mb_strtoupper( $this->AssetTag );
 		
 		if ( ! in_array( $this->DeviceType, array( 'Server', 'Appliance', 'Storage Array', 'Switch', 'Chassis', 'Patch Panel', 'Physical Infrastructure' ) ) )
 		  $this->DeviceType = "Server";
@@ -599,11 +593,6 @@ class Device {
 	}
   
 	function UpdateDevice( $db ) {
-		// Force all uppercase for labels
-		//
-		$this->Label = strtoupper( $this->Label );
-		$this->SerialNo = strtoupper( $this->SerialNo );
-		$this->AssetTag = strtoupper( $this->AssetTag );
 
 		if ( ! in_array( $this->DeviceType, array( 'Server', 'Appliance', 'Storage Array', 'Switch', 'Chassis', 'Patch Panel', 'Physical Infrastructure' ) ) )
 		  $this->DeviceType = "Server";
@@ -914,7 +903,7 @@ class Device {
 	}
 
 	function SearchDevicebyLabel( $db ) {
-		$searchSQL = "select * from fac_Device where Label like \"%" . addslashes(strtoupper( $this->Label )) . "%\" order by Label";
+		$searchSQL = "select * from fac_Device where Label like \"%" . addslashes(( $this->Label )) . "%\" order by Label";
 
 		if ( ! $result = mysql_query( $searchSQL, $db ) ) {
 			return 0;
@@ -1059,7 +1048,7 @@ class Device {
 	}
 
   function SearchDevicebySerialNo( $db ) {
-          $searchSQL = "select * from fac_Device where SerialNo like \"%" . addslashes(strtoupper( $this->SerialNo )) . "%\" order by Label";
+          $searchSQL = "select * from fac_Device where SerialNo like \"%" . addslashes( $this->SerialNo ) . "%\" order by Label";
 
           if ( ! $result = mysql_query( $searchSQL, $db ) ) {
                   return 0;
@@ -1107,7 +1096,7 @@ class Device {
   }
 
   function SearchDevicebyAssetTag( $db ) {
-          $searchSQL = "select * from fac_Device where AssetTag like \"%" . addslashes(strtoupper( $this->AssetTag )) . "%\" order by Label";
+          $searchSQL = "select * from fac_Device where AssetTag like \"%" . addslashes( $this->AssetTag ) . "%\" order by Label";
 
           if ( ! $result = mysql_query( $searchSQL, $db ) ) {
                   return 0;
@@ -1455,7 +1444,7 @@ class ESX {
   }
   
   function SearchByVMName( $db ) {
-    $selectSQL = "select * from fac_VMInventory where ucase(vmName) like \"%" . strtoupper($this->vmName) . "%\"";
+    $selectSQL = "select * from fac_VMInventory where ucase(vmName) like \"%" . $this->vmName . "%\"";
     $result = mysql_query( $selectSQL, $db );
     
     $vmList = array();
@@ -1566,10 +1555,10 @@ class RackRequest {
   function CreateRequest( $db ) {
     $sql = "insert into fac_RackRequest set RequestTime=now(), 
         RequestorID=\"" . intval($this->RequestorID) . "\",
-        Label=\"" . addslashes( strtoupper($this->Label )) . "\", 
-        SerialNo=\"" . addslashes( strtoupper($this->SerialNo )) . "\",
+        Label=\"" . addslashes( ($this->Label )) . "\", 
+        SerialNo=\"" . addslashes( ($this->SerialNo )) . "\",
 		MfgDate=\"" . date("Y-m-d",strtotime($this->MfgDate)) . "\",
-        AssetTag=\"" . addslashes( strtoupper($this->AssetTag )) . "\",
+        AssetTag=\"" . addslashes( ($this->AssetTag )) . "\",
         ESX=\"" . intval($this->ESX) . "\",
         Owner=\"" . intval($this->Owner) . "\",
         DeviceHeight=\"" . intval($this->DeviceHeight) . "\", 
@@ -1580,7 +1569,7 @@ class RackRequest {
         DeviceClass=\"" . addslashes($this->DeviceClass) . "\",
         DeviceType=\"" . addslashes($this->DeviceType) . "\", 
         LabelColor=\"" . addslashes($this->LabelColor) . "\", 
-        CurrentLocation=\"" . addslashes( strtoupper($this->CurrentLocation) ) . "\", 
+        CurrentLocation=\"" . addslashes( ($this->CurrentLocation) ) . "\", 
         SpecialInstructions=\"" . addslashes( $this->SpecialInstructions ) . "\"";
     
     $result = mysql_query( $sql, $db );
