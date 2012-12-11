@@ -348,7 +348,7 @@ class Cabinet {
 	}
 
 	function SearchByCabinetName($db){
-		$select_sql="select * from fac_Cabinet where ucase(Location) like \"%" . mb_strtoupper($this->Location) . "%\" order by Location;";
+		$select_sql="select * from fac_Cabinet where ucase(Location) like \"%".  $this->Location . "%\" order by Location;";
 			
 		$result=mysql_query($select_sql,$db);
 
@@ -1048,7 +1048,7 @@ class Device {
 	}
 
   function SearchDevicebySerialNo( $db ) {
-          $searchSQL = "select * from fac_Device where SerialNo like \"%" . addslashes(strtoupper( $this->SerialNo )) . "%\" order by Label";
+          $searchSQL = "select * from fac_Device where SerialNo like \"%" . addslashes( $this->SerialNo ) . "%\" order by Label";
 
           if ( ! $result = mysql_query( $searchSQL, $db ) ) {
                   return 0;
@@ -1096,7 +1096,7 @@ class Device {
   }
 
   function SearchDevicebyAssetTag( $db ) {
-          $searchSQL = "select * from fac_Device where AssetTag like \"%" . addslashes(strtoupper( $this->AssetTag )) . "%\" order by Label";
+          $searchSQL = "select * from fac_Device where AssetTag like \"%" . addslashes( $this->AssetTag ) . "%\" order by Label";
 
           if ( ! $result = mysql_query( $searchSQL, $db ) ) {
                   return 0;
@@ -1444,7 +1444,7 @@ class ESX {
   }
   
   function SearchByVMName( $db ) {
-    $selectSQL = "select * from fac_VMInventory where ucase(vmName) like \"%" . strtoupper($this->vmName) . "%\"";
+    $selectSQL = "select * from fac_VMInventory where ucase(vmName) like \"%" . $this->vmName . "%\"";
     $result = mysql_query( $selectSQL, $db );
     
     $vmList = array();
