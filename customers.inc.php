@@ -90,8 +90,14 @@ class Contact {
         
 		$result = mysql_query( $updateSQL, $db );
 	}
+	function DeleteContact(){
+		// Clear up any records that might have still had this contact set as the primary contact.
+		mysql_query("UPDATE fac_Device SET PrimaryContact=0 WHERE PrimaryContact=".intval($this->ContactID).";");
+		mysql_query("DELETE FROM fac_Contact WHERE ContactID=".intval($this->ContactID).";");
+		return mysql_affected_rows();
+	}
 
-	function GetContactList( $db ) {
+	static function GetContactList( $db ) {
 		$selectSQL = "select * from fac_Contact order by LastName ASC";
 		$result = mysql_query( $selectSQL, $db );
 

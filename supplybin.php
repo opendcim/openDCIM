@@ -31,7 +31,7 @@
 			$bin->Location=$_POST["location"];
 
 			if($_POST["action"]=="Create"){
-				$bin->AddBin($facDB);
+				$bin->CreateBin($facDB);
 			}else{
 				$binContents=$bc->GetBinContents($facDB);
 

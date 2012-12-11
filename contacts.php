@@ -14,6 +14,99 @@
 		exit;
 	}
 
+	// AJAX
+	if(isset($_POST['o'])){
+		$contactid=intval($_POST['o']);
+		$check=0;
+		// Check for if contact is set as the primary contact for any devices
+		// if so present a list of choices to bulk change them all to
+		if(isset($_POST['deletecheck'])){
+			$sql="SELECT * FROM fac_Device WHERE PrimaryContact = $contactid";
+			$results=mysql_query($sql, $facDB);
+			if(mysql_num_rows($results)>0){
+				print "<p>{$_POST['contact']} is currently the primary contact listed for the following equipment:</p><div><ul>";
+				while($devices=mysql_fetch_assoc($results)){
+					print "<li><a href=\"devices.php?deviceid={$devices['DeviceID']}\">{$devices['Label']}</a></li>";
+				}
+				$contacts=Contact::GetContactList($facDB);
+				$contlist='<select id="primarycontact" name="primarycontact"><option value="0">Unassigned</option>';
+				foreach($contacts as $contactid => $contact){
+					$contlist.="<option value=\"$contact->ContactID\">$contact->LastName, $contact->FirstName</option>";
+				}
+				$contlist.='</select>';
+				print "</ul></div><div class=\"middle\"><button title=\"Transfer primary contact to\">=></button></div><div>$contlist</div>";
+			}else{
+				echo '';
+			}
+			exit;
+		}
+		if(isset($_POST['deptcheck'])){
+			$sql="SELECT * FROM fac_DeptContacts WHERE ContactID = $contactid";
+			$results=mysql_query($sql, $facDB);
+			if(mysql_num_rows($results)>0){
+				$dept=new Department();
+				$emptydept=array();
+				echo "<p>Contact will be removed from the following departments</p><ul>";
+				while($depts=mysql_fetch_assoc($results)){
+					$dept->DeptID=$depts['DeptID'];
+					$dept->GetDeptByID($facDB);
+					$subresults=mysql_fetch_row(mysql_query("SELECT COUNT(*) FROM fac_DeptContacts WHERE DeptID = $dept->DeptID;",$facDB));
+					$subresults=$subresults[0];
+					if($subresults<2){
+						$emptydept[$dept->DeptID]=$dept->Name;
+					}
+					print "<li>$dept->Name ($subresults)</li>";
+				}
+				echo "</ul>";
+				$dev=new Device();
+				if(count($emptydept)){
+					echo "<p>The following departments will be empty after this user is removed</p><ul>";
+					foreach($emptydept as $deptid => $deptname){
+						print "<li>$deptname";
+						$dev->Owner=$deptid;
+						$devices=$dev->GetDevicesbyOwner($facDB);
+						if(count($devices)>0){
+							print "<p>The following devices belong to $deptname:</p><ul>";
+							foreach($devices as $dev){
+								print "<li><a href=\"devices.php?deviceid=$dev->DeviceID\">$dev->Label</a></li>";
+							}
+							print "</ul>";
+						}
+						// check for racks owned by the soon to be deleted department
+						$cablist=Cabinet::ListCabinets($facDB, $deptid);
+						if(count($cablist)>0){
+							print "<p>The following racks are assigned to $deptname:</p><ul>";
+							foreach($cablist as $cab){
+								print "<li><a href=\"cabinets.php?cabinetid=$cab->CabinetID\">$cab->Location</a></li>";
+							}
+							print "</ul>";
+						}
+						print "</li>";
+					}
+					print "</ul>";
+				}
+			}
+			echo '<span class="warning">There is no undo for this action. Are you sure?</span>';
+			exit;
+		}
+		// User is sure they want to remove the contact so remove it. If
+		// no rows are affected then return an error.
+		if(isset($_POST['deletesure'])){
+			$contact->ContactID=$contactid;
+			$check=$contact->DeleteContact();
+		}
+		// Update all devices that had the contact as the primary contact and 
+		// change to the alternate they chose. If no records are updated return
+		// an error
+		if(isset($_POST['n'])){
+			mysql_query("UPDATE fac_Device SET PrimaryContact=".intval($_POST['n'])." WHERE PrimaryContact=$contactid;");
+			$check=mysql_affected_rows();
+		}
+		echo($check>0)?'yes':'no';
+		exit;
+	}
+	// END - AJAX
+
 	$formfix="";
 	if(isset($_REQUEST['contactid']) && ($_REQUEST['contactid']>0)) {
 		$contact->ContactID=(isset($_POST['contactid']) ? $_POST['contactid'] : $_GET['contactid']);
@@ -64,7 +157,56 @@
 
   <script type="text/javascript">
   	$(document).ready(function() {
+		$(document).tooltip();
 		$('#cform').validationEngine({});
+		$('button[name=deletecheck]').click(function(){
+			$.post('', {o: $('#contactid').val(), deletecheck:'', contact: $('#contactid option:selected').text()}, function(data){
+				$('#deletedialog').dialog({
+					modal: true,
+					minWidth: 600,
+					maxWidth: 600,
+					closeOnEscape: true,
+					position: { my: "center", at: "center", of: window },
+					autoOpen: false,
+					buttons: {
+						"Yes": function(){
+							$.post('', {o: $('#contactid').val(), deletesure:''},function(data){
+								if(data=="yes"){
+									//reload the page
+									location.replace('contacts.php');
+								}else{
+									alert("Something broke and the delete didn't complete");
+								}
+							});
+						},
+						"No": function(){
+							$(this).dialog("close");
+						}
+					}
+				});
+				$('#deletedialog').html('');
+				if(data!=''){
+					$('#deletedialog').html(data);
+					$('#deletedialog').dialog("open");
+				}
+				$.post('', {o: $('#contactid').val(), deptcheck:''}, function(data){
+					if(data!=''){
+						$('#deletedialog').append(data);
+						$('#deletedialog').dialog("close");
+						$('#deletedialog').dialog("open");
+					}
+				});
+				$('#deletedialog .middle button').click(function(){
+					$.post('', {n: $('#primarycontact').val(), o: $('#contactid').val()}, function(data){
+						if(data=="yes"){
+							$('button[name=deletecheck]').click();
+						}else{
+							alert('Error');
+						}
+					});
+				});
+			});
+		});
 	});
   </script>
 </head>
@@ -123,7 +265,7 @@ echo '	</select></div>
 <div class="caption">';
 
 	if($contact->ContactID >0){
-		echo '   <button type="submit" name="action" value="Update">',_("Update"),'</button>';
+		echo '   <button type="submit" name="action" value="Update">',_("Update"),'</button><button type="button" name="deletecheck">',_("Delete"),'</button>';
 	}else{
 		echo '   <button type="submit" name="action" value="Create">',_("Create"),'</button>';
 	}
@@ -132,6 +274,9 @@ echo '	</select></div>
 </div> <!-- END div.table -->
 </form>
 </div></div>
+
+<div id="deletedialog" title="Continue removing contact?"></div>
+
 <?php echo '<a href="index.php">[ ',_("Return to Main Menu"),' ]</a>'; ?>
 </div> <!-- END div.main -->
 </div> <!-- END div.page -->

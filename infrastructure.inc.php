@@ -21,19 +21,40 @@
 	GNU General Public License for more details.
 
 	For further details on the license, see http://www.gnu.org/licenses
+
+
+	Classes Defined Here:
+
+		DataCenter:		A logical/physical container for assets.  This may be a room, or
+						even just a portion of a room.  It does need to be a contiguous
+						space for mapping purposes.  Large data centers may want to break
+						up the space into quadrants for easier management, but it can
+						easily be handled as a whole (in terms of the software and database).
+						Any mappings for larger than approximately 2500 SF become difficult
+						to see on a laptop screen, because each cabinet takes up such a small
+						portion of the overall map.
+
+		DeviceTemplate:	A template with default values for height, wattage, and weight.
+						Height and wattage values can be overridden at the device level.
+						Templates are completely optional, but are a very good way to
+						manage the power capacity of the data center.
+
+		Manufacturer:	Used only in DeviceTemplate, so if you choose not to utilize
+						templates, there is no need to enter Manufacturers.
+
+		Zone:			A logical grouping of DataCenter components, so that if a large data
+						center has been broken down into smaller components, it can be
+						reported on as a single entity.  For example, Building A may have
+						data centers in Room 100, Room 109, and Room 205.  All three can
+						be placed in a single zone for reporting on Building A data center
+						metrics.
+						
+						NOT YET IMPLEMENTED
+
+
 */
 
 class DataCenter {
-	/* DataCenter:	A logical/physical container for assets.  This may be a room, or
-					even just a portion of a room.  It does need to be a contiguous
-					space for mapping purposes.  Large data centers may want to break
-					up the space into quadrants for easier management, but it can
-					easily be handled as a whole (in terms of the software and database).
-					Any mappings for larger than approximately 2500 SF become difficult
-					to see on a laptop screen, because each cabinet takes up such a small
-					portion of the overall map.
-	*/
-	
 	var $DataCenterID;
 	var $Name;
 	var $SquareFootage;
@@ -343,12 +364,6 @@ class DataCenter {
 }
 
 class DeviceTemplate {
-	/* DeviceTemplate:	A template with default values for height, wattage, and weight.
-						Height and wattage values can be overridden at the device level.
-						Templates are completely optional, but are a very good way to
-						manage the power capacity of the data center.
-	*/
-	
   var $TemplateID;
   var $ManufacturerID;
   var $Model;
@@ -443,10 +458,6 @@ class DeviceTemplate {
 }
 
 class Manufacturer {
-	/* Manufacturer:	Used only in DeviceTemplate, so if you choose not to utilize
-						templates, there is no need to enter Manufacturers.
-	*/
-	
   var $ManufacturerID;
   var $Name;
   
@@ -499,15 +510,6 @@ class Manufacturer {
 }
 
 class Zone {
-	/*	Zone:	A logical grouping of DataCenter components, so that if a large data
-				center has been broken down into smaller components, it can be
-				reported on as a single entity.  For example, Building A may have
-				data centers in Room 100, Room 109, and Room 205.  All three can
-				be placed in a single zone for reporting on Building A data center
-				metrics.
-				
-				NOT YET IMPLEMENTED
-	*/
   var $ZoneID;
   var $DataCenterID;
   var $Description;

@@ -141,16 +141,21 @@ class Cabinet {
 		return 0;
 	}
 
-	function ListCabinets( $db ) {
-		$cabinetList = array();
+	static function ListCabinets($db,$deptid=null){
+		$cabinetList=array();
 
-		$select_sql = "select * from fac_Cabinet order by DataCenterID, Location";
+		$sql='';
+		if(!is_null($deptid)){
+			$sql=" WHERE AssignedTo=".intval($deptid);
+		}
 
-		if ( ! $result = mysql_query( $select_sql, $db ) ) {
+		$select_sql="SELECT * FROM fac_Cabinet$sql ORDER BY DataCenterID, Location;";
+
+		if(!$result=mysql_query($select_sql,$db)){
 			return 0;
 		}
 
-		while ( $cabinetRow = mysql_fetch_array( $result ) ) {
+		while($cabinetRow=mysql_fetch_array($result)){
 			$cabID = $cabinetRow[ "CabinetID" ];
 			$cabinetList[ $cabID ] = new Cabinet();
 
@@ -1800,7 +1805,7 @@ class SupplyBin {
 		}
 	}
 	
-	function AddBin( $db ) {
+	function CreateBin( $db ) {
 		$sql = sprintf( "insert into fac_SupplyBin set Location=\"%s\"", addslashes( $this->Location ) );
 		mysql_query( $sql, $db );
 		
@@ -1842,7 +1847,7 @@ class Supplies {
 	var $MinQty;
 	var $MaxQty;
 	
-	function AddSupplies( $db ) {
+	function CreateSupplies( $db ) {
 		$sql = sprintf( "insert into fac_Supplies set PartNum=\"%s\", PartName=\"%s\", MinQty='%d', MaxQty='%d'", addslashes( $this->PartNum ), addslashes( $this->PartName ), intval( $this->MinQty ), intval( $this->MaxQty ) );
 		mysql_query( $sql, $db );
 		
