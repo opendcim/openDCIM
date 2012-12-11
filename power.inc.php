@@ -376,7 +376,7 @@ class PowerDistribution {
 	}
 	
 	function SearchByPDUName($db){
-		$select_sql="select * from fac_PowerDistribution where ucase(Label) like \"%".strtoupper($this->Label)."%\";";
+		$select_sql="select * from fac_PowerDistribution where ucase(Label) like \"%".$this->Label."%\";";
 
 		if(!$result=mysql_query($select_sql,$db)){
 			return 0;
