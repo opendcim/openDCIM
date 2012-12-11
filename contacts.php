@@ -15,84 +15,94 @@
 	}
 
 	// AJAX
-	if(isset($_POST['n']) && isset($_POST['o'])){
-		mysql_query("UPDATE fac_Device SET PrimaryContact=".intval($_POST['n'])." WHERE PrimaryContact=".intval($_POST['o']).";", $facDB);
-		if(mysql_affected_rows($facDB)>0){
-			return "yes";
-		}else{
-			return "no";
-		}
-	}
-	if(isset($_POST['deletecheck'])){
-		$contactid=intval($_POST['contactid']);
-		$sql="SELECT * FROM fac_Device WHERE PrimaryContact = $contactid";
-		$results=mysql_query($sql, $facDB);
-		if(mysql_num_rows($results)>0){
-			echo "<p>{$_POST['contact']} is currently the primary contact listed for the following equipment:</p><div><ul>";
-			while($devices=mysql_fetch_assoc($results)){
-				echo "<li><a href=\"devices.php?deviceid={$devices['DeviceID']}\">{$devices['Label']}</a></li>";
-			}
-			$contacts=Contact::GetContactList($facDB);
-			$contlist='<select id="primarycontact" name="primarycontact"><option value="0">Unassigned</option>';
-			foreach($contacts as $contactid => $contact){
-				$contlist.="<option value=\"$contact->ContactID\">$contact->LastName, $contact->FirstName</option>";
-			}
-			$contlist.='</select>';
-			echo "</ul></div><div class=\"middle\"><button>=></button></div><div>Transfer primary contact to: $contlist</div>";
-		}else{
-			return 0;
-		}
-		exit;
-	}
-	if(isset($_POST['deptcheck'])){
-		$contactid=intval($_POST['contactid']);
-		$sql="SELECT * FROM fac_DeptContacts WHERE ContactID = $contactid";
-		$results=mysql_query($sql, $facDB);
-		if(mysql_num_rows($results)>0){
-			$dept=new Department();
-			$emptydept=array();
-			echo "<p>Contact will be removed from the following departments</p><ul>";
-			while($depts=mysql_fetch_assoc($results)){
-				$dept->DeptID=$depts['DeptID'];
-				$dept->GetDeptByID($facDB);
-				$subresults=mysql_fetch_row(mysql_query("SELECT COUNT(*) FROM fac_DeptContacts WHERE DeptID = $dept->DeptID;",$facDB));
-				$subresults=$subresults[0];
-				if($subresults<2){
-					$emptydept[$dept->DeptID]=$dept->Name;
+	if(isset($_POST['o'])){
+		$contactid=intval($_POST['o']);
+		$check=0;
+		// Check for if contact is set as the primary contact for any devices
+		// if so present a list of choices to bulk change them all to
+		if(isset($_POST['deletecheck'])){
+			$sql="SELECT * FROM fac_Device WHERE PrimaryContact = $contactid";
+			$results=mysql_query($sql, $facDB);
+			if(mysql_num_rows($results)>0){
+				print "<p>{$_POST['contact']} is currently the primary contact listed for the following equipment:</p><div><ul>";
+				while($devices=mysql_fetch_assoc($results)){
+					print "<li><a href=\"devices.php?deviceid={$devices['DeviceID']}\">{$devices['Label']}</a></li>";
 				}
-				print "<li>$dept->Name ($subresults)</li>";
-			}
-			echo "</ul>";
-			$dev=new Device();
-			if(count($emptydept)){
-				echo "<p>The following departments will be empty after this user is removed</p><ul>";
-				foreach($emptydept as $deptid => $deptname){
-					print "<li>$deptname";
-					$dev->Owner=$deptid;
-					$devices=$dev->GetDevicesbyOwner($facDB);
-					if(count($devices)>0){
-						print "<p>The following devices belong to $deptname:</p><ul>";
-						foreach($devices as $dev){
-							print "<li><a href=\"devices.php?deviceid=$dev->DeviceID\">$dev->Label</a></li>";
-						}
-						print "</ul>";
-					}
-					// check for racks owned by the soon to be deleted department
-					$cablist=Cabinet::ListCabinets($facDB, $deptid);
-					if(count($cablist)>0){
-						print "<p>The following racks are assigned to $deptname:</p><ul>";
-						foreach($cablist as $cab){
-							print "<li><a href=\"cabinets.php?cabinetid=$cab->CabinetID\">$cab->Location</a></li>";
-						}
-						print "</ul>";
-					}
-					print "</li>";
+				$contacts=Contact::GetContactList($facDB);
+				$contlist='<select id="primarycontact" name="primarycontact"><option value="0">Unassigned</option>';
+				foreach($contacts as $contactid => $contact){
+					$contlist.="<option value=\"$contact->ContactID\">$contact->LastName, $contact->FirstName</option>";
 				}
-				print "</ul>";
+				$contlist.='</select>';
+				print "</ul></div><div class=\"middle\"><button title=\"Transfer primary contact to\">=></button></div><div>$contlist</div>";
+			}else{
+				echo '';
 			}
-		}else{
-			return 0;
+			exit;
 		}
+		if(isset($_POST['deptcheck'])){
+			$sql="SELECT * FROM fac_DeptContacts WHERE ContactID = $contactid";
+			$results=mysql_query($sql, $facDB);
+			if(mysql_num_rows($results)>0){
+				$dept=new Department();
+				$emptydept=array();
+				echo "<p>Contact will be removed from the following departments</p><ul>";
+				while($depts=mysql_fetch_assoc($results)){
+					$dept->DeptID=$depts['DeptID'];
+					$dept->GetDeptByID($facDB);
+					$subresults=mysql_fetch_row(mysql_query("SELECT COUNT(*) FROM fac_DeptContacts WHERE DeptID = $dept->DeptID;",$facDB));
+					$subresults=$subresults[0];
+					if($subresults<2){
+						$emptydept[$dept->DeptID]=$dept->Name;
+					}
+					print "<li>$dept->Name ($subresults)</li>";
+				}
+				echo "</ul>";
+				$dev=new Device();
+				if(count($emptydept)){
+					echo "<p>The following departments will be empty after this user is removed</p><ul>";
+					foreach($emptydept as $deptid => $deptname){
+						print "<li>$deptname";
+						$dev->Owner=$deptid;
+						$devices=$dev->GetDevicesbyOwner($facDB);
+						if(count($devices)>0){
+							print "<p>The following devices belong to $deptname:</p><ul>";
+							foreach($devices as $dev){
+								print "<li><a href=\"devices.php?deviceid=$dev->DeviceID\">$dev->Label</a></li>";
+							}
+							print "</ul>";
+						}
+						// check for racks owned by the soon to be deleted department
+						$cablist=Cabinet::ListCabinets($facDB, $deptid);
+						if(count($cablist)>0){
+							print "<p>The following racks are assigned to $deptname:</p><ul>";
+							foreach($cablist as $cab){
+								print "<li><a href=\"cabinets.php?cabinetid=$cab->CabinetID\">$cab->Location</a></li>";
+							}
+							print "</ul>";
+						}
+						print "</li>";
+					}
+					print "</ul>";
+				}
+			}
+			echo '<span class="warning">There is no undo for this action. Are you sure?</span>';
+			exit;
+		}
+		// User is sure they want to remove the contact so remove it. If
+		// no rows are affected then return an error.
+		if(isset($_POST['deletesure'])){
+			$contact->ContactID=$contactid;
+			$check=$contact->DeleteContact();
+		}
+		// Update all devices that had the contact as the primary contact and 
+		// change to the alternate they chose. If no records are updated return
+		// an error
+		if(isset($_POST['n'])){
+			mysql_query("UPDATE fac_Device SET PrimaryContact=".intval($_POST['n'])." WHERE PrimaryContact=$contactid;");
+			$check=mysql_affected_rows();
+		}
+		echo($check>0)?'yes':'no';
 		exit;
 	}
 	// END - AJAX
@@ -147,9 +157,10 @@
 
   <script type="text/javascript">
   	$(document).ready(function() {
+		$(document).tooltip();
 		$('#cform').validationEngine({});
 		$('button[name=deletecheck]').click(function(){
-			$.post('', {contactid: $('#contactid').val(), deletecheck:'', contact: $('#contactid option:selected').text()}, function(data){
+			$.post('', {o: $('#contactid').val(), deletecheck:'', contact: $('#contactid option:selected').text()}, function(data){
 				$('#deletedialog').dialog({
 					modal: true,
 					minWidth: 600,
@@ -159,7 +170,14 @@
 					autoOpen: false,
 					buttons: {
 						"Yes": function(){
-							alert ('user clicked yes, submit something to remove the contact');
+							$.post('', {o: $('#contactid').val(), deletesure:''},function(data){
+								if(data=="yes"){
+									//reload the page
+									location.replace('contacts.php');
+								}else{
+									alert("Something broke and the delete didn't complete");
+								}
+							});
 						},
 						"No": function(){
 							$(this).dialog("close");
@@ -171,12 +189,21 @@
 					$('#deletedialog').html(data);
 					$('#deletedialog').dialog("open");
 				}
-				$.post('', {contactid: $('#contactid').val(), deptcheck:''}, function(data){
+				$.post('', {o: $('#contactid').val(), deptcheck:''}, function(data){
 					if(data!=''){
 						$('#deletedialog').append(data);
 						$('#deletedialog').dialog("close");
 						$('#deletedialog').dialog("open");
 					}
+				});
+				$('#deletedialog .middle button').click(function(){
+					$.post('', {n: $('#primarycontact').val(), o: $('#contactid').val()}, function(data){
+						if(data=="yes"){
+							$('button[name=deletecheck]').click();
+						}else{
+							alert('Error');
+						}
+					});
 				});
 			});
 		});

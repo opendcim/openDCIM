@@ -19,6 +19,7 @@ textarea {white-space: pre;word-wrap: break-word;}
 .hide {display: none;}
 .show {display: block;}
 .greybg {background-color: lightGrey;}
+.warning {text-align: center; color: red; text-transform: uppercase;}
 
 [readonly],[disabled] {
 	background-color: #dcdcdc;
