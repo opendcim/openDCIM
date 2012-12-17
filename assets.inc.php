@@ -1599,7 +1599,8 @@ class RackRequest {
     
     while ( $row = mysql_fetch_array( $result ) ) {
       $requestNum = sizeof( $requestList );
-      
+
+      $requestList[$requestNum]=new RackRequest();
       $requestList[$requestNum]->RequestID = $row["RequestID"];
       $requestList[$requestNum]->RequestorID = $row["RequestorID"];
       $requestList[$requestNum]->RequestTime = $row["RequestTime"];
