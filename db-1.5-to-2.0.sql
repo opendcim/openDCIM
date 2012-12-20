@@ -138,3 +138,22 @@ CREATE TABLE fac_PatchConnection (
   Notes varchar(80) NOT NULL,
   PRIMARY KEY (PanelDeviceID,PanelPortNumber,PanelSide)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+
+--
+-- Add new tables for device tagging
+--
+
+DROP TABLE IF EXISTS fac_DeviceTags;
+CREATE TABLE fac_DeviceTags (
+  DeviceID int(11) NOT NULL,
+  TagID int(11) NOT NULL,
+  PRIMARY KEY (DeviceID,TagID)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+
+DROP TABLE IF EXISTS fac_Tags;
+CREATE TABLE fac_Tags (
+  TagID int(11) NOT NULL AUTO_INCREMENT,
+  Name varchar(128) NOT NULL,
+  PRIMARY KEY (`TagID`),
+  UNIQUE KEY `Name` (`Name`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 AUTO_INCREMENT=1;

@@ -229,7 +229,7 @@ div.center > div {display: inline-block;text-align: left;}
 .title {caption-side: top; text-align: center; display: table-caption !important;}
 div.table > div {display: table-row;}
 div.table > div > div {display: table-cell;vertical-align: middle; /* padding-bottom: .75em; */}
-div.table > div > div span {display: block;font-size: 0.75em;}
+/* div.table > div > div span {display: block;font-size: 0.75em;} */
 .table label{width:130px;}
 .whiteborder, .whiteborder div {border: 1px solid white;}
 .border, .border div {border: 1px solid gray;}
@@ -379,6 +379,8 @@ div.page.device {
 .device .table .table .table, .right .table + .table {background-color: white;width: 100%;}
 .device .table .table .table > div > div {padding: 3px;}
 .right .table + .table {margin-top: 1em;}
+
+.device #tags { width: 95%; min-width: 350px;}
 
 .chassis .table input{text-align:center;}
 .chassis .table > div > div{text-align:center;}

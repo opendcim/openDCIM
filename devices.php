@@ -76,6 +76,10 @@
 			$dev->DeviceID=intval($_REQUEST['deviceid']);
 			// If no action is requested then we must be just querying a device info.
 			// Skip all modification checks
+			$tagarray=array();
+			if(isset($_POST['tags'])){
+				$tagarray=json_decode($_POST['tags']);
+			}
 			if(isset($_POST['action'])){
 				if($user->WriteAccess&&(($dev->DeviceID >0)&&($_POST['action']=='Update'))){
 					$dev->Label=$_POST['label'];
@@ -110,6 +114,7 @@
 
 					if(($dev->TemplateID >0)&&(intval($dev->NominalWatts==0))){$dev->UpdateWattageFromTemplate($facDB);}
 			
+					$dev->SetTags($tagarray);
 					if($dev->Cabinet <0){
 						$dev->MoveToStorage($facDB);
 					}else{
@@ -146,6 +151,7 @@
 					$dev->ESX=(isset($_POST['esx']))?$_POST['esx']:0;
 					$dev->Reservation=(isset($_POST['reservation']))?($_POST['reservation']=="on")?1:0:0;
 					$dev->CreateDevice($facDB);
+					$dev->SetTags($tagarray);
 				}elseif($user->DeleteAccess&&($_REQUEST['action']=='Delete')){
 					$dev->GetDevice($facDB);
 					$dev->DeleteDevice($facDB);
@@ -166,6 +172,14 @@
 
 			// Finished updating devices or creating them.  Refresh the object with data from the DB
 			$dev->GetDevice($facDB);
+
+			// Get any tags associated with this device
+			$tags=$dev->GetTags();
+			$taginsert="";
+			if(count($tags>0)){
+				// We have some tags so build the javascript elements we need to create the tags themselves
+				$taginsert="\t\ttags: {items: ".json_encode($tags)."},\n";
+			}
 
 			// Since a device exists we're gonna need some additional info, but only if it's not a copy
 			if ( ! $copy ) {
@@ -288,6 +302,7 @@
   <script type="text/javascript" src="scripts/jquery.validationEngine-en.js"></script>
   <script type="text/javascript" src="scripts/jquery.validationEngine.js"></script>
   <script type="text/javascript" src="scripts/jHtmlArea-0.7.5.min.js"></script>
+  <script type="text/javascript" src="scripts/jquery.textext.js"></script>
 <SCRIPT type="text/javascript" >
 var nextField;
 function getScan(fieldName){
@@ -669,6 +684,14 @@ $(document).ready(function() {
 			}
 		}).css({'cursor': 'pointer','text-decoration': 'underline'});
 	});
+	$('#tags').textext({
+		plugins : 'autocomplete tags ajax arrow prompt focus',
+<?php echo $taginsert; ?>
+		ajax : {
+			url : 'scripts/ajax_tags.php',
+			dataType : 'json'
+		}
+	});
 });
 	
 function setPreferredLayout() {<?php if(isset($_COOKIE["layout"]) && strtolower($_COOKIE["layout"])==="portrait"){echo 'swaplayout();setCookie("layout","Portrait");';}else{echo 'setCookie("layout","Landscape");';} ?>}
@@ -685,10 +708,7 @@ echo '<div class="main">
 <button id="layout" onClick="swaplayout()">'._("Portrait").'</button>
 <h2>'.$config->ParameterArray['OrgName'].'</h2>
 <h3>'._("Data Center Device Detail").'</h3>';
-
-if ( $copy )
-	printf( "\n<h3>%s</h3>\n", _("This device is a copy of an existing device.  Remember to set the new location before saving.") );
-	
+echo($copy)?'<h3>'._("This device is a copy of an existing device.  Remember to set the new location before saving.").'</h3>':'';
 echo '<div class="center"><div>
 <div id="positionselector"></div>
 <form name="deviceform" id="deviceform" action="'.$_SERVER['PHP_SELF'].((isset($dev->DeviceID) && $dev->DeviceID>0)?"?deviceid=$dev->DeviceID":"").'" method="POST">
@@ -799,7 +819,11 @@ echo '				</select></div>
 			}
 
 echo '		   </div>
-		</div>	
+		</div>
+		<div>
+			<div><label for="tags">',_("Tags"),'</label></div>
+			<div><textarea type="text" name="tags" id="tags" rows="1"></textarea></div>
+		</div>
 	</div> <!-- END div.table -->
 </fieldset>	
 	<div class="table">
