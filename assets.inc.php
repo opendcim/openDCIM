@@ -2024,8 +2024,8 @@ class Tags {
 		if(!is_null($TagName)){
 			$TagName=mysql_real_escape_string($TagName);
 			$sql="INSERT INTO fac_Tags VALUES (NULL, '$TagName');";
-			mysql_query($sql);
-			if(mysql_info()){
+			$results=mysql_query($sql);
+			if($results){
 				return mysql_insert_id();
 			}
 		}
