@@ -147,20 +147,6 @@
 		$('input[name="VisitedLinkColor"]').blur(function(){
 			$("head").append("<style type=\"text/css\">a:visited {color: "+$(this).val()+";}</style>");
 		});
-		$("#imageselection span").each(function(){
-			var preview=$('#imageselection #preview');
-			$(this).click(function(){
-				preview.html('<img src="images/'+$(this).text()+'" alt="preview" width="'+preview.innerHeight()+'px">').attr('image',$(this).text()).css('border-width', '5px').children('img').css('margin-top', preview.innerHeight()/2-preview.children('img').height()/2+'px');
-				$("#imageselection span").each(function(){
-					$(this).removeAttr('style');
-				});
-				$(this).css('border','1px dotted black')
-				$('#header').css('background-image', 'url("images/'+$(this).text()+'")');
-			});
-			if($('#PDFLogoFile').val()==$(this).text()){
-				$(this).click();
-			}
-		});
 		$('#PDFLogoFile').click(function(){
 			$("#imageselection").dialog({
 				resizable: false,
@@ -174,6 +160,34 @@
 						}
 						$(this).dialog("close");
 					}
+				}
+			});
+			$("#imageselection span").each(function(){
+				var preview=$('#imageselection #preview');
+				$(this).click(function(){
+					preview.html('<img src="images/'+$(this).text()+'" alt="preview">').attr('image',$(this).text()).css('border-width', '5px');
+					preview.children('img').load(function(){
+						var topmargin=0;
+						var leftmargin=0;
+						if($(this).height()<$(this).width()){
+							$(this).width(preview.innerHeight());
+							$(this).css({'max-width': preview.innerWidth()+'px'});
+							topmargin=Math.floor((preview.innerHeight()-$(this).height())/2);
+						}else{
+							$(this).height(preview.innerHeight());
+							$(this).css({'max-height': preview.innerWidth()+'px'});
+							leftmargin=Math.floor((preview.innerWidth()-$(this).width())/2);
+						}
+						$(this).css({'margin-top': topmargin+'px', 'margin-left': leftmargin+'px'});
+					});
+					$("#imageselection span").each(function(){
+						$(this).removeAttr('style');
+					});
+					$(this).css('border','1px dotted black')
+					$('#header').css('background-image', 'url("images/'+$(this).text()+'")');
+				});
+				if($('#PDFLogoFile').val()==$(this).text()){
+					$(this).click();
 				}
 			});
 		});
