@@ -524,7 +524,7 @@ INSERT INTO fac_Config VALUES
         ('MailToAddr','DataCenterTeamAddr@your.domain','Email','string','DataCenterTeamAddr@your.domain'),
         ('ComputerFacMgr','DataCenterMgr Name','Name','string','DataCenterMgr Name'),
         ('FacMgrMail','DataCenterMgr@your.domain','Email','string','DataCenterMgr@your.domain'),
-        ('Version','1.5','','',''),
+        ('Version','2.0','','',''),
         ('UserLookupURL','https://','URL','string','https://'),
         ('ReservedColor','#00FFFF','HexColor','string','#FFFFFF'),
         ('FreeSpaceColor','#FFFFFF','HexColor','string','#FFFFFF'),
