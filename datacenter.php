@@ -36,6 +36,23 @@
 		$dc->GetDataCenter($facDB);
 	}
 	$dcList=$dc->GetDCList($facDB);
+
+
+
+	$imageselect='<div id="preview"></div><div id="filelist">';
+
+	$path='./drawings';
+	$dir=scandir($path);
+	foreach($dir as $i => $f){
+		if(is_file($path.DIRECTORY_SEPARATOR.$f)){
+			$imageinfo=getimagesize($path.DIRECTORY_SEPARATOR.$f);
+			if(preg_match('/^image/i', $imageinfo['mime'])){
+				$imageselect.="<span>$f</span>\n";
+			}
+		}
+	}
+	$imageselect.="</div>";
+
 ?>
 <!doctype html>
 <html>
@@ -58,6 +75,50 @@
   <script type="text/javascript">
 	$(document).ready(function() {
 		$('#datacenterform').validationEngine({});
+		$('#drawingfilename').click(function(){
+			$("#imageselection").dialog({
+				resizable: false,
+				height:500,
+				width: 600,
+				modal: true,
+				buttons: {
+<?php echo '					',_("Select"),': function() {'; ?>
+						if($('#imageselection #preview').attr('image')!=""){
+							$('#drawingfilename').val($('#imageselection #preview').attr('image'));
+						}
+						$(this).dialog("close");
+					}
+				}
+			});
+			$("#imageselection span").each(function(){
+				var preview=$('#imageselection #preview');
+				$(this).click(function(){
+					preview.css({'border-width': '5px', 'width': '380px', 'height': '380px'});
+					preview.html('<img src="drawings/'+$(this).text()+'" alt="preview">').attr('image',$(this).text());
+					preview.children('img').load(function(){
+						var topmargin=0;
+						var leftmargin=0;
+						if($(this).height()<$(this).width()){
+							$(this).width(preview.innerHeight());
+							$(this).css({'max-width': preview.innerWidth()+'px'});
+							topmargin=Math.floor((preview.innerHeight()-$(this).height())/2);
+						}else{
+							$(this).height(preview.innerHeight());
+							$(this).css({'max-height': preview.innerWidth()+'px'});
+							leftmargin=Math.floor((preview.innerWidth()-$(this).width())/2);
+						}
+						$(this).css({'margin-top': topmargin+'px', 'margin-left': leftmargin+'px'});
+					});
+					$("#imageselection span").each(function(){
+						$(this).removeAttr('style');
+					});
+					$(this).css('border','1px dotted black')
+				});
+				if($('#drawingfilename').val()==$(this).text()){
+					$(this).click();
+				}
+			});
+		});
 	});
   </script>
 
@@ -117,8 +178,12 @@ echo '	</select></div>
 </div>
 </div> <!-- END div.table -->
 </form>
+<?php echo '
+			<div id="imageselection" title="Image file selector">
+				',$imageselect,'
+			</div>
 </div></div>
-<?php echo '<a href="index.php">[ ',_("Return to Main Menu"),' ]</a>'; ?>
+<a href="index.php">[ ',_("Return to Main Menu"),' ]</a>'; ?>
 </div><!-- END div.main -->
 </div><!-- END div.page -->
 </body>

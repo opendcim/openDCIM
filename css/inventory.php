@@ -62,7 +62,7 @@ div.cp { position: relative;}
 
 div#imageselection { display: none;}
 #imageselection span { display: block; padding: 0.25em 0 0.5em 0.5em; cursor: pointer; text-decoration: underline; border: 1px solid white;}
-#imageselection #preview { position: absolute; top: 0; right: 0; height: 200px; width: 200px; margin: 0.1em 0 0 0; padding: 0; border: 0px solid black;}
+#imageselection #preview { position: absolute; top: 0; right: 0; height: 180px; width: 180px; margin: 0.1em 0 0 0; padding: 0; border: 0px solid black;}
 #imageselection #filelist { position: absolute; top: 0; left: 1em; height: 210px; width: 175px; overflow-y: scroll; overflow-x: hidden; }
 
 .ui-menu-item ul { max-height: 200px; overflow: auto; }
@@ -229,7 +229,7 @@ div.center > div {display: inline-block;text-align: left;}
 .title {caption-side: top; text-align: center; display: table-caption !important;}
 div.table > div {display: table-row;}
 div.table > div > div {display: table-cell;vertical-align: middle; /* padding-bottom: .75em; */}
-div.table > div > div span {display: block;font-size: 0.75em;}
+/* div.table > div > div span {display: block;font-size: 0.75em;} */
 .table label{width:130px;}
 .whiteborder, .whiteborder div {border: 1px solid white;}
 .border, .border div {border: 1px solid gray;}
@@ -379,6 +379,8 @@ div.page.device {
 .device .table .table .table, .right .table + .table {background-color: white;width: 100%;}
 .device .table .table .table > div > div {padding: 3px;}
 .right .table + .table {margin-top: 1em;}
+
+.device #tags { width: 95%; min-width: 350px;}
 
 .chassis .table input{text-align:center;}
 .chassis .table > div > div{text-align:center;}
@@ -535,6 +537,8 @@ div.page.device {
 .installer div.table > div > div + div {width: 300px;}
 .installer .rights > div:nth-last-child(2) div {padding-top: 0;padding-bottom: 2em;text-align: left;}
 .installer .center input {width: 97%;}
+.installer #configtabs div.table > div > div + div {width: auto;}
+.installer .center #configtabs ~ div input {width: auto;}
 
 /* Menu */
 ul.nav li {padding: .5em;}

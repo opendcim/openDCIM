@@ -184,6 +184,17 @@ CREATE TABLE fac_Device (
 ) ENGINE=MyISAM AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
 
 --
+-- Table structure for table fac_DeviceTags
+--
+
+DROP TABLE IF EXISTS fac_DeviceTags;
+CREATE TABLE fac_DeviceTags (
+  DeviceID int(11) NOT NULL,
+  TagID int(11) NOT NULL,
+  PRIMARY KEY (DeviceID,TagID)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+
+--
 -- Table structure for table fac_DeviceTemplate
 --
 
@@ -390,6 +401,18 @@ CREATE TABLE fac_SwitchConnection (
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
 --
+-- Table structure for table fac_Tags
+--
+
+DROP TABLE IF EXISTS fac_Tags;
+CREATE TABLE fac_Tags (
+  TagID int(11) NOT NULL AUTO_INCREMENT,
+  Name varchar(128) NOT NULL,
+  PRIMARY KEY (`TagID`),
+  UNIQUE KEY `Name` (`Name`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 AUTO_INCREMENT=1;
+
+--
 -- Table structure for table fac_User
 --
 
@@ -512,6 +535,7 @@ INSERT INTO fac_Config VALUES
         ('annualCostPerUYear','200','Dollars','float','200'),
         ('annualCostPerWattYear','0.7884','Dollars','float','0.7884'),
         ('Locale','en_US.utf8','TextLocale','string','en_US.utf8'),
+		('timezone', 'America/Chicago', 'string', 'string', 'America/Chicago'),
         ('PDFLogoFile','logo.png','Filename','string','logo.png'),
         ('PDFfont','Arial','Font','string','Arial'),
         ('SMTPServer','smtp.your.domain','Server','string','smtp.your.domain'),
@@ -524,7 +548,7 @@ INSERT INTO fac_Config VALUES
         ('MailToAddr','DataCenterTeamAddr@your.domain','Email','string','DataCenterTeamAddr@your.domain'),
         ('ComputerFacMgr','DataCenterMgr Name','Name','string','DataCenterMgr Name'),
         ('FacMgrMail','DataCenterMgr@your.domain','Email','string','DataCenterMgr@your.domain'),
-        ('Version','1.5','','',''),
+        ('Version','2.0','','',''),
         ('UserLookupURL','https://','URL','string','https://'),
         ('ReservedColor','#00FFFF','HexColor','string','#FFFFFF'),
         ('FreeSpaceColor','#FFFFFF','HexColor','string','#FFFFFF'),

@@ -512,6 +512,7 @@ class Device {
 	var $WarrantyExpire;
 	var $Notes;
 	var $Reservation;
+	var $Tags;
 
 	function CreateDevice( $db ) {
 		
@@ -1263,6 +1264,37 @@ class Device {
     
     return $devList;
   }
+
+	function GetTags(){
+		$sql="SELECT TagID FROM fac_DeviceTags WHERE DeviceID=".intval($this->DeviceID).";";
+		$results=mysql_query($sql);
+		$tags=array();
+		if(mysql_num_rows($results)>0){
+			while($row=mysql_fetch_row($results)){
+				$tags[]=Tags::FindName($row[0]);
+			}
+		}
+		return $tags;
+	}
+	function SetTags($tags=array()){
+		if(count($tags)>0){
+			//Clear existing tags
+			$this->SetTags();
+			foreach($tags as $tag){
+				$t=Tags::FindID($tag);
+				if($t==0){
+					$t=Tags::CreateTag($tag);
+				}
+				$sql="INSERT INTO fac_DeviceTags (DeviceID, TagID) VALUES (".intval($this->DeviceID).",$t);";
+				mysql_query($sql);
+			}
+		}else{
+			//If no array is passed then clear all the tags
+			$delsql="DELETE FROM fac_DeviceTags WHERE DeviceID=".intval($this->DeviceID).";";
+			mysql_query($delsql);
+		}
+		return 0;
+	}
 }
 
 class ESX {
@@ -1588,7 +1620,8 @@ class RackRequest {
     
     while ( $row = mysql_fetch_array( $result ) ) {
       $requestNum = sizeof( $requestList );
-      
+
+      $requestList[$requestNum]=new RackRequest();
       $requestList[$requestNum]->RequestID = $row["RequestID"];
       $requestList[$requestNum]->RequestorID = $row["RequestorID"];
       $requestList[$requestNum]->RequestTime = $row["RequestTime"];
@@ -1971,4 +2004,69 @@ class BinAudits {
 		mysql_query( $sql, $db );
 	}
 }
+class Tags {
+	var $TagID;
+	var $TagName;
+
+	//Add Create Tag Function
+	static function CreateTag($TagName){
+		if(!is_null($TagName)){
+			$TagName=mysql_real_escape_string($TagName);
+			$sql="INSERT INTO fac_Tags VALUES (NULL, '$TagName');";
+			$results=mysql_query($sql);
+			if($results){
+				return mysql_insert_id();
+			}
+		}
+		return null;
+	}
+	//Add Delete Tag Function
+
+	static function FindID($TagName=null){
+		if(!is_null($TagName)){
+			$TagName=mysql_real_escape_string($TagName);
+			$sql="SELECT TagID FROM fac_Tags WHERE Name = '$TagName';";
+			$result=mysql_query($sql);
+			if(mysql_num_rows($result)>0){
+				return mysql_result($result,0);
+			}
+		}else{
+			//No tagname was supplied so kick back an array of all available TagIDs and Names
+			return $this->FindAll();
+		}
+		//everything failed give them nothing
+		return 0;
+	}
+
+	static function FindName($TagID=null){
+		if(!is_null($TagID)){
+			$TagID=intval($TagID);
+			$sql="SELECT Name FROM fac_Tags WHERE TagID = $TagID;";
+			$result=mysql_query($sql);
+			if(mysql_num_rows($result)>0){
+				return mysql_result($result,0);
+			}
+		}else{
+			//No tagname was supplied so kick back an array of all available TagIDs and Names
+			return $this->FindAll;
+		}
+		//everything failed give them nothing
+		return 0;
+	}
+
+	static function FindAll(){
+		$sql="SELECT * FROM fac_Tags;";
+		$result=mysql_query($sql);
+		$tagarray=array();
+		if(mysql_num_rows($result)>0){
+			while($row=mysql_fetch_assoc($result)){
+				$tagarray[$row['TagID']]=$row['Name'];
+			}
+			return $tagarray;
+		}
+		return 0;
+	}
+
+}
+
 ?>

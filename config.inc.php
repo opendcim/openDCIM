@@ -9,7 +9,7 @@ class Config{
 		$sql='select Parameter, Value, DefaultVal from fac_Config';
 		$result=mysql_query($sql,$db);
 		
-		while ($row=mysql_fetch_array($result)){
+		while ($row=@mysql_fetch_array($result)){
 			if ($row['Parameter']== 'ClassList'){
 				$List = explode(', ', $row['Value']);
 				$this->ParameterArray[$row['Parameter']]=$List;
