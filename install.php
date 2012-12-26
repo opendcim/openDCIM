@@ -954,7 +954,7 @@ function showgroup(obj){
 <a href="?dept"><li>Departments</li></a>
 <a><li class="active">Data Centers</li></a>
 <a href="?cab"><li>Cabinets</li></a>
-<? if(isset($complete)){ echo '<a href="?complete"><li>Complete</li></a>'; }?>
+<?php if(isset($complete)){ echo '<a href="?complete"><li>Complete</li></a>'; }?>
 </ul>
 </div>
 
