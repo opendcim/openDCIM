@@ -23,7 +23,7 @@
 	$status='';
 	if(isset($_REQUEST['action'])&&(($_REQUEST['action']=='Create')||($_REQUEST['action']=='Update'))){
 		$template->ManufacturerID = $_REQUEST['manufacturerid'];
-		$template->Model = strtoupper( $_REQUEST['model'] );
+		$template->Model =  $_REQUEST['model'] ;
 		$template->Height = $_REQUEST['height'];
 		$template->Weight = $_REQUEST['weight'];
 		$template->Wattage = $_REQUEST['wattage'];
