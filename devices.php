@@ -67,7 +67,13 @@
 		if(isset($_REQUEST['action'])&&$_REQUEST['action']=='new'){
 			// Some fields are pre-populated when you click "Add device to this cabinet"
 			if(isset($_REQUEST['cabinet'])){
-				$dev->Cabinet = $_REQUEST['cabinet'];
+				$dev->Cabinet = intval($_REQUEST['cabinet']);
+				$cab->CabinetID = $dev->Cabinet;
+				$cab->GetCabinet( $facDB );
+				
+				// If you are adding a device that is assined to a specific customer, assume that device is also owned by that customer
+				if ( $cab->AssignedTo > 0 )
+					$dev->Owner = $cab->AssignedTo;
 			}
 		}
 		
