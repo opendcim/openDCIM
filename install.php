@@ -256,13 +256,17 @@ function applyupdate ($updatefile){
 <body>
 <?php 
 if(isset($results)){
+	$fh=fopen('install.err', 'a');
+	fwrite($fh, date("Y-m-d g:i:s a\n"));
 	foreach($results as $key => $value){
 		foreach($value as $status => $message){
 			if($status==1){$class="error";}else{$class="success";}
 			print "<h1 class=\"$class\">$message</h1>";
+			fwrite($fh, $message);
 		}
 	}
-	print "<p class=\"$class\">If all updates have completed.  Please remove install.php to return to normal functionality.</p><p>Reload the page to try loading sql updates again or to go on to the installer</p>";
+	fclose($fh);
+	print "<p>If any red errors are showing that does not necessarily mean it failed to load.  Press F5 to reload this page until it goes to the configuration screen</p>";
 }else{
 	echo '<p class="success">All is well.  Please remove install.php to return to normal functionality</p>';
 }
