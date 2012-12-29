@@ -157,3 +157,10 @@ CREATE TABLE fac_Tags (
   PRIMARY KEY (`TagID`),
   UNIQUE KEY `Name` (`Name`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 AUTO_INCREMENT=1;
+
+--
+-- Add a new configurable device label case
+--
+
+INSERT INTO `fac_Config` (`Parameter`, `Value`, `UnitOfMeasure`, `ValType`, `DefaultVal`) VALUES 
+('LabelCase','upper','string','string','upper'),

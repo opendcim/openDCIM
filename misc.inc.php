@@ -138,8 +138,44 @@ if(!extension_loaded('mbstring')){
 	function mb_strtolower($text,$encoding=null){
 		return strtolower($text);
 	}
+	function mb_convert_case($string, $transform, $locale){
+		switch($transform){
+			case 'MB_CASE_UPPER':
+				$string=mb_strtoupper($string);
+				break;
+			case 'MB_CASE_LOWER':
+				$string=mb_strtolower($string);
+				break;
+			case 'MB_CASE_TITLE':
+				$string=ucwords(mb_strtolower($string));
+				break;
+		}
+		return $string;
+	}
 }
 
+/*
+ * Transform text to uppercase, lowercase, initial caps, or do nothing based on system config
+ * 2nd parameter is optional to override the system default
+ *
+ */
+function transform($string,$method=null){
+	$method=(is_null($method))?$config->ParameterArray['LabelCase']:$method;
+	switch ($method){
+		case 'upper':
+			$string=mb_convert_case($string, MB_CASE_UPPER, "UTF-8");
+			break;
+		case 'lower':
+			$string=mb_convert_case($string, MB_CASE_LOWER, "UTF-8");
+			break;
+		case 'initial':
+			$string=mb_convert_case($string, MB_CASE_TITLE, "UTF-8");
+			break;
+		default:
+			// Don't you touch my string.
+	}
+	return $string;
+}
 
 /*
  * Language internationalization slated for v2.0

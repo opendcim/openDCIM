@@ -124,6 +124,11 @@
 				}
 			}
 		});
+		$("#LabelCase option").each(function(){
+			if($(this).val()==$("#LabelCase").attr('data')){
+				$(this).attr('selected', 'selected');
+			}
+		});
 		$("#configtabs").tabs();
 		$("#configtabs input[defaultvalue]").each(function(){
 			$(this).parent().after('<div><button type="button">&lt;--</button></div><div><span>'+$(this).attr('defaultvalue')+'</span></div>');
@@ -372,6 +377,24 @@ echo '<div class="main">
 					<div><div class="cp"><input type="text" class="color-picker" name="FreeSpaceColor" value="',$config->ParameterArray["FreeSpaceColor"],'"></div></div>
 					<div><button type="button"><--</button></div>
 					<div><span>',strtoupper($config->defaults["FreeSpaceColor"]),'</span></div>
+				</div>
+				<div>
+					<div>&nbsp;</div>
+					<div></div>
+					<div></div>
+					<div></div>
+				</div>
+				<div>
+					<div><label for="LabelCase">',_("Device Labels"),'</label></div>
+					<div><select id="LabelCase" name="LabelCase" data="',$config->ParameterArray["LabelCase"],'">
+							<option value="upper">',transform(_("Uppercase"),'upper'),'</option>
+							<option value="lower">',transform(_("Lowercase"),'lower'),'</option>
+							<option value="initial">',transform(_("Initial caps"),'initial'),'</option>
+							<option value="none">',_("Don't touch my labels"),'</option>
+						</select>
+					</div>
+					<div></div>
+					<div></div>
 				</div>
 			</div> <!-- end table -->
 			<h3>',_("Site"),'</h3>
