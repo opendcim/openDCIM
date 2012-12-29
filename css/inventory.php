@@ -539,6 +539,8 @@ div.page.device {
 .installer .center input {width: 97%;}
 .installer #configtabs div.table > div > div + div {width: auto;}
 .installer .center #configtabs ~ div input {width: auto;}
+div.page.installer {min-width: 1100px;}
+div.page.installer .main{max-width: 850px;}
 
 /* Menu */
 ul.nav li {padding: .5em;}
