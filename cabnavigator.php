@@ -121,6 +121,24 @@
 		}else{
 			$totalWatts+=$templ->Wattage;
 		}
+		
+		if ( $device->DeviceType == "Chassis" ) {
+			$childList = $device->GetDeviceChildren( $facDB );
+			
+			$childTempl = new DeviceTemplate();
+			
+			foreach ( $childList as $childDev ) {
+				if ( $childDev->NominalWatts > 0 ) {
+					$totalWatts += $childDev->NominalWatts;
+				} else {
+					$childTempl->TemplateID = $childDev->TemplateID;
+					$childTempl->GetTemplateByID( $facDB );
+					
+					$totalWatts += $childTempl->Wattage;
+				}
+			}
+		}
+		
 		$totalWeight+=$templ->Weight;
 		$totalMoment+=($templ->Weight*($device->Position+($device->Height/2)));
 
