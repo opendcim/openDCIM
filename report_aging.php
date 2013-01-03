@@ -19,52 +19,57 @@
 
 class DeviceAge extends Device{
  function GetAge( $db ) {
-    $selectSQL = 'select count(*) as NumDevices,\'<=1\' as NumYears from fac_Device where (DATEDIFF(NOW(),fac_Device.MfgDate)/365)<=1 and (DATEDIFF(NOW(), fac_Device.MfgDate)/365)>0';
-    $result = mysql_query( $selectSQL, $db );
+	$selectSQL = "select count(Label) as NumDevices,'<=1' as NumYears from fac_Device where (DATEDIFF(NOW(),IF(MfgDate>'1970-01-01',MfgDate,InstallDate))/365)<=1 and (DATEDIFF(NOW(), IF(MfgDate>'1970-01-01',MfgDate,InstallDate))/365)>0";
+	$result = mysql_query( $selectSQL, $db );
 
-          while ( $row = mysql_fetch_array( $result ) )
-                $deptList[$row['NumYears']] = $row['NumDevices'];
-    $selectSQL = 'select count(*) as NumDevices,\'<=2\' as NumYears from fac_Device where (DATEDIFF(NOW(),fac_Device.MfgDate)/365)<=2 and (DATEDIFF(NOW(), fac_Device.MfgDate)/365)>1';
-    $result = mysql_query( $selectSQL, $db );
+	while ( $row = mysql_fetch_array( $result ) )
+		$deptList[$row['NumYears']] = $row['NumDevices'];
 
-          while ( $row = mysql_fetch_array( $result ) )
-                $deptList[$row['NumYears']] = $row['NumDevices'];
-    $selectSQL = 'select count(*) as NumDevices,\'<=3\' as NumYears from fac_Device where (DATEDIFF(NOW(),fac_Device.MfgDate)/365)<=3 and (DATEDIFF(NOW(), fac_Device.MfgDate)/365)>2';
-    $result = mysql_query( $selectSQL, $db );
+	$selectSQL = "select count(*) as NumDevices,'<=2' as NumYears from fac_Device where (DATEDIFF(NOW(),IF(MfgDate>'1970-01-01',MfgDate,InstallDate))/365)<=2 and (DATEDIFF(NOW(), IF(MfgDate>'1970-01-01',MfgDate,InstallDate))/365)>1";
+	$result = mysql_query( $selectSQL, $db );
 
-          while ( $row = mysql_fetch_array( $result ) )
-                $deptList[$row['NumYears']] = $row['NumDevices'];
-    $selectSQL = 'select count(*) as NumDevices,\'<=4\' as NumYears from fac_Device where (DATEDIFF(NOW(),fac_Device.MfgDate)/365)<=4 and (DATEDIFF(NOW(), fac_Device.MfgDate)/365)>3';
-    $result = mysql_query( $selectSQL, $db );
+	while ( $row = mysql_fetch_array( $result ) )
+		$deptList[$row['NumYears']] = $row['NumDevices'];
+	
+	$selectSQL = "select count(*) as NumDevices,'<=3' as NumYears from fac_Device where (DATEDIFF(NOW(),IF(MfgDate>'1970-01-01',MfgDate,InstallDate))/365)<=3 and (DATEDIFF(NOW(), IF(MfgDate>'1970-01-01',MfgDate,InstallDate))/365)>2";
+	$result = mysql_query( $selectSQL, $db );
 
-          while ( $row = mysql_fetch_array( $result ) )
-                $deptList[$row['NumYears']] = $row['NumDevices'];
-    $selectSQL = 'select count(*) as NumDevices,\'>4\' as NumYears from fac_Device where (DATEDIFF(NOW(),fac_Device.MfgDate)/365)>4 and fac_Device.MfgDate>\'1970-01-01\'';
-    $result = mysql_query( $selectSQL, $db );
+	while ( $row = mysql_fetch_array( $result ) )
+		$deptList[$row['NumYears']] = $row['NumDevices'];
+	
+	$selectSQL = "select count(*) as NumDevices,'<=4' as NumYears from fac_Device where (DATEDIFF(NOW(),IF(MfgDate>'1970-01-01',MfgDate,InstallDate))/365)<=4 and (DATEDIFF(NOW(), IF(MfgDate>'1970-01-01',MfgDate,InstallDate))/365)>3";
+	$result = mysql_query( $selectSQL, $db );
 
-          while ( $row = mysql_fetch_array( $result ) )
-                $deptList[$row['NumYears']] = $row['NumDevices'];
-    $selectSQL = 'select count(*) as NumDevices,\'Unknown\' as NumYears from fac_Device where fac_Device.MfgDate<\'1970-01-01\'';
-    $result = mysql_query( $selectSQL, $db );
+	while ( $row = mysql_fetch_array( $result ) )
+		$deptList[$row['NumYears']] = $row['NumDevices'];
+	
+	$selectSQL = "select count(*) as NumDevices,'>4' as NumYears from fac_Device where (DATEDIFF(NOW(),fac_Device.MfgDate)/365)>4 and IF(MfgDate>'1970-01-01',MfgDate,InstallDate)>'1970-01-01'";
+	$result = mysql_query( $selectSQL, $db );
 
-          while ( $row = mysql_fetch_array( $result ) )
-                $deptList[$row['NumYears']] = $row['NumDevices'];
-    return $deptList;
-  }
+	while ( $row = mysql_fetch_array( $result ) )
+		$deptList[$row['NumYears']] = $row['NumDevices'];
+	
+	$selectSQL = "select count(*) as NumDevices,'Unknown' as NumYears from fac_Device where IF(MfgDate>'1970-01-01',MfgDate,InstallDate)<'1970-01-01'";
+	$result = mysql_query( $selectSQL, $db );
+
+	while ( $row = mysql_fetch_array( $result ) )
+		$deptList[$row['NumYears']] = $row['NumDevices'];
+	
+	return $deptList;
+}
 
   function GetDeviceByAge($db,$years){
     if ($years<=3){
-	$yearsplus=$years+1;
-	$selectSQL = 'select * from fac_Device where (DATEDIFF(NOW(), fac_Device.MfgDate)/365)<='.$yearsplus.' and (DATEDIFF(NOW(),fac_Device.MfgDate)/365)>'.$years.' and fac_Device.MfgDate>\'1970-01-01\'';
-    	//echo $selectSQL."\n";
-	$result = mysql_query( $selectSQL, $db );
+		$yearsplus=$years+1;
+		$selectSQL = sprintf( "select * from fac_Device where (DATEDIFF(NOW(), IF(MfgDate>'1970-01-01',MfgDate,InstallDate))/365)<%d and (DATEDIFF(NOW(), IF(MfgDate>'1970-01-01',MfgDate,InstallDate))/365)>=%d", $yearsplus, $years );
+		$result = mysql_query( $selectSQL, $db );
 
-         	 while ( $deviceRow = mysql_fetch_array( $result ) ){
+		while ( $deviceRow = mysql_fetch_array( $result ) ){
 			$devID = $deviceRow['DeviceID'];
 
-                	$deviceList[$devID] = new DeviceAge();
+			$deviceList[$devID] = new DeviceAge();
 
-                	$deviceList[$devID]->DeviceID = $deviceRow['DeviceID'];
+			$deviceList[$devID]->DeviceID = $deviceRow['DeviceID'];
 			$deviceList[$devID]->Label = $deviceRow['Label'];
 			$deviceList[$devID]->SerialNo = $deviceRow['SerialNo'];
 			$deviceList[$devID]->AssetTag = $deviceRow['AssetTag'];
@@ -89,7 +94,7 @@ class DeviceAge extends Device{
 	}
 	else
 	{
-	$selectSQL = 'select * from fac_Device where (DATEDIFF(NOW(), fac_Device.MfgDate)/365)>4 and fac_Device.MfgDate>\'1970-01-01\'';
+	$selectSQL = "select * from fac_Device where (DATEDIFF(NOW(), IF(MfgDate>'1970-01-01',MfgDate,InstallDate))/365)>4 and IF(MfgDate>'1970-01-01',MfgDate,InstallDate)>'1970-01-01'";
     	$result = mysql_query( $selectSQL, $db );
 
          	 while ( $deviceRow = mysql_fetch_array( $result ) ){
@@ -491,16 +496,16 @@ class PDF_Diag extends PDF_Sector {
 	$pdf->AliasNbPages();
 	$pdf->AddPage();
 	
-  $colors[0]=array(100,100,255);
-  $colors[1]=array(255,100,100);
-  $colors[2]=array(255,255,100);
-  $colors[3]=array(170,170,255);
-  $colors[4]=array(0,255,255);
-  $colors[5]=array(255,0,0);
-  $colors[6]=array(0,255,0);
-  $colors[7]=array(0,0,255);
-  $colors[8]=array(100,175,255);
-  $colors[9]=array(255,175,100);
+	$colors[0]=array(100,100,255);
+	$colors[1]=array(255,100,100);
+	$colors[2]=array(255,255,100);
+	$colors[3]=array(170,170,255);
+	$colors[4]=array(0,255,255);
+	$colors[5]=array(255,0,0);
+	$colors[6]=array(0,255,0);
+	$colors[7]=array(0,0,255);
+	$colors[8]=array(100,175,255);
+	$colors[9]=array(255,175,100);
   
 
 	$pdf->SetFont( $config->ParameterArray['PDFfont'],'B', 16 );
@@ -511,30 +516,36 @@ class PDF_Diag extends PDF_Sector {
 
 	$pdf->AddPage();
 	$pdf->SetFillColor(224,235,255);
-	$pdf->SetFont( $config->ParameterArray['PDFfont'],'B', 16 );
+	$pdf->SetFont( $config->ParameterArray['PDFfont'],'B', 12 );
 	$pdf->Cell( 0, 18, 'Devices from 0-1 Years Old', '', 1, 'C', 0 );
-	$pdf->SetFont( $config->ParameterArray['PDFfont'],'', 10 );
+	$pdf->SetFont( $config->ParameterArray['PDFfont'],'', 7 );
 	$headerTags = array( 'Label','Age ','Owner','Primary Contact' );
-        $cellWidths = array( 45, 30, 50, 45 );
-		$maxval = count( $headerTags );
-        for ( $col = 0; $col < $maxval ; $col++ )
-                $pdf->Cell( $cellWidths[$col], 7, $headerTags[$col], 1, 0, 'C', 0 );
-        $pdf->Ln();
+	$cellWidths = array( 45, 30, 50, 45 );
+	$maxval = count( $headerTags );
+	for ( $col = 0; $col < $maxval ; $col++ )
+			$pdf->Cell( $cellWidths[$col], 7, $headerTags[$col], 1, 0, 'C', 0 );
+	$pdf->Ln();
 	$fill=1;
 	foreach( $yearoldlist as $devRow){
 		$dept->DeptID=$devRow->Owner;
 		$dept->GetDeptByID($facDB);
 		$con->ContactID=$devRow->PrimaryContact;
 		$con->GetContactByID($facDB);
-		$date1=new DateTime($devRow->MfgDate);
+		if ( $devRow->MfgDate > "1970-01-01" )
+			$date1=new DateTime($devRow->MfgDate);
+		else
+			$date1 = new DateTime($devRow->InstallDate);
+			
 		$date2=new DateTime('now');
 		$interval=$date1->diff($date2);
 		$years=$interval->format('%y years %d days');
-
-		$pdf->Cell( $cellWidths[0], 6, $devRow->Label, 'LBRT', 0, 'L', $fill );
-                $pdf->Cell( $cellWidths[1], 6, $years, 'LBRT', 0, 'L', $fill );
-                $pdf->Cell( $cellWidths[2], 6, $dept->Name, 'LBRT', 0, 'L', $fill );
-                $pdf->Cell( $cellWidths[3], 6, $con->FirstName.' '.$con->LastName, 'LBRT', 1, 'L', $fill );
+		
+		$cellHeight = 6;
+		
+		$pdf->Cell( $cellWidths[0], $cellHeight, $devRow->Label, 1, 0, 'L', $fill );
+		$pdf->Cell( $cellWidths[1], $cellHeight, $years, 1, 0, 'L', $fill );
+		$pdf->Cell( $cellWidths[2], $cellHeight, $dept->Name, 1, 0, 'L', $fill );
+		$pdf->Cell( $cellWidths[3], $cellHeight, $con->FirstName.' '.$con->LastName, 1, 1, 'L', $fill );
 
 		$fill=!$fill;
 	}

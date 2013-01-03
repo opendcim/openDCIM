@@ -691,7 +691,7 @@ class Device {
 
 		return true;
 	}
-	
+		
 	function GetDeviceChildren( $db ) {
 		$sql = sprintf( "select * from fac_Device where ParentDevice='%d' order by ChassisSlots, Position ASC", intval( $this->DeviceID ) );
 		$result = mysql_query( $sql, $db );
