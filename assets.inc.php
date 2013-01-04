@@ -1730,16 +1730,17 @@ class SwitchConnection {
 	var $EndpointPort;
 	var $Notes;
 
-	function CreateConnection( $db, $recursive = true ){
+	function CreateConnection( $db, $recursive = true ) {
 		$insertSQL = "insert into fac_SwitchConnection set SwitchDeviceID=\"".intval($this->SwitchDeviceID)."\", SwitchPortNumber=\"".intval($this->SwitchPortNumber)."\", EndpointDeviceID=\"".intval($this->EndpointDeviceID)."\", EndpointPort=\"".intval($this->EndpointPort)."\", Notes=\"".addslashes(strip_tags($this->Notes))."\""; 
 
-		mysql_query( $insertSQL, $db);
+		if ( ! $result = mysql_query( $insertSQL, $db) )
+			error_log( mysql_error( $db ) );
 
 		$tmpDev = new Device();
 		$tmpDev->DeviceID = intval($this->EndpointDeviceID);
 		$tmpDev->GetDevice( $db );
-
-		if ( ! $recursive && $tmpDev->DeviceType == "Switch" ) {
+		
+		if ( $recursive && $tmpDev->DeviceType == "Switch" ) {
 			$tmpSw = new SwitchConnection();
 			$tmpSw->SwitchDeviceID = $this->EndpointDeviceID;
 			$tmpSw->SwitchPortNumber = $this->EndpointPort;
@@ -1764,7 +1765,22 @@ class SwitchConnection {
 
 		mysql_query( $sql, $db );
 
+		$tmpDev = new Device();
+		$tmpDev->DeviceID = intval($this->EndpointDeviceID);
+		$tmpDev->GetDevice( $db );
+		
 		if ( $tmpDev->DeviceType == "Switch" ) {
+			$tmpSw = new SwitchConnection();
+			$tmpSw->SwitchDeviceID = $this->EndpointDeviceID;
+			$tmpSw->SwitchPortNumber = $this->EndpointPort;
+			$tmpSw->EndpointDeviceID = $this->SwitchDeviceID;
+			$tmpSw->EndpointPort = $this->SwitchPortNumber;
+			$tmpSw->Notes = $this->Notes;
+			
+			// Remove any existing connection from this port
+			$tmpSw->RemoveConnection( $db );
+			// Call yourself, but with the recursive = false so that you don't create a loop
+			$tmpSw->CreateConnection( $db, false );
 		}
 
 		if ( $tmpDev->DeviceType == "Patch Panel" ) {
@@ -1777,6 +1793,16 @@ class SwitchConnection {
   
     $result = mysql_query( $delSQL, $db );
     
+	$tmpDev = new Device();
+	$tmpDev->DeviceID = intval($this->EndpointDeviceID);
+	$tmpDev->GetDevice( $db );
+
+	if ( $tmpDev->DeviceType == "Switch" ) {
+		$delSQL = sprintf( "delete from fac_SwitchConnection where SwitchDeviceID=%d and SwitchPortNumber=%d", $this->EndpointDeviceID, $this->EndpointPort );
+		
+		$result = mysql_query( $delSQL, $db );
+	}
+	
     return $result;
   }
   
