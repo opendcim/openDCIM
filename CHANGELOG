@@ -15,7 +15,14 @@ Changes in 2.0
 -- Graphs the last read load value in kW on the Cabinet Navigator
 -- Support for various means of calculating kW, including 3-phase
 * Support for hyperlinks and images in Notes for devices
-* Support for front and back connections on patch panels
+* Calculation of load for cabinets includes child devices of chassis
+* Auto-fill the device owner when creating a device in a cabinet assigned to a specific customer
+* Tagging support for devices (further support in 2.1 for searching by tags)
+* Fixed logic bug in the Aging Report to use the Installation Date is the Manufacture Date is set to pre-epoch
+* Added a Copy button for making reservations of devices that need to move to a new location
+* Language mapping ability - includes Slovenian as the first translated language
+* Added the vmState and Last Polled timestamp in the Assets by Owner report
+* No forced uppercase, now a configuration parameter
 
 Changes in 1.5
 --------------

@@ -1724,30 +1724,53 @@ class SwitchConnection {
 							port back to itself, and list the external source in the Notes field.
 	*/
 	
-  var $SwitchDeviceID;
-  var $SwitchPortNumber;
-  var $EndpointDeviceID;
-  var $EndpointPort;
-  var $Notes;
+	var $SwitchDeviceID;
+	var $SwitchPortNumber;
+	var $EndpointDeviceID;
+	var $EndpointPort;
+	var $Notes;
 
-  function CreateConnection($db){
-    $insertSQL="insert into fac_SwitchConnection set SwitchDeviceID=\"".intval($this->SwitchDeviceID)."\", SwitchPortNumber=\"".intval($this->SwitchPortNumber)."\", EndpointDeviceID=\"".intval($this->EndpointDeviceID)."\", EndpointPort=\"".intval($this->EndpointPort)."\", Notes=\"".addslashes(strip_tags($this->Notes))."\""; 
+	function CreateConnection( $db, $recursive = true ){
+		$insertSQL = "insert into fac_SwitchConnection set SwitchDeviceID=\"".intval($this->SwitchDeviceID)."\", SwitchPortNumber=\"".intval($this->SwitchPortNumber)."\", EndpointDeviceID=\"".intval($this->EndpointDeviceID)."\", EndpointPort=\"".intval($this->EndpointPort)."\", Notes=\"".addslashes(strip_tags($this->Notes))."\""; 
 
-    $result=mysql_query($insertSQL,$db);
-	if(!$result){
-		return -1;
-	}else{
-		return $result;
+		mysql_query( $insertSQL, $db);
+
+		$tmpDev = new Device();
+		$tmpDev->DeviceID = intval($this->EndpointDeviceID);
+		$tmpDev->GetDevice( $db );
+
+		if ( ! $recursive && $tmpDev->DeviceType == "Switch" ) {
+			$tmpSw = new SwitchConnection();
+			$tmpSw->SwitchDeviceID = $this->EndpointDeviceID;
+			$tmpSw->SwitchPortNumber = $this->EndpointPort;
+			$tmpSw->EndpointDeviceID = $this->SwitchDeviceID;
+			$tmpSw->EndpointPort = $this->SwitchPortNumber;
+			$tmpSw->Notes = $this->Notes;
+			
+			// Remove any existing connection from this port
+			$tmpSw->RemoveConnection( $db );
+			// Call yourself, but with the recursive = false so that you don't create a loop
+			$tmpSw->CreateConnection( $db, false );
+		}
+
+		if ( $tmpDev->DeviceType == "Patch Panel" ) {
+		}
+		
+		return 1;
 	}
-  }
   
-  function UpdateConnection( $db ) {
-    $sql = "update fac_SwitchConnection set EndpointDeviceID=\"" . intval( $this->EndpointDeviceID ) . "\", EndpointPort=\"" . intval( $this->EndpointPort ) . "\", Notes=\"" . addslashes( $this->Notes ) . "\" where SwitchDeviceID=\"" . intval( $this->SwitchDeviceID ) . "\" and SwitchPortNumber=\"" . intval( $this->SwitchPortNumber ) . "\"";
-    
-    $result = mysql_query( $sql, $db );
-    
-    return $result;
-  }
+	function UpdateConnection( $db ) {
+		$sql = "update fac_SwitchConnection set EndpointDeviceID=\"" . intval( $this->EndpointDeviceID ) . "\", EndpointPort=\"" . intval( $this->EndpointPort ) . "\", Notes=\"" . addslashes( $this->Notes ) . "\" where SwitchDeviceID=\"" . intval( $this->SwitchDeviceID ) . "\" and SwitchPortNumber=\"" . intval( $this->SwitchPortNumber ) . "\"";
+
+		mysql_query( $sql, $db );
+
+		if ( $tmpDev->DeviceType == "Switch" ) {
+		}
+
+		if ( $tmpDev->DeviceType == "Patch Panel" ) {
+		}
+
+	}
     
   function RemoveConnection( $db ) {
     $delSQL = "delete from fac_SwitchConnection where SwitchDeviceID=\"" . $this->SwitchDeviceID . "\" and SwitchPortNumber=\"" . $this->SwitchPortNumber . "\"";
@@ -1834,6 +1857,45 @@ class SwitchConnection {
     
     return $connList;
   }  
+}
+
+class PatchConnection {
+	/* PatchConnection:	Self explanatory - any device set as a patch will allow you to map out the port connections to
+							any other device within the same data center.  For trans-data center connections, you can map the
+							port back to itself, and list the external source in the Notes field.
+	*/
+	
+	var $PanelDeviceID;
+	var $PanelPortNumber;
+	var $FrontEndpointDeviceID;
+	var $FrontEndpointPort;
+	var $RearEndpointDeviceID;
+	var $RearEndpointPort;
+	var $Notes;
+
+	function CreateConnection( $db ) {
+	}
+	
+	function UpdateConnection( $db ) {
+	}
+	
+	function RemoveConnection( $db ) {
+	}
+	
+	function DropEndpointConnections( $db ) {
+	}
+	
+	function DropPanelConnections( $db ) {
+	}
+	
+	function GetPanelConnections( $db ) {
+	}
+	
+	function GetPanelPortConnector( $db ) {
+	}
+	
+	function GetEndpointConnections( $db ) {
+	}
 }
 
 class SupplyBin {
@@ -2015,6 +2077,7 @@ class BinAudits {
 		mysql_query( $sql, $db );
 	}
 }
+
 class Tags {
 	var $TagID;
 	var $TagName;

@@ -163,4 +163,4 @@ CREATE TABLE fac_Tags (
 --
 
 INSERT INTO `fac_Config` (`Parameter`, `Value`, `UnitOfMeasure`, `ValType`, `DefaultVal`) VALUES 
-('LabelCase','upper','string','string','upper'),
+('LabelCase','upper','string','string','upper');
