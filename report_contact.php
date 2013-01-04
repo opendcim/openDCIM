@@ -534,8 +534,8 @@ class PDF_Diag extends PDF_Sector {
     $esx->Owner = $deptRow->DeptID;
     $esxList = $esx->GetVMListbyOwner( $facDB );
     
-		$headerTags = array( 'Virtual Machine Image Name', 'Current Host Server' );
-		$cellWidths = array( 80, 80 );
+		$headerTags = array( 'Virtual Machine Image Name', 'Current Host Server', 'State', 'Last Polled' );
+		$cellWidths = array( 60, 40, 30, 40 );
 		$maxval = count( $headerTags );
 
 		for ( $col = 0; $col < $maxval; $col++ )
@@ -553,7 +553,9 @@ class PDF_Diag extends PDF_Sector {
 			}
 			
 			$pdf->Cell( $cellWidths[0], 6, $esxRow->vmName, 'LBRT', 0, 'L', $fill );
-			$pdf->Cell( $cellWidths[1], 6, $dev->Label, 'LBRT', 1, 'L', $fill );
+			$pdf->Cell( $cellWidths[1], 6, $dev->Label, 'LBRT', 0, 'L', $fill );
+			$pdf->Cell( $cellWidths[2], 6, $esxRow->vmState, 'LBRT', 0, 'L', $fill );
+			$pdf->Cell( $cellWidths[3], 6, date( "d M Y H:i:s", strtotime( $esxRow->LastUpdated )), 'LBRT', 1, 'L', $fill );
     
       $fill != $fill;
     }
