@@ -43,6 +43,15 @@ class Contact {
 		$selectSQL = "select * from fac_Contact where ContactID=\"" . intval($this->ContactID) . "\"";
 
 		$result = mysql_query( $selectSQL, $db );
+		
+		/* Clear out non-key values in case this is a repeated call in a loop, otherwise you'll get ghost data back */
+		$this->UserID = "";
+		$this->LastName = "";
+		$this->FirstName = "";
+		$this->Phone1 = "";
+		$this->Phone2 = "";
+		$this->Phone3 = "";
+		$this->Email = "";
 
 		if ( $contactRow = mysql_fetch_array( $result ) ) {
 			$this->ContactID = $contactRow["ContactID"];
@@ -62,6 +71,15 @@ class Contact {
 		$selectSQL = "select * from fac_Contact where UserID=\"" . addslashes($this->UserID) . "\"";
 
 		$result = mysql_query( $selectSQL, $db );
+
+		/* Clear out non-key values in case this is a repeated call in a loop, otherwise you'll get ghost data back */
+		$this->ContactID = "";
+		$this->LastName = "";
+		$this->FirstName = "";
+		$this->Phone1 = "";
+		$this->Phone2 = "";
+		$this->Phone3 = "";
+		$this->Email = "";
 
 		if ( $contactRow = mysql_fetch_array( $result ) ) {
 			$this->ContactID = $contactRow["ContactID"];
