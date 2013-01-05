@@ -2041,8 +2041,6 @@ class PatchConnection {
 		if ( ! $result = mysql_query( $sql, $db ) ) {
 			error_log( sprintf( "%s; SQL=`%s`", mysql_error( $db ), $sql ) );
 			return -1;
-		} else {
-			error_log( sprintf( "DEBUG: SQL=`%s`", $sql ) );
 		}
 		
 		// Check the endpoint of the front connection in case it has a reciprocal connection
