@@ -23,6 +23,8 @@ Changes in 2.0
 * Language mapping ability - includes Slovenian as the first translated language
 * Added the vmState and Last Polled timestamp in the Assets by Owner report
 * No forced uppercase, now a configuration parameter
+* When you make a switch connection to another switch, it automatically adds the reciprocal connection
+* Support for documenting patch panel connections
 
 Changes in 1.5
 --------------

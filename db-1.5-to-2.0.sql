@@ -132,11 +132,13 @@ DROP TABLE IF EXISTS fac_PatchConnection;
 CREATE TABLE fac_PatchConnection (
   PanelDeviceID int(11) NOT NULL,
   PanelPortNumber int(11) NOT NULL,
-  PanelSide enum('Front','Rear') default 'Front',
-  EndpointDeviceID int(11) NOT NULL,
-  EndpointPort int(11) NOT NULL,
-  Notes varchar(80) NOT NULL,
-  PRIMARY KEY (PanelDeviceID,PanelPortNumber,PanelSide)
+  FrontEndpointDeviceID int(11) NOT NULL,
+  FrontEndpointPort int(11) NOT NULL,
+  RearEndpointDeviceID int(11) NOT NULL,
+  RearEndpointPort int(11) NOT NULL,
+  FrontNotes varchar(80) NOT NULL,
+  RearNotes varchar(80) NOT NULL,
+  PRIMARY KEY (PanelDeviceID,PanelPortNumber)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
 --
