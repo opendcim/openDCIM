@@ -1731,8 +1731,7 @@ class SwitchConnection {
 	var $Notes;
 
 	function CreateConnection( $db, $recursive = true ) {
-		$insertSQL = "insert into fac_SwitchConnection set SwitchDeviceID=\"".intval($this->SwitchDeviceID)."\", SwitchPortNumber=\"".intval($this->SwitchPortNumber)."\", EndpointDeviceID=\"".intval($this->EndpointDeviceID)."\", EndpointPort=\"".intval($this->EndpointPort)."\", Notes=\"".addslashes(strip_tags($this->Notes))."\""; 
-
+		$insertSQL = "insert into fac_SwitchConnection set SwitchDeviceID=\"".intval($this->SwitchDeviceID)."\", SwitchPortNumber=\"".intval($this->SwitchPortNumber)."\", EndpointDeviceID=\"".intval($this->EndpointDeviceID)."\", EndpointPort=\"".intval($this->EndpointPort)."\", Notes=\"".addslashes(strip_tags($this->Notes))."\";"; 
 		if ( ! $result = mysql_query( $insertSQL, $db) ) {
 			error_log( mysql_error( $db ) );
 			return -1;
@@ -1820,7 +1819,7 @@ class SwitchConnection {
 		return 1;	
 	}
     
-	function RemoveConnection( $db ) {
+	function RemoveConnection($db, $recursive=false ) {
 		$this->GetConnectionRecord( $db );
 
 		$delSQL = "delete from fac_SwitchConnection where SwitchDeviceID=\"" . $this->SwitchDeviceID . "\" and SwitchPortNumber=\"" . $this->SwitchPortNumber . "\"";
@@ -1831,9 +1830,8 @@ class SwitchConnection {
 		$tmpDev->DeviceID = intval($this->EndpointDeviceID);
 		$tmpDev->GetDevice( $db );
 
-		if ( $tmpDev->DeviceType == "Switch" ) {
+		if ( $tmpDev->DeviceType == "Switch" && $recursive) {
 			$sql = sprintf( "delete from fac_SwitchConnection where SwitchDeviceID=%d and SwitchPortNumber=%d", $this->EndpointDeviceID, $this->EndpointPort );
-			
 			$result = mysql_query( $sql, $db );
 		}
 

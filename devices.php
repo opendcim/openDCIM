@@ -29,10 +29,10 @@
 				$connect->EndpointPort=$_POST['dp'];
 				$connect->Notes=$_POST['n'];
 				if($connect->EndpointDeviceID==-1){
-					echo $connect->RemoveConnection($facDB);
+					echo $connect->RemoveConnection($facDB,true);
 				}else{
 					// Since I can't be bothered to put in an actual update, just remove the existing connection first.
-					$connect->RemoveConnection($facDB);
+					$connect->RemoveConnection($facDB,true);
 					// should kick back -1 if the insert fails and 1 if it is successful
 					echo $connect->CreateConnection($facDB);
 				}
