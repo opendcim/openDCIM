@@ -10,6 +10,8 @@
 	$user->UserID=$_SERVER['REMOTE_USER'];
 	$user->GetUserRights( $facDB );
 
+	$taginsert="";
+
 	if(!$user->ReadAccess){
 		// No soup for you.
 		header('Location: '.redirect());
@@ -181,7 +183,6 @@
 
 			// Get any tags associated with this device
 			$tags=$dev->GetTags();
-			$taginsert="";
 			if(count($tags>0)){
 				// We have some tags so build the javascript elements we need to create the tags themselves
 				$taginsert="\t\ttags: {items: ".json_encode($tags)."},\n";
@@ -193,7 +194,7 @@
 				$pdu=new PowerDistribution();
 				$panel=new PowerPanel();
 				$networkPatches=new SwitchConnection();
-
+				$patchPanel=new PatchConnection();
 
 				$pwrConnection->DeviceID=($dev->ParentDevice>0)?$dev->ParentDevice:$dev->DeviceID;
 				$pwrCords=$pwrConnection->GetConnectionsByDevice($facDB);
@@ -201,6 +202,9 @@
 				if($dev->DeviceType=='Switch'){
 					$networkPatches->SwitchDeviceID=$dev->DeviceID;
 					$patchList=$networkPatches->GetSwitchConnections($facDB);
+				}elseif($dev->DeviceType=='Patch Panel'){
+					$patchPanel->PanelDeviceID=$dev->DeviceID;
+					$patchList=$patchPanel->GetPanelConnections($facDB);
 				}else{
 					$networkPatches->EndpointDeviceID=($dev->ParentDevice>0)?$dev->ParentDevice:$dev->DeviceID;
 					$patchList=$networkPatches->GetEndpointConnections($facDB);
@@ -1053,7 +1057,7 @@ echo '	<div class="table">
 	if(!is_null($pwrCords)&&((isset($_POST['action'])&&$_POST['action']!='child')||!isset($_POST['action']))){
 		if(count($pwrCords)==0){
 			// We have no power information. Display links to PDU's in cabinet?
-			echo '		<div>		<div><a name="power"></a></div>		<div>',_("No power connections defined.  You can add connections from the power strip screen."),'</div></div><div><div>&nbsp;</div><div></div></div>';
+			echo '	<div>		<div><a name="power"></a></div>		<div>',_("No power connections defined.  You can add connections from the power strip screen."),'</div></div><div><div>&nbsp;</div><div></div></div>';
 		}else{
 			print "		<div>\n		  <div><a name=\"power\">$chassis "._('Power Connections')."</a></div>\n		  <div><div class=\"table border\">\n			<div><div>"._('Panel')."</div><div>"._('Power Strip')."</div><div>"._('Plug #')."</div><div>"._('Power Supply')."</div></div>";
 			foreach($pwrCords as $cord){
@@ -1097,23 +1101,40 @@ echo '	<div class="table">
 		}      
 		echo "			</div><!-- END div.table -->\n		  </div>\n		</div>";
 	}
+
+	if($dev->DeviceType=='Patch Panel'){
+		print "\n\t<div>\n\t\t<div><a name=\"net\">"._('Connections')."</a></div>\n\t\t<div>\n\t\t\t<div class=\"table border patchpanel\">\n\t\t\t\t<div><div>"._('Front')."</div><div>"._('Notes')."</div><div>"._('Patch Port')."</div><div>"._('Back')."</div><div>"._('Notes')."</div></div>\n";
+		if(sizeof($patchList) >0){
+			foreach($patchList as $patchConn){
+				$frontDev=new Device();
+				$rearDev=new Device();
+				$frontDev->DeviceID=$patchConn->FrontEndpointDeviceID;
+				$rearDev->DeviceID=$patchConn->RearEndpointDeviceID;
+				$frontDev->GetDevice($facDB);
+				$rearDev->GetDevice($facDB);
+				print "\n\t\t\t\t<div><div>$frontDev->Label :: $patchConn->FrontEndpointPort</div><div>$patchConn->FrontNotes</div><div>$patchConn->PanelPortNumber</div><div>$rearDev->Label :: $patchConn->RearEndpointPort</div><div>$patchConn->RearNotes</div></div>";
+			}
+		}
+		print "\t\t\t</div><!-- END div.table -->\n\t\t</div>\n\t</div>\n";
+	}
 ?>
-		<div class="caption">
+	<div class="caption">
 <?php
 	if($user->WriteAccess){
 		if($dev->DeviceID >0){
-			echo '		  <button type="submit" name="action" value="Update">',_("Update"),'</button>
-        <button type="submit" name="action" value="Copy">', _("Copy"), '</button>';
+			echo '		<button type="submit" name="action" value="Update">',_("Update"),'</button>
+		<button type="submit" name="action" value="Copy">', _("Copy"), '</button>';
 		} else {
-			echo '		  <button type="submit" name="action" value="Create">',_("Create"),'</button>';
+			echo '		<button type="submit" name="action" value="Create">',_("Create"),'</button>';
 		}
 	}
 	// Delete rights are seperate from write rights
 	if($user->DeleteAccess && $dev->DeviceID >0){
-		echo '		  <button type="button" name="action" value="Delete">',_("Delete"),'</button>';
+		echo '		<button type="button" name="action" value="Delete">',_("Delete"),'</button>';
 	}
 ?>
-		</div>
+
+	</div>
 </div> <!-- END div.table -->
 </div></div>
 </div> <!-- END div.table -->

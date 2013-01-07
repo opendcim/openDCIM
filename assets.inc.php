@@ -2103,31 +2103,34 @@ class PatchConnection {
 	function DropPanelConnections( $db ) {
 	}
 	
-	function GetPanelConnections( $db ) {
-		$sql = sprintf( "select * from fac_PatchConnection where PanelDeviceID=%d order by PanelPortNumber", intval( $this->SwitchDeviceID ) );
-		
-		$result = mysql_query( $sql, $db );
+	function GetPanelConnections($db){
+		$sql="SELECT * FROM fac_PatchConnection WHERE PanelDeviceID=".intval($this->PanelDeviceID)." ORDER BY PanelPortNumber;";
+		$result=mysql_query($sql,$db);
 		
 		$tmpDev = new Device();
 		$tmpDev->DeviceID = $this->PanelDeviceID;
 		$tmpDev->GetDevice( $db );
+		$conList=array();
 		
 		for ( $i = 1; $i <= $tmpDev->Ports; $i++ ) {
-		  $connList[$i] = new PatchConnection();
-		  $connList[$i]->PanelDeviceID = $tmpDev->DeviceID;
-		  $connList[$i]->PanelPortNumber = $i;
+			$connList[$i] = new PatchConnection();
+			$connList[$i]->PanelDeviceID = $tmpDev->DeviceID;
+			$connList[$i]->PanelPortNumber = $i;
 		}      
 		
-		while ( $connRow = mysql_fetch_array( $result ) ) {
-		  $connNum = $connRow["PanelPortNumber"];
-		  $connList[$connNum]->PanelDeviceID = $connRow["PanelDeviceID"];
-		  $connList[$connNum]->PanelPortNumber = $connRow["PanelPortNumber"];
-		  $connList[$connNum]->FrontEndpointDeviceID = $connRow["FrontEndpointDeviceID"];
-		  $connList[$connNum]->FrontEndpointPort = $connRow["FrontEndpointPort"];
-		  $connList[$connNum]->RearEndpointDeviceID = $connRow["RearEndpointDeviceID"];
-		  $connList[$connNum]->RearEndpointPort = $connRow["RearEndpointPort"];
-		  $connList[$connNum]->FrontNotes = $connRow["FrontNotes"];
-		  $connList[$connNum]->RearNotes = $connRow["RearNotes"];
+		while($connRow=mysql_fetch_array($result)){
+			$connNum=$connRow["PanelPortNumber"];
+			$connList[$connNum]->PanelDeviceID=$connRow["PanelDeviceID"];
+			$connList[$connNum]->PanelPortNumber=$connRow["PanelPortNumber"];
+			if($connRow["PanelSide"]=="Front"){
+				$connList[$connNum]->FrontEndpointDeviceID=$connRow["EndpointDeviceID"];
+				$connList[$connNum]->FrontEndpointPort=$connRow["EndpointPort"];
+				$connList[$connNum]->FrontNotes=$connRow["Notes"];
+			}else{
+				$connList[$connNum]->RearEndpointDeviceID=$connRow["EndpointDeviceID"];
+				$connList[$connNum]->RearEndpointPort=$connRow["EndpointPort"];
+				$connList[$connNum]->RearNotes=$connRow["Notes"];
+			}
 		}
 		
 		return $connList;
