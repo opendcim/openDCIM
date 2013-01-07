@@ -2122,15 +2122,12 @@ class PatchConnection {
 			$connNum=$connRow["PanelPortNumber"];
 			$connList[$connNum]->PanelDeviceID=$connRow["PanelDeviceID"];
 			$connList[$connNum]->PanelPortNumber=$connRow["PanelPortNumber"];
-			if($connRow["PanelSide"]=="Front"){
-				$connList[$connNum]->FrontEndpointDeviceID=$connRow["EndpointDeviceID"];
-				$connList[$connNum]->FrontEndpointPort=$connRow["EndpointPort"];
-				$connList[$connNum]->FrontNotes=$connRow["Notes"];
-			}else{
-				$connList[$connNum]->RearEndpointDeviceID=$connRow["EndpointDeviceID"];
-				$connList[$connNum]->RearEndpointPort=$connRow["EndpointPort"];
-				$connList[$connNum]->RearNotes=$connRow["Notes"];
-			}
+			$connList[$connNum]->FrontEndpointDeviceID=$connRow["FrontEndpointDeviceID"];
+			$connList[$connNum]->FrontEndpointPort=$connRow["FrontEndpointPort"];
+			$connList[$connNum]->RearEndpointDeviceID=$connRow["RearEndpointDeviceID"];
+			$connList[$connNum]->RearEndpointPort=$connRow["RearEndpointPort"];
+			$connList[$connNum]->FrontNotes=$connRow["FrontNotes"];
+			$connList[$connNum]->RearNotes=$connRow["RearNotes"];
 		}
 		
 		return $connList;
