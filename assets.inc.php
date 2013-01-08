@@ -882,7 +882,7 @@ class Device {
 	}
 	
 	static function GetPatchPanels($db){
-		$sql="SELECT * FROM fac_Device WHERE DeviceType='Patch Panel';";
+		$sql="SELECT * FROM fac_Device WHERE DeviceType='Patch Panel' order by Label ASC";
 		$result=mysql_query($sql,$db);
 		
 		$panelList=array();
@@ -2043,10 +2043,10 @@ class PatchConnection {
 	}
 	
 	function MakeRearConnection( $db, $recursive = true ) {
-		$sql = sprintf( "insert into fac_PatchConnection values (%d, %d, %d, %d, 0, 0, \"%s\", \"\" ) on duplicate key update FrontEndpointDeviceID=%d,FrontEndpointPort=%d,FrontNotes=\"%s\"",
-			intval( $this->PanelDeviceID ), intval( $this->PanelPortNumber ), intval( $this->FrontEndpointDeviceID ), intval( $FrontEndpointPort ),
-			mysql_escape_string( $this->FrontNotes ), intval( $this->FrontEndpointDeviceID ), intval( $this->FrontEndpointPort ), 
-			mysql_real_escape_string( $this->FrontNotes ) );
+		$sql = sprintf( "insert into fac_PatchConnection values (%d, %d, 0, 0, %d, %d, \"\", \"%s\" ) on duplicate key update RearEndpointDeviceID=%d,RearEndpointPort=%d,RearNotes=\"%s\"",
+			intval( $this->PanelDeviceID ), intval( $this->PanelPortNumber ), intval( $this->RearEndpointDeviceID ), intval( $this->RearEndpointPort ),
+			mysql_escape_string( $this->RearNotes ), intval( $this->RearEndpointDeviceID ), intval( $this->RearEndpointPort ), 
+			mysql_real_escape_string( $this->RearNotes ) );
 		
 		if ( ! $result = mysql_query( $sql, $db) ) {
 			error_log( sprintf( "%s; SQL=`%s`", mysql_error( $db ), $sql ) );
@@ -2061,10 +2061,10 @@ class PatchConnection {
 		// So there is no need to test for a switch like with the front side
 		if ( $recursive && $tmpDev->DeviceType == "Patch Panel" ) {
 			$tmpPanel = new PatchConnection();
-			$tmpPanel->PanelDeviceID = $this->EndpointDeviceID;
-			$tmpPanel->PanelPortNumber = $this->PanelPortNumber;
-			$tmpPanel->RearEndpointDeviceID = $this->RearEndpointDeviceID;
-			$tmpPanel->RearEndpointPort = $this->RearEndpointPort;
+			$tmpPanel->PanelDeviceID = $this->RearEndpointDeviceID;
+			$tmpPanel->PanelPortNumber = $this->RearEndpointPort;
+			$tmpPanel->RearEndpointDeviceID = $this->PanelDeviceID;
+			$tmpPanel->RearEndpointPort = $this->PanelPortNumber;
 			$tmpPanel->RearNotes = $this->RearNotes;
 			$tmpPanel->MakeRearConnection( $db, false );
 		}
