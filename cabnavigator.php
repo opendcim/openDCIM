@@ -299,7 +299,11 @@ $body.='</table>
 		// De-rate all breakers to 80% sustained load
 		$maxDraw*=0.8;
 		
-		$PDUPercent=$pduDraw/$maxDraw*100;
+		if ( $maxDraw > 0 )
+			$PDUPercent=$pduDraw/$maxDraw*100;
+		else
+			$PDUPercent = 0;
+			
 		$PDUColor=($PDUPercent>intval($config->ParameterArray["PowerRed"])?$CriticalColor:($PDUPercent>intval($config->ParameterArray["PowerYellow"])?$CautionColor:$GoodColor));
 		
 		$body.=sprintf("			<a href=\"power_pdu.php?pduid=%d\">CDU %s</a><br>(%.2f kW) / (%.2f kW Max)</font><br>\n", $PDUdev->PDUID, $PDUdev->Label, $pduDraw / 1000, $maxDraw / 1000 );
