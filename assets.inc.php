@@ -735,9 +735,9 @@ class Device {
 		return $childList;
 	}
 	
-	function GetParentDevices( $db ) {
-		$sql = sprintf( "select * from fac_Device where ChassisSlots>0 and ParentDevice=0 order by Label ASC" );
-		$result = mysql_query( $sql, $db );
+	function GetParentDevices($db){
+		$sql="SELECT * FROM fac_Device WHERE ChassisSlots>0 AND ParentDevice=0 ORDER BY Label ASC;";
+		$result=mysql_query($sql,$db);
 		
 		$parentList = array();
 		while ( $row = mysql_fetch_array( $result ) ) {
@@ -881,6 +881,47 @@ class Device {
 		return $deviceList;
 	}
 	
+	static function GetPatchPanels($db){
+		$sql="SELECT * FROM fac_Device WHERE DeviceType='Patch Panel';";
+		$result=mysql_query($sql,$db);
+		
+		$panelList=array();
+		while($row=mysql_fetch_array($result)){
+			$panelList[$row["DeviceID"]]=new Device();
+			$panelList[$row["DeviceID"]]->DeviceID=$row["DeviceID"];
+			$panelList[$row["DeviceID"]]->Label=$row["Label"];
+			$panelList[$row["DeviceID"]]->SerialNo=$row["SerialNo"];
+			$panelList[$row["DeviceID"]]->AssetTag=$row["AssetTag"];
+			$panelList[$row["DeviceID"]]->PrimaryIP=$row["PrimaryIP"];
+			$panelList[$row["DeviceID"]]->SNMPCommunity=$row["SNMPCommunity"];
+			$panelList[$row["DeviceID"]]->ESX=$row["ESX"];
+			$panelList[$row["DeviceID"]]->Owner=$row["Owner"];
+			// Suppressing errors on the following two because they can be null and that generates an apache error
+			@$panelList[$row["DeviceID"]]->EscalationTimeID=$row["EscalationTimeID"];
+			@$panelList[$row["DeviceID"]]->EscalationID=$row["EscalationID"];
+			$panelList[$row["DeviceID"]]->PrimaryContact=$row["PrimaryContact"];
+			$panelList[$row["DeviceID"]]->Cabinet=$row["Cabinet"];
+			$panelList[$row["DeviceID"]]->Position=$row["Position"];
+			$panelList[$row["DeviceID"]]->Height=$row["Height"];
+			$panelList[$row["DeviceID"]]->Ports=$row["Ports"];
+			$panelList[$row["DeviceID"]]->TemplateID=$row["TemplateID"];
+			$panelList[$row["DeviceID"]]->NominalWatts=$row["NominalWatts"];
+			$panelList[$row["DeviceID"]]->PowerSupplyCount=$row["PowerSupplyCount"];
+			$panelList[$row["DeviceID"]]->DeviceType=$row["DeviceType"];
+			$panelList[$row["DeviceID"]]->ChassisSlots=$row["ChassisSlots"];
+			$panelList[$row["DeviceID"]]->RearChassisSlots=$row["RearChassisSlots"];
+			$panelList[$row["DeviceID"]]->ParentDevice=$row["ParentDevice"];
+			$panelList[$row["DeviceID"]]->MfgDate=$row["MfgDate"];
+			$panelList[$row["DeviceID"]]->InstallDate=$row["InstallDate"];
+			$panelList[$row["DeviceID"]]->WarrantyCo=$row["WarrantyCo"];
+			@$panelList[$row["DeviceID"]]->WarrantyExpire=$row["WarrantyExpire"];
+			$panelList[$row["DeviceID"]]->Notes=$row["Notes"];
+			$panelList[$row["DeviceID"]]->Reservation=$row["Reservation"];
+		}
+		
+		return $panelList;
+	}
+
 	function DeleteDevice( $db ) {
 		// First, see if this is a chassis that has children, if so, delete all of the children first
 		if ( $this->ChassisSlots > 0 ) {
@@ -2033,8 +2074,7 @@ class PatchConnection {
 	
 	function RemoveFrontConnection( $db, $recursive = true ) {
 		$this->GetConnectionRecord( $db );
-		
-		$sql = sprintf( "update fac_PatchConnection set FrontEndpointDeviceID=0, FrontEndpointPort=0, FrontNotes='' where PanelDeviceID=%d and PanelPortNumber=%d", intval( $this->PanelDeviceID ), intval( $this->PanelPortNumber ) );
+		$sql="UPDATE fac_PatchConnection SET FrontEndpointDeviceID=NULL, FrontEndpointPort=NULL, FrontNotes=NULL WHERE PanelDeviceID=".intval($this->PanelDeviceID)." AND PanelPortNumber=".intval($this->PanelPortNumber).";";
 
 		if ( ! $result = mysql_query( $sql, $db ) ) {
 			error_log( sprintf( "%s; SQL=`%s`", mysql_error( $db ), $sql ) );
@@ -2066,10 +2106,10 @@ class PatchConnection {
 		return 1;
 	}
 	
-	function RemoveRearConnection( $db, $recursive = true ) {
+	function RemoveRearConnection($db,$recursive=true){
 		$this->GetConnectionRecord( $db );
 		
-		$sql = sprintf( "update fac_PatchConnection set RearEndpointDeviceID=0, RearEndpointPort=0, RearNotes='' where PanelDeviceID=%d and PanelPortNumber=%d", intval( $this->PanelDeviceID ), intval( $this->PanelPortNumber ) );
+		$sql="UPDATE fac_PatchConnection SET RearEndpointDeviceID=NULL, RearEndpointPort=NULL, RearNotes=NULL WHERE PanelDeviceID=".intval($this->PanelDeviceID)." AND PanelPortNumber=".intval($this->PanelPortNumber).";";
 
 		if ( ! $result = mysql_query( $sql, $db ) ) {
 			error_log( sprintf( "%s; SQL=`%s`", mysql_error( $db ), $sql ) );
@@ -2087,11 +2127,11 @@ class PatchConnection {
 		// Patch panel connections can go front to front, or rear to rear, but never front to rear
 		// So since this is a front connection removal, you only need to remove the front connection
 		// at the opposite end
-		if ( $recursive && $tmpDev->DeviceType == "Patch Panel" ) {
-			$tmpPanel = new PatchConnection();
+		if($recursive && $tmpDev->DeviceType == "Patch Panel"){
+			$tmpPanel=new PatchConnection();
 			$tmpPanel->PanelDeviceID = $this->RearEndpointDeviceID;
 			$tmpPanel->PanelPortNumber = $this->RearEndpointPort;
-			$tmpPanel->RemoveRearConnection( $db, false );
+			$tmpPanel->RemoveRearConnection($db, false);
 		}
 		
 		return 1;

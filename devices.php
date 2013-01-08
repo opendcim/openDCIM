@@ -50,6 +50,68 @@
 			}
 			exit;
 		}
+		if(isset($_POST['pdev'])){
+			$patchConnect=new PatchConnection();
+			$patchConnect->PanelDeviceID=intval($_POST['pdev']);
+			if(isset($_POST['pdel'])){
+				$patchConnect->PanelPortNumber=intval($_POST['pdel']);
+				if($patchConnect->RemoveFrontConnection($facDB)){
+					if($patchConnect->RemoveRearConnection($facDB)){
+						echo '1';
+						exit;
+					}
+					echo '0';
+					exit;
+				}else{
+					echo '0';
+				}
+				exit;
+			}
+			if(isset($_POST['pget'])){
+				$patchConnect->PanelPortNumber=intval($_POST['pget']);
+				$patchConnect->GetConnectionRecord($facDB);
+				$frontdev=new Device();
+				$frontdev->DeviceID=$patchConnect->FrontEndpointDeviceID;
+				$frontdev->GetDevice($facDB);
+				$dev->DeviceID=$patchConnect->RearEndpointDeviceID;
+				$dev->GetDevice($facDB);
+				print "<div><a href=\"devices.php?deviceid=$frontdev->DeviceID\">$frontdev->Label</a></div><div>$patchConnect->FrontEndpointPort</div><div>$patchConnect->FrontNotes</div><div>$patchConnect->PanelPortNumber</div><div><a href=\"devices.php?deviceid=$dev->DeviceID\">$dev->Label</a></div><div>$patchConnect->RearEndpointPort</div><div>$patchConnect->RearNotes</div>";
+				exit;
+			}
+			if(isset($_POST['psav'])){
+				$patchConnect->PanelPortNumber=$_POST['psav'];
+				$patchConnect->FrontEndpointDeviceID=$_POST['fdev'];
+				$patchConnect->FrontEndpointPort=$_POST['fport'];
+				$patchConnect->RearEndpointDeviceID=$_POST['rdev'];
+				$patchConnect->RearEndpointPort=$_POST['rport'];
+				$patchConnect->FrontNotes=$_POST['fn'];
+				$patchConnect->RearNotes=$_POST['rn'];
+				if($patchConnect->MakeFrontConnection($facDB)){
+					if($patchConnect->MakeRearConnection($facDB)){
+						$frontdev=new Device();
+						$frontdev->DeviceID=$patchConnect->FrontEndpointDeviceID;
+						$frontdev->GetDevice($facDB);
+						$dev->DeviceID=$patchConnect->RearEndpointDeviceID;
+						$dev->GetDevice($facDB);
+						print "<div><a href=\"devices.php?deviceid=$frontdev->DeviceID\">$frontdev->Label</a></div><div>$patchConnect->FrontEndpointPort</div><div>$patchConnect->FrontNotes</div><div>$patchConnect->PanelPortNumber</div><div><a href=\"devices.php?deviceid=$dev->DeviceID\">$dev->Label</a></div><div>$patchConnect->RearEndpointPort</div><div>$patchConnect->RearNotes</div>";
+						exit;
+					}
+					echo 'error';
+					exit;
+				}else{
+					echo 'error';
+				}
+				exit;
+			}
+			$patchList=$dev::GetPatchPanels($facDB);
+			echo '<select name="devid"><option value=-1>No Connection</option><option value="note">Note Only</option>';
+			foreach($patchList as $devid=>$devRow){
+				$selected="";
+				print "<option value=$devRow->DeviceID$selected>$devRow->Label</option>\n";
+			}
+			echo '</select>';
+			exit;
+		}
 	}
 
 	// These objects are used no matter what operation we're performing
@@ -694,6 +756,86 @@ $(document).ready(function() {
 			}
 		}).css({'cursor': 'pointer','text-decoration': 'underline'});
 	});
+	$('.patchpanel > div:first-child ~ div').each(function(){
+		var row=$(this);
+		$(this).click(function(){
+			var frontdev=row.find('div:first-child');
+			var frontport=row.find('div:nth-child(2)');
+			var frontnotes=row.find('div:nth-child(3)');
+			var patchport=row.find('div:nth-child(4)');
+			var reardev=row.find('div:nth-child(5)');
+			var rearport=row.find('div:nth-child(6)');
+			var rearnotes=row.find('div:nth-child(7)');
+			if($(this).attr('edit')=='yes'){
+
+			}else{
+<?php echo '							row.append(\'<div style="padding: 0px;"><button type="button" value="save">',_("Save"),'</button><button type="button" value="delete">',_("Delete"),'</button><button type="button" value="cancel">',_("Cancel"),'</button></div>\');'; ?>
+				$(this).attr('edit','yes');
+				function fixwidth(test){
+					setTimeout(function() {
+						$('.page').width($('.main').outerWidth()+$('#sidebar').outerWidth()+50);
+					},500);
+				}
+				$.post('', {pdev: 'list'}, function(data){
+					var rdev=reardev.text();
+					reardev.html(data).css({'padding': 0});
+					reardev.find('select option').each(function(){
+						if($(this).text()==rdev){
+							$(this).attr('selected','selected');
+						}
+					});					
+					rearport.html('<input type="text" value="'+rearport.text()+'">').css({'padding': 0});
+					rearnotes.html('<input type="text" value="'+rearnotes.text()+'">').css({'padding': 0});
+				}).then(fixwidth());
+				$.post('', {sp: '0', swdev: $('#deviceid').val()}, function(data){
+					var fdev=frontdev.text();
+					frontdev.html(data).css({'padding': 0});
+					frontdev.find('select option').each(function(){
+						if($(this).text()==fdev){
+							$(this).attr('selected','selected');
+						}
+					});					
+					frontport.html('<input type="text" value="'+frontport.text()+'">').css({'padding': 0});
+					frontnotes.html('<input type="text" value="'+frontnotes.text()+'">').css({'padding': 0});
+				}).then(fixwidth());
+				row.find('div:last-child > button').each(function(){
+					var buttondiv=$(this).parent('div');
+					if($(this).val()=="delete"){
+						$(this).click(function(){
+							$.post('', {pdev: $('#deviceid').val(), pdel: patchport.text()}, function(data){
+								if(data!='1'){
+									alert('error, error, error');
+								}else{
+									buttondiv.remove();
+									frontdev.html('');
+									frontport.html('');
+									frontnotes.html('');
+									reardev.html('');
+									rearport.html('');
+									rearnotes.html('');
+									row.removeAttr('edit');
+								}
+							});
+						});
+					}else if($(this).val()=="cancel"){
+						// pull record from db and set back to original values
+						$(this).click(function(){
+							$.post('', {pdev: $('#deviceid').val(), pget: patchport.text()}, function(data){
+								row.html(data).removeAttr('edit');
+							});
+						});
+					}else if($(this).val()=="save"){
+						$(this).click(function(){
+							console.log('clicked save');
+							$.post('', {pdev: $('#deviceid').val(), psav: patchport.text(), fdev:frontdev.find('select').val(), fport:frontport.find('input').val(), fn:frontnotes.find('input').val(), rdev:reardev.find('select').val(), rport:rearport.find('input').val(), rn:rearnotes.find('input').val()}, function(data){
+								row.html(data).removeAttr('edit');
+							});
+						});
+					}
+				});
+			}
+		});
+	}).css({'cursor': 'pointer','text-decoration': 'underline'});
 	$('#tags').textext({
 		plugins : 'autocomplete tags ajax arrow prompt focus',
 <?php echo $taginsert; ?>
@@ -1103,7 +1245,7 @@ echo '	<div class="table">
 	}
 
 	if($dev->DeviceType=='Patch Panel'){
-		print "\n\t<div>\n\t\t<div><a name=\"net\">"._('Connections')."</a></div>\n\t\t<div>\n\t\t\t<div class=\"table border patchpanel\">\n\t\t\t\t<div><div>"._('Front')."</div><div>"._('Notes')."</div><div>"._('Patch Port')."</div><div>"._('Back')."</div><div>"._('Notes')."</div></div>\n";
+		print "\n\t<div>\n\t\t<div><a name=\"net\">"._('Connections')."</a></div>\n\t\t<div>\n\t\t\t<div class=\"table border patchpanel\">\n\t\t\t\t<div><div>"._('Front')."</div><div>Device Port</div><div>"._('Notes')."</div><div>"._('Patch Port')."</div><div>"._('Back')."</div><div>Device Port</div><div>"._('Notes')."</div></div>\n";
 		if(sizeof($patchList) >0){
 			foreach($patchList as $patchConn){
 				$frontDev=new Device();
@@ -1112,7 +1254,7 @@ echo '	<div class="table">
 				$rearDev->DeviceID=$patchConn->RearEndpointDeviceID;
 				$frontDev->GetDevice($facDB);
 				$rearDev->GetDevice($facDB);
-				print "\n\t\t\t\t<div><div>$frontDev->Label :: $patchConn->FrontEndpointPort</div><div>$patchConn->FrontNotes</div><div>$patchConn->PanelPortNumber</div><div>$rearDev->Label :: $patchConn->RearEndpointPort</div><div>$patchConn->RearNotes</div></div>";
+				print "\n\t\t\t\t<div><div>$frontDev->Label</div><div>$patchConn->FrontEndpointPort</div><div>$patchConn->FrontNotes</div><div>$patchConn->PanelPortNumber</div><div>$rearDev->Label</div><div>$patchConn->RearEndpointPort</div><div>$patchConn->RearNotes</div></div>";
 			}
 		}
 		print "\t\t\t</div><!-- END div.table -->\n\t\t</div>\n\t</div>\n";
