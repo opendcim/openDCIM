@@ -82,10 +82,26 @@
 				$patchConnect->PanelPortNumber=$_POST['psav'];
 				$patchConnect->FrontEndpointDeviceID=$_POST['fdev'];
 				$patchConnect->FrontEndpointPort=$_POST['fport'];
+				$patchConnect->FrontNotes=$_POST['fn'];
 				$patchConnect->RearEndpointDeviceID=$_POST['rdev'];
 				$patchConnect->RearEndpointPort=$_POST['rport'];
-				$patchConnect->FrontNotes=$_POST['fn'];
 				$patchConnect->RearNotes=$_POST['rn'];
+				if($_POST['fdev']==-1){ // connection was saved as remove front half
+					$patchConnect->RemoveFrontConnection($facDB);
+					$patchConnect->FrontEndpointDeviceID=null;
+					$patchConnect->FrontEndpointPort=null;
+					$patchConnect->FrontNotes=null;
+				}
+				if($_POST['rdev']==-1){ // connection was saved as remove rear half
+					$patchConnect->RemoveFrontConnection($facDB);
+					$patchConnect->RearEndpointDeviceID=null;
+					$patchConnect->RearEndpointPort=null;
+					$patchConnect->RearNotes=null;
+				}elseif($_POST['rdev']=='note'){ // connection was saved as note only
+					$patchConnect->RearEndpointDeviceID=null;
+					$patchConnect->RearEndpointPort=null;
+					$patchConnect->RearNotes=$_POST['rn'];
+				}
 				if($patchConnect->MakeFrontConnection($facDB)){
 					if($patchConnect->MakeRearConnection($facDB)){
 						$frontdev=new Device();
@@ -782,10 +798,12 @@ $(document).ready(function() {
 					reardev.find('select option').each(function(){
 						if($(this).text()==rdev){
 							$(this).attr('selected','selected');
+						}else if(rearnotes.text()!=''){
+							$(this).parent('select').val('note');
 						}
 					});					
 					rearport.html('<input type="text" value="'+rearport.text()+'">').css({'padding': 0});
-					rearnotes.html('<input type="text" value="'+rearnotes.text()+'">').css({'padding': 0});
+					rearnotes.html('<input type="text" value="'+rearnotes.text()+'">').css({'padding': 0}); // weird data will break the crap out of this.  fix later.
 				}).then(fixwidth());
 				$.post('', {sp: '0', swdev: $('#deviceid').val()}, function(data){
 					var fdev=frontdev.text();
@@ -826,7 +844,6 @@ $(document).ready(function() {
 						});
 					}else if($(this).val()=="save"){
 						$(this).click(function(){
-							console.log('clicked save');
 							$.post('', {pdev: $('#deviceid').val(), psav: patchport.text(), fdev:frontdev.find('select').val(), fport:frontport.find('input').val(), fn:frontnotes.find('input').val(), rdev:reardev.find('select').val(), rport:rearport.find('input').val(), rn:rearnotes.find('input').val()}, function(data){
 								row.html(data).removeAttr('edit');
 							});
@@ -1254,7 +1271,7 @@ echo '	<div class="table">
 				$rearDev->DeviceID=$patchConn->RearEndpointDeviceID;
 				$frontDev->GetDevice($facDB);
 				$rearDev->GetDevice($facDB);
-				print "\n\t\t\t\t<div><div>$frontDev->Label</div><div>$patchConn->FrontEndpointPort</div><div>$patchConn->FrontNotes</div><div>$patchConn->PanelPortNumber</div><div>$rearDev->Label</div><div>$patchConn->RearEndpointPort</div><div>$patchConn->RearNotes</div></div>";
+				print "\n\t\t\t\t<div><div>$frontDev->Label</div><div>$patchConn->FrontEndpointPort</div><div>$patchConn->FrontNotes</div><div>$patchConn->PanelPortNumber</div><div>$rearDev->Label</div><div>$patchConn->RearEndpointPort</div><div>".htmlentities($patchConn->RearNotes)."</div></div>";
 			}
 		}
 		print "\t\t\t</div><!-- END div.table -->\n\t\t</div>\n\t</div>\n";
