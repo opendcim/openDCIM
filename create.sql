@@ -45,8 +45,7 @@ DROP TABLE IF EXISTS `fac_CabinetAudit`;
 CREATE TABLE `fac_CabinetAudit` (
   CabinetID int(11) NOT NULL,
   UserID varchar(80) NOT NULL,
-  AuditStamp datetime NOT NULL,
-  PRIMARY KEY (`CabinetID`)
+  AuditStamp datetime NOT NULL
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
 --

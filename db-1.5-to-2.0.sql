@@ -35,6 +35,12 @@ ALTER TABLE fac_Manufacturer ADD UNIQUE (Name);
 ALTER TABLE fac_DeviceTemplate ADD UNIQUE KEY (ManufacturerID,Model);
 
 --
+-- Remove the primary key (unique) constraint from the CabinetAudit table
+--
+
+ALTER TABLE fac_CabinetAudit DROP PRIMARY KEY;
+
+--
 -- Correction for typo in create.sql for v1.5, won't have an effect on 
 -- existing installations will just recreate the same index after it removes it
 --
