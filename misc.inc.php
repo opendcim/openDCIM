@@ -9,7 +9,6 @@ Example Usage:
 	if(isValidURL("http://test.com"){//do something}
 
 */
-
 function isValidURL($url){
 	$urlregex="((https?|ftp)\:\/\/)?"; // SCHEME
 	$urlregex.="([a-z0-9+!*(),;?&=\$_.-]+(\:[a-z0-9+!*(),;?&=\$_.-]+)?@)?"; // User and Pass
@@ -160,6 +159,7 @@ if(!extension_loaded('mbstring')){
  *
  */
 function transform($string,$method=null){
+	$config=new Config();
 	$method=(is_null($method))?$config->ParameterArray['LabelCase']:$method;
 	switch ($method){
 		case 'upper':

@@ -10,6 +10,8 @@
 	$user->UserID=$_SERVER['REMOTE_USER'];
 	$user->GetUserRights( $facDB );
 
+	$taginsert="";
+
 	if(!$user->ReadAccess){
 		// No soup for you.
 		header('Location: '.redirect());
@@ -29,10 +31,10 @@
 				$connect->EndpointPort=$_POST['dp'];
 				$connect->Notes=$_POST['n'];
 				if($connect->EndpointDeviceID==-1){
-					echo $connect->RemoveConnection($facDB);
+					echo $connect->RemoveConnection($facDB,true);
 				}else{
 					// Since I can't be bothered to put in an actual update, just remove the existing connection first.
-					$connect->RemoveConnection($facDB);
+					$connect->RemoveConnection($facDB,true);
 					// should kick back -1 if the insert fails and 1 if it is successful
 					echo $connect->CreateConnection($facDB);
 				}
@@ -46,6 +48,84 @@
 				}
 				echo '</select>';
 			}
+			exit;
+		}
+		if(isset($_POST['pdev'])){
+			$patchConnect=new PatchConnection();
+			$patchConnect->PanelDeviceID=intval($_POST['pdev']);
+			if(isset($_POST['pdel'])){
+				$patchConnect->PanelPortNumber=intval($_POST['pdel']);
+				if($patchConnect->RemoveFrontConnection($facDB)){
+					if($patchConnect->RemoveRearConnection($facDB)){
+						echo '1';
+						exit;
+					}
+					echo '0';
+					exit;
+				}else{
+					echo '0';
+				}
+				exit;
+			}
+			if(isset($_POST['pget'])){
+				$patchConnect->PanelPortNumber=intval($_POST['pget']);
+				$patchConnect->GetConnectionRecord($facDB);
+				$frontdev=new Device();
+				$frontdev->DeviceID=$patchConnect->FrontEndpointDeviceID;
+				$frontdev->GetDevice($facDB);
+				$dev->DeviceID=$patchConnect->RearEndpointDeviceID;
+				$dev->GetDevice($facDB);
+				print "<div><a href=\"devices.php?deviceid=$frontdev->DeviceID\">$frontdev->Label</a></div><div>$patchConnect->FrontEndpointPort</div><div>$patchConnect->FrontNotes</div><div>$patchConnect->PanelPortNumber</div><div><a href=\"devices.php?deviceid=$dev->DeviceID\">$dev->Label</a></div><div>$patchConnect->RearEndpointPort</div><div>$patchConnect->RearNotes</div>";
+				exit;
+			}
+			if(isset($_POST['psav'])){
+				$patchConnect->PanelPortNumber=$_POST['psav'];
+				$patchConnect->FrontEndpointDeviceID=$_POST['fdev'];
+				$patchConnect->FrontEndpointPort=$_POST['fport'];
+				$patchConnect->FrontNotes=$_POST['fn'];
+				$patchConnect->RearEndpointDeviceID=$_POST['rdev'];
+				$patchConnect->RearEndpointPort=$_POST['rport'];
+				$patchConnect->RearNotes=$_POST['rn'];
+				if($_POST['fdev']==-1){ // connection was saved as remove front half
+					$patchConnect->RemoveFrontConnection($facDB);
+					$patchConnect->FrontEndpointDeviceID=null;
+					$patchConnect->FrontEndpointPort=null;
+					$patchConnect->FrontNotes=null;
+				}
+				if($_POST['rdev']==-1){ // connection was saved as remove rear half
+					$patchConnect->RemoveFrontConnection($facDB);
+					$patchConnect->RearEndpointDeviceID=null;
+					$patchConnect->RearEndpointPort=null;
+					$patchConnect->RearNotes=null;
+				}elseif($_POST['rdev']=='note'){ // connection was saved as note only
+					$patchConnect->RearEndpointDeviceID=null;
+					$patchConnect->RearEndpointPort=null;
+					$patchConnect->RearNotes=$_POST['rn'];
+				}
+				if($patchConnect->MakeFrontConnection($facDB)){
+					if($patchConnect->MakeRearConnection($facDB)){
+						$frontdev=new Device();
+						$frontdev->DeviceID=$patchConnect->FrontEndpointDeviceID;
+						$frontdev->GetDevice($facDB);
+						$dev->DeviceID=$patchConnect->RearEndpointDeviceID;
+						$dev->GetDevice($facDB);
+						print "<div><a href=\"devices.php?deviceid=$frontdev->DeviceID\">$frontdev->Label</a></div><div>$patchConnect->FrontEndpointPort</div><div>$patchConnect->FrontNotes</div><div>$patchConnect->PanelPortNumber</div><div><a href=\"devices.php?deviceid=$dev->DeviceID\">$dev->Label</a></div><div>$patchConnect->RearEndpointPort</div><div>$patchConnect->RearNotes</div>";
+						exit;
+					}
+					echo 'error';
+					exit;
+				}else{
+					echo 'error';
+				}
+				exit;
+			}
+			$patchList=$dev::GetPatchPanels($facDB);
+			echo '<select name="devid"><option value=-1>No Connection</option><option value="note">Note Only</option>';
+			foreach($patchList as $devid=>$devRow){
+				$selected="";
+				print "<option value=$devRow->DeviceID$selected>$devRow->Label</option>\n";
+			}
+			echo '</select>';
 			exit;
 		}
 	}
@@ -181,7 +261,6 @@
 
 			// Get any tags associated with this device
 			$tags=$dev->GetTags();
-			$taginsert="";
 			if(count($tags>0)){
 				// We have some tags so build the javascript elements we need to create the tags themselves
 				$taginsert="\t\ttags: {items: ".json_encode($tags)."},\n";
@@ -193,7 +272,7 @@
 				$pdu=new PowerDistribution();
 				$panel=new PowerPanel();
 				$networkPatches=new SwitchConnection();
-
+				$patchPanel=new PatchConnection();
 
 				$pwrConnection->DeviceID=($dev->ParentDevice>0)?$dev->ParentDevice:$dev->DeviceID;
 				$pwrCords=$pwrConnection->GetConnectionsByDevice($facDB);
@@ -201,6 +280,9 @@
 				if($dev->DeviceType=='Switch'){
 					$networkPatches->SwitchDeviceID=$dev->DeviceID;
 					$patchList=$networkPatches->GetSwitchConnections($facDB);
+				}elseif($dev->DeviceType=='Patch Panel'){
+					$patchPanel->PanelDeviceID=$dev->DeviceID;
+					$patchList=$patchPanel->GetPanelConnections($facDB);
 				}else{
 					$networkPatches->EndpointDeviceID=($dev->ParentDevice>0)?$dev->ParentDevice:$dev->DeviceID;
 					$patchList=$networkPatches->GetEndpointConnections($facDB);
@@ -690,6 +772,87 @@ $(document).ready(function() {
 			}
 		}).css({'cursor': 'pointer','text-decoration': 'underline'});
 	});
+	$('.patchpanel > div:first-child ~ div').each(function(){
+		var row=$(this);
+		$(this).click(function(){
+			var frontdev=row.find('div:first-child');
+			var frontport=row.find('div:nth-child(2)');
+			var frontnotes=row.find('div:nth-child(3)');
+			var patchport=row.find('div:nth-child(4)');
+			var reardev=row.find('div:nth-child(5)');
+			var rearport=row.find('div:nth-child(6)');
+			var rearnotes=row.find('div:nth-child(7)');
+			if($(this).attr('edit')=='yes'){
+
+			}else{
+<?php echo '							row.append(\'<div style="padding: 0px;"><button type="button" value="save">',_("Save"),'</button><button type="button" value="delete">',_("Delete"),'</button><button type="button" value="cancel">',_("Cancel"),'</button></div>\');'; ?>
+				$(this).attr('edit','yes');
+				function fixwidth(test){
+					setTimeout(function() {
+						$('.page').width($('.main').outerWidth()+$('#sidebar').outerWidth()+50);
+					},500);
+				}
+				$.post('', {pdev: 'list'}, function(data){
+					var rdev=reardev.text();
+					reardev.html(data).css({'padding': 0});
+					reardev.find('select option').each(function(){
+						if($(this).text()==rdev){
+							$(this).attr('selected','selected');
+						}else if(rearnotes.text()!=''){
+							$(this).parent('select').val('note');
+						}
+					});					
+					rearport.html('<input type="text" value="'+rearport.text()+'">').css({'padding': 0});
+					rearnotes.html('<input type="text" value="'+rearnotes.text()+'">').css({'padding': 0}); // weird data will break the crap out of this.  fix later.
+				}).then(fixwidth());
+				$.post('', {sp: '0', swdev: $('#deviceid').val()}, function(data){
+					var fdev=frontdev.text();
+					frontdev.html(data).css({'padding': 0});
+					frontdev.find('select option').each(function(){
+						if($(this).text()==fdev){
+							$(this).attr('selected','selected');
+						}
+					});					
+					frontport.html('<input type="text" value="'+frontport.text()+'">').css({'padding': 0});
+					frontnotes.html('<input type="text" value="'+frontnotes.text()+'">').css({'padding': 0});
+				}).then(fixwidth());
+				row.find('div:last-child > button').each(function(){
+					var buttondiv=$(this).parent('div');
+					if($(this).val()=="delete"){
+						$(this).click(function(){
+							$.post('', {pdev: $('#deviceid').val(), pdel: patchport.text()}, function(data){
+								if(data!='1'){
+									alert('error, error, error');
+								}else{
+									buttondiv.remove();
+									frontdev.html('');
+									frontport.html('');
+									frontnotes.html('');
+									reardev.html('');
+									rearport.html('');
+									rearnotes.html('');
+									row.removeAttr('edit');
+								}
+							});
+						});
+					}else if($(this).val()=="cancel"){
+						// pull record from db and set back to original values
+						$(this).click(function(){
+							$.post('', {pdev: $('#deviceid').val(), pget: patchport.text()}, function(data){
+								row.html(data).removeAttr('edit');
+							});
+						});
+					}else if($(this).val()=="save"){
+						$(this).click(function(){
+							$.post('', {pdev: $('#deviceid').val(), psav: patchport.text(), fdev:frontdev.find('select').val(), fport:frontport.find('input').val(), fn:frontnotes.find('input').val(), rdev:reardev.find('select').val(), rport:rearport.find('input').val(), rn:rearnotes.find('input').val()}, function(data){
+								row.html(data).removeAttr('edit');
+							});
+						});
+					}
+				});
+			}
+		});
+	}).css({'cursor': 'pointer','text-decoration': 'underline'});
 	$('#tags').textext({
 		plugins : 'autocomplete tags ajax arrow prompt focus',
 <?php echo $taginsert; ?>
@@ -1053,7 +1216,7 @@ echo '	<div class="table">
 	if(!is_null($pwrCords)&&((isset($_POST['action'])&&$_POST['action']!='child')||!isset($_POST['action']))){
 		if(count($pwrCords)==0){
 			// We have no power information. Display links to PDU's in cabinet?
-			echo '		<div>		<div><a name="power"></a></div>		<div>',_("No power connections defined.  You can add connections from the power strip screen."),'</div></div><div><div>&nbsp;</div><div></div></div>';
+			echo '	<div>		<div><a name="power"></a></div>		<div>',_("No power connections defined.  You can add connections from the power strip screen."),'</div></div><div><div>&nbsp;</div><div></div></div>';
 		}else{
 			print "		<div>\n		  <div><a name=\"power\">$chassis "._('Power Connections')."</a></div>\n		  <div><div class=\"table border\">\n			<div><div>"._('Panel')."</div><div>"._('Power Strip')."</div><div>"._('Plug #')."</div><div>"._('Power Supply')."</div></div>";
 			foreach($pwrCords as $cord){
@@ -1097,23 +1260,40 @@ echo '	<div class="table">
 		}      
 		echo "			</div><!-- END div.table -->\n		  </div>\n		</div>";
 	}
+
+	if($dev->DeviceType=='Patch Panel'){
+		print "\n\t<div>\n\t\t<div><a name=\"net\">"._('Connections')."</a></div>\n\t\t<div>\n\t\t\t<div class=\"table border patchpanel\">\n\t\t\t\t<div><div>"._('Front')."</div><div>Device Port</div><div>"._('Notes')."</div><div>"._('Patch Port')."</div><div>"._('Back')."</div><div>Device Port</div><div>"._('Notes')."</div></div>\n";
+		if(sizeof($patchList) >0){
+			foreach($patchList as $patchConn){
+				$frontDev=new Device();
+				$rearDev=new Device();
+				$frontDev->DeviceID=$patchConn->FrontEndpointDeviceID;
+				$rearDev->DeviceID=$patchConn->RearEndpointDeviceID;
+				$frontDev->GetDevice($facDB);
+				$rearDev->GetDevice($facDB);
+				print "\n\t\t\t\t<div><div>$frontDev->Label</div><div>$patchConn->FrontEndpointPort</div><div>$patchConn->FrontNotes</div><div>$patchConn->PanelPortNumber</div><div>$rearDev->Label</div><div>$patchConn->RearEndpointPort</div><div>".htmlentities($patchConn->RearNotes)."</div></div>";
+			}
+		}
+		print "\t\t\t</div><!-- END div.table -->\n\t\t</div>\n\t</div>\n";
+	}
 ?>
-		<div class="caption">
+	<div class="caption">
 <?php
 	if($user->WriteAccess){
 		if($dev->DeviceID >0){
-			echo '		  <button type="submit" name="action" value="Update">',_("Update"),'</button>
-        <button type="submit" name="action" value="Copy">', _("Copy"), '</button>';
+			echo '		<button type="submit" name="action" value="Update">',_("Update"),'</button>
+		<button type="submit" name="action" value="Copy">', _("Copy"), '</button>';
 		} else {
-			echo '		  <button type="submit" name="action" value="Create">',_("Create"),'</button>';
+			echo '		<button type="submit" name="action" value="Create">',_("Create"),'</button>';
 		}
 	}
 	// Delete rights are seperate from write rights
 	if($user->DeleteAccess && $dev->DeviceID >0){
-		echo '		  <button type="button" name="action" value="Delete">',_("Delete"),'</button>';
+		echo '		<button type="button" name="action" value="Delete">',_("Delete"),'</button>';
 	}
 ?>
-		</div>
+
+	</div>
 </div> <!-- END div.table -->
 </div></div>
 </div> <!-- END div.table -->

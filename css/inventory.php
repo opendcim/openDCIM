@@ -380,6 +380,8 @@ div.page.device {
 .device .table .table .table > div > div {padding: 3px;}
 .right .table + .table {margin-top: 1em;}
 
+.device .table.patchpanel > div > div {min-width: auto;}
+
 .device #tags { width: 95%; min-width: 350px;}
 
 .chassis .table input{text-align:center;}

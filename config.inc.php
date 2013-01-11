@@ -4,10 +4,10 @@ class Config{
 	var $ParameterArray;
 	var $defaults;
 	
-	function Config ($db){
+	function Config ($db=null){
 		//Get parameter value pairs from fac_Config
 		$sql='select Parameter, Value, DefaultVal from fac_Config';
-		$result=mysql_query($sql,$db);
+		$result=mysql_query($sql);
 		
 		while ($row=@mysql_fetch_array($result)){
 			if ($row['Parameter']== 'ClassList'){

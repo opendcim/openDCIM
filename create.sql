@@ -397,6 +397,7 @@ CREATE TABLE fac_SwitchConnection (
   EndpointPort int(11) NOT NULL,
   Notes varchar(80) NOT NULL,
   PRIMARY KEY (SwitchDeviceID,SwitchPortNumber),
+  UNIQUE KEY EndpointDeviceID (EndpointDeviceID,EndpointPort),
   UNIQUE KEY SwitchDeviceID (SwitchDeviceID,SwitchPortNumber)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
