@@ -2000,20 +2000,20 @@ class PatchConnection {
 		return 1;		
 	}
 	
-	function MakeFrontConnection( $db, $recursive = true ) {
+	function MakeFrontConnection($db,$recursive=true){
 		$this->MakeSafe();
-		$sql="INSERT INTO fac_PatchConnection VALUES ($this->PanelDeviceID, $this->PanelPortNumber, ".(is_null($this->FrontEndpointDeviceID)?'NULL':$this->FrontEndpointDeviceID).", ".(is_null($this->FrontEndpointPort)?'NULL':$this->FrontEndpointPort).", NULL, NULL, \"".(is_null($this->FrontNotes)?'NULL':$this->FrontNotes)."\", NULL ) ON DUPLICATE KEY UPDATE FrontEndpointDeviceID=".(is_null($this->FrontEndpointDeviceID)?'NULL':$this->FrontEndpointDeviceID).",FrontEndpointPort=".(is_null($this->FrontEndpointPort)?'NULL':$this->FrontEndpointPort).",FrontNotes=\"".(is_null($this->FrontNotes)?'NULL':$this->FrontNotes)."\";";
+		$sql="INSERT INTO fac_PatchConnection VALUES ($this->PanelDeviceID, $this->PanelPortNumber, $this->FrontEndpointDeviceID, $this->FrontEndpointPort, NULL, NULL, \"$this->FrontNotes\", NULL ) ON DUPLICATE KEY UPDATE FrontEndpointDeviceID=$this->FrontEndpointDeviceID,FrontEndpointPort=$this->FrontEndpointPort,FrontNotes=\"$this->FrontNotes\";";
 
 		if ( ! $result = mysql_query( $sql, $db) ) {
 			error_log( sprintf( "%s; SQL=`%s`", mysql_error( $db ), $sql ) );
 			return -1;
 		}
 
-		$tmpDev = new Device();
-		$tmpDev->DeviceID = intval($this->FrontEndpointDeviceID);
-		$tmpDev->GetDevice( $db );
+		$tmpDev=new Device();
+		$tmpDev->DeviceID=$this->FrontEndpointDeviceID;
+		$tmpDev->GetDevice($db);
 		
-		if ( $recursive && $tmpDev->DeviceType == "Switch" ) {
+		if($recursive && $tmpDev->DeviceType=="Switch"){
 			$tmpSw = new SwitchConnection();
 			$tmpSw->SwitchDeviceID = $this->FrontEndpointDeviceID;
 			$tmpSw->SwitchPortNumber = $this->FrontEndpointPort;
@@ -2037,12 +2037,13 @@ class PatchConnection {
 			$tmpPanel->MakeFrontConnection( $db, false );
 		}
 		
+		$this->GetConnectionRecord($db); // reload the object from the DB
 		return 1;
 	}
 	
 	function MakeRearConnection($db,$recursive=true){
 		$this->MakeSafe();
-		$sql="INSERT INTO fac_PatchConnection VALUES ($this->PanelDeviceID, $this->PanelPortNumber, NULL, NULL, ".(is_null($this->RearEndpointDeviceID)?'NULL':$this->RearEndpointDeviceID).", ".(is_null($this->RearEndpointPort)?'NULL':$this->RearEndpointPort).", NULL, \"".(is_null($this->RearNotes)?'NULL':$this->RearNotes)."\" ) ON DUPLICATE KEY UPDATE RearEndpointDeviceID=".(is_null($this->RearEndpointDeviceID)?'NULL':$this->RearEndpointDeviceID).",RearEndpointPort=".(is_null($this->RearEndpointPort)?'NULL':$this->RearEndpointPort).",RearNotes=\"".(is_null($this->RearNotes)?'NULL':$this->RearNotes)."\";";
+		$sql="INSERT INTO fac_PatchConnection VALUES ($this->PanelDeviceID, $this->PanelPortNumber, NULL, NULL, $this->RearEndpointDeviceID, $this->RearEndpointPort, NULL, \"$this->RearNotes\" ) ON DUPLICATE KEY UPDATE RearEndpointDeviceID=$this->RearEndpointDeviceID,RearEndpointPort=$this->RearEndpointPort,RearNotes=\"$this->RearNotes\";";
 		if ( ! $result = mysql_query( $sql, $db) ) {
 			error_log( sprintf( "%s; SQL=`%s`", mysql_error( $db ), $sql ) );
 			return -1;
@@ -2064,6 +2065,7 @@ class PatchConnection {
 			$tmpPanel->MakeRearConnection( $db, false );
 		}
 		
+		$this->GetConnectionRecord($db); // reload the object from the DB
 		return 1;
 	}
 	
@@ -2097,7 +2099,7 @@ class PatchConnection {
 			$tmpPanel->PanelPortNumber = $this->FrontEndpointPort;
 			$tmpPanel->RemoveFrontConnection( $db, false );
 		}
-		
+		$this->GetConnectionRecord($db); // reload the object from the DB
 		return 1;
 	}
 	
@@ -2175,14 +2177,15 @@ class PatchConnection {
 	}
 
 	function MakeSafe(){
+		// mysql needed the word NULL for the fields that were null to keep the sql valid
 		$this->PanelDeviceID=intval($this->PanelDeviceID);
 		$this->PanelPortNumber=intval($this->PanelPortNumber);
-		$this->FrontEndpointDeviceID=(is_null($this->FrontEndpointDeviceID))?null:intval($this->FrontEndpointDeviceID);
-		$this->FrontEndpointPort=(is_null($this->FrontEndpointPort))?null:intval($this->FrontEndpointPort);
-		$this->FrontNotes=mysql_real_escape_string($this->FrontNotes);
-		$this->RearEndpointDeviceID=(is_null($this->RearEndpointDeviceID))?null:intval($this->RearEndpointDeviceID);
-		$this->RearEndpointPort=(is_null($this->RearEndpointPort))?null:intval($this->RearEndpointPort);
-		$this->RearNotes=mysql_real_escape_string($this->RearNotes);
+		$this->FrontEndpointDeviceID=(is_null($this->FrontEndpointDeviceID))?'NULL':intval($this->FrontEndpointDeviceID);
+		$this->FrontEndpointPort=(is_null($this->FrontEndpointPort))?'NULL':intval($this->FrontEndpointPort);
+		$this->FrontNotes=(is_null($this->FrontNotes))?'NULL':mysql_real_escape_string($this->FrontNotes);
+		$this->RearEndpointDeviceID=(is_null($this->RearEndpointDeviceID))?'NULL':intval($this->RearEndpointDeviceID);
+		$this->RearEndpointPort=(is_null($this->RearEndpointPort))?'NULL':intval($this->RearEndpointPort);
+		$this->RearNotes=(is_null($this->RearNotes))?'NULL':mysql_real_escape_string($this->RearNotes);
 	}	
 
 }

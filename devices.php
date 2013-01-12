@@ -52,16 +52,13 @@
 		}
 		if(isset($_POST['pdev'])){
 			$patchConnect=new PatchConnection();
-			$patchConnect->PanelDeviceID=intval($_POST['pdev']);
+			$patchConnect->PanelDeviceID=$_POST['pdev'];
 			if(isset($_POST['pdel'])){
-				$patchConnect->PanelPortNumber=intval($_POST['pdel']);
-				if($patchConnect->RemoveFrontConnection($facDB)){
-					if($patchConnect->RemoveRearConnection($facDB)){
-						echo '1';
-						exit;
-					}
-					echo '0';
-					exit;
+				$patchConnect->PanelPortNumber=$_POST['pdel'];
+				if($_POST['side']=='front'){
+					echo ($patchConnect->RemoveFrontConnection($facDB))?1:0;
+				}elseif($_POST['side']=='rear'){
+					echo ($patchConnect->RemoveRearConnection($facDB))?1:0;
 				}else{
 					echo '0';
 				}
@@ -75,48 +72,75 @@
 				$frontdev->GetDevice($facDB);
 				$dev->DeviceID=$patchConnect->RearEndpointDeviceID;
 				$dev->GetDevice($facDB);
-				print "<div><a href=\"devices.php?deviceid=$frontdev->DeviceID\">$frontdev->Label</a></div><div>$patchConnect->FrontEndpointPort</div><div>$patchConnect->FrontNotes</div><div>$patchConnect->PanelPortNumber</div><div><a href=\"devices.php?deviceid=$dev->DeviceID\">$dev->Label</a></div><div>$patchConnect->RearEndpointPort</div><div>$patchConnect->RearNotes</div>";
+				$rowarray=array();
+				$rowarray[1]="<a href=\"devices.php?deviceid=$frontdev->DeviceID\">$frontdev->Label</a>";
+				$rowarray[2]="$patchConnect->FrontEndpointPort";
+				$rowarray[3]="$patchConnect->FrontNotes";
+				$rowarray[4]="$patchConnect->PanelPortNumber";
+				$rowarray[5]="<a href=\"devices.php?deviceid=$dev->DeviceID\">$dev->Label</a>";
+				$rowarray[6]="$patchConnect->RearEndpointPort";
+				$rowarray[7]="$patchConnect->RearNotes";
+				echo json_encode($rowarray);
 				exit;
 			}
 			if(isset($_POST['psav'])){
 				$patchConnect->PanelPortNumber=$_POST['psav'];
-				$patchConnect->FrontEndpointDeviceID=$_POST['fdev'];
-				$patchConnect->FrontEndpointPort=$_POST['fport'];
-				$patchConnect->FrontNotes=$_POST['fn'];
-				$patchConnect->RearEndpointDeviceID=$_POST['rdev'];
-				$patchConnect->RearEndpointPort=$_POST['rport'];
-				$patchConnect->RearNotes=$_POST['rn'];
-				if($_POST['fdev']==-1){ // connection was saved as remove front half
-					$patchConnect->RemoveFrontConnection($facDB);
-					$patchConnect->FrontEndpointDeviceID=null;
-					$patchConnect->FrontEndpointPort=null;
-					$patchConnect->FrontNotes=null;
-				}
-				if($_POST['rdev']==-1){ // connection was saved as remove rear half
-					$patchConnect->RemoveFrontConnection($facDB);
-					$patchConnect->RearEndpointDeviceID=null;
-					$patchConnect->RearEndpointPort=null;
-					$patchConnect->RearNotes=null;
-				}elseif($_POST['rdev']=='note'){ // connection was saved as note only
-					$patchConnect->RearEndpointDeviceID=null;
-					$patchConnect->RearEndpointPort=null;
-					$patchConnect->RearNotes=$_POST['rn'];
-				}
-				if($patchConnect->MakeFrontConnection($facDB)){
-					if($patchConnect->MakeRearConnection($facDB)){
-						$frontdev=new Device();
-						$frontdev->DeviceID=$patchConnect->FrontEndpointDeviceID;
-						$frontdev->GetDevice($facDB);
-						$dev->DeviceID=$patchConnect->RearEndpointDeviceID;
-						$dev->GetDevice($facDB);
-						print "<div><a href=\"devices.php?deviceid=$frontdev->DeviceID\">$frontdev->Label</a></div><div>$patchConnect->FrontEndpointPort</div><div>$patchConnect->FrontNotes</div><div>$patchConnect->PanelPortNumber</div><div><a href=\"devices.php?deviceid=$dev->DeviceID\">$dev->Label</a></div><div>$patchConnect->RearEndpointPort</div><div>$patchConnect->RearNotes</div>";
-						exit;
+				if(isset($_POST['fdev'])){ // if set then we're dealing with a front connection
+					$patchConnect->FrontEndpointDeviceID=$_POST['fdev'];
+					$patchConnect->FrontEndpointPort=$_POST['fport'];
+					$patchConnect->FrontNotes=$_POST['fn'];
+					if($_POST['fdev']==-1){ // connection was saved as remove front half
+						if(!$patchConnect->RemoveFrontConnection($facDB)){ // something broke return an error
+							echo '0';
+							exit;
+						}
+					}else{
+						if(!$patchConnect->MakeFrontConnection($facDB)){
+							echo 0;
+							exit;
+						}
 					}
-					echo 'error';
+				}elseif(isset($_POST['rdev'])){ // if set then we're dealing with a rear connection
+					$patchConnect->RearEndpointDeviceID=$_POST['rdev'];
+					$patchConnect->RearEndpointPort=$_POST['rport'];
+					$patchConnect->RearNotes=$_POST['rn'];
+					if($_POST['rdev']==-1){ // connection was saved as remove rear half
+						if(!$patchConnect->RemoveRearConnection($facDB)){
+							echo 0;
+							exit;
+						}
+					}elseif($_POST['rdev']=='note'){ // connection was saved as note only
+						$patchConnect->RearEndpointDeviceID=null;
+						$patchConnect->RearEndpointPort=null;
+						$patchConnect->RearNotes=$_POST['rn'];
+						if(!$patchConnect->MakeRearConnection($facDB)){
+							echo 0;
+							exit;
+						}
+					}else{
+						if(!$patchConnect->MakeRearConnection($facDB)){
+							echo 0;
+							exit;
+						}
+					}
+				}else{ // neither was set so I don't know wtf happened
+					echo 0;
 					exit;
-				}else{
-					echo 'error';
 				}
+				$frontdev=new Device();
+				$frontdev->DeviceID=$patchConnect->FrontEndpointDeviceID;
+				$frontdev->GetDevice($facDB);
+				$dev->DeviceID=$patchConnect->RearEndpointDeviceID;
+				$dev->GetDevice($facDB);
+				$rowarray=array();
+				$rowarray[1]="<a href=\"devices.php?deviceid=$frontdev->DeviceID\">$frontdev->Label</a>";
+				$rowarray[2]="$patchConnect->FrontEndpointPort";
+				$rowarray[3]="$patchConnect->FrontNotes";
+				$rowarray[4]="$patchConnect->PanelPortNumber";
+				$rowarray[5]="<a href=\"devices.php?deviceid=$dev->DeviceID\">$dev->Label</a>";
+				$rowarray[6]="$patchConnect->RearEndpointPort";
+				$rowarray[7]="$patchConnect->RearNotes";
+				echo json_encode($rowarray);
 				exit;
 			}
 			$patchList=$dev::GetPatchPanels($facDB);
@@ -585,274 +609,333 @@ $(document).ready(function() {
 		});
 	});
 <?php
-	// if they switch device type to switch for a child blade add the dataports field
-	if($dev->ParentDevice>0){
+	// hide all the js functions if they don't have write permissions
+	if($user->WriteAccess){
+
+		// if they switch device type to switch for a child blade add the dataports field
+		if($dev->ParentDevice>0){
 ?>
-	$('select[name=devicetype]').change(function(){
+		$('select[name=devicetype]').change(function(){
 <?php echo '		var dphtml=\'<div id="dphtml"><div><label for="ports">',_("Number of Data Ports"),'</label></div><div><input class="optional,validate[custom[onlyNumberSp]]" name="ports" id="ports" size="4" value="" type="number"></div></div>\';'; ?>
-		if($(this).val()=='Switch' && $('#dphtml').length==0){
-			$('#nominalwatts').parent().parent().before(dphtml);
-		}else{
-			$('#dphtml').remove();
-		}
-	});
-<?php
-	}
-	
-	// hide cabinet slot picker from child devices
-	if($dev->ParentDevice==0){
-?>
-	$('#position').focus(function()	{
-		var cab=$("select#cabinetid").val();
-		$.getJSON('scripts/ajax_cabinetuse.php?cabinet='+cab+'&deviceid='+$("#deviceid").val(), function(data) {
-			var ucount=0;
-			$.each(data, function(i,inuse){
-				ucount++;
-			});
-			var rackhtmlleft='';
-			var rackhtmlright='';
-			for(ucount=ucount; ucount>0; ucount--){
-				if(data[ucount]){var cssclass='notavail'}else{var cssclass=''};
-				rackhtmlleft+='<div>'+ucount+'</div>';
-				rackhtmlright+='<div val='+ucount+' class="'+cssclass+'"></div>';
-			}
-			var rackhtml='<div class="table border positionselector"><div><div>'+rackhtmlleft+'</div><div>'+rackhtmlright+'</div></div></div>';
-			$('#positionselector').html(rackhtml);
-			setTimeout(function(){
-				var divwidth=$('.positionselector').width();
-				var divheight=$('.positionselector').height();
-				$('#positionselector').width(divwidth);
-				$('#height').focus(function(){$('#positionselector').css({'left': '-1000px'});});
-				$('#positionselector').css({
-					'left':(($('.right').position().left)-(divwidth+40)),
-					'top':(($('.right').position().top))
-				});
-				$('#positionselector').mouseleave(function(){
-					$('#positionselector').css({'left': '-1000px'});
-				});
-				$('.positionselector > div > div + div > div').mouseover(function(){
-					$('.positionselector > div > div + div > div').each(function(){
-						$(this).removeAttr('style');
-					});
-					var unum=$("#height").val();
-					if(unum>=1 && $(this).attr('class')!='notavail'){
-						var test='';
-						var background='green';
-						// check each element start with pointer
-						for (var x=0; x<unum; x++){
-							if(x!=0){
-								test+='.prev()';
-								eval("if($(this)"+test+".attr('class')=='notavail' || $(this)"+test+".length ==0){background='red';}");
-							}else{
-								if($(this).attr('class')=='notavail'){background='red';}
-							}
-						}
-						test='';
-						if(background=='red'){var pointer='default'}else{var pointer='pointer'}
-						for (x=0; x<unum; x++){
-							if(x!=0){
-								test+='.prev()';
-								eval("$(this)"+test+".css({'background-color': '"+background+"'})");
-							}else{
-								$(this).css({'background-color': background, 'cursor': pointer});
-								if(background=='green'){
-									$(this).click(function(){
-										$('#position').val($(this).attr('val'));
-										$('#positionselector').css({'left': '-1000px'});
-									});
-								}
-							}
-						}
-					}
-				});
-			},100);
-		}, 'json');
-	});
-<?php
-	}
-?>
-	$('.switch > div:first-child ~ div').each(function(){
-		var row=$(this);
-		$(this).find('div:first-child').click(function(){
-			$(this).css({'min-width': '35px','width': '35px'});
-			var swdev=$('#deviceid').val();
-			var sp=$(this).text();
-			if($(this).attr('edit')=='yes'){
-
+			if($(this).val()=='Switch' && $('#dphtml').length==0){
+				$('#nominalwatts').parent().parent().before(dphtml);
 			}else{
-				$(this).attr('edit','yes');
-				var device=$(this).next();
-				var devid=device.attr('alt');
-				var devport=device.next();
-				devport.css({'min-width': '35px','width': '35px'});
-				var devportwidth=devport.width();
-				var notes=devport.next();
-				$.ajax({
-					type: 'POST',
-					url: 'devices.php',
-					data: 'swdev='+swdev+'&sp='+sp,
-					success: function(data){
-						var height=row.height();
-						device.html(data).css({'width': device.children('select').width()+'px', 'padding': '0px'});
-						device.children('select').css({'background-color': 'transparent'});
-						devport.html('<input type="text" name="dp" value="'+devport.text()+'">').css({'width': devportwidth+'px', 'padding': '0px'}).children('input').css({'width': devportwidth+'px', 'background-color': 'transparent'});
-						notes.html('<input type="text" name="n" value="'+notes.text()+'">').css({'width': notes.width()+'px', 'padding': '0px'}).children('input').css({'width': notes.width()+'px', 'background-color': 'transparent'});
-<?php echo '							row.append(\'<div style="padding: 0px;"><button type="button" value="save">',_("Save"),'</button><button type="button" value="delete">',_("Delete"),'</button><button type="button" value="cancel">',_("Cancel"),'</button></div>\');'; ?>
-						row.find('div > button').css({'height': height+'px', 'line-height': '1'});
-						var buttonwidth=15;
-						row.find('div > button').each(function(){
-							buttonwidth+=$(this).outerWidth();
-							var a=device.find('select');
-							var b=devport.find('input');
-							var c=notes.find('input');
-							if($(this).val()=="delete"){
-								$(this).click(function(e){
-									a.val("");
-									b.val("");
-									c.val("");
-									row.find('div > button[value="save"]').focus();
-									row.find('div > button[value="save"]').click();
-								});
-							}else if($(this).val()=="cancel"){
-								$(this).click(function(){
-									a.val(device.attr('alt'));
-									b.val(devport.attr('data'));
-									c.val(notes.attr('data'));
-									row.find('div > button[value="save"]').focus();
-									row.find('div > button[value="save"]').click();
-								});
-							}else if($(this).val()=="save"){
-								$(this).click(function(){
-									$.ajax({
-										type: 'POST',
-										url: 'devices.php',
-										data: 'swdev='+swdev+'&sp='+sp+'&devid='+a.val()+'&dp='+b.val()+'&n='+c.val(),
-										success: function(data){
-											if(data=="-1"){
-												//error
-												device.css('background-color', 'salmon');
-												devport.css('background-color', 'salmon');
-												notes.css('background-color', 'salmon');
-												setTimeout(function() {
-													device.css('background-color', 'white');
-													devport.css('background-color', 'white');
-													notes.css('background-color', 'white');
-												},1500);
-											}else if(data=="1"){
-												row.find('div:first-child').removeAttr('edit').css('width','auto');
-												// set the fields back to table cells
-												row.find('div:last-child').remove();
-												if(a.val()!='-1'){
-													device.html('<a href="devices.php?deviceid='+a.val()+'">'+a.find('option:selected').text()+'</a>').removeAttr('style');
-												}else{
-													device.html('').removeAttr('style');
-												}
-												devport.html(b.val()).removeAttr('style');
-												notes.html(c.val()).removeAttr('style');
-												device.css('background-color', 'lightgreen');
-												devport.css('background-color', 'lightgreen');
-												notes.css('background-color', 'lightgreen');
-												setTimeout(function() {
-													device.css('background-color', 'white');
-													devport.css('background-color', 'white');
-													notes.css('background-color', 'white');
-												},1500);
-											}else{
-												// something unexpected has happened
-											}
-										}
-									});
-								});
-							}
-							$(this).parent('div').css({'width': buttonwidth+'px', 'text-align': 'center'});
-						});
-						$('div.page').css('width', ($('#deviceform').outerWidth(true)+$('#sidebar').outerWidth(true)+22)+'px');
-					}
-				});
-			}
-		}).css({'cursor': 'pointer','text-decoration': 'underline'});
-	});
-	$('.patchpanel > div:first-child ~ div').each(function(){
-		var row=$(this);
-		$(this).click(function(){
-			var frontdev=row.find('div:first-child');
-			var frontport=row.find('div:nth-child(2)');
-			var frontnotes=row.find('div:nth-child(3)');
-			var patchport=row.find('div:nth-child(4)');
-			var reardev=row.find('div:nth-child(5)');
-			var rearport=row.find('div:nth-child(6)');
-			var rearnotes=row.find('div:nth-child(7)');
-			if($(this).attr('edit')=='yes'){
-
-			}else{
-<?php echo '							row.append(\'<div style="padding: 0px;"><button type="button" value="save">',_("Save"),'</button><button type="button" value="delete">',_("Delete"),'</button><button type="button" value="cancel">',_("Cancel"),'</button></div>\');'; ?>
-				$(this).attr('edit','yes');
-				function fixwidth(test){
-					setTimeout(function() {
-						$('.page').width($('.main').outerWidth()+$('#sidebar').outerWidth()+50);
-					},500);
-				}
-				$.post('', {pdev: 'list'}, function(data){
-					var rdev=reardev.text();
-					reardev.html(data).css({'padding': 0});
-					reardev.find('select option').each(function(){
-						if($(this).text()==rdev){
-							$(this).attr('selected','selected');
-						}else if(rearnotes.text()!=''){
-							$(this).parent('select').val('note');
-						}
-					});					
-					rearport.html('<input type="text" value="'+rearport.text()+'">').css({'padding': 0});
-					rearnotes.html('<input type="text" value="'+rearnotes.text()+'">').css({'padding': 0}); // weird data will break the crap out of this.  fix later.
-				}).then(fixwidth());
-				$.post('', {sp: '0', swdev: $('#deviceid').val()}, function(data){
-					var fdev=frontdev.text();
-					frontdev.html(data).css({'padding': 0});
-					frontdev.find('select option').each(function(){
-						if($(this).text()==fdev){
-							$(this).attr('selected','selected');
-						}
-					});					
-					frontport.html('<input type="text" value="'+frontport.text()+'">').css({'padding': 0});
-					frontnotes.html('<input type="text" value="'+frontnotes.text()+'">').css({'padding': 0});
-				}).then(fixwidth());
-				row.find('div:last-child > button').each(function(){
-					var buttondiv=$(this).parent('div');
-					if($(this).val()=="delete"){
-						$(this).click(function(){
-							$.post('', {pdev: $('#deviceid').val(), pdel: patchport.text()}, function(data){
-								if(data!='1'){
-									alert('error, error, error');
-								}else{
-									buttondiv.remove();
-									frontdev.html('');
-									frontport.html('');
-									frontnotes.html('');
-									reardev.html('');
-									rearport.html('');
-									rearnotes.html('');
-									row.removeAttr('edit');
-								}
-							});
-						});
-					}else if($(this).val()=="cancel"){
-						// pull record from db and set back to original values
-						$(this).click(function(){
-							$.post('', {pdev: $('#deviceid').val(), pget: patchport.text()}, function(data){
-								row.html(data).removeAttr('edit');
-							});
-						});
-					}else if($(this).val()=="save"){
-						$(this).click(function(){
-							$.post('', {pdev: $('#deviceid').val(), psav: patchport.text(), fdev:frontdev.find('select').val(), fport:frontport.find('input').val(), fn:frontnotes.find('input').val(), rdev:reardev.find('select').val(), rport:rearport.find('input').val(), rn:rearnotes.find('input').val()}, function(data){
-								row.html(data).removeAttr('edit');
-							});
-						});
-					}
-				});
+				$('#dphtml').remove();
 			}
 		});
-	}).css({'cursor': 'pointer','text-decoration': 'underline'});
+<?php
+		}
+		
+		// hide cabinet slot picker from child devices
+		if($dev->ParentDevice==0){
+?>
+		$('#position').focus(function()	{
+			var cab=$("select#cabinetid").val();
+			$.getJSON('scripts/ajax_cabinetuse.php?cabinet='+cab+'&deviceid='+$("#deviceid").val(), function(data) {
+				var ucount=0;
+				$.each(data, function(i,inuse){
+					ucount++;
+				});
+				var rackhtmlleft='';
+				var rackhtmlright='';
+				for(ucount=ucount; ucount>0; ucount--){
+					if(data[ucount]){var cssclass='notavail'}else{var cssclass=''};
+					rackhtmlleft+='<div>'+ucount+'</div>';
+					rackhtmlright+='<div val='+ucount+' class="'+cssclass+'"></div>';
+				}
+				var rackhtml='<div class="table border positionselector"><div><div>'+rackhtmlleft+'</div><div>'+rackhtmlright+'</div></div></div>';
+				$('#positionselector').html(rackhtml);
+				setTimeout(function(){
+					var divwidth=$('.positionselector').width();
+					var divheight=$('.positionselector').height();
+					$('#positionselector').width(divwidth);
+					$('#height').focus(function(){$('#positionselector').css({'left': '-1000px'});});
+					$('#positionselector').css({
+						'left':(($('.right').position().left)-(divwidth+40)),
+						'top':(($('.right').position().top))
+					});
+					$('#positionselector').mouseleave(function(){
+						$('#positionselector').css({'left': '-1000px'});
+					});
+					$('.positionselector > div > div + div > div').mouseover(function(){
+						$('.positionselector > div > div + div > div').each(function(){
+							$(this).removeAttr('style');
+						});
+						var unum=$("#height").val();
+						if(unum>=1 && $(this).attr('class')!='notavail'){
+							var test='';
+							var background='green';
+							// check each element start with pointer
+							for (var x=0; x<unum; x++){
+								if(x!=0){
+									test+='.prev()';
+									eval("if($(this)"+test+".attr('class')=='notavail' || $(this)"+test+".length ==0){background='red';}");
+								}else{
+									if($(this).attr('class')=='notavail'){background='red';}
+								}
+							}
+							test='';
+							if(background=='red'){var pointer='default'}else{var pointer='pointer'}
+							for (x=0; x<unum; x++){
+								if(x!=0){
+									test+='.prev()';
+									eval("$(this)"+test+".css({'background-color': '"+background+"'})");
+								}else{
+									$(this).css({'background-color': background, 'cursor': pointer});
+									if(background=='green'){
+										$(this).click(function(){
+											$('#position').val($(this).attr('val'));
+											$('#positionselector').css({'left': '-1000px'});
+										});
+									}
+								}
+							}
+						}
+					});
+				},100);
+			}, 'json');
+		});
+<?php
+		}
+?>
+		$('.switch > div:first-child ~ div').each(function(){
+			var row=$(this);
+			$(this).find('div:first-child').click(function(){
+				$(this).css({'min-width': '35px','width': '35px'});
+				var swdev=$('#deviceid').val();
+				var sp=$(this).text();
+				if($(this).attr('edit')=='yes'){
+
+				}else{
+					$(this).attr('edit','yes');
+					var device=$(this).next();
+					var devid=device.attr('alt');
+					var devport=device.next();
+					devport.css({'min-width': '35px','width': '35px'});
+					var devportwidth=devport.width();
+					var notes=devport.next();
+					$.ajax({
+						type: 'POST',
+						url: 'devices.php',
+						data: 'swdev='+swdev+'&sp='+sp,
+						success: function(data){
+							var height=row.height();
+							device.html(data).css({'width': device.children('select').width()+'px', 'padding': '0px'});
+							device.children('select').css({'background-color': 'transparent'});
+							devport.html('<input type="text" name="dp" value="'+devport.text()+'">').css({'width': devportwidth+'px', 'padding': '0px'}).children('input').css({'width': devportwidth+'px', 'background-color': 'transparent'});
+							notes.html('<input type="text" name="n" value="'+notes.text()+'">').css({'width': notes.width()+'px', 'padding': '0px'}).children('input').css({'width': notes.width()+'px', 'background-color': 'transparent'});
+<?php echo '							row.append(\'<div style="padding: 0px;"><button type="button" value="save">',_("Save"),'</button><button type="button" value="delete">',_("Delete"),'</button><button type="button" value="cancel">',_("Cancel"),'</button></div>\');'; ?>
+							row.find('div > button').css({'height': height+'px', 'line-height': '1'});
+							var buttonwidth=15;
+							row.find('div > button').each(function(){
+								buttonwidth+=$(this).outerWidth();
+								var a=device.find('select');
+								var b=devport.find('input');
+								var c=notes.find('input');
+								if($(this).val()=="delete"){
+									$(this).click(function(e){
+										a.val("");
+										b.val("");
+										c.val("");
+										row.find('div > button[value="save"]').focus();
+										row.find('div > button[value="save"]').click();
+									});
+								}else if($(this).val()=="cancel"){
+									$(this).click(function(){
+										a.val(device.attr('alt'));
+										b.val(devport.attr('data'));
+										c.val(notes.attr('data'));
+										row.find('div > button[value="save"]').focus();
+										row.find('div > button[value="save"]').click();
+									});
+								}else if($(this).val()=="save"){
+									$(this).click(function(){
+										$.ajax({
+											type: 'POST',
+											url: 'devices.php',
+											data: 'swdev='+swdev+'&sp='+sp+'&devid='+a.val()+'&dp='+b.val()+'&n='+c.val(),
+											success: function(data){
+												if(data=="-1"){
+													//error
+													device.css('background-color', 'salmon');
+													devport.css('background-color', 'salmon');
+													notes.css('background-color', 'salmon');
+													setTimeout(function() {
+														device.css('background-color', 'white');
+														devport.css('background-color', 'white');
+														notes.css('background-color', 'white');
+													},1500);
+												}else if(data=="1"){
+													row.find('div:first-child').removeAttr('edit').css('width','auto');
+													// set the fields back to table cells
+													row.find('div:last-child').remove();
+													if(a.val()!='-1'){
+														device.html('<a href="devices.php?deviceid='+a.val()+'">'+a.find('option:selected').text()+'</a>').removeAttr('style');
+													}else{
+														device.html('').removeAttr('style');
+													}
+													devport.html(b.val()).removeAttr('style');
+													notes.html(c.val()).removeAttr('style');
+													device.css('background-color', 'lightgreen');
+													devport.css('background-color', 'lightgreen');
+													notes.css('background-color', 'lightgreen');
+													setTimeout(function() {
+														device.css('background-color', 'white');
+														devport.css('background-color', 'white');
+														notes.css('background-color', 'white');
+													},1500);
+												}else{
+													// something unexpected has happened
+												}
+											}
+										});
+									});
+								}
+								$(this).parent('div').css({'width': buttonwidth+'px', 'text-align': 'center'});
+							});
+							$('div.page').css('width', ($('#deviceform').outerWidth(true)+$('#sidebar').outerWidth(true)+22)+'px');
+						}
+					});
+				}
+			}).css({'cursor': 'pointer','text-decoration': 'underline'});
+		});
+		$('.patchpanel > div:first-child ~ div').each(function(){
+			var row=$(this);
+			$(this).click(function(){
+				var frontdev=row.find('div:first-child');
+				var frontport=row.find('div:nth-child(2)');
+				var frontnotes=row.find('div:nth-child(3)');
+				var patchport=row.find('div:nth-child(4)');
+				var reardev=row.find('div:nth-child(5)');
+				var rearport=row.find('div:nth-child(6)');
+				var rearnotes=row.find('div:nth-child(7)');
+				if($(this).attr('edit')=='yes'){
+
+				}else{
+					// create empty row below the current
+					$(this).after('<div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div>');
+					var btnrow=$(this).next(); // name it for easy reference
+					var frontbtn=btnrow.find('div:first-child'); // front table cell for buttons
+					var rearbtn=btnrow.find('div:nth-child(5)'); // rear table cell for buttons
+					$(this).attr('edit','yes');
+					function fixwidth(test){
+						setTimeout(function() {
+							$('.page').width($('.main').outerWidth()+$('#sidebar').outerWidth()+50);
+						},1000);
+					}
+<?php
+		if($user->SiteAdmin){
+?>
+// Rear panel controls
+<?php echo '							rearbtn.append(\'<div style="padding: 0px; border: 0px;"><button type="button" value="save">',_("Save"),'</button><button type="button" value="delete">',_("Delete"),'</button><button type="button" value="cancel">',_("Cancel"),'</button></div>\');'; ?>
+					rearbtn.css({'padding': 0, 'border': 0}).attr('data', 'rear');;
+					$.post('', {pdev: 'list'}, function(data){
+						var rdev=reardev.text();
+						reardev.html(data).css({'padding': 0});
+						reardev.find('select option').each(function(){
+							if($(this).text()==rdev){
+								$(this).attr('selected','selected');
+							}else if(rearnotes.text()!='' && rdev==''){
+								$(this).parent('select').val('note');
+							}
+						});					
+						rearport.html('<input type="text" value="'+rearport.text()+'">').css({'padding': 0});
+						rearnotes.html('<input type="text" value="'+rearnotes.text()+'">').css({'padding': 0}); // weird data will break the crap out of this.  fix later.
+					}).then(fixwidth());
+<?php
+		}
+?>
+// Front panel controls
+<?php echo '							frontbtn.append(\'<div style="padding: 0px; border: 0px;"><button type="button" value="save">',_("Save"),'</button><button type="button" value="delete">',_("Delete"),'</button><button type="button" value="cancel">',_("Cancel"),'</button></div>\');'; ?>
+					frontbtn.css({'padding': 0, 'border': 0}).attr('data', 'front');
+					$.post('', {sp: '0', swdev: $('#deviceid').val()}, function(data){
+						var fdev=frontdev.text();
+						frontdev.html(data).css({'padding': 0});
+						frontdev.find('select option').each(function(){
+							if($(this).text()==fdev){
+								$(this).attr('selected','selected');
+							}
+						});					
+						frontport.html('<input type="text" value="'+frontport.text()+'">').css({'padding': 0});
+						frontnotes.html('<input type="text" value="'+frontnotes.text()+'">').css({'padding': 0});
+					}).then(fixwidth());
+	// remove new row and set crap back to normal.
+					function btncleanup(e){
+						if(frontbtn.text()=='' && rearbtn.text()==''){ btnrow.remove(); row.removeAttr('edit');	}
+					}
+	// button functions
+					btnrow.find('div > button').each(function(){
+						var buttondiv=$(this).parent('div');
+						var side=buttondiv.parent('div').attr('data');
+						if($(this).val()=="delete"){
+							$(this).click(function(){
+								$.post('', {pdev: $('#deviceid').val(), pdel: patchport.text(), side: side}, function(data){
+									if(data!='1'){
+										alert('error, error, error');
+									}else{
+										buttondiv.remove();
+										if(side=='front'){
+											frontdev.html('');
+											frontport.html('');
+											frontnotes.html('');
+										}else{
+											reardev.html('');
+											rearport.html('');
+											rearnotes.html('');
+										}
+										btncleanup();
+									}
+								});
+							});
+						}else if($(this).val()=="cancel"){
+							// pull record from db and set back to original values
+							$(this).click(function(){
+								$.post('', {pdev: $('#deviceid').val(), pget: patchport.text()}, function(data){
+									var darray=$.parseJSON(data);
+									if(side=='front'){
+										frontdev.html((darray[1]!='NULL')?darray[1]:'');
+										frontport.html((darray[2]!='NULL')?darray[2]:'');
+										frontnotes.html((darray[3]!='NULL')?darray[3]:'');
+									}else{
+										reardev.html((darray[5]!='NULL')?darray[5]:'');
+										rearport.html((darray[6]!='NULL')?darray[6]:'');
+										rearnotes.html((darray[7]!='NULL')?darray[7]:'');
+									}
+									buttondiv.remove();
+									btncleanup();
+								});
+							});
+						}else if($(this).val()=="save"){
+							$(this).click(function(){
+								if(side=='front'){
+									$.post('', {pdev: $('#deviceid').val(), psav: patchport.text(), fdev:frontdev.find('select').val(), fport:frontport.find('input').val(), fn:frontnotes.find('input').val()}, function(data){
+										var darray=$.parseJSON(data);
+										frontdev.html(darray[1]);
+										frontport.html(darray[2]);
+										frontnotes.html(darray[3]);
+									});
+								}else{
+									$.post('', {pdev: $('#deviceid').val(), psav: patchport.text(), rdev:reardev.find('select').val(), rport:rearport.find('input').val(), rn:rearnotes.find('input').val()}, function(data){
+										var darray=$.parseJSON(data);
+										reardev.html(darray[5]);
+										rearport.html(darray[6]);
+										rearnotes.html(darray[7]);
+									});
+								}
+								buttondiv.remove();
+								btncleanup();
+							});
+						}
+					});
+				}
+			});
+		}).css({'cursor': 'pointer','text-decoration': 'underline'});
+
+<?php 
+	} // end of javascript editing functions
+?>
+
+
 	$('#tags').textext({
 		plugins : 'autocomplete tags ajax arrow prompt focus',
 <?php echo $taginsert; ?>
