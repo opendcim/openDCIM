@@ -7,6 +7,12 @@
 </form>
 <br>
 <form action="search.php" method="post">
+<input type="hidden" name="key" value="ctag">
+<label for="searchsn"><?php print _("Search by Custom Tag:"); ?></label><br>
+<input class="search" id="searchctag" name="search"><button class="iebug" type="submit"><img src="css/searchbutton.png" alt="search"></button>
+</form>
+<br>
+<form action="search.php" method="post">
 <input type="hidden" name="key" value="serial">
 <label for="searchsn"><?php print _("Search by SN:"); ?></label><br>
 <input class="search" id="searchsn" name="search"><button class="iebug" type="submit"><img src="css/searchbutton.png" alt="search"></button>

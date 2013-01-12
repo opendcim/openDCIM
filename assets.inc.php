@@ -597,6 +597,15 @@ class Device {
 		$tmpConn->EndpointDeviceID = $this->DeviceID;
 		$tmpConn->DropSwitchConnections( $db );
 		$tmpConn->DropEndpointConnections( $db );
+		
+		$tmpPan = new PatchConnection();
+		if ( $this->Classification == "Patch Panel" ) {
+			$tmpPan->PanelDeviceID = $this->DeviceID;
+			$tmpPan->DropPanelConnections( $db );
+		} else {
+			$tmpPan->FrontEndpointDeviceID = $this->DeviceID;
+			$tmpPan->DropEndpointConnections( $db );
+		}
 	}
   
 	function UpdateDevice( $db ) {
@@ -938,7 +947,16 @@ class Device {
 		$tmpConn->EndpointDeviceID = $this->DeviceID;
 		$tmpConn->DropSwitchConnections( $db );
 		$tmpConn->DropEndpointConnections( $db );
-
+		
+		$tmpPan = new PatchConnection();
+		if ( $this->Classification == "Patch Panel" ) {
+			$tmpPan->PanelDeviceID = $this->DeviceID;
+			$tmpPan->DropPanelConnections( $db );
+		} else {
+			$tmpPan->FrontEndpointDeviceID = $this->DeviceID;
+			$tmpPan->DropEndpointConnections( $db );
+		}
+		
 		// Delete power connections next
 		$powercon = new PowerConnection();
 		$powercon->DeviceID = $this->DeviceID;
@@ -1195,6 +1213,54 @@ class Device {
           return $deviceList;
 
   }
+  
+	function SearchByCustomTag( $db, $tag = null ) {
+		$sql = sprintf( "select a.* from fac_Device a, fac_DeviceTags b, fac_Tags c where a.DeviceID=b.DeviceID and b.TagID=c.TagID and UCASE(c.Name) like UCASE('%%%s%%')", $tag );
+		
+		if ( ! $result = mysql_query( $sql, $db ) ) {
+			error_log( sprintf( "%s; SQL=`%s`", mysql_error( $db ), $sql ) );
+			return -1;
+		}
+		
+		$deviceList = array();
+
+		while ( $deviceRow = mysql_fetch_array( $result ) ) {
+			$devID = $deviceRow["DeviceID"];
+
+			$deviceList[$devID] = new Device();
+
+			$deviceList[$devID]->DeviceID = $deviceRow["DeviceID"];
+			$deviceList[$devID]->Label = $deviceRow["Label"];
+			$deviceList[$devID]->SerialNo = $deviceRow["SerialNo"];
+			$deviceList[$devID]->AssetTag = $deviceRow["AssetTag"];
+			$deviceList[$devID]->PrimaryIP = $deviceRow["PrimaryIP"];
+			$deviceList[$devID]->SNMPCommunity = $deviceRow["SNMPCommunity"];
+			$deviceList[$devID]->ESX = $deviceRow["ESX"];
+			$deviceList[$devID]->Owner = $deviceRow["Owner"];
+			$deviceList[$devID]->EscalationTimeID = $deviceRow["EscalationTimeID"];
+			$deviceList[$devID]->EscalationID = $deviceRow["EscalationID"];
+			$deviceList[$devID]->PrimaryContact = $deviceRow["PrimaryContact"];
+			$deviceList[$devID]->Cabinet = $deviceRow["Cabinet"];
+			$deviceList[$devID]->Position = $deviceRow["Position"];
+			$deviceList[$devID]->Height = $deviceRow["Height"];
+			$deviceList[$devID]->Ports = $deviceRow["Ports"];
+			$deviceList[$devID]->TemplateID = $deviceRow["TemplateID"];
+			$deviceList[$devID]->NominalWatts = $deviceRow["NominalWatts"];
+			$deviceList[$devID]->PowerSupplyCount = $deviceRow["PowerSupplyCount"];
+			$deviceList[$devID]->DeviceType = $deviceRow["DeviceType"];
+			$deviceList[$devID]->ChassisSlots = $deviceRow["ChassisSlots"];
+			$deviceList[$devID]->RearChassisSlots = $deviceRow["RearChassisSlots"];
+			$deviceList[$devID]->ParentDevice = $deviceRow["ParentDevice"];
+			$deviceList[$devID]->MfgDate = $deviceRow["MfgDate"];
+			$deviceList[$devID]->InstallDate = $deviceRow["InstallDate"];
+			$deviceList[$devID]->WarrantyCo = $deviceRow["WarrantyCo"];
+			@$deviceList[$devID]->WarrantyExpire = $deviceRow["WarrantyExpire"];
+			$deviceList[$devID]->Notes = $deviceRow["Notes"];
+			$deviceList[$devID]->Reservation = $deviceRow["Reservation"];
+		}
+		
+		return $deviceList;
+	}
 
 	function UpdateWattageFromTemplate( $db ) {
 	   $selectSQL = "select * from fac_DeviceTemplate where TemplateID=\"" . intval($this->TemplateID) . "\"";
@@ -2134,9 +2200,29 @@ class PatchConnection {
 	}
 	
 	function DropEndpointConnections( $db ) {
+		// You call this when deleting an endpoint device, other than a patch panel
+		$this->MakeSafe();
+		$sql = sprintf( "update fac_PatchConnection set FrontEndpointDeviceID=NULL, FrontEndpointPort=NULL, FrontNotes=NULL where FrontEndpointDeviceID=%d", $this->FrontEndpointDeviceID );
+
+		if ( ! $result = mysql_query( $sql, $db ) ) {
+			error_log( sprintf( "%s; SQL=`%s`", mysql_error( $db ), $sql ) );
+			return -1;
+		}
+
+		return;
 	}
 	
 	function DropPanelConnections( $db ) {
+		// You only call this when you are deleting another patch panel
+		$this->MakeSafe();
+		$sql = sprintf( "update fac_PatchConnection set RearEndpointDeviceID=NULL, RearEndpointPort=NULL, RearNotes=NULL where FrontEndpointDeviceID=%d", $this->FrontEndpointDeviceID );
+
+		if ( ! $result = mysql_query( $sql, $db ) ) {
+			error_log( sprintf( "%s; SQL=`%s`", mysql_error( $db ), $sql ) );
+			return -1;
+		}
+
+		return;
 	}
 	
 	function GetPanelConnections($db){
@@ -2168,9 +2254,6 @@ class PatchConnection {
 		}
 		
 		return $connList;
-	}
-	
-	function GetPanelPortConnector( $db ) {
 	}
 	
 	function GetEndpointConnections( $db ) {

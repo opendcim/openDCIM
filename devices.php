@@ -1331,12 +1331,15 @@ echo '	<div class="table">
 			print "			</div><!-- END div.table -->\n		  </div>\n		</div>\n";
 			
 			print "		<div>\n		  <div><a name=\"net\">$chassis "._('Patches')."</a><br>("._('Managed at Panel').")</div>\n		  <div><div class=\"table border\"><div><div>"._('Panel')."</div><div>"._('Panel Port')."</div><div>"._('Device Port')."</div><div>"._('Notes')."</div></div>\n";
-			foreach( $panelList as $panelConn ) {
-				$tmpDev->DeviceID = $panelConn->PanelDeviceID;
-				$tmpDev->GetDevice( $facDB );
-				printf( "			<div><div><a href=\"devices.php?deviceid=%d#net\">%s</a></div><div>%d</div><div>%d</div><div>%s</div></div>\n", $panelConn->PanelDeviceID, $tmpDev->Label, $panelConn->PanelPortNumber, $panelConn->FrontEndpointPort, $panelConn->FrontNotes );
+			
+			if ( is_array( $panelList ) ) {
+				foreach( $panelList as $panelConn ) {
+					$tmpDev->DeviceID = $panelConn->PanelDeviceID;
+					$tmpDev->GetDevice( $facDB );
+					printf( "			<div><div><a href=\"devices.php?deviceid=%d#net\">%s</a></div><div>%d</div><div>%d</div><div>%s</div></div>\n", $panelConn->PanelDeviceID, $tmpDev->Label, $panelConn->PanelPortNumber, $panelConn->FrontEndpointPort, $panelConn->FrontNotes );
+				}
+				print "			</div><!-- END div.table -->\n		  </div>\n		</div>\n";
 			}
-			print "			</div><!-- END div.table -->\n		  </div>\n		</div>\n";
 		}      
 	}
 		  
