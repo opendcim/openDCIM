@@ -2174,18 +2174,41 @@ class PatchConnection {
 	}
 	
 	function GetEndpointConnections( $db ) {
+		$sql = sprintf( "select * from fac_PatchConnection where FrontEndpointDeviceID=%d order by PanelDeviceID ASC", $this->FrontEndpointDeviceID );
+		if ( ! $result = mysql_query( $sql, $db ) ) {
+			error_log( sprintf( "%s; SQL=`%s`", mysql_error( $db ), $sql ) );
+			return -1;
+		}
+		
+		
+		$patchList = array();
+		
+		while ( $row = mysql_fetch_array( $result ) ) {
+			$pNum = sizeof( $patchList );
+			$patchList[$pNum] = new PatchConnection();
+			$patchList[$pNum]->PanelDeviceID = $row["PanelDeviceID"];
+			$patchList[$pNum]->PanelPortNumber = $row["PanelPortNumber"];
+			$patchList[$pNum]->FrontEndpointDeviceID = $row["FrontEndpointDeviceID"];
+			$patchList[$pNum]->FrontEndpointPort = $row["FrontEndpointPort"];
+			$patchList[$pNum]->RearEndpointDeviceID = $row["RearEndpointDeviceID"];
+			$patchList[$pNum]->RearEndpointPort = $row["RearEndpointPort"];
+			$patchList[$pNum]->FrontNotes = $row["FrontNotes"];
+			$patchList[$pNum]->RearNotes = $row["RearNotes"];
+		}
+		
+		return $patchList;
 	}
 
-	function MakeSafe(){
+	function MakeSafe() {
 		// mysql needed the word NULL for the fields that were null to keep the sql valid
-		$this->PanelDeviceID=intval($this->PanelDeviceID);
-		$this->PanelPortNumber=intval($this->PanelPortNumber);
-		$this->FrontEndpointDeviceID=(is_null($this->FrontEndpointDeviceID))?'NULL':intval($this->FrontEndpointDeviceID);
-		$this->FrontEndpointPort=(is_null($this->FrontEndpointPort))?'NULL':intval($this->FrontEndpointPort);
-		$this->FrontNotes=(is_null($this->FrontNotes))?'NULL':mysql_real_escape_string($this->FrontNotes);
-		$this->RearEndpointDeviceID=(is_null($this->RearEndpointDeviceID))?'NULL':intval($this->RearEndpointDeviceID);
-		$this->RearEndpointPort=(is_null($this->RearEndpointPort))?'NULL':intval($this->RearEndpointPort);
-		$this->RearNotes=(is_null($this->RearNotes))?'NULL':mysql_real_escape_string($this->RearNotes);
+		$this->PanelDeviceID = intval( $this->PanelDeviceID );
+		$this->PanelPortNumber = intval( $this->PanelPortNumber );
+		$this->FrontEndpointDeviceID = ( is_null( $this->FrontEndpointDeviceID ) ) ? 'NULL':intval( $this->FrontEndpointDeviceID );
+		$this->FrontEndpointPort = ( is_null( $this->FrontEndpointPort ) )?'NULL':intval( $this->FrontEndpointPort );
+		$this->FrontNotes = ( is_null( $this->FrontNotes ) )?'NULL':mysql_real_escape_string( $this->FrontNotes );
+		$this->RearEndpointDeviceID = ( is_null( $this->RearEndpointDeviceID ) )?'NULL':intval( $this->RearEndpointDeviceID );
+		$this->RearEndpointPort = ( is_null( $this->RearEndpointPort ) )?'NULL':intval( $this->RearEndpointPort );
+		$this->RearNotes = ( is_null( $this->RearNotes ) )?'NULL':mysql_real_escape_string( $this->RearNotes );
 	}	
 
 }

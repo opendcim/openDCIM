@@ -308,8 +308,10 @@
 					$patchPanel->PanelDeviceID=$dev->DeviceID;
 					$patchList=$patchPanel->GetPanelConnections($facDB);
 				}else{
-					$networkPatches->EndpointDeviceID=($dev->ParentDevice>0)?$dev->ParentDevice:$dev->DeviceID;
+					$networkPatches->EndpointDeviceID= ( $dev->ParentDevice>0 )?$dev->ParentDevice:$dev->DeviceID;
 					$patchList=$networkPatches->GetEndpointConnections($facDB);
+					$patchPanel->FrontEndpointDeviceID = ( $dev->ParentDevice>0 )?$dev->ParentDevice:$dev->DeviceID;
+					$panelList = $patchPanel->GetEndpointConnections( $facDB );
 				}
 			}
 		}
@@ -1315,7 +1317,7 @@ echo '	<div class="table">
 
 	// If device is s switch or appliance show what the heck it is connected to.
 	if($dev->DeviceType=='Server' || $dev->DeviceType=='Appliance' || $dev->DeviceType=='Chassis'){
-		if(count($patchList)==0){
+		if((count($patchList) + count( $panelList )) == 0 ) {
 			// We have no network information. Display links to switches in cabinet?
 			echo '		<div>		<div><a name="power"></a></div>		<div>',("No network connections defined.  You can add connections from a switch device."),'</div></div>';
 		}else{
@@ -1325,6 +1327,14 @@ echo '	<div class="table">
 				$tmpDev->DeviceID = $patchConn->SwitchDeviceID;
 				$tmpDev->GetDevice( $facDB );
 				print "			<div><div><a href=\"devices.php?deviceid=$patchConn->SwitchDeviceID#net\">$tmpDev->Label</a></div><div>$patchConn->SwitchPortNumber</div><div>$patchConn->EndpointPort</div><div>$patchConn->Notes</div></div>\n";
+			}
+			print "			</div><!-- END div.table -->\n		  </div>\n		</div>\n";
+			
+			print "		<div>\n		  <div><a name=\"net\">$chassis "._('Patches')."</a><br>("._('Managed at Panel').")</div>\n		  <div><div class=\"table border\"><div><div>"._('Panel')."</div><div>"._('Panel Port')."</div><div>"._('Device Port')."</div><div>"._('Notes')."</div></div>\n";
+			foreach( $panelList as $panelConn ) {
+				$tmpDev->DeviceID = $panelConn->PanelDeviceID;
+				$tmpDev->GetDevice( $facDB );
+				printf( "			<div><div><a href=\"devices.php?deviceid=%d#net\">%s</a></div><div>%d</div><div>%d</div><div>%s</div></div>\n", $panelConn->PanelDeviceID, $tmpDev->Label, $panelConn->PanelPortNumber, $panelConn->FrontEndpointPort, $panelConn->FrontNotes );
 			}
 			print "			</div><!-- END div.table -->\n		  </div>\n		</div>\n";
 		}      
