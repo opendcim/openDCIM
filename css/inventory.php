@@ -382,7 +382,7 @@ div.page.device {
 
 .device .table.patchpanel > div > div {min-width: auto;}
 
-.device #tags { width: 95%; min-width: 350px;}
+.device #tags { width: 95%; min-width: 250px;}
 
 .chassis .table input{text-align:center;}
 .chassis .table > div > div{text-align:center;}
