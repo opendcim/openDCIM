@@ -36,9 +36,11 @@ ALTER TABLE fac_DeviceTemplate ADD UNIQUE KEY (ManufacturerID,Model);
 
 --
 -- Remove the primary key (unique) constraint from the CabinetAudit table
+-- Handled this in the installer.  Left for people that might just try to 
+-- apply the update manually.
 --
 
-ALTER TABLE fac_CabinetAudit DROP PRIMARY KEY;
+-- ALTER TABLE fac_CabinetAudit DROP PRIMARY KEY;
 
 --
 -- Correction for typo in create.sql for v1.5, won't have an effect on 

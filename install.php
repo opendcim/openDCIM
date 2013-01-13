@@ -181,65 +181,115 @@ function applyupdate ($updatefile){
 		$version="1.5";
 	}
 	
-	if ( $version == "1.5" ) {	// Do the 1.5 to 2.0 Update
+	if($version=="1.5"){	// Do the 1.5 to 2.0 Update
 		// Get a list of all Manufacturers that are duplicated
-		$sql = "select ManufacturerID,Name from fac_Manufacturer group by Name having count(*)>1";
-		$result = mysql_query( $sql, $facDB );
+		$sql="SELECT ManufacturerID,Name FROM fac_Manufacturer GROUP BY Name HAVING COUNT(*)>1;";
+		$result=mysql_query($sql,$facDB);
 		
-		while ( $row = mysql_fetch_array( $result ) ) {
+		while($row=mysql_fetch_array($result)){
 			// Set all devices with that Manufacturer to the ID of just one
-			$sql = sprintf( "update fac_DeviceTemplate set ManufacturerID=%d where ManufacturerID in (select ManufacturerID from fac_Manufacturer where Name=\"%s\")", $row["ManufacturerID"], $row["Name"] );
-			mysql_query( $sql, $facDB );
+			$sql="UPDATE fac_DeviceTemplate SET ManufacturerID={$row["ManufacturerID"]} WHERE ManufacturerID IN (SELECT ManufacturerID FROM fac_Manufacturer WHERE Name=\"{$row["Name"]}\");";
+			mysql_query($sql,$facDB);
 			
 			// Delete all the duplicates other than the one you set everything to
-			$sql = sprintf( "delete from fac_Manufacturer where Name=\"%s\" and ManufacturerID!=%d", $row["Name"], $row["ManufacturerID"] );
-			mysql_query( $sql, $facDB );
+			$sql="DELETE FROM fac_Manufacturer WHERE Name=\"{$row["Name"]}\" and ManufacturerID!={$row["ManufacturerID"]};";
+			mysql_query($sql,$facDB);
 		}
 		
 		// Repeat for Templates
-		$sql = "select TemplateID,ManufacturerID,Model from fac_DeviceTemplate group by ManufacturerID,Model having count(*)>1";
-		$result = mysql_query( $sql, $facDB );
+		$sql="SELECT TemplateID,ManufacturerID,Model FROM fac_DeviceTemplate GROUP BY ManufacturerID,Model HAVING COUNT(*)>1;";
+		$result=mysql_query($sql,$facDB);
 		
-		while ( $row = mysql_fetch_array( $result ) ) {
-			$sql = sprintf( "update fac_Device set TemplateID=%d where TemplateID in (select TemplateID from fac_DeviceTemplate where ManufacturerID=%d and Model=\"%s\")", $row["TemplateID"], $row["ManufacturerID"], $row["Model"] );
-			mysql_query( $sql, $facDB );
+		while($row=mysql_fetch_array($result)){
+			$sql="UPDATE fac_Device SET TemplateID={$row["TemplateID"]} WHERE TemplateID IN (SELECT TemplateID FROM fac_DeviceTemplate WHERE ManufacturerID={$row["ManufacturerID"]} AND Model=\"{$row["Model"]}\");";
+			mysql_query($sql,$facDB);
 			
-			$sql = sprintf( "delete from fac_DeviceTemplate where ManufacturerID=%d and TemplateID!=%d", $row["ManufacturerID"], $row["TemplateID"] );
-			mysql_query( $sql, $facDB );
+			$sql="DELETE FROM fac_DeviceTemplate WHERE ManufacturerID={$row["ManufacturerID"]} AND TemplateID!={$row["TemplateID"]};";
+			mysql_query($sql,$facDB);
 		}
 		
 		// And finally, Departments
-		$sql = "select DeptID, Name from fac_Department group by Name having count(*)>1";
-		$result = mysql_query( $sql, $facDB );
+		$sql="SELECT DeptID, Name FROM fac_Department GROUP BY Name HAVING COUNT(*)>1;";
+		$result=mysql_query($sql,$facDB);
 		
-		while ( $row = mysql_fetch_array( $result ) ) {
-			$sql = sprintf( "update fac_Device set Owner=%d where Owner in (select DeptID from fac_Department where Name=\"%s\")", $row["DeptID"], $row["Name"] );
-			mysql_query( $sql, $facDB );
+		while($row=mysql_fetch_array($result)){
+			$sql="UPDATE fac_Device SET Owner={$row["DeptID"]} WHERE Owner IN (SELECT DeptID FROM fac_Department WHERE Name=\"{$row["Name"]}\");";
+			mysql_query($sql,$facDB);
 			
 			// Yes, I know, this may create duplicates
-			$sql = sprintf( "update fac_DeptContacts set DeptID=%d where DeptID in (select DeptID from fac_Department where Name=\"%s\")", $row["DeptID"], $row["Name"] );
-			mysql_query( $sql, $facDB );
+			$sql="UPDATE fac_DeptContacts SET DeptID={$row["DeptID"]} WHERE DeptID IN (SELECT DeptID FROM fac_Department WHERE Name=\"{$row["Name"]}\");";
+			mysql_query($sql,$facDB);
 			
-			$sql = sprintf( "delete from fac_Department where Name=\"%s\" and DeptID!=%d", $row["Name"], $row["DeptID"] );
-			mysql_query( $sql, $facDB );
+			$sql="DELETE FROM fac_Department WHERE Name=\"{$row["Name"]}\" AND DeptID!={$row["DeptID"]};";
+			mysql_query($sql,$facDB);
 		}
 		
 		// So delete the potential duplicate contact links created in the last step
-		$sql = "select DeptID,ContactID from fac_DeptContacts group by DeptID,ContactID having count(*)>1";
-		$result = mysql_query( $sql, $facDB );
+		$sql="SELECT DeptID,ContactID FROM fac_DeptContacts GROUP BY DeptID,ContactID HAVING COUNT(*)>1;";
+		$result=mysql_query($sql,$facDB);
 		
-		while ( $row = mysql_fetch_array( $result ) ) {
-			$sql = sprintf( "delete from fac_DeptContacts where DeptID=%d and ContactID=%d", $row["DeptID"], $row["ContactID"] );
-			mysql_query( $sql, $facDB );
+		while($row=mysql_fetch_array($result)){
+			$sql="DELETE FROM fac_DeptContacts WHERE DeptID={$row["DeptID"]} AND ContactID={$row["ContactID"]};";
+			mysql_query($sql,$facDB);
 			
-			$sql = sprintf( "insert into fac_DeptContacts values ( %d, %d )", $row["DeptID"], $row["ContactID"] );
-			mysql_query( $sql, $facDB );
+			$sql="INSERT INTO fac_DeptContacts VALUES ({$row["DeptID"]},{$row["ContactID"]});";
+			mysql_query($sql,$facDB);
 		}
 		
-		$config->rebuild( $facDB );
-		$results[]=applyupdate( "db-1.5-to-2.0.sql" );
-		$upgrade = true;
-		$version = "2.0";
+		 /* 
+		 /  Clean up multiple key issues.
+		 /
+		 /	1. Identify Multiple Keys
+		 /	2. Remove them
+		 /	3. Recreate keys based on structure in create.sql
+		 /
+		*/
+		$array=array();
+		$sql="SHOW INDEXES FROM fac_PowerConnection;";
+		$result=mysql_query($sql,$facDB);
+		while($row=mysql_fetch_array($result)){
+			$array[$row["Key_name"]]=1;
+		}
+		foreach($array as $key => $garbage){
+			$sql="ALTER TABLE fac_PowerConnection DROP INDEX $key;";
+			mysql_query($sql);
+		}
+		$sql="ALTER TABLE fac_PowerConnection ADD UNIQUE KEY PDUID (PDUID,PDUPosition);";
+		mysql_query($sql);
+		$sql="ALTER TABLE fac_PowerConnection ADD UNIQUE KEY DeviceID (DeviceID,DeviceConnNumber);";
+		mysql_query($sql);
+
+		// Just removing keys from fac_CabinetAudit
+		$array=array();
+		$sql="SHOW INDEXES FROM fac_CabinetAudit;";
+		$result=mysql_query($sql,$facDB);
+		while($row=mysql_fetch_array($result)){
+			$array[$row["Key_name"]]=1;
+		}
+		foreach($array as $key => $garbage){
+			$sql="ALTER TABLE fac_CabinetAudit DROP INDEX $key;";
+			mysql_query($sql);
+		}
+
+		$array=array();
+		$sql="SHOW INDEXES FROM fac_Department;";
+		$result=mysql_query($sql,$facDB);
+		while($row=mysql_fetch_array($result)){
+			$array[$row["Key_name"]]=1;
+		}
+		foreach($array as $key => $garbage){
+			$sql="ALTER TABLE fac_Department DROP INDEX $key;";
+			mysql_query($sql);
+		}
+		$sql="ALTER TABLE fac_Department ADD PRIMARY KEY (DeptID);";
+		mysql_query($sql);
+		$sql="ALTER TABLE fac_Department ADD UNIQUE KEY Name (Name);";
+		mysql_query($sql);
+		
+		$config->rebuild($facDB);
+		$results[]=applyupdate("db-1.5-to-2.0.sql");
+		$upgrade=true;
+		$version="2.0";
 	}
 		
 	if($upgrade==true){ //If we're doing an upgrade don't call the rest of the installer.
