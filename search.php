@@ -46,7 +46,7 @@
 		$resultcount=count($devList);
 	} elseif ( $searchKey == "ctag" ) {
 		$devList = $dev->SearchByCustomTag( $facDB, $searchTerm );
-		$resultCount = count( $devList );
+		$resultcount = count( $devList );
 	} else {
 		$devList=array();
 	}
