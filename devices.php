@@ -169,6 +169,8 @@
 	// If this page wasn't called then present a blank record for device creation.
 	if(isset($_REQUEST['action'])||isset($_REQUEST['deviceid'])){
 		if(isset($_REQUEST['action'])&&$_REQUEST['action']=='new'){
+			// sets install date to today when a new device is being created
+			$dev->InstallDate=date("m/d/Y");
 			// Some fields are pre-populated when you click "Add device to this cabinet"
 			if(isset($_REQUEST['cabinet'])){
 				$dev->Cabinet = intval($_REQUEST['cabinet']);
@@ -316,7 +318,7 @@
 			}
 		}
 		$cab->CabinetID=$dev->Cabinet;
-	} else {
+	}else{
 		// sets install date to today when a new device is being created
 		$dev->InstallDate=date("m/d/Y");
 	}
@@ -346,21 +348,17 @@
 		$childList=$dev->GetDeviceChildren($facDB);
 	}
 
-/*	
-/ uncomment if you want empty dates to be filled with today's date instead of epoch
-/
-/ unset mfgdates will show up on the asset aging report as unknown
-/*
-
-/*	
-	if($dev->MfgDate <= "1970-01-01"){
-		$dev->MfgDate=date("Y-m-d");
+	if($config->ParameterArray["mDate"]=="now"){
+		if($dev->MfgDate <= "1970-01-01"){
+			$dev->MfgDate=date("Y-m-d");
+		}
 	}
 		
-	if($dev->WarrantyExpire <= "1970-01-01"){
-		$dev->WarrantyExpire= date("Y-m-d");
+	if($config->ParameterArray["wDate"]=="now"){
+		if($dev->WarrantyExpire <= "1970-01-01"){
+			$dev->WarrantyExpire=date("Y-m-d");
+		}
 	}
-*/
 
 	$templateList=$templ->GetTemplateList($facDB);
 	$escTimeList=$escTime->GetEscalationTimeList($facDB);
@@ -392,7 +390,6 @@
 
 
 	$title=($dev->Label!='')?"$dev->Label :: $dev->DeviceID":"openDCIM Device Maintenance";
-
 ?>
 <!doctype html>
 <html>

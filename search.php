@@ -44,10 +44,10 @@
 		$dev->AssetTag=$searchTerm;
 		$devList=$dev->SearchDevicebyAssetTag($facDB);
 		$resultcount=count($devList);
-	} elseif ( $searchKey == "ctag" ) {
-		$devList = $dev->SearchByCustomTag( $facDB, $searchTerm );
-		$resultcount = count( $devList );
-	} else {
+	}elseif($searchKey=="ctag"){
+		$devList=$dev->SearchByCustomTag($facDB,$searchTerm);
+		$resultcount=count($devList);
+	}else{
 		$devList=array();
 	}
 

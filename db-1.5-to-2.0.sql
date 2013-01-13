@@ -172,3 +172,13 @@ CREATE TABLE fac_Tags (
 
 INSERT INTO `fac_Config` (`Parameter`, `Value`, `UnitOfMeasure`, `ValType`, `DefaultVal`) VALUES 
 ('LabelCase','upper','string','string','upper');
+
+
+--
+-- Add a configuration item for defaulting empty date values on the device screen to NOW() or the epoch.
+--
+
+INSERT INTO `fac_Config` (`Parameter`, `Value`, `UnitOfMeasure`, `ValType`, `DefaultVal`) VALUES 
+('mDate','blank','string','string','blank');
+INSERT INTO `fac_Config` (`Parameter`, `Value`, `UnitOfMeasure`, `ValType`, `DefaultVal`) VALUES 
+('wDate','blank','string','string','blank');

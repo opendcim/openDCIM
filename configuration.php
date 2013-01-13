@@ -130,7 +130,7 @@
 			}
 		});
 		$("#configtabs").tabs();
-		$("#configtabs input[defaultvalue]").each(function(){
+		$('#configtabs input[defaultvalue],#configtabs select[defaultvalue]').each(function(){
 			$(this).parent().after('<div><button type="button">&lt;--</button></div><div><span>'+$(this).attr('defaultvalue')+'</span></div>');
 		});
 		$("#configtabs input").each(function(){
@@ -138,7 +138,7 @@
 			$(this).removeAttr('defaultvalue');
 		});
 		$("#configtabs button").each(function(){
-			var a = $(this).parent().prev().find('input');
+			var a = $(this).parent().prev().find('input,select');
 			$(this).click(function(){
 				a.val($(this).parent().next().children('span').text());
 				a.triggerHandler("paste");
@@ -276,6 +276,22 @@ echo '<div class="main">
 					<div><label for="timezone">',_("Time Zone"),'</label></div>
 					<div><input type="text" readonly="readonly" id="timezone" defaultvalue="',$config->defaults["timezone"],'" name="timezone" value="',$config->ParameterArray["timezone"],'"></div>
 				</div>
+				<div>
+					<div><label for="mDate">',_("Manufacture Date"),'</label></div>
+					<div><select id="mDate" name="mDate" defaultvalue="',$config->defaults["mDate"],'" data="',$config->ParameterArray["mDate"],'">
+							<option value="blank"',(($config->ParameterArray["mDate"]=="blank")?' selected="selected"':''),'>',_("Blank"),'</option>
+							<option value="now"',(($config->ParameterArray["mDate"]=="now")?' selected="selected"':''),'>',_("Now"),'</option>
+						</select>
+					</div>
+				</div>
+				<div>
+					<div><label for="wDate">',_("Warranty Date"),'</label></div>
+					<div><select id="wDate" name="wDate" defaultvalue="',$config->defaults["wDate"],'" data="',$config->ParameterArray["wDate"],'">
+							<option value="blank"',(($config->ParameterArray["wDate"]=="blank")?' selected="selected"':''),'>',_("Blank"),'</option>
+							<option value="now"',(($config->ParameterArray["wDate"]=="now")?' selected="selected"':''),'>',_("Now"),'</option>
+						</select>
+					</div>
+				</div>
 			</div> <!-- end table -->
 			<h3>',_("Users"),'</h3>
 			<div class="table">
@@ -378,23 +394,18 @@ echo '<div class="main">
 					<div><button type="button"><--</button></div>
 					<div><span>',strtoupper($config->defaults["FreeSpaceColor"]),'</span></div>
 				</div>
-				<div>
-					<div>&nbsp;</div>
-					<div></div>
-					<div></div>
-					<div></div>
-				</div>
+			</div> <!-- end table -->
+			<h3>',_("Devices"),'</h3>
+			<div class="table">
 				<div>
 					<div><label for="LabelCase">',_("Device Labels"),'</label></div>
-					<div><select id="LabelCase" name="LabelCase" data="',$config->ParameterArray["LabelCase"],'">
+					<div><select id="LabelCase" name="LabelCase" defaultvalue="',$config->defaults["LabelCase"],'" data="',$config->ParameterArray["LabelCase"],'">
 							<option value="upper">',transform(_("Uppercase"),'upper'),'</option>
 							<option value="lower">',transform(_("Lowercase"),'lower'),'</option>
 							<option value="initial">',transform(_("Initial caps"),'initial'),'</option>
 							<option value="none">',_("Don't touch my labels"),'</option>
 						</select>
 					</div>
-					<div></div>
-					<div></div>
 				</div>
 			</div> <!-- end table -->
 			<h3>',_("Site"),'</h3>

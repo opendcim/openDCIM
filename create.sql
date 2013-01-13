@@ -559,8 +559,9 @@ INSERT INTO fac_Config VALUES
         ('LinkColor', '#000000', 'HexColor', 'string', '#000000'),
         ('VisitedLinkColor', '#8D90B3', 'HexColor', 'string', '#8D90B3'),
         ('LabelCase','upper','string','string','upper'),
+        ('mDate','blank','string','string','blank'),
+        ('wDate','blank','string','string','blank'),
 		('VMExpirationTime','7','Days','int','7');
-		
 
 --
 -- Pre-fill some of the templates

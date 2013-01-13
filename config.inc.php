@@ -39,7 +39,10 @@ class Config{
 				$sql='update fac_Config set Value=\''.addslashes($valueStr).'\' where Parameter=\''.$key.'\'';
 				$result=mysql_query($sql,$db);
 			}else{
-				$sql='update fac_Config set Value=\''.addslashes($value).'\' where Parameter=\''.$key.'\'';
+				if(preg_match('/[m|w]Date/',$key)){
+					if($value!='now'){$value='blank';} // if someone puts a weird value in default it back to blank
+				}
+				$sql="update fac_Config set Value=\"".addslashes($value)."\" where Parameter=\"$key\";";
 				$result=mysql_query($sql,$db);
 			}
 		}
