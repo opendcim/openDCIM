@@ -933,8 +933,7 @@ $(document).ready(function() {
 <?php 
 	} // end of javascript editing functions
 ?>
-
-
+	$('#tags').width($('#tags').parent('div').parent('div').innerWidth()-$('#tags').parent('div').prev('div').outerWidth()-5);
 	$('#tags').textext({
 		plugins : 'autocomplete tags ajax arrow prompt focus',
 <?php echo $taginsert; ?>
