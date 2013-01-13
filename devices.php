@@ -1314,28 +1314,31 @@ echo '	<div class="table">
 
 	// If device is s switch or appliance show what the heck it is connected to.
 	if($dev->DeviceType=='Server' || $dev->DeviceType=='Appliance' || $dev->DeviceType=='Chassis'){
-		if((count($patchList) + count( $panelList )) == 0 ) {
+		if((count($patchList)+count($panelList))==0){
 			// We have no network information. Display links to switches in cabinet?
 			echo '		<div>		<div><a name="power"></a></div>		<div>',("No network connections defined.  You can add connections from a switch device."),'</div></div>';
 		}else{
 			print "		<div>\n		  <div><a name=\"net\">$chassis "._('Connections')."</a><br>("._('Managed at Switch').")</div>\n		  <div><div class=\"table border\"><div><div>"._('Switch')."</div><div>"._('Switch Port')."</div><div>"._('Device Port')."</div><div>"._('Notes')."</div></div>\n";
-			$tmpDev = new Device();
+			$tmpDev=new Device();
 			foreach($patchList as $patchConn){
-				$tmpDev->DeviceID = $patchConn->SwitchDeviceID;
-				$tmpDev->GetDevice( $facDB );
+				$tmpDev->DeviceID=$patchConn->SwitchDeviceID;
+				$tmpDev->GetDevice($facDB);
 				print "			<div><div><a href=\"devices.php?deviceid=$patchConn->SwitchDeviceID#net\">$tmpDev->Label</a></div><div>$patchConn->SwitchPortNumber</div><div>$patchConn->EndpointPort</div><div>$patchConn->Notes</div></div>\n";
 			}
 			print "			</div><!-- END div.table -->\n		  </div>\n		</div>\n";
-			
-			print "		<div>\n		  <div><a name=\"net\">$chassis "._('Patches')."</a><br>("._('Managed at Panel').")</div>\n		  <div><div class=\"table border\"><div><div>"._('Panel')."</div><div>"._('Panel Port')."</div><div>"._('Device Port')."</div><div>"._('Notes')."</div></div>\n";
-			
-			if ( is_array( $panelList ) ) {
-				foreach( $panelList as $panelConn ) {
-					$tmpDev->DeviceID = $panelConn->PanelDeviceID;
-					$tmpDev->GetDevice( $facDB );
-					printf( "			<div><div><a href=\"devices.php?deviceid=%d#net\">%s</a></div><div>%d</div><div>%d</div><div>%s</div></div>\n", $panelConn->PanelDeviceID, $tmpDev->Label, $panelConn->PanelPortNumber, $panelConn->FrontEndpointPort, $panelConn->FrontNotes );
+
+			if(count($panelList)>0){
+				print "\t\t<div>\n\t\t\t<div>&nbsp;</div><div></div>\n\t\t</div>\n";				
+				print "\t\t<div>\n\t\t\t<div><a name=\"net\">$chassis "._('Patches')."</a><br>("._('Managed at Panel').")</div>\n\t\t\t<div>\n\t\t\t\t<div class=\"table border\">\n\t\t\t\t\t<div><div>"._('Panel')."</div><div>"._('Panel Port')."</div><div>"._('Device Port')."</div><div>"._('Notes')."</div></div>\n";
+				
+				if(is_array($panelList)){
+					foreach($panelList as $panelConn){
+						$tmpDev->DeviceID=$panelConn->PanelDeviceID;
+						$tmpDev->GetDevice($facDB);
+						print "\t\t\t\t\t<div><div><a href=\"devices.php?deviceid=$panelConn->PanelDeviceID#net\">$tmpDev->Label</a></div><div>$panelConn->PanelPortNumber</div><div>$panelConn->FrontEndpointPort</div><div>$panelConn->FrontNotes</div></div>\n";
+					}
+					print "\t\t\t\t</div><!-- END div.table -->\n\t\t\t</div>\n\t\t</div>\n";
 				}
-				print "			</div><!-- END div.table -->\n		  </div>\n		</div>\n";
 			}
 		}      
 	}
@@ -1370,14 +1373,14 @@ echo '	<div class="table">
 		print "\t\t\t</div><!-- END div.table -->\n\t\t</div>\n\t</div>\n";
 	}
 ?>
-	<div class="caption">
+		<div class="caption">
 <?php
 	if($user->WriteAccess){
 		if($dev->DeviceID >0){
-			echo '		<button type="submit" name="action" value="Update">',_("Update"),'</button>
-		<button type="submit" name="action" value="Copy">', _("Copy"), '</button>';
+			echo '			<button type="submit" name="action" value="Update">',_("Update"),'</button>
+			<button type="submit" name="action" value="Copy">', _("Copy"), '</button>';
 		} else {
-			echo '		<button type="submit" name="action" value="Create">',_("Create"),'</button>';
+			echo '			<button type="submit" name="action" value="Create">',_("Create"),'</button>';
 		}
 	}
 	// Delete rights are seperate from write rights
@@ -1386,8 +1389,8 @@ echo '	<div class="table">
 	}
 ?>
 
-	</div>
-</div> <!-- END div.table -->
+		</div>
+	</div> <!-- END div.table -->
 </div></div>
 </div> <!-- END div.table -->
 </form>

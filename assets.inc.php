@@ -2267,7 +2267,7 @@ class PatchConnection {
 		$patchList=array();
 		while($row=mysql_fetch_array($result)){
 			$pNum=sizeof($patchList);
-			$patchList[$pNum]=newPatchConnection();
+			$patchList[$pNum]=new PatchConnection();
 			$patchList[$pNum]->PanelDeviceID=$row["PanelDeviceID"];
 			$patchList[$pNum]->PanelPortNumber=$row["PanelPortNumber"];
 			$patchList[$pNum]->FrontEndpointDeviceID=$row["FrontEndpointDeviceID"];
