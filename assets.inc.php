@@ -599,7 +599,7 @@ class Device {
 		$tmpConn->DropEndpointConnections( $db );
 		
 		$tmpPan = new PatchConnection();
-		if ( $this->Classification == "Patch Panel" ) {
+		if ( $this->DeviceType == "Patch Panel" ) {
 			$tmpPan->PanelDeviceID = $this->DeviceID;
 			$tmpPan->DropPanelConnections( $db );
 		} else {
@@ -609,6 +609,42 @@ class Device {
 	}
   
 	function UpdateDevice( $db ) {
+		// Stupid User Tricks #417 - A user could change a device that has connections (switch or patch panel) to one that doesn't
+		// Stupid User Tricks #148 - A user could change a device that has children (chassis) to one that doesn't
+		//
+		// As a "safety mechanism" we simply won't allow updates if you try to change a chassis IFF it has children
+		// For the switch and panel connections, though, we drop any defined connections
+		
+		$tmpDev = new Device();
+		$tmpDev->DeviceID = $this->DeviceID;
+		$tmpDev->GetDevice( $db );
+		
+		if ( $tmpDev->DeviceType == "Chassis" && $tmpDev->DeviceType != $this->DeviceType ) {
+			// SUT #148 - Previously defined chassis is no longer a chassis
+			// If it has children, return with no update
+			$childList = $this->GetDeviceChildren( $db );
+			if ( sizeof( $childList ) > 0 ) {
+				$this->GetDevice( $db );
+				return;
+			}
+		}
+		
+		if ( ( $tmpDev->DeviceType == "Switch" || $tmpDev->DeviceType == "Patch Panel" ) && $tmpDev->DeviceType != $this->DeviceType ) {
+			// SUT #417 - Changed a Switch or Patch Panel to something else (even if you change a switch to a Patch Panel, the connections are different)
+			if ( $tmpDev->DeviceType == "Switch" ) {
+				$tmpSw = new SwitchConnection();
+				$tmpSw->SwitchDeviceID = $tmpDev->DeviceID;
+				$tmpSw->DropSwitchConnections( $db );
+				$tmpSw->DropEndpointConnections( $db );
+			}
+			
+			if ( $tmpDev->DeviceType == "Patch Panel" ) {
+				$tmpPan = new PatchConnetion();
+				$tmpPan->DropPanelConnections( $db );
+				$tmpPan->DropEndpointConnections( $db );
+			}
+		}
+		
 		// Force all uppercase for labels
 		//
 		$this->Label = transform( $this->Label );
@@ -2217,6 +2253,14 @@ class PatchConnection {
 		$this->MakeSafe();
 		$sql = sprintf( "update fac_PatchConnection set RearEndpointDeviceID=NULL, RearEndpointPort=NULL, RearNotes=NULL where FrontEndpointDeviceID=%d", $this->FrontEndpointDeviceID );
 
+		if ( ! $result = mysql_query( $sql, $db ) ) {
+			error_log( sprintf( "%s; SQL=`%s`", mysql_error( $db ), $sql ) );
+			return -1;
+		}
+		
+		// Delete any records for this panel itself
+		$sql = sprintf( "delete from fac_PatchConnection where PanelDeviceID=%d", $this->PanelDeviceID );
+		
 		if ( ! $result = mysql_query( $sql, $db ) ) {
 			error_log( sprintf( "%s; SQL=`%s`", mysql_error( $db ), $sql ) );
 			return -1;
