@@ -95,6 +95,13 @@
 	}
 	$tzmenu.='</ul>';
 
+	// Figure out what the URL to this page
+	$href="";
+	$href.=($_SERVER['HTTPS'])?'https://':'http://';
+	$href.=$_SERVER['SERVER_NAME'];
+	$href.=substr($_SERVER['REQUEST_URI'], 0, -strlen(basename($_SERVER['REQUEST_URI'])));
+
+
 ?>
 <html>
 <head>
@@ -503,7 +510,7 @@ echo '<div class="main">
 				</div>
 				<div>
 					<div><label for="InstallURL">',_("Base URL for install"),'</label></div>
-					<div><input type="text" defaultvalue="',$config->defaults["InstallURL"],'" name="InstallURL" value="',$config->ParameterArray["InstallURL"],'"></div>
+					<div><input type="text" defaultvalue="',$href,'" name="InstallURL" value="',$config->ParameterArray["InstallURL"],'"></div>
 				</div>
 			</div> <!-- end table -->
 		</div>
