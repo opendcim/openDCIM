@@ -16,6 +16,7 @@
 	$dc=new DataCenter();
 
 	$dc->DataCenterID=$_REQUEST["dc"];
+	$dc->GetDataCenterbyID( $facDB );
 	$dcStats=$dc->GetDCStatistics($facDB);
 
 	$height=0;
@@ -130,6 +131,10 @@ echo '<div class="main">
   <div>
         <div>',_("Raw Wattage"),'</div>
         <div>',sprintf("%7d "._("Watts"),$dcStats["TotalWatts"]),'</div>
+  </div>
+  <div>
+		<div>',_("Design Maximum (kW)"),'</div>
+		<div>',sprintf("%7d kW",$dc->MaxkW ),'</div>
   </div>
   <div>
         <div>',_("BTU Computation from Watts"),'</div>

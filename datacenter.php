@@ -21,6 +21,7 @@
 		$dc->DeliveryAddress=$_POST['deliveryaddress'];
 		$dc->Administrator=$_POST['administrator'];
 		$dc->DrawingFileName=$_POST['drawingfilename'];
+		$dc->MaxkW=$_POST['maxkw'];
 
 		if($dc->Name!=""){
 			if($_POST['action']=='Create'){
@@ -166,6 +167,10 @@ echo '	</select></div>
 <div>
    <div><label for="drawingfilename">',_("Drawing URL"),'</label></div>
    <div><input type="text" name="drawingfilename" id="drawingfilename" size=60 value="',$dc->DrawingFileName,'"></div>
+</div>
+<div>
+	<div><label for="maxkw">',_("Design Maximum (kW)"),'</label></div>
+	<div><input class="validate[optional,custom[onlyNumberSp]]" type="text" name="maxkw" id="maxkw" size="8" maxlength="8" value="',$dc->MaxkW,'"></div>
 </div>
 <div class="caption">';
 

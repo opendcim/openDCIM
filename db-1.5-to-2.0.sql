@@ -51,6 +51,12 @@ ALTER TABLE fac_PowerConnection DROP INDEX PDUID;
 ALTER TABLE fac_PowerConnection ADD UNIQUE KEY (PDUID,PDUPosition);
 
 --
+-- Add field to Data Centers for tracking Maximum Design Capacity in kW
+--
+
+ALTER TABLE fac_DataCenter ADD COLUMN MaxkW INT(11) NOT NULL AFTER Administrator;
+
+--
 -- New table for smart power distribution device templates
 --
 

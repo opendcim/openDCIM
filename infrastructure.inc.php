@@ -60,41 +60,76 @@ class DataCenter {
 	var $SquareFootage;
 	var $DeliveryAddress;
 	var $Administrator;
+	var $MaxkW;
 	var $DrawingFileName;
 	var $EntryLogging;
 	var $dcconfig;
 
+	function MakeSafe() {
+		$this->DataCenterID = intval( $this->DataCenterID );
+		$this->Name = mysql_real_escape_string( $this->Name );
+		$this->SquareFootage = intval( $this->SquareFootage );
+		$this->DeliveryAddress = mysql_real_escape_string( $this->DeliveryAddress );
+		$this->Administrator = mysql_real_escape_string( $this->Administrator );
+		$this->MaxkW = intval( $this->MaxkW );
+		$this->DrawingFileName = mysql_real_escape_string( $this->DrawingFileName );
+		$this->EntryLogging = intval( $this->EntryLogging );
+	}
+	
 	function CreateDataCenter( $db ) {
-		$sql = "insert into fac_DataCenter set Name=\"" . addslashes( $this->Name ) . "\", SquareFootage=\"" . intval( $this->SquareFootage ) . "\", DeliveryAddress=\"" . addslashes( $this->DeliveryAddress ) . "\", Administrator=\"" . addslashes( $this->Administrator ) . "\", DrawingFileName=\"" . addslashes( $this->DrawingFileName ) . "\", EntryLogging=0";
+		$this->MakeSafe();
+		
+		$sql = sprintf( "insert into fac_DataCenter set Name=\"%s\", SquareFootage=%d, DeliveryAddress=\"%s\", Administrator=\"%s\", MaxkW=%d, DrawingFileName=\"%s\", EntryLogging=0",
+			$this->Name, $this->SquareFootage, $this->DeliveryAddress, $this->Administrator, $this->MaxkW, $this->DrawingFileName );
 
-		$result = mysql_query( $sql, $db );
+		if ( ! $result = mysql_query( $sql, $db ) ) {
+			error_log( sprintf( "%s; SQL=`%s`", mysql_error( $db ), $sql ) );
+			return -1;
+		}
 
-		return $result;
+		return;
 	}
 
 	function UpdateDataCenter( $db ) {
-		$sql = "update fac_DataCenter set Name=\"" . addslashes( $this->Name ) . "\", SquareFootage=\"" . intval( $this->SquareFootage ) . "\", DeliveryAddress=\"" . addslashes( $this->DeliveryAddress ) . "\", Administrator=\"" . addslashes( $this->Administrator ) . "\", DrawingFileName=\"" . addslashes( $this->DrawingFileName ) . "\", EntryLogging=0 where DataCenterID=" . intval( $this->DataCenterID );
-		$result = mysql_query( $sql, $db );
+		$this->MakeSafe();
+		$sql = sprintf( "update fac_DataCenter set Name=\"%s\", SquareFootage=%d, DeliveryAddress=\"%s\", Administrator=\"%s\", MaxkW=%d, DrawingFileName=\"%s\", EntryLogging=0 where DataCenterID=%d",
+			$this->Name, $this->SquareFootage, $this->DeliveryAddress, $this->Administrator, $this->MaxkW, $this->DrawingFileName, $this->DataCenterID );
+		
+		if ( ! $result = mysql_query( $sql, $db ) ) {
+			error_log( sprintf( "%s; SQL=`%s`", mysql_error( $db ), $sql ) );
+			return -1;
+		}
+
+		return;
 	}
 
 	function GetDataCenter( $db ) {
-		$sql = "select * from fac_DataCenter where DataCenterID=\"" . intval( $this->DataCenterID ) . "\"";
+		$this->MakeSafe();
+		$sql = sprintf( "select * from fac_DataCenter where DataCenterID=%d", $this->DataCenterID );
 
-		if ( $result = mysql_query( $sql, $db ) ) {
-			$row = mysql_fetch_array( $result );
-			$this->Name = stripslashes( $row["Name"] );
+		if ( ! $result = mysql_query( $sql, $db ) ) {
+			error_log( sprintf( "%s; SQL=`%s`", mysql_error( $db ), $sql ) );
+			return -1;
+		}
+		
+		while ( $row = mysql_fetch_array( $result ) ) {
+			$this->Name = $row["Name"];
 			$this->SquareFootage = $row["SquareFootage"];
-			$this->DeliveryAddress = stripslashes( $row["DeliveryAddress"] );
-			$this->Administrator = stripslashes( $row["Administrator"] );
-			$this->DrawingFileName = stripslashes( $row["DrawingFileName"] );
+			$this->DeliveryAddress = $row["DeliveryAddress"];
+			$this->Administrator = $row["Administrator"];
+			$this->MaxkW = $row["MaxkW"];
+			$this->DrawingFileName = $row["DrawingFileName"];
 			$this->EntryLogging = $row["EntryLogging"];
 		}
+		
+		return;
 	}
 		
 	function GetDCList( $db ) {
-		$select_sql = "select * from fac_DataCenter order by Name ASC";
+		$sql = "select * from fac_DataCenter order by Name ASC";
 
-		if ( ! $result = mysql_query( $select_sql, $db ) ) {
+		if ( ! $result = mysql_query( $sql, $db ) ) {
+			error_log( sprintf( "%s; SQL=`%s`", mysql_error( $db ), $sql ) );
 			return -1;
 		}
 
@@ -104,12 +139,13 @@ class DataCenter {
 			$dcID = $dcRow[ "DataCenterID" ];
 
 			$datacenterList[$dcID] = new DataCenter();
-			$datacenterList[$dcID]->DataCenterID = stripslashes( $dcRow["DataCenterID"]);
-			$datacenterList[$dcID]->Name = stripslashes( $dcRow["Name"] );
-			$datacenterList[$dcID]->SquareFootage = stripslashes( $dcRow["SquareFootage"] );
-			$datacenterList[$dcID]->DeliveryAddress = stripslashes( $dcRow["DeliveryAddress"] );
-			$datacenterList[$dcID]->Administrator = stripslashes( $dcRow["Administrator"] );
-			$datacenterList[$dcID]->DrawingFileName = stripslashes( $dcRow["DrawingFileName"] );
+			$datacenterList[$dcID]->DataCenterID = $dcRow["DataCenterID"];
+			$datacenterList[$dcID]->Name = $dcRow["Name"];
+			$datacenterList[$dcID]->SquareFootage = $dcRow["SquareFootage"];
+			$datacenterList[$dcID]->DeliveryAddress = $dcRow["DeliveryAddress"];
+			$datacenterList[$dcID]->Administrator = $dcRow["Administrator"];
+			$datacenterList[$dcID]->MaxkW = $dcRow["MaxkW"];
+			$datacenterList[$dcID]->DrawingFileName = $dcRow["DrawingFileName"];
 			$datacenterList[$dcID]->EntryLogging = $dcRow["EntryLogging"];
 		}
 
@@ -117,21 +153,25 @@ class DataCenter {
 	}
 
 	function GetDataCenterbyID( $db ) {
-		$selectSQL = "select * from fac_DataCenter where DataCenterID=\"" . intval($this->DataCenterID) . "\"";
-		if ( ! $result = mysql_query( $selectSQL, $db ) ) {
+		$this->MakeSafe();
+		$sql = sprintf( "select * from fac_DataCenter where DataCenterID=%d", $this->DataCenterID );
+		
+		if ( ! $result = mysql_query( $sql, $db ) ) {
+			error_log( sprintf( "%s; SQL=`%s`", mysql_error( $db ), $sql ) );
 			return -1;
 		}
 
-		$dcRow = mysql_fetch_array( $result );
+		if ( $dcRow = mysql_fetch_array( $result ) ) {
+			$this->Name = $dcRow["Name"];
+			$this->SquareFootage = $dcRow["SquareFootage"];
+			$this->DeliveryAddress = $dcRow["DeliveryAddress"];
+			$this->Administrator = $dcRow["Administrator"];
+			$this->MaxkW = $dcRow["MaxkW"];
+			$this->DrawingFileName = $dcRow["DrawingFileName"];
+			$this->EntryLogging = $dcRow["EntryLogging"];
+		}
 
-		$this->Name = stripslashes($dcRow["Name"]);
-		$this->SquareFootage = stripslashes($dcRow["SquareFootage"]);
-		$this->DeliveryAddress = stripslashes($dcRow["DeliveryAddress"]);
-		$this->Administrator = stripslashes($dcRow["Administrator"]);
-		$this->DrawingFileName = stripslashes($dcRow["DrawingFileName"]);
-		$this->EntryLogging = $dcRow["EntryLogging"];
-
-		return 0;
+		return;
 	}
 	
 	function MakeImageMap( $db ) {

@@ -100,6 +100,7 @@ CREATE TABLE fac_DataCenter (
   SquareFootage int(11) NOT NULL,
   DeliveryAddress varchar(255) NOT NULL,
   Administrator varchar(80) NOT NULL,
+  MaxkW int(11) NOT NULL,
   DrawingFileName varchar(255) NOT NULL,
   EntryLogging tinyint(1) NOT NULL,
   PRIMARY KEY (DataCenterID)
