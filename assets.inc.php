@@ -2164,7 +2164,8 @@ class PatchConnection {
 	
 	function GetConnectionRecord($db){
 		$this->MakeSafe();
-		$sql="select * from fac_PatchConnection where PanelDeviceID=$this->PanelDeviceID and PanelPortNumber=$this->PanelPortNumber";		
+		$sql="select * from fac_PatchConnection where PanelDeviceID=$this->PanelDeviceID and PanelPortNumber=$this->PanelPortNumber";
+	
 		if ( ! $result = mysql_query( $sql, $db ) ) {
 			error_log( sprintf( "%s; SQL=`%s`", mysql_error( $db ), $sql ) );
 			return -1;
@@ -2184,6 +2185,15 @@ class PatchConnection {
 	
 	function MakeFrontConnection($db,$recursive=true){
 		$this->MakeSafe();
+
+		$tmpDev=new Device();
+		$tmpDev->DeviceID = $this->PanelDeviceID;
+		$tmpDev->GetDevice( $db );
+		
+		// If you pass a port number lower than 1, or higher than the total number of ports defined for the patch panel, then bounce
+		if ( $this->PanelPortNumber < 1 || $this->PanelPortNumber > $tmpDev->NumPorts )
+			return -1;
+			
 		$sql="INSERT INTO fac_PatchConnection VALUES ($this->PanelDeviceID, $this->PanelPortNumber, $this->FrontEndpointDeviceID, $this->FrontEndpointPort, NULL, NULL, \"$this->FrontNotes\", NULL ) ON DUPLICATE KEY UPDATE FrontEndpointDeviceID=$this->FrontEndpointDeviceID,FrontEndpointPort=$this->FrontEndpointPort,FrontNotes=\"$this->FrontNotes\";";
 
 		if ( ! $result = mysql_query( $sql, $db) ) {
@@ -2191,7 +2201,6 @@ class PatchConnection {
 			return -1;
 		}
 
-		$tmpDev=new Device();
 		$tmpDev->DeviceID=$this->FrontEndpointDeviceID;
 		$tmpDev->GetDevice($db);
 		
@@ -2225,14 +2234,22 @@ class PatchConnection {
 	
 	function MakeRearConnection($db,$recursive=true){
 		$this->MakeSafe();
+		
+		$tmpDev=new Device();
+		$tmpDev->DeviceID = $this->PanelDeviceID;
+		$tmpDev->GetDevice( $db );
+		
+		// If you pass a port number lower than 1, or higher than the total number of ports defined for the patch panel, then bounce
+		if ( $this->PanelPortNumber < 1 || $this->PanelPortNumber > $tmpDev->NumPorts )
+			return -1;
+		
 		$sql="INSERT INTO fac_PatchConnection VALUES ($this->PanelDeviceID, $this->PanelPortNumber, NULL, NULL, $this->RearEndpointDeviceID, $this->RearEndpointPort, NULL, \"$this->RearNotes\" ) ON DUPLICATE KEY UPDATE RearEndpointDeviceID=$this->RearEndpointDeviceID,RearEndpointPort=$this->RearEndpointPort,RearNotes=\"$this->RearNotes\";";
 		if ( ! $result = mysql_query( $sql, $db) ) {
 			error_log( sprintf( "%s; SQL=`%s`", mysql_error( $db ), $sql ) );
 			return -1;
 		}
 
-		$tmpDev = new Device();
-		$tmpDev->DeviceID = intval($this->RearEndpointDeviceID);
+		$tmpDev->DeviceID = $this->RearEndpointDeviceID;
 		$tmpDev->GetDevice( $db );
 		
 		// Patch Panel rear connections will only go to circuits or other patch panels
