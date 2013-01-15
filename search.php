@@ -155,10 +155,9 @@
 		}else{
 			$cabtemp[$key]['name']="Storage Room";
 			$cabtemp[$key]['dc']=0;
-			$dctemp[$cab->DataCenterID]='Storage Room'; // Add datacenter id to list for loop
+			$dctemp[0]='Storage Room'; // Add datacenter id to list for loop
 		}
 	}
-
 	// Add Datacenter names to temp array
 	foreach($dctemp as $DataCenterID => $Name){
 		if($DataCenterID>0){
@@ -167,7 +166,6 @@
 			$dctemp[$DataCenterID]=$dc->Name;
 		}
 	}
-	$dctemp[0]='DC Lookup Error';
 
 	// Sort array based on device label
 	if(!empty($temp)){
