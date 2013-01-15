@@ -58,7 +58,7 @@ div.cp { position: relative;}
 #configtabs #style .cp > input {width: 7em; }
 #configtabs #email div > input {width: 20em; }
 
-#configtabs #reporting div:first-child + div > input {width: 4.5em; }
+#configtabs #reporting div:first-child + div > input {width: 20em; }
 
 div#imageselection { display: none;}
 #imageselection span { display: block; padding: 0.25em 0 0.5em 0.5em; cursor: pointer; text-decoration: underline; border: 1px solid white;}

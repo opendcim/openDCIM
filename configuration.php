@@ -501,6 +501,10 @@ echo '<div class="main">
 					<div><label for="NewInstallsPeriod">',_("New Installs Period"),'</label></div>
 					<div><input type="text" defaultvalue="',$config->defaults["NewInstallsPeriod"],'" name="NewInstallsPeriod" value="',$config->ParameterArray["NewInstallsPeriod"],'"></div>
 				</div>
+				<div>
+					<div><label for="InstallURL">',_("Base URL for install"),'</label></div>
+					<div><input type="text" defaultvalue="',$config->defaults["InstallURL"],'" name="InstallURL" value="',$config->ParameterArray["InstallURL"],'"></div>
+				</div>
 			</div> <!-- end table -->
 		</div>
 	</div>';
