@@ -146,7 +146,7 @@
 			$patchList=$dev::GetPatchPanels($facDB);
 			echo '<select name="devid"><option value=-1>No Connection</option><option value="note">Note Only</option>';
 			foreach($patchList as $devid=>$devRow){
-				$selected="";
+				$selected=($_POST['pdev']==$devid)?" disabled":"";
 				print "<option value=$devRow->DeviceID$selected>$devRow->Label</option>\n";
 			}
 			echo '</select>';
@@ -834,7 +834,7 @@ $(document).ready(function() {
 // Rear panel controls
 <?php echo '							rearbtn.append(\'<div style="padding: 0px; border: 0px;"><button type="button" value="save">',_("Save"),'</button><button type="button" value="delete">',_("Delete"),'</button><button type="button" value="cancel">',_("Cancel"),'</button></div>\');'; ?>
 					rearbtn.css({'padding': 0, 'border': 0}).attr('data', 'rear');;
-					$.post('', {pdev: 'list'}, function(data){
+					$.post('', {pdev: $('#deviceid').val()}, function(data){
 						var rdev=reardev.text();
 						reardev.html(data).css({'padding': 0});
 						reardev.find('select option').each(function(){
