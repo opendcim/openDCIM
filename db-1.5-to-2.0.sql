@@ -190,3 +190,13 @@ INSERT INTO `fac_Config` (`Parameter`, `Value`, `UnitOfMeasure`, `ValType`, `Def
 ('mDate','blank','string','string','blank');
 INSERT INTO `fac_Config` (`Parameter`, `Value`, `UnitOfMeasure`, `ValType`, `DefaultVal`) VALUES 
 ('wDate','blank','string','string','blank');
+
+--
+-- Add configuration items for use in reports
+--
+
+INSERT INTO `fac_Config` (`Parameter`, `Value`, `UnitOfMeasure`, `ValType`, `DefaultVal`) VALUES 
+('NewInstallsPeriod','7','Days','int','7');
+INSERT INTO `fac_Config` (`Parameter`, `Value`, `UnitOfMeasure`, `ValType`, `DefaultVal`) VALUES 
+('InstallURL','','URL','string','');
+

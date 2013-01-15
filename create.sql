@@ -551,6 +551,7 @@ INSERT INTO fac_Config VALUES
         ('MailToAddr','DataCenterTeamAddr@your.domain','Email','string','DataCenterTeamAddr@your.domain'),
         ('ComputerFacMgr','DataCenterMgr Name','Name','string','DataCenterMgr Name'),
         ('FacMgrMail','DataCenterMgr@your.domain','Email','string','DataCenterMgr@your.domain'),
+		('InstallURL','','URL','string','https://dcim.your.domain'),
         ('Version','2.0','','',''),
         ('UserLookupURL','https://','URL','string','https://'),
         ('ReservedColor','#00FFFF','HexColor','string','#FFFFFF'),
@@ -562,6 +563,7 @@ INSERT INTO fac_Config VALUES
         ('LabelCase','upper','string','string','upper'),
         ('mDate','blank','string','string','blank'),
         ('wDate','blank','string','string','blank'),
+		('NewInstallsPeriod', '7', 'Days', 'int', '7' ),
 		('VMExpirationTime','7','Days','int','7');
 
 --

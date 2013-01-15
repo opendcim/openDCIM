@@ -512,7 +512,37 @@ class Device {
 	var $WarrantyExpire;
 	var $Notes;
 	var $Reservation;
-	var $Tags;
+	
+	function MakeSafe() {
+		$this->DeviceID = intval( $this->DeviceID );
+		$this->Label = mysql_real_escape_string( $this->Label );
+		$this->SerialNo = mysql_real_escape_string( $this->SerialNo );
+		$this->AssetTag = mysql_real_escape_string( $this->AssetTag );
+		$this->PrimaryIP = mysql_real_escape_string( $this->PrimaryIP );
+		$this->SNMPCommunity = mysql_real_escape_string( $this->SNMPCommunity );
+		$this->ESX = intval( $this->ESX );
+		$this->Owner = intval( $this->Owner );
+		$this->EscalationTimeID = intval( $this->EscalationTimeID );
+		$this->EscalationID = intval( $this->EscalationID );
+		$this->PrimaryContact = intval( $this->PrimaryContact );
+		$this->Cabinet = intval( $this->Cabinet );
+		$this->Position = intval( $this->Position );
+		$this->Height = intval( $this->Height );
+		$this->Ports = intval( $this->Ports );
+		$this->TemplateID = intval( $this->TemplateID );
+		$this->NominalWatts = intval( $this->NominalWatts );
+		$this->PowerSupplyCount = intval( $this->PowerSupplyCount );
+		$this->DeviceType = intval( $this->DeviceType );
+		$this->ChassisSlots = intval( $this->ChassisSlots );
+		$this->RearChassisSlots = intval( $this->RearChassisSlots );
+		$this->ParentDevice = intval( $this->ParentDevice );
+		$this->MfgDate = mysql_real_escape_string( $this->MfgDate );
+		$this->InstallDate = mysql_real_escape_string( $this->InstallDate );
+		$this->WarrantyCo = mysql_real_escape_string( $this->WarrantyCo );
+		$this->WarrantyExpire = mysql_real_escape_string( $this->WarrantyExpire );
+		$this->Notes = mysql_real_escape_string( $this->Notes );
+		$this->Reservation = intval( $this->Reservation );
+	}
 
 	function CreateDevice( $db ) {
 		// Force all uppercase for labels
@@ -735,6 +765,56 @@ class Device {
 		$this->Reservation = $devRow["Reservation"];
 
 		return true;
+	}
+	
+	function GetDevicesbyAge( $db, $days = 7 ) {
+		$this->MakeSafe();
+		$sql = sprintf( "select * from fac_Device where DATEDIFF(CURDATE(),InstallDate)<=%d order by InstallDate ASC", $days );
+		
+		if ( ! $result = mysql_query( $sql, $db) ) {
+			error_log( sprintf( "%s; SQL=`%s`", mysql_error( $db ), $sql ) );
+			return -1;
+		}
+
+		$deviceList = array();
+
+		while ( $deviceRow = mysql_fetch_array( $result ) ) {
+			$devID = $deviceRow["DeviceID"];
+
+			$deviceList[$devID] = new Device();
+
+			$deviceList[$devID]->DeviceID = $deviceRow["DeviceID"];
+ 		  	$deviceList[$devID]->Label = $deviceRow["Label"];
+			$deviceList[$devID]->SerialNo = $deviceRow["SerialNo"];
+			$deviceList[$devID]->AssetTag = $deviceRow["AssetTag"];
+			$deviceList[$devID]->PrimaryIP = $deviceRow["PrimaryIP"];
+			$deviceList[$devID]->SNMPCommunity = $deviceRow["SNMPCommunity"];
+			$deviceList[$devID]->ESX = $deviceRow["ESX"];
+			$deviceList[$devID]->Owner = $deviceRow["Owner"];
+			// Suppressing errors on the following two because they can be null and that generates an apache error
+			@$deviceList[$devID]->EscalationTimeID = $deviceRow["EscalationTimeID"];
+			@$deviceList[$devID]->EscalationID = $deviceRow["EscalationID"];
+			$deviceList[$devID]->PrimaryContact = $deviceRow["PrimaryContact"];
+			$deviceList[$devID]->Cabinet = $deviceRow["Cabinet"];
+			$deviceList[$devID]->Position = $deviceRow["Position"];
+			$deviceList[$devID]->Height = $deviceRow["Height"];
+			$deviceList[$devID]->Ports = $deviceRow["Ports"];
+			$deviceList[$devID]->TemplateID = $deviceRow["TemplateID"];
+			$deviceList[$devID]->NominalWatts = $deviceRow["NominalWatts"];
+			$deviceList[$devID]->PowerSupplyCount = $deviceRow["PowerSupplyCount"];
+			$deviceList[$devID]->DeviceType = $deviceRow["DeviceType"];
+			$deviceList[$devID]->ChassisSlots = $deviceRow["ChassisSlots"];
+			$deviceList[$devID]->RearChassisSlots = $deviceRow["RearChassisSlots"];
+			$deviceList[$devID]->ParentDevice = $deviceRow["ParentDevice"];
+			$deviceList[$devID]->MfgDate = $deviceRow["MfgDate"];
+			$deviceList[$devID]->InstallDate = $deviceRow["InstallDate"];
+			$deviceList[$devID]->WarrantyCo = $deviceRow["WarrantyCo"];
+			@$deviceList[$devID]->WarrantyExpire = $deviceRow["WarrantyExpire"];
+			$deviceList[$devID]->Notes = $deviceRow["Notes"];
+			$deviceList[$devID]->Reservation = $deviceRow["Reservation"];
+		}
+		
+		return $deviceList;
 	}
 		
 	function GetDeviceChildren( $db ) {
