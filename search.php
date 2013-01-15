@@ -58,6 +58,7 @@
 	$temp=array(); // Store all devices for display
 	$cabtemp=array(); // List of all cabinet ids for outerloop
 	$childList=array(); // List of all blade devices
+	$dctemp=array(); // List of datacenters involved with result set
 	while(list($devID,$device)=each($devList)){
 		$temp[$x]['devid']=$devID;
 		$temp[$x]['label']=$device->Label;
@@ -87,7 +88,7 @@
 				$temp[$x]['type']='vm';
 				$temp[$x]['cabinet']=$dev->Cabinet;
 				$temp[$x]['parent']=$dev->ParentDevice;
-				$cabtemp[$dev->Cabinet]="";
+				$cabtemp[$dev->Cabinet]['name']="";
 				++$x;
 				if($dev->ParentDevice!=0){
 					$childList[$dev->ParentDevice]=""; // Create a list of chassis devices based on children present
@@ -113,7 +114,7 @@
 				$temp[$x]['type']='chassis';
 				$temp[$x]['cabinet']=$dev->Cabinet;
 				$temp[$x]['parent']=$dev->ParentDevice;
-				$cabtemp[$dev->Cabinet]="";
+				$cabtemp[$dev->Cabinet]['name']="";
 				++$x;
 			}
 		}
@@ -122,15 +123,15 @@
 	// Add racks that matched the search term to the rack list
 	if(isset($cabList)&&is_array($cabList)){
 		foreach($cabList as $CabinetID => $row){
-			$cabtemp[$CabinetID]=$row->Location;
+			$cabtemp[$CabinetID]['name']=$row->Location;
 		}
 	}
 
 	// Add racks that are parents of the PDU devices to the rack list
 	if(isset($pduList)&&is_array($pduList)){
 		foreach($pduList as $key => $row){
-			if(!isset($cabtemp[$row->CabinetID])){
-				$cabtemp[$row->CabinetID]="";
+			if(!isset($cabtemp[$row->CabinetID]['name'])){
+				$cabtemp[$row->CabinetID]['name']="";
 			}
 		}
 	}
@@ -141,13 +142,32 @@
 	// Add Rack Names To Temp Cabinet Array
 	foreach($cabtemp as $key => $row){
 		if($key!=-1){
+			$cab->Location='dc lookup error';
+			$cab->DataCenterID='0';
 			$cab->CabinetID=$key;
-			$cab->GetCabinet($facDB);
-			$cabtemp[$key]=$cab->Location;
+			if($cab->GetCabinet($facDB)==-1){
+				unset($cabtemp[$key]);
+			}else{
+				$cabtemp[$key]['name']=$cab->Location;
+				$cabtemp[$key]['dc']=$cab->DataCenterID;
+				$dctemp[$cab->DataCenterID]=''; // Add datacenter id to list for loop
+			}
 		}else{
-			$cabtemp[$key]="Storage Room";
+			$cabtemp[$key]['name']="Storage Room";
+			$cabtemp[$key]['dc']=0;
+			$dctemp[$cab->DataCenterID]='Storage Room'; // Add datacenter id to list for loop
 		}
 	}
+
+	// Add Datacenter names to temp array
+	foreach($dctemp as $DataCenterID => $Name){
+		if($DataCenterID>0){
+			$dc->DataCenterID=$DataCenterID;
+			$dc->GetDataCenter($facDB);
+			$dctemp[$DataCenterID]=$dc->Name;
+		}
+	}
+	$dctemp[0]='DC Lookup Error';
 
 	// Sort array based on device label
 	if(!empty($temp)){
@@ -176,6 +196,22 @@
   
   <script type="text/javascript" src="scripts/jquery.min.js"></script>
   <script type="text/javascript" src="scripts/jquery-ui.min.js"></script>
+
+<script type="text/javascript">
+$(document).ready(function() {
+	$('.datacenter').each(function(){
+		$(this).prepend('<span class="bullet">&nbsp;</span>');
+		$(this).find('.bullet').toggle(function(){
+			$(this).css('background-image', 'url(css/plus.gif)');
+			$(this).parent('.datacenter').children('ol').toggle();
+		}, function(){
+			$(this).css('background-image', 'url(css/minus.gif)');
+			$(this).parent('.datacenter').children('ol').toggle();
+		});
+	});
+});
+</script>
+
 </head>
 <body>
 <div id="header"></div>
@@ -191,26 +227,18 @@
 <?php
 	// Since the number of Data Centers will be relatively small, simply cycle through all of them to see
 	// if we have any cabinets with matches.
-	
-	foreach ( $dcList as $dcRow ) {
-		$printHeader = true;
-		foreach ($cabtemp as $cabID => $cabLocation) {
-			$cab->CabinetID = $cabID;
-			$cab->GetCabinet( $facDB );
-			if ( $cab->DataCenterID == $dcRow->DataCenterID ) {
-				if ( $printHeader ) {
-					printf( "	<li class=\"datacenter\"><a href=\"dc_stats.php?dc=%d\">%s</a>\n", $dcRow->DataCenterID, $dcRow->Name );
-					$printHeader = false;
-				}
-				
-				print "		<li class=\"cabinet\"><div><img src=\"images/serverrack.png\" alt=\"rack icon\"></div><a href=\"cabnavigator.php?cabinetid=$cabID\">$cabLocation</a>\n			<ol>\n";
+	foreach($dctemp as $DataCenterID=>$DataCenterName){
+		print "\t\t<li class=\"datacenter\"><a href=\"dc_stats.php?dc=$DataCenterID\">$DataCenterName</a>\n\t\t<ol>\n";
+		foreach($cabtemp as $cabID=>$cabRow){
+			if($cabRow['dc']==$DataCenterID){
+				print "\t\t\t<li class=\"cabinet\"><div><img src=\"images/serverrack.png\" alt=\"rack icon\"></div><a href=\"cabnavigator.php?cabinetid=$cabID\">{$cabRow['name']}</a>\n\t\t\t\t<ol>\n";
 				//Always list PDUs directly after the cabinet device IF they exist
 				if(isset($pduList)&&is_array($pduList)){
 					// In theory this should be a short list so just parse the entire thing each time we read a cabinet.
 					// if this ends up being a huge time sink, optimize this above then fix logic
 					foreach($pduList as $key => $row){
 						if($cabID == $row->CabinetID){
-							print "\t\t\t\t<li class=\"pdu\"><a href=\"power_pdu.php?pduid=$row->PDUID\">$row->Label</a>\n";
+							print "\t\t\t\t\t<li class=\"pdu\"><a href=\"power_pdu.php?pduid=$row->PDUID\">$row->Label</a>\n";
 						}
 					}
 				}
@@ -220,57 +248,57 @@
 						if($cabID==$row['cabinet']){
 							//In case of VMHost missing from inventory, this shouldn't ever happen
 							if($row['label']=='' || is_null($row['label'])){$row['label']='VM Host Missing From Inventory';}
-							print "\t\t\t\t<li><a href=\"devices.php?deviceid={$row['devid']}\">{$row['label']}</a>\n";
+							print "\t\t\t\t\t<li><a href=\"devices.php?deviceid={$row['devid']}\">{$row['label']}</a>\n";
 							// Created a nested list showing all blades residing in this chassis
 							if($row['type']=='chassis'){
-								print "\t\t\t\t\t<ul>\n";
+								print "\t\t\t\t\t\t<ul>\n";
 								foreach($devList as $chKey => $chRow){
 									if($chRow['parent']==$row['devid']){
 										//In case of VMHost missing from inventory, this shouldn't ever happen
 										if($chRow['label']=='' || is_null($chRow['label'])){$chRow['label']='VM Host Missing From Inventory';}
-										print "\t\t\t\t\t\t<li><div><img src=\"images/blade.png\" alt=\"blade icon\"></div><a href=\"devices.php?deviceid={$chRow['devid']}\">{$chRow['label']}</a>\n";
+										print "\t\t\t\t\t\t\t<li><div><img src=\"images/blade.png\" alt=\"blade icon\"></div><a href=\"devices.php?deviceid={$chRow['devid']}\">{$chRow['label']}</a>\n";
 										// Create a nested list showing all VMs residing on this host.
 										if($chRow['type']=='vm'){
-											print "\t\t\t\t\t\t\t<ul>\n";
+											print "\t\t\t\t\t\t\t\t<ul>\n";
 											foreach($vmList as $usedkey => $vm){
 												if($vm->DeviceID==$chRow['devid']){
-													print "\t\t\t\t\t\t\t\t<li><div><img src=\"images/vmcube.png\" alt=\"vm icon\"></div>$vm->vmName</li>\n";
+													print "\t\t\t\t\t\t\t\t\t<li><div><img src=\"images/vmcube.png\" alt=\"vm icon\"></div>$vm->vmName</li>\n";
 													// Remove VMs that have already been processed
 													unset($vmList[$usedkey]);
 												}
 											}
-											print "\t\t\t\t\t\t\t</ul>\n";
+											print "\t\t\t\t\t\t\t\t</ul>\n";
 										}
 										// Remove devices that we have already processed.
 										unset($devList[$chKey]);
-										print "\t\t\t\t\t\t</li>\n"; // Close out current list item
+										print "\t\t\t\t\t\t\t</li>\n"; // Close out current list item
 									}
 								}
-								print "\t\t\t\t\t</ul>\n";
+								print "\t\t\t\t\t\t</ul>\n";
 							}
 							// Create a nested list showing all VMs residing on this host.
 							if($row['type']=='vm'){
-								echo "\t\t\t\t\t<ul>\n";
+								echo "\t\t\t\t\t\t<ul>\n";
 								foreach($vmList as $usedkey => $vm){
 									if($vm->DeviceID==$row['devid']){
-										echo "\t\t\t\t\t\t<li><div><img src=\"images/vmcube.png\" alt=\"vm icon\"></div>$vm->vmName</li>\n";
+										echo "\t\t\t\t\t\t\t<li><div><img src=\"images/vmcube.png\" alt=\"vm icon\"></div>$vm->vmName</li>\n";
 										// Remove VMs that have already been processed
 										unset($vmList[$usedkey]);
 									}
 								}
-								echo "\t\t\t\t\t</ul>\n";
+								echo "\t\t\t\t\t\t</ul>\n";
 							}
-							echo "\t\t\t\t</li>\n";
+							echo "\t\t\t\t\t</li>\n";
 						} 
 					}
 				}
-				print "\t\t\t</ol>\n\t\t</li>\n";
+				print "\t\t\t\t</ol>\n\t\t\t</li>\n";
 			}
 		}
+		print "\t\t</ol>\n\t\t</li>\n";
 	}
 ?>
 	</ol>
-
 <p><?php print $searchresults; ?></p>
 </div></div>
 </div><!-- END div.main -->

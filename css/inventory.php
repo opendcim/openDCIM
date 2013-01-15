@@ -243,6 +243,7 @@ div.table > div > div {display: table-cell;vertical-align: middle; /* padding-bo
 .search ol ul li div, .search ol li.datacenter div {display: inline;}
 .search ol ul li div, .search ol li.cabinet div {display: inline;}
 .search ol ul li div img, .search ol li.cabinet div img {vertical-align: middle;height: 1em;margin-right: .25em;}
+.search .main .bullet { background: url("minus.gif") no-repeat scroll left center transparent; cursor: pointer; padding-left: 15px;}
 
 /* User Rights */
 .rights > div:nth-last-child(2) div {text-align: center;padding-top: .75em;padding-bottom: .75em;}

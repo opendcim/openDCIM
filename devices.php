@@ -413,7 +413,13 @@
   <script type="text/javascript" src="scripts/jquery.validationEngine-en.js"></script>
   <script type="text/javascript" src="scripts/jquery.validationEngine.js"></script>
   <script type="text/javascript" src="scripts/jHtmlArea-0.7.5.min.js"></script>
+  <!--[if gt IE 8]>
   <script type="text/javascript" src="scripts/jquery.textext.js"></script>
+  <![endif]-->
+  <!--[if !IE]> -->
+  <script type="text/javascript" src="scripts/jquery.textext.js"></script>
+  <!-- <![endif]-->
+
 <SCRIPT type="text/javascript" >
 var nextField;
 function getScan(fieldName){
@@ -933,22 +939,30 @@ $(document).ready(function() {
 <?php 
 	} // end of javascript editing functions
 ?>
+	function setPreferredLayout() {<?php if(isset($_COOKIE["layout"]) && strtolower($_COOKIE["layout"])==="portrait"){echo 'swaplayout();setCookie("layout","Portrait");';}else{echo 'setCookie("layout","Landscape");';} ?>}
+	setPreferredLayout();
 	$('#tags').width($('#tags').parent('div').parent('div').innerWidth()-$('#tags').parent('div').prev('div').outerWidth()-5);
-	$('#tags').textext({
-		plugins : 'autocomplete tags ajax arrow prompt focus',
-<?php echo $taginsert; ?>
-		ajax : {
-			url : 'scripts/ajax_tags.php',
-			dataType : 'json'
-		}
-	});
+	
+	if(($.browser.msie && $.browser.version>8) || !$.browser.msie){
+
+		$('#tags').textext({
+			plugins : 'autocomplete tags ajax arrow prompt focus',
+	<?php echo $taginsert; ?>
+			ajax : {
+				url : 'scripts/ajax_tags.php',
+				dataType : 'json'
+			}
+		});
+	}else{
+		$('#tags').attr('readonly', 'readonly');
+	}
+
 });
 	
-function setPreferredLayout() {<?php if(isset($_COOKIE["layout"]) && strtolower($_COOKIE["layout"])==="portrait"){echo 'swaplayout();setCookie("layout","Portrait");';}else{echo 'setCookie("layout","Landscape");';} ?>}
 </script>
 
 </head>
-<body onLoad="setPreferredLayout()" onhashchange="getHash()">
+<body onhashchange="getHash()">
 <div id="header"></div>
 <div class="page device">
 <?php

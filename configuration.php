@@ -497,6 +497,10 @@ echo '<div class="main">
 					<div><label for="PDFfont">',_("Font"),'</label></div>
 					<div><input type="text" defaultvalue="',$config->defaults["PDFfont"],'" name="PDFfont" value="',$config->ParameterArray["PDFfont"],'"></div>
 				</div>
+				<div>
+					<div><label for="NewInstallsPeriod">',_("New Installs Period"),'</label></div>
+					<div><input type="text" defaultvalue="',$config->defaults["NewInstallsPeriod"],'" name="NewInstallsPeriod" value="',$config->ParameterArray["NewInstallsPeriod"],'"></div>
+				</div>
 			</div> <!-- end table -->
 		</div>
 	</div>';
