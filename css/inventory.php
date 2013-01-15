@@ -48,7 +48,7 @@ textarea {white-space: pre;word-wrap: break-word;}
 div.cp { position: relative;}
 .miniColors-trigger { position: absolute; top: 0; right: 0;}
 .config .center input { width: 95%; }
-
+.page.config { min-width: 1430px; }
 #configtabs { min-width: 670px; }
 #configtabs button { margin-left: 0.5em; margin-right: 0.5em;}
 #configtabs span { font-style: italic; font-size: -1;}
