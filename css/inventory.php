@@ -240,6 +240,7 @@ div.table > div > div {display: table-cell;vertical-align: middle; /* padding-bo
 .search ol {margin-top: .35em;}
 .search ol li {margin-bottom: .35em;}
 .search ol ul li {margin-left: 1em;margin-bottom: 0em;}
+.search ol ul li div, .search ol li.datacenter div {display: inline;}
 .search ol ul li div, .search ol li.cabinet div {display: inline;}
 .search ol ul li div img, .search ol li.cabinet div img {vertical-align: middle;height: 1em;margin-right: .25em;}
 
