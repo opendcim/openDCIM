@@ -17,14 +17,15 @@ Changes in 2.0
 * Support for hyperlinks and images in Notes for devices
 * Calculation of load for cabinets includes child devices of chassis
 * Auto-fill the device owner when creating a device in a cabinet assigned to a specific customer
-* Tagging support for devices (further support in 2.1 for searching by tags)
+* Tagging support for devices (further support in 2.1 for reporting by tags - currently you can only search by tags)
 * Fixed logic bug in the Aging Report to use the Installation Date is the Manufacture Date is set to pre-epoch
 * Added a Copy button for making reservations of devices that need to move to a new location
 * Language mapping ability - includes Slovenian as the first translated language
 * Added the vmState and Last Polled timestamp in the Assets by Owner report
 * No forced uppercase, now a configuration parameter
 * When you make a switch connection to another switch, it automatically adds the reciprocal connection
-* Support for documenting patch panel connections
+* Support for documenting patch panel connections (front and rear as separate connections)
+* Added report-em_new_installs.php to be manually added to crontab for display of new installations (suggested every 7 days)
 
 Changes in 1.5
 --------------
@@ -71,7 +72,6 @@ Changes in 1.2
 * Changed the power distribution to allow for user input of panel voltages, and calculate the 1-pole voltage from there
 * Added color coding to the Cabinet Navigator to show reservations with a cyan background
 * Corrected the permissions check on the Rack Request Form
-
 
 Changes in 1.1
 --------------
