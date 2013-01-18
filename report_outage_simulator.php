@@ -268,7 +268,7 @@ if (!isset($_REQUEST['action'])){
 	foreach ( $pnlList as $pnlDown ) {
 		$pdu->PanelID = $pnlDown->PanelID;
 		
-		$pduList = array_merge( $pduList, $pdu->GetPDUByPanel( $facDB ) );
+		$pduList = array_merge( $pduList, $pdu->GetPDUbyPanel( $facDB ) );
 		
 		array_push( $pnlArray, $pnlDown->PanelID );
 	}
