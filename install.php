@@ -73,6 +73,7 @@ function applyupdate ($updatefile){
 //			echo $value."<br>\n";
 			if(!mysql_query($value)){
 				//something broke log it
+				$errormsg.="$value<br>\n";
 				$errormsg.=mysql_error();
 				$errormsg.="<br>\n";
 				$result=1;
@@ -481,8 +482,13 @@ if(isset($results)){
 				}
 			}
 		});
+		$("#LabelCase option").each(function(){
+			if($(this).val()==$("#LabelCase").attr('data')){
+				$(this).attr('selected', 'selected');
+			}
+		});
 		$("#configtabs").tabs();
-		$("#configtabs input[defaultvalue]").each(function(){
+		$('#configtabs input[defaultvalue],#configtabs select[defaultvalue]').each(function(){
 			$(this).parent().after('<div><button type="button">&lt;--</button></div><div><span>'+$(this).attr('defaultvalue')+'</span></div>');
 		});
 		$("#configtabs input").each(function(){
@@ -490,7 +496,7 @@ if(isset($results)){
 			$(this).removeAttr('defaultvalue');
 		});
 		$("#configtabs button").each(function(){
-			var a = $(this).parent().prev().find('input');
+			var a = $(this).parent().prev().find('input,select');
 			$(this).click(function(){
 				a.val($(this).parent().next().children('span').text());
 				a.triggerHandler("paste");
@@ -503,20 +509,6 @@ if(isset($results)){
 		});
 		$('input[name="VisitedLinkColor"]').blur(function(){
 			$("head").append("<style type=\"text/css\">a:visited {color: "+$(this).val()+";}</style>");
-		});
-		$("#imageselection span").each(function(){
-			var preview=$('#imageselection #preview');
-			$(this).click(function(){
-				preview.html('<img src="images/'+$(this).text()+'" alt="preview" width="'+preview.innerHeight()+'px">').attr('image',$(this).text()).css('border-width', '5px').children('img').css('margin-top', preview.innerHeight()/2-preview.children('img').height()/2+'px');
-				$("#imageselection span").each(function(){
-					$(this).removeAttr('style');
-				});
-				$(this).css('border','1px dotted black')
-				$('#header').css('background-image', 'url("images/'+$(this).text()+'")');
-			});
-			if($('#PDFLogoFile').val()==$(this).text()){
-				$(this).click();
-			}
 		});
 		$('#PDFLogoFile').click(function(){
 			$("#imageselection").dialog({
@@ -531,6 +523,34 @@ if(isset($results)){
 						}
 						$(this).dialog("close");
 					}
+				}
+			});
+			$("#imageselection span").each(function(){
+				var preview=$('#imageselection #preview');
+				$(this).click(function(){
+					preview.html('<img src="images/'+$(this).text()+'" alt="preview">').attr('image',$(this).text()).css('border-width', '5px');
+					preview.children('img').load(function(){
+						var topmargin=0;
+						var leftmargin=0;
+						if($(this).height()<$(this).width()){
+							$(this).width(preview.innerHeight());
+							$(this).css({'max-width': preview.innerWidth()+'px'});
+							topmargin=Math.floor((preview.innerHeight()-$(this).height())/2);
+						}else{
+							$(this).height(preview.innerHeight());
+							$(this).css({'max-height': preview.innerWidth()+'px'});
+							leftmargin=Math.floor((preview.innerWidth()-$(this).width())/2);
+						}
+						$(this).css({'margin-top': topmargin+'px', 'margin-left': leftmargin+'px'});
+					});
+					$("#imageselection span").each(function(){
+						$(this).removeAttr('style');
+					});
+					$(this).css('border','1px dotted black')
+					$('#header').css('background-image', 'url("images/'+$(this).text()+'")');
+				});
+				if($('#PDFLogoFile').val()==$(this).text()){
+					$(this).click();
 				}
 			});
 		});
@@ -661,12 +681,18 @@ if(isset($results)){
 	}
 	$tzmenu.='</ul>';
 
+	// Figure out what the URL to this page
+	$href="";
+	$href.=($_SERVER['HTTPS'])?'https://':'http://';
+	$href.=$_SERVER['SERVER_NAME'];
+	$href.=substr($_SERVER['REQUEST_URI'], 0, -strlen(basename($_SERVER['REQUEST_URI'])));
+
 echo '<div class="main">
 <h2>',$config->ParameterArray["OrgName"],'</h2>
 <h3>',_("Data Center Configuration"),'</h3>
 <h3>',_("Database Version"),': ',$config->ParameterArray["Version"],'</h3>
 <div class="center"><div>
-<form action="',$_SERVER["PHP_SELF"],'?conf" method="POST">
+<form action="',$_SERVER["PHP_SELF"],'" method="POST">
    <input type="hidden" name="Version" value="',$config->ParameterArray["Version"],'">
 
 	<div id="configtabs">
@@ -696,6 +722,22 @@ echo '<div class="main">
 				<div>
 					<div><label for="timezone">',_("Time Zone"),'</label></div>
 					<div><input type="text" readonly="readonly" id="timezone" defaultvalue="',$config->defaults["timezone"],'" name="timezone" value="',$config->ParameterArray["timezone"],'"></div>
+				</div>
+				<div>
+					<div><label for="mDate">',_("Manufacture Date"),'</label></div>
+					<div><select id="mDate" name="mDate" defaultvalue="',$config->defaults["mDate"],'" data="',$config->ParameterArray["mDate"],'">
+							<option value="blank"',(($config->ParameterArray["mDate"]=="blank")?' selected="selected"':''),'>',_("Blank"),'</option>
+							<option value="now"',(($config->ParameterArray["mDate"]=="now")?' selected="selected"':''),'>',_("Now"),'</option>
+						</select>
+					</div>
+				</div>
+				<div>
+					<div><label for="wDate">',_("Warranty Date"),'</label></div>
+					<div><select id="wDate" name="wDate" defaultvalue="',$config->defaults["wDate"],'" data="',$config->ParameterArray["wDate"],'">
+							<option value="blank"',(($config->ParameterArray["wDate"]=="blank")?' selected="selected"':''),'>',_("Blank"),'</option>
+							<option value="now"',(($config->ParameterArray["wDate"]=="now")?' selected="selected"':''),'>',_("Now"),'</option>
+						</select>
+					</div>
 				</div>
 			</div> <!-- end table -->
 			<h3>',_("Users"),'</h3>
@@ -800,6 +842,19 @@ echo '<div class="main">
 					<div><span>',strtoupper($config->defaults["FreeSpaceColor"]),'</span></div>
 				</div>
 			</div> <!-- end table -->
+			<h3>',_("Devices"),'</h3>
+			<div class="table">
+				<div>
+					<div><label for="LabelCase">',_("Device Labels"),'</label></div>
+					<div><select id="LabelCase" name="LabelCase" defaultvalue="',$config->defaults["LabelCase"],'" data="',$config->ParameterArray["LabelCase"],'">
+							<option value="upper">',transform(_("Uppercase"),'upper'),'</option>
+							<option value="lower">',transform(_("Lowercase"),'lower'),'</option>
+							<option value="initial">',transform(_("Initial caps"),'initial'),'</option>
+							<option value="none">',_("Don't touch my labels"),'</option>
+						</select>
+					</div>
+				</div>
+			</div> <!-- end table -->
 			<h3>',_("Site"),'</h3>
 			<div class="table">
 				<div>
@@ -889,9 +944,19 @@ echo '<div class="main">
 					<div><label for="PDFfont">',_("Font"),'</label></div>
 					<div><input type="text" defaultvalue="',$config->defaults["PDFfont"],'" name="PDFfont" value="',$config->ParameterArray["PDFfont"],'"></div>
 				</div>
+				<div>
+					<div><label for="NewInstallsPeriod">',_("New Installs Period"),'</label></div>
+					<div><input type="text" defaultvalue="',$config->defaults["NewInstallsPeriod"],'" name="NewInstallsPeriod" value="',$config->ParameterArray["NewInstallsPeriod"],'"></div>
+				</div>
+				<div>
+					<div><label for="InstallURL">',_("Base URL for install"),'</label></div>
+					<div><input type="text" defaultvalue="',$href,'" name="InstallURL" value="',$config->ParameterArray["InstallURL"],'"></div>
+				</div>
 			</div> <!-- end table -->
 		</div>
 	</div>';
+
+
 ?>
 <div>
    <div></div>
