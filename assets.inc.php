@@ -2191,7 +2191,7 @@ class PatchConnection {
 		$tmpDev->GetDevice( $db );
 		
 		// If you pass a port number lower than 1, or higher than the total number of ports defined for the patch panel, then bounce
-		if ( $this->PanelPortNumber < 1 || $this->PanelPortNumber > $tmpDev->NumPorts )
+		if ( $this->PanelPortNumber < 1 || $this->PanelPortNumber > $tmpDev->Ports )
 			return -1;
 			
 		$sql="INSERT INTO fac_PatchConnection VALUES ($this->PanelDeviceID, $this->PanelPortNumber, $this->FrontEndpointDeviceID, $this->FrontEndpointPort, NULL, NULL, \"$this->FrontNotes\", NULL ) ON DUPLICATE KEY UPDATE FrontEndpointDeviceID=$this->FrontEndpointDeviceID,FrontEndpointPort=$this->FrontEndpointPort,FrontNotes=\"$this->FrontNotes\";";
@@ -2240,7 +2240,7 @@ class PatchConnection {
 		$tmpDev->GetDevice( $db );
 		
 		// If you pass a port number lower than 1, or higher than the total number of ports defined for the patch panel, then bounce
-		if ( $this->PanelPortNumber < 1 || $this->PanelPortNumber > $tmpDev->NumPorts )
+		if ( $this->PanelPortNumber < 1 || $this->PanelPortNumber > $tmpDev->Ports )
 			return -1;
 		
 		$sql="INSERT INTO fac_PatchConnection VALUES ($this->PanelDeviceID, $this->PanelPortNumber, NULL, NULL, $this->RearEndpointDeviceID, $this->RearEndpointPort, NULL, \"$this->RearNotes\" ) ON DUPLICATE KEY UPDATE RearEndpointDeviceID=$this->RearEndpointDeviceID,RearEndpointPort=$this->RearEndpointPort,RearNotes=\"$this->RearNotes\";";
