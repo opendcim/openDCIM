@@ -292,6 +292,23 @@ function applyupdate ($updatefile){
 		$upgrade=true;
 		$version="2.0";
 	}
+	
+	if ( $version == "2.0" ) {
+		$sql = "select InputAmperage from fac_PowerDistribution limit 1";
+		$result = mysql_query( $sql, $facDB );
+		
+		// See if the field exists - some people have manually added the missing one already, so we can't add what's already there
+		if ( mysql_errno($facDB) == 1054 ) {
+			$sql = "ALTER TABLE fac_PowerDistribution ADD COLUMN InputAmperage INT(11) NOT NULL AFTER PanelPole";
+			$result = mysql_query( $sql, $facDB );
+		}
+
+		$sql = "update fac_Config set Value=\"2.0.1\" where Parameter=\"Version\"";
+		$result = mysql_query( $sql, $facDB );
+		
+		$upgrade = true;
+		$version = "2.0.1";
+	}
 		
 	if($upgrade==true){ //If we're doing an upgrade don't call the rest of the installer.
 ?>
