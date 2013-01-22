@@ -318,6 +318,7 @@ CREATE TABLE fac_PowerDistribution (
   PanelID int(11) NOT NULL,
   BreakerSize int(11) NOT NULL,
   PanelPole int(11) NOT NULL,
+  InputAmperage int(11) NOT NULL,
   FailSafe tinyint(1) NOT NULL,
   PanelID2 int(11) NOT NULL,
   PanelPole2 int(11) NOT NULL,
