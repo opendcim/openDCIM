@@ -289,7 +289,7 @@
 						url: 'power_pdu.php',
 						data: 'd='+devid+'&pid='+pduid.val()+'&output='+output+'&devinput='+psnum,
 						success: function(data){
-							if(data=='ok'){
+							if(data.trim()=='ok'){
 								device.html(link).removeAttr('style');
 								devinput.html(psnum).removeAttr('style');
 								

@@ -760,7 +760,7 @@ $(document).ready(function() {
 											url: 'devices.php',
 											data: 'swdev='+swdev+'&sp='+sp+'&devid='+a.val()+'&dp='+b.val()+'&n='+c.val(),
 											success: function(data){
-												if(data=="-1"){
+												if(data.trim()=="-1"){
 													//error
 													device.css('background-color', 'salmon');
 													devport.css('background-color', 'salmon');
@@ -770,7 +770,7 @@ $(document).ready(function() {
 														devport.css('background-color', 'white');
 														notes.css('background-color', 'white');
 													},1500);
-												}else if(data=="1"){
+												}else if(data.trim()=="1"){
 													row.find('div:first-child').removeAttr('edit').css('width','auto');
 													// set the fields back to table cells
 													row.find('div:last-child').remove();
