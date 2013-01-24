@@ -211,9 +211,7 @@
 
   <script type="text/javascript" src="scripts/jquery.min.js"></script>
   <script type="text/javascript" src="scripts/jquery-ui.min.js"></script>
-  <script type="text/javascript" src="scripts/jquery-migrate-1.0.0.js"></script>
   <script type="text/javascript">
-
 	$(document).ready(function() {
 		$('#panelid').change( function(){
 			$.get('scripts/ajax_panel.php?q='+$(this).val(), function(data) {
@@ -272,66 +270,45 @@
 									});
 								}
 							});
+							row.find('div:nth-child(2) > select, div:nth-child(3) > input').on('focusout', function(){
+								var device=$(this).parent('div').parent('div').children('div > div:nth-child(2)');
+								var output=device.prev().text();
+								var devinput=device.next();
+								var devid=device.find('select').val();
+								var psnum=devinput.find('input').val();
+								device.attr('alt', devid);
+								var link='<a href="devices.php?deviceid='+devid+'">'+device.find('option:selected').text()+'</a>';
+								if(device.find('select').val()!="" && devinput.find('input').val()!=""){
+									$.ajax({
+										type: 'POST',
+										url: 'power_pdu.php',
+										data: 'd='+devid+'&pid='+pduid.val()+'&output='+output+'&devinput='+psnum,
+										success: function(data){
+											if(data.trim()=='ok'){
+												device.html(link).removeAttr('style');
+												devinput.html(psnum).removeAttr('style');
+												row.effect('highlight', {color: 'lightgreen'}, 1500);
+												row.find('div:first-child').removeAttr('edit');
+												row.find('div:last-child').remove();
+											}else{
+												row.effect('highlight', {color: 'salmon'}, 1500);
+												row.find('input,select').effect('highlight', {color: 'salmon'}, 1500);
+											}
+										}
+									});
+								}else if(device.find('select').val()=="" && devinput.find('input').val()==""){
+									$.post('power_pdu.php', {pid: pduid.val(), output: output});
+									device.html('').removeAttr('style');
+									devinput.html('').removeAttr('style');
+									row.effect('highlight', {color: 'lightgreen'}, 1500);
+									row.find('div:first-child').removeAttr('edit');
+									row.find('div:last-child').remove();
+								}
+							});
 						}
 					});
 				}
 			}).css({'cursor': 'pointer', 'text-decoration': 'underline'});
-			row.find('div:nth-child(2) > select, div:nth-child(3) > input').live('focusout', function(){
-				var device=$(this).parent('div').parent('div').children('div > div:nth-child(2)');
-				var output=device.prev().text();
-				var devinput=device.next();
-				var devid=device.find('select').val();
-				var psnum=devinput.find('input').val();
-				device.attr('alt', devid);
-				var link='<a href="devices.php?deviceid='+devid+'">'+device.find('option:selected').text()+'</a>';
-				if(device.find('select').val()!="" && devinput.find('input').val()!=""){
-					$.ajax({
-						type: 'POST',
-						url: 'power_pdu.php',
-						data: 'd='+devid+'&pid='+pduid.val()+'&output='+output+'&devinput='+psnum,
-						success: function(data){
-							if(data.trim()=='ok'){
-								device.html(link).removeAttr('style');
-								devinput.html(psnum).removeAttr('style');
-								
-								device.css('background-color', 'lightgreen');
-								devinput.css('background-color', 'lightgreen');
-								setTimeout(function() {
-									device.css('background-color', 'white');
-									devinput.css('background-color', 'white');
-								},1500);
-								row.find('div:first-child').removeAttr('edit');
-								row.find('div:last-child').remove();
-							}else{
-								device.css('background-color', 'salmon');
-								device.find('select').css('background-color', 'salmon');
-								devinput.css('background-color', 'salmon');
-								devinput.find('input').css('background-color', 'salmon');
-								setTimeout(function() {
-									device.css('background-color', 'white');
-									device.find('select').css('background-color', 'white');
-									devinput.css('background-color', 'white');
-									devinput.find('input').css('background-color', 'white');
-								},1500);
-
-							}
-						}
-					});
-				}else if(device.find('select').val()=="" && devinput.find('input').val()==""){
-					$.post('power_pdu.php', {pid: pduid.val(), output: output});
-					device.html('').removeAttr('style');
-					devinput.html('').removeAttr('style');
-
-					device.css('background-color', 'lightgreen');
-					devinput.css('background-color', 'lightgreen');
-					setTimeout(function() {
-						device.css('background-color', 'white');
-						devinput.css('background-color', 'white');
-					},1500);
-					row.find('div:first-child').removeAttr('edit');
-					row.find('div:last-child').remove();
-				}
-			});
 		});
 	});
   </script>
