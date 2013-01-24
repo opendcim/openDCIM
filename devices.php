@@ -415,12 +415,7 @@
   <script type="text/javascript" src="scripts/jquery.validationEngine-en.js"></script>
   <script type="text/javascript" src="scripts/jquery.validationEngine.js"></script>
   <script type="text/javascript" src="scripts/jHtmlArea-0.7.5.min.js"></script>
-  <!--[if gt IE 8]>
   <script type="text/javascript" src="scripts/jquery.textext.js"></script>
-  <![endif]-->
-  <!--[if !IE]> -->
-  <script type="text/javascript" src="scripts/jquery.textext.js"></script>
-  <!-- <![endif]-->
 
 <SCRIPT type="text/javascript" >
 var nextField;
