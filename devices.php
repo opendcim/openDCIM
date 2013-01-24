@@ -944,8 +944,6 @@ $(document).ready(function() {
 	setPreferredLayout();
 	$('#tags').width($('#tags').parent('div').parent('div').innerWidth()-$('#tags').parent('div').prev('div').outerWidth()-5);
 	
-	if(($.browser.msie && $.browser.version>8) || !$.browser.msie){
-
 		$('#tags').textext({
 			plugins : 'autocomplete tags ajax arrow prompt focus',
 	<?php echo $taginsert; ?>
@@ -954,10 +952,6 @@ $(document).ready(function() {
 				dataType : 'json'
 			}
 		});
-	}else{
-		$('#tags').attr('readonly', 'readonly');
-	}
-
 });
 	
 </script>
