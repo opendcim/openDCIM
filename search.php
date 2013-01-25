@@ -199,12 +199,14 @@
 $(document).ready(function() {
 	$('.datacenter').each(function(){
 		$(this).prepend('<span class="bullet">&nbsp;</span>');
-		$(this).find('.bullet').toggle(function(){
-			$(this).css('background-image', 'url(css/plus.gif)');
-			$(this).parent('.datacenter').children('ol').toggle();
-		}, function(){
-			$(this).css('background-image', 'url(css/minus.gif)');
-			$(this).parent('.datacenter').children('ol').toggle();
+		$(this).find('.bullet').on('click', function(){
+			if($(this).css('background-image')=='url(css/plus.gif)'){
+				$(this).css('background-image', 'url(css/minus.gif)');
+				$(this).parent('.datacenter').children('ol').toggle();
+			}else{
+				$(this).css('background-image', 'url(css/plus.gif)');
+				$(this).parent('.datacenter').children('ol').toggle();
+			}
 		});
 	});
 });
