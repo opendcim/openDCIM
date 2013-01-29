@@ -18,6 +18,9 @@
   <link rel="stylesheet" href="css/jquery-ui.css" type="text/css">
   <link rel="stylesheet" href="css/validationEngine.jquery.css" type="text/css">
   <link rel="stylesheet" href="css/jHtmlArea.css" type="text/css">
+  <link rel="stylesheet" href="css/jquery.dataTables.css" type="text/css">
+  <link rel="stylesheet" href="css/ColVis.css" type="text/css">
+  <link rel="stylesheet" href="css/TableTools.css" type="text/css">
   <style type="text/css"></style>
   <!--[if lt IE 9]>
   <link rel="stylesheet"  href="css/ie.css" type="text/css" />
@@ -30,10 +33,8 @@
   <script type="text/javascript" src="scripts/jquery.validationEngine.js"></script>
   <script type="text/javascript" src="scripts/jHtmlArea-0.7.5.min.js"></script>
   <script type="text/javascript" src="scripts/jquery.textext.js"></script>
-  <link rel="stylesheet" href="css/jquery.dataTables.css" type="text/css">
-  <link rel="stylesheet" href="css/TableTools.css" type="text/css">
   <script type="text/javascript" src="scripts/jquery.dataTables.min.js"></script>
-  <script type="text/javascript" src="scripts/ZeroClipboard.js"></script>
+  <script type="text/javascript" src="scripts/ColVis.min.js"></script>
   <script type="text/javascript" src="scripts/TableTools.min.js"></script>
   
 </head>
@@ -107,9 +108,9 @@ if (!isset($_REQUEST['datacenterid'])) {
 $(document).ready( function() {
 	$( '#export' ).dataTable( {
 		"iDisplayLength" : 25,
+		"sDom" : 'CT<"clear">lfrtip',
 		"oTableTools": {
 			"sSwfPath": "scripts/copy_csv_xls.swf",
-			"sDom": 'T<"clear">lfrtip',
 			"aButtons": [ "copy", "csv", "xls", "print" ]
 		}
 	} );
