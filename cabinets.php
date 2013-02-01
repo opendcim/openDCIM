@@ -14,12 +14,16 @@
 
 	$cab=new Cabinet();
 	$dept=new Department();
+	$taginsert="";
 
 	if(isset($_REQUEST['cabinetid'])){
 		$cab->CabinetID=(isset($_POST['cabinetid'])?$_POST['cabinetid']:$_GET['cabinetid']);
 		$cab->GetCabinet($facDB);
 	}
-
+	$tagarray=array();
+	if(isset($_POST['tags'])){
+		$tagarray=json_decode($_POST['tags']);
+	}
 	if(isset($_POST['action'])){
 		$cab->DataCenterID=$_POST['datacenterid'];
 		$cab->Location=trim($_POST['location']);
@@ -33,6 +37,9 @@
 		$cab->SensorIPAddress=$_POST['sensoripaddress'];
 		$cab->SensorCommunity=$_POST['sensorcommunity'];
 		$cab->SensorOID=$_POST['sensoroid'];
+		$cab->Notes=trim($_POST['notes']);
+		$cab->Notes=($cab->Notes=="<br>")?"":$cab->Notes;
+		$cab->SetTags($tagarray);
 
 		if($cab->Location!=""){
 			if(($cab->CabinetID >0)&&($_POST['action']=='Update')){
@@ -45,6 +52,13 @@
 
 	if($cab->CabinetID >0){
 		$cab->GetCabinet($facDB);
+
+		// Get any tags associated with this device
+		$tags=$cab->GetTags();
+		if(count($tags>0)){
+			// We have some tags so build the javascript elements we need to create the tags themselves
+			$taginsert="\t\ttags: {items: ".json_encode($tags)."},\n";
+		}
 	}else{
 		$cab->CabinetID=null;
 		$cab->DataCenterID=null;
@@ -71,18 +85,85 @@
   <link rel="stylesheet" href="css/inventory.php" type="text/css">
   <link rel="stylesheet" href="css/jquery-ui.css" type="text/css">
   <link rel="stylesheet" href="css/validationEngine.jquery.css" type="text/css">
+  <link rel="stylesheet" href="css/jHtmlArea.css" type="text/css">
   <!--[if lt IE 9]>
   <link rel="stylesheet"  href="css/ie.css" type="text/css">
   <![endif]-->
   <script type="text/javascript" src="scripts/jquery.min.js"></script>
   <script type="text/javascript" src="scripts/jquery-ui.min.js"></script>
+  <script type="text/javascript" src="scripts/jquery-migrate-1.0.0.js"></script>
   <script type="text/javascript" src="scripts/jquery.validationEngine-en.js"></script>
   <script type="text/javascript" src="scripts/jquery.validationEngine.js"></script>
+  <script type="text/javascript" src="scripts/jHtmlArea-0.7.5.min.js"></script>
+  <script type="text/javascript" src="scripts/jquery.textext.js"></script>
 
   <script type="text/javascript">
 	$(document).ready(function() {
+		$('#notes').each(function(){
+			$(this).before('<button type="button" id="editbtn"></button>');
+			if($(this).val()!=''){
+				rendernotes($('#editbtn'));
+			}else{
+				editnotes($('#editbtn'));
+			}
+		});
+		function editnotes(button){
+			button.val('preview').text('Preview');
+			var a=button.next('div');
+			button.next('div').remove();
+			button.next('textarea').htmlarea({
+				toolbar: [
+				"link", "unlink", "image"
+				],
+				css: 'css/jHtmlArea.Editor.css'
+			});
+			$('.jHtmlArea div iframe').height(a.innerHeight());
+		}
+
+		function rendernotes(button){
+			button.val('edit').text('Edit');
+			var w=button.next('div').outerWidth();
+			var h=$('.jHtmlArea').outerHeight();
+			if(h>0){
+				h=h+'px';
+			}else{
+				h="auto";
+			}
+			$('#notes').htmlarea('dispose');
+			button.after('<div id="preview">'+$('#notes').val()+'</div>');
+			button.next('div').css({'width': w+'px', 'height' : h}).find('a').each(function(){
+				$(this).attr('target', '_new');
+			});
+			$('#notes').html($('#notes').val()).hide(); // we still need this field to submit it with the form
+			h=0; // recalculate height in case they added an image that is gonna hork the layout
+			// need a slight delay here to allow the load of large images before the height calculations are done
+			setTimeout(function(){
+				$('#preview').find("*").each(function(){
+					h+=$(this).outerHeight();
+				});
+				$('#preview').height(h);
+			},2000);
+		}
+		$('#editbtn').click(function(){
+			var button=$(this);
+			if($(this).val()=='edit'){
+				editnotes(button);
+			}else{
+				rendernotes(button);
+			}
+		});
 		$('#rackform').validationEngine({});
 		$('input[name="installationdate"]').datepicker({});
+		$('#tags').width($('#tags').parent('div').parent('div').innerWidth()-$('#tags').parent('div').prev('div').outerWidth()-5);
+		
+		$('#tags').textext({
+			plugins : 'autocomplete tags ajax arrow prompt focus',
+<?php echo $taginsert; ?>
+			ajax : {
+				url : 'scripts/ajax_tags.php',
+				dataType : 'json'
+			}
+		});
 	});
   </script>
 </head>
@@ -167,6 +248,16 @@ echo '  </select>
 	<div>',_("Temperature Sensor OID"),'</div>
 	<div><input type="text" name="sensoroid" size=30 value="',$cab->SensorOID,'"></div>
 </div>
+<div>
+	<div><label for="tags">',_("Tags"),'</label></div>
+	<div><textarea type="text" name="tags" id="tags" rows="1"></textarea></div>
+</div>
+</div> <!-- END div.table -->
+<div class="table">
+	<div>
+	  <div><label for="notes">',_("Notes"),'</label></div>
+	  <div><textarea name="notes" id="notes" cols="40" rows="8">',$cab->Notes,'</textarea></div>
+	</div>
 <div class="caption">';
 
 	if($cab->CabinetID >0){

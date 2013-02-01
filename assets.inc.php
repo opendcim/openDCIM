@@ -49,6 +49,7 @@ class Cabinet {
 	var $MapY1;
 	var $MapX2;
 	var $MapY2;
+	var $Notes;
 
 	function CreateCabinet( $db ) {
 		$insert_sql = "insert into fac_Cabinet set DataCenterID=\"" . intval($this->DataCenterID) . "\", Location=\"" . addslashes($this->Location) 
@@ -60,7 +61,8 @@ class Cabinet {
 			. "\", SensorIPAddress=\"" . addslashes( $this->SensorIPAddress ) . "\", SensorCommunity=\"" . addslashes( $this->SensorCommunity )
 			. "\", SensorOID=\"" . addslashes( $this->SensorOID )
 			. "\", MapX1=\"" . intval($this->MapX1) . "\", MapY1=\"" . intval($this->MapY1) 
-			. "\", MapX2=\"" . intval($this->MapX2) . "\", MapY2=\"" . intval($this->MapY2) . "\"";
+			. "\", MapX2=\"" . intval($this->MapX2) . "\", MapY2=\"" . intval($this->MapY2)
+			. "\", Notes=\"" . addslashes($this->Notes) . "\"";
 
 		if ( ! $result = mysql_query( $insert_sql, $db ) ) {
 			// Error in inserting record
@@ -81,7 +83,8 @@ class Cabinet {
 		. "\", SensorIPAddress=\"" . addslashes( $this->SensorIPAddress ) . "\", SensorCommunity=\"" . addslashes( $this->SensorCommunity )
 		. "\", SensorOID=\"" . addslashes( $this->SensorOID ) 
 		. "\", MapX1=\"" . intval($this->MapX1) . "\", MapY1=\"" . intval($this->MapY1) 
-		. "\", MapX2=\"" . intval($this->MapX2) . "\", MapY2=\"" . intval($this->MapY2) 
+		. "\", MapX2=\"" . intval($this->MapX2) . "\", MapY2=\"" . intval($this->MapY2)
+		. "\", Notes=\"" . addslashes($this->Notes)
 		. "\" where CabinetID=\"" . intval($this->CabinetID) . "\"";
 
 		if ( ! $result = mysql_query( $update_sql, $db ) ) {
@@ -114,12 +117,12 @@ class Cabinet {
 			$this->MapY1 = null;
 			$this->MapX2 = null;
 			$this->MapY2 = null;
+			$this->Notes = null;
 
 			return -1;
 		}
 
 		$cabinetRow = mysql_fetch_array( $result );
-
 		$this->DataCenterID = $cabinetRow[ "DataCenterID" ];
 		$this->Location = $cabinetRow[ "Location" ];
 		$this->AssignedTo = $cabinetRow["AssignedTo"];
@@ -137,6 +140,7 @@ class Cabinet {
 		$this->MapY1 = $cabinetRow["MapY1"];
 		$this->MapX2 = $cabinetRow["MapX2"];
 		$this->MapY2 = $cabinetRow["MapY2"];
+		$this->Notes = $cabinetRow["Notes"];
 
 		return 0;
 	}
@@ -177,6 +181,7 @@ class Cabinet {
 			$cabinetList[ $cabID ]->MapY1 = $cabinetRow[ "MapY1" ];
 			$cabinetList[ $cabID ]->MapX2 = $cabinetRow[ "MapX2" ];
 			$cabinetList[ $cabID ]->MapY2 = $cabinetRow[ "MapY2" ];
+			$cabinetList[ $cabID ]->Notes = $cabinetRow[ "Notes" ];
 		}
 
 		return $cabinetList;
@@ -213,6 +218,7 @@ class Cabinet {
 			$cabinetList[ $cabID ]->MapY1 = $cabinetRow[ "MapY1" ];
 			$cabinetList[ $cabID ]->MapX2 = $cabinetRow[ "MapX2" ];
 			$cabinetList[ $cabID ]->MapY2 = $cabinetRow[ "MapY2" ];
+			$cabinetList[ $cabID ]->Notes = $cabinetRow[ "Notes" ];
 		}
 
 		return $cabinetList;
@@ -380,9 +386,41 @@ class Cabinet {
 			$cabinetList[$cabID]->MapY1=$cabinetRow["MapY1"];
 			$cabinetList[$cabID]->MapX2=$cabinetRow["MapX2"];
 			$cabinetList[$cabID]->MapY2=$cabinetRow["MapY2"];
+			$cabinetList[$cabID]->Notes=$cabinetRow["Notes"];
 		}
 
 		return $cabinetList;
+	}
+
+	function GetTags(){
+		$sql="SELECT TagID FROM fac_CabinetTags WHERE CabinetID=".intval($this->CabinetID).";";
+		$results=mysql_query($sql);
+		$tags=array();
+		if(mysql_num_rows($results)>0){
+			while($row=mysql_fetch_row($results)){
+				$tags[]=Tags::FindName($row[0]);
+			}
+		}
+		return $tags;
+	}
+	function SetTags($tags=array()){
+		if(count($tags)>0){
+			//Clear existing tags
+			$this->SetTags();
+			foreach($tags as $tag){
+				$t=Tags::FindID($tag);
+				if($t==0){
+					$t=Tags::CreateTag($tag);
+				}
+				$sql="INSERT INTO fac_CabinetTags (CabinetID, TagID) VALUES (".intval($this->CabinetID).",$t);";
+				mysql_query($sql);
+			}
+		}else{
+			//If no array is passed then clear all the tags
+			$delsql="DELETE FROM fac_CabinetTags WHERE CabinetID=".intval($this->CabinetID).";";
+			mysql_query($delsql);
+		}
+		return 0;
 	}
 }
 

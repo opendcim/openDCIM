@@ -22,8 +22,20 @@ CREATE TABLE fac_Cabinet (
   MapX2 int(11) NOT NULL,
   MapY1 int(11) NOT NULL,
   MapY2 int(11) NOT NULL,
+  Notes text NULL,
   PRIMARY KEY (CabinetID)
 ) ENGINE=MyISAM AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
+
+--
+-- Table structure for table `fac_CabinetTags`
+--
+
+DROP TABLE IF EXISTS fac_CabinetTags;
+CREATE TABLE fac_CabinetTags (
+  CabinetID int(11) NOT NULL,
+  TagID int(11) NOT NULL,
+  PRIMARY KEY (CabinetID,TagID)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 --
 -- Table structure for table `fac_CabinetTemps`
