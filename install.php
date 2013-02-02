@@ -489,7 +489,7 @@ if(isset($results)){
   <script type="text/javascript" src="scripts/jquery.miniColors.js"></script>
   <script type="text/javascript">
 	$(document).ready( function() {
-		$(".color-picker").miniColors({
+		$(".color-picker").minicolors({
 			letterCase: 'uppercase',
 			change: function(hex, rgb){
 				if($(this).attr('id')==='HeaderColor'){
@@ -516,6 +516,10 @@ if(isset($results)){
 			var a = $(this).parent().prev().find('input,select');
 			$(this).click(function(){
 				a.val($(this).parent().next().children('span').text());
+				if(a.hasClass('color-picker')){
+					a.minicolors('value', $(this).parent().next().children('span').text());
+					a.trigger('change');
+				}
 				a.triggerHandler("paste");
 				a.focus();
 				$('input[name="OrgName"]').focus();
