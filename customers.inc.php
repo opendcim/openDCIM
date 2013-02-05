@@ -185,6 +185,7 @@ class Department {
 	}
 
 	function UpdateDepartment( $db ) {
+		($this->DeptColor=="")?$this->DeptColor="#FFFFFF":""; // New color picker was allowing for an empty value
 		$updateSQL = "update fac_Department set Name=\"" . addslashes($this->Name) . "\", ExecSponsor=\"" . addslashes($this->ExecSponsor) . "\", SDM=\"" . addslashes($this->SDM) . "\", Classification=\"" . addslashes($this->Classification) . "\" , DeptColor=\"" . addslashes($this->DeptColor) . "\"where DeptID=\"" . intval($this->DeptID) . "\"";
 
 		$result = mysql_query( $updateSQL, $db );

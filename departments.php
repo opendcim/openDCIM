@@ -66,8 +66,7 @@ function showgroup(obj){
 	document.getElementById('deptcolor').readOnly = true
 	document.getElementById('deptclass').disabled = true
 	document.getElementById('controls').id = "displaynone";
-	$('.color-picker ~ a').remove();
-	$('.color-picker').unbind();
+	$('.color-picker').minicolors('destroy');
 }
 	$(document).ready( function() {
 		$(".color-picker").minicolors({
