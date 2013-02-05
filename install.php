@@ -492,16 +492,19 @@ if(isset($results)){
   <script type="text/javascript" src="scripts/jquery.miniColors.js"></script>
   <script type="text/javascript">
 	$(document).ready( function() {
+        function colorchange(hex,id){
+			if(id==='HeaderColor'){
+				$('#header').css('background-color',hex);
+			}else if(id==='BodyColor'){
+				$('.main').css('background-color',hex);
+			}
+		}
 		$(".color-picker").minicolors({
 			letterCase: 'uppercase',
 			change: function(hex, rgb){
-				if($(this).attr('id')==='HeaderColor'){
-					$('#header').css('background-color',$(this).val());
-				}else if($(this).attr('id')==='BodyColor'){
-					$('.main').css('background-color',$(this).val());
-				}
+				colorchange($(this).val(),$(this).attr('id'));
 			}
-		});
+		}).change(function(){colorchange($(this).val(),$(this).attr('id'));});
 		$("#LabelCase option").each(function(){
 			if($(this).val()==$("#LabelCase").attr('data')){
 				$(this).attr('selected', 'selected');
@@ -520,8 +523,7 @@ if(isset($results)){
 			$(this).click(function(){
 				a.val($(this).parent().next().children('span').text());
 				if(a.hasClass('color-picker')){
-					a.minicolors('value', $(this).parent().next().children('span').text());
-					a.trigger('change');
+					a.minicolors('value', $(this).parent().next().children('span').text()).trigger('change');
 				}
 				a.triggerHandler("paste");
 				a.focus();
