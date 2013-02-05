@@ -145,6 +145,9 @@ function applyupdate ($updatefile){
 	}else{
 		$version=mysql_result($result,0);//sets version number
 	}
+	if($version==""){ // something borked re-apply all database updates and pray for forgiveness
+		$version="1.2";
+	}
 	if($version=="1.2"){ // Do 1.2 to 1.3 Update
 		$results[]=applyupdate("db-1.2-to-1.3.sql");
 		$upgrade=true;
