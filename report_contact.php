@@ -272,9 +272,9 @@ class PDF_Diag extends PDF_Sector {
                 $angleStart += $angle;
             }
             $i++;
-        }
-        if ($angleEnd != 360) {
-            $this->Sector($XDiag, $YDiag, $radius, $angleStart - $angle, 360);
+			if ($angleEnd != 360) {
+				$this->Sector($XDiag, $YDiag, $radius, $angleStart - $angle, 360);
+			}
         }
 
         //Legends
