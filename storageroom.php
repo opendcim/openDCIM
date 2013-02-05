@@ -40,18 +40,18 @@
 	include( 'sidebar.inc.php' );
 ?>
 <div class="main">
-<h2><?php echo $config->ParameterArray['OrgName']; ?></h2>
-<h3>Data Center Cabinet Inventory</h3>
+<?php echo '
+<h2>',$config->ParameterArray['OrgName'],'</h2>
+<h3>',_("Data Center Cabinet Inventory"),'</h3>
 <div class="center"><div>
 <div class="table">
 	<div class="title" id="title">Storage Room</div>
 	<div>
-		<div>Device</div>
-		<div>Asset Tag</div>
-		<div>Serial No.</div>
+		<div>',_("Device"),'</div>
+		<div>',_("Asset Tag"),'</div>
+		<div>',_("Serial No."),'</div>
 		<div></div>
-	</div>
-<?php
+	</div>';
 	while(list($devID,$device)=each($devList)){
 		echo "<div><div><a href=\"devices.php?deviceid=$devID\">$device->Label</a></div><div>$device->AssetTag</div><div>$device->SerialNo</div><div><a href=\"surplus.php?deviceid=$devID\">Surplus</a></div></div>\n";
 	}
