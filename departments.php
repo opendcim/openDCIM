@@ -70,7 +70,7 @@ function showgroup(obj){
 	$('.color-picker').unbind();
 }
 	$(document).ready( function() {
-		$(".color-picker").miniColors({
+		$(".color-picker").minicolors({
 			letterCase: 'uppercase',
 			change: function(hex, rgb) {
 				logData(hex, rgb);
