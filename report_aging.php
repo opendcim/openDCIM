@@ -150,18 +150,18 @@ class PDF extends FPDF {
     	$this->Image( 'images/' . $this->pdfconfig->ParameterArray['PDFLogoFile'],10,8,100);
     	$this->SetFont($this->pdfconfig->ParameterArray['PDFfont'],'B',12);
     	$this->Cell(120);
-    	$this->Cell(30,20,'Information Technology Services',0,0,'C');
+    	$this->Cell(30,20,_('Information Technology Services'),0,0,'C');
     	$this->Ln(20);
 		$this->SetFont( $this->pdfconfig->ParameterArray['PDFfont'],'',10 );
-		$this->Cell( 50, 6, 'Data Center Asset Aging Report', 0, 1, 'L' );
-		$this->Cell( 50, 6, 'Date: ' . date( 'm/d/y' ), 0, 1, 'L' );
+		$this->Cell( 50, 6, _('Data Center Asset Aging Report'), 0, 1, 'L' );
+		$this->Cell( 50, 6, _('Date').': ' . date( 'm/d/y' ), 0, 1, 'L' );
 		$this->Ln(10);
 	}
 
 	function Footer() {
 	    	$this->SetY(-15);
     		$this->SetFont($this->pdfconfig->ParameterArray['PDFfont'],'I',8);
-    		$this->Cell(0,10,'Page '.$this->PageNo().'/{nb}',0,0,'C');
+    		$this->Cell(0,10,_('Page').' '.$this->PageNo().'/{nb}',0,0,'C');
 	}
 	
 
@@ -510,16 +510,16 @@ class PDF_Diag extends PDF_Sector {
 
 	$pdf->SetFont( $config->ParameterArray['PDFfont'],'B', 16 );
 
-	$pdf->Cell( 0, 18, 'Device Ages by Count', '', 1, 'C', 0 );
+	$pdf->Cell( 0, 18, _('Device Ages by Count'), '', 1, 'C', 0 );
 	$pdf->SetXY( 10, 70 );
 	$pdf->PieChart(200, 80, $agingList, '%l years %v machines (%p)', $colors);
 
 	$pdf->AddPage();
 	$pdf->SetFillColor(224,235,255);
 	$pdf->SetFont( $config->ParameterArray['PDFfont'],'B', 12 );
-	$pdf->Cell( 0, 18, 'Devices from 0-1 Years Old', '', 1, 'C', 0 );
+	$pdf->Cell( 0, 18, _('Devices from 0-1 Years Old'), '', 1, 'C', 0 );
 	$pdf->SetFont( $config->ParameterArray['PDFfont'],'', 7 );
-	$headerTags = array( 'Label','Age ','Owner','Primary Contact' );
+	$headerTags = array( _('Label'),_('Age'),_('Owner'),_('Primary Contact') );
 	$cellWidths = array( 45, 30, 50, 45 );
 	$maxval = count( $headerTags );
 	for ( $col = 0; $col < $maxval ; $col++ )
@@ -553,9 +553,9 @@ class PDF_Diag extends PDF_Sector {
 
 	$pdf->AddPage();
 	$pdf->SetFont( $config->ParameterArray['PDFfont'],'B', 16 );
-	$pdf->Cell( 0, 18, 'Devices from 1-2 Years Old', '', 1, 'C', 0 );
+	$pdf->Cell( 0, 18, _('Devices from 1-2 Years Old'), '', 1, 'C', 0 );
 	$pdf->SetFont( $config->ParameterArray['PDFfont'],'', 10 );
-	$headerTags = array( 'Label','Age ','Owner','Primary Contact' );
+	$headerTags = array( _('Label'),_('Age'),_('Owner'),_('Primary Contact') );
         $cellWidths = array( 45, 30, 50, 45 );
 		$maxval = count( $headerTags );
         for ( $col = 0; $col < $maxval; $col++ )
@@ -583,9 +583,9 @@ class PDF_Diag extends PDF_Sector {
 
 	$pdf->AddPage();
 	$pdf->SetFont( $config->ParameterArray['PDFfont'],'B', 16 );
-	$pdf->Cell( 0, 18, 'Devices from 2-3 Years Old', '', 1, 'C', 0 );
+	$pdf->Cell( 0, 18, _('Devices from 2-3 Years Old'), '', 1, 'C', 0 );
 	$pdf->SetFont( $config->ParameterArray['PDFfont'],'', 10 );
-	$headerTags = array( 'Label','Age ','Owner','Primary Contact' );
+	$headerTags = array( _('Label'),_('Age'),_('Owner'),_('Primary Contact') );
         $cellWidths = array( 45, 30, 50, 45 );
 		$maxval = count( $headerTags );
         for ( $col = 0; $col < $maxval; $col++ )
@@ -613,9 +613,9 @@ class PDF_Diag extends PDF_Sector {
 
 	$pdf->AddPage();
 	$pdf->SetFont( $config->ParameterArray['PDFfont'],'B', 16 );
-	$pdf->Cell( 0, 18, 'Devices from 3-4 Years Old', '', 1, 'C', 0 );
+	$pdf->Cell( 0, 18, _('Devices from 3-4 Years Old'), '', 1, 'C', 0 );
 	$pdf->SetFont( $config->ParameterArray['PDFfont'],'', 10 );
-	$headerTags = array( 'Label','Age ','Owner','Primary Contact' );
+	$headerTags = array( _('Label'),_('Age'),_('Owner'),_('Primary Contact') );
         $cellWidths = array( 45, 30, 50, 45 );
 		$maxval = count( $headerTags );
         for ( $col = 0; $col < $maxval; $col++ )
@@ -643,9 +643,9 @@ class PDF_Diag extends PDF_Sector {
 
 	$pdf->AddPage();
 	$pdf->SetFont( $config->ParameterArray['PDFfont'],'B', 16 );
-	$pdf->Cell( 0, 18, 'Devices Greater Than 4 Years Old', '', 1, 'C', 0 );
+	$pdf->Cell( 0, 18, _('Devices Greater Than 4 Years Old'), '', 1, 'C', 0 );
 	$pdf->SetFont( $config->ParameterArray['PDFfont'],'', 10 );
-	$headerTags = array( 'Label','Age ','Owner','Primary Contact' );
+	$headerTags = array( _('Label'),_('Age'),_('Owner'),_('Primary Contact') );
         $cellWidths = array( 45, 30, 50, 45 );
 		$maxval = count( $headerTags );
         for ( $col = 0; $col < $maxval; $col++ )
