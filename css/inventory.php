@@ -29,6 +29,11 @@ textarea {white-space: pre;word-wrap: break-word;}
 	cursor: default;
 } 
 
+.arrow_left { position: relative; background: #ffffff; border: 1px solid #000000; } 
+.arrow_left:after, .arrow_left:before { right: 100%; border: solid transparent; content: " "; height: 0; width: 0; position: absolute; pointer-events: none; } 
+.arrow_left:after { border-color: rgba(255, 255, 255, 0); border-right-color: #ffffff; border-width: 15px; top: 15px; margin-top: -15px; } 
+.arrow_left:before { border-color: rgba(0, 0, 0, 0); border-right-color: #000000; border-width: 16px; top: 15px; margin-top: -16px; }
+
 /* css for timepicker */
 .ui-timepicker-div .ui-widget-header {margin-bottom: 8px;}
 .ui-timepicker-div dl {text-align: left;}
@@ -351,7 +356,18 @@ div.cabinet {
 .cabnavigator .nav li { margin-top: 0.1em; border: 1px solid darkGray;}
 .cabnavigator .nav a:hover li { border-color: black; }
 
-
+.cabnavigator.tooltip {
+	min-height: 30px;
+	min-width: 30px;
+	z-index: 99;
+	position: absolute;
+}
+.cabnavigator.tooltip div {
+	border: 0 none;
+	line-height: 1.25em;
+	margin: 5px;
+	padding: 3px;
+}
 
 /* devices.php  Device Detail */
 div.page.device {

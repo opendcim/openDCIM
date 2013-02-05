@@ -12,6 +12,21 @@
 		exit;
 	}
 
+	if(isset($_POST['tooltip'])){
+		$dev=new Device();
+		$dev->DeviceID=$_POST['tooltip'];
+		$dev->GetDevice($facDB);
+		$dept=new Department();
+		$dept->DeptID=$dev->Owner;
+		$dept->GetDeptByID($facDB);
+		$tmpl=new DeviceTemplate();
+		$tmpl->TemplateID=$dev->TemplateID;
+		$tmpl->GetTemplateByID($facDB);
+		print "<div>IP: $dev->PrimaryIP<br>Dept: $dept->Name<br>Model: $tmpl->Model<br></div>";
+		exit;
+	}
+
+
 	$head=$legend=$zeroheight=$body=$deptcolor="";
 	$cab=new Cabinet();
 	$audit=new CabinetAudit();
@@ -162,7 +177,7 @@
 		}
 		for($i=$devTop;$i>=$device->Position;$i--){
 			if($i==$devTop){
-				$body.="<tr><td>$i</td><td class=\"device$reserved dept$device->Owner\" rowspan=$device->Height><a href=\"devices.php?deviceid=$devID\">$highlight $device->Label</a></td></tr>\n";
+				$body.="<tr><td>$i</td><td class=\"device$reserved dept$device->Owner\" rowspan=$device->Height data=$devID><a href=\"devices.php?deviceid=$devID\">$highlight $device->Label</a></td></tr>\n";
 			}else{
 				$body.="<tr><td>$i</td></tr>\n";
 			}
@@ -378,11 +393,29 @@ echo $head,'  <script type="text/javascript" src="scripts/jquery.min.js"></scrip
 			form.appendTo("body");
 			form.submit();
 		}
-	}
-  </script>
-</head>';
-
+	}';
 ?>
+	$(document).ready(function() {
+		var n=0; // silly counter
+		$('.cabinet td.device').mouseenter(function(){
+			n++;
+			var pos=$(this).offset();
+			var tooltip=$('<div />').css({
+				'left':pos.left+$(this).outerWidth()+15+'px',
+				'top':pos.top+($(this).outerHeight()/2)-15+'px'
+			}).addClass('arrow_left border cabnavigator tooltip').attr('id','tt'+n);
+			$.post('',{tooltip: $(this).attr('data')}, function(data){
+				tooltip.append(data);
+			});
+			$('body').append(tooltip);
+			$(this).mouseleave(function(){
+				$('#tt'+n).remove();
+			});
+		});
+	});
+  </script>
+</head>
+
 <body>
 <div id="header"></div>
 <div class="page">
