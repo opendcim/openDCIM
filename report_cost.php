@@ -395,9 +395,14 @@ class PDF_Diag extends PDF_Sector {
 	$pdf->SetTextColor( 0 );
 	
 	$pdf->SetFont( $config->ParameterArray["PDFfont"], "", 12 );
-	$pdf->Cell( 300, 5, "Annual Base Cost Per 1U (1.75\"): " . money_format( "%.2n", $annualCostPerUYear ), "", 1, "L", "" );
+	if(function_exists('money_format')){
+		$pdf->Cell( 300, 5, "Annual Base Cost Per 1U (1.75\"): " . money_format( "%.2n", $annualCostPerUYear ), "", 1, "L", "" );
+		$pdf->Cell( 300, 5, "Annual Base Cost Per Watt: " . money_format( "%.4n", $annualCostPerWattYear ), "", 1, "L", "" );
+	}else{
+		$pdf->Cell( 300, 5, "Annual Base Cost Per 1U (1.75\"): " . sprintf( $annualCostPerUYear, "%.2n" ), "", 1, "L", "" );
+		$pdf->Cell( 300, 5, "Annual Base Cost Per Watt: " . sprintf( $annualCostPerWattYear, "%.4n" ), "", 1, "L", "" );
+	}
 	$pdf->Ln();
-	$pdf->Cell( 300, 5, "Annual Base Cost Per Watt: " . money_format( "%.4n", $annualCostPerWattYear ), "", 1, "L", "" );
   $pdf->Ln(); 
 
   $pdf->Bookmark( "Departments" );
@@ -507,7 +512,11 @@ class PDF_Diag extends PDF_Sector {
 			$pdf->Cell( $cellWidths[5], 6, $devRow->Position, "LBRT", 0, "L", $fill );
 			$pdf->Cell( $cellWidths[6], 6, $devRow->Height, "LBRT", 0, "L", $fill );
 			$pdf->Cell( $cellWidths[7], 6, $devRow->NominalWatts, "LBRT", 0, "L", $fill );
+		if(function_exists('money_format')){
 			$pdf->Cell( $cellWidths[8], 6, money_format( "%.2n", $hostingCost ), "LBRT", 1, "L", $fill );
+		}else{
+			$pdf->Cell( $cellWidths[8], 6, sprintf( $hostingCost, "%.2n" ), "LBRT", 1, "L", $fill );
+		}
 
 			$TotalRU += $devRow->Height;
 			$TotalBTU += $devRow->NominalWatts * 3.412;
@@ -519,9 +528,14 @@ class PDF_Diag extends PDF_Sector {
 		}
 
 		$pdf->Cell( 0, 5, "Total Rack Units for All Data Centers: " . $TotalRU, "", 1, "L", "" );
-    $pdf->Cell( 0, 5, "Total BTU Output for All Data Centers: " . sprintf( "%d (%.2f Tons)", $TotalBTU, $TotalBTU/12000 ), "", 1, "L", "" );
-    $pdf->Cell( 0, 5, "Annual Electrical Cost for Department:" . money_format( "%.2n", $totalElectricalCost ), "", 1, "L", "" );
-    $pdf->Cell( 0, 5, "Annual Infrastructure Cost for Department:" . money_format( "%.2n", $totalHostingCost ), "", 1, "L", "" );
+		$pdf->Cell( 0, 5, "Total BTU Output for All Data Centers: " . sprintf( "%d (%.2f Tons)", $TotalBTU, $TotalBTU/12000 ), "", 1, "L", "" );
+		if(function_exists('money_format')){
+			$pdf->Cell( 0, 5, "Annual Electrical Cost for Department:" . money_format( "%.2n", $totalElectricalCost ), "", 1, "L", "" );
+			$pdf->Cell( 0, 5, "Annual Infrastructure Cost for Department:" . money_format( "%.2n", $totalHostingCost ), "", 1, "L", "" );
+		}else{
+			$pdf->Cell( 0, 5, "Annual Electrical Cost for Department:" . sprintf( $totalElectricalCost, "%.2n" ), "", 1, "L", "" );
+			$pdf->Cell( 0, 5, "Annual Infrastructure Cost for Department:" . sprintf( $totalHostingCost, "%.2n" ), "", 1, "L", "" );
+		}
 	}
 
 	$pdf->Output();
