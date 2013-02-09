@@ -44,7 +44,7 @@
 	// Build table to display pending rack requests for inclusion later
 	$rackrequest='';
 	if($user->RackAdmin){
-		$rackrequest="<h3>"._('Pending Rack Requests')."</h3>\n<div class=\"table whiteborder rackrequest\">\n<div>\n  <div>"._('Submit Time')."</div>\n  <div>"._('Requestor')."</div>\n  <div>"._('System Name')."</div>\n  <div>"._('Department')."</div>\n  <div>"._('Due By')."</div>\n</div>\n";
+		$rackrequest="<h3>".__('Pending Rack Requests')."</h3>\n<div class=\"table whiteborder rackrequest\">\n<div>\n  <div>".__('Submit Time')."</div>\n  <div>".__('Requestor')."</div>\n  <div>".__('System Name')."</div>\n  <div>".__('Department')."</div>\n  <div>".__('Due By')."</div>\n</div>\n";
 
 		$rack=new RackRequest();
 		$tmpContact=new Contact();
@@ -98,36 +98,36 @@
 echo '
 <div class="main">
 <h2>',$config->ParameterArray["OrgName"],'</h2>
-<h2>',_("Data Center Operations Metrics"),'</h2>
+<h2>',__("Data Center Operations Metrics"),'</h2>
 <div class="center"><div>
 ',$rackrequest,'
-<h3>',_("Data Center Inventory"),' <a href="report_realtimemetrics.php">(',_("View as Excel"),')</a></h3>
+<h3>',__("Data Center Inventory"),' <a href="report_realtimemetrics.php">(',__("View as Excel"),')</a></h3>
 <div class="table border centermargin">
 <div class="title">
-',_("Hosted Systems"),'
+',__("Hosted Systems"),'
 </div>
 <div>
-  <div>',_("Server Count"),'</div>
+  <div>',__("Server Count"),'</div>
   <div>',$ITSservers,'</div>
 </div>
 <div>
-  <div>',_("Other Device Count"),'</div>
+  <div>',__("Other Device Count"),'</div>
   <div>',$ITSdevices,'</div>
 </div>
 <div>
-  <div>',_("Space"),' (1U=1.75")</div>
+  <div>',__("Space"),' (1U=1.75")</div>
   <div>',$ITSsize,' U</div>
 </div>
 <div>
-  <div>',_("Power Consumption"),'</div>
+  <div>',__("Power Consumption"),'</div>
   <div>',sprintf("%.2f kiloWatts/hour",$ITSpower/1000),'</div>
 </div>
 <div>
-  <div>',_("Heat Produced"),'</div>
+  <div>',__("Heat Produced"),'</div>
   <div>',sprintf("%.2f Tons",$ITSheat),'</div>
 </div>
 <div>
-  <div>',_("Virtual Machines"),'</div>
+  <div>',__("Virtual Machines"),'</div>
   <div>',$ITSVM,'</div>
 </div>
 </div> <!-- END div.table -->

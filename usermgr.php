@@ -35,7 +35,7 @@
 			if($_POST['action']=='Create'){
   				$userRights->CreateUser($facDB);
 			}else{
-				$status=_("Updated");
+				$status=__("Updated");
 				$userRights->UpdateUser($facDB);
 			}
 		}else{
@@ -81,16 +81,16 @@
 
 echo '<div class="main">
 <h2>',$config->ParameterArray["OrgName"],'</h2>
-<h3>',_("Data Center Contact Detail"),'</h3>
+<h3>',__("Data Center Contact Detail"),'</h3>
 <h3>',$status,'</h3>
 <div class="center"><div>
 <form action="',$_SERVER["PHP_SELF"],'" method="POST">
 <input type="hidden" name="action" value="query">
 <div class="table">
 <div>
-   <div><label for="seluserid">',_("User"),'</label></div>
+   <div><label for="seluserid">',__("User"),'</label></div>
    <div><select name="seluserid" id="seluserid" onChange="form.submit()">
-   <option value="">',_("New User"),'</option>';
+   <option value="">',__("New User"),'</option>';
 
 	foreach($userList as $userRow){
 		if($userRights->UserID == $userRow->UserID){$selected=' selected';}else{$selected="";}
@@ -100,39 +100,39 @@ echo '<div class="main">
 echo '	</select></div>
 </div>
 <div>
-   <div><label for="userid">',_("UserID"),'</label></div>
+   <div><label for="userid">',__("UserID"),'</label></div>
    <div><input type="text" name="userid" id="userid" value="',$userRights->UserID,'"></div>
 </div>
 <div>
-   <div><label for="name">',_("Name"),'</label></div>
+   <div><label for="name">',__("Name"),'</label></div>
    <div><input type="text" name="name" id="name" value="',$userRights->Name,'"></div>
 </div>
 <div>
-   <div><label>',_("Rights"),'</label></div>
+   <div><label>',__("Rights"),'</label></div>
    <div id="nofloat">
-	<input name="readaccess" id="readaccess" type="checkbox"',$read,'><label for="readaccess">',_("Read/Report Access"),'</label><br>
-	<input name="writeaccess" id="writeaccess" type="checkbox"',$write,'><label for="writeaccess">',_("Modify/Enter Devices"),'</label><br>
-	<input name="deleteaccess" id="deleteaccess" type="checkbox"',$delete,'><label for="deleteaccess">',_("Delete Devices"),'</label><br>
-	<input name="contactadmin" id="contactadmin" type="checkbox"',$contact,'><label for="contactadmin">',_("Enter/Modify Contacts and Departments"),'</label><br>
-	<input name="rackrequest" id="rackrequest" type="checkbox"',$request,'><label for="rackrequest">',_("Enter Rack Requests"),'</label><br>
-	<input name="rackadmin" id="rackadmin" type="checkbox"',$rackadmin,'><label for="rackadmin">',_("Complete Rack Requests"),'</label><br>
-	<input name="siteadmin" id="siteadmin" type="checkbox"',$admin,'><label for="siteadmin">',_("Manage Site and Users"),'</label><br>
-	<input name="disabled" id="disabled" type="checkbox"',$disabled,'><label for="disabled">',_("Disabled"),'</label><br>	
+	<input name="readaccess" id="readaccess" type="checkbox"',$read,'><label for="readaccess">',__("Read/Report Access"),'</label><br>
+	<input name="writeaccess" id="writeaccess" type="checkbox"',$write,'><label for="writeaccess">',__("Modify/Enter Devices"),'</label><br>
+	<input name="deleteaccess" id="deleteaccess" type="checkbox"',$delete,'><label for="deleteaccess">',__("Delete Devices"),'</label><br>
+	<input name="contactadmin" id="contactadmin" type="checkbox"',$contact,'><label for="contactadmin">',__("Enter/Modify Contacts and Departments"),'</label><br>
+	<input name="rackrequest" id="rackrequest" type="checkbox"',$request,'><label for="rackrequest">',__("Enter Rack Requests"),'</label><br>
+	<input name="rackadmin" id="rackadmin" type="checkbox"',$rackadmin,'><label for="rackadmin">',__("Complete Rack Requests"),'</label><br>
+	<input name="siteadmin" id="siteadmin" type="checkbox"',$admin,'><label for="siteadmin">',__("Manage Site and Users"),'</label><br>
+	<input name="disabled" id="disabled" type="checkbox"',$disabled,'><label for="disabled">',__("Disabled"),'</label><br>	
    </div>
 </div>
 <div class="caption">';
 
 	if(strlen($userRights->UserID) >0){
-		echo '   <button type="submit" name="action" value="Update">',_("Update"),'</button>';
+		echo '   <button type="submit" name="action" value="Update">',__("Update"),'</button>';
 	}else{
-		echo '	 <button type="submit" name="action" value="Create">',_("Create"),'</button>';
+		echo '	 <button type="submit" name="action" value="Create">',__("Create"),'</button>';
 	}
 ?>
 </div>
 </div> <!-- END div.table -->
 </form>
 </div></div>
-<?php echo '<a href="index.php">[ ',_("Return to Main Menu"),' ]</a>'; ?>
+<?php echo '<a href="index.php">[ ',__("Return to Main Menu"),' ]</a>'; ?>
 </div> <!-- END div.main -->
 </div> <!-- END div.page -->
 </body>

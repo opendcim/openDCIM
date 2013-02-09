@@ -26,7 +26,7 @@
 						break;
 					case 'Update':
 						$esc->Details=$_POST['details'];
-						$status=_('Updated');
+						$status=__('Updated');
 						$esc->UpdateEscalation($facDB);
 						break;
 					case 'Delete':
@@ -63,15 +63,15 @@
 
 echo '<div class="main">
 <h2>',$config->ParameterArray["OrgName"],'</h2>
-<h3>',_("Data Center Escalation Rules"),'</h3>
+<h3>',__("Data Center Escalation Rules"),'</h3>
 <h3>',$status,'</h3>
 <div class="center"><div>
 <form action="',$_SERVER["PHP_SELF"],'" method="POST">
 <div class="table">
 <div>
-   <div><label for="escalationid">',_("Escalation Rule"),'</label></div>
+   <div><label for="escalationid">',__("Escalation Rule"),'</label></div>
    <div><input type="hidden" name="action" value="query"><select name="escalationid" id="escalationid" onChange="form.submit()">
-   <option value=0>',_("New Escalation Rule"),'</option>';
+   <option value=0>',__("New Escalation Rule"),'</option>';
 
 	foreach( $escList as $escRow ) {
 		if($esc->EscalationID == $escRow->EscalationID){$selected=" selected";}else{$selected="";}
@@ -81,23 +81,23 @@ echo '<div class="main">
 echo '	</select></div>
 </div>
 <div>
-   <div><label for="details">',_("Details"),'</label></div>
+   <div><label for="details">',__("Details"),'</label></div>
    <div><input type="text" name="details" id="details" size="80" value="',$esc->Details,'"></div>
 </div>
 <div class="caption">';
 
 	if($esc->EscalationID >0){
-		echo '   <button type="submit" name="action" value="Update">',_("Update"),'</button>
-	 <button type="submit" name="action" value="Delete">',_("Delete"),'</button>';
+		echo '   <button type="submit" name="action" value="Update">',__("Update"),'</button>
+	 <button type="submit" name="action" value="Delete">',__("Delete"),'</button>';
 	}else{
-		echo '	 <button type="submit" name="action" value="Create">',_("Create"),'</button>';
+		echo '	 <button type="submit" name="action" value="Create">',__("Create"),'</button>';
 	}
 ?>
 </div>
 </div><!-- END div.table -->
 </form>
 </div></div>
-<?php echo '<a href="index.php">[ ',_("Return to Main Menu"),' ]</a>'; ?>
+<?php echo '<a href="index.php">[ ',__("Return to Main Menu"),' ]</a>'; ?>
 </div><!-- END div.main -->
 </div><!-- END div.page -->
 </body>

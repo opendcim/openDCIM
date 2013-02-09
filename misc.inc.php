@@ -192,7 +192,7 @@ if(isset($locale)){
 	bindtextdomain("openDCIM","./locale");
 
 	$codeset='utf8';	
-	if(isset($codeset)){
+	if(function_exists( bind_textdomain_codeset ) && isset($codeset)){
 		bind_textdomain_codeset("openDCIM",$codeset);
 	}
 	textdomain("openDCIM");
@@ -215,6 +215,13 @@ function GetValidTranslations() {
 		}
 	}
 	return $lang;
+}
+
+function __( $string ) {
+	if ( function_exists( gettext ) )
+		return _( $string );
+	else
+		return $string;
 }
 
 /*

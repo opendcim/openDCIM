@@ -69,15 +69,15 @@
 
 echo '<div class="main">
 <h2>',$config->ParameterArray["OrgName"],'</h2>
-<h3>',_("Data Center Manufacturer Listing"),'</h3>
+<h3>',__("Data Center Manufacturer Listing"),'</h3>
 <h3>',$status,'</h3>
 <div class="center"><div>
 <form id="mform" action="',$_SERVER["PHP_SELF"],'" method="POST">
 <div class="table">
 <div>
-   <div><label for="manufacturerid">',_("Manufacturer"),'</label></div>
+   <div><label for="manufacturerid">',__("Manufacturer"),'</label></div>
    <div><input type="hidden" name="action" value="query"><select name="manufacturerid" id="manufacturerid" onChange="form.submit()">
-   <option value=0>',_("New Manufacturer"),'</option>';
+   <option value=0>',__("New Manufacturer"),'</option>';
 
 	foreach($mfgList as $mfgRow){
 		if($mfg->ManufacturerID==$mfgRow->ManufacturerID){$selected=" selected";}else{$selected="";}
@@ -87,22 +87,22 @@ echo '<div class="main">
 echo '	</select></div>
 </div>
 <div>
-   <div><label for="name">',_("Name"),'</label></div>
+   <div><label for="name">',__("Name"),'</label></div>
    <div><input type="text" class="validate[required,minSize[1],maxSize[40]]" name="name" id="name" maxlength="40" value="',$mfg->Name,'"></div>
 </div>
 <div class="caption">';
 
 	if($mfg->ManufacturerID >0){
-		echo '   <button type="submit" name="action" value="Update">',_("Update"),'</button>';
+		echo '   <button type="submit" name="action" value="Update">',__("Update"),'</button>';
 	}else{
-		echo '   <button type="submit" name="action" value="Create">',_("Create"),'</button>';
+		echo '   <button type="submit" name="action" value="Create">',__("Create"),'</button>';
 	}
 ?>
 </div>
 </div><!-- END div.table -->
 </form>
 </div></div>
-<?php echo '<a href="index.php">[ ',_("Return to Main Menu"),' ]</a>'; ?>
+<?php echo '<a href="index.php">[ ',__("Return to Main Menu"),' ]</a>'; ?>
 </div><!-- END div.main -->
 </div><!-- END div.page -->
 </body>

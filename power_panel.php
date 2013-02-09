@@ -70,14 +70,14 @@
 
 echo '<div class="main">
 <h2>',$config->ParameterArray["OrgName"],' Power Panels</h2>
-<h3>',_("Data Center Detail"),'</h3>
+<h3>',__("Data Center Detail"),'</h3>
 <div class="center"><div>
 <form action="',$_SERVER["PHP_SELF"],'" method="POST">
 <div class="table">
 <div>
-   <div><label for="panelid">',_("Power Panel ID"),'</label></div>
+   <div><label for="panelid">',__("Power Panel ID"),'</label></div>
    <div><select name="panelid" id="panelid" onChange="form.submit()">
-	<option value="0">',_("New Panel"),'</option>';
+	<option value="0">',__("New Panel"),'</option>';
 
 	foreach($panelList as $panelRow){
 		if($panelRow->PanelID == $panel->PanelID){$selected=" selected";}else{$selected="";}
@@ -88,7 +88,7 @@ echo '	</select>
    </div>
 </div>
 <div>
-   <div><label for="powersourceid">',_("Power Source"),'</label></div>
+   <div><label for="powersourceid">',__("Power Source"),'</label></div>
    <div><select name="powersourceid" id="powersourceid">';
 
 	foreach($psList as $psRow){
@@ -102,32 +102,32 @@ echo '	</select>
 echo '</select></div>
 </div>
 <div>
-   <div><label for="panellabel">',_("Panel Name"),'</label></div>
+   <div><label for="panellabel">',__("Panel Name"),'</label></div>
    <div><input type="text" size="40" name="panellabel" id="panellabel" value="',$panel->PanelLabel,'"></div>
 </div>
 <div>
-   <div><label for="numberofpoles">',_("Number of Poles"),'</label></div>
+   <div><label for="numberofpoles">',__("Number of Poles"),'</label></div>
    <div><input type="number" name="numberofpoles" id="numberofpoles" size="3" value="',$panel->NumberOfPoles,'"></div>
 </div>
 <div>
-   <div><label for="mainbreakersize">',_("Main Breaker Amperage"),'</label></div>
+   <div><label for="mainbreakersize">',__("Main Breaker Amperage"),'</label></div>
    <div><input type="number" name="mainbreakersize" id="mainbreakersize" size="4" value="',$panel->MainBreakerSize,'"></div>
 </div>
 <div>
-   <div><label for="panelvoltage">',_("Panel Voltage"),'</label></div>
+   <div><label for="panelvoltage">',__("Panel Voltage"),'</label></div>
    <div><input type="number" name="panelvoltage" id="panelvoltage" size="4" value="',$panel->PanelVoltage,'"></div>
 </div>
 <div>
-   <div><label for="numberscheme">',_("Numbering Scheme"),'</label></div>
+   <div><label for="numberscheme">',__("Numbering Scheme"),'</label></div>
    <div><select name="numberscheme" id="numberscheme">';
 
 // This is messy but since we are actually storing this value in the db and we use it elsewhere this
 // worked out best
 	if($panel->NumberScheme=="Odd/Even"){$selected=" selected";}else{$selected="";}
-	print "<option value=\"Odd/Even\"$selected>"._("Odd/Even")."</option>\n";
+	print "<option value=\"Odd/Even\"$selected>".__("Odd/Even")."</option>\n";
 
 	if($panel->NumberScheme=="Sequential"){$selected=" selected";}else{$selected="";}
-	print "<option value=\"Sequential\"$selected>"._("Sequential")."</option>\n";
+	print "<option value=\"Sequential\"$selected>".__("Sequential")."</option>\n";
 
 ?>
    </select>
@@ -136,9 +136,9 @@ echo '</select></div>
 <div class="caption">
 <?php
 	if($panel->PanelID >0){
-		echo '   <button type="submit" name="action" value="Update">',_("Update"),'</button>';
+		echo '   <button type="submit" name="action" value="Update">',__("Update"),'</button>';
 	} else {
-		echo '   <button type="submit" name="action" value="Create">',_("Create"),'</button>';
+		echo '   <button type="submit" name="action" value="Create">',__("Create"),'</button>';
   }
 ?>
 </div>
@@ -163,7 +163,7 @@ echo '</select></div>
 				$pduarray[$pnlPDU->PanelPole2][]=$pnlPDU;
 			}
 		}
-		print "<center><h2>"._("Panel Schedule")."</h2></center>\n<table>";
+		print "<center><h2>".__("Panel Schedule")."</h2></center>\n<table>";
 
 		$nextPole=1;
 		$odd=$even=0;
@@ -290,15 +290,15 @@ echo '</select></div>
 	print "</table>";
 	// Okay so someone didn't get correct information from the breaker panel
 	if(isset($errors)){
-		print "<div class=\"table error\">\n	<div>\n		<div>\n			<fieldset>\n				<legend>"._("Errors")."</legend>\n				<div class=\"table\">\n";
+		print "<div class=\"table error\">\n	<div>\n		<div>\n			<fieldset>\n				<legend>".__("Errors")."</legend>\n				<div class=\"table\">\n";
 		foreach($errors as $err){
 			print "					<div><div>$err</div></div>\n";
 		}
-		print "				</div><!-- END div.table -->\n			</fieldset>\n		</div>\n		<div>"._("PDUs displayed here could not be drawn on the panel because of an overlapping circuit ID assignment. Please check the pole positions on the panels again.")."</div>\n	</div>\n</div><!-- END div.table -->\n";
+		print "				</div><!-- END div.table -->\n			</fieldset>\n		</div>\n		<div>".__("PDUs displayed here could not be drawn on the panel because of an overlapping circuit ID assignment. Please check the pole positions on the panels again.")."</div>\n	</div>\n</div><!-- END div.table -->\n";
 	}
 ?>
 </div></div>
-<?php echo '<a href="index.php">[ ',_("Return to Main Menu"),' ]</a>'; ?>
+<?php echo '<a href="index.php">[ ',__("Return to Main Menu"),' ]</a>'; ?>
 </div><!-- END div.main -->
 </div><!-- END div.page -->
 </body>

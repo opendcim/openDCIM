@@ -74,13 +74,13 @@ echo '<div class="main">
 <div class="heading">
   <div>
 	<h2>',$config->ParameterArray["OrgName"],'</h2>
-	<h3>',_("Data Center Statistics"),'</h3>
+	<h3>',__("Data Center Statistics"),'</h3>
   </div>
   <div>
-	<button onclick="loadCanvas()">',_("Overview"),'</button>
-	<button onclick="space()">',_("Space"),'</button>
-	<button onclick="weight()">',_("Weight"),'</button>
-	<button onclick="power()">',_("Power"),'</button>
+	<button onclick="loadCanvas()">',__("Overview"),'</button>
+	<button onclick="space()">',__("Space"),'</button>
+	<button onclick="weight()">',__("Weight"),'</button>
+	<button onclick="power()">',__("Power"),'</button>
   </div>
 </div>
 <div class="center"><div>
@@ -89,20 +89,20 @@ echo '<div class="main">
   <div class="title">',$dc->Name,'</div>
   <div>
 	<div></div>
-	<div>',_("Infrastructure"),'</div>
-	<div>',_("Occupied"),'</div>
-	<div>',_("Allocated"),'</div>
-	<div>',_("Available"),'</div>
+	<div>',__("Infrastructure"),'</div>
+	<div>',__("Occupied"),'</div>
+	<div>',__("Allocated"),'</div>
+	<div>',__("Available"),'</div>
   </div>
   <div>
-	<div>',sprintf(_("Total U")." %5d",$dcStats["TotalU"]),'</div>
+	<div>',sprintf(__("Total U")." %5d",$dcStats["TotalU"]),'</div>
 	<div>',sprintf("%3d",$dcStats["Infrastructure"]),'</div>
 	<div>',sprintf("%3d",$dcStats["Occupied"]),'</div>
 	<div>',sprintf("%3d",$dcStats["Allocated"]),'</div>
 	<div>',sprintf("%3d",$dcStats["Available"]),'</div>
   </div>
   <div>
-	<div>',_("Percentage"),'</div>
+	<div>',__("Percentage"),'</div>
 	<div>',(($dcStats["TotalU"])?sprintf("%3.1f%%",$dcStats["Infrastructure"]/$dcStats["TotalU"]*100):"0"),'</div>
 	<div>',(($dcStats["TotalU"])?sprintf("%3.1f%%",$dcStats["Occupied"]/$dcStats["TotalU"]*100):"0"),'</div>
 	<div>',(($dcStats["TotalU"])?sprintf("%3.1f%%",$dcStats["Allocated"]/$dcStats["TotalU"]*100):"0"),'</div>
@@ -111,24 +111,24 @@ echo '<div class="main">
   </div> <!-- END div.table -->
   <div class="table border">
   <div>
-        <div>',_("Raw Wattage"),'</div>
-        <div>',sprintf("%7d "._("Watts"),$dcStats["TotalWatts"]),'</div>
+        <div>',__("Raw Wattage"),'</div>
+        <div>',sprintf("%7d ".__("Watts"),$dcStats["TotalWatts"]),'</div>
   </div>
   <div>
-        <div>',_("BTU Computation from Watts"),'</div>
-        <div>',sprintf("%8d "._("BTU"),$dcStats["TotalWatts"]*3.412 ),'</div>
+        <div>',__("BTU Computation from Watts"),'</div>
+        <div>',sprintf("%8d ".__("BTU"),$dcStats["TotalWatts"]*3.412 ),'</div>
   </div>
   <div>
-        <div>',_("Data Center Size"),'</div>
-        <div>',sprintf("%8d "._("Square Feet"),$dc->SquareFootage),'</div>
+        <div>',__("Data Center Size"),'</div>
+        <div>',sprintf("%8d ".__("Square Feet"),$dc->SquareFootage),'</div>
   </div>
   <div>
-        <div>',_("Watts per Square Foot"),'</div>
-        <div>',(($dc->SquareFootage)?sprintf("%8d "._("Watts"),$dcStats["TotalWatts"]/$dc->SquareFootage):"0 "._("Watts")),'</div>
+        <div>',__("Watts per Square Foot"),'</div>
+        <div>',(($dc->SquareFootage)?sprintf("%8d ".__("Watts"),$dcStats["TotalWatts"]/$dc->SquareFootage):"0 ".__("Watts")),'</div>
   </div>
   <div>
-        <div>',_("Minimum Cooling Tonnage Required"),'</div>
-        <div>',sprintf("%7d "._("Tons"),$dcStats["TotalWatts"]*3.412*1.15/12000),'</div>
+        <div>',__("Minimum Cooling Tonnage Required"),'</div>
+        <div>',sprintf("%7d ".__("Tons"),$dcStats["TotalWatts"]*3.412*1.15/12000),'</div>
   </div>
 </div> <!-- END div.table -->
 </div>';

@@ -140,9 +140,9 @@ function allSelect()
 <?php
 echo '<form action="',$_SERVER["PHP_SELF"],'" method="POST" onSubmit="allSelect()">
 <input type="hidden" name="deptid" value="',$dept->DeptID,'">
-<h3>',_("Group to Administer"),': ',$dept->Name,'</h3>
+<h3>',__("Group to Administer"),': ',$dept->Name,'</h3>
 <div>
-',_("Possible Contacts"),'
+',__("Possible Contacts"),'
 <select name="possible" id="possibleList" size="6" multiple="multiple">';
 
 	foreach($possibleList as $contactRow){
@@ -154,10 +154,10 @@ echo '</select>
 <div>
 <input type="button" value="-->" onClick="javascript:addToList()" /><br>
 <input type="button" value="<--" onClick="javascript:removeFromList()" /><br>
-<button type="submit" value="Submit" name="action">',_("Submit"),'</button>
+<button type="submit" value="Submit" name="action">',__("Submit"),'</button>
 </div>
 <div>
-',_("Assigned Contacts"),'
+',__("Assigned Contacts"),'
 <select name="chosen[]" id="chosenList" size="6" multiple="multiple">';
 
 	if(count($deptList)==0){print "<option value=\"temp\" />\n";}

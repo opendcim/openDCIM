@@ -21,20 +21,20 @@
 	}
 
 	$mailer = Swift_Mailer::newInstance($transport);
-	$message = Swift_Message::NewInstance()->setSubject( _("Recent Data Center Installations Report" ) );
+	$message = Swift_Message::NewInstance()->setSubject( __("Recent Data Center Installations Report" ) );
 
 	// Set from address
 	try{		
 		$message->setFrom($config->ParameterArray['MailFromAddr']);
 	}catch(Swift_RfcComplianceException $e){
-		$error.=_("MailFrom").": <span class=\"errmsg\">".$e->getMessage()."</span><br>\n";
+		$error.=__("MailFrom").": <span class=\"errmsg\">".$e->getMessage()."</span><br>\n";
 	}
 
 	// Add data center team to the list of recipients
 	try{		
 		$message->addTo($config->ParameterArray['FacMgrMail']);
 	}catch(Swift_RfcComplianceException $e){
-		$error.=_("Facility Manager email address").": <span class=\"errmsg\">".$e->getMessage()."</span><br>\n";
+		$error.=__("Facility Manager email address").": <span class=\"errmsg\">".$e->getMessage()."</span><br>\n";
 	}
 
 	$logo='images/'.$config->ParameterArray["PDFLogoFile"];

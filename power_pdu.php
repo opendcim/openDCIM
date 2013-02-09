@@ -60,28 +60,28 @@
 		$template->TemplateID=$pdu->TemplateID;
 		$template->GetTemplate($facDB);
 		
-		printf( "<p>%s %s.<br>\n", _("Testing SNMP communication to CDU"), $pdu->Label );
-		printf( "%s %s.<br>\n", _("Connecting to IP address"), $pdu->IPAddress );
-		printf( "%s %s.</p>\n", _("Using SNMP Community string"), $pdu->SNMPCommunity );
+		printf( "<p>%s %s.<br>\n", __("Testing SNMP communication to CDU"), $pdu->Label );
+		printf( "%s %s.<br>\n", __("Connecting to IP address"), $pdu->IPAddress );
+		printf( "%s %s.</p>\n", __("Using SNMP Community string"), $pdu->SNMPCommunity );
 		
-		print "<div id=\"infopanel\"><fieldset><legend>"._("Results")."</legend>\n";
+		print "<div id=\"infopanel\"><fieldset><legend>".__("Results")."</legend>\n";
 		
 		$command="/usr/bin/snmpget";
 		
 		$upTime=$pdu->GetSmartCDUUptime($facDB);
 		if($upTime!=""){
-			printf("<p>%s: %s</p>\n", _("SNMP Uptime"),$upTime);
+			printf("<p>%s: %s</p>\n", __("SNMP Uptime"),$upTime);
 		}else{
-			print "<p>"._("SNMP Uptime did not return a valid value.")."</p>\n";
+			print "<p>".__("SNMP Uptime did not return a valid value.")."</p>\n";
 		}
 		
 		$pollCommand=sprintf( "%s -v 2c -c %s %s %s | /bin/cut -d: -f4", $command, $pdu->SNMPCommunity, $pdu->IPAddress, $template->VersionOID );
 		exec($pollCommand,$verOutput);
 		
 		if(count($verOutput) >0){
-			printf( "<p>%s %s.  %s</p>\n", _("VersionOID returned a value of"), $verOutput[0], _("Please check to see if it makes sense.") );
+			printf( "<p>%s %s.  %s</p>\n", __("VersionOID returned a value of"), $verOutput[0], __("Please check to see if it makes sense.") );
 		}else{
-			print "<p>"._("The OID for Firmware Version did not return a value.  Please check your MIB table.")."</p>\n";
+			print "<p>".__("The OID for Firmware Version did not return a value.  Please check your MIB table.")."</p>\n";
 		}
 		
 		$OIDString=$template->OID1." ".$template->OID2." ".$template->OID3;
@@ -91,21 +91,21 @@
 		
 		if(count($statsOutput) >0){
 			if($statsOutput[0]!=""){
-				printf( "<p>%s %s.  %s</p>\n", _("OID1 returned a value of"), $statsOutput[0], _("Please check to see if it makes sense.") );
+				printf( "<p>%s %s.  %s</p>\n", __("OID1 returned a value of"), $statsOutput[0], __("Please check to see if it makes sense.") );
 			}else{
-				print "<p>"._("OID1 did not return any data.  Please check your MIB table.")."</p>\n";
+				print "<p>".__("OID1 did not return any data.  Please check your MIB table.")."</p>\n";
 			}
 			
 			if((strlen($template->OID2) >0)&&(strlen($statsOutput[1]) >0)){
-				printf( "<p>%s %s.  %s</p>\n", _("OID2 returned a value of"), $statsOutput[1], _("Please check to see if it makes sense.") );
+				printf( "<p>%s %s.  %s</p>\n", __("OID2 returned a value of"), $statsOutput[1], __("Please check to see if it makes sense.") );
 			}elseif(strlen($template->OID2) >0){
-				print "<p>"._("OID2 did not return any data.  Please check your MIB table.")."</p>\n";
+				print "<p>".__("OID2 did not return any data.  Please check your MIB table.")."</p>\n";
 			}
 
 			if((strlen($template->OID3) >0)&&(strlen($statsOutput[2]) >0)){
-				printf( "<p>%s %s.  %s</p>\n", _("OID3 returned a value of"), $statsOutput[2], _("Please check to see if it makes sense.") );
+				printf( "<p>%s %s.  %s</p>\n", __("OID3 returned a value of"), $statsOutput[2], __("Please check to see if it makes sense.") );
 			}elseif(strlen($template->OID3)){
-				print "<p>"._("OID3 did not return any data.  Please check your MIB table.")."</p>\n";
+				print "<p>".__("OID3 did not return any data.  Please check your MIB table.")."</p>\n";
 			}
 			
 			switch($template->ProcessingProfile){
@@ -128,7 +128,7 @@
 					break;
 			}
 			
-			printf("<p>%s %.2f kW</p>", _("Resulting kW from this test is"),$watts/1000);
+			printf("<p>%s %.2f kW</p>", __("Resulting kW from this test is"),$watts/1000);
 		}
 		echo '	</fieldset></div>';
 		exit;
@@ -249,7 +249,7 @@
 							device.html(data).css('padding', '0px');
 							devinput.html('<input name="DeviceConnNumber" value="'+devinput.text()+'"></input>').css('padding', '0px');
 							devinput.children('input').css({'width': width+'px', 'text-align': 'center'});
-<?php echo '							row.append(\'<div style="padding: 0px;"><button name="delete">',_("Delete"),'</button><button name="cancel">',_("Cancel"),'</button></div>\');'; ?>
+<?php echo '							row.append(\'<div style="padding: 0px;"><button name="delete">',__("Delete"),'</button><button name="cancel">',__("Cancel"),'</button></div>\');'; ?>
 							row.find('div > button').css({'height': height+'px', 'line-height': '1'});
 							row.find('div > button').each(function(){
 								var a=devinput.find('input');
@@ -323,25 +323,25 @@
 
 echo '<div class="main">
 <h2>',$config->ParameterArray["OrgName"],'</h2>
-<h3>',_("Data Center PDU Detail"),'</h3>
+<h3>',__("Data Center PDU Detail"),'</h3>
 <div class="center"><div>
 <form name="pduform" id="pduform" action="',$_SERVER["PHP_SELF"],'" method="POST">
 <div class="table">
 <div>
-   <div><label for="pduid">',_("PDU ID"),'</label></div>
+   <div><label for="pduid">',__("PDU ID"),'</label></div>
    <div><input type="text" name="pduid" id="pduid" value="',$pdu->PDUID,'" size="6" readonly></div>
 </div>
 <div>
-   <div><label for="label">',_("Label"),'</label></div>
+   <div><label for="label">',__("Label"),'</label></div>
    <div><input type="text" name="label" id="label" size="50" value="',$pdu->Label,'"></div>
 </div>
 <div>
-   <div><label for="cabinetid">',_("Cabinet"),'</label></div>
+   <div><label for="cabinetid">',__("Cabinet"),'</label></div>
    <div>',$cab->GetCabinetSelectList($facDB),'</div>
 </div>
 <div>
-   <div><label for="panelid">',_("Source Panel"),'</label></div>
-   <div><select name="panelid" id="panelid" ><option value=0>',_("Select Panel"),'</option>';
+   <div><label for="panelid">',__("Source Panel"),'</label></div>
+   <div><select name="panelid" id="panelid" ><option value=0>',__("Select Panel"),'</option>';
 
 foreach($PanelList as $key=>$value){
 	if($value->PanelID == $pdu->PanelID){$selected=' selected';}else{$selected="";}
@@ -351,7 +351,7 @@ foreach($PanelList as $key=>$value){
 echo '   </select></div>
 </div>
 <div>
-	<div><label for="voltage">',_("Voltages:"),'</label></div>
+	<div><label for="voltage">',__("Voltages:"),'</label></div>
 	<div id="voltage">';
 
 	if($pdu->PanelID >0){
@@ -365,7 +365,7 @@ echo '   </select></div>
 echo '	</div>
 </div>
 <div>
-  <div><label for="breakersize">',_("Breaker Size (# of Poles)"),'</label></div>
+  <div><label for="breakersize">',__("Breaker Size (# of Poles)"),'</label></div>
   <div>
 	<select name="breakersize">';
 
@@ -378,15 +378,15 @@ echo '	</select>
   </div>
 </div>
 <div>
-  <div><label for="panelpole">',_("Panel Pole Number"),'</label></div>
+  <div><label for="panelpole">',__("Panel Pole Number"),'</label></div>
   <div><input type="text" name="panelpole" id="panelpole" size=5 value="',$pdu->PanelPole,'"></div>
 </div>
 <div>
-   <div><label for="inputamperage">',_("Input Amperage"),'</label></div>
+   <div><label for="inputamperage">',__("Input Amperage"),'</label></div>
    <div><input type="text" name="inputamperage" id="inputamperage" size=5 value="',$pdu->InputAmperage,'"></div>
 </div>
 <div>
-	<div><label for="templateid">',_("CDU Template"),'</label></div>
+	<div><label for="templateid">',__("CDU Template"),'</label></div>
 	<div><select name="templateid" id="templateid">';
 
 	foreach($templateList as $templateRow){
@@ -400,32 +400,32 @@ echo '	</select>
 echo '   </select></div>
 </div>
 <div>
-   <div><label for="ipaddress">',_("IP Address"),'</label></div>
+   <div><label for="ipaddress">',__("IP Address"),'</label></div>
    <div><input type="text" name="ipaddress" id="ipaddress" size=15 value="',$pdu->IPAddress,'">',((strlen($pdu->IPAddress)>0)?"<a href=\"http://$pdu->IPAddress\" target=\"new\">http://$pdu->IPAddress</a>":""),'</div>
 </div>
 <div>
-    <div>',_("Uptime"),'</div>
+    <div>',__("Uptime"),'</div>
     <div>',$upTime,'</div>
 </div>
 <div>
-    <div>',_("Firmware Version"),'</div>
+    <div>',__("Firmware Version"),'</div>
     <div>',$pdu->FirmwareVersion,'</div>
 </div>
 <div>
-   <div><label for="snmpcommunity">',_("SNMP Community"),'</label></div>
-   <div><input type="text" name="snmpcommunity" id="snmpcommunity" size=15 value="',$pdu->SNMPCommunity,'"><a id="pdutestlink" href="#">', _("Test Communications"), '</a></div>
+   <div><label for="snmpcommunity">',__("SNMP Community"),'</label></div>
+   <div><input type="text" name="snmpcommunity" id="snmpcommunity" size=15 value="',$pdu->SNMPCommunity,'"><a id="pdutestlink" href="#">', __("Test Communications"), '</a></div>
 </div>
 <div class="caption">
-<h3>',_("Automatic Transfer Switch"),'</h3>
+<h3>',__("Automatic Transfer Switch"),'</h3>
 <fieldset id="powerinfo">
 <div class="table centermargin border">
 <div>
-  <div><label for="failsafe">',_("Fail Safe Switch?"),'</label></div>
+  <div><label for="failsafe">',__("Fail Safe Switch?"),'</label></div>
   <div><input type="checkbox" name="failsafe" id="failsafe"',(($pdu->FailSafe)?" checked":""),'></div>
 </div>
 <div>
-   <div><label for="panelid2">',_("Source Panel (Secondary Source)"),'</label></div>
-   <div><select name="panelid2" id="panelid2"><option value=0>',_("Select Panel"),'</option>';
+   <div><label for="panelid2">',__("Source Panel (Secondary Source)"),'</label></div>
+   <div><select name="panelid2" id="panelid2"><option value=0>',__("Select Panel"),'</option>';
 
 	foreach($PanelList as $key=>$value){
 		if($value->PanelID==$pdu->PanelID2){$selected=" selected";}else{$selected="";}
@@ -435,16 +435,16 @@ echo '   </select></div>
 echo '   </select></div>
 </div>
 <div>
-  <div><label for="panelpole2">',_("Panel Pole Number (Secondary Source)"),'</label></div>
+  <div><label for="panelpole2">',__("Panel Pole Number (Secondary Source)"),'</label></div>
   <div><input type="text" name="panelpole2" id="panelpole2" size=4 value="',$pdu->PanelPole2,'"></div>
 </div>
 <div class="caption">';
 
 	if($user->WriteAccess){
 		if($pdu->PDUID >0){
-			echo '   <button type="submit" name="action" value="Update">',_("Update"),'</button>';
+			echo '   <button type="submit" name="action" value="Update">',__("Update"),'</button>';
 		} else {
-			echo '   <button type="submit" name="action" value="Create">',_("Create"),'</button>';
+			echo '   <button type="submit" name="action" value="Create">',__("Create"),'</button>';
 		}
 	}
 
@@ -458,9 +458,9 @@ echo '</div>
 
 <div class="table border">
 	<div>
-		<div>',_("Output No."),'</div>
-		<div>',_("Device Name"),'</div>
-		<div>',_("Dev Input No"),'</div>
+		<div>',__("Output No."),'</div>
+		<div>',__("Device Name"),'</div>
+		<div>',__("Dev Input No"),'</div>
 	</div>';
 
 	for($connNumber=1; $connNumber<$template->NumOutlets+1; $connNumber++){
@@ -487,7 +487,7 @@ echo '</div>
 
 <div id="pdutest" title="Testing SNMP Communications"></div>
 
-<?php echo '<a href="cabnavigator.php?cabinetid=',$cab->CabinetID,'">[ ',_("Return to Navigator"),' ]</a>'; ?>
+<?php echo '<a href="cabnavigator.php?cabinetid=',$cab->CabinetID,'">[ ',__("Return to Navigator"),' ]</a>'; ?>
 </div><!-- END div.main -->
 </div><!-- END div.page -->
 </body>

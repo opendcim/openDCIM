@@ -34,7 +34,7 @@
 		if ( $_REQUEST['action']=='Create' ) {
 			$template->CreateTemplate($facDB);
 		} else {
-			$status=_('Updated');
+			$status=__('Updated');
 			$template->UpdateTemplate($facDB);
 		}
 	}
@@ -66,15 +66,15 @@
 
 echo '<div class="main">
 <h2>',$config->ParameterArray["OrgName"],'</h2>
-<h3>',_("Data Center Device Templates"),'</h3>
+<h3>',__("Data Center Device Templates"),'</h3>
 <h3>',$status,'</h3>
 <div class="center"><div>
 <form action="',$_SERVER["PHP_SELF"],'" method="POST">
 <div class="table">
 	<div>
-		<div><label for="templateid">',_("Template"),'</label></div>
+		<div><label for="templateid">',__("Template"),'</label></div>
 		<div><input type="hidden" name="action" value="query"><select name="templateid" id="templateid" onChange="form.submit()">
-		<option value=0>',_("New Template"),'</option>';
+		<option value=0>',__("New Template"),'</option>';
 
 	foreach($templateList as $templateRow){
 		$manufacturer->ManufacturerID=$templateRow->ManufacturerID;
@@ -86,7 +86,7 @@ echo '<div class="main">
 echo '	</select></div>
 </div>
 <div>
-	<div><label for="manufacturerid">',_("Manufacturer"),'</label></div>
+	<div><label for="manufacturerid">',__("Manufacturer"),'</label></div>
 	<div><select name="manufacturerid" id="manufacturerid">';
 
 	foreach($ManufacturerList as $ManufacturerRow){
@@ -98,23 +98,23 @@ echo '    </select>
    </div>
 </div>
 <div>
-   <div><label for="model">',_("Model"),'</label></div>
+   <div><label for="model">',__("Model"),'</label></div>
    <div><input type="text" name="model" id="model" value="',$template->Model,'"></div>
 </div>
 <div>
-   <div><label for="height">',_("Height"),'</label></div>
+   <div><label for="height">',__("Height"),'</label></div>
    <div><input type="text" name="height" id="height" value="',$template->Height,'"></div>
 </div>
 <div>
-   <div><label for="weight">',_("Weight"),'</label></div>
+   <div><label for="weight">',__("Weight"),'</label></div>
    <div><input type="text" name="weight" id="weight" value="',$template->Weight,'"></div>
 </div>
 <div>
-   <div><label for="wattage">',_("Wattage"),'</label></div>
+   <div><label for="wattage">',__("Wattage"),'</label></div>
    <div><input type="text" name="wattage" id="wattage" value="',$template->Wattage,'"></div>
 </div>
 <div>
-   <div><label for="devicetype">',_("Device Type"),'</label></div>
+   <div><label for="devicetype">',__("Device Type"),'</label></div>
    <div><select name="devicetype" id="select">';
 
 	foreach(array('Server','Appliance','Storage Array','Switch','Chassis','Patch Panel','Physical Infrastructure') as $DevType){
@@ -126,26 +126,26 @@ echo '	</select>
    </div>
 </div>
 <div>
-   <div><label for="pscount">',_("No. Power Supplies"),'</label></div>
+   <div><label for="pscount">',__("No. Power Supplies"),'</label></div>
    <div><input type="text" name="pscount" id="pscount" value="',$template->PSCount,'"></div>
 </div>
 <div>
-   <div><label for="numports">',_("No. Ports"),'</label></div>
+   <div><label for="numports">',__("No. Ports"),'</label></div>
    <div><input type="text" name="numports" id="numports" value="',$template->NumPorts,'"></div>
 </div>
 <div class="caption">';
 
 	if($template->TemplateID >0){
-		echo '   <button type="submit" name="action" value="Update">',_("Update"),'</button>';
+		echo '   <button type="submit" name="action" value="Update">',__("Update"),'</button>';
 	}else{
-		echo '	 <button type="submit" name="action" value="Create">',_("Create"),'</button>';
+		echo '	 <button type="submit" name="action" value="Create">',__("Create"),'</button>';
 	}
 ?>
 </div>
 </div><!-- END div.table -->
 </form>
 </div></div>
-<?php echo '<a href="index.php">[ ',_("Return to Main Menu"),' ]</a>'; ?>
+<?php echo '<a href="index.php">[ ',__("Return to Main Menu"),' ]</a>'; ?>
 </div><!-- END div.main -->
 </div><!-- END div.page -->
 </body>

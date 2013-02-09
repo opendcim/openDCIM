@@ -106,8 +106,8 @@
 
 	$body.="<div class=\"cabinet\">
 <table>
-	<tr><th colspan=2>"._("Cabinet")." $cab->Location</th></tr>
-	<tr><td>"._("Pos")."</td><td>"._("Device")."</td></tr>\n";
+	<tr><th colspan=2>".__("Cabinet")." $cab->Location</th></tr>
+	<tr><td>".__("Pos")."</td><td>".__("Device")."</td></tr>\n";
 
 	$deptswithcolor=array();
 	while(list($devID,$device)=each($devList)){
@@ -237,16 +237,16 @@ $body.='</table>
 </div>
 <div id="infopanel">
 	<fieldset>
-		<legend>'._("Markup Key").'</legend>
-		<p><font color=red>(O)</font> - '._("Owner Unassigned").'</p>
-		<p><font color=red>(T)</font> - '._("Template Unassigned").'</p>
+		<legend>'.__("Markup Key").'</legend>
+		<p><font color=red>(O)</font> - '.__("Owner Unassigned").'</p>
+		<p><font color=red>(T)</font> - '.__("Template Unassigned").'</p>
 '.$legend.'
 	</fieldset>
 	<fieldset>
-		<legend>'._("Cabinet Metrics").'</legend>
+		<legend>'.__("Cabinet Metrics").'</legend>
 		<table style="background: white;" border=1>
 		<tr>
-			<td>'._("Space").'
+			<td>'.__("Space").'
 				<div class="meter-wrap">
 					<div class="meter-value" style="background-color: '.$SpaceColor.'; width: '.$SpacePercent.'%;">
 						<div class="meter-text">'.$SpacePercent.'%</div>
@@ -255,7 +255,7 @@ $body.='</table>
 			</td>
 		</tr>
 		<tr>
-			<td>'._("Weight").'
+			<td>'.__("Weight").'
 				<div class="meter-wrap">
 					<div class="meter-value" style="background-color: '.$WeightColor.'; width: '.$WeightPercent.'%;">
 						<div class="meter-text">'.$WeightPercent.'%</div>
@@ -264,7 +264,7 @@ $body.='</table>
 			</td>
 		</tr>
 		<tr>
-			<td>'._("Power").'
+			<td>'.__("Power").'
 				<div class="meter-wrap">
 					<div class="meter-value" style="background-color: '.$PowerColor.'; width: '.$PowerPercent.'%;">
 						<div class="meter-text">'; $body.=sprintf("%d kW / %d kW",round($totalWatts/1000),$cab->MaxKW);$body.='</div>
@@ -273,10 +273,10 @@ $body.='</table>
 			</td>
 		</tr>
 		</table>
-		<p>'._("Approximate Center of Gravity").': '.$CenterofGravity.' U</p>
+		<p>'.__("Approximate Center of Gravity").': '.$CenterofGravity.' U</p>
 	</fieldset>
 	<fieldset>
-		<legend>'._("Key/Lock Information").'</legend>
+		<legend>'.__("Key/Lock Information").'</legend>
 		<div id="keylock">
 			'.$cab->Keylock.'
 		</div>
@@ -284,14 +284,14 @@ $body.='</table>
 
 	if($zeroheight!=""){
 		$body.='	<fieldset>
-		<legend>'._("Zero-U Devices").'</legend>
+		<legend>'.__("Zero-U Devices").'</legend>
 		<div id="zerou">
 			'.$zeroheight.'
 		</div>
 	</fieldset>';
 	}
 	$body.='	<fieldset>
-		<legend>'._("Power Distribution").'</legend>';
+		<legend>'.__("Power Distribution").'</legend>';
 
 	foreach($PDUList as $PDUdev){
 		if( $PDUdev->IPAddress<>"" ) {
@@ -326,23 +326,23 @@ $body.='</table>
 	}
 	
 	if($user->WriteAccess){
-		$body.="			<ul class=\"nav\"><a href=\"power_pdu.php?pduid=0&cabinetid=$cab->CabinetID\"><li>"._("Add CDU")."</li></a></ul>\n";
+		$body.="			<ul class=\"nav\"><a href=\"power_pdu.php?pduid=0&cabinetid=$cab->CabinetID\"><li>".__("Add CDU")."</li></a></ul>\n";
 	}
 
 	$body.="	</fieldset>
 <fieldset>
-	<p>"._("Last Audit").": $audit->AuditStamp<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;($AuditorName)</p>
+	<p>".__("Last Audit").": $audit->AuditStamp<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;($AuditorName)</p>
 	<ul class=\"nav\">\n";
 	if($user->WriteAccess){
 		$body.="
-		<a href=\"#\" onclick=\"javascript:verifyAudit(this.form)\"><li>"._("Certify Audit")."</li></a>
-		<a href=\"devices.php?action=new&cabinet=$cab->CabinetID\"><li>"._("Add Device")."</li></a>
-		<a href=\"cabaudit.php?cabinetid=$cab->CabinetID\"><li>"._("Audit Report")."</li></a>
-		<a href=\"mapmaker.php?cabinetid=$cab->CabinetID\"><li>"._("Map Coordinates")."</li></a>
-		<a href=\"cabinets.php?cabinetid=$cab->CabinetID\"><li>"._("Edit Cabinet")."</li></a>\n";
+		<a href=\"#\" onclick=\"javascript:verifyAudit(this.form)\"><li>".__("Certify Audit")."</li></a>
+		<a href=\"devices.php?action=new&cabinet=$cab->CabinetID\"><li>".__("Add Device")."</li></a>
+		<a href=\"cabaudit.php?cabinetid=$cab->CabinetID\"><li>".__("Audit Report")."</li></a>
+		<a href=\"mapmaker.php?cabinetid=$cab->CabinetID\"><li>".__("Map Coordinates")."</li></a>
+		<a href=\"cabinets.php?cabinetid=$cab->CabinetID\"><li>".__("Edit Cabinet")."</li></a>\n";
 	}
 	if($user->SiteAdmin){
-		$body.="<a href=\"#\" onclick=\"javascript:verifyDelete(this.form)\"><li>"._("Delete Cabinet")."</li></a>";
+		$body.="<a href=\"#\" onclick=\"javascript:verifyDelete(this.form)\"><li>".__("Delete Cabinet")."</li></a>";
 	}
 
 	$body.='	</ul>
@@ -380,7 +380,7 @@ echo $head,'  <script type="text/javascript" src="scripts/jquery.min.js"></scrip
 	var form=$("<form>").attr({ method: "post", action: "cabnavigator.php" });
 	$("<input>").attr({ type: "hidden", name: "cabinetid", value: "',$cab->CabinetID,'"}).appendTo(form);
 	function verifyAudit(formname){
-		if(confirm("',_("Do you certify that you have completed an audit of the selected cabinet?"),'")){
+		if(confirm("',__("Do you certify that you have completed an audit of the selected cabinet?"),'")){
 			$("<input>").attr({ type: "hidden", name: "audit", value: "yes"}).appendTo(form);
 			form.appendTo("body");
 			form.submit();
@@ -388,7 +388,7 @@ echo $head,'  <script type="text/javascript" src="scripts/jquery.min.js"></scrip
 	}
 	
 	function verifyDelete(formname){
-		if(confirm("',_("Are you sure that you want to delete this cabinet, including all devices, power strips, and connections?"),'\n',_("THIS ACTION CAN NOT BE UNDONE!"),'")){
+		if(confirm("',__("Are you sure that you want to delete this cabinet, including all devices, power strips, and connections?"),'\n',__("THIS ACTION CAN NOT BE UNDONE!"),'")){
 			$("<input>").attr({ type: "hidden", name: "delete", value: "yes"}).appendTo(form);
 			form.appendTo("body");
 			form.submit();
@@ -424,7 +424,7 @@ echo $head,'  <script type="text/javascript" src="scripts/jquery.min.js"></scrip
 ?>
 <div class="main cabnavigator">
 <h2><?php print $config->ParameterArray["OrgName"]; ?></h2>
-<h3><?php print _("Data Center Cabinet Inventory"); ?></h3>
+<h3><?php print __("Data Center Cabinet Inventory"); ?></h3>
 <div class="center"><div>
 <div id="centeriehack">
 <?php

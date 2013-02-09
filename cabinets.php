@@ -175,14 +175,14 @@
 
 echo '<div class="main">
 <h2>',$config->ParameterArray["OrgName"],'</h2>
-<h3>',_("Data Center Cabinet Inventory"),'</h3>
+<h3>',__("Data Center Cabinet Inventory"),'</h3>
 <div class="center"><div>
 <form id="rackform" action="',$_SERVER["PHP_SELF"],'" method="POST">
 <div class="table">
 <div>
-   <div>',_("Cabinet"),'</div>
+   <div>',__("Cabinet"),'</div>
    <div><select name="cabinetid" onChange="form.submit()">
-   <option value=0>',_("New Cabinet"),'</option>';
+   <option value=0>',__("New Cabinet"),'</option>';
 
 	foreach($cabList as $cabRow){
 		if($cabRow->CabinetID == $cab->CabinetID){$selected=' selected';}else{$selected="";}
@@ -192,17 +192,17 @@ echo '<div class="main">
 echo '   </select></div>
 </div>
 <div>
-   <div>',_("Data Center"),'</div>
+   <div>',__("Data Center"),'</div>
    <div>',$cab->GetDCSelectList($facDB),'</div>
 </div>
 <div>
-   <div>',_("Location"),'</div>
+   <div>',__("Location"),'</div>
    <div><input type="text" class="validate[required,minSize[1],maxSize[20]]" name="location" size=10 maxlength=20 value="',$cab->Location,'"></div>
 </div>
 <div>
-  <div>',_("Assigned To"),':</div>
+  <div>',__("Assigned To"),':</div>
   <div><select name="assignedto">
-    <option value=0>',_("General Use"),'</option>';
+    <option value=0>',__("General Use"),'</option>';
 
 	foreach($deptList as $deptRow){
 		if($deptRow->DeptID==$cab->AssignedTo){$selected=' selected';}else{$selected="";}
@@ -213,57 +213,57 @@ echo '  </select>
   </div>
 </div>
 <div>
-   <div>',_("Cabinet Height"),' (U)</div>
+   <div>',__("Cabinet Height"),' (U)</div>
    <div><input type="text" class="validate[optional,custom[onlyNumberSp]]" name="cabinetheight" size=4 maxlength=4 value="',$cab->CabinetHeight,'"></div>
 </div>
 <div>
-   <div>',_("Model"),'</div>
+   <div>',__("Model"),'</div>
    <div><input type="text" name="model" size=30 maxlength=80 value="',$cab->Model,'"></div>
 </div>
 <div>
-   <div>',_("Key/Lock Information"),'</div>
+   <div>',__("Key/Lock Information"),'</div>
    <div><input type="text" name="keylock" size=30 maxlength=30 value="',$cab->Keylock,'"></div>
 </div>
 <div>
-   <div>',_("Maximum"),' kW</div>
+   <div>',__("Maximum"),' kW</div>
    <div><input type="text" class="validate[optional,custom[number]]" name="maxkw" size=30 maxlength=11 value="',$cab->MaxKW,'"></div>
 </div>
 <div>
-   <div>',_("Maximum Weight"),'</div>
+   <div>',__("Maximum Weight"),'</div>
    <div><input type="text" class="validate[optional,custom[onlyNumberSp]]" name="maxweight" size=30 maxlength=11 value="',$cab->MaxWeight,'"></div>
 </div>
 <div>
-   <div>',_("Date of Installation"),'</div>
+   <div>',__("Date of Installation"),'</div>
    <div><input type="text" name="installationdate" size=15 value="',date('m/d/Y', strtotime($cab->InstallationDate)),'"></div>
 </div>
 <div>
-	<div>',_("Sensor IP Address"),'</div>
+	<div>',__("Sensor IP Address"),'</div>
 	<div><input type="text" name="sensoripaddress" size=15 value="',$cab->SensorIPAddress,'"></div>
 </div>
 <div>
-	<div>',_("Sensor SNMP Community"),'</div>
+	<div>',__("Sensor SNMP Community"),'</div>
 	<div><input type="text" name="sensorcommunity" size=30 value="',$cab->SensorCommunity,'"></div>
 </div>
 <div>
-	<div>',_("Temperature Sensor OID"),'</div>
+	<div>',__("Temperature Sensor OID"),'</div>
 	<div><input type="text" name="sensoroid" size=30 value="',$cab->SensorOID,'"></div>
 </div>
 <div>
-	<div><label for="tags">',_("Tags"),'</label></div>
+	<div><label for="tags">',__("Tags"),'</label></div>
 	<div><textarea type="text" name="tags" id="tags" rows="1"></textarea></div>
 </div>
 </div> <!-- END div.table -->
 <div class="table">
 	<div>
-	  <div><label for="notes">',_("Notes"),'</label></div>
+	  <div><label for="notes">',__("Notes"),'</label></div>
 	  <div><textarea name="notes" id="notes" cols="40" rows="8">',$cab->Notes,'</textarea></div>
 	</div>
 <div class="caption">';
 
 	if($cab->CabinetID >0){
-		echo '   <button type="submit" name="action" value="Update">',_("Update"),'</button>';
+		echo '   <button type="submit" name="action" value="Update">',__("Update"),'</button>';
 	}else{
-		echo '   <button type="submit" name="action" value="Create">',_("Create"),'</button>';
+		echo '   <button type="submit" name="action" value="Create">',__("Create"),'</button>';
 	}
 ?>
 </div>		
@@ -271,9 +271,9 @@ echo '  </select>
 </form>
 </div></div>
 <?php if($cab->CabinetID >0){
-		echo '<a href="cabnavigator.php?cabinetid=',$cab->CabinetID,'">[ ',_("Return to Navigator"),' ]</a>'; 
+		echo '<a href="cabnavigator.php?cabinetid=',$cab->CabinetID,'">[ ',__("Return to Navigator"),' ]</a>'; 
 	}else{ 
-		echo '<a href="index.php">[ ',_("Return to Main Menu"),' ]</a>';
+		echo '<a href="index.php">[ ',__("Return to Main Menu"),' ]</a>';
 	}
 ?>
 </div><!-- END div.main -->

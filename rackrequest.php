@@ -59,21 +59,21 @@
 		try{		
 			$message->setFrom($config->ParameterArray['MailFromAddr']);
 		}catch(Swift_RfcComplianceException $e){
-			$error.=_("MailFrom").": <span class=\"errmsg\">".$e->getMessage()."</span><br>\n";
+			$error.=__("MailFrom").": <span class=\"errmsg\">".$e->getMessage()."</span><br>\n";
 		}
 
 		// Add rack requestor to the list of recipients
 		try{		
 			$message->addTo($tmpContact->Email);
 		}catch(Swift_RfcComplianceException $e){
-			$error.=_("Check contact details for")." <a href=\"contacts.php?contactid=$tmpContact->ContactID\">$tmpContact->LastName, $tmpContact->FirstName</a>: <span class=\"errmsg\">".$e->getMessage()."</span><br>\n";
+			$error.=__("Check contact details for")." <a href=\"contacts.php?contactid=$tmpContact->ContactID\">$tmpContact->LastName, $tmpContact->FirstName</a>: <span class=\"errmsg\">".$e->getMessage()."</span><br>\n";
 		}
 
 		// Add data center team to the list of recipients
 		try{		
 			$message->addTo($config->ParameterArray['MailToAddr']);
 		}catch(Swift_RfcComplianceException $e){
-			$error.=_("Data center team address").": <span class=\"errmsg\">".$e->getMessage()."</span><br>\n";
+			$error.=__("Data center team address").": <span class=\"errmsg\">".$e->getMessage()."</span><br>\n";
 		}
 
 		$logo='images/'.$config->ParameterArray["PDFLogoFile"];
@@ -102,14 +102,14 @@
 
 			$req->CreateRequest($facDB);
 
-			$htmlMessage.="<p>"._("Your request for racking up the device labeled")." $req->Label "._("has been received.
+			$htmlMessage.="<p>".__("Your request for racking up the device labeled")." $req->Label ".__("has been received.
 			The Network Operations Center will examine the request and contact you if more information is needed
 			before the request can be processed.  You will receive a notice when this request has been completed.
 			Please allow up to 2 business days for requests to be completed.")."</p>
 
-			<p>"._("Your Request ID is")." $req->RequestID "._("and you may view the request online at")."
+			<p>".__("Your Request ID is")." $req->RequestID ".__("and you may view the request online at")."
 			<a href=\"https://{$_SERVER['SERVER_NAME']}{$_SERVER['PHP_SELF']}?requestid=$req->RequestID\">
-			"._("this link")."</a>.</p>
+			".__("this link")."</a>.</p>
 			
 			</body></html>";
 
@@ -161,8 +161,8 @@
 				
 				$dev->CreateDevice($facDB);
 				
-				$htmlMessage.="<p>"._("Your request for racking up the device labeled")." $req->Label "._("has been completed").".</p>
-				<p>"._("To view your device in its final location click")." <a href=\"".redirect("devices.php?deviceid=$dev->DeviceID")."\"> "._("this link")."</a>.</p>
+				$htmlMessage.="<p>".__("Your request for racking up the device labeled")." $req->Label ".__("has been completed").".</p>
+				<p>".__("To view your device in its final location click")." <a href=\"".redirect("devices.php?deviceid=$dev->DeviceID")."\"> ".__("this link")."</a>.</p>
 				</body></html>";
 
 				$message->setBody($htmlMessage,'text/html');
@@ -184,7 +184,7 @@
 			exit;
 		  }else{
 			// This should never be hit under normal circumstatnces.
-			$error.=_("You do not have permission to delete this request");
+			$error.=__("You do not have permission to delete this request");
 		  }
 	   }
 	}
@@ -225,17 +225,17 @@
 print "			$('#deviceform').validationEngine({'custom_error_messages' : {
 					'#vlanlist' : {
 						'condRequired': {
-							'message': '"._("You must specify the VLAN information for the ethernet connections").".'
+							'message': '".__("You must specify the VLAN information for the ethernet connections").".'
 						}
 					},
 					'#sanlist' : {
 						'condRequired': {
-							'message': '"._("You must specify the SAN port information to continue").".'
+							'message': '".__("You must specify the SAN port information to continue").".'
 						}
 					},
 					'#currentlocation' : {
 						'required': {
-							'message': '"._("You must specify the current location of the equipment").".'
+							'message': '".__("You must specify the current location of the equipment").".'
 						}
 					}
 				}	
@@ -335,7 +335,7 @@ print "			$('#deviceform').validationEngine({'custom_error_messages' : {
 
 echo '<div class="main">
 <h2>',$config->ParameterArray['OrgName'],'</h2>
-<h3>',_("Data Center Rack Request"),'</h3>';
+<h3>',__("Data Center Rack Request"),'</h3>';
 
 if($error!=""){echo '<fieldset class="exception border error"><legend>Errors</legend>'.$error.'</fieldset>';}
 
@@ -346,7 +346,7 @@ echo '<div class="center"><div>
 
 echo '<div class="table">
 	<div>
-		<div><label for="requestorid">',_("Requestor"),'</label></div>
+		<div><label for="requestorid">',__("Requestor"),'</label></div>
 		<div>
 			<select name="requestorid" id="requestorid">';
 
@@ -359,15 +359,15 @@ echo '			</select>
 		</div>
 	</div>
 	<div>
-		<div><label for="label">',_("Label").'</label></div>
+		<div><label for="label">',__("Label").'</label></div>
 		<div><input type="text" name="label" id="label" class="validate[required,minSize[3],maxSize[50]]" size="50" value="',$req->Label,'"></div>
 	</div>
 	<div>
-		<div><label for="labelcolor">',_("Label Color").'</label></div>
+		<div><label for="labelcolor">',__("Label Color").'</label></div>
 		<div>
 			<select name="labelcolor" id="labelcolor">';
 
-	foreach(array(_("White"),_("Yellow"),_("Red")) as $colorCode){
+	foreach(array(__("White"),__("Yellow"),__("Red")) as $colorCode){
 		if($req->LabelColor==$colorCode){$selected=' selected';}else{$selected='';}
 		print "				<option value=\"$colorCode\"$selected>$colorCode</option>\n";
 	}
@@ -376,29 +376,29 @@ echo '			</select>
 		</div>
 	</div>
 	<div>
-		<div><label for="serialno">',_("Serial Number"),'</label></div>
+		<div><label for="serialno">',__("Serial Number"),'</label></div>
 		<div><input type="text" name="serialno" id="serialno" class="validate[required]" size="50" value="',$req->SerialNo,'"></div>
 	</div>
 	<div>
-		<div><label for="mfgdate">',_("Manufacture Date"),'</label></div>
+		<div><label for="mfgdate">',__("Manufacture Date"),'</label></div>
 		<div><input type="text" name="mfgdate" id="mfgdate" size="20" value="',date('m/d/Y',strtotime($req->MfgDate)),'"></div>
 	</div>
 	<div>
-		<div><label for="assettag">',_("Asset Tag"),'</label></div>
+		<div><label for="assettag">',__("Asset Tag"),'</label></div>
 		<div><input type="text" name="assettag" id="assettag" size="20" value="',$req->AssetTag,'"></div>
 	</div>
 	<div>
-		<div><label for="esx">',_("ESX Server?"),'</label></div>
+		<div><label for="esx">',__("ESX Server?"),'</label></div>
 		<div><select name="esx" id="esx">
-			<option value="1"'.(($req->ESX)?' selected':'').'>',_("True"),'</option>
-			<option value="0"'.((!$req->ESX)?' selected':'').'>',_("False"),'</option>
+			<option value="1"'.(($req->ESX)?' selected':'').'>',__("True"),'</option>
+			<option value="0"'.((!$req->ESX)?' selected':'').'>',__("False"),'</option>
 		</select></div>
 	</div>
 	<div>
-		<div><label for="owner">',_("Departmental Owner"),'</label></div>
+		<div><label for="owner">',__("Departmental Owner"),'</label></div>
 		<div>
 			<select name="owner" id="owner" class="validate[required]">
-				<option value=0>',_("Unassigned"),'</option>';
+				<option value=0>',__("Unassigned"),'</option>';
 
 	$deptList = $Dept->GetDepartmentList( $facDB );
 
@@ -411,10 +411,10 @@ echo '			</select>
 		</div>
 	</div>
 	<div>
-		<div><label for="deviceclass">',_("Device Class"),'</label></div>
+		<div><label for="deviceclass">',__("Device Class"),'</label></div>
 		<div>
 			<select name="deviceclass" id="deviceclass">
-				<option value=0>',_("Select a template"),'...</option>';
+				<option value=0>',__("Select a template"),'...</option>';
 
 	$templ=new DeviceTemplate();
 	$templateList=$templ->GetTemplateList($facDB);
@@ -431,52 +431,52 @@ echo '			</select>
 		</div>
 	</div>
 	<div>
-		<div><label for="deviceheight">',_("Height"),'</label></div>
+		<div><label for="deviceheight">',__("Height"),'</label></div>
 		<div><input type="text" name="deviceheight" id="deviceheight" class="validate[required,custom[onlyNumberSp]]" size="15" value="',$req->DeviceHeight,'"></div>
 	</div>
 	<div>
-		<div><label for="ethernetcount">',_("Number of Ethernet Connections"),'</label></div>
+		<div><label for="ethernetcount">',__("Number of Ethernet Connections"),'</label></div>
 		<div><input type="text" name="ethernetcount" id="ethernetcount" class="validate[optional,custom[onlyNumberSp],min[1]]" size="15" value="'.(($req->EthernetCount!=0) ? $req->EthernetCount : '').'"></div>
 	</div>
 	<div>
-		<div><label for="vlanlist">',_("VLAN Settings"),'<span>(ie - eth0 on 973, eth1 on 600)</span></label></div>
+		<div><label for="vlanlist">',__("VLAN Settings"),'<span>(ie - eth0 on 973, eth1 on 600)</span></label></div>
 		<div><input type="text" name="vlanlist" id="vlanlist" class="validate[condRequired[ethernetcount]]" size="50" value="',$req->VLANList,'"></div>
 	</div>
 	<div>
-		<div><label for="sancount">',_("Number of SAN Connections"),'</label></div>
+		<div><label for="sancount">',__("Number of SAN Connections"),'</label></div>
 		<div><input type="text" name="sancount" id="sancount" class="validate[optional,custom[onlyNumberSp],min[1]]" size="15" value="'.(($req->SANCount!=0) ? $req->SANCount : '').'"></div>
 	</div>
 	<div>
-		<div><label for="sanlist">',_("SAN Port Assignments"),'</label></div>
+		<div><label for="sanlist">',__("SAN Port Assignments"),'</label></div>
 		<div><input type="text" name="sanlist" id="sanlist" class="validate[condRequired[sancount]]" size="50" value="',$req->SANList,'"></div>
 	</div>
 
 	<div>
-		<div><label for="devicetype">',_("Device Type"),'</label></div>
+		<div><label for="devicetype">',__("Device Type"),'</label></div>
 		<div>
 			<select name="devicetype" id="devicetype" class="validate[required]">
-				<option value=0>',_("Select"),'...</option>
-				<option value="Server"'.(($req->DeviceType=="Server")?' selected':'').'>',_("Server"),'</option>
-				<option value="Appliance"'.(($req->DeviceType=="Appliance")?' selected':'').'>',_("Appliance"),'</option>
-				<option value="Storage Array"'.(($req->DeviceType=="Storage Array")?' selected':'').'>',_("Storage Array"),'</option>
-				<option value="Switch"'.(($req->DeviceType=="Switch")?' selected':'').'>',_("Switch"),'</option>
-				<option value="Chassis"'.(($req->DeviceType=="Chassis")?' selected':'').'>',_("Chassis"),'</option>
-				<option value="Patch Panel"'.(($req->DeviceType=="Patch Panel")?' selected':'').'>',_("Patch Panel"),'</option>
-				<option value="Physical Infrastructure"'.(($req->DeviceType=="Physical Infrastructure")?' selected':'').'>',_("Physical Infrastructure"),'</option>
+				<option value=0>',__("Select"),'...</option>
+				<option value="Server"'.(($req->DeviceType=="Server")?' selected':'').'>',__("Server"),'</option>
+				<option value="Appliance"'.(($req->DeviceType=="Appliance")?' selected':'').'>',__("Appliance"),'</option>
+				<option value="Storage Array"'.(($req->DeviceType=="Storage Array")?' selected':'').'>',__("Storage Array"),'</option>
+				<option value="Switch"'.(($req->DeviceType=="Switch")?' selected':'').'>',__("Switch"),'</option>
+				<option value="Chassis"'.(($req->DeviceType=="Chassis")?' selected':'').'>',__("Chassis"),'</option>
+				<option value="Patch Panel"'.(($req->DeviceType=="Patch Panel")?' selected':'').'>',__("Patch Panel"),'</option>
+				<option value="Physical Infrastructure"'.(($req->DeviceType=="Physical Infrastructure")?' selected':'').'>',__("Physical Infrastructure"),'</option>
 			</select>
 		</div>
 	</div>
 	<div>
-		<div><label for="currentlocation">',_("Current Location"),'</label></div>
+		<div><label for="currentlocation">',__("Current Location"),'</label></div>
 		<div><input type="text" name="currentlocation" id="currentlocation" class="validate[required]" size="50" value="',$req->CurrentLocation,'"></div>
 	</div>
 	<div>
-		<div><label for="specialinstructions">',_("Special Instructions"),'</label></div>
+		<div><label for="specialinstructions">',__("Special Instructions"),'</label></div>
 		<div><textarea name="specialinstructions" id="specialinstructions" cols=50 rows=5>',$req->SpecialInstructions,'</textarea></div>
 	</div>';
 
 	if($user->RackAdmin && ($req->RequestID>0)){
-		echo '<div><div><label for="cabinetid">',_("Select Rack Location"),':</label></div><div>'.$cab->GetCabinetSelectList($facDB).'&nbsp;&nbsp;<label for="position">',_("Position"),':</label> <input type="text" name="position" id="position" size=5></div></div>';
+		echo '<div><div><label for="cabinetid">',__("Select Rack Location"),':</label></div><div>'.$cab->GetCabinetSelectList($facDB).'&nbsp;&nbsp;<label for="position">',__("Position"),':</label> <input type="text" name="position" id="position" size=5></div></div>';
 	}
 ?>
 	<div class="caption">
@@ -484,14 +484,14 @@ echo '			</select>
 	if($user->RackRequest||$user->RackAdmin){
 		if($req->RequestID >0){
 			if($user->RackAdmin||($user->UserID==$contact->UserID)){
-				echo '<button type="submit" name="action" value="Update Request">',_("Update Request"),'</button>';
-				echo '<button type="submit" name="action" value="Delete Request">',_("Delete Request"),'</button>';
+				echo '<button type="submit" name="action" value="Update Request">',__("Update Request"),'</button>';
+				echo '<button type="submit" name="action" value="Delete Request">',__("Delete Request"),'</button>';
 			}
 			if($user->RackAdmin){
-				echo '<button type="submit" name="action" value="Move to Rack">',_("Move to Rack"),'</button>';
+				echo '<button type="submit" name="action" value="Move to Rack">',__("Move to Rack"),'</button>';
 			}
 		}else{
-			echo '<button type="submit" name="action" value="Create">',_("Create"),'</button>';
+			echo '<button type="submit" name="action" value="Create">',__("Create"),'</button>';
 		}
 	}
 ?>
@@ -499,7 +499,7 @@ echo '			</select>
 </div> <!-- END div.table -->
 </form>
 </div></div>
-<?php echo '<a href="index.php">[ ',_("Return to Main Menu"),' ]</a>'; ?>
+<?php echo '<a href="index.php">[ ',__("Return to Main Menu"),' ]</a>'; ?>
 </div> <!-- END div.main -->
 </div> <!-- END div.page -->
 </body>

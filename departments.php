@@ -85,14 +85,14 @@ function showgroup(obj){
 	include( 'sidebar.inc.php' );
 	echo '<div class="main">
 <h2>',$config->ParameterArray["OrgName"],'</h2>
-<h3>',_("Data Center Department Detail"),'</h3>
+<h3>',__("Data Center Department Detail"),'</h3>
 <div class="center"><div>
 <form action="',$_SERVER["PHP_SELF"],'" method="POST">
 <div class="table centermargin">
 <div>
-   <div>',_("Department"),'</div>
+   <div>',__("Department"),'</div>
    <div><input type="hidden" name="action" value="query"><select name="deptid" onChange="form.submit()">
-   <option value=0>',_("New Department"),'</option>';
+   <option value=0>',__("New Department"),'</option>';
 
 	foreach($deptList as $deptRow){
 		if($dept->DeptID == $deptRow->DeptID){$selected=" selected";}else{$selected="";}
@@ -102,23 +102,23 @@ function showgroup(obj){
 	echo '	</select></div>
 </div>
 <div>
-   <div><label for="deptname">',_("Department Name"),'</label></div>
+   <div><label for="deptname">',__("Department Name"),'</label></div>
    <div><input type="text" size="50" name="name" id="deptname" maxlength="80" value="',$dept->Name,'"></div>
 </div>
 <div>
-   <div><label for="deptsponsor">',_("Executive Sponsor"),'</label></div>
+   <div><label for="deptsponsor">',__("Executive Sponsor"),'</label></div>
    <div><input type="text" size="50" name="execsponsor" id="deptsponsor" maxlength="80" value="',$dept->ExecSponsor,'"></div>
 </div>
 <div>
-   <div><label for="deptmgr">',_("Account Manager"),'</label></div>
+   <div><label for="deptmgr">',__("Account Manager"),'</label></div>
    <div><input type="text" size="50" name="sdm" id="deptmgr" maxlength="80" value="',$dept->SDM,'"></div>
 </div>
 <div>
-   <div><label for="deptcolor">',_("Department Color"),'</label></div>
+   <div><label for="deptcolor">',__("Department Color"),'</label></div>
    <div><div class="cp"><input type="text" class="color-picker" size="50" name="deptcolor" id="deptcolor" maxlength="7" value="',$dept->DeptColor,'"></div></div>
 </div>
 <div>
-   <div><label for="deptclass">',_("Classification"),'</label></div>
+   <div><label for="deptclass">',__("Classification"),'</label></div>
    <div><select name="classification" id="deptclass">';
 
   foreach($config->ParameterArray['ClassList'] as $className){
@@ -132,9 +132,9 @@ function showgroup(obj){
 <div class="caption" id="controls">
 <?php
 	if($dept->DeptID > 0){
-		echo '<button type="submit" name="action" value="Update">',_("Update"),'</button><button type="button" onClick="showgroup(',$dept->DeptID,')">',_("Assign Contacts"),'</button>';
+		echo '<button type="submit" name="action" value="Update">',__("Update"),'</button><button type="button" onClick="showgroup(',$dept->DeptID,')">',__("Assign Contacts"),'</button>';
 	}else{
-    	echo '<button type="submit" name="action" value="Create">',_("Create"),'</button>';
+    	echo '<button type="submit" name="action" value="Create">',__("Create"),'</button>';
 	}
 ?>
 </div>
@@ -143,7 +143,7 @@ function showgroup(obj){
 <iframe name="groupadmin" id="groupadmin" frameborder=0 scrolling="no"></iframe>
 <br>
 </div></div>
-<?php echo '<a href="index.php">[ ',_("Return to Main Menu"),' ]</a>'; ?>
+<?php echo '<a href="index.php">[ ',__("Return to Main Menu"),' ]</a>'; ?>
 </div> <!-- END div.main -->
 </div> <!-- END div.page -->
 </body>

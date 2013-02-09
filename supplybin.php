@@ -36,7 +36,7 @@
 				$binContents=$bc->GetBinContents($facDB);
 
 				// We don't want someone changing the name of a bin to a blank anymore than we want them creating one as a blank name
-				$status=_("Updated");
+				$status=__("Updated");
 				$bin->UpdateBin($facDB);
 
 				// only attempt to alter the contents of the bin if we have the proper elements
@@ -143,15 +143,15 @@
 
 echo '<div class="main">
 <h2>',$config->ParameterArray["OrgName"],'</h2>
-<h3>',_("Data Center Stockroom Supply Bins"),'</h3>
+<h3>',__("Data Center Stockroom Supply Bins"),'</h3>
 <h3>',$status,'</h3>
 <div class="center"><div>
 <form action="',$_SERVER["PHP_SELF"].$formpatch,'" method="POST">
 <div class="table">
 <div>
-   <div><label for="binid">',_("Bin Location"),'</label></div>
+   <div><label for="binid">',__("Bin Location"),'</label></div>
    <div><input type="hidden" name="action" value="query"><select name="binid" id="binid" onChange="form.submit()">
-   <option value=0>',_("New Bin"),'</option>';
+   <option value=0>',__("New Bin"),'</option>';
 
 	foreach($binList as $binRow){
 		if($bin->BinID==$binRow->BinID){$selected=" selected";}else{$selected="";}
@@ -161,13 +161,13 @@ echo '<div class="main">
 echo '	</select></div>
 </div>
 <div>
-   <div><label for="location">',_("Location"),'</label></div>
+   <div><label for="location">',__("Location"),'</label></div>
    <div><input type="text" name="location" id="location" value="',$bin->Location,'"></div>
 </div>';
 
 	if($bin->BinID==0){
 		echo '<div><div>&nbsp;</div><div></div></div>
-		<div class="caption"><button type="submit" name="action" value="Create">',_("Create"),'</button></div>';
+		<div class="caption"><button type="submit" name="action" value="Create">',__("Create"),'</button></div>';
 	}
 ?>
 </div><!-- END div.table -->
@@ -178,8 +178,8 @@ echo '	</select></div>
 		echo '<div class="table">
 	<div>
 		<div></div>
-		<div>',_("Part Number"),'</div>
-		<div>',_("Count"),'</div>
+		<div>',__("Part Number"),'</div>
+		<div>',__("Count"),'</div>
 	</div>';
 
 		foreach($binContents as $cnt){
@@ -194,7 +194,7 @@ echo '	</select></div>
 
 		echo '	<div>
 		<div></div>
-		<div><select name="supplyid[]"><option value="0" selected>',_("Select parts to add..."),'</option>';
+		<div><select name="supplyid[]"><option value="0" selected>',__("Select parts to add..."),'</option>';
 
 		foreach($supList as $tmpSup){
 			print "\t\t\t<option value=\"$tmpSup->SupplyID\">$tmpSup->PartNum ($tmpSup->PartName)</option>\n";
@@ -209,14 +209,14 @@ echo '	</select></div>
 		<div></div>
 	</div>
 	<div class="caption">
-		<button type="submit" name="action" value="Update">',_("Submit"),'</button>
+		<button type="submit" name="action" value="Update">',__("Submit"),'</button>
 	</div>
 </div><!-- END div.table --> ';
 	}
 ?>
 </form>
 </div></div>
-<?php echo '<a href="index.php">[ ',_("Return to Main Menu"),' ]</a>'; ?>
+<?php echo '<a href="index.php">[ ',__("Return to Main Menu"),' ]</a>'; ?>
 </div><!-- END div.main -->
 </div><!-- END div.page -->
 </body>

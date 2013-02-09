@@ -24,14 +24,14 @@
 	}
 
 	$mailer=Swift_Mailer::newInstance($transport);
-	$message=Swift_Message::NewInstance()->setSubject(_("Virtual Machine Inventory Exception Report"));
+	$message=Swift_Message::NewInstance()->setSubject(__("Virtual Machine Inventory Exception Report"));
 
 	// Set from address
 	try{		
 		$message->setFrom($config->ParameterArray['MailFromAddr']);
 		$message->SetReplyTo($config->ParameterArray["MailToAddr"]);
 	}catch(Swift_RfcComplianceException $e){
-		$error.=_("MailFrom").": <span class=\"errmsg\">".$e->getMessage()."</span><br>\n";
+		$error.=__("MailFrom").": <span class=\"errmsg\">".$e->getMessage()."</span><br>\n";
 	}
 
 	// Add people to recipient list
@@ -44,7 +44,7 @@
 		 */
 
 	}catch(Swift_RfcComplianceException $e){
-		$error.=_("Data center team address").": <span class=\"errmsg\">".$e->getMessage()."</span><br>\n";
+		$error.=__("Data center team address").": <span class=\"errmsg\">".$e->getMessage()."</span><br>\n";
 	}
 
 
@@ -55,20 +55,20 @@
       
 		$htmlMessage="<html>
 			<head>
-			   <title>"._('Virtual Machine Inventory Exception Report')."</title>
+			   <title>".__('Virtual Machine Inventory Exception Report')."</title>
 			</head>
 			<body>
-			<p>"._('This is an automated message from the')." {$config->ParameterArray["OrgName"]} "._('Inventory
+			<p>".__('This is an automated message from the')." {$config->ParameterArray["OrgName"]} ".__('Inventory
 			Process.  This process is scheduled to run once each business day.</p>
-			<p>The following')." $esxCount "._('Virtual Machines were detected in the environment
+			<p>The following')." $esxCount ".__('Virtual Machines were detected in the environment
 			and do not have an associated owner record.  It is assumed that
 			these are new Virtual Machines.  Please click on the links below to update
 			ownership information.')."</p>
-			<p>"._('If the appropriate department is not listed as an option for ownership, please
-			send an email to')." {$config->ParameterArray["FacMgrMail"]} "._('to have it added.')."</p>
+			<p>".__('If the appropriate department is not listed as an option for ownership, please
+			send an email to')." {$config->ParameterArray["FacMgrMail"]} ".__('to have it added.')."</p>
 			<p>
 			<table width=\"100%\" border=\"1\" padding=\"0\" bgcolor=white>
-			<tr><td>"._('Server Name')."</td><td>"._('VM Name')."</td><td>"._('Status')."</td><td>"._('Last Updated')."</td></tr>";
+			<tr><td>".__('Server Name')."</td><td>".__('VM Name')."</td><td>".__('Status')."</td><td>".__('Last Updated')."</td></tr>";
 
 		foreach($esxList as $esxRow){
 			$dev->DeviceID=$esxRow->DeviceID;
@@ -78,7 +78,7 @@
 			if($dept->DeptID >0){
 				$dept->GetDeptByID($facDB);
 			}else{
-				$dept->Name=_("Unknown");
+				$dept->Name=__("Unknown");
 			}
           
 			$htmlMessage.="<tr><td>$dev->Label</td><td><a href=\"".redirect("updatevmowner.php?vmindex=$esxRow->VMIndex")."\">$esxRow->vmName</a></td><td>$esxRow->vmState</td><td>$esxRow->LastUpdated</td></tr>\n";
@@ -103,16 +103,16 @@
       
 		$htmlMessage="<html>
 			<head>
-			   <title>"._('Virtual Machine Inventory Expiration Report')."</title>
+			   <title>".__('Virtual Machine Inventory Expiration Report')."</title>
 			</head>
 			<body>
-			<p>"._('This is an automated message from the')." {$config->ParameterArray["OrgName"]} "._('Virtual Machine Inventory
+			<p>".__('This is an automated message from the')." {$config->ParameterArray["OrgName"]} ".__('Virtual Machine Inventory
 			Process.  This process is scheduled to run once each business day.')."</p>
-			<p>"._('The following')." $esxCount "._('Virtual Machines have not been detected within the
-			past')." {$config->ParameterArray["VMExpirationTime"]} "._('days and are assumed to be expired.  They are being removed from the
+			<p>".__('The following')." $esxCount ".__('Virtual Machines have not been detected within the
+			past')." {$config->ParameterArray["VMExpirationTime"]} ".__('days and are assumed to be expired.  They are being removed from the
 			inventory system.')."</p>
 			<table width=\"100%\" border=\"1\" padding=\"0\" bgcolor=white>
-			<tr><td>"._('Server Name')."</td><td>"._('VM Name')."</td><td>"._('Status')."</td><td>"._('Last Updated')."</td></tr>";
+			<tr><td>".__('Server Name')."</td><td>".__('VM Name')."</td><td>".__('Status')."</td><td>".__('Last Updated')."</td></tr>";
 
 		foreach($esxList as $esxRow){
 			$dev->DeviceID=$esxRow->DeviceID;
@@ -122,7 +122,7 @@
 			if($dept->DeptID >0){
 				$dept->GetDeptByID($facDB);
 			}else{
-				$dept->Name=_("Unknown");
+				$dept->Name=__("Unknown");
 			}
           
 			$htmlMessage.="<tr><td>$dev->Label</td><td>$esxRow->vmName</td><td>$esxRow->vmState</td><td>$esxRow->LastUpdated</td></tr>\n";

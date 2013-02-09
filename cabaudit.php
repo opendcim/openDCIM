@@ -48,12 +48,12 @@ class PDF extends FPDF {
     	$this->Image( 'images/' . $this->pdfconfig->ParameterArray['PDFLogoFile'],10,8,100);
     	$this->SetFont($this->pdfconfig->ParameterArray['PDFfont'],'B',12);
     	$this->Cell(120);
-    	$this->Cell(30,20,_("Information Technology Services"),0,0,'C');
+    	$this->Cell(30,20,__("Information Technology Services"),0,0,'C');
     	$this->Ln(20);
 		$this->SetFont( $this->pdfconfig->ParameterArray['PDFfont'],'',10 );
-		$this->Cell( 50, 6, _("Cabinet Audit Report"), 0, 1, 'L' );
+		$this->Cell( 50, 6, __("Cabinet Audit Report"), 0, 1, 'L' );
 		$this->Cell( 50, 6, 'Date: ' . date( 'm/d/y' ), 0, 0, 'L' );
-		$this->Cell( 0, 6, _("Last Audit").": {$_SESSION['AuditStamp']} ({$_SESSION['AuditorName']})", 0, 1, 'R' );
+		$this->Cell( 0, 6, __("Last Audit").": {$_SESSION['AuditStamp']} ({$_SESSION['AuditorName']})", 0, 1, 'R' );
 		$this->Ln(10);
 	}
 
@@ -398,12 +398,12 @@ class PDF_Diag extends PDF_Sector {
 	$pdf->SetFillColor(224,235,255);
 	$fill=0;
 	
-	$cabmessage=_("Cabinet Location").': '.$cab->Location;
+	$cabmessage=__("Cabinet Location").': '.$cab->Location;
 	$pdf->SetFont($config->ParameterArray['PDFfont'],'B',10);
 	$pdf->Cell(0,5,$cabmessage,0,1,'C',0);
 	$pdf->SetFont($config->ParameterArray['PDFfont'],'',10);
 	$deviceList = $device->ViewDevicesByCabinet( $facDB );
-	$headerTags = array( _('Label'), _('SerialNo'), _('AssetTag'), _('Position'), _('Rack Units'), _('#Ports'), _('#PS'), _('PowerConnection1'), _('PowerConnection2'), _('DeviceType') );
+	$headerTags = array( __('Label'), __('SerialNo'), __('AssetTag'), __('Position'), __('Rack Units'), __('#Ports'), __('#PS'), __('PowerConnection1'), __('PowerConnection2'), __('DeviceType') );
 	$cellWidths = array( 45, 40, 20, 18, 20, 15, 10, 35, 35, 50 );
 	$maxval = count( $headerTags );
 	for ( $col = 0; $col < $maxval; $col++ )
@@ -472,13 +472,13 @@ class PDF_Diag extends PDF_Sector {
 	$fill=0;
 	
 	$pdu->CabinetID=$cab->CabinetID;
-        $cabmessage=_("PDUs at").' '.$cabmessage;
+        $cabmessage=__("PDUs at").' '.$cabmessage;
 	$pdf->SetFont($config->ParameterArray['PDFfont'],'B',10);
 	$pdf->Cell(0,5,$cabmessage,0,1,'C',0);
 	$pdf->SetFont($config->ParameterArray['PDFfont'],'',10);
 	$PDUList=$pdu->GetPDUbyCabinet($facDB);
 
-	$headerTags = array( _('Label'), _('NumOutputs'),_('Model'),_('PanelLabel'), _('PanelPole') );
+	$headerTags = array( __('Label'), __('NumOutputs'),__('Model'),__('PanelLabel'), __('PanelPole') );
 	$cellWidths = array(50,30,118,70,20);
 	$maxval = count( $headerTags );
 	for ( $col = 0; $col < $maxval; $col++ )

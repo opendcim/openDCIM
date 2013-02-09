@@ -42,14 +42,14 @@
 <div class="main">
 <?php echo '
 <h2>',$config->ParameterArray['OrgName'],'</h2>
-<h3>',_("Data Center Cabinet Inventory"),'</h3>
+<h3>',__("Data Center Cabinet Inventory"),'</h3>
 <div class="center"><div>
 <div class="table">
 	<div class="title" id="title">Storage Room</div>
 	<div>
-		<div>',_("Device"),'</div>
-		<div>',_("Asset Tag"),'</div>
-		<div>',_("Serial No."),'</div>
+		<div>',__("Device"),'</div>
+		<div>',__("Asset Tag"),'</div>
+		<div>',__("Serial No."),'</div>
 		<div></div>
 	</div>';
 	while(list($devID,$device)=each($devList)){

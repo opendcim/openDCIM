@@ -466,19 +466,19 @@ function swaplayout(){
 	sheet.type = 'text/css';
 	if (sheet.styleSheet) { // IE
 		sheet.styleSheet.cssText = ".device div.left { display: block; }";
-<?php echo '		document.getElementById(\'layout\').innerHTML = "',_("Landscape"),'";
+<?php echo '		document.getElementById(\'layout\').innerHTML = "',__("Landscape"),'";
 	} else {
 		sheet.innerHTML = ".device div.left { display: block; }";
-		document.getElementById(\'layout\').innerHTML = "',_("Landscape"),'";'; ?>
+		document.getElementById(\'layout\').innerHTML = "',__("Landscape"),'";'; ?>
 	}
 	var s = document.getElementsByTagName('style')[0];
 	if (s.innerHTML == sheet.innerHTML){
 		if (sheet.styleSheet){ //IE
 			document.getElementsByTagName('style')[0].styleSheet.cssText = "";
-<?php echo '			document.getElementById(\'layout\').innerHTML = "',_("Portrait"),'";
+<?php echo '			document.getElementById(\'layout\').innerHTML = "',__("Portrait"),'";
 		}else{
 			document.getElementsByTagName(\'style\')[0].innerHTML = "";
-			document.getElementById(\'layout\').innerHTML = "',_("Portrait"),'";'; ?>
+			document.getElementById(\'layout\').innerHTML = "',__("Portrait"),'";'; ?>
 		}
 		setCookie("layout","Landscape");
 	}else{
@@ -515,10 +515,10 @@ $(document).ready(function() {
 			}
 		});
 		$('.left > fieldset ~ .table').each(function(){
-<?php print "			$(this).before($('<h3><a href=\"#\">"._('Notes')."</a></h3>'));"; ?>
+<?php print "			$(this).before($('<h3><a href=\"#\">".__('Notes')."</a></h3>'));"; ?>
 		});
 		$('.right').contents().appendTo($('.left'));
-<?php print "		$('.left').append('<h3><a href=\"#\">"._('Network & Power')."</a></h3>');"; ?>
+<?php print "		$('.left').append('<h3><a href=\"#\">".__('Network & Power')."</a></h3>');"; ?>
 		$('.right').next('div.table').appendTo($('.left'));
 		$('.left legend').each(function(){
 			$(this).parent('fieldset').before($('<h3><a href="#">'+$(this).text()+'</a></h3>'));
@@ -631,7 +631,7 @@ $(document).ready(function() {
 		if($dev->ParentDevice>0){
 ?>
 		$('select[name=devicetype]').change(function(){
-<?php echo '		var dphtml=\'<div id="dphtml"><div><label for="ports">',_("Number of Data Ports"),'</label></div><div><input class="optional,validate[custom[onlyNumberSp]]" name="ports" id="ports" size="4" value="" type="number"></div></div>\';'; ?>
+<?php echo '		var dphtml=\'<div id="dphtml"><div><label for="ports">',__("Number of Data Ports"),'</label></div><div><input class="optional,validate[custom[onlyNumberSp]]" name="ports" id="ports" size="4" value="" type="number"></div></div>\';'; ?>
 			if($(this).val()=='Switch' && $('#dphtml').length==0){
 				$('#nominalwatts').parent().parent().before(dphtml);
 			}else{
@@ -739,7 +739,7 @@ $(document).ready(function() {
 							device.children('select').css({'background-color': 'transparent'});
 							devport.html('<input type="text" name="dp" value="'+devport.text()+'">').css({'width': devportwidth+'px', 'padding': '0px'}).children('input').css({'width': devportwidth+'px', 'background-color': 'transparent'});
 							notes.html('<input type="text" name="n" value="'+notes.text()+'">').css({'width': notes.width()+'px', 'padding': '0px'}).children('input').css({'width': notes.width()+'px', 'background-color': 'transparent'});
-<?php echo '							row.append(\'<div style="padding: 0px;"><button type="button" value="save">',_("Save"),'</button><button type="button" value="delete">',_("Delete"),'</button><button type="button" value="cancel">',_("Cancel"),'</button></div>\');'; ?>
+<?php echo '							row.append(\'<div style="padding: 0px;"><button type="button" value="save">',__("Save"),'</button><button type="button" value="delete">',__("Delete"),'</button><button type="button" value="cancel">',__("Cancel"),'</button></div>\');'; ?>
 							row.find('div > button').css({'height': height+'px', 'line-height': '1'});
 							var buttonwidth=15;
 							row.find('div > button').each(function(){
@@ -842,7 +842,7 @@ $(document).ready(function() {
 		if($user->SiteAdmin){
 ?>
 // Rear panel controls
-<?php echo '							rearbtn.append(\'<div style="padding: 0px; border: 0px;"><button type="button" value="save">',_("Save"),'</button><button type="button" value="delete">',_("Delete"),'</button><button type="button" value="cancel">',_("Cancel"),'</button></div>\');'; ?>
+<?php echo '							rearbtn.append(\'<div style="padding: 0px; border: 0px;"><button type="button" value="save">',__("Save"),'</button><button type="button" value="delete">',__("Delete"),'</button><button type="button" value="cancel">',__("Cancel"),'</button></div>\');'; ?>
 					rearbtn.css({'padding': 0, 'border': 0}).attr('data', 'rear');;
 					$.post('', {pdev: $('#deviceid').val()}, function(data){
 						var rdev=reardev.text();
@@ -861,7 +861,7 @@ $(document).ready(function() {
 		}
 ?>
 // Front panel controls
-<?php echo '							frontbtn.append(\'<div style="padding: 0px; border: 0px;"><button type="button" value="save">',_("Save"),'</button><button type="button" value="delete">',_("Delete"),'</button><button type="button" value="cancel">',_("Cancel"),'</button></div>\');'; ?>
+<?php echo '							frontbtn.append(\'<div style="padding: 0px; border: 0px;"><button type="button" value="save">',__("Save"),'</button><button type="button" value="delete">',__("Delete"),'</button><button type="button" value="cancel">',__("Cancel"),'</button></div>\');'; ?>
 					frontbtn.css({'padding': 0, 'border': 0}).attr('data', 'front');
 					$.post('', {sp: '0', swdev: $('#deviceid').val()}, function(data){
 						var fdev=frontdev.text();
@@ -973,61 +973,61 @@ $(document).ready(function() {
 	include( 'sidebar.inc.php' );
 
 echo '<div class="main">
-<button id="layout" onClick="swaplayout()">'._("Portrait").'</button>
+<button id="layout" onClick="swaplayout()">'.__("Portrait").'</button>
 <h2>'.$config->ParameterArray['OrgName'].'</h2>
-<h3>'._("Data Center Device Detail").'</h3>';
-echo($copy)?'<h3>'._("This device is a copy of an existing device.  Remember to set the new location before saving.").'</h3>':'';
+<h3>'.__("Data Center Device Detail").'</h3>';
+echo($copy)?'<h3>'.__("This device is a copy of an existing device.  Remember to set the new location before saving.").'</h3>':'';
 echo '<div class="center"><div>
 <div id="positionselector"></div>
 <form name="deviceform" id="deviceform" action="'.$_SERVER['PHP_SELF'].((isset($dev->DeviceID) && $dev->DeviceID>0)?"?deviceid=$dev->DeviceID":"").'" method="POST">
 <div class="left">
 <fieldset>
-	<legend>'._("Asset Tracking").'</legend>
+	<legend>'.__("Asset Tracking").'</legend>
 	<div class="table">
 		<div>
-		   <div>'._("Device ID").'</div>
+		   <div>'.__("Device ID").'</div>
 		   <div><input type="text" name="deviceid" id="deviceid" value="'.$dev->DeviceID.'" size="6" readonly></div>
 		</div>
 		<div>
-			<div><label for="reservation">'._("Reservation?").'</label></div>
+			<div><label for="reservation">'.__("Reservation?").'</label></div>
 			<div><input type="checkbox" name="reservation" id="reservation"'.((($dev->Reservation) || $copy )?" checked":"").'></div>
 		</div>
 		<div>
-		   <div><label for="label">'._("Label").'</label></div>
+		   <div><label for="label">'.__("Label").'</label></div>
 		   <div><input type="text" class="validate[required,minSize[3],maxSize[50]]" name="label" id="label" size="40" value="'.$dev->Label.'"></div>
 		</div>
 		<div>
-		   <div><label for="serialno">'._("Serial Number").'</label></div>
+		   <div><label for="serialno">'.__("Serial Number").'</label></div>
 		   <div><input type="text" name="serialno" id="serialno" size="40" value="'.$dev->SerialNo.'">
-		   <button class="hide" type="button" onclick="getScan(\'serialno\')">',_("Scan Barcode"),'</button></div>
+		   <button class="hide" type="button" onclick="getScan(\'serialno\')">',__("Scan Barcode"),'</button></div>
 		</div>
 		<div>
-		   <div><label for="assettag">'._("Asset Tag").'</label></div>
+		   <div><label for="assettag">'.__("Asset Tag").'</label></div>
 		   <div><input type="text" name="assettag" id="assettag" size="20" value="'.$dev->AssetTag.'">
-		   <button class="hide" type="button" onclick="getScan(\'assettag\')">',_("Scan Barcode"),'</button></div>
+		   <button class="hide" type="button" onclick="getScan(\'assettag\')">',__("Scan Barcode"),'</button></div>
 		</div>
 		<div>
-		   <div><label for="mfgdate">'._("Manufacture Date").'</label></div>
+		   <div><label for="mfgdate">'.__("Manufacture Date").'</label></div>
 		   <div><input type="text" class="validate[optional,custom[date]] datepicker" name="mfgdate" id="mfgdate" value="'.(($dev->MfgDate>'0000-00-00 00:00:00')?date('m/d/Y',strtotime($dev->MfgDate)):"").'">
 		   </div>
 		</div>
 		<div>
-		   <div><label for="installdate">'._("Install Date").'</label></div>
+		   <div><label for="installdate">'.__("Install Date").'</label></div>
 		   <div><input type="text" class="validate[required,custom[date]] datepicker" name="installdate" id="installdate" value="'.(($dev->InstallDate>'0000-00-00 00:00:00')?date('m/d/Y',strtotime($dev->InstallDate)):"").'"></div>
 		</div>
 		<div>
-		   <div><label for="warrantyco">'._("Warranty Company").'</label></div>
+		   <div><label for="warrantyco">'.__("Warranty Company").'</label></div>
 		   <div><input type="text" name="warrantyco" id="warrantyco" value="'.$dev->WarrantyCo.'"></div>
 		</div>
 		<div>
-		   <div><label for="installdate">'._("Warranty Expiration").'</label></div>
+		   <div><label for="installdate">'.__("Warranty Expiration").'</label></div>
 		   <div><input type="text" class="validate[custom[date]] datepicker" name="warrantyexpire" id="warrantyexpire" value="'.date('m/d/Y',strtotime($dev->WarrantyExpire)).'"></div>
 		</div>		
 		<div>
-		   <div><label for="owner">'._("Departmental Owner").'</label></div>
+		   <div><label for="owner">'.__("Departmental Owner").'</label></div>
 		   <div>
 			<select name="owner" id="owner">
-				<option value=0>'._("Unassigned").'</option>';
+				<option value=0>'.__("Unassigned").'</option>';
 
 			foreach($deptList as $deptRow){
 				if($dev->Owner==$deptRow->DeptID){$selected=" selected";}else{$selected="";}
@@ -1035,18 +1035,18 @@ echo '<div class="center"><div>
 			}
 
 echo '			</select>
-			<button type="button">',_("Show Contacts"),'</button>
+			<button type="button">',__("Show Contacts"),'</button>
 		   </div>
 		</div>
 		<div>
 		   <div>&nbsp;</div>
 		   <div><fieldset>
-		   <legend>',_("Escalation Information"),'</legend>
+		   <legend>',__("Escalation Information"),'</legend>
 		   <div class="table">
 			<div>
-				<div><label for="escaltationtimeid">',_("Time Period"),'</label></div>
+				<div><label for="escaltationtimeid">',__("Time Period"),'</label></div>
 				<div><select name="escalationtimeid" id="escalationtimeid">
-					<option value="">',_("Select..."),'</option>';
+					<option value="">',__("Select..."),'</option>';
 
 				foreach($escTimeList as $escTime){
 					if($escTime->EscalationTimeID==$dev->EscalationTimeID){$selected=" selected";}else{$selected="";}
@@ -1056,9 +1056,9 @@ echo '			</select>
 echo '				</select></div>
 			</div>
 			<div>
-				<div><label for="escalationid">',_("Details"),'</label></div>
+				<div><label for="escalationid">',__("Details"),'</label></div>
 				<div><select name="escalationid" id="escalationid">
-					<option value="">',_("Select..."),'</option>';
+					<option value="">',__("Select..."),'</option>';
 
 				foreach($escList as $esc){
 					if($esc->EscalationID==$dev->EscalationID){$selected=" selected";}else{$selected="";}
@@ -1071,9 +1071,9 @@ echo '				</select></div>
 		   </fieldset></div>
 		</div>
 		<div>
-		   <div><label for="primarycontact">',_("Primary Contact"),'</label></div>
+		   <div><label for="primarycontact">',__("Primary Contact"),'</label></div>
 		   <div><select name="primarycontact" id="primarycontact">
-				<option value=0>',_("Unassigned"),'</option>';
+				<option value=0>',__("Unassigned"),'</option>';
 
 			foreach($contactList as $contactRow){
 				if($contactRow->ContactID==$dev->PrimaryContact){$contactUserID=$contactRow->UserID;$selected=" selected";}else{$selected="";}
@@ -1083,30 +1083,30 @@ echo '				</select></div>
 			print "\t\t\t</select>\n";
 
 			if(isset($config->ParameterArray['UserLookupURL']) && isValidURL($config->ParameterArray['UserLookupURL']) && isset($contactUserID)){
-				print "<button type=\"button\" onclick=\"window.open( '".$config->ParameterArray["UserLookupURL"]."$contactUserID', 'UserLookup')\">"._('Contact Lookup')."</button>\n";
+				print "<button type=\"button\" onclick=\"window.open( '".$config->ParameterArray["UserLookupURL"]."$contactUserID', 'UserLookup')\">".__('Contact Lookup')."</button>\n";
 			}
 
 echo '		   </div>
 		</div>
 		<div>
-			<div><label for="tags">',_("Tags"),'</label></div>
+			<div><label for="tags">',__("Tags"),'</label></div>
 			<div><textarea type="text" name="tags" id="tags" rows="1"></textarea></div>
 		</div>
 	</div> <!-- END div.table -->
 </fieldset>	
 	<div class="table">
 		<div>
-		  <div><label for="notes">',_("Notes"),'</label></div>
+		  <div><label for="notes">',__("Notes"),'</label></div>
 		  <div><textarea name="notes" id="notes" cols="40" rows="8">',$dev->Notes,'</textarea></div>
 		</div>
 	</div> <!-- END div.table -->
 </div><!-- END div.left -->
 <div class="right">
 <fieldset>
-	<legend>',_("Physical Infrastructure"),'</legend>
+	<legend>',__("Physical Infrastructure"),'</legend>
 	<div class="table">
 		<div>
-			<div><label for="cabinet">',_("Cabinet"),'</label></div>';
+			<div><label for="cabinet">',__("Cabinet"),'</label></div>';
 
 	if($dev->ParentDevice==0){
 		print "\t\t\t<div>".$cab->GetCabinetSelectList($facDB)."</div>\n";
@@ -1114,7 +1114,7 @@ echo '		   </div>
 			print "\t\t\t<div>$cab->Location<input type=\"hidden\" name=\"cabinetid\" value=\"0\"></div>
 		</div>
 		<div>
-			<div><label for=\"parentdevice\">"._('Parent Device')."</label></div>
+			<div><label for=\"parentdevice\">".__('Parent Device')."</label></div>
 			<div><select name=\"parentdevice\">\n";
 			
 			foreach($parentList as $parDev){
@@ -1126,9 +1126,9 @@ echo '		   </div>
 
 echo '		</div>
 		<div>
-			<div><label for="templateid">',_("Device Class"),'</label></div>
+			<div><label for="templateid">',__("Device Class"),'</label></div>
 			<div><select name="templateid" id="templateid">
-				<option value=0>',_("Select a template..."),'</option>';
+				<option value=0>',__("Select a template..."),'</option>';
 
 			foreach($templateList as $tempRow){
 				if($dev->TemplateID==$tempRow->TemplateID){$selected=" selected";}else{$selected="";}
@@ -1141,62 +1141,62 @@ echo '			</select>
 			</div>
 		</div>
 		<div>
-		   <div><label for="position">',_("Position"),'</label></div>
+		   <div><label for="position">',__("Position"),'</label></div>
 		   <div><input type="number" class="required,validate[custom[onlyNumberSp],min[1]]" name="position" id="position" size="4" value="',$dev->Position,'"></div>
 		</div>
 		<div>
-		   <div><label for="height">',_("Height"),'</label></div>
+		   <div><label for="height">',__("Height"),'</label></div>
 		   <div><input type="number" class="required,validate[custom[onlyNumberSp]]" name="height" id="height" size="4" value="',$dev->Height,'"></div>
 		</div>';
 
 		// Blade devices don't have data ports unless they're a switch
 		if($dev->ParentDevice==0||($dev->ParentDevice>0&&$dev->DeviceType=='Switch')){
 			echo '		<div id="dphtml">
-		   <div><label for="ports">',_("Number of Data Ports"),'</label></div>
+		   <div><label for="ports">',__("Number of Data Ports"),'</label></div>
 		   <div><input type="number" class="optional,validate[custom[onlyNumberSp]]" name="ports" id="ports" size="4" value="',$dev->Ports,'"></div>
 		</div>';
 		}
 
 echo '		<div>
-		   <div><label for="nominalwatts">',_("Nominal Draw (Watts)"),'</label></div>
+		   <div><label for="nominalwatts">',__("Nominal Draw (Watts)"),'</label></div>
 		   <div><input type="text" class="optional,validate[custom[onlyNumberSp]]" name="nominalwatts" id="nominalwatts" size=6 value="',$dev->NominalWatts,'"></div>
 		</div>';
 
 		// Blade devices don't have power supplies but they do have a front or back designation
 		if($dev->ParentDevice==0){
 			echo '		<div>
-		   <div><label for="powersupplycount">',_("Number of Power Supplies"),'</label></div>
+		   <div><label for="powersupplycount">',__("Number of Power Supplies"),'</label></div>
 		   <div><input type="number" class="optional,validate[custom[onlyNumberSp]]" name="powersupplycount" id="powersupplycount" size=4 value="',$dev->PowerSupplyCount,'"></div>
 		</div>';
 		}else{
 			echo '		<div>
-			<div><label for="powersupplycount">',_("Front / Rear"),'</label></div>
+			<div><label for="powersupplycount">',__("Front / Rear"),'</label></div>
 			<div><select id="chassisslots" name="chassisslots">
-		   		<option value=0'.(($dev->ChassisSlots==0)?' selected':'').'>',_("Front"),'</option>
-				<option value=1'.(($dev->ChassisSlots==1)?' selected':'').'>',_("Rear"),'</option>
+		   		<option value=0'.(($dev->ChassisSlots==0)?' selected':'').'>',__("Front"),'</option>
+				<option value=1'.(($dev->ChassisSlots==1)?' selected':'').'>',__("Rear"),'</option>
 			</select></div>
 		</div>';
 		}
 
 echo '		<div>
-		   <div>',_("Device Type"),'</div>
+		   <div>',__("Device Type"),'</div>
 		   <div><select name="devicetype">
-			<option value=0>',_("Select..."),'</option>';
+			<option value=0>',__("Select..."),'</option>';
 
 		// We don't want someone accidentally adding a chassis device inside of a chassis slot.
 		if($dev->ParentDevice>0){
-			$devarray=array('Server' => _("Server"),
-							'Appliance' => _("Appliance"),
-							'Storage Array' => _("Storage Array"),
-							'Switch' => _("Switch"));
+			$devarray=array('Server' => __("Server"),
+							'Appliance' => __("Appliance"),
+							'Storage Array' => __("Storage Array"),
+							'Switch' => __("Switch"));
 		}else{
-			$devarray=array('Server' => _("Server"),
-							'Appliance' => _("Appliance"),
-							'Storage Array' => _("Storage Array"),
-							'Switch' => _("Switch"),
-							'Chassis' => _("Chassis"),
-							'Patch Panel' => _("Patch Panel"),
-							'Physical Infrastructure' => _("Physical Infrastructure"));
+			$devarray=array('Server' => __("Server"),
+							'Appliance' => __("Appliance"),
+							'Storage Array' => __("Storage Array"),
+							'Switch' => __("Switch"),
+							'Chassis' => __("Chassis"),
+							'Patch Panel' => __("Patch Panel"),
+							'Physical Infrastructure' => __("Physical Infrastructure"));
 		}
 
 		foreach($devarray as $devType => $translation){
@@ -1215,25 +1215,25 @@ echo '		<div>
 	if($dev->DeviceType=='Chassis'){
 
 echo '<fieldset class="chassis">
-	<legend>',_("Chassis Contents"),'</legend>
+	<legend>',__("Chassis Contents"),'</legend>
 	<div class="table">
 		<div>
 			<div>&nbsp;</div>
-			<div>',_("Front"),'</div>
-			<div class="greybg">',_("Rear"),'</div>
+			<div>',__("Front"),'</div>
+			<div class="greybg">',__("Rear"),'</div>
 		</div>
 		<div>
-			<div><label for="chassisslots">',_("Number of Slots in Chassis:"),'</label></div>
+			<div><label for="chassisslots">',__("Number of Slots in Chassis:"),'</label></div>
 			<div><input type="text" id="chassisslots" class="optional,validate[custom[onlyNumberSp]]" name="chassisslots" size="4" value="',$dev->ChassisSlots,'"></div>
 			<div class="greybg"><input type="text" id="rearchassisslots" class="optional,validate[custom[onlyNumberSp]]" name="rearchassisslots" size="4" value="',$dev->RearChassisSlots,'"></div>
 		</div>
 	</div>
 	<div class="table">
 		<div>
-			<div>',_("Slot #"),'</div>
-			<div>',_("Height"),'</div>
-			<div>',_("Device Name"),'</div>
-			<div>',_("Device Type"),'</div>
+			<div>',__("Slot #"),'</div>
+			<div>',__("Height"),'</div>
+			<div>',__("Device Name"),'</div>
+			<div>',__("Device Type"),'</div>
 		</div>';
 
 	foreach($childList as $chDev){
@@ -1248,7 +1248,7 @@ echo '<fieldset class="chassis">
 	if($dev->ChassisSlots >0){
 
 echo '		<div class="caption">
-			<button type="submit" id="adddevice" value="child" name="action">',_("Add Device"),'</button>
+			<button type="submit" id="adddevice" value="child" name="action">',__("Add Device"),'</button>
 			<input type="hidden" id="parentdevice" name="parentdevice" disabled value="',$dev->DeviceID,'">
 		</div>';
 	}
@@ -1260,21 +1260,21 @@ echo '		<div class="caption">
 	
 	// Do not display ESX block if device isn't a virtual server and the user doesn't have write access
 	if(($user->WriteAccess || $dev->ESX) && ($dev->DeviceType=="Server" || $dev->DeviceType=="")){
-		echo '<fieldset>	<legend>',_("VMWare ESX Server Information"),'</legend>';
+		echo '<fieldset>	<legend>',__("VMWare ESX Server Information"),'</legend>';
 	// If the user doesn't have write access display the list of VMs but not the configuration information.
 		if($user->WriteAccess){
 
 echo '	<div class="table">
 		<div>
-		   <div><label for="esx">'._("ESX Server?").'</label></div>
-		   <div><select name="esx" id="esx"><option value="1"'.(($dev->ESX==1)?" selected":"").'>'._("True").'</option><option value="0"'.(($dev->ESX==0)?" selected":"").'>'._("False").'</option></select></div>
+		   <div><label for="esx">'.__("ESX Server?").'</label></div>
+		   <div><select name="esx" id="esx"><option value="1"'.(($dev->ESX==1)?" selected":"").'>'.__("True").'</option><option value="0"'.(($dev->ESX==0)?" selected":"").'>'.__("False").'</option></select></div>
 		</div>
 		<div>
-		  <div><label for="primaryip">'._("Primary IP").'</label></div>
+		  <div><label for="primaryip">'.__("Primary IP").'</label></div>
 		  <div><input type="text" name="primaryip" id="primaryip" size="20" value="'.$dev->PrimaryIP.'"></div>
 		</div>
 		<div>
-		  <div><label for="snmpcommunity">'._("SNMP Read Only Community").'</label></div>
+		  <div><label for="snmpcommunity">'.__("SNMP Read Only Community").'</label></div>
 		  <div><input type="text" name="snmpcommunity" id="snmpcommunity" size="40" value="'.$dev->SNMPCommunity.'"></div>
 		</div>
 	</div><!-- END div.table -->';
@@ -1285,7 +1285,7 @@ echo '	<div class="table">
 			$esx->DeviceID=$dev->DeviceID;
 			$vmList=$esx->GetDeviceInventory($facDB);
     
-			print "\n<div class=\"table border\"><div><div>"._('VM Name')."</div><div>"._('Status')."</div><div>"._('Owner')."</div><div>"._('Last Updated')."</div></div>\n";
+			print "\n<div class=\"table border\"><div><div>".__('VM Name')."</div><div>".__('Status')."</div><div>".__('Owner')."</div><div>".__('Last Updated')."</div></div>\n";
 			foreach($vmList as $vmRow){
 				if($vmRow->vmState=='poweredOff'){
 					$statColor='red';
@@ -1296,7 +1296,7 @@ echo '	<div class="table">
 				if($Dept->DeptID >0){
 					$Dept->GetDeptByID($facDB);
 				}else{
-					$Dept->Name=_('Unknown');
+					$Dept->Name=__('Unknown');
 				}
 				print "<div><div>$vmRow->vmName</div><div><font color=$statColor>$vmRow->vmState</font></div><div><a href=\"updatevmowner.php?vmindex=$vmRow->VMIndex\">$Dept->Name</a></div><div>$vmRow->LastUpdated</div></div>\n";
 			}
@@ -1315,9 +1315,9 @@ echo '	<div class="table">
 	if(!is_null($pwrCords)&&((isset($_POST['action'])&&$_POST['action']!='child')||!isset($_POST['action']))){
 		if(count($pwrCords)==0){
 			// We have no power information. Display links to PDU's in cabinet?
-			echo '	<div>		<div><a name="power"></a></div>		<div>',_("No power connections defined.  You can add connections from the power strip screen."),'</div></div><div><div>&nbsp;</div><div></div></div>';
+			echo '	<div>		<div><a name="power"></a></div>		<div>',__("No power connections defined.  You can add connections from the power strip screen."),'</div></div><div><div>&nbsp;</div><div></div></div>';
 		}else{
-			print "		<div>\n		  <div><a name=\"power\">$chassis "._('Power Connections')."</a></div>\n		  <div><div class=\"table border\">\n			<div><div>"._('Panel')."</div><div>"._('Power Strip')."</div><div>"._('Plug #')."</div><div>"._('Power Supply')."</div></div>";
+			print "		<div>\n		  <div><a name=\"power\">$chassis ".__('Power Connections')."</a></div>\n		  <div><div class=\"table border\">\n			<div><div>".__('Panel')."</div><div>".__('Power Strip')."</div><div>".__('Plug #')."</div><div>".__('Power Supply')."</div></div>";
 			foreach($pwrCords as $cord){
 				$pdu->PDUID=$cord->PDUID;
 				$pdu->GetPDU($facDB);
@@ -1335,7 +1335,7 @@ echo '	<div class="table">
 			// We have no network information. Display links to switches in cabinet?
 			echo '		<div>		<div><a name="power"></a></div>		<div>',("No network connections defined.  You can add connections from a switch device."),'</div></div>';
 		}else{
-			print "		<div>\n		  <div><a name=\"net\">$chassis "._('Connections')."</a><br>("._('Managed at Switch').")</div>\n		  <div><div class=\"table border\"><div><div>"._('Switch')."</div><div>"._('Switch Port')."</div><div>"._('Device Port')."</div><div>"._('Notes')."</div></div>\n";
+			print "		<div>\n		  <div><a name=\"net\">$chassis ".__('Connections')."</a><br>(".__('Managed at Switch').")</div>\n		  <div><div class=\"table border\"><div><div>".__('Switch')."</div><div>".__('Switch Port')."</div><div>".__('Device Port')."</div><div>".__('Notes')."</div></div>\n";
 			$tmpDev=new Device();
 			foreach($patchList as $patchConn){
 				$tmpDev->DeviceID=$patchConn->SwitchDeviceID;
@@ -1346,7 +1346,7 @@ echo '	<div class="table">
 
 			if(count($panelList)>0){
 				print "\t\t<div>\n\t\t\t<div>&nbsp;</div><div></div>\n\t\t</div>\n";				
-				print "\t\t<div>\n\t\t\t<div><a name=\"net\">$chassis "._('Patches')."</a><br>("._('Managed at Panel').")</div>\n\t\t\t<div>\n\t\t\t\t<div class=\"table border\">\n\t\t\t\t\t<div><div>"._('Panel')."</div><div>"._('Panel Port')."</div><div>"._('Device Port')."</div><div>"._('Notes')."</div></div>\n";
+				print "\t\t<div>\n\t\t\t<div><a name=\"net\">$chassis ".__('Patches')."</a><br>(".__('Managed at Panel').")</div>\n\t\t\t<div>\n\t\t\t\t<div class=\"table border\">\n\t\t\t\t\t<div><div>".__('Panel')."</div><div>".__('Panel Port')."</div><div>".__('Device Port')."</div><div>".__('Notes')."</div></div>\n";
 				
 				if(is_array($panelList)){
 					foreach($panelList as $panelConn){
@@ -1361,7 +1361,7 @@ echo '	<div class="table">
 	}
 		  
 	if($dev->DeviceType=='Switch'){
-		print "		<div>\n		  <div><a name=\"net\">"._('Connections')."</a></div>\n		  <div>\n			<div class=\"table border switch\">\n				<div><div>"._('Switch Port')."</div><div>"._('Device')."</div><div>"._('Device Port')."</div><div>"._('Notes')."</div></div>\n";
+		print "		<div>\n		  <div><a name=\"net\">".__('Connections')."</a></div>\n		  <div>\n			<div class=\"table border switch\">\n				<div><div>".__('Switch Port')."</div><div>".__('Device')."</div><div>".__('Device Port')."</div><div>".__('Notes')."</div></div>\n";
 		if(sizeof($patchList) >0){
 			foreach($patchList as $patchConn){
 				$tmpDev=new Device();
@@ -1375,7 +1375,7 @@ echo '	<div class="table">
 	}
 
 	if($dev->DeviceType=='Patch Panel'){
-		print "\n\t<div>\n\t\t<div><a name=\"net\">"._('Connections')."</a></div>\n\t\t<div>\n\t\t\t<div class=\"table border patchpanel\">\n\t\t\t\t<div><div>"._('Front')."</div><div>Device Port</div><div>"._('Notes')."</div><div>"._('Patch Port')."</div><div>"._('Back')."</div><div>Device Port</div><div>"._('Notes')."</div></div>\n";
+		print "\n\t<div>\n\t\t<div><a name=\"net\">".__('Connections')."</a></div>\n\t\t<div>\n\t\t\t<div class=\"table border patchpanel\">\n\t\t\t\t<div><div>".__('Front')."</div><div>Device Port</div><div>".__('Notes')."</div><div>".__('Patch Port')."</div><div>".__('Back')."</div><div>Device Port</div><div>".__('Notes')."</div></div>\n";
 		if(sizeof($patchList) >0){
 			foreach($patchList as $patchConn){
 				$frontDev=new Device();
@@ -1394,15 +1394,15 @@ echo '	<div class="table">
 <?php
 	if($user->WriteAccess){
 		if($dev->DeviceID >0){
-			echo '			<button type="submit" name="action" value="Update">',_("Update"),'</button>
-			<button type="submit" name="action" value="Copy">', _("Copy"), '</button>';
+			echo '			<button type="submit" name="action" value="Update">',__("Update"),'</button>
+			<button type="submit" name="action" value="Copy">', __("Copy"), '</button>';
 		} else {
-			echo '			<button type="submit" name="action" value="Create">',_("Create"),'</button>';
+			echo '			<button type="submit" name="action" value="Create">',__("Create"),'</button>';
 		}
 	}
 	// Delete rights are seperate from write rights
 	if($user->DeleteAccess && $dev->DeviceID >0){
-		echo '		<button type="button" name="action" value="Delete">',_("Delete"),'</button>';
+		echo '		<button type="button" name="action" value="Delete">',__("Delete"),'</button>';
 	}
 ?>
 
@@ -1414,11 +1414,11 @@ echo '	<div class="table">
 </div></div>
 <?php
 	if($dev->ParentDevice >0){
-		print "   <a href=\"devices.php?deviceid=$pDev->DeviceID\">[ "._('Return to Parent Device')." ]</a>\n";
+		print "   <a href=\"devices.php?deviceid=$pDev->DeviceID\">[ ".__('Return to Parent Device')." ]</a>\n";
 	}elseif($dev->Cabinet >0){
-		print "   <a href=\"cabnavigator.php?cabinetid=$cab->CabinetID\">[ "._('Return to Navigator')." ]</a>";
+		print "   <a href=\"cabnavigator.php?cabinetid=$cab->CabinetID\">[ ".__('Return to Navigator')." ]</a>";
 	}else{
-		echo '   <div><a href="storageroom.php">[ ',_("Return to Navigator"),' ]</a></div>';
+		echo '   <div><a href="storageroom.php">[ ',__("Return to Navigator"),' ]</a></div>';
 	}
 ?>
 <div id="dialog-confirm" title="Verify Delete Device" class="hide">

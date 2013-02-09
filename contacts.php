@@ -219,14 +219,14 @@
 <div class="main">
 <h2><?php print $config->ParameterArray['OrgName']; ?></h2>
 <?php
-echo '<h3>',_("Data Center Contact Detail"),'</h3>
+echo '<h3>',__("Data Center Contact Detail"),'</h3>
 <div class="center"><div>
 <form id="cform" action="',$_SERVER['PHP_SELF'].$formfix,'" method="POST">
 <div class="table">
 <div>
-   <div><label for="contactid">',_("Contact"),'</label></div>
+   <div><label for="contactid">',__("Contact"),'</label></div>
    <div><input type="hidden" name="action" value="query"><select name="contactid" id="contactid" onChange="form.submit()">
-   <option value=0>',_("New Contact"),'</option>';
+   <option value=0>',__("New Contact"),'</option>';
 
 	foreach($contactList as $contactRow ) {
 		if($contact->ContactID == $contactRow->ContactID){$selected=' selected="selected"';}else{$selected='';}
@@ -235,39 +235,39 @@ echo '<h3>',_("Data Center Contact Detail"),'</h3>
 echo '	</select></div>
 </div>
 <div>
-   <div><label for="UserID">',_("UserID"),'</label></div>
+   <div><label for="UserID">',__("UserID"),'</label></div>
    <div><input type="text" class="validate[optional,minSize[1],maxSize[8]]" name="UserID" id="UserID" maxlength="8" value="',$contact->UserID,'"></div>
 </div>
 <div>
-   <div><label for="lastname">',_("Last Name"),'</label></div>
+   <div><label for="lastname">',__("Last Name"),'</label></div>
    <div><input type="text" class="validate[required,minSize[1],maxSize[40]]" name="lastname" id="lastname" maxlength="40" value="',$contact->LastName,'"></div>
 </div>
 <div>
-   <div><label for="firstname">',_("First Name"),'</label></div>
+   <div><label for="firstname">',__("First Name"),'</label></div>
    <div><input type="text" class="validate[optional,minSize[1],maxSize[40]]" name="firstname" id="firstname" maxlength="40" value="',$contact->FirstName,'"></div>
 </div>
 <div>
-   <div><label for="phone1">',_("Phone 1"),'</label></div>
+   <div><label for="phone1">',__("Phone 1"),'</label></div>
    <div><input type="text" class="validate[optional,custom[phone]]" name="phone1" id="phone1" maxlength="20" value="',$contact->Phone1,'"></div>
 </div>
 <div>
-   <div><label for="phone2">',_("Phone 2"),'</label></div>
+   <div><label for="phone2">',__("Phone 2"),'</label></div>
    <div><input type="text" class="validate[optional,custom[phone]]" name="phone2" id="phone2" maxlength="20" value="',$contact->Phone2,'"></div>
 </div>
 <div>
-   <div><label for="phone3">',_("Phone 3"),'</label></div>
+   <div><label for="phone3">',__("Phone 3"),'</label></div>
    <div><input type="text" class="validate[optional,custom[phone]]" name="phone3" id="phone3" maxlength="20" value="',$contact->Phone3,'"></div>
 </div>
 <div>
-   <div><label for="email">',_("Email"),'</label></div>
+   <div><label for="email">',__("Email"),'</label></div>
    <div><input type="text" class="validate[optional,custom[email],maxSize[80]]" size="50" name="email" id="email" maxlength="80" value="',$contact->Email,'"></div>
 </div>
 <div class="caption">';
 
 	if($contact->ContactID >0){
-		echo '   <button type="submit" name="action" value="Update">',_("Update"),'</button><button type="button" name="deletecheck">',_("Delete"),'</button>';
+		echo '   <button type="submit" name="action" value="Update">',__("Update"),'</button><button type="button" name="deletecheck">',__("Delete"),'</button>';
 	}else{
-		echo '   <button type="submit" name="action" value="Create">',_("Create"),'</button>';
+		echo '   <button type="submit" name="action" value="Create">',__("Create"),'</button>';
 	}
 ?>
 </div>
@@ -277,7 +277,7 @@ echo '	</select></div>
 
 <div id="deletedialog" title="Continue removing contact?"></div>
 
-<?php echo '<a href="index.php">[ ',_("Return to Main Menu"),' ]</a>'; ?>
+<?php echo '<a href="index.php">[ ',__("Return to Main Menu"),' ]</a>'; ?>
 </div> <!-- END div.main -->
 </div> <!-- END div.page -->
 </body>

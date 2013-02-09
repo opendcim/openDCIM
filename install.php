@@ -543,7 +543,7 @@ if(isset($results)){
 				width: 400,
 				modal: true,
 				buttons: {
-<?php echo '					',_("Select"),': function() {'; ?>
+<?php echo '					',__("Select"),': function() {'; ?>
 						if($('#imageselection #preview').attr('image')!=""){
 							$('#PDFLogoFile').val($('#imageselection #preview').attr('image'));
 						}
@@ -715,136 +715,136 @@ if(isset($results)){
 
 echo '<div class="main">
 <h2>',$config->ParameterArray["OrgName"],'</h2>
-<h3>',_("Data Center Configuration"),'</h3>
-<h3>',_("Database Version"),': ',$config->ParameterArray["Version"],'</h3>
+<h3>',__("Data Center Configuration"),'</h3>
+<h3>',__("Database Version"),': ',$config->ParameterArray["Version"],'</h3>
 <div class="center"><div>
 <form action="',$_SERVER["PHP_SELF"],'" method="POST">
    <input type="hidden" name="Version" value="',$config->ParameterArray["Version"],'">
 
 	<div id="configtabs">
 		<ul>
-			<li><a href="#general">',_("General"),'</a></li>
-			<li><a href="#style">',_("Style"),'</a></li>
-			<li><a href="#email">',_("Email"),'</a></li>
-			<li><a href="#reporting">',_("Reporting"),'</a></li>
+			<li><a href="#general">',__("General"),'</a></li>
+			<li><a href="#style">',__("Style"),'</a></li>
+			<li><a href="#email">',__("Email"),'</a></li>
+			<li><a href="#reporting">',__("Reporting"),'</a></li>
 		</ul>
 		<div id="general">
 			<div class="table">
 				<div>
-					<div><label for="OrgName">',_("Organization Name"),'</label></div>
+					<div><label for="OrgName">',__("Organization Name"),'</label></div>
 					<div><input type="text" defaultvalue="',$config->defaults["OrgName"],'" name="OrgName" value="',$config->ParameterArray["OrgName"],'"></div>
 				</div>
 				<div>
-					<div><label for="Locale">',_("Locale"),'</label></div>
+					<div><label for="Locale">',__("Locale"),'</label></div>
 					<div><input type="text" defaultvalue="',$config->defaults["Locale"],'" name="Locale" value="',$config->ParameterArray["Locale"],'"></div>
 				</div>
 				<div>
-					<div><label for="DefaultPanelVoltage">',_("Default Panel Voltage"),'</label></div>
+					<div><label for="DefaultPanelVoltage">',__("Default Panel Voltage"),'</label></div>
 					<div><input type="text" defaultvalue="',$config->defaults["DefaultPanelVoltage"],'" name="DefaultPanelVoltage" value="',$config->ParameterArray["DefaultPanelVoltage"],'"></div>
 				</div>
 			</div> <!-- end table -->
-			<h3>',_("Time and Measurements"),'</h3>
+			<h3>',__("Time and Measurements"),'</h3>
 			<div class="table" id="timeandmeasurements">
 				<div>
-					<div><label for="timezone">',_("Time Zone"),'</label></div>
+					<div><label for="timezone">',__("Time Zone"),'</label></div>
 					<div><input type="text" readonly="readonly" id="timezone" defaultvalue="',$config->defaults["timezone"],'" name="timezone" value="',$config->ParameterArray["timezone"],'"></div>
 				</div>
 				<div>
-					<div><label for="mDate">',_("Manufacture Date"),'</label></div>
+					<div><label for="mDate">',__("Manufacture Date"),'</label></div>
 					<div><select id="mDate" name="mDate" defaultvalue="',$config->defaults["mDate"],'" data="',$config->ParameterArray["mDate"],'">
-							<option value="blank"',(($config->ParameterArray["mDate"]=="blank")?' selected="selected"':''),'>',_("Blank"),'</option>
-							<option value="now"',(($config->ParameterArray["mDate"]=="now")?' selected="selected"':''),'>',_("Now"),'</option>
+							<option value="blank"',(($config->ParameterArray["mDate"]=="blank")?' selected="selected"':''),'>',__("Blank"),'</option>
+							<option value="now"',(($config->ParameterArray["mDate"]=="now")?' selected="selected"':''),'>',__("Now"),'</option>
 						</select>
 					</div>
 				</div>
 				<div>
-					<div><label for="wDate">',_("Warranty Date"),'</label></div>
+					<div><label for="wDate">',__("Warranty Date"),'</label></div>
 					<div><select id="wDate" name="wDate" defaultvalue="',$config->defaults["wDate"],'" data="',$config->ParameterArray["wDate"],'">
-							<option value="blank"',(($config->ParameterArray["wDate"]=="blank")?' selected="selected"':''),'>',_("Blank"),'</option>
-							<option value="now"',(($config->ParameterArray["wDate"]=="now")?' selected="selected"':''),'>',_("Now"),'</option>
+							<option value="blank"',(($config->ParameterArray["wDate"]=="blank")?' selected="selected"':''),'>',__("Blank"),'</option>
+							<option value="now"',(($config->ParameterArray["wDate"]=="now")?' selected="selected"':''),'>',__("Now"),'</option>
 						</select>
 					</div>
 				</div>
 			</div> <!-- end table -->
-			<h3>',_("Users"),'</h3>
+			<h3>',__("Users"),'</h3>
 			<div class="table">
 				<div>
-					<div><label for="ClassList">',_("Department Types"),'</label></div>
+					<div><label for="ClassList">',__("Department Types"),'</label></div>
 					<div><input type="text" defaultvalue="',$config->defaults["ClassList"],'" name="ClassList" value="',$classlist,'"></div>
 				</div>
 				<div>
-					<div><label for="UserLookupURL">',_("User Lookup URL"),'</label></div>
+					<div><label for="UserLookupURL">',__("User Lookup URL"),'</label></div>
 					<div><input type="text" defaultvalue="',$config->defaults["UserLookupURL"],'" name="UserLookupURL" value="',$config->ParameterArray["UserLookupURL"],'"></div>
 				</div>
 			</div> <!-- end table -->
-			<h3>',_("Rack Requests"),'</h3>
+			<h3>',__("Rack Requests"),'</h3>
 			<div class="table">
 				<div>
-					<div><label for="MailSubject">',_("Mail Subject"),'</label></div>
+					<div><label for="MailSubject">',__("Mail Subject"),'</label></div>
 					<div><input type="text" defaultvalue="',$config->defaults["MailSubject"],'" name="MailSubject" value="',$config->ParameterArray["MailSubject"],'"></div>
 				</div>
 				<div>
-					<div><label for="RackWarningHours">',_("Warning (Hours)"),'</label></div>
+					<div><label for="RackWarningHours">',__("Warning (Hours)"),'</label></div>
 					<div><input type="text" defaultvalue="',$config->defaults["RackWarningHours"],'" name="RackWarningHours" value="',$config->ParameterArray["RackWarningHours"],'"></div>
 				</div>
 				<div>
-					<div><label for="RackOverdueHours">',_("Critical (Hours)"),'</label></div>
+					<div><label for="RackOverdueHours">',__("Critical (Hours)"),'</label></div>
 					<div><input type="text" defaultvalue="',$config->defaults["RackOverdueHours"],'" name="RackOverdueHours" value="',$config->ParameterArray["RackOverdueHours"],'"></div>
 				</div>
 			</div> <!-- end table -->
-			<h3>',_("Rack Usage"),'</h3>
+			<h3>',__("Rack Usage"),'</h3>
 			<div class="table" id="rackusage">
 				<div>
-					<div><label for="SpaceRed">',_("Space Critical"),'</label></div>
+					<div><label for="SpaceRed">',__("Space Critical"),'</label></div>
 					<div><input type="text" defaultvalue="',$config->defaults["SpaceRed"],'" name="SpaceRed" value="',$config->ParameterArray["SpaceRed"],'"></div>
 				</div>
 				<div>
-					<div><label for="SpaceYellow">',_("Space Warning"),'</label></div>
+					<div><label for="SpaceYellow">',__("Space Warning"),'</label></div>
 					<div><input type="text" defaultvalue="',$config->defaults["SpaceYellow"],'" name="SpaceYellow" value="',$config->ParameterArray["SpaceYellow"],'"></div>
 				</div>
 				<div>
-					<div><label for="WeightRed">',_("Weight Critical"),'</label></div>
+					<div><label for="WeightRed">',__("Weight Critical"),'</label></div>
 					<div><input type="text" defaultvalue="',$config->defaults["WeightRed"],'" name="WeightRed" value="',$config->ParameterArray["WeightRed"],'"></div>
 				</div>
 				<div>
-					<div><label for="WeightYellow">',_("Weight Warning"),'</label></div>
+					<div><label for="WeightYellow">',__("Weight Warning"),'</label></div>
 					<div><input type="text" defaultvalue="',$config->defaults["WeightYellow"],'" name="WeightYellow" value="',$config->ParameterArray["WeightYellow"],'"></div>
 				</div>
 				<div>
-					<div><label for="PowerRed">',_("Power Critical"),'</label></div>
+					<div><label for="PowerRed">',__("Power Critical"),'</label></div>
 					<div><input type="text" defaultvalue="',$config->defaults["PowerRed"],'" name="PowerRed" value="',$config->ParameterArray["PowerRed"],'"></div>
 				</div>
 				<div>
-					<div><label for="PowerYellow">',_("Power Warning"),'</label></div>
+					<div><label for="PowerYellow">',__("Power Warning"),'</label></div>
 					<div><input type="text" defaultvalue="',$config->defaults["PowerYellow"],'" name="PowerYellow" value="',$config->ParameterArray["PowerYellow"],'"></div>
 				</div>
 			</div> <!-- end table -->
-			<h3>',_("Virtual Machines"),'</h3>
+			<h3>',__("Virtual Machines"),'</h3>
 			<div class="table" id="rackusage">
 				<div>
-					<div><lable for="VMExpirationTime">',_("Expiration Time (Days)"),'</label></div>
+					<div><lable for="VMExpirationTime">',__("Expiration Time (Days)"),'</label></div>
 					<div><input type="text" defaultvalue="',$config->defaults["VMExpirationTime"],'" name="VMExpirationTime" value="',$config->ParameterArray["VMExpirationTime"],'"></div>
 				</div>
 			</div> <!-- end table -->
 			',$tzmenu,'
 		</div>
 		<div id="style">
-			<h3>',_("Racks & Maps"),'</h3>
+			<h3>',__("Racks & Maps"),'</h3>
 			<div class="table">
 				<div>
-					<div><label for="CriticalColor">',_("Critical Color"),'</label></div>
+					<div><label for="CriticalColor">',__("Critical Color"),'</label></div>
 					<div><div class="cp"><input type="text" class="color-picker" name="CriticalColor" value="',$config->ParameterArray["CriticalColor"],'"></div></div>
 					<div><button type="button"><--</button></div>
 					<div><span>',strtoupper($config->defaults["CriticalColor"]),'</span></div>
 				</div>
 				<div>
-					<div><label for="CautionColor">',_("Caution Color"),'</label></div>
+					<div><label for="CautionColor">',__("Caution Color"),'</label></div>
 					<div><div class="cp"><input type="text" class="color-picker" name="CautionColor" value="',$config->ParameterArray["CautionColor"],'"></div></div>
 					<div><button type="button"><--</button></div>
 					<div><span>',strtoupper($config->defaults["CautionColor"]),'</span></div>
 				</div>
 				<div>
-					<div><label for="GoodColor">',_("Good Color"),'</label></div>
+					<div><label for="GoodColor">',__("Good Color"),'</label></div>
 					<div><div class="cp"><input type="text" class="color-picker" name="GoodColor" value="',$config->ParameterArray["GoodColor"],'"></div></div>
 					<div><button type="button"><--</button></div>
 					<div><span>',strtoupper($config->defaults["GoodColor"]),'</span></div>
@@ -856,53 +856,53 @@ echo '<div class="main">
 					<div></div>
 				</div>
 				<div>
-					<div><label for="ReservedColor">',_("Reserved Devices"),'</label></div>
+					<div><label for="ReservedColor">',__("Reserved Devices"),'</label></div>
 					<div><div class="cp"><input type="text" class="color-picker" name="ReservedColor" value="',$config->ParameterArray["ReservedColor"],'"></div></div>
 					<div><button type="button"><--</button></div>
 					<div><span>',strtoupper($config->defaults["ReservedColor"]),'</span></div>
 				</div>
 				<div>
-					<div><label for="FreeSpaceColor">',_("Unused Spaces"),'</label></div>
+					<div><label for="FreeSpaceColor">',__("Unused Spaces"),'</label></div>
 					<div><div class="cp"><input type="text" class="color-picker" name="FreeSpaceColor" value="',$config->ParameterArray["FreeSpaceColor"],'"></div></div>
 					<div><button type="button"><--</button></div>
 					<div><span>',strtoupper($config->defaults["FreeSpaceColor"]),'</span></div>
 				</div>
 			</div> <!-- end table -->
-			<h3>',_("Devices"),'</h3>
+			<h3>',__("Devices"),'</h3>
 			<div class="table">
 				<div>
-					<div><label for="LabelCase">',_("Device Labels"),'</label></div>
+					<div><label for="LabelCase">',__("Device Labels"),'</label></div>
 					<div><select id="LabelCase" name="LabelCase" defaultvalue="',$config->defaults["LabelCase"],'" data="',$config->ParameterArray["LabelCase"],'">
-							<option value="upper">',transform(_("Uppercase"),'upper'),'</option>
-							<option value="lower">',transform(_("Lowercase"),'lower'),'</option>
-							<option value="initial">',transform(_("Initial caps"),'initial'),'</option>
-							<option value="none">',_("Don't touch my labels"),'</option>
+							<option value="upper">',transform(__("Uppercase"),'upper'),'</option>
+							<option value="lower">',transform(__("Lowercase"),'lower'),'</option>
+							<option value="initial">',transform(__("Initial caps"),'initial'),'</option>
+							<option value="none">',__("Don't touch my labels"),'</option>
 						</select>
 					</div>
 				</div>
 			</div> <!-- end table -->
-			<h3>',_("Site"),'</h3>
+			<h3>',__("Site"),'</h3>
 			<div class="table">
 				<div>
-					<div><label for="HeaderColor">',_("Header Color"),'</label></div>
+					<div><label for="HeaderColor">',__("Header Color"),'</label></div>
 					<div><div class="cp"><input type="text" class="color-picker" name="HeaderColor" value="',$config->ParameterArray["HeaderColor"],'"></div></div>
 					<div><button type="button"><--</button></div>
 					<div><span>',strtoupper($config->defaults["HeaderColor"]),'</span></div>
 				</div>
 				<div>
-					<div><label for="BodyColor">',_("Body Color"),'</label></div>
+					<div><label for="BodyColor">',__("Body Color"),'</label></div>
 					<div><div class="cp"><input type="text" class="color-picker" name="BodyColor" value="',$config->ParameterArray["BodyColor"],'"></div></div>
 					<div><button type="button"><--</button></div>
 					<div><span>',strtoupper($config->defaults["BodyColor"]),'</span></div>
 				</div>
 				<div>
-					<div><label for="LinkColor">',_("Link Color"),'</label></div>
+					<div><label for="LinkColor">',__("Link Color"),'</label></div>
 					<div><div class="cp"><input type="text" class="color-picker" name="LinkColor" value="',$config->ParameterArray["LinkColor"],'"></div></div>
 					<div><button type="button"><--</button></div>
 					<div><span>',strtoupper($config->defaults["LinkColor"]),'</span></div>
 				</div>
 				<div>
-					<div><label for="VisitedLinkColor">',_("Viewed Link Color"),'</label></div>
+					<div><label for="VisitedLinkColor">',__("Viewed Link Color"),'</label></div>
 					<div><div class="cp"><input type="text" class="color-picker" name="VisitedLinkColor" value="',$config->ParameterArray["VisitedLinkColor"],'"></div></div>
 					<div><button type="button"><--</button></div>
 					<div><span>',strtoupper($config->defaults["VisitedLinkColor"]),'</span></div>
@@ -912,39 +912,39 @@ echo '<div class="main">
 		<div id="email">
 			<div class="table">
 				<div>
-					<div><label for="SMTPServer">',_("SMTP Server"),'</label></div>
+					<div><label for="SMTPServer">',__("SMTP Server"),'</label></div>
 					<div><input type="text" defaultvalue="',$config->defaults["SMTPServer"],'" name="SMTPServer" value="',$config->ParameterArray["SMTPServer"],'"></div>
 				</div>
 				<div>
-					<div><label for="SMTPPort">',_("SMTP Port"),'</label></div>
+					<div><label for="SMTPPort">',__("SMTP Port"),'</label></div>
 					<div><input type="text" defaultvalue="',$config->defaults["SMTPPort"],'" name="SMTPPort" value="',$config->ParameterArray["SMTPPort"],'"></div>
 				</div>
 				<div>
-					<div><label for="SMTPHelo">',_("SMTP Helo"),'</label></div>
+					<div><label for="SMTPHelo">',__("SMTP Helo"),'</label></div>
 					<div><input type="text" defaultvalue="',$config->defaults["SMTPHelo"],'" name="SMTPHelo" value="',$config->ParameterArray["SMTPHelo"],'"></div>
 				</div>
 				<div>
-					<div><label for="SMTPUser">',_("SMTP Username"),'</label></div>
+					<div><label for="SMTPUser">',__("SMTP Username"),'</label></div>
 					<div><input type="text" defaultvalue="',$config->defaults["SMTPUser"],'" name="SMTPUser" value="',$config->ParameterArray["SMTPUser"],'"></div>
 				</div>
 				<div>
-					<div><label for="SMTPPassword">',_("SMTP Password"),'</label></div>
+					<div><label for="SMTPPassword">',__("SMTP Password"),'</label></div>
 					<div><input type="text" defaultvalue="',$config->defaults["SMTPPassword"],'" name="SMTPPassword" value="',$config->ParameterArray["SMTPPassword"],'"></div>
 				</div>
 				<div>
-					<div><label for="MailToAddr">',_("Mail To"),'</label></div>
+					<div><label for="MailToAddr">',__("Mail To"),'</label></div>
 					<div><input type="text" defaultvalue="',$config->defaults["MailToAddr"],'" name="MailToAddr" value="',$config->ParameterArray["MailToAddr"],'"></div>
 				</div>
 				<div>
-					<div><label for="MailFromAddr">',_("Mail From"),'</label></div>
+					<div><label for="MailFromAddr">',__("Mail From"),'</label></div>
 					<div><input type="text" defaultvalue="',$config->defaults["MailFromAddr"],'" name="MailFromAddr" value="',$config->ParameterArray["MailFromAddr"],'"></div>
 				</div>
 				<div>
-					<div><label for="ComputerFacMgr">',_("Facility Manager"),'</label></div>
+					<div><label for="ComputerFacMgr">',__("Facility Manager"),'</label></div>
 					<div><input type="text" defaultvalue="',$config->defaults["ComputerFacMgr"],'" name="ComputerFacMgr" value="',$config->ParameterArray["ComputerFacMgr"],'"></div>
 				</div>
 				<div>
-					<div><label for="FacMgrMail">',_("Facility Manager Email"),'</label></div>
+					<div><label for="FacMgrMail">',__("Facility Manager Email"),'</label></div>
 					<div><input type="text" defaultvalue="',$config->defaults["FacMgrMail"],'" name="FacMgrMail" value="',$config->ParameterArray["FacMgrMail"],'"></div>
 				</div>
 			</div> <!-- end table -->
@@ -955,27 +955,27 @@ echo '<div class="main">
 			</div>
 			<div class="table">
 				<div>
-					<div><label for="annualCostPerUYear">',_("Annual Cost Per Rack Unit (Year)"),'</label></div>
+					<div><label for="annualCostPerUYear">',__("Annual Cost Per Rack Unit (Year)"),'</label></div>
 					<div><input type="text" defaultvalue="',$config->defaults["annualCostPerUYear"],'" name="annualCostPerUYear" value="',$config->ParameterArray["annualCostPerUYear"],'"></div>
 				</div>
 				<div>
-					<div><label for="annualCostPerWattYear">',_("Annual Cost Per Watt (Year)"),'</label></div>
+					<div><label for="annualCostPerWattYear">',__("Annual Cost Per Watt (Year)"),'</label></div>
 					<div><input type="text" defaultvalue="',$config->defaults["annualCostPerWattYear"],'" name="annualCostPerWattYear" value="',$config->ParameterArray["annualCostPerWattYear"],'"></div>
 				</div>
 				<div>
-					<div><label for="PDFLogoFile">',_("Logo file for headers"),'</label></div>
+					<div><label for="PDFLogoFile">',__("Logo file for headers"),'</label></div>
 					<div><input type="text" defaultvalue="',$config->defaults["PDFLogoFile"],'" name="PDFLogoFile" value="',$config->ParameterArray["PDFLogoFile"],'"></div>
 				</div>
 				<div>
-					<div><label for="PDFfont">',_("Font"),'</label></div>
+					<div><label for="PDFfont">',__("Font"),'</label></div>
 					<div><input type="text" defaultvalue="',$config->defaults["PDFfont"],'" name="PDFfont" value="',$config->ParameterArray["PDFfont"],'"></div>
 				</div>
 				<div>
-					<div><label for="NewInstallsPeriod">',_("New Installs Period"),'</label></div>
+					<div><label for="NewInstallsPeriod">',__("New Installs Period"),'</label></div>
 					<div><input type="text" defaultvalue="',$config->defaults["NewInstallsPeriod"],'" name="NewInstallsPeriod" value="',$config->ParameterArray["NewInstallsPeriod"],'"></div>
 				</div>
 				<div>
-					<div><label for="InstallURL">',_("Base URL for install"),'</label></div>
+					<div><label for="InstallURL">',__("Base URL for install"),'</label></div>
 					<div><input type="text" defaultvalue="',$href,'" name="InstallURL" value="',$config->ParameterArray["InstallURL"],'"></div>
 				</div>
 			</div> <!-- end table -->

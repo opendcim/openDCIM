@@ -38,7 +38,7 @@
 		if ( $_REQUEST['action']=='Create' ) {
 			$template->CreateTemplate($facDB);
 		} else {
-			$status=_('Updated');
+			$status=__('Updated');
 			$template->UpdateTemplate($facDB);
 		}
 	}
@@ -72,15 +72,15 @@
 
 echo '<div class="main">
 <h2>',$config->ParameterArray["OrgName"],'</h2>
-<h3>',_("Data Center Cabinet Distribution Unit Templates"),'</h3>
+<h3>',__("Data Center Cabinet Distribution Unit Templates"),'</h3>
 <h3>',$status,'</h3>
 <div class="center"><div>
 <form action="',$_SERVER["PHP_SELF"],'" method="POST">
 <div class="table">
 	<div>
-		<div><label for="templateid">',_("Template"),'</label></div>
+		<div><label for="templateid">',__("Template"),'</label></div>
 		<div><input type="hidden" name="action" value="query"><select name="templateid" id="templateid" onChange="form.submit()">
-		<option value=0>',_("New Template"),'</option>';
+		<option value=0>',__("New Template"),'</option>';
 
 	foreach($templateList as $templateRow){
 		$manufacturer->ManufacturerID=$templateRow->ManufacturerID;
@@ -92,7 +92,7 @@ echo '<div class="main">
 echo '	</select></div>
 </div>
 <div>
-	<div><label for="manufacturerid">',_("Manufacturer"),'</label></div>
+	<div><label for="manufacturerid">',__("Manufacturer"),'</label></div>
 	<div><select name="manufacturerid" id="manufacturerid">';
 
 	foreach($ManufacturerList as $ManufacturerRow){
@@ -104,21 +104,21 @@ echo '    </select>
    </div>
 </div>
 <div>
-   <div><label for="model">',_("Model"),'</label></div>
+   <div><label for="model">',__("Model"),'</label></div>
    <div><input type="text" name="model" id="model" value="',$template->Model,'" size=40></div>
 </div>
 <div>
-   <div><label for="managed">',_("Managed"),'</label></div>
+   <div><label for="managed">',__("Managed"),'</label></div>
    <div>
 		<input type="checkbox" name="managed" id="managed"',$checked,'>
    </div>
 </div>
 <div>
-	<div><label for="versionoid">',_("Firmware Version OID"),'</label></div>
+	<div><label for="versionoid">',__("Firmware Version OID"),'</label></div>
 	<div><input type="text" name="versionoid" id="versionoid" value="',$template->VersionOID,'" size=40></div>
 </div>
 <div>
-   <div><label for="multiplier">',_("Multiplier"),'</label></div>
+   <div><label for="multiplier">',__("Multiplier"),'</label></div>
    <div><select name="multiplier" id="multiplier">';
    
 	$Multi=array("1","10","100");
@@ -131,19 +131,19 @@ echo '   </select>
    </div>
 </div>
 <div>
-   <div><label for="oid1">',_("OID1"),'</label></div>
+   <div><label for="oid1">',__("OID1"),'</label></div>
    <div><input type="text" name="oid1" id="oid1" value="',$template->OID1,'" size=40></div>
 </div>
 <div>
-   <div><label for="oid2">',_("OID2"),'</label></div>
+   <div><label for="oid2">',__("OID2"),'</label></div>
    <div><input type="text" name="oid2" id="oid2" value="',$template->OID2,'" size=40></div>
 </div>
 <div>
-   <div><label for="oid3">',_("OID3"),'</label></div>
+   <div><label for="oid3">',__("OID3"),'</label></div>
    <div><input type="text" name="oid3" id="oid3" value="',$template->OID3,'" size=40></div>
 </div>
 <div>
-   <div><label for="processingprofile">',_("Processing Scheme"),'</label></div>
+   <div><label for="processingprofile">',__("Processing Scheme"),'</label></div>
    <div><select name="processingprofile" id="processingprofile">';
 
 	$ProfileList=array("SingleOIDWatts","SingleOIDAmperes","Combine3OIDWatts","Combine3OIDAmperes","Convert3PhAmperes");
@@ -155,30 +155,30 @@ echo '   </select>
 echo '   </select></div>
 </div>
 <div>
-   <div><label for="voltage">',_("Voltage"),'</label></div>
+   <div><label for="voltage">',__("Voltage"),'</label></div>
    <div><input type="text" name="voltage" id="voltage" value="',$template->Voltage,'"></div>
 </div>
 <div>
-   <div><label for="amperage">',_("Amperage"),'</label></div>
+   <div><label for="amperage">',__("Amperage"),'</label></div>
    <div><input type="text" name="amperage" id="amperage" value="',$template->Amperage,'"></div>
 </div>
 <div>
-   <div><label for="numoutlets">',_("No. of Outlets"),'</label></div>
+   <div><label for="numoutlets">',__("No. of Outlets"),'</label></div>
    <div><input type="text" name="numoutlets" id="numoutlets" value="',$template->NumOutlets,'"></div>
 </div>
 <div class="caption">';
 
 	if($template->TemplateID >0){
-		echo '   <button type="submit" name="action" value="Update">',_("Update"),'</button>';
+		echo '   <button type="submit" name="action" value="Update">',__("Update"),'</button>';
 	}else{
-		echo '	 <button type="submit" name="action" value="Create">',_("Create"),'</button>';
+		echo '	 <button type="submit" name="action" value="Create">',__("Create"),'</button>';
 	}
 ?>
 </div>
 </div><!-- END div.table -->
 </form>
 </div></div>
-<?php echo '<a href="index.php">[ ',_("Return to Main Menu"),' ]</a>'; ?>
+<?php echo '<a href="index.php">[ ',__("Return to Main Menu"),' ]</a>'; ?>
 </div><!-- END div.main -->
 </div><!-- END div.page -->
 </body>

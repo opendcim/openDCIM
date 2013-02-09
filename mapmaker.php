@@ -112,11 +112,11 @@ $(document).ready(function() {
 <div class="mapmaker">
 <div>
 <h2><?php echo $config->ParameterArray["OrgName"]; ?></h2>
-<h3><?php echo _("Map Selector"); ?></h3>
+<h3><?php echo __("Map Selector"); ?></h3>
 </div>
 
 	<div class="table">
-        <div class="title"><?php echo _("Coordinates"); ?></div> 
+        <div class="title"><?php echo __("Coordinates"); ?></div> 
 	<form action="<?php echo $_SERVER["PHP_SELF"]; ?>" method="POST">
     <div class="table"> 
 	<input type="hidden" name="cabinetid" value="<?php printf( "%d", $cab->CabinetID ); ?>">
@@ -153,7 +153,7 @@ $(document).ready(function() {
 <?php echo "<img src=\"css/blank.gif\" height=$height width=$width>"; ?>
 <div class="container demo"> 
   <div style="float: left; width: 70%;"> 
-    <p class="instructions"><?php echo _("Click and drag on the image to select an area for cabinet"),' ',$cab->Location; ?>.</p> 
+    <p class="instructions"><?php echo __("Click and drag on the image to select an area for cabinet"),' ',$cab->Location; ?>.</p> 
  
     <div class="frame" style="margin: 0 0.3em; width: 300px; height: 300px;"> 
       <img id="map" src="<?php echo "drawings/$dc->DrawingFileName"; ?>" /> 
@@ -161,7 +161,7 @@ $(document).ready(function() {
   </div> 
  
   <div style="float: left; width: 30%;"> 
-    <p style="font-size: 110%; font-weight: bold; padding-left: 0.1em;"><?php echo _("Selection Preview"); ?></p> 
+    <p style="font-size: 110%; font-weight: bold; padding-left: 0.1em;"><?php echo __("Selection Preview"); ?></p> 
   
   </div> 
 </div> 
