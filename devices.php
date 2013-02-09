@@ -1330,7 +1330,7 @@ echo '	<div class="table">
 	}
 
 	// If device is s switch or appliance show what the heck it is connected to.
-	if($dev->DeviceType=='Server' || $dev->DeviceType=='Appliance' || $dev->DeviceType=='Chassis'){
+	if($dev->DeviceType=='Server' || $dev->DeviceType=='Appliance' || $dev->DeviceType=='Chassis' || $dev->DeviceType=='Storage Array'){
 		if((count($patchList)+count($panelList))==0){
 			// We have no network information. Display links to switches in cabinet?
 			echo '		<div>		<div><a name="power"></a></div>		<div>',("No network connections defined.  You can add connections from a switch device."),'</div></div>';
