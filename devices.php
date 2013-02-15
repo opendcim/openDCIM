@@ -626,7 +626,6 @@ $(document).ready(function() {
 <?php
 	// hide all the js functions if they don't have write permissions
 	if($user->WriteAccess){
-
 		// if they switch device type to switch for a child blade add the dataports field
 		if($dev->ParentDevice>0){
 ?>
@@ -713,6 +712,13 @@ $(document).ready(function() {
 <?php
 		}
 ?>
+
+		$('#reservation').change(function(){
+			if(!$(this).prop("checked")){
+				var d=new Date();
+				$('#installdate').datepicker("setDate",d);
+			}
+		});
 		$('.switch > div:first-child ~ div').each(function(){
 			var row=$(this);
 			$(this).find('div:first-child').click(function(){
