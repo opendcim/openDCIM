@@ -711,8 +711,15 @@ $(document).ready(function() {
 		});
 <?php
 		}
+		if($dev->DeviceType=='Chassis'){
 ?>
-
+		$('select[name=devicetype]').change(function(){
+			//dummy function here until I can put in a proper warning dialog
+			alert('this will cause all attached blade devices to be removed');
+		});
+<?php
+		}
+?>
 		$('#reservation').change(function(){
 			if(!$(this).prop("checked")){
 				var d=new Date();
