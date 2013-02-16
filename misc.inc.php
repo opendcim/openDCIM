@@ -186,16 +186,19 @@ if(isset($_COOKIE["lang"])){
 }else{
 	$locale=$config->ParameterArray['Locale'];
 }
-if(isset($locale)){
-	setlocale(LC_ALL,$locale);
-	putenv("LC_ALL=$locale");
-	bindtextdomain("openDCIM","./locale");
 
-	$codeset='utf8';	
-	if(function_exists( bind_textdomain_codeset ) && isset($codeset)){
-		bind_textdomain_codeset("openDCIM",$codeset);
+if(extension_loaded('gettext')){
+	if(isset($locale)){
+		setlocale(LC_ALL,$locale);
+		putenv("LC_ALL=$locale");
+		bindtextdomain("openDCIM","./locale");
+
+		$codeset='utf8';
+		if(isset($codeset)){
+			bind_textdomain_codeset("openDCIM",$codeset);
+		}
+		textdomain("openDCIM");
 	}
-	textdomain("openDCIM");
 }
 
 function GetValidTranslations() {
@@ -217,11 +220,12 @@ function GetValidTranslations() {
 	return $lang;
 }
 
-function __( $string ) {
-	if ( function_exists( gettext ) )
-		return _( $string );
-	else
+function __($string){
+	if(extension_loaded('gettext')){
+		return _($string);
+	}else{
 		return $string;
+	}
 }
 
 /*

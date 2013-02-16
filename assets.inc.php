@@ -749,7 +749,8 @@ class Device {
 			// Error occurred
 			return -1;
 		}
-		
+
+/*	Child devices don't have a cabinet ID set by default.  This was causing the bug, I think.  Just commenting out for now.
 		// If this device has children, they should all be updated with the cabinet (in case it moved)
 		if ( $this->DeviceType == "Chassis" ) {
 			$childList = $this->GetDeviceChildren( $db );
@@ -758,7 +759,7 @@ class Device {
 				$child->UpdateDevice( $db );
 			}
 		}
-		
+*/		
 		return 0;
 	}
 
@@ -1103,12 +1104,12 @@ class Device {
 		$tmpConn->DropEndpointConnections( $db );
 		
 		$tmpPan = new PatchConnection();
-		if ( $this->Classification == "Patch Panel" ) {
-			$tmpPan->PanelDeviceID = $this->DeviceID;
-			$tmpPan->DropPanelConnections( $db );
-		} else {
-			$tmpPan->FrontEndpointDeviceID = $this->DeviceID;
-			$tmpPan->DropEndpointConnections( $db );
+		if($this->DeviceType=="Patch Panel"){
+			$tmpPan->PanelDeviceID=$this->DeviceID;
+			$tmpPan->DropPanelConnections($db);
+		}else{
+			$tmpPan->FrontEndpointDeviceID=$this->DeviceID;
+			$tmpPan->DropEndpointConnections($db);
 		}
 		
 		// Delete power connections next

@@ -162,24 +162,25 @@
 		}else{
 			$reserved=" reserved";
 		}
-		if($devTop<$currentHeight){
-			for($i=$currentHeight;$i>$devTop;$i--){
-				if($i==$currentHeight){
-					$blankHeight=$currentHeight-$devTop;
-					$body.="<tr><td>$i</td><td class=\"freespace\" rowspan=$blankHeight>&nbsp;</td></tr>\n";
-				} else {
-					$body.="<tr><td>$i</td></tr>\n";
-				}
-			}
-		} 
 		if($device->Height<1){
 			$zeroheight.="				<a href=\"devices.php?deviceid=$devID\">$highlight $device->Label</a>\n";
-		}
-		for($i=$devTop;$i>=$device->Position;$i--){
-			if($i==$devTop){
-				$body.="<tr><td>$i</td><td class=\"device$reserved dept$device->Owner\" rowspan=$device->Height data=$devID><a href=\"devices.php?deviceid=$devID\">$highlight $device->Label</a></td></tr>\n";
-			}else{
-				$body.="<tr><td>$i</td></tr>\n";
+		}else{
+			if($devTop<$currentHeight){
+				for($i=$currentHeight;$i>$devTop;$i--){
+					if($i==$currentHeight){
+						$blankHeight=$currentHeight-$devTop;
+						$body.="<tr><td>$i</td><td class=\"freespace\" rowspan=$blankHeight>&nbsp;</td></tr>\n";
+					} else {
+						$body.="<tr><td>$i</td></tr>\n";
+					}
+				}
+			}
+			for($i=$devTop;$i>=$device->Position;$i--){
+				if($i==$devTop){
+					$body.="<tr><td>$i</td><td class=\"device$reserved dept$device->Owner\" rowspan=$device->Height data=$devID><a href=\"devices.php?deviceid=$devID\">$highlight $device->Label</a></td></tr>\n";
+				}else{
+					$body.="<tr><td>$i</td></tr>\n";
+				}
 			}
 		}
 		$currentHeight=$device->Position - 1;
@@ -188,7 +189,7 @@
 	// Fill in to the bottom
 	for($i=$currentHeight;$i>0;$i--){
 		if($i==$currentHeight){
-			$blankHeight=$currentHeight+1;
+			$blankHeight=$currentHeight;
 
 			$body.="<tr><td>$i</td><td class=\"freespace\" rowspan=$blankHeight>&nbsp;</td></tr>\n";
 		}else{
