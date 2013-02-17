@@ -743,7 +743,7 @@ echo '<div class="main">
 <h3>',__("Data Center Configuration"),'</h3>
 <h3>',__("Database Version"),': ',$config->ParameterArray["Version"],'</h3>
 <div class="center"><div>
-<form action="',$_SERVER["PHP_SELF"],'" method="POST">
+<form enctype="multipart/form-data" action="',$_SERVER["PHP_SELF"],'" method="POST">
    <input type="hidden" name="Version" value="',$config->ParameterArray["Version"],'">
 
 	<div id="configtabs">
