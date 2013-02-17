@@ -366,6 +366,14 @@ if(isset($results)){
 			}
 		}
 		$config->UpdateConfig($facDB);
+
+		//Disable all tooltip items and clear the SortOrder
+		mysql_query("UPDATE fac_CabinetToolTip SET SortOrder = NULL, Enabled=0;");
+		if(isset($_POST["tooltip"]) && !empty($_POST["tooltip"])){
+			foreach($_POST["tooltip"] as $order => $field){
+				mysql_query("UPDATE fac_CabinetToolTip SET SortOrder=".intval($order).", Enabled=1 WHERE Field='".addslashes($field)."' LIMIT 1;");
+			}
+		}
 	}
 
 // Departments Form Submission
@@ -483,6 +491,7 @@ if(isset($results)){
   <link rel="stylesheet" href="css/inventory.php" type="text/css">
   <link rel="stylesheet" href="css/jquery.miniColors.css" type="text/css">
   <link rel="stylesheet" href="css/jquery-ui.css" type="text/css">
+  <link rel="stylesheet" href="css/jquery.ui.multiselect.css" type="text/css">
   <!--[if lt IE 9]>
   <link rel="stylesheet"  href="css/ie.css" type="text/css">
   <![endif]-->
@@ -490,8 +499,15 @@ if(isset($results)){
   <script type="text/javascript" src="scripts/jquery.min.js"></script>
   <script type="text/javascript" src="scripts/jquery-ui.min.js"></script>
   <script type="text/javascript" src="scripts/jquery.miniColors.js"></script>
+  <script type="text/javascript" src="scripts/jquery.ui.multiselect.js"></script>
   <script type="text/javascript">
 	$(document).ready( function() {
+		$('#tooltip').multiselect();
+		$("#ToolTips option").each(function(){
+			if($(this).val()==$("#ToolTips").attr('data')){
+				$(this).attr('selected', 'selected');
+			}
+		});
         function colorchange(hex,id){
 			if(id==='HeaderColor'){
 				$('#header').css('background-color',hex);
@@ -713,6 +729,15 @@ if(isset($results)){
 	$href.=$_SERVER['SERVER_NAME'];
 	$href.=substr($_SERVER['REQUEST_URI'], 0, -strlen(basename($_SERVER['REQUEST_URI'])));
 
+	// Build up the list of items available for the tooltips
+	$tooltip="<select id=\"tooltip\" name=\"tooltip[]\" multiple=\"multiple\">\n";
+	$ttconfig=mysql_query("SELECT * FROM fac_CabinetToolTip ORDER BY SortOrder ASC, Enabled DESC, Label ASC;");
+	while($row=mysql_fetch_assoc($ttconfig)){
+		$selected=($row["Enabled"])?" selected":"";
+		$tooltip.="<option value=\"".$row['Field']."\"$selected>".__($row["Label"])."</option>\n";
+	}
+	$tooltip.="</select>";
+
 echo '<div class="main">
 <h2>',$config->ParameterArray["OrgName"],'</h2>
 <h3>',__("Data Center Configuration"),'</h3>
@@ -727,6 +752,7 @@ echo '<div class="main">
 			<li><a href="#style">',__("Style"),'</a></li>
 			<li><a href="#email">',__("Email"),'</a></li>
 			<li><a href="#reporting">',__("Reporting"),'</a></li>
+			<li><a href="#tt">',__("Cabinet ToolTips"),'</a></li>
 		</ul>
 		<div id="general">
 			<div class="table">
@@ -979,6 +1005,20 @@ echo '<div class="main">
 					<div><input type="text" defaultvalue="',$href,'" name="InstallURL" value="',$config->ParameterArray["InstallURL"],'"></div>
 				</div>
 			</div> <!-- end table -->
+		</div>
+		<div id="tt">
+			<div class="table">
+				<div>
+					<div><label for="LabelCase">',__("Cabinet ToolTips"),'</label></div>
+					<div><select id="LabelCase" name="ToolTips" defaultvalue="',$config->defaults["ToolTips"],'" data="',$config->ParameterArray["ToolTips"],'">
+							<option value="disabled">',__("Disabled"),'</option>
+							<option value="enabled">',__("Enabled"),'</option>
+						</select>
+					</div>
+				</div>
+			</div> <!-- end table -->
+			<br>
+			',$tooltip,'
 		</div>
 	</div>';
 

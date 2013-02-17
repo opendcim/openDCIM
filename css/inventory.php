@@ -73,6 +73,8 @@ div#imageselection { display: none;}
 .ui-menu-item ul { max-height: 200px; overflow: auto; }
 #tzmenu {display: none;}
 
+#tooltip { min-height: 300px; min-width: 550px; }
+
 /* index */
 .index .table, .index .table .title {background-color: white;}
 .index .table .title {font-weight: bold; font-size: 1.25em;}
@@ -561,6 +563,9 @@ div.page.device {
 .installer .center #configtabs ~ div input {width: auto;}
 div.page.installer {min-width: 1100px;}
 div.page.installer .main{max-width: 850px;}
+
+.installer .ui-multiselect ul li { padding: 0.5em 0.5em 0.5em 20px; height: auto; line-height: inherit;}
+
 
 /* Menu */
 ul.nav li {padding: .5em;}

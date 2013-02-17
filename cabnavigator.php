@@ -13,16 +13,67 @@
 	}
 
 	if(isset($_POST['tooltip'])){
-		$dev=new Device();
-		$dev->DeviceID=$_POST['tooltip'];
-		$dev->GetDevice($facDB);
-		$dept=new Department();
-		$dept->DeptID=$dev->Owner;
-		$dept->GetDeptByID($facDB);
-		$tmpl=new DeviceTemplate();
-		$tmpl->TemplateID=$dev->TemplateID;
-		$tmpl->GetTemplateByID($facDB);
-		print "<div>IP: $dev->PrimaryIP<br>Dept: $dept->Name<br>Model: $tmpl->Model<br></div>";
+		if($config->ParameterArray["ToolTips"]=='enabled'){
+			$dev=new Device();
+			$dev->DeviceID=$_POST['tooltip'];
+			$dev->GetDevice($facDB);
+
+			$tooltip="";
+			$ttconfig=mysql_query("SELECT * FROM fac_CabinetToolTip WHERE Enabled=1 ORDER BY SortOrder ASC, Enabled DESC, Label ASC;");
+			while($row=mysql_fetch_assoc($ttconfig)){
+				switch($row["Field"]){
+					case "SNMPCommunity":
+						if($dev->ESX){
+							$tooltip.=__($row["Label"]).": ".$dev->$row["Field"]."<br>\n";
+						}
+						break;
+					case "ESX":
+						if($dev->ESX){
+							$tooltip.=__($row["Label"]).": ".$dev->$row["Field"]."<br>\n";
+						}
+						break;
+					case "EscalationID":
+						$esc=new Escalations();
+						$esc->EscalationID=$dev->$row["Field"];
+						$esc->GetEscalation($facDB);
+						$tooltip.=__($row["Label"]).": $esc->Details<br>\n";
+						break;
+					case "EscalationTimeID":
+						$escTime=new EscalationTimes();
+						$escTime->EscalationTimeID=$dev->$row["Field"];
+						$escTime->GetEscalationTime($facDB);
+						$tooltip.=__($row["Label"]).": $escTime->TimePeriod<br>\n";
+						break;
+					case "Owner":
+						$dept=new Department();
+						$dept->DeptID=$dev->Owner;
+						$dept->GetDeptByID($facDB);
+						$tooltip.=__($row["Label"]).": $dept->Name<br>\n";
+						break;
+					case "TemplateID":
+						$tmpl=new DeviceTemplate();
+						$tmpl->TemplateID=$dev->TemplateID;
+						$tmpl->GetTemplateByID($facDB);
+						$man=new Manufacturer();
+						$man->ManufacturerID=$tmpl->ManufacturerID;
+						$man->GetManufacturerByID($facDB);
+						$tooltip.=__($row["Label"]).": [$man->Name] $tmpl->Model<br>\n";
+						break;
+					case "ChassisSlots":
+						if($dev->DeviceType=='Chassis'){
+							$tooltip.=__($row["Label"])." ".$dev->$row["Field"]."<br>\n";
+						}
+						break;
+					case "DeviceType":
+						// if this is a chassis device display the number of blades?
+					default:
+						$tooltip.=__($row["Label"]).": ".$dev->$row["Field"]."<br>\n";
+				}
+			}
+			if($tooltip==""){$tooltip=__("Tooltips are enabled with no options selected.");}
+			$tooltip="<div>$tooltip</div>";
+			print $tooltip;
+		}
 		exit;
 	}
 
@@ -395,6 +446,7 @@ echo $head,'  <script type="text/javascript" src="scripts/jquery.min.js"></scrip
 			form.submit();
 		}
 	}';
+if($config->ParameterArray["ToolTips"]=='enabled'){
 ?>
 	$(document).ready(function() {
 		var n=0; // silly counter
@@ -414,6 +466,9 @@ echo $head,'  <script type="text/javascript" src="scripts/jquery.min.js"></scrip
 			});
 		});
 	});
+<?php
+}
+?>
   </script>
 </head>
 
