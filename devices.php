@@ -28,13 +28,13 @@
 			$connect->SwitchPortNumber=$_POST['sp'];
 			if(isset($_POST['devid'])){
 				$connect->EndpointDeviceID=$_POST['devid'];
-				$connect->EndpointPort=$_POST['dp'];
-				$connect->Notes=$_POST['n'];
 				if($connect->EndpointDeviceID==-1){
 					echo $connect->RemoveConnection($facDB,true);
 				}else{
 					// Since I can't be bothered to put in an actual update, just remove the existing connection first.
 					$connect->RemoveConnection($facDB,true);
+					$connect->EndpointPort=$_POST['dp'];
+					$connect->Notes=$_POST['n'];
 					// should kick back -1 if the insert fails and 1 if it is successful
 					echo $connect->CreateConnection($facDB);
 				}
