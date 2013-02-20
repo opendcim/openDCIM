@@ -171,7 +171,7 @@
 		$tempDept->GetDeptByID($facDB);
 
 		// If a dept has been changed from white then it needs to be added to the stylesheet, legend, and device
-		if(strtoupper($tempDept->DeptColor)!="#FFFFFF"){
+		if(! $device->Reservation && strtoupper($tempDept->DeptColor)!="#FFFFFF"){
 			// Fill array with deptid and color so we can process the list once for the legend and style information
 			$deptswithcolor[$device->Owner]["color"]=$tempDept->DeptColor;
 			$deptswithcolor[$device->Owner]["name"]=$tempDept->Name;
