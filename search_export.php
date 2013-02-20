@@ -34,21 +34,19 @@
 		}
 
 		// Left these expanded in case we need to add or remove columns.  Otherwise I would have just collapsed entirely.
-		$body=sprintf( "<table id=\"export\" class=\"display\">\n\t<thead>\n\t\t<tr>\n
-			\t<th>%s</th>
-			\t<th>%s</th>
-			\t<th>%s</th>
-			\t<th>%s</th>
-			\t<th>%s</th>
-			\t<th>%s</th>
-			\t<th>%s</th>
-			\t<th>%s</th>
-			\t<th>%s</th>
-			\t<th>%s</th>
-			\t<th>%s</th>
-			</tr>\n\t</thead>\n\t<tbody>\n", __("Data Center"), __("Location"), __("Position"), __("Height"), 
-			__("Name"), __("Serial Number"), __("Asset Tag"), __("Device Type"), __("Template"), __("Owner"),
-			__("Installation Date") );
+		$body="<table id=\"export\" class=\"display\">\n\t<thead>\n\t\t<tr>\n
+			\t<th>".__("Data Center")."</th>
+			\t<th>".__("Location")."</th>
+			\t<th>".__("Position")."</th>
+			\t<th>".__("Height")."</th>
+			\t<th>".__("Name")."</th>
+			\t<th>".__("Serial Number")."</th>
+			\t<th>".__("Asset Tag")."</th>
+			\t<th>".__("Device Type")."</th>
+			\t<th>".__("Template")."</th>
+			\t<th>".__("Owner")."</th>
+			\t<th>".__("Installation Date")."</th>
+			</tr>\n\t</thead>\n\t<tbody>\n";
 
 		// suppressing errors for when there is a fake data set in place
 		while($row=@mysql_fetch_array($result)){
@@ -110,9 +108,17 @@
 					"aButtons": ["copy","csv","xls","print"]
 				}
 			});
+			redraw();
+		}
+		function redraw(){
+			if(($('#export').outerWidth()+$('#sidebar').outerWidth()+10)<$('.page').innerWidth()){
+				$('.main').width($('#header').innerWidth()-$('#sidebar').outerWidth()-16);
+			}else{
+				$('.main').width($('#export').outerWidth()+40);
+			}
+			$('.page').width($('.main').outerWidth()+$('#sidebar').outerWidth()+10);
 		}
 		dt();
-		$('.main').width($('#header').innerWidth()-$('#sidebar').outerWidth-34);
 		$('#datacenterid').change(function(){
 			$.post('', {datacenterid: $(this).val(), ajax: ''}, function(data){
 				$('#tablecontainer').html(data);
@@ -127,15 +133,14 @@
 	<div class="page">
 <?php
 	include('sidebar.inc.php');
-?>
-		<div class="main">
-			<h2><?php echo $config->ParameterArray['OrgName']; ?></h2>
-			<h3><?php echo __("Data Center View/Export"); ?></h3>
-			<label for="datacenterid"><?php echo __("Data Center").':'; ?></label>
+echo '		<div class="main">
+			<h2>',$config->ParameterArray['OrgName'],'</h2>
+			<h3>',__("Data Center View/Export"),'</h3>
+			<label for="datacenterid">',__("Data Center:"),'</label>
 			<select name="datacenterid" id="datacenterid">
-				<option value=""><?php echo __("Select Data Center"); ?></option>
-				<option value="0"><?php echo __("All Data Centers"); ?></option>
-<?php foreach($dcList as $dc){print "\t\t\t\t<option value=\"$dc->DataCenterID\">$dc->Name</option>\n";} ?>
+				<option value="">',__("Select data center"),'</option>
+				<option value="0">',__("All Data Centers"),'</option>';
+foreach($dcList as $dc){print "\t\t\t\t<option value=\"$dc->DataCenterID\">$dc->Name</option>\n";} ?>
 			</select>
 			<br><br>
 			<div class="center">
