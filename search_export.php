@@ -34,7 +34,7 @@
 		}
 
 		// Left these expanded in case we need to add or remove columns.  Otherwise I would have just collapsed entirely.
-		$body=printf( "<table id=\"export\" class=\"display\">\n\t<thead>\n\t\t<tr>\n
+		$body=sprintf( "<table id=\"export\" class=\"display\">\n\t<thead>\n\t\t<tr>\n
 			\t<th>%s</th>
 			\t<th>%s</th>
 			\t<th>%s</th>
@@ -130,11 +130,11 @@
 ?>
 		<div class="main">
 			<h2><?php echo $config->ParameterArray['OrgName']; ?></h2>
-			<h3>Data Center View/Export</h3>
-			<label for="datacenterid">Data Center:</label>
+			<h3><?php echo __("Data Center View/Export"); ?></h3>
+			<label for="datacenterid"><?php echo __("Data Center").':'; ?></label>
 			<select name="datacenterid" id="datacenterid">
-				<option value="">Select data center</option>
-				<option value="0">All Data Centers</option>
+				<option value=""><?php echo __("Select Data Center"); ?></option>
+				<option value="0"><?php echo __("All Data Centers"); ?></option>
 <?php foreach($dcList as $dc){print "\t\t\t\t<option value=\"$dc->DataCenterID\">$dc->Name</option>\n";} ?>
 			</select>
 			<br><br>
