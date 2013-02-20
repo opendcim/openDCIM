@@ -570,3 +570,6 @@ div.page.installer .main{max-width: 850px;}
 /* Menu */
 ul.nav li {padding: .5em;}
 .nav a:visited {color: #000000;}
+
+/* Search Export */
+div.center div table#export { margin: auto; max-width: none; }

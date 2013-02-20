@@ -6,6 +6,16 @@ GitHub, at http://github.com/samilliken/openDCIM/issues, where you can also down
 the latest development version.  However, it is not advised to pull from GitHub unless you
 are simply testing, as some functionality can break between releases.
 
+Changes in 2.1
+--------------
+* Device names are no longer forced to uppercase - the admin can select a site preference between UPPER, lower, CamelCase, or unchanged
+* ToolTip sneak peak in the cabinet view, with user defined fields to show
+* Cooling capacity metric is added to each data center for capacity planning
+* Search results will now show in the Data Center / Cabinet / Device heirarchy.  Previously the Data Center was not included.
+* Cabinets now have a Notes field (general text entry) and can also be tagged
+* When removing the Reservation checkbox on a device, the Install Date is automatically set to the current date
+* Functionality added to allow an "English Only" version to run if gettext is not available (specifically helps Mac OSX installations)
+
 Changes in 2.0
 --------------
 * Inclusion of locale files for several areas represented by our known install base

@@ -14,6 +14,9 @@
 	
 	$datacenter=new DataCenter();
 	$dcList=$datacenter->GetDCList($facDB);
+	
+	$dev = new Device();
+	
 	$body="";
 
 	if(isset($_REQUEST['datacenterid'])){
@@ -31,17 +34,21 @@
 		}
 
 		// Left these expanded in case we need to add or remove columns.  Otherwise I would have just collapsed entirely.
-		$body="<table id=\"export\" class=\"display\">\n\t<thead>\n\t\t<tr>\n
-			\t<th>Data Center</th>
-			\t<th>Location</th>
-			\t<th>Position</th>
-			\t<th>Height</th>
-			\t<th>Name</th>
-			\t<th>Device Type</th>
-			\t<th>Template</th>
-			\t<th>Owner</th>
-			\t<th>Installation Date</th>
-			</tr>\n\t</thead>\n\t<tbody>\n";
+		$body=printf( "<table id=\"export\" class=\"display\">\n\t<thead>\n\t\t<tr>\n
+			\t<th>%s</th>
+			\t<th>%s</th>
+			\t<th>%s</th>
+			\t<th>%s</th>
+			\t<th>%s</th>
+			\t<th>%s</th>
+			\t<th>%s</th>
+			\t<th>%s</th>
+			\t<th>%s</th>
+			\t<th>%s</th>
+			\t<th>%s</th>
+			</tr>\n\t</thead>\n\t<tbody>\n", __("Data Center"), __("Location"), __("Position"), __("Height"), 
+			__("Name"), __("Serial Number"), __("Asset Tag"), __("Device Type"), __("Template"), __("Owner"),
+			__("Installation Date") );
 
 		// suppressing errors for when there is a fake data set in place
 		while($row=@mysql_fetch_array($result)){
@@ -53,10 +60,14 @@
 			\t<td>{$row["Position"]}</td>
 			\t<td>{$row["Height"]}</td>
 			\t<td>{$row["Label"]}</td>
+			\t<td>{$row["SerialNo"]}</td>
+			\t<td>{$row["AssetTag"]}</td>
 			\t<td>{$row["DeviceType"]}</td>
 			\t<td>{$row["Model"]}</td>
 			\t<td>{$row["Department"]}</td>
 			\t<td>{$date}</td>\n\t\t</tr>\n";
+			
+			
 		}
 		$body.="\t\t</tbody>\n\t</table>\n";
 		if(isset($_REQUEST['ajax'])){
@@ -101,6 +112,7 @@
 			});
 		}
 		dt();
+		$('.main').width($('#header').innerWidth()-$('#sidebar').outerWidth-34);
 		$('#datacenterid').change(function(){
 			$.post('', {datacenterid: $(this).val(), ajax: ''}, function(data){
 				$('#tablecontainer').html(data);
