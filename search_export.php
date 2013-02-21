@@ -55,20 +55,20 @@
 		while($row=@mysql_fetch_array($result)){
 			// insert date formating later for regionalization settings
 			$date=date("d M Y",strtotime($row["InstallDate"]));
+				$Model="";
+				$Department="";
 			
-			if ( $row["TemplateID"] > 0 ) {
-				$templ->TemplateID = $row["TemplateID"];
-				$templ->GetTemplateByID( $facDB );
-				$Model = $templ->Model;
-			} else
-				$Model = "";
+			if($row["TemplateID"] >0){
+				$templ->TemplateID=$row["TemplateID"];
+				$templ->GetTemplateByID($facDB);
+				$Model=$templ->Model;
+			}
 			
-			if ( $row["Owner"] > 0 ) {
-				$dept->DeptID = $row["Owner"];
-				$dept->GetDeptByID( $facDB );
-				$Department = $dept->Name;
-			} else
-				$Department = "";
+			if($row["Owner"] >0){
+				$dept->DeptID=$row["Owner"];
+				$dept->GetDeptByID($facDB);
+				$Department=$dept->Name;
+			}
 			
 			$body.="\t\t<tr>
 			\t<td>{$row["DataCenter"]}</td>
@@ -79,44 +79,44 @@
 			\t<td>{$row["SerialNo"]}</td>
 			\t<td>{$row["AssetTag"]}</td>
 			\t<td>{$row["DeviceType"]}</td>
-			\t<td>{$Model}</td>
-			\t<td>{$Department}</td>
-			\t<td>{$date}</td>\n\t\t</tr>\n";
+			\t<td>$Model</td>
+			\t<td>$Department</td>
+			\t<td>$date</td>\n\t\t</tr>\n";
 			
 			if ( $row["DeviceType"] == "Chassis" ) {
 				// Find all of the children!
 				$dev->DeviceID = $row["DeviceID"];
 				$childList = $dev->GetDeviceChildren( $facDB );
 				
-				foreach ( $childList as $child ) {
-					$cdate = date( "d M Y", strtotime( $child->InstallDate ) );
+				foreach($childList as $child){
+					$cdate=date("d M Y",strtotime($child->InstallDate));
+					$cModel="";
+					$cDepartment="";					
 
-					if ( $child->TemplateID > 0 ) {
-						$templ->TemplateID = $child->TemplateID;
-						$templ->GetTemplateByID( $facDB );
-						$cModel = $templ->Model;
-					} else
-						$cModel = "";
+					if($child->TemplateID >0){
+						$templ->TemplateID=$child->TemplateID;
+						$templ->GetTemplateByID($facDB);
+						$cModel=$templ->Model;
+					}
 					
-					if ( $child->Owner > 0 ) {
-						$dept->DeptID = $child->Owner;
-						$dept->GetDeptByID( $facDB );
-						$cDepartment = $dept->Name;
-					} else
-						$cDepartment = "";					
+					if($child->Owner >0){
+						$dept->DeptID=$child->Owner;
+						$dept->GetDeptByID($facDB);
+						$cDepartment=$dept->Name;
+					}
 
 					$body .= "\t\t<tr>
 					\t<td>{$row["DataCenter"]}</td>
 					\t<td>{$row["Location"]}</td>
 					\t<td>{$row["Position"]}</td>
 					\t<td>[-Child-]</td>
-					\t<td>{$child->Label}</td>
-					\t<td>{$child->SerialNo}</td>
-					\t<td>{$child->AssetTag}</td>
-					\t<td>{$child->DeviceType}</td>
-					\t<td>{$cModel}</td>
-					\t<td>{$cDepartment}</td>
-					\t<td>{$cdate}</td>\n\t\t</tr>\n";
+					\t<td>$child->Label</td>
+					\t<td>$child->SerialNo</td>
+					\t<td>$child->AssetTag</td>
+					\t<td>$child->DeviceType</td>
+					\t<td>$cModel</td>
+					\t<td>$cDepartment</td>
+					\t<td>$cdate</td>\n\t\t</tr>\n";
 				}
 			}
 		}
@@ -192,7 +192,7 @@ echo '		<div class="main">
 			<label for="datacenterid">',__("Data Center:"),'</label>
 			<select name="datacenterid" id="datacenterid">
 				<option value="">',__("Select data center"),'</option>
-				<option value="0">',__("All Data Centers"),'</option>\n';
+				<option value="0">',__("All Data Centers"),'</option>';
 foreach($dcList as $dc){print "\t\t\t\t<option value=\"$dc->DataCenterID\">$dc->Name</option>\n";} ?>
 			</select>
 			<br><br>

@@ -521,6 +521,44 @@ CREATE TABLE fac_BinAudits (
 ) ENGINE=MyISAM AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
 
 --
+-- Table structure for fac_CabinetToolTip
+--
+DROP TABLE IF EXISTS fac_CabinetToolTip;
+CREATE TABLE fac_CabinetToolTip (
+  SortOrder smallint(6) DEFAULT NULL,
+  Field varchar(20) NOT NULL,
+  Label varchar(30) NOT NULL,
+  Enabled tinyint(1) DEFAULT '1',
+  UNIQUE KEY Field (Field)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+
+--
+-- Add base ToolTip configuration options
+--
+
+INSERT INTO fac_CabinetToolTip VALUES(NULL, 'AssetTag', 'Asset Tag', 0);
+INSERT INTO fac_CabinetToolTip VALUES(NULL, 'ChassisSlots', 'Number of Slots in Chassis:', 0);
+INSERT INTO fac_CabinetToolTip VALUES(NULL, 'DeviceID', 'Device ID', 0);
+INSERT INTO fac_CabinetToolTip VALUES(NULL, 'DeviceType', 'Device Type', 0);
+INSERT INTO fac_CabinetToolTip VALUES(NULL, 'EscalationID', 'Details', 0);
+INSERT INTO fac_CabinetToolTip VALUES(NULL, 'EscalationTimeID', 'Time Period', 0);
+INSERT INTO fac_CabinetToolTip VALUES(NULL, 'ESX', 'ESX Server?', 0);
+INSERT INTO fac_CabinetToolTip VALUES(NULL, 'InstallDate', 'Install Date', 0);
+INSERT INTO fac_CabinetToolTip VALUES(NULL, 'MfgDate', 'Manufacture Date', 0);
+INSERT INTO fac_CabinetToolTip VALUES(NULL, 'NominalWatts', 'Nominal Draw (Watts)', 0);
+INSERT INTO fac_CabinetToolTip VALUES(NULL, 'Owner', 'Departmental Owner', 0);
+INSERT INTO fac_CabinetToolTip VALUES(NULL, 'Ports', 'Number of Data Ports', 0);
+INSERT INTO fac_CabinetToolTip VALUES(NULL, 'PowerSupplyCount', 'Number of Power Supplies', 0);
+INSERT INTO fac_CabinetToolTip VALUES(NULL, 'PrimaryContact', 'Primary Contact', 0);
+INSERT INTO fac_CabinetToolTip VALUES(NULL, 'PrimaryIP', 'Primary IP', 0);
+INSERT INTO fac_CabinetToolTip VALUES(NULL, 'Reservation', 'Reservation?', 0);
+INSERT INTO fac_CabinetToolTip VALUES(NULL, 'SerialNo', 'Serial Number', 0);
+INSERT INTO fac_CabinetToolTip VALUES(NULL, 'SNMPCommunity', 'SNMP Read Only Community', 0);
+INSERT INTO fac_CabinetToolTip VALUES(NULL, 'TemplateID', 'Device Class', 0);
+INSERT INTO fac_CabinetToolTip VALUES(NULL, 'WarrantyCo', 'Warranty Company', 0);
+INSERT INTO fac_CabinetToolTip VALUES(NULL, 'WarrantyExpire', 'Warranty Expiration', 0);
+
+--
 -- Table structure and insert script for table fac_Config
 --
 
@@ -577,7 +615,8 @@ INSERT INTO fac_Config VALUES
         ('mDate','blank','string','string','blank'),
         ('wDate','blank','string','string','blank'),
 		('NewInstallsPeriod', '7', 'Days', 'int', '7' ),
-		('VMExpirationTime','7','Days','int','7');
+ 		('VMExpirationTime','7','Days','int','7'),
+ 		('ToolTips', 'Disabled', 'Enabled/Disabled', 'string', 'Disabled');
 
 --
 -- Pre-fill some of the templates
