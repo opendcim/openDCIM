@@ -290,7 +290,7 @@ class DataCenter {
 
 						if($device->NominalWatts >0){
 							$totalWatts += $device->NominalWatts;
-						}else{
+						}elseif ($device->TemplateID!=0){
 							$totalWatts += $templ->Wattage;
 						}
                 		$totalWeight+=$templ->Weight;
