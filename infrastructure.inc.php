@@ -288,10 +288,10 @@ class DataCenter {
         	        	$templ->TemplateID=$device->TemplateID;
             	    	$templ->GetTemplateByID($db);
 
-						if($device->NominalWatts >0){
-							$totalWatts += $device->NominalWatts;
-						}elseif ($device->TemplateID!=0){
-							$totalWatts += $templ->Wattage;
+						if($device->NominalWatts>0){
+							$totalWatts+=$device->NominalWatts;
+						}elseif($device->TemplateID!=0 && $templ->Wattage>0){
+							$totalWatts+=$templ->Wattage;
 						}
                 		$totalWeight+=$templ->Weight;
 	                	$totalMoment+=($templ->Weight *($device->Position +($device->Height /2)));
@@ -432,24 +432,29 @@ class DeviceTemplate {
   }
   
   function GetTemplateByID( $db ) {
-    $selectSQL = "select * from fac_DeviceTemplate where TemplateID=\"" . intval($this->TemplateID) . "\"";
-    $result = mysql_query( $selectSQL, $db );
+	$selectSQL = "select * from fac_DeviceTemplate where TemplateID=\"" . intval($this->TemplateID) . "\"";
+	$result = mysql_query( $selectSQL, $db );
+
+	// Reset object in case of a lookup failure
+	foreach($this as $var => $value){
+		$var=($var!='TemplateID')?NULL:$value;
+	}
     
-    if ( $tempRow = mysql_fetch_array( $result ) ) {
-      $this->TemplateID = $tempRow["TemplateID"];
-      $this->ManufacturerID = $tempRow["ManufacturerID"];
-      $this->Model = $tempRow["Model"];
-      $this->Height = $tempRow["Height"];
-      $this->Weight = $tempRow["Weight"];
-      $this->Wattage = $tempRow["Wattage"];
-	  $this->DeviceType = $tempRow["DeviceType"];
-	  $this->PSCount = $tempRow["PSCount"];
-	  $this->NumPorts = $tempRow["NumPorts"];
+	if($tempRow=mysql_fetch_array($result)){
+		$this->TemplateID=$tempRow["TemplateID"];
+		$this->ManufacturerID=$tempRow["ManufacturerID"];
+		$this->Model=$tempRow["Model"];
+		$this->Height=$tempRow["Height"];
+		$this->Weight=$tempRow["Weight"];
+		$this->Wattage=$tempRow["Wattage"];
+		$this->DeviceType=$tempRow["DeviceType"];
+		$this->PSCount=$tempRow["PSCount"];
+		$this->NumPorts=$tempRow["NumPorts"];
       
-      return true;
-    } else {
-      return false;
-    }
+		return true;
+	}else{
+		return false;
+	}
   }
   
   function GetTemplateList( $db ) {
