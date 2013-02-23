@@ -680,7 +680,7 @@ class Device {
 		// Stupid User Tricks #417 - A user could change a device that has connections (switch or patch panel) to one that doesn't
 		// Stupid User Tricks #148 - A user could change a device that has children (chassis) to one that doesn't
 		//
-		// As a "safety mechanism" we simply won't allow updates if you try to change a chassis IFF it has children
+		// As a "safety mechanism" we simply won't allow updates if you try to change a chassis IF it has children
 		// For the switch and panel connections, though, we drop any defined connections
 		
 		$tmpDev = new Device();

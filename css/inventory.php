@@ -34,6 +34,8 @@ textarea {white-space: pre;word-wrap: break-word;}
 .arrow_left:after { border-color: rgba(255, 255, 255, 0); border-right-color: #ffffff; border-width: 15px; top: 15px; margin-top: -15px; } 
 .arrow_left:before { border-color: rgba(0, 0, 0, 0); border-right-color: #000000; border-width: 16px; top: 15px; margin-top: -16px; }
 
+.no-close .ui-dialog-titlebar-close {display: none;}
+
 /* css for timepicker */
 .ui-timepicker-div .ui-widget-header {margin-bottom: 8px;}
 .ui-timepicker-div dl {text-align: left;}

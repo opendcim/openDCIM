@@ -194,6 +194,14 @@
 			}
 			if(isset($_POST['action'])){
 				if($user->WriteAccess&&(($dev->DeviceID >0)&&($_POST['action']=='Update'))){
+					// User has changed the device type from chassis to something else and has said yes
+					// that they want to remove the dependant child devices
+					if(isset($_POST['killthechildren'])){
+						$childList=$dev->GetDeviceChildren($facDB);
+						foreach($childList as $childDev){
+							$childDev->DeleteDevice($facDB);
+						}
+					}
 					$dev->Label=$_POST['label'];
 					$dev->SerialNo=$_POST['serialno'];
 					$dev->AssetTag=$_POST['assettag'];
@@ -620,7 +628,7 @@ $(document).ready(function() {
 			$('#ports').val(data['NumPorts']);
 			$('#nominalwatts').val(data['Wattage']);
 			$('#powersupplycount').val(data['PSCount']);
-			$('select[name=devicetype]').val(data['DeviceType']);
+			$('select[name=devicetype]').val(data['DeviceType']).trigger('change');
 		});
 	});
 <?php
@@ -635,6 +643,36 @@ $(document).ready(function() {
 				$('#nominalwatts').parent().parent().before(dphtml);
 			}else{
 				$('#dphtml').remove();
+			}
+		});
+<?php
+		}
+		// Add an extra alert warning about child devices in chassis
+		if($dev->DeviceType=='Chassis'){
+?>
+		$('select[name=devicetype]').change(function(){
+			var form=$(this).parents('form');
+			var btn=$(this);
+			if($(this).val()!='Chassis'){
+<?php echo '				$(\'#dialog-confirm\').html(\'<p><span class="ui-icon ui-icon-alert" style="float:left; margin:0 7px 20px 0;"></span>',__("If this device has blades installed they will be deleted and there is no undo. Are you sure?"),'</p>\');'; ?>
+				$('#dialog-confirm').dialog({
+					resizable: false,
+					modal: true,
+					dialogClass: "no-close",
+					buttons: {
+						"Yes": function(){
+							$(this).dialog("destroy");
+							form.append('<input type="hidden" class="killthechildren" name="killthechildren" value="yes">');
+						},
+						"No": function(){
+							$('.killthechildren').remove();
+							$('select[name=devicetype]').val('Chassis');
+							$(this).dialog("destroy");
+						}
+					}
+				});
+			}else{
+				$('.killthechildren').remove();
 			}
 		});
 <?php
@@ -708,14 +746,6 @@ $(document).ready(function() {
 					});
 				},100);
 			}, 'json');
-		});
-<?php
-		}
-		if($dev->DeviceType=='Chassis'){
-?>
-		$('select[name=devicetype]').change(function(){
-			//dummy function here until I can put in a proper warning dialog
-			alert('this will cause all attached blade devices to be removed');
 		});
 <?php
 		}
@@ -958,7 +988,26 @@ $(document).ready(function() {
 				}
 			});
 		}).css({'cursor': 'pointer','text-decoration': 'underline'});
-
+		// Delete device confirmation dialog
+		$('button[value="Delete"]').click(function(e){
+			var form=$(this).parents('form');
+			var btn=$(this);
+<?php echo '			$(\'#dialog-confirm\').html(\'<p><span class="ui-icon ui-icon-alert" style="float:left; margin:0 7px 20px 0;"></span>',__("This device will be deleted and there is no undo. Are you sure?"),'</p>\');'; ?>
+			$('#dialog-confirm').dialog({
+				resizable: false,
+				modal: true,
+				buttons: {
+					"Yes": function(){
+						$(this).dialog("destroy");
+						form.append('<input type="hidden" name="'+btn.attr("name")+'" value="'+btn.val()+'">');
+						form.submit();
+					},
+					"No": function(){
+						$(this).dialog("destroy");
+					}
+				}
+			});
+		});
 <?php 
 	} // end of javascript editing functions
 ?>
@@ -1434,9 +1483,7 @@ echo '	<div class="table">
 		echo '   <div><a href="storageroom.php">[ ',__("Return to Navigator"),' ]</a></div>';
 	}
 ?>
-<div id="dialog-confirm" title="Verify Delete Device" class="hide">
-	<p><span class="ui-icon ui-icon-alert" style="float:left; margin:0 7px 20px 0;"></span>This device will be deleted and there is no undo. Are you sure?</p>
-</div>
+<div id="dialog-confirm" title="Verify Delete Device" class="hide"></div>
 
 </div><!-- END div.main -->
 </div><!-- END div.page -->
@@ -1446,24 +1493,6 @@ echo '	<div class="table">
 		setTimeout(function(){
 			expandToItem('datacenters','cab<?php echo $cab->CabinetID;?>');
 		},500);
-		$('button[value="Delete"]').click(function(e){
-			var form=$(this).parents('form');
-			var btn=$(this);
-			$( "#dialog-confirm" ).dialog({
-				resizable: false,
-				modal: true,
-				buttons: {
-					"Yes": function() {
-						$( this ).dialog( "close" );
-						form.append('<input type="hidden" name="'+btn.attr("name")+'" value="'+btn.val()+'">');
-						form.submit();
-					},
-					"No": function() {
-						$( this ).dialog( "close" );
-					}
-				}
-			});
-		});
 	});
 </script>
 
