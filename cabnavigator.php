@@ -184,29 +184,34 @@
 
 		if($device->NominalWatts >0){
 			$totalWatts+=$device->NominalWatts;
-		}else{
+		}elseif($device->TemplateID!=0 && $templ->Wattage>0){
 			$totalWatts+=$templ->Wattage;
 		}
 		
 		if ( $device->DeviceType == "Chassis" ) {
 			$childList = $device->GetDeviceChildren( $facDB );
-			
 			$childTempl = new DeviceTemplate();
-			
 			foreach ( $childList as $childDev ) {
+				$childTempl->TemplateID = $childDev->TemplateID;
+				$childTempl->GetTemplateByID( $facDB );
+				
 				if ( $childDev->NominalWatts > 0 ) {
 					$totalWatts += $childDev->NominalWatts;
-				} else {
-					$childTempl->TemplateID = $childDev->TemplateID;
-					$childTempl->GetTemplateByID( $facDB );
-					
+				} elseif($childDev->TemplateID!=0 && $childTempl->Wattage>0){
 					$totalWatts += $childTempl->Wattage;
+				}
+				if($childDev->TemplateID!=0){
+					$totalWeight += $childTempl->Weight;
+					//Child device's position is parent's position
+					$totalMoment+=($childTempl->Weight*($device->Position+($device->Height/2)));
 				}
 			}
 		}
 		
-		$totalWeight+=$templ->Weight;
-		$totalMoment+=($templ->Weight*($device->Position+($device->Height/2)));
+		if($device->TemplateID!=0) {
+			$totalWeight+=$templ->Weight;
+			$totalMoment+=($templ->Weight*($device->Position+($device->Height/2)));
+		}
 
 		if($device->Reservation==false){
 			$reserved="";
