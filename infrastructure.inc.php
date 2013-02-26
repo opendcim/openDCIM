@@ -311,10 +311,13 @@ class DataCenter {
 									$totalMoment+=($childTempl->Weight*($device->Position+($device->Height/2)));
 								}
 							}
+						}
 						if($device->TemplateID!=0) {
 							$totalWeight+=$templ->Weight;
 							$totalMoment+=($templ->Weight*($device->Position+($device->Height/2)));
 						}
+					}
+						
 					$CenterofGravity=@round($totalMoment /$totalWeight);
 
         			$used=$cab->CabinetOccupancy($cab->CabinetID,$db);
