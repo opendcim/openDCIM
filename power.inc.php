@@ -313,7 +313,9 @@ class PowerDistribution {
 	}
 	
 	function GetPDUbyPanel($db){
-		$select_sql = "select * from fac_PowerDistribution where PanelID=\"" . intval($this->PanelID) . "\" or PanelID2=\"" . intval( $this->PanelID ) . "\" order by PanelPole ASC";
+		$select_sql = "select * from fac_PowerDistribution where PanelID=\"" . 
+		 				intval($this->PanelID) . "\" or PanelID2=\"" . intval( $this->PanelID ) . 
+		 				"\" order by PanelPole ASC, CabinetID, Label";
 		if ( ! $result = mysql_query( $select_sql, $db ) ) {
 			return 0;
 		}

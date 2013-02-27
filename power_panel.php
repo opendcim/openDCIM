@@ -179,6 +179,7 @@ echo '</select></div>
 					}
 				}
 				// Get info for pdu on this pole if it is populated.
+				$lastCabinet=0;
 				if($odd==0){
 					if(isset($pduarray[$nextPole])){
 						$pn="";
@@ -186,7 +187,11 @@ echo '</select></div>
 							$cab->CabinetID=$pduvar->CabinetID;
 							$cab->GetCabinet( $facDB );
 							
-							$pn.="<a href=\"power_pdu.php?pduid=$pduvar->PDUID\">$cab->Location<span>$pduvar->Label</span></a>";
+							if ($lastCabinet<>$pduvar->CabinetID)
+								$pn.="<a href=\"cabnavigator.php?cabinetid=$pduvar->CabinetID\">$cab->Location</a>";
+                            $pn.="<a href=\"power_pdu.php?pduid=$pduvar->PDUID\"><span>$pduvar->Label</span></a>";
+                            $lastCabinet=$pduvar->CabinetID;
+							
 							switch($pduvar->BreakerSize){
 								case '3': $odd=3; break;
 								case '2': $odd=2; break;
@@ -220,6 +225,7 @@ echo '</select></div>
 					}
 				}
 				// Get info for pdu on this pole if it is populated.
+				$lastCabinet=0;
 				if($odd==0){
 					if(isset($pduarray[$nextPole])){
 						$pn="";
@@ -227,7 +233,11 @@ echo '</select></div>
 							$cab->CabinetID=$pduvar->CabinetID;
 							$cab->GetCabinet( $facDB );
 							
-							$pn.="<a href=\"power_pdu.php?pduid=$pduvar->PDUID\">$cab->Location<span>$pduvar->Label</span></a>";
+							if ($lastCabinet<>$pduvar->CabinetID)
+								$pn.="<a href=\"cabnavigator.php?cabinetid=$pduvar->CabinetID\">$cab->Location</a>";
+                            $pn.="<a href=\"power_pdu.php?pduid=$pduvar->PDUID\"><span>$pduvar->Label</span></a>";
+                            $lastCabinet=$pduvar->CabinetID;
+							
 							switch($pduvar->BreakerSize){
 								case '3': $odd=3; break;
 								case '2': $odd=2; break;
@@ -263,8 +273,12 @@ echo '</select></div>
 							$cab->CabinetID=$pduvar->CabinetID;
 							$cab->GetCabinet( $facDB );
 							
-							$pn.="<a href=\"power_pdu.php?pduid=".$pduvar->PDUID."\">$cab->Location<span>$pduvar->Label</span></a>";
-							switch($pduvar->BreakerSize){
+							if ($lastCabinet<>$pduvar->CabinetID)
+								$pn.="<a href=\"cabnavigator.php?cabinetid=$pduvar->CabinetID\">$cab->Location</a>";
+                            $pn.="<a href=\"power_pdu.php?pduid=$pduvar->PDUID\"><span>$pduvar->Label</span></a>";
+                            $lastCabinet=$pduvar->CabinetID;
+							
+                            switch($pduvar->BreakerSize){
 								case '3': $even=3; break;
 								case '2': $even=2; break;
 								default: $even=0;
