@@ -19,6 +19,12 @@
 	}
 	// Ajax functions and we only want these exposed to people with write access
 	if($user->WriteAccess){
+		if(isset($_POST['cab'])){
+			$cab->CabinetID=$_POST['cab'];
+			$cab->GetCabinet($facDB);
+			echo $cab->CabinetHeight;
+			exit;
+		}
 		if(isset($_POST['swdev'])){
 			$dev->DeviceID=$_POST['swdev'];
 			$dev->GetDevice($facDB);
@@ -326,6 +332,7 @@
 			}
 		}
 		$cab->CabinetID=$dev->Cabinet;
+		$cab->GetCabinet($facDB);
 	}else{
 		// sets install date to today when a new device is being created
 		$dev->InstallDate=date("m/d/Y");
@@ -681,6 +688,12 @@ $(document).ready(function() {
 		// hide cabinet slot picker from child devices
 		if($dev->ParentDevice==0){
 ?>
+		$('#cabinetid').change(function(){
+			$.post('', {cab: $("select#cabinetid").val()}, function(data){
+				var posclass=$('#position').attr('class');
+				$('#position').attr('class',posclass.replace(/max\[([1-9]).*?\]/gi,"max["+data.trim()+"]"));
+			});
+		});
 		$('#position').focus(function()	{
 			var cab=$("select#cabinetid").val();
 			$.getJSON('scripts/ajax_cabinetuse.php?cabinet='+cab+'&deviceid='+$("#deviceid").val(), function(data) {
@@ -736,7 +749,7 @@ $(document).ready(function() {
 									$(this).css({'background-color': background, 'cursor': pointer});
 									if(background=='green'){
 										$(this).click(function(){
-											$('#position').val($(this).attr('val'));
+											$('#position').val($(this).attr('val')).trigger('focusout');
 											$('#positionselector').css({'left': '-1000px'});
 										});
 									}
@@ -1170,8 +1183,8 @@ echo '		   </div>
 		<div>
 			<div><label for="cabinet">',__("Cabinet"),'</label></div>';
 
-	if($dev->ParentDevice==0){
-		print "\t\t\t<div>".$cab->GetCabinetSelectList($facDB)."</div>\n";
+		if($dev->ParentDevice==0){
+			print "\t\t\t<div>".$cab->GetCabinetSelectList($facDB)."</div>\n";
 		}else{
 			print "\t\t\t<div>$cab->Location<input type=\"hidden\" name=\"cabinetid\" value=\"0\"></div>
 		</div>
@@ -1204,7 +1217,7 @@ echo '			</select>
 		</div>
 		<div>
 		   <div><label for="position">',__("Position"),'</label></div>
-		   <div><input type="number" class="required,validate[custom[onlyNumberSp],min[1]]" name="position" id="position" size="4" value="',$dev->Position,'"></div>
+		   <div><input type="number" class="required,validate[custom[onlyNumberSp],min[1],max[',$cab->CabinetHeight,']]" name="position" id="position" size="4" value="',$dev->Position,'"></div>
 		</div>
 		<div>
 		   <div><label for="height">',__("Height"),'</label></div>

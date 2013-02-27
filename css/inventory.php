@@ -372,6 +372,8 @@ div.cabinet {
 	margin: 5px;
 	padding: 3px;
 }
+.cabinet .error { background-color: <?php echo $config->ParameterArray['CriticalColor']; ?>; }
+
 
 /* devices.php  Device Detail */
 div.page.device {

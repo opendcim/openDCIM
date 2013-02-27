@@ -12,6 +12,14 @@
 		exit;
 	}
 
+	// If you're deleting the cabinet, no need to pull in the rest of the information, so get it out of the way
+	if(isset($_POST["delete"]) && $_POST["delete"]=="yes" && $user->SiteAdmin){
+		$cab->DeleteCabinet($facDB);
+		$url=redirect("dc_stats.php?dc=$dcID");
+		header("Location: $url");
+		exit;
+	}
+	
 	if(isset($_POST['tooltip'])){
 		if($config->ParameterArray["ToolTips"]=='enabled'){
 			$dev=new Device();
@@ -99,14 +107,6 @@
 
 	$dcID = $cab->DataCenterID;
 
-	// If you're deleting the cabinet, no need to pull in the rest of the information, so get it out of the way //
-	if(isset($_REQUEST["delete"]) && $_REQUEST["delete"]=="yes" && $user->SiteAdmin){
-		$cab->DeleteCabinet($facDB);
-		$url=redirect("dc_stats.php?dc=$dcID");
-		header("Location: $url");
-		exit;
-	}
-	
 	$audit->CabinetID=$cab->CabinetID;
 
 	// You just have WriteAccess in order to perform/certify a rack audit 
@@ -151,16 +151,13 @@
 		}
 	}
 
-?>
-
-<?php
-
 	$body.="<div class=\"cabinet\">
 <table>
 	<tr><th colspan=2>".__("Cabinet")." $cab->Location</th></tr>
 	<tr><td>".__("Pos")."</td><td>".__("Device")."</td></tr>\n";
 
 	$deptswithcolor=array();
+	$heighterr="";
 	while(list($devID,$device)=each($devList)){
 		$devTop=$device->Position + $device->Height - 1;
 		
@@ -171,7 +168,7 @@
 		$tempDept->GetDeptByID($facDB);
 
 		// If a dept has been changed from white then it needs to be added to the stylesheet, legend, and device
-		if(! $device->Reservation && strtoupper($tempDept->DeptColor)!="#FFFFFF"){
+		if(!$device->Reservation && strtoupper($tempDept->DeptColor)!="#FFFFFF"){
 			// Fill array with deptid and color so we can process the list once for the legend and style information
 			$deptswithcolor[$device->Owner]["color"]=$tempDept->DeptColor;
 			$deptswithcolor[$device->Owner]["name"]=$tempDept->Name;
@@ -213,29 +210,29 @@
 			$totalMoment+=($templ->Weight*($device->Position+($device->Height/2)));
 		}
 
-		if($device->Reservation==false){
-			$reserved="";
-		}else{
-			$reserved=" reserved";
-		}
+		$reserved=($device->Reservation==false)?"":" reserved";
 		if($device->Height<1){
 			$zeroheight.="				<a href=\"devices.php?deviceid=$devID\">$highlight $device->Label</a>\n";
 		}else{
 			if($devTop<$currentHeight){
 				for($i=$currentHeight;$i>$devTop;$i--){
+					$errclass=($i>$cab->CabinetHeight)?' class="error"':'';
+					if($errclass!=''){$heighterr="yup";}
 					if($i==$currentHeight){
 						$blankHeight=$currentHeight-$devTop;
-						$body.="<tr><td>$i</td><td class=\"freespace\" rowspan=$blankHeight>&nbsp;</td></tr>\n";
+						$body.="<tr><td$errclass>$i</td><td class=\"freespace\" rowspan=$blankHeight>&nbsp;</td></tr>\n";
 					} else {
-						$body.="<tr><td>$i</td></tr>\n";
+						$body.="<tr><td$errclass>$i</td></tr>\n";
 					}
 				}
 			}
 			for($i=$devTop;$i>=$device->Position;$i--){
+				$errclass=($i>$cab->CabinetHeight)?' class="error"':'';
+				if($errclass!=''){$heighterr="yup";}
 				if($i==$devTop){
-					$body.="<tr><td>$i</td><td class=\"device$reserved dept$device->Owner\" rowspan=$device->Height data=$devID><a href=\"devices.php?deviceid=$devID\">$highlight $device->Label</a></td></tr>\n";
+					$body.="<tr><td$errclass>$i</td><td class=\"device$reserved dept$device->Owner\" rowspan=$device->Height data=$devID><a href=\"devices.php?deviceid=$devID\">$highlight $device->Label</a></td></tr>\n";
 				}else{
-					$body.="<tr><td>$i</td></tr>\n";
+					$body.="<tr><td$errclass>$i</td></tr>\n";
 				}
 			}
 		}
@@ -252,6 +249,8 @@
 			$body.="<tr><td>$i</td></tr>\n";
 		}
 	}
+
+	if($heighterr!=''){$legend.='<p>* - '.__("Above defined rack height").'</p>';}
 
 	$CenterofGravity=@round($totalMoment/$totalWeight);
 
@@ -450,10 +449,12 @@ echo $head,'  <script type="text/javascript" src="scripts/jquery.min.js"></scrip
 			form.appendTo("body");
 			form.submit();
 		}
-	}';
+	}
+	$(document).ready(function() {
+		$(".cabinet .error").append("*");
+';
 if($config->ParameterArray["ToolTips"]=='enabled'){
 ?>
-	$(document).ready(function() {
 		var n=0; // silly counter
 		$('.cabinet td.device').mouseenter(function(){
 			n++;
@@ -470,10 +471,10 @@ if($config->ParameterArray["ToolTips"]=='enabled'){
 				$('#tt'+n).remove();
 			});
 		});
-	});
 <?php
 }
 ?>
+	});
   </script>
 </head>
 
