@@ -640,6 +640,7 @@ $(document).ready(function() {
 			$('#nominalwatts').val(data['Wattage']);
 			$('#powersupplycount').val(data['PSCount']);
 			$('select[name=devicetype]').val(data['DeviceType']).trigger('change');
+			$('#height').trigger('change');
 		});
 	});
 <?php
