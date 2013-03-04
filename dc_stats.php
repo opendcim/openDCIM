@@ -32,6 +32,9 @@
 	function uselessie(){
 		document.getElementById(\'mapCanvas\').className = \"mapCanvasiefix\";
 	}
+$(document).ready(function() {
+	uselessie();
+});
 </script>
 <style type=\"text/css\">
 .mapCanvasiefix {
@@ -82,7 +85,7 @@
 	});
   </script>
 </head>
-<body onload="loadCanvas(),uselessie()">
+<body>
 <div id="header"></div>
 <div class="page dcstats" id="mapadjust">
 <?php
@@ -160,5 +163,15 @@ echo '<div class="main">
 </div></div>
 </div><!-- END div.main -->
 </div><!-- END div.page -->
+<script type="text/javascript">
+$(document).ready(function(){
+	var firstcabinet=$('#dc<?php echo $dc->DataCenterID;?> > ul > li:first-child').attr('id');
+	// wait half a second after the page loads then open the tree
+	setTimeout(function(){
+		expandToItem('datacenters',firstcabinet);
+	},500);
+	loadCanvas();
+});
+</script>
 </body>
 </html>

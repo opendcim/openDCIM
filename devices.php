@@ -307,7 +307,7 @@
 			}
 
 			// Since a device exists we're gonna need some additional info, but only if it's not a copy
-			if ( ! $copy ) {
+			if(!$copy){
 				$pwrConnection=new PowerConnection();
 				$pdu=new PowerDistribution();
 				$panel=new PowerPanel();
@@ -324,11 +324,15 @@
 					$patchPanel->PanelDeviceID=$dev->DeviceID;
 					$patchList=$patchPanel->GetPanelConnections($facDB);
 				}else{
-					$networkPatches->EndpointDeviceID= ( $dev->ParentDevice>0 )?$dev->ParentDevice:$dev->DeviceID;
+					$networkPatches->EndpointDeviceID=($dev->ParentDevice>0)?$dev->ParentDevice:$dev->DeviceID;
 					$patchList=$networkPatches->GetEndpointConnections($facDB);
-					$patchPanel->FrontEndpointDeviceID = ( $dev->ParentDevice>0 )?$dev->ParentDevice:$dev->DeviceID;
-					$panelList = $patchPanel->GetEndpointConnections( $facDB );
+					$patchPanel->FrontEndpointDeviceID=($dev->ParentDevice>0)?$dev->ParentDevice:$dev->DeviceID;
+					$panelList=$patchPanel->GetEndpointConnections($facDB);
 				}
+			}else{
+				// These are going to be empty however we'll generate an error if they aren't set.
+				$patchList=array();
+				$panelList=array();
 			}
 		}
 		$cab->CabinetID=$dev->Cabinet;
@@ -694,6 +698,16 @@ $(document).ready(function() {
 				$('#position').attr('class',posclass.replace(/max\[([1-9]).*?\]/gi,"max["+data.trim()+"]")).trigger('focusout');
 			});
 		});
+		$('#height').change(function(){
+			if($(this).val()==0){
+				$('#position').attr('disabled', 'true');
+				$(this).parents('form').append('<input class="tmpposition" type="hidden" name="position" value="0">');
+			}else{
+				$('#position').removeAttr('disabled');
+				$('.tmpposition').remove();
+			}
+		});
+		$('#height').trigger('change');
 		$('#position').focus(function()	{
 			var cab=$("select#cabinetid").val();
 			$.getJSON('scripts/ajax_cabinetuse.php?cabinet='+cab+'&deviceid='+$("#deviceid").val(), function(data) {

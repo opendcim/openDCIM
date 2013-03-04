@@ -95,6 +95,7 @@
 	$templ=new DeviceTemplate();
 	$tempPDU=new PowerDistribution();
 	$tempDept=new Department();
+	$dc=new DataCenter();
 
 	// Even if we're deleting the cabinet, it's helpful to know which data center to go back to displaying afterwards
 	$cab->CabinetID=$_REQUEST["cabinetid"];
@@ -105,7 +106,9 @@
 		exit;
 	}
 
-	$dcID = $cab->DataCenterID;
+	$dcID=$cab->DataCenterID;
+	$dc->DataCenterID=$dcID;
+	$dc->GetDataCenterbyID($facDB);
 
 	$audit->CabinetID=$cab->CabinetID;
 
@@ -185,55 +188,53 @@
 			$totalWatts+=$templ->Wattage;
 		}
 		
-		if ( $device->DeviceType == "Chassis" ) {
-			$childList = $device->GetDeviceChildren( $facDB );
-			$childTempl = new DeviceTemplate();
-			foreach ( $childList as $childDev ) {
-				$childTempl->TemplateID = $childDev->TemplateID;
-				$childTempl->GetTemplateByID( $facDB );
-				
-				if ( $childDev->NominalWatts > 0 ) {
-					$totalWatts += $childDev->NominalWatts;
+		if($device->TemplateID!=0){
+			$totalWeight+=$templ->Weight;
+			$totalMoment+=($templ->Weight*($device->Position+($device->Height/2)));
+		}
+
+		if($device->Height<1){
+			$zeroheight.="				<a href=\"devices.php?deviceid=$devID\">$highlight $device->Label</a>\n";
+		}
+		// Chassis devices shouldn't ever be 0u in height
+		if($device->DeviceType=="Chassis"){
+			$childList=$device->GetDeviceChildren($facDB);
+			$childTempl=newDeviceTemplate();
+			foreach($childList as $childDev){
+				$childTempl->TemplateID=$childDev->TemplateID;
+				$childTempl->GetTemplateByID($facDB);
+				if($childDev->NominalWatts>0){
+					$totalWatts+=$childDev->NominalWatts;
 				} elseif($childDev->TemplateID!=0 && $childTempl->Wattage>0){
-					$totalWatts += $childTempl->Wattage;
+					$totalWatts+=$childTempl->Wattage;
 				}
 				if($childDev->TemplateID!=0){
-					$totalWeight += $childTempl->Weight;
+					$totalWeight+=$childTempl->Weight;
 					//Child device's position is parent's position
 					$totalMoment+=($childTempl->Weight*($device->Position+($device->Height/2)));
 				}
 			}
 		}
-		
-		if($device->TemplateID!=0) {
-			$totalWeight+=$templ->Weight;
-			$totalMoment+=($templ->Weight*($device->Position+($device->Height/2)));
-		}
-
 		$reserved=($device->Reservation==false)?"":" reserved";
-		if($device->Height<1){
-			$zeroheight.="				<a href=\"devices.php?deviceid=$devID\">$highlight $device->Label</a>\n";
-		}else{
-			if($devTop<$currentHeight){
-				for($i=$currentHeight;$i>$devTop;$i--){
-					$errclass=($i>$cab->CabinetHeight)?' class="error"':'';
-					if($errclass!=''){$heighterr="yup";}
-					if($i==$currentHeight){
-						$blankHeight=$currentHeight-$devTop;
-						$body.="<tr><td$errclass>$i</td><td class=\"freespace\" rowspan=$blankHeight>&nbsp;</td></tr>\n";
-					} else {
-						$body.="<tr><td$errclass>$i</td></tr>\n";
-					}
-				}
-			}
-			for($i=$devTop;$i>=$device->Position;$i--){
+		if($devTop<$currentHeight){
+			for($i=$currentHeight;$i>$devTop;$i--){
 				$errclass=($i>$cab->CabinetHeight)?' class="error"':'';
 				if($errclass!=''){$heighterr="yup";}
-				if($i==$devTop){
-					$body.="<tr><td$errclass>$i</td><td class=\"device$reserved dept$device->Owner\" rowspan=$device->Height data=$devID><a href=\"devices.php?deviceid=$devID\">$highlight $device->Label</a></td></tr>\n";
-				}else{
+				if($i==$currentHeight){
+					$blankHeight=$currentHeight-$devTop;
+					$body.="<tr><td$errclass>$i</td><td class=\"freespace\" rowspan=$blankHeight>&nbsp;</td></tr>\n";
+				} else {
 					$body.="<tr><td$errclass>$i</td></tr>\n";
 				}
+			}
+		}
+		for($i=$devTop;$i>=$device->Position;$i--){
+			$errclass=($i>$cab->CabinetHeight)?' class="error"':'';
+			if($errclass!=''){$heighterr="yup";}
+			if($i==$devTop){
+				$body.="<tr><td$errclass>$i</td><td class=\"device$reserved dept$device->Owner\" rowspan=$device->Height data=$devID><a href=\"devices.php?deviceid=$devID\">$highlight $device->Label</a></td></tr>\n";
+			}else{
+				$body.="<tr><td$errclass>$i</td></tr>\n";
 			}
 		}
 		$currentHeight=$device->Position - 1;
@@ -350,7 +351,7 @@ $body.='</table>
 		<legend>'.__("Power Distribution").'</legend>';
 
 	foreach($PDUList as $PDUdev){
-		if( $PDUdev->IPAddress<>"" ) {
+		if($PDUdev->IPAddress<>""){
 			$pduDraw=$PDUdev->GetWattage($facDB);
 		}else{
 			$pduDraw=0;
@@ -360,20 +361,21 @@ $body.='</table>
 		$pan->GetPanel($facDB);
 		
 		if($PDUdev->BreakerSize==1){
-			$maxDraw = $PDUdev->InputAmperage * $pan->PanelVoltage / 1.732;
+			$maxDraw=$PDUdev->InputAmperage * $pan->PanelVoltage / 1.732;
 		}elseif($PDUdev->BreakerSize==2){
-			$maxDraw = $PDUdev->InputAmperage * $pan->PanelVoltage;
+			$maxDraw=$PDUdev->InputAmperage * $pan->PanelVoltage;
 		}else{
-			$maxDraw = $PDUdev->InputAmperage * $pan->PanelVoltage * 1.732;
+			$maxDraw=$PDUdev->InputAmperage * $pan->PanelVoltage * 1.732;
 		}
 
 		// De-rate all breakers to 80% sustained load
 		$maxDraw*=0.8;
 		
-		if ( $maxDraw > 0 )
+		if($maxDraw>0){
 			$PDUPercent=$pduDraw/$maxDraw*100;
-		else
-			$PDUPercent = 0;
+		}else{
+			$PDUPercent=0;
+		}
 			
 		$PDUColor=($PDUPercent>intval($config->ParameterArray["PowerRed"])?$CriticalColor:($PDUPercent>intval($config->ParameterArray["PowerYellow"])?$CautionColor:$GoodColor));
 		
@@ -411,7 +413,7 @@ $body.='</table>
 		$head.='		</style>';
 	}
 
-	$title=($cab->Location!='')?"$cab->Location":'Facilities Cabinet Maintenance';
+	$title=($cab->Location!='')?"$cab->Location :: $dc->Name":'Facilities Cabinet Maintenance';
 
 ?>
 <!doctype html>
@@ -494,6 +496,11 @@ if($config->ParameterArray["ToolTips"]=='enabled'){
 ?>
 </div> <!-- END div#centeriehack -->
 </div></div>
+<?php
+	if($dcID>0){
+		print "	<a href=\"dc_stats.php?dc=$dcID\">[ ".__('Return to')." $dc->Name ]</a>";
+	}
+?>
 </div>  <!-- END div.main -->
 
 <div class="clear"></div>
