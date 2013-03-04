@@ -293,20 +293,20 @@ class DataCenter {
 						}elseif($device->TemplateID!=0 && $templ->Wattage>0){
 							$totalWatts += $templ->Wattage;
 						}
-						if ( $device->DeviceType == "Chassis" ) {
-							$childList = $device->GetDeviceChildren( $facDB );
-							$childTempl = new DeviceTemplate();
-							foreach ( $childList as $childDev ) {
-								$childTempl->TemplateID = $childDev->TemplateID;
-								$childTempl->GetTemplateByID( $facDB );
+						if($device->DeviceType=="Chassis"){
+							$childList=$device->GetDeviceChildren($db);
+							$childTempl=new DeviceTemplate();
+							foreach($childList as $childDev){
+								$childTempl->TemplateID=$childDev->TemplateID;
+								$childTempl->GetTemplateByID($db);
 								
-								if ( $childDev->NominalWatts > 0 ) {
-									$totalWatts += $childDev->NominalWatts;
-								} elseif($childDev->TemplateID!=0 && $childTempl->Wattage>0){
-									$totalWatts += $childTempl->Wattage;
+								if($childDev->NominalWatts>0){
+									$totalWatts+=$childDev->NominalWatts;
+								}elseif($childDev->TemplateID!=0&&$childTempl->Wattage>0){
+									$totalWatts+=$childTempl->Wattage;
 								}
 								if($childDev->TemplateID!=0){
-									$totalWeight += $childTempl->Weight;
+									$totalWeight+=$childTempl->Weight;
 									//Child device's position is parent's position
 									$totalMoment+=($childTempl->Weight*($device->Position+($device->Height/2)));
 								}
