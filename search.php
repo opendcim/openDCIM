@@ -27,11 +27,13 @@
 	$cab=new Cabinet();
 	$pdu=new PowerDistribution();
 	$resultcount=0;
+	$title=__("Search Results");
 
 	if($searchKey=='serial'){
 		$dev->SerialNo=$searchTerm;
 		$devList=$dev->SearchDevicebySerialNo($facDB);
 		$resultcount=count($devList);
+		$title=__("Serial number search results for")." &quot;$searchTerm&quot;";
 	}elseif($searchKey=='label'){
 		$dev->Label=$searchTerm;
 		$devList=$dev->SearchDevicebyLabel($facDB);
@@ -43,13 +45,17 @@
 		$pdu->Label=$searchTerm;
 		$pduList=$pdu->SearchByPDUName($facDB);
 		$resultcount=count($devList)+count($cabList)+count($pduList)+count($vmList);
+		$title=__("Name tag search results for")." &quot;$searchTerm&quot;";
 	}elseif($searchKey=='asset'){
 		$dev->AssetTag=$searchTerm;
 		$devList=$dev->SearchDevicebyAssetTag($facDB);
 		$resultcount=count($devList);
+		$title=__("Asset tag search results for")." &quot;$searchTerm&quot;";
 	}elseif($searchKey=="ctag"){
 		$devList=$dev->SearchByCustomTag($facDB,$searchTerm);
-		$resultcount=count($devList);
+		$cabList=$cab->SearchByCustomTag($facDB,$searchTerm);
+		$resultcount=count($devList)+count($cabList);
+		$title=__("Custom tag search results for")." &quot;$searchTerm&quot;";
 	}else{
 		$devList=array();
 	}
@@ -221,7 +227,7 @@ $(document).ready(function() {
 ?>
 <div class="main">
 <h2><?php echo $config->ParameterArray['OrgName']; ?></h2>
-<h3>Search Results</h3>
+<h3><?php echo $title; ?></h3>
 <div class="center"><div>
 	<ol>
 <?php

@@ -102,6 +102,9 @@ div#imageselection { display: none;}
 .dcstats .heading > div + div button {display: block;width: 100%;}
 .dcstats .table, .dcstats .table .title { background-color: white; }
 .dcstats .table .title { font-weight: bold; font-size: 1.25em; }
+.dcstats .table .title span { font-size: 0.6em; vertical-align: top;}
+.dcstats .table .title span:before { content:"  [ "; }
+.dcstats .table .title span:after { content:" ]";}
 .dcstats .table div {padding: 3px;}
 div#dcstats { display: table;}
 div#dcstats > div{ width: 100%;}

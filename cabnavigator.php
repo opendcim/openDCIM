@@ -199,7 +199,7 @@
 		// Chassis devices shouldn't ever be 0u in height
 		if($device->DeviceType=="Chassis"){
 			$childList=$device->GetDeviceChildren($facDB);
-			$childTempl=newDeviceTemplate();
+			$childTempl=new DeviceTemplate();
 			foreach($childList as $childDev){
 				$childTempl->TemplateID=$childDev->TemplateID;
 				$childTempl->GetTemplateByID($facDB);

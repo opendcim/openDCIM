@@ -392,6 +392,40 @@ class Cabinet {
 		return $cabinetList;
 	}
 
+	function SearchByCustomTag($db, $tag=null){
+		$select_sql="SELECT a.* from fac_Cabinet a, fac_CabinetTags b, fac_Tags c WHERE a.CabinetID=b.CabinetID AND b.TagID=c.TagID AND UCASE(c.Name) LIKE UCASE('%".addslashes($tag)."%');";
+		$result=mysql_query($select_sql,$db);
+		$cabinetList=array();
+		$cabCount=0;
+		if(!$result=mysql_query($select_sql,$db)){
+			return 0;
+		}
+		while($cabinetRow=mysql_fetch_array($result)){
+			$cabID=$cabinetRow["CabinetID"];
+			$cabinetList[$cabID]=new Cabinet();
+			$cabinetList[$cabID]->CabinetID=$cabinetRow["CabinetID"];
+			$cabinetList[$cabID]->DataCenterID=$cabinetRow["DataCenterID"];
+			$cabinetList[$cabID]->Location=$cabinetRow["Location"];
+			$cabinetList[$cabID]->AssignedTo=$cabinetRow["AssignedTo"];
+			$cabinetList[$cabID]->ZoneID=$cabinetRow["ZoneID"];
+			$cabinetList[$cabID]->CabinetHeight=$cabinetRow["CabinetHeight"];
+			$cabinetList[$cabID]->Model=$cabinetRow["Model"];
+			$cabinetList[$cabID]->Keylock=$cabinetRow["Keylock"];
+			$cabinetList[$cabID]->MaxKW=$cabinetRow["MaxKW"];
+			$cabinetList[$cabID]->MaxWeight=$cabinetRow["MaxWeight"];
+			$cabinetList[$cabID]->InstallationDate=$cabinetRow["InstallationDate"];
+			$cabinetList[$cabID]->SensorIPAddress = $cabinetRow["SensorIPAddress"];
+			$cabinetList[$cabID]->SensorCommunity = $cabinetRow["SensorCommunity"];
+			$cabinetList[$cabID]->SensorOID = $cabinetRow["SensorOID"];
+			$cabinetList[$cabID]->MapX1=$cabinetRow["MapX1"];
+			$cabinetList[$cabID]->MapY1=$cabinetRow["MapY1"];
+			$cabinetList[$cabID]->MapX2=$cabinetRow["MapX2"];
+			$cabinetList[$cabID]->MapY2=$cabinetRow["MapY2"];
+			$cabinetList[$cabID]->Notes=$cabinetRow["Notes"];
+		}
+		return $cabinetList;
+	}
+
 	function GetTags(){
 		$sql="SELECT TagID FROM fac_CabinetTags WHERE CabinetID=".intval($this->CabinetID).";";
 		$results=mysql_query($sql);
