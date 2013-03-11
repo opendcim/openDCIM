@@ -196,6 +196,21 @@ CREATE TABLE fac_Device (
 ) ENGINE=MyISAM AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
 
 --
+-- Table structure for table fac_DevicePorts
+--
+
+DROP TABLE IF EXISTS fac_DevicePorts;
+CREATE TABLE fac_DevicePorts (
+  ConnectionID int(11) NOT NULL AUTO_INCREMENT,
+  DeviceID int(11),
+  DevicePort int(11),
+  MediaID int(11),
+  Notes text NULL,
+  PRIMARY KEY (ConnectionID),
+  KEY DeviceID (DeviceID,DevicePort)
+) ENGINE=MyISAM AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
+
+--
 -- Table structure for table fac_DeviceTags
 --
 
@@ -258,6 +273,18 @@ CREATE TABLE fac_Manufacturer (
   PRIMARY KEY (ManufacturerID),
   UNIQUE KEY Name (Name)
 ) ENGINE=MyISAM AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
+
+--
+-- Table structure for table `fac_MediaTypes`
+--
+
+DROP TABLE IF EXISTS fac_MediaTypes;
+CREATE TABLE IF NOT EXISTS fac_MediaTypes (
+  mediaid int(11) NOT NULL AUTO_INCREMENT,
+  mediatype varchar(40) NOT NULL,
+  PRIMARY KEY (mediaid),
+  UNIQUE KEY mediatype (mediatype)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci AUTO_INCREMENT=1 ;
 
 --
 -- Table structure for table fac_PanelSchedule

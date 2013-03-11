@@ -312,7 +312,8 @@ function applyupdate ($updatefile){
 		$upgrade=true;
 		$version="2.0.1";
 	}
-	if($version=="2.0.1"){
+	// Change this to 2.0.1 when we're ready for release. This will break the holy hell out of things currently
+	if($version=="2.0.x"){
 		// Get a list of all Manufacturers that are duplicated
 		$sql="SELECT ManufacturerID,Name FROM fac_Manufacturer GROUP BY Name HAVING COUNT(*)>1;";
 		$result=mysql_query($sql,$facDB);
@@ -371,7 +372,26 @@ function applyupdate ($updatefile){
 		$sql="ALTER TABLE fac_DeviceTemplate ADD UNIQUE KEY ManufacturerID (ManufacturerID,Model);";
 		mysql_query($sql);
 
+		// Apply SQL Updates
 		$results[]=applyupdate("db-2.0-to-2.1.sql");
+
+		// Add new field for the ConnectionID
+		mysql_query('ALTER TABLE fac_SwitchConnection ADD ConnectionID INT NULL DEFAULT NULL;',$facDB);
+
+		$sql="SELECT * FROM fac_SwitchConnection;";
+		$result=mysql_query($sql,$facDB);
+		while($row=mysql_fetch_array($result)){
+			$insert="INSERT INTO fac_DevicePorts VALUES (NULL , '{$row['EndpointDeviceID']}', '{$row['EndpointPort']}', NULL , '{$row['Notes']}');";
+			mysql_query($insert,$facDB);
+			$update="UPDATE fac_SwitchConnection SET ConnectionID='".mysql_insert_id($facDB)."' WHERE EndpointDeviceID='{$row['EndpointDeviceID']}' AND EndpointPort='{$row['EndpointPort']}';";
+			mysql_query($update,$facDB);
+		}
+		// Clear eany old primary key information
+		mysql_query('ALTER TABLE fac_SwitchConnection DROP PRIMARY KEY;',$facDB);
+		// Ensure new ConnectionID is unique
+		mysql_query('ALTER TABLE fac_SwitchConnection ADD UNIQUE(ConnectionID);',$facDB);
+
+		// Rebuild the config table just in case.  I dunno gremlins.
 		$config->rebuild($facDB);
 
 		$upgrade=true;

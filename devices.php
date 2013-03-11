@@ -887,7 +887,7 @@ $(document).ready(function() {
 		});
 		$('.patchpanel > div:first-child ~ div').each(function(){
 			var row=$(this);
-			$(this).click(function(){
+			row.find('div:nth-child(4)').click(function(){
 				var frontdev=row.find('div:first-child');
 				var frontport=row.find('div:nth-child(2)');
 				var frontnotes=row.find('div:nth-child(3)');
@@ -895,15 +895,15 @@ $(document).ready(function() {
 				var reardev=row.find('div:nth-child(5)');
 				var rearport=row.find('div:nth-child(6)');
 				var rearnotes=row.find('div:nth-child(7)');
-				if($(this).attr('edit')=='yes'){
+				if(row.attr('edit')=='yes'){
 
 				}else{
 					// create empty row below the current
-					$(this).after('<div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div>');
-					var btnrow=$(this).next(); // name it for easy reference
+					row.after('<div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div>');
+					var btnrow=row.next(); // name it for easy reference
 					var frontbtn=btnrow.find('div:first-child'); // front table cell for buttons
 					var rearbtn=btnrow.find('div:nth-child(5)'); // rear table cell for buttons
-					$(this).attr('edit','yes');
+					row.attr('edit','yes');
 					function fixwidth(test){
 						setTimeout(function() {
 							$('.page').width($('.main').outerWidth()+$('#sidebar').outerWidth()+50);
@@ -1014,8 +1014,8 @@ $(document).ready(function() {
 						}
 					});
 				}
-			});
-		}).css({'cursor': 'pointer','text-decoration': 'underline'});
+			}).css({'cursor': 'pointer','text-decoration': 'underline'});
+		});
 		// Delete device confirmation dialog
 		$('button[value="Delete"]').click(function(e){
 			var form=$(this).parents('form');
@@ -1474,7 +1474,7 @@ echo '	<div class="table">
 				$rearDev->DeviceID=$patchConn->RearEndpointDeviceID;
 				$frontDev->GetDevice($facDB);
 				$rearDev->GetDevice($facDB);
-				print "\n\t\t\t\t<div><div>$frontDev->Label</div><div>$patchConn->FrontEndpointPort</div><div>$patchConn->FrontNotes</div><div>$patchConn->PanelPortNumber</div><div>$rearDev->Label</div><div>$patchConn->RearEndpointPort</div><div>".htmlentities($patchConn->RearNotes)."</div></div>";
+				print "\n\t\t\t\t<div><div><a href=\"devices.php?deviceid=$frontDev->DeviceID\">$frontDev->Label</a></div><div>$patchConn->FrontEndpointPort</div><div>$patchConn->FrontNotes</div><div>$patchConn->PanelPortNumber</div><div><a href=\"devices.php?deviceid=$rearDev->DeviceID\">$rearDev->Label</a></div><div>$patchConn->RearEndpointPort</div><div>".htmlentities($patchConn->RearNotes)."</div></div>";
 			}
 		}
 		print "\t\t\t</div><!-- END div.table -->\n\t\t</div>\n\t</div>\n";
