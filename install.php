@@ -296,22 +296,60 @@ function applyupdate ($updatefile){
 		$version="2.0";
 	}
 	
-	if ( $version == "2.0" ) {
-		$sql = "select InputAmperage from fac_PowerDistribution limit 1";
-		$result = mysql_query( $sql, $facDB );
+	if($version=="2.0"){
+		$sql="select InputAmperage from fac_PowerDistribution limit 1";
+		$result=mysql_query($sql,$facDB);
 		
 		// See if the field exists - some people have manually added the missing one already, so we can't add what's already there
-		if ( mysql_errno($facDB) == 1054 ) {
-			$sql = "ALTER TABLE fac_PowerDistribution ADD COLUMN InputAmperage INT(11) NOT NULL AFTER PanelPole";
-			$result = mysql_query( $sql, $facDB );
+		if(mysql_errno($facDB)==1054){
+			$sql="ALTER TABLE fac_PowerDistribution ADD COLUMN InputAmperage INT(11) NOT NULL AFTER PanelPole";
+			$result=mysql_query($sql,$facDB);
 		}
 
-		$sql = "update fac_Config set Value=\"2.0.1\" where Parameter=\"Version\"";
-		$result = mysql_query( $sql, $facDB );
+		$sql='UPDATE fac_Config SET Value="2.0.1" WHERE Parameter="Version"';
+		$result=mysql_query($sql,$facDB);
 		
-		$upgrade = true;
-		$version = "2.0.1";
+		$upgrade=true;
+		$version="2.0.1";
 	}
+	if($version=="2.0.1"){
+		// Get a list of all Manufacturers that are duplicated
+		$sql="SELECT ManufacturerID,Name FROM fac_Manufacturer GROUP BY Name HAVING COUNT(*)>1;";
+		$result=mysql_query($sql,$facDB);
+		
+		while($row=mysql_fetch_array($result)){
+			// Set all devices with that Manufacturer to the ID of just one
+			$sql="UPDATE fac_DeviceTemplate SET ManufacturerID={$row["ManufacturerID"]} WHERE ManufacturerID IN (SELECT ManufacturerID FROM fac_Manufacturer WHERE Name=\"{$row["Name"]}\");";
+			mysql_query($sql,$facDB);
+			
+			// Delete all the duplicates other than the one you set everything to
+			$sql="DELETE FROM fac_Manufacturer WHERE Name=\"{$row["Name"]}\" and ManufacturerID!={$row["ManufacturerID"]};";
+			mysql_query($sql,$facDB);
+		}
+
+		// Clean up multiple indexes in fac_Department
+		$array=array();
+		$sql="SHOW INDEXES FROM fac_Department;";
+		$result=mysql_query($sql,$facDB);
+		while($row=mysql_fetch_array($result)){
+			$array[$row["Key_name"]]=1;
+		}
+		foreach($array as $key => $garbage){
+			$sql="ALTER TABLE fac_Department DROP INDEX $key;";
+			mysql_query($sql);
+		}
+		$sql="ALTER TABLE fac_Department ADD PRIMARY KEY (DeptID);";
+		mysql_query($sql);
+		$sql="ALTER TABLE fac_Department ADD UNIQUE KEY Name (Name);";
+		mysql_query($sql);
+		
+		$results[]=applyupdate("db-2.0-to-2.1.sql");
+		$config->rebuild($facDB);
+
+		$upgrade=true;
+		$version="2.1";
+	}
+
 		
 	if($upgrade==true){ //If we're doing an upgrade don't call the rest of the installer.
 ?>

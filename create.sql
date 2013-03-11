@@ -255,7 +255,8 @@ DROP TABLE IF EXISTS fac_Manufacturer;
 CREATE TABLE fac_Manufacturer (
   ManufacturerID int(11) NOT NULL AUTO_INCREMENT,
   Name varchar(80) NOT NULL,
-  PRIMARY KEY (ManufacturerID)
+  PRIMARY KEY (ManufacturerID),
+  UNIQUE KEY Name (Name)
 ) ENGINE=MyISAM AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
 
 --
