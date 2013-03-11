@@ -1036,6 +1036,9 @@ $(document).ready(function() {
 				}
 			});
 		});
+	$('#sortable').sortable({
+		items: "div ~ div"
+	});
 <?php 
 	} // end of javascript editing functions
 ?>
@@ -1425,7 +1428,7 @@ echo '	<div class="table">
 			// We have no network information. Display links to switches in cabinet?
 			echo '		<div>		<div><a name="power"></a></div>		<div>',("No network connections defined.  You can add connections from a switch device."),'</div></div>';
 		}else{
-			print "		<div>\n		  <div><a name=\"net\">$chassis ".__('Connections')."</a><br>(".__('Managed at Switch').")</div>\n		  <div><div class=\"table border\"><div><div>".__('Switch')."</div><div>".__('Switch Port')."</div><div>".__('Device Port')."</div><div>".__('Notes')."</div></div>\n";
+			print "		<div>\n		  <div><a name=\"net\">$chassis ".__('Connections')."</a><br>(".__('Managed at Switch').")</div>\n		  <div><div id=\"sortable\" class=\"table border\"><div><div>".__('Switch')."</div><div>".__('Switch Port')."</div><div>".__('Device Port')."</div><div>".__('Notes')."</div></div>\n";
 			$tmpDev=new Device();
 			foreach($patchList as $patchConn){
 				$tmpDev->DeviceID=$patchConn->SwitchDeviceID;
