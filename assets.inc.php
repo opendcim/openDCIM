@@ -783,17 +783,6 @@ class Device {
 			// Error occurred
 			return -1;
 		}
-
-/*	Child devices don't have a cabinet ID set by default.  This was causing the bug, I think.  Just commenting out for now.
-		// If this device has children, they should all be updated with the cabinet (in case it moved)
-		if ( $this->DeviceType == "Chassis" ) {
-			$childList = $this->GetDeviceChildren( $db );
-			foreach ( $childList as $child ) {
-				$child->Cabinet = $this->Cabinet;
-				$child->UpdateDevice( $db );
-			}
-		}
-*/		
 		return 0;
 	}
 

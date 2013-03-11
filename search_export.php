@@ -47,6 +47,7 @@
 			\t<th>".__("Asset Tag")."</th>
 			\t<th>".__("Device Type")."</th>
 			\t<th>".__("Template")."</th>
+			\t<th>".__("Tags")."</th>
 			\t<th>".__("Owner")."</th>
 			\t<th>".__("Installation Date")."</th>
 			</tr>\n\t</thead>\n\t<tbody>\n";
@@ -69,7 +70,8 @@
 				$dept->GetDeptByID($facDB);
 				$Department=$dept->Name;
 			}
-			
+			$dev->DeviceID=$row["DeviceID"];
+			$tags=implode(",", $dev->GetTags());
 			$body.="\t\t<tr>
 			\t<td>{$row["DataCenter"]}</td>
 			\t<td>{$row["Location"]}</td>
@@ -80,19 +82,20 @@
 			\t<td>{$row["AssetTag"]}</td>
 			\t<td>{$row["DeviceType"]}</td>
 			\t<td>$Model</td>
+			\t<td>$tags</td>
 			\t<td>$Department</td>
 			\t<td>$date</td>\n\t\t</tr>\n";
 			
-			if ( $row["DeviceType"] == "Chassis" ) {
+			if($row["DeviceType"]=="Chassis"){
 				// Find all of the children!
-				$dev->DeviceID = $row["DeviceID"];
-				$childList = $dev->GetDeviceChildren( $facDB );
+				$childList=$dev->GetDeviceChildren($facDB);
 				
 				foreach($childList as $child){
 					$cdate=date("d M Y",strtotime($child->InstallDate));
 					$cModel="";
 					$cDepartment="";					
 
+					$ctags=implode(",", $child->GetTags());
 					if($child->TemplateID >0){
 						$templ->TemplateID=$child->TemplateID;
 						$templ->GetTemplateByID($facDB);
@@ -115,6 +118,7 @@
 					\t<td>$child->AssetTag</td>
 					\t<td>$child->DeviceType</td>
 					\t<td>$cModel</td>
+					\t<td>$ctags</td>
 					\t<td>$cDepartment</td>
 					\t<td>$cdate</td>\n\t\t</tr>\n";
 				}

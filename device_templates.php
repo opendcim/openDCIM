@@ -36,8 +36,12 @@
 				$status='An error has occured, template not created';
 			}		
 		} else {
-			$status=__('Updated');
-			$template->UpdateTemplate($facDB);
+			$update=$template->UpdateTemplate($facDB);
+			if($update==""){
+				$status=__('Updated');
+			}else{
+				$status=$update;
+			}
 		}
 	}
 

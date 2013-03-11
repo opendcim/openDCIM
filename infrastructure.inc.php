@@ -450,6 +450,9 @@ class DeviceTemplate {
   function UpdateTemplate( $db ) {
     $updateSQL = "update fac_DeviceTemplate set ManufacturerID=\"" . intval($this->ManufacturerID) . "\", Model=\"" . addslashes($this->Model) . "\", Height=\"" . intval($this->Height) . "\", Weight=\"" . intval($this->Weight) . "\", Wattage=\"" . intval($this->Wattage) . "\", DeviceType=\"" . addslashes( $this->DeviceType ) . "\", PSCount=\"" . intval( $this->PSCount ) . "\", NumPorts=\"" . intval( $this->NumPorts ) . "\" where TemplateID=\"" . intval($this->TemplateID) . "\"";
     $result = mysql_query( $updateSQL, $db );
+	if(mysql_error($db)){
+		return mysql_errno($db).": ".mysql_error($db)."\n";
+	}
   }
   
   function DeleteTemplate( $db ) {
