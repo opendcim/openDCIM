@@ -31,8 +31,10 @@
 		$template->PSCount = $_REQUEST['pscount'];
 		$template->NumPorts = $_REQUEST['numports'];
 
-		if ( $_REQUEST['action']=='Create' ) {
-			$template->CreateTemplate($facDB);
+		if($_REQUEST['action']=='Create'){
+			if($template->CreateTemplate($facDB)==-1){
+				$status='An error has occured, template not created';
+			}		
 		} else {
 			$status=__('Updated');
 			$template->UpdateTemplate($facDB);
@@ -51,12 +53,34 @@
   <title>openDCIM Device Class Templates</title>
   <link rel="stylesheet" href="css/inventory.php" type="text/css">
   <link rel="stylesheet" href="css/jquery-ui.css" type="text/css">
+  <link rel="stylesheet" href="css/validationEngine.jquery.css" type="text/css">
   <!--[if lt IE 9]>
   <link rel="stylesheet"  href="css/ie.css" type="text/css">
   <![endif]-->
   
   <script type="text/javascript" src="scripts/jquery.min.js"></script>
   <script type="text/javascript" src="scripts/jquery-ui.min.js"></script>
+  <script type="text/javascript" src="scripts/jquery.validationEngine-en.js"></script>
+  <script type="text/javascript" src="scripts/jquery.validationEngine.js"></script>
+  <script type="text/javascript">
+	$(document).ready(function(){
+		var oModel=$('#model').val();
+		var chgmsg='<?php echo __('This value must be different than'); ?>'+' '+oModel;
+		$('#deviceform').validationEngine();
+		$('#model').change(function(){
+			if($('#model').val()==oModel){
+				setTimeout(function(){
+					$('#model').validationEngine('showPrompt',chgmsg,'','',true);
+				},500);
+			}
+		});
+		$('#clone').click(function(){
+			$('#templateid').val('New Template');
+			$('button[name="action"]').val('Create').text('<?php echo __('Create');?>');
+			$('#model').trigger('change');
+		});
+	});
+  </script>
 </head>
 <body>
 <div id="header"></div>
@@ -69,7 +93,7 @@ echo '<div class="main">
 <h3>',__("Data Center Device Templates"),'</h3>
 <h3>',$status,'</h3>
 <div class="center"><div>
-<form action="',$_SERVER["PHP_SELF"],'" method="POST">
+<form id="deviceform" action="',$_SERVER["PHP_SELF"],'" method="POST">
 <div class="table">
 	<div>
 		<div><label for="templateid">',__("Template"),'</label></div>
@@ -99,7 +123,7 @@ echo '    </select>
 </div>
 <div>
    <div><label for="model">',__("Model"),'</label></div>
-   <div><input type="text" name="model" id="model" value="',$template->Model,'"></div>
+   <div><input type="text" name="model" id="model" class="validate[required]" value="',$template->Model,'"></div>
 </div>
 <div>
    <div><label for="height">',__("Height"),'</label></div>
@@ -136,7 +160,7 @@ echo '	</select>
 <div class="caption">';
 
 	if($template->TemplateID >0){
-		echo '   <button type="submit" name="action" value="Update">',__("Update"),'</button>';
+		echo '   <button type="submit" name="action" value="Update">',__("Update"),'</button><button type="button" id="clone">',__("Clone"),'</button>';
 	}else{
 		echo '	 <button type="submit" name="action" value="Create">',__("Create"),'</button>';
 	}

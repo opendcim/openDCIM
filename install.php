@@ -327,6 +327,18 @@ function applyupdate ($updatefile){
 			mysql_query($sql,$facDB);
 		}
 
+		// Repeat for Templates
+		$sql="SELECT TemplateID,ManufacturerID,Model FROM fac_DeviceTemplate GROUP BY ManufacturerID,Model HAVING COUNT(*)>1;";
+		$result=mysql_query($sql,$facDB);
+		
+		while($row=mysql_fetch_array($result)){
+			$sql="UPDATE fac_Device SET TemplateID={$row["TemplateID"]} WHERE TemplateID IN (SELECT TemplateID FROM fac_DeviceTemplate WHERE ManufacturerID={$row["ManufacturerID"]} AND Model=\"{$row["Model"]}\");";
+			mysql_query($sql,$facDB);
+			
+			$sql="DELETE FROM fac_DeviceTemplate WHERE ManufacturerID={$row["ManufacturerID"]} AND TemplateID!={$row["TemplateID"]};";
+			mysql_query($sql,$facDB);
+		}
+
 		// Clean up multiple indexes in fac_Department
 		$array=array();
 		$sql="SHOW INDEXES FROM fac_Department;";
@@ -343,6 +355,22 @@ function applyupdate ($updatefile){
 		$sql="ALTER TABLE fac_Department ADD UNIQUE KEY Name (Name);";
 		mysql_query($sql);
 		
+		// Clean up multiple indexes in fac_DeviceTemplate
+		$array=array();
+		$sql="SHOW INDEXES FROM fac_DeviceTemplate;";
+		$result=mysql_query($sql,$facDB);
+		while($row=mysql_fetch_array($result)){
+			$array[$row["Key_name"]]=1;
+		}
+		foreach($array as $key => $garbage){
+			$sql="ALTER TABLE fac_Department DROP INDEX $key;";
+			mysql_query($sql);
+		}
+		$sql="ALTER TABLE fac_DeviceTemplate ADD PRIMARY KEY (TemplateID);";
+		mysql_query($sql);
+		$sql="ALTER TABLE fac_DeviceTemplate ADD UNIQUE KEY ManufacturerID (ManufacturerID,Model);";
+		mysql_query($sql);
+
 		$results[]=applyupdate("db-2.0-to-2.1.sql");
 		$config->rebuild($facDB);
 

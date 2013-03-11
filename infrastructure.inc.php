@@ -437,10 +437,14 @@ class DeviceTemplate {
   var $NumPorts;
   
   function CreateTemplate( $db ) {
-    $insertSQL = "insert into fac_DeviceTemplate set ManufacturerID=\"" . intval($this->ManufacturerID) . "\", Model=\"" . addslashes($this->Model) . "\", Height=\"" . intval($this->Height) . "\", Weight=\"" . intval($this->Weight) . "\", Wattage=\"" . intval($this->Wattage) . "\", DeviceType=\"" . addslashes( $this->DeviceType ) . "\", PSCount=\"" . intval( $this->PSCount ) . "\", NumPorts=\"" . intval( $this->NumPorts ) . "\"";
-    $result = mysql_query( $insertSQL, $db );
-    
-    $this->TemplateID = mysql_insert_id( $db );     
+    $insertSQL="insert into fac_DeviceTemplate set ManufacturerID=\"" . intval($this->ManufacturerID) . "\", Model=\"" . addslashes($this->Model) . "\", Height=\"" . intval($this->Height) . "\", Weight=\"" . intval($this->Weight) . "\", Wattage=\"" . intval($this->Wattage) . "\", DeviceType=\"" . addslashes( $this->DeviceType ) . "\", PSCount=\"" . intval( $this->PSCount ) . "\", NumPorts=\"" . intval( $this->NumPorts ) . "\"";
+    $result=mysql_query($insertSQL,$db);
+
+	if(!mysql_insert_id($db)){
+		return -1;
+	}else{    
+	    $this->TemplateID=mysql_insert_id($db);     
+	}
   }
   
   function UpdateTemplate( $db ) {

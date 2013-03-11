@@ -222,7 +222,7 @@ CREATE TABLE fac_DeviceTemplate (
   PSCount int(11) NOT NULL,
   NumPorts int(11) NOT NULL,
   PRIMARY KEY (TemplateID),
-  KEY ManufacturerID (ManufacturerID)
+  UNIQUE KEY ManufacturerID (ManufacturerID,Model)
 ) ENGINE=MyISAM AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
 
 --
