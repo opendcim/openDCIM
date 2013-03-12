@@ -1393,8 +1393,81 @@ class Device {
   }
   
 	function SearchByCustomTag( $db, $tag = null ) {
-		$sql = sprintf( "select a.* from fac_Device a, fac_DeviceTags b, fac_Tags c where a.DeviceID=b.DeviceID and b.TagID=c.TagID and UCASE(c.Name) like UCASE('%%%s%%')", $tag );
-		
+		//$sql = sprintf( "select a.* from fac_Device a, fac_DeviceTags b, fac_Tags c where a.DeviceID=b.DeviceID and b.TagID=c.TagID and UCASE(c.Name) like UCASE('%%%s%%')", $tag );
+
+		//
+		//Build a somewhat ugly SQL expression in order to do 
+		//semi-complicated tag searches.  All tags are
+		//logically AND'ed togther.  Thus, if you search for tags
+		//'foo' and 'bar' and '!quux', the results should be only 
+		//those systems with both 'foo' and 'bar' tags while 
+		//excluding those with 'quux'.
+		//
+
+		// Basic start of the query.
+		$sql = "SELECT DISTINCT a.* FROM fac_Device a, fac_DeviceTags b, fac_Tags c WHERE a.DeviceID=b.DeviceID AND b.TagID=c.TagID ";
+
+		//split the "tag" if needed, and strip whitespace
+		//note that tags can contain spaces, so we have to use
+		//something else in the search string (commas seem logical)
+		$tags = explode(",", $tag);
+		$tags = array_map("trim", $tags);
+
+		//Two arrays, one of tags we want, and one of those we don't want.
+		$want_tags = array();
+		$not_want_tags = array();
+
+		foreach ( $tags as $t ) {
+			//If the tag starts with a "!" character, we want to 
+			//specifically exclude it from the search.
+			if (strpos($t, '!') !== false ) {
+				$t=preg_replace('/^!/', '', $t,1);	//remove the leading "!" from the tag
+			$not_want_tags[].= $t;
+			} else {
+				$want_tags[] .= $t;
+			}
+		}
+
+		/*
+		error_log(join(',',$want_tags));
+		error_log(join(',',$not_want_tags));
+		*/
+		$num_want_tags = count($want_tags);
+		if (count($want_tags)) {
+			// This builds the part of the query that looks for all tags we want.
+			// First, some basic SQL to start with
+			$sql .= 'AND c.TagId in ( ';
+			$sql .= 'SELECT Want.TagId from fac_Tags Want WHERE ';
+
+			// Loop over the tags we want.
+			$want_sql = sprintf("UCASE(Want.Name) LIKE UCASE('%%%s%%')", array_shift($want_tags));
+			foreach ($want_tags as $t) {
+				$want_sql .= sprintf(" OR UCASE(Want.Name) LIKE UCASE('%%%s%%')", $t);
+			}
+
+			$sql .= "( $want_sql ) )"; //extra parens for closing sub-select
+
+		}
+
+		//only include this section if we have negative tags
+		if (count($not_want_tags)) {
+			$sql .= 'AND a.DeviceID NOT IN ( ';
+			$sql .= 'SELECT D.DeviceID FROM fac_Device D, fac_DeviceTags DT, fac_Tags T ';
+			$sql .= 'WHERE D.DeviceID = DT.DeviceID ';
+			$sql .= '  AND DT.TagID=T.TagID ';
+
+			$not_want_sql = sprintf("UCASE(T.Name) LIKE UCASE('%%%s%%')", array_shift($not_want_tags));
+            foreach ($not_want_tags as $t) {
+                $not_want_sql .= sprintf(" OR UCASE(c.Name) LIKE UCASE('%%%s%%')", $t);
+            }
+			$sql .= "  AND ( $not_want_sql ) )"; //extra parens to close sub-select
+		}
+
+		// This bit of magic filters out the results that don't match enough tags.
+		$sql .= "GROUP BY a.DeviceID HAVING COUNT(c.TagID) >= $num_want_tags";
+
+		//error_log(">> $sql\n");
+
 		if ( ! $result = mysql_query( $sql, $db ) ) {
 			error_log( sprintf( "%s; SQL=`%s`", mysql_error( $db ), $sql ) );
 			return -1;
