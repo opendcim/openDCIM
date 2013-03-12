@@ -73,11 +73,11 @@ INSERT INTO fac_CabinetToolTip VALUES(NULL, 'WarrantyExpire', 'Warranty Expirati
 
 DROP TABLE IF EXISTS fac_MediaTypes;
 CREATE TABLE IF NOT EXISTS fac_MediaTypes (
-  mediaid int(11) NOT NULL AUTO_INCREMENT,
-  mediatype varchar(40) NOT NULL,
-  PRIMARY KEY (mediaid),
-  UNIQUE KEY mediatype (mediatype)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci AUTO_INCREMENT=1 ;
+  MediaID int(11) NOT NULL AUTO_INCREMENT,
+  MediaType varchar(40) NOT NULL,
+  PRIMARY KEY (MediaID),
+  UNIQUE KEY MediaType (MediaType)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci AUTO_INCREMENT=1;
 
 --
 -- Table structure for table fac_DevicePorts
