@@ -387,59 +387,61 @@ if (!isset($_REQUEST['action'])){
 			foreach ( $devList as $devRow ) {
 				// If there is not a circuit to the cabinet that is unaffected, no need to even check
 				$outageStatus = 'Down';
-
-				if ( $diversity ) {
-					// If a circuit was entered with no panel ID, or a device has no connections documented, mark it as unknown
-					// The only way to be sure a device will stay up is if we have a connection to an unaffected circuit,
-					// or to a failsafe switch (ATS) connected to at least one unaffected circuit.
-					$outageStatus = 'Down';
-					
-					$pwrConn->DeviceID = $devRow->DeviceID;
-					$connList = $pwrConn->GetConnectionsByDevice( $facDB );
-					
-					$devPDUList = array();
-					$fsDiverse = false;
-					
-					if ( count( $connList ) == 0 ) {
-						$outageStatus = 'Unknown';
-					}
-
-					foreach ( $connList as $connection ) {
-						// If the connection is to a PDU that is NOT in the affected PDU list, and is not already in the diversity list, add it
-
-						if ( ! in_array( $connection->PDUID, $pduArray ) ) {
-							if ( ! in_array( $connection->PDUID, $devPDUList ) )
-								array_push( $devPDUList, $connection->PDUID );
-
-						}
-
-						if ( in_array( $connection->PDUID, $fsArray ) ) {
-							$fsDiverse = true;
-						}
-					}
-					
-					if ( count( $devPDUList ) > 0 ) {
-						if ( count( $devPDUList ) < $devRow->PowerSupplyCount )
-							$outageStatus = 'Degraded';
-						elseif ( $fsDiverse )
-							$outageStatus = 'Degraded/Fail-Safe';
-						else
-							$outageStatus = 'Normal';
-					}
-					
-				}
 				
-				$pdf->Cell( $cellWidths[0], 6, $cabRow->Location, 'LBRT', 0, 'L', $fill );
-				$pdf->Cell( $cellWidths[1], 6, $devRow->Label, 'LBRT', 0, 'L', $fill );
-				$pdf->Cell( $cellWidths[2], 6, $outageStatus, 'LBRT', 0, 'L', $fill ); 
-				$pdf->Cell( $cellWidths[3], 6, $devRow->Position, 'LBRT', 0, 'L', $fill );
+				if ( ! $devRow->Reservation ) {	// No need to even process devices that aren't installed, yet
+					if ( $diversity ) {
+						// If a circuit was entered with no panel ID, or a device has no connections documented, mark it as unknown
+						// The only way to be sure a device will stay up is if we have a connection to an unaffected circuit,
+						// or to a failsafe switch (ATS) connected to at least one unaffected circuit.
+						$outageStatus = 'Down';
+						
+						$pwrConn->DeviceID = $devRow->DeviceID;
+						$connList = $pwrConn->GetConnectionsByDevice( $facDB );
+						
+						$devPDUList = array();
+						$fsDiverse = false;
+						
+						if ( count( $connList ) == 0 ) {
+							$outageStatus = 'Unknown';
+						}
 
-				$dept->DeptID = $devRow->Owner;
-				$dept->GetDeptByID( $facDB );
+						foreach ( $connList as $connection ) {
+							// If the connection is to a PDU that is NOT in the affected PDU list, and is not already in the diversity list, add it
 
-				$pdf->Cell( $cellWidths[4], 6, $dept->Name, 'LBRT', 1, 'L', $fill );
+							if ( ! in_array( $connection->PDUID, $pduArray ) ) {
+								if ( ! in_array( $connection->PDUID, $devPDUList ) )
+									array_push( $devPDUList, $connection->PDUID );
 
-				$fill =! $fill;         	
+							}
+
+							if ( in_array( $connection->PDUID, $fsArray ) ) {
+								$fsDiverse = true;
+							}
+						}
+						
+						if ( count( $devPDUList ) > 0 ) {
+							if ( count( $devPDUList ) < $devRow->PowerSupplyCount )
+								$outageStatus = 'Degraded';
+							elseif ( $fsDiverse )
+								$outageStatus = 'Degraded/Fail-Safe';
+							else
+								$outageStatus = 'Normal';
+						}
+						
+					}
+					
+					$pdf->Cell( $cellWidths[0], 6, $cabRow->Location, 'LBRT', 0, 'L', $fill );
+					$pdf->Cell( $cellWidths[1], 6, $devRow->Label, 'LBRT', 0, 'L', $fill );
+					$pdf->Cell( $cellWidths[2], 6, $outageStatus, 'LBRT', 0, 'L', $fill ); 
+					$pdf->Cell( $cellWidths[3], 6, $devRow->Position, 'LBRT', 0, 'L', $fill );
+
+					$dept->DeptID = $devRow->Owner;
+					$dept->GetDeptByID( $facDB );
+
+					$pdf->Cell( $cellWidths[4], 6, $dept->Name, 'LBRT', 1, 'L', $fill );
+
+					$fill =! $fill;
+				}
 			}
 		}
 	  
