@@ -508,13 +508,18 @@ class PDF_Diag extends PDF_Sector {
 				$DCRU = 0;
 				$DCBTU = 0;
 			}
+			
+			if ( $devRow->Height > 1 )
+				$Position = sprintf( "[%d-%d]", $devRow->Position, $devRow->Position + $devRow->Height );
+			else
+				$Position = $devRow->Position;
     
 			$pdf->Cell( $cellWidths[0], 6, $devRow->Label, 'LBRT', 0, 'L', $fill );
 			$pdf->Cell( $cellWidths[1], 6, $devRow->SerialNo, 'LBRT', 0, 'L', $fill );
 			$pdf->Cell( $cellWidths[2], 6, $devRow->AssetTag, 'LBRT', 0, 'L', $fill );
 			$pdf->Cell( $cellWidths[3], 6, $dc->Name, 'LBRT', 0, 'L', $fill );
 			$pdf->Cell( $cellWidths[4], 6, $cab->Location, 'LBRT', 0, 'L', $fill );
-			$pdf->Cell( $cellWidths[5], 6, $devRow->Position, 'LBRT', 0, 'L', $fill );
+			$pdf->Cell( $cellWidths[5], 6, $Position, 'LBRT', 0, 'L', $fill );
 			$pdf->Cell( $cellWidths[6], 6, $devRow->Height, 'LBRT', 1, 'L', $fill );
 
 			$TotalRU += $devRow->Height;

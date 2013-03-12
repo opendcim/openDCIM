@@ -79,7 +79,7 @@ class PDF extends FPDF {
 	if ( $DataCenterID > 0 )
 		$Criteria .= 'b.DataCenterID=\'' . intval( $DataCenterID ) . '\' and ';
 		
-    $searchSQL = 'select a.Name,b.Location,c.Position,c.Label,c.SerialNo,c.AssetTag,c.DeviceID,c.DeviceType from fac_DataCenter a, fac_Cabinet b, fac_Device c where ' . $Criteria . 'c.Cabinet=b.CabinetID and b.DataCenterID=a.DataCenterID and c.Reservation=false order by a.Name,b.Location,c.Position';
+    $searchSQL = 'select a.Name,b.Location,c.Position,c.Height,c.Label,c.SerialNo,c.AssetTag,c.DeviceID,c.DeviceType from fac_DataCenter a, fac_Cabinet b, fac_Device c where ' . $Criteria . 'c.Cabinet=b.CabinetID and b.DataCenterID=a.DataCenterID and c.Reservation=false order by a.Name,b.Location,c.Position';
 
 	$result = mysql_query( $searchSQL, $facDB );
 
@@ -89,7 +89,11 @@ class PDF extends FPDF {
 	while ( $reportRow = mysql_fetch_array( $result ) ) {
 		$DataCenter = $reportRow['Name'];
 		$Location = $reportRow['Location'];
-		$Position = $reportRow['Position'];
+		if ( $reportRow["Height"] > 1 )
+			$Position = '[' . $reportRow['Position'] . '-' . intval($reportRow['Position']+$reportRow['Height']) . ']';
+		else
+			$Position = $reportRow['Position'];
+			
 		$Label = $reportRow['Label'];
 		$SerialNo = $reportRow['SerialNo'];
 		$AssetTag = $reportRow['AssetTag'];
