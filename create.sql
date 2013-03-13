@@ -644,7 +644,8 @@ INSERT INTO fac_Config VALUES
         ('wDate','blank','string','string','blank'),
 		('NewInstallsPeriod', '7', 'Days', 'int', '7' ),
  		('VMExpirationTime','7','Days','int','7'),
- 		('ToolTips', 'Disabled', 'Enabled/Disabled', 'string', 'Disabled');
+ 		('ToolTips', 'Disabled', 'Enabled/Disabled', 'string', 'Disabled'),
+        ('SpaceUnits','Square Footage, Square Foot, Square Feet','List','string','Square Footage, Square Foot, Square Feet');
 
 --
 -- Pre-fill some of the templates

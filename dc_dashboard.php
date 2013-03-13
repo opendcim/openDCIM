@@ -120,10 +120,10 @@ echo '<div class="main">
   </div>
   <div>
         <div>',__("Data Center Size"),'</div>
-        <div>',sprintf("%8d ".__("Square Feet"),$dc->SquareFootage),'</div>
+        <div>',sprintf("%8d ".$config->ParameterArray["SpaceUnits"][2],$dc->SquareFootage),'</div>
   </div>
   <div>
-        <div>',__("Watts per Square Foot"),'</div>
+        <div>',__("Watts per ").$config->ParameterArray["SpaceUnits"][1],'</div>
         <div>',(($dc->SquareFootage)?sprintf("%8d ".__("Watts"),$dcStats["TotalWatts"]/$dc->SquareFootage):"0 ".__("Watts")),'</div>
   </div>
   <div>

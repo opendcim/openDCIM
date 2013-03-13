@@ -16,7 +16,7 @@
 
 	if(isset($_REQUEST["action"]) && $_REQUEST["action"]=="Update"){
 		foreach($config->ParameterArray as $key=>$value){
-			if($key=="ClassList"){
+			if(($key=="ClassList")||($key=="SpaceUnits")){
 				$List=explode(", ",$_REQUEST[$key]);
 				$config->ParameterArray[$key]=$List;
 			}else{
@@ -35,15 +35,19 @@
 	}
 
 	// make list of department types
-	$i=0;
-	$classlist="";
-	foreach($config->ParameterArray["ClassList"] as $item){
-		$classlist .= $item;
-		if($i+1 != count($config->ParameterArray["ClassList"])){
-			$classlist.=", ";
-		}
-		$i++;
-	}
+	/* $i=0; */
+	/* $classlist=""; */
+	/* foreach($config->ParameterArray["ClassList"] as $item){ */
+	/* 	$classlist .= $item; */
+	/* 	if($i+1 != count($config->ParameterArray["ClassList"])){ */
+	/* 		$classlist.=", "; */
+	/* 	} */
+	/* 	$i++; */
+	/* } */
+        $classlist = $config->make_string_list("ClassList");
+        // make list of space units
+	$spaceunitlist = $config->make_string_list("SpaceUnits");
+
 
 	$imageselect='<div id="preview"></div><div id="filelist">';
 
@@ -313,6 +317,10 @@ echo '<div class="main">
 				<div>
 					<div><label for="timezone">',__("Time Zone"),'</label></div>
 					<div><input type="text" readonly="readonly" id="timezone" defaultvalue="',$config->defaults["timezone"],'" name="timezone" value="',$config->ParameterArray["timezone"],'"></div>
+				</div>
+				<div>
+					<div><label for="SpaceUnits">',__("Space Unit"),'</label></div>
+					<div><input type="text" defaultvalue="',$config->defaults["SpaceUnits"],'" name="SpaceUnits" value="',$spaceunitlist,'"></div>
 				</div>
 				<div>
 					<div><label for="mDate">',__("Manufacture Date"),'</label></div>

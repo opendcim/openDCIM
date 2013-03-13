@@ -27,6 +27,7 @@ ALTER TABLE fac_Cabinet ADD Notes TEXT NULL AFTER MapY2;
 --
 
 INSERT INTO fac_Config VALUES ('ToolTips', 'Disabled', 'Enabled/Disabled', 'string', 'Disabled');
+INSERT INTO fac_Config VALUES ('SpaceUnits','Square Footage, Square Foot, Square Feet','List','string','Square Footage, Square Foot, Square Feet');
 
 --
 -- Add table for rack tooltips
