@@ -10,7 +10,7 @@ class Config{
 		$result=mysql_query($sql);
 		
 		while ($row=@mysql_fetch_array($result)){
-			if ($row['Parameter']== 'ClassList'){
+			if (($row['Parameter']== 'ClassList')||($row['Parameter']=='SpaceUnits')){
 				$List = explode(', ', $row['Value']);
 				$this->ParameterArray[$row['Parameter']]=$List;
 				$this->defaults[$row['Parameter']]=$row['DefaultVal'];
@@ -24,7 +24,7 @@ class Config{
 
 	function UpdateConfig($db){
 		foreach($this->ParameterArray as $key=>$value){
-			if ($key=='ClassList'){
+			if (($key=='ClassList')||($key=='SpaceUnits')){
 				$numItems=count($value);
 				$i=0;
 				$valueStr='';
@@ -96,6 +96,22 @@ class Config{
 		foreach($uniqueconfig as $key => $row){
 			mysql_query("INSERT INTO fac_Config VALUES ('$key','{$row['Value']}','{$row['UnitOfMeasure']}','{$row['ValType']}','{$row['DefaultVal']}');",$db); 
 		}
+	}
+
+	function make_string_list($ParmValue) {
+	  // Make a string from the list of values in ParameterArray[$ParmValue]
+	  // If e.g. ParameterArray[$ParmValue] == array('a', 'b', 'c') then
+	  // this function returns the string "a, b, c".
+	  $i=0;
+	  $tmpstr = "";
+	  foreach($this->ParameterArray[$ParmValue] as $item){
+	    $tmpstr .= $item;
+	    if($i+1 != count($this->ParameterArray[$ParmValue])){
+	      $tmpstr.=", ";
+	    }
+	    $i++;
+	  }
+	  return $tmpstr;
 	}
 }
 ?>

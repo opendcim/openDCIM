@@ -153,7 +153,7 @@ echo '	</select></div>
    <div><input class="validate[required,minSize[3],maxSize[80]]" type="text" name="name" id="dcname" size="50" maxlength="80" value="',$dc->Name,'"></div>
 </div>
 <div>
-   <div><label for="sqfootage">',__("Square Footage"),'</label></div>
+   <div><label for="sqfootage">',$config->ParameterArray["SpaceUnits"][0],'</label></div>
    <div><input class="validate[optional,custom[onlyNumberSp]]" type="text" name="squarefootage" id="sqfootage" size="10" maxlength="11" value="',$dc->SquareFootage,'"></div>
 </div>
 <div>
