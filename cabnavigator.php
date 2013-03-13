@@ -13,6 +13,13 @@
 	}
 
 	$cab=new Cabinet();
+	$cab->CabinetID=$_REQUEST["cabinetid"];
+	$cab->GetCabinet($facDB);
+
+	if(is_null($cab->CabinetID)){
+		header('Location: '.redirect());
+		exit;
+	}
 
 	// If you're deleting the cabinet, no need to pull in the rest of the information, so get it out of the way
 	if(isset($_POST["delete"]) && $_POST["delete"]=="yes" && $user->SiteAdmin){
@@ -97,15 +104,6 @@
 	$tempPDU=new PowerDistribution();
 	$tempDept=new Department();
 	$dc=new DataCenter();
-
-	// Even if we're deleting the cabinet, it's helpful to know which data center to go back to displaying afterwards
-	$cab->CabinetID=$_REQUEST["cabinetid"];
-	$cab->GetCabinet($facDB);
-
-	if(is_null($cab->CabinetID)){
-		header('Location: '.redirect());
-		exit;
-	}
 
 	$dcID=$cab->DataCenterID;
 	$dc->DataCenterID=$dcID;
