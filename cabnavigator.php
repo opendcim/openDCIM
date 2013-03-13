@@ -12,6 +12,8 @@
 		exit;
 	}
 
+	$cab=new Cabinet();
+
 	// If you're deleting the cabinet, no need to pull in the rest of the information, so get it out of the way
 	if(isset($_POST["delete"]) && $_POST["delete"]=="yes" && $user->SiteAdmin){
 		$cab->DeleteCabinet($facDB);
@@ -87,7 +89,6 @@
 
 
 	$head=$legend=$zeroheight=$body=$deptcolor="";
-	$cab=new Cabinet();
 	$audit=new CabinetAudit();
 	$pdu=new PowerDistribution();
 	$pan = new PowerPanel();
