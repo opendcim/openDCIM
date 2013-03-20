@@ -16,11 +16,6 @@
 	$cab->CabinetID=$_REQUEST["cabinetid"];
 	$cab->GetCabinet($facDB);
 
-	if(is_null($cab->CabinetID)){
-		header('Location: '.redirect());
-		exit;
-	}
-
 	// If you're deleting the cabinet, no need to pull in the rest of the information, so get it out of the way
 	if(isset($_POST["delete"]) && $_POST["delete"]=="yes" && $user->SiteAdmin){
 		$cab->DeleteCabinet($facDB);

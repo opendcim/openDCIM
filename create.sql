@@ -644,6 +644,7 @@ INSERT INTO fac_Config VALUES
         ('wDate','blank','string','string','blank'),
 		('NewInstallsPeriod', '7', 'Days', 'int', '7' ),
  		('VMExpirationTime','7','Days','int','7'),
+ 		('mUnits', 'english', 'English/Metric', 'string', 'english'),
  		('ToolTips', 'Disabled', 'Enabled/Disabled', 'string', 'Disabled');
 
 --
