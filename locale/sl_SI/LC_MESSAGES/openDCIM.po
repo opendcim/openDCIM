@@ -2,306 +2,361 @@ msgid ""
 msgstr ""
 "Project-Id-Version: openDCIM.po\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2013-03-03 20:21-0600\n"
+"POT-Creation-Date: 2013-03-21 21:04-0500\n"
 "PO-Revision-Date: 2013-02-20 15:13-0500\n"
 "Last-Translator: Scott Milliken <scott@themillikens.com>\n"
 "Language-Team: openDCIM <discussion@list.opendcim.org>\n"
+"Language: English\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Language: English\n"
 "X-Poedit-Basepath: c:\\openDCIM\\openDCIM\n"
 "X-Poedit-KeywordsList: __\n"
 "X-Poedit-SearchPath-0: c:\\openDCIM\\openDCIM\n"
 
-#: openDCIM/cabaudit.php:51 openDCIM/report_aging.php:153
-#: openDCIM/report_department.php:34
+#: /home/wilpig.com/openDCIM/cabaudit.php:51
+#: /home/wilpig.com/openDCIM/report_aging.php:153
+#: /home/wilpig.com/openDCIM/report_department.php:34
 msgid "Information Technology Services"
 msgstr "Informacijska tehnologija"
 
-#: openDCIM/cabaudit.php:54
+#: /home/wilpig.com/openDCIM/cabaudit.php:54
 msgid "Cabinet Audit Report"
 msgstr "Kabinet Revizijsko poročilo"
 
-#: openDCIM/cabaudit.php:56 openDCIM/cabnavigator.php:392
+#: /home/wilpig.com/openDCIM/cabaudit.php:56
+#: /home/wilpig.com/openDCIM/cabnavigator.php:386
 msgid "Last Audit"
 msgstr "Zadnja revizija"
 
-#: openDCIM/cabaudit.php:401
+#: /home/wilpig.com/openDCIM/cabaudit.php:401
 msgid "Cabinet Location"
 msgstr "Kabinet Lokacija"
 
-#: openDCIM/cabaudit.php:406 openDCIM/cabaudit.php:481
-#: openDCIM/devices.php:1085 openDCIM/power_pdu.php:335
-#: openDCIM/rackrequest.php:362 openDCIM/report_aging.php:522
-#: openDCIM/report_aging.php:558 openDCIM/report_aging.php:588
-#: openDCIM/report_aging.php:618 openDCIM/report_aging.php:648
+#: /home/wilpig.com/openDCIM/cabaudit.php:406
+#: /home/wilpig.com/openDCIM/cabaudit.php:481
+#: /home/wilpig.com/openDCIM/devices.php:1093
+#: /home/wilpig.com/openDCIM/power_pdu.php:335
+#: /home/wilpig.com/openDCIM/rackrequest.php:362
+#: /home/wilpig.com/openDCIM/report_aging.php:522
+#: /home/wilpig.com/openDCIM/report_aging.php:558
+#: /home/wilpig.com/openDCIM/report_aging.php:588
+#: /home/wilpig.com/openDCIM/report_aging.php:618
+#: /home/wilpig.com/openDCIM/report_aging.php:648
 msgid "Label"
 msgstr "Oznaka"
 
-#: openDCIM/cabaudit.php:406
+#: /home/wilpig.com/openDCIM/cabaudit.php:406
 msgid "SerialNo"
 msgstr "SerialNo"
 
-#: openDCIM/cabaudit.php:406
+#: /home/wilpig.com/openDCIM/cabaudit.php:406
 msgid "AssetTag"
 msgstr "AssetTag"
 
-#: openDCIM/cabaudit.php:406 openDCIM/devices.php:1233
-#: openDCIM/rackrequest.php:479 openDCIM/search_export.php:43
+#: /home/wilpig.com/openDCIM/cabaudit.php:406
+#: /home/wilpig.com/openDCIM/devices.php:1241
+#: /home/wilpig.com/openDCIM/rackrequest.php:479
+#: /home/wilpig.com/openDCIM/search_export.php:43
 msgid "Position"
 msgstr "položaj"
 
-#: openDCIM/cabaudit.php:406
+#: /home/wilpig.com/openDCIM/cabaudit.php:406
 msgid "Rack Units"
 msgstr "Rack Units"
 
-#: openDCIM/cabaudit.php:406
+#: /home/wilpig.com/openDCIM/cabaudit.php:406
 msgid "#Ports"
 msgstr "#Ports"
 
-#: openDCIM/cabaudit.php:406
+#: /home/wilpig.com/openDCIM/cabaudit.php:406
 msgid "#PS"
 msgstr "#PS"
 
-#: openDCIM/cabaudit.php:406
+#: /home/wilpig.com/openDCIM/cabaudit.php:406
 msgid "PowerConnection1"
 msgstr "PowerConnection1"
 
-#: openDCIM/cabaudit.php:406
+#: /home/wilpig.com/openDCIM/cabaudit.php:406
 msgid "PowerConnection2"
 msgstr "PowerConnection2"
 
-#: openDCIM/cabaudit.php:406
+#: /home/wilpig.com/openDCIM/cabaudit.php:406
 msgid "DeviceType"
 msgstr "DeviceType"
 
-#: openDCIM/cabaudit.php:475
+#: /home/wilpig.com/openDCIM/cabaudit.php:475
 msgid "PDUs at"
 msgstr "PDUs at"
 
-#: openDCIM/cabaudit.php:481
+#: /home/wilpig.com/openDCIM/cabaudit.php:481
 msgid "NumOutputs"
 msgstr "NumOutputs"
 
-#: openDCIM/cabaudit.php:481 openDCIM/cabinets.php:220
-#: openDCIM/cdu_templates.php:107 openDCIM/device_templates.php:101
+#: /home/wilpig.com/openDCIM/cabaudit.php:481
+#: /home/wilpig.com/openDCIM/cabinets.php:220
+#: /home/wilpig.com/openDCIM/cdu_templates.php:107
+#: /home/wilpig.com/openDCIM/device_templates.php:129
 msgid "Model"
 msgstr "Model"
 
-#: openDCIM/cabaudit.php:481
+#: /home/wilpig.com/openDCIM/cabaudit.php:481
 msgid "PanelLabel"
 msgstr "PanelLabel"
 
-#: openDCIM/cabaudit.php:481
+#: /home/wilpig.com/openDCIM/cabaudit.php:481
 msgid "PanelPole"
 msgstr "PanelPole"
 
-#: openDCIM/cabinets.php:178 openDCIM/cabnavigator.php:491
-#: openDCIM/storageroom.php:45
+#: /home/wilpig.com/openDCIM/cabinets.php:178
+#: /home/wilpig.com/openDCIM/cabnavigator.php:485
+#: /home/wilpig.com/openDCIM/storageroom.php:45
 msgid "Data Center Cabinet Inventory"
 msgstr "Data Center kabinet Popis"
 
-#: openDCIM/cabinets.php:183 openDCIM/cabnavigator.php:159
-#: openDCIM/devices.php:1198 openDCIM/power_pdu.php:339
+#: /home/wilpig.com/openDCIM/cabinets.php:183
+#: /home/wilpig.com/openDCIM/cabnavigator.php:153
+#: /home/wilpig.com/openDCIM/devices.php:1206
+#: /home/wilpig.com/openDCIM/power_pdu.php:339
 msgid "Cabinet"
 msgstr "Kabinet"
 
-#: openDCIM/cabinets.php:185
+#: /home/wilpig.com/openDCIM/cabinets.php:185
 msgid "New Cabinet"
 msgstr "Novi kabinet"
 
-#: openDCIM/cabinets.php:195 openDCIM/power_source.php:87
-#: openDCIM/search_export.php:41
+#: /home/wilpig.com/openDCIM/cabinets.php:195
+#: /home/wilpig.com/openDCIM/power_source.php:87
+#: /home/wilpig.com/openDCIM/search_export.php:41
 msgid "Data Center"
 msgstr "Data Center"
 
-#: openDCIM/cabinets.php:199 openDCIM/search_export.php:42
-#: openDCIM/supplybin.php:164
+#: /home/wilpig.com/openDCIM/cabinets.php:199
+#: /home/wilpig.com/openDCIM/search_export.php:42
+#: /home/wilpig.com/openDCIM/supplybin.php:164
 msgid "Location"
 msgstr "Kraj"
 
-#: openDCIM/cabinets.php:203
+#: /home/wilpig.com/openDCIM/cabinets.php:203
 msgid "Assigned To"
 msgstr "dodeljena"
 
-#: openDCIM/cabinets.php:205
+#: /home/wilpig.com/openDCIM/cabinets.php:205
 msgid "General Use"
 msgstr "Splošna uporaba"
 
-#: openDCIM/cabinets.php:216
+#: /home/wilpig.com/openDCIM/cabinets.php:216
 msgid "Cabinet Height"
 msgstr "Višina omare"
 
-#: openDCIM/cabinets.php:224 openDCIM/cabnavigator.php:336
+#: /home/wilpig.com/openDCIM/cabinets.php:224
+#: /home/wilpig.com/openDCIM/cabnavigator.php:330
 msgid "Key/Lock Information"
 msgstr "Ključni / zaklepanje informacije"
 
-#: openDCIM/cabinets.php:228
+#: /home/wilpig.com/openDCIM/cabinets.php:228
 msgid "Maximum"
 msgstr "Največja"
 
-#: openDCIM/cabinets.php:232
+#: /home/wilpig.com/openDCIM/cabinets.php:232
 msgid "Maximum Weight"
 msgstr "Največja teža"
 
-#: openDCIM/cabinets.php:236
+#: /home/wilpig.com/openDCIM/cabinets.php:236
 msgid "Date of Installation"
 msgstr "Datum namestitve"
 
-#: openDCIM/cabinets.php:240
+#: /home/wilpig.com/openDCIM/cabinets.php:240
 msgid "Sensor IP Address"
 msgstr "Senzor IP naslov"
 
-#: openDCIM/cabinets.php:244
+#: /home/wilpig.com/openDCIM/cabinets.php:244
 msgid "Sensor SNMP Community"
 msgstr "Senzor SNMP Skupnosti"
 
-#: openDCIM/cabinets.php:248
+#: /home/wilpig.com/openDCIM/cabinets.php:248
 msgid "Temperature Sensor OID"
 msgstr "Senzor temperature OID"
 
-#: openDCIM/cabinets.php:252 openDCIM/devices.php:1181
+#: /home/wilpig.com/openDCIM/cabinets.php:252
+#: /home/wilpig.com/openDCIM/devices.php:1189
+#: /home/wilpig.com/openDCIM/search_export.php:50
 msgid "Tags"
 msgstr ""
 
-#: openDCIM/cabinets.php:258 openDCIM/conflicts.php:74
-#: openDCIM/devices.php:537 openDCIM/devices.php:1188
-#: openDCIM/devices.php:1427 openDCIM/devices.php:1438
-#: openDCIM/devices.php:1453 openDCIM/devices.php:1467
+#: /home/wilpig.com/openDCIM/cabinets.php:258
+#: /home/wilpig.com/openDCIM/conflicts.php:74
+#: /home/wilpig.com/openDCIM/devices.php:541
+#: /home/wilpig.com/openDCIM/devices.php:1196
+#: /home/wilpig.com/openDCIM/devices.php:1435
+#: /home/wilpig.com/openDCIM/devices.php:1446
+#: /home/wilpig.com/openDCIM/devices.php:1461
+#: /home/wilpig.com/openDCIM/devices.php:1475
 msgid "Notes"
 msgstr "Opombe"
 
-#: openDCIM/cabinets.php:264 openDCIM/cdu_templates.php:172
-#: openDCIM/contacts.php:268 openDCIM/datacenter.php:178
-#: openDCIM/departments.php:135 openDCIM/device_manufacturers.php:96
-#: openDCIM/devices.php:1486 openDCIM/device_templates.php:139
-#: openDCIM/escalations.php:90 openDCIM/power_panel.php:139
-#: openDCIM/power_pdu.php:445 openDCIM/power_source.php:116
-#: openDCIM/timeperiods.php:91 openDCIM/usermgr.php:126
+#: /home/wilpig.com/openDCIM/cabinets.php:264
+#: /home/wilpig.com/openDCIM/cdu_templates.php:172
+#: /home/wilpig.com/openDCIM/contacts.php:268
+#: /home/wilpig.com/openDCIM/datacenter.php:181
+#: /home/wilpig.com/openDCIM/departments.php:135
+#: /home/wilpig.com/openDCIM/device_manufacturers.php:96
+#: /home/wilpig.com/openDCIM/devices.php:1494
+#: /home/wilpig.com/openDCIM/device_templates.php:167
+#: /home/wilpig.com/openDCIM/escalations.php:90
+#: /home/wilpig.com/openDCIM/power_panel.php:139
+#: /home/wilpig.com/openDCIM/power_pdu.php:445
+#: /home/wilpig.com/openDCIM/power_source.php:116
+#: /home/wilpig.com/openDCIM/timeperiods.php:91
+#: /home/wilpig.com/openDCIM/usermgr.php:126
 msgid "Update"
 msgstr "Posodobiti"
 
-#: openDCIM/cabinets.php:266 openDCIM/cdu_templates.php:174
-#: openDCIM/contacts.php:270 openDCIM/datacenter.php:180
-#: openDCIM/departments.php:137 openDCIM/device_manufacturers.php:98
-#: openDCIM/devices.php:1489 openDCIM/device_templates.php:141
-#: openDCIM/escalations.php:93 openDCIM/power_panel.php:141
-#: openDCIM/power_pdu.php:447 openDCIM/power_source.php:118
-#: openDCIM/rackrequest.php:494 openDCIM/supplybin.php:170
-#: openDCIM/timeperiods.php:94 openDCIM/usermgr.php:128
+#: /home/wilpig.com/openDCIM/cabinets.php:266
+#: /home/wilpig.com/openDCIM/cdu_templates.php:174
+#: /home/wilpig.com/openDCIM/contacts.php:270
+#: /home/wilpig.com/openDCIM/datacenter.php:183
+#: /home/wilpig.com/openDCIM/departments.php:137
+#: /home/wilpig.com/openDCIM/device_manufacturers.php:98
+#: /home/wilpig.com/openDCIM/devices.php:1497
+#: /home/wilpig.com/openDCIM/device_templates.php:83
+#: /home/wilpig.com/openDCIM/device_templates.php:169
+#: /home/wilpig.com/openDCIM/escalations.php:93
+#: /home/wilpig.com/openDCIM/power_panel.php:141
+#: /home/wilpig.com/openDCIM/power_pdu.php:447
+#: /home/wilpig.com/openDCIM/power_source.php:118
+#: /home/wilpig.com/openDCIM/rackrequest.php:494
+#: /home/wilpig.com/openDCIM/supplybin.php:170
+#: /home/wilpig.com/openDCIM/timeperiods.php:94
+#: /home/wilpig.com/openDCIM/usermgr.php:128
 msgid "Create"
 msgstr "Ustvarjanje"
 
-#: openDCIM/cabinets.php:274 openDCIM/devices.php:1508
-#: openDCIM/devices.php:1510 openDCIM/power_pdu.php:490
+#: /home/wilpig.com/openDCIM/cabinets.php:274
+#: /home/wilpig.com/openDCIM/devices.php:1516
+#: /home/wilpig.com/openDCIM/devices.php:1518
+#: /home/wilpig.com/openDCIM/power_pdu.php:490
 msgid "Return to Navigator"
 msgstr "Nazaj na Navigator"
 
-#: openDCIM/cabinets.php:276 openDCIM/cdu_templates.php:181
-#: openDCIM/contacts.php:280 openDCIM/datacenter.php:191
-#: openDCIM/departments.php:146 openDCIM/device_manufacturers.php:105
-#: openDCIM/device_templates.php:148 openDCIM/escalations.php:100
-#: openDCIM/power_panel.php:315 openDCIM/power_source.php:126
-#: openDCIM/rackrequest.php:502 openDCIM/supplybin.php:219
-#: openDCIM/timeperiods.php:101 openDCIM/usermgr.php:135
+#: /home/wilpig.com/openDCIM/cabinets.php:276
+#: /home/wilpig.com/openDCIM/cdu_templates.php:181
+#: /home/wilpig.com/openDCIM/contacts.php:280
+#: /home/wilpig.com/openDCIM/datacenter.php:194
+#: /home/wilpig.com/openDCIM/departments.php:146
+#: /home/wilpig.com/openDCIM/device_manufacturers.php:105
+#: /home/wilpig.com/openDCIM/device_templates.php:176
+#: /home/wilpig.com/openDCIM/escalations.php:100
+#: /home/wilpig.com/openDCIM/power_panel.php:315
+#: /home/wilpig.com/openDCIM/power_source.php:126
+#: /home/wilpig.com/openDCIM/rackrequest.php:502
+#: /home/wilpig.com/openDCIM/supplybin.php:219
+#: /home/wilpig.com/openDCIM/timeperiods.php:101
+#: /home/wilpig.com/openDCIM/usermgr.php:135
 msgid "Return to Main Menu"
 msgstr "Nazaj na Glavni Meni"
 
-#: openDCIM/cabnavigator.php:81
+#: /home/wilpig.com/openDCIM/cabnavigator.php:85
 msgid "Tooltips are enabled with no options selected."
 msgstr ""
 
-#: openDCIM/cabnavigator.php:160
+#: /home/wilpig.com/openDCIM/cabnavigator.php:154
 msgid "Pos"
 msgstr "Pos"
 
-#: openDCIM/cabnavigator.php:160 openDCIM/devices.php:1453
-#: openDCIM/storageroom.php:50
+#: /home/wilpig.com/openDCIM/cabnavigator.php:154
+#: /home/wilpig.com/openDCIM/devices.php:1461
+#: /home/wilpig.com/openDCIM/storageroom.php:50
 msgid "Device"
 msgstr "Naprava"
 
-#: openDCIM/cabnavigator.php:254
+#: /home/wilpig.com/openDCIM/cabnavigator.php:248
 msgid "Above defined rack height"
 msgstr ""
 
-#: openDCIM/cabnavigator.php:297
+#: /home/wilpig.com/openDCIM/cabnavigator.php:291
 msgid "Markup Key"
 msgstr "Oznaka ključne"
 
-#: openDCIM/cabnavigator.php:298
+#: /home/wilpig.com/openDCIM/cabnavigator.php:292
 msgid "Owner Unassigned"
 msgstr "Lastnik Nedodeljen"
 
-#: openDCIM/cabnavigator.php:299
+#: /home/wilpig.com/openDCIM/cabnavigator.php:293
 msgid "Template Unassigned"
 msgstr "Predloga Nedodeljen"
 
-#: openDCIM/cabnavigator.php:303
+#: /home/wilpig.com/openDCIM/cabnavigator.php:297
 msgid "Cabinet Metrics"
 msgstr "Kabinet Metrics"
 
-#: openDCIM/cabnavigator.php:306 openDCIM/dc_dashboard.php:81
-#: openDCIM/dc_stats.php:102 openDCIM/index.php:118
+#: /home/wilpig.com/openDCIM/cabnavigator.php:300
+#: /home/wilpig.com/openDCIM/dc_dashboard.php:90
+#: /home/wilpig.com/openDCIM/dc_stats.php:111
+#: /home/wilpig.com/openDCIM/index.php:118
 msgid "Space"
 msgstr "Vesolje"
 
-#: openDCIM/cabnavigator.php:315 openDCIM/dc_dashboard.php:82
-#: openDCIM/dc_stats.php:103 openDCIM/device_templates.php:109
+#: /home/wilpig.com/openDCIM/cabnavigator.php:309
+#: /home/wilpig.com/openDCIM/dc_dashboard.php:91
+#: /home/wilpig.com/openDCIM/dc_stats.php:112
+#: /home/wilpig.com/openDCIM/device_templates.php:137
 msgid "Weight"
 msgstr "Teža"
 
-#: openDCIM/cabnavigator.php:324 openDCIM/dc_dashboard.php:83
-#: openDCIM/dc_stats.php:104
+#: /home/wilpig.com/openDCIM/cabnavigator.php:318
+#: /home/wilpig.com/openDCIM/dc_dashboard.php:92
+#: /home/wilpig.com/openDCIM/dc_stats.php:113
 msgid "Power"
 msgstr "Moč"
 
-#: openDCIM/cabnavigator.php:333
+#: /home/wilpig.com/openDCIM/cabnavigator.php:327
 msgid "Approximate Center of Gravity"
 msgstr "Približna težišča"
 
-#: openDCIM/cabnavigator.php:344
+#: /home/wilpig.com/openDCIM/cabnavigator.php:338
 msgid "Zero-U Devices"
 msgstr "Zero-U Naprave"
 
-#: openDCIM/cabnavigator.php:351
+#: /home/wilpig.com/openDCIM/cabnavigator.php:345
 msgid "Power Distribution"
 msgstr "Power Distribution"
 
-#: openDCIM/cabnavigator.php:387
+#: /home/wilpig.com/openDCIM/cabnavigator.php:381
 msgid "Add CDU"
 msgstr "Dodaj CDU"
 
-#: openDCIM/cabnavigator.php:396
+#: /home/wilpig.com/openDCIM/cabnavigator.php:390
 msgid "Certify Audit"
 msgstr "Potrdite revizije"
 
-#: openDCIM/cabnavigator.php:397 openDCIM/devices.php:1340
+#: /home/wilpig.com/openDCIM/cabnavigator.php:391
+#: /home/wilpig.com/openDCIM/devices.php:1348
 msgid "Add Device"
 msgstr "Dodaj napravo"
 
-#: openDCIM/cabnavigator.php:398
+#: /home/wilpig.com/openDCIM/cabnavigator.php:392
 msgid "Audit Report"
 msgstr "revizijsko poročilo"
 
-#: openDCIM/cabnavigator.php:399
+#: /home/wilpig.com/openDCIM/cabnavigator.php:393
 msgid "Map Coordinates"
 msgstr "zemljevid Koordinate"
 
-#: openDCIM/cabnavigator.php:400
+#: /home/wilpig.com/openDCIM/cabnavigator.php:394
 msgid "Edit Cabinet"
 msgstr "Uredi kabinet"
 
-#: openDCIM/cabnavigator.php:403
+#: /home/wilpig.com/openDCIM/cabnavigator.php:397
 msgid "Delete Cabinet"
 msgstr "Brisanje kabinet"
 
-#: openDCIM/cabnavigator.php:441
+#: /home/wilpig.com/openDCIM/cabnavigator.php:435
 msgid ""
 "Do you certify that you have completed an audit of the selected cabinet?"
 msgstr "Ali potrjujete, da ste zaključili revizijo izbrane omari?"
 
-#: openDCIM/cabnavigator.php:449
+#: /home/wilpig.com/openDCIM/cabnavigator.php:443
 msgid ""
 "Are you sure that you want to delete this cabinet, including all devices, "
 "power strips, and connections?"
@@ -309,648 +364,800 @@ msgstr ""
 "Ali ste prepričani, da želite izbrisati to kabinet, vključno z vsemi "
 "napravami, moč trakovi in povezav?"
 
-#: openDCIM/cabnavigator.php:449
+#: /home/wilpig.com/openDCIM/cabnavigator.php:443
 msgid "THIS ACTION CAN NOT BE UNDONE!"
 msgstr "Ta ukrep se ni mogoče razveljaviti!"
 
-#: openDCIM/cabnavigator.php:501
+#: /home/wilpig.com/openDCIM/cabnavigator.php:495
 #, fuzzy
 msgid "Return to"
 msgstr "Nazaj na Navigator"
 
-#: openDCIM/cdu_templates.php:41 openDCIM/device_templates.php:37
-#: openDCIM/escalations.php:29 openDCIM/supplybin.php:39
-#: openDCIM/timeperiods.php:30 openDCIM/usermgr.php:38
+#: /home/wilpig.com/openDCIM/cdu_templates.php:41
+#: /home/wilpig.com/openDCIM/device_templates.php:41
+#: /home/wilpig.com/openDCIM/escalations.php:29
+#: /home/wilpig.com/openDCIM/supplybin.php:39
+#: /home/wilpig.com/openDCIM/timeperiods.php:30
+#: /home/wilpig.com/openDCIM/usermgr.php:38
 msgid "Updated"
 msgstr "Popravljeno"
 
-#: openDCIM/cdu_templates.php:75
+#: /home/wilpig.com/openDCIM/cdu_templates.php:75
 msgid "Data Center Cabinet Distribution Unit Templates"
 msgstr "Data Center Kabinet Distribucijska enota Predloge"
 
-#: openDCIM/cdu_templates.php:81 openDCIM/device_templates.php:75
-#: openDCIM/search_export.php:49
+#: /home/wilpig.com/openDCIM/cdu_templates.php:81
+#: /home/wilpig.com/openDCIM/device_templates.php:103
+#: /home/wilpig.com/openDCIM/search_export.php:49
 msgid "Template"
 msgstr "Predloga"
 
-#: openDCIM/cdu_templates.php:83 openDCIM/device_templates.php:77
+#: /home/wilpig.com/openDCIM/cdu_templates.php:83
+#: /home/wilpig.com/openDCIM/device_templates.php:105
 msgid "New Template"
 msgstr "Nove predloge"
 
-#: openDCIM/cdu_templates.php:95 openDCIM/device_manufacturers.php:78
-#: openDCIM/device_templates.php:89
+#: /home/wilpig.com/openDCIM/cdu_templates.php:95
+#: /home/wilpig.com/openDCIM/device_manufacturers.php:78
+#: /home/wilpig.com/openDCIM/device_templates.php:117
 msgid "Manufacturer"
 msgstr "Proizvajalec"
 
-#: openDCIM/cdu_templates.php:111
+#: /home/wilpig.com/openDCIM/cdu_templates.php:111
 msgid "Managed"
 msgstr "Upravljavec"
 
-#: openDCIM/cdu_templates.php:117
+#: /home/wilpig.com/openDCIM/cdu_templates.php:117
 msgid "Firmware Version OID"
 msgstr "Firmware Version OID"
 
-#: openDCIM/cdu_templates.php:121
+#: /home/wilpig.com/openDCIM/cdu_templates.php:121
 msgid "Multiplier"
 msgstr "Množilnik"
 
-#: openDCIM/cdu_templates.php:134
+#: /home/wilpig.com/openDCIM/cdu_templates.php:134
 msgid "OID1"
 msgstr "OID1"
 
-#: openDCIM/cdu_templates.php:138
+#: /home/wilpig.com/openDCIM/cdu_templates.php:138
 msgid "OID2"
 msgstr "OID2"
 
-#: openDCIM/cdu_templates.php:142
+#: /home/wilpig.com/openDCIM/cdu_templates.php:142
 msgid "OID3"
 msgstr "OID3"
 
-#: openDCIM/cdu_templates.php:146
+#: /home/wilpig.com/openDCIM/cdu_templates.php:146
 msgid "Processing Scheme"
 msgstr "Predelava shema"
 
-#: openDCIM/cdu_templates.php:158
+#: /home/wilpig.com/openDCIM/cdu_templates.php:158
 msgid "Voltage"
 msgstr "Napetost"
 
-#: openDCIM/cdu_templates.php:162
+#: /home/wilpig.com/openDCIM/cdu_templates.php:162
 msgid "Amperage"
 msgstr "Amperage"
 
-#: openDCIM/cdu_templates.php:166
+#: /home/wilpig.com/openDCIM/cdu_templates.php:166
 msgid "No. of Outlets"
 msgstr "Količina Prodajna mesta"
 
-#: openDCIM/configuration.php:199 openDCIM/datacenter.php:86
-#: openDCIM/install.php:562 openDCIM/rackrequest.php:458
+#: /home/wilpig.com/openDCIM/configuration.php:199
+#: /home/wilpig.com/openDCIM/datacenter.php:89
+#: /home/wilpig.com/openDCIM/install.php:648
+#: /home/wilpig.com/openDCIM/rackrequest.php:458
 msgid "Select"
 msgstr "Izberite"
 
-#: openDCIM/configuration.php:282 openDCIM/install.php:743
+#: /home/wilpig.com/openDCIM/configuration.php:282
+#: /home/wilpig.com/openDCIM/install.php:829
 msgid "Data Center Configuration"
 msgstr "Data Center Configuration"
 
-#: openDCIM/configuration.php:283 openDCIM/install.php:744
+#: /home/wilpig.com/openDCIM/configuration.php:283
+#: /home/wilpig.com/openDCIM/install.php:830
 msgid "Database Version"
 msgstr "Database različice"
 
-#: openDCIM/configuration.php:290 openDCIM/install.php:751
+#: /home/wilpig.com/openDCIM/configuration.php:290
+#: /home/wilpig.com/openDCIM/install.php:837
 msgid "General"
 msgstr "Splošno"
 
-#: openDCIM/configuration.php:291 openDCIM/install.php:752
+#: /home/wilpig.com/openDCIM/configuration.php:291
+#: /home/wilpig.com/openDCIM/install.php:838
 msgid "Style"
 msgstr "Slog"
 
-#: openDCIM/configuration.php:292 openDCIM/contacts.php:262
-#: openDCIM/install.php:753 openDCIM/report_department.php:181
+#: /home/wilpig.com/openDCIM/configuration.php:292
+#: /home/wilpig.com/openDCIM/contacts.php:262
+#: /home/wilpig.com/openDCIM/install.php:839
+#: /home/wilpig.com/openDCIM/report_department.php:181
 msgid "Email"
 msgstr "E-pošta"
 
-#: openDCIM/configuration.php:293 openDCIM/install.php:754
+#: /home/wilpig.com/openDCIM/configuration.php:293
+#: /home/wilpig.com/openDCIM/install.php:840
 msgid "Reporting"
 msgstr "Poročanje"
 
-#: openDCIM/configuration.php:294 openDCIM/configuration.php:551
-#: openDCIM/install.php:755 openDCIM/install.php:1012
+#: /home/wilpig.com/openDCIM/configuration.php:294
+#: /home/wilpig.com/openDCIM/configuration.php:559
+#: /home/wilpig.com/openDCIM/install.php:841
+#: /home/wilpig.com/openDCIM/install.php:1106
 #, fuzzy
 msgid "Cabinet ToolTips"
 msgstr "Kabinet Metrics"
 
-#: openDCIM/configuration.php:299 openDCIM/install.php:760
+#: /home/wilpig.com/openDCIM/configuration.php:299
+#: /home/wilpig.com/openDCIM/install.php:846
 msgid "Organization Name"
 msgstr "Ime organizacije"
 
-#: openDCIM/configuration.php:303 openDCIM/install.php:764
+#: /home/wilpig.com/openDCIM/configuration.php:303
+#: /home/wilpig.com/openDCIM/install.php:850
 msgid "Locale"
 msgstr "Locale"
 
-#: openDCIM/configuration.php:307 openDCIM/install.php:768
+#: /home/wilpig.com/openDCIM/configuration.php:307
+#: /home/wilpig.com/openDCIM/install.php:854
 msgid "Default Panel Voltage"
 msgstr "Privzeto plošča Napetost"
 
-#: openDCIM/configuration.php:311 openDCIM/install.php:772
+#: /home/wilpig.com/openDCIM/configuration.php:311
+#: /home/wilpig.com/openDCIM/install.php:858
 msgid "Time and Measurements"
 msgstr ""
 
-#: openDCIM/configuration.php:314 openDCIM/install.php:775
+#: /home/wilpig.com/openDCIM/configuration.php:314
+#: /home/wilpig.com/openDCIM/install.php:861
 #, fuzzy
 msgid "Time Zone"
 msgstr "časovno obdobje"
 
-#: openDCIM/configuration.php:318 openDCIM/devices.php:1099
-#: openDCIM/install.php:779 openDCIM/rackrequest.php:383
+#: /home/wilpig.com/openDCIM/configuration.php:318
+#: /home/wilpig.com/openDCIM/devices.php:1107
+#: /home/wilpig.com/openDCIM/install.php:865
+#: /home/wilpig.com/openDCIM/rackrequest.php:383
 msgid "Manufacture Date"
 msgstr "Izdelava Datum"
 
-#: openDCIM/configuration.php:320 openDCIM/configuration.php:328
-#: openDCIM/install.php:781 openDCIM/install.php:789
+#: /home/wilpig.com/openDCIM/configuration.php:320
+#: /home/wilpig.com/openDCIM/configuration.php:328
+#: /home/wilpig.com/openDCIM/install.php:867
+#: /home/wilpig.com/openDCIM/install.php:875
 msgid "Blank"
 msgstr ""
 
-#: openDCIM/configuration.php:321 openDCIM/configuration.php:329
-#: openDCIM/install.php:782 openDCIM/install.php:790
+#: /home/wilpig.com/openDCIM/configuration.php:321
+#: /home/wilpig.com/openDCIM/configuration.php:329
+#: /home/wilpig.com/openDCIM/install.php:868
+#: /home/wilpig.com/openDCIM/install.php:876
 msgid "Now"
 msgstr ""
 
-#: openDCIM/configuration.php:326 openDCIM/install.php:787
+#: /home/wilpig.com/openDCIM/configuration.php:326
+#: /home/wilpig.com/openDCIM/install.php:873
 #, fuzzy
 msgid "Warranty Date"
 msgstr "Garancija Podjetje"
 
-#: openDCIM/configuration.php:334 openDCIM/install.php:795
+#: /home/wilpig.com/openDCIM/configuration.php:334
+#: /home/wilpig.com/openDCIM/install.php:881
+msgid "Measurement Units"
+msgstr ""
+
+#: /home/wilpig.com/openDCIM/configuration.php:336
+#: /home/wilpig.com/openDCIM/install.php:883
+msgid "English"
+msgstr ""
+
+#: /home/wilpig.com/openDCIM/configuration.php:337
+#: /home/wilpig.com/openDCIM/install.php:884
+msgid "Metric"
+msgstr ""
+
+#: /home/wilpig.com/openDCIM/configuration.php:342
+#: /home/wilpig.com/openDCIM/install.php:889
 msgid "Users"
 msgstr "uporabniki"
 
-#: openDCIM/configuration.php:337 openDCIM/install.php:798
+#: /home/wilpig.com/openDCIM/configuration.php:345
+#: /home/wilpig.com/openDCIM/install.php:892
 msgid "Department Types"
 msgstr "Oddelek Vrste"
 
-#: openDCIM/configuration.php:341 openDCIM/install.php:802
+#: /home/wilpig.com/openDCIM/configuration.php:349
+#: /home/wilpig.com/openDCIM/install.php:896
 msgid "User Lookup URL"
 msgstr "Navodila za iskanje URL"
 
-#: openDCIM/configuration.php:345 openDCIM/install.php:806
+#: /home/wilpig.com/openDCIM/configuration.php:353
+#: /home/wilpig.com/openDCIM/install.php:900
 msgid "Rack Requests"
 msgstr "rack Prošnje"
 
-#: openDCIM/configuration.php:348 openDCIM/install.php:809
+#: /home/wilpig.com/openDCIM/configuration.php:356
+#: /home/wilpig.com/openDCIM/install.php:903
 msgid "Mail Subject"
 msgstr "e-poštnega sporočila"
 
-#: openDCIM/configuration.php:352 openDCIM/install.php:813
+#: /home/wilpig.com/openDCIM/configuration.php:360
+#: /home/wilpig.com/openDCIM/install.php:907
 msgid "Warning (Hours)"
 msgstr "Opozorilo (ur)"
 
-#: openDCIM/configuration.php:356 openDCIM/install.php:817
+#: /home/wilpig.com/openDCIM/configuration.php:364
+#: /home/wilpig.com/openDCIM/install.php:911
 msgid "Critical (Hours)"
 msgstr "Kritična (ur)"
 
-#: openDCIM/configuration.php:360 openDCIM/install.php:821
+#: /home/wilpig.com/openDCIM/configuration.php:368
+#: /home/wilpig.com/openDCIM/install.php:915
 msgid "Rack Usage"
 msgstr "Rack Uporaba"
 
-#: openDCIM/configuration.php:363 openDCIM/install.php:824
+#: /home/wilpig.com/openDCIM/configuration.php:371
+#: /home/wilpig.com/openDCIM/install.php:918
 msgid "Space Critical"
 msgstr "Vesolje Kritično"
 
-#: openDCIM/configuration.php:367 openDCIM/install.php:828
+#: /home/wilpig.com/openDCIM/configuration.php:375
+#: /home/wilpig.com/openDCIM/install.php:922
 msgid "Space Warning"
 msgstr "Opozorilo prostor"
 
-#: openDCIM/configuration.php:371 openDCIM/install.php:832
+#: /home/wilpig.com/openDCIM/configuration.php:379
+#: /home/wilpig.com/openDCIM/install.php:926
 msgid "Weight Critical"
 msgstr "Teža Kritično"
 
-#: openDCIM/configuration.php:375 openDCIM/install.php:836
+#: /home/wilpig.com/openDCIM/configuration.php:383
+#: /home/wilpig.com/openDCIM/install.php:930
 msgid "Weight Warning"
 msgstr "Teža Opozorilo"
 
-#: openDCIM/configuration.php:379 openDCIM/install.php:840
+#: /home/wilpig.com/openDCIM/configuration.php:387
+#: /home/wilpig.com/openDCIM/install.php:934
 msgid "Power Critical"
 msgstr "Moč Kritično"
 
-#: openDCIM/configuration.php:383 openDCIM/install.php:844
+#: /home/wilpig.com/openDCIM/configuration.php:391
+#: /home/wilpig.com/openDCIM/install.php:938
 msgid "Power Warning"
 msgstr "Moč Opozorilo"
 
-#: openDCIM/configuration.php:387 openDCIM/index.php:130
-#: openDCIM/install.php:848
+#: /home/wilpig.com/openDCIM/configuration.php:395
+#: /home/wilpig.com/openDCIM/index.php:130
+#: /home/wilpig.com/openDCIM/install.php:942
 msgid "Virtual Machines"
 msgstr "Virtualni stroji"
 
-#: openDCIM/configuration.php:390 openDCIM/install.php:851
+#: /home/wilpig.com/openDCIM/configuration.php:398
+#: /home/wilpig.com/openDCIM/install.php:945
 msgid "Expiration Time (Days)"
 msgstr "Veljavno Čas (dnevi)"
 
-#: openDCIM/configuration.php:397 openDCIM/install.php:858
+#: /home/wilpig.com/openDCIM/configuration.php:405
+#: /home/wilpig.com/openDCIM/install.php:952
 msgid "Racks & Maps"
 msgstr "Racks & Zemljevidi"
 
-#: openDCIM/configuration.php:400 openDCIM/install.php:861
+#: /home/wilpig.com/openDCIM/configuration.php:408
+#: /home/wilpig.com/openDCIM/install.php:955
 msgid "Critical Color"
 msgstr "kritično Barva"
 
-#: openDCIM/configuration.php:406 openDCIM/install.php:867
+#: /home/wilpig.com/openDCIM/configuration.php:414
+#: /home/wilpig.com/openDCIM/install.php:961
 msgid "Caution Color"
 msgstr "Opozorilo Barva"
 
-#: openDCIM/configuration.php:412 openDCIM/install.php:873
+#: /home/wilpig.com/openDCIM/configuration.php:420
+#: /home/wilpig.com/openDCIM/install.php:967
 msgid "Good Color"
 msgstr "Dobro Barva"
 
-#: openDCIM/configuration.php:424 openDCIM/install.php:885
+#: /home/wilpig.com/openDCIM/configuration.php:432
+#: /home/wilpig.com/openDCIM/install.php:979
 msgid "Reserved Devices"
 msgstr "Rezervirano naprave"
 
-#: openDCIM/configuration.php:430 openDCIM/install.php:891
+#: /home/wilpig.com/openDCIM/configuration.php:438
+#: /home/wilpig.com/openDCIM/install.php:985
 msgid "Unused Spaces"
 msgstr "prazne prostore"
 
-#: openDCIM/configuration.php:436 openDCIM/install.php:897
+#: /home/wilpig.com/openDCIM/configuration.php:444
+#: /home/wilpig.com/openDCIM/install.php:991
 #, fuzzy
 msgid "Devices"
 msgstr "Naprava"
 
-#: openDCIM/configuration.php:439 openDCIM/install.php:900
+#: /home/wilpig.com/openDCIM/configuration.php:447
+#: /home/wilpig.com/openDCIM/install.php:994
 #, fuzzy
 msgid "Device Labels"
 msgstr "Ime naprave"
 
-#: openDCIM/configuration.php:441 openDCIM/install.php:902
+#: /home/wilpig.com/openDCIM/configuration.php:449
+#: /home/wilpig.com/openDCIM/install.php:996
 msgid "Uppercase"
 msgstr ""
 
-#: openDCIM/configuration.php:442 openDCIM/install.php:903
+#: /home/wilpig.com/openDCIM/configuration.php:450
+#: /home/wilpig.com/openDCIM/install.php:997
 msgid "Lowercase"
 msgstr ""
 
-#: openDCIM/configuration.php:443 openDCIM/install.php:904
+#: /home/wilpig.com/openDCIM/configuration.php:451
+#: /home/wilpig.com/openDCIM/install.php:998
 msgid "Initial caps"
 msgstr ""
 
-#: openDCIM/configuration.php:444 openDCIM/install.php:905
+#: /home/wilpig.com/openDCIM/configuration.php:452
+#: /home/wilpig.com/openDCIM/install.php:999
 msgid "Don't touch my labels"
 msgstr ""
 
-#: openDCIM/configuration.php:449 openDCIM/install.php:910
+#: /home/wilpig.com/openDCIM/configuration.php:457
+#: /home/wilpig.com/openDCIM/install.php:1004
 msgid "Site"
 msgstr "stran"
 
-#: openDCIM/configuration.php:452 openDCIM/install.php:913
+#: /home/wilpig.com/openDCIM/configuration.php:460
+#: /home/wilpig.com/openDCIM/install.php:1007
 msgid "Header Color"
 msgstr "Barva glave"
 
-#: openDCIM/configuration.php:458 openDCIM/install.php:919
+#: /home/wilpig.com/openDCIM/configuration.php:466
+#: /home/wilpig.com/openDCIM/install.php:1013
 msgid "Body Color"
 msgstr "Barva telesa"
 
-#: openDCIM/configuration.php:464 openDCIM/install.php:925
+#: /home/wilpig.com/openDCIM/configuration.php:472
+#: /home/wilpig.com/openDCIM/install.php:1019
 msgid "Link Color"
 msgstr "Barva povezave"
 
-#: openDCIM/configuration.php:470 openDCIM/install.php:931
+#: /home/wilpig.com/openDCIM/configuration.php:478
+#: /home/wilpig.com/openDCIM/install.php:1025
 msgid "Viewed Link Color"
 msgstr "Videno Barva povezave"
 
-#: openDCIM/configuration.php:480 openDCIM/install.php:941
+#: /home/wilpig.com/openDCIM/configuration.php:488
+#: /home/wilpig.com/openDCIM/install.php:1035
 msgid "SMTP Server"
 msgstr "SMTP Server"
 
-#: openDCIM/configuration.php:484 openDCIM/install.php:945
+#: /home/wilpig.com/openDCIM/configuration.php:492
+#: /home/wilpig.com/openDCIM/install.php:1039
 msgid "SMTP Port"
 msgstr "SMTP Port"
 
-#: openDCIM/configuration.php:488 openDCIM/install.php:949
+#: /home/wilpig.com/openDCIM/configuration.php:496
+#: /home/wilpig.com/openDCIM/install.php:1043
 msgid "SMTP Helo"
 msgstr "SMTP Helo"
 
-#: openDCIM/configuration.php:492 openDCIM/install.php:953
+#: /home/wilpig.com/openDCIM/configuration.php:500
+#: /home/wilpig.com/openDCIM/install.php:1047
 msgid "SMTP Username"
 msgstr "SMTP Username"
 
-#: openDCIM/configuration.php:496 openDCIM/install.php:957
+#: /home/wilpig.com/openDCIM/configuration.php:504
+#: /home/wilpig.com/openDCIM/install.php:1051
 msgid "SMTP Password"
 msgstr "SMTP Password"
 
-#: openDCIM/configuration.php:500 openDCIM/install.php:961
+#: /home/wilpig.com/openDCIM/configuration.php:508
+#: /home/wilpig.com/openDCIM/install.php:1055
 msgid "Mail To"
 msgstr "Mail Če želite"
 
-#: openDCIM/configuration.php:504 openDCIM/install.php:965
+#: /home/wilpig.com/openDCIM/configuration.php:512
+#: /home/wilpig.com/openDCIM/install.php:1059
 msgid "Mail From"
 msgstr "Od Mail"
 
-#: openDCIM/configuration.php:508 openDCIM/install.php:969
+#: /home/wilpig.com/openDCIM/configuration.php:516
+#: /home/wilpig.com/openDCIM/install.php:1063
 msgid "Facility Manager"
 msgstr "Sklad Manager"
 
-#: openDCIM/configuration.php:512 openDCIM/install.php:973
+#: /home/wilpig.com/openDCIM/configuration.php:520
+#: /home/wilpig.com/openDCIM/install.php:1067
 msgid "Facility Manager Email"
 msgstr "Sklad Manager E-mail"
 
-#: openDCIM/configuration.php:523 openDCIM/install.php:984
+#: /home/wilpig.com/openDCIM/configuration.php:531
+#: /home/wilpig.com/openDCIM/install.php:1078
 msgid "Annual Cost Per Rack Unit (Year)"
 msgstr "Letni stroški na enoto Rack (leto)"
 
-#: openDCIM/configuration.php:527 openDCIM/install.php:988
+#: /home/wilpig.com/openDCIM/configuration.php:535
+#: /home/wilpig.com/openDCIM/install.php:1082
 msgid "Annual Cost Per Watt (Year)"
 msgstr "Letni stroški na Watt (leto)"
 
-#: openDCIM/configuration.php:531 openDCIM/install.php:992
+#: /home/wilpig.com/openDCIM/configuration.php:539
+#: /home/wilpig.com/openDCIM/install.php:1086
 msgid "Logo file for headers"
 msgstr "Datoteka z logotipom za glave"
 
-#: openDCIM/configuration.php:535 openDCIM/install.php:996
+#: /home/wilpig.com/openDCIM/configuration.php:543
+#: /home/wilpig.com/openDCIM/install.php:1090
 msgid "Font"
 msgstr "pisava"
 
-#: openDCIM/configuration.php:539 openDCIM/install.php:1000
+#: /home/wilpig.com/openDCIM/configuration.php:547
+#: /home/wilpig.com/openDCIM/install.php:1094
 #, fuzzy
 msgid "New Installs Period"
 msgstr "Nova Časovno obdobje"
 
-#: openDCIM/configuration.php:543 openDCIM/install.php:1004
+#: /home/wilpig.com/openDCIM/configuration.php:551
+#: /home/wilpig.com/openDCIM/install.php:1098
 msgid "Base URL for install"
 msgstr ""
 
-#: openDCIM/configuration.php:553 openDCIM/install.php:1014
-#: openDCIM/usermgr.php:120
+#: /home/wilpig.com/openDCIM/configuration.php:561
+#: /home/wilpig.com/openDCIM/install.php:1108
+#: /home/wilpig.com/openDCIM/usermgr.php:120
 msgid "Disabled"
 msgstr "onemogočeno"
 
-#: openDCIM/configuration.php:554 openDCIM/install.php:1015
+#: /home/wilpig.com/openDCIM/configuration.php:562
+#: /home/wilpig.com/openDCIM/install.php:1109
 #, fuzzy
 msgid "Enabled"
 msgstr "onemogočeno"
 
-#: openDCIM/conflicts.php:41 openDCIM/devices.php:1409
+#: /home/wilpig.com/openDCIM/conflicts.php:41
+#: /home/wilpig.com/openDCIM/devices.php:1417
 msgid "Power Strip"
 msgstr "Moč Strip"
 
-#: openDCIM/conflicts.php:41 openDCIM/devices.php:1409
+#: /home/wilpig.com/openDCIM/conflicts.php:41
+#: /home/wilpig.com/openDCIM/devices.php:1417
 msgid "Plug #"
 msgstr "Outlet Zaporedje"
 
-#: openDCIM/conflicts.php:41 openDCIM/devices.php:1409
+#: /home/wilpig.com/openDCIM/conflicts.php:41
+#: /home/wilpig.com/openDCIM/devices.php:1417
 msgid "Power Supply"
 msgstr "Napajanje"
 
-#: openDCIM/conflicts.php:74 openDCIM/devices.php:1280
-#: openDCIM/devices.php:1285 openDCIM/devices.php:1427
-#: openDCIM/rackrequest.php:462
+#: /home/wilpig.com/openDCIM/conflicts.php:74
+#: /home/wilpig.com/openDCIM/devices.php:1288
+#: /home/wilpig.com/openDCIM/devices.php:1293
+#: /home/wilpig.com/openDCIM/devices.php:1435
+#: /home/wilpig.com/openDCIM/rackrequest.php:462
 msgid "Switch"
 msgstr "preklopite"
 
-#: openDCIM/conflicts.php:74 openDCIM/devices.php:1427
-#: openDCIM/devices.php:1453
+#: /home/wilpig.com/openDCIM/conflicts.php:74
+#: /home/wilpig.com/openDCIM/devices.php:1435
+#: /home/wilpig.com/openDCIM/devices.php:1461
 msgid "Switch Port"
 msgstr "Switch Port"
 
-#: openDCIM/conflicts.php:74 openDCIM/devices.php:1427
-#: openDCIM/devices.php:1438 openDCIM/devices.php:1453
+#: /home/wilpig.com/openDCIM/conflicts.php:74
+#: /home/wilpig.com/openDCIM/devices.php:1435
+#: /home/wilpig.com/openDCIM/devices.php:1446
+#: /home/wilpig.com/openDCIM/devices.php:1461
 msgid "Device Port"
 msgstr "naprava Port"
 
-#: openDCIM/contacts.php:222 openDCIM/usermgr.php:84
+#: /home/wilpig.com/openDCIM/contacts.php:222
+#: /home/wilpig.com/openDCIM/usermgr.php:84
 msgid "Data Center Contact Detail"
 msgstr "Data Center Kontakt Podrobnosti"
 
-#: openDCIM/contacts.php:227
+#: /home/wilpig.com/openDCIM/contacts.php:227
 msgid "Contact"
 msgstr "Kontakt"
 
-#: openDCIM/contacts.php:229
+#: /home/wilpig.com/openDCIM/contacts.php:229
 msgid "New Contact"
 msgstr "nova oseba"
 
-#: openDCIM/contacts.php:238 openDCIM/report_department.php:181
-#: openDCIM/usermgr.php:103
+#: /home/wilpig.com/openDCIM/contacts.php:238
+#: /home/wilpig.com/openDCIM/report_department.php:181
+#: /home/wilpig.com/openDCIM/usermgr.php:103
 msgid "UserID"
 msgstr "UserID"
 
-#: openDCIM/contacts.php:242
+#: /home/wilpig.com/openDCIM/contacts.php:242
 msgid "Last Name"
 msgstr "priimek"
 
-#: openDCIM/contacts.php:246
+#: /home/wilpig.com/openDCIM/contacts.php:246
 msgid "First Name"
 msgstr "Glede Ime"
 
-#: openDCIM/contacts.php:250
+#: /home/wilpig.com/openDCIM/contacts.php:250
 msgid "Phone 1"
 msgstr "Telefon 1"
 
-#: openDCIM/contacts.php:254
+#: /home/wilpig.com/openDCIM/contacts.php:254
 msgid "Phone 2"
 msgstr "Telefon 2"
 
-#: openDCIM/contacts.php:258
+#: /home/wilpig.com/openDCIM/contacts.php:258
 msgid "Phone 3"
 msgstr "Telefon 3"
 
-#: openDCIM/contacts.php:268 openDCIM/devices.php:812 openDCIM/devices.php:915
-#: openDCIM/devices.php:934 openDCIM/devices.php:1494
-#: openDCIM/escalations.php:91 openDCIM/power_pdu.php:252
-#: openDCIM/timeperiods.php:92
+#: /home/wilpig.com/openDCIM/contacts.php:268
+#: /home/wilpig.com/openDCIM/devices.php:817
+#: /home/wilpig.com/openDCIM/devices.php:920
+#: /home/wilpig.com/openDCIM/devices.php:939
+#: /home/wilpig.com/openDCIM/devices.php:1502
+#: /home/wilpig.com/openDCIM/escalations.php:91
+#: /home/wilpig.com/openDCIM/power_pdu.php:252
+#: /home/wilpig.com/openDCIM/timeperiods.php:92
 msgid "Delete"
 msgstr "Izbriši"
 
-#: openDCIM/datacenter.php:135 openDCIM/power_panel.php:73
-#: openDCIM/power_source.php:66
-msgid "Data Center Detail"
-msgstr "Data Center Podrobnosti"
-
-#: openDCIM/datacenter.php:140
-msgid "Data Center ID"
-msgstr "Data Center ID"
-
-#: openDCIM/datacenter.php:142
-msgid "New Data Center"
-msgstr "Nov podatkovni center"
-
-#: openDCIM/datacenter.php:152 openDCIM/device_manufacturers.php:90
-#: openDCIM/power_source.php:83 openDCIM/report_department.php:181
-#: openDCIM/search_export.php:45 openDCIM/usermgr.php:107
-msgid "Name"
-msgstr "Ime"
-
-#: openDCIM/datacenter.php:156
-msgid "Square Footage"
-msgstr "kvadratni metri"
-
-#: openDCIM/datacenter.php:160
-msgid "Delivery Address"
-msgstr "Naslov za dostavo"
-
-#: openDCIM/datacenter.php:164
-msgid "Administrator"
-msgstr "Administrator"
-
-#: openDCIM/datacenter.php:168
-msgid "Drawing URL"
-msgstr "Risba URL"
-
-#: openDCIM/datacenter.php:172 openDCIM/dc_stats.php:139
-msgid "Design Maximum (kW)"
-msgstr ""
-
-#: openDCIM/dc_dashboard.php:77 openDCIM/dc_stats.php:98
-msgid "Data Center Statistics"
-msgstr "Data Center Statistika"
-
-#: openDCIM/dc_dashboard.php:80 openDCIM/dc_stats.php:101
-msgid "Overview"
-msgstr "Pregled"
-
-#: openDCIM/dc_dashboard.php:92 openDCIM/dc_stats.php:113
-msgid "Infrastructure"
-msgstr "Infrastruktura"
-
-#: openDCIM/dc_dashboard.php:93 openDCIM/dc_stats.php:114
-msgid "Occupied"
-msgstr "Zasedeno"
-
-#: openDCIM/dc_dashboard.php:94 openDCIM/dc_stats.php:115
-msgid "Allocated"
-msgstr "Razporejeni"
-
-#: openDCIM/dc_dashboard.php:95 openDCIM/dc_stats.php:116
-msgid "Available"
-msgstr "Na voljo"
-
-#: openDCIM/dc_dashboard.php:98 openDCIM/dc_stats.php:119
-msgid "Total U"
-msgstr "Skupaj U"
-
-#: openDCIM/dc_dashboard.php:105 openDCIM/dc_stats.php:126
-msgid "Percentage"
-msgstr "odstotek"
-
-#: openDCIM/dc_dashboard.php:114 openDCIM/dc_stats.php:135
-msgid "Raw Wattage"
-msgstr "Surovi Moč"
-
-#: openDCIM/dc_dashboard.php:115 openDCIM/dc_dashboard.php:127
-#: openDCIM/dc_stats.php:136 openDCIM/dc_stats.php:152
-msgid "Watts"
-msgstr "Watts"
-
-#: openDCIM/dc_dashboard.php:118 openDCIM/dc_stats.php:143
-msgid "BTU Computation from Watts"
-msgstr "Izračun BTU od Watts"
-
-#: openDCIM/dc_dashboard.php:119 openDCIM/dc_stats.php:144
-msgid "BTU"
-msgstr "BTU"
-
-#: openDCIM/dc_dashboard.php:122 openDCIM/dc_stats.php:147
-msgid "Data Center Size"
-msgstr "Data Center Velikost"
-
-#: openDCIM/dc_dashboard.php:123 openDCIM/dc_stats.php:148
+#: /home/wilpig.com/openDCIM/datacenter.php:42
+#: /home/wilpig.com/openDCIM/dc_dashboard.php:50
+#: /home/wilpig.com/openDCIM/dc_stats.php:65
 msgid "Square Feet"
 msgstr "kvadratni metri"
 
-#: openDCIM/dc_dashboard.php:126 openDCIM/dc_stats.php:151
+#: /home/wilpig.com/openDCIM/datacenter.php:44
+#: /home/wilpig.com/openDCIM/dc_dashboard.php:53
+#: /home/wilpig.com/openDCIM/dc_stats.php:68
+#, fuzzy
+msgid "Square Meters"
+msgstr "kvadratni metri"
+
+#: /home/wilpig.com/openDCIM/datacenter.php:138
+#: /home/wilpig.com/openDCIM/power_panel.php:73
+#: /home/wilpig.com/openDCIM/power_source.php:66
+msgid "Data Center Detail"
+msgstr "Data Center Podrobnosti"
+
+#: /home/wilpig.com/openDCIM/datacenter.php:143
+msgid "Data Center ID"
+msgstr "Data Center ID"
+
+#: /home/wilpig.com/openDCIM/datacenter.php:145
+msgid "New Data Center"
+msgstr "Nov podatkovni center"
+
+#: /home/wilpig.com/openDCIM/datacenter.php:155
+#: /home/wilpig.com/openDCIM/device_manufacturers.php:90
+#: /home/wilpig.com/openDCIM/power_source.php:83
+#: /home/wilpig.com/openDCIM/report_department.php:181
+#: /home/wilpig.com/openDCIM/search_export.php:45
+#: /home/wilpig.com/openDCIM/usermgr.php:107
+msgid "Name"
+msgstr "Ime"
+
+#: /home/wilpig.com/openDCIM/datacenter.php:163
+msgid "Delivery Address"
+msgstr "Naslov za dostavo"
+
+#: /home/wilpig.com/openDCIM/datacenter.php:167
+msgid "Administrator"
+msgstr "Administrator"
+
+#: /home/wilpig.com/openDCIM/datacenter.php:171
+msgid "Drawing URL"
+msgstr "Risba URL"
+
+#: /home/wilpig.com/openDCIM/datacenter.php:175
+#: /home/wilpig.com/openDCIM/dc_stats.php:148
+msgid "Design Maximum (kW)"
+msgstr ""
+
+#: /home/wilpig.com/openDCIM/dc_dashboard.php:51
+#: /home/wilpig.com/openDCIM/dc_stats.php:66
 msgid "Watts per Square Foot"
 msgstr "Vatih na kvadratni meter"
 
-#: openDCIM/dc_dashboard.php:130 openDCIM/dc_stats.php:155
+#: /home/wilpig.com/openDCIM/dc_dashboard.php:54
+#: /home/wilpig.com/openDCIM/dc_stats.php:69
+#, fuzzy
+msgid "Watts per Square Meter"
+msgstr "Vatih na kvadratni meter"
+
+#: /home/wilpig.com/openDCIM/dc_dashboard.php:86
+#: /home/wilpig.com/openDCIM/dc_stats.php:107
+msgid "Data Center Statistics"
+msgstr "Data Center Statistika"
+
+#: /home/wilpig.com/openDCIM/dc_dashboard.php:89
+#: /home/wilpig.com/openDCIM/dc_stats.php:110
+msgid "Overview"
+msgstr "Pregled"
+
+#: /home/wilpig.com/openDCIM/dc_dashboard.php:101
+#: /home/wilpig.com/openDCIM/dc_stats.php:122
+msgid "Infrastructure"
+msgstr "Infrastruktura"
+
+#: /home/wilpig.com/openDCIM/dc_dashboard.php:102
+#: /home/wilpig.com/openDCIM/dc_stats.php:123
+msgid "Occupied"
+msgstr "Zasedeno"
+
+#: /home/wilpig.com/openDCIM/dc_dashboard.php:103
+#: /home/wilpig.com/openDCIM/dc_stats.php:124
+msgid "Allocated"
+msgstr "Razporejeni"
+
+#: /home/wilpig.com/openDCIM/dc_dashboard.php:104
+#: /home/wilpig.com/openDCIM/dc_stats.php:125
+msgid "Available"
+msgstr "Na voljo"
+
+#: /home/wilpig.com/openDCIM/dc_dashboard.php:107
+#: /home/wilpig.com/openDCIM/dc_stats.php:128
+msgid "Total U"
+msgstr "Skupaj U"
+
+#: /home/wilpig.com/openDCIM/dc_dashboard.php:114
+#: /home/wilpig.com/openDCIM/dc_stats.php:135
+msgid "Percentage"
+msgstr "odstotek"
+
+#: /home/wilpig.com/openDCIM/dc_dashboard.php:123
+#: /home/wilpig.com/openDCIM/dc_stats.php:144
+msgid "Raw Wattage"
+msgstr "Surovi Moč"
+
+#: /home/wilpig.com/openDCIM/dc_dashboard.php:124
+#: /home/wilpig.com/openDCIM/dc_dashboard.php:136
+#: /home/wilpig.com/openDCIM/dc_stats.php:145
+#: /home/wilpig.com/openDCIM/dc_stats.php:161
+msgid "Watts"
+msgstr "Watts"
+
+#: /home/wilpig.com/openDCIM/dc_dashboard.php:127
+#: /home/wilpig.com/openDCIM/dc_stats.php:152
+msgid "BTU Computation from Watts"
+msgstr "Izračun BTU od Watts"
+
+#: /home/wilpig.com/openDCIM/dc_dashboard.php:128
+#: /home/wilpig.com/openDCIM/dc_stats.php:153
+msgid "BTU"
+msgstr "BTU"
+
+#: /home/wilpig.com/openDCIM/dc_dashboard.php:131
+#: /home/wilpig.com/openDCIM/dc_stats.php:156
+msgid "Data Center Size"
+msgstr "Data Center Velikost"
+
+#: /home/wilpig.com/openDCIM/dc_dashboard.php:139
+#: /home/wilpig.com/openDCIM/dc_stats.php:164
 msgid "Minimum Cooling Tonnage Required"
 msgstr "Minimalna Hlajenje tonažo obvezno"
 
-#: openDCIM/dc_dashboard.php:131 openDCIM/dc_stats.php:156
+#: /home/wilpig.com/openDCIM/dc_dashboard.php:140
+#: /home/wilpig.com/openDCIM/dc_stats.php:165
 msgid "Tons"
 msgstr "Tone"
 
-#: openDCIM/dc_stats.php:110
+#: /home/wilpig.com/openDCIM/dc_stats.php:119
 #, fuzzy
 msgid "Export"
 msgstr "Poročila"
 
-#: openDCIM/departments.php:88
+#: /home/wilpig.com/openDCIM/departments.php:88
 msgid "Data Center Department Detail"
 msgstr "Data Center Oddelek Podrobnosti"
 
-#: openDCIM/departments.php:93 openDCIM/index.php:47
-#: openDCIM/report_department.php:163
+#: /home/wilpig.com/openDCIM/departments.php:93
+#: /home/wilpig.com/openDCIM/index.php:47
+#: /home/wilpig.com/openDCIM/report_department.php:163
 msgid "Department"
 msgstr "Oddelek"
 
-#: openDCIM/departments.php:95
+#: /home/wilpig.com/openDCIM/departments.php:95
 msgid "New Department"
 msgstr "Nov oddelek"
 
-#: openDCIM/departments.php:105
+#: /home/wilpig.com/openDCIM/departments.php:105
 msgid "Department Name"
 msgstr "Oddelek Ime"
 
-#: openDCIM/departments.php:109 openDCIM/report_department.php:168
+#: /home/wilpig.com/openDCIM/departments.php:109
+#: /home/wilpig.com/openDCIM/report_department.php:168
 msgid "Executive Sponsor"
 msgstr "Izvršni Sponzor"
 
-#: openDCIM/departments.php:113
+#: /home/wilpig.com/openDCIM/departments.php:113
 msgid "Account Manager"
 msgstr "račun Manager"
 
-#: openDCIM/departments.php:117
+#: /home/wilpig.com/openDCIM/departments.php:117
 msgid "Department Color"
 msgstr "Oddelek Barva"
 
-#: openDCIM/departments.php:121
+#: /home/wilpig.com/openDCIM/departments.php:121
 msgid "Classification"
 msgstr "Uvrstitev"
 
-#: openDCIM/departments.php:135
+#: /home/wilpig.com/openDCIM/departments.php:135
 msgid "Assign Contacts"
 msgstr "Določi Imenik"
 
-#: openDCIM/dept_groups.php:143
+#: /home/wilpig.com/openDCIM/dept_groups.php:143
 msgid "Group to Administer"
 msgstr "Skupina za upravljanje"
 
-#: openDCIM/dept_groups.php:145
+#: /home/wilpig.com/openDCIM/dept_groups.php:145
 msgid "Possible Contacts"
 msgstr "Možni Kontakti"
 
-#: openDCIM/dept_groups.php:157 openDCIM/supplybin.php:212
+#: /home/wilpig.com/openDCIM/dept_groups.php:157
+#: /home/wilpig.com/openDCIM/supplybin.php:212
 msgid "Submit"
 msgstr "Pošlji"
 
-#: openDCIM/dept_groups.php:160
+#: /home/wilpig.com/openDCIM/dept_groups.php:160
 msgid "Assigned Contacts"
 msgstr "Namenski Kontakti"
 
-#: openDCIM/device_manufacturers.php:72
+#: /home/wilpig.com/openDCIM/device_manufacturers.php:72
 msgid "Data Center Manufacturer Listing"
 msgstr "Data Center Proizvajalec objavo"
 
-#: openDCIM/device_manufacturers.php:80
+#: /home/wilpig.com/openDCIM/device_manufacturers.php:80
 msgid "New Manufacturer"
 msgstr "New Proizvajalec"
 
-#: openDCIM/devices.php:488 openDCIM/devices.php:491
+#: /home/wilpig.com/openDCIM/devices.php:492
+#: /home/wilpig.com/openDCIM/devices.php:495
 msgid "Landscape"
 msgstr "Pokrajina"
 
-#: openDCIM/devices.php:497 openDCIM/devices.php:500 openDCIM/devices.php:1065
+#: /home/wilpig.com/openDCIM/devices.php:501
+#: /home/wilpig.com/openDCIM/devices.php:504
+#: /home/wilpig.com/openDCIM/devices.php:1073
 msgid "Portrait"
 msgstr "Portret"
 
-#: openDCIM/devices.php:540
+#: /home/wilpig.com/openDCIM/devices.php:544
 msgid "Network & Power"
 msgstr "Mreža & Power"
 
-#: openDCIM/devices.php:652 openDCIM/devices.php:1244
+#: /home/wilpig.com/openDCIM/devices.php:657
+#: /home/wilpig.com/openDCIM/devices.php:1252
 msgid "Number of Data Ports"
 msgstr "Število Data Ports"
 
-#: openDCIM/devices.php:668
+#: /home/wilpig.com/openDCIM/devices.php:673
 msgid ""
 "If this device has blades installed they will be deleted and there is no "
 "undo. Are you sure?"
 msgstr ""
 
-#: openDCIM/devices.php:812 openDCIM/devices.php:915 openDCIM/devices.php:934
+#: /home/wilpig.com/openDCIM/devices.php:817
+#: /home/wilpig.com/openDCIM/devices.php:920
+#: /home/wilpig.com/openDCIM/devices.php:939
 msgid "Save"
 msgstr "Shrani"
 
-#: openDCIM/devices.php:812 openDCIM/devices.php:915 openDCIM/devices.php:934
-#: openDCIM/power_pdu.php:252
+#: /home/wilpig.com/openDCIM/devices.php:817
+#: /home/wilpig.com/openDCIM/devices.php:920
+#: /home/wilpig.com/openDCIM/devices.php:939
+#: /home/wilpig.com/openDCIM/power_pdu.php:252
 msgid "Cancel"
 msgstr "Prekliči"
 
-#: openDCIM/devices.php:1022
+#: /home/wilpig.com/openDCIM/devices.php:1027
 msgid "This device will be deleted and there is no undo. Are you sure?"
 msgstr ""
 
-#: openDCIM/devices.php:1067
+#: /home/wilpig.com/openDCIM/devices.php:1075
 msgid "Data Center Device Detail"
 msgstr "Data Center Device Podrobnosti"
 
-#: openDCIM/devices.php:1068
+#: /home/wilpig.com/openDCIM/devices.php:1076
 msgid ""
 "This device is a copy of an existing device.  Remember to set the new "
 "location before saving."
@@ -958,225 +1165,260 @@ msgstr ""
 "Ta naprava je kopija obstoječe naprave. Ne pozabite nastaviti novo lokacijo "
 "pred shranjevanjem."
 
-#: openDCIM/devices.php:1074
+#: /home/wilpig.com/openDCIM/devices.php:1082
 msgid "Asset Tracking"
 msgstr "Asset Tracking"
 
-#: openDCIM/devices.php:1077
+#: /home/wilpig.com/openDCIM/devices.php:1085
 msgid "Device ID"
 msgstr "ID naprave"
 
-#: openDCIM/devices.php:1081
+#: /home/wilpig.com/openDCIM/devices.php:1089
 msgid "Reservation?"
 msgstr "Rezervacija?"
 
-#: openDCIM/devices.php:1089 openDCIM/rackrequest.php:379
-#: openDCIM/search_export.php:46
+#: /home/wilpig.com/openDCIM/devices.php:1097
+#: /home/wilpig.com/openDCIM/rackrequest.php:379
+#: /home/wilpig.com/openDCIM/search_export.php:46
 msgid "Serial Number"
 msgstr "Serijska številka"
 
-#: openDCIM/devices.php:1091 openDCIM/devices.php:1096
+#: /home/wilpig.com/openDCIM/devices.php:1099
+#: /home/wilpig.com/openDCIM/devices.php:1104
 msgid "Scan Barcode"
 msgstr "Scan Barcode"
 
-#: openDCIM/devices.php:1094 openDCIM/rackrequest.php:387
-#: openDCIM/search_export.php:47 openDCIM/storageroom.php:51
+#: /home/wilpig.com/openDCIM/devices.php:1102
+#: /home/wilpig.com/openDCIM/rackrequest.php:387
+#: /home/wilpig.com/openDCIM/search_export.php:47
+#: /home/wilpig.com/openDCIM/storageroom.php:51
 msgid "Asset Tag"
 msgstr "Asset Tag"
 
-#: openDCIM/devices.php:1104
+#: /home/wilpig.com/openDCIM/devices.php:1112
 msgid "Install Date"
 msgstr "Namestite Datum"
 
-#: openDCIM/devices.php:1108
+#: /home/wilpig.com/openDCIM/devices.php:1116
 msgid "Warranty Company"
 msgstr "Garancija Podjetje"
 
-#: openDCIM/devices.php:1112
+#: /home/wilpig.com/openDCIM/devices.php:1120
 msgid "Warranty Expiration"
 msgstr "Garancija poteka"
 
-#: openDCIM/devices.php:1116 openDCIM/rackrequest.php:398
+#: /home/wilpig.com/openDCIM/devices.php:1124
+#: /home/wilpig.com/openDCIM/rackrequest.php:398
 msgid "Departmental Owner"
 msgstr "Lastnik oddelčni"
 
-#: openDCIM/devices.php:1119 openDCIM/devices.php:1165
-#: openDCIM/rackrequest.php:401
+#: /home/wilpig.com/openDCIM/devices.php:1127
+#: /home/wilpig.com/openDCIM/devices.php:1173
+#: /home/wilpig.com/openDCIM/rackrequest.php:401
 msgid "Unassigned"
 msgstr "Prosti"
 
-#: openDCIM/devices.php:1127
+#: /home/wilpig.com/openDCIM/devices.php:1135
 msgid "Show Contacts"
 msgstr "Prikaži Imenik"
 
-#: openDCIM/devices.php:1133
+#: /home/wilpig.com/openDCIM/devices.php:1141
 msgid "Escalation Information"
 msgstr "stopnjevanje informacije"
 
-#: openDCIM/devices.php:1136
+#: /home/wilpig.com/openDCIM/devices.php:1144
 msgid "Time Period"
 msgstr "časovno obdobje"
 
-#: openDCIM/devices.php:1138 openDCIM/devices.php:1150
-#: openDCIM/devices.php:1273
+#: /home/wilpig.com/openDCIM/devices.php:1146
+#: /home/wilpig.com/openDCIM/devices.php:1158
+#: /home/wilpig.com/openDCIM/devices.php:1281
 msgid "Select..."
 msgstr "Izberite ..."
 
-#: openDCIM/devices.php:1148 openDCIM/escalations.php:84
+#: /home/wilpig.com/openDCIM/devices.php:1156
+#: /home/wilpig.com/openDCIM/escalations.php:84
 msgid "Details"
 msgstr "Podrobnosti"
 
-#: openDCIM/devices.php:1163 openDCIM/report_aging.php:522
-#: openDCIM/report_aging.php:558 openDCIM/report_aging.php:588
-#: openDCIM/report_aging.php:618 openDCIM/report_aging.php:648
+#: /home/wilpig.com/openDCIM/devices.php:1171
+#: /home/wilpig.com/openDCIM/report_aging.php:522
+#: /home/wilpig.com/openDCIM/report_aging.php:558
+#: /home/wilpig.com/openDCIM/report_aging.php:588
+#: /home/wilpig.com/openDCIM/report_aging.php:618
+#: /home/wilpig.com/openDCIM/report_aging.php:648
 msgid "Primary Contact"
 msgstr "Primarni Kontakt"
 
-#: openDCIM/devices.php:1175
+#: /home/wilpig.com/openDCIM/devices.php:1183
 msgid "Contact Lookup"
 msgstr "Kontakt Iskanje"
 
-#: openDCIM/devices.php:1195 openDCIM/devices.php:1288
-#: openDCIM/rackrequest.php:465
+#: /home/wilpig.com/openDCIM/devices.php:1203
+#: /home/wilpig.com/openDCIM/devices.php:1296
+#: /home/wilpig.com/openDCIM/rackrequest.php:465
 msgid "Physical Infrastructure"
 msgstr "Fizična infrastruktura"
 
-#: openDCIM/devices.php:1206
+#: /home/wilpig.com/openDCIM/devices.php:1214
 msgid "Parent Device"
 msgstr "Matično naprave"
 
-#: openDCIM/devices.php:1218 openDCIM/rackrequest.php:414
+#: /home/wilpig.com/openDCIM/devices.php:1226
+#: /home/wilpig.com/openDCIM/rackrequest.php:414
 msgid "Device Class"
 msgstr "razred naprave"
 
-#: openDCIM/devices.php:1220
+#: /home/wilpig.com/openDCIM/devices.php:1228
 msgid "Select a template..."
 msgstr "Izberite predlogo..."
 
-#: openDCIM/devices.php:1237 openDCIM/devices.php:1323
-#: openDCIM/device_templates.php:105 openDCIM/rackrequest.php:434
-#: openDCIM/search_export.php:44
+#: /home/wilpig.com/openDCIM/devices.php:1245
+#: /home/wilpig.com/openDCIM/devices.php:1331
+#: /home/wilpig.com/openDCIM/device_templates.php:133
+#: /home/wilpig.com/openDCIM/rackrequest.php:434
+#: /home/wilpig.com/openDCIM/search_export.php:44
 msgid "Height"
 msgstr "Višina"
 
-#: openDCIM/devices.php:1250
+#: /home/wilpig.com/openDCIM/devices.php:1258
 msgid "Nominal Draw (Watts)"
 msgstr "Nominalna Draw (W)"
 
-#: openDCIM/devices.php:1257
+#: /home/wilpig.com/openDCIM/devices.php:1265
 msgid "Number of Power Supplies"
 msgstr "Število napajalniki"
 
-#: openDCIM/devices.php:1262
+#: /home/wilpig.com/openDCIM/devices.php:1270
 msgid "Front / Rear"
 msgstr "Spredaj / zadaj"
 
-#: openDCIM/devices.php:1264 openDCIM/devices.php:1311
-#: openDCIM/devices.php:1467
+#: /home/wilpig.com/openDCIM/devices.php:1272
+#: /home/wilpig.com/openDCIM/devices.php:1319
+#: /home/wilpig.com/openDCIM/devices.php:1475
 msgid "Front"
 msgstr "Spredaj"
 
-#: openDCIM/devices.php:1265 openDCIM/devices.php:1312
+#: /home/wilpig.com/openDCIM/devices.php:1273
+#: /home/wilpig.com/openDCIM/devices.php:1320
 msgid "Rear"
 msgstr "Zadaj"
 
-#: openDCIM/devices.php:1271 openDCIM/devices.php:1325
-#: openDCIM/device_templates.php:117 openDCIM/rackrequest.php:455
-#: openDCIM/search_export.php:48
+#: /home/wilpig.com/openDCIM/devices.php:1279
+#: /home/wilpig.com/openDCIM/devices.php:1333
+#: /home/wilpig.com/openDCIM/device_templates.php:145
+#: /home/wilpig.com/openDCIM/rackrequest.php:455
+#: /home/wilpig.com/openDCIM/search_export.php:48
 msgid "Device Type"
 msgstr "Device Type"
 
-#: openDCIM/devices.php:1277 openDCIM/devices.php:1282
-#: openDCIM/rackrequest.php:459
+#: /home/wilpig.com/openDCIM/devices.php:1285
+#: /home/wilpig.com/openDCIM/devices.php:1290
+#: /home/wilpig.com/openDCIM/rackrequest.php:459
 msgid "Server"
 msgstr "strežnik"
 
-#: openDCIM/devices.php:1278 openDCIM/devices.php:1283
-#: openDCIM/rackrequest.php:460
+#: /home/wilpig.com/openDCIM/devices.php:1286
+#: /home/wilpig.com/openDCIM/devices.php:1291
+#: /home/wilpig.com/openDCIM/rackrequest.php:460
 msgid "Appliance"
 msgstr "Aparati"
 
-#: openDCIM/devices.php:1279 openDCIM/devices.php:1284
-#: openDCIM/rackrequest.php:461
+#: /home/wilpig.com/openDCIM/devices.php:1287
+#: /home/wilpig.com/openDCIM/devices.php:1292
+#: /home/wilpig.com/openDCIM/rackrequest.php:461
 msgid "Storage Array"
 msgstr "Storage Array"
 
-#: openDCIM/devices.php:1286 openDCIM/rackrequest.php:463
+#: /home/wilpig.com/openDCIM/devices.php:1294
+#: /home/wilpig.com/openDCIM/rackrequest.php:463
 msgid "Chassis"
 msgstr "Šasija"
 
-#: openDCIM/devices.php:1287 openDCIM/rackrequest.php:464
+#: /home/wilpig.com/openDCIM/devices.php:1295
+#: /home/wilpig.com/openDCIM/rackrequest.php:464
 msgid "Patch Panel"
 msgstr "Patch Panel"
 
-#: openDCIM/devices.php:1307
+#: /home/wilpig.com/openDCIM/devices.php:1315
 msgid "Chassis Contents"
 msgstr "šasija Vsebina"
 
-#: openDCIM/devices.php:1315
+#: /home/wilpig.com/openDCIM/devices.php:1323
 msgid "Number of Slots in Chassis:"
 msgstr "Število slotov šasije:"
 
-#: openDCIM/devices.php:1322
+#: /home/wilpig.com/openDCIM/devices.php:1330
 msgid "Slot #"
 msgstr "Slot #"
 
-#: openDCIM/devices.php:1324 openDCIM/power_pdu.php:462
+#: /home/wilpig.com/openDCIM/devices.php:1332
+#: /home/wilpig.com/openDCIM/power_pdu.php:462
 msgid "Device Name"
 msgstr "Ime naprave"
 
-#: openDCIM/devices.php:1352
+#: /home/wilpig.com/openDCIM/devices.php:1360
 msgid "VMWare ESX Server Information"
 msgstr "VMWare ESX Server Information"
 
-#: openDCIM/devices.php:1358 openDCIM/rackrequest.php:391
+#: /home/wilpig.com/openDCIM/devices.php:1366
+#: /home/wilpig.com/openDCIM/rackrequest.php:391
 msgid "ESX Server?"
 msgstr "ESX Server?"
 
-#: openDCIM/devices.php:1359 openDCIM/rackrequest.php:393
+#: /home/wilpig.com/openDCIM/devices.php:1367
+#: /home/wilpig.com/openDCIM/rackrequest.php:393
 msgid "True"
 msgstr "True"
 
-#: openDCIM/devices.php:1359 openDCIM/rackrequest.php:394
+#: /home/wilpig.com/openDCIM/devices.php:1367
+#: /home/wilpig.com/openDCIM/rackrequest.php:394
 msgid "False"
 msgstr "False"
 
-#: openDCIM/devices.php:1362
+#: /home/wilpig.com/openDCIM/devices.php:1370
 msgid "Primary IP"
 msgstr "Primarni IP"
 
-#: openDCIM/devices.php:1366
+#: /home/wilpig.com/openDCIM/devices.php:1374
 msgid "SNMP Read Only Community"
 msgstr "SNMP bralni skupnosti"
 
-#: openDCIM/devices.php:1377 openDCIM/vmnamecheck.php:71
-#: openDCIM/vmnamecheck.php:115
+#: /home/wilpig.com/openDCIM/devices.php:1385
+#: /home/wilpig.com/openDCIM/vmnamecheck.php:71
+#: /home/wilpig.com/openDCIM/vmnamecheck.php:115
 msgid "VM Name"
 msgstr "VM Ime"
 
-#: openDCIM/devices.php:1377 openDCIM/vmnamecheck.php:71
-#: openDCIM/vmnamecheck.php:115
+#: /home/wilpig.com/openDCIM/devices.php:1385
+#: /home/wilpig.com/openDCIM/vmnamecheck.php:71
+#: /home/wilpig.com/openDCIM/vmnamecheck.php:115
 msgid "Status"
 msgstr "Status"
 
-#: openDCIM/devices.php:1377 openDCIM/report_aging.php:522
-#: openDCIM/report_aging.php:558 openDCIM/report_aging.php:588
-#: openDCIM/report_aging.php:618 openDCIM/report_aging.php:648
-#: openDCIM/search_export.php:50
+#: /home/wilpig.com/openDCIM/devices.php:1385
+#: /home/wilpig.com/openDCIM/report_aging.php:522
+#: /home/wilpig.com/openDCIM/report_aging.php:558
+#: /home/wilpig.com/openDCIM/report_aging.php:588
+#: /home/wilpig.com/openDCIM/report_aging.php:618
+#: /home/wilpig.com/openDCIM/report_aging.php:648
+#: /home/wilpig.com/openDCIM/search_export.php:51
 msgid "Owner"
 msgstr "Lastnik"
 
-#: openDCIM/devices.php:1377 openDCIM/vmnamecheck.php:71
-#: openDCIM/vmnamecheck.php:115
+#: /home/wilpig.com/openDCIM/devices.php:1385
+#: /home/wilpig.com/openDCIM/vmnamecheck.php:71
+#: /home/wilpig.com/openDCIM/vmnamecheck.php:115
 msgid "Last Updated"
 msgstr "v"
 
-#: openDCIM/devices.php:1388 openDCIM/vmnamecheck.php:81
-#: openDCIM/vmnamecheck.php:125
+#: /home/wilpig.com/openDCIM/devices.php:1396
+#: /home/wilpig.com/openDCIM/vmnamecheck.php:81
+#: /home/wilpig.com/openDCIM/vmnamecheck.php:125
 msgid "Unknown"
 msgstr "neznano"
 
-#: openDCIM/devices.php:1407
+#: /home/wilpig.com/openDCIM/devices.php:1415
 msgid ""
 "No power connections defined.  You can add connections from the power strip "
 "screen."
@@ -1184,200 +1426,211 @@ msgstr ""
 "Brez električne povezave opredeliti. Dodate lahko povezave z zaslona "
 "električnega podaljška."
 
-#: openDCIM/devices.php:1409
+#: /home/wilpig.com/openDCIM/devices.php:1417
 msgid "Power Connections"
 msgstr "Motorni Povezave"
 
-#: openDCIM/devices.php:1409 openDCIM/devices.php:1438
+#: /home/wilpig.com/openDCIM/devices.php:1417
+#: /home/wilpig.com/openDCIM/devices.php:1446
 msgid "Panel"
 msgstr "Panel"
 
-#: openDCIM/devices.php:1427 openDCIM/devices.php:1453
-#: openDCIM/devices.php:1467
+#: /home/wilpig.com/openDCIM/devices.php:1435
+#: /home/wilpig.com/openDCIM/devices.php:1461
+#: /home/wilpig.com/openDCIM/devices.php:1475
 msgid "Connections"
 msgstr "Povezave"
 
-#: openDCIM/devices.php:1427
+#: /home/wilpig.com/openDCIM/devices.php:1435
 msgid "Managed at Switch"
 msgstr "Upravljavec na preklop"
 
-#: openDCIM/devices.php:1438
+#: /home/wilpig.com/openDCIM/devices.php:1446
 #, fuzzy
 msgid "Patches"
 msgstr "Patch Panel"
 
-#: openDCIM/devices.php:1438
+#: /home/wilpig.com/openDCIM/devices.php:1446
 #, fuzzy
 msgid "Managed at Panel"
 msgstr "Upravljavec na preklop"
 
-#: openDCIM/devices.php:1438
+#: /home/wilpig.com/openDCIM/devices.php:1446
 #, fuzzy
 msgid "Panel Port"
 msgstr "PanelPole"
 
-#: openDCIM/devices.php:1467
+#: /home/wilpig.com/openDCIM/devices.php:1475
 #, fuzzy
 msgid "Patch Port"
 msgstr "Switch Port"
 
-#: openDCIM/devices.php:1467
+#: /home/wilpig.com/openDCIM/devices.php:1475
 msgid "Back"
 msgstr ""
 
-#: openDCIM/devices.php:1487
+#: /home/wilpig.com/openDCIM/devices.php:1495
 msgid "Copy"
 msgstr "Kopiraj"
 
-#: openDCIM/devices.php:1506
+#: /home/wilpig.com/openDCIM/devices.php:1514
 msgid "Return to Parent Device"
 msgstr "Vrni se na napravo obvladujoče"
 
-#: openDCIM/device_templates.php:69
+#: /home/wilpig.com/openDCIM/device_templates.php:72
+msgid "This value must be different than"
+msgstr ""
+
+#: /home/wilpig.com/openDCIM/device_templates.php:97
 msgid "Data Center Device Templates"
 msgstr "Data Center Device Predloge"
 
-#: openDCIM/device_templates.php:113
+#: /home/wilpig.com/openDCIM/device_templates.php:141
 msgid "Wattage"
 msgstr "moč"
 
-#: openDCIM/device_templates.php:129
+#: /home/wilpig.com/openDCIM/device_templates.php:157
 msgid "No. Power Supplies"
 msgstr "Ne Napajalniki"
 
-#: openDCIM/device_templates.php:133
+#: /home/wilpig.com/openDCIM/device_templates.php:161
 msgid "No. Ports"
 msgstr "Ne Ports"
 
-#: openDCIM/escalations.php:66
+#: /home/wilpig.com/openDCIM/device_templates.php:167
+msgid "Clone"
+msgstr ""
+
+#: /home/wilpig.com/openDCIM/escalations.php:66
 msgid "Data Center Escalation Rules"
 msgstr "Data Center Zviševanje Pravila"
 
-#: openDCIM/escalations.php:72
+#: /home/wilpig.com/openDCIM/escalations.php:72
 msgid "Escalation Rule"
 msgstr "stopnjevanje člen"
 
-#: openDCIM/escalations.php:74
+#: /home/wilpig.com/openDCIM/escalations.php:74
 msgid "New Escalation Rule"
 msgstr "Novo pravilo Stopnjevanje"
 
-#: openDCIM/index.php:47
+#: /home/wilpig.com/openDCIM/index.php:47
 msgid "Pending Rack Requests"
 msgstr "Dokler se zahteva Rack"
 
-#: openDCIM/index.php:47
+#: /home/wilpig.com/openDCIM/index.php:47
 msgid "Submit Time"
 msgstr "Pošljite čas"
 
-#: openDCIM/index.php:47 openDCIM/rackrequest.php:349
+#: /home/wilpig.com/openDCIM/index.php:47
+#: /home/wilpig.com/openDCIM/rackrequest.php:349
 msgid "Requestor"
 msgstr "Requestor"
 
-#: openDCIM/index.php:47
+#: /home/wilpig.com/openDCIM/index.php:47
 msgid "System Name"
 msgstr "sistem Ime"
 
-#: openDCIM/index.php:47
+#: /home/wilpig.com/openDCIM/index.php:47
 msgid "Due By"
 msgstr "Zaradi S"
 
-#: openDCIM/index.php:101
+#: /home/wilpig.com/openDCIM/index.php:101
 msgid "Data Center Operations Metrics"
 msgstr "Data Center Operations Metrics"
 
-#: openDCIM/index.php:104
+#: /home/wilpig.com/openDCIM/index.php:104
 msgid "Data Center Inventory"
 msgstr "Data Center Popis"
 
-#: openDCIM/index.php:104
+#: /home/wilpig.com/openDCIM/index.php:104
 msgid "View as Excel"
 msgstr "Prikaži kot Excel"
 
-#: openDCIM/index.php:107
+#: /home/wilpig.com/openDCIM/index.php:107
 msgid "Hosted Systems"
 msgstr "Hosted sistemi"
 
-#: openDCIM/index.php:110
+#: /home/wilpig.com/openDCIM/index.php:110
 msgid "Server Count"
 msgstr "strežnik Count"
 
-#: openDCIM/index.php:114
+#: /home/wilpig.com/openDCIM/index.php:114
 msgid "Other Device Count"
 msgstr "Ostale naprave Count"
 
-#: openDCIM/index.php:122
+#: /home/wilpig.com/openDCIM/index.php:122
 msgid "Power Consumption"
 msgstr "Poraba"
 
-#: openDCIM/index.php:126
+#: /home/wilpig.com/openDCIM/index.php:126
 msgid "Heat Produced"
 msgstr "proizvedeno toploto"
 
-#: openDCIM/mapmaker.php:115
+#: /home/wilpig.com/openDCIM/mapmaker.php:115
 msgid "Map Selector"
 msgstr "zemljevid Selector"
 
-#: openDCIM/mapmaker.php:119
+#: /home/wilpig.com/openDCIM/mapmaker.php:119
 msgid "Coordinates"
 msgstr "Koordinate"
 
-#: openDCIM/mapmaker.php:156
+#: /home/wilpig.com/openDCIM/mapmaker.php:156
 msgid "Click and drag on the image to select an area for cabinet"
 msgstr "Kliknite in povlecite na sliki, da izberete področje, za omaro"
 
-#: openDCIM/mapmaker.php:164
+#: /home/wilpig.com/openDCIM/mapmaker.php:164
 msgid "Selection Preview"
 msgstr "Izbor Predogled"
 
-#: openDCIM/power_panel.php:78
+#: /home/wilpig.com/openDCIM/power_panel.php:78
 msgid "Power Panel ID"
 msgstr "Moč plošča ID"
 
-#: openDCIM/power_panel.php:80
+#: /home/wilpig.com/openDCIM/power_panel.php:80
 msgid "New Panel"
 msgstr "nova plošča"
 
-#: openDCIM/power_panel.php:91
+#: /home/wilpig.com/openDCIM/power_panel.php:91
 msgid "Power Source"
 msgstr "Napajanje"
 
-#: openDCIM/power_panel.php:105
+#: /home/wilpig.com/openDCIM/power_panel.php:105
 msgid "Panel Name"
 msgstr "Panel Ime"
 
-#: openDCIM/power_panel.php:109
+#: /home/wilpig.com/openDCIM/power_panel.php:109
 msgid "Number of Poles"
 msgstr "Število polov"
 
-#: openDCIM/power_panel.php:113
+#: /home/wilpig.com/openDCIM/power_panel.php:113
 msgid "Main Breaker Amperage"
 msgstr "Glavna Breaker Amperage"
 
-#: openDCIM/power_panel.php:117
+#: /home/wilpig.com/openDCIM/power_panel.php:117
 msgid "Panel Voltage"
 msgstr "Panel Napetost"
 
-#: openDCIM/power_panel.php:121
+#: /home/wilpig.com/openDCIM/power_panel.php:121
 msgid "Numbering Scheme"
 msgstr "Številčenje shema"
 
-#: openDCIM/power_panel.php:127
+#: /home/wilpig.com/openDCIM/power_panel.php:127
 msgid "Odd/Even"
 msgstr "Liho / Sodo"
 
-#: openDCIM/power_panel.php:130
+#: /home/wilpig.com/openDCIM/power_panel.php:130
 msgid "Sequential"
 msgstr "zaporedno"
 
-#: openDCIM/power_panel.php:166
+#: /home/wilpig.com/openDCIM/power_panel.php:166
 msgid "Panel Schedule"
 msgstr "Panel Urnik"
 
-#: openDCIM/power_panel.php:307
+#: /home/wilpig.com/openDCIM/power_panel.php:307
 msgid "Errors"
 msgstr "Napake"
 
-#: openDCIM/power_panel.php:311
+#: /home/wilpig.com/openDCIM/power_panel.php:311
 msgid ""
 "PDUs displayed here could not be drawn on the panel because of an "
 "overlapping circuit ID assignment. Please check the pole positions on the "
@@ -1386,40 +1639,42 @@ msgstr ""
 "PDUS prikazane tukaj, ni bilo mogoče določiti na plošči, ker prekrivajo "
 "kroga nalogo ID. Prosimo, preverite pole pozicije na ploščah znova."
 
-#: openDCIM/power_pdu.php:63
+#: /home/wilpig.com/openDCIM/power_pdu.php:63
 msgid "Testing SNMP communication to CDU"
 msgstr "Testiranje SNMP komunikacijo s CDU"
 
-#: openDCIM/power_pdu.php:64
+#: /home/wilpig.com/openDCIM/power_pdu.php:64
 msgid "Connecting to IP address"
 msgstr "Priključitev IP naslov"
 
-#: openDCIM/power_pdu.php:65
+#: /home/wilpig.com/openDCIM/power_pdu.php:65
 msgid "Using SNMP Community string"
 msgstr "Uporaba SNMP Skupnosti niz"
 
-#: openDCIM/power_pdu.php:67
+#: /home/wilpig.com/openDCIM/power_pdu.php:67
 msgid "Results"
 msgstr "rezultati"
 
-#: openDCIM/power_pdu.php:73
+#: /home/wilpig.com/openDCIM/power_pdu.php:73
 msgid "SNMP Uptime"
 msgstr "SNMP Uptime"
 
-#: openDCIM/power_pdu.php:75
+#: /home/wilpig.com/openDCIM/power_pdu.php:75
 msgid "SNMP Uptime did not return a valid value."
 msgstr "SNMP Uptime ni vrnil veljavno vrednost."
 
-#: openDCIM/power_pdu.php:82
+#: /home/wilpig.com/openDCIM/power_pdu.php:82
 msgid "VersionOID returned a value of"
 msgstr "VersionOID vrne vrednost"
 
-#: openDCIM/power_pdu.php:82 openDCIM/power_pdu.php:94
-#: openDCIM/power_pdu.php:100 openDCIM/power_pdu.php:106
+#: /home/wilpig.com/openDCIM/power_pdu.php:82
+#: /home/wilpig.com/openDCIM/power_pdu.php:94
+#: /home/wilpig.com/openDCIM/power_pdu.php:100
+#: /home/wilpig.com/openDCIM/power_pdu.php:106
 msgid "Please check to see if it makes sense."
 msgstr "Prosimo, da preverite, če je smiselno."
 
-#: openDCIM/power_pdu.php:84
+#: /home/wilpig.com/openDCIM/power_pdu.php:84
 msgid ""
 "The OID for Firmware Version did not return a value.  Please check your MIB "
 "table."
@@ -1427,148 +1682,154 @@ msgstr ""
 "OID za različico vdelane programske opreme ni vrnila vrednost. Preverite "
 "svoj MIB mizo."
 
-#: openDCIM/power_pdu.php:94
+#: /home/wilpig.com/openDCIM/power_pdu.php:94
 msgid "OID1 returned a value of"
 msgstr "OID1 vrne vrednost"
 
-#: openDCIM/power_pdu.php:96
+#: /home/wilpig.com/openDCIM/power_pdu.php:96
 msgid "OID1 did not return any data.  Please check your MIB table."
 msgstr "OID1 ni vrnil nobenih podatkov. Preverite svoj MIB mizo."
 
-#: openDCIM/power_pdu.php:100
+#: /home/wilpig.com/openDCIM/power_pdu.php:100
 msgid "OID2 returned a value of"
 msgstr "OID2 vrne vrednost"
 
-#: openDCIM/power_pdu.php:102
+#: /home/wilpig.com/openDCIM/power_pdu.php:102
 msgid "OID2 did not return any data.  Please check your MIB table."
 msgstr "OID2 ni vrnil nobenih podatkov. Preverite svoj MIB mizo."
 
-#: openDCIM/power_pdu.php:106
+#: /home/wilpig.com/openDCIM/power_pdu.php:106
 msgid "OID3 returned a value of"
 msgstr "OID3 vrne vrednost"
 
-#: openDCIM/power_pdu.php:108
+#: /home/wilpig.com/openDCIM/power_pdu.php:108
 msgid "OID3 did not return any data.  Please check your MIB table."
 msgstr "OID3 ni vrnil nobenih podatkov. Preverite svoj MIB mizo."
 
-#: openDCIM/power_pdu.php:131
+#: /home/wilpig.com/openDCIM/power_pdu.php:131
 msgid "Resulting kW from this test is"
 msgstr "Posledični kW od tega preskusa je"
 
-#: openDCIM/power_pdu.php:326
+#: /home/wilpig.com/openDCIM/power_pdu.php:326
 msgid "Data Center PDU Detail"
 msgstr "Data Center PDU Podrobnosti"
 
-#: openDCIM/power_pdu.php:331
+#: /home/wilpig.com/openDCIM/power_pdu.php:331
 msgid "PDU ID"
 msgstr "PDU ID"
 
-#: openDCIM/power_pdu.php:343
+#: /home/wilpig.com/openDCIM/power_pdu.php:343
 msgid "Source Panel"
 msgstr "vir plošča"
 
-#: openDCIM/power_pdu.php:344 openDCIM/power_pdu.php:428
+#: /home/wilpig.com/openDCIM/power_pdu.php:344
+#: /home/wilpig.com/openDCIM/power_pdu.php:428
 msgid "Select Panel"
 msgstr "Izberite ploščo"
 
-#: openDCIM/power_pdu.php:354
+#: /home/wilpig.com/openDCIM/power_pdu.php:354
 msgid "Voltages:"
 msgstr "napetosti:"
 
-#: openDCIM/power_pdu.php:368
+#: /home/wilpig.com/openDCIM/power_pdu.php:368
 msgid "Breaker Size (# of Poles)"
 msgstr "Varovalka (# Poljakov)"
 
-#: openDCIM/power_pdu.php:381
+#: /home/wilpig.com/openDCIM/power_pdu.php:381
 msgid "Panel Pole Number"
 msgstr "Panel Pole številka"
 
-#: openDCIM/power_pdu.php:385
+#: /home/wilpig.com/openDCIM/power_pdu.php:385
 msgid "Input Amperage"
 msgstr "Vhod Amperage"
 
-#: openDCIM/power_pdu.php:389
+#: /home/wilpig.com/openDCIM/power_pdu.php:389
 msgid "CDU Template"
 msgstr "CDU Predloga"
 
-#: openDCIM/power_pdu.php:403 openDCIM/power_source.php:98
+#: /home/wilpig.com/openDCIM/power_pdu.php:403
+#: /home/wilpig.com/openDCIM/power_source.php:98
 msgid "IP Address"
 msgstr "IP naslov"
 
-#: openDCIM/power_pdu.php:407
+#: /home/wilpig.com/openDCIM/power_pdu.php:407
 msgid "Uptime"
 msgstr "Uptime"
 
-#: openDCIM/power_pdu.php:411
+#: /home/wilpig.com/openDCIM/power_pdu.php:411
 msgid "Firmware Version"
 msgstr "Firmware Version"
 
-#: openDCIM/power_pdu.php:415 openDCIM/power_source.php:102
+#: /home/wilpig.com/openDCIM/power_pdu.php:415
+#: /home/wilpig.com/openDCIM/power_source.php:102
 msgid "SNMP Community"
 msgstr "SNMP Skupnosti"
 
-#: openDCIM/power_pdu.php:416
+#: /home/wilpig.com/openDCIM/power_pdu.php:416
 msgid "Test Communications"
 msgstr "Testna komunikacije"
 
-#: openDCIM/power_pdu.php:419
+#: /home/wilpig.com/openDCIM/power_pdu.php:419
 msgid "Automatic Transfer Switch"
 msgstr "Samodejno Transfer Switch"
 
-#: openDCIM/power_pdu.php:423
+#: /home/wilpig.com/openDCIM/power_pdu.php:423
 msgid "Fail Safe Switch?"
 msgstr "Fail Safe Switch?"
 
-#: openDCIM/power_pdu.php:427
+#: /home/wilpig.com/openDCIM/power_pdu.php:427
 msgid "Source Panel (Secondary Source)"
 msgstr "Vir plošča (sekundarnega vira)"
 
-#: openDCIM/power_pdu.php:438
+#: /home/wilpig.com/openDCIM/power_pdu.php:438
 msgid "Panel Pole Number (Secondary Source)"
 msgstr "Panel Pole Število (sekundarnega vira)"
 
-#: openDCIM/power_pdu.php:461
+#: /home/wilpig.com/openDCIM/power_pdu.php:461
 msgid "Output No."
 msgstr "Izhod #"
 
-#: openDCIM/power_pdu.php:463
+#: /home/wilpig.com/openDCIM/power_pdu.php:463
 msgid "Dev Input No"
 msgstr "Naprava vhod #"
 
-#: openDCIM/power_source.php:71
+#: /home/wilpig.com/openDCIM/power_source.php:71
 msgid "Power Source ID"
 msgstr "Napajanje ID"
 
-#: openDCIM/power_source.php:73
+#: /home/wilpig.com/openDCIM/power_source.php:73
 msgid "New Power Source"
 msgstr "Nov vir napajanja"
 
-#: openDCIM/power_source.php:106
+#: /home/wilpig.com/openDCIM/power_source.php:106
 msgid "Load OID"
 msgstr "Nalaganje OID"
 
-#: openDCIM/power_source.php:110
+#: /home/wilpig.com/openDCIM/power_source.php:110
 msgid "Capacity"
 msgstr "zmogljivost"
 
-#: openDCIM/rackrequest.php:62 openDCIM/report-em_new_installs.php:30
-#: openDCIM/vmnamecheck.php:34
+#: /home/wilpig.com/openDCIM/rackrequest.php:62
+#: /home/wilpig.com/openDCIM/report-em_new_installs.php:30
+#: /home/wilpig.com/openDCIM/vmnamecheck.php:34
 msgid "MailFrom"
 msgstr "E-pošta Iz"
 
-#: openDCIM/rackrequest.php:69
+#: /home/wilpig.com/openDCIM/rackrequest.php:69
 msgid "Check contact details for"
 msgstr "Preverite kontaktne podatke za"
 
-#: openDCIM/rackrequest.php:76 openDCIM/vmnamecheck.php:47
+#: /home/wilpig.com/openDCIM/rackrequest.php:76
+#: /home/wilpig.com/openDCIM/vmnamecheck.php:47
 msgid "Data center team address"
 msgstr "Podatkovni center ekipa naslov"
 
-#: openDCIM/rackrequest.php:105 openDCIM/rackrequest.php:164
+#: /home/wilpig.com/openDCIM/rackrequest.php:105
+#: /home/wilpig.com/openDCIM/rackrequest.php:164
 msgid "Your request for racking up the device labeled"
 msgstr "Vaša zahteva za polic do naprave z oznako"
 
-#: openDCIM/rackrequest.php:105
+#: /home/wilpig.com/openDCIM/rackrequest.php:105
 msgid ""
 "has been received.\n"
 "\t\t\tThe Network Operations Center will examine the request and contact you "
@@ -1584,498 +1845,505 @@ msgstr ""
 "izpolnjen ta zahteva. \n"
 "\t\t\tProsimo, počakajte do 2 delovnih dni za zahteve je treba izpolniti."
 
-#: openDCIM/rackrequest.php:110
+#: /home/wilpig.com/openDCIM/rackrequest.php:110
 msgid "Your Request ID is"
 msgstr "Vaša zahteva je ID"
 
-#: openDCIM/rackrequest.php:110
+#: /home/wilpig.com/openDCIM/rackrequest.php:110
 msgid "and you may view the request online at"
 msgstr "in lahko si ogledate na spletu na zahtevo"
 
-#: openDCIM/rackrequest.php:112 openDCIM/rackrequest.php:165
+#: /home/wilpig.com/openDCIM/rackrequest.php:112
+#: /home/wilpig.com/openDCIM/rackrequest.php:165
 msgid "this link"
 msgstr "ta povezava"
 
-#: openDCIM/rackrequest.php:164
+#: /home/wilpig.com/openDCIM/rackrequest.php:164
 msgid "has been completed"
 msgstr "je bila končana"
 
-#: openDCIM/rackrequest.php:165
+#: /home/wilpig.com/openDCIM/rackrequest.php:165
 msgid "To view your device in its final location click"
 msgstr "Če želite videti mobilno napravo v svoji končni klik lokaciji"
 
-#: openDCIM/rackrequest.php:187
+#: /home/wilpig.com/openDCIM/rackrequest.php:187
 msgid "You do not have permission to delete this request"
 msgstr "Nimaš dovoljenja za brisanje te zahteve"
 
-#: openDCIM/rackrequest.php:228
+#: /home/wilpig.com/openDCIM/rackrequest.php:228
 msgid "You must specify the VLAN information for the ethernet connections"
 msgstr "Navesti morate podatke VLAN za ethernet povezave"
 
-#: openDCIM/rackrequest.php:233
+#: /home/wilpig.com/openDCIM/rackrequest.php:233
 msgid "You must specify the SAN port information to continue"
 msgstr "Navesti morate podatke vrat SAN še naprej"
 
-#: openDCIM/rackrequest.php:238
+#: /home/wilpig.com/openDCIM/rackrequest.php:238
 msgid "You must specify the current location of the equipment"
 msgstr "Določiti morate trenutne lokacije opreme"
 
-#: openDCIM/rackrequest.php:338
+#: /home/wilpig.com/openDCIM/rackrequest.php:338
 msgid "Data Center Rack Request"
 msgstr "Data Center Rack zahteva"
 
-#: openDCIM/rackrequest.php:366
+#: /home/wilpig.com/openDCIM/rackrequest.php:366
 msgid "Label Color"
 msgstr "Oznaka Barva"
 
-#: openDCIM/rackrequest.php:370
+#: /home/wilpig.com/openDCIM/rackrequest.php:370
 msgid "White"
 msgstr "Bela"
 
-#: openDCIM/rackrequest.php:370
+#: /home/wilpig.com/openDCIM/rackrequest.php:370
 msgid "Yellow"
 msgstr "Rumena"
 
-#: openDCIM/rackrequest.php:370
+#: /home/wilpig.com/openDCIM/rackrequest.php:370
 msgid "Red"
 msgstr "Rdeča"
 
-#: openDCIM/rackrequest.php:417
+#: /home/wilpig.com/openDCIM/rackrequest.php:417
 msgid "Select a template"
 msgstr "Izberite predlogo"
 
-#: openDCIM/rackrequest.php:438
+#: /home/wilpig.com/openDCIM/rackrequest.php:438
 msgid "Number of Ethernet Connections"
 msgstr "Število povezav Ethernet"
 
-#: openDCIM/rackrequest.php:442
+#: /home/wilpig.com/openDCIM/rackrequest.php:442
 msgid "VLAN Settings"
 msgstr "Nastavitve VLAN"
 
-#: openDCIM/rackrequest.php:446
+#: /home/wilpig.com/openDCIM/rackrequest.php:446
 msgid "Number of SAN Connections"
 msgstr "Število povezav SAN"
 
-#: openDCIM/rackrequest.php:450
+#: /home/wilpig.com/openDCIM/rackrequest.php:450
 msgid "SAN Port Assignments"
 msgstr "SAN Port Naloge"
 
-#: openDCIM/rackrequest.php:470
+#: /home/wilpig.com/openDCIM/rackrequest.php:470
 msgid "Current Location"
 msgstr "Trenutna lokacija"
 
-#: openDCIM/rackrequest.php:474
+#: /home/wilpig.com/openDCIM/rackrequest.php:474
 msgid "Special Instructions"
 msgstr "Posebna navodila"
 
-#: openDCIM/rackrequest.php:479
+#: /home/wilpig.com/openDCIM/rackrequest.php:479
 msgid "Select Rack Location"
 msgstr "Izberite lokacijo Rack"
 
-#: openDCIM/rackrequest.php:487
+#: /home/wilpig.com/openDCIM/rackrequest.php:487
 msgid "Update Request"
 msgstr "zahtevek za posodobitev"
 
-#: openDCIM/rackrequest.php:488
+#: /home/wilpig.com/openDCIM/rackrequest.php:488
 msgid "Delete Request"
 msgstr "Brisanje Zahteva"
 
-#: openDCIM/rackrequest.php:491
+#: /home/wilpig.com/openDCIM/rackrequest.php:491
 msgid "Move to Rack"
 msgstr "Premik na Rack"
 
-#: openDCIM/report_aging.php:156
+#: /home/wilpig.com/openDCIM/report_aging.php:156
 #, fuzzy
 msgid "Data Center Asset Aging Report"
 msgstr "Data Center sredstev Costing poročilo"
 
-#: openDCIM/report_aging.php:157 openDCIM/report_department.php:38
+#: /home/wilpig.com/openDCIM/report_aging.php:157
+#: /home/wilpig.com/openDCIM/report_department.php:38
 msgid "Date"
 msgstr ""
 
-#: openDCIM/report_aging.php:164 openDCIM/report_department.php:45
+#: /home/wilpig.com/openDCIM/report_aging.php:164
+#: /home/wilpig.com/openDCIM/report_department.php:45
 msgid "Page"
 msgstr ""
 
-#: openDCIM/report_aging.php:513
+#: /home/wilpig.com/openDCIM/report_aging.php:513
 #, fuzzy
 msgid "Device Ages by Count"
 msgstr "Ostale naprave Count"
 
-#: openDCIM/report_aging.php:520
+#: /home/wilpig.com/openDCIM/report_aging.php:520
 msgid "Devices from 0-1 Years Old"
 msgstr ""
 
-#: openDCIM/report_aging.php:522 openDCIM/report_aging.php:558
-#: openDCIM/report_aging.php:588 openDCIM/report_aging.php:618
-#: openDCIM/report_aging.php:648
+#: /home/wilpig.com/openDCIM/report_aging.php:522
+#: /home/wilpig.com/openDCIM/report_aging.php:558
+#: /home/wilpig.com/openDCIM/report_aging.php:588
+#: /home/wilpig.com/openDCIM/report_aging.php:618
+#: /home/wilpig.com/openDCIM/report_aging.php:648
 msgid "Age"
 msgstr ""
 
-#: openDCIM/report_aging.php:556
+#: /home/wilpig.com/openDCIM/report_aging.php:556
 msgid "Devices from 1-2 Years Old"
 msgstr ""
 
-#: openDCIM/report_aging.php:586
+#: /home/wilpig.com/openDCIM/report_aging.php:586
 msgid "Devices from 2-3 Years Old"
 msgstr ""
 
-#: openDCIM/report_aging.php:616
+#: /home/wilpig.com/openDCIM/report_aging.php:616
 msgid "Devices from 3-4 Years Old"
 msgstr ""
 
-#: openDCIM/report_aging.php:646
+#: /home/wilpig.com/openDCIM/report_aging.php:646
 msgid "Devices Greater Than 4 Years Old"
 msgstr ""
 
-#: openDCIM/report_department.php:37
+#: /home/wilpig.com/openDCIM/report_department.php:37
 #, fuzzy
 msgid "Departmental Contacts Report"
 msgstr "Oddelek / Kontakt Poročilo"
 
-#: openDCIM/report_department.php:173
+#: /home/wilpig.com/openDCIM/report_department.php:173
 #, fuzzy
 msgid "Service Delivery Manager"
 msgstr "Sklad Manager"
 
-#: openDCIM/report_department.php:181
+#: /home/wilpig.com/openDCIM/report_department.php:181
 #, fuzzy
 msgid "Phone1"
 msgstr "Telefon 1"
 
-#: openDCIM/report_department.php:181
+#: /home/wilpig.com/openDCIM/report_department.php:181
 #, fuzzy
 msgid "Phone2"
 msgstr "Telefon 2"
 
-#: openDCIM/report_department.php:181
+#: /home/wilpig.com/openDCIM/report_department.php:181
 #, fuzzy
 msgid "Phone3"
 msgstr "Telefon 3"
 
-#: openDCIM/report-em_new_installs.php:24
+#: /home/wilpig.com/openDCIM/report-em_new_installs.php:24
 #, fuzzy
 msgid "Recent Data Center Installations Report"
 msgstr "Data Center Zviševanje Pravila"
 
-#: openDCIM/report-em_new_installs.php:37
+#: /home/wilpig.com/openDCIM/report-em_new_installs.php:37
 #, fuzzy
 msgid "Facility Manager email address"
 msgstr "Sklad Manager E-mail"
 
-#: openDCIM/reports.php:38
+#: /home/wilpig.com/openDCIM/reports.php:38
 msgid "Inventory Reports"
 msgstr "Poročila o oglasnem"
 
-#: openDCIM/reports.php:42
+#: /home/wilpig.com/openDCIM/reports.php:42
 msgid "Contact Reports"
 msgstr "Kontakt poročila"
 
-#: openDCIM/reports.php:43
+#: /home/wilpig.com/openDCIM/reports.php:43
 msgid "Department/Contact Report"
 msgstr "Oddelek / Kontakt Poročilo"
 
-#: openDCIM/reports.php:46
+#: /home/wilpig.com/openDCIM/reports.php:46
 #, fuzzy
 msgid "Asset Reports"
 msgstr "Asset Aging Poročilo"
 
-#: openDCIM/reports.php:47
+#: /home/wilpig.com/openDCIM/reports.php:47
 #, fuzzy
 msgid "Search/Export by Data Center"
 msgstr "Power Distribution jih Data Center"
 
-#: openDCIM/reports.php:48
+#: /home/wilpig.com/openDCIM/reports.php:48
 msgid "Asset Report by Owner"
 msgstr "Asset Poročilo Lastnik"
 
-#: openDCIM/reports.php:49
+#: /home/wilpig.com/openDCIM/reports.php:49
 msgid "Data Center Asset Report"
 msgstr "Data Center premoženja Poročilo"
 
-#: openDCIM/reports.php:50
+#: /home/wilpig.com/openDCIM/reports.php:50
 msgid "Data Center Asset Costing Report"
 msgstr "Data Center sredstev Costing poročilo"
 
-#: openDCIM/reports.php:51
+#: /home/wilpig.com/openDCIM/reports.php:51
 msgid "Asset Aging Report"
 msgstr "Asset Aging Poročilo"
 
-#: openDCIM/reports.php:52
+#: /home/wilpig.com/openDCIM/reports.php:52
 msgid "Virtual Machines by Department"
 msgstr "Virtualni stroji z ministrstva"
 
-#: openDCIM/reports.php:58
+#: /home/wilpig.com/openDCIM/reports.php:58
 #, fuzzy
 msgid "Operational Reports"
 msgstr "Kontakt poročila"
 
-#: openDCIM/reports.php:59
+#: /home/wilpig.com/openDCIM/reports.php:59
 msgid "Data Exceptions Report"
 msgstr "Podatki Izjeme Poročilo"
 
-#: openDCIM/reports.php:60
+#: /home/wilpig.com/openDCIM/reports.php:60
 msgid "Diverse Power Exceptions Report"
 msgstr "Raznolika Izjeme Moč Poročilo"
 
-#: openDCIM/reports.php:61
+#: /home/wilpig.com/openDCIM/reports.php:61
 msgid "Simulated Power Outage Report"
 msgstr "Simulirana izpada napajanja Poročilo"
 
-#: openDCIM/reports.php:62
+#: /home/wilpig.com/openDCIM/reports.php:62
 msgid "Power Distribution by Data Center"
 msgstr "Power Distribution jih Data Center"
 
-#: openDCIM/reports.php:63
+#: /home/wilpig.com/openDCIM/reports.php:63
 msgid "Server Tier Classification Report"
 msgstr "Strežnik Stopnja Razvrstitev Poročilo"
 
-#: openDCIM/reports.php:66
+#: /home/wilpig.com/openDCIM/reports.php:66
 #, fuzzy
 msgid "Auditing Reports"
 msgstr "revizijsko poročilo"
 
-#: openDCIM/reports.php:67
+#: /home/wilpig.com/openDCIM/reports.php:67
 msgid "Cabinet Audit Logs"
 msgstr "Kabinet Revizijski dnevniki"
 
-#: openDCIM/reports.php:68
+#: /home/wilpig.com/openDCIM/reports.php:68
 msgid "Cabinet Audit Frequency"
 msgstr "Kabinet Revizija Frekvenca"
 
-#: openDCIM/reports.php:69
+#: /home/wilpig.com/openDCIM/reports.php:69
 msgid "Surplus/Salvage Audit Report"
 msgstr "Presežek / Salvage Revizijsko poročilo"
 
-#: openDCIM/search_export.php:51
+#: /home/wilpig.com/openDCIM/search_export.php:52
 #, fuzzy
 msgid "Installation Date"
 msgstr "Namestite Datum"
 
-#: openDCIM/search_export.php:191
+#: /home/wilpig.com/openDCIM/search_export.php:195
 #, fuzzy
 msgid "Data Center View/Export"
 msgstr "Data Center premoženja Poročilo"
 
-#: openDCIM/search_export.php:192
+#: /home/wilpig.com/openDCIM/search_export.php:196
 #, fuzzy
 msgid "Data Center:"
 msgstr "Data Center"
 
-#: openDCIM/search_export.php:194
+#: /home/wilpig.com/openDCIM/search_export.php:198
 #, fuzzy
 msgid "Select data center"
 msgstr "Izberite predlogo"
 
-#: openDCIM/search_export.php:195
+#: /home/wilpig.com/openDCIM/search_export.php:199
 #, fuzzy
 msgid "All Data Centers"
 msgstr "Data Center"
 
-#: openDCIM/search.php:30
+#: /home/wilpig.com/openDCIM/search.php:30
 #, fuzzy
 msgid "Search Results"
 msgstr "rezultati"
 
-#: openDCIM/search.php:36
+#: /home/wilpig.com/openDCIM/search.php:36
 msgid "Serial number search results for"
 msgstr ""
 
-#: openDCIM/search.php:48
+#: /home/wilpig.com/openDCIM/search.php:48
 msgid "Name tag search results for"
 msgstr ""
 
-#: openDCIM/search.php:53
+#: /home/wilpig.com/openDCIM/search.php:53
 msgid "Asset tag search results for"
 msgstr ""
 
-#: openDCIM/search.php:58
+#: /home/wilpig.com/openDCIM/search.php:58
 msgid "Custom tag search results for"
 msgstr ""
 
-#: openDCIM/sidebar.inc.php:5
+#: /home/wilpig.com/openDCIM/sidebar.inc.php:5
 msgid "Search by Name:"
 msgstr "Iskanje po imenu:"
 
-#: openDCIM/sidebar.inc.php:11
+#: /home/wilpig.com/openDCIM/sidebar.inc.php:11
 #, fuzzy
 msgid "Search by Custom Tag:"
 msgstr "Iskanje po Asset Tag:"
 
-#: openDCIM/sidebar.inc.php:17
+#: /home/wilpig.com/openDCIM/sidebar.inc.php:17
 msgid "Search by SN:"
 msgstr "Iskanje po SN:"
 
-#: openDCIM/sidebar.inc.php:23
+#: /home/wilpig.com/openDCIM/sidebar.inc.php:23
 msgid "Search by Asset Tag:"
 msgstr "Iskanje po Asset Tag:"
 
-#: openDCIM/sidebar.inc.php:87
+#: /home/wilpig.com/openDCIM/sidebar.inc.php:87
 msgid "Reports"
 msgstr "Poročila"
 
-#: openDCIM/sidebar.inc.php:90
+#: /home/wilpig.com/openDCIM/sidebar.inc.php:90
 msgid "Rack Request Form"
 msgstr "Rack Obrazec"
 
-#: openDCIM/sidebar.inc.php:93
+#: /home/wilpig.com/openDCIM/sidebar.inc.php:93
 msgid "Contact Administration"
 msgstr "Stik z upravo"
 
-#: openDCIM/sidebar.inc.php:94
+#: /home/wilpig.com/openDCIM/sidebar.inc.php:94
 msgid "Dept. Administration"
 msgstr "Oddelek uprava"
 
-#: openDCIM/sidebar.inc.php:95
+#: /home/wilpig.com/openDCIM/sidebar.inc.php:95
 msgid "Time Periods"
 msgstr "časovnih obdobij"
 
-#: openDCIM/sidebar.inc.php:96
+#: /home/wilpig.com/openDCIM/sidebar.inc.php:96
 msgid "Escalation Rules"
 msgstr "zviševanje Pravila"
 
-#: openDCIM/sidebar.inc.php:99
+#: /home/wilpig.com/openDCIM/sidebar.inc.php:99
 msgid "Edit Cabinets"
 msgstr "Urejanje Omare"
 
-#: openDCIM/sidebar.inc.php:100
+#: /home/wilpig.com/openDCIM/sidebar.inc.php:100
 msgid "Edit Device Templates"
 msgstr "Urejanje Device Predloge"
 
-#: openDCIM/sidebar.inc.php:103
+#: /home/wilpig.com/openDCIM/sidebar.inc.php:103
 msgid "Manage Users"
 msgstr "upravljanje uporabnikov"
 
-#: openDCIM/sidebar.inc.php:104
+#: /home/wilpig.com/openDCIM/sidebar.inc.php:104
 msgid "Manage Supply Bins"
 msgstr "Uredi Supply Bins"
 
-#: openDCIM/sidebar.inc.php:105
+#: /home/wilpig.com/openDCIM/sidebar.inc.php:105
 msgid "Manage Supplies"
 msgstr "upravljanje potrošnega materiala"
 
-#: openDCIM/sidebar.inc.php:106
+#: /home/wilpig.com/openDCIM/sidebar.inc.php:106
 msgid "Edit Data Centers"
 msgstr "Urejanje podatkovnih centrov"
 
-#: openDCIM/sidebar.inc.php:107
+#: /home/wilpig.com/openDCIM/sidebar.inc.php:107
 msgid "Edit Power Sources"
 msgstr "Urejanje Viri napajanja"
 
-#: openDCIM/sidebar.inc.php:108
+#: /home/wilpig.com/openDCIM/sidebar.inc.php:108
 msgid "Edit Power Panels"
 msgstr "Urejanje moči plošče"
 
-#: openDCIM/sidebar.inc.php:109
+#: /home/wilpig.com/openDCIM/sidebar.inc.php:109
 msgid "Edit Manufacturers"
 msgstr "Proizvajalci Uredi"
 
-#: openDCIM/sidebar.inc.php:110
+#: /home/wilpig.com/openDCIM/sidebar.inc.php:110
 msgid "Edit CDU Templates"
 msgstr "Urejanje CDU Predloge"
 
-#: openDCIM/sidebar.inc.php:111
+#: /home/wilpig.com/openDCIM/sidebar.inc.php:111
 msgid "Edit Configuration"
 msgstr "Urejanje konfiguracije"
 
-#: openDCIM/sidebar.inc.php:116
+#: /home/wilpig.com/openDCIM/sidebar.inc.php:116
 msgid "Home"
 msgstr "Domov"
 
-#: openDCIM/storageroom.php:52
+#: /home/wilpig.com/openDCIM/storageroom.php:52
 #, fuzzy
 msgid "Serial No."
 msgstr "SerialNo"
 
-#: openDCIM/supplybin.php:146
+#: /home/wilpig.com/openDCIM/supplybin.php:146
 msgid "Data Center Stockroom Supply Bins"
 msgstr "Data Center skladišču Dobava košar"
 
-#: openDCIM/supplybin.php:152
+#: /home/wilpig.com/openDCIM/supplybin.php:152
 msgid "Bin Location"
 msgstr "bin Lokacija"
 
-#: openDCIM/supplybin.php:154
+#: /home/wilpig.com/openDCIM/supplybin.php:154
 msgid "New Bin"
 msgstr "nova Bin"
 
-#: openDCIM/supplybin.php:181
+#: /home/wilpig.com/openDCIM/supplybin.php:181
 msgid "Part Number"
 msgstr "številka dela"
 
-#: openDCIM/supplybin.php:182
+#: /home/wilpig.com/openDCIM/supplybin.php:182
 msgid "Count"
 msgstr "Štetje"
 
-#: openDCIM/supplybin.php:197
+#: /home/wilpig.com/openDCIM/supplybin.php:197
 msgid "Select parts to add..."
 msgstr "Izberite dele dodati ..."
 
-#: openDCIM/timeperiods.php:67
+#: /home/wilpig.com/openDCIM/timeperiods.php:67
 msgid "Data Center Time Periods Listing"
 msgstr "Data Center časovnih obdobij objavo"
 
-#: openDCIM/timeperiods.php:73
+#: /home/wilpig.com/openDCIM/timeperiods.php:73
 msgid "Escalation Time Period"
 msgstr "Stopnjevanje Časovno obdobje"
 
-#: openDCIM/timeperiods.php:75
+#: /home/wilpig.com/openDCIM/timeperiods.php:75
 msgid "New Time Period"
 msgstr "Nova Časovno obdobje"
 
-#: openDCIM/timeperiods.php:85
+#: /home/wilpig.com/openDCIM/timeperiods.php:85
 msgid "Description"
 msgstr "Opis"
 
-#: openDCIM/usermgr.php:91
+#: /home/wilpig.com/openDCIM/usermgr.php:91
 msgid "User"
 msgstr "Uporabnik"
 
-#: openDCIM/usermgr.php:93
+#: /home/wilpig.com/openDCIM/usermgr.php:93
 msgid "New User"
 msgstr "Nov uporabnik"
 
-#: openDCIM/usermgr.php:111
+#: /home/wilpig.com/openDCIM/usermgr.php:111
 msgid "Rights"
 msgstr "pravice"
 
-#: openDCIM/usermgr.php:113
+#: /home/wilpig.com/openDCIM/usermgr.php:113
 msgid "Read/Report Access"
 msgstr "Preberite / Prijavi dostop"
 
-#: openDCIM/usermgr.php:114
+#: /home/wilpig.com/openDCIM/usermgr.php:114
 msgid "Modify/Enter Devices"
 msgstr "Spremeni / Enter naprave"
 
-#: openDCIM/usermgr.php:115
+#: /home/wilpig.com/openDCIM/usermgr.php:115
 msgid "Delete Devices"
 msgstr "Brisanje naprave"
 
-#: openDCIM/usermgr.php:116
+#: /home/wilpig.com/openDCIM/usermgr.php:116
 msgid "Enter/Modify Contacts and Departments"
 msgstr "Vnesite / spremenite stike in oddelki"
 
-#: openDCIM/usermgr.php:117
+#: /home/wilpig.com/openDCIM/usermgr.php:117
 msgid "Enter Rack Requests"
 msgstr "Vpišite Rack Zahteve"
 
-#: openDCIM/usermgr.php:118
+#: /home/wilpig.com/openDCIM/usermgr.php:118
 msgid "Complete Rack Requests"
 msgstr "Izpolnite Rack Zahteve"
 
-#: openDCIM/usermgr.php:119
+#: /home/wilpig.com/openDCIM/usermgr.php:119
 msgid "Manage Site and Users"
 msgstr "Upravljanje spletnih mest in uporabniki"
 
-#: openDCIM/vmnamecheck.php:27 openDCIM/vmnamecheck.php:58
+#: /home/wilpig.com/openDCIM/vmnamecheck.php:27
+#: /home/wilpig.com/openDCIM/vmnamecheck.php:58
 msgid "Virtual Machine Inventory Exception Report"
 msgstr "Virtual Machine Popis Izjema Poročilo"
 
-#: openDCIM/vmnamecheck.php:61 openDCIM/vmnamecheck.php:109
+#: /home/wilpig.com/openDCIM/vmnamecheck.php:61
+#: /home/wilpig.com/openDCIM/vmnamecheck.php:109
 msgid "This is an automated message from the"
 msgstr "To je samodejno sporočilo"
 
-#: openDCIM/vmnamecheck.php:61
+#: /home/wilpig.com/openDCIM/vmnamecheck.php:61
 msgid ""
 "Inventory\n"
 "\t\t\tProcess.  This process is scheduled to run once each business day.</"
@@ -2087,7 +2355,7 @@ msgstr ""
 "p> \n"
 "\t\t\t<p> naslednji"
 
-#: openDCIM/vmnamecheck.php:63
+#: /home/wilpig.com/openDCIM/vmnamecheck.php:63
 msgid ""
 "Virtual Machines were detected in the environment\n"
 "\t\t\tand do not have an associated owner record.  It is assumed that\n"
@@ -2101,7 +2369,7 @@ msgstr ""
 "posodobitev \n"
 "\t\t\t podatkov o lastništvu."
 
-#: openDCIM/vmnamecheck.php:67
+#: /home/wilpig.com/openDCIM/vmnamecheck.php:67
 msgid ""
 "If the appropriate department is not listed as an option for ownership, "
 "please\n"
@@ -2110,19 +2378,20 @@ msgstr ""
 "Če je primerno, oddelek ni navedena kot možnost za lastništvo, prosim \n"
 "\t\t\tpošljite email"
 
-#: openDCIM/vmnamecheck.php:68
+#: /home/wilpig.com/openDCIM/vmnamecheck.php:68
 msgid "to have it added."
 msgstr "da so je dodal."
 
-#: openDCIM/vmnamecheck.php:71 openDCIM/vmnamecheck.php:115
+#: /home/wilpig.com/openDCIM/vmnamecheck.php:71
+#: /home/wilpig.com/openDCIM/vmnamecheck.php:115
 msgid "Server Name"
 msgstr "Ime strežnika"
 
-#: openDCIM/vmnamecheck.php:106
+#: /home/wilpig.com/openDCIM/vmnamecheck.php:106
 msgid "Virtual Machine Inventory Expiration Report"
 msgstr "Virtual Machine Popis poteka Poročilo"
 
-#: openDCIM/vmnamecheck.php:109
+#: /home/wilpig.com/openDCIM/vmnamecheck.php:109
 msgid ""
 "Virtual Machine Inventory\n"
 "\t\t\tProcess.  This process is scheduled to run once each business day."
@@ -2130,11 +2399,11 @@ msgstr ""
 "Virtual Machine Popis \n"
 "\t\t\t procesa. Ta postopek je predviden za obdobje, ko vsak delovni dan."
 
-#: openDCIM/vmnamecheck.php:111
+#: /home/wilpig.com/openDCIM/vmnamecheck.php:111
 msgid "The following"
 msgstr "naslednji"
 
-#: openDCIM/vmnamecheck.php:111
+#: /home/wilpig.com/openDCIM/vmnamecheck.php:111
 msgid ""
 "Virtual Machines have not been detected within the\n"
 "\t\t\tpast"
@@ -2142,10 +2411,13 @@ msgstr ""
 "Virtualni stroji niso bile odkrite v \n"
 "\t\t\tpreteklosti"
 
-#: openDCIM/vmnamecheck.php:112
+#: /home/wilpig.com/openDCIM/vmnamecheck.php:112
 msgid ""
 "days and are assumed to be expired.  They are being removed from the\n"
 "\t\t\tinventory system."
 msgstr ""
 "dni, se šteje, da je potekel. So se odstrani iz \n"
 "\t\t\tSistem evidenc."
+
+#~ msgid "Square Footage"
+#~ msgstr "kvadratni metri"
