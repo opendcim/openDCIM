@@ -313,7 +313,7 @@ function applyupdate ($updatefile){
 		$version="2.0.1";
 	}
 	// Change this to 2.0.1 when we're ready for release. This will break the holy hell out of things currently
-	if($version=="2.0.x"){
+	if($version=="2.0.1"){
 		// Get a list of all Manufacturers that are duplicated
 		$sql="SELECT ManufacturerID,Name FROM fac_Manufacturer GROUP BY Name HAVING COUNT(*)>1;";
 		$result=mysql_query($sql,$facDB);

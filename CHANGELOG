@@ -8,13 +8,20 @@ are simply testing, as some functionality can break between releases.
 
 Changes in 2.1
 --------------
+* Export assets by data center to Excel / CSV
+* Configurable unit of measure (English/Metric)
 * Device names are no longer forced to uppercase - the admin can select a site preference between UPPER, lower, CamelCase, or unchanged
 * ToolTip sneak peak in the cabinet view, with user defined fields to show
 * Cooling capacity metric is added to each data center for capacity planning
 * Search results will now show in the Data Center / Cabinet / Device heirarchy.  Previously the Data Center was not included.
+* Tag searches now support multiple tags, as well as negation (tagA tagB !tagC)
 * Cabinets now have a Notes field (general text entry) and can also be tagged
 * When removing the Reservation checkbox on a device, the Install Date is automatically set to the current date
 * Functionality added to allow an "English Only" version to run if gettext is not available (specifically helps Mac OSX installations)
+* Storage arrays can now be targes of connections from switches and patch panels
+* Nominal Wattage correctly saved when creating a new device
+* Cabinet weight and moment now take into account the weight of child devices
+* Other minor bug fixes
 
 Changes in 2.0
 --------------
