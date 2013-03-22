@@ -433,6 +433,8 @@ class PowerDistribution {
 			
 			// Have to reset this every time, otherwise the exec() will append
 			unset( $statsOutput );
+			$amps = 0;
+			$watts = 0;
 			
 			$pollCommand = sprintf( "%s -v 2c -t 0.5 -r 2 -c %s %s %s | /bin/cut -d: -f4", $command, $row["SNMPCommunity"], $row["IPAddress"], $OIDString );
 			
