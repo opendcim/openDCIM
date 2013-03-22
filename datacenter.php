@@ -38,7 +38,10 @@
 	}
 	$dcList=$dc->GetDCList($facDB);
 
-
+	if ( $config->ParameterArray["mUnits"] == "english" )
+		$vol = __("Square Feet");
+	else
+		$vol = __("Square Meters");
 
 	$imageselect='<div id="preview"></div><div id="filelist">';
 
@@ -153,7 +156,7 @@ echo '	</select></div>
    <div><input class="validate[required,minSize[3],maxSize[80]]" type="text" name="name" id="dcname" size="50" maxlength="80" value="',$dc->Name,'"></div>
 </div>
 <div>
-   <div><label for="sqfootage">',__("Square Footage"),'</label></div>
+   <div><label for="sqfootage">',$vol,'</label></div>
    <div><input class="validate[optional,custom[onlyNumberSp]]" type="text" name="squarefootage" id="sqfootage" size="10" maxlength="11" value="',$dc->SquareFootage,'"></div>
 </div>
 <div>

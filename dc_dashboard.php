@@ -45,6 +45,15 @@
 	if(strlen($dc->DrawingFileName) <1 || !file_exists("drawings/$dc->DrawingFileName")){
 		$screenadjustment="<style type=\"text/css\">.dcstats .heading > div { width: 100% !important;} .dcstats .heading > div + div { display: none; }</style>";
 	}
+	
+	if ( $config->ParameterArray["mUnits"] == "english" ) {
+		$vol = __("Square Feet");
+		$density = __("Watts per Square Foot");
+	} else {
+		$vol = __("Square Meters");
+		$density = __("Watts per Square Meter" );
+	}
+
 ?>
 <!doctype html>
 <html>
@@ -120,10 +129,10 @@ echo '<div class="main">
   </div>
   <div>
         <div>',__("Data Center Size"),'</div>
-        <div>',sprintf("%8d ".__("Square Feet"),$dc->SquareFootage),'</div>
+        <div>', sprintf("%8d %s", $dc->SquareFootage, $vol), '</div>
   </div>
   <div>
-        <div>',__("Watts per Square Foot"),'</div>
+        <div>', $density,'</div>
         <div>',(($dc->SquareFootage)?sprintf("%8d ".__("Watts"),$dcStats["TotalWatts"]/$dc->SquareFootage):"0 ".__("Watts")),'</div>
   </div>
   <div>
