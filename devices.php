@@ -276,6 +276,10 @@
 					$dev->SNMPCommunity=(isset($_POST['snmpcommunity']))?$_POST['snmpcommunity']:"";
 					$dev->ESX=(isset($_POST['esx']))?$_POST['esx']:0;
 					$dev->Reservation=(isset($_POST['reservation']))?($_POST['reservation']=="on")?1:0:0;
+					$dev->NominalWatts=$_POST['nominalwatts'];
+
+					if ( ( $dev->TemplateID > 0 ) && ( intval($dev->NominalWatts == 0 ) ) )
+						$dev->UpdateWattageFromTemplate($facDB);
 					$dev->CreateDevice($facDB);
 					$dev->SetTags($tagarray);
 				}elseif($user->DeleteAccess&&($_REQUEST['action']=='Delete')){
