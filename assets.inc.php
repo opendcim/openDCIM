@@ -1012,7 +1012,7 @@ class Device {
 	}
 
 	function ViewDevicesByCabinet( $db ) {
-		$select_sql = "select * from fac_Device where Cabinet=\"" . intval($this->Cabinet) . "\" order by Position DESC";
+		$select_sql = "select * from fac_Device where Cabinet=\"" . intval($this->Cabinet) . "\" AND Cabinet!=0 order by Position DESC";
 
 		if ( ! $result = mysql_query( $select_sql, $db ) ) {
 			return 0;
