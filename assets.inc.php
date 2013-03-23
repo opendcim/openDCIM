@@ -659,14 +659,60 @@ class Device {
 		// Get the device being copied
 		$this->GetDevice( $db );
 		
-		if ( $this->ParentDevice > 0 )
-			return false;
-		
-		// Now set it as being in storage
-		$this->Cabinet = -1;
+		if($this->ParentDevice >0){
+			/*
+			 * Child devices will need to be constrained to the chassis. Check for open slots
+			 * on whichever side of the chassis the blade is currently.  If a slot is available
+			 * clone into the next available slot or return false and display an appropriate 
+			 * errror message
+			 */
+			$tmpdev=new Device();
+			$tmpdev->DeviceID=$this->ParentDevice;
+			$tmpdev->GetDevice($db);
+			$children=$tmpdev->GetDeviceChildren($db);
+			if($tmpdev->ChassisSlots>0 || $tmpdev->RearChassisSlots>0){
+				$front=array();
+				$rear=array();
+				$pos=$this->Position;
+				if($tmpdev->ChassisSlots>0){
+					for($i=1;$i<=$tmpdev->ChassisSlots;$i++){
+						$front[$i]=false;
+					}
+				}
+				if($tmpdev->RearChassisSlots>0){
+					for($i=1;$i<=$tmpdev->RearChassisSlots;$i++){
+						$rear[$i]=false;
+					}
+				}
+				foreach($children as $child){
+					($child->ChassisSlots==0)?$front[$child->Position]="yes":$rear[$child->Position]="yes";
+				}
+				if($this->ChassisSlots==0){
+					//Front slot device
+					for($i=$tmpdev->ChassisSlots;$i>=1;$i--){
+						if($front[$i]!="yes"){$this->Position=$i;}
+					}
+				}else{
+					//Rear slot device
+					for($i=$tmpdev->RearChassisSlots;$i>=1;$i--){
+						if($rear[$i]!="yes"){$this->Position=$i;}
+					}
+				}
+				// Make sure the position updated before creating a new device
+				if($pos!=$this->Position){
+					$this->CreateDevice($db);
+				}else{
+					return 0;
+				}
+			}
+		}else{
+			// Now set it as being in storage
+			$this->Cabinet=-1;
 
-		// And finally create a new device based on the exact same info
-		$this->CreateDevice( $db );
+			// And finally create a new device based on the exact same info
+			$this->CreateDevice($db);
+		}
+		return 1;
 	}
 	
 	function Surplus( $db ) {
