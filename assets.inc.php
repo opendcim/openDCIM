@@ -702,7 +702,7 @@ class Device {
 				if($pos!=$this->Position){
 					$this->CreateDevice($db);
 				}else{
-					return 0;
+					return false;
 				}
 			}
 		}else{
@@ -712,7 +712,7 @@ class Device {
 			// And finally create a new device based on the exact same info
 			$this->CreateDevice($db);
 		}
-		return 1;
+		return true;
 	}
 	
 	function Surplus( $db ) {
