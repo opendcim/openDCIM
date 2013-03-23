@@ -250,7 +250,7 @@
 	$CenterofGravity=@round($totalMoment/$totalWeight);
 
 	$used=$cab->CabinetOccupancy($cab->CabinetID,$facDB);
-	$SpacePercent=number_format($used/$cab->CabinetHeight*100,0);
+	@$SpacePercent=number_format($used/$cab->CabinetHeight*100,0);
 	@$WeightPercent=number_format($totalWeight/$cab->MaxWeight*100,0);
 	@$PowerPercent=number_format(($totalWatts/1000)/$cab->MaxKW*100,0);
 	$CriticalColor=$config->ParameterArray["CriticalColor"];
