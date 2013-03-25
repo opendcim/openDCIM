@@ -617,9 +617,6 @@ class Device {
 	}
 
 	function CreateDevice( $db ) {
-		// Force all uppercase for labels
-		//
-
 		$this->Label=transform($this->Label);
 		$this->SerialNo=transform($this->SerialNo);
 		$this->AssetTag=transform($this->AssetTag);
@@ -650,14 +647,18 @@ class Device {
 		return $this->DeviceID;
 	}
 
-	function CopyDevice( $db ) {
-		// Need to make a copy of a device for the purpose of assigning a reservation during a move
-		// The copy itself is easy, but you need to make a copy of any children if this is a parent device
-		// You can not copy a child device, only a parent
-		// Also do not copy any power or network connections!
+	function CopyDevice($db,$clonedparent=null) {
+		/*
+		 * Need to make a copy of a device for the purpose of assigning a reservation during a move
+		 *
+		 * The second paremeter is optional for a copy.  if it is set and the device is a chassis
+		 * this should be set to the ID of the new parent device.
+		 *
+		 * Also do not copy any power or network connections!
+		 */
 		
 		// Get the device being copied
-		$this->GetDevice( $db );
+		$this->GetDevice($db);
 		
 		if($this->ParentDevice >0){
 			/*
@@ -671,35 +672,39 @@ class Device {
 			$tmpdev->GetDevice($db);
 			$children=$tmpdev->GetDeviceChildren($db);
 			if($tmpdev->ChassisSlots>0 || $tmpdev->RearChassisSlots>0){
-				$front=array();
-				$rear=array();
-				$pos=$this->Position;
-				if($tmpdev->ChassisSlots>0){
-					for($i=1;$i<=$tmpdev->ChassisSlots;$i++){
-						$front[$i]=false;
+				// If we're cloning every child then there is no need to attempt to find empty slots
+				if(is_null($clonedparent)){
+					$front=array();
+					$rear=array();
+					$pos=$this->Position;
+					if($tmpdev->ChassisSlots>0){
+						for($i=1;$i<=$tmpdev->ChassisSlots;$i++){
+							$front[$i]=false;
+						}
 					}
-				}
-				if($tmpdev->RearChassisSlots>0){
-					for($i=1;$i<=$tmpdev->RearChassisSlots;$i++){
-						$rear[$i]=false;
+					if($tmpdev->RearChassisSlots>0){
+						for($i=1;$i<=$tmpdev->RearChassisSlots;$i++){
+							$rear[$i]=false;
+						}
 					}
-				}
-				foreach($children as $child){
-					($child->ChassisSlots==0)?$front[$child->Position]="yes":$rear[$child->Position]="yes";
-				}
-				if($this->ChassisSlots==0){
-					//Front slot device
-					for($i=$tmpdev->ChassisSlots;$i>=1;$i--){
-						if($front[$i]!="yes"){$this->Position=$i;}
+					foreach($children as $child){
+						($child->ChassisSlots==0)?$front[$child->Position]="yes":$rear[$child->Position]="yes";
 					}
-				}else{
-					//Rear slot device
-					for($i=$tmpdev->RearChassisSlots;$i>=1;$i--){
-						if($rear[$i]!="yes"){$this->Position=$i;}
+					if($this->ChassisSlots==0){
+						//Front slot device
+						for($i=$tmpdev->ChassisSlots;$i>=1;$i--){
+							if($front[$i]!="yes"){$this->Position=$i;}
+						}
+					}else{
+						//Rear slot device
+						for($i=$tmpdev->RearChassisSlots;$i>=1;$i--){
+							if($rear[$i]!="yes"){$this->Position=$i;}
+						}
 					}
 				}
 				// Make sure the position updated before creating a new device
-				if($pos!=$this->Position){
+				if((isset($pos) && $pos!=$this->Position) || !is_null($clonedparent)){
+					(!is_null($clonedparent))?$this->ParentDevice=$clonedparent:'';
 					$this->CreateDevice($db);
 				}else{
 					return false;
@@ -709,8 +714,21 @@ class Device {
 			// Now set it as being in storage
 			$this->Cabinet=-1;
 
+			// If this is a chassis device then check for children to cloned BEFORE we change the deviceid
+			if($this->DeviceType=="Chassis"){
+				$childList=$this->GetDeviceChildren($db);
+			}	
+
 			// And finally create a new device based on the exact same info
 			$this->CreateDevice($db);
+
+			// If this is a chassis device and children are present clone them
+			if(isset($childList)){
+				foreach($childList as $child){
+					$child->CopyDevice($db,$this->DeviceID);
+				}
+			}
+
 		}
 		return true;
 	}
