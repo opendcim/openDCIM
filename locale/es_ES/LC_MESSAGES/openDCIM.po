@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: openDCIM.po\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2013-03-21 21:04-0500\n"
-"PO-Revision-Date: 2013-03-25 10:30+0100\n"
+"PO-Revision-Date: 2013-03-25 11:58+0100\n"
 "Last-Translator: Jose Miguel Gomez <jomigom@iies.es>\n"
 "Language-Team: openDCIM <discussion@list.opendcim.org>\n"
 "Language: English\n"
@@ -133,7 +133,7 @@ msgstr "Centro de Proceso de Datos"
 #: /home/wilpig.com/openDCIM/search_export.php:42
 #: /home/wilpig.com/openDCIM/supplybin.php:164
 msgid "Location"
-msgstr "Posición"
+msgstr "Situación"
 
 #: /home/wilpig.com/openDCIM/cabinets.php:203
 msgid "Assigned To"
@@ -901,7 +901,6 @@ msgstr "Pies Cuadrados"
 #: /home/wilpig.com/openDCIM/datacenter.php:44
 #: /home/wilpig.com/openDCIM/dc_dashboard.php:53
 #: /home/wilpig.com/openDCIM/dc_stats.php:68
-#, fuzzy
 msgid "Square Meters"
 msgstr "Metros Cuadrados"
 
@@ -952,7 +951,6 @@ msgstr "Watios por Pie Cuadrado"
 
 #: /home/wilpig.com/openDCIM/dc_dashboard.php:54
 #: /home/wilpig.com/openDCIM/dc_stats.php:69
-#, fuzzy
 msgid "Watts per Square Meter"
 msgstr "Watios por Metro Cuadrado"
 
@@ -2092,7 +2090,6 @@ msgid "Surplus/Salvage Audit Report"
 msgstr "Informe de Auditoría Excedente/Rescate"
 
 #: /home/wilpig.com/openDCIM/search_export.php:52
-#, fuzzy
 msgid "Installation Date"
 msgstr "Fecha de Instalación"
 
