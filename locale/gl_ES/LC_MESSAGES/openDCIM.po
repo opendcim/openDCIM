@@ -3,17 +3,14 @@ msgstr ""
 "Project-Id-Version: openDCIM.po\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2013-03-21 21:04-0500\n"
-"PO-Revision-Date: 2013-02-20 15:13-0500\n"
-"Last-Translator: Scott Milliken <scott@themillikens.com>\n"
+"PO-Revision-Date: 2013-03-25 10:50+0100\n"
+"Last-Translator: Jose Miguel Gomez <jomigom@iies.es>\n"
 "Language-Team: openDCIM <discussion@list.opendcim.org>\n"
 "Language: English\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Generator: Poedit 1.5.4\n"
-"X-Poedit-Basepath: .\n"
-"X-Poedit-KeywordsList: __\n"
-"X-Poedit-SearchPath-0: c:\\openDCIM\\openDCIM\n"
+"X-Generator: Poedit 1.5.5\n"
 
 #: /home/wilpig.com/openDCIM/cabaudit.php:51
 #: /home/wilpig.com/openDCIM/report_aging.php:153
@@ -32,7 +29,7 @@ msgstr "Última Auditoría"
 
 #: /home/wilpig.com/openDCIM/cabaudit.php:401
 msgid "Cabinet Location"
-msgstr "Posición do Armario"
+msgstr "Identificación do Armario"
 
 #: /home/wilpig.com/openDCIM/cabaudit.php:406
 #: /home/wilpig.com/openDCIM/cabaudit.php:481
@@ -45,7 +42,7 @@ msgstr "Posición do Armario"
 #: /home/wilpig.com/openDCIM/report_aging.php:618
 #: /home/wilpig.com/openDCIM/report_aging.php:648
 msgid "Label"
-msgstr "Nome"
+msgstr "Nemónico"
 
 #: /home/wilpig.com/openDCIM/cabaudit.php:406
 msgid "SerialNo"
@@ -64,7 +61,7 @@ msgstr "Posición"
 
 #: /home/wilpig.com/openDCIM/cabaudit.php:406
 msgid "Rack Units"
-msgstr "Unidades de Rack (Us)"
+msgstr "Us de Rack"
 
 #: /home/wilpig.com/openDCIM/cabaudit.php:406
 msgid "#Ports"
@@ -72,7 +69,7 @@ msgstr "Nº Portos"
 
 #: /home/wilpig.com/openDCIM/cabaudit.php:406
 msgid "#PS"
-msgstr "Nº PS"
+msgstr "Nº FA"
 
 #: /home/wilpig.com/openDCIM/cabaudit.php:406
 msgid "PowerConnection1"
@@ -103,7 +100,7 @@ msgstr "Modelo"
 
 #: /home/wilpig.com/openDCIM/cabaudit.php:481
 msgid "PanelLabel"
-msgstr "EtiquetaCadro"
+msgstr "NemónicoCadro"
 
 #: /home/wilpig.com/openDCIM/cabaudit.php:481
 msgid "PanelPole"
@@ -259,7 +256,7 @@ msgstr "Voltar ao Menú Principal"
 
 #: /home/wilpig.com/openDCIM/cabnavigator.php:85
 msgid "Tooltips are enabled with no options selected."
-msgstr ""
+msgstr "Os Textos de Axuda están habilitados sen opcións seleccionadas."
 
 #: /home/wilpig.com/openDCIM/cabnavigator.php:154
 msgid "Pos"
@@ -273,7 +270,7 @@ msgstr "Dispositivo"
 
 #: /home/wilpig.com/openDCIM/cabnavigator.php:248
 msgid "Above defined rack height"
-msgstr ""
+msgstr "Altura do rack definida arriba"
 
 #: /home/wilpig.com/openDCIM/cabnavigator.php:291
 msgid "Markup Key"
@@ -309,7 +306,7 @@ msgstr "Peso"
 #: /home/wilpig.com/openDCIM/dc_dashboard.php:92
 #: /home/wilpig.com/openDCIM/dc_stats.php:113
 msgid "Power"
-msgstr "Enerxía"
+msgstr "Potencia"
 
 #: /home/wilpig.com/openDCIM/cabnavigator.php:327
 msgid "Approximate Center of Gravity"
@@ -371,9 +368,8 @@ msgid "THIS ACTION CAN NOT BE UNDONE!"
 msgstr "¡ESTA ACCIÓN NON SE PODE DESFACER!"
 
 #: /home/wilpig.com/openDCIM/cabnavigator.php:495
-#, fuzzy
 msgid "Return to"
-msgstr "Voltar ao Visualizador de Armarios"
+msgstr "Voltar a"
 
 #: /home/wilpig.com/openDCIM/cdu_templates.php:41
 #: /home/wilpig.com/openDCIM/device_templates.php:41
@@ -488,9 +484,8 @@ msgstr "Informes"
 #: /home/wilpig.com/openDCIM/configuration.php:559
 #: /home/wilpig.com/openDCIM/install.php:841
 #: /home/wilpig.com/openDCIM/install.php:1106
-#, fuzzy
 msgid "Cabinet ToolTips"
-msgstr "Medidas do Armario"
+msgstr "Textos de Axuda do Armario"
 
 #: /home/wilpig.com/openDCIM/configuration.php:299
 #: /home/wilpig.com/openDCIM/install.php:846
@@ -545,19 +540,18 @@ msgstr "Data da Garantía"
 
 #: /home/wilpig.com/openDCIM/configuration.php:334
 #: /home/wilpig.com/openDCIM/install.php:881
-#, fuzzy
 msgid "Measurement Units"
-msgstr "Tempo e Medidas"
+msgstr "Unidades de Medida"
 
 #: /home/wilpig.com/openDCIM/configuration.php:336
 #: /home/wilpig.com/openDCIM/install.php:883
 msgid "English"
-msgstr ""
+msgstr "Inglesas"
 
 #: /home/wilpig.com/openDCIM/configuration.php:337
 #: /home/wilpig.com/openDCIM/install.php:884
 msgid "Metric"
-msgstr ""
+msgstr "Métricas"
 
 #: /home/wilpig.com/openDCIM/configuration.php:342
 #: /home/wilpig.com/openDCIM/install.php:889
@@ -678,7 +672,7 @@ msgstr "Dispositivos"
 #: /home/wilpig.com/openDCIM/configuration.php:447
 #: /home/wilpig.com/openDCIM/install.php:994
 msgid "Device Labels"
-msgstr "Nomes dos Dispositivos"
+msgstr "Nemónicos dos Dispositivos"
 
 #: /home/wilpig.com/openDCIM/configuration.php:449
 #: /home/wilpig.com/openDCIM/install.php:996
@@ -698,7 +692,7 @@ msgstr "Iniciais en maiúsculas"
 #: /home/wilpig.com/openDCIM/configuration.php:452
 #: /home/wilpig.com/openDCIM/install.php:999
 msgid "Don't touch my labels"
-msgstr "Non modificar os meus nomes"
+msgstr "Non modificar os meus nemónicos"
 
 #: /home/wilpig.com/openDCIM/configuration.php:457
 #: /home/wilpig.com/openDCIM/install.php:1004
@@ -808,9 +802,8 @@ msgstr "Deshabilitado"
 
 #: /home/wilpig.com/openDCIM/configuration.php:562
 #: /home/wilpig.com/openDCIM/install.php:1109
-#, fuzzy
 msgid "Enabled"
-msgstr "Deshabilitado"
+msgstr "Habilitado"
 
 #: /home/wilpig.com/openDCIM/conflicts.php:41
 #: /home/wilpig.com/openDCIM/devices.php:1417
@@ -902,7 +895,7 @@ msgstr "Eliminar"
 #: /home/wilpig.com/openDCIM/dc_dashboard.php:50
 #: /home/wilpig.com/openDCIM/dc_stats.php:65
 msgid "Square Feet"
-msgstr "Metros Cadrados"
+msgstr "Pés Cadrados"
 
 #: /home/wilpig.com/openDCIM/datacenter.php:44
 #: /home/wilpig.com/openDCIM/dc_dashboard.php:53
@@ -954,7 +947,7 @@ msgstr "Potenciá Máxima de Diseño (kW)"
 #: /home/wilpig.com/openDCIM/dc_dashboard.php:51
 #: /home/wilpig.com/openDCIM/dc_stats.php:66
 msgid "Watts per Square Foot"
-msgstr "Watios por Metro Cadrado"
+msgstr "Watios por Pé Cadrado"
 
 #: /home/wilpig.com/openDCIM/dc_dashboard.php:54
 #: /home/wilpig.com/openDCIM/dc_stats.php:69
@@ -1040,9 +1033,8 @@ msgid "Tons"
 msgstr "Toneladas"
 
 #: /home/wilpig.com/openDCIM/dc_stats.php:119
-#, fuzzy
 msgid "Export"
-msgstr "Informes"
+msgstr "Exportar"
 
 #: /home/wilpig.com/openDCIM/departments.php:88
 msgid "Data Center Department Detail"
@@ -1052,7 +1044,7 @@ msgstr "Detalle de Departamentos do CPD"
 #: /home/wilpig.com/openDCIM/index.php:47
 #: /home/wilpig.com/openDCIM/report_department.php:163
 msgid "Department"
-msgstr "Departemento"
+msgstr "Departamento"
 
 #: /home/wilpig.com/openDCIM/departments.php:95
 msgid "New Department"
@@ -1133,6 +1125,8 @@ msgid ""
 "If this device has blades installed they will be deleted and there is no "
 "undo. Are you sure?"
 msgstr ""
+"Se este dispositivo ten fillos instalados, borraranse e isto non poderá "
+"deshacerse. ¿Está seguro?"
 
 #: /home/wilpig.com/openDCIM/devices.php:817
 #: /home/wilpig.com/openDCIM/devices.php:920
@@ -1149,7 +1143,7 @@ msgstr "Cancelar"
 
 #: /home/wilpig.com/openDCIM/devices.php:1027
 msgid "This device will be deleted and there is no undo. Are you sure?"
-msgstr ""
+msgstr "Este dispositivo borrarase e non poderá deshfacerse. ¿Está seguro?"
 
 #: /home/wilpig.com/openDCIM/devices.php:1075
 msgid "Data Center Device Detail"
@@ -1472,7 +1466,7 @@ msgstr "Voltar ao Dispositivo Pai"
 
 #: /home/wilpig.com/openDCIM/device_templates.php:72
 msgid "This value must be different than"
-msgstr ""
+msgstr "Este valor debe ser distinto de"
 
 #: /home/wilpig.com/openDCIM/device_templates.php:97
 msgid "Data Center Device Templates"
@@ -1492,7 +1486,7 @@ msgstr "Nº de Portos"
 
 #: /home/wilpig.com/openDCIM/device_templates.php:167
 msgid "Clone"
-msgstr ""
+msgstr "Clonar"
 
 #: /home/wilpig.com/openDCIM/escalations.php:66
 msgid "Data Center Escalation Rules"
@@ -1797,7 +1791,7 @@ msgstr "Nova Fonte de Enerxía"
 
 #: /home/wilpig.com/openDCIM/power_source.php:106
 msgid "Load OID"
-msgstr "Cargar OID"
+msgstr "OID da Carga"
 
 #: /home/wilpig.com/openDCIM/power_source.php:110
 msgid "Capacity"
@@ -1882,7 +1876,7 @@ msgstr "Solicitude de Rack do CPD"
 
 #: /home/wilpig.com/openDCIM/rackrequest.php:366
 msgid "Label Color"
-msgstr "Cor do Nome"
+msgstr "Cor do Nemónico"
 
 #: /home/wilpig.com/openDCIM/rackrequest.php:370
 msgid "White"
@@ -1941,28 +1935,26 @@ msgid "Move to Rack"
 msgstr "Mover a Rack"
 
 #: /home/wilpig.com/openDCIM/report_aging.php:156
-#, fuzzy
 msgid "Data Center Asset Aging Report"
-msgstr "Informe de Costes de Equipos do CPD"
+msgstr "Informe de Idade de Equipos do CPD"
 
 #: /home/wilpig.com/openDCIM/report_aging.php:157
 #: /home/wilpig.com/openDCIM/report_department.php:38
 msgid "Date"
-msgstr ""
+msgstr "Data"
 
 #: /home/wilpig.com/openDCIM/report_aging.php:164
 #: /home/wilpig.com/openDCIM/report_department.php:45
 msgid "Page"
-msgstr ""
+msgstr "Páxina"
 
 #: /home/wilpig.com/openDCIM/report_aging.php:513
-#, fuzzy
 msgid "Device Ages by Count"
-msgstr "Número de Outros Dispositivos"
+msgstr "Idade dos Dispositivos por Rangos"
 
 #: /home/wilpig.com/openDCIM/report_aging.php:520
 msgid "Devices from 0-1 Years Old"
-msgstr ""
+msgstr "Dispositivos de 0-1 ano"
 
 #: /home/wilpig.com/openDCIM/report_aging.php:522
 #: /home/wilpig.com/openDCIM/report_aging.php:558
@@ -1970,48 +1962,43 @@ msgstr ""
 #: /home/wilpig.com/openDCIM/report_aging.php:618
 #: /home/wilpig.com/openDCIM/report_aging.php:648
 msgid "Age"
-msgstr ""
+msgstr "Idade"
 
 #: /home/wilpig.com/openDCIM/report_aging.php:556
 msgid "Devices from 1-2 Years Old"
-msgstr ""
+msgstr "Dispositivos de 1-2 anos"
 
 #: /home/wilpig.com/openDCIM/report_aging.php:586
 msgid "Devices from 2-3 Years Old"
-msgstr ""
+msgstr "Dispositivos de 2-3 anos"
 
 #: /home/wilpig.com/openDCIM/report_aging.php:616
 msgid "Devices from 3-4 Years Old"
-msgstr ""
+msgstr "Dispositivos de 3-4 anos"
 
 #: /home/wilpig.com/openDCIM/report_aging.php:646
 msgid "Devices Greater Than 4 Years Old"
-msgstr ""
+msgstr "Dispositivos de máis de 4 anos"
 
 #: /home/wilpig.com/openDCIM/report_department.php:37
-#, fuzzy
 msgid "Departmental Contacts Report"
-msgstr "Informe de Departamentos/Contactos"
+msgstr "Informe de Contactos Departamentais"
 
 #: /home/wilpig.com/openDCIM/report_department.php:173
-#, fuzzy
 msgid "Service Delivery Manager"
-msgstr "Xestor de Equipamento"
+msgstr "Xestor do Servizo de Entregas"
 
 #: /home/wilpig.com/openDCIM/report_department.php:181
-#, fuzzy
 msgid "Phone1"
-msgstr "Teléfono 1"
+msgstr "Teléfono1"
 
 #: /home/wilpig.com/openDCIM/report_department.php:181
-#, fuzzy
 msgid "Phone2"
-msgstr "Teléfono 2"
+msgstr "Teléfono2"
 
 #: /home/wilpig.com/openDCIM/report_department.php:181
-#, fuzzy
 msgid "Phone3"
-msgstr "Teléfono 3"
+msgstr "Teléfono3"
 
 #: /home/wilpig.com/openDCIM/report-em_new_installs.php:24
 msgid "Recent Data Center Installations Report"
@@ -2034,14 +2021,12 @@ msgid "Department/Contact Report"
 msgstr "Informe de Departamentos/Contactos"
 
 #: /home/wilpig.com/openDCIM/reports.php:46
-#, fuzzy
 msgid "Asset Reports"
-msgstr "Informe de Idade dos Equipos"
+msgstr "Informe de Equipos"
 
 #: /home/wilpig.com/openDCIM/reports.php:47
-#, fuzzy
 msgid "Search/Export by Data Center"
-msgstr "Distribución de Enerxía Eléctrica por CPD"
+msgstr "Busca/Exportación por CPD"
 
 #: /home/wilpig.com/openDCIM/reports.php:48
 msgid "Asset Report by Owner"
@@ -2064,9 +2049,8 @@ msgid "Virtual Machines by Department"
 msgstr "Máquinas Virtuais por Departamento"
 
 #: /home/wilpig.com/openDCIM/reports.php:58
-#, fuzzy
 msgid "Operational Reports"
-msgstr "Informe de Contactos"
+msgstr "Informes Operacionais"
 
 #: /home/wilpig.com/openDCIM/reports.php:59
 msgid "Data Exceptions Report"
@@ -2089,9 +2073,8 @@ msgid "Server Tier Classification Report"
 msgstr "Informe de Clasificación TIER dos Servidores"
 
 #: /home/wilpig.com/openDCIM/reports.php:66
-#, fuzzy
 msgid "Auditing Reports"
-msgstr "Informe de Auditoría"
+msgstr "Informes de Auditoría"
 
 #: /home/wilpig.com/openDCIM/reports.php:67
 msgid "Cabinet Audit Logs"
@@ -2111,45 +2094,40 @@ msgid "Installation Date"
 msgstr "Data de Instalación"
 
 #: /home/wilpig.com/openDCIM/search_export.php:195
-#, fuzzy
 msgid "Data Center View/Export"
-msgstr "Informe de Equipos do CPD"
+msgstr "Vista/Exportación do CPD"
 
 #: /home/wilpig.com/openDCIM/search_export.php:196
-#, fuzzy
 msgid "Data Center:"
-msgstr "Centro de Proceso de Datos"
+msgstr "CPD:"
 
 #: /home/wilpig.com/openDCIM/search_export.php:198
-#, fuzzy
 msgid "Select data center"
-msgstr "Selecionar unha plantilla"
+msgstr "Selecionar CPD"
 
 #: /home/wilpig.com/openDCIM/search_export.php:199
-#, fuzzy
 msgid "All Data Centers"
-msgstr "Centro de Proceso de Datos"
+msgstr "Todos os CPDs"
 
 #: /home/wilpig.com/openDCIM/search.php:30
-#, fuzzy
 msgid "Search Results"
-msgstr "Resultados"
+msgstr "Resultados da busca"
 
 #: /home/wilpig.com/openDCIM/search.php:36
 msgid "Serial number search results for"
-msgstr ""
+msgstr "Resultados da busca por número de serie para"
 
 #: /home/wilpig.com/openDCIM/search.php:48
 msgid "Name tag search results for"
-msgstr ""
+msgstr "Resultados da busca por etiqueta para"
 
 #: /home/wilpig.com/openDCIM/search.php:53
 msgid "Asset tag search results for"
-msgstr ""
+msgstr "Resultados da busca por etiqueta para"
 
 #: /home/wilpig.com/openDCIM/search.php:58
 msgid "Custom tag search results for"
-msgstr ""
+msgstr "Resultados da busca por etiqueta personalizada para"
 
 #: /home/wilpig.com/openDCIM/sidebar.inc.php:5
 msgid "Search by Name:"
@@ -2240,9 +2218,8 @@ msgid "Home"
 msgstr "Inicio"
 
 #: /home/wilpig.com/openDCIM/storageroom.php:52
-#, fuzzy
 msgid "Serial No."
-msgstr "NºSerie"
+msgstr "Nº Serie"
 
 #: /home/wilpig.com/openDCIM/supplybin.php:146
 msgid "Data Center Stockroom Supply Bins"
