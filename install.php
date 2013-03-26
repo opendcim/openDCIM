@@ -441,6 +441,29 @@ if(isset($results)){
 	$dc=new DataCenter();
 	$cab=new Cabinet();
 
+	function BuildFileList(){
+		$imageselect='<div id="preview"></div><div id="filelist">';
+		$path='./images';
+		$dir=scandir($path);
+		foreach($dir as $i => $f){
+			if(is_file($path.DIRECTORY_SEPARATOR.$f) && round(filesize($path.DIRECTORY_SEPARATOR.$f) / 1024, 2)>=4 && $f!="serverrack.png" && $f!="gradient.png"){
+				$imageinfo=getimagesize($path.DIRECTORY_SEPARATOR.$f);
+				if(preg_match('/^image/i', $imageinfo['mime'])){
+					$imageselect.="<span>$f</span>\n";
+				}
+			}
+		}
+		$imageselect.="</div>";
+		return $imageselect;
+	}
+
+// AJAX Requests
+	if(isset($_GET['fl'])){
+		echo BuildFileList();
+		exit;
+	}
+// END AJAX Requests
+
 // Configuration Form Submission
 	if(isset($_REQUEST["confaction"]) && $_REQUEST["confaction"]=="Update"){
 		foreach($config->ParameterArray as $key=>$value){
@@ -639,47 +662,50 @@ if(isset($results)){
 			$("head").append("<style type=\"text/css\">a:visited {color: "+$(this).val()+";}</style>");
 		});
 		$('#PDFLogoFile').click(function(){
-			$("#imageselection").dialog({
-				resizable: false,
-				height:300,
-				width: 400,
-				modal: true,
-				buttons: {
-<?php echo '					',__("Select"),': function() {'; ?>
-						if($('#imageselection #preview').attr('image')!=""){
-							$('#PDFLogoFile').val($('#imageselection #preview').attr('image'));
+			$.get('',{fl: '1'}).done(function(data){
+				$("#imageselection").html(data);
+				$("#imageselection").dialog({
+					resizable: false,
+					height:300,
+					width: 400,
+					modal: true,
+					buttons: {
+	<?php echo '					',__("Select"),': function() {'; ?>
+							if($('#imageselection #preview').attr('image')!=""){
+								$('#PDFLogoFile').val($('#imageselection #preview').attr('image'));
+							}
+							$(this).dialog("close");
 						}
-						$(this).dialog("close");
 					}
-				}
-			});
-			$("#imageselection span").each(function(){
-				var preview=$('#imageselection #preview');
-				$(this).click(function(){
-					preview.html('<img src="images/'+$(this).text()+'" alt="preview">').attr('image',$(this).text()).css('border-width', '5px');
-					preview.children('img').load(function(){
-						var topmargin=0;
-						var leftmargin=0;
-						if($(this).height()<$(this).width()){
-							$(this).width(preview.innerHeight());
-							$(this).css({'max-width': preview.innerWidth()+'px'});
-							topmargin=Math.floor((preview.innerHeight()-$(this).height())/2);
-						}else{
-							$(this).height(preview.innerHeight());
-							$(this).css({'max-height': preview.innerWidth()+'px'});
-							leftmargin=Math.floor((preview.innerWidth()-$(this).width())/2);
-						}
-						$(this).css({'margin-top': topmargin+'px', 'margin-left': leftmargin+'px'});
-					});
-					$("#imageselection span").each(function(){
-						$(this).removeAttr('style');
-					});
-					$(this).css('border','1px dotted black')
-					$('#header').css('background-image', 'url("images/'+$(this).text()+'")');
 				});
-				if($('#PDFLogoFile').val()==$(this).text()){
-					$(this).click();
-				}
+				$("#imageselection span").each(function(){
+					var preview=$('#imageselection #preview');
+					$(this).click(function(){
+						preview.html('<img src="images/'+$(this).text()+'" alt="preview">').attr('image',$(this).text()).css('border-width', '5px');
+						preview.children('img').load(function(){
+							var topmargin=0;
+							var leftmargin=0;
+							if($(this).height()<$(this).width()){
+								$(this).width(preview.innerHeight());
+								$(this).css({'max-width': preview.innerWidth()+'px'});
+								topmargin=Math.floor((preview.innerHeight()-$(this).height())/2);
+							}else{
+								$(this).height(preview.innerHeight());
+								$(this).css({'max-height': preview.innerWidth()+'px'});
+								leftmargin=Math.floor((preview.innerWidth()-$(this).width())/2);
+							}
+							$(this).css({'margin-top': topmargin+'px', 'margin-left': leftmargin+'px'});
+						});
+						$("#imageselection span").each(function(){
+							$(this).removeAttr('style');
+						});
+						$(this).css('border','1px dotted black')
+						$('#header').css('background-image', 'url("images/'+$(this).text()+'")');
+					});
+					if($('#PDFLogoFile').val()==$(this).text()){
+						$(this).click();
+					}
+				});
 			});
 		});
 		$("#tzmenu").menu();
@@ -751,19 +777,7 @@ if(isset($results)){
 		$i++;
 	}
 
-	$imageselect='<div id="preview"></div><div id="filelist">';
-
-	$path='./images';
-	$dir=scandir($path);
-	foreach($dir as $i => $f){
-		if(is_file($path.DIRECTORY_SEPARATOR.$f) && round(filesize($path.DIRECTORY_SEPARATOR.$f) / 1024, 2)>=4 && $f!="serverrack.png" && $f!="gradient.png"){
-			$imageinfo=getimagesize($path.DIRECTORY_SEPARATOR.$f);
-			if(preg_match('/^image/i', $imageinfo['mime'])){
-				$imageselect.="<span>$f</span>\n";
-			}
-		}
-	}
-	$imageselect.="</div>";
+	$imageselect=BuildFileList();
 
 	function formatOffset($offset) {
 			$hours = $offset / 3600;
