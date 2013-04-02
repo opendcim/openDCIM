@@ -49,123 +49,35 @@
   
   <title>openDCIM Department Contact Maintenance</title>
   <link rel="stylesheet" href="css/inventory.php" type="text/css">
-<script type="text/javascript">
-function addToList()
-{
-  var from = document.getElementById( 'possibleList' );
-  var to = document.getElementById( 'chosenList' );
-  
-  if (from.options.length > 0 ) { 
-    if (to.options[0].value == 'temp') {
-      to.options.length = 0;
-    }
-  }
-  var sel = false;
-  for (i=0;i<from.options.length;i++)
-  {
-    var current = from.options[i];
-    if (current.selected) {
-      sel = true;
-      if (current.value == 'temp') {
-        alert ('You cannot move this text!');
-        return;
-      }
-      var newOpt = document.createElement('option');
-      newOpt.text = current.text;
-      newOpt.value = current.value;
-      
-      try {
-        to.add(newOpt, null); // Standards compliant, doesn't work in IE
-      }
-      catch(ex) {
-        to.add(newOpt);       // Works in IE
-      }
+  <link rel="stylesheet" href="css/jquery-ui.css" type="text/css">
+  <link rel="stylesheet" href="css/jquery.ui.multiselect.css" type="text/css">
+  <script type="text/javascript" src="scripts/jquery.min.js"></script>
+  <script type="text/javascript" src="scripts/jquery-ui.min.js"></script>
+  <script type="text/javascript" src="scripts/jquery.ui.multiselect.js"></script>
 
-      from.remove(i);
-    }
-  }
-}
+  <script type="text/javascript">
+	$(document).ready(function(){
+		$('#chosenList').multiselect();
+	});
+  </script>
 
-function removeFromList()
-{
-  var from = document.getElementById( 'chosenList' );
-  var to = document.getElementById( 'possibleList' );
-  
-  if (from.options.length > 0 ) { 
-    if (to.options[0].value == 'temp') {
-      to.options.length = 0;
-    }
-  }
-  var sel = false;
-  for (i=0;i<from.options.length;i++)
-  {
-    var current = from.options[i];
-    if (current.selected)
-    {
-      sel = true;
-      if (current.value == 'temp')
-      {
-        alert ('You cannot move this text!');
-        return;
-      }
-      var newOpt = document.createElement('option');
-      newOpt.text = current.text;
-      newOpt.value = current.value;
-      
-      try {
-        to.add(newOpt, null); // Standards compliant, doesn't work in IE
-      }
-      catch(ex) {
-        to.add(newOpt);       // Works in IE
-      }
-
-      from.remove(i);
-    }
-  }
-}
-
-function allSelect()
-{
-  List = document.getElementById( 'chosenList' );
-  if (List.length && List.options[0].value == 'temp') return;
-  for (i=0;i<List.length;i++)
-  {
-     List.options[i].selected = true;
-  }
-}
-</script>
 </head>
 <body id="deptgroup">
 <div class="centermargin">
 <?php
-echo '<form action="',$_SERVER["PHP_SELF"],'" method="POST" onSubmit="allSelect()">
+echo '<form action="',$_SERVER["PHP_SELF"],'" method="POST">
 <input type="hidden" name="deptid" value="',$dept->DeptID,'">
-<h3>',__("Group to Administer"),': ',$dept->Name,'</h3>
+<h3>',__("Group to Administer"),': ',$dept->Name,'<button type="submit" value="Submit" name="action">',__("Submit"),'</button></h3>
 <div>
-',__("Possible Contacts"),'
-<select name="possible" id="possibleList" size="6" multiple="multiple">';
-
-	foreach($possibleList as $contactRow){
-		print "<option value=\"$contactRow->ContactID\">$contactRow->LastName, $contactRow->FirstName</option>\n";
-	}
-
-echo '</select>
-</div>
-<div>
-<input type="button" value="-->" onClick="javascript:addToList()" /><br>
-<input type="button" value="<--" onClick="javascript:removeFromList()" /><br>
-<button type="submit" value="Submit" name="action">',__("Submit"),'</button>
-</div>
-<div>
-',__("Assigned Contacts"),'
-<select name="chosen[]" id="chosenList" size="6" multiple="multiple">';
-
-	if(count($deptList)==0){print "<option value=\"temp\" />\n";}
+	<select name="chosen[]" id="chosenList" size="6" multiple="multiple">';
 	foreach($deptList as $contactRow){
-		print "<option value=\"$contactRow->ContactID\">$contactRow->LastName, $contactRow->FirstName</option>\n";
+		print "\t\t<option value=\"$contactRow->ContactID\" selected=\"selected\">$contactRow->LastName, $contactRow->FirstName</option>\n";
+	}
+	foreach($possibleList as $contactRow){
+		print "\t\t<option value=\"$contactRow->ContactID\">$contactRow->LastName, $contactRow->FirstName</option>\n";
 	}
 ?>
-</select>
+	</select>
 </div>
 </form>
 </div>

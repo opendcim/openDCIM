@@ -319,12 +319,11 @@ div.error {margin-top: 2em;margin-bottom: 2em;border: 1px dotted gray;}
 	border: 1px solid gray;
 }
 #deptgroup {background-color: <?php echo $config->ParameterArray['BodyColor']; ?>;}
-#deptgroup > div {padding: 5px 10px;width: 580px;}
-#deptgroup > div h3 {margin-top: 0;margin-bottom: 10px;}
-#deptgroup > div div {display: inline-block;max-width: 200px;vertical-align: middle;}
+#deptgroup > div {padding:5px 10px;width:580px;min-height:300px;}
+#deptgroup > div h3 {margin-top: 0;margin-bottom: 5px;}
+#deptgroup > div h3 button {margin-left:10px;vertical-align:middle;}
 #deptgroup h3 + div {margin-left: 42.5px;}
-#deptgroup h3 + div + div {text-align: center;}
-#deptgroup select {width: 200px;}
+#deptgroup select {width: 440px;}
 #displaynone {display: none !important;}
 
 /* Rack Content */
