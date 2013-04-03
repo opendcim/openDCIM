@@ -631,7 +631,7 @@ INSERT INTO fac_Config VALUES
 	('ComputerFacMgr','DataCenterMgr Name','Name','string','DataCenterMgr Name'),
 	('FacMgrMail','DataCenterMgr@your.domain','Email','string','DataCenterMgr@your.domain'),
 	('InstallURL','','URL','string','https://dcim.your.domain'),
-	('Version','2.0','','',''),
+	('Version','2.1','','',''),
 	('UserLookupURL','https://','URL','string','https://'),
 	('ReservedColor','#00FFFF','HexColor','string','#FFFFFF'),
 	('FreeSpaceColor','#FFFFFF','HexColor','string','#FFFFFF'),
