@@ -1117,8 +1117,8 @@ echo '<div class="main">
 		<div id="tt">
 			<div class="table">
 				<div>
-					<div><label for="LabelCase">',__("Cabinet ToolTips"),'</label></div>
-					<div><select id="LabelCase" name="ToolTips" defaultvalue="',$config->defaults["ToolTips"],'" data="',$config->ParameterArray["ToolTips"],'">
+					<div><label for="ToolTips">',__("Cabinet ToolTips"),'</label></div>
+					<div><select id="ToolTips" name="ToolTips" defaultvalue="',$config->defaults["ToolTips"],'" data="',$config->ParameterArray["ToolTips"],'">
 							<option value="disabled">',__("Disabled"),'</option>
 							<option value="enabled">',__("Enabled"),'</option>
 						</select>
