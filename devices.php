@@ -578,7 +578,7 @@ $(document).ready(function() {
 		}
 	});
 	function editnotes(button){
-		button.val('preview').text('Preview');
+		button.val('preview').text('<?php echo __("Preview");?>');
 		var a=button.next('div');
 		button.next('div').remove();
 		button.next('textarea').htmlarea({
@@ -591,7 +591,7 @@ $(document).ready(function() {
 	}
 
 	function rendernotes(button){
-		button.val('edit').text('Edit');
+		button.val('edit').text('<?php echo __("Edit");?>');
 		var w=button.next('div').outerWidth();
 		var h=$('.jHtmlArea').outerHeight();
 		if(h>0){

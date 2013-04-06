@@ -45,7 +45,7 @@
 		$pdu->Label=$searchTerm;
 		$pduList=$pdu->SearchByPDUName($facDB);
 		$resultcount=count($devList)+count($cabList)+count($pduList)+count($vmList);
-		$title=__("Name tag search results for")." &quot;$searchTerm&quot;";
+		$title=__("Name search results for")." &quot;$searchTerm&quot;";
 	}elseif($searchKey=='asset'){
 		$dev->AssetTag=$searchTerm;
 		$devList=$dev->SearchDevicebyAssetTag($facDB);
@@ -179,9 +179,9 @@
 	}
 
 	if(!empty($devList)){
-		$searchresults="Search complete. ($resultcount) results.";
+		$searchresults=__('Search complete. (<span id="resultcount">'.$resultcount.'</span>) results.');
 	}else{
-		$searchresults="No matching devices found.";
+		$searchresults=__("No matching devices found.");
 	}
 
 ?>
@@ -200,6 +200,7 @@
   
   <script type="text/javascript" src="scripts/jquery.min.js"></script>
   <script type="text/javascript" src="scripts/jquery-ui.min.js"></script>
+  <script type="text/javascript" src="scripts/jquery.timer.js"></script>
 
 <script type="text/javascript">
 $(document).ready(function() {
@@ -215,6 +216,40 @@ $(document).ready(function() {
 			}
 		});
 	});
+	if($('#resultcount').text()=='1'){
+		function pad(number, length) {
+			var str = '' + number;
+			while (str.length < length) {str = '0' + str;}
+			return str;
+		}
+		function formatTime(time) {
+			var min = parseInt(time / 6000),
+				sec = parseInt(time / 100) - (min * 60),
+				hundredths = pad(time - (sec * 100) - (min * 6000), 2);
+			return pad(sec, 2);
+		}
+		var msg=$('<p>').append('Only one result, will autoforward in <span id="countdown"></span> seconds.').click(function(){timer.stop();$(this).remove();})
+		$('#resultcount').parent('p').append(msg);
+		var currentTime=500;
+		var incrementTime = 100;
+		var updateTimer=function(){
+			$('#countdown').html(formatTime(currentTime));
+			if(currentTime==0){
+				// insert forward action here
+				if($('.cabinet').children('ol').length >0){
+					location.href=$('.cabinet').children('ol').find('a').attr('href');
+				}else{
+					// on hold until the bug is fixed to allow cabinet to count as a valid search result
+					console.log('no device found, only a cabinet');
+				}
+				timer.stop();
+			}
+			currentTime -= incrementTime / 10;
+			if (currentTime < 0) currentTime = 0;
+		}
+
+		var timer=$.timer(updateTimer, incrementTime, true);
+	}
 });
 </script>
 
