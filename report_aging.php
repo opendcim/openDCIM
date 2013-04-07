@@ -58,17 +58,46 @@ class DeviceAge extends Device{
 	return $deptList;
 }
 
-  function GetDeviceByAge($db,$years){
-    if ($years<=3){
+function GetDeviceByAge($db,$years){
+	$deviceList=array();
+	if($years<=3){
 		$yearsplus=$years+1;
 		$selectSQL = sprintf( "select * from fac_Device where (DATEDIFF(NOW(), IF(MfgDate>'1970-01-01',MfgDate,InstallDate))/365)<%d and (DATEDIFF(NOW(), IF(MfgDate>'1970-01-01',MfgDate,InstallDate))/365)>=%d", $yearsplus, $years );
-		$result = mysql_query( $selectSQL, $db );
-
-		while ( $deviceRow = mysql_fetch_array( $result ) ){
+		$result = mysql_query($selectSQL,$db);
+		while($deviceRow=mysql_fetch_array($result)){
 			$devID = $deviceRow['DeviceID'];
 
 			$deviceList[$devID] = new DeviceAge();
+			$deviceList[$devID]->DeviceID = $deviceRow['DeviceID'];
+			$deviceList[$devID]->Label = $deviceRow['Label'];
+			$deviceList[$devID]->SerialNo = $deviceRow['SerialNo'];
+			$deviceList[$devID]->AssetTag = $deviceRow['AssetTag'];
+			$deviceList[$devID]->PrimaryIP = $deviceRow['PrimaryIP'];
+			$deviceList[$devID]->SNMPCommunity = $deviceRow['SNMPCommunity'];
+			$deviceList[$devID]->ESX = $deviceRow['ESX'];
+			$deviceList[$devID]->Owner = $deviceRow['Owner'];
+			$deviceList[$devID]->PrimaryContact = $deviceRow['PrimaryContact'];
+			$deviceList[$devID]->Cabinet = $deviceRow['Cabinet'];
+			$deviceList[$devID]->Position = $deviceRow['Position'];
+			$deviceList[$devID]->Height = $deviceRow['Height'];
+			$deviceList[$devID]->Ports = $deviceRow['Ports'];
+			$deviceList[$devID]->TemplateID = $deviceRow['TemplateID'];
+			$deviceList[$devID]->NominalWatts = $deviceRow['NominalWatts'];
+			$deviceList[$devID]->PowerSupplyCount = $deviceRow['PowerSupplyCount'];
+			$deviceList[$devID]->DeviceType = $deviceRow['DeviceType'];
+			$deviceList[$devID]->MfgDate = $deviceRow['MfgDate'];
+			$deviceList[$devID]->InstallDate = $deviceRow['InstallDate'];
+			$deviceList[$devID]->Notes = $deviceRow['Notes'];
+			$deviceList[$devID]->Reservation = $deviceRow['Reservation'];
+		}
+	}else{
+		$selectSQL="select * from fac_Device where (DATEDIFF(NOW(), IF(MfgDate>'1970-01-01',MfgDate,InstallDate))/365)>4 and IF(MfgDate>'1970-01-01',MfgDate,InstallDate)>'1970-01-01'";
+    	$result=mysql_query($selectSQL,$db);
 
+		while($deviceRow=mysql_fetch_array($result)){
+			$devID=$deviceRow['DeviceID'];
+
+			$deviceList[$devID]=new DeviceAge();
 			$deviceList[$devID]->DeviceID = $deviceRow['DeviceID'];
 			$deviceList[$devID]->Label = $deviceRow['Label'];
 			$deviceList[$devID]->SerialNo = $deviceRow['SerialNo'];
@@ -92,40 +121,6 @@ class DeviceAge extends Device{
 			$deviceList[$devID]->Reservation = $deviceRow['Reservation'];
 		}
 	}
-	else
-	{
-	$selectSQL = "select * from fac_Device where (DATEDIFF(NOW(), IF(MfgDate>'1970-01-01',MfgDate,InstallDate))/365)>4 and IF(MfgDate>'1970-01-01',MfgDate,InstallDate)>'1970-01-01'";
-    	$result = mysql_query( $selectSQL, $db );
-
-         	 while ( $deviceRow = mysql_fetch_array( $result ) ){
-			$devID = $deviceRow['DeviceID'];
-
-			$deviceList[$devID] = new DeviceAge();
-
-			$deviceList[$devID]->DeviceID = $deviceRow['DeviceID'];
-			$deviceList[$devID]->Label = $deviceRow['Label'];
-			$deviceList[$devID]->SerialNo = $deviceRow['SerialNo'];
-			$deviceList[$devID]->AssetTag = $deviceRow['AssetTag'];
-			$deviceList[$devID]->PrimaryIP = $deviceRow['PrimaryIP'];
-			$deviceList[$devID]->SNMPCommunity = $deviceRow['SNMPCommunity'];
-			$deviceList[$devID]->ESX = $deviceRow['ESX'];
-			$deviceList[$devID]->Owner = $deviceRow['Owner'];
-			$deviceList[$devID]->PrimaryContact = $deviceRow['PrimaryContact'];
-			$deviceList[$devID]->Cabinet = $deviceRow['Cabinet'];
-			$deviceList[$devID]->Position = $deviceRow['Position'];
-			$deviceList[$devID]->Height = $deviceRow['Height'];
-			$deviceList[$devID]->Ports = $deviceRow['Ports'];
-			$deviceList[$devID]->TemplateID = $deviceRow['TemplateID'];
-			$deviceList[$devID]->NominalWatts = $deviceRow['NominalWatts'];
-			$deviceList[$devID]->PowerSupplyCount = $deviceRow['PowerSupplyCount'];
-			$deviceList[$devID]->DeviceType = $deviceRow['DeviceType'];
-			$deviceList[$devID]->MfgDate = $deviceRow['MfgDate'];
-			$deviceList[$devID]->InstallDate = $deviceRow['InstallDate'];
-			$deviceList[$devID]->Notes = $deviceRow['Notes'];
-			$deviceList[$devID]->Reservation = $deviceRow['Reservation'];
-		}
-	}
-
     return $deviceList;
 }
 
@@ -562,22 +557,24 @@ class PDF_Diag extends PDF_Sector {
                 $pdf->Cell( $cellWidths[$col], 7, $headerTags[$col], 1, 0, 'C', 0 );
         $pdf->Ln();
 	$fill=1;
-	foreach( $year2oldlist as $devRow){
-		$dept->DeptID=$devRow->Owner;
-		$dept->GetDeptByID($facDB);
-		$con->ContactID=$devRow->PrimaryContact;
-		$con->GetContactByID($facDB);
-		$date1=new DateTime($devRow->MfgDate);
-		$date2=new DateTime('now');
-		$interval=$date1->diff($date2);
-		$years=$interval->format('%y years %d days');
+	if(count($year2oldlist)>0){
+		foreach($year2oldlist as $devRow){
+			$dept->DeptID=$devRow->Owner;
+			$dept->GetDeptByID($facDB);
+			$con->ContactID=$devRow->PrimaryContact;
+			$con->GetContactByID($facDB);
+			$date1=new DateTime($devRow->MfgDate);
+			$date2=new DateTime('now');
+			$interval=$date1->diff($date2);
+			$years=$interval->format('%y years %d days');
 
-		$pdf->Cell( $cellWidths[0], 6, $devRow->Label, 'LBRT', 0, 'L', $fill );
-                $pdf->Cell( $cellWidths[1], 6, $years, 'LBRT', 0, 'L', $fill );
-                $pdf->Cell( $cellWidths[2], 6, $dept->Name, 'LBRT', 0, 'L', $fill );
-                $pdf->Cell( $cellWidths[3], 6, $con->FirstName.' '.$con->LastName, 'LBRT', 1, 'L', $fill );
+			$pdf->Cell( $cellWidths[0], 6, $devRow->Label, 'LBRT', 0, 'L', $fill );
+					$pdf->Cell( $cellWidths[1], 6, $years, 'LBRT', 0, 'L', $fill );
+					$pdf->Cell( $cellWidths[2], 6, $dept->Name, 'LBRT', 0, 'L', $fill );
+					$pdf->Cell( $cellWidths[3], 6, $con->FirstName.' '.$con->LastName, 'LBRT', 1, 'L', $fill );
 
-		$fill=!$fill;
+			$fill=!$fill;
+		}
 	}
 
 
@@ -592,22 +589,24 @@ class PDF_Diag extends PDF_Sector {
                 $pdf->Cell( $cellWidths[$col], 7, $headerTags[$col], 1, 0, 'C', 0 );
         $pdf->Ln();
 	$fill=1;
-	foreach( $year3oldlist as $devRow){
-		$dept->DeptID=$devRow->Owner;
-		$dept->GetDeptByID($facDB);
-		$con->ContactID=$devRow->PrimaryContact;
-		$con->GetContactByID($facDB);
-		$date1=new DateTime($devRow->MfgDate);
-		$date2=new DateTime('now');
-		$interval=$date1->diff($date2);
-		$years=$interval->format('%y years %d days');
+	if(count($year3oldlist)>0){
+		foreach($year3oldlist as $devRow){
+			$dept->DeptID=$devRow->Owner;
+			$dept->GetDeptByID($facDB);
+			$con->ContactID=$devRow->PrimaryContact;
+			$con->GetContactByID($facDB);
+			$date1=new DateTime($devRow->MfgDate);
+			$date2=new DateTime('now');
+			$interval=$date1->diff($date2);
+			$years=$interval->format('%y years %d days');
 
-		$pdf->Cell( $cellWidths[0], 6, $devRow->Label, 'LBRT', 0, 'L', $fill );
-                $pdf->Cell( $cellWidths[1], 6, $years, 'LBRT', 0, 'L', $fill );
-                $pdf->Cell( $cellWidths[2], 6, $dept->Name, 'LBRT', 0, 'L', $fill );
-                $pdf->Cell( $cellWidths[3], 6, $con->FirstName.' '.$con->LastName, 'LBRT', 1, 'L', $fill );
+			$pdf->Cell( $cellWidths[0], 6, $devRow->Label, 'LBRT', 0, 'L', $fill );
+					$pdf->Cell( $cellWidths[1], 6, $years, 'LBRT', 0, 'L', $fill );
+					$pdf->Cell( $cellWidths[2], 6, $dept->Name, 'LBRT', 0, 'L', $fill );
+					$pdf->Cell( $cellWidths[3], 6, $con->FirstName.' '.$con->LastName, 'LBRT', 1, 'L', $fill );
 
-		$fill=!$fill;
+			$fill=!$fill;
+		}
 	}
 
 
@@ -622,22 +621,24 @@ class PDF_Diag extends PDF_Sector {
                 $pdf->Cell( $cellWidths[$col], 7, $headerTags[$col], 1, 0, 'C', 0 );
         $pdf->Ln();
 	$fill=1;
-	foreach( $year4oldlist as $devRow){
-		$dept->DeptID=$devRow->Owner;
-		$dept->GetDeptByID($facDB);
-		$con->ContactID=$devRow->PrimaryContact;
-		$con->GetContactByID($facDB);
-		$date1=new DateTime($devRow->MfgDate);
-		$date2=new DateTime('now');
-		$interval=$date1->diff($date2);
-		$years=$interval->format('%y years %d days');
+	if(count($year4oldlist)>0){
+		foreach($year4oldlist as $devRow){
+			$dept->DeptID=$devRow->Owner;
+			$dept->GetDeptByID($facDB);
+			$con->ContactID=$devRow->PrimaryContact;
+			$con->GetContactByID($facDB);
+			$date1=new DateTime($devRow->MfgDate);
+			$date2=new DateTime('now');
+			$interval=$date1->diff($date2);
+			$years=$interval->format('%y years %d days');
 
-		$pdf->Cell( $cellWidths[0], 6, $devRow->Label, 'LBRT', 0, 'L', $fill );
-                $pdf->Cell( $cellWidths[1], 6, $years, 'LBRT', 0, 'L', $fill );
-                $pdf->Cell( $cellWidths[2], 6, $dept->Name, 'LBRT', 0, 'L', $fill );
-                $pdf->Cell( $cellWidths[3], 6, $con->FirstName.' '.$con->LastName, 'LBRT', 1, 'L', $fill );
+			$pdf->Cell( $cellWidths[0], 6, $devRow->Label, 'LBRT', 0, 'L', $fill );
+					$pdf->Cell( $cellWidths[1], 6, $years, 'LBRT', 0, 'L', $fill );
+					$pdf->Cell( $cellWidths[2], 6, $dept->Name, 'LBRT', 0, 'L', $fill );
+					$pdf->Cell( $cellWidths[3], 6, $con->FirstName.' '.$con->LastName, 'LBRT', 1, 'L', $fill );
 
-		$fill=!$fill;
+			$fill=!$fill;
+		}
 	}
 
 
@@ -652,24 +653,25 @@ class PDF_Diag extends PDF_Sector {
                 $pdf->Cell( $cellWidths[$col], 7, $headerTags[$col], 1, 0, 'C', 0 );
         $pdf->Ln();
 	$fill=1;
-	foreach( $oldestlist as $devRow){
-		$dept->DeptID=$devRow->Owner;
-		$dept->GetDeptByID($facDB);
-		$con->ContactID=$devRow->PrimaryContact;
-		$con->GetContactByID($facDB);
-		$date1=new DateTime($devRow->MfgDate);
-		$date2=new DateTime('now');
-		$interval=$date1->diff($date2);
-		$years=$interval->format('%y years %d days');
+	if(count($oldestlist)>0){
+		foreach($oldestlist as $devRow){
+			$dept->DeptID=$devRow->Owner;
+			$dept->GetDeptByID($facDB);
+			$con->ContactID=$devRow->PrimaryContact;
+			$con->GetContactByID($facDB);
+			$date1=new DateTime($devRow->MfgDate);
+			$date2=new DateTime('now');
+			$interval=$date1->diff($date2);
+			$years=$interval->format('%y years %d days');
 
-		$pdf->Cell( $cellWidths[0], 6, $devRow->Label, 'LBRT', 0, 'L', $fill );
-                $pdf->Cell( $cellWidths[1], 6, $years, 'LBRT', 0, 'L', $fill );
-                $pdf->Cell( $cellWidths[2], 6, $dept->Name, 'LBRT', 0, 'L', $fill );
-                $pdf->Cell( $cellWidths[3], 6, $con->FirstName.' '.$con->LastName, 'LBRT', 1, 'L', $fill );
+			$pdf->Cell( $cellWidths[0], 6, $devRow->Label, 'LBRT', 0, 'L', $fill );
+					$pdf->Cell( $cellWidths[1], 6, $years, 'LBRT', 0, 'L', $fill );
+					$pdf->Cell( $cellWidths[2], 6, $dept->Name, 'LBRT', 0, 'L', $fill );
+					$pdf->Cell( $cellWidths[3], 6, $con->FirstName.' '.$con->LastName, 'LBRT', 1, 'L', $fill );
 
-		$fill=!$fill;
+			$fill=!$fill;
+		}
 	}
-
 
 	$pdf->Output();
 ?>
