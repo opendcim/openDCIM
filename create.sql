@@ -647,6 +647,7 @@ INSERT INTO fac_Config VALUES
  	('mUnits', 'english', 'English/Metric', 'string', 'english'),
 	('snmpwalk', '/usr/bin/snmpwalk', 'path', 'string', '/usr/bin/snmpwalk'),
 	('snmpget', '/usr/bin/snmpget', 'path', 'string', '/usr/bin/snmpget'),
+	('cut', '/bin/cut', 'path', 'string', '/bin/cut'),
  	('ToolTips', 'Disabled', 'Enabled/Disabled', 'string', 'Disabled');
 
 --
