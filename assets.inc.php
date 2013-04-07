@@ -2859,7 +2859,7 @@ class Tags {
 			}
 		}else{
 			//No tagname was supplied so kick back an array of all available TagIDs and Names
-			return $this->FindAll;
+			return $this->FindAll();
 		}
 		//everything failed give them nothing
 		return 0;
