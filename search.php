@@ -178,8 +178,8 @@
 		$devList=sort2d($temp,'label');
 	}
 
-	if(!empty($devList)){
-		$searchresults=__('Search complete. (<span id="resultcount">'.$resultcount.'</span>) results.');
+	if($resultcount>0){
+		$searchresults=sprintf(__("Search complete. (%s) results."),"<span id=\"resultcount\">$resultcount</span>");
 	}else{
 		$searchresults=__("No matching devices found.");
 	}
@@ -228,20 +228,16 @@ $(document).ready(function() {
 				hundredths = pad(time - (sec * 100) - (min * 6000), 2);
 			return pad(sec, 2);
 		}
-		var msg=$('<p>').append('Only one result, will autoforward in <span id="countdown"></span> seconds.').click(function(){timer.stop();$(this).remove();})
+		var msg=$('<p>').append('<?php printf(__("Only one result, will autoforward in %s seconds."),'<span id="countdown"></span>'); ?>').click(function(){timer.stop();$(this).remove();})
 		$('#resultcount').parent('p').append(msg);
-		var currentTime=500;
-		var incrementTime = 100;
-		var updateTimer=function(){
+		var currentTime=500,
+		incrementTime=100,
+		updateTimer=function(){
 			$('#countdown').html(formatTime(currentTime));
 			if(currentTime==0){
 				// insert forward action here
-				if($('.cabinet').children('ol').length >0){
-					location.href=$('.cabinet').children('ol').find('a').attr('href');
-				}else{
-					// on hold until the bug is fixed to allow cabinet to count as a valid search result
-					console.log('no device found, only a cabinet');
-				}
+				var lastlink=$('.datacenter').find('a').last().attr("href");
+				location.href=lastlink;
 				timer.stop();
 			}
 			currentTime -= incrementTime / 10;

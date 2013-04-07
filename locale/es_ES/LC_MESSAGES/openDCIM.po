@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: openDCIM.po\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2013-04-06 06:20-0500\n"
+"POT-Creation-Date: 2013-04-06 21:37-0500\n"
 "PO-Revision-Date: 2013-03-25 11:58+0100\n"
 "Last-Translator: Jose Miguel Gomez <jomigom@iies.es>\n"
 "Language-Team: openDCIM <discussion@list.opendcim.org>\n"
@@ -1893,7 +1893,8 @@ msgid "Serial number search results for"
 msgstr "Realtados de la búsqueda por número de serie para"
 
 #: openDCIM/search.php:48
-msgid "Name tag search results for"
+#, fuzzy
+msgid "Name search results for"
 msgstr "Resultados de la búsqueda por etiqueta para"
 
 #: openDCIM/search.php:53
@@ -1905,11 +1906,17 @@ msgid "Custom tag search results for"
 msgstr "Resultados de la búsqueda por etiqueta personalizada para"
 
 #: openDCIM/search.php:182
-msgid "Search complete. (<span id=\"resultcount\">"
+#, php-format
+msgid "Search complete. (%s) results."
 msgstr ""
 
 #: openDCIM/search.php:184
 msgid "No matching devices found."
+msgstr ""
+
+#: openDCIM/search.php:231
+#, php-format
+msgid "Only one result, will autoforward in %s seconds."
 msgstr ""
 
 #: openDCIM/sidebar.inc.php:5
