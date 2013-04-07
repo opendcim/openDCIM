@@ -1,4 +1,3 @@
-<!doctype html>
 <?php
 	require_once( "db.inc.php" );
 	require_once( "facilities.inc.php" );
@@ -36,7 +35,10 @@
 		echo BuildFileList();
 		exit;
 	}
-
+	if(isset($_POST['fe'])){
+		echo(is_file($_POST['fe']))?1:0;
+		exit;
+	}
 	// END AJAX Requests
 
 	if(isset($_REQUEST["action"]) && $_REQUEST["action"]=="Update"){
@@ -132,6 +134,7 @@
 	$tooltip.="</select>";
 
 ?>
+<!doctype html>
 <html>
 <head>
   <meta http-equiv="X-UA-Compatible" content="IE=Edge">
@@ -151,7 +154,7 @@
   <script type="text/javascript" src="scripts/jquery.miniColors.js"></script>
   <script type="text/javascript" src="scripts/jquery.ui.multiselect.js"></script>
   <script type="text/javascript">
-	$(document).ready( function() {
+	$(document).ready(function(){
 		$('#tooltip').multiselect();
 		$("#ToolTips option").each(function(){
 			if($(this).val()==$("#ToolTips").attr('data')){
@@ -284,6 +287,24 @@
 				'top': offset.top+height+'px'
 			});
 			$(this).addClass('text-arrow');
+		});
+		$('input[id^="snmp"]').each(function(){
+			var a=$(this);
+			var icon=$('<span>',{style: 'float:right;margin-top:5px;'}).addClass('ui-icon').addClass('ui-icon-info');
+			a.parent('div').append(icon);
+			$(this).keyup(function(){
+				var b=a.next('span');
+				$.post('',{fe: $(this).val()}).done(function(data){
+					if(data==1){
+						a.effect('highlight', {color: 'lightgreen'}, 1500);
+						b.addClass('ui-icon-circle-check').removeClass('ui-icon-info').removeClass('ui-icon-circle-close');
+					}else{
+						a.effect('highlight', {color: 'salmon'}, 1500);
+						b.addClass('ui-icon-circle-close').removeClass('ui-icon-info').removeClass('ui-icon-circle-check');
+					}
+				});
+			});
+			$(this).trigger('keyup');
 		});
 	});
 
@@ -568,6 +589,17 @@ echo '<div class="main">
 				<div>
 					<div><label for="InstallURL">',__("Base URL for install"),'</label></div>
 					<div><input type="text" defaultvalue="',$href,'" name="InstallURL" value="',$config->ParameterArray["InstallURL"],'"></div>
+				</div>
+			</div> <!-- end table -->
+			<h3>',__("Utilities"),'</h3>
+			<div class="table">
+				<div>
+					<div><label for="snmpget">',__("snmpget"),'</label></div>
+					<div><input type="text" defaultvalue="',$config->defaults["snmpget"],'" name="snmpget" value="',$config->ParameterArray["snmpget"],'"></div>
+				</div>
+				<div>
+					<div><label for="snmpwalk">',__("snmpwalk"),'</label></div>
+					<div><input type="text" defaultvalue="',$config->defaults["snmpwalk"],'" name="snmpwalk" value="',$config->ParameterArray["snmpwalk"],'"></div>
 				</div>
 			</div> <!-- end table -->
 		</div>

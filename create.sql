@@ -645,6 +645,8 @@ INSERT INTO fac_Config VALUES
 	('NewInstallsPeriod', '7', 'Days', 'int', '7' ),
  	('VMExpirationTime','7','Days','int','7'),
  	('mUnits', 'english', 'English/Metric', 'string', 'english'),
+	('snmpwalk', '/usr/bin/snmpwalk', 'path', 'string', '/usr/bin/snmpwalk'),
+	('snmpget', '/usr/bin/snmpget', 'path', 'string', '/usr/bin/snmpget'),
  	('ToolTips', 'Disabled', 'Enabled/Disabled', 'string', 'Disabled');
 
 --
