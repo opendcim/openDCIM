@@ -30,7 +30,7 @@ class Cabinet {
 					cabinets are attached to data centers.  PDU's are associated with cabinets, and metrics
 					are reported on cabinets for power, space, and weight.
 	*/
-	
+
 	var $CabinetID;
 	var $DataCenterID;
 	var $Location;
@@ -50,8 +50,10 @@ class Cabinet {
 	var $MapX2;
 	var $MapY2;
 	var $Notes;
-
+	
 	function CreateCabinet( $db ) {
+		global $dbh;
+		
 		$insert_sql = "insert into fac_Cabinet set DataCenterID=\"" . intval($this->DataCenterID) . "\", Location=\"" . addslashes($this->Location) 
 			. "\", AssignedTo=\"" . intval($this->AssignedTo) . "\", ZoneID=\"" . intval($this->ZoneID) 
 			. "\", CabinetHeight=\"" . intval($this->CabinetHeight) . "\", Model=\"" . addslashes($this->Model) 
@@ -64,17 +66,18 @@ class Cabinet {
 			. "\", MapX2=\"" . intval($this->MapX2) . "\", MapY2=\"" . intval($this->MapY2)
 			. "\", Notes=\"" . addslashes($this->Notes) . "\"";
 
-		if ( ! $result = mysql_query( $insert_sql, $db ) ) {
-			// Error in inserting record
-			echo mysql_errno().": ".mysql_error()."\n";
-			return 0;
+		if ( ! $dbh->exec( $insert_sql ) ) {
+			return false;
+		} else {
+			$this->CabinetID = $dbh->lastInsertID();
 		}
-		$this->CabinetID = mysql_insert_id( $db );
-
+		
 		return $this->CabinetID;
 	}
 
 	function UpdateCabinet( $db ) {
+		global $dbh;
+		
 		$update_sql = "update fac_Cabinet set DataCenterID=\"" . intval($this->DataCenterID) . "\", Location=\"" . addslashes($this->Location) 
 		. "\", AssignedTo=\"" . intval($this->AssignedTo) . "\", ZoneID=\"" . intval($this->ZoneID) 
 		. "\", CabinetHeight=\"" . intval($this->CabinetHeight) . "\", Model=\"" . addslashes($this->Model) 
@@ -87,16 +90,18 @@ class Cabinet {
 		. "\", Notes=\"" . addslashes($this->Notes)
 		. "\" where CabinetID=\"" . intval($this->CabinetID) . "\"";
 
-		if ( ! $result = mysql_query( $update_sql, $db ) ) {
-			return -1;
+		if ( ! $dbh->exec( $update_sql ) ) {
+			return false;
 		}
 
-		return 0;
+		return true;
 	}
 
 	function GetCabinet( $db ) {
 		$select_sql = "select * from fac_Cabinet where CabinetID=\"" . intval($this->CabinetID) . "\"";
+		
 		$result=mysql_query($select_sql,$db);
+		
 		if (mysql_num_rows($result)==0 || !$result){
 			// Error retrieving record
 			$this->CabinetID = null;
