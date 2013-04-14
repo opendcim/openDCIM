@@ -95,3 +95,8 @@ CREATE TABLE fac_DevicePorts (
   KEY DeviceID (DeviceID,DevicePort)
 ) ENGINE=MyISAM AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
 
+--
+-- Add configuration item to allow english or metric values
+--
+
+INSERT INTO fac_Config VALUES ('mUnits', 'english', 'English/Metric', 'string', 'english');

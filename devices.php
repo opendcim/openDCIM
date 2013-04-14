@@ -170,6 +170,7 @@
 	$pwrCords=null;
 	$chassis="";
 	$copy = false;
+	$copyerr=__("This device is a copy of an existing device.  Remember to set the new location before saving.");
 
 	// This page was called from somewhere so let's do stuff.
 	// If this page wasn't called then present a blank record for device creation.
@@ -276,6 +277,10 @@
 					$dev->SNMPCommunity=(isset($_POST['snmpcommunity']))?$_POST['snmpcommunity']:"";
 					$dev->ESX=(isset($_POST['esx']))?$_POST['esx']:0;
 					$dev->Reservation=(isset($_POST['reservation']))?($_POST['reservation']=="on")?1:0:0;
+					$dev->NominalWatts=$_POST['nominalwatts'];
+
+					if ( ( $dev->TemplateID > 0 ) && ( intval($dev->NominalWatts == 0 ) ) )
+						$dev->UpdateWattageFromTemplate($facDB);
 					$dev->CreateDevice($facDB);
 					$dev->SetTags($tagarray);
 				}elseif($user->DeleteAccess&&($_REQUEST['action']=='Delete')){
@@ -284,8 +289,10 @@
 					header('Location: '.redirect("cabnavigator.php?cabinetid=$dev->Cabinet"));
 					exit;
 				} elseif ( $user->WriteAccess && $_REQUEST["action"] == "Copy" ) {
-					$dev->CopyDevice( $facDB );
-					$copy = true;
+					$copy=true;
+					if(!$dev->CopyDevice($facDB)){
+						$copyerr=__("Device did not copy.  Error.");
+					}
 				} elseif($user->WriteAccess&&$_REQUEST['action']=='child') {
 					if(isset($_REQUEST['parentdevice'])){
 						$dev->DeviceID=null;
@@ -571,7 +578,7 @@ $(document).ready(function() {
 		}
 	});
 	function editnotes(button){
-		button.val('preview').text('Preview');
+		button.val('preview').text('<?php echo __("Preview");?>');
 		var a=button.next('div');
 		button.next('div').remove();
 		button.next('textarea').htmlarea({
@@ -584,7 +591,7 @@ $(document).ready(function() {
 	}
 
 	function rendernotes(button){
-		button.val('edit').text('Edit');
+		button.val('edit').text('<?php echo __("Edit");?>');
 		var w=button.next('div').outerWidth();
 		var h=$('.jHtmlArea').outerHeight();
 		if(h>0){
@@ -1069,7 +1076,7 @@ echo '<div class="main">
 <button id="layout" onClick="swaplayout()">'.__("Portrait").'</button>
 <h2>'.$config->ParameterArray['OrgName'].'</h2>
 <h3>'.__("Data Center Device Detail").'</h3>';
-echo($copy)?'<h3>'.__("This device is a copy of an existing device.  Remember to set the new location before saving.").'</h3>':'';
+echo($copy)?"<h3>$copyerr</h3>":'';
 echo '<div class="center"><div>
 <div id="positionselector"></div>
 <form name="deviceform" id="deviceform" action="'.$_SERVER['PHP_SELF'].((isset($dev->DeviceID) && $dev->DeviceID>0)?"?deviceid=$dev->DeviceID":"").'" method="POST">
@@ -1319,8 +1326,11 @@ echo '<fieldset class="chassis">
 			<div><label for="chassisslots">',__("Number of Slots in Chassis:"),'</label></div>
 			<div><input type="text" id="chassisslots" class="optional,validate[custom[onlyNumberSp]]" name="chassisslots" size="4" value="',$dev->ChassisSlots,'"></div>
 			<div class="greybg"><input type="text" id="rearchassisslots" class="optional,validate[custom[onlyNumberSp]]" name="rearchassisslots" size="4" value="',$dev->RearChassisSlots,'"></div>
-		</div>
-	</div>
+		</div>';
+	
+	if($dev->ChassisSlots >0){
+
+echo '	</div>
 	<div class="table">
 		<div>
 			<div>',__("Slot #"),'</div>
@@ -1337,12 +1347,13 @@ echo '<fieldset class="chassis">
 			<div>$chDev->DeviceType</div>
 		</div>\n";
 	}
-	
-	if($dev->ChassisSlots >0){
-
 echo '		<div class="caption">
 			<button type="submit" id="adddevice" value="child" name="action">',__("Add Device"),'</button>
 			<input type="hidden" id="parentdevice" name="parentdevice" disabled value="',$dev->DeviceID,'">
+		</div>';
+	}else{
+echo '		<div class="caption">
+			',__("You must first define how many slots are in the chassis before you can add devices."),'
 		</div>';
 	}
 ?>

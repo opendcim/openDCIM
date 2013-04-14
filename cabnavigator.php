@@ -16,11 +16,6 @@
 	$cab->CabinetID=$_REQUEST["cabinetid"];
 	$cab->GetCabinet($facDB);
 
-	if(is_null($cab->CabinetID)){
-		header('Location: '.redirect());
-		exit;
-	}
-
 	// If you're deleting the cabinet, no need to pull in the rest of the information, so get it out of the way
 	if(isset($_POST["delete"]) && $_POST["delete"]=="yes" && $user->SiteAdmin){
 		$cab->DeleteCabinet($facDB);
@@ -255,7 +250,7 @@
 	$CenterofGravity=@round($totalMoment/$totalWeight);
 
 	$used=$cab->CabinetOccupancy($cab->CabinetID,$facDB);
-	$SpacePercent=number_format($used/$cab->CabinetHeight*100,0);
+	@$SpacePercent=number_format($used/$cab->CabinetHeight*100,0);
 	@$WeightPercent=number_format($totalWeight/$cab->MaxWeight*100,0);
 	@$PowerPercent=number_format(($totalWatts/1000)/$cab->MaxKW*100,0);
 	$CriticalColor=$config->ParameterArray["CriticalColor"];

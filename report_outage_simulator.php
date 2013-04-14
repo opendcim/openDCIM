@@ -2,122 +2,17 @@
 	require_once( 'db.inc.php' );
 	require_once( 'facilities.inc.php' );
 
-	define('FPDF_FONTPATH','font/');
-	require('fpdf.php');
 
-class PDF extends FPDF {
-  var $outlines=array();
-  var $OutlineRoot;
-  var $pdfconfig;
-  var $pdfDB;
-  
-	function PDF($db){
-		$this->pdfDB = $db;
-		parent::FPDF();
-	}
-  
-	function Header() {
-		$this->pdfconfig = new Config($this->pdfDB);
-		$this->Link( 10, 8, 100, 20, 'https://' . $_SERVER['SERVER_NAME'] . $_SERVER['PHP_SELF'] );
-    	$this->Image( 'images/' . $this->pdfconfig->ParameterArray['PDFLogoFile'],10,8,100);
-    	$this->SetFont($this->pdfconfig->ParameterArray['PDFfont'],'B',12);
-    	$this->Cell(120);
-    	$this->Cell(30,20,'Information Technology Services',0,0,'C');
-    	$this->Ln(20);
-		$this->SetFont( $this->pdfconfig->ParameterArray['PDFfont'],'',10 );
-		$this->Cell( 50, 6, 'Outage Impact Report', 0, 1, 'L' );
-		$this->Cell( 50, 6, 'Date: ' . date( 'm/d/y' ), 0, 1, 'L' );
-		$this->Ln(10);
-	}
+	$user = new User();
+	$user->UserID = $_SERVER["REMOTE_USER"];
+	$user->GetUserRights( $facDB );
 
-	function Footer() {
-	    	$this->SetY(-15);
-    		$this->SetFont($this->pdfconfig->ParameterArray['PDFfont'],'I',8);
-    		$this->Cell(0,10,'Page '.$this->PageNo().'/{nb}',0,0,'C');
+	if(!$user->ReadAccess){
+		// No soup for you.
+		header('Location: '.redirect());
+		exit;
 	}
 	
-  function Bookmark($txt,$level=0,$y=0) {
-    if($y==-1)
-        $y=$this->GetY();
-    $this->outlines[]=array('t'=>$txt,'l'=>$level,'y'=>$y,'p'=>$this->PageNo());
-  }
-
-  function _putbookmarks() {
-    $nb=count($this->outlines);
-    if($nb==0)
-        return;
-    $lru=array();
-    $level=0;
-    foreach($this->outlines as $i=>$o)
-    {
-        if($o['l']>0)
-        {
-            $parent=$lru[$o['l']-1];
-            //Set parent and last pointers
-            $this->outlines[$i]['parent']=$parent;
-            $this->outlines[$parent]['last']=$i;
-            if($o['l']>$level)
-            {
-                //Level increasing: set first pointer
-                $this->outlines[$parent]['first']=$i;
-            }
-        }
-        else
-            $this->outlines[$i]['parent']=$nb;
-        if($o['l']<=$level and $i>0)
-        {
-            //Set prev and next pointers
-            $prev=$lru[$o['l']];
-            $this->outlines[$prev]['next']=$i;
-            $this->outlines[$i]['prev']=$prev;
-        }
-        $lru[$o['l']]=$i;
-        $level=$o['l'];
-    }
-    //Outline items
-    $n=$this->n+1;
-    foreach($this->outlines as $i=>$o)
-    {
-        $this->_newobj();
-        $this->_out('<</Title '.$this->_textstring($o['t']));
-        $this->_out('/Parent '.($n+$o['parent']).' 0 R');
-        if(isset($o['prev']))
-            $this->_out('/Prev '.($n+$o['prev']).' 0 R');
-        if(isset($o['next']))
-            $this->_out('/Next '.($n+$o['next']).' 0 R');
-        if(isset($o['first']))
-            $this->_out('/First '.($n+$o['first']).' 0 R');
-        if(isset($o['last']))
-            $this->_out('/Last '.($n+$o['last']).' 0 R');
-        $this->_out(sprintf('/Dest [%d 0 R /XYZ 0 %.2f null]',1+2*$o['p'],($this->h-$o['y'])*$this->k));
-        $this->_out('/Count 0>>');
-        $this->_out('endobj');
-    }
-    //Outline root
-    $this->_newobj();
-    $this->OutlineRoot=$this->n;
-    $this->_out('<</Type /Outlines /First '.$n.' 0 R');
-    $this->_out('/Last '.($n+$lru[0]).' 0 R>>');
-    $this->_out('endobj');
-  }
-
-  function _putresources()
-  {
-    parent::_putresources();
-    $this->_putbookmarks();
-  }
-
-  function _putcatalog()
-  {
-    parent::_putcatalog();
-    if(count($this->outlines)>0)
-    {
-        $this->_out('/Outlines '.$this->OutlineRoot.' 0 R');
-        $this->_out('/PageMode /UseOutlines');
-    }
-  }
-}
-
 if (!isset($_REQUEST['action'])){
 ?>
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
@@ -158,9 +53,9 @@ if (!isset($_REQUEST['action'])){
 <table align="center" border=0>
 <?php
 	if ( @$_REQUEST['datacenterid'] == 0 ) {
-		printf( "<tr><td>Data Center:</td><td>\n" );
+		printf( "<tr><td>%s:</td><td>\n", __("Data Center") );
 		printf( "<select name=\"datacenterid\" onChange=\"form.submit()\">\n" );
-		printf( "<option value=\"\">Select data center</option>\n" );
+		printf( "<option value=\"\">%s</option>\n", __("Select data center") );
 		
 		foreach ( $dcList as $dc )
 			printf( "<option value=\"%d\">%s</option>\n", $dc->DataCenterID, $dc->Name );
@@ -174,12 +69,14 @@ if (!isset($_REQUEST['action'])){
 		$sourceList = $pwrSource->GetSourcesByDataCenter( $facDB );
 		printf( "<input type=\"hidden\" name=\"datacenterid\" value=\"%d\">\n", $datacenter->DataCenterID );
 		
-		printf( "<h3>Choose either power sources or panels to simulate for Data Center: %s</h3>", $datacenter->Name );
+		printf( "<h3>%s: %s</h3>", __("Choose either power sources or panels to simulate for Data Center"), $datacenter->Name );
 		
-		printf( "<input type=submit name=\"action\" value=\"Generate\"><br>\n" );
+		printf( "<input type=submit name=\"action\" value=\"%s\"><br>\n", __("Generate") );
+		
+		printf( "<input type=checkbox name=\"skipnormal\">%s<br>\n", __("Only show down/unknown devices") );
 		
 		printf( "<table border=1 align=center>\n" );
-		printf( "<tr><th>Power Source</th><th>Power Panel</th></tr>\n" );
+		printf( "<tr><th>%s</th><th>%s</th></tr>\n", __("Power Source"), __("Power Panel") );
 		
 		foreach ( $sourceList as $source ) {
 			$pwrPanel->PowerSourceID = $source->PowerSourceID;
@@ -200,6 +97,66 @@ if (!isset($_REQUEST['action'])){
 </form>
 <?php
 } else {
+?>
+<!doctype html>
+<html>
+<head>
+  <meta http-equiv="X-UA-Compatible" content="IE=Edge">
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <link rel="stylesheet" href="css/inventory.php" type="text/css">
+  <link rel="stylesheet" href="css/print.css" type="text/css" media="print">
+  <link rel="stylesheet" href="css/jquery-ui.css" type="text/css">
+  <link rel="stylesheet" href="css/jquery.dataTables.css" type="text/css">
+  <link rel="stylesheet" href="css/ColVis.css" type="text/css">
+  <link rel="stylesheet" href="css/TableTools.css" type="text/css">
+  <style type="text/css"></style>
+  <!--[if lt IE 9]>
+  <link rel="stylesheet"  href="css/ie.css" type="text/css" />
+  <![endif]-->
+  <script type="text/javascript" src="scripts/jquery.min.js"></script>
+  <script type="text/javascript" src="scripts/jquery-ui.min.js"></script>
+  <script type="text/javascript" src="scripts/jquery-migrate-1.0.0.js"></script>
+  <script type="text/javascript" src="scripts/jquery.dataTables.min.js"></script>
+  <script type="text/javascript" src="scripts/ColVis.min.js"></script>
+  <script type="text/javascript" src="scripts/TableTools.min.js"></script>
+  
+  
+  <script type="text/javascript">
+	$(document).ready(function(){
+		var rows;
+		function dt(){
+			$('#report').dataTable({
+				"iDisplayLength": 25,
+				"sDom": 'CT<"clear">lfrtip',
+				"oTableTools": {
+					"sSwfPath": "scripts/copy_csv_xls.swf",
+					"aButtons": ["copy","csv","xls","print"]
+				}
+			});
+			redraw();
+		}
+		function redraw(){
+			if(($('#report').outerWidth()+$('#sidebar').outerWidth()+10)<$('.page').innerWidth()){
+				$('.main').width($('#header').innerWidth()-$('#sidebar').outerWidth()-16);
+			}else{
+				$('.main').width($('#report').outerWidth()+40);
+			}
+			$('.page').width($('.main').outerWidth()+$('#sidebar').outerWidth()+10);
+		}
+		dt();
+	});
+  </script>
+
+</head>
+<body>
+	<div id="header"></div>
+	<div class="page">
+<?php
+	include('sidebar.inc.php');
+echo '		<div class="main">
+			<h2>',$config->ParameterArray['OrgName'],'</h2>
+			<div class="center">
+				<div id="tablecontainer">';
 
 	//
 	//
@@ -227,7 +184,13 @@ if (!isset($_REQUEST['action'])){
 	
 	$dc->DataCenterID = intval( $_REQUEST['datacenterid'] );
 	$dc->GetDataCenter( $facDB );
+	
+	$skipNormal = false;
 
+	if (isset( $_REQUEST["skipnormal"] ) ) {
+		$skipNormal = $_REQUEST["skipnormal"];
+	}
+	
 	if(isset($_POST['sourceid'])){
 		$srcArray=$_POST['sourceid'];
 	}
@@ -308,59 +271,19 @@ if (!isset($_REQUEST['action'])){
 	}
 		
 	usort( $cabList, 'compareCab' );
+
+	printf( "<h2>%s</h2>", __("Power Outage Simulation Report") );
 	
-	$pdf=new PDF($facDB);
-	$pdf->AliasNbPages();
-
-	$pdf->SetFont($config->ParameterArray['PDFfont'],'',8);
-
-	$pdf->SetFillColor( 0, 0, 0 );
-	$pdf->SetTextColor( 255 );
-	$pdf->SetDrawColor( 128, 0, 0 );
-	$pdf->SetLineWidth( .3 );
-
-	$pdf->SetfillColor( 224, 235, 255 );
-	$pdf->SetTextColor( 0 );
-
-	$pdf->AddPage();
-	$pdf->SetFont( $config->ParameterArray['PDFfont'], 'B', 12 );
-	$pdf->Cell( 80, 5, 'Data Center: ' . $dc->Name );
-	$pdf->SetFont( $config->ParameterArray['PDFfont'], '', 8 );
-	$pdf->Ln();
-
-	$pdf->Cell( 0, 2, 'The following cabinets have at least one circuit affected by the simulation:', 0, 1 );
-	$pdf->Ln();
-	
-	$column = 0;
-	$pdf->SetLeftMargin( 20 );
-	
-	foreach ( $cabList as $outageCab ) {
-		$pdf->Cell( 50, 3, $outageCab->Location );
-		
-		$column++;
-		
-		if ( $column == 4 ) {
-			$pdf->Ln();
-			$column = 0;
-		}
+	if ( $skipNormal )  {
+		printf( "<h3>%s</h3>\n", __('Only listing systems which are down or unknown.') );
 	}
 	
-	$pdf->SetLeftMargin( 10 );
-	$pdf->AddPage();
-	
-	$headerTags = array( 'Cabinet', 'Device Name', 'Status', 'Position', 'Owner' );
-	$cellWidths = array( 25, 50, 30, 15, 65 );
-
-	$fill = 0;
+	echo "<table id=\"report\" class=\"display\">\n<thead>\n";
+	foreach ( array( __('Cabinet'), __('Device Name'), __('Status'), __('Position'), __('Owner') ) as $header )
+		printf( "<th>%s</th>\n", $header );
+	echo "</thead>\n<tbody>\n";
 		
 	foreach ( $cabList as $cabRow ) {
-		$maxval = count( $headerTags );
-
-		for ( $col = 0; $col < $maxval; $col++ )
-			$pdf->Cell( $cellWidths[$col], 7, $headerTags[$col], 1, 0, 'C', 1 );
-			
-		$pdf->Ln();
-
 		$dev->Cabinet = $cabRow->CabinetID;
 		
 		// Check to see if all circuits to the cabinet are from the outage list - if so, the whole cabinet goes down
@@ -375,15 +298,7 @@ if (!isset($_REQUEST['action'])){
 		
 		$devList = $dev->ViewDevicesByCabinet( $facDB );
 
-		if ( sizeof( $devList ) == 0 ) {
-			$pdf->Cell( $cellWidths[0], 6, $cabRow->Location, 'LBRT', 0, 'L', $fill );
-			$pdf->Cell( $cellWidths[1], 6, 'None', 'LBRT', 0, 'L', $fill );
-			$pdf->Cell( $cellWidths[2], 6, '', 'LBRT', 0, 'L', $fill );
-			$pdf->Cell( $cellWidths[3], 6, '', 'LBRT', 0, 'L', $fill );
-			$pdf->Cell( $cellWidths[4], 6, '', 'LBRT', 1, 'L', $fill );
-			
-			$fill =! $fill;
-		} else {
+		if ( sizeof( $devList ) > 0 ) {
 			foreach ( $devList as $devRow ) {
 				// If there is not a circuit to the cabinet that is unaffected, no need to even check
 				$outageStatus = 'Down';
@@ -393,7 +308,7 @@ if (!isset($_REQUEST['action'])){
 						// If a circuit was entered with no panel ID, or a device has no connections documented, mark it as unknown
 						// The only way to be sure a device will stay up is if we have a connection to an unaffected circuit,
 						// or to a failsafe switch (ATS) connected to at least one unaffected circuit.
-						$outageStatus = 'Down';
+						$outageStatus = __('Down');
 						
 						$pwrConn->DeviceID = $devRow->DeviceID;
 						$connList = $pwrConn->GetConnectionsByDevice( $facDB );
@@ -402,7 +317,7 @@ if (!isset($_REQUEST['action'])){
 						$fsDiverse = false;
 						
 						if ( count( $connList ) == 0 ) {
-							$outageStatus = 'Unknown';
+							$outageStatus = __('Unknown');
 						}
 
 						foreach ( $connList as $connection ) {
@@ -421,34 +336,44 @@ if (!isset($_REQUEST['action'])){
 						
 						if ( count( $devPDUList ) > 0 ) {
 							if ( count( $devPDUList ) < $devRow->PowerSupplyCount )
-								$outageStatus = 'Degraded';
+								$outageStatus = __('Degraded');
 							elseif ( $fsDiverse )
-								$outageStatus = 'Degraded/Fail-Safe';
+								$outageStatus = __('Degraded/Fail-Safe');
 							else
-								$outageStatus = 'Normal';
+								$outageStatus = __('Normal');
 						}
 						
 					}
 					
-					$pdf->Cell( $cellWidths[0], 6, $cabRow->Location, 'LBRT', 0, 'L', $fill );
-					$pdf->Cell( $cellWidths[1], 6, $devRow->Label, 'LBRT', 0, 'L', $fill );
-					$pdf->Cell( $cellWidths[2], 6, $outageStatus, 'LBRT', 0, 'L', $fill ); 
-					$pdf->Cell( $cellWidths[3], 6, $devRow->Position, 'LBRT', 0, 'L', $fill );
+					if ( ! $skipNormal || ( $skipNormal && ( $outageStatus == __('Down') || $outageStatus == __('Unknown') ) ) ) {
+						echo "<tr>\n";
+						printf( "<td>%s</td>\n", $cabRow->Location );
+						printf( "<td>%s</td>\n", $devRow->Label );
+						printf( "<td>%s</td>\n", $outageStatus );
+						printf( "<td>%s</td>\n", $devRow->Position );
 
-					$dept->DeptID = $devRow->Owner;
-					$dept->GetDeptByID( $facDB );
+						$dept->DeptID = $devRow->Owner;
+						$dept->GetDeptByID( $facDB );
 
-					$pdf->Cell( $cellWidths[4], 6, $dept->Name, 'LBRT', 1, 'L', $fill );
-
-					$fill =! $fill;
+						printf( "<td>%s</td>\n", $dept->Name );
+						
+						echo "</tr>\n";
+					}
 				}
 			}
 		}
 	  
-		$pdf->Ln();
 	}    	
 
-	$pdf->Output();
-	
+?>
+					</tbody>
+					</table>
+				</div>
+			</div>
+		</div><!-- END div.main -->
+	</div><!-- END div.page -->
+</body>
+</html>
+<?php
 }
 ?>

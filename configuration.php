@@ -1,4 +1,3 @@
-<!doctype html>
 <?php
 	require_once( "db.inc.php" );
 	require_once( "facilities.inc.php" );
@@ -13,6 +12,34 @@
 		header('Location: '.redirect());
 		exit;
 	}
+
+	function BuildFileList(){
+		$imageselect='<div id="preview"></div><div id="filelist">';
+
+		$path='./images';
+		$dir=scandir($path);
+		foreach($dir as $i => $f){
+			if(is_file($path.DIRECTORY_SEPARATOR.$f) && round(filesize($path.DIRECTORY_SEPARATOR.$f) / 1024, 2)>=4 && $f!="serverrack.png" && $f!="gradient.png"){
+				$imageinfo=getimagesize($path.DIRECTORY_SEPARATOR.$f);
+				if(preg_match('/^image/i', $imageinfo['mime'])){
+					$imageselect.="<span>$f</span>\n";
+				}
+			}
+		}
+		$imageselect.="</div>";
+		return $imageselect;
+	}
+
+	// AJAX Requests
+	if(isset($_GET['fl'])){
+		echo BuildFileList();
+		exit;
+	}
+	if(isset($_POST['fe'])){
+		echo(is_file($_POST['fe']))?1:0;
+		exit;
+	}
+	// END AJAX Requests
 
 	if(isset($_REQUEST["action"]) && $_REQUEST["action"]=="Update"){
 		foreach($config->ParameterArray as $key=>$value){
@@ -49,19 +76,7 @@
 	$spaceunitlist = $config->make_string_list("SpaceUnits");
 
 
-	$imageselect='<div id="preview"></div><div id="filelist">';
-
-	$path='./images';
-	$dir=scandir($path);
-	foreach($dir as $i => $f){
-		if(is_file($path.DIRECTORY_SEPARATOR.$f) && round(filesize($path.DIRECTORY_SEPARATOR.$f) / 1024, 2)>=4 && $f!="serverrack.png" && $f!="gradient.png"){
-			$imageinfo=getimagesize($path.DIRECTORY_SEPARATOR.$f);
-			if(preg_match('/^image/i', $imageinfo['mime'])){
-				$imageselect.="<span>$f</span>\n";
-			}
-		}
-	}
-	$imageselect.="</div>";
+	$imageselect=BuildFileList();
 
 	function formatOffset($offset) {
 			$hours = $offset / 3600;
@@ -123,6 +138,7 @@
 	$tooltip.="</select>";
 
 ?>
+<!doctype html>
 <html>
 <head>
   <meta http-equiv="X-UA-Compatible" content="IE=Edge">
@@ -142,7 +158,7 @@
   <script type="text/javascript" src="scripts/jquery.miniColors.js"></script>
   <script type="text/javascript" src="scripts/jquery.ui.multiselect.js"></script>
   <script type="text/javascript">
-	$(document).ready( function() {
+	$(document).ready(function(){
 		$('#tooltip').multiselect();
 		$("#ToolTips option").each(function(){
 			if($(this).val()==$("#ToolTips").attr('data')){
@@ -194,47 +210,52 @@
 			$("head").append("<style type=\"text/css\">a:visited {color: "+$(this).val()+";}</style>");
 		});
 		$('#PDFLogoFile').click(function(){
-			$("#imageselection").dialog({
-				resizable: false,
-				height:300,
-				width: 400,
-				modal: true,
-				buttons: {
-<?php echo '					',__("Select"),': function() {'; ?>
-						if($('#imageselection #preview').attr('image')!=""){
-							$('#PDFLogoFile').val($('#imageselection #preview').attr('image'));
+			$.get('',{fl: '1'}).done(function(data){
+				$("#imageselection").html(data);
+
+
+				$("#imageselection").dialog({
+					resizable: false,
+					height:300,
+					width: 400,
+					modal: true,
+					buttons: {
+	<?php echo '					',__("Select"),': function() {'; ?>
+							if($('#imageselection #preview').attr('image')!=""){
+								$('#PDFLogoFile').val($('#imageselection #preview').attr('image'));
+							}
+							$(this).dialog("close");
 						}
-						$(this).dialog("close");
 					}
-				}
-			});
-			$("#imageselection span").each(function(){
-				var preview=$('#imageselection #preview');
-				$(this).click(function(){
-					preview.html('<img src="images/'+$(this).text()+'" alt="preview">').attr('image',$(this).text()).css('border-width', '5px');
-					preview.children('img').load(function(){
-						var topmargin=0;
-						var leftmargin=0;
-						if($(this).height()<$(this).width()){
-							$(this).width(preview.innerHeight());
-							$(this).css({'max-width': preview.innerWidth()+'px'});
-							topmargin=Math.floor((preview.innerHeight()-$(this).height())/2);
-						}else{
-							$(this).height(preview.innerHeight());
-							$(this).css({'max-height': preview.innerWidth()+'px'});
-							leftmargin=Math.floor((preview.innerWidth()-$(this).width())/2);
-						}
-						$(this).css({'margin-top': topmargin+'px', 'margin-left': leftmargin+'px'});
-					});
-					$("#imageselection span").each(function(){
-						$(this).removeAttr('style');
-					});
-					$(this).css('border','1px dotted black')
-					$('#header').css('background-image', 'url("images/'+$(this).text()+'")');
 				});
-				if($('#PDFLogoFile').val()==$(this).text()){
-					$(this).click();
-				}
+				$("#imageselection span").each(function(){
+					var preview=$('#imageselection #preview');
+					$(this).click(function(){
+						preview.html('<img src="images/'+$(this).text()+'" alt="preview">').attr('image',$(this).text()).css('border-width', '5px');
+						preview.children('img').load(function(){
+							var topmargin=0;
+							var leftmargin=0;
+							if($(this).height()<$(this).width()){
+								$(this).width(preview.innerHeight());
+								$(this).css({'max-width': preview.innerWidth()+'px'});
+								topmargin=Math.floor((preview.innerHeight()-$(this).height())/2);
+							}else{
+								$(this).height(preview.innerHeight());
+								$(this).css({'max-height': preview.innerWidth()+'px'});
+								leftmargin=Math.floor((preview.innerWidth()-$(this).width())/2);
+							}
+							$(this).css({'margin-top': topmargin+'px', 'margin-left': leftmargin+'px'});
+						});
+						$("#imageselection span").each(function(){
+							$(this).removeAttr('style');
+						});
+						$(this).css('border','1px dotted black')
+						$('#header').css('background-image', 'url("images/'+$(this).text()+'")');
+					});
+					if($('#PDFLogoFile').val()==$(this).text()){
+						$(this).click();
+					}
+				});
 			});
 		});
 		$("#tzmenu").menu();
@@ -270,6 +291,24 @@
 				'top': offset.top+height+'px'
 			});
 			$(this).addClass('text-arrow');
+		});
+		$('input[id^="snmp"],input[id="cut"]').each(function(){
+			var a=$(this);
+			var icon=$('<span>',{style: 'float:right;margin-top:5px;'}).addClass('ui-icon').addClass('ui-icon-info');
+			a.parent('div').append(icon);
+			$(this).keyup(function(){
+				var b=a.next('span');
+				$.post('',{fe: $(this).val()}).done(function(data){
+					if(data==1){
+						a.effect('highlight', {color: 'lightgreen'}, 1500);
+						b.addClass('ui-icon-circle-check').removeClass('ui-icon-info').removeClass('ui-icon-circle-close');
+					}else{
+						a.effect('highlight', {color: 'salmon'}, 1500);
+						b.addClass('ui-icon-circle-close').removeClass('ui-icon-info').removeClass('ui-icon-circle-check');
+					}
+				});
+			});
+			$(this).trigger('keyup');
 		});
 	});
 
@@ -335,6 +374,14 @@ echo '<div class="main">
 					<div><select id="wDate" name="wDate" defaultvalue="',$config->defaults["wDate"],'" data="',$config->ParameterArray["wDate"],'">
 							<option value="blank"',(($config->ParameterArray["wDate"]=="blank")?' selected="selected"':''),'>',__("Blank"),'</option>
 							<option value="now"',(($config->ParameterArray["wDate"]=="now")?' selected="selected"':''),'>',__("Now"),'</option>
+						</select>
+					</div>
+				</div>
+				<div>
+					<div><label for="mUnits">',__("Measurement Units"),'</label></div>
+					<div><select id="mUnits" name="mUnits" defaultvalue="',$config->defaults["mUnits"],'" data="',$config->ParameterArray["mUnits"],'">
+							<option value="english"',(($config->ParameterArray["mUnits"]=="english")?' selected="selected"':''),'>',__("English"),'</option>
+							<option value="metric"',(($config->ParameterArray["mUnits"]=="metric")?' selected="selected"':''),'>',__("Metric"),'</option>
 						</select>
 					</div>
 				</div>
@@ -550,6 +597,21 @@ echo '<div class="main">
 				<div>
 					<div><label for="InstallURL">',__("Base URL for install"),'</label></div>
 					<div><input type="text" defaultvalue="',$href,'" name="InstallURL" value="',$config->ParameterArray["InstallURL"],'"></div>
+				</div>
+			</div> <!-- end table -->
+			<h3>',__("Utilities"),'</h3>
+			<div class="table">
+				<div>
+					<div><label for="snmpget">',__("snmpget"),'</label></div>
+					<div><input type="text" defaultvalue="',$config->defaults["snmpget"],'" name="snmpget" value="',$config->ParameterArray["snmpget"],'"></div>
+				</div>
+				<div>
+					<div><label for="snmpwalk">',__("snmpwalk"),'</label></div>
+					<div><input type="text" defaultvalue="',$config->defaults["snmpwalk"],'" name="snmpwalk" value="',$config->ParameterArray["snmpwalk"],'"></div>
+				</div>
+				<div>
+					<div><label for="cut">',__("cut"),'</label></div>
+					<div><input type="text" defaultvalue="',$config->defaults["cut"],'" name="cut" value="',$config->ParameterArray["cut"],'"></div>
 				</div>
 			</div> <!-- end table -->
 		</div>
