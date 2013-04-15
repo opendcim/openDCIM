@@ -1733,6 +1733,24 @@ class Device {
 		}
 		return 0;
 	}
+	
+	//JMGA added
+	function GetDeviceLineage($db){
+		$devList=array();
+		$num=1;
+		$devList[$num]=new Device();
+		$devList[$num]->DeviceID=$this->DeviceID;
+		$devList[$num]->GetDevice( $db );
+		
+		while ( $devList[$num]->ParentDevice <> 0) {
+			$num++;
+			$devList[$num]=new Device();
+			$devList[$num]->DeviceID = $devList[$num-1]->ParentDevice;
+			$devList[$num]->GetDevice( $db );
+		}
+		return $devList;	
+	}
+	//FIN JMGA
 }
 
 class ESX {
@@ -2884,5 +2902,174 @@ class Tags {
 	}
 
 }
+
+class ConnectionPath {
+	
+	var $DeviceID;
+	var $DeviceType;
+	var $PortNumber;
+	var $Front;  //false for rear connetcion of panels and end of path for other devices 
+	var $Path;
+	private $PathAux; //loops control
+	
+	function MakeSafe(){
+		$this->DeviceID=intval($this->DeviceID);
+		if ( ! in_array( $this->DeviceType, array( 'Server', 'Appliance', 'Storage Array', 'Switch', 'Chassis', 'Patch Panel', 'Physical Infrastructure' ) ) )
+		  $this->DeviceType = "Server";
+		$this->PortNumber=intval($this->PortNumber);
+		$this->Front=($this->Front)?true:false;
+		for ($i=0; $i<count($this->Path); $i++){
+			$this->Path[$i]["DeviceID"]=intval($this->Path[$i]["DeviceID"]);
+			$this->Path[$i]["DeviceType"]=intval($this->Path[$i]["DeviceType"]);
+			$this->Path[$i]["PortNumber"]=intval($this->Path[$i]["PortNumber"]);
+			$this->Path[$i]["Front"]=($this->Path[$i]["Front"])?true:false;
+		}
+	}
+
+	function AddDeviceToPath ( $db ) {
+		$i=count($this->Path);
+		$this->Path[$i]["DeviceID"]=intval($this->DeviceID);
+		$this->Path[$i]["DeviceType"]=intval($this->DeviceType);
+		$this->Path[$i]["PortNumber"]=intval($this->PortNumber);
+		$this->Path[$i]["Front"]=intval($this->Front);
+	}
+	
+	function ClearPath(){
+		$this->Path=array();
+	}
+	
+	private function AddDeviceToPathAux ( $db ) {
+		$i=count($this->PathAux);
+		$this->PathAux[$i]["DeviceID"]=intval($this->DeviceID);
+		$this->PathAux[$i]["DeviceType"]=intval($this->DeviceType);
+		$this->PathAux[$i]["PortNumber"]=intval($this->PortNumber);
+		$this->PathAux[$i]["Front"]=intval($this->Front);
+	}
+	
+	private function ClearPathAux(){
+		$this->PathAux=array();
+	}
+	
+	private function IsDeviceInPathAux ( $db ) {
+		$ret=false;
+		for ($i=0; $i<count($this->PathAux); $i++){
+			if ($this->PathAux[$i]["DeviceID"]==$this->DeviceID && $this->PathAux[$i]["PortNumber"]=$this->PortNumber) {
+				$ret=true;
+				break;
+			}
+		}
+		return $ret;
+	}
+	
+	function GotoHeadDevice ( $db ) {
+		$this->MakeSafe();
+		$this->ClearPathAux();
+
+		while ($this->DeviceType=="Patch Panel"){
+			if (!$this->IsDeviceInPathAux($db)){
+				$this->AddDeviceToPathAux($db);
+			}else {
+				//loop!!
+				return false;
+			}
+			if (!$this->GotoNextDevice ( $db )) {
+				$this->Front=!$this->Front;
+				return true;
+			}
+		}
+		$this->Front=true;
+		return true;
+	}
+	
+	function GotoNextDevice ( $db ) {
+		$this->MakeSafe();
+		
+		if ($this->DeviceType=="Patch Panel"){
+			//it's a panel
+			if ($this->Front){
+				$sql = "SELECT FrontEndPointDeviceID AS DeviceID,
+							FrontEndpointPort AS PortNumber,
+							DeviceType 
+						FROM fac_patchconnection p INNER JOIN fac_device d ON p.FrontEndPointDeviceID=d.DeviceID
+						WHERE PanelDeviceID=". $this->DeviceID." AND PanelPortNumber=". $this->PortNumber;
+							
+			} else {
+				$sql = "SELECT RearEndPointDeviceID AS DeviceID,
+							RearEndpointPort AS PortNumber,
+							DeviceType 
+						FROM fac_patchconnection p INNER JOIN fac_device d ON p.RearEndPointDeviceID=d.DeviceID
+						WHERE PanelDeviceID=". $this->DeviceID." AND PanelPortNumber=". $this->PortNumber;
+				
+			}
+			
+			$result = mysql_query( $sql, $db );
+			$Front_sig=!$this->Front;
+		}elseif($this->Front){
+			//It isn't a panel
+			//Is it connected to rear connection of other pannel? 
+			$sql = "SELECT PanelDeviceID AS DeviceID,
+						PanelPortNumber AS PortNumber,
+						'Patch Panel' AS DeviceType 
+					FROM fac_patchconnection
+					WHERE RearEndPointDeviceID=". $this->DeviceID." AND RearEndpointPort=". $this->PortNumber;
+			
+			$result = mysql_query( $sql, $db );
+			if($result && mysql_num_rows($result)>0){
+				$Front_sig=true;
+			}else{
+				$Front_sig=false;
+				
+				//Is it connected to front connection of other pannel?
+				$sql = "SELECT PanelDeviceID AS DeviceID,
+							PanelPortNumber AS PortNumber,
+							'Patch Panel' AS DeviceType 
+						FROM fac_patchconnection
+						WHERE FrontEndPointDeviceID=". $this->DeviceID." AND FrontEndpointPort=". $this->PortNumber;
+				
+				$result = mysql_query( $sql, $db );
+					
+				if(!$result || mysql_num_rows($result)==0){
+					//Is it connected to switch?
+					$sql = "SELECT SwitchDeviceID AS DeviceID,
+								SwitchPortNumber AS PortNumber,
+								'Switch' AS DeviceType 
+							FROM fac_switchconnection
+							WHERE EndPointDeviceID=". $this->DeviceID." AND EndpointPort=". $this->PortNumber;
+					$result = mysql_query( $sql, $db );
+					
+					if(!$result || mysql_num_rows($result)==0){
+						//Is it a switch?
+						$sql = "SELECT EndPointDeviceID AS DeviceID,
+									EndpointPort AS PortNumber,
+									DeviceType 
+								FROM fac_switchconnection s INNER JOIN fac_device d ON s.EndPointDeviceID=d.DeviceID
+								WHERE SwitchDeviceID=". $this->DeviceID." AND SwitchPortNumber=". $this->PortNumber;
+						$result = mysql_query( $sql, $db );
+						
+						if(!$result || mysql_num_rows($result)==0){
+							//Not connected
+							return false;
+						}
+					}
+				}
+			}
+		}else{
+			return false;
+		}		
+		
+		$row = mysql_fetch_array( $result );
+		if (is_null($row["DeviceID"]) || is_null($row["PortNumber"]) || is_null($row["DeviceType"])){
+			return false;
+		}
+		$this->DeviceID=$row["DeviceID"];
+		$this->PortNumber=$row["PortNumber"];
+		$this->DeviceType=$row["DeviceType"];
+		$this->Front=($this->DeviceType=="Patch Panel")?$Front_sig:false;
+		
+		return true;
+	}
+	
+	
+} //END OF CONNETCIONPATH
 
 ?>
