@@ -83,8 +83,8 @@
 		elseif(isset($_POST['pathid']) && $_POST['pathid']!='' && $_POST['action']=="PathIdSearch" 
 			|| isset($_GET['pathid']) && $_GET['pathid']!=''){
 			$status="";
-			if (isset($_GET['id'])) {
-				$pathid=intval( $_GET['id'] );
+			if (isset($_GET['pathid'])) {
+				$pathid=intval( $_GET['pathid'] );
 			}else{ 
 				$pathid=intval( $_POST['pathid'] );
 			}
