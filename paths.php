@@ -92,13 +92,13 @@
 							PanelPortNumber AS port,
 							'Patch Panel' AS DeviceType 
 					FROM fac_patchconnection
-					WHERE FrontNotes LIKE '%PATH(".$pathid.")'
+					WHERE FrontNotes LIKE '%PATH(".$pathid.")%'
 					UNION
 					SELECT SwitchDeviceID AS DeviceID,
 						SwitchPortNumber AS port,
 						'Switch' AS DeviceType 
 					FROM fac_switchconnection
-					WHERE Notes ='".$pathid."'";
+					WHERE Notes LIKE '%PATH(".$pathid.")%'";
 			$result = mysql_query( $sql, $facDB );
 			
 			if (mysql_num_rows($result)==0){
