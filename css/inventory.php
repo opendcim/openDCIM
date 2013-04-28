@@ -579,3 +579,29 @@ ul.nav li {padding: .5em;}
 
 /* Search Export */
 div.center div table#export { margin: auto; max-width: none; }
+
+/* Paths */
+/* Paths form */
+fieldset.crit_busc {border: 1px solid grey; padding:0.5em; background-color: #EEEEEE;}
+fieldset.crit_busc legend {background-color: white; padding:0.5em; border: 1px solid grey;}
+table#crit_busc {border: 0px; background: transparent; padding:0.5em;}
+table#crit_busc tr {border: 0px; background: transparent; padding:0.5em;}
+table#crit_busc td {border: 0px; background: transparent; padding:0.5em;}
+
+table#parcheos {
+	border: 3px outset;
+	text-align: center;
+	text-valign: center;
+	max-width: 800px;}
+table#parcheos tr {border: 0px;}	
+table#parcheos td {padding: 0px 0px 0px 0px; border: 0px; vertical-align: top;}
+
+table#parcheos table.disp {
+	margin: 0px 0px 0px 0px;
+	border: 0px;
+	border-collapse: collapse;
+	text-align: left;
+	vertical-align: middle;
+	min-width: 50px;}
+table#parcheos table.disp tr th {background-color: #DDDDDD; padding: 2px 2px 2px 2px; border: 1px solid grey; text-align: left; border-collapse: collapse;}
+table#parcheos table.disp tr td {padding: 2px 2px 2px 2px; border: 1px solid grey; text-align: left; border-collapse: collapse;}
