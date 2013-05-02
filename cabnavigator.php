@@ -248,11 +248,13 @@
 	if($heighterr!=''){$legend.='<p>* - '.__("Above defined rack height").'</p>';}
 
 	$CenterofGravity=@round($totalMoment/$totalWeight);
-
+	
 	$used=$cab->CabinetOccupancy($cab->CabinetID,$facDB);
 	@$SpacePercent=number_format($used/$cab->CabinetHeight*100,0);
 	@$WeightPercent=number_format($totalWeight/$cab->MaxWeight*100,0);
 	@$PowerPercent=number_format(($totalWatts/1000)/$cab->MaxKW*100,0);
+	$measuredWatts = $pdu->GetWattageByCabinet( $cab->CabinetID );
+	@$MeasuredPercent=number_format(($measuredWatts/1000)/$cab->MaxKW*100,0);
 	$CriticalColor=$config->ParameterArray["CriticalColor"];
 	$CautionColor=$config->ParameterArray["CautionColor"];
 	$GoodColor=$config->ParameterArray["GoodColor"];
@@ -260,10 +262,12 @@
 	if($SpacePercent>100){$SpacePercent=100;}
 	if($WeightPercent>100){$WeightPercent=100;}
 	if($PowerPercent>100){$PowerPercent=100;}
+	if($MeasuredPercent>100){$MeasuredPercent=100;}
 
 	$SpaceColor=($SpacePercent>intval($config->ParameterArray["SpaceRed"])?$CriticalColor:($SpacePercent >intval($config->ParameterArray["SpaceYellow"])?$CautionColor:$GoodColor));
 	$WeightColor=($WeightPercent>intval($config->ParameterArray["WeightRed"])?$CriticalColor:($WeightPercent>intval($config->ParameterArray["WeightYellow"])?$CautionColor:$GoodColor));
 	$PowerColor=($PowerPercent>intval($config->ParameterArray["PowerRed"])?$CriticalColor:($PowerPercent>intval($config->ParameterArray["PowerYellow"])?$CautionColor:$GoodColor));
+	$MeasuredColor=($MeasuredPercent>intval($config->ParameterArray["PowerRed"])?$CriticalColor:($MeasuredPercent>intval($config->ParameterArray["PowerYellow"])?$CautionColor:$GoodColor));
 
 	// I don't feel like fixing the check properly to not add in a dept with id of 0 so just remove it at the last second
 	// 0 is when a dept owner hasn't been assigned, just for the record
@@ -315,10 +319,19 @@ $body.='</table>
 			</td>
 		</tr>
 		<tr>
-			<td>'.__("Power").'
+			<td>'.__("Computed Watts").'
 				<div class="meter-wrap">
 					<div class="meter-value" style="background-color: '.$PowerColor.'; width: '.$PowerPercent.'%;">
 						<div class="meter-text">'; $body.=sprintf("%d kW / %d kW",round($totalWatts/1000),$cab->MaxKW);$body.='</div>
+					</div>
+				</div>
+			</td>
+		</tr>
+		<tr>
+			<td>'.__("Measured Watts").'
+				<div class="meter-wrap">
+					<div class="meter-value" style="background-color: '.$MeasuredColor.'; width: '.$MeasuredPercent.'%;">
+						<div class="meter-text">'; $body.=sprintf("%d kW / %d kW",round($measuredWatts/1000),$cab->MaxKW);$body.='</div>
 					</div>
 				</div>
 			</td>

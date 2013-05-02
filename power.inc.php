@@ -419,6 +419,35 @@ class PowerDistribution {
 			return 0;
 		}
 	}
+	
+	function GetWattageByDC( $dc = null ) {
+		global $dbh;
+		
+		if ( $dc == null )
+			$sql = "select count(Wattage) from fac_PDUStats";
+		else
+			$sql = sprintf( "select sum(Wattage) as Wattage from fac_PDUStats where PDUID in (select PDUID from fac_PowerDistribution where CabinetID in (select CabinetID from fac_Cabinet where DataCenterID=%d))", $dc );
+		
+		$row = $dbh->query( $sql )->fetch();
+		$Wattage = $row["Wattage"];
+		
+		return $Wattage;
+	}
+	
+	function GetWattageByCabinet( $CabinetID ) {
+		global $dbh;
+		
+		if ( $CabinetID < 1 )
+			return 0;
+		
+		$sql = sprintf( "select sum(Wattage) as Wattage from fac_PDUStats where PDUID in (select PDUID from fac_PowerDistribution where CabinetID=%d)", $CabinetID );
+		
+		$row = $dbh->query( $sql )->fetch();
+		$Wattage = $row["Wattage"];
+		
+		return $Wattage;
+	}
+
   
 	function UpdateStats( $db ) {
 		$sql = "select PDUID, IPAddress, SNMPCommunity, Multiplier, OID1, OID2, OID3, ProcessingProfile, Voltage from fac_PowerDistribution a, fac_CDUTemplate b where a.TemplateID=b.TemplateID and b.Managed=true and IPAddress>'' and SNMPCommunity>''";

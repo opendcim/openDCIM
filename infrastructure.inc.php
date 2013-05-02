@@ -373,7 +373,10 @@ class DataCenter {
 		$dcStats["Occupied"] = 0;
 		$dcStats["Allocated"] = 0;
 		$dcStats["Available"] = 0;
-		$dcStats["TotalWatts"] = 0;
+		$dcStats["ComputedWatts"] = 0;
+		$dcStats["MeasuredWatts"] = 0;
+		
+		$pdu = new PowerDistribution();
 
 		$selectSQL = "select sum(CabinetHeight) from fac_Cabinet where DataCenterID=\"" . intval($this->DataCenterID) . "\"";
 
@@ -412,15 +415,17 @@ class DataCenter {
 		$result = mysql_query( $selectSQL, $db );
 
 		$statsRow = mysql_fetch_array( $result );
-		$dcStats["TotalWatts"] = intval($statsRow[0]);
+		$dcStats["ComputedWatts"] = intval($statsRow[0]);
 		
 		$selectSQL = "select sum(c.Wattage) from fac_Device a, fac_Cabinet b, fac_DeviceTemplate c where a.Cabinet=b.CabinetID and a.TemplateID=c.TemplateID and a.NominalWatts=0 and b.DataCenterID=\"" . intval($this->DataCenterID) ."\"";
 
 		$result = mysql_query( $selectSQL, $db );
 
 		$statsRow = mysql_fetch_array( $result );
-		$dcStats["TotalWatts"] += intval($statsRow[0]);
+		$dcStats["ComputedWatts"] += intval($statsRow[0]);
 
+		$dcStats["MeasuredWatts"] = $pdu->GetWattageByDC( $this->DataCenterID );
+		
 		return $dcStats;
 	}
 }
