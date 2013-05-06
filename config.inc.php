@@ -104,7 +104,7 @@ class Config{
 		$sth = $dbh->prepare( "INSERT INTO fac_Config VALUES ( :key, :value, :unitofmeasure, :valtype, :defaultval )" );
 		
 		foreach($uniqueconfig as $key => $row){
-			$sth->execute( array( ':key' => '$key', ':value' => $row['Value'], ':unitofmeasure' => $row['UnitOfMeasure'], ':valtype' => $row['ValType'], ':defaultval' => $row['DefaultVal'] ) ); 
+			$sth->execute( array( ':key' => $key, ':value' => $row['Value'], ':unitofmeasure' => $row['UnitOfMeasure'], ':valtype' => $row['ValType'], ':defaultval' => $row['DefaultVal'] ) ); 
 		}
 	}
 }
