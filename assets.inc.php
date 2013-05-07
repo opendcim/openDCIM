@@ -529,6 +529,8 @@ class CabinetTemps {
 	}
 	
 	function UpdateReading( $db ) {
+		global $Config;
+		
 		$cab = new Cabinet();
 		$cab->CabinetID = $this->CabinetID;
 		$cab->GetCabinet( $db );
@@ -536,7 +538,7 @@ class CabinetTemps {
 		if ( ( strlen( $cab->SensorIPAddress ) == 0 ) || ( strlen( $cab->SensorCommunity ) == 0 ) || ( strlen( $cab->SensorOID ) == 0 ) )
 			return;
 
-		$pollCommand = sprintf( "/usr/bin/snmpget -v 2c -c %s %s %s | /bin/cut -d: -f4", $cab->SensorCommunity, $cab->SensorIPAddress, $cab->SensorOID );
+		$pollCommand = sprintf( "%s -v 1 -c %s %s %s | %s -d: -f4", $Config->ParameterArray["snmpget"], $cab->SensorCommunity, $cab->SensorIPAddress, $cab->SensorOID, $Config->ParameterArray["cut"] );
 		
 		exec( $pollCommand, $statsOutput );
 		
@@ -1776,15 +1778,17 @@ class ESX {
   var $Owner;
   
   function EnumerateVMs($dev,$debug=false){
+	global $Config;
+	
     $community=$dev->SNMPCommunity;
     $serverIP=$dev->PrimaryIP;
 
     $vmList=array();
 
-    $pollCommand="/usr/bin/snmpwalk -v 2c -c $community $serverIP .1.3.6.1.4.1.6876.2.1.1.2 | /bin/cut -d: -f4 | /bin/cut -d\\\" -f2";
+    $pollCommand=sprintf( "%s -v 2c -c $community $serverIP .1.3.6.1.4.1.6876.2.1.1.2 | %s -d: -f4 | %s -d\\\" -f2", $Config->ParameterArray["snmpwalk"], $Config->ParameterArray["cut"], $Config->ParameterArray["cut"] );
     exec($pollCommand,$namesOutput);
 
-    $pollCommand="/usr/bin/snmpwalk -v 2c -c $community $serverIP .1.3.6.1.4.1.6876.2.1.1.6 | /bin/cut -d: -f4 | /bin/cut -d\\\" -f2";
+    $pollCommand=sprintf( "%s -v 2c -c $community $serverIP .1.3.6.1.4.1.6876.2.1.1.6 | %s -d: -f4 | %s -d\\\" -f2", $Config->ParameterArray["snmpwalk"], $Config->ParameterArray["cut"], $Config->ParameterArray["cut"] );
     exec($pollCommand,$statesOutput);
 
     if(count($namesOutput)==count($statesOutput)&&count($namesOutput)>0){

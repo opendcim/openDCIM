@@ -70,6 +70,7 @@ CREATE TABLE fac_CDUTemplate (
   ManufacturerID int(11) NOT NULL,
   Model varchar(80) NOT NULL,
   Managed int(1) NOT NULL,
+  SNMPVersion enum('1','2c'),
   VersionOID varchar(80) NOT NULL,
   Multiplier enum( '1', '10', '100' ),
   OID1 varchar(80) NOT NULL,
@@ -205,6 +206,8 @@ CREATE TABLE fac_DevicePorts (
   DeviceID int(11),
   DevicePort int(11),
   MediaID int(11),
+  PortDescriptor varchar(30),
+  CableColor int(11),
   Notes text NULL,
   PRIMARY KEY (ConnectionID),
   KEY DeviceID (DeviceID,DevicePort)

@@ -66,8 +66,6 @@
 		
 		print "<div id=\"infopanel\"><fieldset><legend>".__("Results")."</legend>\n";
 		
-		$command="/usr/bin/snmpget";
-		
 		$upTime=$pdu->GetSmartCDUUptime($facDB);
 		if($upTime!=""){
 			printf("<p>%s: %s</p>\n", __("SNMP Uptime"),$upTime);
@@ -75,7 +73,7 @@
 			print "<p>".__("SNMP Uptime did not return a valid value.")."</p>\n";
 		}
 		
-		$pollCommand=sprintf( "%s -v 2c -c %s %s %s | /bin/cut -d: -f4", $command, $pdu->SNMPCommunity, $pdu->IPAddress, $template->VersionOID );
+		$pollCommand=sprintf( "%s -v %s -c %s %s %s | %s -d: -f4", $Config->ParameterArray["snmpget"], $template->SNMPVersion, $pdu->SNMPCommunity, $pdu->IPAddress, $template->VersionOID, $Config->ParameterArray["cut"] );
 		exec($pollCommand,$verOutput);
 		
 		if(count($verOutput) >0){
@@ -85,7 +83,7 @@
 		}
 		
 		$OIDString=$template->OID1." ".$template->OID2." ".$template->OID3;
-		$pollCommand=sprintf( "%s -v 2c -c %s %s %s | /bin/cut -d: -f4", $command, $pdu->SNMPCommunity, $pdu->IPAddress, $OIDString );
+		$pollCommand=sprintf( "%s -v %s -c %s %s %s | %s -d: -f4", $Config->ParameterArray["snmpget"], $template->SNMPVersion, $pdu->SNMPCommunity, $pdu->IPAddress, $OIDString, $Config->ParameterArray["cut"] );
 		
 		exec($pollCommand,$statsOutput);
 		

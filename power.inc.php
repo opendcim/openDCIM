@@ -28,6 +28,7 @@ class CDUTemplate {
 	var $ManufacturerID;
 	var $Model;
 	var $Managed;
+	var $SNMPVersion;
 	var $VersionOID;
 	var $Multiplier;
 	var $OID1;
@@ -38,19 +39,21 @@ class CDUTemplate {
 	var $Amperage;
 	var $NumOutlets;
 	
-	function GetTemplateList( $db ) {
+	function GetTemplateList( $db = null ) {
+		global $dbh;
+		
 		$sql = "select a.* from fac_CDUTemplate a, fac_Manufacturer b where a.ManufacturerID=b.ManufacturerID order by b.Name ASC,a.Model ASC";
-		$result = mysql_query( $sql, $db );
 		
 		$tmpList = array();
 		
-		while ( $row = mysql_fetch_array( $result ) ) {
+		foreach ( $dbh->query( $sql ) as $row ) {
 			$n = sizeof( $tmpList );
 			$tmpList[$n] = new CDUTemplate();
 			$tmpList[$n]->TemplateID = $row["TemplateID"];
 			$tmpList[$n]->ManufacturerID = $row["ManufacturerID"];
 			$tmpList[$n]->Model = $row["Model"];
 			$tmpList[$n]->Managed = $row["Managed"];
+			$tmpList[$n]->SNMPVersion = $row["SNMPVersion"];
 			$tmpList[$n]->VersionOID = $row["VersionOID"];
 			$tmpList[$n]->Multiplier = $row["Multiplier"];
 			$tmpList[$n]->OID1 = $row["OID1"];
@@ -65,16 +68,16 @@ class CDUTemplate {
 		return $tmpList;
 	}
 	
-	function GetTemplate( $db ) {
-		$sql = sprintf( "select * from fac_CDUTemplate where TemplateID='%d'", intval( $this->TemplateID ) );
-		$result = mysql_query( $sql, $db );
+	function GetTemplate( $db = null ) {
+		global $dbh;
 		
-		if ( mysql_num_rows( $result ) > 0 ) {
-			$row = mysql_fetch_array( $result );
-			
+		$sql = sprintf( "select * from fac_CDUTemplate where TemplateID=%d", $this->TemplateID );
+
+		foreach ( $dbh->query( $sql ) as $row ) {
 			$this->ManufacturerID = $row["ManufacturerID"];
 			$this->Model = $row["Model"];
 			$this->Managed = $row["Managed"];
+			$this->SNMPVersion = $row["SNMPVersion"];
 			$this->VersionOID = $row["VersionOID"];
 			$this->Multiplier = $row["Multiplier"];
 			$this->OID1 = $row["OID1"];
@@ -89,7 +92,9 @@ class CDUTemplate {
 		return;
 	}
 	
-	function CreateTemplate( $db ) {
+	function CreateTemplate() {
+		global $dbh;
+		
 		$sql = sprintf( "select * from fac_CDUTemplate where ManufacturerID=%d and Model=\"%s\"", intval( $this->ManufacturerID ), addslashes( $this->Model ) );
 		$result = mysql_query( $sql, $db );
 		
@@ -98,27 +103,42 @@ class CDUTemplate {
 			return false;
 		}
 		
-		$sql="INSERT fac_CDUTemplate SET ManufacturerID=".intval($this->ManufacturerID).", Model=\"".addslashes($this->Model)."\", Managed=".intval($this->Managed).", VersionOID=\"".addslashes($this->VersionOID)."\", Multiplier=\"".intval($this->Multiplier)."\", OID1=\"".addslashes($this->OID1)."\", OID2=\"".addslashes($this->OID2)."\", OID3=\"".addslashes($this->OID3)."\", ProcessingProfile=\"".addslashes($this->ProcessingProfile)."\", Voltage=".intval($this->Voltage).", Amperage=".intval($this->Amperage).", NumOutlets=".intval($this->NumOutlets).";";
-		$result=mysql_query($sql,$db);
+		$sql = sprintf( "INSERT fac_CDUTemplate SET ManufacturerID=%d, Model=\"%s\", Managed=%d, SNMPVersion=\"%s\", VersionOID=\"%s\", Multiplier=%d, OID1=\"%s\", OID2=\"%s\", OID3=\"%s\", ProcessingProfile=\"%s\", Voltage=%d, Amperage=%d, NumOutlets=%d",
+			$this->ManufacturerID, mysql_real_escape_string( $this->Model ), $this->Managed, mysql_real_escape_string( $this->SNMPVersion ),
+			mysql_real_escape_string( $this->VersionOID ), $this->Multiplier, mysql_real_escape_string( $this->OID1 ), mysql_real_escape_string( $this->OID2 ),
+			mysql_real_escape_string( $this->OID3 ), mysql_real_escape_string( $this->ProcessingProfile ), $this->Voltage, $this->Amperage, $this->NumOutlets );
 		
-		$this->TemplateID=mysql_insert_id($db);
+		if ( ! $dbh->exec( $sql ) )
+			return false;
+		else
+			$this->TemplateID = $dbh->lastInsertID();
 		
 		return $this->TemplateID;
 	}
 	
-	function UpdateTemplate($db){
-		$sql="UPDATE fac_CDUTemplate SET ManufacturerID=".intval($this->ManufacturerID).", Model=\"".addslashes($this->Model)."\", Managed=".intval($this->Managed).", VersionOID=\"".addslashes($this->VersionOID)."\", Multiplier=\"".intval($this->Multiplier)."\", OID1=\"".addslashes($this->OID1)."\", OID2=\"".addslashes($this->OID2)."\", OID3=\"".addslashes($this->OID3)."\", ProcessingProfile=\"".addslashes($this->ProcessingProfile)."\", Voltage=".intval($this->Voltage).", Amperage=".intval($this->Amperage).", NumOutlets=".intval($this->NumOutlets)." where TemplateID=".intval($this->TemplateID).";";
-		$result=mysql_query($sql,$db);
-		return;
+	function UpdateTemplate() {
+		global $dbh;
+		
+		$sql = sprintf( "UPDATE fac_CDUTemplate SET ManufacturerID=%d, Model=\"%s\", Managed=%d, SNMPVersion=\"%s\", VersionOID=\"%s\", Multiplier=%d, OID1=\"%s\", OID2=\"%s\", OID3=\"%s\", ProcessingProfile=\"%s\", Voltage=%d, Amperage=%d, NumOutlets=%d where TemplateID=%d",
+			$this->ManufacturerID, mysql_real_escape_string( $this->Model ), $this->Managed, mysql_real_escape_string( $this->SNMPVersion ), mysql_real_escape_string( $this->VersionOID ),
+			$this->Multiplier, mysql_real_escape_string( $this->OID1 ), mysql_real_escape_string( $this->OID2 ), mysql_real_escape_string( $this->OID3 ), 
+			mysql_real_escape_string( $this->ProcessingProfile ), $this->Voltage, $this->Amperage, $this->NumOutlets, $this->TemplateID );
+
+		if ( ! $dbh->exec( $sql ) )
+			return false;
+		else
+			return true;
 	}
 	
-	function DeleteTemplate( $db ) {
-		// First step is to clear any power strips referencing this template
-		$sql = sprintf( "update fac_PowerDistribution set CDUTemplateID=\"\" where TemplateID=%d", intval( $this->TemplateID ) );
-		$result = mysql_query( $sql, $db );
+	function DeleteTemplate() {
+		global $dbh;
 		
-		$sql = sprintf( "delete from fac_CDUTemplate where TemplateID=%d", intval( $this->TemplateID ) );
-		$result = mysql_query( $sql, $db );
+		// First step is to clear any power strips referencing this template
+		$sql = sprintf( "update fac_PowerDistribution set CDUTemplateID=\"\" where TemplateID=%d", $this->TemplateID );
+		$dbh->execute( $sql );
+		
+		$sql = sprintf( "delete from fac_CDUTemplate where TemplateID=%d", $this->TemplateID );
+		$dbh->exec( $sql );
 		
 		return;
 	}
@@ -450,11 +470,12 @@ class PowerDistribution {
 
   
 	function UpdateStats( $db ) {
-		$sql = "select PDUID, IPAddress, SNMPCommunity, Multiplier, OID1, OID2, OID3, ProcessingProfile, Voltage from fac_PowerDistribution a, fac_CDUTemplate b where a.TemplateID=b.TemplateID and b.Managed=true and IPAddress>'' and SNMPCommunity>''";
+		global $config;
+		
+		$sql = "select PDUID, IPAddress, SNMPCommunity, SNMPVersion, Multiplier, OID1, OID2, OID3, ProcessingProfile, Voltage from fac_PowerDistribution a, fac_CDUTemplate b where a.TemplateID=b.TemplateID and b.Managed=true and IPAddress>'' and SNMPCommunity>''";
 		$result = mysql_query( $sql, $db );
 		
 		// The result set should have no PDU's with blank IP Addresses or SNMP Community, so we can forge ahead with processing them all
-		$command = "/usr/bin/snmpget";
 		
 		while ( $row = mysql_fetch_array( $result ) ) {
 			// If only one OID is used, the OID2 and OID3 should be blank, so no harm in just making one string
@@ -465,7 +486,7 @@ class PowerDistribution {
 			$amps = 0;
 			$watts = 0;
 			
-			$pollCommand = sprintf( "%s -v 2c -t 0.5 -r 2 -c %s %s %s | /bin/cut -d: -f4", $command, $row["SNMPCommunity"], $row["IPAddress"], $OIDString );
+			$pollCommand = sprintf( "%s -v %s -t 0.5 -r 2 -c %s %s %s | %s -d: -f4", $config->ParameterArray["snmpget"], $row["SNMPVersion"], $row["SNMPCommunity"], $row["IPAddress"], $OIDString, $config->ParameterArray["cut"] );
 			
 			exec( $pollCommand, $statsOutput );
 			
@@ -498,6 +519,7 @@ class PowerDistribution {
 			$FirmwareVersion = $this->GetSmartCDUVersion( $db );
 			$updateSQL = sprintf( "update fac_PowerDistribution set FirmwareVersion=\"%s\" where PDUID=%d", $FirmwareVersion, $this->PDUID );
 			mysql_query( $updateSQL, $db );
+			
 		}
 	}
 	
@@ -509,7 +531,7 @@ class PowerDistribution {
 		} else {
 			$serverIP = $this->IPAddress;
 			$community = $this->SNMPCommunity;
-			$pollCommand = "/usr/bin/snmpget -v 2c -t 0.5 -r 2 -c $community $serverIP sysUpTimeInstance";
+			$pollCommand = sprintf( "%s -v 2c -t 0.5 -r 2 -c $community $serverIP sysUpTimeInstance", $config->ParameterArray["snmpget"] );
 
 			exec($pollCommand, $statsOutput);
 			// need error checking here
