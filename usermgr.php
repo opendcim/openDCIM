@@ -23,6 +23,7 @@
 		if((($_POST['action']=='Create')||($_POST['action']=='Update'))&&(isset($_POST['name'])&&$_POST['name']!=null&&$_POST['name']!='')){
 			$userRights->UserID=$_POST['userid'];
 			$userRights->Name=$_POST['name'];
+			$userRights->AdminOwnDevices=(isset($_POST['adminowndevices']))?1:0;
 			$userRights->ReadAccess=(isset($_POST['readaccess']))?1:0;
 			$userRights->WriteAccess=(isset($_POST['writeaccess']))?1:0;
 			$userRights->DeleteAccess=(isset($_POST['deleteaccess']))?1:0;
@@ -46,6 +47,7 @@
 	}
 
 	$userList=$userRights->GetUserList($facDB);
+	$adminown=($userRights->AdminOwnDevices)?"checked":"";
 	$read=($userRights->ReadAccess)?"checked":"";
 	$write=($userRights->WriteAccess)?"checked":"";
 	$delete=($userRights->DeleteAccess)?"checked":"";
@@ -110,9 +112,10 @@ echo '	</select></div>
 <div>
    <div><label>',__("Rights"),'</label></div>
    <div id="nofloat">
-	<input name="readaccess" id="readaccess" type="checkbox"',$read,'><label for="readaccess">',__("Read/Report Access"),'</label><br>
-	<input name="writeaccess" id="writeaccess" type="checkbox"',$write,'><label for="writeaccess">',__("Modify/Enter Devices"),'</label><br>
-	<input name="deleteaccess" id="deleteaccess" type="checkbox"',$delete,'><label for="deleteaccess">',__("Delete Devices"),'</label><br>
+	<input name="adminowndevices" id="adminowndevices" type="checkbox"',$adminown,'><label for="adminowndevices">',__("Admin Own Devices"),'</label><br>
+	<input name="readaccess" id="readaccess" type="checkbox"',$read,'><label for="readaccess">',__("Read/Report Access (Global)"),'</label><br>
+	<input name="writeaccess" id="writeaccess" type="checkbox"',$write,'><label for="writeaccess">',__("Modify/Enter Devices (Global)"),'</label><br>
+	<input name="deleteaccess" id="deleteaccess" type="checkbox"',$delete,'><label for="deleteaccess">',__("Delete Devices (Global)"),'</label><br>
 	<input name="contactadmin" id="contactadmin" type="checkbox"',$contact,'><label for="contactadmin">',__("Enter/Modify Contacts and Departments"),'</label><br>
 	<input name="rackrequest" id="rackrequest" type="checkbox"',$request,'><label for="rackrequest">',__("Enter Rack Requests"),'</label><br>
 	<input name="rackadmin" id="rackadmin" type="checkbox"',$rackadmin,'><label for="rackadmin">',__("Complete Rack Requests"),'</label><br>

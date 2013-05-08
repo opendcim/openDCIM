@@ -19,3 +19,10 @@ ALTER TABLE fac_DevicePorts ADD COLUMN CableColor int(11) AFTER PortDescriptor;
 
 ALTER TABLE fac_CDUTemplate ADD COLUMN SNMPVersion enum( '1', '2c' ) AFTER Managed;
 
+--
+-- Add the new UserRights field for allowing users to admin their own devices
+--
+
+ALTER TABLE fac_User ADD COLUMN AdminOwnDevices tinyint(1) NOT NULL AFTER Name;
+
+

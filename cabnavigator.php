@@ -4,20 +4,33 @@
 
 	$user=new User();
 	$user->UserID=$_SERVER["REMOTE_USER"];
-	$user->GetUserRights($facDB);
-
-	if((isset($_REQUEST["cabinetid"]) && ($_REQUEST["cabinetid"]=="" || $_REQUEST["cabinetid"]==null)) || !isset($_REQUEST["cabinetid"]) || !$user->ReadAccess){
+	$user->GetUserRights();
+	
+	if((isset($_REQUEST["cabinetid"]) && ($_REQUEST["cabinetid"]=="" || $_REQUEST["cabinetid"]==null)) || !isset($_REQUEST["cabinetid"])){
 		// No soup for you.
 		header('Location: '.redirect());
 		exit;
 	}
 
+	// Get the list of departments that this user is a member of
+	$viewList = $user->isMemberOf();
+
 	$cab=new Cabinet();
 	$cab->CabinetID=$_REQUEST["cabinetid"];
 	$cab->GetCabinet($facDB);
-
+	
+	if ( $cab->AssignedTo > 0 ) {
+		// Check to see if this user is allowed to see anything in here
+		if ( ! in_array( $cab->AssignedTo, $viewList ) ) {
+			// This cabinet belongs to a department you don't have affiliation with, so no viewing at all
+			header('Location: '.redirect());
+			exit;
+		}
+	}
+	
 	// If you're deleting the cabinet, no need to pull in the rest of the information, so get it out of the way
-	if(isset($_POST["delete"]) && $_POST["delete"]=="yes" && $user->SiteAdmin){
+	// Only a site administrator can create or delete a cabinet
+	if(isset($_POST["delete"]) && $_POST["delete"]=="yes" && $user->SiteAdmin ) {
 		$cab->DeleteCabinet($facDB);
 		$url=redirect("dc_stats.php?dc=$dcID");
 		header("Location: $url");
@@ -29,6 +42,11 @@
 			$dev=new Device();
 			$dev->DeviceID=$_POST['tooltip'];
 			$dev->GetDevice($facDB);
+			
+			if ( ! in_array( $dev->Owner, $viewList ) ) {
+				print "Details Restricted";
+				exit;
+			}
 
 			$tooltip="";
 			$ttconfig=mysql_query("SELECT * FROM fac_CabinetToolTip WHERE Enabled=1 ORDER BY SortOrder ASC, Enabled DESC, Label ASC;");
@@ -188,8 +206,12 @@
 		}
 
 		if($device->Height<1){
-			$zeroheight.="				<a href=\"devices.php?deviceid=$devID\">$highlight $device->Label</a>\n";
+			if ( in_array( $device->Owner, $viewList ) )
+				$zeroheight.="				<a href=\"devices.php?deviceid=$devID\">$highlight $device->Label</a>\n";
+			else
+				$zeroheight.="              $highlight $device->Label\n";
 		}
+		
 		// Chassis devices shouldn't ever be 0u in height
 		if($device->DeviceType=="Chassis"){
 			$childList=$device->GetDeviceChildren($facDB);
@@ -226,7 +248,11 @@
 			$errclass=($i>$cab->CabinetHeight)?' class="error"':'';
 			if($errclass!=''){$heighterr="yup";}
 			if($i==$devTop){
-				$body.="<tr><td$errclass>$i</td><td class=\"device$reserved dept$device->Owner\" rowspan=$device->Height data=$devID><a href=\"devices.php?deviceid=$devID\">$highlight $device->Label</a></td></tr>\n";
+				if ( in_array( $device->Owner, $viewList ) ) {
+					$body.="<tr><td$errclass>$i</td><td class=\"device$reserved dept$device->Owner\" rowspan=$device->Height data=$devID><a href=\"devices.php?deviceid=$devID\">$highlight $device->Label</a></td></tr>\n";
+				} else {
+					$body.="<tr><td$errclass>$i</td><td class=\"device$reserved dept$device->Owner\" rowspan=$device->Height data=$devID>$highlight $device->Label</td></tr>\n";
+				}
 			}else{
 				$body.="<tr><td$errclass>$i</td></tr>\n";
 			}

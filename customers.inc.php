@@ -388,6 +388,7 @@ class User {
 	
 	var $UserID;
 	var $Name;
+	var $AdminOwnDevices;
 	var $ReadAccess;
 	var $WriteAccess;
 	var $DeleteAccess;
@@ -397,18 +398,20 @@ class User {
 	var $SiteAdmin;
 	var $Disabled;
 
-	function GetUserRights( $db ) {
+	function GetUserRights( $db = null ) {
 		/* Check the table to see if there are any users
 		   defined, yet.  If not, this is a new install, so
 		   create an admin user (all rights) as the current
 		   user.  */
+		  
+		global $dbh;
+		
 		$sql = "select count(*) as TotalUsers from fac_User";
-		$result = mysql_query( $sql, $db );
-
-		$row = mysql_fetch_array( $result );
+		$row = $dbh->query($sql)->fetch();
 
 		if ( $row["TotalUsers"] == 0 ) {
 			$this->Name = "Default Admin";
+			$this->AdminOwnDevices = false;
 			$this->ReadAccess = true;
 			$this->WriteAccess = true;
 			$this->DeleteAccess = true;
@@ -423,13 +426,10 @@ class User {
 
 		$selectSQL = "select * from fac_User where UserID=\"" . addslashes($this->UserID) . "\"";
 
-		if ( ! $result = mysql_query( $selectSQL, $db ) ) {
-			return 0;
-		}
-
-		$userRow = mysql_fetch_array( $result );
+		$userRow = $dbh->query( $selectSQL )->fetch();
 
 		$this->Name = $userRow["Name"];
+		$this->AdminOwnDevices = $userRow["AdminOwnDevices"];
 		$this->ReadAccess = $userRow["ReadAccess"];
 		$this->WriteAccess = $userRow["WriteAccess"];
 		$this->DeleteAccess = $userRow["DeleteAccess"];
@@ -453,19 +453,21 @@ class User {
 		return;
 	}
 
-	function GetUserList( $db ) {
+	function GetUserList( $db = null ) {
 		/* Return an array of objects relating to all defined users. */
+		global $dbh;
+		
 		$sql = "select * from fac_User order by Name ASC";
-		$result = mysql_query( $sql, $db );
-
+		
 		$userList = array();
 
-		while ( $userRow = mysql_fetch_array( $result ) ) {
+		foreach ( $dbh->query( $sql ) as $userRow ) {
 			$userNum = sizeof( $userList );
 			$userList[$userNum] = new User();
 
 			$userList[$userNum]->UserID = $userRow["UserID"];
 			$userList[$userNum]->Name = $userRow["Name"];
+			$userList[$userNum]->AdminOwnDevices = $userRow["AdminOwnDevices"];
 			$userList[$userNum]->ReadAccess = $userRow["ReadAccess"];
 			$userList[$userNum]->WriteAccess = $userRow["WriteAccess"];
 			$userList[$userNum]->DeleteAccess = $userRow["DeleteAccess"];
@@ -478,20 +480,39 @@ class User {
 
 		return $userList;
 	}
+	
+	function isMemberOf() {
+		global $dbh;
+		
+		$sql = sprintf( "select DeptID from fac_DeptContacts where ContactID in (select ContactID from fac_Contact where UserID='%s')", $this->UserID );
+		
+		$deptList = array();
+		foreach( $dbh->query( $sql ) as $row ) {
+			$n = sizeof( $deptList );
+			
+			$deptList[$n] = $row["DeptID"];
+		}
+		
+		return $deptList;
+	}
 
-	function CreateUser( $db ) {
+	function CreateUser( $db = null ) {
+		global $dbh;
+		
 		/* Create a user record based upon the current object attribute values. */
-		$sql = sprintf( "insert into fac_User values (\"%s\", \"%s\", %d, %d, %d, %d, %d, %d, %d, %d )", addslashes( $this->UserID ), addslashes( $this->Name ), $this->ReadAccess, $this->WriteAccess, $this->DeleteAccess, $this->ContactAdmin, $this->RackRequest, $this->RackAdmin, $this->SiteAdmin, $this->Disabled );
-		$result = mysql_query( $sql, $db );
-
-		return $result;
+		$sql = sprintf( "insert into fac_User values (\"%s\", \"%s\", %d, %d, %d, %d, %d, %d, %d, %d, %d )", addslashes( $this->UserID ), addslashes( $this->Name ), $this->AdminOwnDevices, $this->ReadAccess, $this->WriteAccess, $this->DeleteAccess, $this->ContactAdmin, $this->RackRequest, $this->RackAdmin, $this->SiteAdmin, $this->Disabled );
+		$dbh->exec( $sql );
+		
+		return;
 	}
 
 	function UpdateUser( $db ) {
-		/* Update a user record based upon the vurrent object attribute values, with UserID as key. */
-		$sql = sprintf( "update fac_User set Name=\"%s\", ReadAccess=%d, WriteAccess=%d, DeleteAccess=%d, ContactAdmin=%d, RackRequest=%d, RackAdmin=%d, SiteAdmin=%d, Disabled=%d where UserID=\"%s\"", addslashes( $this->Name ), $this->ReadAccess, $this->WriteAccess, $this->DeleteAccess, $this->ContactAdmin, $this->RackRequest, $this->RackAdmin, $this->SiteAdmin, $this->Disabled, addslashes( $this->UserID ) );
+		global $dbh;
+		
+		/* Update a user record based upon the current object attribute values, with UserID as key. */
+		$sql = sprintf( "update fac_User set Name=\"%s\", AdminOwnDevices=%d, ReadAccess=%d, WriteAccess=%d, DeleteAccess=%d, ContactAdmin=%d, RackRequest=%d, RackAdmin=%d, SiteAdmin=%d, Disabled=%d where UserID=\"%s\"", addslashes( $this->Name ), $this->AdminOwnDevices, $this->ReadAccess, $this->WriteAccess, $this->DeleteAccess, $this->ContactAdmin, $this->RackRequest, $this->RackAdmin, $this->SiteAdmin, $this->Disabled, addslashes( $this->UserID ) );
 
-		$result = mysql_query( $sql, $db );
+		$dbh->exec( $sql );
 
 		return;
 	}

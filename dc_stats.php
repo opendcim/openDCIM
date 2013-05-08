@@ -6,11 +6,13 @@
 	$user->UserID=$_SERVER["REMOTE_USER"];
 	$user->GetUserRights($facDB);
 
+/*	Not sure if we need to restrict this view to users with global read access or not
 	if(!$user->ReadAccess){
 		// No soup for you.
 		header('Location: '.redirect());
 		exit;
 	}
+*/
 
 	$cab=new Cabinet();
 	$dc=new DataCenter();

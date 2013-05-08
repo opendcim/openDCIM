@@ -8,15 +8,12 @@
 	$contact=new Contact();
 	
 	$user->UserID=$_SERVER['REMOTE_USER'];
-	$user->GetUserRights( $facDB );
+	$user->GetUserRights();
 
+	$viewList = $user->isMemberOf();
+	
 	$taginsert="";
 
-	if(!$user->ReadAccess){
-		// No soup for you.
-		header('Location: '.redirect());
-		exit;
-	}
 	// Ajax functions and we only want these exposed to people with write access
 	if($user->WriteAccess){
 		if(isset($_POST['cab'])){
@@ -347,6 +344,12 @@
 	}else{
 		// sets install date to today when a new device is being created
 		$dev->InstallDate=date("m/d/Y");
+	}
+	
+	if( !$user->ReadAccess && !in_array( $dev->Owner, $viewList ) ){
+		// No soup for you.
+		header('Location: '.redirect());
+		exit;
 	}
 	
 	if($dev->ParentDevice >0){

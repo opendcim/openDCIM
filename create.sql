@@ -467,6 +467,7 @@ DROP TABLE IF EXISTS fac_User;
 CREATE TABLE fac_User (
   UserID varchar(80) NOT NULL,
   Name varchar(80) NOT NULL,
+  AdminOwnDevices tinyint(1) NOT NULL,
   ReadAccess tinyint(1) NOT NULL,
   WriteAccess tinyint(1) NOT NULL,
   DeleteAccess tinyint(1) NOT NULL,
