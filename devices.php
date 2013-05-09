@@ -1475,7 +1475,7 @@ echo '	<div class="table">
 				$tmpDev->DeviceID=$patchConn->EndpointDeviceID;
 				$tmpDev->GetDevice($facDB);
 				
-				print "\t\t\t\t<div><div>$patchConn->SwitchPortNumber</div><div alt=\"$patchConn->EndpointDeviceID\"><a href=\"devices.php?deviceid=$patchConn->EndpointDeviceID\">$tmpDev->Label</a></div><div data=\"$patchConn->EndpointPort\">$patchConn->EndpointPort</div><div data=\"$patchConn->Notes\">$patchConn->Notes</div></div>\n";
+				print "\t\t\t\t<div><div id=\"sp$patchConn->SwitchPortNumber\">$patchConn->SwitchPortNumber</div><div id=\"d$patchConn->SwitchPortNumber\" alt=\"$patchConn->EndpointDeviceID\"><a href=\"devices.php?deviceid=$patchConn->EndpointDeviceID\">$tmpDev->Label</a></div><div data=\"$patchConn->EndpointPort\" id=\"dp$patchConn->SwitchPortNumber\">$patchConn->EndpointPort</div><div data=\"$patchConn->Notes\" id=\"n$patchConn->SwitchPortNumber\">$patchConn->Notes</div></div>\n";
 			}
 		}      
 		echo "			</div><!-- END div.table -->\n		  </div>\n		</div>";
