@@ -470,7 +470,7 @@ class PowerDistribution {
 
   
 	function UpdateStats( $db ) {
-		global $config;
+		$config=new Config();
 		
 		$sql = "select PDUID, IPAddress, SNMPCommunity, SNMPVersion, Multiplier, OID1, OID2, OID3, ProcessingProfile, Voltage from fac_PowerDistribution a, fac_CDUTemplate b where a.TemplateID=b.TemplateID and b.Managed=true and IPAddress>'' and SNMPCommunity>''";
 		$result = mysql_query( $sql, $db );
@@ -524,6 +524,7 @@ class PowerDistribution {
 	}
 	
 	function GetSmartCDUUptime( $db ) {
+		$config=new Config();
 		$this->GetPDU( $db );
 
 		if (!($this->IPAddress)||!($this->SNMPCommunity)) {
@@ -531,7 +532,7 @@ class PowerDistribution {
 		} else {
 			$serverIP = $this->IPAddress;
 			$community = $this->SNMPCommunity;
-			$pollCommand = sprintf( "%s -v 2c -t 0.5 -r 2 -c $community $serverIP sysUpTimeInstance", $config->ParameterArray["snmpget"] );
+			$pollCommand ="{$config->ParameterArray["snmpget"]} -v 2c -t 0.5 -r 2 -c $community $serverIP sysUpTimeInstance";
 
 			exec($pollCommand, $statsOutput);
 			// need error checking here

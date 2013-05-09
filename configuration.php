@@ -59,6 +59,14 @@
 				mysql_query("UPDATE fac_CabinetToolTip SET SortOrder=".intval($order).", Enabled=1 WHERE Field='".addslashes($field)."' LIMIT 1;");
 			}
 		}
+
+		//Disable all cdu tooltip items and clear the SortOrder
+		mysql_query("UPDATE fac_CDUToolTip SET SortOrder = NULL, Enabled=0;");
+		if(isset($_POST["cdutooltip"]) && !empty($_POST["cdutooltip"])){
+			foreach($_POST["cdutooltip"] as $order => $field){
+				mysql_query("UPDATE fac_CDUToolTip SET SortOrder=".intval($order).", Enabled=1 WHERE Field='".addslashes($field)."' LIMIT 1;");
+			}
+		}
 	}
 
 	// make list of department types
@@ -133,6 +141,14 @@
 	}
 	$tooltip.="</select>";
 
+	// Build up the list of items available for the tooltips
+	$cdutooltip="<select id=\"cdutooltip\" name=\"cdutooltip[]\" multiple=\"multiple\">\n";
+	$ttconfig=mysql_query("SELECT * FROM fac_CDUToolTip ORDER BY SortOrder ASC, Enabled DESC, Label ASC;");
+	while($row=mysql_fetch_assoc($ttconfig)){
+		$selected=($row["Enabled"])?" selected":"";
+		$cdutooltip.="<option value=\"".$row['Field']."\"$selected>".__($row["Label"])."</option>\n";
+	}
+	$cdutooltip.="</select>";
 ?>
 <!doctype html>
 <html>
@@ -155,9 +171,9 @@
   <script type="text/javascript" src="scripts/jquery.ui.multiselect.js"></script>
   <script type="text/javascript">
 	$(document).ready(function(){
-		$('#tooltip').multiselect();
-		$("#ToolTips option").each(function(){
-			if($(this).val()==$("#ToolTips").attr('data')){
+		$('#tooltip, #cdutooltip').multiselect();
+		$("#ToolTips option, #CDUToolTips option").each(function(){
+			if($(this).val()==$(this).parents('select').attr('data')){
 				$(this).attr('selected', 'selected');
 			}
 		});
@@ -330,7 +346,7 @@ echo '<div class="main">
 			<li><a href="#style">',__("Style"),'</a></li>
 			<li><a href="#email">',__("Email"),'</a></li>
 			<li><a href="#reporting">',__("Reporting"),'</a></li>
-			<li><a href="#tt">',__("Cabinet ToolTips"),'</a></li>
+			<li><a href="#tt">',__("ToolTips"),'</a></li>
 		</ul>
 		<div id="general">
 			<div class="table">
@@ -620,6 +636,19 @@ echo '<div class="main">
 			</div> <!-- end table -->
 			<br>
 			',$tooltip,'
+			<br>
+			<div class="table">
+				<div>
+					<div><label for="CDUToolTips">',__("CDU ToolTips"),'</label></div>
+					<div><select id="CDUToolTips" name="CDUToolTips" defaultvalue="',$config->defaults["CDUToolTips"],'" data="',$config->ParameterArray["CDUToolTips"],'">
+							<option value="disabled">',__("Disabled"),'</option>
+							<option value="enabled">',__("Enabled"),'</option>
+						</select>
+					</div>
+				</div>
+			</div> <!-- end table -->
+			<br>
+			',$cdutooltip,'
 		</div>
 	</div>';
 

@@ -25,4 +25,37 @@ ALTER TABLE fac_CDUTemplate ADD COLUMN SNMPVersion enum( '1', '2c' ) AFTER Manag
 
 ALTER TABLE fac_User ADD COLUMN AdminOwnDevices tinyint(1) NOT NULL AFTER Name;
 
+--
+-- Add configuration item to allow enabling tooltips on the rack view
+--
 
+INSERT INTO fac_Config VALUES ('CDUToolTips', 'Disabled', 'Enabled/Disabled', 'string', 'Disabled');
+
+--
+-- Add table for cdu tooltips
+--
+
+DROP TABLE IF EXISTS fac_CDUToolTip;
+CREATE TABLE fac_CDUToolTip (
+  SortOrder smallint(6) DEFAULT NULL,
+  Field varchar(20) NOT NULL,
+  Label varchar(30) NOT NULL,
+  Enabled tinyint(1) DEFAULT '1',
+  UNIQUE KEY Field (Field)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+
+--
+-- Add base ToolTip configuration options
+--
+
+INSERT INTO fac_CDUToolTip VALUES(NULL, 'PanelID', 'Source Panel', 0);
+INSERT INTO fac_CDUToolTip VALUES(NULL, 'PanelVoltage', 'Voltage', 0);
+INSERT INTO fac_CDUToolTip VALUES(NULL, 'BreakerSize', 'Breaker Size', 0);
+INSERT INTO fac_CDUToolTip VALUES(NULL, 'PanelPole', 'Panel Pole Number', 0);
+INSERT INTO fac_CDUToolTip VALUES(NULL, 'InputAmperage', 'Input Amperage', 0);
+INSERT INTO fac_CDUToolTip VALUES(NULL, 'Model', 'Model', 0);
+INSERT INTO fac_CDUToolTip VALUES(NULL, 'IPAddress', 'IP Address', 0);
+INSERT INTO fac_CDUToolTip VALUES(NULL, 'Uptime', 'Uptime', 0);
+INSERT INTO fac_CDUToolTip VALUES(NULL, 'FirmwareVersion', 'Firmware Version', 0);
+INSERT INTO fac_CDUToolTip VALUES(NULL, 'SNMPCommunity', 'SNMP Community', 0);
+INSERT INTO fac_CDUToolTip VALUES(NULL, 'NumOutlets', 'Used/Total Connections', 0);

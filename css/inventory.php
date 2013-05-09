@@ -36,6 +36,44 @@ textarea {white-space: pre;word-wrap: break-word;}
 
 .no-close .ui-dialog-titlebar-close {display: none;}
 
+@keyframes loading{
+	from {
+		-webkit-transform:rotate(0deg);
+		-moz-transform:rotate(0deg);
+		-o-transform:rotate(0deg);
+	}
+	to {
+		-webkit-transform:rotate(360deg);
+		-moz-transform:rotate(360deg);
+		-o-transform:rotate(360deg);
+	}
+}
+
+@-webkit-keyframes loading{
+	from {
+		-webkit-transform:rotate(0deg);
+		-moz-transform:rotate(0deg);
+		-o-transform:rotate(0deg);
+	}
+	to {
+		-webkit-transform:rotate(360deg);
+		-moz-transform:rotate(360deg);
+		-o-transform:rotate(360deg);
+	}
+}
+
+
+.rotate{
+	animation: loading 0.8s;
+	-webkit-animation: loading 0.8s;
+
+	animation-iteration-count: infinite;
+	-webkit-animation-iteration-count: infinite; /*Safari and Chrome*/
+
+	overflow:hidden;
+}   
+
+
 /* css for timepicker */
 .ui-timepicker-div .ui-widget-header {margin-bottom: 8px;}
 .ui-timepicker-div dl {text-align: left;}
@@ -75,7 +113,7 @@ div#imageselection { display: none;}
 .ui-menu-item ul { max-height: 200px; overflow: auto; }
 #tzmenu {display: none;}
 
-#tooltip { min-height: 300px; min-width: 550px; }
+#tooltip, #cdutooltip { min-height: 300px; min-width: 550px; }
 
 /* index */
 .index .table, .index .table .title {background-color: white;}
