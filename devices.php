@@ -804,12 +804,12 @@ $(document).ready(function() {
 
 				}else{
 					$(this).attr('edit','yes');
-					var device=$(this).next();
+					var device=$('#d'+sp);
 					var devid=device.attr('alt');
-					var devport=device.next();
+					var devport=$('#dp'+sp);
 					devport.css({'min-width': '35px','width': '35px'});
 					var devportwidth=devport.width();
-					var notes=devport.next();
+					var notes=$('#n'+sp);
 					$.ajax({
 						type: 'POST',
 						url: 'devices.php',
