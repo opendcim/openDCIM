@@ -212,6 +212,7 @@ div#dcstats .table + .table > div > div + div{white-space: pre; text-align: righ
 #advsrch { color: <?php echo $config->ParameterArray['LinkColor']; ?>; cursor: pointer; }
 #advsrch:before {content:"[ ";}
 #advsrch:after {content:" ]";}
+#searchadv ~ .ui-icon.ui-icon-close { position: absolute; top: 0; right: 0; cursor: pointer;}
 
 .text-arrow {
 	-moz-box-sizing: border-box;

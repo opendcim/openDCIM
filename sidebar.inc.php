@@ -18,6 +18,7 @@
 	<option value="asset">Asset Tag</option>
 	<option value="owner">Owner</option>
 </select>
+<div class="ui-icon ui-icon-close"></div>
 </form>
   <script type="text/javascript">
 	function addlookup(inputobj,lookuptype){
@@ -54,7 +55,7 @@
 	$('#searchadv ~ select[name="key"]').change(function(){
 		addlookup($('#searchadv'),$(this).val())
 	}).height($('#searchadv').outerHeight());
-	$('#advsrch').click(function(){
+	$('#advsrch, #searchadv ~ .ui-icon.ui-icon-close').click(function(){
 		var here=$(this).position();
 		$('#searchadv, #searchname').val('');
 		$('#searchadv').parents('form').height(here.top).toggle();
