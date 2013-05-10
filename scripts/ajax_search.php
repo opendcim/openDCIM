@@ -13,11 +13,11 @@
 		$searchTerm="";
 		if(isset($_REQUEST["q"])){
 			$searchTerm=$_REQUEST["q"];
-			if(isset($_REQUEST["name"])){
+			if(isset($_REQUEST["name"]) || isset($_REQUEST["label"])){
 				$field="Label";
 			}elseif(isset($_REQUEST["serial"])){
 				$field="SerialNo";
-			}elseif(isset($_REQUEST["tag"])){
+			}elseif(isset($_REQUEST["tag"]) || isset($_REQUEST["ctag"])){
 				$field="AssetTag";
 			}
 		}

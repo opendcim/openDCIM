@@ -201,10 +201,17 @@ div#dcstats .table + .table > div > div + div{white-space: pre; text-align: righ
 	-webkit-border-radius: 0px;
 	border-radius: 0px;
 }
+#sidebar form { margin-bottom: 4px; }
 #sidebar input.search { height: 15px; padding: 5px; width: 141px; border: 1px solid black; border-right: 0; vertical-align: top;}
 #sidebar input + button img, #sidebar .text-arrow + button img {height: 27px;}
 #sidebar div.text-core {width: 150px; height: 27px;}
 #sidebar div.text-core textarea{ width: 151px; height: 27px;}
+#sidebar .advsearch { background: white; display: block; height: 4.5em; position: absolute; top: 0px; width: 350px; z-index: 99; }
+#searchadv ~ select { padding: 5px; border: 1px solid black; }
+#sidebar .advsearch.hide { display: none; }
+#advsrch { color: <?php echo $config->ParameterArray['LinkColor']; ?>; cursor: pointer; }
+#advsrch:before {content:"[ ";}
+#advsrch:after {content:" ]";}
 
 .text-arrow {
 	-moz-box-sizing: border-box;

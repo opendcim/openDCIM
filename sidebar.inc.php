@@ -5,79 +5,60 @@
 <label for="searchname"><?php print __("Search by Name:"); ?></label><br>
 <input class="search" id="searchname" name="search"><button class="iebug" type="submit"><img src="css/searchbutton.png" alt="search"></button>
 </form>
+<span id="advsrch">Advanced</span>
 <br>
-<form action="search.php" method="post">
-<input type="hidden" name="key" value="ctag">
-<label for="searchsn"><?php print __("Search by Custom Tag:"); ?></label><br>
-<input class="search" id="searchctag" name="search"><button class="iebug" type="submit"><img src="css/searchbutton.png" alt="search"></button>
-</form>
+<form action="search.php" method="post" class="hide advsearch">
 <br>
-<form action="search.php" method="post">
-<input type="hidden" name="key" value="serial">
-<label for="searchsn"><?php print __("Search by SN:"); ?></label><br>
-<input class="search" id="searchsn" name="search"><button class="iebug" type="submit"><img src="css/searchbutton.png" alt="search"></button>
-</form>
-<br>
-<form action="search.php" method="post">
-<input type="hidden" name="key" value="asset">
-<label for="searchtag"><?php print __("Search by Asset Tag:"); ?></label><br>
-<input class="search" id="searchtag" name="search"><button class="iebug" type="submit"><img src="css/searchbutton.png" alt="search"></button>
+<label for="searchadv"><?php print __("Advanced Search:"); ?></label><br>
+<input class="search" id="searchadv" name="search"><button class="iebug" type="submit"><img src="css/searchbutton.png" alt="search"></button>
+<select name="key">
+	<option value="label">Label</option>
+	<option value="ctag">Custom Tag</option>
+	<option value="serial">Serial Number</option>
+	<option value="asset">Asset Tag</option>
+	<option value="owner">Owner</option>
+</select>
 </form>
   <script type="text/javascript">
-	$('#searchname').autocomplete({
-		minLength: 0,
-		autoFocus: true,
-		source: function(req, add){
-			$.getJSON('scripts/ajax_search.php?name', {q: req.term}, function(data){
-				var suggestions=[];
-				$.each(data, function(i,val){
-					suggestions.push(val);
-				});
-				add(suggestions);
-			});
-		},
-		open: function(){
-			$(this).autocomplete("widget").css({'width': $('#searchname').width()+6+'px'});
-		}
-	}).next().after('<div class="text-arrow"></div>');
-	$('#searchsn').autocomplete({
-		minLength: 0,
-		autoFocus: true,
-		source: function(req, add){
-			$.getJSON('scripts/ajax_search.php?serial', {q: req.term}, function(data){
-				var suggestions=[];
-				$.each(data, function(i,val){
-					suggestions.push(val);
-				});
-				add(suggestions);
-			});
-		},
-		open: function(){
-			$(this).autocomplete("widget").css({'width': $('#searchname').width()+6+'px'});
-		}
-	}).next().after('<div class="text-arrow"></div>');
-	$('#searchtag').autocomplete({
-		minLength: 0,
-		autoFocus: true,
-		source: function(req, add){
-			$.getJSON('scripts/ajax_search.php?tag', {q: req.term}, function(data){
-				var suggestions=[];
-				$.each(data, function(i,val){
-					suggestions.push(val);
-				});
-				add(suggestions);
-			});
-		},
-		open: function(){
-			$(this).autocomplete("widget").css({'width': $('#searchname').width()+6+'px'});
-		}
-	}).next().after('<div class="text-arrow"></div>');
-	$('.text-arrow').each(function(){
-		var inputpos=$(this).prev().prev().position();
-		$(this).css({'top': inputpos.top+'px', 'left': inputpos.left+$(this).prev().prev().width()-($(this).width()/2)});
-		$(this).click(function(){
-			$(this).prev().prev().autocomplete("search", "");
+	function addlookup(inputobj,lookuptype){
+		// clear any existing autocompletes
+		if(inputobj.hasClass('ui-autocomplete-input')){inputobj.autocomplete('destroy');}
+		// clear out previous search arrows
+		inputobj.next('.text-arrow').remove();
+		// Position the arrow
+		var inputpos=inputobj.position();
+		var arrow=$('<div />').addClass('text-arrow');
+		arrow.css({'top': inputpos.top+'px', 'left': inputpos.left+inputobj.width()-(arrow.width()/2)});
+		arrow.click(function(){
+			inputobj.autocomplete("search", "");
 		});
+		// add the autocomplete
+		inputobj.autocomplete({
+			minLength: 0,
+			autoFocus: true,
+			source: function(req, add){
+				$.getJSON('scripts/ajax_search.php?'+lookuptype, {q: req.term}, function(data){
+					var suggestions=[];
+					$.each(data, function(i,val){
+						suggestions.push(val);
+					});
+					add(suggestions);
+				});
+			},
+			open: function(){
+				$(this).autocomplete("widget").css({'width': inputobj.width()+6+'px'});
+			}
+		}).next().after(arrow);
+	}
+	addlookup($('#searchname'),'name');
+	$('#searchadv ~ select[name="key"]').change(function(){
+		addlookup($('#searchadv'),$(this).val())
+	}).height($('#searchadv').outerHeight());
+	$('#advsrch').click(function(){
+		var here=$(this).position();
+		$('#searchadv, #searchname').val('');
+		$('#searchadv').parents('form').height(here.top).toggle();
+		if($(this).text()=='Advanced'){$(this).text('Basic');$('#searchadv ~ select[name="key"]').trigger('change');}else{$(this).text('Advanced');}
 	});
   </script>
   <script type="text/javascript" src="scripts/mktree.js"></script> 
