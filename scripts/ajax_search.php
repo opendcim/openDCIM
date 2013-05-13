@@ -17,7 +17,7 @@
 				$field="Label";
 			}elseif(isset($_REQUEST["serial"])){
 				$field="SerialNo";
-			}elseif(isset($_REQUEST["tag"]) || isset($_REQUEST["ctag"])){
+			}elseif(isset($_REQUEST["tag"]) || isset($_REQUEST["asset"])){
 				$field="AssetTag";
 			}
 		}

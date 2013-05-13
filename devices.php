@@ -345,12 +345,14 @@
 		// sets install date to today when a new device is being created
 		$dev->InstallDate=date("m/d/Y");
 	}
-	
+
+/*	This isn't checking rights properly.  It is denying someone with global read/write access to the device.
 	if( !$user->ReadAccess && !in_array( $dev->Owner, $viewList ) ){
 		// No soup for you.
 		header('Location: '.redirect());
 		exit;
 	}
+*/
 	
 	if($dev->ParentDevice >0){
 		$pDev=new Device();
