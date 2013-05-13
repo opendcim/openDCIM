@@ -529,8 +529,6 @@ class CabinetTemps {
 	}
 	
 	function UpdateReading( $db ) {
-		global $Config;
-		
 		$cab = new Cabinet();
 		$cab->CabinetID = $this->CabinetID;
 		$cab->GetCabinet( $db );
@@ -538,7 +536,7 @@ class CabinetTemps {
 		if ( ( strlen( $cab->SensorIPAddress ) == 0 ) || ( strlen( $cab->SensorCommunity ) == 0 ) || ( strlen( $cab->SensorOID ) == 0 ) )
 			return;
 
-		$pollCommand = sprintf( "%s -v 1 -c %s %s %s | %s -d: -f4", $Config->ParameterArray["snmpget"], $cab->SensorCommunity, $cab->SensorIPAddress, $cab->SensorOID, $Config->ParameterArray["cut"] );
+		$pollCommand = sprintf( "/usr/bin/snmpget -v 2c -c %s %s %s | /bin/cut -d: -f4", $cab->SensorCommunity, $cab->SensorIPAddress, $cab->SensorOID );
 		
 		exec( $pollCommand, $statsOutput );
 		
@@ -1778,17 +1776,15 @@ class ESX {
   var $Owner;
   
   function EnumerateVMs($dev,$debug=false){
-	global $Config;
-	
     $community=$dev->SNMPCommunity;
     $serverIP=$dev->PrimaryIP;
 
     $vmList=array();
 
-    $pollCommand=sprintf( "%s -v 2c -c $community $serverIP .1.3.6.1.4.1.6876.2.1.1.2 | %s -d: -f4 | %s -d\\\" -f2", $Config->ParameterArray["snmpwalk"], $Config->ParameterArray["cut"], $Config->ParameterArray["cut"] );
+    $pollCommand="/usr/bin/snmpwalk -v 2c -c $community $serverIP .1.3.6.1.4.1.6876.2.1.1.2 | /bin/cut -d: -f4 | /bin/cut -d\\\" -f2";
     exec($pollCommand,$namesOutput);
 
-    $pollCommand=sprintf( "%s -v 2c -c $community $serverIP .1.3.6.1.4.1.6876.2.1.1.6 | %s -d: -f4 | %s -d\\\" -f2", $Config->ParameterArray["snmpwalk"], $Config->ParameterArray["cut"], $Config->ParameterArray["cut"] );
+    $pollCommand="/usr/bin/snmpwalk -v 2c -c $community $serverIP .1.3.6.1.4.1.6876.2.1.1.6 | /bin/cut -d: -f4 | /bin/cut -d\\\" -f2";
     exec($pollCommand,$statesOutput);
 
     if(count($namesOutput)==count($statesOutput)&&count($namesOutput)>0){
@@ -2913,7 +2909,6 @@ class ConnectionPath {
 	var $DeviceType;
 	var $PortNumber;
 	var $Front;  //false for rear connetcion of panels and end of path for other devices 
-	var $Path;
 	private $PathAux; //loops control
 	
 	function MakeSafe(){
@@ -2922,32 +2917,14 @@ class ConnectionPath {
 		  $this->DeviceType = "Server";
 		$this->PortNumber=intval($this->PortNumber);
 		$this->Front=($this->Front)?true:false;
-		for ($i=0; $i<count($this->Path); $i++){
-			$this->Path[$i]["DeviceID"]=intval($this->Path[$i]["DeviceID"]);
-			$this->Path[$i]["DeviceType"]=intval($this->Path[$i]["DeviceType"]);
-			$this->Path[$i]["PortNumber"]=intval($this->Path[$i]["PortNumber"]);
-			$this->Path[$i]["Front"]=($this->Path[$i]["Front"])?true:false;
-		}
 	}
 
-	function AddDeviceToPath ( $db ) {
-		$i=count($this->Path);
-		$this->Path[$i]["DeviceID"]=intval($this->DeviceID);
-		$this->Path[$i]["DeviceType"]=intval($this->DeviceType);
-		$this->Path[$i]["PortNumber"]=intval($this->PortNumber);
-		$this->Path[$i]["Front"]=intval($this->Front);
-	}
-	
-	function ClearPath(){
-		$this->Path=array();
-	}
-	
 	private function AddDeviceToPathAux ( $db ) {
 		$i=count($this->PathAux);
-		$this->PathAux[$i]["DeviceID"]=intval($this->DeviceID);
-		$this->PathAux[$i]["DeviceType"]=intval($this->DeviceType);
-		$this->PathAux[$i]["PortNumber"]=intval($this->PortNumber);
-		$this->PathAux[$i]["Front"]=intval($this->Front);
+		$this->PathAux[$i]["DeviceID"]=$this->DeviceID;
+		$this->PathAux[$i]["DeviceType"]=$this->DeviceType;
+		$this->PathAux[$i]["PortNumber"]=$this->PortNumber;
+		$this->PathAux[$i]["Front"]=$this->Front;
 	}
 	
 	private function ClearPathAux(){
@@ -2966,6 +2943,7 @@ class ConnectionPath {
 	}
 	
 	function GotoHeadDevice ( $db ) {
+	//It puts the object in the first device of the path, if it is not it already
 		$this->MakeSafe();
 		$this->ClearPathAux();
 
@@ -2977,6 +2955,8 @@ class ConnectionPath {
 				return false;
 			}
 			if (!$this->GotoNextDevice ( $db )) {
+				//It is a no connected panel in this direccion. Here it begins the path.
+				//I put it pointing to contrary direction
 				$this->Front=!$this->Front;
 				return true;
 			}
@@ -2986,6 +2966,8 @@ class ConnectionPath {
 	}
 	
 	function GotoNextDevice ( $db ) {
+	//It puts the object with the DeviceID, PortNumber and Front of the following device in the path.
+	//If the current device of the object is not connected to at all, gives back "false" and the object does not change
 		$this->MakeSafe();
 		
 		if ($this->DeviceType=="Patch Panel"){
@@ -3005,7 +2987,6 @@ class ConnectionPath {
 						WHERE PanelDeviceID=". $this->DeviceID." AND PanelPortNumber=". $this->PortNumber;
 				
 			}
-			
 			$result = mysql_query( $sql, $db );
 			$Front_sig=!$this->Front;
 		}elseif($this->Front){
@@ -3019,8 +3000,10 @@ class ConnectionPath {
 			
 			$result = mysql_query( $sql, $db );
 			if($result && mysql_num_rows($result)>0){
+				//I go out by front connetcion of the panel
 				$Front_sig=true;
 			}else{
+				//In other cases, or I go out by rear connetcion, or I can not follow
 				$Front_sig=false;
 				
 				//Is it connected to front connection of other pannel?
