@@ -18,7 +18,8 @@
 	$cab=new Cabinet();
 	$cab->CabinetID=$_REQUEST["cabinetid"];
 	$cab->GetCabinet($facDB);
-	
+
+/*	This isn't checking rights properly.  It is denying someone with global read/write access to the device.
 	if($cab->AssignedTo >0){
 		// Check to see if this user is allowed to see anything in here
 		if(!in_array($cab->AssignedTo,$viewList)){
@@ -27,6 +28,7 @@
 			exit;
 		}
 	}
+*/
 	
 	// If you're deleting the cabinet, no need to pull in the rest of the information, so get it out of the way
 	// Only a site administrator can create or delete a cabinet
