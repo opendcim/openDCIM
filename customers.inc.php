@@ -204,6 +204,19 @@ class Department {
 		$this->DeptColor = $deptRow["DeptColor"];
 	}
 
+	function GetDeptByName( $db ) {
+		$selectSQL="SELECT * FROM fac_Department WHERE Name LIKE \"%".addslashes($this->Name)."%\"";
+		$result = mysql_query( $selectSQL, $db );
+
+		$deptRow = mysql_fetch_array( $result );
+
+		$this->DeptID=$deptRow["DeptID"];
+		$this->Name = $deptRow["Name"];
+		$this->ExecSponsor = $deptRow["ExecSponsor"];
+		$this->SDM = $deptRow["SDM"];
+		$this->Classification = $deptRow["Classification"];
+		$this->DeptColor = $deptRow["DeptColor"];
+	}
 	function GetDepartmentList( $db ) {
 		$deptList = array();
 

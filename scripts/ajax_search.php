@@ -19,20 +19,27 @@
 				$field="SerialNo";
 			}elseif(isset($_REQUEST["tag"]) || isset($_REQUEST["asset"])){
 				$field="AssetTag";
+			}elseif(isset($_REQUEST["ctag"])){
+				$field="CustomTag";
+			}elseif(isset($_REQUEST["owner"])){
+				$field="Owner";
 			}
 		}
 			
 		//This will ensure that an empty json record set is returned if this is called directly or in some strange manner
 		if($field!=""){
-			$searchTerm=mysql_real_escape_string($searchTerm);
+			$searchTerm=addslashes($searchTerm);
 			if($field=="Label"){
 				$sql="SELECT DISTINCT Label FROM fac_Device WHERE Label LIKE '%$searchTerm%' UNION SELECT DISTINCT Location AS Label FROM fac_Cabinet WHERE Location LIKE '%$searchTerm%' UNION SELECT DISTINCT Label FROM fac_PowerDistribution WHERE Label LIKE '%$searchTerm%'	UNION SELECT DISTINCT vmName AS Label FROM fac_VMInventory WHERE vmName LIKE '%$searchTerm%';";
+			}elseif($field=="CustomTag"){
+				$sql="SELECT DISTINCT Name FROM fac_Tags WHERE Name LIKE '%$searchTerm%'";
+			}elseif($field=="Owner"){
+				$sql="SELECT DISTINCT Name FROM fac_Department WHERE Name LIKE '%$searchTerm%'";
 			}else{
 				$sql="SELECT DISTINCT $field FROM fac_Device WHERE $field LIKE '%$searchTerm%';";
 			}
-			$result=mysql_query($sql,$facDB);
 			$x=0;
-			while($devrow=mysql_fetch_row($result)){
+			foreach($dbh->query($sql) as $devrow){
 				$deviceList[$x]=$devrow[0];
 				++$x;
 			}

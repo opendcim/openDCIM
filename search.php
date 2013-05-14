@@ -18,14 +18,14 @@
 	//Remove any extra quotes that could get passed in from some funky js or something
 	$searchTerm=str_replace(array("'",'"'),"",$searchTerm);
 
-	$dc = new DataCenter();
-	$dcList = $dc->GetDCList( $facDB );
+	$dc=new DataCenter();
+	$dcList=$dc->GetDCList( $facDB );
 	
 	$dev=new Device();
-	$parDev = new Device();
 	$esx=new ESX();
 	$cab=new Cabinet();
 	$pdu=new PowerDistribution();
+	$dept=new Department();
 	$resultcount=0;
 	$title=__("Search Results");
 
@@ -46,6 +46,18 @@
 		$pduList=$pdu->SearchByPDUName($facDB);
 		$resultcount=count($devList)+count($cabList)+count($pduList)+count($vmList);
 		$title=__("Name search results for")." &quot;$searchTerm&quot;";
+	}elseif($searchKey=='owner'){
+		$dept->Name=$searchTerm;
+		$dept->GetDeptByName($facDB);
+		$dev->Owner=$dept->DeptID;
+		$devList=$dev->GetDevicesbyOwner($facDB);
+		$esx->Owner=$dept->DeptID;
+		$vmList=$esx->GetVMListbyOwner($facDB);
+		$cab->AssignedTo=$dept->DeptID;
+		$cabList=$cab->SearchByOwner($facDB);
+		//PDUs have no ownership information so don't search them
+		$resultcount=count($devList)+count($cabList)+count($vmList);
+		$title=__("Owner search results for")." &quot;$searchTerm&quot;";
 	}elseif($searchKey=='asset'){
 		$dev->AssetTag=$searchTerm;
 		$devList=$dev->SearchDevicebyAssetTag($facDB);
@@ -247,6 +259,12 @@ $(document).ready(function() {
 		var timer=$.timer(updateTimer, incrementTime, true);
 	}
 });
+	function showall(){
+		$('.center > div > ol').removeClass('hidecontents');
+	}
+	function hidedevices(){
+		$('.center > div > ol').addClass('hidecontents');
+	}
 </script>
 
 </head>
@@ -259,6 +277,7 @@ $(document).ready(function() {
 <div class="main">
 <h2><?php echo $config->ParameterArray['OrgName']; ?></h2>
 <h3><?php echo $title; ?></h3>
+<?php echo '<div id="searchfilters"><button type="button" onclick="showall()">'.__("Show All").'</button><button type="button" onclick="hidedevices()">'.__("Racks Only").'</button></div>'; ?>
 <div class="center"><div>
 	<ol>
 <?php

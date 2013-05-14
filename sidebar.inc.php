@@ -2,22 +2,24 @@
 <br>
 <form action="search.php" method="post">
 <input type="hidden" name="key" value="label">
-<label for="searchname"><?php print __("Search by Name:"); ?></label><br>
+<?php echo'
+<label for="searchname">',__("Search by Name:"),'</label><br>
 <input class="search" id="searchname" name="search"><button class="iebug" type="submit"><img src="css/searchbutton.png" alt="search"></button>
 </form>
-<span id="advsrch">Advanced</span>
+<span id="advsrch">',__("Advanced"),'</span>
 <br>
 <form action="search.php" method="post" class="hide advsearch">
 <br>
-<label for="searchadv"><?php print __("Advanced Search:"); ?></label><br>
+<label for="searchadv">',__("Advanced Search:"),'</label><br>
 <input class="search" id="searchadv" name="search"><button class="iebug" type="submit"><img src="css/searchbutton.png" alt="search"></button>
 <select name="key">
-	<option value="label">Label</option>
-	<option value="ctag">Custom Tag</option>
-	<option value="serial">Serial Number</option>
-	<option value="asset">Asset Tag</option>
-	<option value="owner">Owner</option>
-</select>
+	<option value="label">',__("Label"),'</option>
+	<option value="ctag">',__("Custom Tag"),'</option>
+	<option value="serial">',__("Serial Number"),'</option>
+	<option value="asset">',__("Asset Tag"),'</option>
+	<option value="owner">',__("Owner"),'</option>
+</select>';
+?>
 <div class="ui-icon ui-icon-close"></div>
 </form>
   <script type="text/javascript">
@@ -59,7 +61,8 @@
 		var here=$(this).position();
 		$('#searchadv, #searchname').val('');
 		$('#searchadv').parents('form').height(here.top).toggle('slide',200);
-		if($(this).text()=='Advanced'){$(this).text('Basic');$('#searchadv ~ select[name="key"]').trigger('change');}else{$(this).text('Advanced');}
+		$('#searchadv').autocomplete('destroy');
+		if($(this).text()=='Advanced'){$(this).text('<?php echo __("Basic");?>');$('#searchadv ~ select[name="key"]').trigger('change');}else{$(this).text('<?php echo __("Advanced");?>');}
 	});
   </script>
   <script type="text/javascript" src="scripts/mktree.js"></script> 
