@@ -1308,48 +1308,48 @@ class Device {
 
 	}
 
-	function GetDevicesbyOwner( $db ) {
-		$searchSQL = "select a.* from fac_Device a, fac_Cabinet b where a.Cabinet=b.CabinetID and a.Owner=\"" . addslashes($this->Owner) . "\" order by b.DataCenterID, a.Label";
+	function GetDevicesbyOwner($db){
+		$searchSQL="select *, (select b.DataCenterID from fac_Device a, fac_Cabinet b where a.Cabinet=b.CabinetID and a.DeviceID=search.DeviceID order by b.DataCenterID, a.Label) DataCenterID from fac_Device search where Owner=\"".addslashes($this->Owner)."\" order by Label";
+//		$searchSQL="select a.*, b.DataCenterID from fac_Device a, fac_Cabinet b where a.Cabinet=b.CabinetID and a.Owner=\"" . addslashes($this->Owner) . "\" order by b.DataCenterID, a.Label";
 
-		if ( ! $result = mysql_query( $searchSQL, $db ) ) {
+		if(!$result=mysql_query($searchSQL,$db)){
 			return 0;
 		}
 
-		$deviceList = array();
+		$deviceList=array();
+		while($deviceRow=mysql_fetch_array($result)){
+			$devID=$deviceRow["DeviceID"];
 
-		while ( $deviceRow = mysql_fetch_array( $result ) ) {
-			$devID = $deviceRow["DeviceID"];
-
-			$deviceList[$devID] = new Device();
-
-			$deviceList[$devID]->DeviceID = $deviceRow["DeviceID"];
-			$deviceList[$devID]->Label = $deviceRow["Label"];
-			$deviceList[$devID]->SerialNo = $deviceRow["SerialNo"];
-			$deviceList[$devID]->AssetTag = $deviceRow["AssetTag"];
-			$deviceList[$devID]->PrimaryIP = $deviceRow["PrimaryIP"];
-			$deviceList[$devID]->SNMPCommunity = $deviceRow["SNMPCommunity"];
-			$deviceList[$devID]->ESX = $deviceRow["ESX"];
-			$deviceList[$devID]->Owner = $deviceRow["Owner"];
-			$deviceList[$devID]->EscalationTimeID = $deviceRow["EscalationTimeID"];
-			$deviceList[$devID]->EscalationID = $deviceRow["EscalationID"];
-			$deviceList[$devID]->PrimaryContact = $deviceRow["PrimaryContact"];
-			$deviceList[$devID]->Cabinet = $deviceRow["Cabinet"];
-			$deviceList[$devID]->Position = $deviceRow["Position"];
-			$deviceList[$devID]->Height = $deviceRow["Height"];
-			$deviceList[$devID]->Ports = $deviceRow["Ports"];
-			$deviceList[$devID]->TemplateID = $deviceRow["TemplateID"];
-			$deviceList[$devID]->NominalWatts = $deviceRow["NominalWatts"];
-			$deviceList[$devID]->PowerSupplyCount = $deviceRow["PowerSupplyCount"];
-			$deviceList[$devID]->DeviceType = $deviceRow["DeviceType"];
-			$deviceList[$devID]->ChassisSlots = $deviceRow["ChassisSlots"];
-			$deviceList[$devID]->RearChassisSlots = $deviceRow["RearChassisSlots"];
-			$deviceList[$devID]->ParentDevice = $deviceRow["ParentDevice"];
-			$deviceList[$devID]->MfgDate = $deviceRow["MfgDate"];
-			$deviceList[$devID]->InstallDate = $deviceRow["InstallDate"];
-			$deviceList[$devID]->WarrantyCo = $deviceRow["WarrantyCo"];
-			@$deviceList[$devID]->WarrantyExpire = $deviceRow["WarrantyExpire"];
-			$deviceList[$devID]->Notes = $deviceRow["Notes"];
-			$deviceList[$devID]->Reservation = $deviceRow["Reservation"];
+			$deviceList[$devID]=new Device();
+			$deviceList[$devID]->DeviceID=$deviceRow["DeviceID"];
+			$deviceList[$devID]->Label=$deviceRow["Label"];
+			$deviceList[$devID]->SerialNo=$deviceRow["SerialNo"];
+			$deviceList[$devID]->AssetTag=$deviceRow["AssetTag"];
+			$deviceList[$devID]->PrimaryIP=$deviceRow["PrimaryIP"];
+			$deviceList[$devID]->SNMPCommunity=$deviceRow["SNMPCommunity"];
+			$deviceList[$devID]->ESX=$deviceRow["ESX"];
+			$deviceList[$devID]->Owner=$deviceRow["Owner"];
+			$deviceList[$devID]->EscalationTimeID=$deviceRow["EscalationTimeID"];
+			$deviceList[$devID]->EscalationID=$deviceRow["EscalationID"];
+			$deviceList[$devID]->PrimaryContact=$deviceRow["PrimaryContact"];
+			$deviceList[$devID]->Cabinet=$deviceRow["Cabinet"];
+			$deviceList[$devID]->Position=$deviceRow["Position"];
+			$deviceList[$devID]->Height=$deviceRow["Height"];
+			$deviceList[$devID]->Ports=$deviceRow["Ports"];
+			$deviceList[$devID]->TemplateID=$deviceRow["TemplateID"];
+			$deviceList[$devID]->NominalWatts=$deviceRow["NominalWatts"];
+			$deviceList[$devID]->PowerSupplyCount=$deviceRow["PowerSupplyCount"];
+			$deviceList[$devID]->DeviceType=$deviceRow["DeviceType"];
+			$deviceList[$devID]->ChassisSlots=$deviceRow["ChassisSlots"];
+			$deviceList[$devID]->RearChassisSlots=$deviceRow["RearChassisSlots"];
+			$deviceList[$devID]->ParentDevice=$deviceRow["ParentDevice"];
+			$deviceList[$devID]->MfgDate=$deviceRow["MfgDate"];
+			$deviceList[$devID]->InstallDate=$deviceRow["InstallDate"];
+			$deviceList[$devID]->WarrantyCo=$deviceRow["WarrantyCo"];
+			@$deviceList[$devID]->WarrantyExpire=$deviceRow["WarrantyExpire"];
+			$deviceList[$devID]->Notes=$deviceRow["Notes"];
+			$deviceList[$devID]->Reservation=$deviceRow["Reservation"];
+			$deviceList[$devID]->DataCenterID=$deviceRow["DataCenterID"];
 		}
 
 		return $deviceList;

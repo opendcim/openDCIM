@@ -6,11 +6,7 @@
 	$user->UserID=$_SERVER['REMOTE_USER'];
 	$user->GetUserRights($facDB);
 
-	if(!$user->ReadAccess){
-		// No soup for you.
-		header('Location: '.redirect());
-		exit;
-	}
+	$viewList=$user->isMemberOf();
 
 	$searchKey=$_REQUEST['key'];
 	//Remove control characters tab, enter, etc
@@ -78,18 +74,19 @@
 	$childList=array(); // List of all blade devices
 	$dctemp=array(); // List of datacenters involved with result set
 	while(list($devID,$device)=each($devList)){
-		$temp[$x]['devid']=$devID;
-		$temp[$x]['label']=$device->Label;
-		$temp[$x]['type']='srv'; // empty chassis devices need no special treatment leave them as a server
-		$temp[$x]['cabinet']=$device->Cabinet;
-		$temp[$x]['parent']=$device->ParentDevice;
-		$cabtemp[$device->Cabinet]="";
-		++$x;
-		if($device->ParentDevice!=0){
-			$childList[$device->ParentDevice]=""; // Create a list of chassis devices based on children present
+		if($user->ReadAccess || in_array($device->Owner,$viewList)){
+			$temp[$x]['devid']=$devID;
+			$temp[$x]['label']=$device->Label;
+			$temp[$x]['type']='srv'; // empty chassis devices need no special treatment leave them as a server
+			$temp[$x]['cabinet']=$device->Cabinet;
+			$temp[$x]['parent']=$device->ParentDevice;
+			$cabtemp[$device->Cabinet]="";
+			++$x;
+			if($device->ParentDevice!=0){
+				$childList[$device->ParentDevice]=""; // Create a list of chassis devices based on children present
+			}
 		}
 	}
-	
 	if(isset($vmList)){
 		foreach($vmList as $vmRow){
 			$dev->DeviceID=$vmRow->DeviceID;
@@ -101,15 +98,17 @@
 				$temp[$a[0]]['type']='vm';
 			}else{
 				// We didn't find the host server of this vm so we're gonna add it to the list
-				$temp[$x]['devid']=$dev->DeviceID;
-				$temp[$x]['label']=$dev->Label;
-				$temp[$x]['type']='vm';
-				$temp[$x]['cabinet']=$dev->Cabinet;
-				$temp[$x]['parent']=$dev->ParentDevice;
-				$cabtemp[$dev->Cabinet]['name']="";
-				++$x;
-				if($dev->ParentDevice!=0){
-					$childList[$dev->ParentDevice]=""; // Create a list of chassis devices based on children present
+				if($user->ReadAccess || in_array($dev->Owner,$viewList)){
+					$temp[$x]['devid']=$dev->DeviceID;
+					$temp[$x]['label']=$dev->Label;
+					$temp[$x]['type']='vm';
+					$temp[$x]['cabinet']=$dev->Cabinet;
+					$temp[$x]['parent']=$dev->ParentDevice;
+					$cabtemp[$dev->Cabinet]['name']="";
+					++$x;
+					if($dev->ParentDevice!=0){
+						$childList[$dev->ParentDevice]=""; // Create a list of chassis devices based on children present
+					}
 				}
 			}
 		}

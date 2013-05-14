@@ -10,7 +10,7 @@
 	$user->UserID=$_SERVER['REMOTE_USER'];
 	$user->GetUserRights();
 
-	$viewList = $user->isMemberOf();
+	$viewList=$user->isMemberOf();
 	
 	$taginsert="";
 
@@ -346,13 +346,15 @@
 		$dev->InstallDate=date("m/d/Y");
 	}
 
-/*	This isn't checking rights properly.  It is denying someone with global read/write access to the device.
-	if( !$user->ReadAccess && !in_array( $dev->Owner, $viewList ) ){
-		// No soup for you.
-		header('Location: '.redirect());
-		exit;
+	// If they have global read don't bother with further checks
+	if(!$user->ReadAccess){
+		// They didn't have global read so see if they are a member of that owning department
+		if(!in_array($dev->Owner,$viewList)){
+			// No soup for you.
+			header('Location: '.redirect());
+			exit;
+		}
 	}
-*/
 	
 	if($dev->ParentDevice >0){
 		$pDev=new Device();
