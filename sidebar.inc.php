@@ -66,6 +66,7 @@
 	});
   </script>
   <script type="text/javascript" src="scripts/mktree.js"></script> 
+  <script type="text/javascript" src="scripts/konami.js"></script> 
 	<hr>
 	<ul class="nav">
 <?php
