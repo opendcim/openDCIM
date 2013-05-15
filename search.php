@@ -4,7 +4,7 @@
 
 	$user=new User();
 	$user->UserID=$_SERVER['REMOTE_USER'];
-	$user->GetUserRights($facDB);
+	$user->GetUserRights();
 
 	$viewList=$user->isMemberOf();
 
@@ -37,7 +37,7 @@
 		$esx->vmName=$dev->Label;
 		$vmList=$esx->SearchByVMName($facDB);
 		$cab->Location=$searchTerm;
-		$cabList=$cab->SearchByCabinetName($facDB);
+		$cabList=$cab->SearchByCabinetName();
 		$pdu->Label=$searchTerm;
 		$pduList=$pdu->SearchByPDUName($facDB);
 		$resultcount=count($devList)+count($cabList)+count($pduList)+count($vmList);
@@ -50,7 +50,7 @@
 		$esx->Owner=$dept->DeptID;
 		$vmList=$esx->GetVMListbyOwner($facDB);
 		$cab->AssignedTo=$dept->DeptID;
-		$cabList=$cab->SearchByOwner($facDB);
+		$cabList=$cab->SearchByOwner();
 		//PDUs have no ownership information so don't search them
 		$resultcount=count($devList)+count($cabList)+count($vmList);
 		$title=__("Owner search results for")." &quot;$searchTerm&quot;";
@@ -60,8 +60,8 @@
 		$resultcount=count($devList);
 		$title=__("Asset tag search results for")." &quot;$searchTerm&quot;";
 	}elseif($searchKey=="ctag"){
-		$devList=$dev->SearchByCustomTag($facDB,$searchTerm);
-		$cabList=$cab->SearchByCustomTag($facDB,$searchTerm);
+		$devList=$dev->SearchByCustomTag($searchTerm);
+		$cabList=$cab->SearchByCustomTag($searchTerm);
 		$resultcount=count($devList)+count($cabList);
 		$title=__("Custom tag search results for")." &quot;$searchTerm&quot;";
 	}else{

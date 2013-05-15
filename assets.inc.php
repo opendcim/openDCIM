@@ -51,7 +51,7 @@ class Cabinet {
 	var $MapY2;
 	var $Notes;
 	
-	function CreateCabinet( $db ) {
+	function CreateCabinet( $db = null ) {
 		global $dbh;
 		
 		$insert_sql = "insert into fac_Cabinet set DataCenterID=\"" . intval($this->DataCenterID) . "\", Location=\"" . addslashes($this->Location) 
@@ -75,7 +75,7 @@ class Cabinet {
 		return $this->CabinetID;
 	}
 
-	function UpdateCabinet( $db ) {
+	function UpdateCabinet( $db = null ) {
 		global $dbh;
 		
 		$update_sql = "update fac_Cabinet set DataCenterID=\"" . intval($this->DataCenterID) . "\", Location=\"" . addslashes($this->Location) 
@@ -97,37 +97,15 @@ class Cabinet {
 		return true;
 	}
 
-	function GetCabinet( $db ) {
+	function GetCabinet( $db = null ) {
+		global $dbh;
+		
 		$select_sql = "select * from fac_Cabinet where CabinetID=\"" . intval($this->CabinetID) . "\"";
 		
-		$result=mysql_query($select_sql,$db);
+		mysql_query($select_sql,$db);
 		
-		if (mysql_num_rows($result)==0 || !$result){
-			// Error retrieving record
-			$this->CabinetID = null;
-			$this->DataCenterID = null;
-			$this->Location = null;
-			$this->AssignedTo = null;
-			$this->ZoneID = null;
-			$this->CabinetHeight = null;
-			$this->Model = null;
-			$this->Keylock = null;
-			$this->MaxKW = null;
-			$this->MaxWeight = null;
-			$this->InstallationDate = null;
-			$this->SensorIPAddress = null;
-			$this->SensorCommunity = null;
-			$this->SensorOID = null;
-			$this->MapX1 = null;
-			$this->MapY1 = null;
-			$this->MapX2 = null;
-			$this->MapY2 = null;
-			$this->Notes = null;
-
-			return -1;
-		}
-
-		$cabinetRow = mysql_fetch_array( $result );
+		$cabinetRow = $dbh->query( $select_sql )->fetch();
+		
 		$this->DataCenterID = $cabinetRow[ "DataCenterID" ];
 		$this->Location = $cabinetRow[ "Location" ];
 		$this->AssignedTo = $cabinetRow["AssignedTo"];
@@ -150,7 +128,9 @@ class Cabinet {
 		return 0;
 	}
 
-	static function ListCabinets($db,$deptid=null){
+	static function ListCabinets($deptid=null) {
+		global $dbh;
+		
 		$cabinetList=array();
 
 		$sql='';
@@ -160,11 +140,7 @@ class Cabinet {
 
 		$select_sql="SELECT * FROM fac_Cabinet$sql ORDER BY DataCenterID, Location;";
 
-		if(!$result=mysql_query($select_sql,$db)){
-			return 0;
-		}
-
-		while($cabinetRow=mysql_fetch_array($result)){
+		foreach ( $dbh->query( $select_sql ) as $cabinetRow ) {
 			$cabID = $cabinetRow[ "CabinetID" ];
 			$cabinetList[ $cabID ] = new Cabinet();
 
@@ -192,16 +168,14 @@ class Cabinet {
 		return $cabinetList;
 	}
 
-	function ListCabinetsByDC( $db ) {
+	function ListCabinetsByDC( $db = null ) {
+		global $dbh;
+		
 		$cabinetList = array();
 
 		$select_sql = "select * from fac_Cabinet where DataCenterID=\"" . intval($this->DataCenterID) . "\" order by Location";
 
-		if ( ! $result = mysql_query( $select_sql, $db ) ) {
-			return 0;
-		}
-
-		while ( $cabinetRow = mysql_fetch_array( $result ) ) {
+		foreach ( $dbh->query( $select_sql ) as $cabinetRow ) {
 			$cabID = $cabinetRow[ "CabinetID" ];
 			$cabinetList[ $cabID ] = new Cabinet();
 
@@ -229,28 +203,24 @@ class Cabinet {
 		return $cabinetList;
 	}
 
-	function CabinetOccupancy( $CabinetID, $db ) {
+	function CabinetOccupancy( $CabinetID, $db = null ) {
+		global $dbh;
+		
 		$select_sql = "select sum(Height) as Occupancy from fac_Device where Cabinet=$CabinetID";
 
-		if ( ! $result = mysql_query( $select_sql, $db ) ) {
-			return 0;
-		}
-
-		$row = mysql_fetch_array( $result );
+		$row = $dbh->query( $select_sql )->fetch();
 
 		return $row["Occupancy"];
 	}
 
-	function GetDCSelectList( $db ) {
+	function GetDCSelectList( $db = null ) {
+		global $dbh;
+		
 		$select_sql = "select * from fac_DataCenter order by Name";
-
-		if ( ! $result = mysql_query( $select_sql, $db ) ) {
-			return "";
-		}
 
 		$selectList = "<select name=\"datacenterid\">";
 
-		while ( $selectRow = mysql_fetch_array( $result ) ) {
+		foreach ( $dbh->query( $select_sql ) as $selectRow ) {
 			if ( $selectRow[ "DataCenterID" ] == $this->DataCenterID )
 				$selected = "selected";
 			else
@@ -265,16 +235,14 @@ class Cabinet {
 		return $selectList;
 	}
 
-	function GetCabinetSelectList( $db ) {
+	function GetCabinetSelectList( $db = null) {
+		global $dbh;
+		
 		$select_sql = "select Name, CabinetID, Location from fac_DataCenter, fac_Cabinet where fac_DataCenter.DataCenterID=fac_Cabinet.DataCenterID order by Name ASC, Location ASC";
-
-		if ( ! $result = mysql_query( $select_sql, $db ) ) {
-			return "";
-		}
 
 		$selectList = "<select name=\"cabinetid\" id=\"cabinetid\"><option value=\"-1\">Storage Room</option>";
 
-		while ( $selectRow = mysql_fetch_array( $result ) ) {
+		foreach ( $dbh->query( $select_sql) as $selectRow ) {
 			if ( $selectRow[ "CabinetID" ] == $this->CabinetID )
 				$selected = "selected";
 			else
@@ -288,7 +256,9 @@ class Cabinet {
 		return $selectList;
 	}
 
-	function BuildCabinetTree( $db ) {
+	function BuildCabinetTree( $db = null ) {
+		global $dbh;
+		
 		$dc = new DataCenter();
 		$dept = new Department();
 
@@ -309,11 +279,7 @@ class Cabinet {
 
 				$cab_sql = "select * from fac_Cabinet where DataCenterID=\"$dcID\" order by Location ASC";
 
-				if ( ! $result = mysql_query( $cab_sql, $db ) ) {
-					return -1;
-				}
-
-				while ( $cabRow = mysql_fetch_array( $result ) ) {
+				foreach ( $dbh->query( $cab_sql ) as $cabRow  ) {
 				  $dept->DeptID = $cabRow["AssignedTo"];
 				  
 				  if ( $dept->DeptID == 0 )
@@ -335,7 +301,9 @@ class Cabinet {
 		return $tree;
 	}
 
-	function DeleteCabinet( $db ) {
+	function DeleteCabinet( $db = null ) {
+		global $dbh;
+		
 		/* Need to delete all devices and CDUs first */
 		$tmpDev = new Device();
 		$tmpCDU = new PowerDistribution();
@@ -355,22 +323,18 @@ class Cabinet {
 		}
 		
 		$sql = sprintf( "delete from fac_Cabinet where CabinetID=\"%d\"", intval( $this->CabinetID ) );
-		mysql_query( $sql, $db );
+		$dbh->exec( $sql );
 	}
 
-	function SearchByCabinetName($db){
-		$select_sql="select * from fac_Cabinet where ucase(Location) like \"%" . transform($this->Location) . "%\" order by Location;";
-			
-		$result=mysql_query($select_sql,$db);
+	function SearchByCabinetName( $db = null ) {
+		global $dbh;
+		
+		$sql="select * from fac_Cabinet where ucase(Location) like \"%" . transform($this->Location) . "%\" order by Location;";
 
 		$cabinetList=array();
 		$cabCount=0;
 
-		if(!$result=mysql_query($select_sql,$db)){
-			return 0;
-		}
-
-		while($cabinetRow=mysql_fetch_array($result)){
+		foreach ( $dbh->query( $sql ) as $cabinetRow ){
 			$cabID=$cabinetRow["CabinetID"];
 			$cabinetList[$cabID]=new Cabinet();
 			$cabinetList[$cabID]->CabinetID=$cabinetRow["CabinetID"];
@@ -397,19 +361,15 @@ class Cabinet {
 		return $cabinetList;
 	}
 
-	function SearchByOwner($db){
-		$searchSQL="select * from fac_Cabinet WHERE AssignedTo=".intval($this->AssignedTo)." ORDER BY Location;";
-			
-		$result=mysql_query($searchSQL,$db);
+	function SearchByOwner( $db = null ) {
+		global $dbh;
+		
+		$sql="select * from fac_Cabinet WHERE AssignedTo=".intval($this->AssignedTo)." ORDER BY Location;";
 
 		$cabinetList=array();
 		$cabCount=0;
 
-		if(!$result=mysql_query($searchSQL,$db)){
-			return 0;
-		}
-
-		while($cabinetRow=mysql_fetch_array($result)){
+		foreach ( $dbh->query( $sql ) as $cabinetRow ) {
 			$cabID=$cabinetRow["CabinetID"];
 			$cabinetList[$cabID]=new Cabinet();
 			$cabinetList[$cabID]->CabinetID=$cabinetRow["CabinetID"];
@@ -436,15 +396,15 @@ class Cabinet {
 		return $cabinetList;
 	}
 
-	function SearchByCustomTag($db, $tag=null){
-		$select_sql="SELECT a.* from fac_Cabinet a, fac_CabinetTags b, fac_Tags c WHERE a.CabinetID=b.CabinetID AND b.TagID=c.TagID AND UCASE(c.Name) LIKE UCASE('%".addslashes($tag)."%');";
-		$result=mysql_query($select_sql,$db);
+	function SearchByCustomTag( $tag=null ) {
+		global $dbh;
+		
+		$sql="SELECT a.* from fac_Cabinet a, fac_CabinetTags b, fac_Tags c WHERE a.CabinetID=b.CabinetID AND b.TagID=c.TagID AND UCASE(c.Name) LIKE UCASE('%".addslashes($tag)."%');";
+
 		$cabinetList=array();
 		$cabCount=0;
-		if(!$result=mysql_query($select_sql,$db)){
-			return 0;
-		}
-		while($cabinetRow=mysql_fetch_array($result)){
+
+		foreach ( $dbh->query( $sql ) as $cabinetRow ) {
 			$cabID=$cabinetRow["CabinetID"];
 			$cabinetList[$cabID]=new Cabinet();
 			$cabinetList[$cabID]->CabinetID=$cabinetRow["CabinetID"];
@@ -470,18 +430,22 @@ class Cabinet {
 		return $cabinetList;
 	}
 
-	function GetTags(){
-		$sql="SELECT TagID FROM fac_CabinetTags WHERE CabinetID=".intval($this->CabinetID).";";
-		$results=mysql_query($sql);
-		$tags=array();
-		if(mysql_num_rows($results)>0){
-			while($row=mysql_fetch_row($results)){
-				$tags[]=Tags::FindName($row[0]);
-			}
+	function GetTags() {
+		global $dbh;
+		
+		$sql = "SELECT TagID FROM fac_CabinetTags WHERE CabinetID=".intval($this->CabinetID).";";
+
+		$tags = array();
+
+		foreach ( $dbh->query( $sql ) as $row ) {
+			$tags[]=Tags::FindName($row[0]);
 		}
+
 		return $tags;
 	}
-	function SetTags($tags=array()){
+	function SetTags( $tags=array() ) {
+		global $dbh;
+		
 		if(count($tags)>0){
 			//Clear existing tags
 			$this->SetTags();
@@ -491,12 +455,12 @@ class Cabinet {
 					$t=Tags::CreateTag($tag);
 				}
 				$sql="INSERT INTO fac_CabinetTags (CabinetID, TagID) VALUES (".intval($this->CabinetID).",$t);";
-				mysql_query($sql);
+				$dbh->exec($sql);
 			}
 		}else{
 			//If no array is passed then clear all the tags
 			$delsql="DELETE FROM fac_CabinetTags WHERE CabinetID=".intval($this->CabinetID).";";
-			mysql_query($delsql);
+			$dbh->exec($delsql);
 		}
 		return 0;
 	}

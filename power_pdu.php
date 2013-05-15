@@ -4,8 +4,9 @@
 
 	$user=new User();
 	$user->UserID = $_SERVER['REMOTE_USER'];
-	$user->GetUserRights( $facDB );
+	$user->GetUserRights();
 
+	// CDUs don't have owners, they are part of the infrastructure so you have to at least have Global Read to view them
 	if(!$user->ReadAccess){
 		// No soup for you.
 		header('Location: '.redirect());

@@ -23,7 +23,7 @@
 	if($audit->UserID!=""){
 		$tmpUser=new User();
 		$tmpUser->UserID=$audit->UserID;
-		$tmpUser->GetUserRights($facDB);
+		$tmpUser->GetUserRights();
 		$AuditorName=$tmpUser->Name;
 	}else{
 		//If no audit has been completed $AuditorName will return an error
@@ -36,15 +36,14 @@ class PDF extends FPDF {
   var $outlines=array();
   var $OutlineRoot;
   var $pdfconfig;
-  var $pdfDB;
+
   
-	function PDF($db){
-		$this->pdfDB = $db;
+	function PDF(){
 		parent::FPDF('L');
 	}
   
 	function Header() {
-		$this->pdfconfig = new Config($this->pdfDB);
+		$this->pdfconfig = new Config();
     	$this->Image( 'images/' . $this->pdfconfig->ParameterArray['PDFLogoFile'],10,8,100);
     	$this->SetFont($this->pdfconfig->ParameterArray['PDFfont'],'B',12);
     	$this->Cell(120);
@@ -386,12 +385,12 @@ class PDF_Diag extends PDF_Sector {
 //	Begin Report Generation
 //
 //
-	$pdf=new PDF($facDB);
+	$pdf=new PDF();
 	$pdf->SetLeftMargin(5);	
 	$pdf->SetRightMargin(5);
 
 	$cab->CabinetID=$_REQUEST['cabinetid'];
-	$cab->GetCabinet($facDB);
+	$cab->GetCabinet();
 	$device->Cabinet=$cab->CabinetID;
 	$pdf->AliasNbPages();
 	$pdf->AddPage();
