@@ -105,7 +105,7 @@
 				}
 			} else {
 				$tmp1 = explode( " ", snmpget( $pdu->IPAddress, $pdu->SNMPCommunity, $template->OID1 ));
-				$result1 = $tmp[1];
+				$result1 = $tmp1[1];
 				
 				if ( $template->OID2 != "" ) {
 					$tmp2 = explode( " ", snmpget( $pdu->IPAddress, $pdu->SNMPCommunity, $template->OID2 ));
