@@ -469,15 +469,21 @@ class PowerDistribution {
 	}
 
   
-	function UpdateStats( $db ) {
+	function UpdateStats( $db = null ) {
+		global $dbh;
+		
+		if ( function_exists( "snmpget" ) )
+			$usePHPSNMP = true;
+		else
+			$usePHPSNMP = false;
+		
 		$config=new Config();
 		
 		$sql = "select PDUID, IPAddress, SNMPCommunity, SNMPVersion, Multiplier, OID1, OID2, OID3, ProcessingProfile, Voltage from fac_PowerDistribution a, fac_CDUTemplate b where a.TemplateID=b.TemplateID and b.Managed=true and IPAddress>'' and SNMPCommunity>''";
-		$result = mysql_query( $sql, $db );
 		
 		// The result set should have no PDU's with blank IP Addresses or SNMP Community, so we can forge ahead with processing them all
 		
-		while ( $row = mysql_fetch_array( $result ) ) {
+		foreach ( $dbh->query( $sql ) as $row ) {
 			// If only one OID is used, the OID2 and OID3 should be blank, so no harm in just making one string
 			$OIDString = $row["OID1"] . " " . $row["OID2"] . " " . $row["OID3"];
 			
@@ -486,28 +492,53 @@ class PowerDistribution {
 			$amps = 0;
 			$watts = 0;
 			
-			$pollCommand = sprintf( "%s -v %s -t 0.5 -r 2 -c %s %s %s | %s -d: -f4", $config->ParameterArray["snmpget"], $row["SNMPVersion"], $row["SNMPCommunity"], $row["IPAddress"], $OIDString, $config->ParameterArray["cut"] );
+			if ( $usePHPSNMP ) {
+				if ( $row["SNMPVersion"] == "2c" )
+					$tmp = explode( " ", snmp2_get( $row["IPAddress"], $row["SNMPCommunity"], $row["OID1"] ));
+				else
+					$tmp = explode( " ", snmpget( $row["IPAddress"], $row["SNMPCommunity"], $row["OID1"] ));
+				
+				$pollValue1 = @$tmp[1];
+				
+				if ( $row["OID2"] != "" ) {
+					$tmp2 = explode( " ", snmpget( $row["IPAddress"], $row["SNMPCommunity"], $row["OID2"] ));
+					if ( sizeof( $tmp2 ) > 0 )
+						$pollValue2 = $tmp2[1];
+				}
+				
+				if ( $row["OID3"] != "" ) {
+					$tmp3 = explode( " ", snmpget( $row["IPAddress"], $row["SNMPCommunity"], $row["OID3"] ));
+					if ( sizeof( $tmp3 ) > 0 )
+						$pollValue3 = $tmp3[1];
+				}
+			} else {
+				$pollCommand = sprintf( "%s -v %s -t 0.5 -r 2 -c %s %s %s | %s -d: -f4", $config->ParameterArray["snmpget"], $row["SNMPVersion"], $row["SNMPCommunity"], $row["IPAddress"], $OIDString, $config->ParameterArray["cut"] );
+				
+				exec( $pollCommand, $statsOutput );
+				
+				$pollValue1 = @$statsOutput[0];
+				$pollValue2 = @$statsOutput[1];
+				$pollValue3 = @$statsOutput[2];
+			}
 			
-			exec( $pollCommand, $statsOutput );
-			
-			if ( count( $statsOutput ) > 0 ) {
+			if ( $pollValue1 != "" ) {
 				switch ( $row["ProcessingProfile"] ) {
 					case "SingleOIDAmperes":
-						$amps = intval( @$statsOutput[0] ) / intval( $row["Multiplier"] );
+						$amps = intval( $pollValue1 ) / intval( $row["Multiplier"] );
 						$watts = $amps * intval( $row["Voltage"] );
 						break;
 					case "Combine3OIDAmperes":
-						$amps = ( intval( @$statsOutput[0] ) + intval( @$statsOutput[1] ) + intval( @$statsOutput[2] ) ) / intval( $row["Multiplier"] );
+						$amps = ( intval( $pollValue1 ) + intval( $pollValue2 ) + intval( $pollValue3 ) ) / intval( $row["Multiplier"] );
 						$watts = $amps * intval( $row["Voltage"] );
 						break;
 					case "Convert3PhAmperes":
-						$amps = ( intval( @$statsOutput[0] ) + intval( @$statsOutput[1] ) + intval( @$statsOutput[2] ) ) / intval( $row["Multiplier"] ) / 3;
+						$amps = ( intval( $pollValue1 ) + intval( $pollValue2 ) + intval( $pollValue3 ) ) / intval( $row["Multiplier"] ) / 3;
 						$watts = $amps * 1.732 * intval( $row["Voltage"] );
 						break;
 					case "Combine3OIDWatts":
-						$watts = ( intval( @$statsOutput[0] ) + intval( @$statsOutput[1] ) + intval( @$statsOutput[2] ) ) / intval( $row["Multiplier"] );
+						$watts = ( intval( $pollValue1 ) + intval( $pollValue2 ) + intval( $pollValue3 ) ) / intval( $row["Multiplier"] );
 					default:
-						$watts = intval( @$statsOutput[0] ) / intval( $row["Multiplier"] );
+						$watts = intval( $pollValue1 ) / intval( $row["Multiplier"] );
 						break;
 				}
 			}
@@ -523,7 +554,9 @@ class PowerDistribution {
 		}
 	}
 	
-	function GetSmartCDUUptime( $db ) {
+	function GetSmartCDUUptime( $db = null ) {
+		global $dbh;
+		
 		$config=new Config();
 		$this->GetPDU( $db );
 
@@ -532,17 +565,28 @@ class PowerDistribution {
 		} else {
 			$serverIP = $this->IPAddress;
 			$community = $this->SNMPCommunity;
-			$pollCommand ="{$config->ParameterArray["snmpget"]} -v 2c -t 0.5 -r 2 -c $community $serverIP sysUpTimeInstance";
+			
+			if ( ! function_exists( "snmpget" ) ) {
+				$pollCommand ="{$config->ParameterArray["snmpget"]} -v 2c -t 0.5 -r 2 -c $community $serverIP sysUpTimeInstance";
 
-			exec($pollCommand, $statsOutput);
-			// need error checking here
+				exec($pollCommand, $statsOutput);
+				// need error checking here
 
-			if(count($statsOutput) >0){
-				$statsOutput=explode(")",$statsOutput[0]);
-				$upTime=end($statsOutput);
-			}else{
-				$upTime = "Unknown";
+				if(count($statsOutput) >0){
+					$statsOutput=explode(")",$statsOutput[0]);
+					$upTime=end($statsOutput);
+				}else{
+					$upTime = "Unknown";
+				}
+			} else {
+				if ( $this->SNMPVersion == "2c" )
+					$result = explode( ")", snmp2_get( $this->IPAddress, $this->SNMPCommunity, "sysUpTimeInstance" ));
+				else
+					$result = explode( ")", snmpget( $this->IPAddress, $this->SNMPCommunity, "sysUpTimeInstance" ));
+				
+				$upTime = trim( @$result[1] );
 			}
+			
 			return $upTime;
 		}
 	}
@@ -559,18 +603,26 @@ class PowerDistribution {
 		} else {
 			$serverIP = $this->IPAddress;
 			$community = $this->SNMPCommunity;
-
-			$command = "/usr/bin/snmpget";
 			
-			$pollCommand = sprintf( "%s -v 2c -t 0.5 -r 2 -c %s %s %s", $command, $this->SNMPCommunity, $this->IPAddress, $template->VersionOID );
+			if ( ! function_exists( "snmpget" ) ) {
+				$pollCommand = sprintf( "%s -v 2c -t 0.5 -r 2 -c %s %s %s", $config->ParameterArray["snmpget"], $this->SNMPCommunity, $this->IPAddress, $template->VersionOID );
 
-			exec( $pollCommand, $statsOutput );
-			// need error checking here
+				exec( $pollCommand, $statsOutput );
+				// need error checking here
 
-			if ( count( $statsOutput ) > 0 )
-				$version = str_replace( "\"", "", end( explode( " ", $statsOutput[0] ) ) );
-			else
-				$version = "Unknown";
+				if ( count( $statsOutput ) > 0 )
+					$version = str_replace( "\"", "", end( explode( " ", $statsOutput[0] ) ) );
+				else
+					$version = "Unknown";
+			} else {
+				if ( $template->SNMPVersion == "2c" )
+					$result = explode( "\"", snmp2_get( $this->IPAddress, $this->SNMPCommunity, $template->VersionOID ));
+				else
+					$result = explode( "\"", snmpget( $this->IPAddress, $this->SNMPCommunity, $template->VersionOID ));
+				
+				$version = @$result[1];
+			}
+			
 			return $version;
 		}
 	}
