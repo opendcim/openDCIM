@@ -103,7 +103,7 @@ class CDUTemplate {
 			return false;
 		}
 		
-		$sql = sprintf( "INSERT fac_CDUTemplate SET ManufacturerID=%d, Model=\"%s\", Managed=%d, SNMPVersion=\"%s\", VersionOID=\"%s\", Multiplier=%d, OID1=\"%s\", OID2=\"%s\", OID3=\"%s\", ProcessingProfile=\"%s\", Voltage=%d, Amperage=%d, NumOutlets=%d",
+		$sql = sprintf( "INSERT fac_CDUTemplate SET ManufacturerID=%d, Model=\"%s\", Managed=%d, SNMPVersion=\"%s\", VersionOID=\"%s\", Multiplier=\"%d\", OID1=\"%s\", OID2=\"%s\", OID3=\"%s\", ProcessingProfile=\"%s\", Voltage=%d, Amperage=%d, NumOutlets=%d",
 			$this->ManufacturerID, mysql_real_escape_string( $this->Model ), $this->Managed, mysql_real_escape_string( $this->SNMPVersion ),
 			mysql_real_escape_string( $this->VersionOID ), $this->Multiplier, mysql_real_escape_string( $this->OID1 ), mysql_real_escape_string( $this->OID2 ),
 			mysql_real_escape_string( $this->OID3 ), mysql_real_escape_string( $this->ProcessingProfile ), $this->Voltage, $this->Amperage, $this->NumOutlets );
@@ -119,11 +119,11 @@ class CDUTemplate {
 	function UpdateTemplate() {
 		global $dbh;
 		
-		$sql = sprintf( "UPDATE fac_CDUTemplate SET ManufacturerID=%d, Model=\"%s\", Managed=%d, SNMPVersion=\"%s\", VersionOID=\"%s\", Multiplier=%d, OID1=\"%s\", OID2=\"%s\", OID3=\"%s\", ProcessingProfile=\"%s\", Voltage=%d, Amperage=%d, NumOutlets=%d where TemplateID=%d",
+		$sql = sprintf( "UPDATE fac_CDUTemplate SET ManufacturerID=%d, Model=\"%s\", Managed=%d, SNMPVersion=\"%s\", VersionOID=\"%s\", Multiplier=\"%d\", OID1=\"%s\", OID2=\"%s\", OID3=\"%s\", ProcessingProfile=\"%s\", Voltage=%d, Amperage=%d, NumOutlets=%d where TemplateID=%d",
 			$this->ManufacturerID, mysql_real_escape_string( $this->Model ), $this->Managed, mysql_real_escape_string( $this->SNMPVersion ), mysql_real_escape_string( $this->VersionOID ),
 			$this->Multiplier, mysql_real_escape_string( $this->OID1 ), mysql_real_escape_string( $this->OID2 ), mysql_real_escape_string( $this->OID3 ), 
 			mysql_real_escape_string( $this->ProcessingProfile ), $this->Voltage, $this->Amperage, $this->NumOutlets, $this->TemplateID );
-
+		
 		if ( ! $dbh->exec( $sql ) )
 			return false;
 		else
