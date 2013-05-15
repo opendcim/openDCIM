@@ -19,16 +19,14 @@
 	$cab->CabinetID=$_REQUEST["cabinetid"];
 	$cab->GetCabinet($facDB);
 
-/*	This isn't checking rights properly.  It is denying someone with global read/write access to the device.
 	if($cab->AssignedTo >0){
 		// Check to see if this user is allowed to see anything in here
-		if(!in_array($cab->AssignedTo,$viewList)){
+		if( !in_array($cab->AssignedTo,$viewList) && !$user->ReadAccess ){
 			// This cabinet belongs to a department you don't have affiliation with, so no viewing at all
 			header('Location: '.redirect());
 			exit;
 		}
 	}
-*/
 	
 	// If you're deleting the cabinet, no need to pull in the rest of the information, so get it out of the way
 	// Only a site administrator can create or delete a cabinet
@@ -50,7 +48,7 @@
 			$dev->DeviceID=intval($_POST['tooltip']);
 			$dev->GetDevice($facDB);
 			
-			if(!in_array($dev->Owner,$viewList)){
+			if(!in_array($dev->Owner,$viewList) && !$user->ReadAccess){
 				print "Details Restricted";
 				exit;
 			}
@@ -260,7 +258,7 @@
 		}
 
 		if($device->Height<1){
-			if ( in_array( $device->Owner, $viewList ) )
+			if ( in_array( $device->Owner, $viewList ) || $user->ReadAccess )
 				$zeroheight.="				<a href=\"devices.php?deviceid=$devID\">$highlight $device->Label</a>\n";
 			else
 				$zeroheight.="              $highlight $device->Label\n";
@@ -302,7 +300,7 @@
 			$errclass=($i>$cab->CabinetHeight)?' class="error"':'';
 			if($errclass!=''){$heighterr="yup";}
 			if($i==$devTop){
-				if ( in_array( $device->Owner, $viewList ) ) {
+				if ( in_array( $device->Owner, $viewList ) || $user->ReadAccess ) {
 					$body.="<tr><td$errclass>$i</td><td class=\"device$reserved dept$device->Owner\" rowspan=$device->Height data=$devID><a href=\"devices.php?deviceid=$devID\">$highlight $device->Label</a></td></tr>\n";
 				} else {
 					$body.="<tr><td$errclass>$i</td><td class=\"device$reserved dept$device->Owner\" rowspan=$device->Height data=$devID>$highlight $device->Label</td></tr>\n";

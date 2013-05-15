@@ -494,20 +494,28 @@ class PowerDistribution {
 			
 			if ( $usePHPSNMP ) {
 				if ( $row["SNMPVersion"] == "2c" )
-					$tmp = explode( " ", snmp2_get( $row["IPAddress"], $row["SNMPCommunity"], $row["OID1"] ));
+					$tmp = explode( " ", @snmp2_get( $row["IPAddress"], $row["SNMPCommunity"], $row["OID1"] ));
 				else
-					$tmp = explode( " ", snmpget( $row["IPAddress"], $row["SNMPCommunity"], $row["OID1"] ));
+					$tmp = explode( " ", @snmpget( $row["IPAddress"], $row["SNMPCommunity"], $row["OID1"] ));
 				
 				$pollValue1 = @$tmp[1];
 				
 				if ( $row["OID2"] != "" ) {
-					$tmp2 = explode( " ", snmpget( $row["IPAddress"], $row["SNMPCommunity"], $row["OID2"] ));
+					if ( $row["SNMPVersion"] == "2c" )
+						$tmp2 = explode( " ", @snmp2_get( $row["IPAddress"], $row["SNMPCommunity"], $row["OID2"] ));
+					else
+						$tmp2 = explode( " ", @snmpget( $row["IPAddress"], $row["SNMPCommunity"], $row["OID2"] ));
+					
 					if ( sizeof( $tmp2 ) > 0 )
 						$pollValue2 = $tmp2[1];
 				}
 				
 				if ( $row["OID3"] != "" ) {
-					$tmp3 = explode( " ", snmpget( $row["IPAddress"], $row["SNMPCommunity"], $row["OID3"] ));
+					if ( $row["SNMPVersion"] == "2c" )
+						$tmp3 = explode( " ", @snmp2_get( $row["IPAddress"], $row["SNMPCommunity"], $row["OID3"] ));
+					else
+						$tmp3 = explode( " ", @snmpget( $row["IPAddress"], $row["SNMPCommunity"], $row["OID3"] ));
+
 					if ( sizeof( $tmp3 ) > 0 )
 						$pollValue3 = $tmp3[1];
 				}
@@ -580,9 +588,9 @@ class PowerDistribution {
 				}
 			} else {
 				if ( $this->SNMPVersion == "2c" )
-					$result = explode( ")", snmp2_get( $this->IPAddress, $this->SNMPCommunity, "sysUpTimeInstance" ));
+					$result = explode( ")", @snmp2_get( $this->IPAddress, $this->SNMPCommunity, "sysUpTimeInstance" ));
 				else
-					$result = explode( ")", snmpget( $this->IPAddress, $this->SNMPCommunity, "sysUpTimeInstance" ));
+					$result = explode( ")", @snmpget( $this->IPAddress, $this->SNMPCommunity, "sysUpTimeInstance" ));
 				
 				$upTime = trim( @$result[1] );
 			}
@@ -616,9 +624,9 @@ class PowerDistribution {
 					$version = "Unknown";
 			} else {
 				if ( $template->SNMPVersion == "2c" )
-					$result = explode( "\"", snmp2_get( $this->IPAddress, $this->SNMPCommunity, $template->VersionOID ));
+					$result = explode( "\"", @snmp2_get( $this->IPAddress, $this->SNMPCommunity, $template->VersionOID ));
 				else
-					$result = explode( "\"", snmpget( $this->IPAddress, $this->SNMPCommunity, $template->VersionOID ));
+					$result = explode( "\"", @snmpget( $this->IPAddress, $this->SNMPCommunity, $template->VersionOID ));
 				
 				$version = @$result[1];
 			}
