@@ -73,7 +73,7 @@
 			print "<p>".__("SNMP Uptime did not return a valid value.")."</p>\n";
 		}
 		
-		$pollCommand=sprintf( "%s -v %s -c %s %s %s | %s -d: -f4", $Config->ParameterArray["snmpget"], $template->SNMPVersion, $pdu->SNMPCommunity, $pdu->IPAddress, $template->VersionOID, $Config->ParameterArray["cut"] );
+		$pollCommand=sprintf( "%s -v %s -c %s %s %s | %s -d: -f4", $config->ParameterArray["snmpget"], $template->SNMPVersion, $pdu->SNMPCommunity, $pdu->IPAddress, $template->VersionOID, $config->ParameterArray["cut"] );
 		exec($pollCommand,$verOutput);
 		
 		if(count($verOutput) >0){
@@ -83,7 +83,7 @@
 		}
 		
 		$OIDString=$template->OID1." ".$template->OID2." ".$template->OID3;
-		$pollCommand=sprintf( "%s -v %s -c %s %s %s | %s -d: -f4", $Config->ParameterArray["snmpget"], $template->SNMPVersion, $pdu->SNMPCommunity, $pdu->IPAddress, $OIDString, $Config->ParameterArray["cut"] );
+		$pollCommand=sprintf( "%s -v %s -c %s %s %s | %s -d: -f4", $config->ParameterArray["snmpget"], $template->SNMPVersion, $pdu->SNMPCommunity, $pdu->IPAddress, $OIDString, $config->ParameterArray["cut"] );
 		
 		exec($pollCommand,$statsOutput);
 		
