@@ -102,8 +102,6 @@ class Cabinet {
 		
 		$select_sql = "select * from fac_Cabinet where CabinetID=\"" . intval($this->CabinetID) . "\"";
 		
-		mysql_query($select_sql,$db);
-		
 		$cabinetRow = $dbh->query( $select_sql )->fetch();
 		
 		$this->DataCenterID = $cabinetRow[ "DataCenterID" ];
@@ -474,36 +472,34 @@ class CabinetAudit {
 	var $UserID;
 	var $AuditStamp;
 
-	function CertifyAudit( $db ) {
+	function CertifyAudit( $db = null ) {
+		global $dbh;
+		
 		$sql = "insert into fac_CabinetAudit set CabinetID=\"" . intval( $this->CabinetID ) . "\", UserID=\"" . addslashes( $this->UserID ) . "\", AuditStamp=now()";
 
-		$result = mysql_query( $sql, $db );
-
-		return $result;
+		$dbh->exec( $sql );
+		
+		return;
 	}
 
-	function GetLastAudit( $db ) {
+	function GetLastAudit( $db = null ) {
+		global $dbh;
+		
 		$sql = "select * from fac_CabinetAudit where CabinetID=\"" . intval( $this->CabinetID ) . "\" order by AuditStamp DESC Limit 1";
 
-        if(!$result = mysql_query($sql,$db)){
-			echo mysql_errno().": ".mysql_error()."\n";
-		}
-
-		if ( $row = mysql_fetch_array( $result ) ) {
+		if ( $row = $dbh->query( $sql )->fetch() ) {
 			$this->CabinetID = $row["CabinetID"];
 			$this->UserID = $row["UserID"];
 			$this->AuditStamp = date( "M d, Y H:i", strtotime( $row["AuditStamp"] ) );
 		}
 	}
 	
-	function GetLastAuditByUser( $db ) {
+	function GetLastAuditByUser( $db = null ) {
+		global $dbh;
+		
 		$sql = "select * from fac_CabinetAudit where UserID=\"" . addslashes( $this->UserID ) . "\" order by AuditStamp DESC Limit 1";
 
-        if(!$result = mysql_query($sql,$db)){
-			echo mysql_errno().": ".mysql_error()."\n";
-		}
-
-		if ( $row = mysql_fetch_array( $result ) ) {
+		if ( $row = $dbh->query( $sql )->fetch() ) {
 			$this->CabinetID = $row["CabinetID"];
 			$this->UserID = $row["UserID"];
 			$this->AuditStamp = date( "M d, Y H:i", strtotime( $row["AuditStamp"] ) );
@@ -518,12 +514,12 @@ class CabinetTemps {
 	var $LastRead;
 	var $Temp;
 
-	function GetReading( $db ) {
+	function GetReading() {
+		global $dbh;
+		
 		$sql = sprintf( "select * from fac_CabinetTemps where CabinetID=%d", $this->CabinetID );
 		
-		$result = mysql_query( $sql, $db );
-		
-		if ( $row = mysql_fetch_array( $result ) ) {
+		if ( $row = $dbh->query( $sql )->fetch() ) {
 			$this->LastRead = date( "m-d-Y H:i:s", strtotime($row["LastRead"]) );
 			$Temp = $row["Temp"];
 		}
@@ -531,25 +527,35 @@ class CabinetTemps {
 		return;
 	}
 	
-	function UpdateReading( $db ) {
+	function UpdateReading() {
+		global $dbh;
+		
 		$cab = new Cabinet();
 		$cab->CabinetID = $this->CabinetID;
-		$cab->GetCabinet( $db );
+		$cab->GetCabinet();
 		
 		if ( ( strlen( $cab->SensorIPAddress ) == 0 ) || ( strlen( $cab->SensorCommunity ) == 0 ) || ( strlen( $cab->SensorOID ) == 0 ) )
 			return;
 
-		$pollCommand = sprintf( "/usr/bin/snmpget -v 2c -c %s %s %s | /bin/cut -d: -f4", $cab->SensorCommunity, $cab->SensorIPAddress, $cab->SensorOID );
+		if ( ! function_exists( "snmpget" ) ) {
+			$pollCommand = sprintf( "%s -v 2c -c %s %s %s | %s -d: -f4", $config->ParameterArray["snmpget"], $cab->SensorCommunity, $cab->SensorIPAddress, $cab->SensorOID, $config->ParameterArray["cut"] );
+			
+			exec( $pollCommand, $statsOutput );
+			
+			$sensorValue = intval( @$statsOutput[0] );
+		} else {
+			$result = explode( " ", snmp2_get( $cab->SensorIPAddress, $cab->SensorCommunity, $cab->SensorOID ));
+			
+			$sensorValue = intval($result[1]);
+		}
 		
-		exec( $pollCommand, $statsOutput );
-		
-		if ( count( $statsOutput ) > 0 ) {
-			$this->Temp = intval( $statsOutput[0] );
+		if ( $sensorValue > 0 ) {
+			$this->Temp = $sensorValue;
 			// Delete any existing record and then add in a new one
 			$sql = sprintf( "delete from fac_CabinetTemps where CabinetID=%d", $this->CabinetID );
-			mysql_query( $sql, $db );
-			$sql = sprintF( "insert into fac_CabinetTemps set CabinetID=%d, Temp=%d, LastRead=now()", $this->CabinetID, $this->Temp );
-			mysql_query( $sql, $db );
+			$dbh->exec( $sql );
+			$sql = sprintf( "insert into fac_CabinetTemps set CabinetID=%d, Temp=%d, LastRead=now()", $this->CabinetID, $this->Temp );
+			$dbh->exec( $sql );
 		}
 	}	
 }
@@ -624,7 +630,9 @@ class Device {
 		$this->Reservation = intval( $this->Reservation );
 	}
 
-	function CreateDevice( $db ) {
+	function CreateDevice( $db = null ) {
+		global $dbh;
+		
 		$this->Label=transform($this->Label);
 		$this->SerialNo=transform($this->SerialNo);
 		$this->AssetTag=transform($this->AssetTag);
@@ -642,13 +650,13 @@ class Device {
 			"\", WarrantyCo=\"" . addslashes( $this->WarrantyCo ) . "\", WarrantyExpire=\"" . date( "Y-m-d",strtotime($this->WarrantyExpire)) . 
 			"\", Notes=\"" . addslashes( $this->Notes ) . "\", Reservation=\"" . intval($this->Reservation) . "\"";
 
-		if ( ! $result = mysql_query( $insert_sql, $db ) ) {
+		if ( ! $dbh->exec( $insert_sql ) ) {
 			// Error occurred
 			printf( "<h3>MySQL Error.  SQL = \"%s\"</h3>\n", $insert_sql );
-			return 0;
+			return false;
 		}
 
-		$this->DeviceID = mysql_insert_id( $db );
+		$this->DeviceID = $dbh->lastInsertId();
 
 		(class_exists('LogActions'))?LogActions::LogThis($this):'';
 

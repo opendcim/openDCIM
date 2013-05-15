@@ -4,7 +4,7 @@
 
 	$user=new User();
 	$user->UserID=$_SERVER['REMOTE_USER'];
-	$user->GetUserRights($facDB);
+	$user->GetUserRights();
 
 	if(!$user->WriteAccess){
 		// No soup for you.
@@ -43,15 +43,15 @@
 
 		if($cab->Location!=""){
 			if(($cab->CabinetID >0)&&($_POST['action']=='Update')){
-				$cab->UpdateCabinet($facDB);
+				$cab->UpdateCabinet();
 			}elseif($_POST['action']=='Create'){
-				$cab->CreateCabinet($facDB);
+				$cab->CreateCabinet();
 			}
 		}
 	}
 
 	if($cab->CabinetID >0){
-		$cab->GetCabinet($facDB);
+		$cab->GetCabinet();
 
 		// Get any tags associated with this device
 		$tags=$cab->GetTags();
@@ -73,7 +73,7 @@
 
 
 	$deptList=$dept->GetDepartmentList($facDB);
-	$cabList=$cab->ListCabinets($facDB);
+	$cabList=$cab->ListCabinets();
 ?>
 <!doctype html>
 <html>
