@@ -602,7 +602,7 @@ class ColorCoding {
 	function GetCode() {
 		global $dbh;
 		
-		$sql = sprintf( "select * from fac_ColorCode where ColorID=%d", $this->ColorID );
+		$sql = sprintf( "select * from fac_ColorCoding where ColorID=%d", $this->ColorID );
 		
 		if ( ! $row = $dbh->query( $sql )->fetch() )
 			return false;
@@ -616,7 +616,7 @@ class ColorCoding {
 	static function GetCodeList() {
 		global $dbh;
 		
-		$sql = "select * from fac_ColorCode order by Name ASC";
+		$sql = "select * from fac_ColorCoding order by Name ASC";
 		
 		$codeList = array();
 		
@@ -2337,7 +2337,7 @@ class MediaTypes {
 		return true;
 	}
 	
-	static method GetMediaTypeList() {
+	static function GetMediaTypeList() {
 		global $dbh;
 		
 		$sql = "select * from fac_MediaTypes order by MediaType ASC";
