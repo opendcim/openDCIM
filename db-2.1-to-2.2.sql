@@ -59,3 +59,29 @@ INSERT INTO fac_CDUToolTip VALUES(NULL, 'Uptime', 'Uptime', 0);
 INSERT INTO fac_CDUToolTip VALUES(NULL, 'FirmwareVersion', 'Firmware Version', 0);
 INSERT INTO fac_CDUToolTip VALUES(NULL, 'SNMPCommunity', 'SNMP Community', 0);
 INSERT INTO fac_CDUToolTip VALUES(NULL, 'NumOutlets', 'Used/Total Connections', 0);
+
+--
+-- Updating MediaTypes table
+--
+
+ALTER TABLE fac_MediaTypes ADD COLUMN ColorID INT(11) NOT NULL;
+
+--
+-- Add ColorCoding Table
+--
+
+DROP TABLE IF EXISTS fac_ColorCoding;
+CREATE TABLE fac_ColorCoding (
+  ColorID INT(11) NOT NULL AUTO_INCREMENT,
+  Name VARCHAR(20) NOT NULL,
+  DefaultNote VARCHAR(40),
+  PRIMARY KEY(ColorID)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+
+--
+-- Modify fac_DevicePorts for consistency
+--
+
+ALTER TABLE fac_DevicePorts CHANGE CableColor ColorID INT(11);
+
+
