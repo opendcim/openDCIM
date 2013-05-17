@@ -3040,7 +3040,7 @@ class SwitchInfo {
 		for ( $n = 0; $n < $dev->Ports; $n++ ) {
 			$query = explode( ":", snmp2_get( $dev->PrimaryIP, $dev->SNMPCommunity, $baseOID . ($dev->FirstPortNum + $n) ) );
 			
-			$nameList[$n] = $query[1];
+			$nameList[$n] = @$query[1];
 		}
 		
 		return $nameList;
@@ -3061,9 +3061,9 @@ class SwitchInfo {
 		
 		for ( $n = 0; $n < $dev->Ports; $n++ ) {
 			$query = explode( ":", snmp2_get( $dev->PrimaryIP, $dev->SNMPCommunity, $baseOID . ($dev->FirstPortNum + $n) ) );
-			$query2 = explode( "(", $query[1] );
+			$query2 = explode( "(", @$query[1] );
 			
-			$statusList[$n] = $query2[0];
+			$statusList[$n] = @$query2[0];
 		}
 		
 		return $statusList;
@@ -3085,7 +3085,7 @@ class SwitchInfo {
 		for ( $n = 0; $n < $dev->Ports; $n++ ) {
 			$query = explode( ":", snmp2_get( $dev->PrimaryIP, $dev->SNMPCommunity, $baseOID . ($dev->FirstPortNum + $n) ) );
 			
-			$aliasList[$n] = $query[1];
+			$aliasList[$n] = @$query[1];
 		}
 		
 		return $aliasList;	
