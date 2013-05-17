@@ -84,4 +84,9 @@ CREATE TABLE fac_ColorCoding (
 
 ALTER TABLE fac_DevicePorts CHANGE CableColor ColorID INT(11);
 
+--
+-- Adding a field to track where numbering starts for a port - mainly for switch devices
+--
+
+ALTER TABLE fac_Device ADD COLUMN FirstPortNum INT(11) NOT NULL AFTER Ports;
 

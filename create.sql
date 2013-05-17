@@ -191,6 +191,7 @@ CREATE TABLE fac_Device (
   Position int(11) NOT NULL,
   Height int(11) NOT NULL,
   Ports int(11) NOT NULL,
+  FirstPortNum int(11) NOT NULL,
   TemplateID int(11) NOT NULL,
   NominalWatts int(11) NOT NULL,
   PowerSupplyCount int(11) NOT NULL,

@@ -814,6 +814,7 @@ class Device {
 	var $Position;
 	var $Height;
 	var $Ports;
+	var $FirstPortNum;
 	var $TemplateID;
 	var $NominalWatts;
 	var $PowerSupplyCount;
@@ -844,6 +845,7 @@ class Device {
 		$this->Position = intval( $this->Position );
 		$this->Height = intval( $this->Height );
 		$this->Ports = intval( $this->Ports );
+		$this->FirstPortNum = intval( $this->FirstPortNum );
 		$this->TemplateID = intval( $this->TemplateID );
 		$this->NominalWatts = intval( $this->NominalWatts );
 		$this->PowerSupplyCount = intval( $this->PowerSupplyCount );
@@ -862,6 +864,8 @@ class Device {
 	function CreateDevice( $db = null ) {
 		global $dbh;
 		
+		$this->MakeSafe();
+		
 		$this->Label=transform($this->Label);
 		$this->SerialNo=transform($this->SerialNo);
 		$this->AssetTag=transform($this->AssetTag);
@@ -869,19 +873,20 @@ class Device {
 		if ( ! in_array( $this->DeviceType, array( 'Server', 'Appliance', 'Storage Array', 'Switch', 'Chassis', 'Patch Panel', 'Physical Infrastructure' ) ) )
 		  $this->DeviceType = "Server";
 
-		$insert_sql = "insert into fac_Device set Label=\"" . addslashes($this->Label) . "\", SerialNo=\"" . addslashes($this->SerialNo) . "\", AssetTag=\"" . addslashes($this->AssetTag) . 
-			"\", PrimaryIP=\"" . addslashes($this->PrimaryIP) . "\", SNMPCommunity=\"" . addslashes($this->SNMPCommunity) . "\", ESX=\"" . intval($this->ESX) . "\", Owner=\"" . intval($this->Owner) . 
-			"\", EscalationTimeID=\"" . intval( $this->EscalationTimeID ) . "\", EscalationID=\"" . intval( $this->EscalationID ) . "\", PrimaryContact=\"" . intval( $this->PrimaryContact ) . 
-			"\", Cabinet=\"" . intval($this->Cabinet) . "\", Position=\"" . intval($this->Position) . "\", Height=\"" . intval($this->Height) . "\", Ports=\"" . intval($this->Ports) . 
-			"\", TemplateID=\"" . intval($this->TemplateID) . "\", NominalWatts=\"" . intval($this->NominalWatts) . "\", PowerSupplyCount=\"" . intval($this->PowerSupplyCount) . 
-			"\", DeviceType=\"" . $this->DeviceType . "\", ChassisSlots=\"" . intval($this->ChassisSlots) . "\", RearChassisSlots=\"" . intval($this->RearChassisSlots) . "\", ParentDevice=\"" . intval( $this->ParentDevice) . 
-			"\", MfgDate=\"" . date("Y-m-d",strtotime($this->MfgDate)) . "\", InstallDate=\"" . date("Y-m-d",strtotime($this->InstallDate)) . 
-			"\", WarrantyCo=\"" . addslashes( $this->WarrantyCo ) . "\", WarrantyExpire=\"" . date( "Y-m-d",strtotime($this->WarrantyExpire)) . 
-			"\", Notes=\"" . addslashes( $this->Notes ) . "\", Reservation=\"" . intval($this->Reservation) . "\"";
+		$sql = sprintf( "insert into fac_Device set Label=\"%s\", SerialNo=\"%s\", AssetTag=\"%s\", PrimaryIP=\"%s\", SNMPCommunity=\"%s\", 
+			ESX=%, Owner=%d, EscalationTimeID=%d, EscalationID=%d, PrimaryContact=%d, Cabinet=%d, Position=%d, Height=%d, Ports=%d, 
+			FirstPortNum=%d, TemplateID=%d, NominalWatts=%d, PowerSupplyCount=%d, DeviceType=\"%s\", ChassisSlots=%d, RearChassisSlots=%d,
+			ParentDevice=%d, MfgDate=\"%s\", InstallDate=\"%s\", WarrantyCo=\"%s\", WarrantyExpire=\"%s\", Notes=\"%s\", 
+			Reservation=%d",
+			$this->Label, $this->SerialNo, $this->AssetTag, $this->PrimaryIP, $this->SNMPCommunity, $this->ESX, $this->Owner,
+			$this->EscalationTimeID, $this->EscalationID, $this->PrimaryContact, $this->Cabinet, $this->Position, $this->Height, $this->Ports,
+			$this->FirstPortNum, $this->TemplateID, $this->NominalWatts, $this->PowerSupplyCount, $this->DeviceType, $this->ChassisSlots,
+			$this->RearChassisSlots, $this->ParentDevice, date( "Y-m-d", strtotime( $this->MfgDate )), date( "Y-m-d", strtotime( $this->InstallDate)),
+			$this->WarrantyCo, date( "Y-m-d", strtotime( $this->WarrantyExpire)), $this->Notes );
 
-		if ( ! $dbh->exec( $insert_sql ) ) {
+		if ( ! $dbh->exec( $sql ) ) {
 			// Error occurred
-			printf( "<h3>MySQL Error.  SQL = \"%s\"</h3>\n", $insert_sql );
+			printf( "<h3>MySQL Error.  SQL = \"%s\"</h3>\n", $sql );
 			return false;
 		}
 
@@ -1076,16 +1081,16 @@ class Device {
 			$powercon->DeleteConnections( $db );
 		  }
       
-  		$update_sql = "update fac_Device set Label=\"" . addslashes($this->Label) . "\", SerialNo=\"" . addslashes($this->SerialNo) . "\", AssetTag=\"" . addslashes($this->AssetTag) . 
-			"\", PrimaryIP=\"" . addslashes($this->PrimaryIP) . "\", SNMPCommunity=\"" . addslashes($this->SNMPCommunity) . "\", ESX=\"" . intval($this->ESX) . 
-			"\", Owner=\"" . addslashes($this->Owner) . "\", EscalationTimeID=\"" . intval( $this->EscalationTimeID ) . "\", EscalationID=\"" . intval( $this->EscalationID ) . 
-			"\", PrimaryContact=\"" . intval( $this->PrimaryContact ) . "\", Cabinet=\"" . intval($this->Cabinet) . "\", Position=\"" . intval($this->Position) . 
-			"\", Height=\"" . intval($this->Height) . "\", Ports=\"" . intval($this->Ports) . "\", TemplateID=\"" . intval($this->TemplateID) . 
-			"\", NominalWatts=\"" . intval($this->NominalWatts) . "\", PowerSupplyCount=\"" . intval($this->PowerSupplyCount) . "\", DeviceType=\"" . $this->DeviceType . 
-			"\", ChassisSlots=\"" . intval($this->ChassisSlots) . "\", RearChassisSlots=\"" . intval($this->RearChassisSlots) . "\", ParentDevice=\"" . intval($this->ParentDevice) .
-			"\", MfgDate=\"" . date("Y-m-d",strtotime($this->MfgDate)) . "\", InstallDate=\"" . date("Y-m-d",strtotime($this->InstallDate)) . 
-			"\", WarrantyCo=\"" . addslashes( $this->WarrantyCo ) . "\", WarrantyExpire=\"" . date("Y-m-d", strtotime($this->WarrantyExpire)) . 
-			"\", Notes=\"" . addslashes( $this->Notes ) . "\", Reservation=\"" . intval($this->Reservation) . "\" where DeviceID=\"" . intval($this->DeviceID) . "\"";
+		$update_sql = sprintf( "update fac_Device set Label=\"%s\", SerialNo=\"%s\", AssetTag=\"%s\", PrimaryIP=\"%s\", SNMPCommunity=\"%s\", 
+			ESX=%, Owner=%d, EscalationTimeID=%d, EscalationID=%d, PrimaryContact=%d, Cabinet=%d, Position=%d, Height=%d, Ports=%d, 
+			FirstPortNum=%d, TemplateID=%d, NominalWatts=%d, PowerSupplyCount=%d, DeviceType=\"%s\", ChassisSlots=%d, RearChassisSlots=%d,
+			ParentDevice=%d, MfgDate=\"%s\", InstallDate=\"%s\", WarrantyCo=\"%s\", WarrantyExpire=\"%s\", Notes=\"%s\", 
+			Reservation=%d where DeviceID=%d",
+			$this->Label, $this->SerialNo, $this->AssetTag, $this->PrimaryIP, $this->SNMPCommunity, $this->ESX, $this->Owner,
+			$this->EscalationTimeID, $this->EscalationID, $this->PrimaryContact, $this->Cabinet, $this->Position, $this->Height, $this->Ports,
+			$this->FirstPortNum, $this->TemplateID, $this->NominalWatts, $this->PowerSupplyCount, $this->DeviceType, $this->ChassisSlots,
+			$this->RearChassisSlots, $this->ParentDevice, date( "Y-m-d", strtotime( $this->MfgDate )), date( "Y-m-d", strtotime( $this->InstallDate)),
+			$this->WarrantyCo, date( "Y-m-d", strtotime( $this->WarrantyExpire)), $this->Notes , $this->DeviceID);
     }
 
 		if ( ! $result = mysql_query( $update_sql, $db ) ) {
@@ -1095,15 +1100,13 @@ class Device {
 		return 0;
 	}
 
-	function GetDevice( $db ) {
+	function GetDevice( $db = null ) {
+		global $dbh;
+		
 		$select_sql = "select * from fac_Device where DeviceID=\"" . intval($this->DeviceID) . "\"";
 
-		$result=mysql_query($select_sql,$db);
-		if(!$result || mysql_num_rows($result)==0){
+		if ( ! $devRow = $dbh->query( $select_sql )->fetch() )
 			return false;
-		}
-
-		$devRow = mysql_fetch_array( $result );
 
 		$this->DeviceID = $devRow["DeviceID"];
 		$this->Label = $devRow["Label"];
@@ -1121,6 +1124,7 @@ class Device {
 		$this->Position = $devRow["Position"];
 		$this->Height = $devRow["Height"];
 		$this->Ports = $devRow["Ports"];
+		$this->FirstPortNum = $devRow["FirstPortNum"];
 		$this->TemplateID = $devRow["TemplateID"];
 		$this->NominalWatts = $devRow["NominalWatts"];
 		$this->PowerSupplyCount = $devRow["PowerSupplyCount"];
@@ -1170,6 +1174,7 @@ class Device {
 			$deviceList[$devID]->Position = $deviceRow["Position"];
 			$deviceList[$devID]->Height = $deviceRow["Height"];
 			$deviceList[$devID]->Ports = $deviceRow["Ports"];
+			$deviceList[$devID]->FirstPortNum = $deviceRow["FirstPortNum"];
 			$deviceList[$devID]->TemplateID = $deviceRow["TemplateID"];
 			$deviceList[$devID]->NominalWatts = $deviceRow["NominalWatts"];
 			$deviceList[$devID]->PowerSupplyCount = $deviceRow["PowerSupplyCount"];
@@ -1213,6 +1218,7 @@ class Device {
 			$childList[$childNum]->Position = $row["Position"];
 			$childList[$childNum]->Height = $row["Height"];
 			$childList[$childNum]->Ports = $row["Ports"];
+			$childList[$childNum]->FirstPortNum = $row["FirstPortNum"];
 			$childList[$childNum]->TemplateID = $row["TemplateID"];
 			$childList[$childNum]->NominalWatts = $row["NominalWatts"];
 			$childList[$childNum]->PowerSupplyCount = $row["PowerSupplyCount"];
@@ -1256,6 +1262,7 @@ class Device {
 			$parentList[$parentNum]->Position = $row["Position"];
 			$parentList[$parentNum]->Height = $row["Height"];
 			$parentList[$parentNum]->Ports = $row["Ports"];
+			$parentList[$parentNum]->FirstPortNum = $row["FirstPortNum"];
 			$parentList[$parentNum]->TemplateID = $row["TemplateID"];
 			$parentList[$parentNum]->NominalWatts = $row["NominalWatts"];
 			$parentList[$parentNum]->PowerSupplyCount = $row["PowerSupplyCount"];
@@ -1304,6 +1311,7 @@ class Device {
 			$deviceList[$devID]->Position = $deviceRow["Position"];
 			$deviceList[$devID]->Height = $deviceRow["Height"];
 			$deviceList[$devID]->Ports = $deviceRow["Ports"];
+			$deviceList[$devID]->FirstPortNum = $deviceRow["FirstPortNum"];
 			$deviceList[$devID]->TemplateID = $deviceRow["TemplateID"];
 			$deviceList[$devID]->NominalWatts = $deviceRow["NominalWatts"];
 			$deviceList[$devID]->PowerSupplyCount = $deviceRow["PowerSupplyCount"];
@@ -1359,6 +1367,7 @@ class Device {
 			$deviceList[$devID]->Position = $deviceRow["Position"];
 			$deviceList[$devID]->Height = $deviceRow["Height"];
 			$deviceList[$devID]->Ports = $deviceRow["Ports"];
+			$deviceList[$devID]->FirstPortNum= $deviceRow["FirstPortNum"];
 			$deviceList[$devID]->TemplateID = $deviceRow["TemplateID"];
 			$deviceList[$devID]->NominalWatts = $deviceRow["NominalWatts"];
 			$deviceList[$devID]->PowerSupplyCount = $deviceRow["PowerSupplyCount"];
@@ -1400,6 +1409,7 @@ class Device {
 			$panelList[$row["DeviceID"]]->Position=$row["Position"];
 			$panelList[$row["DeviceID"]]->Height=$row["Height"];
 			$panelList[$row["DeviceID"]]->Ports=$row["Ports"];
+			$panelList[$row["DeviceID"]]->FirstPortNum=$row["FirstPortNum"];
 			$panelList[$row["DeviceID"]]->TemplateID=$row["TemplateID"];
 			$panelList[$row["DeviceID"]]->NominalWatts=$row["NominalWatts"];
 			$panelList[$row["DeviceID"]]->PowerSupplyCount=$row["PowerSupplyCount"];
@@ -1490,6 +1500,7 @@ class Device {
 			$deviceList[$devID]->Position = $deviceRow["Position"];
 			$deviceList[$devID]->Height = $deviceRow["Height"];
 			$deviceList[$devID]->Ports = $deviceRow["Ports"];
+			$deviceList[$devID]->FirstPortNum = $deviceRow["FirstPortNum"];
 			$deviceList[$devID]->TemplateID = $deviceRow["TemplateID"];
 			$deviceList[$devID]->NominalWatts = $deviceRow["NominalWatts"];
 			$deviceList[$devID]->PowerSupplyCount = $deviceRow["PowerSupplyCount"];
@@ -1537,6 +1548,7 @@ class Device {
 			$deviceList[$devID]->Position=$deviceRow["Position"];
 			$deviceList[$devID]->Height=$deviceRow["Height"];
 			$deviceList[$devID]->Ports=$deviceRow["Ports"];
+			$deviceList[$devID]->FirstPortNum=$deviceRow["FirstPortNum"];
 			$deviceList[$devID]->TemplateID=$deviceRow["TemplateID"];
 			$deviceList[$devID]->NominalWatts=$deviceRow["NominalWatts"];
 			$deviceList[$devID]->PowerSupplyCount=$deviceRow["PowerSupplyCount"];
@@ -1586,6 +1598,7 @@ class Device {
 			$deviceList[$devID]->Position = $deviceRow["Position"];
 			$deviceList[$devID]->Height = $deviceRow["Height"];
 			$deviceList[$devID]->Ports = $deviceRow["Ports"];
+			$deviceList[$devID]->FirstPortNum = $deviceRow["FirstPortNum"];	
 			$deviceList[$devID]->TemplateID = $deviceRow["TemplateID"];
 			$deviceList[$devID]->NominalWatts = $deviceRow["NominalWatts"];
 			$deviceList[$devID]->PowerSupplyCount = $deviceRow["PowerSupplyCount"];
@@ -1634,6 +1647,7 @@ class Device {
 				$deviceList[$devID]->Position = $deviceRow["Position"];
 				$deviceList[$devID]->Height = $deviceRow["Height"];
 				$deviceList[$devID]->Ports = $deviceRow["Ports"];
+				$deviceList[$devID]->FirstPortNum = $deviceRow["FirstPortNum"];
 				$deviceList[$devID]->TemplateID = $deviceRow["TemplateID"];
 				$deviceList[$devID]->NominalWatts = $deviceRow["NominalWatts"];
 				$deviceList[$devID]->PowerSupplyCount = $deviceRow["PowerSupplyCount"];
@@ -1682,6 +1696,7 @@ class Device {
                 $deviceList[$devID]->Position = $deviceRow["Position"];
                 $deviceList[$devID]->Height = $deviceRow["Height"];
                 $deviceList[$devID]->Ports = $deviceRow["Ports"];
+                $deviceList[$devID]->FirstPortNum = $deviceRow["FirstPortNum"];
                 $deviceList[$devID]->TemplateID = $deviceRow["TemplateID"];
                 $deviceList[$devID]->NominalWatts = $deviceRow["NominalWatts"];
                 $deviceList[$devID]->PowerSupplyCount = $deviceRow["PowerSupplyCount"];
@@ -1804,6 +1819,7 @@ class Device {
 			$deviceList[$devID]->Position = $deviceRow["Position"];
 			$deviceList[$devID]->Height = $deviceRow["Height"];
 			$deviceList[$devID]->Ports = $deviceRow["Ports"];
+			$deviceList[$devID]->FirstPortNum = $deviceRow["FirstPortNum"];
 			$deviceList[$devID]->TemplateID = $deviceRow["TemplateID"];
 			$deviceList[$devID]->NominalWatts = $deviceRow["NominalWatts"];
 			$deviceList[$devID]->PowerSupplyCount = $deviceRow["PowerSupplyCount"];
@@ -1834,29 +1850,29 @@ class Device {
 	}
 	
 	function GetTop10Tenants( $db ) {
-    $selectSQL = "select sum(height) as RackUnits,fac_Department.Name as OwnerName from fac_Device,fac_Department where Owner is not NULL and fac_Device.Owner=fac_Department.DeptID group by Owner order by RackUnits DESC limit 0,10";
-    $result = mysql_query( $selectSQL, $db );
-    
-    $deptList = array();
-    
-    while ( $row = mysql_fetch_array( $result ) )
-      $deptList[$row["OwnerName"]] = $row["RackUnits"];
-      
-    return $deptList;
-  }
+		$selectSQL = "select sum(height) as RackUnits,fac_Department.Name as OwnerName from fac_Device,fac_Department where Owner is not NULL and fac_Device.Owner=fac_Department.DeptID group by Owner order by RackUnits DESC limit 0,10";
+		$result = mysql_query( $selectSQL, $db );
+		
+		$deptList = array();
+		
+		while ( $row = mysql_fetch_array( $result ) )
+		  $deptList[$row["OwnerName"]] = $row["RackUnits"];
+		  
+		return $deptList;
+	}
   
   
-  function GetTop10Power( $db ) {
-    $selectSQL = "select sum(NominalWatts) as TotalPower,fac_Department.Name as OwnerName from fac_Device,fac_Department where Owner is not NULL and fac_Device.Owner=fac_Department.DeptID group by Owner order by TotalPower DESC limit 0,10";
-    $result = mysql_query( $selectSQL, $db );
-    
-    $deptList = array();
-    
-    while ( $row = mysql_fetch_array( $result ) )
-      $deptList[$row["OwnerName"]] = $row["TotalPower"];
-      
-    return $deptList;
-  }
+	function GetTop10Power( $db ) {
+		$selectSQL = "select sum(NominalWatts) as TotalPower,fac_Department.Name as OwnerName from fac_Device,fac_Department where Owner is not NULL and fac_Device.Owner=fac_Department.DeptID group by Owner order by TotalPower DESC limit 0,10";
+		$result = mysql_query( $selectSQL, $db );
+
+		$deptList = array();
+
+		while ( $row = mysql_fetch_array( $result ) )
+		  $deptList[$row["OwnerName"]] = $row["TotalPower"];
+		  
+		return $deptList;
+	}
   
   
   function GetDeviceDiversity( $db ) {
@@ -1927,6 +1943,7 @@ class Device {
         $devList[$currSize]->Position = $devRow->Position;
         $devList[$currSize]->Height = $devRow->Height;
         $devList[$currSize]->Ports = $devRow->Ports;
+        $devList[$currSize]->FirstPortNum = $devRow->FirstPortNum;
         $devList[$currSize]->TemplateID = $devRow->TemplateID;
         $devList[$currSize]->NominalWatts = $devRow->NominalWatts;
         $devList[$currSize]->PowerSupplyCount = $devRow->PowerSupplyCount;
@@ -3003,6 +3020,76 @@ class SwitchConnection {
 
 		return $connList;
 	}  
+}
+
+class SwitchInfo {
+	/* All of these functions will REQUIRE the built-in SNMP functions - the external calls are simply too slow */
+	static function getPortNames( $DeviceID ) {
+		global $dbh;
+		
+		$dev = new Device();
+		$dev->DeviceID = $DeviceID;
+		
+		if ( ! $dev->GetDevice() )
+			return false;
+		
+		$baseOID = ".1.3.6.1.2.1.31.1.1.1.1.";
+		
+		$nameList = array();
+		
+		for ( $n = 0; $n < $dev->Ports; $n++ ) {
+			$query = explode( ":", snmp2_get( $dev->PrimaryIP, $dev->SNMPCommunity, $baseOID . ($dev->FirstPortNum + $n) ) );
+			
+			$nameList[$n] = $query[1];
+		}
+		
+		return $nameList;
+	}
+	
+	static function getPortStatus( $DeviceID ) {
+		global $dbh;
+		
+		$dev = new Device();
+		$dev->DeviceID = $DeviceID;
+		
+		if ( ! $dev->GetDevice() )
+			return false;
+		
+		$baseOID = ".1.3.6.1.2.1.2.2.1.8.";
+		
+		$statusList = array();
+		
+		for ( $n = 0; $n < $dev->Ports; $n++ ) {
+			$query = explode( ":", snmp2_get( $dev->PrimaryIP, $dev->SNMPCommunity, $baseOID . ($dev->FirstPortNum + $n) ) );
+			$query2 = explode( "(", $query[1] );
+			
+			$statusList[$n] = $query2[0];
+		}
+		
+		return $statusList;
+	}
+	
+	static function getPortAlias( $DeviceID ) {
+		global $dbh;
+		
+		$dev = new Device();
+		$dev->DeviceID = $DeviceID;
+		
+		if ( ! $dev->GetDevice() )
+			return false;
+		
+		$baseOID = ".1.3.6.1.2.1.31.1.1.1.18.";
+		
+		$aliasList = array();
+		
+		for ( $n = 0; $n < $dev->Ports; $n++ ) {
+			$query = explode( ":", snmp2_get( $dev->PrimaryIP, $dev->SNMPCommunity, $baseOID . ($dev->FirstPortNum + $n) ) );
+			
+			$aliasList[$n] = $query[1];
+		}
+		
+		return $aliasList;	
+	}
 }
 
 class Tags {
