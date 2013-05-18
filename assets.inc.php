@@ -882,11 +882,12 @@ class Device {
 			$this->EscalationTimeID, $this->EscalationID, $this->PrimaryContact, $this->Cabinet, $this->Position, $this->Height, $this->Ports,
 			$this->FirstPortNum, $this->TemplateID, $this->NominalWatts, $this->PowerSupplyCount, $this->DeviceType, $this->ChassisSlots,
 			$this->RearChassisSlots, $this->ParentDevice, date( "Y-m-d", strtotime( $this->MfgDate )), date( "Y-m-d", strtotime( $this->InstallDate)),
-			$this->WarrantyCo, date( "Y-m-d", strtotime( $this->WarrantyExpire)), $this->Notes );
+			$this->WarrantyCo, date( "Y-m-d", strtotime( $this->WarrantyExpire)), $this->Notes, $this->Reservation );
 
 		if ( ! $dbh->exec( $sql ) ) {
-			// Error occurred
-			printf( "<h3>MySQL Error.  SQL = \"%s\"</h3>\n", $sql );
+			$info = $dbh->errorInfo();
+		
+			error_log( "PDO Error:  " . $info[2] );
 			return false;
 		}
 
