@@ -90,3 +90,9 @@ ALTER TABLE fac_DevicePorts CHANGE CableColor ColorID INT(11);
 
 ALTER TABLE fac_Device ADD COLUMN FirstPortNum INT(11) NOT NULL AFTER Ports;
 
+--
+-- Expanding cabinet sensory information
+--
+
+ALTER TABLE fac_Cabinet CHANGE SensorOID TempSensorOID VARCHAR(80) NOT NULL;
+ALTER TABLE fac_Cabinet ADD COLUMN HumiditySensorOID VARCHAR(80) NOT NULL AFTER TempSensorOID;

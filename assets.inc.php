@@ -44,29 +44,55 @@ class Cabinet {
 	var $InstallationDate;
 	var $SensorIPAddress;
 	var $SensorCommunity;
-	var $SensorOID;
+	var $TempSensorOID;
+	var $HumiditySensorOID;
 	var $MapX1;
 	var $MapY1;
 	var $MapX2;
 	var $MapY2;
 	var $Notes;
 	
+	function MakeSafe() {
+		$this->CabinetID = intval( $this->CabinetID );
+		$this->DataCenterID = intval( $this->DataCenterID );
+		$this->Location = mysql_real_escape_string( $this->Location );
+		$this->AssignedTo = intval( $this->AssignedTo );
+		$this->CabinetHeight = intval( $this->CabinetHeight );
+		$this->Model = mysql_real_escape_string( $this->Model );
+		$this->KeyLock = mysql_real_escape_string( $this->KeyLock );
+		$this->MaxKW = floatval( $this->MaxKW );
+		$this->MaxWeight = intval( $this->MaxWeight );
+		$this->SensorIPAddress = mysql_real_escape_string( $this->SensorIPAddress );
+		$this->SensorCommunity = mysql_real_escape_string( $this->SensorCommunity );
+		$this->TempSensorOID = mysql_real_escape_string( $this->TempSensorOID );
+		$this->HumiditySensorOID = mysql_real_escape_string( $this->HumiditySensorOID );
+		$this->MapX1 = intval( $this->MapX1 );
+		$this->MapY1 = intval( $this->MapY1 );
+		$this->MapX2 = intval( $this->MapX2 );
+		$this->MapY2 = intval( $this->MapY2 );
+		$this->Notes = mysql_real_escape_string( $this->Notes );
+	}
+	
 	function CreateCabinet( $db = null ) {
 		global $dbh;
 		
-		$insert_sql = "insert into fac_Cabinet set DataCenterID=\"" . intval($this->DataCenterID) . "\", Location=\"" . addslashes($this->Location) 
-			. "\", AssignedTo=\"" . intval($this->AssignedTo) . "\", ZoneID=\"" . intval($this->ZoneID) 
-			. "\", CabinetHeight=\"" . intval($this->CabinetHeight) . "\", Model=\"" . addslashes($this->Model) 
-			. "\", Keylock=\"" . addslashes( $this->Keylock ) . "\", MaxKW=\"" . floatval($this->MaxKW) 
-			. "\", MaxWeight=\"" . intval( $this->MaxWeight ) 
-			. "\", InstallationDate=\"" . date( "Y-m-d", strtotime( $this->InstallationDate ) ) 
-			. "\", SensorIPAddress=\"" . addslashes( $this->SensorIPAddress ) . "\", SensorCommunity=\"" . addslashes( $this->SensorCommunity )
-			. "\", SensorOID=\"" . addslashes( $this->SensorOID )
-			. "\", MapX1=\"" . intval($this->MapX1) . "\", MapY1=\"" . intval($this->MapY1) 
-			. "\", MapX2=\"" . intval($this->MapX2) . "\", MapY2=\"" . intval($this->MapY2)
-			. "\", Notes=\"" . addslashes($this->Notes) . "\"";
+		$this->MakeSafe();
+		
+		$sql = "insert into fac_Cabinet set DataCenterID=%d, Location=\"%s\", AssignedTo=%d,
+			CabinetHeight=%d, Model=\"%s\", Keylock=\"%s\", MaxKW=%f, MaxWeight=%d,
+			InstallationDate=\"%s\", SensorIPAddress=\"%s\", SensorCommunity=\"%s\",
+			TempSensorOID=\"%s\", HumiditySensorOID=\"%s\", MapX1=%d, MapY1=%d,
+			MapX2=%d, MapY2=%d, Notes=\"%s\"",
+			$this->DataCenterID, $this->Location, $this->AssignedTo, $this->CabinetHeight,
+			$this->Model, $this->Keylock, $this->MaxKW, $this->MaxWeight,
+			date( "Y-m-d", strtotime( $this->InstallationDate) ), $this->SensorIPAddress,
+			$this->SensorCommunity, $this->TempSensorOID, $this->HumiditySensorOID,
+			$this->MapX1, $this->MapY1, $this->MapX2, $this->MapY2, $this->Notes );
 
-		if ( ! $dbh->exec( $insert_sql ) ) {
+		if ( ! $dbh->exec( $sql ) ) {
+			$info = $dbh->errorInfo();
+
+			error_log( "PDO Error:  " . $info[2] );
 			return false;
 		} else {
 			$this->CabinetID = $dbh->lastInsertID();
@@ -78,19 +104,23 @@ class Cabinet {
 	function UpdateCabinet( $db = null ) {
 		global $dbh;
 		
-		$update_sql = "update fac_Cabinet set DataCenterID=\"" . intval($this->DataCenterID) . "\", Location=\"" . addslashes($this->Location) 
-		. "\", AssignedTo=\"" . intval($this->AssignedTo) . "\", ZoneID=\"" . intval($this->ZoneID) 
-		. "\", CabinetHeight=\"" . intval($this->CabinetHeight) . "\", Model=\"" . addslashes($this->Model) 
-		. "\", Keylock=\"" . addslashes( $this->Keylock ) . "\", MaxKW=\"" . floatval($this->MaxKW) 
-		. "\", MaxWeight=\"" . intval( $this->MaxWeight ) . "\", InstallationDate=\"" . date( "Y-m-d", strtotime( $this->InstallationDate ) )
-		. "\", SensorIPAddress=\"" . addslashes( $this->SensorIPAddress ) . "\", SensorCommunity=\"" . addslashes( $this->SensorCommunity )
-		. "\", SensorOID=\"" . addslashes( $this->SensorOID ) 
-		. "\", MapX1=\"" . intval($this->MapX1) . "\", MapY1=\"" . intval($this->MapY1) 
-		. "\", MapX2=\"" . intval($this->MapX2) . "\", MapY2=\"" . intval($this->MapY2)
-		. "\", Notes=\"" . addslashes($this->Notes)
-		. "\" where CabinetID=\"" . intval($this->CabinetID) . "\"";
+		$this->MakeSafe();
+		
+		$sql = "update fac_Cabinet set DataCenterID=%d, Location=\"%s\", AssignedTo=%d,
+			CabinetHeight=%d, Model=\"%s\", Keylock=\"%s\", MaxKW=%f, MaxWeight=%d,
+			InstallationDate=\"%s\", SensorIPAddress=\"%s\", SensorCommunity=\"%s\",
+			TempSensorOID=\"%s\", HumiditySensorOID=\"%s\", MapX1=%d, MapY1=%d,
+			MapX2=%d, MapY2=%d, Notes=\"%s\" where CabinetID=%d",
+			$this->DataCenterID, $this->Location, $this->AssignedTo, $this->CabinetHeight,
+			$this->Model, $this->Keylock, $this->MaxKW, $this->MaxWeight,
+			date( "Y-m-d", strtotime( $this->InstallationDate) ), $this->SensorIPAddress,
+			$this->SensorCommunity, $this->TempSensorOID, $this->HumiditySensorOID,
+			$this->MapX1, $this->MapY1, $this->MapX2, $this->MapY2, $this->Notes, $this->CabinetID );
 
-		if ( ! $dbh->exec( $update_sql ) ) {
+		if ( ! $dbh->exec( $sql ) ) {
+			$info = $dbh->errorInfo();
+
+			error_log( "PDO Error:  " . $info[2] );
 			return false;
 		}
 
@@ -102,7 +132,12 @@ class Cabinet {
 		
 		$select_sql = "select * from fac_Cabinet where CabinetID=\"" . intval($this->CabinetID) . "\"";
 		
-		$cabinetRow = $dbh->query( $select_sql )->fetch();
+		if ( ! $cabinetRow = $dbh->query( $select_sql )->fetch() ) {
+			$info = $dbh->errorInfo();
+
+			error_log( "PDO Error:  " . $info[2] );
+			return false;
+		}		
 		
 		$this->DataCenterID = $cabinetRow[ "DataCenterID" ];
 		$this->Location = $cabinetRow[ "Location" ];
@@ -116,14 +151,15 @@ class Cabinet {
 		$this->InstallationDate = $cabinetRow[ "InstallationDate" ];
 		$this->SensorIPAddress = $cabinetRow["SensorIPAddress"];
 		$this->SensorCommunity = $cabinetRow["SensorCommunity"];
-		$this->SensorOID = $cabinetRow["SensorOID"];
+		$this->TempSensorOID = $cabinetRow["TempSensorOID"];
+		$this->HumiditySensorOID = $cabinetRow["HumiditySensorOID"];
 		$this->MapX1 = $cabinetRow["MapX1"];
 		$this->MapY1 = $cabinetRow["MapY1"];
 		$this->MapX2 = $cabinetRow["MapX2"];
 		$this->MapY2 = $cabinetRow["MapY2"];
 		$this->Notes = $cabinetRow["Notes"];
 
-		return 0;
+		return;
 	}
 
 	static function ListCabinets($deptid=null) {
@@ -136,10 +172,10 @@ class Cabinet {
 			$sql=" WHERE AssignedTo=".intval($deptid);
 		}
 
-		$select_sql="SELECT * FROM fac_Cabinet$sql ORDER BY DataCenterID, Location;";
+		$sql="SELECT * FROM fac_Cabinet$sql ORDER BY DataCenterID, Location;";
 
 		foreach ( $dbh->query( $select_sql ) as $cabinetRow ) {
-			$cabID = $cabinetRow[ "CabinetID" ];
+			$cabID = sizeof( $cabinetList );
 			$cabinetList[ $cabID ] = new Cabinet();
 
 			$cabinetList[ $cabID ]->CabinetID = $cabinetRow[ "CabinetID" ];
@@ -155,7 +191,8 @@ class Cabinet {
 			$cabinetList[ $cabID ]->InstallationDate = $cabinetRow[ "InstallationDate" ];
 			$cabinetList[ $cabID ]->SensorIPAddress = $cabinetRow["SensorIPAddress"];
 			$cabinetList[ $cabID ]->SensorCommunity = $cabinetRow["SensorCommunity"];
-			$cabinetList[ $cabID ]->SensorOID = $cabinetRow["SensorOID"];
+			$cabinetList[ $cabID ]->TempSensorOID = $cabinetRow["TempSensorOID"];
+			$cabinetList[ $cabID ]->HumiditySensorOID = $cabinetRow["HumiditySensorOID"];
 			$cabinetList[ $cabID ]->MapX1 = $cabinetRow[ "MapX1" ];
 			$cabinetList[ $cabID ]->MapY1 = $cabinetRow[ "MapY1" ];
 			$cabinetList[ $cabID ]->MapX2 = $cabinetRow[ "MapX2" ];
@@ -174,7 +211,7 @@ class Cabinet {
 		$select_sql = "select * from fac_Cabinet where DataCenterID=\"" . intval($this->DataCenterID) . "\" order by Location";
 
 		foreach ( $dbh->query( $select_sql ) as $cabinetRow ) {
-			$cabID = $cabinetRow[ "CabinetID" ];
+			$cabID = sizeof( $cabinetList );
 			$cabinetList[ $cabID ] = new Cabinet();
 
 			$cabinetList[ $cabID ]->CabinetID = $cabinetRow[ "CabinetID" ];
@@ -190,7 +227,8 @@ class Cabinet {
 			$cabinetList[ $cabID ]->InstallationDate = $cabinetRow[ "InstallationDate" ];
 			$cabinetList[ $cabID ]->SensorIPAddress = $cabinetRow["SensorIPAddress"];
 			$cabinetList[ $cabID ]->SensorCommunity = $cabinetRow["SensorCommunity"];
-			$cabinetList[ $cabID ]->SensorOID = $cabinetRow["SensorOID"];
+			$cabinetList[ $cabID ]->TempSensorOID = $cabinetRow["TempSensorOID"];
+			$cabinetList[ $cabID ]->HumiditySensorOID = $cabinetRow["HumiditySensorOID"];
 			$cabinetList[ $cabID ]->MapX1 = $cabinetRow[ "MapX1" ];
 			$cabinetList[ $cabID ]->MapY1 = $cabinetRow[ "MapY1" ];
 			$cabinetList[ $cabID ]->MapX2 = $cabinetRow[ "MapX2" ];
@@ -206,7 +244,12 @@ class Cabinet {
 		
 		$select_sql = "select sum(Height) as Occupancy from fac_Device where Cabinet=$CabinetID";
 
-		$row = $dbh->query( $select_sql )->fetch();
+		if ( ! $row = $dbh->query( $select_sql )->fetch() ) {
+			$info = $dbh->errorInfo();
+
+			error_log( "PDO Error:  " . $info[2] );
+			return false;
+		}
 
 		return $row["Occupancy"];
 	}
@@ -321,7 +364,14 @@ class Cabinet {
 		}
 		
 		$sql = sprintf( "delete from fac_Cabinet where CabinetID=\"%d\"", intval( $this->CabinetID ) );
-		$dbh->exec( $sql );
+		if ( ! $dbh->exec( $sql ) ) {
+			$info = $dbh->errorInfo();
+
+			error_log( "PDO Error:  " . $info[2] );
+			return false;
+		}
+		
+		return;
 	}
 
 	function SearchByCabinetName( $db = null ) {
@@ -330,10 +380,9 @@ class Cabinet {
 		$sql="select * from fac_Cabinet where ucase(Location) like \"%" . transform($this->Location) . "%\" order by Location;";
 
 		$cabinetList=array();
-		$cabCount=0;
 
 		foreach ( $dbh->query( $sql ) as $cabinetRow ){
-			$cabID=$cabinetRow["CabinetID"];
+			$cabID=sizeof( $cabinetList );
 			$cabinetList[$cabID]=new Cabinet();
 			$cabinetList[$cabID]->CabinetID=$cabinetRow["CabinetID"];
 			$cabinetList[$cabID]->DataCenterID=$cabinetRow["DataCenterID"];
@@ -348,7 +397,8 @@ class Cabinet {
 			$cabinetList[$cabID]->InstallationDate=$cabinetRow["InstallationDate"];
 			$cabinetList[$cabID]->SensorIPAddress = $cabinetRow["SensorIPAddress"];
 			$cabinetList[$cabID]->SensorCommunity = $cabinetRow["SensorCommunity"];
-			$cabinetList[$cabID]->SensorOID = $cabinetRow["SensorOID"];
+			$cabinetList[$cabID]->TempSensorOID = $cabinetRow["TempSensorOID"];
+			$cabinetList[$cabID]->HumiditySensorOID = $cabinetRow["HumiditySensorOID"];
 			$cabinetList[$cabID]->MapX1=$cabinetRow["MapX1"];
 			$cabinetList[$cabID]->MapY1=$cabinetRow["MapY1"];
 			$cabinetList[$cabID]->MapX2=$cabinetRow["MapX2"];
@@ -365,10 +415,9 @@ class Cabinet {
 		$sql="select * from fac_Cabinet WHERE AssignedTo=".intval($this->AssignedTo)." ORDER BY Location;";
 
 		$cabinetList=array();
-		$cabCount=0;
 
 		foreach ( $dbh->query( $sql ) as $cabinetRow ) {
-			$cabID=$cabinetRow["CabinetID"];
+			$cabID=sizeof( $cabinetList );
 			$cabinetList[$cabID]=new Cabinet();
 			$cabinetList[$cabID]->CabinetID=$cabinetRow["CabinetID"];
 			$cabinetList[$cabID]->DataCenterID=$cabinetRow["DataCenterID"];
@@ -383,7 +432,8 @@ class Cabinet {
 			$cabinetList[$cabID]->InstallationDate=$cabinetRow["InstallationDate"];
 			$cabinetList[$cabID]->SensorIPAddress = $cabinetRow["SensorIPAddress"];
 			$cabinetList[$cabID]->SensorCommunity = $cabinetRow["SensorCommunity"];
-			$cabinetList[$cabID]->SensorOID = $cabinetRow["SensorOID"];
+			$cabinetList[$cabID]->TempSensorOID = $cabinetRow["TempSensorOID"];
+			$cabinetList[$cabID]->HumiditySensorOID = $cabinetRow["HumiditySensorOID"];
 			$cabinetList[$cabID]->MapX1=$cabinetRow["MapX1"];
 			$cabinetList[$cabID]->MapY1=$cabinetRow["MapY1"];
 			$cabinetList[$cabID]->MapX2=$cabinetRow["MapX2"];
@@ -400,10 +450,9 @@ class Cabinet {
 		$sql="SELECT a.* from fac_Cabinet a, fac_CabinetTags b, fac_Tags c WHERE a.CabinetID=b.CabinetID AND b.TagID=c.TagID AND UCASE(c.Name) LIKE UCASE('%".addslashes($tag)."%');";
 
 		$cabinetList=array();
-		$cabCount=0;
 
 		foreach ( $dbh->query( $sql ) as $cabinetRow ) {
-			$cabID=$cabinetRow["CabinetID"];
+			$cabID=sizeof( $cabinetList );
 			$cabinetList[$cabID]=new Cabinet();
 			$cabinetList[$cabID]->CabinetID=$cabinetRow["CabinetID"];
 			$cabinetList[$cabID]->DataCenterID=$cabinetRow["DataCenterID"];
@@ -418,7 +467,8 @@ class Cabinet {
 			$cabinetList[$cabID]->InstallationDate=$cabinetRow["InstallationDate"];
 			$cabinetList[$cabID]->SensorIPAddress = $cabinetRow["SensorIPAddress"];
 			$cabinetList[$cabID]->SensorCommunity = $cabinetRow["SensorCommunity"];
-			$cabinetList[$cabID]->SensorOID = $cabinetRow["SensorOID"];
+			$cabinetList[$cabID]->TempSensorOID = $cabinetRow["TempSensorOID"];
+			$cabinetList[$cabID]->HumiditySensorOID = $cabinetRow["HumiditySensorOID"];
 			$cabinetList[$cabID]->MapX1=$cabinetRow["MapX1"];
 			$cabinetList[$cabID]->MapY1=$cabinetRow["MapY1"];
 			$cabinetList[$cabID]->MapX2=$cabinetRow["MapX2"];
@@ -453,12 +503,22 @@ class Cabinet {
 					$t=Tags::CreateTag($tag);
 				}
 				$sql="INSERT INTO fac_CabinetTags (CabinetID, TagID) VALUES (".intval($this->CabinetID).",$t);";
-				$dbh->exec($sql);
+				if ( ! $dbh->exec($sql) ) {
+					$info = $dbh->errorInfo();
+
+					error_log( "PDO Error:  " . $info[2] );
+					return false;
+				}			
 			}
 		}else{
 			//If no array is passed then clear all the tags
 			$delsql="DELETE FROM fac_CabinetTags WHERE CabinetID=".intval($this->CabinetID).";";
-			$dbh->exec($delsql);
+			if ( ! $dbh->exec($delsql) ) {
+				$info = $dbh->errorInfo();
+
+				error_log( "PDO Error:  " . $info[2] );
+				return false;
+			}
 		}
 		return 0;
 	}
@@ -875,21 +935,21 @@ class Device {
 			$this->DeviceType="Server";
 		}
 
-		$sql="INSERT INTO fac_Device SET Label=\"$this->Label\", SerialNo=\"$this->SerialNo\", AssetTag=\"$this->AssetTag\", 
-			PrimaryIP=\"$this->PrimaryIP\", SNMPCommunity=\"$this->SNMPCommunity\", ESX=\"$this->ESX\", Owner=\"$this->Owner\", 
-			EscalationTimeID=\"$this->EscalationTimeID\", EscalationID=\"$this->EscalationID\", PrimaryContact=\"$this->PrimaryContact\", 
-			Cabinet=\"$this->Cabinet\", Position=\"$this->Position\", Height=\"$this->Height\", Ports=\"$this->Ports\", 
-			FirstPortNum=\"$this->FirstPortNum\", TemplateID=\"$this->TemplateID\", NominalWatts=\"$this->NominalWatts\", 
-			PowerSupplyCount=\"$this->PowerSupplyCount\", DeviceType=\"$this->DeviceType\", ChassisSlots=\"$this->ChassisSlots\", 
-			RearChassisSlots=\"$this->RearChassisSlots\",ParentDevice=\"$this->ParentDevice\", 
-			MfgDate=\"".date("Y-m-d", strtotime($this->MfgDate))."\", 
-			InstallDate=\"".date("Y-m-d", strtotime($this->InstallDate))."\", WarrantyCo=\"$this->WarrantyCo\", 
-			WarrantyExpire=\"".date("Y-m-d", strtotime($this->WarrantyExpire))."\", Notes=\"$this->Notes\", 
-			Reservation=\"$this->Reservation\";";
+		$sql = sprintf( "insert into fac_Device set Label=\"%s\", SerialNo=\"%s\", AssetTag=\"%s\", PrimaryIP=\"%s\", SNMPCommunity=\"%s\", 
+			ESX=%, Owner=%d, EscalationTimeID=%d, EscalationID=%d, PrimaryContact=%d, Cabinet=%d, Position=%d, Height=%d, Ports=%d, 
+			FirstPortNum=%d, TemplateID=%d, NominalWatts=%d, PowerSupplyCount=%d, DeviceType=\"%s\", ChassisSlots=%d, RearChassisSlots=%d,
+			ParentDevice=%d, MfgDate=\"%s\", InstallDate=\"%s\", WarrantyCo=\"%s\", WarrantyExpire=\"%s\", Notes=\"%s\", 
+			Reservation=%d",
+			$this->Label, $this->SerialNo, $this->AssetTag, $this->PrimaryIP, $this->SNMPCommunity, $this->ESX, $this->Owner,
+			$this->EscalationTimeID, $this->EscalationID, $this->PrimaryContact, $this->Cabinet, $this->Position, $this->Height, $this->Ports,
+			$this->FirstPortNum, $this->TemplateID, $this->NominalWatts, $this->PowerSupplyCount, $this->DeviceType, $this->ChassisSlots,
+			$this->RearChassisSlots, $this->ParentDevice, date( "Y-m-d", strtotime( $this->MfgDate )), date( "Y-m-d", strtotime( $this->InstallDate)),
+			$this->WarrantyCo, date( "Y-m-d", strtotime( $this->WarrantyExpire)), $this->Notes, $this->Reservation );
 
-		if(!$dbh->exec($sql)){
-			$info=$dbh->errorInfo();
-			error_log("PDO Error: {$info[2]}");
+		if ( ! $dbh->exec( $sql ) ) {
+			$info = $dbh->errorInfo();
+
+			error_log( "PDO Error:  " . $info[2] );
 			return false;
 		}
 
