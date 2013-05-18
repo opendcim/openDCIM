@@ -174,8 +174,6 @@
 				}catch(Swift_TransportException $e){
 					$error.="Server: <span class=\"errmsg\">".$e->getMessage()."</span><br>\n";
 				}
-
-				$temp=__("Your request for racking up the device labeled %1\$s has been completed.");	
 			
 				header('Location: '.redirect("devices.php?deviceid=$dev->DeviceID"));
 				exit;
