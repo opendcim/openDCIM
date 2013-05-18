@@ -3059,7 +3059,7 @@ class SwitchInfo {
 
 		$x=array();
 		for($n=1;$n<SwitchInfo::getNumPorts($DeviceID);$n++){
-			$portdesc=@snmp2_get($dev->PrimaryIP,$dev->SNMPCommunity,"IF-MIB::ifDescr.$n");
+			$portdesc=@end(explode(":",snmp2_get($dev->PrimaryIP,$dev->SNMPCommunity,"IF-MIB::ifDescr.$n")));
 			if(preg_match("/\/1$/",$portdesc)){$x[$n]=$portdesc;} // Find lines that end with /1
 		}
 		return $x;
