@@ -830,35 +830,35 @@ class Device {
 	var $Reservation;
 	
 	function MakeSafe() {
-		$this->DeviceID = intval( $this->DeviceID );
-		$this->Label = mysql_real_escape_string( $this->Label );
-		$this->SerialNo = mysql_real_escape_string( $this->SerialNo );
-		$this->AssetTag = mysql_real_escape_string( $this->AssetTag );
-		$this->PrimaryIP = mysql_real_escape_string( $this->PrimaryIP );
-		$this->SNMPCommunity = mysql_real_escape_string( $this->SNMPCommunity );
-		$this->ESX = intval( $this->ESX );
-		$this->Owner = intval( $this->Owner );
-		$this->EscalationTimeID = intval( $this->EscalationTimeID );
-		$this->EscalationID = intval( $this->EscalationID );
-		$this->PrimaryContact = intval( $this->PrimaryContact );
-		$this->Cabinet = intval( $this->Cabinet );
-		$this->Position = intval( $this->Position );
-		$this->Height = intval( $this->Height );
-		$this->Ports = intval( $this->Ports );
-		$this->FirstPortNum = intval( $this->FirstPortNum );
-		$this->TemplateID = intval( $this->TemplateID );
-		$this->NominalWatts = intval( $this->NominalWatts );
-		$this->PowerSupplyCount = intval( $this->PowerSupplyCount );
-		$this->DeviceType = intval( $this->DeviceType );
-		$this->ChassisSlots = intval( $this->ChassisSlots );
-		$this->RearChassisSlots = intval( $this->RearChassisSlots );
-		$this->ParentDevice = intval( $this->ParentDevice );
-		$this->MfgDate = mysql_real_escape_string( $this->MfgDate );
-		$this->InstallDate = mysql_real_escape_string( $this->InstallDate );
-		$this->WarrantyCo = mysql_real_escape_string( $this->WarrantyCo );
-		$this->WarrantyExpire = mysql_real_escape_string( $this->WarrantyExpire );
-		$this->Notes = mysql_real_escape_string( $this->Notes );
-		$this->Reservation = intval( $this->Reservation );
+		$this->DeviceID=intval($this->DeviceID);
+		$this->Label=addslashes($this->Label);
+		$this->SerialNo=addslashes($this->SerialNo);
+		$this->AssetTag=addslashes($this->AssetTag);
+		$this->PrimaryIP=addslashes($this->PrimaryIP);
+		$this->SNMPCommunity=addslashes($this->SNMPCommunity);
+		$this->ESX=intval($this->ESX);
+		$this->Owner=intval($this->Owner);
+		$this->EscalationTimeID=intval($this->EscalationTimeID);
+		$this->EscalationID=intval($this->EscalationID);
+		$this->PrimaryContact=intval($this->PrimaryContact);
+		$this->Cabinet=intval($this->Cabinet);
+		$this->Position=intval($this->Position);
+		$this->Height=intval($this->Height);
+		$this->Ports=intval($this->Ports);
+		$this->FirstPortNum=intval($this->FirstPortNum);
+		$this->TemplateID=intval($this->TemplateID);
+		$this->NominalWatts=intval($this->NominalWatts);
+		$this->PowerSupplyCount=intval($this->PowerSupplyCount);
+		$this->DeviceType=addslashes($this->DeviceType);
+		$this->ChassisSlots=intval($this->ChassisSlots);
+		$this->RearChassisSlots=intval($this->RearChassisSlots);
+		$this->ParentDevice=intval($this->ParentDevice);
+		$this->MfgDate=addslashes($this->MfgDate);
+		$this->InstallDate=addslashes($this->InstallDate);
+		$this->WarrantyCo=addslashes($this->WarrantyCo);
+		$this->WarrantyExpire=addslashes($this->WarrantyExpire);
+		$this->Notes=addslashes($this->Notes);
+		$this->Reservation=intval($this->Reservation);
 	}
 
 	function CreateDevice( $db = null ) {
@@ -870,10 +870,12 @@ class Device {
 		$this->SerialNo=transform($this->SerialNo);
 		$this->AssetTag=transform($this->AssetTag);
 		
-		if ( ! in_array( $this->DeviceType, array( 'Server', 'Appliance', 'Storage Array', 'Switch', 'Chassis', 'Patch Panel', 'Physical Infrastructure' ) ) )
-		  $this->DeviceType = "Server";
+		//Keep weird values out of DeviceType
+		if(!in_array($this->DeviceType,array('Server','Appliance','StorageArray','Switch','Chassis','PatchPanel','PhysicalInfrastructure'))){
+			$this->DeviceType="Server";
+		}
 
-		$sql="UPDATE fac_Device SET Label=\"$this->Label\", SerialNo=\"$this->SerialNo\", AssetTag=\"$this->AssetTag\", 
+		$sql="INSERT INTO fac_Device SET Label=\"$this->Label\", SerialNo=\"$this->SerialNo\", AssetTag=\"$this->AssetTag\", 
 			PrimaryIP=\"$this->PrimaryIP\", SNMPCommunity=\"$this->SNMPCommunity\", ESX=\"$this->ESX\", Owner=\"$this->Owner\", 
 			EscalationTimeID=\"$this->EscalationTimeID\", EscalationID=\"$this->EscalationID\", PrimaryContact=\"$this->PrimaryContact\", 
 			Cabinet=\"$this->Cabinet\", Position=\"$this->Position\", Height=\"$this->Height\", Ports=\"$this->Ports\", 
@@ -886,8 +888,8 @@ class Device {
 			Reservation=\"$this->Reservation\";";
 
 		if(!$dbh->exec($sql)){
-			// Error occurred
-			printf( "<h3>MySQL Error.  SQL = \"%s\"</h3>\n", $sql );
+			$info=$dbh->errorInfo();
+			error_log("PDO Error: {$info[2]}");
 			return false;
 		}
 
@@ -2696,126 +2698,132 @@ class RackRequest {
   var $SpecialInstructions;
   var $MfgDate;
   
-  function CreateRequest( $db ) {
-    $sql = "insert into fac_RackRequest set RequestTime=now(), 
-        RequestorID=\"" . intval($this->RequestorID) . "\",
-        Label=\"" . addslashes( transform($this->Label )) . "\", 
-        SerialNo=\"" . addslashes( transform($this->SerialNo )) . "\",
-		MfgDate=\"" . date("Y-m-d",transform($this->MfgDate,'upper')) . "\",
-        AssetTag=\"" . addslashes( transform($this->AssetTag )) . "\",
-        ESX=\"" . intval($this->ESX) . "\",
-        Owner=\"" . intval($this->Owner) . "\",
-        DeviceHeight=\"" . intval($this->DeviceHeight) . "\", 
-        EthernetCount=\"" . intval($this->EthernetCount) . "\", 
-        VLANList=\"" . addslashes( $this->VLANList ) . "\", 
-        SANCount=\"" . intval($this->SANCount) . "\", 
-        SANList=\"" . addslashes( $this->SANList ) . "\",
-        DeviceClass=\"" . addslashes($this->DeviceClass) . "\",
-        DeviceType=\"" . addslashes($this->DeviceType) . "\", 
-        LabelColor=\"" . addslashes($this->LabelColor) . "\", 
-        CurrentLocation=\"" . addslashes( transform($this->CurrentLocation) ) . "\", 
-        SpecialInstructions=\"" . addslashes( $this->SpecialInstructions ) . "\"";
+  function CreateRequest($db=null){
+	global $dbh;
+    $sql="INSERT INTO fac_RackRequest SET RequestTime=now(), RequestorID=\"".intval($this->RequestorID)."\",
+		Label=\"".addslashes(transform($this->Label))."\", SerialNo=\"".addslashes(transform($this->SerialNo))."\",
+		MfgDate=\"".date("Y-m-d", strtotime($this->MfgDate))."\", 
+		AssetTag=\"".addslashes(transform($this->AssetTag))."\", ESX=\"".intval($this->ESX)."\",
+		Owner=\"".intval($this->Owner)."\", DeviceHeight=\"".intval($this->DeviceHeight)."\",
+		EthernetCount=\"".intval($this->EthernetCount)."\", VLANList=\"".addslashes($this->VLANList)."\",
+		SANCount=\"".intval($this->SANCount)."\", SANList=\"".addslashes($this->SANList)."\",
+		DeviceClass=\"".addslashes($this->DeviceClass)."\", DeviceType=\"".addslashes($this->DeviceType)."\",
+		LabelColor=\"".addslashes($this->LabelColor)."\", 
+		CurrentLocation=\"".addslashes(transform($this->CurrentLocation))."\",
+		SpecialInstructions=\"".addslashes($this->SpecialInstructions)."\"";
     
-    $result = mysql_query( $sql, $db );
-    
-    $this->RequestID = mysql_insert_id( $db );
-    
-    return $result;
+	if(!$dbh->exec($sql)){
+		$info=$dbh->errorInfo();
+		error_log("PDO Error: {$info[2]}");
+		return false;
+	}else{		
+		$this->RequestID=$dbh->lastInsertId();
+        return $this->RequestID;
+	}
   }
   
   function GetOpenRequests( $db ) {
-    $sql = "select * from fac_RackRequest where CompleteTime='0000-00-00 00:00:00'";
+	global $dbh;
+    $sql="SELECT * FROM fac_RackRequest WHERE CompleteTime='0000-00-00 00:00:00'";
     
-    $result = mysql_query( $sql, $db );
-    
-    $requestList = array();
-    
-    while ( $row = mysql_fetch_array( $result ) ) {
-      $requestNum = sizeof( $requestList );
+    $requestList=array();
+	foreach($dbh->query($sql) as $row){ 
+		$requestNum=sizeof($requestList);
 
-      $requestList[$requestNum]=new RackRequest();
-      $requestList[$requestNum]->RequestID = $row["RequestID"];
-      $requestList[$requestNum]->RequestorID = $row["RequestorID"];
-      $requestList[$requestNum]->RequestTime = $row["RequestTime"];
-      $requestList[$requestNum]->CompleteTime = $row["CompleteTime"];
-      $requestList[$requestNum]->Label = $row["Label"];
-      $requestList[$requestNum]->SerialNo = $row["SerialNo"];
-      $requestList[$requestNum]->AssetTag = $row["AssetTag"];
-      $requestList[$requestNum]->ESX = $row["ESX"];
-      $requestList[$requestNum]->Owner = $row["Owner"];
-      $requestList[$requestNum]->DeviceHeight = $row["DeviceHeight"];
-      $requestList[$requestNum]->EthernetCount = $row["EthernetCount"];
-      $requestList[$requestNum]->VLANList = $row["VLANList"];
-      $requestList[$requestNum]->SANCount = $row["SANCount"];
-      $requestList[$requestNum]->SANList = $row["SANList"];
-      $requestList[$requestNum]->DeviceClass = $row["DeviceClass"];
-      $requestList[$requestNum]->DeviceType = $row["DeviceType"];
-      $requestList[$requestNum]->LabelColor = $row["LabelColor"];
-      $requestList[$requestNum]->CurrentLocation = $row["CurrentLocation"];
-      $requestList[$requestNum]->SpecialInstructions = $row["SpecialInstructions"];
+		$requestList[$requestNum]=new RackRequest();
+		$requestList[$requestNum]->RequestID=$row["RequestID"];
+		$requestList[$requestNum]->RequestorID=$row["RequestorID"];
+		$requestList[$requestNum]->RequestTime=$row["RequestTime"];
+		$requestList[$requestNum]->CompleteTime=$row["CompleteTime"];
+		$requestList[$requestNum]->Label=$row["Label"];
+		$requestList[$requestNum]->SerialNo=$row["SerialNo"];
+		$requestList[$requestNum]->AssetTag=$row["AssetTag"];
+		$requestList[$requestNum]->ESX=$row["ESX"];
+		$requestList[$requestNum]->Owner=$row["Owner"];
+		$requestList[$requestNum]->DeviceHeight=$row["DeviceHeight"];
+		$requestList[$requestNum]->EthernetCount=$row["EthernetCount"];
+		$requestList[$requestNum]->VLANList=$row["VLANList"];
+		$requestList[$requestNum]->SANCount=$row["SANCount"];
+		$requestList[$requestNum]->SANList=$row["SANList"];
+		$requestList[$requestNum]->DeviceClass=$row["DeviceClass"];
+		$requestList[$requestNum]->DeviceType=$row["DeviceType"];
+		$requestList[$requestNum]->LabelColor=$row["LabelColor"];
+		$requestList[$requestNum]->CurrentLocation=$row["CurrentLocation"];
+		$requestList[$requestNum]->SpecialInstructions=$row["SpecialInstructions"];
     }
     
     return $requestList;
   }
   
-  function GetRequest( $db ) {
-    $sql = "select * from fac_RackRequest where RequestID=\"" . $this->RequestID . "\"";
-    $result = mysql_query( $sql, $db );
-    
-    $row = mysql_fetch_array( $result );
-    
-    $this->RequestorID = $row["RequestorID"];
-    $this->RequestTime = $row["RequestTime"];
-    $this->CompleteTime = $row["CompleteTime"];
-    $this->Label = $row["Label"];
-    $this->SerialNo = $row["SerialNo"];
-    $this->MfgDate = $row["MfgDate"];
-    $this->AssetTag = $row["AssetTag"];
-    $this->ESX = $row["ESX"];
-    $this->Owner = $row["Owner"];
-    $this->DeviceHeight = $row["DeviceHeight"];
-    $this->EthernetCount = $row["EthernetCount"];
-    $this->VLANList = $row["VLANList"];
-    $this->SANCount = $row["SANCount"];
-    $this->SANList = $row["SANList"];
-    $this->DeviceClass = $row["DeviceClass"];
-    $this->DeviceType = $row["DeviceType"];
-    $this->LabelColor = $row["LabelColor"];
-    $this->CurrentLocation = $row["CurrentLocation"];
-    $this->SpecialInstructions = $row["SpecialInstructions"];
+  function GetRequest($db=null){
+	global $dbh;
+    $sql="SELECT * FROM fac_RackRequest WHERE RequestID=\"".intval($this->RequestID)."\";";
+
+	if($row=$dbh->query($sql)->fetch()){
+		$this->RequestorID=$row["RequestorID"];
+		$this->RequestTime=$row["RequestTime"];
+		$this->CompleteTime=$row["CompleteTime"];
+		$this->Label=$row["Label"];
+		$this->SerialNo=$row["SerialNo"];
+		$this->MfgDate=$row["MfgDate"];
+		$this->AssetTag=$row["AssetTag"];
+		$this->ESX=$row["ESX"];
+		$this->Owner=$row["Owner"];
+		$this->DeviceHeight=$row["DeviceHeight"];
+		$this->EthernetCount=$row["EthernetCount"];
+		$this->VLANList=$row["VLANList"];
+		$this->SANCount=$row["SANCount"];
+		$this->SANList=$row["SANList"];
+		$this->DeviceClass=$row["DeviceClass"];
+		$this->DeviceType=$row["DeviceType"];
+		$this->LabelColor=$row["LabelColor"];
+		$this->CurrentLocation=$row["CurrentLocation"];
+		$this->SpecialInstructions=$row["SpecialInstructions"];
+	}else{
+		//something bad happened maybe tell someone
+	}
   }
   
-  function CompleteRequest( $db ) {
-    $sql = "update fac_RackRequest set CompleteTime=now() where RequestID=\"" . $this->RequestID . "\"";
-    mysql_query( $sql, $db );
+  function CompleteRequest($db=null){
+	global $dbh;
+    $sql="UPDATE fac_RackRequest SET CompleteTime=now() WHERE RequestID=\"".$this->RequestID."\";";
+	if($dbh->query($sql)){
+		return true;
+	}else{
+		return false;
+	}
   }
   
-  function DeleteRequest( $db ) {
-    $sql = "delete from fac_RackRequest where RequestID=\"" . intval( $this->RequestID ) . "\"";
-    mysql_query( $sql, $db );
+  function DeleteRequest($db=null){
+	global $dbh;
+    $sql="DELETE FROM fac_RackRequest WHERE RequestID=\"".intval($this->RequestID)."\";";
+	if($dbh->query($sql)){
+		return true;
+	}else{
+		return false;
+	}
   }
 
-  function UpdateRequest( $db ) {
-    $sql = "update fac_RackRequest set 
-        RequestorID=\"" . intval( $this->RequestorID ) . "\", 
-        Label=\"" . addslashes( $this->Label ) . "\", 
-        SerialNo=\"" . addslashes( $this->SerialNo ) . "\",
-        AssetTag=\"" . addslashes( $this->AssetTag ) . "\",
-        ESX=\"" . $this->ESX . "\",
-        Owner=\"" . $this->Owner . "\",
-        DeviceHeight=\"" . $this->DeviceHeight . "\", 
-        EthernetCount=\"" . $this->EthernetCount . "\", 
-        VLANList=\"" . addslashes( $this->VLANList ) . "\", 
-        SANCount=\"" . $this->SANCount . "\", 
-        SANList=\"" . addslashes( $this->SANList ) . "\",
-        DeviceClass=\"" . $this->DeviceClass . "\",
-        DeviceType=\"" . $this->DeviceType . "\", 
-        LabelColor=\"" . $this->LabelColor . "\", 
-        CurrentLocation=\"" . addslashes( $this->CurrentLocation ) . "\", 
-        SpecialInstructions=\"" . addslashes( $this->SpecialInstructions ) . "\"
-        where RequestID=\"" . intval($this->RequestID) . "\"";
+  function UpdateRequest($db=null){
+	global $dbh;
+    $sql="UPDATE fac_RackRequest SET RequestTime=now(), RequestorID=\"".intval($this->RequestorID)."\",
+		Label=\"".addslashes(transform($this->Label))."\", SerialNo=\"".addslashes(transform($this->SerialNo))."\",
+		MfgDate=\"".date("Y-m-d", strtotime($this->MfgDate))."\", 
+		AssetTag=\"".addslashes(transform($this->AssetTag))."\", ESX=\"".intval($this->ESX)."\",
+		Owner=\"".intval($this->Owner)."\", DeviceHeight=\"".intval($this->DeviceHeight)."\",
+		EthernetCount=\"".intval($this->EthernetCount)."\", VLANList=\"".addslashes($this->VLANList)."\",
+		SANCount=\"".intval($this->SANCount)."\", SANList=\"".addslashes($this->SANList)."\",
+		DeviceClass=\"".addslashes($this->DeviceClass)."\", DeviceType=\"".addslashes($this->DeviceType)."\",
+		LabelColor=\"".addslashes($this->LabelColor)."\", 
+		CurrentLocation=\"".addslashes(transform($this->CurrentLocation))."\",
+		SpecialInstructions=\"".addslashes($this->SpecialInstructions)."\" 
+		WHERE RequestID=\"".intval($this->RequestID)."\";";
     
-    $result = mysql_query( $sql, $db );
+	if($dbh->query($sql)){
+		return true;
+	}else{
+		return false;
+	}
   }  
 }
 

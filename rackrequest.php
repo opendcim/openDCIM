@@ -29,7 +29,7 @@
 	if(isset($_POST["action"])){
 		if(isset($_REQUEST['requestid']) && $_REQUEST['requestid'] >0){
 			$req->RequestID=$_REQUEST['requestid'];
-			$req->GetRequest($facDB);
+			$req->GetRequest();
 
 			$contact->ContactID=$req->RequestorID;
 			$contact->GetContactByID($facDB);
@@ -79,7 +79,7 @@
 		$logo='images/'.$config->ParameterArray["PDFLogoFile"];
 		$logo=$message->embed(Swift_Image::fromPath($logo)->setFilename('logo.png'));
 
-		$htmlMessage='<!doctype html><html><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"><title>ITS Data Center Inventory</title></head><body><div id="header" style="padding: 5px 0;background: '.$config->ParameterArray["HeaderColor"].';"><center><img src="'.$logo.'"></center></div><div class="page"><p><h3>ITS Facilities Rack Request</h3>'."\n";
+		$htmlMessage='<!doctype html><html><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"><title>ITS Data Center Inventory</title></head><body><div id="header" style="padding: 5px 0;background: '.$config->ParameterArray["HeaderColor"].';"><center><img src="'.$logo.'"></center></div><div class="page"><p><h3>'._("ITS Facilities Rack Request").'</h3>'."\n";
 
 		if($_POST['action'] == 'Create'){
 			$req->RequestorID=$_POST['requestorid'];
@@ -100,14 +100,14 @@
 			$req->CurrentLocation=$_POST['currentlocation'];
 			$req->SpecialInstructions=$_POST['specialinstructions'];
 
-			$req->CreateRequest($facDB);
+			$req->CreateRequest();
 
-			$htmlMessage.="<p>".__("Your request for racking up the device labeled")." $req->Label ".__("has been received.
+			$htmlMessage.="<p>".sprintf(__('Your request for racking up the device labeled %1$s has been received.
 			The Network Operations Center will examine the request and contact you if more information is needed
 			before the request can be processed.  You will receive a notice when this request has been completed.
-			Please allow up to 2 business days for requests to be completed.")."</p>
+			Please allow up to 2 business days for requests to be completed.'),$req->Label)."</p>
 
-			<p>".__("Your Request ID is")." $req->RequestID ".__("and you may view the request online at")."
+			<p>".sprintf(__('Your Request ID is %1$d and you may view the request online at'),$req->RequestID)."
 			<a href=\"https://{$_SERVER['SERVER_NAME']}{$_SERVER['PHP_SELF']}?requestid=$req->RequestID\">
 			".__("this link")."</a>.</p>
 			
@@ -140,10 +140,10 @@
 			$req->CurrentLocation=$_POST['currentlocation'];
 			$req->SpecialInstructions=$_POST['specialinstructions'];
 
-			$req->UpdateRequest($facDB);
+			$req->UpdateRequest();
 
 			if($user->RackAdmin && $_POST['action']=='Move to Rack'){
-				$req->CompleteRequest($facDB);
+				$req->CompleteRequest();
 				
 				$dev->Label=$req->Label;
 				$dev->SerialNo=$req->SerialNo;
@@ -158,12 +158,13 @@
 				$dev->Ports=$req->EthernetCount;
 				$dev->DeviceType=$req->DeviceType;
 				$dev->TemplateID=$req->DeviceClass;
-				
-				$dev->CreateDevice($facDB);
-				
-				$htmlMessage.="<p>".__("Your request for racking up the device labeled")." $req->Label ".__("has been completed").".</p>
-				<p>".__("To view your device in its final location click")." <a href=\"".redirect("devices.php?deviceid=$dev->DeviceID")."\"> ".__("this link")."</a>.</p>
-				</body></html>";
+
+				$dev->CreateDevice();
+		
+				$htmlMessage.="<p>".sprintf(__('Your request for racking up the device labeled %1$s has been completed.'),$req->Label)."</p>";
+				$htmlMessage.="<p>".sprintf(__('To view your device in its final location click %1$s'),
+				"<a href=\"".redirect("devices.php?deviceid=$dev->DeviceID")."\"> ".__("this link")."</a>.</p>
+				</body></html>");
 
 				$message->setBody($htmlMessage,'text/html');
 				try{
@@ -173,13 +174,15 @@
 				}catch(Swift_TransportException $e){
 					$error.="Server: <span class=\"errmsg\">".$e->getMessage()."</span><br>\n";
 				}
+
+				$temp=__("Your request for racking up the device labeled %1\$s has been completed.");	
 			
 				header('Location: '.redirect("devices.php?deviceid=$dev->DeviceID"));
 				exit;
 			}
 	  }elseif($_POST['action']=='Delete Request'){
 		  if($user->RackAdmin||$user->UserID==$contact->UserID){
-			$req->DeleteRequest($facDB);
+			$req->DeleteRequest();
 			header('Location: '.redirect('index.php'));
 			exit;
 		  }else{
@@ -191,7 +194,7 @@
 	// If requestid is set we are either looking up a request or performing an action on one already. Refresh the object from the DB
 	if(isset($_REQUEST['requestid']) && $_REQUEST['requestid']>0){
 		$req->RequestID=$_REQUEST['requestid'];
-		$req->GetRequest($facDB);
+		$req->GetRequest();
 		$formfix="?requestid=$req->RequestID";
 
 		$contact->ContactID=$req->RequestorID;
