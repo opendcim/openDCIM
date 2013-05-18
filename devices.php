@@ -1114,6 +1114,10 @@ echo '<div class="center"><div>
 		   <button class="hide" type="button" onclick="getScan(\'assettag\')">',__("Scan Barcode"),'</button></div>
 		</div>
 		<div>
+		  <div><label for="primaryip">'.__("Primary IP").'</label></div>
+		  <div><input type="text" name="primaryip" id="primaryip" size="20" value="'.$dev->PrimaryIP.'"></div>
+		</div>
+		<div>
 		   <div><label for="mfgdate">'.__("Manufacture Date").'</label></div>
 		   <div><input type="text" class="validate[optional,custom[date]] datepicker" name="mfgdate" id="mfgdate" value="'.(($dev->MfgDate>'0000-00-00 00:00:00')?date('m/d/Y',strtotime($dev->MfgDate)):"").'">
 		   </div>
@@ -1379,10 +1383,6 @@ echo '	<div class="table">
 		<div>
 		   <div><label for="esx">'.__("ESX Server?").'</label></div>
 		   <div><select name="esx" id="esx"><option value="1"'.(($dev->ESX==1)?" selected":"").'>'.__("True").'</option><option value="0"'.(($dev->ESX==0)?" selected":"").'>'.__("False").'</option></select></div>
-		</div>
-		<div>
-		  <div><label for="primaryip">'.__("Primary IP").'</label></div>
-		  <div><input type="text" name="primaryip" id="primaryip" size="20" value="'.$dev->PrimaryIP.'"></div>
 		</div>
 		<div>
 		  <div><label for="snmpcommunity">'.__("SNMP Read Only Community").'</label></div>

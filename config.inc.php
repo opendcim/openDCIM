@@ -55,12 +55,11 @@ class Config{
 	static function RevertToDefault($db, $parameter){
 		global $dbh;
 		
-		if ($parameter=='none'){
-			$sql='update fac_Config set Value=DefaultVal';
-			}
-		else{
-			$sql='update fac_Config set Value=DefaultVal where Parameter = \''.$parameter.'\'';
-			}
+		if($parameter=='none'){
+			$sql='UPDATE fac_Config SET Value=DefaultVal;';
+		}else{
+			$sql="UPDATE fac_Config SET Value=DefaultVal WHERE Parameter=\"$parameter\";";
+		}
 		
 		$dbh->query($sql);
 		return;

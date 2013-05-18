@@ -1025,48 +1025,48 @@ class Device {
 		}
 	}
   
-	function UpdateDevice( $db ) {
+	function UpdateDevice($db=null){
+		global $dbh;
 		// Stupid User Tricks #417 - A user could change a device that has connections (switch or patch panel) to one that doesn't
 		// Stupid User Tricks #148 - A user could change a device that has children (chassis) to one that doesn't
 		//
 		// As a "safety mechanism" we simply won't allow updates if you try to change a chassis IF it has children
 		// For the switch and panel connections, though, we drop any defined connections
 		
-		$tmpDev = new Device();
-		$tmpDev->DeviceID = $this->DeviceID;
-		$tmpDev->GetDevice( $db );
+		$tmpDev=new Device();
+		$tmpDev->DeviceID=$this->DeviceID;
+		$tmpDev->GetDevice($db);
 		
-		if ( $tmpDev->DeviceType == "Chassis" && $tmpDev->DeviceType != $this->DeviceType ) {
+		if($tmpDev->DeviceType == "Chassis" && $tmpDev->DeviceType != $this->DeviceType){
 			// SUT #148 - Previously defined chassis is no longer a chassis
 			// If it has children, return with no update
-			$childList = $this->GetDeviceChildren( $db );
-			if ( sizeof( $childList ) > 0 ) {
-				$this->GetDevice( $db );
+			$childList=$this->GetDeviceChildren($db);
+			if(sizeof($childList)>0){
+				$this->GetDevice($db);
 				return;
 			}
 		}
 		
-		if ( ( $tmpDev->DeviceType == "Switch" || $tmpDev->DeviceType == "Patch Panel" ) && $tmpDev->DeviceType != $this->DeviceType ) {
+		if(($tmpDev->DeviceType=="Switch" || $tmpDev->DeviceType=="PatchPanel") && $tmpDev->DeviceType!=$this->DeviceType){
 			// SUT #417 - Changed a Switch or Patch Panel to something else (even if you change a switch to a Patch Panel, the connections are different)
-			if ( $tmpDev->DeviceType == "Switch" ) {
-				$tmpSw = new SwitchConnection();
-				$tmpSw->SwitchDeviceID = $tmpDev->DeviceID;
-				$tmpSw->DropSwitchConnections( $db );
-				$tmpSw->DropEndpointConnections( $db );
+			if($tmpDev->DeviceType=="Switch"){
+				$tmpSw=new SwitchConnection();
+				$tmpSw->SwitchDeviceID=$tmpDev->DeviceID;
+				$tmpSw->DropSwitchConnections($db);
+				$tmpSw->DropEndpointConnections($db);
 			}
 			
-			if ( $tmpDev->DeviceType == "Patch Panel" ) {
-				$tmpPan = new PatchConnetion();
-				$tmpPan->DropPanelConnections( $db );
-				$tmpPan->DropEndpointConnections( $db );
+			if($tmpDev->DeviceType=="PatchPanel"){
+				$tmpPan=new PatchConnetion();
+				$tmpPan->DropPanelConnections($db);
+				$tmpPan->DropEndpointConnections($db);
 			}
 		}
 		
 		// Force all uppercase for labels
-		//
-		$this->Label = transform( $this->Label );
-		$this->SerialNo = transform( $this->SerialNo );
-		$this->AssetTag = transform( $this->AssetTag );
+		$this->Label=transform($this->Label);
+		$this->SerialNo=transform($this->SerialNo);
+		$this->AssetTag=transform($this->AssetTag);
 
 		//Keep weird values out of DeviceType
 		if(!in_array($this->DeviceType,array('Server','Appliance','StorageArray','Switch','Chassis','PatchPanel','PhysicalInfrastructure'))){
@@ -1074,9 +1074,8 @@ class Device {
 		}
 
 		// You can't update what doesn't exist, so check for existing record first and retrieve the current location
-		$select_sql = "select * from fac_Device where DeviceID=\"" . $this->DeviceID . "\"";
-		$result=mysql_query($select_sql,$db);
-		if($row=mysql_fetch_array($result)){
+		$select_sql = "SELECT * FROM fac_Device WHERE DeviceID=\"$this->DeviceID\";";
+		foreach($dbh->query($select_sql) as $row){
 			// If you changed cabinets then the power connections need to be removed
 			if($row["Cabinet"]!=$this->Cabinet){
 				$powercon=new PowerConnection();
@@ -1096,11 +1095,10 @@ class Device {
 				WarrantyExpire=\"".date("Y-m-d", strtotime($this->WarrantyExpire))."\", Notes=\"$this->Notes\", 
 				Reservation=\"$this->Reservation\" WHERE DeviceID=$this->DeviceID;";
 		}
-
-		if(!$result=mysql_query($update_sql,$db)){
-			// Error occurred
-			return -1;
+		if(!$dbh->exec($update_sql)){
+			return false;
 		}
+
 		return 0;
 	}
 
