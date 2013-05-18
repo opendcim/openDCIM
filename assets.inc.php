@@ -1068,33 +1068,36 @@ class Device {
 		$this->SerialNo = transform( $this->SerialNo );
 		$this->AssetTag = transform( $this->AssetTag );
 
-		if ( ! in_array( $this->DeviceType, array( 'Server', 'Appliance', 'Storage Array', 'Switch', 'Chassis', 'Patch Panel', 'Physical Infrastructure' ) ) )
-		  $this->DeviceType = "Server";
+		//Keep weird values out of DeviceType
+		if(!in_array($this->DeviceType,array('Server','Appliance','StorageArray','Switch','Chassis','PatchPanel','PhysicalInfrastructure'))){
+			$this->DeviceType="Server";
+		}
 
 		// You can't update what doesn't exist, so check for existing record first and retrieve the current location
 		$select_sql = "select * from fac_Device where DeviceID=\"" . $this->DeviceID . "\"";
-		$result = mysql_query( $select_sql, $db );
-		if ( $row = mysql_fetch_array( $result ) ) {
-		  // If you changed cabinets then the power connections need to be removed
-		  if ( $row["Cabinet"] != $this->Cabinet ) {
-			$powercon = new PowerConnection();
-			$powercon->DeviceID = $this->DeviceID;
-			$powercon->DeleteConnections( $db );
-		  }
+		$result=mysql_query($select_sql,$db);
+		if($row=mysql_fetch_array($result)){
+			// If you changed cabinets then the power connections need to be removed
+			if($row["Cabinet"]!=$this->Cabinet){
+				$powercon=new PowerConnection();
+				$powercon->DeviceID=$this->DeviceID;
+				$powercon->DeleteConnections($db);
+			}
       
-		$update_sql = sprintf( "update fac_Device set Label=\"%s\", SerialNo=\"%s\", AssetTag=\"%s\", PrimaryIP=\"%s\", SNMPCommunity=\"%s\", 
-			ESX=%, Owner=%d, EscalationTimeID=%d, EscalationID=%d, PrimaryContact=%d, Cabinet=%d, Position=%d, Height=%d, Ports=%d, 
-			FirstPortNum=%d, TemplateID=%d, NominalWatts=%d, PowerSupplyCount=%d, DeviceType=\"%s\", ChassisSlots=%d, RearChassisSlots=%d,
-			ParentDevice=%d, MfgDate=\"%s\", InstallDate=\"%s\", WarrantyCo=\"%s\", WarrantyExpire=\"%s\", Notes=\"%s\", 
-			Reservation=%d where DeviceID=%d",
-			$this->Label, $this->SerialNo, $this->AssetTag, $this->PrimaryIP, $this->SNMPCommunity, $this->ESX, $this->Owner,
-			$this->EscalationTimeID, $this->EscalationID, $this->PrimaryContact, $this->Cabinet, $this->Position, $this->Height, $this->Ports,
-			$this->FirstPortNum, $this->TemplateID, $this->NominalWatts, $this->PowerSupplyCount, $this->DeviceType, $this->ChassisSlots,
-			$this->RearChassisSlots, $this->ParentDevice, date( "Y-m-d", strtotime( $this->MfgDate )), date( "Y-m-d", strtotime( $this->InstallDate)),
-			$this->WarrantyCo, date( "Y-m-d", strtotime( $this->WarrantyExpire)), $this->Notes , $this->DeviceID);
-    }
+			$update_sql="UPDATE fac_Device SET Label=\"$this->Label\", SerialNo=\"$this->SerialNo\", AssetTag=\"$this->AssetTag\", 
+				PrimaryIP=\"$this->PrimaryIP\", SNMPCommunity=\"$this->SNMPCommunity\", ESX=\"$this->ESX\", Owner=\"$this->Owner\", 
+				EscalationTimeID=\"$this->EscalationTimeID\", EscalationID=\"$this->EscalationID\", PrimaryContact=\"$this->PrimaryContact\", 
+				Cabinet=\"$this->Cabinet\", Position=\"$this->Position\", Height=\"$this->Height\", Ports=\"$this->Ports\", 
+				FirstPortNum=\"$this->FirstPortNum\", TemplateID=\"$this->TemplateID\", NominalWatts=\"$this->NominalWatts\", 
+				PowerSupplyCount=\"$this->PowerSupplyCount\", DeviceType=\"$this->DeviceType\", ChassisSlots=\"$this->ChassisSlots\", 
+				RearChassisSlots=\"$this->RearChassisSlots\",ParentDevice=\"$this->ParentDevice\", 
+				MfgDate=\"".date("Y-m-d", strtotime($this->MfgDate))."\", 
+				InstallDate=\"".date("Y-m-d", strtotime($this->InstallDate))."\", WarrantyCo=\"$this->WarrantyCo\", 
+				WarrantyExpire=\"".date("Y-m-d", strtotime($this->WarrantyExpire))."\", Notes=\"$this->Notes\", 
+				Reservation=\"$this->Reservation\" WHERE DeviceID=$this->DeviceID;";
+		}
 
-		if ( ! $result = mysql_query( $update_sql, $db ) ) {
+		if(!$result=mysql_query($update_sql,$db)){
 			// Error occurred
 			return -1;
 		}
@@ -1106,8 +1109,9 @@ class Device {
 		
 		$select_sql = "select * from fac_Device where DeviceID=\"" . intval($this->DeviceID) . "\"";
 
-		if ( ! $devRow = $dbh->query( $select_sql )->fetch() )
+		if(!$devRow=$dbh->query($select_sql)->fetch()){
 			return false;
+		}
 
 		$this->DeviceID = $devRow["DeviceID"];
 		$this->Label = $devRow["Label"];
