@@ -873,21 +873,21 @@ class Device {
 		if ( ! in_array( $this->DeviceType, array( 'Server', 'Appliance', 'Storage Array', 'Switch', 'Chassis', 'Patch Panel', 'Physical Infrastructure' ) ) )
 		  $this->DeviceType = "Server";
 
-		$sql="UPDATE fac_Device SET Label=\"$this->Label\", SerialNo=\"$this->SerialNo\", AssetTag=\"$this->AssetTag\", 
-			PrimaryIP=\"$this->PrimaryIP\", SNMPCommunity=\"$this->SNMPCommunity\", ESX=\"$this->ESX\", Owner=\"$this->Owner\", 
-			EscalationTimeID=\"$this->EscalationTimeID\", EscalationID=\"$this->EscalationID\", PrimaryContact=\"$this->PrimaryContact\", 
-			Cabinet=\"$this->Cabinet\", Position=\"$this->Position\", Height=\"$this->Height\", Ports=\"$this->Ports\", 
-			FirstPortNum=\"$this->FirstPortNum\", TemplateID=\"$this->TemplateID\", NominalWatts=\"$this->NominalWatts\", 
-			PowerSupplyCount=\"$this->PowerSupplyCount\", DeviceType=\"$this->DeviceType\", ChassisSlots=\"$this->ChassisSlots\", 
-			RearChassisSlots=\"$this->RearChassisSlots\",ParentDevice=\"$this->ParentDevice\", 
-			MfgDate=\"".date("Y-m-d", strtotime($this->MfgDate))."\", 
-			InstallDate=\"".date("Y-m-d", strtotime($this->InstallDate))."\", WarrantyCo=\"$this->WarrantyCo\", 
-			WarrantyExpire=\"".date("Y-m-d", strtotime($this->WarrantyExpire))."\", Notes=\"$this->Notes\", 
-			Reservation=\"$this->Reservation\";";
+		$sql = sprintf( "insert into fac_Device set Label=\"%s\", SerialNo=\"%s\", AssetTag=\"%s\", PrimaryIP=\"%s\", SNMPCommunity=\"%s\", 
+			ESX=%, Owner=%d, EscalationTimeID=%d, EscalationID=%d, PrimaryContact=%d, Cabinet=%d, Position=%d, Height=%d, Ports=%d, 
+			FirstPortNum=%d, TemplateID=%d, NominalWatts=%d, PowerSupplyCount=%d, DeviceType=\"%s\", ChassisSlots=%d, RearChassisSlots=%d,
+			ParentDevice=%d, MfgDate=\"%s\", InstallDate=\"%s\", WarrantyCo=\"%s\", WarrantyExpire=\"%s\", Notes=\"%s\", 
+			Reservation=%d",
+			$this->Label, $this->SerialNo, $this->AssetTag, $this->PrimaryIP, $this->SNMPCommunity, $this->ESX, $this->Owner,
+			$this->EscalationTimeID, $this->EscalationID, $this->PrimaryContact, $this->Cabinet, $this->Position, $this->Height, $this->Ports,
+			$this->FirstPortNum, $this->TemplateID, $this->NominalWatts, $this->PowerSupplyCount, $this->DeviceType, $this->ChassisSlots,
+			$this->RearChassisSlots, $this->ParentDevice, date( "Y-m-d", strtotime( $this->MfgDate )), date( "Y-m-d", strtotime( $this->InstallDate)),
+			$this->WarrantyCo, date( "Y-m-d", strtotime( $this->WarrantyExpire)), $this->Notes, $this->Reservation );
 
-		if(!$dbh->exec($sql)){
-			// Error occurred
-			printf( "<h3>MySQL Error.  SQL = \"%s\"</h3>\n", $sql );
+		if ( ! $dbh->exec( $sql ) ) {
+			$info = $dbh->errorInfo();
+		
+			error_log( "PDO Error:  " . $info[2] );
 			return false;
 		}
 
