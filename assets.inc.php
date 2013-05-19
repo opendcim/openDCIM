@@ -320,7 +320,7 @@ class Cabinet {
 
 				$sql = "select * from fac_Cabinet where DataCenterID=\"$dcID\" order by Location ASC";
 
-				foreach ( $dbh->query( $_sql ) as $cabRow  ) {
+				foreach ( $dbh->query( $sql ) as $cabRow  ) {
 				  $dept->DeptID = $cabRow["AssignedTo"];
 				  
 				  if ( $dept->DeptID == 0 )
