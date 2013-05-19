@@ -567,6 +567,9 @@ class PowerDistribution {
 		
 		$config=new Config();
 		$this->GetPDU( $db );
+		$tmpl = new CDUTemplate();
+		$tmpl->TemplateID = $this->TemplateID;
+		$tmpl->GetTemplate();
 
 		if (!($this->IPAddress)||!($this->SNMPCommunity)) {
 			return "Not Configured";
@@ -587,7 +590,7 @@ class PowerDistribution {
 					$upTime = "Unknown";
 				}
 			} else {
-				if ( $this->SNMPVersion == "2c" )
+				if ( $tmpl->SNMPVersion == "2c" )
 					$result = explode( ")", @snmp2_get( $this->IPAddress, $this->SNMPCommunity, "sysUpTimeInstance" ));
 				else
 					$result = explode( ")", @snmpget( $this->IPAddress, $this->SNMPCommunity, "sysUpTimeInstance" ));
