@@ -36,7 +36,8 @@
 		$cab->InstallationDate=$_POST['installationdate'];
 		$cab->SensorIPAddress=$_POST['sensoripaddress'];
 		$cab->SensorCommunity=$_POST['sensorcommunity'];
-		$cab->SensorOID=$_POST['sensoroid'];
+		$cab->TempSensorOID=$_POST['tempsensoroid'];
+		$cab->HumiditySensorOID=$_POST['humiditysensoroid'];
 		$cab->Notes=trim($_POST['notes']);
 		$cab->Notes=($cab->Notes=="<br>")?"":$cab->Notes;
 		$cab->SetTags($tagarray);
@@ -246,7 +247,11 @@ echo '  </select>
 </div>
 <div>
 	<div>',__("Temperature Sensor OID"),'</div>
-	<div><input type="text" name="sensoroid" size=30 value="',$cab->SensorOID,'"></div>
+	<div><input type="text" name="tempsensoroid" size=30 value="',$cab->TempSensorOID,'"></div>
+</div>
+<div>
+	<div>',__("Humidity Sensor OID"),'</div>
+	<div><input type="text" name="humiditysensoroid" size=30 value="',$cab->HumiditySensorOID,'"></div>
 </div>
 <div>
 	<div><label for="tags">',__("Tags"),'</label></div>

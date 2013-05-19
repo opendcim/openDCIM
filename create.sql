@@ -47,6 +47,7 @@ CREATE TABLE fac_CabinetTemps (
   CabinetID int(11) NOT NULL,
   LastRead datetime NOT NULL,
   Temp int(11) NOT NULL,
+  Humidity int(11) NOT NULL,
   PRIMARY KEY (CabinetID)
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
 

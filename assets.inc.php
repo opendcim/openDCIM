@@ -78,7 +78,7 @@ class Cabinet {
 		
 		$this->MakeSafe();
 		
-		$sql = "insert into fac_Cabinet set DataCenterID=%d, Location=\"%s\", AssignedTo=%d,
+		$sql = sprintf( "insert into fac_Cabinet set DataCenterID=%d, Location=\"%s\", AssignedTo=%d,
 			CabinetHeight=%d, Model=\"%s\", Keylock=\"%s\", MaxKW=%f, MaxWeight=%d,
 			InstallationDate=\"%s\", SensorIPAddress=\"%s\", SensorCommunity=\"%s\",
 			TempSensorOID=\"%s\", HumiditySensorOID=\"%s\", MapX1=%d, MapY1=%d,
@@ -106,7 +106,7 @@ class Cabinet {
 		
 		$this->MakeSafe();
 		
-		$sql = "update fac_Cabinet set DataCenterID=%d, Location=\"%s\", AssignedTo=%d,
+		$sql = sprintf( "update fac_Cabinet set DataCenterID=%d, Location=\"%s\", AssignedTo=%d,
 			CabinetHeight=%d, Model=\"%s\", Keylock=\"%s\", MaxKW=%f, MaxWeight=%d,
 			InstallationDate=\"%s\", SensorIPAddress=\"%s\", SensorCommunity=\"%s\",
 			TempSensorOID=\"%s\", HumiditySensorOID=\"%s\", MapX1=%d, MapY1=%d,
@@ -130,9 +130,9 @@ class Cabinet {
 	function GetCabinet( $db = null ) {
 		global $dbh;
 		
-		$select_sql = "select * from fac_Cabinet where CabinetID=\"" . intval($this->CabinetID) . "\"";
+		$sql = "select * from fac_Cabinet where CabinetID=\"" . intval($this->CabinetID) . "\"";
 		
-		if ( ! $cabinetRow = $dbh->query( $select_sql )->fetch() ) {
+		if ( ! $cabinetRow = $dbh->query( $sql )->fetch() ) {
 			$info = $dbh->errorInfo();
 
 			error_log( "PDO Error:  " . $info[2] );
@@ -174,7 +174,7 @@ class Cabinet {
 
 		$sql="SELECT * FROM fac_Cabinet$sql ORDER BY DataCenterID, Location;";
 
-		foreach ( $dbh->query( $select_sql ) as $cabinetRow ) {
+		foreach ( $dbh->query( $sql ) as $cabinetRow ) {
 			$cabID = sizeof( $cabinetList );
 			$cabinetList[ $cabID ] = new Cabinet();
 
@@ -208,9 +208,9 @@ class Cabinet {
 		
 		$cabinetList = array();
 
-		$select_sql = "select * from fac_Cabinet where DataCenterID=\"" . intval($this->DataCenterID) . "\" order by Location";
+		$sql = "select * from fac_Cabinet where DataCenterID=\"" . intval($this->DataCenterID) . "\" order by Location";
 
-		foreach ( $dbh->query( $select_sql ) as $cabinetRow ) {
+		foreach ( $dbh->query( $sql ) as $cabinetRow ) {
 			$cabID = sizeof( $cabinetList );
 			$cabinetList[ $cabID ] = new Cabinet();
 
@@ -242,9 +242,9 @@ class Cabinet {
 	function CabinetOccupancy( $CabinetID, $db = null ) {
 		global $dbh;
 		
-		$select_sql = "select sum(Height) as Occupancy from fac_Device where Cabinet=$CabinetID";
+		$sql = "select sum(Height) as Occupancy from fac_Device where Cabinet=$CabinetID";
 
-		if ( ! $row = $dbh->query( $select_sql )->fetch() ) {
+		if ( ! $row = $dbh->query( $sql )->fetch() ) {
 			$info = $dbh->errorInfo();
 
 			error_log( "PDO Error:  " . $info[2] );
@@ -257,11 +257,11 @@ class Cabinet {
 	function GetDCSelectList( $db = null ) {
 		global $dbh;
 		
-		$select_sql = "select * from fac_DataCenter order by Name";
+		$sql = "select * from fac_DataCenter order by Name";
 
 		$selectList = "<select name=\"datacenterid\">";
 
-		foreach ( $dbh->query( $select_sql ) as $selectRow ) {
+		foreach ( $dbh->query( $sql ) as $selectRow ) {
 			if ( $selectRow[ "DataCenterID" ] == $this->DataCenterID )
 				$selected = "selected";
 			else
@@ -279,11 +279,11 @@ class Cabinet {
 	function GetCabinetSelectList( $db = null) {
 		global $dbh;
 		
-		$select_sql = "select Name, CabinetID, Location from fac_DataCenter, fac_Cabinet where fac_DataCenter.DataCenterID=fac_Cabinet.DataCenterID order by Name ASC, Location ASC";
+		$sql = "select Name, CabinetID, Location from fac_DataCenter, fac_Cabinet where fac_DataCenter.DataCenterID=fac_Cabinet.DataCenterID order by Name ASC, Location ASC";
 
 		$selectList = "<select name=\"cabinetid\" id=\"cabinetid\"><option value=\"-1\">Storage Room</option>";
 
-		foreach ( $dbh->query( $select_sql) as $selectRow ) {
+		foreach ( $dbh->query( $sql) as $selectRow ) {
 			if ( $selectRow[ "CabinetID" ] == $this->CabinetID )
 				$selected = "selected";
 			else
@@ -318,9 +318,9 @@ class Cabinet {
 
 				$tree .= "	<li class=\"$classType\" id=\"dc$dcID\"><a href=\"dc_stats.php?dc=" . $datacenter->DataCenterID . "\">" . $datacenter->Name . "</a>/\n		<ul>\n";
 
-				$cab_sql = "select * from fac_Cabinet where DataCenterID=\"$dcID\" order by Location ASC";
+				$sql = "select * from fac_Cabinet where DataCenterID=\"$dcID\" order by Location ASC";
 
-				foreach ( $dbh->query( $cab_sql ) as $cabRow  ) {
+				foreach ( $dbh->query( $_sql ) as $cabRow  ) {
 				  $dept->DeptID = $cabRow["AssignedTo"];
 				  
 				  if ( $dept->DeptID == 0 )
@@ -537,7 +537,12 @@ class CabinetAudit {
 		
 		$sql = "insert into fac_CabinetAudit set CabinetID=\"" . intval( $this->CabinetID ) . "\", UserID=\"" . addslashes( $this->UserID ) . "\", AuditStamp=now()";
 
-		$dbh->exec( $sql );
+		if ( ! $dbh->exec( $sql ) ) {
+			$info = $dbh->errorInfo();
+
+			error_log( "PDO Error:  " . $info[2] );
+			return false;
+		}
 		
 		return;
 	}
@@ -551,7 +556,14 @@ class CabinetAudit {
 			$this->CabinetID = $row["CabinetID"];
 			$this->UserID = $row["UserID"];
 			$this->AuditStamp = date( "M d, Y H:i", strtotime( $row["AuditStamp"] ) );
+		} else {
+			$info = $dbh->errorInfo();
+
+			error_log( "PDO Error:  " . $info[2] );
+			return false;
 		}
+		
+		return;
 	}
 	
 	function GetLastAuditByUser( $db = null ) {
@@ -563,7 +575,14 @@ class CabinetAudit {
 			$this->CabinetID = $row["CabinetID"];
 			$this->UserID = $row["UserID"];
 			$this->AuditStamp = date( "M d, Y H:i", strtotime( $row["AuditStamp"] ) );
+		} else {
+			$info = $dbh->errorInfo();
+
+			error_log( "PDO Error:  " . $info[2] );
+			return false;
 		}
+		
+		return;
 	}
 }
 
@@ -573,6 +592,7 @@ class CabinetTemps {
 	var $CabinetID;
 	var $LastRead;
 	var $Temp;
+	var $Humidity;
 
 	function GetReading() {
 		global $dbh;
@@ -582,6 +602,12 @@ class CabinetTemps {
 		if ( $row = $dbh->query( $sql )->fetch() ) {
 			$this->LastRead = date( "m-d-Y H:i:s", strtotime($row["LastRead"]) );
 			$Temp = $row["Temp"];
+			$Humidity = $row["Humidity"];
+		} else {
+			$info = $dbh->errorInfo();
+
+			error_log( "PDO Error:  " . $info[2] );
+			return false;
 		}
 		
 		return;
@@ -594,28 +620,39 @@ class CabinetTemps {
 		$cab->CabinetID = $this->CabinetID;
 		$cab->GetCabinet();
 		
-		if ( ( strlen( $cab->SensorIPAddress ) == 0 ) || ( strlen( $cab->SensorCommunity ) == 0 ) || ( strlen( $cab->SensorOID ) == 0 ) )
+		if ( ( strlen( $cab->SensorIPAddress ) == 0 ) || ( strlen( $cab->SensorCommunity ) == 0 ) || ( strlen( $cab->TempSensorOID ) == 0 ) )
 			return;
 
 		if ( ! function_exists( "snmpget" ) ) {
-			$pollCommand = sprintf( "%s -v 2c -c %s %s %s | %s -d: -f4", $config->ParameterArray["snmpget"], $cab->SensorCommunity, $cab->SensorIPAddress, $cab->SensorOID, $config->ParameterArray["cut"] );
+			$pollCommand = sprintf( "%s -v 2c -c %s %s %s | %s -d: -f4", $config->ParameterArray["snmpget"], $cab->SensorCommunity, $cab->SensorIPAddress, $cab->TempSensorOID, $config->ParameterArray["cut"] );
 			
 			exec( $pollCommand, $statsOutput );
 			
-			$sensorValue = intval( @$statsOutput[0] );
+			$tempValue = intval( @$statsOutput[0] );
 		} else {
-			$result = explode( " ", snmp2_get( $cab->SensorIPAddress, $cab->SensorCommunity, $cab->SensorOID ));
+			$result = explode( " ", snmp2_get( $cab->SensorIPAddress, $cab->SensorCommunity, $cab->TempSensorOID ));
 			
-			$sensorValue = intval($result[1]);
+			$tempValue = intval($result[1]);
 		}
 		
 		if ( $sensorValue > 0 ) {
 			$this->Temp = $sensorValue;
 			// Delete any existing record and then add in a new one
 			$sql = sprintf( "delete from fac_CabinetTemps where CabinetID=%d", $this->CabinetID );
-			$dbh->exec( $sql );
-			$sql = sprintf( "insert into fac_CabinetTemps set CabinetID=%d, Temp=%d, LastRead=now()", $this->CabinetID, $this->Temp );
-			$dbh->exec( $sql );
+			if ( ! $dbh->exec( $sql ) ) {
+				$info = $dbh->errorInfo();
+
+				error_log( "PDO Error:  " . $info[2] );
+				return false;
+			}
+
+			$sql = sprintf( "insert into fac_CabinetTemps set CabinetID=%d, Temp=%d, Humidity=%d, LastRead=now()", $this->CabinetID, $this->Temp, $this->Humidity );
+			if ( ! $dbh->exec( $sql ) ) {
+				$info = $dbh->errorInfo();
+
+				error_log( "PDO Error:  " . $info[2] );
+				return false;
+			}
 		}
 	}	
 }
