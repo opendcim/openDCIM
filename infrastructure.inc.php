@@ -541,16 +541,17 @@ class DeviceTemplate {
     $result = mysql_query( $delSQL, $db );
   }
   
-  function GetTemplateByID( $db ) {
-	$selectSQL = "select * from fac_DeviceTemplate where TemplateID=\"" . intval($this->TemplateID) . "\"";
-	$result = mysql_query( $selectSQL, $db );
+  function GetTemplateByID( $db = null ) {
+	global $dbh;
+	
+	$sql = "select * from fac_DeviceTemplate where TemplateID=\"" . intval($this->TemplateID) . "\"";
 
 	// Reset object in case of a lookup failure
 	foreach($this as $var => $value){
 		$var=($var!='TemplateID')?NULL:$value;
 	}
     
-	if($tempRow=mysql_fetch_array($result)){
+	if ( $tempRow = $dbh->query( $sql )->fetch() ) {
 		$this->TemplateID=$tempRow["TemplateID"];
 		$this->ManufacturerID=$tempRow["ManufacturerID"];
 		$this->Model=$tempRow["Model"];
@@ -562,7 +563,10 @@ class DeviceTemplate {
 		$this->NumPorts=$tempRow["NumPorts"];
       
 		return true;
-	}else{
+	} else {
+		$info = $dbh->errorInfo();
+
+		error_log( "PDO Error:  " . $info[2] );
 		return false;
 	}
   }
