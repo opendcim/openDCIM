@@ -362,7 +362,6 @@
 				rowobject.remove();
 			}else{
 				$.post('',{ccused: rowobject.find('div:nth-child(2) input').attr('data')}).done(function(data){
-					console.log(data);
 					if(data.trim()==0){
 						rowobject.effect('explode', {}, 500, function(){
 							$(this).remove();
