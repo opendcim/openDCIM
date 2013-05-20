@@ -368,11 +368,22 @@
 							$(this).remove();
 						});
 					}else{
-						alert('this code is in use somewhere. add a modal requesting permission to remove this record and all associated entries');
+						var modal=$('<div />', {id: 'modal', title: 'Code Delete Override'}).html('<div id="modaltext">this code is in use somewhere. add a modal requesting permission to remove this record and all associated entries</div>').dialog({
+							dialogClass: 'no-close',
+							appendTo: 'body',
+							modal: true,
+							buttons: {
+								"Yes": function(){
+									$('#modaltext').html('AAAAAAAAAAHHHHHHHHHH!!!  *crash* *fire* *chaos*');
+									// decide how to handle these.
+								},
+								Cancel: function(){
+									$(this).dialog("destroy");
+								}
+							}
+						});
 					}
 				});
-				// Lookup color code, if it isn't in use remove it.
-				// If code is in use present removal options
 			}
 		}
 		var blankrow=$('<div />').html('<div><img src="images/del.gif"></div><div><input type="text" name="colorcode[]"></div><div><input type="text" name="ccdefaulttext[]"></div>');
