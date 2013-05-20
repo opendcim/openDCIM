@@ -35,8 +35,36 @@
 		echo BuildFileList();
 		exit;
 	}
-	if(isset($_POST['fe'])){
+	if(isset($_POST['fe'])){ // checking that a file exists
 		echo(is_file($_POST['fe']))?1:0;
+		exit;
+	}
+	if(isset($_POST['cc'])){  // Cable color codes
+		$col=new ColorCoding();
+		if(isset($_POST['cid'])){ // If set we're updating an existing entry
+			$col->ColorID=$_POST['cid'];
+			if(isset($_POST['original'])){
+				$col->GetCode();
+			    header('Content-Type: application/json');
+				echo json_encode($col);
+				exit;
+			}
+			$col->Name=$_POST['cc'];
+			$col->DefaultNote=$_POST['ccdn'];
+			if($col->UpdateCode()){
+				echo 'u';
+			}else{
+				echo 'f';
+			}
+		}else{
+			$col->Name=$_POST['cc'];
+			$col->DefaultNote=$_POST['ccdn'];
+			if($col->CreateCode()){
+				echo $col->ColorID;
+			}else{
+				echo 'f';
+			}
+		}
 		exit;
 	}
 	// END AJAX Requests
@@ -125,6 +153,21 @@
 		$tzmenu.="\t\t</ul>\t</li>";
 	}
 	$tzmenu.='</ul>';
+
+	// Build list of cable color codes
+	$cablecolors="";
+
+	$codeList=ColorCoding::GetCodeList();
+	if(count($codeList)>0){
+		foreach($codeList as $cc){
+			$cablecolors.='<div>
+					<div><img src="images/del.gif"></div>
+					<div><input type="text" name="colorcode[]" data='.$cc->ColorID.' value="'.$cc->Name.'"></input></div>
+					<div><input type="text" name="ccdefaulttext[]" value="'.$cc->DefaultNote.'"></input></div>
+				</div>';
+		}
+	}
+
 
 	// Figure out what the URL to this page
 	$href="";
@@ -304,6 +347,83 @@
 			});
 			$(this).addClass('text-arrow');
 		});
+		function removeitem(rowobject,lookup=true){
+			if(!lookup){
+				rowobject.remove();
+			}else{
+				alert("quit that. it isn't setup yet");
+				// Lookup color code, if it isn't in use remove it.
+				// If code is in use present removal options
+			}
+		}
+		var blankrow=$('<div />').html('<div><img src="images/del.gif"></div><div><input type="text" name="colorcode[]"></div><div><input type="text" name="ccdefaulttext[]"></div>');
+		function bindrow(row){
+			var addrem=row.find('div:first-child');
+			var cc=row.find('div:nth-child(2) input');
+			var ccdn=row.find('div:nth-child(3) input');
+			if(cc.val().trim()!='' && addrem.attr('id')!='newline'){
+				addrem.click(function(){
+					removeitem(row,true);
+				});
+			}
+			row.find('div > input').each(function(){
+				// If a value changes then check it for conflicts, if no conflict update
+				$(this).change(function(){
+					if(cc.val().trim()!=''){
+						$.post('',{cid: cc.attr('data'),cc: cc.val(), ccdn: ccdn.val()}).done(function(data){
+							if(data.trim()=='f'){ // fail
+								$.post('',{cid: cc.attr('data'),cc: cc.val(), ccdn: ccdn.val(),original:data.trim()}).done(function(jsondata){
+									cc.val(jsondata.Name);
+									ccdn.val(jsondata.DefaultNote);
+								});
+								cc.effect('highlight', {color: 'salmon'}, 1500);
+								ccdn.effect('highlight', {color: 'salmon'}, 1500);
+							}else if(data.trim()=='u'){ // updated
+								cc.effect('highlight', {color: 'lightgreen'}, 2500);
+								ccdn.effect('highlight', {color: 'lightgreen'}, 2500);
+							}else{ // created
+								var newitem=blankrow.clone();
+								newitem.find('div:nth-child(2) input').val(cc.val()).attr('data',data.trim());
+								newitem.find('div:nth-child(3) input').val(ccdn.val());
+								bindrow(newitem);
+								row.before(newitem);
+								if(addrem.attr('id')=='newline'){
+									cc.val('');
+									ccdn.val('');
+								}else{
+									row.remove();
+								}
+							}
+						});
+					}else if(cc.val().trim()=='' && ccdn.val().trim()=='' && addrem.attr('id')!='newline'){
+						// If both blanks are emptied of values and they were an existing data pair
+						$.post('',{cid: cc.attr('data'),cc: cc.val(), ccdn: ccdn.val(),original:''}).done(function(jsondata){
+							cc.val(jsondata.Name);
+							ccdn.val(jsondata.DefaultNote);
+						});
+						cc.effect('highlight', {color: 'salmon'}, 1500);
+						ccdn.effect('highlight', {color: 'salmon'}, 1500);
+					}
+				});
+			});
+		}
+		function delrow(row){
+			
+		}
+		$('#cablecolor > div ~ div > div:first-child').each(function(){
+			if($(this).attr('id')=='newline'){
+				var row=$(this).parent('div');
+				$(this).click(function(){
+					var newitem=blankrow.clone();
+					newitem.find('div:first-child').click(function(){
+						removeitem($(this).parent('div'),false);
+					});
+					bindrow(newitem);
+					row.before(newitem);
+				});
+			}
+			bindrow($(this).parent('div'));
+		});
 		$('input[id^="snmp"],input[id="cut"]').each(function(){
 			var a=$(this);
 			var icon=$('<span>',{style: 'float:right;margin-top:5px;'}).addClass('ui-icon').addClass('ui-icon-info');
@@ -347,6 +467,7 @@ echo '<div class="main">
 			<li><a href="#email">',__("Email"),'</a></li>
 			<li><a href="#reporting">',__("Reporting"),'</a></li>
 			<li><a href="#tt">',__("ToolTips"),'</a></li>
+			<li><a href="#cc">',__("Cabling"),'</a></li>
 		</ul>
 		<div id="general">
 			<div class="table">
@@ -649,6 +770,27 @@ echo '<div class="main">
 			</div> <!-- end table -->
 			<br>
 			',$cdutooltip,'
+		</div>
+		<div id="cc">
+			<h3>',__("Media Types"),'</h3>
+			<div class="table" id="mediatypes">
+				<div>
+				</div>
+			</div> <!-- end table -->
+			<h3>',__("Cable Colors"),'</h3>
+			<div class="table" id="cablecolor">
+				<div>
+					<div></div>
+					<div>Color</div>
+					<div>Default Note</div>
+				</div>
+				',$cablecolors,'
+				<div>
+					<div id="newline"><img alt="add new row" src="images/add.gif"></div>
+					<div><input type="text" name="colorcode[]"></input></div>
+					<div><input type="text" name="ccdefaulttext[]"></input></div>
+				</div>
+			</div> <!-- end table -->
 		</div>
 	</div>';
 

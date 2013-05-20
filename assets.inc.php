@@ -665,87 +665,83 @@ class ColorCoding {
 	function CreateCode() {
 		global $dbh;
 		
-		$sql = sprintf( "insert into fac_ColorCoding set Name=\"%s\", DefaultNote=\"%s\"", 
-			mysql_real_escape_string( $this->Name ), mysql_real_escape_string( $this->DefaultNote ) );
+		$sql="INSERT INTO fac_ColorCoding SET Name=\"".addslashes($this->Name)."\", 
+			DefaultNote=\"".addslashes($this->DefaultNote)."\"";
 		
-		if ( $dbh->exec( $sql ) ) {
-			$this->ColorID = $dbh->lastInsertId();
-		} else {
-			$info = $dbh->errorInfo();
+		if($dbh->exec($sql)){
+			$this->ColorID=$dbh->lastInsertId();
+		}else{
+			$info=$dbh->errorInfo();
 
-			error_log( "PDO Error:  " . $info[2] );
+			error_log("PDO Error: {$info[2]}");
 			return false;
 		}
 		
-		return;
+		return $this->ColorID;
 	}
 	
 	function UpdateCode() {
 		global $dbh;
 		
-		$sql = sprintf( "update fac_ColorCoding set Name=\"%s\", DefaultNote=\"%s\" where ColorID=%d", 
-			mysql_real_escape_string( $this->Name ), mysql_real_escape_string( $this->DefaultNote ), $this->ColorID );
-			
-		if ( ! $dbh->exec( $sql ) ) {
-			$info = $dbh->errorInfo();
-
-			error_log( "PDO Error:  " . $info[2] );
-			return false;
-		}
+		$sql="UPDATE fac_ColorCoding SET Name=\"".addslashes($this->Name)."\", 
+			DefaultNote=\"".addslashes($this->DefaultNote)."\" WHERE ColorID=".intval($this->ColorID).";";
 		
-		return;
+		if(!$dbh->query($sql)){
+			$info=$dbh->errorInfo();
+			error_log("PDO Error: {$info[2]}");
+			return false;
+		}else{		
+			return true;
+		}
 	}
 	
 	function DeleteCode() {
 		/* If you call this, the upstream application should be checking to see if it is used already - you don't want to
 			create orphan connetions that reference this color code! */
-		
 		global $dbh;
 		
-		$sql = sprintf( "delete from fac_ColorCoding where ColorID=%d", $this->ColorID );
+		$sql="DELETE FROM fac_ColorCoding WHERE ColorID=".intval($this->ColorID);
 		
-		if ( ! $dbh->exec( $sql ) ) {
-			$info = $dbh->errorInfo();
+		if(!$dbh->exec($sql)){
+			$info=$dbh->errorInfo();
 
-			error_log( "PDO Error:  " . $info[2] );
+			error_log("PDO Error: {$info[2]}");
 			return false;
 		}
 		
-		return;
+		return true;
 	}
 	
 	function GetCode() {
 		global $dbh;
 		
-		$sql = sprintf( "select * from fac_ColorCoding where ColorID=%d", $this->ColorID );
-		
-		if ( ! $row = $dbh->query( $sql )->fetch() ) {
-			$info = $dbh->errorInfo();
+		$sql="SELECT * FROM fac_ColorCoding WHERE ColorID=".intval($this->ColorID);
 
-			error_log( "PDO Error:  " . $info[2] );
+		if($row=$dbh->query($sql)->fetch()){
+			$this->Name=$row["Name"];
+			$this->DefaultNote=$row["DefaultNote"];
+		}else{
+			$info=$dbh->errorInfo();
+
+			error_log("PDO Error: {$info[2]}");
 			return false;
 		}
 			
-		$this->Name = $row["Name"];
-		$this->DefaultNote = $row["DefaultNote"];
-		
 		return true;
 	}
 	
 	static function GetCodeList() {
 		global $dbh;
 		
-		$sql = "select * from fac_ColorCoding order by Name ASC";
+		$sql="SELECT * FROM fac_ColorCoding ORDER BY Name ASC";
 		
-		$codeList = array();
-		
-		foreach ( $dbh->query( $sql ) as $row ) {
-			$n = sizeof( $codeList );
-			$codeList[$n] = new ColorCoding();
-			
-			$codeList[$n]->ColorID = $row["ColorID"];
-			$codeList[$n]->Name = $row["Name"];
-			$codeList[$n]->DefaultNote = $row["DefaultNote"];
+		$codeList=array();
+		foreach($dbh->query($sql) as $row){
+			$n=$row["ColorID"]; // index array by id
+			$codeList[$n]=new ColorCoding();
+			$codeList[$n]->ColorID=$row["ColorID"];
+			$codeList[$n]->Name=$row["Name"];
+			$codeList[$n]->DefaultNote=$row["DefaultNote"];
 		}
 		
 		return $codeList;
