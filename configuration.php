@@ -67,6 +67,16 @@
 		}
 		exit;
 	}
+	if(isset($_POST['ccused'])){
+		$count=ColorCoding::TimesUsed($_POST['ccused']);
+		if($count==0){
+			$col=new ColorCoding();
+			$col->ColorID=$_POST['ccused'];
+			$col->DeleteCode();
+		}
+		echo $count;
+		exit;
+	}
 	// END AJAX Requests
 
 	if(isset($_REQUEST["action"]) && $_REQUEST["action"]=="Update"){
@@ -351,7 +361,16 @@
 			if(!lookup){
 				rowobject.remove();
 			}else{
-				alert("quit that. it isn't setup yet");
+				$.post('',{ccused: rowobject.find('div:nth-child(2) input').attr('data')}).done(function(data){
+					console.log(data);
+					if(data.trim()==0){
+						rowobject.effect('explode', {}, 500, function(){
+							$(this).remove();
+						});
+					}else{
+						alert('this code is in use somewhere. add a modal requesting permission to remove this record and all associated entries');
+					}
+				});
 				// Lookup color code, if it isn't in use remove it.
 				// If code is in use present removal options
 			}

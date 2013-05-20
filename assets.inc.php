@@ -746,6 +746,15 @@ class ColorCoding {
 		
 		return $codeList;
 	}
+
+	static function TimesUsed($colorid){
+		global $dbh;
+
+		$count=$dbh->prepare('SELECT * FROM fac_DevicePorts WHERE ColorID='.intval($colorid));
+		$count->execute();
+
+		return $count->rowCount();
+	}
 }
 
 class ConnectionPath {
@@ -2183,26 +2192,27 @@ class DevicePorts {
 	var $ColorID;
 	var $Notes;
 	
-	static function GetPortsforDevice( $DeviceID ) {
+	static function GetPortsforDevice($DeviceID){
 		global $dbh;
 		
-		if ( intval( $DeviceID ) < 1 )
-			return;
+		if(intval($DeviceID)<1){
+			return false;
+		}
 		
-		$sql = sprintf( "select * from fac_DevicePorts where DeviceID=%d", $DeviceID );
+		$sql="SELECT * FROM fac_DevicePorts WHERE DeviceID=".intval($DeviceID);
 		
-		$portList = array();
-		foreach ( $dbh->query( $sql ) as $row ) {
-			$n = sizeof( $portList );
-			$portList[n] = new DevicePorts();
+		$portList=array();
+		foreach($dbh->query($sql) as $row){
+			$n=sizeof($portList);
+			$portList[$n]=new DevicePorts();
 			
-			$portList[n]->ConnectionID = $row["ConnectionID"];
-			$portList[n]->DeviceID = $row["DeviceID"];
-			$portList[n]->DevicePort = $row["DevicePort"];
-			$portList[n]->MediaID = $row["MediaID"];
-			$portList[n]->PortDescriptor = $row["PortDescriptor"];
-			$portList[n]->ColorID = $row["ColorID"];
-			$portList[n]->Notes = $row["Notes"];
+			$portList[$n]->ConnectionID=$row["ConnectionID"];
+			$portList[$n]->DeviceID=$row["DeviceID"];
+			$portList[$n]->DevicePort=$row["DevicePort"];
+			$portList[$n]->MediaID=$row["MediaID"];
+			$portList[$n]->PortDescriptor=$row["PortDescriptor"];
+			$portList[$n]->ColorID=$row["ColorID"];
+			$portList[$n]->Notes=$row["Notes"];
 		}
 		
 		return $portList;
