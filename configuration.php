@@ -164,12 +164,17 @@
 	}
 	$tzmenu.='</ul>';
 
+	// Build list of media types
+	$mediatypes="";
+
 	// Build list of cable color codes
 	$cablecolors="";
+	$colorselector='<select name="mediacolorcode[]"><option value=""></option>';
 
 	$codeList=ColorCoding::GetCodeList();
 	if(count($codeList)>0){
 		foreach($codeList as $cc){
+			$colorselector.='<option value="'.$cc->ColorID.'">'.$cc->Name.'</option>';
 			$cablecolors.='<div>
 					<div><img src="images/del.gif"></div>
 					<div><input type="text" name="colorcode[]" data='.$cc->ColorID.' value="'.$cc->Name.'"></input></div>
@@ -177,7 +182,7 @@
 				</div>';
 		}
 	}
-
+	$colorselector.='</select>';
 
 	// Figure out what the URL to this page
 	$href="";
@@ -804,6 +809,15 @@ echo '<div class="main">
 			<h3>',__("Media Types"),'</h3>
 			<div class="table" id="mediatypes">
 				<div>
+					<div></div>
+					<div>Media Type</div>
+					<div>Default Color</div>
+				</div>
+				',$mediatypes,'
+				<div>
+					<div id="newline"><img alt="add new row" src="images/add.gif"></div>
+					<div><input type="text" name="mediatype[]"></input></div>
+					<div>',$colorselector,'</div>
 				</div>
 			</div> <!-- end table -->
 			<h3>',__("Cable Colors"),'</h3>

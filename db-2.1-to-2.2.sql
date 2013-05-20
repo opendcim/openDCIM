@@ -75,7 +75,8 @@ CREATE TABLE fac_ColorCoding (
   ColorID INT(11) NOT NULL AUTO_INCREMENT,
   Name VARCHAR(20) NOT NULL,
   DefaultNote VARCHAR(40),
-  PRIMARY KEY(ColorID)
+  PRIMARY KEY(ColorID),
+  UNIQUE KEY Name (Name)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 --
