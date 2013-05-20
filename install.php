@@ -1315,7 +1315,12 @@ function showgroup(obj){
    <div><input type="text" name="name" id="dcname" size="50" value="<?php echo $dc->Name; ?>"></div>
 </div>
 <div>
-   <div><label for="sqfootage">Square Footage</label></div>
+   <div><label for="sqfootage">
+   <?php if ($config->ParameterArray["mUnits"] == "english") {
+		echo __("Square Feet");
+	} else {
+		echo __("Square Meters");
+	}?></label></div>
    <div><input type="text" name="squarefootage" id="sqfootage" size="10" value="<?php echo $dc->SquareFootage; ?>"></div>
 </div>
 <div>
