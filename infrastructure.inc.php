@@ -54,6 +54,82 @@
 
 */
 
+
+class BinAudits {
+	var $BinID;
+	var $UserID;
+	var $AuditStamp;
+	
+	function AddAudit( $db ) {
+		$sql = sprintf( "insert into fac_BinAudits set BinID='%d', UserID=\"%d\", AuditStamp=\"%s\"", intval( $this->BinID ), addslashes( $this->UserID ), date( "Y-m-d", strtotime( $this->AuditStamp ) ) );
+		mysql_query( $sql, $db );
+	}
+}
+
+class BinContents {
+	var $BinID;
+	var $SupplyID;
+	var $Count;
+	
+	function AddContents( $db ) {
+		$sql = sprintf( "insert into fac_BinContents set BinID='%d', SupplyID='%d', Count='%d'", intval( $this->BinID ), intval( $this->SupplyID ), intval( $this->Count ) );
+		mysql_query( $sql, $db );
+	}
+	
+	function GetBinContents( $db ) {
+		/* Return all of the supplies found in this bin */
+		$sql = sprintf( "select * from fac_BinContents where BinID='%d'", intval( $this->BinID ) );
+		$result = mysql_query( $sql, $db );
+		
+		$binList = array();
+		
+		while ( $row = mysql_fetch_array( $result ) ) {
+			$num = sizeof( $binList );
+			$binList[$num] = new BinContents();
+			
+			$binList[$num]->BinID = $row["BinID"];
+			$binList[$num]->SupplyID = $row["SupplyID"];
+			$binList[$num]->Count = $row["Count"];
+		}
+		
+		return $binList;
+	}
+	
+	function FindSupplies( $db ) {
+		/* Return all of the bins where this SupplyID is found */
+		$sql = sprintf( "select a.* from fac_BinContents a, fac_SupplyBin b where a.SupplyID='%d' and a.BinID=b.BinID order by b.Location ASC", intval( $this->SupplyID ) );
+		$result = mysql_query( $sql, $db );
+
+		$binList = array();
+		
+		while ( $row = mysql_fetch_array( $result ) ) {
+			$num = sizeof( $binList );
+			$binList[$num] = new BinContents();
+			
+			$binList[$num]->BinID = $row["BinID"];
+			$binList[$num]->SupplyID = $row["SupplyID"];
+			$binList[$num]->Count = $row["Count"];
+		}
+		
+		return $binList;		
+	}
+	
+	function UpdateCount( $db ) {
+		$sql = sprintf( "update fac_BinContents set Count='%d' where BinID='%d' and SupplyID='%d'", intval( $this->Count ), intval( $this->BinID ), intval( $this->SupplyID ) );
+		mysql_query( $sql, $db );
+	}
+	
+	function RemoveContents( $db ) {
+		$sql = sprintf( "delete from fac_BinContents where BinID='%d' and SupplyID='%d'", intval( $this->BinID ), intval( $this->SupplyID ) );
+		mysql_query( $sql, $db );
+	}
+	
+	function EmptyBin( $db ) {
+		$sql = sprintf( "delete from fac_BinContents where BinID='%d'", intval( $this->BinID ) );
+		mysql_query( $sql, $db );
+	}
+}
+
 class DataCenter {
 	var $DataCenterID;
 	var $Name;
@@ -373,7 +449,10 @@ class DataCenter {
 		$dcStats["Occupied"] = 0;
 		$dcStats["Allocated"] = 0;
 		$dcStats["Available"] = 0;
-		$dcStats["TotalWatts"] = 0;
+		$dcStats["ComputedWatts"] = 0;
+		$dcStats["MeasuredWatts"] = 0;
+		
+		$pdu = new PowerDistribution();
 
 		$selectSQL = "select sum(CabinetHeight) from fac_Cabinet where DataCenterID=\"" . intval($this->DataCenterID) . "\"";
 
@@ -412,15 +491,17 @@ class DataCenter {
 		$result = mysql_query( $selectSQL, $db );
 
 		$statsRow = mysql_fetch_array( $result );
-		$dcStats["TotalWatts"] = intval($statsRow[0]);
+		$dcStats["ComputedWatts"] = intval($statsRow[0]);
 		
 		$selectSQL = "select sum(c.Wattage) from fac_Device a, fac_Cabinet b, fac_DeviceTemplate c where a.Cabinet=b.CabinetID and a.TemplateID=c.TemplateID and a.NominalWatts=0 and b.DataCenterID=\"" . intval($this->DataCenterID) ."\"";
 
 		$result = mysql_query( $selectSQL, $db );
 
 		$statsRow = mysql_fetch_array( $result );
-		$dcStats["TotalWatts"] += intval($statsRow[0]);
+		$dcStats["ComputedWatts"] += intval($statsRow[0]);
 
+		$dcStats["MeasuredWatts"] = $pdu->GetWattageByDC( $this->DataCenterID );
+		
 		return $dcStats;
 	}
 }
@@ -460,16 +541,17 @@ class DeviceTemplate {
     $result = mysql_query( $delSQL, $db );
   }
   
-  function GetTemplateByID( $db ) {
-	$selectSQL = "select * from fac_DeviceTemplate where TemplateID=\"" . intval($this->TemplateID) . "\"";
-	$result = mysql_query( $selectSQL, $db );
+  function GetTemplateByID( $db = null ) {
+	global $dbh;
+	
+	$sql = "select * from fac_DeviceTemplate where TemplateID=\"" . intval($this->TemplateID) . "\"";
 
 	// Reset object in case of a lookup failure
 	foreach($this as $var => $value){
 		$var=($var!='TemplateID')?NULL:$value;
 	}
     
-	if($tempRow=mysql_fetch_array($result)){
+	if ( $tempRow = $dbh->query( $sql )->fetch() ) {
 		$this->TemplateID=$tempRow["TemplateID"];
 		$this->ManufacturerID=$tempRow["ManufacturerID"];
 		$this->Model=$tempRow["Model"];
@@ -481,7 +563,10 @@ class DeviceTemplate {
 		$this->NumPorts=$tempRow["NumPorts"];
       
 		return true;
-	}else{
+	} else {
+		$info = $dbh->errorInfo();
+
+		error_log( "PDO Error:  " . $info[2] );
 		return false;
 	}
   }
@@ -581,6 +666,111 @@ class Manufacturer {
 	$result = mysql_query( $sql, $db );
 	return "yup";
   }
+}
+
+class Supplies {
+	var $SupplyID;
+	var $PartNum;
+	var $PartName;
+	var $MinQty;
+	var $MaxQty;
+	
+	function CreateSupplies( $db ) {
+		$sql = sprintf( "insert into fac_Supplies set PartNum=\"%s\", PartName=\"%s\", MinQty='%d', MaxQty='%d'", addslashes( $this->PartNum ), addslashes( $this->PartName ), intval( $this->MinQty ), intval( $this->MaxQty ) );
+		mysql_query( $sql, $db );
+		
+		$this->SupplyID = mysql_insert_id( $db );
+	}
+	
+	function GetSupplies( $db ) {
+		$sql = sprintf( "select * from fac_Supplies where SupplyID='%d'", intval( $this->SupplyID ) );
+		$result = mysql_query( $sql, $db );
+		
+		if ( $row = mysql_fetch_array( $result ) ) {
+			$this->SupplyID = $row["SupplyID"];
+			$this->PartNum = $row["PartNum"];
+			$this->PartName = $row["PartName"];
+			$this->MinQty = $row["MinQty"];
+			$this->MaxQty = $row["MaxQty"];
+		}
+	}
+	
+	function GetSuppliesList($db){
+		$sql="select * from fac_Supplies order by PartNum ASC";
+		$result=mysql_query($sql,$db);
+		
+		$supplyList=array();
+		
+		while($row=mysql_fetch_array($result)){
+			$supplyList[$row["SupplyID"]]=new Supplies();
+			
+			$supplyList[$row["SupplyID"]]->SupplyID=$row["SupplyID"];
+			$supplyList[$row["SupplyID"]]->PartNum=$row["PartNum"];
+			$supplyList[$row["SupplyID"]]->PartName=$row["PartName"];
+			$supplyList[$row["SupplyID"]]->MinQty=$row["MinQty"];
+			$supplyList[$row["SupplyID"]]->MaxQty=$row["MaxQty"];
+		}
+		
+		return $supplyList;
+	}
+	
+	function UpdateSupplies($db){
+		$sql=sprintf( "update fac_Supplies set PartNum=\"%s\", PartName=\"%s\", MinQty='%d', MaxQty='%d' where SupplyID='%d'", addslashes( $this->PartNum ), addslashes( $this->PartName ), intval( $this->MinQty ), intval( $this->MaxQty ), intval( $this->SupplyID ) );
+		mysql_query($sql,$db);
+	}
+	
+	function DeleteSupplies( $db ) {
+		$sql = sprintf( "delete from fac_Supplies where SupplyID='%d'", intval( $this->SupplyID ) );
+		mysql_query( $sql, $db );
+	}
+}
+
+class SupplyBin {
+	var $BinID;
+	var $Location;
+	
+	function GetBin( $db ) {
+		$sql = sprintf( "select * from fac_SupplyBin where BinID='%d'", intval( $this->BinID ) );
+		$result = mysql_query( $sql, $db );
+		
+		if ( $row = mysql_fetch_array( $result ) ) {
+			$this->Location = $row["Location"];
+		}
+	}
+	
+	function CreateBin( $db ) {
+		$sql = sprintf( "insert into fac_SupplyBin set Location=\"%s\"", addslashes( $this->Location ) );
+		mysql_query( $sql, $db );
+		
+		$this->BinID = mysql_insert_id( $db );
+	}
+	
+	function UpdateBin( $db ) {
+		$sql = sprintf( "update fac_SupplyBin set Location=\"%s\" where BinID='%d'", addslashes( $this->Location ), intval( $this->BinID ) );
+		mysql_query( $sql, $db );	
+	}
+	
+	function DeleteBin( $db ) {
+		$sql = sprintf( "delete from fac_SupplyBin where BinID='%d'; delete from fac_BinContents where BinID='%d'; delete from fac_BinAudits where BinID='%d'", intval( $this->BinID ), intval( $this->BinID ), intval( $this->BinID ) );
+		mysql_query( $sql, $db );
+	}
+	
+	function GetBinList( $db ) {
+		$sql = sprintf( "select * from fac_SupplyBin order by Location ASC" );
+		$result = mysql_query( $sql, $db );
+		
+		$binList = array();
+		
+		while ( $row = mysql_fetch_array( $result ) ) {
+			$binNum = sizeof( $binList );
+			$binList[$binNum] = new SupplyBin();
+			
+			$binList[$binNum]->BinID = $row["BinID"];
+			$binList[$binNum]->Location = $row["Location"];
+		}
+		
+		return $binList;
+	}
 }
 
 class Zone {

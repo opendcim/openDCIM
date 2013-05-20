@@ -4,8 +4,9 @@
 
 	$user=new User();
 	$user->UserID = $_SERVER['REMOTE_USER'];
-	$user->GetUserRights( $facDB );
+	$user->GetUserRights();
 
+	// CDUs don't have owners, they are part of the infrastructure so you have to at least have Global Read to view them
 	if(!$user->ReadAccess){
 		// No soup for you.
 		header('Location: '.redirect());
@@ -66,8 +67,6 @@
 		
 		print "<div id=\"infopanel\"><fieldset><legend>".__("Results")."</legend>\n";
 		
-		$command="/usr/bin/snmpget";
-		
 		$upTime=$pdu->GetSmartCDUUptime($facDB);
 		if($upTime!=""){
 			printf("<p>%s: %s</p>\n", __("SNMP Uptime"),$upTime);
@@ -75,61 +74,92 @@
 			print "<p>".__("SNMP Uptime did not return a valid value.")."</p>\n";
 		}
 		
-		$pollCommand=sprintf( "%s -v 2c -c %s %s %s | /bin/cut -d: -f4", $command, $pdu->SNMPCommunity, $pdu->IPAddress, $template->VersionOID );
-		exec($pollCommand,$verOutput);
-		
-		if(count($verOutput) >0){
-			printf( "<p>%s %s.  %s</p>\n", __("VersionOID returned a value of"), $verOutput[0], __("Please check to see if it makes sense.") );
+		$cduVersion = $pdu->GetSmartCDUVersion( $facDB );
+		if($cduVersion != ""){
+			printf( "<p>%s %s.  %s</p>\n", __("VersionOID returned a value of"), $cduVersion, __("Please check to see if it makes sense.") );
 		}else{
 			print "<p>".__("The OID for Firmware Version did not return a value.  Please check your MIB table.")."</p>\n";
 		}
 		
-		$OIDString=$template->OID1." ".$template->OID2." ".$template->OID3;
-		$pollCommand=sprintf( "%s -v 2c -c %s %s %s | /bin/cut -d: -f4", $command, $pdu->SNMPCommunity, $pdu->IPAddress, $OIDString );
-		
-		exec($pollCommand,$statsOutput);
-		
-		if(count($statsOutput) >0){
-			if($statsOutput[0]!=""){
-				printf( "<p>%s %s.  %s</p>\n", __("OID1 returned a value of"), $statsOutput[0], __("Please check to see if it makes sense.") );
-			}else{
-				print "<p>".__("OID1 did not return any data.  Please check your MIB table.")."</p>\n";
-			}
+		if ( ! function_exists( "snmpget" ) ) {
+			$OIDString=$template->OID1." ".$template->OID2." ".$template->OID3;
+			$pollCommand=sprintf( "%s -v %s -c %s %s %s | %s -d: -f4", $config->ParameterArray["snmpget"], $template->SNMPVersion, $pdu->SNMPCommunity, $pdu->IPAddress, $OIDString, $config->ParameterArray["cut"] );
 			
-			if((strlen($template->OID2) >0)&&(strlen($statsOutput[1]) >0)){
-				printf( "<p>%s %s.  %s</p>\n", __("OID2 returned a value of"), $statsOutput[1], __("Please check to see if it makes sense.") );
-			}elseif(strlen($template->OID2) >0){
-				print "<p>".__("OID2 did not return any data.  Please check your MIB table.")."</p>\n";
-			}
-
-			if((strlen($template->OID3) >0)&&(strlen($statsOutput[2]) >0)){
-				printf( "<p>%s %s.  %s</p>\n", __("OID3 returned a value of"), $statsOutput[2], __("Please check to see if it makes sense.") );
-			}elseif(strlen($template->OID3)){
-				print "<p>".__("OID3 did not return any data.  Please check your MIB table.")."</p>\n";
-			}
+			exec($pollCommand,$statsOutput);
 			
-			switch($template->ProcessingProfile){
-				case "SingleOIDAmperes":
-					$amps=intval(@$statsOutput[0])/intval($template->Multiplier);
-					$watts=$amps*intval($template->Voltage);
-					break;
-				case "Combine3OIDAmperes":
-					$amps=(intval(@$statsOutput[0])+intval(@$statsOutput[1])+intval(@$statsOutput[2]))/intval($template->Multiplier);
-					$watts=$amps*intval($template->Voltage);
-					break;
-				case "Convert3PhAmperes":
-					$amps=(intval(@$statsOutput[0])+intval(@$statsOutput[1])+intval(@$statsOutput[2]))/intval($template->Multiplier)/3;
-					$watts=$amps*1.732*intval($template->Voltage);
-					break;
-				case "Combine3OIDWatts":
-					$watts=(intval(@$statsOutput[0])+intval(@$statsOutput[1])+intval(@$statsOutput[2]))/intval($template->Multiplier);
-				default:
-					$watts=intval(@$statsOutput[0])/intval($template->Multiplier);
-					break;
+			$result1 = @$statsOutput[0];
+			$result2 = @$statsOutput[1];
+			$result3 = @$statsOutput[2];
+		} else {
+			if ( $template->SNMPVersion == "2c" ) {
+				$tmp1 = explode( " ", snmp2_get( $pdu->IPAddress, $pdu->SNMPCommunity, $template->OID1 ));
+				$result1 = $tmp1[1];
+				
+				if ( $template->OID2 != "" ) {
+					$tmp2 = explode( " ", snmp2_get( $pdu->IPAddress, $pdu->SNMPCommunity, $template->OID2 ));
+					$result2 = $tmp2[1];
+				}
+				
+				if ( $template->OID3 != "" ) {
+					$tmp3 = explode( " ", snmp2_get( $pdu->IPAddress, $pdu->SNMPCommunity, $template->OID3 ));
+					$result3 = $tmp3[1];
+				}
+			} else {
+				$tmp1 = explode( " ", snmpget( $pdu->IPAddress, $pdu->SNMPCommunity, $template->OID1 ));
+				$result1 = $tmp1[1];
+				
+				if ( $template->OID2 != "" ) {
+					$tmp2 = explode( " ", snmpget( $pdu->IPAddress, $pdu->SNMPCommunity, $template->OID2 ));
+					$result2 = $tmp2[1];
+				}
+				
+				if ( $template->OID3 != "" ) {
+					$tmp3 = explode( " ", snmpget( $pdu->IPAddress, $pdu->SNMPCommunity, $template->OID3 ));
+					$result3 = $tmp3[1];
+				}
 			}
-			
-			printf("<p>%s %.2f kW</p>", __("Resulting kW from this test is"),$watts/1000);
 		}
+		
+		if($result1!=""){
+			printf( "<p>%s %s.  %s</p>\n", __("OID1 returned a value of"), $result1, __("Please check to see if it makes sense.") );
+		}else{
+			print "<p>".__("OID1 did not return any data.  Please check your MIB table.")."</p>\n";
+		}
+		
+		if((strlen($template->OID2) >0)&&(strlen($result2) >0)){
+			printf( "<p>%s %s.  %s</p>\n", __("OID2 returned a value of"), $result2, __("Please check to see if it makes sense.") );
+		}elseif(strlen($template->OID2) >0){
+			print "<p>".__("OID2 did not return any data.  Please check your MIB table.")."</p>\n";
+		}
+
+		if((strlen($template->OID3) >0)&&(strlen($result3) >0)){
+			printf( "<p>%s %s.  %s</p>\n", __("OID3 returned a value of"), $result3, __("Please check to see if it makes sense.") );
+		}elseif(strlen($template->OID3)){
+			print "<p>".__("OID3 did not return any data.  Please check your MIB table.")."</p>\n";
+		}
+		
+		switch($template->ProcessingProfile){
+			case "SingleOIDAmperes":
+				$amps=intval($result1)/intval($template->Multiplier);
+				$watts=$amps*intval($template->Voltage);
+				break;
+			case "Combine3OIDAmperes":
+				$amps=(intval($result1)+intval($result2)+intval($result3))/intval($template->Multiplier);
+				$watts=$amps*intval($template->Voltage);
+				break;
+			case "Convert3PhAmperes":
+				$amps=(intval($result1)+intval($result2)+intval($result3))/intval($template->Multiplier)/3;
+				$watts=$amps*1.732*intval($template->Voltage);
+				break;
+			case "Combine3OIDWatts":
+				$watts=(intval($result1)+intval($result2)+intval($result3))/intval($template->Multiplier);
+			default:
+				$watts=intval($result1)/intval($template->Multiplier);
+				break;
+		}
+		
+		printf("<p>%s %.2f kW</p>", __("Resulting kW from this test is"),$watts/1000);
+
 		echo '	</fieldset></div>';
 		exit;
 	}

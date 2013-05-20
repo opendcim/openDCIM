@@ -17,14 +17,15 @@ CREATE TABLE fac_Cabinet (
   InstallationDate date NOT NULL,
   SensorIPAddress varchar(20) NOT NULL,
   SensorCommunity varchar(40) NOT NULL,
-  SensorOID varchar(80) NOT NULL,
+  TempSensorOID varchar(80) NOT NULL,
+  HumiditySensorOID varchar(80) NOT NULL,
   MapX1 int(11) NOT NULL,
   MapX2 int(11) NOT NULL,
   MapY1 int(11) NOT NULL,
   MapY2 int(11) NOT NULL,
   Notes text NULL,
   PRIMARY KEY (CabinetID)
-) ENGINE=MyISAM AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
 
 --
 -- Table structure for table `fac_CabinetTags`
@@ -46,8 +47,9 @@ CREATE TABLE fac_CabinetTemps (
   CabinetID int(11) NOT NULL,
   LastRead datetime NOT NULL,
   Temp int(11) NOT NULL,
+  Humidity int(11) NOT NULL,
   PRIMARY KEY (CabinetID)
-) ENGINE=MyISAM AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
 
 --
 -- Table structure for table `fac_CabinetAudit`
@@ -58,7 +60,7 @@ CREATE TABLE `fac_CabinetAudit` (
   CabinetID int(11) NOT NULL,
   UserID varchar(80) NOT NULL,
   AuditStamp datetime NOT NULL
-) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 --
 -- Table structure for table `fac_CDUTemplate`
@@ -70,6 +72,7 @@ CREATE TABLE fac_CDUTemplate (
   ManufacturerID int(11) NOT NULL,
   Model varchar(80) NOT NULL,
   Managed int(1) NOT NULL,
+  SNMPVersion enum('1','2c'),
   VersionOID varchar(80) NOT NULL,
   Multiplier enum( '1', '10', '100' ),
   OID1 varchar(80) NOT NULL,
@@ -82,7 +85,7 @@ CREATE TABLE fac_CDUTemplate (
   PRIMARY KEY (TemplateID),
   KEY ManufacturerID (ManufacturerID),
   UNIQUE KEY (ManufacturerID, Model)
-) ENGINE=MyISAM AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
 
 --
 -- Table structure for table `fac_Contact`
@@ -99,7 +102,19 @@ CREATE TABLE fac_Contact (
   Phone3 varchar(20) NOT NULL,
   Email varchar(80) NOT NULL,
   PRIMARY KEY (ContactID)
-) ENGINE=MyISAM AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
+
+--
+-- Add ColorCoding Table
+--
+
+DROP TABLE IF EXISTS fac_ColorCoding;
+CREATE TABLE fac_ColorCoding (
+  ColorID INT(11) NOT NULL AUTO_INCREMENT,
+  Name VARCHAR(20) NOT NULL,
+  DefaultNote VARCHAR(40),
+  PRIMARY KEY(ColorID)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 --
 -- Table structure for table fac_DataCenter
@@ -116,7 +131,7 @@ CREATE TABLE fac_DataCenter (
   DrawingFileName varchar(255) NOT NULL,
   EntryLogging tinyint(1) NOT NULL,
   PRIMARY KEY (DataCenterID)
-) ENGINE=MyISAM AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
 
 --
 -- Table structure for table fac_Department
@@ -132,7 +147,7 @@ CREATE TABLE fac_Department (
   DeptColor VARCHAR( 7 ) NOT NULL DEFAULT '#FFFFFF',
   PRIMARY KEY (DeptID),
   UNIQUE KEY Name (Name)
-) ENGINE=MyISAM AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
 
 --
 -- Table structure for table fac_DeptContacts
@@ -142,7 +157,7 @@ DROP TABLE IF EXISTS fac_DeptContacts;
 CREATE TABLE fac_DeptContacts (
   DeptID int(11) NOT NULL,
   ContactID int(11) NOT NULL
-) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 --
 -- Table structure for table fac_Decommission
@@ -155,7 +170,7 @@ CREATE TABLE fac_Decommission (
   SerialNo varchar(40) NOT NULL,
   AssetTag varchar(20) NOT NULL,
   UserID varchar(80) NOT NULL
-) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 --
 -- Table structure for table fac_Device
@@ -178,6 +193,7 @@ CREATE TABLE fac_Device (
   Position int(11) NOT NULL,
   Height int(11) NOT NULL,
   Ports int(11) NOT NULL,
+  FirstPortNum int(11) NOT NULL,
   TemplateID int(11) NOT NULL,
   NominalWatts int(11) NOT NULL,
   PowerSupplyCount int(11) NOT NULL,
@@ -193,7 +209,7 @@ CREATE TABLE fac_Device (
   Reservation tinyint(1) NOT NULL,
   PRIMARY KEY (DeviceID),
   KEY SerialNo (SerialNo,`AssetTag`,`PrimaryIP`)
-) ENGINE=MyISAM AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
 
 --
 -- Table structure for table fac_DevicePorts
@@ -205,10 +221,12 @@ CREATE TABLE fac_DevicePorts (
   DeviceID int(11),
   DevicePort int(11),
   MediaID int(11),
+  PortDescriptor varchar(30),
+  ColorID int(11),
   Notes text NULL,
   PRIMARY KEY (ConnectionID),
   KEY DeviceID (DeviceID,DevicePort)
-) ENGINE=MyISAM AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
 
 --
 -- Table structure for table fac_DeviceTags
@@ -238,7 +256,7 @@ CREATE TABLE fac_DeviceTemplate (
   NumPorts int(11) NOT NULL,
   PRIMARY KEY (TemplateID),
   UNIQUE KEY ManufacturerID (ManufacturerID,Model)
-) ENGINE=MyISAM AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
 
 --
 -- Table structure for table fac_EscalationTimes
@@ -249,7 +267,7 @@ CREATE TABLE fac_EscalationTimes (
 	EscalationTimeID int(11) NOT NULL AUTO_INCREMENT,
 	TimePeriod varchar(80) NOT NULL,
 	PRIMARY KEY (EscalationTimeID)
-) ENGINE=MyISAM AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
 
 --
 -- Table structure for table fac_Escalations
@@ -260,7 +278,7 @@ CREATE TABLE fac_Escalations (
 	EscalationID int(11) NOT NULL AUTO_INCREMENT,
 	Details varchar(80) NULL,
 	PRIMARY KEY (EscalationID)
-) ENGINE=MyISAM AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
 
 --
 -- Table structure for table fac_Manufacturer
@@ -272,7 +290,7 @@ CREATE TABLE fac_Manufacturer (
   Name varchar(80) NOT NULL,
   PRIMARY KEY (ManufacturerID),
   UNIQUE KEY Name (Name)
-) ENGINE=MyISAM AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
 
 --
 -- Table structure for table `fac_MediaTypes`
@@ -280,11 +298,12 @@ CREATE TABLE fac_Manufacturer (
 
 DROP TABLE IF EXISTS fac_MediaTypes;
 CREATE TABLE IF NOT EXISTS fac_MediaTypes (
-  mediaid int(11) NOT NULL AUTO_INCREMENT,
-  mediatype varchar(40) NOT NULL,
+  MediaID int(11) NOT NULL AUTO_INCREMENT,
+  MediaType varchar(40) NOT NULL,
+  ColorID INT(11) NOT NULL,
   PRIMARY KEY (mediaid),
   UNIQUE KEY mediatype (mediatype)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci AUTO_INCREMENT=1 ;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci AUTO_INCREMENT=1;
 
 --
 -- Table structure for table fac_PanelSchedule
@@ -297,7 +316,7 @@ CREATE TABLE fac_PanelSchedule (
   NumPoles int(11) NOT NULL,
   Label varchar(80) NOT NULL,
   PRIMARY KEY (PanelID)
-) ENGINE=MyISAM AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
 
 --
 -- Table structure for table fac_PatchConnection
@@ -314,7 +333,7 @@ CREATE TABLE fac_PatchConnection (
   FrontNotes varchar(80) DEFAULT NULL,
   RearNotes varchar(80) DEFAULT NULL,
   PRIMARY KEY (PanelDeviceID,PanelPortNumber)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 
 --
@@ -326,7 +345,7 @@ create table fac_PDUStats(
   PDUID int(11) NOT NULL,
   Wattage int(11) NOT NULL,
   PRIMARY KEY (PDUID)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 --
 -- Table structure for table fac_PowerConnection
@@ -340,7 +359,7 @@ CREATE TABLE fac_PowerConnection (
   DeviceConnNumber int(11) NOT NULL,
   UNIQUE KEY PDUID (PDUID,PDUPosition),
   UNIQUE KEY DeviceID (DeviceID,DeviceConnNumber)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 --
 -- Table structure for table fac_PowerDistribution
@@ -363,7 +382,7 @@ CREATE TABLE fac_PowerDistribution (
   PanelID2 int(11) NOT NULL,
   PanelPole2 int(11) NOT NULL,
   PRIMARY KEY (PDUID)
-) ENGINE=MyISAM AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
 
 --
 -- Table structure for table fac_PowerPanel
@@ -379,7 +398,7 @@ CREATE TABLE fac_PowerPanel (
   PanelVoltage int(11) NOT NULL,
   NumberScheme enum('Odd/Even','Sequential') NOT NULL,
   PRIMARY KEY (PanelID)
-) ENGINE=MyISAM AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
 
 --
 -- Table structure for table fac_PowerSource
@@ -396,7 +415,7 @@ CREATE TABLE fac_PowerSource (
   Capacity int(11) NOT NULL,
   PRIMARY KEY (PowerSourceID),
   KEY DataCenterID (DataCenterID)
-) ENGINE=MyISAM AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
 
 --
 -- Table structure for table fac_RackRequest
@@ -426,7 +445,7 @@ CREATE TABLE fac_RackRequest (
   SpecialInstructions text NOT NULL,
   PRIMARY KEY (RequestID),
   KEY RequestorID (RequestorID)
-) ENGINE=MyISAM AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
 
 --
 -- Table structure for table fac_SwitchConnection
@@ -442,7 +461,7 @@ CREATE TABLE fac_SwitchConnection (
   PRIMARY KEY (SwitchDeviceID,SwitchPortNumber),
   UNIQUE KEY EndpointDeviceID (EndpointDeviceID,EndpointPort),
   UNIQUE KEY SwitchDeviceID (SwitchDeviceID,SwitchPortNumber)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 --
 -- Table structure for table fac_Tags
@@ -454,7 +473,7 @@ CREATE TABLE fac_Tags (
   Name varchar(128) NOT NULL,
   PRIMARY KEY (`TagID`),
   UNIQUE KEY `Name` (`Name`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8 AUTO_INCREMENT=1;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 AUTO_INCREMENT=1;
 
 --
 -- Table structure for table fac_User
@@ -464,6 +483,7 @@ DROP TABLE IF EXISTS fac_User;
 CREATE TABLE fac_User (
   UserID varchar(80) NOT NULL,
   Name varchar(80) NOT NULL,
+  AdminOwnDevices tinyint(1) NOT NULL,
   ReadAccess tinyint(1) NOT NULL,
   WriteAccess tinyint(1) NOT NULL,
   DeleteAccess tinyint(1) NOT NULL,
@@ -473,7 +493,7 @@ CREATE TABLE fac_User (
   SiteAdmin tinyint(1) NOT NULL,
   Disabled tinyint(1) NOT NULL,
   PRIMARY KEY (UserID)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 --
 -- Table structure for table fac_VMInventory
@@ -490,7 +510,7 @@ CREATE TABLE fac_VMInventory (
   Owner int(11) NOT NULL,
   PRIMARY KEY (VMIndex),
   KEY ValidDevice (DeviceID)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 --
 -- Table structure for table fac_Zone
@@ -503,7 +523,7 @@ CREATE TABLE fac_Zone (
   Description varchar(120) NOT NULL,
   PRIMARY KEY (ZoneID),
   KEY DataCenterID (DataCenterID)
-) ENGINE=MyISAM AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
 
 --
 -- Table structure for fac_SupplyBin
@@ -513,7 +533,7 @@ CREATE TABLE fac_SupplyBin (
   BinID int(11) NOT NULL AUTO_INCREMENT,
   Location varchar(40) NOT NULL,
   PRIMARY KEY (BinID)
-) ENGINE=MyISAM AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
 
 --
 -- Table structure for fac_Supplies
@@ -526,7 +546,7 @@ CREATE TABLE fac_Supplies (
   MinQty int(11) NOT NULL,
   MaxQty int(11) NOT NULL,
   PRIMARY KEY (SupplyID)
-) ENGINE=MyISAM AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
 
 --
 -- Table structure for fac_BinContents
@@ -536,7 +556,7 @@ CREATE TABLE fac_BinContents (
   BinID int(11) NOT NULL,
   SupplyID int(11) NOT NULL,
   Count int(11) NOT NULL
-) ENGINE=MyISAM AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
 
 --
 -- Table structure for fac_BinAudits
@@ -546,7 +566,7 @@ CREATE TABLE fac_BinAudits (
   BinID int(11) NOT NULL,
   UserID int(11) NOT NULL,
   AuditStamp datetime NOT NULL
-) ENGINE=MyISAM AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
 
 --
 -- Table structure for fac_CabinetToolTip
@@ -597,7 +617,7 @@ CREATE TABLE fac_Config (
  UnitOfMeasure varchar(40) NOT NULL,
  ValType varchar(40) NOT NULL,
  DefaultVal varchar(200) NOT NULL
-) ENGINE=MyISAM AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
 
 INSERT INTO fac_Config VALUES
 	('OrgName','openDCIM Computer Facilities','Name','string','openDCIM Computer Facilities'),

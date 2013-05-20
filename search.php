@@ -4,13 +4,9 @@
 
 	$user=new User();
 	$user->UserID=$_SERVER['REMOTE_USER'];
-	$user->GetUserRights($facDB);
+	$user->GetUserRights();
 
-	if(!$user->ReadAccess){
-		// No soup for you.
-		header('Location: '.redirect());
-		exit;
-	}
+	$viewList=$user->isMemberOf();
 
 	$searchKey=$_REQUEST['key'];
 	//Remove control characters tab, enter, etc
@@ -18,14 +14,14 @@
 	//Remove any extra quotes that could get passed in from some funky js or something
 	$searchTerm=str_replace(array("'",'"'),"",$searchTerm);
 
-	$dc = new DataCenter();
-	$dcList = $dc->GetDCList( $facDB );
+	$dc=new DataCenter();
+	$dcList=$dc->GetDCList( $facDB );
 	
 	$dev=new Device();
-	$parDev = new Device();
 	$esx=new ESX();
 	$cab=new Cabinet();
 	$pdu=new PowerDistribution();
+	$dept=new Department();
 	$resultcount=0;
 	$title=__("Search Results");
 
@@ -41,19 +37,31 @@
 		$esx->vmName=$dev->Label;
 		$vmList=$esx->SearchByVMName($facDB);
 		$cab->Location=$searchTerm;
-		$cabList=$cab->SearchByCabinetName($facDB);
+		$cabList=$cab->SearchByCabinetName();
 		$pdu->Label=$searchTerm;
 		$pduList=$pdu->SearchByPDUName($facDB);
 		$resultcount=count($devList)+count($cabList)+count($pduList)+count($vmList);
 		$title=__("Name search results for")." &quot;$searchTerm&quot;";
+	}elseif($searchKey=='owner'){
+		$dept->Name=$searchTerm;
+		$dept->GetDeptByName($facDB);
+		$dev->Owner=$dept->DeptID;
+		$devList=$dev->GetDevicesbyOwner($facDB);
+		$esx->Owner=$dept->DeptID;
+		$vmList=$esx->GetVMListbyOwner($facDB);
+		$cab->AssignedTo=$dept->DeptID;
+		$cabList=$cab->SearchByOwner();
+		//PDUs have no ownership information so don't search them
+		$resultcount=count($devList)+count($cabList)+count($vmList);
+		$title=__("Owner search results for")." &quot;$searchTerm&quot;";
 	}elseif($searchKey=='asset'){
 		$dev->AssetTag=$searchTerm;
 		$devList=$dev->SearchDevicebyAssetTag($facDB);
 		$resultcount=count($devList);
 		$title=__("Asset tag search results for")." &quot;$searchTerm&quot;";
 	}elseif($searchKey=="ctag"){
-		$devList=$dev->SearchByCustomTag($facDB,$searchTerm);
-		$cabList=$cab->SearchByCustomTag($facDB,$searchTerm);
+		$devList=$dev->SearchByCustomTag($searchTerm);
+		$cabList=$cab->SearchByCustomTag($searchTerm);
 		$resultcount=count($devList)+count($cabList);
 		$title=__("Custom tag search results for")." &quot;$searchTerm&quot;";
 	}else{
@@ -66,18 +74,19 @@
 	$childList=array(); // List of all blade devices
 	$dctemp=array(); // List of datacenters involved with result set
 	while(list($devID,$device)=each($devList)){
-		$temp[$x]['devid']=$devID;
-		$temp[$x]['label']=$device->Label;
-		$temp[$x]['type']='srv'; // empty chassis devices need no special treatment leave them as a server
-		$temp[$x]['cabinet']=$device->Cabinet;
-		$temp[$x]['parent']=$device->ParentDevice;
-		$cabtemp[$device->Cabinet]="";
-		++$x;
-		if($device->ParentDevice!=0){
-			$childList[$device->ParentDevice]=""; // Create a list of chassis devices based on children present
+		if($user->ReadAccess || in_array($device->Owner,$viewList)){
+			$temp[$x]['devid']=$devID;
+			$temp[$x]['label']=$device->Label;
+			$temp[$x]['type']='srv'; // empty chassis devices need no special treatment leave them as a server
+			$temp[$x]['cabinet']=$device->Cabinet;
+			$temp[$x]['parent']=$device->ParentDevice;
+			$cabtemp[$device->Cabinet]="";
+			++$x;
+			if($device->ParentDevice!=0){
+				$childList[$device->ParentDevice]=""; // Create a list of chassis devices based on children present
+			}
 		}
 	}
-	
 	if(isset($vmList)){
 		foreach($vmList as $vmRow){
 			$dev->DeviceID=$vmRow->DeviceID;
@@ -89,15 +98,17 @@
 				$temp[$a[0]]['type']='vm';
 			}else{
 				// We didn't find the host server of this vm so we're gonna add it to the list
-				$temp[$x]['devid']=$dev->DeviceID;
-				$temp[$x]['label']=$dev->Label;
-				$temp[$x]['type']='vm';
-				$temp[$x]['cabinet']=$dev->Cabinet;
-				$temp[$x]['parent']=$dev->ParentDevice;
-				$cabtemp[$dev->Cabinet]['name']="";
-				++$x;
-				if($dev->ParentDevice!=0){
-					$childList[$dev->ParentDevice]=""; // Create a list of chassis devices based on children present
+				if($user->ReadAccess || in_array($dev->Owner,$viewList)){
+					$temp[$x]['devid']=$dev->DeviceID;
+					$temp[$x]['label']=$dev->Label;
+					$temp[$x]['type']='vm';
+					$temp[$x]['cabinet']=$dev->Cabinet;
+					$temp[$x]['parent']=$dev->ParentDevice;
+					$cabtemp[$dev->Cabinet]['name']="";
+					++$x;
+					if($dev->ParentDevice!=0){
+						$childList[$dev->ParentDevice]=""; // Create a list of chassis devices based on children present
+					}
 				}
 			}
 		}
@@ -247,6 +258,12 @@ $(document).ready(function() {
 		var timer=$.timer(updateTimer, incrementTime, true);
 	}
 });
+	function showall(){
+		$('.center > div > ol').removeClass('hidecontents');
+	}
+	function hidedevices(){
+		$('.center > div > ol').addClass('hidecontents');
+	}
 </script>
 
 </head>
@@ -259,6 +276,7 @@ $(document).ready(function() {
 <div class="main">
 <h2><?php echo $config->ParameterArray['OrgName']; ?></h2>
 <h3><?php echo $title; ?></h3>
+<?php echo '<div id="searchfilters"><button type="button" onclick="showall()">'.__("Show All").'</button><button type="button" onclick="hidedevices()">'.__("Racks Only").'</button></div>'; ?>
 <div class="center"><div>
 	<ol>
 <?php

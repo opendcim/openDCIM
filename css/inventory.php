@@ -36,6 +36,44 @@ textarea {white-space: pre;word-wrap: break-word;}
 
 .no-close .ui-dialog-titlebar-close {display: none;}
 
+@keyframes loading{
+	from {
+		-webkit-transform:rotate(0deg);
+		-moz-transform:rotate(0deg);
+		-o-transform:rotate(0deg);
+	}
+	to {
+		-webkit-transform:rotate(360deg);
+		-moz-transform:rotate(360deg);
+		-o-transform:rotate(360deg);
+	}
+}
+
+@-webkit-keyframes loading{
+	from {
+		-webkit-transform:rotate(0deg);
+		-moz-transform:rotate(0deg);
+		-o-transform:rotate(0deg);
+	}
+	to {
+		-webkit-transform:rotate(360deg);
+		-moz-transform:rotate(360deg);
+		-o-transform:rotate(360deg);
+	}
+}
+
+
+.rotate{
+	animation: loading 0.8s;
+	-webkit-animation: loading 0.8s;
+
+	animation-iteration-count: infinite;
+	-webkit-animation-iteration-count: infinite; /*Safari and Chrome*/
+
+	overflow:hidden;
+}   
+
+
 /* css for timepicker */
 .ui-timepicker-div .ui-widget-header {margin-bottom: 8px;}
 .ui-timepicker-div dl {text-align: left;}
@@ -75,7 +113,7 @@ div#imageselection { display: none;}
 .ui-menu-item ul { max-height: 200px; overflow: auto; }
 #tzmenu {display: none;}
 
-#tooltip { min-height: 300px; min-width: 550px; }
+#tooltip, #cdutooltip { min-height: 300px; min-width: 550px; }
 
 /* index */
 .index .table, .index .table .title {background-color: white;}
@@ -163,10 +201,18 @@ div#dcstats .table + .table > div > div + div{white-space: pre; text-align: righ
 	-webkit-border-radius: 0px;
 	border-radius: 0px;
 }
+#sidebar form { margin-bottom: 4px; }
 #sidebar input.search { height: 15px; padding: 5px; width: 141px; border: 1px solid black; border-right: 0; vertical-align: top;}
 #sidebar input + button img, #sidebar .text-arrow + button img {height: 27px;}
 #sidebar div.text-core {width: 150px; height: 27px;}
 #sidebar div.text-core textarea{ width: 151px; height: 27px;}
+#sidebar .advsearch { background: white; display: block; height: 4.5em; position: absolute; top: 0px; width: 350px; z-index: 99; }
+#searchadv ~ select { padding: 5px; border: 1px solid black; }
+#sidebar .advsearch.hide { display: none; }
+#advsrch { color: <?php echo $config->ParameterArray['LinkColor']; ?>; cursor: pointer; }
+#advsrch:before {content:"[ ";}
+#advsrch:after {content:" ]";}
+#searchadv ~ .ui-icon.ui-icon-close { position: absolute; top: 0; right: 0; cursor: pointer;}
 
 .text-arrow {
 	-moz-box-sizing: border-box;
@@ -256,6 +302,8 @@ div.table > div > div {display: table-cell;vertical-align: middle; /* padding-bo
 .search ol ul li div, .search ol li.cabinet div {display: inline;}
 .search ol ul li div img, .search ol li.cabinet div img {vertical-align: middle;height: 1em;margin-right: .25em;}
 .search .main .bullet { background: url("minus.gif") no-repeat scroll left center transparent; cursor: pointer; padding-left: 15px;}
+.search .hidecontents li.cabinet > ol { display: none; }
+
 
 /* User Rights */
 .rights > div:nth-last-child(2) div {text-align: center;padding-top: .75em;padding-bottom: .75em;}

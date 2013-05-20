@@ -17,6 +17,35 @@
 	$path="";
 	$pathid="";
 	
+	if(isset($_POST['bot_eliminar'])){
+		for ($i=1;$i<$_POST['elem_path'];$i++){
+			if ($_POST["DeviceType"][$i]!="Patch Panel" 
+				&& $_POST["DeviceType"][$i+1]=="Patch Panel"
+				&& !$_POST["Front"][$i+1]){
+				$pc=new PatchConnection();
+				$pc->PanelDeviceID=$_POST["DeviceID"][$i+1];
+				$pc->PanelPortNumber=$_POST["PortNumber"][$i+1];
+				$pc->RemoveFrontConnection($facDB);
+				
+			} elseif ($_POST["DeviceType"][$i]!="Patch Panel"
+				&& $_POST["DeviceType"][$i+1]!="Patch Panel"){
+				
+				$sc=new SwitchConnection();
+				$sc->SwitchDeviceID=$_POST["DeviceID"][$i+1];
+				$sc->SwitchPortNumber=$_POST["PortNumber"][$i+1];
+				$sc->RemoveConnection($facDB);
+				
+			} elseif ($_POST["DeviceType"][$i]=="Patch Panel"
+				&& $_POST["Front"][$i]) {
+				
+				$pc=new PatchConnection();
+				$pc->PanelDeviceID=$_POST["DeviceID"][$i];
+				$pc->PanelPortNumber=$_POST["PortNumber"][$i];
+				$pc->RemoveFrontConnection($facDB);
+			}
+		}
+		$status.="Eliminada";
+	}
 	
 	if(isset($_POST['action']) || isset($_GET['pathid']) || (isset($_GET['deviceid']) && isset($_GET['portnumber']))){
 		//Search by deviceid/port
@@ -45,38 +74,63 @@
 		elseif(isset($_POST['label']) && $_POST['label']!=''
 			&& isset($_POST['port']) && $_POST['port']!=''
 			&& $_POST['action']=="DevicePortSearch"){
-				
-			if (isset($_GET['deviceid'])) {
-				$deviceid=intval( $_GET['deviceid'] );
-			}else{ 
-				$deviceid=intval( $_POST['pathid'] );
-			}
 
-			$pathid=_("Device")." '".$_POST['label']."'-"._("Port")." ".intval($_POST['port']);
+			//Remove control characters tab, enter, etc
+			$label=preg_replace("/[[:cntrl:]]/","",$_POST['label']);
+			//Remove any extra quotes that could get passed in from some funky js or something
+			$label=str_replace(array("'",'"'),"",$label);
 			
-			//Search device by label
-			$sql = "SELECT *
-					FROM fac_device
-					WHERE Label LIKE '".$_POST['label']."'";
-			$result = mysql_query( $sql, $facDB );
-			
-			if (mysql_num_rows($result)==0){
-				$status=_("Not found");
-			}
-			elseif (mysql_num_rows($result)>1){
-				$status=_("There are several devices labeled ").$_POST['label'];
-			} else {
-				$row = mysql_fetch_array( $result );
+			//Construyo la lista para el dispositivo
+			$dev=new Device();
+			$dev->Label=$label;
+			$devList=$dev->SearchDevicebyLabel($facDB);
+
+			if (isset($_POST['devid']) && $_POST['devid']!=0 &&
+				isset($_POST['label_ant']) && $_POST['label_ant']==$_POST['label']){
+				//by ID1
 				$cp=new ConnectionPath();
-				$cp->DeviceID=$row["DeviceID"];
-				$cp->PortNumber=$_POST['port'];
-				$cp->DeviceType=$row["DeviceType"];
+				$cp->DeviceID=intval($_POST['devid']);
+				$cp->PortNumber=intval($_POST['port']);
+				$cp->DeviceType=$devList[$cp->DeviceID]->DeviceType;
 				$cp->Front=true;
-				
+				//label of devid
+				$label=$devList[$cp->DeviceID]->Label;
+				//intento irme al principio del path
 				if (!$cp->GotoHeadDevice($facDB)){
-					$status="<blink>"._("There is a loop in the port")."</blink>";
+					//$status="<blink>"._("There is a loop in this port")."</blink>";
+					$status="<blink>Hay un bucle en ese puerto</blink>";
 				} 
+			}else{ //no devid1 or changed label
+				//por el label
+				if (count($devList)==0){
+					//$status=_("Not found the device")." '".$label1."'";
+					$status="No encontrado el dispositivo '".$label1."'";
+				}
+				elseif(count($devList)>1){
+					//Varios dev1
+					//$status=_("There are several devices with this label").".<br>". _("Please, select a device from list").".";
+					$status="Hay varios dispositivos que contienen ese nemónico.<br>Seleccione uno de la lista correspondiente.";
+					//creo una lista con las posibilidades un combo
+				}else {
+					$cp=new ConnectionPath();
+					$keys=array_keys($devList);
+					$cp->DeviceID=$keys[0];
+					$cp->PortNumber=intval($_POST['port']);
+					$cp->DeviceType=$devList[$cp->DeviceID]->DeviceType;
+					$cp->Front=true;
+					//label of devid
+					$label=$devList[$cp->DeviceID]->Label;
+					
+					//intento irme al principio del path
+					if (!$cp->GotoHeadDevice($facDB)){
+						//$status="<blink>"._("There is a loop in this port")."</blink>";
+						$status="<blink>Hay un bucle en ese puerto</blink>";
+					} 
+				}
 			}
+				
+			//$pathid=$label."["._("Port").": ".intval($_POST['port'])."]";
+			$pathid=$label."[Puerto: ".intval($_POST['port'])."]";
 		}
 		
 		//Search by path identifier (in "notes" field)
@@ -88,23 +142,26 @@
 			}else{ 
 				$pathid=intval( $_POST['pathid'] );
 			}
+			
+			
 			$sql = "SELECT PanelDeviceID AS DeviceID,
 							PanelPortNumber AS port,
 							'Patch Panel' AS DeviceType 
 					FROM fac_patchconnection
-					WHERE FrontNotes LIKE '%PATH(".$pathid.")%'
+					WHERE FrontNotes ='".$pathid."'
 					UNION
 					SELECT SwitchDeviceID AS DeviceID,
 						SwitchPortNumber AS port,
 						'Switch' AS DeviceType 
 					FROM fac_switchconnection
-					WHERE Notes LIKE '%PATH(".$pathid.")%'";
+					WHERE Notes ='".$pathid."'";
 			$result = mysql_query( $sql, $facDB );
 			
 			if (mysql_num_rows($result)==0){
 				$status="No encontrado";
 			} else {
 				$row = mysql_fetch_array( $result );
+				
 				$cp=new ConnectionPath();
 				$cp->DeviceID=$row["DeviceID"];
 				$cp->PortNumber=$row["port"];
@@ -131,11 +188,19 @@
 			
 			$dev=new Device();
 			$end=false;
-			$primero=true;
+			$elem_path=0;
+			$form_eliminar="";
 				
 			while (!$end) {
+				//first device
+				//get the device
 				$dev->DeviceID=$cp->DeviceID;
 				$dev->GetDevice( $facDB );
+				$elem_path++;
+				$form_eliminar.="<input type='hidden' name='DeviceID[".$elem_path."]' value='".$cp->DeviceID."'>\n";
+				$form_eliminar.="<input type='hidden' name='PortNumber[".$elem_path."]' value='".$cp->PortNumber."'>\n";
+				$form_eliminar.="<input type='hidden' name='DeviceType[".$elem_path."]' value='".$cp->DeviceType."'>\n";
+				$form_eliminar.="<input type='hidden' name='Front[".$elem_path."]' value='".$cp->Front."'>\n";
 				
 				//If this device is the first and is a panel, I put it to the right position freeing the left
 				if ($primero && $dev->DeviceType=="Patch Panel"){
@@ -232,7 +297,6 @@
 					
 				} else {
 				//A row with two devices
-				
 					//I get device Lineage (for multi level chassis)
 					$devList=array();
 					$devList=$dev->GetDeviceLineage($facDB);
@@ -277,7 +341,7 @@
 					
 					$path.="\t\t</td>";
 					
-					if ($primero || $dev->DeviceType=="Patch Panel"){
+					if ($elem_path==1 || $dev->DeviceType=="Patch Panel"){
 						//half hose
 						//Out connection type
 						$tipo_con=($cp->Front)?"f":"r";
@@ -286,6 +350,12 @@
 					}
 					//next device, if exist
 					if ($cp->GotoNextDevice($facDB)) {
+						$elem_path++;
+						$form_eliminar.="<input type='hidden' name='DeviceID[".$elem_path."]' value='".$cp->DeviceID."'>\n";
+						$form_eliminar.="<input type='hidden' name='PortNumber[".$elem_path."]' value='".$cp->PortNumber."'>\n";
+						$form_eliminar.="<input type='hidden' name='DeviceType[".$elem_path."]' value='".$cp->DeviceType."'>\n";
+						$form_eliminar.="<input type='hidden' name='Front[".$elem_path."]' value='".$cp->Front."'>\n";
+						
 						$dev->DeviceID=$cp->DeviceID;
 						$dev->GetDevice( $facDB );
 						
@@ -298,6 +368,7 @@
 						//Out connection type
 						$tipo_con=($cp->Front)?"f":"r";
 						
+						//Can I follow?
 						if ($dev->DeviceType=="Patch Panel"){
 							$path.="\n\t\t<td  style='background: #FFF url(images/b1".$tipo_con.".png) no-repeat left bottom;'>";
 							// I prepare row separation between patch rows
@@ -385,11 +456,36 @@
 						$end=true;
 					}
 				}
-				$primero=false;
 			}
-
+			//key
+			$path.="\t<tr>\n\t\t<td>&nbsp;</td>\n\t</tr>";
+			$path.="\t<tr>\n";
+			$path.="\t\t<td>&nbsp;&nbsp;&nbsp;</td>\n";
+			$path.="\t\t<td style='background: #FFF url(images/leyendaf.png) no-repeat right top;'></td>\n";
+			$path.="\t\t<td colspan=3 align=left>&nbsp;&nbsp;"._("Conexión frontal")."</td>\n";
+			$path.="\t\t<td>&nbsp;&nbsp;&nbsp;</td>\n";
+			$path.="\t</tr>\n";
+			$path.="\t<tr>\n";
+			$path.="\t\t<td>&nbsp;&nbsp;&nbsp;</td>\n";
+			$path.="\t\t<td style='background: #FFF url(images/leyendar.png) no-repeat right top;'></td>\n";
+			$path.="\t\t<td colspan=3 align=left>&nbsp;&nbsp;"._("Conexión trasera")."</td>\n";
+			$path.="\t\t<td>&nbsp;&nbsp;&nbsp;</td>\n";
+			$path.="\t</tr>\n";
+			
 			//End of path table
 			$path.="\t<tr>\n\t\t<td>&nbsp;</td>\n\t</tr></table></div>";
+			
+			//Delete Form
+			$path.= "<form action='".$_SERVER["PHP_SELF"]."' method='POST'>\n";
+			$path.= "<br>\n"; 
+			$path.= "<div>\n";
+			//PATH INFO
+			$path.= "<input type='hidden' name='elem_path' value='".$elem_path."'>\n";
+			$path.=$form_eliminar;	
+			$path.= "	<button type='submit' name='bot_eliminar' value='delete'>"._("Delete connection in DataBase")."</button>\n";
+			$path.= "</div>\n";
+			$path.= "</form>\n";
+			$path.= "</div>\n";
 		}	
 	}
 		

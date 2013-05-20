@@ -4,7 +4,7 @@
 
 	$user=new User();
 	$user->UserID=$_SERVER['REMOTE_USER'];
-	$user->GetUserRights($facDB);
+	$user->GetUserRights();
 
 	if(!$user->WriteAccess){
 		// No soup for you.
@@ -36,22 +36,23 @@
 		$cab->InstallationDate=$_POST['installationdate'];
 		$cab->SensorIPAddress=$_POST['sensoripaddress'];
 		$cab->SensorCommunity=$_POST['sensorcommunity'];
-		$cab->SensorOID=$_POST['sensoroid'];
+		$cab->TempSensorOID=$_POST['tempsensoroid'];
+		$cab->HumiditySensorOID=$_POST['humiditysensoroid'];
 		$cab->Notes=trim($_POST['notes']);
 		$cab->Notes=($cab->Notes=="<br>")?"":$cab->Notes;
 		$cab->SetTags($tagarray);
 
 		if($cab->Location!=""){
 			if(($cab->CabinetID >0)&&($_POST['action']=='Update')){
-				$cab->UpdateCabinet($facDB);
+				$cab->UpdateCabinet();
 			}elseif($_POST['action']=='Create'){
-				$cab->CreateCabinet($facDB);
+				$cab->CreateCabinet();
 			}
 		}
 	}
 
 	if($cab->CabinetID >0){
-		$cab->GetCabinet($facDB);
+		$cab->GetCabinet();
 
 		// Get any tags associated with this device
 		$tags=$cab->GetTags();
@@ -73,7 +74,7 @@
 
 
 	$deptList=$dept->GetDepartmentList($facDB);
-	$cabList=$cab->ListCabinets($facDB);
+	$cabList=$cab->ListCabinets();
 ?>
 <!doctype html>
 <html>
@@ -246,7 +247,11 @@ echo '  </select>
 </div>
 <div>
 	<div>',__("Temperature Sensor OID"),'</div>
-	<div><input type="text" name="sensoroid" size=30 value="',$cab->SensorOID,'"></div>
+	<div><input type="text" name="tempsensoroid" size=30 value="',$cab->TempSensorOID,'"></div>
+</div>
+<div>
+	<div>',__("Humidity Sensor OID"),'</div>
+	<div><input type="text" name="humiditysensoroid" size=30 value="',$cab->HumiditySensorOID,'"></div>
 </div>
 <div>
 	<div><label for="tags">',__("Tags"),'</label></div>

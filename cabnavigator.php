@@ -4,20 +4,33 @@
 
 	$user=new User();
 	$user->UserID=$_SERVER["REMOTE_USER"];
-	$user->GetUserRights($facDB);
-
-	if((isset($_REQUEST["cabinetid"]) && ($_REQUEST["cabinetid"]=="" || $_REQUEST["cabinetid"]==null)) || !isset($_REQUEST["cabinetid"]) || !$user->ReadAccess){
+	$user->GetUserRights();
+	
+	if((isset($_REQUEST["cabinetid"]) && ($_REQUEST["cabinetid"]=="" || $_REQUEST["cabinetid"]==null)) || !isset($_REQUEST["cabinetid"])){
 		// No soup for you.
 		header('Location: '.redirect());
 		exit;
 	}
 
+	// Get the list of departments that this user is a member of
+	$viewList = $user->isMemberOf();
+
 	$cab=new Cabinet();
 	$cab->CabinetID=$_REQUEST["cabinetid"];
 	$cab->GetCabinet($facDB);
 
+	if($cab->AssignedTo >0){
+		// Check to see if this user is allowed to see anything in here
+		if( !in_array($cab->AssignedTo,$viewList) && !$user->ReadAccess ){
+			// This cabinet belongs to a department you don't have affiliation with, so no viewing at all
+			header('Location: '.redirect());
+			exit;
+		}
+	}
+	
 	// If you're deleting the cabinet, no need to pull in the rest of the information, so get it out of the way
-	if(isset($_POST["delete"]) && $_POST["delete"]=="yes" && $user->SiteAdmin){
+	// Only a site administrator can create or delete a cabinet
+	if(isset($_POST["delete"]) && $_POST["delete"]=="yes" && $user->SiteAdmin ) {
 		$cab->DeleteCabinet($facDB);
 		$url=redirect("dc_stats.php?dc=$dcID");
 		header("Location: $url");
@@ -25,76 +38,133 @@
 	}
 	
 	if(isset($_POST['tooltip'])){
-		if($config->ParameterArray["ToolTips"]=='enabled'){
+		if(isset($_POST['cdu']) && $config->ParameterArray["CDUToolTips"]=='enabled'){
+			$pdu=new PowerDistribution();
+			$pdu->PDUID=intval($_POST['tooltip']);
+			$pdu->GetPDU($facDB);
+			$ttconfig=mysql_query("SELECT * FROM fac_CDUToolTip WHERE Enabled=1 ORDER BY SortOrder ASC, Enabled DESC, Label ASC;");
+		}elseif($config->ParameterArray["ToolTips"]=='enabled'){
 			$dev=new Device();
-			$dev->DeviceID=$_POST['tooltip'];
+			$dev->DeviceID=intval($_POST['tooltip']);
 			$dev->GetDevice($facDB);
-
-			$tooltip="";
-			$ttconfig=mysql_query("SELECT * FROM fac_CabinetToolTip WHERE Enabled=1 ORDER BY SortOrder ASC, Enabled DESC, Label ASC;");
-			while($row=mysql_fetch_assoc($ttconfig)){
-				switch($row["Field"]){
-					case "SNMPCommunity":
-						if($dev->ESX){
-							$tooltip.=__($row["Label"]).": ".$dev->$row["Field"]."<br>\n";
-						}
-						break;
-					case "ESX":
-						if($dev->ESX){
-							$tooltip.=__($row["Label"]).": ".$dev->$row["Field"]."<br>\n";
-						}
-						break;
-					case "EscalationID":
-						$esc=new Escalations();
-						$esc->EscalationID=$dev->$row["Field"];
-						$esc->GetEscalation($facDB);
-						$tooltip.=__($row["Label"]).": $esc->Details<br>\n";
-						break;
-					case "EscalationTimeID":
-						$escTime=new EscalationTimes();
-						$escTime->EscalationTimeID=$dev->$row["Field"];
-						$escTime->GetEscalationTime($facDB);
-						$tooltip.=__($row["Label"]).": $escTime->TimePeriod<br>\n";
-						break;
-					case "Owner":
-						$dept=new Department();
-						$dept->DeptID=$dev->Owner;
-						$dept->GetDeptByID($facDB);
-						$tooltip.=__($row["Label"]).": $dept->Name<br>\n";
-						break;
-					case "TemplateID":
-						$tmpl=new DeviceTemplate();
-						$tmpl->TemplateID=$dev->TemplateID;
-						$tmpl->GetTemplateByID($facDB);
-						$man=new Manufacturer();
-						$man->ManufacturerID=$tmpl->ManufacturerID;
-						$man->GetManufacturerByID($facDB);
-						$tooltip.=__($row["Label"]).": [$man->Name] $tmpl->Model<br>\n";
-						break;
-					case "ChassisSlots":
-						if($dev->DeviceType=='Chassis'){
-							$tooltip.=__($row["Label"])." ".$dev->$row["Field"]."<br>\n";
-						}
-						break;
-					case "DeviceType":
-						// if this is a chassis device display the number of blades?
-					default:
-						$tooltip.=__($row["Label"]).": ".$dev->$row["Field"]."<br>\n";
-				}
+			
+			if(!in_array($dev->Owner,$viewList) && !$user->ReadAccess){
+				print "Details Restricted";
+				exit;
 			}
-			if($tooltip==""){$tooltip=__("Tooltips are enabled with no options selected.");}
-			$tooltip="<div>$tooltip</div>";
-			print $tooltip;
+			$ttconfig=mysql_query("SELECT * FROM fac_CabinetToolTip WHERE Enabled=1 ORDER BY SortOrder ASC, Enabled DESC, Label ASC;");
 		}
+
+		$tooltip="";
+		while($row=mysql_fetch_assoc($ttconfig)){
+			switch($row["Field"]){
+				case "SNMPCommunity":
+					if(isset($pdu->SNMPCommunity)){
+						$tooltip.=__($row["Label"]).": ".$pdu->$row["Field"]."<br>\n";
+					}else{
+						if($dev->ESX){
+							$tooltip.=__($row["Label"]).": ".$dev->$row["Field"]."<br>\n";
+						}
+					}
+					break;
+				case "ESX":
+					if($dev->ESX){
+						$tooltip.=__($row["Label"]).": ".$dev->$row["Field"]."<br>\n";
+					}
+					break;
+				case "EscalationID":
+					$esc=new Escalations();
+					$esc->EscalationID=$dev->$row["Field"];
+					$esc->GetEscalation($facDB);
+					$tooltip.=__($row["Label"]).": $esc->Details<br>\n";
+					break;
+				case "EscalationTimeID":
+					$escTime=new EscalationTimes();
+					$escTime->EscalationTimeID=$dev->$row["Field"];
+					$escTime->GetEscalationTime($facDB);
+					$tooltip.=__($row["Label"]).": $escTime->TimePeriod<br>\n";
+					break;
+				case "Owner":
+					$dept=new Department();
+					$dept->DeptID=$dev->Owner;
+					$dept->GetDeptByID($facDB);
+					$tooltip.=__($row["Label"]).": $dept->Name<br>\n";
+					break;
+				case "TemplateID":
+					$tmpl=new DeviceTemplate();
+					$tmpl->TemplateID=$dev->TemplateID;
+					$tmpl->GetTemplateByID($facDB);
+					$man=new Manufacturer();
+					$man->ManufacturerID=$tmpl->ManufacturerID;
+					$man->GetManufacturerByID($facDB);
+					$tooltip.=__($row["Label"]).": [$man->Name] $tmpl->Model<br>\n";
+					break;
+				case "ChassisSlots":
+					if($dev->DeviceType=='Chassis'){
+						$tooltip.=__($row["Label"])." ".$dev->$row["Field"]."<br>\n";
+					}
+					break;
+				case "Model":
+					$template=new CDUTemplate();
+					$manufacturer=new Manufacturer();
+
+					$template->TemplateID=$pdu->TemplateID;
+					$template->GetTemplate($facDB);
+
+					$manufacturer->ManufacturerID=$template->ManufacturerID;
+					$manufacturer->GetManufacturerByID($facDB);
+					$tooltip.=__($row["Label"]).": [$manufacturer->Name] $template->Model<br>\n";
+					break;
+				case "NumOutlets":
+					$template=new CDUTemplate();
+					$powerConn=new PowerConnection();
+
+					$template->TemplateID=$pdu->TemplateID;
+					$template->GetTemplate($facDB);
+
+					$powerConn->PDUID=$pdu->PDUID;
+					$connList=$powerConn->GetConnectionsByPDU($facDB);
+
+					$tooltip.=__($row["Label"]).": ".count($connList)."/".($template->NumOutlets+1)."<br>\n";
+					break;
+				case "Uptime":
+					$tooltip.=__($row["Label"]).": ".$pdu->GetSmartCDUUptime($facDB)."<br>\n";
+					break;
+				case "PanelID":
+					$pan=new PowerPanel();
+					$pan->PanelID=$pdu->PanelID;
+					$pan->GetPanel($facDB);
+					$tooltip.=__($row["Label"]).": $pan->PanelLabel<br>\n";
+					break;
+				case "PanelVoltage":
+					$pan=new PowerPanel();
+					$pan->PanelID=$pdu->PanelID;
+					$pan->GetPanel($facDB);
+
+					$tooltip.=__($row["Label"]).": ".$pan->PanelVoltage." / ".intval($pan->PanelVoltage/1.73)."<br>\n";
+					break;
+				case "DeviceType":
+					// if this is a chassis device display the number of blades?
+				default:
+					if(isset($_POST['cdu'])){
+						$tooltip.=__($row["Label"]).": ".$pdu->$row["Field"]."<br>\n";
+					}else{
+						$tooltip.=__($row["Label"]).": ".$dev->$row["Field"]."<br>\n";
+					}
+			}
+		}
+		if($tooltip==""){$tooltip=__("Tooltips are enabled with no options selected.");}
+		$tooltip="<div>$tooltip</div>";
+		print $tooltip;
 		exit;
 	}
 
 
 	$head=$legend=$zeroheight=$body=$deptcolor="";
 	$audit=new CabinetAudit();
-	$pdu=new PowerDistribution();
-	$pan = new PowerPanel();
 	$dev=new Device();
+	$pdu=new PowerDistribution();
+	$pan=new PowerPanel();
 	$templ=new DeviceTemplate();
 	$tempPDU=new PowerDistribution();
 	$tempDept=new Department();
@@ -188,8 +258,12 @@
 		}
 
 		if($device->Height<1){
-			$zeroheight.="				<a href=\"devices.php?deviceid=$devID\">$highlight $device->Label</a>\n";
+			if ( in_array( $device->Owner, $viewList ) || $user->ReadAccess )
+				$zeroheight.="				<a href=\"devices.php?deviceid=$devID\">$highlight $device->Label</a>\n";
+			else
+				$zeroheight.="              $highlight $device->Label\n";
 		}
+		
 		// Chassis devices shouldn't ever be 0u in height
 		if($device->DeviceType=="Chassis"){
 			$childList=$device->GetDeviceChildren($facDB);
@@ -226,7 +300,11 @@
 			$errclass=($i>$cab->CabinetHeight)?' class="error"':'';
 			if($errclass!=''){$heighterr="yup";}
 			if($i==$devTop){
-				$body.="<tr><td$errclass>$i</td><td class=\"device$reserved dept$device->Owner\" rowspan=$device->Height data=$devID><a href=\"devices.php?deviceid=$devID\">$highlight $device->Label</a></td></tr>\n";
+				if ( in_array( $device->Owner, $viewList ) || $user->ReadAccess ) {
+					$body.="<tr><td$errclass>$i</td><td class=\"device$reserved dept$device->Owner\" rowspan=$device->Height data=$devID><a href=\"devices.php?deviceid=$devID\">$highlight $device->Label</a></td></tr>\n";
+				} else {
+					$body.="<tr><td$errclass>$i</td><td class=\"device$reserved dept$device->Owner\" rowspan=$device->Height data=$devID>$highlight $device->Label</td></tr>\n";
+				}
 			}else{
 				$body.="<tr><td$errclass>$i</td></tr>\n";
 			}
@@ -248,11 +326,13 @@
 	if($heighterr!=''){$legend.='<p>* - '.__("Above defined rack height").'</p>';}
 
 	$CenterofGravity=@round($totalMoment/$totalWeight);
-
+	
 	$used=$cab->CabinetOccupancy($cab->CabinetID,$facDB);
 	@$SpacePercent=number_format($used/$cab->CabinetHeight*100,0);
 	@$WeightPercent=number_format($totalWeight/$cab->MaxWeight*100,0);
 	@$PowerPercent=number_format(($totalWatts/1000)/$cab->MaxKW*100,0);
+	$measuredWatts = $pdu->GetWattageByCabinet( $cab->CabinetID );
+	@$MeasuredPercent=number_format(($measuredWatts/1000)/$cab->MaxKW*100,0);
 	$CriticalColor=$config->ParameterArray["CriticalColor"];
 	$CautionColor=$config->ParameterArray["CautionColor"];
 	$GoodColor=$config->ParameterArray["GoodColor"];
@@ -260,10 +340,12 @@
 	if($SpacePercent>100){$SpacePercent=100;}
 	if($WeightPercent>100){$WeightPercent=100;}
 	if($PowerPercent>100){$PowerPercent=100;}
+	if($MeasuredPercent>100){$MeasuredPercent=100;}
 
 	$SpaceColor=($SpacePercent>intval($config->ParameterArray["SpaceRed"])?$CriticalColor:($SpacePercent >intval($config->ParameterArray["SpaceYellow"])?$CautionColor:$GoodColor));
 	$WeightColor=($WeightPercent>intval($config->ParameterArray["WeightRed"])?$CriticalColor:($WeightPercent>intval($config->ParameterArray["WeightYellow"])?$CautionColor:$GoodColor));
 	$PowerColor=($PowerPercent>intval($config->ParameterArray["PowerRed"])?$CriticalColor:($PowerPercent>intval($config->ParameterArray["PowerYellow"])?$CautionColor:$GoodColor));
+	$MeasuredColor=($MeasuredPercent>intval($config->ParameterArray["PowerRed"])?$CriticalColor:($MeasuredPercent>intval($config->ParameterArray["PowerYellow"])?$CautionColor:$GoodColor));
 
 	// I don't feel like fixing the check properly to not add in a dept with id of 0 so just remove it at the last second
 	// 0 is when a dept owner hasn't been assigned, just for the record
@@ -315,10 +397,19 @@ $body.='</table>
 			</td>
 		</tr>
 		<tr>
-			<td>'.__("Power").'
+			<td>'.__("Computed Watts").'
 				<div class="meter-wrap">
 					<div class="meter-value" style="background-color: '.$PowerColor.'; width: '.$PowerPercent.'%;">
 						<div class="meter-text">'; $body.=sprintf("%d kW / %d kW",round($totalWatts/1000),$cab->MaxKW);$body.='</div>
+					</div>
+				</div>
+			</td>
+		</tr>
+		<tr>
+			<td>'.__("Measured Watts").'
+				<div class="meter-wrap">
+					<div class="meter-value" style="background-color: '.$MeasuredColor.'; width: '.$MeasuredPercent.'%;">
+						<div class="meter-text">'; $body.=sprintf("%d kW / %d kW",round($measuredWatts/1000),$cab->MaxKW);$body.='</div>
 					</div>
 				</div>
 			</td>
@@ -341,7 +432,7 @@ $body.='</table>
 		</div>
 	</fieldset>';
 	}
-	$body.='	<fieldset>
+	$body.='	<fieldset name="pdu">
 		<legend>'.__("Power Distribution").'</legend>';
 
 	foreach($PDUList as $PDUdev){
@@ -458,9 +549,31 @@ if($config->ParameterArray["ToolTips"]=='enabled'){
 			var tooltip=$('<div />').css({
 				'left':pos.left+$(this).outerWidth()+15+'px',
 				'top':pos.top+($(this).outerHeight()/2)-15+'px'
-			}).addClass('arrow_left border cabnavigator tooltip').attr('id','tt'+n);
+			}).addClass('arrow_left border cabnavigator tooltip').attr('id','tt'+n).append('<span class="ui-icon ui-icon-refresh rotate"></span>');
 			$.post('',{tooltip: $(this).attr('data')}, function(data){
-				tooltip.append(data);
+				tooltip.html(data);
+			});
+			$('body').append(tooltip);
+			$(this).mouseleave(function(){
+				$('#tt'+n).remove();
+			});
+		});
+<?php
+}
+if($config->ParameterArray["CDUToolTips"]=='enabled'){
+?>
+		var n=0; // silly counter
+		$('fieldset[name="pdu"] legend ~ a').mouseenter(function(){
+			n++;
+			var pos=$(this).offset();
+			var tooltip=$('<div />').css({
+				'left':pos.left+$(this).outerWidth()+15+'px',
+				'top':pos.top+($(this).outerHeight()/2)-15+'px'
+			}).addClass('arrow_left border cabnavigator tooltip').attr('id','tt'+n).append('<span class="ui-icon ui-icon-refresh rotate"></span>');
+			var id=$(this).attr('href');
+			id=id.substring(id.lastIndexOf('=')+1,id.length);
+			$.post('',{tooltip: id, cdu: ''}, function(data){
+				tooltip.html(data);
 			});
 			$('body').append(tooltip);
 			$(this).mouseleave(function(){

@@ -6,11 +6,13 @@
 	$user->UserID=$_SERVER["REMOTE_USER"];
 	$user->GetUserRights($facDB);
 
+/*	Not sure if we need to restrict this view to users with global read access or not
 	if(!$user->ReadAccess){
 		// No soup for you.
 		header('Location: '.redirect());
 		exit;
 	}
+*/
 
 	$cab=new Cabinet();
 	$dc=new DataCenter();
@@ -141,16 +143,20 @@ echo '<div class="main">
   </div> <!-- END div.table -->
   <div class="table border">
   <div>
-        <div>',__("Raw Wattage"),'</div>
-        <div>',sprintf("%7d ".__("Watts"),$dcStats["TotalWatts"]),'</div>
+        <div>',__("Computed Wattage"),'</div>
+        <div>',sprintf("%7d %s", $dcStats["ComputedWatts"], __("Watts")),'</div>
+  </div>
+  <div>
+		<div>',__("Measured Wattage"), '</div>
+		<div>',sprintf("%7d %s", $dcStats["MeasuredWatts"], __("Watts")),'</div>
   </div>
   <div>
 		<div>',__("Design Maximum (kW)"),'</div>
 		<div>',sprintf("%7d kW",$dc->MaxkW ),'</div>
   </div>
   <div>
-        <div>',__("BTU Computation from Watts"),'</div>
-        <div>',sprintf("%8d ".__("BTU"),$dcStats["TotalWatts"]*3.412 ),'</div>
+        <div>',__("BTU Computation from Computed Watts"),'</div>
+        <div>',sprintf("%8d ".__("BTU"),$dcStats["ComputedWatts"]*3.412 ),'</div>
   </div>
   <div>
         <div>',__("Data Center Size"),'</div>
@@ -158,11 +164,11 @@ echo '<div class="main">
   </div>
   <div>
         <div>',$density,'</div>
-        <div>',(($dc->SquareFootage)?sprintf("%8d ".__("Watts"),$dcStats["TotalWatts"]/$dc->SquareFootage):"0 ".__("Watts")),'</div>
+        <div>',(($dc->SquareFootage)?sprintf("%8d ".__("Watts"),$dcStats["ComputedWatts"]/$dc->SquareFootage):"0 ".__("Watts")),'</div>
   </div>
   <div>
-        <div>',__("Minimum Cooling Tonnage Required"),'</div>
-        <div>',sprintf("%7d ".__("Tons"),$dcStats["TotalWatts"]*3.412*1.15/12000),'</div>
+        <div>',__("Minimum Cooling Tonnage (Based on Computed Watts)"),'</div>
+        <div>',sprintf("%7d ".__("Tons"),$dcStats["ComputedWatts"]*3.412*1.15/12000),'</div>
   </div>
 </div> <!-- END div.table -->
 </div>';

@@ -35,8 +35,46 @@
 		echo BuildFileList();
 		exit;
 	}
-	if(isset($_POST['fe'])){
+	if(isset($_POST['fe'])){ // checking that a file exists
 		echo(is_file($_POST['fe']))?1:0;
+		exit;
+	}
+	if(isset($_POST['cc'])){  // Cable color codes
+		$col=new ColorCoding();
+		if(isset($_POST['cid'])){ // If set we're updating an existing entry
+			$col->ColorID=$_POST['cid'];
+			if(isset($_POST['original'])){
+				$col->GetCode();
+			    header('Content-Type: application/json');
+				echo json_encode($col);
+				exit;
+			}
+			$col->Name=$_POST['cc'];
+			$col->DefaultNote=$_POST['ccdn'];
+			if($col->UpdateCode()){
+				echo 'u';
+			}else{
+				echo 'f';
+			}
+		}else{
+			$col->Name=$_POST['cc'];
+			$col->DefaultNote=$_POST['ccdn'];
+			if($col->CreateCode()){
+				echo $col->ColorID;
+			}else{
+				echo 'f';
+			}
+		}
+		exit;
+	}
+	if(isset($_POST['ccused'])){
+		$count=ColorCoding::TimesUsed($_POST['ccused']);
+		if($count==0){
+			$col=new ColorCoding();
+			$col->ColorID=$_POST['ccused'];
+			$col->DeleteCode();
+		}
+		echo $count;
 		exit;
 	}
 	// END AJAX Requests
@@ -57,6 +95,14 @@
 		if(isset($_POST["tooltip"]) && !empty($_POST["tooltip"])){
 			foreach($_POST["tooltip"] as $order => $field){
 				mysql_query("UPDATE fac_CabinetToolTip SET SortOrder=".intval($order).", Enabled=1 WHERE Field='".addslashes($field)."' LIMIT 1;");
+			}
+		}
+
+		//Disable all cdu tooltip items and clear the SortOrder
+		mysql_query("UPDATE fac_CDUToolTip SET SortOrder = NULL, Enabled=0;");
+		if(isset($_POST["cdutooltip"]) && !empty($_POST["cdutooltip"])){
+			foreach($_POST["cdutooltip"] as $order => $field){
+				mysql_query("UPDATE fac_CDUToolTip SET SortOrder=".intval($order).", Enabled=1 WHERE Field='".addslashes($field)."' LIMIT 1;");
 			}
 		}
 	}
@@ -122,6 +168,26 @@
 	}
 	$tzmenu.='</ul>';
 
+	// Build list of media types
+	$mediatypes="";
+
+	// Build list of cable color codes
+	$cablecolors="";
+	$colorselector='<select name="mediacolorcode[]"><option value=""></option>';
+
+	$codeList=ColorCoding::GetCodeList();
+	if(count($codeList)>0){
+		foreach($codeList as $cc){
+			$colorselector.='<option value="'.$cc->ColorID.'">'.$cc->Name.'</option>';
+			$cablecolors.='<div>
+					<div><img src="images/del.gif"></div>
+					<div><input type="text" name="colorcode[]" data='.$cc->ColorID.' value="'.$cc->Name.'"></input></div>
+					<div><input type="text" name="ccdefaulttext[]" value="'.$cc->DefaultNote.'"></input></div>
+				</div>';
+		}
+	}
+	$colorselector.='</select>';
+
 	// Figure out what the URL to this page
 	$href="";
 	$href.=($_SERVER['HTTPS'])?'https://':'http://';
@@ -137,6 +203,14 @@
 	}
 	$tooltip.="</select>";
 
+	// Build up the list of items available for the tooltips
+	$cdutooltip="<select id=\"cdutooltip\" name=\"cdutooltip[]\" multiple=\"multiple\">\n";
+	$ttconfig=mysql_query("SELECT * FROM fac_CDUToolTip ORDER BY SortOrder ASC, Enabled DESC, Label ASC;");
+	while($row=mysql_fetch_assoc($ttconfig)){
+		$selected=($row["Enabled"])?" selected":"";
+		$cdutooltip.="<option value=\"".$row['Field']."\"$selected>".__($row["Label"])."</option>\n";
+	}
+	$cdutooltip.="</select>";
 ?>
 <!doctype html>
 <html>
@@ -159,9 +233,9 @@
   <script type="text/javascript" src="scripts/jquery.ui.multiselect.js"></script>
   <script type="text/javascript">
 	$(document).ready(function(){
-		$('#tooltip').multiselect();
-		$("#ToolTips option").each(function(){
-			if($(this).val()==$("#ToolTips").attr('data')){
+		$('#tooltip, #cdutooltip').multiselect();
+		$("#ToolTips option, #CDUToolTips option").each(function(){
+			if($(this).val()==$(this).parents('select').attr('data')){
 				$(this).attr('selected', 'selected');
 			}
 		});
@@ -292,6 +366,102 @@
 			});
 			$(this).addClass('text-arrow');
 		});
+		function removeitem(rowobject,lookup=true){
+			if(!lookup){
+				rowobject.remove();
+			}else{
+				$.post('',{ccused: rowobject.find('div:nth-child(2) input').attr('data')}).done(function(data){
+					if(data.trim()==0){
+						rowobject.effect('explode', {}, 500, function(){
+							$(this).remove();
+						});
+					}else{
+						var modal=$('<div />', {id: 'modal', title: 'Code Delete Override'}).html('<div id="modaltext">this code is in use somewhere. add a modal requesting permission to remove this record and all associated entries</div>').dialog({
+							dialogClass: 'no-close',
+							appendTo: 'body',
+							modal: true,
+							buttons: {
+								"Yes": function(){
+									$('#modaltext').html('AAAAAAAAAAHHHHHHHHHH!!!  *crash* *fire* *chaos*');
+									// decide how to handle these.
+								},
+								Cancel: function(){
+									$(this).dialog("destroy");
+								}
+							}
+						});
+					}
+				});
+			}
+		}
+		var blankrow=$('<div />').html('<div><img src="images/del.gif"></div><div><input type="text" name="colorcode[]"></div><div><input type="text" name="ccdefaulttext[]"></div>');
+		function bindrow(row){
+			var addrem=row.find('div:first-child');
+			var cc=row.find('div:nth-child(2) input');
+			var ccdn=row.find('div:nth-child(3) input');
+			if(cc.val().trim()!='' && addrem.attr('id')!='newline'){
+				addrem.click(function(){
+					removeitem(row,true);
+				});
+			}
+			row.find('div > input').each(function(){
+				// If a value changes then check it for conflicts, if no conflict update
+				$(this).change(function(){
+					if(cc.val().trim()!=''){
+						$.post('',{cid: cc.attr('data'),cc: cc.val(), ccdn: ccdn.val()}).done(function(data){
+							if(data.trim()=='f'){ // fail
+								$.post('',{cid: cc.attr('data'),cc: cc.val(), ccdn: ccdn.val(),original:data.trim()}).done(function(jsondata){
+									cc.val(jsondata.Name);
+									ccdn.val(jsondata.DefaultNote);
+								});
+								cc.effect('highlight', {color: 'salmon'}, 1500);
+								ccdn.effect('highlight', {color: 'salmon'}, 1500);
+							}else if(data.trim()=='u'){ // updated
+								cc.effect('highlight', {color: 'lightgreen'}, 2500);
+								ccdn.effect('highlight', {color: 'lightgreen'}, 2500);
+							}else{ // created
+								var newitem=blankrow.clone();
+								newitem.find('div:nth-child(2) input').val(cc.val()).attr('data',data.trim());
+								newitem.find('div:nth-child(3) input').val(ccdn.val());
+								bindrow(newitem);
+								row.before(newitem);
+								if(addrem.attr('id')=='newline'){
+									cc.val('');
+									ccdn.val('');
+								}else{
+									row.remove();
+								}
+							}
+						});
+					}else if(cc.val().trim()=='' && ccdn.val().trim()=='' && addrem.attr('id')!='newline'){
+						// If both blanks are emptied of values and they were an existing data pair
+						$.post('',{cid: cc.attr('data'),cc: cc.val(), ccdn: ccdn.val(),original:''}).done(function(jsondata){
+							cc.val(jsondata.Name);
+							ccdn.val(jsondata.DefaultNote);
+						});
+						cc.effect('highlight', {color: 'salmon'}, 1500);
+						ccdn.effect('highlight', {color: 'salmon'}, 1500);
+					}
+				});
+			});
+		}
+		function delrow(row){
+			
+		}
+		$('#cablecolor > div ~ div > div:first-child').each(function(){
+			if($(this).attr('id')=='newline'){
+				var row=$(this).parent('div');
+				$(this).click(function(){
+					var newitem=blankrow.clone();
+					newitem.find('div:first-child').click(function(){
+						removeitem($(this).parent('div'),false);
+					});
+					bindrow(newitem);
+					row.before(newitem);
+				});
+			}
+			bindrow($(this).parent('div'));
+		});
 		$('input[id^="snmp"],input[id="cut"]').each(function(){
 			var a=$(this);
 			var icon=$('<span>',{style: 'float:right;margin-top:5px;'}).addClass('ui-icon').addClass('ui-icon-info');
@@ -334,7 +504,8 @@ echo '<div class="main">
 			<li><a href="#style">',__("Style"),'</a></li>
 			<li><a href="#email">',__("Email"),'</a></li>
 			<li><a href="#reporting">',__("Reporting"),'</a></li>
-			<li><a href="#tt">',__("Cabinet ToolTips"),'</a></li>
+			<li><a href="#tt">',__("ToolTips"),'</a></li>
+			<li><a href="#cc">',__("Cabling"),'</a></li>
 		</ul>
 		<div id="general">
 			<div class="table">
@@ -628,6 +799,49 @@ echo '<div class="main">
 			</div> <!-- end table -->
 			<br>
 			',$tooltip,'
+			<br>
+			<div class="table">
+				<div>
+					<div><label for="CDUToolTips">',__("CDU ToolTips"),'</label></div>
+					<div><select id="CDUToolTips" name="CDUToolTips" defaultvalue="',$config->defaults["CDUToolTips"],'" data="',$config->ParameterArray["CDUToolTips"],'">
+							<option value="disabled">',__("Disabled"),'</option>
+							<option value="enabled">',__("Enabled"),'</option>
+						</select>
+					</div>
+				</div>
+			</div> <!-- end table -->
+			<br>
+			',$cdutooltip,'
+		</div>
+		<div id="cc">
+			<h3>',__("Media Types"),'</h3>
+			<div class="table" id="mediatypes">
+				<div>
+					<div></div>
+					<div>Media Type</div>
+					<div>Default Color</div>
+				</div>
+				',$mediatypes,'
+				<div>
+					<div id="newline"><img alt="add new row" src="images/add.gif"></div>
+					<div><input type="text" name="mediatype[]"></input></div>
+					<div>',$colorselector,'</div>
+				</div>
+			</div> <!-- end table -->
+			<h3>',__("Cable Colors"),'</h3>
+			<div class="table" id="cablecolor">
+				<div>
+					<div></div>
+					<div>Color</div>
+					<div>Default Note</div>
+				</div>
+				',$cablecolors,'
+				<div>
+					<div id="newline"><img alt="add new row" src="images/add.gif"></div>
+					<div><input type="text" name="colorcode[]"></input></div>
+					<div><input type="text" name="ccdefaulttext[]"></input></div>
+				</div>
+			</div> <!-- end table -->
 		</div>
 	</div>';
 

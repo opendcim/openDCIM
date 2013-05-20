@@ -8,15 +8,12 @@
 	$contact=new Contact();
 	
 	$user->UserID=$_SERVER['REMOTE_USER'];
-	$user->GetUserRights( $facDB );
+	$user->GetUserRights();
 
+	$viewList=$user->isMemberOf();
+	
 	$taginsert="";
 
-	if(!$user->ReadAccess){
-		// No soup for you.
-		header('Location: '.redirect());
-		exit;
-	}
 	// Ajax functions and we only want these exposed to people with write access
 	if($user->WriteAccess){
 		if(isset($_POST['cab'])){
@@ -347,6 +344,16 @@
 	}else{
 		// sets install date to today when a new device is being created
 		$dev->InstallDate=date("m/d/Y");
+	}
+
+	// If they have global read don't bother with further checks
+	if(!$user->ReadAccess){
+		// They didn't have global read so see if they are a member of that owning department
+		if(!in_array($dev->Owner,$viewList)){
+			// No soup for you.
+			header('Location: '.redirect());
+			exit;
+		}
 	}
 	
 	if($dev->ParentDevice >0){
@@ -801,12 +808,12 @@ $(document).ready(function() {
 
 				}else{
 					$(this).attr('edit','yes');
-					var device=$(this).next();
+					var device=$('#d'+sp);
 					var devid=device.attr('alt');
-					var devport=device.next();
+					var devport=$('#dp'+sp);
 					devport.css({'min-width': '35px','width': '35px'});
 					var devportwidth=devport.width();
-					var notes=devport.next();
+					var notes=$('#n'+sp);
 					$.ajax({
 						type: 'POST',
 						url: 'devices.php',
@@ -1107,6 +1114,14 @@ echo '<div class="center"><div>
 		   <button class="hide" type="button" onclick="getScan(\'assettag\')">',__("Scan Barcode"),'</button></div>
 		</div>
 		<div>
+		  <div><label for="primaryip">'.__("Primary IP").'</label></div>
+		  <div><input type="text" name="primaryip" id="primaryip" size="20" value="'.$dev->PrimaryIP.'"></div>
+		</div>
+		<div>
+		  <div><label for="snmpcommunity">'.__("SNMP Read Only Community").'</label></div>
+		  <div><input type="text" name="snmpcommunity" id="snmpcommunity" size="40" value="'.$dev->SNMPCommunity.'"></div>
+		</div>
+		<div>
 		   <div><label for="mfgdate">'.__("Manufacture Date").'</label></div>
 		   <div><input type="text" class="validate[optional,custom[date]] datepicker" name="mfgdate" id="mfgdate" value="'.(($dev->MfgDate>'0000-00-00 00:00:00')?date('m/d/Y',strtotime($dev->MfgDate)):"").'">
 		   </div>
@@ -1373,14 +1388,6 @@ echo '	<div class="table">
 		   <div><label for="esx">'.__("ESX Server?").'</label></div>
 		   <div><select name="esx" id="esx"><option value="1"'.(($dev->ESX==1)?" selected":"").'>'.__("True").'</option><option value="0"'.(($dev->ESX==0)?" selected":"").'>'.__("False").'</option></select></div>
 		</div>
-		<div>
-		  <div><label for="primaryip">'.__("Primary IP").'</label></div>
-		  <div><input type="text" name="primaryip" id="primaryip" size="20" value="'.$dev->PrimaryIP.'"></div>
-		</div>
-		<div>
-		  <div><label for="snmpcommunity">'.__("SNMP Read Only Community").'</label></div>
-		  <div><input type="text" name="snmpcommunity" id="snmpcommunity" size="40" value="'.$dev->SNMPCommunity.'"></div>
-		</div>
 	</div><!-- END div.table -->';
 
 		}
@@ -1472,7 +1479,7 @@ echo '	<div class="table">
 				$tmpDev->DeviceID=$patchConn->EndpointDeviceID;
 				$tmpDev->GetDevice($facDB);
 				
-				print "\t\t\t\t<div><div>$patchConn->SwitchPortNumber</div><div alt=\"$patchConn->EndpointDeviceID\"><a href=\"devices.php?deviceid=$patchConn->EndpointDeviceID\">$tmpDev->Label</a></div><div data=\"$patchConn->EndpointPort\">$patchConn->EndpointPort</div><div data=\"$patchConn->Notes\">$patchConn->Notes</div></div>\n";
+				print "\t\t\t\t<div><div id=\"sp$patchConn->SwitchPortNumber\">$patchConn->SwitchPortNumber</div><div id=\"d$patchConn->SwitchPortNumber\" alt=\"$patchConn->EndpointDeviceID\"><a href=\"devices.php?deviceid=$patchConn->EndpointDeviceID\">$tmpDev->Label</a></div><div data=\"$patchConn->EndpointPort\" id=\"dp$patchConn->SwitchPortNumber\">$patchConn->EndpointPort</div><div data=\"$patchConn->Notes\" id=\"n$patchConn->SwitchPortNumber\">$patchConn->Notes</div></div>\n";
 			}
 		}      
 		echo "			</div><!-- END div.table -->\n		  </div>\n		</div>";

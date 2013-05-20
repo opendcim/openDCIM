@@ -73,7 +73,7 @@
 							print "</ul>";
 						}
 						// check for racks owned by the soon to be deleted department
-						$cablist=Cabinet::ListCabinets($facDB, $deptid);
+						$cablist=Cabinet::ListCabinets($deptid);
 						if(count($cablist)>0){
 							print "<p>The following racks are assigned to $deptname:</p><ul>";
 							foreach($cablist as $cab){
