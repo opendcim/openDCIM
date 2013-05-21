@@ -362,7 +362,7 @@
 			});
 			$(this).addClass('text-arrow');
 		});
-		function removeitem(rowobject,lookup=true){
+		function removeitem(rowobject,lookup){
 			if(!lookup){
 				rowobject.remove();
 			}else{
