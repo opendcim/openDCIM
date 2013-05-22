@@ -92,7 +92,7 @@ class Cabinet {
 		if ( ! $dbh->exec( $sql ) ) {
 			$info = $dbh->errorInfo();
 
-			error_log( "PDO Error:  " . $info[2] );
+			error_log( "PDO Error: " . $info[2] . " SQL=" . $sql );
 			return false;
 		} else {
 			$this->CabinetID = $dbh->lastInsertID();
@@ -120,7 +120,7 @@ class Cabinet {
 		if ( ! $dbh->exec( $sql ) ) {
 			$info = $dbh->errorInfo();
 
-			error_log( "PDO Error:  " . $info[2] );
+			error_log( "PDO Error: " . $info[2] . " SQL=" . $sql );
 			return false;
 		}
 
@@ -135,7 +135,7 @@ class Cabinet {
 		if ( ! $cabinetRow = $dbh->query( $sql )->fetch() ) {
 			$info = $dbh->errorInfo();
 
-			error_log( "PDO Error:  " . $info[2] );
+			error_log( "PDO Error: " . $info[2] . " SQL=" . $sql );
 			return false;
 		}		
 		
@@ -247,7 +247,7 @@ class Cabinet {
 		if ( ! $row = $dbh->query( $sql )->fetch() ) {
 			$info = $dbh->errorInfo();
 
-			error_log( "PDO Error:  " . $info[2] );
+			error_log( "PDO Error: " . $info[2] . " SQL=" . $sql );
 			return false;
 		}
 
@@ -367,7 +367,7 @@ class Cabinet {
 		if ( ! $dbh->exec( $sql ) ) {
 			$info = $dbh->errorInfo();
 
-			error_log( "PDO Error:  " . $info[2] );
+			error_log( "PDO Error: " . $info[2] . " SQL=" . $sql );
 			return false;
 		}
 		
@@ -506,7 +506,7 @@ class Cabinet {
 				if ( ! $dbh->exec($sql) ) {
 					$info = $dbh->errorInfo();
 
-					error_log( "PDO Error:  " . $info[2] );
+					error_log( "PDO Error: " . $info[2] . " SQL=" . $sql );
 					return false;
 				}			
 			}
@@ -516,7 +516,7 @@ class Cabinet {
 			if ( ! $dbh->exec($delsql) ) {
 				$info = $dbh->errorInfo();
 
-				error_log( "PDO Error:  " . $info[2] );
+				error_log( "PDO Error: " . $info[2] . " SQL=" . $sql );
 				return false;
 			}
 		}
@@ -540,7 +540,7 @@ class CabinetAudit {
 		if ( ! $dbh->exec( $sql ) ) {
 			$info = $dbh->errorInfo();
 
-			error_log( "PDO Error:  " . $info[2] );
+			error_log( "PDO Error: " . $info[2] . " SQL=" . $sql );
 			return false;
 		}
 		
@@ -559,7 +559,7 @@ class CabinetAudit {
 		} else {
 			$info = $dbh->errorInfo();
 
-			error_log( "PDO Error:  " . $info[2] );
+			error_log( "PDO Error: " . $info[2] . " SQL=" . $sql );
 			return false;
 		}
 		
@@ -578,7 +578,7 @@ class CabinetAudit {
 		} else {
 			$info = $dbh->errorInfo();
 
-			error_log( "PDO Error:  " . $info[2] );
+			error_log( "PDO Error: " . $info[2] . " SQL=" . $sql );
 			return false;
 		}
 		
@@ -606,7 +606,7 @@ class CabinetTemps {
 		} else {
 			$info = $dbh->errorInfo();
 
-			error_log( "PDO Error:  " . $info[2] );
+			error_log( "PDO Error: " . $info[2] . " SQL=" . $sql );
 			return false;
 		}
 		
@@ -642,7 +642,7 @@ class CabinetTemps {
 			if ( ! $dbh->exec( $sql ) ) {
 				$info = $dbh->errorInfo();
 
-				error_log( "PDO Error:  " . $info[2] );
+				error_log( "PDO Error: " . $info[2] . " SQL=" . $sql );
 				return false;
 			}
 
@@ -650,7 +650,7 @@ class CabinetTemps {
 			if ( ! $dbh->exec( $sql ) ) {
 				$info = $dbh->errorInfo();
 
-				error_log( "PDO Error:  " . $info[2] );
+				error_log( "PDO Error: " . $info[2] . " SQL=" . $sql );
 				return false;
 			}
 		}
@@ -1014,7 +1014,7 @@ class Device {
 		if ( ! $dbh->exec( $sql ) ) {
 			$info = $dbh->errorInfo();
 
-			error_log( "PDO Error:  " . $info[2] );
+			error_log( "PDO Error: " . $info[2] . " SQL=" . $sql );
 			return false;
 		}
 
@@ -1122,7 +1122,7 @@ class Device {
 		if ( ! $dbh->exex( $sql ) ) {
 			$info = $dbh->errorInfo();
 
-			error_log( "PDO Error:  " . $info[2] );
+			error_log( "PDO Error: " . $info[2] . " SQL=" . $sql );
 			return false;
 		}
 		
@@ -1211,7 +1211,7 @@ class Device {
 		if ( ! $row = $dbh->query( $sql )->fetch() ) {
 			$info = $dbh->errorInfo();
 
-			error_log( "PDO Error:  " . $info[2] );
+			error_log( "PDO Error: " . $info[2] . " SQL=" . $sql );
 			return false;
 		}		
 
@@ -1237,7 +1237,7 @@ class Device {
 		if( ! $dbh->exec($update_sql) ) {
 			$info = $dbh->errorInfo();
 
-			error_log( "PDO Error:  " . $info[2] );
+			error_log( "PDO Error: " . $info[2] . " SQL=" . $sql );
 			return false;
 		}
 		
@@ -1247,12 +1247,15 @@ class Device {
 	function GetDevice( $db = null ) {
 		global $dbh;
 		
+		if ( $this->DeviceID == 0 )
+			return false;
+		
 		$sql = "select * from fac_Device where DeviceID=\"" . intval($this->DeviceID) . "\"";
 
 		if(! $devRow = $dbh->query($sql)->fetch() ) {
 			$info = $dbh->errorInfo();
 
-			error_log( "PDO Error:  " . $info[2] );
+			error_log( "PDO Error: " . $info[2] . " SQL=" . $sql );
 			return false;
 		}
 		
@@ -1490,7 +1493,7 @@ class Device {
 		if ( ! $row = $dbh->query( $sql )->fetch() ) {
 			$info = $dbh->errorInfo();
 
-			error_log( "PDO Error:  " . $info[2] );
+			error_log( "PDO Error: " . $info[2] . " SQL=" . $sql );
 			return false;
 		}
 		
@@ -1623,7 +1626,7 @@ class Device {
 		if ( ! $dbh->exec( $sql ) ) {
 			$info = $dbh->errorInfo();
 
-			error_log( "PDO Error:  " . $info[2] );
+			error_log( "PDO Error: " . $info[2] . " SQL=" . $sql );
 			return false;
 		}
 		
@@ -2147,7 +2150,7 @@ class Device {
 				if ( ! $dbh->exec( $sql ) ) {
 					$info = $dbh->errorInfo();
 
-					error_log( "PDO Error:  " . $info[2] );
+					error_log( "PDO Error: " . $info[2] . " SQL=" . $sql );
 					return false;
 				}				
 			}
@@ -2157,7 +2160,7 @@ class Device {
 			if ( ! $dbh->exec( $sql ) ) {
 				$info = $dbh->errorInfo();
 
-				error_log( "PDO Error:  " . $info[2] );
+				error_log( "PDO Error: " . $info[2] . " SQL=" . $sql );
 				return false;
 			}
 		}
@@ -2192,14 +2195,29 @@ class DevicePorts {
 	var $ColorID;
 	var $Notes;
 	
-	static function GetPortsforDevice( $DeviceID ) {
+	function MakeSafe() {
+		$this->ConnectionID = intval( $this->ConnectionID );
+		$this->DeviceID = intval( $this->DeviceID );
+		$this->DevicePort = intval( $this->DevicePort );
+		$this->MediaID = intval( $this->MediaID );
+		$this->PortDescriptor = mysql_real_escape_string( $this->PortDescriptor );
+		$this->ColorID = intval( $this->ColorID );
+		$this->Notes = mysql_real_escape_string( $this->Notes );
+	}
+	
+	static function getPortList( $DeviceID ) {
 		global $dbh;
 		
 		if ( intval( $DeviceID ) < 1 ) {
 			return false;
 		}
 		
-		$sql="SELECT * FROM fac_DevicePorts WHERE DeviceID=".intval($DeviceID);
+		$dev = new Device();
+		$dev->DeviceID = $DeviceID;
+		if ( ! $dev->GetDevice() )
+			return false;	// This device doesn't exist
+		
+		$sql = sprintf( "SELECT * FROM fac_DevicePorts WHERE DeviceID=%d", $dev->DeviceID );
 		
 		$portList = array();
 		
@@ -2216,7 +2234,73 @@ class DevicePorts {
 			$portList[$n]->Notes = $row["Notes"];
 		}
 		
+		if ( sizeof( $portList ) == 0 && $dev->DeviceType == "Switch" ) {
+			// Build the DevicePorts from the existing info in the following priority:
+			//  - Existing switchconnection table
+			//  - SNMP data (if it exists)
+			//  - Placeholders
+			$swCon = new SwitchConnection();
+			$swCon->SwitchDeviceID = $dev->DeviceID;
+			
+			$nameList = SwitchInfo::getPortNames( $dev->DeviceID );
+			$aliasList = SwitchInfo::getPortAlias( $dev->DeviceID );
+			
+			$devPort->DeviceID = $dev->DeviceID;
+			
+			for ( $n = 0; $n < $dev->Ports; $n++ ) {
+				$portList[$n] = new DevicePorts();
+				
+				$portList[$n]->DevicePort = $n + 1;
+				$swCon->SwitchPortNumber = $n + 1;
+				
+				if ( $swCon->GetConnectionRecord() )
+					$portList[$n]->Notes = $swCon->Notes;
+				else
+					$portList[$n]->Notes = $aliasList[$n];
+					
+				$portList[$n]->PortDescriptor = @$nameList[$n];
+				
+				$portList[$n]->CreatePort();
+			}
+		}
+		
 		return $portList;
+	}
+	
+	function CreatePort() {
+		global $dbh;
+		
+		$this->MakeSafe();
+		
+		$sql = sprintf( "insert into fac_DevicePorts set DeviceID=%d, DevicePort=%d, MediaID=%d, PortDescriptor=\"%s\", ColorID=%d, Notes=\"%s\"",
+			$this->DeviceID, $this->DevicePort, $this->MediaID, $this->PortDescriptor, $this->ColorID, $this->Notes );
+			
+		if ( ! $dbh->exec( $sql ) ) {
+			$info = $dbh->errorInfo();
+
+			error_log( "PDO Error: " . $info[2] . " SQL=" . $sql );
+			return false;
+		} else {
+			$this->ConnetionID = $dbh->lastInsertID();
+		}
+		
+		return $this->ConnectionID;		
+	}
+	
+	function UpdatePort() {
+		global $dbh;
+		
+		$sql = sprintf( "update fac_DevicePorts set DeviceID=%d, DevicePort=%d, MediaID=%d, PortDescriptor=\"%s\", ColorID=%d, Notes=\"%s\" where ConnectionID=%d",
+			$this->DeviceID, $this->DevicePort, $this->MediaID, $this->PortDescriptor, $this->ColorID, $this->Notes, $this->ConnectionID );
+			
+		if ( ! $dbh->exec( $sql ) ) {
+			$info = $dbh->errorInfo();
+
+			error_log( "PDO Error: " . $info[2] . " SQL=" . $sql );
+			return false;
+		}
+		
+		return;
 	}
 }
 
@@ -3081,21 +3165,20 @@ class SwitchConnection {
 		}
 	}
 	
-	function GetConnectionRecord( $db ) {
+	function GetConnectionRecord( $db = null ) {
+		global $dbh;
+		
 		$sql = sprintf( "select * from fac_SwitchConnection where SwitchDeviceID=%d and SwitchPortNumber=%d", intval( $this->SwitchDeviceID), intval( $this->SwitchPortNumber ) );
-		
-		if ( ! $result = mysql_query( $sql, $db ) ) {
-			error_log( sprintf( "%s; SQL=`%s`", mysql_error( $db ), $sql ) );
-			return -1;
+			
+		if ( ! $row = $dbh->query( $sql )->fetch() ) {
+			return false;
 		}
+
+		$this->EndpointDeviceID = $row["EndpointDeviceID"];
+		$this->EndpointPort = $row["EndpointPort"];
+		$this->Notes = $row["Notes"];
 		
-		if ( $row = mysql_fetch_array( $result ) ) {
-			$this->EndpointDeviceID = $row["EndpointDeviceID"];
-			$this->EndpointPort = $row["EndpointPort"];
-			$this->Notes = $row["Notes"];
-		}
-		
-		return 1;	
+		return;	
 	}
     
 	function RemoveConnection($db, $recursive=false ) {
@@ -3214,6 +3297,10 @@ class SwitchInfo {
 		if(!$dev->GetDevice()) {
 			return false;
 		}
+		
+		if ( $dev->PrimaryIP == "" || $dev->SNMPCommunity == "" )
+			return;
+			
 		return @end( explode( ":", snmp2_get( $dev->PrimaryIP, $dev->SNMPCommunity, 'IF-MIB::ifNumber.0' )));
 	}
 
@@ -3227,6 +3314,9 @@ class SwitchInfo {
 			return false;
 		}
 
+		if ( $dev->PrimaryIP == "" || $dev->SNMPCommunity == "" )
+			return;
+			
 		$x = array();
 		for ( $n=1; $n < SwitchInfo::getNumPorts($DeviceID); $n++ ) {
 			$portdesc = @end( explode( ":", snmp2_get( $dev->PrimaryIP, $dev->SNMPCommunity, "IF-MIB::ifDescr.$n" )));
@@ -3247,13 +3337,19 @@ class SwitchInfo {
 			return false;
 		}
 		
+		if ( $dev->PrimaryIP == "" || $dev->SNMPCommunity == "" )
+			return;
+			
 		$baseOID = ".1.3.6.1.2.1.31.1.1.1.1.";
-		$baseOID = "IF-MIB::ifDescr."; // MIB instead of OID, also full name instead of shorthand
+		$baseOID = "IF-MIB::ifName."; // MIB instead of OID, also full name instead of shorthand
 		
 		$nameList = array();
 		if ( is_null( $portid )) {		
 			for ( $n=0; $n < $dev->Ports; $n++ ){
-				$query = @end( explode( ":", snmp2_get( $dev->PrimaryIP, $dev->SNMPCommunity, $baseOID . ( $dev->FirstPortNum + $n ))));
+				// Check to make sure that you're not timing out (snmp2_get returns FALSE), and if so, break out of the loop
+				if ( ! $reply = snmp2_get( $dev->PrimaryIP, $dev->SNMPCommunity, $baseOID . ( $dev->FirstPortNum + $n )) )
+					break;
+				$query = @end( explode( ":", $reply ) );
 				$nameList[$n] = $query;
 			}
 		} else {
@@ -3274,13 +3370,18 @@ class SwitchInfo {
 			return false;
 		}
 		
+		if ( $dev->PrimaryIP == "" || $dev->SNMPCommunity == "" )
+			return;
+			
 		$baseOID = ".1.3.6.1.2.1.2.2.1.8.";
 		$baseOID="IF-MIB::ifOperStatus."; // arguments for not using MIB?
 
 		$statusList = array();
 		if ( is_null($portid) ) {		
 			for ( $n=0; $n < $dev->Ports; $n++ ) {
-				@preg_match( "/(INTEGER: )(.+)(\(.*)/", snmp2_get( $dev->PrimaryIP, $dev->SNMPCommunity, $baseOID.( $dev->FirstPortNum+$n )), $matches);
+				if ( ! $reply = snmp2_get( $dev->PrimaryIP, $dev->SNMPCommunity, $baseOID.( $dev->FirstPortNum+$n )) )
+					break;
+				@preg_match( "/(INTEGER: )(.+)(\(.*)/", $reply, $matches);
 				$statusList[$n]=@$matches[2];
 			}
 		}else{
@@ -3302,13 +3403,18 @@ class SwitchInfo {
 			return false;
 		}
 		
+		if ( $dev->PrimaryIP == "" || $dev->SNMPCommunity == "" )
+			return;
+			
 		$baseOID=".1.3.6.1.2.1.31.1.1.1.18.";
 		
 		$aliasList = array();
 
 		if ( is_null( $portid )) {
 			for ( $n=0; $n < $dev->Ports; $n++ ) {
-				$query = @end( explode( ":", snmp2_get( $dev->PrimaryIP, $dev->SNMPCommunity, $baseOID.( $dev->FirstPortNum+$n ))));
+				if ( ! $reply = snmp2_get( $dev->PrimaryIP, $dev->SNMPCommunity, $baseOID.( $dev->FirstPortNum+$n )) )
+					break;
+				$query = @end( explode( ":", $reply ));
 				$aliasList[$n] = $query;
 			}
 		}else{

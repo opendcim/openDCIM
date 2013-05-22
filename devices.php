@@ -3,6 +3,7 @@
 	require_once( 'facilities.inc.php' );
 
 	$dev=new Device();
+	$dev=new Device();
 	$cab=new Cabinet();
 	$user=new User();
 	$contact=new Contact();
@@ -322,6 +323,8 @@
 				$pwrCords=$pwrConnection->GetConnectionsByDevice($facDB);
 
 				if($dev->DeviceType=='Switch'){
+					$portList = DevicePorts::getPortList( $dev->DeviceID );
+					$linkList = SwitchInfo::getPortStatus( $dev->DeviceID );
 					$networkPatches->SwitchDeviceID=$dev->DeviceID;
 					$patchList=$networkPatches->GetSwitchConnections($facDB);
 				}elseif($dev->DeviceType=='Patch Panel'){
@@ -1472,16 +1475,24 @@ echo '	<div class="table">
 	}
 		  
 	if($dev->DeviceType=='Switch'){
-		print "		<div>\n		  <div><a name=\"net\">".__('Connections')."</a></div>\n		  <div>\n			<div class=\"table border switch\">\n				<div><div>".__('Switch Port')."</div><div>".__('Device')."</div><div>".__('Device Port')."</div><div>".__('Notes')."</div></div>\n";
-		if(sizeof($patchList) >0){
-			foreach($patchList as $patchConn){
-				$tmpDev=new Device();
-				$tmpDev->DeviceID=$patchConn->EndpointDeviceID;
-				$tmpDev->GetDevice($facDB);
-				
-				print "\t\t\t\t<div><div id=\"sp$patchConn->SwitchPortNumber\">$patchConn->SwitchPortNumber</div><div id=\"d$patchConn->SwitchPortNumber\" alt=\"$patchConn->EndpointDeviceID\"><a href=\"devices.php?deviceid=$patchConn->EndpointDeviceID\">$tmpDev->Label</a></div><div data=\"$patchConn->EndpointPort\" id=\"dp$patchConn->SwitchPortNumber\">$patchConn->EndpointPort</div><div data=\"$patchConn->Notes\" id=\"n$patchConn->SwitchPortNumber\">$patchConn->Notes</div></div>\n";
-			}
-		}      
+		print "		<div>\n		  <div><a name=\"net\">".__('Connections')."</a></div>\n		  <div>\n			<div class=\"table border switch\">\n				<div><div>#</div><div>".__('Name')."</div><div>".__('Device')."</div><div>".__('Device Port')."</div><div>".__('Notes')."</div><div>".__("Status")."</div></div>\n";
+// 		if(sizeof($patchList) >0){
+//			foreach($patchList as $patchConn){
+		for ( $n = 0; $n < sizeof( $portList ); $n++ ) {
+			$i = $n + 1;	// The "port number" starting at 1
+			
+			$tmpDev=new Device();
+			$tmpDev->DeviceID=$patchList[$n]->EndpointDeviceID;
+			$tmpDev->GetDevice($facDB);
+			
+			printf( "\t\t\t\t<div><div id=\"sp%d\">%d</div><div>%s</div><div id=\"d%d\" alt=\"%d\"><a href=\"devices.php?deviceid=%d\">%s</a></div>
+				<div data=\"%s\" id=\"dp%d\">%d</div><div data=\"%s\" id=\"n%d\">%s</div><div data=\"%s\" id=\"st%d\">%s</div></div>\n",
+				$i, $i, $portList[$n]->PortDescriptor, $i, $patchList[$n]->EndpointDeviceID, $patchList[$n]->EndpointDeviceID, $tmpDev->Label,
+				$patchList[$n]->EndpointPort, $i, $patchList[$n]->EndpointPort,	$portList[$n]->Notes, $i, $portList[$n]->Notes, $linkList[$n], $i, $linkList[$n] );
+			// print "\t\t\t\t<div><div id=\"sp"$i\">$i</div><div>".$portList[$n]->PortDescriptor."</div><div id=\"d$i\" alt=\"".$patchList[$n]->EndpointDeviceID."\"><a href=\"devices.php?deviceid=".$patchList[$n]->EndpointDeviceID."\">$tmpDev->Label</a></div><div data=\"".$patchList[$n]->EndpointPort."\" id=\"dp$i\">".$patchList[$n]->EndpointPort."</div><div data=\"".$portList[$n]->Notes."\" id=\"n$i\">".$portList[$n]->Notes."</div></div>\n";
+		}
+//			}
+//		}      
 		echo "			</div><!-- END div.table -->\n		  </div>\n		</div>";
 	}
 
