@@ -2192,27 +2192,28 @@ class DevicePorts {
 	var $ColorID;
 	var $Notes;
 	
-	static function GetPortsforDevice($DeviceID){
+	static function GetPortsforDevice( $DeviceID ) {
 		global $dbh;
 		
-		if(intval($DeviceID)<1){
+		if ( intval( $DeviceID ) < 1 ) {
 			return false;
 		}
 		
 		$sql="SELECT * FROM fac_DevicePorts WHERE DeviceID=".intval($DeviceID);
 		
-		$portList=array();
-		foreach($dbh->query($sql) as $row){
+		$portList = array();
+		
+		foreach ( $dbh->query($sql) as $row ) {
 			$n=sizeof($portList);
 			$portList[$n]=new DevicePorts();
 			
-			$portList[$n]->ConnectionID=$row["ConnectionID"];
-			$portList[$n]->DeviceID=$row["DeviceID"];
-			$portList[$n]->DevicePort=$row["DevicePort"];
-			$portList[$n]->MediaID=$row["MediaID"];
-			$portList[$n]->PortDescriptor=$row["PortDescriptor"];
-			$portList[$n]->ColorID=$row["ColorID"];
-			$portList[$n]->Notes=$row["Notes"];
+			$portList[$n]->ConnectionID = $row["ConnectionID"];
+			$portList[$n]->DeviceID = $row["DeviceID"];
+			$portList[$n]->DevicePort = $row["DevicePort"];
+			$portList[$n]->MediaID = $row["MediaID"];
+			$portList[$n]->PortDescriptor = $row["PortDescriptor"];
+			$portList[$n]->ColorID = $row["ColorID"];
+			$portList[$n]->Notes = $row["Notes"];
 		}
 		
 		return $portList;
@@ -3204,113 +3205,115 @@ class SwitchConnection {
 
 class SwitchInfo {
 	/* All of these functions will REQUIRE the built-in SNMP functions - the external calls are simply too slow */
-	static function getNumPorts($DeviceID){
+	static function getNumPorts($DeviceID) {
 		global $dbh;
 		
-		$dev=new Device();
-		$dev->DeviceID=$DeviceID;
+		$dev = new Device();
+		$dev->DeviceID = $DeviceID;
 		
-		if(!$dev->GetDevice()){
+		if(!$dev->GetDevice()) {
 			return false;
 		}
-		return @end(explode(":",snmp2_get($dev->PrimaryIP,$dev->SNMPCommunity,'IF-MIB::ifNumber.0')));
+		return @end( explode( ":", snmp2_get( $dev->PrimaryIP, $dev->SNMPCommunity, 'IF-MIB::ifNumber.0' )));
 	}
 
-	static function findFirstPort($DeviceID){
+	static function findFirstPort( $DeviceID ) {
 		global $dbh;
 		
 		$dev=new Device();
-		$dev->DeviceID=$DeviceID;
+		$dev->DeviceID = $DeviceID;
 		
-		if(!$dev->GetDevice()){
+		if ( !$dev->GetDevice() ) {
 			return false;
 		}
 
-		$x=array();
-		for($n=1;$n<SwitchInfo::getNumPorts($DeviceID);$n++){
-			$portdesc=@end(explode(":",snmp2_get($dev->PrimaryIP,$dev->SNMPCommunity,"IF-MIB::ifDescr.$n")));
-			if(preg_match("/\/1$/",$portdesc)){$x[$n]=$portdesc;} // Find lines that end with /1
+		$x = array();
+		for ( $n=1; $n < SwitchInfo::getNumPorts($DeviceID); $n++ ) {
+			$portdesc = @end( explode( ":", snmp2_get( $dev->PrimaryIP, $dev->SNMPCommunity, "IF-MIB::ifDescr.$n" )));
+			if ( preg_match( "/\/1$/", $portdesc )) {
+				$x[$n] = $portdesc;
+			} // Find lines that end with /1
 		}
 		return $x;
 	}
 
-	static function getPortNames($DeviceID,$portid=null){
+	static function getPortNames( $DeviceID, $portid = null ) {
 		global $dbh;
 		
-		$dev=new Device();
-		$dev->DeviceID=$DeviceID;
+		$dev = new Device();
+		$dev->DeviceID = $DeviceID;
 		
-		if(!$dev->GetDevice()){
+		if ( !$dev->GetDevice() ) {
 			return false;
 		}
 		
-		$baseOID=".1.3.6.1.2.1.31.1.1.1.1.";
-		$baseOID="IF-MIB::ifDescr."; // MIB instead of OID, also full name instead of shorthand
+		$baseOID = ".1.3.6.1.2.1.31.1.1.1.1.";
+		$baseOID = "IF-MIB::ifDescr."; // MIB instead of OID, also full name instead of shorthand
 		
-		$nameList=array();
-		if(is_null($portid)){		
-			for($n=0;$n<$dev->Ports;$n++){
-				$query=@end(explode(":",snmp2_get($dev->PrimaryIP,$dev->SNMPCommunity,$baseOID.($dev->FirstPortNum+$n))));
-				$nameList[$n]=$query;
+		$nameList = array();
+		if ( is_null( $portid )) {		
+			for ( $n=0; $n < $dev->Ports; $n++ ){
+				$query = @end( explode( ":", snmp2_get( $dev->PrimaryIP, $dev->SNMPCommunity, $baseOID . ( $dev->FirstPortNum + $n ))));
+				$nameList[$n] = $query;
 			}
-		}else{
-				$query=@end(explode(":",snmp2_get($dev->PrimaryIP,$dev->SNMPCommunity,$baseOID.$portid)));
-				$nameList=$query;
+		} else {
+				$query = @end( explode( ":", snmp2_get( $dev->PrimaryIP, $dev->SNMPCommunity, $baseOID.$portid )));
+				$nameList = $query;
 		}
 		
 		return $nameList;
 	}
 	
-	static function getPortStatus($DeviceID,$portid=null){
+	static function getPortStatus( $DeviceID, $portid = null ) {
 		global $dbh;
 		
-		$dev=new Device();
-		$dev->DeviceID=$DeviceID;
+		$dev = new Device();
+		$dev->DeviceID = $DeviceID;
 		
-		if(!$dev->GetDevice()){
+		if ( ! $dev->GetDevice() ) {
 			return false;
 		}
 		
 		$baseOID = ".1.3.6.1.2.1.2.2.1.8.";
 		$baseOID="IF-MIB::ifOperStatus."; // arguments for not using MIB?
 
-		$statusList=array();
-		if(is_null($portid)){		
-			for($n=0;$n<$dev->Ports;$n++){
-				@preg_match("/(INTEGER: )(.+)(\(.*)/",snmp2_get($dev->PrimaryIP,$dev->SNMPCommunity,$baseOID.($dev->FirstPortNum+$n)),$matches);
+		$statusList = array();
+		if ( is_null($portid) ) {		
+			for ( $n=0; $n < $dev->Ports; $n++ ) {
+				@preg_match( "/(INTEGER: )(.+)(\(.*)/", snmp2_get( $dev->PrimaryIP, $dev->SNMPCommunity, $baseOID.( $dev->FirstPortNum+$n )), $matches);
 				$statusList[$n]=@$matches[2];
 			}
 		}else{
-			@preg_match("/(INTEGER: )(.+)(\(.*)/",snmp2_get($dev->PrimaryIP,$dev->SNMPCommunity,$baseOID.$portid),$matches);
+			@preg_match( "/(INTEGER: )(.+)(\(.*)/", snmp2_get( $dev->PrimaryIP, $dev->SNMPCommunity, $baseOID.$portid ), $matches);
 			// This will change the array that was getting kicked back to a single value for an individual port lookup
-			$statusList=@$matches[2];
+			$statusList = @$matches[2];
 		}
 		
 		return $statusList;
 	}
 	
-	static function getPortAlias($DeviceID,$portid=null){
+	static function getPortAlias( $DeviceID, $portid = null ) {
 		global $dbh;
 		
-		$dev=new Device();
-		$dev->DeviceID=$DeviceID;
+		$dev = new Device();
+		$dev->DeviceID = $DeviceID;
 		
-		if(!$dev->GetDevice()){
+		if ( ! $dev->GetDevice() ) {
 			return false;
 		}
 		
 		$baseOID=".1.3.6.1.2.1.31.1.1.1.18.";
 		
-		$aliasList=array();
+		$aliasList = array();
 
-		if(is_null($portid)){
-			for($n=0;$n<$dev->Ports;$n++){
-				$query=@end(explode(":",snmp2_get($dev->PrimaryIP,$dev->SNMPCommunity,$baseOID.($dev->FirstPortNum+$n))));
-				$aliasList[$n]=$query;
+		if ( is_null( $portid )) {
+			for ( $n=0; $n < $dev->Ports; $n++ ) {
+				$query = @end( explode( ":", snmp2_get( $dev->PrimaryIP, $dev->SNMPCommunity, $baseOID.( $dev->FirstPortNum+$n ))));
+				$aliasList[$n] = $query;
 			}
 		}else{
-			$query=@end(explode(":",snmp2_get($dev->PrimaryIP,$dev->SNMPCommunity,$baseOID.$portid)));
-			$aliasList=$query;
+			$query = @end( explode( ":", snmp2_get( $dev->PrimaryIP, $dev->SNMPCommunity, $baseOID.$portid )));
+			$aliasList = $query;
 		}
 		
 		return $aliasList;	

@@ -165,7 +165,7 @@
 	$tzmenu.='</ul>';
 
 	// Build list of media types
-	$mediatypes="";
+	$mediatypes = "";
 
 	// Build list of cable color codes
 	$cablecolors="";
