@@ -559,7 +559,7 @@ div.page.device {
 	/* Turn off list bullets */
 	ul.mktree  li { list-style: none; } 
 	/* Control how "spaced out" the tree is */
-	ul.mktree, ul.mktree ul , ul.mktree li { margin-left:10px; padding:0px; }
+	ul.mktree, ul.mktree ul , ul.mktree li { margin-left:5px; padding:0px; }
 	/* Provide space for our own "bullet" inside the LI */
 	ul.mktree  li           .bullet { padding-left: 15px; }
 	/* Show "bullets" in the links, depending on the class of the LI that the link's in */
@@ -571,9 +571,10 @@ div.page.device {
 	ul.mktree  li.liClosed  ul { display: none; }
 	/* Format menu items differently depending on what level of the tree they are in */
 	ul.mktree  li { font-family: arial, helvetica; font-size: 12pt; }
+	ul.mktree  a.DC { color: #000088; A:hover}
+	ul.mktree  a.CONTAINER { color: #008800; }
+	ul.mktree  a:hover { color: red; }
 	ul.mktree  li ul li { font-family: arial, helvetica; font-size: 10pt; }
-	ul.mktree  li ul li ul li { font-family: arial, helvetica; font-size: 8pt; }
-	ul.mktree  li ul li ul li ul li { font-family: arial, helvetica; font-size: 6pt; }
 }
 .meter-wrap{position: relative;background-color: lightgrey;}
 .meter-wrap, .meter-value, .meter-text {width: 155px; height: 1em;}

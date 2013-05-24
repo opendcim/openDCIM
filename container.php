@@ -1,0 +1,246 @@
+<?php
+	require_once('db.inc.php');
+	require_once('facilities.inc.php');
+
+	$user=new User();
+
+	$user->UserID=$_SERVER['REMOTE_USER'];
+	$user->GetUserRights($facDB);
+
+	if(!$user->SiteAdmin){
+		// No soup for you.
+		header('Location: '.redirect());
+		exit;
+	}
+
+	$c=new Container();
+	if(isset($_POST['action'])&&(($_POST['action']=='Create')||($_POST['action']=='Update'))){
+		$c->ContainerID=$_POST['containerid'];
+		$c->Name=trim($_POST['name']);
+		$c->DrawingFileName=$_POST['drawingfilename'];
+		$c->ParentID=$_POST['parentid'];
+		$c->MapX=$_POST['x'];
+		$c->MapY=$_POST['y'];
+		
+		if($c->Name!=""){
+			if($_POST['action']=='Create'){
+				$c->CreateContainer($facDB);
+			}else{
+				$c->UpdateContainer($facDB);
+			}
+		}
+	}
+
+	if(isset($_REQUEST['containerid'])&& $_REQUEST['containerid'] >0){
+		$c->ContainerID=(isset($_POST['containerid']) ? $_POST['containerid'] : $_GET['containerid']);
+		$c->GetContainer($facDB);
+	}
+	$cList=$c->GetContainerList($facDB);
+
+
+
+	$imageselect='<div id="preview"></div><div id="filelist">';
+
+	$path='./drawings';
+	$dir=scandir($path);
+	foreach($dir as $i => $f){
+		if(is_file($path.DIRECTORY_SEPARATOR.$f)){
+			$imageinfo=getimagesize($path.DIRECTORY_SEPARATOR.$f);
+			if(preg_match('/^image/i', $imageinfo['mime'])){
+				$imageselect.="<span>$f</span>\n";
+			}
+		}
+	}
+	$imageselect.="</div>";
+
+?>
+<!doctype html>
+<html>
+<head>
+  <meta http-equiv="X-UA-Compatible" content="IE=Edge">
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <title>openDCIM Data Center Inventory</title>
+  
+  <link rel="stylesheet" href="css/inventory.php" type="text/css">
+  <link rel="stylesheet" href="css/jquery-ui.css" type="text/css">
+  <link rel="stylesheet" href="css/validationEngine.jquery.css" type="text/css">
+  <!--[if lt IE 9]>
+  <link rel="stylesheet"  href="css/ie.css" type="text/css">
+  <![endif]-->
+  <script type="text/javascript" src="scripts/jquery.min.js"></script>
+  <script type="text/javascript" src="scripts/jquery-ui.min.js"></script>
+  <script type="text/javascript" src="scripts/jquery.validationEngine-en.js"></script>
+  <script type="text/javascript" src="scripts/jquery.validationEngine.js"></script>
+
+  <script type="text/javascript">
+	$(document).ready(function() {
+		$('#datacenterform').validationEngine({});
+		$('#drawingfilename').click(function(){
+			$("#imageselection").dialog({
+				resizable: false,
+				height:500,
+				width: 600,
+				modal: true,
+				buttons: {
+<?php echo '					',_("Select"),': function() {'; ?>
+						if($('#imageselection #preview').attr('image')!=""){
+							$('#drawingfilename').val($('#imageselection #preview').attr('image'));
+						}
+						$(this).dialog("close");
+					}
+				}
+			});
+			$("#imageselection span").each(function(){
+				var preview=$('#imageselection #preview');
+				$(this).click(function(){
+					preview.css({'border-width': '5px', 'width': '380px', 'height': '380px'});
+					preview.html('<img src="drawings/'+$(this).text()+'" alt="preview">').attr('image',$(this).text());
+					preview.children('img').load(function(){
+						var topmargin=0;
+						var leftmargin=0;
+						if($(this).height()<$(this).width()){
+							$(this).width(preview.innerHeight());
+							$(this).css({'max-width': preview.innerWidth()+'px'});
+							topmargin=Math.floor((preview.innerHeight()-$(this).height())/2);
+						}else{
+							$(this).height(preview.innerHeight());
+							$(this).css({'max-height': preview.innerWidth()+'px'});
+							leftmargin=Math.floor((preview.innerWidth()-$(this).width())/2);
+						}
+						$(this).css({'margin-top': topmargin+'px', 'margin-left': leftmargin+'px'});
+					});
+					$("#imageselection span").each(function(){
+						$(this).removeAttr('style');
+					});
+					$(this).css('border','1px dotted black')
+				});
+				if($('#drawingfilename').val()==$(this).text()){
+					$(this).click();
+				}
+			});
+		});
+	});
+	function coords(evento){
+		mievento = evento || window.event;
+
+		yo=document.getElementById("yo");
+		x=mievento.layerX;
+		y=mievento.layerY;
+		yo.style.left=(x-12)+"px";
+		yo.style.top=(y-12)+"px";
+		yo.hidden=false;
+		CoorX=document.getElementById("x");
+		CoorX.value=x*2;
+		CoorY=document.getElementById("y");
+		CoorY.value=y*2;
+	}
+	function mueve(){
+		tam=50;
+		red=.5;
+		tam=tam*red;
+		yo=document.getElementById("yo");
+		cont=document.getElementById("containerimg");
+		CoorX=document.getElementById("x");
+		CoorY=document.getElementById("y");
+		if (CoorX.value<0) CoorX.value=0;
+		if (CoorX.value*red>cont.offsetWidth) CoorX.value=cont.offsetWidth/red;
+		if (CoorY.value<0) CoorY.value=0;
+		if (CoorY.value*red>cont.offsetHeight) CoorY.value=cont.offsetHeight/red;
+		yo.style.left=(CoorX.value*red-tam/2)+"px";
+		yo.style.top=(CoorY.value*red-tam/2)+"px";
+		if (CoorX.value<0 || CoorX.value*red>cont.offsetWidth
+			|| CoorY.value<0 || CoorY.value*red>cont.offsetHeight)
+			yo.hidden=true;
+		else
+			yo.hidden=false;
+	}
+  </script>
+
+</head>
+<body>
+<div id="header"></div>
+<div class="page">
+<?php
+	include( 'sidebar.inc.php' );
+
+echo '<div class="main">
+<h2>',$config->ParameterArray["OrgName"],'</h2>
+<h3>',_("Container Detail"),'</h3>
+<div class="center"><div>
+<form id="containerform" action="',$_SERVER["PHP_SELF"],'" method="POST">
+<div class="table">
+<div>
+   <div><label for="containerid">',_("Container ID"),'</label></div>
+   <div><select name="containerid" id="containerid" onChange="form.submit()">
+      <option value="0">',_("New Container"),'</option>';
+
+	foreach($cList as $cRow){
+		if($cRow->ContainerID == $c->ContainerID){$selected=" selected";}else{$selected="";}
+		print "<option value=\"$cRow->ContainerID\"$selected>$cRow->Name</option>\n";
+	}
+
+echo '	</select></div>
+</div>
+<div>
+   <div><label for="cname">',_("Name"),'</label></div>
+   <div><input class="validate[required,minSize[3],maxSize[80]]" type="text" name="name" id="cname" size="50" maxlength="80" value="',$c->Name,'"></div>
+</div>
+<div>
+   <div><label for="drawingfilename">',_("Drawing URL"),'</label></div>
+   <div><input type="text" name="drawingfilename" id="drawingfilename" size=60 value="',$c->DrawingFileName,'"></div>
+</div>
+<div>
+	<div><label for="parentid">',_("Parent Container"),'</label></div>
+  	<div><select name="parentid" id="parentid">
+      <option value="0">',_("None"),'</option>';
+
+//	$container=new Container();
+//	$cList=$container->GetContainerList($facDB);
+	foreach($cList as $cRow){
+		if ($cRow->ContainerID<>$c->ContainerID){
+			if($cRow->ContainerID == $c->ParentID){$selected=" selected";}else{$selected="";}
+			print "<option value=\"$cRow->ContainerID\"$selected>$cRow->Name</option>\n";
+		}
+	}
+
+echo '	</select></div>
+</div>
+<div> 
+	<div><b>X</b></div> 
+ 	<div><input type="text" name="x" id="x" value="',$c->MapX,'" onblur="mueve()"></div> 
+</div> 
+<div> 
+    <div><b>Y</b></div> 
+    <div><input type="text" name="y" id="y" value="',$c->MapY,'" onblur="mueve()"></div> 
+</div>'; 
+
+if ($c->ParentID>0){
+	print "<div>\n  <div><b>Click on the image to select container coordinates</b></div>"; 
+	$container->ContainerID=$c->ParentID;
+	$container->GetContainer($facDB);
+	print "<div>";
+	print $container->MakeContainerMiniImage($facDB,"container",$c->ContainerID);
+	print "</div></div>"; 
+}
+
+echo '<div class="caption">';
+
+	if($c->ContainerID >0){
+		echo '   <button type="submit" name="action" value="Update">',_("Update"),'</button>';
+	}else{
+		echo '   <button type="submit" name="action" value="Create">',_("Create"),'</button>';
+	}
+?>
+</div>
+</div> <!-- END div.table -->
+</form>
+<?php echo '
+			<div id="imageselection" title="Image file selector">
+				',$imageselect,'
+			</div>
+</div></div>
+<a href="index.php">[ ',_("Return to Main Menu"),' ]</a>'; ?>
+</div><!-- END div.main -->
+</div><!-- END div.page -->
+</body>
+</html>

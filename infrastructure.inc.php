@@ -564,7 +564,7 @@ class DataCenter {
 		$zone = new Zone();
 		
 		$classType = "liClosed";
-		$tree = str_repeat(" ",$lev+1)."<li class=\"$classType\" id=\"dc$this->DataCenterID\"><a href=\"dc_stats.php?dc=" 
+		$tree = str_repeat(" ",$lev+1)."<li class=\"$classType\" id=\"dc$this->DataCenterID\"><a class=\"DC\" href=\"dc_stats.php?dc=" 
 			. $this->DataCenterID . "\">" . $this->Name . "</a>/\n";
 		$tree.=str_repeat(" ",$lev+2)."<ul>\n";
 
@@ -1111,7 +1111,7 @@ class Container {
 		$tree="\n<ul class=\"mktree\" id=\"datacenters\">\n";;
 		//Add root children
 		$tree.=$c->AddContainerToTree($db,0);
-		$tree .= "<li class=\"liOpen\" id=\"dc-1\"><a href=\"storageroom.php\">"._("Storage Room")."</a></li>\n";
+		$tree .= "<li class=\"liOpen\" id=\"dc-1\"><a class=\"DC\" href=\"storageroom.php\">"._("Storage Room")."</a></li>\n";
 		$tree .= "</ul>\n";
 		return $tree;
 	}
@@ -1123,7 +1123,7 @@ class Container {
 		
 		if ($this->GetContainer($db)){
 			$lev++;
-			$tree .= str_repeat(" ",$lev)."<li class=\"liOpen\" id=\"c".$this->ContainerID."\"><a href=\"container_stats.php?container=" 
+			$tree .= str_repeat(" ",$lev)."<li class=\"liOpen\" id=\"c".$this->ContainerID."\"><a class=\"CONTAINER\" href=\"container_stats.php?container=" 
 					. $this->ContainerID . "\">" . $this->Name . "</a>\n";
 			$lev++;
 			$tree .= str_repeat(" ",$lev)."<ul>\n";
@@ -1291,10 +1291,10 @@ class Container {
 		$cStats["Occupied"] = 0;
 		$cStats["Allocated"] = 0;
 		$cStats["Available"] = 0;
-		$cStats["TotalWatts"] = 0;
 		$cStats["SquareFootage"] = 0;
-		$cStats["RealWatts"] = 0;
 		$cStats["MaxkW"] = 0;
+		$cStats["ComputedWatts"] = 0;
+		$cStats["MeasuredWatts"] = 0;
 		
 		$dcList = $this->GetChildDCList( $db );
 		if ( count( $dcList ) > 0 ) {
@@ -1306,9 +1306,9 @@ class Container {
 				$cStats["Occupied"] += $dcStats["Occupied"];
 				$cStats["Allocated"] += $dcStats["Allocated"];
 				$cStats["Available"] += $dcStats["Available"];
-				$cStats["TotalWatts"] += $dcStats["TotalWatts"];
 				$cStats["SquareFootage"] += $datacenter->SquareFootage;
-				$cStats["RealWatts"] += $dcStats["RealWatts"];
+				$cStats["ComputedWatts"] += $dcStats["ComputedWatts"];
+				$cStats["MeasuredWatts"] += $dcStats["MeasuredWatts"];
 				$cStats["MaxkW"] += $datacenter->MaxkW;
 			} 
 		}
@@ -1323,9 +1323,9 @@ class Container {
 				$cStats["Occupied"] += $childStats["Occupied"];
 				$cStats["Allocated"] += $childStats["Allocated"];
 				$cStats["Available"] += $childStats["Available"];
-				$cStats["TotalWatts"] += $childStats["TotalWatts"];
 				$cStats["SquareFootage"] += $childStats["SquareFootage"];
-				$cStats["RealWatts"] += $childStats["RealWatts"];
+				$cStats["ComputedWatts"] += $childStats["ComputedWatts"];
+				$cStats["MeasuredWatts"] += $childStats["MeasuredWatts"];
 				$cStats["MaxkW"] += $childStats["MaxkW"]; 
 			}
 		}
