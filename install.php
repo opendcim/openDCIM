@@ -616,10 +616,8 @@ if(isset($results)){
   <script type="text/javascript">
 	$(document).ready( function() {
 		$('#tooltip').multiselect();
-		$("#ToolTips option").each(function(){
-			if($(this).val()==$("#ToolTips").attr('data')){
-				$(this).attr('selected', 'selected');
-			}
+		$("select#ToolTips, select#CDUToolTips, select#LabelCase").each(function(){
+			$(this).val($(this).attr('data'));
 		});
         function colorchange(hex,id){
 			if(id==='HeaderColor'){
@@ -634,11 +632,6 @@ if(isset($results)){
 				colorchange($(this).val(),$(this).attr('id'));
 			}
 		}).change(function(){colorchange($(this).val(),$(this).attr('id'));});
-		$("#LabelCase option").each(function(){
-			if($(this).val()==$("#LabelCase").attr('data')){
-				$(this).attr('selected', 'selected');
-			}
-		});
 		$("#configtabs").tabs();
 		$('#configtabs input[defaultvalue],#configtabs select[defaultvalue]').each(function(){
 			$(this).parent().after('<div><button type="button">&lt;--</button></div><div><span>'+$(this).attr('defaultvalue')+'</span></div>');
