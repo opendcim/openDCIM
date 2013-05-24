@@ -749,11 +749,17 @@ class ColorCoding {
 
 	static function TimesUsed($colorid){
 		global $dbh;
+		$colorid=intval($colorid);
 
-		$count=$dbh->prepare('SELECT * FROM fac_DevicePorts WHERE ColorID='.intval($colorid));
+		// get a count of the number of times this color is in use both on ports or assigned
+		// to a template.  
+		$sql="SELECT COUNT(*) + (SELECT COUNT(*) FROM fac_MediaTypes WHERE ColorID=$colorid) 
+			AS Result FROM fac_DevicePorts WHERE ColorID=$colorid";
+		$count=$dbh->prepare($sql);
 		$count->execute();
+		
 
-		return $count->rowCount();
+		return $count->fetchColumn();
 	}
 }
 
@@ -2569,24 +2575,34 @@ class MediaTypes {
 	function CreateType() {
 		global $dbh;
 		
-		$sql = sprintf( "insert into fac_MediaTypes set MediaType=\"%s\", ColorID=%d",
-			mysql_real_escape_string( $this->MediaType ), $this->ColorID );
+		$sql="INSERT INTO fac_MediaTypes SET MediaType=\"".addslashes($this->MediaType)."\", 
+			ColorID=".intval($this->ColorID);
 			
-		if ( ! $dbh->exec( $sql ) )
+		if($dbh->exec($sql)){
+			$this->MediaID=$dbh->lastInsertId();
+		}else{
+			$info=$dbh->errorInfo();
+
+			error_log("PDO Error: {$info[2]}");
 			return false;
+		}
 		
-		$this->MediaID = $dbh->lastInsertId();
-		
-		return;
+		return $this->MediaID;
 	}
 	
 	function UpdateType() {
 		global $dbh;
 		
-		$sql = sprintf( "update fac_MediaTypes set MediaType=\"%s\", ColorID=%d where MediaID=%d",
-			mysql_real_escape_string( $this->MediaType ), $this->ColorID, $this->MediaID );
+		$sql="UPDATE fac_MediaTypes SET MediaType=\"".addslashes($this->MediaType)."\", 
+			ColorID=".intval($this->ColorID)." WHERE MediaID=".intval($this->MediaID);
 			
-		return $dbh->exec( $sql );
+		if(!$dbh->query($sql)){
+			$info=$dbh->errorInfo();
+			error_log("PDO Error: {$info[2]}");
+			return false;
+		}else{		
+			return true;
+		}
 	}
 	
 	function DeleteType() {
@@ -2594,7 +2610,7 @@ class MediaTypes {
 		
 		global $dbh;
 		
-		$sql = sprintf( "delete from fac_MediaTypes where MediaID=%d", $this->MediaID );
+		$sql="DELETE FROM fac_MediaTypes WHERE MediaID=".intval($this->MediaID);
 		
 		return $dbh->exec( $sql );
 	}
@@ -2602,34 +2618,43 @@ class MediaTypes {
 	function GetType() {
 		global $dbh;
 		
-		$sql = sprintf( "select * from fac_MediaTypes where MediaID=%d", $this->MediaID );
+		$sql="SELECT * FROM fac_MediaTypes WHERE MediaID=".intval($this->MediaID);
 		
-		if ( ! $row = $dbh->query( $sql )->fetch() )
+		if(!$row=$dbh->query($sql)->fetch()){
 			return false;
-		
-		$this->MediaType = $row["MediaType"];
-		$this->ColorID = $row["ColorID"];
-		
-		return true;
+		}else{
+			$this->MediaType = $row["MediaType"];
+			$this->ColorID = $row["ColorID"];
+			
+			return true;
+		}
 	}
 	
 	static function GetMediaTypeList() {
 		global $dbh;
 		
-		$sql = "select * from fac_MediaTypes order by MediaType ASC";
+		$sql = "SELECT * FROM fac_MediaTypes ORDER BY MediaType ASC";
 		
 		$mediaList = array();
-		
+	
 		foreach ( $dbh->query( $sql ) as $row ) {
-			$n = sizeof( $mediaList );
+			$n=$row["MediaID"];
 			$mediaList[$n] = new MediaTypes();
-			
 			$mediaList[$n]->MediaID = $row["MediaID"];
 			$mediaList[$n]->MediaType = $row["MediaType"];
 			$mediaList[$n]->ColorID = $row["ColorID"];
 		}
 		
 		return $mediaList;
+	}
+
+	static function TimesUsed($mediaid){
+		global $dbh;
+
+		$count=$dbh->prepare('SELECT * FROM fac_DevicePorts WHERE MediaID='.intval($mediaid));
+		$count->execute();
+
+		return $count->rowCount();
 	}
 }
 

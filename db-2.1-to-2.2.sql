@@ -64,7 +64,7 @@ INSERT INTO fac_CDUToolTip VALUES(NULL, 'NumOutlets', 'Used/Total Connections', 
 -- Updating MediaTypes table
 --
 
-ALTER TABLE fac_MediaTypes ADD COLUMN ColorID INT(11) NOT NULL;
+ALTER TABLE fac_MediaTypes ADD COLUMN ColorID INT(11) DEFAULT NULL;
 
 --
 -- Add ColorCoding Table

@@ -41,6 +41,8 @@
 	}
 	if(isset($_POST['cc'])){  // Cable color codes
 		$col=new ColorCoding();
+		$col->Name=trim($_POST['cc']);
+		$col->DefaultNote=trim($_POST['ccdn']);
 		if(isset($_POST['cid'])){ // If set we're updating an existing entry
 			$col->ColorID=$_POST['cid'];
 			if(isset($_POST['original'])){
@@ -49,16 +51,12 @@
 				echo json_encode($col);
 				exit;
 			}
-			$col->Name=$_POST['cc'];
-			$col->DefaultNote=$_POST['ccdn'];
 			if($col->UpdateCode()){
 				echo 'u';
 			}else{
 				echo 'f';
 			}
 		}else{
-			$col->Name=$_POST['cc'];
-			$col->DefaultNote=$_POST['ccdn'];
 			if($col->CreateCode()){
 				echo $col->ColorID;
 			}else{
@@ -76,6 +74,43 @@
 		}
 		echo $count;
 		exit;
+	}
+	if(isset($_POST['mt'])){ // Media Types
+		$mt=new MediaTypes();
+		$mt->MediaType=trim($_POST['mt']);
+		$mt->ColorID=$_POST['mtcc'];
+		if(isset($_POST['mtid'])){ // If set we're updating an existing entry
+			$mt->MediaID=$_POST['mtid'];
+			if(isset($_POST['original'])){
+				$mt->GetType();
+			    header('Content-Type: application/json');
+				echo json_encode($mt);
+				exit;
+			}
+			if($mt->UpdateType()){
+				echo 'u';
+			}else{
+				echo 'f';
+			}
+		}else{
+			if($mt->CreateType()){
+				echo $mt->MediaID;
+			}else{
+				echo 'f';
+			}
+			
+		}
+		exit;
+	}
+	if(isset($_POST['cclist'])){
+		$codeList=ColorCoding::GetCodeList();
+		$output='<select name="mediacolorcode[]"><option value=""></option>';
+		foreach($codeList as $cc){
+			$output.="<option value=\"$cc->ColorID\">$cc->Name</option>";
+		}
+		$output.='</select>';
+		echo $output;
+		exit;		
 	}
 	// END AJAX Requests
 
@@ -164,9 +199,6 @@
 	}
 	$tzmenu.='</ul>';
 
-	// Build list of media types
-	$mediatypes = "";
-
 	// Build list of cable color codes
 	$cablecolors="";
 	$colorselector='<select name="mediacolorcode[]"><option value=""></option>';
@@ -183,6 +215,25 @@
 		}
 	}
 	$colorselector.='</select>';
+
+	// Build list of media types
+	$mediatypes="";
+	$mediaList=MediaTypes::GetMediaTypeList();
+
+	if(count($mediaList)>0){
+		foreach($mediaList as $mt){
+			$mediatypes.='<div>
+					<div><img src="images/del.gif"></div>
+					<div><input type="text" name="mediatype[]" data='.$mt->MediaID.' value="'.$mt->MediaType.'"></input></div>
+					<div><select name="mediacolorcode[]"><option value=""></option>';
+			foreach($codeList as $cc){
+				$selected=($mt->ColorID==$cc->ColorID)?' selected':'';
+				$mediatypes.="<option value=\"$cc->ColorID\"$selected>$cc->Name</option>";
+			}
+			$mediatypes.='</select></div>
+				</div>';
+		}
+	}
 
 	// Figure out what the URL to this page
 	$href="";
@@ -229,23 +280,15 @@
   <script type="text/javascript" src="scripts/jquery.ui.multiselect.js"></script>
   <script type="text/javascript">
 	$(document).ready(function(){
+		// ToolTips
+
 		$('#tooltip, #cdutooltip').multiselect();
 		$("select#ToolTips, select#CDUToolTips, select#LabelCase").each(function(){
 			$(this).val($(this).attr('data'));
 		});
-		function colorchange(hex,id){
-			if(id==='HeaderColor'){
-				$('#header').css('background-color',hex);
-			}else if(id==='BodyColor'){
-				$('.main').css('background-color',hex);
-			}
-		}
-		$(".color-picker").minicolors({
-			letterCase: 'uppercase',
-			change: function(hex, rgb){
-					colorchange($(this).val(),$(this).attr('id'));
-			}
-		}).change(function(){colorchange($(this).val(),$(this).attr('id'));});
+
+		// Applies to everything
+
 		$("#configtabs").tabs();
 		$('#configtabs input[defaultvalue],#configtabs select[defaultvalue]').each(function(){
 			$(this).parent().after('<div><button type="button">&lt;--</button></div><div><span>'+$(this).attr('defaultvalue')+'</span></div>');
@@ -266,12 +309,31 @@
 				$('input[name="OrgName"]').focus();
 			});
 		});
+
+		// Style - Site
+
+		function colorchange(hex,id){
+			if(id==='HeaderColor'){
+				$('#header').css('background-color',hex);
+			}else if(id==='BodyColor'){
+				$('.main').css('background-color',hex);
+			}
+		}
+		$(".color-picker").minicolors({
+			letterCase: 'uppercase',
+			change: function(hex, rgb){
+					colorchange($(this).val(),$(this).attr('id'));
+			}
+		}).change(function(){colorchange($(this).val(),$(this).attr('id'));});
 		$('input[name="LinkColor"]').blur(function(){
 			$("head").append("<style type=\"text/css\">a:link, a:hover, a:visited:hover {color: "+$(this).val()+";}</style>");
 		});
 		$('input[name="VisitedLinkColor"]').blur(function(){
 			$("head").append("<style type=\"text/css\">a:visited {color: "+$(this).val()+";}</style>");
 		});
+
+		// Reporting
+
 		$('#PDFLogoFile').click(function(){
 			$.get('',{fl: '1'}).done(function(data){
 				$("#imageselection").html(data);
@@ -321,6 +383,9 @@
 				});
 			});
 		});
+
+		// General - Time and Measurements
+
 		$("#tzmenu").menu();
 		$("#tzmenu ul > li").click(function(e){
 			e.preventDefault();
@@ -355,12 +420,109 @@
 			});
 			$(this).addClass('text-arrow');
 		});
-		function removeitem(rowobject,lookup){
+
+		// Cabling - Media Types
+		function removemedia(row){
+			$.post('',{mtused: row.find('div:nth-child(2) input').attr('data')}).done(function(data){
+				if(data.trim()==0){
+					rowobject.effect('explode', {}, 500, function(){
+						$(this).remove();
+					});
+				}else{
+
+				}
+			});
+
+		}
+
+		var blankmediarow=$('<div />').html('<div><img src="images/del.gif"></div><div><input id="mediatype[]" name="mediatype[]" type="text"></div><div><select name="mediacolorcode[]"></select></div>');
+		function bindmediarow(row){
+			var addrem=row.find('div:first-child');
+			var mt=row.find('div:nth-child(2) input');
+			var mtcc=row.find('div:nth-child(3) select');
+			if(mt.val().trim()!='' && addrem.attr('id')!='newline'){
+				addrem.click(function(){
+					removemedia(row);
+				});
+			}
+			function update(inputobj){
+				if(mt.val().trim()==''){
+					$.post('',{mt: mt.val(), mtid: mt.attr('data'), mtcc: mtcc.val(),original:''}).done(function(jsondata){
+						mt.val(jsondata.MediaType);
+						mtcc.val(jsondata.ColorID);
+					});
+					mt.effect('highlight', {color: 'salmon'}, 1500);
+					mtcc.effect('highlight', {color: 'salmon'}, 1500);
+					// reset value to previous
+				}else{
+					// attempt to update
+					$.post('',{mt: mt.val(), mtid: mt.attr('data'), mtcc: mtcc.val()}).done(function(data){
+						if(data.trim()=='f'){ // fail
+							$.post('',{mt: mt.val(), mtid: mt.attr('data'), mtcc: mtcc.val(),original:''}).done(function(jsondata){
+								mt.val(jsondata.MediaType);
+								mtcc.val(jsondata.ColorID);
+							});
+							mt.effect('highlight', {color: 'salmon'}, 1500);
+							mtcc.effect('highlight', {color: 'salmon'}, 1500);
+						}else if(data.trim()=='u'){ // updated
+							mt.effect('highlight', {color: 'lightgreen'}, 2500);
+							mtcc.effect('highlight', {color: 'lightgreen'}, 2500);
+						}else{ // created
+
+
+// finish this part later
+
+
+						}
+					});
+				}
+			}
+			mt.change(function(){
+				update($(this));
+			});
+			mtcc.change(function(){
+				update($(this));
+			});
+		}
+
+		$('#mediatypes > div ~ div > div:first-child').each(function(){
+			if($(this).attr('id')=='newline'){
+				var row=$(this).parent('div');
+				$(this).click(function(){
+					var newitem=blankmediarow.clone();
+					// Clone the current dropdown list
+					newitem.find('select[name="mediacolorcode[]"]').replaceWith((row.find('select[name="mediacolorcode[]"]').clone()));
+					newitem.find('div:first-child').click(function(){
+						removecolor($(this).parent('div'),false);
+					});
+					bindmediarow(newitem);
+					row.before(newitem);
+				});
+			}
+			bindmediarow($(this).parent('div'));
+		});
+
+		function updatechoices(){
+			var newlist='';
+			$.post('',{cclist: '1'}).done(function(data){
+				$('#mediatypes > div ~ div').each(function(){
+					var list=$(this).find('select[name="mediacolorcode[]"]');
+					var dc=list.val();
+					list.parent('div').html(data);
+					$(this).find('select[name="mediacolorcode[]"]').val(dc);
+				});
+			});
+		}
+
+		// Cabling - Cable Colors
+
+		function removecolor(rowobject,lookup){
 			if(!lookup){
 				rowobject.remove();
 			}else{
 				$.post('',{ccused: rowobject.find('div:nth-child(2) input').attr('data')}).done(function(data){
 					if(data.trim()==0){
+						updatechoices();
 						rowobject.effect('explode', {}, 500, function(){
 							$(this).remove();
 						});
@@ -390,7 +552,7 @@
 			var ccdn=row.find('div:nth-child(3) input');
 			if(cc.val().trim()!='' && addrem.attr('id')!='newline'){
 				addrem.click(function(){
-					removeitem(row,true);
+					removecolor(row,true);
 				});
 			}
 			row.find('div > input').each(function(){
@@ -408,6 +570,8 @@
 							}else if(data.trim()=='u'){ // updated
 								cc.effect('highlight', {color: 'lightgreen'}, 2500);
 								ccdn.effect('highlight', {color: 'lightgreen'}, 2500);
+								// update media type color pick lists
+								updatechoices();
 							}else{ // created
 								var newitem=blankrow.clone();
 								newitem.find('div:nth-child(2) input').val(cc.val()).attr('data',data.trim());
@@ -420,6 +584,8 @@
 								}else{
 									row.remove();
 								}
+								// update media type color pick lists
+								updatechoices();
 							}
 						});
 					}else if(cc.val().trim()=='' && ccdn.val().trim()=='' && addrem.attr('id')!='newline'){
@@ -434,16 +600,13 @@
 				});
 			});
 		}
-		function delrow(row){
-			
-		}
 		$('#cablecolor > div ~ div > div:first-child').each(function(){
 			if($(this).attr('id')=='newline'){
 				var row=$(this).parent('div');
 				$(this).click(function(){
 					var newitem=blankrow.clone();
 					newitem.find('div:first-child').click(function(){
-						removeitem($(this).parent('div'),false);
+						removecolor($(this).parent('div'),false);
 					});
 					bindrow(newitem);
 					row.before(newitem);
@@ -451,6 +614,10 @@
 			}
 			bindrow($(this).parent('div'));
 		});
+
+
+		// Reporting - Utilities
+
 		$('input[id^="snmp"],input[id="cut"]').each(function(){
 			var a=$(this);
 			var icon=$('<span>',{style: 'float:right;margin-top:5px;'}).addClass('ui-icon').addClass('ui-icon-info');
