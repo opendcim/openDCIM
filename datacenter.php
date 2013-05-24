@@ -22,7 +22,10 @@
 		$dc->Administrator=$_POST['administrator'];
 		$dc->DrawingFileName=$_POST['drawingfilename'];
 		$dc->MaxkW=$_POST['maxkw'];
-
+		$dc->ContainerID=$_POST['container'];
+		$dc->MapX=$_POST['x'];
+		$dc->MapY=$_POST['y'];
+		
 		if($dc->Name!=""){
 			if($_POST['action']=='Create'){
 				$dc->CreateDataCenter($facDB);
@@ -124,6 +127,40 @@
 			});
 		});
 	});
+	function coords(evento){
+		mievento = evento || window.event;
+
+		yo=document.getElementById("yo");
+		x=mievento.layerX;
+		y=mievento.layerY;
+		yo.style.left=(x-12)+"px";
+		yo.style.top=(y-12)+"px";
+		yo.hidden=false;
+		CoorX=document.getElementById("x");
+		CoorX.value=x*2;
+		CoorY=document.getElementById("y");
+		CoorY.value=y*2;
+	}
+	function mueve(){
+		tam=50;
+		red=.5;
+		tam=tam*red;
+		yo=document.getElementById("yo");
+		cont=document.getElementById("containerimg");
+		CoorX=document.getElementById("x");
+		CoorY=document.getElementById("y");
+		if (CoorX.value<0) CoorX.value=0;
+		if (CoorX.value*red>cont.offsetWidth) CoorX.value=cont.offsetWidth/red;
+		if (CoorY.value<0) CoorY.value=0;
+		if (CoorY.value*red>cont.offsetHeight) CoorY.value=cont.offsetHeight/red;
+		yo.style.left=(CoorX.value*red-tam/2)+"px";
+		yo.style.top=(CoorY.value*red-tam/2)+"px";
+		if (CoorX.value<0 || CoorX.value*red>cont.offsetWidth
+			|| CoorY.value<0 || CoorY.value*red>cont.offsetHeight)
+			yo.hidden=true;
+		else
+			yo.hidden=false;
+	}
   </script>
 
 </head>
@@ -175,7 +212,39 @@ echo '	</select></div>
 	<div><label for="maxkw">',__("Design Maximum (kW)"),'</label></div>
 	<div><input class="validate[optional,custom[onlyNumberSp]]" type="text" name="maxkw" id="maxkw" size="8" maxlength="8" value="',$dc->MaxkW,'"></div>
 </div>
-<div class="caption">';
+<div>
+	<div><label for="container">',__("Container"),'</label></div>
+  	<div><select name="container" id="container">
+      <option value="0">',__("None"),'</option>';
+
+	$container=new Container();
+	$cList=$container->GetContainerList($facDB);
+	foreach($cList as $cRow){
+		if($cRow->ContainerID == $dc->ContainerID){$selected=" selected";}else{$selected="";}
+		print "<option value=\"$cRow->ContainerID\"$selected>$cRow->Name</option>\n";
+	}
+
+echo '	</select></div>
+</div>
+<div> 
+	<div><b>X</b></div> 
+ 	<div><input type="text" name="x" id="x" value="',$dc->MapX,'" onblur="mueve()"></div> 
+</div> 
+<div> 
+    <div><b>Y</b></div> 
+    <div><input type="text" name="y" id="y" value="',$dc->MapY,'" onblur="mueve()"></div> 
+</div>'; 
+
+if ($dc->ContainerID>0){
+	print "<div>\n  <div><b>".__("Click on the image to select DC coordinates")."</b></div>"; 
+	$container->ContainerID=$dc->ContainerID;
+	$container->GetContainer($facDB);
+	print "<div>";
+	print $container->MakeContainerMiniImage($facDB,"dc",$dc->DataCenterID);
+	print "</div></div>"; 
+}
+
+echo '<div class="caption">';
 
 	if($dc->DataCenterID >0){
 		echo '   <button type="submit" name="action" value="Update">',__("Update"),'</button>';

@@ -89,6 +89,7 @@ echo '	<a href="reports.php"><li>',__("Reports"),'</li></a>';
 		echo '		<a href="usermgr.php"><li>',__("Manage Users"),'</li></a>
 		<a href="supplybin.php"><li>',__("Manage Supply Bins"),'</li></a>
 		<a href="supplies.php"><li>',__("Manage Supplies"),'</li></a>
+		<a href="container.php"><li>',_("Edit Containers"),'</li></a>
 		<a href="datacenter.php"><li>',__("Edit Data Centers"),'</li></a>
 		<a href="power_source.php"><li>',__("Edit Power Sources"),'</li></a>
 		<a href="power_panel.php"><li>',__("Edit Power Panels"),'</li></a>
@@ -117,8 +118,9 @@ echo '	<a href="reports.php"><li>',__("Reports"),'</li></a>';
 	echo '		</select>
 	</div>';
 
-	$menucab = new Cabinet();
-	echo $menucab->BuildCabinetTree( $facDB );
+	$container = new Container();
+	echo $container->BuildMenuTree( $facDB );
+	
 ?>
 <script type="text/javascript">
 $("#sidebar .nav a").each(function(){

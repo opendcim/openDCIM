@@ -99,3 +99,7 @@ ALTER TABLE fac_Cabinet CHANGE SensorOID TempSensorOID VARCHAR(80) NOT NULL;
 ALTER TABLE fac_Cabinet ADD COLUMN HumiditySensorOID VARCHAR(80) NOT NULL AFTER TempSensorOID;
 
 ALTER TABLE fac_CabinetTemps ADD COLUMN Humidity INT(11) NOT NULL AFTER Temp;
+
+ALTER TABLE fac_datacenter ADD COLUMN ContainerID INT(11) NOT NULL AFTER EntryLogging;
+ALTER TABLE fac_datacenter ADD COLUMN MapX INT(11) AFTER ContainerID;
+ALTER TABLE fac_datacenter ADD COLUMN MapY INT(11) AFTER MapX;

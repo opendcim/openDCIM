@@ -140,7 +140,10 @@ class DataCenter {
 	var $DrawingFileName;
 	var $EntryLogging;
 	var $dcconfig;
-
+	var $ContainerID;
+	var $MapX;
+	var $MapY;
+	
 	function MakeSafe() {
 		$this->DataCenterID = intval( $this->DataCenterID );
 		$this->Name = mysql_real_escape_string( $this->Name );
@@ -150,14 +153,35 @@ class DataCenter {
 		$this->MaxkW = intval( $this->MaxkW );
 		$this->DrawingFileName = mysql_real_escape_string( $this->DrawingFileName );
 		$this->EntryLogging = intval( $this->EntryLogging );
+		$this->ContainerID = intval( $this->ContainerID );
+		$this->MapX = intval( $this->MapX );
+		$this->MapY = intval( $this->MapY );
 	}
-	
+		
 	function CreateDataCenter( $db ) {
 		$this->MakeSafe();
 		
-		$sql = sprintf( "insert into fac_DataCenter set Name=\"%s\", SquareFootage=%d, DeliveryAddress=\"%s\", Administrator=\"%s\", MaxkW=%d, DrawingFileName=\"%s\", EntryLogging=0",
-			$this->Name, $this->SquareFootage, $this->DeliveryAddress, $this->Administrator, $this->MaxkW, $this->DrawingFileName );
-
+		$sql = sprintf( "insert into fac_DataCenter 
+						set Name=\"%s\", 
+							SquareFootage=%d, 
+							DeliveryAddress=\"%s\", 
+							Administrator=\"%s\", 
+							MaxkW=%d, 
+							DrawingFileName=\"%s\", 
+							EntryLogging=0,
+							ContainerID=%d,
+							MapX=%d,
+							MapY=%d",
+							$this->Name, 
+							$this->SquareFootage, 
+							$this->DeliveryAddress, 
+							$this->Administrator, 
+							$this->MaxkW, 
+							$this->DrawingFileName,
+							$this->ContainerID,
+							$this->MapX,
+							$this->MapY );
+	
 		if ( ! $result = mysql_query( $sql, $db ) ) {
 			error_log( sprintf( "%s; SQL=`%s`", mysql_error( $db ), $sql ) );
 			return -1;
@@ -168,9 +192,29 @@ class DataCenter {
 
 	function UpdateDataCenter( $db ) {
 		$this->MakeSafe();
-		$sql = sprintf( "update fac_DataCenter set Name=\"%s\", SquareFootage=%d, DeliveryAddress=\"%s\", Administrator=\"%s\", MaxkW=%d, DrawingFileName=\"%s\", EntryLogging=0 where DataCenterID=%d",
-			$this->Name, $this->SquareFootage, $this->DeliveryAddress, $this->Administrator, $this->MaxkW, $this->DrawingFileName, $this->DataCenterID );
-		
+		$sql = sprintf( "update fac_DataCenter 
+						set Name=\"%s\", 
+							SquareFootage=%d, 
+							DeliveryAddress=\"%s\", 
+							Administrator=\"%s\", 
+							MaxkW=%d, 
+							DrawingFileName=\"%s\", 
+							EntryLogging=0,
+							ContainerID=%d,
+							MapX=%d,
+							MapY=%d
+						 where DataCenterID=%d",
+						$this->Name, 
+						$this->SquareFootage, 
+						$this->DeliveryAddress, 
+						$this->Administrator, 
+						$this->MaxkW, 
+						$this->DrawingFileName,
+						$this->ContainerID,
+						$this->MapX,
+						$this->MapY, 
+						$this->DataCenterID );
+			
 		if ( ! $result = mysql_query( $sql, $db ) ) {
 			error_log( sprintf( "%s; SQL=`%s`", mysql_error( $db ), $sql ) );
 			return -1;
@@ -196,6 +240,9 @@ class DataCenter {
 			$this->MaxkW = $row["MaxkW"];
 			$this->DrawingFileName = $row["DrawingFileName"];
 			$this->EntryLogging = $row["EntryLogging"];
+			$this->ContainerID = $row["ContainerID"];
+			$this->MapX = $row["MapX"];
+			$this->MapY = $row["MapY"];
 		}
 		
 		return;
@@ -223,12 +270,16 @@ class DataCenter {
 			$datacenterList[$dcID]->MaxkW = $dcRow["MaxkW"];
 			$datacenterList[$dcID]->DrawingFileName = $dcRow["DrawingFileName"];
 			$datacenterList[$dcID]->EntryLogging = $dcRow["EntryLogging"];
+			$datacenterList[$dcID]->ContainerID = $dcRow["ContainerID"];
+			$datacenterList[$dcID]->MapX = $dcRow["MapX"];
+			$datacenterList[$dcID]->MapY = $dcRow["MapY"];
 		}
 
 		return $datacenterList;
 	}
 
 	function GetDataCenterbyID( $db ) {
+		//JMGA: This function is identical to GetDataCenter  (???) 
 		$this->MakeSafe();
 		$sql = sprintf( "select * from fac_DataCenter where DataCenterID=%d", $this->DataCenterID );
 		
@@ -245,6 +296,9 @@ class DataCenter {
 			$this->MaxkW = $dcRow["MaxkW"];
 			$this->DrawingFileName = $dcRow["DrawingFileName"];
 			$this->EntryLogging = $dcRow["EntryLogging"];
+			$this->ContainerID = $dcRow["ContainerID"];
+			$this->MapX = $dcRow["MapX"];
+			$this->MapY = $dcRow["MapY"];
 		}
 
 		return;
@@ -504,6 +558,117 @@ class DataCenter {
 		
 		return $dcStats;
 	}
+	
+	function AddDCToTree($db,$lev=0) {
+		$dept = new Department();
+		$zone = new Zone();
+		
+		$classType = "liClosed";
+		$tree = str_repeat(" ",$lev+1)."<li class=\"$classType\" id=\"dc$this->DataCenterID\"><a href=\"dc_stats.php?dc=" 
+			. $this->DataCenterID . "\">" . $this->Name . "</a>/\n";
+		$tree.=str_repeat(" ",$lev+2)."<ul>\n";
+
+		$zone->DataCenterID=$this->DataCenterID;
+		$zoneList=$zone->GetZonesByDC($db);
+		while ( list( $zoneNum, $myzone ) = each( $zoneList ) ) {
+			$tree .= str_repeat(" ",$lev+3)."<li class=\"liClosed\" id=\"zone".$myzone->ZoneID."\">" . 
+					$myzone->Description . "/\n";
+			$tree.=str_repeat(" ",$lev+4)."<ul>\n";
+			//Rows
+			$filas_sql="SELECT CabRowID, name AS Fila
+						FROM fac_cabrow
+						WHERE ZoneID=\"$myzone->ZoneID\"
+						ORDER BY Fila";
+			
+			if ( ! $result_filas= mysql_query( $filas_sql, $db ) ) {
+				return -1;
+			}
+
+			while ( $filaRow = mysql_fetch_array( $result_filas ) ) {
+			  $tree .= str_repeat(" ",$lev+5)."<li class=\"liClosed\" id=\"fila".$filaRow['Fila']."\">
+			  		 Fila ".$filaRow['Fila']."/\n";
+			  $tree.=str_repeat(" ",$lev+6)."<ul>\n";
+			  // DataCenterID and ZoneID are redundant if fac_cabrow is defined and is CabrowID set in fac_cabinet
+			  $cab_sql = "SELECT * 
+			  			FROM fac_Cabinet 
+			  			WHERE DataCenterID=\"$this->DataCenterID\" 
+							AND ZoneID=\"$myzone->ZoneID\"
+							AND CabRowID=\"".$filaRow['CabRowID']."\"
+						ORDER BY Location ASC";
+			  
+			  if ( ! $result = mysql_query( $cab_sql, $db ) ) {
+					return -1;
+			  }
+
+			  while ( $cabRow = mysql_fetch_array( $result ) ) {
+				  $dept->DeptID = $cabRow["AssignedTo"];
+				  
+				  if ( $dept->DeptID == 0 )
+				    $dept->Name = _("General Use");
+				  else
+				    $dept->GetDeptByID( $db );
+				    
+				  //$tree .= str_repeat(" ",$lev+7)."<li id=\"cab{$cabRow['CabinetID']}\"><a href=\"cabnavigator.php?cabinetid={$cabRow['CabinetID']}\">{$cabRow['Location']} [$dept->Name]</a></li>\n";
+				  $tree .= str_repeat(" ",$lev+7)."<li id=\"cab{$cabRow['CabinetID']}\"><a href=\"cabnavigator.php?cabinetid={$cabRow['CabinetID']}\">{$cabRow['Location']}</a></li>\n";
+			  }
+			  $tree .= str_repeat(" ",$lev+6)."</ul>\n";
+			  $tree .= str_repeat(" ",$lev+5)."</li>\n";
+			} 
+			
+			//Cabinets without CabRowID
+			$cab_sql = "SELECT * 
+			  			FROM fac_Cabinet 
+			  			WHERE DataCenterID=\"$this->DataCenterID\" 
+							AND ZoneID=\"$myzone->ZoneID\"
+							AND CabRowID=0
+						ORDER BY Location ASC";
+			
+			if ( ! $result = mysql_query( $cab_sql, $db ) ) {
+				return -1;
+			}
+	
+			while ( $cabRow = mysql_fetch_array( $result ) ) {
+			  $dept->DeptID = $cabRow["AssignedTo"];
+			  
+			  if ( $dept->DeptID == 0 )
+			    $dept->Name = _("General Use");
+			  else
+			    $dept->GetDeptByID( $db );
+			    
+			  //$tree .= str_repeat(" ",$lev+1)."<li id=\"cab{$cabRow['CabinetID']}\"><a href=\"cabnavigator.php?cabinetid={$cabRow['CabinetID']}\">{$cabRow['Location']} [$dept->Name]</a></li>\n";
+			  $tree .= str_repeat(" ",$lev+5)."<li id=\"cab{$cabRow['CabinetID']}\"><a href=\"cabnavigator.php?cabinetid={$cabRow['CabinetID']}\">{$cabRow['Location']}</a></li>\n";
+			}
+			
+			$tree .= str_repeat(" ",$lev+4)."</ul>\n";
+			$tree .= str_repeat(" ",$lev+3)."</li>\n";
+		} //zone
+		
+		//Cabinets without ZoneID
+		$cab_sql = "select * from fac_Cabinet where DataCenterID=\"$this->DataCenterID\" AND 
+						ZoneID=0 order by Location ASC";
+
+		if ( ! $result = mysql_query( $cab_sql, $db ) ) {
+			return -1;
+		}
+
+		while ( $cabRow = mysql_fetch_array( $result ) ) {
+		  $dept->DeptID = $cabRow["AssignedTo"];
+		  
+		  if ( $dept->DeptID == 0 )
+		    $dept->Name = _("General Use");
+		  else
+		    $dept->GetDeptByID( $db );
+		    
+		  //$tree .= str_repeat(" ",$lev+1)."<li id=\"cab{$cabRow['CabinetID']}\"><a href=\"cabnavigator.php?cabinetid={$cabRow['CabinetID']}\">{$cabRow['Location']} [$dept->Name]</a></li>\n";
+		  $tree .= str_repeat(" ",$lev+3)."<li id=\"cab{$cabRow['CabinetID']}\"><a href=\"cabnavigator.php?cabinetid={$cabRow['CabinetID']}\">{$cabRow['Location']}</a></li>\n";
+		}
+
+		$tree .= str_repeat(" ",$lev+2)."</ul>\n";
+		$tree .= str_repeat(" ",$lev+1)."</li>\n";
+		
+		return $tree;
+	}
+	
 }
 
 class DeviceTemplate {
@@ -792,7 +957,7 @@ class Zone {
   }
   
   function GetZonesByDC( $db ) {
-    $sql = "select * from fac_Zone where DataCenterID=\"" . intval($this->DataCenterID) . "\"";
+    $sql = "select * from fac_Zone where DataCenterID=\"" . intval($this->DataCenterID) . "\" order by Description";
     $result = mysql_query( $sql, $db );
     
     $zoneList = array();
@@ -810,5 +975,388 @@ class Zone {
   }
 }
 
+//JMGA: containerobjects may contain DCs or other containers
+class Container {
+	var $ContainerID;
+	var $Name;
+	var $ParentID;
+	var $DrawingFileName;
+	var $MapX;
+	var $MapY;
 
+	function MakeSafe() {
+		$this->ContainerID = intval( $this->ContainerID );
+		$this->Name = mysql_real_escape_string( $this->Name );
+		$this->ParentID = intval( $this->ParentID );
+		$this->DrawingFileName = mysql_real_escape_string( $this->DrawingFileName );
+		$this->MapX = intval( $this->MapX );
+		$this->MapY = intval( $this->MapY );
+	}
+	
+	function CreateContainer( $db ) {
+		$this->MakeSafe();
+		
+		$sql = sprintf( "insert into fac_Container set Name=\"%s\", ParentID=%d, DrawingFileName=\"%s\", MapX=%d, MapY=%d",
+			$this->Name, $this->ParentID, $this->DrawingFileName, $this->MapX, $this->MapY );
+
+		if ( ! $result = mysql_query( $sql, $db ) ) {
+			error_log( sprintf( "%s; SQL=`%s`", mysql_error( $db ), $sql ) );
+			return -1;
+		}
+		$this->ContainerID = mysql_insert_id();
+
+		return;
+	}
+
+	function UpdateContainer( $db ) {
+		$this->MakeSafe();
+		$sql = sprintf( "update fac_Container set Name=\"%s\", ParentID=%d, DrawingFileName=\"%s\", MapX=%d, MapY=%d where ContainerID=%d",
+			$this->Name, $this->ParentID, $this->DrawingFileName, $this->MapX, $this->MapY, $this->ContainerID );
+		
+		if ( ! $result = mysql_query( $sql, $db ) ) {
+			error_log( sprintf( "%s; SQL=`%s`", mysql_error( $db ), $sql ) );
+			return -1;
+		}
+
+		return;
+	}
+
+	function GetContainer( $db ) {
+		$this->MakeSafe();
+		$sql = sprintf( "select * from fac_container where ContainerID=%d", $this->ContainerID );
+
+		if ( ! $result = mysql_query( $sql, $db ) ) {
+			error_log( sprintf( "%s; SQL=`%s`", mysql_error( $db ), $sql ) );
+			return false;
+		}
+		
+		if (mysql_num_rows($result)==0){
+			return false;
+		} else{
+			$row = mysql_fetch_array( $result );
+			$this->Name = $row["Name"];
+			$this->ParentID= $row["ParentID"];
+			$this->DrawingFileName = $row["DrawingFileName"];
+			$this->MapX = $row["MapX"];
+			$this->MapY = $row["MapY"];
+		}
+		
+		return true;
+	}
+	
+	function GetChildContainerList( $db ) {
+		$sql = "SELECT * 
+				FROM fac_Container
+				WHERE ParentID=".$this->ContainerID." 
+				ORDER BY Name ASC";
+
+		if ( ! $result = mysql_query( $sql, $db ) ) {
+			error_log( sprintf( "%s; SQL=`%s`", mysql_error( $db ), $sql ) );
+			return false;
+		}
+
+		$containerList = array();
+
+		while ( $cRow = mysql_fetch_array( $result ) ) {
+			$cID = $cRow[ "ContainerID" ];
+
+			$containerList[$cID] = new Container();
+			$containerList[$cID]->ContainerID = $cRow["ContainerID"];
+			$containerList[$cID]->Name = $cRow["Name"];
+			$containerList[$cID]->ParentID = $cRow["ParentID"];
+			$containerList[$cID]->DrawingFileName = $cRow["DrawingFileName"];
+			$containerList[$cID]->MapX = $cRow["MapX"];
+			$containerList[$cID]->MapY = $cRow["MapY"];
+		}
+
+		return $containerList;
+	}
+	function GetChildDCList( $db ) {
+		$sql = "SELECT * 
+				FROM fac_datacenter
+				WHERE ContainerID=".$this->ContainerID." 
+				ORDER BY Name ASC";
+
+		if ( ! $result = mysql_query( $sql, $db ) ) {
+			error_log( sprintf( "%s; SQL=`%s`", mysql_error( $db ), $sql ) );
+			return false;
+		}
+
+		$datacenterList = array();
+
+		while ( $dcRow = mysql_fetch_array( $result ) ) {
+			$dcID = $dcRow[ "DataCenterID" ];
+
+			$datacenterList[$dcID] = new DataCenter();
+			$datacenterList[$dcID]->DataCenterID = $dcRow["DataCenterID"];
+			$datacenterList[$dcID]->Name = $dcRow["Name"];
+			$datacenterList[$dcID]->SquareFootage = $dcRow["SquareFootage"];
+			$datacenterList[$dcID]->DeliveryAddress = $dcRow["DeliveryAddress"];
+			$datacenterList[$dcID]->Administrator = $dcRow["Administrator"];
+			$datacenterList[$dcID]->MaxkW = $dcRow["MaxkW"];
+			$datacenterList[$dcID]->DrawingFileName = $dcRow["DrawingFileName"];
+			$datacenterList[$dcID]->EntryLogging = $dcRow["EntryLogging"];
+			$datacenterList[$dcID]->ContainerID = $dcRow["ContainerID"];
+			$datacenterList[$dcID]->MapX = $dcRow["MapX"];
+			$datacenterList[$dcID]->MapY = $dcRow["MapY"];
+		}
+
+		return $datacenterList;
+	}
+		
+	function BuildMenuTree( $db ) {
+		$c=new Container();
+		$c->ContainerID=0;
+		//begin the tree
+		$tree="\n<ul class=\"mktree\" id=\"datacenters\">\n";;
+		//Add root children
+		$tree.=$c->AddContainerToTree($db,0);
+		$tree .= "<li class=\"liOpen\" id=\"dc-1\"><a href=\"storageroom.php\">"._("Storage Room")."</a></li>\n";
+		$tree .= "</ul>\n";
+		return $tree;
+	}
+
+	function AddContainerToTree($db,$lev=0) {
+		
+		$tree="";
+		$container_opened=false;
+		
+		if ($this->GetContainer($db)){
+			$lev++;
+			$tree .= str_repeat(" ",$lev)."<li class=\"liOpen\" id=\"c".$this->ContainerID."\"><a href=\"container_stats.php?container=" 
+					. $this->ContainerID . "\">" . $this->Name . "</a>\n";
+			$lev++;
+			$tree .= str_repeat(" ",$lev)."<ul>\n";
+			$container_opened=true;
+		}
+		
+		$cList=$this->GetChildContainerList($db);
+		$lev++;
+		if ( count( $cList ) > 0 ) {
+			while ( list( $cID, $container ) = each( $cList ) ) {
+				$tree.=$container->AddContainerToTree($db,$lev);
+			}
+		}
+		
+		$dcList = $this->GetChildDCList( $db );
+
+		if ( count( $dcList ) > 0 ) {
+			while ( list( $dcID, $datacenter ) = each( $dcList ) ) {
+				$tree.=$datacenter->AddDCToTree($db,$lev);
+			} //DC
+		}
+
+		if ($container_opened){
+			
+			$tree .= str_repeat(" ",$lev-1)."</ul>\n";
+			$tree .= str_repeat(" ",$lev-2)."</li>\n";
+		}
+		
+		return $tree;
+	}
+	
+	function MakeContainerImage( $db ) {
+		$mapHTML = "";
+		$mapfile="";
+		$tam=50;
+	 
+		if ( strlen($this->DrawingFileName) > 0 ) {
+			$mapfile = "drawings/" . $this->DrawingFileName;
+		}
+	   
+		if ( file_exists( $mapfile ) ) {
+			list($width, $height, $type, $attr)=getimagesize($mapfile);
+			$mapHTML.="<div style='position:relative;'>\n";
+			$mapHTML.="<img src=\"".$mapfile."\" width=\"$width\" height=\"$height\" alt=\"Container Image\">\n";
+			
+			$cList=$this->GetChildContainerList($db);
+			if ( count( $cList ) > 0 ) {
+				while ( list( $cID, $container ) = each( $cList ) ) {
+					if (is_null($container->MapX) || $container->MapX==0 
+						|| is_null($container->MapY) || $container->MapY==0 ){
+						$mapHTML.="<div>\n";
+						$mapHTML.="<a title=\"".$container->Name."\" href=\"container_stats.php?container=".$cID."\">";
+						$mapHTML.="<br><div style='background-color: #dcdcdc;'>".$container->Name."</div></a>";
+						$mapHTML.= "</div>\n";
+						}
+					else {
+						$mapHTML.="<div style='position:absolute; top:".($container->MapY-$tam/2)."px; left:".($container->MapX-$tam/2)."px;'>\n";
+						$mapHTML.="<a title=\"".$container->Name."\" href=\"container_stats.php?container=".$cID."\">";
+						$mapHTML.="<img src=\"images/Container.png\" width=$tam height=$tam alt=\"Container\">\n</div>\n";
+						$mapHTML.="<div style='position:absolute; top:".($container->MapY+$tam/2)."px; left:".($container->MapX-$tam/2)."px; background-color: #dcdcdc;'>";
+						$mapHTML.="<a title=\"".$container->Name."\" href=\"container_stats.php?container=".$cID."\">";
+						$mapHTML.= $container->Name."</a></div>";
+					}
+				}
+			}
+			
+			$dcList=$this->GetChildDCList($db);
+			if ( count( $dcList ) > 0 ) {
+				while ( list( $dcID, $dc ) = each( $dcList ) ) {
+					if (is_null($dc->MapX) || $dc->MapX==0 
+						|| is_null($dc->MapY) || $dc->MapY==0 ){
+						$mapHTML.="<div>\n";
+						$mapHTML.="<a title=\"".$dc->Name."\" href=\"dc_stats.php?dc=".$dcID."\">";
+						$mapHTML.=$dc->Name."</a>";
+						$mapHTML.= "</div>\n";
+					}
+					else{
+						$mapHTML.="<div style='position:absolute; top:".($dc->MapY-$tam/2)."px; left:".($dc->MapX-$tam/2)."px;'>\n";
+						$mapHTML.="<a title=\"".$dc->Name."\" href=\"dc_stats.php?dc=".$dcID."\">";
+						$mapHTML.="<img src=\"images/DC.png\" width=$tam height=$tam alt=\"Datacenter\"></a>\n</div>\n";
+						$mapHTML.="<div style='position:absolute; top:".($dc->MapY+$tam/2)."px; left:".($dc->MapX-$tam/2)."px; background-color: #dcdcdc;'>";
+						$mapHTML.="<a title=\"".$dc->Name."\" href=\"dc_stats.php?dc=".$dcID."\">";
+						$mapHTML.=$dc->Name."</a></div>";
+					}
+				}
+			}
+			
+			$mapHTML .= "</div>\n";
+	    }
+	    return $mapHTML;
+	}
+	function MakeContainerMiniImage($db,$tipo="",$id=0) {
+		$mapHTML = "";
+		$mapfile="";
+		$tam=50;
+		$red=.5;
+		$tam*=$red;
+	 
+		if ( strlen($this->DrawingFileName) > 0 ) {
+			$mapfile = "drawings/" . $this->DrawingFileName;
+		}
+	   
+		if ( file_exists( $mapfile ) ) {
+			list($width, $height, $type, $attr)=getimagesize($mapfile);
+			$mapHTML.="<div style='position:relative;'>\n";
+			$mapHTML.="<img id='containerimg' src=\"".$mapfile."\" width=\"".($width*$red)."\" height=\"".($height*$red)."\" 
+					 onclick='coords(event)' alt=\"Container Image\">\n";
+			
+			$cList=$this->GetChildContainerList($db);
+			if ( count( $cList ) > 0 ) {
+				while ( list( $cID, $container ) = each( $cList ) ) {
+					if ((is_null($container->MapX) || $container->MapX<0 || $container->MapX>$width 
+						|| is_null($container->MapY) || $container->MapY<0 || $container->MapY>$height)
+						&& $tipo=="container" && $id==$cID ){
+							$mapHTML.="<div id='yo' hidden style='position:absolute;'>\n";
+							$mapHTML.="<img src=\"images/Container.png\" width=$tam height=$tam alt=\"Container\">\n</div>\n";
+						}
+					else {
+						
+						if ($tipo=="container" && $id==$cID) {
+							$mapHTML.="<div id='yo' style='position:absolute; top:".($container->MapY*$red-$tam/2)."px; left:".($container->MapX*$red-$tam/2)."px;'>\n";
+							$mapHTML.="<img src=\"images/Container.png\" width=$tam height=$tam alt=\"Container\">\n</div>\n";
+						}
+						else {
+							$mapHTML.="<div style='position:absolute; top:".($container->MapY*$red-$tam/2)."px; left:".($container->MapX*$red-$tam/2)."px;'>\n";
+							$mapHTML.="<img src=\"images/ContainerGris.png\" width=$tam height=$tam alt=\"Container\">\n</div>\n";
+						}
+					}
+				}
+			}
+			
+			$dcList=$this->GetChildDCList($db);
+			if ( count( $dcList ) > 0 ) {
+				while ( list( $dcID, $dc ) = each( $dcList ) ) {
+					if ((is_null($dc->MapX) || $dc->MapX<0 || $dc->MapX>$width
+						|| is_null($dc->MapY) || $dc->MapY<0 || $dc->MapY>$height)
+						&& $tipo=="dc" && $id==$dcID){
+							$mapHTML.="<div id='yo' hidden style='position:absolute;'>\n";
+							$mapHTML.="<img src=\"images/DC.png\" width=$tam height=$tam alt=\"Datacenter\">\n</div>\n";
+						}
+					else{
+						if ($tipo=="dc" && $id==$dcID){
+							$mapHTML.="<div id='yo' style='position:absolute; top:".($dc->MapY*$red-$tam/2)."px; left:".($dc->MapX*$red-$tam/2)."px;'>\n";
+							$mapHTML.="<img src=\"images/DC.png\" width=$tam height=$tam alt=\"Datacenter\">\n</div>\n";
+						}
+						else {
+							$mapHTML.="<div style='position:absolute; top:".($dc->MapY*$red-$tam/2)."px; left:".($dc->MapX*$red-$tam/2)."px;'>\n";
+							$mapHTML.="<img src=\"images/DCGris.png\" width=$tam height=$tam alt=\"Datacenter\">\n</div>\n";
+						}
+					}
+				}
+			}
+			
+			$mapHTML .= "</div>\n";
+	    }
+	    return $mapHTML;
+	}
+	
+	function GetContainerStatistics( $db ) {
+		$this->GetContainer( $db );
+
+		$cStats["DCs"] = 0;
+		$cStats["TotalU"] = 0;
+		$cStats["Infrastructure"] = 0;
+		$cStats["Occupied"] = 0;
+		$cStats["Allocated"] = 0;
+		$cStats["Available"] = 0;
+		$cStats["TotalWatts"] = 0;
+		$cStats["SquareFootage"] = 0;
+		$cStats["RealWatts"] = 0;
+		$cStats["MaxkW"] = 0;
+		
+		$dcList = $this->GetChildDCList( $db );
+		if ( count( $dcList ) > 0 ) {
+			while ( list( $dcID, $datacenter ) = each( $dcList ) ) {
+				$dcStats=$datacenter->GetDCStatistics( $db );
+				$cStats["DCs"]++;
+				$cStats["TotalU"] += $dcStats["TotalU"];
+				$cStats["Infrastructure"] += $dcStats["Infrastructure"];
+				$cStats["Occupied"] += $dcStats["Occupied"];
+				$cStats["Allocated"] += $dcStats["Allocated"];
+				$cStats["Available"] += $dcStats["Available"];
+				$cStats["TotalWatts"] += $dcStats["TotalWatts"];
+				$cStats["SquareFootage"] += $datacenter->SquareFootage;
+				$cStats["RealWatts"] += $dcStats["RealWatts"];
+				$cStats["MaxkW"] += $datacenter->MaxkW;
+			} 
+		}
+		
+		$cList=$this->GetChildContainerList($db);
+		if ( count( $cList ) > 0 ) {
+			while ( list( $cID, $container ) = each( $cList ) ) {
+				$childStats=$container->GetContainerStatistics($db);
+				$cStats["DCs"] += $childStats["DCs"];
+				$cStats["TotalU"] += $childStats["TotalU"];
+				$cStats["Infrastructure"] += $childStats["Infrastructure"];
+				$cStats["Occupied"] += $childStats["Occupied"];
+				$cStats["Allocated"] += $childStats["Allocated"];
+				$cStats["Available"] += $childStats["Available"];
+				$cStats["TotalWatts"] += $childStats["TotalWatts"];
+				$cStats["SquareFootage"] += $childStats["SquareFootage"];
+				$cStats["RealWatts"] += $childStats["RealWatts"];
+				$cStats["MaxkW"] += $childStats["MaxkW"]; 
+			}
+		}
+		return $cStats;
+	}
+	
+	function GetContainerList( $db ) {
+		$sql = "select * from fac_container order by Name ASC";
+
+		if ( ! $result = mysql_query( $sql, $db ) ) {
+			error_log( sprintf( "%s; SQL=`%s`", mysql_error( $db ), $sql ) );
+			return -1;
+		}
+
+		$containerList = array();
+
+		while ( $cRow = mysql_fetch_array( $result ) ) {
+			$cID = $cRow[ "ContainerID" ];
+
+			$containerList[$cID] = new Container();
+			$containerList[$cID]->ContainerID = $cRow["ContainerID"];
+			$containerList[$cID]->Name = $cRow["Name"];
+			$containerList[$cID]->ParentID = $cRow["ParentID"];
+			$containerList[$cID]->DrawingFileName = $cRow["DrawingFileName"];
+			$containerList[$cID]->MapX = $cRow["MapX"];
+			$containerList[$cID]->MapY = $cRow["MapY"];
+		}
+
+		return $containerList;
+	}
+	
+}
+//END Class Container
 ?>
