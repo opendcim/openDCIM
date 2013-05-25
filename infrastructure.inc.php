@@ -1023,7 +1023,7 @@ class Container {
 
 	function GetContainer( $db ) {
 		$this->MakeSafe();
-		$sql="SEELCT * FROM fac_Container WHERE ContainerID=".intval($this->ContainerID);
+		$sql="SELECT * FROM fac_Container WHERE ContainerID=".intval($this->ContainerID);
 
 		if ( ! $result = mysql_query( $sql, $db ) ) {
 			error_log( sprintf( "%s; SQL=`%s`", mysql_error( $db ), $sql ) );

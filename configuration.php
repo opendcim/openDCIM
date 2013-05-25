@@ -102,6 +102,16 @@
 		}
 		exit;
 	}
+	if(isset($_POST['mtused'])){
+		$count=MediaTypes::TimesUsed($_POST['mtused']);
+		if($count==0){
+			$mt=new MediaTypes();
+			$mt->MediaID=$_POST['mtused'];
+			$mt->DeleteType();
+		}
+		echo $count;
+		exit;
+	}
 	if(isset($_POST['cclist'])){
 		$codeList=ColorCoding::GetCodeList();
 		$output='<select name="mediacolorcode[]"><option value=""></option>';
@@ -425,10 +435,24 @@
 		function removemedia(row){
 			$.post('',{mtused: row.find('div:nth-child(2) input').attr('data')}).done(function(data){
 				if(data.trim()==0){
-					rowobject.effect('explode', {}, 500, function(){
+					row.effect('explode', {}, 500, function(){
 						$(this).remove();
 					});
 				}else{
+					var modal=$('<div />', {id: 'modal', title: 'Media Type Delete Override'}).html('<div id="modaltext">this code is in use somewhere. add a modal requesting permission to remove this record and all associated entries</div>').dialog({
+						dialogClass: 'no-close',
+						appendTo: 'body',
+						modal: true,
+						buttons: {
+							"Yes": function(){
+								$('#modaltext').html('AAAAAAAAAAHHHHHHHHHH!!!  *crash* *fire* *chaos*');
+								// decide how to handle these.
+							},
+							Cancel: function(){
+								$(this).dialog("destroy");
+							}
+						}
+					});
 
 				}
 			});
@@ -468,11 +492,18 @@
 							mt.effect('highlight', {color: 'lightgreen'}, 2500);
 							mtcc.effect('highlight', {color: 'lightgreen'}, 2500);
 						}else{ // created
-
-
-// finish this part later
-
-
+							var newitem=blankmediarow.clone();
+							newitem.find('div:nth-child(2) input').val(mt.val()).attr('data',data.trim());
+							newitem.find('div:nth-child(3) select').replaceWith(mtcc.clone());
+							newitem.find('div:nth-child(3) select').val(mtcc.val());
+							bindmediarow(newitem);
+							row.before(newitem);
+							if(addrem.attr('id')=='newline'){
+								mt.val('');
+								mtcc.val('');
+							}else{
+								row.remove();
+							}
 						}
 					});
 				}
@@ -481,7 +512,12 @@
 				update($(this));
 			});
 			mtcc.change(function(){
-				update($(this));
+				var row=$(this).parent('div').parent('div');
+				if(row.find('div:first-child').attr('id')!='newline'){
+					update($(this));
+				}else if(row.find('div:nth-child(2) input').val().trim()!=''){
+					update($(this));
+				}
 			});
 		}
 
