@@ -6,7 +6,7 @@
 */
 
 // Pre-Flight check
-	if(!isset($_SERVER['REMOTE_USER']) || !extension_loaded('gettext') || !function_exists("mysql_query") || !function_exists("json_encode")){
+	if(!isset($_SERVER['REMOTE_USER']) || !extension_loaded('gettext') || !extension_loaded('PDO') || !function_exists("json_encode") ){
 		$tests=array();
 		$tests['Remote User']['errtxt']='<a href="http://httpd.apache.org/docs/2.2/howto/auth.html">http://httpd.apache.org/docs/2.2/howto/auth.html</a>';
 		$tests['Remote User']['goodtxt']='';
@@ -17,11 +17,15 @@
 		$tests['gettext']['errtxt']='PHP is missing the <a href="http://php.net/manual/book.gettext.php">Gettext extension</a>. Please install it.';
 		$tests['gettext']['goodtxt']='';
 		$tests['gettext']['state']=(extension_loaded('gettext'))?"good":"fail";
-		$tests['mysql']['errtxt']='openDCIM requires a MySQL database, but PHP doesn\'t have the <a href="http://php.net/mysql">MySQL</a> extension.';
-		$tests['mysql']['goodtxt']='';
-		$tests['mysql']['state']=(function_exists("mysql_query"))?"good":"fail";
+		$tests['pdo']['errtxt']='openDCIM requires the <a href="http://php.net/manual/pdo.installation.php">PDO extention</a> and you do not appear to have it loaded';
+		$tests['pdo']['goodtxt']='';
+		$tests['pdo']['state']=(extension_loaded('PDO'))?"good":"fail";
+		$tests['pdodrivers']['errtxt']='No PDO drivers have been detected';
+		$tests['pdodrivers']['goodtxt']='Available drivers: '.implode(", ",PDO::getAvailableDrivers());
+		$tests['pdodrivers']['state']=(count(PDO::getAvailableDrivers())>0)?"good":"fail";
+
 		$tests['json']['errtxt']='PHP is missing the <a href="http://php.net/manual/book.json.php">JavaScript Object Notation (JSON) extension</a>.  Please install it.';
-		$tests['json']['goodtxt']='';
+		$tests['json']['goodtxt']='PHP json module detected';
 		$tests['json']['state']=(function_exists("json_encode"))?"good":"fail";
 
         echo '<!doctype html><html><head><title>openDCIM :: pre-flight environment sanity check</title><script type="text/javascript" src="scripts/jquery.min.js"></script><script type="text/javascript">$(document).ready(function(){$("tr").each(function(){if($(this).find("td:last-child").text()=="fail"){$(this).addClass("fail");}});});</script><style type="text/css">table{width:80%;border-collapse:collapse;border:3px solid black;}th{text-align:left;text-transform:uppercase;border-right: 1px solid black;}th,td{padding:5px;}tr:nth-child(even){background-color:#d1e1f1;}td:last-child{text-align:center;text-transform:uppercase;border:2px solid;background-color:green;}.fail td:last-child{font-weight: bold;background-color: red;}</style></head><body><h2>Pre-flight environment checks</h2><table>';
@@ -1471,7 +1475,7 @@ function showgroup(obj){
 <?php echo $nodccab; ?>
 <div class='center'><div>
 
-<p>You have completed the basic configuration for openDCIM.  At this time please goto the wiki for additional questions that you might have or join our mailing list at [insert link here].</p>
+<p>You have completed the basic configuration for openDCIM.  At this time please <a href="http://www.opendcim.org/wiki/" title="openDCIM Wiki">go to the wiki</a> for additional questions that you might have or <a href="http://list.opendcim.org/listinfo.cgi/discussion-opendcim.org" title="openDCIM Mailing List">join our mailing list</a>.</p>
 <p>To start normal operation of openDCIM please delete install.php from the installation directory</p>
 
 
