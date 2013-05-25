@@ -1023,7 +1023,7 @@ class Container {
 
 	function GetContainer( $db ) {
 		$this->MakeSafe();
-		$sql = sprintf( "select * from fac_container where ContainerID=%d", $this->ContainerID );
+		$sql="SEELCT * FROM fac_Container WHERE ContainerID=".intval($this->ContainerID);
 
 		if ( ! $result = mysql_query( $sql, $db ) ) {
 			error_log( sprintf( "%s; SQL=`%s`", mysql_error( $db ), $sql ) );
@@ -1047,7 +1047,7 @@ class Container {
 	function GetChildContainerList( $db ) {
 		$sql = "SELECT * 
 				FROM fac_Container
-				WHERE ParentID=".$this->ContainerID." 
+				WHERE ParentID=".intval($this->ContainerID)." 
 				ORDER BY Name ASC";
 
 		if ( ! $result = mysql_query( $sql, $db ) ) {
@@ -1073,7 +1073,7 @@ class Container {
 	}
 	function GetChildDCList( $db ) {
 		$sql = "SELECT * 
-				FROM fac_datacenter
+				FROM fac_DataCenter
 				WHERE ContainerID=".$this->ContainerID." 
 				ORDER BY Name ASC";
 
@@ -1333,7 +1333,7 @@ class Container {
 	}
 	
 	function GetContainerList( $db ) {
-		$sql = "select * from fac_container order by Name ASC";
+		$sql = "SELECT * FROM fac_Container ORDER BY Name ASC";
 
 		if ( ! $result = mysql_query( $sql, $db ) ) {
 			error_log( sprintf( "%s; SQL=`%s`", mysql_error( $db ), $sql ) );
