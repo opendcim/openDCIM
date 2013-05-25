@@ -47,6 +47,9 @@
 		exit;
 	}else{
 		require_once("db.inc.php");
+		if (!$facDB) {
+			die("Connection to the MySQL database has failed. Please verify your settings.");
+		}
 	}
 
 // Functions for upgrade / installing db objects
