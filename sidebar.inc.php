@@ -61,8 +61,8 @@
 		var here=$(this).position();
 		$('#searchadv, #searchname').val('');
 		$('#searchadv').parents('form').height(here.top).toggle('slide',200);
-		$('#searchadv').autocomplete('destroy');
-		if($(this).text()=='Advanced'){$(this).text('<?php echo __("Basic");?>');$('#searchadv ~ select[name="key"]').trigger('change');}else{$(this).text('<?php echo __("Advanced");?>');}
+		if($('#searchadv').hasClass('ui-autocomplete-input')){$('#searchadv').autocomplete('destroy');}
+		if($(this).text()=='<?php echo __("Advanced");?>'){$(this).text('<?php echo __("Basic");?>');$('#searchadv ~ select[name="key"]').trigger('change');}else{$(this).text('<?php echo __("Advanced");?>');}
 	});
   </script>
   <script type="text/javascript" src="scripts/mktree.js"></script> 
