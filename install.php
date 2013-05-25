@@ -43,6 +43,9 @@
 		exit;
 	}else{
 		require_once("db.inc.php");
+		if (!$facDB) {
+			die("Connection to the MySQL database has failed. Please verify your settings.");
+		}
 	}
 
 // Functions for upgrade / installing db objects
@@ -1471,7 +1474,7 @@ function showgroup(obj){
 <?php echo $nodccab; ?>
 <div class='center'><div>
 
-<p>You have completed the basic configuration for openDCIM.  At this time please goto the wiki for additional questions that you might have or join our mailing list at [insert link here].</p>
+<p>You have completed the basic configuration for openDCIM.  At this time please <a href="http://www.opendcim.org/wiki/" title="openDCIM Wiki">go to the wiki</a> for additional questions that you might have or <a href="http://list.opendcim.org/listinfo.cgi/discussion-opendcim.org" title="openDCIM Mailing List">join our mailing list</a>.</p>
 <p>To start normal operation of openDCIM please delete install.php from the installation directory</p>
 
 
