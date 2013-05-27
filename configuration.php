@@ -51,6 +51,25 @@
 				echo json_encode($col);
 				exit;
 			}
+			if(isset($_POST['clear'])){
+				$mediatypes=MediaTypes::GetMediaTypeList();
+				foreach($mediatypes as $mt){
+					if($mt->ColorID==$col->ColorID){
+						$mt->ColorID=='';
+						$mt->UpdateType();
+					}
+				}
+				ColorCoding::ClearCode($col->ColorID);
+				if($col->DeleteCode()){
+					echo 'u';
+				}else{
+					echo 'f';
+				}
+				exit;
+			}
+			if(isset($_POST['change'])){
+
+			}
 			if($col->UpdateCode()){
 				echo 'u';
 			}else{
@@ -114,11 +133,10 @@
 	}
 	if(isset($_POST['cclist'])){
 		$codeList=ColorCoding::GetCodeList();
-		$output='<select name="mediacolorcode[]"><option value=""></option>';
+		$output='<option value=""></option>';
 		foreach($codeList as $cc){
 			$output.="<option value=\"$cc->ColorID\">$cc->Name</option>";
 		}
-		$output.='</select>';
 		echo $output;
 		exit;		
 	}
@@ -469,6 +487,12 @@
 					removemedia(row);
 				});
 			}
+			mt.keypress(function(event){
+				if(event.keyCode==10 || event.keyCode==13){
+					event.preventDefault();
+					mt.change();
+				}
+			});
 			function update(inputobj){
 				if(mt.val().trim()==''){
 					$.post('',{mt: mt.val(), mtid: mt.attr('data'), mtcc: mtcc.val(),original:''}).done(function(jsondata){
@@ -544,7 +568,7 @@
 				$('#mediatypes > div ~ div').each(function(){
 					var list=$(this).find('select[name="mediacolorcode[]"]');
 					var dc=list.val();
-					list.parent('div').html(data);
+					list.html(data);
 					$(this).find('select[name="mediacolorcode[]"]').val(dc);
 				});
 			});
@@ -563,20 +587,51 @@
 							$(this).remove();
 						});
 					}else{
-						var modal=$('<div />', {id: 'modal', title: 'Code Delete Override'}).html('<div id="modaltext">this code is in use somewhere. add a modal requesting permission to remove this record and all associated entries</div>').dialog({
+						var defaultbutton={
+							"Clear all": function(){
+								$.post('',{cid: rowobject.find('div:nth-child(2) input').attr('data'),cc: '', clear: ''}).done(function(data){
+									if(data.trim()=='u'){ // success
+										$('#modal').dialog("destroy");
+										updatechoices();
+										rowobject.effect('explode', {}, 500, function(){
+											$(this).remove();
+										});
+									}else{ // failed to delete
+										$('#modaltext').html('AAAAAAAAAAHHHHHHHHHH!!!  *crash* *fire* *chaos*<br><br>Something just went horribly wrong.');
+										$('#modal').dialog('option','buttons',cancelbutton);
+									}
+								});
+							}
+						}
+						var replacebutton={
+							"Replace": function(){
+								$('#modaltext').html('Replace all existing connections that were using X with Y');
+								// send command to replace all connections with x
+							}
+						}
+						var cancelbutton={
+							Cancel: function(){
+								$(this).dialog("destroy");
+							}
+						}
+						var modal=$('<div />', {id: 'modal', title: 'Code Delete Override'}).html('<div id="modaltext">This code is in use somewhere. You can either choose to clear all instances of this color being used or choose to have them replaced with another color. <select id="replaceme"></select></div>').dialog({
 							dialogClass: 'no-close',
 							appendTo: 'body',
 							modal: true,
-							buttons: {
-								"Yes": function(){
-									$('#modaltext').html('AAAAAAAAAAHHHHHHHHHH!!!  *crash* *fire* *chaos*');
-									// decide how to handle these.
-								},
-								Cancel: function(){
-									$(this).dialog("destroy");
-								}
+							buttons: $.extend({}, defaultbutton, cancelbutton)
+						});
+						var choices=$('div#mediatypes.table div:last-child div select').clone();
+						choices.find('option').each(function(){
+							if($(this).val()==rowobject.find('div:nth-child(2) input').attr('data')){$(this).remove();}
+						});
+						choices.change(function(){
+							if($(this).val()==''){ // clear all
+								modal.dialog('option','buttons',$.extend({}, defaultbutton, cancelbutton));
+							}else{ // replace
+								modal.dialog('option','buttons',$.extend({}, replacebutton, cancelbutton));
 							}
 						});
+						modal.find($('#replaceme')).replaceWith(choices);
 					}
 				});
 			}
@@ -591,6 +646,18 @@
 					removecolor(row,true);
 				});
 			}
+			cc.keypress(function(event){
+				if(event.keyCode==10 || event.keyCode==13){
+					event.preventDefault();
+					cc.change();
+				}
+			});
+			ccdn.keypress(function(event){
+				if(event.keyCode==10 || event.keyCode==13){
+					event.preventDefault();
+					ccdn.change();
+				}
+			});
 			row.find('div > input').each(function(){
 				// If a value changes then check it for conflicts, if no conflict update
 				$(this).change(function(){
