@@ -749,17 +749,11 @@ class ColorCoding {
 
 	static function TimesUsed($colorid){
 		global $dbh;
-		$colorid=intval($colorid);
 
-		// get a count of the number of times this color is in use both on ports or assigned
-		// to a template.  
-		$sql="SELECT COUNT(*) + (SELECT COUNT(*) FROM fac_MediaTypes WHERE ColorID=$colorid) 
-			AS Result FROM fac_DevicePorts WHERE ColorID=$colorid";
-		$count=$dbh->prepare($sql);
+		$count=$dbh->prepare('SELECT * FROM fac_DevicePorts WHERE ColorID='.intval($colorid));
 		$count->execute();
-		
 
-		return $count->fetchColumn();
+		return $count->rowCount();
 	}
 }
 
@@ -2575,34 +2569,24 @@ class MediaTypes {
 	function CreateType() {
 		global $dbh;
 		
-		$sql="INSERT INTO fac_MediaTypes SET MediaType=\"".addslashes($this->MediaType)."\", 
-			ColorID=".intval($this->ColorID);
+		$sql = sprintf( "insert into fac_MediaTypes set MediaType=\"%s\", ColorID=%d",
+			mysql_real_escape_string( $this->MediaType ), $this->ColorID );
 			
-		if($dbh->exec($sql)){
-			$this->MediaID=$dbh->lastInsertId();
-		}else{
-			$info=$dbh->errorInfo();
-
-			error_log("PDO Error: {$info[2]}");
+		if ( ! $dbh->exec( $sql ) )
 			return false;
-		}
 		
-		return $this->MediaID;
+		$this->MediaID = $dbh->lastInsertId();
+		
+		return;
 	}
 	
 	function UpdateType() {
 		global $dbh;
 		
-		$sql="UPDATE fac_MediaTypes SET MediaType=\"".addslashes($this->MediaType)."\", 
-			ColorID=".intval($this->ColorID)." WHERE MediaID=".intval($this->MediaID);
+		$sql = sprintf( "update fac_MediaTypes set MediaType=\"%s\", ColorID=%d where MediaID=%d",
+			mysql_real_escape_string( $this->MediaType ), $this->ColorID, $this->MediaID );
 			
-		if(!$dbh->query($sql)){
-			$info=$dbh->errorInfo();
-			error_log("PDO Error: {$info[2]}");
-			return false;
-		}else{		
-			return true;
-		}
+		return $dbh->exec( $sql );
 	}
 	
 	function DeleteType() {
@@ -2610,7 +2594,7 @@ class MediaTypes {
 		
 		global $dbh;
 		
-		$sql="DELETE FROM fac_MediaTypes WHERE MediaID=".intval($this->MediaID);
+		$sql = sprintf( "delete from fac_MediaTypes where MediaID=%d", $this->MediaID );
 		
 		return $dbh->exec( $sql );
 	}
@@ -2618,43 +2602,34 @@ class MediaTypes {
 	function GetType() {
 		global $dbh;
 		
-		$sql="SELECT * FROM fac_MediaTypes WHERE MediaID=".intval($this->MediaID);
+		$sql = sprintf( "select * from fac_MediaTypes where MediaID=%d", $this->MediaID );
 		
-		if(!$row=$dbh->query($sql)->fetch()){
+		if ( ! $row = $dbh->query( $sql )->fetch() )
 			return false;
-		}else{
-			$this->MediaType = $row["MediaType"];
-			$this->ColorID = $row["ColorID"];
-			
-			return true;
-		}
+		
+		$this->MediaType = $row["MediaType"];
+		$this->ColorID = $row["ColorID"];
+		
+		return true;
 	}
 	
 	static function GetMediaTypeList() {
 		global $dbh;
 		
-		$sql = "SELECT * FROM fac_MediaTypes ORDER BY MediaType ASC";
+		$sql = "select * from fac_MediaTypes order by MediaType ASC";
 		
 		$mediaList = array();
-	
+		
 		foreach ( $dbh->query( $sql ) as $row ) {
-			$n=$row["MediaID"];
+			$n = sizeof( $mediaList );
 			$mediaList[$n] = new MediaTypes();
+			
 			$mediaList[$n]->MediaID = $row["MediaID"];
 			$mediaList[$n]->MediaType = $row["MediaType"];
 			$mediaList[$n]->ColorID = $row["ColorID"];
 		}
 		
 		return $mediaList;
-	}
-
-	static function TimesUsed($mediaid){
-		global $dbh;
-
-		$count=$dbh->prepare('SELECT * FROM fac_DevicePorts WHERE MediaID='.intval($mediaid));
-		$count->execute();
-
-		return $count->rowCount();
 	}
 }
 
@@ -2731,10 +2706,10 @@ class PatchConnection {
 
 		if ( $recursive && $tmpDev->DeviceType == "Patch Panel" ) {
 			$tmpPanel = new PatchConnection();
-			$tmpPanel->PanelDeviceID = $this->EndpointDeviceID;
-			$tmpPanel->PanelPortNumber = $this->PanelPortNumber;
-			$tmpPanel->FrontEndpointDeviceID = $this->FrontEndpointDeviceID;
-			$tmpPanel->FrontEndpointPort = $this->FrontEndpointPort;
+			$tmpPanel->PanelDeviceID = $this->FrontEndpointDeviceID;
+			$tmpPanel->PanelPortNumber = $this->FrontEndpointPort;
+			$tmpPanel->FrontEndpointDeviceID = $this->PanelDeviceID;
+			$tmpPanel->FrontEndpointPort = $this->PanelPortNumber;
 			$tmpPanel->FrontNotes = $this->FrontNotes;
 			$tmpPanel->MakeFrontConnection( $db, false );
 		}
