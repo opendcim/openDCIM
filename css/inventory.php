@@ -572,7 +572,8 @@ div.page.device {
 	/* Format menu items differently depending on what level of the tree they are in */
 	ul.mktree  li { font-family: arial, helvetica; font-size: 12pt; }
 	ul.mktree  a.DC { color: #000088; A:hover}
-	ul.mktree  a.CONTAINER { color: #008800; }
+	ul.mktree  a.CONTAINER { color: #006600; }
+	ul.mktree  a.RACK { color: #660000; }
 	ul.mktree  a:hover { color: red; }
 	ul.mktree  li ul li { font-family: arial, helvetica; font-size: 10pt; }
 }

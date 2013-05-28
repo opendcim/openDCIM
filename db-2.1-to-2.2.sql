@@ -100,6 +100,31 @@ ALTER TABLE fac_Cabinet ADD COLUMN HumiditySensorOID VARCHAR(80) NOT NULL AFTER 
 
 ALTER TABLE fac_CabinetTemps ADD COLUMN Humidity INT(11) NOT NULL AFTER Temp;
 
-ALTER TABLE fac_DataCenter ADD COLUMN ContainerID INT(11) NOT NULL AFTER EntryLogging;
-ALTER TABLE fac_DataCenter ADD COLUMN MapX INT(11) AFTER ContainerID;
-ALTER TABLE fac_DataCenter ADD COLUMN MapY INT(11) AFTER MapX;
+--
+-- Changes to improve the cabinet tree
+-- Modify fac_datacenter to link to containers 
+-- Modify fac_cabinet to link to Cabinet Rows
+-- Adding Containers (fac_Container) and Cabinet Rows (fac_CabRow). Using Zones (fac_Zone)
+--
+ALTER TABLE fac_DataCenter ADD COLUMN ContainerID INT(11) NOT NULL DEFAULT '0' AFTER EntryLogging;
+ALTER TABLE fac_DataCenter ADD COLUMN MapX INT(11) DEFAULT NULL AFTER ContainerID;
+ALTER TABLE fac_DataCenter ADD COLUMN MapY INT(11) DEFAULT NULL AFTER MapX;
+
+ALTER TABLE fac_Cabinet ADD COLUMN CabRowID INT(11) NULL DEFAULT NULL AFTER ZoneID;
+
+CREATE TABLE IF NOT EXISTS `fac_CabRow` (
+  CabRowID int(11) NOT NULL AUTO_INCREMENT,
+  Name varchar(120) NOT NULL,
+  ZoneID int(11) NOT NULL,
+  PRIMARY KEY (`CabRowID`)
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+
+CREATE TABLE IF NOT EXISTS `fac_Container` (
+  ContainerID int(11) NOT NULL AUTO_INCREMENT,
+  Name varchar(120) NOT NULL,
+  ParentID int(11) NOT NULL DEFAULT '0',
+  DrawingFileName varchar(255) DEFAULT NULL,
+  MapX int(11) DEFAULT NULL,
+  MapY int(11) DEFAULT NULL,
+  PRIMARY KEY (`ContainerID`)
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;

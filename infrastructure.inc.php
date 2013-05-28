@@ -608,8 +608,8 @@ class DataCenter {
 				  else
 				    $dept->GetDeptByID( $db );
 				    
-				  //$tree .= str_repeat(" ",$lev+7)."<li id=\"cab{$cabRow['CabinetID']}\"><a href=\"cabnavigator.php?cabinetid={$cabRow['CabinetID']}\">{$cabRow['Location']} [$dept->Name]</a></li>\n";
-				  $tree .= str_repeat(" ",$lev+7)."<li id=\"cab{$cabRow['CabinetID']}\"><a href=\"cabnavigator.php?cabinetid={$cabRow['CabinetID']}\">{$cabRow['Location']}</a></li>\n";
+				  //$tree .= str_repeat(" ",$lev+7)."<li id=\"cab{$cabRow['CabinetID']}\"><a class=\"RACK\" href=\"cabnavigator.php?cabinetid={$cabRow['CabinetID']}\">{$cabRow['Location']} [$dept->Name]</a></li>\n";
+				  $tree .= str_repeat(" ",$lev+7)."<li id=\"cab{$cabRow['CabinetID']}\"><a class=\"RACK\" href=\"cabnavigator.php?cabinetid={$cabRow['CabinetID']}\">{$cabRow['Location']}</a></li>\n";
 			  }
 			  $tree .= str_repeat(" ",$lev+6)."</ul>\n";
 			  $tree .= str_repeat(" ",$lev+5)."</li>\n";
@@ -635,8 +635,8 @@ class DataCenter {
 			  else
 			    $dept->GetDeptByID( $db );
 			    
-			  //$tree .= str_repeat(" ",$lev+1)."<li id=\"cab{$cabRow['CabinetID']}\"><a href=\"cabnavigator.php?cabinetid={$cabRow['CabinetID']}\">{$cabRow['Location']} [$dept->Name]</a></li>\n";
-			  $tree .= str_repeat(" ",$lev+5)."<li id=\"cab{$cabRow['CabinetID']}\"><a href=\"cabnavigator.php?cabinetid={$cabRow['CabinetID']}\">{$cabRow['Location']}</a></li>\n";
+			  //$tree .= str_repeat(" ",$lev+1)."<li id=\"cab{$cabRow['CabinetID']}\"><a class=\"RACK\" href=\"cabnavigator.php?cabinetid={$cabRow['CabinetID']}\">{$cabRow['Location']} [$dept->Name]</a></li>\n";
+			  $tree .= str_repeat(" ",$lev+5)."<li id=\"cab{$cabRow['CabinetID']}\"><a class=\"RACK\" href=\"cabnavigator.php?cabinetid={$cabRow['CabinetID']}\">{$cabRow['Location']}</a></li>\n";
 			}
 			
 			$tree .= str_repeat(" ",$lev+4)."</ul>\n";
@@ -660,7 +660,7 @@ class DataCenter {
 		    $dept->GetDeptByID( $db );
 		    
 		  //$tree .= str_repeat(" ",$lev+1)."<li id=\"cab{$cabRow['CabinetID']}\"><a href=\"cabnavigator.php?cabinetid={$cabRow['CabinetID']}\">{$cabRow['Location']} [$dept->Name]</a></li>\n";
-		  $tree .= str_repeat(" ",$lev+3)."<li id=\"cab{$cabRow['CabinetID']}\"><a href=\"cabnavigator.php?cabinetid={$cabRow['CabinetID']}\">{$cabRow['Location']}</a></li>\n";
+		  $tree .= str_repeat(" ",$lev+3)."<li id=\"cab{$cabRow['CabinetID']}\"><a class=\"RACK\" href=\"cabnavigator.php?cabinetid={$cabRow['CabinetID']}\">{$cabRow['Location']}</a></li>\n";
 		}
 
 		$tree .= str_repeat(" ",$lev+2)."</ul>\n";
@@ -1111,7 +1111,7 @@ class Container {
 		$tree="\n<ul class=\"mktree\" id=\"datacenters\">\n";;
 		//Add root children
 		$tree.=$c->AddContainerToTree($db,0);
-		$tree .= "<li class=\"liOpen\" id=\"dc-1\"><a class=\"DC\" href=\"storageroom.php\">"._("Storage Room")."</a></li>\n";
+		$tree .= "<li class=\"liOpen\" id=\"dc-1\"><a href=\"storageroom.php\">"._("Storage Room")."</a></li>\n";
 		$tree .= "</ul>\n";
 		return $tree;
 	}
@@ -1221,6 +1221,7 @@ class Container {
 		$tam=50;
 		$red=.5;
 		$tam*=$red;
+		$yo_ok=false;
 	 
 		if ( strlen($this->DrawingFileName) > 0 ) {
 			$mapfile = "drawings/" . $this->DrawingFileName;
@@ -1240,12 +1241,14 @@ class Container {
 						&& $tipo=="container" && $id==$cID ){
 							$mapHTML.="<div id='yo' hidden style='position:absolute;'>\n";
 							$mapHTML.="<img src=\"images/Container.png\" width=$tam height=$tam alt=\"Container\">\n</div>\n";
+							$yo_ok=true;
 						}
 					else {
 						
 						if ($tipo=="container" && $id==$cID) {
 							$mapHTML.="<div id='yo' style='position:absolute; top:".($container->MapY*$red-$tam/2)."px; left:".($container->MapX*$red-$tam/2)."px;'>\n";
 							$mapHTML.="<img src=\"images/Container.png\" width=$tam height=$tam alt=\"Container\">\n</div>\n";
+							$yo_ok=true;
 						}
 						else {
 							$mapHTML.="<div style='position:absolute; top:".($container->MapY*$red-$tam/2)."px; left:".($container->MapX*$red-$tam/2)."px;'>\n";
@@ -1263,11 +1266,13 @@ class Container {
 						&& $tipo=="dc" && $id==$dcID){
 							$mapHTML.="<div id='yo' hidden style='position:absolute;'>\n";
 							$mapHTML.="<img src=\"images/DC.png\" width=$tam height=$tam alt=\"Datacenter\">\n</div>\n";
+							$yo_ok=true;
 						}
 					else{
 						if ($tipo=="dc" && $id==$dcID){
 							$mapHTML.="<div id='yo' style='position:absolute; top:".($dc->MapY*$red-$tam/2)."px; left:".($dc->MapX*$red-$tam/2)."px;'>\n";
 							$mapHTML.="<img src=\"images/DC.png\" width=$tam height=$tam alt=\"Datacenter\">\n</div>\n";
+							$yo_ok=true;
 						}
 						else {
 							$mapHTML.="<div style='position:absolute; top:".($dc->MapY*$red-$tam/2)."px; left:".($dc->MapX*$red-$tam/2)."px;'>\n";
@@ -1275,6 +1280,13 @@ class Container {
 						}
 					}
 				}
+			}
+			if (!$yo_ok){
+				$mapHTML.="<div id='yo' hidden style='position:absolute;'>\n";
+				if ($tipo=="container")
+					$mapHTML.="<img src=\"images/Container.png\" width=$tam height=$tam alt=\"Container\">\n</div>\n";
+				else
+					$mapHTML.="<img src=\"images/DC.png\" width=$tam height=$tam alt=\"Datacenter\">\n</div>\n";
 			}
 			
 			$mapHTML .= "</div>\n";
