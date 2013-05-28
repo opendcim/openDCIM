@@ -157,6 +157,8 @@
 			exit;
 		}
 	}
+	// END AJAX
+
 
 	// These objects are used no matter what operation we're performing
 	$templ=new DeviceTemplate();
@@ -183,8 +185,9 @@
 				$cab->GetCabinet( $facDB );
 				
 				// If you are adding a device that is assined to a specific customer, assume that device is also owned by that customer
-				if ( $cab->AssignedTo > 0 )
-					$dev->Owner = $cab->AssignedTo;
+				if($cab->AssignedTo >0){
+					$dev->Owner=$cab->AssignedTo;
+				}
 			}
 		}
 		
@@ -277,11 +280,12 @@
 					$dev->Reservation=(isset($_POST['reservation']))?($_POST['reservation']=="on")?1:0:0;
 					$dev->NominalWatts=$_POST['nominalwatts'];
 
-					if ( ( $dev->TemplateID > 0 ) && ( intval($dev->NominalWatts == 0 ) ) )
+					if( ($dev->TemplateID>0) && (intval($dev->NominalWatts==0)) ){
 						$dev->UpdateWattageFromTemplate($facDB);
+					}
 					$dev->CreateDevice($facDB);
 					$dev->SetTags($tagarray);
-				}elseif($user->DeleteAccess&&($_REQUEST['action']=='Delete')){
+				}elseif($user->DeleteAccess && ($_REQUEST['action']=='Delete')){
 					$dev->GetDevice($facDB);
 					$dev->DeleteDevice($facDB);
 					header('Location: '.redirect("cabnavigator.php?cabinetid=$dev->Cabinet"));
@@ -1476,23 +1480,29 @@ echo '	<div class="table">
 		  
 	if($dev->DeviceType=='Switch'){
 		print "		<div>\n		  <div><a name=\"net\">".__('Connections')."</a></div>\n		  <div>\n			<div class=\"table border switch\">\n				<div><div>#</div><div>".__('Name')."</div><div>".__('Device')."</div><div>".__('Device Port')."</div><div>".__('Notes')."</div><div>".__("Status")."</div></div>\n";
-// 		if(sizeof($patchList) >0){
-//			foreach($patchList as $patchConn){
 		for ( $n = 0; $n < sizeof( $portList ); $n++ ) {
 			$i = $n + 1;	// The "port number" starting at 1
 			
 			$tmpDev=new Device();
 			$tmpDev->DeviceID=$patchList[$n]->EndpointDeviceID;
 			$tmpDev->GetDevice($facDB);
-			
-			printf( "\t\t\t\t<div><div id=\"sp%d\">%d</div><div>%s</div><div id=\"d%d\" alt=\"%d\"><a href=\"devices.php?deviceid=%d\">%s</a></div>
-				<div data=\"%s\" id=\"dp%d\">%d</div><div data=\"%s\" id=\"n%d\">%s</div><div data=\"%s\" id=\"st%d\">%s</div></div>\n",
-				$i, $i, $portList[$n]->PortDescriptor, $i, $patchList[$n]->EndpointDeviceID, $patchList[$n]->EndpointDeviceID, $tmpDev->Label,
-				$patchList[$n]->EndpointPort, $i, $patchList[$n]->EndpointPort,	$portList[$n]->Notes, $i, $portList[$n]->Notes, $linkList[$n], $i, $linkList[$n] );
-			// print "\t\t\t\t<div><div id=\"sp"$i\">$i</div><div>".$portList[$n]->PortDescriptor."</div><div id=\"d$i\" alt=\"".$patchList[$n]->EndpointDeviceID."\"><a href=\"devices.php?deviceid=".$patchList[$n]->EndpointDeviceID."\">$tmpDev->Label</a></div><div data=\"".$patchList[$n]->EndpointPort."\" id=\"dp$i\">".$patchList[$n]->EndpointPort."</div><div data=\"".$portList[$n]->Notes."\" id=\"n$i\">".$portList[$n]->Notes."</div></div>\n";
+
+			print "\t\t\t\t<div>
+					<div id=\"sp$i\">$i</div>
+					<div>{$portList[$n]->PortDescriptor}</div>
+					<div id=\"d$i\" alt=\"{$patchList[$n]->EndpointDeviceID}\"><a href=\"devices.php?deviceid={$patchList[$n]->EndpointDeviceID}\">$tmpDev->Label</a></div>
+					<div data=\"{$patchList[$n]->EndpointPort}\" id=\"dp$i\">{$patchList[$n]->EndpointPort}</div>
+					<div data=\"{$portList[$n]->Notes}\" id=\"n$i\">{$portList[$n]->Notes}</div>
+					<div id=\"st$i\">{$linkList[$n]}</div>
+				</div>\n";
 		}
-//			}
-//		}      
+/*
+ 		if(sizeof($patchList) >0){
+			foreach($patchList as $patchConn){
+			 print "\t\t\t\t<div><div id=\"sp"$i\">$i</div><div>".$portList[$n]->PortDescriptor."</div><div id=\"d$i\" alt=\"".$patchList[$n]->EndpointDeviceID."\"><a href=\"devices.php?deviceid=".$patchList[$n]->EndpointDeviceID."\">$tmpDev->Label</a></div><div data=\"".$patchList[$n]->EndpointPort."\" id=\"dp$i\">".$patchList[$n]->EndpointPort."</div><div data=\"".$portList[$n]->Notes."\" id=\"n$i\">".$portList[$n]->Notes."</div></div>\n";
+			}
+		}      
+*/
 		echo "			</div><!-- END div.table -->\n		  </div>\n		</div>";
 	}
 
