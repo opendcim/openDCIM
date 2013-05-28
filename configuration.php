@@ -51,24 +51,27 @@
 				echo json_encode($col);
 				exit;
 			}
-			if(isset($_POST['clear'])){
+			if(isset($_POST['clear']) || isset($_POST['change'])){
+				$newcolorid=0;
+				if(isset($_POST['clear'])){
+					ColorCoding::ResetCode($col->ColorID);
+				}else{
+					$newcolorid=$_POST['change'];
+					ColorCoding::ResetCode($col->ColorID,$newcolorid);
+				}
 				$mediatypes=MediaTypes::GetMediaTypeList();
 				foreach($mediatypes as $mt){
 					if($mt->ColorID==$col->ColorID){
-						$mt->ColorID=='';
+						$mt->ColorID=$newcolorid;
 						$mt->UpdateType();
 					}
 				}
-				ColorCoding::ClearCode($col->ColorID);
 				if($col->DeleteCode()){
 					echo 'u';
 				}else{
 					echo 'f';
 				}
 				exit;
-			}
-			if(isset($_POST['change'])){
-
 			}
 			if($col->UpdateCode()){
 				echo 'u';
@@ -106,6 +109,20 @@
 				echo json_encode($mt);
 				exit;
 			}
+			if(isset($_POST['clear']) || isset($_POST['change'])){
+				if(isset($_POST['clear'])){
+					MediaTypes::ResetType($mt->MediaID);
+				}else{
+					$newmediaid=$_POST['change'];
+					MediaTypes::ResetType($mt->MediaID,$newmediaid);
+				}
+				if($mt->DeleteType()){
+					echo 'u';
+				}else{
+					echo 'f';
+				}
+				exit;
+			}
 			if($mt->UpdateType()){
 				echo 'u';
 			}else{
@@ -130,6 +147,15 @@
 		}
 		echo $count;
 		exit;
+	}
+	if(isset($_POST['mtlist'])){
+		$codeList=MediaTypes::GetMediaTypeList();
+		$output='<option value=""></option>';
+		foreach($codeList as $mt){
+			$output.="<option value=\"$mt->MediaID\">$mt->MediaType</option>";
+		}
+		echo $output;
+		exit;		
 	}
 	if(isset($_POST['cclist'])){
 		$codeList=ColorCoding::GetCodeList();
@@ -457,21 +483,64 @@
 						$(this).remove();
 					});
 				}else{
-					var modal=$('<div />', {id: 'modal', title: 'Media Type Delete Override'}).html('<div id="modaltext">this code is in use somewhere. add a modal requesting permission to remove this record and all associated entries</div>').dialog({
+					var defaultbutton={
+						"Clear all": function(){
+							$.post('',{mtid: row.find('div:nth-child(2) input').attr('data'),mt: '', mtcc: '', clear: ''}).done(function(data){
+								if(data.trim()=='u'){ // success
+									$('#modal').dialog("destroy");
+									row.effect('explode', {}, 500, function(){
+										$(this).remove();
+									});
+								}else{ // failed to delete
+									$('#modaltext').html('AAAAAAAAAAHHHHHHHHHH!!!  *crash* *fire* *chaos*<br><br>Something just went horribly wrong.');
+									$('#modal').dialog('option','buttons',cancelbutton);
+								}
+							});
+						}
+					}
+					var replacebutton={
+						"Replace": function(){
+							// send command to replace all connections with x
+							$.post('',{mtid: row.find('div:nth-child(2) input').attr('data'),mt: '', mtcc: '', change: $('#modal select').val()}).done(function(data){
+								if(data.trim()=='u'){ // success
+									$('#modal').dialog("destroy");
+									row.effect('explode', {}, 500, function(){
+										$(this).remove();
+									});
+								}else{ // failed to delete
+									$('#modaltext').html('AAAAAAAAAAHHHHHHHHHH!!!  *crash* *fire* *chaos*<br><br>Something just went horribly wrong.');
+									$('#modal').dialog('option','buttons',cancelbutton);
+								}
+							});
+						}
+					}
+					var cancelbutton={
+						Cancel: function(){
+							$(this).dialog("destroy");
+						}
+					}
+					var modal=$('<div />', {id: 'modal', title: 'Media Type Delete Override'}).html('<div id="modaltext">this code is in use somewhere. add a modal requesting permission to remove this record and all associated entries<select id="replaceme"></select></div>').dialog({
 						dialogClass: 'no-close',
 						appendTo: 'body',
 						modal: true,
-						buttons: {
-							"Yes": function(){
-								$('#modaltext').html('AAAAAAAAAAHHHHHHHHHH!!!  *crash* *fire* *chaos*');
-								// decide how to handle these.
-							},
-							Cancel: function(){
-								$(this).dialog("destroy");
-							}
-						}
+						buttons: $.extend({}, defaultbutton, cancelbutton)
 					});
-
+					$.post('',{mtlist: ''}).done(function(data){
+						var choices=$('<select />');
+						choices.html(data);
+						choices.find('option').each(function(){
+							if($(this).val()==row.find('div:nth-child(2) input').attr('data')){$(this).remove();}
+						});
+						choices.change(function(){
+							if($(this).val()==''){ // clear all
+								modal.dialog('option','buttons',$.extend({}, defaultbutton, cancelbutton));
+							}else{ // replace
+								modal.dialog('option','buttons',$.extend({}, replacebutton, cancelbutton));
+							}
+						});
+						modal.find($('#replaceme')).replaceWith(choices);
+						
+					});
 				}
 			});
 
@@ -495,13 +564,13 @@
 			});
 			function update(inputobj){
 				if(mt.val().trim()==''){
+					// reset value to previous
 					$.post('',{mt: mt.val(), mtid: mt.attr('data'), mtcc: mtcc.val(),original:''}).done(function(jsondata){
 						mt.val(jsondata.MediaType);
 						mtcc.val(jsondata.ColorID);
 					});
 					mt.effect('highlight', {color: 'salmon'}, 1500);
 					mtcc.effect('highlight', {color: 'salmon'}, 1500);
-					// reset value to previous
 				}else{
 					// attempt to update
 					$.post('',{mt: mt.val(), mtid: mt.attr('data'), mtcc: mtcc.val()}).done(function(data){
@@ -545,6 +614,7 @@
 			});
 		}
 
+		// Add a new blank row
 		$('#mediatypes > div ~ div > div:first-child').each(function(){
 			if($(this).attr('id')=='newline'){
 				var row=$(this).parent('div');
@@ -562,9 +632,9 @@
 			bindmediarow($(this).parent('div'));
 		});
 
+		// Update color drop lists
 		function updatechoices(){
-			var newlist='';
-			$.post('',{cclist: '1'}).done(function(data){
+			$.post('',{cclist: ''}).done(function(data){
 				$('#mediatypes > div ~ div').each(function(){
 					var list=$(this).find('select[name="mediacolorcode[]"]');
 					var dc=list.val();
@@ -589,7 +659,7 @@
 					}else{
 						var defaultbutton={
 							"Clear all": function(){
-								$.post('',{cid: rowobject.find('div:nth-child(2) input').attr('data'),cc: '', clear: ''}).done(function(data){
+								$.post('',{cid: rowobject.find('div:nth-child(2) input').attr('data'),cc: '', ccdn: '', clear: ''}).done(function(data){
 									if(data.trim()=='u'){ // success
 										$('#modal').dialog("destroy");
 										updatechoices();
@@ -605,8 +675,22 @@
 						}
 						var replacebutton={
 							"Replace": function(){
-								$('#modaltext').html('Replace all existing connections that were using X with Y');
 								// send command to replace all connections with x
+								$.post('',{cid: rowobject.find('div:nth-child(2) input').attr('data'),cc: '', ccdn: '', change: $('#modal select').val()}).done(function(data){
+									if(data.trim()=='u'){ // success
+										$('#modal').dialog("destroy");
+										updatechoices();
+										rowobject.effect('explode', {}, 500, function(){
+											$(this).remove();
+										});
+										// Need to trigger a reload of any of the media types that had this 
+										// color so they will display the new color
+										$('#mediatypes > div ~ div:not(:last-child) input').val('').change();
+									}else{ // failed to delete
+										$('#modaltext').html('AAAAAAAAAAHHHHHHHHHH!!!  *crash* *fire* *chaos*<br><br>Something just went horribly wrong.');
+										$('#modal').dialog('option','buttons',cancelbutton);
+									}
+								});
 							}
 						}
 						var cancelbutton={

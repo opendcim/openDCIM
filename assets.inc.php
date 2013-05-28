@@ -747,15 +747,25 @@ class ColorCoding {
 		return $codeList;
 	}
 
-	static function ClearCode($colorid){
+	static function ResetCode($colorid,$tocolorid=0){
+	/*
+	 * This probably shouldn't be a function here since it will only be used in one
+	 * place. This function will remove a color code from any device ports or will
+	 * set it to another via an optional second color id
+	 *
+	 */
 		global $dbh;
 		$colorid=intval($colorid);
+		$tocolorid=intval($tocolorid); // it will always be 0 unless otherwise set
 
-		$sql="SELECT ConnectionID FROM fac_DevicePorts WHERE ColorID=$colorid;";
-		foreach($dbh->query($sql) as $row){
-			$dp=DevicePorts::getConnection($row["ConnectionID"]);
-			$dp->ColorID='';
-			$dp->UpdatePort();
+		$sql="UPDATE fac_DevicePorts SET ColorID='$tocolorid' WHERE ColorID='$colorid';";
+
+		if(!$dbh->query($sql)){
+			$info=$dbh->errorInfo();
+			error_log("PDO Error: {$info[2]}");
+			return false;
+		}else{		
+			return true;
 		}
 	}
 
@@ -2685,6 +2695,28 @@ class MediaTypes {
 		}
 		
 		return $mediaList;
+	}
+
+	static function ResetType($mediaid,$tomediaid=0){
+	/*
+	 * This probably shouldn't be a function here since it will only be used in one
+	 * place. This function will remove a color code from any device ports or will
+	 * set it to another via an optional second color id
+	 *
+	 */
+		global $dbh;
+		$mediaid=intval($mediaid);
+		$tomediaid=intval($tomediaid); // it will always be 0 unless otherwise set
+
+		$sql="UPDATE fac_DevicePorts SET MediaID='$tomediaid' WHERE MediaID='$mediaid';";
+
+		if(!$dbh->query($sql)){
+			$info=$dbh->errorInfo();
+			error_log("PDO Error: {$info[2]}");
+			return false;
+		}else{		
+			return true;
+		}
 	}
 
 	static function TimesUsed($mediaid){
