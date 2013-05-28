@@ -23,6 +23,27 @@
 			echo $cab->CabinetHeight;
 			exit;
 		}
+		if(isset($_POST['fp'])){
+			$dev->DeviceID=$_POST['devid'];
+			$dev->GetDevice($facDB);
+			if($_POST['fp']==''){ // querying possible first ports
+				$portCandidates=SwitchInfo::findFirstPort($dev->DeviceID);
+				if(count($portCandidates>0)){
+					foreach($portCandidates as $id => $portdesc){
+						$checked=($id==$dev->FirstPortNum)?' checked':'';
+						print '<input type="radio" name="firstportnum" id="fp'.$id.'" value="'.$id.'"'.$checked.'><label for="fp'.$id.'">'.$portdesc.'</label><br>';
+					}
+				}
+			}else{ // setting first port
+				$dev->FirstPortNum=$_POST['fp'];
+				if($dev->UpdateDevice()){
+					echo 'Updated';
+				}else{
+					echo 'Failure';
+				}
+			}
+			exit;
+		};
 		if(isset($_POST['swdev'])){
 			$dev->DeviceID=$_POST['swdev'];
 			$dev->GetDevice($facDB);
@@ -664,6 +685,31 @@ $(document).ready(function() {
 			$('#height').trigger('change');
 		});
 	});
+	$('select[name=devicetype]').change(function(){
+		if($(this).val()=='Switch'){
+			$('#firstport').show();
+		}else{
+			$('#firstport').hide();
+		}
+	});
+	$('#firstport').click(function(){
+		var modal=$('<div />', {id: 'modal', title: 'Select switch first port'}).html('<div id="modaltext"></div><br><div id="modalstatus" class="warning"></div>').dialog({
+			appendTo: 'body',
+			modal: true,
+			close: function(){$(this).dialog('destroy');}
+		});
+		$.post('',{fp: '', devid: $('#deviceid').val()}).done(function(data){
+			$('#modaltext').html(data);
+			$('#modaltext input').change(function(){
+				$.post('',{fp: $(this).val(), devid: $('#deviceid').val()}).done(function(data){
+					$('#modalstatus').html(data);
+					$('#modal').dialog('destroy');
+				});
+			});
+		});
+	});
+
+	if($('select[name=devicetype]').val()=='Switch'){$('#firstport').show();}
 <?php
 	// hide all the js functions if they don't have write permissions
 	if($user->WriteAccess){
@@ -1330,6 +1376,10 @@ echo '		<div>
 		</div>
 	</div> <!-- END div.table -->
 </fieldset>
+<fieldset id="firstport" class="hide">
+	<legend>Switch SNMP</legend>
+	<div>Click here to set the first port for the switch<br><button type="button">First Port</button></div>
+</fieldset>
 <?php
 	//
 	// Do not display the chassis contents block if this is a child device (ParentDevice > 0)
@@ -1480,18 +1530,19 @@ echo '	<div class="table">
 		  
 	if($dev->DeviceType=='Switch'){
 		print "		<div>\n		  <div><a name=\"net\">".__('Connections')."</a></div>\n		  <div>\n			<div class=\"table border switch\">\n				<div><div>#</div><div>".__('Name')."</div><div>".__('Device')."</div><div>".__('Device Port')."</div><div>".__('Notes')."</div><div>".__("Status")."</div></div>\n";
+
 		for ( $n = 0; $n < sizeof( $portList ); $n++ ) {
 			$i = $n + 1;	// The "port number" starting at 1
 			
 			$tmpDev=new Device();
-			$tmpDev->DeviceID=$patchList[$n]->EndpointDeviceID;
+			$tmpDev->DeviceID=$patchList[$i]->EndpointDeviceID;
 			$tmpDev->GetDevice($facDB);
 
 			print "\t\t\t\t<div>
 					<div id=\"sp$i\">$i</div>
 					<div>{$portList[$n]->PortDescriptor}</div>
-					<div id=\"d$i\" alt=\"{$patchList[$n]->EndpointDeviceID}\"><a href=\"devices.php?deviceid={$patchList[$n]->EndpointDeviceID}\">$tmpDev->Label</a></div>
-					<div data=\"{$patchList[$n]->EndpointPort}\" id=\"dp$i\">{$patchList[$n]->EndpointPort}</div>
+					<div id=\"d$i\" alt=\"{$patchList[$i]->EndpointDeviceID}\"><a href=\"devices.php?deviceid={$patchList[$i]->EndpointDeviceID}\">$tmpDev->Label</a></div>
+					<div data=\"{$patchList[$i]->EndpointPort}\" id=\"dp$i\">{$patchList[$i]->EndpointPort}</div>
 					<div data=\"{$portList[$n]->Notes}\" id=\"n$i\">{$portList[$n]->Notes}</div>
 					<div id=\"st$i\">{$linkList[$n]}</div>
 				</div>\n";

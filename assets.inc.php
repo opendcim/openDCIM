@@ -1270,7 +1270,7 @@ class Device {
 			return false;
 		}
 		
-		return;
+		return true;
 	}
 
 	function GetDevice( $db = null ) {

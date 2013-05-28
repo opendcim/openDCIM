@@ -458,6 +458,8 @@ div.page.device {
 
 .device #tags { width: 95%; min-width: 250px;}
 
+#firstport.hide { display: none; }
+
 .chassis .table input{text-align:center;}
 .chassis .table > div > div{text-align:center;}
 .chassis .table + .table > div > div{text-align:left;}
