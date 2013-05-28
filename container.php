@@ -31,7 +31,20 @@
 		}
 	}
 
-	if(isset($_REQUEST['containerid'])&& $_REQUEST['containerid'] >0){
+	if(isset($_POST['cambio_cont'])&& $_POST['cambio_cont']=='SI'){
+		$c->ContainerID=$_POST['containerid'];
+		$c->Name=trim($_POST['name']);
+		$c->DrawingFileName=$_POST['drawingfilename'];
+		$c->ParentID=$_POST['parentid'];
+		if ($c->ParentID==0){
+			$c->MapX=0;
+			$c->MapY=0;
+		}else{
+			$c->MapX=$_POST['x'];
+			$c->MapY=$_POST['y'];
+		}
+	}
+	elseif(isset($_REQUEST['containerid'])&& $_REQUEST['containerid'] >0){
 		$c->ContainerID=(isset($_POST['containerid']) ? $_POST['containerid'] : $_GET['containerid']);
 		$c->GetContainer($facDB);
 	}
@@ -154,6 +167,10 @@
 		else
 			yo.hidden=false;
 	}
+  	function cambio_container(){
+		document.getElementById("cambio_cont").value="SI";
+		document.getElementById("containerform").submit();
+	}
   </script>
 
 </head>
@@ -189,9 +206,10 @@ echo '	</select></div>
    <div><label for="drawingfilename">',_("Drawing URL"),'</label></div>
    <div><input type="text" name="drawingfilename" id="drawingfilename" size=60 value="',$c->DrawingFileName,'"></div>
 </div>
+<div><input type="hidden" name="cambio_cont" id="cambio_cont" value=""></div>
 <div>
 	<div><label for="parentid">',_("Parent Container"),'</label></div>
-  	<div><select name="parentid" id="parentid">
+  	<div><select name="parentid" id="parentid" onChange="cambio_container()">
       <option value="0">',_("None"),'</option>';
 
 //	$container=new Container();

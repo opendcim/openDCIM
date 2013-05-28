@@ -35,7 +35,24 @@
 		}
 	}
 
-	if(isset($_REQUEST['datacenterid'])&&$_REQUEST['datacenterid'] >0){
+	if(isset($_POST['cambio_cont'])&& $_POST['cambio_cont']=='SI'){
+		$dc->DataCenterID=$_POST['datacenterid'];
+		$dc->Name=trim($_POST['name']);
+		$dc->SquareFootage=$_POST['squarefootage'];
+		$dc->DeliveryAddress=$_POST['deliveryaddress'];
+		$dc->Administrator=$_POST['administrator'];
+		$dc->DrawingFileName=$_POST['drawingfilename'];
+		$dc->MaxkW=$_POST['maxkw'];
+		$dc->ContainerID=$_POST['container'];
+		if ($dc->ContainerID==0){
+			$dc->MapX=0;
+			$dc->MapY=0;
+		}else{
+			$dc->MapX=$_POST['x'];
+			$dc->MapY=$_POST['y'];
+		}
+	}
+	elseif(isset($_REQUEST['datacenterid'])&&$_REQUEST['datacenterid'] >0){
 		$dc->DataCenterID=(isset($_POST['datacenterid']) ? $_POST['datacenterid'] : $_GET['datacenterid']);
 		$dc->GetDataCenter($facDB);
 	}
@@ -161,6 +178,11 @@
 		else
 			yo.hidden=false;
 	}
+
+	function cambio_container(){
+		document.getElementById("cambio_cont").value="SI";
+		document.getElementById("datacenterform").submit();
+	}
   </script>
 
 </head>
@@ -212,9 +234,10 @@ echo '	</select></div>
 	<div><label for="maxkw">',__("Design Maximum (kW)"),'</label></div>
 	<div><input class="validate[optional,custom[onlyNumberSp]]" type="text" name="maxkw" id="maxkw" size="8" maxlength="8" value="',$dc->MaxkW,'"></div>
 </div>
+<div><input type="hidden" name="cambio_cont" id="cambio_cont" value=""></div>
 <div>
 	<div><label for="container">',__("Container"),'</label></div>
-  	<div><select name="container" id="container">
+  	<div><select name="container" id="container" onChange="cambio_container()">
       <option value="0">',__("None"),'</option>';
 
 	$container=new Container();
@@ -235,14 +258,16 @@ echo '	</select></div>
     <div><input type="text" name="y" id="y" value="',$dc->MapY,'" onblur="mueve()"></div> 
 </div>'; 
 
+print "<div id=divcontainer>\n"; 
 if ($dc->ContainerID>0){
-	print "<div>\n  <div><b>".__("Click on the image to select DC coordinates")."</b></div>"; 
+	print "  <div><b>".__("Click on the image to select DC coordinates")."</b></div>"; 
 	$container->ContainerID=$dc->ContainerID;
 	$container->GetContainer($facDB);
 	print "<div>";
 	print $container->MakeContainerMiniImage($facDB,"dc",$dc->DataCenterID);
-	print "</div></div>"; 
+	print "</div>"; 
 }
+print "</div>"; 
 
 echo '<div class="caption">';
 
