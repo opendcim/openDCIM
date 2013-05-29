@@ -3415,10 +3415,13 @@ class SwitchInfo {
 			return;
 			
 		$x = array();
-		for ( $n=1; $n < SwitchInfo::getNumPorts($DeviceID); $n++ ) {
-			$portdesc = @end( explode( ":", snmp2_get( $dev->PrimaryIP, $dev->SNMPCommunity, "IF-MIB::ifDescr.$n" )));
+		
+		$portList = snmp2_real_walk( $dev->PrimaryIP, $dev->SNMPCommunity, "IF-MIB::ifDescr" );
+		foreach( $portList as $index => $port ) {
+			$head = explode( ".", $index );
+			$portdesc = @end( explode( ":", $port));
 			if ( preg_match( "/\/1$/", $portdesc )) {
-				$x[$n] = $portdesc;
+				$x[$head[1]] = $portdesc;
 			} // Find lines that end with /1
 		}
 		return $x;
