@@ -3418,10 +3418,10 @@ class SwitchInfo {
 		
 		$portList = snmp2_real_walk( $dev->PrimaryIP, $dev->SNMPCommunity, "IF-MIB::ifDescr" );
 		foreach( $portList as $index => $port ) {
-			$head = explode( ".", $index );
+			$head = @end( explode( ".", $index ) );
 			$portdesc = @end( explode( ":", $port));
 			if ( preg_match( "/\/1$/", $portdesc )) {
-				$x[$head[1]] = $portdesc;
+				$x[$head] = $portdesc;
 			} // Find lines that end with /1
 		}
 		return $x;
