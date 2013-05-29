@@ -2281,40 +2281,39 @@ class DevicePorts {
 			$n=sizeof($portList);
 			$portList[$n]=new DevicePorts();
 			
-			$portList[$n]->ConnectionID = $row["ConnectionID"];
-			$portList[$n]->DeviceID = $row["DeviceID"];
-			$portList[$n]->DevicePort = $row["DevicePort"];
-			$portList[$n]->MediaID = $row["MediaID"];
-			$portList[$n]->PortDescriptor = $row["PortDescriptor"];
-			$portList[$n]->ColorID = $row["ColorID"];
-			$portList[$n]->Notes = $row["Notes"];
+			$portList[$n]->ConnectionID=$row["ConnectionID"];
+			$portList[$n]->DeviceID=$row["DeviceID"];
+			$portList[$n]->DevicePort=$row["DevicePort"];
+			$portList[$n]->MediaID=$row["MediaID"];
+			$portList[$n]->PortDescriptor=$row["PortDescriptor"];
+			$portList[$n]->ColorID=$row["ColorID"];
+			$portList[$n]->Notes=$row["Notes"];
 		}
 		
-		if ( sizeof( $portList ) == 0 && $dev->DeviceType == "Switch" ) {
+		if( sizeof($portList)==0 && $dev->DeviceType=="Switch" ){
 			// Build the DevicePorts from the existing info in the following priority:
 			//  - Existing switchconnection table
 			//  - SNMP data (if it exists)
 			//  - Placeholders
-			$swCon = new SwitchConnection();
-			$swCon->SwitchDeviceID = $dev->DeviceID;
+			$swCon=new SwitchConnection();
+			$swCon->SwitchDeviceID=$dev->DeviceID;
 			
-			$nameList = SwitchInfo::getPortNames( $dev->DeviceID );
-			$aliasList = SwitchInfo::getPortAlias( $dev->DeviceID );
+			$nameList=SwitchInfo::getPortNames($dev->DeviceID);
+			$aliasList=SwitchInfo::getPortAlias($dev->DeviceID);
 			
-			$devPort->DeviceID = $dev->DeviceID;
 			
-			for ( $n = 0; $n < $dev->Ports; $n++ ) {
-				$portList[$n] = new DevicePorts();
-				
-				$portList[$n]->DevicePort = $n + 1;
-				$swCon->SwitchPortNumber = $n + 1;
-				
-				if ( $swCon->GetConnectionRecord() )
-					$portList[$n]->Notes = $swCon->Notes;
-				else
-					$portList[$n]->Notes = $aliasList[$n];
-					
-				$portList[$n]->PortDescriptor = @$nameList[$n];
+			for( $n=0; $n<$dev->Ports; $n++ ){
+				$portList[$n]=new DevicePorts();
+				$portList[$n]->DeviceID=$dev->DeviceID;
+				$portList[$n]->DevicePort=$n+1;
+				$portList[$n]->PortDescriptor=@$nameList[$n];
+
+				$swCon->SwitchPortNumber=$n+1;
+				if($swCon->GetConnectionRecord()){
+					$portList[$n]->Notes=$swCon->Notes;
+				}else{
+					$portList[$n]->Notes=$aliasList[$n];
+				}
 				
 				$portList[$n]->CreatePort();
 			}
@@ -2328,16 +2327,17 @@ class DevicePorts {
 		
 		$this->MakeSafe();
 		
-		$sql = sprintf( "insert into fac_DevicePorts set DeviceID=%d, DevicePort=%d, MediaID=%d, PortDescriptor=\"%s\", ColorID=%d, Notes=\"%s\"",
-			$this->DeviceID, $this->DevicePort, $this->MediaID, $this->PortDescriptor, $this->ColorID, $this->Notes );
-			
-		if ( ! $dbh->exec( $sql ) ) {
-			$info = $dbh->errorInfo();
+		$sql = "INSERT INTO fac_DevicePorts SET DeviceID=$this->DeviceID, DevicePort=$this->DevicePort, 
+				MediaID=$this->MediaID, PortDescriptor=\"$this->PortDescriptor\", ColorID=$this->ColorID, 
+				Notes=\"$this->Notes\"";
 
-			error_log( "PDO Error: " . $info[2] . " SQL=" . $sql );
+		if( !$dbh->exec($sql) ){
+			$info=$dbh->errorInfo();
+
+			error_log("PDO Error: {$info[2]} SQL=$sql");
 			return false;
-		} else {
-			$this->ConnetionID = $dbh->lastInsertID();
+		}else{
+			$this->ConnetionID=$dbh->lastInsertID();
 		}
 		
 		return $this->ConnectionID;		

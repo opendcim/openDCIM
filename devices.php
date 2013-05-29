@@ -105,6 +105,7 @@
 				$rowarray[5]="<a href=\"devices.php?deviceid=$dev->DeviceID\">$dev->Label</a>";
 				$rowarray[6]="$patchConnect->RearEndpointPort";
 				$rowarray[7]="$patchConnect->RearNotes";
+				header('Content-Type: application/json');
 				echo json_encode($rowarray);
 				exit;
 			}
@@ -165,6 +166,7 @@
 				$rowarray[5]="<a href=\"devices.php?deviceid=$dev->DeviceID\">$dev->Label</a>";
 				$rowarray[6]="$patchConnect->RearEndpointPort";
 				$rowarray[7]="$patchConnect->RearNotes";
+				header('Content-Type: application/json');
 				echo json_encode($rowarray);
 				exit;
 			}
@@ -177,6 +179,24 @@
 			echo '</select>';
 			exit;
 		}
+
+		if(isset($_POST['refreshswitch'])){
+			$portList=DevicePorts::getPortList($_POST['refreshswitch']);
+			$linkList=SwitchInfo::getPortStatus($_POST['refreshswitch']);
+			$mediaTypes=MediaTypes::GetMediaTypeList();
+			$colorCodes=ColorCoding::GetCodeList();
+
+			// combine port status with port description
+			foreach($portList as $key => $dp){
+				$dp->PortStatus=$linkList[$key];
+				$dp->MediaID=(isset($mediaTypes[$dp->MediaID]))?$mediaTypes[$dp->MediaID]->MediaType:'';
+				$dp->ColorID=(isset($colorCodes[$dp->ColorID]))?$colorCodes[$dp->ColorID]->Name:'';
+			}
+			header('Content-Type: application/json');
+			echo json_encode($portList);
+			exit;
+		}
+
 	}
 	// END AJAX
 
@@ -249,6 +269,7 @@
 					$dev->WarrantyExpire=date('Y-m-d',strtotime($_POST['warrantyexpire']));
 					$dev->Notes=trim($_POST['notes']);
 					$dev->Notes=($dev->Notes=="<br>")?"":$dev->Notes;
+					$dev->FirstPortNum=$_POST['firstportnum'];
 					// All of the values below here are optional based on the type of device being dealt with
 					$dev->ChassisSlots=(isset($_POST['chassisslots']))?$_POST['chassisslots']:0;
 					$dev->RearChassisSlots=(isset($_POST['rearchassisslots']))?$_POST['rearchassisslots']:0;
@@ -289,6 +310,7 @@
 					$dev->WarrantyExpire=date('Y-m-d',strtotime($_POST['warrantyexpire']));
 					$dev->Notes=trim($_POST['notes']);
 					$dev->Notes=($dev->Notes=="<br>")?"":$dev->Notes;
+					$dev->FirstPortNum=$_POST['firstportnum'];
 					// All of the values below here are optional based on the type of device being dealt with
 					$dev->ChassisSlots=(isset($_POST['chassisslots']))?$_POST['chassisslots']:0;
 					$dev->RearChassisSlots=(isset($_POST['rearchassisslots']))?$_POST['rearchassisslots']:0;
@@ -350,6 +372,8 @@
 				if($dev->DeviceType=='Switch'){
 					$portList = DevicePorts::getPortList( $dev->DeviceID );
 					$linkList = SwitchInfo::getPortStatus( $dev->DeviceID );
+					$mediaTypes=MediaTypes::GetMediaTypeList();
+					$colorCodes=ColorCoding::GetCodeList();
 					$networkPatches->SwitchDeviceID=$dev->DeviceID;
 					$patchList=$networkPatches->GetSwitchConnections($facDB);
 				}elseif($dev->DeviceType=='Patch Panel'){
@@ -692,7 +716,7 @@ $(document).ready(function() {
 			$('#firstport').hide();
 		}
 	});
-	$('#firstport').click(function(){
+	$('#firstport button[name=firstport]').click(function(){
 		var modal=$('<div />', {id: 'modal', title: 'Select switch first port'}).html('<div id="modaltext"></div><br><div id="modalstatus" class="warning"></div>').dialog({
 			appendTo: 'body',
 			modal: true,
@@ -701,13 +725,30 @@ $(document).ready(function() {
 		$.post('',{fp: '', devid: $('#deviceid').val()}).done(function(data){
 			$('#modaltext').html(data);
 			$('#modaltext input').change(function(){
-				$.post('',{fp: $(this).val(), devid: $('#deviceid').val()}).done(function(data){
+				var fpnum=$(this).val();
+				$.post('',{fp: fpnum, devid: $('#deviceid').val()}).done(function(data){
+					$('input[name=firstportnum]').val(fpnum);
 					$('#modalstatus').html(data);
 					$('#modal').dialog('destroy');
 				});
 			});
 		});
 	});
+	$('#firstport button[name=refresh]').click(function(){
+		refreshswitch($('#deviceid').val());
+	});
+	function refreshswitch(devid){
+		$.post('',{refreshswitch: devid}).done(function(data){
+			$('.switch > div ~ div > div:first-child').each(function(){
+				var portnum=$(this).text();
+				$('#spn'+portnum).text(data[portnum-1].PortDescriptor);
+				$('#n'+portnum).text(data[portnum-1].Notes);
+				$('#st'+portnum).text(data[portnum-1].PortStatus);
+				$('#mt'+portnum).text(data[portnum-1].MediaID);
+				$('#cc'+portnum).text(data[portnum-1].ColorID);
+			});
+		});
+	}
 
 	if($('select[name=devicetype]').val()=='Switch'){$('#firstport').show();}
 <?php
@@ -1168,7 +1209,8 @@ echo '<div class="center"><div>
 		</div>
 		<div>
 		  <div><label for="primaryip">'.__("Primary IP").'</label></div>
-		  <div><input type="text" name="primaryip" id="primaryip" size="20" value="'.$dev->PrimaryIP.'"></div>
+		  <div><input type="text" name="primaryip" id="primaryip" size="20" value="'.$dev->PrimaryIP.'">
+				<input type="hidden" name="firstportnum" value="'.$dev->FirstPortNum.'"></div>
 		</div>
 		<div>
 		  <div><label for="snmpcommunity">'.__("SNMP Read Only Community").'</label></div>
@@ -1378,7 +1420,7 @@ echo '		<div>
 </fieldset>
 <fieldset id="firstport" class="hide">
 	<legend>Switch SNMP</legend>
-	<div>Click here to set the first port for the switch<br><button type="button">First Port</button></div>
+	<div>Click here to set the first port for the switch<br><button type="button" name="firstport">First Port</button><button type="button" name="refresh">Refresh</button></div>
 </fieldset>
 <?php
 	//
@@ -1529,7 +1571,16 @@ echo '	<div class="table">
 	}
 		  
 	if($dev->DeviceType=='Switch'){
-		print "		<div>\n		  <div><a name=\"net\">".__('Connections')."</a></div>\n		  <div>\n			<div class=\"table border switch\">\n				<div><div>#</div><div>".__('Name')."</div><div>".__('Device')."</div><div>".__('Device Port')."</div><div>".__('Notes')."</div><div>".__("Status")."</div></div>\n";
+		print "		<div>\n		  <div><a name=\"net\">".__('Connections')."</a></div>\n		  <div>\n			<div class=\"table border switch\">\n				<div>
+				<div>#</div>
+				<div>".__('Name')."</div>
+				<div>".__('Device')."</div>
+				<div>".__('Device Port')."</div>
+				<div>".__('Notes')."</div>
+				<div>".__("Status")."</div>
+				<div>".__("Media Type")."</div>
+				<div>".__("Color Code")."</div>
+			</div>\n";
 
 		for ( $n = 0; $n < sizeof( $portList ); $n++ ) {
 			$i = $n + 1;	// The "port number" starting at 1
@@ -1538,13 +1589,18 @@ echo '	<div class="table">
 			$tmpDev->DeviceID=$patchList[$i]->EndpointDeviceID;
 			$tmpDev->GetDevice($facDB);
 
+			$mt=(isset($mediaTypes[$portList[$n]->MediaID]))?$mediaTypes[$portList[$n]->MediaID]->MediaType:'';
+			$cc=(isset($colorCodes[$portList[$n]->ColorID]))?$colorCodes[$portList[$n]->ColorID]->Name:'';
+
 			print "\t\t\t\t<div>
 					<div id=\"sp$i\">$i</div>
-					<div>{$portList[$n]->PortDescriptor}</div>
+					<div id=\"spn$i\">{$portList[$n]->PortDescriptor}</div>
 					<div id=\"d$i\" alt=\"{$patchList[$i]->EndpointDeviceID}\"><a href=\"devices.php?deviceid={$patchList[$i]->EndpointDeviceID}\">$tmpDev->Label</a></div>
 					<div data=\"{$patchList[$i]->EndpointPort}\" id=\"dp$i\">{$patchList[$i]->EndpointPort}</div>
 					<div data=\"{$portList[$n]->Notes}\" id=\"n$i\">{$portList[$n]->Notes}</div>
 					<div id=\"st$i\">{$linkList[$n]}</div>
+					<div id=\"mt$i\">$mt</div>
+					<div id=\"cc$i\">$cc</div>
 				</div>\n";
 		}
 /*
