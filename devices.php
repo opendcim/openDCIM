@@ -466,14 +466,6 @@
 			}
 		}
 	}
-	// 1150 default width 
-	// add 10px per character over 30
-	// 10px with a base font of 12px is 0.833em
-	if($widthfix>0){$widthfix2=(($widthfix)*0.75);
-	$widthfix=(($widthfix2*2)+18);
-	$css="<style type=\"text/css\">div.page.device {min-width:{$widthfix}em;}.device div.left, .device div.right {max-width:{$widthfix2}em;}</style>\n";}else{$css="";}
-
-
 	$title=($dev->Label!='')?"$dev->Label :: $dev->DeviceID":"openDCIM Device Maintenance";
 ?>
 <!doctype html>
@@ -492,7 +484,6 @@
   <!--[if lt IE 9]>
   <link rel="stylesheet"  href="css/ie.css" type="text/css" />
   <![endif]-->
-  <?php echo $css; ?>
   <script type="text/javascript" src="scripts/jquery.min.js"></script>
   <script type="text/javascript" src="scripts/jquery-ui.min.js"></script>
   <script type="text/javascript" src="scripts/jquery-migrate-1.0.0.js"></script>
@@ -1516,7 +1507,7 @@ echo '	<div class="table">
 	}
 ?>
 </div><!-- END div.right -->
-<div class="table">
+<div class="table" id="pandn">
 <div><div>
 <div class="table style">
 <?php

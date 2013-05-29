@@ -129,6 +129,19 @@ $("#sidebar .nav a").each(function(){
 	}
 });
 $(document).ready(function(){
+	function resize(){
+		var pw=$('html').innerWidth(),pnw=$('#pandn').width(),hw=$('#header').width(),maindiv=$('div.main').width(),sbw=$('#sidebar').width(),width;
+		var mw=$('div.left').width()+$('div.right').width()+22;// 10 for padding, 2 for border, 10 for magic
+		console.log(maindiv+sbw+'<'+pw);
+		if((maindiv+sbw)<pw){
+			$('div.main').width(pw-sbw-40); // 40 is the magic number
+		}
+		mw=(mw>maindiv)?mw:maindiv+20;
+		if(mw>pnw){width=sbw+mw;}else{width=pnw+mw;}
+		width=(width<hw)?hw:width;
+		$('div.page').width(width);
+	}
+	resize();
 	var top = (($("#header").height() / 2)-($(".langselect").height() / 2));
 	$(".langselect").css({"top": top+"px", "right": "40px", "z-index": "99", "left": "auto"}).appendTo("#header");
 	$("#language").change(function(){

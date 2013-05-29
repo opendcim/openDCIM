@@ -426,9 +426,6 @@ div.cabinet {
 
 
 /* devices.php  Device Detail */
-div.page.device {
-	min-width: 1350px; /* 1030 */
-}
 .device fieldset {
 	display: inline-block;
 	vertical-align: top;
