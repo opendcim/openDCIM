@@ -106,7 +106,7 @@ echo '	<a href="reports.php"><li>',__("Reports"),'</li></a>';
 	//strip any encoding info and keep just the country lang pair
 	$locale=explode(".",$locale);
 	$locale=$locale[0];
-	echo '	<div class="langselect">
+	echo '	<div class="langselect hide">
 		<label for="language">Language</label>
 		<select name="language" id="language" current="'.$locale.'">';
 		foreach($lang as $cc => $translatedname){
@@ -129,27 +129,37 @@ $("#sidebar .nav a").each(function(){
 	}
 });
 function resize(){
-	var pw=$('html').innerWidth(),pnw=$('#pandn').width(),hw=$('#header').width(),maindiv=$('div.main').width(),sbw=$('#sidebar').width(),width;
-	var mw=$('div.left').width()+$('div.right').width()+22;// 10 for padding, 2 for border, 10 for magic
-	if((maindiv+sbw)<pw){
-		$('div.main').width(pw-sbw-40); // 40 is the magic number
+	var widesttab=0;
+	// make all the tabs on the config page the same width
+	$('#configtabs > ul ~ div').each(function(){
+		widesttab=($(this).width()>widesttab)?$(this).width():widesttab;
+	});
+	$('#configtabs > ul ~ div').each(function(){
+		$(this).width(widesttab);
+	});
+	var pnw=$('#pandn').outerWidth(),hw=$('#header').outerWidth(),maindiv=$('div.main').outerWidth(),
+		sbw=$('#sidebar').outerWidth(),width,mw=$('div.left').outerWidth()+$('div.right').outerWidth(),
+		main;
+	widesttab+=58;
+	// find widths
+	maindiv=(maindiv>mw)?maindiv:mw;
+	main=(maindiv>pnw)?maindiv:pnw; // find largest possible value for maindiv
+	main=(maindiv>widesttab)?maindiv:widesttab; // find largest possible value for maindiv
+	width=((sbw+main)>hw)?sbw+main:hw; // which is bigger sidebar + main or the header
+
+	// The math just isn't adding up across browsers and FUCK IE
+	if((maindiv+sbw)<width){ // page is larger than content expand main to fit
+		$('div.main').width(width-sbw-16); 
+	}else{ // page is smaller than content expand the page to fit
+		$('#header').width(width+4);
+		$('div.page').width(width+5);
 	}
-/*	console.log(maindiv+sbw+'<'+pw);
-	console.log('page width: '+pw);
-	console.log('power width: '+pnw);
-	console.log('header width: '+hw);
-	console.log('main.div width: '+maindiv);
-	console.log('sidebar width: '+sbw);
-	console.log('left + right width:'+mw); */
-	mw=(mw>maindiv)?mw:maindiv+20;
-	if(mw>pnw){width=sbw+mw;}else{width=pnw+mw;}
-	width=(width<hw)?hw:width;
-	$('div.page').width(width);
 }
 $(document).ready(function(){
 	resize();
+	$('#header').append($('.langselect'));
 	var top = (($("#header").height() / 2)-($(".langselect").height() / 2));
-	$(".langselect").css({"top": top+"px", "right": "40px", "z-index": "99", "left": "auto"}).appendTo("#header");
+	$(".langselect").css({"top": top+"px", "right": "40px", "z-index": "99", "position": "absolute"}).removeClass('hide').appendTo("#header");
 	$("#language").change(function(){
 		$.ajax({
 			type: 'POST',

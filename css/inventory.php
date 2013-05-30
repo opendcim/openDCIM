@@ -93,7 +93,6 @@ textarea {white-space: pre;word-wrap: break-word;}
 div.cp { position: relative;}
 .miniColors-trigger { position: absolute; top: 0; right: 0;}
 .config .center input { width: 95%; }
-.page.config { min-width: 1430px; }
 #configtabs { min-width: 670px; }
 #configtabs button { margin-left: 0.5em; margin-right: 0.5em;}
 #configtabs span { font-style: italic; font-size: -1;}
@@ -227,8 +226,6 @@ div#dcstats .table + .table > div > div + div{white-space: pre; text-align: righ
 }
 .text-core { display: inline-block; }
 
-.langselect { position: absolute; left: -1000px; }
-
 .ui-autocomplete { max-height: 100px; overflow-y: auto; overflow-x: hidden; padding-right: 20px;}
 * html .ui-autocomplete {height: 100px;}
 .ui-menu .ui-menu-item a { line-height: 1 !important; white-space: nowrap !important; overflow: hidden;}
@@ -257,7 +254,7 @@ div#dcstats .table + .table > div > div + div{white-space: pre; text-align: righ
 .mapmaker + .center > div > div.container {position: absolute;top: 0px;left: 0px;}
 
 /* Basic Page Layout */
-.page {position: relative;min-width: 1030px;width: 100%;}
+.page {position: relative;width: 100%;}
 .clear {clear: both;}
 p, h2, h3, h1 {margin-top: 1em;margin-bottom: 1em;}
 h2 {font-size: 1.5em;text-align: center;}
@@ -267,16 +264,12 @@ a:link, a:hover, a:visited:hover {color:<?php echo $config->ParameterArray['Link
 a:visited {color: <?php echo $config->ParameterArray['VisitedLinkColor']; ?>;}
 
 div.main {
-	position: relative;
 	display: inline-block;
 	vertical-align: top;
 	min-height: 500px;
-	min-width: 800px;
-	margin-left: 0px;
-	margin-right: auto;
+	padding: 5px;
 	background-color: <?php echo $config->ParameterArray['BodyColor']; ?>;
 	border: 1px dotted #333;
-	padding: 5px;
 }
 div.center > div {display: inline-block;text-align: left;}
 .center {text-align: center;min-height: 400px;}

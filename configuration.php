@@ -263,8 +263,8 @@
 			$colorselector.='<option value="'.$cc->ColorID.'">'.$cc->Name.'</option>';
 			$cablecolors.='<div>
 					<div><img src="images/del.gif"></div>
-					<div><input type="text" name="colorcode[]" data='.$cc->ColorID.' value="'.$cc->Name.'"></input></div>
-					<div><input type="text" name="ccdefaulttext[]" value="'.$cc->DefaultNote.'"></input></div>
+					<div><input type="text" name="colorcode[]" data='.$cc->ColorID.' value="'.$cc->Name.'"></div>
+					<div><input type="text" name="ccdefaulttext[]" value="'.$cc->DefaultNote.'"></div>
 				</div>';
 		}
 	}
@@ -278,7 +278,7 @@
 		foreach($mediaList as $mt){
 			$mediatypes.='<div>
 					<div><img src="images/del.gif"></div>
-					<div><input type="text" name="mediatype[]" data='.$mt->MediaID.' value="'.$mt->MediaType.'"></input></div>
+					<div><input type="text" name="mediatype[]" data='.$mt->MediaID.' value="'.$mt->MediaType.'"></div>
 					<div><select name="mediacolorcode[]"><option value=""></option>';
 			foreach($codeList as $cc){
 				$selected=($mt->ColorID==$cc->ColorID)?' selected':'';
@@ -952,7 +952,7 @@ echo '<div class="main">
 			<h3>',__("Virtual Machines"),'</h3>
 			<div class="table" id="rackusage">
 				<div>
-					<div><lable for="VMExpirationTime">',__("Expiration Time (Days)"),'</label></div>
+					<div><label for="VMExpirationTime">',__("Expiration Time (Days)"),'</label></div>
 					<div><input type="text" defaultvalue="',$config->defaults["VMExpirationTime"],'" name="VMExpirationTime" value="',$config->ParameterArray["VMExpirationTime"],'"></div>
 				</div>
 			</div> <!-- end table -->
@@ -964,19 +964,19 @@ echo '<div class="main">
 				<div>
 					<div><label for="CriticalColor">',__("Critical Color"),'</label></div>
 					<div><div class="cp"><input type="text" class="color-picker" name="CriticalColor" value="',$config->ParameterArray["CriticalColor"],'"></div></div>
-					<div><button type="button"><--</button></div>
+					<div><button type="button">&lt;--</button></div>
 					<div><span>',strtoupper($config->defaults["CriticalColor"]),'</span></div>
 				</div>
 				<div>
 					<div><label for="CautionColor">',__("Caution Color"),'</label></div>
 					<div><div class="cp"><input type="text" class="color-picker" name="CautionColor" value="',$config->ParameterArray["CautionColor"],'"></div></div>
-					<div><button type="button"><--</button></div>
+					<div><button type="button">&lt;--</button></div>
 					<div><span>',strtoupper($config->defaults["CautionColor"]),'</span></div>
 				</div>
 				<div>
 					<div><label for="GoodColor">',__("Good Color"),'</label></div>
 					<div><div class="cp"><input type="text" class="color-picker" name="GoodColor" value="',$config->ParameterArray["GoodColor"],'"></div></div>
-					<div><button type="button"><--</button></div>
+					<div><button type="button">&lt;--</button></div>
 					<div><span>',strtoupper($config->defaults["GoodColor"]),'</span></div>
 				</div>
 				<div>
@@ -988,13 +988,13 @@ echo '<div class="main">
 				<div>
 					<div><label for="ReservedColor">',__("Reserved Devices"),'</label></div>
 					<div><div class="cp"><input type="text" class="color-picker" name="ReservedColor" value="',$config->ParameterArray["ReservedColor"],'"></div></div>
-					<div><button type="button"><--</button></div>
+					<div><button type="button">&lt;--</button></div>
 					<div><span>',strtoupper($config->defaults["ReservedColor"]),'</span></div>
 				</div>
 				<div>
 					<div><label for="FreeSpaceColor">',__("Unused Spaces"),'</label></div>
 					<div><div class="cp"><input type="text" class="color-picker" name="FreeSpaceColor" value="',$config->ParameterArray["FreeSpaceColor"],'"></div></div>
-					<div><button type="button"><--</button></div>
+					<div><button type="button">&lt;--</button></div>
 					<div><span>',strtoupper($config->defaults["FreeSpaceColor"]),'</span></div>
 				</div>
 			</div> <!-- end table -->
@@ -1016,25 +1016,25 @@ echo '<div class="main">
 				<div>
 					<div><label for="HeaderColor">',__("Header Color"),'</label></div>
 					<div><div class="cp"><input type="text" class="color-picker" name="HeaderColor" value="',$config->ParameterArray["HeaderColor"],'"></div></div>
-					<div><button type="button"><--</button></div>
+					<div><button type="button">&lt;--</button></div>
 					<div><span>',strtoupper($config->defaults["HeaderColor"]),'</span></div>
 				</div>
 				<div>
 					<div><label for="BodyColor">',__("Body Color"),'</label></div>
 					<div><div class="cp"><input type="text" class="color-picker" name="BodyColor" value="',$config->ParameterArray["BodyColor"],'"></div></div>
-					<div><button type="button"><--</button></div>
+					<div><button type="button">&lt;--</button></div>
 					<div><span>',strtoupper($config->defaults["BodyColor"]),'</span></div>
 				</div>
 				<div>
 					<div><label for="LinkColor">',__("Link Color"),'</label></div>
 					<div><div class="cp"><input type="text" class="color-picker" name="LinkColor" value="',$config->ParameterArray["LinkColor"],'"></div></div>
-					<div><button type="button"><--</button></div>
+					<div><button type="button">&lt;--</button></div>
 					<div><span>',strtoupper($config->defaults["LinkColor"]),'</span></div>
 				</div>
 				<div>
 					<div><label for="VisitedLinkColor">',__("Viewed Link Color"),'</label></div>
 					<div><div class="cp"><input type="text" class="color-picker" name="VisitedLinkColor" value="',$config->ParameterArray["VisitedLinkColor"],'"></div></div>
-					<div><button type="button"><--</button></div>
+					<div><button type="button">&lt;--</button></div>
 					<div><span>',strtoupper($config->defaults["VisitedLinkColor"]),'</span></div>
 				</div>
 			</div> <!-- end table -->
@@ -1163,7 +1163,7 @@ echo '<div class="main">
 				',$mediatypes,'
 				<div>
 					<div id="newline"><img alt="add new row" src="images/add.gif"></div>
-					<div><input type="text" name="mediatype[]"></input></div>
+					<div><input type="text" name="mediatype[]"></div>
 					<div>',$colorselector,'</div>
 				</div>
 			</div> <!-- end table -->
@@ -1177,8 +1177,8 @@ echo '<div class="main">
 				',$cablecolors,'
 				<div>
 					<div id="newline"><img alt="add new row" src="images/add.gif"></div>
-					<div><input type="text" name="colorcode[]"></input></div>
-					<div><input type="text" name="ccdefaulttext[]"></input></div>
+					<div><input type="text" name="colorcode[]"></div>
+					<div><input type="text" name="ccdefaulttext[]"></div>
 				</div>
 			</div> <!-- end table -->
 		</div>
@@ -1194,8 +1194,8 @@ echo '<div class="main">
    <div><input type="submit" name="action" value="Update"></div>
 </div>
 </div> <!-- END div.table -->
-</div>
 </form>
+</div>
 </div>
    <a href="index.php">Return to Main Menu</a>
   </div>
