@@ -950,6 +950,7 @@ $(document).ready(function() {
 														devport.css('background-color', 'white');
 														notes.css('background-color', 'white');
 													},1500);
+													resize();
 												}else if(data.trim()=="1"){
 													row.find('div:first-child').removeAttr('edit').css('width','auto');
 													// set the fields back to table cells
@@ -969,6 +970,7 @@ $(document).ready(function() {
 														devport.css('background-color', 'white');
 														notes.css('background-color', 'white');
 													},1500);
+													resize();
 												}else{
 													// something unexpected has happened
 												}
@@ -978,7 +980,8 @@ $(document).ready(function() {
 								}
 								$(this).parent('div').css({'width': buttonwidth+'px', 'text-align': 'center'});
 							});
-							$('div.page').css('width', ($('#deviceform').outerWidth(true)+$('#sidebar').outerWidth(true)+22)+'px');
+							// redraw twice because of the delay in load time on the buttons
+							resize();resize();
 						}
 					});
 				}
