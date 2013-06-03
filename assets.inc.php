@@ -36,6 +36,7 @@ class Cabinet {
 	var $Location;
 	var $AssignedTo;
 	var $ZoneID;
+	var $CabRowID;      //JMGA: Row of this cabinet
 	var $CabinetHeight;
 	var $Model;
 	var $Keylock;
@@ -51,12 +52,14 @@ class Cabinet {
 	var $MapX2;
 	var $MapY2;
 	var $Notes;
-	
+
 	function MakeSafe() {
 		$this->CabinetID = intval( $this->CabinetID );
 		$this->DataCenterID = intval( $this->DataCenterID );
 		$this->Location = mysql_real_escape_string( $this->Location );
 		$this->AssignedTo = intval( $this->AssignedTo );
+		$this->ZoneID = intval( $this->ZoneID );
+		$this->CabRowID = intval( $this->CabRowID );
 		$this->CabinetHeight = intval( $this->CabinetHeight );
 		$this->Model = mysql_real_escape_string( $this->Model );
 		$this->KeyLock = mysql_real_escape_string( $this->KeyLock );
@@ -79,11 +82,13 @@ class Cabinet {
 		$this->MakeSafe();
 		
 		$sql = sprintf( "insert into fac_Cabinet set DataCenterID=%d, Location=\"%s\", AssignedTo=%d,
+			ZoneID=%d, CabRowID=%d,
 			CabinetHeight=%d, Model=\"%s\", Keylock=\"%s\", MaxKW=%f, MaxWeight=%d,
 			InstallationDate=\"%s\", SensorIPAddress=\"%s\", SensorCommunity=\"%s\",
 			TempSensorOID=\"%s\", HumiditySensorOID=\"%s\", MapX1=%d, MapY1=%d,
 			MapX2=%d, MapY2=%d, Notes=\"%s\"",
-			$this->DataCenterID, $this->Location, $this->AssignedTo, $this->CabinetHeight,
+			$this->DataCenterID, $this->Location, $this->AssignedTo, 
+			$this->ZoneID, $this->CabRowID, $this->CabinetHeight,
 			$this->Model, $this->Keylock, $this->MaxKW, $this->MaxWeight,
 			date( "Y-m-d", strtotime( $this->InstallationDate) ), $this->SensorIPAddress,
 			$this->SensorCommunity, $this->TempSensorOID, $this->HumiditySensorOID,
@@ -107,11 +112,13 @@ class Cabinet {
 		$this->MakeSafe();
 		
 		$sql = sprintf( "update fac_Cabinet set DataCenterID=%d, Location=\"%s\", AssignedTo=%d,
+			ZoneID=%d, CabRowID=%d,
 			CabinetHeight=%d, Model=\"%s\", Keylock=\"%s\", MaxKW=%f, MaxWeight=%d,
 			InstallationDate=\"%s\", SensorIPAddress=\"%s\", SensorCommunity=\"%s\",
 			TempSensorOID=\"%s\", HumiditySensorOID=\"%s\", MapX1=%d, MapY1=%d,
 			MapX2=%d, MapY2=%d, Notes=\"%s\" where CabinetID=%d",
-			$this->DataCenterID, $this->Location, $this->AssignedTo, $this->CabinetHeight,
+			$this->DataCenterID, $this->Location, $this->AssignedTo, 
+			$this->ZoneID, $this->CabRowID, $this->CabinetHeight,
 			$this->Model, $this->Keylock, $this->MaxKW, $this->MaxWeight,
 			date( "Y-m-d", strtotime( $this->InstallationDate) ), $this->SensorIPAddress,
 			$this->SensorCommunity, $this->TempSensorOID, $this->HumiditySensorOID,
@@ -143,6 +150,7 @@ class Cabinet {
 		$this->Location = $cabinetRow[ "Location" ];
 		$this->AssignedTo = $cabinetRow["AssignedTo"];
 		$this->ZoneID = $cabinetRow["ZoneID"];
+		$this->CabRowID = $cabinetRow["CabRowID"];
 		$this->CabinetHeight = $cabinetRow[ "CabinetHeight" ];
 		$this->Model = $cabinetRow["Model"];
 		$this->Keylock = $cabinetRow["Keylock"];
@@ -183,6 +191,7 @@ class Cabinet {
 			$cabinetList[ $cabID ]->Location = $cabinetRow[ "Location" ];
 			$cabinetList[ $cabID ]->AssignedTo = $cabinetRow[ "AssignedTo" ];
 			$cabinetList[ $cabID ]->ZoneID = $cabinetRow["ZoneID"];
+			$cabinetList[ $cabID ]->CabRowID = $cabinetRow["CabRowID"];
 			$cabinetList[ $cabID ]->CabinetHeight = $cabinetRow[ "CabinetHeight" ];
 			$cabinetList[ $cabID ]->Model = $cabinetRow[ "Model" ];
 			$cabinetList[ $cabID ]->Keylock = $cabinetRow["Keylock"];
@@ -219,6 +228,7 @@ class Cabinet {
 			$cabinetList[ $cabID ]->Location = $cabinetRow[ "Location" ];
 			$cabinetList[ $cabID ]->AssignedTo = $cabinetRow[ "AssignedTo" ];
 			$cabinetList[ $cabID ]->ZoneID = $cabinetRow[ "ZoneID" ];
+			$cabinetList[ $cabID ]->CabRowID = $cabinetRow["CabRowID"];
 			$cabinetList[ $cabID ]->CabinetHeight = $cabinetRow[ "CabinetHeight" ];
 			$cabinetList[ $cabID ]->Model = $cabinetRow[ "Model" ];
 			$cabinetList[ $cabID ]->Keylock = $cabinetRow[ "Keylock" ];
@@ -389,6 +399,7 @@ class Cabinet {
 			$cabinetList[$cabID]->Location=$cabinetRow["Location"];
 			$cabinetList[$cabID]->AssignedTo=$cabinetRow["AssignedTo"];
 			$cabinetList[$cabID]->ZoneID=$cabinetRow["ZoneID"];
+			$cabinetList[$cabID]->CabRowID=$cabinetRow["CabRowID"];
 			$cabinetList[$cabID]->CabinetHeight=$cabinetRow["CabinetHeight"];
 			$cabinetList[$cabID]->Model=$cabinetRow["Model"];
 			$cabinetList[$cabID]->Keylock=$cabinetRow["Keylock"];
@@ -424,6 +435,7 @@ class Cabinet {
 			$cabinetList[$cabID]->Location=$cabinetRow["Location"];
 			$cabinetList[$cabID]->AssignedTo=$cabinetRow["AssignedTo"];
 			$cabinetList[$cabID]->ZoneID=$cabinetRow["ZoneID"];
+			$cabinetList[$cabID]->CabRowID=$cabinetRow["CabRowID"];
 			$cabinetList[$cabID]->CabinetHeight=$cabinetRow["CabinetHeight"];
 			$cabinetList[$cabID]->Model=$cabinetRow["Model"];
 			$cabinetList[$cabID]->Keylock=$cabinetRow["Keylock"];
@@ -459,6 +471,7 @@ class Cabinet {
 			$cabinetList[$cabID]->Location=$cabinetRow["Location"];
 			$cabinetList[$cabID]->AssignedTo=$cabinetRow["AssignedTo"];
 			$cabinetList[$cabID]->ZoneID=$cabinetRow["ZoneID"];
+			$cabinetList[$cabID]->CabRowID=$cabinetRow["CabRowID"];
 			$cabinetList[$cabID]->CabinetHeight=$cabinetRow["CabinetHeight"];
 			$cabinetList[$cabID]->Model=$cabinetRow["Model"];
 			$cabinetList[$cabID]->Keylock=$cabinetRow["Keylock"];
