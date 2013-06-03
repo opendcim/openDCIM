@@ -9,6 +9,7 @@ CREATE TABLE fac_Cabinet (
   Location varchar(20) NOT NULL,
   AssignedTo int(11) NOT NULL,
   ZoneID int(11) NOT NULL,
+  CabRowID int(11) NOT NULL,
   CabinetHeight int(11) NOT NULL,
   Model varchar(80) NOT NULL,
   Keylock varchar(30) NOT NULL,
@@ -130,6 +131,9 @@ CREATE TABLE fac_DataCenter (
   MaxkW int(11) NOT NULL,
   DrawingFileName varchar(255) NOT NULL,
   EntryLogging tinyint(1) NOT NULL,
+  ContainerID INT(11) NOT NULL,
+  MapX int(11) NOT NULL,
+  MapY int(11) NOT NULL,
   PRIMARY KEY (DataCenterID)
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
 
@@ -686,3 +690,29 @@ INSERT INTO fac_CDUTemplate set ManufacturerID=(select ManufacturerID from fac_M
 INSERT INTO fac_CDUTemplate set ManufacturerID=(select ManufacturerID from fac_Manufacturer where Name='ServerTech'), Model="Generic Single-Phase CDU", Managed=TRUE, VersionOID=".1.3.6.1.4.1.1718.3.1.1.0", Multiplier=100, OID1=".1.3.6.1.4.1.1718.3.2.2.1.7.1.1", OID2="", OID3="", ProcessingProfile="SingleOIDAmperes", Voltage="", Amperage="", NumOutlets="";
 INSERT INTO fac_CDUTemplate set ManufacturerID=(select ManufacturerID from fac_Manufacturer where Name='ServerTech'), Model="Generic 3-Phase CDU", Managed=TRUE, VersionOID=".1.3.6.1.4.1.1718.3.1.1.0", Multiplier=100, OID1=".1.3.6.1.4.1.1718.3.2.2.1.7.1.1", OID2=".1.3.6.1.4.1.1718.3.2.2.1.7.1.2", OID3=".1.3.6.1.4.1.1718.3.2.2.1.7.1.3", ProcessingProfile="Convert3PhAmperes", Voltage="", Amperage="", NumOutlets="";
 
+--
+-- Table structure for fac_CabRow
+--
+
+DROP TABLE IF EXISTS fac_CabRow;
+CREATE TABLE fac_CabRow (
+  CabRowID int(11) NOT NULL AUTO_INCREMENT,
+  Name varchar(120) NOT NULL,
+  ZoneID int(11) NOT NULL,
+  PRIMARY KEY (CabRowID)
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+
+--
+-- Table structure for fac_CabRow
+--
+
+DROP TABLE IF EXISTS fac_Container;
+CREATE TABLE fac_Container (
+  ContainerID int(11) NOT NULL AUTO_INCREMENT,
+  Name varchar(120) NOT NULL,
+  ParentID int(11) NOT NULL DEFAULT '0',
+  DrawingFileName varchar(255) DEFAULT NULL,
+  MapX int(11) NOT NULL,
+  MapY int(11) NOT NULL,
+  PRIMARY KEY (ContainerID)
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
