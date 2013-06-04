@@ -187,7 +187,7 @@ echo '<div class="main">
 <form id="containerform" action="',$_SERVER["PHP_SELF"],'" method="POST">
 <div class="table">
 <div>
-   <div><label for="containerid">',_("Container ID"),'</label></div>
+   <div><label for="containerid">',_("Container"),'</label></div>
    <div><select name="containerid" id="containerid" onChange="form.submit()">
       <option value="0">',_("New Container"),'</option>';
 

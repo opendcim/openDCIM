@@ -1001,6 +1001,24 @@ class Zone {
     
     return $zoneList;
   }
+  function GetZoneList( $db ) {
+	$sql = sprintf( "select * from fac_Zone order by Description ASC" );
+	$result = mysql_query( $sql, $db );
+	
+	$zoneList = array();
+	
+	while ( $row = mysql_fetch_array( $result ) ) {
+		$zoneNum = sizeof( $zoneList );
+		$zoneList[$zoneNum] = new Zone();
+		
+		$zoneList[$zoneNum]->ZoneID = $row["ZoneID"];
+		$zoneList[$zoneNum]->DataCenterID = $row["DataCenterID"];
+		$zoneList[$zoneNum]->Description = $row["Description"];
+	}
+	
+	return $zoneList;
+  }
+  
 }
 
 class CabRow {
@@ -1063,6 +1081,25 @@ class CabRow {
     
     return $cabrowList;
   }
+  
+  function GetCabRowList( $db ) {
+	$sql = sprintf( "select * from fac_CabRow order by Name ASC" );
+	$result = mysql_query( $sql, $db );
+	
+	$cabrowList = array();
+	
+	while ( $row = mysql_fetch_array( $result ) ) {
+		$cabrowNum = sizeof( $cabrowList );
+		$cabrowList[$cabrowNum] = new CabRow();
+		
+		$cabrowList[$cabrowNum]->CabRowID = $row["CabRowID"];
+		$cabrowList[$cabrowNum]->ZoneID = $row["ZoneID"];
+		$cabrowList[$cabrowNum]->Name = $row["Name"];
+	}
+	
+	return $cabrowList;
+  }
+  
 }
 
 //JMGA: containerobjects may contain DCs or other containers
