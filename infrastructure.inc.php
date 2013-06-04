@@ -943,6 +943,34 @@ class Zone {
   var $DataCenterID;
   var $Description;
   
+  function CreateZone ( $db ) {
+		$sql = sprintf( "insert into fac_Zone set Description=\"%s\", DataCenterID='%d'", addslashes( $this->Description ), intval($this->DataCenterID));
+		mysql_query( $sql, $db );
+		
+		$this->ZoneID = mysql_insert_id( $db );
+	}
+	
+  function UpdateZone( $db ) {
+  		//update cabinets in this zone
+		$sql = sprintf( "update fac_Cabinet set DataCenterID=%d where ZoneID='%d'", intval($this->DataCenterID), intval( $this->ZoneID ) );
+		mysql_query( $sql, $db );
+		//update zone	
+		$sql = sprintf( "update fac_Zone set Description=\"%s\", DataCenterID=%d where ZoneID='%d'", addslashes( $this->Description ), intval($this->DataCenterID), intval( $this->ZoneID ) );
+		mysql_query( $sql, $db );	
+  }
+	
+  function DeleteZone( $db ) {
+		//update cabinets in this zone
+  		$sql = sprintf( "update from fac_Cabinet set CabRowID=0, ZoneID=0 where ZoneID='%d'", intval( $this->ZoneID ) );
+		mysql_query( $sql, $db );
+		//delete CabRows in this zone
+		$sql = sprintf( "delete from fac_CabRow where ZoneID='%d'", intval( $this->ZoneID ) );
+		mysql_query( $sql, $db );
+		//delete zone
+		$sql = sprintf( "delete from fac_Zone where ZoneID='%d'", intval( $this->ZoneID ) );
+		mysql_query( $sql, $db );
+  }
+  
   function GetZone( $db ) {
     $sql = "select * from fac_Zone where ZoneID=\"" . intval($this->ZoneID) . "\"";
     $result = mysql_query( $sql, $db );
@@ -972,6 +1000,68 @@ class Zone {
     }
     
     return $zoneList;
+  }
+}
+
+class CabRow {
+  var $CabRowID;
+  var $Name;
+  var $ZoneID;
+  
+  function CreateCabRow( $db ) {
+		$sql = sprintf( "insert into fac_CabRow set Name=\"%s\", ZoneID='%d'", addslashes( $this->Name ), intval($this->ZoneID));
+		mysql_query( $sql, $db );
+		
+		$this->CabRowID = mysql_insert_id( $db );
+	}
+	
+  function UpdateCabRow( $db ) {
+		//update cabinets in this cabrow
+		$sql = sprintf( "update fac_Cabinet set ZoneID='%d' where CabRowID='%d'", intval($this->ZoneID), intval( $this->CabRowID ) );
+		mysql_query( $sql, $db );
+		//update cabrow
+		$sql = sprintf( "update fac_CabRow set Name=\"%s\", ZoneID='%d' where CabRowID='%d'", addslashes( $this->Name ), intval($this->ZoneID), intval( $this->CabRowID ) );
+		mysql_query( $sql, $db );	
+	}
+	
+  function DeleteCabRow( $db ) {
+  		//update cabinets in this cabrow
+		$sql = sprintf( "update from fac_Cabinet set CabRowID=0 where CabRowID='%d' and ZoneID='%d'", intval( $this->CabRowID ), intval( $this->ZoneID ) );
+		mysql_query( $sql, $db );
+		//delete cabrow
+		$sql = sprintf( "delete from fac_CabRow where CabRowID='%d'", intval( $this->CabRowID ) );
+		mysql_query( $sql, $db );
+  }
+  
+  function GetCabRow( $db ) {
+    $sql = "select * from fac_CabRow where CabRowID=\"" . intval($this->CabRowID) . "\"";
+    $result = mysql_query( $sql, $db );
+    
+    if ( $row = mysql_fetch_array( $result ) ) {
+      $this->CabRowID = $row["CabRowID"];
+      $this->Name = $row["Name"];
+      $this->ZoneID = $row["ZoneID"];
+    }
+    
+    return;
+  }
+  
+  function GetCabRowsByZones( $db ) {
+    $sql = "select * from fac_CabRow where ZoneID=\"" . intval($this->ZoneID) . "\" order by Name";
+    $result = mysql_query( $sql, $db );
+    
+    $cabrowList = array();
+    
+    while ( $row = mysql_fetch_array( $result ) ) {
+      $zoneNum = sizeof( $cabrowList );
+      
+      $cabrowList[$zoneNum] = new CabRow();
+      $cabrowList[$zoneNum]->CabRowID = $row["CabRowID"];
+      $cabrowList[$zoneNum]->Name = $row["Name"];
+      $cabrowList[$zoneNum]->ZoneID = $row["ZoneID"];
+    }
+    
+    return $cabrowList;
   }
 }
 

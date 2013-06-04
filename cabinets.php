@@ -28,6 +28,8 @@
 		$cab->DataCenterID=$_POST['datacenterid'];
 		$cab->Location=trim($_POST['location']);
 		$cab->AssignedTo=$_POST['assignedto'];
+		$cab->ZoneID=$_POST['zoneid'];
+		$cab->CabRowID=$_POST['cabrowid'];
 		$cab->CabinetHeight=$_POST['cabinetheight'];
 		$cab->Model=$_POST['model'];
 		$cab->Keylock=$_POST['keylock'];
@@ -50,8 +52,36 @@
 			}
 		}
 	}
-
-	if($cab->CabinetID >0){
+	elseif(isset($_POST['cabinetidprev']) && $_POST['cabinetidprev']==$cab->CabinetID){ 
+		//datacenter or zone have changed (or user reload)--> reload getting info from $_POST
+		$cab->DataCenterID=$_POST['datacenterid'];
+		$cab->Location=trim($_POST['location']);
+		$cab->AssignedTo=$_POST['assignedto'];
+		if ($cab->DataCenterID<>$_POST['dcidprev'])
+			$cab->ZoneID=0;
+		else
+			$cab->ZoneID=$_POST['zoneid'];
+		if ($cab->ZoneID<>$_POST['zoneidprev'])
+			$cab->CabRowID=0;
+		else
+			$cab->CabRowID=$_POST['cabrowid'];
+		$cab->CabinetHeight=$_POST['cabinetheight'];
+		$cab->Model=$_POST['model'];
+		$cab->Keylock=$_POST['keylock'];
+		$cab->MaxKW=$_POST['maxkw'];
+		$cab->MaxWeight=$_POST['maxweight'];
+		$cab->InstallationDate=$_POST['installationdate'];
+		$cab->SensorIPAddress=$_POST['sensoripaddress'];
+		$cab->SensorCommunity=$_POST['sensorcommunity'];
+		$cab->TempSensorOID=$_POST['tempsensoroid'];
+		$cab->HumiditySensorOID=$_POST['humiditysensoroid'];
+		$cab->Notes=trim($_POST['notes']);
+		$cab->Notes=($cab->Notes=="<br>")?"":$cab->Notes;
+		if(count($tagarray)>0){
+			$taginsert="\t\ttags: {items: ".json_encode($tagarray)."},\n";
+		}
+	}
+	elseif($cab->CabinetID >0){
 		$cab->GetCabinet();
 
 		// Get any tags associated with this device
@@ -64,6 +94,8 @@
 		$cab->CabinetID=null;
 		$cab->DataCenterID=null;
 		$cab->Location=null;
+		$cab->ZoneID=null;
+		$cab->CabRowID=null;
 		$cab->CabinetHeight=null;
 		$cab->Model=null;
 		$cab->Keylock=null;
@@ -180,6 +212,9 @@ echo '<div class="main">
 <div class="center"><div>
 <form id="rackform" action="',$_SERVER["PHP_SELF"],'" method="POST">
 <div class="table">
+<div><input type="hidden" name="cabinetidprev" id="cabinetidprev" value="',$cab->CabinetID,'"></div>
+<div><input type="hidden" name="dcidprev" id="dcinetidprev" value="',$cab->DataCenterID,'"></div>
+<div><input type="hidden" name="zoneidprev" id="zoneidprev" value="',$cab->ZoneID,'"></div>
 <div>
    <div>',__("Cabinet"),'</div>
    <div><select name="cabinetid" onChange="form.submit()">
@@ -194,7 +229,7 @@ echo '   </select></div>
 </div>
 <div>
    <div>',__("Data Center"),'</div>
-   <div>',$cab->GetDCSelectList($facDB),'</div>
+   <div>',$cab->GetDCSelectListSubmit($facDB),'</div>
 </div>
 <div>
    <div>',__("Location"),'</div>
@@ -212,6 +247,14 @@ echo '   </select></div>
 
 echo '  </select>
   </div>
+</div>
+<div>
+   <div>',__("Zone"),'</div>
+   <div>',$cab->GetZoneSelectListSubmit($facDB),'</div>
+</div>
+<div>
+   <div>',__("Cabinet Row"),'</div>
+   <div>',$cab->GetCabRowSelectList($facDB),'</div>
 </div>
 <div>
    <div>',__("Cabinet Height"),' (U)</div>

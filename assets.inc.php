@@ -62,7 +62,7 @@ class Cabinet {
 		$this->CabRowID = intval( $this->CabRowID );
 		$this->CabinetHeight = intval( $this->CabinetHeight );
 		$this->Model = mysql_real_escape_string( $this->Model );
-		$this->KeyLock = mysql_real_escape_string( $this->KeyLock );
+		$this->Keylock = mysql_real_escape_string( $this->Keylock );
 		$this->MaxKW = floatval( $this->MaxKW );
 		$this->MaxWeight = intval( $this->MaxWeight );
 		$this->SensorIPAddress = mysql_real_escape_string( $this->SensorIPAddress );
@@ -277,6 +277,26 @@ class Cabinet {
 			else
 				$selected = "";
 
+			$selectList .= "<option value=\"" . $selectRow[ "DataCenterID" ] . "\" $selected>" . $selectRow[ "Name" ] . "</option>";
+		}
+
+		$selectList .= "</select>";
+
+		return $selectList;
+	}
+	
+	function GetDCSelectListSubmit( $db = null ) {
+		global $dbh;
+		
+		$sql = "select * from fac_DataCenter order by Name";
+
+		$selectList = "<select name=\"datacenterid\" id=\"datacenterid\" onChange=\"form.submit()\">";
+
+		foreach ( $dbh->query( $sql ) as $selectRow ) {
+			if ( $selectRow[ "DataCenterID" ] == $this->DataCenterID )
+				$selected = "selected";
+			else
+				$selected = "";
 
 			$selectList .= "<option value=\"" . $selectRow[ "DataCenterID" ] . "\" $selected>" . $selectRow[ "Name" ] . "</option>";
 		}
@@ -285,7 +305,59 @@ class Cabinet {
 
 		return $selectList;
 	}
+	
+	function GetZoneSelectListSubmit( $db = null ) {
+		global $dbh;
+		
+		$sql = "select * from fac_Zone where DataCenterID='".$this->DataCenterID."' order by Description";
 
+		$selectList = "<select name=\"zoneid\" id=\"zoneid\" onChange=\"form.submit()\">";
+		if ( $this->ZoneID == 0 )
+			$selected = "selected";
+		else
+			$selected = "";
+		$selectList .= "<option value=\"0\" $selected>" . __("None") . "</option>";
+
+		foreach ( $dbh->query( $sql ) as $selectRow ) {
+			if ( $selectRow[ "ZoneID" ] == $this->ZoneID )
+				$selected = "selected";
+			else
+				$selected = "";
+
+			$selectList .= "<option value=\"" . $selectRow[ "ZoneID" ] . "\" $selected>" . $selectRow[ "Description" ] . "</option>";
+		}
+
+		$selectList .= "</select>";
+
+		return $selectList;
+	}
+		
+	function GetCabRowSelectList( $db = null ) {
+		global $dbh;
+		
+		$sql = "select * from fac_CabRow where ZoneID='".$this->ZoneID."' order by Name";
+
+		$selectList = "<select name=\"cabrowid\">";
+		if ( $this->CabRowID == 0 )
+			$selected = "selected";
+		else
+			$selected = "";
+		$selectList .= "<option value=\"0\" $selected>" . __("None") . "</option>";
+		
+		foreach ( $dbh->query( $sql ) as $selectRow ) {
+			if ( $selectRow[ "CabRowID" ] == $this->CabRowID )
+				$selected = "selected";
+			else
+				$selected = "";
+
+			$selectList .= "<option value=\"" . $selectRow[ "CabRowID" ] . "\" $selected>" . $selectRow[ "Name" ] . "</option>";
+		}
+
+		$selectList .= "</select>";
+
+		return $selectList;
+	}
+	
 	function GetCabinetSelectList( $db = null) {
 		global $dbh;
 		
@@ -529,7 +601,7 @@ class Cabinet {
 			if ( ! $dbh->exec($delsql) ) {
 				$info = $dbh->errorInfo();
 
-				error_log( "PDO Error: " . $info[2] . " SQL=" . $sql );
+				error_log( "PDO Error: " . $info[2] . " SQL=" . $delsql );
 				return false;
 			}
 		}
