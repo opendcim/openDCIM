@@ -12,6 +12,8 @@
 		header('Location: '.redirect());
 		exit;
 	}
+	
+	$status="";
 
 	$dc=new DataCenter();
 	if(isset($_POST['action'])&&(($_POST['action']=='Create')||($_POST['action']=='Update'))){
@@ -30,6 +32,7 @@
 			if($_POST['action']=='Create'){
 				$dc->CreateDataCenter($facDB);
 			}else{
+				$status=__("Updated");
 				$dc->UpdateDataCenter($facDB);
 			}
 		}
@@ -195,6 +198,7 @@
 echo '<div class="main">
 <h2>',$config->ParameterArray["OrgName"],'</h2>
 <h3>',__("Data Center Detail"),'</h3>
+<h3>',$status,'</h3>
 <div class="center"><div>
 <form id="datacenterform" action="',$_SERVER["PHP_SELF"],'" method="POST">
 <div class="table">
@@ -264,7 +268,7 @@ if ($dc->ContainerID>0){
 	$container->ContainerID=$dc->ContainerID;
 	$container->GetContainer($facDB);
 	print "<div>";
-	print $container->MakeContainerMiniImage($facDB,"dc",$dc->DataCenterID);
+	print $container->MakeContainerMiniImage("dc",$dc->DataCenterID);
 	print "</div>"; 
 }
 print "</div>"; 

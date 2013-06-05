@@ -15,6 +15,7 @@
 	$cab=new Cabinet();
 	$dept=new Department();
 	$taginsert="";
+	$status="";
 
 	if(isset($_REQUEST['cabinetid'])){
 		$cab->CabinetID=(isset($_POST['cabinetid'])?$_POST['cabinetid']:$_GET['cabinetid']);
@@ -46,6 +47,7 @@
 
 		if($cab->Location!=""){
 			if(($cab->CabinetID >0)&&($_POST['action']=='Update')){
+				$status=__("Updated");
 				$cab->UpdateCabinet();
 			}elseif($_POST['action']=='Create'){
 				$cab->CreateCabinet();
@@ -213,6 +215,7 @@
 echo '<div class="main">
 <h2>',$config->ParameterArray["OrgName"],'</h2>
 <h3>',__("Data Center Cabinet Inventory"),'</h3>
+<h3>',$status,'</h3>
 <div class="center"><div>
 <form id="rackform" action="',$_SERVER["PHP_SELF"],'" method="POST">
 <div class="table">

@@ -20,7 +20,6 @@
 	$formpatch="";
 	$status="";
 
-
 	if(isset($_REQUEST["cabrowid"])) {
 		$cabrow->ZoneID=(isset($_POST['cabrowid'])?$_POST['cabrowid']:$_GET['cabrowid']);
 		$cabrow->GetCabRow($facDB);

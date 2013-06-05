@@ -4,7 +4,7 @@
 
 	$user=new User();
 	$user->UserID=$_SERVER["REMOTE_USER"];
-	$user->GetUserRights($facDB);
+	$user->GetUserRights();
 	
 	if(!$user->ReadAccess){
 		// No soup for you.
@@ -15,8 +15,8 @@
 	$c=New Container();
 	
 	$c->ContainerID=$_REQUEST["container"];
-	$c->GetContainer($facDB);
-	$cStats=$c->GetContainerStatistics($facDB);
+	$c->GetContainer();
+	$cStats=$c->GetContainerStatistics();
 
 ?>
 <!doctype html>

@@ -12,6 +12,8 @@
 		header('Location: '.redirect());
 		exit;
 	}
+	
+	$status="";
 
 	$c=new Container();
 	if(isset($_POST['action'])&&(($_POST['action']=='Create')||($_POST['action']=='Update'))){
@@ -26,6 +28,7 @@
 			if($_POST['action']=='Create'){
 				$c->CreateContainer($facDB);
 			}else{
+				$status=__("Updated");
 				$c->UpdateContainer($facDB);
 			}
 		}
@@ -183,6 +186,7 @@
 echo '<div class="main">
 <h2>',$config->ParameterArray["OrgName"],'</h2>
 <h3>',_("Container Detail"),'</h3>
+<h3>',$status,'</h3>
 <div class="center"><div>
 <form id="containerform" action="',$_SERVER["PHP_SELF"],'" method="POST">
 <div class="table">
@@ -237,7 +241,7 @@ if ($c->ParentID>0){
 	$container->ContainerID=$c->ParentID;
 	$container->GetContainer($facDB);
 	print "<div>";
-	print $container->MakeContainerMiniImage($facDB,"container",$c->ContainerID);
+	print $container->MakeContainerMiniImage("container",$c->ContainerID);
 	print "</div></div>"; 
 }
 
