@@ -52,7 +52,7 @@
 			}
 		}
 	}
-	elseif(isset($_POST['cabinetidprev']) && $_POST['cabinetidprev']==$cab->CabinetID){ 
+	elseif(isset($_POST['cabinetidprev']) && ($_POST['cabinetidprev']==$cab->CabinetID || $_POST['cabinetidprev']=="")){ 
 		//datacenter or zone have changed (or user reload)--> reload getting info from $_POST
 		$cab->DataCenterID=$_POST['datacenterid'];
 		$cab->Location=trim($_POST['location']);
@@ -92,7 +92,11 @@
 		}
 	}else{
 		$cab->CabinetID=null;
-		$cab->DataCenterID=null;
+		//Set DataCenterID to first DC in dcList for getting zoneList
+		$dc=new DataCenter();
+		$dcList=$dc->GetDCList($facDB);
+		$keys=array_keys($dcList);
+		$cab->DataCenterID=$keys[0];
 		$cab->Location=null;
 		$cab->ZoneID=null;
 		$cab->CabRowID=null;

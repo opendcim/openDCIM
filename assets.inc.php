@@ -887,7 +887,7 @@ class ConnectionPath {
 		$this->Front=($this->Front)?true:false;
 	}
 
-	private function AddDeviceToPathAux ( $db ) {
+	private function AddDeviceToPathAux () {
 		$i=count($this->PathAux);
 		$this->PathAux[$i]["DeviceID"]=$this->DeviceID;
 		$this->PathAux[$i]["DeviceType"]=$this->DeviceType;
@@ -899,7 +899,7 @@ class ConnectionPath {
 		$this->PathAux=array();
 	}
 	
-	private function IsDeviceInPathAux ( $db ) {
+	private function IsDeviceInPathAux () {
 		$ret=false;
 		for ($i=0; $i<count($this->PathAux); $i++){
 			if ($this->PathAux[$i]["DeviceID"]==$this->DeviceID && $this->PathAux[$i]["PortNumber"]=$this->PortNumber) {
@@ -910,19 +910,19 @@ class ConnectionPath {
 		return $ret;
 	}
 	
-	function GotoHeadDevice ( $db ) {
+	function GotoHeadDevice () {
 	//It puts the object in the first device of the path, if it is not it already
 		$this->MakeSafe();
 		$this->ClearPathAux();
 
 		while ($this->DeviceType=="Patch Panel"){
-			if (!$this->IsDeviceInPathAux($db)){
-				$this->AddDeviceToPathAux($db);
+			if (!$this->IsDeviceInPathAux()){
+				$this->AddDeviceToPathAux();
 			}else {
 				//loop!!
 				return false;
 			}
-			if (!$this->GotoNextDevice ( $db )) {
+			if (!$this->GotoNextDevice ()) {
 				//It is a no connected panel in this direccion. Here it begins the path.
 				//I put it pointing to contrary direction
 				$this->Front=!$this->Front;
@@ -933,9 +933,10 @@ class ConnectionPath {
 		return true;
 	}
 	
-	function GotoNextDevice ( $db ) {
+	function GotoNextDevice ( $db = null ) {
 	//It puts the object with the DeviceID, PortNumber and Front of the following device in the path.
 	//If the current device of the object is not connected to at all, gives back "false" and the object does not change
+		global $dbh;
 		$this->MakeSafe();
 		
 		if ($this->DeviceType=="Patch Panel"){
@@ -955,7 +956,8 @@ class ConnectionPath {
 						WHERE PanelDeviceID=". $this->DeviceID." AND PanelPortNumber=". $this->PortNumber;
 				
 			}
-			$result = mysql_query( $sql, $db );
+			$result = $dbh->prepare($sql);
+			$result->execute();
 			$Front_sig=!$this->Front;
 		}elseif($this->Front){
 			//It isn't a panel
@@ -966,8 +968,9 @@ class ConnectionPath {
 					FROM fac_patchconnection
 					WHERE RearEndPointDeviceID=". $this->DeviceID." AND RearEndpointPort=". $this->PortNumber;
 			
-			$result = mysql_query( $sql, $db );
-			if($result && mysql_num_rows($result)>0){
+			$result = $dbh->prepare($sql);
+			$result->execute();
+			if($result->rowCount()>0){
 				//I go out by front connetcion of the panel
 				$Front_sig=true;
 			}else{
@@ -981,27 +984,29 @@ class ConnectionPath {
 						FROM fac_patchconnection
 						WHERE FrontEndPointDeviceID=". $this->DeviceID." AND FrontEndpointPort=". $this->PortNumber;
 				
-				$result = mysql_query( $sql, $db );
-					
-				if(!$result || mysql_num_rows($result)==0){
+				$result = $dbh->prepare($sql);
+				$result->execute();	
+				if($result->rowCount()==0){
 					//Is it connected to switch?
 					$sql = "SELECT SwitchDeviceID AS DeviceID,
 								SwitchPortNumber AS PortNumber,
 								'Switch' AS DeviceType 
 							FROM fac_switchconnection
 							WHERE EndPointDeviceID=". $this->DeviceID." AND EndpointPort=". $this->PortNumber;
-					$result = mysql_query( $sql, $db );
+					$result = $dbh->prepare($sql);
+					$result->execute();
 					
-					if(!$result || mysql_num_rows($result)==0){
+					if($result->rowCount()==0){
 						//Is it a switch?
 						$sql = "SELECT EndPointDeviceID AS DeviceID,
 									EndpointPort AS PortNumber,
 									DeviceType 
 								FROM fac_switchconnection s INNER JOIN fac_device d ON s.EndPointDeviceID=d.DeviceID
 								WHERE SwitchDeviceID=". $this->DeviceID." AND SwitchPortNumber=". $this->PortNumber;
-						$result = mysql_query( $sql, $db );
-						
-						if(!$result || mysql_num_rows($result)==0){
+						$result = $dbh->prepare($sql);
+						$result->execute();
+					
+						if($result->rowCount()==0){
 							//Not connected
 							return false;
 						}
@@ -1012,7 +1017,7 @@ class ConnectionPath {
 			return false;
 		}		
 		
-		$row = mysql_fetch_array( $result );
+		$row = $result->fetch();
 		if (is_null($row["DeviceID"]) || is_null($row["PortNumber"]) || is_null($row["DeviceType"])){
 			return false;
 		}
@@ -1748,7 +1753,7 @@ class Device {
 		return;
 	}
 
-	function SearchDevicebyLabel( $db ) {
+	function SearchDevicebyLabel( $db = null ) {
 		global $dbh;
 		
 		$sql = "select * from fac_Device where Label like \"%" . addslashes(transform( $this->Label )) . "%\" order by Label";
