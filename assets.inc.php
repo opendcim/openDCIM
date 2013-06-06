@@ -637,18 +637,16 @@ class CabinetAudit {
 		
 		$sql = "select * from fac_CabinetAudit where CabinetID=\"" . intval( $this->CabinetID ) . "\" order by AuditStamp DESC Limit 1";
 
-		if ( $row = $dbh->query( $sql )->fetch() ) {
-			$this->CabinetID = $row["CabinetID"];
-			$this->UserID = $row["UserID"];
-			$this->AuditStamp = date( "M d, Y H:i", strtotime( $row["AuditStamp"] ) );
-		} else {
-			$info = $dbh->errorInfo();
+		if($row=$dbh->query($sql)->fetch()){
+			$this->CabinetID=$row["CabinetID"];
+			$this->UserID=$row["UserID"];
+			$this->AuditStamp=date("M d, Y H:i", strtotime($row["AuditStamp"]));
 
-			error_log( "PDO Error: " . $info[2] . " SQL=" . $sql );
+			return true;
+		} else {
+			// No sense in logging an error for something that's never been done
 			return false;
 		}
-		
-		return;
 	}
 	
 	function GetLastAuditByUser( $db = null ) {
@@ -1338,7 +1336,7 @@ class Device {
 		if($row["Cabinet"]!=$this->Cabinet){
 			$powercon=new PowerConnection();
 			$powercon->DeviceID=$this->DeviceID;
-			$powercon->DeleteConnections($db);
+			$powercon->DeleteConnections();
 		}
   
 		$update_sql="UPDATE fac_Device SET Label=\"$this->Label\", SerialNo=\"$this->SerialNo\", AssetTag=\"$this->AssetTag\", 
@@ -1737,7 +1735,7 @@ class Device {
 		// Delete power connections next
 		$powercon = new PowerConnection();
 		$powercon->DeviceID = $this->DeviceID;
-		$powercon->DeleteConnections( $db );
+		$powercon->DeleteConnections();
 
 		// Now delete the device itself
 		$sql = "delete from fac_Device where DeviceID=\"" . intval($this->DeviceID) . "\"";

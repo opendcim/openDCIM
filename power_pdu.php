@@ -38,15 +38,14 @@
 			if((isset($_REQUEST['d']) && ($_REQUEST['d']!="" || $_REQUEST['d']!="undefined")) || (isset($_REQUEST['devinput']) && ($_REQUEST['devinput']!="" || $_REQUEST['devinput']!="undefined" ))){
 				$powerConn->DeviceID=$_REQUEST['d'];
 				$powerConn->DeviceConnNumber=$_REQUEST['devinput'];
-				$check=$powerConn->CreateConnection($facDB);
 				// check for valid creation 
-				if($check==0){
+				if($powerConn->CreateConnection()){
 					echo 'ok';
 				}else{
 					echo 'no';
 				}
 			}else{
-				$powerConn->RemoveConnection($facDB);
+				$powerConn->RemoveConnection();
 			}
 		}
 		// This is for ajax actions so make sure not to call the rest of the page
@@ -220,7 +219,7 @@
 	// $PanelList = $Panel->GetPanelsByDataCenter( $cab->DataCenterID, $facDB );
 
 	$powerConn->PDUID=$pdu->PDUID;
-	$connList=$powerConn->GetConnectionsByPDU($facDB);
+	$connList=$powerConn->GetConnectionsByPDU();
 
 	$title=($pdu->Label!='')?"$pdu->Label :: $pdu->PDUID":'Data Center PDU Detail';
 

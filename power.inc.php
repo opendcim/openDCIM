@@ -156,85 +156,117 @@ class PowerConnection {
 	var $DeviceID;
 	var $DeviceConnNumber;
 
-	function CreateConnection($db){
-		// Clear out any existing connections first
-		$sql="delete from fac_PowerConnection where PDUID=\"".intval($this->PDUID)."\" and PDUPosition=\"".intval($this->PDUPosition)."\"";
-		mysql_query($sql,$db);
 
-		$insert_sql="insert into fac_PowerConnection set DeviceID=\"".intval($this->DeviceID)."\", DeviceConnNumber=\"".intval($this->DeviceConnNumber)."\", PDUID=\"".intval($this->PDUID)."\", PDUPosition=\"".intval($this->PDUPosition)."\"";
-		if(!$result=mysql_query($insert_sql,$db)){
-			return -1;
+	private function MakeSafe(){
+		$this->PDUID=intval($this->PDUID);
+		$this->PDUPosition=intval($this->PDUPosition);
+		$this->DeviceID=intval($this->DeviceID);
+		$this->DeviceConnNumber=intval($this->DeviceConnNumber);
+	}
+
+	function CreateConnection(){
+		global $dbh;
+
+		$this->MakeSafe();
+		$sql="INSERT INTO fac_PowerConnection SET DeviceID=$this->DeviceID, 
+			DeviceConnNumber=$this->DeviceConnNumber, PDUID=$this->PDUID, 
+			PDUPosition=$this->PDUPosition ON DUPLICATE KEY UPDATE DeviceID=$this->DeviceID,
+			DeviceConnNumber=$this->DeviceConnNumber;";
+
+		if($dbh->exec($sql)){
+			return true;
+		}else{
+			return false;
 		}
-
-		return 0;
 	}
 	
-	function DeleteConnections( $db ) {
-	/* This function is called when deleting a device, and will remove ALL connections for the specified device. */
-	 $rm_sql = "delete from fac_PowerConnection where DeviceID=\"" . intval($this->DeviceID) . "\"";
-	 if ( ! $result = mysql_query( $rm_sql, $db ) )
-	   die( "Unable to remove power connections from database table fac_PowerConnection." );
+	function DeleteConnections(){
+		/*
+		 * This function is called when deleting a device, and will remove 
+		 * ALL connections for the specified device.
+		 */
+		global $dbh;
+
+		$this->MakeSafe();
+		$sql="DELETE FROM fac_PowerConnection WHERE DeviceID=$this->DeviceID;";
+
+		if($dbh->exec($sql)){
+			return true;
+		}else{
+			return false;
+		}
 	}
 	
-	function RemoveConnection( $db ) {
-		/* This function is called when removing a single connection, specified by the unique combination of PDU ID and PDU Position. */
-		$sql = "delete from fac_PowerConnection where PDUID=\"" . intval( $this->PDUID ) . "\" and PDUPosition=\"" . intval( $this->PDUPosition ) . "\"";
-		mysql_query( $sql, $db );
-		
-		return;
+	function RemoveConnection(){
+		/*
+		 * This function is called when removing a single connection, 
+		 * specified by the unique combination of PDU ID and PDU Position.
+		 */
+		global $dbh;
+
+		$this->MakeSafe();
+		$sql="DELETE FROM fac_PowerConnection WHERE PDUID=$this->PDUID AND 
+			PDUPosition=$this->PDUPosition;";
+
+		if($dbh->exec($sql)){
+			return true;
+		}else{
+			return false;
+		}
 	}
 
-  function GetPDUConnectionByPosition( $db ) {
-    $select_sql = "select * from fac_PowerConnection where PDUID=\"" . intval($this->PDUID) . "\" and PDUPosition=\"" . intval($this->PDUPosition) . "\"";
-    
-    $result = mysql_query( $select_sql, $db );
-    
-    if ( $connRow = mysql_fetch_array( $result ) ) {
-        $this->PDUID = $connRow["PDUID"];
-        $this->PDUPosition = $connRow["PDUPosition"];
-        $this->DeviceID = $connRow["DeviceID"];
-        $this->DeviceConnNumber = $connRow["DeviceConnNumber"];
-    }
-  }
-  
-  function GetConnectionsByPDU( $db ) {
-    $select_sql="select * from fac_PowerConnection where PDUID=\"" . intval($this->PDUID) . "\" order by PDUPosition";
-    $result=mysql_query($select_sql,$db);
+	function GetPDUConnectionByPosition($db=null){
+		global $dbh;
 
-    $connList=array();
+		$this->MakeSafe();
+		$sql="SELECT * FROM fac_PowerConnection WHERE PDUID=$this->PDUID AND PDUPosition=$this->PDUPosition;";
     
-	while($connRow=mysql_fetch_array($result)){
-		$connNum=$connRow["PDUPosition"];
-		$connList[$connNum]=new PowerConnection;
-		$connList[$connNum]->PDUID=$connRow["PDUID"];
-		$connList[$connNum]->PDUPosition=$connRow["PDUPosition"];
-		$connList[$connNum]->DeviceID=$connRow["DeviceID"];
-		$connList[$connNum]->DeviceConnNumber=$connRow["DeviceConnNumber"];
+		if($row=$dbh->query($sql)->fetch()){
+			$this->PDUID=$row["PDUID"];
+			$this->PDUPosition=$row["PDUPosition"];
+			$this->DeviceID=$row["DeviceID"];
+			$this->DeviceConnNumber=$row["DeviceConnNumber"];
+		}
 	}
-    return $connList;
-  }
   
-  function GetConnectionsByDevice( $db ) {
-    $select_sql = "select * from fac_PowerConnection where DeviceID=\"" . intval($this->DeviceID) . "\" order by PDUID, PDUPosition";
+	function GetConnectionsByPDU($db=null){
+		global $dbh;
 
-    $result = mysql_query( $select_sql, $db );
+		$this->MakeSafe();
+		$sql="SELECT * FROM fac_PowerConnection WHERE PDUID=$this->PDUID ORDER BY PDUPosition;";
 
-    $connList = array();
-    $connNum = 0;
+		$connList=array();
+		foreach($dbh->query($sql) as $row){
+			$connNum=$row["PDUPosition"];
+			$connList[$connNum]=new PowerConnection;
+			$connList[$connNum]->PDUID=$row["PDUID"];
+			$connList[$connNum]->PDUPosition=$row["PDUPosition"];
+			$connList[$connNum]->DeviceID=$row["DeviceID"];
+			$connList[$connNum]->DeviceConnNumber=$row["DeviceConnNumber"];
+		}
+		return $connList;
+	}
+  
+	function GetConnectionsByDevice($db){
+		global $dbh;
+
+		$this->MakeSafe();
+    	$sql="SELECT * FROM fac_PowerConnection WHERE DeviceID=$this->DeviceID ORDER BY DeviceConnnumber ASC, PDUID, PDUPosition";
+
+		$connList=array();
+		$connNum=0;
     
-    while ( $connRow = mysql_fetch_array( $result ) ) {
-      $connList[$connNum] = new PowerConnection;
+		foreach($dbh->query($sql) as $row){
+			$connList[$connNum]=new PowerConnection;
+			$connList[$connNum]->PDUID=$row["PDUID"];
+			$connList[$connNum]->PDUPosition=$row["PDUPosition"];
+			$connList[$connNum]->DeviceID=$row["DeviceID"];
+			$connList[$connNum]->DeviceConnNumber=$row["DeviceConnNumber"];
       
-      $connList[$connNum]->PDUID = $connRow["PDUID"];
-      $connList[$connNum]->PDUPosition = $connRow["PDUPosition"];
-      $connList[$connNum]->DeviceID = $connRow["DeviceID"];
-      $connList[$connNum]->DeviceConnNumber = $connRow["DeviceConnNumber"];
-      
-      $connNum++;
-    }
-    
-    return $connList;
-  }    
+			$connNum++;
+		}
+		return $connList;
+	}    
 }
 
 class PowerDistribution {
@@ -262,6 +294,22 @@ class PowerDistribution {
 	var $FailSafe;
 	var $PanelID2;
 	var $PanelPole2;
+
+	function MakeSafe(){
+		$this->Label=addslashes($this->Label);
+		$this->CabinetID=intval($this->CabinetID);
+		$this->TemplateID=intval($this->TemplateID);
+		$this->IPAddress=addslashes($this->IPAddress);
+		$this->SNMPCommunity=addslashes($this->SNMPCommunity);
+		$this->FirmwareVersion=addslashes($this->FirmwareVersion);
+		$this->PanelID=intval($this->PanelID);
+		$this->BreakerSize=intval($this->BreakerSize);
+		$this->PanelPole=intval($this->PanelPole);
+		$this->InputAmperage=intval($this->InputAmperage);
+		$this->FailSafe=intval($this->FailSafe);
+		$this->PanelID2=intval($this->PanelID2);
+		$this->PanelPole2=intval($this->PanelPole2);
+	}
 
 	function CreatePDU( $db ) {
 		$insert_sql = "insert into fac_PowerDistribution set Label=\"" . addslashes($this->Label) . "\", CabinetID=\"" . intval($this->CabinetID) . "\", TemplateID=\"" . intval( $this->TemplateID ) . "\", IPAddress=\"" . addslashes($this->IPAddress) . "\", SNMPCommunity=\"" . addslashes($this->SNMPCommunity) . "\", PanelID=\"" . intval($this->PanelID) . "\", BreakerSize=\"" . intval( $this->BreakerSize ) . "\", PanelPole=\"" . intval($this->PanelPole) . "\", InputAmperage=\"" . intval( $this->InputAmperage ) . "\", FailSafe=\"" . intval($this->FailSafe) . "\", PanelID2=\"" . intval($this->PanelID2) . "\", PanelPole2=\"" . intval($this->PanelPole2) . "\"";
@@ -642,17 +690,25 @@ class PowerDistribution {
 	}
 
 	function DeletePDU( $db ) {
+		global $dbh;
+
+		$this->MakeSafe();
 		// First, remove any connections to the PDU
-		$tmpConn = new PowerConnection();
-		$tmpConn->PDUID = $this->PDUID;
-		$connList = $tmpConn->GetConnectionsByPDU( $db );
+		$tmpConn=new PowerConnection();
+		$tmpConn->PDUID=$this->PDUID;
+		$connList=$tmpConn->GetConnectionsByPDU();
 		
-		foreach ( $connList as $delConn ) {
-			$delConn->RemoveConnections( $db );
+		foreach($connList as $delConn){
+			$delConn->RemoveConnections();
 		}
 		
-		$sql = sprintf( "delete from fac_PowerDistribution where PDUID=\"%d\"", intval( $this->PDUID ) );
-		mysql_query( $sql, $db );
+		$sql="DELETE FROM fac_PowerDistribution WHERE PDUID=$this->PDUID;";
+		if(!$dbh->exec($sql)){
+			// Something went sound and this didn't delete.
+			return false;
+		}else{
+			return true;
+		}
 	}
 }
 

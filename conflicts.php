@@ -22,9 +22,9 @@
 			$pwrConnection->PDUPosition=$_POST['con'];
 			$pwrConnection->DeviceConnNumber=$_POST['power'];
 			if(isset($_POST['e'])){
-				$pwrConnection->CreateConnection($facDB);
+				$pwrConnection->CreateConnection();
 			}else{
-				$pwrConnection->RemoveConnection($facDB);
+				$pwrConnection->RemoveConnection();
 			}
 			echo 'ok';
 		}else{
