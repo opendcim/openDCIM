@@ -443,13 +443,16 @@ class PowerDistribution {
 	function GetWattageByDC( $dc = null ) {
 		global $dbh;
 		
-		if ( $dc == null )
-			$sql = "select count(Wattage) from fac_PDUStats";
-		else
-			$sql = sprintf( "select sum(Wattage) as Wattage from fac_PDUStats where PDUID in (select PDUID from fac_PowerDistribution where CabinetID in (select CabinetID from fac_Cabinet where DataCenterID=%d))", $dc );
-		
-		$row = $dbh->query( $sql )->fetch();
-		$Wattage = $row["Wattage"];
+		if($dc==null){
+			$sql="select count(Wattage) from fac_PDUStats";
+		}else{
+			$sql="select sum(Wattage) as Wattage from fac_PDUStats where PDUID in 
+			(select PDUID from fac_PowerDistribution where CabinetID in 
+			(select CabinetID from fac_Cabinet where DataCenterID=".intval($dc)."))";
+		}		
+
+		$row=$dbh->query($sql)->fetch();
+		$Wattage=$row["Wattage"];
 		
 		return $Wattage;
 	}

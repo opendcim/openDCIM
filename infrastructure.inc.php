@@ -284,7 +284,7 @@ class DataCenter {
 		global $dbh;
 		
 		$this->MakeSafe();
-		$sql = sprintf( "select * from fac_DataCenter where DataCenterID=%d", $this->DataCenterID );
+		$sql="SELECT * FROM fac_DataCenter WHERE DataCenterID=$this->DataCenterID";
 		
 		if ( ! $dcRow = $dbh->query( $sql )->fetch() ) {
 			$info = $dbh->errorInfo();
@@ -307,33 +307,34 @@ class DataCenter {
 		return;
 	}
 	
-	function MakeImageMap( $db ) {
-	 $mapHTML = "";
+	function MakeImageMap() {
+		$mapHTML="";
 	 
-	 if ( strlen($this->DrawingFileName) > 0 ) {
-	   $mapfile = "drawings/" . $this->DrawingFileName;
-	   
-	   if ( file_exists( $mapfile ) ) {
-	     list($width, $height, $type, $attr)=getimagesize($mapfile);
-	     $mapHTML.="<div class=\"canvas\">\n";
-		 $mapHTML.="<img src=\"css/blank.gif\" usemap=\"#datacenter\" width=\"$width\" height=\"$height\" alt=\"clearmap over canvas\">\n";
-	     $mapHTML.="<map name=\"datacenter\">\n";
-	     
-	     $selectSQL="select * from fac_Cabinet where DataCenterID=\"" . intval($this->DataCenterID) . "\"";
-		 $result = mysql_query( $selectSQL, $db );
-	     
-	     while ( $cabRow = mysql_fetch_array( $result ) ) {
-	       $mapHTML.="<area href=\"cabnavigator.php?cabinetid=" . $cabRow["CabinetID"] . "\" shape=\"rect\" coords=\"" . $cabRow["MapX1"] . ", " . $cabRow["MapY1"] . ", " . $cabRow["MapX2"] . ", " . $cabRow["MapY2"] . "\" alt=\"".$cabRow["Location"]."\" title=\"".$cabRow["Location"]."\">\n";
-	     }
-	     
-	     $mapHTML.="</map>\n";
-	     $mapHTML.="<canvas id=\"mapCanvas\" width=\"$width\" height=\"$height\"></canvas>\n";
-             
-	     
-	     $mapHTML .= "</div>\n";
-	    }
-	 }
-	 return $mapHTML;
+		if(strlen($this->DrawingFileName)>0){
+			$mapfile="drawings".DIRECTORY_SEPARATOR.$this->DrawingFileName;
+		   
+			if(file_exists($mapfile)){
+				list($width, $height, $type, $attr)=getimagesize($mapfile);
+				$mapHTML.="<div class=\"canvas\">\n";
+				$mapHTML.="<img src=\"css/blank.gif\" usemap=\"#datacenter\" width=\"$width\" height=\"$height\" alt=\"clearmap over canvas\">\n";
+				$mapHTML.="<map name=\"datacenter\">\n";
+				 
+				$selectSQL="select * from fac_Cabinet where DataCenterID=\"" . intval($this->DataCenterID) . "\"";
+				$result = mysql_query($selectSQL);
+				 
+				while($row=mysql_fetch_array( $result ) ) {
+					$mapHTML.="<area href=\"cabnavigator.php?cabinetid={$row["CabinetID"]}\" shape=\"rect\"";
+					$mapHTML.=" coords=\"{$row["MapX1"]},{$row["MapY1"]},{$row["MapX2"]},{$row["MapY2"]}\"";
+					$mapHTML.=" alt=\"{$row["Location"]}\" title=\"{$row["Location"]}\">\n";
+				}
+				 
+				$mapHTML.="</map>\n";
+				$mapHTML.="<canvas id=\"mapCanvas\" width=\"$width\" height=\"$height\"></canvas>\n";
+					 
+				$mapHTML .= "</div>\n";
+			}
+		}
+		return $mapHTML;
 	}
 
 	function MakeImageMapNoLinks( $db ) {
@@ -365,11 +366,11 @@ class DataCenter {
 	 return $mapHTML;
 	}
 
-	function DrawCanvas($db){
+	function DrawCanvas(){
 		$script="";	
 		// check to see if map was set
 		if(strlen($this->DrawingFileName)){
-			$mapfile = "drawings/" . $this->DrawingFileName;
+			$mapfile="drawings".DIRECTORY_SEPARATOR.$this->DrawingFileName;
 
 			// map was set in config check to ensure a file exists before we attempt to use it
 			if(file_exists($mapfile)){
@@ -405,21 +406,20 @@ class DataCenter {
 				$weight.="		context.globalCompositeOperation = 'destination-over';\n		var img=new Image();\n		img.onload=function(){\n			context.drawImage(img,0,0);\n		}\n		img.src=\"$mapfile\";\n";
 				$power.="		context.globalCompositeOperation = 'destination-over';\n		var img=new Image();\n		img.onload=function(){\n			context.drawImage(img,0,0);\n		}\n		img.src=\"$mapfile\";\n";
 				$selectSQL="select * from fac_Cabinet where DataCenterID=\"".intval($this->DataCenterID)."\"";
-				$result=mysql_query($selectSQL,$db);
+				$result=mysql_query($selectSQL);
 				
 				// read all cabinets and draw image map
 				while($cabRow=mysql_fetch_array($result)){
 					$cab->CabinetID=$cabRow["CabinetID"];
-					$cab->GetCabinet($db);
+					$cab->GetCabinet();
 					$dev->Cabinet=$cab->CabinetID;
 					$dev->Location=$cab->Location;
-    	    		$devList=$dev->ViewDevicesByCabinet( $db );
+    	    		$devList=$dev->ViewDevicesByCabinet();
 					$currentHeight = $cab->CabinetHeight;
         			$totalWatts = $totalWeight = $totalMoment =0;
-        							
 					while(list($devID,$device)=each($devList)){
         	        	$templ->TemplateID=$device->TemplateID;
-            	    	$templ->GetTemplateByID($db);
+            	    	$templ->GetTemplateByID();
 
 						if($device->NominalWatts >0){
 							$totalWatts += $device->NominalWatts;
@@ -427,11 +427,11 @@ class DataCenter {
 							$totalWatts += $templ->Wattage;
 						}
 						if($device->DeviceType=="Chassis"){
-							$childList=$device->GetDeviceChildren($db);
+							$childList=$device->GetDeviceChildren();
 							$childTempl=new DeviceTemplate();
 							foreach($childList as $childDev){
 								$childTempl->TemplateID=$childDev->TemplateID;
-								$childTempl->GetTemplateByID($db);
+								$childTempl->GetTemplateByID();
 								
 								if($childDev->NominalWatts>0){
 									$totalWatts+=$childDev->NominalWatts;
@@ -453,7 +453,7 @@ class DataCenter {
 						
 					$CenterofGravity=@round($totalMoment /$totalWeight);
 
-        			$used=$cab->CabinetOccupancy($cab->CabinetID,$db);
+        			$used=$cab->CabinetOccupancy($cab->CabinetID);
         			$SpacePercent=number_format($used /$cab->CabinetHeight *100,0);
 					// check to make sure there is a weight limit set to keep errors out of logs
 					if(!isset($cab->MaxWeight)||$cab->MaxWeight==0){$WeightPercent=0;}else{$WeightPercent=number_format($totalWeight /$cab->MaxWeight *100,0);}
@@ -518,7 +518,7 @@ class DataCenter {
 		if ( ! $statsRow = $dbh->query( $sql )->fetch() ) {
 			$info = $dbh->errorInfo();
 
-			error_log( "PDO Error: " . $info[2] . " SQL=" . $sql );
+			error_log("PDO Error: {$info[2]} SQL=$sql");
 			return false;
 		}		
 		$dcStats["TotalU"] = $statsRow[0];
@@ -527,7 +527,7 @@ class DataCenter {
 		if ( ! $statsRow = $dbh->query( $sql )->fetch() ) {
 			$info = $dbh->errorInfo();
 
-			error_log( "PDO Error: " . $info[2] . " SQL=" . $sql );
+			error_log("PDO Error: {$info[2]} SQL=$sql");
 			return false;
 		}		
 		$dcStats["Infrastructure"] = $statsRow[0];
@@ -536,7 +536,7 @@ class DataCenter {
 		if ( ! $statsRow = $dbh->query( $sql )->fetch() ) {
 			$info = $dbh->errorInfo();
 
-			error_log( "PDO Error: " . $info[2] . " SQL=" . $sql );
+			error_log("PDO Error: {$info[2]} SQL=$sql");
 			return false;
 		}		
 		$dcStats["Occupied"] = $statsRow[0];
@@ -545,7 +545,7 @@ class DataCenter {
         if ( ! $statsRow = $dbh->query( $sql )->fetch() ) {
 			$info = $dbh->errorInfo();
 
-			error_log( "PDO Error: " . $info[2] . " SQL=" . $sql );
+			error_log("PDO Error: {$info[2]} SQL=$sql");
 			return false;
 		}		
 		$dcStats["Allocated"] = $statsRow[0];
@@ -558,7 +558,7 @@ class DataCenter {
         if ( ! $statsRow = $dbh->query( $sql )->fetch() ) {
 			$info = $dbh->errorInfo();
 
-			error_log( "PDO Error: " . $info[2] . " SQL=" . $sql );
+			error_log("PDO Error: {$info[2]} SQL=$sql");
 			return false;
 		}		
 		$dcStats["ComputedWatts"] = intval($statsRow[0]);
@@ -567,7 +567,7 @@ class DataCenter {
         if ( ! $statsRow = $dbh->query( $sql )->fetch() ) {
 			$info = $dbh->errorInfo();
 
-			error_log( "PDO Error: " . $info[2] . " SQL=" . $sql );
+			error_log("PDO Error: {$info[2]} SQL=$sql");
 			return false;
 		}		
 		$dcStats["ComputedWatts"] += intval($statsRow[0]);
@@ -713,10 +713,9 @@ class DeviceTemplate {
 		$this->NumPorts=$tempRow["NumPorts"];
       
 		return true;
-	} else {
-		$info = $dbh->errorInfo();
-
-		error_log( "PDO Error:  " . $info[2] );
+	}else{
+		// if a template id isn't set this is generating an error 
+		// since this is just a select don't bother with logging errors
 		return false;
 	}
   }
@@ -1195,21 +1194,21 @@ class Container {
 	var $MapX;
 	var $MapY;
 
-	function MakeSafe() {
-		$this->ContainerID = intval( $this->ContainerID );
-		$this->Name = mysql_real_escape_string( $this->Name );
-		$this->ParentID = intval( $this->ParentID );
-		$this->DrawingFileName = mysql_real_escape_string( $this->DrawingFileName );
-		$this->MapX = intval( $this->MapX );
-		$this->MapY = intval( $this->MapY );
+	function MakeSafe(){
+		$this->ContainerID=intval($this->ContainerID);
+		$this->Name=addslashes($this->Name);
+		$this->ParentID=intval($this->ParentID);
+		$this->DrawingFileName=addslashes($this->DrawingFileName);
+		$this->MapX=intval($this->MapX);
+		$this->MapY=intval($this->MapY);
 	}
 	
-	function CreateContainer( $db = null ) {
+	function CreateContainer() {
 		global $dbh;
 		
 		$this->MakeSafe();
-		$sql = sprintf( "insert into fac_Container set Name=\"%s\", ParentID=%d, DrawingFileName=\"%s\", MapX=%d, MapY=%d",
-			$this->Name, $this->ParentID, $this->DrawingFileName, $this->MapX, $this->MapY );
+		$sql="INSERT INTO fac_Container set Name=\"$this->Name\", ParentID=$this->ParentID, 
+				DrawingFileName=\"$this->DrawingFileName\", MapX=$this->MapX, MapY=$this->MapY;";
 
 		if ( ! $dbh->exec( $sql ) ) {
 			$info = $dbh->errorInfo();
@@ -1221,103 +1220,102 @@ class Container {
 		return $this->ContainerID;
 	}
 
-	function UpdateContainer( $db = null ) {
+	function UpdateContainer() {
 		global $dbh;
 		
 		$this->MakeSafe();
-		$sql = sprintf( "update fac_Container set Name=\"%s\", ParentID=%d, DrawingFileName=\"%s\", MapX=%d, MapY=%d where ContainerID=%d",
-			$this->Name, $this->ParentID, $this->DrawingFileName, $this->MapX, $this->MapY, $this->ContainerID );
+		$sql="UPDATE fac_Container SET Name=\"$this->Name\", ParentID=$this->ParentID, 
+			DrawingFileName=\"$this->DrawingFileName\", MapX=$this->MapX, MapY=$this->MapY 
+			WHERE ContainerID=$this->ContainerID;";
 		
-		if ( ! $result = mysql_query( $sql, $db ) ) {
-			error_log( sprintf( "%s; SQL=`%s`", mysql_error( $db ), $sql ) );
-			return -1;
+		if(!$dbh->query($sql)){
+			$info=$dbh->errorInfo();
+			error_log("PDO Error: {$info[2]} SQL=$sql");
+			return false;
+		}else{
+			return true;
 		}
-
-		return;
 	}
 
-	function GetContainer( $db = null ) {
+	function GetContainer() {
 		global $dbh;
 		
 		$this->MakeSafe();
-		$sql="SELECT * FROM fac_Container WHERE ContainerID=".intval($this->ContainerID);
+		$sql="SELECT * FROM fac_Container WHERE ContainerID=$this->ContainerID;";
 
-		if ( ! $row = $dbh->query( $sql )->fetch() ) {
-			$info = $dbh->errorInfo();
-			error_log( "PDO Error: " . $info[2] . " SQL=" . $sql );
+		if($row=$dbh->query($sql)->fetch()){
+			$this->Name = $row["Name"];
+			$this->ParentID= $row["ParentID"];
+			$this->DrawingFileName = $row["DrawingFileName"];
+			$this->MapX = $row["MapX"];
+			$this->MapY = $row["MapY"];
+
+			return true;
+		}else{
+			// do not display error info for this, it is designed to fail occasionally and
+			// is just generating log spam.
 			return false;
 		}
-		
-		$this->Name = $row["Name"];
-		$this->ParentID= $row["ParentID"];
-		$this->DrawingFileName = $row["DrawingFileName"];
-		$this->MapX = $row["MapX"];
-		$this->MapY = $row["MapY"];
-
-		return true;
 	}
 	
-	function GetChildContainerList( $db = null ) {
+	function GetChildContainerList(){
 		global $dbh;
 		
-		$sql = "SELECT * 
-				FROM fac_Container
-				WHERE ParentID=".intval($this->ContainerID)." 
+		$this->MakeSafe();
+		$sql="SELECT * FROM fac_Container WHERE ParentID=$this->ContainerID 
 				ORDER BY Name ASC";
 
 		$containerList = array();
 
-		foreach ( $dbh->query( $sql ) as $cRow ) {
-			$cID = $cRow[ "ContainerID" ];
+		foreach($dbh->query($sql)as$cRow){
+			$cID=$cRow["ContainerID"];
 
-			$containerList[$cID] = new Container();
-			$containerList[$cID]->ContainerID = $cRow["ContainerID"];
-			$containerList[$cID]->Name = $cRow["Name"];
-			$containerList[$cID]->ParentID = $cRow["ParentID"];
-			$containerList[$cID]->DrawingFileName = $cRow["DrawingFileName"];
-			$containerList[$cID]->MapX = $cRow["MapX"];
-			$containerList[$cID]->MapY = $cRow["MapY"];
+			$containerList[$cID]=new Container();
+			$containerList[$cID]->ContainerID=$cRow["ContainerID"];
+			$containerList[$cID]->Name=$cRow["Name"];
+			$containerList[$cID]->ParentID=$cRow["ParentID"];
+			$containerList[$cID]->DrawingFileName=$cRow["DrawingFileName"];
+			$containerList[$cID]->MapX=$cRow["MapX"];
+			$containerList[$cID]->MapY=$cRow["MapY"];
 		}
 
 		return $containerList;
 	}
-	function GetChildDCList( $db = null ) {
+	function GetChildDCList(){
 		global $dbh;
-		
-		$sql = "SELECT * 
-				FROM fac_DataCenter
-				WHERE ContainerID=".$this->ContainerID." 
+	
+		$this->MakeSafe();	
+		$sql = "SELECT * FROM fac_DataCenter WHERE ContainerID=$this->ContainerID 
 				ORDER BY Name ASC";
 
 		$datacenterList = array();
 
-		foreach ( $dbh->query( $sql ) as $dcRow ) {
-			$dcID = $dcRow[ "DataCenterID" ];
+		foreach($dbh->query($sql)as$dcRow){
+			$dcID=$dcRow["DataCenterID"];
 
 			$datacenterList[$dcID] = new DataCenter();
-			$datacenterList[$dcID]->DataCenterID = $dcRow["DataCenterID"];
-			$datacenterList[$dcID]->Name = $dcRow["Name"];
-			$datacenterList[$dcID]->SquareFootage = $dcRow["SquareFootage"];
-			$datacenterList[$dcID]->DeliveryAddress = $dcRow["DeliveryAddress"];
-			$datacenterList[$dcID]->Administrator = $dcRow["Administrator"];
-			$datacenterList[$dcID]->MaxkW = $dcRow["MaxkW"];
-			$datacenterList[$dcID]->DrawingFileName = $dcRow["DrawingFileName"];
-			$datacenterList[$dcID]->EntryLogging = $dcRow["EntryLogging"];
-			$datacenterList[$dcID]->ContainerID = $dcRow["ContainerID"];
-			$datacenterList[$dcID]->MapX = $dcRow["MapX"];
-			$datacenterList[$dcID]->MapY = $dcRow["MapY"];
+			$datacenterList[$dcID]->DataCenterID=$dcRow["DataCenterID"];
+			$datacenterList[$dcID]->Name=$dcRow["Name"];
+			$datacenterList[$dcID]->SquareFootage=$dcRow["SquareFootage"];
+			$datacenterList[$dcID]->DeliveryAddress=$dcRow["DeliveryAddress"];
+			$datacenterList[$dcID]->Administrator=$dcRow["Administrator"];
+			$datacenterList[$dcID]->MaxkW=$dcRow["MaxkW"];
+			$datacenterList[$dcID]->DrawingFileName=$dcRow["DrawingFileName"];
+			$datacenterList[$dcID]->EntryLogging=$dcRow["EntryLogging"];
+			$datacenterList[$dcID]->ContainerID=$dcRow["ContainerID"];
+			$datacenterList[$dcID]->MapX=$dcRow["MapX"];
+			$datacenterList[$dcID]->MapY=$dcRow["MapY"];
 		}
 
 		return $datacenterList;
 	}
 		
-	function BuildMenuTree( $db = null ) {
+	function BuildMenuTree() {
 		$c=new Container();
-		$c->ContainerID=0;
 		//begin the tree
 		$tree="\n<ul class=\"mktree\" id=\"datacenters\">\n";;
 		//Add root children
-		$tree.=$c->AddContainerToTree(0);
+		$tree.=$c->AddContainerToTree();
 		$tree .= "<li class=\"liOpen\" id=\"dc-1\"><a href=\"storageroom.php\">"._("Storage Room")."</a></li>\n";
 		$tree .= "</ul>\n";
 		return $tree;
@@ -1536,7 +1534,7 @@ class Container {
 		if ( count( $cList ) > 0 ) {
 			while ( list( $cID, $container ) = each( $cList ) ) {
 				//pending for PDO update
-				$childStats=$container->GetContainerStatistics($db);
+				$childStats=$container->GetContainerStatistics();
 				$cStats["DCs"] += $childStats["DCs"];
 				$cStats["TotalU"] += $childStats["TotalU"];
 				$cStats["Infrastructure"] += $childStats["Infrastructure"];

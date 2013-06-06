@@ -121,7 +121,7 @@ echo '	<a href="reports.php"><li>',__("Reports"),'</li></a>';
 	</div>';
 
 	$container = new Container();
-	echo $container->BuildMenuTree( $facDB );
+	echo $container->BuildMenuTree();
 	
 ?>
 <script type="text/javascript">

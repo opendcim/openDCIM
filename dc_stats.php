@@ -18,8 +18,8 @@
 	$dc=new DataCenter();
 
 	$dc->DataCenterID=$_REQUEST["dc"];
-	$dc->GetDataCenterbyID( $facDB );
-	$dcStats=$dc->GetDCStatistics($facDB);
+	$dc->GetDataCenterbyID();
+	$dcStats=$dc->GetDCStatistics();
 
 	$height=0;
 	$width=0;
@@ -45,23 +45,10 @@ $(document).ready(function() {
 </style>";
 		}
 	}
-	$height+=60; //Offset for text on header
-	$width+=10; //Don't remember why I need this
-
-	// Necessary for IE layout bug where it wants to make the mapsize $width * 10 for whatever crazy reason
-	// Base sizes for calculations
-	// 95px for mode buttons
-	// 691px for header 
-	// 1030px for page
-	if($width>800){
-		$offset=($width-800);
-		$screenadjustment="<style type=\"text/css\">div.center > div{width:".($offset+800)."px;} div#mapadjust{width:".($offset+1030)."px;} #mapadjust div.heading > div{width:".($offset+691)."px;} #mapadjust div.heading > div + div{width:95px;}</style>\n";
-	}
 	// If no mapfile is set then we don't need the buttons to control drawing the map.  Adjust the CSS to hide them and make the heading centered
 	if(strlen($dc->DrawingFileName) <1 || !file_exists("drawings/$dc->DrawingFileName")){
 		$screenadjustment="<style type=\"text/css\">.dcstats .heading > div { width: 100% !important;} .dcstats .heading > div + div { display: none; }</style>";
 	}
-	
 		
 	if ( $config->ParameterArray["mUnits"] == "english" ) {
 		$vol = __("Square Feet");
@@ -85,8 +72,7 @@ $(document).ready(function() {
     <?php if(isset($ie8fix)){print $ie8fix;} ?>
     <script src="scripts/excanvas.js"></script>
   <![endif]-->
-  <?php if(isset($screenadjustment)){print $screenadjustment;} ?>
-  <?php print $dc->DrawCanvas($facDB);?>
+  <?php print $dc->DrawCanvas();?>
   <script type="text/javascript" src="scripts/jquery.min.js"></script>
   <script type="text/javascript" src="scripts/jquery-ui.min.js"></script>
   <script type="text/javascript">
@@ -173,7 +159,7 @@ echo '<div class="main">
 </div> <!-- END div.table -->
 </div>';
 
-  print $dc->MakeImageMap( $facDB );
+  print $dc->MakeImageMap();
 ?>
 </div></div>
 </div><!-- END div.main -->

@@ -245,7 +245,7 @@ echo '	</select></div>
       <option value="0">',__("None"),'</option>';
 
 	$container=new Container();
-	$cList=$container->GetContainerList($facDB);
+	$cList=$container->GetContainerList();
 	foreach($cList as $cRow){
 		if($cRow->ContainerID == $dc->ContainerID){$selected=" selected";}else{$selected="";}
 		print "<option value=\"$cRow->ContainerID\"$selected>$cRow->Name</option>\n";
@@ -266,7 +266,7 @@ print "<div id=divcontainer>\n";
 if ($dc->ContainerID>0){
 	print "  <div><b>".__("Click on the image to select DC coordinates")."</b></div>"; 
 	$container->ContainerID=$dc->ContainerID;
-	$container->GetContainer($facDB);
+	$container->GetContainer();
 	print "<div>";
 	print $container->MakeContainerMiniImage("dc",$dc->DataCenterID);
 	print "</div>"; 

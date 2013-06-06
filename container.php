@@ -49,9 +49,9 @@
 	}
 	elseif(isset($_REQUEST['containerid'])&& $_REQUEST['containerid'] >0){
 		$c->ContainerID=(isset($_POST['containerid']) ? $_POST['containerid'] : $_GET['containerid']);
-		$c->GetContainer($facDB);
+		$c->GetContainer();
 	}
-	$cList=$c->GetContainerList($facDB);
+	$cList=$c->GetContainerList();
 
 
 
@@ -217,7 +217,7 @@ echo '	</select></div>
       <option value="0">',_("None"),'</option>';
 
 //	$container=new Container();
-//	$cList=$container->GetContainerList($facDB);
+//	$cList=$container->GetContainerList();
 	foreach($cList as $cRow){
 		if ($cRow->ContainerID<>$c->ContainerID){
 			if($cRow->ContainerID == $c->ParentID){$selected=" selected";}else{$selected="";}
@@ -239,7 +239,7 @@ echo '	</select></div>
 if ($c->ParentID>0){
 	print "<div>\n  <div><b>Click on the image to select container coordinates</b></div>"; 
 	$container->ContainerID=$c->ParentID;
-	$container->GetContainer($facDB);
+	$container->GetContainer();
 	print "<div>";
 	print $container->MakeContainerMiniImage("container",$c->ContainerID);
 	print "</div></div>"; 
