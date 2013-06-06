@@ -15,6 +15,31 @@
 	// Get the list of departments that this user is a member of
 	$viewList = $user->isMemberOf();
 
+/**
+ * Determines ownership of the cabinet and returns the CSS class in case a
+ * color unequal white is assigned to the owner
+ *
+ * @param 	Cabinet 	$cabinet
+ * @param 	array 		&$deptswithcolor
+ * @return 	string		CSS class or empty string
+ */
+function get_cabinet_owner_color($cabinet, &$deptswithcolor) {
+  global $facDB;
+  $cab_color = '';
+  if ($cabinet->AssignedTo != 0) {
+    $tempDept = new Department();
+    $tempDept->DeptID = $cabinet->AssignedTo;
+    $deptid = $tempDept->DeptID;
+    $tempDept->GetDeptByID($facDB);
+    if (strtoupper($tempDept->DeptColor) != "#FFFFFF") {
+       $deptswithcolor[$cabinet->AssignedTo]["color"] = $tempDept->DeptColor;
+       $deptswithcolor[$cabinet->AssignedTo]["name"]= $tempDept->Name;
+       $cab_color = "class=\"dept$deptid\"";
+    }
+  }
+  return $cab_color;
+}
+
 	$cab=new Cabinet();
 	$cab->CabinetID=$_REQUEST["cabinetid"];
 	$cab->GetCabinet($facDB);
@@ -205,6 +230,9 @@
 	$totalWeight=0;
 	$totalMoment=0;
 
+	$deptswithcolor=array();
+        $cab_color = get_cabinet_owner_color($cab, $deptswithcolor);
+
 	if($config->ParameterArray["ReservedColor"] != "#FFFFFF" || $config->ParameterArray["FreeSpaceColor"] != "#FFFFFF"){
 		$head.="		<style type=\"text/css\">
 			.reserved{background-color: {$config->ParameterArray['ReservedColor']};}
@@ -220,10 +248,9 @@
 
 	$body.="<div class=\"cabinet\">
 <table>
-	<tr><th colspan=2>".__("Cabinet")." $cab->Location</th></tr>
+	<tr><th colspan=2 $cab_color >".__("Cabinet")." $cab->Location</th></tr>
 	<tr><td>".__("Pos")."</td><td>".__("Device")."</td></tr>\n";
 
-	$deptswithcolor=array();
 	$heighterr="";
 	while(list($devID,$device)=each($devList)){
 		$devTop=$device->Position + $device->Height - 1;
