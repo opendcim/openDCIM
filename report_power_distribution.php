@@ -4,7 +4,7 @@
 
 	$user=new User();
 	$user->UserID=$_SERVER['REMOTE_USER'];
-	$user->GetUserRights($facDB);
+	$user->GetUserRights();
 
 	if(!$user->ReadAccess){
 		header( "Location: ".redirect());
@@ -26,7 +26,7 @@ class PDF extends FPDF {
 	}
   
 	function Header() {
-		$this->pdfconfig = new Config($this->pdfDB);
+		$this->pdfconfig = new Config();
     	$this->Image( 'images/' . $this->pdfconfig->ParameterArray['PDFLogoFile'],10,8,100);
     	$this->SetFont($this->pdfconfig->ParameterArray['PDFfont'],'B',12);
    		$this->Cell(120);

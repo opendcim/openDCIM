@@ -4,7 +4,7 @@
 
 	$user=new User();
 	$user->UserID=$_SERVER["REMOTE_USER"];
-	$user->GetUserRights($facDB);
+	$user->GetUserRights();
 
 /*	Not sure if we need to restrict this view to users with global read access or not
 	if(!$user->ReadAccess){

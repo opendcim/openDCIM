@@ -4,7 +4,7 @@ class Config{
 	var $ParameterArray;
 	var $defaults;
 	
-	function Config ($db=null){
+	function Config(){
 		global $dbh;
 		
 		//Get parameter value pairs from fac_Config
@@ -23,7 +23,7 @@ class Config{
 		return;
 	}
 
-	function UpdateConfig($db=null){
+	function UpdateConfig(){
 		global $dbh;
 		
 		foreach($this->ParameterArray as $key=>$value){
@@ -52,7 +52,7 @@ class Config{
 		return;
 	}
 	
-	static function RevertToDefault($db, $parameter){
+	static function RevertToDefault($parameter){
 		global $dbh;
 		
 		if($parameter=='none'){
@@ -65,7 +65,7 @@ class Config{
 		return;
 	}
 	
-	function Rebuild ($db){
+	function Rebuild (){
 /* Rebuild: This function should only be needed after something like the version erasing glitch from 1.1 and 1.2.
 			At this time it is possible to get unwanted duplicate configuration parameters and this will clean
 			them.

@@ -114,10 +114,10 @@ function applyupdate ($updatefile){
 
 	$user=new User();
 	$user->UserID=$_SERVER['REMOTE_USER'];
-	$user->GetUserRights($facDB);
+	$user->GetUserRights();
 
 	// Re-read the config
-	$config->Config($facDB);
+	$config->Config();
 // Check to see if we have any users in the database.
 	if(mysql_num_rows(mysql_query("SELECT * FROM fac_User WHERE SiteAdmin=1;"))<1){
 		// no users in the system or no users with site admin rights, either way we're missing the class of people we need
@@ -130,7 +130,7 @@ function applyupdate ($updatefile){
 
 		$user=new User();
 		$user->UserID=$_SERVER['REMOTE_USER'];
-		$user->GetUserRights($facDB);
+		$user->GetUserRights();
 
 		if(!$user->SiteAdmin){
 			// dolemite says you aren't an admin so you can't apply the update
@@ -159,7 +159,7 @@ function applyupdate ($updatefile){
 	}
 	if($version=="1.3"){ // Do 1.3 to 1.4 Update
 		// Clean the configuration table of any duplicate values that might have been added.
-		$config->rebuild($facDB);
+		$config->rebuild();
 		$results[]=applyupdate("db-1.3-to-1.4.sql");
 		$upgrade=true;
 		$version="1.4";
@@ -183,7 +183,7 @@ function applyupdate ($updatefile){
 			exit;
 		}
 
-		$config->rebuild($facDB);
+		$config->rebuild();
 		$results[]=applyupdate("db-1.4-to-1.5.sql");
 		$upgrade=true;
 		$version="1.5";
@@ -294,7 +294,7 @@ function applyupdate ($updatefile){
 		$sql="ALTER TABLE fac_Department ADD UNIQUE KEY Name (Name);";
 		mysql_query($sql);
 		
-		$config->rebuild($facDB);
+		$config->rebuild();
 		$results[]=applyupdate("db-1.5-to-2.0.sql");
 		$upgrade=true;
 		$version="2.0";
@@ -396,7 +396,7 @@ function applyupdate ($updatefile){
 		mysql_query('ALTER TABLE fac_SwitchConnection ADD UNIQUE(ConnectionID);',$facDB);
 
 		// Rebuild the config table just in case.  I dunno gremlins.
-		$config->rebuild($facDB);
+		$config->rebuild();
 
 		$upgrade=true;
 		$version="2.1";
@@ -482,7 +482,7 @@ if(isset($results)){
 				$config->ParameterArray[$key]=$_REQUEST[$key];
 			}
 		}
-		$config->UpdateConfig($facDB);
+		$config->UpdateConfig();
 
 		//Disable all tooltip items and clear the SortOrder
 		mysql_query("UPDATE fac_CabinetToolTip SET SortOrder = NULL, Enabled=0;");

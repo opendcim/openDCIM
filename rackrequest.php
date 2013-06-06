@@ -6,7 +6,7 @@
 	$user=new User();
 	
 	$user->UserID=$_SERVER['REMOTE_USER'];
-	$user->GetUserRights($facDB);
+	$user->GetUserRights();
 	
 	if(!$user->RackRequest){
 		// No soup for you.

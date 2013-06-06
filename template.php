@@ -4,7 +4,7 @@
 
 	$user=new User();
 	$user->UserID=$_SERVER['REMOTE_USER'];
-	$user->GetUserRights($facDB);
+	$user->GetUserRights();
 
 	if(!$user->ReadAccess){
 		// No soup for you.

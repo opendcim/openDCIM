@@ -187,7 +187,7 @@
 	if($audit->UserID!=""){
 		$tmpUser=new User();
 		$tmpUser->UserID=$audit->UserID;
-		$tmpUser->GetUserRights($facDB);
+		$tmpUser->GetUserRights();
 		$AuditorName=$tmpUser->Name;
 	}else{
 		//If no audit has been completed $AuditorName will return an error

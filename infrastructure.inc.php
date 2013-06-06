@@ -373,7 +373,7 @@ class DataCenter {
 
 			// map was set in config check to ensure a file exists before we attempt to use it
 			if(file_exists($mapfile)){
-				$this->dcconfig=new Config($db);
+				$this->dcconfig=new Config();
 				$dev=new Device();
 				$templ=new DeviceTemplate();
 				$cab=new Cabinet();

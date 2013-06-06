@@ -4,7 +4,7 @@
 
 	$user=new User();
 	$user->UserID=$_SERVER['REMOTE_USER'];
-	$user->GetUserRights($facDB);
+	$user->GetUserRights();
 
 	if(!$user->SiteAdmin){
 		header('Location: '.redirect());
@@ -16,7 +16,7 @@
 
 	if(isset($_REQUEST['seluserid']) && strlen($_REQUEST['seluserid']) >0){
 		$userRights->UserID=$_REQUEST['seluserid'];
-		$userRights->GetUserRights($facDB);
+		$userRights->GetUserRights();
 	}
 	
 	if(isset($_POST['action'])&&isset($_POST['userid'])){
@@ -43,7 +43,7 @@
 		//Should we ever add a delete user function it will go here
 		}
 		// Reload rights because actions like disable reset other rights
-		$userRights->GetUserRights($facDB);
+		$userRights->GetUserRights();
 	}
 
 	$userList=$userRights->GetUserList($facDB);
