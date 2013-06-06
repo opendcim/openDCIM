@@ -177,21 +177,27 @@
 				$config->ParameterArray[$key]=$_REQUEST[$key];
 			}
 		}
-		$config->UpdateConfig($facDB);
+		$config->UpdateConfig();
 
 		//Disable all tooltip items and clear the SortOrder
-		mysql_query("UPDATE fac_CabinetToolTip SET SortOrder = NULL, Enabled=0;");
+		$dbh->exec("UPDATE fac_CabinetToolTip SET SortOrder = NULL, Enabled=0;");
 		if(isset($_POST["tooltip"]) && !empty($_POST["tooltip"])){
+			$p=$dbh->prepare("UPDATE fac_CabinetToolTip SET SortOrder=:sortorder, Enabled=1 WHERE Field=:field LIMIT 1;");
 			foreach($_POST["tooltip"] as $order => $field){
-				mysql_query("UPDATE fac_CabinetToolTip SET SortOrder=".intval($order).", Enabled=1 WHERE Field='".addslashes($field)."' LIMIT 1;");
+				$p->bindParam(":sortorder",$order);
+				$p->bindParam(":field",$field);
+				$p->execute();
 			}
 		}
 
 		//Disable all cdu tooltip items and clear the SortOrder
-		mysql_query("UPDATE fac_CDUToolTip SET SortOrder = NULL, Enabled=0;");
+		$dbh->exec("UPDATE fac_CDUToolTip SET SortOrder = NULL, Enabled=0;");
 		if(isset($_POST["cdutooltip"]) && !empty($_POST["cdutooltip"])){
+			$p=$dbh->prepare("UPDATE fac_CDUToolTip SET SortOrder=:sortorder, Enabled=1 WHERE Field=:field LIMIT 1;");
 			foreach($_POST["cdutooltip"] as $order => $field){
-				mysql_query("UPDATE fac_CDUToolTip SET SortOrder=".intval($order).", Enabled=1 WHERE Field='".addslashes($field)."' LIMIT 1;");
+				$p->bindParam(":sortorder",$order);
+				$p->bindParam(":field",$field);
+				$p->execute();
 			}
 		}
 	}
@@ -291,14 +297,14 @@
 
 	// Figure out what the URL to this page
 	$href="";
-	$href.=($_SERVER['HTTPS'])?'https://':'http://';
+	$href.=(isset($_SERVER['HTTPS']))?'https://':'http://';
 	$href.=$_SERVER['SERVER_NAME'];
 	$href.=substr($_SERVER['REQUEST_URI'], 0, -strlen(basename($_SERVER['REQUEST_URI'])));
 
 	// Build up the list of items available for the tooltips
 	$tooltip="<select id=\"tooltip\" name=\"tooltip[]\" multiple=\"multiple\">\n";
-	$ttconfig=mysql_query("SELECT * FROM fac_CabinetToolTip ORDER BY SortOrder ASC, Enabled DESC, Label ASC;");
-	while($row=mysql_fetch_assoc($ttconfig)){
+	$sql="SELECT * FROM fac_CabinetToolTip ORDER BY SortOrder ASC, Enabled DESC, Label ASC;";
+	foreach($dbh->query($sql) as $row){
 		$selected=($row["Enabled"])?" selected":"";
 		$tooltip.="<option value=\"".$row['Field']."\"$selected>".__($row["Label"])."</option>\n";
 	}
@@ -306,8 +312,8 @@
 
 	// Build up the list of items available for the tooltips
 	$cdutooltip="<select id=\"cdutooltip\" name=\"cdutooltip[]\" multiple=\"multiple\">\n";
-	$ttconfig=mysql_query("SELECT * FROM fac_CDUToolTip ORDER BY SortOrder ASC, Enabled DESC, Label ASC;");
-	while($row=mysql_fetch_assoc($ttconfig)){
+	$sql="SELECT * FROM fac_CDUToolTip ORDER BY SortOrder ASC, Enabled DESC, Label ASC;";
+	foreach($dbh->query($sql) as $row){
 		$selected=($row["Enabled"])?" selected":"";
 		$cdutooltip.="<option value=\"".$row['Field']."\"$selected>".__($row["Label"])."</option>\n";
 	}
@@ -484,7 +490,7 @@
 					});
 				}else{
 					var defaultbutton={
-						"Clear all": function(){
+						"<?php echo __("Clear all"); ?>": function(){
 							$.post('',{mtid: row.find('div:nth-child(2) input').attr('data'),mt: '', mtcc: '', clear: ''}).done(function(data){
 								if(data.trim()=='u'){ // success
 									$('#modal').dialog("destroy");
@@ -492,14 +498,14 @@
 										$(this).remove();
 									});
 								}else{ // failed to delete
-									$('#modaltext').html('AAAAAAAAAAHHHHHHHHHH!!!  *crash* *fire* *chaos*<br><br>Something just went horribly wrong.');
+									$('#modaltext').html('AAAAAAAAAAHHHHHHHHHH!!!  *crash* *fire* *chaos*<br><br><?php echo __("Something just went horribly wrong."); ?>');
 									$('#modal').dialog('option','buttons',cancelbutton);
 								}
 							});
 						}
 					}
 					var replacebutton={
-						"Replace": function(){
+						"<?php echo __("Replace"); ?>": function(){
 							// send command to replace all connections with x
 							$.post('',{mtid: row.find('div:nth-child(2) input').attr('data'),mt: '', mtcc: '', change: $('#modal select').val()}).done(function(data){
 								if(data.trim()=='u'){ // success
@@ -508,18 +514,18 @@
 										$(this).remove();
 									});
 								}else{ // failed to delete
-									$('#modaltext').html('AAAAAAAAAAHHHHHHHHHH!!!  *crash* *fire* *chaos*<br><br>Something just went horribly wrong.');
+									$('#modaltext').html('AAAAAAAAAAHHHHHHHHHH!!!  *crash* *fire* *chaos*<br><br><?php echo __("Something just went horribly wrong."); ?>');
 									$('#modal').dialog('option','buttons',cancelbutton);
 								}
 							});
 						}
 					}
 					var cancelbutton={
-						Cancel: function(){
+						"<?php echo __("Cancel"); ?>": function(){
 							$(this).dialog("destroy");
 						}
 					}
-					var modal=$('<div />', {id: 'modal', title: 'Media Type Delete Override'}).html('<div id="modaltext">this code is in use somewhere. add a modal requesting permission to remove this record and all associated entries<select id="replaceme"></select></div>').dialog({
+<?php echo "					var modal=$('<div />', {id: 'modal', title: '".__("Media Type Delete Override")."'}).html('<div id=\"modaltext\">".__("This media type is in use somewhere. Select an alternate type to assign to all the records to or choose clear all.")."<select id=\"replaceme\"></select></div>').dialog({"; ?>
 						dialogClass: 'no-close',
 						appendTo: 'body',
 						modal: true,
@@ -658,7 +664,7 @@
 						});
 					}else{
 						var defaultbutton={
-							"Clear all": function(){
+							"<?php echo __("Clear all"); ?>": function(){
 								$.post('',{cid: rowobject.find('div:nth-child(2) input').attr('data'),cc: '', ccdn: '', clear: ''}).done(function(data){
 									if(data.trim()=='u'){ // success
 										$('#modal').dialog("destroy");
@@ -667,14 +673,14 @@
 											$(this).remove();
 										});
 									}else{ // failed to delete
-										$('#modaltext').html('AAAAAAAAAAHHHHHHHHHH!!!  *crash* *fire* *chaos*<br><br>Something just went horribly wrong.');
+										$('#modaltext').html('AAAAAAAAAAHHHHHHHHHH!!!  *crash* *fire* *chaos*<br><br><?php echo __("Something just went horribly wrong."); ?>');
 										$('#modal').dialog('option','buttons',cancelbutton);
 									}
 								});
 							}
 						}
 						var replacebutton={
-							"Replace": function(){
+							"<?php echo __("Replace"); ?>": function(){
 								// send command to replace all connections with x
 								$.post('',{cid: rowobject.find('div:nth-child(2) input').attr('data'),cc: '', ccdn: '', change: $('#modal select').val()}).done(function(data){
 									if(data.trim()=='u'){ // success
@@ -687,18 +693,18 @@
 										// color so they will display the new color
 										$('#mediatypes > div ~ div:not(:last-child) input').val('').change();
 									}else{ // failed to delete
-										$('#modaltext').html('AAAAAAAAAAHHHHHHHHHH!!!  *crash* *fire* *chaos*<br><br>Something just went horribly wrong.');
+										$('#modaltext').html('AAAAAAAAAAHHHHHHHHHH!!!  *crash* *fire* *chaos*<br><br><?php echo __("Something just went horribly wrong."); ?>');
 										$('#modal').dialog('option','buttons',cancelbutton);
 									}
 								});
 							}
 						}
 						var cancelbutton={
-							Cancel: function(){
+							"<?php echo __("Cancel"); ?>": function(){
 								$(this).dialog("destroy");
 							}
 						}
-						var modal=$('<div />', {id: 'modal', title: 'Code Delete Override'}).html('<div id="modaltext">This code is in use somewhere. You can either choose to clear all instances of this color being used or choose to have them replaced with another color. <select id="replaceme"></select></div>').dialog({
+<?php echo "						var modal=$('<div />', {id: 'modal', title: '".__("Code Delete Override")."'}).html('<div id=\"modaltext\">".__("This code is in use somewhere. You can either choose to clear all instances of this color being used or choose to have them replaced with another color.")." <select id=\"replaceme\"></select></div>').dialog({"; ?>
 							dialogClass: 'no-close',
 							appendTo: 'body',
 							modal: true,
@@ -801,7 +807,6 @@
 			}
 			bindrow($(this).parent('div'));
 		});
-
 
 		// Reporting - Utilities
 
@@ -1157,12 +1162,12 @@ echo '<div class="main">
 			<div class="table" id="mediatypes">
 				<div>
 					<div></div>
-					<div>Media Type</div>
-					<div>Default Color</div>
+					<div>',__("Media Type"),'</div>
+					<div>',__("Default Color"),'</div>
 				</div>
 				',$mediatypes,'
 				<div>
-					<div id="newline"><img alt="add new row" src="images/add.gif"></div>
+					<div id="newline"><img title="',__("Add new row"),'" src="images/add.gif"></div>
 					<div><input type="text" name="mediatype[]"></div>
 					<div>',$colorselector,'</div>
 				</div>
@@ -1171,12 +1176,12 @@ echo '<div class="main">
 			<div class="table" id="cablecolor">
 				<div>
 					<div></div>
-					<div>Color</div>
-					<div>Default Note</div>
+					<div>',__("Color"),'</div>
+					<div>',__("Default Note"),'</div>
 				</div>
 				',$cablecolors,'
 				<div>
-					<div id="newline"><img alt="add new row" src="images/add.gif"></div>
+					<div id="newline"><img title="',__("Add new row"),'" src="images/add.gif"></div>
 					<div><input type="text" name="colorcode[]"></div>
 					<div><input type="text" name="ccdefaulttext[]"></div>
 				</div>

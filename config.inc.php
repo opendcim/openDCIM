@@ -23,7 +23,7 @@ class Config{
 		return;
 	}
 
-	function UpdateConfig($db){
+	function UpdateConfig($db=null){
 		global $dbh;
 		
 		foreach($this->ParameterArray as $key=>$value){
