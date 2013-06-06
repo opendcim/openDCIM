@@ -29,18 +29,6 @@
 </style>";
 		}
 	}
-	$height+=60; //Offset for text on header
-	$width+=10; //Don't remember why I need this
-
-	// Necessary for IE layout bug where it wants to make the mapsize $width * 10 for whatever crazy reason
-	// Base sizes for calculations
-	// 95px for mode buttons
-	// 691px for header 
-	// 1030px for page
-	if($width>800){
-		$offset=($width-800);
-		$screenadjustment="<style type=\"text/css\">div.center > div{width:".($offset+800)."px;} div#mapadjust{width:".($offset+1030)."px;} #mapadjust div.heading > div{width:".($offset+691)."px;} #mapadjust div.heading > div + div{width:95px;}</style>\n";
-	}
 	// If no mapfile is set then we don't need the buttons to control drawing the map.  Adjust the CSS to hide them and make the heading centered
 	if(strlen($dc->DrawingFileName) <1 || !file_exists("drawings/$dc->DrawingFileName")){
 		$screenadjustment="<style type=\"text/css\">.dcstats .heading > div { width: 100% !important;} .dcstats .heading > div + div { display: none; }</style>";
@@ -120,29 +108,37 @@ echo '<div class="main">
   </div> <!-- END div.table -->
   <div class="table border">
   <div>
-        <div>',__("Raw Wattage"),'</div>
-        <div>',sprintf("%7d ".__("Watts"),$dcStats["TotalWatts"]),'</div>
+        <div>',__("Computed Wattage"),'</div>
+        <div>',sprintf("%7d %s", $dcStats["ComputedWatts"], __("Watts")),'</div>
   </div>
   <div>
-        <div>',__("BTU Computation from Watts"),'</div>
-        <div>',sprintf("%8d ".__("BTU"),$dcStats["TotalWatts"]*3.412 ),'</div>
+		<div>',__("Measured Wattage"), '</div>
+		<div>',sprintf("%7d %s", $dcStats["MeasuredWatts"], __("Watts")),'</div>
+  </div>
+  <div>
+		<div>',__("Design Maximum (kW)"),'</div>
+		<div>',sprintf("%7d kW",$dc->MaxkW ),'</div>
+  </div>
+  <div>
+        <div>',__("BTU Computation from Computed Watts"),'</div>
+        <div>',sprintf("%8d ".__("BTU"),$dcStats["ComputedWatts"]*3.412 ),'</div>
   </div>
   <div>
         <div>',__("Data Center Size"),'</div>
-        <div>', sprintf("%8d %s", $dc->SquareFootage, $vol), '</div>
+        <div>',sprintf("%8d %s",$dc->SquareFootage, $vol),'</div>
   </div>
   <div>
-        <div>', $density,'</div>
-        <div>',(($dc->SquareFootage)?sprintf("%8d ".__("Watts"),$dcStats["TotalWatts"]/$dc->SquareFootage):"0 ".__("Watts")),'</div>
+        <div>',$density,'</div>
+        <div>',(($dc->SquareFootage)?sprintf("%8d ".__("Watts"),$dcStats["ComputedWatts"]/$dc->SquareFootage):"0 ".__("Watts")),'</div>
   </div>
   <div>
-        <div>',__("Minimum Cooling Tonnage Required"),'</div>
-        <div>',sprintf("%7d ".__("Tons"),$dcStats["TotalWatts"]*3.412*1.15/12000),'</div>
+        <div>',__("Minimum Cooling Tonnage (Based on Computed Watts)"),'</div>
+        <div>',sprintf("%7d ".__("Tons"),$dcStats["ComputedWatts"]*3.412*1.15/12000),'</div>
   </div>
 </div> <!-- END div.table -->
 </div>';
 
-  print $dc->MakeImageMapNoLinks( $facDB );
+  print $dc->MakeImageMap('hidethelinks');
 ?>
 </div></div>
 </div><!-- END div.main -->

@@ -307,7 +307,10 @@ class DataCenter {
 		return;
 	}
 	
-	function MakeImageMap() {
+	function MakeImageMap($nolinks=null) {
+		global $dbh;
+
+		$this->MakeSafe();
 		$mapHTML="";
 	 
 		if(strlen($this->DrawingFileName)>0){
@@ -319,13 +322,14 @@ class DataCenter {
 				$mapHTML.="<img src=\"css/blank.gif\" usemap=\"#datacenter\" width=\"$width\" height=\"$height\" alt=\"clearmap over canvas\">\n";
 				$mapHTML.="<map name=\"datacenter\">\n";
 				 
-				$selectSQL="select * from fac_Cabinet where DataCenterID=\"" . intval($this->DataCenterID) . "\"";
-				$result = mysql_query($selectSQL);
+				$sql="select * from fac_Cabinet where DataCenterID=\"" . intval($this->DataCenterID) . "\"";
 				 
-				while($row=mysql_fetch_array( $result ) ) {
-					$mapHTML.="<area href=\"cabnavigator.php?cabinetid={$row["CabinetID"]}\" shape=\"rect\"";
-					$mapHTML.=" coords=\"{$row["MapX1"]},{$row["MapY1"]},{$row["MapX2"]},{$row["MapY2"]}\"";
-					$mapHTML.=" alt=\"{$row["Location"]}\" title=\"{$row["Location"]}\">\n";
+				if(is_null($nolinks)){
+					foreach($dbh->query($sql) as $row){
+						$mapHTML.="<area href=\"cabnavigator.php?cabinetid={$row["CabinetID"]}\" shape=\"rect\"";
+						$mapHTML.=" coords=\"{$row["MapX1"]},{$row["MapY1"]},{$row["MapX2"]},{$row["MapY2"]}\"";
+						$mapHTML.=" alt=\"{$row["Location"]}\" title=\"{$row["Location"]}\">\n";
+					}
 				}
 				 
 				$mapHTML.="</map>\n";
@@ -337,36 +341,10 @@ class DataCenter {
 		return $mapHTML;
 	}
 
-	function MakeImageMapNoLinks( $db ) {
-	 $mapHTML = "";
-	 
-	 if ( strlen($this->DrawingFileName) > 0 ) {
-	   $mapfile = "drawings/" . $this->DrawingFileName;
-	   
-	   if ( file_exists( $mapfile ) ) {
-	     list($width, $height, $type, $attr)=getimagesize($mapfile);
-	     $mapHTML.="<div class=\"canvas\">\n";
-		 $mapHTML.="<img src=\"css/blank.gif\" usemap=\"#datacenter\" width=\"$width\" height=\"$height\" alt=\"clearmap over canvas\">\n";
-	     $mapHTML.="<map name=\"datacenter\">\n";
-	     
-	     $selectSQL="select * from fac_Cabinet where DataCenterID=\"" . intval($this->DataCenterID) . "\"";
-		 $result = mysql_query( $selectSQL, $db );
-	     
-	     while ( $cabRow = mysql_fetch_array( $result ) ) {
-	       $mapHTML.="<area href=\"#\" shape=\"rect\" coords=\"" . $cabRow["MapX1"] . ", " . $cabRow["MapY1"] . ", " . $cabRow["MapX2"] . ", " . $cabRow["MapY2"] . "\" alt=\"".$cabRow["Location"]."\" title=\"".$cabRow["Location"]."\">\n";
-	     }
-	     
-	     $mapHTML.="</map>\n";
-	     $mapHTML.="<canvas id=\"mapCanvas\" width=\"$width\" height=\"$height\"></canvas>\n";
-             
-	     
-	     $mapHTML .= "</div>\n";
-	    }
-	 }
-	 return $mapHTML;
-	}
-
 	function DrawCanvas(){
+		global $dbh;
+
+		$this->MakeSafe();
 		$script="";	
 		// check to see if map was set
 		if(strlen($this->DrawingFileName)){
@@ -405,11 +383,10 @@ class DataCenter {
 				$space.="		context.globalCompositeOperation = 'destination-over';\n		var img=new Image();\n		img.onload=function(){\n			context.drawImage(img,0,0);\n		}\n		img.src=\"$mapfile\";\n";
 				$weight.="		context.globalCompositeOperation = 'destination-over';\n		var img=new Image();\n		img.onload=function(){\n			context.drawImage(img,0,0);\n		}\n		img.src=\"$mapfile\";\n";
 				$power.="		context.globalCompositeOperation = 'destination-over';\n		var img=new Image();\n		img.onload=function(){\n			context.drawImage(img,0,0);\n		}\n		img.src=\"$mapfile\";\n";
-				$selectSQL="select * from fac_Cabinet where DataCenterID=\"".intval($this->DataCenterID)."\"";
-				$result=mysql_query($selectSQL);
+				$sql="SELECT * FROM fac_Cabinet WHERE DataCenterID=\"$this->DataCenterID\"";
 				
 				// read all cabinets and draw image map
-				while($cabRow=mysql_fetch_array($result)){
+				foreach($dbh->query($sql) as $cabRow){
 					$cab->CabinetID=$cabRow["CabinetID"];
 					$cab->GetCabinet();
 					$dev->Cabinet=$cab->CabinetID;
