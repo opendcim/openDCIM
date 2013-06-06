@@ -87,6 +87,7 @@ textarea {white-space: pre;word-wrap: break-word;}
 	padding:5px 0;
 	background:<?php echo $config->ParameterArray['HeaderColor']; ?> url(../images/<?php echo $config->ParameterArray['PDFLogoFile']; ?>) no-repeat center center;
 	height:66px;
+	position: relative;
 }
 
 /* Configuration Page */

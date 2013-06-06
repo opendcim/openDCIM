@@ -31,7 +31,6 @@
 		// Position the arrow
 		var inputpos=inputobj.position();
 		var arrow=$('<div />').addClass('text-arrow');
-		arrow.css({'top': inputpos.top+'px', 'left': inputpos.left+inputobj.width()-(arrow.width()/2)});
 		arrow.click(function(){
 			inputobj.autocomplete("search", "");
 		});
@@ -52,6 +51,7 @@
 				$(this).autocomplete("widget").css({'width': inputobj.width()+6+'px'});
 			}
 		}).next().after(arrow);
+		arrow.css({'top': inputpos.top+'px', 'left': inputpos.left+inputobj.width()-(arrow.width()/2)});
 	}
 	addlookup($('#searchname'),'name');
 	$('#searchadv ~ select[name="key"]').change(function(){
