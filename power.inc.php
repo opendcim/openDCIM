@@ -704,7 +704,7 @@ class PowerDistribution {
 		
 		$sql="DELETE FROM fac_PowerDistribution WHERE PDUID=$this->PDUID;";
 		if(!$dbh->exec($sql)){
-			// Something went sound and this didn't delete.
+			// Something went south and this didn't delete.
 			return false;
 		}else{
 			return true;
