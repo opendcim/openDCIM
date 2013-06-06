@@ -131,6 +131,8 @@ $("#sidebar .nav a").each(function(){
 	}
 });
 function resize(){
+	// page width is calcuated different between ie, chrome, and ff
+	$('#header').width(Math.floor($(window).outerWidth()-(16*2))); //16px = 1em per side padding
 	var widesttab=0;
 	// make all the tabs on the config page the same width
 	$('#configtabs > ul ~ div').each(function(){
@@ -159,6 +161,13 @@ function resize(){
 }
 $(document).ready(function(){
 	resize();
+	// redraw the screen if the window size changes for some reason
+	$(window).resize(function(){
+		if(this.resizeTO){ clearTimeout(this.resizeTO);}
+		this.resizeTO=setTimeout(function(){
+			resize();resize();
+		}, 500);
+	});
 	$('#header').append($('.langselect'));
 	var top = (($("#header").height() / 2)-($(".langselect").height() / 2));
 	$(".langselect").css({"top": top+"px", "right": "40px", "z-index": "99", "position": "absolute"}).removeClass('hide').appendTo("#header");
