@@ -21,7 +21,7 @@
 	$status="";
 
 	if(isset($_REQUEST["cabrowid"])) {
-		$cabrow->ZoneID=(isset($_POST['cabrowid'])?$_POST['cabrowid']:$_GET['cabrowid']);
+		$cabrow->CabRowID=(isset($_POST['cabrowid'])?$_POST['cabrowid']:$_GET['cabrowid']);
 		$cabrow->GetCabRow($facDB);
 		
 		if(isset($_POST["action"]) && (($_POST["action"]=="Create") || ($_POST["action"]=="Update"))){
@@ -31,8 +31,8 @@
 			if($_POST["action"]=="Create"){
 				$cabrow->CreateCabRow($facDB);
 			}else{
-				$status=__("Updated");
-				$cabrow->UpdateCabRow($facDB);
+				if ($cabrow->UpdateCabRow($facDB))
+					$status=__("Updated");
 			}
 		}
 		$formpatch="?cabrowid={$_REQUEST['cabrowid']}";
