@@ -23,97 +23,6 @@
 	For further details on the license, see http://www.gnu.org/licenses
 */
 
-
-function CabinetRowToObject($dbRow){
-	/*
-	 * Generic function that will take any row returned from the fac_Cabinet
-	 * table and convert it to an object for use in array or other
-	 */
-	$cab=new Cabinet();
-	$cab->CabinetID=$dbRow["CabinetID"];
-	$cab->DataCenterID=$dbRow["DataCenterID"];
-	$cab->Location=$dbRow["Location"];
-	$cab->AssignedTo=$dbRow["AssignedTo"];
-	$cab->ZoneID=$dbRow["ZoneID"];
-	$cab->CabRowID=$dbRow["CabRowID"];
-	$cab->CabinetHeight=$dbRow["CabinetHeight"];
-	$cab->Model=$dbRow["Model"];
-	$cab->Keylock=$dbRow["Keylock"];
-	$cab->MaxKW=$dbRow["MaxKW"];
-	$cab->MaxWeight=$dbRow["MaxWeight"];
-	$cab->InstallationDate=$dbRow["InstallationDate"];
-	$cab->SensorIPAddress=$dbRow["SensorIPAddress"];
-	$cab->SensorCommunity=$dbRow["SensorCommunity"];
-	$cab->TempSensorOID=$dbRow["TempSensorOID"];
-	$cab->HumiditySensorOID=$dbRow["HumiditySensorOID"];
-	$cab->MapX1=$dbRow["MapX1"];
-	$cab->MapY1=$dbRow["MapY1"];
-	$cab->MapX2=$dbRow["MapX2"];
-	$cab->MapY2=$dbRow["MapY2"];
-	$cab->Notes=$dbRow["Notes"];
-
-	return $cab;
-}
-
-function DeviceRowToObject($dbRow){
-	/*
-	 * Generic function that will take any row returned from the fac_Devices
-	 * table and convert it to an object for use in array or other
-	 */
-
-	$dev=new Device();
-	$dev->DeviceID=$dbRow["DeviceID"];
-	$dev->Label=$dbRow["Label"];
-	$dev->SerialNo=$dbRow["SerialNo"];
-	$dev->AssetTag=$dbRow["AssetTag"];
-	$dev->PrimaryIP=$dbRow["PrimaryIP"];
-	$dev->SNMPCommunity=$dbRow["SNMPCommunity"];
-	$dev->ESX=$dbRow["ESX"];
-	$dev->Owner=$dbRow["Owner"];
-	// Suppressing errors on the following two because they can be null and that generates an apache error
-	@$dev->EscalationTimeID=$dbRow["EscalationTimeID"];
-	@$dev->EscalationID=$dbRow["EscalationID"];
-	$dev->PrimaryContact=$dbRow["PrimaryContact"];
-	$dev->Cabinet=$dbRow["Cabinet"];
-	$dev->Position=$dbRow["Position"];
-	$dev->Height=$dbRow["Height"];
-	$dev->Ports=$dbRow["Ports"];
-	$dev->FirstPortNum=$dbRow["FirstPortNum"];
-	$dev->TemplateID=$dbRow["TemplateID"];
-	$dev->NominalWatts=$dbRow["NominalWatts"];
-	$dev->PowerSupplyCount=$dbRow["PowerSupplyCount"];
-	$dev->DeviceType=$dbRow["DeviceType"];
-	$dev->ChassisSlots=$dbRow["ChassisSlots"];
-	$dev->RearChassisSlots=$dbRow["RearChassisSlots"];
-	$dev->ParentDevice=$dbRow["ParentDevice"];
-	$dev->MfgDate=$dbRow["MfgDate"];
-	$dev->InstallDate=$dbRow["InstallDate"];
-	$dev->WarrantyCo=$dbRow["WarrantyCo"];
-	@$dev->WarrantyExpire=$dbRow["WarrantyExpire"];
-	$dev->Notes=$dbRow["Notes"];
-	$dev->Reservation=$dbRow["Reservation"];
-
-	return $dev;
-}
-
-function ESXRowToObject($dbRow){
-	/*
-	 * Generic function that will take any row returned from the fac_VMInventory
-	 * table and convert it to an object for use in array or other
-	 */
-
-	$vm=new ESX();
-	$vm->VMIndex=$dbRow["VMIndex"];
-	$vm->DeviceID=$dbRow["DeviceID"];
-	$vm->LastUpdated=$dbRow["LastUpdated"];
-	$vm->vmID=$dbRow["vmID"];
-	$vm->vmName=$dbRow["vmName"];
-	$vm->vmState=$dbRow["vmState"];
-	$vm->Owner=$dbRow["Owner"];
-
-	return $vm;
-}
-
 class Cabinet {
 	/* Cabinet:		The workhorse logical container for DCIM.  This can be a 2-post rack, a 4-post open rack,
 					or an enclosed cabinet.  The height is variable.  Devices are attached to cabinets, and
@@ -164,6 +73,37 @@ class Cabinet {
 		$this->MapX2 = intval( $this->MapX2 );
 		$this->MapY2 = intval( $this->MapY2 );
 		$this->Notes = mysql_real_escape_string( $this->Notes );
+	}
+	
+	static function CabinetRowToObject($dbRow){
+		/*
+		 * Generic function that will take any row returned from the fac_Cabinet
+		 * table and convert it to an object for use in array or other
+		 */
+		$cab=new Cabinet();
+		$cab->CabinetID=$dbRow["CabinetID"];
+		$cab->DataCenterID=$dbRow["DataCenterID"];
+		$cab->Location=$dbRow["Location"];
+		$cab->AssignedTo=$dbRow["AssignedTo"];
+		$cab->ZoneID=$dbRow["ZoneID"];
+		$cab->CabRowID=$dbRow["CabRowID"];
+		$cab->CabinetHeight=$dbRow["CabinetHeight"];
+		$cab->Model=$dbRow["Model"];
+		$cab->Keylock=$dbRow["Keylock"];
+		$cab->MaxKW=$dbRow["MaxKW"];
+		$cab->MaxWeight=$dbRow["MaxWeight"];
+		$cab->InstallationDate=$dbRow["InstallationDate"];
+		$cab->SensorIPAddress=$dbRow["SensorIPAddress"];
+		$cab->SensorCommunity=$dbRow["SensorCommunity"];
+		$cab->TempSensorOID=$dbRow["TempSensorOID"];
+		$cab->HumiditySensorOID=$dbRow["HumiditySensorOID"];
+		$cab->MapX1=$dbRow["MapX1"];
+		$cab->MapY1=$dbRow["MapY1"];
+		$cab->MapX2=$dbRow["MapX2"];
+		$cab->MapY2=$dbRow["MapY2"];
+		$cab->Notes=$dbRow["Notes"];
+
+		return $cab;
 	}
 	
 	function CreateCabinet( $db = null ) {
@@ -274,7 +214,7 @@ class Cabinet {
 
 		foreach ( $dbh->query( $sql ) as $cabinetRow ) {
 			$cabID=sizeof($cabinetList);
-			$cabinetList[$cabID]=CabinetRowToObject($cabinetRow);
+			$cabinetList[$cabID]=Cabinet::CabinetRowToObject($cabinetRow);
 		}
 
 		return $cabinetList;
@@ -289,7 +229,7 @@ class Cabinet {
 
 		foreach ( $dbh->query( $sql ) as $cabinetRow ) {
 			$cabID=sizeof($cabinetList);
-			$cabinetList[$cabID]=CabinetRowToObject($cabinetRow);
+			$cabinetList[$cabID]=Cabinet::CabinetRowToObject($cabinetRow);
 		}
 
 		return $cabinetList;
@@ -511,7 +451,7 @@ class Cabinet {
 
 		foreach ( $dbh->query( $sql ) as $cabinetRow ){
 			$cabID=sizeof($cabinetList);
-			$cabinetList[$cabID]=CabinetRowToObject($cabinetRow);
+			$cabinetList[$cabID]=Cabinet::CabinetRowToObject($cabinetRow);
 		}
 
 		return $cabinetList;
@@ -526,7 +466,7 @@ class Cabinet {
 
 		foreach ( $dbh->query( $sql ) as $cabinetRow ) {
 			$cabID=sizeof($cabinetList);
-			$cabinetList[$cabID]=CabinetRowToObject($cabinetRow);
+			$cabinetList[$cabID]=Cabinet::CabinetRowToObject($cabinetRow);
 		}
 
 		return $cabinetList;
@@ -541,7 +481,7 @@ class Cabinet {
 
 		foreach ( $dbh->query( $sql ) as $cabinetRow ) {
 			$cabID=sizeof($cabinetList);
-			$cabinetList[$cabID]=CabinetRowToObject($cabinetRow);
+			$cabinetList[$cabID]=Cabinet::CabinetRowToObject($cabinetRow);
 		}
 		return $cabinetList;
 	}
@@ -1084,6 +1024,48 @@ class Device {
 		$this->Notes=addslashes(trim($this->Notes));
 		$this->Reservation=intval($this->Reservation);
 	}
+	
+	static function DeviceRowToObject($dbRow){
+		/*
+		 * Generic function that will take any row returned from the fac_Devices
+		 * table and convert it to an object for use in array or other
+		 */
+
+		$dev=new Device();
+		$dev->DeviceID=$dbRow["DeviceID"];
+		$dev->Label=$dbRow["Label"];
+		$dev->SerialNo=$dbRow["SerialNo"];
+		$dev->AssetTag=$dbRow["AssetTag"];
+		$dev->PrimaryIP=$dbRow["PrimaryIP"];
+		$dev->SNMPCommunity=$dbRow["SNMPCommunity"];
+		$dev->ESX=$dbRow["ESX"];
+		$dev->Owner=$dbRow["Owner"];
+		// Suppressing errors on the following two because they can be null and that generates an apache error
+		@$dev->EscalationTimeID=$dbRow["EscalationTimeID"];
+		@$dev->EscalationID=$dbRow["EscalationID"];
+		$dev->PrimaryContact=$dbRow["PrimaryContact"];
+		$dev->Cabinet=$dbRow["Cabinet"];
+		$dev->Position=$dbRow["Position"];
+		$dev->Height=$dbRow["Height"];
+		$dev->Ports=$dbRow["Ports"];
+		$dev->FirstPortNum=$dbRow["FirstPortNum"];
+		$dev->TemplateID=$dbRow["TemplateID"];
+		$dev->NominalWatts=$dbRow["NominalWatts"];
+		$dev->PowerSupplyCount=$dbRow["PowerSupplyCount"];
+		$dev->DeviceType=$dbRow["DeviceType"];
+		$dev->ChassisSlots=$dbRow["ChassisSlots"];
+		$dev->RearChassisSlots=$dbRow["RearChassisSlots"];
+		$dev->ParentDevice=$dbRow["ParentDevice"];
+		$dev->MfgDate=$dbRow["MfgDate"];
+		$dev->InstallDate=$dbRow["InstallDate"];
+		$dev->WarrantyCo=$dbRow["WarrantyCo"];
+		@$dev->WarrantyExpire=$dbRow["WarrantyExpire"];
+		$dev->Notes=$dbRow["Notes"];
+		$dev->Reservation=$dbRow["Reservation"];
+
+		return $dev;
+	}
+
 
 	function CreateDevice( $db = null ) {
 		global $dbh;
@@ -1398,7 +1380,7 @@ class Device {
 		$deviceList = array();
 
 		foreach ( $dbh->query( $sql ) as $deviceRow ) {
-			$deviceList[$deviceRow["DeviceID"]]=DeviceRowToObject($deviceRow);
+			$deviceList[$deviceRow["DeviceID"]]=Device::DeviceRowToObject($deviceRow);
 		}
 		
 		return $deviceList;
@@ -1414,7 +1396,7 @@ class Device {
 		$childList = array();
 
 		foreach($dbh->query($sql) as $row){
-			$deviceList[$row["DeviceID"]]=DeviceRowToObject($row);
+			$deviceList[$row["DeviceID"]]=Device::DeviceRowToObject($row);
 		}
 		
 		return $childList;
@@ -1428,7 +1410,7 @@ class Device {
 		$parentList = array();
 
 		foreach($dbh->query($sql) as $row){
-			$deviceList[$row["DeviceID"]]=DeviceRowToObject($row);
+			$deviceList[$row["DeviceID"]]=Device::DeviceRowToObject($row);
 		}
 		
 		return $parentList;
@@ -1444,7 +1426,7 @@ class Device {
 		$deviceList = array();
 
 		foreach($dbh->query($sql) as $deviceRow){
-			$deviceList[$deviceRow["DeviceID"]]=DeviceRowToObject($deviceRow);
+			$deviceList[$deviceRow["DeviceID"]]=Device::DeviceRowToObject($deviceRow);
 		}
 
 		return $deviceList;
@@ -1473,7 +1455,7 @@ class Device {
 		$deviceList=array();
 	  
 		foreach($dbh->query($sql) as $deviceRow){
-			$deviceList[$deviceRow["DeviceID"]]=DeviceRowToObject($deviceRow);
+			$deviceList[$deviceRow["DeviceID"]]=Device::DeviceRowToObject($deviceRow);
 		}
 
 		return $deviceList;
@@ -1487,7 +1469,7 @@ class Device {
 		$panelList=array();
 
 		foreach($dbh->query($sql) as $row){
-			$panelList[$row["DeviceID"]]=DeviceRowToObject($row);
+			$panelList[$row["DeviceID"]]=Device::DeviceRowToObject($row);
 		}
 		
 		return $panelList;
@@ -1553,7 +1535,7 @@ class Device {
 		$deviceList = array();
 
 		foreach ( $dbh->query( $sql ) as $deviceRow ) {
-			$deviceList[$deviceRow["DeviceID"]]=DeviceRowToObject($deviceRow);
+			$deviceList[$deviceRow["DeviceID"]]=Device::DeviceRowToObject($deviceRow);
 		}
 
 		return $deviceList;
@@ -1572,7 +1554,7 @@ class Device {
 		$deviceList=array();
 
 		foreach($dbh->query($sql) as $deviceRow){
-			$deviceList[$deviceRow["DeviceID"]]=DeviceRowToObject($deviceRow);
+			$deviceList[$deviceRow["DeviceID"]]=Device::DeviceRowToObject($deviceRow);
 		}
 
 		return $deviceList;
@@ -1586,7 +1568,7 @@ class Device {
 		$deviceList = array();
 
 		foreach($dbh->query($sql) as $deviceRow){ 
-			$deviceList[$deviceRow["DeviceID"]]=DeviceRowToObject($deviceRow);
+			$deviceList[$deviceRow["DeviceID"]]=Device::DeviceRowToObject($deviceRow);
 		}
 
 		return $deviceList;
@@ -1602,7 +1584,7 @@ class Device {
 		$deviceList = array();
 
 		foreach ( $dbh->query( $sql ) as $deviceRow ) {
-			$deviceList[$deviceRow["DeviceID"]]=DeviceRowToObject($deviceRow);
+			$deviceList[$deviceRow["DeviceID"]]=Device::DeviceRowToObject($deviceRow);
 		}
 
 		return $deviceList;
@@ -1618,7 +1600,7 @@ class Device {
 		$deviceList=array();
 
 		foreach($dbh->query($sql) as $deviceRow){
-			$deviceList[$deviceRow["DeviceID"]]=DeviceRowToObject($deviceRow);
+			$deviceList[$deviceRow["DeviceID"]]=Device::DeviceRowToObject($deviceRow);
 		}
 
 		return $deviceList;
@@ -1704,7 +1686,7 @@ class Device {
 		$deviceList = array();
 
 		foreach($dbh->query($sql) as $deviceRow){
-			$deviceList[$deviceRow["DeviceID"]]=DeviceRowToObject($deviceRow);
+			$deviceList[$deviceRow["DeviceID"]]=Device::DeviceRowToObject($deviceRow);
 		}
 		
 		return $deviceList;
@@ -2035,14 +2017,32 @@ class ESX {
 				Any other virtualization technology that supports SNMP queries should be easy
 				to add.
 	*/
-  var $VMIndex;
-  var $DeviceID;
-  var $LastUpdated;
-  var $vmID;
-  var $vmName;
-  var $vmState;
-  var $Owner;
+	var $VMIndex;
+	var $DeviceID;
+	var $LastUpdated;
+	var $vmID;
+	var $vmName;
+	var $vmState;
+	var $Owner;
   
+	static function ESXRowToObject($dbRow){
+		/*
+		 * Generic function that will take any row returned from the fac_VMInventory
+		 * table and convert it to an object for use in array or other
+		 */
+
+		$vm=new ESX();
+		$vm->VMIndex=$dbRow["VMIndex"];
+		$vm->DeviceID=$dbRow["DeviceID"];
+		$vm->LastUpdated=$dbRow["LastUpdated"];
+		$vm->vmID=$dbRow["vmID"];
+		$vm->vmName=$dbRow["vmName"];
+		$vm->vmState=$dbRow["vmState"];
+		$vm->Owner=$dbRow["Owner"];
+
+		return $vm;
+	}
+
   function EnumerateVMs($dev,$debug=false){
     $community=$dev->SNMPCommunity;
     $serverIP=$dev->PrimaryIP;
@@ -2138,7 +2138,7 @@ class ESX {
 		$vmCount = 0;
   
 		while($vmRow=mysql_fetch_array($result)){
-			$vmList[$vmCount]=ESXRowToObject($vmRow);
+			$vmList[$vmCount]=ESX::ESXRowToObject($vmRow);
 			$vmCount++;
 		}
     
@@ -2153,7 +2153,7 @@ class ESX {
 		$vmCount = 0;
   
 		while($vmRow=mysql_fetch_array($result)){
-			$vmList[$vmCount]=ESXRowToObject($vmRow);
+			$vmList[$vmCount]=ESX::ESXRowToObject($vmRow);
 			$vmCount++;
 		}
    
@@ -2168,7 +2168,7 @@ class ESX {
 		$vmCount = 0;
   
 		while($vmRow=mysql_fetch_array($result)){
-			$vmList[$vmCount]=ESXRowToObject($vmRow);
+			$vmList[$vmCount]=ESX::ESXRowToObject($vmRow);
 			$vmCount++;
 		}
    
@@ -2183,7 +2183,7 @@ class ESX {
 		$vmCount = 0;
   
 		while($vmRow=mysql_fetch_array($result)){
-			$vmList[$vmCount]=ESXRowToObject($vmRow);
+			$vmList[$vmCount]=ESX::ESXRowToObject($vmRow);
 			$vmCount++;
 		}
 
@@ -2198,7 +2198,7 @@ class ESX {
 		$vmCount = 0;
   
 		while($vmRow=mysql_fetch_array($result)){
-			$vmList[$vmCount]=ESXRowToObject($vmRow);
+			$vmList[$vmCount]=ESX::ESXRowToObject($vmRow);
 			$vmCount++;
 		}
 
@@ -2213,7 +2213,7 @@ class ESX {
 		$vmCount = 0;
   
 		while($vmRow=mysql_fetch_array($result)){
-			$vmList[$vmCount]=ESXRowToObject($vmRow);
+			$vmList[$vmCount]=ESX::ESXRowToObject($vmRow);
 			$vmCount++;
 		}
 
@@ -2570,7 +2570,7 @@ class PatchConnection {
 		$tmpDev = new Device();
 		$tmpDev->DeviceID = $this->PanelDeviceID;
 		$tmpDev->GetDevice( $db );
-		$conList=array();
+		$connList=array();
 		
 		for ( $i = 1; $i <= $tmpDev->Ports; $i++ ) {
 			$connList[$i] = new PatchConnection();
