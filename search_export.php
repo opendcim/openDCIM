@@ -88,7 +88,7 @@
 			
 			if($row["DeviceType"]=="Chassis"){
 				// Find all of the children!
-				$childList=$dev->GetDeviceChildren($facDB);
+				$childList=$dev->GetDeviceChildren();
 				
 				foreach($childList as $child){
 					$cdate=date("d M Y",strtotime($child->InstallDate));

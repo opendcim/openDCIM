@@ -293,7 +293,7 @@ function get_cabinet_owner_color($cabinet, &$deptswithcolor) {
 		
 		// Chassis devices shouldn't ever be 0u in height
 		if($device->DeviceType=="Chassis"){
-			$childList=$device->GetDeviceChildren($facDB);
+			$childList=$device->GetDeviceChildren();
 			$childTempl=new DeviceTemplate();
 			foreach($childList as $childDev){
 				$childTempl->TemplateID=$childDev->TemplateID;

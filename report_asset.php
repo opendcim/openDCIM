@@ -119,7 +119,7 @@ class PDF extends FPDF {
 		if ( $reportRow["DeviceType"] == "Chassis" ) {
 			$chDev = new Device();
 			$chDev->DeviceID = $reportRow["DeviceID"];
-			$chList = $chDev->GetDeviceChildren( $facDB );
+			$chList = $chDev->GetDeviceChildren();
 			
 			foreach ( $chList as $chRow ) {
 				$pdf->Cell( $cellWidths[0], 6, '', 'LR', 0, 'L', $fill );

@@ -1030,6 +1030,46 @@ class ConnectionPath {
 	
 } //END OF CONNETCIONPATH
 
+function DeviceRowToObject($dbRow){
+	/*
+	 * Generic function that will take any row returned from the fac_devices
+	 * table and convert it to an object for use in array or other
+	 */
+
+	$dev=new Device();
+	$dev->DeviceID=$dbRow["DeviceID"];
+	$dev->Label=$dbRow["Label"];
+	$dev->SerialNo=$dbRow["SerialNo"];
+	$dev->AssetTag=$dbRow["AssetTag"];
+	$dev->PrimaryIP=$dbRow["PrimaryIP"];
+	$dev->SNMPCommunity=$dbRow["SNMPCommunity"];
+	$dev->ESX=$dbRow["ESX"];
+	$dev->Owner=$dbRow["Owner"];
+	// Suppressing errors on the following two because they can be null and that generates an apache error
+	@$dev->EscalationTimeID=$dbRow["EscalationTimeID"];
+	@$dev->EscalationID=$dbRow["EscalationID"];
+	$dev->PrimaryContact=$dbRow["PrimaryContact"];
+	$dev->Cabinet=$dbRow["Cabinet"];
+	$dev->Position=$dbRow["Position"];
+	$dev->Height=$dbRow["Height"];
+	$dev->Ports=$dbRow["Ports"];
+	$dev->FirstPortNum=$dbRow["FirstPortNum"];
+	$dev->TemplateID=$dbRow["TemplateID"];
+	$dev->NominalWatts=$dbRow["NominalWatts"];
+	$dev->PowerSupplyCount=$dbRow["PowerSupplyCount"];
+	$dev->DeviceType=$dbRow["DeviceType"];
+	$dev->ChassisSlots=$dbRow["ChassisSlots"];
+	$dev->RearChassisSlots=$dbRow["RearChassisSlots"];
+	$dev->ParentDevice=$dbRow["ParentDevice"];
+	$dev->MfgDate=$dbRow["MfgDate"];
+	$dev->InstallDate=$dbRow["InstallDate"];
+	$dev->WarrantyCo=$dbRow["WarrantyCo"];
+	@$dev->WarrantyExpire=$dbRow["WarrantyExpire"];
+	$dev->Notes=$dbRow["Notes"];
+	$dev->Reservation=$dbRow["Reservation"];
+
+	return $dev;
+}
 class Device {
 	/*	Device:		Assets within the data center, at the most granular level.  There are three basic
 					groupings of information kept about a device:  asset tracking, virtualization
@@ -1112,21 +1152,21 @@ class Device {
 		$this->AssetTag=transform($this->AssetTag);
 		
 		//Keep weird values out of DeviceType
-		if(!in_array($this->DeviceType,array('Server','Appliance','StorageArray','Switch','Chassis','PatchPanel','PhysicalInfrastructure'))){
+		if(!in_array($this->DeviceType,array('Server','Appliance','Storage Array','Switch','Chassis','Patch Panel','Physical Infrastructure'))){
 			$this->DeviceType="Server";
 		}
 
 		$sql="INSERT INTO fac_Device SET Label=\"$this->Label\", SerialNo=\"$this->SerialNo\", AssetTag=\"$this->AssetTag\", 
-			PrimaryIP=\"$this->PrimaryIP\", SNMPCommunity=\"$this->SNMPCommunity\", ESX=\"$this->ESX\", Owner=\"$this->Owner\", 
-			EscalationTimeID=\"$this->EscalationTimeID\", EscalationID=\"$this->EscalationID\", PrimaryContact=\"$this->PrimaryContact\", 
-			Cabinet=\"$this->Cabinet\", Position=\"$this->Position\", Height=\"$this->Height\", Ports=\"$this->Ports\", 
-			FirstPortNum=\"$this->FirstPortNum\", TemplateID=\"$this->TemplateID\", NominalWatts=\"$this->NominalWatts\", 
-			PowerSupplyCount=\"$this->PowerSupplyCount\", DeviceType=\"$this->DeviceType\", ChassisSlots=\"$this->ChassisSlots\", 
-			RearChassisSlots=\"$this->RearChassisSlots\",ParentDevice=\"$this->ParentDevice\", 
+			PrimaryIP=\"$this->PrimaryIP\", SNMPCommunity=\"$this->SNMPCommunity\", ESX=$this->ESX, Owner=$this->Owner, 
+			EscalationTimeID=$this->EscalationTimeID, EscalationID=$this->EscalationID, PrimaryContact=$this->PrimaryContact, 
+			Cabinet=$this->Cabinet, Position=$this->Position, Height=$this->Height, Ports=$this->Ports, 
+			FirstPortNum=$this->FirstPortNum, TemplateID=$this->TemplateID, NominalWatts=$this->NominalWatts, 
+			PowerSupplyCount=$this->PowerSupplyCount, DeviceType=\"$this->DeviceType\", ChassisSlots=$this->ChassisSlots, 
+			RearChassisSlots=$this->RearChassisSlots,ParentDevice=$this->ParentDevice, 
 			MfgDate=\"".date("Y-m-d", strtotime($this->MfgDate))."\", 
 			InstallDate=\"".date("Y-m-d", strtotime($this->InstallDate))."\", WarrantyCo=\"$this->WarrantyCo\", 
 			WarrantyExpire=\"".date("Y-m-d", strtotime($this->WarrantyExpire))."\", Notes=\"$this->Notes\", 
-			Reservation=\"$this->Reservation\";";
+			Reservation=$this->Reservation;";
 
 		if ( ! $dbh->exec( $sql ) ) {
 			$info = $dbh->errorInfo();
@@ -1165,7 +1205,7 @@ class Device {
 			$tmpdev=new Device();
 			$tmpdev->DeviceID=$this->ParentDevice;
 			$tmpdev->GetDevice($db);
-			$children=$tmpdev->GetDeviceChildren($db);
+			$children=$tmpdev->GetDeviceChildren();
 			if($tmpdev->ChassisSlots>0 || $tmpdev->RearChassisSlots>0){
 				// If we're cloning every child then there is no need to attempt to find empty slots
 				if(is_null($clonedparent)){
@@ -1211,7 +1251,7 @@ class Device {
 
 			// If this is a chassis device then check for children to cloned BEFORE we change the deviceid
 			if($this->DeviceType=="Chassis"){
-				$childList=$this->GetDeviceChildren($db);
+				$childList=$this->GetDeviceChildren();
 			}	
 
 			// And finally create a new device based on the exact same info
@@ -1254,7 +1294,7 @@ class Device {
 		
 		// While the child devices will automatically get moved to storage as part of the UpdateDevice() call above, it won't sever their network connections
 		if ( $this->DeviceType == "Chassis" ) {
-			$childList = $this->GetDeviceChildren( $db );
+			$childList = $this->GetDeviceChildren();
 			foreach ( $childList as $child )
 				$child->MoveToStorage( $db );
 		}
@@ -1298,7 +1338,7 @@ class Device {
 			}
 		}
 		
-		if(($tmpDev->DeviceType=="Switch" || $tmpDev->DeviceType=="PatchPanel") && $tmpDev->DeviceType!=$this->DeviceType){
+		if(($tmpDev->DeviceType=="Switch" || $tmpDev->DeviceType=="Patch Panel") && $tmpDev->DeviceType!=$this->DeviceType){
 			// SUT #417 - Changed a Switch or Patch Panel to something else (even if you change a switch to a Patch Panel, the connections are different)
 			if($tmpDev->DeviceType=="Switch"){
 				$tmpSw=new SwitchConnection();
@@ -1307,7 +1347,7 @@ class Device {
 				$tmpSw->DropEndpointConnections($db);
 			}
 			
-			if($tmpDev->DeviceType=="PatchPanel"){
+			if($tmpDev->DeviceType=="Patch Panel"){
 				$tmpPan=new PatchConnetion();
 				$tmpPan->DropPanelConnections($db);
 				$tmpPan->DropEndpointConnections($db);
@@ -1320,7 +1360,7 @@ class Device {
 		$this->AssetTag=transform($this->AssetTag);
 
 		//Keep weird values out of DeviceType
-		if(!in_array($this->DeviceType,array('Server','Appliance','StorageArray','Switch','Chassis','PatchPanel','PhysicalInfrastructure'))){
+		if(!in_array($this->DeviceType,array('Server','Appliance','Storage Array','Switch','Chassis','Patch Panel','Physical Infrastructure'))){
 			$this->DeviceType="Server";
 		}
 
@@ -1358,145 +1398,80 @@ class Device {
 		return true;
 	}
 
-	function GetDevice( $db = null ) {
+	function GetDevice($db=null){
 		global $dbh;
-		
-		if ( $this->DeviceID == 0 )
-			return false;
-		
-		$sql = "select * from fac_Device where DeviceID=\"" . intval($this->DeviceID) . "\"";
-
-		if(! $devRow = $dbh->query($sql)->fetch() ) {
-			$info = $dbh->errorInfo();
-
-			error_log( "PDO Error: " . $info[2] . " SQL=" . $sql );
+	
+		$this->MakeSafe();
+	
+		if($this->DeviceID==0){
 			return false;
 		}
 		
-		$this->DeviceID = $devRow["DeviceID"];
-		$this->Label = $devRow["Label"];
-		$this->SerialNo = $devRow["SerialNo"];
-		$this->AssetTag = $devRow["AssetTag"];
-		$this->PrimaryIP = $devRow["PrimaryIP"];
-		$this->SNMPCommunity = $devRow["SNMPCommunity"];
-		$this->ESX = $devRow["ESX"];
-		$this->Owner = $devRow["Owner"];
-		// Suppressing errors on the following two because they can be null and that generates an apache error
-		@$this->EscalationTimeID = $devRow["EscalationTimeID"];
-		@$this->EscalationID = $devRow["EscalationID"];
-		$this->PrimaryContact = $devRow["PrimaryContact"];
-		$this->Cabinet = $devRow["Cabinet"];
-		$this->Position = $devRow["Position"];
-		$this->Height = $devRow["Height"];
-		$this->Ports = $devRow["Ports"];
-		$this->FirstPortNum = $devRow["FirstPortNum"];
-		$this->TemplateID = $devRow["TemplateID"];
-		$this->NominalWatts = $devRow["NominalWatts"];
-		$this->PowerSupplyCount = $devRow["PowerSupplyCount"];
-		$this->DeviceType = $devRow["DeviceType"];
-		$this->ChassisSlots = $devRow["ChassisSlots"];
-		$this->RearChassisSlots = $devRow["RearChassisSlots"];
-		$this->ParentDevice = $devRow["ParentDevice"];
-		$this->MfgDate = $devRow["MfgDate"];
-		$this->InstallDate = $devRow["InstallDate"];
-		$this->WarrantyCo = $devRow["WarrantyCo"];
-		@$this->WarrantyExpire = $devRow["WarrantyExpire"];
-		$this->Notes = $devRow["Notes"];
-		$this->Reservation = $devRow["Reservation"];
+		$sql="SELECT * FROM fac_Device WHERE DeviceID=$this->DeviceID;";
 
-		return true;
+		if($devRow=$dbh->query($sql)->fetch()){
+			$this->DeviceID = $devRow["DeviceID"];
+			$this->Label = $devRow["Label"];
+			$this->SerialNo = $devRow["SerialNo"];
+			$this->AssetTag = $devRow["AssetTag"];
+			$this->PrimaryIP = $devRow["PrimaryIP"];
+			$this->SNMPCommunity = $devRow["SNMPCommunity"];
+			$this->ESX = $devRow["ESX"];
+			$this->Owner = $devRow["Owner"];
+			// Suppressing errors on the following two because they can be null and that generates an apache error
+			@$this->EscalationTimeID = $devRow["EscalationTimeID"];
+			@$this->EscalationID = $devRow["EscalationID"];
+			$this->PrimaryContact = $devRow["PrimaryContact"];
+			$this->Cabinet = $devRow["Cabinet"];
+			$this->Position = $devRow["Position"];
+			$this->Height = $devRow["Height"];
+			$this->Ports = $devRow["Ports"];
+			$this->FirstPortNum = $devRow["FirstPortNum"];
+			$this->TemplateID = $devRow["TemplateID"];
+			$this->NominalWatts = $devRow["NominalWatts"];
+			$this->PowerSupplyCount = $devRow["PowerSupplyCount"];
+			$this->DeviceType = $devRow["DeviceType"];
+			$this->ChassisSlots = $devRow["ChassisSlots"];
+			$this->RearChassisSlots = $devRow["RearChassisSlots"];
+			$this->ParentDevice = $devRow["ParentDevice"];
+			$this->MfgDate = $devRow["MfgDate"];
+			$this->InstallDate = $devRow["InstallDate"];
+			$this->WarrantyCo = $devRow["WarrantyCo"];
+			@$this->WarrantyExpire = $devRow["WarrantyExpire"];
+			$this->Notes = $devRow["Notes"];
+			$this->Reservation = $devRow["Reservation"];
+
+			return true;
+		}else{
+			return false;
+		}
 	}
 	
 	function GetDevicesbyAge( $db, $days = 7 ) {
 		global $dbh;
 		
-		$this->MakeSafe();
-		
-		$sql = sprintf( "select * from fac_Device where DATEDIFF(CURDATE(),InstallDate)<=%d order by InstallDate ASC", $days );
+		$sql="SELECT * FROM fac_Device WHERE DATEDIFF(CURDATE(),InstallDate)<=".intval($days)." ORDER BY InstallDate ASC;";
 		
 		$deviceList = array();
 
 		foreach ( $dbh->query( $sql ) as $deviceRow ) {
-			$devID = $deviceRow["DeviceID"];
-
-			$deviceList[$devID] = new Device();
-
-			$deviceList[$devID]->DeviceID = $deviceRow["DeviceID"];
- 		  	$deviceList[$devID]->Label = $deviceRow["Label"];
-			$deviceList[$devID]->SerialNo = $deviceRow["SerialNo"];
-			$deviceList[$devID]->AssetTag = $deviceRow["AssetTag"];
-			$deviceList[$devID]->PrimaryIP = $deviceRow["PrimaryIP"];
-			$deviceList[$devID]->SNMPCommunity = $deviceRow["SNMPCommunity"];
-			$deviceList[$devID]->ESX = $deviceRow["ESX"];
-			$deviceList[$devID]->Owner = $deviceRow["Owner"];
-			// Suppressing errors on the following two because they can be null and that generates an apache error
-			@$deviceList[$devID]->EscalationTimeID = $deviceRow["EscalationTimeID"];
-			@$deviceList[$devID]->EscalationID = $deviceRow["EscalationID"];
-			$deviceList[$devID]->PrimaryContact = $deviceRow["PrimaryContact"];
-			$deviceList[$devID]->Cabinet = $deviceRow["Cabinet"];
-			$deviceList[$devID]->Position = $deviceRow["Position"];
-			$deviceList[$devID]->Height = $deviceRow["Height"];
-			$deviceList[$devID]->Ports = $deviceRow["Ports"];
-			$deviceList[$devID]->FirstPortNum = $deviceRow["FirstPortNum"];
-			$deviceList[$devID]->TemplateID = $deviceRow["TemplateID"];
-			$deviceList[$devID]->NominalWatts = $deviceRow["NominalWatts"];
-			$deviceList[$devID]->PowerSupplyCount = $deviceRow["PowerSupplyCount"];
-			$deviceList[$devID]->DeviceType = $deviceRow["DeviceType"];
-			$deviceList[$devID]->ChassisSlots = $deviceRow["ChassisSlots"];
-			$deviceList[$devID]->RearChassisSlots = $deviceRow["RearChassisSlots"];
-			$deviceList[$devID]->ParentDevice = $deviceRow["ParentDevice"];
-			$deviceList[$devID]->MfgDate = $deviceRow["MfgDate"];
-			$deviceList[$devID]->InstallDate = $deviceRow["InstallDate"];
-			$deviceList[$devID]->WarrantyCo = $deviceRow["WarrantyCo"];
-			@$deviceList[$devID]->WarrantyExpire = $deviceRow["WarrantyExpire"];
-			$deviceList[$devID]->Notes = $deviceRow["Notes"];
-			$deviceList[$devID]->Reservation = $deviceRow["Reservation"];
+			$deviceList[$deviceRow["DeviceID"]]=DeviceRowToObject($deviceRow);
 		}
 		
 		return $deviceList;
 	}
 		
-	function GetDeviceChildren( $db = null ) {
+	function GetDeviceChildren() {
 		global $dbh;
-		
-		$sql = sprintf( "select * from fac_Device where ParentDevice='%d' order by ChassisSlots, Position ASC", intval( $this->DeviceID ) );
+	
+		$this->MakeSafe();
+	
+		$sql="SELECT * FROM fac_Device WHERE ParentDevice=$this->DeviceID ORDER BY ChassisSlots, Position ASC;";
 
 		$childList = array();
 
-		foreach ( $dbh->query( $sql ) as $row ) {
-			$childNum = sizeof( $childList );
-			
-			$childList[$childNum] = new Device();
-			$childList[$childNum]->DeviceID = $row["DeviceID"];
-			$childList[$childNum]->Label = $row["Label"];
-			$childList[$childNum]->SerialNo = $row["SerialNo"];
-			$childList[$childNum]->AssetTag = $row["AssetTag"];
-			$childList[$childNum]->PrimaryIP = $row["PrimaryIP"];
-			$childList[$childNum]->SNMPCommunity = $row["SNMPCommunity"];
-			$childList[$childNum]->ESX = $row["ESX"];
-			$childList[$childNum]->Owner = $row["Owner"];
-			// Suppressing errors on the following two because they can be null and that generates an apache error
-			@$childList[$childNum]->EscalationTimeID = $row["EscalationTimeID"];
-			@$childList[$childNum]->EscalationID = $row["EscalationID"];
-			$childList[$childNum]->PrimaryContact = $row["PrimaryContact"];
-			$childList[$childNum]->Cabinet = $row["Cabinet"];
-			$childList[$childNum]->Position = $row["Position"];
-			$childList[$childNum]->Height = $row["Height"];
-			$childList[$childNum]->Ports = $row["Ports"];
-			$childList[$childNum]->FirstPortNum = $row["FirstPortNum"];
-			$childList[$childNum]->TemplateID = $row["TemplateID"];
-			$childList[$childNum]->NominalWatts = $row["NominalWatts"];
-			$childList[$childNum]->PowerSupplyCount = $row["PowerSupplyCount"];
-			$childList[$childNum]->DeviceType = $row["DeviceType"];
-			$childList[$childNum]->ChassisSlots = $row["ChassisSlots"];
-			$childList[$childNum]->RearChassisSlots = $row["RearChassisSlots"];
-			$childList[$childNum]->ParentDevice = $row["ParentDevice"];
-			$childList[$childNum]->MfgDate = $row["MfgDate"];
-			$childList[$childNum]->InstallDate = $row["InstallDate"];
-			$childList[$childNum]->WarrantyCo = $row["WarrantyCo"];
-			@$childList[$childNum]->WarrantyExpire = $row["WarrantyExpire"];
-			$childList[$childNum]->Notes = $row["Notes"];
-			$childList[$childNum]->Reservation = $row["Reservation"];
+		foreach($dbh->query($sql) as $row){
+			$deviceList[$row["DeviceID"]]=DeviceRowToObject($row);
 		}
 		
 		return $childList;
@@ -1509,40 +1484,8 @@ class Device {
 		
 		$parentList = array();
 
-		foreach ( $dbh->query( $sql ) as $row ) {
-			$parentNum = sizeof( $parentList );
-			
-			$parentList[$parentNum] = new Device();
-			$parentList[$parentNum]->DeviceID = $row["DeviceID"];
-			$parentList[$parentNum]->Label = $row["Label"];
-			$parentList[$parentNum]->SerialNo = $row["SerialNo"];
-			$parentList[$parentNum]->AssetTag = $row["AssetTag"];
-			$parentList[$parentNum]->PrimaryIP = $row["PrimaryIP"];
-			$parentList[$parentNum]->SNMPCommunity = $row["SNMPCommunity"];
-			$parentList[$parentNum]->ESX = $row["ESX"];
-			$parentList[$parentNum]->Owner = $row["Owner"];
-			// Suppressing errors on the following two because they can be null and that generates an apache error
-			@$parentList[$parentNum]->EscalationTimeID = $row["EscalationTimeID"];
-			@$parentList[$parentNum]->EscalationID = $row["EscalationID"];
-			$parentList[$parentNum]->PrimaryContact = $row["PrimaryContact"];
-			$parentList[$parentNum]->Cabinet = $row["Cabinet"];
-			$parentList[$parentNum]->Position = $row["Position"];
-			$parentList[$parentNum]->Height = $row["Height"];
-			$parentList[$parentNum]->Ports = $row["Ports"];
-			$parentList[$parentNum]->FirstPortNum = $row["FirstPortNum"];
-			$parentList[$parentNum]->TemplateID = $row["TemplateID"];
-			$parentList[$parentNum]->NominalWatts = $row["NominalWatts"];
-			$parentList[$parentNum]->PowerSupplyCount = $row["PowerSupplyCount"];
-			$parentList[$parentNum]->DeviceType = $row["DeviceType"];
-			$parentList[$parentNum]->ChassisSlots = $row["ChassisSlots"];
-			$parentList[$parentNum]->RearChassisSlots = $row["RearChassisSlots"];
-			$parentList[$parentNum]->ParentDevice = $row["ParentDevice"];
-			$parentList[$parentNum]->MfgDate = $row["MfgDate"];
-			$parentList[$parentNum]->InstallDate = $row["InstallDate"];
-			$parentList[$parentNum]->WarrantyCo = $row["WarrantyCo"];
-			@$parentList[$parentNum]->WarrantyExpire = $row["WarrantyExpire"];
-			$parentList[$parentNum]->Notes = $row["Notes"];
-			$parentList[$parentNum]->Reservation = $row["Reservation"];
+		foreach($dbh->query($sql) as $row){
+			$deviceList[$row["DeviceID"]]=DeviceRowToObject($row);
 		}
 		
 		return $parentList;
@@ -1550,152 +1493,58 @@ class Device {
 
 	function ViewDevicesByCabinet( $db = null ) {
 		global $dbh;
+
+		$this->MakeSafe();
 		
-		$sql = "select * from fac_Device where Cabinet=\"" . intval($this->Cabinet) . "\" AND Cabinet!=0 order by Position DESC";
+		$sql="SELECT * FROM fac_Device WHERE Cabinet=$this->Cabinet AND Cabinet!=0 ORDER BY Position DESC;";
 
 		$deviceList = array();
 
-		foreach ( $dbh->query( $sql ) as $deviceRow ) {
-			$devID = $deviceRow["DeviceID"];
-
-			$deviceList[$devID] = new Device();
-
-			$deviceList[$devID]->DeviceID = $deviceRow["DeviceID"];
- 		  	$deviceList[$devID]->Label = $deviceRow["Label"];
-			$deviceList[$devID]->SerialNo = $deviceRow["SerialNo"];
-			$deviceList[$devID]->AssetTag = $deviceRow["AssetTag"];
-			$deviceList[$devID]->PrimaryIP = $deviceRow["PrimaryIP"];
-			$deviceList[$devID]->SNMPCommunity = $deviceRow["SNMPCommunity"];
-			$deviceList[$devID]->ESX = $deviceRow["ESX"];
-			$deviceList[$devID]->Owner = $deviceRow["Owner"];
-			// Suppressing errors on the following two because they can be null and that generates an apache error
-			@$deviceList[$devID]->EscalationTimeID = $deviceRow["EscalationTimeID"];
-			@$deviceList[$devID]->EscalationID = $deviceRow["EscalationID"];
-			$deviceList[$devID]->PrimaryContact = $deviceRow["PrimaryContact"];
-			$deviceList[$devID]->Cabinet = $deviceRow["Cabinet"];
-			$deviceList[$devID]->Position = $deviceRow["Position"];
-			$deviceList[$devID]->Height = $deviceRow["Height"];
-			$deviceList[$devID]->Ports = $deviceRow["Ports"];
-			$deviceList[$devID]->FirstPortNum = $deviceRow["FirstPortNum"];
-			$deviceList[$devID]->TemplateID = $deviceRow["TemplateID"];
-			$deviceList[$devID]->NominalWatts = $deviceRow["NominalWatts"];
-			$deviceList[$devID]->PowerSupplyCount = $deviceRow["PowerSupplyCount"];
-			$deviceList[$devID]->DeviceType = $deviceRow["DeviceType"];
-			$deviceList[$devID]->ChassisSlots = $deviceRow["ChassisSlots"];
-			$deviceList[$devID]->RearChassisSlots = $deviceRow["RearChassisSlots"];
-			$deviceList[$devID]->ParentDevice = $deviceRow["ParentDevice"];
-			$deviceList[$devID]->MfgDate = $deviceRow["MfgDate"];
-			$deviceList[$devID]->InstallDate = $deviceRow["InstallDate"];
-			$deviceList[$devID]->WarrantyCo = $deviceRow["WarrantyCo"];
-			@$deviceList[$devID]->WarrantyExpire = $deviceRow["WarrantyExpire"];
-			$deviceList[$devID]->Notes = $deviceRow["Notes"];
-			$deviceList[$devID]->Reservation = $deviceRow["Reservation"];
+		foreach($dbh->query($sql) as $deviceRow){
+			$deviceList[$deviceRow["DeviceID"]]=DeviceRowToObject($deviceRow);
 		}
 
 		return $deviceList;
 	}
 	
 	function CreatePatchCandidateList( $db = null ) {
-		global $dbh;
-
 		// This will generate a list of all devices capable of being plugged into a switch
 		// or patch panel - meaning that you set the DeviceID field to the target device and it will
 		// generate a list of all candidates that are in the same Data Center.
+		global $dbh;
 
-		$dev=($this->ParentDevice>0)?intval($this->ParentDevice):intval($this->DeviceID);
-		$sql = "select b.DataCenterID from fac_Device a, fac_Cabinet b where a.DeviceID=\"$dev\" and a.Cabinet=b.CabinetID";
-		if ( ! $row = $dbh->query( $sql )->fetch() ) {
-			$info = $dbh->errorInfo();
+		$this->MakeSafe();
 
-			error_log( "PDO Error: " . $info[2] . " SQL=" . $sql );
+		$dev=($this->ParentDevice>0)?$this->ParentDevice:$this->DeviceID;
+		$sql = "SELECT b.DataCenterID FROM fac_Device a, fac_Cabinet b WHERE a.DeviceID=$dev AND a.Cabinet=b.CabinetID;";
+		if(!$row=$dbh->query($sql)->fetch()){
 			return false;
 		}
 		
 		$targetDC = $row["DataCenterID"];
 
-		$sql = "select * from fac_Device a, fac_Cabinet b where a.Cabinet=b.CabinetID and b.DataCenterID=\"" . intval($targetDC) . "\" and a.DeviceType in ('Server','Appliance','Switch','Chassis','Patch Panel','Storage Array') and a.DeviceID<>' . $dev . ' order by a.Label";
+		$sql="SELECT * FROM fac_Device a, fac_Cabinet b WHERE a.Cabinet=b.CabinetID AND 
+			b.DataCenterID=$targetDC AND a.DeviceType!='Physical Infrastructure' AND 
+			a.DeviceID!=$dev ORDER BY a.Label;";
 
-		$deviceList = array();
+		$deviceList=array();
 	  
-		foreach ( $dbh->query( $sql ) as $deviceRow ) {
-			$devID = $deviceRow["DeviceID"];
-
-			$deviceList[$devID] = new Device();
-
-			$deviceList[$devID]->DeviceID = $deviceRow["DeviceID"];
- 		  	$deviceList[$devID]->Label = $deviceRow["Label"];
-			$deviceList[$devID]->SerialNo = $deviceRow["SerialNo"];
-			$deviceList[$devID]->AssetTag = $deviceRow["AssetTag"];
-			$deviceList[$devID]->PrimaryIP = $deviceRow["PrimaryIP"];
-			$deviceList[$devID]->SNMPCommunity = $deviceRow["SNMPCommunity"];
-			$deviceList[$devID]->ESX = $deviceRow["ESX"];
-			$deviceList[$devID]->Owner = $deviceRow["Owner"];
-			// Suppressing errors on the following two because they can be null and that generates an apache error
-			@$deviceList[$devID]->EscalationTimeID = $deviceRow["EscalationTimeID"];
-			@$deviceList[$devID]->EscalationID = $deviceRow["EscalationID"];
-			$deviceList[$devID]->PrimaryContact = $deviceRow["PrimaryContact"];
-			$deviceList[$devID]->Cabinet = $deviceRow["Cabinet"];
-			$deviceList[$devID]->Position = $deviceRow["Position"];
-			$deviceList[$devID]->Height = $deviceRow["Height"];
-			$deviceList[$devID]->Ports = $deviceRow["Ports"];
-			$deviceList[$devID]->FirstPortNum= $deviceRow["FirstPortNum"];
-			$deviceList[$devID]->TemplateID = $deviceRow["TemplateID"];
-			$deviceList[$devID]->NominalWatts = $deviceRow["NominalWatts"];
-			$deviceList[$devID]->PowerSupplyCount = $deviceRow["PowerSupplyCount"];
-			$deviceList[$devID]->DeviceType = $deviceRow["DeviceType"];
-			$deviceList[$devID]->ChassisSlots = $deviceRow["ChassisSlots"];
-			$deviceList[$devID]->RearChassisSlots = $deviceRow["RearChassisSlots"];
-			$deviceList[$devID]->ParentDevice = $deviceRow["ParentDevice"];
-			$deviceList[$devID]->MfgDate = $deviceRow["MfgDate"];
-			$deviceList[$devID]->InstallDate = $deviceRow["InstallDate"];
-			$deviceList[$devID]->WarrantyCo = $deviceRow["WarrantyCo"];
-			@$deviceList[$devID]->WarrantyExpire = $deviceRow["WarrantyExpire"];
-			$deviceList[$devID]->Notes = $deviceRow["Notes"];
-			$deviceList[$devID]->Reservation = $deviceRow["Reservation"];
+		foreach($dbh->query($sql) as $deviceRow){
+			$deviceList[$deviceRow["DeviceID"]]=DeviceRowToObject($deviceRow);
 		}
 
 		return $deviceList;
 	}
 	
-	static function GetPatchPanels( $db = null ) {
+	static function GetPatchPanels(){
 		global $dbh;
 		
-		$sql="SELECT * FROM fac_Device WHERE DeviceType='Patch Panel' order by Label ASC";
+		$sql="SELECT * FROM fac_Device WHERE DeviceType='Patch Panel' ORDER BY Label ASC;";
 		
 		$panelList=array();
 
-		foreach ( $dbh->query( $sql ) as $row ) {
-			$panelList[$row["DeviceID"]]=new Device();
-			$panelList[$row["DeviceID"]]->DeviceID=$row["DeviceID"];
-			$panelList[$row["DeviceID"]]->Label=$row["Label"];
-			$panelList[$row["DeviceID"]]->SerialNo=$row["SerialNo"];
-			$panelList[$row["DeviceID"]]->AssetTag=$row["AssetTag"];
-			$panelList[$row["DeviceID"]]->PrimaryIP=$row["PrimaryIP"];
-			$panelList[$row["DeviceID"]]->SNMPCommunity=$row["SNMPCommunity"];
-			$panelList[$row["DeviceID"]]->ESX=$row["ESX"];
-			$panelList[$row["DeviceID"]]->Owner=$row["Owner"];
-			// Suppressing errors on the following two because they can be null and that generates an apache error
-			@$panelList[$row["DeviceID"]]->EscalationTimeID=$row["EscalationTimeID"];
-			@$panelList[$row["DeviceID"]]->EscalationID=$row["EscalationID"];
-			$panelList[$row["DeviceID"]]->PrimaryContact=$row["PrimaryContact"];
-			$panelList[$row["DeviceID"]]->Cabinet=$row["Cabinet"];
-			$panelList[$row["DeviceID"]]->Position=$row["Position"];
-			$panelList[$row["DeviceID"]]->Height=$row["Height"];
-			$panelList[$row["DeviceID"]]->Ports=$row["Ports"];
-			$panelList[$row["DeviceID"]]->FirstPortNum=$row["FirstPortNum"];
-			$panelList[$row["DeviceID"]]->TemplateID=$row["TemplateID"];
-			$panelList[$row["DeviceID"]]->NominalWatts=$row["NominalWatts"];
-			$panelList[$row["DeviceID"]]->PowerSupplyCount=$row["PowerSupplyCount"];
-			$panelList[$row["DeviceID"]]->DeviceType=$row["DeviceType"];
-			$panelList[$row["DeviceID"]]->ChassisSlots=$row["ChassisSlots"];
-			$panelList[$row["DeviceID"]]->RearChassisSlots=$row["RearChassisSlots"];
-			$panelList[$row["DeviceID"]]->ParentDevice=$row["ParentDevice"];
-			$panelList[$row["DeviceID"]]->MfgDate=$row["MfgDate"];
-			$panelList[$row["DeviceID"]]->InstallDate=$row["InstallDate"];
-			$panelList[$row["DeviceID"]]->WarrantyCo=$row["WarrantyCo"];
-			@$panelList[$row["DeviceID"]]->WarrantyExpire=$row["WarrantyExpire"];
-			$panelList[$row["DeviceID"]]->Notes=$row["Notes"];
-			$panelList[$row["DeviceID"]]->Reservation=$row["Reservation"];
+		foreach($dbh->query($sql) as $row){
+			$panelList[$row["DeviceID"]]=DeviceRowToObject($row);
 		}
 		
 		return $panelList;
@@ -1703,10 +1552,12 @@ class Device {
 
 	function DeleteDevice( $db = null ) {
 		global $dbh;
-		
+	
+		$this->MakeSafe();
+	
 		// First, see if this is a chassis that has children, if so, delete all of the children first
 		if ( $this->ChassisSlots > 0 ) {
-			$childList = $this->GetDeviceChildren( $db );
+			$childList = $this->GetDeviceChildren();
 			
 			foreach ( $childList as $tmpDev ) {
 				$tmpDev->DeleteDevice( $db );
@@ -1735,12 +1586,12 @@ class Device {
 		$powercon->DeleteConnections();
 
 		// Now delete the device itself
-		$sql = "delete from fac_Device where DeviceID=\"" . intval($this->DeviceID) . "\"";
+		$sql="DELETE FROM fac_Device WHERE DeviceID=$this->DeviceID;";
 
 		if ( ! $dbh->exec( $sql ) ) {
 			$info = $dbh->errorInfo();
 
-			error_log( "PDO Error: " . $info[2] . " SQL=" . $sql );
+			error_log("PDO Error: {$info[2]} SQL=$sql");
 			return false;
 		}
 		
@@ -1748,237 +1599,83 @@ class Device {
 		return;
 	}
 
+
 	function SearchDevicebyLabel( $db = null ) {
 		global $dbh;
+
+		$this->MakeSafe();
 		
-		$sql = "select * from fac_Device where Label like \"%" . addslashes(transform( $this->Label )) . "%\" order by Label";
+		$sql="SELECT * FROM fac_Device WHERE Label LIKE \"%$this->Label%\" ORDER BY Label;";
 
 		$deviceList = array();
 
 		foreach ( $dbh->query( $sql ) as $deviceRow ) {
-			$devID = $deviceRow["DeviceID"];
-
-			$deviceList[$devID] = new Device();
-
-			$deviceList[$devID]->DeviceID = $deviceRow["DeviceID"];
-			$deviceList[$devID]->Label = $deviceRow["Label"];
-			$deviceList[$devID]->SerialNo = $deviceRow["SerialNo"];
-			$deviceList[$devID]->AssetTag = $deviceRow["AssetTag"];
-			$deviceList[$devID]->PrimaryIP = $deviceRow["PrimaryIP"];
-			$deviceList[$devID]->SNMPCommunity = $deviceRow["SNMPCommunity"];
-			$deviceList[$devID]->ESX = $deviceRow["ESX"];
-			$deviceList[$devID]->Owner = $deviceRow["Owner"];
-			// Suppressing errors on the following two because they can be null and that generates an apache error
-			@$deviceList[$devID]->EscalationTimeID = $deviceRow["EscalationTimeID"];
-			@$deviceList[$devID]->EscalationID = $deviceRow["EscalationID"];
-			$deviceList[$devID]->PrimaryContact = $deviceRow["PrimaryContact"];
-			$deviceList[$devID]->Cabinet = $deviceRow["Cabinet"];
-			$deviceList[$devID]->Position = $deviceRow["Position"];
-			$deviceList[$devID]->Height = $deviceRow["Height"];
-			$deviceList[$devID]->Ports = $deviceRow["Ports"];
-			$deviceList[$devID]->FirstPortNum = $deviceRow["FirstPortNum"];
-			$deviceList[$devID]->TemplateID = $deviceRow["TemplateID"];
-			$deviceList[$devID]->NominalWatts = $deviceRow["NominalWatts"];
-			$deviceList[$devID]->PowerSupplyCount = $deviceRow["PowerSupplyCount"];
-			$deviceList[$devID]->DeviceType = $deviceRow["DeviceType"];
-			$deviceList[$devID]->ChassisSlots = $deviceRow["ChassisSlots"];
-			$deviceList[$devID]->RearChassisSlots = $deviceRow["RearChassisSlots"];
-			$deviceList[$devID]->ParentDevice = $deviceRow["ParentDevice"];
-			$deviceList[$devID]->MfgDate = $deviceRow["MfgDate"];
-			$deviceList[$devID]->InstallDate = $deviceRow["InstallDate"];
-			$deviceList[$devID]->WarrantyCo = $deviceRow["WarrantyCo"];
-			@$deviceList[$devID]->WarrantyExpire = $deviceRow["WarrantyExpire"];
-			$deviceList[$devID]->Notes = $deviceRow["Notes"];
-			$deviceList[$devID]->Reservation = $deviceRow["Reservation"];
+			$deviceList[$deviceRow["DeviceID"]]=DeviceRowToObject($deviceRow);
 		}
 
 		return $deviceList;
-
 	}
 
 	function GetDevicesbyOwner( $db = null ) {
 		global $dbh;
+
+		$this->MakeSafe();
 		
-		$sql = "select *, (select b.DataCenterID from fac_Device a, fac_Cabinet b where a.Cabinet=b.CabinetID and a.DeviceID=search.DeviceID order by b.DataCenterID, a.Label) DataCenterID from fac_Device search where Owner=\"".addslashes($this->Owner)."\" order by Label";
-//		$searchSQL="select a.*, b.DataCenterID from fac_Device a, fac_Cabinet b where a.Cabinet=b.CabinetID and a.Owner=\"" . addslashes($this->Owner) . "\" order by b.DataCenterID, a.Label";
+		$sql="SELECT *, (SELECT b.DataCenterID FROM fac_Device a, fac_Cabinet b 
+			WHERE a.Cabinet=b.CabinetID AND a.DeviceID=search.DeviceID ORDER BY 
+			b.DataCenterID, a.Label) DataCenterID FROM fac_Device search WHERE 
+			Owner=$this->Owner ORDER BY Label;";
 
 		$deviceList=array();
 
-		foreach ( $dbh->query( $sql ) as $deviceRow ) {
-			$devID=$deviceRow["DeviceID"];
-
-			$deviceList[$devID]=new Device();
-			$deviceList[$devID]->DeviceID=$deviceRow["DeviceID"];
-			$deviceList[$devID]->Label=$deviceRow["Label"];
-			$deviceList[$devID]->SerialNo=$deviceRow["SerialNo"];
-			$deviceList[$devID]->AssetTag=$deviceRow["AssetTag"];
-			$deviceList[$devID]->PrimaryIP=$deviceRow["PrimaryIP"];
-			$deviceList[$devID]->SNMPCommunity=$deviceRow["SNMPCommunity"];
-			$deviceList[$devID]->ESX=$deviceRow["ESX"];
-			$deviceList[$devID]->Owner=$deviceRow["Owner"];
-			$deviceList[$devID]->EscalationTimeID=$deviceRow["EscalationTimeID"];
-			$deviceList[$devID]->EscalationID=$deviceRow["EscalationID"];
-			$deviceList[$devID]->PrimaryContact=$deviceRow["PrimaryContact"];
-			$deviceList[$devID]->Cabinet=$deviceRow["Cabinet"];
-			$deviceList[$devID]->Position=$deviceRow["Position"];
-			$deviceList[$devID]->Height=$deviceRow["Height"];
-			$deviceList[$devID]->Ports=$deviceRow["Ports"];
-			$deviceList[$devID]->FirstPortNum=$deviceRow["FirstPortNum"];
-			$deviceList[$devID]->TemplateID=$deviceRow["TemplateID"];
-			$deviceList[$devID]->NominalWatts=$deviceRow["NominalWatts"];
-			$deviceList[$devID]->PowerSupplyCount=$deviceRow["PowerSupplyCount"];
-			$deviceList[$devID]->DeviceType=$deviceRow["DeviceType"];
-			$deviceList[$devID]->ChassisSlots=$deviceRow["ChassisSlots"];
-			$deviceList[$devID]->RearChassisSlots=$deviceRow["RearChassisSlots"];
-			$deviceList[$devID]->ParentDevice=$deviceRow["ParentDevice"];
-			$deviceList[$devID]->MfgDate=$deviceRow["MfgDate"];
-			$deviceList[$devID]->InstallDate=$deviceRow["InstallDate"];
-			$deviceList[$devID]->WarrantyCo=$deviceRow["WarrantyCo"];
-			@$deviceList[$devID]->WarrantyExpire=$deviceRow["WarrantyExpire"];
-			$deviceList[$devID]->Notes=$deviceRow["Notes"];
-			$deviceList[$devID]->Reservation=$deviceRow["Reservation"];
-			$deviceList[$devID]->DataCenterID=$deviceRow["DataCenterID"];
+		foreach($dbh->query($sql) as $deviceRow){
+			$deviceList[$deviceRow["DeviceID"]]=DeviceRowToObject($deviceRow);
 		}
 
 		return $deviceList;
-
 	}
 
   function GetESXDevices( $db = null ) {
 		global $dbh;
 		
-		$sql = "select * from fac_Device where ESX=TRUE order by DeviceID";
+		$sql="SELECT * FROM fac_Device WHERE ESX=TRUE ORDER BY DeviceID;";
 
 		$deviceList = array();
 
-		foreach ( $dbh->query( $sql ) as $deviceRow ) {
-			$devID = $deviceRow["DeviceID"];
-
-			$deviceList[$devID] = new Device();
-
-			$deviceList[$devID]->DeviceID = $deviceRow["DeviceID"];
-			$deviceList[$devID]->Label = $deviceRow["Label"];
-			$deviceList[$devID]->SerialNo = $deviceRow["SerialNo"];
-			$deviceList[$devID]->AssetTag = $deviceRow["AssetTag"];
-			$deviceList[$devID]->PrimaryIP = $deviceRow["PrimaryIP"];
-			$deviceList[$devID]->SNMPCommunity = $deviceRow["SNMPCommunity"];
-			$deviceList[$devID]->ESX = $deviceRow["ESX"];
-			$deviceList[$devID]->Owner = $deviceRow["Owner"];
-			$deviceList[$devID]->EscalationTimeID = $deviceRow["EscalationTimeID"];
-			$deviceList[$devID]->EscalationID = $deviceRow["EscalationID"];
-			$deviceList[$devID]->PrimaryContact = $deviceRow["PrimaryContact"];
-			$deviceList[$devID]->Cabinet = $deviceRow["Cabinet"];
-			$deviceList[$devID]->Position = $deviceRow["Position"];
-			$deviceList[$devID]->Height = $deviceRow["Height"];
-			$deviceList[$devID]->Ports = $deviceRow["Ports"];
-			$deviceList[$devID]->FirstPortNum = $deviceRow["FirstPortNum"];	
-			$deviceList[$devID]->TemplateID = $deviceRow["TemplateID"];
-			$deviceList[$devID]->NominalWatts = $deviceRow["NominalWatts"];
-			$deviceList[$devID]->PowerSupplyCount = $deviceRow["PowerSupplyCount"];
-			$deviceList[$devID]->DeviceType = $deviceRow["DeviceType"];
-			$deviceList[$devID]->ChassisSlots = $deviceRow["ChassisSlots"];
-			$deviceList[$devID]->RearChassisSlots = $deviceRow["RearChassisSlots"];
-			$deviceList[$devID]->ParentDevice = $deviceRow["ParentDevice"];
-			$deviceList[$devID]->MfgDate = $deviceRow["MfgDate"];
-			$deviceList[$devID]->InstallDate = $deviceRow["InstallDate"];
-			$deviceList[$devID]->WarrantyCo = $deviceRow["WarrantyCo"];
-			@$deviceList[$devID]->WarrantyExpire = $deviceRow["WarrantyExpire"];			
-			$deviceList[$devID]->Notes = $deviceRow["Notes"];
-			$deviceList[$devID]->Reservation = $deviceRow["Reservation"];
+		foreach($dbh->query($sql) as $deviceRow){ 
+			$deviceList[$deviceRow["DeviceID"]]=DeviceRowToObject($deviceRow);
 		}
 
 		return $deviceList;
-
 	}
 
 	function SearchDevicebySerialNo( $db = null ) {
 		global $dbh;
 
-		$sql = "select * from fac_Device where SerialNo like \"%" . addslashes(transform( $this->SerialNo )) . "%\" order by Label";
+		$this->MakeSafe();
+
+		$sql = "SELECT * FROM fac_Device WHERE SerialNo LIKE \"%$this->SerialNo%\" ORDER BY Label;";
 
 		$deviceList = array();
 
 		foreach ( $dbh->query( $sql ) as $deviceRow ) {
-			$devID = $deviceRow["DeviceID"];
-
-			$deviceList[$devID] = new Device();
-
-			$deviceList[$devID]->DeviceID = $deviceRow["DeviceID"];
-			$deviceList[$devID]->Label = $deviceRow["Label"];
-			$deviceList[$devID]->SerialNo = $deviceRow["SerialNo"];
-			$deviceList[$devID]->AssetTag = $deviceRow["AssetTag"];
-			$deviceList[$devID]->PrimaryIP = $deviceRow["PrimaryIP"];
-			$deviceList[$devID]->SNMPCommunity = $deviceRow["SNMPCommunity"];
-			$deviceList[$devID]->ESX = $deviceRow["ESX"];
-			$deviceList[$devID]->Owner = $deviceRow["Owner"];
-			$deviceList[$devID]->EscalationTimeID = $deviceRow["EscalationTimeID"];
-			$deviceList[$devID]->EscalationID = $deviceRow["EscalationID"];
-			$deviceList[$devID]->PrimaryContact = $deviceRow["PrimaryContact"];
-			$deviceList[$devID]->Cabinet = $deviceRow["Cabinet"];
-			$deviceList[$devID]->Position = $deviceRow["Position"];
-			$deviceList[$devID]->Height = $deviceRow["Height"];
-			$deviceList[$devID]->Ports = $deviceRow["Ports"];
-			$deviceList[$devID]->FirstPortNum = $deviceRow["FirstPortNum"];
-			$deviceList[$devID]->TemplateID = $deviceRow["TemplateID"];
-			$deviceList[$devID]->NominalWatts = $deviceRow["NominalWatts"];
-			$deviceList[$devID]->PowerSupplyCount = $deviceRow["PowerSupplyCount"];
-			$deviceList[$devID]->DeviceType = $deviceRow["DeviceType"];
-			$deviceList[$devID]->ChassisSlots = $deviceRow["ChassisSlots"];
-			$deviceList[$devID]->RearChassisSlots = $deviceRow["RearChassisSlots"];
-			$deviceList[$devID]->ParentDevice = $deviceRow["ParentDevice"];
-			$deviceList[$devID]->MfgDate = $deviceRow["MfgDate"];
-			$deviceList[$devID]->InstallDate = $deviceRow["InstallDate"];
-			$deviceList[$devID]->WarrantyCo = $deviceRow["WarrantyCo"];
-			@$deviceList[$devID]->WarrantyExpire = $deviceRow["WarrantyExpire"];				  
-			$deviceList[$devID]->Notes = $deviceRow["Notes"];
-			$deviceList[$devID]->Reservation = $deviceRow["Reservation"];
+			$deviceList[$deviceRow["DeviceID"]]=DeviceRowToObject($deviceRow);
 		}
 
 		return $deviceList;
-
 	}
 
 	function SearchDevicebyAssetTag( $db = null ) {
 		global $dbh;
+
+		$this->MakeSafe();
 		
-		$sql = "select * from fac_Device where AssetTag like \"%" . addslashes(transform( $this->AssetTag )) . "%\" order by Label";
+		$sql="SELECT * FROM fac_Device WHERE AssetTag LIKE \"%$this->AssetTag%\" ORDER BY Label;";
 
-		$deviceList = array();
+		$deviceList=array();
 
-		foreach ( $dbh->query( $sql ) as $deviceRow ) {
-			$devID = $deviceRow["DeviceID"];
-
-			$deviceList[$devID] = new Device();
-
-			$deviceList[$devID]->DeviceID = $deviceRow["DeviceID"];
-			$deviceList[$devID]->Label = $deviceRow["Label"];
-			$deviceList[$devID]->SerialNo = $deviceRow["SerialNo"];
-			$deviceList[$devID]->AssetTag = $deviceRow["AssetTag"];
-			$deviceList[$devID]->PrimaryIP = $deviceRow["PrimaryIP"];
-			$deviceList[$devID]->SNMPCommunity = $deviceRow["SNMPCommunity"];
-			$deviceList[$devID]->ESX = $deviceRow["ESX"];
-			$deviceList[$devID]->Owner = $deviceRow["Owner"];
-			$deviceList[$devID]->EscalationTimeID = $deviceRow["EscalationTimeID"];
-			$deviceList[$devID]->EscalationID = $deviceRow["EscalationID"];
-			$deviceList[$devID]->PrimaryContact = $deviceRow["PrimaryContact"];
-			$deviceList[$devID]->Cabinet = $deviceRow["Cabinet"];
-			$deviceList[$devID]->Position = $deviceRow["Position"];
-			$deviceList[$devID]->Height = $deviceRow["Height"];
-			$deviceList[$devID]->Ports = $deviceRow["Ports"];
-			$deviceList[$devID]->FirstPortNum = $deviceRow["FirstPortNum"];
-			$deviceList[$devID]->TemplateID = $deviceRow["TemplateID"];
-			$deviceList[$devID]->NominalWatts = $deviceRow["NominalWatts"];
-			$deviceList[$devID]->PowerSupplyCount = $deviceRow["PowerSupplyCount"];
-			$deviceList[$devID]->DeviceType = $deviceRow["DeviceType"];
-			$deviceList[$devID]->ChassisSlots = $deviceRow["ChassisSlots"];
-			$deviceList[$devID]->RearChassisSlots = $deviceRow["RearChassisSlots"];
-			$deviceList[$devID]->ParentDevice = $deviceRow["ParentDevice"];
-			$deviceList[$devID]->MfgDate = $deviceRow["MfgDate"];
-			$deviceList[$devID]->InstallDate = $deviceRow["InstallDate"];
-			$deviceList[$devID]->WarrantyCo = $deviceRow["WarrantyCo"];
-			@$deviceList[$devID]->WarrantyExpire = $deviceRow["WarrantyExpire"];
-			$deviceList[$devID]->Notes = $deviceRow["Notes"];
-			$deviceList[$devID]->Reservation = $deviceRow["Reservation"];
+		foreach($dbh->query($sql) as $deviceRow){
+			$deviceList[$deviceRow["DeviceID"]]=DeviceRowToObject($deviceRow);
 		}
 
 		return $deviceList;
@@ -1988,8 +1685,6 @@ class Device {
 	function SearchByCustomTag( $db, $tag = null ) {
 		global $dbh;
 		
-		//$sql = sprintf( "select a.* from fac_Device a, fac_DeviceTags b, fac_Tags c where a.DeviceID=b.DeviceID and b.TagID=c.TagID and UCASE(c.Name) like UCASE('%%%s%%')", $tag );
-
 		//
 		//Build a somewhat ugly SQL expression in order to do 
 		//semi-complicated tag searches.  All tags are
@@ -2065,40 +1760,8 @@ class Device {
 
 		$deviceList = array();
 
-		foreach ( $dbh->query( $sql ) as $deviceRow ) {
-			$devID = $deviceRow["DeviceID"];
-
-			$deviceList[$devID] = new Device();
-
-			$deviceList[$devID]->DeviceID = $deviceRow["DeviceID"];
-			$deviceList[$devID]->Label = $deviceRow["Label"];
-			$deviceList[$devID]->SerialNo = $deviceRow["SerialNo"];
-			$deviceList[$devID]->AssetTag = $deviceRow["AssetTag"];
-			$deviceList[$devID]->PrimaryIP = $deviceRow["PrimaryIP"];
-			$deviceList[$devID]->SNMPCommunity = $deviceRow["SNMPCommunity"];
-			$deviceList[$devID]->ESX = $deviceRow["ESX"];
-			$deviceList[$devID]->Owner = $deviceRow["Owner"];
-			$deviceList[$devID]->EscalationTimeID = $deviceRow["EscalationTimeID"];
-			$deviceList[$devID]->EscalationID = $deviceRow["EscalationID"];
-			$deviceList[$devID]->PrimaryContact = $deviceRow["PrimaryContact"];
-			$deviceList[$devID]->Cabinet = $deviceRow["Cabinet"];
-			$deviceList[$devID]->Position = $deviceRow["Position"];
-			$deviceList[$devID]->Height = $deviceRow["Height"];
-			$deviceList[$devID]->Ports = $deviceRow["Ports"];
-			$deviceList[$devID]->FirstPortNum = $deviceRow["FirstPortNum"];
-			$deviceList[$devID]->TemplateID = $deviceRow["TemplateID"];
-			$deviceList[$devID]->NominalWatts = $deviceRow["NominalWatts"];
-			$deviceList[$devID]->PowerSupplyCount = $deviceRow["PowerSupplyCount"];
-			$deviceList[$devID]->DeviceType = $deviceRow["DeviceType"];
-			$deviceList[$devID]->ChassisSlots = $deviceRow["ChassisSlots"];
-			$deviceList[$devID]->RearChassisSlots = $deviceRow["RearChassisSlots"];
-			$deviceList[$devID]->ParentDevice = $deviceRow["ParentDevice"];
-			$deviceList[$devID]->MfgDate = $deviceRow["MfgDate"];
-			$deviceList[$devID]->InstallDate = $deviceRow["InstallDate"];
-			$deviceList[$devID]->WarrantyCo = $deviceRow["WarrantyCo"];
-			@$deviceList[$devID]->WarrantyExpire = $deviceRow["WarrantyExpire"];
-			$deviceList[$devID]->Notes = $deviceRow["Notes"];
-			$deviceList[$devID]->Reservation = $deviceRow["Reservation"];
+		foreach($dbh->query($sql) as $deviceRow){
+			$deviceList[$deviceRow["DeviceID"]]=DeviceRowToObject($deviceRow);
 		}
 		
 		return $deviceList;
@@ -2198,38 +1861,10 @@ class Device {
       
       $diversityList = $devRow->GetDeviceDiversity( $db );
       
-      if ( sizeof( $diversityList ) < 2 ) {      
-        $currSize = sizeof( $devList );
-        
-        $devList[$currSize] = new Device();
-
-        $devList[$currSize]->DeviceID = $devRow->DeviceID;
-        $devList[$currSize]->Label = $devRow->Label;
-        $devList[$currSize]->SerialNo = $devRow->SerialNo;
-        $devList[$currSize]->AssetTag = $devRow->AssetTag;
-		$devList[$currSize]->PrimaryIP = $devRow->PrimaryIP;
-		$devList[$currSize]->SNMPCommunity = $devRow->SNMPCommunity;
-		$devList[$currSize]->ESX = $devRow->ESX;
-		$devList[$currSize]->Owner = $devRow->Owner;
-		$devList[$currSize]->EscalationTimeID = $devRow->EscalationTimeID;
-		$devList[$currSize]->EscalationID = $devRow->EscalationID;
-		$devList[$currSize]->PrimaryContact = $devRow->PrimaryContact;
-        $devList[$currSize]->Cabinet = $devRow->Cabinet;
-        $devList[$currSize]->Position = $devRow->Position;
-        $devList[$currSize]->Height = $devRow->Height;
-        $devList[$currSize]->Ports = $devRow->Ports;
-        $devList[$currSize]->FirstPortNum = $devRow->FirstPortNum;
-        $devList[$currSize]->TemplateID = $devRow->TemplateID;
-        $devList[$currSize]->NominalWatts = $devRow->NominalWatts;
-        $devList[$currSize]->PowerSupplyCount = $devRow->PowerSupplyCount;
-        $devList[$currSize]->DeviceType = $devRow->DeviceType;
-		$devList[$currSize]->MfgDate = $devRow->MfgDate;
-		$devList[$currSize]->InstallDate = $devRow->InstallDate;
-		$devList[$currSize]->WarrantyCo = $devRow->WarrantyCo;
-		@$devList[$currSize]->WarrantyExpire = $devRow->WarrantyExpire;
-		$devList[$currSize]->Notes = $devRow->Notes;
-		$devList[$currSize]->Reservation = $devRow->Reservation;
-      }
+		if(sizeof($diversityList) <2){      
+			$currSize=sizeof($devList);
+			$devList[$currSize]=$devRow;
+		}
     }
     
     return $devList;

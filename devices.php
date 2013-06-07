@@ -170,7 +170,7 @@
 				echo json_encode($rowarray);
 				exit;
 			}
-			$patchList=$dev::GetPatchPanels($facDB);
+			$patchList=$dev::GetPatchPanels();
 			echo '<select name="devid"><option value=-1>No Connection</option><option value="note">Note Only</option>';
 			foreach($patchList as $devid=>$devRow){
 				$selected=($_POST['pdev']==$devid)?" disabled":"";
@@ -246,7 +246,7 @@
 					// User has changed the device type from chassis to something else and has said yes
 					// that they want to remove the dependant child devices
 					if(isset($_POST['killthechildren'])){
-						$childList=$dev->GetDeviceChildren($facDB);
+						$childList=$dev->GetDeviceChildren();
 						foreach($childList as $childDev){
 							$childDev->DeleteDevice($facDB);
 						}
@@ -430,7 +430,7 @@
 	
 	$childList=array();
 	if($dev->ChassisSlots>0 || $dev->RearChassisSlots>0){
-		$childList=$dev->GetDeviceChildren($facDB);
+		$childList=$dev->GetDeviceChildren();
 	}
 
 	if($config->ParameterArray["mDate"]=="now"){
