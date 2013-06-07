@@ -1072,11 +1072,11 @@ class Device {
 	
 	function MakeSafe() {
 		$this->DeviceID=intval($this->DeviceID);
-		$this->Label=addslashes($this->Label);
-		$this->SerialNo=addslashes($this->SerialNo);
-		$this->AssetTag=addslashes($this->AssetTag);
-		$this->PrimaryIP=addslashes($this->PrimaryIP);
-		$this->SNMPCommunity=addslashes($this->SNMPCommunity);
+		$this->Label=addslashes(trim($this->Label));
+		$this->SerialNo=addslashes(trim($this->SerialNo));
+		$this->AssetTag=addslashes(trim($this->AssetTag));
+		$this->PrimaryIP=addslashes(trim($this->PrimaryIP));
+		$this->SNMPCommunity=addslashes(trim($this->SNMPCommunity));
 		$this->ESX=intval($this->ESX);
 		$this->Owner=intval($this->Owner);
 		$this->EscalationTimeID=intval($this->EscalationTimeID);
@@ -1090,15 +1090,15 @@ class Device {
 		$this->TemplateID=intval($this->TemplateID);
 		$this->NominalWatts=intval($this->NominalWatts);
 		$this->PowerSupplyCount=intval($this->PowerSupplyCount);
-		$this->DeviceType=addslashes($this->DeviceType);
+		$this->DeviceType=addslashes(trim($this->DeviceType));
 		$this->ChassisSlots=intval($this->ChassisSlots);
 		$this->RearChassisSlots=intval($this->RearChassisSlots);
 		$this->ParentDevice=intval($this->ParentDevice);
 		$this->MfgDate=addslashes($this->MfgDate);
 		$this->InstallDate=addslashes($this->InstallDate);
-		$this->WarrantyCo=addslashes($this->WarrantyCo);
+		$this->WarrantyCo=addslashes(trim($this->WarrantyCo));
 		$this->WarrantyExpire=addslashes($this->WarrantyExpire);
-		$this->Notes=addslashes($this->Notes);
+		$this->Notes=addslashes(trim($this->Notes));
 		$this->Reservation=intval($this->Reservation);
 	}
 
@@ -1286,7 +1286,8 @@ class Device {
 		$tmpDev=new Device();
 		$tmpDev->DeviceID=$this->DeviceID;
 		$tmpDev->GetDevice();
-		
+	
+		$this->MakeSafe();	
 		if($tmpDev->DeviceType == "Chassis" && $tmpDev->DeviceType != $this->DeviceType){
 			// SUT #148 - Previously defined chassis is no longer a chassis
 			// If it has children, return with no update
@@ -1324,11 +1325,8 @@ class Device {
 		}
 
 		// You can't update what doesn't exist, so check for existing record first and retrieve the current location
-		$sql = "SELECT * FROM fac_Device WHERE DeviceID=\"$this->DeviceID\";";
-		if ( ! $row = $dbh->query( $sql )->fetch() ) {
-			$info = $dbh->errorInfo();
-
-			error_log( "PDO Error: " . $info[2] . " SQL=" . $sql );
+		$sql = "SELECT * FROM fac_Device WHERE DeviceID=$this->DeviceID;";
+		if(!$row=$dbh->query($sql)->fetch()){
 			return false;
 		}		
 
@@ -1339,22 +1337,21 @@ class Device {
 			$powercon->DeleteConnections();
 		}
   
-		$update_sql="UPDATE fac_Device SET Label=\"$this->Label\", SerialNo=\"$this->SerialNo\", AssetTag=\"$this->AssetTag\", 
-			PrimaryIP=\"$this->PrimaryIP\", SNMPCommunity=\"$this->SNMPCommunity\", ESX=\"$this->ESX\", Owner=\"$this->Owner\", 
-			EscalationTimeID=\"$this->EscalationTimeID\", EscalationID=\"$this->EscalationID\", PrimaryContact=\"$this->PrimaryContact\", 
-			Cabinet=\"$this->Cabinet\", Position=\"$this->Position\", Height=\"$this->Height\", Ports=\"$this->Ports\", 
-			FirstPortNum=\"$this->FirstPortNum\", TemplateID=\"$this->TemplateID\", NominalWatts=\"$this->NominalWatts\", 
-			PowerSupplyCount=\"$this->PowerSupplyCount\", DeviceType=\"$this->DeviceType\", ChassisSlots=\"$this->ChassisSlots\", 
-			RearChassisSlots=\"$this->RearChassisSlots\",ParentDevice=\"$this->ParentDevice\", 
+		$sql="UPDATE fac_Device SET Label=\"$this->Label\", SerialNo=\"$this->SerialNo\", AssetTag=\"$this->AssetTag\", 
+			PrimaryIP=\"$this->PrimaryIP\", SNMPCommunity=\"$this->SNMPCommunity\", ESX=$this->ESX, Owner=$this->Owner, 
+			EscalationTimeID=$this->EscalationTimeID, EscalationID=$this->EscalationID, PrimaryContact=$this->PrimaryContact, 
+			Cabinet=$this->Cabinet, Position=$this->Position, Height=$this->Height, Ports=$this->Ports, 
+			FirstPortNum=$this->FirstPortNum, TemplateID=$this->TemplateID, NominalWatts=$this->NominalWatts, 
+			PowerSupplyCount=$this->PowerSupplyCount, DeviceType=\"$this->DeviceType\", ChassisSlots=$this->ChassisSlots, 
+			RearChassisSlots=$this->RearChassisSlots,ParentDevice=$this->ParentDevice, 
 			MfgDate=\"".date("Y-m-d", strtotime($this->MfgDate))."\", 
 			InstallDate=\"".date("Y-m-d", strtotime($this->InstallDate))."\", WarrantyCo=\"$this->WarrantyCo\", 
 			WarrantyExpire=\"".date("Y-m-d", strtotime($this->WarrantyExpire))."\", Notes=\"$this->Notes\", 
-			Reservation=\"$this->Reservation\" WHERE DeviceID=$this->DeviceID;";
+			Reservation=$this->Reservation WHERE DeviceID=$this->DeviceID;";
 
-		if( ! $dbh->exec($update_sql) ) {
-			$info = $dbh->errorInfo();
-
-			error_log( "PDO Error: " . $info[2] . " SQL=" . $sql );
+		if(!$dbh->query($sql)){
+			$info=$dbh->errorInfo();
+			error_log("PDO Error: {$info[2]} SQL=$sql");
 			return false;
 		}
 		
@@ -2245,8 +2242,8 @@ class Device {
 
 		$tags=array();
 
-		foreach( $dbh->query( $sql) as $row ) {
-			$tags[]=Tags::FindName($row[0]);
+		foreach($dbh->query($sql) as $tagid){
+			$tags[]=Tags::FindName($tagid[0]);
 		}
 
 		return $tags;
@@ -2254,7 +2251,8 @@ class Device {
 	
 	function SetTags($tags=array()) {
 		global $dbh;
-		
+
+		$this->MakeSafe();		
 		if(count($tags)>0){
 			//Clear existing tags
 			$this->SetTags();
@@ -2263,21 +2261,18 @@ class Device {
 				if($t==0){
 					$t=Tags::CreateTag($tag);
 				}
-				$sql="INSERT INTO fac_DeviceTags (DeviceID, TagID) VALUES (".intval($this->DeviceID).",$t);";
-				if ( ! $dbh->exec( $sql ) ) {
-					$info = $dbh->errorInfo();
+				$sql="INSERT INTO fac_DeviceTags (DeviceID, TagID) VALUES ($this->DeviceID,$t);";
+				if(!$dbh->exec($sql)){
+					$info=$dbh->errorInfo();
 
-					error_log( "PDO Error: " . $info[2] . " SQL=" . $sql );
+					error_log("PDO Error: {$info[2]} SQL=$sql");
 					return false;
 				}				
 			}
 		}else{
 			//If no array is passed then clear all the tags
-			$sql="DELETE FROM fac_DeviceTags WHERE DeviceID=".intval($this->DeviceID).";";
-			if ( ! $dbh->exec( $sql ) ) {
-				$info = $dbh->errorInfo();
-
-				error_log( "PDO Error: " . $info[2] . " SQL=" . $sql );
+			$sql="DELETE FROM fac_DeviceTags WHERE DeviceID=$this->DeviceID;";
+			if(!$dbh->exec($sql)){
 				return false;
 			}
 		}
