@@ -29,28 +29,28 @@ function CabinetRowToObject($dbRow){
 	 * Generic function that will take any row returned from the fac_Cabinet
 	 * table and convert it to an object for use in array or other
 	 */
-	$cab=newCabinet();
-	$cab->CabinetID=$cabinetRow["CabinetID"];
-	$cab->DataCenterID=$cabinetRow["DataCenterID"];
-	$cab->Location=$cabinetRow["Location"];
-	$cab->AssignedTo=$cabinetRow["AssignedTo"];
-	$cab->ZoneID=$cabinetRow["ZoneID"];
-	$cab->CabRowID=$cabinetRow["CabRowID"];
-	$cab->CabinetHeight=$cabinetRow["CabinetHeight"];
-	$cab->Model=$cabinetRow["Model"];
-	$cab->Keylock=$cabinetRow["Keylock"];
-	$cab->MaxKW=$cabinetRow["MaxKW"];
-	$cab->MaxWeight=$cabinetRow["MaxWeight"];
-	$cab->InstallationDate=$cabinetRow["InstallationDate"];
-	$cab->SensorIPAddress=$cabinetRow["SensorIPAddress"];
-	$cab->SensorCommunity=$cabinetRow["SensorCommunity"];
-	$cab->TempSensorOID=$cabinetRow["TempSensorOID"];
-	$cab->HumiditySensorOID=$cabinetRow["HumiditySensorOID"];
-	$cab->MapX1=$cabinetRow["MapX1"];
-	$cab->MapY1=$cabinetRow["MapY1"];
-	$cab->MapX2=$cabinetRow["MapX2"];
-	$cab->MapY2=$cabinetRow["MapY2"];
-	$cab->Notes=$cabinetRow["Notes"];
+	$cab=new Cabinet();
+	$cab->CabinetID=$dbRow["CabinetID"];
+	$cab->DataCenterID=$dbRow["DataCenterID"];
+	$cab->Location=$dbRow["Location"];
+	$cab->AssignedTo=$dbRow["AssignedTo"];
+	$cab->ZoneID=$dbRow["ZoneID"];
+	$cab->CabRowID=$dbRow["CabRowID"];
+	$cab->CabinetHeight=$dbRow["CabinetHeight"];
+	$cab->Model=$dbRow["Model"];
+	$cab->Keylock=$dbRow["Keylock"];
+	$cab->MaxKW=$dbRow["MaxKW"];
+	$cab->MaxWeight=$dbRow["MaxWeight"];
+	$cab->InstallationDate=$dbRow["InstallationDate"];
+	$cab->SensorIPAddress=$dbRow["SensorIPAddress"];
+	$cab->SensorCommunity=$dbRow["SensorCommunity"];
+	$cab->TempSensorOID=$dbRow["TempSensorOID"];
+	$cab->HumiditySensorOID=$dbRow["HumiditySensorOID"];
+	$cab->MapX1=$dbRow["MapX1"];
+	$cab->MapY1=$dbRow["MapY1"];
+	$cab->MapX2=$dbRow["MapX2"];
+	$cab->MapY2=$dbRow["MapY2"];
+	$cab->Notes=$dbRow["Notes"];
 
 	return $cab;
 }
