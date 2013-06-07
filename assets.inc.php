@@ -24,6 +24,96 @@
 */
 
 
+function CabinetRowToObject($dbRow){
+	/*
+	 * Generic function that will take any row returned from the fac_Cabinet
+	 * table and convert it to an object for use in array or other
+	 */
+	$cab=newCabinet();
+	$cab->CabinetID=$cabinetRow["CabinetID"];
+	$cab->DataCenterID=$cabinetRow["DataCenterID"];
+	$cab->Location=$cabinetRow["Location"];
+	$cab->AssignedTo=$cabinetRow["AssignedTo"];
+	$cab->ZoneID=$cabinetRow["ZoneID"];
+	$cab->CabRowID=$cabinetRow["CabRowID"];
+	$cab->CabinetHeight=$cabinetRow["CabinetHeight"];
+	$cab->Model=$cabinetRow["Model"];
+	$cab->Keylock=$cabinetRow["Keylock"];
+	$cab->MaxKW=$cabinetRow["MaxKW"];
+	$cab->MaxWeight=$cabinetRow["MaxWeight"];
+	$cab->InstallationDate=$cabinetRow["InstallationDate"];
+	$cab->SensorIPAddress=$cabinetRow["SensorIPAddress"];
+	$cab->SensorCommunity=$cabinetRow["SensorCommunity"];
+	$cab->TempSensorOID=$cabinetRow["TempSensorOID"];
+	$cab->HumiditySensorOID=$cabinetRow["HumiditySensorOID"];
+	$cab->MapX1=$cabinetRow["MapX1"];
+	$cab->MapY1=$cabinetRow["MapY1"];
+	$cab->MapX2=$cabinetRow["MapX2"];
+	$cab->MapY2=$cabinetRow["MapY2"];
+	$cab->Notes=$cabinetRow["Notes"];
+
+	return $cab;
+}
+
+function DeviceRowToObject($dbRow){
+	/*
+	 * Generic function that will take any row returned from the fac_Devices
+	 * table and convert it to an object for use in array or other
+	 */
+
+	$dev=new Device();
+	$dev->DeviceID=$dbRow["DeviceID"];
+	$dev->Label=$dbRow["Label"];
+	$dev->SerialNo=$dbRow["SerialNo"];
+	$dev->AssetTag=$dbRow["AssetTag"];
+	$dev->PrimaryIP=$dbRow["PrimaryIP"];
+	$dev->SNMPCommunity=$dbRow["SNMPCommunity"];
+	$dev->ESX=$dbRow["ESX"];
+	$dev->Owner=$dbRow["Owner"];
+	// Suppressing errors on the following two because they can be null and that generates an apache error
+	@$dev->EscalationTimeID=$dbRow["EscalationTimeID"];
+	@$dev->EscalationID=$dbRow["EscalationID"];
+	$dev->PrimaryContact=$dbRow["PrimaryContact"];
+	$dev->Cabinet=$dbRow["Cabinet"];
+	$dev->Position=$dbRow["Position"];
+	$dev->Height=$dbRow["Height"];
+	$dev->Ports=$dbRow["Ports"];
+	$dev->FirstPortNum=$dbRow["FirstPortNum"];
+	$dev->TemplateID=$dbRow["TemplateID"];
+	$dev->NominalWatts=$dbRow["NominalWatts"];
+	$dev->PowerSupplyCount=$dbRow["PowerSupplyCount"];
+	$dev->DeviceType=$dbRow["DeviceType"];
+	$dev->ChassisSlots=$dbRow["ChassisSlots"];
+	$dev->RearChassisSlots=$dbRow["RearChassisSlots"];
+	$dev->ParentDevice=$dbRow["ParentDevice"];
+	$dev->MfgDate=$dbRow["MfgDate"];
+	$dev->InstallDate=$dbRow["InstallDate"];
+	$dev->WarrantyCo=$dbRow["WarrantyCo"];
+	@$dev->WarrantyExpire=$dbRow["WarrantyExpire"];
+	$dev->Notes=$dbRow["Notes"];
+	$dev->Reservation=$dbRow["Reservation"];
+
+	return $dev;
+}
+
+function ESXRowToObject($dbRow){
+	/*
+	 * Generic function that will take any row returned from the fac_VMInventory
+	 * table and convert it to an object for use in array or other
+	 */
+
+	$vm=new ESX();
+	$vm->VMIndex=$dbRow["VMIndex"];
+	$vm->DeviceID=$dbRow["DeviceID"];
+	$vm->LastUpdated=$dbRow["LastUpdated"];
+	$vm->vmID=$dbRow["vmID"];
+	$vm->vmName=$dbRow["vmName"];
+	$vm->vmState=$dbRow["vmState"];
+	$vm->Owner=$dbRow["Owner"];
+
+	return $vm;
+}
+
 class Cabinet {
 	/* Cabinet:		The workhorse logical container for DCIM.  This can be a 2-post rack, a 4-post open rack,
 					or an enclosed cabinet.  The height is variable.  Devices are attached to cabinets, and
@@ -183,30 +273,8 @@ class Cabinet {
 		$sql="SELECT * FROM fac_Cabinet$sql ORDER BY DataCenterID, Location;";
 
 		foreach ( $dbh->query( $sql ) as $cabinetRow ) {
-			$cabID = sizeof( $cabinetList );
-			$cabinetList[ $cabID ] = new Cabinet();
-
-			$cabinetList[ $cabID ]->CabinetID = $cabinetRow[ "CabinetID" ];
-			$cabinetList[ $cabID ]->DataCenterID = $cabinetRow[ "DataCenterID" ];
-			$cabinetList[ $cabID ]->Location = $cabinetRow[ "Location" ];
-			$cabinetList[ $cabID ]->AssignedTo = $cabinetRow[ "AssignedTo" ];
-			$cabinetList[ $cabID ]->ZoneID = $cabinetRow["ZoneID"];
-			$cabinetList[ $cabID ]->CabRowID = $cabinetRow["CabRowID"];
-			$cabinetList[ $cabID ]->CabinetHeight = $cabinetRow[ "CabinetHeight" ];
-			$cabinetList[ $cabID ]->Model = $cabinetRow[ "Model" ];
-			$cabinetList[ $cabID ]->Keylock = $cabinetRow["Keylock"];
-			$cabinetList[ $cabID ]->MaxKW = $cabinetRow[ "MaxKW" ];
-			$cabinetList[ $cabID ]->MaxWeight = $cabinetRow[ "MaxWeight" ];
-			$cabinetList[ $cabID ]->InstallationDate = $cabinetRow[ "InstallationDate" ];
-			$cabinetList[ $cabID ]->SensorIPAddress = $cabinetRow["SensorIPAddress"];
-			$cabinetList[ $cabID ]->SensorCommunity = $cabinetRow["SensorCommunity"];
-			$cabinetList[ $cabID ]->TempSensorOID = $cabinetRow["TempSensorOID"];
-			$cabinetList[ $cabID ]->HumiditySensorOID = $cabinetRow["HumiditySensorOID"];
-			$cabinetList[ $cabID ]->MapX1 = $cabinetRow[ "MapX1" ];
-			$cabinetList[ $cabID ]->MapY1 = $cabinetRow[ "MapY1" ];
-			$cabinetList[ $cabID ]->MapX2 = $cabinetRow[ "MapX2" ];
-			$cabinetList[ $cabID ]->MapY2 = $cabinetRow[ "MapY2" ];
-			$cabinetList[ $cabID ]->Notes = $cabinetRow[ "Notes" ];
+			$cabID=sizeof($cabinetList);
+			$cabinetList[$cabID]=CabinetRowToObject($cabinetRow);
 		}
 
 		return $cabinetList;
@@ -220,30 +288,8 @@ class Cabinet {
 		$sql = "select * from fac_Cabinet where DataCenterID=\"" . intval($this->DataCenterID) . "\" order by Location";
 
 		foreach ( $dbh->query( $sql ) as $cabinetRow ) {
-			$cabID = sizeof( $cabinetList );
-			$cabinetList[ $cabID ] = new Cabinet();
-
-			$cabinetList[ $cabID ]->CabinetID = $cabinetRow[ "CabinetID" ];
-			$cabinetList[ $cabID ]->DataCenterID = $cabinetRow[ "DataCenterID" ];
-			$cabinetList[ $cabID ]->Location = $cabinetRow[ "Location" ];
-			$cabinetList[ $cabID ]->AssignedTo = $cabinetRow[ "AssignedTo" ];
-			$cabinetList[ $cabID ]->ZoneID = $cabinetRow[ "ZoneID" ];
-			$cabinetList[ $cabID ]->CabRowID = $cabinetRow["CabRowID"];
-			$cabinetList[ $cabID ]->CabinetHeight = $cabinetRow[ "CabinetHeight" ];
-			$cabinetList[ $cabID ]->Model = $cabinetRow[ "Model" ];
-			$cabinetList[ $cabID ]->Keylock = $cabinetRow[ "Keylock" ];
-			$cabinetList[ $cabID ]->MaxKW = $cabinetRow[ "MaxKW" ];
-			$cabinetList[ $cabID ]->MaxWeight = $cabinetRow[ "MaxWeight" ];
-			$cabinetList[ $cabID ]->InstallationDate = $cabinetRow[ "InstallationDate" ];
-			$cabinetList[ $cabID ]->SensorIPAddress = $cabinetRow["SensorIPAddress"];
-			$cabinetList[ $cabID ]->SensorCommunity = $cabinetRow["SensorCommunity"];
-			$cabinetList[ $cabID ]->TempSensorOID = $cabinetRow["TempSensorOID"];
-			$cabinetList[ $cabID ]->HumiditySensorOID = $cabinetRow["HumiditySensorOID"];
-			$cabinetList[ $cabID ]->MapX1 = $cabinetRow[ "MapX1" ];
-			$cabinetList[ $cabID ]->MapY1 = $cabinetRow[ "MapY1" ];
-			$cabinetList[ $cabID ]->MapX2 = $cabinetRow[ "MapX2" ];
-			$cabinetList[ $cabID ]->MapY2 = $cabinetRow[ "MapY2" ];
-			$cabinetList[ $cabID ]->Notes = $cabinetRow[ "Notes" ];
+			$cabID=sizeof($cabinetList);
+			$cabinetList[$cabID]=CabinetRowToObject($cabinetRow);
 		}
 
 		return $cabinetList;
@@ -464,29 +510,8 @@ class Cabinet {
 		$cabinetList=array();
 
 		foreach ( $dbh->query( $sql ) as $cabinetRow ){
-			$cabID=sizeof( $cabinetList );
-			$cabinetList[$cabID]=new Cabinet();
-			$cabinetList[$cabID]->CabinetID=$cabinetRow["CabinetID"];
-			$cabinetList[$cabID]->DataCenterID=$cabinetRow["DataCenterID"];
-			$cabinetList[$cabID]->Location=$cabinetRow["Location"];
-			$cabinetList[$cabID]->AssignedTo=$cabinetRow["AssignedTo"];
-			$cabinetList[$cabID]->ZoneID=$cabinetRow["ZoneID"];
-			$cabinetList[$cabID]->CabRowID=$cabinetRow["CabRowID"];
-			$cabinetList[$cabID]->CabinetHeight=$cabinetRow["CabinetHeight"];
-			$cabinetList[$cabID]->Model=$cabinetRow["Model"];
-			$cabinetList[$cabID]->Keylock=$cabinetRow["Keylock"];
-			$cabinetList[$cabID]->MaxKW=$cabinetRow["MaxKW"];
-			$cabinetList[$cabID]->MaxWeight=$cabinetRow["MaxWeight"];
-			$cabinetList[$cabID]->InstallationDate=$cabinetRow["InstallationDate"];
-			$cabinetList[$cabID]->SensorIPAddress = $cabinetRow["SensorIPAddress"];
-			$cabinetList[$cabID]->SensorCommunity = $cabinetRow["SensorCommunity"];
-			$cabinetList[$cabID]->TempSensorOID = $cabinetRow["TempSensorOID"];
-			$cabinetList[$cabID]->HumiditySensorOID = $cabinetRow["HumiditySensorOID"];
-			$cabinetList[$cabID]->MapX1=$cabinetRow["MapX1"];
-			$cabinetList[$cabID]->MapY1=$cabinetRow["MapY1"];
-			$cabinetList[$cabID]->MapX2=$cabinetRow["MapX2"];
-			$cabinetList[$cabID]->MapY2=$cabinetRow["MapY2"];
-			$cabinetList[$cabID]->Notes=$cabinetRow["Notes"];
+			$cabID=sizeof($cabinetList);
+			$cabinetList[$cabID]=CabinetRowToObject($cabinetRow);
 		}
 
 		return $cabinetList;
@@ -500,29 +525,8 @@ class Cabinet {
 		$cabinetList=array();
 
 		foreach ( $dbh->query( $sql ) as $cabinetRow ) {
-			$cabID=sizeof( $cabinetList );
-			$cabinetList[$cabID]=new Cabinet();
-			$cabinetList[$cabID]->CabinetID=$cabinetRow["CabinetID"];
-			$cabinetList[$cabID]->DataCenterID=$cabinetRow["DataCenterID"];
-			$cabinetList[$cabID]->Location=$cabinetRow["Location"];
-			$cabinetList[$cabID]->AssignedTo=$cabinetRow["AssignedTo"];
-			$cabinetList[$cabID]->ZoneID=$cabinetRow["ZoneID"];
-			$cabinetList[$cabID]->CabRowID=$cabinetRow["CabRowID"];
-			$cabinetList[$cabID]->CabinetHeight=$cabinetRow["CabinetHeight"];
-			$cabinetList[$cabID]->Model=$cabinetRow["Model"];
-			$cabinetList[$cabID]->Keylock=$cabinetRow["Keylock"];
-			$cabinetList[$cabID]->MaxKW=$cabinetRow["MaxKW"];
-			$cabinetList[$cabID]->MaxWeight=$cabinetRow["MaxWeight"];
-			$cabinetList[$cabID]->InstallationDate=$cabinetRow["InstallationDate"];
-			$cabinetList[$cabID]->SensorIPAddress = $cabinetRow["SensorIPAddress"];
-			$cabinetList[$cabID]->SensorCommunity = $cabinetRow["SensorCommunity"];
-			$cabinetList[$cabID]->TempSensorOID = $cabinetRow["TempSensorOID"];
-			$cabinetList[$cabID]->HumiditySensorOID = $cabinetRow["HumiditySensorOID"];
-			$cabinetList[$cabID]->MapX1=$cabinetRow["MapX1"];
-			$cabinetList[$cabID]->MapY1=$cabinetRow["MapY1"];
-			$cabinetList[$cabID]->MapX2=$cabinetRow["MapX2"];
-			$cabinetList[$cabID]->MapY2=$cabinetRow["MapY2"];
-			$cabinetList[$cabID]->Notes=$cabinetRow["Notes"];
+			$cabID=sizeof($cabinetList);
+			$cabinetList[$cabID]=CabinetRowToObject($cabinetRow);
 		}
 
 		return $cabinetList;
@@ -536,29 +540,8 @@ class Cabinet {
 		$cabinetList=array();
 
 		foreach ( $dbh->query( $sql ) as $cabinetRow ) {
-			$cabID=sizeof( $cabinetList );
-			$cabinetList[$cabID]=new Cabinet();
-			$cabinetList[$cabID]->CabinetID=$cabinetRow["CabinetID"];
-			$cabinetList[$cabID]->DataCenterID=$cabinetRow["DataCenterID"];
-			$cabinetList[$cabID]->Location=$cabinetRow["Location"];
-			$cabinetList[$cabID]->AssignedTo=$cabinetRow["AssignedTo"];
-			$cabinetList[$cabID]->ZoneID=$cabinetRow["ZoneID"];
-			$cabinetList[$cabID]->CabRowID=$cabinetRow["CabRowID"];
-			$cabinetList[$cabID]->CabinetHeight=$cabinetRow["CabinetHeight"];
-			$cabinetList[$cabID]->Model=$cabinetRow["Model"];
-			$cabinetList[$cabID]->Keylock=$cabinetRow["Keylock"];
-			$cabinetList[$cabID]->MaxKW=$cabinetRow["MaxKW"];
-			$cabinetList[$cabID]->MaxWeight=$cabinetRow["MaxWeight"];
-			$cabinetList[$cabID]->InstallationDate=$cabinetRow["InstallationDate"];
-			$cabinetList[$cabID]->SensorIPAddress = $cabinetRow["SensorIPAddress"];
-			$cabinetList[$cabID]->SensorCommunity = $cabinetRow["SensorCommunity"];
-			$cabinetList[$cabID]->TempSensorOID = $cabinetRow["TempSensorOID"];
-			$cabinetList[$cabID]->HumiditySensorOID = $cabinetRow["HumiditySensorOID"];
-			$cabinetList[$cabID]->MapX1=$cabinetRow["MapX1"];
-			$cabinetList[$cabID]->MapY1=$cabinetRow["MapY1"];
-			$cabinetList[$cabID]->MapX2=$cabinetRow["MapX2"];
-			$cabinetList[$cabID]->MapY2=$cabinetRow["MapY2"];
-			$cabinetList[$cabID]->Notes=$cabinetRow["Notes"];
+			$cabID=sizeof($cabinetList);
+			$cabinetList[$cabID]=CabinetRowToObject($cabinetRow);
 		}
 		return $cabinetList;
 	}
@@ -1029,65 +1012,6 @@ class ConnectionPath {
 	
 	
 } //END OF CONNETCIONPATH
-
-function DeviceRowToObject($dbRow){
-	/*
-	 * Generic function that will take any row returned from the fac_devices
-	 * table and convert it to an object for use in array or other
-	 */
-
-	$dev=new Device();
-	$dev->DeviceID=$dbRow["DeviceID"];
-	$dev->Label=$dbRow["Label"];
-	$dev->SerialNo=$dbRow["SerialNo"];
-	$dev->AssetTag=$dbRow["AssetTag"];
-	$dev->PrimaryIP=$dbRow["PrimaryIP"];
-	$dev->SNMPCommunity=$dbRow["SNMPCommunity"];
-	$dev->ESX=$dbRow["ESX"];
-	$dev->Owner=$dbRow["Owner"];
-	// Suppressing errors on the following two because they can be null and that generates an apache error
-	@$dev->EscalationTimeID=$dbRow["EscalationTimeID"];
-	@$dev->EscalationID=$dbRow["EscalationID"];
-	$dev->PrimaryContact=$dbRow["PrimaryContact"];
-	$dev->Cabinet=$dbRow["Cabinet"];
-	$dev->Position=$dbRow["Position"];
-	$dev->Height=$dbRow["Height"];
-	$dev->Ports=$dbRow["Ports"];
-	$dev->FirstPortNum=$dbRow["FirstPortNum"];
-	$dev->TemplateID=$dbRow["TemplateID"];
-	$dev->NominalWatts=$dbRow["NominalWatts"];
-	$dev->PowerSupplyCount=$dbRow["PowerSupplyCount"];
-	$dev->DeviceType=$dbRow["DeviceType"];
-	$dev->ChassisSlots=$dbRow["ChassisSlots"];
-	$dev->RearChassisSlots=$dbRow["RearChassisSlots"];
-	$dev->ParentDevice=$dbRow["ParentDevice"];
-	$dev->MfgDate=$dbRow["MfgDate"];
-	$dev->InstallDate=$dbRow["InstallDate"];
-	$dev->WarrantyCo=$dbRow["WarrantyCo"];
-	@$dev->WarrantyExpire=$dbRow["WarrantyExpire"];
-	$dev->Notes=$dbRow["Notes"];
-	$dev->Reservation=$dbRow["Reservation"];
-
-	return $dev;
-}
-
-function ESXRowToObject($dbRow){
-	/*
-	 * Generic function that will take any row returned from the fac_VMInventory
-	 * table and convert it to an object for use in array or other
-	 */
-
-	$vm=new ESX();
-	$vm->VMIndex=$dbRow["VMIndex"];
-	$vm->DeviceID=$dbRow["DeviceID"];
-	$vm->LastUpdated=$dbRow["LastUpdated"];
-	$vm->vmID=$dbRow["vmID"];
-	$vm->vmName=$dbRow["vmName"];
-	$vm->vmState=$dbRow["vmState"];
-	$vm->Owner=$dbRow["Owner"];
-
-	return $vm;
-}
 
 class Device {
 	/*	Device:		Assets within the data center, at the most granular level.  There are three basic
