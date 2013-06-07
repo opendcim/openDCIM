@@ -53,8 +53,16 @@
 				$cab->CreateCabinet();
 			}
 		}
-	}
-	elseif(isset($_POST['cabinetidprev']) && ($_POST['cabinetidprev']==$cab->CabinetID || $_POST['cabinetidprev']=="")){ 
+	}elseif($cab->CabinetID >0){
+		$cab->GetCabinet();
+
+		// Get any tags associated with this device
+		$tags=$cab->GetTags();
+		if(count($tags>0)){
+			// We have some tags so build the javascript elements we need to create the tags themselves
+			$taginsert="\t\ttags: {items: ".json_encode($tags)."},\n";
+		}
+	}elseif(isset($_POST['cabinetidprev']) && ($_POST['cabinetidprev']==$cab->CabinetID || $_POST['cabinetidprev']=="")){ 
 		//datacenter or zone have changed (or user reload)--> reload getting info from $_POST
 		$cab->DataCenterID=$_POST['datacenterid'];
 		$cab->Location=trim($_POST['location']);
@@ -81,16 +89,6 @@
 		$cab->Notes=($cab->Notes=="<br>")?"":$cab->Notes;
 		if(count($tagarray)>0){
 			$taginsert="\t\ttags: {items: ".json_encode($tagarray)."},\n";
-		}
-	}
-	elseif($cab->CabinetID >0){
-		$cab->GetCabinet();
-
-		// Get any tags associated with this device
-		$tags=$cab->GetTags();
-		if(count($tags>0)){
-			// We have some tags so build the javascript elements we need to create the tags themselves
-			$taginsert="\t\ttags: {items: ".json_encode($tags)."},\n";
 		}
 	}else{
 		$cab->CabinetID=null;
