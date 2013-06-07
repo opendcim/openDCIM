@@ -934,14 +934,14 @@ class Zone {
 		
 	//update cabinets in this zone
 	$sql = sprintf( "update fac_Cabinet set DataCenterID=%d where ZoneID='%d'", intval($this->DataCenterID), intval( $this->ZoneID ) );
-	if ( ! $dbh->exec( $sql ) ) {
+	if(!$dbh->query($sql)){
   		$info = $dbh->errorInfo();
   		error_log( "PDO Error: " . $info[2] . " SQL=" . $sql );
 		return false;
   	}
 	//update zone	
 	$sql = sprintf( "update fac_Zone set Description=\"%s\", DataCenterID=%d where ZoneID='%d'", addslashes( $this->Description ), intval($this->DataCenterID), intval( $this->ZoneID ) );
-	if ( ! $dbh->exec( $sql ) ) {
+	if(!$dbh->query($sql)){
   		$info = $dbh->errorInfo();
   		error_log( "PDO Error: " . $info[2] . " SQL=" . $sql );
 		return false;
@@ -956,21 +956,21 @@ class Zone {
   	
   	//update cabinets in this zone
   	$sql = sprintf( "update from fac_Cabinet set CabRowID=0, ZoneID=0 where ZoneID='%d'", intval( $this->ZoneID ) );
-	if ( ! $dbh->exec( $sql ) ) {
+  	if(!$dbh->query($sql)){
   		$info = $dbh->errorInfo();
   		error_log( "PDO Error: " . $info[2] . " SQL=" . $sql );
 		return false;
   	}
 	//delete CabRows in this zone
   	$sql = sprintf( "delete from fac_CabRow where ZoneID='%d'", intval( $this->ZoneID ) );
-	if ( ! $dbh->exec( $sql ) ) {
+  	if(!$dbh->query($sql)){
   		$info = $dbh->errorInfo();
   		error_log( "PDO Error: " . $info[2] . " SQL=" . $sql );
 		return false;
   	}
 				//delete zone
   	$sql = sprintf( "delete from fac_Zone where ZoneID='%d'", intval( $this->ZoneID ) );
-	if ( ! $dbh->exec( $sql ) ) {
+  	if(!$dbh->query($sql)){
   		$info = $dbh->errorInfo();
   		error_log( "PDO Error: " . $info[2] . " SQL=" . $sql );
 		return false;
@@ -1066,7 +1066,7 @@ class CabRow {
   	$this->MakeSafe();
   	//update cabinets in this cabrow
   	$sql = sprintf( "update fac_Cabinet set ZoneID='%d' where CabRowID='%d'", intval($this->ZoneID), intval( $this->CabRowID ) );
-  	if ( ! $dbh->exec( $sql ) ) {
+  	if(!$dbh->query($sql)){
   		$info = $dbh->errorInfo();
   		error_log( "PDO Error: " . $info[2] . " SQL=" . $sql );
 		return false;
@@ -1074,7 +1074,7 @@ class CabRow {
   	
   	//update cabrow
   	$sql = sprintf( "update fac_CabRow set Name=\"%s\", ZoneID='%d' where CabRowID='%d'", addslashes( $this->Name ), intval($this->ZoneID), intval( $this->CabRowID ) );
-  	if ( ! $dbh->exec( $sql ) ) {
+  	if(!$dbh->query($sql)){
   		$info = $dbh->errorInfo();
   		error_log( "PDO Error: " . $info[2] . " SQL=" . $sql );
 		return false;
@@ -1089,14 +1089,14 @@ class CabRow {
   	$this->MakeSafe();
   	//update cabinets in this cabrow
   	$sql = sprintf( "update from fac_Cabinet set CabRowID=0 where CabRowID='%d' and ZoneID='%d'", intval( $this->CabRowID ), intval( $this->ZoneID ) );
-  	if ( ! $dbh->exec( $sql ) ) {
+  	if(!$dbh->query($sql)){
   		$info = $dbh->errorInfo();
   		error_log( "PDO Error: " . $info[2] . " SQL=" . $sql );
 		return false;
   	}
   	  	//delete cabrow
   	$sql = sprintf( "delete from fac_CabRow where CabRowID='%d'", intval( $this->CabRowID ) );
-  	if ( ! $dbh->exec( $sql ) ) {
+  	if(!$dbh->query($sql)){
   		$info = $dbh->errorInfo();
   		error_log( "PDO Error: " . $info[2] . " SQL=" . $sql );
 		return false;
