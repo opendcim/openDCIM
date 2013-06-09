@@ -66,6 +66,7 @@ $(document).ready(function() {
   
   <title>openDCIM Data Center Information Management</title>
   <link rel="stylesheet" href="css/inventory.php" type="text/css">
+  <link rel="stylesheet" href="css/print.css" type="text/css" media="print">
   <link rel="stylesheet" href="css/jquery-ui.css" type="text/css">
   <!--[if lte IE 8]>
     <link rel="stylesheet"  href="css/ie.css" type="text/css">
@@ -94,7 +95,7 @@ echo '<div class="main">
 	<h2>',$config->ParameterArray["OrgName"],'</h2>
 	<h3>',__("Data Center Statistics"),'</h3>
   </div>
-  <div>
+  <div class="nav">
 	<button onclick="loadCanvas()">',__("Overview"),'</button>
 	<button onclick="space()">',__("Space"),'</button>
 	<button onclick="weight()">',__("Weight"),'</button>

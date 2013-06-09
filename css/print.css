@@ -3,7 +3,7 @@
 body {font-size: 12px;}
 p, h2, h3, h1 { margin-bottom: .25em; margin-top: .25em; }
 
-#header,#sidebar {display: none;}
+#header, #sidebar, .nav, .dcstats .heading > div + div button {display: none;}
 
 div.main {
 	display: block;
