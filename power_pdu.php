@@ -20,6 +20,7 @@
 	$template = new CDUTemplate();
 	$templateList = $template->GetTemplateList( $facDB );
 	$manufacturer = new Manufacturer();
+	$upTime='';
 
 	// Ajax actions
 	if(isset($_REQUEST['d']) || isset($_REQUEST['c']) || isset($_REQUEST['pid'])){

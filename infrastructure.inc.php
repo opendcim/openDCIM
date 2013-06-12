@@ -574,7 +574,7 @@ class DataCenter {
 			$tree.=str_repeat(" ",$lev+4)."<ul>\n";
 			//Rows
 			$filas_sql="SELECT CabRowID, name AS Fila
-						FROM fac_cabrow
+						FROM fac_CabRow
 						WHERE ZoneID=\"$myzone->ZoneID\"
 						ORDER BY Fila";
 			
@@ -597,8 +597,8 @@ class DataCenter {
 			  }
 			  $tree .= str_repeat(" ",$lev+6)."</ul>\n";
 			  $tree .= str_repeat(" ",$lev+5)."</li>\n";
-			} 
-			
+			}
+
 			//Cabinets without CabRowID
 			$cab_sql = "SELECT * 
 			  			FROM fac_Cabinet 

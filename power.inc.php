@@ -296,12 +296,12 @@ class PowerDistribution {
 	var $PanelPole2;
 
 	function MakeSafe(){
-		$this->Label=addslashes($this->Label);
+		$this->Label=addslashes(trim($this->Label));
 		$this->CabinetID=intval($this->CabinetID);
 		$this->TemplateID=intval($this->TemplateID);
-		$this->IPAddress=addslashes($this->IPAddress);
-		$this->SNMPCommunity=addslashes($this->SNMPCommunity);
-		$this->FirmwareVersion=addslashes($this->FirmwareVersion);
+		$this->IPAddress=addslashes(trim($this->IPAddress));
+		$this->SNMPCommunity=addslashes(trim($this->SNMPCommunity));
+		$this->FirmwareVersion=addslashes(trim($this->FirmwareVersion));
 		$this->PanelID=intval($this->PanelID);
 		$this->BreakerSize=intval($this->BreakerSize);
 		$this->PanelPole=intval($this->PanelPole);
@@ -311,103 +311,131 @@ class PowerDistribution {
 		$this->PanelPole2=intval($this->PanelPole2);
 	}
 
-	function CreatePDU( $db ) {
-		$insert_sql = "insert into fac_PowerDistribution set Label=\"" . addslashes($this->Label) . "\", CabinetID=\"" . intval($this->CabinetID) . "\", TemplateID=\"" . intval( $this->TemplateID ) . "\", IPAddress=\"" . addslashes($this->IPAddress) . "\", SNMPCommunity=\"" . addslashes($this->SNMPCommunity) . "\", PanelID=\"" . intval($this->PanelID) . "\", BreakerSize=\"" . intval( $this->BreakerSize ) . "\", PanelPole=\"" . intval($this->PanelPole) . "\", InputAmperage=\"" . intval( $this->InputAmperage ) . "\", FailSafe=\"" . intval($this->FailSafe) . "\", PanelID2=\"" . intval($this->PanelID2) . "\", PanelPole2=\"" . intval($this->PanelPole2) . "\"";
+	static function PDURowToObject($row){
+		$PDU=new PowerDistribution();
+		$PDU->PDUID=$row["PDUID"];
+		$PDU->Label=stripslashes($row["Label"]);
+		$PDU->CabinetID=$row["CabinetID"];
+		$PDU->TemplateID=$row["TemplateID"];
+		$PDU->IPAddress=stripslashes($row["IPAddress"]);
+		$PDU->SNMPCommunity=stripslashes($row["SNMPCommunity"]);
+		$PDU->FirmwareVersion=$row["FirmwareVersion"];
+		$PDU->PanelID=$row["PanelID"];
+		$PDU->BreakerSize=$row["BreakerSize"];
+		$PDU->PanelPole=$row["PanelPole"];
+		$PDU->InputAmerage=$row["InputAmperage"];
+		$PDU->FailSafe=$row["FailSafe"];
+		$PDU->PanelID2=$row["PanelID2"];
+		$PDU->PanelPole2=$row["PanelPole2"];
 
-		if ( ! $result = mysql_query( $insert_sql, $db ) ) {
-			return -1;
+		return $PDU;
+	}
+	
+	function CreatePDU($db=null){
+		global $dbh;
+
+		$this->MakeSafe();
+
+		$sql="INSERT INTO fac_PowerDistribution SET Label=\"$this->Label\", 
+			CabinetID=$this->CabinetID, TemplateID=$this->TemplateID, 
+			IPAddress=\"$this->IPAddress\", SNMPCommunity=\"$this->SNMPCommunity\", 
+			PanelID=$this->PanelID, BreakerSize=$this->BreakerSize, 
+			PanelPole=$this->PanelPole, InputAmperage=$this->InputAmperage, 
+			FailSafe=$this->FailSafe, PanelID2=$this->PanelID2, PanelPole2=$this->PanelPole2;";
+
+		if($dbh->exec($sql)){
+			$this->PDUID=$dbh->lastInsertId();
+
+			return $this->PDUID;
+		}else{
+			$info=$dbh->errorInfo();
+
+			error_log("CreatePDU::PDO Error: {$info[2]} SQL=$sql");
+
+			return false;
 		}
-
-		$this->PDUID = mysql_insert_id( $db );
-
-		return $this->PDUID;
 	}
 
-	function UpdatePDU( $db ) {
-		$update_sql = "update fac_PowerDistribution set Label=\"" . addslashes($this->Label) . "\", CabinetID=\"" . intval($this->CabinetID) . "\", TemplateID=\"" . intval( $this->TemplateID ) . "\", IPAddress=\"" . addslashes($this->IPAddress) . "\", SNMPCommunity=\"" . addslashes($this->SNMPCommunity) . "\", PanelID=\"" . intval($this->PanelID) . "\", BreakerSize=\"" . intval( $this->BreakerSize ) . "\", PanelPole=\"" . intval($this->PanelPole) . "\", InputAmperage=\"" . intval( $this->InputAmperage ) . "\", FailSafe=\"" . intval($this->FailSafe) . "\", PanelID2=\"" . intval($this->PanelID2) . "\", PanelPole2=\"" . intval($this->PanelPole2) . "\" where PDUID=\"" . intval($this->PDUID) . "\"";
+	function UpdatePDU($db=null){
+		global $dbh;
 
-		return mysql_query( $update_sql, $db );
+		$this->MakeSafe();
+
+		$sql="UPDATE fac_PowerDistribution SET Label=\"$this->Label\", 
+			CabinetID=$this->CabinetID, TemplateID=$this->TemplateID, 
+			IPAddress=\"$this->IPAddress\", SNMPCommunity=\"$this->SNMPCommunity\", 
+			PanelID=$this->PanelID, BreakerSize=$this->BreakerSize, 
+			PanelPole=$this->PanelPole, InputAmperage=$this->InputAmperage, 
+			FailSafe=$this->FailSafe, PanelID2=$this->PanelID2, PanelPole2=$this->PanelPole2
+			WHERE PDUID=$this->PDUID;";
+
+		return $dbh->query($sql);
 	}
 
-	function GetSourceForPDU( $db ) {
-		$this->GetPDU( $db );
+	function GetSourceForPDU($db=null){
+		$this->GetPDU();
 
-		$panel = new PowerPanel();
+		$panel=new PowerPanel();
 
-		$panel->PanelID = $this->PanelID;
-		$panel->GetPanel( $db );
+		$panel->PanelID=$this->PanelID;
+		$panel->GetPanel();
 
 		return $panel->PowerSourceID;
 	}
 	
-	function GetPDU( $db ) {
-		$select_sql = "select * from fac_PowerDistribution where PDUID=\"" . intval($this->PDUID) . "\"";
+	function GetPDU($db=null){
+		global $dbh;
 
-		if ( ! $result = mysql_query( $select_sql, $db ) ) {
-			return false;
-		}
+		$this->MakeSafe();
 
-		if ( $PDUrow = mysql_fetch_array( $result ) ) {
-			$this->Label = stripslashes($PDUrow["Label"]);
-			$this->CabinetID = $PDUrow["CabinetID"];
-			$this->TemplateID = $PDUrow["TemplateID"];
-			$this->IPAddress = stripslashes($PDUrow["IPAddress"]);
-			$this->SNMPCommunity = stripslashes($PDUrow["SNMPCommunity"]);
-			$this->FirmwareVersion = $PDUrow["FirmwareVersion"];
-			$this->PanelID = $PDUrow["PanelID"];
-			$this->BreakerSize = $PDUrow["BreakerSize"];
-			$this->PanelPole = $PDUrow["PanelPole"];
-			$this->InputAmperage = $PDUrow["InputAmperage"];
-			$this->FailSafe = $PDUrow["FailSafe"];
-			$this->PanelID2 = $PDUrow["PanelID2"];
-			$this->PanelPole2 = $PDUrow["PanelPole2"];
-		} else {
-			$this->Label = null;
-			$this->CabinetID = null;
-			$this->TemplateID = null;
-			$this->IPAddress = null;
-			$this->SNMPCommunity = null;
-			$this->FirmwareVersion = null;
-			$this->PanelID = null;
-			$this->BreakerSize = null;
-			$this->PanelPole = null;
-			$this->InputAmperage = null;
-			$this->FailSafe = null;
-			$this->PanelID2 = null;
-			$this->PanelPole2 = null;
+		$sql="SELECT * FROM fac_PowerDistribution WHERE PDUID=$this->PDUID;";
+
+		if($PDUrow=$dbh->query($sql)->fetch()){
+			$this->Label=stripslashes($PDUrow["Label"]);
+			$this->CabinetID=$PDUrow["CabinetID"];
+			$this->TemplateID=$PDUrow["TemplateID"];
+			$this->IPAddress=stripslashes($PDUrow["IPAddress"]);
+			$this->SNMPCommunity=stripslashes($PDUrow["SNMPCommunity"]);
+			$this->FirmwareVersion=$PDUrow["FirmwareVersion"];
+			$this->PanelID=$PDUrow["PanelID"];
+			$this->BreakerSize=$PDUrow["BreakerSize"];
+			$this->PanelPole=$PDUrow["PanelPole"];
+			$this->InputAmperage=$PDUrow["InputAmperage"];
+			$this->FailSafe=$PDUrow["FailSafe"];
+			$this->PanelID2=$PDUrow["PanelID2"];
+			$this->PanelPole2=$PDUrow["PanelPole2"];
+		}else{
+			$this->Label=null;
+			$this->CabinetID=null;
+			$this->TemplateID=null;
+			$this->IPAddress=null;
+			$this->SNMPCommunity=null;
+			$this->FirmwareVersion=null;
+			$this->PanelID=null;
+			$this->BreakerSize=null;
+			$this->PanelPole=null;
+			$this->InputAmperage=null;
+			$this->FailSafe=null;
+			$this->PanelID2=null;
+			$this->PanelPole2=null;
 		}
 
 		return true;
 	}
-	
+
 	function GetPDUbyPanel($db){
-		$select_sql = "select * from fac_PowerDistribution where PanelID=\"" . 
-		 				intval($this->PanelID) . "\" or PanelID2=\"" . intval( $this->PanelID ) . 
-		 				"\" order by PanelPole ASC, CabinetID, Label";
-		if ( ! $result = mysql_query( $select_sql, $db ) ) {
-			return 0;
-		}
+		global $dbh;
+
+		$this->MakeSafe();
+
+		$sql="SELECT * FROM fac_PowerDistribution WHERE PanelID=$this->PanelID
+			 OR PanelID2=$this->PanelID ORDER BY PanelPole ASC, CabinetID, Label";
 
 		$PDUList = array();
 
-		while ( $PDUrow = mysql_fetch_array( $result ) ) {
-			$PDUID = $PDUrow["PDUID"];
-
-			$PDUList[$PDUID]=new PowerDistribution();
-			$PDUList[$PDUID]->PDUID = $PDUrow["PDUID"];
-			$PDUList[$PDUID]->Label = stripslashes($PDUrow["Label"]);
-			$PDUList[$PDUID]->CabinetID = $PDUrow["CabinetID"];
-			$PDUList[$PDUID]->TemplateID = $PDUrow["TemplateID"];
-			$PDUList[$PDUID]->IPAddress = stripslashes($PDUrow["IPAddress"]);
-			$PDUList[$PDUID]->SNMPCommunity = stripslashes($PDUrow["SNMPCommunity"]);
-			$PDUList[$PDUID]->FirmwareVersion = $PDUrow["FirmwareVersion"];
-			$PDUList[$PDUID]->PanelID = $PDUrow["PanelID"];
-			$PDUList[$PDUID]->BreakerSize = $PDUrow["BreakerSize"];
-			$PDUList[$PDUID]->PanelPole = $PDUrow["PanelPole"];
-			$PDUList[$PDUID]->InputAmerage = $PDUrow["InputAmperage"];
-			$PDUList[$PDUID]->FailSafe = $PDUrow["FailSafe"];
-			$PDUList[$PDUID]->PanelID2 = $PDUrow["PanelID2"];
-			$PDUList[$PDUID]->PanelPole2 = $PDUrow["PanelPole2"];
+		foreach($dbh->query($sql) as $PDURow){
+			$PDUID=$PDURow["PDUID"];
+			$PDUList[$PDUID]=PowerDistribution::PDURowToObject($PDURow);
 		}
 
 		return $PDUList;
