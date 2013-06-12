@@ -344,7 +344,7 @@ class PowerDistribution {
 		$select_sql = "select * from fac_PowerDistribution where PDUID=\"" . intval($this->PDUID) . "\"";
 
 		if ( ! $result = mysql_query( $select_sql, $db ) ) {
-			return -1;
+			return false;
 		}
 
 		if ( $PDUrow = mysql_fetch_array( $result ) ) {
@@ -377,7 +377,7 @@ class PowerDistribution {
 			$this->PanelPole2 = null;
 		}
 
-		return 0;
+		return true;
 	}
 	
 	function GetPDUbyPanel($db){
@@ -693,13 +693,17 @@ class PowerDistribution {
 		global $dbh;
 
 		$this->MakeSafe();
+
+		// Do not attempt anything else if the lookup fails
+		if(!$this->GetPDU($db)){return false;}
+
 		// First, remove any connections to the PDU
 		$tmpConn=new PowerConnection();
 		$tmpConn->PDUID=$this->PDUID;
 		$connList=$tmpConn->GetConnectionsByPDU();
 		
 		foreach($connList as $delConn){
-			$delConn->RemoveConnections();
+			$delConn->RemoveConnection();
 		}
 		
 		$sql="DELETE FROM fac_PowerDistribution WHERE PDUID=$this->PDUID;";

@@ -33,6 +33,15 @@
 			}
 			echo '</select>';
 		}elseif(isset($_REQUEST['pid'])){
+			if(isset($_POST['confirmdelete'])){
+				$pdu->PDUID=$_POST['pid'];
+				if($pdu->DeletePDU($facDB)){
+					echo 'ok';
+				}else{
+					echo 'no';
+				}
+				exit;
+			}
 			$powerConn->PDUID=$_REQUEST['pid'];
 			$powerConn->PDUPosition=$_REQUEST['output'];
 			if((isset($_REQUEST['d']) && ($_REQUEST['d']!="" || $_REQUEST['d']!="undefined")) || (isset($_REQUEST['devinput']) && ($_REQUEST['devinput']!="" || $_REQUEST['devinput']!="undefined" ))){
@@ -339,6 +348,31 @@
 				}
 			}).css({'cursor': 'pointer', 'text-decoration': 'underline'});
 		});
+		$('.main button[value=Delete]').click(function(){
+			var defaultbutton={
+				"<?php echo __("Yes"); ?>": function(){
+					$.post('', {pid: $('#pduid').val(),confirmdelete: ''}, function(data){
+						if(data.trim()=='ok'){
+							self.location=$('.main > a').last().attr('href');
+							$(this).dialog("destroy");
+						}else{
+							alert('error');
+						}
+					});
+				}
+			}
+			var cancelbutton={
+				"<?php echo __("No"); ?>": function(){
+					$(this).dialog("destroy");
+				}
+			}
+<?php echo "			var modal=$('<div />', {id: 'modal', title: '".__("PDU Deletion Confirmation")."'}).html('<div id=\"modaltext\">".__("Are you sure that you want to delete this PDU and all the power connections on it?")."</div>').dialog({"; ?>
+				dialogClass: 'no-close',
+				appendTo: 'body',
+				modal: true,
+				buttons: $.extend({}, defaultbutton, cancelbutton)
+			});
+		});
 	});
   </script>
 
@@ -469,12 +503,15 @@ echo '   </select></div>
 </div>
 <div class="caption">';
 
-	if($user->WriteAccess){
-		if($pdu->PDUID >0){
+	if($pdu->PDUID >0){
+		if($user->WriteAccess || $user->SiteAdmin){
 			echo '   <button type="submit" name="action" value="Update">',__("Update"),'</button>';
-		} else {
-			echo '   <button type="submit" name="action" value="Create">',__("Create"),'</button>';
+			if($user->SiteAdmin){
+				echo '   <button type="button" name="action" value="Delete">',__("Delete"),'</button>';
+			}
 		}
+	}else{
+		echo '   <button type="submit" name="action" value="Create">',__("Create"),'</button>';
 	}
 
 echo '</div>
