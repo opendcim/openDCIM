@@ -245,7 +245,7 @@
 						$path.="</th>\n";
 						$path.=str_repeat("\t",$t)."</tr>\n";
 						$path.=str_repeat("\t",$t++)."<tr>\n";
-						$path.=str_repeat("\t",$t)."<td nowrap>Slot:".$devList[$i]->Position."</td>\n";
+						$path.=str_repeat("\t",$t)."<td nowrap>Slot:".$devList[$i-1]->Position."</td>\n";
 					}
 					
 					//device
@@ -318,7 +318,7 @@
 						$path.="</th>\n";
 						$path.=str_repeat("\t",$t)."</tr>\n";
 						$path.=str_repeat("\t",$t++)."<tr>\n";
-						$path.=str_repeat("\t",$t)."<td nowrap>Slot:".$devList[$i]->Position."</td>\n";
+						$path.=str_repeat("\t",$t)."<td nowrap>Slot:".$devList[$i-1]->Position."</td>\n";
 					}
 					
 					//Device
@@ -402,7 +402,7 @@
 							$path.="</th>\n";
 							$path.=str_repeat("\t",$t)."</tr>\n";
 							$path.=str_repeat("\t",$t++)."<tr>\n";
-							$path.=str_repeat("\t",$t)."<td nowrap>Slot:".$devList[$i]->Position."</td>\n";
+							$path.=str_repeat("\t",$t)."<td nowrap>Slot:".$devList[$i-1]->Position."</td>\n";
 						}
 						
 						//device
