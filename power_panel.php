@@ -39,7 +39,7 @@
 		$panel->PanelID=(isset($_POST['panelid']) ? $_POST['panelid'] : $_GET['panelid']);
 		$panel->GetPanel($facDB);
 		$pdu->PanelID = $panel->PanelID;
-		$pduList=$pdu->GetPDUbyPanel($facDB);
+		$pduList=$pdu->GetPDUbyPanel();
 	}
 
 	$panelList=$panel->GetPanelList($facDB);

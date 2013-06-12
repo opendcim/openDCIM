@@ -425,10 +425,10 @@ class Cabinet {
 		}
 		
 		$tmpCDU->CabinetID = $this->CabinetID;
-		$cduList = $tmpCDU->GetPDUbyCabinet( $db );
+		$cduList = $tmpCDU->GetPDUbyCabinet();
 		
 		foreach ( $cduList as &$delCDU ) {
-			$delCDU->DeletePDU( $db );
+			$delCDU->DeletePDU();
 		}
 		
 		$sql = sprintf( "delete from fac_Cabinet where CabinetID=\"%d\"", intval( $this->CabinetID ) );
@@ -1755,7 +1755,7 @@ class Device {
 		
 		foreach ( $pcList as $pcRow ) {
 			$PDU->PDUID = $pcRow->PDUID;
-			$powerSource = $PDU->GetSourceForPDU( $db );
+			$powerSource = $PDU->GetSourceForPDU();
 
 			if ( ! in_array( $powerSource, $sourceList ) )
 				$sourceList[$sourceCount++] = $powerSource;

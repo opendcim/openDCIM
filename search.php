@@ -39,7 +39,7 @@
 		$cab->Location=$searchTerm;
 		$cabList=$cab->SearchByCabinetName();
 		$pdu->Label=$searchTerm;
-		$pduList=$pdu->SearchByPDUName($facDB);
+		$pduList=$pdu->SearchByPDUName();
 		$resultcount=count($devList)+count($cabList)+count($pduList)+count($vmList);
 		$title=__("Name search results for")." &quot;$searchTerm&quot;";
 	}elseif($searchKey=='owner'){

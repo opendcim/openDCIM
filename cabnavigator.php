@@ -66,7 +66,7 @@ function get_cabinet_owner_color($cabinet, &$deptswithcolor) {
 		if(isset($_POST['cdu']) && $config->ParameterArray["CDUToolTips"]=='enabled'){
 			$pdu=new PowerDistribution();
 			$pdu->PDUID=intval($_POST['tooltip']);
-			$pdu->GetPDU($facDB);
+			$pdu->GetPDU();
 			$ttconfig=mysql_query("SELECT * FROM fac_CDUToolTip WHERE Enabled=1 ORDER BY SortOrder ASC, Enabled DESC, Label ASC;");
 		}elseif($config->ParameterArray["ToolTips"]=='enabled'){
 			$dev=new Device();
@@ -153,7 +153,7 @@ function get_cabinet_owner_color($cabinet, &$deptswithcolor) {
 					$tooltip.=__($row["Label"]).": ".count($connList)."/".($template->NumOutlets+1)."<br>\n";
 					break;
 				case "Uptime":
-					$tooltip.=__($row["Label"]).": ".$pdu->GetSmartCDUUptime($facDB)."<br>\n";
+					$tooltip.=__($row["Label"]).": ".$pdu->GetSmartCDUUptime()."<br>\n";
 					break;
 				case "PanelID":
 					$pan=new PowerPanel();
@@ -220,7 +220,7 @@ function get_cabinet_owner_color($cabinet, &$deptswithcolor) {
 	}
 
 	$pdu->CabinetID=$cab->CabinetID;
-	$PDUList=$pdu->GetPDUbyCabinet($facDB);
+	$PDUList=$pdu->GetPDUbyCabinet();
 
 	$dev->Cabinet=$cab->CabinetID;
 	$devList=$dev->ViewDevicesByCabinet($facDB);
@@ -464,7 +464,7 @@ $body.='</table>
 
 	foreach($PDUList as $PDUdev){
 		if($PDUdev->IPAddress<>""){
-			$pduDraw=$PDUdev->GetWattage($facDB);
+			$pduDraw=$PDUdev->GetWattage();
 		}else{
 			$pduDraw=0;
 		}

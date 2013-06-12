@@ -190,7 +190,7 @@ class PDF extends FPDF {
 				$pdf->SetFont( $config->ParameterArray['PDFfont'], '', 8 );
 				$pdf->Ln();
 				$pdu->PanelID=$panRow->PanelID;
-				$pduList = $pdu->GetPDUbyPanel( $facDB );
+				$pduList = $pdu->GetPDUbyPanel();
 				
 				foreach ( $pduList as $pduRow ){
 					$pdf->BookMark( $pduRow->Label, 4 );

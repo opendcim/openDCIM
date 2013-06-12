@@ -231,7 +231,7 @@ echo '		<div class="main">
 	foreach ( $pnlList as $pnlDown ) {
 		$pdu->PanelID = $pnlDown->PanelID;
 		
-		$pduList = array_merge( $pduList, $pdu->GetPDUbyPanel( $facDB ) );
+		$pduList = array_merge( $pduList, $pdu->GetPDUbyPanel());
 		
 		array_push( $pnlArray, $pnlDown->PanelID );
 	}
@@ -288,7 +288,7 @@ echo '		<div class="main">
 		
 		// Check to see if all circuits to the cabinet are from the outage list - if so, the whole cabinet goes down
 		$pdu->CabinetID = $cabRow->CabinetID;
-		$cabPDUList = $pdu->GetPDUbyCabinet( $facDB );
+		$cabPDUList = $pdu->GetPDUbyCabinet();
 		
 		$diversity = false;
 		foreach ( $cabPDUList as $testPDU ) {

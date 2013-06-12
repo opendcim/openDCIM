@@ -41,7 +41,7 @@
 			print "<span>Server Name: $dev->Label</span><span># Power Supplies: $dev->PowerSupplyCount</span><div class=\"table border\">\n			<div><div>".__('Power Strip')."</div><div>".__('Plug #')."</div><div>".__('Power Supply')."</div></div>";
 			foreach($pwrCords as $cord){
 				$pdu->PDUID=$cord->PDUID;
-				$pdu->GetPDU($facDB);
+				$pdu->GetPDU();
 				print "			<div><div data=\"$pdu->PDUID\"><a href=\"power_pdu.php?pduid=$pdu->PDUID\">$pdu->Label</a></div><div><a href=\"power_connection.php?pdu=$pdu->PDUID&conn=$cord->PDUPosition\">$cord->PDUPosition</a></div><div".(($cord->DeviceConnNumber==$_POST['power'])?' class="bold"':' class="disabled"').">$cord->DeviceConnNumber</div></div>\n";
 			}
 			print "</div>";

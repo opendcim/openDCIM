@@ -442,10 +442,10 @@ class PDF_Diag extends PDF_Sector {
 			$pdf->Cell( $cellWidths[5], 6, $devRow->Ports, 'LBRT', 0, 'L', $fill );
 			$pdf->Cell( $cellWidths[6], 6, $devRow->PowerSupplyCount, 'LBRT', 0, 'L', $fill );
 			@$pdu->PDUID=$connList[0]->PDUID;
-			$pdu->GetPDU($facDB);
+			$pdu->GetPDU();
 			$pdf->Cell( $cellWidths[7], 6, (isset($connList[0]))?$pdu->Label.$connList[0]->PDUPosition:"", 'LBRT', 0, 'L', $fill );
 			@$pdu->PDUID=$connList[1]->PDUID;
-			$pdu->GetPDU($facDB);
+			$pdu->GetPDU();
 			$pdf->Cell( $cellWidths[8], 6, (isset($connList[1]))?$pdu->Label.$connList[1]->PDUPosition:"", 'LBRT', 0, 'L', $fill );
 			$templ->TemplateID=$devRow->TemplateID;
 			$templ->GetTemplateByID($facDB);
@@ -475,7 +475,7 @@ class PDF_Diag extends PDF_Sector {
 	$pdf->SetFont($config->ParameterArray['PDFfont'],'B',10);
 	$pdf->Cell(0,5,$cabmessage,0,1,'C',0);
 	$pdf->SetFont($config->ParameterArray['PDFfont'],'',10);
-	$PDUList=$pdu->GetPDUbyCabinet($facDB);
+	$PDUList=$pdu->GetPDUbyCabinet();
 
 	$headerTags = array( __('Label'), __('NumOutputs'),__('Model'),__('PanelLabel'), __('PanelPole') );
 	$cellWidths = array(50,30,118,70,20);

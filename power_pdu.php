@@ -36,7 +36,7 @@
 		}elseif(isset($_REQUEST['pid'])){
 			if(isset($_POST['confirmdelete'])){
 				$pdu->PDUID=$_POST['pid'];
-				if($pdu->DeletePDU($facDB)){
+				if($pdu->DeletePDU()){
 					echo 'ok';
 				}else{
 					echo 'no';
@@ -64,7 +64,7 @@
 
 	if(isset($_POST['test'])){
 		$pdu->PDUID=$_POST["test"];
-		$pdu->GetPDU($facDB);
+		$pdu->GetPDU();
 		
 		$template=new CDUTemplate();
 		$template->TemplateID=$pdu->TemplateID;
@@ -76,14 +76,14 @@
 		
 		print "<div id=\"infopanel\"><fieldset><legend>".__("Results")."</legend>\n";
 		
-		$upTime=$pdu->GetSmartCDUUptime($facDB);
+		$upTime=$pdu->GetSmartCDUUptime();
 		if($upTime!=""){
 			printf("<p>%s: %s</p>\n", __("SNMP Uptime"),$upTime);
 		}else{
 			print "<p>".__("SNMP Uptime did not return a valid value.")."</p>\n";
 		}
 		
-		$cduVersion = $pdu->GetSmartCDUVersion( $facDB );
+		$cduVersion = $pdu->GetSmartCDUVersion();
 		if($cduVersion != ""){
 			printf( "<p>%s %s.  %s</p>\n", __("VersionOID returned a value of"), $cduVersion, __("Please check to see if it makes sense.") );
 		}else{
@@ -203,19 +203,19 @@
 		}
 
 		if($_REQUEST['action']=='Create'){
-			$ret=$pdu->CreatePDU($facDB);
+			$ret=$pdu->CreatePDU();
 		}else{
 			$pdu->PDUID = $_REQUEST['pduid'];
-			$pdu->UpdatePDU( $facDB );
+			$pdu->UpdatePDU();
 		}
 	}
 
 	if($pdu->PDUID >0){
-		$pdu->GetPDU($facDB);
-		$upTime=$pdu->GetSmartCDUUptime($facDB);
+		$pdu->GetPDU();
+		$upTime=$pdu->GetSmartCDUUptime();
 		
-		$template->TemplateID = $pdu->TemplateID;
-		$template->GetTemplate( $facDB );
+		$template->TemplateID=$pdu->TemplateID;
+		$template->GetTemplate();
 	} else {
 		$pdu->CabinetID=$_GET['cabinetid'];
 	}
