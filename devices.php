@@ -734,7 +734,11 @@ $(document).ready(function() {
 				var portnum=$(this).text();
 				$('#spn'+portnum).text(data[portnum-1].PortDescriptor);
 				$('#n'+portnum).text(data[portnum-1].Notes);
-				$('#st'+portnum).text(data[portnum-1].PortStatus);
+				if(data[portnum-1].PortStatus=='down'){
+					$('#st'+portnum).find('span').removeClass('up').addClass('down');
+				}else{
+					$('#st'+portnum).find('span').removeClass('down').addClass('up');
+				}
 				$('#mt'+portnum).text(data[portnum-1].MediaID);
 				$('#cc'+portnum).text(data[portnum-1].ColorID);
 			});
