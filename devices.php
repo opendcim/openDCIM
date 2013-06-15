@@ -1592,7 +1592,7 @@ echo '	<div class="table">
 					<div id=\"d$i\" alt=\"{$patchList[$i]->EndpointDeviceID}\"><a href=\"devices.php?deviceid={$patchList[$i]->EndpointDeviceID}\">$tmpDev->Label</a></div>
 					<div data=\"{$patchList[$i]->EndpointPort}\" id=\"dp$i\">{$patchList[$i]->EndpointPort}</div>
 					<div data=\"{$portList[$n]->Notes}\" id=\"n$i\">{$portList[$n]->Notes}</div>
-					<div id=\"st$i\">{$linkList[$n]}</div>
+					<div id=\"st$i\"><span class=\"ui-icon status {$linkList[$n]}\"></span></div>
 					<div id=\"mt$i\">$mt</div>
 					<div id=\"cc$i\">$cc</div>
 				</div>\n";

@@ -451,6 +451,10 @@ div.cabinet {
 
 #firstport.hide { display: none; }
 
+.switch .status { background-image: url("../images/portstatus.png");}
+.switch .down { background-position: left; }
+.switch .up { background-position: right; }
+
 .chassis .table input{text-align:center;}
 .chassis .table > div > div{text-align:center;}
 .chassis .table + .table > div > div{text-align:left;}
