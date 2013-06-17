@@ -252,6 +252,8 @@ function get_cabinet_owner_color($cabinet, &$deptswithcolor) {
 	<tr><td>".__("Pos")."</td><td>".__("Device")."</td></tr>\n";
 
 	$heighterr="";
+        $ownership_unassigned = false;
+        $template_unassigned = false;
 	while(list($devID,$device)=each($devList)){
 		$devTop=$device->Position + $device->Height - 1;
 		
@@ -269,8 +271,10 @@ function get_cabinet_owner_color($cabinet, &$deptswithcolor) {
 		}
 
 		$highlight="<blink><font color=red>";
-		if($device->TemplateID==0){$highlight.="(T)";}
-		if($device->Owner==0){$highlight.="(O)";}
+		if($device->TemplateID==0){$highlight.="(T)";
+                  $template_unassigned = true;}
+		if($device->Owner==0){$highlight.="(O)";
+                  $ownership_unassigned = true;}
 		$highlight.= "</font></blink>";
 
 		if($device->NominalWatts >0){
@@ -312,7 +316,7 @@ function get_cabinet_owner_color($cabinet, &$deptswithcolor) {
 		}
 		$reserved=($device->Reservation==false)?"":" reserved";
 		if($devTop<$currentHeight){
-			for($i=$currentHeight;$i>$devTop;$i--){
+			for($i=$currentHeight;($i>$devTop)and($i>0);$i--){
 				$errclass=($i>$cab->CabinetHeight)?' class="error"':'';
 				if($errclass!=''){$heighterr="yup";}
 				if($i==$currentHeight){
@@ -392,15 +396,22 @@ function get_cabinet_owner_color($cabinet, &$deptswithcolor) {
 	if($legend!=""){
 //		$legend.='<p><span class="border">&nbsp;&nbsp;&nbsp;&nbsp;</span> - Custom Color Not Assigned</p>';
 	}
+        // add legend for the flags which actually used in the cabinet
+        $legend_flags = '';
+        if ($ownership_unassigned) {
+          $legend_flags.= '		<p><font color=red>(O)</font> - '.__("Owner Unassigned").'</p>';
+        }
+        if ($template_unassigned) {
+          $legend_flags .= '		<p><font color=red>(T)</font> - '.__("Template Unassigned").'</p>';
+        }
+        
 
 $body.='</table>
 </div>
 <div id="infopanel">
 	<fieldset>
-		<legend>'.__("Markup Key").'</legend>
-		<p><font color=red>(O)</font> - '.__("Owner Unassigned").'</p>
-		<p><font color=red>(T)</font> - '.__("Template Unassigned").'</p>
-'.$legend.'
+		<legend>'.__("Markup Key")."</legend>\n".$legend_flags."\n"
+.$legend.'
 	</fieldset>
 	<fieldset>
 		<legend>'.__("Cabinet Metrics").'</legend>
