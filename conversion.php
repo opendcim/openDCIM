@@ -58,8 +58,6 @@
 		}
 	}
 
-print_r($ports);
-
 	$findpatch=$dbh->prepare('SELECT * FROM fac_PatchConnection WHERE FrontEndpointDeviceID=:deviceid ORDER BY FrontEndpointPort ASC;');
 	foreach($ports as $deviceid => $port){
 		$findpatch->execute(array(':deviceid' => $deviceid));
@@ -96,7 +94,10 @@ print_r($ports);
 		$ports[$row['PanelDeviceID']][-$row['PanelPortNumber']]['Notes']=$row['RearNotes'];
 	}
 
+print "Ports and related connections:<br>\n";
 print_r($ports);
+print "Errors and things that didn't quite match right:<br>\n";
+print_r($errors);
 
 	// All the ports should be in the array now, use the prepared statement to load them all
 	foreach($ports as $deviceid => $row){
