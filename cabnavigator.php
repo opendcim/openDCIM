@@ -409,11 +409,11 @@ function get_cabinet_owner_color($cabinet, &$deptswithcolor) {
 $body.='</table>
 </div>
 <div id="infopanel">
-	<fieldset>
+	<fieldset id="legend">
 		<legend>'.__("Markup Key")."</legend>\n".$legend_flags."\n"
 .$legend.'
 	</fieldset>
-	<fieldset>
+	<fieldset id="metrics">
 		<legend>'.__("Cabinet Metrics").'</legend>
 		<table style="background: white;" border=1>
 		<tr>
@@ -455,17 +455,17 @@ $body.='</table>
 		</table>
 		<p>'.__("Approximate Center of Gravity").': '.$CenterofGravity.' U</p>
 	</fieldset>
-	<fieldset>
+	<fieldset id="keylock">
 		<legend>'.__("Key/Lock Information").'</legend>
-		<div id="keylock">
+		<div>
 			'.$cab->Keylock.'
 		</div>
 	</fieldset>';
 
 	if($zeroheight!=""){
-		$body.='	<fieldset>
+		$body.='	<fieldset id="zerou">
 		<legend>'.__("Zero-U Devices").'</legend>
-		<div id="zerou">
+		<div>
 			'.$zeroheight.'
 		</div>
 	</fieldset>';
@@ -577,6 +577,7 @@ echo $head,'  <script type="text/javascript" src="scripts/jquery.min.js"></scrip
 	}
 	$(document).ready(function() {
 		$(".cabinet .error").append("*");
+		if($("#legend *").length==1){$("#legend").hide();}
 ';
 if($config->ParameterArray["ToolTips"]=='enabled'){
 ?>
