@@ -252,8 +252,8 @@ function get_cabinet_owner_color($cabinet, &$deptswithcolor) {
 	<tr><td>".__("Pos")."</td><td>".__("Device")."</td></tr>\n";
 
 	$heighterr="";
-        $ownership_unassigned = false;
-        $template_unassigned = false;
+	$ownership_unassigned = false;
+	$template_unassigned = false;
 	while(list($devID,$device)=each($devList)){
 		$devTop=$device->Position + $device->Height - 1;
 		
@@ -316,14 +316,16 @@ function get_cabinet_owner_color($cabinet, &$deptswithcolor) {
 		}
 		$reserved=($device->Reservation==false)?"":" reserved";
 		if($devTop<$currentHeight){
-			for($i=$currentHeight;($i>$devTop)and($i>0);$i--){
+			for($i=$currentHeight;($i>$devTop);$i--){
 				$errclass=($i>$cab->CabinetHeight)?' class="error"':'';
 				if($errclass!=''){$heighterr="yup";}
 				if($i==$currentHeight){
 					$blankHeight=$currentHeight-$devTop;
+					if($devTop==-1){--$blankHeight;}
 					$body.="<tr><td$errclass>$i</td><td class=\"freespace\" rowspan=$blankHeight>&nbsp;</td></tr>\n";
 				} else {
 					$body.="<tr><td$errclass>$i</td></tr>\n";
+					if($i==1){break;}
 				}
 			}
 		}
