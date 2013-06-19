@@ -315,7 +315,7 @@ function get_cabinet_owner_color($cabinet, &$deptswithcolor) {
 			}
 		}
 		$reserved=($device->Reservation==false)?"":" reserved";
-		if($devTop<$currentHeight){
+		if($devTop<$currentHeight && $currentHeight>0){
 			for($i=$currentHeight;($i>$devTop);$i--){
 				$errclass=($i>$cab->CabinetHeight)?' class="error"':'';
 				if($errclass!=''){$heighterr="yup";}
