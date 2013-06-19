@@ -7,13 +7,13 @@
 	$user=new User();
 	
 	$user->UserID=$_SERVER['REMOTE_USER'];
-	$user->GetUserRights( $facDB );
+	$user->GetUserRights();
 
 	if($dev->DeviceID < 1 || !$user->WriteAccess){
 		header('Location: '.redirect());
-		die();
+		exit();
 	}
   
-	$dev->Surplus($facDB);
+	$dev->Surplus();
 	header('Location: '.redirect('storageroom.php'));
 ?>

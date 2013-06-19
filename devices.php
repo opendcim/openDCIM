@@ -286,9 +286,9 @@
 			
 					$dev->SetTags($tagarray);
 					if($dev->Cabinet <0){
-						$dev->MoveToStorage($facDB);
+						$dev->MoveToStorage();
 					}else{
-						$dev->UpdateDevice($facDB);
+						$dev->UpdateDevice();
 					}
 				}elseif($user->WriteAccess&&($_POST['action']=='Create')){
 					$dev->Label=$_POST['label'];

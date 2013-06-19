@@ -1193,15 +1193,18 @@ class Device {
 		return true;
 	}
 	
-	function Surplus( $db = null ) {
+	function Surplus() {
 		global $dbh;
 		
 		// Make sure we're not trying to decommission a device that doesn't exist
-		if ( ! $this->GetDevice( $db ) )
-		  die( "Can't find device " . $this->DeviceID . " to decommission!" );
+		if(!$this->GetDevice()){
+			die( "Can't find device $this->DeviceID to decommission!" );
+		}
 
-		$sql = "insert into fac_Decommission values ( now(), \"$this->Label\", \"$this->SerialNo\", \"$this->AssetTag\", \"{$_SERVER['REMOTE_USER']}\" )";
-		if ( ! $dbh->exex( $sql ) ) {
+		$sql="INSERT INTO fac_Decommission VALUES ( NOW(), \"$this->Label\", 
+			\"$this->SerialNo\", \"$this->AssetTag\", \"{$_SERVER['REMOTE_USER']}\" )";
+
+		if(!$dbh->exec($sql)){
 			$info = $dbh->errorInfo();
 
 			error_log( "PDO Error: " . $info[2] . " SQL=" . $sql );
@@ -1209,10 +1212,10 @@ class Device {
 		}
 		
 		// Ok, we have the transaction of decommissioning, now tidy up the database.
-		$this->DeleteDevice( $db );
+		$this->DeleteDevice();
 	}
   
-	function MoveToStorage( $db = null ) {
+	function MoveToStorage() {
 		// Cabinet ID of -1 means that the device is in the storage area
 		$this->Cabinet = -1;
 		$this->UpdateDevice();
@@ -1220,27 +1223,28 @@ class Device {
 		// While the child devices will automatically get moved to storage as part of the UpdateDevice() call above, it won't sever their network connections
 		if ( $this->DeviceType == "Chassis" ) {
 			$childList = $this->GetDeviceChildren();
-			foreach ( $childList as $child )
-				$child->MoveToStorage( $db );
+			foreach($childList as $child){
+				$child->MoveToStorage();
+			}
 		}
 
-		$tmpConn = new SwitchConnection();
-		$tmpConn->SwitchDeviceID = $this->DeviceID;
-		$tmpConn->EndpointDeviceID = $this->DeviceID;
-		$tmpConn->DropSwitchConnections( $db );
-		$tmpConn->DropEndpointConnections( $db );
+		$tmpConn=new SwitchConnection();
+		$tmpConn->SwitchDeviceID=$this->DeviceID;
+		$tmpConn->EndpointDeviceID=$this->DeviceID;
+		$tmpConn->DropSwitchConnections();
+		$tmpConn->DropEndpointConnections();
 		
-		$tmpPan = new PatchConnection();
+		$tmpPan=new PatchConnection();
 		if ( $this->DeviceType == "Patch Panel" ) {
 			$tmpPan->PanelDeviceID = $this->DeviceID;
-			$tmpPan->DropPanelConnections( $db );
+			$tmpPan->DropPanelConnections();
 		} else {
 			$tmpPan->FrontEndpointDeviceID = $this->DeviceID;
-			$tmpPan->DropEndpointConnections( $db );
+			$tmpPan->DropEndpointConnections();
 		}
 	}
   
-	function UpdateDevice( $db = null ) {
+	function UpdateDevice() {
 		global $dbh;
 		// Stupid User Tricks #417 - A user could change a device that has connections (switch or patch panel) to one that doesn't
 		// Stupid User Tricks #148 - A user could change a device that has children (chassis) to one that doesn't
@@ -1268,14 +1272,14 @@ class Device {
 			if($tmpDev->DeviceType=="Switch"){
 				$tmpSw=new SwitchConnection();
 				$tmpSw->SwitchDeviceID=$tmpDev->DeviceID;
-				$tmpSw->DropSwitchConnections($db);
-				$tmpSw->DropEndpointConnections($db);
+				$tmpSw->DropSwitchConnections();
+				$tmpSw->DropEndpointConnections();
 			}
 			
 			if($tmpDev->DeviceType=="Patch Panel"){
 				$tmpPan=new PatchConnetion();
-				$tmpPan->DropPanelConnections($db);
-				$tmpPan->DropEndpointConnections($db);
+				$tmpPan->DropPanelConnections();
+				$tmpPan->DropEndpointConnections();
 			}
 		}
 		
@@ -1493,16 +1497,16 @@ class Device {
 		$tmpConn = new SwitchConnection();
 		$tmpConn->SwitchDeviceID = $this->DeviceID;
 		$tmpConn->EndpointDeviceID = $this->DeviceID;
-		$tmpConn->DropSwitchConnections( $db );
-		$tmpConn->DropEndpointConnections( $db );
+		$tmpConn->DropSwitchConnections();
+		$tmpConn->DropEndpointConnections();
 		
 		$tmpPan = new PatchConnection();
 		if($this->DeviceType=="Patch Panel"){
 			$tmpPan->PanelDeviceID=$this->DeviceID;
-			$tmpPan->DropPanelConnections($db);
+			$tmpPan->DropPanelConnections();
 		}else{
 			$tmpPan->FrontEndpointDeviceID=$this->DeviceID;
-			$tmpPan->DropEndpointConnections($db);
+			$tmpPan->DropEndpointConnections();
 		}
 		
 		// Delete power connections next
@@ -1693,7 +1697,6 @@ class Device {
 	}
 
 	function UpdateWattageFromTemplate() {
-		global $dbh;
 		$tmpl=new DeviceTemplate();
 		$tmpl->TemplateID=$this->TemplateID;
 		$tmpl->GetTemplateByID();
@@ -2522,38 +2525,53 @@ class PatchConnection {
 		return 1;
 	}
 	
-	function DropEndpointConnections( $db ) {
+	function DropEndpointConnections() {
+		global $dbh;
+
 		// You call this when deleting an endpoint device, other than a patch panel
 		$this->MakeSafe();
-		$sql = sprintf( "update fac_PatchConnection set FrontEndpointDeviceID=NULL, FrontEndpointPort=NULL, FrontNotes=NULL where FrontEndpointDeviceID=%d", $this->FrontEndpointDeviceID );
 
-		if ( ! $result = mysql_query( $sql, $db ) ) {
-			error_log( sprintf( "%s; SQL=`%s`", mysql_error( $db ), $sql ) );
+		$sql="UPDATE fac_PatchConnection SET FrontEndpointDeviceID=NULL, 
+			FrontEndpointPort=NULL, FrontNotes=NULL WHERE 
+			FrontEndpointDeviceID=$this->FrontEndpointDeviceID;";
+
+		if(!$dbh->query($sql)){
+			$info=$dbh->errorInfo();
+
+			error_log("DropEndpointConnections::PDO Error: {$info[2]} SQL=$sql");
 			return -1;
+		}else{
+			return true;
 		}
-
-		return;
 	}
 	
-	function DropPanelConnections( $db ) {
+	function DropPanelConnections() {
+		global $dbh;
+
 		// You only call this when you are deleting another patch panel
 		$this->MakeSafe();
-		$sql = sprintf( "update fac_PatchConnection set RearEndpointDeviceID=NULL, RearEndpointPort=NULL, RearNotes=NULL where FrontEndpointDeviceID=%d", $this->FrontEndpointDeviceID );
+		$sql="UPDATE fac_PatchConnection SET RearEndpointDeviceID=NULL, 
+			RearEndpointPort=NULL, RearNotes=NULL WHERE 
+			FrontEndpointDeviceID=$this->FrontEndpointDeviceID;";
 
-		if ( ! $result = mysql_query( $sql, $db ) ) {
-			error_log( sprintf( "%s; SQL=`%s`", mysql_error( $db ), $sql ) );
+		if(!$dbh->query($sql)){
+			$info=$dbh->errorInfo();
+
+			error_log("DropPanelConnections::PDO Error: {$info[2]} SQL=$sql");
 			return -1;
 		}
 		
 		// Delete any records for this panel itself
-		$sql = sprintf( "delete from fac_PatchConnection where PanelDeviceID=%d", $this->PanelDeviceID );
+		$sql="DELETE FROM fac_PatchConnection WHERE PanelDeviceID=$this->PanelDeviceID;";
 		
-		if ( ! $result = mysql_query( $sql, $db ) ) {
-			error_log( sprintf( "%s; SQL=`%s`", mysql_error( $db ), $sql ) );
-			return -1;
-		}
+		if(!$dbh->query($sql)){
+			$info=$dbh->errorInfo();
 
-		return;
+			error_log("DropPanelConnections::PDO Error: {$info[2]} SQL=$sql");
+			return -1;
+		}else{
+			return true;
+		}
 	}
 	
 	function GetPanelConnections($db){
@@ -2797,16 +2815,34 @@ class SwitchConnection {
 	var $EndpointPort;
 	var $Notes;
 
+	function MakeSafe(){
+		$this->SwitchDeviceID=intval($this->SwitchDeviceID);
+		$this->SwitchPortNumber=intval($this->SwitchPortNumber);
+		$this->EndpointDeviceID=intval($this->EndpointDeviceID);
+		$this->EndpointPort=intval($this->EndpointPort);
+		$this->Notes=addslashes(trim($this->Notes);
+	}
+
 	function CreateConnection( $db, $recursive = true ) {
-		$insertSQL = "insert into fac_SwitchConnection set SwitchDeviceID=\"".intval($this->SwitchDeviceID)."\", SwitchPortNumber=\"".intval($this->SwitchPortNumber)."\", EndpointDeviceID=\"".intval($this->EndpointDeviceID)."\", EndpointPort=\"".intval($this->EndpointPort)."\", Notes=\"".addslashes(strip_tags($this->Notes))."\";"; 
-		if ( ! $result = mysql_query( $insertSQL, $db) ) {
-			error_log( mysql_error( $db ) );
+		global $dbh;
+
+		$this->MakeSafe();
+
+		$sql="INSERT INFO fac_SwitchConnection SET SwitchDeviceID=$this->SwitchDeviceID, 
+			SwitchPortNumber=$this->SwitchPortNumber, 
+			EndpointDeviceID=$this->EndpointDeviceID, 
+			EndpointPort=$this->EndpointPort, Notes=\"$this->Notes\";"; 
+
+		if(!$dbh->exec($sql)){
+			$info=$dbh->errorInfo();
+
+			error_log("CreateConnection::PDO Error: {$info[2]} SQL=$sql");
 			return -1;
 		}
 
-		$tmpDev = new Device();
-		$tmpDev->DeviceID = intval($this->EndpointDeviceID);
-		$tmpDev->GetDevice( $db );
+		$tmpDev=new Device();
+		$tmpDev->DeviceID=$this->EndpointDeviceID;
+		$tmpDev->GetDevice();
 		
 		if ( $recursive && $tmpDev->DeviceType == "Switch" ) {
 			$tmpSw = new SwitchConnection();
@@ -2912,19 +2948,37 @@ class SwitchConnection {
 	}
   
 	function DropEndpointConnections( $db ) {
-		$delSQL = "delete from fac_SwitchConnection where EndpointDeviceID=\"" . $this->EndpointDeviceID . "\"";
+		global $dbh;
 
-		$result = mysql_query( $delSQL, $db );
+		$this->MakeSafe();
 
-		return $result;
+		$sql="DELETE FROM fac_SwitchConnection WHERE EndpointDeviceID=$this->EndpointDeviceID;";
+
+		if(!$dbh->exec($sql)){
+			$info=$dbh->errorInfo();
+
+			error_log("DropEndpointConnections::PDO Error: {$info[2]} SQL=$sql");
+			return false;
+		}else{
+			return true;
+		}
 	}
   
-	function DropSwitchConnections( $db ) {
-		$delSQL = "delete from fac_SwitchConnections where SwitchDeviceID=\"" . $this->SwitchDeviceID . "\"";
+	function DropSwitchConnections() {
+		global $dbh;
 
-		$result = mysql_query( $delSQL, $db );
+		$this->MakeSafe();
 
-		return $result;
+		$sql="DELETE FROM fac_SwitchConnection WHERE SwitchDeviceID=$this->EndpointDeviceID;";
+
+		if(!$dbh->exec($sql)){
+			$info=$dbh->errorInfo();
+
+			error_log("DropSwitchConnections::PDO Error: {$info[2]} SQL=$sql");
+			return false;
+		}else{
+			return true;
+		}
 	}
 
 	function GetSwitchConnections( $db ) {
