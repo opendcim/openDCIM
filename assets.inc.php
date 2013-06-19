@@ -1692,19 +1692,13 @@ class Device {
 		return $deviceList;
 	}
 
-	function UpdateWattageFromTemplate( $db = null ) {
+	function UpdateWattageFromTemplate() {
 		global $dbh;
-		
-		$tmpl = new DeviceTemplate();
-		$tmpl->TemplateID = $this->TemplateID;
-		
+		$tmpl=new DeviceTemplate();
+		$tmpl->TemplateID=$this->TemplateID;
 		$tmpl->GetTemplateByID();
-		
-		if ( $row = $dbh->query( $sql )->fetch() ) {
-			$this->NominalWatts = $tmpl->Wattage;
-		} else {
-			$this->NominalWatts = 0;
-		}
+
+		$this->NominalWatts=$tmpl->Wattage;
 	}
 	
 	function GetTop10Tenants( $db = null ) {

@@ -282,7 +282,7 @@
 					$dev->Reservation=(isset($_POST['reservation']))?($_POST['reservation']=="on")?1:0:0;
 					$dev->NominalWatts=$_POST['nominalwatts'];
 
-					if(($dev->TemplateID >0)&&(intval($dev->NominalWatts==0))){$dev->UpdateWattageFromTemplate($facDB);}
+					if(($dev->TemplateID >0)&&(intval($dev->NominalWatts==0))){$dev->UpdateWattageFromTemplate();}
 			
 					$dev->SetTags($tagarray);
 					if($dev->Cabinet <0){
@@ -324,7 +324,7 @@
 					$dev->NominalWatts=$_POST['nominalwatts'];
 
 					if( ($dev->TemplateID>0) && (intval($dev->NominalWatts==0)) ){
-						$dev->UpdateWattageFromTemplate($facDB);
+						$dev->UpdateWattageFromTemplate();
 					}
 					$dev->CreateDevice($facDB);
 					$dev->SetTags($tagarray);
