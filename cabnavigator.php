@@ -578,6 +578,7 @@ echo $head,'  <script type="text/javascript" src="scripts/jquery.min.js"></scrip
 	$(document).ready(function() {
 		$(".cabinet .error").append("*");
 		if($("#legend *").length==1){$("#legend").hide();}
+		if($("#keylock div").text().trim()==""){$("#keylock").hide();}
 ';
 if($config->ParameterArray["ToolTips"]=='enabled'){
 ?>
