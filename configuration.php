@@ -343,7 +343,7 @@
 		// ToolTips
 
 		$('#tooltip, #cdutooltip').multiselect();
-		$("select#ToolTips, select#CDUToolTips, select#LabelCase").each(function(){
+		$("select#ToolTips, select#CDUToolTips, select#LabelCase, select#MediaEnforce").each(function(){
 			$(this).val($(this).attr('data'));
 		});
 
@@ -1159,6 +1159,17 @@ echo '<div class="main">
 		</div>
 		<div id="cc">
 			<h3>',__("Media Types"),'</h3>
+			<div class="table">
+				<div>
+					<div><label for="MediaEnforce">',__("Media Type Matching"),'</label></div>
+					<div><select id="MediaEnforce" name="MediaEnforce" defaultvalue="',$config->defaults["MediaEnforce"],'" data="',$config->ParameterArray["MediaEnforce"],'">
+							<option value="disabled">',__("Disabled"),'</option>
+							<option value="enabled">',__("Enforce"),'</option>
+						</select>
+					</div>
+				</div>
+			</div> <!-- end table -->
+			<br>
 			<div class="table" id="mediatypes">
 				<div>
 					<div></div>

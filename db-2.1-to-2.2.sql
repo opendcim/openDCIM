@@ -112,19 +112,44 @@ ALTER TABLE fac_DataCenter ADD COLUMN MapY INT(11) NOT NULL AFTER MapX;
 
 ALTER TABLE fac_Cabinet ADD COLUMN CabRowID INT(11) NOT DEFAULT '0' NULL AFTER ZoneID;
 
-CREATE TABLE IF NOT EXISTS `fac_CabRow` (
+CREATE TABLE IF NOT EXISTS fac_CabRow (
   CabRowID int(11) NOT NULL AUTO_INCREMENT,
   Name varchar(120) NOT NULL,
   ZoneID int(11) NOT NULL,
-  PRIMARY KEY (`CabRowID`)
+  PRIMARY KEY (CabRowID)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
-CREATE TABLE IF NOT EXISTS `fac_Container` (
+CREATE TABLE IF NOT EXISTS fac_Container (
   ContainerID int(11) NOT NULL AUTO_INCREMENT,
   Name varchar(120) NOT NULL,
   ParentID int(11) NOT NULL DEFAULT '0',
   DrawingFileName varchar(255) DEFAULT NULL,
   MapX int(11) NOT NULL,
   MapY int(11) NOT NULL,
-  PRIMARY KEY (`ContainerID`)
+  PRIMARY KEY (ContainerID)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+
+--
+-- Add configuration item to set enforcing of media type matching on ports
+--
+
+INSERT INTO fac_Config VALUES ('MediaEnforce', 'Disabled', 'Enabled/Disabled', 'string', 'Disabled');
+
+--
+-- Table structure for table `fac_Ports`
+--
+
+CREATE TABLE fac_Ports (
+  DeviceID int(11) NOT NULL,
+  PortNumber int(11) NOT NULL,
+  Label varchar(40) NOT NULL,
+  MediaID int(11) NOT NULL DEFAULT '0',
+  ColorID int(11) NOT NULL DEFAULT '0',
+  PortNotes varchar(80) NOT NULL,
+  ConnectedDeviceID int(11) DEFAULT NULL,
+  ConnectedPort int(11) DEFAULT NULL,
+  Notes varchar(80) NOT NULL,
+  PRIMARY KEY (DeviceID,PortNumber),
+  UNIQUE KEY LabeledPort (DeviceID,PortNumber,Label),
+  UNIQUE KEY ConnectedDevice (ConnectedDeviceID,ConnectedPort)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
