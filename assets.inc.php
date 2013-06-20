@@ -2820,7 +2820,7 @@ class SwitchConnection {
 		$this->SwitchPortNumber=intval($this->SwitchPortNumber);
 		$this->EndpointDeviceID=intval($this->EndpointDeviceID);
 		$this->EndpointPort=intval($this->EndpointPort);
-		$this->Notes=addslashes(trim($this->Notes);
+		$this->Notes=addslashes(trim($this->Notes));
 	}
 
 	function CreateConnection( $db, $recursive = true ) {
