@@ -1324,7 +1324,7 @@ class Device {
 	
 		$this->MakeSafe();
 	
-		if($this->DeviceID==0){
+		if($this->DeviceID==0 || $this->DeviceID == null){
 			return false;
 		}
 		
@@ -1406,7 +1406,7 @@ class Device {
 		$parentList = array();
 
 		foreach($dbh->query($sql) as $row){
-			$deviceList[$row["DeviceID"]]=Device::DeviceRowToObject($row);
+			$parentList[$row["DeviceID"]]=Device::DeviceRowToObject($row);
 		}
 		
 		return $parentList;
