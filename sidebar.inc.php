@@ -132,7 +132,7 @@ $("#sidebar .nav a").each(function(){
 });
 function resize(){
 	// page width is calcuated different between ie, chrome, and ff
-	$('#header').width(Math.floor($(window).outerWidth()-(16*2))); //16px = 1em per side padding
+	$('#header').width(Math.floor($(window).outerWidth()-(16*3))); //16px = 1em per side padding
 	var widesttab=0;
 	// make all the tabs on the config page the same width
 	$('#configtabs > ul ~ div').each(function(){

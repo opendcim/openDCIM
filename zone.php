@@ -91,7 +91,7 @@ echo '	</select></div>
 </div>
 <div>
    <div><label for="datacenterid">',__("Data Center"),'</label></div>
-   <div><select name="datacenterid" id="datacenterid" onChange="form.submit()">';
+   <div><select name="datacenterid" id="datacenterid">';
 
 	foreach($DCList as $DCRow){
 		if($zone->DataCenterID==$DCRow->DataCenterID){$selected=" selected";}else{$selected="";}

@@ -17,6 +17,23 @@
 	$taginsert="";
 	$status="";
 
+	// AJAX Requests
+		//Zone Lists
+		if(isset($_POST['zonelist'])){
+			$cab->DataCenterID=$_POST['zonelist'];
+			echo $cab->GetZoneSelectList();
+			exit;
+		}
+		if(isset($_POST['rowlist'])){
+			$cab->ZoneID=$_POST['rowlist'];
+			echo $cab->GetCabRowSelectList();
+			exit;
+		}
+	
+		//Row Lists
+
+	// END - AJAX Requests
+
 	if(isset($_REQUEST['cabinetid'])){
 		$cab->CabinetID=(isset($_POST['cabinetid'])?$_POST['cabinetid']:$_GET['cabinetid']);
 		$cab->GetCabinet($facDB);
@@ -61,34 +78,6 @@
 		if(count($tags>0)){
 			// We have some tags so build the javascript elements we need to create the tags themselves
 			$taginsert="\t\ttags: {items: ".json_encode($tags)."},\n";
-		}
-	}elseif(isset($_POST['cabinetidprev']) && ($_POST['cabinetidprev']==$cab->CabinetID || $_POST['cabinetidprev']=="")){ 
-		//datacenter or zone have changed (or user reload)--> reload getting info from $_POST
-		$cab->DataCenterID=$_POST['datacenterid'];
-		$cab->Location=trim($_POST['location']);
-		$cab->AssignedTo=$_POST['assignedto'];
-		if ($cab->DataCenterID<>$_POST['dcidprev'])
-			$cab->ZoneID=0;
-		else
-			$cab->ZoneID=$_POST['zoneid'];
-		if ($cab->ZoneID<>$_POST['zoneidprev'])
-			$cab->CabRowID=0;
-		else
-			$cab->CabRowID=$_POST['cabrowid'];
-		$cab->CabinetHeight=$_POST['cabinetheight'];
-		$cab->Model=$_POST['model'];
-		$cab->Keylock=$_POST['keylock'];
-		$cab->MaxKW=$_POST['maxkw'];
-		$cab->MaxWeight=$_POST['maxweight'];
-		$cab->InstallationDate=$_POST['installationdate'];
-		$cab->SensorIPAddress=$_POST['sensoripaddress'];
-		$cab->SensorCommunity=$_POST['sensorcommunity'];
-		$cab->TempSensorOID=$_POST['tempsensoroid'];
-		$cab->HumiditySensorOID=$_POST['humiditysensoroid'];
-		$cab->Notes=trim($_POST['notes']);
-		$cab->Notes=($cab->Notes=="<br>")?"":$cab->Notes;
-		if(count($tagarray)>0){
-			$taginsert="\t\ttags: {items: ".json_encode($tagarray)."},\n";
 		}
 	}else{
 		$cab->CabinetID=null;
@@ -189,6 +178,25 @@
 				rendernotes(button);
 			}
 		});
+		$('#datacenterid').change(function(){
+			$.post('',{zonelist: $(this).val()}).done(function(data){
+				$('#zoneid').html('');
+				$(data).find('option').each(function(){
+					$('#zoneid').append($(this));	
+				});
+				$('#zoneid').val(0);
+				$('#zoneid').change();
+			});
+		});
+		$('#zoneid').change(function(){
+			$.post('',{rowlist: $(this).val()}).done(function(data){
+				$('#cabrowid').html('');
+				$(data).find('option').each(function(){
+					$('#cabrowid').append($(this));	
+				});
+				$('#cabrowid').val(0);
+			});
+		});
 		$('#rackform').validationEngine({});
 		$('input[name="installationdate"]').datepicker({});
 		$('#tags').width($('#tags').parent('div').parent('div').innerWidth()-$('#tags').parent('div').prev('div').outerWidth()-5);
@@ -217,9 +225,6 @@ echo '<div class="main">
 <div class="center"><div>
 <form id="rackform" action="',$_SERVER["PHP_SELF"],'" method="POST">
 <div class="table">
-<div><input type="hidden" name="cabinetidprev" id="cabinetidprev" value="',$cab->CabinetID,'"></div>
-<div><input type="hidden" name="dcidprev" id="dcinetidprev" value="',$cab->DataCenterID,'"></div>
-<div><input type="hidden" name="zoneidprev" id="zoneidprev" value="',$cab->ZoneID,'"></div>
 <div>
    <div>',__("Cabinet"),'</div>
    <div><select name="cabinetid" onChange="form.submit()">
@@ -234,7 +239,7 @@ echo '   </select></div>
 </div>
 <div>
    <div>',__("Data Center"),'</div>
-   <div>',$cab->GetDCSelectListSubmit($facDB),'</div>
+   <div>',$cab->GetDCSelectList(),'</div>
 </div>
 <div>
    <div>',__("Location"),'</div>
@@ -255,11 +260,11 @@ echo '  </select>
 </div>
 <div>
    <div>',__("Zone"),'</div>
-   <div>',$cab->GetZoneSelectListSubmit($facDB),'</div>
+   <div>',$cab->GetZoneSelectList(),'</div>
 </div>
 <div>
    <div>',__("Cabinet Row"),'</div>
-   <div>',$cab->GetCabRowSelectList($facDB),'</div>
+   <div>',$cab->GetCabRowSelectList(),'</div>
 </div>
 <div>
    <div>',__("Cabinet Height"),' (U)</div>

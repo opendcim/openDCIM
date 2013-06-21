@@ -53,26 +53,26 @@ class Cabinet {
 	var $Notes;
 
 	function MakeSafe() {
-		$this->CabinetID = intval( $this->CabinetID );
-		$this->DataCenterID = intval( $this->DataCenterID );
-		$this->Location = mysql_real_escape_string( $this->Location );
-		$this->AssignedTo = intval( $this->AssignedTo );
-		$this->ZoneID = intval( $this->ZoneID );
-		$this->CabRowID = intval( $this->CabRowID );
-		$this->CabinetHeight = intval( $this->CabinetHeight );
-		$this->Model = mysql_real_escape_string( $this->Model );
-		$this->Keylock = mysql_real_escape_string( $this->Keylock );
-		$this->MaxKW = floatval( $this->MaxKW );
-		$this->MaxWeight = intval( $this->MaxWeight );
-		$this->SensorIPAddress = mysql_real_escape_string( $this->SensorIPAddress );
-		$this->SensorCommunity = mysql_real_escape_string( $this->SensorCommunity );
-		$this->TempSensorOID = mysql_real_escape_string( $this->TempSensorOID );
-		$this->HumiditySensorOID = mysql_real_escape_string( $this->HumiditySensorOID );
-		$this->MapX1 = intval( $this->MapX1 );
-		$this->MapY1 = intval( $this->MapY1 );
-		$this->MapX2 = intval( $this->MapX2 );
-		$this->MapY2 = intval( $this->MapY2 );
-		$this->Notes = mysql_real_escape_string( $this->Notes );
+		$this->CabinetID=intval($this->CabinetID);
+		$this->DataCenterID=intval($this->DataCenterID);
+		$this->Location=addslashes($this->Location);
+		$this->AssignedTo=intval($this->AssignedTo);
+		$this->ZoneID=intval($this->ZoneID);
+		$this->CabRowID=intval($this->CabRowID);
+		$this->CabinetHeight=intval($this->CabinetHeight);
+		$this->Model=addslashes($this->Model);
+		$this->Keylock=addslashes($this->Keylock);
+		$this->MaxKW=floatval($this->MaxKW);
+		$this->MaxWeight=intval($this->MaxWeight);
+		$this->SensorIPAddress=addslashes($this->SensorIPAddress);
+		$this->SensorCommunity=addslashes($this->SensorCommunity);
+		$this->TempSensorOID=addslashes($this->TempSensorOID);
+		$this->HumiditySensorOID=addslashes($this->HumiditySensorOID);
+		$this->MapX1=intval($this->MapX1);
+		$this->MapY1=intval($this->MapY1);
+		$this->MapX2=intval($this->MapX2);
+		$this->MapY2=intval($this->MapY2);
+		$this->Notes=addslashes($this->Notes);
 	}
 	
 	static function CabinetRowToObject($dbRow){
@@ -253,27 +253,23 @@ class Cabinet {
 	function GetDCSelectList( $db = null ) {
 		global $dbh;
 		
-		$sql = "select * from fac_DataCenter order by Name";
+		$sql="SELECT * FROM fac_DataCenter ORDER BY Name";
 
-		$selectList = "<select name=\"datacenterid\">";
+		$selectList='<select name="datacenterid" id="datacenterid">';
 
-		foreach ( $dbh->query( $sql ) as $selectRow ) {
-			if ( $selectRow[ "DataCenterID" ] == $this->DataCenterID )
-				$selected = "selected";
-			else
-				$selected = "";
-
-			$selectList .= "<option value=\"" . $selectRow[ "DataCenterID" ] . "\" $selected>" . $selectRow[ "Name" ] . "</option>";
+		foreach($dbh->query($sql) as $selectRow){
+			$selected=($selectRow["DataCenterID"]==$this->DataCenterID)?' selected':'';
+			$selectList.="<option value=\"{$selectRow["DataCenterID"]}\"$selected>{$selectRow["Name"]}</option>";
 		}
 
-		$selectList .= "</select>";
+		$selectList.='</select>';
 
 		return $selectList;
 	}
 	
 	function GetDCSelectListSubmit( $db = null ) {
 		global $dbh;
-		
+
 		$sql = "select * from fac_DataCenter order by Name";
 
 		$selectList = "<select name=\"datacenterid\" id=\"datacenterid\" onChange=\"form.submit()\">";
@@ -292,54 +288,42 @@ class Cabinet {
 		return $selectList;
 	}
 	
-	function GetZoneSelectListSubmit( $db = null ) {
+	function GetZoneSelectList(){
 		global $dbh;
 		
-		$sql = "select * from fac_Zone where DataCenterID='".$this->DataCenterID."' order by Description";
+		$this->MakeSafe();
+		
+		$sql="SELECT * FROM fac_Zone WHERE DataCenterID=$this->DataCenterID ORDER BY Description;";
 
-		$selectList = "<select name=\"zoneid\" id=\"zoneid\" onChange=\"form.submit()\">";
-		if ( $this->ZoneID == 0 )
-			$selected = "selected";
-		else
-			$selected = "";
-		$selectList .= "<option value=\"0\" $selected>" . __("None") . "</option>";
+		$selectList='<select name="zoneid" id="zoneid">';
+		$selectList.='<option value=0>'.__("None").'</option>';
 
-		foreach ( $dbh->query( $sql ) as $selectRow ) {
-			if ( $selectRow[ "ZoneID" ] == $this->ZoneID )
-				$selected = "selected";
-			else
-				$selected = "";
-
-			$selectList .= "<option value=\"" . $selectRow[ "ZoneID" ] . "\" $selected>" . $selectRow[ "Description" ] . "</option>";
+		foreach($dbh->query($sql) as $selectRow){
+			$selected=($selectRow["ZoneID"]==$this->ZoneID)?' selected':'';
+			$selectList.="<option value=\"{$selectRow["ZoneID"]}\"$selected>{$selectRow["Description"]}</option>";
 		}
 
-		$selectList .= "</select>";
+		$selectList.='</select>';
 
 		return $selectList;
 	}
 		
-	function GetCabRowSelectList( $db = null ) {
+	function GetCabRowSelectList(){
 		global $dbh;
-		
-		$sql = "select * from fac_CabRow where ZoneID='".$this->ZoneID."' order by Name";
 
-		$selectList = "<select name=\"cabrowid\">";
-		if ( $this->CabRowID == 0 )
-			$selected = "selected";
-		else
-			$selected = "";
-		$selectList .= "<option value=\"0\" $selected>" . __("None") . "</option>";
+		$this->MakeSafe();
 		
-		foreach ( $dbh->query( $sql ) as $selectRow ) {
-			if ( $selectRow[ "CabRowID" ] == $this->CabRowID )
-				$selected = "selected";
-			else
-				$selected = "";
+		$sql="SELECT * FROM fac_CabRow WHERE ZoneID=$this->ZoneID ORDER BY Name;";
 
-			$selectList .= "<option value=\"" . $selectRow[ "CabRowID" ] . "\" $selected>" . $selectRow[ "Name" ] . "</option>";
+		$selectList='<select name="cabrowid" id="cabrowid">';
+		$selectList.='<option value=0>'.__("None").'</option>';
+		
+		foreach($dbh->query($sql) as $selectRow){
+			$selected=($selectRow["CabRowID"]==$this->CabRowID)?' selected':'';
+			$selectList.="<option value=\"{$selectRow["CabRowID"]}\"$selected>{$selectRow["Name"]}</option>";
 		}
 
-		$selectList .= "</select>";
+		$selectList.='</select>';
 
 		return $selectList;
 	}
