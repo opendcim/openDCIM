@@ -306,6 +306,20 @@ class Cabinet {
 
 		return $selectList;
 	}
+
+	function GetCabinetByRow(){
+		global $dbh;
+
+		$this->MakeSafe();
+		
+		$sql="SELECT * FROM fac_Cabinet WHERE CabRowID=$this->CabRowID ORDER BY Location ASC;";
+
+		foreach($dbh->query($sql) as $cabinetRow){
+			$cabinetList[$cabinetRow['CabinetID']]=Cabinet::CabinetRowToObject($cabinetRow);
+		}
+
+		return $cabinetList;
+	}
 		
 	function GetCabRowSelectList(){
 		global $dbh;
