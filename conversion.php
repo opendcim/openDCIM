@@ -99,21 +99,27 @@ print_r($ports);
 print "Errors and things that didn't quite match right:<br>\n";
 print_r($errors);
 
+	$n=0; $insertsql='';
 	// All the ports should be in the array now, use the prepared statement to load them all
 	foreach($ports as $deviceid => $row){
 		foreach($row as $portnum => $port){
 			$null=null;$blank="";
-			$cdevice=(isset($port['Notes']))?$port['Connected Device']:null;
-			$cport=(isset($port['Notes']))?$port['Connected Port']:null;
+			$cdevice=(isset($port['Connected Device']))?$port['Connected Device']:'NULL';
+			$cport=(isset($port['Connected Port']))?$port['Connected Port']:'NULL';
 			$notes=(isset($port['Notes']))?$port['Notes']:'';
 
-			$insert->bindParam(':cdeviceid',$cdevice);
-			$insert->bindParam(':cport',$cport);
-			$insert->bindParam(':notes',$notes);
-			$insert->bindParam(':deviceid',$deviceid);
-			$insert->bindParam(':portnumber',$portnum);
-
-			$insert->execute();
+			$insertsql.="($deviceid,$portnum,\"\",0,0,\"\",$cdevice,$cport,\"$notes\")";
+			if($n!=50){
+				$insertsql.=" ,";
+				++$n;
+			}else{
+				$dbh->exec('INSERT INTO fac_Ports VALUES'.$insertsql);
+				$n=0; $insertsql='';
+			}
 		}
 	}
+	//do one last insert
+	$insertsql=substr($insertsql, 0, -1);// shave off that last comma
+	$dbh->exec('INSERT INTO fac_Ports VALUES'.$insertsql);
+
 ?>
