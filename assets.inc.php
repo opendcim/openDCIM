@@ -140,24 +140,24 @@ class Cabinet {
 		global $dbh;
 		
 		$this->MakeSafe();
-		
-		$sql = sprintf( "update fac_Cabinet set DataCenterID=%d, Location=\"%s\", AssignedTo=%d,
-			ZoneID=%d, CabRowID=%d,
-			CabinetHeight=%d, Model=\"%s\", Keylock=\"%s\", MaxKW=%f, MaxWeight=%d,
-			InstallationDate=\"%s\", SensorIPAddress=\"%s\", SensorCommunity=\"%s\",
-			TempSensorOID=\"%s\", HumiditySensorOID=\"%s\", MapX1=%d, MapY1=%d,
-			MapX2=%d, MapY2=%d, Notes=\"%s\" where CabinetID=%d",
-			$this->DataCenterID, $this->Location, $this->AssignedTo, 
-			$this->ZoneID, $this->CabRowID, $this->CabinetHeight,
-			$this->Model, $this->Keylock, $this->MaxKW, $this->MaxWeight,
-			date( "Y-m-d", strtotime( $this->InstallationDate) ), $this->SensorIPAddress,
-			$this->SensorCommunity, $this->TempSensorOID, $this->HumiditySensorOID,
-			$this->MapX1, $this->MapY1, $this->MapX2, $this->MapY2, $this->Notes, $this->CabinetID );
 
-		if ( ! $dbh->exec( $sql ) ) {
-			$info = $dbh->errorInfo();
+		$sql="UPDATE fac_Cabinet SET DataCenterID=$this->DataCenterID, 
+			Location=\"$this->Location\", AssignedTo=$this->AssignedTo, 
+			ZoneID=$this->ZoneID, CabRowID=$this->CabRowID, 
+			CabinetHeight=$this->CabinetHeight, Model=\"$this->Model\", 
+			Keylock=\"$this->Keylock\", MaxKW=$this->MaxKW, MaxWeight=$this->MaxWeight, 
+			InstallationDate=\"".date("Y-m-d", strtotime($this->InstallationDate))."\", 
+			SensorIPAddress=\"$this->SensorIPAddress\", 
+			SensorCommunity=\"$this->SensorCommunity\", 
+			TempSensorOID=\"$this->TempSensorOID\", 
+			HumiditySensorOID=\"$this->HumiditySensorOID\", MapX1=$this->MapX1, 
+			MapY1=$this->MapY1, MapX2=$this->MapX2, MapY2=$this->MapY2, 
+			Notes=\"$this->Notes\" where CabinetID=$this->CabinetID;";
 
-			error_log( "PDO Error: " . $info[2] . " SQL=" . $sql );
+		if(!$dbh->query($sql)){
+			$info=$dbh->errorInfo();
+
+			error_log("UpdateCabinet::PDO Error: {$info[2]} SQL=$sql" );
 			return false;
 		}
 
@@ -166,13 +166,12 @@ class Cabinet {
 
 	function GetCabinet( $db = null ) {
 		global $dbh;
-		
-		$sql = "select * from fac_Cabinet where CabinetID=\"" . intval($this->CabinetID) . "\"";
-		
-		if ( ! $cabinetRow = $dbh->query( $sql )->fetch() ) {
-			$info = $dbh->errorInfo();
 
-			error_log( "PDO Error: " . $info[2] . " SQL=" . $sql );
+		$this->MakeSafe();
+		
+		$sql="SELECT * FROM fac_Cabinet WHERE CabinetID=$this->CabinetID;";
+		
+		if(!$cabinetRow=$dbh->query($sql)->fetch()){
 			return false;
 		}		
 		
@@ -505,12 +504,7 @@ class Cabinet {
 		}else{
 			//If no array is passed then clear all the tags
 			$delsql="DELETE FROM fac_CabinetTags WHERE CabinetID=".intval($this->CabinetID).";";
-			if ( ! $dbh->exec($delsql) ) {
-				$info = $dbh->errorInfo();
-
-				error_log( "PDO Error: " . $info[2] . " SQL=" . $delsql );
-				return false;
-			}
+			$dbh->exec($delsql);
 		}
 		return 0;
 	}
