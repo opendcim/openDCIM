@@ -560,14 +560,14 @@ class DataCenter {
 		
 		$classType = "liClosed";
 		$tree = str_repeat(" ",$lev+1)."<li class=\"$classType\" id=\"dc$this->DataCenterID\"><a class=\"DC\" href=\"dc_stats.php?dc=" 
-			. $this->DataCenterID . "\">" . $this->Name . "</a>/\n";
+			. $this->DataCenterID . "\">" . $this->Name . "</a>\n";
 		$tree.=str_repeat(" ",$lev+2)."<ul>\n";
 
 		$zone->DataCenterID=$this->DataCenterID;
 		$zoneList=$zone->GetZonesByDC(); 
 		while ( list( $zoneNum, $myzone ) = each( $zoneList ) ) {
-			$tree .= str_repeat(" ",$lev+3)."<li class=\"liClosed\" id=\"zone".$myzone->ZoneID."\">" . 
-					$myzone->Description . "/\n";
+			$tree .= str_repeat(" ",$lev+3)."<li class=\"liClosed\" id=\"zone".$myzone->ZoneID."\"><span class=\"ZONE\">" . 
+					$myzone->Description . "</span>\n";
 			$tree.=str_repeat(" ",$lev+4)."<ul>\n";
 			//Rows
 			$filas_sql="SELECT CabRowID, name AS Fila
@@ -577,8 +577,8 @@ class DataCenter {
 			
 			foreach ( $dbh->query( $filas_sql ) as $filaRow ) {
 			//while ( $filaRow = mysql_fetch_array( $result_filas ) ) {
-			  $tree .= str_repeat(" ",$lev+5)."<li class=\"liClosed\" id=\"fila{$filaRow['Fila']}\">".
-				"<a href=\"rowview.php?row={$filaRow['CabRowID']}\">".__("Row ").$filaRow['Fila']."</a>/\n";
+			  $tree .= str_repeat(" ",$lev+5)."<li class=\"liClosed\" id=\"fila".$filaRow['Fila']."\"><span class=\"CABROW\">".
+			  	__("Row ").$filaRow['Fila']."</span>\n";
 			  $tree.=str_repeat(" ",$lev+6)."<ul>\n";
 			  // DataCenterID and ZoneID are redundant if fac_cabrow is defined and is CabrowID set in fac_cabinet
 			  $cab_sql = "SELECT * 
