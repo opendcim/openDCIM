@@ -125,6 +125,15 @@ echo '	<a href="reports.php"><li>',__("Reports"),'</li></a>';
 	
 ?>
 <script type="text/javascript">
+if (typeof jQuery == 'undefined') {
+	alert('jQuery is not loaded');
+	window.location.assign("http://opendcim.org/wiki/index.php?title=Errors:Operational");
+}
+if (typeof jQuery.ui == 'undefined') {
+	alert('jQueryUI is not loaded');
+	window.location.assign("http://opendcim.org/wiki/index.php?title=Errors:Operational");
+}
+
 $("#sidebar .nav a").each(function(){
 	if($(this).attr("href")=="<?php echo basename($_SERVER['PHP_SELF']);?>"){
 		$(this).children().addClass("active");
