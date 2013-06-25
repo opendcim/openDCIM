@@ -1592,7 +1592,7 @@ echo '	<div class="table">
 
 			print "\t\t\t\t<div>
 					<div id=\"sp$i\">$i</div>
-					<div id=\"spn$i\">{$portList[$n]->PortDescriptor}</div>
+					<div id=\"spn$i\">{$portList[$n]->Label}</div>
 					<div id=\"d$i\" alt=\"{$patchList[$i]->EndpointDeviceID}\"><a href=\"devices.php?deviceid={$patchList[$i]->EndpointDeviceID}\">$tmpDev->Label</a></div>
 					<div data=\"{$patchList[$i]->EndpointPort}\" id=\"dp$i\">{$patchList[$i]->EndpointPort}</div>
 					<div data=\"{$portList[$n]->Notes}\" id=\"n$i\">{$portList[$n]->Notes}</div>

@@ -1870,6 +1870,24 @@ class DevicePorts {
 		$this->ConnectedDeviceID=intval($this->ConnectedDeviceID);
 		$this->ConnectedPort=intval($this->ConnectedPort);
 		$this->Notes=addslashes(trim($this->Notes));
+
+		$this->ConnectedDeviceID=($this->ConnectedDeviceID==0)?"NULL":$this->ConnectedDeviceID;
+		$this->ConnectedPort=($this->ConnectedPort==0)?"NULL":$this->ConnectedPort;
+	}
+
+	static function RowToObject($dbRow){
+		$dp=new DevicePorts();
+		$dp->DeviceID=$dbRow['DeviceID'];
+		$dp->PortNumber=$dbRow['PortNumber'];
+		$dp->Label=$dbRow['Label'];
+		$dp->MediaID=$dbRow['MediaID'];
+		$dp->ColorID=$dbRow['ColorID'];
+		$dp->PortNotes=$dbRow['PortNotes'];
+		$dp->ConnectedDeviceID=$dbRow['ConnectedDeviceID'];
+		$dp->ConnectedPort=$dbRow['ConnectedPort'];
+		$dp->Notes=$dbRow['Notes'];
+
+		return $dp;
 	}
 
 	function getPort(){
@@ -1958,33 +1976,26 @@ class DevicePorts {
 		return true;
 	}
 
-	static function getPortList( $DeviceID ) {
+	static function getPortList($DeviceID){
 		global $dbh;
 		
-		if ( intval( $DeviceID ) < 1 ) {
+		if(intval($DeviceID) <1){
 			return false;
 		}
 		
 		$dev = new Device();
 		$dev->DeviceID = $DeviceID;
-		if ( ! $dev->GetDevice() )
+		if(!$dev->GetDevice()){
 			return false;	// This device doesn't exist
+		}
 		
-		$sql = sprintf( "SELECT * FROM fac_DevicePorts WHERE DeviceID=%d", $dev->DeviceID );
+		$sql="SELECT * FROM fac_Ports WHERE DeviceID=$dev->DeviceID;";
 		
 		$portList = array();
 		
-		foreach ( $dbh->query($sql) as $row ) {
+		foreach($dbh->query($sql) as $row){
 			$n=sizeof($portList);
-			$portList[$n]=new DevicePorts();
-			
-			$portList[$n]->ConnectionID=$row["ConnectionID"];
-			$portList[$n]->DeviceID=$row["DeviceID"];
-			$portList[$n]->DevicePort=$row["DevicePort"];
-			$portList[$n]->MediaID=$row["MediaID"];
-			$portList[$n]->PortDescriptor=$row["PortDescriptor"];
-			$portList[$n]->ColorID=$row["ColorID"];
-			$portList[$n]->Notes=$row["Notes"];
+			$portList[$n]=DevicePorts::RowToObject($row);
 		}
 		
 		if( sizeof($portList)==0 && $dev->DeviceType=="Switch" ){
@@ -2002,8 +2013,8 @@ class DevicePorts {
 			for( $n=0; $n<$dev->Ports; $n++ ){
 				$portList[$n]=new DevicePorts();
 				$portList[$n]->DeviceID=$dev->DeviceID;
-				$portList[$n]->DevicePort=$n+1;
-				$portList[$n]->PortDescriptor=@$nameList[$n];
+				$portList[$n]->PortNumber=$n+1;
+				$portList[$n]->Label=@$nameList[$n];
 
 				$swCon->SwitchPortNumber=$n+1;
 				if($swCon->GetConnectionRecord()){
@@ -2011,7 +2022,7 @@ class DevicePorts {
 				}else{
 					$portList[$n]->Notes=$aliasList[$n];
 				}
-				
+
 				$portList[$n]->CreatePort();
 			}
 		}
