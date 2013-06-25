@@ -369,8 +369,9 @@
 				$pwrConnection->DeviceID=($dev->ParentDevice>0)?$dev->ParentDevice:$dev->DeviceID;
 				$pwrCords=$pwrConnection->GetConnectionsByDevice($facDB);
 
+				$portList=DevicePorts::getPortList($dev->DeviceID);
+
 				if($dev->DeviceType=='Switch'){
-					$portList = DevicePorts::getPortList( $dev->DeviceID );
 					$linkList = SwitchInfo::getPortStatus( $dev->DeviceID );
 					$mediaTypes=MediaTypes::GetMediaTypeList();
 					$colorCodes=ColorCoding::GetCodeList();
@@ -1538,46 +1539,16 @@ echo '	<div class="table">
 	}
 
 	// If device is s switch or appliance show what the heck it is connected to.
-	if($dev->DeviceType=='Server' || $dev->DeviceType=='Appliance' || $dev->DeviceType=='Chassis' || $dev->DeviceType=='Storage Array'){
-		if((count($patchList)+count($panelList))==0){
-			// We have no network information. Display links to switches in cabinet?
-			echo '		<div>		<div><a name="power"></a></div>		<div>',("No network connections defined.  You can add connections from a switch device."),'</div></div>';
-		}else{
-			print "		<div>\n		  <div><a name=\"net\">$chassis ".__('Connections')."</a><br>(".__('Managed at Switch').")</div>\n		  <div><div id=\"sortable\" class=\"table border\"><div><div>".__('Switch')."</div><div>".__('Switch Port')."</div><div>".__('Device Port')."</div><div>".__('Notes')."</div></div>\n";
-			$tmpDev=new Device();
-			foreach($patchList as $patchConn){
-				$tmpDev->DeviceID=$patchConn->SwitchDeviceID;
-				$tmpDev->GetDevice($facDB);
-				print "			<div class=\"row\"><div><a href=\"devices.php?deviceid=$patchConn->SwitchDeviceID#net\">$tmpDev->Label</a></div><div>$patchConn->SwitchPortNumber</div><div>$patchConn->EndpointPort</div><div>$patchConn->Notes</div></div>\n";
-			}
-			print "			</div><!-- END div.table -->\n		  </div>\n		</div>\n";
-
-			if(count($panelList)>0){
-				print "\t\t<div>\n\t\t\t<div>&nbsp;</div><div></div>\n\t\t</div>\n";				
-				print "\t\t<div>\n\t\t\t<div><a name=\"net\">$chassis ".__('Patches')."</a><br>(".__('Managed at Panel').")</div>\n\t\t\t<div>\n\t\t\t\t<div class=\"table border\">\n\t\t\t\t\t<div><div>".__('Panel')."</div><div>".__('Panel Port')."</div><div>".__('Device Port')."</div><div>".__('Notes')."</div></div>\n";
-				
-				if(is_array($panelList)){
-					foreach($panelList as $panelConn){
-						$tmpDev->DeviceID=$panelConn->PanelDeviceID;
-						$tmpDev->GetDevice($facDB);
-						print "\t\t\t\t\t<div><div><a href=\"devices.php?deviceid=$panelConn->PanelDeviceID#net\">$tmpDev->Label</a></div><div>$panelConn->PanelPortNumber</div><div>$panelConn->FrontEndpointPort</div><div>$panelConn->FrontNotes</div></div>\n";
-					}
-					print "\t\t\t\t</div><!-- END div.table -->\n\t\t\t</div>\n\t\t</div>\n";
-				}
-			}
-		}      
-	}
-		  
-	if($dev->DeviceType=='Switch'){
+	if($dev->DeviceType!='Physical Infrastructure'){
 		print "		<div>\n		  <div><a name=\"net\">".__('Connections')."</a></div>\n		  <div>\n			<div class=\"table border switch\">\n				<div>
 				<div>#</div>
 				<div>".__('Name')."</div>
 				<div>".__('Device')."</div>
 				<div>".__('Device Port')."</div>
-				<div>".__('Notes')."</div>
-				<div>".__("Status")."</div>
-				<div>".__("Media Type")."</div>
-				<div>".__("Color Code")."</div>
+				<div>".__('Notes')."</div>";
+		if($dev->DeviceType=='Switch'){print "\t\t\t\t<div>".__("Status")."</div>";}
+		print "\t\t\t\t<div>".__("Media Type")."</div>
+			<div>".__("Color Code")."</div>
 			</div>\n";
 
 		for ( $n = 0; $n < sizeof( $portList ); $n++ ) {
@@ -1595,21 +1566,16 @@ echo '	<div class="table">
 					<div id=\"spn$i\">{$portList[$n]->Label}</div>
 					<div id=\"d$i\" alt=\"{$patchList[$i]->EndpointDeviceID}\"><a href=\"devices.php?deviceid={$patchList[$i]->EndpointDeviceID}\">$tmpDev->Label</a></div>
 					<div data=\"{$patchList[$i]->EndpointPort}\" id=\"dp$i\">{$patchList[$i]->EndpointPort}</div>
-					<div data=\"{$portList[$n]->Notes}\" id=\"n$i\">{$portList[$n]->Notes}</div>
-					<div id=\"st$i\"><span class=\"ui-icon status {$linkList[$n]}\"></span></div>
-					<div id=\"mt$i\">$mt</div>
+					<div data=\"{$portList[$n]->Notes}\" id=\"n$i\">{$portList[$n]->Notes}</div>";
+			if($dev->DeviceType=='Switch'){print "\t\t\t\t<div id=\"st$i\"><span class=\"ui-icon status {$linkList[$n]}\"></span></div>";}
+			print "\t\t\t\t<div id=\"mt$i\">$mt</div>
 					<div id=\"cc$i\">$cc</div>
 				</div>\n";
 		}
-/*
- 		if(sizeof($patchList) >0){
-			foreach($patchList as $patchConn){
-			 print "\t\t\t\t<div><div id=\"sp"$i\">$i</div><div>".$portList[$n]->PortDescriptor."</div><div id=\"d$i\" alt=\"".$patchList[$n]->EndpointDeviceID."\"><a href=\"devices.php?deviceid=".$patchList[$n]->EndpointDeviceID."\">$tmpDev->Label</a></div><div data=\"".$patchList[$n]->EndpointPort."\" id=\"dp$i\">".$patchList[$n]->EndpointPort."</div><div data=\"".$portList[$n]->Notes."\" id=\"n$i\">".$portList[$n]->Notes."</div></div>\n";
-			}
-		}      
-*/
 		echo "			</div><!-- END div.table -->\n		  </div>\n		</div>";
 	}
+
+
 
 	if($dev->DeviceType=='Patch Panel'){
 		print "\n\t<div>\n\t\t<div><a name=\"net\">".__('Connections')."</a></div>\n\t\t<div>\n\t\t\t<div class=\"table border patchpanel\">\n\t\t\t\t<div><div>".__('Front')."</div><div>Device Port</div><div>".__('Notes')."</div><div>".__('Patch Port')."</div><div>".__('Back')."</div><div>Device Port</div><div>".__('Notes')."</div></div>\n";

@@ -1998,32 +1998,42 @@ class DevicePorts {
 			$portList[$n]=DevicePorts::RowToObject($row);
 		}
 		
-		if( sizeof($portList)==0 && $dev->DeviceType=="Switch" ){
+		if( sizeof($portList)==0 && $dev->DeviceType!="Physical Infrastructure" ){
 			// Build the DevicePorts from the existing info in the following priority:
 			//  - Existing switchconnection table
 			//  - SNMP data (if it exists)
 			//  - Placeholders
-			$swCon=new SwitchConnection();
-			$swCon->SwitchDeviceID=$dev->DeviceID;
-			
-			$nameList=SwitchInfo::getPortNames($dev->DeviceID);
-			$aliasList=SwitchInfo::getPortAlias($dev->DeviceID);
-			
-			
-			for( $n=0; $n<$dev->Ports; $n++ ){
-				$portList[$n]=new DevicePorts();
-				$portList[$n]->DeviceID=$dev->DeviceID;
-				$portList[$n]->PortNumber=$n+1;
-				$portList[$n]->Label=@$nameList[$n];
+			if($dev->DeviceType=="Switch"){
+				$swCon=new SwitchConnection();
+				$swCon->SwitchDeviceID=$dev->DeviceID;
+				
+				$nameList=SwitchInfo::getPortNames($dev->DeviceID);
+				$aliasList=SwitchInfo::getPortAlias($dev->DeviceID);
+				
+				for( $n=0; $n<$dev->Ports; $n++ ){
+					$portList[$n]=new DevicePorts();
+					$portList[$n]->DeviceID=$dev->DeviceID;
+					$portList[$n]->PortNumber=$n+1;
+					$portList[$n]->Label=@$nameList[$n];
 
-				$swCon->SwitchPortNumber=$n+1;
-				if($swCon->GetConnectionRecord()){
-					$portList[$n]->Notes=$swCon->Notes;
-				}else{
-					$portList[$n]->Notes=$aliasList[$n];
+					$swCon->SwitchPortNumber=$n+1;
+					if($swCon->GetConnectionRecord()){
+						$portList[$n]->Notes=$swCon->Notes;
+					}else{
+						$portList[$n]->Notes=$aliasList[$n];
+					}
+
+					$portList[$n]->CreatePort();
 				}
+			}else{
+				for( $n=0; $n<$dev->Ports; $n++ ){
+					$portList[$n]=new DevicePorts();
+					$portList[$n]->DeviceID=$dev->DeviceID;
+					$portList[$n]->PortNumber=$n+1;
+					$portList[$n]->Label=@$nameList[$n];
 
-				$portList[$n]->CreatePort();
+					$portList[$n]->CreatePort();
+				}
 			}
 		}
 		
