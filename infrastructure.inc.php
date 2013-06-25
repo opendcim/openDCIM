@@ -1105,7 +1105,6 @@ class CabRow {
   	global $dbh;
   		
   	$sql = "select * from fac_CabRow where CabRowID=\"" . intval($this->CabRowID) . "\"";
-  	$result = mysql_query( $sql, $db );
     
   	if ( ! $row = $dbh->query( $sql )->fetch() ) {
   		$info = $dbh->errorInfo();
