@@ -314,6 +314,8 @@ class Cabinet {
 		
 		$sql="SELECT * FROM fac_Cabinet WHERE CabRowID=$this->CabRowID ORDER BY Location ASC;";
 
+		$cabinetList=array();
+
 		foreach($dbh->query($sql) as $cabinetRow){
 			$cabinetList[$cabinetRow['CabinetID']]=Cabinet::CabinetRowToObject($cabinetRow);
 		}
@@ -1848,51 +1850,114 @@ class Device {
 }
 
 class DevicePorts {
-	var $ConnectionID;
 	var $DeviceID;
-	var $DevicePort;
+	var $PortNumber;
+	var $Label;
 	var $MediaID;
-	var $PortDescriptor;
 	var $ColorID;
+	var $PortNotes;
+	var $ConnectedDeviceID;
+	var $ConnectedPort;
 	var $Notes;
 	
 	function MakeSafe() {
-		$this->ConnectionID = intval( $this->ConnectionID );
-		$this->DeviceID = intval( $this->DeviceID );
-		$this->DevicePort = intval( $this->DevicePort );
-		$this->MediaID = intval( $this->MediaID );
-		$this->PortDescriptor = mysql_real_escape_string( $this->PortDescriptor );
-		$this->ColorID = intval( $this->ColorID );
-		$this->Notes = mysql_real_escape_string( $this->Notes );
+		$this->DeviceID=intval($this->DeviceID);
+		$this->PortNumber=intval($this->PortNumber);
+		$this->Label=addslashes(trim($this->Label));
+		$this->MediaID=intval($this->MediaID);
+		$this->ColorID=intval($this->ColorID);
+		$this->PortNotes=addslashes(trim($this->PortNotes));
+		$this->ConnectedDeviceID=intval($this->ConnectedDeviceID);
+		$this->ConnectedPort=intval($this->ConnectedPort);
+		$this->Notes=addslashes(trim($this->Notes));
 	}
 
-	static function getConnection($ConnectionID){
+	function getPort(){
 		global $dbh;
-		$ConnectionID=intval($ConnectionID);
+		$this->MakeSafe();
 
-		$sql="SELECT * FROM fac_DevicePorts WHERE ConnectionID=$ConnectionID;";
+		$sql="SELECT * FROM fac_Ports WHERE DeviceID=$this->DeviceID AND PortNumber=$this->PortNumber;";
 
-		if(!$row=$dbh->query($sql)->fetch()){
+		if(!$row=$dbh->query($sql)->fetchAll()){
+			return false;
+		}else{
+			$this->DeviceID=$row['DeviceID'];
+			$this->PortNumber=$row['PortNumber'];
+			$this->Label=$row['Label'];
+			$this->MediaID=$row['MediaID'];
+			$this->ColorID=$row['ColorID'];
+			$this->PortNotes=$row['PortNotes'];
+			$this->ConnectedDeviceID=$row['ConnectedDeviceID'];
+			$this->ConnectedPort=$row['ConnectedPort'];
+			$this->Notes=$row['Notes'];
+
+			return true;
+		}
+	}
+
+	function createPort() {
+		global $dbh;
+		
+		$this->MakeSafe();
+
+		$sql="INSERT INTO fac_Ports SET DeviceID=$this->DeviceID, PortNumber=$this->PortNumber, 
+			MediaID=$this->MediaID, ColorID=$this->ColorID, PortNotes=\"$this->PortNotes\", 
+			ConnectedDeviceID=$this->ConnectedDeviceID, ConnectedPort=$this->ConnectedPort,
+			Notes=\"$this->Notes\";";
+			
+		if(!$dbh->query($sql)){
 			$info=$dbh->errorInfo();
 
-			error_log("PDO Error: {$info[2]}");
+			error_log("createPort::PDO Error: {$info[2]} SQL=$sql");
 			return false;
 		}
-
-		$dp=new DevicePorts();
-
-		$dp->ConnectionID=$row['ConnectionID'];
-		$dp->DeviceID=$row['DeviceID'];
-		$dp->DevicePort=$row['DevicePort'];
-		$dp->MediaID=$row['MediaID'];
-		$dp->PortDescriptor=$row['PortDescriptor'];
-		$dp->ColorID=$row['ColorID'];
-		$dp->Notes=$row['Notes'];
-
-		return $dp;
-
+		
+		return true;
 	}
-	
+
+	function updatePort() {
+		global $dbh;
+		
+		$this->MakeSafe();
+
+		$sql="UPDATE fac_Ports SET DeviceID=$this->DeviceID, PortNumber=$this->PortNumber, 
+			MediaID=$this->MediaID, ColorID=$this->ColorID, PortNotes=\"$this->PortNotes\", 
+			ConnectedDeviceID=$this->ConnectedDeviceID, ConnectedPort=$this->ConnectedPort,
+			Notes=\"$this->Notes\" WHERE DeviceID=$this->DeviceID AND 
+			PortNumber=$this->PortNumber;";
+			
+		if(!$dbh->query($sql)){
+			$info=$dbh->errorInfo();
+
+			error_log("updatePort::PDO Error: {$info[2]} SQL=$sql");
+			return false;
+		}
+		
+		return true;
+	}
+
+	function removeConnection(){
+		global $dbh;
+
+		$this->getPort();
+
+		$sql="UPDATE fac_Ports SET ConnectedDeviceID=NULL, ConnectedPort=NULL WHERE
+			DeviceID=$this->DeviceID AND PortNumber=$this->PortNumber;
+			UPDATE fac_Ports SET ConnectedDeviceID=NULL, ConnectedPort=NULL WHERE
+			ConnectedDeviceID=$this->DeviceID, ConnectedPort=$this->PortNumber;";
+
+		// trying this catch exception because i'm not sure how executing two 
+		// sql commands at once is gonna go.
+		try{
+			$dbh->exec($sql);
+		}catch(PDOException $e){
+			echo $e->getMessage();
+			die();
+		}
+
+		return true;
+	}
+
 	static function getPortList( $DeviceID ) {
 		global $dbh;
 		
@@ -1952,43 +2017,6 @@ class DevicePorts {
 		}
 		
 		return $portList;
-	}
-	
-	function CreatePort() {
-		global $dbh;
-		
-		$this->MakeSafe();
-		
-		$sql = "INSERT INTO fac_DevicePorts SET DeviceID=$this->DeviceID, DevicePort=$this->DevicePort, 
-				MediaID=$this->MediaID, PortDescriptor=\"$this->PortDescriptor\", ColorID=$this->ColorID, 
-				Notes=\"$this->Notes\"";
-
-		if( !$dbh->exec($sql) ){
-			$info=$dbh->errorInfo();
-
-			error_log("PDO Error: {$info[2]} SQL=$sql");
-			return false;
-		}else{
-			$this->ConnetionID=$dbh->lastInsertID();
-		}
-		
-		return $this->ConnectionID;		
-	}
-	
-	function UpdatePort() {
-		global $dbh;
-		
-		$sql = sprintf( "update fac_DevicePorts set DeviceID=%d, DevicePort=%d, MediaID=%d, PortDescriptor=\"%s\", ColorID=%d, Notes=\"%s\" where ConnectionID=%d",
-			$this->DeviceID, $this->DevicePort, $this->MediaID, $this->PortDescriptor, $this->ColorID, $this->Notes, $this->ConnectionID );
-			
-		if ( ! $dbh->exec( $sql ) ) {
-			$info = $dbh->errorInfo();
-
-			error_log( "PDO Error: " . $info[2] . " SQL=" . $sql );
-			return false;
-		}
-		
-		return;
 	}
 }
 

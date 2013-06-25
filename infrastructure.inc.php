@@ -286,10 +286,7 @@ class DataCenter {
 		$this->MakeSafe();
 		$sql="SELECT * FROM fac_DataCenter WHERE DataCenterID=$this->DataCenterID";
 		
-		if ( ! $dcRow = $dbh->query( $sql )->fetch() ) {
-			$info = $dbh->errorInfo();
-
-			error_log( "PDO Error: " . $info[2] . " SQL=" . $sql );
+		if(!$dcRow=$dbh->query($sql)->fetch()){
 			return false;
 		}		
 		
@@ -580,8 +577,8 @@ class DataCenter {
 			
 			foreach ( $dbh->query( $filas_sql ) as $filaRow ) {
 			//while ( $filaRow = mysql_fetch_array( $result_filas ) ) {
-			  $tree .= str_repeat(" ",$lev+5)."<li class=\"liClosed\" id=\"fila".$filaRow['Fila']."\">".__("Row ")
-			  		.$filaRow['Fila']."/\n";
+			  $tree .= str_repeat(" ",$lev+5)."<li class=\"liClosed\" id=\"fila{$filaRow['Fila']}\">".
+				"<a href=\"rowview.php?row={$filaRow['CabRowID']}\">".__("Row ").$filaRow['Fila']."</a>/\n";
 			  $tree.=str_repeat(" ",$lev+6)."<ul>\n";
 			  // DataCenterID and ZoneID are redundant if fac_cabrow is defined and is CabrowID set in fac_cabinet
 			  $cab_sql = "SELECT * 
