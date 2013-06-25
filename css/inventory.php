@@ -567,12 +567,16 @@ div.cabinet {
 	ul.mktree  li.liOpen    ul { display: block; }
 	ul.mktree  li.liClosed  ul { display: none; }
 	/* Format menu items differently depending on what level of the tree they are in */
-	ul.mktree  li { font-family: arial, helvetica; font-size: 12pt; }
-	ul.mktree  a.DC { color: #000088; A:hover}
-	ul.mktree  a.CONTAINER { color: #006600; }
+	ul.mktree  li { font-family: arial, helvetica; font-size: 11pt; font-weight: bold; }
+	ul.mktree  a.DC { color: #000088; font-weight: bold; }
+	ul.mktree  a.CONTAINER { color: #005500; }
+	ul.mktree  span.ZONE { color: #330066; }
+	ul.mktree  span.CABROW { color: #AA3300; }
+	ul.mktree  span:hover { color: red; }
 	ul.mktree  a.RACK { color: #660000; }
+	ul.mktree  a { text-decoration: none; }
 	ul.mktree  a:hover { color: red; }
-	ul.mktree  li ul li { font-family: arial, helvetica; font-size: 10pt; }
+	ul.mktree  li ul li { font-family: arial, helvetica; font-size: 11pt; font-weight: normal;}
 }
 .meter-wrap{position: relative;background-color: lightgrey;}
 .meter-wrap, .meter-value, .meter-text {width: 155px; height: 1em;}
