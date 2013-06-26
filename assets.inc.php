@@ -1913,6 +1913,19 @@ class DevicePorts {
 		}
 	}
 
+	function getPorts(){
+		global $dbh;
+		$this->MakeSafe();
+
+		$sql="SELECT * FROM fac_Ports WHERE DeviceID=$this->DeviceID;";
+
+		$ports=array();
+		foreach($dbh->query($sql) as $row){
+			$ports[]=DevicePorts::RowToObject($row);
+		}	
+		return $ports;
+	}	
+
 	function createPort() {
 		global $dbh;
 		
@@ -1974,6 +1987,60 @@ class DevicePorts {
 		}
 
 		return true;
+	}
+
+	static function getPatchCandidates($DeviceID,$PortNum=null,$listports=null){
+		/*
+		 * $DeviceID = ID of the device that you are wanting to make a connection from
+		 * $PortNum(optional) = Port Number on the device you are wanting to connect,
+		 *		mandatory if media enforcing is on
+		 * $listports(optional) = Any value will trigger this to kick back a list of
+		 * 		valid points that this port can connect to instead of the default list
+		 *		of valid devices that it can connect to.
+		 */
+		global $dbh;
+		global $config;
+		
+		$dev=new Device(); // make sure we have a real device first
+		$dev->DeviceID=$DeviceID;
+		if(!$dev->GetDevice()){return false;}
+
+		$mediaenforce="";
+		if($config->ParameterArray["MediaEnforce"]=='enabled' && !is_null($PortNum)){
+			$dp=new DevicePorts();
+			$dp->DeviceID=$DeviceID;
+			$dp->PortNumber=$PortNum;
+			$dp->getPort();
+			$mt=new MediaTypes();
+			$mt->MediaID=$dp->MediaID;
+			$mt->GetType();
+
+			$mediaenforce=" AND MediaID=$mt->MediaID";
+		}elseif($config->ParameterArray["MediaEnforce"]=='enabled' && is_null($PortNum)){
+			// Media Type Enforcing is enabled and you didn't supply a port to match type on
+			return false;
+		}
+
+		$candidates=array();
+
+		if(is_null($listports)){
+			$sql="SELECT DISTINCT DeviceID FROM fac_Ports WHERE DeviceID!=$dev->DeviceID$mediaenforce;";
+			foreach($dbh->query($sql) as $row){
+				$candidate=$row['DeviceID'];
+				$tmpDev=new Device();
+				$tmpDev->DeviceID=$candidate;
+				$tmpDev->GetDevice();
+
+				$candidates[$candidate]=$tmpDev;
+			}
+		}else{
+			$sql="SELECT * FROM fac_Ports WHERE DeviceID!=$dev->DeviceID AND ConnectedDeviceID IS NULL$mediaenforce;";
+			foreach($dbh->query($sql) as $row){
+				$candidates[]=DevicePorts::RowToObject($row);
+			}
+		}
+
+		return $candidates;
 	}
 
 	static function getPortList($DeviceID){
