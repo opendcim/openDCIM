@@ -578,7 +578,7 @@ class DataCenter {
 			foreach ( $dbh->query( $filas_sql ) as $filaRow ) {
 			//while ( $filaRow = mysql_fetch_array( $result_filas ) ) {
 			  $tree .= str_repeat(" ",$lev+5)."<li class=\"liClosed\" id=\"fila".$filaRow['Fila']."\"><span class=\"CABROW\">".
-			  	__("Row ").$filaRow['Fila']."</span>\n";
+			  	"<a href=\"rowview.php?row={$filaRow['CabRowID']}\">".__("Row ").$filaRow['Fila']."</a></span>\n";
 			  $tree.=str_repeat(" ",$lev+6)."<ul>\n";
 			  // DataCenterID and ZoneID are redundant if fac_cabrow is defined and is CabrowID set in fac_cabinet
 			  $cab_sql = "SELECT * 
