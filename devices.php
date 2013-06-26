@@ -77,6 +77,11 @@
 			echo json_encode($list);
 			exit;
 		}
+		if(isset($_GET['cc'])){
+			header('Content-Type: application/json');
+			echo json_encode(ColorCoding::GetCodeList());
+			exit;
+		}
 		if(isset($_GET['mt'])){
 			header('Content-Type: application/json');
 			echo json_encode(MediaTypes::GetMediaTypeList());
@@ -914,6 +919,16 @@ $(document).ready(function() {
 				porttype.html(mlist).find('select').val(porttype.attr('data'));
 			});
 		}
+		function getcolortypes(portnum){
+			var portcolor=$('#cc'+portnum);
+			$.get('',{cc:''}).done(function(data){
+				var clist=$("<select>");
+				$.each(data, function(key,cc){
+					clist.append('<option value='+cc.ColorID+'>'+cc.Name+'</option>');
+				});
+				portcolor.html(clist).find('select').val(portcolor.attr('data'));
+			});
+		}
 		$('.switch.table > div ~ div').each(function(){
 			var row=$(this);
 			row.find('div:first-child').click(function(){
@@ -937,9 +952,11 @@ $(document).ready(function() {
 					cnotes.html('<input type="text" value="'+cnotes.text()+'">');
 					portname.html('<input type="text" value="'+portname.text()+'">');
 					getmediatypes(portnum);
+					getcolortypes(portnum);
 					//listports
 					//do something with data here
 				});
+				row.children('div ~ div').css({'padding': '0px', 'background-color': 'transparent'});
 			}).css({'cursor': 'pointer','text-decoration': 'underline'});
 		});
 		$('.patchpanel > div:first-child ~ div').each(function(){
