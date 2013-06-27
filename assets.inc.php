@@ -1934,9 +1934,9 @@ class DevicePorts {
 		$this->MakeSafe();
 
 		$sql="INSERT INTO fac_Ports SET DeviceID=$this->DeviceID, PortNumber=$this->PortNumber, 
-			MediaID=$this->MediaID, ColorID=$this->ColorID, PortNotes=\"$this->PortNotes\", 
-			ConnectedDeviceID=$this->ConnectedDeviceID, ConnectedPort=$this->ConnectedPort,
-			Notes=\"$this->Notes\";";
+			Label=\"$this->Label\", MediaID=$this->MediaID, ColorID=$this->ColorID, 
+			PortNotes=\"$this->PortNotes\", ConnectedDeviceID=$this->ConnectedDeviceID, 
+			ConnectedPort=$this->ConnectedPort, Notes=\"$this->Notes\";";
 			
 		if(!$dbh->query($sql)){
 			$info=$dbh->errorInfo();
@@ -1973,6 +1973,7 @@ class DevicePorts {
 			// make new connection
 			$tmpport->ConnectedDeviceID=$this->DeviceID;
 			$tmpport->ConnectedPort=$this->PortNumber;
+			$tmpport->Notes=$this->Notes;
 			DevicePorts::makeConnection($tmpport,$this);
 		}
 
@@ -2000,10 +2001,11 @@ class DevicePorts {
 		$port2->MakeSafe();
 
 		$sql="UPDATE fac_Ports SET ConnectedDeviceID=$port2->DeviceID, 
-			ConnectedPort=$port2->PortNumber WHERE DeviceID=$port1->DeviceID AND 
-			PortNumber=$port1->PortNumber; UPDATE fac_Ports SET 
-			ConnectedDeviceID=$port1->DeviceID, ConnectedPort=$port1->PortNumber WHERE 
-			DeviceID=$port2->DeviceID AND PortNumber=$port2->PortNumber;";
+			ConnectedPort=$port2->PortNumber, Notes=\"$port2->Notes\" WHERE 
+			DeviceID=$port1->DeviceID AND PortNumber=$port1->PortNumber; UPDATE fac_Ports 
+			SET ConnectedDeviceID=$port1->DeviceID, ConnectedPort=$port1->PortNumber, 
+			Notes=\"$port1->Notes\" WHERE DeviceID=$port2->DeviceID AND 
+			PortNumber=$port2->PortNumber;";
 
 		if(!$dbh->exec($sql)){
 			$info=$dbh->errorInfo();
