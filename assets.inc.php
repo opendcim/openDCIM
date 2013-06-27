@@ -1871,8 +1871,10 @@ class DevicePorts {
 		$this->ConnectedPort=intval($this->ConnectedPort);
 		$this->Notes=addslashes(trim($this->Notes));
 
-		$this->ConnectedDeviceID=($this->ConnectedDeviceID==0)?"NULL":$this->ConnectedDeviceID;
-		$this->ConnectedPort=($this->ConnectedPort==0)?"NULL":$this->ConnectedPort;
+		if($this->ConnectedDeviceID==0 || $this->ConnectedPort==0){
+			$this->ConnectedDeviceID="NULL";
+			$this->ConnectedPort="NULL";
+		}
 	}
 
 	static function RowToObject($dbRow){
@@ -1896,7 +1898,7 @@ class DevicePorts {
 
 		$sql="SELECT * FROM fac_Ports WHERE DeviceID=$this->DeviceID AND PortNumber=$this->PortNumber;";
 
-		if(!$row=$dbh->query($sql)->fetchAll()){
+		if(!$row=$dbh->query($sql)->fetch()){
 			return false;
 		}else{
 			$this->DeviceID=$row['DeviceID'];
@@ -1948,22 +1950,68 @@ class DevicePorts {
 
 	function updatePort() {
 		global $dbh;
-		
+
+		$oldport=new DevicePorts(); // originating port prior to modification
+		$oldport->DeviceID=$this->DeviceID;
+		$oldport->PortNumber=$this->PortNumber;
+		$oldport->getPort();
+		$tmpport=new DevicePorts(); // connecting to here
+		$tmpport->DeviceID=$this->ConnectedDeviceID;
+		$tmpport->PortNumber=$this->ConnectedPort;
+		$tmpport->getPort();
+	
 		$this->MakeSafe();
 
-		$sql="UPDATE fac_Ports SET DeviceID=$this->DeviceID, PortNumber=$this->PortNumber, 
-			MediaID=$this->MediaID, ColorID=$this->ColorID, PortNotes=\"$this->PortNotes\", 
-			ConnectedDeviceID=$this->ConnectedDeviceID, ConnectedPort=$this->ConnectedPort,
-			Notes=\"$this->Notes\" WHERE DeviceID=$this->DeviceID AND 
-			PortNumber=$this->PortNumber;";
-			
+		// clear previous connection
+		$oldport->removeConnection();
+		$tmpport->removeConnection();
+
+		if($this->ConnectedDeviceID==0 || $this->PortNumber==0 || $this->ConnectedPort==0){
+			// when any of the above equal 0 this is a delete request
+			// skip making any new connections but go ahead and update the device
+		}else{
+			// make new connection
+			$tmpport->ConnectedDeviceID=$this->DeviceID;
+			$tmpport->ConnectedPort=$this->PortNumber;
+			DevicePorts::makeConnection($tmpport,$this);
+		}
+
+		// update port
+		$sql="UPDATE fac_Ports SET MediaID=$this->MediaID, ColorID=$this->ColorID, 
+			PortNotes=\"$this->PortNotes\", ConnectedDeviceID=$this->ConnectedDeviceID, 
+			ConnectedPort=$this->ConnectedPort, Notes=\"$this->Notes\" WHERE 
+			DeviceID=$this->DeviceID AND PortNumber=$this->PortNumber;";
+
 		if(!$dbh->query($sql)){
+			$info=$dbh->errorInfo();
+
+			error_log("updatePort::PDO Error: {$info[2]} SQL=$sql");
+			
+			return false;
+		}
+
+		return true;
+	}
+
+	static function makeConnection($port1,$port2){
+		global $dbh;
+
+		$port1->MakeSafe();
+		$port2->MakeSafe();
+
+		$sql="UPDATE fac_Ports SET ConnectedDeviceID=$port2->DeviceID, 
+			ConnectedPort=$port2->PortNumber WHERE DeviceID=$port1->DeviceID AND 
+			PortNumber=$port1->PortNumber; UPDATE fac_Ports SET 
+			ConnectedDeviceID=$port1->DeviceID, ConnectedPort=$port1->PortNumber WHERE 
+			DeviceID=$port2->DeviceID AND PortNumber=$port2->PortNumber;";
+
+		if(!$dbh->exec($sql)){
 			$info=$dbh->errorInfo();
 
 			error_log("updatePort::PDO Error: {$info[2]} SQL=$sql");
 			return false;
 		}
-		
+
 		return true;
 	}
 
@@ -1975,7 +2023,7 @@ class DevicePorts {
 		$sql="UPDATE fac_Ports SET ConnectedDeviceID=NULL, ConnectedPort=NULL WHERE
 			DeviceID=$this->DeviceID AND PortNumber=$this->PortNumber;
 			UPDATE fac_Ports SET ConnectedDeviceID=NULL, ConnectedPort=NULL WHERE
-			ConnectedDeviceID=$this->DeviceID, ConnectedPort=$this->PortNumber;";
+			ConnectedDeviceID=$this->DeviceID AND ConnectedPort=$this->PortNumber;";
 
 		// trying this catch exception because i'm not sure how executing two 
 		// sql commands at once is gonna go.
