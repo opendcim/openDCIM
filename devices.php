@@ -896,39 +896,6 @@ $(document).ready(function() {
 			}
 		});
 		// Make connections to other devices
-		function getavailports(devid,portnum){
-			var cdevice=$('#d'+portnum);
-			if(cdevice.find('select').val()!=0 && cdevice.find('select').val()!=null){
-				var cdeviceport=$('#dp'+portnum);
-				$.post('',{swdev: $('#deviceid').val(),pn: portnum,thisdev: devid,listports: ''}).done(function(data){
-					var portlist=$("<select>");
-					$.each(data, function(key,port){
-						portlist.append('<option value='+port.PortNumber+'>'+port.PortNumber+'</option>');
-					});
-					cdeviceport.html(portlist).find('select').val(cdeviceport.attr('data'));
-				});
-			}
-		}
-		function getmediatypes(portnum){
-			var porttype=$('#mt'+portnum);
-			$.get('',{mt:''}).done(function(data){
-				var mlist=$("<select>");
-				$.each(data, function(key,mt){
-					mlist.append('<option value='+mt.MediaID+'>'+mt.MediaType+'</option>');
-				});
-				porttype.html(mlist).find('select').val(porttype.attr('data'));
-			});
-		}
-		function getcolortypes(portnum){
-			var portcolor=$('#cc'+portnum);
-			$.get('',{cc:''}).done(function(data){
-				var clist=$("<select>");
-				$.each(data, function(key,cc){
-					clist.append('<option value='+cc.ColorID+'>'+cc.Name+'</option>');
-				});
-				portcolor.html(clist).find('select').val(portcolor.attr('data'));
-			});
-		}
 		$('.switch.table > div ~ div').each(function(){
 			var row=$(this);
 			row.find('div:first-child').click(function(){
@@ -939,22 +906,70 @@ $(document).ready(function() {
 				var cnotes=$('#n'+portnum);
 				var porttype=$('#mt'+portnum);
 				var portcolor=$('#cc'+portnum);
+				function getavailports(devid,portnum){
+					var cdeviceport=$('#dp'+portnum);
+					$.post('',{swdev: $('#deviceid').val(),pn: portnum,thisdev: devid,listports: ''}).done(function(data){
+						var portlist=$("<select>");
+						$.each(data, function(key,port){
+							var pn=port.PortNumber;
+							portlist.append('<option value='+pn+'>'+pn+'</option>');
+							portlist.data(pn, {MediaID: port.MediaID, ColorID: port.ColorID});
+						});
+						portlist.change(function(){
+							//Match media type and color on incoming port
+							porttype.children('select').val($(this).data($(this).val()).MediaID);
+							portcolor.children('select').val($(this).data($(this).val()).ColorID);
+						});
+						cdeviceport.html(portlist).find('select').val(cdeviceport.data('default'));
+					});
+				}
+				function getmediatypes(portnum){
+					$.get('',{mt:''}).done(function(data){
+						var mlist=$("<select>").append('<option value=0></option>');
+						$.each(data, function(key,mt){
+							var option=$("<option>",({'value':mt.MediaID})).append(mt.MediaType);
+							mlist.append(option).data(mt.MediaID,mt.ColorID);
+						});
+						mlist.change(function(){
+							// default color is associated with this type so set it
+							if($(this).data($(this).val())!=""){
+								portcolor.children('select').val($(this).data($(this).val()));
+							}
+						});
+						porttype.html(mlist).find('select').val(porttype.data('default'));
+					});
+				}
+				function getcolortypes(portnum){
+					$.get('',{cc:''}).done(function(data){
+						var clist=$("<select>").append('<option value=0></option>');
+						$.each(data, function(key,cc){
+							var option=$("<option>",({'value':cc.ColorID})).append(cc.Name);
+							clist.append(option).data(cc.ColorID,cc.DefaultNote);
+						});
+						clist.change(function(){
+							// default note is associated with this color so set it
+							if($(this).data($(this).val())!=""){
+								cnotes.children('input').val($(this).data($(this).val()));
+							}
+						});
+						portcolor.html(clist).find('select').val(portcolor.data('default'));
+					});
+				}
 				$.post('',{swdev: $('#deviceid').val(),pn: portnum}).done(function(data){
 					var devlist=$("<select>").append('<option value=0></option>');
 					devlist.change(function(){
 						getavailports($(this).val(),portnum);
 					});
+					
 					$.each(data, function(devid,device){
 						devlist.append('<option value='+devid+'>'+device.Label+'</option>');
 					});
-					cdevice.html(devlist).find('select').val(cdevice.attr('data'));
+					cdevice.html(devlist).find('select').val(cdevice.data('default'));
 					devlist.change();
 					cnotes.html('<input type="text" value="'+cnotes.text()+'">');
 					portname.html('<input type="text" value="'+portname.text()+'">');
 					getmediatypes(portnum);
 					getcolortypes(portnum);
-					//listports
-					//do something with data here
 				});
 				row.children('div ~ div').css({'padding': '0px', 'background-color': 'transparent'});
 			}).css({'cursor': 'pointer','text-decoration': 'underline'});
@@ -1532,9 +1547,9 @@ echo '	<div class="table">
 			print "\t\t\t\t<div>
 					<div id=\"sp$i\">$i</div>
 					<div id=\"spn$i\">{$portList[$n]->Label}</div>
-					<div id=\"d$i\" data=\"{$portList[$n]->ConnectedDeviceID}\"><a href=\"devices.php?deviceid={$portList[$n]->ConnectedDeviceID}\">$tmpDev->Label</a></div>
-					<div id=\"dp$i\" data=\"{$portList[$n]->ConnectedPort}\">{$portList[$n]->ConnectedPort}</div>
-					<div id=\"n$i\" data=\"{$portList[$n]->Notes}\">{$portList[$n]->Notes}</div>";
+					<div id=\"d$i\" data-default=\"{$portList[$n]->ConnectedDeviceID}\"><a href=\"devices.php?deviceid={$portList[$n]->ConnectedDeviceID}\">$tmpDev->Label</a></div>
+					<div id=\"dp$i\" data-default=\"{$portList[$n]->ConnectedPort}\">{$portList[$n]->ConnectedPort}</div>
+					<div id=\"n$i\" data-default=\"{$portList[$n]->Notes}\">{$portList[$n]->Notes}</div>";
 			if($dev->DeviceType=='Switch'){print "\t\t\t\t<div id=\"st$i\"><span class=\"ui-icon status {$linkList[$n]}\"></span></div>";}
 			print "\t\t\t\t<div id=\"mt$i\">$mt</div>
 					<div id=\"cc$i\">$cc</div>
