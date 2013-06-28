@@ -1055,6 +1055,9 @@ $(document).ready(function() {
 					controls.append(savebtn).append(cancelbtn).append(deletebtn);
 					portcolor.after(controls);
 					row.children('div ~ div').css({'padding': '0px', 'background-color': 'transparent'});
+					setTimeout(function() {
+						resize();
+					},200);
 				}
 			}).css({'cursor': 'pointer','text-decoration': 'underline'});
 		});

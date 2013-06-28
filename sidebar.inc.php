@@ -165,7 +165,7 @@ function resize(){
 		$('div.main').width(width-sbw-16); 
 	}else{ // page is smaller than content expand the page to fit
 		$('#header').width(width+4);
-		$('div.page').width(width+5);
+		$('div.page').width(width+6);
 	}
 }
 $(document).ready(function(){
