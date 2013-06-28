@@ -2111,8 +2111,7 @@ class DevicePorts {
 		$portList = array();
 		
 		foreach($dbh->query($sql) as $row){
-			$n=sizeof($portList);
-			$portList[$n]=DevicePorts::RowToObject($row);
+			$portList[$row['PortNumber']]=DevicePorts::RowToObject($row);
 		}
 		
 		if( sizeof($portList)==0 && $dev->DeviceType!="Physical Infrastructure" ){

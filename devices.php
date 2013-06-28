@@ -415,17 +415,11 @@
 				$pwrCords=$pwrConnection->GetConnectionsByDevice($facDB);
 
 				$portList=DevicePorts::getPortList($dev->DeviceID);
+				$mediaTypes=MediaTypes::GetMediaTypeList();
+				$colorCodes=ColorCoding::GetCodeList();
 
 				if($dev->DeviceType=='Switch'){
 					$linkList = SwitchInfo::getPortStatus( $dev->DeviceID );
-					$mediaTypes=MediaTypes::GetMediaTypeList();
-					$colorCodes=ColorCoding::GetCodeList();
-				}elseif($dev->DeviceType=='Patch Panel'){
-					$patchPanel->PanelDeviceID=$dev->DeviceID;
-					$patchList=$patchPanel->GetPanelConnections($facDB);
-				}else{
-					$patchPanel->FrontEndpointDeviceID=($dev->ParentDevice>0)?$dev->ParentDevice:$dev->DeviceID;
-					$panelList=$patchPanel->GetEndpointConnections($facDB);
 				}
 			}else{
 				// These are going to be empty however we'll generate an error if they aren't set.
@@ -1624,20 +1618,20 @@ echo '	<div class="table">
 			$i = $n + 1;	// The "port number" starting at 1
 
 			$tmpDev=new Device();
-			$tmpDev->DeviceID=$portList[$n]->ConnectedDeviceID;
+			$tmpDev->DeviceID=$portList[$i]->ConnectedDeviceID;
 			$tmpDev->GetDevice($facDB);
 
-			$mt=(isset($mediaTypes[$portList[$n]->MediaID]))?$mediaTypes[$portList[$n]->MediaID]->MediaType:'';
-			$cc=(isset($colorCodes[$portList[$n]->ColorID]))?$colorCodes[$portList[$n]->ColorID]->Name:'';
+			$mt=(isset($mediaTypes[$portList[$i]->MediaID]))?$mediaTypes[$portList[$i]->MediaID]->MediaType:'';
+			$cc=(isset($colorCodes[$portList[$i]->ColorID]))?$colorCodes[$portList[$i]->ColorID]->Name:'';
 
 			// the data attribute is used to store the previous value of the connection
 			print "\t\t\t\t<div>
 					<div id=\"sp$i\">$i</div>
-					<div id=\"spn$i\">{$portList[$n]->Label}</div>
-					<div id=\"d$i\" data-default=\"{$portList[$n]->ConnectedDeviceID}\"><a href=\"devices.php?deviceid={$portList[$n]->ConnectedDeviceID}\">$tmpDev->Label</a></div>
-					<div id=\"dp$i\" data-default=\"{$portList[$n]->ConnectedPort}\">{$portList[$n]->ConnectedPort}</div>
-					<div id=\"n$i\" data-default=\"{$portList[$n]->Notes}\">{$portList[$n]->Notes}</div>";
-			if($dev->DeviceType=='Switch'){print "\t\t\t\t<div id=\"st$i\"><span class=\"ui-icon status {$linkList[$n]}\"></span></div>";}
+					<div id=\"spn$i\">{$portList[$i]->Label}</div>
+					<div id=\"d$i\" data-default=\"{$portList[$i]->ConnectedDeviceID}\"><a href=\"devices.php?deviceid={$portList[$i]->ConnectedDeviceID}\">$tmpDev->Label</a></div>
+					<div id=\"dp$i\" data-default=\"{$portList[$i]->ConnectedPort}\">{$portList[$i]->ConnectedPort}</div>
+					<div id=\"n$i\" data-default=\"{$portList[$i]->Notes}\">{$portList[$i]->Notes}</div>";
+			if($dev->DeviceType=='Switch'){print "\t\t\t\t<div id=\"st$i\"><span class=\"ui-icon status {$linkList[$i]}\"></span></div>";}
 			print "\t\t\t\t<div id=\"mt$i\">$mt</div>
 					<div id=\"cc$i\">$cc</div>
 				</div>\n";
@@ -1646,19 +1640,25 @@ echo '	<div class="table">
 	}
 
 
-
 	if($dev->DeviceType=='Patch Panel'){
 		print "\n\t<div>\n\t\t<div><a name=\"net\">".__('Connections')."</a></div>\n\t\t<div>\n\t\t\t<div class=\"table border patchpanel\">\n\t\t\t\t<div><div>".__('Front')."</div><div>Device Port</div><div>".__('Notes')."</div><div>".__('Patch Port')."</div><div>".__('Back')."</div><div>Device Port</div><div>".__('Notes')."</div></div>\n";
-		if(sizeof($patchList) >0){
-			foreach($patchList as $patchConn){
-				$frontDev=new Device();
-				$rearDev=new Device();
-				$frontDev->DeviceID=$patchConn->FrontEndpointDeviceID;
-				$rearDev->DeviceID=$patchConn->RearEndpointDeviceID;
-				$frontDev->GetDevice($facDB);
-				$rearDev->GetDevice($facDB);
-				print "\n\t\t\t\t<div><div><a href=\"devices.php?deviceid=$frontDev->DeviceID\">$frontDev->Label</a></div><div>$patchConn->FrontEndpointPort</div><div>$patchConn->FrontNotes</div><div>$patchConn->PanelPortNumber</div><div><a href=\"devices.php?deviceid=$rearDev->DeviceID\">$rearDev->Label</a></div><div>$patchConn->RearEndpointPort</div><div>".htmlentities($patchConn->RearNotes)."</div></div>";
-			}
+		for($n=0; $n< sizeof($portList)/2; $n++){
+			$i = $n + 1;	// The "port number" starting at 1
+			$frontDev=new Device();
+			$rearDev=new Device();
+			$frontDev->DeviceID=$portList[$i]->ConnectedDeviceID;
+			$rearDev->DeviceID=$portList[-$i]->ConnectedDeviceID;
+			$frontDev->GetDevice();
+			$rearDev->GetDevice();
+			print "\n\t\t\t\t<div>
+					<div data-default=$frontDev->DeviceID><a href=\"devices.php?deviceid=$frontDev->DeviceID\">$frontDev->Label</a></div>
+					<div data-default={$portList[$i]->ConnectedPort}>{$portList[$i]->ConnectedPort}</div>
+					<div data-default=\"{$portList[$i]->Notes}\">{$portList[$i]->Notes}</div>
+					<div>$i</div>
+					<div data-default=$rearDev->DeviceID><a href=\"devices.php?deviceid=$rearDev->DeviceID\">$rearDev->Label</a></div>
+					<div data-default={$portList[-$i]->ConnectedPort}>{$portList[-$i]->ConnectedPort}</div>
+					<div data-default=\"{$portList[-$i]->Notes}\">{$portList[-$i]->Notes}</div>
+				</div>";
 		}
 		print "\t\t\t</div><!-- END div.table -->\n\t\t</div>\n\t</div>\n";
 	}
