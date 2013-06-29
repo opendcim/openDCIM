@@ -122,111 +122,6 @@
 			echo json_encode(MediaTypes::GetMediaTypeList());
 			exit;
 		}
-		if(isset($_POST['pdev'])){
-			$patchConnect=new PatchConnection();
-			$patchConnect->PanelDeviceID=$_POST['pdev'];
-			if(isset($_POST['pdel'])){
-				$patchConnect->PanelPortNumber=$_POST['pdel'];
-				if($_POST['side']=='front'){
-					echo ($patchConnect->RemoveFrontConnection($facDB))?1:0;
-				}elseif($_POST['side']=='rear'){
-					echo ($patchConnect->RemoveRearConnection($facDB))?1:0;
-				}else{
-					echo '0';
-				}
-				exit;
-			}
-			if(isset($_POST['pget'])){
-				$patchConnect->PanelPortNumber=intval($_POST['pget']);
-				$patchConnect->GetConnectionRecord($facDB);
-				$frontdev=new Device();
-				$frontdev->DeviceID=$patchConnect->FrontEndpointDeviceID;
-				$frontdev->GetDevice($facDB);
-				$dev->DeviceID=$patchConnect->RearEndpointDeviceID;
-				$dev->GetDevice($facDB);
-				$rowarray=array();
-				$rowarray[1]="<a href=\"devices.php?deviceid=$frontdev->DeviceID\">$frontdev->Label</a>";
-				$rowarray[2]="$patchConnect->FrontEndpointPort";
-				$rowarray[3]="$patchConnect->FrontNotes";
-				$rowarray[4]="$patchConnect->PanelPortNumber";
-				$rowarray[5]="<a href=\"devices.php?deviceid=$dev->DeviceID\">$dev->Label</a>";
-				$rowarray[6]="$patchConnect->RearEndpointPort";
-				$rowarray[7]="$patchConnect->RearNotes";
-				header('Content-Type: application/json');
-				echo json_encode($rowarray);
-				exit;
-			}
-			if(isset($_POST['psav'])){
-				$patchConnect->PanelPortNumber=$_POST['psav'];
-				if(isset($_POST['fdev'])){ // if set then we're dealing with a front connection
-					$patchConnect->FrontEndpointDeviceID=$_POST['fdev'];
-					$patchConnect->FrontEndpointPort=$_POST['fport'];
-					$patchConnect->FrontNotes=$_POST['fn'];
-					if($_POST['fdev']==-1){ // connection was saved as remove front half
-						if(!$patchConnect->RemoveFrontConnection($facDB)){ // something broke return an error
-							echo '0';
-							exit;
-						}
-					}else{
-						if(!$patchConnect->MakeFrontConnection($facDB)){
-							echo 0;
-							exit;
-						}
-					}
-				}elseif(isset($_POST['rdev'])){ // if set then we're dealing with a rear connection
-					$patchConnect->RearEndpointDeviceID=$_POST['rdev'];
-					$patchConnect->RearEndpointPort=$_POST['rport'];
-					$patchConnect->RearNotes=$_POST['rn'];
-					if($_POST['rdev']==-1){ // connection was saved as remove rear half
-						if(!$patchConnect->RemoveRearConnection($facDB)){
-							echo 0;
-							exit;
-						}
-					}elseif($_POST['rdev']=='note'){ // connection was saved as note only
-						$patchConnect->RearEndpointDeviceID=null;
-						$patchConnect->RearEndpointPort=null;
-						$patchConnect->RearNotes=$_POST['rn'];
-						if(!$patchConnect->MakeRearConnection($facDB)){
-							echo 0;
-							exit;
-						}
-					}else{
-						if(!$patchConnect->MakeRearConnection($facDB)){
-							echo 0;
-							exit;
-						}
-					}
-				}else{ // neither was set so I don't know wtf happened
-					echo 0;
-					exit;
-				}
-				$frontdev=new Device();
-				$frontdev->DeviceID=$patchConnect->FrontEndpointDeviceID;
-				$frontdev->GetDevice($facDB);
-				$dev->DeviceID=$patchConnect->RearEndpointDeviceID;
-				$dev->GetDevice($facDB);
-				$rowarray=array();
-				$rowarray[1]="<a href=\"devices.php?deviceid=$frontdev->DeviceID\">$frontdev->Label</a>";
-				$rowarray[2]="$patchConnect->FrontEndpointPort";
-				$rowarray[3]="$patchConnect->FrontNotes";
-				$rowarray[4]="$patchConnect->PanelPortNumber";
-				$rowarray[5]="<a href=\"devices.php?deviceid=$dev->DeviceID\">$dev->Label</a>";
-				$rowarray[6]="$patchConnect->RearEndpointPort";
-				$rowarray[7]="$patchConnect->RearNotes";
-				header('Content-Type: application/json');
-				echo json_encode($rowarray);
-				exit;
-			}
-			$patchList=$dev::GetPatchPanels();
-			echo '<select name="devid"><option value=-1>No Connection</option><option value="note">Note Only</option>';
-			foreach($patchList as $devid=>$devRow){
-				$selected=($_POST['pdev']==$devid)?" disabled":"";
-				print "<option value=$devRow->DeviceID$selected>$devRow->Label</option>\n";
-			}
-			echo '</select>';
-			exit;
-		}
-
 		if(isset($_POST['refreshswitch'])){
 			$portList=DevicePorts::getPortList($_POST['refreshswitch']);
 			$linkList=SwitchInfo::getPortStatus($_POST['refreshswitch']);
@@ -1075,17 +970,24 @@ $(document).ready(function() {
 			var rearport=$('#rp'+portnum);
 			var rearnotes=$('#rn'+portnum);
 			function save(e){
-				// this will work to check
-/*				console.log(e.data.f.find('*').length);
-				console.log(e.data.f.html(''));
-				console.log(e.data.f.find('*').length);
-				var rear=($(e.currentTarget).parent().attr('id').indexOf("fd"))?true:false;
-				var rear=($(e.currentTarget).parent().data('rear')); */
-				console.log(btnrow.find('.controls').length);
-				redrawrow(e);
-			}
-			function btncleanup(e){
-				if(frontbtn.text()=='' && rearbtn.text()==''){ btnrow.remove(); row.data('edit',false);	}
+				var rear=($(e.currentTarget).parent().data('rear'));
+				var fr=(rear)?'r':'f';
+				var cdevice=$('#'+fr+'d'+portnum+' select').val();
+				var cdeviceport=$('#'+fr+'p'+portnum+' select').val();
+				var porttype=$('#'+fr+'p'+portnum+' select').data(cdeviceport).MediaID;
+				var portcolor=$('#'+fr+'p'+portnum+' select').data(cdeviceport).ColorID;
+				var cnotes=$('#'+fr+'n'+portnum+' input').val();
+				if(rear){portnum=portnum*-1;}
+				$.post('',{saveport: '',swdev: $('#deviceid').val(),pnum: portnum,
+							pname: '',cdevice: cdevice,cdeviceport: cdeviceport,
+							cnotes: cnotes,porttype: porttype,
+							portcolor: portcolor}).done(function(data){
+					if(data.trim()==1){
+						redrawrow(e);
+					}else{
+						// something broke
+					}
+				});
 			}
 			function devicelist(jsonObject){
 				var devlist=$("<select>").append('<option value=0></option>');
@@ -1127,7 +1029,8 @@ $(document).ready(function() {
 				$.post('',{getport: '',swdev: $('#deviceid').val(),pnum: portnum}).done(function(data){
 					if(rear){
 						reardev.html('<a href="devices.php?deviceid='+data.ConnectedDeviceID+'">'+data.ConnectedDeviceLabel+'</a>').data('default',data.ConnectedDeviceID);
-						rearport.html(data.ConnectedPort).data('default',data.ConnectedPort);
+						var cp=(data.ConnectedPort<0)?data.ConnectedPort*-1:'';
+						rearport.html(cp).data('default',data.ConnectedPort);
 						rearnotes.html(data.Notes).data('default',data.Notes);
 					}else{
 						frontdev.html('<a href="devices.php?deviceid='+data.ConnectedDeviceID+'">'+data.ConnectedDeviceLabel+'</a>').data('default',data.ConnectedDeviceID);
@@ -1142,7 +1045,7 @@ $(document).ready(function() {
 				}
 			}
 			var controls=$('<div>',({'class':'controls'}));
-			var savebtn=$('<button>',{'type':'button'}).append('Save').click({f: frontbtn,b: rearbtn},save);
+			var savebtn=$('<button>',{'type':'button'}).append('Save').click(save);
 			var cancelbtn=$('<button>',{'type':'button'}).append('Cancel').click(redrawrow);
 			var deletebtn=$('<button>',{'type':'button'}).append('Delete');
 			controls.append(savebtn).append(deletebtn).append(cancelbtn);
@@ -1167,7 +1070,7 @@ $(document).ready(function() {
 					frontbtn.css({'padding': 0, 'border': 0}).attr('data', 'front');
 					$.post('', {pn: $(this).text(), swdev: $('#deviceid').val()}, function(data){
 						frontdev.html(devicelist(data));
-					}).then(resize());
+					}).then(resize()).then(resize());
 				}
 			}).css({'cursor': 'pointer','text-decoration': 'underline'});
 		});
@@ -1191,9 +1094,6 @@ $(document).ready(function() {
 				}
 			});
 		});
-	$('#sortable').sortable({
-		items: ".row"
-	});
 <?php 
 	} // end of javascript editing functions
 ?>
