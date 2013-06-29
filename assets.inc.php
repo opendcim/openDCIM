@@ -2039,7 +2039,7 @@ class DevicePorts {
 		return true;
 	}
 
-	static function getPatchCandidates($DeviceID,$PortNum=null,$listports=null){
+	static function getPatchCandidates($DeviceID,$PortNum=null,$listports=null,$patchpanels=null){
 		/*
 		 * $DeviceID = ID of the device that you are wanting to make a connection from
 		 * $PortNum(optional) = Port Number on the device you are wanting to connect,
@@ -2050,7 +2050,7 @@ class DevicePorts {
 		 */
 		global $dbh;
 		global $config;
-		
+
 		$dev=new Device(); // make sure we have a real device first
 		$dev->DeviceID=$DeviceID;
 		if(!$dev->GetDevice()){return false;}
@@ -2071,10 +2071,14 @@ class DevicePorts {
 			return false;
 		}
 
+		$pp="";
+		if(!is_null($patchpanels)){
+			$pp=' AND b.DeviceType="Patch Panel"';
+		}
 		$candidates=array();
 
 		if(is_null($listports)){
-			$sql="SELECT DISTINCT DeviceID FROM fac_Ports WHERE DeviceID!=$dev->DeviceID$mediaenforce;";
+			$sql="SELECT DISTINCT a.DeviceID FROM fac_Ports a, fac_Device b WHERE a.DeviceID=b.DeviceID AND a.DeviceID!=$dev->DeviceID$mediaenforce$pp;";
 			foreach($dbh->query($sql) as $row){
 				$candidate=$row['DeviceID'];
 				$tmpDev=new Device();
@@ -2084,7 +2088,7 @@ class DevicePorts {
 				$candidates[$candidate]=$tmpDev;
 			}
 		}else{
-			$sql="SELECT * FROM fac_Ports WHERE DeviceID!=$dev->DeviceID AND ConnectedDeviceID IS NULL$mediaenforce;";
+			$sql="SELECT a.* FROM fac_Ports a, fac_Device b WHERE a.DeviceID=b.DeviceID AND a.DeviceID!=$dev->DeviceID AND ConnectedDeviceID IS NULL$mediaenforce$pp;";
 			foreach($dbh->query($sql) as $row){
 				$candidates[]=DevicePorts::RowToObject($row);
 			}

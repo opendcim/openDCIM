@@ -105,7 +105,8 @@
 					}
 				}
 			}else{
-				$list=DevicePorts::getPatchCandidates($_POST['swdev'],$_POST['pn']);
+				$patchpanels=(isset($_POST['rear']))?"true":null;
+				$list=DevicePorts::getPatchCandidates($_POST['swdev'],$_POST['pn'],null,$patchpanels);
 			}
 			header('Content-Type: application/json');
 			echo json_encode($list);
@@ -1055,134 +1056,118 @@ $(document).ready(function() {
 				}
 			}).css({'cursor': 'pointer','text-decoration': 'underline'});
 		});
-		$('.patchpanel > div:first-child ~ div').each(function(){
+		$('.patchpanel > div ~ div').each(function(){
 			var row=$(this);
-			row.find('div:nth-child(4)').click(function(){
-				var frontdev=row.find('div:first-child');
-				var frontport=row.find('div:nth-child(2)');
-				var frontnotes=row.find('div:nth-child(3)');
-				var patchport=row.find('div:nth-child(4)');
-				var reardev=row.find('div:nth-child(5)');
-				var rearport=row.find('div:nth-child(6)');
-				var rearnotes=row.find('div:nth-child(7)');
-				if(row.attr('edit')=='yes'){
-
-				}else{
-					// create empty row below the current
-					row.after('<div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div>');
-					var btnrow=row.next(); // name it for easy reference
-					var frontbtn=btnrow.find('div:first-child'); // front table cell for buttons
-					var rearbtn=btnrow.find('div:nth-child(5)'); // rear table cell for buttons
-					row.attr('edit','yes');
-					function fixwidth(test){
-						setTimeout(function() {
-							$('.page').width($('.main').outerWidth()+$('#sidebar').outerWidth()+50);
-						},1000);
+			// create empty row below the current
+			var btnrow=$('<div>');
+			var i=row.children('div').length;
+			for(var a=0; a < i; a++){
+				btnrow.append($('<div>'));
+			}
+			var frontbtn=btnrow.find('div:first-child'); // front table cell for buttons
+			var rearbtn=btnrow.find('div:nth-child('+(Math.ceil(i/2)+1)+')'); // rear table cell for buttons
+			var portnum=row.data('port');
+			var frontdev=$('#fd'+portnum);
+			var frontport=$('#fp'+portnum);
+			var frontnotes=$('#fn'+portnum);
+			var patchport=$('#pp'+portnum);
+			var reardev=$('#rd'+portnum);
+			var rearport=$('#rp'+portnum);
+			var rearnotes=$('#rn'+portnum);
+			function save(e){
+				// this will work to check
+/*				console.log(e.data.f.find('*').length);
+				console.log(e.data.f.html(''));
+				console.log(e.data.f.find('*').length);
+				var rear=($(e.currentTarget).parent().attr('id').indexOf("fd"))?true:false;
+				var rear=($(e.currentTarget).parent().data('rear')); */
+				console.log(btnrow.find('.controls').length);
+				redrawrow(e);
+			}
+			function btncleanup(e){
+				if(frontbtn.text()=='' && rearbtn.text()==''){ btnrow.remove(); row.data('edit',false);	}
+			}
+			function devicelist(jsonObject){
+				var devlist=$("<select>").append('<option value=0></option>');
+				$.each(jsonObject, function(devid,device){
+					devlist.append('<option value='+devid+'>'+device.Label+'</option>');
+				});
+				devlist.change(function(e){
+					var rear=($(e.currentTarget).parent().data('rear'));
+					getavailports($(this).val(),portnum,rear);
+				});
+				return devlist;
+			}
+			function getavailports(devid,portnum,rear){
+				$.post('',{swdev: $('#deviceid').val(),pn: portnum,thisdev: devid,listports: ''}).done(function(data){
+					var portlist=$("<select>");
+					$.each(data, function(key,port){
+						var pn=port.PortNumber;
+						if(rear){
+							if(pn<0){
+								portlist.prepend('<option value='+pn+'>'+(pn*-1)+'</option>');
+								portlist.data(pn, {MediaID: port.MediaID, ColorID: port.ColorID});
+							}
+						}else{
+							if(pn>0){
+								portlist.append('<option value='+pn+'>'+pn+'</option>');
+								portlist.data(pn, {MediaID: port.MediaID, ColorID: port.ColorID});
+							}
+						}
+					});
+					if(rear){
+						rearport.html(portlist).find('select').val(rearport.data('default'));
+					}else{
+						frontport.html(portlist).find('select').val(frontport.data('default'));
 					}
+				});
+			}
+			function redrawrow(e){
+				var rear=($(e.currentTarget).parent().data('rear'));
+				$.post('',{getport: '',swdev: $('#deviceid').val(),pnum: portnum}).done(function(data){
+					if(rear){
+						reardev.html('<a href="devices.php?deviceid='+data.ConnectedDeviceID+'">'+data.ConnectedDeviceLabel+'</a>').data('default',data.ConnectedDeviceID);
+						rearport.html(data.ConnectedPort).data('default',data.ConnectedPort);
+						rearnotes.html(data.Notes).data('default',data.Notes);
+					}else{
+						frontdev.html('<a href="devices.php?deviceid='+data.ConnectedDeviceID+'">'+data.ConnectedDeviceLabel+'</a>').data('default',data.ConnectedDeviceID);
+						frontport.html(data.ConnectedPort).data('default',data.ConnectedPort);
+						frontnotes.html(data.Notes).data('default',data.Notes);
+					}
+					$(e.currentTarget).parent().remove();
+				});
+				if(btnrow.find('.controls').length===1){
+					row.data('edit',false);
+					btnrow.remove();
+				}
+			}
+			var controls=$('<div>',({'class':'controls'}));
+			var savebtn=$('<button>',{'type':'button'}).append('Save').click({f: frontbtn,b: rearbtn},save);
+			var cancelbtn=$('<button>',{'type':'button'}).append('Cancel').click(redrawrow);
+			var deletebtn=$('<button>',{'type':'button'}).append('Delete');
+			controls.append(savebtn).append(deletebtn).append(cancelbtn);
+			patchport.click(function(){
+				if(!row.data('edit')==true){
+					row.after(btnrow);
+					row.data('edit',true);
 <?php
 		if($user->SiteAdmin){
 ?>
 // Rear panel controls
-<?php echo '							rearbtn.append(\'<div style="padding: 0px; border: 0px;"><button type="button" value="save">',__("Save"),'</button><button type="button" value="delete">',__("Delete"),'</button><button type="button" value="cancel">',__("Cancel"),'</button></div>\');'; ?>
+					rearbtn.append(controls.clone(true).data('rear',true));
 					rearbtn.css({'padding': 0, 'border': 0}).attr('data', 'rear');;
-					$.post('', {pdev: $('#deviceid').val()}, function(data){
-						var rdev=reardev.text();
-						reardev.html(data).css({'padding': 0});
-						reardev.find('select option').each(function(){
-							if($(this).text()==rdev){
-								$(this).attr('selected','selected');
-							}else if(rearnotes.text()!='' && rdev==''){
-								$(this).parent('select').val('note');
-							}
-						});					
-						rearport.html('<input type="text" value="'+rearport.text()+'">').css({'padding': 0});
-						rearnotes.html('<input type="text" value="'+rearnotes.text()+'">').css({'padding': 0}); // weird data will break the crap out of this.  fix later.
-					}).then(fixwidth());
+					$.post('', {pn: $(this).text(), swdev: $('#deviceid').val(), rear: ''}, function(data){
+						reardev.html(devicelist(data)).data('rear',true);
+					}).then(resize());
 <?php
 		}
 ?>
 // Front panel controls
-<?php echo '							frontbtn.append(\'<div style="padding: 0px; border: 0px;"><button type="button" value="save">',__("Save"),'</button><button type="button" value="delete">',__("Delete"),'</button><button type="button" value="cancel">',__("Cancel"),'</button></div>\');'; ?>
+					frontbtn.append(controls.clone(true).data('rear',false));
 					frontbtn.css({'padding': 0, 'border': 0}).attr('data', 'front');
-					$.post('', {sp: '0', swdev: $('#deviceid').val()}, function(data){
-						var fdev=frontdev.text();
-						frontdev.html(data).css({'padding': 0});
-						frontdev.find('select option').each(function(){
-							if($(this).text()==fdev){
-								$(this).attr('selected','selected');
-							}
-						});					
-						frontport.html('<input type="text" value="'+frontport.text()+'">').css({'padding': 0});
-						frontnotes.html('<input type="text" value="'+frontnotes.text()+'">').css({'padding': 0});
-					}).then(fixwidth());
-	// remove new row and set crap back to normal.
-					function btncleanup(e){
-						if(frontbtn.text()=='' && rearbtn.text()==''){ btnrow.remove(); row.removeAttr('edit');	}
-					}
-	// button functions
-					btnrow.find('div > button').each(function(){
-						var buttondiv=$(this).parent('div');
-						var side=buttondiv.parent('div').attr('data');
-						if($(this).val()=="delete"){
-							$(this).click(function(){
-								$.post('', {pdev: $('#deviceid').val(), pdel: patchport.text(), side: side}, function(data){
-									if(data!='1'){
-										alert('error, error, error');
-									}else{
-										buttondiv.remove();
-										if(side=='front'){
-											frontdev.html('');
-											frontport.html('');
-											frontnotes.html('');
-										}else{
-											reardev.html('');
-											rearport.html('');
-											rearnotes.html('');
-										}
-										btncleanup();
-									}
-								});
-							});
-						}else if($(this).val()=="cancel"){
-							// pull record from db and set back to original values
-							$(this).click(function(){
-								$.post('', {pdev: $('#deviceid').val(), pget: patchport.text()}, function(data){
-									var darray=$.parseJSON(data);
-									if(side=='front'){
-										frontdev.html((darray[1]!='NULL')?darray[1]:'');
-										frontport.html((darray[2]!='NULL')?darray[2]:'');
-										frontnotes.html((darray[3]!='NULL')?darray[3]:'');
-									}else{
-										reardev.html((darray[5]!='NULL')?darray[5]:'');
-										rearport.html((darray[6]!='NULL')?darray[6]:'');
-										rearnotes.html((darray[7]!='NULL')?darray[7]:'');
-									}
-									buttondiv.remove();
-									btncleanup();
-								});
-							});
-						}else if($(this).val()=="save"){
-							$(this).click(function(){
-								if(side=='front'){
-									$.post('', {pdev: $('#deviceid').val(), psav: patchport.text(), fdev:frontdev.find('select').val(), fport:frontport.find('input').val(), fn:frontnotes.find('input').val()}, function(data){
-										var darray=$.parseJSON(data);
-										frontdev.html(darray[1]);
-										frontport.html(darray[2]);
-										frontnotes.html(darray[3]);
-									});
-								}else{
-									$.post('', {pdev: $('#deviceid').val(), psav: patchport.text(), rdev:reardev.find('select').val(), rport:rearport.find('input').val(), rn:rearnotes.find('input').val()}, function(data){
-										var darray=$.parseJSON(data);
-										reardev.html(darray[5]);
-										rearport.html(darray[6]);
-										rearnotes.html(darray[7]);
-									});
-								}
-								buttondiv.remove();
-								btncleanup();
-							});
-						}
-					});
+					$.post('', {pn: $(this).text(), swdev: $('#deviceid').val()}, function(data){
+						frontdev.html(devicelist(data));
+					}).then(resize());
 				}
 			}).css({'cursor': 'pointer','text-decoration': 'underline'});
 		});
@@ -1650,14 +1635,15 @@ echo '	<div class="table">
 			$rearDev->DeviceID=$portList[-$i]->ConnectedDeviceID;
 			$frontDev->GetDevice();
 			$rearDev->GetDevice();
-			print "\n\t\t\t\t<div>
-					<div data-default=$frontDev->DeviceID><a href=\"devices.php?deviceid=$frontDev->DeviceID\">$frontDev->Label</a></div>
-					<div data-default={$portList[$i]->ConnectedPort}>{$portList[$i]->ConnectedPort}</div>
-					<div data-default=\"{$portList[$i]->Notes}\">{$portList[$i]->Notes}</div>
-					<div>$i</div>
-					<div data-default=$rearDev->DeviceID><a href=\"devices.php?deviceid=$rearDev->DeviceID\">$rearDev->Label</a></div>
-					<div data-default={$portList[-$i]->ConnectedPort}>{$portList[-$i]->ConnectedPort}</div>
-					<div data-default=\"{$portList[-$i]->Notes}\">{$portList[-$i]->Notes}</div>
+			$rp=($portList[-$i]->ConnectedPort!='')?$portList[-$i]->ConnectedPort*-1:'';
+			print "\n\t\t\t\t<div data-port=$i>
+					<div id=\"fd$i\" data-default=$frontDev->DeviceID><a href=\"devices.php?deviceid=$frontDev->DeviceID\">$frontDev->Label</a></div>
+					<div id=\"fp$i\" data-default={$portList[$i]->ConnectedPort}>{$portList[$i]->ConnectedPort}</div>
+					<div id=\"fn$i\" data-default=\"{$portList[$i]->Notes}\">{$portList[$i]->Notes}</div>
+					<div id=\"pp$i\">$i</div>
+					<div id=\"rd$i\" data-default=$rearDev->DeviceID><a href=\"devices.php?deviceid=$rearDev->DeviceID\">$rearDev->Label</a></div>
+					<div id=\"rp$i\" data-default={$portList[-$i]->ConnectedPort}>$rp</div>
+					<div id=\"rn$i\" data-default=\"{$portList[-$i]->Notes}\">{$portList[-$i]->Notes}</div>
 				</div>";
 		}
 		print "\t\t\t</div><!-- END div.table -->\n\t\t</div>\n\t</div>\n";
