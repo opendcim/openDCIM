@@ -1877,6 +1877,12 @@ class DevicePorts {
 		}
 	}
 
+	function MakeDisplay(){
+		$this->Label=stripslashes(trim($this->Label));
+		$this->PortNotes=stripslashes(trim($this->PortNotes));
+		$this->Notes=stripslashes(trim($this->Notes));
+	}
+
 	static function RowToObject($dbRow){
 		$dp=new DevicePorts();
 		$dp->DeviceID=$dbRow['DeviceID'];
@@ -1888,6 +1894,8 @@ class DevicePorts {
 		$dp->ConnectedDeviceID=$dbRow['ConnectedDeviceID'];
 		$dp->ConnectedPort=$dbRow['ConnectedPort'];
 		$dp->Notes=$dbRow['Notes'];
+
+		$dp->MakeDisplay();
 
 		return $dp;
 	}
@@ -1910,6 +1918,8 @@ class DevicePorts {
 			$this->ConnectedDeviceID=$row['ConnectedDeviceID'];
 			$this->ConnectedPort=$row['ConnectedPort'];
 			$this->Notes=$row['Notes'];
+
+			$this->MakeDisplay();
 
 			return true;
 		}

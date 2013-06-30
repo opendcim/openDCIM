@@ -55,8 +55,7 @@
 				$dp->MediaName=(isset($mt[$dp->MediaID]))?$mt[$dp->MediaID]->MediaType:'';
 				$dp->ColorName=(isset($cc[$dp->ColorID]))?$cc[$dp->ColorID]->Name:'';
 				$dev->DeviceID=$dp->ConnectedDeviceID;
-				$dp->ConnectedDeviceLabel=($dev->GetDevice($facDB))?$dev->Label:'';
-
+				$dp->ConnectedDeviceLabel=($dev->GetDevice($facDB))?stripslashes($dev->Label):'';
 				header('Content-Type: application/json');
 				echo json_encode($dp);
 				exit;
@@ -969,6 +968,13 @@ $(document).ready(function() {
 			var reardev=$('#rd'+portnum);
 			var rearport=$('#rp'+portnum);
 			var rearnotes=$('#rn'+portnum);
+			function clear(e){
+				var rear=($(e.currentTarget).parent().data('rear'));
+				var fr=(rear)?'r':'f';
+				$('#'+fr+'d'+portnum+' select').val('');
+				$('#'+fr+'p'+portnum+' select').val('');
+				save(e);
+			}
 			function save(e){
 				var rear=($(e.currentTarget).parent().data('rear'));
 				var fr=(rear)?'r':'f';
@@ -977,10 +983,12 @@ $(document).ready(function() {
 				var porttype=$('#'+fr+'p'+portnum+' select').data(cdeviceport).MediaID;
 				var portcolor=$('#'+fr+'p'+portnum+' select').data(cdeviceport).ColorID;
 				var cnotes=$('#'+fr+'n'+portnum+' input').val();
-				if(rear){portnum=portnum*-1;}
-				$.post('',{saveport: '',swdev: $('#deviceid').val(),pnum: portnum,
-							pname: '',cdevice: cdevice,cdeviceport: cdeviceport,
-							cnotes: cnotes,porttype: porttype,
+				var p=(rear)?portnum*-1:portnum;
+				porttype=(porttype===undefined)?0:porttype;
+				portcolor=(portcolor===undefined)?0:portcolor;
+				$.post('',{saveport: '', swdev: $('#deviceid').val(), pnum: p,
+							pname: '', cdevice: cdevice, cdeviceport: cdeviceport,
+							cnotes: cnotes, porttype: porttype,
 							portcolor: portcolor}).done(function(data){
 					if(data.trim()==1){
 						redrawrow(e);
@@ -1001,7 +1009,8 @@ $(document).ready(function() {
 				return devlist;
 			}
 			function getavailports(devid,portnum,rear){
-				$.post('',{swdev: $('#deviceid').val(),pn: portnum,thisdev: devid,listports: ''}).done(function(data){
+				var p=(rear)?portnum*-1:portnum;
+				$.post('',{swdev: $('#deviceid').val(),pn: p,thisdev: devid,listports: ''}).done(function(data){
 					var portlist=$("<select>");
 					$.each(data, function(key,port){
 						var pn=port.PortNumber;
@@ -1018,24 +1027,27 @@ $(document).ready(function() {
 						}
 					});
 					if(rear){
-						rearport.html(portlist).find('select').val(rearport.data('default'));
+						rearport.html(portlist.val(rearport.data('default')));
 					}else{
-						frontport.html(portlist).find('select').val(frontport.data('default'));
+						frontport.html(portlist.val(frontport.data('default')));
 					}
 				});
 			}
 			function redrawrow(e){
 				var rear=($(e.currentTarget).parent().data('rear'));
-				$.post('',{getport: '',swdev: $('#deviceid').val(),pnum: portnum}).done(function(data){
+				var p=(rear)?portnum*-1:portnum;
+				$.post('',{getport: '',swdev: $('#deviceid').val(),pnum: p}).done(function(data){
 					if(rear){
 						reardev.html('<a href="devices.php?deviceid='+data.ConnectedDeviceID+'">'+data.ConnectedDeviceLabel+'</a>').data('default',data.ConnectedDeviceID);
 						var cp=(data.ConnectedPort<0)?data.ConnectedPort*-1:'';
 						rearport.html(cp).data('default',data.ConnectedPort);
 						rearnotes.html(data.Notes).data('default',data.Notes);
+						row.children('div[id^=r]').removeAttr('style');
 					}else{
 						frontdev.html('<a href="devices.php?deviceid='+data.ConnectedDeviceID+'">'+data.ConnectedDeviceLabel+'</a>').data('default',data.ConnectedDeviceID);
 						frontport.html(data.ConnectedPort).data('default',data.ConnectedPort);
 						frontnotes.html(data.Notes).data('default',data.Notes);
+						row.children('div[id^=f]').removeAttr('style');
 					}
 					$(e.currentTarget).parent().remove();
 				});
@@ -1044,10 +1056,10 @@ $(document).ready(function() {
 					btnrow.remove();
 				}
 			}
-			var controls=$('<div>',({'class':'controls'}));
+			var controls=$('<div>',({'class':'controls'})).css({'padding': 0, 'border': 0});
 			var savebtn=$('<button>',{'type':'button'}).append('Save').click(save);
 			var cancelbtn=$('<button>',{'type':'button'}).append('Cancel').click(redrawrow);
-			var deletebtn=$('<button>',{'type':'button'}).append('Delete');
+			var deletebtn=$('<button>',{'type':'button'}).append('Delete').click(clear);
 			controls.append(savebtn).append(deletebtn).append(cancelbtn);
 			patchport.click(function(){
 				if(!row.data('edit')==true){
@@ -1060,7 +1072,8 @@ $(document).ready(function() {
 					rearbtn.append(controls.clone(true).data('rear',true));
 					rearbtn.css({'padding': 0, 'border': 0}).attr('data', 'rear');;
 					$.post('', {pn: $(this).text(), swdev: $('#deviceid').val(), rear: ''}, function(data){
-						reardev.html(devicelist(data)).data('rear',true);
+						reardev.html(devicelist(data).val(reardev.data('default'))).data('rear',true).children().change();
+						rearnotes.html($('<input>').val(rearnotes.data('default')));
 					}).then(resize());
 <?php
 		}
@@ -1069,8 +1082,10 @@ $(document).ready(function() {
 					frontbtn.append(controls.clone(true).data('rear',false));
 					frontbtn.css({'padding': 0, 'border': 0}).attr('data', 'front');
 					$.post('', {pn: $(this).text(), swdev: $('#deviceid').val()}, function(data){
-						frontdev.html(devicelist(data));
+						frontdev.html(devicelist(data).val(frontdev.data('default'))).children().change();
+						frontnotes.html($('<input>').val(frontnotes.text()));
 					}).then(resize()).then(resize());
+					row.children('div:not([id^=pp])').css({'padding': 0, 'border': 0});
 				}
 			}).css({'cursor': 'pointer','text-decoration': 'underline'});
 		});
@@ -1523,7 +1538,6 @@ echo '	<div class="table">
 		}
 		echo "			</div><!-- END div.table -->\n		  </div>\n		</div>";
 	}
-
 
 	if($dev->DeviceType=='Patch Panel'){
 		print "\n\t<div>\n\t\t<div><a name=\"net\">".__('Connections')."</a></div>\n\t\t<div>\n\t\t\t<div class=\"table border patchpanel\">\n\t\t\t\t<div><div>".__('Front')."</div><div>Device Port</div><div>".__('Notes')."</div><div>".__('Patch Port')."</div><div>".__('Back')."</div><div>Device Port</div><div>".__('Notes')."</div></div>\n";
