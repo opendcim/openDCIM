@@ -3282,7 +3282,7 @@ class SwitchInfo {
 				if ( ! $reply = snmp2_get( $dev->PrimaryIP, $dev->SNMPCommunity, $baseOID . ( $dev->FirstPortNum + $n )) )
 					break;
 				$query = @end( explode( ":", $reply ) );
-				$nameList[$n] = $query;
+				$nameList[$n+1] = $query;
 			}
 		} else {
 				$query = @end( explode( ":", snmp2_get( $dev->PrimaryIP, $dev->SNMPCommunity, $baseOID.$portid )));
@@ -3314,7 +3314,7 @@ class SwitchInfo {
 				if ( ! $reply = snmp2_get( $dev->PrimaryIP, $dev->SNMPCommunity, $baseOID.( $dev->FirstPortNum+$n )) )
 					break;
 				@preg_match( "/(INTEGER: )(.+)(\(.*)/", $reply, $matches);
-				$statusList[$n]=@$matches[2];
+				$statusList[$n+1]=@$matches[2];
 			}
 		}else{
 			@preg_match( "/(INTEGER: )(.+)(\(.*)/", snmp2_get( $dev->PrimaryIP, $dev->SNMPCommunity, $baseOID.$portid ), $matches);

@@ -122,19 +122,12 @@
 			exit;
 		}
 		if(isset($_POST['refreshswitch'])){
-			$portList=DevicePorts::getPortList($_POST['refreshswitch']);
-			$linkList=SwitchInfo::getPortStatus($_POST['refreshswitch']);
-			$mediaTypes=MediaTypes::GetMediaTypeList();
-			$colorCodes=ColorCoding::GetCodeList();
-
-			// combine port status with port description
-			foreach($portList as $key => $dp){
-				$dp->PortStatus=$linkList[$key];
-				$dp->MediaID=(isset($mediaTypes[$dp->MediaID]))?$mediaTypes[$dp->MediaID]->MediaType:'';
-				$dp->ColorID=(isset($colorCodes[$dp->ColorID]))?$colorCodes[$dp->ColorID]->Name:'';
-			}
 			header('Content-Type: application/json');
-			echo json_encode($portList);
+			if(isset($_POST['names'])){
+				echo json_encode(SwitchInfo::getPortNames($_POST['refreshswitch']));
+			}else{
+				echo json_encode(SwitchInfo::getPortStatus($_POST['refreshswitch']));
+			}
 			exit;
 		}
 
@@ -659,21 +652,26 @@ $(document).ready(function() {
 	$('#firstport button[name=refresh]').click(function(){
 		refreshswitch($('#deviceid').val());
 	});
-	function refreshswitch(devid){
-		$.post('',{refreshswitch: devid}).done(function(data){
-			$('.switch > div ~ div > div:first-child').each(function(){
-				var portnum=$(this).text();
-				$('#spn'+portnum).text(data[portnum-1].PortDescriptor);
-				$('#n'+portnum).text(data[portnum-1].Notes);
-				if(data[portnum-1].PortStatus=='down'){
-					$('#st'+portnum).find('span').removeClass('up').addClass('down');
-				}else{
-					$('#st'+portnum).find('span').removeClass('down').addClass('up');
-				}
-				$('#mt'+portnum).text(data[portnum-1].MediaID);
-				$('#cc'+portnum).text(data[portnum-1].ColorID);
+	$('#firstport button[name=name]').click(function(){
+		refreshswitch($('#deviceid').val(),true);
+	});
+	function refreshswitch(devid,names){
+		if(names){
+			$.post('',{refreshswitch: devid, names: names}).done(function(data){
+				$('.switch > div ~ div > div:first-child').each(function(){
+					$(this).trigger('click');
+					var portnum=$(this).text();
+					$('#spn'+portnum).children('input').val(data[portnum]);
+				});
 			});
-		});
+		}else{
+			$.post('',{refreshswitch: devid}).done(function(data){
+				$('.switch > div ~ div > div:first-child').each(function(){
+					var portnum=$(this).text();
+					$('#st'+portnum).html($('<span>').addClass('ui-icon').addClass('status').addClass(data[portnum]));
+				});
+			});
+		}
 	}
 
 	if($('select[name=devicetype]').val()=='Switch'){$('#firstport').show();}
@@ -831,7 +829,7 @@ $(document).ready(function() {
 					var cnotes=$('#n'+portnum);
 					var porttype=$('#mt'+portnum);
 					var portcolor=$('#cc'+portnum);
-					function getavailports(devid,portnum){
+					function getports(devid,portnum){
 						var cdeviceport=$('#dp'+portnum);
 						$.post('',{swdev: $('#deviceid').val(),pn: portnum,thisdev: devid,listports: ''}).done(function(data){
 							var portlist=$("<select>");
@@ -886,7 +884,7 @@ $(document).ready(function() {
 					$.post('',{swdev: $('#deviceid').val(),pn: portnum}).done(function(data){
 						var devlist=$("<select>").append('<option value=0></option>');
 						devlist.change(function(){
-							getavailports($(this).val(),portnum);
+							getports($(this).val(),portnum);
 						});
 						
 						$.each(data, function(devid,device){
@@ -938,12 +936,17 @@ $(document).ready(function() {
 						});
 					}
 					var controls=$('<div>',({'id':'controls'+portnum}));
-					var savebtn=$('<button>',{'type':'button'}).append('Save').click(save);
-					var cancelbtn=$('<button>',{'type':'button'}).append('Cancel').click(redrawrow);
-					var deletebtn=$('<button>',{'type':'button'}).append('Delete').click(clear);
+					var savebtn=$('<button>',{'type':'button'}).append('<?php echo __("Save"); ?>').click(save);
+					var cancelbtn=$('<button>',{'type':'button'}).append('<?php echo __("Cancel"); ?>').click(redrawrow);
+					var deletebtn=$('<button>',{'type':'button'}).append('<?php echo __("Delete"); ?>').click(clear);
 					controls.append(savebtn).append(cancelbtn).append(deletebtn);
+					var minwidth=0;
 					portcolor.after(controls);
-					row.children('div ~ div').css({'padding': '0px', 'background-color': 'transparent'});
+					controls.children('button').each(function(){
+						minwidth+=$(this).outerWidth()+14; // 14 padding and border
+					});
+					controls.css('min-width',minwidth);
+					row.children('div ~ div:not([id^=st])').css({'padding': '0px', 'background-color': 'transparent'});
 					setTimeout(function() {
 						resize();
 					},200);
@@ -1057,9 +1060,9 @@ $(document).ready(function() {
 				}
 			}
 			var controls=$('<div>',({'class':'controls'})).css({'padding': 0, 'border': 0});
-			var savebtn=$('<button>',{'type':'button'}).append('Save').click(save);
-			var cancelbtn=$('<button>',{'type':'button'}).append('Cancel').click(redrawrow);
-			var deletebtn=$('<button>',{'type':'button'}).append('Delete').click(clear);
+			var savebtn=$('<button>',{'type':'button'}).append('<?php echo __("Save"); ?>').click(save);
+			var cancelbtn=$('<button>',{'type':'button'}).append('<?php echo __("Cancel"); ?>').click(redrawrow);
+			var deletebtn=$('<button>',{'type':'button'}).append('<?php echo __("Delete"); ?>').click(clear);
 			controls.append(savebtn).append(deletebtn).append(cancelbtn);
 			patchport.click(function(){
 				if(!row.data('edit')==true){
@@ -1381,10 +1384,10 @@ echo '		<div>
 	</div> <!-- END div.table -->
 </fieldset>
 <fieldset id="firstport" class="hide">
-	<legend>Switch SNMP</legend>
-	<div>Click here to set the first port for the switch<br><button type="button" name="firstport">First Port</button><button type="button" name="refresh">Refresh</button></div>
-</fieldset>
-<?php
+<?php echo '	<legend>'.__("Switch SNMP").'</legend>
+	<div><p>'.__("Use these buttons to set the first port for the switch, check the status of the ports again, or attempt to load the Port Name labels from the switch device.").'</p><button type="button" name="firstport">'.__("Set First Port").'</button><button type="button" name="refresh">'.__("Refresh Status").'</button><button type="button" name="name">'.__("Refresh Port Names").'</button></div>
+</fieldset>';
+
 	//
 	// Do not display the chassis contents block if this is a child device (ParentDevice > 0)
 	//
