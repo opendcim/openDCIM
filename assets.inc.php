@@ -3421,7 +3421,7 @@ class SwitchInfo {
 				if ( ! $reply = snmp2_get( $dev->PrimaryIP, $dev->SNMPCommunity, $baseOID.( $dev->FirstPortNum+$n )) )
 					break;
 				$query = @end( explode( ":", $reply ));
-				$aliasList[$n] = $query;
+				$aliasList[$n+1] = $query;
 			}
 		}else{
 			$query = @end( explode( ":", snmp2_get( $dev->PrimaryIP, $dev->SNMPCommunity, $baseOID.$portid )));
