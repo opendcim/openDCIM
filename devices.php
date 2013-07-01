@@ -810,6 +810,32 @@ $(document).ready(function() {
 <?php
 		}
 ?>
+		// add the current ports value to it's data store
+		$('#ports').data('ports',$('#ports').val());
+		$('#ports').change(function(){
+			if($(this).val()>$(this).data('ports')){
+				//make more ports and add the rows below
+				console.log('new value: '+$(this).val()+' original value: '+$(this).data('ports'));
+				$(this).data('ports',$(this).val());
+				console.log('change the value for the data point each time this is changed or all hell will break loose.');
+			}else if($(this).val()==$(this).data('ports')){
+				console.log('how would they manage to trigger this condition? I mean really.');
+			}else{
+				//S.U.T. present options to remove ports
+				$('div.switch').css('position','relative');
+				var h=$('div.switch > div:first-child + div > div:first-child').outerHeight();
+				var icon=$('<span>').addClass('ui-icon').addClass('status').addClass('down');
+				$('.switch div:first-child[id^=sp]').each(function(){
+					// this idea is crap and needs to be thought out better but it's time to go home so i'm submitting since it won't break anything
+					$('<div>',{'id': 'kp'+$(this).text()}).css({
+						'position': 'absolute', 
+						'left': -(h + 3)+'px',
+						'top' : ((h * parseInt($(this).text())) + (h-16) )+'px',
+						'border' : 0
+					}).outerHeight(h).outerWidth(h).append(icon.clone()).appendTo($('div.switch'));
+				});
+			}
+		});
 		$('#reservation').change(function(){
 			if(!$(this).prop("checked")){
 				var d=new Date();

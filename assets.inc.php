@@ -1019,6 +1019,20 @@ class Device {
 		$this->Reservation=intval($this->Reservation);
 	}
 	
+	function MakeDisplay() {
+		$this->Label=stripslashes($this->Label);
+		$this->SerialNo=stripslashes($this->SerialNo);
+		$this->AssetTag=stripslashes($this->AssetTag);
+		$this->PrimaryIP=stripslashes($this->PrimaryIP);
+		$this->SNMPCommunity=stripslashes($this->SNMPCommunity);
+		$this->DeviceType=stripslashes($this->DeviceType);
+		$this->MfgDate=stripslashes($this->MfgDate);
+		$this->InstallDate=stripslashes($this->InstallDate);
+		$this->WarrantyCo=stripslashes($this->WarrantyCo);
+		$this->WarrantyExpire=stripslashes($this->WarrantyExpire);
+		$this->Notes=stripslashes($this->Notes);
+	}
+
 	static function DeviceRowToObject($dbRow){
 		/*
 		 * Generic function that will take any row returned from the fac_Devices
@@ -1056,6 +1070,8 @@ class Device {
 		@$dev->WarrantyExpire=$dbRow["WarrantyExpire"];
 		$dev->Notes=$dbRow["Notes"];
 		$dev->Reservation=$dbRow["Reservation"];
+
+		$dev->MakeDisplay();
 
 		return $dev;
 	}
@@ -1363,6 +1379,8 @@ class Device {
 			@$this->WarrantyExpire = $devRow["WarrantyExpire"];
 			$this->Notes = $devRow["Notes"];
 			$this->Reservation = $devRow["Reservation"];
+
+			$this->MakeDisplay();
 
 			return true;
 		}else{
@@ -1954,7 +1972,7 @@ class DevicePorts {
 			error_log("createPort::PDO Error: {$info[2]} SQL=$sql");
 			return false;
 		}
-		
+
 		return true;
 	}
 
@@ -2033,12 +2051,11 @@ class DevicePorts {
 		$this->getPort();
 
 		$sql="UPDATE fac_Ports SET ConnectedDeviceID=NULL, ConnectedPort=NULL WHERE
-			DeviceID=$this->DeviceID AND PortNumber=$this->PortNumber;
-			UPDATE fac_Ports SET ConnectedDeviceID=NULL, ConnectedPort=NULL WHERE
-			ConnectedDeviceID=$this->DeviceID AND ConnectedPort=$this->PortNumber;";
+			(DeviceID=$this->DeviceID AND PortNumber=$this->PortNumber) OR 
+			(ConnectedDeviceID=$this->DeviceID AND ConnectedPort=$this->PortNumber);";
 
-		// trying this catch exception because i'm not sure how executing two 
-		// sql commands at once is gonna go.
+		/* not sure the best way to catch these errors this should modify 2 lines
+		   per run. */
 		try{
 			$dbh->exec($sql);
 		}catch(PDOException $e){
@@ -2048,6 +2065,63 @@ class DevicePorts {
 
 		return true;
 	}
+
+	function removePort(){
+		/*	Remove a single port from a device */
+		global $dbh;
+
+		if(!$this->getport()){
+			return false;
+		}
+
+		$this->removeConnection();
+
+		$sql="DELETE FROM fac_Ports WHERE DeviceID=$this->DeviceID AND PortNumber=$this->PortNumber;";
+
+		if(!$dbh->query($sql)){
+			//delete failed, wtf
+			return false;
+		}else{
+			return true;
+		}		
+	}
+
+// these next two should probably be moved to the device object.
+
+	static function removeConnections($DeviceID){
+		/* Drop all network connections on a device */
+		global $dbh;
+
+		$dev=new Device(); // make sure we have a real device first
+		$dev->DeviceID=$DeviceID;
+		if(!$dev->GetDevice()){return false;}
+
+		$sql="UPDATE fac_Ports SET ConnectedDeviceID=NULL, ConnectedPort=NULL WHERE
+			DeviceID=$dev->DeviceID OR ConnectedDeviceID=$dev->DeviceID;";
+
+		$dbh->exec($sql); // don't need to log if this fails
+
+		return true;
+	}
+
+	function removePorts(){
+		/*	Remove all ports from a device prior to delete, etc */
+		global $dbh;
+
+		$sql="UPDATE fac_Ports SET ConnectedDeviceID=NULL, ConnectedPort=NULL WHERE
+            ConnectedDeviceID=$this->DeviceID;
+			DELETE FROM fac_Ports WHERE DeviceID=$this->DeviceID;";
+
+		try{
+			$dbh->exec($sql);
+		}catch(PDOException $e){
+			echo $e->getMessage();
+			die();
+		}
+
+		return true;
+	}
+
 
 	static function getPatchCandidates($DeviceID,$PortNum=null,$listports=null,$patchpanels=null){
 		/*
