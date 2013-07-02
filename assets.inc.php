@@ -2211,44 +2211,44 @@ class ESX {
 		return $vm;
 	}
 
-  function EnumerateVMs($dev,$debug=false){
-    $community=$dev->SNMPCommunity;
-    $serverIP=$dev->PrimaryIP;
+	function EnumerateVMs($dev,$debug=false){
+		$community=$dev->SNMPCommunity;
+		$serverIP=$dev->PrimaryIP;
 
-    $vmList=array();
+		$vmList=array();
 
-    $pollCommand="/usr/bin/snmpwalk -v 2c -c $community $serverIP .1.3.6.1.4.1.6876.2.1.1.2 | /bin/cut -d: -f4 | /bin/cut -d\\\" -f2";
-    exec($pollCommand,$namesOutput);
+		$pollCommand="/usr/bin/snmpwalk -v 2c -c $community $serverIP .1.3.6.1.4.1.6876.2.1.1.2 | /bin/cut -d: -f4 | /bin/cut -d\\\" -f2";
+		exec($pollCommand,$namesOutput);
 
-    $pollCommand="/usr/bin/snmpwalk -v 2c -c $community $serverIP .1.3.6.1.4.1.6876.2.1.1.6 | /bin/cut -d: -f4 | /bin/cut -d\\\" -f2";
-    exec($pollCommand,$statesOutput);
+		$pollCommand="/usr/bin/snmpwalk -v 2c -c $community $serverIP .1.3.6.1.4.1.6876.2.1.1.6 | /bin/cut -d: -f4 | /bin/cut -d\\\" -f2";
+		exec($pollCommand,$statesOutput);
 
-    if(count($namesOutput)==count($statesOutput)&&count($namesOutput)>0){
-      $tempVMs=array_combine($namesOutput,$statesOutput);
-    }else{
-      $tempVMs=array();
+		if(count($namesOutput)==count($statesOutput)&&count($namesOutput)>0){
+			$tempVMs=array_combine($namesOutput,$statesOutput);
+		} else {
+			$tempVMs=array();
+		}
+
+		$vmID=0;
+
+		if ( @count( $tempVMs ) > 0 ) {
+			if ( $debug )
+				printf( "\t%d VMs found\n", count( $tempVMs ) );
+
+			foreach( $tempVMs as $key => $value ) {
+				$vmList[$vmID] = new ESX();
+				$vmList[$vmID]->DeviceID = $dev->DeviceID;
+				$vmList[$vmID]->LastUpdated = date( 'y-m-d H:i:s' );
+				$vmList[$vmID]->vmID = $vmID;
+				$vmList[$vmID]->vmName = $key;
+				$vmList[$vmID]->vmState = $value;
+
+				$vmID++;
+			}
+		}
+
+		return $vmList;
 	}
-
-    $vmID=0;
-
-    if ( @count( $tempVMs ) > 0 ) {
-      if ( $debug )
-        printf( "\t%d VMs found\n", count( $tempVMs ) );
-        
-      foreach( $tempVMs as $key => $value ) {
-                $vmList[$vmID] = new ESX();
-                $vmList[$vmID]->DeviceID = $dev->DeviceID;
-                $vmList[$vmID]->LastUpdated = date( 'y-m-d H:i:s' );
-                $vmList[$vmID]->vmID = $vmID;
-                $vmList[$vmID]->vmName = $key;
-                $vmList[$vmID]->vmState = $value;
-
-                $vmID++;
-      }
-    }
-
-    return $vmList;
-  }
   
   function UpdateInventory( $db, $debug=false ) {
     $dev = new Device();
@@ -2276,6 +2276,29 @@ class ESX {
       }
     }
   }
+  
+	static function RefreshInventory( $DeviceID ) {
+		global $dbh;
+		
+		$search = $dbh->prepare( "select * from fac_VMInventory where vmName=:vmName" );
+		$update = $dbh->prepare( "update fac_VMInventory set DeviceID=:DeviceID, LastUpdated=:LastUpdated, vmID=:vmID, vmState=:vmState where vmName=:vmName" );
+		$insert = $dbh->prepare( "insert into fac_VMInventory set DeviceID=:DeviceID, LastUpdated=:LastUpdated, vmID=:vmID, vmState=:vmState, vmName=:vmName" );
+		
+		$vmList = $this->EnumerateVMs( $DeviceID );
+		if ( count( $vmList ) > 0 ) {
+			foreach( $vmList as $vm ) {
+				$search->execute( $vm->vmName );
+
+				if ( mysql_num_rows( $result ) > 0 ) {
+					$update->execute( $vm->DeviceID, $vm->LastUpdated, $vm->vmID, $vm->vmState, $vm->vmName );
+				} else {
+					$insert->execute( $vm->DeviceID, $vm->LastUpdated, $vm->vmID, $vm->vmState, $vm->vmName );
+				}
+			}
+		}
+		
+		return $vmList;
+	}
   
 	function GetVMbyIndex( $db ) {
 		$searchSQL = "select * from fac_VMInventory where VMIndex=\"" . $this->VMIndex . "\"";
