@@ -2236,8 +2236,8 @@ class ESX {
 				$vmList[$vmID]->DeviceID = $dev->DeviceID;
 				$vmList[$vmID]->LastUpdated = date( 'Y-m-d H:i:s' );
 				$vmList[$vmID]->vmID = $vmID;
-				$vmList[$vmID]->vmName = trim( @end( explode( ":", $name ) ) );
-				$vmList[$vmID]->vmState = trim( @end( explode( ":", $name ) ) );
+				$vmList[$vmID]->vmName = trim( str_replace( '"', '', @end( explode( ":", $name ) ) ) );
+				$vmList[$vmID]->vmState = trim( str_replace( '"', '', @end( explode( ":", $name ) ) ) );
 			}
 		}
 
@@ -2270,11 +2270,11 @@ class ESX {
 		$vmList = ESX::EnumerateVMs( $DeviceID );
 		if ( count( $vmList ) > 0 ) {
 			foreach( $vmList as $vm ) {
-				$search->execute( $vm->vmName );
+				$search->execute( array( ":vmName"=>$vm->vmName ) );
 				
 				$parameters = array( ":DeviceID"=>$vm->DeviceID, ":LastUpdated"=>$vm->LastUpdated, ":vmID"=>$vm->vmID, ":vmState"=>$vm->vmState, ":vmName"=>$vm->vmName );
 
-				if ( mysql_num_rows( $result ) > 0 ) {
+				if ( $search->rowCount() > 0 ) {
 					$update->execute( $parameters );
 				} else {
 					$insert->execute( $parameters );
