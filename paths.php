@@ -18,33 +18,19 @@
 	$pathid="";
 	
 	if(isset($_POST['bot_eliminar'])){
+		$port=new DevicePorts();
 		for ($i=1;$i<$_POST['elem_path'];$i++){
-			if ($_POST["DeviceType"][$i]!="Patch Panel" 
-				&& $_POST["DeviceType"][$i+1]=="Patch Panel"
-				&& !$_POST["Front"][$i+1]){
-				$pc=new PatchConnection();
-				$pc->PanelDeviceID=$_POST["DeviceID"][$i+1];
-				$pc->PanelPortNumber=$_POST["PortNumber"][$i+1];
-				$pc->RemoveFrontConnection($facDB);
-				
-			} elseif ($_POST["DeviceType"][$i]!="Patch Panel"
-				&& $_POST["DeviceType"][$i+1]!="Patch Panel"){
-				
-				$sc=new SwitchConnection();
-				$sc->SwitchDeviceID=$_POST["DeviceID"][$i+1];
-				$sc->SwitchPortNumber=$_POST["PortNumber"][$i+1];
-				$sc->RemoveConnection($facDB);
-				
-			} elseif ($_POST["DeviceType"][$i]=="Patch Panel"
-				&& $_POST["Front"][$i]) {
-				
-				$pc=new PatchConnection();
-				$pc->PanelDeviceID=$_POST["DeviceID"][$i];
-				$pc->PanelPortNumber=$_POST["PortNumber"][$i];
-				$pc->RemoveFrontConnection($facDB);
+			if ($_POST["PortNumber"][$i]>0){
+				$port->DeviceID=$_POST["DeviceID"][$i];
+				$port->PortNumber=$_POST["PortNumber"][$i];
+				$port->getPort();
+				//only remove connections between front ports
+				if ($port->ConnectedPort>0){
+					$port->removeConnection();
+				}
 			}
 		}
-		$status.="Eliminada";
+		$status.=__("Front connections Deleted");
 	}
 	
 	if(isset($_POST['action']) || isset($_GET['pathid']) || (isset($_GET['deviceid']) && isset($_GET['portnumber']))){
@@ -80,7 +66,7 @@
 			//Remove any extra quotes that could get passed in from some funky js or something
 			$label=str_replace(array("'",'"'),"",$label);
 			
-			//Construyo la lista para el dispositivo
+			//Get list of devices
 			$dev=new Device();
 			$dev->Label=$label;
 			$devList=$dev->SearchDevicebyLabel();
@@ -91,30 +77,26 @@
 				$cp=new ConnectionPath();
 				$cp->DeviceID=intval($_POST['devid']);
 				$cp->PortNumber=intval($_POST['port']);
-				$cp->DeviceType=$devList[$cp->DeviceID]->DeviceType;
-				$cp->Front=true;
 				//label of devid
 				$label=$devList[$cp->DeviceID]->Label;
-				//intento irme al principio del path
+				//search the begining of the path
 				if (!$cp->GotoHeadDevice()){
 					$status="<blink>".__("There is a loop in this port")."</blink>";
 				} 
 			}else{ //no devid1 or changed label
-				//por el label
+				//by label
 				if (count($devList)==0){
 					$status=__("Not found the device")." '".$label."'";
 				}
 				elseif(count($devList)>1){
-					//Varios dev1
+					//several dev1
 					$status=__("There are several devices with this label").".<br>". __("Please, select a device from list").".";
-					//creo una lista con las posibilidades un combo
+					//I use $devList to fill a combobox later
 				}else {
 					$cp=new ConnectionPath();
 					$keys=array_keys($devList);
 					$cp->DeviceID=$keys[0];
 					$cp->PortNumber=intval($_POST['port']);
-					$cp->DeviceType=$devList[$cp->DeviceID]->DeviceType;
-					$cp->Front=true;
 					//label of devid
 					$label=$devList[$cp->DeviceID]->Label;
 					
@@ -139,17 +121,11 @@
 			}
 			
 			
-			$sql = "SELECT PanelDeviceID AS DeviceID,
-							PanelPortNumber AS port,
-							'Patch Panel' AS DeviceType 
-					FROM fac_patchconnection
-					WHERE FrontNotes ='".$pathid."'
-					UNION
-					SELECT SwitchDeviceID AS DeviceID,
-						SwitchPortNumber AS port,
-						'Switch' AS DeviceType 
-					FROM fac_switchconnection
+			$sql = "SELECT DeviceID,
+							PortNumber
+					FROM fac_Ports
 					WHERE Notes ='".$pathid."'";
+
 			$result = $dbh->prepare($sql);
 			$result->execute();
 			
@@ -160,9 +136,7 @@
 				
 				$cp=new ConnectionPath();
 				$cp->DeviceID=$row["DeviceID"];
-				$cp->PortNumber=$row["port"];
-				$cp->DeviceType=$row["DeviceType"];
-				$cp->Front=true;
+				$cp->PortNumber=$row["PortNumber"];
 				
 				if (!$cp->GotoHeadDevice()){
 					$status="<blink>".__("There is a loop in the port")."</blink>";
@@ -195,21 +169,19 @@
 				$elem_path++;
 				$form_eliminar.="<input type='hidden' name='DeviceID[".$elem_path."]' value='".$cp->DeviceID."'>\n";
 				$form_eliminar.="<input type='hidden' name='PortNumber[".$elem_path."]' value='".$cp->PortNumber."'>\n";
-				$form_eliminar.="<input type='hidden' name='DeviceType[".$elem_path."]' value='".$cp->DeviceType."'>\n";
-				$form_eliminar.="<input type='hidden' name='Front[".$elem_path."]' value='".$cp->Front."'>\n";
 				
 				//If this device is the first and is a panel, I put it to the right position freeing the left
 				if ($elem_path==1 && $dev->DeviceType=="Patch Panel"){
 					$path.="</td>\n\t\t<td></td>";
 					
 					//In connection type
-					$tipo_con=($cp->Front)?"r":"f";
+					$tipo_con=($cp->PortNumber>0)?"r":"f";
 					
 					//half hose
 					$path.="\n\t\t<td style='width:25px; background: #FFF url(images/a2".$tipo_con.".png) no-repeat center top;'></td>\n";
 					
 					//Out connection type
-					$tipo_con=($cp->Front)?"f":"r";
+					$tipo_con=($cp->PortNumber>0)?"f":"r";
 					
 					//Can the path continue?
 					if ($dev->DeviceType=="Patch Panel"){
@@ -251,7 +223,7 @@
 					//device
 					$path.=str_repeat("\t",$t--)."<td style='background-color: yellow;' nowrap>".
 							"<a href='devices.php?deviceid=".$dev->DeviceID."'>".$dev->Label."</a>
-							<br>".__("Port").": ".$cp->PortNumber."</td>\n";
+							<br>".__("Port").": ".abs($cp->PortNumber)."</td>\n";
 					$path.=str_repeat("\t",$t--)."</tr>\n";
 					
 					//Ending device table
@@ -262,7 +234,7 @@
 					}
 					$path.=str_repeat("\t",$t--)."</td>\n";
 					$path.=str_repeat("\t",$t--)."</tr>\n";
-					if ($cp->Front){
+					if ($cp->PortNumber>0){
 						$t++;
 						$path.=str_repeat("\t",$t++)."<tr>\n";
 						$path.=str_repeat("\t",$t)."<td colspan=2 style='padding: 0px 0px 0px 0px; border: 0px solid grey; 
@@ -279,7 +251,7 @@
 					$conex="\t\t<td style='height:30px; width: 25px; background: #FFF url(images/b3".$tipo_con.".png) no-repeat center;'>&nbsp;</td>\n";
 					$conex.="\t\t<td style='height:30px; background: #FFF url(images/b2".$tipo_con.".png) no-repeat left;'>&nbsp;</td>\n\t</tr>\n";;
 					if ($cp->GotoNextDevice()) {
-						$tipo_con=($cp->Front)?"r":"f";  //In connection type
+						$tipo_con=($cp->PortNumber>0)?"r":"f";  //In connection type
 
 						//row separation between patch rows: draw the connection between panels
 						$path.="\t<tr>\n\t\t<td></td><td style='height:30px; background: #FFF url(images/b4".$tipo_con.".png) no-repeat right;'>&nbsp;</td>\n"; 
@@ -324,7 +296,7 @@
 					//Device
 					$path.=str_repeat("\t",$t--)."<td style='background-color: yellow;' nowrap>".
 							"<a href='devices.php?deviceid=".$dev->DeviceID."'>".$dev->Label.
-							"</a><br>".__("Port").": ".$cp->PortNumber."</td>\n";
+							"</a><br>".__("Port").": ".abs($cp->PortNumber)."</td>\n";
 					$path.=str_repeat("\t",$t--)."</tr>\n";
 					$path.=str_repeat("\t",$t--)."</table>\n";
 					
@@ -340,7 +312,7 @@
 					if ($elem_path==1 || $dev->DeviceType=="Patch Panel"){
 						//half hose
 						//Out connection type
-						$tipo_con=($cp->Front)?"f":"r";
+						$tipo_con=($cp->PortNumber>0)?"f":"r";
 						
 						$path.="\n\t\t<td style='width:25px; background: #FFF url(images/a1".$tipo_con.".png) no-repeat center top;'></td>\n";
 					}
@@ -349,20 +321,18 @@
 						$elem_path++;
 						$form_eliminar.="<input type='hidden' name='DeviceID[".$elem_path."]' value='".$cp->DeviceID."'>\n";
 						$form_eliminar.="<input type='hidden' name='PortNumber[".$elem_path."]' value='".$cp->PortNumber."'>\n";
-						$form_eliminar.="<input type='hidden' name='DeviceType[".$elem_path."]' value='".$cp->DeviceType."'>\n";
-						$form_eliminar.="<input type='hidden' name='Front[".$elem_path."]' value='".$cp->Front."'>\n";
 						
 						$dev->DeviceID=$cp->DeviceID;
 						$dev->GetDevice();
 						
 						//In connection type
-						$tipo_con=($cp->Front)?"r":"f";
+						$tipo_con=($cp->PortNumber>0)?"r":"f";
 						
 						//half hose
 						$path.="\n\t\t<td style='width:25px; background: #FFF url(images/a2".$tipo_con.".png) no-repeat center top;'></td>\n";
 						
 						//Out connection type
-						$tipo_con=($cp->Front)?"f":"r";
+						$tipo_con=($cp->PortNumber>0)?"f":"r";
 						
 						//Can I follow?
 						if ($dev->DeviceType=="Patch Panel"){
@@ -408,7 +378,7 @@
 						//device
 						$path.=str_repeat("\t",$t--)."<td style='background-color: yellow;' nowrap>".
 								"<a href='devices.php?deviceid=".$dev->DeviceID."'>".$dev->Label.
-								"</a><br>".__("Port").": ".$cp->PortNumber."</td>\n";
+								"</a><br>".__("Port").": ".abs($cp->PortNumber)."</td>\n";
 						$path.=str_repeat("\t",$t--)."</tr>\n";
 						
 						//ending device table
@@ -418,7 +388,7 @@
 							$path.=str_repeat("\t",$t--)."</tr>\n";
 						}
 						
-						if ($cp->Front){
+						if ($cp->PortNumber>0){
 							$t++;
 							$path.=str_repeat("\t",$t++)."<tr>\n";
 							$path.=str_repeat("\t",$t)."<td colspan=2 style='padding: 0px 0px 0px 0px; border: 0px solid grey; 
@@ -432,7 +402,7 @@
 						$path.="\t\t</td>\n\t\t<td>&nbsp;&nbsp;&nbsp;</td>\n\t</tr>\n";
 	
 						if ($cp->GotoNextDevice()) {
-							$tipo_con=($cp->Front)?"r":"f";  //In connection type
+							$tipo_con=($cp->PortNumber>0)?"r":"f";  //In connection type
 	
 							//row separation between patch rows: draw the connection between panels
 							$path.="\t<tr>\n\t\t<td></td><td style='height:30px; background: #FFF url(images/b4".$tipo_con.".png) no-repeat right;'>&nbsp;</td>\n"; 
@@ -478,7 +448,7 @@
 			//PATH INFO
 			$path.= "<input type='hidden' name='elem_path' value='".$elem_path."'>\n";
 			$path.=$form_eliminar;	
-			$path.= "	<button type='submit' name='bot_eliminar' value='delete'>".__("Delete connection in DataBase")."</button>\n";
+			$path.= "	<button type='submit' name='bot_eliminar' value='delete'>".__("Delete front connections in DataBase")."</button>\n";
 			$path.= "</div>\n";
 			$path.= "</form>\n";
 			$path.= "</div>\n";

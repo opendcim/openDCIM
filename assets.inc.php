@@ -786,28 +786,20 @@ class ColorCoding {
 }
 
 class ConnectionPath {
-	
 	var $DeviceID;
-	var $DeviceType;
-	var $PortNumber;
-	var $Front;  //false for rear connetcion of panels and end of path for other devices
+	var $PortNumber; //The sign of PortNumber indicate if the path continue by front port (>0) or rear port (<0)
 	
 	private $PathAux; //loops control
 	
 	function MakeSafe(){
 		$this->DeviceID=intval($this->DeviceID);
-		if ( ! in_array( $this->DeviceType, array( 'Server', 'Appliance', 'Storage Array', 'Switch', 'Chassis', 'Patch Panel', 'Physical Infrastructure' ) ) )
-		  $this->DeviceType = "Server";
 		$this->PortNumber=intval($this->PortNumber);
-		$this->Front=($this->Front)?true:false;
 	}
 
 	private function AddDeviceToPathAux () {
 		$i=count($this->PathAux);
 		$this->PathAux[$i]["DeviceID"]=$this->DeviceID;
-		$this->PathAux[$i]["DeviceType"]=$this->DeviceType;
 		$this->PathAux[$i]["PortNumber"]=$this->PortNumber;
-		$this->PathAux[$i]["Front"]=$this->Front;
 	}
 	
 	private function ClearPathAux(){
@@ -829,119 +821,53 @@ class ConnectionPath {
 	//It puts the object in the first device of the path, if it is not it already
 		$this->MakeSafe();
 		$this->ClearPathAux();
-
-		while ($this->DeviceType=="Patch Panel"){
-			if (!$this->IsDeviceInPathAux()){
-				$this->AddDeviceToPathAux();
-			}else {
-				//loop!!
-				return false;
+		
+		$FrontPort=new DevicePorts();
+		$FrontPort->DeviceID=$this->DeviceID;
+		$FrontPort->PortNumber=abs($this->PortNumber);
+		
+		$RearPort=new DevicePorts();
+		$RearPort->DeviceID=$this->DeviceID;
+		$RearPort->PortNumber=-abs($this->PortNumber);
+		
+		if ($FrontPort->getPort() && $RearPort->getPort()){
+			//It's a Panel (intermediate device)
+			while ($this->GotoNextDevice ()){
+				if (!$this->IsDeviceInPathAux()){
+					$this->AddDeviceToPathAux();
+				}else {
+					//loop!!
+					return false;
+				}
 			}
-			if (!$this->GotoNextDevice ()) {
-				//It is a no connected panel in this direccion. Here it begins the path.
-				//I put it pointing to contrary direction
-				$this->Front=!$this->Front;
-				return true;
-			}
+			//change orientation
+			$this->PortNumber=-$this->PortNumber;
+		} else {
+			//It's not a panel
+			$this->PortNumber=abs($this->PortNumber);
 		}
-		$this->Front=true;
 		return true;
 	}
 	
-	function GotoNextDevice ( $db = null ) {
-	//It puts the object with the DeviceID, PortNumber and Front of the following device in the path.
+	function GotoNextDevice () {
+	//It puts the object with the DeviceID and PortNumber of the following device in the path.
 	//If the current device of the object is not connected to at all, gives back "false" and the object does not change
 		global $dbh;
 		$this->MakeSafe();
 		
-		if ($this->DeviceType=="Patch Panel"){
-			//it's a panel
-			if ($this->Front){
-				$sql = "SELECT FrontEndPointDeviceID AS DeviceID,
-							FrontEndpointPort AS PortNumber,
-							DeviceType 
-						FROM fac_patchconnection p INNER JOIN fac_device d ON p.FrontEndPointDeviceID=d.DeviceID
-						WHERE PanelDeviceID=". $this->DeviceID." AND PanelPortNumber=". $this->PortNumber;
-							
+		$port=new DevicePorts();
+		$port->DeviceID=$this->DeviceID;
+		$port->PortNumber=$this->PortNumber;
+		if ($port->getPort()){
+			if (is_null($port->ConnectedDeviceID) || is_null($port->ConnectedPort)){
+				return false;
 			} else {
-				$sql = "SELECT RearEndPointDeviceID AS DeviceID,
-							RearEndpointPort AS PortNumber,
-							DeviceType 
-						FROM fac_patchconnection p INNER JOIN fac_device d ON p.RearEndPointDeviceID=d.DeviceID
-						WHERE PanelDeviceID=". $this->DeviceID." AND PanelPortNumber=". $this->PortNumber;
-				
+				$this->DeviceID=$port->ConnectedDeviceID;
+				$this->PortNumber=-$port->ConnectedPort;
+				return true;
 			}
-			$result = $dbh->prepare($sql);
-			$result->execute();
-			$Front_sig=!$this->Front;
-		}elseif($this->Front){
-			//It isn't a panel
-			//Is it connected to rear connection of other pannel? 
-			$sql = "SELECT PanelDeviceID AS DeviceID,
-						PanelPortNumber AS PortNumber,
-						'Patch Panel' AS DeviceType 
-					FROM fac_patchconnection
-					WHERE RearEndPointDeviceID=". $this->DeviceID." AND RearEndpointPort=". $this->PortNumber;
-			
-			$result = $dbh->prepare($sql);
-			$result->execute();
-			if($result->rowCount()>0){
-				//I go out by front connetcion of the panel
-				$Front_sig=true;
-			}else{
-				//In other cases, or I go out by rear connetcion, or I can not follow
-				$Front_sig=false;
-				
-				//Is it connected to front connection of other pannel?
-				$sql = "SELECT PanelDeviceID AS DeviceID,
-							PanelPortNumber AS PortNumber,
-							'Patch Panel' AS DeviceType 
-						FROM fac_patchconnection
-						WHERE FrontEndPointDeviceID=". $this->DeviceID." AND FrontEndpointPort=". $this->PortNumber;
-				
-				$result = $dbh->prepare($sql);
-				$result->execute();	
-				if($result->rowCount()==0){
-					//Is it connected to switch?
-					$sql = "SELECT SwitchDeviceID AS DeviceID,
-								SwitchPortNumber AS PortNumber,
-								'Switch' AS DeviceType 
-							FROM fac_switchconnection
-							WHERE EndPointDeviceID=". $this->DeviceID." AND EndpointPort=". $this->PortNumber;
-					$result = $dbh->prepare($sql);
-					$result->execute();
-					
-					if($result->rowCount()==0){
-						//Is it a switch?
-						$sql = "SELECT EndPointDeviceID AS DeviceID,
-									EndpointPort AS PortNumber,
-									DeviceType 
-								FROM fac_switchconnection s INNER JOIN fac_device d ON s.EndPointDeviceID=d.DeviceID
-								WHERE SwitchDeviceID=". $this->DeviceID." AND SwitchPortNumber=". $this->PortNumber;
-						$result = $dbh->prepare($sql);
-						$result->execute();
-					
-						if($result->rowCount()==0){
-							//Not connected
-							return false;
-						}
-					}
-				}
-			}
-		}else{
+		} else
 			return false;
-		}		
-		
-		$row = $result->fetch();
-		if (is_null($row["DeviceID"]) || is_null($row["PortNumber"]) || is_null($row["DeviceType"])){
-			return false;
-		}
-		$this->DeviceID=$row["DeviceID"];
-		$this->PortNumber=$row["PortNumber"];
-		$this->DeviceType=$row["DeviceType"];
-		$this->Front=($this->DeviceType=="Patch Panel")?$Front_sig:false;
-		
-		return true;
 	}
 	
 	
