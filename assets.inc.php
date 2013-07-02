@@ -1505,7 +1505,7 @@ class Device {
   function GetESXDevices( $db = null ) {
 		global $dbh;
 		
-		$sql="SELECT * FROM fac_Device WHERE ESX=TRUE ORDER BY DeviceID;";
+		$sql="SELECT * FROM fac_Device WHERE ESX=TRUE ORDER BY DeviceID";
 
 		$deviceList = array();
 
@@ -2217,33 +2217,27 @@ class ESX {
 
 		$vmList=array();
 
-		$pollCommand="/usr/bin/snmpwalk -v 2c -c $community $serverIP .1.3.6.1.4.1.6876.2.1.1.2 | /bin/cut -d: -f4 | /bin/cut -d\\\" -f2";
-		exec($pollCommand,$namesOutput);
+		$namesList = snmp2_real_walk( $serverIP, $community, ".1.3.6.1.4.1.6876.2.1.1.2" );
+		$statesList = snmp2_real_walk( $serverIP, $community, ".1.3.6.1.4.1.6876.2.1.1.6" );
 
-		$pollCommand="/usr/bin/snmpwalk -v 2c -c $community $serverIP .1.3.6.1.4.1.6876.2.1.1.6 | /bin/cut -d: -f4 | /bin/cut -d\\\" -f2";
-		exec($pollCommand,$statesOutput);
-
-		if(count($namesOutput)==count($statesOutput)&&count($namesOutput)>0){
-			$tempVMs=array_combine($namesOutput,$statesOutput);
+		if ( count($namesList) > 0  && count($namesList) == count($statesList)){
+			$tempList=array_combine($namesList,$statesList);
 		} else {
-			$tempVMs=array();
+			$tempList=array();
 		}
-
-		$vmID=0;
 
 		if ( @count( $tempVMs ) > 0 ) {
 			if ( $debug )
 				printf( "\t%d VMs found\n", count( $tempVMs ) );
 
-			foreach( $tempVMs as $key => $value ) {
+			foreach( $tempList as $name => $state ) {
+				$vmID = sizeof( $vmList );
 				$vmList[$vmID] = new ESX();
 				$vmList[$vmID]->DeviceID = $dev->DeviceID;
-				$vmList[$vmID]->LastUpdated = date( 'y-m-d H:i:s' );
+				$vmList[$vmID]->LastUpdated = date( 'Y-m-d H:i:s' );
 				$vmList[$vmID]->vmID = $vmID;
-				$vmList[$vmID]->vmName = $key;
-				$vmList[$vmID]->vmState = $value;
-
-				$vmID++;
+				$vmList[$vmID]->vmName = trim( @end( explode( ":", $name ) ) );
+				$vmList[$vmID]->vmState = trim( @end( explode( ":", $name ) ) );
 			}
 		}
 
@@ -2256,25 +2250,11 @@ class ESX {
     $devList = $dev->GetESXDevices( $db );
     
     foreach ( $devList as $esxDev ) {
-      if ( $debug )
-        printf( "Querying host %s @ %s...\n", $esxDev->Label, $esxDev->PrimaryIP );
+		if ( $debug )
+			printf( "Querying host %s @ %s...\n", $esxDev->Label, $esxDev->PrimaryIP );
         
-      $vmList = $this->EnumerateVMs( $esxDev, $debug );
-      if ( count( $vmList ) > 0 ) {
-        foreach( $vmList as $vm ) {
-          $searchSQL = "select * from fac_VMInventory where vmName=\"" . $vm->vmName . "\"";
-          $result = mysql_query( $searchSQL, $db );
-          
-          if ( mysql_num_rows( $result ) > 0 ) {
-            $updateSQL = "update fac_VMInventory set DeviceID=\"" . $vm->DeviceID . "\", LastUpdated=\"" . $vm->LastUpdated . "\", vmID=\"" . $vm->vmID . "\", vmState=\"" . $vm->vmState . "\" where vmName=\"" . $vm->vmName . "\"";
-            $result = mysql_query( $updateSQL, $db );
-          } else {
-            $insertSQL = "insert into fac_VMInventory set DeviceID=\"" . $vm->DeviceID . "\", LastUpdated=\"" . $vm->LastUpdated . "\", vmID=\"" . $vm->vmID . "\", vmName=\"" . $vm->vmName . "\", vmState=\"" . $vm->vmState . "\"";
-            $result = mysql_query( $insertSQL, $db );
-          }
-        }
-      }
-    }
+		$this->RefreshInventory( $esxDev );
+	}
   }
   
 	static function RefreshInventory( $DeviceID ) {
