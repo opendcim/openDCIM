@@ -2237,7 +2237,7 @@ class ESX {
 				$vmList[$vmID]->LastUpdated = date( 'Y-m-d H:i:s' );
 				$vmList[$vmID]->vmID = $vmID;
 				$vmList[$vmID]->vmName = trim( str_replace( '"', '', @end( explode( ":", $name ) ) ) );
-				$vmList[$vmID]->vmState = trim( str_replace( '"', '', @end( explode( ":", $name ) ) ) );
+				$vmList[$vmID]->vmState = trim( str_replace( '"', '', @end( explode( ":", $state ) ) ) );
 			}
 		}
 
