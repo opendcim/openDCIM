@@ -2244,21 +2244,21 @@ class ESX {
 		return $vmList;
 	}
   
-  function UpdateInventory( $db, $debug=false ) {
-    $dev = new Device();
-    
-    $devList = $dev->GetESXDevices( $db );
-    
-    foreach ( $devList as $esxDev ) {
-		if ( $debug )
-			printf( "Querying host %s @ %s...\n", $esxDev->Label, $esxDev->PrimaryIP );
-        
-		$vmList = ESX::RefreshInventory( $esxDev );
-		
-		if ( $debug )
-			print_r( $vmList );
+	function UpdateInventory( $db, $debug=false ) {
+		$dev = new Device();
+
+		$devList = $dev->GetESXDevices( $db );
+
+		foreach ( $devList as $esxDev ) {
+			if ( $debug )
+				printf( "Querying host %s @ %s...\n", $esxDev->Label, $esxDev->PrimaryIP );
+
+			$vmList = ESX::RefreshInventory( $esxDev );
+
+			if ( $debug )
+				print_r( $vmList );
+		}
 	}
-  }
   
 	static function RefreshInventory( $DeviceID ) {
 		global $dbh;
