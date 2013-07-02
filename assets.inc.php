@@ -2226,9 +2226,9 @@ class ESX {
 			$tempList=array();
 		}
 
-		if ( @count( $tempVMs ) > 0 ) {
+		if ( @count( $tempList ) > 0 ) {
 			if ( $debug )
-				printf( "\t%d VMs found\n", count( $tempVMs ) );
+				printf( "\t%d VMs found\n", count( $tempList ) );
 
 			foreach( $tempList as $name => $state ) {
 				$vmID = sizeof( $vmList );
@@ -2253,7 +2253,10 @@ class ESX {
 		if ( $debug )
 			printf( "Querying host %s @ %s...\n", $esxDev->Label, $esxDev->PrimaryIP );
         
-		$this->RefreshInventory( $esxDev );
+		$vmList = ESX::RefreshInventory( $esxDev );
+		
+		if ( $debug )
+			print_r( $vmList );
 	}
   }
   
@@ -2264,15 +2267,17 @@ class ESX {
 		$update = $dbh->prepare( "update fac_VMInventory set DeviceID=:DeviceID, LastUpdated=:LastUpdated, vmID=:vmID, vmState=:vmState where vmName=:vmName" );
 		$insert = $dbh->prepare( "insert into fac_VMInventory set DeviceID=:DeviceID, LastUpdated=:LastUpdated, vmID=:vmID, vmState=:vmState, vmName=:vmName" );
 		
-		$vmList = $this->EnumerateVMs( $DeviceID );
+		$vmList = ESX::EnumerateVMs( $DeviceID );
 		if ( count( $vmList ) > 0 ) {
 			foreach( $vmList as $vm ) {
 				$search->execute( $vm->vmName );
+				
+				$parameters = array( ":DeviceID"=>$vm->DeviceID, ":LastUpdated"=>$vm->LastUpdated, ":vmID"=>$vm->vmID, ":vmState"=>$vm->vmState, ":vmName"=>$vm->vmName );
 
 				if ( mysql_num_rows( $result ) > 0 ) {
-					$update->execute( $vm->DeviceID, $vm->LastUpdated, $vm->vmID, $vm->vmState, $vm->vmName );
+					$update->execute( $parameters );
 				} else {
-					$insert->execute( $vm->DeviceID, $vm->LastUpdated, $vm->vmID, $vm->vmState, $vm->vmName );
+					$insert->execute( $parameters );
 				}
 			}
 		}
