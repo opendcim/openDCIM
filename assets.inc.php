@@ -2270,11 +2270,19 @@ class ESX {
 		$vmList = ESX::EnumerateVMs( $DeviceID );
 		if ( count( $vmList ) > 0 ) {
 			foreach( $vmList as $vm ) {
+<<<<<<< HEAD
 				$search->execute( array( ":vmName"=>$vm->vmName ) );
 				
 				$parameters = array( ":DeviceID"=>$vm->DeviceID, ":LastUpdated"=>$vm->LastUpdated, ":vmID"=>$vm->vmID, ":vmState"=>$vm->vmState, ":vmName"=>$vm->vmName );
 
 				if ( $search->rowCount() > 0 ) {
+=======
+				$search->execute( $vm->vmName );
+				
+				$parameters = array( ":DeviceID"=>$vm->DeviceID, ":LastUpdated"=>$vm->LastUpdated, ":vmID"=>$vm->vmID, ":vmState"=>$vm->vmState, ":vmName"=>$vm->vmName );
+
+				if ( mysql_num_rows( $result ) > 0 ) {
+>>>>>>> c7da35a2dbcfb3b9fdfc7f0cbddd7a191ee9b948
 					$update->execute( $parameters );
 				} else {
 					$insert->execute( $parameters );
