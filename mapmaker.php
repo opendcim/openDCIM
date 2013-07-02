@@ -43,24 +43,8 @@
 	function uselessie(){
 		document.getElementById(\'mapCanvas\').className = "mapCanvasiefix";
 	}
-</script>
-<style type="text/css">
-.main {
-	    width: '.($width+42).'px !important;
-}
-</style>';
+</script>';
 		}
-	}
-	$height+=60; //Offset for text on header
-	$width+=10; //Don't remember why I need this
-
-	// Base sizes for calculations
-	// 206px for coordinate box
-	// 580px for header 
-	// 1030px for page
-	if($width>800){
-		$offset=($width-800);
-		$screenadjustment="<style type=\"text/css\">div#mapadjust { width:".($offset+1030)."px;} .mapmaker > div { width:".($offset+580)."px;} .mapmaker div + div { width:206px;}</style>\n";
 	}
 ?>
 <!doctype html>
