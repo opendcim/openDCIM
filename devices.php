@@ -44,7 +44,7 @@
 			}
 			exit;
 		};
-		if(isset($_POST['swdev'])){ // setting network connections not patch panels
+		if(isset($_POST['swdev'])){ 
 			if(isset($_POST['getport'])){
 				$dp=new DevicePorts();
 				$dp->DeviceID=$_POST['swdev'];
@@ -76,6 +76,32 @@
 				}else{
 					echo 0;
 				}
+				exit;
+			}
+			if(isset($_POST['delport'])){
+				$dp=new DevicePorts();
+				$dp->DeviceID=$_POST['swdev'];
+				$dp->PortNumber=$_POST['pnum'];
+				$ports=end($dp->getPorts());
+				// remove the selected port then shuffle the data to fill the hole if needed
+				if($ports->PortNumber!=$dp->PortNumber){
+					$ports->PortNumber=$dp->PortNumber;
+print_r($ports);
+print_r($dp);exit;
+					$dp->removePort();
+					echo $ports->updatePort();
+				}else{ // Last available port. just delete it.
+					if($dp->removePort()){
+						$dev->DeviceID=$dp->DeviceID;
+						$dev->GetDevice();
+						$dev->Ports=$dev->Ports-1;
+						$dev->UpdateDevice();
+						echo 1;
+					}else{
+						echo 0;
+					}
+				}
+
 				exit;
 			}
 			$list='';
@@ -544,6 +570,10 @@ $(document).ready(function() {
 		}).removeClass('left');  
 	}
 
+	// add the current ports value to the document data store
+	$(document).data('ports',$('#ports').val());
+	$(document).data('devicetype', $('select[name="devicetype"]').val());
+
 	$('#notes').each(function(){
 		$(this).before('<button type="button" id="editbtn"></button>');
 		if($(this).val()!=''){
@@ -625,11 +655,23 @@ $(document).ready(function() {
 			$('#height').trigger('change');
 		});
 	});
+
+	if($('select[name=devicetype]').val()=='Switch'){$('#firstport').show();}
 	$('select[name=devicetype]').change(function(){
 		if($(this).val()=='Switch'){
+			if($(document).data('devicetype')!='Switch'){
+				$('#firstport button:not([name="firstport"])').hide();
+			}
 			$('#firstport').show();
+			$('.switch div[id^="st"]').show();
 		}else{
 			$('#firstport').hide();
+			$('.switch div[id^="st"]').hide();
+		}
+		if($(this).val()=='Server'){
+			$('#esxframe').show();
+		}else{
+			$('#esxframe').hide();
 		}
 	});
 	$('#firstport button[name=firstport]').click(function(){
@@ -674,8 +716,6 @@ $(document).ready(function() {
 			});
 		}
 	}
-
-	if($('select[name=devicetype]').val()=='Switch'){$('#firstport').show();}
 <?php
 	// hide all the js functions if they don't have write permissions
 	if($user->WriteAccess){
@@ -811,32 +851,51 @@ $(document).ready(function() {
 <?php
 		}
 ?>
-		// add the current ports value to it's data store
-		$('#ports').data('ports',$('#ports').val());
+
 		$('#ports').change(function(){
-			if($(this).val()>$(this).data('ports')){
+			// not sure why .data() is turning an int into a string parseInt is fixing that
+			if($(this).val() > parseInt($(document).data('ports'))){
 				//make more ports and add the rows below
-				console.log('new value: '+$(this).val()+' original value: '+$(this).data('ports'));
-				$(this).data('ports',$(this).val());
+				console.log('new value: '+$(this).val()+' original value: '+$(document).data('ports'));
+				$(document).data('ports',$(this).val());
 				console.log('change the value for the data point each time this is changed or all hell will break loose.');
-			}else if($(this).val()==$(this).data('ports')){
+			}else if($(this).val()==$(document).data('ports')){
 				console.log('how would they manage to trigger this condition? I mean really.');
 			}else{
-				//S.U.T. present options to remove ports
-				var row=$('.switch > div:first-child > div:first-child').parent('div');
-				var icon=$('<span>').addClass('ui-icon').addClass('status').addClass('down');
-				$('<div>').prependTo(row);
-				$('.switch div:first-child[id^=sp]').each(function(){
-					row=$(this).parent('div');
-					// this idea is crap and needs to be thought out better but it's time to go home so i'm submitting since it won't break anything
-					$('<div>',{'id': 'kp'+$(this).text()}).append(icon.clone()).click({row: row},deletethis).prependTo(row);
-				});
+				var dt=['Switch','Patch Panel','Physical Infrastructure'];
+				if($.inArray($(document).data('devicetype'),dt)){
+					//S.U.T. present options to remove ports
+					var row=$('.switch > div:first-child > div:first-child').parent('div');
+					var icon=$('<span>').addClass('ui-icon').addClass('status').addClass('down');
+					$('<div>').prependTo(row);
+					$('.switch div:first-child[id^=sp]').each(function(){
+						row=$(this).parent('div');
+						// this idea is crap and needs to be thought out better but it's time to go home so i'm submitting since it won't break anything
+						$('<div>',{'id': 'kp'+$(this).text()}).append(icon.clone()).click({row: row},deletethis).prependTo(row);
+					});
+				}
 			}
 		});
 		function deletethis(e){
-			console.log(e.data.row);
-
-
+			var lastport=$('.switch > div:last-child div[id^="sp"]:not([id^="spn"])').text();
+			var portnum=e.data.row.find('div[id^="sp"]:not([id^="spn"])').text();
+			$.post('',{delport: '',swdev: $('#deviceid').val(),pnum: portnum}).done(function(data){
+				if(data.trim()==1){
+					// port was removed and last port shuffled into this one's place
+					$(document).data('ports',$(document).data('ports')-1);
+					if($('#ports').val()==$(document).data('ports')){
+						//refresh screen
+					}else{
+						var row=$('#sp'+portnum).parent('div');
+						var swaprow=$('#sp'+lastport).parent('div');
+						for(var i=2;i<$(swaprow).children('div').length;i++){
+							row.children('div').eq(i).html(swaprow.children('div').eq(i).html());
+						}
+						swaprow.remove();
+					}
+				}
+				console.log(data);
+			});
 		}
 		$('#reservation').change(function(){
 			if(!$(this).prop("checked")){
@@ -1471,7 +1530,7 @@ echo '		<div class="caption">
 	
 	// Do not display ESX block if device isn't a virtual server and the user doesn't have write access
 	if(($user->WriteAccess || $dev->ESX) && ($dev->DeviceType=="Server" || $dev->DeviceType=="")){
-		echo '<fieldset>	<legend>',__("VMWare ESX Server Information"),'</legend>';
+		echo '<fieldset id="esxframe">	<legend>',__("VMWare ESX Server Information"),'</legend>';
 	// If the user doesn't have write access display the list of VMs but not the configuration information.
 		if($user->WriteAccess){
 
@@ -1540,7 +1599,7 @@ echo '	<div class="table">
 				<div>".__('Device')."</div>
 				<div>".__('Device Port')."</div>
 				<div>".__('Notes')."</div>";
-		if($dev->DeviceType=='Switch'){print "\t\t\t\t<div>".__("Status")."</div>";}
+		if($dev->DeviceType=='Switch'){print "\t\t\t\t<div id=\"st\">".__("Status")."</div>";}
 		print "\t\t\t\t<div>".__("Media Type")."</div>
 			<div>".__("Color Code")."</div>
 			</div>\n";

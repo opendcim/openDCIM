@@ -1925,7 +1925,7 @@ class DevicePorts {
 		global $dbh;
 		$this->MakeSafe();
 
-		$sql="SELECT * FROM fac_Ports WHERE DeviceID=$this->DeviceID;";
+		$sql="SELECT * FROM fac_Ports WHERE DeviceID=$this->DeviceID ORDER BY PortNumber ASC;";
 
 		$ports=array();
 		foreach($dbh->query($sql) as $row){
@@ -2031,11 +2031,12 @@ class DevicePorts {
 		}
 
 		// update port
-		$sql="UPDATE fac_Ports SET MediaID=$this->MediaID, ColorID=$this->ColorID, 
-			PortNotes=\"$this->PortNotes\", ConnectedDeviceID=$this->ConnectedDeviceID, 
+		$sql="UPDATE fac_Ports SET PortNumber=$this->PortNumber, MediaID=$this->MediaID, 
+			ColorID=$this->ColorID, PortNotes=\"$this->PortNotes\", 
+			ConnectedDeviceID=$this->ConnectedDeviceID, Label=\"$this->Label\",
 			ConnectedPort=$this->ConnectedPort, Notes=\"$this->Notes\" WHERE 
-			DeviceID=$this->DeviceID AND PortNumber=$this->PortNumber;";
-
+			DeviceID=$oldport->DeviceID AND PortNumber=$oldport->PortNumber;";
+error_log($sql);
 		if(!$dbh->query($sql)){
 			$info=$dbh->errorInfo();
 
