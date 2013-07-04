@@ -1629,10 +1629,17 @@ echo '	<div class="table">
 </div><!-- END div.page -->
 <script type="text/javascript">
 	$(document).ready(function() {
-		// wait half a second after the page loads then open the tree
-		setTimeout(function(){
-			expandToItem('datacenters','cab<?php echo $cab->CabinetID;?>');
-		},500);
+		// Don't attempt to open the datacenter tree until it is loaded
+		function opentree(){
+			if($('#datacenters .bullet').length==0){
+				setTimeout(function(){
+					opentree();
+				},500);
+			}else{
+				expandToItem('datacenters','cab<?php echo $cab->CabinetID;?>');
+			}
+		}
+		opentree();
 	});
 </script>
 
