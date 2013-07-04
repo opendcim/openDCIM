@@ -302,10 +302,6 @@
 				$pwrConnection->DeviceID=($dev->ParentDevice>0)?$dev->ParentDevice:$dev->DeviceID;
 				$pwrCords=$pwrConnection->GetConnectionsByDevice($facDB);
 
-				$portList=DevicePorts::getPortList($dev->DeviceID);
-				$mediaTypes=MediaTypes::GetMediaTypeList();
-				$colorCodes=ColorCoding::GetCodeList();
-
 				if($dev->DeviceType=='Switch'){
 					$linkList = SwitchInfo::getPortStatus( $dev->DeviceID );
 				}
@@ -314,6 +310,11 @@
 				$patchList=array();
 				$panelList=array();
 			}
+			// ports apply to copied devices under the new model
+			$portList=DevicePorts::getPortList($dev->DeviceID);
+			$mediaTypes=MediaTypes::GetMediaTypeList();
+			$colorCodes=ColorCoding::GetCodeList();
+
 		}
 		$cab->CabinetID=$dev->Cabinet;
 		$cab->GetCabinet($facDB);
@@ -822,20 +823,21 @@ $(document).ready(function() {
 				console.log('how would they manage to trigger this condition? I mean really.');
 			}else{
 				//S.U.T. present options to remove ports
-				$('div.switch').css('position','relative');
-				var h=$('div.switch > div:first-child + div > div:first-child').outerHeight();
+				var row=$('.switch > div:first-child > div:first-child').parent('div');
 				var icon=$('<span>').addClass('ui-icon').addClass('status').addClass('down');
+				$('<div>').prependTo(row);
 				$('.switch div:first-child[id^=sp]').each(function(){
+					row=$(this).parent('div');
 					// this idea is crap and needs to be thought out better but it's time to go home so i'm submitting since it won't break anything
-					$('<div>',{'id': 'kp'+$(this).text()}).css({
-						'position': 'absolute', 
-						'left': -(h + 3)+'px',
-						'top' : ((h * parseInt($(this).text())) + (h-16) )+'px',
-						'border' : 0
-					}).outerHeight(h).outerWidth(h).append(icon.clone()).appendTo($('div.switch'));
+					$('<div>',{'id': 'kp'+$(this).text()}).append(icon.clone()).click({row: row},deletethis).prependTo(row);
 				});
 			}
 		});
+		function deletethis(e){
+			console.log(e.data.row);
+
+
+		}
 		$('#reservation').change(function(){
 			if(!$(this).prop("checked")){
 				var d=new Date();
@@ -1543,23 +1545,21 @@ echo '	<div class="table">
 			<div>".__("Color Code")."</div>
 			</div>\n";
 
-		for ( $n = 0; $n < sizeof( $portList ); $n++ ) {
-			$i = $n + 1;	// The "port number" starting at 1
-
+		foreach($portList as $i => $port){
 			$tmpDev=new Device();
-			$tmpDev->DeviceID=$portList[$i]->ConnectedDeviceID;
-			$tmpDev->GetDevice($facDB);
+			$tmpDev->DeviceID=$port->ConnectedDeviceID;
+			$tmpDev->GetDevice();
 
-			$mt=(isset($mediaTypes[$portList[$i]->MediaID]))?$mediaTypes[$portList[$i]->MediaID]->MediaType:'';
-			$cc=(isset($colorCodes[$portList[$i]->ColorID]))?$colorCodes[$portList[$i]->ColorID]->Name:'';
+			$mt=(isset($mediaTypes[$port->MediaID]))?$mediaTypes[$port->MediaID]->MediaType:'';
+			$cc=(isset($colorCodes[$port->ColorID]))?$colorCodes[$port->ColorID]->Name:'';
 
 			// the data attribute is used to store the previous value of the connection
 			print "\t\t\t\t<div>
 					<div id=\"sp$i\">$i</div>
-					<div id=\"spn$i\">{$portList[$i]->Label}</div>
-					<div id=\"d$i\" data-default=\"{$portList[$i]->ConnectedDeviceID}\"><a href=\"devices.php?deviceid={$portList[$i]->ConnectedDeviceID}\">$tmpDev->Label</a></div>
-					<div id=\"dp$i\" data-default=\"{$portList[$i]->ConnectedPort}\">{$portList[$i]->ConnectedPort}</div>
-					<div id=\"n$i\" data-default=\"{$portList[$i]->Notes}\">{$portList[$i]->Notes}</div>";
+					<div id=\"spn$i\">{$port->Label}</div>
+					<div id=\"d$i\" data-default=\"{$port->ConnectedDeviceID}\"><a href=\"devices.php?deviceid={$port->ConnectedDeviceID}\">$tmpDev->Label</a></div>
+					<div id=\"dp$i\" data-default=\"{$port->ConnectedPort}\">{$port->ConnectedPort}</div>
+					<div id=\"n$i\" data-default=\"{$port->Notes}\">{$port->Notes}</div>";
 			if($dev->DeviceType=='Switch'){print "\t\t\t\t<div id=\"st$i\"><span class=\"ui-icon status {$linkList[$i]}\"></span></div>";}
 			print "\t\t\t\t<div id=\"mt$i\">$mt</div>
 					<div id=\"cc$i\">$cc</div>

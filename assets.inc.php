@@ -1038,7 +1038,7 @@ class Device {
 
 		$this->DeviceID = $dbh->lastInsertId();
 
-		DevicePorts::createPorts($dev->DeviceID);
+		DevicePorts::createPorts($this->DeviceID);
 
 		(class_exists('LogActions'))?LogActions::LogThis($this):'';
 
@@ -1204,20 +1204,70 @@ class Device {
 				return;
 			}
 		}
+
+		// If we made it to a device update and the number of ports available don't match the device, just fix it.
+		if($tmpDev->Ports!=$this->Ports){
+			if($tmpDev->Ports>$this->Ports){ // old device has more ports
+				for($n=$this->Ports; $n<$tmpDev->Ports; $n++){
+					$p=new DevicePorts;
+					$p->DeviceID=$this->DeviceID;
+					$p->PortNumber=$n+1;
+					$p->removePort();
+					if($this->DeviceType=='Patch Panel'){
+						$p->PortNumber=$p->PortNumber*-1;
+						$p->removePort();
+					}
+				}
+			}else{ // new device has more ports
+				for($n=$tmpDev->Ports; $n<$this->Ports; ++$n){
+					$p=new DevicePorts;
+					$p->DeviceID=$this->DeviceID;
+					$p->PortNumber=$n+1;
+					$p->createPort();
+					if($this->DeviceType=='Patch Panel'){
+						$p->PortNumber=$p->PortNumber*-1;
+						$p->createPort();
+					}
+				}
+
+			}
+		}
 		
 		if(($tmpDev->DeviceType=="Switch" || $tmpDev->DeviceType=="Patch Panel") && $tmpDev->DeviceType!=$this->DeviceType){
 			// SUT #417 - Changed a Switch or Patch Panel to something else (even if you change a switch to a Patch Panel, the connections are different)
 			if($tmpDev->DeviceType=="Switch"){
-				$tmpSw=new SwitchConnection();
-				$tmpSw->SwitchDeviceID=$tmpDev->DeviceID;
-				$tmpSw->DropSwitchConnections();
-				$tmpSw->DropEndpointConnections();
+				DevicePorts::removeConnections($this->DeviceID);
 			}
-			
 			if($tmpDev->DeviceType=="Patch Panel"){
-				$tmpPan=new PatchConnetion();
-				$tmpPan->DropPanelConnections();
-				$tmpPan->DropEndpointConnections();
+				DevicePorts::removeConnections($this->DeviceID);
+				$p=new DevicePorts();
+				$p->DeviceID=$this->DeviceID;
+				$ports=$p->getPorts();
+				foreach($ports as $i => $port){
+					if($port->PortNumber<0){
+						$port->removePort();
+					}
+				}
+			}
+		}
+		if($this->DeviceType == "Patch Panel" && $tmpDev->DeviceType != $this->DeviceType){
+			// This asshole just changed a switch or something into a patch panel. Make the rear ports.
+			$p=new DevicePorts();
+			$p->DeviceID=$this->DeviceID;
+			if($tmpDev->Ports!=$this->Ports && $tmpDev->Ports<$this->Ports){
+				// since we just made the new rear ports up there only make the first few, hopefully.
+				for($n=1;$n<=$tmpDev->Ports;$n++){
+					$i=$n*-1;
+					$p->PortNumber=$i;
+					$p->createPort();
+				}
+			}else{
+				// make a rear port to match every front port
+				$ports=$p->getPorts();
+				foreach($ports as $i => $port){
+					$port->PortNumber=$port->PortNumber*-1;
+					$port->createPort();
+				}
 			}
 		}
 		
@@ -1928,7 +1978,7 @@ class DevicePorts {
 				$portList[$i]->Label=@$nameList[$n];
 				$portList[$i]->Notes=@$aliasList[$n];
 
-				$portList[$i]->CreatePort();
+				$portList[$i]->createPort();
 			}
 		}else{
 			for( $n=0; $n<$dev->Ports; $n++ ){
@@ -1937,14 +1987,14 @@ class DevicePorts {
 				$portList[$i]->DeviceID=$dev->DeviceID;
 				$portList[$i]->PortNumber=$i;
 
-				$portList[$n]->CreatePort();
+				$portList[$i]->createPort();
 				if($dev->DeviceType=="Patch Panel"){
 					$i=$i*-1;
 					$portList[$i]=new DevicePorts();
 					$portList[$i]->DeviceID=$dev->DeviceID;
 					$portList[$i]->PortNumber=$i;
 
-					$portList[$i]->CreatePort();
+					$portList[$i]->createPort();
 				}
 			}
 		}
