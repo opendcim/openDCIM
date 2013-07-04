@@ -1038,6 +1038,8 @@ class Device {
 
 		$this->DeviceID = $dbh->lastInsertId();
 
+		DevicePorts::createPorts($this->DeviceID);
+
 		(class_exists('LogActions'))?LogActions::LogThis($this):'';
 
 		return $this->DeviceID;
@@ -1202,20 +1204,70 @@ class Device {
 				return;
 			}
 		}
+
+		// If we made it to a device update and the number of ports available don't match the device, just fix it.
+		if($tmpDev->Ports!=$this->Ports){
+			if($tmpDev->Ports>$this->Ports){ // old device has more ports
+				for($n=$this->Ports; $n<$tmpDev->Ports; $n++){
+					$p=new DevicePorts;
+					$p->DeviceID=$this->DeviceID;
+					$p->PortNumber=$n+1;
+					$p->removePort();
+					if($this->DeviceType=='Patch Panel'){
+						$p->PortNumber=$p->PortNumber*-1;
+						$p->removePort();
+					}
+				}
+			}else{ // new device has more ports
+				for($n=$tmpDev->Ports; $n<$this->Ports; ++$n){
+					$p=new DevicePorts;
+					$p->DeviceID=$this->DeviceID;
+					$p->PortNumber=$n+1;
+					$p->createPort();
+					if($this->DeviceType=='Patch Panel'){
+						$p->PortNumber=$p->PortNumber*-1;
+						$p->createPort();
+					}
+				}
+
+			}
+		}
 		
 		if(($tmpDev->DeviceType=="Switch" || $tmpDev->DeviceType=="Patch Panel") && $tmpDev->DeviceType!=$this->DeviceType){
 			// SUT #417 - Changed a Switch or Patch Panel to something else (even if you change a switch to a Patch Panel, the connections are different)
 			if($tmpDev->DeviceType=="Switch"){
-				$tmpSw=new SwitchConnection();
-				$tmpSw->SwitchDeviceID=$tmpDev->DeviceID;
-				$tmpSw->DropSwitchConnections();
-				$tmpSw->DropEndpointConnections();
+				DevicePorts::removeConnections($this->DeviceID);
 			}
-			
 			if($tmpDev->DeviceType=="Patch Panel"){
-				$tmpPan=new PatchConnetion();
-				$tmpPan->DropPanelConnections();
-				$tmpPan->DropEndpointConnections();
+				DevicePorts::removeConnections($this->DeviceID);
+				$p=new DevicePorts();
+				$p->DeviceID=$this->DeviceID;
+				$ports=$p->getPorts();
+				foreach($ports as $i => $port){
+					if($port->PortNumber<0){
+						$port->removePort();
+					}
+				}
+			}
+		}
+		if($this->DeviceType == "Patch Panel" && $tmpDev->DeviceType != $this->DeviceType){
+			// This asshole just changed a switch or something into a patch panel. Make the rear ports.
+			$p=new DevicePorts();
+			$p->DeviceID=$this->DeviceID;
+			if($tmpDev->Ports!=$this->Ports && $tmpDev->Ports<$this->Ports){
+				// since we just made the new rear ports up there only make the first few, hopefully.
+				for($n=1;$n<=$tmpDev->Ports;$n++){
+					$i=$n*-1;
+					$p->PortNumber=$i;
+					$p->createPort();
+				}
+			}else{
+				// make a rear port to match every front port
+				$ports=$p->getPorts();
+				foreach($ports as $i => $port){
+					$port->PortNumber=$port->PortNumber*-1;
+					$port->createPort();
+				}
 			}
 		}
 		
@@ -1902,6 +1954,53 @@ class DevicePorts {
 		return true;
 	}
 
+	static function createPorts($DeviceID){
+		$dev=New Device;
+		$dev->DeviceID=$DeviceID;
+		if(!$dev->GetDevice()){return false;}
+
+		// Build the DevicePorts from the existing info in the following priority:
+		//  - Existing switchconnection table
+		//  - SNMP data (if it exists)
+		//  - Placeholders
+		if($dev->DeviceType=="Switch"){
+			$swCon=new SwitchConnection();
+			$swCon->SwitchDeviceID=$dev->DeviceID;
+			
+			$nameList=SwitchInfo::getPortNames($dev->DeviceID);
+			$aliasList=SwitchInfo::getPortAlias($dev->DeviceID);
+			
+			for( $n=0; $n<$dev->Ports; $n++ ){
+				$i=$n+1;
+				$portList[$i]=new DevicePorts();
+				$portList[$i]->DeviceID=$dev->DeviceID;
+				$portList[$i]->PortNumber=$i;
+				$portList[$i]->Label=@$nameList[$n];
+				$portList[$i]->Notes=@$aliasList[$n];
+
+				$portList[$i]->createPort();
+			}
+		}else{
+			for( $n=0; $n<$dev->Ports; $n++ ){
+				$i=$n+1;
+				$portList[$i]=new DevicePorts();
+				$portList[$i]->DeviceID=$dev->DeviceID;
+				$portList[$i]->PortNumber=$i;
+
+				$portList[$i]->createPort();
+				if($dev->DeviceType=="Patch Panel"){
+					$i=$i*-1;
+					$portList[$i]=new DevicePorts();
+					$portList[$i]->DeviceID=$dev->DeviceID;
+					$portList[$i]->PortNumber=$i;
+
+					$portList[$i]->createPort();
+				}
+			}
+		}
+		return $portList;
+	}
+
 	function updatePort() {
 		global $dbh;
 
@@ -2110,61 +2209,22 @@ class DevicePorts {
 	static function getPortList($DeviceID){
 		global $dbh;
 		
-		if(intval($DeviceID) <1){
-			return false;
-		}
-		
-		$dev = new Device();
-		$dev->DeviceID = $DeviceID;
+		$dev=new Device();
+		$dev->DeviceID=$DeviceID;
 		if(!$dev->GetDevice()){
 			return false;	// This device doesn't exist
 		}
 		
 		$sql="SELECT * FROM fac_Ports WHERE DeviceID=$dev->DeviceID;";
 		
-		$portList = array();
-		
+		$portList=array();
 		foreach($dbh->query($sql) as $row){
 			$portList[$row['PortNumber']]=DevicePorts::RowToObject($row);
 		}
 		
 		if( sizeof($portList)==0 && $dev->DeviceType!="Physical Infrastructure" ){
-			// Build the DevicePorts from the existing info in the following priority:
-			//  - Existing switchconnection table
-			//  - SNMP data (if it exists)
-			//  - Placeholders
-			if($dev->DeviceType=="Switch"){
-				$swCon=new SwitchConnection();
-				$swCon->SwitchDeviceID=$dev->DeviceID;
-				
-				$nameList=SwitchInfo::getPortNames($dev->DeviceID);
-				$aliasList=SwitchInfo::getPortAlias($dev->DeviceID);
-				
-				for( $n=0; $n<$dev->Ports; $n++ ){
-					$portList[$n]=new DevicePorts();
-					$portList[$n]->DeviceID=$dev->DeviceID;
-					$portList[$n]->PortNumber=$n+1;
-					$portList[$n]->Label=@$nameList[$n];
-
-					$swCon->SwitchPortNumber=$n+1;
-					if($swCon->GetConnectionRecord()){
-						$portList[$n]->Notes=$swCon->Notes;
-					}else{
-						$portList[$n]->Notes=$aliasList[$n];
-					}
-
-					$portList[$n]->CreatePort();
-				}
-			}else{
-				for( $n=0; $n<$dev->Ports; $n++ ){
-					$portList[$n]=new DevicePorts();
-					$portList[$n]->DeviceID=$dev->DeviceID;
-					$portList[$n]->PortNumber=$n+1;
-					$portList[$n]->Label=@$nameList[$n];
-
-					$portList[$n]->CreatePort();
-				}
-			}
+			// somehow this device doesn't have ports so make them now
+			$portList=DevicePorts::createPorts($dev->DeviceID);
 		}
 		
 		return $portList;
