@@ -223,7 +223,7 @@ function get_cabinet_owner_color($cabinet, &$deptswithcolor) {
 	$PDUList=$pdu->GetPDUbyCabinet();
 
 	$dev->Cabinet=$cab->CabinetID;
-	$devList=$dev->ViewDevicesByCabinet($facDB);
+	$devList=$dev->ViewDevicesByCabinet();
 
 	$currentHeight=$cab->CabinetHeight;
 	$totalWatts=0;
@@ -655,12 +655,19 @@ if($config->ParameterArray["CDUToolTips"]=='enabled'){
 <div class="clear"></div>
 </div>
 <script type="text/javascript">
-$(document).ready(function() {
-	// wait half a second after the page loads then open the tree
-	setTimeout(function(){
-		expandToItem('datacenters','cab<?php echo $cab->CabinetID;?>');
-	},500);
-});
+	$(document).ready(function() {
+		// Don't attempt to open the datacenter tree until it is loaded
+		function opentree(){
+			if($('#datacenters .bullet').length==0){
+				setTimeout(function(){
+					opentree();
+				},500);
+			}else{
+				expandToItem('datacenters','cab<?php echo $cab->CabinetID;?>');
+			}
+		}
+		opentree();
+	});
 </script>
 </body>
 </html>

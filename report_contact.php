@@ -363,8 +363,8 @@ class PDF_Diag extends PDF_Sector {
     }
 }
 
-  $tenantList = $dev->GetTop10Tenants( $facDB );
-  $powerList = $dev->GetTop10Power( $facDB );
+  $tenantList=$dev->GetTop10Tenants();
+  $powerList=$dev->GetTop10Power();
   
   
 
@@ -470,7 +470,7 @@ class PDF_Diag extends PDF_Sector {
 		$pdf->Ln();
 
 		$dev->Owner = $deptRow->DeptID;
-		$devList = $dev->GetDevicesbyOwner( $facDB );
+		$devList = $dev->GetDevicesbyOwner();
 
 		$TotalRU = 0;
 		$TotalBTU = 0;

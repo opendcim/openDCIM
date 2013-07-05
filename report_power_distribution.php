@@ -200,7 +200,7 @@ class PDF extends FPDF {
 					$pdf->SetFont( $config->ParameterArray['PDFfont'], '', 8 );
 					$pdf->Ln();
 					$dev->Cabinet=$pduRow->CabinetID;
-					$devList=$dev->ViewDevicesByCabinet( $facDB );
+					$devList=$dev->ViewDevicesByCabinet();
 					
 					$headerTags = array( 'Power Source', 'Panel', 'PDU', 'Device');
 					$cellWidths = array( 40, 30, 30, 60 );

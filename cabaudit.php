@@ -401,7 +401,7 @@ class PDF_Diag extends PDF_Sector {
 	$pdf->SetFont($config->ParameterArray['PDFfont'],'B',10);
 	$pdf->Cell(0,5,$cabmessage,0,1,'C',0);
 	$pdf->SetFont($config->ParameterArray['PDFfont'],'',10);
-	$deviceList = $device->ViewDevicesByCabinet( $facDB );
+	$deviceList = $device->ViewDevicesByCabinet();
 	$headerTags = array( __('Label'), __('SerialNo'), __('AssetTag'), __('Position'), __('Rack Units'), __('#Ports'), __('#PS'), __('PowerConnection1'), __('PowerConnection2'), __('DeviceType') );
 	$cellWidths = array( 45, 40, 20, 18, 20, 15, 10, 35, 35, 50 );
 	$maxval = count( $headerTags );
@@ -432,7 +432,7 @@ class PDF_Diag extends PDF_Sector {
 			}
 		
 			$connection->DeviceID=$devRow->DeviceID;
-			$connList=$connection->GetConnectionsByDevice($facDB);
+			$connList=$connection->GetConnectionsByDevice();
     
 			$pdf->Cell( $cellWidths[0], 6, $devRow->Label, 'LBRT', 0, 'L', $fill );
 			$pdf->Cell( $cellWidths[1], 6, $devRow->SerialNo, 'LBRT', 0, 'L', $fill );

@@ -182,7 +182,7 @@ foreach($cabinets as $cabid => $cabinet){
 	
 
 		$dev->Cabinet=$cabid;
-		$devList=$dev->ViewDevicesByCabinet($facDB);
+		$devList=$dev->ViewDevicesByCabinet();
 
 		$currentHeight=$cab->CabinetHeight;
 

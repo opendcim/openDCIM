@@ -27,12 +27,12 @@
 
 	if($searchKey=='serial'){
 		$dev->SerialNo=$searchTerm;
-		$devList=$dev->SearchDevicebySerialNo($facDB);
+		$devList=$dev->SearchDevicebySerialNo();
 		$resultcount=count($devList);
 		$title=__("Serial number search results for")." &quot;$searchTerm&quot;";
 	}elseif($searchKey=='label'){
 		$dev->Label=$searchTerm;
-		$devList=$dev->SearchDevicebyLabel($facDB);
+		$devList=$dev->SearchDevicebyLabel();
 		//Virtual machines will never be search via asset tags or serial numbers
 		$esx->vmName=$dev->Label;
 		$vmList=$esx->SearchByVMName($facDB);
@@ -46,7 +46,7 @@
 		$dept->Name=$searchTerm;
 		$dept->GetDeptByName($facDB);
 		$dev->Owner=$dept->DeptID;
-		$devList=$dev->GetDevicesbyOwner($facDB);
+		$devList=$dev->GetDevicesbyOwner();
 		$esx->Owner=$dept->DeptID;
 		$vmList=$esx->GetVMListbyOwner($facDB);
 		$cab->AssignedTo=$dept->DeptID;
@@ -56,7 +56,7 @@
 		$title=__("Owner search results for")." &quot;$searchTerm&quot;";
 	}elseif($searchKey=='asset'){
 		$dev->AssetTag=$searchTerm;
-		$devList=$dev->SearchDevicebyAssetTag($facDB);
+		$devList=$dev->SearchDevicebyAssetTag();
 		$resultcount=count($devList);
 		$title=__("Asset tag search results for")." &quot;$searchTerm&quot;";
 	}elseif($searchKey=="ctag"){

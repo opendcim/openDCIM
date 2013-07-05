@@ -4,7 +4,7 @@
 	require_once( 'swiftmailer/swift_required.php' );
 
 	$device = new Device();
-	$devList = $device->GetDevicesbyAge( $facDB, $config->ParameterArray["NewInstallsPeriod"] );
+	$devList = $device->GetDevicesbyAge($config->ParameterArray["NewInstallsPeriod"] );
 
 	// If any port other than 25 is specified, assume encryption and authentication
 	if($config->ParameterArray['SMTPPort']!= 25){

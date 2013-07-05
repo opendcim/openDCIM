@@ -162,7 +162,7 @@ class PDF extends FPDF {
 	$pdf->Ln();
 
 	$dev->Owner = 0;
-	$devList = $dev->GetDevicesbyOwner( $facDB );
+	$devList = $dev->GetDevicesbyOwner();
 
 	$headerTags = array( 'Device Name', 'Serial Number', 'Template?', 'Power Cords', 'Room', 'Cabinet', 'Position', 'Rack Units' );
 	$cellWidths = array( 50, 30, 20, 20, 20, 20, 20, 20 );
@@ -231,7 +231,7 @@ class PDF extends FPDF {
 		$pdf->Ln();
 
 		$dev->Owner = $deptRow->DeptID;
-		$devList = $dev->GetDevicesbyOwner( $facDB );
+		$devList = $dev->GetDevicesbyOwner();
 
 
 		$headerTags = array( 'Device Name', 'Serial Number', 'Template?', 'Power Cords', 'Room', 'Cabinet', 'Position', 'Rack Units' );

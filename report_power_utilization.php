@@ -185,8 +185,8 @@ class PDF extends FPDF {
     foreach ( $cabList as $cabRow ) {
       $pdf->BookMark( $cabRow->Location, 2 );
       
-      $dev->Cabinet = $cabRow->CabinetID;
-      $devList = $dev->GetSinglePowerByCabinet( $facDB );
+      $dev->Cabinet=$cabRow->CabinetID;
+      $devList=$dev->GetSinglePowerByCabinet();
       
       if ( sizeof( $devList ) == 0 ) {
         $pdf->Cell( $cellWidths[0], 6, $cabRow->Location, 'LBRT', 0, 'L', $fill );
@@ -198,7 +198,7 @@ class PDF extends FPDF {
         $fill =! $fill;
       } else {
         foreach ( $devList as $devRow ) {
-          $sourceList = $devRow->GetDeviceDiversity( $facDB );
+          $sourceList = $devRow->GetDeviceDiversity();
           @$source->PowerSourceID = $sourceList[0];
           if ( $source->PowerSourceID > 0 ) {
             $source->GetSource( $facDB );

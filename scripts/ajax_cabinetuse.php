@@ -16,7 +16,7 @@
 			$dev->DeviceID = $_REQUEST["deviceid"];
 
 		$cab->CabinetID=$dev->Cabinet=intval($_REQUEST['cabinet']);
-		$devList=$dev->ViewDevicesByCabinet($facDB);
+		$devList=$dev->ViewDevicesByCabinet();
 		$cab->GetCabinet($facDB);
 
 		// Build array of each position used

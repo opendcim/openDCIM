@@ -417,7 +417,7 @@ class Cabinet {
 		$tmpCDU = new PowerDistribution();
 		
 		$tmpDev->Cabinet = $this->CabinetID;
-		$devList = $tmpDev->ViewDevicesByCabinet( $db );
+		$devList = $tmpDev->ViewDevicesByCabinet();
 		
 		foreach ( $devList as &$delDev ) {
 			$delDev->DeleteDevice();
@@ -1003,7 +1003,7 @@ class Device {
 	}
 
 
-	function CreateDevice( $db = null ) {
+	function CreateDevice(){
 		global $dbh;
 		
 		$this->MakeSafe();
@@ -1045,7 +1045,7 @@ class Device {
 		return $this->DeviceID;
 	}
 
-	function CopyDevice($db,$clonedparent=null) {
+	function CopyDevice($clonedparent=null) {
 		/*
 		 * Need to make a copy of a device for the purpose of assigning a reservation during a move
 		 *
@@ -1056,7 +1056,7 @@ class Device {
 		 */
 		
 		// Get the device being copied
-		$this->GetDevice($db);
+		$this->GetDevice();
 		
 		if($this->ParentDevice >0){
 			/*
@@ -1067,7 +1067,7 @@ class Device {
 			 */
 			$tmpdev=new Device();
 			$tmpdev->DeviceID=$this->ParentDevice;
-			$tmpdev->GetDevice($db);
+			$tmpdev->GetDevice();
 			$children=$tmpdev->GetDeviceChildren();
 			if($tmpdev->ChassisSlots>0 || $tmpdev->RearChassisSlots>0){
 				// If we're cloning every child then there is no need to attempt to find empty slots
@@ -1103,7 +1103,7 @@ class Device {
 				// Make sure the position updated before creating a new device
 				if((isset($pos) && $pos!=$this->Position) || !is_null($clonedparent)){
 					(!is_null($clonedparent))?$this->ParentDevice=$clonedparent:'';
-					$this->CreateDevice($db);
+					$this->CreateDevice();
 				}else{
 					return false;
 				}
@@ -1118,12 +1118,12 @@ class Device {
 			}	
 
 			// And finally create a new device based on the exact same info
-			$this->CreateDevice($db);
+			$this->CreateDevice();
 
 			// If this is a chassis device and children are present clone them
 			if(isset($childList)){
 				foreach($childList as $child){
-					$child->CopyDevice($db,$this->DeviceID);
+					$child->CopyDevice($this->DeviceID);
 				}
 			}
 
@@ -1143,9 +1143,9 @@ class Device {
 			\"$this->SerialNo\", \"$this->AssetTag\", \"{$_SERVER['REMOTE_USER']}\" )";
 
 		if(!$dbh->exec($sql)){
-			$info = $dbh->errorInfo();
+			$info=$dbh->errorInfo();
 
-			error_log( "PDO Error: " . $info[2] . " SQL=" . $sql );
+			error_log("Surplus::PDO Error: {$info[2]} SQL=$sql");
 			return false;
 		}
 		
@@ -1155,31 +1155,19 @@ class Device {
   
 	function MoveToStorage() {
 		// Cabinet ID of -1 means that the device is in the storage area
-		$this->Cabinet = -1;
+		$this->Cabinet=-1;
 		$this->UpdateDevice();
 		
 		// While the child devices will automatically get moved to storage as part of the UpdateDevice() call above, it won't sever their network connections
-		if ( $this->DeviceType == "Chassis" ) {
-			$childList = $this->GetDeviceChildren();
+		if($this->DeviceType=="Chassis"){
+			$childList=$this->GetDeviceChildren();
 			foreach($childList as $child){
 				$child->MoveToStorage();
 			}
 		}
 
-		$tmpConn=new SwitchConnection();
-		$tmpConn->SwitchDeviceID=$this->DeviceID;
-		$tmpConn->EndpointDeviceID=$this->DeviceID;
-		$tmpConn->DropSwitchConnections();
-		$tmpConn->DropEndpointConnections();
-		
-		$tmpPan=new PatchConnection();
-		if ( $this->DeviceType == "Patch Panel" ) {
-			$tmpPan->PanelDeviceID = $this->DeviceID;
-			$tmpPan->DropPanelConnections();
-		} else {
-			$tmpPan->FrontEndpointDeviceID = $this->DeviceID;
-			$tmpPan->DropEndpointConnections();
-		}
+		// Delete all network connections first
+		DevicePorts::removePorts($this->DeviceID);
 	}
   
 	function UpdateDevice() {
@@ -1331,22 +1319,20 @@ class Device {
 				$this->$prop=$value;
 			}
 
-			$this->MakeDisplay();
-
 			return true;
 		}else{
 			return false;
 		}
 	}
 	
-	function GetDevicesbyAge( $db, $days = 7 ) {
+	function GetDevicesbyAge($days=7){
 		global $dbh;
 		
 		$sql="SELECT * FROM fac_Device WHERE DATEDIFF(CURDATE(),InstallDate)<=".intval($days)." ORDER BY InstallDate ASC;";
 		
 		$deviceList = array();
 
-		foreach ( $dbh->query( $sql ) as $deviceRow ) {
+		foreach($dbh->query($sql) as $deviceRow){
 			$deviceList[$deviceRow["DeviceID"]]=Device::DeviceRowToObject($deviceRow);
 		}
 		
@@ -1369,12 +1355,12 @@ class Device {
 		return $childList;
 	}
 	
-	function GetParentDevices( $db = null ) {
+	function GetParentDevices(){
 		global $dbh;
 		
 		$sql="SELECT * FROM fac_Device WHERE ChassisSlots>0 AND ParentDevice=0 ORDER BY Label ASC;";
 		
-		$parentList = array();
+		$parentList=array();
 
 		foreach($dbh->query($sql) as $row){
 			$parentList[$row["DeviceID"]]=Device::DeviceRowToObject($row);
@@ -1383,7 +1369,7 @@ class Device {
 		return $parentList;
 	}
 
-	function ViewDevicesByCabinet( $db = null ) {
+	function ViewDevicesByCabinet(){
 		global $dbh;
 
 		$this->MakeSafe();
@@ -1392,35 +1378,6 @@ class Device {
 
 		$deviceList = array();
 
-		foreach($dbh->query($sql) as $deviceRow){
-			$deviceList[$deviceRow["DeviceID"]]=Device::DeviceRowToObject($deviceRow);
-		}
-
-		return $deviceList;
-	}
-	
-	function CreatePatchCandidateList( $db = null ) {
-		// This will generate a list of all devices capable of being plugged into a switch
-		// or patch panel - meaning that you set the DeviceID field to the target device and it will
-		// generate a list of all candidates that are in the same Data Center.
-		global $dbh;
-
-		$this->MakeSafe();
-
-		$dev=($this->ParentDevice>0)?$this->ParentDevice:$this->DeviceID;
-		$sql = "SELECT b.DataCenterID FROM fac_Device a, fac_Cabinet b WHERE a.DeviceID=$dev AND a.Cabinet=b.CabinetID;";
-		if(!$row=$dbh->query($sql)->fetch()){
-			return false;
-		}
-		
-		$targetDC = $row["DataCenterID"];
-
-		$sql="SELECT * FROM fac_Device a, fac_Cabinet b WHERE a.Cabinet=b.CabinetID AND 
-			b.DataCenterID=$targetDC AND a.DeviceType!='Physical Infrastructure' AND 
-			a.DeviceID!=$dev ORDER BY a.Label;";
-
-		$deviceList=array();
-	  
 		foreach($dbh->query($sql) as $deviceRow){
 			$deviceList[$deviceRow["DeviceID"]]=Device::DeviceRowToObject($deviceRow);
 		}
@@ -1442,16 +1399,16 @@ class Device {
 		return $panelList;
 	}
 
-	function DeleteDevice( $db = null ) {
+	function DeleteDevice(){
 		global $dbh;
 	
 		$this->MakeSafe();
 	
 		// First, see if this is a chassis that has children, if so, delete all of the children first
-		if ( $this->ChassisSlots > 0 ) {
-			$childList = $this->GetDeviceChildren();
+		if($this->ChassisSlots >0){
+			$childList=$this->GetDeviceChildren();
 			
-			foreach ( $childList as $tmpDev ) {
+			foreach($childList as $tmpDev){
 				$tmpDev->DeleteDevice();
 			}
 		}
@@ -1460,15 +1417,15 @@ class Device {
 		DevicePorts::removePorts($this->DeviceID);
 		
 		// Delete power connections next
-		$powercon = new PowerConnection();
-		$powercon->DeviceID = $this->DeviceID;
+		$powercon=new PowerConnection();
+		$powercon->DeviceID=$this->DeviceID;
 		$powercon->DeleteConnections();
 
 		// Now delete the device itself
 		$sql="DELETE FROM fac_Device WHERE DeviceID=$this->DeviceID;";
 
-		if ( ! $dbh->exec( $sql ) ) {
-			$info = $dbh->errorInfo();
+		if(!$dbh->exec($sql)){
+			$info=$dbh->errorInfo();
 
 			error_log("PDO Error: {$info[2]} SQL=$sql");
 			return false;
@@ -1479,7 +1436,7 @@ class Device {
 	}
 
 
-	function SearchDevicebyLabel( $db = null ) {
+	function SearchDevicebyLabel(){
 		global $dbh;
 
 		$this->MakeSafe();
@@ -1488,14 +1445,14 @@ class Device {
 
 		$deviceList = array();
 
-		foreach ( $dbh->query( $sql ) as $deviceRow ) {
+		foreach($dbh->query($sql) as $deviceRow){
 			$deviceList[$deviceRow["DeviceID"]]=Device::DeviceRowToObject($deviceRow);
 		}
 
 		return $deviceList;
 	}
 
-	function GetDevicesbyOwner( $db = null ) {
+	function GetDevicesbyOwner(){
 		global $dbh;
 
 		$this->MakeSafe();
@@ -1514,7 +1471,7 @@ class Device {
 		return $deviceList;
 	}
 
-  function GetESXDevices( $db = null ) {
+  function GetESXDevices() {
 		global $dbh;
 		
 		$sql="SELECT * FROM fac_Device WHERE ESX=TRUE ORDER BY DeviceID";
@@ -1528,23 +1485,23 @@ class Device {
 		return $deviceList;
 	}
 
-	function SearchDevicebySerialNo( $db = null ) {
+	function SearchDevicebySerialNo(){
 		global $dbh;
 
 		$this->MakeSafe();
 
-		$sql = "SELECT * FROM fac_Device WHERE SerialNo LIKE \"%$this->SerialNo%\" ORDER BY Label;";
+		$sql="SELECT * FROM fac_Device WHERE SerialNo LIKE \"%$this->SerialNo%\" ORDER BY Label;";
 
-		$deviceList = array();
+		$deviceList=array();
 
-		foreach ( $dbh->query( $sql ) as $deviceRow ) {
+		foreach($dbh->query($sql) as $deviceRow){
 			$deviceList[$deviceRow["DeviceID"]]=Device::DeviceRowToObject($deviceRow);
 		}
 
 		return $deviceList;
 	}
 
-	function SearchDevicebyAssetTag( $db = null ) {
+	function SearchDevicebyAssetTag(){
 		global $dbh;
 
 		$this->MakeSafe();
@@ -1561,7 +1518,7 @@ class Device {
 
 	}
   
-	function SearchByCustomTag( $db, $tag = null ) {
+	function SearchByCustomTag($tag=null){
 		global $dbh;
 		
 		//
@@ -1654,65 +1611,75 @@ class Device {
 		$this->NominalWatts=$tmpl->Wattage;
 	}
 	
-	function GetTop10Tenants( $db = null ) {
+	function GetTop10Tenants(){
 		global $dbh;
 		
-		$sql = "select sum(height) as RackUnits,fac_Department.Name as OwnerName from fac_Device,fac_Department where Owner is not NULL and fac_Device.Owner=fac_Department.DeptID group by Owner order by RackUnits DESC limit 0,10";
+		$sql="SELECT SUM(Height) AS RackUnits,fac_Department.Name AS OwnerName FROM 
+			fac_Device,fac_Department WHERE Owner IS NOT NULL AND 
+			fac_Device.Owner=fac_Department.DeptID GROUP BY Owner ORDER BY RackUnits 
+			DESC LIMIT 0,10";
 
 		$deptList = array();
 		
-		foreach ( $dbh->query( $sql ) as $row )
-		  $deptList[$row["OwnerName"]] = $row["RackUnits"];
+		foreach($dbh->query($sql) as $row){
+			$deptList[$row["OwnerName"]]=$row["RackUnits"];
+		}
 		  
 		return $deptList;
 	}
   
   
-	function GetTop10Power( $db = null ) {
+	function GetTop10Power(){
 		global $dbh;
 		
-		$sql = "select sum(NominalWatts) as TotalPower,fac_Department.Name as OwnerName from fac_Device,fac_Department where Owner is not NULL and fac_Device.Owner=fac_Department.DeptID group by Owner order by TotalPower DESC limit 0,10";
-		$deptList = array();
+		$sql="SELECT SUM(NominalWatts) AS TotalPower,fac_Department.Name AS OwnerName 
+			FROM fac_Device,fac_Department WHERE Owner IS NOT NULL AND 
+			fac_Device.Owner=fac_Department.DeptID GROUP BY Owner ORDER BY TotalPower 
+			DESC LIMIT 0,10";
 
-		foreach ( $dbh->query( $sql ) as $row )
-		  $deptList[$row["OwnerName"]] = $row["TotalPower"];
+		$deptList=array();
+
+		foreach($dbh->query($sql) as $row){
+			$deptList[$row["OwnerName"]]=$row["TotalPower"];
+		}
 		  
 		return $deptList;
 	}
   
   
-  function GetDeviceDiversity( $db = null ) {
+  function GetDeviceDiversity(){
 	global $dbh;
 	
-    $pc = new PowerConnection();
-    $PDU = new PowerDistribution();
+    $pc=new PowerConnection();
+    $PDU=new PowerDistribution();
 	
 	// If this is a child (card slot) device, then only the parent will have power connections defined
-	if ( $this->ParentDevice > 0 ) {
-		$tmpDev = new Device();
-		$tmpDev->DeviceID = $this->ParentDevice;
+	if($this->ParentDevice >0){
+		$tmpDev=new Device();
+		$tmpDev->DeviceID=$this->ParentDevice;
 		
-		$sourceList = $tmpDev->GetDeviceDiversity( $db );
-	} else {
-		$pc->DeviceID = $this->DeviceID;
-		$pcList = $pc->GetConnectionsByDevice( $db );
+		$sourceList=$tmpDev->GetDeviceDiversity();
+	}else{
+		$pc->DeviceID=$this->DeviceID;
+		$pcList=$pc->GetConnectionsByDevice();
 		
-		$sourceList = array();
-		$sourceCount = 0;
+		$sourceList=array();
+		$sourceCount=0;
 		
-		foreach ( $pcList as $pcRow ) {
-			$PDU->PDUID = $pcRow->PDUID;
-			$powerSource = $PDU->GetSourceForPDU();
+		foreach($pcList as $pcRow){
+			$PDU->PDUID=$pcRow->PDUID;
+			$powerSource=$PDU->GetSourceForPDU();
 
-			if ( ! in_array( $powerSource, $sourceList ) )
-				$sourceList[$sourceCount++] = $powerSource;
+			if(!in_array($powerSource,$sourceList)){
+				$sourceList[$sourceCount++]=$powerSource;
+			}
 		}
 	}
 	
     return $sourceList;
   }
 
-  function GetSinglePowerByCabinet( $db = null ) {
+  function GetSinglePowerByCabinet(){
 	global $dbh;
 	
     // Return an array of objects for devices that
@@ -1721,7 +1688,7 @@ class Device {
     $pc = new PowerConnection();
     $PDU = new PowerDistribution();
     
-    $sourceList = $this->ViewDevicesByCabinet( $db );
+    $sourceList = $this->ViewDevicesByCabinet();
 
     $devList = array();
     
@@ -1731,7 +1698,7 @@ class Device {
 
       $pc->DeviceID = $devRow->DeviceID;
       
-      $diversityList = $devRow->GetDeviceDiversity( $db );
+      $diversityList = $devRow->GetDeviceDiversity();
       
 		if(sizeof($diversityList) <2){      
 			$currSize=sizeof($devList);
@@ -1787,7 +1754,7 @@ class Device {
 	}
 	
 	//JMGA added
-	function GetDeviceLineage( $db = null ) {
+	function GetDeviceLineage() {
 		$devList=array();
 		$num=1;
 		$devList[$num]=new Device();
@@ -2265,18 +2232,20 @@ class ESX {
 	}
   
 	function UpdateInventory( $db, $debug=false ) {
-		$dev = new Device();
+		$dev=new Device();
 
-		$devList = $dev->GetESXDevices( $db );
+		$devList=$dev->GetESXDevices();
 
-		foreach ( $devList as $esxDev ) {
-			if ( $debug )
-				printf( "Querying host %s @ %s...\n", $esxDev->Label, $esxDev->PrimaryIP );
+		foreach($devList as $esxDev){
+			if($debug){
+				print "Querying host $esxDev->Label @ $esxDev->PrimaryIP...\n";
+			}
 
 			$vmList = ESX::RefreshInventory( $esxDev );
 
-			if ( $debug )
-				print_r( $vmList );
+			if($debug){
+				print_r($vmList);
+			}
 		}
 	}
   

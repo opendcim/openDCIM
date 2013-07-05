@@ -27,7 +27,7 @@
 		// Build drop down list of devices for this cabinet
 		if(isset($_REQUEST['c'])){
 			$connDev->Cabinet=$_REQUEST['c'];
-			$devlist=$connDev->ViewDevicesByCabinet($facDB);
+			$devlist=$connDev->ViewDevicesByCabinet();
 			echo '<select name="d"><option value=""></option>';
 			foreach($devlist as $device){
 				echo '<option value="',$device->DeviceID,'"',((isset($_REQUEST['d'])&&$_REQUEST['d']==$device->DeviceID)?" selected":""),'>',$device->Label,'</option>';

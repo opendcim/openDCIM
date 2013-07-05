@@ -296,7 +296,7 @@ echo '		<div class="main">
 				$diversity = true;
 		}
 		
-		$devList = $dev->ViewDevicesByCabinet( $facDB );
+		$devList = $dev->ViewDevicesByCabinet();
 
 		if ( sizeof( $devList ) > 0 ) {
 			foreach ( $devList as $devRow ) {
@@ -311,7 +311,7 @@ echo '		<div class="main">
 						$outageStatus = __('Down');
 						
 						$pwrConn->DeviceID = $devRow->DeviceID;
-						$connList = $pwrConn->GetConnectionsByDevice( $facDB );
+						$connList = $pwrConn->GetConnectionsByDevice();
 						
 						$devPDUList = array();
 						$fsDiverse = false;

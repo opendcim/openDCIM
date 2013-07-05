@@ -64,7 +64,7 @@
 					foreach($emptydept as $deptid => $deptname){
 						print "<li>$deptname";
 						$dev->Owner=$deptid;
-						$devices=$dev->GetDevicesbyOwner($facDB);
+						$devices=$dev->GetDevicesbyOwner();
 						if(count($devices)>0){
 							print "<p>The following devices belong to $deptname:</p><ul>";
 							foreach($devices as $dev){

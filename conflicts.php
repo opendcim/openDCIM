@@ -36,7 +36,7 @@
 			$dev->GetDevice($facDB);
 
 			$pwrConnection->DeviceID=($dev->ParentDevice>0)?$dev->ParentDevice:$dev->DeviceID;
-			$pwrCords=$pwrConnection->GetConnectionsByDevice($facDB);
+			$pwrCords=$pwrConnection->GetConnectionsByDevice();
 
 			print "<span>Server Name: $dev->Label</span><span># Power Supplies: $dev->PowerSupplyCount</span><div class=\"table border\">\n			<div><div>".__('Power Strip')."</div><div>".__('Plug #')."</div><div>".__('Power Supply')."</div></div>";
 			foreach($pwrCords as $cord){

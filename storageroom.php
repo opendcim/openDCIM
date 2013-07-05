@@ -16,7 +16,7 @@
 
 	// Cabinet -1 is the Storage Area
 	$dev->Cabinet=-1;
-	$devList=$dev->ViewDevicesByCabinet($facDB);
+	$devList=$dev->ViewDevicesByCabinet();
 ?>
 <!doctype html>
 <html>
