@@ -1327,36 +1327,9 @@ class Device {
 		$sql="SELECT * FROM fac_Device WHERE DeviceID=$this->DeviceID;";
 
 		if($devRow=$dbh->query($sql)->fetch()){
-			$this->DeviceID = $devRow["DeviceID"];
-			$this->Label = $devRow["Label"];
-			$this->SerialNo = $devRow["SerialNo"];
-			$this->AssetTag = $devRow["AssetTag"];
-			$this->PrimaryIP = $devRow["PrimaryIP"];
-			$this->SNMPCommunity = $devRow["SNMPCommunity"];
-			$this->ESX = $devRow["ESX"];
-			$this->Owner = $devRow["Owner"];
-			// Suppressing errors on the following two because they can be null and that generates an apache error
-			@$this->EscalationTimeID = $devRow["EscalationTimeID"];
-			@$this->EscalationID = $devRow["EscalationID"];
-			$this->PrimaryContact = $devRow["PrimaryContact"];
-			$this->Cabinet = $devRow["Cabinet"];
-			$this->Position = $devRow["Position"];
-			$this->Height = $devRow["Height"];
-			$this->Ports = $devRow["Ports"];
-			$this->FirstPortNum = $devRow["FirstPortNum"];
-			$this->TemplateID = $devRow["TemplateID"];
-			$this->NominalWatts = $devRow["NominalWatts"];
-			$this->PowerSupplyCount = $devRow["PowerSupplyCount"];
-			$this->DeviceType = $devRow["DeviceType"];
-			$this->ChassisSlots = $devRow["ChassisSlots"];
-			$this->RearChassisSlots = $devRow["RearChassisSlots"];
-			$this->ParentDevice = $devRow["ParentDevice"];
-			$this->MfgDate = $devRow["MfgDate"];
-			$this->InstallDate = $devRow["InstallDate"];
-			$this->WarrantyCo = $devRow["WarrantyCo"];
-			@$this->WarrantyExpire = $devRow["WarrantyExpire"];
-			$this->Notes = $devRow["Notes"];
-			$this->Reservation = $devRow["Reservation"];
+			foreach(Device::DeviceRowToObject($devRow) as $prop => $value){
+				$this->$prop=$value;
+			}
 
 			$this->MakeDisplay();
 

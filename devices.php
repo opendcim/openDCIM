@@ -406,7 +406,7 @@
 	$portList=DevicePorts::getPortList($dev->DeviceID);
 	$mediaTypes=MediaTypes::GetMediaTypeList();
 	$colorCodes=ColorCoding::GetCodeList();
-	$templateList=$templ->GetTemplateList();
+	$templateList=$templ->GetTemplateList($facDB);
 	$escTimeList=$escTime->GetEscalationTimeList($facDB);
 	$escList=$esc->GetEscalationList($facDB);
 	$deptList=$Dept->GetDepartmentList($facDB); 
