@@ -347,10 +347,6 @@
 				$patchList=array();
 				$panelList=array();
 			}
-			// ports apply to copied devices under the new model
-			$portList=DevicePorts::getPortList($dev->DeviceID);
-			$mediaTypes=MediaTypes::GetMediaTypeList();
-			$colorCodes=ColorCoding::GetCodeList();
 
 		}
 		$cab->CabinetID=$dev->Cabinet;
@@ -407,6 +403,9 @@
 		}
 	}
 
+	$portList=DevicePorts::getPortList($dev->DeviceID);
+	$mediaTypes=MediaTypes::GetMediaTypeList();
+	$colorCodes=ColorCoding::GetCodeList();
 	$templateList=$templ->GetTemplateList($facDB);
 	$escTimeList=$escTime->GetEscalationTimeList($facDB);
 	$escList=$esc->GetEscalationList($facDB);
@@ -867,18 +866,17 @@ $(document).ready(function() {
 			// not sure why .data() is turning an int into a string parseInt is fixing that
 			if($(this).val() > parseInt($(document).data('ports'))){
 				//make more ports and add the rows below
-				console.log('new value: '+$(this).val()+' original value: '+$(document).data('ports'));
-				$(document).data('ports',$(this).val());
-				console.log('change the value for the data point each time this is changed or all hell will break loose.');
+				$('button[value="Update"]').click();
 			}else if($(this).val()==$(document).data('ports')){
-				console.log('how would they manage to trigger this condition? I mean really.');
+				// this is the I changed my mind condition.
+				$('div[id^="kp"]').remove();
 			}else{
 				var dt=['Switch','Patch Panel','Physical Infrastructure'];
 				if($.inArray($(document).data('devicetype'),dt)){
 					//S.U.T. present options to remove ports
 					var row=$('.switch > div:first-child > div:first-child').parent('div');
 					var icon=$('<span>').addClass('ui-icon').addClass('status').addClass('down');
-					$('<div>').prependTo(row);
+					$('<div>',{'id': 'kp'}).prependTo(row);
 					$('.switch div:first-child[id^=sp]').each(function(){
 						row=$(this).parent('div');
 						// this idea is crap and needs to be thought out better but it's time to go home so i'm submitting since it won't break anything
@@ -892,20 +890,21 @@ $(document).ready(function() {
 			var portnum=e.data.row.find('div[id^="sp"]:not([id^="spn"])').text();
 			$.post('',{delport: '',swdev: $('#deviceid').val(),pnum: portnum}).done(function(data){
 				if(data.trim()==1){
-					// port was removed and last port shuffled into this one's place
-					$(document).data('ports',$(document).data('ports')-1);
-					if($('#ports').val()==$(document).data('ports')){
-						//refresh screen
-					}else{
+					if($(document).data('ports')>$('#ports').val()){
+						// port was removed and last port shuffled into this one's place
+						$(document).data('ports',$(document).data('ports')-1);
+						$('#ports').val();
 						var row=$('#sp'+portnum).parent('div');
 						var swaprow=$('#sp'+lastport).parent('div');
 						for(var i=2;i<$(swaprow).children('div').length;i++){
 							row.children('div').eq(i).html(swaprow.children('div').eq(i).html());
 						}
 						swaprow.remove();
+						if($(document).data('ports')==$('#ports').val()){$('#ports').change();}
+					}else{
+						$('#ports').change();
 					}
 				}
-				console.log(data);
 			});
 		}
 		$('#reservation').change(function(){
@@ -1603,7 +1602,7 @@ echo '	<div class="table">
 	}
 
 	// New simplified model will apply to all devices except for patch panels and physical infrastructure
-	if(!in_array($dev->DeviceType,array('Physical Infrastructure','Patch Panel'))){
+	if(!in_array($dev->DeviceType,array('Physical Infrastructure','Patch Panel')) && !empty($portList) ){
 		print "		<div>\n		  <div><a name=\"net\">".__('Connections')."</a></div>\n		  <div>\n			<div class=\"table border switch\">\n				<div>
 				<div>#</div>
 				<div>".__('Port Name')."</div>
