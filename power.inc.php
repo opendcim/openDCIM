@@ -247,7 +247,7 @@ class PowerConnection {
 		return $connList;
 	}
   
-	function GetConnectionsByDevice($db){
+	function GetConnectionsByDevice($db=null){
 		global $dbh;
 
 		$this->MakeSafe();

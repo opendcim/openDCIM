@@ -420,7 +420,7 @@ class Cabinet {
 		$devList = $tmpDev->ViewDevicesByCabinet( $db );
 		
 		foreach ( $devList as &$delDev ) {
-			$delDev->DeleteDevice( $db );
+			$delDev->DeleteDevice();
 		}
 		
 		$tmpCDU->CabinetID = $this->CabinetID;
@@ -1479,25 +1479,12 @@ class Device {
 			$childList = $this->GetDeviceChildren();
 			
 			foreach ( $childList as $tmpDev ) {
-				$tmpDev->DeleteDevice( $db );
+				$tmpDev->DeleteDevice();
 			}
 		}
 		
 		// Delete all network connections first
-		$tmpConn = new SwitchConnection();
-		$tmpConn->SwitchDeviceID = $this->DeviceID;
-		$tmpConn->EndpointDeviceID = $this->DeviceID;
-		$tmpConn->DropSwitchConnections();
-		$tmpConn->DropEndpointConnections();
-		
-		$tmpPan = new PatchConnection();
-		if($this->DeviceType=="Patch Panel"){
-			$tmpPan->PanelDeviceID=$this->DeviceID;
-			$tmpPan->DropPanelConnections();
-		}else{
-			$tmpPan->FrontEndpointDeviceID=$this->DeviceID;
-			$tmpPan->DropEndpointConnections();
-		}
+		DevicePorts::removePorts($this->DeviceID);
 		
 		// Delete power connections next
 		$powercon = new PowerConnection();
@@ -1513,7 +1500,7 @@ class Device {
 			error_log("PDO Error: {$info[2]} SQL=$sql");
 			return false;
 		}
-		
+
 		(class_exists('LogActions'))?LogActions::LogThis($this):'';
 		return;
 	}
@@ -2130,20 +2117,19 @@ class DevicePorts {
 		return true;
 	}
 
-	function removePorts(){
+	static function removePorts($DeviceID){
 		/*	Remove all ports from a device prior to delete, etc */
 		global $dbh;
 
-		$sql="UPDATE fac_Ports SET ConnectedDeviceID=NULL, ConnectedPort=NULL WHERE
-            ConnectedDeviceID=$this->DeviceID;
-			DELETE FROM fac_Ports WHERE DeviceID=$this->DeviceID;";
+		$dev=new Device(); // make sure we have a real device first
+		$dev->DeviceID=$DeviceID;
+		if(!$dev->GetDevice()){return false;}
 
-		try{
-			$dbh->exec($sql);
-		}catch(PDOException $e){
-			echo $e->getMessage();
-			die();
-		}
+		DevicePorts::removeConnections($DeviceID);
+
+		$sql="DELETE FROM fac_Ports WHERE DeviceID=$this->DeviceID;";
+
+		$dbh->exec($sql);
 
 		return true;
 	}

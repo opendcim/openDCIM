@@ -19,13 +19,13 @@
 	if($user->WriteAccess){
 		if(isset($_POST['cab'])){
 			$cab->CabinetID=$_POST['cab'];
-			$cab->GetCabinet($facDB);
+			$cab->GetCabinet();
 			echo $cab->CabinetHeight;
 			exit;
 		}
 		if(isset($_POST['fp'])){
 			$dev->DeviceID=$_POST['devid'];
-			$dev->GetDevice($facDB);
+			$dev->GetDevice();
 			if($_POST['fp']==''){ // querying possible first ports
 				$portCandidates=SwitchInfo::findFirstPort($dev->DeviceID);
 				if(count($portCandidates>0)){
@@ -55,7 +55,7 @@
 				$dp->MediaName=(isset($mt[$dp->MediaID]))?$mt[$dp->MediaID]->MediaType:'';
 				$dp->ColorName=(isset($cc[$dp->ColorID]))?$cc[$dp->ColorID]->Name:'';
 				$dev->DeviceID=$dp->ConnectedDeviceID;
-				$dp->ConnectedDeviceLabel=($dev->GetDevice($facDB))?stripslashes($dev->Label):'';
+				$dp->ConnectedDeviceLabel=($dev->GetDevice())?stripslashes($dev->Label):'';
 				header('Content-Type: application/json');
 				echo json_encode($dp);
 				exit;
@@ -194,7 +194,7 @@
 			if(isset($_REQUEST['cabinet'])){
 				$dev->Cabinet = intval($_REQUEST['cabinet']);
 				$cab->CabinetID = $dev->Cabinet;
-				$cab->GetCabinet( $facDB );
+				$cab->GetCabinet();
 				
 				// If you are adding a device that is assined to a specific customer, assume that device is also owned by that customer
 				if($cab->AssignedTo >0){
@@ -219,7 +219,7 @@
 					if(isset($_POST['killthechildren'])){
 						$childList=$dev->GetDeviceChildren();
 						foreach($childList as $childDev){
-							$childDev->DeleteDevice($facDB);
+							$childDev->DeleteDevice();
 						}
 					}
 					$dev->Label=$_POST['label'];
@@ -297,16 +297,16 @@
 					if( ($dev->TemplateID>0) && (intval($dev->NominalWatts==0)) ){
 						$dev->UpdateWattageFromTemplate();
 					}
-					$dev->CreateDevice($facDB);
+					$dev->CreateDevice();
 					$dev->SetTags($tagarray);
 				}elseif($user->DeleteAccess && ($_REQUEST['action']=='Delete')){
-					$dev->GetDevice($facDB);
-					$dev->DeleteDevice($facDB);
+					$dev->GetDevice();
+					$dev->DeleteDevice();
 					header('Location: '.redirect("cabnavigator.php?cabinetid=$dev->Cabinet"));
 					exit;
 				} elseif ( $user->WriteAccess && $_REQUEST["action"] == "Copy" ) {
 					$copy=true;
-					if(!$dev->CopyDevice($facDB)){
+					if(!$dev->CopyDevice()){
 						$copyerr=__("Device did not copy.  Error.");
 					}
 				} elseif($user->WriteAccess&&$_REQUEST['action']=='child') {
@@ -320,7 +320,7 @@
 			}
 
 			// Finished updating devices or creating them.  Refresh the object with data from the DB
-			$dev->GetDevice($facDB);
+			$dev->GetDevice();
 
 			// Get any tags associated with this device
 			$tags=$dev->GetTags();
@@ -337,7 +337,7 @@
 				$patchPanel=new PatchConnection();
 
 				$pwrConnection->DeviceID=($dev->ParentDevice>0)?$dev->ParentDevice:$dev->DeviceID;
-				$pwrCords=$pwrConnection->GetConnectionsByDevice($facDB);
+				$pwrCords=$pwrConnection->GetConnectionsByDevice();
 
 				if($dev->DeviceType=='Switch'){
 					$linkList = SwitchInfo::getPortStatus( $dev->DeviceID );
@@ -350,7 +350,7 @@
 
 		}
 		$cab->CabinetID=$dev->Cabinet;
-		$cab->GetCabinet($facDB);
+		$cab->GetCabinet();
 	}else{
 		// sets install date to today when a new device is being created
 		$dev->InstallDate=date("m/d/Y");
@@ -369,12 +369,12 @@
 	if($dev->ParentDevice >0){
 		$pDev=new Device();
 		$pDev->DeviceID=$dev->ParentDevice;
-		$pDev->GetDevice($facDB);
+		$pDev->GetDevice();
 		
-		$parentList=$pDev->GetParentDevices($facDB);
+		$parentList=$pDev->GetParentDevices();
 		
 		$cab->CabinetID=$pDev->Cabinet;
-		$cab->GetCabinet($facDB);
+		$cab->GetCabinet();
 		$chassis="Chassis";
 
 		// This is a child device and if the action of new is set let's assume the departmental owner, primary contact, etc are the same as the parent
@@ -406,7 +406,7 @@
 	$portList=DevicePorts::getPortList($dev->DeviceID);
 	$mediaTypes=MediaTypes::GetMediaTypeList();
 	$colorCodes=ColorCoding::GetCodeList();
-	$templateList=$templ->GetTemplateList($facDB);
+	$templateList=$templ->GetTemplateList();
 	$escTimeList=$escTime->GetEscalationTimeList($facDB);
 	$escList=$esc->GetEscalationList($facDB);
 	$deptList=$Dept->GetDepartmentList($facDB); 
@@ -1381,7 +1381,7 @@ echo '		   </div>
 			<div><label for="cabinet">',__("Cabinet"),'</label></div>';
 
 		if($dev->ParentDevice==0){
-			print "\t\t\t<div>".$cab->GetCabinetSelectList($facDB)."</div>\n";
+			print "\t\t\t<div>".$cab->GetCabinetSelectList()."</div>\n";
 		}else{
 			print "\t\t\t<div>$cab->Location<input type=\"hidden\" name=\"cabinetid\" value=\"0\"></div>
 		</div>
