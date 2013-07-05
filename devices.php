@@ -83,25 +83,36 @@
 				$dp->DeviceID=$_POST['swdev'];
 				$dp->PortNumber=$_POST['pnum'];
 				$ports=end($dp->getPorts());
+				function updatedevice($devid){
+					$dev=new Device();
+					$dev->DeviceID=$devid;
+					$dev->GetDevice();
+					$dev->Ports=$dev->Ports-1;
+					$dev->UpdateDevice();
+				}
 				// remove the selected port then shuffle the data to fill the hole if needed
 				if($ports->PortNumber!=$dp->PortNumber){
-					$ports->PortNumber=$dp->PortNumber;
-print_r($ports);
-print_r($dp);exit;
-					$dp->removePort();
-					echo $ports->updatePort();
+					foreach($ports as $i=>$prop){
+						if($i!="PortNumber"){
+							$dp->$i=$prop;
+						}
+					}
+					if($dp->updatePort()){
+						if($ports->removePort()){
+							updatedevice($dp->DeviceID);
+							echo 1;
+							exit;
+						}
+					}
+					echo 0;
 				}else{ // Last available port. just delete it.
 					if($dp->removePort()){
-						$dev->DeviceID=$dp->DeviceID;
-						$dev->GetDevice();
-						$dev->Ports=$dev->Ports-1;
-						$dev->UpdateDevice();
+						updatedevice($dp->DeviceID);
 						echo 1;
 					}else{
 						echo 0;
 					}
 				}
-
 				exit;
 			}
 			$list='';

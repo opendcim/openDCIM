@@ -2036,7 +2036,7 @@ class DevicePorts {
 			ConnectedDeviceID=$this->ConnectedDeviceID, Label=\"$this->Label\",
 			ConnectedPort=$this->ConnectedPort, Notes=\"$this->Notes\" WHERE 
 			DeviceID=$oldport->DeviceID AND PortNumber=$oldport->PortNumber;";
-error_log($sql);
+
 		if(!$dbh->query($sql)){
 			$info=$dbh->errorInfo();
 
@@ -2188,7 +2188,7 @@ error_log($sql);
 		$candidates=array();
 
 		if(is_null($listports)){
-			$sql="SELECT DISTINCT a.DeviceID FROM fac_Ports a, fac_Device b WHERE a.DeviceID=b.DeviceID AND a.DeviceID!=$dev->DeviceID$mediaenforce$pp;";
+			$sql="SELECT DISTINCT a.DeviceID FROM fac_Ports a, fac_Device b WHERE b.Cabinet>-1 AND a.DeviceID=b.DeviceID AND a.DeviceID!=$dev->DeviceID$mediaenforce$pp;";
 			foreach($dbh->query($sql) as $row){
 				$candidate=$row['DeviceID'];
 				$tmpDev=new Device();
@@ -2198,7 +2198,7 @@ error_log($sql);
 				$candidates[$candidate]=$tmpDev;
 			}
 		}else{
-			$sql="SELECT a.* FROM fac_Ports a, fac_Device b WHERE a.DeviceID=b.DeviceID AND a.DeviceID!=$dev->DeviceID AND ConnectedDeviceID IS NULL$mediaenforce$pp;";
+			$sql="SELECT a.* FROM fac_Ports a, fac_Device b WHERE b.Cabinet>-1 AND a.DeviceID=b.DeviceID AND a.DeviceID!=$dev->DeviceID AND ConnectedDeviceID IS NULL$mediaenforce$pp;";
 			foreach($dbh->query($sql) as $row){
 				$candidates[]=DevicePorts::RowToObject($row);
 			}
