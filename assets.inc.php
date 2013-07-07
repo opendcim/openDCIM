@@ -2067,7 +2067,7 @@ class DevicePorts {
 
 		DevicePorts::removeConnections($DeviceID);
 
-		$sql="DELETE FROM fac_Ports WHERE DeviceID=$this->DeviceID;";
+		$sql="DELETE FROM fac_Ports WHERE DeviceID=$dev->DeviceID;";
 
 		$dbh->exec($sql);
 
