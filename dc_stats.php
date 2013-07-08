@@ -178,6 +178,7 @@ echo '<div class="main">
 				expandToItem('datacenters',firstcabinet);
 			}
 		}
+		loadCanvas();
 		opentree();
 	});
 </script>
