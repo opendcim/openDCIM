@@ -161,6 +161,13 @@
 		if(isset($_POST['refreshswitch'])){
 			header('Content-Type: application/json');
 			if(isset($_POST['names'])){
+				foreach(SwitchInfo::getPortNames($_POST['refreshswitch']) as $PortNumber => $Label){
+					$port=new DevicePorts();
+					$port->DeviceID=$_POST['refreshswitch'];
+					$port->PortNumber=$PortNumber;
+					$port->Label=$Label;
+					$port->updateLabel();
+				}
 				echo json_encode(SwitchInfo::getPortNames($_POST['refreshswitch']));
 			}else{
 				echo json_encode(SwitchInfo::getPortStatus($_POST['refreshswitch']));
@@ -711,10 +718,8 @@ $(document).ready(function() {
 	function refreshswitch(devid,names){
 		if(names){
 			$.post('',{refreshswitch: devid, names: names}).done(function(data){
-				$('.switch > div ~ div > div:first-child').each(function(){
-					$(this).trigger('click');
-					var portnum=$(this).text();
-					$('#spn'+portnum).children('input').val(data[portnum]);
+				$.each(data, function(i,label){
+					$('#spn'+i).text(label);
 				});
 			});
 		}else{

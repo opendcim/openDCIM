@@ -1928,6 +1928,25 @@ class DevicePorts {
 		return $portList;
 	}
 
+
+	function updateLabel(){
+		global $dbh;
+
+		$this->MakeSafe();
+
+		$label=$this->Label;
+		if(!$this->getPort()){return false;}
+
+		$sql="UPDATE fac_Ports SET Label=\"$label\" WHERE 
+			DeviceID=$this->DeviceID AND PortNumber=$this->PortNumber;";
+
+		if(!$dbh->query($sql)){
+			return false;
+		}else{
+			return true;
+		}
+	}
+
 	function updatePort() {
 		global $dbh;
 
@@ -1958,11 +1977,11 @@ class DevicePorts {
 		}
 
 		// update port
-		$sql="UPDATE fac_Ports SET PortNumber=$this->PortNumber, MediaID=$this->MediaID, 
-			ColorID=$this->ColorID, PortNotes=\"$this->PortNotes\", 
-			ConnectedDeviceID=$this->ConnectedDeviceID, Label=\"$this->Label\",
-			ConnectedPort=$this->ConnectedPort, Notes=\"$this->Notes\" WHERE 
-			DeviceID=$oldport->DeviceID AND PortNumber=$oldport->PortNumber;";
+		$sql="UPDATE fac_Ports SET MediaID=$this->MediaID, ColorID=$this->ColorID, 
+			PortNotes=\"$this->PortNotes\", ConnectedDeviceID=$this->ConnectedDeviceID, 
+			Label=\"$this->Label\", ConnectedPort=$this->ConnectedPort, 
+			Notes=\"$this->Notes\" WHERE DeviceID=$this->DeviceID AND 
+			PortNumber=$this->PortNumber;";
 
 		if(!$dbh->query($sql)){
 			$info=$dbh->errorInfo();
