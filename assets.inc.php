@@ -2231,7 +2231,7 @@ class ESX {
 		return $vmList;
 	}
 
-	function EnumerateVMs($dev,$debug=false){
+	static function EnumerateVMs($dev,$debug=false){
 		$community=$dev->SNMPCommunity;
 		$serverIP=$dev->PrimaryIP;
 
@@ -2282,14 +2282,18 @@ class ESX {
 		}
 	}
   
-	static function RefreshInventory( $DeviceID ) {
+	static function RefreshInventory( $DeviceID, $debug = false ) {
 		global $dbh;
+
+		$dev = new Device();
+		$dev->DeviceID = $DeviceID;
+		$dev->GetDevice();
 		
 		$search = $dbh->prepare( "select * from fac_VMInventory where vmName=:vmName" );
 		$update = $dbh->prepare( "update fac_VMInventory set DeviceID=:DeviceID, LastUpdated=:LastUpdated, vmID=:vmID, vmState=:vmState where vmName=:vmName" );
 		$insert = $dbh->prepare( "insert into fac_VMInventory set DeviceID=:DeviceID, LastUpdated=:LastUpdated, vmID=:vmID, vmState=:vmState, vmName=:vmName" );
 		
-		$vmList = ESX::EnumerateVMs( $DeviceID );
+		$vmList = ESX::EnumerateVMs( $dev );
 		if ( count( $vmList ) > 0 ) {
 			foreach( $vmList as $vm ) {
 				$search->execute( array( ":vmName"=>$vm->vmName ) );
@@ -2298,8 +2302,12 @@ class ESX {
 
 				if ( $search->rowCount() > 0 ) {
 					$update->execute( $parameters );
+					if ( $debug )
+						error_log( "Updating existing VM '" . $vm->vmName . "'in inventory." );
 				} else {
 					$insert->execute( $parameters );
+					if ( $debug ) 
+						error_log( "Adding new VM '" . $vm->vmName . "'to inventory." );
 				}
 			}
 		}

@@ -159,6 +159,7 @@
 			exit;
 		}
 		if(isset($_POST['esxrefresh'])){
+			ESX::RefreshInventory($_POST['esxrefresh']);
 			buildesxtable($_POST['esxrefresh']);
 			exit;
 		}
