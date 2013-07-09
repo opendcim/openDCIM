@@ -18,12 +18,12 @@
 
 	if($_REQUEST['vmindex'] >0){
 		$esx->VMIndex = $_REQUEST['vmindex'];
-		$esx->GetVMbyIndex($facDB);
+		$esx->GetVMbyIndex();
 		$dev->DeviceID=$esx->DeviceID;
-		$dev->GetDevice($facDB);
+		$dev->GetDevice();
 		if(isset($_REQUEST['action']) && $_REQUEST['action']=='Update'){
 			$esx->Owner=$_REQUEST['owner'];
-			$esx->UpdateVMOwner($facDB);
+			$esx->UpdateVMOwner();
 			header('Location: '.redirect("devices.php?deviceid=$esx->DeviceID"));
 		}
 	}else{
@@ -32,7 +32,7 @@
 		exit;
 	}
 
-	$deptList=$dept->GetDepartmentList($facDB);
+	$deptList=$dept->GetDepartmentList();
 ?>
 <!doctype html>
 <html>

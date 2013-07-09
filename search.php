@@ -35,7 +35,7 @@
 		$devList=$dev->SearchDevicebyLabel();
 		//Virtual machines will never be search via asset tags or serial numbers
 		$esx->vmName=$dev->Label;
-		$vmList=$esx->SearchByVMName($facDB);
+		$vmList=$esx->SearchByVMName();
 		$cab->Location=$searchTerm;
 		$cabList=$cab->SearchByCabinetName();
 		$pdu->Label=$searchTerm;
@@ -44,11 +44,11 @@
 		$title=__("Name search results for")." &quot;$searchTerm&quot;";
 	}elseif($searchKey=='owner'){
 		$dept->Name=$searchTerm;
-		$dept->GetDeptByName($facDB);
+		$dept->GetDeptByName();
 		$dev->Owner=$dept->DeptID;
 		$devList=$dev->GetDevicesbyOwner();
 		$esx->Owner=$dept->DeptID;
-		$vmList=$esx->GetVMListbyOwner($facDB);
+		$vmList=$esx->GetVMListbyOwner();
 		$cab->AssignedTo=$dept->DeptID;
 		$cabList=$cab->SearchByOwner();
 		//PDUs have no ownership information so don't search them
@@ -90,7 +90,7 @@
 	if(isset($vmList)){
 		foreach($vmList as $vmRow){
 			$dev->DeviceID=$vmRow->DeviceID;
-			$dev->GetDevice($facDB);
+			$dev->GetDevice();
 			$a=ArraySearchRecursive($vmRow->DeviceID,$temp,'devid');
 			// if we find a matching server in the existing list set it to type vm so it will nest in the results
 			if(is_array($a)){
@@ -124,7 +124,7 @@
 			}else{
 				// Device doesn't exist so we need to add it to the list for display purposes
 				$dev->DeviceID=$key;
-				$dev->GetDevice($facDB);
+				$dev->GetDevice();
 
 				$temp[$x]['devid']=$dev->DeviceID;
 				$temp[$x]['label']=$dev->Label;
@@ -162,7 +162,7 @@
 			$cab->Location='dc lookup error';
 			$cab->DataCenterID='0';
 			$cab->CabinetID=$key;
-			if($cab->GetCabinet($facDB)==-1){
+			if($cab->GetCabinet()==-1){
 				unset($cabtemp[$key]);
 			}else{
 				$cabtemp[$key]['name']=$cab->Location;

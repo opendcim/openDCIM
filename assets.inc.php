@@ -2217,6 +2217,20 @@ class ESX {
 		return $vm;
 	}
 
+	function search($sql){
+		global $dbh;
+
+		$vmList=array();
+		$vmCount=0;
+
+		foreach($dbh->query($sql) as $row){
+			$vmList[$vmCount]=ESX::ESXRowToObject($row);
+			$vmCount++;
+		}
+
+		return $vmList;
+	}
+
 	function EnumerateVMs($dev,$debug=false){
 		$community=$dev->SNMPCommunity;
 		$serverIP=$dev->PrimaryIP;
@@ -2250,7 +2264,7 @@ class ESX {
 		return $vmList;
 	}
   
-	function UpdateInventory( $db, $debug=false ) {
+	function UpdateInventory($debug=false){
 		$dev=new Device();
 
 		$devList=$dev->GetESXDevices();
@@ -2293,122 +2307,66 @@ class ESX {
 		return $vmList;
 	}
   
-	function GetVMbyIndex( $db ) {
-		$searchSQL = "select * from fac_VMInventory where VMIndex=\"" . $this->VMIndex . "\"";
-		if($result=mysql_query($searchSQL,$db)){
-			$vmRow=mysql_fetch_array($result);
+	function GetVMbyIndex() {
+		global $dbh;
 
-			$this->DeviceID=$vmRow["DeviceID"];
-			$this->LastUpdated=$vmRow["LastUpdated"];
-			$this->vmID=$vmRow["vmID"];
-			$this->vmName=$vmRow["vmName"];
-			$this->vmState=$vmRow["vmState"];
-			$this->Owner=$vmRow["Owner"];
+		$sql="SELECT * FROM fac_VMInventory WHERE VMIndex=$this->VMIndex;";
+
+		if(!$vmRow=$dbh->query($sql)){
+			return false;
+		}else{
+			foreach(ESX::ESXRowToObject($vmRow) as $param => $value){
+				$this->$param=$value;
+			}
+			return true;
 		}
-
-		return;
 	}
   
-	function UpdateVMOwner( $db ) {
-		$updateSQL = "update fac_VMInventory set Owner=\"" . $this->Owner . "\" where VMIndex=\"" . $this->VMIndex . "\"";
-		$result = mysql_query( $updateSQL, $db );
+	function UpdateVMOwner() {
+		global $dbh;
+
+		$sql="UPDATE fac_VMInventory SET Owner=$this->Owner WHERE VMIndex=$this->VMIndex;";
+		$dbh->query($sql);
 	} 
   
-	function GetInventory( $db=null ) {
-		$selectSQL = "select * from fac_VMInventory order by DeviceID, vmName";
-		$result = mysql_query($selectSQL);
-    
-		$vmList = array();
-		$vmCount = 0;
-  
-		while($vmRow=mysql_fetch_array($result)){
-			$vmList[$vmCount]=ESX::ESXRowToObject($vmRow);
-			$vmCount++;
-		}
-    
-		return $vmList; 
+	function GetInventory() {
+		$sql="SELECT * FROM fac_VMInventory ORDER BY DeviceID, vmName;";
+		return $this->search($sql);
 	}
   
-	function GetDeviceInventory( $db ) {
-		$selectSQL = "select * from fac_VMInventory where DeviceID=\"" . $this->DeviceID . "\" order by vmName";
-		$result = mysql_query( $selectSQL, $db );
-    
-		$vmList = array();
-		$vmCount = 0;
-  
-		while($vmRow=mysql_fetch_array($result)){
-			$vmList[$vmCount]=ESX::ESXRowToObject($vmRow);
-			$vmCount++;
-		}
-   
-		return $vmList; 
+	function GetDeviceInventory() {
+		$sql="SELECT * FROM fac_VMInventory WHERE DeviceID=$this->DeviceID ORDER BY vmName;";
+		return $this->search($sql);
 	}
   
-	function GetVMListbyOwner( $db ) {
-		$selectSQL = "select * from fac_VMInventory where Owner=\"" . $this->Owner . "\" order by DeviceID, vmName";
-		$result = mysql_query( $selectSQL, $db );
-    
-		$vmList = array();
-		$vmCount = 0;
-  
-		while($vmRow=mysql_fetch_array($result)){
-			$vmList[$vmCount]=ESX::ESXRowToObject($vmRow);
-			$vmCount++;
-		}
-   
-		return $vmList; 
+	function GetVMListbyOwner() {
+		$sql="SELECT * FROM fac_VMInventory WHERE Owner=$this->Owner ORDER BY DeviceID, vmName;";
+		return $this->search($sql);
 	}
   
-	function SearchByVMName( $db ) {
-		$selectSQL = "select * from fac_VMInventory where ucase(vmName) like \"%" . transform($this->vmName) . "%\"";
-		$result = mysql_query( $selectSQL, $db );
-    
-		$vmList = array();
-		$vmCount = 0;
-  
-		while($vmRow=mysql_fetch_array($result)){
-			$vmList[$vmCount]=ESX::ESXRowToObject($vmRow);
-			$vmCount++;
-		}
-
-		return $vmList; 
+	function SearchByVMName() {
+		$sql="SELECT * FROM fac_VMInventory WHERE vmName like \"%$this->vmName%\";";
+		return $this->search($sql);
 	}
   
-	function GetOrphanVMList( $db ) {
-		$selectSQL = "select * from fac_VMInventory where Owner is NULL"; 
-		$result = mysql_query( $selectSQL, $db );
-    
-		$vmList = array();
-		$vmCount = 0;
-  
-		while($vmRow=mysql_fetch_array($result)){
-			$vmList[$vmCount]=ESX::ESXRowToObject($vmRow);
-			$vmCount++;
-		}
-
-		return $vmList; 
+	function GetOrphanVMList(){
+		$sql="SELECT * FROM fac_VMInventory WHERE Owner IS NULL;"; 
+		return $this->search($sql);
 	}
 
-	function GetExpiredVMList( $numDays, $db ) {
-		$selectSQL = "select * from fac_VMInventory where to_days(now())-to_days(LastUpdated)>$numDays"; 
-		$result = mysql_query( $selectSQL, $db );
-    
-		$vmList = array();
-		$vmCount = 0;
-  
-		while($vmRow=mysql_fetch_array($result)){
-			$vmList[$vmCount]=ESX::ESXRowToObject($vmRow);
-			$vmCount++;
-		}
-
-		return $vmList; 
+	function GetExpiredVMList($numDays){
+		// I don't think this is standard SQL and will need to be looked at closer
+		$sql="SELECT * FROM fac_VMInventory WHERE to_days(now())-to_days(LastUpdated)>$numDays;"; 
+		return $this->search($sql);
 	}
   
-	function ExpireVMs( $numDays, $db ) {
+	function ExpireVMs($numDays){
+		global $dbh;
+
 		// Don't allow calls to expire EVERYTHING
 		if($numDays >0){
-			$selectSQL="delete from fac_VMInventory where to_days(now())-to_days(LastUpdated)>$numDays";
-			$result=mysql_query($selectSQL,$db);
+			$sql="DELETE FROM fac_VMInventory WHERE to_days(now())-to_days(LastUpdated)>$numDays;";
+			$dbh->query($sql);
 		}
 	}
 

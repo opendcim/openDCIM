@@ -143,10 +143,10 @@ class PDF extends FPDF {
 	$pdf->SetTextColor( 0 );
 
   $pdf->Bookmark( 'Departments' );
-	$deptList = $dept->GetDepartmentList( $facDB );
+	$deptList = $dept->GetDepartmentList();
 	
 	$VM = new ESX();
-	$vmList = $VM->GetInventory( $facDB );
+	$vmList = $VM->GetInventory();
 	
 	$vmCount = count( $vmList );
 	
@@ -154,7 +154,7 @@ class PDF extends FPDF {
 	$pdf->Cell( 0, 5, $vmCount );
 	$pdf->Ln();
 	
-	$vmList = $VM->GetOrphanVMList( $facDB );
+	$vmList = $VM->GetOrphanVMList();
 	$vmCount = 0;
 	
 	$pdf->Cell( 80, 12, 'Virtual Machines Unassigned to a Department' );
@@ -187,7 +187,7 @@ class PDF extends FPDF {
 
 	foreach( $deptList as $deptRow ) {
 	 $VM->Owner = $deptRow->DeptID; 
-	 $vmList = $VM->GetVMListByOwner( $facDB );
+	 $vmList = $VM->GetVMListByOwner();
 	 $vmCount = 0;
 	 
 	 if ( count( $vmList ) > 0 ) {

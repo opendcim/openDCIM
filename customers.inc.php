@@ -184,16 +184,16 @@ class Department {
 		return $this->DeptID;
 	}
 
-	function UpdateDepartment( $db ) {
+	function UpdateDepartment() {
 		if($this->DeptColor==""){$this->DeptColor="#FFFFFF";} // New color picker was allowing for an empty value
 		$updateSQL = "update fac_Department set Name=\"" . addslashes($this->Name) . "\", ExecSponsor=\"" . addslashes($this->ExecSponsor) . "\", SDM=\"" . addslashes($this->SDM) . "\", Classification=\"" . addslashes($this->Classification) . "\" , DeptColor=\"" . addslashes($this->DeptColor) . "\"where DeptID=\"" . intval($this->DeptID) . "\"";
 
-		$result = mysql_query( $updateSQL, $db );
+		$result = mysql_query( $updateSQL );
 	}
 
-	function GetDeptByID( $db ) {
+	function GetDeptByID() {
 		$selectSQL = "select * from fac_Department where DeptID=\"" . intval($this->DeptID) . "\"";
-		$result = mysql_query( $selectSQL, $db );
+		$result = mysql_query( $selectSQL );
 
 		$deptRow = mysql_fetch_array( $result );
 
@@ -204,9 +204,9 @@ class Department {
 		$this->DeptColor = $deptRow["DeptColor"];
 	}
 
-	function GetDeptByName( $db ) {
+	function GetDeptByName() {
 		$selectSQL="SELECT * FROM fac_Department WHERE Name LIKE \"%".addslashes($this->Name)."%\"";
-		$result = mysql_query( $selectSQL, $db );
+		$result = mysql_query( $selectSQL);
 
 		$deptRow = mysql_fetch_array( $result );
 
@@ -217,11 +217,11 @@ class Department {
 		$this->Classification = $deptRow["Classification"];
 		$this->DeptColor = $deptRow["DeptColor"];
 	}
-	function GetDepartmentList( $db ) {
+	function GetDepartmentList() {
 		$deptList = array();
 
 		$selectSQL = "select * from fac_Department order by Name ASC";
-		$result = mysql_query( $selectSQL, $db );
+		$result = mysql_query( $selectSQL);
 
 		while ( $deptRow = mysql_fetch_array( $result ) ) {
 			$deptID = $deptRow["DeptID"];

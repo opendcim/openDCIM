@@ -537,7 +537,7 @@ class PDF_Diag extends PDF_Sector {
     $esx = new ESX();
     
     $esx->Owner = $deptRow->DeptID;
-    $esxList = $esx->GetVMListbyOwner( $facDB );
+    $esxList = $esx->GetVMListbyOwner();
     
 		$headerTags = array( 'Virtual Machine Image Name', 'Current Host Server', 'State', 'Last Polled' );
 		$cellWidths = array( 60, 40, 30, 40 );

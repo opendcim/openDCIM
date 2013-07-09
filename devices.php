@@ -420,7 +420,7 @@
 	$templateList=$templ->GetTemplateList($facDB);
 	$escTimeList=$escTime->GetEscalationTimeList($facDB);
 	$escList=$esc->GetEscalationList($facDB);
-	$deptList=$Dept->GetDepartmentList($facDB); 
+	$deptList=$Dept->GetDepartmentList(); 
 
 	// We have a slight issue with width if we get a really long escalation name
 	$widthfix=0;
@@ -444,7 +444,7 @@
 		global $facDB;
 		$esx=new ESX();
 		$esx->DeviceID=$deviceid;
-		$vmList=$esx->GetDeviceInventory($facDB);
+		$vmList=$esx->GetDeviceInventory();
 
 		print "\n<div class=\"table border\"><div><div>".__('VM Name')."</div><div>".__('Status')."</div><div>".__('Owner')."</div><div>".__('Last Updated')."</div></div>\n";
 		foreach($vmList as $vmRow){
@@ -456,7 +456,7 @@
 			$Dept=new Department();
 			$Dept->DeptID=$vmRow->Owner;
 			if($Dept->DeptID >0){
-				$Dept->GetDeptByID($facDB);
+				$Dept->GetDeptByID();
 			}else{
 				$Dept->Name=__('Unknown');
 			}

@@ -49,7 +49,7 @@
 
 
 	// Send email about Virtual Machines that don't have owners assigned
-	$esxList=$esx->GetOrphanVMList($facDB);
+	$esxList=$esx->GetOrphanVMList();
 	if(count($esxList) >0){
 		$esxCount=count($esxList);
       
@@ -97,7 +97,7 @@
     }
 
 	// Send email about Virtual Machines that are going to be pruned from inventory
-	$esxList=$esx->GetExpiredVMList($config->ParameterArray["VMExpirationTime"],$facDB);
+	$esxList=$esx->GetExpiredVMList($config->ParameterArray["VMExpirationTime"]);
 	if(count($esxList) >0){
 		$esxCount=count($esxList);
       
@@ -140,7 +140,7 @@
 		}
 
 		// Delete 'em
-		$esx->ExpireVMs($config->ParameterArray["VMExpirationTime"],$facDB);
+		$esx->ExpireVMs($config->ParameterArray["VMExpirationTime"]);
 	}
 
 	// output any errors so they might get recorded someplace
