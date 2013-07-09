@@ -6,28 +6,64 @@
 */
 
 // Pre-Flight check
-	if(!isset($_SERVER['REMOTE_USER']) || !extension_loaded('gettext') || !extension_loaded('PDO') || !function_exists("json_encode") ){
-		$tests=array();
-		$tests['Remote User']['errtxt']='<a href="http://httpd.apache.org/docs/2.2/howto/auth.html">http://httpd.apache.org/docs/2.2/howto/auth.html</a>';
-		$tests['Remote User']['goodtxt']='';
-		$tests['Remote User']['state']=(isset($_SERVER['REMOTE_USER']))?"good":"fail";
-		$tests['mbstring']['errtxt']='PHP is missing the <a href="http://php.net/mbstring">mbstring extension</a>';
-		$tests['mbstring']['goodtxt']='';
-		$tests['mbstring']['state']=(extension_loaded('mbstring'))?"good":"fail";
-		$tests['gettext']['errtxt']='PHP is missing the <a href="http://php.net/manual/book.gettext.php">Gettext extension</a>. Please install it.';
-		$tests['gettext']['goodtxt']='';
-		$tests['gettext']['state']=(extension_loaded('gettext'))?"good":"fail";
-		$tests['pdo']['errtxt']='openDCIM requires the <a href="http://php.net/manual/pdo.installation.php">PDO extention</a> and you do not appear to have it loaded';
-		$tests['pdo']['goodtxt']='';
-		$tests['pdo']['state']=(extension_loaded('PDO'))?"good":"fail";
-		$tests['pdodrivers']['errtxt']='No PDO drivers have been detected';
-		$tests['pdodrivers']['goodtxt']='Available drivers: '.implode(", ",PDO::getAvailableDrivers());
-		$tests['pdodrivers']['state']=(count(PDO::getAvailableDrivers())>0)?"good":"fail";
+	$tests=array();
+	$errors=0;
+	$tests['Remote User']['errtxt']='<a href="http://httpd.apache.org/docs/2.2/howto/auth.html">http://httpd.apache.org/docs/2.2/howto/auth.html</a>';
+	$tests['Remote User']['goodtxt']='';
+	if (isset($_SERVER['REMOTE_USER'])) {
+		$tests['Remote User']['state']="good";
+	}
+	else {
+		$tests['Remote User']['state']="fail";
+		$errors++;
+	}
 
-		$tests['json']['errtxt']='PHP is missing the <a href="http://php.net/manual/book.json.php">JavaScript Object Notation (JSON) extension</a>.  Please install it.';
-		$tests['json']['goodtxt']='PHP json module detected';
-		$tests['json']['state']=(function_exists("json_encode"))?"good":"fail";
+	$tests['mbstring']['errtxt']='PHP is missing the <a href="http://php.net/mbstring">mbstring extension</a>';
+	$tests['mbstring']['goodtxt']='';
+	if (extension_loaded('mbstring')) {
+		$tests['mbstring']['state']="good";
+	}
+	else {
+		$tests['mbstring']['state']="fail";
+		$errors++;
+	}
 
+	$tests['gettext']['errtxt']='PHP is missing the <a href="http://php.net/manual/book.gettext.php">Gettext extension</a>. Please install it.';
+	$tests['gettext']['goodtxt']='';
+	$tests['gettext']['state']=(extension_loaded('gettext'))?"good":"fail";
+
+	$tests['pdo']['errtxt']='openDCIM requires the <a href="http://php.net/manual/pdo.installation.php">PDO extention</a> and you do not appear to have it loaded';
+	$tests['pdo']['goodtxt']='';
+	$tests['pdodrivers']['errtxt']='No PDO drivers have been detected';
+	if (extension_loaded('PDO')) {
+		$tests['pdo']['state']="good";
+		if (count(PDO::getAvailableDrivers())>0) {
+			$tests['pdodrivers']['goodtxt']='Available drivers: '.implode(", ",PDO::getAvailableDrivers());
+			$tests['pdodrivers']['state']="good";
+		}
+		else {
+			$tests['pdodrivers']['goodtxt']='Available drivers: none';
+			$tests['pdodrivers']['state']="fail";
+			$errors++;
+		}
+	}
+	else {
+		$tests['pdo']['state']="fail";
+		$tests['pdodrivers']['state']="fail";
+		$errors++;
+	}
+
+	$tests['json']['errtxt']='PHP is missing the <a href="http://php.net/manual/book.json.php">JavaScript Object Notation (JSON) extension</a>.  Please install it.';
+	$tests['json']['goodtxt']='PHP json module detected';
+	if (function_exists('json_encode')) {
+		$tests['json']['state']="good";
+	}
+	else {
+		$tests['json']['state']="fail";
+		$errors++;
+	}
+
+	if ($errors > 0) {
         echo '<!doctype html><html><head><title>openDCIM :: pre-flight environment sanity check</title><script type="text/javascript" src="scripts/jquery.min.js"></script><script type="text/javascript">$(document).ready(function(){$("tr").each(function(){if($(this).find("td:last-child").text()=="fail"){$(this).addClass("fail");}});});</script><style type="text/css">table{width:80%;border-collapse:collapse;border:3px solid black;}th{text-align:left;text-transform:uppercase;border-right: 1px solid black;}th,td{padding:5px;}tr:nth-child(even){background-color:#d1e1f1;}td:last-child{text-align:center;text-transform:uppercase;border:2px solid;background-color:green;}.fail td:last-child{font-weight: bold;background-color: red;}</style></head><body><h2>Pre-flight environment checks</h2><table>';
 		foreach($tests as $test => $text){
 			$desc=($text['state']=='good')?$text['goodtxt']:$text['errtxt'];
