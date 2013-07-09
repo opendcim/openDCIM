@@ -1474,7 +1474,7 @@ class Device {
   function GetESXDevices() {
 		global $dbh;
 		
-		$sql="SELECT * FROM fac_Device WHERE ESX=TRUE ORDER BY DeviceID";
+		$sql="SELECT * FROM fac_Device WHERE ESX=TRUE ORDER BY DeviceID;";
 
 		$deviceList = array();
 

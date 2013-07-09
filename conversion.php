@@ -96,7 +96,7 @@
 
 print "Ports and related connections:<br>\n";
 print_r($ports);
-print "Errors and things that didn't quite match right:<br>\n";
+print "<br>Errors and things that didn't quite match right:<br>\n";
 print_r($errors);
 
 	$n=0; $insertsql='';
