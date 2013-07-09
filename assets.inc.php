@@ -3280,18 +3280,19 @@ class SwitchInfo {
 		
 		$dev = new Device();
 		$dev->DeviceID = $DeviceID;
+		$nameList=array(); // should this fail return blank
 		
-		if ( !$dev->GetDevice() ) {
-			return false;
+		if(!$dev->GetDevice()){
+			return $nameList;
 		}
 		
-		if ( $dev->PrimaryIP == "" || $dev->SNMPCommunity == "" )
-			return;
+		if($dev->PrimaryIP=="" || $dev->SNMPCommunity==""){
+			return $nameList;
+		}
 			
 		$baseOID = ".1.3.6.1.2.1.31.1.1.1.1.";
 		$baseOID = "IF-MIB::ifName."; // MIB instead of OID, also full name instead of shorthand
 		
-		$nameList = array();
 		if ( is_null( $portid )) {		
 			for ( $n=0; $n < $dev->Ports; $n++ ){
 				// Check to make sure that you're not timing out (snmp2_get returns FALSE), and if so, break out of the loop
@@ -3311,20 +3312,21 @@ class SwitchInfo {
 	static function getPortStatus( $DeviceID, $portid = null ) {
 		global $dbh;
 		
-		$dev = new Device();
-		$dev->DeviceID = $DeviceID;
+		$dev=new Device();
+		$dev->DeviceID=$DeviceID;
+		$statusList=array();
 		
-		if ( ! $dev->GetDevice() ) {
-			return false;
+		if(!$dev->GetDevice()){
+			return $statusList;
 		}
 		
-		if ( $dev->PrimaryIP == "" || $dev->SNMPCommunity == "" )
-			return;
+		if($dev->PrimaryIP=="" || $dev->SNMPCommunity==""){
+			return $statusList;
+		}
 			
 		$baseOID = ".1.3.6.1.2.1.2.2.1.8.";
 		$baseOID="IF-MIB::ifOperStatus."; // arguments for not using MIB?
 
-		$statusList = array();
 		if ( is_null($portid) ) {		
 			for ( $n=0; $n < $dev->Ports; $n++ ) {
 				if ( ! $reply = snmp2_get( $dev->PrimaryIP, $dev->SNMPCommunity, $baseOID.( $dev->FirstPortNum+$n )) )

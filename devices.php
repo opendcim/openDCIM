@@ -724,9 +724,8 @@ $(document).ready(function() {
 			});
 		}else{
 			$.post('',{refreshswitch: devid}).done(function(data){
-				$('.switch > div ~ div > div:first-child').each(function(){
-					var portnum=$(this).text();
-					$('#st'+portnum).html($('<span>').addClass('ui-icon').addClass('status').addClass(data[portnum]));
+				$.each(data, function(i,portstatus){
+					$('#st'+i).html($('<span>').addClass('ui-icon').addClass('status').addClass(portstatus));
 				});
 			});
 		}
