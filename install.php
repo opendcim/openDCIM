@@ -1526,6 +1526,54 @@ function showgroup(obj){
 <?php
 	}
 ?>
+<script type="text/javascript">
+if (typeof jQuery == 'undefined') {
+	alert('jQuery is not loaded');
+	window.location.assign("http://opendcim.org/wiki/index.php?title=Errors:Operational");
+}
+if (typeof jQuery.ui == 'undefined') {
+	alert('jQueryUI is not loaded');
+	window.location.assign("http://opendcim.org/wiki/index.php?title=Errors:Operational");
+}
+function resize(){
+	// page width is calcuated different between ie, chrome, and ff
+	$('#header').width(Math.floor($(window).outerWidth()-(16*3))); //16px = 1em per side padding
+	var widesttab=0;
+	// make all the tabs on the config page the same width
+	$('#configtabs > ul ~ div').each(function(){
+		widesttab=($(this).width()>widesttab)?$(this).width():widesttab;
+	});
+	$('#configtabs > ul ~ div').each(function(){
+		$(this).width(widesttab);
+	});
+	var pnw=$('#pandn').outerWidth(),hw=$('#header').outerWidth(),maindiv=$('div.main').outerWidth(),
+		sbw=$('#sidebar').outerWidth(),width,mw=$('div.left').outerWidth()+$('div.right').outerWidth(),
+		main;
+	widesttab+=58;
+	// find widths
+	maindiv=(maindiv>mw)?maindiv:mw;
+	main=(maindiv>pnw)?maindiv:pnw; // find largest possible value for maindiv
+	main=(maindiv>widesttab)?maindiv:widesttab; // find largest possible value for maindiv
+	width=((sbw+main)>hw)?sbw+main:hw; // which is bigger sidebar + main or the header
 
+	// The math just isn't adding up across browsers and FUCK IE
+	if((maindiv+sbw)<width){ // page is larger than content expand main to fit
+		$('div.main').width(width-sbw-16); 
+	}else{ // page is smaller than content expand the page to fit
+		$('#header').width(width+4);
+		$('div.page').width(width+6);
+	}
+}
+$(document).ready(function(){
+	resize();
+	// redraw the screen if the window size changes for some reason
+	$(window).resize(function(){
+		if(this.resizeTO){ clearTimeout(this.resizeTO);}
+		this.resizeTO=setTimeout(function(){
+			resize();resize();
+		}, 500);
+	});
+});
+</script>
 </body>
 </html>
