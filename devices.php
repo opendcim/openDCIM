@@ -158,6 +158,10 @@
 			echo json_encode(MediaTypes::GetMediaTypeList());
 			exit;
 		}
+		if(isset($_POST['esxrefresh'])){
+			buildesxtable($_POST['esxrefresh']);
+			exit;
+		}
 		if(isset($_POST['refreshswitch'])){
 			header('Content-Type: application/json');
 			if(isset($_POST['names'])){
@@ -435,6 +439,33 @@
 		}
 	}
 	$title=($dev->Label!='')?"$dev->Label :: $dev->DeviceID":"openDCIM Device Maintenance";
+
+	function buildesxtable($deviceid){
+		global $facDB;
+		$esx=new ESX();
+		$esx->DeviceID=$deviceid;
+		$vmList=$esx->GetDeviceInventory($facDB);
+
+		print "\n<div class=\"table border\"><div><div>".__('VM Name')."</div><div>".__('Status')."</div><div>".__('Owner')."</div><div>".__('Last Updated')."</div></div>\n";
+		foreach($vmList as $vmRow){
+			if($vmRow->vmState=='poweredOff'){
+				$statColor='red';
+			}else{
+				$statColor='green';
+			}
+			$Dept=new Department();
+			$Dept->DeptID=$vmRow->Owner;
+			if($Dept->DeptID >0){
+				$Dept->GetDeptByID($facDB);
+			}else{
+				$Dept->Name=__('Unknown');
+			}
+			print "<div><div>$vmRow->vmName</div><div><font color=$statColor>$vmRow->vmState</font></div><div><a href=\"updatevmowner.php?vmindex=$vmRow->VMIndex\">$Dept->Name</a></div><div>$vmRow->LastUpdated</div></div>\n";
+		}
+		echo '</div> <!-- END div.table -->';
+	}
+
+
 ?>
 <!doctype html>
 <html>
@@ -653,6 +684,19 @@ $(document).ready(function() {
 		window.open('contactpopup.php?deptid='+$('#owner').val(), 'Contacts Lookup', 'width=800, height=700, resizable=no, toolbar=no');
 		return false;
 	});
+	// Add in refresh functions for virtual machines
+	var esxtable=$('<div>').addClass('table border').append('<div><div>VM Name</div><div>Status</div><div>Owner</div><div>Last Updated</div></div>');
+	var esxbutton=$('<button>',{'type':'button'}).css({'position':'absolute','top':'10px','right':'2px'}).text('Refresh');
+	esxbutton.click(esxrefresh);
+	if($('#esx').val()==1){
+		$('#esxframe').css('position','relative').append(esxbutton);
+	}
+	function esxrefresh(){
+		$.post('',{esxrefresh: $('#deviceid').val()}).done(function(data){
+			$('#esxframe .table ~ .table').replaceWith(data);
+		});
+	}	
+
 	// This is for adding blades to chassis devices
 	$('#adddevice').click(function() {
 		$(":input").attr("disabled","disabled");
@@ -1557,26 +1601,7 @@ echo '	<div class="table">
 
 		}
 		if($dev->ESX){
-			$esx=new ESX();
-			$esx->DeviceID=$dev->DeviceID;
-			$vmList=$esx->GetDeviceInventory($facDB);
-    
-			print "\n<div class=\"table border\"><div><div>".__('VM Name')."</div><div>".__('Status')."</div><div>".__('Owner')."</div><div>".__('Last Updated')."</div></div>\n";
-			foreach($vmList as $vmRow){
-				if($vmRow->vmState=='poweredOff'){
-					$statColor='red';
-				}else{
-					$statColor='green';
-				}
-				$Dept->DeptID=$vmRow->Owner;
-				if($Dept->DeptID >0){
-					$Dept->GetDeptByID($facDB);
-				}else{
-					$Dept->Name=__('Unknown');
-				}
-				print "<div><div>$vmRow->vmName</div><div><font color=$statColor>$vmRow->vmState</font></div><div><a href=\"updatevmowner.php?vmindex=$vmRow->VMIndex\">$Dept->Name</a></div><div>$vmRow->LastUpdated</div></div>\n";
-			}
-			echo '</div> <!-- END div.table -->';
+			buildesxtable($dev->DeviceID);
 		}
 		print "</fieldset>\n";
 	}
