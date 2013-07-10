@@ -2720,7 +2720,7 @@ class SwitchInfo {
 					if ( $indexValue == $dev->FirstPortNum )
 						$Saving = true;
 						
-					if ( $Saving == true ) {
+					if ( $Saving == true )
 						$nameList[sizeof($nameList) + 1] = trim(end(explode(":",$label)));
 					
 					// Once we have captured enough values that match the number of ports, stop
