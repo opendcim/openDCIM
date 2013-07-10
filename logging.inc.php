@@ -43,6 +43,8 @@ class LogActions {
 
 	// Generic catch all logging function
 	static function LogThis($object){
+		global $dbh;
+
 		$userid=$_SERVER['REMOTE_USER'];
 		$trace=debug_backtrace();
 		// we're only concerned with the 2nd record $trace can be read for a full debug if something calls for it
@@ -80,7 +82,7 @@ class LogActions {
 				// default action to keep log anything we don't understand
 				$sql="INSERT INTO fac_GenericLog set UserID='$userid', Object='{$caller['class']}', Action='{$caller['function']}', Time=NOW();";
 		}
-		mysql_query($sql);
+		$dbh->query($sql);
 	}
 
 	// Add in functions here for actions lookup by device, user, date, etc

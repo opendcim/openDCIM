@@ -196,7 +196,7 @@
 		$formfix="?requestid=$req->RequestID";
 
 		$contact->ContactID=$req->RequestorID;
-		$contact->GetContactByID($facDB);
+		$contact->GetContactByID();
 	}
 ?>
 <!doctype html>

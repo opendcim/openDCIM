@@ -38,75 +38,115 @@ class Contact {
 	var $Phone2;
 	var $Phone3;
 	var $Email;
+	protected $DB;
 
-	function GetContactByID( $db ) {
-		$selectSQL = "select * from fac_Contact where ContactID=\"" . intval($this->ContactID) . "\"";
+	function __construct(){
+		global $dbh;
+		$this->DB=$dbh;
+	}
 
-		$result = mysql_query( $selectSQL, $db );
-		
-		/* Clear out non-key values in case this is a repeated call in a loop, otherwise you'll get ghost data back */
-		$this->UserID = "";
-		$this->LastName = "";
-		$this->FirstName = "";
-		$this->Phone1 = "";
-		$this->Phone2 = "";
-		$this->Phone3 = "";
-		$this->Email = "";
+	function MakeSafe(){
+		$this->ContactID=intval($this->ContactID);
+		$this->UserID=addslashes(trim($this->UserID));
+		$this->LastName=addslashes(trim($this->LastName));
+		$this->FirstName=addslashes(trim($this->FirstName));
+		$this->Phone1=addslashes(trim($this->Phone1));
+		$this->Phone2=addslashes(trim($this->Phone2));
+		$this->Phone3=addslashes(trim($this->Phone3));
+		$this->Email=addslashes(trim($this->Email));
+	}
 
-		if ( $contactRow = mysql_fetch_array( $result ) ) {
-			$this->ContactID = $contactRow["ContactID"];
-			$this->UserID = $contactRow["UserID"];
-			$this->LastName = $contactRow["LastName"];
-			$this->FirstName = $contactRow["FirstName"];
-			$this->Phone1 = $contactRow["Phone1"];
-			$this->Phone2 = $contactRow["Phone2"];
-			$this->Phone3 = $contactRow["Phone3"];
-			$this->Email = $contactRow["Email"];
+	function MakeDisplay(){
+		$this->UserID=stripslashes($this->UserID);
+		$this->LastName=stripslashes($this->LastName);
+		$this->FirstName=stripslashes($this->FirstName);
+		$this->Phone1=stripslashes($this->Phone1);
+		$this->Phone2=stripslashes($this->Phone2);
+		$this->Phone3=stripslashes($this->Phone3);
+		$this->Email=stripslashes($this->Email);
+	}
+
+	static function ContactRowToObject($row){
+		$contact=new Contact();
+		$contact->ContactID=$row["ContactID"];
+		$contact->UserID=$row["UserID"];
+		$contact->LastName=$row["LastName"];
+		$contact->FirstName=$row["FirstName"];
+		$contact->Phone1=$row["Phone1"];
+		$contact->Phone2=$row["Phone2"];
+		$contact->Phone3=$row["Phone3"];
+		$contact->Email=$row["Email"];
+
+		$contact->MakeDisplay();
+
+		return $contact;
+	}
+
+	function GetContactByID(){
+		$this->MakeSafe();
+
+		$sql="SELECT * FROM fac_Contact WHERE ContactID=$this->ContactID;";
+
+		if($row=$this->DB->query($sql)->fetch()){
+			foreach(Contact::ContactRowToObject($row) as $prop => $value){
+				$this->$prop=$value;
+			}
+		}else{
+			// if a lookup fails just kick back a blank record
+			foreach($this as $prop => $value){
+				if($prop!='ContactID'){
+					$this->$prop='';
+				}
+			}
 		}
-		
-		return $result;
+		return true;
 	}
 	
-	function GetContactByUserID( $db ) {
-		$selectSQL = "select * from fac_Contact where UserID=\"" . addslashes($this->UserID) . "\"";
+	function GetContactByUserID(){
+		$sql="SELECT * FROM fac_Contact WHERE UserID=\"$this->UserID\";";
 
-		$result = mysql_query( $selectSQL, $db );
-
-		/* Clear out non-key values in case this is a repeated call in a loop, otherwise you'll get ghost data back */
-		$this->ContactID = "";
-		$this->LastName = "";
-		$this->FirstName = "";
-		$this->Phone1 = "";
-		$this->Phone2 = "";
-		$this->Phone3 = "";
-		$this->Email = "";
-
-		if ( $contactRow = mysql_fetch_array( $result ) ) {
-			$this->ContactID = $contactRow["ContactID"];
-			$this->UserID = $contactRow["UserID"];
-			$this->LastName = $contactRow["LastName"];
-			$this->FirstName = $contactRow["FirstName"];
-			$this->Phone1 = $contactRow["Phone1"];
-			$this->Phone2 = $contactRow["Phone2"];
-			$this->Phone3 = $contactRow["Phone3"];
-			$this->Email = $contactRow["Email"];
+		if($row=$this->DB->query($sql)->fetch()){
+			foreach(Contact::ContactRowToObject($row) as $prop => $value){
+				$this->$prop=$value;
+			}
+		}else{
+			// if a lookup fails just kick back a blank record
+			foreach($this as $prop => $value){
+				if($prop!='UserID'){
+					$this->$prop='';
+				}
+			}
 		}
-
-		return mysql_num_rows( $result );
+		return true;
 	}
 
-	function CreateContact( $db ) {
-		$insertSQL = "insert into fac_Contact set UserID=\"" . addslashes($this->UserID) . "\", LastName=\"" . addslashes($this->LastName) . "\", FirstName=\"" .addslashes( $this->FirstName ). "\", Phone1=\"" . addslashes($this->Phone1) . "\", Phone2=\"" . addslashes($this->Phone2) . "\", Phone3=\"" . addslashes($this->Phone3) . "\", Email=\"" . addslashes($this->Email) . "\"";
+	function CreateContact() {
+		$this->MakeSafe();
 
-		$result = mysql_query( $insertSQL, $db );
+		$sql="INSERT INTO fac_Contact SET UserID=\"$this->UserID\", 
+			LastName=\"$this->LastName\", FirstName=\"$this->FirstName\", 
+			Phone1=\"$this->Phone1\", Phone2=\"$this->Phone2\", Phone3=\"$this->Phone3\", 
+			Email=\"$this->Email\";";
 
-		$this->ContactID = mysql_insert_id();
+		if($this->DB->exec($sql)){
+			$this->ContactID=$dbh->lastInsertId();
+			$this->MakeDisplay();
+			return $this->ContactID;
+		}else{
+			return false;
+		}
 	}
 
-	function UpdateContact( $db ) {
-		$updateSQL = "update fac_Contact set UserID=\"" . addslashes($this->UserID) . "\", LastName=\"" . addslashes($this->LastName) . "\", FirstName=\"" . addslashes($this->FirstName) . "\", Phone1=\"" . addslashes($this->Phone1) . "\", Phone2=\"" . addslashes($this->Phone2) . "\", Phone3=\"" . addslashes($this->Phone3) . "\", Email=\"" . addslashes($this->Email) . "\" where ContactID=\"" . intval($this->ContactID) . "\"";
-        
-		$result = mysql_query( $updateSQL, $db );
+	function UpdateContact(){
+		$this->MakeSafe();
+
+		$sql="UPDATE fac_Contact SET UserID=\"$this->UserID\", 
+			LastName=\"$this->LastName\", FirstName=\"$this->FirstName\", 
+			Phone1=\"$this->Phone1\", Phone2=\"$this->Phone2\",	Phone3=\"$this->Phone3\", 
+			Email=\"$this->Email\" WHERE ContactID=$this->ContactID;";
+       
+		$this->DB->query($sql); 
+		$this->MakeDisplay();
 	}
 	function DeleteContact(){
 		// Clear up any records that might have still had this contact set as the primary contact.
