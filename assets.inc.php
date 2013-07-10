@@ -2805,25 +2805,30 @@ class Tags {
 
 	//Add Create Tag Function
 	static function CreateTag($TagName){
+		global $dbh;
+
 		if(!is_null($TagName)){
-			$TagName=mysql_real_escape_string($TagName);
+			$TagName=addslashes($TagName);
 			$sql="INSERT INTO fac_Tags VALUES (NULL, '$TagName');";
-			$results=mysql_query($sql);
-			if($results){
-				return mysql_insert_id();
+			if(!$dbh->exec($sql)){
+				return null;
+			}else{
+				return $dbh->lastInsertId();
 			}
 		}
 		return null;
 	}
+
 	//Add Delete Tag Function
 
 	static function FindID($TagName=null){
+		global $dbh;
+
 		if(!is_null($TagName)){
-			$TagName=mysql_real_escape_string($TagName);
+			$TagName=addslashes($TagName);
 			$sql="SELECT TagID FROM fac_Tags WHERE Name = '$TagName';";
-			$result=mysql_query($sql);
-			if(mysql_num_rows($result)>0){
-				return mysql_result($result,0);
+			if($TagID=$dbh->query($sql)->fetchColumn()){
+				return $TagID;
 			}
 		}else{
 			//No tagname was supplied so kick back an array of all available TagIDs and Names
@@ -2834,12 +2839,13 @@ class Tags {
 	}
 
 	static function FindName($TagID=null){
+		global $dbh;
+
 		if(!is_null($TagID)){
 			$TagID=intval($TagID);
 			$sql="SELECT Name FROM fac_Tags WHERE TagID = $TagID;";
-			$result=mysql_query($sql);
-			if(mysql_num_rows($result)>0){
-				return mysql_result($result,0);
+			if($TagName=$dbh->query($sql)->fetchColumn()){
+				return $TagName;
 			}
 		}else{
 			//No tagname was supplied so kick back an array of all available TagIDs and Names
@@ -2850,16 +2856,15 @@ class Tags {
 	}
 
 	static function FindAll(){
+		global $dbh;
+
 		$sql="SELECT * FROM fac_Tags;";
-		$result=mysql_query($sql);
+
 		$tagarray=array();
-		if(mysql_num_rows($result)>0){
-			while($row=mysql_fetch_assoc($result)){
-				$tagarray[$row['TagID']]=$row['Name'];
-			}
-			return $tagarray;
+		foreach($dbh->query($sql) as $row){
+			$tagarray[$row['TagID']]=$row['Name'];
 		}
-		return 0;
+		return $tagarray;
 	}
 
 }
