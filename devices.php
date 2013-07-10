@@ -750,7 +750,7 @@ $(document).ready(function() {
 					$('input[name=firstportnum]').val(fpnum);
 					$('#modalstatus').html(data);
 					$('#modal').dialog('destroy');
-				});
+				}).then(refreshswitch($('#deviceid').val(),true));
 			});
 		});
 	});
@@ -762,12 +762,22 @@ $(document).ready(function() {
 	});
 	function refreshswitch(devid,names){
 		if(names){
+			var modal=$('<div />', {id: 'modal', title: 'Please wait...'}).html('<div id="modaltext"><img src="images/animatedswitch.gif" style="width: 100%;"><br>Polling device...</div><br><div id="modalstatus" class="warning"></div>').dialog({
+				appendTo: 'body',
+				minWidth: 500,
+				closeOnEscape: false,
+				dialogClass: "no-close",
+				modal: true
+			});
 			$.post('',{refreshswitch: devid, names: names}).done(function(data){
 				$.each(data, function(i,label){
 					if(label){
 						$('#spn'+i).text(label);
+					}else{
+						$('#spn'+i).text('');
 					}
 				});
+				modal.dialog('destroy');
 			});
 		}else{
 			$.post('',{refreshswitch: devid}).done(function(data){
