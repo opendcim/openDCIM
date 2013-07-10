@@ -2712,16 +2712,20 @@ class SwitchInfo {
 		$baseOID = "IF-MIB::ifName"; 
 
 		if(is_null($portid)){		
-			if($reply=snmprealwalk($dev->PrimaryIP,$dev->SNMPCommunity,$baseOID)){
-				foreach($reply as $mib => $label){
-					$reply[end(explode(".",$mib))]=trim(end(explode(":",$label)));
-					unset($reply[$mib]);
-				}
-				//set the array to the first port
-				for($n=key($reply);$n!=$dev->FirstPortNum;$n++){next($reply);}
-				for($n=1; $n<=$dev->Ports; $n++){
-					$nameList[$n]=current($reply); // get the value
-					next($reply); // advance the array
+			if($reply=snmp2_real_walk($dev->PrimaryIP,$dev->SNMPCommunity,$baseOID)){
+				// Skip the returned values until we get to the first port
+				$Saving = false;
+				foreach($reply as $oid => $label){
+					$indexValue = end(explode( ".", $oid ));
+					if ( $indexValue == $dev->FirstPortNum )
+						$Saving = true;
+						
+					if ( $Saving == true ) {
+						$nameList[sizeof($nameList) + 1] = trim(end(explode(":",$label)));
+					
+					// Once we have captured enough values that match the number of ports, stop
+					if ( sizeof( $nameList ) == $dev->Ports )
+						break;
 				}
 			}
 		} else {
