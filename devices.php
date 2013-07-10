@@ -764,7 +764,9 @@ $(document).ready(function() {
 		if(names){
 			$.post('',{refreshswitch: devid, names: names}).done(function(data){
 				$.each(data, function(i,label){
-					$('#spn'+i).text(label);
+					if(label){
+						$('#spn'+i).text(label);
+					}
 				});
 			});
 		}else{

@@ -3257,15 +3257,20 @@ class SwitchInfo {
 		}
 			
 		$baseOID = ".1.3.6.1.2.1.31.1.1.1.1.";
-		$baseOID = "IF-MIB::ifName."; // MIB instead of OID, also full name instead of shorthand
-		
-		if ( is_null( $portid )) {		
-			for ( $n=0; $n < $dev->Ports; $n++ ){
-				// Check to make sure that you're not timing out (snmp2_get returns FALSE), and if so, break out of the loop
-				if ( ! $reply = snmp2_get( $dev->PrimaryIP, $dev->SNMPCommunity, $baseOID . ( $dev->FirstPortNum + $n )) )
-					break;
-				$query = @end( explode( ":", $reply ) );
-				$nameList[$n+1] = $query;
+		$baseOID = "IF-MIB::ifName"; // MIB instead of OID, also full name instead of shorthand
+
+		if(is_null($portid)){		
+			if($reply=snmprealwalk($dev->PrimaryIP,$dev->SNMPCommunity,$baseOID)){
+				foreach($reply as $mib => $label){
+					$reply[end(explode(".",$mib))]=trim(end(explode(":",$label)));
+					unset($reply[$mib]);
+				}
+				//set the array to the first port
+				for($n=key($reply);$n!=$dev->FirstPortNum;$n++){next($reply);}
+				for($n=1; $n<=$dev->Ports; $n++){
+					$nameList[$n]=current($reply); // get the value
+					next($reply); // advance the array
+				}
 			}
 		} else {
 				$query = @end( explode( ":", snmp2_get( $dev->PrimaryIP, $dev->SNMPCommunity, $baseOID.$portid )));
