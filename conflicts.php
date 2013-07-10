@@ -14,6 +14,551 @@
 		exit;
 	}
 
+class PatchConnection {
+	/* PatchConnection:	Self explanatory - any device set as a patch will allow you to map out the port connections to
+							any other device within the same data center.  For trans-data center connections, you can map the
+							port back to itself, and list the external source in the Notes field.
+	*/
+	
+	var $PanelDeviceID;
+	var $PanelPortNumber;
+	var $FrontEndpointDeviceID;
+	var $FrontEndpointPort;
+	var $RearEndpointDeviceID;
+	var $RearEndpointPort;
+	var $FrontNotes;
+	var $RearNotes;
+	
+	function GetConnectionRecord($db){
+		$this->MakeSafe();
+		$sql="select * from fac_PatchConnection where PanelDeviceID=$this->PanelDeviceID and PanelPortNumber=$this->PanelPortNumber";
+	
+		if ( ! $result = mysql_query( $sql, $db ) ) {
+			error_log( sprintf( "%s; SQL=`%s`", mysql_error( $db ), $sql ) );
+			return -1;
+		}
+		
+		if($row=mysql_fetch_array($result)){
+			$this->FrontEndpointDeviceID=$row["FrontEndpointDeviceID"];
+			$this->FrontEndpointPort=$row["FrontEndpointPort"];
+			$this->RearEndpointDeviceID=$row["RearEndpointDeviceID"];
+			$this->RearEndpointPort=$row["RearEndpointPort"];
+			$this->FrontNotes=$row["FrontNotes"];
+			$this->RearNotes=$row["RearNotes"];
+		}
+		
+		return 1;		
+	}
+	
+	function MakeFrontConnection($db,$recursive=true){
+		$this->MakeSafe();
+
+		$tmpDev=new Device();
+		$tmpDev->DeviceID = $this->PanelDeviceID;
+		$tmpDev->GetDevice( $db );
+		
+		// If you pass a port number lower than 1, or higher than the total number of ports defined for the patch panel, then bounce
+		if ( $this->PanelPortNumber < 1 || $this->PanelPortNumber > $tmpDev->Ports )
+			return -1;
+			
+		$sql="INSERT INTO fac_PatchConnection VALUES ($this->PanelDeviceID, $this->PanelPortNumber, $this->FrontEndpointDeviceID, $this->FrontEndpointPort, NULL, NULL, \"$this->FrontNotes\", NULL ) ON DUPLICATE KEY UPDATE FrontEndpointDeviceID=$this->FrontEndpointDeviceID,FrontEndpointPort=$this->FrontEndpointPort,FrontNotes=\"$this->FrontNotes\";";
+
+		if ( ! $result = mysql_query( $sql, $db) ) {
+			error_log( sprintf( "%s; SQL=`%s`", mysql_error( $db ), $sql ) );
+			return -1;
+		}
+
+		$tmpDev->DeviceID=$this->FrontEndpointDeviceID;
+		$tmpDev->GetDevice($db);
+		
+		if($recursive && $tmpDev->DeviceType=="Switch"){
+			$tmpSw = new SwitchConnection();
+			$tmpSw->SwitchDeviceID = $this->FrontEndpointDeviceID;
+			$tmpSw->SwitchPortNumber = $this->FrontEndpointPort;
+			$tmpSw->EndpointDeviceID = $this->PanelDeviceID;
+			$tmpSw->EndpointPort = $this->PanelPortNumber;
+			$tmpSw->Notes = $this->FrontNotes;
+			
+			// Remove any existing connection from this port
+			$tmpSw->RemoveConnection( $db );
+			// Call yourself, but with the recursive = false so that you don't create a loop
+			$tmpSw->CreateConnection( $db, false );
+		}
+
+		if ( $recursive && $tmpDev->DeviceType == "Patch Panel" ) {
+			$tmpPanel = new PatchConnection();
+			$tmpPanel->PanelDeviceID = $this->FrontEndpointDeviceID;
+			$tmpPanel->PanelPortNumber = $this->FrontEndpointPort;
+			$tmpPanel->FrontEndpointDeviceID = $this->PanelDeviceID;
+			$tmpPanel->FrontEndpointPort = $this->PanelPortNumber;
+			$tmpPanel->FrontNotes = $this->FrontNotes;
+			$tmpPanel->MakeFrontConnection( $db, false );
+		}
+		
+		$this->GetConnectionRecord($db); // reload the object from the DB
+		return 1;
+	}
+	
+	function MakeRearConnection($db,$recursive=true){
+		$this->MakeSafe();
+		
+		$tmpDev=new Device();
+		$tmpDev->DeviceID = $this->PanelDeviceID;
+		$tmpDev->GetDevice( $db );
+		
+		// If you pass a port number lower than 1, or higher than the total number of ports defined for the patch panel, then bounce
+		if ( $this->PanelPortNumber < 1 || $this->PanelPortNumber > $tmpDev->Ports )
+			return -1;
+		
+		$sql="INSERT INTO fac_PatchConnection VALUES ($this->PanelDeviceID, $this->PanelPortNumber, NULL, NULL, $this->RearEndpointDeviceID, $this->RearEndpointPort, NULL, \"$this->RearNotes\" ) ON DUPLICATE KEY UPDATE RearEndpointDeviceID=$this->RearEndpointDeviceID,RearEndpointPort=$this->RearEndpointPort,RearNotes=\"$this->RearNotes\";";
+		if ( ! $result = mysql_query( $sql, $db) ) {
+			error_log( sprintf( "%s; SQL=`%s`", mysql_error( $db ), $sql ) );
+			return -1;
+		}
+
+		$tmpDev->DeviceID = $this->RearEndpointDeviceID;
+		$tmpDev->GetDevice( $db );
+		
+		// Patch Panel rear connections will only go to circuits or other patch panels
+		// So there is no need to test for a switch like with the front side
+		if ( $recursive && $tmpDev->DeviceType == "Patch Panel" ) {
+			$tmpPanel = new PatchConnection();
+			$tmpPanel->PanelDeviceID = $this->RearEndpointDeviceID;
+			$tmpPanel->PanelPortNumber = $this->RearEndpointPort;
+			$tmpPanel->RearEndpointDeviceID = $this->PanelDeviceID;
+			$tmpPanel->RearEndpointPort = $this->PanelPortNumber;
+			$tmpPanel->RearNotes = $this->RearNotes;
+			$tmpPanel->MakeRearConnection( $db, false );
+		}
+		
+		$this->GetConnectionRecord($db); // reload the object from the DB
+		return 1;
+	}
+	
+	function RemoveFrontConnection($db,$recursive=true){
+		$this->GetConnectionRecord($db); // just pulled data from db both variables are int already, no need to sanitize again
+		$sql="UPDATE fac_PatchConnection SET FrontEndpointDeviceID=NULL, FrontEndpointPort=NULL, FrontNotes=NULL WHERE PanelDeviceID=$this->PanelDeviceID AND PanelPortNumber=$this->PanelPortNumber;";
+
+		if ( ! $result = mysql_query( $sql, $db ) ) {
+			error_log( sprintf( "%s; SQL=`%s`", mysql_error( $db ), $sql ) );
+			return -1;
+		}
+		
+		// Check the endpoint of the front connection in case it has a reciprocal connection
+		$tmpDev = new Device();
+		$tmpDev->DeviceID = $this->FrontEndpointDeviceID;
+		$tmpDev->GetDevice( $db );
+		
+		if ( $recursive && $tmpDev->DeviceType == "Switch" ) {
+			$tmpSw = new SwitchConnection();
+			$tmpSw->SwitchDeviceID = $this->FrontEndpointDeviceID;
+			$tmpSw->SwitchPortNumber = $this->FrontEndpointPort;
+			$tmpSw->RemoveConnection( $db );	
+		}
+		
+		// Patch panel connections can go front to front, or rear to rear, but never front to rear
+		// So since this is a front connection removal, you only need to remove the front connection
+		// at the opposite end
+		if ( $recursive && $tmpDev->DeviceType == "Patch Panel" ) {
+			$tmpPanel = new PatchConnection();
+			$tmpPanel->PanelDeviceID = $this->FrontEndpointDeviceID;
+			$tmpPanel->PanelPortNumber = $this->FrontEndpointPort;
+			$tmpPanel->RemoveFrontConnection( $db, false );
+		}
+		$this->GetConnectionRecord($db); // reload the object from the DB
+		return 1;
+	}
+	
+	function RemoveRearConnection($db,$recursive=true){
+		$this->GetConnectionRecord($db); // just pulled data from db both variables are int already, no need to sanitize again
+		$sql="UPDATE fac_PatchConnection SET RearEndpointDeviceID=NULL, RearEndpointPort=NULL, RearNotes=NULL WHERE PanelDeviceID=$this->PanelDeviceID AND PanelPortNumber=$this->PanelPortNumber;";
+
+		if ( ! $result = mysql_query( $sql, $db ) ) {
+			error_log( sprintf( "%s; SQL=`%s`", mysql_error( $db ), $sql ) );
+			return -1;
+		}
+		
+		// Check the endpoint of the front connection in case it has a reciprocal connection
+		$tmpDev = new Device();
+		$tmpDev->DeviceID = $this->RearEndpointDeviceID;
+		$tmpDev->GetDevice( $db );
+		// Patch panel rear connections can only go to either
+		//		(a) Another patch panel (rear)
+		//		(b) A circuit ID - in which case the DeviceID is 0, but the notes has the circuit ID
+		
+		// Patch panel connections can go front to front, or rear to rear, but never front to rear
+		// So since this is a front connection removal, you only need to remove the front connection
+		// at the opposite end
+		if($recursive && $tmpDev->DeviceType == "Patch Panel"){
+			$tmpPanel=new PatchConnection();
+			$tmpPanel->PanelDeviceID = $this->RearEndpointDeviceID;
+			$tmpPanel->PanelPortNumber = $this->RearEndpointPort;
+			$tmpPanel->RemoveRearConnection($db, false);
+		}
+		
+		return 1;
+	}
+	
+	function DropEndpointConnections() {
+		global $dbh;
+
+		// You call this when deleting an endpoint device, other than a patch panel
+		$this->MakeSafe();
+
+		$sql="UPDATE fac_PatchConnection SET FrontEndpointDeviceID=NULL, 
+			FrontEndpointPort=NULL, FrontNotes=NULL WHERE 
+			FrontEndpointDeviceID=$this->FrontEndpointDeviceID;";
+
+		if(!$dbh->query($sql)){
+			$info=$dbh->errorInfo();
+
+			error_log("DropEndpointConnections::PDO Error: {$info[2]} SQL=$sql");
+			return -1;
+		}else{
+			return true;
+		}
+	}
+	
+	function DropPanelConnections() {
+		global $dbh;
+
+		// You only call this when you are deleting another patch panel
+		$this->MakeSafe();
+		$sql="UPDATE fac_PatchConnection SET RearEndpointDeviceID=NULL, 
+			RearEndpointPort=NULL, RearNotes=NULL WHERE 
+			FrontEndpointDeviceID=$this->FrontEndpointDeviceID;";
+
+		if(!$dbh->query($sql)){
+			$info=$dbh->errorInfo();
+
+			error_log("DropPanelConnections::PDO Error: {$info[2]} SQL=$sql");
+			return -1;
+		}
+		
+		// Delete any records for this panel itself
+		$sql="DELETE FROM fac_PatchConnection WHERE PanelDeviceID=$this->PanelDeviceID;";
+		
+		if(!$dbh->query($sql)){
+			$info=$dbh->errorInfo();
+
+			error_log("DropPanelConnections::PDO Error: {$info[2]} SQL=$sql");
+			return -1;
+		}else{
+			return true;
+		}
+	}
+	
+	function GetPanelConnections($db){
+		$this->MakeSafe();
+		$sql="SELECT * FROM fac_PatchConnection WHERE PanelDeviceID=$this->PanelDeviceID ORDER BY PanelPortNumber;";
+		$result=mysql_query($sql,$db);
+		
+		$tmpDev = new Device();
+		$tmpDev->DeviceID = $this->PanelDeviceID;
+		$tmpDev->GetDevice( $db );
+		$connList=array();
+		
+		for ( $i = 1; $i <= $tmpDev->Ports; $i++ ) {
+			$connList[$i] = new PatchConnection();
+			$connList[$i]->PanelDeviceID = $tmpDev->DeviceID;
+			$connList[$i]->PanelPortNumber = $i;
+		}      
+		
+		while($connRow=mysql_fetch_array($result)){
+			$connNum=$connRow["PanelPortNumber"];
+			$connList[$connNum]->PanelDeviceID=$connRow["PanelDeviceID"];
+			$connList[$connNum]->PanelPortNumber=$connRow["PanelPortNumber"];
+			$connList[$connNum]->FrontEndpointDeviceID=$connRow["FrontEndpointDeviceID"];
+			$connList[$connNum]->FrontEndpointPort=$connRow["FrontEndpointPort"];
+			$connList[$connNum]->RearEndpointDeviceID=$connRow["RearEndpointDeviceID"];
+			$connList[$connNum]->RearEndpointPort=$connRow["RearEndpointPort"];
+			$connList[$connNum]->FrontNotes=$connRow["FrontNotes"];
+			$connList[$connNum]->RearNotes=$connRow["RearNotes"];
+		}
+		
+		return $connList;
+	}
+	
+	function GetEndpointConnections($db){
+		$this->MakeSafe();
+		$sql="SELECT * FROM fac_PatchConnection WHERE FrontEndpointDeviceID=$this->FrontEndpointDeviceID ORDER BY PanelDeviceID ASC;";
+		if ( ! $result = mysql_query( $sql, $db ) ) {
+			error_log( sprintf( "%s; SQL=`%s`", mysql_error( $db ), $sql ) );
+			return -1;
+		}
+		
+		$patchList=array();
+		while($row=mysql_fetch_array($result)){
+			$pNum=sizeof($patchList);
+			$patchList[$pNum]=new PatchConnection();
+			$patchList[$pNum]->PanelDeviceID=$row["PanelDeviceID"];
+			$patchList[$pNum]->PanelPortNumber=$row["PanelPortNumber"];
+			$patchList[$pNum]->FrontEndpointDeviceID=$row["FrontEndpointDeviceID"];
+			$patchList[$pNum]->FrontEndpointPort=$row["FrontEndpointPort"];
+			$patchList[$pNum]->RearEndpointDeviceID=$row["RearEndpointDeviceID"];
+			$patchList[$pNum]->RearEndpointPort=$row["RearEndpointPort"];
+			$patchList[$pNum]->FrontNotes=$row["FrontNotes"];
+			$patchList[$pNum]->RearNotes=$row["RearNotes"];
+		}
+		
+		return $patchList;
+	}
+
+	function MakeSafe(){
+		// mysql needed the word NULL for the fields that were null to keep the sql valid
+		$this->PanelDeviceID=intval($this->PanelDeviceID);
+		$this->PanelPortNumber=intval($this->PanelPortNumber);
+		$this->FrontEndpointDeviceID=(is_null($this->FrontEndpointDeviceID))?'NULL':intval($this->FrontEndpointDeviceID);
+		$this->FrontEndpointPort=(is_null($this->FrontEndpointPort))?'NULL':intval($this->FrontEndpointPort);
+		$this->FrontNotes=(is_null($this->FrontNotes))?'NULL':mysql_real_escape_string($this->FrontNotes);
+		$this->RearEndpointDeviceID=(is_null($this->RearEndpointDeviceID))?'NULL':intval($this->RearEndpointDeviceID);
+		$this->RearEndpointPort=(is_null($this->RearEndpointPort))?'NULL':intval($this->RearEndpointPort);
+		$this->RearNotes=(is_null($this->RearNotes))?'NULL':mysql_real_escape_string($this->RearNotes);
+	}	
+
+}
+
+class SwitchConnection {
+	/* SwitchConnection:	Self explanatory - any device set as a switch will allow you to map out the port connections to
+							any other device within the same data center.  For trans-data center connections, you can map the
+							port back to itself, and list the external source in the Notes field.
+	*/
+	
+	var $SwitchDeviceID;
+	var $SwitchPortNumber;
+	var $EndpointDeviceID;
+	var $EndpointPort;
+	var $Notes;
+
+	function MakeSafe(){
+		$this->SwitchDeviceID=intval($this->SwitchDeviceID);
+		$this->SwitchPortNumber=intval($this->SwitchPortNumber);
+		$this->EndpointDeviceID=intval($this->EndpointDeviceID);
+		$this->EndpointPort=intval($this->EndpointPort);
+		$this->Notes=addslashes(trim($this->Notes));
+	}
+
+	function CreateConnection( $db, $recursive = true ) {
+		global $dbh;
+
+		$this->MakeSafe();
+
+		$sql="INSERT INFO fac_SwitchConnection SET SwitchDeviceID=$this->SwitchDeviceID, 
+			SwitchPortNumber=$this->SwitchPortNumber, 
+			EndpointDeviceID=$this->EndpointDeviceID, 
+			EndpointPort=$this->EndpointPort, Notes=\"$this->Notes\";"; 
+
+		if(!$dbh->exec($sql)){
+			$info=$dbh->errorInfo();
+
+			error_log("CreateConnection::PDO Error: {$info[2]} SQL=$sql");
+			return -1;
+		}
+
+		$tmpDev=new Device();
+		$tmpDev->DeviceID=$this->EndpointDeviceID;
+		$tmpDev->GetDevice();
+		
+		if ( $recursive && $tmpDev->DeviceType == "Switch" ) {
+			$tmpSw = new SwitchConnection();
+			$tmpSw->SwitchDeviceID = $this->EndpointDeviceID;
+			$tmpSw->SwitchPortNumber = $this->EndpointPort;
+			$tmpSw->EndpointDeviceID = $this->SwitchDeviceID;
+			$tmpSw->EndpointPort = $this->SwitchPortNumber;
+			$tmpSw->Notes = $this->Notes;
+			
+			// Remove any existing connection from this port
+			$tmpSw->RemoveConnection( $db );
+			// Call yourself, but with the recursive = false so that you don't create a loop
+			$tmpSw->CreateConnection( $db, false );
+		}
+
+		if ( $tmpDev->DeviceType == "Patch Panel" ) {
+			$tmpPan = new PatchConnection();
+			$tmpPan->PanelDeviceID = $this->EndpointDeviceID;
+			$tmpPan->PanelPortNumber = $this->EndpointPort;
+			$tmpPan->FrontEndpointDeviceID = $this->SwitchDeviceID;
+			$tmpPan->FrontEndpointPort = $this->SwitchPortNumber;
+			$tmpPan->FrontNotes = $this->Notes;
+			$tmpPan->MakeFrontConnection( $db, false );
+		}
+		
+		return 1;
+	}
+  
+	function UpdateConnection( $db ) {
+		$sql = "update fac_SwitchConnection set EndpointDeviceID=\"" . intval( $this->EndpointDeviceID ) . "\", EndpointPort=\"" . intval( $this->EndpointPort ) . "\", Notes=\"" . addslashes( $this->Notes ) . "\" where SwitchDeviceID=\"" . intval( $this->SwitchDeviceID ) . "\" and SwitchPortNumber=\"" . intval( $this->SwitchPortNumber ) . "\"";
+
+		mysql_query( $sql, $db );
+
+		$tmpDev = new Device();
+		$tmpDev->DeviceID = intval($this->EndpointDeviceID);
+		$tmpDev->GetDevice( $db );
+		
+		if ( $tmpDev->DeviceType == "Switch" ) {
+			$tmpSw = new SwitchConnection();
+			$tmpSw->SwitchDeviceID = $this->EndpointDeviceID;
+			$tmpSw->SwitchPortNumber = $this->EndpointPort;
+			$tmpSw->EndpointDeviceID = $this->SwitchDeviceID;
+			$tmpSw->EndpointPort = $this->SwitchPortNumber;
+			$tmpSw->Notes = $this->Notes;
+			
+			// Remove any existing connection from this port
+			$tmpSw->RemoveConnection( $db );
+			// Call yourself, but with the recursive = false so that you don't create a loop
+			$tmpSw->CreateConnection( $db, false );
+		}
+
+		if ( $tmpDev->DeviceType == "Patch Panel" ) {
+			$tmpPan = new PatchConnection();
+			$tmpPan->PanelDeviceID = $this->EndpointDeviceID;
+			$tmpPan->PanelPortNumber = $this->EndpointPort;
+			$tmpPan->FrontEndpointDeviceID = $this->SwitchDeviceID;
+			$tmpPan->FrontEndpointPort = $this->SwitchPortNumber;
+			$tmpPan->FrontNotes = $this->Notes;
+			$tmpPan->MakeFrontConnection( $db, false );
+		}
+	}
+	
+	function GetConnectionRecord( $db = null ) {
+		global $dbh;
+		
+		$sql = sprintf( "select * from fac_SwitchConnection where SwitchDeviceID=%d and SwitchPortNumber=%d", intval( $this->SwitchDeviceID), intval( $this->SwitchPortNumber ) );
+			
+		if ( ! $row = $dbh->query( $sql )->fetch() ) {
+			return false;
+		}
+
+		$this->EndpointDeviceID = $row["EndpointDeviceID"];
+		$this->EndpointPort = $row["EndpointPort"];
+		$this->Notes = $row["Notes"];
+		
+		return;	
+	}
+    
+	function RemoveConnection($db, $recursive=false ) {
+		$this->GetConnectionRecord( $db );
+
+		$delSQL = "delete from fac_SwitchConnection where SwitchDeviceID=\"" . $this->SwitchDeviceID . "\" and SwitchPortNumber=\"" . $this->SwitchPortNumber . "\"";
+
+		$result = mysql_query( $delSQL, $db );
+
+		$tmpDev = new Device();
+		$tmpDev->DeviceID = intval($this->EndpointDeviceID);
+		$tmpDev->GetDevice( $db );
+
+		if ( $tmpDev->DeviceType == "Switch" && $recursive) {
+			$sql = sprintf( "delete from fac_SwitchConnection where SwitchDeviceID=%d and SwitchPortNumber=%d", $this->EndpointDeviceID, $this->EndpointPort );
+			$result = mysql_query( $sql, $db );
+		}
+
+		if ( $tmpDev->DeviceType == "Patch Panel" ) {
+			$tmpPan = new PatchConnection();
+			$tmpPan->PanelDeviceID = $this->EndpointDeviceID;
+			$tmpPan->PanelPortNumber = $this->EndpointPort;
+			$tmpPan->RemoveFrontConnection( $db, false );
+		}
+
+		return $result;
+	}
+  
+	function DropEndpointConnections( $db ) {
+		global $dbh;
+
+		$this->MakeSafe();
+
+		$sql="DELETE FROM fac_SwitchConnection WHERE EndpointDeviceID=$this->EndpointDeviceID;";
+
+		if(!$dbh->exec($sql)){
+			$info=$dbh->errorInfo();
+
+			error_log("DropEndpointConnections::PDO Error: {$info[2]} SQL=$sql");
+			return false;
+		}else{
+			return true;
+		}
+	}
+  
+	function DropSwitchConnections() {
+		global $dbh;
+
+		$this->MakeSafe();
+
+		$sql="DELETE FROM fac_SwitchConnection WHERE SwitchDeviceID=$this->EndpointDeviceID;";
+
+		if(!$dbh->exec($sql)){
+			$info=$dbh->errorInfo();
+
+			error_log("DropSwitchConnections::PDO Error: {$info[2]} SQL=$sql");
+			return false;
+		}else{
+			return true;
+		}
+	}
+
+	function GetSwitchConnections( $db ) {
+		$selectSQL = "select * from fac_SwitchConnection where SwitchDeviceID=\"" . $this->SwitchDeviceID . "\" order by SwitchPortNumber";
+
+		$result = mysql_query( $selectSQL, $db );
+
+		$tmpDev = new Device();
+		$tmpDev->DeviceID = $this->SwitchDeviceID;
+		$tmpDev->GetDevice( $db );
+
+		for ( $i = 1; $i <= $tmpDev->Ports; $i++ ) {
+			$connList[$i] = new SwitchConnection();
+			$connList[$i]->SwitchDeviceID = $tmpDev->DeviceID;
+			$connList[$i]->SwitchPortNumber = $i;
+		}      
+
+		while ( $connRow = mysql_fetch_array( $result ) ) {
+			$connNum = $connRow["SwitchPortNumber"];
+			$connList[$connNum]->SwitchDeviceID = $connRow["SwitchDeviceID"];
+			$connList[$connNum]->SwitchPortNumber = $connRow["SwitchPortNumber"];
+			$connList[$connNum]->EndpointDeviceID = $connRow["EndpointDeviceID"];
+			$connList[$connNum]->EndpointPort = $connRow["EndpointPort"];
+			$connList[$connNum]->Notes = $connRow["Notes"];
+		}
+
+		return $connList;
+	}
+  
+	function GetSwitchPortConnector( $db ) {
+		$selectSQL = "select * from fac_SwitchConnection where SwitchDeviceID=\"" . $this->SwitchDeviceID . "\" and SwitchPortNumber=\"" . $this->SwitchPortNumber . "\"";
+
+		$result = mysql_query( $selectSQL, $db );
+
+		if ( $row = mysql_fetch_array( $result ) ) {
+			$this->EndpointDeviceID = $row["EndpointDeviceID"];
+			$this->EndpointPort = $row["EndpointPort"];
+			$this->Notes = $row["Notes"];
+		}
+
+		return;
+	}
+  
+	function GetEndpointConnections( $db ) {
+		$selectSQL = "select * from fac_SwitchConnection where EndpointDeviceID=\"" . $this->EndpointDeviceID . "\" order by EndpointPort";
+
+		$result = mysql_query( $selectSQL, $db );
+
+		$connList = array();
+
+		while ( $connRow = mysql_fetch_array( $result ) ) {
+			$numConnects = sizeof( $connList );
+
+			$connList[$numConnects] = new SwitchConnection();
+			$connList[$numConnects]->SwitchDeviceID = $connRow["SwitchDeviceID"];
+			$connList[$numConnects]->SwitchPortNumber = $connRow["SwitchPortNumber"];
+			$connList[$numConnects]->EndpointDeviceID = $connRow["EndpointDeviceID"];
+			$connList[$numConnects]->EndpointPort = $connRow["EndpointPort"];
+			$connList[$numConnects]->Notes = $connRow["Notes"];
+		}
+
+		return $connList;
+	}  
+}
+
 	if(isset($_POST['DeviceID']) && isset($_POST['power'])){
 		if(isset($_POST['con']) && isset($_POST['pduid'])){
 			$pwrConnection=new PowerConnection();

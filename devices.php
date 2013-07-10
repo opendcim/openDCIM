@@ -346,7 +346,6 @@
 				$pwrConnection=new PowerConnection();
 				$pdu=new PowerDistribution();
 				$panel=new PowerPanel();
-				$patchPanel=new PatchConnection();
 
 				$pwrConnection->DeviceID=($dev->ParentDevice>0)?$dev->ParentDevice:$dev->DeviceID;
 				$pwrCords=$pwrConnection->GetConnectionsByDevice();
