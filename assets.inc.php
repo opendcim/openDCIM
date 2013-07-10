@@ -3256,8 +3256,8 @@ class SwitchInfo {
 			return $nameList;
 		}
 			
-		$baseOID = ".1.3.6.1.2.1.31.1.1.1.1.";
-		$baseOID = "IF-MIB::ifName"; // MIB instead of OID, also full name instead of shorthand
+		$baseOID = ".1.3.6.1.2.1.31.1.1.1.1";
+		$baseOID = "IF-MIB::ifName"; 
 
 		if(is_null($portid)){		
 			if($reply=snmprealwalk($dev->PrimaryIP,$dev->SNMPCommunity,$baseOID)){
@@ -3273,7 +3273,7 @@ class SwitchInfo {
 				}
 			}
 		} else {
-				$query = @end( explode( ":", snmp2_get( $dev->PrimaryIP, $dev->SNMPCommunity, $baseOID.$portid )));
+				$query = @end( explode( ":", snmp2_get( $dev->PrimaryIP, $dev->SNMPCommunity, $baseOID.'.'.$portid )));
 				$nameList = $query;
 		}
 		
