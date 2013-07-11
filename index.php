@@ -9,7 +9,7 @@
 
 	$user = new User();
 	$user->UserID = $_SERVER['REMOTE_USER'];
-	$user->GetUserRights( $facDB );
+	$user->GetUserRights();
 	
 	// ITSD Statistics
 	$sql = 'select count(*) as Devices from fac_Device where DeviceType!=\'Server\'';
@@ -54,10 +54,10 @@
   
 		foreach($rackList as $request){
 			$tmpContact->ContactID=$request->RequestorID;
-			$tmpContact->GetContactByID($facDB);
+			$tmpContact->GetContactByID();
     
 			$dept->DeptID=$request->Owner;
-			$dept->GetDeptByID($facDB);
+			$dept->GetDeptByID();
     
 			$reqDate=getdate(strtotime($request->RequestTime));
 			$dueDate=date('M j Y H:i:s',mktime($reqDate['hours'],$reqDate['minutes'],$reqDate['seconds'],$reqDate['mon'],$reqDate['mday']+1,$reqDate['year']));

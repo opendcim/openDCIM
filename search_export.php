@@ -31,7 +31,7 @@
 			}else{
 				$sql="select a.Name as DataCenter, b.DeviceID, c.Location, b.Position, b.Height, b.Label, b.DeviceType, b.AssetTag, b.SerialNo, b.InstallDate, b.TemplateID, b.Owner from fac_DataCenter a, fac_Device b, fac_Cabinet c where b.Cabinet=c.CabinetID and c.DataCenterID=a.DataCenterID and c.DataCenterID=$dc order by Location ASC, Position ASC";
 			}
-			$result=mysql_query($sql,$facDB);
+			$result=mysql_query($sql);
 		}else{
 			$result=array();
 		}
@@ -67,7 +67,7 @@
 			
 			if($row["Owner"] >0){
 				$dept->DeptID=$row["Owner"];
-				$dept->GetDeptByID($facDB);
+				$dept->GetDeptByID();
 				$Department=$dept->Name;
 			}
 			$dev->DeviceID=$row["DeviceID"];
@@ -104,7 +104,7 @@
 					
 					if($child->Owner >0){
 						$dept->DeptID=$child->Owner;
-						$dept->GetDeptByID($facDB);
+						$dept->GetDeptByID();
 						$cDepartment=$dept->Name;
 					}
 

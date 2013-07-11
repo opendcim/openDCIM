@@ -14,6 +14,7 @@
 
 	// Get the list of departments that this user is a member of
 	$viewList = $user->isMemberOf();
+print_r($viewList);
 
 /**
  * Determines ownership of the cabinet and returns the CSS class in case a
@@ -24,13 +25,12 @@
  * @return 	string		CSS class or empty string
  */
 function get_cabinet_owner_color($cabinet, &$deptswithcolor) {
-  global $facDB;
   $cab_color = '';
   if ($cabinet->AssignedTo != 0) {
     $tempDept = new Department();
     $tempDept->DeptID = $cabinet->AssignedTo;
     $deptid = $tempDept->DeptID;
-    $tempDept->GetDeptByID($facDB);
+    $tempDept->GetDeptByID();
     if (strtoupper($tempDept->DeptColor) != "#FFFFFF") {
        $deptswithcolor[$cabinet->AssignedTo]["color"] = $tempDept->DeptColor;
        $deptswithcolor[$cabinet->AssignedTo]["name"]= $tempDept->Name;
@@ -100,19 +100,19 @@ function get_cabinet_owner_color($cabinet, &$deptswithcolor) {
 				case "EscalationID":
 					$esc=new Escalations();
 					$esc->EscalationID=$dev->$row["Field"];
-					$esc->GetEscalation($facDB);
+					$esc->GetEscalation();
 					$tooltip.=__($row["Label"]).": $esc->Details<br>\n";
 					break;
 				case "EscalationTimeID":
 					$escTime=new EscalationTimes();
 					$escTime->EscalationTimeID=$dev->$row["Field"];
-					$escTime->GetEscalationTime($facDB);
+					$escTime->GetEscalationTime();
 					$tooltip.=__($row["Label"]).": $escTime->TimePeriod<br>\n";
 					break;
 				case "Owner":
 					$dept=new Department();
 					$dept->DeptID=$dev->Owner;
-					$dept->GetDeptByID($facDB);
+					$dept->GetDeptByID();
 					$tooltip.=__($row["Label"]).": $dept->Name<br>\n";
 					break;
 				case "TemplateID":
@@ -261,7 +261,7 @@ function get_cabinet_owner_color($cabinet, &$deptswithcolor) {
 		$templ->GetTemplateByID($facDB);
 
 		$tempDept->DeptID=$device->Owner;
-		$tempDept->GetDeptByID($facDB);
+		$tempDept->GetDeptByID();
 
 		// If a dept has been changed from white then it needs to be added to the stylesheet, legend, and device
 		if(!$device->Reservation && strtoupper($tempDept->DeptColor)!="#FFFFFF"){

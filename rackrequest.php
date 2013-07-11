@@ -21,9 +21,9 @@
 	$contact=new Contact();
 	$tmpContact=new Contact();
 	$formfix=$error='';	
-	$contactList=$contact->GetContactList($facDB);
+	$contactList=$contact->GetContactList();
 	$contact->UserID=$user->UserID;
-	$contact->GetContactByUserID($facDB);
+	$contact->GetContactByUserID();
 
 	//We only need to worry about sending email in the event this is a new submission and no other time.
 	if(isset($_POST["action"])){
@@ -32,11 +32,11 @@
 			$req->GetRequest();
 
 			$contact->ContactID=$req->RequestorID;
-			$contact->GetContactByID($facDB);
+			$contact->GetContactByID();
 		}
 
 		$tmpContact->ContactID=$_POST["requestorid"];
-		$tmpContact->GetContactByID($facDB);
+		$tmpContact->GetContactByID();
 
 		// If any port other than 25 is specified, assume encryption and authentication
 		if($config->ParameterArray['SMTPPort']!= 25){
@@ -401,7 +401,7 @@ echo '			</select>
 			<select name="owner" id="owner" class="validate[required]">
 				<option value=0>',__("Unassigned"),'</option>';
 
-	$deptList = $Dept->GetDepartmentList( $facDB );
+	$deptList = $Dept->GetDepartmentList();
 
 	foreach($deptList as $deptRow){
 		if($req->Owner==$deptRow->DeptID){$selected=' selected';}else{$selected='';}

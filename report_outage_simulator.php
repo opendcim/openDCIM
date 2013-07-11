@@ -5,7 +5,7 @@
 
 	$user = new User();
 	$user->UserID = $_SERVER["REMOTE_USER"];
-	$user->GetUserRights( $facDB );
+	$user->GetUserRights();
 
 	if(!$user->ReadAccess){
 		// No soup for you.
@@ -33,7 +33,7 @@ if (!isset($_REQUEST['action'])){
 
 	$user = new User();
 	$user->UserID = $_SERVER['REMOTE_USER'];
-	$user->GetUserRights( $facDB );
+	$user->GetUserRights();
 
 	include( 'sidebar.inc.php' );
 	
@@ -353,7 +353,7 @@ echo '		<div class="main">
 						printf( "<td>%s</td>\n", $devRow->Position );
 
 						$dept->DeptID = $devRow->Owner;
-						$dept->GetDeptByID( $facDB );
+						$dept->GetDeptByID();
 
 						printf( "<td>%s</td>\n", $dept->Name );
 						

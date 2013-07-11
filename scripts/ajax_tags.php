@@ -4,7 +4,7 @@
 
 	$user=new User();
 	$user->UserID = $_SERVER["REMOTE_USER"];
-	$user->GetUserRights($facDB);
+	$user->GetUserRights();
 
 	$tagList=array();
 	// if user has read rights then return a search if not return blank
@@ -14,7 +14,7 @@
 			$searchTerm=mysql_real_escape_string($_REQUEST["q"]);
 		}
 		$sql="SELECT * FROM fac_Tags WHERE Name LIKE '%$searchTerm%';";
-		$result=mysql_query($sql,$facDB);
+		$result=mysql_query($sql);
 		while($row=mysql_fetch_row($result)){
 			$tagList[]=$row[1];
 		}

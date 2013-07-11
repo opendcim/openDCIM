@@ -523,9 +523,9 @@ class PDF_Diag extends PDF_Sector {
 	$fill=1;
 	foreach( $yearoldlist as $devRow){
 		$dept->DeptID=$devRow->Owner;
-		$dept->GetDeptByID($facDB);
+		$dept->GetDeptByID();
 		$con->ContactID=$devRow->PrimaryContact;
-		$con->GetContactByID($facDB);
+		$con->GetContactByID();
 		if ( $devRow->MfgDate > "1970-01-01" )
 			$date1=new DateTime($devRow->MfgDate);
 		else
@@ -560,9 +560,9 @@ class PDF_Diag extends PDF_Sector {
 	if(count($year2oldlist)>0){
 		foreach($year2oldlist as $devRow){
 			$dept->DeptID=$devRow->Owner;
-			$dept->GetDeptByID($facDB);
+			$dept->GetDeptByID();
 			$con->ContactID=$devRow->PrimaryContact;
-			$con->GetContactByID($facDB);
+			$con->GetContactByID();
 			$date1=new DateTime($devRow->MfgDate);
 			$date2=new DateTime('now');
 			$interval=$date1->diff($date2);
@@ -592,9 +592,9 @@ class PDF_Diag extends PDF_Sector {
 	if(count($year3oldlist)>0){
 		foreach($year3oldlist as $devRow){
 			$dept->DeptID=$devRow->Owner;
-			$dept->GetDeptByID($facDB);
+			$dept->GetDeptByID();
 			$con->ContactID=$devRow->PrimaryContact;
-			$con->GetContactByID($facDB);
+			$con->GetContactByID();
 			$date1=new DateTime($devRow->MfgDate);
 			$date2=new DateTime('now');
 			$interval=$date1->diff($date2);
@@ -624,9 +624,9 @@ class PDF_Diag extends PDF_Sector {
 	if(count($year4oldlist)>0){
 		foreach($year4oldlist as $devRow){
 			$dept->DeptID=$devRow->Owner;
-			$dept->GetDeptByID($facDB);
+			$dept->GetDeptByID();
 			$con->ContactID=$devRow->PrimaryContact;
-			$con->GetContactByID($facDB);
+			$con->GetContactByID();
 			$date1=new DateTime($devRow->MfgDate);
 			$date2=new DateTime('now');
 			$interval=$date1->diff($date2);
@@ -656,9 +656,9 @@ class PDF_Diag extends PDF_Sector {
 	if(count($oldestlist)>0){
 		foreach($oldestlist as $devRow){
 			$dept->DeptID=$devRow->Owner;
-			$dept->GetDeptByID($facDB);
+			$dept->GetDeptByID();
 			$con->ContactID=$devRow->PrimaryContact;
-			$con->GetContactByID($facDB);
+			$con->GetContactByID();
 			$date1=new DateTime($devRow->MfgDate);
 			$date2=new DateTime('now');
 			$interval=$date1->diff($date2);

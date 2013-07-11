@@ -4,7 +4,7 @@
 
 	$user=new User();
 	$user->UserID = $_SERVER["REMOTE_USER"];
-	$user->GetUserRights($facDB);
+	$user->GetUserRights();
 
 	$deviceList=array();
 	// if user has read rights then return a search if not return blank

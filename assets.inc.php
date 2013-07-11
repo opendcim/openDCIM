@@ -393,7 +393,7 @@ class Cabinet {
 				  if ( $dept->DeptID == 0 )
 				    $dept->Name = "General Use";
 				  else
-				    $dept->GetDeptByID( $db );
+				    $dept->GetDeptByID();
 				    
 					$tree .= "			<li id=\"cab{$cabRow['CabinetID']}\"><a href=\"cabnavigator.php?cabinetid={$cabRow['CabinetID']}\">{$cabRow['Location']} [$dept->Name]</a></li>\n";
 				}

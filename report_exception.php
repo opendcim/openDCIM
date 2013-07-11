@@ -206,7 +206,7 @@ class PDF extends FPDF {
 		$fill =! $fill;
 	}
 
- 	$deptList = $dept->GetDepartmentList( $facDB );
+ 	$deptList = $dept->GetDepartmentList();
 
 	foreach( $deptList as $deptRow ) {
 		$pdf->AddPage();

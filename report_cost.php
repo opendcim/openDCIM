@@ -406,7 +406,7 @@ class PDF_Diag extends PDF_Sector {
   $pdf->Ln(); 
 
   $pdf->Bookmark( "Departments" );
-	$deptList = $dept->GetDepartmentList( $facDB );
+	$deptList = $dept->GetDepartmentList();
 
 	foreach( $deptList as $deptRow ) {
 		// Skip ITS for Now
@@ -441,7 +441,7 @@ class PDF_Diag extends PDF_Sector {
 
 		$pdf->Ln();
 
-		$contactList = $con->GetContactsForDepartment( $deptRow->DeptID, $facDB );
+		$contactList=$con->GetContactsForDepartment($deptRow->DeptID);
 
 		$fill = 0;
 

@@ -227,7 +227,7 @@ WTF was this supposed to be doing?
       		$pdf->Cell( $cellWidths[3], 6, $devRow->Position, 'LBRT', 0, 'L', $fill );
       		
       		$dept->DeptID = $devRow->Owner;
-      		$dept->GetDeptByID( $facDB );
+      		$dept->GetDeptByID();
       		
       		$pdf->Cell( $cellWidths[4], 6, $dept->Name, 'LBRT', 1, 'L', $fill );
           

@@ -4,7 +4,7 @@
 
 	$user=new User();
 	$user->UserID = $_SERVER["REMOTE_USER"];
-	$user->GetUserRights($facDB);
+	$user->GetUserRights();
 	
 	$tmpl = new DeviceTemplate();
 

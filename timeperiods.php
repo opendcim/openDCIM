@@ -5,7 +5,7 @@
 	$user = new User();
 
 	$user->UserID = $_SERVER['REMOTE_USER'];
-	$user->GetUserRights( $facDB );
+	$user->GetUserRights();
 
 	if(!$user->ContactAdmin){
 		// No soup for you.
@@ -23,23 +23,23 @@
 				switch($_POST['action']){
 					case 'Create':
 						$period->TimePeriod=$_POST['timeperiod'];
-						$period->CreatePeriod($facDB);
+						$period->CreatePeriod();
 						break;
 					case 'Update':
 						$period->TimePeriod=$_POST['timeperiod'];
 						$status=__('Updated');
-						$period->UpdatePeriod($facDB);
+						$period->UpdatePeriod();
 						break;
 					case 'Delete':
-						$period->DeletePeriod($facDB);
+						$period->DeletePeriod();
 						header('Location: '.redirect("timeperiods.php"));
 						exit;
 				}
 			}
 		}
-		$period->GetEscalationTime($facDB);
+		$period->GetEscalationTime();
 	}
-	$periodList=$period->GetEscalationTimeList($facDB);
+	$periodList=$period->GetEscalationTimeList();
 ?>
 <!doctype html>
 <html>

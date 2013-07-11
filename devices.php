@@ -189,7 +189,7 @@
 	$mfg=new Manufacturer();
 	$esc=new Escalations();
 	$escTime=new EscalationTimes();
-	$contactList=$contact->GetContactList($facDB);
+	$contactList=$contact->GetContactList();
 	$Dept=new Department();
 	$pwrCords=null;
 	$chassis="";
@@ -418,8 +418,8 @@
 	$mediaTypes=MediaTypes::GetMediaTypeList();
 	$colorCodes=ColorCoding::GetCodeList();
 	$templateList=$templ->GetTemplateList($facDB);
-	$escTimeList=$escTime->GetEscalationTimeList($facDB);
-	$escList=$esc->GetEscalationList($facDB);
+	$escTimeList=$escTime->GetEscalationTimeList();
+	$escList=$esc->GetEscalationList();
 	$deptList=$Dept->GetDepartmentList(); 
 
 	// We have a slight issue with width if we get a really long escalation name
@@ -441,7 +441,6 @@
 	$title=($dev->Label!='')?"$dev->Label :: $dev->DeviceID":"openDCIM Device Maintenance";
 
 	function buildesxtable($deviceid){
-		global $facDB;
 		$esx=new ESX();
 		$esx->DeviceID=$deviceid;
 		$vmList=$esx->GetDeviceInventory();

@@ -416,7 +416,7 @@ class PDF_Diag extends PDF_Sector {
 	$pdf->SetTextColor( 0 );
 
   $pdf->Bookmark( 'Departments' );
-	$deptList = $dept->GetDepartmentList( $facDB );
+	$deptList = $dept->GetDepartmentList();
 
 	foreach( $deptList as $deptRow ) {
 		// Skip ITS for Now
@@ -452,7 +452,7 @@ class PDF_Diag extends PDF_Sector {
 
 		$pdf->Ln();
 
-		$contactList = $con->GetContactsForDepartment( $deptRow->DeptID, $facDB );
+		$contactList=$con->GetContactsForDepartment($deptRow->DeptID);
 
 		$fill = 0;
 
@@ -554,7 +554,7 @@ class PDF_Diag extends PDF_Sector {
 		foreach( $esxList as $esxRow ) {
 			if ( $esxRow->DeviceID != $lastDevice ) {
 				$dev->DeviceID = $esxRow->DeviceID;
-				$dev->GetDevice( $facDB );
+				$dev->GetDevice();
 			}
 			
 			$pdf->Cell( $cellWidths[0], 6, $esxRow->vmName, 'LBRT', 0, 'L', $fill );

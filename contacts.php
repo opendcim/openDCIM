@@ -22,13 +22,13 @@
 		// if so present a list of choices to bulk change them all to
 		if(isset($_POST['deletecheck'])){
 			$sql="SELECT * FROM fac_Device WHERE PrimaryContact = $contactid";
-			$results=mysql_query($sql, $facDB);
+			$results=mysql_query($sql);
 			if(mysql_num_rows($results)>0){
 				print "<p>{$_POST['contact']} is currently the primary contact listed for the following equipment:</p><div><ul>";
 				while($devices=mysql_fetch_assoc($results)){
 					print "<li><a href=\"devices.php?deviceid={$devices['DeviceID']}\">{$devices['Label']}</a></li>";
 				}
-				$contacts=Contact::GetContactList($facDB);
+				$contacts=Contact::GetContactList();
 				$contlist='<select id="primarycontact" name="primarycontact"><option value="0">Unassigned</option>';
 				foreach($contacts as $contactid => $contact){
 					$contlist.="<option value=\"$contact->ContactID\">$contact->LastName, $contact->FirstName</option>";
@@ -42,15 +42,15 @@
 		}
 		if(isset($_POST['deptcheck'])){
 			$sql="SELECT * FROM fac_DeptContacts WHERE ContactID = $contactid";
-			$results=mysql_query($sql, $facDB);
+			$results=mysql_query($sql);
 			if(mysql_num_rows($results)>0){
 				$dept=new Department();
 				$emptydept=array();
 				echo "<p>Contact will be removed from the following departments</p><ul>";
 				while($depts=mysql_fetch_assoc($results)){
 					$dept->DeptID=$depts['DeptID'];
-					$dept->GetDeptByID($facDB);
-					$subresults=mysql_fetch_row(mysql_query("SELECT COUNT(*) FROM fac_DeptContacts WHERE DeptID = $dept->DeptID;",$facDB));
+					$dept->GetDeptByID();
+					$subresults=mysql_fetch_row(mysql_query("SELECT COUNT(*) FROM fac_DeptContacts WHERE DeptID = $dept->DeptID;"));
 					$subresults=$subresults[0];
 					if($subresults<2){
 						$emptydept[$dept->DeptID]=$dept->Name;
@@ -110,7 +110,7 @@
 	$formfix="";
 	if(isset($_REQUEST['contactid']) && ($_REQUEST['contactid']>0)) {
 		$contact->ContactID=(isset($_POST['contactid']) ? $_POST['contactid'] : $_GET['contactid']);
-		$contact->GetContactByID($facDB);
+		$contact->GetContactByID();
 
 		$formfix="?contactid=$contact->ContactID";
 	}
@@ -127,15 +127,15 @@
 
 		if($contact->LastName!=''){
 			if($_POST['action']=='Create'){
-					$contact->CreateContact($facDB);
+					$contact->CreateContact();
 			}else{
-				$contact->UpdateContact($facDB);
+				$contact->UpdateContact();
 			}
 		}
 		//Refresh object from db
-		$contact->GetContactByID($facDB);
+		$contact->GetContactByID();
 	}
-	$contactList=$contact->GetContactList($facDB);
+	$contactList=$contact->GetContactList();
 ?>
 <!doctype html>
 <html>

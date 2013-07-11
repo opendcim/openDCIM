@@ -21,16 +21,16 @@
 		exit;
 	}
 	$dept->DeptID=(isset($_POST['deptid']) ? $_POST['deptid'] : $_GET['deptid']);
-	$dept->GetDeptByID($facDB);
+	$dept->GetDeptByID();
 
 	// Update if form was submitted and action is set
 	if(isset($_POST['action']) && $_POST['action']=="Submit"){
 		$grpMembers=$_POST['chosen'];
-		$dept->AssignContacts($grpMembers,$facDB);
+		$dept->AssignContacts($grpMembers);
 	}
 
-	$deptList=$contact->GetContactsForDepartment($dept->DeptID,$facDB);
-	$contactList=$contact->GetContactList($facDB);
+	$deptList=$contact->GetContactsForDepartment($dept->DeptID);
+	$contactList=$contact->GetContactList();
 	$possibleList=array_obj_diff($contactList,$deptList);
 
 	function array_obj_diff($array1,$array2){

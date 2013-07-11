@@ -34,10 +34,10 @@
 			$userRights->Disabled=(isset($_POST['disabled']))?1:0;
 
 			if($_POST['action']=='Create'){
-  				$userRights->CreateUser($facDB);
+  				$userRights->CreateUser();
 			}else{
 				$status=__("Updated");
-				$userRights->UpdateUser($facDB);
+				$userRights->UpdateUser();
 			}
 		}else{
 		//Should we ever add a delete user function it will go here
@@ -46,7 +46,7 @@
 		$userRights->GetUserRights();
 	}
 
-	$userList=$userRights->GetUserList($facDB);
+	$userList=$userRights->GetUserList();
 	$adminown=($userRights->AdminOwnDevices)?"checked":"";
 	$read=($userRights->ReadAccess)?"checked":"";
 	$write=($userRights->WriteAccess)?"checked":"";

@@ -72,11 +72,11 @@
 
 		foreach($esxList as $esxRow){
 			$dev->DeviceID=$esxRow->DeviceID;
-			$dev->GetDevice($facDB);
+			$dev->GetDevice();
         
 			$dept->DeptID=$esxRow->Owner;
 			if($dept->DeptID >0){
-				$dept->GetDeptByID($facDB);
+				$dept->GetDeptByID();
 			}else{
 				$dept->Name=__("Unknown");
 			}
@@ -116,11 +116,11 @@
 
 		foreach($esxList as $esxRow){
 			$dev->DeviceID=$esxRow->DeviceID;
-			$dev->GetDevice($facDB);
+			$dev->GetDevice();
         
 			$dept->DeptID=$esxRow->Owner;
 			if($dept->DeptID >0){
-				$dept->GetDeptByID($facDB);
+				$dept->GetDeptByID();
 			}else{
 				$dept->Name=__("Unknown");
 			}

@@ -98,7 +98,7 @@
 	}
 
 
-	$deptList=$dept->GetDepartmentList($facDB);
+	$deptList=$dept->GetDepartmentList();
 	$cabList=$cab->ListCabinets();
 ?>
 <!doctype html>

@@ -535,7 +535,7 @@ if(isset($results)){
 // Departments Form Submission
 	if(isset($_REQUEST['deptid'])&&($_REQUEST['deptid']>0)){
 		$dept->DeptID = $_REQUEST['deptid'];
-		$dept->GetDeptByID( $facDB );
+		$dept->GetDeptByID();
 	}
 
 	if(isset($_REQUEST['deptaction'])&& (($_REQUEST['deptaction']=='Create') || ($_REQUEST['deptaction']=='Update'))){
@@ -547,9 +547,9 @@ if(isset($results)){
 
 		if($_REQUEST['deptaction']=='Create'){
 		  if($dept->Name != '' && $dept->Name != null)
-			 $dept->CreateDepartment($facDB);
+			 $dept->CreateDepartment();
 		}else{
-			$dept->UpdateDepartment($facDB);
+			$dept->UpdateDepartment();
 		}
 	}
 	$result=mysql_query("SELECT * FROM fac_Department LIMIT 1;");
@@ -1216,7 +1216,7 @@ echo '<div class="main">
 <?php
 
 	}elseif(isset($_GET["dept"])){
-		$deptList = $dept->GetDepartmentList( $facDB );
+		$deptList = $dept->GetDepartmentList();
 ?>
 <script type="text/javascript">
 function showgroup(obj){
@@ -1401,7 +1401,7 @@ function showgroup(obj){
 			$cab->InstallationDate=date('m/d/Y');
 		}
 
-		$deptList=$dept->GetDepartmentList($facDB);
+		$deptList=$dept->GetDepartmentList();
 		$cabList=$cab->ListCabinets($facDB);
 ?>
 
