@@ -52,7 +52,7 @@
 			$cp->Front=true;
 				
 			if (!$cp->GotoHeadDevice()){
-				$status="<blink>".__("There is a loop in the port")."</blink>";
+				$status="<blink>".__("There is a loop in this port")."</blink>";
 			} 
 		}
 		
@@ -139,7 +139,7 @@
 				$cp->PortNumber=$row["PortNumber"];
 				
 				if (!$cp->GotoHeadDevice()){
-					$status="<blink>".__("There is a loop in the port")."</blink>";
+					$status="<blink>".__("There is a loop in this port")."</blink>";
 				} 
 			}
 		}

@@ -76,7 +76,7 @@ echo '<div class="main">
   </div> <!-- END div.table -->
   <div class="table border">
   <div>
-        <div>',_("CPDs"),'</div>
+        <div>',_("Data Centers"),'</div>
         <div>',sprintf("%s ",number_format($cStats["DCs"],0, ",", ".")),'</div>
   </div>
   <div>
