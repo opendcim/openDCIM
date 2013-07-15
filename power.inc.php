@@ -38,31 +38,68 @@ class CDUTemplate {
 	var $Voltage;
 	var $Amperage;
 	var $NumOutlets;
+
+	function MakeSafe(){
+		$validSNMPVersions=array(1,'2c');
+		$validMultipliers=array(1,10,100);
+		$validProcessingProfiles=array('SingleOIDWatts','SingleOIDAmperes',
+			'Combine3OIDWatts','Combine3OIDAmperes','Convert3PhAmperes');
+
+		$this->TemplateID=intval($this->TemplateID);
+		$this->ManufacturerID=intval($this->ManufacturerID);
+		$this->Model=addslashes(trim($this->Model));
+		$this->Managed=intval($this->Managed);
+		$this->SNMPVersion=(in_array($this->SNMPVersion, $validSNMPVersions))?$this->SNMPVersion:'2c';
+		$this->VersionOID=addslashes(trim($this->VersionOID));
+		$this->Multiplier=(in_array($this->Multiplier, $validMultipliers))?$this->Multiplier:1;
+		$this->OID1=addslashes(trim($this->OID1));
+		$this->OID2=addslashes(trim($this->OID2));
+		$this->OID3=addslashes(trim($this->OID3));
+		$this->ProcessingProfile=(in_array($this->ProcessingProfile, $validProcessingProfiles))?$this->ProcessingProfile:'SingleOIDWatts';
+		$this->Voltage=intval($this->Voltage);
+		$this->Amperage=intval($this->Amperage);
+		$this->NumOutlets=intval($this->NumOutlets);
+	}
+
+	function MakeDisplay(){
+		$this->Model=stripslashes($this->Model);
+		$this->VersionOID=stripslashes($this->VersionOID);
+		$this->OID1=stripslashes($this->OID1);
+		$this->OID2=stripslashes($this->OID2);
+		$this->OID3=stripslashes($this->OID3);
+	}
+
+	static function TemplateRowToObject($row){
+		$template=new CDUTemplate();
+		$template->TemplateID=$row["TemplateID"];
+		$template->ManufacturerID=$row["ManufacturerID"];
+		$template->Model=$row["Model"];
+		$template->Managed=$row["Managed"];
+		$template->SNMPVersion=$row["SNMPVersion"];
+		$template->VersionOID=$row["VersionOID"];
+		$template->Multiplier=$row["Multiplier"];
+		$template->OID1=$row["OID1"];
+		$template->OID2=$row["OID2"];
+		$template->OID3=$row["OID3"];
+		$template->ProcessingProfile=$row["ProcessingProfile"];
+		$template->Voltage=$row["Voltage"];
+		$template->Amperage=$row["Amperage"];
+		$template->NumOutlets=$row["NumOutlets"];
+
+		$template->MakeDisplay();
+
+		return $template;
+	}
 	
 	function GetTemplateList( $db = null ) {
 		global $dbh;
 		
-		$sql = "select a.* from fac_CDUTemplate a, fac_Manufacturer b where a.ManufacturerID=b.ManufacturerID order by b.Name ASC,a.Model ASC";
+		$sql="SELECT a.* FROM fac_CDUTemplate a, fac_Manufacturer b WHERE 
+			a.ManufacturerID=b.ManufacturerID ORDER BY b.Name ASC,a.Model ASC;";
 		
-		$tmpList = array();
-		
-		foreach ( $dbh->query( $sql ) as $row ) {
-			$n = sizeof( $tmpList );
-			$tmpList[$n] = new CDUTemplate();
-			$tmpList[$n]->TemplateID = $row["TemplateID"];
-			$tmpList[$n]->ManufacturerID = $row["ManufacturerID"];
-			$tmpList[$n]->Model = $row["Model"];
-			$tmpList[$n]->Managed = $row["Managed"];
-			$tmpList[$n]->SNMPVersion = $row["SNMPVersion"];
-			$tmpList[$n]->VersionOID = $row["VersionOID"];
-			$tmpList[$n]->Multiplier = $row["Multiplier"];
-			$tmpList[$n]->OID1 = $row["OID1"];
-			$tmpList[$n]->OID2 = $row["OID2"];
-			$tmpList[$n]->OID3 = $row["OID3"];
-			$tmpList[$n]->ProcessingProfile = $row["ProcessingProfile"];
-			$tmpList[$n]->Voltage = $row["Voltage"];
-			$tmpList[$n]->Amperage = $row["Amperage"];
-			$tmpList[$n]->NumOutlets = $row["NumOutlets"];
+		$tmpList=array();
+		foreach($dbh->query($sql) as $row){
+			$tmpList[$row["TemplateID"]]=CDUTemplate::TemplateRowToObject($row);
 		}
 		
 		return $tmpList;
@@ -70,23 +107,15 @@ class CDUTemplate {
 	
 	function GetTemplate( $db = null ) {
 		global $dbh;
-		
-		$sql = sprintf( "select * from fac_CDUTemplate where TemplateID=%d", $this->TemplateID );
 
-		foreach ( $dbh->query( $sql ) as $row ) {
-			$this->ManufacturerID = $row["ManufacturerID"];
-			$this->Model = $row["Model"];
-			$this->Managed = $row["Managed"];
-			$this->SNMPVersion = $row["SNMPVersion"];
-			$this->VersionOID = $row["VersionOID"];
-			$this->Multiplier = $row["Multiplier"];
-			$this->OID1 = $row["OID1"];
-			$this->OID2 = $row["OID2"];
-			$this->OID3 = $row["OID3"];
-			$this->ProcessingProfile = $row["ProcessingProfile"];
-			$this->Voltage = $row["Voltage"];
-			$this->Amperage = $row["Amperage"];
-			$this->NumOutlets = $row["NumOutlets"];
+		$this->MakeSafe();
+		
+		$sql="SELECT * FROM fac_CDUTemplate WHERE TemplateID=$this->TemplateID";
+
+		foreach($dbh->query($sql) as $row){
+			foreach(CDUTemplate::TemplateRowToObject($row) as $prop => $value){
+				$this->$prop=$value;
+			}
 		}
 		
 		return;
@@ -94,53 +123,59 @@ class CDUTemplate {
 	
 	function CreateTemplate() {
 		global $dbh;
+
+		$this->MakeSafe();
 		
-		$sql = sprintf( "select * from fac_CDUTemplate where ManufacturerID=%d and Model=\"%s\"", intval( $this->ManufacturerID ), addslashes( $this->Model ) );
-		$result = mysql_query( $sql, $db );
+		$sql="INSERT INTO fac_CDUTemplate SET ManufacturerID=$this->ManufacturerID, 
+			Model=\"$this->Model\", Managed=$this->Managed, 
+			SNMPVersion=\"$this->SNMPVersion\", VersionOID=\"$this->VersionOID\", 
+			Multiplier=\"$this->Multiplier\", OID1=\"$this->OID1\", OID2=\"$this->OID2\", 
+			OID3=\"$this->OID3\", ProcessingProfile=\"$this->ProcessingProfile\", 
+			Voltage=$this->Voltage, Amperage=$this->Amperage, NumOutlets=$this->NumOutlets;";
 		
-		if ( mysql_num_rows( $result ) > 0 ) {
-			// A combination of this Mfg + Model already exists
+		if(!$dbh->exec($sql)){
+			// A combination of this Mfg + Model already exists most likely
 			return false;
-		}
-		
-		$sql = sprintf( "INSERT fac_CDUTemplate SET ManufacturerID=%d, Model=\"%s\", Managed=%d, SNMPVersion=\"%s\", VersionOID=\"%s\", Multiplier=\"%d\", OID1=\"%s\", OID2=\"%s\", OID3=\"%s\", ProcessingProfile=\"%s\", Voltage=%d, Amperage=%d, NumOutlets=%d",
-			$this->ManufacturerID, mysql_real_escape_string( $this->Model ), $this->Managed, mysql_real_escape_string( $this->SNMPVersion ),
-			mysql_real_escape_string( $this->VersionOID ), $this->Multiplier, mysql_real_escape_string( $this->OID1 ), mysql_real_escape_string( $this->OID2 ),
-			mysql_real_escape_string( $this->OID3 ), mysql_real_escape_string( $this->ProcessingProfile ), $this->Voltage, $this->Amperage, $this->NumOutlets );
-		
-		if ( ! $dbh->exec( $sql ) )
-			return false;
-		else
+		}else{
 			$this->TemplateID = $dbh->lastInsertID();
+		}
 		
 		return $this->TemplateID;
 	}
 	
 	function UpdateTemplate() {
 		global $dbh;
+
+		$this->MakeSafe();
 		
-		$sql = sprintf( "UPDATE fac_CDUTemplate SET ManufacturerID=%d, Model=\"%s\", Managed=%d, SNMPVersion=\"%s\", VersionOID=\"%s\", Multiplier=\"%d\", OID1=\"%s\", OID2=\"%s\", OID3=\"%s\", ProcessingProfile=\"%s\", Voltage=%d, Amperage=%d, NumOutlets=%d where TemplateID=%d",
-			$this->ManufacturerID, mysql_real_escape_string( $this->Model ), $this->Managed, mysql_real_escape_string( $this->SNMPVersion ), mysql_real_escape_string( $this->VersionOID ),
-			$this->Multiplier, mysql_real_escape_string( $this->OID1 ), mysql_real_escape_string( $this->OID2 ), mysql_real_escape_string( $this->OID3 ), 
-			mysql_real_escape_string( $this->ProcessingProfile ), $this->Voltage, $this->Amperage, $this->NumOutlets, $this->TemplateID );
+		$sql="UPDATE fac_CDUTemplate SET ManufacturerID=$this->ManufacturerID, 
+			Model=\"$this->Model\", Managed=$this->Managed, 
+			SNMPVersion=\"$this->SNMPVersion\", VersionOID=\"$this->VersionOID\", 
+			Multiplier=\"$this->Multiplier\", OID1=\"$this->OID1\", OID2=\"$this->OID2\", 
+			OID3=\"$this->OID3\", ProcessingProfile=\"$this->ProcessingProfile\", 
+			Voltage=$this->Voltage, Amperage=$this->Amperage, NumOutlets=$this->NumOutlets
+			WHERE TemplateID=$this->TemplateID;";
 		
-		if ( ! $dbh->exec( $sql ) )
+		if(!$dbh->query($sql)){
 			return false;
-		else
+		}else{
 			return true;
+		}
 	}
 	
 	function DeleteTemplate() {
 		global $dbh;
+
+		$this->MakeSafe();
 		
 		// First step is to clear any power strips referencing this template
-		$sql = sprintf( "update fac_PowerDistribution set CDUTemplateID=\"\" where TemplateID=%d", $this->TemplateID );
-		$dbh->execute( $sql );
+		$sql="UPDATE fac_PowerDistribution SET CDUTemplateID=0 WHERE TemplateID=$this->TemplateID;";
+		$dbh->query($sql);
 		
-		$sql = sprintf( "delete from fac_CDUTemplate where TemplateID=%d", $this->TemplateID );
-		$dbh->exec( $sql );
+		$sql="DELETE FROM fac_CDUTemplate WHERE TemplateID=$this->TemplateID;";
+		$dbh->exec($sql);
 		
-		return;
+		return true;
 	}
 }
 
@@ -155,7 +190,6 @@ class PowerConnection {
 	var $PDUPosition;
 	var $DeviceID;
 	var $DeviceConnNumber;
-
 
 	private function MakeSafe(){
 		$this->PDUID=intval($this->PDUID);
@@ -219,7 +253,8 @@ class PowerConnection {
 		global $dbh;
 
 		$this->MakeSafe();
-		$sql="SELECT * FROM fac_PowerConnection WHERE PDUID=$this->PDUID AND PDUPosition=$this->PDUPosition;";
+		$sql="SELECT * FROM fac_PowerConnection WHERE PDUID=$this->PDUID AND 
+			PDUPosition=$this->PDUPosition;";
     
 		if($row=$dbh->query($sql)->fetch()){
 			$this->PDUID=$row["PDUID"];
@@ -233,7 +268,8 @@ class PowerConnection {
 		global $dbh;
 
 		$this->MakeSafe();
-		$sql="SELECT * FROM fac_PowerConnection WHERE PDUID=$this->PDUID ORDER BY PDUPosition;";
+		$sql="SELECT * FROM fac_PowerConnection WHERE PDUID=$this->PDUID ORDER BY 
+			PDUPosition;";
 
 		$connList=array();
 		foreach($dbh->query($sql) as $row){
@@ -317,14 +353,21 @@ class PowerDistribution {
 		$this->PanelPole2=intval($this->PanelPole2);
 	}
 
+	function MakeDisplay(){
+		$this->Label=stripslashes($this->Label);
+		$this->IPAddress=stripslashes($this->IPAddress);
+		$this->SNMPCommunity=stripslashes($this->SNMPCommunity);
+		$this->FirmwareVersion=stripslashes($this->FirmwareVersion);
+	}
+
 	static private function PDURowToObject($row){
 		$PDU=new PowerDistribution();
 		$PDU->PDUID=$row["PDUID"];
-		$PDU->Label=stripslashes($row["Label"]);
+		$PDU->Label=$row["Label"];
 		$PDU->CabinetID=$row["CabinetID"];
 		$PDU->TemplateID=$row["TemplateID"];
-		$PDU->IPAddress=stripslashes($row["IPAddress"]);
-		$PDU->SNMPCommunity=stripslashes($row["SNMPCommunity"]);
+		$PDU->IPAddress=$row["IPAddress"];
+		$PDU->SNMPCommunity=$row["SNMPCommunity"];
 		$PDU->FirmwareVersion=$row["FirmwareVersion"];
 		$PDU->PanelID=$row["PanelID"];
 		$PDU->BreakerSize=$row["BreakerSize"];
@@ -333,6 +376,8 @@ class PowerDistribution {
 		$PDU->FailSafe=$row["FailSafe"];
 		$PDU->PanelID2=$row["PanelID2"];
 		$PDU->PanelPole2=$row["PanelPole2"];
+
+		$PDU->MakeDisplay();
 
 		return $PDU;
 	}
@@ -348,7 +393,7 @@ class PowerDistribution {
 			FailSafe=$this->FailSafe, PanelID2=$this->PanelID2, PanelPole2=$this->PanelPole2;";
 
 		if($this->DB->exec($sql)){
-			$this->PDUID=$dbh->lastInsertId();
+			$this->PDUID=$this->DB->lastInsertId();
 
 			return $this->PDUID;
 		}else{
@@ -390,34 +435,16 @@ class PowerDistribution {
 
 		$sql="SELECT * FROM fac_PowerDistribution WHERE PDUID=$this->PDUID;";
 
-		if($PDUrow=$this->DB->query($sql)->fetch()){
-			$this->Label=stripslashes($PDUrow["Label"]);
-			$this->CabinetID=$PDUrow["CabinetID"];
-			$this->TemplateID=$PDUrow["TemplateID"];
-			$this->IPAddress=stripslashes($PDUrow["IPAddress"]);
-			$this->SNMPCommunity=stripslashes($PDUrow["SNMPCommunity"]);
-			$this->FirmwareVersion=$PDUrow["FirmwareVersion"];
-			$this->PanelID=$PDUrow["PanelID"];
-			$this->BreakerSize=$PDUrow["BreakerSize"];
-			$this->PanelPole=$PDUrow["PanelPole"];
-			$this->InputAmperage=$PDUrow["InputAmperage"];
-			$this->FailSafe=$PDUrow["FailSafe"];
-			$this->PanelID2=$PDUrow["PanelID2"];
-			$this->PanelPole2=$PDUrow["PanelPole2"];
+		if($PDURow=$this->DB->query($sql)->fetch()){
+			foreach(PowerDistribution::PDURowToObject($PDURow) as $prop => $value){
+				$this->$prop=$value;
+			}
 		}else{
-			$this->Label=null;
-			$this->CabinetID=null;
-			$this->TemplateID=null;
-			$this->IPAddress=null;
-			$this->SNMPCommunity=null;
-			$this->FirmwareVersion=null;
-			$this->PanelID=null;
-			$this->BreakerSize=null;
-			$this->PanelPole=null;
-			$this->InputAmperage=null;
-			$this->FailSafe=null;
-			$this->PanelID2=null;
-			$this->PanelPole2=null;
+			foreach($this as $prop => $value){
+				if($prop!='PDUID'){
+					$this->$prop=null;
+				}
+			}
 		}
 
 		return true;
@@ -429,8 +456,7 @@ class PowerDistribution {
 		$sql="SELECT * FROM fac_PowerDistribution WHERE PanelID=$this->PanelID
 			 OR PanelID2=$this->PanelID ORDER BY PanelPole ASC, CabinetID, Label";
 
-		$PDUList = array();
-
+		$PDUList=array();
 		foreach($this->DB->query($sql) as $PDURow){
 			$PDUList[$PDURow["PDUID"]]=PowerDistribution::PDURowToObject($PDURow);
 		}
@@ -443,7 +469,7 @@ class PowerDistribution {
 
 		$sql="SELECT * FROM fac_PowerDistribution WHERE CabinetID=$this->CabinetID;";
 
-		$PDUList = array();
+		$PDUList=array();
 		foreach($this->DB->query($sql) as $PDURow){
 			$PDUList[$PDURow["PDUID"]]=PowerDistribution::PDURowToObject($PDURow);
 		}
@@ -456,7 +482,7 @@ class PowerDistribution {
 
 		$sql="SELECT * FROM fac_PowerDistribution WHERE Label LIKE \"%$this->Label%\";";
 
-		$PDUList = array();
+		$PDUList=array();
 		foreach($this->DB->query($sql) as $PDURow){
 			$PDUList[$PDURow["PDUID"]]=PowerDistribution::PDURowToObject($PDURow);
 		}
@@ -464,7 +490,7 @@ class PowerDistribution {
 		return $PDUList;
 	}
 
-	function GetWattage() {
+	function GetWattage(){
 		$this->MakeSafe();
 
 		$sql="SELECT Wattage FROM fac_PDUStats WHERE PDUID=$this->PDUID;";
@@ -476,7 +502,7 @@ class PowerDistribution {
 		}
 	}
 	
-	function GetWattageByDC($dc=null) {
+	function GetWattageByDC($dc=null){
 		// What was the idea behind this null function?
 		if($dc==null){
 			$sql="select count(Wattage) from fac_PDUStats";
@@ -489,7 +515,7 @@ class PowerDistribution {
 		return $this->DB->query($sql)->fetchColumn();
 	}
 	
-	function GetWattageByCabinet( $CabinetID ) {
+	function GetWattageByCabinet($CabinetID){
 		$CabinetID=intval($CabinetID);
 		if($CabinetID <1){
 			return 0;
@@ -571,24 +597,33 @@ class PowerDistribution {
 				$pollValue3 = @$statsOutput[2];
 			}
 			
-			if ( $pollValue1 != "" ) {
+			if($pollValue1!=""){
+				// The multiplier should be an int but no telling what voodoo the db might cause
+				$pollValue1=intval($pollValue1);
+				$pollValue2=intval($pollValue2);
+				$pollValue3=intval($pollValue3);
+				$row["Multiplier"]=intval($row["Multiplier"]);
+				$row["Voltage"]=intval($row["Voltage"]);
+
 				switch ( $row["ProcessingProfile"] ) {
 					case "SingleOIDAmperes":
-						$amps = intval( $pollValue1 ) / intval( $row["Multiplier"] );
-						$watts = $amps * intval( $row["Voltage"] );
+						$amps=$pollValue1/$row["Multiplier"];
+						$watts=$amps * $row["Voltage"];
 						break;
 					case "Combine3OIDAmperes":
-						$amps = ( intval( $pollValue1 ) + intval( $pollValue2 ) + intval( $pollValue3 ) ) / intval( $row["Multiplier"] );
-						$watts = $amps * intval( $row["Voltage"] );
+						$amps=($pollValue1 + $pollValue2 + $pollValue3) / $row["Multiplier"];
+						$watts=$amps * $row["Voltage"];
 						break;
 					case "Convert3PhAmperes":
-						$amps = ( intval( $pollValue1 ) + intval( $pollValue2 ) + intval( $pollValue3 ) ) / intval( $row["Multiplier"] ) / 3;
-						$watts = $amps * 1.732 * intval( $row["Voltage"] );
+						// OO does this next formula need another set of () to be clear?
+						$amps=($pollValue1 + $pollValue2 + $pollValue3) / $row["Multiplier"] / 3;
+						$watts=$amps * 1.732 * $row["Voltage"];
 						break;
 					case "Combine3OIDWatts":
-						$watts = ( intval( $pollValue1 ) + intval( $pollValue2 ) + intval( $pollValue3 ) ) / intval( $row["Multiplier"] );
+						$watts=($pollValue1 + $pollValue2 + $pollValue3) / $row["Multiplier"];
+						break;
 					default:
-						$watts = intval( $pollValue1 ) / intval( $row["Multiplier"] );
+						$watts=$pollValue1 / $row["Multiplier"];
 						break;
 				}
 			}
@@ -711,119 +746,129 @@ class PowerPanel {
 					purpose of building out a panel schedule.
 	*/
 	
-  var $PanelID;
-  var $PowerSourceID;
-  var $PanelLabel;
-  var $NumberOfPoles;
-  var $MainBreakerSize;
-  var $PanelVoltage;
-  var $NumberScheme;
-  
-  function GetPanelsByDataCenter( $DataCenterID, $db ) {
-    $select_sql = "select * from fac_PowerPanel a, fac_PowerSource b where a.PowerSourceID=b.PowerSourceID and b.DataCenterID=\"" . intval($DataCenterID) . "\" order by PanelLabel";
-    $result = mysql_query( $select_sql, $db );
-    
-    $PanelList = array();
-    
-    while ( $row = mysql_fetch_array( $result ) ) {
-      $PanelID = $row["PanelID"];
-      
-      $PanelList[$PanelID]->PanelID = $row["PanelID"];
-      $PanelList[$PanelID]->PowerSourceID = $row["PowerSourceID"];
-      $PanelList[$PanelID]->PanelLabel = stripslashes($row["PanelLabel"]);
-      $PanelList[$PanelID]->NumberOfPoles = $row["NumberOfPoles"];
-      $PanelList[$PanelID]->MainBreakerSize = $row["MainBreakerSize"];
-	  $PanelList[$PanelID]->PanelVoltage = $row["PanelVoltage"];
-      $PanelList[$PanelID]->NumberScheme = $row["NumberScheme"];
-    }
-    
-    return $PanelList;
-  }
+	var $PanelID;
+	var $PowerSourceID;
+	var $PanelLabel;
+	var $NumberOfPoles;
+	var $MainBreakerSize;
+	var $PanelVoltage;
+	var $NumberScheme;
 
-  function GetPanelList( $db ) {
-    $sql = "select * from fac_PowerPanel order by PanelLabel";
-    $result = mysql_query( $sql, $db );
-
-    $PanelList = array();
-
-    while ( $row = mysql_fetch_array( $result ) ) {
-      $PanelID = $row["PanelID"];
-
-      $PanelList[$PanelID]=new PowerPanel();
-      $PanelList[$PanelID]->PanelID = $row["PanelID"];
-      $PanelList[$PanelID]->PowerSourceID = $row["PowerSourceID"];
-      $PanelList[$PanelID]->PanelLabel = stripslashes($row["PanelLabel"]);
-      $PanelList[$PanelID]->NumberOfPoles = $row["NumberOfPoles"];
-      $PanelList[$PanelID]->MainBreakerSize = $row["MainBreakerSize"];
-	  $PanelList[$PanelID]->PanelVoltage = $row["PanelVoltage"];
-      $PanelList[$PanelID]->NumberScheme = $row["NumberScheme"];
-    }
-
-    return $PanelList;
-  }
-  
-  function GetPanelListBySource( $db ) {
-    $sql = "select * from fac_PowerPanel where PowerSourceID=\"".intval($this->PowerSourceID)."\" order by PanelLabel";
-    $result = mysql_query( $sql, $db );
-
-    $PanelList = array();
-
-    while ( $row = mysql_fetch_array( $result ) ) {
-      $PanelID = $row["PanelID"];
-
-      $PanelList[$PanelID]->PanelID = $row["PanelID"];
-      $PanelList[$PanelID]->PowerSourceID = $row["PowerSourceID"];
-      $PanelList[$PanelID]->PanelLabel = stripslashes($row["PanelLabel"]);
-      $PanelList[$PanelID]->NumberOfPoles = $row["NumberOfPoles"];
-      $PanelList[$PanelID]->MainBreakerSize = $row["MainBreakerSize"];
-	  $PanelList[$PanelID]->PanelVoltage = $row["PanelVoltage"];
-      $PanelList[$PanelID]->NumberScheme = $row["NumberScheme"];
-    }
-
-    return $PanelList;
-  }
-  
-  function GetPanel( $db ) {
-	$sql = "select * from fac_PowerPanel where PanelID=\"" . intval( $this->PanelID ) . "\"";
-	$result = mysql_query( $sql, $db );
-
-	if ( $row = mysql_fetch_array( $result ) ) {
-		$this->PanelID = $row["PanelID"];
-		$this->PowerSourceID = $row["PowerSourceID"];
-		$this->PanelLabel = $row["PanelLabel"];
-		$this->NumberOfPoles = $row["NumberOfPoles"];
-		$this->MainBreakerSize = $row["MainBreakerSize"];
-		$this->PanelVoltage = $row["PanelVoltage"];
-		$this->NumberScheme = $row["NumberScheme"];
+	function MakeSafe(){
+		$this->PanelID=intval($this->PanelID);
+		$this->PowerSourceID=intval($this->PowerSourceID);
+		$this->PanelLabel=addslashes(trim($this->PanelLabel));
+		$this->NumberOfPoles=intval($this->NumberOfPoles);
+		$this->MainBreakerSize=intval($this->MainBreakerSize);
+		$this->PanelVoltage=intval($this->PanelVoltage);
+		$this->NumberScheme=($this->NumberScheme=='Sequential')?$this->NumberScheme:'Odd/Even';
 	}
-  }
+
+	function MakeDisplay(){
+		$this->PanelLabel=stripslashes($this->PanelLabel);
+	}
+
+	static function PanelRowToObject($row){
+		$panel=new PowerPanel();
+		$panel->PanelID=$row["PanelID"];
+		$panel->PowerSourceID=$row["PowerSourceID"];
+		$panel->PanelLabel=$row["PanelLabel"];
+		$panel->NumberOfPoles=$row["NumberOfPoles"];
+		$panel->MainBreakerSize=$row["MainBreakerSize"];
+		$panel->PanelVoltage=$row["PanelVoltage"];
+		$panel->NumberScheme=$row["NumberScheme"];
+
+		$panel->MakeDisplay();
+
+		return $panel;
+	}
+
+	function Search($sql){
+		global $dbh;
+
+		$PanelList=array();
+		foreach($dbh->query($sql) as $row){    
+			$PanelList[$row["PanelID"]]=PowerPanel::PanelRowToObject($row);
+		}
+
+		return $PanelList;
+	}
+	
+	static function GetPanelsByDataCenter($DataCenterID){
+		$sql="SELECT * FROM fac_PowerPanel a, fac_PowerSource b WHERE 
+			a.PowerSourceID=b.PowerSourceID AND b.DataCenterID=\"".intval($DataCenterID).
+			"\" ORDER BY PanelLabel;";
+	  
+		return $this->Search($sql);
+	}
+
+	function GetPanelList(){
+		$sql="SELECT * FROM fac_PowerPanel ORDER BY PanelLabel;";
+
+		return $this->Search($sql);
+	}
+  
+	function GetPanelListBySource(){
+		$this->MakeSafe();
+
+		$sql="SELECT * FROM fac_PowerPanel WHERE PowerSourceID=$this->PowerSourceID ORDER BY PanelLabel";
+
+		return $this->Search($sql);
+	}
+  
+	function GetPanel( $db ) {
+		global $dbh;
+
+		$sql="SELECT * FROM fac_PowerPanel WHERE PanelID=$this->PanelID;";
+
+		if($row=$dbh->query($sql)->fetch()){
+			foreach(PowerPanel::PanelRowToObject($row) as $prop => $value){
+				$this->$prop=$value;
+			}
+		}else{
+			foreach($this as $prop => $value){
+				if($prop!='PanelID'){
+					$this->$prop=null;
+				}
+			}
+		}
+		return true;
+	}
 
   
-  function CreatePanel( $db ) {
-	/* Only 2 types of number schemes */
-	if ( ! $this->NumberScheme == "Sequential" )
-		$this->NumberScheme = "Odd/Even";
+	function CreatePanel(){
+		global $dbh;
+		$this->MakeSafe();
 
-	$sql = "insert into fac_PowerPanel set PowerSourceID=\"" . intval( $this->PowerSourceID ) . "\", PanelLabel=\"" . addslashes( $this->PanelLabel ) . "\", NumberOfPoles=\"" . intval( $this->NumberOfPoles ) . "\", MainBreakerSize=\"" . intval( $this->MainBreakerSize ) . "\", PanelVoltage=\"" . intval( $this->PanelVoltage ) . "\", NumberScheme=\"" . $this->NumberScheme . "\"";
+		$sql="INSERT INTO fac_PowerPanel SET PowerSourceID=$this->PowerSourceID, 
+			PanelLabel=\"$this->PanelLabel\", NumberOfPoles=$this->NumberOfPoles, 
+			MainBreakerSize=$this->MainBreakerSize, PanelVoltage=$this->PanelVoltage, 
+			NumberScheme=\"$this->NumberScheme\";";
 
-	$result = mysql_query( $sql, $db );
+		if($dbh->exec($sql)){
+			$this->PanelID=$dbh->lastInsertId();
 
-	$this->PanelID = mysql_insert_id();
+			return $this->PanelID;
+		}else{
+			$info=$this->DB->errorInfo();
 
-	return $this->PanelID;
-  }
+			error_log("CreatePanel::PDO Error: {$info[2]} SQL=$sql");
 
-  function UpdatePanel( $db ) {
-        /* Only 2 types of number schemes */
-        if ( ! $this->NumberScheme == "Sequential" )
-                $this->NumberScheme = "Odd/Even";
+			return false;
+		}
+	}
 
-        $sql = "update fac_PowerPanel set PowerSourceID=\"" . intval( $this->PowerSourceID ) . "\", PanelLabel=\"" . addslashes( $this->PanelLabel ) . "\", NumberOfPoles=\"" . intval( $this->NumberOfPoles ) . "\", MainBreakerSize=\"" . intval( $this->MainBreakerSize ) . "\", PanelVoltage=\"" . intval( $this->PanelVoltage ) . "\", NumberScheme=\"" . $this->NumberScheme . "\" where PanelID=\"" . intval( $this->PanelID ) . "\"";
+	function UpdatePanel(){
+		global $dbh;
+		$this->MakeSafe();
 
-        $result = mysql_query( $sql, $db );
+		$sql="UPDATE fac_PowerPanel SET PowerSourceID=$this->PowerSourceID, 
+			PanelLabel=\"$this->PanelLabel\", NumberOfPoles=$this->NumberOfPoles, 
+			MainBreakerSize=$this->MainBreakerSize, PanelVoltage=$this->PanelVoltage, 
+			NumberScheme=\"$this->NumberScheme\" WHERE PanelID=$this->PanelID;";
 
-	return $result;
-  }
+		return $dbh->query($sql);
+	}
 }
 
 class PanelSchedule {
@@ -831,46 +876,69 @@ class PanelSchedule {
 						other words - if you take down Panel A4, what cabinets will be affected?
 	*/
 	
-  var $PanelID;
-  var $PolePosition;
-  var $NumPoles;
-  var $Label;
-  
-  function MakeConnection( $db ) {
-    $insert_sql = "insert into fac_PanelSchedule values( \"" . intval($this->PanelID) . "\", \"" . intval($this->PolePosition) . "\", \"" . intval($this->NumPoles) . "\", \"" . addslashes($this->Label) . "\" on duplicate key update fac_PanelSchedule set NumPoles=\"" . intval($this->NumPoles) . "\", Label=\"" . addslashes($this->Label) . "\" where PanelID=\"" . intval($this->PanelID) . "\" and PolePosition=\"" . intval($this->PolePosition) . "\"";
-    return mysql_query( $insert_sql, $db );
-  }
-  
-  function DisplayPanel( $db ) {
-    $html = "<table border=1>\n";
-      
-    $pan = new PowerPanel();
-    $pan->PanelID = $this->PanelID;
-    $pan->GetPanel( $db );
-   
-    $sched = array_fill( 1, $pan->NumberOfPoles, "<td>&nbsp;</td>" );
-    
-    $select_sql = "select * from fac_PanelSchedule where PanelID=\"" . intval($this->PanelID) . "\" order by PolePosition ASC";
-    $result = mysql_query( $select_sql, $db );
-  
-    while ( $row = mysql_fetch_assoc( $result ) ) {
-      $sched[$row["PolePosition"]] = "<td rowspan=" . $row["NumPoles"] . ">" . $row["Label"] . "</td>";
-      
-      if ( $row["NumPoles"] > 1 )
-        $sched[$row["PolePosition"] + 2] = "";
-      
-      if ( $row["NumPoles"] > 2 )
-        $sched[$row["PolePosition"] + 4] = "";
-    }
-    
-    for ( $i = 1; $i < $pan->NumberOfPoles + 1; $i++ ) {
-      $html .= "<tr><td>" . $i . "</td>" . $sched[$i] . "<td>" . ($i + 1) . "</td>" . $sched[++$i] . "</tr>\n";
-    }
-    
-    $html .= "</table>\n";
-    
-    return $html;
-  }
+	var $PanelID;
+	var $PolePosition;
+	var $NumPoles;
+	var $Label;
+
+	function MakeSafe(){
+		$this->PanelID=intval($this->PanelID);
+		$this->PolePosition=intval($this->PolePosition);
+		$this->NumPoles=intval($this->NumPoles);
+		$this->Label=addslashes(trim($this->Label));
+	}
+
+	function MakeDisplay(){
+		$this->Label=stripslashes($this->Label);
+	}
+
+	function MakeConnection(){
+		global $dbh;
+
+		$this->MakeSafe();
+
+		$sql="INSERT INTO fac_PanelSchedule SET PanelID=$this->PanelID, 
+			PolePosition=$this->PolePosition, NumPoles=$this->NumPoles, 
+			Label=\"$this->Label\" ON DUPLICATE KEY UPDATE Label=\"$this->Label\", 
+			NumPoles=$this->NumPoles;";
+
+		return $dbh->query($sql);
+	}
+
+	function DisplayPanel(){
+		global $dbh;
+
+		$html="<table border=1>\n";
+		  
+		$pan=new PowerPanel();
+		$pan->PanelID=$this->PanelID;
+		$pan->GetPanel();
+		 
+		$sched=array_fill( 1, $pan->NumberOfPoles, "<td>&nbsp;</td>" );
+
+		$sql="SELECT * FROM fac_PanelSchedule WHERE PanelID=$this->PanelID ORDER BY PolePosition ASC;";
+		$result = mysql_query( $select_sql, $db );
+
+		foreach($dbh->query($sql) as $row){
+			$sched[$row["PolePosition"]]="<td rowspan={$row["NumPoles"]}>{$row["Label"]}</td>";
+		  
+			if($row["NumPoles"] >1){
+				$sched[$row["PolePosition"] + 2] = "";
+			}
+		  
+			if($row["NumPoles"] >2){
+				$sched[$row["PolePosition"] + 4] = "";
+			}
+
+			for($i=1; $i< $pan->NumberOfPoles + 1; $i++){
+				$html .= "<tr><td>$i</td>{$sched[$i]}<td>".($i+1)."</td>{$sched[++$i]}</tr>\n";
+			}
+		}
+
+		$html .= "</table>\n";
+
+		return $html;
+	}
 }
 
 class PowerSource {
@@ -886,112 +954,154 @@ class PowerSource {
 						power sources, but it may be implemented in a future release.
 	*/
 	
-  var $PowerSourceID;
-  var $SourceName;
-  var $DataCenterID;
-  var $IPAddress;
-  var $Community;
-  var $LoadOID;
-  var $Capacity;
-  
-  function CreatePowerSource( $db ) {
-    $sql = "insert into fac_PowerSource set SourceName=\"" . addslashes( $this->SourceName ) . "\", DataCenterID=" . intval( $this->DataCenterID ) . ", IPAddress=\"" . addslashes( $this->IPAddress ) . "\", Community=\"" . addslashes( $this->Community ) . "\", LoadOID=\"" . addslashes( $this->LoadOID ) . "\", Capacity=" . intval( $this->Capacity );
+	var $PowerSourceID;
+	var $SourceName;
+	var $DataCenterID;
+	var $IPAddress;
+	var $Community;
+	var $LoadOID;
+	var $Capacity;
 
-    $result = mysql_query( $sql, $db );
+	function MakeSafe(){
+		$this->PowerSourceID=intval($this->PowerSourceID);
+		$this->SourceName=addslashes(trim($this->SourceName));
+		$this->DataCenterID=intval($this->DataCenterID);
+		$this->IPAddress=addslashes(trim($this->IPAddress));
+		$this->Community=addslashes(trim($this->Community));
+		$this->LoadOID=addslashes(trim($this->LoadOID));
+		$this->Capacity=intval($this->Capacity);
+	}
 
-  }
+	function MakeDisplay(){
+		$this->SourceName=stripslashes($this->SourceName);
+		$this->IPAddress=stripslashes($this->IPAddress);
+		$this->Community=stripslashes($this->Community);
+		$this->LoadOID=stripslashes($this->LoadOID);
+	}
 
-  function UpdatePowerSource( $db ) {
-	$sql = "update fac_PowerSource set SourceName=\"" . addslashes( $this->SourceName ) . "\", DataCenterID=" . intval( $this->DataCenterID ) . ", IPAddress=\"" . addslashes( $this->IPAddress ) . "\", Community=\"" . addslashes( $this->Community ) . "\", LoadOID=\"" . addslashes( $this->LoadOID ) . "\", Capacity=" . intval( $this->Capacity ) . " where PowerSourceID=\"" . intval( $this->PowerSourceID ) . "\"";
+	static function PowerSourceRowToObject($row){
+		$source=new PowerSource;
+		$source->PowerSourceID=$row["PowerSourceID"];
+		$source->SourceName=$row["SourceName"];
+		$source->DataCenterID=$row["DataCenterID"];
+		$source->IPAddress=$row["IPAddress"];
+		$source->Community=$row["Community"];
+		$source->LoadOID=$row["LoadOID"];
+		$source->Capacity=$row["Capacity"];
 
-	$result = mysql_query( $sql, $db );
+		$source->MakeDisplay();
 
-	return $result;
-  }
+		return $source;
+	}
 
-  function GetSourcesByDataCenter( $db ) {
-    $select_sql = "select * from fac_PowerSource where DataCenterID=\"" . intval($this->DataCenterID) . "\"";
-    $result = mysql_query( $select_sql, $db );
-    
-    $SourceList = array();
-    
-    while ( $row = mysql_fetch_array( $result ) ) {
-      $SourceID = count($SourceList);
-      
-      $SourceList[$SourceID] = new PowerSource;
-      $SourceList[$SourceID]->PowerSourceID = $row["PowerSourceID"];
-      $SourceList[$SourceID]->SourceName = $row["SourceName"];
-      $SourceList[$SourceID]->DataCenterID = $row["DataCenterID"];
-      $SourceList[$SourceID]->IPAddress = $row["IPAddress"];
-      $SourceList[$SourceID]->Community = $row["Community"];
-      $SourceList[$SourceID]->LoadOID = $row["LoadOID"];
-      $SourceList[$SourceID]->Capacity = $row["Capacity"];
-    }
-    
-    return $SourceList;
-  }
-  
-  function GetPSList( $db ) {
-    $sql = "select * from fac_PowerSource order by SourceName ASC";
-    $result = mysql_query( $sql, $db );
+	function CreatePowerSource(){
+		global $dbh;
 
-    $SourceList = array();
+		$this->MakeSafe();
 
-    while ( $row = mysql_fetch_array( $result ) ) {
-      $SourceID = count($SourceList);
+		$sql="INSERT INTO fac_PowerSource SET SourceName=\"$this->SourceName\", 
+			DataCenterID=$this->DataCenterID, IPAddress=\"$this->IPAddress\", 
+			Community=\"$this->Community\", LoadOID=\"$this->LoadOID\", 
+			Capacity=$this->Capacity;";
 
-      $SourceList[$SourceID] = new PowerSource;
-      $SourceList[$SourceID]->PowerSourceID = $row["PowerSourceID"];
-      $SourceList[$SourceID]->SourceName = $row["SourceName"];
-      $SourceList[$SourceID]->DataCenterID = $row["DataCenterID"];
-      $SourceList[$SourceID]->IPAddress = $row["IPAddress"];
-      $SourceList[$SourceID]->Community = $row["Community"];
-      $SourceList[$SourceID]->LoadOID = $row["LoadOID"];
-      $SourceList[$SourceID]->Capacity = $row["Capacity"];
-    }
+		if(!$dbh->exec($sql)){
+			return false;
+		}else{
+			$this->PowerSourceID = $dbh->lastInsertID();
+		}
+		
+		return $this->PowerSourceID;
+	}
 
-    return $SourceList;
-  } 
-  
-  function GetSource( $db ) {
-    $selectSQL = "select * from fac_PowerSource where PowerSourceID=\"" . intval($this->PowerSourceID) . "\"";
-    $result = mysql_query( $selectSQL, $db );
-    
-    if ( $row = mysql_fetch_array( $result ) ) {
-      $this->PowerSourceID = $row["PowerSourceID"];
-      $this->SourceName = $row["SourceName"];
-      $this->DataCenterID = $row["DataCenterID"];
-      $this->IPAddress = $row["IPAddress"];
-      $this->Community = $row["Community"];
-      $this->LoadOID = $row["LoadOID"];
-      $this->Capacity = $row["Capacity"];
-    }
-  }
-  
-  function GetCurrentLoad( $db ) {
-  	$totalLoad = 0;
-  	
-	// Liebert UPS Query
-  	// Query OID .1.3.6.1.4.1.476.1.1.1.1.1.2.0 to get the model number
-  	// If model type is blank (NFinity), OID = 1.3.6.1.4.1.476.1.42.3.5.2.2.1.8.3
-  	// If model type is Series 300 / 600, OID = .1.3.6.1.4.1.476.1.1.1.1.4.2.0
-    $pollCommand = "/usr/bin/snmpget -v 1 -c " . $this->Community . " " . $this->IPAddress . " .1.3.6.1.4.1.476.1.1.1.1.1.2.0 | /bin/cut -d: -f4";
-    exec( $pollCommand, $snmpOutput );
-    
-    if ( @$snmpOutput[0] != "" ) {
-	    $pollCommand = "/usr/bin/snmpget -v 1 -c " . $this->Community . " " . $this->IPAddress . " .1.3.6.1.4.1.476.1.1.1.1.4.2.0 | /bin/cut -d: -f4";
-	    exec( $pollCommand, $loadOutput );
-	    
-	    $totalLoad = ( $loadOutput[0] * $this->Capacity ) / 100;
-  	} else {
-	    $pollCommand = "/usr/bin/snmpget -v 1 -c " . $this->Community . " " . $this->IPAddress . " .1.3.6.1.4.1.476.1.42.3.5.2.2.1.8.3 | /bin/cut -d: -f4";
-	    exec( $pollCommand, $loadOutput );
-	    
-	    $totalLoad = $loadOutput[0];
-	  }
-    
-    return $totalLoad;
-  }
+	function UpdatePowerSource(){
+		global $dbh;
+
+		$this->MakeSafe();
+
+		$sql="INSERT INTO fac_PowerSource SET SourceName=\"$this->SourceName\", 
+			DataCenterID=$this->DataCenterID, IPAddress=\"$this->IPAddress\", 
+			Community=\"$this->Community\", LoadOID=\"$this->LoadOID\", 
+			Capacity=$this->Capacity WHERE PowerSourceID=$this->PowerSourceID;";
+
+		return $dbh->query($sql);
+	}
+
+	function GetSourcesByDataCenter(){ 
+		global $dbh;
+
+		$this->MakeSafe();
+
+		$sql="SELECT * FROM fac_PowerSource WHERE DataCenterID=$this->DataCenterID;";
+
+		$SourceList=array();
+		foreach($dbh->query($sql) as $row){
+			$SourceList[$row["PowerSourceID"]]=PowerSource::PowerSourceRowToObject($row);
+		}
+
+		return $SourceList;
+	}
+
+	function GetPSList(){
+		global $dbh;
+
+		$this->MakeSafe();
+
+		$sql="SELECT * FROM fac_PowerSource ORDER BY SourceName ASC;";
+
+		$SourceList=array();
+		foreach($dbh->query($sql) as $row){
+			$SourceList[$row["PowerSourceID"]]=PowerSource::PowerSourceRowToObject($row);
+		}
+
+		return $SourceList;
+	} 
+
+	function GetSource(){
+		global $dbh;
+
+		$this->MakeSafe();
+
+		$sql="SELECT * FROM fac_PowerSource WHERE PowerSourceID=$this->PowerSourceID;";
+
+		if($row=$dbh->query($sql)->fetch()){
+			foreach(PowerSource::PowerSourceRowToObject($row) as $prop => $value){
+				$this->$prop=$value;
+			}
+		}else{
+			foreach($this as $prop => $value){
+				if($prop!='PowerSourceID'){
+					$this->$prop=null;
+				}
+			}
+		}
+	
+		return true;
+	}
+
+	function GetCurrentLoad(){
+		$totalLoad = 0;
+		
+		// Liebert UPS Query
+		// Query OID .1.3.6.1.4.1.476.1.1.1.1.1.2.0 to get the model number
+		// If model type is blank (NFinity), OID = 1.3.6.1.4.1.476.1.42.3.5.2.2.1.8.3
+		// If model type is Series 300 / 600, OID = .1.3.6.1.4.1.476.1.1.1.1.4.2.0
+		$pollCommand="/usr/bin/snmpget -v 1 -c $this->Community $this->IPAddress .1.3.6.1.4.1.476.1.1.1.1.1.2.0 | /bin/cut -d: -f4";
+		exec($pollCommand,$snmpOutput);
+
+		if(@$snmpOutput[0]!=""){
+			$pollCommand="/usr/bin/snmpget -v 1 -c $this->Community $this->IPAddress .1.3.6.1.4.1.476.1.1.1.1.4.2.0 | /bin/cut -d: -f4";
+			exec($pollCommand,$loadOutput);
+			
+			$totalLoad=($loadOutput[0] * $this->Capacity) / 100;
+		}else{
+			$pollCommand="/usr/bin/snmpget -v 1 -c $this->Community $this->IPAddress .1.3.6.1.4.1.476.1.42.3.5.2.2.1.8.3 | /bin/cut -d: -f4";
+			exec($pollCommand,$loadOutput);
+			
+			$totalLoad=$loadOutput[0];
+		}
+
+		return $totalLoad;
+	}
 
 }
 
