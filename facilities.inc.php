@@ -36,7 +36,6 @@ require_once( "infrastructure.inc.php" );
 require_once( "power.inc.php" );
 require_once( "config.inc.php" );
 require_once( "misc.inc.php" );
-require_once( "vanderbilt.inc.php" );
 
 /* Remove comment if you are going to use data center and resource logging.
 require_once( "logging.inc.php" );
