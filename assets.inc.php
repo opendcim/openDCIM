@@ -2130,14 +2130,25 @@ class DevicePorts {
 		$candidates=array();
 
 		if(is_null($listports)){
-			$sql="SELECT DISTINCT a.DeviceID FROM fac_Ports a, fac_Device b WHERE b.Cabinet>-1 AND a.DeviceID=b.DeviceID AND a.DeviceID!=$dev->DeviceID$mediaenforce$pp;";
+			// Run two queries - first, devices in the same cabinet as the device patching from
+			$sql="SELECT DISTINCT a.DeviceID FROM fac_Ports a, fac_Device b WHERE b.Cabinet=$dev->Cabinet AND a.DeviceID=b.DeviceID AND a.DeviceID!=$dev->DeviceID$mediaenforce$pp ORDER BY b.Label ASC;";
 			foreach($dbh->query($sql) as $row){
 				$candidate=$row['DeviceID'];
 				$tmpDev=new Device();
 				$tmpDev->DeviceID=$candidate;
 				$tmpDev->GetDevice();
 
-				$candidates[$candidate]=$tmpDev;
+				$candidates[sizeof($candidates)]=$tmpDev;
+			}
+			// Then run the same query, but for the rest of the devices in the database
+			$sql="SELECT DISTINCT a.DeviceID FROM fac_Ports a, fac_Device b WHERE b.Cabinet>-1 AND b.Cabinet!=$dev->Cabinet AND a.DeviceID=b.DeviceID AND a.DeviceID!=$dev->DeviceID$mediaenforce$pp ORDER BY b.Label ASC;";
+			foreach($dbh->query($sql) as $row){
+				$candidate=$row['DeviceID'];
+				$tmpDev=new Device();
+				$tmpDev->DeviceID=$candidate;
+				$tmpDev->GetDevice();
+
+				$candidates[sizeof($candidates)]=$tmpDev;
 			}
 		}else{
 			$sql="SELECT a.* FROM fac_Ports a, fac_Device b WHERE b.Cabinet>-1 AND a.DeviceID=b.DeviceID AND a.DeviceID!=$dev->DeviceID AND ConnectedDeviceID IS NULL$mediaenforce$pp;";
