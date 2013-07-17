@@ -586,7 +586,7 @@ class DataCenter {
 			  			WHERE DataCenterID=\"$this->DataCenterID\" 
 							AND ZoneID=\"$myzone->ZoneID\"
 							AND CabRowID=\"".$filaRow['CabRowID']."\"
-						ORDER BY Location ASC";
+						ORDER BY length(Location),Location ASC";
 			  
 			  foreach ( $dbh->query( $cab_sql ) as $cabRow ) {
 			  //while ( $cabRow = mysql_fetch_array( $result ) ) {
