@@ -99,7 +99,7 @@ class CDUTemplate {
 		
 		$tmpList=array();
 		foreach($dbh->query($sql) as $row){
-			$tmpList[$row["TemplateID"]]=CDUTemplate::TemplateRowToObject($row);
+			$tmpList[]=CDUTemplate::TemplateRowToObject($row);
 		}
 		
 		return $tmpList;
@@ -458,7 +458,7 @@ class PowerDistribution {
 
 		$PDUList=array();
 		foreach($this->DB->query($sql) as $PDURow){
-			$PDUList[$PDURow["PDUID"]]=PowerDistribution::PDURowToObject($PDURow);
+			$PDUList[]=PowerDistribution::PDURowToObject($PDURow);
 		}
 
 		return $PDUList;
@@ -788,7 +788,7 @@ class PowerPanel {
 
 		$PanelList=array();
 		foreach($dbh->query($sql) as $row){    
-			$PanelList[$row["PanelID"]]=PowerPanel::PanelRowToObject($row);
+			$PanelList[]=PowerPanel::PanelRowToObject($row);
 		}
 
 		return $PanelList;
@@ -917,7 +917,6 @@ class PanelSchedule {
 		$sched=array_fill( 1, $pan->NumberOfPoles, "<td>&nbsp;</td>" );
 
 		$sql="SELECT * FROM fac_PanelSchedule WHERE PanelID=$this->PanelID ORDER BY PolePosition ASC;";
-		$result = mysql_query( $select_sql, $db );
 
 		foreach($dbh->query($sql) as $row){
 			$sched[$row["PolePosition"]]="<td rowspan={$row["NumPoles"]}>{$row["Label"]}</td>";
@@ -1050,7 +1049,7 @@ class PowerSource {
 
 		$SourceList=array();
 		foreach($dbh->query($sql) as $row){
-			$SourceList[$row["PowerSourceID"]]=PowerSource::PowerSourceRowToObject($row);
+			$SourceList[]=PowerSource::PowerSourceRowToObject($row);
 		}
 
 		return $SourceList;
