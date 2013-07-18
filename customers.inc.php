@@ -38,12 +38,6 @@ class Contact {
 	var $Phone2;
 	var $Phone3;
 	var $Email;
-	protected $DB;
-
-	function __construct(){
-		global $dbh;
-		$this->DB=$dbh;
-	}
 
 	function MakeSafe(){
 		$this->ContactID=intval($this->ContactID);
@@ -64,8 +58,6 @@ class Contact {
 		$this->Phone2=stripslashes($this->Phone2);
 		$this->Phone3=stripslashes($this->Phone3);
 		$this->Email=stripslashes($this->Email);
-
-		unset($this->DB);
 	}
 
 	static function ContactRowToObject($row){
@@ -84,12 +76,22 @@ class Contact {
 		return $contact;
 	}
 
+	function query($sql){
+		global $dbh;
+		return $dbh->query($sql);
+	}
+
+	function exec($sql){
+		global $dbh;
+		return $dbh->exec($sql);
+	}
+
 	function GetContactByID(){
 		$this->MakeSafe();
 
 		$sql="SELECT * FROM fac_Contact WHERE ContactID=$this->ContactID;";
 
-		if($row=$this->DB->query($sql)->fetch()){
+		if($row=$this->query($sql)->fetch()){
 			foreach(Contact::ContactRowToObject($row) as $prop => $value){
 				$this->$prop=$value;
 			}
@@ -107,7 +109,7 @@ class Contact {
 	function GetContactByUserID(){
 		$sql="SELECT * FROM fac_Contact WHERE UserID=\"$this->UserID\";";
 
-		if($row=$this->DB->query($sql)->fetch()){
+		if($row=$this->query($sql)->fetch()){
 			foreach(Contact::ContactRowToObject($row) as $prop => $value){
 				$this->$prop=$value;
 			}
@@ -123,6 +125,7 @@ class Contact {
 	}
 
 	function CreateContact() {
+		global $dbh;
 		$this->MakeSafe();
 
 		$sql="INSERT INTO fac_Contact SET UserID=\"$this->UserID\", 
@@ -130,8 +133,8 @@ class Contact {
 			Phone1=\"$this->Phone1\", Phone2=\"$this->Phone2\", Phone3=\"$this->Phone3\", 
 			Email=\"$this->Email\";";
 
-		if($this->DB->exec($sql)){
-			$this->ContactID=$this->DB->lastInsertId();
+		if($this->exec($sql)){
+			$this->ContactID=$dbh->lastInsertId();
 			$this->MakeDisplay();
 			return $this->ContactID;
 		}else{
@@ -147,15 +150,15 @@ class Contact {
 			Phone1=\"$this->Phone1\", Phone2=\"$this->Phone2\",	Phone3=\"$this->Phone3\", 
 			Email=\"$this->Email\" WHERE ContactID=$this->ContactID;";
        
-		$this->DB->query($sql); 
+		$this->query($sql); 
 		$this->MakeDisplay();
 	}
 	function DeleteContact(){
 		$this->MakeSafe();
 
 		// Clear up any records that might have still had this contact set as the primary contact.
-		$this->DB->query("UPDATE fac_Device SET PrimaryContact=0 WHERE PrimaryContact=$this->ContactID;");
-		if($this->DB->exec("DELETE FROM fac_Contact WHERE ContactID=$this->ContactID;")){
+		$this->query("UPDATE fac_Device SET PrimaryContact=0 WHERE PrimaryContact=$this->ContactID;");
+		if($this->exec("DELETE FROM fac_Contact WHERE ContactID=$this->ContactID;")){
 			return true;
 		}else{
 			return false;
@@ -169,7 +172,7 @@ class Contact {
 
 		$contactList=array();
 		foreach($dbh->query($sql) as $row){
-			$contactList[$row["ContactID"]]=Contact::ContactRowToObject($row);
+			$contactList[]=Contact::ContactRowToObject($row);
 		}
 
 		return $contactList;
@@ -180,7 +183,7 @@ class Contact {
 			a.ContactID=b.ContactID AND b.DeptID=".intval($DeptID)." ORDER BY a.LastName ASC;";
 
 		$contactList=array();
-		foreach($this->DB->query($sql) as $row){
+		foreach($this->query($sql) as $row){
 			$contactList[$row["ContactID"]]=Contact::ContactRowToObject($row);
 		}
 
@@ -200,12 +203,6 @@ class Department {
 	var $SDM;
 	var $Classification;
 	var $DeptColor;
-	protected $DB;
-
-	function __construct(){
-		global $dbh;
-		$this->DB=$dbh;
-	}
 
 	function MakeSafe(){
 		$this->DeptID=intval($this->DeptID);
@@ -222,8 +219,6 @@ class Department {
 		$this->SDM=stripslashes($this->SDM);
 		$this->Classification=stripslashes($this->Classification);
 		$this->DeptColor=stripslashes($this->DeptColor);
-
-		unset($this->DB);
 	}
 
 	static function DeptRowToObject($row){
@@ -240,15 +235,26 @@ class Department {
 		return $dept;
 	}
 
+	function query($sql){
+		global $dbh;
+		return $dbh->query($sql);
+	}
+
+	function exec($sql){
+		global $dbh;
+		return $dbh->exec($sql);
+	}
+
 	function CreateDepartment(){
+		global $dbh;
 		$this->MakeSafe();
 
 		$sql="INSERT INTO fac_Department SET Name=\"$this->Name\", 
 			ExecSponsor=\"$this->ExecSponsor\", SDM=\"$this->SDM\", 
 			Classification=\"$this->Classification\", DeptColor=\"$this->DeptColor\";";
 
-		if($this->DB->exec($sql)){
-			$this->DeptID=$this->DB->lastInsertId();
+		if($this->exec($sql)){
+			$this->DeptID=$dbh->lastInsertId();
 			$this->MakeDisplay();
 			return $this->DeptID;
 		}else{
@@ -268,14 +274,14 @@ class Department {
 			Classification=\"$this->Classification\" , DeptColor=\"$this->DeptColor\" 
 			WHERE DeptID=\"$this->DeptID\";";
 
-		$this->DB->query($sql); 
+		$this->query($sql); 
 		$this->MakeDisplay();
 	}
 
 	function GetDeptByID() {
 		$sql="SELECT * FROM fac_Department WHERE DeptID=$this->DeptID;";
 
-		if($row=$this->DB->query($sql)->fetch()){
+		if($row=$this->query($sql)->fetch()){
 			foreach(Department::DeptRowToObject($row) as $prop => $value){
 				$this->$prop=$value;
 			}
@@ -286,7 +292,7 @@ class Department {
 		$this->MakeSafe();
 
 		$sql="SELECT * FROM fac_Department WHERE Name LIKE \"%$this->Name%\";";
-		if($row=$this->DB->query($sql)->fetch()){
+		if($row=$this->query($sql)->fetch()){
 			foreach(Department::DeptRowToObject($row) as $prop => $value){
 				$this->$prop=$value;
 			}
@@ -295,8 +301,8 @@ class Department {
 	function GetDepartmentList() {
 		$sql="SELECT * FROM fac_Department ORDER BY Name ASC;";
 		$deptList=array();
-		foreach($this->DB->query($sql) as $row){
-			$deptList[$row["DeptID"]]=Department::DeptRowToObject($row);
+		foreach($this->query($sql) as $row){
+			$deptList[]=Department::DeptRowToObject($row);
 		}
 
 		return $deptList;
@@ -307,14 +313,15 @@ class Department {
 
 		// First clear out all previous assignments
 		$sql="DELETE FROM fac_DeptContacts WHERE DeptID=$this->DeptID;";
-		$this->DB->exec($sql);
+		$this->exec($sql);
 
 		if(is_array($MemberList)){
 		  foreach($MemberList as $ContactID){
 				$sql="INSERT INTO fac_DeptContacts SET DeptID=$this->DeptID, ContactID=".intval($ContactID).";";
-	 			$this->DB->exec($sql); 
+	 			$this->exec($sql); 
 			}
 		}
+		$this->MakeDisplay();
 	}
 	
 	function GetDepartmentByContact($UserID){
@@ -323,7 +330,7 @@ class Department {
 			c.UserID=\"".addslashes($UserID)."\";";
 	 
 		// If someone is assigned to more than one department, just return the first hit
-		if($row=$this->DB->query($sql)->fetch()){
+		if($row=$this->query($sql)->fetch()){
 			$this->DeptID=$row["DeptID"];
 			$this->GetDeptByID();
 		}
@@ -333,12 +340,6 @@ class Department {
 class Escalations {
 	var $EscalationID;
 	var $Details;
-	protected $DB;
-
-	function __construct(){
-		global $dbh;
-		$this->DB=$dbh;
-	}
 
 	function MakeSafe(){
 		$this->EscalationID=intval($this->EscalationID);
@@ -349,13 +350,24 @@ class Escalations {
 		$this->Details=stripslashes($this->Details);
 	}
 
+	function query($sql){
+		global $dbh;
+		return $dbh->query($sql);
+	}
+
+	function exec($sql){
+		global $dbh;
+		return $dbh->exec($sql);
+	}
+
 	function CreateEscalation(){
+		global $dbh;
 		$this->MakeSafe();
 
 		$sql="INSERT INTO fac_Escalations SET Details=\"$this->Details\";";
 
-		if($this->DB->exec($sql)){
-			$this->EscalationID=$this->DB->lastInsertId();
+		if($this->exec($sql)){
+			$this->EscalationID=$dbh->lastInsertId();
 			$this->MakeDisplay();
 			return $this->EscalationID;
 		}else{
@@ -368,7 +380,7 @@ class Escalations {
 
 		$sql="DELETE FROM fac_Escalations WHERE EscalationID=$this->EscalationID;";
 
-		return $this->DB->exec($sql);
+		return $this->exec($sql);
 	}
 	
 	function GetEscalation(){
@@ -376,7 +388,7 @@ class Escalations {
 
 		$sql="SELECT * FROM fac_Escalations WHERE EscalationID=$this->EscalationID;";
 		
-		if($row=$this->DB->query($sql)->fetch()){
+		if($row=$this->query($sql)->fetch()){
 			$this->EscalationID=$row["EscalationID"];
 			$this->Details=$row["Details"];
 			$this->MakeDisplay();
@@ -390,7 +402,7 @@ class Escalations {
 		$sql="SELECT * FROM fac_Escalations ORDER BY Details ASC;";
 		
 		$escList=array();
-		foreach($this->DB->query($sql) as $row){
+		foreach($this->query($sql) as $row){
 			$escList[$row["EscalationID"]]=new Escalations();
 			$escList[$row["EscalationID"]]->EscalationID=$row["EscalationID"];
 			$escList[$row["EscalationID"]]->Details=$row["Details"];
@@ -408,19 +420,13 @@ class Escalations {
 
 		$this->MakeDisplay();
 			
-		return $this->DB->query($sql);
+		return $this->query($sql);
 	}
 }
 
 class EscalationTimes {
 	var $EscalationTimeID;
 	var $TimePeriod;
-	protected $DB;
-
-	function __construct(){
-		global $dbh;
-		$this->DB=$dbh;
-	}
 
 	function MakeSafe(){
 		$this->EscalationTimeID=intval($this->EscalationTimeID);
@@ -431,13 +437,24 @@ class EscalationTimes {
 		$this->TimePeriod=stripslashes($this->TimePeriod);
 	}
 	
+	function query($sql){
+		global $dbh;
+		return $dbh->query($sql);
+	}
+
+	function exec($sql){
+		global $dbh;
+		return $dbh->exec($sql);
+	}
+
 	function CreatePeriod(){
+		global $dbh;
 		$this->MakeSafe();
 
 		$sql="INSERT INTO fac_EscalationTimes SET TimePeriod=\"$this->TimePeriod\";";
 		
-		if($this->DB->exec($sql)){
-			$this->EscalationTimeID=$this->DB->lastInsertId();
+		if($this->exec($sql)){
+			$this->EscalationTimeID=$dbh->lastInsertId();
 			$this->MakeDisplay();
 			return $this->EscalationTimeID;
 		}else{
@@ -450,13 +467,13 @@ class EscalationTimes {
 
 		$sql="DELETE FROM fac_EscalationTimes WHERE EscalationTimeID=$this->EscalationTimeID;";
 		
-		return $this->DB->exec($sql);
+		return $this->exec($sql);
 	}
 	
 	function GetEscalationTime(){
 		$sql="SELECT * FROM fac_EscalationTimes WHERE EscalationTimeID=$this->EscalationTimeID;";
 		
-		if($row=$this->DB->query($sql)->fetch()){
+		if($row=$this->query($sql)->fetch()){
 			$this->EscalationTimeID=$row["EscalationTimeID"];
 			$this->TimePeriod=$row["TimePeriod"];
 			$this->MakeDisplay();
@@ -470,7 +487,7 @@ class EscalationTimes {
 		$sql="SELECT * FROM fac_EscalationTimes ORDER BY TimePeriod ASC;";
 		
 		$escList=array();
-		foreach($this->DB->query($sql) as $row){
+		foreach($this->query($sql) as $row){
 			$escList[$row["EscalationTimeID"]]=new EscalationTimes();
 			$escList[$row["EscalationTimeID"]]->EscalationTimeID = $row["EscalationTimeID"];
 			$escList[$row["EscalationTimeID"]]->TimePeriod = $row["TimePeriod"];
@@ -486,7 +503,7 @@ class EscalationTimes {
 		$sql="UPDATE fac_EscalationTimes SET TimePeriod=\"$this->TimePeriod\" WHERE 
 			EscalationTimeID=$this->EscalationTimeID;";
 		
-		return $this->DB->query($sql);
+		return $this->query($sql);
 	}
 }
 

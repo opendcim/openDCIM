@@ -312,7 +312,7 @@ class Cabinet {
 
 		$this->MakeSafe();
 		
-		$sql="SELECT * FROM fac_Cabinet WHERE CabRowID=$this->CabRowID ORDER BY length(Location),Location ASC;";
+		$sql="SELECT * FROM fac_Cabinet WHERE CabRowID=$this->CabRowID ORDER BY LENGTH(Location),Location ASC;";
 
 		$cabinetList=array();
 

@@ -505,11 +505,11 @@ class PowerDistribution {
 	function GetWattageByDC($dc=null){
 		// What was the idea behind this null function?
 		if($dc==null){
-			$sql="select count(Wattage) from fac_PDUStats";
+			$sql="SELECT COUNT(Wattage) FROM fac_PDUStats;";
 		}else{
-			$sql="select sum(Wattage) as Wattage from fac_PDUStats where PDUID in 
-			(select PDUID from fac_PowerDistribution where CabinetID in 
-			(select CabinetID from fac_Cabinet where DataCenterID=".intval($dc)."))";
+			$sql="SELECT SUM(Wattage) AS Wattage FROM fac_PDUStats WHERE PDUID IN 
+			(SELECT PDUID FROM fac_PowerDistribution WHERE CabinetID IN 
+			(SELECT CabinetID FROM fac_Cabinet WHERE DataCenterID=".intval($dc)."))";
 		}		
 		
 		return $this->DB->query($sql)->fetchColumn();
