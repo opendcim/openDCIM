@@ -1044,7 +1044,7 @@ $(document).ready(function() {
 						});
 						
 						$.each(data, function(devid,device){
-							devlist.append('<option value='+devid+'>'+device.Label+'</option>');
+							devlist.append('<option value='+device.DeviceID+'>'+device.Label+'</option>');
 						});
 						cdevice.html(devlist).find('select').val(cdevice.data('default'));
 						devlist.change();
