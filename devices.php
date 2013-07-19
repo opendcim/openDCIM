@@ -1159,7 +1159,7 @@ $(document).ready(function() {
 			function devicelist(jsonObject){
 				var devlist=$("<select>").append('<option value=0></option>');
 				$.each(jsonObject, function(devid,device){
-					devlist.append('<option value='+devid+'>'+device.Label+'</option>');
+					devlist.append('<option value='+device.DeviceID+'>'+device.Label+'</option>');
 				});
 				devlist.change(function(e){
 					var rear=($(e.currentTarget).parent().data('rear'));
