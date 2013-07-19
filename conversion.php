@@ -9,81 +9,74 @@
 	 * this is meant for the dev branches only to do an immediate conversion.
 	 */
 
-	// Retrieve a list of all devices and make ports for them.
+	// Retrieve a list of all switch and panel devices and make ports for them.
 
 	$sql='SELECT DeviceID,Ports,DeviceType from fac_Device WHERE 
-		DeviceType!="Physical Infrastructure" AND Ports>0;';
-	$insert=$dbh->prepare('INSERT INTO fac_Ports VALUES ( :deviceid, :portnumber, 
-		"", 0, 0, "", :cdeviceid, :cport, :notes );');
+		DeviceType in ("Switch", "Patch Panel") AND Ports>0;';
 
-
-	$errors=array();
-	$ports=array();
 	foreach($dbh->query($sql) as $row){
 		for($x=1;$x<=$row['Ports'];$x++){
 			// Create a port for every device
-			$ports[$row['DeviceID']][$x]='';
+			$ports[$row['DeviceID']][$x]["Label"] = $x;
 			if($row['DeviceType']=='Patch Panel'){
 				// Patch panels needs rear ports as well
-				$ports[$row['DeviceID']][-$x]='';
+				$ports[$row['DeviceID']][-$x]["Label"]=$x;
 			}
 		}
 	}
+	
+	// Get a list of all non-switch and non-patch panel devices
+	$sql = "select DeviceID, Ports, DeviceType from fac_Device WHERE
+		DeviceType NOT IN ('Physical Infrastructure', 'Switch', 'Patch Panel')";
+	$swCount = $dbh->prepare( "select * from fac_SwitchConnection where EndpointDeviceID=:deviceid order by EndpointPort ASC" );
+	$ppCount = $dbh->prepare( "select * from fac_PatchConnection where FrontEndpointDeviceID=:deviceid order by FrontEndpointPort ASC" );
+	$portHash = array();
+	
+	$dev = new Device();
+	
+	foreach ( $dbh->query( $sql ) as $row ) {
+		$swCount->execute( array( ":deviceid" => $row["DeviceID"] ) );
+		$totalPorts = $swCount->rowCount();
+		
+		$ppCount->execute( array( ":deviceid" => $row["DeviceID"] ) );
+		$totalPorts += $ppCount->rowCount();
+		
+		$dev->DeviceID = $row["DeviceID"];
+		$dev->GetDevice();
+		if ( $dev->Ports < $totalPorts ) {
+			$dev->Ports = $totalPorts;
+			$dev->UpdateDevice();
+		}
+		
+		while ( $conRow = $swCount->fetch() ) {
+			$pNum = sizeof( $ports[$row["DeviceID"]] ) + 1;
+			$ports[$row["DeviceID"]][$pNum] = array();
+			$ports[$row["DeviceID"]][$pNum]["Label"] = $conRow["EndpointPort"];
+			$ports[$row["DeviceID"]][$pNum]["Notes"] = $conRow["Notes"];
+			$ports[$row["DeviceID"]][$pNum]["Connected Device"] = $conRow["SwitchDeviceID"];
+			$ports[$row["DeviceID"]][$pNum]["Connected Port"] = $conRow["SwitchPortNumber"];
+			$portHash[$row["DeviceID"] . "-" . $conRow["EndpointPort"]] = $pNum;
+			$ports[$conRow["SwitchDeviceID"]][$conRow["SwitchPortNumber"]]["Notes"] = $conRow["Notes"];
+			$ports[$conRow["SwitchDeviceID"]][$conRow["SwitchPortNumber"]]["Connected Device"] = $row["DeviceID"];
+			$ports[$conRow["SwitchDeviceID"]][$conRow["SwitchPortNumber"]]["Connected Port"] = $pNum;
+			printf( "Created port %d (%d) for device %d connected to Switch %d Port %d<br>\n", $pNum, $conRow["EndpointPort"], $row["DeviceID"], $conRow["SwitchDeviceID"], $conRow["SwitchPortNumber"] );
+		}
 
-	$findswitch=$dbh->prepare('SELECT * FROM fac_SwitchConnection WHERE EndpointDeviceID=:deviceid ORDER BY EndpointPort ASC;');
-	foreach($ports as $deviceid => $port){
-		$findswitch->execute(array(':deviceid' => $deviceid));
-		$defined=$findswitch->fetchAll();
-		foreach($defined as $row){
-			// Weed out any port numbers that have been defined outside the range of 
-			// valid ports for the device
-			if(isset($ports[$deviceid][$row['EndpointPort']])){
-				// Device Ports
-				$ports[$deviceid][$row['EndpointPort']]['Notes']=$row['Notes'];
-				$ports[$deviceid][$row['EndpointPort']]['Connected Device']=$row['SwitchDeviceID'];
-				$ports[$deviceid][$row['EndpointPort']]['Connected Port']=$row['SwitchPortNumber'];
-
-				// Switch Ports
-				$ports[$row['SwitchDeviceID']][$row['SwitchPortNumber']]['Notes']=$row['Notes'];
-				$ports[$row['SwitchDeviceID']][$row['SwitchPortNumber']]['Connected Device']=$row['EndpointDeviceID'];
-				$ports[$row['SwitchDeviceID']][$row['SwitchPortNumber']]['Connected Port']=$row['EndpointPort'];
-
-			}else{
-				// Either display this as a log item later or possibly backfill empty 
-				// ports with this data
-				$errors[$deviceid][$row['EndpointPort']]['Notes']=$row['Notes'];
-				$errors[$deviceid][$row['EndpointPort']]['Connected Device']=$row['SwitchDeviceID'];
-				$errors[$deviceid][$row['EndpointPort']]['Connected Port']=$row['SwitchPortNumber'];
-			}
+		while ( $conRow = $ppCount->fetch() ) {
+			$pNum = sizeof( $ports[$row["DeviceID"]] ) + 1;
+			$ports[$row["DeviceID"]][$pNum] = array();
+			$ports[$row["DeviceID"]][$pNum]["Label"] = $conRow["FrontEndpointPort"];
+			$ports[$row["DeviceID"]][$pNum]["Notes"] = $conRow["FrontNotes"];
+			$ports[$row["DeviceID"]][$pNum]["Connected Device"] = $conRow["PanelDeviceID"];
+			$ports[$row["DeviceID"]][$pNum]["Connected Port"] = $conRow["PanelPortNumber"];
+			$portHash[$row["DeviceID"] . "-" .$conRow["FrontEndpointPort"]] = $pNum;
+			$ports[$conRow["PanelDeviceID"]][$conRow["PanelPortNumber"]]["Notes"] = $conRow["FrontNotes"];
+			$ports[$conRow["PanelDeviceID"]][$conRow["PanelPortNumber"]]["Connected Device"] = $row["FrontEndpointDeviceID"];
+			$ports[$conRow["PanelDeviceID"]][$conRow["PanelPortNumber"]]["Connected Port"] = $pNum;
+			printf( "Created patch panel port %d (%d) for device %d<br>\n", $pNum, $conRow["FrontEndpointPort"], $row["DeviceID"] );
 		}
 	}
-
-	$findpatch=$dbh->prepare('SELECT * FROM fac_PatchConnection WHERE FrontEndpointDeviceID=:deviceid ORDER BY FrontEndpointPort ASC;');
-	foreach($ports as $deviceid => $port){
-		$findpatch->execute(array(':deviceid' => $deviceid));
-		$defined=$findpatch->fetchAll();
-		foreach($defined as $row){
-			// Weed out any port numbers that have been defined outside the range of 
-			// valid ports for the device
-			if(isset($ports[$deviceid][$row['FrontEndpointPort']])){
-				// Connect the device to the panel
-				$ports[$deviceid][$row['FrontEndpointPort']]['Notes']=$row['FrontNotes'];
-				$ports[$deviceid][$row['FrontEndpointPort']]['Connected Device']=$row['PanelDeviceID'];
-				$ports[$deviceid][$row['FrontEndpointPort']]['Connected Port']=$row['PanelPortNumber'];
-				// Connect the panel to the device
-				$ports[$row['PanelDeviceID']][$row['PanelPortNumber']]['Connected Device']=$row['FrontEndpointDeviceID'];
-				$ports[$row['PanelDeviceID']][$row['PanelPortNumber']]['Connected Port']=$row['FrontEndpointPort'];
-				$ports[$row['PanelDeviceID']][$row['PanelPortNumber']]['Notes']=$row['FrontNotes'];
-			}else{
-				// Either display this as a log item later or possibly backfill empty 
-				// ports with this data
-				$errors[$deviceid][$row['FrontEndpointPort']]['Notes']=$row['FrontNotes'];
-				$errors[$deviceid][$row['FrontEndpointPort']]['Connected Device']=$row['PanelDeviceID'];
-				$errors[$deviceid][$row['FrontEndpointPort']]['Connected Port']=$row['PanelPortNumber'];
-			}
-		}
-	}
-
+	
 	foreach($dbh->query('SELECT * FROM fac_PatchConnection;') as $row){
 		// Read all the patch connections again to get the rear connection info 
 		$ports[$row['RearEndpointDeviceID']][-$row['RearEndpointPort']]['Connected Device']=$row['PanelDeviceID'];
@@ -94,32 +87,22 @@
 		$ports[$row['PanelDeviceID']][-$row['PanelPortNumber']]['Notes']=$row['RearNotes'];
 	}
 
-print "Ports and related connections:<br>\n";
-print_r($ports);
-print "<br>Errors and things that didn't quite match right:<br>\n";
-print_r($errors);
-
-	$n=0; $insertsql='';
 	// All the ports should be in the array now, use the prepared statement to load them all
-	foreach($ports as $deviceid => $row){
-		foreach($row as $portnum => $port){
-			$null=null;$blank="";
-			$cdevice=(isset($port['Connected Device']))?$port['Connected Device']:'NULL';
-			$cport=(isset($port['Connected Port']))?$port['Connected Port']:'NULL';
-			$notes=(isset($port['Notes']))?$port['Notes']:'';
+	$populate = $dbh->prepare('INSERT INTO fac_Ports VALUES ( :deviceid, :portnumber, :label, 0, 0, "", :cdeviceid, :cport, :notes )');
 
-			$insertsql.="($deviceid,$portnum,\"\",0,0,\"\",$cdevice,$cport,\"$notes\")";
-			if($n!=50){
-				$insertsql.=" ,";
-				++$n;
-			}else{
-				$dbh->exec('INSERT INTO fac_Ports VALUES'.$insertsql);
-				$n=0; $insertsql='';
-			}
+	foreach($ports as $deviceid => $row){
+		printf( "Saving %d ports for device %d.<br>\n", sizeof( $row ), $deviceid );
+		foreach($row as $portnum => $port){
+			$cdevice=(isset($port['Connected Device']))?$port['Connected Device']:null;
+			$label=(isset($port['Label']))?$port['Label']:'';
+			$cport=(isset($port['Connected Port']))?$port['Connected Port']:null;
+			$notes=(isset($port['Notes']))?$port['Notes']:'';
+			
+			$populate->execute( array( ":deviceid" => $deviceid, ":portnumber" => $portnum, ":label" => $label,
+				":cdeviceid" => $cdevice, ":cport" => $cport, ":notes" => $notes ) );
 		}
 	}
-	//do one last insert
-	$insertsql=substr($insertsql, 0, -1);// shave off that last comma
-	$dbh->exec('INSERT INTO fac_Ports VALUES'.$insertsql);
+	
+	printf( "\n<p>Conversion completed.</p>\n" );
 
 ?>
