@@ -31,7 +31,7 @@
 			}else{
 				$sql="select a.Name as DataCenter, b.DeviceID, c.Location, b.Position, b.Height, b.Label, b.DeviceType, b.AssetTag, b.SerialNo, b.InstallDate, b.TemplateID, b.Owner from fac_DataCenter a, fac_Device b, fac_Cabinet c where b.Cabinet=c.CabinetID and c.DataCenterID=a.DataCenterID and c.DataCenterID=$dc order by Location ASC, Position ASC";
 			}
-			$result=mysql_query($sql);
+			$result=$dbh->query($sql);
 		}else{
 			$result=array();
 		}
@@ -53,7 +53,7 @@
 			</tr>\n\t</thead>\n\t<tbody>\n";
 
 		// suppressing errors for when there is a fake data set in place
-		while($row=@mysql_fetch_array($result)){
+		foreach($result as $row){
 			// insert date formating later for regionalization settings
 			$date=date("d M Y",strtotime($row["InstallDate"]));
 				$Model="";

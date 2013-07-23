@@ -2555,7 +2555,7 @@ class RackRequest {
 	}
   }
   
-  function GetOpenRequests( $db ) {
+  function GetOpenRequests() {
 	global $dbh;
     $sql="SELECT * FROM fac_RackRequest WHERE CompleteTime='0000-00-00 00:00:00'";
     

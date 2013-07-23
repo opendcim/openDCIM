@@ -11,11 +11,10 @@
 	if($user->ReadAccess){
 		$searchTerm="";
 		if(isset($_REQUEST["q"])){
-			$searchTerm=mysql_real_escape_string($_REQUEST["q"]);
+			$searchTerm=addslashes(trim($_REQUEST["q"]));
 		}
 		$sql="SELECT * FROM fac_Tags WHERE Name LIKE '%$searchTerm%';";
-		$result=mysql_query($sql);
-		while($row=mysql_fetch_row($result)){
+		foreach($dbh->query($sql)){
 			$tagList[]=$row[1];
 		}
 	}

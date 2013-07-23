@@ -20,8 +20,7 @@ class PDF extends FPDF {
   var $pdfconfig;
   var $pdfDB;
   
-	function PDF($db){
-		$this->pdfDB = $db;
+	function PDF(){
 		parent::FPDF();
 	}
   
@@ -81,12 +80,10 @@ class PDF extends FPDF {
 		
     $searchSQL = 'select a.Name,b.Location,c.Position,c.Height,c.Label,c.SerialNo,c.AssetTag,c.DeviceID,c.DeviceType from fac_DataCenter a, fac_Cabinet b, fac_Device c where ' . $Criteria . 'c.Cabinet=b.CabinetID and b.DataCenterID=a.DataCenterID and c.Reservation=false order by a.Name,b.Location,c.Position';
 
-	$result = mysql_query( $searchSQL);
-
 	$lastDC = '';
 	$lastCab = '';
 
-	while ( $reportRow = mysql_fetch_array( $result ) ) {
+	foreach($dbh->query($searchSQL) as $reportRow){
 		$DataCenter = $reportRow['Name'];
 		$Location = $reportRow['Location'];
 		if ( $reportRow["Height"] > 1 )

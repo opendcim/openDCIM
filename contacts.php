@@ -22,10 +22,10 @@
 		// if so present a list of choices to bulk change them all to
 		if(isset($_POST['deletecheck'])){
 			$sql="SELECT * FROM fac_Device WHERE PrimaryContact = $contactid";
-			$results=mysql_query($sql);
-			if(mysql_num_rows($results)>0){
+			$sth=$dbh->prepare($sql);$sth->execute();
+			if($sth->rowCount()>0){
 				print "<p>{$_POST['contact']} is currently the primary contact listed for the following equipment:</p><div><ul>";
-				while($devices=mysql_fetch_assoc($results)){
+				foreach($sth as $devices){
 					print "<li><a href=\"devices.php?deviceid={$devices['DeviceID']}\">{$devices['Label']}</a></li>";
 				}
 				$contacts=Contact::GetContactList();
@@ -42,16 +42,15 @@
 		}
 		if(isset($_POST['deptcheck'])){
 			$sql="SELECT * FROM fac_DeptContacts WHERE ContactID = $contactid";
-			$results=mysql_query($sql);
-			if(mysql_num_rows($results)>0){
+			$sth=$dbh->prepare($sql);$sth->execute();
+			if($sth->rowCount()>0){
 				$dept=new Department();
 				$emptydept=array();
 				echo "<p>Contact will be removed from the following departments</p><ul>";
-				while($depts=mysql_fetch_assoc($results)){
+				foreach($sth as $depts){
 					$dept->DeptID=$depts['DeptID'];
 					$dept->GetDeptByID();
-					$subresults=mysql_fetch_row(mysql_query("SELECT COUNT(*) FROM fac_DeptContacts WHERE DeptID = $dept->DeptID;"));
-					$subresults=$subresults[0];
+					$subresults=$dbh->query("SELECT COUNT(*) FROM fac_DeptContacts WHERE DeptID = $dept->DeptID;")->fetchColumn();
 					if($subresults<2){
 						$emptydept[$dept->DeptID]=$dept->Name;
 					}
@@ -99,10 +98,10 @@
 		// change to the alternate they chose. If no records are updated return
 		// an error
 		if(isset($_POST['n'])){
-			mysql_query("UPDATE fac_Device SET PrimaryContact=".intval($_POST['n'])." WHERE PrimaryContact=$contactid;");
-			$check=mysql_affected_rows();
+			$sth=$dbh->prepare("UPDATE fac_Device SET PrimaryContact=".intval($_POST['n'])." WHERE PrimaryContact=$contactid;");
+			$sth->execute();
 		}
-		echo($check>0)?'yes':'no';
+		echo($sth->rowCount>0)?'yes':'no';
 		exit;
 	}
 	// END - AJAX

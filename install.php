@@ -92,6 +92,8 @@
 	$successlog="";
 	
 function applyupdate ($updatefile){
+	$global $dbh;
+
 	//Make sure the upgrade file exists.
 	if(file_exists($updatefile)){
 		$file=fopen($updatefile, 'r');
@@ -114,10 +116,11 @@ function applyupdate ($updatefile){
 		foreach($sql as $key => $value){
 // uncomment to debug sql injection
 //			echo $value."<br>\n";
-			if(!mysql_query($value)){
+			if(!$dbh->query($value)){
+				$info=$dbh->errorInfo();
 				//something broke log it
 				$errormsg.="$value<br>\n";
-				$errormsg.=mysql_error();
+				$errormsg.=$info[2];
 				$errormsg.="<br>\n";
 				$result=1;
 			}
@@ -143,8 +146,9 @@ function applyupdate ($updatefile){
 	$upgrade=false;
 
 // Check to see if we are doing an upgrade or an install
-	$result=mysql_query("SHOW TABLES;");
-	if(mysql_num_rows($result)==0){ // No tables in the DB so try to install.
+	$result=$dbh->prepare("SHOW TABLES;");
+	$result->execute();
+	if($result->rowCount()==0){ // No tables in the DB so try to install.
 		$results[]=applyupdate("create.sql");
 		$upgrade=false;
 	}
@@ -158,7 +162,9 @@ function applyupdate ($updatefile){
 	// Re-read the config
 	$config->Config();
 // Check to see if we have any users in the database.
-	if(mysql_num_rows(mysql_query("SELECT * FROM fac_User WHERE SiteAdmin=1;"))<1){
+	$sth=$dbh->prepare("SELECT * FROM fac_User WHERE SiteAdmin=1;");
+	$sth->execute();
+	if($sth->rowCount()<1){
 		// no users in the system or no users with site admin rights, either way we're missing the class of people we need
 		// put stuff here like correcting for a missing site admin
 		print "There are no users in the database with sufficient privileges to perform this update";
@@ -180,13 +186,14 @@ function applyupdate ($updatefile){
 	}
 
 //  test for openDCIM version
-	$result=mysql_query("SELECT Value FROM fac_Config WHERE Parameter='Version' LIMIT 1;");
-	if(mysql_num_rows($result)==0){// Empty result set means this is either 1.0 or 1.1. Surely the check above caught all 1.0 instances.
+	$result=$dbh->prepare("SELECT Value FROM fac_Config WHERE Parameter='Version' LIMIT 1;");
+	$result->execute();
+	if($result->rowCount()==0){// Empty result set means this is either 1.0 or 1.1. Surely the check above caught all 1.0 instances.
 		$results[]=applyupdate("db-1.1-to-1.2.sql");
 		$upgrade=true;
 		$version="1.2";
 	}else{
-		$version=mysql_result($result,0);//sets version number
+		$version=$result->fetchColumn();//sets version number
 	}
 	if($version==""){ // something borked re-apply all database updates and pray for forgiveness
 		$version="1.2";
@@ -208,13 +215,17 @@ function applyupdate ($updatefile){
 		// Both of these need to return 0 results before we continue or the database schema update will not complete.
 		$conflicts=0;
 		$sql="SELECT PDUID, CONCAT(PDUID,'-',PDUPosition) AS KEY1, COUNT(PDUID) AS Count  FROM fac_PowerConnection GROUP BY KEY1 HAVING (COUNT(KEY1)>1) ORDER BY PDUID ASC;";
-		$conflicts+=(mysql_num_rows(mysql_query($sql, $facDB))>0)?1:0;
+		$sth=$dbh->prepare($sql);$sth->execute();
+		$conflicts+=($sth->rowCount()>0)?1:0;
 		$sql="SELECT DeviceID, CONCAT(DeviceID,'-',DeviceConnNumber) AS KEY2, COUNT(DeviceID) AS Count FROM fac_PowerConnection GROUP BY KEY2 HAVING (COUNT(KEY2)>1) ORDER BY DeviceID ASC;";
-		$conflicts+=(mysql_num_rows(mysql_query($sql, $facDB))>0)?1:0;
+		$sth=$dbh->prepare($sql);$sth->execute();
+		$conflicts+=($sth->rowCount()>0)?1:0;
 		$sql="SELECT SwitchDeviceID, CONCAT(SwitchDeviceID,'-',SwitchPortNumber) AS KEY1, COUNT(SwitchDeviceID) AS Count FROM fac_SwitchConnection GROUP BY KEY1 HAVING (COUNT(KEY1)>1) ORDER BY SwitchDeviceID ASC;";
-		$conflicts+=(mysql_num_rows(mysql_query($sql, $facDB))>0)?1:0;
+		$sth=$dbh->prepare($sql);$sth->execute();
+		$conflicts+=($sth->rowCount()>0)?1:0;
 		$sql="SELECT SwitchDeviceID, SwitchPortNumber, EndpointDeviceID, EndpointPort, CONCAT(EndpointDeviceID,'-',EndpointPort) AS KEY2, COUNT(EndpointDeviceID) AS Count FROM fac_SwitchConnection GROUP BY KEY2 HAVING (COUNT(KEY2)>1) ORDER BY EndpointDeviceID ASC;";
-		$conflicts+=(mysql_num_rows(mysql_query($sql, $facDB))>0)?1:0;
+		$sth=$dbh->prepare($sql);$sth->execute();
+		$conflicts+=($sth->rowCount()>0)?1:0;
 
 		require_once("facilities.inc.php");
 		if($conflicts!=0){
@@ -231,56 +242,49 @@ function applyupdate ($updatefile){
 	if($version=="1.5"){	// Do the 1.5 to 2.0 Update
 		// Get a list of all Manufacturers that are duplicated
 		$sql="SELECT ManufacturerID,Name FROM fac_Manufacturer GROUP BY Name HAVING COUNT(*)>1;";
-		$result=mysql_query($sql,$facDB);
-		
-		while($row=mysql_fetch_array($result)){
+		foreach($dbh->query($sql) as $row){
 			// Set all devices with that Manufacturer to the ID of just one
 			$sql="UPDATE fac_DeviceTemplate SET ManufacturerID={$row["ManufacturerID"]} WHERE ManufacturerID IN (SELECT ManufacturerID FROM fac_Manufacturer WHERE Name=\"{$row["Name"]}\");";
-			mysql_query($sql,$facDB);
+			$dbh->query($sql);
 			
 			// Delete all the duplicates other than the one you set everything to
 			$sql="DELETE FROM fac_Manufacturer WHERE Name=\"{$row["Name"]}\" and ManufacturerID!={$row["ManufacturerID"]};";
-			mysql_query($sql,$facDB);
+			$dbh->query($sql);
 		}
 		
 		// Repeat for Templates
 		$sql="SELECT TemplateID,ManufacturerID,Model FROM fac_DeviceTemplate GROUP BY ManufacturerID,Model HAVING COUNT(*)>1;";
-		$result=mysql_query($sql,$facDB);
-		
-		while($row=mysql_fetch_array($result)){
+		foreach($dbh->query($sql) as $row){
 			$sql="UPDATE fac_Device SET TemplateID={$row["TemplateID"]} WHERE TemplateID IN (SELECT TemplateID FROM fac_DeviceTemplate WHERE ManufacturerID={$row["ManufacturerID"]} AND Model=\"{$row["Model"]}\");";
-			mysql_query($sql,$facDB);
+			$dbh->query($sql);
 			
 			$sql="DELETE FROM fac_DeviceTemplate WHERE ManufacturerID={$row["ManufacturerID"]} AND TemplateID!={$row["TemplateID"]};";
-			mysql_query($sql,$facDB);
+			$dbh->query($sql);
 		}
 		
 		// And finally, Departments
 		$sql="SELECT DeptID, Name FROM fac_Department GROUP BY Name HAVING COUNT(*)>1;";
-		$result=mysql_query($sql,$facDB);
-		
-		while($row=mysql_fetch_array($result)){
+		foreach($dbh->query($sql) as $row){
 			$sql="UPDATE fac_Device SET Owner={$row["DeptID"]} WHERE Owner IN (SELECT DeptID FROM fac_Department WHERE Name=\"{$row["Name"]}\");";
-			mysql_query($sql,$facDB);
+			$dbh->query($sql);
 			
 			// Yes, I know, this may create duplicates
 			$sql="UPDATE fac_DeptContacts SET DeptID={$row["DeptID"]} WHERE DeptID IN (SELECT DeptID FROM fac_Department WHERE Name=\"{$row["Name"]}\");";
-			mysql_query($sql,$facDB);
+			$dbh->query($sql);
 			
 			$sql="DELETE FROM fac_Department WHERE Name=\"{$row["Name"]}\" AND DeptID!={$row["DeptID"]};";
-			mysql_query($sql,$facDB);
+			$dbh->query($sql);
 		}
 		
 		// So delete the potential duplicate contact links created in the last step
 		$sql="SELECT DeptID,ContactID FROM fac_DeptContacts GROUP BY DeptID,ContactID HAVING COUNT(*)>1;";
-		$result=mysql_query($sql,$facDB);
-		
-		while($row=mysql_fetch_array($result)){
+
+		foreach($dbh->query($sql) as $row){	
 			$sql="DELETE FROM fac_DeptContacts WHERE DeptID={$row["DeptID"]} AND ContactID={$row["ContactID"]};";
-			mysql_query($sql,$facDB);
+			$dbh->query($sql);
 			
 			$sql="INSERT INTO fac_DeptContacts VALUES ({$row["DeptID"]},{$row["ContactID"]});";
-			mysql_query($sql,$facDB);
+			$dbh->query($sql);
 		}
 		
 		 /* 
@@ -293,45 +297,42 @@ function applyupdate ($updatefile){
 		*/
 		$array=array();
 		$sql="SHOW INDEXES FROM fac_PowerConnection;";
-		$result=mysql_query($sql,$facDB);
-		while($row=mysql_fetch_array($result)){
+		foreach($dbh->query($sql) as $row){
 			$array[$row["Key_name"]]=1;
 		}
 		foreach($array as $key => $garbage){
 			$sql="ALTER TABLE fac_PowerConnection DROP INDEX $key;";
-			mysql_query($sql);
+			$dbh->query($sql);
 		}
 		$sql="ALTER TABLE fac_PowerConnection ADD UNIQUE KEY PDUID (PDUID,PDUPosition);";
-		mysql_query($sql);
+		$dbh->query($sql);
 		$sql="ALTER TABLE fac_PowerConnection ADD UNIQUE KEY DeviceID (DeviceID,DeviceConnNumber);";
-		mysql_query($sql);
+		$dbh->query($sql);
 
 		// Just removing keys from fac_CabinetAudit
 		$array=array();
 		$sql="SHOW INDEXES FROM fac_CabinetAudit;";
-		$result=mysql_query($sql,$facDB);
-		while($row=mysql_fetch_array($result)){
+		foreach($dbh->query($sql) as $row){
 			$array[$row["Key_name"]]=1;
 		}
 		foreach($array as $key => $garbage){
 			$sql="ALTER TABLE fac_CabinetAudit DROP INDEX $key;";
-			mysql_query($sql);
+			$dbh->query($sql);
 		}
 
 		$array=array();
 		$sql="SHOW INDEXES FROM fac_Department;";
-		$result=mysql_query($sql,$facDB);
-		while($row=mysql_fetch_array($result)){
+		foreach($dbh->query($sql) as $row){
 			$array[$row["Key_name"]]=1;
 		}
 		foreach($array as $key => $garbage){
 			$sql="ALTER TABLE fac_Department DROP INDEX $key;";
-			mysql_query($sql);
+			$dbh->query($sql);
 		}
 		$sql="ALTER TABLE fac_Department ADD PRIMARY KEY (DeptID);";
-		mysql_query($sql);
+		$dbh->query($sql);
 		$sql="ALTER TABLE fac_Department ADD UNIQUE KEY Name (Name);";
-		mysql_query($sql);
+		$dbh->query($sql);
 		
 		$config->rebuild();
 		$results[]=applyupdate("db-1.5-to-2.0.sql");
@@ -341,16 +342,15 @@ function applyupdate ($updatefile){
 	
 	if($version=="2.0"){
 		$sql="select InputAmperage from fac_PowerDistribution limit 1";
-		$result=mysql_query($sql,$facDB);
-		
 		// See if the field exists - some people have manually added the missing one already, so we can't add what's already there
-		if(mysql_errno($facDB)==1054){
+		if(!$dbh->query($sql)){
+//		if(mysql_errno($facDB)==1054){
 			$sql="ALTER TABLE fac_PowerDistribution ADD COLUMN InputAmperage INT(11) NOT NULL AFTER PanelPole";
-			$result=mysql_query($sql,$facDB);
+			$dbh->query($sql);
 		}
 
 		$sql='UPDATE fac_Config SET Value="2.0.1" WHERE Parameter="Version"';
-		$result=mysql_query($sql,$facDB);
+		$dbh->query($sql);
 		
 		$upgrade=true;
 		$version="2.0.1";
@@ -359,80 +359,75 @@ function applyupdate ($updatefile){
 	if($version=="2.0.1"){
 		// Get a list of all Manufacturers that are duplicated
 		$sql="SELECT ManufacturerID,Name FROM fac_Manufacturer GROUP BY Name HAVING COUNT(*)>1;";
-		$result=mysql_query($sql,$facDB);
 		
-		while($row=mysql_fetch_array($result)){
+		foreach($dbh->query($sql) as $row){
 			// Set all devices with that Manufacturer to the ID of just one
 			$sql="UPDATE fac_DeviceTemplate SET ManufacturerID={$row["ManufacturerID"]} WHERE ManufacturerID IN (SELECT ManufacturerID FROM fac_Manufacturer WHERE Name=\"{$row["Name"]}\");";
-			mysql_query($sql,$facDB);
+			$dbh->query($sql);
 			
 			// Delete all the duplicates other than the one you set everything to
 			$sql="DELETE FROM fac_Manufacturer WHERE Name=\"{$row["Name"]}\" and ManufacturerID!={$row["ManufacturerID"]};";
-			mysql_query($sql,$facDB);
+			$dbh->query($sql);
 		}
 
 		// Repeat for Templates
 		$sql="SELECT TemplateID,ManufacturerID,Model FROM fac_DeviceTemplate GROUP BY ManufacturerID,Model HAVING COUNT(*)>1;";
-		$result=mysql_query($sql,$facDB);
 		
-		while($row=mysql_fetch_array($result)){
+		foreach($dbh->query($sql) as $row){
 			$sql="UPDATE fac_Device SET TemplateID={$row["TemplateID"]} WHERE TemplateID IN (SELECT TemplateID FROM fac_DeviceTemplate WHERE ManufacturerID={$row["ManufacturerID"]} AND Model=\"{$row["Model"]}\");";
-			mysql_query($sql,$facDB);
+			$dbh->query($sql);
 			
 			$sql="DELETE FROM fac_DeviceTemplate WHERE ManufacturerID={$row["ManufacturerID"]} AND TemplateID!={$row["TemplateID"]};";
-			mysql_query($sql,$facDB);
+			$dbh->query($sql);
 		}
 
 		// Clean up multiple indexes in fac_Department
 		$array=array();
 		$sql="SHOW INDEXES FROM fac_Department;";
-		$result=mysql_query($sql,$facDB);
-		while($row=mysql_fetch_array($result)){
+		foreach($dbh->query($sql) as $row){
 			$array[$row["Key_name"]]=1;
 		}
 		foreach($array as $key => $garbage){
 			$sql="ALTER TABLE fac_Department DROP INDEX $key;";
-			mysql_query($sql);
+			$dbh->query($sql);
 		}
 		$sql="ALTER TABLE fac_Department ADD PRIMARY KEY (DeptID);";
-		mysql_query($sql);
+		$dbh->query($sql);
 		$sql="ALTER TABLE fac_Department ADD UNIQUE KEY Name (Name);";
-		mysql_query($sql);
+		$dbh->query($sql);
 		
 		// Clean up multiple indexes in fac_DeviceTemplate
 		$array=array();
 		$sql="SHOW INDEXES FROM fac_DeviceTemplate;";
-		$result=mysql_query($sql,$facDB);
-		while($row=mysql_fetch_array($result)){
+		foreach($dbh->query($sql) as $row){
 			$array[$row["Key_name"]]=1;
 		}
 		foreach($array as $key => $garbage){
 			$sql="ALTER TABLE fac_Department DROP INDEX $key;";
-			mysql_query($sql);
+			$dbh->query($sql);
 		}
 		$sql="ALTER TABLE fac_DeviceTemplate ADD PRIMARY KEY (TemplateID);";
-		mysql_query($sql);
+		$dbh->query($sql);
 		$sql="ALTER TABLE fac_DeviceTemplate ADD UNIQUE KEY ManufacturerID (ManufacturerID,Model);";
-		mysql_query($sql);
+		$dbh->query($sql);
 
 		// Apply SQL Updates
 		$results[]=applyupdate("db-2.0-to-2.1.sql");
 
 		// Add new field for the ConnectionID
-		mysql_query('ALTER TABLE fac_SwitchConnection ADD ConnectionID INT NULL DEFAULT NULL;',$facDB);
+		$dbh->query('ALTER TABLE fac_SwitchConnection ADD ConnectionID INT NULL DEFAULT NULL;');
 
 		$sql="SELECT * FROM fac_SwitchConnection;";
-		$result=mysql_query($sql,$facDB);
-		while($row=mysql_fetch_array($result)){
+		foreach($dbh->query($sql) as $row){
 			$insert="INSERT INTO fac_DevicePorts VALUES (NULL , '{$row['EndpointDeviceID']}', '{$row['EndpointPort']}', NULL , '{$row['Notes']}');";
-			mysql_query($insert,$facDB);
-			$update="UPDATE fac_SwitchConnection SET ConnectionID='".mysql_insert_id($facDB)."' WHERE EndpointDeviceID='{$row['EndpointDeviceID']}' AND EndpointPort='{$row['EndpointPort']}';";
-			mysql_query($update,$facDB);
+			$dbh->query($insert);
+			$update="UPDATE fac_SwitchConnection SET ConnectionID='".$dbh->lastInsertId()."' WHERE EndpointDeviceID='{$row['EndpointDeviceID']}' AND EndpointPort='{$row['EndpointPort']}';";
+			$dbh->query($update);			
 		}
 		// Clear eany old primary key information
-		mysql_query('ALTER TABLE fac_SwitchConnection DROP PRIMARY KEY;',$facDB);
+		$dbh->query('ALTER TABLE fac_SwitchConnection DROP PRIMARY KEY;');
 		// Ensure new ConnectionID is unique
-		mysql_query('ALTER TABLE fac_SwitchConnection ADD UNIQUE(ConnectionID);',$facDB);
+		$dbh->query('ALTER TABLE fac_SwitchConnection ADD UNIQUE(ConnectionID);');
 
 		// Rebuild the config table just in case.  I dunno gremlins.
 		$config->rebuild();
@@ -524,10 +519,10 @@ if(isset($results)){
 		$config->UpdateConfig();
 
 		//Disable all tooltip items and clear the SortOrder
-		mysql_query("UPDATE fac_CabinetToolTip SET SortOrder = NULL, Enabled=0;");
+		$dbh->query("UPDATE fac_CabinetToolTip SET SortOrder = NULL, Enabled=0;");
 		if(isset($_POST["tooltip"]) && !empty($_POST["tooltip"])){
 			foreach($_POST["tooltip"] as $order => $field){
-				mysql_query("UPDATE fac_CabinetToolTip SET SortOrder=".intval($order).", Enabled=1 WHERE Field='".addslashes($field)."' LIMIT 1;");
+				$dbh->query("UPDATE fac_CabinetToolTip SET SortOrder=".intval($order).", Enabled=1 WHERE Field='".addslashes($field)."' LIMIT 1;");
 			}
 		}
 	}
@@ -552,8 +547,9 @@ if(isset($results)){
 			$dept->UpdateDepartment();
 		}
 	}
-	$result=mysql_query("SELECT * FROM fac_Department LIMIT 1;");
-	if(mysql_num_rows($result)==0){ // No departments defined
+	$result=$dbh->prepare("SELECT * FROM fac_Department LIMIT 1;");
+	$result->execute();
+	if($result->rowCount()==0){ // No departments defined
 		$nodept="<h3>Create a department</h3>";
 		$nodeptdrop="readonly";
 	}else{
@@ -581,8 +577,9 @@ if(isset($results)){
 		$dc->GetDataCenter();
 	}
 	$dcList=$dc->GetDCList();
-	$result=mysql_query("SELECT * FROM fac_DataCenter LIMIT 1;");
-	if(mysql_num_rows($result)==0){ // No data centers configured disable cabinets and complete options
+	$result=$dbh->prepare("SELECT * FROM fac_DataCenter LIMIT 1;");
+	$result->execute();
+	if($result->rowCount()==0){ // No data centers configured disable cabinets and complete options
 		$nodc="<h3>Define a data center</h3>";
 		$nodccab="<h3>You must create a Data Center before you can create cabinets in it.</h3>";
 		$nodcfield="disabled";
@@ -621,8 +618,9 @@ if(isset($results)){
 		}
 	}
 	if($nodccab==""){ // only attempt to check for racks in the db if a data center has already been created
-		$result=mysql_query("SELECT * FROM fac_Cabinet LIMIT 1;");
-		if(mysql_num_rows($result)==0){ // No racks defined disable complete option
+		$result=$dbh->prepare("SELECT * FROM fac_Cabinet LIMIT 1;");
+		$result->execute();
+		if($result->rowCount()==0){ // No racks defined disable complete option
 			$nodccab="<h3>Create a rack for equipment to be housed in</h3>";
 			$nocabdrop="readonly";
 			$nocab="error";
@@ -889,8 +887,8 @@ if(isset($results)){
 
 	// Build up the list of items available for the tooltips
 	$tooltip="<select id=\"tooltip\" name=\"tooltip[]\" multiple=\"multiple\">\n";
-	$ttconfig=mysql_query("SELECT * FROM fac_CabinetToolTip ORDER BY SortOrder ASC, Enabled DESC, Label ASC;");
-	while($row=mysql_fetch_assoc($ttconfig)){
+	$ttconfig=$dbh->query("SELECT * FROM fac_CabinetToolTip ORDER BY SortOrder ASC, Enabled DESC, Label ASC;");
+	foreach($ttconfig as $row){
 		$selected=($row["Enabled"])?" selected":"";
 		$tooltip.="<option value=\"".$row['Field']."\"$selected>".__($row["Label"])."</option>\n";
 	}

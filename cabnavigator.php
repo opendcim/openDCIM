@@ -66,7 +66,7 @@ function get_cabinet_owner_color($cabinet, &$deptswithcolor) {
 			$pdu=new PowerDistribution();
 			$pdu->PDUID=intval($_POST['tooltip']);
 			$pdu->GetPDU();
-			$ttconfig=mysql_query("SELECT * FROM fac_CDUToolTip WHERE Enabled=1 ORDER BY SortOrder ASC, Enabled DESC, Label ASC;");
+			$ttconfig=$dbh->query("SELECT * FROM fac_CDUToolTip WHERE Enabled=1 ORDER BY SortOrder ASC, Enabled DESC, Label ASC;");
 		}elseif($config->ParameterArray["ToolTips"]=='enabled'){
 			$dev=new Device();
 			$dev->DeviceID=intval($_POST['tooltip']);
@@ -76,11 +76,11 @@ function get_cabinet_owner_color($cabinet, &$deptswithcolor) {
 				print "Details Restricted";
 				exit;
 			}
-			$ttconfig=mysql_query("SELECT * FROM fac_CabinetToolTip WHERE Enabled=1 ORDER BY SortOrder ASC, Enabled DESC, Label ASC;");
+			$ttconfig=$dbh->query("SELECT * FROM fac_CabinetToolTip WHERE Enabled=1 ORDER BY SortOrder ASC, Enabled DESC, Label ASC;");
 		}
 
 		$tooltip="";
-		while($row=mysql_fetch_assoc($ttconfig)){
+		foreach($ttconfig as $row){
 			switch($row["Field"]){
 				case "SNMPCommunity":
 					if(isset($pdu->SNMPCommunity)){

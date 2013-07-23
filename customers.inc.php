@@ -612,7 +612,7 @@ class User {
 		
 		$userList=array();
 		foreach($dbh->query($sql) as $row){
-			$userList[$userRow["UserID"]]=User::UserRowToObject($row);
+			$userList[]=User::UserRowToObject($row);
 		}
 
 		return $userList;

@@ -13,11 +13,11 @@
 	
 	// ITSD Statistics
 	$sql='SELECT
-		(SELECT COUNT(*) FROM fac_Device WHERE DeviceType!="Server") AS Devices, 
-		(SELECT COUNT(*) FROM fac_Device WHERE DeviceType="Server") AS Servers,
-		(SELECT SUM(Height) FROM fac_Device) AS Size,
-		(SELECT COUNT(*) FROM fac_VMInventory) AS VMcount,
-		(SELECT SUM(NominalWatts) FROM fac_Device) AS Power
+		(SELECT COUNT(*) FROM fac_Device WHERE DeviceType!="Server" LIMIT 1) AS Devices, 
+		(SELECT COUNT(*) FROM fac_Device WHERE DeviceType="Server" LIMIT 1) AS Servers,
+		(SELECT SUM(Height) FROM fac_Device LIMIT 1) AS Size,
+		(SELECT COUNT(*) FROM fac_VMInventory LIMIT 1) AS VMcount,
+		(SELECT SUM(NominalWatts) FROM fac_Device LIMIT 1) AS Power
 		FROM fac_Device LIMIT 1;';
 
 	$row=$dbh->query($sql)->fetch();

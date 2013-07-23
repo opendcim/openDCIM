@@ -18,107 +18,60 @@
 	$con = new Contact();
 
 class DeviceAge extends Device{
- function GetAge( $db ) {
+ function GetAge() {
+	global $dbh;
 	$selectSQL = "select count(Label) as NumDevices,'<=1' as NumYears from fac_Device where (DATEDIFF(NOW(),IF(MfgDate>'1970-01-01',MfgDate,InstallDate))/365)<=1 and (DATEDIFF(NOW(), IF(MfgDate>'1970-01-01',MfgDate,InstallDate))/365)>0";
-	$result = mysql_query( $selectSQL, $db );
 
-	while ( $row = mysql_fetch_array( $result ) )
+	foreach($dbh->query($selectSQL) as $row){
 		$deptList[$row['NumYears']] = $row['NumDevices'];
+	}
 
 	$selectSQL = "select count(*) as NumDevices,'<=2' as NumYears from fac_Device where (DATEDIFF(NOW(),IF(MfgDate>'1970-01-01',MfgDate,InstallDate))/365)<=2 and (DATEDIFF(NOW(), IF(MfgDate>'1970-01-01',MfgDate,InstallDate))/365)>1";
-	$result = mysql_query( $selectSQL, $db );
-
-	while ( $row = mysql_fetch_array( $result ) )
-		$deptList[$row['NumYears']] = $row['NumDevices'];
 	
+	foreach($dbh->query($selectSQL) as $row){
+		$deptList[$row['NumYears']] = $row['NumDevices'];
+	}
+
 	$selectSQL = "select count(*) as NumDevices,'<=3' as NumYears from fac_Device where (DATEDIFF(NOW(),IF(MfgDate>'1970-01-01',MfgDate,InstallDate))/365)<=3 and (DATEDIFF(NOW(), IF(MfgDate>'1970-01-01',MfgDate,InstallDate))/365)>2";
-	$result = mysql_query( $selectSQL, $db );
-
-	while ( $row = mysql_fetch_array( $result ) )
-		$deptList[$row['NumYears']] = $row['NumDevices'];
 	
+	foreach($dbh->query($selectSQL) as $row){
+		$deptList[$row['NumYears']] = $row['NumDevices'];
+	}
+
 	$selectSQL = "select count(*) as NumDevices,'<=4' as NumYears from fac_Device where (DATEDIFF(NOW(),IF(MfgDate>'1970-01-01',MfgDate,InstallDate))/365)<=4 and (DATEDIFF(NOW(), IF(MfgDate>'1970-01-01',MfgDate,InstallDate))/365)>3";
-	$result = mysql_query( $selectSQL, $db );
-
-	while ( $row = mysql_fetch_array( $result ) )
-		$deptList[$row['NumYears']] = $row['NumDevices'];
 	
+	foreach($dbh->query($selectSQL) as $row){
+		$deptList[$row['NumYears']] = $row['NumDevices'];
+	}
+
 	$selectSQL = "select count(*) as NumDevices,'>4' as NumYears from fac_Device where (DATEDIFF(NOW(),fac_Device.MfgDate)/365)>4 and IF(MfgDate>'1970-01-01',MfgDate,InstallDate)>'1970-01-01'";
-	$result = mysql_query( $selectSQL, $db );
-
-	while ( $row = mysql_fetch_array( $result ) )
-		$deptList[$row['NumYears']] = $row['NumDevices'];
 	
+	foreach($dbh->query($selectSQL) as $row){
+		$deptList[$row['NumYears']] = $row['NumDevices'];
+	}
+
 	$selectSQL = "select count(*) as NumDevices,'Unknown' as NumYears from fac_Device where IF(MfgDate>'1970-01-01',MfgDate,InstallDate)<'1970-01-01'";
-	$result = mysql_query( $selectSQL, $db );
-
-	while ( $row = mysql_fetch_array( $result ) )
-		$deptList[$row['NumYears']] = $row['NumDevices'];
 	
+	foreach($dbh->query($selectSQL) as $row){
+		$deptList[$row['NumYears']] = $row['NumDevices'];
+	}
+
 	return $deptList;
 }
 
 function GetDeviceByAge($years){
+	global $dbh;
 	$deviceList=array();
 	if($years<=3){
 		$yearsplus=$years+1;
 		$selectSQL = sprintf( "select * from fac_Device where (DATEDIFF(NOW(), IF(MfgDate>'1970-01-01',MfgDate,InstallDate))/365)<%d and (DATEDIFF(NOW(), IF(MfgDate>'1970-01-01',MfgDate,InstallDate))/365)>=%d", $yearsplus, $years );
-		$result = mysql_query($selectSQL,$db);
-		while($deviceRow=mysql_fetch_array($result)){
-			$devID = $deviceRow['DeviceID'];
-
-			$deviceList[$devID] = new DeviceAge();
-			$deviceList[$devID]->DeviceID = $deviceRow['DeviceID'];
-			$deviceList[$devID]->Label = $deviceRow['Label'];
-			$deviceList[$devID]->SerialNo = $deviceRow['SerialNo'];
-			$deviceList[$devID]->AssetTag = $deviceRow['AssetTag'];
-			$deviceList[$devID]->PrimaryIP = $deviceRow['PrimaryIP'];
-			$deviceList[$devID]->SNMPCommunity = $deviceRow['SNMPCommunity'];
-			$deviceList[$devID]->ESX = $deviceRow['ESX'];
-			$deviceList[$devID]->Owner = $deviceRow['Owner'];
-			$deviceList[$devID]->PrimaryContact = $deviceRow['PrimaryContact'];
-			$deviceList[$devID]->Cabinet = $deviceRow['Cabinet'];
-			$deviceList[$devID]->Position = $deviceRow['Position'];
-			$deviceList[$devID]->Height = $deviceRow['Height'];
-			$deviceList[$devID]->Ports = $deviceRow['Ports'];
-			$deviceList[$devID]->TemplateID = $deviceRow['TemplateID'];
-			$deviceList[$devID]->NominalWatts = $deviceRow['NominalWatts'];
-			$deviceList[$devID]->PowerSupplyCount = $deviceRow['PowerSupplyCount'];
-			$deviceList[$devID]->DeviceType = $deviceRow['DeviceType'];
-			$deviceList[$devID]->MfgDate = $deviceRow['MfgDate'];
-			$deviceList[$devID]->InstallDate = $deviceRow['InstallDate'];
-			$deviceList[$devID]->Notes = $deviceRow['Notes'];
-			$deviceList[$devID]->Reservation = $deviceRow['Reservation'];
+		foreach($dbh->query($selectSQL) as $deviceRow){
+			$deviceList[$deviceRow['DeviceID']]=Device::DeviceRowToObject($deviceRow);
 		}
 	}else{
 		$selectSQL="select * from fac_Device where (DATEDIFF(NOW(), IF(MfgDate>'1970-01-01',MfgDate,InstallDate))/365)>4 and IF(MfgDate>'1970-01-01',MfgDate,InstallDate)>'1970-01-01'";
-    	$result=mysql_query($selectSQL,$db);
-
-		while($deviceRow=mysql_fetch_array($result)){
-			$devID=$deviceRow['DeviceID'];
-
-			$deviceList[$devID]=new DeviceAge();
-			$deviceList[$devID]->DeviceID = $deviceRow['DeviceID'];
-			$deviceList[$devID]->Label = $deviceRow['Label'];
-			$deviceList[$devID]->SerialNo = $deviceRow['SerialNo'];
-			$deviceList[$devID]->AssetTag = $deviceRow['AssetTag'];
-			$deviceList[$devID]->PrimaryIP = $deviceRow['PrimaryIP'];
-			$deviceList[$devID]->SNMPCommunity = $deviceRow['SNMPCommunity'];
-			$deviceList[$devID]->ESX = $deviceRow['ESX'];
-			$deviceList[$devID]->Owner = $deviceRow['Owner'];
-			$deviceList[$devID]->PrimaryContact = $deviceRow['PrimaryContact'];
-			$deviceList[$devID]->Cabinet = $deviceRow['Cabinet'];
-			$deviceList[$devID]->Position = $deviceRow['Position'];
-			$deviceList[$devID]->Height = $deviceRow['Height'];
-			$deviceList[$devID]->Ports = $deviceRow['Ports'];
-			$deviceList[$devID]->TemplateID = $deviceRow['TemplateID'];
-			$deviceList[$devID]->NominalWatts = $deviceRow['NominalWatts'];
-			$deviceList[$devID]->PowerSupplyCount = $deviceRow['PowerSupplyCount'];
-			$deviceList[$devID]->DeviceType = $deviceRow['DeviceType'];
-			$deviceList[$devID]->MfgDate = $deviceRow['MfgDate'];
-			$deviceList[$devID]->InstallDate = $deviceRow['InstallDate'];
-			$deviceList[$devID]->Notes = $deviceRow['Notes'];
-			$deviceList[$devID]->Reservation = $deviceRow['Reservation'];
+		foreach($dbh->query($selectSQL) as $deviceRow){
+			$deviceList[$deviceRow['DeviceID']]=Device::DeviceRowToObject($deviceRow);
 		}
 	}
     return $deviceList;
@@ -135,8 +88,7 @@ class PDF extends FPDF {
   var $pdfconfig;
   var $pdfDB;
   
-	function PDF($db){
-		$this->pdfDB = $db;
+	function PDF(){
 		parent::FPDF();
 	}
   
