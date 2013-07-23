@@ -30,10 +30,10 @@
 		
 		if($dc->Name!=""){
 			if($_POST['action']=='Create'){
-				$dc->CreateDataCenter($facDB);
+				$dc->CreateDataCenter();
 			}else{
 				$status=__("Updated");
-				$dc->UpdateDataCenter($facDB);
+				$dc->UpdateDataCenter();
 			}
 		}
 	}
@@ -57,9 +57,9 @@
 	}
 	elseif(isset($_REQUEST['datacenterid'])&&$_REQUEST['datacenterid'] >0){
 		$dc->DataCenterID=(isset($_POST['datacenterid']) ? $_POST['datacenterid'] : $_GET['datacenterid']);
-		$dc->GetDataCenter($facDB);
+		$dc->GetDataCenter();
 	}
-	$dcList=$dc->GetDCList($facDB);
+	$dcList=$dc->GetDCList();
 
 	if ( $config->ParameterArray["mUnits"] == "english" )
 		$vol = __("Square Feet");

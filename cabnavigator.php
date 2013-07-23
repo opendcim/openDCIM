@@ -14,7 +14,6 @@
 
 	// Get the list of departments that this user is a member of
 	$viewList = $user->isMemberOf();
-print_r($viewList);
 
 /**
  * Determines ownership of the cabinet and returns the CSS class in case a
@@ -42,7 +41,7 @@ function get_cabinet_owner_color($cabinet, &$deptswithcolor) {
 
 	$cab=new Cabinet();
 	$cab->CabinetID=$_REQUEST["cabinetid"];
-	$cab->GetCabinet($facDB);
+	$cab->GetCabinet();
 
 	if($cab->AssignedTo >0){
 		// Check to see if this user is allowed to see anything in here
@@ -56,7 +55,7 @@ function get_cabinet_owner_color($cabinet, &$deptswithcolor) {
 	// If you're deleting the cabinet, no need to pull in the rest of the information, so get it out of the way
 	// Only a site administrator can create or delete a cabinet
 	if(isset($_POST["delete"]) && $_POST["delete"]=="yes" && $user->SiteAdmin ) {
-		$cab->DeleteCabinet($facDB);
+		$cab->DeleteCabinet();
 		$url=redirect("dc_stats.php?dc=$dcID");
 		header("Location: $url");
 		exit;
@@ -71,7 +70,7 @@ function get_cabinet_owner_color($cabinet, &$deptswithcolor) {
 		}elseif($config->ParameterArray["ToolTips"]=='enabled'){
 			$dev=new Device();
 			$dev->DeviceID=intval($_POST['tooltip']);
-			$dev->GetDevice($facDB);
+			$dev->GetDevice();
 			
 			if(!in_array($dev->Owner,$viewList) && !$user->ReadAccess){
 				print "Details Restricted";
@@ -118,10 +117,10 @@ function get_cabinet_owner_color($cabinet, &$deptswithcolor) {
 				case "TemplateID":
 					$tmpl=new DeviceTemplate();
 					$tmpl->TemplateID=$dev->TemplateID;
-					$tmpl->GetTemplateByID($facDB);
+					$tmpl->GetTemplateByID();
 					$man=new Manufacturer();
 					$man->ManufacturerID=$tmpl->ManufacturerID;
-					$man->GetManufacturerByID($facDB);
+					$man->GetManufacturerByID();
 					$tooltip.=__($row["Label"]).": [$man->Name] $tmpl->Model<br>\n";
 					break;
 				case "ChassisSlots":
@@ -134,10 +133,10 @@ function get_cabinet_owner_color($cabinet, &$deptswithcolor) {
 					$manufacturer=new Manufacturer();
 
 					$template->TemplateID=$pdu->TemplateID;
-					$template->GetTemplate($facDB);
+					$template->GetTemplate();
 
 					$manufacturer->ManufacturerID=$template->ManufacturerID;
-					$manufacturer->GetManufacturerByID($facDB);
+					$manufacturer->GetManufacturerByID();
 					$tooltip.=__($row["Label"]).": [$manufacturer->Name] $template->Model<br>\n";
 					break;
 				case "NumOutlets":
@@ -145,10 +144,10 @@ function get_cabinet_owner_color($cabinet, &$deptswithcolor) {
 					$powerConn=new PowerConnection();
 
 					$template->TemplateID=$pdu->TemplateID;
-					$template->GetTemplate($facDB);
+					$template->GetTemplate();
 
 					$powerConn->PDUID=$pdu->PDUID;
-					$connList=$powerConn->GetConnectionsByPDU($facDB);
+					$connList=$powerConn->GetConnectionsByPDU();
 
 					$tooltip.=__($row["Label"]).": ".count($connList)."/".($template->NumOutlets+1)."<br>\n";
 					break;
@@ -158,13 +157,13 @@ function get_cabinet_owner_color($cabinet, &$deptswithcolor) {
 				case "PanelID":
 					$pan=new PowerPanel();
 					$pan->PanelID=$pdu->PanelID;
-					$pan->GetPanel($facDB);
+					$pan->GetPanel();
 					$tooltip.=__($row["Label"]).": $pan->PanelLabel<br>\n";
 					break;
 				case "PanelVoltage":
 					$pan=new PowerPanel();
 					$pan->PanelID=$pdu->PanelID;
-					$pan->GetPanel($facDB);
+					$pan->GetPanel();
 
 					$tooltip.=__($row["Label"]).": ".$pan->PanelVoltage." / ".intval($pan->PanelVoltage/1.73)."<br>\n";
 					break;
@@ -197,18 +196,18 @@ function get_cabinet_owner_color($cabinet, &$deptswithcolor) {
 
 	$dcID=$cab->DataCenterID;
 	$dc->DataCenterID=$dcID;
-	$dc->GetDataCenterbyID($facDB);
+	$dc->GetDataCenterbyID();
 
 	$audit->CabinetID=$cab->CabinetID;
 
 	// You just have WriteAccess in order to perform/certify a rack audit 
 	if(isset($_REQUEST["audit"]) && $_REQUEST["audit"]=="yes" && $user->WriteAccess){
 		$audit->UserID=$user->UserID;
-		$audit->CertifyAudit($facDB);
+		$audit->CertifyAudit();
 	}
 
 	$audit->AuditStamp="Never";
-	$audit->GetLastAudit($facDB);
+	$audit->GetLastAudit();
 	if($audit->UserID!=""){
 		$tmpUser=new User();
 		$tmpUser->UserID=$audit->UserID;
@@ -258,7 +257,7 @@ function get_cabinet_owner_color($cabinet, &$deptswithcolor) {
 		$devTop=$device->Position + $device->Height - 1;
 		
 		$templ->TemplateID=$device->TemplateID;
-		$templ->GetTemplateByID($facDB);
+		$templ->GetTemplateByID();
 
 		$tempDept->DeptID=$device->Owner;
 		$tempDept->GetDeptByID();
@@ -301,7 +300,7 @@ function get_cabinet_owner_color($cabinet, &$deptswithcolor) {
 			$childTempl=new DeviceTemplate();
 			foreach($childList as $childDev){
 				$childTempl->TemplateID=$childDev->TemplateID;
-				$childTempl->GetTemplateByID($facDB);
+				$childTempl->GetTemplateByID();
 				if($childDev->NominalWatts>0){
 					$totalWatts+=$childDev->NominalWatts;
 				} elseif($childDev->TemplateID!=0 && $childTempl->Wattage>0){
@@ -360,7 +359,7 @@ function get_cabinet_owner_color($cabinet, &$deptswithcolor) {
 
 	$CenterofGravity=@round($totalMoment/$totalWeight);
 	
-	$used=$cab->CabinetOccupancy($cab->CabinetID,$facDB);
+	$used=$cab->CabinetOccupancy($cab->CabinetID);
 	@$SpacePercent=number_format($used/$cab->CabinetHeight*100,0);
 	@$WeightPercent=number_format($totalWeight/$cab->MaxWeight*100,0);
 	@$PowerPercent=number_format(($totalWatts/1000)/$cab->MaxKW*100,0);
@@ -483,7 +482,7 @@ $body.='</table>
 		}
 
 		$pan->PanelID=$PDUdev->PanelID;
-		$pan->GetPanel($facDB);
+		$pan->GetPanel();
 		
 		if($PDUdev->BreakerSize==1){
 			$maxDraw=$PDUdev->InputAmperage * $pan->PanelVoltage / 1.732;

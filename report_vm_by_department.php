@@ -130,7 +130,7 @@ class PDF extends FPDF {
 //
 //
 
-	$pdf=new PDF($facDB);
+	$pdf=new PDF();
 	$pdf->AliasNbPages();
 	$pdf->AddPage();
 	$pdf->SetFont($config->ParameterArray['PDFfont'],'',8);
@@ -175,7 +175,7 @@ class PDF extends FPDF {
 	foreach( $vmList as $esxRow ) {
 		if ( $esxRow->DeviceID != $lastDevice ) {
 			$dev->DeviceID = $esxRow->DeviceID;
-			$dev->GetDevice( $facDB );
+			$dev->GetDevice();
 		}
 		
 		$pdf->Cell( $cellWidths[0], 6, ++$vmCount, 'LBRT', 0, 'L', $fill );
@@ -254,7 +254,7 @@ class PDF extends FPDF {
 		foreach( $vmList as $esxRow ) {
 			if ( $esxRow->DeviceID != $lastDevice ) {
 				$dev->DeviceID = $esxRow->DeviceID;
-				$dev->GetDevice( $facDB );
+				$dev->GetDevice();
 			}
 			
 			$pdf->Cell( $cellWidths[0], 6, ++$vmCount, 'LBRT', 0, 'L', $fill );

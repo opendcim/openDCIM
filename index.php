@@ -12,34 +12,25 @@
 	$user->GetUserRights();
 	
 	// ITSD Statistics
-	$sql = 'select count(*) as Devices from fac_Device where DeviceType!=\'Server\'';
-	$res = mysql_query( $sql, $facDB );
-	$row = mysql_fetch_array( $res );
-	$ITSdevices = $row['Devices'];
-  
-	$sql = 'select count(*) as Servers from fac_Device where DeviceType=\'Server\'';
-	$res = mysql_query( $sql, $facDB );
-	$row = mysql_fetch_array( $res );  
-	$ITSservers = $row['Servers'];
-  
-	$sql = 'select sum(Height) as Size from fac_Device';
-	$res = mysql_query( $sql, $facDB );
-	$row = mysql_fetch_array( $res );
-	$ITSsize = $row['Size'];
+	$sql='SELECT
+		(SELECT COUNT(*) FROM fac_Device WHERE DeviceType!="Server") AS Devices, 
+		(SELECT COUNT(*) FROM fac_Device WHERE DeviceType="Server") AS Servers,
+		(SELECT SUM(Height) FROM fac_Device) AS Size,
+		(SELECT COUNT(*) FROM fac_VMInventory) AS VMcount,
+		(SELECT SUM(NominalWatts) FROM fac_Device) AS Power
+		FROM fac_Device LIMIT 1;';
 
-	$sql = 'select count(*) as VMcount from fac_VMInventory';
-	$res = mysql_query( $sql, $facDB );
-	$row = mysql_fetch_array( $res );
-	$ITSVM = $row['VMcount'];
-  
-	$sql = 'select sum(NominalWatts) as Power from fac_Device';
-	$res = mysql_query( $sql, $facDB );
-	$row = mysql_fetch_array( $res );
-	$ITSpower = $row['Power'];
-	$ITSheat = $ITSpower * 3.412 / 12000;
+	$row=$dbh->query($sql)->fetch();
+
+	$ITSdevices=$row['Devices'];
+	$ITSservers=$row['Servers'];
+	$ITSsize=$row['Size'];
+	$ITSVM=$row['VMcount'];
+	$ITSpower=$row['Power'];
+	$ITSheat=$ITSpower * 3.412 / 12000;
   
 	$dc = new DataCenter();
-	$dcList = $dc->GetDCList( $facDB );
+	$dcList = $dc->GetDCList();
 
 	// Build table to display pending rack requests for inclusion later
 	$rackrequest='';
@@ -50,7 +41,7 @@
 		$tmpContact=new Contact();
 		$dept=new Department();
   
-		$rackList=$rack->GetOpenRequests($facDB);
+		$rackList=$rack->GetOpenRequests();
   
 		foreach($rackList as $request){
 			$tmpContact->ContactID=$request->RequestorID;

@@ -58,7 +58,7 @@ class DeviceAge extends Device{
 	return $deptList;
 }
 
-function GetDeviceByAge($db,$years){
+function GetDeviceByAge($years){
 	$deviceList=array();
 	if($years<=3){
 		$yearsplus=$years+1;
@@ -471,12 +471,12 @@ class PDF_Diag extends PDF_Sector {
         }
     }
 }
-	$agingList = $dev->GetAge( $facDB );
-	$yearoldlist=$dev->GetDeviceByAge($facDB, 0);
-	$year2oldlist=$dev->GetDeviceByAge($facDB,1);
-	$year3oldlist=$dev->GetDeviceByAge($facDB,2);
-	$year4oldlist=$dev->GetDeviceByAge($facDB,3);
-	$oldestlist=$dev->GetDeviceByAge($facDB,4);
+	$agingList=$dev->GetAge();
+	$yearoldlist=$dev->GetDeviceByAge(0);
+	$year2oldlist=$dev->GetDeviceByAge(1);
+	$year3oldlist=$dev->GetDeviceByAge(2);
+	$year4oldlist=$dev->GetDeviceByAge(3);
+	$oldestlist=$dev->GetDeviceByAge(4);
   
   
 
@@ -487,7 +487,7 @@ class PDF_Diag extends PDF_Sector {
 //
 //
 
-	$pdf=new PDF_Diag($facDB);
+	$pdf=new PDF_Diag();
 	$pdf->AliasNbPages();
 	$pdf->AddPage();
 	

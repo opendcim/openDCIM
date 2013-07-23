@@ -18,7 +18,7 @@
 		//This will ensure that an empty json record set is returned if this is called directly or in some strange manner
 		if ( $searchTerm !="" ) {
 			$tmpl->TemplateID = intval( $searchTerm );
-			$tmpl->GetTemplateByID( $facDB );
+			$tmpl->GetTemplateByID();
 		}
 	}
 	header('Content-Type: application/json');

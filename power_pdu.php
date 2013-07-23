@@ -18,7 +18,7 @@
 	$powerConn=new PowerConnection();
 	$connDev=new Device();
 	$template = new CDUTemplate();
-	$templateList = $template->GetTemplateList( $facDB );
+	$templateList = $template->GetTemplateList(  );
 	$manufacturer = new Manufacturer();
 	$upTime='';
 
@@ -68,7 +68,7 @@
 		
 		$template=new CDUTemplate();
 		$template->TemplateID=$pdu->TemplateID;
-		$template->GetTemplate($facDB);
+		$template->GetTemplate();
 		
 		printf( "<p>%s %s.<br>\n", __("Testing SNMP communication to CDU"), $pdu->Label );
 		printf( "%s %s.<br>\n", __("Connecting to IP address"), $pdu->IPAddress );
@@ -221,12 +221,12 @@
 	}
 
 	$cab->CabinetID=$pdu->CabinetID;
-	$cab->GetCabinet($facDB);
+	$cab->GetCabinet();
 	
 	$Panel=new PowerPanel();
-	$PanelList=$Panel->GetPanelList($facDB);
+	$PanelList=$Panel->GetPanelList();
 	/* For strict panel selection, comment out the line above and uncomment the following line */
-	// $PanelList = $Panel->GetPanelsByDataCenter( $cab->DataCenterID, $facDB );
+	// $PanelList = $Panel->GetPanelsByDataCenter( $cab->DataCenterID,  );
 
 	$powerConn->PDUID=$pdu->PDUID;
 	$connList=$powerConn->GetConnectionsByPDU();
@@ -401,7 +401,7 @@ echo '<div class="main">
 </div>
 <div>
    <div><label for="cabinetid">',__("Cabinet"),'</label></div>
-   <div>',$cab->GetCabinetSelectList($facDB),'</div>
+   <div>',$cab->GetCabinetSelectList(),'</div>
 </div>
 <div>
    <div><label for="panelid">',__("Source Panel"),'</label></div>
@@ -421,7 +421,7 @@ echo '   </select></div>
 	if($pdu->PanelID >0){
 		$pnl=new PowerPanel();
 		$pnl->PanelID=$pdu->PanelID;
-		$pnl->GetPanel($facDB);
+		$pnl->GetPanel();
 	
 		print $pnl->PanelVoltage." / ".intval($pnl->PanelVoltage/1.73);
 	}
@@ -455,7 +455,7 @@ echo '	</select>
 
 	foreach($templateList as $templateRow){
 		$manufacturer->ManufacturerID=$templateRow->ManufacturerID;
-		$manufacturer->GetManufacturerByID($facDB);
+		$manufacturer->GetManufacturerByID();
 		
 		$selected=($pdu->TemplateID==$templateRow->TemplateID)?" selected":"";		
 		print "		<option value=$templateRow->TemplateID$selected>[$manufacturer->Name] $templateRow->Model</option>\n";
@@ -533,7 +533,7 @@ echo '</div>
 	for($connNumber=1; $connNumber<$template->NumOutlets+1; $connNumber++){
 		if(isset($connList[$connNumber])){
 			$connDev->DeviceID=$connList[$connNumber]->DeviceID;
-			$connDev->GetDevice($facDB);
+			$connDev->GetDevice();
 			print "	<div>\n		<div>$connNumber</div>\n		<div alt=\"{$connList[$connNumber]->DeviceID}\" data=\"{$connList[$connNumber]->DeviceID}\"><a href=\"devices.php?deviceid={$connList[$connNumber]->DeviceID}\">$connDev->Label</a></div>\n		<div data=\"{$connList[$connNumber]->DeviceConnNumber}\">{$connList[$connNumber]->DeviceConnNumber}</div>\n	</div>\n";
 		}else{
 			print "	<div>\n		<div>$connNumber</div>\n		<div alt=\"\"></div>\n		<div></div>\n	</div>\n";
@@ -544,7 +544,7 @@ echo '</div>
 	foreach ( $connList as $ghostConnection ) {
 		if ( $ghostConnection->PDUPosition > $template->NumOutlets ) {
 			$connDev->DeviceID=$ghostConnection->DeviceID;
-			$connDev->GetDevice($facDB);
+			$connDev->GetDevice();
 			print "	<div>\n		<div>$ghostConnection->PDUPosition</div>\n		<div alt=\"{$ghostConnection->DeviceID}\" data=\"{$ghostConnection->DeviceID}\"><a href=\"devices.php?deviceid={$ghostConnection->DeviceID}\">$connDev->Label</a></div>\n		<div data=\"{$ghostConnection->DeviceConnNumber}\">{$ghostConnection->DeviceConnNumber}</div>\n	</div>\n";
 		}
 	}

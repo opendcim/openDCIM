@@ -15,30 +15,30 @@
 	$zone=new Zone();
 	$DC=new DataCenter();
 	
-	$DCList=$DC->GetDCList($facDB);
+	$DCList=$DC->GetDCList();
 	$formpatch="";
 	$status="";
 
 
 	if(isset($_REQUEST["zoneid"])) {
 		$zone->ZoneID=(isset($_POST['zoneid'])?$_POST['zoneid']:$_GET['zoneid']);
-		$zone->GetZone($facDB);
+		$zone->GetZone();
 		
 		if(isset($_POST["action"]) && (($_POST["action"]=="Create") || ($_POST["action"]=="Update"))){
 			$zone->Description=$_POST["description"];
 			$zone->DataCenterID=$_POST["datacenterid"];
 			
 			if($_POST["action"]=="Create"){
-				$zone->CreateZone($facDB);
+				$zone->CreateZone();
 			}else{
 				$status=__("Updated");
-				$zone->UpdateZone($facDB);
+				$zone->UpdateZone();
 			}
 		}
 		$formpatch="?zoneid={$_REQUEST['zoneid']}";
 	}
 	
-	$zoneList=$zone->GetZoneList($facDB);
+	$zoneList=$zone->GetZoneList();
 
 ?>
 <!doctype html>
@@ -79,7 +79,7 @@ echo '<div class="main">
 	foreach($zoneList as $zoneRow){
 		if($zone->ZoneID==$zoneRow->ZoneID){$selected=" selected";}else{$selected="";}
 		$DC->DataCenterID=$zoneRow->DataCenterID;
-		$DC->GetDataCenter($facDB);
+		$DC->GetDataCenter();
 		print "<option value=\"$zoneRow->ZoneID\"$selected>[".$DC->Name."] ".$zoneRow->Description."</option>\n";
 	}
 

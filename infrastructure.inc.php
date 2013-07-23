@@ -887,12 +887,13 @@ class Supplies {
 		}
 	}
 	
-	function GetSuppliesList(){
+	function GetSuppliesList($indexbyid=false){
 		$sql="SELECT * FROM fac_Supplies ORDER BY PartNum ASC;";
 		
 		$supplyList=array();
 		foreach($this->query($sql) as $row){
-			$supplyList[]=Supplies::RowToObject($row);
+			$index=($indexbyid)?$row['SupplyID']:$row['PartNum'];
+			$supplyList[$index]=Supplies::RowToObject($row);
 		}
 		
 		return $supplyList;
@@ -932,8 +933,8 @@ class SupplyBin {
 
 	static function RowToObject($row){
 		$bin=New SupplyBin();
-		$bin=$row['BinID'];
-		$bin=$row['Location'];
+		$bin->BinID=$row['BinID'];
+		$bin->Location=$row['Location'];
 		$bin->MakeDisplay();
 
 		return $bin;
@@ -988,23 +989,23 @@ class SupplyBin {
 		return $this->query($sql);
 	}
 	
-	function DeleteBin( $db ) {
-		$sql = sprintf( "delete from fac_SupplyBin where BinID='%d'; delete from fac_BinContents where BinID='%d'; delete from fac_BinAudits where BinID='%d'", intval( $this->BinID ), intval( $this->BinID ), intval( $this->BinID ) );
-		mysql_query( $sql, $db );
+	function DeleteBin(){
+		// needs testing, not currently implemented
+		$this->MakeSafe();
+
+		$sql="DELETE FROM fac_SupplyBin WHERE BinID=$this->BinID; 
+			DELETE FROM fac_BinContents WHERE BinID=$this->BinID; 
+			DELETE FROM fac_BinAudits WHERE BinID=$this->BinID;";
+
+		return $this->exec($sql);
 	}
 	
-	function GetBinList( $db ) {
-		$sql = sprintf( "select * from fac_SupplyBin order by Location ASC" );
-		$result = mysql_query( $sql, $db );
+	function GetBinList(){
+		$sql="SELECT * FROM fac_SupplyBin ORDER BY Location ASC;";
 		
-		$binList = array();
-		
-		while ( $row = mysql_fetch_array( $result ) ) {
-			$binNum = sizeof( $binList );
-			$binList[$binNum] = new SupplyBin();
-			
-			$binList[$binNum]->BinID = $row["BinID"];
-			$binList[$binNum]->Location = $row["Location"];
+		$binList=array();
+		foreach($this->query($sql) as $row){
+			$binList[]=SupplyBin::RowToObject($row);
 		}
 		
 		return $binList;
@@ -1012,265 +1013,259 @@ class SupplyBin {
 }
 
 class Zone {
-  var $ZoneID;
-  var $DataCenterID;
-  var $Description;
+	var $ZoneID;
+	var $DataCenterID;
+	var $Description;
   
-  function MakeSafe() {
-	$this->ZoneID = intval( $this->ZoneID );
-	$this->DataCenterID = intval( $this->DataCenterID );
-	$this->Description = mysql_real_escape_string( $this->Description );
-  }
-  
-  function CreateZone ( $db = null ) {
-  	global $dbh;
-		
-  	$this->MakeSafe();
-		
-  	$sql = sprintf( "insert into fac_Zone set Description=\"%s\", DataCenterID='%d'", addslashes( $this->Description ), intval($this->DataCenterID));
-  	if ( ! $dbh->exec( $sql ) ) {
-		$info = $dbh->errorInfo();
-		error_log( "PDO Error: " . $info[2] . " SQL=" . $sql );
-		return false;
-	} else {
-		$this->ZoneID = $dbh->lastInsertID();
+	function MakeSafe(){
+		$this->ZoneID=intval($this->ZoneID);
+		$this->DataCenterID=intval($this->DataCenterID);
+		$this->Description=addslashes(trim($this->Description));
 	}
-	
-	return $this->ZoneID;
-	}
-	
-  function UpdateZone( $db = null ) {
-  	global $dbh;
-		
-	$this->MakeSafe();
-		
-	//update cabinets in this zone
-	$sql = sprintf( "update fac_Cabinet set DataCenterID=%d where ZoneID='%d'", intval($this->DataCenterID), intval( $this->ZoneID ) );
-	if(!$dbh->query($sql)){
-  		$info = $dbh->errorInfo();
-  		error_log( "PDO Error: " . $info[2] . " SQL=" . $sql );
-		return false;
-  	}
-	//update zone	
-	$sql = sprintf( "update fac_Zone set Description=\"%s\", DataCenterID=%d where ZoneID='%d'", addslashes( $this->Description ), intval($this->DataCenterID), intval( $this->ZoneID ) );
-	if(!$dbh->query($sql)){
-  		$info = $dbh->errorInfo();
-  		error_log( "PDO Error: " . $info[2] . " SQL=" . $sql );
-		return false;
-  	}
-  	return true;
-  }
-	
-  function DeleteZone( $db = null ) {
-  	global $dbh;
-  	
-  	$this->MakeSafe();
-  	
-  	//update cabinets in this zone
-  	$sql = sprintf( "update from fac_Cabinet set CabRowID=0, ZoneID=0 where ZoneID='%d'", intval( $this->ZoneID ) );
-  	if(!$dbh->query($sql)){
-  		$info = $dbh->errorInfo();
-  		error_log( "PDO Error: " . $info[2] . " SQL=" . $sql );
-		return false;
-  	}
-	//delete CabRows in this zone
-  	$sql = sprintf( "delete from fac_CabRow where ZoneID='%d'", intval( $this->ZoneID ) );
-  	if(!$dbh->query($sql)){
-  		$info = $dbh->errorInfo();
-  		error_log( "PDO Error: " . $info[2] . " SQL=" . $sql );
-		return false;
-  	}
-				//delete zone
-  	$sql = sprintf( "delete from fac_Zone where ZoneID='%d'", intval( $this->ZoneID ) );
-  	if(!$dbh->query($sql)){
-  		$info = $dbh->errorInfo();
-  		error_log( "PDO Error: " . $info[2] . " SQL=" . $sql );
-		return false;
-  	}
-  	return true;
-  }
-  
-  function GetZone( $db = null ) {
-  	global $dbh;
-  	
-    $sql = "select * from fac_Zone where ZoneID=\"" . intval($this->ZoneID) . "\"";
-    if ( ! $row = $dbh->query( $sql )->fetch() ) {
-		$info = $dbh->errorInfo();
-		error_log( "PDO Error: " . $info[2] . " SQL=" . $sql );
-		return false;
-	}		
-	$this->ZoneID = $row["ZoneID"];
-	$this->DataCenterID = $row["DataCenterID"];
-	$this->Description = $row["Description"];
-    
-    return true;
-  }
-  
-  function GetZonesByDC( $db = null ) {
-  	global $dbh;
-  	
-    $sql = "select * from fac_Zone where DataCenterID=\"" . intval($this->DataCenterID) . "\" order by Description";
-    
-    $zoneList = array();
-    
-    foreach ( $dbh->query( $sql ) as $row ) {
-      $zoneNum = sizeof( $zoneList );
-      
-      $zoneList[$zoneNum] = new Zone();
-      $zoneList[$zoneNum]->ZoneID = $row["ZoneID"];
-      $zoneList[$zoneNum]->DataCenterID = $row["DataCenterID"];
-      $zoneList[$zoneNum]->Description = $row["Description"];
-    }
-    
-    return $zoneList;
-  }
-  function GetZoneList( $db = null ) {
-  	global $dbh;
-  	
-	$sql = sprintf( "select * from fac_Zone order by Description ASC" );
 
-	$zoneList = array();
-	
-	foreach ( $dbh->query( $sql ) as $row ) {
-		$zoneNum = sizeof( $zoneList );
-		$zoneList[$zoneNum] = new Zone();
-		
-		$zoneList[$zoneNum]->ZoneID = $row["ZoneID"];
-		$zoneList[$zoneNum]->DataCenterID = $row["DataCenterID"];
-		$zoneList[$zoneNum]->Description = $row["Description"];
+	function MakeDisplay(){
+		$this->Description=stripslashes($this->Description);
+	}
+
+	static function RowToObject($row){
+		$zone=New Zone();
+		$zone->ZoneID=$row["ZoneID"];
+		$zone->DataCenterID=$row["DataCenterID"];
+		$zone->Description=$row["Description"];
+		$zone->MakeDisplay();
+
+		return $zone;
+	}
+ 
+	function query($sql){
+		global $dbh;
+		return $dbh->query($sql);
 	}
 	
-	return $zoneList;
-  }
+	function exec($sql){
+		global $dbh;
+		return $dbh->exec($sql);
+	}
+	
+	function CreateZone(){
+		global $dbh;
+			
+		$this->MakeSafe();
+			
+		$sql="INSERT INTO fac_Zone SET Description=\"$this->Description\", 
+			DataCenterID=$this->DataCenterID;";
+		if(!$dbh->exec($sql)){
+			$info=$dbh->errorInfo();
+			error_log("PDO Error: {$info[2]} SQL=$sql");
+			return false;
+		}else{
+			$this->ZoneID=$dbh->lastInsertID();
+			return $this->ZoneID;
+		}
+	}
+	
+	function UpdateZone(){
+		$this->MakeSafe();
+			
+		//update cabinets in this zone
+		$sql="UPDATE fac_Cabinet SET DataCenterID=$this->DataCenterID WHERE 
+			ZoneID=$this->ZoneID;";
+		if(!$this->query($sql)){
+			return false;
+		}
+	
+		//update zone	
+		$sql="UPDATE fac_Zone SET Description=\"$this->Description\", 
+			DataCenterID=$this->DataCenterID WHERE ZoneID=$this->ZoneID;";
+		if(!$this->query($sql)){
+			return false;
+		}
+		return true;
+	}
+	
+	function DeleteZone(){
+		$this->MakeSafe();
+		
+		//update cabinets in this zone
+		$sql="UPDATE FROM fac_Cabinet SET CabRowID=0, ZoneID=0 WHERE 
+			ZoneID=$this->ZoneID;";
+		if(!$this->query($sql)){
+			return false;
+		}
+
+		//delete CabRows in this zone
+		$sql="DELETE FROM fac_CabRow WHERE ZoneID=$this->ZoneID;";
+		if(!$this->query($sql)){
+			return false;
+		}
+
+		//delete zone
+		$sql="DELETE FROM fac_Zone WHERE ZoneID=$this->ZoneID;";
+		if(!$this->query($sql)){
+			return false;
+		}
+		return true;
+	}
+  
+	function GetZone(){
+		$this->MakeSafe();
+		
+		$sql="SELECT * FROM fac_Zone WHERE ZoneID=$this->ZoneID;";
+		if($row=$this->query($sql)->fetch()){
+			foreach(Zone::RowToObject($row) as $prop => $value){
+				$this->$prop=$value;
+			}
+			return true;
+		}else{
+			return false;
+		}
+	}
+  
+	function GetZonesByDC(){
+		$this->MakeSafe();
+		
+		$sql="SELECT * FROM fac_Zone WHERE DataCenterID=$this->DataCenterID ORDER BY 
+			Description;";
+		
+		$zoneList=array();
+		foreach($this->query($sql) as $row){
+			$zoneList[]=Zone::RowToObject($row);
+		}
+		
+		return $zoneList;
+	}
+
+	function GetZoneList(){
+		$sql="SELECT * FROM fac_Zone ORDER BY Description ASC;";
+
+		$zoneList=array();
+		foreach($this->query($sql) as $row){
+			$zoneList[]=Zone::RowToObject($row);
+		}
+		
+		return $zoneList;
+	}
   
 }
 
 class CabRow {
-  var $CabRowID;
-  var $Name;
-  var $ZoneID;
-  
-  function MakeSafe() {
-	$this->CabRowID = intval( $this->CabRowID );
-	$this->Name = mysql_real_escape_string( $this->Name );
-	$this->ZoneID = intval( $this->ZoneID );
-	}
-  
-  function CreateCabRow( $db = null ) {
-  	global $dbh;
+	var $CabRowID;
+	var $Name;
+	var $ZoneID;
 
-  	$this->MakeSafe();
-	$sql = sprintf( "insert into fac_CabRow set Name=\"%s\", ZoneID='%d'", addslashes( $this->Name ), intval($this->ZoneID));
-	if ( ! $dbh->exec( $sql ) ) {
-		$info = $dbh->errorInfo();
-		error_log( "PDO Error: " . $info[2] . " SQL=" . $sql );
-		return false;
-	} else {
-		$this->CabRowID = $dbh->lastInsertID();
+	function MakeSafe() {
+		$this->CabRowID=intval($this->CabRowID);
+		$this->Name=addslashes(trim($this->Name));
+		$this->ZoneID=intval($this->ZoneID);
+	}
+
+	function MakeDisplay(){
+		$this->Name=stripslashes($this->Name);
+	}
+
+	function RowToObject($row){
+		$cabrow=new CabRow();
+		$cabrow->CabRowID=$row["CabRowID"];
+		$cabrow->Name=$row["Name"];
+		$cabrow->ZoneID=$row["ZoneID"];
+		$cabrow->MakeDisplay();
+
+		return $cabrow;
+	}
+
+	function query($sql){
+		global $dbh;
+		return $dbh->query($sql);
 	}
 	
-	return $this->CabRowID;
+	function exec($sql){
+		global $dbh;
+		return $dbh->exec($sql);
 	}
 	
-  function UpdateCabRow( $db = null ) {
-  	global $dbh;
-  		
-  	$this->MakeSafe();
-  	//update cabinets in this cabrow
-  	$sql = sprintf( "update fac_Cabinet set ZoneID='%d' where CabRowID='%d'", intval($this->ZoneID), intval( $this->CabRowID ) );
-  	if(!$dbh->query($sql)){
-  		$info = $dbh->errorInfo();
-  		error_log( "PDO Error: " . $info[2] . " SQL=" . $sql );
-		return false;
-  	}
-  	
-  	//update cabrow
-  	$sql = sprintf( "update fac_CabRow set Name=\"%s\", ZoneID='%d' where CabRowID='%d'", addslashes( $this->Name ), intval($this->ZoneID), intval( $this->CabRowID ) );
-  	if(!$dbh->query($sql)){
-  		$info = $dbh->errorInfo();
-  		error_log( "PDO Error: " . $info[2] . " SQL=" . $sql );
-		return false;
-  	}
-  	
-	return true;
-  }
+	function CreateCabRow(){
+		global $dbh;
+		$this->MakeSafe();
+
+		$sql="INSERT INTO fac_CabRow SET Name=\"$this->Name\", ZoneID=$this->ZoneID;";
+		if($dbh->exec($sql)){
+			$this->CabRowID=$dbh->lastInsertID();
+			return $this->CabRowID;
+		}else{
+			return false;
+		}
+	}
 	
-  function DeleteCabRow( $db = null ) {
-  	global $dbh;
-  		
-  	$this->MakeSafe();
-  	//update cabinets in this cabrow
-  	$sql = sprintf( "update from fac_Cabinet set CabRowID=0 where CabRowID='%d' and ZoneID='%d'", intval( $this->CabRowID ), intval( $this->ZoneID ) );
-  	if(!$dbh->query($sql)){
-  		$info = $dbh->errorInfo();
-  		error_log( "PDO Error: " . $info[2] . " SQL=" . $sql );
-		return false;
-  	}
-  	  	//delete cabrow
-  	$sql = sprintf( "delete from fac_CabRow where CabRowID='%d'", intval( $this->CabRowID ) );
-  	if(!$dbh->query($sql)){
-  		$info = $dbh->errorInfo();
-  		error_log( "PDO Error: " . $info[2] . " SQL=" . $sql );
-		return false;
-  	}
-  	return true;
-  }
-  
-  function GetCabRow( $db = null ) {
-  	global $dbh;
-  		
-  	$sql = "select * from fac_CabRow where CabRowID=\"" . intval($this->CabRowID) . "\"";
-    
-  	if ( ! $row = $dbh->query( $sql )->fetch() ) {
-  		$info = $dbh->errorInfo();
-  		error_log( "PDO Error: " . $info[2] . " SQL=" . $sql );
-		return false;
-  	}
-  	$this->CabRowID = $row["CabRowID"];
-  	$this->Name = $row["Name"];
-  	$this->ZoneID = $row["ZoneID"];
-    
-  	return true;
-  }
-  
-  function GetCabRowsByZones( $db = null ) {
-    global $dbh;
-    
-  	$sql = "select * from fac_CabRow where ZoneID=\"" . intval($this->ZoneID) . "\" order by Name";
-    
-    $cabrowList = array();
-    
-    foreach ( $dbh->query( $sql ) as $row ) {
-      $zoneNum = sizeof( $cabrowList );
-      
-      $cabrowList[$zoneNum] = new CabRow();
-      $cabrowList[$zoneNum]->CabRowID = $row["CabRowID"];
-      $cabrowList[$zoneNum]->Name = $row["Name"];
-      $cabrowList[$zoneNum]->ZoneID = $row["ZoneID"];
-    }
-    
-    return $cabrowList;
-  }
-  
-  function GetCabRowList( $db = null ) {
-  	global $dbh;
-  	
-	$sql = sprintf( "select * from fac_CabRow order by Name ASC" );
-	
-	$cabrowList = array();
-	
-	foreach ( $dbh->query( $sql ) as $row ) {
-		$cabrowNum = sizeof( $cabrowList );
-		$cabrowList[$cabrowNum] = new CabRow();
+	function UpdateCabRow(){
+		$this->MakeSafe();
+
+		$sql="UPDATE fac_Cabinet SET ZoneID=$this->ZoneID WHERE CabRowID=$this->CabRowID;";
+		if(!$this->query($sql)){
+			return false;
+		}
 		
-		$cabrowList[$cabrowNum]->CabRowID = $row["CabRowID"];
-		$cabrowList[$cabrowNum]->ZoneID = $row["ZoneID"];
-		$cabrowList[$cabrowNum]->Name = $row["Name"];
+		$sql="UPDATE fac_CabRow SET Name=\"$this->Name\", ZoneID=$this->ZoneID WHERE CabRowID=$this->CabRowID;";
+		if(!$this->query($sql)){
+			return false;
+		}
+		
+		return true;
 	}
 	
-	return $cabrowList;
-  }
-  
+	function DeleteCabRow(){
+		$this->MakeSafe();
+
+		//update cabinets in this cabrow
+		$sql="UPDATE fac_Cabinet SET CabRowID=0 WHERE CabRowID=$this->CabRowID AND ZoneID=$this->ZoneID;";
+		if(!$this->query($sql)){
+			return false;
+		}
+
+		//delete cabrow
+		$sql="DELETE FROM fac_CabRow WHERE CabRowID=$this->CabRowID;";
+		if(!$this->query($sql)){
+			return false;
+		}
+		return true;
+	}
+
+	function GetCabRow(){
+		$sql="SELECT * FROM fac_CabRow WHERE CabRowID=$this->CabRowID;";
+
+		if($row=$this->query($sql)->fetch()){
+			foreach(CabRow::RowToObject($row) as $prop => $value){
+				$this->$prop=$value;
+			}
+			return true;
+		}else{
+			return false;
+		}
+	}
+
+	function GetCabRowsByZones(){
+		$this->MakeSafe();
+
+		$sql="SELECT * FROM fac_CabRow WHERE ZoneID=$this->ZoneID ORDER BY Name";
+
+		$cabrowList=array();
+		foreach($this->query($sql) as $row){
+			$cabrowList[]=CabRow::RowToObject($row);
+		}
+
+		return $cabrowList;
+	}
+
+	function GetCabRowList(){
+		$sql="SELECT * FROM fac_CabRow ORDER BY Name ASC;";
+		
+		$cabrowList=array();
+		foreach($this->query($sql) as $row){
+			$cabrowList[]=CabRow::RowToObject($row);
+		}
+		
+		return $cabrowList;
+	}
+
 }
 
 //JMGA: containerobjects may contain DCs or other containers
@@ -1284,11 +1279,39 @@ class Container {
 
 	function MakeSafe(){
 		$this->ContainerID=intval($this->ContainerID);
-		$this->Name=addslashes($this->Name);
+		$this->Name=addslashes(trim($this->Name));
 		$this->ParentID=intval($this->ParentID);
-		$this->DrawingFileName=addslashes($this->DrawingFileName);
+		$this->DrawingFileName=addslashes(trim($this->DrawingFileName));
 		$this->MapX=intval($this->MapX);
 		$this->MapY=intval($this->MapY);
+	}
+	
+	function MakeDisplay(){
+		$this->Name=stripslashes($this->Name);
+		$this->DrawingFileName=stripslashes($this->DrawingFileName);
+	}
+
+	function RowToObject($row){
+		$container=new Container();
+		$container->ContainerID=$row["ContainerID"];
+		$container->Name=$row["Name"];
+		$container->ParentID=$row["ParentID"];
+		$container->DrawingFileName=$row["DrawingFileName"];
+		$container->MapX=$row["MapX"];
+		$container->MapY=$row["MapY"];
+		$container->MakeDisplay();
+
+		return $container;
+	}
+
+	function query($sql){
+		global $dbh;
+		return $dbh->query($sql);
+	}
+	
+	function exec($sql){
+		global $dbh;
+		return $dbh->exec($sql);
 	}
 	
 	function CreateContainer() {
@@ -1298,9 +1321,9 @@ class Container {
 		$sql="INSERT INTO fac_Container set Name=\"$this->Name\", ParentID=$this->ParentID, 
 				DrawingFileName=\"$this->DrawingFileName\", MapX=$this->MapX, MapY=$this->MapY;";
 
-		if ( ! $dbh->exec( $sql ) ) {
-			$info = $dbh->errorInfo();
-			error_log( "PDO Error: " . $info[2] . " SQL=" . $sql );
+		if(!$dbh->exec($sql)){
+			$info=$dbh->errorInfo();
+			error_log("PDO Error: {$info[2]} SQL=$sql");
 			return false;
 		} else {
 			$this->ContainerID = $dbh->lastInsertID();
@@ -1308,91 +1331,58 @@ class Container {
 		return $this->ContainerID;
 	}
 
-	function UpdateContainer() {
-		global $dbh;
-		
+	function UpdateContainer(){
 		$this->MakeSafe();
+
 		$sql="UPDATE fac_Container SET Name=\"$this->Name\", ParentID=$this->ParentID, 
 			DrawingFileName=\"$this->DrawingFileName\", MapX=$this->MapX, MapY=$this->MapY 
 			WHERE ContainerID=$this->ContainerID;";
 		
-		if(!$dbh->query($sql)){
-			$info=$dbh->errorInfo();
-			error_log("PDO Error: {$info[2]} SQL=$sql");
+		if(!$this->query($sql)){
 			return false;
 		}else{
 			return true;
 		}
 	}
 
-	function GetContainer() {
-		global $dbh;
-		
+	function GetContainer(){
 		$this->MakeSafe();
+
 		$sql="SELECT * FROM fac_Container WHERE ContainerID=$this->ContainerID;";
 
-		if($row=$dbh->query($sql)->fetch()){
-			$this->Name = $row["Name"];
-			$this->ParentID= $row["ParentID"];
-			$this->DrawingFileName = $row["DrawingFileName"];
-			$this->MapX = $row["MapX"];
-			$this->MapY = $row["MapY"];
-
+		if($row=$this->query($sql)->fetch()){
+			foreach(Container::RowToObject($row) as $prop => $value){
+				$this->$prop=$value;
+			}
 			return true;
 		}else{
-			// do not display error info for this, it is designed to fail occasionally and
-			// is just generating log spam.
 			return false;
 		}
 	}
 	
 	function GetChildContainerList(){
-		global $dbh;
-		
 		$this->MakeSafe();
+
 		$sql="SELECT * FROM fac_Container WHERE ParentID=$this->ContainerID 
-				ORDER BY Name ASC";
+			ORDER BY Name ASC;";
 
-		$containerList = array();
-
-		foreach($dbh->query($sql)as$cRow){
-			$cID=$cRow["ContainerID"];
-
-			$containerList[$cID]=new Container();
-			$containerList[$cID]->ContainerID=$cRow["ContainerID"];
-			$containerList[$cID]->Name=$cRow["Name"];
-			$containerList[$cID]->ParentID=$cRow["ParentID"];
-			$containerList[$cID]->DrawingFileName=$cRow["DrawingFileName"];
-			$containerList[$cID]->MapX=$cRow["MapX"];
-			$containerList[$cID]->MapY=$cRow["MapY"];
+		$containerList=array();
+		foreach($this->query($sql) as $row){
+			$containerList[$row["ContainerID"]]=Container::RowToObject($row);
 		}
 
 		return $containerList;
 	}
+
 	function GetChildDCList(){
-		global $dbh;
-	
-		$this->MakeSafe();	
-		$sql = "SELECT * FROM fac_DataCenter WHERE ContainerID=$this->ContainerID 
-				ORDER BY Name ASC";
+		$this->MakeSafe();
 
-		$datacenterList = array();
+		$sql="SELECT * FROM fac_DataCenter WHERE ContainerID=$this->ContainerID 
+			ORDER BY Name ASC;";
 
-		foreach($dbh->query($sql)as$dcRow){
-			$dcID=$dcRow["DataCenterID"];
-
-			$datacenterList[$dcID] = new DataCenter();
-			$datacenterList[$dcID]->DataCenterID=$dcRow["DataCenterID"];
-			$datacenterList[$dcID]->Name=$dcRow["Name"];
-			$datacenterList[$dcID]->SquareFootage=$dcRow["SquareFootage"];
-			$datacenterList[$dcID]->DeliveryAddress=$dcRow["DeliveryAddress"];
-			$datacenterList[$dcID]->Administrator=$dcRow["Administrator"];
-			$datacenterList[$dcID]->MaxkW=$dcRow["MaxkW"];
-			$datacenterList[$dcID]->DrawingFileName=$dcRow["DrawingFileName"];
-			$datacenterList[$dcID]->EntryLogging=$dcRow["EntryLogging"];
-			$datacenterList[$dcID]->ContainerID=$dcRow["ContainerID"];
-			$datacenterList[$dcID]->MapX=$dcRow["MapX"];
-			$datacenterList[$dcID]->MapY=$dcRow["MapY"];
+		$datacenterList=array();
+		foreach($this->query($sql) as $row){
+			$datacenterList[$row["DataCenterID"]]=DataCenter::DataCenterRowToObject($row);
 		}
 
 		return $datacenterList;
@@ -1404,8 +1394,9 @@ class Container {
 		$tree="\n<ul class=\"mktree\" id=\"datacenters\">\n";;
 		//Add root children
 		$tree.=$c->AddContainerToTree();
-		$tree .= "<li class=\"liOpen\" id=\"dc-1\"><a href=\"storageroom.php\">"._("Storage Room")."</a></li>\n";
-		$tree .= "</ul>\n";
+		$tree.="<li class=\"liOpen\" id=\"dc-1\"><a href=\"storageroom.php\">"._("Storage Room")."</a></li>\n";
+		$tree.="</ul>\n";
+
 		return $tree;
 	}
 
@@ -1413,42 +1404,43 @@ class Container {
 		$tree="";
 		$container_opened=false;
 		
-		if ($this->GetContainer()){
+		if($this->GetContainer()){
 			$lev++;
-			$tree .= str_repeat(" ",$lev)."<li class=\"liOpen\" id=\"c".$this->ContainerID."\"><a class=\"CONTAINER\" href=\"container_stats.php?container=" 
-					. $this->ContainerID . "\">" . $this->Name . "</a>\n";
+			$tree.=str_repeat(" ",$lev)."<li class=\"liOpen\" id=\"c$this->ContainerID\">"
+				."<a class=\"CONTAINER\" href=\"container_stats.php?container=$this->ContainerID\">"
+				."$this->Name</a>\n";
 			$lev++;
-			$tree .= str_repeat(" ",$lev)."<ul>\n";
+			$tree.=str_repeat(" ",$lev)."<ul>\n";
 			$container_opened=true;
 		}
 		
 		$cList=$this->GetChildContainerList();
 		$lev++;
-		if ( count( $cList ) > 0 ) {
-			while ( list( $cID, $container ) = each( $cList ) ) {
+		if(count($cList) >0){
+			while(list($cID,$container)=each($cList)){
 				$tree.=$container->AddContainerToTree($lev);
 			}
 		}
 		
-		$dcList = $this->GetChildDCList();
+		$dcList=$this->GetChildDCList();
 
-		if ( count( $dcList ) > 0 ) {
-			while ( list( $dcID, $datacenter ) = each( $dcList ) ) {
+		if(count($dcList) >0){
+			while(list($dcID,$datacenter)=each($dcList)){
 				$tree.=$datacenter->AddDCToTree($lev);
 			} //DC
 		}
 
 		if ($container_opened){
 			
-			$tree .= str_repeat(" ",$lev-1)."</ul>\n";
-			$tree .= str_repeat(" ",$lev-2)."</li>\n";
+			$tree.=str_repeat(" ",$lev-1)."</ul>\n";
+			$tree.=str_repeat(" ",$lev-2)."</li>\n";
 		}
 		
 		return $tree;
 	}
 	
-	function MakeContainerImage( $db = null ) {
-		$mapHTML = "";
+	function MakeContainerImage(){
+		$mapHTML="";
 		$mapfile="";
 		$tam=50;
 	 
@@ -1459,7 +1451,7 @@ class Container {
 		if ( file_exists( $mapfile ) ) {
 			list($width, $height, $type, $attr)=getimagesize($mapfile);
 			$mapHTML.="<div style='position:relative;'>\n";
-			$mapHTML.="<img src=\"".$mapfile."\" width=\"$width\" height=\"$height\" alt=\"Container Image\">\n";
+			$mapHTML.="<img src=\"$mapfile\" width=\"$width\" height=\"$height\" alt=\"Container Image\">\n";
 			
 			$cList=$this->GetChildContainerList();
 			if ( count( $cList ) > 0 ) {
@@ -1507,6 +1499,7 @@ class Container {
 	    }
 	    return $mapHTML;
 	}
+
 	function MakeContainerMiniImage($tipo="",$id=0) {
 		$mapHTML = "";
 		$mapfile="";
@@ -1586,7 +1579,7 @@ class Container {
 	    return $mapHTML;
 	}
 	
-	function GetContainerStatistics( $db = null ) {
+	function GetContainerStatistics(){
 		$this->GetContainer();
 
 		$cStats["DCs"] = 0;
@@ -1600,61 +1593,48 @@ class Container {
 		$cStats["ComputedWatts"] = 0;
 		$cStats["MeasuredWatts"] = 0;
 		
-		$dcList = $this->GetChildDCList();
-		if ( count( $dcList ) > 0 ) {
-			while ( list( $dcID, $datacenter ) = each( $dcList ) ) {
-				//pending for PDO update
-				$dcStats=$datacenter->GetDCStatistics( $db );
+		$dcList=$this->GetChildDCList();
+		if(count($dcList) >0){
+			while(list($dcID,$datacenter)=each($dcList)){
+				$dcStats=$datacenter->GetDCStatistics();
 				$cStats["DCs"]++;
-				$cStats["TotalU"] += $dcStats["TotalU"];
-				$cStats["Infrastructure"] += $dcStats["Infrastructure"];
-				$cStats["Occupied"] += $dcStats["Occupied"];
-				$cStats["Allocated"] += $dcStats["Allocated"];
-				$cStats["Available"] += $dcStats["Available"];
-				$cStats["SquareFootage"] += $datacenter->SquareFootage;
-				$cStats["ComputedWatts"] += $dcStats["ComputedWatts"];
-				$cStats["MeasuredWatts"] += $dcStats["MeasuredWatts"];
-				$cStats["MaxkW"] += $datacenter->MaxkW;
+				$cStats["TotalU"]+=$dcStats["TotalU"];
+				$cStats["Infrastructure"]+=$dcStats["Infrastructure"];
+				$cStats["Occupied"]+=$dcStats["Occupied"];
+				$cStats["Allocated"]+=$dcStats["Allocated"];
+				$cStats["Available"]+=$dcStats["Available"];
+				$cStats["SquareFootage"]+=$datacenter->SquareFootage;
+				$cStats["ComputedWatts"]+=$dcStats["ComputedWatts"];
+				$cStats["MeasuredWatts"]+=$dcStats["MeasuredWatts"];
+				$cStats["MaxkW"]+=$datacenter->MaxkW;
 			} 
 		}
 		
 		$cList=$this->GetChildContainerList();
-		if ( count( $cList ) > 0 ) {
-			while ( list( $cID, $container ) = each( $cList ) ) {
-				//pending for PDO update
+		if(count($cList) >0){
+			while(list($cID,$container)=each($cList)){
 				$childStats=$container->GetContainerStatistics();
-				$cStats["DCs"] += $childStats["DCs"];
-				$cStats["TotalU"] += $childStats["TotalU"];
-				$cStats["Infrastructure"] += $childStats["Infrastructure"];
-				$cStats["Occupied"] += $childStats["Occupied"];
-				$cStats["Allocated"] += $childStats["Allocated"];
-				$cStats["Available"] += $childStats["Available"];
-				$cStats["SquareFootage"] += $childStats["SquareFootage"];
-				$cStats["ComputedWatts"] += $childStats["ComputedWatts"];
-				$cStats["MeasuredWatts"] += $childStats["MeasuredWatts"];
-				$cStats["MaxkW"] += $childStats["MaxkW"]; 
+				$cStats["DCs"]+=$childStats["DCs"];
+				$cStats["TotalU"]+=$childStats["TotalU"];
+				$cStats["Infrastructure"]+=$childStats["Infrastructure"];
+				$cStats["Occupied"]+=$childStats["Occupied"];
+				$cStats["Allocated"]+=$childStats["Allocated"];
+				$cStats["Available"]+=$childStats["Available"];
+				$cStats["SquareFootage"]+=$childStats["SquareFootage"];
+				$cStats["ComputedWatts"]+=$childStats["ComputedWatts"];
+				$cStats["MeasuredWatts"]+=$childStats["MeasuredWatts"];
+				$cStats["MaxkW"]+=$childStats["MaxkW"];
 			}
 		}
 		return $cStats;
 	}
 	
-	function GetContainerList( $db = null ) {
-		global $dbh;
-		
-		$sql = "SELECT * FROM fac_Container ORDER BY Name ASC";
+	function GetContainerList(){
+		$sql="SELECT * FROM fac_Container ORDER BY Name ASC;";
 
-		$containerList = array();
-
-		foreach ( $dbh->query( $sql ) as $cRow ) {
-			$cID = $cRow[ "ContainerID" ];
-
-			$containerList[$cID] = new Container();
-			$containerList[$cID]->ContainerID = $cRow["ContainerID"];
-			$containerList[$cID]->Name = $cRow["Name"];
-			$containerList[$cID]->ParentID = $cRow["ParentID"];
-			$containerList[$cID]->DrawingFileName = $cRow["DrawingFileName"];
-			$containerList[$cID]->MapX = $cRow["MapX"];
-			$containerList[$cID]->MapY = $cRow["MapY"];
+		$containerList=array();
+		foreach($this->query($sql) as $row){
+			$containerList[$row["ContainerID"]]=Container::RowToObject($row);
 		}
 
 		return $containerList;

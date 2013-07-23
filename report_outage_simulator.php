@@ -38,7 +38,7 @@ if (!isset($_REQUEST['action'])){
 	include( 'sidebar.inc.php' );
 	
 	$datacenter = new DataCenter();
-	$dcList = $datacenter->GetDCList( $facDB );
+	$dcList = $datacenter->GetDCList();
 	
 	$pwrSource = new PowerSource();
 	$pwrPanel = new PowerPanel();
@@ -63,10 +63,10 @@ if (!isset($_REQUEST['action'])){
 		printf( "</td></tr>" );
 	} else {
 		$datacenter->DataCenterID = $_REQUEST['datacenterid'];
-		$datacenter->GetDataCenter( $facDB );
+		$datacenter->GetDataCenter();
 		
 		$pwrSource->DataCenterID = $datacenter->DataCenterID;
-		$sourceList = $pwrSource->GetSourcesByDataCenter( $facDB );
+		$sourceList = $pwrSource->GetSourcesByDataCenter();
 		printf( "<input type=\"hidden\" name=\"datacenterid\" value=\"%d\">\n", $datacenter->DataCenterID );
 		
 		printf( "<h3>%s: %s</h3>", __("Choose either power sources or panels to simulate for Data Center"), $datacenter->Name );
@@ -80,7 +80,7 @@ if (!isset($_REQUEST['action'])){
 		
 		foreach ( $sourceList as $source ) {
 			$pwrPanel->PowerSourceID = $source->PowerSourceID;
-			$panelList = $pwrPanel->GetPanelListBySource( $facDB );
+			$panelList = $pwrPanel->GetPanelListBySource();
 			
 			printf( "<tr><td><input type=\"checkbox\" name=\"sourceid[]\" value=\"%d\">%s</td>\n", $source->PowerSourceID, $source->SourceName );
 			
@@ -183,7 +183,7 @@ echo '		<div class="main">
 	}
 	
 	$dc->DataCenterID = intval( $_REQUEST['datacenterid'] );
-	$dc->GetDataCenter( $facDB );
+	$dc->GetDataCenter();
 	
 	$skipNormal = false;
 
@@ -207,7 +207,7 @@ echo '		<div class="main">
 		foreach ( $srcArray as $srcID ) {
 			$pan->PowerSourceID = $srcID;
 			
-			$pnlList = array_merge( $pnlList, $pan->GetPanelListBySource( $facDB ) );
+			$pnlList = array_merge( $pnlList, $pan->GetPanelListBySource() );
 		}
 	} else {
 		// Need to build an array of Panel Objects (what we got from input was just the IDs)
@@ -217,7 +217,7 @@ echo '		<div class="main">
 			$pnlCount = count( $pnlList );
 			$pnlList[$pnlCount] = new PowerPanel();
 			$pnlList[$pnlCount]->PanelID = $pnlID;
-			$pnlList[$pnlCount]->GetPanel( $facDB );
+			$pnlList[$pnlCount]->GetPanel();
 		}
 	}
 	
@@ -253,7 +253,7 @@ echo '		<div class="main">
 			
 			$cabList[$cabCount] = new Cabinet();
 			$cabList[$cabCount]->CabinetID = $outagePDU->CabinetID;
-			$cabList[$cabCount]->GetCabinet( $facDB );
+			$cabList[$cabCount]->GetCabinet();
 		}
 			
 		if ( $outagePDU->FailSafe ) {

@@ -142,7 +142,7 @@ class PDF extends FPDF {
 	$dept = new Department();
 	$dc = new DataCenter();
 
-	$pdf=new PDF($facDB);
+	$pdf=new PDF();
 	$pdf->AliasNbPages();
 	  
 	$pdf->SetFont($config->ParameterArray["PDFfont"],'',8);
@@ -157,7 +157,7 @@ class PDF extends FPDF {
 
   $pdf->Bookmark( "Data Centers" );
 	
-  $dcList = $dc->GetDCList( $facDB );
+  $dcList = $dc->GetDCList();
   
   foreach ( $dcList as $dcRow ) {
     $pdf->AddPage();
@@ -178,7 +178,7 @@ class PDF extends FPDF {
   	$fill = 0;
   	
     $cab->DataCenterID = $dcRow->DataCenterID;
-    $cabList = $cab->ListCabinetsByDC( $facDB );
+    $cabList = $cab->ListCabinetsByDC();
     
     foreach ( $cabList as $cabRow ) {
       $pdf->BookMark( $cabRow->Location, 2 );
@@ -199,7 +199,7 @@ class PDF extends FPDF {
           $sourceList=$devRow->GetDeviceDiversity();
           @$source->PowerSourceID = $sourceList[0];
           if ( $source->PowerSourceID > 0 ) {
-            $source->GetSource( $facDB );
+            $source->GetSource();
           } else {
             $source->SourceName = "Unknown";
           }
@@ -213,7 +213,7 @@ WTF was this supposed to be doing?
             if ( $sourceID < 1 ) {
               $sources .= "Unknown ";
             } else {
-              $source->GetSource( $facDB );
+              $source->GetSource();
               $sources .= $source->SourceName . " ";
             }
           }

@@ -113,8 +113,8 @@ echo '<div class="main">
 <br>
 <div class="JMGA" style="center width: 1200px; overflow: auto">';
 
-  //print $c->MakeImageMap( $facDB );
-  print $c->MakeContainerImage( $facDB );
+  //print $c->MakeImageMap();
+  print $c->MakeContainerImage();
 ?>
 </div></div>
 </div><!-- END div.JMGA -->

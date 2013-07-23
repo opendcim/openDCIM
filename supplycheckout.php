@@ -15,7 +15,7 @@
 	$dept=new Department();
 	$sup=new Supplies();
 	
-	$supplyList=$sup->GetSuppliesList($facDB);
+	$supplyList=$sup->GetSuppliesList();
 	$deptList=$dept->GetDepartmentList();
 
 	// Check to make sure this was a form submission

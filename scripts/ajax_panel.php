@@ -17,7 +17,7 @@
 		//This will ensure that an empty json record set is returned if this is called directly or in some strange manner
 		if ( $searchTerm !="" ) {
 			$pnl->PanelID = intval( $searchTerm );
-			$pnl->GetPanel( $facDB );
+			$pnl->GetPanel();
 		}
 	}
 	header('Content-Type: application/json');

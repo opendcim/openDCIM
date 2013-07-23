@@ -142,7 +142,7 @@ class PDF extends FPDF {
 	$dept = new Department();
 	$dc = new DataCenter();
 
-	$pdf=new PDF($facDB);
+	$pdf=new PDF();
 	$pdf->AliasNbPages();
 	  
 	$pdf->SetFont($config->ParameterArray['PDFfont'],'',8);
@@ -157,7 +157,7 @@ class PDF extends FPDF {
 
 	$pdf->Bookmark( 'Data Centers' );
 	
-	$dcList = $dc->GetDCList( $facDB );
+	$dcList = $dc->GetDCList();
   
 	foreach ( $dcList as $dcRow ) {
 		$pdf->AddPage();
@@ -168,7 +168,7 @@ class PDF extends FPDF {
 		
   	
 		$source->DataCenterID = $dcRow->DataCenterID;
-		$sourceList = $source->GetSourcesByDataCenter( $facDB );
+		$sourceList = $source->GetSourcesByDataCenter();
     
 		foreach ( $sourceList as $sourceRow ) {
 			
@@ -180,7 +180,7 @@ class PDF extends FPDF {
 			$pdf->Ln();
 
 			$pan->PowerSourceID = $sourceRow->PowerSourceID;
-			$panList = $pan->GetPanelListBYSource( $facDB );
+			$panList = $pan->GetPanelListBYSource();
       			
 			foreach ( $panList as $panRow ) {
 				$pdf->BookMark( $panRow->PanelLabel, 3 );

@@ -13,7 +13,7 @@
 	}
 	
 	$datacenter=new DataCenter();
-	$dcList=$datacenter->GetDCList($facDB);
+	$dcList=$datacenter->GetDCList();
 	
 	$templ = new DeviceTemplate();
 	$dept = new Department();
@@ -61,7 +61,7 @@
 			
 			if($row["TemplateID"] >0){
 				$templ->TemplateID=$row["TemplateID"];
-				$templ->GetTemplateByID($facDB);
+				$templ->GetTemplateByID();
 				$Model=$templ->Model;
 			}
 			
@@ -98,7 +98,7 @@
 					$ctags=implode(",", $child->GetTags());
 					if($child->TemplateID >0){
 						$templ->TemplateID=$child->TemplateID;
-						$templ->GetTemplateByID($facDB);
+						$templ->GetTemplateByID();
 						$cModel=$templ->Model;
 					}
 					

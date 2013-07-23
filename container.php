@@ -26,10 +26,10 @@
 		
 		if($c->Name!=""){
 			if($_POST['action']=='Create'){
-				$c->CreateContainer($facDB);
+				$c->CreateContainer();
 			}else{
 				$status=__("Updated");
-				$c->UpdateContainer($facDB);
+				$c->UpdateContainer();
 			}
 		}
 	}

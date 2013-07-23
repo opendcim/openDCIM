@@ -17,87 +17,43 @@
   // This needs to be all generated from the db someplace.
 
   // ITS Statistics
-  $sql = "select count(*) as Devices, sum(Height) as Size, sum(NominalWatts) as Power from fac_Device a, fac_Department b where a.Owner=b.DeptID and b.Classification='ITS'";
-  $res = mysql_query( $sql, $facDB );
-  $row = mysql_fetch_array( $res );
+  $sql="select count(*) as Devices, sum(Height) as Size, sum(NominalWatts) as Power, (select count(*) as VMcount from fac_VMInventory a, fac_Department b where a.Owner=b.DeptID and b.Classification='ITS') as VMcount from fac_Device a, fac_Department b where a.Owner=b.DeptID and b.Classification='ITS'";
+  $row=$dbh->query($sql)->fetch();
   $ITSdevices = $row["Devices"];
   $ITSsize = $row["Size"];
   $ITSpower = $row["Power"];
   $ITSheat = $ITSpower * 3.412 / 12000;
-  
-  $sql = "select count(*) as VMcount from fac_VMInventory a, fac_Department b where a.Owner=b.DeptID and b.Classification='ITS'";
-  $res = mysql_query( $sql, $facDB );
-  $row = mysql_fetch_array( $res );
   $ITSVM = $row["VMcount"];
   
   $data["ITS Managed Services"] = array( $ITSdevices, $ITSsize, $ITSVM, $ITSpower, $ITSheat );
     
   // Administrative Statistics
-  $sql = "select count(*) as Devices from fac_Device a, fac_Department b where a.Owner=b.DeptID and b.Classification='Administrative'";
-  $res = mysql_query( $sql, $facDB );
-  $row = mysql_fetch_array( $res );
+  $sql="select count(*) as Devices, sum(Height) as Size, sum(NominalWatts) as Power, (select count(*) from fac_VMInventory a, fac_Department b where a.Owner=b.DeptID and b.Classification='Administrative') as VMcount  from fac_Device a, fac_Department b where a.Owner=b.DeptID and b.Classification='Administrative'";
+  $row=$dbh->query($sql)->fetch();
   $Admindevices = $row["Devices"];
-  
-  $sql = "select sum(Height) as Size from fac_Device a, fac_Department b where a.Owner=b.DeptID and b.Classification='Administrative'";
-  $res = mysql_query( $sql, $facDB );
-  $row = mysql_fetch_array( $res );
   $Adminsize = $row["Size"];
-
-  $sql = "select count(*) as VMcount from fac_VMInventory a, fac_Department b where a.Owner=b.DeptID and b.Classification='Administrative'";
-  $res = mysql_query( $sql, $facDB );
-  $row = mysql_fetch_array( $res );
   $AdminVM = $row["VMcount"];
-  
-  $sql = "select sum(NominalWatts) as Power from fac_Device a, fac_Department b where a.Owner=b.DeptID and b.Classification='Administrative'";
-  $res = mysql_query( $sql, $facDB );
-  $row = mysql_fetch_array( $res );
   $Adminpower = $row["Power"];
   $Adminheat = $Adminpower * 3.412 / 12000;
   
   $data["Non-ITS Administrative Colocations"] = array( $Admindevices, $Adminsize, $AdminVM, $Adminpower, $Adminheat );
   
   // Academic (non-research) Statistics
-  $sql = "select count(*) as Devices from fac_Device a, fac_Department b where a.Owner=b.DeptID and b.Classification='Academic'";
-  $res = mysql_query( $sql, $facDB );
-  $row = mysql_fetch_array( $res );
+  $sql="select count(*) as Devices, sum(Height) as Size, sum(NominalWatts) as Power, (select count(*) from fac_VMInventory a, fac_Department b where a.Owner=b.DeptID and b.Classification='Academic') as VMcount  from fac_Device a, fac_Department b where a.Owner=b.DeptID and b.Classification='Academic'";
+  $row=$dbh->query($sql)->fetch();
   $Academicdevices = $row["Devices"];
-  
-  $sql = "select sum(Height) as Size from fac_Device a, fac_Department b where a.Owner=b.DeptID and b.Classification='Academic'";
-  $res = mysql_query( $sql, $facDB );
-  $row = mysql_fetch_array( $res );
   $Academicsize = $row["Size"];
-
-  $sql = "select count(*) as VMcount from fac_VMInventory a, fac_Department b where a.Owner=b.DeptID and b.Classification='Academic'";
-  $res = mysql_query( $sql, $facDB );
-  $row = mysql_fetch_array( $res );
   $AcademicVM = $row["VMcount"];
-  
-  $sql = "select sum(NominalWatts) as Power from fac_Device a, fac_Department b where a.Owner=b.DeptID and b.Classification='Academic'";
-  $res = mysql_query( $sql, $facDB );
-  $row = mysql_fetch_array( $res );
   $Academicpower = $row["Power"];
   $Academicheat = $Academicpower * 3.412 / 12000;
   
   $data["Academic (Non-Research) Colocations"] = array( $Academicdevices, $Academicsize, $AcademicVM, $Academicpower, $Academicheat );
   // Research Computing Statistics
-  $sql = "select count(*) as Devices from fac_Device a, fac_Department b where a.Owner=b.DeptID and b.Classification='Research'";
-  $res = mysql_query( $sql, $facDB );
-  $row = mysql_fetch_array( $res );
+  $sql="select count(*) as Devices, sum(Height) as Size, sum(NominalWatts) as Power, (select count(*) from fac_VMInventory a, fac_Department b where a.Owner=b.DeptID and b.Classification='Research') as VMcount  from fac_Device a, fac_Department b where a.Owner=b.DeptID and b.Classification='Research'";
+  $row=$dbh->query($sql)->fetch();
   $Researchdevices = $row["Devices"];
-  
-  $sql = "select sum(Height) as Size from fac_Device a, fac_Department b where a.Owner=b.DeptID and b.Classification='Research'";
-  $res = mysql_query( $sql, $facDB );
-  $row = mysql_fetch_array( $res );
   $Researchsize = $row["Size"];
-
-  $sql = "select count(*) as VMcount from fac_VMInventory a, fac_Department b where a.Owner=b.DeptID and b.Classification='Research'";
-  $res = mysql_query( $sql, $facDB );
-  $row = mysql_fetch_array( $res );
   $ResearchVM = $row["VMcount"];
-  
-  $sql = "select sum(NominalWatts) as Power from fac_Device a, fac_Department b where a.Owner=b.DeptID and b.Classification='Research'";
-  $res = mysql_query( $sql, $facDB );
-  $row = mysql_fetch_array( $res );
   $Researchpower = $row["Power"];
   $Researchheat = $Researchpower * 3.412 / 12000;
   

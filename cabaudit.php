@@ -19,7 +19,7 @@
 	$audit=new CabinetAudit();
 	$audit->CabinetID=$_REQUEST['cabinetid'];
 	$audit->AuditStamp="Never";
-	$audit->GetLastAudit($facDB);
+	$audit->GetLastAudit();
 	if($audit->UserID!=""){
 		$tmpUser=new User();
 		$tmpUser->UserID=$audit->UserID;
@@ -415,7 +415,7 @@ class PDF_Diag extends PDF_Sector {
 		// 	continue;
 			if ( $devRow->Cabinet != $cab->CabinetID ) {
 				$cab->CabinetID = $devRow->Cabinet;
-				$cab->GetCabinet( $facDB );
+				$cab->GetCabinet();
 			}
 
 			if ( $cab->DataCenterID != $dc->DataCenterID ) {
@@ -425,7 +425,7 @@ class PDF_Diag extends PDF_Sector {
 			  }
 			  
 				$dc->DataCenterID = $cab->DataCenterID;
-				$dc->GetDataCenterbyID( $facDB );
+				$dc->GetDataCenterbyID();
 				
 				$DCRU = 0;
 				$DCBTU = 0;
@@ -448,9 +448,9 @@ class PDF_Diag extends PDF_Sector {
 			$pdu->GetPDU();
 			$pdf->Cell( $cellWidths[8], 6, (isset($connList[1]))?$pdu->Label.$connList[1]->PDUPosition:"", 'LBRT', 0, 'L', $fill );
 			$templ->TemplateID=$devRow->TemplateID;
-			$templ->GetTemplateByID($facDB);
+			$templ->GetTemplateByID();
 			$mfg->ManufacturerID=$templ->ManufacturerID;
-			$mfg->GetManufacturerByID($facDB);
+			$mfg->GetManufacturerByID();
 			$pdf->Cell( $cellWidths[9], 6, $mfg->Name." ".$templ->Model, 'LBRT', 1, 'L', $fill );
 
 			
@@ -485,14 +485,14 @@ class PDF_Diag extends PDF_Sector {
 	$pdf->Ln();
 	foreach ($PDUList as $PDUrow){
 			$panel->PanelID=$PDUrow->PanelID;
-			$panel->GetPanel($facDB);
+			$panel->GetPanel();
 
 			$pdutemp=new CDUTemplate();
 			$pdutemp->TemplateID=$PDUrow->TemplateID;
-			$pdutemp->GetTemplate($facDB);
+			$pdutemp->GetTemplate();
 
 			$mfg->ManufacturerID=$pdutemp->ManufacturerID;
-			$mfg->GetManufacturerByID($facDB);
+			$mfg->GetManufacturerByID();
 	
 			$pdf->Cell( $cellWidths[0], 6, $PDUrow->Label, 'LBRT', 0, 'L', $fill );
 			$pdf->Cell( $cellWidths[1], 6, $pdutemp->NumOutlets, 'LBRT', 0, 'L', $fill );

@@ -15,7 +15,7 @@
 	$searchTerm=str_replace(array("'",'"'),"",$searchTerm);
 
 	$dc=new DataCenter();
-	$dcList=$dc->GetDCList( $facDB );
+	$dcList=$dc->GetDCList();
 	
 	$dev=new Device();
 	$esx=new ESX();
@@ -179,7 +179,7 @@
 	foreach($dctemp as $DataCenterID => $Name){
 		if($DataCenterID>0){
 			$dc->DataCenterID=$DataCenterID;
-			$dc->GetDataCenter($facDB);
+			$dc->GetDataCenter();
 			$dctemp[$DataCenterID]=$dc->Name;
 		}
 	}

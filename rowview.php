@@ -91,10 +91,10 @@ function get_cabinet_owner_color($cabinet, &$deptswithcolor) {
 				case "TemplateID":
 					$tmpl=new DeviceTemplate();
 					$tmpl->TemplateID=$dev->TemplateID;
-					$tmpl->GetTemplateByID($facDB);
+					$tmpl->GetTemplateByID();
 					$man=new Manufacturer();
 					$man->ManufacturerID=$tmpl->ManufacturerID;
-					$man->GetManufacturerByID($facDB);
+					$man->GetManufacturerByID();
 					$tooltip.=__($row["Label"]).": [$man->Name] $tmpl->Model<br>\n";
 					break;
 				case "ChassisSlots":
@@ -107,10 +107,10 @@ function get_cabinet_owner_color($cabinet, &$deptswithcolor) {
 					$manufacturer=new Manufacturer();
 
 					$template->TemplateID=$pdu->TemplateID;
-					$template->GetTemplate($facDB);
+					$template->GetTemplate();
 
 					$manufacturer->ManufacturerID=$template->ManufacturerID;
-					$manufacturer->GetManufacturerByID($facDB);
+					$manufacturer->GetManufacturerByID();
 					$tooltip.=__($row["Label"]).": [$manufacturer->Name] $template->Model<br>\n";
 					break;
 				case "NumOutlets":
@@ -118,10 +118,10 @@ function get_cabinet_owner_color($cabinet, &$deptswithcolor) {
 					$powerConn=new PowerConnection();
 
 					$template->TemplateID=$pdu->TemplateID;
-					$template->GetTemplate($facDB);
+					$template->GetTemplate();
 
 					$powerConn->PDUID=$pdu->PDUID;
-					$connList=$powerConn->GetConnectionsByPDU($facDB);
+					$connList=$powerConn->GetConnectionsByPDU();
 
 					$tooltip.=__($row["Label"]).": ".count($connList)."/".($template->NumOutlets+1)."<br>\n";
 					break;
@@ -131,13 +131,13 @@ function get_cabinet_owner_color($cabinet, &$deptswithcolor) {
 				case "PanelID":
 					$pan=new PowerPanel();
 					$pan->PanelID=$pdu->PanelID;
-					$pan->GetPanel($facDB);
+					$pan->GetPanel();
 					$tooltip.=__($row["Label"]).": $pan->PanelLabel<br>\n";
 					break;
 				case "PanelVoltage":
 					$pan=new PowerPanel();
 					$pan->PanelID=$pdu->PanelID;
-					$pan->GetPanel($facDB);
+					$pan->GetPanel();
 
 					$tooltip.=__($row["Label"]).": ".$pan->PanelVoltage." / ".intval($pan->PanelVoltage/1.73)."<br>\n";
 					break;
@@ -205,7 +205,7 @@ foreach($cabinets as $cabid => $cabinet){
 			$devTop=$device->Position + $device->Height - 1;
 			
 			$templ->TemplateID=$device->TemplateID;
-			$templ->GetTemplateByID($facDB);
+			$templ->GetTemplateByID();
 
 			$tempDept->DeptID=$device->Owner;
 			$tempDept->GetDeptByID();
@@ -289,7 +289,7 @@ foreach($cabinets as $cabid => $cabinet){
 
 	$dcID=$cab->DataCenterID;
 	$dc->DataCenterID=$dcID;
-	$dc->GetDataCenterbyID($facDB);
+	$dc->GetDataCenterbyID();
 
 	// If $head isn't empty then we must have added some style information so close the tag up.
 	if($head!=""){

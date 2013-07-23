@@ -375,7 +375,7 @@ class PDF_Diag extends PDF_Sector {
 //
 //
 
-	$pdf=new PDF_Diag($facDB);
+	$pdf=new PDF_Diag();
 	$pdf->AliasNbPages();
 	$pdf->AddPage();
 	
@@ -493,7 +493,7 @@ class PDF_Diag extends PDF_Sector {
 		foreach( $devList as $devRow ) {
 			if ( $devRow->Cabinet != $cab->CabinetID ) {
 				$cab->CabinetID = $devRow->Cabinet;
-				$cab->GetCabinet( $facDB );
+				$cab->GetCabinet();
 			}
 
 			if ( $cab->DataCenterID != $dc->DataCenterID ) {
@@ -503,7 +503,7 @@ class PDF_Diag extends PDF_Sector {
 			  }
 			  
 				$dc->DataCenterID = $cab->DataCenterID;
-				$dc->GetDataCenterbyID( $facDB );
+				$dc->GetDataCenterbyID();
 				
 				$DCRU = 0;
 				$DCBTU = 0;

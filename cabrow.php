@@ -16,29 +16,29 @@
 	$zone=new Zone();
 	$DC=new DataCenter();
 	
-	$zoneList=$zone->GetZoneList($facDB);
+	$zoneList=$zone->GetZoneList();
 	$formpatch="";
 	$status="";
 
 	if(isset($_REQUEST["cabrowid"])) {
 		$cabrow->CabRowID=(isset($_POST['cabrowid'])?$_POST['cabrowid']:$_GET['cabrowid']);
-		$cabrow->GetCabRow($facDB);
+		$cabrow->GetCabRow();
 		
 		if(isset($_POST["action"]) && (($_POST["action"]=="Create") || ($_POST["action"]=="Update"))){
 			$cabrow->Name=$_POST["name"];
 			$cabrow->ZoneID=$_POST["zoneid"];
 			
 			if($_POST["action"]=="Create"){
-				$cabrow->CreateCabRow($facDB);
+				$cabrow->CreateCabRow();
 			}else{
-				if ($cabrow->UpdateCabRow($facDB))
+				if ($cabrow->UpdateCabRow())
 					$status=__("Updated");
 			}
 		}
 		$formpatch="?cabrowid={$_REQUEST['cabrowid']}";
 	}
 	
-	$cabrowList=$cabrow->GetCabRowList($facDB);
+	$cabrowList=$cabrow->GetCabRowList();
 
 ?>
 <!doctype html>
@@ -79,9 +79,9 @@ echo '<div class="main">
 	foreach($cabrowList as $cabrowRow){
 		if($cabrow->CabRowID==$cabrowRow->CabRowID){$selected=" selected";}else{$selected="";}
 		$zone->ZoneID=$cabrowRow->ZoneID;
-		$zone->GetZone($facDB);
+		$zone->GetZone();
 		$DC->DataCenterID=$zone->DataCenterID;
-		$DC->GetDataCenter($facDB);
+		$DC->GetDataCenter();
 		print "<option value=\"$cabrowRow->CabRowID\"$selected>[".$DC->Name."/".$zone->Description."] ".$cabrowRow->Name."</option>\n";
 	}
 
@@ -98,7 +98,7 @@ echo '	</select></div>
 	foreach($zoneList as $zoneRow){
 		if($cabrow->ZoneID==$zoneRow->ZoneID){$selected=" selected";}else{$selected="";}
 		$DC->DataCenterID=$zoneRow->DataCenterID;
-		$DC->GetDataCenter($facDB);
+		$DC->GetDataCenter();
 		print "<option value=\"$zoneRow->ZoneID\"$selected>[".$DC->Name."] ".$zoneRow->Description."</option>\n";
 	}
 

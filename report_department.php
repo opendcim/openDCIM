@@ -136,7 +136,7 @@ class PDF extends FPDF {
 	$dept = new Department();
 	$con = new Contact();
 	
-	$pdf=new PDF($facDB);
+	$pdf=new PDF();
 	$pdf->AliasNbPages();
 	  
 	$pdf->SetFont($config->ParameterArray['PDFfont'],'',8);

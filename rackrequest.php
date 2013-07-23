@@ -418,13 +418,13 @@ echo '			</select>
 				<option value=0>',__("Select a template"),'...</option>';
 
 	$templ=new DeviceTemplate();
-	$templateList=$templ->GetTemplateList($facDB);
+	$templateList=$templ->GetTemplateList();
 	$mfg=new Manufacturer();
   
 	foreach($templateList as $tempRow){
 		if($req->DeviceClass==$tempRow->TemplateID){$selected = ' selected';}else{$selected = '';}
 		$mfg->ManufacturerID=$tempRow->ManufacturerID;
-		$mfg->GetManufacturerByID($facDB);
+		$mfg->GetManufacturerByID();
 		print "				<option value=\"$tempRow->TemplateID\"$selected>$mfg->Name - $tempRow->Model</option>\n";
 	}
 
@@ -477,7 +477,7 @@ echo '			</select>
 	</div>';
 
 	if($user->RackAdmin && ($req->RequestID>0)){
-		echo '<div><div><label for="cabinetid">',__("Select Rack Location"),':</label></div><div>'.$cab->GetCabinetSelectList($facDB).'&nbsp;&nbsp;<label for="position">',__("Position"),':</label> <input type="text" name="position" id="position" size=5></div></div>';
+		echo '<div><div><label for="cabinetid">',__("Select Rack Location"),':</label></div><div>'.$cab->GetCabinetSelectList().'&nbsp;&nbsp;<label for="position">',__("Position"),':</label> <input type="text" name="position" id="position" size=5></div></div>';
 	}
 ?>
 	<div class="caption">

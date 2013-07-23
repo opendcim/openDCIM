@@ -417,7 +417,7 @@
 	$portList=DevicePorts::getPortList($dev->DeviceID);
 	$mediaTypes=MediaTypes::GetMediaTypeList();
 	$colorCodes=ColorCoding::GetCodeList();
-	$templateList=$templ->GetTemplateList($facDB);
+	$templateList=$templ->GetTemplateList();
 	$escTimeList=$escTime->GetEscalationTimeList();
 	$escList=$esc->GetEscalationList();
 	$deptList=$Dept->GetDepartmentList(); 
@@ -1464,7 +1464,7 @@ echo '		</div>
 			foreach($templateList as $tempRow){
 				if($dev->TemplateID==$tempRow->TemplateID){$selected=" selected";}else{$selected="";}
 				$mfg->ManufacturerID=$tempRow->ManufacturerID;
-				$mfg->GetManufacturerByID($facDB);
+				$mfg->GetManufacturerByID();
 				print "\t\t\t\t<option value=\"$tempRow->TemplateID\"$selected>$mfg->Name - $tempRow->Model</option>\n";
 			}
 
@@ -1634,7 +1634,7 @@ echo '	<div class="table">
 				$pdu->PDUID=$cord->PDUID;
 				$pdu->GetPDU();
 				$panel->PanelID=$pdu->PanelID;
-				$panel->GetPanel($facDB);
+				$panel->GetPanel();
 				print "			<div><div><a href=\"power_panel.php?panelid=$pdu->PanelID\">$panel->PanelLabel</a></div><div><a href=\"power_pdu.php?pduid=$pdu->PDUID\">$pdu->Label</a></div><div>$cord->PDUPosition</div><div>$cord->DeviceConnNumber</div></div>\n";
 			}
 			print "			</div><!-- END div.table --></div>\n		</div>\n		<div>\n			<div>&nbsp;</div><div></div>\n		</div>\n";

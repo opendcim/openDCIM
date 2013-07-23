@@ -139,7 +139,7 @@ class PDF extends FPDF {
 //
 //
 
-	$pdf=new PDF($facDB);
+	$pdf=new PDF();
 	$pdf->AliasNbPages();
 	  
 	$pdf->SetFont($config->ParameterArray['PDFfont'],'',8);
@@ -181,12 +181,12 @@ class PDF extends FPDF {
 
 		if ( $devRow->Cabinet != $cab->CabinetID ) {
 			$cab->CabinetID = $devRow->Cabinet;
-			$cab->GetCabinet( $facDB );
+			$cab->GetCabinet();
 		}
 
 		if ( $cab->DataCenterID != $dc->DataCenterID ) {
 			$dc->DataCenterID = $cab->DataCenterID;
-			$dc->GetDataCenterbyID( $facDB );
+			$dc->GetDataCenterbyID();
 		}
 
     if ( $devRow->TemplateID > 0 )
@@ -251,12 +251,12 @@ class PDF extends FPDF {
 		    
 			if ( $devRow->Cabinet != $cab->CabinetID ) {
 				$cab->CabinetID = $devRow->Cabinet;
-				$cab->GetCabinet( $facDB );
+				$cab->GetCabinet();
 			}
 
 			if ( $cab->DataCenterID != $dc->DataCenterID ) {
 				$dc->DataCenterID = $cab->DataCenterID;
-				$dc->GetDataCenterbyID( $facDB );
+				$dc->GetDataCenterbyID();
 			}
 
       if ( $devRow->TemplateID > 0 )

@@ -16,17 +16,17 @@
 	$cab=new Cabinet();
 
 	$cab->CabinetID=$_REQUEST["cabinetid"];
-	$cab->GetCabinet($facDB);
+	$cab->GetCabinet();
 
 	$dc->DataCenterID=$cab->DataCenterID;
-	$dc->GetDataCenter($facDB);
+	$dc->GetDataCenter();
 
 	if(isset($_REQUEST["action"])&&($_REQUEST["action"]=="Submit")){
 		$cab->MapX1=intval($_REQUEST["x1"]);
 		$cab->MapX2=intval($_REQUEST["x2"]);
 		$cab->MapY1=intval($_REQUEST["y1"]);
 		$cab->MapY2=intval($_REQUEST["y2"]);
-		$cab->UpdateCabinet($facDB);
+		$cab->UpdateCabinet();
 
 		$url=redirect("cabnavigator.php?cabinetid=$cab->CabinetID");
 		header("Location: $url");

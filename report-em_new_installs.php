@@ -56,10 +56,10 @@
 
 		foreach ( $devList as $devRow ) {
 			$cab->CabinetID = $devRow->Cabinet;
-			$cab->GetCabinet( $facDB );
+			$cab->GetCabinet();
 			
 			$dc->DataCenterID = $cab->DataCenterID;
-			$dc->GetDataCenter( $facDB );
+			$dc->GetDataCenter();
 			
 			$dept->DeptID = $devRow->Owner;
 			$dept->GetDeptByID();

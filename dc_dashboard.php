@@ -6,7 +6,7 @@
 	$dc=new DataCenter();
 
 	$dc->DataCenterID=$_REQUEST["dc"];
-	$dcStats=$dc->GetDCStatistics($facDB);
+	$dcStats=$dc->GetDCStatistics();
 
 	$height=0;
 	$width=0;
@@ -58,7 +58,7 @@
     <script src="scripts/excanvas.js"></script>
   <![endif]-->
   <?php if(isset($screenadjustment)){print $screenadjustment;} ?>
-  <?php print $dc->DrawCanvas($facDB);?>
+  <?php print $dc->DrawCanvas();?>
   <script type="text/javascript" src="scripts/jquery.min.js"></script>
   <script type="text/javascript" src="scripts/jquery-ui.min.js"></script>
 </head>

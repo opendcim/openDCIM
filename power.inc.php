@@ -816,7 +816,7 @@ class PowerPanel {
 		return $this->Search($sql);
 	}
   
-	function GetPanel( $db ) {
+	function GetPanel() {
 		global $dbh;
 
 		$sql="SELECT * FROM fac_PowerPanel WHERE PanelID=$this->PanelID;";

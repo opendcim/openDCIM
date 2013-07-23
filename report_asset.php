@@ -48,7 +48,7 @@ class PDF extends FPDF {
     $Owner = @$_REQUEST['owner'];
 	$DataCenterID = @$_REQUEST['datacenterid'];
   
-	$pdf=new PDF($facDB);
+	$pdf=new PDF();
 	$pdf->AliasNbPages();
 	$pdf->AddPage();
 	$pdf->SetFont($config->ParameterArray['PDFfont'],'',8);
@@ -81,7 +81,7 @@ class PDF extends FPDF {
 		
     $searchSQL = 'select a.Name,b.Location,c.Position,c.Height,c.Label,c.SerialNo,c.AssetTag,c.DeviceID,c.DeviceType from fac_DataCenter a, fac_Cabinet b, fac_Device c where ' . $Criteria . 'c.Cabinet=b.CabinetID and b.DataCenterID=a.DataCenterID and c.Reservation=false order by a.Name,b.Location,c.Position';
 
-	$result = mysql_query( $searchSQL, $facDB );
+	$result = mysql_query( $searchSQL);
 
 	$lastDC = '';
 	$lastCab = '';

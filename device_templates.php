@@ -17,7 +17,7 @@
 
 	if(isset($_REQUEST['templateid']) && $_REQUEST['templateid'] >0){
 		$template->TemplateID=$_REQUEST['templateid'];
-		$template->GetTemplateByID($facDB);
+		$template->GetTemplateByID();
 	}
 
 	$status='';
@@ -32,11 +32,11 @@
 		$template->NumPorts = $_REQUEST['numports'];
 
 		if($_REQUEST['action']=='Create'){
-			if($template->CreateTemplate($facDB)==-1){
+			if($template->CreateTemplate()==-1){
 				$status='An error has occured, template not created';
 			}		
 		} else {
-			$update=$template->UpdateTemplate($facDB);
+			$update=$template->UpdateTemplate();
 			if($update==""){
 				$status=__('Updated');
 			}else{
@@ -45,8 +45,8 @@
 		}
 	}
 
-	$templateList=$template->GetTemplateList($facDB);
-	$ManufacturerList=$manufacturer->GetManufacturerList($facDB);
+	$templateList=$template->GetTemplateList();
+	$ManufacturerList=$manufacturer->GetManufacturerList();
 ?>
 <!doctype html>
 <html>
@@ -106,7 +106,7 @@ echo '<div class="main">
 
 	foreach($templateList as $templateRow){
 		$manufacturer->ManufacturerID=$templateRow->ManufacturerID;
-		$manufacturer->GetManufacturerByID($facDB);
+		$manufacturer->GetManufacturerByID();
 		if($template->TemplateID==$templateRow->TemplateID){$selected=" selected";}else{$selected="";}
 		print "		<option value=\"$templateRow->TemplateID\"$selected>[$manufacturer->Name] $templateRow->Model</option>\n";
 	}

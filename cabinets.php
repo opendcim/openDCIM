@@ -36,7 +36,7 @@
 
 	if(isset($_REQUEST['cabinetid'])){
 		$cab->CabinetID=(isset($_POST['cabinetid'])?$_POST['cabinetid']:$_GET['cabinetid']);
-		$cab->GetCabinet($facDB);
+		$cab->GetCabinet();
 	}
 	$tagarray=array();
 	if(isset($_POST['tags'])){
@@ -83,7 +83,7 @@
 		$cab->CabinetID=null;
 		//Set DataCenterID to first DC in dcList for getting zoneList
 		$dc=new DataCenter();
-		$dcList=$dc->GetDCList($facDB);
+		$dcList=$dc->GetDCList();
 		$keys=array_keys($dcList);
 		$cab->DataCenterID=$keys[0];
 		$cab->Location=null;
