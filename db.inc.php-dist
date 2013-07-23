@@ -17,6 +17,6 @@
 	}
 
 	require_once( 'config.inc.php');
-	$config=new Config($facDB);
+	$config=new Config();
 	
 ?>

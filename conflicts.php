@@ -578,7 +578,7 @@ class SwitchConnection {
 			$pdu=new PowerDistribution();
 
 			$dev->DeviceID=$_POST['DeviceID'];
-			$dev->GetDevice($facDB);
+			$dev->GetDevice();
 
 			$pwrConnection->DeviceID=($dev->ParentDevice>0)?$dev->ParentDevice:$dev->DeviceID;
 			$pwrCords=$pwrConnection->GetConnectionsByDevice();
@@ -602,25 +602,25 @@ class SwitchConnection {
 			$networkPatches->SwitchDeviceID=$_POST['SwitchDeviceID'];
 			$networkPatches->SwitchPortNumber=$_POST['SwitchPortNumber'];
 			if(isset($_POST['EndpointPort'])){ // Update Connection
-				$networkPatches->GetSwitchPortConnector($facDB);
+				$networkPatches->GetSwitchPortConnector();
 				$networkPatches->EndpointPort=$_POST['EndpointPort'];
-				$networkPatches->UpdateConnection($facDB);
+				$networkPatches->UpdateConnection();
 				print "ok";
 			}else{ // Delete Connection
-				$networkPatches->RemoveConnection($facDB);
+				$networkPatches->RemoveConnection();
 				print "ok";
 			}
 		}else{
-			$patchList=$networkPatches->GetEndpointConnections($facDB);
+			$patchList=$networkPatches->GetEndpointConnections();
 			$tmpDev=new Device();
 			$tmpDev->DeviceID=$networkPatches->EndpointDeviceID;
-			$tmpDev->GetDevice($facDB);
+			$tmpDev->GetDevice();
 
 			print "<span>Server Name: <a href=\"devices.php?deviceid=$tmpDev->DeviceID\">$tmpDev->Label</a></span><span># Data Ports: $tmpDev->Ports</span><div class=\"table border\">\n				<div><div>".__('Switch')."</div><div>".__('Switch Port')."</div><div>".__('Device Port')."</div><div>".__('Notes')."</div></div>\n";
 
 				foreach($patchList as $patchConn){
 					$tmpDev->DeviceID=$patchConn->SwitchDeviceID;
-					$tmpDev->GetDevice($facDB);
+					$tmpDev->GetDevice();
 					print "\t\t\t\t<div><div data=\"$patchConn->SwitchDeviceID\"><a href=\"devices.php?deviceid=$patchConn->SwitchDeviceID\">$tmpDev->Label</a></div><div><a href=\"changepatch.php?switchid=$patchConn->SwitchDeviceID&portid=$patchConn->SwitchPortNumber\">$patchConn->SwitchPortNumber</a></div><div>$patchConn->EndpointPort</div><div>$patchConn->Notes</div></div>\n";
 				}
 			print "</div><!-- END div.table -->\n";

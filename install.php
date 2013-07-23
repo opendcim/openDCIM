@@ -570,17 +570,17 @@ if(isset($results)){
 		$dc->DrawingFileName = $_REQUEST['drawingfilename'];
 		
 		if($_REQUEST['dcaction']=='Create'){
-			$dc->CreateDataCenter($facDB);
+			$dc->CreateDataCenter();
 		}else{
-			$dc->UpdateDataCenter($facDB);
+			$dc->UpdateDataCenter();
 		}
 	}
 
 	if(isset($_REQUEST['datacenterid']) && $_REQUEST['datacenterid'] >0){
 		$dc->DataCenterID=$_REQUEST['datacenterid'];
-		$dc->GetDataCenter($facDB);
+		$dc->GetDataCenter();
 	}
-	$dcList=$dc->GetDCList($facDB);
+	$dcList=$dc->GetDCList();
 	$result=mysql_query("SELECT * FROM fac_DataCenter LIMIT 1;");
 	if(mysql_num_rows($result)==0){ // No data centers configured disable cabinets and complete options
 		$nodc="<h3>Define a data center</h3>";
@@ -594,7 +594,7 @@ if(isset($results)){
 //Cabinet Form Submission
 	if(isset($_REQUEST['cabinetid'])){
 		$cab->CabinetID=$_REQUEST['cabinetid'];
-		$cab->GetCabinet($facDB);
+		$cab->GetCabinet();
 	}
 
 	if(isset($_REQUEST['cabaction'])){
@@ -607,7 +607,7 @@ if(isset($results)){
 			$cab->MaxKW=$_REQUEST['maxkw'];
 			$cab->MaxWeight=$_REQUEST['maxweight'];
 			$cab->InstallationDate=$_REQUEST['installationdate'];
-			$cab->UpdateCabinet($facDB);
+			$cab->UpdateCabinet();
 		}elseif($_REQUEST['cabaction']=='Create'){
 			$cab->DataCenterID=$_REQUEST['datacenterid'];
 			$cab->Location=$_REQUEST['location'];
@@ -617,7 +617,7 @@ if(isset($results)){
 			$cab->MaxKW=$_REQUEST['maxkw'];
 			$cab->MaxWeight=$_REQUEST['maxweight'];
 			$cab->InstallationDate=$_REQUEST['installationdate'];
-			$cab->CreateCabinet($facDB);
+			$cab->CreateCabinet();
 		}
 	}
 	if($nodccab==""){ // only attempt to check for racks in the db if a data center has already been created
@@ -1389,7 +1389,7 @@ function showgroup(obj){
 <?php
 	}elseif(isset($_GET["cab"])){
 		if($cab->CabinetID >0){
-			$cab->GetCabinet($facDB);
+			$cab->GetCabinet();
 		}else{
 			$cab->CabinetID=null;
 			$cab->DataCenterID=null;
@@ -1402,7 +1402,7 @@ function showgroup(obj){
 		}
 
 		$deptList=$dept->GetDepartmentList();
-		$cabList=$cab->ListCabinets($facDB);
+		$cabList=$cab->ListCabinets();
 ?>
 
 <div class='page installer'>
@@ -1439,7 +1439,7 @@ function showgroup(obj){
 </div>
 <div>
    <div>Data Center</div>
-   <div><?php echo $cab->GetDCSelectList($facDB); ?></div>
+   <div><?php echo $cab->GetDCSelectList(); ?></div>
 </div>
 <div>
    <div>Location</div>

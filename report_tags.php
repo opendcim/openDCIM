@@ -28,7 +28,7 @@
 			}else{
 				$sql="SELECT dev.Label, dc.Name as DC, c.Location as Rack, dept.Name as Owner, t.Name as Tag, dev.Notes FROM fac_Tags t, fac_Device dev, fac_Cabinet c, fac_DataCenter dc, fac_DeviceTags dt, fac_Department dept WHERE t.TagID=dt.TagID AND dt.DeviceID=dev.DeviceID AND dev.Cabinet=c.CabinetID AND dc.DataCenterID=c.DataCenterID AND dept.DeptID=dev.Owner AND dt.TagID=$tag ORDER BY dev.Label ASC, Tag ASC;";
 			}
-			$result=mysql_query($sql,$facDB);
+			$result=$dbh->query($sql);
 		}else{
 			$result=array();
 		}
@@ -44,7 +44,7 @@
 			</tr>\n\t</thead>\n\t<tbody>\n";
 
 		// suppressing errors for when there is a fake data set in place
-		while($row=@mysql_fetch_array($result)){
+		foreach($result as $row){
 			$body.="\t\t<tr>
 			\t<td>{$row["Label"]}</td>
 			\t<td>{$row["DC"]}</td>
