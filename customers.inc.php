@@ -544,7 +544,7 @@ class User {
 		$this->Name=stripslashes($this->Name);
 	}
 
-	static function UserRowToObject($row){
+	static function RowToObject($row){
 		$user=new User();
 		$user->UserID=$row["UserID"];
 		$user->Name=$row["Name"];
@@ -562,6 +562,16 @@ class User {
 		return $user;
 	}
 
+	function query($sql){
+		global $dbh;
+		return $dbh->query($sql);
+	}
+	
+	function exec($sql){
+		global $dbh;
+		return $dbh->exec($sql);
+	}
+	
 	function GetUserRights(){
 		/* Check the table to see if there are any users
 		   defined, yet.  If not, this is a new install, so
@@ -587,7 +597,7 @@ class User {
 		$sql="SELECT * FROM fac_User WHERE UserID=\"$this->UserID\";";
 
 		if($row=$dbh->query($sql)->fetch()){
-			foreach(User::UserRowToObject($row) as $prop => $value){
+			foreach(User::RowToObject($row) as $prop => $value){
 				$this->$prop=$value;
 			}
 		}
@@ -612,7 +622,7 @@ class User {
 		
 		$userList=array();
 		foreach($dbh->query($sql) as $row){
-			$userList[]=User::UserRowToObject($row);
+			$userList[]=User::RowToObject($row);
 		}
 
 		return $userList;
