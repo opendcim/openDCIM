@@ -11,8 +11,6 @@
 	$user->UserID=$_SERVER['REMOTE_USER'];
 	$user->GetUserRights();
 
-	$viewList=$user->isMemberOf();
-	
 	$taginsert="";
 
 	// Ajax functions and we only want these exposed to people with write access
@@ -367,14 +365,10 @@
 		$dev->InstallDate=date("m/d/Y");
 	}
 
-	// If they have global read don't bother with further checks
-	if(!$user->ReadAccess){
-		// They didn't have global read so see if they are a member of that owning department
-		if(!in_array($dev->Owner,$viewList)){
-			// No soup for you.
-			header('Location: '.redirect());
-			exit;
-		}
+	if(! $user->canRead($dev->Owner) {
+		// No soup for you.
+		header('Location: '.redirect());
+		exit;
 	}
 	
 	if($dev->ParentDevice >0){

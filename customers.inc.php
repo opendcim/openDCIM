@@ -571,16 +571,41 @@ class User {
 		global $dbh;
 		return $dbh->exec($sql);
 	}
+
+	function canRead( $Owner ) {
+		// If the user has Global rights, don't waste compute cycles on more granular checks
+		if ( $this->ReadAccess ) {
+			return true;
+		}
+		
+		if ( in_array( $Owner, $this->isMemberOf() ) ) {
+			return true;
+		} else {
+			return false;
+		}
+	}
 	
+	function canWrite( $Owner ) {
+		// If the user has Global rights, don't wast compute cycles on more granular checks
+		if ( $this->WriteAccess ) {
+			return true;
+		}
+		
+		if ( in_array( $Owner, $this->isMemberOf() ) && $this->AdminOwnDevices ) {
+			return true;
+		} else {
+			return false;
+		}
+	}
+
 	function GetUserRights(){
 		/* Check the table to see if there are any users
 		   defined, yet.  If not, this is a new install, so
 		   create an admin user (all rights) as the current
 		   user.  */
-		global $dbh;
 		
 		$sql="SELECT COUNT(*) AS TotalUsers FROM fac_User;";
-		$users=$dbh->query($sql)->fetchColumn();
+		$users=$this->query($sql)->fetchColumn();
 
 		if($users==0){
 			$this->Name="Default Admin";
@@ -596,7 +621,7 @@ class User {
 
 		$sql="SELECT * FROM fac_User WHERE UserID=\"$this->UserID\";";
 
-		if($row=$dbh->query($sql)->fetch()){
+		if($row=$this->query($sql)->fetch()){
 			foreach(User::RowToObject($row) as $prop => $value){
 				$this->$prop=$value;
 			}

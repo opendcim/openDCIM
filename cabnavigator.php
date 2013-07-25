@@ -12,8 +12,6 @@
 		exit;
 	}
 
-	// Get the list of departments that this user is a member of
-	$viewList = $user->isMemberOf();
 
 /**
  * Determines ownership of the cabinet and returns the CSS class in case a
@@ -45,7 +43,7 @@ function get_cabinet_owner_color($cabinet, &$deptswithcolor) {
 
 	if($cab->AssignedTo >0){
 		// Check to see if this user is allowed to see anything in here
-		if( !in_array($cab->AssignedTo,$viewList) && !$user->ReadAccess ){
+		if( ! $user->canRead($cab->AssignedTo) ){
 			// This cabinet belongs to a department you don't have affiliation with, so no viewing at all
 			header('Location: '.redirect());
 			exit;
@@ -72,7 +70,7 @@ function get_cabinet_owner_color($cabinet, &$deptswithcolor) {
 			$dev->DeviceID=intval($_POST['tooltip']);
 			$dev->GetDevice();
 			
-			if(!in_array($dev->Owner,$viewList) && !$user->ReadAccess){
+			if(!$user->canRead($dev->Owner)){
 				print "Details Restricted";
 				exit;
 			}
@@ -288,10 +286,11 @@ function get_cabinet_owner_color($cabinet, &$deptswithcolor) {
 		}
 
 		if($device->Height<1){
-			if ( in_array( $device->Owner, $viewList ) || $user->ReadAccess )
+			if ( $user->canRead( $device->Owner )) {
 				$zeroheight.="				<a href=\"devices.php?deviceid=$devID\">$highlight $device->Label</a>\n";
-			else
+			} else {
 				$zeroheight.="              $highlight $device->Label\n";
+			}
 		}
 		
 		// Chassis devices shouldn't ever be 0u in height
@@ -332,7 +331,7 @@ function get_cabinet_owner_color($cabinet, &$deptswithcolor) {
 			$errclass=($i>$cab->CabinetHeight)?' class="error"':'';
 			if($errclass!=''){$heighterr="yup";}
 			if($i==$devTop){
-				if ( in_array( $device->Owner, $viewList ) || $user->ReadAccess ) {
+				if ( $user->can_read( $device->Owner )) {
 					$body.="<tr><td$errclass>$i</td><td class=\"device$reserved dept$device->Owner\" rowspan=$device->Height data=$devID><a href=\"devices.php?deviceid=$devID\">$highlight $device->Label</a></td></tr>\n";
 				} else {
 					$body.="<tr><td$errclass>$i</td><td class=\"device$reserved dept$device->Owner\" rowspan=$device->Height data=$devID>$highlight $device->Label</td></tr>\n";
