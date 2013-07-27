@@ -367,8 +367,8 @@
 
 	if(!$user->canRead($dev->Owner)){
 		// No soup for you.
-//		header('Location: '.redirect());
-//		exit;
+		header('Location: '.redirect());
+		exit;
 	}
 	
 	if($dev->ParentDevice >0){
@@ -677,6 +677,11 @@ $(document).ready(function() {
 		window.open('contactpopup.php?deptid='+$('#owner').val(), 'Contacts Lookup', 'width=800, height=700, resizable=no, toolbar=no');
 		return false;
 	});
+	// Make SNMP community visible
+	$('#snmpcommunity').focus(function(){$(this).attr('type','text');});
+	$('#snmpcommunity').blur(function(){$(this).attr('type','password');});
+
+
 	// Add in refresh functions for virtual machines
 	var esxtable=$('<div>').addClass('table border').append('<div><div>VM Name</div><div>Status</div><div>Owner</div><div>Last Updated</div></div>');
 	var esxbutton=$('<button>',{'type':'button'}).css({'position':'absolute','top':'10px','right':'2px'}).text('Refresh');
@@ -1329,7 +1334,7 @@ echo '<div class="center"><div>
 		</div>
 		<div>
 		  <div><label for="snmpcommunity">'.__("SNMP Read Only Community").'</label></div>
-		  <div><input type="text" name="snmpcommunity" id="snmpcommunity" size="40" value="'.$dev->SNMPCommunity.'"></div>
+		  <div><input type="password" name="snmpcommunity" id="snmpcommunity" size="40" value="'.$dev->SNMPCommunity.'"></div>
 		</div>
 		<div>
 		   <div><label for="mfgdate">'.__("Manufacture Date").'</label></div>
