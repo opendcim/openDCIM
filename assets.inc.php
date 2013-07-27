@@ -912,6 +912,7 @@ class Device {
 	var $WarrantyExpire;
 	var $Notes;
 	var $Reservation;
+	var $Rights;
 	
 	function MakeSafe() {
 		$this->DeviceID=intval($this->DeviceID);
@@ -998,10 +999,27 @@ class Device {
 		$dev->Reservation=$dbRow["Reservation"];
 
 		$dev->MakeDisplay();
+		$dev->FilterRights();
 
 		return $dev;
 	}
 
+	private function FilterRights(){
+		$this->Rights='None';
+		if(User::Current()->canRead($this->Owner)){$this->Rights="Read";}
+		if(User::Current()->canWrite($this->Owner)){$this->Rights="Write";}
+
+		// Remove information that this user isn't allowed to see
+		if($this->Rights=='None'){
+			$publicfields=array('DeviceID','Label','Cabinet','Position','Height','Reservation','DeviceType','Rights');
+			foreach($this as $prop => $value){
+				if(!in_array($prop,$publicfields)){
+					$this->$prop=null;
+				}
+			}
+		}
+	}
+	
 
 	function CreateDevice(){
 		global $dbh;
@@ -1303,7 +1321,7 @@ class Device {
 		return true;
 	}
 
-	function GetDevice($db=null){
+	function GetDevice(){
 		global $dbh;
 	
 		$this->MakeSafe();
@@ -1324,7 +1342,7 @@ class Device {
 			return false;
 		}
 	}
-	
+
 	function GetDevicesbyAge($days=7){
 		global $dbh;
 		

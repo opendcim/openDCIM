@@ -365,10 +365,10 @@
 		$dev->InstallDate=date("m/d/Y");
 	}
 
-	if(! $user->canRead($dev->Owner) {
+	if(!$user->canRead($dev->Owner)){
 		// No soup for you.
-		header('Location: '.redirect());
-		exit;
+//		header('Location: '.redirect());
+//		exit;
 	}
 	
 	if($dev->ParentDevice >0){

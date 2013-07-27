@@ -1,0 +1,37 @@
+/*
+ *		Breakdown of rights functions
+ *
+ */
+
+Read:
+	Search:				search.php,ajax_search.php,ajax_tags.php
+	Get contacts for a device:	contactpopup.php
+		* 
+
+Write:
+
+No Rights Management:
+	Display a map and basic stats for any datacenter (no menu):	dc_dashboard.php
+	Display a map and basic stats for any datacenter:			dc_stats.php
+		* need to check rights before adding the links to the racks
+
+Global Read:
+	Returns a json compliant string of any power panel object: 	scripts/ajax_panel.ph
+	Returns a true/false list of rack positions in use:			scripts/ajax_cabinetuse.php
+	Returns a json compliant string of any device template:		scripts/ajax_template.php
+	Returns a json compliant string of all tags:				sctiprs/ajax_tags.php
+		* need to remove all rights checking on these
+
+Admin Only:
+	Manage Users:		usermgr.php
+	Edit Containers:	container.php
+	Edit Data Centers:	datacenter.php
+	Edit Zones:			zone.php
+	Edit Rows:			cabrow.php
+	Edit Power Sources:	power_source.php
+	Edit Power Panels:	power_panel.php
+	Edit Manufacturers:	device_manufacturers.php
+	Edit CDU Templates:	cdu_templates.php
+	Edit Configuration:	configuration.php
+	Net/Power Conflicts:conflicts.php
+		* This is for legacy support only. It was needed prior to a database schema change.

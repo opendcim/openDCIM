@@ -783,11 +783,19 @@ class PowerPanel {
 		return $panel;
 	}
 
-	function Search($sql){
+	function query($sql){
 		global $dbh;
+		return $dbh->query($sql);
+	}
 
+	function exec($sql){
+		global $dbh;
+		return $dbh->exec($sql);
+	}
+
+	function Search($sql){
 		$PanelList=array();
-		foreach($dbh->query($sql) as $row){    
+		foreach($this->query($sql) as $row){    
 			$PanelList[]=PowerPanel::PanelRowToObject($row);
 		}
 
@@ -817,11 +825,11 @@ class PowerPanel {
 	}
   
 	function GetPanel() {
-		global $dbh;
+		$this->MakeSafe();
 
 		$sql="SELECT * FROM fac_PowerPanel WHERE PanelID=$this->PanelID;";
 
-		if($row=$dbh->query($sql)->fetch()){
+		if($row=$this->query($sql)->fetch()){
 			foreach(PowerPanel::PanelRowToObject($row) as $prop => $value){
 				$this->$prop=$value;
 			}

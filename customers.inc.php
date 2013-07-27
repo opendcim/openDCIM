@@ -528,6 +528,7 @@ class User {
 	var $Disabled;
 
 	function MakeSafe(){
+		$this->UserID=addslashes(trim($this->UserID));
 		$this->Name=addslashes(trim($this->Name));
 		$this->AdminOwnDevices=intval($this->AdminOwnDevices);
 		$this->ReadAccess=intval($this->ReadAccess);
@@ -541,6 +542,7 @@ class User {
 	}
 
 	function MakeDisplay(){
+		$this->UserID=stripslashes($this->UserID);
 		$this->Name=stripslashes($this->Name);
 	}
 
@@ -619,6 +621,8 @@ class User {
 			$this->CreateUser();
 		}
 
+		$this->MakeSafe();
+
 		$sql="SELECT * FROM fac_User WHERE UserID=\"$this->UserID\";";
 
 		if($row=$this->query($sql)->fetch()){
@@ -654,20 +658,18 @@ class User {
 	}
 	
 	function isMemberOf(){
-		global $dbh;
-
-		$this->MakeSafe();
+		$this->GetUserRights();
 		
 		$sql="SELECT DeptID FROM fac_DeptContacts WHERE ContactID IN 
-			(SELECT ContactID FROM fac_Contact WHERE UserID=$this->UserID);";
-		
+			(SELECT ContactID FROM fac_Contact WHERE UserID=\"$this->UserID\");";
+
 		$deptList=array();
-		if($query=$dbh->query($sql)){
+		if($query=$this->query($sql)){
 			foreach($query as $row){
 				$deptList[]=$row["DeptID"];
 			}
 		}
-		
+
 		return $deptList;
 	}
 
@@ -703,6 +705,13 @@ class User {
 		$this->MakeDisplay();
 
 		return $dbh->exec($sql);
+	}
+
+	static function Current(){
+		$cuser=new User();
+		$cuser->UserID=$_SERVER['REMOTE_USER'];
+		$cuser->GetUserRights();
+		return $cuser;
 	}
 }
 
