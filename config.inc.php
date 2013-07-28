@@ -52,6 +52,21 @@ class Config{
 		return;
 	}
 	
+	static function UpdateParameter($parameter,$value){
+		global $dbh;
+
+		if(is_null($parameter) || is_null($value)){
+			return false;
+		}else{
+			$sql="UPDATE fac_Config SET Value=\"$value\" WHERE Parameter=\"$parameter\";";
+			if($dbh->query($sql)){
+				return true;
+			}else{
+				return false;
+			}
+		}
+	}
+
 	static function RevertToDefault($parameter){
 		global $dbh;
 		
