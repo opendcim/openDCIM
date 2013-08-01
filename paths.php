@@ -115,9 +115,9 @@
 			|| isset($_GET['pathid']) && $_GET['pathid']!=''){
 			$status="";
 			if (isset($_GET['pathid'])) {
-				$pathid=intval( $_GET['pathid'] );
+				$pathid=$_GET['pathid'];
 			}else{ 
-				$pathid=intval( $_POST['pathid'] );
+				$pathid=$_POST['pathid'];
 			}
 			
 			
@@ -150,7 +150,7 @@
 		if ($status==""){
 			
 			$path.="<div style='text-align: center;'>";
-			$path.="<div style='font-size: 1.5em;'>".__("Path of ").$pathid."</div>\n";
+			$path.="<div style='font-size: 1.5em;'>".__("Path of")." ".$pathid."</div>\n";
 
 			//Path Table
 			$path.="<table id=parcheos>\n\t<tr>\n\t\t<td>&nbsp;</td>\n\t</tr>\n\t<tr>\n";
