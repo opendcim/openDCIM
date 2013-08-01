@@ -115,7 +115,6 @@ if (!isset($_REQUEST['action'])){
   <![endif]-->
   <script type="text/javascript" src="scripts/jquery.min.js"></script>
   <script type="text/javascript" src="scripts/jquery-ui.min.js"></script>
-  <script type="text/javascript" src="scripts/jquery-migrate-1.0.0.js"></script>
   <script type="text/javascript" src="scripts/jquery.dataTables.min.js"></script>
   <script type="text/javascript" src="scripts/ColVis.min.js"></script>
   <script type="text/javascript" src="scripts/TableTools.min.js"></script>
