@@ -204,7 +204,7 @@ function get_cabinet_owner_color($cabinet, &$deptswithcolor) {
 		$audit->CertifyAudit();
 	}
 
-	$audit->AuditStamp="Never";
+	$audit->AuditStamp=__("Never");
 	$audit->GetLastAudit();
 	if($audit->UserID!=""){
 		$tmpUser=new User();

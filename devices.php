@@ -812,11 +812,11 @@ $(document).ready(function() {
 					modal: true,
 					dialogClass: "no-close",
 					buttons: {
-						"Yes": function(){
+<?php echo '				',__("Yes"),': function(){'; ?>
 							$(this).dialog("destroy");
 							form.append('<input type="hidden" class="killthechildren" name="killthechildren" value="yes">');
 						},
-						"No": function(){
+<?php echo '				',__("No"),': function(){'; ?>
 							$('.killthechildren').remove();
 							$('select[name=devicetype]').val('Chassis');
 							$(this).dialog("destroy");
@@ -1255,12 +1255,12 @@ $(document).ready(function() {
 				resizable: false,
 				modal: true,
 				buttons: {
-					"Yes": function(){
+<?php echo '				',__("Yes"),': function(){'; ?>
 						$(this).dialog("destroy");
 						form.append('<input type="hidden" name="'+btn.attr("name")+'" value="'+btn.val()+'">');
 						form.submit();
 					},
-					"No": function(){
+<?php echo '				',__("No"),': function(){'; ?>
 						$(this).dialog("destroy");
 					}
 				}
@@ -1729,8 +1729,8 @@ echo '	<div class="table">
 	}else{
 		echo '   <div><a href="storageroom.php">[ ',__("Return to Navigator"),' ]</a></div>';
 	}
+	print "<div id=\"dialog-confirm\" title=\"".__("Verify Delete Device")."\" class=\"hide\"></div>";
 ?>
-<div id="dialog-confirm" title="Verify Delete Device" class="hide"></div>
 
 </div><!-- END div.main -->
 </div><!-- END div.page -->
