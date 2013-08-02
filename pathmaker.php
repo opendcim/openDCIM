@@ -16,6 +16,52 @@
 	$status="";
 	$path="";
 	$pathid="";
+
+	function builddclist($id=null){
+		$dc=new DataCenter();
+		$dcList=$dc->GetDCList();
+
+		$id=(!is_null($id))?" name=\"$id\" id=\"$id\"":'';
+
+		$dcpicklist="<select$id><option value=0></option>";
+		foreach($dcList as $d){
+			$dcpicklist.="<option value=$d->DataCenterID>$d->Name</option>";
+		}
+		$dcpicklist.='</select>';
+
+		return $dcpicklist;
+	}
+
+	// AJAX - Start
+
+	function displayjson($array){
+		header('Content-Type: application/json');
+		echo json_encode($array);
+		exit;
+	}
+
+	if(isset($_POST['dc'])){
+		$cab=new Cabinet();
+		$cab->DataCenterID=$_POST['dc'];
+
+		displayjson($cab->ListCabinetsByDC());
+	}
+
+	if(isset($_POST['cab'])){
+		$dev=new Device();
+		$dev->Cabinet=$_POST['cab'];
+		
+		displayjson($dev->ViewDevicesByCabinet());
+	}
+
+	if(isset($_POST['dev'])){
+		$dp=new DevicePorts();
+		$dp->DeviceID=$_POST['dev'];
+		
+		displayjson($dp->getPorts());
+	}
+
+	// AJAX - End
 	
 	if(isset($_POST['bot_implementar'])){
 		for ($i=1;$i<$_POST['elem_path'];$i++){
@@ -403,6 +449,63 @@
   <![endif]-->
   <script type="text/javascript" src="scripts/jquery.min.js"></script>
   <script type="text/javascript" src="scripts/jquery-ui.min.js"></script>
+  <script type="text/javascript">
+	$(document).ready(function(){
+		var cabl=$('<div>');
+		var cabs=$('<div>');
+		var cabr=$('<div>').append(cabl).append(cabs);
+		var devl=cabl.clone();
+		var devs=cabs.clone();
+		var devr=$('<div>').append(devl).append(devs);
+		var porl=cabl.clone();
+		var pors=cabs.clone();
+		var porr=$('<div>').append(porl).append(pors);
+		var select=$('<select>');
+		var opt=$('<option>');
+		$('#dc-front').change(function(e){
+			$.post('',({dc: $(this).val()})).done(function(data){
+				var s=select.clone();
+				s.children().detach();
+				s.append(opt.clone());
+				$.each(data, function(i,cab){
+					var o=opt.clone().val(cab.CabinetID).text(cab.Location);
+					s.append(o);
+				});
+				s.change(function(e){
+					$.post('',({cab: $(this).val()})).done(function(data){
+						var ds=select.clone();
+						ds.children().detach();
+						ds.append(opt.clone()).attr('name','devid1');
+						$.each(data, function(i,dev){
+							var o=opt.clone().val(dev.DeviceID).text(dev.Label);
+							ds.append(o);
+						});
+						ds.change(function(e){
+							$.post('',({dev: $(this).val()})).done(function(data){
+								select.children().detach();
+								select.append(opt.clone()).attr('name','port1');
+								$.each(data, function(i,por){
+									var o=opt.clone().val(por.PortNumber).text(por.PortNumber);
+									select.append(o);
+								});
+								porl.text('Port');
+								pors.html(select.change());
+								porr.insertAfter($(e.target).parent('div').parent('div'));
+							});
+						});
+						devl.text('Device');
+						devs.html(ds.change());
+						devr.insertAfter($(e.target).parent('div').parent('div'));
+					});
+				});
+				cabl.text('Cabinet');
+				cabs.html(s.change());
+				cabr.insertAfter($(e.target).parent('div').parent('div'));
+			});
+		});
+	});
+  </script>
+
 </head>
 <body>
 <div id="header"></div>
@@ -422,32 +525,8 @@ echo '<div class="main">
 	<legend>'.__("Initial device").'</legend>
 	<div class="table">
 		<div>
-		  	<div><label for="label">',__("Label"),'</label></div>
-			<div><input type="text" name="label1" id="label1" size="20" value="',(isset($_POST['label1'])?$_POST['label1']:""),'"></div>
-		</div>';
-if (isset($devList1) && count($devList1)>1) {
-	print "<div><div><input type='hidden' name='label1_ant' value='".(isset($_POST['label1'])?$_POST['label1']:"")."'></div></div>";
-	print "		<div>
-		   <div><label for='devid1'>".__("Devices")."</label></div>
-		   <div><select name='devid1' id='devid1'>";
-	if (isset($_POST['devid1'])){
-		print "		   <option value=0>".__("Select inital device")."</option>";
-		$devid1=$_POST['devid1'];
-	}else{
-		print "		   <option value=0 selected>".__("Select inital device")."</option>";
-		$devid1=0;
-	}
-	foreach($devList1 as $devRow ) {
-		$selected=(($devid1 == $devRow->DeviceID)?" selected":"");
-		//$pos="[".(($devRow->ParentDevice>0)?"S":"U").((isset($devRow->BackSide) && $devRow->BackSide)?"T":"").$devRow->Position."] ";
-		$pos="[".(($devRow->ParentDevice>0)?"S":"U").((isset($devRow->BackSide) && $devRow->BackSide)?"T":"").$devRow->Position."] ";
-		print "		   <option value=$devRow->DeviceID".$selected.">".$pos.$devRow->Label."</option>";
-	}
-	print "\t\t</select></div></div>";
-}
-echo'		<div>
-		   <div><label for="port">',__("Port"),'</label></div>
-		   <div><input type="text" name="port1" id="port1" size="20" value='.(isset($_POST['port1'])?$_POST['port1']:"").'></div>
+		  	<div><label for="dc-front">',__("Data Center"),'</label></div>
+			<div>'.builddclist('dc-front').'</div>
 		</div>
 	</div>
 </fieldset>
