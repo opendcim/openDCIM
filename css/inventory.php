@@ -333,7 +333,7 @@ div.center div table {
 }
 div.center div table table{min-width: 150px;}
 div.center div table, div.center div tr, div.center div td {border: 1px solid gray;}
-.panelmgr .polenumber {padding: 0.25em 0.5em;text-align: center;}
+.cabinet tr > td:first-child, .panelmgr .polenumber {padding: 0.25em 0.5em;text-align: center;}
 .panelmgr .polelabel {
 	min-width: 150px;
 	max-width: 400px;
