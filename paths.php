@@ -16,7 +16,30 @@
 	$status="";
 	$path="";
 	$pathid="";
-	
+
+	function builddclist($id=null){
+		$dc=new DataCenter();
+		$dcList=$dc->GetDCList();
+		$idnum='';
+
+		if(!is_null($id)){
+			if($id=="dc-front"){
+				$idnum=1;
+			}elseif($id=="dc-rear"){
+				$idnum=2;
+			}
+			$id=" name=\"$id\" id=\"$id\"";
+		}
+
+		$dcpicklist="<select$id><option value=0>&nbsp;</option>";
+		foreach($dcList as $d){
+			$dcpicklist.="<option value=$d->DataCenterID>$d->Name</option>";
+		}
+		$dcpicklist.='</select>';
+
+		return $dcpicklist;
+	}
+
 	if(isset($_POST['bot_eliminar'])){
 		$port=new DevicePorts();
 		for ($i=1;$i<$_POST['elem_path'];$i++){
@@ -33,31 +56,29 @@
 		$status.=__("Front connections Deleted");
 	}
 	
-	if(isset($_POST['action']) || isset($_GET['pathid']) || (isset($_GET['deviceid']) && isset($_GET['portnumber']))){
+	if(isset($_POST['action']) || isset($_REQUEST['pathid']) || (isset($_REQUEST['deviceid']) && isset($_REQUEST['portnumber']))){
 		//Search by deviceid/port
-		if(isset($_GET['deviceid']) && $_GET['deviceid']!=''
-			&& isset($_GET['portnumber']) && $_GET['portnumber']!=''){
+		if(isset($_REQUEST['deviceid']) && $_REQUEST['deviceid']!=''
+			&& isset($_REQUEST['portnumber']) && $_REQUEST['portnumber']!=''){
 				
-			$pathid=__("Device")." ".intval($_GET['deviceid'])."-".__("Port")." ".intval($_GET['portnumber']);
+			$pathid=__("Device")." ".intval($_REQUEST['deviceid'])."-".__("Port")." ".intval($_REQUEST['portnumber']);
 			
 			$cp=new ConnectionPath();
 			$dev=new Device();
 			
-			$dev->DeviceID=intval($_GET['deviceid']);
+			$dev->DeviceID=intval($_REQUEST['deviceid']);
 			$dev->GetDevice();
 			
-			$cp->DeviceID=intval($_GET['deviceid']);
-			$cp->PortNumber=intval($_GET['portnumber']);
+			$cp->DeviceID=intval($_REQUEST['deviceid']);
+			$cp->PortNumber=intval($_REQUEST['portnumber']);
 			$cp->DeviceType=$dev->DeviceType;
 			$cp->Front=true;
 				
 			if (!$cp->GotoHeadDevice()){
 				$status="<blink>".__("There is a loop in this port")."</blink>";
 			} 
-		}
-		
 		//Search by label/port
-		elseif(isset($_POST['label']) && $_POST['label']!=''
+		}elseif(isset($_POST['label']) && $_POST['label']!=''
 			&& isset($_POST['port']) && $_POST['port']!=''
 			&& $_POST['action']=="DevicePortSearch"){
 
@@ -86,7 +107,7 @@
 			}else{ //no devid1 or changed label
 				//by label
 				if (count($devList)==0){
-					$status=__("Not found the device")." '".$label."'";
+					$status=__("Device not found")." '$label'";
 				}
 				elseif(count($devList)>1){
 					//several dev1
@@ -121,10 +142,7 @@
 			}
 			
 			
-			$sql = "SELECT DeviceID,
-							PortNumber
-					FROM fac_Ports
-					WHERE Notes ='".$pathid."'";
+			$sql="SELECT DeviceID, PortNumber FROM fac_Ports WHERE Notes=\"$pathid\"";
 
 			$result = $dbh->prepare($sql);
 			$result->execute();
@@ -149,12 +167,12 @@
 		
 		if ($status==""){
 			
-			$path.="<div style='text-align: center;'>";
-			$path.="<div style='font-size: 1.5em;'>".__("Path of")." ".$pathid."</div>\n";
+			$path.="<div style=\"text-align: center;\">";
+			$path.="<div style=\"font-size: 1.5em;\">".__("Path of")." $pathid</div>\n";
 
 			//Path Table
-			$path.="<table id=parcheos>\n\t<tr>\n\t\t<td>&nbsp;</td>\n\t</tr>\n\t<tr>\n";
-			$path.="\t\t<td>&nbsp;&nbsp;&nbsp;</td>\n\t\t<td>";
+			$path.="<table id=\"parcheos\">\n\t<tr>\n\t\t<td colspan=6>&nbsp;</td>\n\t</tr>\n\t<tr>\n";
+			$path.="\t\t<td>&nbsp;&nbsp;&nbsp;</td>\n\t\t<td class=\"right\">";
 			
 			$dev=new Device();
 			$end=false;
@@ -167,8 +185,8 @@
 				$dev->DeviceID=$cp->DeviceID;
 				$dev->GetDevice();
 				$elem_path++;
-				$form_eliminar.="<input type='hidden' name='DeviceID[".$elem_path."]' value='".$cp->DeviceID."'>\n";
-				$form_eliminar.="<input type='hidden' name='PortNumber[".$elem_path."]' value='".$cp->PortNumber."'>\n";
+				$form_eliminar.="<input type=\"hidden\" name=\"DeviceID[$elem_path]\" value=\"$cp->DeviceID\">\n";
+				$form_eliminar.="<input type=\"hidden\" name=\"PortNumber[$elem_path]\" value=\"$cp->PortNumber\">\n";
 				
 				//If this device is the first and is a panel, I put it to the right position freeing the left
 				if ($elem_path==1 && $dev->DeviceType=="Patch Panel"){
@@ -178,14 +196,14 @@
 					$tipo_con=($cp->PortNumber>0)?"r":"f";
 					
 					//half hose
-					$path.="\n\t\t<td style='width:25px; background: #FFF url(images/a2".$tipo_con.".png) no-repeat center top;'></td>\n";
+					$path.="\n\t\t<td class=\"$tipo_con-right\"></td>\n";
 					
 					//Out connection type
 					$tipo_con=($cp->PortNumber>0)?"f":"r";
 					
 					//Can the path continue?
 					if ($dev->DeviceType=="Patch Panel"){
-						$path.="\n\t\t<td  style='background: #FFF url(images/b1".$tipo_con.".png) no-repeat left bottom;'>";
+						$path.="\n\t\t<td class=\"connection-$tipo_con-1\">";
 					}
 					else{
 						$path.="\n\t\t<td>";
@@ -196,14 +214,14 @@
 					$devList=$dev->GetDeviceLineage();
 					
 					//Device table
-					$path.="\n\t\t\t<table class=disp align=left>\n\t\t\t\t<tr>\n\t\t\t\t\t<th colspan=2>";
+					$path.="\n\t\t\t<table>\n\t\t\t\t<tr>\n\t\t\t\t\t<th colspan=2>";
 					
 					//Cabinet
 					$cab=new Cabinet();
 					$cab->CabinetID=$devList[sizeof($devList)]->Cabinet;
 					$cab->GetCabinet();
-					$path.=__("Cabinet").": <a href='cabnavigator.php?cabinetid=".$cab->CabinetID."'>".$cab->Location."</a>";
-					$path.="</th>\n\t\t\t\t</tr>\n\t\t\t\t<tr>\n\t\t\t\t\t<td nowrap>U:".$devList[sizeof($devList)]->Position."</td>\n";
+					$path.=__("Cabinet").": <a href=\"cabnavigator.php?cabinetid=$cab->CabinetID\">$cab->Location</a>";
+					$path.="</th>\n\t\t\t\t</tr>\n\t\t\t\t<tr>\n\t\t\t\t\t<td>U:{$devList[sizeof($devList)]->Position}</td>\n";
 					
 					
 					//Lineage
@@ -213,16 +231,16 @@
 						$path.=str_repeat("\t",$t++)."<table class=disp>\n";
 						$path.=str_repeat("\t",$t++)."<tr>\n";
 						$path.=str_repeat("\t",$t--)."<th colspan=2>";
-						$path.="<a href='devices.php?deviceid=".$devList[$i]->DeviceID."'>".$devList[$i]->Label."</a>";
+						$path.="<a href=\"devices.php?deviceid={$devList[$i]->DeviceID}\">{$devList[$i]->Label}</a>";
 						$path.="</th>\n";
 						$path.=str_repeat("\t",$t)."</tr>\n";
 						$path.=str_repeat("\t",$t++)."<tr>\n";
-						$path.=str_repeat("\t",$t)."<td nowrap>Slot:".$devList[$i-1]->Position."</td>\n";
+						$path.=str_repeat("\t",$t)."<td>Slot:{$devList[$i-1]->Position}</td>\n";
 					}
 					
 					//device
-					$path.=str_repeat("\t",$t--)."<td style='background-color: yellow;' nowrap>".
-							"<a href='devices.php?deviceid=".$dev->DeviceID."'>".$dev->Label."</a>
+					$path.=str_repeat("\t",$t--)."<td>".
+							"<a href=\"devices.php?deviceid=$dev->DeviceID\">$dev->Label</a>
 							<br>".__("Port").": ".abs($cp->PortNumber)."</td>\n";
 					$path.=str_repeat("\t",$t--)."</tr>\n";
 					
@@ -232,13 +250,10 @@
 						$path.=str_repeat("\t",$t--)."</tr>\n";
 						$path.=str_repeat("\t",$t--)."</table>\n";
 					}
-					$path.=str_repeat("\t",$t--)."</td>\n";
-					$path.=str_repeat("\t",$t--)."</tr>\n";
 					if ($cp->PortNumber>0){
 						$t++;
 						$path.=str_repeat("\t",$t++)."<tr>\n";
-						$path.=str_repeat("\t",$t)."<td colspan=2 style='padding: 0px 0px 0px 0px; border: 0px solid grey; 
-							height:5px; background: #FFF url(images/b0f.png) no-repeat left;'>\n";
+						$path.=str_repeat("\t",$t)."<td colspan=2 class=\"base-f\">\n";
 						$path.=str_repeat("\t",$t--)."</td>\n";
 						$path.=str_repeat("\t",$t--)."</tr>\n";
 					}
@@ -248,16 +263,16 @@
 					$path.="\t\t</td>\n\t\t<td>&nbsp;&nbsp;&nbsp;</td>\n\t</tr>\n";
 
 					//connection for next row
-					$conex="\t\t<td style='height:30px; width: 25px; background: #FFF url(images/b3".$tipo_con.".png) no-repeat center;'>&nbsp;</td>\n";
-					$conex.="\t\t<td style='height:30px; background: #FFF url(images/b2".$tipo_con.".png) no-repeat left;'>&nbsp;</td>\n\t</tr>\n";;
+					$conex="\t\t<td class=\"connection-$tipo_con-3\">&nbsp;</td>\n";
+					$conex.="\t\t<td class=\"connection-$tipo_con-2\">&nbsp;</td>\n\t<td></td></tr>\n";
 					if ($cp->GotoNextDevice()) {
 						$tipo_con=($cp->PortNumber>0)?"r":"f";  //In connection type
 
 						//row separation between patch rows: draw the connection between panels
-						$path.="\t<tr>\n\t\t<td></td><td style='height:30px; background: #FFF url(images/b4".$tipo_con.".png) no-repeat right;'>&nbsp;</td>\n"; 
-						$path.="\t\t<td style='height:30px; width: 25px; background: #FFF url(images/b3".$tipo_con.".png) no-repeat center;'>&nbsp;</td>\n";
+						$path.="\t<tr>\n\t\t<td></td><td class=\"connection-$tipo_con-4\">&nbsp;</td>\n"; 
+						$path.="\t\t<td class=\"connection-$tipo_con-3\">&nbsp;</td>\n";
 						$path.=$conex;
-						$path.="\n<tr>\n\t\t<td>&nbsp;&nbsp;&nbsp;</td>\n\t\t<td align=right>";
+						$path.="\n<tr>\n\t\t<td>&nbsp;&nbsp;&nbsp;</td>\n\t\t<td>";
 					} else {
 						//End of path
 						$end=true;
@@ -270,14 +285,14 @@
 					$devList=$dev->GetDeviceLineage();
 					
 					//Device table
-					$path.="\n\t\t\t<table class=disp align=right>\n\t\t\t\t<tr>\n\t\t\t\t\t<th colspan=2>";
+					$path.="\n\t\t\t<table>\n\t\t\t\t<tr>\n\t\t\t\t\t<th colspan=2>";
 					
 					//cabinet
 					$cab=new Cabinet();
 					$cab->CabinetID=$devList[sizeof($devList)]->Cabinet;
 					$cab->GetCabinet();
-					$path.=__("Cabinet").": <a href='cabnavigator.php?cabinetid=".$cab->CabinetID."'>".$cab->Location."</a>";
-					$path.="</th>\n\t\t\t\t</tr>\n\t\t\t\t<tr>\n\t\t\t\t\t<td nowrap>U:".$devList[sizeof($devList)]->Position."</td>\n";
+					$path.=__("Cabinet").": <a href=\"cabnavigator.php?cabinetid=$cab->CabinetID\">$cab->Location</a>";
+					$path.="</th>\n\t\t\t\t</tr>\n\t\t\t\t<tr>\n\t\t\t\t\t<td>U:{$devList[sizeof($devList)]->Position}</td>\n";
 					
 					//Lineage
 					$t=5;
@@ -286,16 +301,16 @@
 						$path.=str_repeat("\t",$t++)."<table class=disp>\n";
 						$path.=str_repeat("\t",$t++)."<tr>\n";
 						$path.=str_repeat("\t",$t--)."<th colspan=2>";
-						$path.="<a href='devices.php?deviceid=".$devList[$i]->DeviceID."'>".$devList[$i]->Label."</a>";
+						$path.="<a href=\"devices.php?deviceid={$devList[$i]->DeviceID}\">{$devList[$i]->Label}</a>";
 						$path.="</th>\n";
 						$path.=str_repeat("\t",$t)."</tr>\n";
 						$path.=str_repeat("\t",$t++)."<tr>\n";
-						$path.=str_repeat("\t",$t)."<td nowrap>Slot:".$devList[$i-1]->Position."</td>\n";
+						$path.=str_repeat("\t",$t)."<td>Slot:{$devList[$i-1]->Position}</td>\n";
 					}
 					
 					//Device
-					$path.=str_repeat("\t",$t--)."<td style='background-color: yellow;' nowrap>".
-							"<a href='devices.php?deviceid=".$dev->DeviceID."'>".$dev->Label.
+					$path.=str_repeat("\t",$t--)."<td>".
+							"<a href=\"devices.php?deviceid=$dev->DeviceID\">$dev->Label".
 							"</a><br>".__("Port").": ".abs($cp->PortNumber)."</td>\n";
 					$path.=str_repeat("\t",$t--)."</tr>\n";
 					$path.=str_repeat("\t",$t--)."</table>\n";
@@ -314,13 +329,13 @@
 						//Out connection type
 						$tipo_con=($cp->PortNumber>0)?"f":"r";
 						
-						$path.="\n\t\t<td style='width:25px; background: #FFF url(images/a1".$tipo_con.".png) no-repeat center top;'></td>\n";
+						$path.="\n\t\t<td class=\"$tipo_con-left\"></td>\n";
 					}
 					//next device, if exist
 					if ($cp->GotoNextDevice()) {
 						$elem_path++;
-						$form_eliminar.="<input type='hidden' name='DeviceID[".$elem_path."]' value='".$cp->DeviceID."'>\n";
-						$form_eliminar.="<input type='hidden' name='PortNumber[".$elem_path."]' value='".$cp->PortNumber."'>\n";
+						$form_eliminar.="<input type=\"hidden\" name=\"DeviceID[$elem_path]\" value=\"$cp->DeviceID\">\n";
+						$form_eliminar.="<input type=\"hidden\" name=\"PortNumber[$elem_path]\" value=\"$cp->PortNumber\">\n";
 						
 						$dev->DeviceID=$cp->DeviceID;
 						$dev->GetDevice();
@@ -329,18 +344,17 @@
 						$tipo_con=($cp->PortNumber>0)?"r":"f";
 						
 						//half hose
-						$path.="\n\t\t<td style='width:25px; background: #FFF url(images/a2".$tipo_con.".png) no-repeat center top;'></td>\n";
+						$path.="\n\t\t<td class=\"$tipo_con-right\"></td>\n";
 						
 						//Out connection type
 						$tipo_con=($cp->PortNumber>0)?"f":"r";
 						
 						//Can I follow?
 						if ($dev->DeviceType=="Patch Panel"){
-							$path.="\n\t\t<td  style='background: #FFF url(images/b1".$tipo_con.".png) no-repeat left bottom;'>";
+							$path.="\n\t\t<td class=\"connection-$tipo_con-1\">";
 							// I prepare row separation between patch rows
-							$conex="\t\t<td style='height:30px; width: 25px; background: #FFF url(images/b3".$tipo_con.".png) no-repeat center;'>&nbsp;</td>\n";
-							$conex.="\t\t<td style='height:30px; background: #FFF url(images/b2".$tipo_con.".png) no-repeat left;'>&nbsp;</td>\n\t</tr>\n";;
-						
+							$conex="\t\t<td class=\"connection-$tipo_con-3\">&nbsp;</td>\n";
+							$conex.="\t\t<td class=\"connection-$tipo_con-2\">&nbsp;</td>\n\t<td></td></tr>\n";
 						}
 						else{
 							$conex="";
@@ -352,14 +366,14 @@
 						$devList=$dev->GetDeviceLineage();
 						
 						//Device Table
-						$path.="\n\t\t\t<table class=disp align=left>\n\t\t\t\t<tr>\n\t\t\t\t\t<th colspan=2>";
+						$path.="\n\t\t\t<table>\n\t\t\t\t<tr>\n\t\t\t\t\t<th colspan=2>";
 						
 						//cabinet
 						$cab=new Cabinet();
 						$cab->CabinetID=$devList[sizeof($devList)]->Cabinet;
 						$cab->GetCabinet();
 						$path.=__("Cabinet").": <a href='cabnavigator.php?cabinetid=".$cab->CabinetID."'>".$cab->Location."</a>";
-						$path.="</th>\n\t\t\t\t</tr>\n\t\t\t\t<tr>\n\t\t\t\t\t<td nowrap>U:".$devList[sizeof($devList)]->Position."</td>\n";
+						$path.="</th>\n\t\t\t\t</tr>\n\t\t\t\t<tr>\n\t\t\t\t\t<td>U:".$devList[sizeof($devList)]->Position."</td>\n";
 						
 						//lineage
 						$t=5;
@@ -372,11 +386,11 @@
 							$path.="</th>\n";
 							$path.=str_repeat("\t",$t)."</tr>\n";
 							$path.=str_repeat("\t",$t++)."<tr>\n";
-							$path.=str_repeat("\t",$t)."<td nowrap>Slot:".$devList[$i-1]->Position."</td>\n";
+							$path.=str_repeat("\t",$t)."<td>Slot:".$devList[$i-1]->Position."</td>\n";
 						}
 						
 						//device
-						$path.=str_repeat("\t",$t--)."<td style='background-color: yellow;' nowrap>".
+						$path.=str_repeat("\t",$t--)."<td style='background-color: yellow;'>".
 								"<a href='devices.php?deviceid=".$dev->DeviceID."'>".$dev->Label.
 								"</a><br>".__("Port").": ".abs($cp->PortNumber)."</td>\n";
 						$path.=str_repeat("\t",$t--)."</tr>\n";
@@ -391,8 +405,7 @@
 						if ($cp->PortNumber>0){
 							$t++;
 							$path.=str_repeat("\t",$t++)."<tr>\n";
-							$path.=str_repeat("\t",$t)."<td colspan=2 style='padding: 0px 0px 0px 0px; border: 0px solid grey; 
-								height:5px; background: #FFF url(images/b0f.png) no-repeat left;'>\n";
+							$path.=str_repeat("\t",$t)."<td colspan=2 class=\"base-f\">\n";
 							$path.=str_repeat("\t",$t--)."</td>\n";
 							$path.=str_repeat("\t",$t--)."</tr>\n";
 						}
@@ -405,10 +418,10 @@
 							$tipo_con=($cp->PortNumber>0)?"r":"f";  //In connection type
 	
 							//row separation between patch rows: draw the connection between panels
-							$path.="\t<tr>\n\t\t<td></td><td style='height:30px; background: #FFF url(images/b4".$tipo_con.".png) no-repeat right;'>&nbsp;</td>\n"; 
-							$path.="\t\t<td style='height:30px; width: 25px; background: #FFF url(images/b3".$tipo_con.".png) no-repeat center;'>&nbsp;</td>\n";
+							$path.="\t<tr>\n\t\t<td></td><td class=\"connection-$tipo_con-4\">&nbsp;</td>\n"; 
+							$path.="\t\t<td class=\"connection-$tipo_con-3\">&nbsp;</td>\n";
 							$path.=$conex;
-							$path.="\n<tr>\n\t\t<td>&nbsp;&nbsp;&nbsp;</td>\n\t\t<td align=right>";
+							$path.="\n<tr>\n\t\t<td>&nbsp;&nbsp;&nbsp;</td>\n\t\t<td>";
 						} else {
 							//End of path
 							$path.="\t<tr>\n\t\t<td></td><td>&nbsp;</td>\n";
@@ -424,31 +437,27 @@
 				}
 			}
 			//key
-			$path.="\t<tr>\n\t\t<td>&nbsp;</td>\n\t</tr>";
+			$path.="\t<tr>\n\t\t<td colspan=6>&nbsp;</td>\n\t</tr>";
 			$path.="\t<tr>\n";
-			$path.="\t\t<td>&nbsp;&nbsp;&nbsp;</td>\n";
-			$path.="\t\t<td style='background: #FFF url(images/leyendaf.png) no-repeat right top;'></td>\n";
-			$path.="\t\t<td colspan=3 align=left>&nbsp;&nbsp;".__("Front Connection")."</td>\n";
-			$path.="\t\t<td>&nbsp;&nbsp;&nbsp;</td>\n";
+			$path.="\t\t<td class=\"right\" colspan=2><img src=\"images/leyendaf.png\" alt=\"\"></td>\n";
+			$path.="\t\t<td class=\"left\" colspan=4>&nbsp;&nbsp;".__("Front Connection")."</td>\n";
 			$path.="\t</tr>\n";
 			$path.="\t<tr>\n";
-			$path.="\t\t<td>&nbsp;&nbsp;&nbsp;</td>\n";
-			$path.="\t\t<td style='background: #FFF url(images/leyendar.png) no-repeat right top;'></td>\n";
-			$path.="\t\t<td colspan=3 align=left>&nbsp;&nbsp;".__("Rear Connection")."</td>\n";
-			$path.="\t\t<td>&nbsp;&nbsp;&nbsp;</td>\n";
+			$path.="\t\t<td class=\"right\" colspan=2><img src=\"images/leyendar.png\" alt=\"\"></td>\n";
+			$path.="\t\t<td class=\"left\" colspan=4>&nbsp;&nbsp;".__("Rear Connection")."</td>\n";
 			$path.="\t</tr>\n";
 			
 			//End of path table
-			$path.="\t<tr>\n\t\t<td>&nbsp;</td>\n\t</tr></table></div>";
+			$path.="\t<tr>\n\t\t<td colspan=6>&nbsp;</td>\n\t</tr></table></div>";
 			
 			//Delete Form
-			$path.= "<form action='".$_SERVER["PHP_SELF"]."' method='POST'>\n";
+			$path.= "<form action=\"{$_SERVER["PHP_SELF"]}\" method=\"POST\">\n";
 			$path.= "<br>\n"; 
 			$path.= "<div>\n";
 			//PATH INFO
-			$path.= "<input type='hidden' name='elem_path' value='".$elem_path."'>\n";
+			$path.= "<input type=\"hidden\" name=\"elem_path\" value=\"".$elem_path."\">\n";
 			$path.=$form_eliminar;	
-			$path.= "	<button type='submit' name='bot_eliminar' value='delete'>".__("Delete front connections in DataBase")."</button>\n";
+			$path.= "	<button type=\"submit\" name=\"bot_eliminar\" value=\"delete\">".__("Delete front connections in DataBase")."</button>\n";
 			$path.= "</div>\n";
 			$path.= "</form>\n";
 			$path.= "</div>\n";
@@ -470,6 +479,62 @@
   <![endif]-->
   <script type="text/javascript" src="scripts/jquery.min.js"></script>
   <script type="text/javascript" src="scripts/jquery-ui.min.js"></script>
+  <script type="text/javascript">
+	$(document).ready(function(){
+		var cabl=$('<div>');
+		var cabs=$('<div>');
+		var cabr=$('<div>').append(cabl).append(cabs);
+		var devl=cabl.clone();
+		var devs=cabs.clone();
+		var devr=$('<div>').append(devl).append(devs);
+		var porl=cabl.clone();
+		var pors=cabs.clone();
+		var porr=$('<div>').append(porl).append(pors);
+		var select=$('<select>');
+		var opt=$('<option>');
+		$('.main fieldset select').change(function(e){
+			$.post('pathmaker.php',({dc: $(this).val()})).done(function(data){
+				var s=select.clone();
+				s.children().detach();
+				s.append(opt.clone());
+				$.each(data, function(i,cab){
+					var o=opt.clone().val(cab.CabinetID).text(cab.Location);
+					s.append(o);
+				});
+				s.change(function(e){
+					$.post('pathmaker.php',({cab: $(this).val()})).done(function(data){
+						var ds=select.clone();
+						ds.children().detach();
+						ds.append(opt.clone()).attr('name','deviceid');
+						$.each(data, function(i,dev){
+							var o=opt.clone().val(dev.DeviceID).text(dev.Label);
+							ds.append(o);
+						});
+						ds.change(function(e){
+							$.post('pathmaker.php',({dev: $(this).val()})).done(function(data){
+								select.children().detach();
+								select.append(opt.clone()).attr('name','portnumber');
+								$.each(data, function(i,por){
+									var o=opt.clone().val(por.PortNumber).text(por.PortNumber);
+									select.append(o);
+								});
+								porl.text('Port');
+								pors.html(select.change());
+								porr.insertAfter($(e.target).parent('div').parent('div'));
+							});
+						});
+						devl.text('Device');
+						devs.html(ds.change());
+						devr.insertAfter($(e.target).parent('div').parent('div'));
+					});
+				});
+				cabl.text('Cabinet');
+				cabs.html(s.change());
+				cabr.insertAfter($(e.target).parent('div').parent('div'));
+			});
+		});
+	});
+  </script>
 </head>
 <body>
 <div id="header"></div>
@@ -482,56 +547,32 @@ echo '<div class="main">
 <h3>',__("End to end connection path"),'</h3>
 <h3>',$status,'</h3>
 <div class="center"><div><div>
-<table id=crit_busc border=10>
+<table id="crit_busc">
 <tr><td>
-<fieldset class=crit_busc>
+<fieldset class="crit_busc">
 		<legend>'.__("Search by path identifier").'</legend>
 <form action="',$_SERVER["PHP_SELF"],'" method="POST">
 <div class="table">
 <br>
 <div>
    <div><label for="pathid">',__("Identifier"),'</label></div>
-   <div><input type="text" name="pathid" id="pathid" size="20" value=',(isset($_POST['pathid'])?$_POST['pathid']:""),'></div>
+   <div><input type="text" name="pathid" id="pathid" size="20" value="',(isset($_POST['pathid'])?$_POST['pathid']:""),'"></div>
 </div>
 <br>
-<div class="caption">';
-echo '	 <button type="submit" name="action" value="PathIdSearch">',__("Search"),'</button></div>';
-echo '</div> <!-- END div.table -->';
-echo '</form></fieldset></td>';
+<div class="caption"><button type="submit" name="action" value="PathIdSearch">',__("Search"),'</button></div>
+</div> <!-- END div.table -->
+</form></fieldset></td>
 
-echo '<td>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td>';
+<td>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td>
 
-echo '<td><fieldset class=crit_busc>
+<td><fieldset class=crit_busc>
 		<legend>'.__("Search by label/port").'</legend>
 		<form action="',$_SERVER["PHP_SELF"],'" method="POST">
 <div class="table">
-<div>
-   <div><label for="label">',__("Label"),'</label></div>
-   <div><input type="text" name="label" id="label" size="20" value=',(isset($_POST['label'])?$_POST['label']:""),'></div>
-</div>';
-if (isset($devList) && count($devList)>1) {
-	print "<div><div><input type='hidden' name='label_ant' value='".(isset($_POST['label'])?$_POST['label']:"")."'></div></div>";
-	print "		<div>
-		   <div><label for='devid'>".__("Devices")."</label></div>
-		   <div><select name='devid' id='devid'>";
-	if (isset($_POST['devid'])){
-		print "		   <option value=0>".__("Select device")."</option>";
-		$devid=$_POST['devid'];
-	}else{
-		print "		   <option value=0 selected>".__("Select device")."</option>";
-		$devid=0;
-	}
-	foreach($devList as $devRow ) {
-		$selected=(($devid == $devRow->DeviceID)?" selected":"");
-		$pos="[".(($devRow->ParentDevice>0)?"S":"U").((isset($devRow->BackSide) && $devRow->BackSide)?"T":"").$devRow->Position."] ";
-		print "		   <option value=$devRow->DeviceID".$selected.">".$pos.$devRow->Label."</option>";
-	}
-	print "\t\t</select></div></div>";
-}
-echo'<div>
-   <div><label for="port">',__("Port"),'</label></div>
-   <div><input type="text" name="port" id="port" size="20" value='.(isset($_POST['port'])?$_POST['port']:"").'></div>
-</div>
+	<div>
+		<div><label for="dc-rear">',__("Data Center"),'</label></div>
+		<div>'.builddclist('dc-rear').'</div>
+	</div>
 <br>
 <div class="caption">';
 echo '	 <button type="submit" name="action" value="DevicePortSearch">',__("Search"),'</button></div>';
@@ -540,9 +581,12 @@ echo '</form></fieldset></td></tr></table>';
 
 ?>
 </div></div>
-<?php echo "<br><br>",$path,"</div><br>"; 
+<?php echo "<br><br>",$path,"<br>"; 
 echo '<a href="index.php">[ ',__("Return to Main Menu"),' ]</a>'; ?>
 </div><!-- END div.main -->
 </div><!-- END div.page -->
+<script type="text/javascript">
+	$('table#parcheos table tr + tr > td + td:has(table)').css('background-color','transparent');
+</script>
 </body>
 </html>

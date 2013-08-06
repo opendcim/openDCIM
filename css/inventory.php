@@ -20,6 +20,9 @@ textarea {white-space: pre;word-wrap: break-word;}
 .show {display: block;}
 .greybg {background-color: lightGrey;}
 .warning {text-align: center; color: red; text-transform: uppercase;}
+.right {text-align: right;}
+.left {text-align: left;}
+
 
 [readonly],[disabled] {
 	background-color: #dcdcdc;
@@ -330,7 +333,7 @@ div.center div table {
 }
 div.center div table table{min-width: 150px;}
 div.center div table, div.center div tr, div.center div td {border: 1px solid gray;}
-div.center div td:first-child, .panelmgr .polenumber {padding: 0.25em 0.5em;text-align: center;}
+.panelmgr .polenumber {padding: 0.25em 0.5em;text-align: center;}
 .panelmgr .polelabel {
 	min-width: 150px;
 	max-width: 400px;
@@ -644,20 +647,28 @@ table#crit_busc {border: 0px; background: transparent; padding:0.5em;}
 table#crit_busc tr {border: 0px; background: transparent; padding:0.5em;}
 table#crit_busc td {border: 0px; background: transparent; padding:0.5em;}
 
-table#parcheos {
-	border: 3px outset;
-	text-align: center;
-	text-valign: center;
-	max-width: 800px;}
+table#parcheos {border: 3px outset; text-align: center; text-valign: center; max-width: 800px;}
 table#parcheos tr {border: 0px;}	
-table#parcheos td {padding: 0px 0px 0px 0px; border: 0px; vertical-align: top;}
+table#parcheos td {padding: 0px; border: 0px; vertical-align: top;}
 
-table#parcheos table.disp {
-	margin: 0px 0px 0px 0px;
-	border: 0px;
-	border-collapse: collapse;
-	text-align: left;
-	vertical-align: middle;
-	min-width: 50px;}
-table#parcheos table.disp tr th {background-color: #DDDDDD; padding: 2px 2px 2px 2px; border: 1px solid grey; text-align: left; border-collapse: collapse;}
-table#parcheos table.disp tr td {padding: 2px 2px 2px 2px; border: 1px solid grey; text-align: left; border-collapse: collapse;}
+#parcheos .f-right {background: url("../images/a2f.png") no-repeat #FFF; width:25px;}
+#parcheos .f-left {background: url("../images/a1f.png") no-repeat #FFF; width:25px;}
+#parcheos .r-right {background: url("../images/a2r.png") no-repeat #FFF; width:25px;}
+#parcheos .r-left {background: url("../images/a1r.png") no-repeat #FFF; width:25px;}
+
+#parcheos .base-f, #parcheos .base-r {background: url("../images/b0f.png") no-repeat top left #FFF; height: 5px; padding: 0px; border: 0px;}
+
+#parcheos .connection-f-1 {background: url("../images/b1f.png") no-repeat #FFF;}
+#parcheos .connection-f-2 {background: url("../images/b2f.png") no-repeat #FFF; width:25px;}
+#parcheos .connection-f-3 {background: url("../images/b3f.png") no-repeat #FFF; height:30px;}
+#parcheos .connection-f-4 {background: url("../images/b4f.png") no-repeat top right #FFF; height:30px;}
+#parcheos .connection-r-1 {background: url("../images/b1r.png") no-repeat #FFF;}
+#parcheos .connection-r-2 {background: url("../images/b2r.png") no-repeat #FFF; width:25px;}
+#parcheos .connection-r-3 {background: url("../images/b3r.png") no-repeat #FFF; height:30px;}
+#parcheos .connection-r-4 {background: url("../images/b4r.png") no-repeat top right #FFF; height:30px;}
+
+table#parcheos table tr + tr > td + td{background-color:yellow;}
+table#parcheos table {margin: 0px; border: 0px; border-collapse: collapse; text-align: left; vertical-align: middle; min-width: 50px; white-space: nowrap;}
+table#parcheos table tr th {background-color: #DDDDDD; padding: 2px; border: 1px solid grey; text-align: left; border-collapse: collapse;}
+table#parcheos table tr td {padding: 2px; border: 1px solid grey; text-align: left; border-collapse: collapse;}
+table#parcheos tr td:first-child + td table {margin-left: auto;}
