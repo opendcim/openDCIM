@@ -1394,12 +1394,19 @@ class Device {
 		return $parentList;
 	}
 
-	function ViewDevicesByCabinet(){
+	function ViewDevicesByCabinet($includechildren=false){
 		global $dbh;
 
 		$this->MakeSafe();
-		
-		$sql="SELECT * FROM fac_Device WHERE Cabinet=$this->Cabinet AND Cabinet!=0 ORDER BY Position DESC;";
+
+		if($includechildren){
+			$sql="SELECT * FROM fac_Device WHERE ParentDevice IN (SELECT DeviceID FROM 
+				fac_Device WHERE Cabinet=1) UNION SELECT * FROM fac_Device WHERE 
+				Cabinet=$this->Cabinet ORDER BY ParentDevice ASC, Position DESC;";
+		}else{		
+			$sql="SELECT * FROM fac_Device WHERE Cabinet=$this->Cabinet AND Cabinet!=0 
+				ORDER BY Position DESC;";
+		}
 
 		$deviceList = array();
 

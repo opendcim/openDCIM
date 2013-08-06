@@ -59,7 +59,7 @@
 		$dev=new Device();
 		$dev->Cabinet=$_POST['cab'];
 		
-		displayjson($dev->ViewDevicesByCabinet());
+		displayjson($dev->ViewDevicesByCabinet(true));
 	}
 
 	if(isset($_POST['dev'])){
