@@ -1401,8 +1401,8 @@ class Device {
 
 		if($includechildren){
 			$sql="SELECT * FROM fac_Device WHERE ParentDevice IN (SELECT DeviceID FROM 
-				fac_Device WHERE Cabinet=1) UNION SELECT * FROM fac_Device WHERE 
-				Cabinet=$this->Cabinet ORDER BY ParentDevice ASC, Position DESC;";
+				fac_Device WHERE Cabinet=$this->Cabinet) UNION SELECT * FROM fac_Device 
+				WHERE Cabinet=$this->Cabinet ORDER BY ParentDevice ASC, Position DESC;";
 		}else{		
 			$sql="SELECT * FROM fac_Device WHERE Cabinet=$this->Cabinet AND Cabinet!=0 
 				ORDER BY Position DESC;";
