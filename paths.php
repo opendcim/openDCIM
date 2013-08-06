@@ -7,7 +7,7 @@
 	$user->UserID = $_SERVER['REMOTE_USER'];
 	$user->GetUserRights();
 	
-	if(!$user->ContactAdmin){
+	if(!$user->ReadAccess){
 		// No soup for you.
 		header('Location: '.redirect());
 		exit;
@@ -228,7 +228,7 @@
 					$t=5;
 					for ($i=sizeof($devList); $i>1; $i--){
 						$path.=str_repeat("\t",$t++)."<td>\n";
-						$path.=str_repeat("\t",$t++)."<table class=disp>\n";
+						$path.=str_repeat("\t",$t++)."<table>\n";
 						$path.=str_repeat("\t",$t++)."<tr>\n";
 						$path.=str_repeat("\t",$t--)."<th colspan=2>";
 						$path.="<a href=\"devices.php?deviceid={$devList[$i]->DeviceID}\">{$devList[$i]->Label}</a>";
@@ -298,7 +298,7 @@
 					$t=5;
 					for ($i=sizeof($devList); $i>1; $i--){
 						$path.=str_repeat("\t",$t++)."<td>\n";
-						$path.=str_repeat("\t",$t++)."<table class=disp>\n";
+						$path.=str_repeat("\t",$t++)."<table>\n";
 						$path.=str_repeat("\t",$t++)."<tr>\n";
 						$path.=str_repeat("\t",$t--)."<th colspan=2>";
 						$path.="<a href=\"devices.php?deviceid={$devList[$i]->DeviceID}\">{$devList[$i]->Label}</a>";
@@ -372,26 +372,26 @@
 						$cab=new Cabinet();
 						$cab->CabinetID=$devList[sizeof($devList)]->Cabinet;
 						$cab->GetCabinet();
-						$path.=__("Cabinet").": <a href='cabnavigator.php?cabinetid=".$cab->CabinetID."'>".$cab->Location."</a>";
-						$path.="</th>\n\t\t\t\t</tr>\n\t\t\t\t<tr>\n\t\t\t\t\t<td>U:".$devList[sizeof($devList)]->Position."</td>\n";
+						$path.=__("Cabinet").": <a href=\"cabnavigator.php?cabinetid=$cab->CabinetID\">$cab->Location</a>";
+						$path.="</th>\n\t\t\t\t</tr>\n\t\t\t\t<tr>\n\t\t\t\t\t<td>U:{$devList[sizeof($devList)]->Position}</td>\n";
 						
 						//lineage
 						$t=5;
 						for ($i=sizeof($devList); $i>1; $i--){
 							$path.=str_repeat("\t",$t++)."<td>\n";
-							$path.=str_repeat("\t",$t++)."<table class=disp>\n";
+							$path.=str_repeat("\t",$t++)."<table>\n";
 							$path.=str_repeat("\t",$t++)."<tr>\n";
 							$path.=str_repeat("\t",$t--)."<th colspan=2>";
-							$path.="<a href='devices.php?deviceid=".$devList[$i]->DeviceID."'>".$devList[$i]->Label."</a>";
+							$path.="<a href=\"devices.php?deviceid={$devList[$i]->DeviceID}\">".$devList[$i]->Label."</a>";
 							$path.="</th>\n";
 							$path.=str_repeat("\t",$t)."</tr>\n";
 							$path.=str_repeat("\t",$t++)."<tr>\n";
-							$path.=str_repeat("\t",$t)."<td>Slot:".$devList[$i-1]->Position."</td>\n";
+							$path.=str_repeat("\t",$t)."<td>Slot:{$devList[$i-1]->Position}</td>\n";
 						}
 						
 						//device
-						$path.=str_repeat("\t",$t--)."<td style='background-color: yellow;'>".
-								"<a href='devices.php?deviceid=".$dev->DeviceID."'>".$dev->Label.
+						$path.=str_repeat("\t",$t--)."<td>".
+								"<a href=\"devices.php?deviceid=$dev->DeviceID\">$dev->Label".
 								"</a><br>".__("Port").": ".abs($cp->PortNumber)."</td>\n";
 						$path.=str_repeat("\t",$t--)."</tr>\n";
 						
@@ -455,7 +455,7 @@
 			$path.= "<br>\n"; 
 			$path.= "<div>\n";
 			//PATH INFO
-			$path.= "<input type=\"hidden\" name=\"elem_path\" value=\"".$elem_path."\">\n";
+			$path.= "<input type=\"hidden\" name=\"elem_path\" value=\"$elem_path\">\n";
 			$path.=$form_eliminar;	
 			$path.= "	<button type=\"submit\" name=\"bot_eliminar\" value=\"delete\">".__("Delete front connections in DataBase")."</button>\n";
 			$path.= "</div>\n";
