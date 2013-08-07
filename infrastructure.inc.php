@@ -310,7 +310,7 @@ class DataCenter {
 				$mapHTML.="<map name=\"datacenter\">\n";
 				 
 				if(is_null($nolinks)){
-					$sql="SELECT * FROM fac_Cabinet WHERE DataCenterID=$this->DataCenterID\";";
+					$sql="SELECT * FROM fac_Cabinet WHERE DataCenterID=$this->DataCenterID;";
 
 					if($racks=$this->query($sql)){ 
 						foreach($racks as $row){
