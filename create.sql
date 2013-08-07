@@ -29,6 +29,33 @@ CREATE TABLE fac_Cabinet (
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
 
 --
+-- Table structure for fac_CabRow
+--
+
+DROP TABLE IF EXISTS fac_CabRow;
+CREATE TABLE fac_CabRow (
+  CabRowID int(11) NOT NULL AUTO_INCREMENT,
+  Name varchar(120) NOT NULL,
+  ZoneID int(11) NOT NULL,
+  PRIMARY KEY (CabRowID)
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+
+--
+-- Table structure for fac_CabContainer
+--
+
+DROP TABLE IF EXISTS fac_Container;
+CREATE TABLE fac_Container (
+  ContainerID int(11) NOT NULL AUTO_INCREMENT,
+  Name varchar(120) NOT NULL,
+  ParentID int(11) NOT NULL DEFAULT '0',
+  DrawingFileName varchar(255) DEFAULT NULL,
+  MapX int(11) NOT NULL,
+  MapY int(11) NOT NULL,
+  PRIMARY KEY (ContainerID)
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+
+--
 -- Table structure for table `fac_CabinetTags`
 --
 
@@ -114,7 +141,8 @@ CREATE TABLE fac_ColorCoding (
   ColorID INT(11) NOT NULL AUTO_INCREMENT,
   Name VARCHAR(20) NOT NULL,
   DefaultNote VARCHAR(40),
-  PRIMARY KEY(ColorID)
+  PRIMARY KEY(ColorID),
+  UNIQUE KEY Name (Name)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 --
@@ -295,6 +323,25 @@ CREATE TABLE fac_Manufacturer (
   PRIMARY KEY (ManufacturerID),
   UNIQUE KEY Name (Name)
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
+
+--
+-- Table structure for table `fac_Ports`
+--
+
+CREATE TABLE fac_Ports (
+  DeviceID int(11) NOT NULL,
+  PortNumber int(11) NOT NULL,
+  Label varchar(40) NOT NULL,
+  MediaID int(11) NOT NULL DEFAULT '0',
+  ColorID int(11) NOT NULL DEFAULT '0',
+  PortNotes varchar(80) NOT NULL,
+  ConnectedDeviceID int(11) DEFAULT NULL,
+  ConnectedPort int(11) DEFAULT NULL,
+  Notes varchar(80) NOT NULL,
+  PRIMARY KEY (DeviceID,PortNumber),
+  UNIQUE KEY LabeledPort (DeviceID,PortNumber,Label),
+  UNIQUE KEY ConnectedDevice (ConnectedDeviceID,ConnectedPort)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 --
 -- Table structure for table `fac_MediaTypes`
@@ -611,6 +658,35 @@ INSERT INTO fac_CabinetToolTip VALUES(NULL, 'WarrantyCo', 'Warranty Company', 0)
 INSERT INTO fac_CabinetToolTip VALUES(NULL, 'WarrantyExpire', 'Warranty Expiration', 0);
 
 --
+-- Add table for cdu tooltips
+--
+
+DROP TABLE IF EXISTS fac_CDUToolTip;
+CREATE TABLE fac_CDUToolTip (
+  SortOrder smallint(6) DEFAULT NULL,
+  Field varchar(20) NOT NULL,
+  Label varchar(30) NOT NULL,
+  Enabled tinyint(1) DEFAULT '1',
+  UNIQUE KEY Field (Field)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+
+--
+-- Add base ToolTip configuration options
+--
+
+INSERT INTO fac_CDUToolTip VALUES(NULL, 'PanelID', 'Source Panel', 0);
+INSERT INTO fac_CDUToolTip VALUES(NULL, 'PanelVoltage', 'Voltage', 0);
+INSERT INTO fac_CDUToolTip VALUES(NULL, 'BreakerSize', 'Breaker Size', 0);
+INSERT INTO fac_CDUToolTip VALUES(NULL, 'PanelPole', 'Panel Pole Number', 0);
+INSERT INTO fac_CDUToolTip VALUES(NULL, 'InputAmperage', 'Input Amperage', 0);
+INSERT INTO fac_CDUToolTip VALUES(NULL, 'Model', 'Model', 0);
+INSERT INTO fac_CDUToolTip VALUES(NULL, 'IPAddress', 'IP Address', 0);
+INSERT INTO fac_CDUToolTip VALUES(NULL, 'Uptime', 'Uptime', 0);
+INSERT INTO fac_CDUToolTip VALUES(NULL, 'FirmwareVersion', 'Firmware Version', 0);
+INSERT INTO fac_CDUToolTip VALUES(NULL, 'SNMPCommunity', 'SNMP Community', 0);
+INSERT INTO fac_CDUToolTip VALUES(NULL, 'NumOutlets', 'Used/Total Connections', 0);
+
+--
 -- Table structure and insert script for table fac_Config
 --
 
@@ -637,6 +713,7 @@ INSERT INTO fac_Config VALUES
 	('CriticalColor','#cc0000','HexColor','string','#cc0000'),
 	('CautionColor','#cccc00','HexColor','string','#cccc00'),
 	('GoodColor','#0a0','HexColor','string','#0a0'),
+	('MediaEnforce', 'Disabled', 'Enabled/Disabled', 'string', 'Disabled')
 	('DefaultPanelVoltage','208','Volts','int','208'),
 	('annualCostPerUYear','200','Dollars','float','200'),
 	('annualCostPerWattYear','0.7884','Dollars','float','0.7884'),
@@ -672,7 +749,8 @@ INSERT INTO fac_Config VALUES
 	('snmpwalk', '/usr/bin/snmpwalk', 'path', 'string', '/usr/bin/snmpwalk'),
 	('snmpget', '/usr/bin/snmpget', 'path', 'string', '/usr/bin/snmpget'),
 	('cut', '/bin/cut', 'path', 'string', '/bin/cut'),
- 	('ToolTips', 'Disabled', 'Enabled/Disabled', 'string', 'Disabled');
+ 	('ToolTips', 'Disabled', 'Enabled/Disabled', 'string', 'Disabled'),
+	('CDUToolTips', 'Disabled', 'Enabled/Disabled', 'string', 'Disabled');
 
 --
 -- Pre-fill some of the templates
@@ -690,29 +768,3 @@ INSERT INTO fac_CDUTemplate set ManufacturerID=(select ManufacturerID from fac_M
 INSERT INTO fac_CDUTemplate set ManufacturerID=(select ManufacturerID from fac_Manufacturer where Name='ServerTech'), Model="Generic Single-Phase CDU", Managed=TRUE, VersionOID=".1.3.6.1.4.1.1718.3.1.1.0", Multiplier=100, OID1=".1.3.6.1.4.1.1718.3.2.2.1.7.1.1", OID2="", OID3="", ProcessingProfile="SingleOIDAmperes", Voltage="", Amperage="", NumOutlets="";
 INSERT INTO fac_CDUTemplate set ManufacturerID=(select ManufacturerID from fac_Manufacturer where Name='ServerTech'), Model="Generic 3-Phase CDU", Managed=TRUE, VersionOID=".1.3.6.1.4.1.1718.3.1.1.0", Multiplier=100, OID1=".1.3.6.1.4.1.1718.3.2.2.1.7.1.1", OID2=".1.3.6.1.4.1.1718.3.2.2.1.7.1.2", OID3=".1.3.6.1.4.1.1718.3.2.2.1.7.1.3", ProcessingProfile="Convert3PhAmperes", Voltage="", Amperage="", NumOutlets="";
 
---
--- Table structure for fac_CabRow
---
-
-DROP TABLE IF EXISTS fac_CabRow;
-CREATE TABLE fac_CabRow (
-  CabRowID int(11) NOT NULL AUTO_INCREMENT,
-  Name varchar(120) NOT NULL,
-  ZoneID int(11) NOT NULL,
-  PRIMARY KEY (CabRowID)
-) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
-
---
--- Table structure for fac_CabRow
---
-
-DROP TABLE IF EXISTS fac_Container;
-CREATE TABLE fac_Container (
-  ContainerID int(11) NOT NULL AUTO_INCREMENT,
-  Name varchar(120) NOT NULL,
-  ParentID int(11) NOT NULL DEFAULT '0',
-  DrawingFileName varchar(255) DEFAULT NULL,
-  MapX int(11) NOT NULL,
-  MapY int(11) NOT NULL,
-  PRIMARY KEY (ContainerID)
-) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
