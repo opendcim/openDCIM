@@ -1411,7 +1411,7 @@ class Device {
 		$deviceList = array();
 
 		foreach($dbh->query($sql) as $deviceRow){
-			$deviceList[]=Device::DeviceRowToObject($deviceRow);
+			$deviceList[$row["DeviceID"]]=Device::DeviceRowToObject($deviceRow);
 		}
 
 		return $deviceList;
