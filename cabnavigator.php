@@ -287,7 +287,7 @@ function get_cabinet_owner_color($cabinet, &$deptswithcolor) {
 
 		if($device->Height<1){
 			if ( $user->canRead( $device->Owner )) {
-				$zeroheight.="				<a href=\"devices.php?deviceid=$devID\">$highlight $device->Label</a>\n";
+				$zeroheight.="				<a href=\"devices.php?deviceid=$device->DeviceID\">$highlight $device->Label</a>\n";
 			} else {
 				$zeroheight.="              $highlight $device->Label\n";
 			}
@@ -332,9 +332,9 @@ function get_cabinet_owner_color($cabinet, &$deptswithcolor) {
 			if($errclass!=''){$heighterr="yup";}
 			if($i==$devTop){
 				if ( $user->canRead( $device->Owner )) {
-					$body.="<tr><td$errclass>$i</td><td class=\"device$reserved dept$device->Owner\" rowspan=$device->Height data=$devID><a href=\"devices.php?deviceid=$devID\">$highlight $device->Label</a></td></tr>\n";
+					$body.="<tr><td$errclass>$i</td><td class=\"device$reserved dept$device->Owner\" rowspan=$device->Height data=$device->DeviceID><a href=\"devices.php?deviceid=$device->DeviceID\">$highlight $device->Label</a></td></tr>\n";
 				} else {
-					$body.="<tr><td$errclass>$i</td><td class=\"device$reserved dept$device->Owner\" rowspan=$device->Height data=$devID>$highlight $device->Label</td></tr>\n";
+					$body.="<tr><td$errclass>$i</td><td class=\"device$reserved dept$device->Owner\" rowspan=$device->Height data=$device->DeviceID>$highlight $device->Label</td></tr>\n";
 				}
 			}else{
 				$body.="<tr><td$errclass>$i</td></tr>\n";
