@@ -2292,10 +2292,10 @@ class ESX {
 
 		$vmList=array();
 
-		$namesList = snmp2_real_walk( $serverIP, $community, ".1.3.6.1.4.1.6876.2.1.1.2" );
-		$statesList = snmp2_real_walk( $serverIP, $community, ".1.3.6.1.4.1.6876.2.1.1.6" );
+		$namesList = @snmp2_real_walk( $serverIP, $community, ".1.3.6.1.4.1.6876.2.1.1.2" );
+		$statesList = @snmp2_real_walk( $serverIP, $community, ".1.3.6.1.4.1.6876.2.1.1.6" );
 
-		if ( count($namesList) > 0  && count($namesList) == count($statesList)){
+		if ( is_array( $namesList ) && count($namesList) > 0  && count($namesList) == count($statesList)){
 			$tempList=array_combine($namesList,$statesList);
 		} else {
 			$tempList=array();
