@@ -594,9 +594,9 @@
 							var newitem=blankmediarow.clone();
 							newitem.find('div:nth-child(2) input').val(mt.val()).attr('data',data.trim());
 							newitem.find('div:nth-child(3) select').replaceWith(mtcc.clone());
-							newitem.find('div:nth-child(3) select').val(mtcc.val());
 							bindmediarow(newitem);
 							row.before(newitem);
+							newitem.find('div:nth-child(3) select').val(mtcc.val()).focus();
 							if(addrem.attr('id')=='newline'){
 								mt.val('');
 								mtcc.val('');
@@ -768,9 +768,9 @@
 							}else{ // created
 								var newitem=blankrow.clone();
 								newitem.find('div:nth-child(2) input').val(cc.val()).attr('data',data.trim());
-								newitem.find('div:nth-child(3) input').val(ccdn.val());
 								bindrow(newitem);
 								row.before(newitem);
+								newitem.find('div:nth-child(3) input').val(ccdn.val()).focus();
 								if(addrem.attr('id')=='newline'){
 									cc.val('');
 									ccdn.val('');
