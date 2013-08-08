@@ -920,6 +920,8 @@ class Device {
 	var $Notes;
 	var $Reservation;
 	var $Rights;
+	var $HalfDepth ;
+	var $BackSide ;
 	
 	function MakeSafe() {
 		$this->DeviceID=intval($this->DeviceID);
@@ -951,6 +953,8 @@ class Device {
 		$this->WarrantyExpire=addslashes($this->WarrantyExpire);
 		$this->Notes=addslashes(trim($this->Notes));
 		$this->Reservation=intval($this->Reservation);
+		$this->HalfDepth = intval( $this->HalfDepth );
+		$this->BackSide = intval( $this->BackSide );
 	}
 	
 	function MakeDisplay() {
@@ -1004,7 +1008,9 @@ class Device {
 		@$dev->WarrantyExpire=$dbRow["WarrantyExpire"];
 		$dev->Notes=$dbRow["Notes"];
 		$dev->Reservation=$dbRow["Reservation"];
-
+		$dev->HalfDepth=$dbRow["HalfDepth"];
+		$dev->BackSide=$dbRow["BackSide"];
+		
 		$dev->MakeDisplay();
 		$dev->FilterRights();
 
@@ -1052,7 +1058,7 @@ class Device {
 			MfgDate=\"".date("Y-m-d", strtotime($this->MfgDate))."\", 
 			InstallDate=\"".date("Y-m-d", strtotime($this->InstallDate))."\", WarrantyCo=\"$this->WarrantyCo\", 
 			WarrantyExpire=\"".date("Y-m-d", strtotime($this->WarrantyExpire))."\", Notes=\"$this->Notes\", 
-			Reservation=$this->Reservation;";
+			Reservation=$this->Reservation, HalfDepth=$this->HalfDepth, BackSide=$this->BackSide;";
 
 		if ( ! $dbh->exec( $sql ) ) {
 			$info = $dbh->errorInfo();
@@ -1317,7 +1323,7 @@ class Device {
 			MfgDate=\"".date("Y-m-d", strtotime($this->MfgDate))."\", 
 			InstallDate=\"".date("Y-m-d", strtotime($this->InstallDate))."\", WarrantyCo=\"$this->WarrantyCo\", 
 			WarrantyExpire=\"".date("Y-m-d", strtotime($this->WarrantyExpire))."\", Notes=\"$this->Notes\", 
-			Reservation=$this->Reservation WHERE DeviceID=$this->DeviceID;";
+			Reservation=$this->Reservation, HalfDepth=$this->HalfDepth, BackSide=$this->BackSide WHERE DeviceID=$this->DeviceID;";
 
 		if(!$dbh->query($sql)){
 			$info=$dbh->errorInfo();
@@ -1785,7 +1791,6 @@ class Device {
 		return;
 	}
 	
-	//JMGA added
 	function GetDeviceCabinetID(){
 		$tmpDev = new Device();
 		$tmpDev->DeviceID = $this->DeviceID;
@@ -1797,9 +1802,7 @@ class Device {
 		}
 		return $tmpDev->Cabinet;	
 	}
-	//END JMGA
-	
-	//JMGA added
+
 	function GetDeviceLineage() {
 		$devList=array();
 		$num=1;
@@ -1815,7 +1818,64 @@ class Device {
 		}
 		return $devList;	
 	}
-	//END JMGA
+
+	function GetRootDeviceID(){
+		$tmpDev = new Device();
+		$tmpDev->DeviceID = $this->DeviceID;
+		$tmpDev->GetDevice();
+		
+		while ( $tmpDev->ParentDevice <> 0) {
+			$tmpDev->DeviceID = $tmpDev->ParentDevice;
+			$tmpDev->GetDevice();
+		}
+		return $tmpDev->DeviceID;	
+	}
+	
+	function GetDeviceTotalPower(){
+	//calculate device power including child devices power
+		$TotalPower=0;
+		//own device power
+		if($this->NominalWatts>0){
+			$TotalPower=$this->NominalWatts;
+		}elseif ($this->TemplateID>0){
+			$templ=new DeviceTemplate();
+			$templ->TemplateID=$this->TemplateID;
+			$templ->GetTemplateByID();
+			$TotalPower=$templ->Wattage;
+		}
+		
+		//child device power
+		if ( $this->ChassisSlots > 0 ) {
+			$childList = $this->GetDeviceChildren();
+			foreach ( $childList as $tmpDev ) {
+				$TotalPower+=$tmpDev->GetDeviceTotalPower();
+			}
+		}
+		return $TotalPower;	
+	}
+
+	function GetDeviceTotalWeight(){
+	//calculate device weight including child devices weight
+		
+		$TotalWeight=0;
+		
+		//own device weight
+		if ($this->TemplateID>0){
+			$templ=new DeviceTemplate();
+			$templ->TemplateID=$this->TemplateID;
+			$templ->GetTemplateByID();
+			$TotalWeight=$templ->Weight;
+		}
+		
+		//child device weight
+		if ( $this->ChassisSlots > 0 ) {
+			$childList = $this->GetDeviceChildren();
+			foreach ( $childList as $tmpDev ) {
+				$TotalWeight+=$tmpDev->GetDeviceTotalWeight();
+			}
+		}
+		return $TotalWeight;	
+	}
 }
 
 class DevicePorts {

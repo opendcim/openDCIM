@@ -262,7 +262,9 @@
 					$dev->ESX=(isset($_POST['esx']))?$_POST['esx']:0;
 					$dev->Reservation=(isset($_POST['reservation']))?($_POST['reservation']=="on")?1:0:0;
 					$dev->NominalWatts=$_POST['nominalwatts'];
-
+					$dev->HalfDepth=(isset($_POST['halfdepth']))?($_POST['halfdepth']=="on")?1:0:0;
+					$dev->BackSide=(isset($_POST['backside']))?($_POST['backside']=="on")?1:0:0;
+					
 					if(($dev->TemplateID >0)&&(intval($dev->NominalWatts==0))){$dev->UpdateWattageFromTemplate();}
 			
 					$dev->SetTags($tagarray);
@@ -282,7 +284,7 @@
 					$dev->Cabinet=$_POST['cabinetid'];
 					$dev->Position=$_POST['position'];
 					$dev->Height=$_POST['height'];
-					$dev->Ports=$_POST['ports'];
+					//$dev->Ports=$_POST['ports'];  already done below
 					$dev->TemplateID=$_POST['templateid'];
 					$dev->DeviceType=$_POST['devicetype'];
 					$dev->MfgDate=date('Y-m-d',strtotime($_POST['mfgdate']));
@@ -345,7 +347,9 @@
 				$pdu=new PowerDistribution();
 				$panel=new PowerPanel();
 
-				$pwrConnection->DeviceID=($dev->ParentDevice>0)?$dev->ParentDevice:$dev->DeviceID;
+				//$pwrConnection->DeviceID=($dev->ParentDevice>0)?$dev->ParentDevice:$dev->DeviceID;
+				//JMGA: changed for multichassis
+				$pwrConnection->DeviceID=($dev->ParentDevice>0)?$dev->GetRootDeviceID():$dev->DeviceID;
 				$pwrCords=$pwrConnection->GetConnectionsByDevice();
 
 				if($dev->DeviceType=='Switch'){
@@ -378,7 +382,9 @@
 		
 		$parentList=$pDev->GetParentDevices();
 		
-		$cab->CabinetID=$pDev->Cabinet;
+		//$cab->CabinetID=$pDev->Cabinet;
+		//JMGA: changed for multichassis
+		$cab->CabinetID=$pDev->GetDeviceCabinetID($facDB);
 		$cab->GetCabinet();
 		$chassis="Chassis";
 
@@ -432,7 +438,7 @@
 			}
 		}
 	}
-	$title=($dev->Label!='')?"$dev->Label :: $dev->DeviceID":"openDCIM Device Maintenance";
+	$title=($dev->Label!='')?"$dev->Label :: $dev->DeviceID":__("openDCIM Device Maintenance");
 
 	function buildesxtable($deviceid){
 		$esx=new ESX();
@@ -1470,13 +1476,27 @@ echo '			</select>
 			</div>
 		</div>
 		<div>
+		   <div><label for="height">',__("Height"),'</label></div>
+		   <div><input type="number" class="required,validate[custom[onlyNumberSp]]" name="height" id="height" size="4" value="',$dev->Height,'"></div>
+		</div>
+		<div>
 		   <div><label for="position">',__("Position"),'</label></div>
 		   <div><input type="number" class="required,validate[custom[onlyNumberSp],min[1],max[',$cab->CabinetHeight,']]" name="position" id="position" size="4" value="',$dev->Position,'"></div>
 		</div>
-		<div>
-		   <div><label for="height">',__("Height"),'</label></div>
-		   <div><input type="number" class="required,validate[custom[onlyNumberSp]]" name="height" id="height" size="4" value="',$dev->Height,'"></div>
+		';
+
+		//JMGA: child devices not use HalfDepth
+		if($dev->ParentDevice==0){
+echo '		<div>
+			<div><label for="halfdepth">'.__("Half Depth").'</label></div>
+			<div><input type="checkbox" name="halfdepth" id="halfdepth"'.(($dev->HalfDepth)?" checked":"").'></div>
 		</div>';
+		}
+echo '		<div>
+			<div><label for="backside">'.__("Back Side").'</label></div>
+			<div><input type="checkbox" name="backside" id="backside"'.(($dev->BackSide)?" checked":"").'></div>
+		</div>';
+
 
 		// Blade devices don't have data ports unless they're a switch
 		if($dev->ParentDevice==0||($dev->ParentDevice>0&&$dev->DeviceType=='Switch')){
@@ -1498,13 +1518,15 @@ echo '		<div>
 		   <div><input type="number" class="optional,validate[custom[onlyNumberSp]]" name="powersupplycount" id="powersupplycount" size=4 value="',$dev->PowerSupplyCount,'"></div>
 		</div>';
 		}else{
+			
+			/*JMGA changed the criterion of front/rear: no longer in chassisslots, but BackSide
 			echo '		<div>
 			<div><label for="powersupplycount">',__("Front / Rear"),'</label></div>
 			<div><select id="chassisslots" name="chassisslots">
 		   		<option value=0'.(($dev->ChassisSlots==0)?' selected':'').'>',__("Front"),'</option>
 				<option value=1'.(($dev->ChassisSlots==1)?' selected':'').'>',__("Rear"),'</option>
 			</select></div>
-		</div>';
+		</div>'; */
 		}
 
 echo '		<div>
@@ -1573,7 +1595,7 @@ echo '	</div>
 		</div>';
 
 	foreach($childList as $chDev){
-		print "\t\t<div".(($chDev->ChassisSlots)?' class="greybg"':'').">
+		print "\t\t<div".(($chDev->BackSide)?' class="greybg"':'').">
 			<div>$chDev->Position</div>
 			<div>$chDev->Height</div>
 			<div><a href=\"devices.php?deviceid=$chDev->DeviceID\">$chDev->Label</a></div>

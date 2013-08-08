@@ -251,40 +251,9 @@ function get_cabinet_owner_color($cabinet, &$deptswithcolor) {
 	$heighterr="";
 	$ownership_unassigned = false;
 	$template_unassigned = false;
-	while(list($devID,$device)=each($devList)){
-		$devTop=$device->Position + $device->Height - 1;
-		
-		$templ->TemplateID=$device->TemplateID;
-		$templ->GetTemplateByID();
-
-		$tempDept->DeptID=$device->Owner;
-		$tempDept->GetDeptByID();
-
-		// If a dept has been changed from white then it needs to be added to the stylesheet, legend, and device
-		if(!$device->Reservation && strtoupper($tempDept->DeptColor)!="#FFFFFF"){
-			// Fill array with deptid and color so we can process the list once for the legend and style information
-			$deptswithcolor[$device->Owner]["color"]=$tempDept->DeptColor;
-			$deptswithcolor[$device->Owner]["name"]=$tempDept->Name;
-		}
-
-		$highlight="<blink><font color=red>";
-		if($device->TemplateID==0){$highlight.="(T)";
-                  $template_unassigned = true;}
-		if($device->Owner==0){$highlight.="(O)";
-                  $ownership_unassigned = true;}
-		$highlight.= "</font></blink>";
-
-		if($device->NominalWatts >0){
-			$totalWatts+=$device->NominalWatts;
-		}elseif($device->TemplateID!=0 && $templ->Wattage>0){
-			$totalWatts+=$templ->Wattage;
-		}
-		
-		if($device->TemplateID!=0){
-			$totalWeight+=$templ->Weight;
-			$totalMoment+=($templ->Weight*($device->Position+($device->Height/2)));
-		}
-
+	$deptswithcolor=array();
+	$backside=false;
+	while(list($dev_index,$device)=each($devList)){
 		if($device->Height<1){
 			if ( $user->canRead( $device->Owner )) {
 				$zeroheight.="				<a href=\"devices.php?deviceid=$device->DeviceID\">$highlight $device->Label</a>\n";
@@ -293,54 +262,72 @@ function get_cabinet_owner_color($cabinet, &$deptswithcolor) {
 			}
 		}
 		
-		// Chassis devices shouldn't ever be 0u in height
-		if($device->DeviceType=="Chassis"){
-			$childList=$device->GetDeviceChildren();
-			$childTempl=new DeviceTemplate();
-			foreach($childList as $childDev){
-				$childTempl->TemplateID=$childDev->TemplateID;
-				$childTempl->GetTemplateByID();
-				if($childDev->NominalWatts>0){
-					$totalWatts+=$childDev->NominalWatts;
-				} elseif($childDev->TemplateID!=0 && $childTempl->Wattage>0){
-					$totalWatts+=$childTempl->Wattage;
-				}
-				if($childDev->TemplateID!=0){
-					$totalWeight+=$childTempl->Weight;
-					//Child device's position is parent's position
-					$totalMoment+=($childTempl->Weight*($device->Position+($device->Height/2)));
+		//JMGA only fulldepth devices and front devices
+		if (!$device->HalfDepth || !$device->BackSide){
+			if ($device->HalfDepth) $backside=true;
+			$devTop=$device->Position + $device->Height - 1;
+			
+			$templ->TemplateID=$device->TemplateID;
+			$templ->GetTemplateByID();
+	
+			$tempDept->DeptID=$device->Owner;
+			$tempDept->GetDeptByID();
+	
+			// If a dept has been changed from white then it needs to be added to the stylesheet, legend, and device
+			if(!$device->Reservation && strtoupper($tempDept->DeptColor)!="#FFFFFF"){
+				// Fill array with deptid and color so we can process the list once for the legend and style information
+				$deptswithcolor[$device->Owner]["color"]=$tempDept->DeptColor;
+				$deptswithcolor[$device->Owner]["name"]=$tempDept->Name;
+			}
+	
+			$highlight="<blink><font color=red>";
+			if($device->TemplateID==0){
+				$highlight.="(T)";
+	            $template_unassigned = true;
+			}
+			if($device->Owner==0){
+				$highlight.="(O)";
+	            $ownership_unassigned = true;
+			}
+			$highlight.= "</font></blink>";
+			
+			$totalWatts+=$device->GetDeviceTotalPower();
+			$DeviceTotalWeight=$device->GetDeviceTotalWeight();
+			$totalWeight+=$DeviceTotalWeight;
+			$totalMoment+=($DeviceTotalWeight*($device->Position+($device->Height/2)));
+
+			$reserved=($device->Reservation==false)?"":" reserved";
+			if($devTop<$currentHeight && $currentHeight>0){
+				for($i=$currentHeight;($i>$devTop);$i--){
+					$errclass=($i>$cab->CabinetHeight)?' class="error"':'';
+					if($errclass!=''){$heighterr="yup";}
+					if($i==$currentHeight){
+						$blankHeight=$currentHeight-$devTop;
+						if($devTop==-1){--$blankHeight;}
+						$body.="<tr><td$errclass>$i</td><td class=\"freespace\" rowspan=$blankHeight>&nbsp;</td></tr>\n";
+					} else {
+						$body.="<tr><td$errclass>$i</td></tr>\n";
+						if($i==1){break;}
+					}
 				}
 			}
-		}
-		$reserved=($device->Reservation==false)?"":" reserved";
-		if($devTop<$currentHeight && $currentHeight>0){
-			for($i=$currentHeight;($i>$devTop);$i--){
+			for($i=$devTop;$i>=$device->Position;$i--){
 				$errclass=($i>$cab->CabinetHeight)?' class="error"':'';
 				if($errclass!=''){$heighterr="yup";}
-				if($i==$currentHeight){
-					$blankHeight=$currentHeight-$devTop;
-					if($devTop==-1){--$blankHeight;}
-					$body.="<tr><td$errclass>$i</td><td class=\"freespace\" rowspan=$blankHeight>&nbsp;</td></tr>\n";
-				} else {
-					$body.="<tr><td$errclass>$i</td></tr>\n";
-					if($i==1){break;}
+				if($i==$devTop){
+					if ( $user->canRead( $device->Owner )) {
+						$body.="<tr><td$errclass>$i</td><td class=\"device$reserved dept$device->Owner\" rowspan=$device->Height data=$device->DeviceID><a href=\"devices.php?deviceid=$device->DeviceID\">$highlight $device->Label</a></td></tr>\n";
+					} else {
+						$body.="<tr><td$errclass>$i</td><td class=\"device$reserved dept$device->Owner\" rowspan=$device->Height data=$device->DeviceID>$highlight $device->Label</td></tr>\n";
+					}
+				}else{
+ 					$body.="<tr><td$errclass>$i</td></tr>\n";
 				}
 			}
-		}
-		for($i=$devTop;$i>=$device->Position;$i--){
-			$errclass=($i>$cab->CabinetHeight)?' class="error"':'';
-			if($errclass!=''){$heighterr="yup";}
-			if($i==$devTop){
-				if ( $user->canRead( $device->Owner )) {
-					$body.="<tr><td$errclass>$i</td><td class=\"device$reserved dept$device->Owner\" rowspan=$device->Height data=$device->DeviceID><a href=\"devices.php?deviceid=$device->DeviceID\">$highlight $device->Label</a></td></tr>\n";
-				} else {
-					$body.="<tr><td$errclass>$i</td><td class=\"device$reserved dept$device->Owner\" rowspan=$device->Height data=$device->DeviceID>$highlight $device->Label</td></tr>\n";
-				}
-			}else{
-				$body.="<tr><td$errclass>$i</td></tr>\n";
-			}
-		}
-		$currentHeight=$device->Position - 1;
+			$currentHeight=$device->Position - 1;
+		} else {
+			$backside=true;
+		}	
 	}
 
 	// Fill in to the bottom
@@ -353,13 +340,95 @@ function get_cabinet_owner_color($cabinet, &$deptswithcolor) {
 			$body.="<tr><td>$i</td></tr>\n";
 		}
 	}
-
+	
+	if($backside){
+		$currentHeight=$cab->CabinetHeight;
+		reset($devList);
+		$body.="</table></div><div class=\"cabinet\">
+	<table>
+		<tr><th colspan=2 $cab_color >".__("Cabinet")." $cab->Location (".__("back").")</th></tr>
+		<tr><td>".__("Pos")."</td><td>".__("Device")."</td></tr>\n";
+	
+		while(list($dev_index,$device)=each($devList)){
+			if (!$device->HalfDepth || $device->BackSide){
+				$devTop=$device->Position + $device->Height - 1;
+				
+				$templ->TemplateID=$device->TemplateID;
+				$templ->GetTemplateByID();
+		
+				$tempDept->DeptID=$device->Owner;
+				$tempDept->GetDeptByID();
+		
+				// If a dept has been changed from white then it needs to be added to the stylesheet, legend, and device
+				if(strtoupper($tempDept->DeptColor)!="#FFFFFF"){
+					// Fill array with deptid and color so we can process the list once for the legend and style information
+					$deptswithcolor[$device->Owner]["color"]=$tempDept->DeptColor;
+					$deptswithcolor[$device->Owner]["name"]=$tempDept->Name;
+				}
+		
+				$highlight="<blink><font color=red>";
+				if($device->TemplateID==0){$highlight.="(T)";}
+				if($device->Owner==0){$highlight.="(O)";}
+				$highlight.= "</font></blink>";
+		
+				if ($device->HalfDepth) {
+					// (if fulldepth device, already accounted in frontside)
+					$totalWatts+=$device->GetDeviceTotalPower();
+					$DeviceTotalWeight=$device->GetDeviceTotalWeight();
+					$totalWeight+=$DeviceTotalWeight;
+					$totalMoment+=($DeviceTotalWeight*($device->Position+($device->Height/2)));
+				}
+				
+				$reserved=($device->Reservation==false)?"":" reserved";
+				if($devTop<$currentHeight){
+					for($i=$currentHeight;$i>$devTop;$i--){
+						$errclass=($i>$cab->CabinetHeight)?' class="error"':'';
+						if($errclass!=''){$heighterr="yup";}
+						if($i==$currentHeight){
+							$blankHeight=$currentHeight-$devTop;
+							$body.="<tr><td $errclass>$i</td><td class=\"freespace\" rowspan=$blankHeight>&nbsp;</td></tr>\n";
+						} else {
+							$body.="<tr><td $errclass>$i</td></tr>\n";
+						}
+					}
+				}
+				for($i=$devTop;$i>=$device->Position;$i--){
+					$errclass=($i>$cab->CabinetHeight)?' class="error"':'';
+					if($errclass!=''){$heighterr="yup";}
+					if($i==$devTop){
+						if ( $user->canRead( $device->Owner )) {
+							$body.="<tr><td$errclass>$i</td><td class=\"device$reserved dept$device->Owner\" rowspan=$device->Height data=$device->DeviceID>".
+								"<a href=\"devices.php?deviceid=$device->DeviceID\">$highlight $device->Label".
+								(!$device->BackSide?" (".__("back").")":"")."</a></td></tr>\n";
+						} else {
+							$body.="<tr><td$errclass>$i</td><td class=\"device$reserved dept$device->Owner\" rowspan=$device->Height data=$device->DeviceID>".
+								"$highlight $device->Label".(!$device->BackSide?" (".__("trasera").")":"")."</td></tr>\n";
+						}
+					}else{
+						$body.="<tr><td$errclass>$i</td></tr>\n";
+					}
+				}
+				$currentHeight=$device->Position - 1;
+			}
+		}
+		// Fill in to the bottom
+		for($i=$currentHeight;$i>0;$i--){
+			if($i==$currentHeight){
+				$blankHeight=$currentHeight+1;
+	
+				$body.="<tr><td>$i</td><td class=\"freespace\" rowspan=$blankHeight>&nbsp;</td></tr>\n";
+			}else{
+				$body.="<tr><td>$i</td></tr>\n";
+			}
+		}
+	}	
+	
 	if($heighterr!=''){$legend.='<p>* - '.__("Above defined rack height").'</p>';}
 
 	$CenterofGravity=@round($totalMoment/$totalWeight);
 	
 	$used=$cab->CabinetOccupancy($cab->CabinetID);
-	@$SpacePercent=number_format($used/$cab->CabinetHeight*100,0);
+	@$SpacePercent=($cab->CabinetHeight>0)?number_format($used/$cab->CabinetHeight*100,0):0;
 	@$WeightPercent=number_format($totalWeight/$cab->MaxWeight*100,0);
 	@$PowerPercent=number_format(($totalWatts/1000)/$cab->MaxKW*100,0);
 	$measuredWatts = $pdu->GetWattageByCabinet( $cab->CabinetID );
@@ -536,8 +605,7 @@ $body.='</table>
 		$head.='		</style>';
 	}
 
-	$title=($cab->Location!='')?"$cab->Location :: $dc->Name":'Facilities Cabinet Maintenance';
-
+	$title=($cab->Location!='')?"$cab->Location :: $dc->Name":__("Facilities Cabinet Maintenance");
 ?>
 <!doctype html>
 <html>
