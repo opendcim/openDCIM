@@ -110,32 +110,29 @@
 
 			//Search device
 			$dev=new Device();
-			$dev->DeviceID=$_POST['devid1'];
-			$devList1=$dev->GetDevice();
+			$dev->DeviceID=intval($_POST['devid1']);
 			
-			if (isset($_POST['devid1']) && $_POST['devid1']!=0){
+			if ($dev->GetDevice()){
 				$pp=new PlannedPath();
-				$pp->devID1=intval($_POST['devid1']);
+				$pp->devID1=$dev->DeviceID;
 				$pp->port1=intval($_POST['port1']);
-				$label1=$devList1[$pp->devID1]->Label;
+				$label1=$dev->Label;
 			}
 			
 			//FINAL DEVICE
 				
 			//Search device
 			$dev=new Device();
-			$dev->DeviceID=$_POST['devid2'];
-			$devList2=$dev->GetDevice();
+			$dev->DeviceID=intval($_POST['devid2']);
 			
-			if (isset($_POST['devid2']) && $_POST['devid2']!=0 &&
-				isset($pp)){
-				$pp->devID2=intval($_POST['devid2']);
+			if ($dev->GetDevice() && isset($pp)){
+				$pp->devID2=$dev->DeviceID;
 				$pp->port2=intval($_POST['port2']);
-				$label2=$devList2[$pp->devID2]->Label;
+				$label2=$dev->Label;
 			}
 			
 			if ($status==""){		
-				$pathid=$label1."[".intval($_POST['port1'])."]---".$label2."[".intval($_POST['port2'])."]";
+				$pathid=$label1."[".$pp->port1."]---".$label2."[".$pp->port2."]";
 				
 				//make path
 				if ($pp->MakePath()){
