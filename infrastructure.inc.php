@@ -653,6 +653,8 @@ class DeviceTemplate {
 	
 	function CreateTemplate(){
 		global $dbh;
+		
+		$this->MakeSafe();
 
 		$sql="INSERT INTO fac_DeviceTemplate SET ManufacturerID=$this->ManufacturerID, 
 			Model=\"$this->Model\", Height=$this->Height, Weight=$this->Weight, 
@@ -660,6 +662,7 @@ class DeviceTemplate {
 			PSCount=$this->PSCount, NumPorts=$this->NumPorts;";
 
 		if(!$dbh->exec($sql)){
+			error_log( "SQL Error: " . $sql );
 			return false;
 		}else{
 			$this->TemplateID=$dbh->lastInsertID();

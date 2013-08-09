@@ -1192,14 +1192,17 @@ $(document).ready(function() {
 					var portlist=$("<select>");
 					$.each(data, function(key,port){
 						var pn=port.PortNumber;
+						if ( port.Label == "" ) {
+							port.Label = abs(port.PortNumber);
+						}
 						if(rear){
 							if(pn<0){
-								portlist.prepend('<option value='+pn+'>'+(pn*-1)+'</option>');
+								portlist.prepend('<option value='+pn+'>'+port.Label+'</option>');
 								portlist.data(pn, {MediaID: port.MediaID, ColorID: port.ColorID});
 							}
 						}else{
 							if(pn>0){
-								portlist.append('<option value='+pn+'>'+pn+'</option>');
+								portlist.append('<option value='+pn+'>'+port.Label+'</option>');
 								portlist.data(pn, {MediaID: port.MediaID, ColorID: port.ColorID});
 							}
 						}
@@ -1725,14 +1728,29 @@ echo '	<div class="table">
 			$i = $n + 1;	// The "port number" starting at 1
 			$frontDev=new Device();
 			$rearDev=new Device();
+			$tmpPort = new DevicePorts();
+
 			$frontDev->DeviceID=$portList[$i]->ConnectedDeviceID;
 			$rearDev->DeviceID=$portList[-$i]->ConnectedDeviceID;
 			$frontDev->GetDevice();
 			$rearDev->GetDevice();
+			
+			$tmpPort->DeviceID = $frontDev->DeviceID;
+			$tmpPort->PortNumber = $portList[$i]->ConnectedPort;
+			$tmpPort->getPort();
+
+			if ($frontDev->DeviceID > 0 && $tmpPort->Label > "") {
+				$fp = $tmpPort->Label;
+			} elseif ( $frontDev->DeviceID > 0 ) {
+				$fp = $tmpPort->PortNumber;
+			} else {
+				$fp = "";
+			}
+			
 			$rp=($portList[-$i]->ConnectedPort!='')?$portList[-$i]->ConnectedPort*-1:'';
 			print "\n\t\t\t\t<div data-port=$i>
 					<div id=\"fd$i\" data-default=$frontDev->DeviceID><a href=\"devices.php?deviceid=$frontDev->DeviceID\">$frontDev->Label</a></div>
-					<div id=\"fp$i\" data-default={$portList[$i]->ConnectedPort}>{$portList[$i]->ConnectedPort}</div>
+					<div id=\"fp$i\" data-default={$portList[$i]->ConnectedPort}>{$fp}</div>
 					<div id=\"fn$i\" data-default=\"{$portList[$i]->Notes}\">{$portList[$i]->Notes}</div>
 					<div id=\"pp$i\">$i</div>
 					<div id=\"rd$i\" data-default=$rearDev->DeviceID><a href=\"devices.php?deviceid=$rearDev->DeviceID\">$rearDev->Label</a></div>
@@ -1757,6 +1775,7 @@ echo '	<div class="table">
 	if($user->DeleteAccess && $dev->DeviceID >0){
 		echo '		<button type="button" name="action" value="Delete">',__("Delete"),'</button>';
 	}
+	echo '		<a href="export_port_connections.php?deviceid=',$dev->DeviceID,'"><button type="button">',__("Export Connections"),'</button></a>';
 ?>
 
 		</div>

@@ -52,19 +52,25 @@
 	$sheet->getActiveSheet()->setTitle("Connections");
 	
 	$row = 2;
-	$targetDev = new Device();
-	$targetPort = new DevicePorts();
-	
-	$color = new ColorCoding();
-	$mediaType = new MediaTypes();
 	
 	foreach ( $portList as $devPort ) {
+		// These are created inside the loop, because they need to be clean instances each time
+		$targetDev = new Device();
+		$targetPort = new DevicePorts();
+		
+		$color = new ColorCoding();
+		$mediaType = new MediaTypes();
+
 		$targetDev->DeviceID = $devPort->ConnectedDeviceID;
 		$targetDev->getDevice();
 		
 		$targetPort->DeviceID = $targetDev->DeviceID;
 		$targetPort->PortNumber = $devPort->ConnectedPort;
 		$targetPort->getPort();
+		
+		if ( $targetPort->Label == '' ) {
+			$targetPort->Label = $devPort->ConnectedDeviceID > 0 ? $devPort->ConnectedPort : '';
+		}
 		
 		$color->ColorID = $devPort->ColorID;
 		$color->getCode();
@@ -83,7 +89,7 @@
 	}
 	
 	header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
-	header( sprintf( "Content-Disposition: attachment;filename=\"opendcim-%s.xlsx\"", date( "YmdHis" ) ) );
+	header( sprintf( "Content-Disposition: attachment;filename=\"openDCIM-dev" . $dev->DeviceID . "-connections.xlsx\"", date( "YmdHis" ) ) );
 	
 	$writer = new PHPExcel_Writer_Excel2007($sheet);
 	$writer->save('php://output');
