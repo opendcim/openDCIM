@@ -239,6 +239,8 @@ CREATE TABLE fac_Device (
   WarrantyExpire date NULL,
   Notes text NULL,
   Reservation tinyint(1) NOT NULL,
+  HalfDepth tinyint(1) NOT NULL DEFAULT '0',
+  BackSide tinyint(1) NOT NULL DEFAULT '0',
   PRIMARY KEY (DeviceID),
   KEY SerialNo (SerialNo,`AssetTag`,`PrimaryIP`)
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
