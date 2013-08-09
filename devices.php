@@ -857,7 +857,9 @@ $(document).ready(function() {
 		$('#height').trigger('change');
 		$('#position').focus(function()	{
 			var cab=$("select#cabinetid").val();
-			$.getJSON('scripts/ajax_cabinetuse.php?cabinet='+cab+'&deviceid='+$("#deviceid").val(), function(data) {
+			var hd=$('#halfdepth').is(':checked');
+			var bs=$('#backside').is(':checked');
+			$.getJSON('scripts/ajax_cabinetuse.php?cabinet='+cab+'&deviceid='+$("#deviceid").val()+'&halfdepth='+hd+'&backside='+bs, function(data) {
 				var ucount=0;
 				$.each(data, function(i,inuse){
 					ucount++;

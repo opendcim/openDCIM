@@ -18,16 +18,43 @@
 		$cab->CabinetID=$dev->Cabinet=intval($_REQUEST['cabinet']);
 		$devList=$dev->ViewDevicesByCabinet();
 		$cab->GetCabinet();
-
-		// Build array of each position used
-		foreach($devList as $key => $device) {
-			// Only count space occupied by devices other than the current one
-			if ( $dev->DeviceID != $device->DeviceID ) {
-				if($device->Height > 0){
-					$i=$device->Height;
-					while($i>0){
-						$i--;
-						$cabinetuse[$device->Position+$i]=true;
+		
+		$dev->BackSide=(isset($_REQUEST['backside']))?($_REQUEST['backside']=='true'?true:false):false;
+		$dev->HalfDepth=(isset($_REQUEST['halfdepth']))?($_REQUEST['halfdepth']=='true'?true:false):false;
+		
+		if (!$dev->BackSide){
+			// Build array of each position used
+			foreach($devList as $key => $device) {
+				// Only count space occupied by devices other than the current one
+				if ( $dev->DeviceID != $device->DeviceID && (!$device->BackSide || !$device->HalfDepth || !$dev->HalfDepth)) {
+					if($device->Height > 0){
+						$i=$device->Height;
+						while($i>0){
+							$i--;
+							if(!$device->HalfDepth){
+								$cabinetuse[$device->Position+$i]=true;
+							} else {
+								$cabinetuse[$device->Position+$i]=(!$device->BackSide || !$dev->HalfDepth);
+							}
+						}
+					}
+				}
+			}
+		} else {
+			// Build array of each position used
+			foreach($devList as $key => $device) {
+				// Only count space occupied by devices other than the current one
+				if ( $dev->DeviceID != $device->DeviceID && ($device->BackSide || !$device->HalfDepth || !$dev->HalfDepth)) {
+					if($device->Height > 0){
+						$i=$device->Height;
+						while($i>0){
+							$i--;
+							if(!$device->HalfDepth){
+								$cabinetuse[$device->Position+$i]=true;
+							} else {
+								$cabinetuse[$device->Position+$i]=($device->BackSide || !$dev->HalfDepth);
+							}
+						}
 					}
 				}
 			}
