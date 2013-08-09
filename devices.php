@@ -997,9 +997,15 @@ $(document).ready(function() {
 							var portlist=$("<select>");
 							$.each(data, function(key,port){
 								var pn=port.PortNumber;
+								var label=port.Label;
+								
+								if ( label == '' ) {
+									label = pn;
+								}
+								
 								// only allow positive values
 								if(pn>0){
-									portlist.append('<option value='+pn+'>'+pn+'</option>');
+									portlist.append('<option value='+pn+'>'+label+'</option>');
 									portlist.data(pn, {MediaID: port.MediaID, ColorID: port.ColorID});
 								}
 							});
