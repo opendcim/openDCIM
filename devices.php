@@ -48,12 +48,19 @@
 				$dp->DeviceID=$_POST['swdev'];
 				$dp->PortNumber=$_POST['pnum'];
 				$dp->getPort();
+				
+				$cd=new DevicePorts();
+				$cd->DeviceID=$dp->ConnectedDeviceID;
+				$cd->PortNumber=$dp->ConnectedPort;
+				$cd->getPort();
+				
 				$mt=MediaTypes::GetMediaTypeList();
 				$cc=ColorCoding::GetCodeList();
 				$dp->MediaName=(isset($mt[$dp->MediaID]))?$mt[$dp->MediaID]->MediaType:'';
 				$dp->ColorName=(isset($cc[$dp->ColorID]))?$cc[$dp->ColorID]->Name:'';
 				$dev->DeviceID=$dp->ConnectedDeviceID;
 				$dp->ConnectedDeviceLabel=($dev->GetDevice())?stripslashes($dev->Label):'';
+				$dp->ConnectedPort=($cd->Label>'')?$cd->Label:$dp->ConnectedPort;
 				header('Content-Type: application/json');
 				echo json_encode($dp);
 				exit;
@@ -1681,12 +1688,19 @@ echo '	<div class="table">
 		print "\t\t\t\t<div>".__("Media Type")."</div>
 			<div>".__("Color Code")."</div>
 			</div>\n";
-
+		
 		foreach($portList as $i => $port){
 			$tmpDev=new Device();
 			$tmpDev->DeviceID=$port->ConnectedDeviceID;
 			$tmpDev->GetDevice();
 
+			$cp = new DevicePorts();
+			$cp->DeviceID = $port->ConnectedDeviceID;
+			$cp->PortNumber = $port->ConnectedPort;
+			$cp->getPort();
+			
+			if ( $cp->DeviceID > 0 && $cp->Label == '' ) { $cp->Label = $cp->PortNumber; };
+			
 			$mt=(isset($mediaTypes[$port->MediaID]))?$mediaTypes[$port->MediaID]->MediaType:'';
 			$cc=(isset($colorCodes[$port->ColorID]))?$colorCodes[$port->ColorID]->Name:'';
 
@@ -1695,7 +1709,7 @@ echo '	<div class="table">
 					<div id=\"sp$i\">$i</div>
 					<div id=\"spn$i\">{$port->Label}</div>
 					<div id=\"d$i\" data-default=\"{$port->ConnectedDeviceID}\"><a href=\"devices.php?deviceid={$port->ConnectedDeviceID}\">$tmpDev->Label</a></div>
-					<div id=\"dp$i\" data-default=\"{$port->ConnectedPort}\">{$port->ConnectedPort}</div>
+					<div id=\"dp$i\" data-default=\"{$port->ConnectedPort}\">{$cp->Label}</div>
 					<div id=\"n$i\" data-default=\"{$port->Notes}\">{$port->Notes}</div>";
 			if($dev->DeviceType=='Switch'){print "\t\t\t\t<div id=\"st$i\"><span class=\"ui-icon status {$linkList[$i]}\"></span></div>";}
 			print "\t\t\t\t<div id=\"mt$i\">$mt</div>
