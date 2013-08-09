@@ -146,3 +146,10 @@ CREATE TABLE fac_Ports (
   UNIQUE KEY LabeledPort (DeviceID,PortNumber,Label),
   UNIQUE KEY ConnectedDevice (ConnectedDeviceID,ConnectedPort)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+--
+-- Adding two fields to front/back side usage of cabinets
+--
+
+ALTER TABLE fac_Device ADD COLUMN HalfDepth tinyint(1) NOT NULL DEFAULT '0' AFTER Reservation;
+ALTER TABLE fac_Device ADD COLUMN BackSide tinyint(1) NOT NULL DEFAULT '0' AFTER HalfDepth;
