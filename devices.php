@@ -702,7 +702,7 @@ $(document).ready(function() {
 					minWidth: 400,
 					close: function(){$(this).dialog('destroy');}
 				});
-				$('#modal').dialog("option", "width", $('#parcheos').width()+30);
+				$('#modal').dialog("option", "width", $('#parcheos').width()+75);
 			});
 		});
 	}

@@ -357,7 +357,7 @@
 							$conex.="\t\t<td class=\"connection-$tipo_con-2\">&nbsp;</td>\n\t<td></td></tr>\n";
 						}
 						else{
-							$conex="";
+							$conex="\t\t<td></td>\t\t<td></td>\n\t<td></td></tr>";
 							$path.="\n\t\t<td>";
 						}
 					
@@ -466,6 +466,11 @@
 			$path.= "</div>\n";
 		}	
 	}
+
+// Slight style adjustment that css can't handle on its own
+$path.="<script type=\"text/javascript\">
+	$('table#parcheos table tr + tr > td + td:has(table)').css('background-color','transparent');
+</script>";
 
 if(isset($_GET['pathonly'])){
 	echo $path;
@@ -593,8 +598,5 @@ echo '</form></fieldset></td></tr></table>';
 echo '<a href="index.php">[ ',__("Return to Main Menu"),' ]</a>'; ?>
 </div><!-- END div.main -->
 </div><!-- END div.page -->
-<script type="text/javascript">
-	$('table#parcheos table tr + tr > td + td:has(table)').css('background-color','transparent');
-</script>
 </body>
 </html>
