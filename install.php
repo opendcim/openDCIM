@@ -92,7 +92,7 @@
 	$successlog="";
 	
 function applyupdate ($updatefile){
-	$global $dbh;
+	global $dbh;
 
 	//Make sure the upgrade file exists.
 	if(file_exists($updatefile)){
