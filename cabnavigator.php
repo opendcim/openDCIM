@@ -346,7 +346,7 @@ function get_cabinet_owner_color($cabinet, &$deptswithcolor) {
 		reset($devList);
 		$body.="</table></div><div class=\"cabinet\">
 	<table>
-		<tr><th colspan=2 $cab_color >".__("Cabinet")." $cab->Location (".__("back").")</th></tr>
+		<tr><th colspan=2 $cab_color >".__("Cabinet")." $cab->Location (".__("Rear").")</th></tr>
 		<tr><td>".__("Pos")."</td><td>".__("Device")."</td></tr>\n";
 	
 		while(list($dev_index,$device)=each($devList)){
@@ -399,7 +399,7 @@ function get_cabinet_owner_color($cabinet, &$deptswithcolor) {
 						if ( $user->canRead( $device->Owner )) {
 							$body.="<tr><td$errclass>$i</td><td class=\"device$reserved dept$device->Owner\" rowspan=$device->Height data=$device->DeviceID>".
 								"<a href=\"devices.php?deviceid=$device->DeviceID\">$highlight $device->Label".
-								(!$device->BackSide?" (".__("back").")":"")."</a></td></tr>\n";
+								(!$device->BackSide?" (".__("Rear").")":"")."</a></td></tr>\n";
 						} else {
 							$body.="<tr><td$errclass>$i</td><td class=\"device$reserved dept$device->Owner\" rowspan=$device->Height data=$device->DeviceID>".
 								"$highlight $device->Label".(!$device->BackSide?" (".__("trasera").")":"")."</td></tr>\n";
@@ -414,7 +414,7 @@ function get_cabinet_owner_color($cabinet, &$deptswithcolor) {
 		// Fill in to the bottom
 		for($i=$currentHeight;$i>0;$i--){
 			if($i==$currentHeight){
-				$blankHeight=$currentHeight+1;
+				$blankHeight=$currentHeight;
 	
 				$body.="<tr><td>$i</td><td class=\"freespace\" rowspan=$blankHeight>&nbsp;</td></tr>\n";
 			}else{
@@ -733,6 +733,20 @@ if($config->ParameterArray["CDUToolTips"]=='enabled'){
 			}
 		}
 		opentree();
+
+		// Combine the two racks into one table so the sizes are equal
+		if($('.cabinet + .cabinet').length >0){
+			var width=$('#centeriehack > .cabinet:first-child').width();
+			$('.cabinet tr > td:first-child').addClass('pos');
+			$('.cabinet + .cabinet').find('tr').each(function(i){
+				$(this).prepend($('#centeriehack > .cabinet:first-child').find('tr').eq(i).find('td, th'));
+			});
+			$('.cabinet td').each(function(){
+				$(this).css('width',($(this).hasClass('pos'))?'auto':'45%');
+			});
+			$('#centeriehack > .cabinet:first-child').remove();
+			$('.cabinet').width(width*2).css('max-width',width*2+'px');
+		}
 	});
 </script>
 </body>

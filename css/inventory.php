@@ -388,7 +388,7 @@ div.error {margin-top: 2em;margin-bottom: 2em;border: 1px dotted gray;}
 #infopanel fieldset > p > span + span {
 	display: inline-block;
 	vertical-align: middle;
-	height: 1em;
+	height: 1.1em;
 	width: 150px;
 	overflow: hidden;
 }

@@ -1790,7 +1790,9 @@ echo '	<div class="table">
 	if($user->DeleteAccess && $dev->DeviceID >0){
 		echo '		<button type="button" name="action" value="Delete">',__("Delete"),'</button>';
 	}
-	echo '		<a href="export_port_connections.php?deviceid=',$dev->DeviceID,'"><button type="button">',__("Export Connections"),'</button></a>';
+	if($dev->DeviceID >0){
+		echo '		<a href="export_port_connections.php?deviceid=',$dev->DeviceID,'"><button type="button">',__("Export Connections"),'</button></a>';
+	}
 ?>
 
 		</div>
