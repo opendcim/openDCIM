@@ -62,7 +62,7 @@
 		$mediaType = new MediaTypes();
 
 		$targetDev->DeviceID = $devPort->ConnectedDeviceID;
-		$targetDev->getDevice();
+		$targetDev->GetDevice();
 		
 		$targetPort->DeviceID = $targetDev->DeviceID;
 		$targetPort->PortNumber = $devPort->ConnectedPort;
@@ -73,10 +73,10 @@
 		}
 		
 		$color->ColorID = $devPort->ColorID;
-		$color->getCode();
+		$color->GetCode();
 		
 		$mediaType->MediaID = $devPort->MediaID;
-		$mediaType->getType();
+		$mediaType->GetType();
 		
 		$sheet->getActiveSheet()->SetCellValue('A' . $row, $dev->Label);
 		$sheet->getActiveSheet()->SetCellValue('B' . $row, $devPort->Label);
