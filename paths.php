@@ -463,6 +463,11 @@
 			$path.= "</div>\n";
 		}	
 	}
+
+if(isset($_GET['pathonly'])){
+	echo $path;
+	exit;
+}
 		
 ?>
 <!doctype html>

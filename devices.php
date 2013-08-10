@@ -690,6 +690,21 @@ $(document).ready(function() {
 		window.open('contactpopup.php?deptid='+$('#owner').val(), 'Contacts Lookup', 'width=800, height=700, resizable=no, toolbar=no');
 		return false;
 	});
+
+	// Display modal with path information if a device port is clicked.
+	$('.switch div[id^=dp] a, .patchpanel div[id^=fp] a, .patchpanel div[id^=rp] a').click(function(e){
+		e.preventDefault();
+		$.get($(e.target).attr('href'),{pathonly: ''}).done(function(data){
+			var modal=$('<div />', {id: 'modal'}).html('<div id="modaltext">'+data+'</div><br><div id="modalstatus"></div>').dialog({
+				appendTo: 'body',
+				modal: true,
+				minWidth: 400,
+				close: function(){$(this).dialog('destroy');}
+			});
+			$('#modal').dialog("option", "width", $('#parcheos').width()+30);
+		});
+	});
+
 	// Make SNMP community visible
 	$('#snmpcommunity').focus(function(){$(this).attr('type','text');});
 	$('#snmpcommunity').blur(function(){$(this).attr('type','password');});
@@ -1707,10 +1722,10 @@ echo '	<div class="table">
 			// the data attribute is used to store the previous value of the connection
 			print "\t\t\t\t<div>
 					<div id=\"sp$i\">$i</div>
-					<div id=\"spn$i\">{$port->Label}</div>
-					<div id=\"d$i\" data-default=\"{$port->ConnectedDeviceID}\"><a href=\"devices.php?deviceid={$port->ConnectedDeviceID}\">$tmpDev->Label</a></div>
-					<div id=\"dp$i\" data-default=\"{$port->ConnectedPort}\">{$cp->Label}</div>
-					<div id=\"n$i\" data-default=\"{$port->Notes}\">{$port->Notes}</div>";
+					<div id=\"spn$i\">$port->Label</div>
+					<div id=\"d$i\" data-default=\"$port->ConnectedDeviceID\"><a href=\"devices.php?deviceid=$port->ConnectedDeviceID\">$tmpDev->Label</a></div>
+					<div id=\"dp$i\" data-default=\"$port->ConnectedPort\"><a href=\"paths.php?deviceid=$port->ConnectedDeviceID&portnumber=$port->ConnectedPort\">$cp->Label</a></div>
+					<div id=\"n$i\" data-default=\"$port->Notes\">$port->Notes</div>";
 			if($dev->DeviceType=='Switch'){print "\t\t\t\t<div id=\"st$i\"><span class=\"ui-icon status {$linkList[$i]}\"></span></div>";}
 			print "\t\t\t\t<div id=\"mt$i\">$mt</div>
 					<div id=\"cc$i\">$cc</div>
@@ -1743,11 +1758,11 @@ echo '	<div class="table">
 			$rp=($portList[-$i]->ConnectedPort!='')?abs($portList[-$i]->ConnectedPort):''; //rear port label
 			print "\n\t\t\t\t<div data-port=$i>
 					<div id=\"fd$i\" data-default=$frontDev->DeviceID><a href=\"devices.php?deviceid=$frontDev->DeviceID\">$frontDev->Label</a></div>
-					<div id=\"fp$i\" data-default={$portList[$i]->ConnectedPort}>{$fp}</div>
+					<div id=\"fp$i\" data-default={$portList[$i]->ConnectedPort}><a href=\"paths.php?deviceid=$frontDev->DeviceID&portnumber={$portList[$i]->ConnectedPort}\">$fp</a></div>
 					<div id=\"fn$i\" data-default=\"{$portList[$i]->Notes}\">{$portList[$i]->Notes}</div>
 					<div id=\"pp$i\">$i</div>
 					<div id=\"rd$i\" data-default=$rearDev->DeviceID><a href=\"devices.php?deviceid=$rearDev->DeviceID\">$rearDev->Label</a></div>
-					<div id=\"rp$i\" data-default={$portList[-$i]->ConnectedPort}>$rp</div>
+					<div id=\"rp$i\" data-default={$portList[-$i]->ConnectedPort}><a href=\"paths.php?deviceid=$rearDev->DeviceID&portnumber={$portList[-$i]->ConnectedPort}\">$rp</a></div>
 					<div id=\"rn$i\" data-default=\"{$portList[-$i]->Notes}\">{$portList[-$i]->Notes}</div>
 				</div>";
 		}

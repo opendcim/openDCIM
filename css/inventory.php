@@ -647,7 +647,7 @@ table#crit_busc {border: 0px; background: transparent; padding:0.5em;}
 table#crit_busc tr {border: 0px; background: transparent; padding:0.5em;}
 table#crit_busc td {border: 0px; background: transparent; padding:0.5em;}
 
-table#parcheos {border: 3px outset; text-align: center; text-valign: center; max-width: 800px;}
+table#parcheos {border: 3px outset; text-align: center; text-valign: center; max-width: 800px; margin-left: auto; margin-right: auto;}
 table#parcheos tr {border: 0px;}	
 table#parcheos td {padding: 0px; border: 0px; vertical-align: top;}
 
