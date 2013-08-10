@@ -721,9 +721,6 @@ class ColorCoding {
 			$this->Name=$row["Name"];
 			$this->DefaultNote=$row["DefaultNote"];
 		}else{
-			$info=$dbh->errorInfo();
-
-			error_log("PDO Error: {$info[2]}");
 			return false;
 		}
 			
