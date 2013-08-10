@@ -449,17 +449,20 @@
 			
 			//End of path table
 			$path.="\t<tr>\n\t\t<td colspan=6>&nbsp;</td>\n\t</tr></table></div>";
-			
-			//Delete Form
-			$path.= "<form action=\"{$_SERVER["PHP_SELF"]}\" method=\"POST\">\n";
-			$path.= "<br>\n"; 
-			$path.= "<div>\n";
-			//PATH INFO
-			$path.= "<input type=\"hidden\" name=\"elem_path\" value=\"$elem_path\">\n";
-			$path.=$form_eliminar;	
-			$path.= "	<button type=\"submit\" name=\"bot_eliminar\" value=\"delete\">".__("Delete front connections in DataBase")."</button>\n";
-			$path.= "</div>\n";
-			$path.= "</form>\n";
+		
+			// need to add an additional check for permission here if they can write
+			if(!isset($_GET['pathonly'])){
+				//Delete Form
+				$path.= "<form action=\"{$_SERVER["PHP_SELF"]}\" method=\"POST\">\n";
+				$path.= "<br>\n"; 
+				$path.= "<div>\n";
+				//PATH INFO
+				$path.= "<input type=\"hidden\" name=\"elem_path\" value=\"$elem_path\">\n";
+				$path.=$form_eliminar;	
+				$path.= "	<button type=\"submit\" name=\"bot_eliminar\" value=\"delete\">".__("Delete front connections in DataBase")."</button>\n";
+				$path.= "</div>\n";
+				$path.= "</form>\n";
+			}
 			$path.= "</div>\n";
 		}	
 	}
