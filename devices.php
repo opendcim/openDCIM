@@ -60,7 +60,8 @@
 				$dp->ColorName=(isset($cc[$dp->ColorID]))?$cc[$dp->ColorID]->Name:'';
 				$dev->DeviceID=$dp->ConnectedDeviceID;
 				$dp->ConnectedDeviceLabel=($dev->GetDevice())?stripslashes($dev->Label):'';
-				$dp->ConnectedPort=($cd->Label>'')?$cd->Label:$dp->ConnectedPort;
+				$dp->ConnectedPort=$dp->ConnectedPort;
+				$dp->ConnectedPortLabel=($cd->Label>'')?$cd->Label:$dp->ConnectedPort;
 				header('Content-Type: application/json');
 				echo json_encode($dp);
 				exit;
@@ -1004,15 +1005,11 @@ $(document).ready(function() {
 							var portlist=$("<select>");
 							$.each(data, function(key,port){
 								var pn=port.PortNumber;
-								var label=port.Label;
-								
-								if ( label == '' ) {
-									label = pn;
-								}
+								port.Label==(port.Label=="")?pn:port.Label;
 								
 								// only allow positive values
 								if(pn>0){
-									portlist.append('<option value='+pn+'>'+label+'</option>');
+									portlist.append('<option value='+pn+'>'+port.Label+'</option>');
 									portlist.data(pn, {MediaID: port.MediaID, ColorID: port.ColorID});
 								}
 							});
@@ -1101,7 +1098,7 @@ $(document).ready(function() {
 						$.post('',{getport: '',swdev: $('#deviceid').val(),pnum: portnum}).done(function(data){
 							portname.html(data.Label).data('default',data.Label);
 							cdevice.html('<a href="devices.php?deviceid='+data.ConnectedDeviceID+'">'+data.ConnectedDeviceLabel+'</a>').data('default',data.ConnectedDeviceID);
-							cdeviceport.html(data.ConnectedPort).data('default',data.ConnectedPort);
+							cdeviceport.html(data.ConnectedPortLabel).data('default',data.ConnectedPort);
 							cnotes.html(data.Notes).data('default',data.Notes);
 							porttype.html(data.MediaName).data('default',data.MediaID);
 							portcolor.html(data.ColorName).data('default',data.ColorID);
@@ -1192,8 +1189,8 @@ $(document).ready(function() {
 					var portlist=$("<select>");
 					$.each(data, function(key,port){
 						var pn=port.PortNumber;
-						if ( port.Label == "" ) {
-							port.Label = abs(port.PortNumber);
+						if(port.Label==""){
+							port.Label=Math.abs(port.PortNumber);
 						}
 						if(rear){
 							if(pn<0){
@@ -1728,26 +1725,22 @@ echo '	<div class="table">
 			$i = $n + 1;	// The "port number" starting at 1
 			$frontDev=new Device();
 			$rearDev=new Device();
-			$tmpPort = new DevicePorts();
 
 			$frontDev->DeviceID=$portList[$i]->ConnectedDeviceID;
 			$rearDev->DeviceID=$portList[-$i]->ConnectedDeviceID;
 			$frontDev->GetDevice();
 			$rearDev->GetDevice();
 			
-			$tmpPort->DeviceID = $frontDev->DeviceID;
-			$tmpPort->PortNumber = $portList[$i]->ConnectedPort;
-			$tmpPort->getPort();
-
-			if ($frontDev->DeviceID > 0 && $tmpPort->Label > "") {
-				$fp = $tmpPort->Label;
-			} elseif ( $frontDev->DeviceID > 0 ) {
-				$fp = $tmpPort->PortNumber;
-			} else {
-				$fp = "";
+			$fp=""; //front port label
+			$cPort=new DevicePorts();
+			if($frontDev->DeviceID >0){
+				$cPort->DeviceID=$frontDev->DeviceID;
+				$cPort->PortNumber=$portList[$i]->ConnectedPort;
+				$cPort->getPort();
+				$fp=($cPort->Label!="")?$cPort->Label:$cPort->PortNumber;
 			}
 			
-			$rp=($portList[-$i]->ConnectedPort!='')?$portList[-$i]->ConnectedPort*-1:'';
+			$rp=($portList[-$i]->ConnectedPort!='')?abs($portList[-$i]->ConnectedPort):''; //rear port label
 			print "\n\t\t\t\t<div data-port=$i>
 					<div id=\"fd$i\" data-default=$frontDev->DeviceID><a href=\"devices.php?deviceid=$frontDev->DeviceID\">$frontDev->Label</a></div>
 					<div id=\"fp$i\" data-default={$portList[$i]->ConnectedPort}>{$fp}</div>
