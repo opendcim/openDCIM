@@ -60,14 +60,14 @@
 		//Search by deviceid/port
 		if(isset($_REQUEST['deviceid']) && $_REQUEST['deviceid']!=''
 			&& isset($_REQUEST['portnumber']) && $_REQUEST['portnumber']!=''){
-				
-			$pathid=__("Device")." ".intval($_REQUEST['deviceid'])."-".__("Port")." ".intval($_REQUEST['portnumber']);
 			
 			$cp=new ConnectionPath();
 			$dev=new Device();
 			
 			$dev->DeviceID=intval($_REQUEST['deviceid']);
 			$dev->GetDevice();
+			
+			$pathid=$dev->Label ." - ".__("Port")." ".intval($_REQUEST['portnumber']);
 			
 			$cp->DeviceID=intval($_REQUEST['deviceid']);
 			$cp->PortNumber=intval($_REQUEST['portnumber']);
