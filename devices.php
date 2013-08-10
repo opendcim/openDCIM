@@ -692,17 +692,22 @@ $(document).ready(function() {
 	});
 
 	// Display modal with path information if a device port is clicked.
-	$('.switch div[id^=dp] a, .patchpanel div[id^=fp] a, .patchpanel div[id^=rp] a').click(function(e){
-		e.preventDefault();
-		$.get($(e.target).attr('href'),{pathonly: ''}).done(function(data){
-			var modal=$('<div />', {id: 'modal'}).html('<div id="modaltext">'+data+'</div><br><div id="modalstatus"></div>').dialog({
-				appendTo: 'body',
-				modal: true,
-				minWidth: 400,
-				close: function(){$(this).dialog('destroy');}
+	function devicepaths(row){
+		row.find('div[id^=dp] a, div[id^=fp] a, div[id^=rp] a').click(function(e){
+			e.preventDefault();
+			$.get($(e.target).attr('href'),{pathonly: ''}).done(function(data){
+				var modal=$('<div />', {id: 'modal'}).html('<div id="modaltext">'+data+'</div><br><div id="modalstatus"></div>').dialog({
+					appendTo: 'body',
+					modal: true,
+					minWidth: 400,
+					close: function(){$(this).dialog('destroy');}
+				});
+				$('#modal').dialog("option", "width", $('#parcheos').width()+30);
 			});
-			$('#modal').dialog("option", "width", $('#parcheos').width()+30);
 		});
+	}
+	$('.patchpanel > div + div, .switch > div + div').each(function(){
+		devicepaths($(this));
 	});
 
 	// Make SNMP community visible
@@ -1020,7 +1025,7 @@ $(document).ready(function() {
 							var portlist=$("<select>");
 							$.each(data, function(key,port){
 								var pn=port.PortNumber;
-								port.Label==(port.Label=="")?pn:port.Label;
+								port.Label=(port.Label=="")?pn:port.Label;
 								
 								// only allow positive values
 								if(pn>0){
@@ -1113,13 +1118,14 @@ $(document).ready(function() {
 						$.post('',{getport: '',swdev: $('#deviceid').val(),pnum: portnum}).done(function(data){
 							portname.html(data.Label).data('default',data.Label);
 							cdevice.html('<a href="devices.php?deviceid='+data.ConnectedDeviceID+'">'+data.ConnectedDeviceLabel+'</a>').data('default',data.ConnectedDeviceID);
-							cdeviceport.html(data.ConnectedPortLabel).data('default',data.ConnectedPort);
+							cdeviceport.html('<a href="paths.php?deviceid='+data.ConnectedDeviceID+'&portnumber='+data.ConnectedPort+'">'+data.ConnectedPortLabel+'</a>').data('default',data.ConnectedPort);
 							cnotes.html(data.Notes).data('default',data.Notes);
 							porttype.html(data.MediaName).data('default',data.MediaID);
 							portcolor.html(data.ColorName).data('default',data.ColorID);
 							$('#controls'+portnum).remove();
 							row.children('div ~ div').removeAttr('style');
 							row.data('edit',false);
+							devicepaths(row);
 						});
 					}
 					var controls=$('<div>',({'id':'controls'+portnum}));
@@ -1233,12 +1239,12 @@ $(document).ready(function() {
 					if(rear){
 						reardev.html('<a href="devices.php?deviceid='+data.ConnectedDeviceID+'">'+data.ConnectedDeviceLabel+'</a>').data('default',data.ConnectedDeviceID);
 						var cp=(data.ConnectedPort<0)?data.ConnectedPort*-1:'';
-						rearport.html(cp).data('default',data.ConnectedPort);
+						rearport.html('<a href="paths.php?deviceid='+data.ConnectedDeviceID+'&portnumber='+data.ConnectedPort+'">'+cp+'</a>').data('default',data.ConnectedPort);
 						rearnotes.html(data.Notes).data('default',data.Notes);
 						row.children('div[id^=r]').removeAttr('style');
 					}else{
 						frontdev.html('<a href="devices.php?deviceid='+data.ConnectedDeviceID+'">'+data.ConnectedDeviceLabel+'</a>').data('default',data.ConnectedDeviceID);
-						frontport.html(data.ConnectedPort).data('default',data.ConnectedPort);
+						frontport.html('<a href="paths.php?deviceid='+data.ConnectedDeviceID+'&portnumber='+data.ConnectedPort+'">'+data.ConnectedPortLabel+'</a>').data('default',data.ConnectedPort);
 						frontnotes.html(data.Notes).data('default',data.Notes);
 						row.children('div[id^=f]').removeAttr('style');
 					}
@@ -1247,6 +1253,7 @@ $(document).ready(function() {
 				if(btnrow.find('.controls').length===1){
 					row.data('edit',false);
 					btnrow.remove();
+					devicepaths(row);
 				}
 			}
 			var controls=$('<div>',({'class':'controls'})).css({'padding': 0, 'border': 0});
