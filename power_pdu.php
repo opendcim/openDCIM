@@ -2,10 +2,6 @@
 	require_once( 'db.inc.php' );
 	require_once( 'facilities.inc.php' );
 
-	$user=new User();
-	$user->UserID = $_SERVER['REMOTE_USER'];
-	$user->GetUserRights();
-
 	// CDUs don't have owners, they are part of the infrastructure so you have to at least have Global Read to view them
 	if(!$user->ReadAccess){
 		// No soup for you.
@@ -17,9 +13,9 @@
 	$cab=new Cabinet();
 	$powerConn=new PowerConnection();
 	$connDev=new Device();
-	$template = new CDUTemplate();
-	$templateList = $template->GetTemplateList(  );
-	$manufacturer = new Manufacturer();
+	$template=new CDUTemplate();
+	$templateList=$template->GetTemplateList();
+	$manufacturer=new Manufacturer();
 	$upTime='';
 
 	// Ajax actions

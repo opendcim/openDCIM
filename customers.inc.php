@@ -279,12 +279,19 @@ class Department {
 	}
 
 	function GetDeptByID() {
+		$this->MakeSafe();
+
+		if($this->DeptID==0){return false;}
+
 		$sql="SELECT * FROM fac_Department WHERE DeptID=$this->DeptID;";
 
 		if($row=$this->query($sql)->fetch()){
 			foreach(Department::DeptRowToObject($row) as $prop => $value){
 				$this->$prop=$value;
 			}
+			return true;
+		}else{
+			return false;
 		}
 	}
 

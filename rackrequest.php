@@ -3,11 +3,6 @@
 	require_once( 'facilities.inc.php' );
 	require_once( 'swiftmailer/swift_required.php' );
 	
-	$user=new User();
-	
-	$user->UserID=$_SERVER['REMOTE_USER'];
-	$user->GetUserRights();
-	
 	if(!$user->RackRequest){
 		// No soup for you.
 		header('Location: '.redirect());

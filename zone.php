@@ -2,10 +2,6 @@
 	require_once("db.inc.php");
 	require_once("facilities.inc.php");
 
-	$user=new User();
-	$user->UserID=$_SERVER["REMOTE_USER"];
-	$user->GetUserRights();
-
 	if(!$user->SiteAdmin){
 		// No soup for you.
 		header('Location: '.redirect());
@@ -18,7 +14,6 @@
 	$DCList=$DC->GetDCList();
 	$formpatch="";
 	$status="";
-
 
 	if(isset($_REQUEST["zoneid"])) {
 		$zone->ZoneID=(isset($_POST['zoneid'])?$_POST['zoneid']:$_GET['zoneid']);

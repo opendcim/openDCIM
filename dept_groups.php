@@ -2,13 +2,6 @@
 	require_once( "db.inc.php" );
 	require_once( "facilities.inc.php" );
 
-	$dept=new Department();
-	$contact=new Contact();
-	$user=new User();
-
-	$user->UserID=$_SERVER['REMOTE_USER'];
-	$user->GetUserRights();
-
 	if(!$user->ContactAdmin){
 		// No soup for you.
 		header('Location: '.redirect());
@@ -20,6 +13,9 @@
 		echo "How'd you get here without a referral?";
 		exit;
 	}
+	$dept=new Department();
+	$contact=new Contact();
+
 	$dept->DeptID=(isset($_POST['deptid']) ? $_POST['deptid'] : $_GET['deptid']);
 	$dept->GetDeptByID();
 

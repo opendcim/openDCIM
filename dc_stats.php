@@ -2,22 +2,16 @@
 	require_once("db.inc.php");
 	require_once("facilities.inc.php");
 
-	$user=new User();
-	$user->UserID=$_SERVER["REMOTE_USER"];
-	$user->GetUserRights();
-
-/*	Not sure if we need to restrict this view to users with global read access or not
-	if(!$user->ReadAccess){
+	if(!isset($_GET["dc"])){
 		// No soup for you.
 		header('Location: '.redirect());
 		exit;
 	}
-*/
 
 	$cab=new Cabinet();
 	$dc=new DataCenter();
 
-	$dc->DataCenterID=$_REQUEST["dc"];
+	$dc->DataCenterID=$_GET["dc"];
 	$dc->GetDataCenterbyID();
 	$dcStats=$dc->GetDCStatistics();
 

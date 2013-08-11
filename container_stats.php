@@ -2,11 +2,7 @@
 	require_once("db.inc.php");
 	require_once("facilities.inc.php");
 
-	$user=new User();
-	$user->UserID=$_SERVER["REMOTE_USER"];
-	$user->GetUserRights();
-	
-	if(!$user->ReadAccess){
+	if(!isset($_GET["container"])){
 		// No soup for you.
 		header('Location: '.redirect());
 		exit;
@@ -14,7 +10,7 @@
 
 	$c=New Container();
 	
-	$c->ContainerID=$_REQUEST["container"];
+	$c->ContainerID=$_GET["container"];
 	$c->GetContainer();
 	$cStats=$c->GetContainerStatistics();
 
@@ -113,7 +109,6 @@ echo '<div class="main">
 <br>
 <div class="JMGA" style="center width: 1200px; overflow: auto">';
 
-  //print $c->MakeImageMap();
   print $c->MakeContainerImage();
 ?>
 </div></div>

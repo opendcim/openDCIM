@@ -2,17 +2,13 @@
 	require_once( 'db.inc.php' );
 	require_once( 'facilities.inc.php' );
 
-	$contact=new Contact();
-	$user=new User();
-
-	$user->UserID=$_SERVER['REMOTE_USER'];
-	$user->GetUserRights();
-
 	if(!$user->ContactAdmin){
 		// No soup for you.
 		header('Location: '.redirect());
 		exit;
 	}
+
+	$contact=new Contact();
 
 	// AJAX
 	if(isset($_POST['o'])){

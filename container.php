@@ -2,20 +2,15 @@
 	require_once('db.inc.php');
 	require_once('facilities.inc.php');
 
-	$user=new User();
-
-	$user->UserID=$_SERVER['REMOTE_USER'];
-	$user->GetUserRights();
-
 	if(!$user->SiteAdmin){
 		// No soup for you.
 		header('Location: '.redirect());
 		exit;
 	}
 	
+	$c=new Container();
 	$status="";
 
-	$c=new Container();
 	if(isset($_POST['action'])&&(($_POST['action']=='Create')||($_POST['action']=='Update'))){
 		$c->ContainerID=$_POST['containerid'];
 		$c->Name=trim($_POST['name']);

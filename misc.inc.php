@@ -1,6 +1,11 @@
 <?php
 /* All functions contained herein will be general use functions */
 
+/* This is used on every page so we might as well just init it once */
+$user=new User();
+$user->UserID = $_SERVER['REMOTE_USER'];
+$user->GetUserRights();
+	
 /* 
 Regex to make sure a valid URL is in the config before offering options for contact lookups
 http://www.php.net/manual/en/function.preg-match.php#93824

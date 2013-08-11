@@ -2,12 +2,6 @@
 	require_once( 'db.inc.php' );
 	require_once( 'facilities.inc.php' );
 
-	$user=new User();
-	$user->UserID=$_SERVER['REMOTE_USER'];
-	$user->GetUserRights();
-
-	$viewList=$user->isMemberOf();
-
 	$searchKey=$_REQUEST['key'];
 	//Remove control characters tab, enter, etc
 	$searchTerm=preg_replace("/[[:cntrl:]]/","",$_REQUEST['search']);
@@ -74,17 +68,16 @@
 	$childList=array(); // List of all blade devices
 	$dctemp=array(); // List of datacenters involved with result set
 	while(list($devID,$device)=each($devList)){
-		if($user->ReadAccess || in_array($device->Owner,$viewList)){
-			$temp[$x]['devid']=$devID;
-			$temp[$x]['label']=$device->Label;
-			$temp[$x]['type']='srv'; // empty chassis devices need no special treatment leave them as a server
-			$temp[$x]['cabinet']=$device->Cabinet;
-			$temp[$x]['parent']=$device->ParentDevice;
-			$cabtemp[$device->Cabinet]="";
-			++$x;
-			if($device->ParentDevice!=0){
-				$childList[$device->ParentDevice]=""; // Create a list of chassis devices based on children present
-			}
+		$temp[$x]['devid']=$devID;
+		$temp[$x]['label']=$device->Label;
+		$temp[$x]['type']='srv'; // empty chassis devices need no special treatment leave them as a server
+		$temp[$x]['cabinet']=$device->Cabinet;
+		$temp[$x]['parent']=$device->ParentDevice;
+		$temp[$x]['rights']=$device->Rights;
+		$cabtemp[$device->Cabinet]="";
+		++$x;
+		if($device->ParentDevice!=0){
+			$childList[$device->ParentDevice]=""; // Create a list of chassis devices based on children present
 		}
 	}
 	if(isset($vmList)){
@@ -98,17 +91,16 @@
 				$temp[$a[0]]['type']='vm';
 			}else{
 				// We didn't find the host server of this vm so we're gonna add it to the list
-				if($user->ReadAccess || in_array($dev->Owner,$viewList)){
-					$temp[$x]['devid']=$dev->DeviceID;
-					$temp[$x]['label']=$dev->Label;
-					$temp[$x]['type']='vm';
-					$temp[$x]['cabinet']=$dev->Cabinet;
-					$temp[$x]['parent']=$dev->ParentDevice;
-					$cabtemp[$dev->Cabinet]['name']="";
-					++$x;
-					if($dev->ParentDevice!=0){
-						$childList[$dev->ParentDevice]=""; // Create a list of chassis devices based on children present
-					}
+				$temp[$x]['devid']=$dev->DeviceID;
+				$temp[$x]['label']=$dev->Label;
+				$temp[$x]['type']='vm';
+				$temp[$x]['cabinet']=$dev->Cabinet;
+				$temp[$x]['parent']=$dev->ParentDevice;
+				$temp[$x]['rights']=$device->Rights;
+				$cabtemp[$dev->Cabinet]['name']="";
+				++$x;
+				if($dev->ParentDevice!=0){
+					$childList[$dev->ParentDevice]=""; // Create a list of chassis devices based on children present
 				}
 			}
 		}
@@ -131,6 +123,7 @@
 				$temp[$x]['type']='chassis';
 				$temp[$x]['cabinet']=$dev->Cabinet;
 				$temp[$x]['parent']=$dev->ParentDevice;
+				$temp[$x]['rights']=$device->Rights;
 				$cabtemp[$dev->Cabinet]['name']="";
 				++$x;
 			}
@@ -162,12 +155,12 @@
 			$cab->Location='dc lookup error';
 			$cab->DataCenterID='0';
 			$cab->CabinetID=$key;
-			if($cab->GetCabinet()==-1){
-				unset($cabtemp[$key]);
-			}else{
+			if($cab->GetCabinet()){
 				$cabtemp[$key]['name']=$cab->Location;
 				$cabtemp[$key]['dc']=$cab->DataCenterID;
 				$dctemp[$cab->DataCenterID]=''; // Add datacenter id to list for loop
+			}else{
+				unset($cabtemp[$key]);
 			}
 		}else{
 			$cabtemp[$key]['name']="Storage Room";
@@ -303,7 +296,11 @@ $(document).ready(function() {
 						if($cabID==$row['cabinet']){
 							//In case of VMHost missing from inventory, this shouldn't ever happen
 							if($row['label']=='' || is_null($row['label'])){$row['label']='VM Host Missing From Inventory';}
-							print "\t\t\t\t\t<li><a href=\"devices.php?deviceid={$row['devid']}\">{$row['label']}</a>\n";
+							if($row['rights']=="Write"){
+								print "\t\t\t\t\t<li><a href=\"devices.php?deviceid={$row['devid']}\">{$row['label']}</a>\n";
+							}else{
+								print "\t\t\t\t\t<li>{$row['label']}\n";
+							}
 							// Created a nested list showing all blades residing in this chassis
 							if($row['type']=='chassis'){
 								print "\t\t\t\t\t\t<ul>\n";
@@ -311,7 +308,8 @@ $(document).ready(function() {
 									if($chRow['parent']==$row['devid']){
 										//In case of VMHost missing from inventory, this shouldn't ever happen
 										if($chRow['label']=='' || is_null($chRow['label'])){$chRow['label']='VM Host Missing From Inventory';}
-										print "\t\t\t\t\t\t\t<li><div><img src=\"images/blade.png\" alt=\"blade icon\"></div><a href=\"devices.php?deviceid={$chRow['devid']}\">{$chRow['label']}</a>\n";
+										$vmhost=($chRow['rights']=="Write")?"<a href=\"devices.php?deviceid={$chRow['devid']}\">{$chRow['label']}</a>":$chRow['label'];
+										print "\t\t\t\t\t\t\t<li><div><img src=\"images/blade.png\" alt=\"blade icon\"></div>$vmhost\n";
 										// Create a nested list showing all VMs residing on this host.
 										if($chRow['type']=='vm'){
 											print "\t\t\t\t\t\t\t\t<ul>\n";

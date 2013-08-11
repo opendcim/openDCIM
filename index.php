@@ -7,17 +7,12 @@
 	require_once( 'db.inc.php' );
 	require_once( 'facilities.inc.php' );
 
-	$user = new User();
-	$user->UserID = $_SERVER['REMOTE_USER'];
-	$user->GetUserRights();
-	
 	// ITSD Statistics
-	$sql='SELECT
+	$sql='SELECT SUM(NominalWatts) AS Power,
 		(SELECT COUNT(*) FROM fac_Device WHERE DeviceType!="Server" LIMIT 1) AS Devices, 
 		(SELECT COUNT(*) FROM fac_Device WHERE DeviceType="Server" LIMIT 1) AS Servers,
 		(SELECT SUM(Height) FROM fac_Device LIMIT 1) AS Size,
-		(SELECT COUNT(*) FROM fac_VMInventory LIMIT 1) AS VMcount,
-		(SELECT SUM(NominalWatts) FROM fac_Device LIMIT 1) AS Power
+		(SELECT COUNT(*) FROM fac_VMInventory LIMIT 1) AS VMcount
 		FROM fac_Device LIMIT 1;';
 
 	$row=$dbh->query($sql)->fetch();

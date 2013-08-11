@@ -2,10 +2,6 @@
 	require_once("db.inc.php");
 	require_once("facilities.inc.php");
 
-	$user=new User();
-	$user->UserID=$_SERVER["REMOTE_USER"];
-	$user->GetUserRights();
-
 	if(!$user->SiteAdmin){
 		// No soup for you.
 		header('Location: '.redirect());
@@ -19,7 +15,6 @@
 	$supList=$sup->GetSuppliesList(true);
 	$formpatch="";
 	$status="";
-
 
 	if(isset($_REQUEST["binid"])) {
 		$bin->BinID=(isset($_POST['binid'])?$_POST['binid']:$_GET['binid']);

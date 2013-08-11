@@ -164,39 +164,21 @@ class Cabinet {
 		return true;
 	}
 
-	function GetCabinet( $db = null ) {
+	function GetCabinet(){
 		global $dbh;
 
 		$this->MakeSafe();
 		
 		$sql="SELECT * FROM fac_Cabinet WHERE CabinetID=$this->CabinetID;";
 		
-		if(!$cabinetRow=$dbh->query($sql)->fetch()){
+		if($cabinetRow=$dbh->query($sql)->fetch()){
+			foreach(Cabinet::CabinetRowToObject($cabinetRow) as $prop => $value){
+				$this->$prop=$value;
+			}
+			return true;
+		}else{
 			return false;
-		}		
-		
-		$this->DataCenterID = $cabinetRow[ "DataCenterID" ];
-		$this->Location = $cabinetRow[ "Location" ];
-		$this->AssignedTo = $cabinetRow["AssignedTo"];
-		$this->ZoneID = $cabinetRow["ZoneID"];
-		$this->CabRowID = $cabinetRow["CabRowID"];
-		$this->CabinetHeight = $cabinetRow[ "CabinetHeight" ];
-		$this->Model = $cabinetRow["Model"];
-		$this->Keylock = $cabinetRow["Keylock"];
-		$this->MaxKW = $cabinetRow["MaxKW"];
-		$this->MaxWeight = $cabinetRow["MaxWeight"];
-		$this->InstallationDate = $cabinetRow[ "InstallationDate" ];
-		$this->SensorIPAddress = $cabinetRow["SensorIPAddress"];
-		$this->SensorCommunity = $cabinetRow["SensorCommunity"];
-		$this->TempSensorOID = $cabinetRow["TempSensorOID"];
-		$this->HumiditySensorOID = $cabinetRow["HumiditySensorOID"];
-		$this->MapX1 = $cabinetRow["MapX1"];
-		$this->MapY1 = $cabinetRow["MapY1"];
-		$this->MapX2 = $cabinetRow["MapX2"];
-		$this->MapY2 = $cabinetRow["MapY2"];
-		$this->Notes = $cabinetRow["Notes"];
-
-		return;
+		}
 	}
 
 	static function ListCabinets($deptid=null) {
@@ -950,8 +932,8 @@ class Device {
 		$this->WarrantyExpire=addslashes($this->WarrantyExpire);
 		$this->Notes=addslashes(trim($this->Notes));
 		$this->Reservation=intval($this->Reservation);
-		$this->HalfDepth = intval( $this->HalfDepth );
-		$this->BackSide = intval( $this->BackSide );
+		$this->HalfDepth=intval($this->HalfDepth);
+		$this->BackSide=intval($this->BackSide);
 	}
 	
 	function MakeDisplay() {
@@ -1015,9 +997,17 @@ class Device {
 	}
 
 	private function FilterRights(){
+		$cab=new Cabinet();
+		$cab->CabinetID=$this->Cabinet;
+
 		$this->Rights='None';
-		if(User::Current()->canRead($this->Owner)){$this->Rights="Read";}
-		if(User::Current()->canWrite($this->Owner)){$this->Rights="Write";}
+		$user=User::Current();
+		if($user->canRead($this->Owner)){$this->Rights="Read";}
+		if($user->canWrite($this->Owner)){$this->Rights="Write";} // write by device
+		if($cab->GetCabinet()){
+			if($user->canWrite($cab->AssignedTo)){$this->Rights="Write";} // write because the cabinet is assigned
+		}
+		if($user->SiteAdmin && $this->DeviceType=='Patch Panel'){$this->Rights="Write";} // admin override of rights for patch panels
 
 		// Remove information that this user isn't allowed to see
 		if($this->Rights=='None'){
@@ -1209,6 +1199,9 @@ class Device {
 		$tmpDev=new Device();
 		$tmpDev->DeviceID=$this->DeviceID;
 		$tmpDev->GetDevice();
+
+		// Check the user's permissions to modify this device
+		if($tmpDev->Rights!='Write'){return false;}
 	
 		$this->MakeSafe();	
 		if($tmpDev->DeviceType == "Chassis" && $tmpDev->DeviceType != $this->DeviceType){
@@ -1988,6 +1981,9 @@ class DevicePorts {
 		$dev=New Device;
 		$dev->DeviceID=$DeviceID;
 		if(!$dev->GetDevice()){return false;}
+
+		// Check the user's permissions to modify this device
+		if($dev->Rights!='Write'){return false;}
 		$portList=array();
 
 		// Build the DevicePorts from the existing info in the following priority:
@@ -2059,6 +2055,26 @@ class DevicePorts {
 		$tmpport->DeviceID=$this->ConnectedDeviceID;
 		$tmpport->PortNumber=$this->ConnectedPort;
 		$tmpport->getPort();
+
+		//check rights before we go any further
+		$dev=new Device();
+		$dev->DeviceID=$this->DeviceID;
+		$dev->GetDevice();
+		$replacingdev=new Device();
+		$replacingdev->DeviceID=$oldport->ConnectedDeviceID;
+		$replacingdev->GetDevice();
+		$connecteddev=new Device();
+		$connecteddev->DeviceID=$this->ConnectedDeviceID;
+		$connecteddev->GetDevice();
+
+		$rights=false;
+		$rights=($dev->Rights=="Write")?true:$rights;
+		$rights=($replacingdev->Rights=="Write")?true:$rights;
+		$rights=($connecteddev->Rights=="Write")?true:$rights;
+
+		if(!$rights){
+			return false;
+		}
 	
 		$this->MakeSafe();
 
@@ -2169,6 +2185,9 @@ class DevicePorts {
 		$dev->DeviceID=$DeviceID;
 		if(!$dev->GetDevice()){return false;}
 
+		// Check the user's permissions to modify this device
+		if($dev->Rights!='Write'){return false;}
+
 		$sql="UPDATE fac_Ports SET ConnectedDeviceID=NULL, ConnectedPort=NULL WHERE
 			DeviceID=$dev->DeviceID OR ConnectedDeviceID=$dev->DeviceID;";
 
@@ -2184,6 +2203,9 @@ class DevicePorts {
 		$dev=new Device(); // make sure we have a real device first
 		$dev->DeviceID=$DeviceID;
 		if(!$dev->GetDevice()){return false;}
+
+		// Check the user's permissions to modify this device
+		if($dev->Rights!='Write'){return false;}
 
 		DevicePorts::removeConnections($DeviceID);
 
@@ -2242,7 +2264,8 @@ class DevicePorts {
 				$tmpDev->DeviceID=$candidate;
 				$tmpDev->GetDevice();
 
-				$candidates[sizeof($candidates)]=$tmpDev;
+				// Filter device pick list by what they have rights to modify
+				($tmpDev->Rights=="Write")?$candidates[]=$tmpDev:'';
 			}
 			// Then run the same query, but for the rest of the devices in the database
 			$sql="SELECT DISTINCT a.DeviceID FROM fac_Ports a, fac_Device b WHERE b.Cabinet>-1 AND b.Cabinet!=$dev->Cabinet AND a.DeviceID=b.DeviceID AND a.DeviceID!=$dev->DeviceID$mediaenforce$pp ORDER BY b.Label ASC;";
@@ -2252,7 +2275,8 @@ class DevicePorts {
 				$tmpDev->DeviceID=$candidate;
 				$tmpDev->GetDevice();
 
-				$candidates[sizeof($candidates)]=$tmpDev;
+				// Filter device pick list by what they have rights to modify
+				($tmpDev->Rights=="Write")?$candidates[]=$tmpDev:'';
 			}
 		}else{
 			$sql="SELECT a.* FROM fac_Ports a, fac_Device b WHERE b.Cabinet>-1 AND a.DeviceID=b.DeviceID AND a.DeviceID!=$dev->DeviceID AND ConnectedDeviceID IS NULL$mediaenforce$pp;";
@@ -2871,8 +2895,9 @@ class SwitchInfo {
 
 		if ( is_null($portid) ) {		
 			for ( $n=0; $n < $dev->Ports; $n++ ) {
-				if ( ! $reply = snmp2_get( $dev->PrimaryIP, $dev->SNMPCommunity, $baseOID.( $dev->FirstPortNum+$n )) )
+				if(!$reply=@snmp2_get($dev->PrimaryIP, $dev->SNMPCommunity, $baseOID.($dev->FirstPortNum+$n))){
 					break;
+				}
 				@preg_match( "/(INTEGER: )(.+)(\(.*)/", $reply, $matches);
 				$statusList[$n+1]=@$matches[2];
 			}

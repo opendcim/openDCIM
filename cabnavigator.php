@@ -2,11 +2,7 @@
 	require_once( "db.inc.php" );
 	require_once( "facilities.inc.php" );
 
-	$user=new User();
-	$user->UserID=$_SERVER["REMOTE_USER"];
-	$user->GetUserRights();
-	
-	if((isset($_REQUEST["cabinetid"]) && ($_REQUEST["cabinetid"]=="" || $_REQUEST["cabinetid"]==null)) || !isset($_REQUEST["cabinetid"])){
+	if((isset($_REQUEST["cabinetid"]) && (intval($_REQUEST["cabinetid"])==0)) || !isset($_REQUEST["cabinetid"])){
 		// No soup for you.
 		header('Location: '.redirect());
 		exit;
@@ -22,19 +18,20 @@
  * @return 	string		CSS class or empty string
  */
 function get_cabinet_owner_color($cabinet, &$deptswithcolor) {
-  $cab_color = '';
-  if ($cabinet->AssignedTo != 0) {
-    $tempDept = new Department();
-    $tempDept->DeptID = $cabinet->AssignedTo;
-    $deptid = $tempDept->DeptID;
-    $tempDept->GetDeptByID();
-    if (strtoupper($tempDept->DeptColor) != "#FFFFFF") {
-       $deptswithcolor[$cabinet->AssignedTo]["color"] = $tempDept->DeptColor;
-       $deptswithcolor[$cabinet->AssignedTo]["name"]= $tempDept->Name;
-       $cab_color = "class=\"dept$deptid\"";
-    }
-  }
-  return $cab_color;
+	$cab_color='';
+	if($cabinet->AssignedTo!=0){
+		$tempDept=new Department();
+		$tempDept->DeptID=$cabinet->AssignedTo;
+		$deptid=$tempDept->DeptID;
+		if($tempDept->GetDeptByID()){
+			if(strtoupper($tempDept->DeptColor)!="#FFFFFF"){
+				$deptswithcolor[$cabinet->AssignedTo]["color"]=$tempDept->DeptColor;
+				$deptswithcolor[$cabinet->AssignedTo]["name"]=$tempDept->Name;
+				$cab_color="class=\"dept$deptid\"";
+			}
+		}
+  	}
+	return $cab_color;
 }
 
 	$cab=new Cabinet();
@@ -62,16 +59,16 @@ function get_cabinet_owner_color($cabinet, &$deptswithcolor) {
 	if(isset($_POST['tooltip'])){
 		if(isset($_POST['cdu']) && $config->ParameterArray["CDUToolTips"]=='enabled'){
 			$pdu=new PowerDistribution();
-			$pdu->PDUID=intval($_POST['tooltip']);
+			$pdu->PDUID=$_POST['tooltip'];
 			$pdu->GetPDU();
 			$ttconfig=$dbh->query("SELECT * FROM fac_CDUToolTip WHERE Enabled=1 ORDER BY SortOrder ASC, Enabled DESC, Label ASC;");
 		}elseif($config->ParameterArray["ToolTips"]=='enabled'){
 			$dev=new Device();
-			$dev->DeviceID=intval($_POST['tooltip']);
+			$dev->DeviceID=$_POST['tooltip'];
 			$dev->GetDevice();
 			
-			if(!$user->canRead($dev->Owner)){
-				print "Details Restricted";
+			if($dev->Rights=='None'){
+				print __("Details Restricted");
 				exit;
 			}
 			$ttconfig=$dbh->query("SELECT * FROM fac_CabinetToolTip WHERE Enabled=1 ORDER BY SortOrder ASC, Enabled DESC, Label ASC;");
@@ -182,7 +179,7 @@ function get_cabinet_owner_color($cabinet, &$deptswithcolor) {
 	}
 
 
-	$head=$legend=$zeroheight=$body=$deptcolor="";
+	$head=$legend=$zeroheight=$body=$deptcolor=$AuditorName="";
 	$audit=new CabinetAudit();
 	$dev=new Device();
 	$pdu=new PowerDistribution();
@@ -211,9 +208,6 @@ function get_cabinet_owner_color($cabinet, &$deptswithcolor) {
 		$tmpUser->UserID=$audit->UserID;
 		$tmpUser->GetUserRights();
 		$AuditorName=$tmpUser->Name;
-	}else{
-		//If no audit has been completed $AuditorName will return an error
-		$AuditorName="";
 	}
 
 	$pdu->CabinetID=$cab->CabinetID;
@@ -228,7 +222,7 @@ function get_cabinet_owner_color($cabinet, &$deptswithcolor) {
 	$totalMoment=0;
 
 	$deptswithcolor=array();
-        $cab_color = get_cabinet_owner_color($cab, $deptswithcolor);
+	$cab_color=get_cabinet_owner_color($cab, $deptswithcolor);
 
 	if($config->ParameterArray["ReservedColor"] != "#FFFFFF" || $config->ParameterArray["FreeSpaceColor"] != "#FFFFFF"){
 		$head.="		<style type=\"text/css\">
@@ -255,7 +249,7 @@ function get_cabinet_owner_color($cabinet, &$deptswithcolor) {
 	$backside=false;
 	while(list($dev_index,$device)=each($devList)){
 		if($device->Height<1){
-			if ( $user->canRead( $device->Owner )) {
+			if($device->Rights!="None"){
 				$zeroheight.="				<a href=\"devices.php?deviceid=$device->DeviceID\">$highlight $device->Label</a>\n";
 			} else {
 				$zeroheight.="              $highlight $device->Label\n";
@@ -315,9 +309,9 @@ function get_cabinet_owner_color($cabinet, &$deptswithcolor) {
 				$errclass=($i>$cab->CabinetHeight)?' class="error"':'';
 				if($errclass!=''){$heighterr="yup";}
 				if($i==$devTop){
-					if ( $user->canRead( $device->Owner )) {
+					if($device->Rights!="None"){
 						$body.="<tr><td$errclass>$i</td><td class=\"device$reserved dept$device->Owner\" rowspan=$device->Height data=$device->DeviceID><a href=\"devices.php?deviceid=$device->DeviceID\">$highlight $device->Label</a></td></tr>\n";
-					} else {
+					}else{
 						$body.="<tr><td$errclass>$i</td><td class=\"device$reserved dept$device->Owner\" rowspan=$device->Height data=$device->DeviceID>$highlight $device->Label</td></tr>\n";
 					}
 				}else{
@@ -396,13 +390,15 @@ function get_cabinet_owner_color($cabinet, &$deptswithcolor) {
 					$errclass=($i>$cab->CabinetHeight)?' class="error"':'';
 					if($errclass!=''){$heighterr="yup";}
 					if($i==$devTop){
-						if ( $user->canRead( $device->Owner )) {
-							$body.="<tr><td$errclass>$i</td><td class=\"device$reserved dept$device->Owner\" rowspan=$device->Height data=$device->DeviceID>".
-								"<a href=\"devices.php?deviceid=$device->DeviceID\">$highlight $device->Label".
+						if($device->Rights!="None"){
+							$body.="<tr><td$errclass>$i</td><td class=\"device$reserved dept".
+								"$device->Owner\" rowspan=$device->Height data=$device->DeviceID><a".
+								" href=\"devices.php?deviceid=$device->DeviceID\">$highlight $device->Label".
 								(!$device->BackSide?" (".__("Rear").")":"")."</a></td></tr>\n";
-						} else {
-							$body.="<tr><td$errclass>$i</td><td class=\"device$reserved dept$device->Owner\" rowspan=$device->Height data=$device->DeviceID>".
-								"$highlight $device->Label".(!$device->BackSide?" (".__("trasera").")":"")."</td></tr>\n";
+						}else{
+							$body.="<tr><td$errclass>$i</td><td class=\"device$reserved dept".
+								"$device->Owner\" rowspan=$device->Height data=$device->DeviceID>".
+								"$highlight $device->Label".(!$device->BackSide?" (".__("Rear").")":"")."</td></tr>\n";
 						}
 					}else{
 						$body.="<tr><td$errclass>$i</td></tr>\n";
@@ -450,6 +446,7 @@ function get_cabinet_owner_color($cabinet, &$deptswithcolor) {
 	// I don't feel like fixing the check properly to not add in a dept with id of 0 so just remove it at the last second
 	// 0 is when a dept owner hasn't been assigned, just for the record
 	if(isset($deptswithcolor[0])){unset($deptswithcolor[0]);}
+	if(isset($deptswithcolor[""])){unset($deptswithcolor[""]);}
 
 	// We're done processing devices so build the legend and style blocks
 	if(!empty($deptswithcolor)){
@@ -650,34 +647,30 @@ echo $head,'  <script type="text/javascript" src="scripts/jquery.min.js"></scrip
 ';
 if($config->ParameterArray["ToolTips"]=='enabled'){
 ?>
-		var n=0; // silly counter
-		$('.cabinet td.device').mouseenter(function(){
-			n++;
+		$('.cabinet td.device:has(a)').mouseenter(function(){
 			var pos=$(this).offset();
 			var tooltip=$('<div />').css({
 				'left':pos.left+$(this).outerWidth()+15+'px',
 				'top':pos.top+($(this).outerHeight()/2)-15+'px'
-			}).addClass('arrow_left border cabnavigator tooltip').attr('id','tt'+n).append('<span class="ui-icon ui-icon-refresh rotate"></span>');
+			}).addClass('arrow_left border cabnavigator tooltip').attr('id','tt').append('<span class="ui-icon ui-icon-refresh rotate"></span>');
 			$.post('',{tooltip: $(this).attr('data')}, function(data){
 				tooltip.html(data);
 			});
 			$('body').append(tooltip);
 			$(this).mouseleave(function(){
-				$('#tt'+n).remove();
+				tooltip.remove();
 			});
 		});
 <?php
 }
 if($config->ParameterArray["CDUToolTips"]=='enabled'){
 ?>
-		var n=0; // silly counter
 		$('fieldset[name="pdu"] legend ~ a').mouseenter(function(){
-			n++;
 			var pos=$(this).offset();
 			var tooltip=$('<div />').css({
 				'left':pos.left+$(this).outerWidth()+15+'px',
 				'top':pos.top+($(this).outerHeight()/2)-15+'px'
-			}).addClass('arrow_left border cabnavigator tooltip').attr('id','tt'+n).append('<span class="ui-icon ui-icon-refresh rotate"></span>');
+			}).addClass('arrow_left border cabnavigator tooltip').attr('id','tt').append('<span class="ui-icon ui-icon-refresh rotate"></span>');
 			var id=$(this).attr('href');
 			id=id.substring(id.lastIndexOf('=')+1,id.length);
 			$.post('',{tooltip: id, cdu: ''}, function(data){
@@ -685,7 +678,7 @@ if($config->ParameterArray["CDUToolTips"]=='enabled'){
 			});
 			$('body').append(tooltip);
 			$(this).mouseleave(function(){
-				$('#tt'+n).remove();
+				tooltip.remove();
 			});
 		});
 <?php
