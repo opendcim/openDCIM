@@ -487,6 +487,10 @@
 		echo '</div> <!-- END div.table -->';
 	}
 
+$write=false;
+$write=($user->canWrite($cab->AssignedTo))?true:$write;
+$write=($dev->Rights=="Write")?true:$write;
+
 
 ?>
 <!doctype html>
@@ -1810,7 +1814,7 @@ echo '	<div class="table">
 ?>
 		<div class="caption">
 <?php
-	if($dev->Rights=="Write"){
+	if($write){
 		if($dev->DeviceID >0){
 			echo '			<button type="submit" name="action" value="Update">',__("Update"),'</button>
 			<button type="submit" name="action" value="Copy">', __("Copy"), '</button>';
@@ -1850,7 +1854,7 @@ echo '	<div class="table">
 	var portrights=$.parseJSON('<?php echo json_encode($jsondata); ?>');
 
 <?php
-	if($dev->Rights!="Write"){
+	if(!$write){
 		print "$('#firstport button[name=firstport],#firstport button[name=name]').hide();
 				$('.main input, .main select').prop('disabled', true);";
 	}
