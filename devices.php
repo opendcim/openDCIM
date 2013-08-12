@@ -60,29 +60,6 @@
 		$dev->DeviceID=$_POST['swdev'];
 		$dev->GetDevice();
 		if($dev->Rights=="Write"){
-			if(isset($_POST['getport'])){
-				$dp=new DevicePorts();
-				$dp->DeviceID=$_POST['swdev'];
-				$dp->PortNumber=$_POST['pnum'];
-				$dp->getPort();
-				
-				$cd=new DevicePorts();
-				$cd->DeviceID=$dp->ConnectedDeviceID;
-				$cd->PortNumber=$dp->ConnectedPort;
-				$cd->getPort();
-				
-				$mt=MediaTypes::GetMediaTypeList();
-				$cc=ColorCoding::GetCodeList();
-				$dp->MediaName=(isset($mt[$dp->MediaID]))?$mt[$dp->MediaID]->MediaType:'';
-				$dp->ColorName=(isset($cc[$dp->ColorID]))?$cc[$dp->ColorID]->Name:'';
-				$dev->DeviceID=$dp->ConnectedDeviceID;
-				$dp->ConnectedDeviceLabel=($dev->GetDevice())?stripslashes($dev->Label):'';
-				$dp->ConnectedPort=$dp->ConnectedPort;
-				$dp->ConnectedPortLabel=(!is_null($cd->Label) && $cd->Label!='')?$cd->Label:$dp->ConnectedPort;
-				header('Content-Type: application/json');
-				echo json_encode($dp);
-				exit;
-			}
 			if(isset($_POST['saveport'])){
 				$dp=new DevicePorts();
 				$dp->DeviceID=$_POST['swdev'];
@@ -138,39 +115,62 @@
 				}
 				exit;
 			}
-			$list='';
-			if(isset($_POST['listports'])){
-				$dp=new DevicePorts();
-				$dp->DeviceID=$_POST['thisdev'];
-				$list=$dp->getPorts();
-				if($config->ParameterArray["MediaEnforce"]=='enabled'){
-					$dp->DeviceID=$_POST['thisdev'];
-					$dp->PortNumber=$_POST['pn'];
-					$dp->getPort();
-					foreach($list as $key => $port){
-						if($port['MediaID']!=$dp->MediaID){
-							unset($list[$key]); // remove the nonmatching ports	
-						}
-					}
-				}
-				foreach($list as $key => $port){
-					if(!is_null($port->ConnectedDeviceID)){
-						if($port->ConnectedDeviceID==$_POST['swdev'] && $port->ConnectedPort==$_POST['pn']){
-							// This is what is currently connected so leave it in the list
-						}else{
-							// Remove any other ports that already have connections
-							unset($list[$key]);
-						}
-					}
-				}
-			}else{
-				$patchpanels=(isset($_POST['rear']))?"true":null;
-				$list=DevicePorts::getPatchCandidates($_POST['swdev'],$_POST['pn'],null,$patchpanels);
-			}
+		}
+		if(isset($_POST['getport'])){
+			$dp=new DevicePorts();
+			$dp->DeviceID=$_POST['swdev'];
+			$dp->PortNumber=$_POST['pnum'];
+			$dp->getPort();
+			
+			$cd=new DevicePorts();
+			$cd->DeviceID=$dp->ConnectedDeviceID;
+			$cd->PortNumber=$dp->ConnectedPort;
+			$cd->getPort();
+			
+			$mt=MediaTypes::GetMediaTypeList();
+			$cc=ColorCoding::GetCodeList();
+			$dp->MediaName=(isset($mt[$dp->MediaID]))?$mt[$dp->MediaID]->MediaType:'';
+			$dp->ColorName=(isset($cc[$dp->ColorID]))?$cc[$dp->ColorID]->Name:'';
+			$dev->DeviceID=$dp->ConnectedDeviceID;
+			$dp->ConnectedDeviceLabel=($dev->GetDevice())?stripslashes($dev->Label):'';
+			$dp->ConnectedPort=$dp->ConnectedPort;
+			$dp->ConnectedPortLabel=(!is_null($cd->Label) && $cd->Label!='')?$cd->Label:$dp->ConnectedPort;
 			header('Content-Type: application/json');
-			echo json_encode($list);
+			echo json_encode($dp);
 			exit;
 		}
+		$list='';
+		if(isset($_POST['listports'])){
+			$dp=new DevicePorts();
+			$dp->DeviceID=$_POST['thisdev'];
+			$list=$dp->getPorts();
+			if($config->ParameterArray["MediaEnforce"]=='enabled'){
+				$dp->DeviceID=$_POST['thisdev'];
+				$dp->PortNumber=$_POST['pn'];
+				$dp->getPort();
+				foreach($list as $key => $port){
+					if($port['MediaID']!=$dp->MediaID){
+						unset($list[$key]); // remove the nonmatching ports	
+					}
+				}
+			}
+			foreach($list as $key => $port){
+				if(!is_null($port->ConnectedDeviceID)){
+					if($port->ConnectedDeviceID==$_POST['swdev'] && $port->ConnectedPort==$_POST['pn']){
+						// This is what is currently connected so leave it in the list
+					}else{
+						// Remove any other ports that already have connections
+						unset($list[$key]);
+					}
+				}
+			}
+		}else{
+			$patchpanels=(isset($_POST['rear']))?"true":null;
+			$list=DevicePorts::getPatchCandidates($_POST['swdev'],$_POST['pn'],null,$patchpanels);
+		}
+		header('Content-Type: application/json');
+		echo json_encode($list);
+		exit;
 	}
 	if(isset($_POST['esxrefresh'])){
 		$dev->DeviceID=$_POST['esxrefresh'];
