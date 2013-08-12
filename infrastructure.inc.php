@@ -700,7 +700,7 @@ class DeviceTemplate {
 
 		// Reset object in case of a lookup failure
 		foreach($this as $prop => $value){
-			$var=($prop!='TemplateID')?null:$value;
+			$value=($prop!='TemplateID')?null:$value;
 		}
 		
 		if($row=$this->query($sql)->fetch()){

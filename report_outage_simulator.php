@@ -30,11 +30,6 @@ if (!isset($_REQUEST['action'])){
 <body>
 <div style="height: 66px;" id="header"></div>
 <?php
-
-	$user = new User();
-	$user->UserID = $_SERVER['REMOTE_USER'];
-	$user->GetUserRights();
-
 	include( 'sidebar.inc.php' );
 	
 	$datacenter = new DataCenter();
