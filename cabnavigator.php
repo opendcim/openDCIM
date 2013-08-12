@@ -196,7 +196,7 @@ function get_cabinet_owner_color($cabinet, &$deptswithcolor) {
 	$audit->CabinetID=$cab->CabinetID;
 
 	// You just have WriteAccess in order to perform/certify a rack audit 
-	if(isset($_REQUEST["audit"]) && $_REQUEST["audit"]=="yes" && $user->WriteAccess){
+	if(isset($_REQUEST["audit"]) && $_REQUEST["audit"]=="yes" && $user->CanWrite($cab->AssignedTo)){
 		$audit->UserID=$user->UserID;
 		$audit->CertifyAudit();
 	}
@@ -572,7 +572,7 @@ $body.='</table>
 		$body.=sprintf("				<div class=\"meter-wrap\">\n\t<div class=\"meter-value\" style=\"background-color: %s; width: %d%%;\">\n\t\t<div class=\"meter-text\">%d%%</div>\n\t</div>\n</div><br>", $PDUColor, $PDUPercent, $PDUPercent );
 	}
 	
-	if($user->WriteAccess){
+	if($user->CanWrite($cab->AssignedTo)){
 		$body.="			<ul class=\"nav\"><a href=\"power_pdu.php?pduid=0&cabinetid=$cab->CabinetID\"><li>".__("Add CDU")."</li></a></ul>\n";
 	}
 
@@ -580,7 +580,7 @@ $body.='</table>
 <fieldset>
 	<p>".__("Last Audit").": $audit->AuditStamp<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;($AuditorName)</p>
 	<ul class=\"nav\">\n";
-	if($user->WriteAccess){
+	if($user->CanWrite($cab->AssignedTo)){
 		$body.="
 		<a href=\"#\" onclick=\"javascript:verifyAudit(this.form)\"><li>".__("Certify Audit")."</li></a>
 		<a href=\"devices.php?action=new&cabinet=$cab->CabinetID\"><li>".__("Add Device")."</li></a>

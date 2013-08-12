@@ -9,17 +9,30 @@
 	
 	$taginsert="";
 
-	// Ajax functions and we only want these exposed to people with write access
-	if(true){
-		if(isset($_POST['cab'])){
-			$cab->CabinetID=$_POST['cab'];
-			$cab->GetCabinet();
-			echo $cab->CabinetHeight;
-			exit;
-		}
-		if(isset($_POST['fp'])){
-			$dev->DeviceID=$_POST['devid'];
-			$dev->GetDevice();
+	// Ajax functions
+	// Get cabinet height
+	if(isset($_POST['cab'])){
+		$cab->CabinetID=$_POST['cab'];
+		$cab->GetCabinet();
+		echo $cab->CabinetHeight;
+		exit;
+	}
+	// Get list of color codes
+	if(isset($_GET['cc'])){
+		header('Content-Type: application/json');
+		echo json_encode(ColorCoding::GetCodeList());
+		exit;
+	}
+	// Get list of media typse
+	if(isset($_GET['mt'])){
+		header('Content-Type: application/json');
+		echo json_encode(MediaTypes::GetMediaTypeList());
+		exit;
+	}
+	if(isset($_POST['fp'])){
+		$dev->DeviceID=$_POST['devid'];
+		$dev->GetDevice();
+		if($dev->Rights=="Write"){
 			if($_POST['fp']==''){ // querying possible first ports
 				$portCandidates=SwitchInfo::findFirstPort($dev->DeviceID);
 				if(count($portCandidates>0)){
@@ -36,9 +49,17 @@
 					echo 'Failure';
 				}
 			}
-			exit;
-		};
-		if(isset($_POST['swdev'])){ 
+		}else{
+			// The button to trigger this function is hidden if they don't have rights
+			// but users aren't to be trusted.
+			echo 'Failure';
+		}
+		exit;
+	};
+	if(isset($_POST['swdev'])){ 
+		$dev->DeviceID=$_POST['swdev'];
+		$dev->GetDevice();
+		if($dev->Rights=="Write"){
 			if(isset($_POST['getport'])){
 				$dp=new DevicePorts();
 				$dp->DeviceID=$_POST['swdev'];
@@ -150,24 +171,23 @@
 			echo json_encode($list);
 			exit;
 		}
-		if(isset($_GET['cc'])){
-			header('Content-Type: application/json');
-			echo json_encode(ColorCoding::GetCodeList());
-			exit;
-		}
-		if(isset($_GET['mt'])){
-			header('Content-Type: application/json');
-			echo json_encode(MediaTypes::GetMediaTypeList());
-			exit;
-		}
-		if(isset($_POST['esxrefresh'])){
+	}
+	if(isset($_POST['esxrefresh'])){
+		$dev->DeviceID=$_POST['esxrefresh'];
+		$dev->GetDevice();
+		if($dev->Rights=="Write"){
 			ESX::RefreshInventory($_POST['esxrefresh']);
 			buildesxtable($_POST['esxrefresh']);
-			exit;
 		}
-		if(isset($_POST['refreshswitch'])){
-			header('Content-Type: application/json');
-			if(isset($_POST['names'])){
+		exit;
+	}
+	if(isset($_POST['refreshswitch'])){
+		header('Content-Type: application/json');
+		if(isset($_POST['names'])){
+			$dev->DeviceID=$_POST['refreshswitch'];
+			$dev->GetDevice();
+			// This function should be hidden if they don't have rights, but just in case
+			if($dev->Rights=="Write"){
 				foreach(SwitchInfo::getPortNames($_POST['refreshswitch']) as $PortNumber => $Label){
 					$port=new DevicePorts();
 					$port->DeviceID=$_POST['refreshswitch'];
@@ -175,13 +195,12 @@
 					$port->Label=$Label;
 					$port->updateLabel();
 				}
-				echo json_encode(SwitchInfo::getPortNames($_POST['refreshswitch']));
-			}else{
-				echo json_encode(SwitchInfo::getPortStatus($_POST['refreshswitch']));
 			}
-			exit;
+			echo json_encode(SwitchInfo::getPortNames($_POST['refreshswitch']));
+		}else{
+			echo json_encode(SwitchInfo::getPortStatus($_POST['refreshswitch']));
 		}
-
+		exit;
 	}
 	// END AJAX
 
@@ -866,7 +885,9 @@ $(document).ready(function() {
 		$('#cabinetid').change(function(){
 			$.post('', {cab: $("select#cabinetid").val()}, function(data){
 				var posclass=$('#position').attr('class');
-				$('#position').attr('class',posclass.replace(/max\[([1-9]).*?\]/gi,"max["+data.trim()+"]")).trigger('focusout');
+				if(data.trim()>0){
+					$('#position').attr('class',posclass.replace(/max\[([1-9]).*?\]/gi,"max["+data.trim()+"]")).trigger('focusout');
+				}
 			});
 		});
 		$('#height').change(function(){
@@ -1028,142 +1049,144 @@ $(document).ready(function() {
 	// Make connections to other devices
 	$('.switch.table > div ~ div').each(function(){
 		var row=$(this);
-		row.find('div:first-child').click(function(){
-			if(!row.data('edit')){
-				row.data('edit',true);
-				var portnum=$(this).text();
-				var portname=$('#spn'+portnum);
-				var cdevice=$('#d'+portnum);
-				var cdeviceport=$('#dp'+portnum);
-				var cnotes=$('#n'+portnum);
-				var porttype=$('#mt'+portnum);
-				var portcolor=$('#cc'+portnum);
-				function getports(devid,portnum){
+		var portnum=row.data('port');
+		if(portrights[portnum]){ // only bind edit functions if they have rights
+			row.find('div:first-child').click(function(){
+				if(!row.data('edit')){
+					row.data('edit',true);
+					var portname=$('#spn'+portnum);
+					var cdevice=$('#d'+portnum);
 					var cdeviceport=$('#dp'+portnum);
-					$.post('',{swdev: $('#deviceid').val(),pn: portnum,thisdev: devid,listports: ''}).done(function(data){
-						var portlist=$("<select>");
-						$.each(data, function(key,port){
-							var pn=port.PortNumber;
-							port.Label=(port.Label=="")?pn:port.Label;
-							
-							// only allow positive values
-							if(pn>0){
-								portlist.append('<option value='+pn+'>'+port.Label+'</option>');
-								portlist.data(pn, {MediaID: port.MediaID, ColorID: port.ColorID});
+					var cnotes=$('#n'+portnum);
+					var porttype=$('#mt'+portnum);
+					var portcolor=$('#cc'+portnum);
+					function getports(devid,portnum){
+						var cdeviceport=$('#dp'+portnum);
+						$.post('',{swdev: $('#deviceid').val(),pn: portnum,thisdev: devid,listports: ''}).done(function(data){
+							var portlist=$("<select>");
+							$.each(data, function(key,port){
+								var pn=port.PortNumber;
+								port.Label=(port.Label=="")?pn:port.Label;
+								
+								// only allow positive values
+								if(pn>0){
+									portlist.append('<option value='+pn+'>'+port.Label+'</option>');
+									portlist.data(pn, {MediaID: port.MediaID, ColorID: port.ColorID});
+								}
+							});
+							portlist.change(function(){
+								//Match media type and color on incoming port
+								porttype.children('select').val($(this).data($(this).val()).MediaID);
+								portcolor.children('select').val($(this).data($(this).val()).ColorID);
+							});
+							cdeviceport.html(portlist).find('select').val(cdeviceport.data('default'));
+						});
+					}
+					function getmediatypes(portnum){
+						$.get('',{mt:''}).done(function(data){
+							var mlist=$("<select>").append('<option value=0></option>');
+							$.each(data, function(key,mt){
+								var option=$("<option>",({'value':mt.MediaID})).append(mt.MediaType);
+								mlist.append(option).data(mt.MediaID,mt.ColorID);
+							});
+							mlist.change(function(){
+								// default color is associated with this type so set it
+								if($(this).data($(this).val())!=""){
+									portcolor.children('select').val($(this).data($(this).val()));
+								}
+							});
+							porttype.html(mlist).find('select').val(porttype.data('default'));
+						});
+					}
+					function getcolortypes(portnum){
+						$.get('',{cc:''}).done(function(data){
+							var clist=$("<select>").append('<option value=0></option>');
+							$.each(data, function(key,cc){
+								var option=$("<option>",({'value':cc.ColorID})).append(cc.Name);
+								clist.append(option).data(cc.ColorID,cc.DefaultNote);
+							});
+							clist.change(function(){
+								// default note is associated with this color so set it
+								if($(this).data($(this).val())!=""){
+									cnotes.children('input').val($(this).data($(this).val()));
+								}
+							});
+							portcolor.html(clist).find('select').val(portcolor.data('default'));
+						});
+					}
+					$.post('',{swdev: $('#deviceid').val(),pn: portnum}).done(function(data){
+						var devlist=$("<select>").append('<option value=0></option>');
+						devlist.change(function(){
+							getports($(this).val(),portnum);
+						});
+						
+						$.each(data, function(devid,device){
+							devlist.append('<option value='+device.DeviceID+'>'+device.Label+'</option>');
+						});
+						cdevice.html(devlist).find('select').val(cdevice.data('default'));
+						devlist.change();
+						cnotes.html('<input type="text" value="'+cnotes.text()+'">');
+						portname.html('<input type="text" value="'+portname.text()+'">');
+						getmediatypes(portnum);
+						getcolortypes(portnum);
+					});
+					function save(){
+						$.post('',{
+							saveport: '',
+							swdev: $('#deviceid').val(),
+							pnum: portnum,
+							pname: portname.children('input').val(),
+							cdevice: cdevice.children('select').val(),
+							cdeviceport: cdeviceport.children('select').val(),
+							cnotes: cnotes.children('input').val(),
+							porttype: porttype.children('select').val(),
+							portcolor: portcolor.children('select').val()
+						}).done(function(data){
+							if(data.trim()==1){
+								redrawrow();
+							}else{
+								// something broke
 							}
 						});
-						portlist.change(function(){
-							//Match media type and color on incoming port
-							porttype.children('select').val($(this).data($(this).val()).MediaID);
-							portcolor.children('select').val($(this).data($(this).val()).ColorID);
+					}
+					function clear(){
+						cdevice.children('select').val(0);
+						cdeviceport.children('select').val(0);
+						cnotes.children('input').val('');
+						save();
+					}
+					function redrawrow(){
+						$.post('',{getport: '',swdev: $('#deviceid').val(),pnum: portnum}).done(function(data){
+							portname.html(data.Label).data('default',data.Label);
+							cdevice.html('<a href="devices.php?deviceid='+data.ConnectedDeviceID+'">'+data.ConnectedDeviceLabel+'</a>').data('default',data.ConnectedDeviceID);
+							cdeviceport.html('<a href="paths.php?deviceid='+data.ConnectedDeviceID+'&portnumber='+data.ConnectedPort+'">'+data.ConnectedPortLabel+'</a>').data('default',data.ConnectedPort);
+							cnotes.html(data.Notes).data('default',data.Notes);
+							porttype.html(data.MediaName).data('default',data.MediaID);
+							portcolor.html(data.ColorName).data('default',data.ColorID);
+							$('#controls'+portnum).remove();
+							row.children('div ~ div').removeAttr('style');
+							row.data('edit',false);
+							devicepaths(row);
 						});
-						cdeviceport.html(portlist).find('select').val(cdeviceport.data('default'));
+					}
+					var controls=$('<div>',({'id':'controls'+portnum}));
+					var savebtn=$('<button>',{'type':'button'}).append('<?php echo __("Save"); ?>').click(save);
+					var cancelbtn=$('<button>',{'type':'button'}).append('<?php echo __("Cancel"); ?>').click(redrawrow);
+					var deletebtn=$('<button>',{'type':'button'}).append('<?php echo __("Delete"); ?>').click(clear);
+					controls.append(savebtn).append(cancelbtn).append(deletebtn);
+					var minwidth=0;
+					portcolor.after(controls);
+					controls.children('button').each(function(){
+						minwidth+=$(this).outerWidth()+14; // 14 padding and border
 					});
+					controls.css('min-width',minwidth);
+					row.children('div ~ div:not([id^=st])').css({'padding': '0px', 'background-color': 'transparent'});
+					setTimeout(function() {
+						resize();
+					},200);
 				}
-				function getmediatypes(portnum){
-					$.get('',{mt:''}).done(function(data){
-						var mlist=$("<select>").append('<option value=0></option>');
-						$.each(data, function(key,mt){
-							var option=$("<option>",({'value':mt.MediaID})).append(mt.MediaType);
-							mlist.append(option).data(mt.MediaID,mt.ColorID);
-						});
-						mlist.change(function(){
-							// default color is associated with this type so set it
-							if($(this).data($(this).val())!=""){
-								portcolor.children('select').val($(this).data($(this).val()));
-							}
-						});
-						porttype.html(mlist).find('select').val(porttype.data('default'));
-					});
-				}
-				function getcolortypes(portnum){
-					$.get('',{cc:''}).done(function(data){
-						var clist=$("<select>").append('<option value=0></option>');
-						$.each(data, function(key,cc){
-							var option=$("<option>",({'value':cc.ColorID})).append(cc.Name);
-							clist.append(option).data(cc.ColorID,cc.DefaultNote);
-						});
-						clist.change(function(){
-							// default note is associated with this color so set it
-							if($(this).data($(this).val())!=""){
-								cnotes.children('input').val($(this).data($(this).val()));
-							}
-						});
-						portcolor.html(clist).find('select').val(portcolor.data('default'));
-					});
-				}
-				$.post('',{swdev: $('#deviceid').val(),pn: portnum}).done(function(data){
-					var devlist=$("<select>").append('<option value=0></option>');
-					devlist.change(function(){
-						getports($(this).val(),portnum);
-					});
-					
-					$.each(data, function(devid,device){
-						devlist.append('<option value='+device.DeviceID+'>'+device.Label+'</option>');
-					});
-					cdevice.html(devlist).find('select').val(cdevice.data('default'));
-					devlist.change();
-					cnotes.html('<input type="text" value="'+cnotes.text()+'">');
-					portname.html('<input type="text" value="'+portname.text()+'">');
-					getmediatypes(portnum);
-					getcolortypes(portnum);
-				});
-				function save(){
-					$.post('',{
-						saveport: '',
-						swdev: $('#deviceid').val(),
-						pnum: portnum,
-						pname: portname.children('input').val(),
-						cdevice: cdevice.children('select').val(),
-						cdeviceport: cdeviceport.children('select').val(),
-						cnotes: cnotes.children('input').val(),
-						porttype: porttype.children('select').val(),
-						portcolor: portcolor.children('select').val()
-					}).done(function(data){
-						if(data.trim()==1){
-							redrawrow();
-						}else{
-							// something broke
-						}
-					});
-				}
-				function clear(){
-					cdevice.children('select').val(0);
-					cdeviceport.children('select').val(0);
-					cnotes.children('input').val('');
-					save();
-				}
-				function redrawrow(){
-					$.post('',{getport: '',swdev: $('#deviceid').val(),pnum: portnum}).done(function(data){
-						portname.html(data.Label).data('default',data.Label);
-						cdevice.html('<a href="devices.php?deviceid='+data.ConnectedDeviceID+'">'+data.ConnectedDeviceLabel+'</a>').data('default',data.ConnectedDeviceID);
-						cdeviceport.html('<a href="paths.php?deviceid='+data.ConnectedDeviceID+'&portnumber='+data.ConnectedPort+'">'+data.ConnectedPortLabel+'</a>').data('default',data.ConnectedPort);
-						cnotes.html(data.Notes).data('default',data.Notes);
-						porttype.html(data.MediaName).data('default',data.MediaID);
-						portcolor.html(data.ColorName).data('default',data.ColorID);
-						$('#controls'+portnum).remove();
-						row.children('div ~ div').removeAttr('style');
-						row.data('edit',false);
-						devicepaths(row);
-					});
-				}
-				var controls=$('<div>',({'id':'controls'+portnum}));
-				var savebtn=$('<button>',{'type':'button'}).append('<?php echo __("Save"); ?>').click(save);
-				var cancelbtn=$('<button>',{'type':'button'}).append('<?php echo __("Cancel"); ?>').click(redrawrow);
-				var deletebtn=$('<button>',{'type':'button'}).append('<?php echo __("Delete"); ?>').click(clear);
-				controls.append(savebtn).append(cancelbtn).append(deletebtn);
-				var minwidth=0;
-				portcolor.after(controls);
-				controls.children('button').each(function(){
-					minwidth+=$(this).outerWidth()+14; // 14 padding and border
-				});
-				controls.css('min-width',minwidth);
-				row.children('div ~ div:not([id^=st])').css({'padding': '0px', 'background-color': 'transparent'});
-				setTimeout(function() {
-					resize();
-				},200);
-			}
-		}).css({'cursor': 'pointer','text-decoration': 'underline'});
+			}).css({'cursor': 'pointer','text-decoration': 'underline'});
+		}
 	});
 	$('.patchpanel > div ~ div').each(function(){
 		var row=$(this);
@@ -1732,7 +1755,7 @@ echo '	<div class="table">
 			if($dev->DeviceType=='Switch'){$linkList[$i]=(isset($linkList[$i]))?$linkList[$i]:'err';}
 
 			// the data attribute is used to store the previous value of the connection
-			print "\t\t\t\t<div>
+			print "\t\t\t\t<div data-port=$i>
 					<div id=\"sp$i\">$i</div>
 					<div id=\"spn$i\">$port->Label</div>
 					<div id=\"d$i\" data-default=\"$port->ConnectedDeviceID\"><a href=\"devices.php?deviceid=$port->ConnectedDeviceID\">$tmpDev->Label</a></div>
@@ -1825,6 +1848,14 @@ echo '	<div class="table">
 </div><!-- END div.page -->
 <script type="text/javascript">
 	var portrights=$.parseJSON('<?php echo json_encode($jsondata); ?>');
+
+<?php
+	if($dev->Rights!="Write"){
+		print "$('#firstport button[name=firstport],#firstport button[name=name]').hide();
+				$('.main input, .main select').prop('disabled', true);";
+	}
+?>
+
 	$(document).ready(function() {
 		// Don't attempt to open the datacenter tree until it is loaded
 		function opentree(){
