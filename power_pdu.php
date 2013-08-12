@@ -2,13 +2,6 @@
 	require_once( 'db.inc.php' );
 	require_once( 'facilities.inc.php' );
 
-	// CDUs don't have owners, they are part of the infrastructure so you have to at least have Global Read to view them
-	if(!$user->ReadAccess){
-		// No soup for you.
-		header('Location: '.redirect());
-		exit;
-	}
-
 	$pdu=new PowerDistribution();
 	$cab=new Cabinet();
 	$powerConn=new PowerConnection();
@@ -19,42 +12,51 @@
 	$upTime='';
 
 	// Ajax actions
-	if(isset($_REQUEST['d']) || isset($_REQUEST['c']) || isset($_REQUEST['pid'])){
-		// Build drop down list of devices for this cabinet
-		if(isset($_REQUEST['c'])){
-			$connDev->Cabinet=$_REQUEST['c'];
-			$devlist=$connDev->ViewDevicesByCabinet();
-			echo '<select name="d"><option value=""></option>';
-			foreach($devlist as $device){
-				echo '<option value="',$device->DeviceID,'"',((isset($_REQUEST['d'])&&$_REQUEST['d']==$device->DeviceID)?" selected":""),'>',$device->Label,'</option>';
-			}
-			echo '</select>';
-		}elseif(isset($_REQUEST['pid'])){
-			if(isset($_POST['confirmdelete'])){
-				$pdu->PDUID=$_POST['pid'];
-				if($pdu->DeletePDU()){
-					echo 'ok';
-				}else{
-					echo 'no';
-				}
-				exit;
-			}
-			$powerConn->PDUID=$_REQUEST['pid'];
-			$powerConn->PDUPosition=$_REQUEST['output'];
-			if((isset($_REQUEST['d']) && ($_REQUEST['d']!="" || $_REQUEST['d']!="undefined")) || (isset($_REQUEST['devinput']) && ($_REQUEST['devinput']!="" || $_REQUEST['devinput']!="undefined" ))){
-				$powerConn->DeviceID=$_REQUEST['d'];
-				$powerConn->DeviceConnNumber=$_REQUEST['devinput'];
-				// check for valid creation 
-				if($powerConn->CreateConnection()){
-					echo 'ok';
-				}else{
-					echo 'no';
-				}
-			}else{
-				$powerConn->RemoveConnection();
-			}
+	// List of devices in the rack
+	if(isset($_POST['c'])){
+		$connDev->Cabinet=$_POST['c'];
+		header('Content-Type: application/json');
+		$devices=$connDev->ViewDevicesByCabinet();
+		// filter for rights
+		foreach($devices as $i => $dev){
+			if($dev->Rights!="Write"){unset($devices[$i]);}
 		}
-		// This is for ajax actions so make sure not to call the rest of the page
+		echo json_encode($devices);
+		exit;
+	}
+	if(isset($_POST['pdu'])){
+		$powerConn->PDUID=$_POST['pdu'];
+		$powerConn->PDUPosition=$_POST['output'];
+		$powerConn->GetPDUConnectionByPosition();
+		if(isset($_POST['deviceid']) && isset($_POST['devinput'])){
+			$powerConn->DeviceID=$_POST['deviceid'];
+			$powerConn->DeviceConnNumber=$_POST['devinput'];
+			if($powerConn->DeviceID=="" || $powerConn->DeviceConnNumber==""){
+				$powerConn->RemoveConnection();
+				echo 1;
+			}else{
+				echo $powerConn->CreateConnection();
+			}
+			exit;
+		}
+		if(isset($_POST['output'])){
+			header('Content-Type: application/json');
+			$connDev->DeviceID=$powerConn->DeviceID;
+			$connDev->GetDevice();
+			$powerConn->DeviceLabel=$connDev->Label;
+			echo json_encode($powerConn);
+			exit;
+		}
+		exit;
+	}
+
+	if(isset($_REQUEST['pid']) && isset($_POST['confirmdelete'])){
+		$pdu->PDUID=$_POST['pid'];
+		if($pdu->DeletePDU()){
+			echo 'ok';
+		}else{
+			echo 'no';
+		}
 		exit;
 	}
 
@@ -169,15 +171,21 @@
 		exit;
 	}
 
+	// END - Ajax
 
 
 	if(isset($_REQUEST['pduid'])){
-		$pdu->PDUID=(isset($_REQUEST['pduid']) ? $_REQUEST['pduid'] : $_GET['pduid']);
+		$pdu->PDUID=(isset($_REQUEST['pduid'])?(isset($_POST['pduid']))?$_POST['pduid']:$_GET['pduid']:$_GET['pduid']);
 	}else{
 		echo 'Do not call this file directly';
 		exit;
 	}
-	if(isset($_REQUEST['action']) && (($_REQUEST['action']=='Create') || ($_REQUEST['action']=='Update')) && $user->WriteAccess) {
+
+	$pdu->GetPDU();
+	$cab->CabinetID=(isset($_REQUEST['cabinetid']))?$_REQUEST['cabinetid']:$pdu->CabinetID;
+	$cab->GetCabinet();
+
+	if(isset($_REQUEST['action']) && (($_REQUEST['action']=='Create') || ($_REQUEST['action']=='Update')) && $user->canWrite($cab->AssignedTo)) {
 		$pdu->Label=$_REQUEST['label'];
 		$pdu->CabinetID=$_REQUEST['cabinetid'];
 		$pdu->TemplateID=$_REQUEST['templateid'];
@@ -207,17 +215,18 @@
 	}
 
 	if($pdu->PDUID >0){
-		$pdu->GetPDU();
 		$upTime=$pdu->GetSmartCDUUptime();
 		
 		$template->TemplateID=$pdu->TemplateID;
 		$template->GetTemplate();
 	} else {
-		$pdu->CabinetID=$_GET['cabinetid'];
+		$pdu->CabinetID=$_REQUEST['cabinetid'];
 	}
 
 	$cab->CabinetID=$pdu->CabinetID;
 	$cab->GetCabinet();
+
+	$write=$user->canWrite($cab->AssignedTo);
 	
 	$Panel=new PowerPanel();
 	$PanelList=$Panel->GetPanelList();
@@ -262,88 +271,70 @@
 		});
 		$('.center > div + div > .table > div:first-child ~ div').each(function(){
 			var row=$(this);
-			var pduid=$('#pduid');
-			var cabid=$('#cabinetid').val();
-			row.find('div:first-child').click(function(){
-				if($(this).attr('edit')=='yes'){
-
-				}else{
-					$(this).attr('edit', 'yes');
-					var output=$(this).text();
-					var device=$(this).next();
-					var devid=device.attr('alt');
-					if(devid!=""){var selected='&d='+devid;}else{var selected='';}
-					var devinput=device.next();
-					var width=devinput.width();
-					var height=devinput.innerHeight();
-					$.ajax({
-						type: 'POST',
-						url: 'power_pdu.php',
-						data: 'c='+cabid+selected,
-						success: function(data){
-							device.html(data).css('padding', '0px');
-							devinput.html('<input name="DeviceConnNumber" value="'+devinput.text()+'"></input>').css('padding', '0px');
-							devinput.children('input').css({'width': width+'px', 'text-align': 'center'});
-<?php echo '							row.append(\'<div style="padding: 0px;"><button name="delete">',__("Delete"),'</button><button name="cancel">',__("Cancel"),'</button></div>\');'; ?>
-							row.find('div > button').css({'height': height+'px', 'line-height': '1'});
-							row.find('div > button').each(function(){
-								var a=devinput.find('input');
-								var b=device.find('select');
-								if($(this).attr('name')=="delete"){
-									$(this).click(function(){
-										b.val("");
-										a.val("");
-										a.focus();
-										b.focus();
-									});
-								}else if($(this).attr('name')=="cancel"){
-									$(this).click(function(){
-										b.val(device.attr('data'));
-										a.val(devinput.attr('data'));
-										a.focus();
-										b.focus();
-									});
-								}
-							});
-							row.find('div:nth-child(2) > select, div:nth-child(3) > input').on('focusout', function(){
-								var device=$(this).parent('div').parent('div').children('div > div:nth-child(2)');
-								var output=device.prev().text();
-								var devinput=device.next();
-								var devid=device.find('select').val();
-								var psnum=devinput.find('input').val();
-								device.attr('alt', devid);
-								var link='<a href="devices.php?deviceid='+devid+'">'+device.find('option:selected').text()+'</a>';
-								if(device.find('select').val()!="" && devinput.find('input').val()!=""){
-									$.ajax({
-										type: 'POST',
-										url: 'power_pdu.php',
-										data: 'd='+devid+'&pid='+pduid.val()+'&output='+output+'&devinput='+psnum,
-										success: function(data){
-											if(data.trim()=='ok'){
-												device.html(link).removeAttr('style');
-												devinput.html(psnum).removeAttr('style');
-												row.effect('highlight', {color: 'lightgreen'}, 1500);
-												row.find('div:first-child').removeAttr('edit');
-												row.find('div:last-child').remove();
-											}else{
-												row.effect('highlight', {color: 'salmon'}, 1500);
-												row.find('input,select').effect('highlight', {color: 'salmon'}, 1500);
-											}
-										}
-									});
-								}else if(device.find('select').val()=="" && devinput.find('input').val()==""){
-									$.post('power_pdu.php', {pid: pduid.val(), output: output});
-									device.html('').removeAttr('style');
-									devinput.html('').removeAttr('style');
+			var output=row.find('div:first-child');
+			if(portrights[output.text()]){
+				output.click(function(){
+					if(!row.data('edit')){
+						function update(){
+							if(input.val()=='' && select.val()==''){
+								save();
+							}else if(input.val()!='' && select.val()!=''){
+								save();
+							}
+						}
+						var pduid=$('#pduid');
+						var cabid=$('#cabinetid').val();
+						var option=$('<option>');
+						var select=$('<select>').append(option).on('focusout',update).css('background-color','transparent');
+						var input=$('<input>').on('focusout',update).css('background-color','transparent');
+						var btn_delete=$('<button>').text('Delete');
+						var btn_cancel=$('<button>').text('Cancel');
+						var controls=$('<div>').css('padding','0px').append(btn_delete).append(btn_cancel);
+						var device=output.next();
+						var devinput=device.next();
+						var width=devinput.width();
+						btn_delete.click(function(){
+							select.val('');
+							input.val('');
+							select.focus();
+							input.focus();
+						});
+						btn_cancel.click(function(){
+							redraw();
+						});
+						function save(){
+							$.post('',{pdu: $('#pduid').val(), output: output.text(), deviceid: select.val(), devinput: input.val()}).done(function(data){
+								if(data.trim()=='1'){
+									//success
 									row.effect('highlight', {color: 'lightgreen'}, 1500);
-									row.find('div:first-child').removeAttr('edit');
-									row.find('div:last-child').remove();
+									redraw();
+								}else{
+									//fail
+									row.effect('highlight', {color: 'salmon'}, 1500);
 								}
 							});
 						}
-					});
-				}
-			}).css({'cursor': 'pointer', 'text-decoration': 'underline'});
+						function redraw(){
+							$.post('',{pdu: $('#pduid').val(), output: output.text()}).done(function(data){
+								var link=$('<a>').text(data.DeviceLabel).prop('href','devices.php?deviceid='+data.DeviceID);
+								device.data('device',data.DeviceID).html(link).prop('style','');
+								devinput.data('input',data.DeviceConnNumber).text(data.DeviceConnNumber).prop('style','');
+								controls.remove();
+								row.data('edit',false);
+							});
+						}
+						row.data('edit', true);
+						$.post('',{c: cabid}).done(function(data){
+							$.each(data, function(i,dev){
+								select.append(option.clone().val(dev.DeviceID).text(dev.Label));
+							});
+							device.html(select.val(device.data('device'))).css('padding','0px');
+							devinput.html(input.val(devinput.data('input')).width(width)).css('padding','0px');
+							row.append(controls);
+						});
+					}
+				}).css({'cursor': 'pointer', 'text-decoration': 'underline'});
+			}
 		});
 		$('.main button[value=Delete]').click(function(){
 			var defaultbutton={
@@ -353,7 +344,7 @@
 							self.location=$('.main > a').last().attr('href');
 							$(this).dialog("destroy");
 						}else{
-							alert('error');
+							alert('Nope');
 						}
 					});
 				}
@@ -501,14 +492,16 @@ echo '   </select></div>
 <div class="caption">';
 
 	if($pdu->PDUID >0){
-		if($user->WriteAccess || $user->SiteAdmin){
+		if($write || $user->SiteAdmin){
 			echo '   <button type="submit" name="action" value="Update">',__("Update"),'</button>';
 			if($user->SiteAdmin){
 				echo '   <button type="button" name="action" value="Delete">',__("Delete"),'</button>';
 			}
 		}
 	}else{
-		echo '   <button type="submit" name="action" value="Create">',__("Create"),'</button>';
+		if($write || $user->SiteAdmin){
+			echo '   <button type="submit" name="action" value="Create">',__("Create"),'</button>';
+		}
 	}
 
 echo '</div>
@@ -526,12 +519,15 @@ echo '</div>
 		<div>',__("Dev Input No"),'</div>
 	</div>';
 
+	$portrights=array();
 	for($connNumber=1; $connNumber<$template->NumOutlets+1; $connNumber++){
 		if(isset($connList[$connNumber])){
 			$connDev->DeviceID=$connList[$connNumber]->DeviceID;
 			$connDev->GetDevice();
-			print "	<div>\n		<div>$connNumber</div>\n		<div alt=\"{$connList[$connNumber]->DeviceID}\" data=\"{$connList[$connNumber]->DeviceID}\"><a href=\"devices.php?deviceid={$connList[$connNumber]->DeviceID}\">$connDev->Label</a></div>\n		<div data=\"{$connList[$connNumber]->DeviceConnNumber}\">{$connList[$connNumber]->DeviceConnNumber}</div>\n	</div>\n";
+			$portrights[$connNumber]=($connDev->Rights=="Write")?true:$write;
+			print "	<div>\n		<div>$connNumber</div>\n		<div alt=\"{$connList[$connNumber]->DeviceID}\" data-device=\"{$connList[$connNumber]->DeviceID}\"><a href=\"devices.php?deviceid={$connList[$connNumber]->DeviceID}\">$connDev->Label</a></div>\n		<div data-input=\"{$connList[$connNumber]->DeviceConnNumber}\">{$connList[$connNumber]->DeviceConnNumber}</div>\n	</div>\n";
 		}else{
+			$portrights[$connNumber]=$write;
 			print "	<div>\n		<div>$connNumber</div>\n		<div alt=\"\"></div>\n		<div></div>\n	</div>\n";
 		}
 	}
@@ -541,7 +537,8 @@ echo '</div>
 		if ( $ghostConnection->PDUPosition > $template->NumOutlets ) {
 			$connDev->DeviceID=$ghostConnection->DeviceID;
 			$connDev->GetDevice();
-			print "	<div>\n		<div>$ghostConnection->PDUPosition</div>\n		<div alt=\"{$ghostConnection->DeviceID}\" data=\"{$ghostConnection->DeviceID}\"><a href=\"devices.php?deviceid={$ghostConnection->DeviceID}\">$connDev->Label</a></div>\n		<div data=\"{$ghostConnection->DeviceConnNumber}\">{$ghostConnection->DeviceConnNumber}</div>\n	</div>\n";
+			$portrights[$connNumber]=($connDev->Rights=="Write")?true:$write;
+			print "	<div>\n		<div>$ghostConnection->PDUPosition</div>\n		<div alt=\"{$ghostConnection->DeviceID}\" data-device=\"{$ghostConnection->DeviceID}\"><a href=\"devices.php?deviceid={$ghostConnection->DeviceID}\">$connDev->Label</a></div>\n		<div data-input=\"{$ghostConnection->DeviceConnNumber}\">{$ghostConnection->DeviceConnNumber}</div>\n	</div>\n";
 		}
 	}
 ?>  
@@ -553,5 +550,14 @@ echo '</div>
 <?php echo '<a href="cabnavigator.php?cabinetid=',$cab->CabinetID,'">[ ',__("Return to Navigator"),' ]</a>'; ?>
 </div><!-- END div.main -->
 </div><!-- END div.page -->
+<script type="text/javascript">
+	var portrights=$.parseJSON('<?php echo json_encode($portrights); ?>');
+
+<?php
+	if($pdu->PDUID >0 && !$write){
+		print "$('.main select, .main input').prop('disabled', true);";
+	}
+?>
+</script>
 </body>
 </html>

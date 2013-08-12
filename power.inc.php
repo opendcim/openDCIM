@@ -198,20 +198,64 @@ class PowerConnection {
 		$this->DeviceConnNumber=intval($this->DeviceConnNumber);
 	}
 
+	function RowToObject($row){
+		$conn=new PowerConnection;
+		$conn->PDUID=$row["PDUID"];
+		$conn->PDUPosition=$row["PDUPosition"];
+		$conn->DeviceID=$row["DeviceID"];
+		$conn->DeviceConnNumber=$row["DeviceConnNumber"];
+
+		return $conn;
+	}
+
+	function CanWrite(){
+		// check rights
+		$write=false;
+
+			// check for an existing device
+		$tmpconn=new PowerConnection();
+		foreach($this as $prop => $value){
+			$tmpconn->$prop=$value;
+		}
+		$tmpconn->GetPDUConnectionByPosition();
+		$dev=new Device();
+		$dev->DeviceID=$tmpconn->DeviceID;
+		$dev->GetDevice();
+		$write=($dev->Rights=="Write")?true:$write;
+
+			// check for new device
+		$dev->DeviceID=$this->DeviceID;
+		$dev->GetDevice();
+		$write=($dev->Rights=="Write")?true:$write;
+
+			// check for rack ownership
+		$pdu=new PowerDistribution();
+		$pdu->PDUID=$this->PDUID;
+		$pdu->GetPDU();
+		$cab=new Cabinet();
+		$cab->CabinetID=$pdu->CabinetID;
+		$cab->GetCabinet();
+		$write=(User::Current()->canWrite($cab->AssignedTo))?true:$write;
+
+		return $write;
+	}
+
 	function CreateConnection(){
 		global $dbh;
 
 		$this->MakeSafe();
+
 		$sql="INSERT INTO fac_PowerConnection SET DeviceID=$this->DeviceID, 
 			DeviceConnNumber=$this->DeviceConnNumber, PDUID=$this->PDUID, 
 			PDUPosition=$this->PDUPosition ON DUPLICATE KEY UPDATE DeviceID=$this->DeviceID,
 			DeviceConnNumber=$this->DeviceConnNumber;";
 
-		if($dbh->exec($sql)){
-			return true;
-		}else{
-			return false;
+		if($this->CanWrite()){
+			if($dbh->query($sql)){
+				return true;
+			}
 		}
+		return false;
 	}
 	
 	function DeleteConnections(){
@@ -224,11 +268,12 @@ class PowerConnection {
 		$this->MakeSafe();
 		$sql="DELETE FROM fac_PowerConnection WHERE DeviceID=$this->DeviceID;";
 
-		if($dbh->exec($sql)){
-			return true;
-		}else{
-			return false;
+		if($this->CanWrite()){
+			if($dbh->exec($sql)){
+				return true;
+			}
 		}
+		return false;
 	}
 	
 	function RemoveConnection(){
@@ -242,14 +287,15 @@ class PowerConnection {
 		$sql="DELETE FROM fac_PowerConnection WHERE PDUID=$this->PDUID AND 
 			PDUPosition=$this->PDUPosition;";
 
-		if($dbh->exec($sql)){
-			return true;
-		}else{
-			return false;
+		if($this->CanWrite()){
+			if($dbh->exec($sql)){
+				return true;
+			}
 		}
+		return false;
 	}
 
-	function GetPDUConnectionByPosition($db=null){
+	function GetPDUConnectionByPosition(){
 		global $dbh;
 
 		$this->MakeSafe();
@@ -257,14 +303,15 @@ class PowerConnection {
 			PDUPosition=$this->PDUPosition;";
     
 		if($row=$dbh->query($sql)->fetch()){
-			$this->PDUID=$row["PDUID"];
-			$this->PDUPosition=$row["PDUPosition"];
-			$this->DeviceID=$row["DeviceID"];
-			$this->DeviceConnNumber=$row["DeviceConnNumber"];
+			foreach(PowerConnection::RowToObject($row) as $prop => $value){
+				$this->$prop=$value;
+			}
+			return true;
 		}
+		return false;
 	}
   
-	function GetConnectionsByPDU($db=null){
+	function GetConnectionsByPDU(){
 		global $dbh;
 
 		$this->MakeSafe();
@@ -273,12 +320,7 @@ class PowerConnection {
 
 		$connList=array();
 		foreach($dbh->query($sql) as $row){
-			$connNum=$row["PDUPosition"];
-			$connList[$connNum]=new PowerConnection;
-			$connList[$connNum]->PDUID=$row["PDUID"];
-			$connList[$connNum]->PDUPosition=$row["PDUPosition"];
-			$connList[$connNum]->DeviceID=$row["DeviceID"];
-			$connList[$connNum]->DeviceConnNumber=$row["DeviceConnNumber"];
+			$connList[$row["PDUPosition"]]=PowerConnection::RowToObject($row);
 		}
 		return $connList;
 	}
@@ -290,16 +332,8 @@ class PowerConnection {
     	$sql="SELECT * FROM fac_PowerConnection WHERE DeviceID=$this->DeviceID ORDER BY DeviceConnnumber ASC, PDUID, PDUPosition";
 
 		$connList=array();
-		$connNum=0;
-    
 		foreach($dbh->query($sql) as $row){
-			$connList[$connNum]=new PowerConnection;
-			$connList[$connNum]->PDUID=$row["PDUID"];
-			$connList[$connNum]->PDUPosition=$row["PDUPosition"];
-			$connList[$connNum]->DeviceID=$row["DeviceID"];
-			$connList[$connNum]->DeviceConnNumber=$row["DeviceConnNumber"];
-      
-			$connNum++;
+			$connList[]=PowerConnection::RowToObject($row);
 		}
 		return $connList;
 	}    
@@ -330,12 +364,6 @@ class PowerDistribution {
 	var $FailSafe;
 	var $PanelID2;
 	var $PanelPole2;
-	protected $DB;
-
-	function __construct(){
-		global $dbh;
-		$this->DB=$dbh;
-	}
 
 	function MakeSafe(){
 		$this->Label=addslashes(trim($this->Label));
@@ -360,7 +388,7 @@ class PowerDistribution {
 		$this->FirmwareVersion=stripslashes($this->FirmwareVersion);
 	}
 
-	static private function PDURowToObject($row){
+	static function PDURowToObject($row){
 		$PDU=new PowerDistribution();
 		$PDU->PDUID=$row["PDUID"];
 		$PDU->Label=$row["Label"];
@@ -382,7 +410,19 @@ class PowerDistribution {
 		return $PDU;
 	}
 	
+	function query($sql){
+		global $dbh;
+		return $dbh->query($sql);
+	}
+
+	function exec($sql){
+		global $dbh;
+		return $dbh->exec($sql);
+	}
+
 	function CreatePDU(){
+		global $dbh;
+
 		$this->MakeSafe();
 
 		$sql="INSERT INTO fac_PowerDistribution SET Label=\"$this->Label\", 
@@ -392,12 +432,12 @@ class PowerDistribution {
 			PanelPole=$this->PanelPole, InputAmperage=$this->InputAmperage, 
 			FailSafe=$this->FailSafe, PanelID2=$this->PanelID2, PanelPole2=$this->PanelPole2;";
 
-		if($this->DB->exec($sql)){
-			$this->PDUID=$this->DB->lastInsertId();
+		if($this->exec($sql)){
+			$this->PDUID=$dbh->lastInsertId();
 
 			return $this->PDUID;
 		}else{
-			$info=$this->DB->errorInfo();
+			$info=$dbh->errorInfo();
 
 			error_log("CreatePDU::PDO Error: {$info[2]} SQL=$sql");
 
@@ -416,7 +456,7 @@ class PowerDistribution {
 			FailSafe=$this->FailSafe, PanelID2=$this->PanelID2, PanelPole2=$this->PanelPole2
 			WHERE PDUID=$this->PDUID;";
 
-		return $this->DB->query($sql);
+		return $this->query($sql);
 	}
 
 	function GetSourceForPDU(){
@@ -435,7 +475,7 @@ class PowerDistribution {
 
 		$sql="SELECT * FROM fac_PowerDistribution WHERE PDUID=$this->PDUID;";
 
-		if($PDURow=$this->DB->query($sql)->fetch()){
+		if($PDURow=$this->query($sql)->fetch()){
 			foreach(PowerDistribution::PDURowToObject($PDURow) as $prop => $value){
 				$this->$prop=$value;
 			}
@@ -457,7 +497,7 @@ class PowerDistribution {
 			 OR PanelID2=$this->PanelID ORDER BY PanelPole ASC, CabinetID, Label";
 
 		$PDUList=array();
-		foreach($this->DB->query($sql) as $PDURow){
+		foreach($this->query($sql) as $PDURow){
 			$PDUList[]=PowerDistribution::PDURowToObject($PDURow);
 		}
 
@@ -470,7 +510,7 @@ class PowerDistribution {
 		$sql="SELECT * FROM fac_PowerDistribution WHERE CabinetID=$this->CabinetID;";
 
 		$PDUList=array();
-		foreach($this->DB->query($sql) as $PDURow){
+		foreach($this->query($sql) as $PDURow){
 			$PDUList[$PDURow["PDUID"]]=PowerDistribution::PDURowToObject($PDURow);
 		}
 
@@ -483,7 +523,7 @@ class PowerDistribution {
 		$sql="SELECT * FROM fac_PowerDistribution WHERE Label LIKE \"%$this->Label%\";";
 
 		$PDUList=array();
-		foreach($this->DB->query($sql) as $PDURow){
+		foreach($this->query($sql) as $PDURow){
 			$PDUList[$PDURow["PDUID"]]=PowerDistribution::PDURowToObject($PDURow);
 		}
 
@@ -495,7 +535,7 @@ class PowerDistribution {
 
 		$sql="SELECT Wattage FROM fac_PDUStats WHERE PDUID=$this->PDUID;";
 	
-		if($wattage=$this->DB->query($sql)->fetchColumn()){
+		if($wattage=$this->query($sql)->fetchColumn()){
 			return $wattage;	
 		}else{
 			return false;
@@ -512,7 +552,7 @@ class PowerDistribution {
 			(SELECT CabinetID FROM fac_Cabinet WHERE DataCenterID=".intval($dc)."))";
 		}		
 		
-		return $this->DB->query($sql)->fetchColumn();
+		return $this->query($sql)->fetchColumn();
 	}
 	
 	function GetWattageByCabinet($CabinetID){
@@ -524,7 +564,7 @@ class PowerDistribution {
 		$sql="SELECT SUM(Wattage) AS Wattage FROM fac_PDUStats WHERE PDUID 
 			IN (SELECT PDUID FROM fac_PowerDistribution WHERE CabinetID=$CabinetID);";
 
-		if(!$wattage=$this->DB->query($sql)->fetchColumn()){
+		if(!$wattage=$this->query($sql)->fetchColumn()){
 			$wattage=0;
 		}
 		
@@ -548,7 +588,7 @@ class PowerDistribution {
 		
 		// The result set should have no PDU's with blank IP Addresses or SNMP Community, so we can forge ahead with processing them all
 		
-		foreach ( $this->DB->query( $sql ) as $row ) {
+		foreach($this->query($sql) as $row){
 			// If only one OID is used, the OID2 and OID3 should be blank, so no harm in just making one string
 			$OIDString = $row["OID1"] . " " . $row["OID2"] . " " . $row["OID3"];
 			
@@ -630,12 +670,12 @@ class PowerDistribution {
 			
 			$sql="INSERT INTO fac_PDUStats SET PDUID={$row["PDUID"]}, Wattage=$watts ON 
 				DUPLICATE KEY UPDATE Wattage=$watts;";
-			$this->DB->exec($sql);
+			$this->exec($sql);
 			
 			$this->PDUID=$row["PDUID"];      
 			$sql="UPDATE fac_PowerDistribution SET FirmwareVersion=\"".
 				$this->GetSmartCDUVersion()."\" WHERE PDUID=$this->PDUID;";
-			$this->DB->exec($sql);
+			$this->exec($sql);
 		}
 	}
 	
@@ -720,6 +760,12 @@ class PowerDistribution {
 		// Do not attempt anything else if the lookup fails
 		if(!$this->GetPDU()){return false;}
 
+		// Check rights
+		$cab=new Cabinet();
+		$cab->CabinetID=$this->CabinetID;
+		$cab->GetCabinet();
+		if(!User::Current()->canWrite($cab->AssignedTo)){return false;}
+
 		// First, remove any connections to the PDU
 		$tmpConn=new PowerConnection();
 		$tmpConn->PDUID=$this->PDUID;
@@ -730,7 +776,7 @@ class PowerDistribution {
 		}
 		
 		$sql="DELETE FROM fac_PowerDistribution WHERE PDUID=$this->PDUID;";
-		if(!$this->DB->exec($sql)){
+		if(!$this->exec($sql)){
 			// Something went south and this didn't delete.
 			return false;
 		}else{
@@ -858,7 +904,7 @@ class PowerPanel {
 
 			return $this->PanelID;
 		}else{
-			$info=$this->DB->errorInfo();
+			$info=$dbh->errorInfo();
 
 			error_log("CreatePanel::PDO Error: {$info[2]} SQL=$sql");
 

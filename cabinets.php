@@ -2,12 +2,6 @@
 	require_once( 'db.inc.php' );
 	require_once( 'facilities.inc.php' );
 
-	if(!$user->WriteAccess){
-		// No soup for you.
-		header('Location: '.redirect());
-		exit;
-	}
-
 	$cab=new Cabinet();
 	$dept=new Department();
 	$taginsert="";
@@ -30,10 +24,22 @@
 
 	// END - AJAX Requests
 
+	$write=($user->WriteAccess)?true:false;
+
 	if(isset($_REQUEST['cabinetid'])){
 		$cab->CabinetID=(isset($_POST['cabinetid'])?$_POST['cabinetid']:$_GET['cabinetid']);
 		$cab->GetCabinet();
+		$write=($user->canWrite($cab->AssignedTo))?true:$write;
 	}
+
+	// this will allow a user to modify a rack but not create a new one
+	// creation is still limited to global write priviledges
+	if(!$write){
+		// No soup for you.
+		header('Location: '.redirect());
+		exit;
+	}
+
 	$tagarray=array();
 	if(isset($_POST['tags'])){
 		$tagarray=json_decode($_POST['tags']);

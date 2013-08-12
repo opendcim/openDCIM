@@ -325,20 +325,18 @@ class Cabinet {
 		return $selectList;
 	}
 	
-	function GetCabinetSelectList( $db = null) {
+	function GetCabinetSelectList(){
 		global $dbh;
 		
-		$sql = "select Name, CabinetID, Location from fac_DataCenter, fac_Cabinet where fac_DataCenter.DataCenterID=fac_Cabinet.DataCenterID order by Name ASC, Location ASC";
+		$sql="SELECT Name, CabinetID, Location FROM fac_DataCenter, fac_Cabinet WHERE 
+			fac_DataCenter.DataCenterID=fac_Cabinet.DataCenterID ORDER BY Name ASC, 
+			Location ASC;";
 
-		$selectList = "<select name=\"cabinetid\" id=\"cabinetid\"><option value=\"-1\">Storage Room</option>";
+		$selectList="<select name=\"cabinetid\" id=\"cabinetid\"><option value=\"-1\">Storage Room</option>";
 
-		foreach ( $dbh->query( $sql) as $selectRow ) {
-			if ( $selectRow[ "CabinetID" ] == $this->CabinetID )
-				$selected = "selected";
-			else
-				$selected = "";
-
-			$selectList .= "<option value=\"" . $selectRow[ "CabinetID" ] . "\" $selected>" . $selectRow[ "Name" ] . " / " . $selectRow[ "Location" ] . "</option>";
+		foreach($dbh->query($sql) as $selectRow){
+			$selected=($selectRow["CabinetID"]==$this->CabinetID)?' selected':'';
+			$selectList.="<option value=\"{$selectRow["CabinetID"]}\"$selected>{$selectRow["Name"]} / {$selectRow["Location"]}</option>";
 		}
 
 		$selectList .= "</select>";
@@ -346,81 +344,82 @@ class Cabinet {
 		return $selectList;
 	}
 
-	function BuildCabinetTree( $db = null ) {
+	function BuildCabinetTree(){
 		global $dbh;
 		
-		$dc = new DataCenter();
-		$dept = new Department();
+		$dc=new DataCenter();
+		$dept=new Department();
 
-		$dcList = $dc->GetDCList( $db );
+		$dcList=$dc->GetDCList();
 
-		if ( count( $dcList ) > 0 ) {
-			$tree = "<ul class=\"mktree\" id=\"datacenters\">\n";
+		if(count($dcList) >0){
+			$tree="<ul class=\"mktree\" id=\"datacenters\">\n";
 			
-			$zoneInfo = new Zone();
-
-			while ( list( $dcID, $datacenter ) = each( $dcList ) ) {
-				if ( $dcID == $this->DataCenterID )
+			$zoneInfo=new Zone();
+			while(list($dcID,$datacenter)=each($dcList)){
+				if($dcID==$this->DataCenterID){
 					$classType = "liOpen";
-				else
+				}else{
 					$classType = "liClosed";
-
-				$tree .= "	<li class=\"$classType\" id=\"dc$dcID\"><a href=\"dc_stats.php?dc=" . $datacenter->DataCenterID . "\">" . $datacenter->Name . "</a>/\n		<ul>\n";
-
-				$sql = "select * from fac_Cabinet where DataCenterID=\"$dcID\" order by Location ASC";
-
-				foreach ( $dbh->query( $sql ) as $cabRow  ) {
-				  $dept->DeptID = $cabRow["AssignedTo"];
-				  
-				  if ( $dept->DeptID == 0 )
-				    $dept->Name = "General Use";
-				  else
-				    $dept->GetDeptByID();
-				    
-					$tree .= "			<li id=\"cab{$cabRow['CabinetID']}\"><a href=\"cabnavigator.php?cabinetid={$cabRow['CabinetID']}\">{$cabRow['Location']} [$dept->Name]</a></li>\n";
 				}
 
-				$tree .= "		</ul>\n	</li>\n";
+				$tree.="\t<li class=\"$classType\" id=\"dc$dcID\"><a href=\"dc_stats.php?dc=$datacenter->DataCenterID\">$datacenter->Name</a>/\n\t\t<ul>\n";
+
+				$sql="SELECT * FROM fac_Cabinet WHERE DataCenterID=\"$dcID\" ORDER BY Location ASC;";
+
+				foreach($dbh->query($sql) as $cabRow){
+					$dept->DeptID = $cabRow["AssignedTo"];
+				  
+					if($dept->DeptID==0){
+						$dept->Name = "General Use";
+					}else{
+						$dept->GetDeptByID();
+					}
+				    
+					$tree.="\t\t\t<li id=\"cab{$cabRow['CabinetID']}\"><a href=\"cabnavigator.php?cabinetid={$cabRow['CabinetID']}\">{$cabRow['Location']} [$dept->Name]</a></li>\n";
+				}
+
+				$tree.="\t\t</ul>\n	</li>\n";
 			}
 			
-			$tree .= "<li class=\"liOpen\" id=\"dc-1\"><a href=\"storageroom.php\">Storage Room</a></li>";
-
-			$tree .= "</ul>";
+			$tree.="<li class=\"liOpen\" id=\"dc-1\"><a href=\"storageroom.php\">Storage Room</a></li>";
+			$tree.="</ul>";
 		}
 
 		return $tree;
 	}
 
-	function DeleteCabinet( $db = null ) {
+	function DeleteCabinet(){
 		global $dbh;
 		
 		/* Need to delete all devices and CDUs first */
-		$tmpDev = new Device();
-		$tmpCDU = new PowerDistribution();
+		$tmpDev=new Device();
+		$tmpCDU=new PowerDistribution();
 		
-		$tmpDev->Cabinet = $this->CabinetID;
-		$devList = $tmpDev->ViewDevicesByCabinet();
+		$tmpDev->Cabinet=$this->CabinetID;
+		$devList=$tmpDev->ViewDevicesByCabinet();
 		
-		foreach ( $devList as &$delDev ) {
+		foreach($devList as &$delDev){
 			$delDev->DeleteDevice();
 		}
 		
-		$tmpCDU->CabinetID = $this->CabinetID;
-		$cduList = $tmpCDU->GetPDUbyCabinet();
+		$tmpCDU->CabinetID=$this->CabinetID;
+		$cduList=$tmpCDU->GetPDUbyCabinet();
 		
-		foreach ( $cduList as &$delCDU ) {
+		foreach($cduList as &$delCDU){
 			$delCDU->DeletePDU();
 		}
 		
-		$sql = sprintf( "delete from fac_Cabinet where CabinetID=\"%d\"", intval( $this->CabinetID ) );
-		if ( ! $dbh->exec( $sql ) ) {
-			$info = $dbh->errorInfo();
+		$sql="DELETE FROM fac_Cabinet WHERE CabinetID=$this->CabinetID;";
 
-			error_log( "PDO Error: " . $info[2] . " SQL=" . $sql );
+		if(!$dbh->exec($sql)){
+			$info=$dbh->errorInfo();
+
+			error_log("PDO Error::DeleteCabinet: {$info[2]} SQL=$sql");
 			return false;
 		}
 		
-		return;
+		return true;
 	}
 
 	function SearchByCabinetName( $db = null ) {
