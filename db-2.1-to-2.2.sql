@@ -73,12 +73,6 @@ CREATE TABLE fac_ColorCoding (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 --
--- Modify fac_DevicePorts for consistency
---
-
-ALTER TABLE fac_DevicePorts CHANGE CableColor ColorID INT(11);
-
---
 -- Adding a field to track where numbering starts for a port - mainly for switch devices
 --
 
