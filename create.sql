@@ -330,6 +330,7 @@ CREATE TABLE fac_Manufacturer (
 -- Table structure for table `fac_Ports`
 --
 
+DROP TABLE IF EXISTS fac_Ports;
 CREATE TABLE fac_Ports (
   DeviceID int(11) NOT NULL,
   PortNumber int(11) NOT NULL,
@@ -715,7 +716,7 @@ INSERT INTO fac_Config VALUES
 	('CriticalColor','#cc0000','HexColor','string','#cc0000'),
 	('CautionColor','#cccc00','HexColor','string','#cccc00'),
 	('GoodColor','#0a0','HexColor','string','#0a0'),
-	('MediaEnforce', 'Disabled', 'Enabled/Disabled', 'string', 'Disabled')
+	('MediaEnforce', 'Disabled', 'Enabled/Disabled', 'string', 'Disabled'),
 	('DefaultPanelVoltage','208','Volts','int','208'),
 	('annualCostPerUYear','200','Dollars','float','200'),
 	('annualCostPerWattYear','0.7884','Dollars','float','0.7884'),
