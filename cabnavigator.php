@@ -374,15 +374,17 @@ function get_cabinet_owner_color($cabinet, &$deptswithcolor) {
 				}
 				
 				$reserved=($device->Reservation==false)?"":" reserved";
-				if($devTop<$currentHeight){
+				if($devTop<$currentHeight && $currentHeight>0){
 					for($i=$currentHeight;$i>$devTop;$i--){
 						$errclass=($i>$cab->CabinetHeight)?' class="error"':'';
 						if($errclass!=''){$heighterr="yup";}
 						if($i==$currentHeight){
 							$blankHeight=$currentHeight-$devTop;
+							if($devTop==-1){--$blankHeight;}
 							$body.="<tr><td $errclass>$i</td><td class=\"freespace\" rowspan=$blankHeight>&nbsp;</td></tr>\n";
 						} else {
 							$body.="<tr><td $errclass>$i</td></tr>\n";
+							if($i==1){break;}
 						}
 					}
 				}
