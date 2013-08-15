@@ -250,7 +250,7 @@ function get_cabinet_owner_color($cabinet, &$deptswithcolor) {
 	while(list($dev_index,$device)=each($devList)){
 		if($device->Height<1){
 			if($device->Rights!="None"){
-				$zeroheight.="				<a href=\"devices.php?deviceid=$device->DeviceID\">$highlight $device->Label</a>\n";
+				$zeroheight.="				<a href=\"devices.php?deviceid=$device->DeviceID\" data-deviceid=$device->DeviceID>$highlight $device->Label</a>\n";
 			} else {
 				$zeroheight.="              $highlight $device->Label\n";
 			}
@@ -310,9 +310,9 @@ function get_cabinet_owner_color($cabinet, &$deptswithcolor) {
 				if($errclass!=''){$heighterr="yup";}
 				if($i==$devTop){
 					if($device->Rights!="None"){
-						$body.="<tr><td$errclass>$i</td><td class=\"device$reserved dept$device->Owner\" rowspan=$device->Height data=$device->DeviceID><a href=\"devices.php?deviceid=$device->DeviceID\">$highlight $device->Label</a></td></tr>\n";
+						$body.="<tr><td$errclass>$i</td><td class=\"device$reserved dept$device->Owner\" rowspan=$device->Height data-deviceid=$device->DeviceID><a href=\"devices.php?deviceid=$device->DeviceID\">$highlight $device->Label</a></td></tr>\n";
 					}else{
-						$body.="<tr><td$errclass>$i</td><td class=\"device$reserved dept$device->Owner\" rowspan=$device->Height data=$device->DeviceID>$highlight $device->Label</td></tr>\n";
+						$body.="<tr><td$errclass>$i</td><td class=\"device$reserved dept$device->Owner\" rowspan=$device->Height data-deviceid=$device->DeviceID>$highlight $device->Label</td></tr>\n";
 					}
 				}else{
  					$body.="<tr><td$errclass>$i</td></tr>\n";
@@ -394,12 +394,12 @@ function get_cabinet_owner_color($cabinet, &$deptswithcolor) {
 					if($i==$devTop){
 						if($device->Rights!="None"){
 							$body.="<tr><td$errclass>$i</td><td class=\"device$reserved dept".
-								"$device->Owner\" rowspan=$device->Height data=$device->DeviceID><a".
+								"$device->Owner\" rowspan=$device->Height data-deviceid=$device->DeviceID><a".
 								" href=\"devices.php?deviceid=$device->DeviceID\">$highlight $device->Label".
 								(!$device->BackSide?" (".__("Rear").")":"")."</a></td></tr>\n";
 						}else{
 							$body.="<tr><td$errclass>$i</td><td class=\"device$reserved dept".
-								"$device->Owner\" rowspan=$device->Height data=$device->DeviceID>".
+								"$device->Owner\" rowspan=$device->Height data-deviceid=$device->DeviceID>".
 								"$highlight $device->Label".(!$device->BackSide?" (".__("Rear").")":"")."</td></tr>\n";
 						}
 					}else{
@@ -649,13 +649,13 @@ echo $head,'  <script type="text/javascript" src="scripts/jquery.min.js"></scrip
 ';
 if($config->ParameterArray["ToolTips"]=='enabled'){
 ?>
-		$('.cabinet td.device:has(a)').mouseenter(function(){
+		$('.cabinet td.device:has(a), #zerou div > a').mouseenter(function(){
 			var pos=$(this).offset();
 			var tooltip=$('<div />').css({
 				'left':pos.left+$(this).outerWidth()+15+'px',
 				'top':pos.top+($(this).outerHeight()/2)-15+'px'
 			}).addClass('arrow_left border cabnavigator tooltip').attr('id','tt').append('<span class="ui-icon ui-icon-refresh rotate"></span>');
-			$.post('',{tooltip: $(this).attr('data')}, function(data){
+			$.post('',{tooltip: $(this).data('deviceid')}, function(data){
 				tooltip.html(data);
 			});
 			$('body').append(tooltip);
