@@ -307,7 +307,6 @@
 					$dev->Cabinet=$_POST['cabinetid'];
 					$dev->Position=$_POST['position'];
 					$dev->Height=$_POST['height'];
-					//$dev->Ports=$_POST['ports'];  already done below
 					$dev->TemplateID=$_POST['templateid'];
 					$dev->DeviceType=$_POST['devicetype'];
 					$dev->MfgDate=date('Y-m-d',strtotime($_POST['mfgdate']));
@@ -328,6 +327,8 @@
 					$dev->ESX=(isset($_POST['esx']))?$_POST['esx']:0;
 					$dev->Reservation=(isset($_POST['reservation']))?($_POST['reservation']=="on")?1:0:0;
 					$dev->NominalWatts=$_POST['nominalwatts'];
+					$dev->HalfDepth=(isset($_POST['halfdepth']))?($_POST['halfdepth']=="on")?1:0:0;
+					$dev->BackSide=(isset($_POST['backside']))?($_POST['backside']=="on")?1:0:0;
 
 					if( ($dev->TemplateID>0) && (intval($dev->NominalWatts==0)) ){
 						$dev->UpdateWattageFromTemplate();
