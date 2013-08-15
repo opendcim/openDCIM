@@ -17,18 +17,18 @@
 	}
 
 	$status='';
-	if(isset($_REQUEST['action'])&&(($_REQUEST['action']=='Create')||($_REQUEST['action']=='Update'))){
-		$template->ManufacturerID = $_REQUEST['manufacturerid'];
-		$template->Model = transform( $_REQUEST['model'] );
-		$template->Height = $_REQUEST['height'];
-		$template->Weight = $_REQUEST['weight'];
-		$template->Wattage = $_REQUEST['wattage'];
-		$template->DeviceType = $_REQUEST['devicetype'];
-		$template->PSCount = $_REQUEST['pscount'];
-		$template->NumPorts = $_REQUEST['numports'];
+	if(isset($_POST['action'])&&(($_POST['action']=='Create')||($_POST['action']=='Update'))){
+		$template->ManufacturerID = $_POST['manufacturerid'];
+		$template->Model = transform( $_POST['model'] );
+		$template->Height = $_POST['height'];
+		$template->Weight = $_POST['weight'];
+		$template->Wattage = $_POST['wattage'];
+		$template->DeviceType = $_POST['devicetype'];
+		$template->PSCount = $_POST['pscount'];
+		$template->NumPorts = $_POST['numports'];
 
-		if($_REQUEST['action']=='Create'){
-			if($template->CreateTemplate()==-1){
+		if($_POST['action']=='Create'){
+			if(!$template->CreateTemplate()){
 				$status='An error has occured, template not created';
 			}		
 		} else {
