@@ -850,23 +850,16 @@ if(isset($results)){
 
 	}
 
-	static $regions = array(
-		'Africa' => DateTimeZone::AFRICA,
-		'America' => DateTimeZone::AMERICA,
-		'Antarctica' => DateTimeZone::ANTARCTICA,
-		'Asia' => DateTimeZone::ASIA,
-		'Atlantic' => DateTimeZone::ATLANTIC,
-		'Europe' => DateTimeZone::EUROPE,
-		'Indian' => DateTimeZone::INDIAN,
-		'Pacific' => DateTimeZone::PACIFIC
-	);
-
-	foreach($regions as $name => $mask){
-		$tzlist[$name]=DateTimeZone::listIdentifiers($mask);
+	$regions=array();
+	foreach(DateTimeZone::listIdentifiers() as $line){
+		$pieces=explode("/",$line);
+		if($pieces[1]){
+			$regions[$pieces[0]][]=$line;
+		}
 	}
 
 	$tzmenu='<ul id="tzmenu">';
-	foreach($tzlist as $country => $cityarray){
+	foreach($regions as $country => $cityarray){
 		$tzmenu.="\t<li>$country\n\t\t<ul>";
 		foreach($cityarray as $key => $city){
 			$z=new DateTimeZone($city);
