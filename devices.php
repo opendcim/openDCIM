@@ -743,13 +743,12 @@ $(document).ready(function() {
 		});
 	});
 
-	if($('select[name=devicetype]').val()=='Switch'){$('#firstport').show();}
 	$('select[name=devicetype]').change(function(){
 		if($(this).val()=='Switch'){
 			if($(document).data('devicetype')!='Switch'){
 				$('#firstport button:not([name="firstport"])').hide();
 			}
-			$('#firstport').show();
+			$('#firstport').show().removeClass('hide');
 			$('.switch div[id^="st"]').show();
 		}else{
 			$('#firstport').hide();
@@ -769,7 +768,7 @@ $(document).ready(function() {
 			}
 		}
 
-	});
+	}).change();
 	$('#firstport button[name=firstport]').click(function(){
 		var modal=$('<div />', {id: 'modal', title: 'Select switch first port'}).html('<div id="modaltext"></div><br><div id="modalstatus" class="warning"></div>').dialog({
 			appendTo: 'body',
@@ -837,6 +836,9 @@ $(document).ready(function() {
 		});
 <?php
 		}
+
+print "		var dialog=$('<div>').prop('title','".__("Verify Delete Device")."').html('<p><span class=\"ui-icon ui-icon-alert\" style=\"float:left; margin:0 7px 20px 0;\"></span><span></span></p>');";
+
 		// Add an extra alert warning about child devices in chassis
 		if($dev->DeviceType=='Chassis'){
 ?>
@@ -844,8 +846,8 @@ $(document).ready(function() {
 			var form=$(this).parents('form');
 			var btn=$(this);
 			if($(this).val()!='Chassis'){
-<?php echo '				$(\'#dialog-confirm\').html(\'<p><span class="ui-icon ui-icon-alert" style="float:left; margin:0 7px 20px 0;"></span>',__("If this device has blades installed they will be deleted and there is no undo. Are you sure?"),'</p>\');'; ?>
-				$('#dialog-confirm').dialog({
+<?php echo '				dialog.find(\'span + span\').text("',__("If this device has blades installed they will be deleted and there is no undo. Are you sure?"),'");'; ?>
+				dialog.dialog({
 					resizable: false,
 					modal: true,
 					dialogClass: "no-close",
@@ -1016,8 +1018,8 @@ $(document).ready(function() {
 		$('button[value="Delete"]').click(function(e){
 			var form=$(this).parents('form');
 			var btn=$(this);
-<?php echo '			$(\'#dialog-confirm\').html(\'<p><span class="ui-icon ui-icon-alert" style="float:left; margin:0 7px 20px 0;"></span>',__("This device will be deleted and there is no undo. Are you sure?"),'</p>\');'; ?>
-			$('#dialog-confirm').dialog({
+<?php echo '				dialog.find(\'span + span\').text("',__("This device will be deleted and there is no undo. Are you sure?"),'");'; ?>
+			dialog.dialog({
 				resizable: false,
 				modal: true,
 				buttons: {
@@ -1807,7 +1809,6 @@ echo '	<div class="table">
 	}else{
 		echo '   <div><a href="storageroom.php">[ ',__("Return to Navigator"),' ]</a></div>';
 	}
-	print "<div id=\"dialog-confirm\" title=\"".__("Verify Delete Device")."\" class=\"hide\"></div>";
 ?>
 
 </div><!-- END div.main -->
