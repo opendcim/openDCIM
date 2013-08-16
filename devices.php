@@ -325,7 +325,7 @@
 							break;
 					}
 				}elseif($user->WriteAccess && $_POST['action']=='Create'){
-					if(($dev->TemplateID>0) && (intval($dev->NominalWatts==0))){
+					if($dev->TemplateID>0 && intval($dev->NominalWatts==0)){
 						$dev->UpdateWattageFromTemplate();
 					}
 					$dev->CreateDevice();
@@ -760,6 +760,15 @@ $(document).ready(function() {
 		}else{
 			$('#esxframe').hide();
 		}
+		// if true, then dealing with child device
+		if($('select[name="parentdevice"]').length){
+			if($(this).val()=='Switch'){
+				$('#dphtml').removeClass('hide');
+			}else{
+				$('#dphtml').addClass('hide');
+			}
+		}
+
 	});
 	$('#firstport button[name=firstport]').click(function(){
 		var modal=$('<div />', {id: 'modal', title: 'Select switch first port'}).html('<div id="modaltext"></div><br><div id="modalstatus" class="warning"></div>').dialog({
