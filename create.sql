@@ -733,6 +733,7 @@ INSERT INTO fac_Config VALUES
 	('MailSubject','ITS Facilities Rack Request','EmailSub','string','ITS Facilities Rack Request'),
 	('MailToAddr','DataCenterTeamAddr@your.domain','Email','string','DataCenterTeamAddr@your.domain'),
 	('ComputerFacMgr','DataCenterMgr Name','Name','string','DataCenterMgr Name'),
+	('NetworkCapacityReportOptIn', 'OptIn', 'OptIn/OptOut', 'string', 'OptIn' ),
 	('FacMgrMail','DataCenterMgr@your.domain','Email','string','DataCenterMgr@your.domain'),
 	('InstallURL','','URL','string','https://dcim.your.domain'),
 	('Version','2.1','','',''),

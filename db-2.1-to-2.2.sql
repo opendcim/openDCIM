@@ -7,6 +7,11 @@ INSERT INTO fac_Config VALUES ('snmpget', '/usr/bin/snmpget', 'path', 'string', 
 INSERT INTO fac_Config VALUES ('cut', '/bin/cut', 'path', 'string', '/bin/cut');
 
 --
+-- Add configuration item for OptIn or OptOut of Capacity Management Report for Networking
+--
+
+INSERT INTO fac_Config VALUES ('NetworkCapacityReportOptIn', 'OptIn', 'OptIn/OptOut', 'string', 'OptIn' );
+--
 -- Add the SNMPVersion field to CDUTemplates
 --
 
