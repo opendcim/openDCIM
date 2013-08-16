@@ -748,8 +748,10 @@ $(document).ready(function() {
 			if($(document).data('devicetype')!='Switch'){
 				$('#firstport button:not([name="firstport"])').hide();
 			}
-			$('#firstport').show().removeClass('hide');
-			$('.switch div[id^="st"]').show();
+			if($('#deviceid').val()>0){
+				$('#firstport').show().removeClass('hide');
+				$('.switch div[id^="st"]').show();
+			}
 		}else{
 			$('#firstport').hide();
 			$('.switch div[id^="st"]').hide();
@@ -823,19 +825,6 @@ $(document).ready(function() {
 <?php
 	// hide all the js functions if they don't have write permissions
 	if($dev->Rights=="Write"){
-		// if they switch device type to switch for a child blade add the dataports field
-		if($dev->ParentDevice>0){
-?>
-		$('select[name=devicetype]').change(function(){
-<?php echo '		var dphtml=\'<div id="dphtml"><div><label for="ports">',__("Number of Data Ports"),'</label></div><div><input class="optional,validate[custom[onlyNumberSp]]" name="ports" id="ports" size="4" value="" type="number"></div></div>\';'; ?>
-			if($(this).val()=='Switch' && $('#dphtml').length==0){
-				$('#nominalwatts').parent().parent().before(dphtml);
-			}else{
-				$('#dphtml').remove();
-			}
-		});
-<?php
-		}
 
 print "		var dialog=$('<div>').prop('title','".__("Verify Delete Device")."').html('<p><span class=\"ui-icon ui-icon-alert\" style=\"float:left; margin:0 7px 20px 0;\"></span><span></span></p>');";
 
@@ -858,7 +847,7 @@ print "		var dialog=$('<div>').prop('title','".__("Verify Delete Device")."').ht
 						},
 <?php echo '				',__("No"),': function(){'; ?>
 							$('.killthechildren').remove();
-							$('select[name=devicetype]').val('Chassis');
+							$('select[name=devicetype]').val('Chassis').change();
 							$(this).dialog("destroy");
 						}
 					}
