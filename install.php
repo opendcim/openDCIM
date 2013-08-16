@@ -436,6 +436,24 @@ function applyupdate ($updatefile){
 		$version="2.1";
 	}
 
+	if($version=="2.1"){
+		// This is gonna be a pretty big one.
+
+		// found this in devices.php, search for this criteria and change it to 
+		// match the new stuff after the schema updates have been applied
+          /*JMGA changed the criterion of front/rear: no longer in chassisslots, but BackSide
+            echo '      <div>
+            <div><label for="powersupplycount">',__("Front / Rear"),'</label></div>
+            <div><select id="chassisslots" name="chassisslots">
+                <option value=0'.(($dev->ChassisSlots==0)?' selected':'').'>',__("Front"),'</option>
+                <option value=1'.(($dev->ChassisSlots==1)?' selected':'').'>',__("Rear"),'</option>
+            </select></div>
+        </div>'; */
+
+
+
+
+	}
 		
 	if($upgrade==true){ //If we're doing an upgrade don't call the rest of the installer.
 ?>

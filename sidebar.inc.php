@@ -60,7 +60,7 @@
 	$('#advsrch, #searchadv ~ .ui-icon.ui-icon-close').click(function(){
 		var here=$(this).position();
 		$('#searchadv, #searchname').val('');
-		$('#searchadv').parents('form').height(here.top).toggle('slide',200);
+		$('#searchadv').parents('form').height(here.top).toggle('slide',200).removeClass('hide');
 		if($('#searchadv').hasClass('ui-autocomplete-input')){$('#searchadv').autocomplete('destroy');}
 		if($(this).text()=='<?php echo __("Advanced");?>'){$(this).text('<?php echo __("Basic");?>');$('#searchadv ~ select[name="key"]').trigger('change');}else{$(this).text('<?php echo __("Advanced");?>');}
 	});

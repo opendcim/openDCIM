@@ -16,7 +16,7 @@ html {
 select {padding: .05em;}
 fieldset table, table {border: 1px solid grey;}
 textarea {white-space: pre;word-wrap: break-word;}
-.hide {display: none;}
+.hide {display: none !important;}
 .show {display: block;}
 .greybg {background-color: lightGrey;}
 .warning {text-align: center; color: red; text-transform: uppercase;}

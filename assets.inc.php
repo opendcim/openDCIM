@@ -1179,12 +1179,12 @@ class Device {
 		if($this->DeviceType=="Chassis"){
 			$childList=$this->GetDeviceChildren();
 			foreach($childList as $child){
-				$child->MoveToStorage();
+				DevicePorts::removeConnections($child->DeviceID);
 			}
 		}
 
 		// Delete all network connections first
-		DevicePorts::removePorts($this->DeviceID);
+		DevicePorts::removeConnections($this->DeviceID);
 	}
   
 	function UpdateDevice() {

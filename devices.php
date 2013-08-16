@@ -216,6 +216,7 @@
 	$chassis="";
 	$copy = false;
 	$copyerr=__("This device is a copy of an existing device.  Remember to set the new location before saving.");
+	$childList=array();
 
 	// This page was called from somewhere so let's do stuff.
 	// If this page wasn't called then present a blank record for device creation.
@@ -246,114 +247,96 @@
 				$tagarray=json_decode($_POST['tags']);
 			}
 			if(isset($_POST['action'])){
-				if($user->WriteAccess&&(($dev->DeviceID >0)&&($_POST['action']=='Update'))){
-					// User has changed the device type from chassis to something else and has said yes
-					// that they want to remove the dependant child devices
-					if(isset($_POST['killthechildren'])){
-						$childList=$dev->GetDeviceChildren();
-						foreach($childList as $childDev){
-							$childDev->DeleteDevice();
-						}
-					}
-					$dev->Label=$_POST['label'];
-					$dev->SerialNo=$_POST['serialno'];
-					$dev->AssetTag=$_POST['assettag'];
-					$dev->Owner=$_POST['owner'];
-					$dev->EscalationTimeID=$_POST['escalationtimeid'];
-					$dev->EscalationID=$_POST['escalationid'];
-					$dev->PrimaryContact=$_POST['primarycontact'];
-					$dev->Cabinet=$_POST['cabinetid'];
-					$dev->Position=$_POST['position'];
-					$dev->Height=$_POST['height'];
-					$dev->TemplateID=$_POST['templateid'];
-					$dev->DeviceType=$_POST['devicetype'];
-					$dev->MfgDate=date('Y-m-d',strtotime($_POST['mfgdate']));
-					$dev->InstallDate=date('Y-m-d',strtotime($_POST['installdate']));
-					$dev->WarrantyCo=$_POST['warrantyco'];
-					$dev->WarrantyExpire=date('Y-m-d',strtotime($_POST['warrantyexpire']));
-					$dev->Notes=trim($_POST['notes']);
-					$dev->Notes=($dev->Notes=="<br>")?"":$dev->Notes;
-					$dev->FirstPortNum=$_POST['firstportnum'];
-					// All of the values below here are optional based on the type of device being dealt with
-					$dev->ChassisSlots=(isset($_POST['chassisslots']))?$_POST['chassisslots']:0;
-					$dev->RearChassisSlots=(isset($_POST['rearchassisslots']))?$_POST['rearchassisslots']:0;
-					$dev->Ports=(isset($_POST['ports']))?$_POST['ports']:"";
-					$dev->PowerSupplyCount=(isset($_POST['powersupplycount']))?$_POST['powersupplycount']:"";
-					$dev->ParentDevice=(isset($_POST['parentdevice']))?$_POST['parentdevice']:"";
-					$dev->PrimaryIP=(isset($_POST['primaryip']))?$_POST['primaryip']:"";
-					$dev->SNMPCommunity=(isset($_POST['snmpcommunity']))?$_POST['snmpcommunity']:"";
-					$dev->ESX=(isset($_POST['esx']))?$_POST['esx']:0;
-					$dev->Reservation=(isset($_POST['reservation']))?($_POST['reservation']=="on")?1:0:0;
-					$dev->NominalWatts=$_POST['nominalwatts'];
-					$dev->HalfDepth=(isset($_POST['halfdepth']))?($_POST['halfdepth']=="on")?1:0:0;
-					$dev->BackSide=(isset($_POST['backside']))?($_POST['backside']=="on")?1:0:0;
-					
-					if(($dev->TemplateID >0)&&(intval($dev->NominalWatts==0))){$dev->UpdateWattageFromTemplate();}
-			
-					$dev->SetTags($tagarray);
-					if($dev->Cabinet <0){
-						$dev->MoveToStorage();
-					}else{
-						$dev->UpdateDevice();
-					}
-				}elseif($user->WriteAccess&&($_POST['action']=='Create')){
-					$dev->Label=$_POST['label'];
-					$dev->SerialNo=$_POST['serialno'];
-					$dev->AssetTag=$_POST['assettag'];
-					$dev->Owner=$_POST['owner'];
-					$dev->EscalationTimeID=$_POST['escalationtimeid'];
-					$dev->EscalationID=$_POST['escalationid'];
-					$dev->PrimaryContact=$_POST['primarycontact'];
-					$dev->Cabinet=$_POST['cabinetid'];
-					$dev->Position=$_POST['position'];
-					$dev->Height=$_POST['height'];
-					$dev->TemplateID=$_POST['templateid'];
-					$dev->DeviceType=$_POST['devicetype'];
-					$dev->MfgDate=date('Y-m-d',strtotime($_POST['mfgdate']));
-					$dev->InstallDate=date('Y-m-d',strtotime($_POST['installdate']));
-					$dev->WarrantyCo=$_POST['warrantyco'];
-					$dev->WarrantyExpire=date('Y-m-d',strtotime($_POST['warrantyexpire']));
-					$dev->Notes=trim($_POST['notes']);
-					$dev->Notes=($dev->Notes=="<br>")?"":$dev->Notes;
-					$dev->FirstPortNum=$_POST['firstportnum'];
-					// All of the values below here are optional based on the type of device being dealt with
-					$dev->ChassisSlots=(isset($_POST['chassisslots']))?$_POST['chassisslots']:0;
-					$dev->RearChassisSlots=(isset($_POST['rearchassisslots']))?$_POST['rearchassisslots']:0;
-					$dev->Ports=(isset($_POST['ports']))?$_POST['ports']:"";
-					$dev->PowerSupplyCount=(isset($_POST['powersupplycount']))?$_POST['powersupplycount']:"";
-					$dev->ParentDevice=(isset($_POST['parentdevice']))?$_POST['parentdevice']:"";
-					$dev->PrimaryIP=(isset($_POST['primaryip']))?$_POST['primaryip']:"";
-					$dev->SNMPCommunity=(isset($_POST['snmpcommunity']))?$_POST['snmpcommunity']:"";
-					$dev->ESX=(isset($_POST['esx']))?$_POST['esx']:0;
-					$dev->Reservation=(isset($_POST['reservation']))?($_POST['reservation']=="on")?1:0:0;
-					$dev->NominalWatts=$_POST['nominalwatts'];
-					$dev->HalfDepth=(isset($_POST['halfdepth']))?($_POST['halfdepth']=="on")?1:0:0;
-					$dev->BackSide=(isset($_POST['backside']))?($_POST['backside']=="on")?1:0:0;
+				$dev->GetDevice();
 
-					if( ($dev->TemplateID>0) && (intval($dev->NominalWatts==0)) ){
+				$dev->Label=$_POST['label'];
+				$dev->SerialNo=$_POST['serialno'];
+				$dev->AssetTag=$_POST['assettag'];
+				$dev->Owner=$_POST['owner'];
+				$dev->EscalationTimeID=$_POST['escalationtimeid'];
+				$dev->EscalationID=$_POST['escalationid'];
+				$dev->PrimaryContact=$_POST['primarycontact'];
+				$dev->Cabinet=$_POST['cabinetid'];
+				$dev->Position=$_POST['position'];
+				$dev->Height=$_POST['height'];
+				$dev->TemplateID=$_POST['templateid'];
+				$dev->DeviceType=$_POST['devicetype'];
+				$dev->MfgDate=date('Y-m-d',strtotime($_POST['mfgdate']));
+				$dev->InstallDate=date('Y-m-d',strtotime($_POST['installdate']));
+				$dev->WarrantyCo=$_POST['warrantyco'];
+				$dev->WarrantyExpire=date('Y-m-d',strtotime($_POST['warrantyexpire']));
+				$dev->Notes=trim($_POST['notes']);
+				$dev->Notes=($dev->Notes=="<br>")?"":$dev->Notes;
+				$dev->FirstPortNum=$_POST['firstportnum'];
+				// All of the values below here are optional based on the type of device being dealt with
+				$dev->ChassisSlots=(isset($_POST['chassisslots']))?$_POST['chassisslots']:0;
+				$dev->RearChassisSlots=(isset($_POST['rearchassisslots']))?$_POST['rearchassisslots']:0;
+				$dev->Ports=(isset($_POST['ports']))?$_POST['ports']:"";
+				$dev->PowerSupplyCount=(isset($_POST['powersupplycount']))?$_POST['powersupplycount']:"";
+				$dev->ParentDevice=(isset($_POST['parentdevice']))?$_POST['parentdevice']:"";
+				$dev->PrimaryIP=(isset($_POST['primaryip']))?$_POST['primaryip']:"";
+				$dev->SNMPCommunity=(isset($_POST['snmpcommunity']))?$_POST['snmpcommunity']:"";
+				$dev->ESX=(isset($_POST['esx']))?$_POST['esx']:0;
+				$dev->Reservation=(isset($_POST['reservation']))?($_POST['reservation']=="on")?1:0:0;
+				$dev->NominalWatts=$_POST['nominalwatts'];
+				$dev->HalfDepth=(isset($_POST['halfdepth']))?($_POST['halfdepth']=="on")?1:0:0;
+				$dev->BackSide=(isset($_POST['backside']))?($_POST['backside']=="on")?1:0:0;
+				
+				if(($dev->TemplateID >0)&&(intval($dev->NominalWatts==0))){$dev->UpdateWattageFromTemplate();}
+
+				if($dev->Rights=="Write" && $dev->DeviceID >0){
+					switch($_POST['action']){
+						case 'Update':
+							// User has changed the device type from chassis to something else and has said yes
+							// that they want to remove the dependant child devices
+							if(isset($_POST['killthechildren'])){
+								$childList=$dev->GetDeviceChildren();
+								foreach($childList as $childDev){
+									$childDev->DeleteDevice();
+								}
+							}
+					
+							$dev->SetTags($tagarray);
+							if($dev->Cabinet <0){
+								$dev->MoveToStorage();
+							}else{
+								$dev->UpdateDevice();
+							}
+							break;
+						case 'Delete':
+							$dev->DeleteDevice();
+							header('Location: '.redirect("cabnavigator.php?cabinetid=$dev->Cabinet"));
+							exit;
+							break; // the exit should handle it
+						case 'Copy':
+							$copy=true;
+							if(!$dev->CopyDevice()){
+								$copyerr=__("Device did not copy.  Error.");
+							}
+							break;
+						case 'Child':
+							foreach($dev as $prop => $value){
+								$dev->$prop=null;
+							}
+							$dev->ParentDevice=$_REQUEST["parentdevice"];
+
+							// sets install date to today when a new device is being created
+							$dev->InstallDate=date("m/d/Y");
+							break;
+					}
+				}elseif($user->WriteAccess && $_POST['action']=='Create'){
+					if(($dev->TemplateID>0) && (intval($dev->NominalWatts==0))){
 						$dev->UpdateWattageFromTemplate();
 					}
 					$dev->CreateDevice();
 					$dev->SetTags($tagarray);
-				}elseif($user->DeleteAccess && ($_REQUEST['action']=='Delete')){
-					$dev->GetDevice();
-					$dev->DeleteDevice();
-					header('Location: '.redirect("cabnavigator.php?cabinetid=$dev->Cabinet"));
-					exit;
-				} elseif ( $user->WriteAccess && $_REQUEST["action"] == "Copy" ) {
-					$copy=true;
-					if(!$dev->CopyDevice()){
-						$copyerr=__("Device did not copy.  Error.");
-					}
-				} elseif($user->WriteAccess&&$_REQUEST['action']=='child') {
-					if(isset($_REQUEST['parentdevice'])){
-						$dev->DeviceID=null;
-						$dev->ParentDevice=$_REQUEST["parentdevice"];
-					}
-					// sets install date to today when a new device is being created
-					$dev->InstallDate=date("m/d/Y");
 				}
 			}
+
+			/*
+			 * Prepare data for display 
+			 *
+			 */
 
 			// Finished updating devices or creating them.  Refresh the object with data from the DB
 			$dev->GetDevice();
@@ -371,59 +354,67 @@
 				$pdu=new PowerDistribution();
 				$panel=new PowerPanel();
 
-				//$pwrConnection->DeviceID=($dev->ParentDevice>0)?$dev->ParentDevice:$dev->DeviceID;
-				//JMGA: changed for multichassis
 				$pwrConnection->DeviceID=($dev->ParentDevice>0)?$dev->GetRootDeviceID():$dev->DeviceID;
 				$pwrCords=$pwrConnection->GetConnectionsByDevice();
 
 				if($dev->DeviceType=='Switch'){
-					$linkList = SwitchInfo::getPortStatus( $dev->DeviceID );
+					$linkList=SwitchInfo::getPortStatus($dev->DeviceID);
 				}
-			}else{
-				// These are going to be empty however we'll generate an error if they aren't set.
-				$patchList=array();
-				$panelList=array();
 			}
 
+			if($dev->ChassisSlots>0 || $dev->RearChassisSlots>0){
+				$childList=$dev->GetDeviceChildren();
+			}
+
+			if($dev->ParentDevice >0){
+				$pDev=new Device();
+				$pDev->DeviceID=$dev->ParentDevice;
+				$pDev->GetDevice();
+				
+				$parentList=$pDev->GetParentDevices();
+				
+				//$cab->CabinetID=$pDev->Cabinet;
+				//JMGA: changed for multichassis
+				$cab->CabinetID=$pDev->GetDeviceCabinetID($facDB);
+				$cab->GetCabinet();
+				$chassis="Chassis";
+
+				// This is a child device and if the action of new is set let's assume the 
+				// departmental owner, primary contact, etc are the same as the parent
+				if(isset($_POST['action']) && $_POST['action']=='Child'){
+					$dev->Owner=$pDev->Owner;
+					$dev->EscalationTimeID=$pDev->EscalationTimeID;
+					$dev->EscalationID=$pDev->EscalationID;
+					$dev->PrimaryContact=$pDev->PrimaryContact;
+				}
+			}
 		}
 		$cab->CabinetID=$dev->Cabinet;
 		$cab->GetCabinet();
 	}else{
+		/*
+		 * Everything below here will get processed when no deviceid is present
+		 * aka adding a new device
+		 */
+
 		// sets install date to today when a new device is being created
 		$dev->InstallDate=date("m/d/Y");
 	}
-/*
-	if(!$user->canRead($dev->Owner)){
-		// No soup for you.
-		header('Location: '.redirect());
-		exit;
-	}
-*/	
-	if($dev->ParentDevice >0){
-		$pDev=new Device();
-		$pDev->DeviceID=$dev->ParentDevice;
-		$pDev->GetDevice();
-		
-		$parentList=$pDev->GetParentDevices();
-		
-		//$cab->CabinetID=$pDev->Cabinet;
-		//JMGA: changed for multichassis
-		$cab->CabinetID=$pDev->GetDeviceCabinetID($facDB);
-		$cab->GetCabinet();
-		$chassis="Chassis";
 
-		// This is a child device and if the action of new is set let's assume the departmental owner, primary contact, etc are the same as the parent
-		if(isset($_REQUEST['action'])&&$_REQUEST['action']=='child'){
-			$dev->Owner=$pDev->Owner;
-			$dev->EscalationTimeID=$pDev->EscalationTimeID;
-			$dev->EscalationID=$pDev->EscalationID;
-			$dev->PrimaryContact=$pDev->PrimaryContact;
-		}
-	}
-	
-	$childList=array();
-	if($dev->ChassisSlots>0 || $dev->RearChassisSlots>0){
-		$childList=$dev->GetDeviceChildren();
+	// We don't want someone accidentally adding a chassis device inside of a chassis slot.
+	if($dev->ParentDevice>0){
+		$devarray=array('Server' => __("Server"),
+						'Appliance' => __("Appliance"),
+						'Storage Array' => __("Storage Array"),
+						'Switch' => __("Switch"));
+	}else{
+		$devarray=array('Server' => __("Server"),
+						'Appliance' => __("Appliance"),
+						'Storage Array' => __("Storage Array"),
+						'Switch' => __("Switch"),
+						'Chassis' => __("Chassis"),
+						'Patch Panel' => __("Patch Panel"),
+						'Physical Infrastructure' => __("Physical Infrastructure"));
 	}
 
 	if($config->ParameterArray["mDate"]=="now"){
@@ -446,22 +437,6 @@
 	$escList=$esc->GetEscalationList();
 	$deptList=$Dept->GetDepartmentList(); 
 
-	// We have a slight issue with width if we get a really long escalation name
-	$widthfix=0;
-	foreach($escList as $tmp){
-		if(strlen($tmp->Details)>30){
-			if(strlen($tmp->Details)>$widthfix){
-				$widthfix=strlen($tmp->Details);
-			}
-		}
-	}
-	foreach($deptList as $tmp){
-		if(strlen($tmp->Name)>30){
-			if(strlen($tmp->Name)>$widthfix){
-				$widthfix=strlen($tmp->Name);
-			}
-		}
-	}
 	$title=($dev->Label!='')?"$dev->Label :: $dev->DeviceID":__("openDCIM Device Maintenance");
 
 	function buildesxtable($deviceid){
@@ -1529,10 +1504,13 @@ echo '		</div>
 				<option value=0>',__("Select a template..."),'</option>';
 
 			foreach($templateList as $tempRow){
-				if($dev->TemplateID==$tempRow->TemplateID){$selected=" selected";}else{$selected="";}
-				$mfg->ManufacturerID=$tempRow->ManufacturerID;
-				$mfg->GetManufacturerByID();
-				print "\t\t\t\t<option value=\"$tempRow->TemplateID\"$selected>$mfg->Name - $tempRow->Model</option>\n";
+				// $devarray is helping to remove invalid device templates from child devices
+				if(in_array($tempRow->DeviceType, $devarray)){
+					if($dev->TemplateID==$tempRow->TemplateID){$selected=" selected";}else{$selected="";}
+					$mfg->ManufacturerID=$tempRow->ManufacturerID;
+					$mfg->GetManufacturerByID();
+					print "\t\t\t\t<option value=\"$tempRow->TemplateID\"$selected>$mfg->Name - $tempRow->Model</option>\n";
+				}
 			}
 
 echo '			</select>
@@ -1562,56 +1540,30 @@ echo '		<div>
 
 
 		// Blade devices don't have data ports unless they're a switch
-		if($dev->ParentDevice==0||($dev->ParentDevice>0&&$dev->DeviceType=='Switch')){
-			echo '		<div id="dphtml">
+		$hide=($dev->ParentDevice==0 || ($dev->ParentDevice>0 && $dev->DeviceType=='Switch'))?'':' class="hide"';
+			
+		echo '		<div id="dphtml"',$hide,'>
 		   <div><label for="ports">',__("Number of Data Ports"),'</label></div>
 		   <div><input type="number" class="optional,validate[custom[onlyNumberSp]]" name="ports" id="ports" size="4" value="',$dev->Ports,'"></div>
 		</div>';
-		}
 
 echo '		<div>
 		   <div><label for="nominalwatts">',__("Nominal Draw (Watts)"),'</label></div>
 		   <div><input type="text" class="optional,validate[custom[onlyNumberSp]]" name="nominalwatts" id="nominalwatts" size=6 value="',$dev->NominalWatts,'"></div>
 		</div>';
 
-		// Blade devices don't have power supplies but they do have a front or back designation
+		// Blade devices don't have power supplies
 		if($dev->ParentDevice==0){
 			echo '		<div>
 		   <div><label for="powersupplycount">',__("Number of Power Supplies"),'</label></div>
 		   <div><input type="number" class="optional,validate[custom[onlyNumberSp]]" name="powersupplycount" id="powersupplycount" size=4 value="',$dev->PowerSupplyCount,'"></div>
 		</div>';
-		}else{
-			
-			/*JMGA changed the criterion of front/rear: no longer in chassisslots, but BackSide
-			echo '		<div>
-			<div><label for="powersupplycount">',__("Front / Rear"),'</label></div>
-			<div><select id="chassisslots" name="chassisslots">
-		   		<option value=0'.(($dev->ChassisSlots==0)?' selected':'').'>',__("Front"),'</option>
-				<option value=1'.(($dev->ChassisSlots==1)?' selected':'').'>',__("Rear"),'</option>
-			</select></div>
-		</div>'; */
 		}
 
 echo '		<div>
 		   <div>',__("Device Type"),'</div>
 		   <div><select name="devicetype">
 			<option value=0>',__("Select..."),'</option>';
-
-		// We don't want someone accidentally adding a chassis device inside of a chassis slot.
-		if($dev->ParentDevice>0){
-			$devarray=array('Server' => __("Server"),
-							'Appliance' => __("Appliance"),
-							'Storage Array' => __("Storage Array"),
-							'Switch' => __("Switch"));
-		}else{
-			$devarray=array('Server' => __("Server"),
-							'Appliance' => __("Appliance"),
-							'Storage Array' => __("Storage Array"),
-							'Switch' => __("Switch"),
-							'Chassis' => __("Chassis"),
-							'Patch Panel' => __("Patch Panel"),
-							'Physical Infrastructure' => __("Physical Infrastructure"));
-		}
 
 		foreach($devarray as $devType => $translation){
 			if($devType==$dev->DeviceType){$selected=" selected";}else{$selected="";}
@@ -1666,7 +1618,7 @@ echo '	</div>
 		</div>\n";
 	}
 echo '		<div class="caption">
-			<button type="submit" id="adddevice" value="child" name="action">',__("Add Device"),'</button>
+			<button type="submit" id="adddevice" value="Child" name="action">',__("Add Device"),'</button>
 			<input type="hidden" id="parentdevice" name="parentdevice" disabled value="',$dev->DeviceID,'">
 		</div>';
 	}else{
@@ -1707,7 +1659,7 @@ echo '	<div class="table">
 <?php
 	//HTML content condensed for PHP logic clarity.
 	// If $pwrCords is null then we're creating a device record. Skip power checking.
-	if(!is_null($pwrCords)&&((isset($_POST['action'])&&$_POST['action']!='child')||!isset($_POST['action']))){
+	if(!is_null($pwrCords)&&((isset($_POST['action'])&&$_POST['action']!='Child')||!isset($_POST['action']))){
 		if(count($pwrCords)==0){
 			// We have no power information. Display links to PDU's in cabinet?
 			echo '	<div>		<div><a name="power"></a></div>		<div>',__("No power connections defined.  You can add connections from the power strip screen."),'</div></div><div><div>&nbsp;</div><div></div></div>';
