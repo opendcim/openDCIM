@@ -1981,7 +1981,7 @@ class DevicePorts {
 		global $dbh;
 		$this->MakeSafe();
 			
-		$sql = "select count(*) as ActivePorts from fac_Ports where DeviceID=$this->DeviceID and (ConnectedDeviceID != null or Notes > '')";
+		$sql = "select count(*) as ActivePorts from fac_Ports where DeviceID=$this->DeviceID and (ConnectedDeviceID>0 or Notes > '')";
 		
 		$row = $dbh->query($sql)->fetch();
 
