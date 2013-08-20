@@ -239,7 +239,7 @@ function get_cabinet_owner_color($cabinet, &$deptswithcolor) {
 
 	$body.="<div class=\"cabinet\">
 <table>
-	<tr><th colspan=2 $cab_color >".__("Cabinet")." $cab->Location</th></tr>
+	<tr><th id=\"cabid\" data-cabinetid=$cab->CabinetID colspan=2 $cab_color >".__("Cabinet")." $cab->Location</th></tr>
 	<tr><td>".__("Pos")."</td><td>".__("Device")."</td></tr>\n";
 
 	$heighterr="";
@@ -251,8 +251,9 @@ function get_cabinet_owner_color($cabinet, &$deptswithcolor) {
 		if($device->Height<1){
 			if($device->Rights!="None"){
 				$zeroheight.="				<a href=\"devices.php?deviceid=$device->DeviceID\" data-deviceid=$device->DeviceID>$highlight $device->Label</a>\n";
-			} else {
-				$zeroheight.="              $highlight $device->Label\n";
+			}else{
+				// empty html anchor for a line break
+				$zeroheight.="              $highlight $device->Label\n<a></a>";
 			}
 		}
 		

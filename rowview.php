@@ -34,130 +34,6 @@ function get_cabinet_owner_color($cabinet, &$deptswithcolor) {
 }
 
 	$cab=new Cabinet();
-
-	if(isset($_POST['tooltip'])){
-		if(isset($_POST['cdu']) && $config->ParameterArray["CDUToolTips"]=='enabled'){
-			$pdu=new PowerDistribution();
-			$pdu->PDUID=intval($_POST['tooltip']);
-			$pdu->GetPDU();
-			$ttconfig=$dbh->query("SELECT * FROM fac_CDUToolTip WHERE Enabled=1 ORDER BY SortOrder ASC, Enabled DESC, Label ASC;");
-		}elseif($config->ParameterArray["ToolTips"]=='enabled'){
-			$dev=new Device();
-			$dev->DeviceID=intval($_POST['tooltip']);
-			$dev->GetDevice();
-			
-			if(!in_array($dev->Owner,$viewList) && !$user->ReadAccess){
-				print "Details Restricted";
-				exit;
-			}
-			$ttconfig=$dbh->query("SELECT * FROM fac_CabinetToolTip WHERE Enabled=1 ORDER BY SortOrder ASC, Enabled DESC, Label ASC;");
-		}
-
-		$tooltip="";
-		foreach($ttconfig as $row){
-			switch($row["Field"]){
-				case "SNMPCommunity":
-					if(isset($pdu->SNMPCommunity)){
-						$tooltip.=__($row["Label"]).": ".$pdu->$row["Field"]."<br>\n";
-					}else{
-						if($dev->ESX){
-							$tooltip.=__($row["Label"]).": ".$dev->$row["Field"]."<br>\n";
-						}
-					}
-					break;
-				case "ESX":
-					if($dev->ESX){
-						$tooltip.=__($row["Label"]).": ".$dev->$row["Field"]."<br>\n";
-					}
-					break;
-				case "EscalationID":
-					$esc=new Escalations();
-					$esc->EscalationID=$dev->$row["Field"];
-					$esc->GetEscalation();
-					$tooltip.=__($row["Label"]).": $esc->Details<br>\n";
-					break;
-				case "EscalationTimeID":
-					$escTime=new EscalationTimes();
-					$escTime->EscalationTimeID=$dev->$row["Field"];
-					$escTime->GetEscalationTime();
-					$tooltip.=__($row["Label"]).": $escTime->TimePeriod<br>\n";
-					break;
-				case "Owner":
-					$dept=new Department();
-					$dept->DeptID=$dev->Owner;
-					$dept->GetDeptByID();
-					$tooltip.=__($row["Label"]).": $dept->Name<br>\n";
-					break;
-				case "TemplateID":
-					$tmpl=new DeviceTemplate();
-					$tmpl->TemplateID=$dev->TemplateID;
-					$tmpl->GetTemplateByID();
-					$man=new Manufacturer();
-					$man->ManufacturerID=$tmpl->ManufacturerID;
-					$man->GetManufacturerByID();
-					$tooltip.=__($row["Label"]).": [$man->Name] $tmpl->Model<br>\n";
-					break;
-				case "ChassisSlots":
-					if($dev->DeviceType=='Chassis'){
-						$tooltip.=__($row["Label"])." ".$dev->$row["Field"]."<br>\n";
-					}
-					break;
-				case "Model":
-					$template=new CDUTemplate();
-					$manufacturer=new Manufacturer();
-
-					$template->TemplateID=$pdu->TemplateID;
-					$template->GetTemplate();
-
-					$manufacturer->ManufacturerID=$template->ManufacturerID;
-					$manufacturer->GetManufacturerByID();
-					$tooltip.=__($row["Label"]).": [$manufacturer->Name] $template->Model<br>\n";
-					break;
-				case "NumOutlets":
-					$template=new CDUTemplate();
-					$powerConn=new PowerConnection();
-
-					$template->TemplateID=$pdu->TemplateID;
-					$template->GetTemplate();
-
-					$powerConn->PDUID=$pdu->PDUID;
-					$connList=$powerConn->GetConnectionsByPDU();
-
-					$tooltip.=__($row["Label"]).": ".count($connList)."/".($template->NumOutlets+1)."<br>\n";
-					break;
-				case "Uptime":
-					$tooltip.=__($row["Label"]).": ".$pdu->GetSmartCDUUptime()."<br>\n";
-					break;
-				case "PanelID":
-					$pan=new PowerPanel();
-					$pan->PanelID=$pdu->PanelID;
-					$pan->GetPanel();
-					$tooltip.=__($row["Label"]).": $pan->PanelLabel<br>\n";
-					break;
-				case "PanelVoltage":
-					$pan=new PowerPanel();
-					$pan->PanelID=$pdu->PanelID;
-					$pan->GetPanel();
-
-					$tooltip.=__($row["Label"]).": ".$pan->PanelVoltage." / ".intval($pan->PanelVoltage/1.73)."<br>\n";
-					break;
-				case "DeviceType":
-					// if this is a chassis device display the number of blades?
-				default:
-					if(isset($_POST['cdu'])){
-						$tooltip.=__($row["Label"]).": ".$pdu->$row["Field"]."<br>\n";
-					}else{
-						$tooltip.=__($row["Label"]).": ".$dev->$row["Field"]."<br>\n";
-					}
-			}
-		}
-		if($tooltip==""){$tooltip=__("Tooltips are enabled with no options selected.");}
-		$tooltip="<div>$tooltip</div>";
-		print $tooltip;
-		exit;
-	}
-
-
 	$head=$legend=$zeroheight=$body=$deptcolor="";
 	$deptswithcolor=array();
 	$dev=new Device();
@@ -195,7 +71,7 @@ foreach($cabinets as $cabid => $cabinet){
 
 		$body.="<div class=\"cabinet\">
 	<table>
-		<tr><th colspan=2 $cab_color ><a href=\"cabnavigator.php?cabinetid=$cab->CabinetID\">".__("Cabinet")." $cab->Location</a></th></tr>
+		<tr><th id=\"cabid\" data-cabinetid=$cab->CabinetID colspan=2 $cab_color ><a href=\"cabnavigator.php?cabinetid=$cab->CabinetID\">".__("Cabinet")." $cab->Location</a></th></tr>
 		<tr><td>".__("Pos")."</td><td>".__("Device")."</td></tr>\n";
 
 		$heighterr="";
@@ -244,9 +120,9 @@ foreach($cabinets as $cabid => $cabinet){
 				if($errclass!=''){$heighterr="yup";}
 				if($i==$devTop){
 					if ( in_array( $device->Owner, $viewList ) || $user->ReadAccess ) {
-						$body.="<tr><td$errclass>$i</td><td class=\"device$reserved dept$device->Owner\" rowspan=$device->Height data=$devID><a href=\"devices.php?deviceid=$devID\">$highlight $device->Label</a></td></tr>\n";
+						$body.="<tr><td$errclass>$i</td><td class=\"device$reserved dept$device->Owner\" rowspan=$device->Height data-deviceid=$devID><a href=\"devices.php?deviceid=$devID\">$highlight $device->Label</a></td></tr>\n";
 					} else {
-						$body.="<tr><td$errclass>$i</td><td class=\"device$reserved dept$device->Owner\" rowspan=$device->Height data=$devID>$highlight $device->Label</td></tr>\n";
+						$body.="<tr><td$errclass>$i</td><td class=\"device$reserved dept$device->Owner\" rowspan=$device->Height>$highlight $device->Label</td></tr>\n";
 					}
 				}else{
 					$body.="<tr><td$errclass>$i</td></tr>\n";
@@ -323,20 +199,18 @@ echo $head,'  <script type="text/javascript" src="scripts/jquery.min.js"></scrip
 ';
 if($config->ParameterArray["ToolTips"]=='enabled'){
 ?>
-		var n=0; // silly counter
-		$('.cabinet td.device').mouseenter(function(){
-			n++;
+		$('.cabinet td.device:has("a")').mouseenter(function(){
 			var pos=$(this).offset();
 			var tooltip=$('<div />').css({
 				'left':pos.left+$(this).outerWidth()+15+'px',
 				'top':pos.top+($(this).outerHeight()/2)-15+'px'
-			}).addClass('arrow_left border cabnavigator tooltip').attr('id','tt'+n).append('<span class="ui-icon ui-icon-refresh rotate"></span>');
-			$.post('',{tooltip: $(this).attr('data')}, function(data){
+			}).addClass('arrow_left border cabnavigator tooltip').append('<span class="ui-icon ui-icon-refresh rotate"></span>');
+			$.post('cabnavigator.php',{tooltip: $(this).data('deviceid'), cabinetid: 1}, function(data){
 				tooltip.html(data);
 			});
 			$('body').append(tooltip);
 			$(this).mouseleave(function(){
-				$('#tt'+n).remove();
+				tooltip.remove();
 			});
 		});
 <?php
