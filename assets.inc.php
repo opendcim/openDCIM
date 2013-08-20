@@ -1215,7 +1215,7 @@ class Device {
 			$cab->CabinetID=$this->Cabinet;
 			$cab->GetCabinet();
 			// Make sure the user has rights to save a device into the new cabinet
-			if(!User::Current()->canWrite($cab->AssignedTo){
+			if(!User::Current()->canWrite($cab->AssignedTo)){
 				return false;
 			}
 			$powercon=new PowerConnection();
