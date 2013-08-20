@@ -953,7 +953,7 @@ class Device {
 		$this->Notes=stripslashes($this->Notes);
 	}
 
-	static function DeviceRowToObject($dbRow){
+	static function DeviceRowToObject($dbRow, $filter = true){
 		/*
 		 * Generic function that will take any row returned from the fac_Devices
 		 * table and convert it to an object for use in array or other
@@ -994,7 +994,9 @@ class Device {
 		$dev->BackSide=$dbRow["BackSide"];
 		
 		$dev->MakeDisplay();
-		$dev->FilterRights();
+		if ( $filter ) {
+			$dev->FilterRights();
+		}
 
 		return $dev;
 	}
@@ -1352,15 +1354,15 @@ class Device {
 		global $config;
 		
 		if ( $config->ParameterArray["NetworkCapacityReportOptIn"] == "OptIn" ) {
-			$sql = "select a.* from fac_Device a, fac_Cabinet b where a.Cabinet=b.CabinetID and DeviceType=\"Switch\" and DeviceID in (select DeviceID from fac_DeviceTags where TagID in (select TagID from fac_Tags where Name=\"Report\")) order by b.DataCenterID ASC, b.Location ASC, Label ASC";
+			$sql = "select * from fac_Device a, fac_Cabinet b where a.Cabinet=b.CabinetID and DeviceType=\"Switch\" and DeviceID in (select DeviceID from fac_DeviceTags where TagID in (select TagID from fac_Tags where Name=\"Report\")) order by b.DataCenterID ASC, b.Location ASC, Label ASC";
 		} else {
-			$sql = "select a.* from fac_Device a, fac_Cabinet b where a.Cabinet=b.CabinetID and DeviceType=\"Switch\" and DeviceID not in (select DeviceID from fac_DeviceTags where TagID in (select TageID from fac_Tags where Name=\"NoReport\")) order by b.DataCenterID ASC, b.Location ASC, Label ASC";
+			$sql = "select * from fac_Device a, fac_Cabinet b where a.Cabinet=b.CabinetID and DeviceType=\"Switch\" and DeviceID not in (select DeviceID from fac_DeviceTags where TagID in (select TageID from fac_Tags where Name=\"NoReport\")) order by b.DataCenterID ASC, b.Location ASC, Label ASC";
 		}
 		
 		$deviceList = array();
 		
 		foreach( $dbh->query($sql) as $deviceRow ) {
-			$deviceList[] = Device::DeviceRowToObject( $deviceRow );
+			$deviceList[] = Device::DeviceRowToObject( $deviceRow, false );
 		}
 		
 		return $deviceList;
@@ -1975,8 +1977,19 @@ class DevicePorts {
 			$ports[]=DevicePorts::RowToObject($row);
 		}	
 		return $ports;
-	}	
+	}
+	
+	function getActivePortCount() {
+		global $dbh;
+		$this->MakeSafe();
+			
+		$sql = "select count(*) as ActivePorts from fac_Ports where DeviceID=$this->DeviceID and (ConnectedDeviceID != null or Notes > '')";
+		
+		$row = $dbh->query($sql)->fetch();
 
+		return $row["ActivePorts"];
+	}
+		
 	function createPort() {
 		global $dbh;
 		
