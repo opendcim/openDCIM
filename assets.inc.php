@@ -328,15 +328,17 @@ class Cabinet {
 	function GetCabinetSelectList(){
 		global $dbh;
 		
-		$sql="SELECT Name, CabinetID, Location FROM fac_DataCenter, fac_Cabinet WHERE 
+		$sql="SELECT Name, CabinetID, Location, AssignedTo FROM fac_DataCenter, fac_Cabinet WHERE 
 			fac_DataCenter.DataCenterID=fac_Cabinet.DataCenterID ORDER BY Name ASC, 
 			Location ASC;";
 
 		$selectList="<select name=\"cabinetid\" id=\"cabinetid\"><option value=\"-1\">Storage Room</option>";
 
 		foreach($dbh->query($sql) as $selectRow){
-			$selected=($selectRow["CabinetID"]==$this->CabinetID)?' selected':'';
-			$selectList.="<option value=\"{$selectRow["CabinetID"]}\"$selected>{$selectRow["Name"]} / {$selectRow["Location"]}</option>";
+			if($selectRow["CabinetID"]==$this->CabinetID || User::Current()->canWrite($selectRow["AssignedTo"])){
+				$selected=($selectRow["CabinetID"]==$this->CabinetID)?' selected':'';
+				$selectList.="<option value=\"{$selectRow["CabinetID"]}\"$selected>{$selectRow["Name"]} / {$selectRow["Location"]}</option>";
+			}
 		}
 
 		$selectList .= "</select>";
@@ -1200,6 +1202,27 @@ class Device {
 		if($tmpDev->Rights!='Write'){return false;}
 	
 		$this->MakeSafe();	
+
+		// You can't update what doesn't exist, so check for existing record first and retrieve the current location
+		$sql = "SELECT * FROM fac_Device WHERE DeviceID=$this->DeviceID;";
+		if(!$row=$dbh->query($sql)->fetch()){
+			return false;
+		}		
+
+		// If you changed cabinets then the power connections need to be removed
+		if($row["Cabinet"]!=$this->Cabinet){
+			$cab=new Cabinet();
+			$cab->CabinetID=$this->Cabinet;
+			$cab->GetCabinet();
+			// Make sure the user has rights to save a device into the new cabinet
+			if(!User::Current()->canWrite($cab->AssignedTo){
+				return false;
+			}
+			$powercon=new PowerConnection();
+			$powercon->DeviceID=$this->DeviceID;
+			$powercon->DeleteConnections();
+		}
+  
 		if($tmpDev->DeviceType == "Chassis" && $tmpDev->DeviceType != $this->DeviceType){
 			// SUT #148 - Previously defined chassis is no longer a chassis
 			// If it has children, return with no update
@@ -1281,19 +1304,6 @@ class Device {
 		$this->SerialNo=transform($this->SerialNo);
 		$this->AssetTag=transform($this->AssetTag);
 
-		// You can't update what doesn't exist, so check for existing record first and retrieve the current location
-		$sql = "SELECT * FROM fac_Device WHERE DeviceID=$this->DeviceID;";
-		if(!$row=$dbh->query($sql)->fetch()){
-			return false;
-		}		
-
-		// If you changed cabinets then the power connections need to be removed
-		if($row["Cabinet"]!=$this->Cabinet){
-			$powercon=new PowerConnection();
-			$powercon->DeviceID=$this->DeviceID;
-			$powercon->DeleteConnections();
-		}
-  
 		$sql="UPDATE fac_Device SET Label=\"$this->Label\", SerialNo=\"$this->SerialNo\", AssetTag=\"$this->AssetTag\", 
 			PrimaryIP=\"$this->PrimaryIP\", SNMPCommunity=\"$this->SNMPCommunity\", ESX=$this->ESX, Owner=$this->Owner, 
 			EscalationTimeID=$this->EscalationTimeID, EscalationID=$this->EscalationID, PrimaryContact=$this->PrimaryContact, 
@@ -1308,7 +1318,7 @@ class Device {
 
 		if(!$dbh->query($sql)){
 			$info=$dbh->errorInfo();
-			error_log("PDO Error: {$info[2]} SQL=$sql");
+			error_log("UpdateDevice::PDO Error: {$info[2]} SQL=$sql");
 			return false;
 		}
 		
