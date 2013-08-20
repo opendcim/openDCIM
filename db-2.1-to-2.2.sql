@@ -152,3 +152,9 @@ CREATE TABLE fac_Ports (
 
 ALTER TABLE fac_Device ADD COLUMN HalfDepth tinyint(1) NOT NULL DEFAULT '0' AFTER Reservation;
 ALTER TABLE fac_Device ADD COLUMN BackSide tinyint(1) NOT NULL DEFAULT '0' AFTER HalfDepth;
+
+--
+-- Add a no reporting tag for switch devices
+--
+
+INSERT INTO fac_Tags VALUES (NULL , 'NoReport');

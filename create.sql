@@ -529,6 +529,7 @@ CREATE TABLE fac_Tags (
   UNIQUE KEY `Name` (`Name`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 AUTO_INCREMENT=1;
 
+INSERT INTO fac_Tags VALUES (NULL , 'NoReport');
 --
 -- Table structure for table fac_User
 --

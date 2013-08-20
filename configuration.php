@@ -228,7 +228,7 @@
 	$regions=array();
 	foreach(DateTimeZone::listIdentifiers() as $line){
 		$pieces=explode("/",$line);
-		if($pieces[1]){
+		if(isset($pieces[1])){
 			$regions[$pieces[0]][]=$line;
 		}
 	}
@@ -331,7 +331,7 @@
 		// ToolTips
 
 		$('#tooltip, #cdutooltip').multiselect();
-		$("select#ToolTips, select#CDUToolTips, select#LabelCase, select#MediaEnforce").each(function(){
+		$("select").each(function(){
 			$(this).val($(this).attr('data'));
 		});
 
@@ -1102,6 +1102,18 @@ echo '<div class="main">
 					<div><input type="text" defaultvalue="',$href,'" name="InstallURL" value="',$config->ParameterArray["InstallURL"],'"></div>
 				</div>
 			</div> <!-- end table -->
+			<h3>',__("Capacity Reporting"),'</h3>
+			<div class="table">
+				<div>
+					<div><label for="NetworkCapacityReportOptIn">',__("Switches"),'</label></div>
+					<div>
+						<select id="NetworkCapacityReportOptIn" defaultvalue="',$config->defaults["NetworkCapacityReportOptIn"],'" name="NetworkCapacityReportOptIn" data="',$config->ParameterArray["NetworkCapacityReportOptIn"],'">
+							<option value="OptIn">',__("Enable"),'</option>
+							<option value="OptOut">',__("Disable"),'</option>
+						</select>
+					</div>
+				</div>
+			</div>
 			<h3>',__("Utilities"),'</h3>
 			<div class="table">
 				<div>
