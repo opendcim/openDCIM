@@ -152,11 +152,35 @@ function applyupdate ($updatefile){
 		$results[]=applyupdate("create.sql");
 		$upgrade=false;
 	}
+
 	// New install so create a user
 	require_once("customers.inc.php");
 
 	$user=new User();
 	$user->UserID=$_SERVER['REMOTE_USER'];
+
+	/* Check the table to see if there are any users
+	   defined, yet.  If not, this is a new install, so
+	   create an admin user (all rights) as the current
+	   user.  */
+	
+	$sql="SELECT COUNT(*) AS TotalUsers FROM fac_User;";
+	$users=$dbh->query($sql)->fetchColumn();
+
+	if($users==0){
+		$user->Name="Default Admin";
+		foreach($user as $prop => $value){
+			if($prop!='Name' || $prop!='UserID'){
+				$user->$prop=true;
+			}
+		}
+		$user->Disabled=false;
+
+		$user->CreateUser();
+	}
+
+	// This will be reloading the rights for a new install but for upgrades
+	// it will be the actual rights load
 	$user->GetUserRights();
 
 	// Re-read the config

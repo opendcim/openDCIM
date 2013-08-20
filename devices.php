@@ -284,6 +284,10 @@
 				
 				if(($dev->TemplateID >0)&&(intval($dev->NominalWatts==0))){$dev->UpdateWattageFromTemplate();}
 
+				$write=false;
+				$write=($user->canWrite($cab->AssignedTo))?true:$write;
+				$write=($dev->Rights=="Write")?true:$write;
+
 				if($dev->Rights=="Write" && $dev->DeviceID >0){
 					switch($_POST['action']){
 						case 'Update':
@@ -324,7 +328,10 @@
 							$dev->InstallDate=date("m/d/Y");
 							break;
 					}
-				}elseif($user->WriteAccess && $_POST['action']=='Create'){
+				// Can't check the device for rights because it shouldn't exist yet
+				// but the user could have rights from the cabinet and it is checked above
+				// when the device object is populated.
+				}elseif($write && $_POST['action']=='Create'){
 					if($dev->TemplateID>0 && intval($dev->NominalWatts==0)){
 						$dev->UpdateWattageFromTemplate();
 					}
@@ -1633,10 +1640,10 @@ echo '		<div class="caption">
 	}
 	
 	// Do not display ESX block if device isn't a virtual server and the user doesn't have write access
-	if(($user->WriteAccess || $dev->ESX) && ($dev->DeviceType=="Server" || $dev->DeviceType=="")){
+	if(($write || $dev->ESX) && ($dev->DeviceType=="Server" || $dev->DeviceType=="")){
 		echo '<fieldset id="esxframe">	<legend>',__("VMWare ESX Server Information"),'</legend>';
 	// If the user doesn't have write access display the list of VMs but not the configuration information.
-		if($user->WriteAccess){
+		if($write){
 
 echo '	<div class="table">
 		<div>

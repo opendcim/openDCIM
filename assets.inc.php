@@ -902,6 +902,9 @@ class Device {
 	var $BackSide ;
 	
 	function MakeSafe() {
+		//Keep weird values out of DeviceType
+		$validdevicetypes=array('Server','Appliance','Storage Array','Switch','Chassis','Patch Panel','Physical Infrastructure');
+
 		$this->DeviceID=intval($this->DeviceID);
 		$this->Label=addslashes(trim($this->Label));
 		$this->SerialNo=addslashes(trim($this->SerialNo));
@@ -921,7 +924,7 @@ class Device {
 		$this->TemplateID=intval($this->TemplateID);
 		$this->NominalWatts=intval($this->NominalWatts);
 		$this->PowerSupplyCount=intval($this->PowerSupplyCount);
-		$this->DeviceType=addslashes(trim($this->DeviceType));
+		$this->DeviceType=(in_array($this->DeviceType,$validdevicetypes))?$this->DeviceType:'Server';
 		$this->ChassisSlots=intval($this->ChassisSlots);
 		$this->RearChassisSlots=intval($this->RearChassisSlots);
 		$this->ParentDevice=intval($this->ParentDevice);
@@ -941,7 +944,6 @@ class Device {
 		$this->AssetTag=stripslashes($this->AssetTag);
 		$this->PrimaryIP=stripslashes($this->PrimaryIP);
 		$this->SNMPCommunity=stripslashes($this->SNMPCommunity);
-		$this->DeviceType=stripslashes($this->DeviceType);
 		$this->MfgDate=stripslashes($this->MfgDate);
 		$this->InstallDate=stripslashes($this->InstallDate);
 		$this->WarrantyCo=stripslashes($this->WarrantyCo);
@@ -1029,11 +1031,6 @@ class Device {
 		$this->SerialNo=transform($this->SerialNo);
 		$this->AssetTag=transform($this->AssetTag);
 		
-		//Keep weird values out of DeviceType
-		if(!in_array($this->DeviceType,array('Server','Appliance','Storage Array','Switch','Chassis','Patch Panel','Physical Infrastructure'))){
-			$this->DeviceType="Server";
-		}
-
 		$sql="INSERT INTO fac_Device SET Label=\"$this->Label\", SerialNo=\"$this->SerialNo\", AssetTag=\"$this->AssetTag\", 
 			PrimaryIP=\"$this->PrimaryIP\", SNMPCommunity=\"$this->SNMPCommunity\", ESX=$this->ESX, Owner=$this->Owner, 
 			EscalationTimeID=$this->EscalationTimeID, EscalationID=$this->EscalationID, PrimaryContact=$this->PrimaryContact, 
@@ -1283,11 +1280,6 @@ class Device {
 		$this->Label=transform($this->Label);
 		$this->SerialNo=transform($this->SerialNo);
 		$this->AssetTag=transform($this->AssetTag);
-
-		//Keep weird values out of DeviceType
-		if(!in_array($this->DeviceType,array('Server','Appliance','Storage Array','Switch','Chassis','Patch Panel','Physical Infrastructure'))){
-			$this->DeviceType="Server";
-		}
 
 		// You can't update what doesn't exist, so check for existing record first and retrieve the current location
 		$sql = "SELECT * FROM fac_Device WHERE DeviceID=$this->DeviceID;";

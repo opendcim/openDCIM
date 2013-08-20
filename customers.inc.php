@@ -608,26 +608,6 @@ class User {
 	}
 
 	function GetUserRights(){
-		/* Check the table to see if there are any users
-		   defined, yet.  If not, this is a new install, so
-		   create an admin user (all rights) as the current
-		   user.  */
-		
-		$sql="SELECT COUNT(*) AS TotalUsers FROM fac_User;";
-		$users=$this->query($sql)->fetchColumn();
-
-		if($users==0){
-			$this->Name="Default Admin";
-			foreach($this as $prop => $value){
-				if($prop!='Name' || $prop!='UserID'){
-					$this->$prop=true;
-				}
-			}
-			$this->Disabled=false;
-
-			$this->CreateUser();
-		}
-
 		$this->MakeSafe();
 
 		$sql="SELECT * FROM fac_User WHERE UserID=\"$this->UserID\";";
