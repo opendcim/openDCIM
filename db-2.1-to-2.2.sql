@@ -157,4 +157,5 @@ ALTER TABLE fac_Device ADD COLUMN BackSide tinyint(1) NOT NULL DEFAULT '0' AFTER
 -- Add a no reporting tag for switch devices
 --
 
+INSERT INTO fac_Tags VALUES (NULL , 'Report');
 INSERT INTO fac_Tags VALUES (NULL , 'NoReport');

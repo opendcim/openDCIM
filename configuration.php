@@ -1108,8 +1108,8 @@ echo '<div class="main">
 					<div><label for="NetworkCapacityReportOptIn">',__("Switches"),'</label></div>
 					<div>
 						<select id="NetworkCapacityReportOptIn" defaultvalue="',$config->defaults["NetworkCapacityReportOptIn"],'" name="NetworkCapacityReportOptIn" data="',$config->ParameterArray["NetworkCapacityReportOptIn"],'">
-							<option value="OptIn">',__("Enable"),'</option>
-							<option value="OptOut">',__("Disable"),'</option>
+							<option value="OptIn">',__("OptIn"),'</option>
+							<option value="OptOut">',__("OptOut"),'</option>
 						</select>
 					</div>
 				</div>
