@@ -953,7 +953,7 @@ class Device {
 		$this->Notes=stripslashes($this->Notes);
 	}
 
-	static function DeviceRowToObject($dbRow, $filter = true){
+	static function DeviceRowToObject($dbRow){
 		/*
 		 * Generic function that will take any row returned from the fac_Devices
 		 * table and convert it to an object for use in array or other
@@ -994,9 +994,7 @@ class Device {
 		$dev->BackSide=$dbRow["BackSide"];
 		
 		$dev->MakeDisplay();
-		if ( $filter ) {
-			$dev->FilterRights();
-		}
+		$dev->FilterRights();
 
 		return $dev;
 	}
@@ -1362,7 +1360,7 @@ class Device {
 		$deviceList = array();
 		
 		foreach( $dbh->query($sql) as $deviceRow ) {
-			$deviceList[] = Device::DeviceRowToObject( $deviceRow, false );
+			$deviceList[] = Device::DeviceRowToObject( $deviceRow );
 		}
 		
 		return $deviceList;

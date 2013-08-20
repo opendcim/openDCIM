@@ -696,8 +696,16 @@ class User {
 
 	static function Current(){
 		$cuser=new User();
-		$cuser->UserID=@$_SERVER['REMOTE_USER'];
-		$cuser->GetUserRights();
+
+		if ( php_sapi_name() == "cli" ) {
+			// If the script is being called from the command line, just give God priveleges and be done with it
+			$cuser->ReadAccess = true;
+			$cuser->WriteAccess = true;
+			$cuser->SiteAdmin = true;
+		} else {
+			$cuser->UserID=@$_SERVER['REMOTE_USER'];
+			$cuser->GetUserRights();
+		}
 		return $cuser;
 	}
 }
