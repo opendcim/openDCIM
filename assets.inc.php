@@ -1348,6 +1348,8 @@ class Device {
 	}
 
 	static function GetSwitchesToReport() {
+		global $dbh;
+		
 		if ( $config->ParameterArray["NetworkCapacityReportOptIn"] == "OptIn" ) {
 			$sql = "select a.* from fac_Device a, fac_Cabinet b where a.Cabinet=b.CabinetID and DeviceType=\"Switch\" and DeviceID in (select DeviceID from fac_DeviceTags where TagID in (select TagID from fac_Tags where Name=\"Report\")) order by b.DataCenterID ASC, b.Location ASC, Label ASC";
 		} else {
