@@ -696,7 +696,7 @@ class User {
 
 	static function Current(){
 		$cuser=new User();
-		$cuser->UserID=$_SERVER['REMOTE_USER'];
+		$cuser->UserID=@$_SERVER['REMOTE_USER'];
 		$cuser->GetUserRights();
 		return $cuser;
 	}

@@ -3,7 +3,7 @@
 
 /* This is used on every page so we might as well just init it once */
 $user=new User();
-$user->UserID = $_SERVER['REMOTE_USER'];
+$user->UserID = @$_SERVER['REMOTE_USER'];
 $user->GetUserRights();
 	
 /* 
