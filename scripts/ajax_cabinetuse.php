@@ -7,15 +7,16 @@
 	$cab=new Cabinet();
 	$dev=new Device();
 	
-	if ( isset( $_REQUEST["deviceid"] ) )
-		$dev->DeviceID = $_REQUEST["deviceid"];
+	if(isset($_GET["deviceid"])){
+		$dev->DeviceID=$_GET["deviceid"];
+	}
 
-	$cab->CabinetID=$dev->Cabinet=intval($_REQUEST['cabinet']);
+	$cab->CabinetID=$dev->Cabinet=intval($_GET['cabinet']);
 	$devList=$dev->ViewDevicesByCabinet();
 	$cab->GetCabinet();
 	
-	$dev->BackSide=(isset($_REQUEST['backside']))?($_REQUEST['backside']=='true'?true:false):false;
-	$dev->HalfDepth=(isset($_REQUEST['halfdepth']))?($_REQUEST['halfdepth']=='true'?true:false):false;
+	$dev->BackSide=(isset($_GET['backside']))?($_GET['backside']=='true'?true:false):false;
+	$dev->HalfDepth=(isset($_GET['halfdepth']))?($_GET['halfdepth']=='true'?true:false):false;
 	
 	if (!$dev->BackSide){
 		// Build array of each position used

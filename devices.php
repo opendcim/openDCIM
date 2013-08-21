@@ -831,7 +831,7 @@ $(document).ready(function() {
 	}
 <?php
 	// hide all the js functions if they don't have write permissions
-	if($dev->Rights=="Write"){
+	if($write){
 
 print "		var dialog=$('<div>').prop('title','".__("Verify Delete Device")."').html('<p><span class=\"ui-icon ui-icon-alert\" style=\"float:left; margin:0 7px 20px 0;\"></span><span></span></p>');";
 
