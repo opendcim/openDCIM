@@ -170,7 +170,7 @@ function applyupdate ($updatefile){
 	if($users==0){
 		$user->Name="Default Admin";
 		foreach($user as $prop => $value){
-			if($prop!='Name' || $prop!='UserID'){
+			if($prop!='Name' && $prop!='UserID'){
 				$user->$prop=true;
 			}
 		}
