@@ -131,6 +131,7 @@ INSERT INTO fac_Config VALUES ('MediaEnforce', 'Disabled', 'Enabled/Disabled', '
 -- Table structure for table `fac_Ports`
 --
 
+DROP TABLE IF EXISTS fac_Ports;
 CREATE TABLE fac_Ports (
   DeviceID int(11) NOT NULL,
   PortNumber int(11) NOT NULL,
