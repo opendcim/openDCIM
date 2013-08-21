@@ -561,6 +561,9 @@ div.cabinet {
 
 /* Put this inside a @media qualifier so Netscape 4 ignores it */
 @media screen, print { 
+	/* Set printouts to landscape */
+	@page {size: landscape}
+
 	/* Turn off list bullets */
 	ul.mktree  li { list-style: none; } 
 	/* Control how "spaced out" the tree is */

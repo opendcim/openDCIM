@@ -1323,7 +1323,7 @@ print "		var dialog=$('<div>').prop('title','".__("Verify Delete Device")."').ht
 	function setPreferredLayout() {<?php if(isset($_COOKIE["layout"]) && strtolower($_COOKIE["layout"])==="portrait"){echo 'swaplayout();setCookie("layout","Portrait");';}else{echo 'setCookie("layout","Landscape");';} ?>}
 	setPreferredLayout();
 	$('#tags').width($('#tags').parent('div').parent('div').innerWidth()-$('#tags').parent('div').prev('div').outerWidth()-5);
-	
+
 	$('#tags').textext({
 		plugins : 'autocomplete tags ajax arrow prompt focus',
 <?php echo $taginsert; ?>
@@ -1831,6 +1831,24 @@ echo '	<div class="table">
 			}
 		}
 		opentree();
+
+		if(navigator.appName.indexOf("Internet Explorer")==-1){
+			// experimental print function
+			// only works with FF and Chrome.  Once again IE is a broken damnable mess.
+			$('<button>', { 'type': 'button' }).text('Print').click(function(e){
+				e.preventDefault();
+				var insert=$('#header').clone(); // clone header
+				var devinfo=$('<div>').addClass('device').addClass('page').append($('#deviceform').clone()); // clone devinfo
+				devinfo.find('#pandn .caption').remove(); // remove buttons
+				var popup=window.open('template.php',"Print", "menubar=0,location=0,height=700,width=700" );
+				popup.onload=function(){
+					$(popup.document.body).html(insert).after(devinfo); // put into the popup
+					popup.print(); //print
+				}
+			}).appendTo('#pandn .caption');
+		}
+
+		
 	});
 </script>
 

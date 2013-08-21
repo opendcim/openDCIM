@@ -1,17 +1,6 @@
 <?php
 	require_once('db.inc.php');
 	require_once('facilities.inc.php');
-
-	$user=new User();
-	$user->UserID=$_SERVER['REMOTE_USER'];
-	$user->GetUserRights();
-
-	if(!$user->ReadAccess){
-		// No soup for you.
-		header('Location: '.redirect());
-		exit;
-	}
-
 ?>
 <!doctype html>
 <html>
