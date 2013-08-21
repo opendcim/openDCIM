@@ -44,6 +44,7 @@
 	$devList = Device::GetSwitchesToReport();
 	$lastDC = null;
 	$lastCabinet = null;
+	$urlBase = $config->ParameterArray["InstallURL"];
 	
 	if ( sizeof( $devList ) == 0 ) {
 		$htmlMessage .= "<p>There are no switches that qualify for this report.</p>\n";
@@ -83,22 +84,22 @@
 						if ( $portList[$n]->ConnectedDeviceID > 0 ) {
 							$dev->DeviceID = $portList[$n]->ConnectedDeviceID;
 							$dev->GetDevice();
-							$devName = $dev->Label;
+							$devAnchor = "<a href=\"" . $urlBase . "devices.php?deviceid=" . $dev->DeviceID . "\">" . $dev->Label . "</a>";
 						} else {
-							$devName = "&nbsp;";
+							$devAnchor = "&nbsp;";
 						}
 						
 						$port->DeviceID = $portList[$n]->ConnectedDeviceID;
 						$port->PortNumber =$portList[$n]->ConnectedPort;
 						$port->getPort();
 						
-						$exceptionRows .= sprintf( "<tr><td>%s</td><td>%s</td><td>%s</td><td>%s</td><td>%s</td><td>%s</td></tr>\n", $devRow->Label, $portList[$n]->Label, $devName, $port->Label, $portList[$n]->Notes, $statusList[$n+1] );
+						$exceptionRows .= sprintf( "<tr><td><a href=\"%sdevices.php?deviceid=%d\">%s</a></td><td>%s</td><td>%s</td><td>%s</td><td>%s</td><td>%s</td></tr>\n", $urlBase, $devRow->DeviceID, $devRow->Label, $portList[$n]->Label, $devAnchor, $port->Label, $portList[$n]->Notes, $statusList[$n+1] );
 					}
 				}
 			}
 
 			if ( $activeCount >= floor( $devRow->Ports * 0.75 ) ) {
-				$mismatchRows .= sprintf( "<tr><td>%s</td><td>%s</td><td>%s</td><td>%d</td><td>%d</td></tr>\n", $dataCenter, $cabinet, $devRow->Label, $devRow->Ports, $activeCount );
+				$mismatchRows .= sprintf( "<tr><td>%s</td><td>%s</td><td><a href=\"%sdevices.php?deviceid=%d\">%s</a></td><td>%d</td><td>%d</td></tr>\n", $dataCenter, $cabinet, $urlBase, $devRow->DeviceID, $devRow->Label, $devRow->Ports, $activeCount );
 				$dataCenter = "&nbsp;";
 				$cabinet = "&nbsp;";
 			}
