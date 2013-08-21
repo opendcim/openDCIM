@@ -45,6 +45,7 @@
 	$lastDC = null;
 	$lastCabinet = null;
 	$urlBase = $config->ParameterArray["InstallURL"];
+	$threshold = intval($config->ParameterArray["NetworkThreshold"]) / 100;
 	
 	if ( sizeof( $devList ) == 0 ) {
 		$htmlMessage .= "<p>There are no switches that qualify for this report.</p>\n";
@@ -98,7 +99,7 @@
 				}
 			}
 
-			if ( $activeCount >= floor( $devRow->Ports * 0.75 ) ) {
+			if ( $activeCount >= floor( $devRow->Ports * $threshold ) ) {
 				$mismatchRows .= sprintf( "<tr><td>%s</td><td>%s</td><td><a href=\"%sdevices.php?deviceid=%d\">%s</a></td><td>%d</td><td>%d</td></tr>\n", $dataCenter, $cabinet, $urlBase, $devRow->DeviceID, $devRow->Label, $devRow->Ports, $activeCount );
 				$dataCenter = "&nbsp;";
 				$cabinet = "&nbsp;";

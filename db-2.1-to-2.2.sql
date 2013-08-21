@@ -11,6 +11,7 @@ INSERT INTO fac_Config VALUES ('cut', '/bin/cut', 'path', 'string', '/bin/cut');
 --
 
 INSERT INTO fac_Config VALUES ('NetworkCapacityReportOptIn', 'OptIn', 'OptIn/OptOut', 'string', 'OptIn' );
+INSERT INTO fac_Config VALUES ('NetworkThreshold', '75', 'Percentage', 'integer', '75' );
 --
 -- Add the SNMPVersion field to CDUTemplates
 --

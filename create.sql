@@ -736,6 +736,7 @@ INSERT INTO fac_Config VALUES
 	('MailToAddr','DataCenterTeamAddr@your.domain','Email','string','DataCenterTeamAddr@your.domain'),
 	('ComputerFacMgr','DataCenterMgr Name','Name','string','DataCenterMgr Name'),
 	('NetworkCapacityReportOptIn', 'OptIn', 'OptIn/OptOut', 'string', 'OptIn' ),
+	('NetworkThreshold', '75', 'Percentage', 'integer', '75' ),
 	('FacMgrMail','DataCenterMgr@your.domain','Email','string','DataCenterMgr@your.domain'),
 	('InstallURL','','URL','string','https://dcim.your.domain'),
 	('Version','2.1','','',''),

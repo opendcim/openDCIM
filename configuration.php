@@ -1113,6 +1113,10 @@ echo '<div class="main">
 						</select>
 					</div>
 				</div>
+				<div>
+					<div><label for="NetworkThreshold">',__("Switch Capacity Threshold"),'</label></div>
+					<div><input type="text" defaultvalue="',$config->defaults["NetworkThreshold"],'" name="NetworkThreshold" value="',$config->ParameterArray["NetworkThreshold"],'"></div>
+				</div>
 			</div>
 			<h3>',__("Utilities"),'</h3>
 			<div class="table">
