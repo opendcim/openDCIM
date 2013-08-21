@@ -1351,16 +1351,16 @@ class Device {
 		global $dbh;
 		global $config;
 		
-		if ( $config->ParameterArray["NetworkCapacityReportOptIn"] == "OptIn" ) {
-			$sql = "select * from fac_Device a, fac_Cabinet b where a.Cabinet=b.CabinetID and DeviceType=\"Switch\" and DeviceID in (select DeviceID from fac_DeviceTags where TagID in (select TagID from fac_Tags where Name=\"Report\")) order by b.DataCenterID ASC, b.Location ASC, Label ASC";
-		} else {
-			$sql = "select * from fac_Device a, fac_Cabinet b where a.Cabinet=b.CabinetID and DeviceType=\"Switch\" and DeviceID not in (select DeviceID from fac_DeviceTags where TagID in (select TageID from fac_Tags where Name=\"NoReport\")) order by b.DataCenterID ASC, b.Location ASC, Label ASC";
-		}
-		
-		$deviceList = array();
-		
-		foreach( $dbh->query($sql) as $deviceRow ) {
-			$deviceList[] = Device::DeviceRowToObject( $deviceRow );
+		$tag=($config->ParameterArray["NetworkCapacityReportOptIn"]=="OptIn")?'Report':'NoReport';
+
+		$sql="SELECT * FROM fac_Device a, fac_Cabinet b WHERE a.Cabinet=b.CabinetID 
+			AND DeviceType=\"Switch\" AND DeviceID IN (SELECT DeviceID FROM 
+			fac_DeviceTags WHERE TagID IN (SELECT TagID FROM fac_Tags WHERE 
+			Name=\"$tag\")) ORDER BY b.DataCenterID ASC, b.Location ASC, Label ASC;";
+
+		$deviceList=array();
+		foreach($dbh->query($sql) as $deviceRow){
+			$deviceList[]=Device::DeviceRowToObject($deviceRow);
 		}
 		
 		return $deviceList;
@@ -1369,10 +1369,10 @@ class Device {
 	function GetDevicesbyAge($days=7){
 		global $dbh;
 		
-		$sql="SELECT * FROM fac_Device WHERE DATEDIFF(CURDATE(),InstallDate)<=".intval($days)." ORDER BY InstallDate ASC;";
+		$sql="SELECT * FROM fac_Device WHERE DATEDIFF(CURDATE(),InstallDate)<=".
+			intval($days)." ORDER BY InstallDate ASC;";
 		
-		$deviceList = array();
-
+		$deviceList=array();
 		foreach($dbh->query($sql) as $deviceRow){
 			$deviceList[]=Device::DeviceRowToObject($deviceRow);
 		}
