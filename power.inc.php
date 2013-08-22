@@ -400,7 +400,7 @@ class PowerDistribution {
 		$PDU->PanelID=$row["PanelID"];
 		$PDU->BreakerSize=$row["BreakerSize"];
 		$PDU->PanelPole=$row["PanelPole"];
-		$PDU->InputAmerage=$row["InputAmperage"];
+		$PDU->InputAmperage=$row["InputAmperage"];
 		$PDU->FailSafe=$row["FailSafe"];
 		$PDU->PanelID2=$row["PanelID2"];
 		$PDU->PanelPole2=$row["PanelPole2"];
