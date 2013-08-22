@@ -14,7 +14,7 @@
 	$dc->DataCenterID=$_GET["dc"];
 	$dc->GetDataCenterbyID();
 	$dcStats=$dc->GetDCStatistics();
-
+	
 	$height=0;
 	$width=0;
 	$ie8fix="";

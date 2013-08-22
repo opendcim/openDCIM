@@ -476,55 +476,62 @@ class DataCenter {
 		
 		$pdu=new PowerDistribution();
 
-		$sql="SELECT SUM(CabinetHeight) FROM fac_Cabinet WHERE 
+		$sql="SELECT IFNULL(SUM(CabinetHeight), 0) as TotalU FROM fac_Cabinet WHERE 
 			DataCenterID=$this->DataCenterID;";
 
 		if(!$dcStats["TotalU"]=$this->query($sql)->fetchColumn()){
+			error_log( "PDO Error:  $sql" );
 			return false;
 		}		
 
-		$sql="SELECT SUM(a.Height) FROM fac_Device a,fac_Cabinet b WHERE 
-			a.Cabinet=b.CabinetID AND b.DataCenterID=$this->DataCenterID AND a.DeviceType 
-			NOT IN ('Server','Storage Array');";
+		$sql="SELECT IFNULL(SUM(a.Height), 0) as TotalU FROM fac_Device a,fac_Cabinet b WHERE 
+			a.Cabinet=b.CabinetID AND b.DataCenterID=$this->DataCenterID AND 
+			a.DeviceType NOT IN ('Server','Storage Array');";
 
 		if(!$dcStats["Infrastructure"]=$this->query($sql)->fetchColumn()){
+			error_log( "PDO Error:  $sql" );
 			return false;
 		}		
  
-		$sql="SELECT SUM(a.Height) FROM fac_Device a,fac_Cabinet b WHERE 
+		$sql="SELECT IFNULL(SUM(a.Height), 0) as TotalU FROM fac_Device a,fac_Cabinet b WHERE 
 			a.Cabinet=b.CabinetID AND b.DataCenterID=$this->DataCenterID AND 
 			a.Reservation=false AND a.DeviceType IN ('Server', 'Storage Array');";
 
 		if(!$dcStats["Occupied"]=$this->query($sql)->fetchColumn()){
+			error_log( "PDO Error:  $sql" );
 			return false;
 		}		
 
-        $sql="SELECT SUM(a.Height) FROM fac_Device a,fac_Cabinet b WHERE 
-			a.Cabinet=b.CabinetID AND b.DataCenterID=$this->DataCenterID AND 
-			a.Reservation=true;";
+        $sql="SELECT IFNULL(SUM(Height), 0) as TotalU FROM fac_Device WHERE Cabinet in (select CabinetID from fac_Cabinet where DataCenterID=$this->DataCenterID) and Reservation=true";
 
-		if(!$dcStats["Allocated"]=$this->query($sql)->fetchColumn()){
+		// Have to do it this way because even though the IFNULL clause is in there, the conditional always bombs out when there are no reservations
+		if ( !$ret = $this->query($sql) ) {
+			error_log( "PDO Error:  $sql" );
 			return false;
-		}		
+		}
+		
+		$dcStats["Allocated"]=$ret->fetchColumn();
 
         $dcStats["Available"]=$dcStats["TotalU"] - $dcStats["Occupied"] - $dcStats["Infrastructure"] - $dcStats["Allocated"];
 
 
 		// Perform two queries - one is for the wattage overrides (where NominalWatts > 0) and one for the template (default) values
-		$sql="SELECT SUM(NominalWatts) FROM fac_Device a,fac_Cabinet b WHERE 
+		$sql="SELECT IFNULL(SUM(NominalWatts), 0) as TotalWatts FROM fac_Device a,fac_Cabinet b WHERE 
 			a.Cabinet=b.CabinetID AND a.NominalWatts>0 AND 
 			b.DataCenterID=$this->DataCenterID;";
 
 		if(!$dcStats["ComputedWatts"]=$this->query($sql)->fetchColumn()){
+			error_log( "PDO Error:  $sql" );
 			return false;
 		}		
 		
-		$sql="SELECT SUM(c.Wattage) FROM fac_Device a, fac_Cabinet b, 
+		$sql="SELECT IFNULL(SUM(c.Wattage), 0) as TotalWatts FROM fac_Device a, fac_Cabinet b, 
 			fac_DeviceTemplate c WHERE a.Cabinet=b.CabinetID AND 
 			a.TemplateID=c.TemplateID AND a.NominalWatts=0 AND 
 			b.DataCenterID=$this->DataCenterID;";
 
 		if(!$dcStats["ComputedWatts"]+=$this->query($sql)->fetchColumn()){
+			error_log( "PDO Error:  $sql" );
 			return false;
 		}		
 
