@@ -88,7 +88,8 @@
 	}
 
 	// All the ports should be in the array now, use the prepared statement to load them all
-	$populate = $dbh->prepare('INSERT INTO fac_Ports VALUES ( :deviceid, :portnumber, :label, 0, 0, "", :cdeviceid, :cport, :notes )');
+	$populate = $dbh->prepare('INSERT INTO fac_Ports VALUES ( :deviceid, :portnumber, :label, 0, 0, "", :cdeviceid, :cport, :notes )
+		ON DUPLICATE KEY UPDATE Label=:label, ConnectedDeviceID=:cdeviceid, ConnectedPort=:cport, Notes=:notes' );
 
 	foreach($ports as $deviceid => $row){
 		printf( "Saving %d ports for device %d.<br>\n", sizeof( $row ), $deviceid );
