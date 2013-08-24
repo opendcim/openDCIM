@@ -1007,7 +1007,12 @@ class Device {
 		$user=User::Current();
 		if($user->canRead($this->Owner)){$this->Rights="Read";}
 		if($user->canWrite($this->Owner)){$this->Rights="Write";} // write by device
-		if($cab->GetCabinet()){
+		if($this->Cabinet==0){ // cabinet=0 this is a child device of a chassis
+			$par=new Device();
+			$par->DeviceID=$this->ParentDevice;
+			$par->GetDevice();
+			$this->Rights=($par->Rights=="Write")?"Write":$this->Rights;
+		}elseif($cab->GetCabinet()){
 			if($user->canWrite($cab->AssignedTo)){$this->Rights="Write";} // write because the cabinet is assigned
 		}
 		if($user->SiteAdmin && $this->DeviceType=='Patch Panel'){$this->Rights="Write";} // admin override of rights for patch panels
@@ -1390,7 +1395,7 @@ class Device {
 		$childList = array();
 
 		foreach($dbh->query($sql) as $row){
-			$childList[$row["DeviceID"]]=Device::DeviceRowToObject($row);
+			$childList[]=Device::DeviceRowToObject($row);
 		}
 		
 		return $childList;
@@ -1402,9 +1407,12 @@ class Device {
 		$sql="SELECT * FROM fac_Device WHERE ChassisSlots>0 AND ParentDevice=0 ORDER BY Label ASC;";
 		
 		$parentList=array();
-
 		foreach($dbh->query($sql) as $row){
-			$parentList[]=Device::DeviceRowToObject($row);
+			// Assigning here will trigger the FilterRights method and check the cabinet rights
+			$temp=Device::DeviceRowToObject($row);
+			if($temp->DeviceID==$this->ParentDevice || $temp->Rights=="Write"){
+				$parentList[]=$temp;
+			}
 		}
 		
 		return $parentList;

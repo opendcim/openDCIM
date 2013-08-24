@@ -470,7 +470,9 @@
 		echo '</div> <!-- END div.table -->';
 	}
 
-$write=false;
+// In the case of a child device we might define this above and in that case we 
+// need to preserve the flag
+$write=(isset($write))?$write:false;
 $write=($user->canWrite($cab->AssignedTo))?true:$write;
 $write=($dev->Rights=="Write")?true:$write;
 
@@ -1814,8 +1816,9 @@ echo '	<div class="table">
 
 <?php
 	if(!$write){
-		print "$('#firstport button[name=firstport],#firstport button[name=name]').hide();
-				$('.main input, .main select').prop('disabled', true);";
+		print "\t\t//Disable all input if they don't have rights.
+		$('#firstport button[name=firstport],#firstport button[name=name]').hide();
+		$('.main input, .main select').prop('disabled', true);";
 	}
 ?>
 
