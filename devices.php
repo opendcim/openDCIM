@@ -6,7 +6,7 @@
 	$dev=new Device();
 	$cab=new Cabinet();
 	$contact=new Contact();
-	
+
 	$taginsert="";
 
 	// Ajax functions
@@ -23,7 +23,7 @@
 		echo json_encode(ColorCoding::GetCodeList());
 		exit;
 	}
-	// Get list of media typse
+	// Get list of media types
 	if(isset($_GET['mt'])){
 		header('Content-Type: application/json');
 		echo json_encode(MediaTypes::GetMediaTypeList());
@@ -56,7 +56,7 @@
 		}
 		exit;
 	};
-	if(isset($_POST['swdev'])){ 
+	if(isset($_POST['swdev'])){
 		$dev->DeviceID=$_POST['swdev'];
 		$dev->GetDevice();
 		if($dev->Rights=="Write"){
@@ -121,12 +121,12 @@
 			$dp->DeviceID=$_POST['swdev'];
 			$dp->PortNumber=$_POST['pnum'];
 			$dp->getPort();
-			
+
 			$cd=new DevicePorts();
 			$cd->DeviceID=$dp->ConnectedDeviceID;
 			$cd->PortNumber=$dp->ConnectedPort;
 			$cd->getPort();
-			
+
 			$mt=MediaTypes::GetMediaTypeList();
 			$cc=ColorCoding::GetCodeList();
 			$dp->MediaName=(isset($mt[$dp->MediaID]))?$mt[$dp->MediaID]->MediaType:'';
@@ -150,7 +150,7 @@
 				$dp->getPort();
 				foreach($list as $key => $port){
 					if($port['MediaID']!=$dp->MediaID){
-						unset($list[$key]); // remove the nonmatching ports	
+						unset($list[$key]); // remove the nonmatching ports
 					}
 				}
 			}
@@ -229,14 +229,14 @@
 				$dev->Cabinet=$_REQUEST['cabinet'];
 				$cab->CabinetID=$dev->Cabinet;
 				$cab->GetCabinet();
-				
-				// If you are adding a device that is assined to a specific customer, assume that device is also owned by that customer
+
+				// If you are adding a device that is assigned to a specific customer, assume that device is also owned by that customer
 				if($cab->AssignedTo >0){
 					$dev->Owner=$cab->AssignedTo;
 				}
 			}
 		}
-		
+
 		// if no device id requested then we must be making a new device so skip all data lookups.
 		if(isset($_REQUEST['deviceid'])){
 			$dev->DeviceID=intval($_REQUEST['deviceid']);
@@ -249,9 +249,9 @@
 			if(isset($_POST['action'])){
 				$dev->GetDevice();
 
-				$dev->Label=$_POST['label'];
-				$dev->SerialNo=$_POST['serialno'];
-				$dev->AssetTag=$_POST['assettag'];
+				$dev->Label=trim($_POST['label']);
+				$dev->SerialNo=trim($_POST['serialno']);
+				$dev->AssetTag=trim($_POST['assettag']);
 				$dev->Owner=$_POST['owner'];
 				$dev->EscalationTimeID=$_POST['escalationtimeid'];
 				$dev->EscalationID=$_POST['escalationid'];
@@ -281,7 +281,7 @@
 				$dev->NominalWatts=$_POST['nominalwatts'];
 				$dev->HalfDepth=(isset($_POST['halfdepth']))?($_POST['halfdepth']=="on")?1:0:0;
 				$dev->BackSide=(isset($_POST['backside']))?($_POST['backside']=="on")?1:0:0;
-				
+
 				if(($dev->TemplateID >0)&&(intval($dev->NominalWatts==0))){$dev->UpdateWattageFromTemplate();}
 
 				$write=false;
@@ -299,7 +299,7 @@
 									$childDev->DeleteDevice();
 								}
 							}
-					
+
 							$dev->SetTags($tagarray);
 							if($dev->Cabinet <0){
 								$dev->MoveToStorage();
@@ -341,7 +341,7 @@
 			}
 
 			/*
-			 * Prepare data for display 
+			 * Prepare data for display
 			 *
 			 */
 
@@ -377,16 +377,16 @@
 				$pDev=new Device();
 				$pDev->DeviceID=$dev->ParentDevice;
 				$pDev->GetDevice();
-				
+
 				$parentList=$pDev->GetParentDevices();
-				
+
 				//$cab->CabinetID=$pDev->Cabinet;
 				//JMGA: changed for multichassis
 				$cab->CabinetID=$pDev->GetDeviceCabinetID($facDB);
 				$cab->GetCabinet();
 				$chassis="Chassis";
 
-				// This is a child device and if the action of new is set let's assume the 
+				// This is a child device and if the action of new is set let's assume the
 				// departmental owner, primary contact, etc are the same as the parent
 				if(isset($_POST['action']) && $_POST['action']=='Child'){
 					$dev->Owner=$pDev->Owner;
@@ -429,7 +429,7 @@
 			$dev->MfgDate=date("Y-m-d");
 		}
 	}
-		
+
 	if($config->ParameterArray["wDate"]=="now"){
 		if($dev->WarrantyExpire <= "1970-01-01"){
 			$dev->WarrantyExpire=date("Y-m-d");
@@ -442,7 +442,7 @@
 	$templateList=$templ->GetTemplateList();
 	$escTimeList=$escTime->GetEscalationTimeList();
 	$escList=$esc->GetEscalationList();
-	$deptList=$Dept->GetDepartmentList(); 
+	$deptList=$Dept->GetDepartmentList();
 
 	$title=($dev->Label!='')?"$dev->Label :: $dev->DeviceID":__("openDCIM Device Maintenance");
 
@@ -470,7 +470,7 @@
 		echo '</div> <!-- END div.table -->';
 	}
 
-// In the case of a child device we might define this above and in that case we 
+// In the case of a child device we might define this above and in that case we
 // need to preserve the flag
 $write=(isset($write))?$write:false;
 $write=($user->canWrite($cab->AssignedTo))?true:$write;
@@ -483,7 +483,7 @@ $write=($dev->Rights=="Write")?true:$write;
 <head>
   <meta http-equiv="X-UA-Compatible" content="IE=Edge">
   <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-  
+
   <title><?php echo $title; ?></title>
   <link rel="stylesheet" href="css/inventory.php" type="text/css">
   <link rel="stylesheet" href="css/print.css" type="text/css" media="print">
@@ -535,7 +535,7 @@ function getHash(){
 </SCRIPT>
 
 <script type="text/javascript">
-/* 
+/*
 IE work around
 http://stackoverflow.com/questions/5227088/creating-style-node-adding-innerhtml-add-to-dom-and-ie-headaches
 */
@@ -625,7 +625,7 @@ $(document).ready(function() {
 		$('.left').accordion({
 			autoHeight: false,
 			collapsible: true
-		}).removeClass('left');  
+		}).removeClass('left');
 	}
 
 	// add the current ports value to the document data store
@@ -730,7 +730,7 @@ $(document).ready(function() {
 		$.post('',{esxrefresh: $('#deviceid').val()}).done(function(data){
 			$('#esxframe .table ~ .table').replaceWith(data);
 		});
-	}	
+	}
 
 	// This is for adding blades to chassis devices
 	$('#adddevice').click(function() {
@@ -867,7 +867,7 @@ print "		var dialog=$('<div>').prop('title','".__("Verify Delete Device")."').ht
 		});
 <?php
 		}
-		
+
 		// hide cabinet slot picker from child devices
 		if($dev->ParentDevice==0){
 ?>
@@ -1032,7 +1032,7 @@ print "		var dialog=$('<div>').prop('title','".__("Verify Delete Device")."').ht
 				}
 			});
 		});
-<?php 
+<?php
 	} // end of javascript editing functions
 ?>
 	// Make connections to other devices
@@ -1056,7 +1056,7 @@ print "		var dialog=$('<div>').prop('title','".__("Verify Delete Device")."').ht
 							$.each(data, function(key,port){
 								var pn=port.PortNumber;
 								port.Label=(port.Label=="")?pn:port.Label;
-								
+
 								// only allow positive values
 								if(pn>0){
 									portlist.append('<option value='+pn+'>'+port.Label+'</option>');
@@ -1108,7 +1108,7 @@ print "		var dialog=$('<div>').prop('title','".__("Verify Delete Device")."').ht
 						devlist.change(function(){
 							getports($(this).val(),portnum);
 						});
-						
+
 						$.each(data, function(devid,device){
 							devlist.append('<option value='+device.DeviceID+'>'+device.Label+'</option>');
 						});
@@ -1335,7 +1335,7 @@ print "		var dialog=$('<div>').prop('title','".__("Verify Delete Device")."').ht
 		}
 	});
 });
-	
+
 </script>
 
 </head>
@@ -1404,7 +1404,7 @@ echo '<div class="center"><div>
 		<div>
 		   <div><label for="installdate">'.__("Warranty Expiration").'</label></div>
 		   <div><input type="text" class="validate[custom[date]] datepicker" name="warrantyexpire" id="warrantyexpire" value="'.date('m/d/Y',strtotime($dev->WarrantyExpire)).'"></div>
-		</div>		
+		</div>
 		<div>
 		   <div><label for="owner">'.__("Departmental Owner").'</label></div>
 		   <div>
@@ -1461,7 +1461,7 @@ echo '				</select></div>
 				if($contactRow->ContactID==$dev->PrimaryContact){$contactUserID=$contactRow->UserID;$selected=" selected";}else{$selected="";}
 				print "\t\t\t\t<option value=\"$contactRow->ContactID\"$selected>$contactRow->LastName, $contactRow->FirstName</option>\n";
 			}
-			
+
 			print "\t\t\t</select>\n";
 
 			if(isset($config->ParameterArray['UserLookupURL']) && isValidURL($config->ParameterArray['UserLookupURL']) && isset($contactUserID)){
@@ -1475,7 +1475,7 @@ echo '		   </div>
 			<div><textarea type="text" name="tags" id="tags" rows="1"></textarea></div>
 		</div>
 	</div> <!-- END div.table -->
-</fieldset>	
+</fieldset>
 	<div class="table">
 		<div>
 		  <div><label for="notes">',__("Notes"),'</label></div>
@@ -1498,7 +1498,7 @@ echo '		   </div>
 		<div>
 			<div><label for=\"parentdevice\">".__('Parent Device')."</label></div>
 			<div><select name=\"parentdevice\">\n";
-			
+
 			foreach($parentList as $parDev){
 				if($pDev->DeviceID==$parDev->DeviceID){$selected=" selected";}else{$selected="";}
 				print "\t\t\t\t<option value=\"$parDev->DeviceID\"$selected>$parDev->Label</option>\n";
@@ -1550,7 +1550,7 @@ echo '		<div>
 
 		// Blade devices don't have data ports unless they're a switch
 		$hide=($dev->ParentDevice==0 || ($dev->ParentDevice>0 && $dev->DeviceType=='Switch'))?'':' class="hide"';
-			
+
 		echo '		<div id="dphtml"',$hide,'>
 		   <div><label for="ports">',__("Number of Data Ports"),'</label></div>
 		   <div><input type="number" class="optional,validate[custom[onlyNumberSp]]" name="ports" id="ports" size="4" value="',$dev->Ports,'"></div>
@@ -1576,7 +1576,7 @@ echo '		<div>
 
 		foreach($devarray as $devType => $translation){
 			if($devType==$dev->DeviceType){$selected=" selected";}else{$selected="";}
-			print "\t\t\t<option value=\"$devType\"$selected>$translation</option>\n";  
+			print "\t\t\t<option value=\"$devType\"$selected>$translation</option>\n";
 		}
 ?>
 		   </select></div>
@@ -1606,7 +1606,7 @@ echo '<fieldset class="chassis">
 			<div><input type="text" id="chassisslots" class="optional,validate[custom[onlyNumberSp]]" name="chassisslots" size="4" value="',$dev->ChassisSlots,'"></div>
 			<div class="greybg"><input type="text" id="rearchassisslots" class="optional,validate[custom[onlyNumberSp]]" name="rearchassisslots" size="4" value="',$dev->RearChassisSlots,'"></div>
 		</div>';
-	
+
 	if($dev->ChassisSlots >0){
 
 echo '	</div>
@@ -1640,7 +1640,7 @@ echo '		<div class="caption">
 </fieldset>
 <?php
 	}
-	
+
 	// Do not display ESX block if device isn't a virtual server and the user doesn't have write access
 	if(($write || $dev->ESX) && ($dev->DeviceType=="Server" || $dev->DeviceType=="")){
 		echo '<fieldset id="esxframe">	<legend>',__("VMWare ESX Server Information"),'</legend>';
@@ -1685,7 +1685,7 @@ echo '	<div class="table">
 		}
 	}
 
-	$jsondata=array();// array to store user ability to modify a port. index=portnumber, value=true/false 
+	$jsondata=array();// array to store user ability to modify a port. index=portnumber, value=true/false
 	// New simplified model will apply to all devices except for patch panels and physical infrastructure
 	if(!in_array($dev->DeviceType,array('Physical Infrastructure','Patch Panel')) && !empty($portList) ){
 		print "		<div>\n		  <div><a name=\"net\">".__('Connections')."</a></div>\n		  <div>\n			<div class=\"table border switch\">\n				<div>
@@ -1698,7 +1698,7 @@ echo '	<div class="table">
 		print "\t\t\t\t<div>".__("Media Type")."</div>
 			<div>".__("Color Code")."</div>
 			</div>\n";
-		
+
 		foreach($portList as $i => $port){
 			$tmpDev=new Device();
 			$tmpDev->DeviceID=$port->ConnectedDeviceID;
@@ -1712,9 +1712,9 @@ echo '	<div class="table">
 			$cp->DeviceID=$port->ConnectedDeviceID;
 			$cp->PortNumber=$port->ConnectedPort;
 			$cp->getPort();
-			
+
 			if($cp->DeviceID >0 && $cp->Label==''){$cp->Label=$cp->PortNumber;};
-			
+
 			$mt=(isset($mediaTypes[$port->MediaID]))?$mediaTypes[$port->MediaID]->MediaType:'';
 			$cc=(isset($colorCodes[$port->ColorID]))?$colorCodes[$port->ColorID]->Name:'';
 
@@ -1746,7 +1746,7 @@ echo '	<div class="table">
 			$rearDev->DeviceID=$portList[-$i]->ConnectedDeviceID;
 			$frontDev->GetDevice();
 			$rearDev->GetDevice();
-			
+
 			// Allow the user to modify the port if they have rights over the patch panel itself or
 			// the attached device, but only the front port.  The rear is still reserved for administrators only.
 			$jsondata[$i]=($dev->Rights=="Write")?true:($frontDev->Rights=="Write")?true:false;
@@ -1759,7 +1759,7 @@ echo '	<div class="table">
 				$cPort->getPort();
 				$fp=($cPort->Label!="")?$cPort->Label:$cPort->PortNumber;
 			}
-			
+
 			$rp=($portList[-$i]->ConnectedPort!='')?abs($portList[-$i]->ConnectedPort):''; //rear port label
 			print "\n\t\t\t\t<div data-port=$i>
 					<div id=\"fd$i\" data-default=$frontDev->DeviceID><a href=\"devices.php?deviceid=$frontDev->DeviceID\">$frontDev->Label</a></div>
@@ -1851,7 +1851,7 @@ echo '	<div class="table">
 			}).appendTo('#pandn .caption');
 		}
 
-		
+
 	});
 </script>
 
