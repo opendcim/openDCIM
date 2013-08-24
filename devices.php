@@ -249,9 +249,9 @@
 			if(isset($_POST['action'])){
 				$dev->GetDevice();
 
-				$dev->Label=trim($_POST['label']);
-				$dev->SerialNo=trim($_POST['serialno']);
-				$dev->AssetTag=trim($_POST['assettag']);
+				$dev->Label=$_POST['label'];
+				$dev->SerialNo=$_POST['serialno'];
+				$dev->AssetTag=$_POST['assettag'];
 				$dev->Owner=$_POST['owner'];
 				$dev->EscalationTimeID=$_POST['escalationtimeid'];
 				$dev->EscalationID=$_POST['escalationid'];
