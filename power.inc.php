@@ -69,7 +69,7 @@ class CDUTemplate {
 		$this->OID3=stripslashes($this->OID3);
 	}
 
-	static function TemplateRowToObject($row){
+	static function RowToObject($row){
 		$template=new CDUTemplate();
 		$template->TemplateID=$row["TemplateID"];
 		$template->ManufacturerID=$row["ManufacturerID"];
@@ -99,7 +99,7 @@ class CDUTemplate {
 		
 		$tmpList=array();
 		foreach($dbh->query($sql) as $row){
-			$tmpList[]=CDUTemplate::TemplateRowToObject($row);
+			$tmpList[]=CDUTemplate::RowToObject($row);
 		}
 		
 		return $tmpList;
@@ -113,7 +113,7 @@ class CDUTemplate {
 		$sql="SELECT * FROM fac_CDUTemplate WHERE TemplateID=$this->TemplateID";
 
 		foreach($dbh->query($sql) as $row){
-			foreach(CDUTemplate::TemplateRowToObject($row) as $prop => $value){
+			foreach(CDUTemplate::RowToObject($row) as $prop => $value){
 				$this->$prop=$value;
 			}
 		}
@@ -198,7 +198,7 @@ class PowerConnection {
 		$this->DeviceConnNumber=intval($this->DeviceConnNumber);
 	}
 
-	function RowToObject($row){
+	static function RowToObject($row){
 		$conn=new PowerConnection;
 		$conn->PDUID=$row["PDUID"];
 		$conn->PDUPosition=$row["PDUPosition"];
@@ -388,7 +388,7 @@ class PowerDistribution {
 		$this->FirmwareVersion=stripslashes($this->FirmwareVersion);
 	}
 
-	static function PDURowToObject($row){
+	static function RowToObject($row){
 		$PDU=new PowerDistribution();
 		$PDU->PDUID=$row["PDUID"];
 		$PDU->Label=$row["Label"];
@@ -476,7 +476,7 @@ class PowerDistribution {
 		$sql="SELECT * FROM fac_PowerDistribution WHERE PDUID=$this->PDUID;";
 
 		if($PDURow=$this->query($sql)->fetch()){
-			foreach(PowerDistribution::PDURowToObject($PDURow) as $prop => $value){
+			foreach(PowerDistribution::RowToObject($PDURow) as $prop => $value){
 				$this->$prop=$value;
 			}
 		}else{
@@ -498,7 +498,7 @@ class PowerDistribution {
 
 		$PDUList=array();
 		foreach($this->query($sql) as $PDURow){
-			$PDUList[]=PowerDistribution::PDURowToObject($PDURow);
+			$PDUList[]=PowerDistribution::RowToObject($PDURow);
 		}
 
 		return $PDUList;
@@ -511,7 +511,7 @@ class PowerDistribution {
 
 		$PDUList=array();
 		foreach($this->query($sql) as $PDURow){
-			$PDUList[$PDURow["PDUID"]]=PowerDistribution::PDURowToObject($PDURow);
+			$PDUList[$PDURow["PDUID"]]=PowerDistribution::RowToObject($PDURow);
 		}
 
 		return $PDUList;
@@ -524,7 +524,7 @@ class PowerDistribution {
 
 		$PDUList=array();
 		foreach($this->query($sql) as $PDURow){
-			$PDUList[$PDURow["PDUID"]]=PowerDistribution::PDURowToObject($PDURow);
+			$PDUList[$PDURow["PDUID"]]=PowerDistribution::RowToObject($PDURow);
 		}
 
 		return $PDUList;
@@ -814,7 +814,7 @@ class PowerPanel {
 		$this->PanelLabel=stripslashes($this->PanelLabel);
 	}
 
-	static function PanelRowToObject($row){
+	static function RowToObject($row){
 		$panel=new PowerPanel();
 		$panel->PanelID=$row["PanelID"];
 		$panel->PowerSourceID=$row["PowerSourceID"];
@@ -842,7 +842,7 @@ class PowerPanel {
 	function Search($sql){
 		$PanelList=array();
 		foreach($this->query($sql) as $row){    
-			$PanelList[]=PowerPanel::PanelRowToObject($row);
+			$PanelList[]=PowerPanel::RowToObject($row);
 		}
 
 		return $PanelList;
@@ -876,7 +876,7 @@ class PowerPanel {
 		$sql="SELECT * FROM fac_PowerPanel WHERE PanelID=$this->PanelID;";
 
 		if($row=$this->query($sql)->fetch()){
-			foreach(PowerPanel::PanelRowToObject($row) as $prop => $value){
+			foreach(PowerPanel::RowToObject($row) as $prop => $value){
 				$this->$prop=$value;
 			}
 		}else{
@@ -1032,7 +1032,7 @@ class PowerSource {
 		$this->LoadOID=stripslashes($this->LoadOID);
 	}
 
-	static function PowerSourceRowToObject($row){
+	static function RowToObject($row){
 		$source=new PowerSource;
 		$source->PowerSourceID=$row["PowerSourceID"];
 		$source->SourceName=$row["SourceName"];
@@ -1088,7 +1088,7 @@ class PowerSource {
 
 		$SourceList=array();
 		foreach($dbh->query($sql) as $row){
-			$SourceList[$row["PowerSourceID"]]=PowerSource::PowerSourceRowToObject($row);
+			$SourceList[$row["PowerSourceID"]]=PowerSource::RowToObject($row);
 		}
 
 		return $SourceList;
@@ -1103,7 +1103,7 @@ class PowerSource {
 
 		$SourceList=array();
 		foreach($dbh->query($sql) as $row){
-			$SourceList[]=PowerSource::PowerSourceRowToObject($row);
+			$SourceList[]=PowerSource::RowToObject($row);
 		}
 
 		return $SourceList;
@@ -1117,7 +1117,7 @@ class PowerSource {
 		$sql="SELECT * FROM fac_PowerSource WHERE PowerSourceID=$this->PowerSourceID;";
 
 		if($row=$dbh->query($sql)->fetch()){
-			foreach(PowerSource::PowerSourceRowToObject($row) as $prop => $value){
+			foreach(PowerSource::RowToObject($row) as $prop => $value){
 				$this->$prop=$value;
 			}
 		}else{

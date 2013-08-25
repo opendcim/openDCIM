@@ -75,7 +75,7 @@ class Cabinet {
 		$this->Notes=addslashes($this->Notes);
 	}
 	
-	static function CabinetRowToObject($dbRow){
+	static function RowToObject($dbRow){
 		/*
 		 * Generic function that will take any row returned from the fac_Cabinet
 		 * table and convert it to an object for use in array or other
@@ -172,7 +172,7 @@ class Cabinet {
 		$sql="SELECT * FROM fac_Cabinet WHERE CabinetID=$this->CabinetID;";
 		
 		if($cabinetRow=$dbh->query($sql)->fetch()){
-			foreach(Cabinet::CabinetRowToObject($cabinetRow) as $prop => $value){
+			foreach(Cabinet::RowToObject($cabinetRow) as $prop => $value){
 				$this->$prop=$value;
 			}
 			return true;
@@ -195,7 +195,7 @@ class Cabinet {
 
 		foreach ( $dbh->query( $sql ) as $cabinetRow ) {
 			$cabID=sizeof($cabinetList);
-			$cabinetList[$cabID]=Cabinet::CabinetRowToObject($cabinetRow);
+			$cabinetList[$cabID]=Cabinet::RowToObject($cabinetRow);
 		}
 
 		return $cabinetList;
@@ -210,7 +210,7 @@ class Cabinet {
 
 		foreach ( $dbh->query( $sql ) as $cabinetRow ) {
 			$cabID=sizeof($cabinetList);
-			$cabinetList[$cabID]=Cabinet::CabinetRowToObject($cabinetRow);
+			$cabinetList[$cabID]=Cabinet::RowToObject($cabinetRow);
 		}
 
 		return $cabinetList;
@@ -299,7 +299,7 @@ class Cabinet {
 		$cabinetList=array();
 
 		foreach($dbh->query($sql) as $cabinetRow){
-			$cabinetList[$cabinetRow['CabinetID']]=Cabinet::CabinetRowToObject($cabinetRow);
+			$cabinetList[$cabinetRow['CabinetID']]=Cabinet::RowToObject($cabinetRow);
 		}
 
 		return $cabinetList;
@@ -433,7 +433,7 @@ class Cabinet {
 
 		foreach ( $dbh->query( $sql ) as $cabinetRow ){
 			$cabID=sizeof($cabinetList);
-			$cabinetList[$cabID]=Cabinet::CabinetRowToObject($cabinetRow);
+			$cabinetList[$cabID]=Cabinet::RowToObject($cabinetRow);
 		}
 
 		return $cabinetList;
@@ -448,7 +448,7 @@ class Cabinet {
 
 		foreach ( $dbh->query( $sql ) as $cabinetRow ) {
 			$cabID=sizeof($cabinetList);
-			$cabinetList[$cabID]=Cabinet::CabinetRowToObject($cabinetRow);
+			$cabinetList[$cabID]=Cabinet::RowToObject($cabinetRow);
 		}
 
 		return $cabinetList;
@@ -463,7 +463,7 @@ class Cabinet {
 
 		foreach ( $dbh->query( $sql ) as $cabinetRow ) {
 			$cabID=sizeof($cabinetList);
-			$cabinetList[$cabID]=Cabinet::CabinetRowToObject($cabinetRow);
+			$cabinetList[$cabID]=Cabinet::RowToObject($cabinetRow);
 		}
 		return $cabinetList;
 	}
@@ -953,7 +953,7 @@ class Device {
 		$this->Notes=stripslashes($this->Notes);
 	}
 
-	static function DeviceRowToObject($dbRow){
+	static function RowToObject($dbRow){
 		/*
 		 * Generic function that will take any row returned from the fac_Devices
 		 * table and convert it to an object for use in array or other
@@ -1342,7 +1342,7 @@ class Device {
 		$sql="SELECT * FROM fac_Device WHERE DeviceID=$this->DeviceID;";
 
 		if($devRow=$dbh->query($sql)->fetch()){
-			foreach(Device::DeviceRowToObject($devRow) as $prop => $value){
+			foreach(Device::RowToObject($devRow) as $prop => $value){
 				$this->$prop=$value;
 			}
 
@@ -1365,7 +1365,7 @@ class Device {
 
 		$deviceList=array();
 		foreach($dbh->query($sql) as $deviceRow){
-			$deviceList[]=Device::DeviceRowToObject($deviceRow);
+			$deviceList[]=Device::RowToObject($deviceRow);
 		}
 		
 		return $deviceList;
@@ -1379,7 +1379,7 @@ class Device {
 		
 		$deviceList=array();
 		foreach($dbh->query($sql) as $deviceRow){
-			$deviceList[]=Device::DeviceRowToObject($deviceRow);
+			$deviceList[]=Device::RowToObject($deviceRow);
 		}
 		
 		return $deviceList;
@@ -1395,7 +1395,7 @@ class Device {
 		$childList = array();
 
 		foreach($dbh->query($sql) as $row){
-			$childList[]=Device::DeviceRowToObject($row);
+			$childList[]=Device::RowToObject($row);
 		}
 		
 		return $childList;
@@ -1409,7 +1409,7 @@ class Device {
 		$parentList=array();
 		foreach($dbh->query($sql) as $row){
 			// Assigning here will trigger the FilterRights method and check the cabinet rights
-			$temp=Device::DeviceRowToObject($row);
+			$temp=Device::RowToObject($row);
 			if($temp->DeviceID==$this->ParentDevice || $temp->Rights=="Write"){
 				$parentList[]=$temp;
 			}
@@ -1435,7 +1435,7 @@ class Device {
 		$deviceList = array();
 
 		foreach($dbh->query($sql) as $deviceRow){
-			$deviceList[]=Device::DeviceRowToObject($deviceRow);
+			$deviceList[]=Device::RowToObject($deviceRow);
 		}
 
 		return $deviceList;
@@ -1449,7 +1449,7 @@ class Device {
 		$panelList=array();
 
 		foreach($dbh->query($sql) as $row){
-			$panelList[$row["DeviceID"]]=Device::DeviceRowToObject($row);
+			$panelList[$row["DeviceID"]]=Device::RowToObject($row);
 		}
 		
 		return $panelList;
@@ -1502,7 +1502,7 @@ class Device {
 		$deviceList = array();
 
 		foreach($dbh->query($sql) as $deviceRow){
-			$deviceList[$deviceRow["DeviceID"]]=Device::DeviceRowToObject($deviceRow);
+			$deviceList[$deviceRow["DeviceID"]]=Device::RowToObject($deviceRow);
 		}
 
 		return $deviceList;
@@ -1521,7 +1521,7 @@ class Device {
 		$deviceList=array();
 
 		foreach($dbh->query($sql) as $deviceRow){
-			$deviceList[$deviceRow["DeviceID"]]=Device::DeviceRowToObject($deviceRow);
+			$deviceList[$deviceRow["DeviceID"]]=Device::RowToObject($deviceRow);
 		}
 
 		return $deviceList;
@@ -1535,7 +1535,7 @@ class Device {
 		$deviceList = array();
 
 		foreach($dbh->query($sql) as $deviceRow){ 
-			$deviceList[$deviceRow["DeviceID"]]=Device::DeviceRowToObject($deviceRow);
+			$deviceList[$deviceRow["DeviceID"]]=Device::RowToObject($deviceRow);
 		}
 
 		return $deviceList;
@@ -1551,7 +1551,7 @@ class Device {
 		$deviceList=array();
 
 		foreach($dbh->query($sql) as $deviceRow){
-			$deviceList[$deviceRow["DeviceID"]]=Device::DeviceRowToObject($deviceRow);
+			$deviceList[$deviceRow["DeviceID"]]=Device::RowToObject($deviceRow);
 		}
 
 		return $deviceList;
@@ -1567,7 +1567,7 @@ class Device {
 		$deviceList=array();
 
 		foreach($dbh->query($sql) as $deviceRow){
-			$deviceList[$deviceRow["DeviceID"]]=Device::DeviceRowToObject($deviceRow);
+			$deviceList[$deviceRow["DeviceID"]]=Device::RowToObject($deviceRow);
 		}
 
 		return $deviceList;
@@ -1653,7 +1653,7 @@ class Device {
 		$deviceList = array();
 
 		foreach($dbh->query($sql) as $deviceRow){
-			$deviceList[$deviceRow["DeviceID"]]=Device::DeviceRowToObject($deviceRow);
+			$deviceList[$deviceRow["DeviceID"]]=Device::RowToObject($deviceRow);
 		}
 		
 		return $deviceList;
@@ -2374,7 +2374,7 @@ class ESX {
 	var $vmState;
 	var $Owner;
   
-	static function ESXRowToObject($dbRow){
+	static function RowToObject($dbRow){
 		/*
 		 * Generic function that will take any row returned from the fac_VMInventory
 		 * table and convert it to an object for use in array or other
@@ -2399,7 +2399,7 @@ class ESX {
 		$vmCount=0;
 
 		foreach($dbh->query($sql) as $row){
-			$vmList[$vmCount]=ESX::ESXRowToObject($row);
+			$vmList[$vmCount]=ESX::RowToObject($row);
 			$vmCount++;
 		}
 
@@ -2498,7 +2498,7 @@ class ESX {
 		if(!$vmRow=$dbh->query($sql)){
 			return false;
 		}else{
-			foreach(ESX::ESXRowToObject($vmRow) as $param => $value){
+			foreach(ESX::RowToObject($vmRow) as $param => $value){
 				$this->$param=$value;
 			}
 			return true;

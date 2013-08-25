@@ -57,12 +57,12 @@ function GetDeviceByAge($years){
 		$yearsplus=$years+1;
 		$selectSQL = sprintf( "select * from fac_Device where (DATEDIFF(NOW(), IF(MfgDate>'1970-01-01',MfgDate,InstallDate))/365)<%d and (DATEDIFF(NOW(), IF(MfgDate>'1970-01-01',MfgDate,InstallDate))/365)>=%d", $yearsplus, $years );
 		foreach($dbh->query($selectSQL) as $deviceRow){
-			$deviceList[$deviceRow['DeviceID']]=Device::DeviceRowToObject($deviceRow);
+			$deviceList[$deviceRow['DeviceID']]=Device::RowToObject($deviceRow);
 		}
 	}else{
 		$selectSQL="select * from fac_Device where (DATEDIFF(NOW(), IF(MfgDate>'1970-01-01',MfgDate,InstallDate))/365)>4 and IF(MfgDate>'1970-01-01',MfgDate,InstallDate)>'1970-01-01'";
 		foreach($dbh->query($selectSQL) as $deviceRow){
-			$deviceList[$deviceRow['DeviceID']]=Device::DeviceRowToObject($deviceRow);
+			$deviceList[$deviceRow['DeviceID']]=Device::RowToObject($deviceRow);
 		}
 	}
     return $deviceList;

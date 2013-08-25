@@ -96,7 +96,7 @@ class BinContents {
 		$this->Count=intval($this->Count);
 	}
 
-	function BinRowToObject($row){
+	static function RowToObject($row){
 		$bin=new BinContents();
 		$bin->BinID=$row["BinID"];
 		$bin->SupplyID=$row["SupplyID"];
@@ -128,7 +128,7 @@ class BinContents {
 		
 		$binList=array();
 		foreach($this->query($sql) as $row){
-			$binList[]=BinContents::BinRowToObject($row);
+			$binList[]=BinContents::RowToObject($row);
 		}
 		
 		return $binList;
@@ -143,7 +143,7 @@ class BinContents {
 
 		$binList=array();
 		foreach($this->query($sql) as $row){
-			$binList[]=BinContents::BinRowToObject($row);
+			$binList[]=BinContents::RowToObject($row);
 		}
 		
 		return $binList;		
@@ -211,7 +211,7 @@ class DataCenter {
 		$this->DrawingFileName=stripslashes($this->DrawingFileName);
 	}
 
-	static function DataCenterRowToObject($row){
+	static function RowToObject($row){
 		$dc=New DataCenter();
 		$dc->DataCenterID=$row["DataCenterID"];
 		$dc->Name=$row["Name"];
@@ -271,7 +271,7 @@ class DataCenter {
 		$sql="SELECT * FROM fac_DataCenter WHERE DataCenterID=$this->DataCenterID;";
 
 		if($row=$this->query($sql)->fetch()){
-			foreach(DataCenter::DataCenterRowToObject($row) as $prop => $value){
+			foreach(DataCenter::RowToObject($row) as $prop => $value){
 				$this->$prop=$value;
 			}
 			return true;
@@ -285,7 +285,7 @@ class DataCenter {
 
 		$datacenterList=array();
 		foreach($this->query($sql) as $row){
-			$datacenterList[]=DataCenter::DataCenterRowToObject($row);
+			$datacenterList[]=DataCenter::RowToObject($row);
 		}
 
 		return $datacenterList;
@@ -705,7 +705,7 @@ class DeviceTemplate {
 
 		$devList=array();
 		foreach($this->query($sql) as $row){
-			$devList[]=Device::DeviceRowToObject($row);
+			$devList[]=Device::RowToObject($row);
 		}
 
 		$this->MakeDisplay();
@@ -1137,7 +1137,7 @@ class CabRow {
 		$this->Name=stripslashes($this->Name);
 	}
 
-	function RowToObject($row){
+	static function RowToObject($row){
 		$cabrow=new CabRow();
 		$cabrow->CabRowID=$row["CabRowID"];
 		$cabrow->Name=$row["Name"];
@@ -1265,7 +1265,7 @@ class Container {
 		$this->DrawingFileName=stripslashes($this->DrawingFileName);
 	}
 
-	function RowToObject($row){
+	static function RowToObject($row){
 		$container=new Container();
 		$container->ContainerID=$row["ContainerID"];
 		$container->Name=$row["Name"];
@@ -1356,7 +1356,7 @@ class Container {
 
 		$datacenterList=array();
 		foreach($this->query($sql) as $row){
-			$datacenterList[$row["DataCenterID"]]=DataCenter::DataCenterRowToObject($row);
+			$datacenterList[$row["DataCenterID"]]=DataCenter::RowToObject($row);
 		}
 
 		return $datacenterList;

@@ -60,7 +60,7 @@ class Contact {
 		$this->Email=stripslashes($this->Email);
 	}
 
-	static function ContactRowToObject($row){
+	static function RowToObject($row){
 		$contact=new Contact();
 		$contact->ContactID=$row["ContactID"];
 		$contact->UserID=$row["UserID"];
@@ -92,7 +92,7 @@ class Contact {
 		$sql="SELECT * FROM fac_Contact WHERE ContactID=$this->ContactID;";
 
 		if($row=$this->query($sql)->fetch()){
-			foreach(Contact::ContactRowToObject($row) as $prop => $value){
+			foreach(Contact::RowToObject($row) as $prop => $value){
 				$this->$prop=$value;
 			}
 		}else{
@@ -110,7 +110,7 @@ class Contact {
 		$sql="SELECT * FROM fac_Contact WHERE UserID=\"$this->UserID\";";
 
 		if($row=$this->query($sql)->fetch()){
-			foreach(Contact::ContactRowToObject($row) as $prop => $value){
+			foreach(Contact::RowToObject($row) as $prop => $value){
 				$this->$prop=$value;
 			}
 		}else{
@@ -172,7 +172,7 @@ class Contact {
 
 		$contactList=array();
 		foreach($dbh->query($sql) as $row){
-			$contactList[]=Contact::ContactRowToObject($row);
+			$contactList[]=Contact::RowToObject($row);
 		}
 
 		return $contactList;
@@ -184,7 +184,7 @@ class Contact {
 
 		$contactList=array();
 		foreach($this->query($sql) as $row){
-			$contactList[$row["ContactID"]]=Contact::ContactRowToObject($row);
+			$contactList[$row["ContactID"]]=Contact::RowToObject($row);
 		}
 
 		return $contactList;
@@ -221,7 +221,7 @@ class Department {
 		$this->DeptColor=stripslashes($this->DeptColor);
 	}
 
-	static function DeptRowToObject($row){
+	static function RowToObject($row){
 		$dept=new Department();
 		$dept->DeptID=$row["DeptID"];
 		$dept->Name=$row["Name"];
@@ -286,7 +286,7 @@ class Department {
 		$sql="SELECT * FROM fac_Department WHERE DeptID=$this->DeptID;";
 
 		if($row=$this->query($sql)->fetch()){
-			foreach(Department::DeptRowToObject($row) as $prop => $value){
+			foreach(Department::RowToObject($row) as $prop => $value){
 				$this->$prop=$value;
 			}
 			return true;
@@ -300,7 +300,7 @@ class Department {
 
 		$sql="SELECT * FROM fac_Department WHERE Name LIKE \"%$this->Name%\";";
 		if($row=$this->query($sql)->fetch()){
-			foreach(Department::DeptRowToObject($row) as $prop => $value){
+			foreach(Department::RowToObject($row) as $prop => $value){
 				$this->$prop=$value;
 			}
 		}
@@ -309,7 +309,7 @@ class Department {
 		$sql="SELECT * FROM fac_Department ORDER BY Name ASC;";
 		$deptList=array();
 		foreach($this->query($sql) as $row){
-			$deptList[]=Department::DeptRowToObject($row);
+			$deptList[]=Department::RowToObject($row);
 		}
 
 		return $deptList;
