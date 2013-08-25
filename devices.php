@@ -547,28 +547,33 @@ function setCookie(c_name, value) {
 	document.cookie=c_name + "=" + c_value;
 }
 function swaplayout(){
-	var sheet = document.createElement('style');
-	sheet.type = 'text/css';
-	if (sheet.styleSheet) { // IE
-		sheet.styleSheet.cssText = ".device div.left { display: block; }";
-<?php echo '		document.getElementById(\'layout\').innerHTML = "',__("Landscape"),'";
-	} else {
-		sheet.innerHTML = ".device div.left { display: block; }";
-		document.getElementById(\'layout\').innerHTML = "',__("Landscape"),'";'; ?>
-	}
-	var s = document.getElementsByTagName('style')[0];
-	if (s.innerHTML == sheet.innerHTML){
-		if (sheet.styleSheet){ //IE
-			document.getElementsByTagName('style')[0].styleSheet.cssText = "";
-<?php echo '			document.getElementById(\'layout\').innerHTML = "',__("Portrait"),'";
-		}else{
-			document.getElementsByTagName(\'style\')[0].innerHTML = "";
-			document.getElementById(\'layout\').innerHTML = "',__("Portrait"),'";'; ?>
-		}
-		setCookie("layout","Landscape");
-	}else{
+	var sheet=document.createElement('style');
+	sheet.type='text/css';
+	var s=document.getElementsByTagName('style')[0];
+	var button=document.getElementById('layout');
+
+	function p(){ // set to portrait view
 		s.parentNode.insertBefore(sheet, s);
+		button.innerHTML="<?php echo __('Landscape'); ?>";
 		setCookie("layout","Portrait");
+	}
+
+	function l(){ // set to landscape view
+		if(sheet.styleSheet){ //IE
+			s.styleSheet.cssText = "";
+		}else{
+			s.innerHTML = "";
+		}
+		button.innerHTML="<?php echo __('Portrait'); ?>";
+		setCookie("layout","Landscape");
+	}
+
+	if(sheet.styleSheet){ // IE
+		sheet.styleSheet.cssText = ".device div.left { display: block; }";
+		(s.styleSheet.cssText==sheet.styleSheet.cssText)?l():p();
+	}else{
+		sheet.innerHTML = ".device div.left { display: block; }";
+		(s.innerHTML==sheet.innerHTML)?l():p();
 	}
 }
 $(document).ready(function() {
