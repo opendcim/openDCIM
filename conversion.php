@@ -85,7 +85,12 @@
 		$ports[$row['PanelDeviceID']][-$row['PanelPortNumber']]['Connected Device']=$row['RearEndpointDeviceID'];
 		$ports[$row['PanelDeviceID']][-$row['PanelPortNumber']]['Connected Port']=-$row['RearEndpointPort'];
 		$ports[$row['PanelDeviceID']][-$row['PanelPortNumber']]['Notes']=$row['RearNotes'];
-	}
+		$ports[$row['FrontEndpointDeviceID']][$row['FrontEndpointPort']]['Connected Device']=$row['PanelDeviceID'];
+		$ports[$row['FrontEndpointDeviceID']][$row['FrontEndpointPort']]['Connected Port']=$row['PanelPortNumber'];
+		$ports[$row['FrontEndpointDeviceID']][$row['FrontEndpointPort']]['Notes']=$row['FrontNotes'];
+		$ports[$row['PanelDeviceID']][$row['PanelPortNumber']]['Connected Device']=$row['FrontEndpointDeviceID'];
+		$ports[$row['PanelDeviceID']][$row['PanelPortNumber']]['Connected Port']=-$row['FrontEndpointPort'];
+		$ports[$row['PanelDeviceID']][$row['PanelPortNumber']]['Notes']=$row['FrontNotes'];	}
 
 	// All the ports should be in the array now, use the prepared statement to load them all
 	$populate = $dbh->prepare('INSERT INTO fac_Ports VALUES ( :deviceid, :portnumber, :label, 0, 0, "", :cdeviceid, :cport, :notes )
