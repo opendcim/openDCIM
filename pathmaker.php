@@ -133,7 +133,7 @@
 				if ($pp->MakePath()){
 					//Go to initial device on Path
 					if (!$pp->GotoHeadDevice()){
-						$status="<blink>".__("Path not inicialiced")."</blink>";
+						$status="<blink>".__("Path not initialized")."</blink>";
 					}
 				} else {
 					switch ($pp->PathError){
@@ -472,7 +472,7 @@
 
 echo '<div class="main">
 <h2>',$config->ParameterArray["OrgName"],'</h2>
-<h3>',__("Creating an end to end conntecion"),'</h3>
+<h3>',__("Creating an end to end connection"),'</h3>
 <h3>',$status,'</h3>
 <div class="center"><div><div>
 <form action="',$_SERVER["PHP_SELF"],'" method="POST">
