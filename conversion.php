@@ -89,7 +89,7 @@
 		$ports[$row['FrontEndpointDeviceID']][$row['FrontEndpointPort']]['Connected Port']=$row['PanelPortNumber'];
 		$ports[$row['FrontEndpointDeviceID']][$row['FrontEndpointPort']]['Notes']=$row['FrontNotes'];
 		$ports[$row['PanelDeviceID']][$row['PanelPortNumber']]['Connected Device']=$row['FrontEndpointDeviceID'];
-		$ports[$row['PanelDeviceID']][$row['PanelPortNumber']]['Connected Port']=-$row['FrontEndpointPort'];
+		$ports[$row['PanelDeviceID']][$row['PanelPortNumber']]['Connected Port']=$row['FrontEndpointPort'];
 		$ports[$row['PanelDeviceID']][$row['PanelPortNumber']]['Notes']=$row['FrontNotes'];	}
 
 	// All the ports should be in the array now, use the prepared statement to load them all
