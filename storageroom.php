@@ -53,7 +53,7 @@
 		<div></div>
 	</div>';
 	while(list($devID,$device)=each($devList)){
-		echo "<div><div><a href=\"devices.php?deviceid=$devID\">$device->Label</a></div><div>$device->AssetTag</div><div>$device->SerialNo</div><div><a href=\"surplus.php?deviceid=$devID\">Surplus</a></div></div>\n";
+		echo "<div><div><a href=\"devices.php?deviceid=$device->DeviceID\">$device->Label</a></div><div>$device->AssetTag</div><div>$device->SerialNo</div><div><a href=\"surplus.php?deviceid=$devID\">Surplus</a></div></div>\n";
 	}
 ?>
 </div> <!-- END div.table -->
