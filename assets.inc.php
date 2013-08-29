@@ -1130,8 +1130,12 @@ class Device {
 				}
 			}
 		}else{
-			// Now set it as being in storage
-			$this->Cabinet=-1;
+			// Set the position in the current cabinet above the usable space. This will
+			// make the user change the position before they can update it.
+			$cab=new Cabinet();
+			$cab->CabinetID=$this->Cabinet;
+			$cab->GetCabinet();
+			$this->Position=$cab->CabinetHeight+1;
 
 			// If this is a chassis device then check for children to cloned BEFORE we change the deviceid
 			if($this->DeviceType=="Chassis"){

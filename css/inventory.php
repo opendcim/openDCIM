@@ -389,6 +389,7 @@ div.error {margin-top: 2em;margin-bottom: 2em;border: 1px dotted gray;}
 	display: inline-block;
 	vertical-align: middle;
 	height: 1.1em;
+	line-height: 1.2em;
 	width: 150px;
 	overflow: hidden;
 }
