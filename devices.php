@@ -879,9 +879,7 @@ print "		var dialog=$('<div>').prop('title','".__("Verify Delete Device")."').ht
 		$('#cabinetid').change(function(){
 			$.post('', {cab: $("select#cabinetid").val()}, function(data){
 				var posclass=$('#position').attr('class');
-				console.log(data);
 				if(parseInt(data.trim())>0){
-					console.log('check passed');
 					$('#position').attr('class',posclass.replace(/max\[([0-9]).*?\]/gi,"max["+data.trim()+"]")).trigger('focusout');
 				}
 			});
