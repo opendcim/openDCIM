@@ -161,3 +161,9 @@ ALTER TABLE fac_Device ADD COLUMN BackSide tinyint(1) NOT NULL DEFAULT '0' AFTER
 
 INSERT INTO fac_Tags VALUES (NULL , 'Report');
 INSERT INTO fac_Tags VALUES (NULL , 'NoReport');
+
+--
+-- Bump up the database version
+--
+
+UPDATE fac_Config set Value='3.0' WHERE Parameter='Version';
