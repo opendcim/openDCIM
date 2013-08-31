@@ -120,7 +120,7 @@ foreach($cabinets as $cabid => $cabinet){
 				if($errclass!=''){$heighterr="yup";}
 				if($i==$devTop){
 					if ( in_array( $device->Owner, $viewList ) || $user->ReadAccess ) {
-						$body.="<tr><td$errclass>$i</td><td class=\"device$reserved dept$device->Owner\" rowspan=$device->Height data-deviceid=$devID><a href=\"devices.php?deviceid=$devID\">$highlight $device->Label</a></td></tr>\n";
+						$body.="<tr><td$errclass>$i</td><td class=\"device$reserved dept$device->Owner\" rowspan=$device->Height data-deviceid=$device->DeviceID><a href=\"devices.php?deviceid=$device->DeviceID\">$highlight $device->Label</a></td></tr>\n";
 					} else {
 						$body.="<tr><td$errclass>$i</td><td class=\"device$reserved dept$device->Owner\" rowspan=$device->Height>$highlight $device->Label</td></tr>\n";
 					}
