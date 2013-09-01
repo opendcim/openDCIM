@@ -19,15 +19,19 @@
  */
 function get_cabinet_owner_color($cabinet, &$deptswithcolor) {
 	$cab_color='';
-	if($cabinet->AssignedTo!=0){
-		$tempDept=new Department();
-		$tempDept->DeptID=$cabinet->AssignedTo;
+	if ($cabinet->AssignedTo!= 0) 
+	{
+		$tempDept = new Department();
+		$tempDept->DeptID = $cabinet->AssignedTo;
 		$deptid=$tempDept->DeptID;
-		if($tempDept->GetDeptByID()){
-			if(strtoupper($tempDept->DeptColor)!="#FFFFFF"){
-				$deptswithcolor[$cabinet->AssignedTo]["color"]=$tempDept->DeptColor;
-				$deptswithcolor[$cabinet->AssignedTo]["name"]=$tempDept->Name;
-				$cab_color="class=\"dept$deptid\"";
+		if ($tempDept->GetDeptByID())
+		{
+			if (strtoupper($tempDept->DeptColor) != '#FFFFFF')
+			{
+				$deptswithcolor[$cabinet->AssignedTo]['color'] = 
+				    $tempDept->DeptColor;
+				$deptswithcolor[$cabinet->AssignedTo]['name'] = $tempDept->Name;
+				$cab_color = "class=\"dept$deptid\"";
 			}
 		}
   	}
@@ -222,7 +226,7 @@ function get_cabinet_owner_color($cabinet, &$deptswithcolor) {
 	$totalMoment=0;
 
 	$deptswithcolor=array();
-	$cab_color=get_cabinet_owner_color($cab, $deptswithcolor);
+	$cab_color = get_cabinet_owner_color($cab, $deptswithcolor);
 
 	if($config->ParameterArray["ReservedColor"] != "#FFFFFF" || $config->ParameterArray["FreeSpaceColor"] != "#FFFFFF"){
 		$head.="		<style type=\"text/css\">
@@ -239,13 +243,12 @@ function get_cabinet_owner_color($cabinet, &$deptswithcolor) {
 
 	$body.="<div class=\"cabinet\">
 <table>
-	<tr><th id=\"cabid\" data-cabinetid=$cab->CabinetID colspan=2 $cab_color >".__("Cabinet")." $cab->Location</th></tr>
+	<tr><th id=\"cabid\" data-cabinetid=$cab->CabinetID colspan=2 $cab_color>".__("Cabinet")." $cab->Location</th></tr>
 	<tr><td>".__("Pos")."</td><td>".__("Device")."</td></tr>\n";
 
 	$heighterr="";
 	$ownership_unassigned = false;
 	$template_unassigned = false;
-	$deptswithcolor=array();
 	$backside=false;
 	while(list($dev_index,$device)=each($devList)){
 		if($device->Height<1){
