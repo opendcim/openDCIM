@@ -1,9 +1,5 @@
-<!doctype html>
 <?php
-/*
-	Generic first time installer.  Makes assumption that the db.inc.php has been created
-
-*/
+$codeversion="3.0";
 
 // Pre-Flight check
 	$tests=array();
@@ -133,7 +129,7 @@ function applyupdate ($updatefile){
 			$successlog="$updatefile: Database updates applied.<br>\n";
 		}
 	}else{
-		$errormsg="Seems you're at 1.0 but you're missing the db updates to goto 1.1. Are you sure that db-1.0-to-1.1.sql unpacked from the archive?";
+		$errormsg="An update has been unpacked to the openDCIM installation but the database update &quot;$updatefile&quot; is missing.<br><br>\nPlease unpack the archive and try again.";
 	}
 	$temp=array();
 	if(isset($errormsg)){
@@ -141,6 +137,11 @@ function applyupdate ($updatefile){
 	}else{
 		$temp[0]=$successlog;
 	}
+
+	$message=(isset($errormsg))?$errormsg:$successlog;
+	$class=(isset($errormsg))?'error':'success';
+	print "<h1 class=\"$class\">$message</h1>";
+
 	return $temp;
 }
 	$upgrade=false;
@@ -214,24 +215,33 @@ function applyupdate ($updatefile){
 	$result->execute();
 	if($result->rowCount()==0){// Empty result set means this is either 1.0 or 1.1. Surely the check above caught all 1.0 instances.
 		$results[]=applyupdate("db-1.1-to-1.2.sql");
-		$upgrade=true;
 		$version="1.2";
 	}else{
 		$version=$result->fetchColumn();//sets version number
 	}
+
+	// Check the detected version against the code version.  Update the current
+	// code version at the top of this file each time we update.
+	$upgrade=($codeversion!=$version)?true:false;
+
+function upgrade(){
+	global $version;
+	global $config;
+	global $results;
+	global $dbh;
+	global $errormsg;
+
 	if($version==""){ // something borked re-apply all database updates and pray for forgiveness
 		$version="1.2";
 	}
 	if($version=="1.2"){ // Do 1.2 to 1.3 Update
 		$results[]=applyupdate("db-1.2-to-1.3.sql");
-		$upgrade=true;
 		$version="1.3";
 	}
 	if($version=="1.3"){ // Do 1.3 to 1.4 Update
 		// Clean the configuration table of any duplicate values that might have been added.
 		$config->rebuild();
 		$results[]=applyupdate("db-1.3-to-1.4.sql");
-		$upgrade=true;
 		$version="1.4";
 	}
 	if($version=="1.4"){ // Do 1.4 to 1.5 Update
@@ -259,7 +269,6 @@ function applyupdate ($updatefile){
 
 		$config->rebuild();
 		$results[]=applyupdate("db-1.4-to-1.5.sql");
-		$upgrade=true;
 		$version="1.5";
 	}
 	
@@ -360,7 +369,6 @@ function applyupdate ($updatefile){
 		
 		$config->rebuild();
 		$results[]=applyupdate("db-1.5-to-2.0.sql");
-		$upgrade=true;
 		$version="2.0";
 	}
 	
@@ -376,10 +384,9 @@ function applyupdate ($updatefile){
 		$sql='UPDATE fac_Config SET Value="2.0.1" WHERE Parameter="Version"';
 		$dbh->query($sql);
 		
-		$upgrade=true;
 		$version="2.0.1";
 	}
-	// Change this to 2.0.1 when we're ready for release. This will break the holy hell out of things currently
+
 	if($version=="2.0.1"){
 		// Get a list of all Manufacturers that are duplicated
 		$sql="SELECT ManufacturerID,Name FROM fac_Manufacturer GROUP BY Name HAVING COUNT(*)>1;";
@@ -456,29 +463,175 @@ function applyupdate ($updatefile){
 		// Rebuild the config table just in case.  I dunno gremlins.
 		$config->rebuild();
 
-		$upgrade=true;
 		$version="2.1";
 	}
 
 	if($version=="2.1"){
-		// This is gonna be a pretty big one.
+		// First apply the schema updates needed.
+		$results[]=applyupdate("db-2.1-to-3.0.sql");
 
-		// found this in devices.php, search for this criteria and change it to 
-		// match the new stuff after the schema updates have been applied
-          /*JMGA changed the criterion of front/rear: no longer in chassisslots, but BackSide
-            echo '      <div>
-            <div><label for="powersupplycount">',__("Front / Rear"),'</label></div>
-            <div><select id="chassisslots" name="chassisslots">
-                <option value=0'.(($dev->ChassisSlots==0)?' selected':'').'>',__("Front"),'</option>
-                <option value=1'.(($dev->ChassisSlots==1)?' selected':'').'>',__("Rear"),'</option>
-            </select></div>
-        </div>'; */
+		print "Update blade devices for new front/rear tracking method<br>\n";
+		$sql="UPDATE fac_Device SET BackSide=1, ChassisSlots=0 WHERE ChassisSlots=1 AND ParentDevice>0;";
+		$dbh->query($sql);
 
+		// Port conversion
+		$numports=$dbh->query('SELECT SUM(Ports) + (SELECT SUM(Ports) FROM fac_Device WHERE DeviceType="Patch Panel") as TotalPorts, COUNT(DeviceID) as Devices FROM fac_Device')->fetch();
+		print "Creating {$numports['TotalPorts']} ports for {$numports['Devices']} devices. <b>THIS MAY TAKE A WHILE</b><br>\n";
 
+		// Retrieve a list of all devices and make ports for them.
+		$sql='SELECT DeviceID,Ports,DeviceType from fac_Device WHERE 
+			DeviceType!="Physical Infrastructure" AND Ports>0;';
 
+		$errors=array();
+		$ports=array();
+		foreach($dbh->query($sql) as $row){
+			for($x=1;$x<=$row['Ports'];$x++){
+				// Create a port for every device
+				$ports[$row['DeviceID']][$x]['Label']=$x;
+				if($row['DeviceType']=='Patch Panel'){
+					// Patch panels needs rear ports as well
+					$ports[$row['DeviceID']][-$x]['Label']="Rear $x";
+				}
+			}
+		}
 
+		$findswitch=$dbh->prepare('SELECT * FROM fac_SwitchConnection WHERE EndpointDeviceID=:deviceid ORDER BY EndpointPort ASC;');
+		foreach($ports as $deviceid => $port){
+			$findswitch->execute(array(':deviceid' => $deviceid));
+			$defined=$findswitch->fetchAll();
+			foreach($defined as $row){
+				// Weed out any port numbers that have been defined outside the range of 
+				// valid ports for the device
+				if(isset($ports[$deviceid][$row['EndpointPort']])){
+					// Device Ports
+					$ports[$deviceid][$row['EndpointPort']]['Notes']=$row['Notes'];
+					$ports[$deviceid][$row['EndpointPort']]['Connected Device']=$row['SwitchDeviceID'];
+					$ports[$deviceid][$row['EndpointPort']]['Connected Port']=$row['SwitchPortNumber'];
+
+					// Switch Ports
+					$ports[$row['SwitchDeviceID']][$row['SwitchPortNumber']]['Notes']=$row['Notes'];
+					$ports[$row['SwitchDeviceID']][$row['SwitchPortNumber']]['Connected Device']=$row['EndpointDeviceID'];
+					$ports[$row['SwitchDeviceID']][$row['SwitchPortNumber']]['Connected Port']=$row['EndpointPort'];
+
+				}else{
+					// Either display this as a log item later or possibly backfill empty 
+					// ports with this data
+					$errors[$deviceid][$row['EndpointPort']]['Notes']=$row['Notes'];
+					$errors[$deviceid][$row['EndpointPort']]['Connected Device']=$row['SwitchDeviceID'];
+					$errors[$deviceid][$row['EndpointPort']]['Connected Port']=$row['SwitchPortNumber'];
+				}
+			}
+		}
+
+		$findpatch=$dbh->prepare('SELECT * FROM fac_PatchConnection WHERE FrontEndpointDeviceID=:deviceid ORDER BY FrontEndpointPort ASC;');
+		foreach($ports as $deviceid => $port){
+			$findpatch->execute(array(':deviceid' => $deviceid));
+			$defined=$findpatch->fetchAll();
+			foreach($defined as $row){
+				// Weed out any port numbers that have been defined outside the range of 
+				// valid ports for the device
+				if(isset($ports[$deviceid][$row['FrontEndpointPort']])){
+					// Connect the device to the panel
+					$ports[$deviceid][$row['FrontEndpointPort']]['Notes']=$row['FrontNotes'];
+					$ports[$deviceid][$row['FrontEndpointPort']]['Connected Device']=$row['PanelDeviceID'];
+					$ports[$deviceid][$row['FrontEndpointPort']]['Connected Port']=$row['PanelPortNumber'];
+					// Connect the panel to the device
+					$ports[$row['PanelDeviceID']][$row['PanelPortNumber']]['Connected Device']=$row['FrontEndpointDeviceID'];
+					$ports[$row['PanelDeviceID']][$row['PanelPortNumber']]['Connected Port']=$row['FrontEndpointPort'];
+					$ports[$row['PanelDeviceID']][$row['PanelPortNumber']]['Notes']=$row['FrontNotes'];
+				}else{
+					// Either display this as a log item later or possibly backfill empty 
+					// ports with this data
+					$errors[$deviceid][$row['FrontEndpointPort']]['Notes']=$row['FrontNotes'];
+					$errors[$deviceid][$row['FrontEndpointPort']]['Connected Device']=$row['PanelDeviceID'];
+					$errors[$deviceid][$row['FrontEndpointPort']]['Connected Port']=$row['PanelPortNumber'];
+				}
+			}
+		}
+
+		foreach($dbh->query('SELECT * FROM fac_PatchConnection;') as $row){
+			// Read all the patch connections again to get the rear connection info 
+			$ports[$row['RearEndpointDeviceID']][-$row['RearEndpointPort']]['Connected Device']=$row['PanelDeviceID'];
+			$ports[$row['RearEndpointDeviceID']][-$row['RearEndpointPort']]['Connected Port']=-$row['PanelPortNumber'];
+			$ports[$row['RearEndpointDeviceID']][-$row['RearEndpointPort']]['Notes']=$row['RearNotes'];
+			$ports[$row['PanelDeviceID']][-$row['PanelPortNumber']]['Connected Device']=$row['RearEndpointDeviceID'];
+			$ports[$row['PanelDeviceID']][-$row['PanelPortNumber']]['Connected Port']=-$row['RearEndpointPort'];
+			$ports[$row['PanelDeviceID']][-$row['PanelPortNumber']]['Notes']=$row['RearNotes'];
+		}
+
+		// Backfill the extra data
+		foreach($errors as $deviceid => $row){
+			$numPorts=count($ports[$deviceid])+1;
+			foreach($row as $portnum => $port){
+				for($n=1;$n<$numPorts;$n++){
+					if(!isset($ports[$deviceid][$n]['Notes'])){
+						$ports[$deviceid][$n]=$port;
+						// connect up the other side as well
+						$ports[$port['Connected Device']][$port['Connected Port']]['Connected Device']=$deviceid;
+						$ports[$port['Connected Device']][$port['Connected Port']]['Connected Port']=$n;
+						$ports[$port['Connected Device']][$port['Connected Port']]['Notes']=$port['Notes'];
+						unset($errors[$deviceid][$portnum]); // Remove it from the backfill data
+						break;
+					}
+				}
+			}
+		}
+
+		$incdataports=$dbh->prepare('UPDATE fac_Device SET Ports=:n WHERE DeviceID=:deviceid;');
+
+		// Anything left in $errors now is an extra port that exists outside the number of designated deviceports.
+		foreach($errors as $deviceid => $row){
+			foreach($row as $portnum => $port){
+				$n=count($ports[$deviceid])+1;
+				$ports[$deviceid][]=$port;
+				// connect up the other side as well, $n will give us the new port number 
+				// since it is outside the defined range for the device
+				$ports[$port['Connected Device']][$port['Connected Port']]['Connected Device']=$deviceid;
+				$ports[$port['Connected Device']][$port['Connected Port']]['Connected Port']=$n;
+				$ports[$port['Connected Device']][$port['Connected Port']]['Notes']=$port['Notes'];
+				// Update the number of ports on this device to match the corrected value
+				$incdataports->execute(array(":n"=>$n,":deviceid"=>$deviceid));
+			unset($errors[$deviceid][$portnum]); // Remove it from the backfill data
+			}
+		}
+
+		$n=1; $insertsql=''; $insertlimit=100;
+		$insertprogress=100/($numports['TotalPorts']/$insertlimit);
+		$insertprogress=(intval($insertprogress)>0)?intval($insertprogress):1; // if this is gonna do more than 100 inserts we might have issues
+		echo "<br>\nConversion process: <br>\n<table style=\"border: 1px solid black; border-collapse: collapse; width: 100%;\"><tr>";flush();
+		// All the ports should be in the array now, use the prepared statement to load them all
+		foreach($ports as $deviceid => $row){
+			foreach($row as $portnum => $port){
+				$null=null;$blank="";
+				$cdevice=(isset($port['Connected Device']))?$port['Connected Device']:'NULL';
+				$cport=(isset($port['Connected Port']))?$port['Connected Port']:'NULL';
+				$notes=(isset($port['Notes']))?$port['Notes']:'';
+
+				$insertsql.="($deviceid,$portnum,\"\",0,0,\"\",$cdevice,$cport,\"$notes\")";
+				if($n%$insertlimit!=0){
+					$insertsql.=" ,";
+				}else{
+					$dbh->exec('INSERT INTO fac_Ports VALUES'.$insertsql);
+					$insertsql='';
+					print "<td width=\"$insertprogress%\" style=\"background-color: green\">&nbsp;</td>";
+					flush(); // attempt to update the progress as this goes on.
+				}
+				++$n;
+			}
+		}
+		//do one last insert
+		$insertsql=substr($insertsql, 0, -1);// shave off that last comma
+		$dbh->exec('INSERT INTO fac_Ports VALUES'.$insertsql);
+		echo "</tr></table>";
+
+		print "<br>\nPort conversion complete.<br>\n";
+
+		// Rebuild the config table just in case.
+		$config->rebuild();
 	}
 		
+}
+
 	if($upgrade==true){ //If we're doing an upgrade don't call the rest of the installer.
 ?>
 <!doctype html>
@@ -491,19 +644,23 @@ function applyupdate ($updatefile){
 </style>
 </head>
 <body>
-<?php 
+<?php
+
+upgrade();
+ 
 if(isset($results)){
+	date_default_timezone_set($config->ParameterArray['timezone']);
+
 	$fh=fopen('install.err', 'a');
 	fwrite($fh, date("Y-m-d g:i:s a\n"));
 	foreach($results as $key => $value){
 		foreach($value as $status => $message){
 			if($status==1){$class="error";}else{$class="success";}
-			print "<h1 class=\"$class\">$message</h1>";
 			fwrite($fh, $message);
 		}
 	}
 	fclose($fh);
-	print "<p>If any red errors are showing that does not necessarily mean it failed to load.  Press F5 to reload this page until it goes to the configuration screen</p>";
+	print "<p>Take note of any errors displayed in red then press F5 to reload this page until it goes to the configuration screen.</p>";
 }else{
 	echo '<p class="success">All is well.  Please remove install.php to return to normal functionality</p>';
 }
@@ -546,6 +703,133 @@ if(isset($results)){
 		echo(is_file($_POST['fe']))?1:0;
 		exit;
 	}
+	if(isset($_POST['cc'])){  // Cable color codes
+		$col=new ColorCoding();
+		$col->Name=trim($_POST['cc']);
+		$col->DefaultNote=trim($_POST['ccdn']);
+		if(isset($_POST['cid'])){ // If set we're updating an existing entry
+			$col->ColorID=$_POST['cid'];
+			if(isset($_POST['original'])){
+				$col->GetCode();
+			    header('Content-Type: application/json');
+				echo json_encode($col);
+				exit;
+			}
+			if(isset($_POST['clear']) || isset($_POST['change'])){
+				$newcolorid=0;
+				if(isset($_POST['clear'])){
+					ColorCoding::ResetCode($col->ColorID);
+				}else{
+					$newcolorid=$_POST['change'];
+					ColorCoding::ResetCode($col->ColorID,$newcolorid);
+				}
+				$mediatypes=MediaTypes::GetMediaTypeList();
+				foreach($mediatypes as $mt){
+					if($mt->ColorID==$col->ColorID){
+						$mt->ColorID=$newcolorid;
+						$mt->UpdateType();
+					}
+				}
+				if($col->DeleteCode()){
+					echo 'u';
+				}else{
+					echo 'f';
+				}
+				exit;
+			}
+			if($col->UpdateCode()){
+				echo 'u';
+			}else{
+				echo 'f';
+			}
+		}else{
+			if($col->CreateCode()){
+				echo $col->ColorID;
+			}else{
+				echo 'f';
+			}
+		}
+		exit;
+	}
+	if(isset($_POST['ccused'])){
+		$count=ColorCoding::TimesUsed($_POST['ccused']);
+		if($count==0){
+			$col=new ColorCoding();
+			$col->ColorID=$_POST['ccused'];
+			$col->DeleteCode();
+		}
+		echo $count;
+		exit;
+	}
+	if(isset($_POST['mt'])){ // Media Types
+		$mt=new MediaTypes();
+		$mt->MediaType=trim($_POST['mt']);
+		$mt->ColorID=$_POST['mtcc'];
+		if(isset($_POST['mtid'])){ // If set we're updating an existing entry
+			$mt->MediaID=$_POST['mtid'];
+			if(isset($_POST['original'])){
+				$mt->GetType();
+			    header('Content-Type: application/json');
+				echo json_encode($mt);
+				exit;
+			}
+			if(isset($_POST['clear']) || isset($_POST['change'])){
+				if(isset($_POST['clear'])){
+					MediaTypes::ResetType($mt->MediaID);
+				}else{
+					$newmediaid=$_POST['change'];
+					MediaTypes::ResetType($mt->MediaID,$newmediaid);
+				}
+				if($mt->DeleteType()){
+					echo 'u';
+				}else{
+					echo 'f';
+				}
+				exit;
+			}
+			if($mt->UpdateType()){
+				echo 'u';
+			}else{
+				echo 'f';
+			}
+		}else{
+			if($mt->CreateType()){
+				echo $mt->MediaID;
+			}else{
+				echo 'f';
+			}
+			
+		}
+		exit;
+	}
+	if(isset($_POST['mtused'])){
+		$count=MediaTypes::TimesUsed($_POST['mtused']);
+		if($count==0){
+			$mt=new MediaTypes();
+			$mt->MediaID=$_POST['mtused'];
+			$mt->DeleteType();
+		}
+		echo $count;
+		exit;
+	}
+	if(isset($_POST['mtlist'])){
+		$codeList=MediaTypes::GetMediaTypeList();
+		$output='<option value=""></option>';
+		foreach($codeList as $mt){
+			$output.="<option value=\"$mt->MediaID\">$mt->MediaType</option>";
+		}
+		echo $output;
+		exit;		
+	}
+	if(isset($_POST['cclist'])){
+		$codeList=ColorCoding::GetCodeList();
+		$output='<option value=""></option>';
+		foreach($codeList as $cc){
+			$output.="<option value=\"$cc->ColorID\">$cc->Name</option>";
+		}
+		echo $output;
+		exit;		
+	}
 // END AJAX Requests
 
 // Configuration Form Submission
@@ -565,6 +849,17 @@ if(isset($results)){
 		if(isset($_POST["tooltip"]) && !empty($_POST["tooltip"])){
 			foreach($_POST["tooltip"] as $order => $field){
 				$dbh->query("UPDATE fac_CabinetToolTip SET SortOrder=".intval($order).", Enabled=1 WHERE Field='".addslashes($field)."' LIMIT 1;");
+			}
+		}
+
+		//Disable all cdu tooltip items and clear the SortOrder
+		$dbh->exec("UPDATE fac_CDUToolTip SET SortOrder = NULL, Enabled=0;");
+		if(isset($_POST["cdutooltip"]) && !empty($_POST["cdutooltip"])){
+			$p=$dbh->prepare("UPDATE fac_CDUToolTip SET SortOrder=:sortorder, Enabled=1 WHERE Field=:field LIMIT 1;");
+			foreach($_POST["cdutooltip"] as $order => $field){
+				$p->bindParam(":sortorder",$order);
+				$p->bindParam(":field",$field);
+				$p->execute();
 			}
 		}
 	}
@@ -698,7 +993,7 @@ if(isset($results)){
   <script type="text/javascript" src="scripts/jquery.ui.multiselect.js"></script>
   <script type="text/javascript">
 	$(document).ready( function() {
-		$('#tooltip').multiselect();
+		$('#tooltip, #cdutooltip').multiselect();
 		$("select").each(function(){
 			$(this).val($(this).attr('data'));
 		});
@@ -840,6 +1135,339 @@ if(isset($results)){
 			});
 			$(this).trigger('keyup');
 		});
+
+
+		// Cabling - Media Types
+		function removemedia(row){
+			$.post('',{mtused: row.find('div:nth-child(2) input').attr('data')}).done(function(data){
+				if(data.trim()==0){
+					row.effect('explode', {}, 500, function(){
+						$(this).remove();
+					});
+				}else{
+					var defaultbutton={
+						"<?php echo __("Clear all"); ?>": function(){
+							$.post('',{mtid: row.find('div:nth-child(2) input').attr('data'),mt: '', mtcc: '', clear: ''}).done(function(data){
+								if(data.trim()=='u'){ // success
+									$('#modal').dialog("destroy");
+									row.effect('explode', {}, 500, function(){
+										$(this).remove();
+									});
+								}else{ // failed to delete
+									$('#modaltext').html('AAAAAAAAAAHHHHHHHHHH!!!  *crash* *fire* *chaos*<br><br><?php echo __("Something just went horribly wrong."); ?>');
+									$('#modal').dialog('option','buttons',cancelbutton);
+								}
+							});
+						}
+					}
+					var replacebutton={
+						"<?php echo __("Replace"); ?>": function(){
+							// send command to replace all connections with x
+							$.post('',{mtid: row.find('div:nth-child(2) input').attr('data'),mt: '', mtcc: '', change: $('#modal select').val()}).done(function(data){
+								if(data.trim()=='u'){ // success
+									$('#modal').dialog("destroy");
+									row.effect('explode', {}, 500, function(){
+										$(this).remove();
+									});
+								}else{ // failed to delete
+									$('#modaltext').html('AAAAAAAAAAHHHHHHHHHH!!!  *crash* *fire* *chaos*<br><br><?php echo __("Something just went horribly wrong."); ?>');
+									$('#modal').dialog('option','buttons',cancelbutton);
+								}
+							});
+						}
+					}
+					var cancelbutton={
+						"<?php echo __("Cancel"); ?>": function(){
+							$(this).dialog("destroy");
+						}
+					}
+<?php echo "					var modal=$('<div />', {id: 'modal', title: '".__("Media Type Delete Override")."'}).html('<div id=\"modaltext\">".__("This media type is in use somewhere. Select an alternate type to assign to all the records to or choose clear all.")."<select id=\"replaceme\"></select></div>').dialog({"; ?>
+						dialogClass: 'no-close',
+						appendTo: 'body',
+						modal: true,
+						buttons: $.extend({}, defaultbutton, cancelbutton)
+					});
+					$.post('',{mtlist: ''}).done(function(data){
+						var choices=$('<select />');
+						choices.html(data);
+						choices.find('option').each(function(){
+							if($(this).val()==row.find('div:nth-child(2) input').attr('data')){$(this).remove();}
+						});
+						choices.change(function(){
+							if($(this).val()==''){ // clear all
+								modal.dialog('option','buttons',$.extend({}, defaultbutton, cancelbutton));
+							}else{ // replace
+								modal.dialog('option','buttons',$.extend({}, replacebutton, cancelbutton));
+							}
+						});
+						modal.find($('#replaceme')).replaceWith(choices);
+						
+					});
+				}
+			});
+
+		}
+
+		var blankmediarow=$('<div />').html('<div><img src="images/del.gif"></div><div><input id="mediatype[]" name="mediatype[]" type="text"></div><div><select name="mediacolorcode[]"></select></div>');
+		function bindmediarow(row){
+			var addrem=row.find('div:first-child');
+			var mt=row.find('div:nth-child(2) input');
+			var mtcc=row.find('div:nth-child(3) select');
+			if(mt.val().trim()!='' && addrem.attr('id')!='newline'){
+				addrem.click(function(){
+					removemedia(row);
+				});
+			}
+			mt.keypress(function(event){
+				if(event.keyCode==10 || event.keyCode==13){
+					event.preventDefault();
+					mt.change();
+				}
+			});
+			function update(inputobj){
+				if(mt.val().trim()==''){
+					// reset value to previous
+					$.post('',{mt: mt.val(), mtid: mt.attr('data'), mtcc: mtcc.val(),original:''}).done(function(jsondata){
+						mt.val(jsondata.MediaType);
+						mtcc.val(jsondata.ColorID);
+					});
+					mt.effect('highlight', {color: 'salmon'}, 1500);
+					mtcc.effect('highlight', {color: 'salmon'}, 1500);
+				}else{
+					// attempt to update
+					$.post('',{mt: mt.val(), mtid: mt.attr('data'), mtcc: mtcc.val()}).done(function(data){
+						if(data.trim()=='f'){ // fail
+							$.post('',{mt: mt.val(), mtid: mt.attr('data'), mtcc: mtcc.val(),original:''}).done(function(jsondata){
+								mt.val(jsondata.MediaType);
+								mtcc.val(jsondata.ColorID);
+							});
+							mt.effect('highlight', {color: 'salmon'}, 1500);
+							mtcc.effect('highlight', {color: 'salmon'}, 1500);
+						}else if(data.trim()=='u'){ // updated
+							mt.effect('highlight', {color: 'lightgreen'}, 2500);
+							mtcc.effect('highlight', {color: 'lightgreen'}, 2500);
+						}else{ // created
+							var newitem=blankmediarow.clone();
+							newitem.find('div:nth-child(2) input').val(mt.val()).attr('data',data.trim());
+							newitem.find('div:nth-child(3) select').replaceWith(mtcc.clone());
+							bindmediarow(newitem);
+							row.before(newitem);
+							newitem.find('div:nth-child(3) select').val(mtcc.val()).focus();
+							if(addrem.attr('id')=='newline'){
+								mt.val('');
+								mtcc.val('');
+							}else{
+								row.remove();
+							}
+						}
+					});
+				}
+			}
+			mt.change(function(){
+				update($(this));
+			});
+			mtcc.change(function(){
+				var row=$(this).parent('div').parent('div');
+				if(row.find('div:first-child').attr('id')!='newline'){
+					update($(this));
+				}else if(row.find('div:nth-child(2) input').val().trim()!=''){
+					update($(this));
+				}
+			});
+		}
+
+		// Add a new blank row
+		$('#mediatypes > div ~ div > div:first-child').each(function(){
+			if($(this).attr('id')=='newline'){
+				var row=$(this).parent('div');
+				$(this).click(function(){
+					var newitem=blankmediarow.clone();
+					// Clone the current dropdown list
+					newitem.find('select[name="mediacolorcode[]"]').replaceWith((row.find('select[name="mediacolorcode[]"]').clone()));
+					newitem.find('div:first-child').click(function(){
+						removecolor($(this).parent('div'),false);
+					});
+					bindmediarow(newitem);
+					row.before(newitem);
+				});
+			}
+			bindmediarow($(this).parent('div'));
+		});
+
+		// Update color drop lists
+		function updatechoices(){
+			$.post('',{cclist: ''}).done(function(data){
+				$('#mediatypes > div ~ div').each(function(){
+					var list=$(this).find('select[name="mediacolorcode[]"]');
+					var dc=list.val();
+					list.html(data);
+					$(this).find('select[name="mediacolorcode[]"]').val(dc);
+				});
+			});
+		}
+
+		// Cabling - Cable Colors
+
+		function removecolor(rowobject,lookup){
+			if(!lookup){
+				rowobject.remove();
+			}else{
+				$.post('',{ccused: rowobject.find('div:nth-child(2) input').attr('data')}).done(function(data){
+					if(data.trim()==0){
+						updatechoices();
+						rowobject.effect('explode', {}, 500, function(){
+							$(this).remove();
+						});
+					}else{
+						var defaultbutton={
+							"<?php echo __("Clear all"); ?>": function(){
+								$.post('',{cid: rowobject.find('div:nth-child(2) input').attr('data'),cc: '', ccdn: '', clear: ''}).done(function(data){
+									if(data.trim()=='u'){ // success
+										$('#modal').dialog("destroy");
+										updatechoices();
+										rowobject.effect('explode', {}, 500, function(){
+											$(this).remove();
+										});
+									}else{ // failed to delete
+										$('#modaltext').html('AAAAAAAAAAHHHHHHHHHH!!!  *crash* *fire* *chaos*<br><br><?php echo __("Something just went horribly wrong."); ?>');
+										$('#modal').dialog('option','buttons',cancelbutton);
+									}
+								});
+							}
+						}
+						var replacebutton={
+							"<?php echo __("Replace"); ?>": function(){
+								// send command to replace all connections with x
+								$.post('',{cid: rowobject.find('div:nth-child(2) input').attr('data'),cc: '', ccdn: '', change: $('#modal select').val()}).done(function(data){
+									if(data.trim()=='u'){ // success
+										$('#modal').dialog("destroy");
+										updatechoices();
+										rowobject.effect('explode', {}, 500, function(){
+											$(this).remove();
+										});
+										// Need to trigger a reload of any of the media types that had this 
+										// color so they will display the new color
+										$('#mediatypes > div ~ div:not(:last-child) input').val('').change();
+									}else{ // failed to delete
+										$('#modaltext').html('AAAAAAAAAAHHHHHHHHHH!!!  *crash* *fire* *chaos*<br><br><?php echo __("Something just went horribly wrong."); ?>');
+										$('#modal').dialog('option','buttons',cancelbutton);
+									}
+								});
+							}
+						}
+						var cancelbutton={
+							"<?php echo __("Cancel"); ?>": function(){
+								$(this).dialog("destroy");
+							}
+						}
+<?php echo "						var modal=$('<div />', {id: 'modal', title: '".__("Code Delete Override")."'}).html('<div id=\"modaltext\">".__("This code is in use somewhere. You can either choose to clear all instances of this color being used or choose to have them replaced with another color.")." <select id=\"replaceme\"></select></div>').dialog({"; ?>
+							dialogClass: 'no-close',
+							appendTo: 'body',
+							modal: true,
+							buttons: $.extend({}, defaultbutton, cancelbutton)
+						});
+						var choices=$('div#mediatypes.table div:last-child div select').clone();
+						choices.find('option').each(function(){
+							if($(this).val()==rowobject.find('div:nth-child(2) input').attr('data')){$(this).remove();}
+						});
+						choices.change(function(){
+							if($(this).val()==''){ // clear all
+								modal.dialog('option','buttons',$.extend({}, defaultbutton, cancelbutton));
+							}else{ // replace
+								modal.dialog('option','buttons',$.extend({}, replacebutton, cancelbutton));
+							}
+						});
+						modal.find($('#replaceme')).replaceWith(choices);
+					}
+				});
+			}
+		}
+		var blankrow=$('<div />').html('<div><img src="images/del.gif"></div><div><input type="text" name="colorcode[]"></div><div><input type="text" name="ccdefaulttext[]"></div>');
+		function bindrow(row){
+			var addrem=row.find('div:first-child');
+			var cc=row.find('div:nth-child(2) input');
+			var ccdn=row.find('div:nth-child(3) input');
+			if(cc.val().trim()!='' && addrem.attr('id')!='newline'){
+				addrem.click(function(){
+					removecolor(row,true);
+				});
+			}
+			cc.keypress(function(event){
+				if(event.keyCode==10 || event.keyCode==13){
+					event.preventDefault();
+					cc.change();
+				}
+			});
+			ccdn.keypress(function(event){
+				if(event.keyCode==10 || event.keyCode==13){
+					event.preventDefault();
+					ccdn.change();
+				}
+			});
+			row.find('div > input').each(function(){
+				// If a value changes then check it for conflicts, if no conflict update
+				$(this).change(function(){
+					if(cc.val().trim()!=''){
+						$.post('',{cid: cc.attr('data'),cc: cc.val(), ccdn: ccdn.val()}).done(function(data){
+							if(data.trim()=='f'){ // fail
+								$.post('',{cid: cc.attr('data'),cc: cc.val(), ccdn: ccdn.val(),original:data.trim()}).done(function(jsondata){
+									cc.val(jsondata.Name);
+									ccdn.val(jsondata.DefaultNote);
+								});
+								cc.effect('highlight', {color: 'salmon'}, 1500);
+								ccdn.effect('highlight', {color: 'salmon'}, 1500);
+							}else if(data.trim()=='u'){ // updated
+								cc.effect('highlight', {color: 'lightgreen'}, 2500);
+								ccdn.effect('highlight', {color: 'lightgreen'}, 2500);
+								// update media type color pick lists
+								updatechoices();
+							}else{ // created
+								var newitem=blankrow.clone();
+								newitem.find('div:nth-child(2) input').val(cc.val()).attr('data',data.trim());
+								bindrow(newitem);
+								row.before(newitem);
+								newitem.find('div:nth-child(3) input').val(ccdn.val()).focus();
+								if(addrem.attr('id')=='newline'){
+									cc.val('');
+									ccdn.val('');
+								}else{
+									row.remove();
+								}
+								// update media type color pick lists
+								updatechoices();
+							}
+						});
+					}else if(cc.val().trim()=='' && ccdn.val().trim()=='' && addrem.attr('id')!='newline'){
+						// If both blanks are emptied of values and they were an existing data pair
+						$.post('',{cid: cc.attr('data'),cc: cc.val(), ccdn: ccdn.val(),original:''}).done(function(jsondata){
+							cc.val(jsondata.Name);
+							ccdn.val(jsondata.DefaultNote);
+						});
+						cc.effect('highlight', {color: 'salmon'}, 1500);
+						ccdn.effect('highlight', {color: 'salmon'}, 1500);
+					}
+				});
+			});
+		}
+		$('#cablecolor > div ~ div > div:first-child').each(function(){
+			if($(this).attr('id')=='newline'){
+				var row=$(this).parent('div');
+				$(this).click(function(){
+					var newitem=blankrow.clone();
+					newitem.find('div:first-child').click(function(){
+						removecolor($(this).parent('div'),false);
+					});
+					bindrow(newitem);
+					row.before(newitem);
+				});
+			}
+			bindrow($(this).parent('div'));
+		});
+
+
+
+
+
 	});
 
   </script>
@@ -920,14 +1548,60 @@ if(isset($results)){
 	$href.=$_SERVER['SERVER_NAME'];
 	$href.=substr($_SERVER['REQUEST_URI'], 0, -strlen(basename($_SERVER['REQUEST_URI'])));
 
+	// Build list of cable color codes
+	$cablecolors="";
+	$colorselector='<select name="mediacolorcode[]"><option value=""></option>';
+
+	$codeList=ColorCoding::GetCodeList();
+	if(count($codeList)>0){
+		foreach($codeList as $cc){
+			$colorselector.='<option value="'.$cc->ColorID.'">'.$cc->Name.'</option>';
+			$cablecolors.='<div>
+					<div><img src="images/del.gif"></div>
+					<div><input type="text" name="colorcode[]" data='.$cc->ColorID.' value="'.$cc->Name.'"></div>
+					<div><input type="text" name="ccdefaulttext[]" value="'.$cc->DefaultNote.'"></div>
+				</div>';
+		}
+	}
+	$colorselector.='</select>';
+
+	// Build list of media types
+	$mediatypes="";
+	$mediaList=MediaTypes::GetMediaTypeList();
+
+	if(count($mediaList)>0){
+		foreach($mediaList as $mt){
+			$mediatypes.='<div>
+					<div><img src="images/del.gif"></div>
+					<div><input type="text" name="mediatype[]" data='.$mt->MediaID.' value="'.$mt->MediaType.'"></div>
+					<div><select name="mediacolorcode[]"><option value=""></option>';
+			foreach($codeList as $cc){
+				$selected=($mt->ColorID==$cc->ColorID)?' selected':'';
+				$mediatypes.="<option value=\"$cc->ColorID\"$selected>$cc->Name</option>";
+			}
+			$mediatypes.='</select></div>
+				</div>';
+		}
+	}
+
 	// Build up the list of items available for the tooltips
 	$tooltip="<select id=\"tooltip\" name=\"tooltip[]\" multiple=\"multiple\">\n";
 	$ttconfig=$dbh->query("SELECT * FROM fac_CabinetToolTip ORDER BY SortOrder ASC, Enabled DESC, Label ASC;");
 	foreach($ttconfig as $row){
-		$selected=($row["Enabled"])?" selected":"";
+		$selected=($row["Enabled"])?' selected="selected"':"";
 		$tooltip.="<option value=\"".$row['Field']."\"$selected>".__($row["Label"])."</option>\n";
 	}
 	$tooltip.="</select>";
+
+	// Build up the list of items available for the tooltips
+	$cdutooltip="<select id=\"cdutooltip\" name=\"cdutooltip[]\" multiple=\"multiple\">\n";
+	$sql="SELECT * FROM fac_CDUToolTip ORDER BY SortOrder ASC, Enabled DESC, Label ASC;";
+	foreach($dbh->query($sql) as $row){
+		$selected=($row["Enabled"])?' selected="selected"':"";
+		$cdutooltip.="<option value=\"".$row['Field']."\"$selected>".__($row["Label"])."</option>\n";
+	}
+	$cdutooltip.="</select>";
+
 
 echo '<div class="main">
 <h2>',$config->ParameterArray["OrgName"],'</h2>
@@ -943,7 +1617,8 @@ echo '<div class="main">
 			<li><a href="#style">',__("Style"),'</a></li>
 			<li><a href="#email">',__("Email"),'</a></li>
 			<li><a href="#reporting">',__("Reporting"),'</a></li>
-			<li><a href="#tt">',__("Cabinet ToolTips"),'</a></li>
+			<li><a href="#tt">',__("ToolTips"),'</a></li>
+			<li><a href="#cc">',__("Cabling"),'</a></li>
 		</ul>
 		<div id="general">
 			<div class="table">
@@ -1210,10 +1885,14 @@ echo '<div class="main">
 					<div><label for="NetworkCapacityReportOptIn">',__("Switches"),'</label></div>
 					<div>
 						<select id="NetworkCapacityReportOptIn" defaultvalue="',$config->defaults["NetworkCapacityReportOptIn"],'" name="NetworkCapacityReportOptIn" data="',$config->ParameterArray["NetworkCapacityReportOptIn"],'">
-							<option value="OptIn">',__("Enable"),'</option>
-							<option value="OptOut">',__("Disable"),'</option>
+							<option value="OptIn">',__("OptIn"),'</option>
+							<option value="OptOut">',__("OptOut"),'</option>
 						</select>
 					</div>
+				</div>
+				<div>
+					<div><label for="NetworkThreshold">',__("Switch Capacity Threshold"),'</label></div>
+					<div><input type="text" defaultvalue="',$config->defaults["NetworkThreshold"],'" name="NetworkThreshold" value="',$config->ParameterArray["NetworkThreshold"],'"></div>
 				</div>
 			</div>
 			<h3>',__("Utilities"),'</h3>
@@ -1245,6 +1924,60 @@ echo '<div class="main">
 			</div> <!-- end table -->
 			<br>
 			',$tooltip,'
+			<br>
+			<div class="table">
+				<div>
+					<div><label for="CDUToolTips">',__("CDU ToolTips"),'</label></div>
+					<div><select id="CDUToolTips" name="CDUToolTips" defaultvalue="',$config->defaults["CDUToolTips"],'" data="',$config->ParameterArray["CDUToolTips"],'">
+							<option value="disabled">',__("Disabled"),'</option>
+							<option value="enabled">',__("Enabled"),'</option>
+						</select>
+					</div>
+				</div>
+			</div> <!-- end table -->
+			<br>
+			',$cdutooltip,'
+		</div>
+		<div id="cc">
+			<h3>',__("Media Types"),'</h3>
+			<div class="table">
+				<div>
+					<div><label for="MediaEnforce">',__("Media Type Matching"),'</label></div>
+					<div><select id="MediaEnforce" name="MediaEnforce" defaultvalue="',$config->defaults["MediaEnforce"],'" data="',$config->ParameterArray["MediaEnforce"],'">
+							<option value="disabled">',__("Disabled"),'</option>
+							<option value="enabled">',__("Enforce"),'</option>
+						</select>
+					</div>
+				</div>
+			</div> <!-- end table -->
+			<br>
+			<div class="table" id="mediatypes">
+				<div>
+					<div></div>
+					<div>',__("Media Type"),'</div>
+					<div>',__("Default Color"),'</div>
+				</div>
+				',$mediatypes,'
+				<div>
+					<div id="newline"><img title="',__("Add new row"),'" src="images/add.gif"></div>
+					<div><input type="text" name="mediatype[]"></div>
+					<div>',$colorselector,'</div>
+				</div>
+			</div> <!-- end table -->
+			<h3>',__("Cable Colors"),'</h3>
+			<div class="table" id="cablecolor">
+				<div>
+					<div></div>
+					<div>',__("Color"),'</div>
+					<div>',__("Default Note"),'</div>
+				</div>
+				',$cablecolors,'
+				<div>
+					<div id="newline"><img title="',__("Add new row"),'" src="images/add.gif"></div>
+					<div><input type="text" name="colorcode[]"></div>
+					<div><input type="text" name="ccdefaulttext[]"></div>
+				</div>
+			</div> <!-- end table -->
 		</div>
 	</div>';
 
