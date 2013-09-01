@@ -331,7 +331,7 @@
 		// ToolTips
 
 		$('#tooltip, #cdutooltip').multiselect();
-		$("select").each(function(){
+		$("select:not('#tooltip, #cdutooltip')").each(function(){
 			$(this).val($(this).attr('data'));
 		});
 

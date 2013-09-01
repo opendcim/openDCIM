@@ -994,7 +994,7 @@ if(isset($results)){
   <script type="text/javascript">
 	$(document).ready( function() {
 		$('#tooltip, #cdutooltip').multiselect();
-		$("select").each(function(){
+		$("select:not('#tooltip, #cdutooltip')").each(function(){
 			$(this).val($(this).attr('data'));
 		});
         function colorchange(hex,id){
