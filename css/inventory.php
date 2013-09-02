@@ -301,7 +301,6 @@ div.table > div > div {display: table-cell;vertical-align: middle; /* padding-bo
 .search .main .bullet { background: url("minus.gif") no-repeat scroll left center transparent; cursor: pointer; padding-left: 15px;}
 .search .hidecontents li.cabinet > ol { display: none; }
 
-
 /* User Rights */
 .rights > div:nth-last-child(2) div {text-align: center;padding-top: .75em;padding-bottom: .75em;}
 div.table > div + div + div + div > div + div label {float: none;}
@@ -400,6 +399,7 @@ div.cabinet {
 	max-width: 250px;
 	margin-right: 20px;
 }
+
 .cabinet td + td {vertical-align: middle;padding: 0.25em 0.5em;width: 90%;}
 .cabinet th{font-size: 1.5em;padding: 0.25em;text-align: center;}
 #zerou a{display: block;}
@@ -422,6 +422,41 @@ div.cabinet {
 }
 .cabinet .error { background-color: <?php echo $config->ParameterArray['CriticalColor']; ?>; }
 
+/* Cabinet Properties */
+
+#infopanel table#cabprop {
+	margin: 0px 0px 4px 0px;
+	display: block;
+	border-collapse: separate;
+    border: 0px none;
+	border-spacing: 3px;
+	width: 100%;
+	min-width: 200px; max-width: 350px;
+}
+table#cabprop tr {
+    width: 99%;
+    padding: 2px;
+    margin: 2px;
+}
+#infopanel fieldset table#cabprop td.left {
+    /* width: 50%; */
+    /* text-align: left; */  
+    padding: 4px 2px 4px 2px;
+    font-weight: bold;
+    border: 0px none;
+    border-bottom: 3px solid gray;
+    /* border-right: 3px solid gray; */
+    margin: 2px;
+}
+#infopanel fieldset table#cabprop td.right {
+    /* width: 50%; */
+    text-align: left;
+    padding: 4px 2px 4px 6px;
+    border: 0px none;
+    border-bottom: 3px solid gray;
+    border-right: 3px solid gray;
+    margin: 2px;
+}
 
 /* devices.php  Device Detail */
 .device fieldset {

@@ -498,7 +498,7 @@ $body.='</table>
 			</td>
 		</tr>
 		<tr>
-			<td>'.__("Weight").'
+			<td>'.__("Weight").' ['.$cab->MaxWeight.']
 				<div class="meter-wrap">
 					<div class="meter-value" style="background-color: '.$WeightColor.'; width: '.$WeightPercent.'%;">
 						<div class="meter-text">'.$WeightPercent.'%</div>
@@ -584,8 +584,32 @@ $body.='</table>
 
 	$body.="	</fieldset>
 <fieldset>
-	<p>".__("Last Audit").": $audit->AuditStamp<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;($AuditorName)</p>
-	<ul class=\"nav\">\n";
+	<table id=\"cabprop\">
+	<tr><td class=\"left\">".__("Last Audit").":</td>"
+	    . "<td class=\"right\">".$audit->AuditStamp."<br>($AuditorName)</td></tr>
+	<tr><td class=\"left\">".__("Model").":</td>"
+	    . "<td class=\"right\">".$cab->Model."</td></tr>
+	<tr><td class=\"left\">".__("Installation Date").":</td><td class=\"right\">".$cab->InstallationDate."</td></tr>";
+	if ($cab->ZoneID)
+	{
+	    $zone = new Zone();
+	    $zone->ZoneID = $cab->ZoneID;
+	    $zone->GetZone();
+	    $body.="<tr><td class=\"left\">".__("Zone").":</td>"
+	        . "<td class=\"right\">".$zone->Description."</td></tr>";
+	}
+	if ($cab->CabRowID)
+	{
+	    $cabrow = new CabRow();
+	    $cabrow->CabRowID = $cab->CabRowID;
+	    $cabrow->GetCabRow();
+	    $body.="<tr><td class=\"left\">".__("Row").":</td>"
+	        . "<td class=\"right\">".$cabrow->Name."</td></tr>";
+	}
+	
+	$body.="<tr><td class=\"left\">".__("Notes").":</td><td class=\"right\">".$cab->Notes."</td></tr>
+	    </table>
+	    <ul class=\"nav\">\n";
 	if($user->CanWrite($cab->AssignedTo)){
 		$body.="
 		<a href=\"#\" onclick=\"javascript:verifyAudit(this.form)\"><li>".__("Certify Audit")."</li></a>
