@@ -38,6 +38,58 @@ function get_cabinet_owner_color($cabinet, &$deptswithcolor) {
 	return $cab_color;
 }
 
+/**
+ * Render cabinet properties into this view. 
+ * 
+ * The cabinet properties zone, row, model, maximum weight and installation date are
+ * rendered to be for this page. It checks if the user is allowed to see the content
+ * of the cabinet and only if the user does the information is provided.
+ * 
+ * @param Cabinet $cab
+ * @param CabinetAudit $audit
+ * @param string $AuditorName
+ * @param bool $permission if $permission is true then the user should see the 
+ *      additional cabinet properties; default is to show the content
+ */
+function renderCabinetProps($cab, $audit, $AuditorName, $permission = true)
+{
+    $renderedHTML = '';
+    if (! $permission) return $renderedHTML;
+    
+    $renderedHTML .= "    <table id=\"cabprop\">\n"
+        . "      <tr><td class=\"left\">".__("Last Audit").":</td>"
+	    . "<td class=\"right\">".$audit->AuditStamp."";
+    	    if ($AuditorName != '')
+    	    {
+    	        $renderedHTML .= "<br>$AuditorName";
+    	    }
+    	    $renderedHTML .= "</td></tr>";
+    $renderedHTML .= "<tr><td class=\"left\">".__("Model").":</td>"
+        . "<td class=\"right\">".$cab->Model."</td></tr>"
+        . "<tr><td class=\"left\">".__("Installation Date").":</td>"
+        . "<td class=\"right\">".$cab->InstallationDate."</td></tr>";
+	if ($cab->ZoneID)
+    {
+        $zone = new Zone();
+        $zone->ZoneID = $cab->ZoneID;
+        $zone->GetZone();
+        $renderedHTML .= "<tr><td class=\"left\">".__("Zone").":</td>"
+            . "<td class=\"right\">".$zone->Description."</td></tr>";
+    }
+    if ($cab->CabRowID)
+    {
+        $cabrow = new CabRow();
+        $cabrow->CabRowID = $cab->CabRowID;
+        $cabrow->GetCabRow();
+        $renderedHTML .= "<tr><td class=\"left\">".__("Row").":</td>"
+            . "<td class=\"right\">".$cabrow->Name."</td></tr>";
+    }
+    $renderedHTML .= "<tr><td class=\"left\">".__("Notes").":</td>"
+        . "<td class=\"right\">".$cab->Notes."</td></tr>\n</table>";
+    
+    return $renderedHTML;
+}
+
 	$cab=new Cabinet();
 	$cab->CabinetID=$_REQUEST["cabinetid"];
 	$cab->GetCabinet();
@@ -582,49 +634,26 @@ $body.='</table>
 		$body.="			<ul class=\"nav\"><a href=\"power_pdu.php?pduid=0&cabinetid=$cab->CabinetID\"><li>".__("Add CDU")."</li></a></ul>\n";
 	}
 
-	$body.="	</fieldset>
-<fieldset>
-	<table id=\"cabprop\">
-	<tr><td class=\"left\">".__("Last Audit").":</td>"
-	    . "<td class=\"right\">".$audit->AuditStamp."<br>($AuditorName)</td></tr>
-	<tr><td class=\"left\">".__("Model").":</td>"
-	    . "<td class=\"right\">".$cab->Model."</td></tr>
-	<tr><td class=\"left\">".__("Installation Date").":</td><td class=\"right\">".$cab->InstallationDate."</td></tr>";
-	if ($cab->ZoneID)
+	$body.="	</fieldset>";
+	if ($user->CanWrite($cab->AssignedTo))
 	{
-	    $zone = new Zone();
-	    $zone->ZoneID = $cab->ZoneID;
-	    $zone->GetZone();
-	    $body.="<tr><td class=\"left\">".__("Zone").":</td>"
-	        . "<td class=\"right\">".$zone->Description."</td></tr>";
-	}
-	if ($cab->CabRowID)
-	{
-	    $cabrow = new CabRow();
-	    $cabrow->CabRowID = $cab->CabRowID;
-	    $cabrow->GetCabRow();
-	    $body.="<tr><td class=\"left\">".__("Row").":</td>"
-	        . "<td class=\"right\">".$cabrow->Name."</td></tr>";
-	}
-	
-	$body.="<tr><td class=\"left\">".__("Notes").":</td><td class=\"right\">".$cab->Notes."</td></tr>
-	    </table>
-	    <ul class=\"nav\">\n";
-	if($user->CanWrite($cab->AssignedTo)){
+	    $body.="    <fieldset> ";
+	    $body.=renderCabinetProps($cab, $audit, $AuditorName);
+	    $body.="    <ul class=\"nav\">\n";
 		$body.="
 		<a href=\"#\" onclick=\"javascript:verifyAudit(this.form)\"><li>".__("Certify Audit")."</li></a>
 		<a href=\"devices.php?action=new&cabinet=$cab->CabinetID\"><li>".__("Add Device")."</li></a>
 		<a href=\"cabaudit.php?cabinetid=$cab->CabinetID\"><li>".__("Audit Report")."</li></a>
 		<a href=\"mapmaker.php?cabinetid=$cab->CabinetID\"><li>".__("Map Coordinates")."</li></a>
 		<a href=\"cabinets.php?cabinetid=$cab->CabinetID\"><li>".__("Edit Cabinet")."</li></a>\n";
-	}
-	if($user->SiteAdmin){
-		$body.="<a href=\"#\" onclick=\"javascript:verifyDelete(this.form)\"><li>".__("Delete Cabinet")."</li></a>";
-	}
+		if($user->SiteAdmin){
+		    $body.="<a href=\"#\" onclick=\"javascript:verifyDelete(this.form)\"><li>".__("Delete Cabinet")."</li></a>";
+		}
 
-	$body.='	</ul>
-</fieldset>
-
+	    $body.='	</ul>
+</fieldset>';
+	}
+	$body.='
 </div> <!-- END div#infopanel -->';
 
 	// If $head isn't empty then we must have added some style information so close the tag up.
