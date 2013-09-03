@@ -6,6 +6,32 @@ GitHub, at http://github.com/samilliken/openDCIM/issues, where you can also down
 the latest development version.  However, it is not advised to pull from GitHub unless you
 are simply testing, as some functionality can break between releases.
 
+
+Changes in 3.0
+--------------
+* Complete rewrite of objects to move away from deprecated mysql* calls.  Using PDO library.
+* Complete rewrite of security model
+-- Ability to give rights to users to admin own devices, but not others
+-- Read and Write rights are now global, otherwise user inherit view of their own devices only
+-- Device details are completely hidden from users without proper rights
+* Updated SNMP calls for VMware installations
+* Configuration screen lets you now define cable colors and media types
+* Devices now have more port options
+-- User defined names
+-- User defined cable color
+-- User defined media type
+* Any IF-MIB compliant switch can now be polled for link status and port names
+* CDUs can now be deleted
+* Path view - clicking on the port name of a connection will show the path from end to end
+* Auto path making - will find the least weight connection between two points utilizing patch panels
+* Half-depth support and front/rear cabinet views
+* New email report on switch capacity, configured as either OptIn or OptOut
+* Support for defining zones and rows within data center
+* Tooltips for CDUs with user defined data to display
+* Enhanced search functions
+* Export network connections in Excel format for importing into label software
+* Many bug fixes
+
 Changes in 2.1
 --------------
 * Export assets by data center to Excel / CSV
