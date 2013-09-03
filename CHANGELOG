@@ -25,6 +25,10 @@ Changes in 3.0
 * Auto path making - will find the least weight connection between two points utilizing patch panels
 * Half-depth support and front/rear cabinet views
 * New email report on switch capacity, configured as either OptIn or OptOut
+* Support for defining zones and rows within data center
+* Tooltips for CDUs with user defined data to display
+* Enhanced search functions
+* Export network connections in Excel format for importing into label software
 * Many bug fixes
 
 Changes in 2.1
