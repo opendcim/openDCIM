@@ -6,6 +6,7 @@ GitHub, at http://github.com/samilliken/openDCIM/issues, where you can also down
 the latest development version.  However, it is not advised to pull from GitHub unless you
 are simply testing, as some functionality can break between releases.
 
+
 Changes in 3.0
 --------------
 * Complete rewrite of objects to move away from deprecated mysql* calls.  Using PDO library.
