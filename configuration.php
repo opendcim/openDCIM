@@ -332,7 +332,9 @@
 
 		$('#tooltip, #cdutooltip').multiselect();
 		$("select:not('#tooltip, #cdutooltip')").each(function(){
-			$(this).val($(this).attr('data'));
+			if($(this).attr('data')){
+				$(this).val($(this).attr('data'));
+			}
 		});
 
 		// Applies to everything
