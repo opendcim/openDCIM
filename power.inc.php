@@ -366,6 +366,7 @@ class PowerDistribution {
 	var $PanelPole2;
 
 	function MakeSafe(){
+		$this->PDUID=intval($this->PDUID);
 		$this->Label=addslashes(trim($this->Label));
 		$this->CabinetID=intval($this->CabinetID);
 		$this->TemplateID=intval($this->TemplateID);
