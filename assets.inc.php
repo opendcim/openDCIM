@@ -2308,7 +2308,7 @@ class DevicePorts {
 				$tmpDev->GetDevice();
 
 				// Filter device pick list by what they have rights to modify
-				($tmpDev->Rights=="Write")?$candidates[]=$tmpDev:'';
+				($tmpDev->Rights=="Write")?$candidates[]=array( "DeviceID"=>$tmpDev->DeviceID, "Label"=>$tmpDev->Label):'';
 			}
 			// Then run the same query, but for the rest of the devices in the database
 			$sql="SELECT DISTINCT a.DeviceID FROM fac_Ports a, fac_Device b WHERE b.Cabinet>-1 AND b.Cabinet!=$dev->Cabinet AND a.DeviceID=b.DeviceID AND a.DeviceID!=$dev->DeviceID$mediaenforce$pp ORDER BY b.Label ASC;";
@@ -2319,12 +2319,12 @@ class DevicePorts {
 				$tmpDev->GetDevice();
 
 				// Filter device pick list by what they have rights to modify
-				($tmpDev->Rights=="Write")?$candidates[]=$tmpDev:'';
+				($tmpDev->Rights=="Write")?$candidates[]=array( "DeviceID"=>$tmpDev->DeviceID, "Label"=>$tmpDev->Label):'';
 			}
 		}else{
 			$sql="SELECT a.* FROM fac_Ports a, fac_Device b WHERE b.Cabinet>-1 AND a.DeviceID=b.DeviceID AND a.DeviceID!=$dev->DeviceID AND ConnectedDeviceID IS NULL$mediaenforce$pp;";
 			foreach($dbh->query($sql) as $row){
-				$candidates[]=DevicePorts::RowToObject($row);
+				$candidates[]=array( "DeviceID"=>$row["DeviceID"], "Label"=>$row["Label"]);
 			}
 		}
 
