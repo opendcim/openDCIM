@@ -2934,15 +2934,27 @@ class SwitchInfo {
 		}
 			
 		$baseOID = ".1.3.6.1.2.1.2.2.1.8.";
-		$baseOID="IF-MIB::ifOperStatus."; // arguments for not using MIB?
+		$baseOID="IF-MIB::ifOperStatus"; // arguments for not using MIB?
 
 		if ( is_null($portid) ) {		
-			for ( $n=0; $n < $dev->Ports; $n++ ) {
-				if(!$reply=@snmp2_get($dev->PrimaryIP, $dev->SNMPCommunity, $baseOID.($dev->FirstPortNum+$n))){
-					break;
+			if($reply=@snmp2_real_walk($dev->PrimaryIP, $dev->SNMPCommunity, $baseOID, 10000, 2)){			
+				// Skip the returned values until we get to the first port
+				$Saving = false;
+				foreach($reply as $oid => $status){
+					$indexValue = end(explode( ".", $oid ));
+					if ( $indexValue == $dev->FirstPortNum ) {
+						$Saving = true;
+					}
+					
+					if ( $Saving == true ) {
+						@preg_match( "/(INTEGER: )(.+)(\(.*)/", $status, $matches);
+						$statusList[sizeof( $statusList) + 1]=@$matches[2];
+					}
+					
+					// Once we have captured enough values that match the number of ports, stop
+					if ( sizeof( $statusList ) == $dev->Ports )
+						break;
 				}
-				@preg_match( "/(INTEGER: )(.+)(\(.*)/", $reply, $matches);
-				$statusList[$n+1]=@$matches[2];
 			}
 		}else{
 			@preg_match( "/(INTEGER: )(.+)(\(.*)/", snmp2_get( $dev->PrimaryIP, $dev->SNMPCommunity, $baseOID.$portid ), $matches);
