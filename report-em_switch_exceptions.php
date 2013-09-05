@@ -86,15 +86,16 @@
 							$dev->DeviceID = $portList[$n]->ConnectedDeviceID;
 							$dev->GetDevice();
 							$devAnchor = "<a href=\"" . $urlBase . "devices.php?deviceid=" . $dev->DeviceID . "\">" . $dev->Label . "</a>";
+							$port->DeviceID = $portList[$n]->ConnectedDeviceID;
+							$port->PortNumber =$portList[$n]->ConnectedPort;
+							$port->getPort();
+							$portName = $port->Label;
 						} else {
 							$devAnchor = "&nbsp;";
+							$portName = "&nbsp;";
 						}
 						
-						$port->DeviceID = $portList[$n]->ConnectedDeviceID;
-						$port->PortNumber =$portList[$n]->ConnectedPort;
-						$port->getPort();
-						
-						$exceptionRows .= sprintf( "<tr><td><a href=\"%sdevices.php?deviceid=%d\">%s</a></td><td>%s</td><td>%s</td><td>%s</td><td>%s</td><td>%s</td></tr>\n", $urlBase, $devRow->DeviceID, $devRow->Label, $portList[$n]->Label, $devAnchor, $port->Label, $portList[$n]->Notes, $statusList[$n+1] );
+						$exceptionRows .= sprintf( "<tr><td><a href=\"%sdevices.php?deviceid=%d\">%s</a></td><td>%s</td><td>%s</td><td>%s</td><td>%s</td><td>%s</td></tr>\n", $urlBase, $devRow->DeviceID, $devRow->Label, $portList[$n]->Label, $devAnchor, $portName, $portList[$n]->Notes, $statusList[$n+1] );
 					}
 				}
 			}
