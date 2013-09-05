@@ -1360,12 +1360,18 @@ class Device {
 		global $dbh;
 		global $config;
 		
-		$tag=($config->ParameterArray["NetworkCapacityReportOptIn"]=="OptIn")?'Report':'NoReport';
-
-		$sql="SELECT * FROM fac_Device a, fac_Cabinet b WHERE a.Cabinet=b.CabinetID 
-			AND DeviceType=\"Switch\" AND DeviceID IN (SELECT DeviceID FROM 
-			fac_DeviceTags WHERE TagID IN (SELECT TagID FROM fac_Tags WHERE 
-			Name=\"$tag\")) ORDER BY b.DataCenterID ASC, b.Location ASC, Label ASC;";
+		// No, Wilbur, these are not identical SQL statement except for the tag.  Please don't combine them, again.
+		if ( $config->ParameterArray["NetworkCapacityReportOptIn"] == "OptIn") {
+			$sql="SELECT * FROM fac_Device a, fac_Cabinet b WHERE a.Cabinet=b.CabinetID 
+				AND DeviceType=\"Switch\" AND DeviceID IN (SELECT DeviceID FROM 
+				fac_DeviceTags WHERE TagID IN (SELECT TagID FROM fac_Tags WHERE 
+				Name=\"Report\")) ORDER BY b.DataCenterID ASC, b.Location ASC, Label ASC;";
+		} else {
+			$sql="SELECT * FROM fac_Device a, fac_Cabinet b WHERE a.Cabinet=b.CabinetID 
+				AND DeviceType=\"Switch\" AND DeviceID NOT IN (SELECT DeviceID FROM 
+				fac_DeviceTags WHERE TagID IN (SELECT TagID FROM fac_Tags WHERE 
+				Name=\"NoReport\")) ORDER BY b.DataCenterID ASC, b.Location ASC, Label ASC;";
+		}
 
 		$deviceList=array();
 		foreach($dbh->query($sql) as $deviceRow){
@@ -2952,8 +2958,9 @@ class SwitchInfo {
 					}
 					
 					// Once we have captured enough values that match the number of ports, stop
-					if ( sizeof( $statusList ) == $dev->Ports )
+					if ( sizeof( $statusList ) == $dev->Ports ) {
 						break;
+					}
 				}
 			}
 		}else{
