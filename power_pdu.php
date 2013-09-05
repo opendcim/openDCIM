@@ -160,6 +160,7 @@
 				break;
 			case "Combine3OIDWatts":
 				$watts=(intval($result1)+intval($result2)+intval($result3))/intval($template->Multiplier);
+				break;
 			default:
 				$watts=intval($result1)/intval($template->Multiplier);
 				break;
