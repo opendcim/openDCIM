@@ -425,8 +425,7 @@ div.cabinet {
 /* Cabinet Properties */
 
 #infopanel table#cabprop {
-	margin: 0px 0px 4px 0px;
-	display: block;
+    margin: 0px 0px 2px 0px;
 	border-collapse: separate;
     border: 0px none;
 	border-spacing: 3px;
@@ -434,28 +433,42 @@ div.cabinet {
 	min-width: 200px; max-width: 350px;
 }
 table#cabprop tr {
-    width: 99%;
+    width: 100%;
     padding: 2px;
-    margin: 2px;
+    margin: 1px 0px 1px 1px;
 }
 #infopanel fieldset table#cabprop td.left {
-    /* width: 50%; */
-    /* text-align: left; */  
-    padding: 4px 2px 4px 2px;
+    padding: 3px 2px 3px 2px;
     font-weight: bold;
     border: 0px none;
     border-bottom: 3px solid gray;
     /* border-right: 3px solid gray; */
-    margin: 2px;
+    margin: 2px 2px 2px 0px;
 }
 #infopanel fieldset table#cabprop td.right {
     /* width: 50%; */
     text-align: left;
-    padding: 4px 2px 4px 6px;
+    padding: 3px 2px 3px 4px;
     border: 0px none;
     border-bottom: 3px solid gray;
     border-right: 3px solid gray;
-    margin: 2px;
+    margin: 2px 0px 2px 2px;
+    /* max-width: 280px; */
+}
+table#cabprop span.text-label {
+     -webkit-border-radius: 2px;
+     border-radius: 2px;
+     box-sizing: border-box;
+     /* position: relative; */
+     /* float: left; */
+     border: 1px solid #9daccc;
+     background: #e2e6f0;
+     color: #000;
+     padding: 0px 3px 0px 3px;
+     margin: 0 2px 0px 0;
+     /* cursor: default; */
+     /* height: 16px; */
+     font: 11px "lucida grande",tahoma,verdana,arial,sans-serif;
 }
 
 /* devices.php  Device Detail */
