@@ -953,10 +953,13 @@ class Device {
 		$this->Notes=stripslashes($this->Notes);
 	}
 
-	static function RowToObject($dbRow){
+	static function RowToObject($dbRow,$filterrights=true){
 		/*
 		 * Generic function that will take any row returned from the fac_Devices
 		 * table and convert it to an object for use in array or other
+		 *
+		 * Pass false to filterrights when you don't need to check for rights for 
+		 * whatever reason.
 		 */
 
 		$dev=new Device();
@@ -994,7 +997,9 @@ class Device {
 		$dev->BackSide=$dbRow["BackSide"];
 		
 		$dev->MakeDisplay();
-		$dev->FilterRights();
+		if($filterrights){
+			$dev->FilterRights();
+		}
 
 		return $dev;
 	}
@@ -1360,12 +1365,18 @@ class Device {
 		global $dbh;
 		global $config;
 		
-		$tag=($config->ParameterArray["NetworkCapacityReportOptIn"]=="OptIn")?'Report':'NoReport';
-
-		$sql="SELECT * FROM fac_Device a, fac_Cabinet b WHERE a.Cabinet=b.CabinetID 
-			AND DeviceType=\"Switch\" AND DeviceID IN (SELECT DeviceID FROM 
-			fac_DeviceTags WHERE TagID IN (SELECT TagID FROM fac_Tags WHERE 
-			Name=\"$tag\")) ORDER BY b.DataCenterID ASC, b.Location ASC, Label ASC;";
+		// No, Wilbur, these are not identical SQL statement except for the tag.  Please don't combine them, again.
+		if ( $config->ParameterArray["NetworkCapacityReportOptIn"] == "OptIn") {
+			$sql="SELECT * FROM fac_Device a, fac_Cabinet b WHERE a.Cabinet=b.CabinetID 
+				AND DeviceType=\"Switch\" AND DeviceID IN (SELECT DeviceID FROM 
+				fac_DeviceTags WHERE TagID IN (SELECT TagID FROM fac_Tags WHERE 
+				Name=\"Report\")) ORDER BY b.DataCenterID ASC, b.Location ASC, Label ASC;";
+		} else {
+			$sql="SELECT * FROM fac_Device a, fac_Cabinet b WHERE a.Cabinet=b.CabinetID 
+				AND DeviceType=\"Switch\" AND DeviceID NOT IN (SELECT DeviceID FROM 
+				fac_DeviceTags WHERE TagID IN (SELECT TagID FROM fac_Tags WHERE 
+				Name=\"NoReport\")) ORDER BY b.DataCenterID ASC, b.Location ASC, Label ASC;";
+		}
 
 		$deviceList=array();
 		foreach($dbh->query($sql) as $deviceRow){
@@ -2299,32 +2310,35 @@ class DevicePorts {
 		$candidates=array();
 
 		if(is_null($listports)){
-			// Run two queries - first, devices in the same cabinet as the device patching from
-			$sql="SELECT DISTINCT a.DeviceID FROM fac_Ports a, fac_Device b WHERE b.Cabinet=$dev->Cabinet AND a.DeviceID=b.DeviceID AND a.DeviceID!=$dev->DeviceID$mediaenforce$pp ORDER BY b.Label ASC;";
-			foreach($dbh->query($sql) as $row){
-				$candidate=$row['DeviceID'];
-				$tmpDev=new Device();
-				$tmpDev->DeviceID=$candidate;
-				$tmpDev->GetDevice();
+			$groups=User::Current()->isMemberOf();  // list of groups the current user is member of
+			$rights=null;
+			foreach($groups as $index => $DeptID){
+				if(is_null($rights)){
+					$rights="AssignedTo=$DeptID OR Owner=$DeptID";
+				}else{
+					$rights.="OR AssignedTo=$DeptID OR Owner=$DeptID";
+				}
+			}
+			$rights=(is_null($rights))?null:" AND ($rights)";
 
-				// Filter device pick list by what they have rights to modify
-				($tmpDev->Rights=="Write")?$candidates[]=$tmpDev:'';
+			// Run two queries - first, devices in the same cabinet as the device patching from
+			$sql="SELECT a.*, AssignedTo FROM fac_Device a, fac_Cabinet b WHERE Cabinet=CabinetID AND Cabinet=$dev->Cabinet AND DeviceID!=$dev->DeviceID$rights$mediaenforce$pp ORDER BY Position DESC, Label ASC;";
+			foreach($dbh->query($sql) as $row){
+				// false to skip rights check we filtered using sql above
+				$tmpDev=Device::RowToObject($row,false);
+				$candidates[]=array( "DeviceID"=>$tmpDev->DeviceID, "Label"=>$tmpDev->Label);
 			}
 			// Then run the same query, but for the rest of the devices in the database
-			$sql="SELECT DISTINCT a.DeviceID FROM fac_Ports a, fac_Device b WHERE b.Cabinet>-1 AND b.Cabinet!=$dev->Cabinet AND a.DeviceID=b.DeviceID AND a.DeviceID!=$dev->DeviceID$mediaenforce$pp ORDER BY b.Label ASC;";
+			$sql="SELECT a.*, AssignedTo FROM fac_Device a, fac_Cabinet b WHERE Cabinet=CabinetID AND Cabinet!=$dev->Cabinet AND Cabinet>-1 AND DeviceID!=$dev->DeviceID$rights$mediaenforce$pp ORDER BY Label ASC;";
 			foreach($dbh->query($sql) as $row){
-				$candidate=$row['DeviceID'];
-				$tmpDev=new Device();
-				$tmpDev->DeviceID=$candidate;
-				$tmpDev->GetDevice();
-
-				// Filter device pick list by what they have rights to modify
-				($tmpDev->Rights=="Write")?$candidates[]=$tmpDev:'';
+				// false to skip rights check we filtered using sql above
+				$tmpDev=Device::RowToObject($row,false);
+				$candidates[]=array( "DeviceID"=>$tmpDev->DeviceID, "Label"=>$tmpDev->Label);
 			}
 		}else{
 			$sql="SELECT a.* FROM fac_Ports a, fac_Device b WHERE b.Cabinet>-1 AND a.DeviceID=b.DeviceID AND a.DeviceID!=$dev->DeviceID AND ConnectedDeviceID IS NULL$mediaenforce$pp;";
 			foreach($dbh->query($sql) as $row){
-				$candidates[]=DevicePorts::RowToObject($row);
+				$candidates[]=array( "DeviceID"=>$row["DeviceID"], "Label"=>$row["Label"]);
 			}
 		}
 
@@ -2934,15 +2948,28 @@ class SwitchInfo {
 		}
 			
 		$baseOID = ".1.3.6.1.2.1.2.2.1.8.";
-		$baseOID="IF-MIB::ifOperStatus."; // arguments for not using MIB?
+		$baseOID="IF-MIB::ifOperStatus"; // arguments for not using MIB?
 
 		if ( is_null($portid) ) {		
-			for ( $n=0; $n < $dev->Ports; $n++ ) {
-				if(!$reply=@snmp2_get($dev->PrimaryIP, $dev->SNMPCommunity, $baseOID.($dev->FirstPortNum+$n))){
-					break;
+			if($reply=@snmp2_real_walk($dev->PrimaryIP, $dev->SNMPCommunity, $baseOID, 10000, 2)){			
+				// Skip the returned values until we get to the first port
+				$Saving = false;
+				foreach($reply as $oid => $status){
+					$indexValue = end(explode( ".", $oid ));
+					if ( $indexValue == $dev->FirstPortNum ) {
+						$Saving = true;
+					}
+					
+					if ( $Saving == true ) {
+						@preg_match( "/(INTEGER: )(.+)(\(.*)/", $status, $matches);
+						$statusList[sizeof( $statusList) + 1]=@$matches[2];
+					}
+					
+					// Once we have captured enough values that match the number of ports, stop
+					if ( sizeof( $statusList ) == $dev->Ports ) {
+						break;
+					}
 				}
-				@preg_match( "/(INTEGER: )(.+)(\(.*)/", $reply, $matches);
-				$statusList[$n+1]=@$matches[2];
 			}
 		}else{
 			@preg_match( "/(INTEGER: )(.+)(\(.*)/", snmp2_get( $dev->PrimaryIP, $dev->SNMPCommunity, $baseOID.$portid ), $matches);
