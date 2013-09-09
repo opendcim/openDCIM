@@ -1864,7 +1864,8 @@ echo '	<div class="table">
 
 		var setmediatype=$('<select>').css({'border':'none','position':'absolute','width':'auto'}).append($('<option>'));
 		setmediatype.change(function(){
-			alert('all ports changed to '+$("#mt > select option:selected").text());
+			alert('all ports changed to '+$("#mt > select option:selected").text()+' ColorID: '+$(this).data($(this).val()));
+			$('div[id^=mt]:not(#mt)').text($("#mt > select option:selected").text()).data('default',$(this).val());
 			setmediatype.val('');
 		});
 		$('#mt').append(setmediatype);
