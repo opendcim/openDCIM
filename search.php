@@ -188,6 +188,13 @@
 		$searchresults=__("No matching devices found.");
 	}
 
+	// if json is set then return the device list as a json string
+	if(isset($_REQUEST['json'])){
+		header('Content-Type: application/json');
+		echo json_encode($devList);
+		exit;
+	}
+
 ?>
 <!doctype html>
 <html>

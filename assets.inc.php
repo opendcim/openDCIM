@@ -1361,6 +1361,13 @@ class Device {
 		}
 	}
 
+	static function GetDeviceByID($DeviceID){
+		$dev=New Device();
+		$dev->DeviceID=$DeviceID;
+		$dev->GetDevice();
+		return $dev;
+	}
+
 	static function GetSwitchesToReport() {
 		global $dbh;
 		global $config;
