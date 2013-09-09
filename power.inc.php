@@ -1072,7 +1072,7 @@ class PowerSource {
 
 		$this->MakeSafe();
 
-		$sql="INSERT INTO fac_PowerSource SET SourceName=\"$this->SourceName\", 
+		$sql="UPDATE fac_PowerSource SET SourceName=\"$this->SourceName\", 
 			DataCenterID=$this->DataCenterID, IPAddress=\"$this->IPAddress\", 
 			Community=\"$this->Community\", LoadOID=\"$this->LoadOID\", 
 			Capacity=$this->Capacity WHERE PowerSourceID=$this->PowerSourceID;";
