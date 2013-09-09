@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: openDCIM.po\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2013-09-03 08:14-0500\n"
-"PO-Revision-Date: 2013-07-12 14:23+0100\n"
+"PO-Revision-Date: 2013-09-06 13:13+0100\n"
 "Last-Translator: Jose Miguel Gomez <jomigom@iies.es>\n"
 "Language-Team: openDCIM <discussion@list.opendcim.org>\n"
 "Language: English\n"
@@ -242,7 +242,7 @@ msgstr "Volver al Menú Principal"
 
 #: openDCIM/cabnavigator.php:75
 msgid "Details Restricted"
-msgstr ""
+msgstr "Detalles Restringidos"
 
 #: openDCIM/cabnavigator.php:179
 msgid "Tooltips are enabled with no options selected."
@@ -250,7 +250,7 @@ msgstr "Los tooltips están abilitados sin opciones seleccionadas"
 
 #: openDCIM/cabnavigator.php:208
 msgid "Never"
-msgstr ""
+msgstr "Nunca"
 
 #: openDCIM/cabnavigator.php:247 openDCIM/cabnavigator.php:348
 #: openDCIM/rowview.php:75
@@ -348,7 +348,7 @@ msgstr "Eliminar Armario"
 
 #: openDCIM/cabnavigator.php:611
 msgid "Facilities Cabinet Maintenance"
-msgstr ""
+msgstr "Mantenimiento de Instalaciones del Armario"
 
 #: openDCIM/cabnavigator.php:635
 msgid ""
@@ -789,26 +789,24 @@ msgid "Base URL for install"
 msgstr "URL base para instalar"
 
 #: openDCIM/configuration.php:1105 openDCIM/install.php:1882
-#, fuzzy
 msgid "Capacity Reporting"
-msgstr "Informes"
+msgstr "Informes de Capacidad"
 
 #: openDCIM/configuration.php:1108 openDCIM/install.php:1885
-#, fuzzy
 msgid "Switches"
-msgstr "Conmutador"
+msgstr "Conmutadores"
 
 #: openDCIM/configuration.php:1111 openDCIM/install.php:1888
 msgid "OptIn"
-msgstr ""
+msgstr "OptIn"
 
 #: openDCIM/configuration.php:1112 openDCIM/install.php:1889
 msgid "OptOut"
-msgstr ""
+msgstr "OptOut"
 
 #: openDCIM/configuration.php:1117 openDCIM/install.php:1894
 msgid "Switch Capacity Threshold"
-msgstr ""
+msgstr "Umbral de Capacidad del Conmutador"
 
 #: openDCIM/configuration.php:1121 openDCIM/install.php:1898
 msgid "Utilities"
@@ -1013,9 +1011,8 @@ msgid "Percentage"
 msgstr "Porcentaje"
 
 #: openDCIM/container_stats.php:75
-#, fuzzy
 msgid "Data Centers"
-msgstr "Centro de Proceso de Datos"
+msgstr "Centros de Proceso de Datos"
 
 #: openDCIM/container_stats.php:79 openDCIM/dc_dashboard.php:111
 #: openDCIM/dc_stats.php:127
@@ -1232,7 +1229,7 @@ msgstr "Infraestructura Física"
 
 #: openDCIM/devices.php:447
 msgid "openDCIM Device Maintenance"
-msgstr ""
+msgstr "Mantenimiento de dispositvos de opnDCIM"
 
 #: openDCIM/devices.php:454 openDCIM/vmnamecheck.php:71
 #: openDCIM/vmnamecheck.php:115
@@ -1285,9 +1282,8 @@ msgid "Edit"
 msgstr "Editar"
 
 #: openDCIM/devices.php:843
-#, fuzzy
 msgid "Verify Delete Device"
-msgstr "Borrado Sobreescrtura de Tipo de Medio"
+msgstr "Verificar Borrado del Dispositivo"
 
 #: openDCIM/devices.php:852
 msgid ""
@@ -1426,12 +1422,11 @@ msgstr "Altura"
 
 #: openDCIM/devices.php:1546
 msgid "Half Depth"
-msgstr ""
+msgstr "Medio Fondo"
 
 #: openDCIM/devices.php:1551
-#, fuzzy
 msgid "Back Side"
-msgstr "Atrás"
+msgstr "Parte Trasera"
 
 #: openDCIM/devices.php:1560
 msgid "Number of Data Ports"
@@ -1563,9 +1558,8 @@ msgid "Copy"
 msgstr "Copiar"
 
 #: openDCIM/devices.php:1797
-#, fuzzy
 msgid "Export Connections"
-msgstr "Conexiones Eléctricas"
+msgstr "Exportar Conexiones"
 
 #: openDCIM/devices.php:1809
 msgid "Return to Parent Device"
@@ -1685,67 +1679,64 @@ msgid "Selection Preview"
 msgstr "Previsualización de la Selección"
 
 #: openDCIM/pathmaker.php:84 openDCIM/pathmaker.php:86
-#, fuzzy
 msgid "Connection implemented"
-msgstr "Conexiones Frontales Eliminadas"
+msgstr "Conexión Implementada"
 
 #: openDCIM/pathmaker.php:136
 msgid "Path not initialized"
-msgstr ""
+msgstr "Camino no inicializado"
 
 #: openDCIM/pathmaker.php:141
 msgid "Error getting initial device data"
-msgstr ""
+msgstr "Error al obtener los datos del dispositivo inicial"
 
 #: openDCIM/pathmaker.php:144
 msgid "Error: initial device is a panel"
-msgstr ""
+msgstr "Error: el dispositivo inicial es un panel"
 
 #: openDCIM/pathmaker.php:147
 msgid "Error getting initial device port data"
-msgstr ""
+msgstr "Error al obtener los datos del puerto del dispositivo inicial"
 
 #: openDCIM/pathmaker.php:150
 msgid "Error: initial device port is already connected"
-msgstr ""
+msgstr "Error: el dispositivo inicial ya está conectado"
 
 #: openDCIM/pathmaker.php:153
 msgid "Error getting final device data"
-msgstr ""
+msgstr "Error obteniendo datos del dispositivo final"
 
 #: openDCIM/pathmaker.php:156
 msgid "Error: final device is a panel"
-msgstr ""
+msgstr "Error: el dispositivo final es un panel"
 
 #: openDCIM/pathmaker.php:159
 msgid "Error getting final device port data"
-msgstr ""
+msgstr "Error obteniendo datos del puerto del dispositivo final"
 
 #: openDCIM/pathmaker.php:162
 msgid "Error: final device port is already connected"
-msgstr ""
+msgstr "Error: el puerto del dispositivo final ya está conectado"
 
 #: openDCIM/pathmaker.php:165
-#, fuzzy
 msgid "Path not found"
-msgstr "No encontrado"
+msgstr "Camino no encontrado"
 
 #: openDCIM/pathmaker.php:172
 msgid "Initial device unspecified"
-msgstr ""
+msgstr "Dispositivo inicial no especificado"
 
 #: openDCIM/pathmaker.php:174
 msgid "Initial device port unspecified"
-msgstr ""
+msgstr "Puerto del dispositivo inicial no especificado"
 
 #: openDCIM/pathmaker.php:176 openDCIM/pathmaker.php:178
 msgid "Final device unspecified"
-msgstr ""
+msgstr "Dispositivo final no especificado"
 
 #: openDCIM/pathmaker.php:180
-#, fuzzy
 msgid "Unknown Error"
-msgstr "Desconocido"
+msgstr "Error Desconocido"
 
 #: openDCIM/pathmaker.php:235 openDCIM/pathmaker.php:312 openDCIM/paths.php:59
 #: openDCIM/paths.php:120 openDCIM/paths.php:233 openDCIM/paths.php:303
@@ -1763,26 +1754,23 @@ msgstr "Conexión Trasera"
 
 #: openDCIM/pathmaker.php:384
 msgid "Implement in DataBase"
-msgstr ""
+msgstr "Implementar en la Base de Datos"
 
 #: openDCIM/pathmaker.php:475
-#, fuzzy
 msgid "Creating an end to end connection"
-msgstr "Conexiones extremo a extremo"
+msgstr "Creación de conexiones extremo a extremo"
 
 #: openDCIM/pathmaker.php:482
-#, fuzzy
 msgid "Initial device"
-msgstr "Iniciales en mayúsculas"
+msgstr "Dipositivo inicial"
 
 #: openDCIM/pathmaker.php:494
-#, fuzzy
 msgid "Final device"
-msgstr "Seleccionar Dispositivo"
+msgstr "Dipositivo final"
 
 #: openDCIM/pathmaker.php:504
 msgid "Make Path"
-msgstr ""
+msgstr "Crear Camino"
 
 #: openDCIM/paths.php:45
 msgid "Front connections Deleted"
@@ -1794,9 +1782,8 @@ msgid "There is a loop in this port"
 msgstr "Hay un bucle en ese puerto"
 
 #: openDCIM/paths.php:99
-#, fuzzy
 msgid "Device not found"
-msgstr "Puerto del Dispositivo"
+msgstr "Dispositivo no encontrado"
 
 #: openDCIM/paths.php:103
 msgid "There are several devices with this label"
@@ -1815,7 +1802,6 @@ msgid "Error"
 msgstr "Error"
 
 #: openDCIM/paths.php:160
-#, fuzzy
 msgid "Path of"
 msgstr "Camino de"
 
@@ -2284,9 +2270,8 @@ msgid "Facility Manager email address"
 msgstr "Correo del Gestor de Equipamiento"
 
 #: openDCIM/report-em_switch_exceptions.php:21
-#, fuzzy
 msgid "Data Center Switch Capacity Exceptions Report"
-msgstr "Informe de Incumplimientos de Fecha"
+msgstr "Informe de Excepciones de Capacidad de Conmutadores"
 
 #: openDCIM/report_outage_simulator.php:53 openDCIM/search_export.php:186
 msgid "Select data center"
@@ -2612,9 +2597,8 @@ msgid "Edit Configuration"
 msgstr "Editar Configuración"
 
 #: openDCIM/sidebar.inc.php:101
-#, fuzzy
 msgid "Make Path Connection"
-msgstr "Conexión Trasera"
+msgstr "Crear Camino de Conexiones"
 
 #: openDCIM/sidebar.inc.php:106
 msgid "Home"

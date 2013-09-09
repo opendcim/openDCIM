@@ -1741,7 +1741,7 @@ echo '	<div class="table">
 	}
 
 	if($dev->DeviceType=='Patch Panel'){
-		print "\n\t<div>\n\t\t<div><a name=\"net\">".__('Connections')."</a></div>\n\t\t<div>\n\t\t\t<div class=\"table border patchpanel\">\n\t\t\t\t<div><div>".__('Front')."</div><div>Device Port</div><div>".__('Notes')."</div><div>".__('Patch Port')."</div><div>".__('Back')."</div><div>Device Port</div><div>".__('Notes')."</div></div>\n";
+		print "\n\t<div>\n\t\t<div><a name=\"net\">".__('Connections')."</a></div>\n\t\t<div>\n\t\t\t<div class=\"table border patchpanel\">\n\t\t\t\t<div><div>".__('Front')."</div><div>".__("Device Port")."</div><div>".__('Notes')."</div><div>".__('Patch Port')."</div><div>".__('Back')."</div><div>".__("Device Port")."</div><div>".__('Notes')."</div></div>\n";
 		for($n=0; $n< sizeof($portList)/2; $n++){
 			$i = $n + 1;	// The "port number" starting at 1
 			$frontDev=new Device();
