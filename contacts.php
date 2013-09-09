@@ -231,7 +231,7 @@ echo '	</select></div>
 </div>
 <div>
    <div><label for="UserID">',__("UserID"),'</label></div>
-   <div><input type="text" class="validate[optional,minSize[1],maxSize[8]]" name="UserID" id="UserID" maxlength="8" value="',$contact->UserID,'"></div>
+   <div><input type="text" class="validate[optional,minSize[1],maxSize[40]]" name="UserID" id="UserID" maxlength="40" value="',$contact->UserID,'"></div>
 </div>
 <div>
    <div><label for="lastname">',__("Last Name"),'</label></div>
