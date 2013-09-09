@@ -1125,23 +1125,28 @@ print "		var dialog=$('<div>').prop('title','".__("Verify Delete Device")."').ht
 						getcolortypes(portnum);
 					});
 					function save(){
-						$.post('',{
-							saveport: '',
-							swdev: $('#deviceid').val(),
-							pnum: portnum,
-							pname: portname.children('input').val(),
-							cdevice: cdevice.children('select').val(),
-							cdeviceport: cdeviceport.children('select').val(),
-							cnotes: cnotes.children('input').val(),
-							porttype: porttype.children('select').val(),
-							portcolor: portcolor.children('select').val()
-						}).done(function(data){
-							if(data.trim()==1){
-								redrawrow();
-							}else{
-								// something broke
-							}
-						});
+						if(portname.children('input').val().trim().length){
+							$.post('',{
+								saveport: '',
+								swdev: $('#deviceid').val(),
+								pnum: portnum,
+								pname: portname.children('input').val(),
+								cdevice: cdevice.children('select').val(),
+								cdeviceport: cdeviceport.children('select').val(),
+								cnotes: cnotes.children('input').val(),
+								porttype: porttype.children('select').val(),
+								portcolor: portcolor.children('select').val()
+							}).done(function(data){
+								if(data.trim()==1){
+									redrawrow();
+								}else{
+									// something broke
+								}
+							});
+						}else{
+							// No port name set, DENIED!
+							row.effect('highlight', {color: 'salmon'}, 1500);
+						}
 					}
 					function clear(){
 						cdevice.children('select').val(0);
@@ -1153,6 +1158,7 @@ print "		var dialog=$('<div>').prop('title','".__("Verify Delete Device")."').ht
 						$.post('',{getport: '',swdev: $('#deviceid').val(),pnum: portnum}).done(function(data){
 							portname.html(data.Label).data('default',data.Label);
 							cdevice.html('<a href="devices.php?deviceid='+data.ConnectedDeviceID+'">'+data.ConnectedDeviceLabel+'</a>').data('default',data.ConnectedDeviceID);
+							data.ConnectedPortLabel=(data.ConnectedPortLabel==null)?'':data.ConnectedPortLabel;
 							cdeviceport.html('<a href="paths.php?deviceid='+data.ConnectedDeviceID+'&portnumber='+data.ConnectedPort+'">'+data.ConnectedPortLabel+'</a>').data('default',data.ConnectedPort);
 							cnotes.html(data.Notes).data('default',data.Notes);
 							porttype.html(data.MediaName).data('default',data.MediaID);

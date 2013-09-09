@@ -457,7 +457,7 @@ div.cabinet {
 
 .switch.table > div > div { min-width: 0px; }
 .switch.table > div > div:first-child { min-width: 15px; }
-.switch.table input, .switch.table select { width: 99%; padding: 0; }
+.switch.table input, .switch.table select { width: 99%; padding: 0; background-color: transparent;}
 .switch.table div[id^=n] input { width:98%; }
 
 .switch .status { background-image: url("../images/portstatus.png");}
