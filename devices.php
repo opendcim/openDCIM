@@ -1706,7 +1706,7 @@ echo '	<div class="table">
 				<div>".__('Device Port')."</div>
 				<div>".__('Notes')."</div>";
 		if($dev->DeviceType=='Switch'){print "\t\t\t\t<div id=\"st\">".__("Status")."</div>";}
-		print "\t\t\t\t<div>".__("Media Type")."</div>
+		print "\t\t\t\t<div id=\"mt\">".__("Media Type")."</div>
 			<div>".__("Color Code")."</div>
 			</div>\n";
 
@@ -1862,6 +1862,21 @@ echo '	<div class="table">
 			}).appendTo('#pandn .caption');
 		}
 
+		var setmediatype=$('<select>').css({'border':'none','position':'absolute','width':'auto'}).append($('<option>'));
+		setmediatype.change(function(){
+			alert('all ports changed to '+$("#mt > select option:selected").text());
+			setmediatype.val('');
+		});
+		$('#mt').append(setmediatype);
+		var pos=$('#mt').offset();
+		$.get('',{mt:''}).done(function(data){
+			$.each(data, function(key,mt){
+				var option=$("<option>",({'value':mt.MediaID})).append(mt.MediaType);
+				setmediatype.append(option).data(mt.MediaID,mt.ColorID);
+			});
+		}).then(function(){
+			setmediatype.offset({top: pos.top, left: pos.left+$('#mt').outerWidth()-setmediatype.width()});
+		});
 
 	});
 </script>
