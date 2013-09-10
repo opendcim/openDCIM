@@ -29,14 +29,13 @@
 
 		if($_POST['action']=='Create'){
 			if(!$template->CreateTemplate()){
-				$status='An error has occured, template not created';
+				$status=__('An error has occured, template not created');
 			}		
 		} else {
-			$update=$template->UpdateTemplate();
-			if($update==""){
+			if($template->UpdateTemplate()){
 				$status=__('Updated');
 			}else{
-				$status=$update;
+				$status=__('Error');
 			}
 		}
 	}
