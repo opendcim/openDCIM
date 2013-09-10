@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: openDCIM.po\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2013-09-03 08:14-0500\n"
-"PO-Revision-Date: 2013-09-06 13:13+0100\n"
+"PO-Revision-Date: 2013-09-09 14:16+0100\n"
 "Last-Translator: Jose Miguel Gomez <jomigom@iies.es>\n"
 "Language-Team: openDCIM <discussion@list.opendcim.org>\n"
 "Language: English\n"
@@ -1479,7 +1479,7 @@ msgstr "Contenido do Chasis"
 
 #: openDCIM/devices.php:1606 openDCIM/devices.php:1744
 msgid "Front"
-msgstr "Parte Delanteira"
+msgstr "Frontal"
 
 #: openDCIM/devices.php:1610
 msgid "Number of Slots in Chassis:"
@@ -1551,7 +1551,7 @@ msgstr "Porto de Parcheo"
 
 #: openDCIM/devices.php:1744
 msgid "Back"
-msgstr "Atrás"
+msgstr "Traseira"
 
 #: openDCIM/devices.php:1787
 msgid "Copy"
