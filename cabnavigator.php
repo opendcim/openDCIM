@@ -237,7 +237,7 @@ function get_cabinet_owner_color($cabinet, &$deptswithcolor) {
 			$legend.='<p><span class="reserved border">&nbsp;&nbsp;&nbsp;&nbsp;</span> - '.__("Reservation").'</p>';
 		}
 		if($config->ParameterArray["FreeSpaceColor"] != "#FFFFFF"){
-			$legend.='<p><span class="freespace border">&nbsp;&nbsp;&nbsp;&nbsp;</span> - '-__("Free Space").'</p>';
+			$legend.='<p><span class="freespace border">&nbsp;&nbsp;&nbsp;&nbsp;</span> - '.__("Free Space").'</p>';
 		}
 	}
 
