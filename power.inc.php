@@ -475,7 +475,7 @@ class PowerDistribution {
 		$this->MakeSafe();
 
 		$sql="SELECT * FROM fac_PowerDistribution WHERE PDUID=$this->PDUID;";
-
+		
 		if($PDURow=$this->query($sql)->fetch()){
 			foreach(PowerDistribution::RowToObject($PDURow) as $prop => $value){
 				$this->$prop=$value;
