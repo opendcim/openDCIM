@@ -1545,7 +1545,7 @@ if(isset($results)){
 
 	// Figure out what the URL to this page
 	$href="";
-	$href.=($_SERVER['HTTPS'])?'https://':'http://';
+	$href.=(isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'])?'https://':'http://';
 	$href.=$_SERVER['SERVER_NAME'];
 	$href.=substr($_SERVER['REQUEST_URI'], 0, -strlen(basename($_SERVER['REQUEST_URI'])));
 
