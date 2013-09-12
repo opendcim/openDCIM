@@ -64,6 +64,7 @@ class Cabinet {
 		$this->Keylock=addslashes($this->Keylock);
 		$this->MaxKW=floatval($this->MaxKW);
 		$this->MaxWeight=intval($this->MaxWeight);
+		$this->InstallationDate=date("Y-m-d", strtotime($this->InstallationDate));
 		$this->SensorIPAddress=addslashes($this->SensorIPAddress);
 		$this->SensorCommunity=addslashes($this->SensorCommunity);
 		$this->TempSensorOID=addslashes($this->TempSensorOID);
@@ -106,37 +107,37 @@ class Cabinet {
 		return $cab;
 	}
 	
-	function CreateCabinet( $db = null ) {
+	function CreateCabinet(){
 		global $dbh;
 		
 		$this->MakeSafe();
-		
-		$sql = sprintf( "insert into fac_Cabinet set DataCenterID=%d, Location=\"%s\", AssignedTo=%d,
-			ZoneID=%d, CabRowID=%d,
-			CabinetHeight=%d, Model=\"%s\", Keylock=\"%s\", MaxKW=%f, MaxWeight=%d,
-			InstallationDate=\"%s\", SensorIPAddress=\"%s\", SensorCommunity=\"%s\",
-			TempSensorOID=\"%s\", HumiditySensorOID=\"%s\", MapX1=%d, MapY1=%d,
-			MapX2=%d, MapY2=%d, Notes=\"%s\"",
-			$this->DataCenterID, $this->Location, $this->AssignedTo, 
-			$this->ZoneID, $this->CabRowID, $this->CabinetHeight,
-			$this->Model, $this->Keylock, $this->MaxKW, $this->MaxWeight,
-			date( "Y-m-d", strtotime( $this->InstallationDate) ), $this->SensorIPAddress,
-			$this->SensorCommunity, $this->TempSensorOID, $this->HumiditySensorOID,
-			$this->MapX1, $this->MapY1, $this->MapX2, $this->MapY2, $this->Notes );
 
-		if ( ! $dbh->exec( $sql ) ) {
-			$info = $dbh->errorInfo();
+		$sql="INSERT INFO fac_Cabinet SET DataCenterID=$this->DataCenterID, 
+			Location=\"$this->Location\", AssignedTo=$this->AssignedTo, 
+			ZoneID=$this->ZoneID, CabRowID=$this->CabRowID, 
+			CabinetHeight=$this->CabinetHeight, Model=\"$this->Model\", 
+			Keylock=\"$this->Keylock\", MaxKW=\"$this->MaxKW\", MaxWeight=$this->MaxWeight, 
+			InstallationDate=\"$this->InstallationDate\", 
+			SensorIPAddress=\"$this->SensorIPAddress\", 
+			SensorCommunity=\"$this->SensorCommunity\", 
+			TempSensorOID=\"$this->TempSensorOID\", 
+			HumiditySensorOID=\"$this->HumiditySensorOID\", MapX1=$this->MapX1, 
+			MapY1=$this->MapY1, MapX2=$this->MapX2, MapY2=$this->MapY2, 
+			Notes=\"$this->Notes\";";
 
-			error_log( "PDO Error: " . $info[2] . " SQL=" . $sql );
+		if(!$dbh->exec($sql)){
+			$info=$dbh->errorInfo();
+
+			error_log("CreateCabinet::PDO Error: {$info[2]} SQL=$sql");
 			return false;
-		} else {
-			$this->CabinetID = $dbh->lastInsertID();
+		}else{
+			$this->CabinetID=$dbh->lastInsertID();
 		}
 		
 		return $this->CabinetID;
 	}
 
-	function UpdateCabinet( $db = null ) {
+	function UpdateCabinet(){
 		global $dbh;
 		
 		$this->MakeSafe();
@@ -152,7 +153,7 @@ class Cabinet {
 			TempSensorOID=\"$this->TempSensorOID\", 
 			HumiditySensorOID=\"$this->HumiditySensorOID\", MapX1=$this->MapX1, 
 			MapY1=$this->MapY1, MapX2=$this->MapX2, MapY2=$this->MapY2, 
-			Notes=\"$this->Notes\" where CabinetID=$this->CabinetID;";
+			Notes=\"$this->Notes\" WHERE CabinetID=$this->CabinetID;";
 
 		if(!$dbh->query($sql)){
 			$info=$dbh->errorInfo();
@@ -186,52 +187,49 @@ class Cabinet {
 		
 		$cabinetList=array();
 
-		$sql='';
-		if(!is_null($deptid)){
-			$sql=" WHERE AssignedTo=".intval($deptid);
-		}
+		$dept=(!is_null($deptid))?" WHERE AssignedTo=".intval($deptid):'';
+		$sql="SELECT * FROM fac_Cabinet$dept ORDER BY DataCenterID, Location;";
 
-		$sql="SELECT * FROM fac_Cabinet$sql ORDER BY DataCenterID, Location;";
-
-		foreach ( $dbh->query( $sql ) as $cabinetRow ) {
-			$cabID=sizeof($cabinetList);
-			$cabinetList[$cabID]=Cabinet::RowToObject($cabinetRow);
+		foreach($dbh->query($sql) as $cabinetRow){
+			$cabinetList[]=Cabinet::RowToObject($cabinetRow);
 		}
 
 		return $cabinetList;
 	}
 
-	function ListCabinetsByDC( $db = null ) {
+	function ListCabinetsByDC(){
 		global $dbh;
 		
-		$cabinetList = array();
+		$this->MakeSafe();
+		
+		$sql="SELECT * FROM fac_Cabinet WHERE DataCenterID=$this->DataCenterID ORDER BY Location;";
 
-		$sql = "select * from fac_Cabinet where DataCenterID=\"" . intval($this->DataCenterID) . "\" order by Location";
-
-		foreach ( $dbh->query( $sql ) as $cabinetRow ) {
-			$cabID=sizeof($cabinetList);
-			$cabinetList[$cabID]=Cabinet::RowToObject($cabinetRow);
+		$cabinetList=array();
+		foreach($dbh->query($sql) as $cabinetRow){
+			$cabinetList[]=Cabinet::RowToObject($cabinetRow);
 		}
 
 		return $cabinetList;
 	}
 
-	function CabinetOccupancy( $CabinetID, $db = null ) {
+	function CabinetOccupancy($CabinetID){
 		global $dbh;
+
+		$CabinetID=intval($CabinetID);
 		
-		$sql = "select sum(Height) as Occupancy from fac_Device where Cabinet=$CabinetID";
+		$sql="SELECT SUM(Height) AS Occupancy FROM fac_Device WHERE Cabinet=$CabinetID;";
 
-		if ( ! $row = $dbh->query( $sql )->fetch() ) {
-			$info = $dbh->errorInfo();
+		if(!$row=$dbh->query($sql)->fetch()){
+			$info=$dbh->errorInfo();
 
-			error_log( "PDO Error: " . $info[2] . " SQL=" . $sql );
+			error_log("CabinetOccupancy::PDO Error: {$info[2]} SQL=$sql");
 			return false;
 		}
 
 		return $row["Occupancy"];
 	}
 
-	function GetDCSelectList( $db = null ) {
+	function GetDCSelectList(){
 		global $dbh;
 		
 		$sql="SELECT * FROM fac_DataCenter ORDER BY Name";
@@ -248,23 +246,19 @@ class Cabinet {
 		return $selectList;
 	}
 	
-	function GetDCSelectListSubmit( $db = null ) {
+	function GetDCSelectListSubmit(){
 		global $dbh;
 
-		$sql = "select * from fac_DataCenter order by Name";
+		$sql="SELECT * FROM fac_DataCenter ORDER BY Name;";
 
-		$selectList = "<select name=\"datacenterid\" id=\"datacenterid\" onChange=\"form.submit()\">";
+		$selectList='<select name="datacenterid" id="datacenterid" onChange="form.submit()">';
 
-		foreach ( $dbh->query( $sql ) as $selectRow ) {
-			if ( $selectRow[ "DataCenterID" ] == $this->DataCenterID )
-				$selected = "selected";
-			else
-				$selected = "";
-
-			$selectList .= "<option value=\"" . $selectRow[ "DataCenterID" ] . "\" $selected>" . $selectRow[ "Name" ] . "</option>";
+		foreach($dbh->query($sql) as $selectRow){
+			$selected=($selectRow[ "DataCenterID"]==$this->DataCenterID)?' selected':'';
+			$selectList.="<option value={$selectRow["DataCenterID"]}$selected>{$selectRow["Name"]}</option>";
 		}
 
-		$selectList .= "</select>";
+		$selectList.='</select>';
 
 		return $selectList;
 	}
@@ -297,9 +291,8 @@ class Cabinet {
 		$sql="SELECT * FROM fac_Cabinet WHERE CabRowID=$this->CabRowID ORDER BY LENGTH(Location),Location ASC;";
 
 		$cabinetList=array();
-
 		foreach($dbh->query($sql) as $cabinetRow){
-			$cabinetList[$cabinetRow['CabinetID']]=Cabinet::RowToObject($cabinetRow);
+			$cabinetList[]=Cabinet::RowToObject($cabinetRow);
 		}
 
 		return $cabinetList;
@@ -2520,7 +2513,7 @@ class ESX {
 
 		$sql="SELECT * FROM fac_VMInventory WHERE VMIndex=$this->VMIndex;";
 
-		if(!$vmRow=$dbh->query($sql)){
+		if(!$vmRow=$dbh->query($sql)->fetch()){
 			return false;
 		}else{
 			foreach(ESX::RowToObject($vmRow) as $param => $value){

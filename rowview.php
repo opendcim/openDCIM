@@ -252,11 +252,15 @@ if($config->ParameterArray["ToolTips"]=='enabled'){
 			if($('#datacenters .bullet').length==0){
 				setTimeout(function(){
 					opentree();
+					resize();
 				},500);
 			}else{
 				expandToItem('datacenters','cab<?php echo $cab->CabinetID;?>');
+				resize();
 			}
 		}
+//		var container=$('#centeriehack');
+//		container.children().each(function(i,cab){container.prepend(cab)});
 		opentree();
 	});
 </script>
