@@ -2310,8 +2310,9 @@ class DevicePorts {
 		$candidates=array();
 
 		if(is_null($listports)){
-			if ( ! User::Current()->WriteAccess ) {
-				$groups=User::Current()->isMemberOf();  // list of groups the current user is member of
+			$currentuser=User::Current();
+			if(!$currentuser->WriteAccess){
+				$groups=$currentuser->isMemberOf();  // list of groups the current user is member of
 				$rights=null;
 				foreach($groups as $index => $DeptID){
 					if(is_null($rights)){
@@ -2321,28 +2322,34 @@ class DevicePorts {
 					}
 				}
 				$rights=(is_null($rights))?null:" AND ($rights)";
-			} else {
-				$rights = null;
+			}else{
+				$rights=null;
 			}
 
 			// Run two queries - first, devices in the same cabinet as the device patching from
-			$sql="SELECT a.*, AssignedTo FROM fac_Device a, fac_Cabinet b WHERE a.Ports>0 AND Cabinet=CabinetID AND Cabinet=$dev->Cabinet AND DeviceID!=$dev->DeviceID$rights$mediaenforce$pp ORDER BY Position DESC, Label ASC;";
+			$sql="SELECT a.*, AssignedTo FROM fac_Device a, fac_Cabinet b WHERE Ports>0 
+				AND Cabinet=CabinetID AND Cabinet=$dev->Cabinet AND DeviceID!=$dev->DeviceID
+				$rights$mediaenforce$pp ORDER BY Position DESC, Label ASC;";
 			foreach($dbh->query($sql) as $row){
 				// false to skip rights check we filtered using sql above
 				$tmpDev=Device::RowToObject($row,false);
-				$candidates[]=array( "DeviceID"=>$tmpDev->DeviceID, "Label"=>$tmpDev->Label);
+				$candidates[]=array("DeviceID"=>$tmpDev->DeviceID, "Label"=>$tmpDev->Label);
 			}
 			// Then run the same query, but for the rest of the devices in the database
-			$sql="SELECT a.*, AssignedTo FROM fac_Device a, fac_Cabinet b WHERE a.Ports>0 AND Cabinet=CabinetID AND Cabinet!=$dev->Cabinet AND Cabinet>-1 AND DeviceID!=$dev->DeviceID$rights$mediaenforce$pp ORDER BY Label ASC;";
+			$sql="SELECT a.*, AssignedTo FROM fac_Device a, fac_Cabinet b WHERE Ports>0 
+				AND Cabinet=CabinetID AND Cabinet!=$dev->Cabinet AND Cabinet>-1 AND 
+				DeviceID!=$dev->DeviceID$rights$mediaenforce$pp ORDER BY Label ASC;";
 			foreach($dbh->query($sql) as $row){
 				// false to skip rights check we filtered using sql above
 				$tmpDev=Device::RowToObject($row,false);
-				$candidates[]=array( "DeviceID"=>$tmpDev->DeviceID, "Label"=>$tmpDev->Label);
+				$candidates[]=array("DeviceID"=>$tmpDev->DeviceID, "Label"=>$tmpDev->Label);
 			}
 		}else{
-			$sql="SELECT a.* FROM fac_Ports a, fac_Device b WHERE b.Cabinet>-1 AND a.DeviceID=b.DeviceID AND a.Ports>0 AND a.DeviceID!=$dev->DeviceID AND ConnectedDeviceID IS NULL$mediaenforce$pp;";
+			$sql="SELECT a.* FROM fac_Ports a, fac_Device b WHERE Ports>0 AND Cabinet>-1 
+				AND a.DeviceID=b.DeviceID AND a.DeviceID!=$dev->DeviceID AND 
+				ConnectedDeviceID IS NULL$mediaenforce$pp;";
 			foreach($dbh->query($sql) as $row){
-				$candidates[]=array( "DeviceID"=>$row["DeviceID"], "Label"=>$row["Label"]);
+				$candidates[]=array("DeviceID"=>$row["DeviceID"], "Label"=>$row["Label"]);
 			}
 		}
 
