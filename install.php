@@ -109,6 +109,7 @@ function applyupdate ($updatefile){
 		$sql=explode(";",$sqlstring);
 		unset($sql[count($sql)-1]);
 		$result=0;
+		$errormsg = "";
 		foreach($sql as $key => $value){
 // uncomment to debug sql injection
 //			echo $value."<br>\n";
