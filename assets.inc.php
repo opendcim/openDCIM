@@ -897,6 +897,10 @@ class Device {
 	var $BackSide ;
 	
 	function MakeSafe() {
+		if ( ! is_object( $this ) ) {
+			// If called from a static procedure, $this is not a valid object and the routine will throw an error
+			return;
+		}
 		//Keep weird values out of DeviceType
 		$validdevicetypes=array('Server','Appliance','Storage Array','Switch','Chassis','Patch Panel','Physical Infrastructure');
 
