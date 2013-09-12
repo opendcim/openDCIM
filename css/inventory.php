@@ -301,7 +301,6 @@ div.table > div > div {display: table-cell;vertical-align: middle; /* padding-bo
 .search .main .bullet { background: url("minus.gif") no-repeat scroll left center transparent; cursor: pointer; padding-left: 15px;}
 .search .hidecontents li.cabinet > ol { display: none; }
 
-
 /* User Rights */
 .rights > div:nth-last-child(2) div {text-align: center;padding-top: .75em;padding-bottom: .75em;}
 div.table > div + div + div + div > div + div label {float: none;}
@@ -400,6 +399,7 @@ div.cabinet {
 	max-width: 250px;
 	margin-right: 20px;
 }
+
 .cabinet td + td {vertical-align: middle;padding: 0.25em 0.5em;width: 90%;}
 .cabinet th{font-size: 1.5em;padding: 0.25em;text-align: center;}
 #zerou a{display: block;}
@@ -422,6 +422,54 @@ div.cabinet {
 }
 .cabinet .error { background-color: <?php echo $config->ParameterArray['CriticalColor']; ?>; }
 
+/* Cabinet Properties */
+
+#infopanel table#cabprop {
+    margin: 0px 0px 2px 0px;
+	border-collapse: separate;
+    border: 0px none;
+	border-spacing: 3px;
+	width: 100%;
+	min-width: 200px; max-width: 350px;
+}
+table#cabprop tr {
+    width: 100%;
+    padding: 2px;
+    margin: 1px 0px 1px 1px;
+}
+#infopanel fieldset table#cabprop td.left {
+    padding: 3px 2px 3px 2px;
+    font-weight: bold;
+    border: 0px none;
+    border-bottom: 3px solid gray;
+    /* border-right: 3px solid gray; */
+    margin: 2px 2px 2px 0px;
+}
+#infopanel fieldset table#cabprop td.right {
+    /* width: 50%; */
+    text-align: left;
+    padding: 3px 2px 3px 4px;
+    border: 0px none;
+    border-bottom: 3px solid gray;
+    border-right: 3px solid gray;
+    margin: 2px 0px 2px 2px;
+    /* max-width: 280px; */
+}
+table#cabprop span.text-label {
+     -webkit-border-radius: 2px;
+     border-radius: 2px;
+     box-sizing: border-box;
+     /* position: relative; */
+     /* float: left; */
+     border: 1px solid #9daccc;
+     background: #e2e6f0;
+     color: #000;
+     padding: 0px 3px 0px 3px;
+     margin: 0 2px 0px 0;
+     /* cursor: default; */
+     /* height: 16px; */
+     font: 11px "lucida grande",tahoma,verdana,arial,sans-serif;
+}
 
 /* devices.php  Device Detail */
 .device fieldset {

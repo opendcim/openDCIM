@@ -38,6 +38,75 @@ function get_cabinet_owner_color($cabinet, &$deptswithcolor) {
 	return $cab_color;
 }
 
+/**
+ * Merge the tags into one HTML string
+ * 
+ * @param Device|Cabinet $dev
+ * @return string
+ *      a string of tag names where the tag names are embedded in span tags
+ */
+function renderTagsToString($obj)
+{
+    $tagsString = '';
+    foreach ($obj->GetTags() as $tag)
+    {
+        $tagsString .= '<span class="text-label">' . $tag . '</span>';
+    }
+    return $tagsString;
+}
+
+/**
+ * Render cabinet properties into this view. 
+ * 
+ * The cabinet properties zone, row, model, maximum weight and installation date
+ * are rendered to be for this page. It checks if the user is allowed to see the
+ * content of the cabinet and only if the user does the information is provided.
+ * 
+ * @param Cabinet $cab
+ * @param CabinetAudit $audit
+ * @param string $AuditorName
+ */
+function renderCabinetProps($cab, $audit, $AuditorName)
+{   
+    $renderedHTML .= "    <table id=\"cabprop\">\n"
+        . '      <tr><td class="left">' . __('Last Audit') . ':</td>'
+	    . '<td class="right">' . $audit->AuditStamp . '';
+    	    if ($AuditorName != '') {
+    	        $renderedHTML .= "<br>$AuditorName";
+    	    }
+    $renderedHTML .= "</td></tr>\n";
+    $renderedHTML .= "      <tr><td class=\"left\">" . __('Model') . ":</td>"
+        . "<td class=\"right\">".$cab->Model."</td></tr>";
+    
+    $renderedHTML .= '      <tr><td class="left">' . __('Data Center');
+    $tmpDC = new DataCenter();
+    $tmpDC->DataCenterID = $cab->DataCenterID;
+    $tmpDC->GetDataCenter();
+    $renderedHTML .= ':</td><td class="right">' . $tmpDC->Name . '</td></tr>';
+    $renderedHTML .= '      <tr><td class="left">' . __('Install Date')
+        . ':</td><td class="right">' . $cab->InstallationDate . '</td></tr>';
+	if ($cab->ZoneID) {
+        $zone = new Zone();
+        $zone->ZoneID = $cab->ZoneID;
+        $zone->GetZone();
+        $renderedHTML .= '      <tr><td class="left">' . __('Zone') . ':</td>'
+            . '<td class="right">' . $zone->Description . "</td></tr>\n";
+    }
+    if ($cab->CabRowID) {
+        $cabrow = new CabRow();
+        $cabrow->CabRowID = $cab->CabRowID;
+        $cabrow->GetCabRow();
+        $renderedHTML .= '      <tr><td class="left">' . __('Row') . ':</td>'
+            . '<td class="right">' . $cabrow->Name . "</td></tr>\n";
+    }
+    $renderedHTML .= '      <tr><td class="left">' . __('Tags') . ':</td>';
+    $renderedHTML .= '<td class="right">' . renderTagsToString($cab)
+        . "</td></tr>\n";
+    $renderedHTML .= "</table>";
+    
+    return $renderedHTML;
+}
+
 	$cab=new Cabinet();
 	$cab->CabinetID=$_REQUEST["cabinetid"];
 	$cab->GetCabinet();
@@ -498,7 +567,7 @@ $body.='</table>
 			</td>
 		</tr>
 		<tr>
-			<td>'.__("Weight").'
+			<td>'.__("Weight").' ['.$cab->MaxWeight.']
 				<div class="meter-wrap">
 					<div class="meter-value" style="background-color: '.$WeightColor.'; width: '.$WeightPercent.'%;">
 						<div class="meter-text">'.$WeightPercent.'%</div>
@@ -582,25 +651,27 @@ $body.='</table>
 		$body.="			<ul class=\"nav\"><a href=\"power_pdu.php?pduid=0&cabinetid=$cab->CabinetID\"><li>".__("Add CDU")."</li></a></ul>\n";
 	}
 
-	$body.="	</fieldset>
-<fieldset>
-	<p>".__("Last Audit").": $audit->AuditStamp<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;($AuditorName)</p>
-	<ul class=\"nav\">\n";
-	if($user->CanWrite($cab->AssignedTo)){
-		$body.="
-		<a href=\"#\" onclick=\"javascript:verifyAudit(this.form)\"><li>".__("Certify Audit")."</li></a>
-		<a href=\"devices.php?action=new&cabinet=$cab->CabinetID\"><li>".__("Add Device")."</li></a>
-		<a href=\"cabaudit.php?cabinetid=$cab->CabinetID\"><li>".__("Audit Report")."</li></a>
-		<a href=\"mapmaker.php?cabinetid=$cab->CabinetID\"><li>".__("Map Coordinates")."</li></a>
-		<a href=\"cabinets.php?cabinetid=$cab->CabinetID\"><li>".__("Edit Cabinet")."</li></a>\n";
+	$body.="	</fieldset>";
+	if ($user->CanWrite($cab->AssignedTo) || $user->SiteAdmin) {
+	    $body.="    <fieldset> ";
+        if ($user->CanWrite($cab->AssignedTo) ) {
+            $body .= renderCabinetProps($cab, $audit, $AuditorName);
+        }
+	    $body.="    <ul class=\"nav\">\n";
+        if($user->CanWrite($cab->AssignedTo)){
+            $body.="
+        <a href=\"#\" onclick=\"javascript:verifyAudit(this.form)\"><li>".__("Certify Audit")."</li></a>
+        <a href=\"devices.php?action=new&cabinet=$cab->CabinetID\"><li>".__("Add Device")."</li></a>
+        <a href=\"cabaudit.php?cabinetid=$cab->CabinetID\"><li>".__("Audit Report")."</li></a>
+        <a href=\"mapmaker.php?cabinetid=$cab->CabinetID\"><li>".__("Map Coordinates")."</li></a>
+        <a href=\"cabinets.php?cabinetid=$cab->CabinetID\"><li>".__("Edit Cabinet")."</li></a>\n";
+        }
+		if($user->SiteAdmin){
+		    $body.="<a href=\"#\" onclick=\"javascript:verifyDelete(this.form)\"><li>".__("Delete Cabinet")."</li></a>";
+		}
+	    $body.="      </ul>\n    </fieldset>";
 	}
-	if($user->SiteAdmin){
-		$body.="<a href=\"#\" onclick=\"javascript:verifyDelete(this.form)\"><li>".__("Delete Cabinet")."</li></a>";
-	}
-
-	$body.='	</ul>
-</fieldset>
-
+	$body.='
 </div> <!-- END div#infopanel -->';
 
 	// If $head isn't empty then we must have added some style information so close the tag up.
