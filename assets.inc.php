@@ -901,6 +901,7 @@ class Device {
 			// If called from a static procedure, $this is not a valid object and the routine will throw an error
 			return;
 		}
+		
 		//Keep weird values out of DeviceType
 		$validdevicetypes=array('Server','Appliance','Storage Array','Switch','Chassis','Patch Panel','Physical Infrastructure');
 
@@ -2490,11 +2491,11 @@ class ESX {
 		}
 	}
   
-	static function RefreshInventory( $DeviceID, $debug = false ) {
+	static function RefreshInventory( $ESXDevice, $debug = false ) {
 		global $dbh;
 
 		$dev = new Device();
-		$dev->DeviceID = $DeviceID;
+		$dev->DeviceID = $ESXDevice->DeviceID;
 		$dev->GetDevice();
 		
 		$search = $dbh->prepare( "select * from fac_VMInventory where vmName=:vmName" );
