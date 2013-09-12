@@ -2495,7 +2495,11 @@ class ESX {
 		global $dbh;
 
 		$dev = new Device();
-		$dev->DeviceID = $ESXDevice->DeviceID;
+		if ( is_object( $ESXDevice ) ) {
+			$dev->DeviceID = $ESXDevice->DeviceID;
+		} else {
+			$dev->DeviceID = $ESXDevice;
+		}
 		$dev->GetDevice();
 		
 		$search = $dbh->prepare( "select * from fac_VMInventory where vmName=:vmName" );
