@@ -29,6 +29,22 @@
 		echo json_encode(MediaTypes::GetMediaTypeList());
 		exit;
 	}
+	// Set all ports to the same media type or color code
+	if(isset($_POST['setall'])){
+		// Make a new method to set all the ports to a media type?
+
+		// Return all the ports for the device then eval just the MT and CC
+		$dp=new DevicePorts();
+		$dp->DeviceID=$_POST['devid'];
+		header('Content-Type: application/json');
+		$ports=array(
+			'mt' => MediaTypes::GetMediaTypeList(),
+			'cc' => ColorCoding::GetCodeList(),
+			'ports' => $dp->getPorts()
+			);
+		echo json_encode($ports);
+		exit;
+	}
 	if(isset($_POST['fp'])){
 		$dev->DeviceID=$_POST['devid'];
 		$dev->GetDevice();
@@ -1739,8 +1755,8 @@ echo '	<div class="table">
 					<div id=\"dp$i\" data-default=\"$port->ConnectedPort\"><a href=\"paths.php?deviceid=$port->ConnectedDeviceID&portnumber=$port->ConnectedPort\">$cp->Label</a></div>
 					<div id=\"n$i\" data-default=\"$port->Notes\">$port->Notes</div>";
 			if($dev->DeviceType=='Switch'){print "\t\t\t\t<div id=\"st$i\"><span class=\"ui-icon status {$linkList[$i]}\"></span></div>";}
-			print "\t\t\t\t<div id=\"mt$i\">$mt</div>
-					<div id=\"cc$i\">$cc</div>
+			print "\t\t\t\t<div id=\"mt$i\" data-default=$port->MediaID>$mt</div>
+					<div id=\"cc$i\" data-default=$port->ColorID>$cc</div>
 				</div>\n";
 		}
 		echo "			</div><!-- END div.table -->\n		  </div>\n		</div>";
@@ -1864,8 +1880,18 @@ echo '	<div class="table">
 
 		var setmediatype=$('<select>').css({'border':'none','position':'absolute','width':'auto'}).append($('<option>'));
 		setmediatype.change(function(){
+			// set all the media types to the one selected from the drop down
+			$.post('',{setall: '', devid: $('#deviceid').val(), mt:''}).done(function(data){
+				console.log(data.mt);
+				// setall kicked back every port run through them all and update note, media type, and color code
+				$.each(data.ports, function(key,p){
+					$('#n'+p.PortNumber).text(p.Notes);
+					$('#mt'+p.PortNumber).text((p.MediaID>0)?data.mt[p.MediaID].MediaType:'').data('default',p.MediaID);
+					$('#cc'+p.PortNumber).text((p.ColorID>0)?data.cc[p.ColorID].Name:'').data('default',p.ColorID);
+				});
+			});
 			alert('all ports changed to '+$("#mt > select option:selected").text()+' ColorID: '+$(this).data($(this).val()));
-			$('div[id^=mt]:not(#mt)').text($("#mt > select option:selected").text()).data('default',$(this).val());
+//			$('div[id^=mt]:not(#mt)').text($("#mt > select option:selected").text()).data('default',$(this).val());
 			setmediatype.val('');
 		});
 		$('#mt').append(setmediatype);
