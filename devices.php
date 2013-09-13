@@ -1893,6 +1893,7 @@ echo '	<div class="table">
 		}
 
 		var setmediatype=$('<select>').css({'border':'none','position':'absolute','width':'auto'}).append($('<option>'));
+		setmediatype.append($('<option>').val('clear').text('Clear'));
 		setmediatype.change(function(){
 			var dialog=$('<div />', {id: 'modal', title: 'Override all types?'}).html('<div id="modaltext"></div><br><div id="modalstatus" class="warning">Do you want to override all media types?</div>');
 			dialog.dialog({
