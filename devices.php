@@ -33,8 +33,8 @@
 	if(isset($_POST['setall'])){
 		// Make a new method to set all the ports to a media type?
 		foreach(DevicePorts::getPortList($_POST['devid']) as $portnum => $port){
-			$port->MediaID=(($_POST['setall']=='true' || $port->MediaID==0) && isset($_POST['mt']) && intval($_POST['mt'])>0)?$_POST['mt']:$port->MediaID;
-			$port->ColorID=(($_POST['setall']=='true' || $port->ColorID==0) && isset($_POST['cc']) && intval($_POST['cc'])>0)?$_POST['cc']:$port->ColorID;
+			$port->MediaID=(($_POST['setall']=='true' || $port->MediaID==0) && isset($_POST['mt']) && ($_POST['setall']=='true' || intval($_POST['mt'])>0))?$_POST['mt']:$port->MediaID;
+			$port->ColorID=(($_POST['setall']=='true' || $port->ColorID==0) && isset($_POST['cc']) && ($_POST['setall']=='true' || intval($_POST['cc'])>0))?$_POST['cc']:$port->ColorID;
 			$port->updatePort();
 			// Update the other side to keep media types in sync if it is connected same
 			// rule applies that it will only be set if it is currently unset
@@ -42,8 +42,8 @@
 				$port->DeviceID=$port->ConnectedDeviceID;
 				$port->PortNumber=$port->ConnectedPort;
 				$port->getPort();
-				$port->MediaID=(($_POST['setall']=='true' || $port->MediaID==0) && isset($_POST['mt']) && intval($_POST['mt'])>0)?$_POST['mt']:$port->MediaID;
-				$port->ColorID=(($_POST['setall']=='true' || $port->ColorID==0) && isset($_POST['cc']) && intval($_POST['cc'])>0)?$_POST['cc']:$port->ColorID;
+				$port->MediaID=(($_POST['setall']=='true' || $port->MediaID==0) && isset($_POST['mt']) && ($_POST['setall']=='true' || intval($_POST['mt'])>0))?$_POST['mt']:$port->MediaID;
+				$port->ColorID=(($_POST['setall']=='true' || $port->ColorID==0) && isset($_POST['cc']) && ($_POST['setall']=='true' || intval($_POST['cc'])>0))?$_POST['cc']:$port->ColorID;
 				$port->updatePort();
 			}
 		}
