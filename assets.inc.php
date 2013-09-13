@@ -1976,18 +1976,9 @@ class DevicePorts {
 		if(!$row=$dbh->query($sql)->fetch()){
 			return false;
 		}else{
-			$this->DeviceID=$row['DeviceID'];
-			$this->PortNumber=$row['PortNumber'];
-			$this->Label=$row['Label'];
-			$this->MediaID=$row['MediaID'];
-			$this->ColorID=$row['ColorID'];
-			$this->PortNotes=$row['PortNotes'];
-			$this->ConnectedDeviceID=$row['ConnectedDeviceID'];
-			$this->ConnectedPort=$row['ConnectedPort'];
-			$this->Notes=$row['Notes'];
-
-			$this->MakeDisplay();
-
+			foreach(DevicePorts::RowToObject($row) as $prop => $value){
+				$this->$prop=$value;
+			}
 			return true;
 		}
 	}

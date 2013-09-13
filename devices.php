@@ -32,7 +32,21 @@
 	// Set all ports to the same media type or color code
 	if(isset($_POST['setall'])){
 		// Make a new method to set all the ports to a media type?
-
+		foreach(DevicePorts::getPortList($_POST['devid']) as $portnum => $port){
+			$port->MediaID=(($_POST['setall']=='true' || $port->MediaID==0) && isset($_POST['mt']) && intval($_POST['mt'])>0)?$_POST['mt']:$port->MediaID;
+			$port->ColorID=(($_POST['setall']=='true' || $port->ColorID==0) && isset($_POST['cc']) && intval($_POST['cc'])>0)?$_POST['cc']:$port->ColorID;
+			$port->updatePort();
+			// Update the other side to keep media types in sync if it is connected same
+			// rule applies that it will only be set if it is currently unset
+			if($port->ConnectedDeviceID!='NULL'){
+				$port->DeviceID=$port->ConnectedDeviceID;
+				$port->PortNumber=$port->ConnectedPort;
+				$port->getPort();
+				$port->MediaID=(($_POST['setall']=='true' || $port->MediaID==0) && isset($_POST['mt']) && intval($_POST['mt'])>0)?$_POST['mt']:$port->MediaID;
+				$port->ColorID=(($_POST['setall']=='true' || $port->ColorID==0) && isset($_POST['cc']) && intval($_POST['cc'])>0)?$_POST['cc']:$port->ColorID;
+				$port->updatePort();
+			}
+		}
 		// Return all the ports for the device then eval just the MT and CC
 		$dp=new DevicePorts();
 		$dp->DeviceID=$_POST['devid'];
@@ -1880,19 +1894,34 @@ echo '	<div class="table">
 
 		var setmediatype=$('<select>').css({'border':'none','position':'absolute','width':'auto'}).append($('<option>'));
 		setmediatype.change(function(){
-			// set all the media types to the one selected from the drop down
-			$.post('',{setall: '', devid: $('#deviceid').val(), mt:''}).done(function(data){
-				console.log(data.mt);
-				// setall kicked back every port run through them all and update note, media type, and color code
-				$.each(data.ports, function(key,p){
-					$('#n'+p.PortNumber).text(p.Notes);
-					$('#mt'+p.PortNumber).text((p.MediaID>0)?data.mt[p.MediaID].MediaType:'').data('default',p.MediaID);
-					$('#cc'+p.PortNumber).text((p.ColorID>0)?data.cc[p.ColorID].Name:'').data('default',p.ColorID);
-				});
+			var dialog=$('<div />', {id: 'modal', title: 'Override all types?'}).html('<div id="modaltext"></div><br><div id="modalstatus" class="warning">Do you want to override all media types?</div>');
+			dialog.dialog({
+				resizable: false,
+				modal: true,
+				dialogClass: "no-close",
+				buttons: {
+<?php echo '			',__("Yes"),': function(){'; ?>
+						$(this).dialog("destroy");
+						doit(true);
+					},
+<?php echo '			',__("No"),': function(){'; ?>
+						$(this).dialog("destroy");
+						doit(false);
+					}
+				}
 			});
-			alert('all ports changed to '+$("#mt > select option:selected").text()+' ColorID: '+$(this).data($(this).val()));
-//			$('div[id^=mt]:not(#mt)').text($("#mt > select option:selected").text()).data('default',$(this).val());
-			setmediatype.val('');
+			function doit(override){
+				// set all the media types to the one selected from the drop down
+				$.post('',{setall: override, devid: $('#deviceid').val(), mt:setmediatype.val(), cc: setmediatype.data(setmediatype.val())}).done(function(data){
+					// setall kicked back every port run through them all and update note, media type, and color code
+					$.each(data.ports, function(key,p){
+						$('#n'+p.PortNumber).text(p.Notes);
+						$('#mt'+p.PortNumber).text((p.MediaID>0)?data.mt[p.MediaID].MediaType:'').data('default',p.MediaID);
+						$('#cc'+p.PortNumber).text((p.ColorID>0)?data.cc[p.ColorID].Name:'').data('default',p.ColorID);
+					});
+				});
+				setmediatype.val('');
+			}
 		});
 		$('#mt').append(setmediatype);
 		var pos=$('#mt').offset();
