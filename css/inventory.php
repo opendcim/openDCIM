@@ -257,6 +257,12 @@ div#dcstats .table + .table > div > div + div{white-space: pre; text-align: righ
 .mapmaker + .center div{position: relative;width: 100%;}
 .mapmaker + .center > div > div.container {position: absolute;top: 0px;left: 0px;}
 
+/* Zonemaker */
+.zonemaker > div{width: 100%;display: inline-block;vertical-align: middle;}
+.zonemaker .table .table {margin-left: auto;}
+.zonemaker + .center div{position: relative;width: 100%;}
+.zonemaker + .center > div > div.container {position: absolute;top: 0px;left: 0px;}
+
 /* Basic Page Layout */
 .page {position: relative;width: 100%;}
 .clear {clear: both;}

@@ -577,6 +577,11 @@ CREATE TABLE fac_Zone (
   ZoneID int(11) NOT NULL AUTO_INCREMENT,
   DataCenterID int(11) NOT NULL,
   Description varchar(120) NOT NULL,
+  MapX1 int(11) NOT NULL,
+  MapY1 int(11) NOT NULL,
+  MapX2 int(11) NOT NULL,
+  MapY2 int(11) NOT NULL,
+  MapZoom int(11) DEFAULT '100' NOT NULL
   PRIMARY KEY (ZoneID),
   KEY DataCenterID (DataCenterID)
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
