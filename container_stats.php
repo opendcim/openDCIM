@@ -35,7 +35,15 @@
 <div id="header"></div>
 <div class="page dcstats" id="mapadjust">
 <?php
-	include( "sidebar.inc.php" );
+include( "sidebar.inc.php" );
+
+if ( $config->ParameterArray["mUnits"] == "english" ) {
+    $vol = __("Square Feet");
+    $density = __("Watts per Square Foot");
+} else {
+    $vol = __("Square Meters");
+    $density = __("Watts per Square Meter" );
+}
 
 echo '<div class="main">
 <div class="heading">
@@ -93,10 +101,10 @@ echo '<div class="main">
   </div>
   <div>
         <div>',_("Data Center Size"),'</div>
-        <div>',sprintf("%s "._("Square Feet"),number_format($cStats["SquareFootage"],0, ",", ".")),'</div>
+        <div>',sprintf("%s ".$vol,number_format($cStats["SquareFootage"],0, ",", ".")),'</div>
   </div>
   <div>
-        <div>',_("Watts per Square Foot"),'</div>
+        <div>',$density,'</div>
         <div>',(($cStats["SquareFootage"]>0)?sprintf("%s "._("Watts"),number_format($cStats["ComputedWatts"]/$cStats["SquareFootage"],0, ",", ".")):"0 "._("Watts")),'</div>
   </div>
   <div>
