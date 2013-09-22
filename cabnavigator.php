@@ -13,29 +13,26 @@
  * Determines ownership of the cabinet and returns the CSS class in case a
  * color unequal white is assigned to the owner
  *
- * @param 	Cabinet 	$cabinet
- * @param 	array 		&$deptswithcolor
- * @return 	string		CSS class or empty string
+ * @param Cabinet $cabinet
+ * @param array $deptswithcolor
+ * @return (string|array)[] CSS class or empty string
  */
-function get_cabinet_owner_color($cabinet, &$deptswithcolor) {
-	$cab_color='';
-	if ($cabinet->AssignedTo!= 0) 
-	{
+function getColorofCabinetOwner($cabinet, $deptswithcolor) {
+	$cab_color = '';
+	if ($cabinet->AssignedTo != 0) {
 		$tempDept = new Department();
 		$tempDept->DeptID = $cabinet->AssignedTo;
-		$deptid=$tempDept->DeptID;
-		if ($tempDept->GetDeptByID())
-		{
-			if (strtoupper($tempDept->DeptColor) != '#FFFFFF')
-			{
-				$deptswithcolor[$cabinet->AssignedTo]['color'] = 
+		$deptid = $tempDept->DeptID;
+		if ($tempDept->GetDeptByID()) {
+			if (strtoupper($tempDept->DeptColor) != '#FFFFFF') {
+				$deptswithcolor[$cabinet->AssignedTo]['color'] =
 				    $tempDept->DeptColor;
 				$deptswithcolor[$cabinet->AssignedTo]['name'] = $tempDept->Name;
 				$cab_color = "class=\"dept$deptid\"";
 			}
 		}
   	}
-	return $cab_color;
+	return array($cab_color, $deptswithcolor);
 }
 
 /**
@@ -295,7 +292,7 @@ function renderCabinetProps($cab, $audit, $AuditorName)
 	$totalMoment=0;
 
 	$deptswithcolor=array();
-	$cab_color = get_cabinet_owner_color($cab, $deptswithcolor);
+	list($cab_color, $deptswithcolor) = getColorofCabinetOwner($cab, $deptswithcolor);
 
 	if($config->ParameterArray["ReservedColor"] != "#FFFFFF" || $config->ParameterArray["FreeSpaceColor"] != "#FFFFFF"){
 		$head.="		<style type=\"text/css\">
