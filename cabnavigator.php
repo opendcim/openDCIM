@@ -65,7 +65,7 @@ function renderTagsToString($obj)
  */
 function renderCabinetProps($cab, $audit, $AuditorName)
 {   
-    $renderedHTML .= "    <table id=\"cabprop\">\n"
+    $renderedHTML = "    <table id=\"cabprop\">\n"
         . '      <tr><td class="left">' . __('Last Audit') . ':</td>'
 	    . '<td class="right">' . $audit->AuditStamp . '';
     	    if ($AuditorName != '') {
