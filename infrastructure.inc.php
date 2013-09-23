@@ -711,6 +711,20 @@ class DeviceTemplate {
 		$this->MakeDisplay();
 		return $devList;
 	}
+
+	function UpdateDevices(){
+		/* This will cause every device with a TemplateID matching this one to display
+		   the updated values.  We are not touching DeviceType or NumPorts at this time
+		   because those have alternate side effects that i'm not sure we really need
+		   to address here
+		*/
+		$this->MakeSafe();
+
+		$sql="UPDATE fac_Device SET Height=$this->Height, NominalWatts=$this->Wattage, 
+			PowerSupplyCount=$this->PSCount WHERE TemplateID=$this->TemplateID;";
+
+		return $this->query($sql);
+	}
 }
 
 class Manufacturer {
