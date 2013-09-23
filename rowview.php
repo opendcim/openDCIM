@@ -12,6 +12,9 @@
 			$cabrow->GetCabRow();
 			$cabrow->CabOrder=($cabrow->CabOrder=='ASC')?'DESC':'ASC';
 			$cabrow->SetDirection();
+
+			// no need to load the rest of the page
+			exit;
 		}
 	// Ajax - END
 
