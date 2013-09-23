@@ -2,12 +2,18 @@
 	require_once( "db.inc.php" );
 	require_once( "facilities.inc.php" );
 
-	$user=new User();
-	$user->UserID=$_SERVER["REMOTE_USER"];
-	$user->GetUserRights();
-
 	// Get the list of departments that this user is a member of
 	$viewList = $user->isMemberOf();
+
+	// Ajax
+		if(isset($_POST['FlipDirection'])){
+			$cabrow=New CabRow();
+			$cabrow->CabRowID=$_POST['row'];
+			$cabrow->GetCabRow();
+			$cabrow->CabOrder=($cabrow->CabOrder=='ASC')?'DESC':'ASC';
+			$cabrow->SetDirection();
+		}
+	// Ajax - END
 
 /**
  * Determines ownership of the cabinet and returns the CSS class in case a
@@ -50,18 +56,13 @@ function get_cabinet_owner_color($cabinet, &$deptswithcolor) {
 	$cabinets=$cab->GetCabinetByRow();
 
 //start loop to parse all cabinets in the row
-foreach($cabinets as $cabid => $cabinet){
-
-		$cab->CabinetID=$cabid;
-		$cab->GetCabinet();
-	
-
-		$dev->Cabinet=$cabid;
+foreach($cabinets as $i => $cabinet){
+		$dev->Cabinet=$cabinet->CabinetID;
 		$devList=$dev->ViewDevicesByCabinet();
 
-		$currentHeight=$cab->CabinetHeight;
+		$currentHeight=$cabinet->CabinetHeight;
 
-		$cab_color = get_cabinet_owner_color($cab, $deptswithcolor);
+		$cab_color=get_cabinet_owner_color($cabinet, $deptswithcolor);
 
 		if($config->ParameterArray["ReservedColor"] != "#FFFFFF" || $config->ParameterArray["FreeSpaceColor"] != "#FFFFFF"){
 			$head.="		<style type=\"text/css\">
@@ -71,7 +72,7 @@ foreach($cabinets as $cabid => $cabinet){
 
 		$body.="<div class=\"cabinet\">
 	<table>
-		<tr><th id=\"cabid\" data-cabinetid=$cab->CabinetID colspan=2 $cab_color ><a href=\"cabnavigator.php?cabinetid=$cab->CabinetID\">".__("Cabinet")." $cab->Location</a></th></tr>
+		<tr><th id=\"cabid\" data-cabinetid=$cabinet->CabinetID colspan=2 $cab_color ><a href=\"cabnavigator.php?cabinetid=$cabinet->CabinetID\">".__("Cabinet")." $cabinet->Location</a></th></tr>
 		<tr><td>".__("Pos")."</td><td>".__("Device")."</td></tr>\n";
 
 		$heighterr="";
@@ -103,7 +104,7 @@ foreach($cabinets as $cabid => $cabinet){
 			$reserved=($device->Reservation==false)?"":" reserved";
 			if($devTop<$currentHeight && $currentHeight>0){
 				for($i=$currentHeight;($i>$devTop);$i--){
-					$errclass=($i>$cab->CabinetHeight)?' class="error"':'';
+					$errclass=($i>$cabinet->CabinetHeight)?' class="error"':'';
 					if($errclass!=''){$heighterr="yup";}
 					if($i==$currentHeight){
 						$blankHeight=$currentHeight-$devTop;
@@ -116,7 +117,7 @@ foreach($cabinets as $cabid => $cabinet){
 				}
 			}
 			for($i=$devTop;$i>=$device->Position;$i--){
-				$errclass=($i>$cab->CabinetHeight)?' class="error"':'';
+				$errclass=($i>$cabinet->CabinetHeight)?' class="error"':'';
 				if($errclass!=''){$heighterr="yup";}
 				if($i==$devTop){
 					if ( in_array( $device->Owner, $viewList ) || $user->ReadAccess ) {
@@ -196,6 +197,13 @@ echo $head,'  <script type="text/javascript" src="scripts/jquery.min.js"></scrip
   <script type="text/javascript">
 	$(document).ready(function() {
 		$(".cabinet .error").append("*");
+		function FlipItGood(){
+			var container=$("#centeriehack");
+			container.children().each(function(i,cab){container.prepend(cab)});
+		}
+		$("<button>",{id: "reverse", type: "button"}).text("Reverse Cabinet Order").click(function(){
+			$.post("",{FlipDirection: "", row: '.$cabrow->CabRowID.'}).done(FlipItGood);
+		}).prependTo($(".main"));
 ';
 if($config->ParameterArray["ToolTips"]=='enabled'){
 ?>
@@ -215,7 +223,9 @@ if($config->ParameterArray["ToolTips"]=='enabled'){
 		});
 <?php
 }
+if($cabrow->CabOrder=="DESC"){echo '		FlipItGood();';}
 ?>
+
 	});
   </script>
 </head>
@@ -259,8 +269,6 @@ if($config->ParameterArray["ToolTips"]=='enabled'){
 				resize();
 			}
 		}
-//		var container=$('#centeriehack');
-//		container.children().each(function(i,cab){container.prepend(cab)});
 		opentree();
 	});
 </script>

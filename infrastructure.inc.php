@@ -1420,6 +1420,7 @@ class CabRow {
 		$this->CabRowID=intval($this->CabRowID);
 		$this->Name=addslashes(trim($this->Name));
 		$this->ZoneID=intval($this->ZoneID);
+		$this->CabOrder=($this->CabOrder=="ASC")?"ASC":"DESC";
 	}
 
 	function MakeDisplay(){
@@ -1431,6 +1432,7 @@ class CabRow {
 		$cabrow->CabRowID=$row["CabRowID"];
 		$cabrow->Name=$row["Name"];
 		$cabrow->ZoneID=$row["ZoneID"];
+		$cabrow->CabOrder=$row["CabOrder"];
 		$cabrow->MakeDisplay();
 
 		return $cabrow;
@@ -1527,6 +1529,14 @@ class CabRow {
 		}
 		
 		return $cabrowList;
+	}
+
+	function SetDirection(){
+		$this->MakeSafe();
+
+		$sql="UPDATE fac_CabRow SET CabOrder=\"$this->CabOrder\" WHERE CabRowID=$this->CabRowID;";
+
+		return $this->query($sql);
 	}
 
 }
