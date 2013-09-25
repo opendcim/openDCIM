@@ -17,7 +17,8 @@
  * @param array $deptswithcolor
  * @return (string|array)[] CSS class or empty string
  */
-function getColorofCabinetOwner($cabinet, $deptswithcolor) {
+function getColorofCabinetOwner($cabinet, $deptswithcolor)
+{
 	$cab_color = '';
 	if ($cabinet->AssignedTo != 0) {
 		$tempDept = new Department();
@@ -37,7 +38,7 @@ function getColorofCabinetOwner($cabinet, $deptswithcolor) {
 
 /**
  * Merge the tags into one HTML string
- * 
+ *
  * @param Device|Cabinet $dev
  * @return string
  *      a string of tag names where the tag names are embedded in span tags
@@ -53,18 +54,18 @@ function renderTagsToString($obj)
 }
 
 /**
- * Render cabinet properties into this view. 
- * 
+ * Render cabinet properties into this view.
+ *
  * The cabinet properties zone, row, model, maximum weight and installation date
  * are rendered to be for this page. It checks if the user is allowed to see the
  * content of the cabinet and only if the user does the information is provided.
- * 
+ *
  * @param Cabinet $cab
  * @param CabinetAudit $audit
  * @param string $AuditorName
  */
 function renderCabinetProps($cab, $audit, $AuditorName)
-{   
+{
     $renderedHTML = "    <table id=\"cabprop\">\n"
         . '      <tr><td class="left">' . __('Last Audit') . ':</td>'
 	    . '<td class="right">' . $audit->AuditStamp . '';
@@ -74,7 +75,7 @@ function renderCabinetProps($cab, $audit, $AuditorName)
     $renderedHTML .= "</td></tr>\n";
     $renderedHTML .= "      <tr><td class=\"left\">" . __('Model') . ":</td>"
         . "<td class=\"right\">".$cab->Model."</td></tr>";
-    
+
     $renderedHTML .= '      <tr><td class="left">' . __('Data Center');
     $tmpDC = new DataCenter();
     $tmpDC->DataCenterID = $cab->DataCenterID;
@@ -100,7 +101,7 @@ function renderCabinetProps($cab, $audit, $AuditorName)
     $renderedHTML .= '<td class="right">' . renderTagsToString($cab)
         . "</td></tr>\n";
     $renderedHTML .= "</table>";
-    
+
     return $renderedHTML;
 }
 
@@ -116,7 +117,7 @@ function renderCabinetProps($cab, $audit, $AuditorName)
 			exit;
 		}
 	}
-	
+
 	// If you're deleting the cabinet, no need to pull in the rest of the information, so get it out of the way
 	// Only a site administrator can create or delete a cabinet
 	if(isset($_POST["delete"]) && $_POST["delete"]=="yes" && $user->SiteAdmin ) {
@@ -125,7 +126,7 @@ function renderCabinetProps($cab, $audit, $AuditorName)
 		header("Location: $url");
 		exit;
 	}
-	
+
 	if(isset($_POST['tooltip'])){
 		if(isset($_POST['cdu']) && $config->ParameterArray["CDUToolTips"]=='enabled'){
 			$pdu=new PowerDistribution();
@@ -136,7 +137,7 @@ function renderCabinetProps($cab, $audit, $AuditorName)
 			$dev=new Device();
 			$dev->DeviceID=$_POST['tooltip'];
 			$dev->GetDevice();
-			
+
 			if($dev->Rights=='None'){
 				print __("Details Restricted");
 				exit;
@@ -265,7 +266,7 @@ function renderCabinetProps($cab, $audit, $AuditorName)
 
 	$audit->CabinetID=$cab->CabinetID;
 
-	// You just have WriteAccess in order to perform/certify a rack audit 
+	// You just have WriteAccess in order to perform/certify a rack audit
 	if(isset($_REQUEST["audit"]) && $_REQUEST["audit"]=="yes" && $user->CanWrite($cab->AssignedTo)){
 		$audit->UserID=$user->UserID;
 		$audit->CertifyAudit();
@@ -325,25 +326,25 @@ function renderCabinetProps($cab, $audit, $AuditorName)
 				$zeroheight.="              $highlight $device->Label\n<a></a>";
 			}
 		}
-		
+
 		//JMGA only fulldepth devices and front devices
 		if (!$device->HalfDepth || !$device->BackSide){
 			if ($device->HalfDepth) $backside=true;
 			$devTop=$device->Position + $device->Height - 1;
-			
+
 			$templ->TemplateID=$device->TemplateID;
 			$templ->GetTemplateByID();
-	
+
 			$tempDept->DeptID=$device->Owner;
 			$tempDept->GetDeptByID();
-	
+
 			// If a dept has been changed from white then it needs to be added to the stylesheet, legend, and device
 			if(!$device->Reservation && strtoupper($tempDept->DeptColor)!="#FFFFFF"){
 				// Fill array with deptid and color so we can process the list once for the legend and style information
 				$deptswithcolor[$device->Owner]["color"]=$tempDept->DeptColor;
 				$deptswithcolor[$device->Owner]["name"]=$tempDept->Name;
 			}
-	
+
 			$highlight="<blink><font color=red>";
 			if($device->TemplateID==0){
 				$highlight.="(T)";
@@ -354,7 +355,7 @@ function renderCabinetProps($cab, $audit, $AuditorName)
 	            $ownership_unassigned = true;
 			}
 			$highlight.= "</font></blink>";
-			
+
 			$totalWatts+=$device->GetDeviceTotalPower();
 			$DeviceTotalWeight=$device->GetDeviceTotalWeight();
 			$totalWeight+=$DeviceTotalWeight;
@@ -391,7 +392,7 @@ function renderCabinetProps($cab, $audit, $AuditorName)
 			$currentHeight=$device->Position - 1;
 		} else {
 			$backside=true;
-		}	
+		}
 	}
 
 	// Fill in to the bottom
@@ -404,7 +405,7 @@ function renderCabinetProps($cab, $audit, $AuditorName)
 			$body.="<tr><td>$i</td></tr>\n";
 		}
 	}
-	
+
 	if($backside){
 		$currentHeight=$cab->CabinetHeight;
 		reset($devList);
@@ -412,29 +413,29 @@ function renderCabinetProps($cab, $audit, $AuditorName)
 	<table>
 		<tr><th colspan=2 $cab_color >".__("Cabinet")." $cab->Location (".__("Rear").")</th></tr>
 		<tr><td>".__("Pos")."</td><td>".__("Device")."</td></tr>\n";
-	
+
 		while(list($dev_index,$device)=each($devList)){
 			if (!$device->HalfDepth || $device->BackSide){
 				$devTop=$device->Position + $device->Height - 1;
-				
+
 				$templ->TemplateID=$device->TemplateID;
 				$templ->GetTemplateByID();
-		
+
 				$tempDept->DeptID=$device->Owner;
 				$tempDept->GetDeptByID();
-		
+
 				// If a dept has been changed from white then it needs to be added to the stylesheet, legend, and device
 				if(strtoupper($tempDept->DeptColor)!="#FFFFFF"){
 					// Fill array with deptid and color so we can process the list once for the legend and style information
 					$deptswithcolor[$device->Owner]["color"]=$tempDept->DeptColor;
 					$deptswithcolor[$device->Owner]["name"]=$tempDept->Name;
 				}
-		
+
 				$highlight="<blink><font color=red>";
 				if($device->TemplateID==0){$highlight.="(T)";}
 				if($device->Owner==0){$highlight.="(O)";}
 				$highlight.= "</font></blink>";
-		
+
 				if ($device->HalfDepth) {
 					// (if fulldepth device, already accounted in frontside)
 					$totalWatts+=$device->GetDeviceTotalPower();
@@ -442,7 +443,7 @@ function renderCabinetProps($cab, $audit, $AuditorName)
 					$totalWeight+=$DeviceTotalWeight;
 					$totalMoment+=($DeviceTotalWeight*($device->Position+($device->Height/2)));
 				}
-				
+
 				$reserved=($device->Reservation==false)?"":" reserved";
 				if($devTop<$currentHeight && $currentHeight>0){
 					for($i=$currentHeight;$i>$devTop;$i--){
@@ -483,18 +484,18 @@ function renderCabinetProps($cab, $audit, $AuditorName)
 		for($i=$currentHeight;$i>0;$i--){
 			if($i==$currentHeight){
 				$blankHeight=$currentHeight;
-	
+
 				$body.="<tr><td>$i</td><td class=\"freespace\" rowspan=$blankHeight>&nbsp;</td></tr>\n";
 			}else{
 				$body.="<tr><td>$i</td></tr>\n";
 			}
 		}
-	}	
-	
+	}
+
 	if($heighterr!=''){$legend.='<p>* - '.__("Above defined rack height").'</p>';}
 
 	$CenterofGravity=@round($totalMoment/$totalWeight);
-	
+
 	$used=$cab->CabinetOccupancy($cab->CabinetID);
 	@$SpacePercent=($cab->CabinetHeight>0)?number_format($used/$cab->CabinetHeight*100,0):0;
 	@$WeightPercent=number_format($totalWeight/$cab->MaxWeight*100,0);
@@ -504,7 +505,7 @@ function renderCabinetProps($cab, $audit, $AuditorName)
 	$CriticalColor=$config->ParameterArray["CriticalColor"];
 	$CautionColor=$config->ParameterArray["CautionColor"];
 	$GoodColor=$config->ParameterArray["GoodColor"];
-	
+
 	if($SpacePercent>100){$SpacePercent=100;}
 	if($WeightPercent>100){$WeightPercent=100;}
 	if($PowerPercent>100){$PowerPercent=100;}
@@ -542,7 +543,7 @@ function renderCabinetProps($cab, $audit, $AuditorName)
         if ($template_unassigned) {
           $legend_flags .= '		<p><font color=red>(T)</font> - '.__("Template Unassigned").'</p>';
         }
-        
+
 
 $body.='</table>
 </div>
@@ -620,7 +621,7 @@ $body.='</table>
 
 		$pan->PanelID=$PDUdev->PanelID;
 		$pan->GetPanel();
-		
+
 		if($PDUdev->BreakerSize==1){
 			$maxDraw=$PDUdev->InputAmperage * $pan->PanelVoltage / 1.732;
 		}elseif($PDUdev->BreakerSize==2){
@@ -631,19 +632,19 @@ $body.='</table>
 
 		// De-rate all breakers to 80% sustained load
 		$maxDraw*=0.8;
-		
+
 		if($maxDraw>0){
 			$PDUPercent=$pduDraw/$maxDraw*100;
 		}else{
 			$PDUPercent=0;
 		}
-			
+
 		$PDUColor=($PDUPercent>intval($config->ParameterArray["PowerRed"])?$CriticalColor:($PDUPercent>intval($config->ParameterArray["PowerYellow"])?$CautionColor:$GoodColor));
-		
+
 		$body.=sprintf("			<a href=\"power_pdu.php?pduid=%d\">CDU %s</a><br>(%.2f kW) / (%.2f kW Max)</font><br>\n", $PDUdev->PDUID, $PDUdev->Label, $pduDraw / 1000, $maxDraw / 1000 );
 		$body.=sprintf("				<div class=\"meter-wrap\">\n\t<div class=\"meter-value\" style=\"background-color: %s; width: %d%%;\">\n\t\t<div class=\"meter-text\">%d%%</div>\n\t</div>\n</div><br>", $PDUColor, $PDUPercent, $PDUPercent );
 	}
-	
+
 	if($user->CanWrite($cab->AssignedTo)){
 		$body.="			<ul class=\"nav\"><a href=\"power_pdu.php?pduid=0&cabinetid=$cab->CabinetID\"><li>".__("Add CDU")."</li></a></ul>\n";
 	}
@@ -683,7 +684,7 @@ $body.='</table>
 <head>
   <meta http-equiv="X-UA-Compatible" content="IE=Edge">
   <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-  
+
   <title><?php echo $title; ?></title>
   <link rel="stylesheet" href="css/inventory.php" type="text/css">
   <link rel="stylesheet" href="css/print.css" type="text/css" media="print">
@@ -691,8 +692,8 @@ $body.='</table>
   <!--[if lt IE 9]>
   <link rel="stylesheet"  href="css/ie.css" type="text/css" />
   <![endif]-->
- 
-<?php 
+
+<?php
 
 echo $head,'  <script type="text/javascript" src="scripts/jquery.min.js"></script>
   <script type="text/javascript" src="scripts/jquery-ui.min.js"></script>
@@ -706,7 +707,7 @@ echo $head,'  <script type="text/javascript" src="scripts/jquery.min.js"></scrip
 			form.submit();
 		}
 	}
-	
+
 	function verifyDelete(formname){
 		if(confirm("',__("Are you sure that you want to delete this cabinet, including all devices, power strips, and connections?"),'\n',__("THIS ACTION CAN NOT BE UNDONE!"),'")){
 			$("<input>").attr({ type: "hidden", name: "delete", value: "yes"}).appendTo(form);

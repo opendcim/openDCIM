@@ -890,6 +890,16 @@ echo '<div class="main">
 						</select>
 					</div>
 				</div>
+				<div>
+					<div><label for="PageSize">',__("Page Size"),'</label></div>
+					<div><select id="PageSize" name="PageSize" defaultvalue="',$config->defaults["PageSize"],'" data="',a,'">
+							<option value="A4"',(($config->ParameterArray["PageSize"]=="A4")?' selected="selected"':''),'>',__("A4"),'</option>
+							<option value="A3"',(($config->ParameterArray["PageSize"]=="A3")?' selected="selected"':''),'>',__("A3"),'</option>
+							<option value="Letter"',(($config->ParameterArray["PageSize"]=="Letter")?' selected="selected"':''),'>',__("Letter"),'</option>
+							<option value="Legal"',(($config->ParameterArray["PageSize"]=="Legal")?' selected="selected"':''),'>',__("Legal"),'</option>
+						</select>
+					</div>
+				</div>
 			</div> <!-- end table -->
 			<h3>',__("Users"),'</h3>
 			<div class="table">

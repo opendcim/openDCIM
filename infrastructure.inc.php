@@ -295,6 +295,29 @@ class DataCenter {
 		// Not sure why this was duplicated but this will do til we clear up the references
 		return $this->GetDataCenter();
 	}
+
+    /**
+     * Returns an array with all the hierarchy of containers the data center
+     *  belongs to.
+     * @param type $containerList
+     * @return type
+     */
+    public function getContainerList($containerID = 0)
+    {
+        $container = new Container();
+        if ($containerID == 0) {
+            $container->ContainerID = $this->ContainerID;
+        } else {
+            $container->ContainerID = $containerID;
+        }
+        $container->GetContainer();
+        $containerList[] = $container->Name;
+        if ($container->ParentID > 0) {
+            $childContainerList = $this->getContainerList($container->ParentID);
+            $containerList = array_merge($childContainerList, $containerList);
+        }
+        return $containerList;
+    }
 	
 	function MakeImageMap($nolinks=null) {
 		$this->MakeSafe();
@@ -695,6 +718,26 @@ class DeviceTemplate {
 
 		return $templateList;
 	}
+
+    /**
+     * Return a list of the templates indexed by the TemplateID
+     *
+     * @param DbLink $db
+     * @return multitype:DeviceTemplate
+     */
+    function getTemplateListIndexedbyID ()
+    {
+        global $dbh;
+        $templateList = array();
+        $stmt = $dbh->prepare('select * from fac_DeviceTemplate');
+        $stmt->execute();
+        while ($row = $stmt->fetch()) {
+            $devTempl = DeviceTemplate::RowToObject($row);
+            $templateList[$devTempl->TemplateID] = $devTempl;
+        }
+
+        return $templateList;
+    }
 
 	function GetMissingMfgDates(){
 		$this->MakeSafe();
@@ -1412,7 +1455,28 @@ class Container {
 		
 		return $tree;
 	}
-	
+
+    /**
+     * Returns the maximum level of containers.
+     * 
+     * @param int $level
+     * @return int
+     */
+    public function computeMaxLevel($level = 0)
+    {
+        $this->GetContainer();
+        $maxLevel = $level;
+        $containerChildList = $this->GetChildContainerList();
+        if (count($containerChildList) > 0) {
+            $level++;
+            foreach ($containerChildList as $cName => $childContainer) {
+                $retval = $childContainer->computeMaxLevel($level);
+                $maxLevel = max(array($retval, $maxLevel));
+            }
+        }
+        return $maxLevel;
+    }
+
 	function MakeContainerImage(){
 		$mapHTML="";
 		$mapfile="";

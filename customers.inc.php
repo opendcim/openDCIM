@@ -178,6 +178,25 @@ class Contact {
 		return $contactList;
 	}
 
+    /**
+     * Return the list of all contacts indexed by ContactID
+     * 
+     * @global PDO $dbh
+     * @return (Contact)[]
+     */
+    public function GetContactListIndexedbyID() {
+        global $dbh;
+        $deptList = array();
+        $stmt = $dbh->prepare('SELECT * FROM fac_Contact');
+        $stmt->execute();
+        while ($row = $stmt->fetch()) {
+            $contact = Contact::RowToObject($row);
+            $deptList[$contact->ContactID] = $contact;
+        }
+
+		return $deptList;
+    }
+
 	function GetContactsForDepartment($DeptID){
 		$sql="SELECT a.* FROM fac_Contact a, fac_DeptContacts b WHERE 
 			a.ContactID=b.ContactID AND b.DeptID=".intval($DeptID)." ORDER BY a.LastName ASC;";
@@ -312,6 +331,24 @@ class Department {
 		foreach($this->query($sql) as $row){
 			$deptList[]=Department::RowToObject($row);
 		}
+
+		return $deptList;
+	}
+
+    /**
+     * Returns the list of departments indexed by the DeptID
+     * @global PDO $dbh
+     * @return (Department)[]
+     */
+    public function GetDepartmentListIndexedbyID() {
+        global $dbh;
+        $deptList = array();
+        $stmt = $dbh->prepare('SELECT * FROM fac_Department ORDER BY Name ASC');
+        $stmt->execute();
+        while ($row = $stmt->fetch()) {
+            $dept = Department::RowToObject($row);
+            $deptList[$dept->DeptID] = $dept;
+        }
 
 		return $deptList;
 	}
