@@ -2923,7 +2923,7 @@ class SwitchInfo {
 				// Skip the returned values until we get to the first port
 				$Saving = false;
 				foreach($reply as $oid => $label){
-					$indexValue = end(explode( ".", $oid ));
+					$indexValue = @end(explode( ".", $oid ));
 					if ( $indexValue == $dev->FirstPortNum )
 						$Saving = true;
 						
@@ -2966,7 +2966,7 @@ class SwitchInfo {
 				// Skip the returned values until we get to the first port
 				$Saving = false;
 				foreach($reply as $oid => $status){
-					$indexValue = end(explode( ".", $oid ));
+					$indexValue = @end(explode( ".", $oid ));
 					if ( $indexValue == $dev->FirstPortNum ) {
 						$Saving = true;
 					}

@@ -232,7 +232,7 @@ echo '	</select></div>
 </div>'; 
 
 if ($c->ParentID>0){
-	print "<div>\n  <div><b>Click on the image to select container coordinates</b></div>"; 
+	print "<div>\n  <div><b>".__("Click on the image to select container coordinates")."</b></div>"; 
 	$container->ContainerID=$c->ParentID;
 	$container->GetContainer();
 	print "<div>";

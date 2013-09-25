@@ -17,26 +17,35 @@
 	}
 
 	$status='';
-	if(isset($_POST['action'])&&(($_POST['action']=='Create')||($_POST['action']=='Update'))){
-		$template->ManufacturerID = $_POST['manufacturerid'];
-		$template->Model = transform( $_POST['model'] );
-		$template->Height = $_POST['height'];
-		$template->Weight = $_POST['weight'];
-		$template->Wattage = $_POST['wattage'];
-		$template->DeviceType = $_POST['devicetype'];
-		$template->PSCount = $_POST['pscount'];
-		$template->NumPorts = $_POST['numports'];
+	if(isset($_POST['action'])){
+		$template->ManufacturerID=$_POST['manufacturerid'];
+		$template->Model=transform($_POST['model']);
+		$template->Height=$_POST['height'];
+		$template->Weight=$_POST['weight'];
+		$template->Wattage=$_POST['wattage'];
+		$template->DeviceType=$_POST['devicetype'];
+		$template->PSCount=$_POST['pscount'];
+		$template->NumPorts=$_POST['numports'];
 
-		if($_POST['action']=='Create'){
-			if(!$template->CreateTemplate()){
-				$status=__('An error has occured, template not created');
-			}		
-		} else {
-			if($template->UpdateTemplate()){
-				$status=__('Updated');
-			}else{
-				$status=__('Error');
-			}
+		switch($_POST['action']){
+			case 'Create':
+				$status=(!$template->CreateTemplate())?__('An error has occured, template not created'):'';
+				break;
+			case 'Update':
+				$status=($template->UpdateTemplate())?__('Updated'):__('Error');
+				break;
+			case 'Device':
+				// someone will inevitibly try to update the template values and just click 
+				// update devices so make sure the template will update before trying to 
+				// update the device values to match the template
+				if($template->UpdateTemplate()){
+					$status=($template->UpdateDevices())?__('Updated'):__('Error');
+				}else{
+					$status=__('Error');
+				}
+				break;
+			default:
+				// do nothing if the value isn't one we expect
 		}
 	}
 
@@ -74,9 +83,10 @@
 			}
 		});
 		$('#clone').click(function(){
-			$('#templateid').val('New Template');
+			$('#templateid').val(0);
 			$('button[name="action"]').val('Create').text('<?php echo __('Create');?>');
 			$('#model').trigger('change');
+			$('#device, #clone').remove();
 		});
 	});
   </script>
@@ -96,7 +106,7 @@ echo '<div class="main">
 <div class="table">
 	<div>
 		<div><label for="templateid">',__("Template"),'</label></div>
-		<div><input type="hidden" name="action" value="query"><select name="templateid" id="templateid" onChange="form.submit()">
+		<div><input type="hidden"><select name="templateid" id="templateid" onChange="form.submit()">
 		<option value=0>',__("New Template"),'</option>';
 
 	foreach($templateList as $templateRow){
@@ -159,7 +169,7 @@ echo '	</select>
 <div class="caption">';
 
 	if($template->TemplateID >0){
-		echo '   <button type="submit" name="action" value="Update">',__("Update"),'</button><button type="button" id="clone">',__("Clone"),'</button>';
+		echo '   <button type="submit" name="action" value="Update">',__("Update Template"),'</button><button type="button" id="clone">',__("Clone Template"),'</button><button type="submit" name="action" value="Device" id="device">',__("Update Devices"),'</button>';
 	}else{
 		echo '	 <button type="submit" name="action" value="Create">',__("Create"),'</button>';
 	}

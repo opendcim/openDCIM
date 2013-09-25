@@ -1203,50 +1203,50 @@ class Zone {
 		
 		return $zoneList;
 	}
-  
+	
 	function GetZoneStatistics(){
 		$this->GetZone();
 
-		$sql="SELECT SUM(CabinetHeight) as TotalU FROM fac_Cabinet WHERE
+		$sql="SELECT SUM(CabinetHeight) as TotalU FROM fac_Cabinet WHERE 
 			ZoneID=$this->ZoneID;";
 		$zoneStats["TotalU"]=($test=$this->query($sql)->fetchColumn())?$test:0;
 
-		$sql="SELECT SUM(a.Height) as TotalU FROM fac_Device a,fac_Cabinet b WHERE
-			a.Cabinet=b.CabinetID AND b.ZoneID=$this->ZoneID AND
+		$sql="SELECT SUM(a.Height) as TotalU FROM fac_Device a,fac_Cabinet b WHERE 
+			a.Cabinet=b.CabinetID AND b.ZoneID=$this->ZoneID AND 
 			a.DeviceType NOT IN ('Server','Storage Array');";
 		$zoneStats["Infrastructure"]=($test=$this->query($sql)->fetchColumn())?$test:0;
-
-		$sql="SELECT SUM(a.Height) as TotalU FROM fac_Device a,fac_Cabinet b WHERE
-			a.Cabinet=b.CabinetID AND b.ZoneID=$this->ZoneID AND
+ 
+		$sql="SELECT SUM(a.Height) as TotalU FROM fac_Device a,fac_Cabinet b WHERE 
+			a.Cabinet=b.CabinetID AND b.ZoneID=$this->ZoneID AND 
 			a.Reservation=false AND a.DeviceType IN ('Server', 'Storage Array');";
 		$zoneStats["Occupied"]=($test=$this->query($sql)->fetchColumn())?$test:0;
 
         $sql="SELECT SUM(a.Height) FROM fac_Device a,fac_Cabinet b WHERE
 			a.Cabinet=b.CabinetID AND b.ZoneID=$this->ZoneID;";
 		$zoneStats["Allocated"]=($test=$this->query($sql)->fetchColumn())?$test:0;
-
+		
         $zoneStats["Available"]=$zoneStats["TotalU"] - $zoneStats["Occupied"] - $zoneStats["Infrastructure"] - $zoneStats["Allocated"];
 
 		// Perform two queries - one is for the wattage overrides (where NominalWatts > 0) and one for the template (default) values
-		$sql="SELECT SUM(NominalWatts) as TotalWatts FROM fac_Device a,fac_Cabinet b WHERE
-			a.Cabinet=b.CabinetID AND a.NominalWatts>0 AND
+		$sql="SELECT SUM(NominalWatts) as TotalWatts FROM fac_Device a,fac_Cabinet b WHERE 
+			a.Cabinet=b.CabinetID AND a.NominalWatts>0 AND 
 			b.ZoneID=$this->ZoneID;";
 		$zoneStats["ComputedWatts"]=($test=$this->query($sql)->fetchColumn())?$test:0;
-
-		$sql="SELECT SUM(c.Wattage) as TotalWatts FROM fac_Device a, fac_Cabinet b,
-			fac_DeviceTemplate c WHERE a.Cabinet=b.CabinetID AND
-			a.TemplateID=c.TemplateID AND a.NominalWatts=0 AND
+		
+		$sql="SELECT SUM(c.Wattage) as TotalWatts FROM fac_Device a, fac_Cabinet b, 
+			fac_DeviceTemplate c WHERE a.Cabinet=b.CabinetID AND 
+			a.TemplateID=c.TemplateID AND a.NominalWatts=0 AND 
 			b.ZoneID=$this->ZoneID;";
 		$zoneStats["ComputedWatts"]+=($test=$this->query($sql)->fetchColumn())?$test:0;
-
-		$sql="SELECT SUM(Wattage) AS Wattage FROM fac_PDUStats WHERE PDUID IN
-			(SELECT PDUID FROM fac_PowerDistribution WHERE CabinetID IN
+		
+		$sql="SELECT SUM(Wattage) AS Wattage FROM fac_PDUStats WHERE PDUID IN 
+			(SELECT PDUID FROM fac_PowerDistribution WHERE CabinetID IN 
 			(SELECT CabinetID FROM fac_Cabinet WHERE ZoneID=$this->ZoneID))";
 		$zoneStats["MeasuredWatts"]=($test=$this->query($sql)->fetchColumn())?$test:0;
-
+		
 		return $zoneStats;
-}
-
+	}
+	
 	function MakeImageMap($nolinks=null) {
 		$this->MakeSafe();
 		$zoom=$this->MapZoom/100;
@@ -1254,11 +1254,11 @@ class Zone {
 		$dc=new DataCenter();
 		$dc->DataCenterID=$this->DataCenterID;
 		$dc->GetDataCenterbyID();
-
+	 
 		if(strlen($dc->DrawingFileName)>0){
 			//$mapfile="drawings".DIRECTORY_SEPARATOR.$this->DrawingFileName;
 			$mapfile="drawings/".$dc->DrawingFileName;
-
+			
 			if(file_exists($mapfile)){
 				list($width, $height, $type, $attr)=getimagesize($mapfile);
 				$width=($this->MapX2-$this->MapX1)*$zoom;
@@ -1266,11 +1266,11 @@ class Zone {
 				$mapHTML.="<div class=\"canvas\">\n";
 				$mapHTML.="<img src=\"css/blank.gif\" usemap=\"#datacenter\" width=\"$width\" height=\"$height\" alt=\"clearmap over canvas\">\n";
 				$mapHTML.="<map name=\"datacenter\">\n";
-
+				 
 				if(is_null($nolinks)){
 					$sql="SELECT * FROM fac_Cabinet WHERE DataCenterID=$this->DataCenterID;";
 
-					if($racks=$this->query($sql)){
+					if($racks=$this->query($sql)){ 
 						foreach($racks as $row){
 							$mapHTML.="<area href=\"cabnavigator.php?cabinetid={$row["CabinetID"]}\" shape=\"rect\"";
 							$mapHTML.=" coords=\"".(($row["MapX1"]-$this->MapX1)*$zoom).",".(($row["MapY1"]-$this->MapY1)*$zoom).",".(($row["MapX2"]-$this->MapX1)*$zoom).",".(($row["MapY2"]-$this->MapY1)*$zoom)."\"";
@@ -1278,36 +1278,36 @@ class Zone {
 						}
 					}
 				}
-
+				 
 				$mapHTML.="</map>\n";
 				$mapHTML.="<canvas id=\"mapCanvas\" width=\"$width\" height=\"$height\"></canvas>\n";
-
+					 
 				$mapHTML .= "</div>\n";
 			}
 		}
 		return $mapHTML;
 	}
-
+	
 	function DrawCanvas(){
 		$this->MakeSafe();
 		$zoom=$this->MapZoom/100;
 		$dc=new DataCenter();
 		$dc->DataCenterID=$this->DataCenterID;
 		$dc->GetDataCenterbyID();
-
-		$script="";
+		
+		$script="";	
 		// check to see if map was set
 		if(strlen($dc->DrawingFileName)){
 			//$mapfile="drawings".DIRECTORY_SEPARATOR.$this->DrawingFileName;
 			$mapfile="drawings/".$dc->DrawingFileName;
-
+			
 			// map was set in config check to ensure a file exists before we attempt to use it
 			if(file_exists($mapfile)){
 				$dc->dcconfig=new Config();
 				$dev=new Device();
 				$templ=new DeviceTemplate();
 				$cab=new Cabinet();
-
+				
 				// get all color codes and limits for use with loop below
 				$CriticalColor=html2rgb($dc->dcconfig->ParameterArray["CriticalColor"]);
 				$CautionColor=html2rgb($dc->dcconfig->ParameterArray["CautionColor"]);
@@ -1318,7 +1318,7 @@ class Zone {
 				$WeightYellow=intval($dc->dcconfig->ParameterArray["WeightYellow"]);
 				$PowerRed=intval($dc->dcconfig->ParameterArray["PowerRed"]);
 				$PowerYellow=intval($dc->dcconfig->ParameterArray["PowerYellow"]);
-
+				
 				$script.="  <script type=\"text/javascript\">\n	function loadCanvas(){\n";
 				$space="	function space(){\n";
 				$weight="	function weight(){\n";
@@ -1327,7 +1327,7 @@ class Zone {
 				$weight.="	var mycanvas=document.getElementById(\"mapCanvas\");\n		var width = mycanvas.width;\n		mycanvas.width = width + 1;\n		width = mycanvas.width;\n		mycanvas.width = width - 1;\n		var context=mycanvas.getContext('2d');\n";
 				$power.="	var mycanvas=document.getElementById(\"mapCanvas\");\n		var width = mycanvas.width;\n		mycanvas.width = width + 1;\n		width = mycanvas.width;\n		mycanvas.width = width - 1;\n		var context=mycanvas.getContext('2d');\n";
 				$script.="	var mycanvas=document.getElementById(\"mapCanvas\");\n		var width = mycanvas.width;\n		mycanvas.width = width + 1;\n		width = mycanvas.width;\n		mycanvas.width = width - 1;\n		var context=mycanvas.getContext('2d');\n";
-
+				
 				// get image file attributes and type
 				list($width, $height, $type, $attr)=getimagesize($mapfile);
 				//$width=($this->MapX2-$this->MapX1)*2;
@@ -1337,7 +1337,7 @@ class Zone {
 				$weight.="		context.globalCompositeOperation = 'destination-over';\n		var img=new Image();\n		img.onload=function(){\n			context.drawImage(img,-$this->MapX1*$zoom,-$this->MapY1*$zoom,$width*$zoom,$height*$zoom);\n		}\n		img.src=\"$mapfile\";\n";
 				$power.="		context.globalCompositeOperation = 'destination-over';\n		var img=new Image();\n		img.onload=function(){\n			context.drawImage(img,-$this->MapX1*$zoom,-$this->MapY1*$zoom,$width*$zoom,$height*$zoom);\n		}\n		img.src=\"$mapfile\";\n";
 				$sql="SELECT * FROM fac_Cabinet WHERE ZoneID=\"$this->ZoneID\"";
-
+				
 				// read all cabinets and draw image map
 				foreach($this->query($sql) as $cabRow){
 					$cab->CabinetID=$cabRow["CabinetID"];
@@ -1362,7 +1362,7 @@ class Zone {
 							foreach($childList as $childDev){
 								$childTempl->TemplateID=$childDev->TemplateID;
 								$childTempl->GetTemplateByID();
-
+								
 								if($childDev->NominalWatts>0){
 									$totalWatts+=$childDev->NominalWatts;
 								}elseif($childDev->TemplateID!=0&&$childTempl->Wattage>0){
@@ -1380,7 +1380,7 @@ class Zone {
 							$totalMoment+=($templ->Weight*($device->Position+($device->Height/2)));
 						}
 					}
-
+						
 					$CenterofGravity=@round($totalMoment /$totalWeight);
 
         			$used=$cab->CabinetOccupancy($cab->CabinetID);
@@ -1390,7 +1390,7 @@ class Zone {
 					if(!isset($cab->MaxWeight)||$cab->MaxWeight==0){$WeightPercent=0;}else{$WeightPercent=number_format($totalWeight /$cab->MaxWeight *100,0);}
 					// check to make sure there is a kilowatt limit set to keep errors out of logs
     	    		if(!isset($cab->MaxKW)||$cab->MaxKW==0){$PowerPercent=0;}else{$PowerPercent=number_format(($totalWatts /1000 ) /$cab->MaxKW *100,0);}
-
+					
 					//Decide which color to paint on the canvas depending on the thresholds
 					if($SpacePercent>$SpaceRed){$scolor=$CriticalColor;}elseif($SpacePercent>$SpaceYellow){$scolor=$CautionColor;}else{$scolor=$GoodColor;}
 					if($WeightPercent>$WeightRed){$wcolor=$CriticalColor;}elseif($WeightPercent>$WeightYellow){$wcolor=$CautionColor;}else{$wcolor=$GoodColor;}
@@ -1427,31 +1427,31 @@ class Zone {
 		}
 		return $script;
 	}
-
+	
 	function MakeDCZoneMiniImage() {
 		$mapHTML = "";
 		$mapfile="";
 		$red=.5;
-
+		
 		$dc=new DataCenter();
 		$dc->DataCenterID=$this->DataCenterID;
 		$dc->GetDataCenterbyID();
-
+	 
 		if ( strlen($dc->DrawingFileName) > 0 ) {
 			$mapfile = "drawings/" . $dc->DrawingFileName;
 		}
-
+	   
 		if ( file_exists( $mapfile ) ) {
 			list($width, $height, $type, $attr)=getimagesize($mapfile);
 			$mapHTML.="<div style='position:relative;'>\n";
-			$mapHTML.="<img id='dczoneimg' src=\"".$mapfile."\" width=\"".($width*$red)."\" height=\"".($height*$red)."\"
+			$mapHTML.="<img id='dczoneimg' src=\"".$mapfile."\" width=\"".($width*$red)."\" height=\"".($height*$red)."\" 
 					 onclick='coords(event)' alt=\"DC Zone Image\">\n";
 			$mapHTML .= "<canvas id=\"mapCanvas\" width=\"".($width*$red)."\" height=\"".($height*$red)."\"></canvas>\n";
 			$mapHTML .= "</div>\n";
 	    }
 	    return $mapHTML;
 	}
-
+	
 }
 
 class CabRow {
@@ -1580,7 +1580,7 @@ class CabRow {
 		$sql="UPDATE fac_CabRow SET CabOrder=\"$this->CabOrder\" WHERE CabRowID=$this->CabRowID;";
 
 		return $this->query($sql);
-}
+	}
 
 }
 
