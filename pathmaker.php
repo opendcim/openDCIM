@@ -177,7 +177,7 @@
 			}elseif(!isset($_POST['port2']) || $_POST['port2']==''){
 				$status=__("Final device unspecified");
 			}else{
-				$status=_("Unknown Error");
+				$status=__("Unknown Error");
 			}
 		}
 

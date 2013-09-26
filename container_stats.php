@@ -49,7 +49,7 @@ echo '<div class="main">
 <div class="heading">
   <div>
 	<h2>',$config->ParameterArray["OrgName"],'</h2>
-	<h3>',_("Data Centers Statistics"),'</h3>
+	<h3>',__("Data Centers Statistics"),'</h3>
   </div>
 </div>
 <div class="center"><div>
@@ -58,20 +58,20 @@ echo '<div class="main">
   <div class="title">',$c->Name,'</div>
   <div>
 	<div></div>
-	<div>',_("Infrastructure"),'</div>
-	<div>',_("Occupied"),'</div>
-	<div>',_("Allocated"),'</div>
-	<div>',_("Available"),'</div>
+	<div>',__("Infrastructure"),'</div>
+	<div>',__("Occupied"),'</div>
+	<div>',__("Allocated"),'</div>
+	<div>',__("Available"),'</div>
   </div>
   <div>
-	<div>',sprintf(_("Total U")." %5d",$cStats["TotalU"]),'</div>
+	<div>',sprintf(__("Total U")." %5d",$cStats["TotalU"]),'</div>
 	<div>',sprintf("%3d",$cStats["Infrastructure"]),'</div>
 	<div>',sprintf("%3d",$cStats["Occupied"]),'</div>
 	<div>',sprintf("%3d",$cStats["Allocated"]),'</div>
 	<div>',sprintf("%3d",$cStats["Available"]),'</div>
   </div>
   <div>
-	<div>',_("Percentage"),'</div>
+	<div>',__("Percentage"),'</div>
 	<div>',(($cStats["TotalU"])?sprintf("%3.1f%%",$cStats["Infrastructure"]/$cStats["TotalU"]*100):"0"),'</div>
 	<div>',(($cStats["TotalU"])?sprintf("%3.1f%%",$cStats["Occupied"]/$cStats["TotalU"]*100):"0"),'</div>
 	<div>',(($cStats["TotalU"])?sprintf("%3.1f%%",$cStats["Allocated"]/$cStats["TotalU"]*100):"0"),'</div>
@@ -80,7 +80,7 @@ echo '<div class="main">
   </div> <!-- END div.table -->
   <div class="table border">
   <div>
-        <div>',_("Data Centers"),'</div>
+        <div>',__("Data Centers"),'</div>
         <div>',sprintf("%s ",number_format($cStats["DCs"],0, ",", ".")),'</div>
   </div>
   <div>
@@ -92,24 +92,24 @@ echo '<div class="main">
 		<div>',sprintf("%7d %s", $cStats["MeasuredWatts"], __("Watts")),'</div>
   </div>
     <div>
-		<div>',_("Design Maximum (kW)"),'</div>
+		<div>',__("Design Maximum (kW)"),'</div>
 		<div>',sprintf("%s kW",number_format($cStats["MaxkW"],0, ",", ".") ),'</div>
   </div>
   <div>
-        <div>',_("BTU Computation from Watts"),'</div>
-        <div>',sprintf("%s "._("BTU"),number_format($cStats["ComputedWatts"]*3.412,0, ",", ".") ),'</div>
+        <div>',__("BTU Computation from Watts"),'</div>
+        <div>',sprintf("%s ".__("BTU"),number_format($cStats["ComputedWatts"]*3.412,0, ",", ".") ),'</div>
   </div>
   <div>
-        <div>',_("Data Center Size"),'</div>
+        <div>',__("Data Center Size"),'</div>
         <div>',sprintf("%s ".$vol,number_format($cStats["SquareFootage"],0, ",", ".")),'</div>
   </div>
   <div>
         <div>',$density,'</div>
-        <div>',(($cStats["SquareFootage"]>0)?sprintf("%s "._("Watts"),number_format($cStats["ComputedWatts"]/$cStats["SquareFootage"],0, ",", ".")):"0 "._("Watts")),'</div>
+        <div>',(($cStats["SquareFootage"]>0)?sprintf("%s ".__("Watts"),number_format($cStats["ComputedWatts"]/$cStats["SquareFootage"],0, ",", ".")):"0 ".__("Watts")),'</div>
   </div>
   <div>
-        <div>',_("Minimum Cooling Tonnage Required"),'</div>
-        <div>',sprintf("%s "._("Tons"),number_format($cStats["ComputedWatts"]*3.412*1.15/12000,0, ",", ".")),'</div>
+        <div>',__("Minimum Cooling Tonnage Required"),'</div>
+        <div>',sprintf("%s ".__("Tons"),number_format($cStats["ComputedWatts"]*3.412*1.15/12000,0, ",", ".")),'</div>
   </div>
 </div> <!-- END div.table -->
 </div>
