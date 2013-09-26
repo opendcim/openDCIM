@@ -447,8 +447,7 @@ table#cabprop tr {
     padding: 3px 2px 3px 2px;
     font-weight: bold;
     border: 0px none;
-    border-bottom: 3px solid gray;
-    /* border-right: 3px solid gray; */
+    border-bottom: 1px solid gray;
     margin: 2px 2px 2px 0px;
 }
 #infopanel fieldset table#cabprop td.right {
@@ -456,8 +455,8 @@ table#cabprop tr {
     text-align: left;
     padding: 3px 2px 3px 4px;
     border: 0px none;
-    border-bottom: 3px solid gray;
-    border-right: 3px solid gray;
+    border-bottom: 1px solid gray;
+    border-right: 2px solid gray;
     margin: 2px 0px 2px 2px;
     /* max-width: 280px; */
 }
@@ -465,15 +464,11 @@ table#cabprop span.text-label {
      -webkit-border-radius: 2px;
      border-radius: 2px;
      box-sizing: border-box;
-     /* position: relative; */
-     /* float: left; */
      border: 1px solid #9daccc;
      background: #e2e6f0;
      color: #000;
      padding: 0px 3px 0px 3px;
      margin: 0 2px 0px 0;
-     /* cursor: default; */
-     /* height: 16px; */
      font: 11px "lucida grande",tahoma,verdana,arial,sans-serif;
 }
 
