@@ -762,7 +762,9 @@ INSERT INTO fac_Config VALUES
 	('snmpget', '/usr/bin/snmpget', 'path', 'string', '/usr/bin/snmpget'),
 	('cut', '/bin/cut', 'path', 'string', '/bin/cut'),
  	('ToolTips', 'Disabled', 'Enabled/Disabled', 'string', 'Disabled'),
-	('CDUToolTips', 'Disabled', 'Enabled/Disabled', 'string', 'Disabled');
+	('CDUToolTips', 'Disabled', 'Enabled/Disabled', 'string', 'Disabled'),
+        ('PageSize', 'Letter', 'string', 'string', 'Letter')
+;
 
 --
 -- Pre-fill some of the templates

@@ -730,3 +730,5 @@ table#parcheos table {margin: 0px; border: 0px; border-collapse: collapse; text-
 table#parcheos table tr th {background-color: #DDDDDD; padding: 2px; border: 1px solid grey; text-align: left; border-collapse: collapse;}
 table#parcheos table tr td {padding: 2px; border: 1px solid grey; text-align: left; border-collapse: collapse;}
 table#parcheos tr td:first-child + td table {margin-left: auto;}
+
+p.errormsg {padding: 20px; background-color: #DDDDDD; font-size: 120%; font-weight: bold; color: red;}
