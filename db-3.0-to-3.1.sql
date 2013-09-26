@@ -13,9 +13,6 @@ ALTER TABLE fac_Zone ADD COLUMN MapZoom int(11) DEFAULT '100' NOT NULL AFTER Map
 --
 ALTER TABLE fac_CabRow ADD COLUMN CabOrder ENUM( 'ASC', 'DESC' ) NOT NULL DEFAULT 'ASC';
 
-
-
-
 --
 -- Bump up the database version
 --
