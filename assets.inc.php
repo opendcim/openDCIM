@@ -3205,7 +3205,7 @@ class PlannedPath {
 	}
 	
 	private function SelectNode () {
-		//Busco el  nodo de la lista de candidatos el nodo con peso mínimo
+		//Busco el  nodo de la lista de candidatos el nodo con peso minimo
 		//search node in candidate list with min weight
 		$minweight=99999; //big number
 		$this->DeviceID=0;
@@ -3241,7 +3241,7 @@ class PlannedPath {
 						"; PD=".$this->nodes[$this->DeviceID][$this->PortNumber]["prev_dev"].
 						"; PP=".$this->nodes[$this->DeviceID][$this->PortNumber]["prev_port"]);;	
 			
-		//Compruebo si el puerto del dispositivo actual está conectado a la conexión trasera de un panel
+		//Compruebo si el puerto del dispositivo actual estï¿½ conectado a la conexiï¿½n trasera de un panel
 		//I check if the port of this device is connected to a rear-panel connection
 		$port=new DevicePorts();
 		$port->DeviceID=$this->DeviceID;
@@ -3276,7 +3276,7 @@ class PlannedPath {
 			$cabrow->CabRowID = $cabinet->CabRowID;
 			$cabrow->GetCabRow();
 			
-			//busco el dispositivo final en el mismo armario (si no está reflejado en un panel)
+			//busco el dispositivo final en el mismo armario (si no este reflejado en un panel)
 			//looking for the end device in the same cabinet (if not reflected in a panel)
 			if ($cab==$this->cab2 && !$this->espejo2){
 				$this->escribe_log(" DEV2 found in actual cabinet (".$cab."-'".$cabinet->Location."')");
@@ -3315,13 +3315,13 @@ class PlannedPath {
 					bf.ConnectedDeviceID IS NULL
 				ORDER BY DeviceID1,PortNumber1,DeviceID2,PortNumber2;";
 			foreach($dbh->query($sql) as $row){
-				//Compruebo si tengo que añadir esta pareja
+				//Compruebo si tengo que aï¿½adir esta pareja
 				//I check if I have to add this pair of nodes
 				if (isset($this->candidates[$row["DeviceID2"]]) 
 					&& $this->nodes[$row["DeviceID2"]][$this->candidates[$row["DeviceID2"]]]["weight"]>$this->nodes[$this->DeviceID][$this->PortNumber]["weight"]+$weight_cabinet+$weight_rear
 					|| !isset($this->candidates[$row["DeviceID2"]]) && !isset($this->used_candidates[$row["DeviceID2"]])){
 					$this->AddNodeToList($row["DeviceID1"],-$row["PortNumber1"],$this->nodes[$this->DeviceID][$this->PortNumber]["weight"]+$weight_cabinet, $this->DeviceID, $this->PortNumber);
-					//Añado directamente el espejo de este puerto
+					//Aï¿½ado directamente el espejo de este puerto
 					//I add directly the mirror port of this port
 					$this->AddNodeToList($row["DeviceID2"],$row["PortNumber2"],$this->nodes[$this->DeviceID][$this->PortNumber]["weight"]+$weight_cabinet+$weight_rear, $row["DeviceID1"],-$row["PortNumber1"]);
 				}
@@ -3348,13 +3348,13 @@ class PlannedPath {
 					bf.ConnectedDeviceID IS NULL
 				ORDER BY DeviceID1,PortNumber1,DeviceID2,PortNumber2;";
 			foreach($dbh->query($sql) as $row){
-				//Compruebo si tengo que añadir esta pareja
+				//Compruebo si tengo que aï¿½adir esta pareja
 				//I check if I have to add this pair of nodes
 				if (isset($this->candidates[$row["DeviceID2"]]) 
 					&& $this->nodes[$row["DeviceID2"]][$this->candidates[$row["DeviceID2"]]]["weight"]>$this->nodes[$this->DeviceID][$this->PortNumber]["weight"]+$weight_row+$weight_rear
 					|| !isset($this->candidates[$row["DeviceID2"]]) && !isset($this->used_candidates[$row["DeviceID2"]])){
 					$this->AddNodeToList($row["DeviceID1"],-$row["PortNumber1"],$this->nodes[$this->DeviceID][$this->PortNumber]["weight"]+$weight_row,$this->DeviceID, $this->PortNumber);
-					//Añado directamente el espejo de este puerto
+					//Aï¿½ado directamente el espejo de este puerto
 					//I add directly the mirror port of this port
 					$this->AddNodeToList($row["DeviceID2"],$row["PortNumber2"],$this->nodes[$this->DeviceID][$this->PortNumber]["weight"]+$weight_row+$weight_rear, $row["DeviceID1"],-$row["PortNumber1"]);
 				}
@@ -3482,7 +3482,9 @@ class PlannedPath {
 	
 	function GotoNextDevice () {
 	//Pone el objeto con el DeviceID, PortNumber y Front del dispositivo siguiente en el path.
-	//Si el dispositivo actual del objeto no estï¿½ conectado a nada, devuelve "false" y el objeto no cambia
+	//Si el dispositivo actual del objeto no est conectado a nada, devuelve "false" y el objeto no cambia
+    // Places the object with the DeviceID, PortNumber and Front of the next device in the path.
+    // If the object's current device is not connected returns "false" and the object doesn't change.
 		$this->acti++;
 		If (isset($this->Path[$this->acti]["DeviceID"])){
 			$this->DeviceID=$this->Path[$this->acti]["DeviceID"];
