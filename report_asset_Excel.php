@@ -29,7 +29,8 @@ if ((! $user->ReadAccess) and (! $user->AdminOwnDevices)) {
     echo '<html>
         <head><link rel="stylesheet" href="css/inventory.php" type="text/css">
     </head>
-    <body><p class="errormsg">Missing rights to execute the report</p>
+    <body><p class="errormsg">' . __('Missing rights to execute the report')
+    . '</p>
     </body></html>', PHP_EOL;
     exit();
 }
@@ -44,7 +45,6 @@ require 'PHPExcel.php';
 require 'PHPExcel/Writer/Excel2007.php';
 
 // Configuration variables.
-
 // Properties of the document and worksheets.
 $DProps = array(
     'version' => 1.0,
@@ -53,7 +53,6 @@ $DProps = array(
         'Description' => 'Data Center Statistics on all data centers assets.',
         'Title' => 'Data Center Statistics',
         'Keywords' => 'datacenter report assets statistic',
-        // 'PageSize' => 'A4'
         'PageSize' => $config->ParameterArray['PageSize'],
         'User' => $user->Name
     ),
@@ -373,9 +372,8 @@ function buildColumnIndex($colSpec)
 function buildExStringColIdx($colSpec)
 {
     $colIndex = array();
-    foreach ($colSpec as $key => $val) { {
-            $colIndex[] = $val[0];
-        }
+    foreach ($colSpec as $key => $val) {
+        $colIndex[] = $val[0];
     }
 
     return $colIndex;
@@ -1024,8 +1022,6 @@ function computeSheetBodyDCInventory($DProps)
             $invData[] = $devSpec;
         } else {
             foreach ($cabList as $cab) {
-                ReportStats::get()->report('Info', 'Cab assigned '.$cab->AssignedTo);
-                ReportStats::get()->report('Info', 'User can read '.$user->canRead($cab->AssignedTo));
                 if (((! $user->ReadAccess) and ($cab->AssignedTo == 0))
                     or (($cab->AssignedTo > 0)
                         and (! $user->canRead($cab->AssignedTo)))) {
@@ -1114,12 +1110,11 @@ function computeSheetBodyDCInventory($DProps)
                                 ENT_COMPAT, 'UTF-8');
                         $invData[] = $devSpec;
                         $dcStats['Watts'] += $dev->NominalWatts;
-                        // devices can be installed at the same position and could be
-                        // of different height; count only the free rack units which
-                        // are not covered by any device
+                        // devices can be installed at the same position and
+                        // could be of different height; count only the free
+                        // rack units which are not covered by any device
                         if ($low_idx == $dev->Position) {
                             $low_idx += $dev->Height;
-
                             $dcStats['Rk_UtU'] += $reservedRack ? 0 : $dev->Height;
                         } else {
                             $rest_height = ($dev->Position + $dev->Height - $low_idx);
@@ -1277,13 +1272,14 @@ function writeDCStatsLine($worksheet, $style, $DProps, $rownum, $DCStatsSum)
  * $DCStats is a recursive data structure. Either it contains the statistics values
  * for the current value or an index to the next level, e.g.
  *   . $DCStats['Rk_Num'] is the sum of the number of racks on this level
- *   . or
- *   . $DCStats['A-D'] is the array with the statistics value for the NatCo 'A-D'
+ *   or
+ *   . $DCStats[<DC>] is the array with the statistics value for the data center
+ *     DC
  *
  * @param array $DProps
  * @param PHPExcel_Worksheet $worksheet
  * @param array DCStats
- * @param int $level level of statistic data, NatCo is the highest level (4)
+ * @param int $level level of statistic data
  * @param int $row row number
  * @param $rowTitle the title the row statistics will get
  */
@@ -1315,7 +1311,7 @@ function writeDCStatsContent($DProps, $worksheet, &$DCStats, $level, &$row,
     foreach ($DCStats as $StatKey => $val) {
         if (is_array($val)) {
             writeDCStatsContent($DProps, $worksheet, $DCStats[$StatKey],
-            $level, &$row, $StatKey);
+                $level, &$row, $StatKey);
         }
     }
     if ($level == 1) {
@@ -1361,7 +1357,6 @@ function writeDCStatsSummary($DProps, $objPHPExcel, $DCStats, $thisDate)
 function writeFrontPageContent($worksheet, $config, $DProps)
 {
     $worksheet->SetTitle('Front Page');
-
     // add logo
     $objDrawing = new PHPExcel_Worksheet_Drawing();
     $objDrawing->setWorksheet($worksheet);
@@ -1372,6 +1367,7 @@ function writeFrontPageContent($worksheet, $config, $DProps)
     $objDrawing->setCoordinates('A1');
     $objDrawing->setOffsetX(5);
     $objDrawing->setOffsetY(5);
+    // set the header of the print out
     $header_range = $DProps['Front Page']['HeaderRange'];
     $fillcolor = $config->ParameterArray['HeaderColor'];
     $fillcolor = (strpos($fillcolor, '#') == 0) ? substr($fillcolor, 1) : $fillcolor;
@@ -1389,7 +1385,6 @@ function writeFrontPageContent($worksheet, $config, $DProps)
         ->getFont()
         ->setBold(true);
     $worksheet->getRowDimension('2')->setRowHeight($org_font_size + 2);
-    // TODO: Add the user who generated the report
     $worksheet->setCellValue('A4', 'Report generated by \''
         . $DProps['Doc']['User']
         . '\' on ' . date('Y-m-d H:i:s'));
@@ -1549,8 +1544,8 @@ function writeExcelReport(&$DProps, $objPHPExcel, $thisDate)
 $cacheMethod = PHPExcel_CachedObjectStorageFactory::cache_in_memory_serialized;
 $retcode = PHPExcel_Settings::setCacheStorageMethod($cacheMethod);
 
-// TODO: Comment out before releasing, disable reporting by default
-ReportStats::get()->useStatReporting();
+// REMARK: Comment in if a reporting on the resource usage is needed
+// ReportStats::get()->useStatReporting();
 
 $thisDate = date('Y-m-d');
 
