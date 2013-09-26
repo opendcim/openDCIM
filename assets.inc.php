@@ -3205,7 +3205,7 @@ class PlannedPath {
 	}
 	
 	private function SelectNode () {
-		//Busco el  nodo de la lista de candidatos el nodo con peso m�nimo
+		//Busco el  nodo de la lista de candidatos el nodo con peso minimo
 		//search node in candidate list with min weight
 		$minweight=99999; //big number
 		$this->DeviceID=0;
@@ -3276,7 +3276,7 @@ class PlannedPath {
 			$cabrow->CabRowID = $cabinet->CabRowID;
 			$cabrow->GetCabRow();
 			
-			//busco el dispositivo final en el mismo armario (si no est� reflejado en un panel)
+			//busco el dispositivo final en el mismo armario (si no este reflejado en un panel)
 			//looking for the end device in the same cabinet (if not reflected in a panel)
 			if ($cab==$this->cab2 && !$this->espejo2){
 				$this->escribe_log(" DEV2 found in actual cabinet (".$cab."-'".$cabinet->Location."')");
