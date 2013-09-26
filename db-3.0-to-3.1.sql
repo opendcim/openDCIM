@@ -27,4 +27,3 @@ UPDATE fac_Config set Value='3.1' WHERE Parameter='Version';
 --
 
 INSERT INTO fac_Config VALUES ('PageSize', 'Letter', 'string', 'string', 'Letter');
->>>>>>> Temporary merge branch 2
