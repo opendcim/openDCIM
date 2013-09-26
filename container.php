@@ -93,7 +93,7 @@
 				width: 600,
 				modal: true,
 				buttons: {
-<?php echo '					',_("Select"),': function() {'; ?>
+<?php echo '					',__("Select"),': function() {'; ?>
 						if($('#imageselection #preview').attr('image')!=""){
 							$('#drawingfilename').val($('#imageselection #preview').attr('image'));
 						}
@@ -180,15 +180,15 @@
 
 echo '<div class="main">
 <h2>',$config->ParameterArray["OrgName"],'</h2>
-<h3>',_("Container Detail"),'</h3>
+<h3>',__("Container Detail"),'</h3>
 <h3>',$status,'</h3>
 <div class="center"><div>
 <form id="containerform" action="',$_SERVER["PHP_SELF"],'" method="POST">
 <div class="table">
 <div>
-   <div><label for="containerid">',_("Container"),'</label></div>
+   <div><label for="containerid">',__("Container"),'</label></div>
    <div><select name="containerid" id="containerid" onChange="form.submit()">
-      <option value="0">',_("New Container"),'</option>';
+      <option value="0">',__("New Container"),'</option>';
 
 	foreach($cList as $cRow){
 		if($cRow->ContainerID == $c->ContainerID){$selected=" selected";}else{$selected="";}
@@ -198,18 +198,18 @@ echo '<div class="main">
 echo '	</select></div>
 </div>
 <div>
-   <div><label for="cname">',_("Name"),'</label></div>
+   <div><label for="cname">',__("Name"),'</label></div>
    <div><input class="validate[required,minSize[3],maxSize[80]]" type="text" name="name" id="cname" size="50" maxlength="80" value="',$c->Name,'"></div>
 </div>
 <div>
-   <div><label for="drawingfilename">',_("Drawing URL"),'</label></div>
+   <div><label for="drawingfilename">',__("Drawing URL"),'</label></div>
    <div><input type="text" name="drawingfilename" id="drawingfilename" size=60 value="',$c->DrawingFileName,'"></div>
 </div>
 <div><input type="hidden" name="cambio_cont" id="cambio_cont" value=""></div>
 <div>
-	<div><label for="parentid">',_("Parent Container"),'</label></div>
+	<div><label for="parentid">',__("Parent Container"),'</label></div>
   	<div><select name="parentid" id="parentid" onChange="cambio_container()">
-      <option value="0">',_("None"),'</option>';
+      <option value="0">',__("None"),'</option>';
 
 //	$container=new Container();
 //	$cList=$container->GetContainerList();
@@ -243,9 +243,9 @@ if ($c->ParentID>0){
 echo '<div class="caption">';
 
 	if($c->ContainerID >0){
-		echo '   <button type="submit" name="action" value="Update">',_("Update"),'</button>';
+		echo '   <button type="submit" name="action" value="Update">',__("Update"),'</button>';
 	}else{
-		echo '   <button type="submit" name="action" value="Create">',_("Create"),'</button>';
+		echo '   <button type="submit" name="action" value="Create">',__("Create"),'</button>';
 	}
 ?>
 </div>
@@ -256,7 +256,7 @@ echo '<div class="caption">';
 				',$imageselect,'
 			</div>
 </div></div>
-<a href="index.php">[ ',_("Return to Main Menu"),' ]</a>'; ?>
+<a href="index.php">[ ',__("Return to Main Menu"),' ]</a>'; ?>
 </div><!-- END div.main -->
 </div><!-- END div.page -->
 </body>

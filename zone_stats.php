@@ -148,7 +148,7 @@ echo '<div class="main">
         <div>',sprintf("%8d %s",$dc->SquareFootage*$prop_zone_dc, $vol),'</div>
   </div>
   <div>
-        <div>',$density,' (',_("approximate"),')</div>
+        <div>',$density,' (',__("approximate"),')</div>
         <div>',(($dc->SquareFootage)?sprintf("%8d ".__("Watts"),$zoneStats["ComputedWatts"]/$dc->SquareFootage/$prop_zone_dc):"0 ".__("Watts")),'</div>
   </div>
   <div>

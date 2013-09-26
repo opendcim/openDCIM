@@ -1695,7 +1695,7 @@ class Container {
 		$tree="\n<ul class=\"mktree\" id=\"datacenters\">\n";;
 		//Add root children
 		$tree.=$c->AddContainerToTree();
-		$tree.="<li class=\"liOpen\" id=\"dc-1\"><a href=\"storageroom.php\">"._("Storage Room")."</a></li>\n";
+		$tree.="<li class=\"liOpen\" id=\"dc-1\"><a href=\"storageroom.php\">".__("Storage Room")."</a></li>\n";
 		$tree.="</ul>\n";
 
 		return $tree;
