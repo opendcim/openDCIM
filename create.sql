@@ -763,7 +763,13 @@ INSERT INTO fac_Config VALUES
 	('cut', '/bin/cut', 'path', 'string', '/bin/cut'),
  	('ToolTips', 'Disabled', 'Enabled/Disabled', 'string', 'Disabled'),
 	('CDUToolTips', 'Disabled', 'Enabled/Disabled', 'string', 'Disabled'),
-        ('PageSize', 'Letter', 'string', 'string', 'Letter')
+	('PageSize', 'Letter', 'string', 'string', 'Letter'),
+	('TemperatureRed', '30', 'degrees', 'float', '30'),
+	('TemperatureYellow', '25', 'degrees', 'float', '25'),
+	('HumidityRedHigh', '75', 'percentage', 'float', '75'),
+	('HumidityRedLow', '35', 'percentage', 'float', '35'),
+	('HumidityYellowHigh', '55', 'percentage', 'float', '55'),
+	('HumidityYellowLow', '45', 'percentage', 'float', '45')	
 ;
 
 --

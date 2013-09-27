@@ -24,3 +24,14 @@ UPDATE fac_Config set Value='3.1' WHERE Parameter='Version';
 --
 
 INSERT INTO fac_Config VALUES ('PageSize', 'Letter', 'string', 'string', 'Letter');
+
+--
+-- Add configuration items for temperature and humidity ranges for DC and Zone drawing
+--
+
+INSERT INTO fac_Config VALUES ('TemperatureRed', '30', 'degrees', 'float', '30'),
+	('TemperatureYellow', '25', 'degrees', 'float', '25'),
+	('HumidityRedHigh', '75', 'percentage', 'float', '75'),
+	('HumidityRedLow', '35', 'percentage', 'float', '35'),
+	('HumidityYellowHigh', '55', 'percentage', 'float', '55'),
+	('HumidityYellowLow', '45', 'percentage', 'float', '45');	

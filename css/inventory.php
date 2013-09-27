@@ -150,7 +150,7 @@ div#imageselection { display: none;}
 div#dcstats { display: table;}
 div#dcstats > div{ width: 100%;}
 div#dcstats .table + .table > div > div + div{white-space: pre; text-align: right;}
-.canvas {position: relative; margin-top: 2em;}
+.canvas {position: relative;}
 .canvas img {position: absolute; top: 0; left: 0;}
 
 /* Storage Room */
@@ -727,3 +727,5 @@ table#parcheos table tr td {padding: 2px; border: 1px solid grey; text-align: le
 table#parcheos tr td:first-child + td table {margin-left: auto;}
 
 p.errormsg {padding: 20px; background-color: #DDDDDD; font-size: 120%; font-weight: bold; color: red;}
+
+div#maptitle {padding: 8px; font-size: 120%; font-weight: bold;} 

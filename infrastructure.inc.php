@@ -339,7 +339,8 @@ class DataCenter {
 						foreach($racks as $row){
 							$mapHTML.="<area href=\"cabnavigator.php?cabinetid={$row["CabinetID"]}\" shape=\"rect\"";
 							$mapHTML.=" coords=\"{$row["MapX1"]},{$row["MapY1"]},{$row["MapX2"]},{$row["MapY2"]}\"";
-							$mapHTML.=" alt=\"{$row["Location"]}\" title=\"{$row["Location"]}\">\n";
+//							$mapHTML.=" alt=\"{$row["Location"]}\" title=\"{$row["Location"]}\">\n";
+							$mapHTML.=" alt=\"{$row["Location"]}\">\n";
 						}
 					}
 				}
@@ -347,7 +348,7 @@ class DataCenter {
 				$mapHTML.="</map>\n";
 				$mapHTML.="<canvas id=\"mapCanvas\" width=\"$width\" height=\"$height\"></canvas>\n";
 					 
-				$mapHTML .= "</div>\n";
+				$mapHTML .= "<br><br><br><br><br><br><br><br></div>\n";
 			}
 		}
 		return $mapHTML;
@@ -378,14 +379,37 @@ class DataCenter {
 				$PowerRed=intval($this->dcconfig->ParameterArray["PowerRed"]);
 				$PowerYellow=intval($this->dcconfig->ParameterArray["PowerYellow"]);
 				
+				// Temperature 
+				$unknounColor=html2rgb('FFFFFF');
+				//$TemperatureGreen=20;
+				$TemperatureYellow=intval($this->dcconfig->ParameterArray["TemperatureYellow"]);
+				$TemperatureRed=intval($this->dcconfig->ParameterArray["TemperatureRed"]);
+				
+				// Humidity
+				$HumidityMin=intval($this->dcconfig->ParameterArray["HumidityRedLow"]);
+				$HumidityMedMin=intval($this->dcconfig->ParameterArray["HumidityYellowLow"]);			
+				$HumidityMedMax=intval($this->dcconfig->ParameterArray["HumidityYellowHigh"]);				
+				$HumidityMax=intval($this->dcconfig->ParameterArray["HumidityRedHigh"]);
+				
+				//Real Power
+				$RealPowerRed=intval($this->dcconfig->ParameterArray["PowerRed"]);
+				$RealPowerYellow=intval($this->dcconfig->ParameterArray["PowerYellow"]);
+				
 				$script.="  <script type=\"text/javascript\">\n	function loadCanvas(){\n";
 				$space="	function space(){\n";
 				$weight="	function weight(){\n";
 				$power="	function power(){\n";
+				$temperature="	function temperatura(){\n";
+				$humidity="	function humedad(){\n";				
+				$realpower="	function realpower(){\n";				
+				
+				$script.="	var mycanvas=document.getElementById(\"mapCanvas\");\n		var width = mycanvas.width;\n		mycanvas.width = width + 1;\n		width = mycanvas.width;\n		mycanvas.width = width - 1;\n		var context=mycanvas.getContext('2d');\n";
 				$space.="	var mycanvas=document.getElementById(\"mapCanvas\");\n		var width = mycanvas.width;\n		mycanvas.width = width + 1;\n		width = mycanvas.width;\n		mycanvas.width = width - 1;\n		var context=mycanvas.getContext('2d');\n";
 				$weight.="	var mycanvas=document.getElementById(\"mapCanvas\");\n		var width = mycanvas.width;\n		mycanvas.width = width + 1;\n		width = mycanvas.width;\n		mycanvas.width = width - 1;\n		var context=mycanvas.getContext('2d');\n";
 				$power.="	var mycanvas=document.getElementById(\"mapCanvas\");\n		var width = mycanvas.width;\n		mycanvas.width = width + 1;\n		width = mycanvas.width;\n		mycanvas.width = width - 1;\n		var context=mycanvas.getContext('2d');\n";
-				$script.="	var mycanvas=document.getElementById(\"mapCanvas\");\n		var width = mycanvas.width;\n		mycanvas.width = width + 1;\n		width = mycanvas.width;\n		mycanvas.width = width - 1;\n		var context=mycanvas.getContext('2d');\n";
+				$temperature.="	var mycanvas=document.getElementById(\"mapCanvas\");\n		var width = mycanvas.width;\n		mycanvas.width = width + 1;\n		width = mycanvas.width;\n		mycanvas.width = width - 1;\n		var context=mycanvas.getContext('2d');\n";
+				$humidity.="	var mycanvas=document.getElementById(\"mapCanvas\");\n		var width = mycanvas.width;\n		mycanvas.width = width + 1;\n		width = mycanvas.width;\n		mycanvas.width = width - 1;\n		var context=mycanvas.getContext('2d');\n";
+				$realpower.="	var mycanvas=document.getElementById(\"mapCanvas\");\n		var width = mycanvas.width;\n		mycanvas.width = width + 1;\n		width = mycanvas.width;\n		mycanvas.width = width - 1;\n		var context=mycanvas.getContext('2d');\n";
 				
 				// get image file attributes and type
 				list($width, $height, $type, $attr)=getimagesize($mapfile);
@@ -393,92 +417,163 @@ class DataCenter {
 				$space.="		context.globalCompositeOperation = 'destination-over';\n		var img=new Image();\n		img.onload=function(){\n			context.drawImage(img,0,0);\n		}\n		img.src=\"$mapfile\";\n";
 				$weight.="		context.globalCompositeOperation = 'destination-over';\n		var img=new Image();\n		img.onload=function(){\n			context.drawImage(img,0,0);\n		}\n		img.src=\"$mapfile\";\n";
 				$power.="		context.globalCompositeOperation = 'destination-over';\n		var img=new Image();\n		img.onload=function(){\n			context.drawImage(img,0,0);\n		}\n		img.src=\"$mapfile\";\n";
-				$sql="SELECT * FROM fac_Cabinet WHERE DataCenterID=\"$this->DataCenterID\"";
+            	$temperature.="		context.globalCompositeOperation = 'destination-over';\n		var img=new Image();\n		img.onload=function(){\n			context.drawImage(img,0,0);\n		}\n		img.src=\"$mapfile\";\n"; 
+            	$humidity.="		context.globalCompositeOperation = 'destination-over';\n		var img=new Image();\n		img.onload=function(){\n			context.drawImage(img,0,0);\n		}\n		img.src=\"$mapfile\";\n"; 
+				$realpower.="		context.globalCompositeOperation = 'destination-over';\n		var img=new Image();\n		img.onload=function(){\n			context.drawImage(img,0,0);\n		}\n		img.src=\"$mapfile\";\n"; 
 				
-				// read all cabinets and draw image map
-				foreach($this->query($sql) as $cabRow){
-					$cab->CabinetID=$cabRow["CabinetID"];
-					$cab->GetCabinet();
-					$dev->Cabinet=$cab->CabinetID;
-					$dev->Location=$cab->Location;
-    	    		$devList=$dev->ViewDevicesByCabinet();
-					$currentHeight = $cab->CabinetHeight;
-        			$totalWatts = $totalWeight = $totalMoment =0;
-					while(list($devID,$device)=each($devList)){
-        	        	$templ->TemplateID=$device->TemplateID;
-            	    	$templ->GetTemplateByID();
-
-						if($device->NominalWatts >0){
-							$totalWatts += $device->NominalWatts;
-						}elseif($device->TemplateID!=0 && $templ->Wattage>0){
-							$totalWatts += $templ->Wattage;
+				$sql="SELECT C.*, Temp, Humidity, P.RealPower, LastRead, RPLastRead 
+					FROM ((fac_Cabinet C LEFT JOIN fac_CabinetTemps T ON C.CabinetId = T.CabinetID) LEFT JOIN
+						(SELECT CabinetID, SUM(Wattage) RealPower
+						FROM fac_PowerDistribution PD LEFT JOIN fac_PDUStats PS ON PD.PDUID=PS.PDUID
+						GROUP BY CabinetID) P ON C.CabinetId = P.CabinetID) LEFT JOIN
+						(SELECT CabinetID, MAX(LastRead) RPLastRead
+						FROM fac_PowerDistribution PD LEFT JOIN fac_PDUStats PS ON PD.PDUID=PS.PDUID
+						GROUP BY CabinetID) PLR ON C.CabinetId = PLR.CabinetID
+				    WHERE C.DataCenterID=".intval($this->DataCenterID).";";
+	
+				$fechaLecturaTemps=0;
+				$fechaLecturaRP=0;
+				if($racks=$this->query($sql)){ 
+					// read all cabinets and draw image map
+					foreach($racks as $cabRow){
+						$cab->CabinetID=$cabRow["CabinetID"];
+						if (!$cab->GetCabinet()){
+							continue;
 						}
-						if($device->DeviceType=="Chassis"){
-							$childList=$device->GetDeviceChildren();
-							$childTempl=new DeviceTemplate();
-							foreach($childList as $childDev){
-								$childTempl->TemplateID=$childDev->TemplateID;
-								$childTempl->GetTemplateByID();
-								
-								if($childDev->NominalWatts>0){
-									$totalWatts+=$childDev->NominalWatts;
-								}elseif($childDev->TemplateID!=0&&$childTempl->Wattage>0){
-									$totalWatts+=$childTempl->Wattage;
-								}
-								if($childDev->TemplateID!=0){
-									$totalWeight+=$childTempl->Weight;
-									//Child device's position is parent's position
-									$totalMoment+=($childTempl->Weight*($device->Position+($device->Height/2)));
-								}
-							}
+						if ($cab->MapX1==$cab->MapX2 || $cab->MapY1==$cab->MapY2){
+							continue;
 						}
-						if($device->TemplateID!=0) {
-							$totalWeight+=$templ->Weight;
-							$totalMoment+=($templ->Weight*($device->Position+($device->Height/2)));
-						}
-					}
+						$dev->Cabinet=$cab->CabinetID;
+						$dev->Location=$cab->Location;  //$dev->Location ???
+	    	    		$devList=$dev->ViewDevicesByCabinet();
+						$currentHeight = $cab->CabinetHeight;
+	        			$totalWatts = $totalWeight = $totalMoment =0;
+						$currentTemperature=$cabRow["Temp"];
+						$currentHumidity=$cabRow["Humidity"];
+						$currentRealPower=$cabRow["RealPower"];
 						
-					$CenterofGravity=@round($totalMoment /$totalWeight);
-
-        			$used=$cab->CabinetOccupancy($cab->CabinetID);
-					// check to make sure the cabinet height is set to keep errors out of the logs
-					if(!isset($cab->CabinetHeight)||$cab->CabinetHeight==0){$SpacePercent=100;}else{$SpacePercent=number_format($used /$cab->CabinetHeight *100,0);}
-					// check to make sure there is a weight limit set to keep errors out of logs
-					if(!isset($cab->MaxWeight)||$cab->MaxWeight==0){$WeightPercent=0;}else{$WeightPercent=number_format($totalWeight /$cab->MaxWeight *100,0);}
-					// check to make sure there is a kilowatt limit set to keep errors out of logs
-    	    		if(!isset($cab->MaxKW)||$cab->MaxKW==0){$PowerPercent=0;}else{$PowerPercent=number_format(($totalWatts /1000 ) /$cab->MaxKW *100,0);}
+						while(list($devID,$device)=each($devList)){
+							$totalWatts+=$device->GetDeviceTotalPower();
+							$DeviceTotalWeight=$device->GetDeviceTotalWeight();
+							$totalWeight+=$DeviceTotalWeight;
+							$totalMoment+=($DeviceTotalWeight*($device->Position+($device->Height/2)));
+						}
+							
+	        			$used=$cab->CabinetOccupancy($cab->CabinetID);
+						// check to make sure the cabinet height is set to keep errors out of the logs
+						if(!isset($cab->CabinetHeight)||$cab->CabinetHeight==0){$SpacePercent=100;}else{$SpacePercent=number_format($used /$cab->CabinetHeight *100,0);}
+						// check to make sure there is a weight limit set to keep errors out of logs
+						if(!isset($cab->MaxWeight)||$cab->MaxWeight==0){$WeightPercent=0;}else{$WeightPercent=number_format($totalWeight /$cab->MaxWeight *100,0);}
+						// check to make sure there is a kilowatt limit set to keep errors out of logs
+	    	    		if(!isset($cab->MaxKW)||$cab->MaxKW==0){$PowerPercent=0;}else{$PowerPercent=number_format(($totalWatts /1000 ) /$cab->MaxKW *100,0);}
+						if(!isset($cab->MaxKW)||$cab->MaxKW==0){$RealPowerPercent=0;}else{$RealPowerPercent=number_format(($currentRealPower /1000 ) /$cab->MaxKW *100,0, ",", ".");}
 					
-					//Decide which color to paint on the canvas depending on the thresholds
-					if($SpacePercent>$SpaceRed){$scolor=$CriticalColor;}elseif($SpacePercent>$SpaceYellow){$scolor=$CautionColor;}else{$scolor=$GoodColor;}
-					if($WeightPercent>$WeightRed){$wcolor=$CriticalColor;}elseif($WeightPercent>$WeightYellow){$wcolor=$CautionColor;}else{$wcolor=$GoodColor;}
-					if($PowerPercent>$PowerRed){$pcolor=$CriticalColor;}elseif($PowerPercent>$PowerYellow){$pcolor=$CautionColor;}else{$pcolor=$GoodColor;}
-					if($SpacePercent>$SpaceRed || $WeightPercent>$WeightRed || $PowerPercent>$PowerRed){$color=$CriticalColor;}elseif($SpacePercent>$SpaceYellow || $WeightPercent>$WeightYellow || $PowerPercent>$PowerYellow){$color=$CautionColor;}else{$color=$GoodColor;}
-
-					$width=$cab->MapX2-$cab->MapX1;
-					$height=$cab->MapY2-$cab->MapY1;
-					$textstrlen=strlen($dev->Location);
-					$textXcoord=$cab->MapX1+3;
-					$textYcoord=$cab->MapY1+floor($height/2);
-
-					$border="\n\t\tcontext.strokeStyle='#000000';\n\t\tcontext.lineWidth=1;\n\t\tcontext.strokeRect($cab->MapX1,$cab->MapY1,$width,$height);";
-					$statuscolor="\n\t\tcontext.fillRect($cab->MapX1,$cab->MapY1,$width,$height);";
-					$label="\n\t\tcontext.fillStyle='#000000';\n\t\tcontext.font='bold 7px sans-serif';\n\t\tcontext.fillText('$dev->Location',$textXcoord,$textYcoord);";
-
-					// Uncomment this to add borders and rack labels to the canvas drawing of the data center.
-					// Discuss moving this into a configuration item for the future.
-					$border=$label="";
-
-					$script.="\t\tcontext.fillStyle=\"rgba({$color[0]}, {$color[1]}, {$color[2]}, 0.35)\";$border$statuscolor$label\n";
-					$space.="\t\tcontext.fillStyle=\"rgba({$scolor[0]}, {$scolor[1]}, {$scolor[2]}, 0.35)\";$border$statuscolor$label\n";
-					$weight.="\t\tcontext.fillStyle=\"rgba({$wcolor[0]}, {$wcolor[1]}, {$wcolor[2]}, 0.35)\";$border$statuscolor$label\n";
-					$power.="\t\tcontext.fillStyle=\"rgba({$pcolor[0]}, {$pcolor[1]}, {$pcolor[2]}, 0.35)\";$border$statuscolor$label\n";
+						//Decide which color to paint on the canvas depending on the thresholds
+						if($SpacePercent>$SpaceRed){$scolor=$CriticalColor;}elseif($SpacePercent>$SpaceYellow){$scolor=$CautionColor;}else{$scolor=$GoodColor;}
+						if($WeightPercent>$WeightRed){$wcolor=$CriticalColor;}elseif($WeightPercent>$WeightYellow){$wcolor=$CautionColor;}else{$wcolor=$GoodColor;}
+						if($PowerPercent>$PowerRed){$pcolor=$CriticalColor;}elseif($PowerPercent>$PowerYellow){$pcolor=$CautionColor;}else{$pcolor=$GoodColor;}
+						if($RealPowerPercent>$RealPowerRed){$rpcolor=$CriticalColor;}elseif($RealPowerPercent>$RealPowerYellow){$rpcolor=$CautionColor;}else{$rpcolor=$GoodColor;}
+						
+						/* Example for continuous color range for temperature
+						if($currentTemperature==0){$tcolor=$unknounColor;}
+							elseif($currentTemperature>$TemperatureRed){$tcolor=$CriticalColor;}
+							elseif($currentTemperature<$TemperatureGreen){$tcolor=$GoodColor;}
+							elseif($currentTemperature<$TemperatureYellow){
+								$tcolor[0]=intval(($CautionColor[0]-$GoodColor[0])/($TemperatureYellow-$TemperatureGreen)*($currentTemperature-$TemperatureGreen)+$GoodColor[0]);
+								$tcolor[1]=intval(($CautionColor[1]-$GoodColor[1])/($TemperatureYellow-$TemperatureGreen)*($currentTemperature-$TemperatureGreen)+$GoodColor[1]);
+								$tcolor[2]=intval(($CautionColor[2]-$GoodColor[2])/($TemperatureYellow-$TemperatureGreen)*($currentTemperature-$TemperatureGreen)+$GoodColor[2]);}
+							else{
+								$tcolor[0]=intval(($CriticalColor[0]-$CautionColor[0])/($TemperatureRed-$TemperatureYellow)*($currentTemperature-$TemperatureYellow)+$CautionColor[0]);
+								$tcolor[1]=intval(($CriticalColor[1]-$CautionColor[1])/($TemperatureRed-$TemperatureYellow)*($currentTemperature-$TemperatureYellow)+$CautionColor[1]);
+								$tcolor[2]=intval(($CriticalColor[2]-$CautionColor[2])/($TemperatureRed-$TemperatureYellow)*($currentTemperature-$TemperatureYellow)+$CautionColor[2]);}
+						*/
+						if($currentTemperature==0){$tcolor=$unknounColor;}
+							elseif($currentTemperature>$TemperatureRed){$tcolor=$CriticalColor;}
+							elseif($currentTemperature>$TemperatureYellow){$tcolor=$CautionColor;}
+							else{$tcolor=$GoodColor;}
+						
+						if($currentHumidity==0){$hcolor=$unknounColor;}
+							elseif($currentHumidity>$HumidityMax || $currentHumidity<$HumidityMin){$hcolor=$CriticalColor;}
+							elseif($currentHumidity>$HumidityMedMax || $currentHumidity<$HumidityMedMin) {$hcolor=$CautionColor;}
+							else{$hcolor=$GoodColor;}
+												
+						if($SpacePercent>$SpaceRed || $WeightPercent>$WeightRed || $PowerPercent>$PowerRed || 
+							$currentTemperature>$TemperatureRed || $currentHumidity>$HumidityMax || 
+							$currentHumidity<$HumidityMin && $currentHumidity!=0 || 
+							$RealPowerPercent>$RealPowerRed){$color=$CriticalColor;}
+	        			elseif($SpacePercent>$SpaceYellow || $WeightPercent>$WeightYellow || $PowerPercent>$PowerYellow || 
+	        				$currentTemperature>$TemperatureYellow || $currentHumidity>$HumidityMedMax || 
+	        				$currentHumidity<$HumidityMedMin && $currentHumidity!=0  || 
+	        				$RealPowerPercent>$RealPowerYellow){$color=$CautionColor;}
+	        			else{$color=$GoodColor;}
+	        			
+						$width=$cab->MapX2-$cab->MapX1;
+						$height=$cab->MapY2-$cab->MapY1;
+						$textstrlen=strlen($dev->Location);
+						$textXcoord=$cab->MapX1+3;
+						$textYcoord=$cab->MapY1+floor($height*2/3);
+	
+						$border="\n\t\tcontext.strokeStyle='#000000';\n\t\tcontext.lineWidth=1;\n\t\tcontext.strokeRect($cab->MapX1,$cab->MapY1,$width,$height);";
+						$statuscolor="\n\t\tcontext.fillRect($cab->MapX1,$cab->MapY1,$width,$height);";
+						$label="\n\t\tcontext.fillStyle='#000000';\n\t\tcontext.font='10px arial';\n\t\tcontext.fillText('$dev->Location',$textXcoord,$textYcoord);\n";
+						$labelsp="\n\t\tcontext.fillStyle='#000000';\n\t\tcontext.font='bold 12px arial';\n\t\tcontext.fillText('".number_format($used,0, ",", ".")."',$textXcoord,$textYcoord);\n";
+						$labelwe="\n\t\tcontext.fillStyle='#000000';\n\t\tcontext.font='bold 12px arial';\n\t\tcontext.fillText('".number_format($totalWeight,0, ",", ".")."',$textXcoord,$textYcoord);\n";
+						$labelpo="\n\t\tcontext.fillStyle='#000000';\n\t\tcontext.font='10px arial';\n\t\tcontext.fillText('".number_format($totalWatts/1000,2, ",", ".")."',$textXcoord,$textYcoord);\n";
+						$labelte="\n\t\tcontext.fillStyle='#000000';\n\t\tcontext.font='10px arial';\n\t\tcontext.fillText('".(($currentTemperature>0)?number_format($currentTemperature,0, ",", "."):"")."',$textXcoord,$textYcoord);\n";
+						$labelhu="\n\t\tcontext.fillStyle='#000000';\n\t\tcontext.font='10px arial';\n\t\tcontext.fillText('".(($currentHumidity>0)?number_format($currentHumidity,0, ",", ".")."%":"")."',$textXcoord,$textYcoord);\n";
+						$labelrp="\n\t\tcontext.fillStyle='#000000';\n\t\tcontext.font='10px arial';\n\t\tcontext.fillText('".(($currentRealPower>0)?number_format($currentRealPower/1000,2, ",", "."):"")."',$textXcoord,$textYcoord);\n";
+	
+						// Uncomment this to add borders and rack labels to the canvas drawing of the data center.
+						// Discuss moving this into a configuration item for the future.
+						$border=$label=$labelsp=$labelwe=$labelpo=$labelte=$labelhu=$labelrp="";
+	
+						$script.="\t\tcontext.fillStyle=\"rgba({$color[0]}, {$color[1]}, {$color[2]}, 0.35)\";$border$statuscolor$label\n";
+						$space.="\t\tcontext.fillStyle=\"rgba({$scolor[0]}, {$scolor[1]}, {$scolor[2]}, .35)\";$border$statuscolor$labelsp\n";
+						$weight.="\t\tcontext.fillStyle=\"rgba({$wcolor[0]}, {$wcolor[1]}, {$wcolor[2]}, 0.35)\";$border$statuscolor$labelwe\n";
+						$power.="\t\tcontext.fillStyle=\"rgba({$pcolor[0]}, {$pcolor[1]}, {$pcolor[2]}, 0.35)\";$border$statuscolor$labelpo\n";
+						$temperature.="\t\tcontext.fillStyle=\"rgba({$tcolor[0]}, {$tcolor[1]}, {$tcolor[2]}, 0.35)\";$border$statuscolor$labelte\n";
+						$humidity.="\t\tcontext.fillStyle=\"rgba({$hcolor[0]}, {$hcolor[1]}, {$hcolor[2]}, 0.35)\";$border$statuscolor$labelhu\n";
+						$realpower.="\t\tcontext.fillStyle=\"rgba({$rpcolor[0]}, {$rpcolor[1]}, {$rpcolor[2]}, 0.35)\";$border$statuscolor$labelrp\n";
+						
+						$fechaLecturaTemps=(!is_null($cabRow["LastRead"])&&($cabRow["LastRead"]>$fechaLecturaTemps))?date('d-m-Y',strtotime(($cabRow["LastRead"]))):$fechaLecturaTemps;
+						$fechaLecturaRP=(!is_null($cabRow["RPLastRead"])&&($cabRow["RPLastRead"]>$fechaLecturaRP))?date('d-m-Y',strtotime(($cabRow["RPLastRead"]))):$fechaLecturaRP;
+					}
 				}
 			}
-			$space.="	}\n";
-			$weight.="	}\n";
-			$power.="	}\n";
-			$script.="	}\n";
-			$script.=$space.$weight.$power;
+			
+			//Key
+			$leyenda="document.getElementById('maptitle').innerHTML='".__("OVERVIEW: worse state of cabinets")."';";
+			$leyendasp="document.getElementById('maptitle').innerHTML='".__("SPACE: occupation of cabinets")."';";
+			$leyendawe="document.getElementById('maptitle').innerHTML='".__("WEIGHT: Supported weight by cabinets")."';";
+			$leyendapo="document.getElementById('maptitle').innerHTML='".__("POWER: Computed from devices power supplies")."';";
+			$leyendate="document.getElementById('maptitle').innerHTML='".__("TEMPERATURE").": ".($fechaLecturaTemps>0?__("Measured on")." ".$fechaLecturaTemps:__("no data"))."';";
+			$leyendahu="document.getElementById('maptitle').innerHTML='".__("HUMIDITY").": ".($fechaLecturaTemps>0?__("Measured on")." ".$fechaLecturaTemps:__("no data"))."';";
+			$leyendarp="document.getElementById('maptitle').innerHTML='".__("REAL POWER").": ".($fechaLecturaRP>0?__("Measured on")." ".$fechaLecturaRP:__("no data"))."';";
+						/*
+			$leyenda="\n\t\tcontext.fillStyle='#000000';\n\t\tcontext.font='15px arial';
+				\n\t\tcontext.fillText('".__("OVERVIEW: worse state of cabinets")."',5,20);";
+			$leyendasp="\n\t\tcontext.fillStyle='#000000';\n\t\tcontext.font='15px arial';
+				\n\t\tcontext.fillText('".__("SPACE: occupation of cabinets")."',5,20);";
+			$leyendawe="\n\t\tcontext.fillStyle='#000000';\n\t\tcontext.font='15px arial';
+				\n\t\tcontext.fillText('".__("WEIGHT: Supported weight by cabinets")."',5,20);";
+			$leyendapo="\n\t\tcontext.fillStyle='#000000';\n\t\tcontext.font='15px arial';
+				\n\t\tcontext.fillText('".__("POWER: Computed from devices power supplies")."',5,20);";
+			$leyendate="\n\t\tcontext.fillStyle='#000000';\n\t\tcontext.font='15px arial';
+				\n\t\tcontext.fillText('".__("TEMPERATURE: Measured on")." ".$fechaLecturaTemps."',5,20);";
+			$leyendahu="\n\t\tcontext.fillStyle='#000000';\n\t\tcontext.font='15px arial';
+				\n\t\tcontext.fillText('".__("HUMIDITY: % Measured on")." ".$fechaLecturaTemps."',5,20);";
+			$leyendarp="\n\t\tcontext.fillStyle='#000000';\n\t\tcontext.font='15px arial';
+				\n\t\tcontext.fillText('".__("REAL POWER: Measured on")." ".$fechaLecturaRP."',5,20);";
+			*/
+			$space.=$leyendasp."\n	}\n";
+			$weight.=$leyendawe."\n	}\n";
+			$power.=$leyendapo."\n	}\n";
+			$temperature.=$leyendate."\n	}\n";
+			$humidity.=$leyendahu."\n	}\n";
+			$realpower.=$leyendarp."\n	}\n";
+			
+			$script.=$leyenda."\n	}\n";
+			$script.=$space.$weight.$power.$temperature.$humidity.$realpower;
 			$script.="	</script>\n";
 		}
 		return $script;
@@ -1133,8 +1228,6 @@ class Zone {
 			MapX2=$this->MapX2,
 			MapY2=$this->MapY2, 
 			MapZoom=$this->MapZoom 
-			MapY2=$this->MapY2,
-			MapZoom=$this->MapZoom
 			WHERE ZoneID=$this->ZoneID;";
 		if(!$this->query($sql)){
 			return false;
@@ -1273,13 +1366,15 @@ class Zone {
 						foreach($racks as $row){
 							$mapHTML.="<area href=\"cabnavigator.php?cabinetid={$row["CabinetID"]}\" shape=\"rect\"";
 							$mapHTML.=" coords=\"".(($row["MapX1"]-$this->MapX1)*$zoom).",".(($row["MapY1"]-$this->MapY1)*$zoom).",".(($row["MapX2"]-$this->MapX1)*$zoom).",".(($row["MapY2"]-$this->MapY1)*$zoom)."\"";
-							$mapHTML.=" alt=\"{$row["Location"]}\" title=\"{$row["Location"]}\">\n";
+							//$mapHTML.=" alt=\"{$row["Location"]}\" title=\"{$row["Location"]}\">\n";
+							$mapHTML.=" alt=\"{$row["Location"]}\">\n";
 						}
 					}
 				}
 				$mapHTML.="</map>\n";
 				$mapHTML.="<canvas id=\"mapCanvas\" width=\"$width\" height=\"$height\"></canvas>\n";
-				$mapHTML .= "</div>\n";
+					 
+				$mapHTML .= "<br><br><br><br><br><br><br><br></div>\n";
 			}
 		}
 		return $mapHTML;
@@ -1311,14 +1406,38 @@ class Zone {
 				$WeightYellow=intval($dc->dcconfig->ParameterArray["WeightYellow"]);
 				$PowerRed=intval($dc->dcconfig->ParameterArray["PowerRed"]);
 				$PowerYellow=intval($dc->dcconfig->ParameterArray["PowerYellow"]);
+				
+				// Temperature 
+				$unknounColor=html2rgb('FFFFFF');
+				$TemperatureYellow=intval($dc->dcconfig->ParameterArray["TemperatureYellow"]);
+				$TemperatureRed=intval($dc->dcconfig->ParameterArray["TemperatureRed"]);
+				
+				// Humidity
+				$HumidityMin=intval($dc->dcconfig->ParameterArray["HumidityRedLow"]);
+				$HumidityMedMin=intval($dc->dcconfig->ParameterArray["HumidityYellowLow"]);			
+				$HumidityMedMax=intval($dc->dcconfig->ParameterArray["HumidityYellowHigh"]);				
+				$HumidityMax=intval($dc->dcconfig->ParameterArray["HumidityRedHigh"]);
+								
+				//Real Power
+				$RealPowerRed=intval($dc->dcconfig->ParameterArray["PowerRed"]);
+				$RealPowerYellow=intval($dc->dcconfig->ParameterArray["PowerYellow"]);
+				
 				$script.="  <script type=\"text/javascript\">\n	function loadCanvas(){\n";
 				$space="	function space(){\n";
 				$weight="	function weight(){\n";
 				$power="	function power(){\n";
+				$temperature="	function temperatura(){\n";
+				$humidity="	function humedad(){\n";				
+				$realpower="	function realpower(){\n";				
+				
+				$script.="	var mycanvas=document.getElementById(\"mapCanvas\");\n		var width = mycanvas.width;\n		mycanvas.width = width + 1;\n		width = mycanvas.width;\n		mycanvas.width = width - 1;\n		var context=mycanvas.getContext('2d');\n";
 				$space.="	var mycanvas=document.getElementById(\"mapCanvas\");\n		var width = mycanvas.width;\n		mycanvas.width = width + 1;\n		width = mycanvas.width;\n		mycanvas.width = width - 1;\n		var context=mycanvas.getContext('2d');\n";
 				$weight.="	var mycanvas=document.getElementById(\"mapCanvas\");\n		var width = mycanvas.width;\n		mycanvas.width = width + 1;\n		width = mycanvas.width;\n		mycanvas.width = width - 1;\n		var context=mycanvas.getContext('2d');\n";
 				$power.="	var mycanvas=document.getElementById(\"mapCanvas\");\n		var width = mycanvas.width;\n		mycanvas.width = width + 1;\n		width = mycanvas.width;\n		mycanvas.width = width - 1;\n		var context=mycanvas.getContext('2d');\n";
-				$script.="	var mycanvas=document.getElementById(\"mapCanvas\");\n		var width = mycanvas.width;\n		mycanvas.width = width + 1;\n		width = mycanvas.width;\n		mycanvas.width = width - 1;\n		var context=mycanvas.getContext('2d');\n";
+				$temperature.="	var mycanvas=document.getElementById(\"mapCanvas\");\n		var width = mycanvas.width;\n		mycanvas.width = width + 1;\n		width = mycanvas.width;\n		mycanvas.width = width - 1;\n		var context=mycanvas.getContext('2d');\n";
+				$humidity.="	var mycanvas=document.getElementById(\"mapCanvas\");\n		var width = mycanvas.width;\n		mycanvas.width = width + 1;\n		width = mycanvas.width;\n		mycanvas.width = width - 1;\n		var context=mycanvas.getContext('2d');\n";
+				$realpower.="	var mycanvas=document.getElementById(\"mapCanvas\");\n		var width = mycanvas.width;\n		mycanvas.width = width + 1;\n		width = mycanvas.width;\n		mycanvas.width = width - 1;\n		var context=mycanvas.getContext('2d');\n";
+								
 				// get image file attributes and type
 				list($width, $height, $type, $attr)=getimagesize($mapfile);
 				//$width=($this->MapX2-$this->MapX1)*2;
@@ -1327,89 +1446,148 @@ class Zone {
 				$space.="		context.globalCompositeOperation = 'destination-over';\n		var img=new Image();\n		img.onload=function(){\n			context.drawImage(img,-$this->MapX1*$zoom,-$this->MapY1*$zoom,$width*$zoom,$height*$zoom);\n		}\n		img.src=\"$mapfile\";\n";
 				$weight.="		context.globalCompositeOperation = 'destination-over';\n		var img=new Image();\n		img.onload=function(){\n			context.drawImage(img,-$this->MapX1*$zoom,-$this->MapY1*$zoom,$width*$zoom,$height*$zoom);\n		}\n		img.src=\"$mapfile\";\n";
 				$power.="		context.globalCompositeOperation = 'destination-over';\n		var img=new Image();\n		img.onload=function(){\n			context.drawImage(img,-$this->MapX1*$zoom,-$this->MapY1*$zoom,$width*$zoom,$height*$zoom);\n		}\n		img.src=\"$mapfile\";\n";
-				$sql="SELECT * FROM fac_Cabinet WHERE ZoneID=\"$this->ZoneID\"";
-				// read all cabinets and draw image map
-				foreach($this->query($sql) as $cabRow){
-					$cab->CabinetID=$cabRow["CabinetID"];
-					$cab->GetCabinet();
-					$dev->Cabinet=$cab->CabinetID;
-					$dev->Location=$cab->Location;
-    	    		$devList=$dev->ViewDevicesByCabinet();
-					$currentHeight = $cab->CabinetHeight;
-        			$totalWatts = $totalWeight = $totalMoment =0;
-					while(list($devID,$device)=each($devList)){
-        	        	$templ->TemplateID=$device->TemplateID;
-            	    	$templ->GetTemplateByID();
+            	$temperature.="		context.globalCompositeOperation = 'destination-over';\n		var img=new Image();\n		img.onload=function(){\n			context.drawImage(img,-$this->MapX1*$zoom,-$this->MapY1*$zoom,$width*$zoom,$height*$zoom);\n		}\n		img.src=\"$mapfile\";\n"; 
+            	$humidity.="		context.globalCompositeOperation = 'destination-over';\n		var img=new Image();\n		img.onload=function(){\n			context.drawImage(img,-$this->MapX1*$zoom,-$this->MapY1*$zoom,$width*$zoom,$height*$zoom);\n		}\n		img.src=\"$mapfile\";\n"; 
+				$realpower.="		context.globalCompositeOperation = 'destination-over';\n		var img=new Image();\n		img.onload=function(){\n			context.drawImage(img,-$this->MapX1*$zoom,-$this->MapY1*$zoom,$width*$zoom,$height*$zoom);\n		}\n		img.src=\"$mapfile\";\n"; 
+				
+				$sql="SELECT C.*, Temp, Humidity, P.RealPower, LastRead, RPLastRead 
+					FROM ((fac_Cabinet C LEFT JOIN fac_CabinetTemps T ON C.CabinetId = T.CabinetID) LEFT JOIN
+						(SELECT CabinetID, SUM(Wattage) RealPower
+						FROM fac_PowerDistribution PD LEFT JOIN fac_PDUStats PS ON PD.PDUID=PS.PDUID
+						GROUP BY CabinetID) P ON C.CabinetId = P.CabinetID) LEFT JOIN
+						(SELECT CabinetID, MAX(LastRead) RPLastRead
+						FROM fac_PowerDistribution PD LEFT JOIN fac_PDUStats PS ON PD.PDUID=PS.PDUID
+						GROUP BY CabinetID) PLR ON C.CabinetId = PLR.CabinetID
+				    WHERE C.ZoneID=".intval($this->ZoneID).";";
 
-						if($device->NominalWatts >0){
-							$totalWatts += $device->NominalWatts;
-						}elseif($device->TemplateID!=0 && $templ->Wattage>0){
-							$totalWatts += $templ->Wattage;
+				$fechaLecturaTemps=0;
+				$fechaLecturaRP=0;
+				if($racks=$this->query($sql)){ 
+					// read all cabinets and draw image map
+					foreach($racks as $cabRow){
+						$cab->CabinetID=$cabRow["CabinetID"];
+						if (!$cab->GetCabinet()){
+							continue;
 						}
-						if($device->DeviceType=="Chassis"){
-							$childList=$device->GetDeviceChildren();
-							$childTempl=new DeviceTemplate();
-							foreach($childList as $childDev){
-								$childTempl->TemplateID=$childDev->TemplateID;
-								$childTempl->GetTemplateByID();
-								if($childDev->NominalWatts>0){
-									$totalWatts+=$childDev->NominalWatts;
-								}elseif($childDev->TemplateID!=0&&$childTempl->Wattage>0){
-									$totalWatts+=$childTempl->Wattage;
-								}
-								if($childDev->TemplateID!=0){
-									$totalWeight+=$childTempl->Weight;
-									//Child device's position is parent's position
-									$totalMoment+=($childTempl->Weight*($device->Position+($device->Height/2)));
-								}
-							}
+						if ($cab->MapX1==$cab->MapX2 || $cab->MapY1==$cab->MapY2){
+							continue;
 						}
-						if($device->TemplateID!=0) {
-							$totalWeight+=$templ->Weight;
-							$totalMoment+=($templ->Weight*($device->Position+($device->Height/2)));
+						$dev->Cabinet=$cab->CabinetID;
+						$dev->Location=$cab->Location;  //$dev->Location ???
+	    	    		$devList=$dev->ViewDevicesByCabinet();
+						$currentHeight = $cab->CabinetHeight;
+	        			$totalWatts = $totalWeight =0;
+						$currentTemperature=$cabRow["Temp"];
+						$currentHumidity=$cabRow["Humidity"];
+						$currentRealPower=$cabRow["RealPower"];
+						
+						while(list($devID,$device)=each($devList)){
+							$totalWatts+=$device->GetDeviceTotalPower();
+							$DeviceTotalWeight=$device->GetDeviceTotalWeight();
+							$totalWeight+=$DeviceTotalWeight;
 						}
+	        			$used=$cab->CabinetOccupancy($cab->CabinetID);
+						// check to make sure the cabinet height is set to keep errors out of the logs
+						if(!isset($cab->CabinetHeight)||$cab->CabinetHeight==0){$SpacePercent=100;}else{$SpacePercent=number_format($used /$cab->CabinetHeight *100,0);}
+						// check to make sure there is a weight limit set to keep errors out of logs
+						if(!isset($cab->MaxWeight)||$cab->MaxWeight==0){$WeightPercent=0;}else{$WeightPercent=number_format($totalWeight /$cab->MaxWeight *100,0);}
+						// check to make sure there is a kilowatt limit set to keep errors out of logs
+	    	    		if(!isset($cab->MaxKW)||$cab->MaxKW==0){$PowerPercent=0;}else{$PowerPercent=number_format(($totalWatts /1000 ) /$cab->MaxKW *100,0);}
+						if(!isset($cab->MaxKW)||$cab->MaxKW==0){$RealPowerPercent=0;}else{$RealPowerPercent=number_format(($currentRealPower /1000 ) /$cab->MaxKW *100,0, ",", ".");}
+					
+						//Decide which color to paint on the canvas depending on the thresholds
+						if($SpacePercent>$SpaceRed){$scolor=$CriticalColor;}elseif($SpacePercent>$SpaceYellow){$scolor=$CautionColor;}else{$scolor=$GoodColor;}
+						if($WeightPercent>$WeightRed){$wcolor=$CriticalColor;}elseif($WeightPercent>$WeightYellow){$wcolor=$CautionColor;}else{$wcolor=$GoodColor;}
+						if($PowerPercent>$PowerRed){$pcolor=$CriticalColor;}elseif($PowerPercent>$PowerYellow){$pcolor=$CautionColor;}else{$pcolor=$GoodColor;}
+						if($RealPowerPercent>$RealPowerRed){$rpcolor=$CriticalColor;}elseif($RealPowerPercent>$RealPowerYellow){$rpcolor=$CautionColor;}else{$rpcolor=$GoodColor;}
+						
+						if($currentTemperature==0){$tcolor=$unknounColor;}
+							elseif($currentTemperature>$TemperatureRed){$tcolor=$CriticalColor;}
+							elseif($currentTemperature>$TemperatureYellow){$tcolor=$CautionColor;}
+							else{$tcolor=$GoodColor;}
+						
+						if($currentHumidity==0){$hcolor=$unknounColor;}
+							elseif($currentHumidity>$HumidityMax || $currentHumidity<$HumidityMin){$hcolor=$CriticalColor;}
+							elseif($currentHumidity>$HumidityMedMax || $currentHumidity<$HumidityMedMin) {$hcolor=$CautionColor;}
+							else{$hcolor=$GoodColor;}
+												
+						if($SpacePercent>$SpaceRed || $WeightPercent>$WeightRed || $PowerPercent>$PowerRed || 
+							$currentTemperature>$TemperatureRed || $currentHumidity>$HumidityMax || 
+							$currentHumidity<$HumidityMin && $currentHumidity!=0 || 
+							$RealPowerPercent>$RealPowerRed){$color=$CriticalColor;}
+	        			elseif($SpacePercent>$SpaceYellow || $WeightPercent>$WeightYellow || $PowerPercent>$PowerYellow || 
+	        				$currentTemperature>$TemperatureYellow || $currentHumidity>$HumidityMedMax || 
+	        				$currentHumidity<$HumidityMedMin && $currentHumidity!=0  || 
+	        				$RealPowerPercent>$RealPowerYellow){$color=$CautionColor;}
+	        			else{$color=$GoodColor;}
+	        			
+						$width=($cab->MapX2-$cab->MapX1)*$zoom;
+						$height=($cab->MapY2-$cab->MapY1)*$zoom;
+						$textstrlen=strlen($dev->Location);
+						$textXcoord=($cab->MapX1-$this->MapX1)*$zoom+3;
+						$textYcoord=($cab->MapY1-$this->MapY1)*$zoom+floor($height*2/3);
+	        				
+						$border="\n\t\tcontext.strokeStyle='#000000';\n\t\tcontext.lineWidth=1;\n\t\tcontext.strokeRect(($cab->MapX1-$this->MapX1)*$zoom,($cab->MapY1-$this->MapY1)*$zoom,$width,$height);";
+						$statuscolor="\n\t\tcontext.fillRect(($cab->MapX1-$this->MapX1)*$zoom,($cab->MapY1-$this->MapY1)*$zoom,$width,$height);";
+						$label="\n\t\tcontext.fillStyle='#000000';\n\t\tcontext.font='10px arial';\n\t\tcontext.fillText('$dev->Location',$textXcoord,$textYcoord);\n";
+						$labelsp="\n\t\tcontext.fillStyle='#000000';\n\t\tcontext.font='bold 12px arial';\n\t\tcontext.fillText('".number_format($used,0, ",", ".")."',$textXcoord,$textYcoord);\n";
+						$labelwe="\n\t\tcontext.fillStyle='#000000';\n\t\tcontext.font='bold 12px arial';\n\t\tcontext.fillText('".number_format($totalWeight,0, ",", ".")."',$textXcoord,$textYcoord);\n";
+						$labelpo="\n\t\tcontext.fillStyle='#000000';\n\t\tcontext.font='10px arial';\n\t\tcontext.fillText('".number_format($totalWatts/1000,2, ",", ".")."',$textXcoord,$textYcoord);\n";
+						$labelte="\n\t\tcontext.fillStyle='#000000';\n\t\tcontext.font='10px arial';\n\t\tcontext.fillText('".(($currentTemperature>0)?number_format($currentTemperature,0, ",", "."):"")."',$textXcoord,$textYcoord);\n";
+						$labelhu="\n\t\tcontext.fillStyle='#000000';\n\t\tcontext.font='10px arial';\n\t\tcontext.fillText('".(($currentHumidity>0)?number_format($currentHumidity,0, ",", ".")."%":"")."',$textXcoord,$textYcoord);\n";
+						$labelrp="\n\t\tcontext.fillStyle='#000000';\n\t\tcontext.font='10px arial';\n\t\tcontext.fillText('".(($currentRealPower>0)?number_format($currentRealPower/1000,2, ",", "."):"")."',$textXcoord,$textYcoord);\n";
+	
+						// Uncomment this to add borders and rack labels to the canvas drawing of the data center.
+						// Discuss moving this into a configuration item for the future.
+						$border=$label=$labelsp=$labelwe=$labelpo=$labelte=$labelhu=$labelrp="";
+	
+						$script.="\t\tcontext.fillStyle=\"rgba({$color[0]}, {$color[1]}, {$color[2]}, 0.35)\";$border$statuscolor$label\n";
+						$space.="\t\tcontext.fillStyle=\"rgba({$scolor[0]}, {$scolor[1]}, {$scolor[2]}, .35)\";$border$statuscolor$labelsp\n";
+						$weight.="\t\tcontext.fillStyle=\"rgba({$wcolor[0]}, {$wcolor[1]}, {$wcolor[2]}, 0.35)\";$border$statuscolor$labelwe\n";
+						$power.="\t\tcontext.fillStyle=\"rgba({$pcolor[0]}, {$pcolor[1]}, {$pcolor[2]}, 0.35)\";$border$statuscolor$labelpo\n";
+						$temperature.="\t\tcontext.fillStyle=\"rgba({$tcolor[0]}, {$tcolor[1]}, {$tcolor[2]}, 0.35)\";$border$statuscolor$labelte\n";
+						$humidity.="\t\tcontext.fillStyle=\"rgba({$hcolor[0]}, {$hcolor[1]}, {$hcolor[2]}, 0.35)\";$border$statuscolor$labelhu\n";
+						$realpower.="\t\tcontext.fillStyle=\"rgba({$rpcolor[0]}, {$rpcolor[1]}, {$rpcolor[2]}, 0.35)\";$border$statuscolor$labelrp\n";
+						
+						$fechaLecturaTemps=(!is_null($cabRow["LastRead"])&&($cabRow["LastRead"]>$fechaLecturaTemps))?date('d-m-Y',strtotime(($cabRow["LastRead"]))):$fechaLecturaTemps;
+						$fechaLecturaRP=(!is_null($cabRow["RPLastRead"])&&($cabRow["RPLastRead"]>$fechaLecturaRP))?date('d-m-Y',strtotime(($cabRow["RPLastRead"]))):$fechaLecturaRP;
 					}
-					$CenterofGravity=@round($totalMoment /$totalWeight);
-
-        			$used=$cab->CabinetOccupancy($cab->CabinetID);
-					// check to make sure the cabinet height is set to keep errors out of the logs
-					if(!isset($cab->CabinetHeight)||$cab->CabinetHeight==0){$SpacePercent=100;}else{$SpacePercent=number_format($used /$cab->CabinetHeight *100,0);}
-					// check to make sure there is a weight limit set to keep errors out of logs
-					if(!isset($cab->MaxWeight)||$cab->MaxWeight==0){$WeightPercent=0;}else{$WeightPercent=number_format($totalWeight /$cab->MaxWeight *100,0);}
-					// check to make sure there is a kilowatt limit set to keep errors out of logs
-    	    		if(!isset($cab->MaxKW)||$cab->MaxKW==0){$PowerPercent=0;}else{$PowerPercent=number_format(($totalWatts /1000 ) /$cab->MaxKW *100,0);}
-					//Decide which color to paint on the canvas depending on the thresholds
-					if($SpacePercent>$SpaceRed){$scolor=$CriticalColor;}elseif($SpacePercent>$SpaceYellow){$scolor=$CautionColor;}else{$scolor=$GoodColor;}
-					if($WeightPercent>$WeightRed){$wcolor=$CriticalColor;}elseif($WeightPercent>$WeightYellow){$wcolor=$CautionColor;}else{$wcolor=$GoodColor;}
-					if($PowerPercent>$PowerRed){$pcolor=$CriticalColor;}elseif($PowerPercent>$PowerYellow){$pcolor=$CautionColor;}else{$pcolor=$GoodColor;}
-					if($SpacePercent>$SpaceRed || $WeightPercent>$WeightRed || $PowerPercent>$PowerRed){$color=$CriticalColor;}elseif($SpacePercent>$SpaceYellow || $WeightPercent>$WeightYellow || $PowerPercent>$PowerYellow){$color=$CautionColor;}else{$color=$GoodColor;}
-
-					$width=($cab->MapX2-$cab->MapX1)*$zoom;
-					$height=($cab->MapY2-$cab->MapY1)*$zoom;
-					$textstrlen=strlen($dev->Location);
-					$textXcoord=($cab->MapX1-$this->MapX1)*$zoom+3;
-					$textYcoord=($cab->MapY1-$this->MapY1)*$zoom+floor($height*2/3);
-
-					$border="\n\t\tcontext.strokeStyle='#000000';\n\t\tcontext.lineWidth=1;\n\t\tcontext.strokeRect(($cab->MapX1-$this->MapX1)*$zoom,($cab->MapY1-$this->MapY1)*$zoom,$width,$height);";
-					$statuscolor="\n\t\tcontext.fillRect(($cab->MapX1-$this->MapX1)*$zoom,($cab->MapY1-$this->MapY1)*$zoom,$width,$height);";
-					//$label="\n\t\tcontext.fillStyle='#000000';\n\t\tcontext.font='bold 7px sans-serif';\n\t\tcontext.fillText('$dev->Location',$textXcoord,$textYcoord);";
-					$label="\n\t\tcontext.fillStyle='#000000';\n\t\tcontext.font='10px arial';\n\t\tcontext.fillText('$dev->Location',$textXcoord,$textYcoord);\n";
-
-					// Uncomment this to add borders and rack labels to the canvas drawing of the data center.
-					// Discuss moving this into a configuration item for the future.
-					$border=$label="";
-
-					$script.="\t\tcontext.fillStyle=\"rgba({$color[0]}, {$color[1]}, {$color[2]}, 0.35)\";$border$statuscolor$label\n";
-					$space.="\t\tcontext.fillStyle=\"rgba({$scolor[0]}, {$scolor[1]}, {$scolor[2]}, 0.35)\";$border$statuscolor$label\n";
-					$weight.="\t\tcontext.fillStyle=\"rgba({$wcolor[0]}, {$wcolor[1]}, {$wcolor[2]}, 0.35)\";$border$statuscolor$label\n";
-					$power.="\t\tcontext.fillStyle=\"rgba({$pcolor[0]}, {$pcolor[1]}, {$pcolor[2]}, 0.35)\";$border$statuscolor$label\n";
 				}
 			}
-			$space.="	}\n";
-			$weight.="	}\n";
-			$power.="	}\n";
-			$script.="	}\n";
-			$script.=$space.$weight.$power;
+			//Key
+			$leyenda="document.getElementById('maptitle').innerHTML='".__("OVERVIEW: worse state of cabinets")."';";
+			$leyendasp="document.getElementById('maptitle').innerHTML='".__("SPACE: occupation of cabinets")."';";
+			$leyendawe="document.getElementById('maptitle').innerHTML='".__("WEIGHT: Supported weight by cabinets")."';";
+			$leyendapo="document.getElementById('maptitle').innerHTML='".__("POWER: Computed from devices power supplies")."';";
+			$leyendate="document.getElementById('maptitle').innerHTML='".__("TEMPERATURE").": ".($fechaLecturaTemps>0?__("Measured on")." ".$fechaLecturaTemps:__("no data"))."';";
+			$leyendahu="document.getElementById('maptitle').innerHTML='".__("HUMIDITY").": ".($fechaLecturaTemps>0?__("Measured on")." ".$fechaLecturaTemps:__("no data"))."';";
+			$leyendarp="document.getElementById('maptitle').innerHTML='".__("REAL POWER").": ".($fechaLecturaRP>0?__("Measured on")." ".$fechaLecturaRP:__("no data"))."';";
+			/*
+			$leyenda="\n\t\tcontext.fillStyle='#000000';\n\t\tcontext.font='15px arial';
+				\n\t\tcontext.fillText('".__("OVERVIEW: worse state of cabinets")."',5,20);";
+			$leyendasp="\n\t\tcontext.fillStyle='#000000';\n\t\tcontext.font='15px arial';
+				\n\t\tcontext.fillText('".__("SPACE: occupation of cabinets")."',5,20);";
+			$leyendawe="\n\t\tcontext.fillStyle='#000000';\n\t\tcontext.font='15px arial';
+				\n\t\tcontext.fillText('".__("WEIGHT: Supported weight by cabinets")."',5,20);";
+			$leyendapo="\n\t\tcontext.fillStyle='#000000';\n\t\tcontext.font='15px arial';
+				\n\t\tcontext.fillText('".__("POWER: Computed from devices power supplies")."',5,20);";
+			$leyendate="\n\t\tcontext.fillStyle='#000000';\n\t\tcontext.font='15px arial';
+				\n\t\tcontext.fillText('".__("TEMPERATURE: Measured on")." ".$fechaLecturaTemps."',5,20);";
+			$leyendahu="\n\t\tcontext.fillStyle='#000000';\n\t\tcontext.font='15px arial';
+				\n\t\tcontext.fillText('".__("HUMIDITY: % Measured on")." ".$fechaLecturaTemps."',5,20);";
+			$leyendarp="\n\t\tcontext.fillStyle='#000000';\n\t\tcontext.font='15px arial';
+				\n\t\tcontext.fillText('".__("REAL POWER: Measured on")." ".$fechaLecturaRP."',5,20);";
+			*/
+			
+			$space.=$leyendasp."\n	}\n";
+			$weight.=$leyendawe."\n	}\n";
+			$power.=$leyendapo."\n	}\n";
+			$temperature.=$leyendate."\n	}\n";
+			$humidity.=$leyendahu."\n	}\n";
+			$realpower.=$leyendarp."\n	}\n";
+			
+			$script.=$leyenda."\n	}\n";
+			$script.=$space.$weight.$power.$temperature.$humidity.$realpower;
 			$script.="	</script>\n";
 		}
 		return $script;
