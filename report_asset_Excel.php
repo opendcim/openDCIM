@@ -1,12 +1,12 @@
 <?php
 
 /**
- * This is a library to create an Excel file with the device and rack on all
- * data centers information serialized.
+ * This is a library to create an Excel file with the information on all devices
+ * and cabinets in all data centers serialized.
  *
  * With this library an Excel file is create which contains a header worksheet,
  * a worksheet with the data center statistics, a worksheet with the serialized
- * device information and a worksheet with the serialized rack information.
+ * device information and a worksheet with the serialized cabinet information.
  *
  * Be aware that the creation of an Excel file requires lots of CPU and memory
  * resources, e.g. depending on the number of objects managed it and your CPU
@@ -73,34 +73,39 @@ $DProps = array(
             array('', '', null, null)
         ),
         'remarks' => array(
-            '- This is the combined report on all data center assets. It '
-                . 'contains the list of all devices and a list of all racks.',
-            '- Using Excel\'s pivot capabilities many different anaylsis and '
+            '● This is the combined report on all data center assets. It '
+                . 'contains the list of all devices and a list of all cabinets.',
+            '● Using Excel\'s pivot capabilities many different anaylsis and '
                 . 'statistics can be performed.',
-            '- The \'DC Statistics\' page is only generated for users who are '
+            '● The terms \'cabinet\' and  \'rack\' are used interchangeable.',
+            '● For user who have only the \'Admin Own Devices\' right the report '
+                . 'is limited to the cabinets which are owned by this department.',
+            '● The \'DC Statistics\' page is only generated for users who are '
                 . 'not limited to \'Admin Own Devices\'.',
-            '- For a child device the column \'Parent Device\' shows the parent '
-                . 'device otherwise it is empty. A child devices is e.g. blade '
-                . 'server.',
-            '- The \'Position\' for a child device is the position within in the '
-                . 'parent device.',
-            '- Consecutive free rack space is indicated in worksheet \'DC Inventory'
+            '● For a child device the column \'Parent Device\' shows the parent '
+                . 'device otherwise it is empty. A child devices is e.g. a '
+                . 'blade server.',
+            '● The \'Position\' for a child device is the slot position within '
+                . 'in the parent device.',
+            '● \'Half Depth\' contains a value \'front\' or \'rear\' only if the '
+                . 'device is of half depth in which case this indicates the '
+                . 'location.',
+            '● Consecutive free rack space is indicated in worksheet \'DC Inventory'
                 .'\' with the string \'__EMPTY \' in column \'Device\'. '
                 . '\'Position\' gives the start of the range and \'Height\' '
                 . 'specifies the size of the range of free rack space.',
-            ' - A range of consecutive free slots in a chassis is indicacted in '
+            '● A range of consecutive free slots in a chassis is indicacted in '
                 . 'worksheet \'DC Inventory\' with the string \'__EMPTYSLOT \' in '
                 . 'the column \'Device\'. \'Position\' gives the start of the '
                 . 'range and \'Height\' specifies the number of free slots.',
-            '- All free rack units (RU) within the racks sum up to the total '
+            '● All free rack units (RU) within the racks sum up to the total '
                 . 'amount of free rack units. It is possible that devices of '
                 . 'different height are mounted at the same position within a '
-                . 'cabinet. Only the on non occupied rack units are free RUs.',
-            '- Racks of \'Model\' equal \'RESERVED\' are placeholders on the floor '
-                . 'space in the DC for racks to come. Their sum is '
-                . 'provided in the number is counted in the column "No. '
-                . 'Reserved Racks". Nevertheless, the rack units are taken '
-                . 'into account in all other statistics.',
+                . 'cabinet. Only the non occupied rack units are free RUs.',
+            '● Cabinets of \'Model\' equal \'RESERVED\' are placeholders on the '
+                . 'floor space in the DC for racks to come. Their number is '
+                . 'counted in the column \'No. Reserved Racks\'. Nevertheless, '
+                . 'the rack units are taken into account in all other statistics.',
             '',
             'This file is confidential and shall not be used without permission of '
                 . 'the owner.',
@@ -169,6 +174,7 @@ $DProps = array(
             array('DC Name', 'T', null, null),
             array('Cabinet', '', 10, null),
             array('Position', '', null, null),
+            array('Half Depth', '', null, null),
             array('Height', '', null, null),
             array('Device', '', 19, null),
             array('Parent Device', '', 19, null),
@@ -799,6 +805,35 @@ function getRowName($cab, $emptyVal = null)
     return $rowName;
 }
 
+/**
+ * Return if the position of the device if it is half depth, either 'front' or
+ *  'rear' otherwise 'null'.
+ * @param Device $dev
+ * @return string|null
+ */
+function getDeviceDepthPos($dev) {
+    $retval = null;
+    if ($dev) {
+        if ($dev->HalfDepth) {
+            if ($dev->BackSide) {
+                $retval = 'rear';
+            } else {
+                $retval = 'front';
+            }
+        }
+    }
+
+    return $retval;
+}
+
+/**
+ * Assign the statistics values of a data center to the overall statistics
+ *  $dcStats
+ *
+ * @param array $dcStats
+ * @param DataCenter $dc
+ * @param array $Stats
+ */
 function assignStatsVal(&$dcStats, $dc, $Stats) {
     $arr = array();
     $tmp = &$arr;
@@ -1092,6 +1127,7 @@ function computeSheetBodyDCInventory($DProps)
                         $devSpec['DC Name'] = $dc->Name;
                         $devSpec['Cabinet'] = $cab->Location;
                         $devSpec['Position'] = $dev->Position;
+                        $devSpec['Half Depth'] = getDeviceDepthPos($dev);
                         $devSpec['Height'] = $dev->Height;
                         $devSpec['Device'] = $dev->Label;
                         $devSpec['Parent Device'] = null;
