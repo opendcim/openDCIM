@@ -956,7 +956,7 @@ function computeDeviceChildren($sheetColumns, $invData, $parentDev, $DCName,
         }
     }
 
-    return $wattageTotal;
+    return array($wattageTotal, $invData);
 }
 
 /**
@@ -1068,19 +1068,17 @@ function computeSheetBodyDCInventory($DProps)
                 $rowName = getRowName($cab);
                 addRackStat($invCab, $cab, $cabinetColumns, $dc, $dcContainerList);
                 $cab_height = $cab->CabinetHeight;
-                $reservedRack = false;
                 if (mb_strtoupper($cab->Model) == 'RESERVED') {
                     $dcStats['Rk_Res']++;
-                    $reservedRack = true;
                 } else {
                     $dcStats['Rk_Num']++;
-                    $dcStats['Rk_UtT'] += $cab_height;
                 }
+                $dcStats['Rk_UtT'] += $cab_height;
                 $device->Cabinet = $cab->CabinetID;
                 $device_list = $device->ViewDevicesByCabinet();
                 // empty cabinet
                 if ((count($device_list) == 0) && ($cab->CabinetHeight > 0)) {
-                    $dcStats['Rk_UtE'] += $reservedRack ? 0 : $cab_height;
+                    $dcStats['Rk_UtE'] += $cab_height;
                     $devSpec = makeEmptySpec($sheetColumns, $dcContainerList);
                     $devSpec['Zone'] = $zoneName;
                     $devSpec['Row'] = $rowName;
@@ -1102,9 +1100,9 @@ function computeSheetBodyDCInventory($DProps)
                                 $height = $cab_height - $low_idx + 1;
                             }
                             if ($height > 0) {
-                                $dcStats['Rk_UtE'] += $reservedRack ? 0 : $height;
+                                $dcStats['Rk_UtE'] += $height;
                                 $devSpec = makeEmptySpec($sheetColumns,
-                                    $dcContainerList);
+                                $dcContainerList);
                                 $$devSpec['Zone'] = $zoneName;
                                 $devSpec['Row'] = $rowName;
                                 $devSpec['DC Name'] = $dc->Name;
@@ -1151,12 +1149,12 @@ function computeSheetBodyDCInventory($DProps)
                         // rack units which are not covered by any device
                         if ($low_idx == $dev->Position) {
                             $low_idx += $dev->Height;
-                            $dcStats['Rk_UtU'] += $reservedRack ? 0 : $dev->Height;
+                            $dcStats['Rk_UtU'] += $dev->Height;
                         } else {
                             $rest_height = ($dev->Position + $dev->Height - $low_idx);
                             $rest_height = ($rest_height > 0 ? $rest_height : 0);
                             $low_idx += $rest_height;
-                            $dcStats['Rk_UtU'] += $reservedRack ? 0 : $rest_height;
+                            $dcStats['Rk_UtU'] += $rest_height;
                         }
                         if ($dev->DeviceType == 'Chassis') {
                             list($watts, $invData) = computeDeviceChildren(
@@ -1170,9 +1168,9 @@ function computeSheetBodyDCInventory($DProps)
                         // empty range at the top of the cabinet, $low_idx is
                         // the potentially free location
                         $height = $cab->CabinetHeight - $low_idx + 1;
-                        $dcStats['Rk_UtE'] += $reservedRack ? 0 : $height;
+                        $dcStats['Rk_UtE'] += $height;
                         $devSpec = makeEmptySpec($sheetColumns,
-                            $dcContainerList);
+                        $dcContainerList);
                         $devSpec['Zone'] = $zoneName;
                         $devSpec['Row'] = $rowName;
                         $devSpec['DC Name'] = $dc->Name;
@@ -1201,7 +1199,7 @@ function computeSheetBodyDCInventory($DProps)
 function computeDCStatsSummary(&$DCStats, $KPIS)
 {
     $initFlag = true;
-    foreach ($DCStats as $key => $val) {
+    foreach (array_keys($DCStats) as $key) {
         if (! in_array($key, $KPIS)) {
             // there is a level with information, initialize the summary statistics
             if ($initFlag) {
@@ -1460,6 +1458,7 @@ function writeDCInvContent($worksheet, $sheetProps, $invData)
     $colIdx = $sheetProps['ColIdx'];
     // first line is the header for the worksheet
     $worksheet->fromArray($invData, null, 'A2');
+    ReportStats::get()->report('Info', 'Number of Inventory entries '.count($invData));
     $highestRow = count($invData);
     foreach ($sheetProps['ExpStr'] as $colName) {
         $colLetter = $colIdx[$colName][1];
