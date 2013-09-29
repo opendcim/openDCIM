@@ -26,6 +26,8 @@
 		$template->DeviceType=$_POST['devicetype'];
 		$template->PSCount=$_POST['pscount'];
 		$template->NumPorts=$_POST['numports'];
+        $template->Notes=trim($_POST['notes']);
+		$template->Notes=($template->Notes=="<br>")?"":$template->Notes;
 
 		switch($_POST['action']){
 			case 'Create':
@@ -62,6 +64,7 @@
   <link rel="stylesheet" href="css/inventory.php" type="text/css">
   <link rel="stylesheet" href="css/jquery-ui.css" type="text/css">
   <link rel="stylesheet" href="css/validationEngine.jquery.css" type="text/css">
+  <link rel="stylesheet" href="css/jHtmlArea.css" type="text/css">
   <!--[if lt IE 9]>
   <link rel="stylesheet"  href="css/ie.css" type="text/css">
   <![endif]-->
@@ -70,6 +73,8 @@
   <script type="text/javascript" src="scripts/jquery-ui.min.js"></script>
   <script type="text/javascript" src="scripts/jquery.validationEngine-en.js"></script>
   <script type="text/javascript" src="scripts/jquery.validationEngine.js"></script>
+  <script type="text/javascript" src="scripts/jHtmlArea-0.8.min.js"></script>
+  <script type="text/javascript" src="scripts/jquery.textext.js"></script>
   <script type="text/javascript">
 	$(document).ready(function(){
 		var oModel=$('#model').val();
@@ -82,13 +87,71 @@
 				},500);
 			}
 		});
+        
 		$('#clone').click(function(){
 			$('#templateid').val(0);
 			$('button[name="action"]').val('Create').text('<?php echo __('Create');?>');
 			$('#model').trigger('change');
 			$('#device, #clone').remove();
 		});
-	});
+
+        $('#notes').each(function(){
+            $(this).before('<button type="button" id="editbtn"></button>');
+            if($(this).val()!=''){
+                rendernotes($('#editbtn'));
+            }else{
+                editnotes($('#editbtn'));
+            }
+        });
+    
+        function editnotes(button){
+            button.val('preview').text('<?php echo __("Preview");?>');
+            var a=button.next('div');
+            button.next('div').remove();
+            button.next('textarea').htmlarea({
+                toolbar: [
+                "link", "unlink", "image"
+                ],
+                css: 'css/jHtmlArea.Editor.css'
+            });
+            $('.jHtmlArea div iframe').height(a.innerHeight());
+        }
+
+        function rendernotes(button){
+            button.val('edit').text('<?php echo __("Edit");?>');
+            var w=button.next('div').outerWidth();
+            var h=$('.jHtmlArea').outerHeight();
+            if(h>0){
+                h=h+'px';
+            }else{
+                h="auto";
+            }
+            $('#notes').htmlarea('dispose');
+            button.after('<div id="preview">'+$('#notes').val()+'</div>');
+            button.next('div').css({'width': w+'px', 'height' : h}).find('a').each(function(){
+                $(this).attr('target', '_new');
+            });
+            $('#notes').html($('#notes').val()).hide(); // we still need this field to submit it with the form
+            h=0; // recalculate height in case they added an image that is gonna hork the layout
+            // need a slight delay here to allow the load of large images before the height calculations are done
+            setTimeout(function(){
+                $('#preview').find("*").each(function(){
+                    h+=$(this).outerHeight();
+                });
+                $('#preview').height(h);
+            },2000);
+        }
+
+        $('#editbtn').click(function(){
+            var button=$(this);
+            if($(this).val()=='edit'){
+                editnotes(button);
+            }else{
+                rendernotes(button);
+            }
+        });
+  });
+
   </script>
 </head>
 <body>
@@ -165,6 +228,10 @@ echo '	</select>
 <div>
    <div><label for="numports">',__("No. Ports"),'</label></div>
    <div><input type="text" name="numports" id="numports" value="',$template->NumPorts,'"></div>
+</div>
+<div>
+   <div><label for="notes">',__('Notes'),'</label></div>
+   <div><textarea name="notes" id="notes" cols="40" rows="8">',$template->Notes,'</textarea></div>
 </div>
 <div class="caption">';
 

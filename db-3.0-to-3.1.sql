@@ -35,3 +35,9 @@ INSERT INTO fac_Config VALUES ('TemperatureRed', '30', 'degrees', 'float', '30')
 	('HumidityRedLow', '35', 'percentage', 'float', '35'),
 	('HumidityYellowHigh', '55', 'percentage', 'float', '55'),
 	('HumidityYellowLow', '45', 'percentage', 'float', '45');	
+
+---
+--- Extend the fac_DeviceTemplate table to hold notes
+---
+
+ALTER TABLE fac_DeviceTemplate ADD COLUMN Notes text NOT NULL AFTER NumPorts;
