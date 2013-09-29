@@ -47,14 +47,15 @@ require 'PHPExcel/Writer/Excel2007.php';
 // Configuration variables.
 // Properties of the document and worksheets.
 $DProps = array(
-    'version' => 1.0,
     'Doc' => array(
+        'version' => 1.0,
         'Subject' => 'Asset Report',
         'Description' => 'Data Center Statistics on all data centers assets.',
         'Title' => 'Data Center Statistics',
-        'Keywords' => 'datacenter report assets statistic',
+        'Keywords' => 'datacenter report assets\' statistic',
         'PageSize' => $config->ParameterArray['PageSize'],
-        'User' => $user->Name
+        'User' => $user->Name,
+        'UserID' => $user->UserID
     ),
     'Front Page' => array(
         'Title' => '&L&BNotes on DC Statistics&R&A',
@@ -65,7 +66,6 @@ $DProps = array(
         'Border color' => '95B3D7',
         'Logo Name' => 'Logo Name',
         'Logo Description' => 'Logo Description',
-        // 'PageSize' => 'A4',
         'PageSize' => $config->ParameterArray['PageSize'],
         'Orientation' => PHPExcel_Worksheet_PageSetup::ORIENTATION_PORTRAIT,
         'Columns' => array(
@@ -430,15 +430,15 @@ function addColumnIndices(&$DProps)
  *  workbook to be generated
  * @param string $thisDate
  *  the date on which the workbook is generated
- * @param array $config
+ * @param string $ownerName
  *  the configuration of openDCIM
  * @param array $DProps
  *  the workbook configuration
  */
-function setDocumentProperties($objPHPExcel, $thisDate, $config, $DProps)
+function setDocumentProperties($objPHPExcel, $thisDate, $ownerName, $DProps)
 {
-    $creator = basename(__FILE__) . ' version ' . $DProps['version'] . ', '
-        . $config->ParameterArray['OrgName'];
+    $creator = basename(__FILE__) . ' version ' . $DProps['Doc']['version']
+        . ', '. $ownerName;
     $subject = $DProps['Doc']['Subject'];
     $description = $DProps['Doc']['Description'];
     $title = $DProps['Doc']['Title'];
@@ -449,149 +449,11 @@ function setDocumentProperties($objPHPExcel, $thisDate, $config, $DProps)
         ->setDescription($description)
         ->setTitle($title)
         ->setKeywords($keywords)
-        ->setLastModifiedBy($DProps['Doc']['User']);
+        ->setLastModifiedBy($DProps['Doc']['UserID']);
     $objPHPExcel->getDefaultStyle()
         ->getFont()
         ->setName('Arial')
         ->setSize(10);
-}
-
-/**
- * Create a list of the header names from the worksheet column attributes
- *
- * @param array $wsCols
- * @return (string)[] a list of the column names
- */
-function getHeaderNames($wsCols)
-{
-    $colNames = array();
-    foreach ($wsCols as $colAttrs) {
-        $colNames[] = $colAttrs[0];
-     }
-
-    return $colNames;
-}
-
-/**
- * @param array $headerDef the array column headers for a worksheet
- * @return string Excel alphnum range specification
- */
-function compHeaderRange($headerDef)
-{
-    // columns start is zero based, therefore adjustment required
-    $header_len = count($headerDef) - 1;
-    $header_range = 'A1:' . PHPExcel_Cell::stringFromColumnIndex($header_len)
-        . '1';
-
-    return $header_range;
-}
-
-/**
- * Write the header of a worksheet
- *
- * @param PHPExcel_Worksheet $worksheet
- * @param string $wsKind the kind of worksheet
- * @param array $wsAttr the attribues of the worksheet
- */
-function writeWSHeader($worksheet, $wsKind, $wsAttr)
-{
-    $hrange = $wsAttr['HeaderRange'];
-
-    if (! $hrange) {
-        $hrange = compHeaderRange($wsAttr['Columns']);
-    }
-    $colNames = getHeaderNames($wsAttr['Columns']);
-    $worksheet->fromArray($colNames, null, 'A1');
-    if ($wsAttr['HeaderHeight']) {
-        $worksheet->getRowDimension('1')->setRowHeight($wsAttr['HeaderHeight']);
-    }
-    $freezeCell = 'A2';
-    $repeat_header = true;
-    switch ($wsKind) {
-    	case 'Front Page':
-    	    $freezeCell = 'A3';
-    	    $repeat_header = false;
-    	    break;
-    	case 'DC Stats':
-    	    $worksheet->getStyle($hrange)->getAlignment()->setWrapText(true);
-    	    break;
-    	case 'DC Inventory':
-    	case 'Rack Inventory':
-    	    break;
-    }
-    $worksheet->freezePane($freezeCell);
-    $worksheet->getStyle($hrange)->getFill()
-        ->setFillType(PHPExcel_Style_Fill::FILL_SOLID);
-    $worksheet->getStyle($hrange)->getFill()
-        ->getStartColor()->setRGB($wsAttr['FillColor']);
-    $worksheet->getStyle($hrange)->getFont()
-        ->getColor()->setRGB($wsAttr['HeadingFontColor']);
-    $worksheet->getStyle($hrange)->getFont()->setBold(true);
-    if ($repeat_header) {
-        $worksheet->getPageSetup()->setRowsToRepeatAtTopByStartAndEnd(1, 1);
-    }
-}
-
-/**
- * Format the columns of the worksheet according to the attribute definition
- *
- * @param PHPExcel_Worksheet $worksheet
- * @param array $columns
- */
-function formatWSColumns($worksheet, $columns)
-{
-    $fmt_code = array(
-        'T' => PHPExcel_Style_NumberFormat::FORMAT_TEXT,
-        'D' => 'yyyy-mm-dd',
-        'N' => PHPExcel_Style_NumberFormat::FORMAT_NUMBER,
-        'F' => '0.0',
-        'P' => '0.0%',
-        '' => null
-    );
-
-    $highestRow = $worksheet->getHighestRow();
-    $colFmt = $columns[0][1];
-    $start = 0;
-    $idx = 0;
-    foreach ($columns as $col) {
-        if ($col[2]) {
-            // set the column width if a specific value is defined
-            $colLetter = PHPExcel_Cell::stringFromColumnIndex($start + $idx);
-            $worksheet->getColumnDimension($colLetter)->setWidth($col[2]);
-
-        }
-        if ($col[3] and ($col[3] == 'wrap')) {
-            // set text wrapping attribute if requested
-            $colLetter = PHPExcel_Cell::stringFromColumnIndex($start + $idx);
-            $range = $colLetter . '2:' . $colLetter . $highestRow;
-            $worksheet->getStyle($range)->getAlignment()->setWrapText(true);
-        }
-        if ($colFmt != $col[1]) {
-            // assign the format to the range if a format is explicitly required
-            $start_col = PHPExcel_Cell::stringFromColumnIndex($start);
-            $end_col =  PHPExcel_Cell::stringFromColumnIndex($start+$idx-1);
-            $range = $start_col . '2:' . $end_col . $highestRow;
-            $colFmtSpec = $fmt_code[$colFmt];
-            if ($colFmtSpec) {
-                $worksheet->getStyle($range)
-                    ->getNumberFormat()->setFormatCode($colFmtSpec);
-            }
-            $colFmt = $col[1];
-            $start = $start + $idx;
-            $idx = 1;
-        } else {
-            // still in the same format range
-            $idx += 1;
-        }
-    }
-    $start_col = PHPExcel_Cell::stringFromColumnIndex($start);
-    $end_col =  PHPExcel_Cell::stringFromColumnIndex($start+$idx-1);
-    $range = $start_col . '2:' . $end_col . $highestRow;
-    $colFmtSpec = $fmt_code[$colFmt];
-    if ($colFmtSpec) {
-        // assign up to the end the format if explicitly required
-        $worksheet->getStyle($range)->getNumberFormat()->setFormatCode($colFmtSpec);
-    }
 }
 
 /**
@@ -607,7 +469,7 @@ function setWorksheetProperties($worksheet, $wsKind, $DProps, $thisDate)
     $worksheet->SetTitle($wsKind . ' '. $thisDate);
     $worksheet->getTabColor()->setRGB($DProps[$wsKind]['FillColor']);
     // Set the printout options
-    switch ($DProps['Doc']['PageSize']) {
+    switch ($DProps[$wsKind]['PageSize']) {
         case 'A4':
             $page_size = PHPExcel_Worksheet_PageSetup::PAPERSIZE_A4;
             break;
@@ -647,6 +509,145 @@ function setWorksheetProperties($worksheet, $wsKind, $DProps, $thisDate)
         case 'DC Inventory':
             $worksheet->getPageSetup()->setRowsToRepeatAtTopByStartAndEnd(1, 1);
             break;
+    }
+}
+
+/**
+ * Create a list of the header names from the worksheet column attributes
+ *
+ * @param array $wsCols
+ * @return (string)[] a list of the column names
+ */
+function getHeaderNames($wsCols)
+{
+    $colNames = array();
+    foreach ($wsCols as $colAttrs) {
+        $colNames[] = $colAttrs[0];
+     }
+
+    return $colNames;
+}
+
+/**
+ * @param array $headerDef the array column headers for a worksheet
+ * @return string Excel alphnum range specification
+ */
+function computeHeaderRange($headerDef)
+{
+    // columns start is zero based, therefore adjustment required
+    $headerLen = count($headerDef) - 1;
+    $headerRange = 'A1:' . PHPExcel_Cell::stringFromColumnIndex($headerLen) . '1';
+
+    return $headerRange;
+}
+
+/**
+ * Write the header of a worksheet
+ *
+ * @param PHPExcel_Worksheet $worksheet
+ * @param string $wsKind the kind of worksheet
+ * @param array $wsProps the attribues of the worksheet
+ */
+function writeWSHeader($worksheet, $wsKind, $wsProps)
+{
+    $hrange = $wsProps['HeaderRange'];
+
+    if (! $hrange) {
+        $hrange = computeHeaderRange($wsProps['Columns']);
+    }
+    $colNames = getHeaderNames($wsProps['Columns']);
+    $worksheet->fromArray($colNames, null, 'A1');
+    if ($wsProps['HeaderHeight']) {
+        $worksheet->getRowDimension('1')->setRowHeight($wsProps['HeaderHeight']);
+    }
+    $freezeCell = 'A2';
+    $repeat_header = true;
+    switch ($wsKind) {
+    	case 'Front Page':
+    	    $freezeCell = 'A3';
+    	    $repeat_header = false;
+    	    break;
+    	case 'DC Stats':
+    	    $worksheet->getStyle($hrange)->getAlignment()->setWrapText(true);
+    	    break;
+    	case 'DC Inventory':
+    	case 'Rack Inventory':
+    	    break;
+    }
+    $worksheet->freezePane($freezeCell);
+    $worksheet->getStyle($hrange)->getFill()
+        ->setFillType(PHPExcel_Style_Fill::FILL_SOLID);
+    $worksheet->getStyle($hrange)->getFill()
+        ->getStartColor()->setRGB($wsProps['FillColor']);
+    $worksheet->getStyle($hrange)->getFont()
+        ->getColor()->setRGB($wsProps['HeadingFontColor']);
+    $worksheet->getStyle($hrange)->getFont()->setBold(true);
+    if ($repeat_header) {
+        $worksheet->getPageSetup()->setRowsToRepeatAtTopByStartAndEnd(1, 1);
+    }
+}
+
+/**
+ * Format the columns of the worksheet according to the attribute definition
+ *
+ * @param PHPExcel_Worksheet $worksheet
+ * @param array $columns
+ */
+function formatWSColumns($worksheet, $columns)
+{
+    $fmt_code = array(
+        'T' => PHPExcel_Style_NumberFormat::FORMAT_TEXT,
+        'D' => 'yyyy-mm-dd',
+        'N' => PHPExcel_Style_NumberFormat::FORMAT_NUMBER,
+        'F' => '0.0',
+        'P' => '0.0%',
+        '' => null
+    );
+    $highestRow = $worksheet->getHighestRow();
+    $colFmt = $columns[0][1];
+    $colidx = 0;
+    $start = 0;
+    $idx = 0;
+    foreach ($columns as $col) {
+        if ($col[2]) {
+            // set the column width if a specific value is defined
+
+           $colLetter = PHPExcel_Cell::stringFromColumnIndex($colidx);
+           $worksheet->getColumnDimension($colLetter)->setWidth($col[2]);
+
+        }
+        if ($col[3] and ($col[3] == 'wrap')) {
+            // set text wrapping attribute if requested
+            $colLetter = PHPExcel_Cell::stringFromColumnIndex($colidx);
+            $range = $colLetter . '2:' . $colLetter . $highestRow;
+            $worksheet->getStyle($range)->getAlignment()->setWrapText(true);
+        }
+        if ($colFmt != $col[1]) {
+            // assign the format to the range if a format is explicitly required
+            $start_col = PHPExcel_Cell::stringFromColumnIndex($start);
+            $end_col =  PHPExcel_Cell::stringFromColumnIndex($start+$idx-1);
+            $range = $start_col . '2:' . $end_col . $highestRow;
+            $colFmtSpec = $fmt_code[$colFmt];
+            if ($colFmtSpec) {
+                $worksheet->getStyle($range)
+                    ->getNumberFormat()->setFormatCode($colFmtSpec);
+            }
+            $colFmt = $col[1];
+            $start = $start + $idx;
+            $idx = 1;
+        } else {
+            // still in the same format range
+            $idx += 1;
+        }
+        $colidx++;
+    }
+    $start_col = PHPExcel_Cell::stringFromColumnIndex($start);
+    $end_col =  PHPExcel_Cell::stringFromColumnIndex($start+$idx-1);
+    $range = $start_col . '2:' . $end_col . $highestRow;
+    $colFmtSpec = $fmt_code[$colFmt];
+    if ($colFmtSpec) {
+        // assign up to the end the format if explicitly required
+        $worksheet->getStyle($range)->getNumberFormat()->setFormatCode($colFmtSpec);
     }
 }
 
@@ -827,6 +828,48 @@ function getDeviceDepthPos($dev) {
 }
 
 /**
+ * Get the name of the contact
+ *
+ * @param array $contactList
+ * @param int $contactID
+ * @return string
+ */
+function getContactName($contactList, $contactID)
+{
+    $contactName = null;
+    if ($contactID) {
+        $contactName = implode(', ', array($contactList[$contactID]->LastName,
+            $contactList[$contactID]->FirstName));
+    }
+
+    return $contactName;
+}
+
+/** Alternative function to array_merge_recursive, taken from the PHP manual
+ *   page, author: andyidol at gmail dot com
+ *
+ * The original array_merge_recursive failed on a sequence of data center names
+ * which could be interpreted as numbers. The last entry then was converted to
+ * a '0' index instead of a string such as '1029'.
+ *
+ * @param array $Arr1
+ * @param array $Arr2
+ * @return array
+ */
+function MergeArrays($Arr1, $Arr2)
+{
+    foreach($Arr2 as $key => $Value)
+    {
+        if(array_key_exists($key, $Arr1) && is_array($Value))
+            $Arr1[$key] = MergeArrays($Arr1[$key], $Arr2[$key]);
+        else
+            $Arr1[$key] = $Value;
+        }
+
+  return $Arr1;
+}
+
+/**
  * Assign the statistics values of a data center to the overall statistics
  *  $dcStats
  *
@@ -844,7 +887,8 @@ function assignStatsVal(&$dcStats, $dc, $Stats) {
         $tmp = &$tmp[$level];
     }
     $tmp = $Stats;
-    $dcStats = array_merge_recursive($dcStats, $arr);
+ //   $dcStats = array_merge_recursive($dcStats, $arr);
+    $dcStats = MergeArrays($dcStats, $arr);
 }
 
 /**
@@ -915,7 +959,7 @@ function computeDeviceChildren($sheetColumns, $invData, $parentDev, $DCName,
             list($manufacturer, $model) = getDeviceTemplateName($devTemplates,
                 $child);
             $devSpec = makeEmptySpec($sheetColumns, $dcContainerList);
-            $devSpec['DeviceID'] = $child->DeviceID;
+            $devSpec['DevID'] = $child->DeviceID;
             $devSpec['Zone'] = $zoneName;
             $devSpec['Row'] = $rowName;
             $devSpec['DC Name'] = $DCName;
@@ -924,7 +968,7 @@ function computeDeviceChildren($sheetColumns, $invData, $parentDev, $DCName,
             $devSpec['Height'] = $child->Height;
             $devSpec['Device'] = $child->Label;
             $devSpec['Parent Device'] = $parentDev->Label;
-            $devSpec['Manufactuer'] = $manufacturer;
+            $devSpec['Manufacturer'] = $manufacturer;
             $devSpec['Model'] = $model;
             $devSpec['Device Type'] = $child->DeviceType;
             $devSpec['Asset Number'] = $child->AssetTag;
@@ -1000,16 +1044,6 @@ function addRackStat(&$invCab, $cab, $cabinetColumns, $dc, $dcContainerList)
     $invCab[$dc->DataCenterID][$cab->Location] = $rack;
 }
 
-function getContactName($contactList, $contactID)
-{
-    $contactName = null;
-    if ($contactID) {
-        $contactName = implode(', ', array($contactList[$contactID]->LastName,
-            $contactList[$contactID]->FirstName));
-    }
-
-    return $contactName;
-}
 /**
  * Compute the full inventory on devices in the data centers and return the data
  *   center summary statistics
@@ -1271,13 +1305,12 @@ function statsLine($itemName, $values)
  *
  * @param PHPExcel_Worksheet $worksheet
  * @param string $style
- * @param array $DProps
+ * @param array $wsProps
  * @param integer $rownum
  * @param array $DCStatsSum
  */
-function writeDCStatsLine($worksheet, $style, $DProps, $rownum, $DCStatsSum)
+function writeDCStatsLine($worksheet, $style, $wsProps, $rownum, $DCStatsSum)
 {
-    $wsProps = $DProps['DC Stats'];
     $worksheet->fromArray($DCStatsSum, null, 'A' . $rownum);
     $lastCol = count($DCStatsSum) - 1;
     $range = 'A' . $rownum . ':' . PHPExcel_Cell::stringFromColumnIndex($lastCol)
@@ -1310,46 +1343,47 @@ function writeDCStatsLine($worksheet, $style, $DProps, $rownum, $DCStatsSum)
  *   . $DCStats[<DC>] is the array with the statistics value for the data center
  *     DC
  *
- * @param array $DProps
+ * @param array $wsProps
  * @param PHPExcel_Worksheet $worksheet
  * @param array DCStats
  * @param int $level level of statistic data
  * @param int $row row number
  * @param $rowTitle the title the row statistics will get
  */
-function writeDCStatsContent($DProps, $worksheet, &$DCStats, $level, &$row,
+function writeDCStatsContent($wsProps, $worksheet, &$DCStats, $level, &$row,
     $rowTitle)
 {
+    $level++;
     switch ($level) {
-    	case 0:
+    	case 1:
     	    $style = 'Total';
     	    $prefix = '';
     	    break;
-    	case 1:
+    	case 2:
     	    $style = 'SummaryLine';
     	    $prefix = '';
 
     	    break;
     	default:
-    	    $prefix = str_pad('', ($level-1)*5);
+    	    $prefix = str_pad('', ($level*5));
     	    $style = null;
     }
-    $level++;
     $rowTitleStr = $prefix . $rowTitle;
-    $sumFlag = true;
-    if (($level > 1) and $sumFlag) {
-        writeDCStatsLine($worksheet, $style, $DProps, ++$row,
+ //   $sumFlag = true;
+ //   if (($level > 1) and $sumFlag) {
+    if ($level > 1) {
+        writeDCStatsLine($worksheet, $style, $wsProps, ++$row,
             statsLine($rowTitleStr, $DCStats));
-        $sumFlag = false;
+        // $sumFlag = false;
     }
     foreach ($DCStats as $StatKey => $val) {
         if (is_array($val)) {
-            writeDCStatsContent($DProps, $worksheet, $DCStats[$StatKey],
+            writeDCStatsContent($wsProps, $worksheet, $DCStats[$StatKey],
                 $level, &$row, $StatKey);
         }
     }
     if ($level == 1) {
-        writeDCStatsLine($worksheet, $style, $DProps, ++$row,
+        writeDCStatsLine($worksheet, $style, $wsProps, ++$row,
             statsLine($rowTitleStr, $DCStats));
     }
 }
@@ -1364,20 +1398,15 @@ function writeDCStatsContent($DProps, $worksheet, &$DCStats, $level, &$row,
  */
 function writeDCStatsSummary($DProps, $objPHPExcel, $DCStats, $thisDate)
 {
-    // sum up the statistics for the four levels
+    $wsKind = 'DC Stats';
     computeDCStatsSummary($DCStats, $DProps['DC Stats']['KPIs']);
 
-    $wsKind = 'DC Stats';
     $worksheet = $objPHPExcel->createSheet(0);
-
     setWorksheetProperties($worksheet, $wsKind, $DProps, $thisDate);
     $worksheet->getPageSetup()->setFirstPageNumber(1);
-
     writeWSHeader($worksheet, $wsKind, $DProps[$wsKind]);
-    // $rowNumber = 2;
     $rowNumber = 1;
-    writeDCStatsContent($DProps, $worksheet, $DCStats, 0, $rowNumber,
-        'Total');
+    writeDCStatsContent($DProps[$wsKind], $worksheet, $DCStats, 0, $rowNumber, 'Total');
     formatWSColumns($worksheet, $DProps[$wsKind]['Columns']);
 }
 
@@ -1546,14 +1575,15 @@ function writeFrontPage($DProps, $config, $objPHPExcel, $thisDate)
 function writeExcelReport(&$DProps, $objPHPExcel, $thisDate)
 {
     ReportStats::get()->report('Info', 'User: ' . $DProps['Doc']['User']
-        . ' Version: ' . $DProps['version']);
+        . ' Version: ' . $DProps['Doc']['version']);
 
     $config = new Config();
     $config->Config();
     addColumnIndices($DProps);
 
     // Generate new workbook 'DC_Statistics_<timestamp>.xlsx'
-    setDocumentProperties($objPHPExcel, $thisDate, $config, $DProps);
+    setDocumentProperties($objPHPExcel, $thisDate,
+        $config->ParameterArray['OrgName'], $DProps);
 
     list($DCStats, $Rack_Inv, $limitedUser) = writeDCInventory($DProps,
         $objPHPExcel, $thisDate);
