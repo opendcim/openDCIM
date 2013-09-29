@@ -695,6 +695,7 @@ class DeviceTemplate {
 	var $DeviceType;
 	var $PSCount;
 	var $NumPorts;
+    var $Notes;
 
 	function MakeSafe(){
 		$validDeviceTypes=array('Server','Appliance','Storage Array','Switch','Chassis','Patch Panel','Physical Infrastructure');
@@ -708,10 +709,12 @@ class DeviceTemplate {
 		$this->DeviceType=(in_array($this->DeviceType, $validDeviceTypes))?$this->DeviceType:'Server';
 		$this->PSCount=intval($this->PSCount);
 		$this->NumPorts=intval($this->NumPorts);
+        $this->Notes=addslashes(trim($this->Notes));
 	}
 
 	function MakeDisplay(){
 		$this->Model=stripslashes($this->Model);
+        $this->Notes=stripslashes($this->Notes);
 	}
 
 	static function RowToObject($row){
@@ -725,6 +728,7 @@ class DeviceTemplate {
 		$Template->DeviceType=$row["DeviceType"];
 		$Template->PSCount=$row["PSCount"];
 		$Template->NumPorts=$row["NumPorts"];
+        $Template->Notes=$row["Notes"];
 		$Template->MakeDisplay();
 
 		return $Template;
@@ -748,7 +752,8 @@ class DeviceTemplate {
 		$sql="INSERT INTO fac_DeviceTemplate SET ManufacturerID=$this->ManufacturerID, 
 			Model=\"$this->Model\", Height=$this->Height, Weight=$this->Weight, 
 			Wattage=$this->Wattage, DeviceType=\"$this->DeviceType\", 
-			PSCount=$this->PSCount, NumPorts=$this->NumPorts;";
+			PSCount=$this->PSCount, NumPorts=$this->NumPorts,
+			Notes=\"$this->Notes\";";
 
 		if(!$dbh->exec($sql)){
 			error_log( "SQL Error: " . $sql );
@@ -761,10 +766,12 @@ class DeviceTemplate {
 	}
   
 	function UpdateTemplate(){
-		$sql="UPDATE fac_DeviceTemplate SET ManufacturerID=$this->ManufacturerID, 
+		$this->MakeSafe();
+        $sql="UPDATE fac_DeviceTemplate SET ManufacturerID=$this->ManufacturerID,
 			Model=\"$this->Model\", Height=$this->Height, Weight=$this->Weight, 
 			Wattage=$this->Wattage, DeviceType=\"$this->DeviceType\", 
-			PSCount=$this->PSCount, NumPorts=$this->NumPorts WHERE 
+			PSCount=$this->PSCount, NumPorts=$this->NumPorts,
+			Notes=\"$this->Notes\" WHERE
 			TemplateID=$this->TemplateID;";
 
 		if(!$this->query($sql)){
