@@ -288,6 +288,7 @@ CREATE TABLE fac_DeviceTemplate (
   DeviceType enum('Server','Appliance','Storage Array','Switch','Chassis','Patch Panel','Physical Infrastructure') NOT NULL default 'Server',
   PSCount int(11) NOT NULL,
   NumPorts int(11) NOT NULL,
+  Notes text NOT NULL,
   PRIMARY KEY (TemplateID),
   UNIQUE KEY ManufacturerID (ManufacturerID,Model)
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
