@@ -103,6 +103,7 @@ div.cp { position: relative;}
 #configtabs label:after {content:":"; margin-right: 0.5em;}
 #configtabs #general div > input {width: 20em; }
 #configtabs #general #rackusage input {width: 2em; }
+#configtabs #general #rackusage > div > div:nth-child(5) { width: 6em; }
 #configtabs #style .cp > input {width: 7em; }
 #configtabs #email div > input {width: 20em; }
 
