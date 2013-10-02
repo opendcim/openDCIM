@@ -167,14 +167,13 @@ $(document).ready(function() {
   <link rel="stylesheet" href="css/inventory.php" type="text/css">
   <link rel="stylesheet" href="css/print.css" type="text/css" media="print">
   <link rel="stylesheet" href="css/jquery-ui.css" type="text/css">
+  <script type="text/javascript" src="scripts/jquery.min.js"></script>
+  <script type="text/javascript" src="scripts/jquery-ui.min.js"></script>
   <!--[if lte IE 8]>
     <link rel="stylesheet"  href="css/ie.css" type="text/css">
     <?php if(isset($ie8fix)){print $ie8fix;} ?>
     <script src="scripts/excanvas.js"></script>
   <![endif]-->
-  <?php print $dc->DrawCanvas();?>
-  <script type="text/javascript" src="scripts/jquery.min.js"></script>
-  <script type="text/javascript" src="scripts/jquery-ui.min.js"></script>
   <script type="text/javascript">
 	$(document).ready(function(){
 		$('#mapCanvas').css('width', $('.canvas > img[alt="clearmap over canvas"]').width()+'px');
@@ -217,13 +216,6 @@ echo '<div class="main">
 	<h3>',__("Data Center Statistics"),'</h3>
   </div>
   <div class="nav">
-	<button onclick="loadCanvas()">',__("Overview"),'</button>
-	<button onclick="space()">',__("Space"),'</button>
-	<button onclick="weight()">',__("Weight"),'</button>
-	<button onclick="power()">',__("Power"),'</button>
-	<button onclick="temperatura()">',__("Temperature"),'</button>
-	<button onclick="humedad()">',__("Humidity"),'</button>
-	<button onclick="realpower()">',__("Real Power"),'</button>
   </div>
 </div>
 <div class="center"><div>
@@ -304,6 +296,21 @@ echo '<div class="main">
 				expandToItem('datacenters',firstcabinet);
 			}
 		}
+
+  <?php print $dc->DrawCanvas();?>
+
+		var menu=$('<select>').change(function(){
+			eval($(this).val()+'()');
+		});
+		menu.append($('<option>').val('loadCanvas').text('<?php echo __("Overview") ?>'));
+		menu.append($('<option>').val('space').text('<?php echo __("Space") ?>'));
+		menu.append($('<option>').val('weight').text('<?php echo __("Weight") ?>'));
+		menu.append($('<option>').val('power').text('<?php echo __("Power") ?>'));
+		menu.append($('<option>').val('temperatura').text('<?php echo __("Temperature") ?>'));
+		menu.append($('<option>').val('humedad').text('<?php echo __("Humidity") ?>'));
+		menu.append($('<option>').val('realpower').text('<?php echo __("Real Power") ?>'));
+		$('.main .nav').html(menu);
+
 		loadCanvas();
 		opentree();
 	});

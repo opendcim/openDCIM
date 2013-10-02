@@ -395,7 +395,7 @@ class DataCenter {
 				$RealPowerRed=intval($this->dcconfig->ParameterArray["PowerRed"]);
 				$RealPowerYellow=intval($this->dcconfig->ParameterArray["PowerYellow"]);
 				
-				$script.="  <script type=\"text/javascript\">\n	function loadCanvas(){\n";
+				$script.="\tvar maptitle=$('#maptitle');\n\tfunction loadCanvas(){\n";
 				$space="	function space(){\n";
 				$weight="	function weight(){\n";
 				$power="	function power(){\n";
@@ -403,7 +403,7 @@ class DataCenter {
 				$humidity="	function humedad(){\n";				
 				$realpower="	function realpower(){\n";				
 				
-				$script.="	var mycanvas=document.getElementById(\"mapCanvas\");\n		var width = mycanvas.width;\n		mycanvas.width = width + 1;\n		width = mycanvas.width;\n		mycanvas.width = width - 1;\n		var context=mycanvas.getContext('2d');\n";
+				$script.="\t\tvar mycanvas=document.getElementById(\"mapCanvas\");\n		var width = mycanvas.width;\n		mycanvas.width = width + 1;\n		width = mycanvas.width;\n		mycanvas.width = width - 1;\n		var context=mycanvas.getContext('2d');\n";
 				$space.="	var mycanvas=document.getElementById(\"mapCanvas\");\n		var width = mycanvas.width;\n		mycanvas.width = width + 1;\n		width = mycanvas.width;\n		mycanvas.width = width - 1;\n		var context=mycanvas.getContext('2d');\n";
 				$weight.="	var mycanvas=document.getElementById(\"mapCanvas\");\n		var width = mycanvas.width;\n		mycanvas.width = width + 1;\n		width = mycanvas.width;\n		mycanvas.width = width - 1;\n		var context=mycanvas.getContext('2d');\n";
 				$power.="	var mycanvas=document.getElementById(\"mapCanvas\");\n		var width = mycanvas.width;\n		mycanvas.width = width + 1;\n		width = mycanvas.width;\n		mycanvas.width = width - 1;\n		var context=mycanvas.getContext('2d');\n";
@@ -420,17 +420,14 @@ class DataCenter {
             	$temperature.="		context.globalCompositeOperation = 'destination-over';\n		var img=new Image();\n		img.onload=function(){\n			context.drawImage(img,0,0);\n		}\n		img.src=\"$mapfile\";\n"; 
             	$humidity.="		context.globalCompositeOperation = 'destination-over';\n		var img=new Image();\n		img.onload=function(){\n			context.drawImage(img,0,0);\n		}\n		img.src=\"$mapfile\";\n"; 
 				$realpower.="		context.globalCompositeOperation = 'destination-over';\n		var img=new Image();\n		img.onload=function(){\n			context.drawImage(img,0,0);\n		}\n		img.src=\"$mapfile\";\n"; 
+
+				$sql="SELECT C.*, Temps.Temp, Temps.Humidity, Stats.Wattage AS RealPower, 
+					Temps.LastRead, Temps.LastRead AS RPLastRead FROM fac_Cabinet AS C
+					LEFT JOIN fac_CabinetTemps AS Temps ON C.CabinetID=Temps.CabinetID
+					LEFT JOIN fac_PowerDistribution AS P ON C.CabinetID=P.CabinetID
+					LEFT JOIN fac_PDUStats AS Stats ON P.PDUID=Stats.PDUID 
+					WHERE C.DataCenterID=$this->DataCenterID GROUP BY CabinetID;";
 				
-				$sql="SELECT C.*, Temp, Humidity, P.RealPower, LastRead, RPLastRead 
-					FROM ((fac_Cabinet C LEFT JOIN fac_CabinetTemps T ON C.CabinetId = T.CabinetID) LEFT JOIN
-						(SELECT CabinetID, SUM(Wattage) RealPower
-						FROM fac_PowerDistribution PD LEFT JOIN fac_PDUStats PS ON PD.PDUID=PS.PDUID
-						GROUP BY CabinetID) P ON C.CabinetId = P.CabinetID) LEFT JOIN
-						(SELECT CabinetID, MAX(LastRead) RPLastRead
-						FROM fac_PowerDistribution PD LEFT JOIN fac_PDUStats PS ON PD.PDUID=PS.PDUID
-						GROUP BY CabinetID) PLR ON C.CabinetId = PLR.CabinetID
-				    WHERE C.DataCenterID=".intval($this->DataCenterID).";";
-	
 				$fechaLecturaTemps=0;
 				$fechaLecturaRP=0;
 				if($racks=$this->query($sql)){ 
@@ -542,13 +539,13 @@ class DataCenter {
 			}
 			
 			//Key
-			$leyenda="document.getElementById('maptitle').innerHTML='".__("OVERVIEW: worse state of cabinets")."';";
-			$leyendasp="document.getElementById('maptitle').innerHTML='".__("SPACE: occupation of cabinets")."';";
-			$leyendawe="document.getElementById('maptitle').innerHTML='".__("WEIGHT: Supported weight by cabinets")."';";
-			$leyendapo="document.getElementById('maptitle').innerHTML='".__("POWER: Computed from devices power supplies")."';";
-			$leyendate="document.getElementById('maptitle').innerHTML='".__("TEMPERATURE").": ".($fechaLecturaTemps>0?__("Measured on")." ".$fechaLecturaTemps:__("no data"))."';";
-			$leyendahu="document.getElementById('maptitle').innerHTML='".__("HUMIDITY").": ".($fechaLecturaTemps>0?__("Measured on")." ".$fechaLecturaTemps:__("no data"))."';";
-			$leyendarp="document.getElementById('maptitle').innerHTML='".__("REAL POWER").": ".($fechaLecturaRP>0?__("Measured on")." ".$fechaLecturaRP:__("no data"))."';";
+			$leyenda="maptitle.html('".__("OVERVIEW: worse state of cabinets")."');";
+			$leyendasp="maptitle.html('".__("SPACE: occupation of cabinets")."');";
+			$leyendawe="maptitle.html('".__("WEIGHT: Supported weight by cabinets")."');";
+			$leyendapo="maptitle.html('".__("POWER: Computed from devices power supplies")."');";
+			$leyendate="maptitle.html('".__("TEMPERATURE").": ".($fechaLecturaTemps>0?__("Measured on")." ".$fechaLecturaTemps:__("no data"))."');";
+			$leyendahu="maptitle.html('".__("HUMIDITY").": ".($fechaLecturaTemps>0?__("Measured on")." ".$fechaLecturaTemps:__("no data"))."');";
+			$leyendarp="maptitle.html('".__("REAL POWER").": ".($fechaLecturaRP>0?__("Measured on")." ".$fechaLecturaRP:__("no data"))."');";
 						/*
 			$leyenda="\n\t\tcontext.fillStyle='#000000';\n\t\tcontext.font='15px arial';
 				\n\t\tcontext.fillText('".__("OVERVIEW: worse state of cabinets")."',5,20);";
@@ -574,7 +571,6 @@ class DataCenter {
 			
 			$script.=$leyenda."\n	}\n";
 			$script.=$space.$weight.$power.$temperature.$humidity.$realpower;
-			$script.="	</script>\n";
 		}
 		return $script;
 	}
