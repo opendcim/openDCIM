@@ -181,7 +181,6 @@ $(document).ready(function() {
     <?php if(isset($ie8fix)){print $ie8fix;} ?>
     <script src="scripts/excanvas.js"></script>
   <![endif]-->
-  <?php print $zone->DrawCanvas();?>
   <script type="text/javascript" src="scripts/jquery.min.js"></script>
   <script type="text/javascript" src="scripts/jquery-ui.min.js"></script>
   <script type="text/javascript">
@@ -225,13 +224,6 @@ echo '<div class="main">
 	<h3>',__("Zone Statistics"),'</h3>
   </div>
   <div class="nav">
-	<button onclick="loadCanvas()">',__("Overview"),'</button>
-	<button onclick="space()">',__("Space"),'</button>
-	<button onclick="weight()">',__("Weight"),'</button>
-	<button onclick="power()">',__("Power"),'</button>
-	<button onclick="temperatura()">',__("Temperature"),'</button>
-	<button onclick="humedad()">',__("Humidity"),'</button>
-	<button onclick="realpower()">',__("Real Power"),'</button>
     </div>
 </div>
 <div class="center"><div>
@@ -308,6 +300,21 @@ echo '<div class="main">
 				expandToItem('datacenters',firstcabinet);
 			}
 		}
+
+  <?php print $zone->DrawCanvas();?>
+
+		var menu=$('<select>').change(function(){
+			eval($(this).val()+'()');
+		});
+		menu.append($('<option>').val('loadCanvas').text('<?php echo __("Overview") ?>'));
+		menu.append($('<option>').val('space').text('<?php echo __("Space") ?>'));
+		menu.append($('<option>').val('weight').text('<?php echo __("Weight") ?>'));
+		menu.append($('<option>').val('power').text('<?php echo __("Power") ?>'));
+		menu.append($('<option>').val('temperatura').text('<?php echo __("Temperature") ?>'));
+		menu.append($('<option>').val('humedad').text('<?php echo __("Humidity") ?>'));
+		menu.append($('<option>').val('realpower').text('<?php echo __("Real Power") ?>'));
+		$('.main .nav').html(menu);
+
 		loadCanvas();
 		opentree();
 	});

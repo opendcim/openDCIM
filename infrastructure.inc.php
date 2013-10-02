@@ -395,32 +395,36 @@ class DataCenter {
 				$RealPowerRed=intval($this->dcconfig->ParameterArray["PowerRed"]);
 				$RealPowerYellow=intval($this->dcconfig->ParameterArray["PowerYellow"]);
 				
-				$script.="\tvar maptitle=$('#maptitle');\n\tfunction loadCanvas(){\n";
-				$space="	function space(){\n";
-				$weight="	function weight(){\n";
-				$power="	function power(){\n";
-				$temperature="	function temperatura(){\n";
-				$humidity="	function humedad(){\n";				
-				$realpower="	function realpower(){\n";				
-				
-				$script.="\t\tvar mycanvas=document.getElementById(\"mapCanvas\");\n		var width = mycanvas.width;\n		mycanvas.width = width + 1;\n		width = mycanvas.width;\n		mycanvas.width = width - 1;\n		var context=mycanvas.getContext('2d');\n";
-				$space.="	var mycanvas=document.getElementById(\"mapCanvas\");\n		var width = mycanvas.width;\n		mycanvas.width = width + 1;\n		width = mycanvas.width;\n		mycanvas.width = width - 1;\n		var context=mycanvas.getContext('2d');\n";
-				$weight.="	var mycanvas=document.getElementById(\"mapCanvas\");\n		var width = mycanvas.width;\n		mycanvas.width = width + 1;\n		width = mycanvas.width;\n		mycanvas.width = width - 1;\n		var context=mycanvas.getContext('2d');\n";
-				$power.="	var mycanvas=document.getElementById(\"mapCanvas\");\n		var width = mycanvas.width;\n		mycanvas.width = width + 1;\n		width = mycanvas.width;\n		mycanvas.width = width - 1;\n		var context=mycanvas.getContext('2d');\n";
-				$temperature.="	var mycanvas=document.getElementById(\"mapCanvas\");\n		var width = mycanvas.width;\n		mycanvas.width = width + 1;\n		width = mycanvas.width;\n		mycanvas.width = width - 1;\n		var context=mycanvas.getContext('2d');\n";
-				$humidity.="	var mycanvas=document.getElementById(\"mapCanvas\");\n		var width = mycanvas.width;\n		mycanvas.width = width + 1;\n		width = mycanvas.width;\n		mycanvas.width = width - 1;\n		var context=mycanvas.getContext('2d');\n";
-				$realpower.="	var mycanvas=document.getElementById(\"mapCanvas\");\n		var width = mycanvas.width;\n		mycanvas.width = width + 1;\n		width = mycanvas.width;\n		mycanvas.width = width - 1;\n		var context=mycanvas.getContext('2d');\n";
-				
 				// get image file attributes and type
 				list($width, $height, $type, $attr)=getimagesize($mapfile);
-				$script.="		context.globalCompositeOperation = 'destination-over';\n		var img=new Image();\n		img.onload=function(){\n			context.drawImage(img,0,0);\n		}\n		img.src=\"$mapfile\";\n";
-				$space.="		context.globalCompositeOperation = 'destination-over';\n		var img=new Image();\n		img.onload=function(){\n			context.drawImage(img,0,0);\n		}\n		img.src=\"$mapfile\";\n";
-				$weight.="		context.globalCompositeOperation = 'destination-over';\n		var img=new Image();\n		img.onload=function(){\n			context.drawImage(img,0,0);\n		}\n		img.src=\"$mapfile\";\n";
-				$power.="		context.globalCompositeOperation = 'destination-over';\n		var img=new Image();\n		img.onload=function(){\n			context.drawImage(img,0,0);\n		}\n		img.src=\"$mapfile\";\n";
-            	$temperature.="		context.globalCompositeOperation = 'destination-over';\n		var img=new Image();\n		img.onload=function(){\n			context.drawImage(img,0,0);\n		}\n		img.src=\"$mapfile\";\n"; 
-            	$humidity.="		context.globalCompositeOperation = 'destination-over';\n		var img=new Image();\n		img.onload=function(){\n			context.drawImage(img,0,0);\n		}\n		img.src=\"$mapfile\";\n"; 
-				$realpower.="		context.globalCompositeOperation = 'destination-over';\n		var img=new Image();\n		img.onload=function(){\n			context.drawImage(img,0,0);\n		}\n		img.src=\"$mapfile\";\n"; 
 
+				$script.="\n\t\tvar maptitle=$('#maptitle');
+		var mycanvas=document.getElementById(\"mapCanvas\");
+		var context=mycanvas.getContext('2d');
+		context.globalCompositeOperation='destination-over';
+
+		function clearcanvas(){
+			// erase anything on the canvas
+			context.clearRect(0,0, mycanvas.width, mycanvas.height);
+			// create a new image for the canvas
+			var img=new Image();
+			// draw after the image has loaded
+			img.onload=function(){
+				context.drawImage(img,0,0);
+			}
+			// give it an image to load
+			img.src=\"$mapfile\";
+		}
+
+		function loadCanvas(){\n\t\t\tclearcanvas();\n";
+
+				$space="\t\tfunction space(){\n\t\t\tclearcanvas();\n";
+				$weight="\t\tfunction weight(){\n\t\t\tclearcanvas();\n";
+				$power="\t\tfunction power(){\n\t\t\tclearcanvas();\n";
+				$temperature="\t\tfunction temperatura(){\n\t\t\tclearcanvas();\n";
+				$humidity="\t\tfunction humedad(){\n\t\t\tclearcanvas();\n";				
+				$realpower="\t\tfunction realpower(){\n\t\t\tclearcanvas();\n";				
+				
 				$sql="SELECT C.*, Temps.Temp, Temps.Humidity, Stats.Wattage AS RealPower, 
 					Temps.LastRead, Temps.LastRead AS RPLastRead FROM fac_Cabinet AS C
 					LEFT JOIN fac_CabinetTemps AS Temps ON C.CabinetID=Temps.CabinetID
@@ -510,27 +514,27 @@ class DataCenter {
 						$textXcoord=$cab->MapX1+3;
 						$textYcoord=$cab->MapY1+floor($height*2/3);
 	
-						$border="\n\t\tcontext.strokeStyle='#000000';\n\t\tcontext.lineWidth=1;\n\t\tcontext.strokeRect($cab->MapX1,$cab->MapY1,$width,$height);";
-						$statuscolor="\n\t\tcontext.fillRect($cab->MapX1,$cab->MapY1,$width,$height);";
-						$label="\n\t\tcontext.fillStyle='#000000';\n\t\tcontext.font='10px arial';\n\t\tcontext.fillText('$dev->Location',$textXcoord,$textYcoord);\n";
-						$labelsp="\n\t\tcontext.fillStyle='#000000';\n\t\tcontext.font='bold 12px arial';\n\t\tcontext.fillText('".number_format($used,0, ",", ".")."',$textXcoord,$textYcoord);\n";
-						$labelwe="\n\t\tcontext.fillStyle='#000000';\n\t\tcontext.font='bold 12px arial';\n\t\tcontext.fillText('".number_format($totalWeight,0, ",", ".")."',$textXcoord,$textYcoord);\n";
-						$labelpo="\n\t\tcontext.fillStyle='#000000';\n\t\tcontext.font='10px arial';\n\t\tcontext.fillText('".number_format($totalWatts/1000,2, ",", ".")."',$textXcoord,$textYcoord);\n";
-						$labelte="\n\t\tcontext.fillStyle='#000000';\n\t\tcontext.font='10px arial';\n\t\tcontext.fillText('".(($currentTemperature>0)?number_format($currentTemperature,0, ",", "."):"")."',$textXcoord,$textYcoord);\n";
-						$labelhu="\n\t\tcontext.fillStyle='#000000';\n\t\tcontext.font='10px arial';\n\t\tcontext.fillText('".(($currentHumidity>0)?number_format($currentHumidity,0, ",", ".")."%":"")."',$textXcoord,$textYcoord);\n";
-						$labelrp="\n\t\tcontext.fillStyle='#000000';\n\t\tcontext.font='10px arial';\n\t\tcontext.fillText('".(($currentRealPower>0)?number_format($currentRealPower/1000,2, ",", "."):"")."',$textXcoord,$textYcoord);\n";
+						$border="\n\t\t\tcontext.strokeStyle='#000000';\n\t\t\tcontext.lineWidth=1;\n\t\t\tcontext.strokeRect($cab->MapX1,$cab->MapY1,$width,$height);";
+						$statuscolor="\n\t\t\tcontext.fillRect($cab->MapX1,$cab->MapY1,$width,$height);";
+						$label="\n\t\t\tcontext.fillStyle='#000000';\n\t\t\tcontext.font='10px arial';\n\t\t\tcontext.fillText('$dev->Location',$textXcoord,$textYcoord);\n";
+						$labelsp="\n\t\t\tcontext.fillStyle='#000000';\n\t\t\tcontext.font='bold 12px arial';\n\t\t\tcontext.fillText('".number_format($used,0, ",", ".")."',$textXcoord,$textYcoord);\n";
+						$labelwe="\n\t\t\tcontext.fillStyle='#000000';\n\t\t\tcontext.font='bold 12px arial';\n\t\t\tcontext.fillText('".number_format($totalWeight,0, ",", ".")."',$textXcoord,$textYcoord);\n";
+						$labelpo="\n\t\t\tcontext.fillStyle='#000000';\n\t\t\tcontext.font='10px arial';\n\t\t\tcontext.fillText('".number_format($totalWatts/1000,2, ",", ".")."',$textXcoord,$textYcoord);\n";
+						$labelte="\n\t\t\tcontext.fillStyle='#000000';\n\t\t\tcontext.font='10px arial';\n\t\t\tcontext.fillText('".(($currentTemperature>0)?number_format($currentTemperature,0, ",", "."):"")."',$textXcoord,$textYcoord);\n";
+						$labelhu="\n\t\t\tcontext.fillStyle='#000000';\n\t\t\tcontext.font='10px arial';\n\t\t\tcontext.fillText('".(($currentHumidity>0)?number_format($currentHumidity,0, ",", ".")."%":"")."',$textXcoord,$textYcoord);\n";
+						$labelrp="\n\t\t\tcontext.fillStyle='#000000';\n\t\t\tcontext.font='10px arial';\n\t\t\tcontext.fillText('".(($currentRealPower>0)?number_format($currentRealPower/1000,2, ",", "."):"")."',$textXcoord,$textYcoord);\n";
 	
 						// Uncomment this to add borders and rack labels to the canvas drawing of the data center.
 						// Discuss moving this into a configuration item for the future.
 						$border=$label=$labelsp=$labelwe=$labelpo=$labelte=$labelhu=$labelrp="";
 	
-						$script.="\t\tcontext.fillStyle=\"rgba({$color[0]}, {$color[1]}, {$color[2]}, 0.35)\";$border$statuscolor$label\n";
-						$space.="\t\tcontext.fillStyle=\"rgba({$scolor[0]}, {$scolor[1]}, {$scolor[2]}, .35)\";$border$statuscolor$labelsp\n";
-						$weight.="\t\tcontext.fillStyle=\"rgba({$wcolor[0]}, {$wcolor[1]}, {$wcolor[2]}, 0.35)\";$border$statuscolor$labelwe\n";
-						$power.="\t\tcontext.fillStyle=\"rgba({$pcolor[0]}, {$pcolor[1]}, {$pcolor[2]}, 0.35)\";$border$statuscolor$labelpo\n";
-						$temperature.="\t\tcontext.fillStyle=\"rgba({$tcolor[0]}, {$tcolor[1]}, {$tcolor[2]}, 0.35)\";$border$statuscolor$labelte\n";
-						$humidity.="\t\tcontext.fillStyle=\"rgba({$hcolor[0]}, {$hcolor[1]}, {$hcolor[2]}, 0.35)\";$border$statuscolor$labelhu\n";
-						$realpower.="\t\tcontext.fillStyle=\"rgba({$rpcolor[0]}, {$rpcolor[1]}, {$rpcolor[2]}, 0.35)\";$border$statuscolor$labelrp\n";
+						$script.="\t\t\tcontext.fillStyle=\"rgba({$color[0]}, {$color[1]}, {$color[2]}, 0.35)\";$border$statuscolor$label\n";
+						$space.="\t\t\tcontext.fillStyle=\"rgba({$scolor[0]}, {$scolor[1]}, {$scolor[2]}, .35)\";$border$statuscolor$labelsp\n";
+						$weight.="\t\t\tcontext.fillStyle=\"rgba({$wcolor[0]}, {$wcolor[1]}, {$wcolor[2]}, 0.35)\";$border$statuscolor$labelwe\n";
+						$power.="\t\t\tcontext.fillStyle=\"rgba({$pcolor[0]}, {$pcolor[1]}, {$pcolor[2]}, 0.35)\";$border$statuscolor$labelpo\n";
+						$temperature.="\t\t\tcontext.fillStyle=\"rgba({$tcolor[0]}, {$tcolor[1]}, {$tcolor[2]}, 0.35)\";$border$statuscolor$labelte\n";
+						$humidity.="\t\t\tcontext.fillStyle=\"rgba({$hcolor[0]}, {$hcolor[1]}, {$hcolor[2]}, 0.35)\";$border$statuscolor$labelhu\n";
+						$realpower.="\t\t\tcontext.fillStyle=\"rgba({$rpcolor[0]}, {$rpcolor[1]}, {$rpcolor[2]}, 0.35)\";$border$statuscolor$labelrp\n";
 						
 						$fechaLecturaTemps=(!is_null($cabRow["LastRead"])&&($cabRow["LastRead"]>$fechaLecturaTemps))?date('d-m-Y',strtotime(($cabRow["LastRead"]))):$fechaLecturaTemps;
 						$fechaLecturaRP=(!is_null($cabRow["RPLastRead"])&&($cabRow["RPLastRead"]>$fechaLecturaRP))?date('d-m-Y',strtotime(($cabRow["RPLastRead"]))):$fechaLecturaRP;
@@ -539,13 +543,13 @@ class DataCenter {
 			}
 			
 			//Key
-			$leyenda="maptitle.html('".__("OVERVIEW: worse state of cabinets")."');";
-			$leyendasp="maptitle.html('".__("SPACE: occupation of cabinets")."');";
-			$leyendawe="maptitle.html('".__("WEIGHT: Supported weight by cabinets")."');";
-			$leyendapo="maptitle.html('".__("POWER: Computed from devices power supplies")."');";
-			$leyendate="maptitle.html('".__("TEMPERATURE").": ".($fechaLecturaTemps>0?__("Measured on")." ".$fechaLecturaTemps:__("no data"))."');";
-			$leyendahu="maptitle.html('".__("HUMIDITY").": ".($fechaLecturaTemps>0?__("Measured on")." ".$fechaLecturaTemps:__("no data"))."');";
-			$leyendarp="maptitle.html('".__("REAL POWER").": ".($fechaLecturaRP>0?__("Measured on")." ".$fechaLecturaRP:__("no data"))."');";
+			$leyenda="\t\t\tmaptitle.html('".__("OVERVIEW: worse state of cabinets")."');";
+			$leyendasp="\t\t\tmaptitle.html('".__("SPACE: occupation of cabinets")."');";
+			$leyendawe="\t\t\tmaptitle.html('".__("WEIGHT: Supported weight by cabinets")."');";
+			$leyendapo="\t\t\tmaptitle.html('".__("POWER: Computed from devices power supplies")."');";
+			$leyendate="\t\t\tmaptitle.html('".__("TEMPERATURE").": ".($fechaLecturaTemps>0?__("Measured on")." ".$fechaLecturaTemps:__("no data"))."');";
+			$leyendahu="\t\t\tmaptitle.html('".__("HUMIDITY").": ".($fechaLecturaTemps>0?__("Measured on")." ".$fechaLecturaTemps:__("no data"))."');";
+			$leyendarp="\t\t\tmaptitle.html('".__("REAL POWER").": ".($fechaLecturaRP>0?__("Measured on")." ".$fechaLecturaRP:__("no data"))."');";
 						/*
 			$leyenda="\n\t\tcontext.fillStyle='#000000';\n\t\tcontext.font='15px arial';
 				\n\t\tcontext.fillText('".__("OVERVIEW: worse state of cabinets")."',5,20);";
@@ -562,14 +566,14 @@ class DataCenter {
 			$leyendarp="\n\t\tcontext.fillStyle='#000000';\n\t\tcontext.font='15px arial';
 				\n\t\tcontext.fillText('".__("REAL POWER: Measured on")." ".$fechaLecturaRP."',5,20);";
 			*/
-			$space.=$leyendasp."\n	}\n";
-			$weight.=$leyendawe."\n	}\n";
-			$power.=$leyendapo."\n	}\n";
-			$temperature.=$leyendate."\n	}\n";
-			$humidity.=$leyendahu."\n	}\n";
-			$realpower.=$leyendarp."\n	}\n";
+			$space.=$leyendasp."\n\t\t}\n";
+			$weight.=$leyendawe."\n\t\t}\n";
+			$power.=$leyendapo."\n\t\t}\n";
+			$temperature.=$leyendate."\n\t\t}\n";
+			$humidity.=$leyendahu."\n\t\t}\n";
+			$realpower.=$leyendarp."\n\t\t}\n";
 			
-			$script.=$leyenda."\n	}\n";
+			$script.=$leyenda."\n\t\t}\n";
 			$script.=$space.$weight.$power.$temperature.$humidity.$realpower;
 		}
 		return $script;
@@ -1425,43 +1429,36 @@ class Zone {
 				$RealPowerRed=intval($dc->dcconfig->ParameterArray["PowerRed"]);
 				$RealPowerYellow=intval($dc->dcconfig->ParameterArray["PowerYellow"]);
 				
-				$script.="  <script type=\"text/javascript\">\n	function loadCanvas(){\n";
-				$space="	function space(){\n";
-				$weight="	function weight(){\n";
-				$power="	function power(){\n";
-				$temperature="	function temperatura(){\n";
-				$humidity="	function humedad(){\n";				
-				$realpower="	function realpower(){\n";				
-				
-				$script.="	var mycanvas=document.getElementById(\"mapCanvas\");\n		var width = mycanvas.width;\n		mycanvas.width = width + 1;\n		width = mycanvas.width;\n		mycanvas.width = width - 1;\n		var context=mycanvas.getContext('2d');\n";
-				$space.="	var mycanvas=document.getElementById(\"mapCanvas\");\n		var width = mycanvas.width;\n		mycanvas.width = width + 1;\n		width = mycanvas.width;\n		mycanvas.width = width - 1;\n		var context=mycanvas.getContext('2d');\n";
-				$weight.="	var mycanvas=document.getElementById(\"mapCanvas\");\n		var width = mycanvas.width;\n		mycanvas.width = width + 1;\n		width = mycanvas.width;\n		mycanvas.width = width - 1;\n		var context=mycanvas.getContext('2d');\n";
-				$power.="	var mycanvas=document.getElementById(\"mapCanvas\");\n		var width = mycanvas.width;\n		mycanvas.width = width + 1;\n		width = mycanvas.width;\n		mycanvas.width = width - 1;\n		var context=mycanvas.getContext('2d');\n";
-				$temperature.="	var mycanvas=document.getElementById(\"mapCanvas\");\n		var width = mycanvas.width;\n		mycanvas.width = width + 1;\n		width = mycanvas.width;\n		mycanvas.width = width - 1;\n		var context=mycanvas.getContext('2d');\n";
-				$humidity.="	var mycanvas=document.getElementById(\"mapCanvas\");\n		var width = mycanvas.width;\n		mycanvas.width = width + 1;\n		width = mycanvas.width;\n		mycanvas.width = width - 1;\n		var context=mycanvas.getContext('2d');\n";
-				$realpower.="	var mycanvas=document.getElementById(\"mapCanvas\");\n		var width = mycanvas.width;\n		mycanvas.width = width + 1;\n		width = mycanvas.width;\n		mycanvas.width = width - 1;\n		var context=mycanvas.getContext('2d');\n";
-								
 				// get image file attributes and type
 				list($width, $height, $type, $attr)=getimagesize($mapfile);
-				//$width=($this->MapX2-$this->MapX1)*2;
-				//$height=($this->MapY2-$this->MapY1)*2;
-				$script.="		context.globalCompositeOperation = 'destination-over';\n		var img=new Image();\n		img.onload=function(){\n			context.drawImage(img,-$this->MapX1*$zoom,-$this->MapY1*$zoom,$width*$zoom,$height*$zoom);\n		}\n		img.src=\"$mapfile\";\n";
-				$space.="		context.globalCompositeOperation = 'destination-over';\n		var img=new Image();\n		img.onload=function(){\n			context.drawImage(img,-$this->MapX1*$zoom,-$this->MapY1*$zoom,$width*$zoom,$height*$zoom);\n		}\n		img.src=\"$mapfile\";\n";
-				$weight.="		context.globalCompositeOperation = 'destination-over';\n		var img=new Image();\n		img.onload=function(){\n			context.drawImage(img,-$this->MapX1*$zoom,-$this->MapY1*$zoom,$width*$zoom,$height*$zoom);\n		}\n		img.src=\"$mapfile\";\n";
-				$power.="		context.globalCompositeOperation = 'destination-over';\n		var img=new Image();\n		img.onload=function(){\n			context.drawImage(img,-$this->MapX1*$zoom,-$this->MapY1*$zoom,$width*$zoom,$height*$zoom);\n		}\n		img.src=\"$mapfile\";\n";
-            	$temperature.="		context.globalCompositeOperation = 'destination-over';\n		var img=new Image();\n		img.onload=function(){\n			context.drawImage(img,-$this->MapX1*$zoom,-$this->MapY1*$zoom,$width*$zoom,$height*$zoom);\n		}\n		img.src=\"$mapfile\";\n"; 
-            	$humidity.="		context.globalCompositeOperation = 'destination-over';\n		var img=new Image();\n		img.onload=function(){\n			context.drawImage(img,-$this->MapX1*$zoom,-$this->MapY1*$zoom,$width*$zoom,$height*$zoom);\n		}\n		img.src=\"$mapfile\";\n"; 
-				$realpower.="		context.globalCompositeOperation = 'destination-over';\n		var img=new Image();\n		img.onload=function(){\n			context.drawImage(img,-$this->MapX1*$zoom,-$this->MapY1*$zoom,$width*$zoom,$height*$zoom);\n		}\n		img.src=\"$mapfile\";\n"; 
-				
-				$sql="SELECT C.*, Temp, Humidity, P.RealPower, LastRead, RPLastRead 
-					FROM ((fac_Cabinet C LEFT JOIN fac_CabinetTemps T ON C.CabinetId = T.CabinetID) LEFT JOIN
-						(SELECT CabinetID, SUM(Wattage) RealPower
-						FROM fac_PowerDistribution PD LEFT JOIN fac_PDUStats PS ON PD.PDUID=PS.PDUID
-						GROUP BY CabinetID) P ON C.CabinetId = P.CabinetID) LEFT JOIN
-						(SELECT CabinetID, MAX(LastRead) RPLastRead
-						FROM fac_PowerDistribution PD LEFT JOIN fac_PDUStats PS ON PD.PDUID=PS.PDUID
-						GROUP BY CabinetID) PLR ON C.CabinetId = PLR.CabinetID
-				    WHERE C.ZoneID=".intval($this->ZoneID).";";
+
+				$script.="\n\t\tvar maptitle=$('#maptitle');
+		var mycanvas=document.getElementById(\"mapCanvas\");
+		var context=mycanvas.getContext('2d');
+		context.globalCompositeOperation='destination-over';
+		function clearcanvas(){
+			context.clearRect(0,0, mycanvas.width, mycanvas.height);
+			var img=new Image();
+			img.onload=function(){
+				context.drawImage(img,-$this->MapX1*$zoom,-$this->MapY1*$zoom,$width*$zoom,$height*$zoom);
+			}
+			img.src=\"$mapfile\";
+		}
+		function loadCanvas(){\n\t\t\tclearcanvas();\n";
+
+				$space="\t\tfunction space(){\n\t\t\tclearcanvas();\n";
+				$weight="\t\tfunction weight(){\n\t\t\tclearcanvas();\n";
+				$power="\t\tfunction power(){\n\t\t\tclearcanvas();\n";
+				$temperature="\t\tfunction temperatura(){\n\t\t\tclearcanvas();\n";
+				$humidity="\t\tfunction humedad(){\n\t\t\tclearcanvas();\n";				
+				$realpower="\t\tfunction realpower(){\n\t\t\tclearcanvas();\n";				
+								
+				$sql="SELECT C.*, Temps.Temp, Temps.Humidity, Stats.Wattage AS RealPower, 
+					Temps.LastRead, Temps.LastRead AS RPLastRead FROM fac_Cabinet AS C
+					LEFT JOIN fac_CabinetTemps AS Temps ON C.CabinetID=Temps.CabinetID
+					LEFT JOIN fac_PowerDistribution AS P ON C.CabinetID=P.CabinetID
+					LEFT JOIN fac_PDUStats AS Stats ON P.PDUID=Stats.PDUID 
+					WHERE C.ZoneID=$this->ZoneID GROUP BY CabinetID;";
 
 				$fechaLecturaTemps=0;
 				$fechaLecturaRP=0;
@@ -1558,13 +1555,13 @@ class Zone {
 				}
 			}
 			//Key
-			$leyenda="document.getElementById('maptitle').innerHTML='".__("OVERVIEW: worse state of cabinets")."';";
-			$leyendasp="document.getElementById('maptitle').innerHTML='".__("SPACE: occupation of cabinets")."';";
-			$leyendawe="document.getElementById('maptitle').innerHTML='".__("WEIGHT: Supported weight by cabinets")."';";
-			$leyendapo="document.getElementById('maptitle').innerHTML='".__("POWER: Computed from devices power supplies")."';";
-			$leyendate="document.getElementById('maptitle').innerHTML='".__("TEMPERATURE").": ".($fechaLecturaTemps>0?__("Measured on")." ".$fechaLecturaTemps:__("no data"))."';";
-			$leyendahu="document.getElementById('maptitle').innerHTML='".__("HUMIDITY").": ".($fechaLecturaTemps>0?__("Measured on")." ".$fechaLecturaTemps:__("no data"))."';";
-			$leyendarp="document.getElementById('maptitle').innerHTML='".__("REAL POWER").": ".($fechaLecturaRP>0?__("Measured on")." ".$fechaLecturaRP:__("no data"))."';";
+			$leyenda="\t\t\tmaptitle.html('".__("OVERVIEW: worse state of cabinets")."');";
+			$leyendasp="\t\t\tmaptitle.html('".__("SPACE: occupation of cabinets")."');";
+			$leyendawe="\t\t\tmaptitle.html('".__("WEIGHT: Supported weight by cabinets")."');";
+			$leyendapo="\t\t\tmaptitle.html('".__("POWER: Computed from devices power supplies")."');";
+			$leyendate="\t\t\tmaptitle.html('".__("TEMPERATURE").": ".($fechaLecturaTemps>0?__("Measured on")." ".$fechaLecturaTemps:__("no data"))."');";
+			$leyendahu="\t\t\tmaptitle.html('".__("HUMIDITY").": ".($fechaLecturaTemps>0?__("Measured on")." ".$fechaLecturaTemps:__("no data"))."');";
+			$leyendarp="\t\t\tmaptitle.html('".__("REAL POWER").": ".($fechaLecturaRP>0?__("Measured on")." ".$fechaLecturaRP:__("no data"))."');";
 			/*
 			$leyenda="\n\t\tcontext.fillStyle='#000000';\n\t\tcontext.font='15px arial';
 				\n\t\tcontext.fillText('".__("OVERVIEW: worse state of cabinets")."',5,20);";
@@ -1582,16 +1579,15 @@ class Zone {
 				\n\t\tcontext.fillText('".__("REAL POWER: Measured on")." ".$fechaLecturaRP."',5,20);";
 			*/
 			
-			$space.=$leyendasp."\n	}\n";
-			$weight.=$leyendawe."\n	}\n";
-			$power.=$leyendapo."\n	}\n";
-			$temperature.=$leyendate."\n	}\n";
-			$humidity.=$leyendahu."\n	}\n";
-			$realpower.=$leyendarp."\n	}\n";
+			$space.=$leyendasp."\n\t\t}\n";
+			$weight.=$leyendawe."\n\t\t}\n";
+			$power.=$leyendapo."\n\t\t}\n";
+			$temperature.=$leyendate."\n\t\t}\n";
+			$humidity.=$leyendahu."\n\t\t}\n";
+			$realpower.=$leyendarp."\n\t\t}\n";
 			
-			$script.=$leyenda."\n	}\n";
+			$script.=$leyenda."\n\t\t}\n";
 			$script.=$space.$weight.$power.$temperature.$humidity.$realpower;
-			$script.="	</script>\n";
 		}
 		return $script;
 	}
