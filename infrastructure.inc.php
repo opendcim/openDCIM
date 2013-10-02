@@ -524,7 +524,7 @@ class DataCenter {
 						$labelhu="\n\t\t\tcontext.fillStyle='#000000';\n\t\t\tcontext.font='10px arial';\n\t\t\tcontext.fillText('".(($currentHumidity>0)?number_format($currentHumidity,0, ",", ".")."%":"")."',$textXcoord,$textYcoord);\n";
 						$labelrp="\n\t\t\tcontext.fillStyle='#000000';\n\t\t\tcontext.font='10px arial';\n\t\t\tcontext.fillText('".(($currentRealPower>0)?number_format($currentRealPower/1000,2, ",", "."):"")."',$textXcoord,$textYcoord);\n";
 	
-						// Uncomment this to add borders and rack labels to the canvas drawing of the data center.
+						// Comment this to add borders and rack labels to the canvas drawing of the data center.
 						// Discuss moving this into a configuration item for the future.
 						$border=$label=$labelsp=$labelwe=$labelpo=$labelte=$labelhu=$labelrp="";
 	
@@ -1527,27 +1527,27 @@ class Zone {
 						$textXcoord=($cab->MapX1-$this->MapX1)*$zoom+3;
 						$textYcoord=($cab->MapY1-$this->MapY1)*$zoom+floor($height*2/3);
 	        				
-						$border="\n\t\tcontext.strokeStyle='#000000';\n\t\tcontext.lineWidth=1;\n\t\tcontext.strokeRect(($cab->MapX1-$this->MapX1)*$zoom,($cab->MapY1-$this->MapY1)*$zoom,$width,$height);";
-						$statuscolor="\n\t\tcontext.fillRect(($cab->MapX1-$this->MapX1)*$zoom,($cab->MapY1-$this->MapY1)*$zoom,$width,$height);";
-						$label="\n\t\tcontext.fillStyle='#000000';\n\t\tcontext.font='10px arial';\n\t\tcontext.fillText('$dev->Location',$textXcoord,$textYcoord);\n";
-						$labelsp="\n\t\tcontext.fillStyle='#000000';\n\t\tcontext.font='bold 12px arial';\n\t\tcontext.fillText('".number_format($used,0, ",", ".")."',$textXcoord,$textYcoord);\n";
-						$labelwe="\n\t\tcontext.fillStyle='#000000';\n\t\tcontext.font='bold 12px arial';\n\t\tcontext.fillText('".number_format($totalWeight,0, ",", ".")."',$textXcoord,$textYcoord);\n";
-						$labelpo="\n\t\tcontext.fillStyle='#000000';\n\t\tcontext.font='10px arial';\n\t\tcontext.fillText('".number_format($totalWatts/1000,2, ",", ".")."',$textXcoord,$textYcoord);\n";
-						$labelte="\n\t\tcontext.fillStyle='#000000';\n\t\tcontext.font='10px arial';\n\t\tcontext.fillText('".(($currentTemperature>0)?number_format($currentTemperature,0, ",", "."):"")."',$textXcoord,$textYcoord);\n";
-						$labelhu="\n\t\tcontext.fillStyle='#000000';\n\t\tcontext.font='10px arial';\n\t\tcontext.fillText('".(($currentHumidity>0)?number_format($currentHumidity,0, ",", ".")."%":"")."',$textXcoord,$textYcoord);\n";
-						$labelrp="\n\t\tcontext.fillStyle='#000000';\n\t\tcontext.font='10px arial';\n\t\tcontext.fillText('".(($currentRealPower>0)?number_format($currentRealPower/1000,2, ",", "."):"")."',$textXcoord,$textYcoord);\n";
+						$border="\n\t\t\tcontext.strokeStyle='#000000';\n\t\t\tcontext.lineWidth=1;\n\t\t\tcontext.strokeRect(($cab->MapX1-$this->MapX1)*$zoom,($cab->MapY1-$this->MapY1)*$zoom,$width,$height);";
+						$statuscolor="\n\t\t\tcontext.fillRect(($cab->MapX1-$this->MapX1)*$zoom,($cab->MapY1-$this->MapY1)*$zoom,$width,$height);";
+						$label="\n\t\t\tcontext.fillStyle='#000000';\n\t\t\tcontext.font='10px arial';\n\t\t\tcontext.fillText('$dev->Location',$textXcoord,$textYcoord);\n";
+						$labelsp="\n\t\t\tcontext.fillStyle='#000000';\n\t\t\tcontext.font='bold 12px arial';\n\t\t\tcontext.fillText('".number_format($used,0, ",", ".")."',$textXcoord,$textYcoord);\n";
+						$labelwe="\n\t\t\tcontext.fillStyle='#000000';\n\t\t\tcontext.font='bold 12px arial';\n\t\t\tcontext.fillText('".number_format($totalWeight,0, ",", ".")."',$textXcoord,$textYcoord);\n";
+						$labelpo="\n\t\t\tcontext.fillStyle='#000000';\n\t\t\tcontext.font='10px arial';\n\t\t\tcontext.fillText('".number_format($totalWatts/1000,2, ",", ".")."',$textXcoord,$textYcoord);\n";
+						$labelte="\n\t\t\tcontext.fillStyle='#000000';\n\t\t\tcontext.font='10px arial';\n\t\t\tcontext.fillText('".(($currentTemperature>0)?number_format($currentTemperature,0, ",", "."):"")."',$textXcoord,$textYcoord);\n";
+						$labelhu="\n\t\t\tcontext.fillStyle='#000000';\n\t\t\tcontext.font='10px arial';\n\t\t\tcontext.fillText('".(($currentHumidity>0)?number_format($currentHumidity,0, ",", ".")."%":"")."',$textXcoord,$textYcoord);\n";
+						$labelrp="\n\t\t\tcontext.fillStyle='#000000';\n\t\t\tcontext.font='10px arial';\n\t\t\tcontext.fillText('".(($currentRealPower>0)?number_format($currentRealPower/1000,2, ",", "."):"")."',$textXcoord,$textYcoord);\n";
 	
-						// Uncomment this to add borders and rack labels to the canvas drawing of the data center.
+						// Comment this to add borders and rack labels to the canvas drawing of the data center.
 						// Discuss moving this into a configuration item for the future.
 						$border=$label=$labelsp=$labelwe=$labelpo=$labelte=$labelhu=$labelrp="";
 	
-						$script.="\t\tcontext.fillStyle=\"rgba({$color[0]}, {$color[1]}, {$color[2]}, 0.35)\";$border$statuscolor$label\n";
-						$space.="\t\tcontext.fillStyle=\"rgba({$scolor[0]}, {$scolor[1]}, {$scolor[2]}, .35)\";$border$statuscolor$labelsp\n";
-						$weight.="\t\tcontext.fillStyle=\"rgba({$wcolor[0]}, {$wcolor[1]}, {$wcolor[2]}, 0.35)\";$border$statuscolor$labelwe\n";
-						$power.="\t\tcontext.fillStyle=\"rgba({$pcolor[0]}, {$pcolor[1]}, {$pcolor[2]}, 0.35)\";$border$statuscolor$labelpo\n";
-						$temperature.="\t\tcontext.fillStyle=\"rgba({$tcolor[0]}, {$tcolor[1]}, {$tcolor[2]}, 0.35)\";$border$statuscolor$labelte\n";
-						$humidity.="\t\tcontext.fillStyle=\"rgba({$hcolor[0]}, {$hcolor[1]}, {$hcolor[2]}, 0.35)\";$border$statuscolor$labelhu\n";
-						$realpower.="\t\tcontext.fillStyle=\"rgba({$rpcolor[0]}, {$rpcolor[1]}, {$rpcolor[2]}, 0.35)\";$border$statuscolor$labelrp\n";
+						$script.="\t\t\tcontext.fillStyle=\"rgba({$color[0]}, {$color[1]}, {$color[2]}, 0.35)\";$border$statuscolor$label\n";
+						$space.="\t\t\tcontext.fillStyle=\"rgba({$scolor[0]}, {$scolor[1]}, {$scolor[2]}, .35)\";$border$statuscolor$labelsp\n";
+						$weight.="\t\t\tcontext.fillStyle=\"rgba({$wcolor[0]}, {$wcolor[1]}, {$wcolor[2]}, 0.35)\";$border$statuscolor$labelwe\n";
+						$power.="\t\t\tcontext.fillStyle=\"rgba({$pcolor[0]}, {$pcolor[1]}, {$pcolor[2]}, 0.35)\";$border$statuscolor$labelpo\n";
+						$temperature.="\t\t\tcontext.fillStyle=\"rgba({$tcolor[0]}, {$tcolor[1]}, {$tcolor[2]}, 0.35)\";$border$statuscolor$labelte\n";
+						$humidity.="\t\t\tcontext.fillStyle=\"rgba({$hcolor[0]}, {$hcolor[1]}, {$hcolor[2]}, 0.35)\";$border$statuscolor$labelhu\n";
+						$realpower.="\t\t\tcontext.fillStyle=\"rgba({$rpcolor[0]}, {$rpcolor[1]}, {$rpcolor[2]}, 0.35)\";$border$statuscolor$labelrp\n";
 						
 						$fechaLecturaTemps=(!is_null($cabRow["LastRead"])&&($cabRow["LastRead"]>$fechaLecturaTemps))?date('d-m-Y',strtotime(($cabRow["LastRead"]))):$fechaLecturaTemps;
 						$fechaLecturaRP=(!is_null($cabRow["RPLastRead"])&&($cabRow["RPLastRead"]>$fechaLecturaRP))?date('d-m-Y',strtotime(($cabRow["RPLastRead"]))):$fechaLecturaRP;

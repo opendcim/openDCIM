@@ -309,10 +309,10 @@ echo '<div class="main">
 		menu.append($('<option>').val('loadCanvas').text('<?php echo __("Overview") ?>'));
 		menu.append($('<option>').val('space').text('<?php echo __("Space") ?>'));
 		menu.append($('<option>').val('weight').text('<?php echo __("Weight") ?>'));
-		menu.append($('<option>').val('power').text('<?php echo __("Power") ?>'));
+		menu.append($('<option>').val('power').text('<?php echo __("Calculated Power") ?>'));
+		menu.append($('<option>').val('realpower').text('<?php echo __("Measured Power") ?>'));
 		menu.append($('<option>').val('temperatura').text('<?php echo __("Temperature") ?>'));
 		menu.append($('<option>').val('humedad').text('<?php echo __("Humidity") ?>'));
-		menu.append($('<option>').val('realpower').text('<?php echo __("Real Power") ?>'));
 		$('.main .nav').html(menu);
 
 		loadCanvas();
