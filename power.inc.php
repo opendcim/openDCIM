@@ -107,7 +107,7 @@ class CDUTemplate {
 	}
 	
 	function UpdateTemplate($db){
-		$sql="UPDATE fac_CDUTemplate SET ManufacturerID=".intval($this->ManufacturerID).", Model=\"".addslashes($this->Model)."\", Managed=".intval($this->Managed).", VersionOID=\"".addslashes($this->VersionOID)."\", Multiplier=\"".intval($this->Multiplier)."\", OID1=\"".addslashes($this->OID1)."\", OID2=\"".addslashes($this->OID2)."\", OID3=\"".addslashes($this->OID3)."\", ProcessingProfile=\"".addslashes($this->ProcessingProfile)."\", Voltage=".intval($this->Voltage).", Amperage=".intval($this->Amperage).", NumOutlets=".intval($this->NumOutlets)." where TemplateID=".intval($this->TemplateID).";";
+		$sql="UPDATE fac_CDUTemplate SET ManufacturerID=".intval($this->ManufacturerID).", Model=\"".addslashes($this->Model)."\", Managed=".intval($this->Managed).", VersionOID=\"".addslashes($this->VersionOID)."\", Multiplier=\"".($this->Multiplier)."\", OID1=\"".addslashes($this->OID1)."\", OID2=\"".addslashes($this->OID2)."\", OID3=\"".addslashes($this->OID3)."\", ProcessingProfile=\"".addslashes($this->ProcessingProfile)."\", Voltage=".intval($this->Voltage).", Amperage=".intval($this->Amperage).", NumOutlets=".intval($this->NumOutlets)." where TemplateID=".intval($this->TemplateID).";";
 		$result=mysql_query($sql,$db);
 		return;
 	}

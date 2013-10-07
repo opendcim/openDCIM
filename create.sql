@@ -71,7 +71,7 @@ CREATE TABLE fac_CDUTemplate (
   Model varchar(80) NOT NULL,
   Managed int(1) NOT NULL,
   VersionOID varchar(80) NOT NULL,
-  Multiplier enum( '1', '10', '100' ),
+  Multiplier enum( '0.1', '1', '10', '100' ),
   OID1 varchar(80) NOT NULL,
   OID2 varchar(80) NOT NULL,
   OID3 varchar(80) NOT NULL,

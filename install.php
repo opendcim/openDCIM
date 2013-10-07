@@ -312,6 +312,12 @@ function applyupdate ($updatefile){
 		$upgrade = true;
 		$version = "2.0.1";
 	}
+
+        if ( $version == "2.1" ) { 
+            $results[] = applyupdate("db-2.1-to-2.2.sql");
+            $upgrade = true;
+            $version = "2.2";
+        }
 		
 	if($upgrade==true){ //If we're doing an upgrade don't call the rest of the installer.
 ?>
