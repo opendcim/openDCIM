@@ -337,12 +337,25 @@ class DataCenter {
 
 					if($racks=$this->query($sql)){ 
 						foreach($racks as $row){
-							$mapHTML.="<area href=\"cabnavigator.php?cabinetid={$row["CabinetID"]}\" shape=\"rect\"";
+							$mapHTML.="<area name=\"cab\" href=\"cabnavigator.php?cabinetid={$row["CabinetID"]}\" shape=\"rect\"";
 							$mapHTML.=" coords=\"{$row["MapX1"]},{$row["MapY1"]},{$row["MapX2"]},{$row["MapY2"]}\"";
 //							$mapHTML.=" alt=\"{$row["Location"]}\" title=\"{$row["Location"]}\">\n";
 							$mapHTML.=" alt=\"{$row["Location"]}\">\n";
 						}
 					}
+					$sql="SELECT * FROM fac_Zone WHERE DataCenterID=$this->DataCenterID;";
+
+					if($zones=$this->query($sql)){ 
+						foreach($zones as $row){
+							$mapHTML.="<area name=\"zone\" href=\"zone_stats.php?zone={$row["ZoneID"]}\" shape=\"rect\"";
+							$mapHTML.=" coords=\"{$row["MapX1"]},{$row["MapY1"]},{$row["MapX2"]},{$row["MapY2"]}\"";
+							$mapHTML.=" alt=\"{$row["Description"]}\" title=\"{$row["Description"]}\">\n";
+//							$mapHTML.=" alt=\"{$row["Location"]}\">\n";
+						}
+					}
+					$mapHTML.="<area name=\"dc\" shape=\"rect\"";
+					$mapHTML.=" coords=\"0,0,{$width},{$height}\"";
+					$mapHTML.=" alt=\"{$this->Name}\" title=\"{$this->Name}\">\n";
 				}
 				 
 				$mapHTML.="</map>\n";

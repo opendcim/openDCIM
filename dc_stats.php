@@ -179,7 +179,7 @@ $(document).ready(function() {
 		$('#mapCanvas').css('width', $('.canvas > img[alt="clearmap over canvas"]').width()+'px');
 		$('#mapCanvas').parent('.canvas').css('width', $('.canvas > img[alt="clearmap over canvas"]').width()+'px');
 
-		$('map[name="datacenter"] area').mouseenter(function(){
+		$('map[name="datacenter"] area[name="cab"]').mouseenter(function(){
 			var pos=$(this).offset();
 			var despl=$(this).attr('coords');
 			var coor=despl.split(',');
@@ -197,6 +197,63 @@ $(document).ready(function() {
 			$('body').append(tooltip);
 			$(this).mouseleave(function(){
 				tooltip.remove();
+			});
+		});
+
+		$('map[name="datacenter"] area[name="zone"]').mouseenter(function(){
+			var pos=$(this).offset();
+			var despl=$(this).attr('coords');
+			var coor=despl.split(',');
+			var tx=pos.left+(coor[0]*1);
+			var ty=pos.top+(coor[1]*1);
+			var tw=coor[2]-coor[0];
+			var th=coor[3]-coor[1];
+			//alert(nombre);
+			var zoneborderl=$('<div id="zoneborderl" />').css({
+				'z-index': 99,
+				'position': 'absolute',
+				'border': '2px solid red',
+				'left':tx-1+'px',
+				'top':ty-1+'px',
+				'width':0+'px',
+				'height':th+2+'px'});
+			$('body').append(zoneborderl);
+			var zoneborderu=$('<div id="zoneborderu" />').css({
+				'z-index': 99,
+				'position': 'absolute',
+				'border': '2px solid red',
+				'left':tx-1+'px',
+				'top':ty-1+'px',
+				'width':tw+2+'px',
+				'height':0+'px'});
+			$('body').append(zoneborderu);
+			var zoneborderr=$('<div id="zoneborderr" />').css({
+				'z-index': 99,
+				'position': 'absolute',
+				'border': '2px solid red',
+				'left':tx+tw+1+'px',
+				'top':ty-1+'px',
+				'width':0+'px',
+				'height':th+2+'px'});
+			$('body').append(zoneborderr);
+			var zoneborderd=$('<div id="zoneborderd" />').css({
+				'z-index': 99,
+				'position': 'absolute',
+				'border': '2px solid red',
+				'left':tx-1+'px',
+				'top':ty+th+1+'px',
+				'width':tw+2+'px',
+				'height':0+'px'});
+			$('body').append(zoneborderd);
+			$(this).mouseleave(function(){
+				var b=document.getElementById("zoneborderl");
+				if(b!=null) b.parentNode.removeChild(b);
+				var b=document.getElementById("zoneborderu");
+				if(b!=null) b.parentNode.removeChild(b);
+				var b=document.getElementById("zoneborderr");
+				if(b!=null) b.parentNode.removeChild(b);
+				var b=document.getElementById("zoneborderd");
+				if(b!=null) b.parentNode.removeChild(b);
 			});
 		});
 	});

@@ -420,6 +420,7 @@ div.cabinet {
 	min-width: 30px;
 	z-index: 99;
 	position: absolute;
+	white-space: nowrap;
 }
 .cabnavigator.tooltip div {
 	border: 0 none;
