@@ -105,7 +105,7 @@
 
 	// Figure out what the URL to this page
 	$href="";
-	$href.=($_SERVER['HTTPS'])?'https://':'http://';
+	$href.=(array_key_exists('HTTPS', $_SERVER))?'https://':'http://';
 	$href.=$_SERVER['SERVER_NAME'];
 	$href.=substr($_SERVER['REQUEST_URI'], 0, -strlen(basename($_SERVER['REQUEST_URI'])));
 
