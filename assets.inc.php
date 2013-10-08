@@ -112,7 +112,7 @@ class Cabinet {
 		
 		$this->MakeSafe();
 
-		$sql="INSERT INFO fac_Cabinet SET DataCenterID=$this->DataCenterID, 
+		$sql="INSERT INTO fac_Cabinet SET DataCenterID=$this->DataCenterID, 
 			Location=\"$this->Location\", AssignedTo=$this->AssignedTo, 
 			ZoneID=$this->ZoneID, CabRowID=$this->CabRowID, 
 			CabinetHeight=$this->CabinetHeight, Model=\"$this->Model\", 
