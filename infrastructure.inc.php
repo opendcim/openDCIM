@@ -437,13 +437,23 @@ class DataCenter {
 				$temperature="\t\tfunction temperatura(){\n\t\t\tclearcanvas();\n";
 				$humidity="\t\tfunction humedad(){\n\t\t\tclearcanvas();\n";				
 				$realpower="\t\tfunction realpower(){\n\t\t\tclearcanvas();\n";				
-				
+				/*
 				$sql="SELECT C.*, Temps.Temp, Temps.Humidity, Stats.Wattage AS RealPower, 
 					Temps.LastRead, Temps.LastRead AS RPLastRead FROM fac_Cabinet AS C
 					LEFT JOIN fac_CabinetTemps AS Temps ON C.CabinetID=Temps.CabinetID
 					LEFT JOIN fac_PowerDistribution AS P ON C.CabinetID=P.CabinetID
 					LEFT JOIN fac_PDUStats AS Stats ON P.PDUID=Stats.PDUID 
 					WHERE C.DataCenterID=$this->DataCenterID GROUP BY CabinetID;";
+				*/
+				$sql="SELECT C.*, T.Temp, T.Humidity, P.RealPower, T.LastRead, PLR.RPLastRead 
+					FROM ((fac_Cabinet C LEFT JOIN fac_CabinetTemps T ON C.CabinetId = T.CabinetID) LEFT JOIN
+						(SELECT CabinetID, SUM(Wattage) RealPower
+						FROM fac_PowerDistribution PD LEFT JOIN fac_PDUStats PS ON PD.PDUID=PS.PDUID
+						GROUP BY CabinetID) P ON C.CabinetId = P.CabinetID) LEFT JOIN
+						(SELECT CabinetID, MAX(LastRead) RPLastRead
+						FROM fac_PowerDistribution PD LEFT JOIN fac_PDUStats PS ON PD.PDUID=PS.PDUID
+						GROUP BY CabinetID) PLR ON C.CabinetId = PLR.CabinetID
+				    WHERE C.DataCenterID=".intval($this->DataCenterID).";";
 				
 				$fechaLecturaTemps=0;
 				$fechaLecturaRP=0;

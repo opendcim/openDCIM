@@ -35,6 +35,12 @@ INSERT INTO fac_Config VALUES ('TemperatureRed', '30', 'degrees', 'float', '30')
 	('HumidityRedLow', '35', 'percentage', 'float', '35'),
 	('HumidityYellowHigh', '55', 'percentage', 'float', '55'),
 	('HumidityYellowLow', '45', 'percentage', 'float', '45');	
+	
+--
+-- Add LastRead field in PDUStats
+--
+
+ALTER TABLE fac_PDUStats ADD COLUMN LastRead datetime DEFAULT NULL AFTER Wattage;
 
 ---
 --- Extend the fac_DeviceTemplate table to hold notes

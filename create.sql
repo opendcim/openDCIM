@@ -399,6 +399,7 @@ DROP TABLE IF EXISTS fac_PDUStats;
 create table fac_PDUStats(
   PDUID int(11) NOT NULL,
   Wattage int(11) NOT NULL,
+  LastRead datetime DEFAULT NULL,
   PRIMARY KEY (PDUID)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 

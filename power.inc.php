@@ -475,7 +475,7 @@ class PowerDistribution {
 		$this->MakeSafe();
 
 		$sql="SELECT * FROM fac_PowerDistribution WHERE PDUID=$this->PDUID;";
-		
+
 		if($PDURow=$this->query($sql)->fetch()){
 			foreach(PowerDistribution::RowToObject($PDURow) as $prop => $value){
 				$this->$prop=$value;
@@ -669,8 +669,8 @@ class PowerDistribution {
 				}
 			}
 			
-			$sql="INSERT INTO fac_PDUStats SET PDUID={$row["PDUID"]}, Wattage=$watts ON 
-				DUPLICATE KEY UPDATE Wattage=$watts;";
+			$sql="INSERT INTO fac_PDUStats SET PDUID={$row["PDUID"]}, Wattage=$watts, LastRead=now() ON 
+				DUPLICATE KEY UPDATE Wattage=$watts, LastRead=now();";
 			$this->exec($sql);
 			
 			$this->PDUID=$row["PDUID"];      
