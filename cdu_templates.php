@@ -131,11 +131,22 @@ echo '</select>
    <div><label for="multiplier">',__("Multiplier"),'</label></div>
    <div><select name="multiplier" id="multiplier">';
    
-	$Multi=array("1","10","100");
-	foreach($Multi as $unit){
-		$selected=($unit==$template->Multiplier)?' selected':'';
-		print "\t\t<option value=\"$unit\"$selected>$unit</option>\n";
+	$Multi=array("0.1", "1","10","100");
+        $mult = 1;
+
+        // Loop to find the template default multiplier, if any
+        foreach($Multi as $unit) {
+            //$selected = ($unit==$template->Multiplier)?' selected' : '';
+            if ($unit == $template->Multiplier) {
+                $mult = $template->Multiplier;
+                break;
+            }
 	}
+        // Set the "selected" option, using $mult as set above
+	foreach($Multi as $unit){
+            $selected = ( $unit == $mult ) ? ' selected' : '';
+            print "\t\t<option value=\"$unit\"$selected>$unit</option>\n";
+        }
 	
 echo '   </select>
    </div>

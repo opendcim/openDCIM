@@ -457,7 +457,7 @@ echo '   </select></div>
 </div>
 <div>
     <div>',__("Uptime"),'</div>
-    <div>',$upTime,'</div>
+    <div>', ( isset($upTime) ? $upTime : "SNMP Uptime did not return a valid value.") ,'</div>
 </div>
 <div>
     <div>',__("Firmware Version"),'</div>
