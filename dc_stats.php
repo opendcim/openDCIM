@@ -55,7 +55,7 @@ $(document).ready(function() {
 	
 	if(isset($_POST['tooltip'])){
 		
-		$sql="SELECT SELECT C.*, T.Temp, T.Humidity, P.RealPower, T.LastRead, PLR.RPLastRead 
+		$sql="SELECT C.*, T.Temp, T.Humidity, P.RealPower, T.LastRead, PLR.RPLastRead 
 			FROM ((fac_Cabinet C LEFT JOIN fac_CabinetTemps T ON C.CabinetId = T.CabinetID) LEFT JOIN
 				(SELECT CabinetID, SUM(Wattage) RealPower
 				FROM fac_PowerDistribution PD LEFT JOIN fac_PDUStats PS ON PD.PDUID=PS.PDUID
