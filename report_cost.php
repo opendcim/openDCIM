@@ -2,15 +2,6 @@
 	require_once( "db.inc.php" );
 	require_once( "facilities.inc.php" );
 
-	$user=new User();
-	$user->UserID=$_SERVER['REMOTE_USER'];
-	$user->GetUserRights($facDB);
-
-	if(!$user->ReadAccess){
-		header( "Location: ".redirect());
-		exit;
-	}
-
 	define('FPDF_FONTPATH','font/');
 	require('fpdf.php');
 	
@@ -37,7 +28,7 @@ class PDF extends FPDF {
 	}
   
 	function Header() {
-		$this->pdfconfig = new Config($this->pdfDB);
+		$this->pdfconfig = new Config();
     	$this->Image( 'images/' . $this->pdfconfig->ParameterArray["PDFLogoFile"],10,8,100);
     	$this->SetFont($this->pdfconfig->ParameterArray["PDFfont"],'B',12);
     	$this->Cell(120);
@@ -368,8 +359,8 @@ class PDF_Diag extends PDF_Sector {
     }
 }
 
-  $tenantList = $dev->GetTop10Tenants( $facDB );
-  $powerList = $dev->GetTop10Power( $facDB );
+  $tenantList=$dev->GetTop10Tenants();
+  $powerList=$dev->GetTop10Power();
   
   
 
@@ -380,7 +371,7 @@ class PDF_Diag extends PDF_Sector {
 //
 //
 
-	$pdf=new PDF_Diag($facDB);
+	$pdf=new PDF_Diag();
 	$pdf->AliasNbPages();
 	$pdf->AddPage();
 	
@@ -406,7 +397,7 @@ class PDF_Diag extends PDF_Sector {
   $pdf->Ln(); 
 
   $pdf->Bookmark( "Departments" );
-	$deptList = $dept->GetDepartmentList( $facDB );
+	$deptList = $dept->GetDepartmentList();
 
 	foreach( $deptList as $deptRow ) {
 		// Skip ITS for Now
@@ -441,7 +432,7 @@ class PDF_Diag extends PDF_Sector {
 
 		$pdf->Ln();
 
-		$contactList = $con->GetContactsForDepartment( $deptRow->DeptID, $facDB );
+		$contactList=$con->GetContactsForDepartment($deptRow->DeptID);
 
 		$fill = 0;
 
@@ -459,7 +450,7 @@ class PDF_Diag extends PDF_Sector {
 		$pdf->Ln();
 
 		$dev->Owner = $deptRow->DeptID;
-		$devList = $dev->GetDevicesbyOwner( $facDB );
+		$devList = $dev->GetDevicesbyOwner();
 
 		$TotalRU = 0;
 		$TotalBTU = 0;
@@ -483,7 +474,7 @@ class PDF_Diag extends PDF_Sector {
 		foreach( $devList as $devRow ) {
 			if ( $devRow->Cabinet != $cab->CabinetID ) {
 				$cab->CabinetID = $devRow->Cabinet;
-				$cab->GetCabinet( $facDB );
+				$cab->GetCabinet();
 			}
 
 			if ( $cab->DataCenterID != $dc->DataCenterID ) {
@@ -493,7 +484,7 @@ class PDF_Diag extends PDF_Sector {
 			  }
 			  
 				$dc->DataCenterID = $cab->DataCenterID;
-				$dc->GetDataCenterbyID( $facDB );
+				$dc->GetDataCenterbyID();
 				
 				$DCRU = 0;
 				$DCBTU = 0;

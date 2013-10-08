@@ -3,11 +3,6 @@
 	require_once( 'facilities.inc.php' );
 	require_once( 'swiftmailer/swift_required.php' );
 	
-	$user=new User();
-	
-	$user->UserID=$_SERVER['REMOTE_USER'];
-	$user->GetUserRights($facDB);
-	
 	if(!$user->RackRequest){
 		// No soup for you.
 		header('Location: '.redirect());
@@ -21,22 +16,22 @@
 	$contact=new Contact();
 	$tmpContact=new Contact();
 	$formfix=$error='';	
-	$contactList=$contact->GetContactList($facDB);
+	$contactList=$contact->GetContactList();
 	$contact->UserID=$user->UserID;
-	$contact->GetContactByUserID($facDB);
+	$contact->GetContactByUserID();
 
 	//We only need to worry about sending email in the event this is a new submission and no other time.
 	if(isset($_POST["action"])){
 		if(isset($_REQUEST['requestid']) && $_REQUEST['requestid'] >0){
 			$req->RequestID=$_REQUEST['requestid'];
-			$req->GetRequest($facDB);
+			$req->GetRequest();
 
 			$contact->ContactID=$req->RequestorID;
-			$contact->GetContactByID($facDB);
+			$contact->GetContactByID();
 		}
 
 		$tmpContact->ContactID=$_POST["requestorid"];
-		$tmpContact->GetContactByID($facDB);
+		$tmpContact->GetContactByID();
 
 		// If any port other than 25 is specified, assume encryption and authentication
 		if($config->ParameterArray['SMTPPort']!= 25){
@@ -79,7 +74,7 @@
 		$logo='images/'.$config->ParameterArray["PDFLogoFile"];
 		$logo=$message->embed(Swift_Image::fromPath($logo)->setFilename('logo.png'));
 
-		$htmlMessage='<!doctype html><html><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"><title>ITS Data Center Inventory</title></head><body><div id="header" style="padding: 5px 0;background: '.$config->ParameterArray["HeaderColor"].';"><center><img src="'.$logo.'"></center></div><div class="page"><p><h3>ITS Facilities Rack Request</h3>'."\n";
+		$htmlMessage='<!doctype html><html><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"><title>ITS Data Center Inventory</title></head><body><div id="header" style="padding: 5px 0;background: '.$config->ParameterArray["HeaderColor"].';"><center><img src="'.$logo.'"></center></div><div class="page"><p><h3>'.__("ITS Facilities Rack Request").'</h3>'."\n";
 
 		if($_POST['action'] == 'Create'){
 			$req->RequestorID=$_POST['requestorid'];
@@ -100,14 +95,14 @@
 			$req->CurrentLocation=$_POST['currentlocation'];
 			$req->SpecialInstructions=$_POST['specialinstructions'];
 
-			$req->CreateRequest($facDB);
+			$req->CreateRequest();
 
-			$htmlMessage.="<p>".__("Your request for racking up the device labeled")." $req->Label ".__("has been received.
+			$htmlMessage.="<p>".sprintf(__('Your request for racking up the device labeled %1$s has been received.
 			The Network Operations Center will examine the request and contact you if more information is needed
 			before the request can be processed.  You will receive a notice when this request has been completed.
-			Please allow up to 2 business days for requests to be completed.")."</p>
+			Please allow up to 2 business days for requests to be completed.'),$req->Label)."</p>
 
-			<p>".__("Your Request ID is")." $req->RequestID ".__("and you may view the request online at")."
+			<p>".sprintf(__('Your Request ID is %1$d and you may view the request online at'),$req->RequestID)."
 			<a href=\"https://{$_SERVER['SERVER_NAME']}{$_SERVER['PHP_SELF']}?requestid=$req->RequestID\">
 			".__("this link")."</a>.</p>
 			
@@ -140,10 +135,10 @@
 			$req->CurrentLocation=$_POST['currentlocation'];
 			$req->SpecialInstructions=$_POST['specialinstructions'];
 
-			$req->UpdateRequest($facDB);
+			$req->UpdateRequest();
 
 			if($user->RackAdmin && $_POST['action']=='Move to Rack'){
-				$req->CompleteRequest($facDB);
+				$req->CompleteRequest();
 				
 				$dev->Label=$req->Label;
 				$dev->SerialNo=$req->SerialNo;
@@ -158,12 +153,13 @@
 				$dev->Ports=$req->EthernetCount;
 				$dev->DeviceType=$req->DeviceType;
 				$dev->TemplateID=$req->DeviceClass;
-				
-				$dev->CreateDevice($facDB);
-				
-				$htmlMessage.="<p>".__("Your request for racking up the device labeled")." $req->Label ".__("has been completed").".</p>
-				<p>".__("To view your device in its final location click")." <a href=\"".redirect("devices.php?deviceid=$dev->DeviceID")."\"> ".__("this link")."</a>.</p>
-				</body></html>";
+
+				$dev->CreateDevice();
+		
+				$htmlMessage.="<p>".sprintf(__('Your request for racking up the device labeled %1$s has been completed.'),$req->Label)."</p>";
+				$htmlMessage.="<p>".sprintf(__('To view your device in its final location click %1$s'),
+				"<a href=\"".redirect("devices.php?deviceid=$dev->DeviceID")."\"> ".__("this link")."</a>.</p>
+				</body></html>");
 
 				$message->setBody($htmlMessage,'text/html');
 				try{
@@ -179,7 +175,7 @@
 			}
 	  }elseif($_POST['action']=='Delete Request'){
 		  if($user->RackAdmin||$user->UserID==$contact->UserID){
-			$req->DeleteRequest($facDB);
+			$req->DeleteRequest();
 			header('Location: '.redirect('index.php'));
 			exit;
 		  }else{
@@ -191,11 +187,11 @@
 	// If requestid is set we are either looking up a request or performing an action on one already. Refresh the object from the DB
 	if(isset($_REQUEST['requestid']) && $_REQUEST['requestid']>0){
 		$req->RequestID=$_REQUEST['requestid'];
-		$req->GetRequest($facDB);
+		$req->GetRequest();
 		$formfix="?requestid=$req->RequestID";
 
 		$contact->ContactID=$req->RequestorID;
-		$contact->GetContactByID($facDB);
+		$contact->GetContactByID();
 	}
 ?>
 <!doctype html>
@@ -400,7 +396,7 @@ echo '			</select>
 			<select name="owner" id="owner" class="validate[required]">
 				<option value=0>',__("Unassigned"),'</option>';
 
-	$deptList = $Dept->GetDepartmentList( $facDB );
+	$deptList = $Dept->GetDepartmentList();
 
 	foreach($deptList as $deptRow){
 		if($req->Owner==$deptRow->DeptID){$selected=' selected';}else{$selected='';}
@@ -417,13 +413,13 @@ echo '			</select>
 				<option value=0>',__("Select a template"),'...</option>';
 
 	$templ=new DeviceTemplate();
-	$templateList=$templ->GetTemplateList($facDB);
+	$templateList=$templ->GetTemplateList();
 	$mfg=new Manufacturer();
   
 	foreach($templateList as $tempRow){
 		if($req->DeviceClass==$tempRow->TemplateID){$selected = ' selected';}else{$selected = '';}
 		$mfg->ManufacturerID=$tempRow->ManufacturerID;
-		$mfg->GetManufacturerByID($facDB);
+		$mfg->GetManufacturerByID();
 		print "				<option value=\"$tempRow->TemplateID\"$selected>$mfg->Name - $tempRow->Model</option>\n";
 	}
 
@@ -476,7 +472,7 @@ echo '			</select>
 	</div>';
 
 	if($user->RackAdmin && ($req->RequestID>0)){
-		echo '<div><div><label for="cabinetid">',__("Select Rack Location"),':</label></div><div>'.$cab->GetCabinetSelectList($facDB).'&nbsp;&nbsp;<label for="position">',__("Position"),':</label> <input type="text" name="position" id="position" size=5></div></div>';
+		echo '<div><div><label for="cabinetid">',__("Select Rack Location"),':</label></div><div>'.$cab->GetCabinetSelectList().'&nbsp;&nbsp;<label for="position">',__("Position"),':</label> <input type="text" name="position" id="position" size=5></div></div>';
 	}
 ?>
 	<div class="caption">

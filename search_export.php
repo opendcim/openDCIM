@@ -2,23 +2,12 @@
 	require_once('db.inc.php');
 	require_once('facilities.inc.php');
 
-	$user=new User();
-	$user->UserID=$_SERVER['REMOTE_USER'];
-	$user->GetUserRights($facDB);
-
-	if(!$user->ReadAccess){
-		// No soup for you.
-		header('Location: '.redirect());
-		exit;
-	}
-	
 	$datacenter=new DataCenter();
-	$dcList=$datacenter->GetDCList($facDB);
+	$dcList=$datacenter->GetDCList();
 	
-	$templ = new DeviceTemplate();
-	$dept = new Department();
-	
-	$dev = new Device();
+	$templ=new DeviceTemplate();
+	$dept=new Department();
+	$dev=new Device();
 	
 	$body="";
 
@@ -31,7 +20,7 @@
 			}else{
 				$sql="select a.Name as DataCenter, b.DeviceID, c.Location, b.Position, b.Height, b.Label, b.DeviceType, b.AssetTag, b.SerialNo, b.InstallDate, b.TemplateID, b.Owner from fac_DataCenter a, fac_Device b, fac_Cabinet c where b.Cabinet=c.CabinetID and c.DataCenterID=a.DataCenterID and c.DataCenterID=$dc order by Location ASC, Position ASC";
 			}
-			$result=mysql_query($sql,$facDB);
+			$result=$dbh->query($sql);
 		}else{
 			$result=array();
 		}
@@ -47,12 +36,13 @@
 			\t<th>".__("Asset Tag")."</th>
 			\t<th>".__("Device Type")."</th>
 			\t<th>".__("Template")."</th>
+			\t<th>".__("Tags")."</th>
 			\t<th>".__("Owner")."</th>
 			\t<th>".__("Installation Date")."</th>
 			</tr>\n\t</thead>\n\t<tbody>\n";
 
 		// suppressing errors for when there is a fake data set in place
-		while($row=@mysql_fetch_array($result)){
+		foreach($result as $row){
 			// insert date formating later for regionalization settings
 			$date=date("d M Y",strtotime($row["InstallDate"]));
 				$Model="";
@@ -60,16 +50,17 @@
 			
 			if($row["TemplateID"] >0){
 				$templ->TemplateID=$row["TemplateID"];
-				$templ->GetTemplateByID($facDB);
+				$templ->GetTemplateByID();
 				$Model=$templ->Model;
 			}
 			
 			if($row["Owner"] >0){
 				$dept->DeptID=$row["Owner"];
-				$dept->GetDeptByID($facDB);
+				$dept->GetDeptByID();
 				$Department=$dept->Name;
 			}
-			
+			$dev->DeviceID=$row["DeviceID"];
+			$tags=implode(",", $dev->GetTags());
 			$body.="\t\t<tr>
 			\t<td>{$row["DataCenter"]}</td>
 			\t<td>{$row["Location"]}</td>
@@ -80,28 +71,29 @@
 			\t<td>{$row["AssetTag"]}</td>
 			\t<td>{$row["DeviceType"]}</td>
 			\t<td>$Model</td>
+			\t<td>$tags</td>
 			\t<td>$Department</td>
 			\t<td>$date</td>\n\t\t</tr>\n";
 			
-			if ( $row["DeviceType"] == "Chassis" ) {
+			if($row["DeviceType"]=="Chassis"){
 				// Find all of the children!
-				$dev->DeviceID = $row["DeviceID"];
-				$childList = $dev->GetDeviceChildren( $facDB );
+				$childList=$dev->GetDeviceChildren();
 				
 				foreach($childList as $child){
 					$cdate=date("d M Y",strtotime($child->InstallDate));
 					$cModel="";
 					$cDepartment="";					
 
+					$ctags=implode(",", $child->GetTags());
 					if($child->TemplateID >0){
 						$templ->TemplateID=$child->TemplateID;
-						$templ->GetTemplateByID($facDB);
+						$templ->GetTemplateByID();
 						$cModel=$templ->Model;
 					}
 					
 					if($child->Owner >0){
 						$dept->DeptID=$child->Owner;
-						$dept->GetDeptByID($facDB);
+						$dept->GetDeptByID();
 						$cDepartment=$dept->Name;
 					}
 
@@ -115,6 +107,7 @@
 					\t<td>$child->AssetTag</td>
 					\t<td>$child->DeviceType</td>
 					\t<td>$cModel</td>
+					\t<td>$ctags</td>
 					\t<td>$cDepartment</td>
 					\t<td>$cdate</td>\n\t\t</tr>\n";
 				}
@@ -144,7 +137,6 @@
   <![endif]-->
   <script type="text/javascript" src="scripts/jquery.min.js"></script>
   <script type="text/javascript" src="scripts/jquery-ui.min.js"></script>
-  <script type="text/javascript" src="scripts/jquery-migrate-1.0.0.js"></script>
   <script type="text/javascript" src="scripts/jquery.dataTables.min.js"></script>
   <script type="text/javascript" src="scripts/ColVis.min.js"></script>
   <script type="text/javascript" src="scripts/TableTools.min.js"></script>

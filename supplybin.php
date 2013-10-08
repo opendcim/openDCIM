@@ -2,10 +2,6 @@
 	require_once("db.inc.php");
 	require_once("facilities.inc.php");
 
-	$user=new User();
-	$user->UserID=$_SERVER["REMOTE_USER"];
-	$user->GetUserRights($facDB);
-
 	if(!$user->SiteAdmin){
 		// No soup for you.
 		header('Location: '.redirect());
@@ -16,14 +12,13 @@
 	$bc=new BinContents();
 	$sup=new Supplies();
 	
-	$supList=$sup->GetSuppliesList($facDB);
+	$supList=$sup->GetSuppliesList(true);
 	$formpatch="";
 	$status="";
 
-
 	if(isset($_REQUEST["binid"])) {
 		$bin->BinID=(isset($_POST['binid'])?$_POST['binid']:$_GET['binid']);
-		$bin->GetBin($facDB);
+		$bin->GetBin();
 		
 		$bc->BinID=$bin->BinID;
 
@@ -31,13 +26,13 @@
 			$bin->Location=$_POST["location"];
 
 			if($_POST["action"]=="Create"){
-				$bin->CreateBin($facDB);
+				$bin->CreateBin();
 			}else{
-				$binContents=$bc->GetBinContents($facDB);
+				$binContents=$bc->GetBinContents();
 
 				// We don't want someone changing the name of a bin to a blank anymore than we want them creating one as a blank name
 				$status=__("Updated");
-				$bin->UpdateBin($facDB);
+				$bin->UpdateBin();
 
 				// only attempt to alter the contents of the bin if we have the proper elements
 				if(isset($_POST['supplyid']) && count($_POST['supplyid']>0)){
@@ -69,9 +64,9 @@
 								$contents->Count=$count;
 								// if we manually set supply to zero remove it from the bin?
 								if($count==-1){
-									$contents->RemoveContents($facDB);
+									$contents->RemoveContents();
 								}else{
-									$contents->UpdateCount($facDB);
+									$contents->UpdateCount();
 								}
 								$ins=false;
 							}
@@ -79,19 +74,19 @@
 						if($ins){
 							$bc->SupplyID=$SupplyID;
 							$bc->Count=$count;
-							$bc->AddContents($facDB);
+							$bc->AddContents();
 						}
 					}
 				}
 			}
 		}
 		// Bin contents could have changed above so pull them again
-		$binContents=$bc->GetBinContents($facDB);
+		$binContents=$bc->GetBinContents();
 
 		$formpatch="?binid={$_REQUEST['binid']}";
 	}
 	
-	$binList=$bin->GetBinList($facDB);
+	$binList=$bin->GetBinList();
 
 ?>
 <!doctype html>

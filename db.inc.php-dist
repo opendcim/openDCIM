@@ -1,17 +1,22 @@
 <?php
 
-	
 	$dbhost = 'localhost';
 	$dbname = 'dcim';
 	$dbuser = 'dcim';
 	$dbpass = 'dcim';
 
-	$facDB = mysql_connect( $dbhost, $dbuser, $dbpass );
+	$locale = "en_US";
+	$codeset = "UTF-8";
 
-	mysql_set_charset('utf8',$facDB);
-	mysql_select_db( $dbname, $facDB );
-	
+	try {
+			$pdoconnect = sprintf( "mysql:host=%s;dbname=%s", $dbhost, $dbname );
+			$dbh = new PDO( $pdoconnect, $dbuser, $dbpass );
+	} catch ( PDOException $e ) {
+			printf( "Error!  %s\n", $e->getMessage() );
+			die();
+	}
+
 	require_once( 'config.inc.php');
-	$config=new Config($facDB);
+	$config=new Config();
 	
 ?>

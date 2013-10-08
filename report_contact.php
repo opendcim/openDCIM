@@ -2,15 +2,6 @@
 	require_once( 'db.inc.php' );
 	require_once( 'facilities.inc.php' );
 
-	$user=new User();
-	$user->UserID=$_SERVER['REMOTE_USER'];
-	$user->GetUserRights($facDB);
-
-	if(!$user->ReadAccess){
-		header( "Location: ".redirect());
-		exit;
-	}
-
 	define('FPDF_FONTPATH','font/');
 	require('fpdf.php');
 
@@ -32,7 +23,7 @@ class PDF extends FPDF {
 	}
 	
 	function Header() {
-		$this->pdfconfig = new Config($this->pdfDB);
+		$this->pdfconfig = new Config();
     	$this->Image( 'images/' . $this->pdfconfig->ParameterArray['PDFLogoFile'],10,8,100);
     	$this->SetFont($this->pdfconfig->ParameterArray['PDFfont'],'B',12);
     	$this->Cell(120);
@@ -363,8 +354,8 @@ class PDF_Diag extends PDF_Sector {
     }
 }
 
-  $tenantList = $dev->GetTop10Tenants( $facDB );
-  $powerList = $dev->GetTop10Power( $facDB );
+  $tenantList=$dev->GetTop10Tenants();
+  $powerList=$dev->GetTop10Power();
   
   
 
@@ -375,7 +366,7 @@ class PDF_Diag extends PDF_Sector {
 //
 //
 
-	$pdf=new PDF_Diag($facDB);
+	$pdf=new PDF_Diag();
 	$pdf->AliasNbPages();
 	$pdf->AddPage();
 	
@@ -416,7 +407,7 @@ class PDF_Diag extends PDF_Sector {
 	$pdf->SetTextColor( 0 );
 
   $pdf->Bookmark( 'Departments' );
-	$deptList = $dept->GetDepartmentList( $facDB );
+	$deptList = $dept->GetDepartmentList();
 
 	foreach( $deptList as $deptRow ) {
 		// Skip ITS for Now
@@ -452,7 +443,7 @@ class PDF_Diag extends PDF_Sector {
 
 		$pdf->Ln();
 
-		$contactList = $con->GetContactsForDepartment( $deptRow->DeptID, $facDB );
+		$contactList=$con->GetContactsForDepartment($deptRow->DeptID);
 
 		$fill = 0;
 
@@ -470,7 +461,7 @@ class PDF_Diag extends PDF_Sector {
 		$pdf->Ln();
 
 		$dev->Owner = $deptRow->DeptID;
-		$devList = $dev->GetDevicesbyOwner( $facDB );
+		$devList = $dev->GetDevicesbyOwner();
 
 		$TotalRU = 0;
 		$TotalBTU = 0;
@@ -493,7 +484,7 @@ class PDF_Diag extends PDF_Sector {
 		foreach( $devList as $devRow ) {
 			if ( $devRow->Cabinet != $cab->CabinetID ) {
 				$cab->CabinetID = $devRow->Cabinet;
-				$cab->GetCabinet( $facDB );
+				$cab->GetCabinet();
 			}
 
 			if ( $cab->DataCenterID != $dc->DataCenterID ) {
@@ -503,18 +494,23 @@ class PDF_Diag extends PDF_Sector {
 			  }
 			  
 				$dc->DataCenterID = $cab->DataCenterID;
-				$dc->GetDataCenterbyID( $facDB );
+				$dc->GetDataCenterbyID();
 				
 				$DCRU = 0;
 				$DCBTU = 0;
 			}
+			
+			if ( $devRow->Height > 1 )
+				$Position = sprintf( "[%d-%d]", $devRow->Position, $devRow->Position + $devRow->Height );
+			else
+				$Position = $devRow->Position;
     
 			$pdf->Cell( $cellWidths[0], 6, $devRow->Label, 'LBRT', 0, 'L', $fill );
 			$pdf->Cell( $cellWidths[1], 6, $devRow->SerialNo, 'LBRT', 0, 'L', $fill );
 			$pdf->Cell( $cellWidths[2], 6, $devRow->AssetTag, 'LBRT', 0, 'L', $fill );
 			$pdf->Cell( $cellWidths[3], 6, $dc->Name, 'LBRT', 0, 'L', $fill );
 			$pdf->Cell( $cellWidths[4], 6, $cab->Location, 'LBRT', 0, 'L', $fill );
-			$pdf->Cell( $cellWidths[5], 6, $devRow->Position, 'LBRT', 0, 'L', $fill );
+			$pdf->Cell( $cellWidths[5], 6, $Position, 'LBRT', 0, 'L', $fill );
 			$pdf->Cell( $cellWidths[6], 6, $devRow->Height, 'LBRT', 1, 'L', $fill );
 
 			$TotalRU += $devRow->Height;
@@ -532,7 +528,7 @@ class PDF_Diag extends PDF_Sector {
     $esx = new ESX();
     
     $esx->Owner = $deptRow->DeptID;
-    $esxList = $esx->GetVMListbyOwner( $facDB );
+    $esxList = $esx->GetVMListbyOwner();
     
 		$headerTags = array( 'Virtual Machine Image Name', 'Current Host Server', 'State', 'Last Polled' );
 		$cellWidths = array( 60, 40, 30, 40 );
@@ -549,7 +545,7 @@ class PDF_Diag extends PDF_Sector {
 		foreach( $esxList as $esxRow ) {
 			if ( $esxRow->DeviceID != $lastDevice ) {
 				$dev->DeviceID = $esxRow->DeviceID;
-				$dev->GetDevice( $facDB );
+				$dev->GetDevice();
 			}
 			
 			$pdf->Cell( $cellWidths[0], 6, $esxRow->vmName, 'LBRT', 0, 'L', $fill );

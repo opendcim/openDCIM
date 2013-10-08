@@ -2,15 +2,6 @@
 	require_once( 'db.inc.php' );
 	require_once( 'facilities.inc.php' );
 
-	$user=new User();
-	$user->UserID=$_SERVER['REMOTE_USER'];
-	$user->GetUserRights($facDB);
-
-	if(!$user->ReadAccess){
-		header( "Location: ".redirect());
-		exit;
-	}
-
 	define('FPDF_FONTPATH','font/');
 	require('fpdf.php');
 
@@ -20,8 +11,7 @@ class PDF extends FPDF {
   var $pdfconfig;
   var $pdfDB;
   
-	function PDF($db){
-		$this->pdfDB = $db;
+	function PDF(){
 		parent::FPDF();
 	}
   
@@ -36,7 +26,7 @@ class PDF extends FPDF {
 		else
 			$endDate = date( "M d, Y" );
 		
-		$this->pdfconfig = new Config($this->pdfDB);
+		$this->pdfconfig = new Config();
 		$this->Link( 10, 8, 100, 20, 'https://' . $_SERVER['SERVER_NAME'] . $_SERVER['PHP_SELF'] );
     	$this->Image( 'images/' . $this->pdfconfig->ParameterArray['PDFLogoFile'],10,8,100);
     	$this->SetFont($this->pdfconfig->ParameterArray['PDFfont'],'B',12);
@@ -139,7 +129,7 @@ class PDF extends FPDF {
 
 if(!isset($_REQUEST['action'])){
 	$dc = new DataCenter();
-	$dcList = $dc->GetDCList($facDB);
+	$dcList = $dc->GetDCList();
 ?>
 <!doctype html>
 <html>
@@ -211,7 +201,7 @@ $(function(){
 
 
 	
-	$pdf=new PDF($facDB);
+	$pdf=new PDF();
 	$pdf->AliasNbPages();
 
 	$pdf->SetFont($config->ParameterArray['PDFfont'],'',8);
@@ -255,18 +245,19 @@ $(function(){
 	else
 		$endDate = date( "Y-m-d" );
 	
-	$sql = sprintf( "select a.*, b.Name from fac_Decommission a, fac_User b where a.UserID=b.UserID and SurplusDate>='%s' and SurplusDate<='%s' order by SurplusDate DESC", $startDate, $endDate );
+	$sql="SELECT a.*, b.Name FROM fac_Decommission a, fac_User b WHERE 
+		a.UserID=b.UserID AND SurplusDate>='$startDate' AND SurplusDate<='$endDate' 
+		ORDER BY SurplusDate DESC;";
 
-	$result = mysql_query( $sql, $facDB );
-	
 	$currDate = "";
 	$borders = "LR";
-	
-	while ( $resRow = mysql_fetch_array( $result ) ) {
-		if ( $currDate != $resRow["SurplusDate"] )
+
+	foreach($dbh->query($sql) as $resRow){	
+		if($currDate!=$resRow["SurplusDate"]){
 			$pdf->Cell( $cellWidths[0], 6, date( "D, M d, Y", strtotime( $resRow["SurplusDate"] ) ), $borders, 0, 'L', $fill );
-		else
+		}else{
 			$pdf->Cell( $cellWidths[0], 6, "", $borders, 0, 'L', $fill );
+		}
 		
 		$currDate = $resRow["SurplusDate"];
 		

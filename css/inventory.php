@@ -16,10 +16,13 @@ html {
 select {padding: .05em;}
 fieldset table, table {border: 1px solid grey;}
 textarea {white-space: pre;word-wrap: break-word;}
-.hide {display: none;}
+.hide {display: none !important;}
 .show {display: block;}
 .greybg {background-color: lightGrey;}
 .warning {text-align: center; color: red; text-transform: uppercase;}
+.right {text-align: right;}
+.left {text-align: left;}
+
 
 [readonly],[disabled] {
 	background-color: #dcdcdc;
@@ -36,6 +39,44 @@ textarea {white-space: pre;word-wrap: break-word;}
 
 .no-close .ui-dialog-titlebar-close {display: none;}
 
+@keyframes loading{
+	from {
+		-webkit-transform:rotate(0deg);
+		-moz-transform:rotate(0deg);
+		-o-transform:rotate(0deg);
+	}
+	to {
+		-webkit-transform:rotate(360deg);
+		-moz-transform:rotate(360deg);
+		-o-transform:rotate(360deg);
+	}
+}
+
+@-webkit-keyframes loading{
+	from {
+		-webkit-transform:rotate(0deg);
+		-moz-transform:rotate(0deg);
+		-o-transform:rotate(0deg);
+	}
+	to {
+		-webkit-transform:rotate(360deg);
+		-moz-transform:rotate(360deg);
+		-o-transform:rotate(360deg);
+	}
+}
+
+
+.rotate{
+	animation: loading 0.8s;
+	-webkit-animation: loading 0.8s;
+
+	animation-iteration-count: infinite;
+	-webkit-animation-iteration-count: infinite; /*Safari and Chrome*/
+
+	overflow:hidden;
+}   
+
+
 /* css for timepicker */
 .ui-timepicker-div .ui-widget-header {margin-bottom: 8px;}
 .ui-timepicker-div dl {text-align: left;}
@@ -49,19 +90,20 @@ textarea {white-space: pre;word-wrap: break-word;}
 	padding:5px 0;
 	background:<?php echo $config->ParameterArray['HeaderColor']; ?> url(../images/<?php echo $config->ParameterArray['PDFLogoFile']; ?>) no-repeat center center;
 	height:66px;
+	position: relative;
 }
 
 /* Configuration Page */
 div.cp { position: relative;}
 .miniColors-trigger { position: absolute; top: 0; right: 0;}
 .config .center input { width: 95%; }
-.page.config { min-width: 1430px; }
 #configtabs { min-width: 670px; }
 #configtabs button { margin-left: 0.5em; margin-right: 0.5em;}
 #configtabs span { font-style: italic; font-size: -1;}
 #configtabs label:after {content:":"; margin-right: 0.5em;}
 #configtabs #general div > input {width: 20em; }
 #configtabs #general #rackusage input {width: 2em; }
+#configtabs #general #rackusage > div > div:nth-child(5) { width: 6em; }
 #configtabs #style .cp > input {width: 7em; }
 #configtabs #email div > input {width: 20em; }
 
@@ -75,7 +117,7 @@ div#imageselection { display: none;}
 .ui-menu-item ul { max-height: 200px; overflow: auto; }
 #tzmenu {display: none;}
 
-#tooltip { min-height: 300px; min-width: 550px; }
+#tooltip, #cdutooltip { min-height: 300px; min-width: 550px; }
 
 /* index */
 .index .table, .index .table .title {background-color: white;}
@@ -109,7 +151,7 @@ div#imageselection { display: none;}
 div#dcstats { display: table;}
 div#dcstats > div{ width: 100%;}
 div#dcstats .table + .table > div > div + div{white-space: pre; text-align: right;}
-.canvas {position: relative; margin-top: 2em;}
+.canvas {position: relative;}
 .canvas img {position: absolute; top: 0; left: 0;}
 
 /* Storage Room */
@@ -163,10 +205,18 @@ div#dcstats .table + .table > div > div + div{white-space: pre; text-align: righ
 	-webkit-border-radius: 0px;
 	border-radius: 0px;
 }
+#sidebar form { margin-bottom: 4px; }
 #sidebar input.search { height: 15px; padding: 5px; width: 141px; border: 1px solid black; border-right: 0; vertical-align: top;}
 #sidebar input + button img, #sidebar .text-arrow + button img {height: 27px;}
 #sidebar div.text-core {width: 150px; height: 27px;}
 #sidebar div.text-core textarea{ width: 151px; height: 27px;}
+#sidebar .advsearch { background: white; display: block; height: 4.5em; position: absolute; top: 0px; width: 350px; z-index: 99; }
+#searchadv ~ select { padding: 5px; border: 1px solid black; }
+#sidebar .advsearch.hide { display: none; }
+#advsrch { color: <?php echo $config->ParameterArray['LinkColor']; ?>; cursor: pointer; }
+#advsrch:before {content:"[ ";}
+#advsrch:after {content:" ]";}
+#searchadv ~ .ui-icon.ui-icon-close { position: absolute; top: 0; right: 0; cursor: pointer;}
 
 .text-arrow {
 	-moz-box-sizing: border-box;
@@ -180,8 +230,6 @@ div#dcstats .table + .table > div > div + div{white-space: pre; text-align: righ
 	z-index: 2;
 }
 .text-core { display: inline-block; }
-
-.langselect { position: absolute; left: -1000px; }
 
 .ui-autocomplete { max-height: 100px; overflow-y: auto; overflow-x: hidden; padding-right: 20px;}
 * html .ui-autocomplete {height: 100px;}
@@ -210,8 +258,14 @@ div#dcstats .table + .table > div > div + div{white-space: pre; text-align: righ
 .mapmaker + .center div{position: relative;width: 100%;}
 .mapmaker + .center > div > div.container {position: absolute;top: 0px;left: 0px;}
 
+/* Zonemaker */
+.zonemaker > div{width: 100%;display: inline-block;vertical-align: middle;}
+.zonemaker .table .table {margin-left: auto;}
+.zonemaker + .center div{position: relative;width: 100%;}
+.zonemaker + .center > div > div.container {position: absolute;top: 0px;left: 0px;}
+
 /* Basic Page Layout */
-.page {position: relative;min-width: 1030px;width: 100%;}
+.page {position: relative;width: 100%;}
 .clear {clear: both;}
 p, h2, h3, h1 {margin-top: 1em;margin-bottom: 1em;}
 h2 {font-size: 1.5em;text-align: center;}
@@ -221,16 +275,12 @@ a:link, a:hover, a:visited:hover {color:<?php echo $config->ParameterArray['Link
 a:visited {color: <?php echo $config->ParameterArray['VisitedLinkColor']; ?>;}
 
 div.main {
-	position: relative;
 	display: inline-block;
 	vertical-align: top;
 	min-height: 500px;
-	min-width: 800px;
-	margin-left: 0px;
-	margin-right: auto;
+	padding: 5px;
 	background-color: <?php echo $config->ParameterArray['BodyColor']; ?>;
 	border: 1px dotted #333;
-	padding: 5px;
 }
 div.center > div {display: inline-block;text-align: left;}
 .center {text-align: center;min-height: 400px;}
@@ -256,6 +306,7 @@ div.table > div > div {display: table-cell;vertical-align: middle; /* padding-bo
 .search ol ul li div, .search ol li.cabinet div {display: inline;}
 .search ol ul li div img, .search ol li.cabinet div img {vertical-align: middle;height: 1em;margin-right: .25em;}
 .search .main .bullet { background: url("minus.gif") no-repeat scroll left center transparent; cursor: pointer; padding-left: 15px;}
+.search .hidecontents li.cabinet > ol { display: none; }
 
 /* User Rights */
 .rights > div:nth-last-child(2) div {text-align: center;padding-top: .75em;padding-bottom: .75em;}
@@ -288,7 +339,7 @@ div.center div table {
 }
 div.center div table table{min-width: 150px;}
 div.center div table, div.center div tr, div.center div td {border: 1px solid gray;}
-div.center div td:first-child, .panelmgr .polenumber {padding: 0.25em 0.5em;text-align: center;}
+.cabinet tr > td:first-child, .panelmgr .polenumber {padding: 0.25em 0.5em;text-align: center;}
 .panelmgr .polelabel {
 	min-width: 150px;
 	max-width: 400px;
@@ -319,12 +370,11 @@ div.error {margin-top: 2em;margin-bottom: 2em;border: 1px dotted gray;}
 	border: 1px solid gray;
 }
 #deptgroup {background-color: <?php echo $config->ParameterArray['BodyColor']; ?>;}
-#deptgroup > div {padding: 5px 10px;width: 580px;}
-#deptgroup > div h3 {margin-top: 0;margin-bottom: 10px;}
-#deptgroup > div div {display: inline-block;max-width: 200px;vertical-align: middle;}
+#deptgroup > div {padding:5px 10px;width:580px;min-height:300px;}
+#deptgroup > div h3 {margin-top: 0;margin-bottom: 5px;}
+#deptgroup > div h3 button {margin-left:10px;vertical-align:middle;}
 #deptgroup h3 + div {margin-left: 42.5px;}
-#deptgroup h3 + div + div {text-align: center;}
-#deptgroup select {width: 200px;}
+#deptgroup select {width: 440px;}
 #displaynone {display: none !important;}
 
 /* Rack Content */
@@ -345,6 +395,7 @@ div.error {margin-top: 2em;margin-bottom: 2em;border: 1px dotted gray;}
 	display: inline-block;
 	vertical-align: middle;
 	height: 1.1em;
+	line-height: 1.2em;
 	width: 150px;
 	overflow: hidden;
 }
@@ -355,6 +406,7 @@ div.cabinet {
 	max-width: 250px;
 	margin-right: 20px;
 }
+
 .cabinet td + td {vertical-align: middle;padding: 0.25em 0.5em;width: 90%;}
 .cabinet th{font-size: 1.5em;padding: 0.25em;text-align: center;}
 #zerou a{display: block;}
@@ -368,6 +420,7 @@ div.cabinet {
 	min-width: 30px;
 	z-index: 99;
 	position: absolute;
+	white-space: nowrap;
 }
 .cabnavigator.tooltip div {
 	border: 0 none;
@@ -377,11 +430,51 @@ div.cabinet {
 }
 .cabinet .error { background-color: <?php echo $config->ParameterArray['CriticalColor']; ?>; }
 
+/* Cabinet Properties */
+
+#infopanel table#cabprop {
+    margin: 0px 0px 2px 0px;
+	border-collapse: separate;
+    border: 0px none;
+	border-spacing: 3px;
+	width: 100%;
+	min-width: 200px; max-width: 350px;
+}
+table#cabprop tr {
+    width: 100%;
+    padding: 2px;
+    margin: 1px 0px 1px 1px;
+}
+#infopanel fieldset table#cabprop td.left {
+    padding: 3px 2px 3px 2px;
+    font-weight: bold;
+    border: 0px none;
+    border-bottom: 1px solid gray;
+    margin: 2px 2px 2px 0px;
+}
+#infopanel fieldset table#cabprop td.right {
+    /* width: 50%; */
+    text-align: left;
+    padding: 3px 2px 3px 4px;
+    border: 0px none;
+    border-bottom: 1px solid gray;
+    border-right: 2px solid gray;
+    margin: 2px 0px 2px 2px;
+    /* max-width: 280px; */
+}
+table#cabprop span.text-label {
+     -webkit-border-radius: 2px;
+     border-radius: 2px;
+     box-sizing: border-box;
+     border: 1px solid #9daccc;
+     background: #e2e6f0;
+     color: #000;
+     padding: 0px 3px 0px 3px;
+     margin: 0 2px 0px 0;
+     font: 11px "lucida grande",tahoma,verdana,arial,sans-serif;
+}
 
 /* devices.php  Device Detail */
-div.page.device {
-	min-width: 1350px; /* 1030 */
-}
 .device fieldset {
 	display: inline-block;
 	vertical-align: top;
@@ -410,6 +503,17 @@ div.page.device {
 .device .table.patchpanel > div > div {min-width: auto;}
 
 .device #tags { width: 95%; min-width: 250px;}
+
+#firstport.hide { display: none; }
+
+.switch.table > div > div { min-width: 0px; }
+.switch.table > div > div:first-child { min-width: 15px; }
+.switch.table input, .switch.table select { width: 99%; padding: 0; background-color: transparent;}
+.switch.table div[id^=n] input { width:98%; }
+
+.switch .status { background-image: url("../images/portstatus.png");}
+.switch .down { background-position: left; }
+.switch .up { background-position: right; }
 
 .chassis .table input{text-align:center;}
 .chassis .table > div > div{text-align:center;}
@@ -509,10 +613,13 @@ div.page.device {
 
 /* Put this inside a @media qualifier so Netscape 4 ignores it */
 @media screen, print { 
+	/* Set printouts to landscape */
+	@page {size: landscape}
+
 	/* Turn off list bullets */
 	ul.mktree  li { list-style: none; } 
 	/* Control how "spaced out" the tree is */
-	ul.mktree, ul.mktree ul , ul.mktree li { margin-left:10px; padding:0px; }
+	ul.mktree, ul.mktree ul , ul.mktree li { margin-left:5px; padding:0px; }
 	/* Provide space for our own "bullet" inside the LI */
 	ul.mktree  li           .bullet { padding-left: 15px; }
 	/* Show "bullets" in the links, depending on the class of the LI that the link's in */
@@ -523,10 +630,16 @@ div.page.device {
 	ul.mktree  li.liOpen    ul { display: block; }
 	ul.mktree  li.liClosed  ul { display: none; }
 	/* Format menu items differently depending on what level of the tree they are in */
-	ul.mktree  li { font-family: arial, helvetica; font-size: 12pt; }
-	ul.mktree  li ul li { font-family: arial, helvetica; font-size: 10pt; }
-	ul.mktree  li ul li ul li { font-family: arial, helvetica; font-size: 8pt; }
-	ul.mktree  li ul li ul li ul li { font-family: arial, helvetica; font-size: 6pt; }
+	ul.mktree  li { font-family: arial, helvetica; font-size: 11pt; font-weight: bold; }
+	ul.mktree  a.DC { color: #000088; font-weight: bold; }
+	ul.mktree  a.CONTAINER { color: #005500; }
+	ul.mktree  span.ZONE { color: #330066; }
+	ul.mktree  span.CABROW { color: #AA3300; }
+	ul.mktree  span:hover { color: red; }
+	ul.mktree  a.RACK { color: #660000; }
+	ul.mktree  a { text-decoration: none; }
+	ul.mktree  a:hover { color: red; }
+	ul.mktree  li ul li { font-family: arial, helvetica; font-size: 11pt; font-weight: normal;}
 }
 .meter-wrap{position: relative;background-color: lightgrey;}
 .meter-wrap, .meter-value, .meter-text {width: 155px; height: 1em;}
@@ -580,3 +693,41 @@ ul.nav li {padding: .5em;}
 
 /* Search Export */
 div.center div table#export { margin: auto; max-width: none; }
+
+/* Paths */
+/* Paths form */
+fieldset.crit_busc {border: 1px solid grey; padding:0.5em; background-color: #EEEEEE;}
+fieldset.crit_busc legend {background-color: white; padding:0.5em; border: 1px solid grey;}
+table#crit_busc {border: 0px; background: transparent; padding:0.5em;}
+table#crit_busc tr {border: 0px; background: transparent; padding:0.5em;}
+table#crit_busc td {border: 0px; background: transparent; padding:0.5em;}
+
+table#parcheos {border: 3px outset; text-align: center; text-valign: center; max-width: 800px; margin-left: auto; margin-right: auto;}
+table#parcheos tr {border: 0px;}	
+table#parcheos td {padding: 0px; border: 0px; vertical-align: top;}
+
+#parcheos .f-right {background: url("../images/a2f.png") no-repeat #FFF; width:25px;}
+#parcheos .f-left {background: url("../images/a1f.png") no-repeat #FFF; width:25px;}
+#parcheos .r-right {background: url("../images/a2r.png") no-repeat #FFF; width:25px;}
+#parcheos .r-left {background: url("../images/a1r.png") no-repeat #FFF; width:25px;}
+
+#parcheos .base-f, #parcheos .base-r {background: url("../images/b0f.png") no-repeat top left #FFF; height: 5px; padding: 0px; border: 0px;}
+
+#parcheos .connection-f-1 {background: url("../images/b1f.png") no-repeat #FFF;}
+#parcheos .connection-f-2 {background: url("../images/b2f.png") no-repeat #FFF; width:25px;}
+#parcheos .connection-f-3 {background: url("../images/b3f.png") no-repeat #FFF; height:30px;}
+#parcheos .connection-f-4 {background: url("../images/b4f.png") no-repeat top right #FFF; height:30px;}
+#parcheos .connection-r-1 {background: url("../images/b1r.png") no-repeat #FFF;}
+#parcheos .connection-r-2 {background: url("../images/b2r.png") no-repeat #FFF; width:25px;}
+#parcheos .connection-r-3 {background: url("../images/b3r.png") no-repeat #FFF; height:30px;}
+#parcheos .connection-r-4 {background: url("../images/b4r.png") no-repeat top right #FFF; height:30px;}
+
+table#parcheos table tr + tr > td + td{background-color:yellow;}
+table#parcheos table {margin: 0px; border: 0px; border-collapse: collapse; text-align: left; vertical-align: middle; min-width: 50px; white-space: nowrap;}
+table#parcheos table tr th {background-color: #DDDDDD; padding: 2px; border: 1px solid grey; text-align: left; border-collapse: collapse;}
+table#parcheos table tr td {padding: 2px; border: 1px solid grey; text-align: left; border-collapse: collapse;}
+table#parcheos tr td:first-child + td table {margin-left: auto;}
+
+p.errormsg {padding: 20px; background-color: #DDDDDD; font-size: 120%; font-weight: bold; color: red;}
+
+div#maptitle {padding: 8px; font-size: 120%; font-weight: bold;} 

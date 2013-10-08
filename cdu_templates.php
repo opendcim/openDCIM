@@ -2,11 +2,7 @@
 	require_once('db.inc.php');
 	require_once('facilities.inc.php');
 
-	$user=new User();
-	$user->UserID=$_SERVER['REMOTE_USER'];
-	$user->GetUserRights($facDB);
-
-	if(!$user->WriteAccess){
+	if(!$user->SiteAdmin){
 		// No soup for you.
 		header('Location: '.redirect());
 		exit;
@@ -17,7 +13,7 @@
 
 	if(isset($_REQUEST['templateid']) && $_REQUEST['templateid'] >0){
 		$template->TemplateID=$_REQUEST['templateid'];
-		$template->GetTemplate($facDB);
+		$template->GetTemplate();
 	}
 
 	$status='';
@@ -25,6 +21,7 @@
 		$template->ManufacturerID = $_REQUEST['manufacturerid'];
 		$template->Model = transform( $_REQUEST['model'] );
 		$template->Managed = isset($_REQUEST['managed'])?1:0;
+		$template->SNMPVersion = $_REQUEST['snmpversion'];
 		$template->VersionOID = $_REQUEST['versionoid'];
 		$template->Multiplier = $_REQUEST['multiplier'];
 		$template->OID1 = $_REQUEST['oid1'];
@@ -36,15 +33,15 @@
 		$template->NumOutlets = $_REQUEST["numoutlets"];
 
 		if ( $_REQUEST['action']=='Create' ) {
-			$template->CreateTemplate($facDB);
+			$template->CreateTemplate();
 		} else {
 			$status=__('Updated');
-			$template->UpdateTemplate($facDB);
+			$template->UpdateTemplate();
 		}
 	}
 
-	$templateList=$template->GetTemplateList($facDB);
-	$ManufacturerList=$manufacturer->GetManufacturerList($facDB);
+	$templateList=$template->GetTemplateList();
+	$ManufacturerList=$manufacturer->GetManufacturerList();
 
 	$checked=($template->Managed)?" checked":"";
 ?>
@@ -84,7 +81,7 @@ echo '<div class="main">
 
 	foreach($templateList as $templateRow){
 		$manufacturer->ManufacturerID=$templateRow->ManufacturerID;
-		$manufacturer->GetManufacturerByID($facDB);
+		$manufacturer->GetManufacturerByID();
 		$selected=($template->TemplateID==$templateRow->TemplateID)?' selected':'';
 		print "		<option value=\"$templateRow->TemplateID\"$selected>[$manufacturer->Name] $templateRow->Model</option>\n";
 	}
@@ -112,6 +109,19 @@ echo '    </select>
    <div>
 		<input type="checkbox" name="managed" id="managed"',$checked,'>
    </div>
+</div>
+<div>
+	<div><label for="snmpversion">',__("SNMP Version"),'</label></div>
+	<div><select name="snmpversion" id="snmpversion">';
+
+	$snmpv = array( "1", "2c" );
+	foreach ( $snmpv as $unit ) {
+		$selected = ( $unit == $template->SNMPVersion ) ? 'selected':'';
+		print "\t\t<option value=\"$unit\" $selected>$unit</option>\n";
+	}
+	
+echo '</select>	
+	</div>
 </div>
 <div>
 	<div><label for="versionoid">',__("Firmware Version OID"),'</label></div>

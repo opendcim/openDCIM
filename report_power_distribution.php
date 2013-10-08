@@ -2,15 +2,6 @@
 	require_once( 'db.inc.php' );
 	require_once( 'facilities.inc.php' );
 
-	$user=new User();
-	$user->UserID=$_SERVER['REMOTE_USER'];
-	$user->GetUserRights($facDB);
-
-	if(!$user->ReadAccess){
-		header( "Location: ".redirect());
-		exit;
-	}
-
 	define('FPDF_FONTPATH','font/');
 	require('fpdf.php');
 
@@ -26,7 +17,7 @@ class PDF extends FPDF {
 	}
   
 	function Header() {
-		$this->pdfconfig = new Config($this->pdfDB);
+		$this->pdfconfig = new Config();
     	$this->Image( 'images/' . $this->pdfconfig->ParameterArray['PDFLogoFile'],10,8,100);
     	$this->SetFont($this->pdfconfig->ParameterArray['PDFfont'],'B',12);
    		$this->Cell(120);
@@ -142,7 +133,7 @@ class PDF extends FPDF {
 	$dept = new Department();
 	$dc = new DataCenter();
 
-	$pdf=new PDF($facDB);
+	$pdf=new PDF();
 	$pdf->AliasNbPages();
 	  
 	$pdf->SetFont($config->ParameterArray['PDFfont'],'',8);
@@ -157,7 +148,7 @@ class PDF extends FPDF {
 
 	$pdf->Bookmark( 'Data Centers' );
 	
-	$dcList = $dc->GetDCList( $facDB );
+	$dcList = $dc->GetDCList();
   
 	foreach ( $dcList as $dcRow ) {
 		$pdf->AddPage();
@@ -168,7 +159,7 @@ class PDF extends FPDF {
 		
   	
 		$source->DataCenterID = $dcRow->DataCenterID;
-		$sourceList = $source->GetSourcesByDataCenter( $facDB );
+		$sourceList = $source->GetSourcesByDataCenter();
     
 		foreach ( $sourceList as $sourceRow ) {
 			
@@ -180,7 +171,7 @@ class PDF extends FPDF {
 			$pdf->Ln();
 
 			$pan->PowerSourceID = $sourceRow->PowerSourceID;
-			$panList = $pan->GetPanelListBYSource( $facDB );
+			$panList = $pan->GetPanelListBYSource();
       			
 			foreach ( $panList as $panRow ) {
 				$pdf->BookMark( $panRow->PanelLabel, 3 );
@@ -190,7 +181,7 @@ class PDF extends FPDF {
 				$pdf->SetFont( $config->ParameterArray['PDFfont'], '', 8 );
 				$pdf->Ln();
 				$pdu->PanelID=$panRow->PanelID;
-				$pduList = $pdu->GetPDUbyPanel( $facDB );
+				$pduList = $pdu->GetPDUbyPanel();
 				
 				foreach ( $pduList as $pduRow ){
 					$pdf->BookMark( $pduRow->Label, 4 );
@@ -200,7 +191,7 @@ class PDF extends FPDF {
 					$pdf->SetFont( $config->ParameterArray['PDFfont'], '', 8 );
 					$pdf->Ln();
 					$dev->Cabinet=$pduRow->CabinetID;
-					$devList=$dev->ViewDevicesByCabinet( $facDB );
+					$devList=$dev->ViewDevicesByCabinet();
 					
 					$headerTags = array( 'Power Source', 'Panel', 'PDU', 'Device');
 					$cellWidths = array( 40, 30, 30, 60 );

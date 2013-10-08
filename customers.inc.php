@@ -39,123 +39,171 @@ class Contact {
 	var $Phone3;
 	var $Email;
 
-	function GetContactByID( $db ) {
-		$selectSQL = "select * from fac_Contact where ContactID=\"" . intval($this->ContactID) . "\"";
+	function MakeSafe(){
+		$this->ContactID=intval($this->ContactID);
+		$this->UserID=addslashes(trim($this->UserID));
+		$this->LastName=addslashes(trim($this->LastName));
+		$this->FirstName=addslashes(trim($this->FirstName));
+		$this->Phone1=addslashes(trim($this->Phone1));
+		$this->Phone2=addslashes(trim($this->Phone2));
+		$this->Phone3=addslashes(trim($this->Phone3));
+		$this->Email=addslashes(trim($this->Email));
+	}
 
-		$result = mysql_query( $selectSQL, $db );
-		
-		/* Clear out non-key values in case this is a repeated call in a loop, otherwise you'll get ghost data back */
-		$this->UserID = "";
-		$this->LastName = "";
-		$this->FirstName = "";
-		$this->Phone1 = "";
-		$this->Phone2 = "";
-		$this->Phone3 = "";
-		$this->Email = "";
+	function MakeDisplay(){
+		$this->UserID=stripslashes($this->UserID);
+		$this->LastName=stripslashes($this->LastName);
+		$this->FirstName=stripslashes($this->FirstName);
+		$this->Phone1=stripslashes($this->Phone1);
+		$this->Phone2=stripslashes($this->Phone2);
+		$this->Phone3=stripslashes($this->Phone3);
+		$this->Email=stripslashes($this->Email);
+	}
 
-		if ( $contactRow = mysql_fetch_array( $result ) ) {
-			$this->ContactID = $contactRow["ContactID"];
-			$this->UserID = $contactRow["UserID"];
-			$this->LastName = $contactRow["LastName"];
-			$this->FirstName = $contactRow["FirstName"];
-			$this->Phone1 = $contactRow["Phone1"];
-			$this->Phone2 = $contactRow["Phone2"];
-			$this->Phone3 = $contactRow["Phone3"];
-			$this->Email = $contactRow["Email"];
+	static function RowToObject($row){
+		$contact=new Contact();
+		$contact->ContactID=$row["ContactID"];
+		$contact->UserID=$row["UserID"];
+		$contact->LastName=$row["LastName"];
+		$contact->FirstName=$row["FirstName"];
+		$contact->Phone1=$row["Phone1"];
+		$contact->Phone2=$row["Phone2"];
+		$contact->Phone3=$row["Phone3"];
+		$contact->Email=$row["Email"];
+
+		$contact->MakeDisplay();
+
+		return $contact;
+	}
+
+	function query($sql){
+		global $dbh;
+		return $dbh->query($sql);
+	}
+
+	function exec($sql){
+		global $dbh;
+		return $dbh->exec($sql);
+	}
+
+	function GetContactByID(){
+		$this->MakeSafe();
+
+		$sql="SELECT * FROM fac_Contact WHERE ContactID=$this->ContactID;";
+
+		if($row=$this->query($sql)->fetch()){
+			foreach(Contact::RowToObject($row) as $prop => $value){
+				$this->$prop=$value;
+			}
+		}else{
+			// if a lookup fails just kick back a blank record
+			foreach($this as $prop => $value){
+				if($prop!='ContactID'){
+					$this->$prop='';
+				}
+			}
 		}
-		
-		return $result;
+		return true;
 	}
 	
-	function GetContactByUserID( $db ) {
-		$selectSQL = "select * from fac_Contact where UserID=\"" . addslashes($this->UserID) . "\"";
+	function GetContactByUserID(){
+		$sql="SELECT * FROM fac_Contact WHERE UserID=\"$this->UserID\";";
 
-		$result = mysql_query( $selectSQL, $db );
-
-		/* Clear out non-key values in case this is a repeated call in a loop, otherwise you'll get ghost data back */
-		$this->ContactID = "";
-		$this->LastName = "";
-		$this->FirstName = "";
-		$this->Phone1 = "";
-		$this->Phone2 = "";
-		$this->Phone3 = "";
-		$this->Email = "";
-
-		if ( $contactRow = mysql_fetch_array( $result ) ) {
-			$this->ContactID = $contactRow["ContactID"];
-			$this->UserID = $contactRow["UserID"];
-			$this->LastName = $contactRow["LastName"];
-			$this->FirstName = $contactRow["FirstName"];
-			$this->Phone1 = $contactRow["Phone1"];
-			$this->Phone2 = $contactRow["Phone2"];
-			$this->Phone3 = $contactRow["Phone3"];
-			$this->Email = $contactRow["Email"];
+		if($row=$this->query($sql)->fetch()){
+			foreach(Contact::RowToObject($row) as $prop => $value){
+				$this->$prop=$value;
+			}
+		}else{
+			// if a lookup fails just kick back a blank record
+			foreach($this as $prop => $value){
+				if($prop!='UserID'){
+					$this->$prop='';
+				}
+			}
 		}
-
-		return mysql_num_rows( $result );
+		return true;
 	}
 
-	function CreateContact( $db ) {
-		$insertSQL = "insert into fac_Contact set UserID=\"" . addslashes($this->UserID) . "\", LastName=\"" . addslashes($this->LastName) . "\", FirstName=\"" .addslashes( $this->FirstName ). "\", Phone1=\"" . addslashes($this->Phone1) . "\", Phone2=\"" . addslashes($this->Phone2) . "\", Phone3=\"" . addslashes($this->Phone3) . "\", Email=\"" . addslashes($this->Email) . "\"";
+	function CreateContact() {
+		global $dbh;
+		$this->MakeSafe();
 
-		$result = mysql_query( $insertSQL, $db );
+		$sql="INSERT INTO fac_Contact SET UserID=\"$this->UserID\", 
+			LastName=\"$this->LastName\", FirstName=\"$this->FirstName\", 
+			Phone1=\"$this->Phone1\", Phone2=\"$this->Phone2\", Phone3=\"$this->Phone3\", 
+			Email=\"$this->Email\";";
 
-		$this->ContactID = mysql_insert_id();
+		if($this->exec($sql)){
+			$this->ContactID=$dbh->lastInsertId();
+			$this->MakeDisplay();
+			return $this->ContactID;
+		}else{
+			return false;
+		}
 	}
 
-	function UpdateContact( $db ) {
-		$updateSQL = "update fac_Contact set UserID=\"" . addslashes($this->UserID) . "\", LastName=\"" . addslashes($this->LastName) . "\", FirstName=\"" . addslashes($this->FirstName) . "\", Phone1=\"" . addslashes($this->Phone1) . "\", Phone2=\"" . addslashes($this->Phone2) . "\", Phone3=\"" . addslashes($this->Phone3) . "\", Email=\"" . addslashes($this->Email) . "\" where ContactID=\"" . intval($this->ContactID) . "\"";
-        
-		$result = mysql_query( $updateSQL, $db );
+	function UpdateContact(){
+		$this->MakeSafe();
+
+		$sql="UPDATE fac_Contact SET UserID=\"$this->UserID\", 
+			LastName=\"$this->LastName\", FirstName=\"$this->FirstName\", 
+			Phone1=\"$this->Phone1\", Phone2=\"$this->Phone2\",	Phone3=\"$this->Phone3\", 
+			Email=\"$this->Email\" WHERE ContactID=$this->ContactID;";
+       
+		$this->query($sql); 
+		$this->MakeDisplay();
 	}
 	function DeleteContact(){
+		$this->MakeSafe();
+
 		// Clear up any records that might have still had this contact set as the primary contact.
-		mysql_query("UPDATE fac_Device SET PrimaryContact=0 WHERE PrimaryContact=".intval($this->ContactID).";");
-		mysql_query("DELETE FROM fac_Contact WHERE ContactID=".intval($this->ContactID).";");
-		return mysql_affected_rows();
+		$this->query("UPDATE fac_Device SET PrimaryContact=0 WHERE PrimaryContact=$this->ContactID;");
+		if($this->exec("DELETE FROM fac_Contact WHERE ContactID=$this->ContactID;")){
+			return true;
+		}else{
+			return false;
+		}
 	}
 
-	static function GetContactList( $db ) {
-		$selectSQL = "select * from fac_Contact order by LastName ASC";
-		$result = mysql_query( $selectSQL, $db );
+	static function GetContactList(){
+		global $dbh;
 
-		$contactList = array();
+		$sql="SELECT * FROM fac_Contact ORDER BY LastName ASC;";
 
-		while ( $contactRow = mysql_fetch_array( $result ) ) {
-			$contactID = $contactRow["ContactID"];
-
-			$contactList[$contactID] = new Contact();
-			$contactList[$contactID]->ContactID = $contactRow["ContactID"];
-			$contactList[$contactID]->UserID = $contactRow["UserID"];
-			$contactList[$contactID]->LastName = $contactRow["LastName"];
-			$contactList[$contactID]->FirstName = $contactRow["FirstName"];
-			$contactList[$contactID]->Phone1 = $contactRow["Phone1"];
-			$contactList[$contactID]->Phone2 = $contactRow["Phone2"];
-			$contactList[$contactID]->Phone3 = $contactRow["Phone3"];
-			$contactList[$contactID]->Email = $contactRow["Email"];
+		$contactList=array();
+		foreach($dbh->query($sql) as $row){
+			$contactList[]=Contact::RowToObject($row);
 		}
 
 		return $contactList;
 	}
 
-	function GetContactsForDepartment( $DeptID, $db ) {
-		$selectSQL = "select a.* from fac_Contact a, fac_DeptContacts b where a.ContactID=b.ContactID and b.DeptID=\"" . $DeptID . "\" order by a.LastName ASC";
-		$result = mysql_query( $selectSQL, $db );
+    /**
+     * Return the list of all contacts indexed by ContactID
+     * 
+     * @global PDO $dbh
+     * @return (Contact)[]
+     */
+    public function GetContactListIndexedbyID() {
+        global $dbh;
+        $deptList = array();
+        $stmt = $dbh->prepare('SELECT * FROM fac_Contact');
+        $stmt->execute();
+        while ($row = $stmt->fetch()) {
+            $contact = Contact::RowToObject($row);
+            $deptList[$contact->ContactID] = $contact;
+        }
 
-		$contactList = array();
+		return $deptList;
+    }
 
-		while ( $contactRow = mysql_fetch_array( $result ) ) {
-			$contactID = $contactRow["ContactID"];
+	function GetContactsForDepartment($DeptID){
+		$sql="SELECT a.* FROM fac_Contact a, fac_DeptContacts b WHERE 
+			a.ContactID=b.ContactID AND b.DeptID=".intval($DeptID)." ORDER BY a.LastName ASC;";
 
-			$contactList[$contactID] = new Contact();
-			$contactList[$contactID]->ContactID = $contactRow["ContactID"];
-			$contactList[$contactID]->UserID = $contactRow["UserID"];
-			$contactList[$contactID]->LastName = $contactRow["LastName"];
-			$contactList[$contactID]->FirstName = $contactRow["FirstName"];
-			$contactList[$contactID]->Phone1 = $contactRow["Phone1"];
-			$contactList[$contactID]->Phone2 = $contactRow["Phone2"];
-			$contactList[$contactID]->Phone3 = $contactRow["Phone3"];
-			$contactList[$contactID]->Email = $contactRow["Email"];
+		$contactList=array();
+		foreach($this->query($sql) as $row){
+			$contactList[$row["ContactID"]]=Contact::RowToObject($row);
 		}
 
 		return $contactList;
@@ -175,79 +223,161 @@ class Department {
 	var $Classification;
 	var $DeptColor;
 
-	function CreateDepartment( $db ) {
-		$insertSQL = "insert into fac_Department set Name=\"" . addslashes($this->Name) . "\", ExecSponsor=\"" . addslashes($this->ExecSponsor) . "\", SDM=\"" . addslashes($this->SDM) . "\", Classification=\"" . addslashes($this->Classification) . "\", DeptColor=\"" . addslashes($this->DeptColor) . "\"";
-		$result = mysql_query( $insertSQL, $db );
-
-		$this->DeptID = mysql_insert_id( $db );
-
-		return $this->DeptID;
+	function MakeSafe(){
+		$this->DeptID=intval($this->DeptID);
+		$this->Name=addslashes(trim($this->Name));
+		$this->ExecSponsor=addslashes(trim($this->ExecSponsor));
+		$this->SDM=addslashes(trim($this->SDM));
+		$this->Classification=addslashes(trim($this->Classification));
+		$this->DeptColor=addslashes(trim($this->DeptColor));
 	}
 
-	function UpdateDepartment( $db ) {
-		($this->DeptColor=="")?$this->DeptColor="#FFFFFF":""; // New color picker was allowing for an empty value
-		$updateSQL = "update fac_Department set Name=\"" . addslashes($this->Name) . "\", ExecSponsor=\"" . addslashes($this->ExecSponsor) . "\", SDM=\"" . addslashes($this->SDM) . "\", Classification=\"" . addslashes($this->Classification) . "\" , DeptColor=\"" . addslashes($this->DeptColor) . "\"where DeptID=\"" . intval($this->DeptID) . "\"";
-
-		$result = mysql_query( $updateSQL, $db );
+	function MakeDisplay(){
+		$this->Name=stripslashes($this->Name);
+		$this->ExecSponsor=stripslashes($this->ExecSponsor);
+		$this->SDM=stripslashes($this->SDM);
+		$this->Classification=stripslashes($this->Classification);
+		$this->DeptColor=stripslashes($this->DeptColor);
 	}
 
-	function GetDeptByID( $db ) {
-		$selectSQL = "select * from fac_Department where DeptID=\"" . intval($this->DeptID) . "\"";
-		$result = mysql_query( $selectSQL, $db );
+	static function RowToObject($row){
+		$dept=new Department();
+		$dept->DeptID=$row["DeptID"];
+		$dept->Name=$row["Name"];
+		$dept->ExecSponsor=$row["ExecSponsor"];
+		$dept->SDM=$row["SDM"];
+		$dept->Classification=$row["Classification"];
+		$dept->DeptColor=$row["DeptColor"];
 
-		$deptRow = mysql_fetch_array( $result );
+		$dept->MakeDisplay();
 
-		$this->Name = $deptRow["Name"];
-		$this->ExecSponsor = $deptRow["ExecSponsor"];
-		$this->SDM = $deptRow["SDM"];
-		$this->Classification = $deptRow["Classification"];
-		$this->DeptColor = $deptRow["DeptColor"];
+		return $dept;
 	}
 
-	function GetDepartmentList( $db ) {
-		$deptList = array();
+	function query($sql){
+		global $dbh;
+		return $dbh->query($sql);
+	}
 
-		$selectSQL = "select * from fac_Department order by Name ASC";
-		$result = mysql_query( $selectSQL, $db );
+	function exec($sql){
+		global $dbh;
+		return $dbh->exec($sql);
+	}
 
-		while ( $deptRow = mysql_fetch_array( $result ) ) {
-			$deptID = $deptRow["DeptID"];
+	function CreateDepartment(){
+		global $dbh;
+		$this->MakeSafe();
 
-			$deptList[$deptID] = new Department();
-			$deptList[$deptID]->DeptID = $deptRow["DeptID"];
-			$deptList[$deptID]->Name = $deptRow["Name"];
-			$deptList[$deptID]->ExecSponsor = $deptRow["ExecSponsor"];
-			$deptList[$deptID]->SDM = $deptRow["SDM"];
-			$deptList[$deptID]->Classification = $deptRow["Classification"];
-			$deptList[$deptID]->DeptColor = $deptRow["DeptColor"];
+		$sql="INSERT INTO fac_Department SET Name=\"$this->Name\", 
+			ExecSponsor=\"$this->ExecSponsor\", SDM=\"$this->SDM\", 
+			Classification=\"$this->Classification\", DeptColor=\"$this->DeptColor\";";
+
+		if($this->exec($sql)){
+			$this->DeptID=$dbh->lastInsertId();
+			$this->MakeDisplay();
+			return $this->DeptID;
+		}else{
+			return false;
+		}
+	}
+
+	function UpdateDepartment() {
+		if($this->DeptColor==""){
+			$this->DeptColor="#FFFFFF"; // New color picker was allowing for an empty value
+		}
+
+		$this->MakeSafe();
+
+		$sql="UPDATE fac_Department SET Name=\"$this->Name\", 
+			ExecSponsor=\"$this->ExecSponsor\", SDM=\"$this->SDM\", 
+			Classification=\"$this->Classification\" , DeptColor=\"$this->DeptColor\" 
+			WHERE DeptID=\"$this->DeptID\";";
+
+		$this->query($sql); 
+		$this->MakeDisplay();
+	}
+
+	function GetDeptByID() {
+		$this->MakeSafe();
+
+		$sql="SELECT * FROM fac_Department WHERE DeptID=$this->DeptID;";
+
+		if($row=$this->query($sql)->fetch()){
+			foreach(Department::RowToObject($row) as $prop => $value){
+				$this->$prop=$value;
+			}
+		}else{
+			// Return an empty object in the case of a failed lookup, preserve the id though
+			foreach($this as $prop => $value){
+				$this->$prop=($prop=='DeptID')?$value:'';
+			}
+		}
+		return true;
+	}
+
+	function GetDeptByName() {
+		$this->MakeSafe();
+
+		$sql="SELECT * FROM fac_Department WHERE Name LIKE \"%$this->Name%\";";
+		if($row=$this->query($sql)->fetch()){
+			foreach(Department::RowToObject($row) as $prop => $value){
+				$this->$prop=$value;
+			}
+		}
+	}
+	function GetDepartmentList() {
+		$sql="SELECT * FROM fac_Department ORDER BY Name ASC;";
+		$deptList=array();
+		foreach($this->query($sql) as $row){
+			$deptList[]=Department::RowToObject($row);
 		}
 
 		return $deptList;
 	}
 
-	function AssignContacts( $MemberList, $db ) {
-		// First clear out all previous assignments
-		$clearSQL = "delete from fac_DeptContacts where DeptID=\"" . intval($this->DeptID) . "\"";
-		mysql_query( $clearSQL, $db );
+    /**
+     * Returns the list of departments indexed by the DeptID
+     * @global PDO $dbh
+     * @return (Department)[]
+     */
+    public function GetDepartmentListIndexedbyID() {
+        global $dbh;
+        $deptList = array();
+        $stmt = $dbh->prepare('SELECT * FROM fac_Department ORDER BY Name ASC');
+        $stmt->execute();
+        while ($row = $stmt->fetch()) {
+            $dept = Department::RowToObject($row);
+            $deptList[$dept->DeptID] = $dept;
+        }
 
-    if ( is_array( $MemberList ) ) {
-      foreach( $MemberList as $ContactID ) {
-  			$insertSQL = "insert into fac_DeptContacts set DeptID=\"" . intval($this->DeptID) . "\", ContactID=\"" . intval($ContactID) . "\"";
-  
-  			mysql_query( $insertSQL, $db );
-  		}
-  	}
+		return $deptList;
+	}
+
+	function AssignContacts($MemberList){
+		$this->MakeSafe();
+
+		// First clear out all previous assignments
+		$sql="DELETE FROM fac_DeptContacts WHERE DeptID=$this->DeptID;";
+		$this->exec($sql);
+
+		if(is_array($MemberList)){
+		  foreach($MemberList as $ContactID){
+				$sql="INSERT INTO fac_DeptContacts SET DeptID=$this->DeptID, ContactID=".intval($ContactID).";";
+	 			$this->exec($sql); 
+			}
+		}
+		$this->MakeDisplay();
 	}
 	
-	function GetDepartmentByContact($UserID,$db){
-		$searchSQL="select a.* from fac_Department a, fac_DeptContacts b, fac_Contact c where a.DeptID=b.DeptID and b.ContactID=c.ContactID and c.UserID=\"".addslashes($UserID)."\"";
+	function GetDepartmentByContact($UserID){
+		$sql="SELECT a.* FROM fac_Department a, fac_DeptContacts b, fac_Contact c 
+			WHERE a.DeptID=b.DeptID AND b.ContactID=c.ContactID AND 
+			c.UserID=\"".addslashes($UserID)."\";";
 	 
 		// If someone is assigned to more than one department, just return the first hit
-		if($result=mysql_query($searchSQL,$db)){
-			$deptRow=mysql_fetch_array($result);
-				   
-			$this->DeptID=$deptRow["DeptID"];
-			$this->GetDeptByID($db);
+		if($row=$this->query($sql)->fetch()){
+			$this->DeptID=$row["DeptID"];
+			$this->GetDeptByID();
 		}
 	}
 }
@@ -256,125 +386,169 @@ class Escalations {
 	var $EscalationID;
 	var $Details;
 
-	function CreateEscalation( $db ) {
-		$sql = "insert into fac_Escalations set Details=\"" . addslashes( $this->Details ) . "\"";
-		
-		$result = mysql_query( $sql, $db );
-		
-		$this->EscalationID = mysql_insert_id( $db );
-		
-		return $this->EscalationID;
+	function MakeSafe(){
+		$this->EscalationID=intval($this->EscalationID);
+		$this->Details=addslashes(trim($this->Details));
 	}
-	
-	function DeleteEscalation( $db ) {
-		$sql = "delete from fac_Escalations where EscalationID=\"" . intval( $this->EscalationID ) . "\"";
-		
-		$result = mysql_query( $sql, $db );
-		
-		return $result;
+
+	function MakeDisplay(){
+		$this->Details=stripslashes($this->Details);
 	}
-	
-	function GetEscalation( $db ) {
-		$sql = "select * from fac_Escalations where EscalationID=\"" . intval( $this->EscalationID ) . "\"";
-		
-		$result = mysql_query( $sql, $db );
-		
-		if ( $row = mysql_fetch_array( $result ) ) {
-			$this->EscalationID = $row["EscalationID"];
-			$this->Details = $row["Details"];
+
+	function query($sql){
+		global $dbh;
+		return $dbh->query($sql);
+	}
+
+	function exec($sql){
+		global $dbh;
+		return $dbh->exec($sql);
+	}
+
+	function CreateEscalation(){
+		global $dbh;
+		$this->MakeSafe();
+
+		$sql="INSERT INTO fac_Escalations SET Details=\"$this->Details\";";
+
+		if($this->exec($sql)){
+			$this->EscalationID=$dbh->lastInsertId();
+			$this->MakeDisplay();
+			return $this->EscalationID;
+		}else{
+			return false;
 		}
-		
-		return;
 	}
 	
-	function GetEscalationList( $db ) {
-		$sql = "select * from fac_Escalations order by Details ASC";
+	function DeleteEscalation(){
+		$this->MakeSafe();
+
+		$sql="DELETE FROM fac_Escalations WHERE EscalationID=$this->EscalationID;";
+
+		return $this->exec($sql);
+	}
+	
+	function GetEscalation(){
+		$this->MakeSafe();
+
+		$sql="SELECT * FROM fac_Escalations WHERE EscalationID=$this->EscalationID;";
 		
-		$result = mysql_query( $sql, $db );
+		if($row=$this->query($sql)->fetch()){
+			$this->EscalationID=$row["EscalationID"];
+			$this->Details=$row["Details"];
+			$this->MakeDisplay();
+			return true;
+		}else{
+			return false;
+		}
+	}
+	
+	function GetEscalationList() {
+		$sql="SELECT * FROM fac_Escalations ORDER BY Details ASC;";
 		
-		$escList = array();
-		
-		while ( $row = mysql_fetch_array( $result ) ) {
-			$currEsc = sizeof( $escList );
-			$escList[$currEsc] = new Escalations();
-			
-			$escList[$currEsc]->EscalationID = $row["EscalationID"];
-			$escList[$currEsc]->Details = $row["Details"];
+		$escList=array();
+		foreach($this->query($sql) as $row){
+			$escList[$row["EscalationID"]]=new Escalations();
+			$escList[$row["EscalationID"]]->EscalationID=$row["EscalationID"];
+			$escList[$row["EscalationID"]]->Details=$row["Details"];
+			$escList[$row["EscalationID"]]->MakeDisplay();
 		}
 		
 		return $escList;
 	}
 	
-	function UpdateEscalation( $db ) {
-		$tmpEsc = new Escalations();
-		$sql = "update fac_Escalations set Details=\"" . addslashes( $this->Details ) .
-			"\" where EscalationID=\"" . intval( $this->EscalationID ) . "\"";
+	function UpdateEscalation(){
+		$this->MakeSafe();
+
+		$sql="UPDATE fac_Escalations SET Details=\"$this->Details\" WHERE 
+			EscalationID=$this->EscalationID;";
+
+		$this->MakeDisplay();
 			
-		$result = mysql_query( $sql, $db );
-		
-		return $result;
+		return $this->query($sql);
 	}
 }
 
 class EscalationTimes {
 	var $EscalationTimeID;
 	var $TimePeriod;
-	
-	function CreatePeriod( $db ) {
-		$sql = "insert into fac_EscalationTimes set TimePeriod=\"" . addslashes( $this->TimePeriod ) . "\"";
-		
-		$result = mysql_query( $sql, $db );
-		
-		$this->EscalationTimeID = mysql_insert_id( $db );
-		
-		return $this->EscalationTimeID;
+
+	function MakeSafe(){
+		$this->EscalationTimeID=intval($this->EscalationTimeID);
+		$this->TimePeriod=addslashes(trim($this->TimePeriod));
+	}
+
+	function MakeDisplay(){
+		$this->TimePeriod=stripslashes($this->TimePeriod);
 	}
 	
-	function DeletePeriod( $db ) {
-		$sql = "delete from fac_EscalationTimes where EscalationTimeID=\"" . intval( $this->EscalationTimeID ) . "\"";
-		
-		$result = mysql_query( $sql, $db );
-		
-		return $result;
+	function query($sql){
+		global $dbh;
+		return $dbh->query($sql);
 	}
-	
-	function GetEscalationTime( $db ) {
-		$sql = "select * from fac_EscalationTimes where EscalationTimeID=\"" . intval( $this->EscalationTimeID ) . "\"";
+
+	function exec($sql){
+		global $dbh;
+		return $dbh->exec($sql);
+	}
+
+	function CreatePeriod(){
+		global $dbh;
+		$this->MakeSafe();
+
+		$sql="INSERT INTO fac_EscalationTimes SET TimePeriod=\"$this->TimePeriod\";";
 		
-		$result = mysql_query( $sql, $db );
-		
-		if ( $row = mysql_fetch_array( $result ) ) {
-			$this->EscalationTimeID = $row["EscalationTimeID"];
-			$this->TimePeriod = $row["TimePeriod"];
+		if($this->exec($sql)){
+			$this->EscalationTimeID=$dbh->lastInsertId();
+			$this->MakeDisplay();
+			return $this->EscalationTimeID;
+		}else{
+			return false;
 		}
-		
-		return;
 	}
 	
-	function GetEscalationTimeList( $db ) {
-		$sql = "select * from fac_EscalationTimes order by TimePeriod ASC";
+	function DeletePeriod(){
+		$this->MakeSafe();
+
+		$sql="DELETE FROM fac_EscalationTimes WHERE EscalationTimeID=$this->EscalationTimeID;";
 		
-		$result = mysql_query( $sql, $db );
+		return $this->exec($sql);
+	}
+	
+	function GetEscalationTime(){
+		$sql="SELECT * FROM fac_EscalationTimes WHERE EscalationTimeID=$this->EscalationTimeID;";
 		
-		$escList = array();
+		if($row=$this->query($sql)->fetch()){
+			$this->EscalationTimeID=$row["EscalationTimeID"];
+			$this->TimePeriod=$row["TimePeriod"];
+			$this->MakeDisplay();
+			return true;
+		}else{
+			return false;
+		}
+	}
+	
+	function GetEscalationTimeList(){
+		$sql="SELECT * FROM fac_EscalationTimes ORDER BY TimePeriod ASC;";
 		
-		while ( $row = mysql_fetch_array( $result ) ) {
-			$currEsc = sizeof( $escList );
-			$escList[$currEsc] = new EscalationTimes();
-			
-			$escList[$currEsc]->EscalationTimeID = $row["EscalationTimeID"];
-			$escList[$currEsc]->TimePeriod = $row["TimePeriod"];
+		$escList=array();
+		foreach($this->query($sql) as $row){
+			$escList[$row["EscalationTimeID"]]=new EscalationTimes();
+			$escList[$row["EscalationTimeID"]]->EscalationTimeID = $row["EscalationTimeID"];
+			$escList[$row["EscalationTimeID"]]->TimePeriod = $row["TimePeriod"];
+			$escList[$row["EscalationTimeID"]]->MakeDisplay();
 		}
 		
 		return $escList;
 	}
 	
-	function UpdatePeriod( $db ) {
-		$sql = "update fac_EscalationTimes set TimePeriod=\"" . addslashes( $this->TimePeriod ) . "\" where EscalationTimeID=\"" . intval( $this->EscalationTimeID ) . "\"";
+	function UpdatePeriod(){
+		$this->MakeSafe();
+
+		$sql="UPDATE fac_EscalationTimes SET TimePeriod=\"$this->TimePeriod\" WHERE 
+			EscalationTimeID=$this->EscalationTimeID;";
 		
-		$result = mysql_query( $sql, $db );
-		
-		return $result;
+		return $this->query($sql);
 	}
 }
 
@@ -388,6 +562,7 @@ class User {
 	
 	var $UserID;
 	var $Name;
+	var $AdminOwnDevices;
 	var $ReadAccess;
 	var $WriteAccess;
 	var $DeleteAccess;
@@ -397,103 +572,179 @@ class User {
 	var $SiteAdmin;
 	var $Disabled;
 
-	function GetUserRights( $db ) {
-		/* Check the table to see if there are any users
-		   defined, yet.  If not, this is a new install, so
-		   create an admin user (all rights) as the current
-		   user.  */
-		$sql = "select count(*) as TotalUsers from fac_User";
-		$result = mysql_query( $sql, $db );
+	function MakeSafe(){
+		$this->UserID=addslashes(trim($this->UserID));
+		$this->Name=addslashes(trim($this->Name));
+		$this->AdminOwnDevices=intval($this->AdminOwnDevices);
+		$this->ReadAccess=intval($this->ReadAccess);
+		$this->WriteAccess=intval($this->WriteAccess);
+		$this->DeleteAccess=intval($this->DeleteAccess);
+		$this->ContactAdmin=intval($this->ContactAdmin);
+		$this->RackRequest=intval($this->RackRequest);
+		$this->RackAdmin=intval($this->RackAdmin);
+		$this->SiteAdmin=intval($this->SiteAdmin);
+		$this->Disabled=intval($this->Disabled);
+	}
 
-		$row = mysql_fetch_array( $result );
+	function MakeDisplay(){
+		$this->UserID=stripslashes($this->UserID);
+		$this->Name=stripslashes($this->Name);
+	}
 
-		if ( $row["TotalUsers"] == 0 ) {
-			$this->Name = "Default Admin";
-			$this->ReadAccess = true;
-			$this->WriteAccess = true;
-			$this->DeleteAccess = true;
-			$this->ContactAdmin = true;
-			$this->RackRequest = true;
-			$this->RackAdmin = true;
-			$this->SiteAdmin = true;
-			$this->Disabled = false;
+	static function RowToObject($row){
+		$user=new User();
+		$user->UserID=$row["UserID"];
+		$user->Name=$row["Name"];
+		$user->AdminOwnDevices=$row["AdminOwnDevices"];
+		$user->ReadAccess=$row["ReadAccess"];
+		$user->WriteAccess=$row["WriteAccess"];
+		$user->DeleteAccess=$row["DeleteAccess"];
+		$user->ContactAdmin=$row["ContactAdmin"];
+		$user->RackRequest=$row["RackRequest"];
+		$user->RackAdmin=$row["RackAdmin"];
+		$user->SiteAdmin=$row["SiteAdmin"];
+		$user->Disabled=$row["Disabled"];
+		$user->MakeDisplay();
 
-			$this->CreateUser( $db );
+		return $user;
+	}
+
+	function query($sql){
+		global $dbh;
+		return $dbh->query($sql);
+	}
+	
+	function exec($sql){
+		global $dbh;
+		return $dbh->exec($sql);
+	}
+
+	function canRead( $Owner ) {
+		// If the user has Global rights, don't waste compute cycles on more granular checks
+		if ( $this->ReadAccess ) {
+			return true;
 		}
-
-		$selectSQL = "select * from fac_User where UserID=\"" . addslashes($this->UserID) . "\"";
-
-		if ( ! $result = mysql_query( $selectSQL, $db ) ) {
-			return 0;
+		
+		if ( in_array( $Owner, $this->isMemberOf() ) ) {
+			return true;
+		} else {
+			return false;
 		}
+	}
+	
+	function canWrite( $Owner ) {
+		// If the user has Global rights, don't wast compute cycles on more granular checks
+		if ( $this->WriteAccess ) {
+			return true;
+		}
+		
+		if ( in_array( $Owner, $this->isMemberOf() ) && $this->AdminOwnDevices ) {
+			return true;
+		} else {
+			return false;
+		}
+	}
 
-		$userRow = mysql_fetch_array( $result );
+	function GetUserRights(){
+		$this->MakeSafe();
 
-		$this->Name = $userRow["Name"];
-		$this->ReadAccess = $userRow["ReadAccess"];
-		$this->WriteAccess = $userRow["WriteAccess"];
-		$this->DeleteAccess = $userRow["DeleteAccess"];
-		$this->ContactAdmin = $userRow["ContactAdmin"];
-		$this->RackRequest = $userRow["RackRequest"];
-		$this->RackAdmin = $userRow["RackAdmin"];
-		$this->SiteAdmin = $userRow["SiteAdmin"];
-		$this->Disabled = $userRow["Disabled"];
+		$sql="SELECT * FROM fac_User WHERE UserID=\"$this->UserID\";";
+
+		if($row=$this->query($sql)->fetch()){
+			foreach(User::RowToObject($row) as $prop => $value){
+				$this->$prop=$value;
+			}
+		}
 
 		/* Just in case someone disabled a user, but didn't remove all of their individual rights */
-		if ( $this->Disabled ) {
-			$this->ReadAccess = false;
-			$this->WriteAccess = false;
-			$this->DeleteAccess = false;
-			$this->ContactAdmin = false;
-			$this->RackRequest = false;
-			$this->RackAdmin = false;
-			$this->SiteAdmin = false;
+		if($this->Disabled){
+			foreach($this as $prop => $value){
+				if($prop!='Name' || $prop!='UserID'){
+					$this->$prop=false;
+				}
+			}
 		}
 		
 		return;
 	}
 
-	function GetUserList( $db ) {
+	function GetUserList(){
 		/* Return an array of objects relating to all defined users. */
-		$sql = "select * from fac_User order by Name ASC";
-		$result = mysql_query( $sql, $db );
-
-		$userList = array();
-
-		while ( $userRow = mysql_fetch_array( $result ) ) {
-			$userNum = sizeof( $userList );
-			$userList[$userNum] = new User();
-
-			$userList[$userNum]->UserID = $userRow["UserID"];
-			$userList[$userNum]->Name = $userRow["Name"];
-			$userList[$userNum]->ReadAccess = $userRow["ReadAccess"];
-			$userList[$userNum]->WriteAccess = $userRow["WriteAccess"];
-			$userList[$userNum]->DeleteAccess = $userRow["DeleteAccess"];
-			$userList[$userNum]->ContactAdmin = $userRow["ContactAdmin"];
-			$userList[$userNum]->RackRequest = $userRow["RackRequest"];
-			$userList[$userNum]->RackAdmin = $userRow["RackAdmin"];
-			$userList[$userNum]->SiteAdmin = $userRow["SiteAdmin"];
-			$userList[$userNum]->Disabled = $userRow["Disabled"];
+		global $dbh;
+		
+		$sql="SELECT * FROM fac_User ORDER BY Name ASC;";
+		
+		$userList=array();
+		foreach($dbh->query($sql) as $row){
+			$userList[]=User::RowToObject($row);
 		}
 
 		return $userList;
 	}
+	
+	function isMemberOf(){
+		$this->GetUserRights();
+		
+		$sql="SELECT DeptID FROM fac_DeptContacts WHERE ContactID IN 
+			(SELECT ContactID FROM fac_Contact WHERE UserID=\"$this->UserID\");";
 
-	function CreateUser( $db ) {
-		/* Create a user record based upon the current object attribute values. */
-		$sql = sprintf( "insert into fac_User values (\"%s\", \"%s\", %d, %d, %d, %d, %d, %d, %d, %d )", addslashes( $this->UserID ), addslashes( $this->Name ), $this->ReadAccess, $this->WriteAccess, $this->DeleteAccess, $this->ContactAdmin, $this->RackRequest, $this->RackAdmin, $this->SiteAdmin, $this->Disabled );
-		$result = mysql_query( $sql, $db );
+		$deptList=array();
+		if($query=$this->query($sql)){
+			foreach($query as $row){
+				$deptList[]=$row["DeptID"];
+			}
+		}
 
-		return $result;
+		return $deptList;
 	}
 
-	function UpdateUser( $db ) {
-		/* Update a user record based upon the vurrent object attribute values, with UserID as key. */
-		$sql = sprintf( "update fac_User set Name=\"%s\", ReadAccess=%d, WriteAccess=%d, DeleteAccess=%d, ContactAdmin=%d, RackRequest=%d, RackAdmin=%d, SiteAdmin=%d, Disabled=%d where UserID=\"%s\"", addslashes( $this->Name ), $this->ReadAccess, $this->WriteAccess, $this->DeleteAccess, $this->ContactAdmin, $this->RackRequest, $this->RackAdmin, $this->SiteAdmin, $this->Disabled, addslashes( $this->UserID ) );
+	function CreateUser(){
+		global $dbh;
 
-		$result = mysql_query( $sql, $db );
+		$this->MakeSafe();
+		
+		/* Create a user record based upon the current object attribute values. */
+		$sql="INSERT INTO fac_User VALUES (\"$this->UserID\", \"$this->Name\", 
+			$this->AdminOwnDevices, $this->ReadAccess, $this->WriteAccess, 
+			$this->DeleteAccess, $this->ContactAdmin, $this->RackRequest, $this->RackAdmin, 
+			$this->SiteAdmin, $this->Disabled);";
 
-		return;
+		$this->MakeDisplay();
+
+		return $dbh->exec($sql);
+	}
+
+	function UpdateUser(){
+		global $dbh;
+		
+		$this->MakeSafe();
+
+		/* Update a user record based upon the current object attribute values, with UserID as key. */
+		$sql="UPDATE fac_User SET Name=\"$this->Name\", ReadAccess=$this->ReadAccess, 
+			AdminOwnDevices=$this->AdminOwnDevices, WriteAccess=$this->WriteAccess, 
+			DeleteAccess=$this->DeleteAccess, ContactAdmin=$this->ContactAdmin, 
+			RackRequest=$this->RackRequest, RackAdmin=$this->RackAdmin, 
+			SiteAdmin=$this->SiteAdmin, Disabled=$this->Disabled 
+			WHERE UserID=\"$this->UserID\";";
+
+		$this->MakeDisplay();
+
+		return $dbh->exec($sql);
+	}
+
+	static function Current(){
+		$cuser=new User();
+
+		if ( php_sapi_name() == "cli" ) {
+			// If the script is being called from the command line, just give God priveleges and be done with it
+			$cuser->ReadAccess = true;
+			$cuser->WriteAccess = true;
+			$cuser->SiteAdmin = true;
+		} else {
+			$cuser->UserID=@$_SERVER['REMOTE_USER'];
+			$cuser->GetUserRights();
+		}
+		return $cuser;
 	}
 }
 

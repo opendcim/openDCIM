@@ -4,7 +4,7 @@
 
 	$user=new User();
 	$user->UserID=$_SERVER['REMOTE_USER'];
-	$user->GetUserRights($facDB);
+	$user->GetUserRights();
 
 	if(!$user->ReadAccess){
 		// No soup for you.
@@ -16,7 +16,7 @@
 
 	// Cabinet -1 is the Storage Area
 	$dev->Cabinet=-1;
-	$devList=$dev->ViewDevicesByCabinet($facDB);
+	$devList=$dev->ViewDevicesByCabinet();
 ?>
 <!doctype html>
 <html>
@@ -53,7 +53,7 @@
 		<div></div>
 	</div>';
 	while(list($devID,$device)=each($devList)){
-		echo "<div><div><a href=\"devices.php?deviceid=$devID\">$device->Label</a></div><div>$device->AssetTag</div><div>$device->SerialNo</div><div><a href=\"surplus.php?deviceid=$devID\">Surplus</a></div></div>\n";
+		echo "<div><div><a href=\"devices.php?deviceid=$device->DeviceID\">$device->Label</a></div><div>$device->AssetTag</div><div>$device->SerialNo</div><div><a href=\"surplus.php?deviceid=$device->DeviceID\">Surplus</a></div></div>\n";
 	}
 ?>
 </div> <!-- END div.table -->

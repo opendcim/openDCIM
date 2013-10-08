@@ -2,15 +2,6 @@
 	require_once( 'db.inc.php' );
 	require_once( 'facilities.inc.php' );
 
-	$user=new User();
-	$user->UserID=$_SERVER['REMOTE_USER'];
-	$user->GetUserRights($facDB);
-
-	if(!$user->ReadAccess){
-		header( "Location: ".redirect());
-		exit;
-	}
-
 	define('FPDF_FONTPATH','font/');
 	require('fpdf.php');
 
@@ -20,8 +11,7 @@ class PDF extends FPDF {
   var $pdfconfig;
   var $pdfDB;
   
-	function PDF($db){
-		$this->pdfDB = $db;
+	function PDF(){
 		parent::FPDF();
 	}
   
@@ -36,7 +26,7 @@ class PDF extends FPDF {
 		else
 			$endDate = date( "M d, Y" );
 		
-		$this->pdfconfig = new Config($this->pdfDB);
+		$this->pdfconfig = new Config();
 		$this->Link( 10, 8, 100, 20, 'https://' . $_SERVER['SERVER_NAME'] . $_SERVER['PHP_SELF'] );
     	$this->Image( 'images/' . $this->pdfconfig->ParameterArray['PDFLogoFile'],10,8,100);
     	$this->SetFont($this->pdfconfig->ParameterArray['PDFfont'],'B',12);
@@ -139,7 +129,7 @@ class PDF extends FPDF {
 
 if(!isset($_REQUEST['action'])){
 	$dc=new DataCenter();
-	$dcList=$dc->GetDCList($facDB);
+	$dcList=$dc->GetDCList();
 ?>
 <!doctype html>
 <html>
@@ -242,28 +232,28 @@ $(function(){
 	if ( @intval($_REQUEST["datacenterid"]) > 0 ) {
 		$dcLimit = sprintf( "CabinetID in (select CabinetID from fac_Cabinet where DataCenterID=%d) and", intval( $_REQUEST["datacenterid"] ));
 		$dc->DataCenterID = $_REQUEST["datacenterid"];
-		$dc->GetDataCenter( $facDB );
+		$dc->GetDataCenter();
 		
 		$cab->DataCenterID = $dc->DataCenterID;
-		$cabList = $cab->ListCabinetsByDC( $facDB );
+		$cabList = $cab->ListCabinetsByDC();
 	} else {
 		$dcLimit = "";
 		$dc->Name = "All Data Centers";
 		
-		$cabList = $cab->ListCabinets( $facDB );
+		$cabList = $cab->ListCabinets();
 	}
 	
 	// First query - Summary of all auditors, including the total within the selected period and the date of the last audit
 	
 	$sql = sprintf( "select count(*) as TotalCabinets, a.*, b.Name from fac_CabinetAudit a, fac_User b where a.UserID=b.UserID and %s date(AuditStamp)>='%s' and date(AuditStamp)<='%s' group by UserID order by count(*) ASC", $dcLimit, $startDate, $endDate );
-	$summaryResult = mysql_query( $sql, $facDB );
+	$summaryResult=$dbh->query($sql);
 	
 	// Second query - List of all cabinets audits in the time period, sorted and grouped by date
 	
 	$sql = sprintf( "select count(*) as TotalCabinets, date(a.AuditStamp) as AuditDate from fac_CabinetAudit a where %s date(AuditStamp)>='%s' and date(AuditStamp)<='%s' group by date(a.AuditStamp) order by a.AuditStamp ASC", $dcLimit, $startDate, $endDate );
-	$dateSumResult = mysql_query( $sql, $facDB );
+	$dateSumResult=$dbh->query($sql);
 	
-	$pdf=new PDF($facDB);
+	$pdf=new PDF();
 	$pdf->AliasNbPages();
 
 	$pdf->SetFont($config->ParameterArray['PDFfont'],'',8);
@@ -297,9 +287,9 @@ $(function(){
 		
 	$pdf->Ln();
 
-	while ( $row = mysql_fetch_array( $summaryResult ) ) {
+	foreach($summaryResult as $row){
 		$cabAudit->UserID = $row["UserID"];
-		$cabAudit->GetLastAuditByUser( $facDB );
+		$cabAudit->GetLastAuditByUser();
 		
 		$pdf->Cell( $cellWidths[0], 6, $row["UserID"], 'LR', 0, 'L', $fill );
 		$pdf->Cell( $cellWidths[1], 6, $row["Name"], 'LR', 0, 'L', $fill );
@@ -333,16 +323,15 @@ $(function(){
 	
 	$dowCount = array( "Sun"=>0, "Mon"=>0, "Tue"=>0, "Wed"=>0, "Thu"=>0, "Fri"=>0, "Sat"=>0 );
 
-	while ( $row = mysql_fetch_array( $dateSumResult ) ) {
+	foreach($dateSumResult as $row){
 		$auditDate = date( "D, M d, Y", strtotime( $row["AuditDate"] ) );
 		$dow = date( "D", strtotime( $row["AuditDate"] ) );
 		$showDate = true;
 		$pdf->Bookmark( $auditDate, 1, 0 );
 		
 		$sql = sprintf( "select b.Location, c.Name as Auditor from fac_CabinetAudit a, fac_Cabinet b, fac_User c where a.UserID=c.UserID and a.CabinetID=b.CabinetID and date(a.AuditStamp)=\"%s\"", $row["AuditDate"] );
-		$res = mysql_query( $sql, $facDB );
-		
-		while ( $resRow = mysql_fetch_array( $res ) ) {
+
+		foreach($dbh->query($sql) as $resRow){		
 			if ( $showDate ) {
 				$pdf->Ln(4);
 				$pdf->Cell( $cellWidths[0], 6, $auditDate, 'TLR', 0, 'L', $fill );
@@ -424,11 +413,10 @@ $(function(){
 	
 	foreach ( $cabList as $tmpCab ) {
 		$sql = sprintf( "select a.AuditStamp as AuditDate, b.Name as Auditor from fac_CabinetAudit a, fac_User b where a.UserID=b.UserID and CabinetID='%d' and date(AuditStamp)>='%s' and date(AuditStamp)<='%s' order by AuditStamp DESC", $tmpCab->CabinetID, $startDate, $endDate );
-		$res = mysql_query( $sql, $facDB );
 
 		$showCab = true;
-		
-		while ( $resRow = mysql_fetch_array( $res ) ) {
+
+		foreach($dbh->query($sql) as $resRow){		
 			if ( $showCab ) {
 				$pdf->Bookmark( $tmpCab->Location, 1, 0 );
 				$pdf->Ln(4);

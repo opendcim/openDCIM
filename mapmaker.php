@@ -4,7 +4,7 @@
 
 	$user=new User();
 	$user->UserID=$_SERVER["REMOTE_USER"];
-	$user->GetUserRights($facDB);
+	$user->GetUserRights();
 
 	if(!$user->SiteAdmin){
 		// No soup for you.
@@ -16,17 +16,17 @@
 	$cab=new Cabinet();
 
 	$cab->CabinetID=$_REQUEST["cabinetid"];
-	$cab->GetCabinet($facDB);
+	$cab->GetCabinet();
 
 	$dc->DataCenterID=$cab->DataCenterID;
-	$dc->GetDataCenter($facDB);
+	$dc->GetDataCenter();
 
 	if(isset($_REQUEST["action"])&&($_REQUEST["action"]=="Submit")){
 		$cab->MapX1=intval($_REQUEST["x1"]);
 		$cab->MapX2=intval($_REQUEST["x2"]);
 		$cab->MapY1=intval($_REQUEST["y1"]);
 		$cab->MapY2=intval($_REQUEST["y2"]);
-		$cab->UpdateCabinet($facDB);
+		$cab->UpdateCabinet();
 
 		$url=redirect("cabnavigator.php?cabinetid=$cab->CabinetID");
 		header("Location: $url");
@@ -43,24 +43,8 @@
 	function uselessie(){
 		document.getElementById(\'mapCanvas\').className = "mapCanvasiefix";
 	}
-</script>
-<style type="text/css">
-.main {
-	    width: '.($width+42).'px !important;
-}
-</style>';
+</script>';
 		}
-	}
-	$height+=60; //Offset for text on header
-	$width+=10; //Don't remember why I need this
-
-	// Base sizes for calculations
-	// 206px for coordinate box
-	// 580px for header 
-	// 1030px for page
-	if($width>800){
-		$offset=($width-800);
-		$screenadjustment="<style type=\"text/css\">div#mapadjust { width:".($offset+1030)."px;} .mapmaker > div { width:".($offset+580)."px;} .mapmaker div + div { width:206px;}</style>\n";
 	}
 ?>
 <!doctype html>

@@ -2,15 +2,6 @@
 	require_once( 'db.inc.php' );
 	require_once( 'facilities.inc.php' );
 
-	$user=new User();
-	$user->UserID=$_SERVER['REMOTE_USER'];
-	$user->GetUserRights($facDB);
-
-	if(!$user->ReadAccess){
-		header( "Location: ".redirect());
-		exit;
-	}
-
 	define('FPDF_FONTPATH','font/');
 	require('fpdf.php');
 
@@ -31,7 +22,7 @@ class PDF extends FPDF {
 	}
   
 	function Header() {
-		$this->pdfconfig = new Config($this->pdfDB);
+		$this->pdfconfig = new Config();
     	$this->Image( 'images/' . $this->pdfconfig->ParameterArray['PDFLogoFile'],10,8,100);
     	$this->SetFont($this->pdfconfig->ParameterArray['PDFfont'],'B',12);
     	$this->Cell(120);
@@ -139,7 +130,7 @@ class PDF extends FPDF {
 //
 //
 
-	$pdf=new PDF($facDB);
+	$pdf=new PDF();
 	$pdf->AliasNbPages();
 	  
 	$pdf->SetFont($config->ParameterArray['PDFfont'],'',8);
@@ -162,7 +153,7 @@ class PDF extends FPDF {
 	$pdf->Ln();
 
 	$dev->Owner = 0;
-	$devList = $dev->GetDevicesbyOwner( $facDB );
+	$devList = $dev->GetDevicesbyOwner();
 
 	$headerTags = array( 'Device Name', 'Serial Number', 'Template?', 'Power Cords', 'Room', 'Cabinet', 'Position', 'Rack Units' );
 	$cellWidths = array( 50, 30, 20, 20, 20, 20, 20, 20 );
@@ -181,12 +172,12 @@ class PDF extends FPDF {
 
 		if ( $devRow->Cabinet != $cab->CabinetID ) {
 			$cab->CabinetID = $devRow->Cabinet;
-			$cab->GetCabinet( $facDB );
+			$cab->GetCabinet();
 		}
 
 		if ( $cab->DataCenterID != $dc->DataCenterID ) {
 			$dc->DataCenterID = $cab->DataCenterID;
-			$dc->GetDataCenterbyID( $facDB );
+			$dc->GetDataCenterbyID();
 		}
 
     if ( $devRow->TemplateID > 0 )
@@ -206,7 +197,7 @@ class PDF extends FPDF {
 		$fill =! $fill;
 	}
 
- 	$deptList = $dept->GetDepartmentList( $facDB );
+ 	$deptList = $dept->GetDepartmentList();
 
 	foreach( $deptList as $deptRow ) {
 		$pdf->AddPage();
@@ -231,7 +222,7 @@ class PDF extends FPDF {
 		$pdf->Ln();
 
 		$dev->Owner = $deptRow->DeptID;
-		$devList = $dev->GetDevicesbyOwner( $facDB );
+		$devList = $dev->GetDevicesbyOwner();
 
 
 		$headerTags = array( 'Device Name', 'Serial Number', 'Template?', 'Power Cords', 'Room', 'Cabinet', 'Position', 'Rack Units' );
@@ -251,12 +242,12 @@ class PDF extends FPDF {
 		    
 			if ( $devRow->Cabinet != $cab->CabinetID ) {
 				$cab->CabinetID = $devRow->Cabinet;
-				$cab->GetCabinet( $facDB );
+				$cab->GetCabinet();
 			}
 
 			if ( $cab->DataCenterID != $dc->DataCenterID ) {
 				$dc->DataCenterID = $cab->DataCenterID;
-				$dc->GetDataCenterbyID( $facDB );
+				$dc->GetDataCenterbyID();
 			}
 
       if ( $devRow->TemplateID > 0 )

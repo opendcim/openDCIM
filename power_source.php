@@ -2,10 +2,6 @@
 	require_once('db.inc.php');
 	require_once('facilities.inc.php');
 
-	$user=new User();
-	$user->UserID=$_SERVER['REMOTE_USER'];
-	$user->GetUserRights($facDB);
-
 	if(!$user->SiteAdmin){
 		// No soup for you.
 		header('Location: '.redirect());
@@ -24,20 +20,20 @@
 		$ps->Capacity=$_REQUEST['capacity'];
 		
 		if($_REQUEST['action']=='Create'){
-			$ps->CreatePowerSource($facDB);
+			$ps->CreatePowerSource();
 		}else{
-			$ps->UpdatePowerSource($facDB);
+			$ps->UpdatePowerSource();
 		}
 	}
 
 	if(isset($_REQUEST['powersourceid']) && $_REQUEST['powersourceid'] >0){
 		$ps->PowerSourceID=$_REQUEST['powersourceid'];
-		$ps->GetSource($facDB);
+		$ps->GetSource();
 	}
-	$psList=$ps->GetPSList($facDB);
+	$psList=$ps->GetPSList();
 
 	$dc=new DataCenter();
-	$dcList=$dc->GetDCList($facDB);
+	$dcList=$dc->GetDCList();
 
 ?>
 <!doctype html>

@@ -4,7 +4,7 @@
 	require_once( 'swiftmailer/swift_required.php' );
 
 	$device = new Device();
-	$devList = $device->GetDevicesbyAge( $facDB, $config->ParameterArray["NewInstallsPeriod"] );
+	$devList = $device->GetDevicesbyAge($config->ParameterArray["NewInstallsPeriod"] );
 
 	// If any port other than 25 is specified, assume encryption and authentication
 	if($config->ParameterArray['SMTPPort']!= 25){
@@ -56,13 +56,13 @@
 
 		foreach ( $devList as $devRow ) {
 			$cab->CabinetID = $devRow->Cabinet;
-			$cab->GetCabinet( $facDB );
+			$cab->GetCabinet();
 			
 			$dc->DataCenterID = $cab->DataCenterID;
-			$dc->GetDataCenter( $facDB );
+			$dc->GetDataCenter();
 			
 			$dept->DeptID = $devRow->Owner;
-			$dept->GetDeptByID( $facDB );
+			$dept->GetDeptByID();
 			
 			$htmlMessage .= sprintf( "<tr><td>%s</td><td>%s</td><td>%s</td><td><a href=\"%s/cabnavigator.php?cabinetid=%d\">%s</a></td><td><a href=\"%s/devices.php?deviceid=%d\">%s</a></td><td>%s</td></tr>\n", date( "d M Y", strtotime( $devRow->InstallDate ) ), $devRow->Reservation == 1 ? "Y" : "N", $dc->Name, $config->ParameterArray["InstallURL"], $cab->CabinetID, $cab->Location, $config->ParameterArray["InstallURL"], $devRow->DeviceID, $devRow->Label, $dept->Name );
 		}

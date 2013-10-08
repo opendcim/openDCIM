@@ -4,12 +4,13 @@ class Config{
 	var $ParameterArray;
 	var $defaults;
 	
-	function Config ($db=null){
+	function Config(){
+		global $dbh;
+		
 		//Get parameter value pairs from fac_Config
 		$sql='select Parameter, Value, DefaultVal from fac_Config';
-		$result=mysql_query($sql);
-		
-		while ($row=@mysql_fetch_array($result)){
+			
+		foreach ($dbh->query( $sql ) as $row){
 			if ($row['Parameter']== 'ClassList'){
 				$List = explode(', ', $row['Value']);
 				$this->ParameterArray[$row['Parameter']]=$List;
@@ -22,7 +23,9 @@ class Config{
 		return;
 	}
 
-	function UpdateConfig($db){
+	function UpdateConfig(){
+		global $dbh;
+		
 		foreach($this->ParameterArray as $key=>$value){
 			if ($key=='ClassList'){
 				$numItems=count($value);
@@ -37,29 +40,47 @@ class Config{
 				}
 					
 				$sql='update fac_Config set Value=\''.addslashes($valueStr).'\' where Parameter=\''.$key.'\'';
-				$result=mysql_query($sql,$db);
+				$dbh->query( $sql );
 			}else{
 				if(preg_match('/[m|w]Date/',$key)){
 					if($value!='now'){$value='blank';} // if someone puts a weird value in default it back to blank
 				}
 				$sql="update fac_Config set Value=\"".addslashes($value)."\" where Parameter=\"$key\";";
-				$result=mysql_query($sql,$db);
+				$dbh->query($sql);
 			}
 		}
 		return;
 	}
 	
-	static function RevertToDefault($db, $parameter){
-		if ($parameter=='none'){
-			$sql='update fac_Config set Value=DefaultVal';
+	static function UpdateParameter($parameter,$value){
+		global $dbh;
+
+		if(is_null($parameter) || is_null($value)){
+			return false;
+		}else{
+			$sql="UPDATE fac_Config SET Value=\"$value\" WHERE Parameter=\"$parameter\";";
+			if($dbh->query($sql)){
+				return true;
+			}else{
+				return false;
 			}
-		else{
-			$sql='update fac_Config set Value=DefaultVal where Parameter = \''.$parameter.'\'';
-			}
-		$result=mysql_query($sql,$db);
+		}
+	}
+
+	static function RevertToDefault($parameter){
+		global $dbh;
+		
+		if($parameter=='none'){
+			$sql='UPDATE fac_Config SET Value=DefaultVal;';
+		}else{
+			$sql="UPDATE fac_Config SET Value=DefaultVal WHERE Parameter=\"$parameter\";";
+		}
+		
+		$dbh->query($sql);
 		return;
 	}
-	function Rebuild ($db){
+	
+	function Rebuild (){
 /* Rebuild: This function should only be needed after something like the version erasing glitch from 1.1 and 1.2.
 			At this time it is possible to get unwanted duplicate configuration parameters and this will clean
 			them.
@@ -67,13 +88,14 @@ class Config{
 			I am not sanitizing input here because it should have no user interaction.  Read from the db, flush
 			db, write unique values back to the db.
 */
+		global $dbh;
+		
 		$sql='select * from fac_Config';
-		$result=mysql_query($sql,$db);
-
+		
 		$uniqueconfig=array();
 
 		// Build array of unique config parameters
-		while ($row=mysql_fetch_array($result)){
+		foreach ( $dbh->query( $sql ) as $row){
 			if(isset($uniqueconfig[$row['Parameter']]['Value'])){
 				// if value in the array is equal to the default value AND the current value is different from the value in the array update the value in the array
 				if($uniqueconfig[$row['Parameter']]['Value']==$row['DefaultVal'] && $uniqueconfig[$row['Parameter']]['Value']!=$row['Value']){
@@ -90,11 +112,13 @@ class Config{
 		}
 
 		// Empty config table
-		mysql_query('TRUNCATE TABLE fac_Config;',$db);
+		$dbh->exec('TRUNCATE TABLE fac_Config;');
 
 		// Rebuild config table from cleaned array
+		$sth = $dbh->prepare( "INSERT INTO fac_Config VALUES ( :key, :value, :unitofmeasure, :valtype, :defaultval )" );
+		
 		foreach($uniqueconfig as $key => $row){
-			mysql_query("INSERT INTO fac_Config VALUES ('$key','{$row['Value']}','{$row['UnitOfMeasure']}','{$row['ValType']}','{$row['DefaultVal']}');",$db); 
+			$sth->execute( array( ':key' => $key, ':value' => $row['Value'], ':unitofmeasure' => $row['UnitOfMeasure'], ':valtype' => $row['ValType'], ':defaultval' => $row['DefaultVal'] ) ); 
 		}
 	}
 }

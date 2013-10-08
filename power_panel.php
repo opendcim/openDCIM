@@ -2,10 +2,6 @@
 	require_once("db.inc.php");
 	require_once("facilities.inc.php");
 
-    $user=new User();
-	$user->UserID=$_SERVER["REMOTE_USER"];
-	$user->GetUserRights($facDB);
-
 	if(!$user->SiteAdmin){
 		// No soup for you.
 		header('Location: '.redirect());
@@ -29,22 +25,22 @@
 		$panel->NumberScheme=$_POST["numberscheme"];
 		
 		if($_POST["action"]=="Create"){
-			$panel->CreatePanel($facDB);
+			$panel->CreatePanel();
 		} else {
-			$panel->UpdatePanel($facDB);
+			$panel->UpdatePanel();
 		}
 	}
 
 	if(isset($_REQUEST["panelid"])&&($_REQUEST["panelid"] >0)){
 		$panel->PanelID=(isset($_POST['panelid']) ? $_POST['panelid'] : $_GET['panelid']);
-		$panel->GetPanel($facDB);
+		$panel->GetPanel();
 		$pdu->PanelID = $panel->PanelID;
-		$pduList=$pdu->GetPDUbyPanel($facDB);
+		$pduList=$pdu->GetPDUbyPanel();
 	}
 
-	$panelList=$panel->GetPanelList($facDB);
+	$panelList=$panel->GetPanelList();
 	$ps=new PowerSource();
-  	$psList=$ps->GetPSList($facDB);
+  	$psList=$ps->GetPSList();
 ?>
 <!doctype html>
 <html>
@@ -185,7 +181,7 @@ echo '</select></div>
 						$pn="";
 						foreach($pduarray[$nextPole] as $pduvar) {
 							$cab->CabinetID=$pduvar->CabinetID;
-							$cab->GetCabinet( $facDB );
+							$cab->GetCabinet(  );
 							
 							if ($lastCabinet<>$pduvar->CabinetID)
 								$pn.="<a href=\"cabnavigator.php?cabinetid=$pduvar->CabinetID\">$cab->Location</a>";
@@ -231,7 +227,7 @@ echo '</select></div>
 						$pn="";
 						foreach($pduarray[$nextPole] as $pduvar) {
 							$cab->CabinetID=$pduvar->CabinetID;
-							$cab->GetCabinet( $facDB );
+							$cab->GetCabinet(  );
 							
 							if ($lastCabinet<>$pduvar->CabinetID)
 								$pn.="<a href=\"cabnavigator.php?cabinetid=$pduvar->CabinetID\">$cab->Location</a>";
@@ -271,7 +267,7 @@ echo '</select></div>
 						$pn="";
 						foreach($pduarray[$nextPole] as $pduvar) {
 							$cab->CabinetID=$pduvar->CabinetID;
-							$cab->GetCabinet( $facDB );
+							$cab->GetCabinet(  );
 							
 							if ($lastCabinet<>$pduvar->CabinetID)
 								$pn.="<a href=\"cabnavigator.php?cabinetid=$pduvar->CabinetID\">$cab->Location</a>";

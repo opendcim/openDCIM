@@ -2,10 +2,6 @@
 	require_once( "db.inc.php" );
 	require_once( "facilities.inc.php" );
 
-	$user=new User();
-	$user->UserID = $_SERVER["REMOTE_USER"];
-	$user->GetUserRights( $facDB );
-
 	if(!$user->ContactAdmin){
 		// No soup for you.
 		header('Location: '.redirect());
@@ -22,23 +18,23 @@
 				switch($_POST['action']){
 					case 'Create':
 						$esc->Details=$_POST['details'];
-						$esc->CreateEscalation($facDB);
+						$esc->CreateEscalation();
 						break;
 					case 'Update':
 						$esc->Details=$_POST['details'];
 						$status=__('Updated');
-						$esc->UpdateEscalation($facDB);
+						$esc->UpdateEscalation();
 						break;
 					case 'Delete':
-						$esc->DeleteEscalation($facDB);
+						$esc->DeleteEscalation();
 						header('Location: '.redirect("escalations.php"));
 						exit;
 				}
 			}
 		}
-		$esc->GetEscalation($facDB);
+		$esc->GetEscalation();
 	}
-	$escList=$esc->GetEscalationList($facDB);
+	$escList=$esc->GetEscalationList();
 ?>
 <!doctype html>
 <html>

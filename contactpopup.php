@@ -7,7 +7,7 @@
 	$contact=new Contact();
 	
 	$user->UserID = $_SERVER['REMOTE_USER'];
-	$user->GetUserRights( $facDB );
+	$user->GetUserRights();
 
 	if(!$user->ReadAccess || !isset($_REQUEST['deptid'])){
 		// No soup for you.
@@ -16,9 +16,9 @@
 	}
 
 	$deptID=intval($_REQUEST['deptid']);
-	$contactList=$contact->GetContactsForDepartment($deptID, $facDB);
+	$contactList=$contact->GetContactsForDepartment($deptID);
 	$dept->DeptID=$deptID;
-	$dept->GetDeptByID($facDB);
+	$dept->GetDeptByID();
 
 	if(isset($config->ParameterArray['UserLookupURL']) && isValidURL($config->ParameterArray['UserLookupURL'])){
 		$el=1; //enable displaying lookup options

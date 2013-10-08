@@ -23,7 +23,7 @@ class PDF extends FPDF {
 	}
   
 	function Header() {
-		$this->pdfconfig = new Config($this->pdfDB);
+		$this->pdfconfig = new Config();
     	$this->Image( 'images/' . $this->pdfconfig->ParameterArray['PDFLogoFile'],10,8,100);
     	$this->SetFont($this->pdfconfig->ParameterArray['PDFfont'],'B',12);
     	$this->Cell(120);
@@ -130,7 +130,7 @@ class PDF extends FPDF {
 //
 //
 
-	$pdf=new PDF($facDB);
+	$pdf=new PDF();
 	$pdf->AliasNbPages();
 	$pdf->AddPage();
 	$pdf->SetFont($config->ParameterArray['PDFfont'],'',8);
@@ -143,10 +143,10 @@ class PDF extends FPDF {
 	$pdf->SetTextColor( 0 );
 
   $pdf->Bookmark( 'Departments' );
-	$deptList = $dept->GetDepartmentList( $facDB );
+	$deptList = $dept->GetDepartmentList();
 	
 	$VM = new ESX();
-	$vmList = $VM->GetInventory( $facDB );
+	$vmList = $VM->GetInventory();
 	
 	$vmCount = count( $vmList );
 	
@@ -154,7 +154,7 @@ class PDF extends FPDF {
 	$pdf->Cell( 0, 5, $vmCount );
 	$pdf->Ln();
 	
-	$vmList = $VM->GetOrphanVMList( $facDB );
+	$vmList = $VM->GetOrphanVMList();
 	$vmCount = 0;
 	
 	$pdf->Cell( 80, 12, 'Virtual Machines Unassigned to a Department' );
@@ -175,7 +175,7 @@ class PDF extends FPDF {
 	foreach( $vmList as $esxRow ) {
 		if ( $esxRow->DeviceID != $lastDevice ) {
 			$dev->DeviceID = $esxRow->DeviceID;
-			$dev->GetDevice( $facDB );
+			$dev->GetDevice();
 		}
 		
 		$pdf->Cell( $cellWidths[0], 6, ++$vmCount, 'LBRT', 0, 'L', $fill );
@@ -187,7 +187,7 @@ class PDF extends FPDF {
 
 	foreach( $deptList as $deptRow ) {
 	 $VM->Owner = $deptRow->DeptID; 
-	 $vmList = $VM->GetVMListByOwner( $facDB );
+	 $vmList = $VM->GetVMListByOwner();
 	 $vmCount = 0;
 	 
 	 if ( count( $vmList ) > 0 ) {
@@ -221,7 +221,7 @@ class PDF extends FPDF {
 
 		$pdf->Ln();
 
-		$contactList = $con->GetContactsForDepartment( $deptRow->DeptID, $facDB );
+		$contactList=$con->GetContactsForDepartment($deptRow->DeptID);
 
 		$fill = 0;
 
@@ -254,7 +254,7 @@ class PDF extends FPDF {
 		foreach( $vmList as $esxRow ) {
 			if ( $esxRow->DeviceID != $lastDevice ) {
 				$dev->DeviceID = $esxRow->DeviceID;
-				$dev->GetDevice( $facDB );
+				$dev->GetDevice();
 			}
 			
 			$pdf->Cell( $cellWidths[0], 6, ++$vmCount, 'LBRT', 0, 'L', $fill );

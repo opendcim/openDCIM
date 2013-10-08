@@ -2,17 +2,13 @@
 	require_once( 'db.inc.php' );
 	require_once( 'facilities.inc.php' );
 
-	$contact=new Contact();
-	$user=new User();
-
-	$user->UserID=$_SERVER['REMOTE_USER'];
-	$user->GetUserRights($facDB);
-
 	if(!$user->ContactAdmin){
 		// No soup for you.
 		header('Location: '.redirect());
 		exit;
 	}
+
+	$contact=new Contact();
 
 	// AJAX
 	if(isset($_POST['o'])){
@@ -22,13 +18,13 @@
 		// if so present a list of choices to bulk change them all to
 		if(isset($_POST['deletecheck'])){
 			$sql="SELECT * FROM fac_Device WHERE PrimaryContact = $contactid";
-			$results=mysql_query($sql, $facDB);
-			if(mysql_num_rows($results)>0){
+			$sth=$dbh->prepare($sql);$sth->execute();
+			if($sth->rowCount()>0){
 				print "<p>{$_POST['contact']} is currently the primary contact listed for the following equipment:</p><div><ul>";
-				while($devices=mysql_fetch_assoc($results)){
+				foreach($sth as $devices){
 					print "<li><a href=\"devices.php?deviceid={$devices['DeviceID']}\">{$devices['Label']}</a></li>";
 				}
-				$contacts=Contact::GetContactList($facDB);
+				$contacts=Contact::GetContactList();
 				$contlist='<select id="primarycontact" name="primarycontact"><option value="0">Unassigned</option>';
 				foreach($contacts as $contactid => $contact){
 					$contlist.="<option value=\"$contact->ContactID\">$contact->LastName, $contact->FirstName</option>";
@@ -42,16 +38,15 @@
 		}
 		if(isset($_POST['deptcheck'])){
 			$sql="SELECT * FROM fac_DeptContacts WHERE ContactID = $contactid";
-			$results=mysql_query($sql, $facDB);
-			if(mysql_num_rows($results)>0){
+			$sth=$dbh->prepare($sql);$sth->execute();
+			if($sth->rowCount()>0){
 				$dept=new Department();
 				$emptydept=array();
 				echo "<p>Contact will be removed from the following departments</p><ul>";
-				while($depts=mysql_fetch_assoc($results)){
+				foreach($sth as $depts){
 					$dept->DeptID=$depts['DeptID'];
-					$dept->GetDeptByID($facDB);
-					$subresults=mysql_fetch_row(mysql_query("SELECT COUNT(*) FROM fac_DeptContacts WHERE DeptID = $dept->DeptID;",$facDB));
-					$subresults=$subresults[0];
+					$dept->GetDeptByID();
+					$subresults=$dbh->query("SELECT COUNT(*) FROM fac_DeptContacts WHERE DeptID = $dept->DeptID;")->fetchColumn();
 					if($subresults<2){
 						$emptydept[$dept->DeptID]=$dept->Name;
 					}
@@ -64,7 +59,7 @@
 					foreach($emptydept as $deptid => $deptname){
 						print "<li>$deptname";
 						$dev->Owner=$deptid;
-						$devices=$dev->GetDevicesbyOwner($facDB);
+						$devices=$dev->GetDevicesbyOwner();
 						if(count($devices)>0){
 							print "<p>The following devices belong to $deptname:</p><ul>";
 							foreach($devices as $dev){
@@ -73,7 +68,7 @@
 							print "</ul>";
 						}
 						// check for racks owned by the soon to be deleted department
-						$cablist=Cabinet::ListCabinets($facDB, $deptid);
+						$cablist=Cabinet::ListCabinets($deptid);
 						if(count($cablist)>0){
 							print "<p>The following racks are assigned to $deptname:</p><ul>";
 							foreach($cablist as $cab){
@@ -99,10 +94,10 @@
 		// change to the alternate they chose. If no records are updated return
 		// an error
 		if(isset($_POST['n'])){
-			mysql_query("UPDATE fac_Device SET PrimaryContact=".intval($_POST['n'])." WHERE PrimaryContact=$contactid;");
-			$check=mysql_affected_rows();
+			$sth=$dbh->prepare("UPDATE fac_Device SET PrimaryContact=".intval($_POST['n'])." WHERE PrimaryContact=$contactid;");
+			$sth->execute();
 		}
-		echo($check>0)?'yes':'no';
+		echo($sth->rowCount>0)?'yes':'no';
 		exit;
 	}
 	// END - AJAX
@@ -110,7 +105,7 @@
 	$formfix="";
 	if(isset($_REQUEST['contactid']) && ($_REQUEST['contactid']>0)) {
 		$contact->ContactID=(isset($_POST['contactid']) ? $_POST['contactid'] : $_GET['contactid']);
-		$contact->GetContactByID($facDB);
+		$contact->GetContactByID();
 
 		$formfix="?contactid=$contact->ContactID";
 	}
@@ -127,15 +122,15 @@
 
 		if($contact->LastName!=''){
 			if($_POST['action']=='Create'){
-					$contact->CreateContact($facDB);
+					$contact->CreateContact();
 			}else{
-				$contact->UpdateContact($facDB);
+				$contact->UpdateContact();
 			}
 		}
 		//Refresh object from db
-		$contact->GetContactByID($facDB);
+		$contact->GetContactByID();
 	}
-	$contactList=$contact->GetContactList($facDB);
+	$contactList=$contact->GetContactList();
 ?>
 <!doctype html>
 <html>
@@ -236,7 +231,7 @@ echo '	</select></div>
 </div>
 <div>
    <div><label for="UserID">',__("UserID"),'</label></div>
-   <div><input type="text" class="validate[optional,minSize[1],maxSize[8]]" name="UserID" id="UserID" maxlength="8" value="',$contact->UserID,'"></div>
+   <div><input type="text" class="validate[optional,minSize[1],maxSize[40]]" name="UserID" id="UserID" maxlength="40" value="',$contact->UserID,'"></div>
 </div>
 <div>
    <div><label for="lastname">',__("Last Name"),'</label></div>

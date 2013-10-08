@@ -1,18 +1,167 @@
-<!doctype html>
 <?php
 	require_once( "db.inc.php" );
 	require_once( "facilities.inc.php" );
-
-	$user = new User();
-
-	$user->UserID = $_SERVER["REMOTE_USER"];
-	$user->GetUserRights( $facDB );
 
 	if(!$user->SiteAdmin){
 		// No soup for you.
 		header('Location: '.redirect());
 		exit;
 	}
+
+	function BuildFileList(){
+		$imageselect='<div id="preview"></div><div id="filelist">';
+
+		$path='./images';
+		$dir=scandir($path);
+		foreach($dir as $i => $f){
+			if(is_file($path.DIRECTORY_SEPARATOR.$f) && round(filesize($path.DIRECTORY_SEPARATOR.$f) / 1024, 2)>=4 && $f!="serverrack.png" && $f!="gradient.png"){
+				$imageinfo=getimagesize($path.DIRECTORY_SEPARATOR.$f);
+				if(preg_match('/^image/i', $imageinfo['mime'])){
+					$imageselect.="<span>$f</span>\n";
+				}
+			}
+		}
+		$imageselect.="</div>";
+		return $imageselect;
+	}
+
+	// AJAX Requests
+	if(isset($_GET['fl'])){
+		echo BuildFileList();
+		exit;
+	}
+	if(isset($_POST['fe'])){ // checking that a file exists
+		echo(is_file($_POST['fe']))?1:0;
+		exit;
+	}
+	if(isset($_POST['cc'])){  // Cable color codes
+		$col=new ColorCoding();
+		$col->Name=trim($_POST['cc']);
+		$col->DefaultNote=trim($_POST['ccdn']);
+		if(isset($_POST['cid'])){ // If set we're updating an existing entry
+			$col->ColorID=$_POST['cid'];
+			if(isset($_POST['original'])){
+				$col->GetCode();
+			    header('Content-Type: application/json');
+				echo json_encode($col);
+				exit;
+			}
+			if(isset($_POST['clear']) || isset($_POST['change'])){
+				$newcolorid=0;
+				if(isset($_POST['clear'])){
+					ColorCoding::ResetCode($col->ColorID);
+				}else{
+					$newcolorid=$_POST['change'];
+					ColorCoding::ResetCode($col->ColorID,$newcolorid);
+				}
+				$mediatypes=MediaTypes::GetMediaTypeList();
+				foreach($mediatypes as $mt){
+					if($mt->ColorID==$col->ColorID){
+						$mt->ColorID=$newcolorid;
+						$mt->UpdateType();
+					}
+				}
+				if($col->DeleteCode()){
+					echo 'u';
+				}else{
+					echo 'f';
+				}
+				exit;
+			}
+			if($col->UpdateCode()){
+				echo 'u';
+			}else{
+				echo 'f';
+			}
+		}else{
+			if($col->CreateCode()){
+				echo $col->ColorID;
+			}else{
+				echo 'f';
+			}
+		}
+		exit;
+	}
+	if(isset($_POST['ccused'])){
+		$count=ColorCoding::TimesUsed($_POST['ccused']);
+		if($count==0){
+			$col=new ColorCoding();
+			$col->ColorID=$_POST['ccused'];
+			$col->DeleteCode();
+		}
+		echo $count;
+		exit;
+	}
+	if(isset($_POST['mt'])){ // Media Types
+		$mt=new MediaTypes();
+		$mt->MediaType=trim($_POST['mt']);
+		$mt->ColorID=$_POST['mtcc'];
+		if(isset($_POST['mtid'])){ // If set we're updating an existing entry
+			$mt->MediaID=$_POST['mtid'];
+			if(isset($_POST['original'])){
+				$mt->GetType();
+			    header('Content-Type: application/json');
+				echo json_encode($mt);
+				exit;
+			}
+			if(isset($_POST['clear']) || isset($_POST['change'])){
+				if(isset($_POST['clear'])){
+					MediaTypes::ResetType($mt->MediaID);
+				}else{
+					$newmediaid=$_POST['change'];
+					MediaTypes::ResetType($mt->MediaID,$newmediaid);
+				}
+				if($mt->DeleteType()){
+					echo 'u';
+				}else{
+					echo 'f';
+				}
+				exit;
+			}
+			if($mt->UpdateType()){
+				echo 'u';
+			}else{
+				echo 'f';
+			}
+		}else{
+			if($mt->CreateType()){
+				echo $mt->MediaID;
+			}else{
+				echo 'f';
+			}
+			
+		}
+		exit;
+	}
+	if(isset($_POST['mtused'])){
+		$count=MediaTypes::TimesUsed($_POST['mtused']);
+		if($count==0){
+			$mt=new MediaTypes();
+			$mt->MediaID=$_POST['mtused'];
+			$mt->DeleteType();
+		}
+		echo $count;
+		exit;
+	}
+	if(isset($_POST['mtlist'])){
+		$codeList=MediaTypes::GetMediaTypeList();
+		$output='<option value=""></option>';
+		foreach($codeList as $mt){
+			$output.="<option value=\"$mt->MediaID\">$mt->MediaType</option>";
+		}
+		echo $output;
+		exit;		
+	}
+	if(isset($_POST['cclist'])){
+		$codeList=ColorCoding::GetCodeList();
+		$output='<option value=""></option>';
+		foreach($codeList as $cc){
+			$output.="<option value=\"$cc->ColorID\">$cc->Name</option>";
+		}
+		echo $output;
+		exit;		
+	}
+	// END AJAX Requests
 
 	if(isset($_REQUEST["action"]) && $_REQUEST["action"]=="Update"){
 		foreach($config->ParameterArray as $key=>$value){
@@ -23,13 +172,27 @@
 				$config->ParameterArray[$key]=$_REQUEST[$key];
 			}
 		}
-		$config->UpdateConfig($facDB);
+		$config->UpdateConfig();
 
 		//Disable all tooltip items and clear the SortOrder
-		mysql_query("UPDATE fac_CabinetToolTip SET SortOrder = NULL, Enabled=0;");
+		$dbh->exec("UPDATE fac_CabinetToolTip SET SortOrder = NULL, Enabled=0;");
 		if(isset($_POST["tooltip"]) && !empty($_POST["tooltip"])){
+			$p=$dbh->prepare("UPDATE fac_CabinetToolTip SET SortOrder=:sortorder, Enabled=1 WHERE Field=:field LIMIT 1;");
 			foreach($_POST["tooltip"] as $order => $field){
-				mysql_query("UPDATE fac_CabinetToolTip SET SortOrder=".intval($order).", Enabled=1 WHERE Field='".addslashes($field)."' LIMIT 1;");
+				$p->bindParam(":sortorder",$order);
+				$p->bindParam(":field",$field);
+				$p->execute();
+			}
+		}
+
+		//Disable all cdu tooltip items and clear the SortOrder
+		$dbh->exec("UPDATE fac_CDUToolTip SET SortOrder = NULL, Enabled=0;");
+		if(isset($_POST["cdutooltip"]) && !empty($_POST["cdutooltip"])){
+			$p=$dbh->prepare("UPDATE fac_CDUToolTip SET SortOrder=:sortorder, Enabled=1 WHERE Field=:field LIMIT 1;");
+			foreach($_POST["cdutooltip"] as $order => $field){
+				$p->bindParam(":sortorder",$order);
+				$p->bindParam(":field",$field);
+				$p->execute();
 			}
 		}
 	}
@@ -45,19 +208,7 @@
 		$i++;
 	}
 
-	$imageselect='<div id="preview"></div><div id="filelist">';
-
-	$path='./images';
-	$dir=scandir($path);
-	foreach($dir as $i => $f){
-		if(is_file($path.DIRECTORY_SEPARATOR.$f) && round(filesize($path.DIRECTORY_SEPARATOR.$f) / 1024, 2)>=4 && $f!="serverrack.png" && $f!="gradient.png"){
-			$imageinfo=getimagesize($path.DIRECTORY_SEPARATOR.$f);
-			if(preg_match('/^image/i', $imageinfo['mime'])){
-				$imageselect.="<span>$f</span>\n";
-			}
-		}
-	}
-	$imageselect.="</div>";
+	$imageselect=BuildFileList();
 
 	function formatOffset($offset) {
 			$hours = $offset / 3600;
@@ -74,23 +225,16 @@
 
 	}
 
-	static $regions = array(
-		'Africa' => DateTimeZone::AFRICA,
-		'America' => DateTimeZone::AMERICA,
-		'Antarctica' => DateTimeZone::ANTARCTICA,
-		'Asia' => DateTimeZone::ASIA,
-		'Atlantic' => DateTimeZone::ATLANTIC,
-		'Europe' => DateTimeZone::EUROPE,
-		'Indian' => DateTimeZone::INDIAN,
-		'Pacific' => DateTimeZone::PACIFIC
-	);
-
-	foreach($regions as $name => $mask){
-		$tzlist[$name]=DateTimeZone::listIdentifiers($mask);
+	$regions=array();
+	foreach(DateTimeZone::listIdentifiers() as $line){
+		$pieces=explode("/",$line);
+		if(isset($pieces[1])){
+			$regions[$pieces[0]][]=$line;
+		}
 	}
 
 	$tzmenu='<ul id="tzmenu">';
-	foreach($tzlist as $country => $cityarray){
+	foreach($regions as $country => $cityarray){
 		$tzmenu.="\t<li>$country\n\t\t<ul>";
 		foreach($cityarray as $key => $city){
 			$z=new DateTimeZone($city);
@@ -103,22 +247,67 @@
 	}
 	$tzmenu.='</ul>';
 
+	// Build list of cable color codes
+	$cablecolors="";
+	$colorselector='<select name="mediacolorcode[]"><option value=""></option>';
+
+	$codeList=ColorCoding::GetCodeList();
+	if(count($codeList)>0){
+		foreach($codeList as $cc){
+			$colorselector.='<option value="'.$cc->ColorID.'">'.$cc->Name.'</option>';
+			$cablecolors.='<div>
+					<div><img src="images/del.gif"></div>
+					<div><input type="text" name="colorcode[]" data='.$cc->ColorID.' value="'.$cc->Name.'"></div>
+					<div><input type="text" name="ccdefaulttext[]" value="'.$cc->DefaultNote.'"></div>
+				</div>';
+		}
+	}
+	$colorselector.='</select>';
+
+	// Build list of media types
+	$mediatypes="";
+	$mediaList=MediaTypes::GetMediaTypeList();
+
+	if(count($mediaList)>0){
+		foreach($mediaList as $mt){
+			$mediatypes.='<div>
+					<div><img src="images/del.gif"></div>
+					<div><input type="text" name="mediatype[]" data='.$mt->MediaID.' value="'.$mt->MediaType.'"></div>
+					<div><select name="mediacolorcode[]"><option value=""></option>';
+			foreach($codeList as $cc){
+				$selected=($mt->ColorID==$cc->ColorID)?' selected':'';
+				$mediatypes.="<option value=\"$cc->ColorID\"$selected>$cc->Name</option>";
+			}
+			$mediatypes.='</select></div>
+				</div>';
+		}
+	}
+
 	// Figure out what the URL to this page
 	$href="";
-	$href.=(array_key_exists('HTTPS', $_SERVER))?'https://':'http://';
+	$href.=(isset($_SERVER['HTTPS']))?'https://':'http://';
 	$href.=$_SERVER['SERVER_NAME'];
 	$href.=substr($_SERVER['REQUEST_URI'], 0, -strlen(basename($_SERVER['REQUEST_URI'])));
 
 	// Build up the list of items available for the tooltips
 	$tooltip="<select id=\"tooltip\" name=\"tooltip[]\" multiple=\"multiple\">\n";
-	$ttconfig=mysql_query("SELECT * FROM fac_CabinetToolTip ORDER BY SortOrder ASC, Enabled DESC, Label ASC;");
-	while($row=mysql_fetch_assoc($ttconfig)){
+	$sql="SELECT * FROM fac_CabinetToolTip ORDER BY SortOrder ASC, Enabled DESC, Label ASC;";
+	foreach($dbh->query($sql) as $row){
 		$selected=($row["Enabled"])?" selected":"";
 		$tooltip.="<option value=\"".$row['Field']."\"$selected>".__($row["Label"])."</option>\n";
 	}
 	$tooltip.="</select>";
 
+	// Build up the list of items available for the tooltips
+	$cdutooltip="<select id=\"cdutooltip\" name=\"cdutooltip[]\" multiple=\"multiple\">\n";
+	$sql="SELECT * FROM fac_CDUToolTip ORDER BY SortOrder ASC, Enabled DESC, Label ASC;";
+	foreach($dbh->query($sql) as $row){
+		$selected=($row["Enabled"])?" selected":"";
+		$cdutooltip.="<option value=\"".$row['Field']."\"$selected>".__($row["Label"])."</option>\n";
+	}
+	$cdutooltip.="</select>";
 ?>
+<!doctype html>
 <html>
 <head>
   <meta http-equiv="X-UA-Compatible" content="IE=Edge">
@@ -138,31 +327,18 @@
   <script type="text/javascript" src="scripts/jquery.miniColors.js"></script>
   <script type="text/javascript" src="scripts/jquery.ui.multiselect.js"></script>
   <script type="text/javascript">
-	$(document).ready( function() {
-		$('#tooltip').multiselect();
-		$("#ToolTips option").each(function(){
-			if($(this).val()==$("#ToolTips").attr('data')){
-				$(this).attr('selected', 'selected');
+	$(document).ready(function(){
+		// ToolTips
+
+		$('#tooltip, #cdutooltip').multiselect();
+		$("select:not('#tooltip, #cdutooltip')").each(function(){
+			if($(this).attr('data')){
+				$(this).val($(this).attr('data'));
 			}
 		});
-		function colorchange(hex,id){
-			if(id==='HeaderColor'){
-				$('#header').css('background-color',hex);
-			}else if(id==='BodyColor'){
-				$('.main').css('background-color',hex);
-			}
-		}
-		$(".color-picker").minicolors({
-			letterCase: 'uppercase',
-			change: function(hex, rgb){
-					colorchange($(this).val(),$(this).attr('id'));
-			}
-		}).change(function(){colorchange($(this).val(),$(this).attr('id'));});
-		$("#LabelCase option").each(function(){
-			if($(this).val()==$("#LabelCase").attr('data')){
-				$(this).attr('selected', 'selected');
-			}
-		});
+
+		// Applies to everything
+
 		$("#configtabs").tabs();
 		$('#configtabs input[defaultvalue],#configtabs select[defaultvalue]').each(function(){
 			$(this).parent().after('<div><button type="button">&lt;--</button></div><div><span>'+$(this).attr('defaultvalue')+'</span></div>');
@@ -183,56 +359,83 @@
 				$('input[name="OrgName"]').focus();
 			});
 		});
+
+		// Style - Site
+
+		function colorchange(hex,id){
+			if(id==='HeaderColor'){
+				$('#header').css('background-color',hex);
+			}else if(id==='BodyColor'){
+				$('.main').css('background-color',hex);
+			}
+		}
+		$(".color-picker").minicolors({
+			letterCase: 'uppercase',
+			change: function(hex, rgb){
+					colorchange($(this).val(),$(this).attr('id'));
+			}
+		}).change(function(){colorchange($(this).val(),$(this).attr('id'));});
 		$('input[name="LinkColor"]').blur(function(){
 			$("head").append("<style type=\"text/css\">a:link, a:hover, a:visited:hover {color: "+$(this).val()+";}</style>");
 		});
 		$('input[name="VisitedLinkColor"]').blur(function(){
 			$("head").append("<style type=\"text/css\">a:visited {color: "+$(this).val()+";}</style>");
 		});
+
+		// Reporting
+
 		$('#PDFLogoFile').click(function(){
-			$("#imageselection").dialog({
-				resizable: false,
-				height:300,
-				width: 400,
-				modal: true,
-				buttons: {
-<?php echo '					',__("Select"),': function() {'; ?>
-						if($('#imageselection #preview').attr('image')!=""){
-							$('#PDFLogoFile').val($('#imageselection #preview').attr('image'));
+			$.get('',{fl: '1'}).done(function(data){
+				$("#imageselection").html(data);
+
+
+				$("#imageselection").dialog({
+					resizable: false,
+					height:300,
+					width: 400,
+					modal: true,
+					buttons: {
+	<?php echo '					',__("Select"),': function() {'; ?>
+							if($('#imageselection #preview').attr('image')!=""){
+								$('#PDFLogoFile').val($('#imageselection #preview').attr('image'));
+							}
+							$(this).dialog("close");
 						}
-						$(this).dialog("close");
 					}
-				}
-			});
-			$("#imageselection span").each(function(){
-				var preview=$('#imageselection #preview');
-				$(this).click(function(){
-					preview.html('<img src="images/'+$(this).text()+'" alt="preview">').attr('image',$(this).text()).css('border-width', '5px');
-					preview.children('img').load(function(){
-						var topmargin=0;
-						var leftmargin=0;
-						if($(this).height()<$(this).width()){
-							$(this).width(preview.innerHeight());
-							$(this).css({'max-width': preview.innerWidth()+'px'});
-							topmargin=Math.floor((preview.innerHeight()-$(this).height())/2);
-						}else{
-							$(this).height(preview.innerHeight());
-							$(this).css({'max-height': preview.innerWidth()+'px'});
-							leftmargin=Math.floor((preview.innerWidth()-$(this).width())/2);
-						}
-						$(this).css({'margin-top': topmargin+'px', 'margin-left': leftmargin+'px'});
-					});
-					$("#imageselection span").each(function(){
-						$(this).removeAttr('style');
-					});
-					$(this).css('border','1px dotted black')
-					$('#header').css('background-image', 'url("images/'+$(this).text()+'")');
 				});
-				if($('#PDFLogoFile').val()==$(this).text()){
-					$(this).click();
-				}
+				$("#imageselection span").each(function(){
+					var preview=$('#imageselection #preview');
+					$(this).click(function(){
+						preview.html('<img src="images/'+$(this).text()+'" alt="preview">').attr('image',$(this).text()).css('border-width', '5px');
+						preview.children('img').load(function(){
+							var topmargin=0;
+							var leftmargin=0;
+							if($(this).height()<$(this).width()){
+								$(this).width(preview.innerHeight());
+								$(this).css({'max-width': preview.innerWidth()+'px'});
+								topmargin=Math.floor((preview.innerHeight()-$(this).height())/2);
+							}else{
+								$(this).height(preview.innerHeight());
+								$(this).css({'max-height': preview.innerWidth()+'px'});
+								leftmargin=Math.floor((preview.innerWidth()-$(this).width())/2);
+							}
+							$(this).css({'margin-top': topmargin+'px', 'margin-left': leftmargin+'px'});
+						});
+						$("#imageselection span").each(function(){
+							$(this).removeAttr('style');
+						});
+						$(this).css('border','1px dotted black')
+						$('#header').css('background-image', 'url("images/'+$(this).text()+'")');
+					});
+					if($('#PDFLogoFile').val()==$(this).text()){
+						$(this).click();
+					}
+				});
 			});
 		});
+
+		// General - Time and Measurements
+
 		$("#tzmenu").menu();
 		$("#tzmenu ul > li").click(function(e){
 			e.preventDefault();
@@ -267,6 +470,354 @@
 			});
 			$(this).addClass('text-arrow');
 		});
+
+		// Cabling - Media Types
+		function removemedia(row){
+			$.post('',{mtused: row.find('div:nth-child(2) input').attr('data')}).done(function(data){
+				if(data.trim()==0){
+					row.effect('explode', {}, 500, function(){
+						$(this).remove();
+					});
+				}else{
+					var defaultbutton={
+						"<?php echo __("Clear all"); ?>": function(){
+							$.post('',{mtid: row.find('div:nth-child(2) input').attr('data'),mt: '', mtcc: '', clear: ''}).done(function(data){
+								if(data.trim()=='u'){ // success
+									$('#modal').dialog("destroy");
+									row.effect('explode', {}, 500, function(){
+										$(this).remove();
+									});
+								}else{ // failed to delete
+									$('#modaltext').html('AAAAAAAAAAHHHHHHHHHH!!!  *crash* *fire* *chaos*<br><br><?php echo __("Something just went horribly wrong."); ?>');
+									$('#modal').dialog('option','buttons',cancelbutton);
+								}
+							});
+						}
+					}
+					var replacebutton={
+						"<?php echo __("Replace"); ?>": function(){
+							// send command to replace all connections with x
+							$.post('',{mtid: row.find('div:nth-child(2) input').attr('data'),mt: '', mtcc: '', change: $('#modal select').val()}).done(function(data){
+								if(data.trim()=='u'){ // success
+									$('#modal').dialog("destroy");
+									row.effect('explode', {}, 500, function(){
+										$(this).remove();
+									});
+								}else{ // failed to delete
+									$('#modaltext').html('AAAAAAAAAAHHHHHHHHHH!!!  *crash* *fire* *chaos*<br><br><?php echo __("Something just went horribly wrong."); ?>');
+									$('#modal').dialog('option','buttons',cancelbutton);
+								}
+							});
+						}
+					}
+					var cancelbutton={
+						"<?php echo __("Cancel"); ?>": function(){
+							$(this).dialog("destroy");
+						}
+					}
+<?php echo "					var modal=$('<div />', {id: 'modal', title: '".__("Media Type Delete Override")."'}).html('<div id=\"modaltext\">".__("This media type is in use somewhere. Select an alternate type to assign to all the records to or choose clear all.")."<select id=\"replaceme\"></select></div>').dialog({"; ?>
+						dialogClass: 'no-close',
+						appendTo: 'body',
+						modal: true,
+						buttons: $.extend({}, defaultbutton, cancelbutton)
+					});
+					$.post('',{mtlist: ''}).done(function(data){
+						var choices=$('<select />');
+						choices.html(data);
+						choices.find('option').each(function(){
+							if($(this).val()==row.find('div:nth-child(2) input').attr('data')){$(this).remove();}
+						});
+						choices.change(function(){
+							if($(this).val()==''){ // clear all
+								modal.dialog('option','buttons',$.extend({}, defaultbutton, cancelbutton));
+							}else{ // replace
+								modal.dialog('option','buttons',$.extend({}, replacebutton, cancelbutton));
+							}
+						});
+						modal.find($('#replaceme')).replaceWith(choices);
+						
+					});
+				}
+			});
+
+		}
+
+		var blankmediarow=$('<div />').html('<div><img src="images/del.gif"></div><div><input id="mediatype[]" name="mediatype[]" type="text"></div><div><select name="mediacolorcode[]"></select></div>');
+		function bindmediarow(row){
+			var addrem=row.find('div:first-child');
+			var mt=row.find('div:nth-child(2) input');
+			var mtcc=row.find('div:nth-child(3) select');
+			if(mt.val().trim()!='' && addrem.attr('id')!='newline'){
+				addrem.click(function(){
+					removemedia(row);
+				});
+			}
+			mt.keypress(function(event){
+				if(event.keyCode==10 || event.keyCode==13){
+					event.preventDefault();
+					mt.change();
+				}
+			});
+			function update(inputobj){
+				if(mt.val().trim()==''){
+					// reset value to previous
+					$.post('',{mt: mt.val(), mtid: mt.attr('data'), mtcc: mtcc.val(),original:''}).done(function(jsondata){
+						mt.val(jsondata.MediaType);
+						mtcc.val(jsondata.ColorID);
+					});
+					mt.effect('highlight', {color: 'salmon'}, 1500);
+					mtcc.effect('highlight', {color: 'salmon'}, 1500);
+				}else{
+					// attempt to update
+					$.post('',{mt: mt.val(), mtid: mt.attr('data'), mtcc: mtcc.val()}).done(function(data){
+						if(data.trim()=='f'){ // fail
+							$.post('',{mt: mt.val(), mtid: mt.attr('data'), mtcc: mtcc.val(),original:''}).done(function(jsondata){
+								mt.val(jsondata.MediaType);
+								mtcc.val(jsondata.ColorID);
+							});
+							mt.effect('highlight', {color: 'salmon'}, 1500);
+							mtcc.effect('highlight', {color: 'salmon'}, 1500);
+						}else if(data.trim()=='u'){ // updated
+							mt.effect('highlight', {color: 'lightgreen'}, 2500);
+							mtcc.effect('highlight', {color: 'lightgreen'}, 2500);
+						}else{ // created
+							var newitem=blankmediarow.clone();
+							newitem.find('div:nth-child(2) input').val(mt.val()).attr('data',data.trim());
+							newitem.find('div:nth-child(3) select').replaceWith(mtcc.clone());
+							bindmediarow(newitem);
+							row.before(newitem);
+							newitem.find('div:nth-child(3) select').val(mtcc.val()).focus();
+							if(addrem.attr('id')=='newline'){
+								mt.val('');
+								mtcc.val('');
+							}else{
+								row.remove();
+							}
+						}
+					});
+				}
+			}
+			mt.change(function(){
+				update($(this));
+			});
+			mtcc.change(function(){
+				var row=$(this).parent('div').parent('div');
+				if(row.find('div:first-child').attr('id')!='newline'){
+					update($(this));
+				}else if(row.find('div:nth-child(2) input').val().trim()!=''){
+					update($(this));
+				}
+			});
+		}
+
+		// Add a new blank row
+		$('#mediatypes > div ~ div > div:first-child').each(function(){
+			if($(this).attr('id')=='newline'){
+				var row=$(this).parent('div');
+				$(this).click(function(){
+					var newitem=blankmediarow.clone();
+					// Clone the current dropdown list
+					newitem.find('select[name="mediacolorcode[]"]').replaceWith((row.find('select[name="mediacolorcode[]"]').clone()));
+					newitem.find('div:first-child').click(function(){
+						removecolor($(this).parent('div'),false);
+					});
+					bindmediarow(newitem);
+					row.before(newitem);
+				});
+			}
+			bindmediarow($(this).parent('div'));
+		});
+
+		// Update color drop lists
+		function updatechoices(){
+			$.post('',{cclist: ''}).done(function(data){
+				$('#mediatypes > div ~ div').each(function(){
+					var list=$(this).find('select[name="mediacolorcode[]"]');
+					var dc=list.val();
+					list.html(data);
+					$(this).find('select[name="mediacolorcode[]"]').val(dc);
+				});
+			});
+		}
+
+		// Cabling - Cable Colors
+
+		function removecolor(rowobject,lookup){
+			if(!lookup){
+				rowobject.remove();
+			}else{
+				$.post('',{ccused: rowobject.find('div:nth-child(2) input').attr('data')}).done(function(data){
+					if(data.trim()==0){
+						updatechoices();
+						rowobject.effect('explode', {}, 500, function(){
+							$(this).remove();
+						});
+					}else{
+						var defaultbutton={
+							"<?php echo __("Clear all"); ?>": function(){
+								$.post('',{cid: rowobject.find('div:nth-child(2) input').attr('data'),cc: '', ccdn: '', clear: ''}).done(function(data){
+									if(data.trim()=='u'){ // success
+										$('#modal').dialog("destroy");
+										updatechoices();
+										rowobject.effect('explode', {}, 500, function(){
+											$(this).remove();
+										});
+									}else{ // failed to delete
+										$('#modaltext').html('AAAAAAAAAAHHHHHHHHHH!!!  *crash* *fire* *chaos*<br><br><?php echo __("Something just went horribly wrong."); ?>');
+										$('#modal').dialog('option','buttons',cancelbutton);
+									}
+								});
+							}
+						}
+						var replacebutton={
+							"<?php echo __("Replace"); ?>": function(){
+								// send command to replace all connections with x
+								$.post('',{cid: rowobject.find('div:nth-child(2) input').attr('data'),cc: '', ccdn: '', change: $('#modal select').val()}).done(function(data){
+									if(data.trim()=='u'){ // success
+										$('#modal').dialog("destroy");
+										updatechoices();
+										rowobject.effect('explode', {}, 500, function(){
+											$(this).remove();
+										});
+										// Need to trigger a reload of any of the media types that had this 
+										// color so they will display the new color
+										$('#mediatypes > div ~ div:not(:last-child) input').val('').change();
+									}else{ // failed to delete
+										$('#modaltext').html('AAAAAAAAAAHHHHHHHHHH!!!  *crash* *fire* *chaos*<br><br><?php echo __("Something just went horribly wrong."); ?>');
+										$('#modal').dialog('option','buttons',cancelbutton);
+									}
+								});
+							}
+						}
+						var cancelbutton={
+							"<?php echo __("Cancel"); ?>": function(){
+								$(this).dialog("destroy");
+							}
+						}
+<?php echo "						var modal=$('<div />', {id: 'modal', title: '".__("Code Delete Override")."'}).html('<div id=\"modaltext\">".__("This code is in use somewhere. You can either choose to clear all instances of this color being used or choose to have them replaced with another color.")." <select id=\"replaceme\"></select></div>').dialog({"; ?>
+							dialogClass: 'no-close',
+							appendTo: 'body',
+							modal: true,
+							buttons: $.extend({}, defaultbutton, cancelbutton)
+						});
+						var choices=$('div#mediatypes.table div:last-child div select').clone();
+						choices.find('option').each(function(){
+							if($(this).val()==rowobject.find('div:nth-child(2) input').attr('data')){$(this).remove();}
+						});
+						choices.change(function(){
+							if($(this).val()==''){ // clear all
+								modal.dialog('option','buttons',$.extend({}, defaultbutton, cancelbutton));
+							}else{ // replace
+								modal.dialog('option','buttons',$.extend({}, replacebutton, cancelbutton));
+							}
+						});
+						modal.find($('#replaceme')).replaceWith(choices);
+					}
+				});
+			}
+		}
+		var blankrow=$('<div />').html('<div><img src="images/del.gif"></div><div><input type="text" name="colorcode[]"></div><div><input type="text" name="ccdefaulttext[]"></div>');
+		function bindrow(row){
+			var addrem=row.find('div:first-child');
+			var cc=row.find('div:nth-child(2) input');
+			var ccdn=row.find('div:nth-child(3) input');
+			if(cc.val().trim()!='' && addrem.attr('id')!='newline'){
+				addrem.click(function(){
+					removecolor(row,true);
+				});
+			}
+			cc.keypress(function(event){
+				if(event.keyCode==10 || event.keyCode==13){
+					event.preventDefault();
+					cc.change();
+				}
+			});
+			ccdn.keypress(function(event){
+				if(event.keyCode==10 || event.keyCode==13){
+					event.preventDefault();
+					ccdn.change();
+				}
+			});
+			row.find('div > input').each(function(){
+				// If a value changes then check it for conflicts, if no conflict update
+				$(this).change(function(){
+					if(cc.val().trim()!=''){
+						$.post('',{cid: cc.attr('data'),cc: cc.val(), ccdn: ccdn.val()}).done(function(data){
+							if(data.trim()=='f'){ // fail
+								$.post('',{cid: cc.attr('data'),cc: cc.val(), ccdn: ccdn.val(),original:data.trim()}).done(function(jsondata){
+									cc.val(jsondata.Name);
+									ccdn.val(jsondata.DefaultNote);
+								});
+								cc.effect('highlight', {color: 'salmon'}, 1500);
+								ccdn.effect('highlight', {color: 'salmon'}, 1500);
+							}else if(data.trim()=='u'){ // updated
+								cc.effect('highlight', {color: 'lightgreen'}, 2500);
+								ccdn.effect('highlight', {color: 'lightgreen'}, 2500);
+								// update media type color pick lists
+								updatechoices();
+							}else{ // created
+								var newitem=blankrow.clone();
+								newitem.find('div:nth-child(2) input').val(cc.val()).attr('data',data.trim());
+								bindrow(newitem);
+								row.before(newitem);
+								newitem.find('div:nth-child(3) input').val(ccdn.val()).focus();
+								if(addrem.attr('id')=='newline'){
+									cc.val('');
+									ccdn.val('');
+								}else{
+									row.remove();
+								}
+								// update media type color pick lists
+								updatechoices();
+							}
+						});
+					}else if(cc.val().trim()=='' && ccdn.val().trim()=='' && addrem.attr('id')!='newline'){
+						// If both blanks are emptied of values and they were an existing data pair
+						$.post('',{cid: cc.attr('data'),cc: cc.val(), ccdn: ccdn.val(),original:''}).done(function(jsondata){
+							cc.val(jsondata.Name);
+							ccdn.val(jsondata.DefaultNote);
+						});
+						cc.effect('highlight', {color: 'salmon'}, 1500);
+						ccdn.effect('highlight', {color: 'salmon'}, 1500);
+					}
+				});
+			});
+		}
+		$('#cablecolor > div ~ div > div:first-child').each(function(){
+			if($(this).attr('id')=='newline'){
+				var row=$(this).parent('div');
+				$(this).click(function(){
+					var newitem=blankrow.clone();
+					newitem.find('div:first-child').click(function(){
+						removecolor($(this).parent('div'),false);
+					});
+					bindrow(newitem);
+					row.before(newitem);
+				});
+			}
+			bindrow($(this).parent('div'));
+		});
+
+		// Reporting - Utilities
+
+		$('input[id^="snmp"],input[id="cut"]').each(function(){
+			var a=$(this);
+			var icon=$('<span>',{style: 'float:right;margin-top:5px;'}).addClass('ui-icon').addClass('ui-icon-info');
+			a.parent('div').append(icon);
+			$(this).keyup(function(){
+				var b=a.next('span');
+				$.post('',{fe: $(this).val()}).done(function(data){
+					if(data==1){
+						a.effect('highlight', {color: 'lightgreen'}, 1500);
+						b.addClass('ui-icon-circle-check').removeClass('ui-icon-info').removeClass('ui-icon-circle-close');
+					}else{
+						a.effect('highlight', {color: 'salmon'}, 1500);
+						b.addClass('ui-icon-circle-close').removeClass('ui-icon-info').removeClass('ui-icon-circle-check');
+					}
+				});
+			});
+			$(this).trigger('keyup');
+		});
 	});
 
   </script>
@@ -291,7 +842,8 @@ echo '<div class="main">
 			<li><a href="#style">',__("Style"),'</a></li>
 			<li><a href="#email">',__("Email"),'</a></li>
 			<li><a href="#reporting">',__("Reporting"),'</a></li>
-			<li><a href="#tt">',__("Cabinet ToolTips"),'</a></li>
+			<li><a href="#tt">',__("ToolTips"),'</a></li>
+			<li><a href="#cc">',__("Cabling"),'</a></li>
 		</ul>
 		<div id="general">
 			<div class="table">
@@ -330,6 +882,24 @@ echo '<div class="main">
 						</select>
 					</div>
 				</div>
+				<div>
+					<div><label for="mUnits">',__("Measurement Units"),'</label></div>
+					<div><select id="mUnits" name="mUnits" defaultvalue="',$config->defaults["mUnits"],'" data="',$config->ParameterArray["mUnits"],'">
+							<option value="english"',(($config->ParameterArray["mUnits"]=="english")?' selected="selected"':''),'>',__("English"),'</option>
+							<option value="metric"',(($config->ParameterArray["mUnits"]=="metric")?' selected="selected"':''),'>',__("Metric"),'</option>
+						</select>
+					</div>
+				</div>
+				<div>
+					<div><label for="PageSize">',__("Page Size"),'</label></div>
+					<div><select id="PageSize" name="PageSize" defaultvalue="',$config->defaults["PageSize"],'" data="',$config->ParameterArray["PageSize"],'">
+							<option value="A4"',(($config->ParameterArray["PageSize"]=="A4")?' selected="selected"':''),'>',__("A4"),'</option>
+							<option value="A3"',(($config->ParameterArray["PageSize"]=="A3")?' selected="selected"':''),'>',__("A3"),'</option>
+							<option value="Letter"',(($config->ParameterArray["PageSize"]=="Letter")?' selected="selected"':''),'>',__("Letter"),'</option>
+							<option value="Legal"',(($config->ParameterArray["PageSize"]=="Legal")?' selected="selected"':''),'>',__("Legal"),'</option>
+						</select>
+					</div>
+				</div>
 			</div> <!-- end table -->
 			<h3>',__("Users"),'</h3>
 			<div class="table">
@@ -362,32 +932,50 @@ echo '<div class="main">
 				<div>
 					<div><label for="SpaceRed">',__("Space Critical"),'</label></div>
 					<div><input type="text" defaultvalue="',$config->defaults["SpaceRed"],'" name="SpaceRed" value="',$config->ParameterArray["SpaceRed"],'"></div>
+					<div></div>
+					<div><label for="TemperatureRed">',__("Temperature Critical"),'</label></div>
+					<div><input type="text" defaultvalue="',$config->defaults["TemperatureRed"],'" name="TemperatureRed" value="',$config->ParameterArray["TemperatureRed"],'"></div>
 				</div>
 				<div>
 					<div><label for="SpaceYellow">',__("Space Warning"),'</label></div>
 					<div><input type="text" defaultvalue="',$config->defaults["SpaceYellow"],'" name="SpaceYellow" value="',$config->ParameterArray["SpaceYellow"],'"></div>
+					<div></div>
+					<div><label for="TemperatureYellow">',__("Temperature Warning"),'</label></div>
+					<div><input type="text" defaultvalue="',$config->defaults["TemperatureYellow"],'" name="TemperatureYellow" value="',$config->ParameterArray["TemperatureYellow"],'"></div>
 				</div>
 				<div>
 					<div><label for="WeightRed">',__("Weight Critical"),'</label></div>
 					<div><input type="text" defaultvalue="',$config->defaults["WeightRed"],'" name="WeightRed" value="',$config->ParameterArray["WeightRed"],'"></div>
+					<div></div>
+					<div><label for="HumidityRedHigh">',__("High Humidity Critical"),'</label></div>
+					<div><input type="text" defaultvalue="',$config->defaults["HumidityRedHigh"],'" name="HumidityRedHigh" value="',$config->ParameterArray["HumidityRedHigh"],'"></div>
 				</div>
 				<div>
 					<div><label for="WeightYellow">',__("Weight Warning"),'</label></div>
 					<div><input type="text" defaultvalue="',$config->defaults["WeightYellow"],'" name="WeightYellow" value="',$config->ParameterArray["WeightYellow"],'"></div>
+					<div></div>
+					<div><label for="HumidityRedLow">',__("Low Humidity Critical"),'</label></div>
+					<div><input type="text" defaultvalue="',$config->defaults["HumidityRedLow"],'" name="HumidityRedLow" value="',$config->ParameterArray["HumidityRedLow"],'"></div>
 				</div>
 				<div>
 					<div><label for="PowerRed">',__("Power Critical"),'</label></div>
 					<div><input type="text" defaultvalue="',$config->defaults["PowerRed"],'" name="PowerRed" value="',$config->ParameterArray["PowerRed"],'"></div>
+					<div></div>
+					<div><label for="HumidityYellowHigh">',__("High Humidity Caution"),'</label></div>
+					<div><input type="text" defaultvalue="',$config->defaults["HumidityYellowHigh"],'" name="HumidityYellowHigh" value="',$config->ParameterArray["HumidityYellowHigh"],'"></div>
 				</div>
 				<div>
 					<div><label for="PowerYellow">',__("Power Warning"),'</label></div>
 					<div><input type="text" defaultvalue="',$config->defaults["PowerYellow"],'" name="PowerYellow" value="',$config->ParameterArray["PowerYellow"],'"></div>
+					<div></div>
+					<div><label for="HumidityYellowLow">',__("Low Humidity Caution"),'</label></div>
+					<div><input type="text" defaultvalue="',$config->defaults["HumidityYellowLow"],'" name="HumidityYellowLow" value="',$config->ParameterArray["HumidityYellowLow"],'"></div>
 				</div>
 			</div> <!-- end table -->
 			<h3>',__("Virtual Machines"),'</h3>
 			<div class="table" id="rackusage">
 				<div>
-					<div><lable for="VMExpirationTime">',__("Expiration Time (Days)"),'</label></div>
+					<div><label for="VMExpirationTime">',__("Expiration Time (Days)"),'</label></div>
 					<div><input type="text" defaultvalue="',$config->defaults["VMExpirationTime"],'" name="VMExpirationTime" value="',$config->ParameterArray["VMExpirationTime"],'"></div>
 				</div>
 			</div> <!-- end table -->
@@ -399,19 +987,19 @@ echo '<div class="main">
 				<div>
 					<div><label for="CriticalColor">',__("Critical Color"),'</label></div>
 					<div><div class="cp"><input type="text" class="color-picker" name="CriticalColor" value="',$config->ParameterArray["CriticalColor"],'"></div></div>
-					<div><button type="button"><--</button></div>
+					<div><button type="button">&lt;--</button></div>
 					<div><span>',strtoupper($config->defaults["CriticalColor"]),'</span></div>
 				</div>
 				<div>
 					<div><label for="CautionColor">',__("Caution Color"),'</label></div>
 					<div><div class="cp"><input type="text" class="color-picker" name="CautionColor" value="',$config->ParameterArray["CautionColor"],'"></div></div>
-					<div><button type="button"><--</button></div>
+					<div><button type="button">&lt;--</button></div>
 					<div><span>',strtoupper($config->defaults["CautionColor"]),'</span></div>
 				</div>
 				<div>
 					<div><label for="GoodColor">',__("Good Color"),'</label></div>
 					<div><div class="cp"><input type="text" class="color-picker" name="GoodColor" value="',$config->ParameterArray["GoodColor"],'"></div></div>
-					<div><button type="button"><--</button></div>
+					<div><button type="button">&lt;--</button></div>
 					<div><span>',strtoupper($config->defaults["GoodColor"]),'</span></div>
 				</div>
 				<div>
@@ -423,13 +1011,13 @@ echo '<div class="main">
 				<div>
 					<div><label for="ReservedColor">',__("Reserved Devices"),'</label></div>
 					<div><div class="cp"><input type="text" class="color-picker" name="ReservedColor" value="',$config->ParameterArray["ReservedColor"],'"></div></div>
-					<div><button type="button"><--</button></div>
+					<div><button type="button">&lt;--</button></div>
 					<div><span>',strtoupper($config->defaults["ReservedColor"]),'</span></div>
 				</div>
 				<div>
 					<div><label for="FreeSpaceColor">',__("Unused Spaces"),'</label></div>
 					<div><div class="cp"><input type="text" class="color-picker" name="FreeSpaceColor" value="',$config->ParameterArray["FreeSpaceColor"],'"></div></div>
-					<div><button type="button"><--</button></div>
+					<div><button type="button">&lt;--</button></div>
 					<div><span>',strtoupper($config->defaults["FreeSpaceColor"]),'</span></div>
 				</div>
 			</div> <!-- end table -->
@@ -451,25 +1039,25 @@ echo '<div class="main">
 				<div>
 					<div><label for="HeaderColor">',__("Header Color"),'</label></div>
 					<div><div class="cp"><input type="text" class="color-picker" name="HeaderColor" value="',$config->ParameterArray["HeaderColor"],'"></div></div>
-					<div><button type="button"><--</button></div>
+					<div><button type="button">&lt;--</button></div>
 					<div><span>',strtoupper($config->defaults["HeaderColor"]),'</span></div>
 				</div>
 				<div>
 					<div><label for="BodyColor">',__("Body Color"),'</label></div>
 					<div><div class="cp"><input type="text" class="color-picker" name="BodyColor" value="',$config->ParameterArray["BodyColor"],'"></div></div>
-					<div><button type="button"><--</button></div>
+					<div><button type="button">&lt;--</button></div>
 					<div><span>',strtoupper($config->defaults["BodyColor"]),'</span></div>
 				</div>
 				<div>
 					<div><label for="LinkColor">',__("Link Color"),'</label></div>
 					<div><div class="cp"><input type="text" class="color-picker" name="LinkColor" value="',$config->ParameterArray["LinkColor"],'"></div></div>
-					<div><button type="button"><--</button></div>
+					<div><button type="button">&lt;--</button></div>
 					<div><span>',strtoupper($config->defaults["LinkColor"]),'</span></div>
 				</div>
 				<div>
 					<div><label for="VisitedLinkColor">',__("Viewed Link Color"),'</label></div>
 					<div><div class="cp"><input type="text" class="color-picker" name="VisitedLinkColor" value="',$config->ParameterArray["VisitedLinkColor"],'"></div></div>
-					<div><button type="button"><--</button></div>
+					<div><button type="button">&lt;--</button></div>
 					<div><span>',strtoupper($config->defaults["VisitedLinkColor"]),'</span></div>
 				</div>
 			</div> <!-- end table -->
@@ -544,6 +1132,37 @@ echo '<div class="main">
 					<div><input type="text" defaultvalue="',$href,'" name="InstallURL" value="',$config->ParameterArray["InstallURL"],'"></div>
 				</div>
 			</div> <!-- end table -->
+			<h3>',__("Capacity Reporting"),'</h3>
+			<div class="table">
+				<div>
+					<div><label for="NetworkCapacityReportOptIn">',__("Switches"),'</label></div>
+					<div>
+						<select id="NetworkCapacityReportOptIn" defaultvalue="',$config->defaults["NetworkCapacityReportOptIn"],'" name="NetworkCapacityReportOptIn" data="',$config->ParameterArray["NetworkCapacityReportOptIn"],'">
+							<option value="OptIn">',__("OptIn"),'</option>
+							<option value="OptOut">',__("OptOut"),'</option>
+						</select>
+					</div>
+				</div>
+				<div>
+					<div><label for="NetworkThreshold">',__("Switch Capacity Threshold"),'</label></div>
+					<div><input type="text" defaultvalue="',$config->defaults["NetworkThreshold"],'" name="NetworkThreshold" value="',$config->ParameterArray["NetworkThreshold"],'"></div>
+				</div>
+			</div>
+			<h3>',__("Utilities"),'</h3>
+			<div class="table">
+				<div>
+					<div><label for="snmpget">',__("snmpget"),'</label></div>
+					<div><input type="text" defaultvalue="',$config->defaults["snmpget"],'" name="snmpget" value="',$config->ParameterArray["snmpget"],'"></div>
+				</div>
+				<div>
+					<div><label for="snmpwalk">',__("snmpwalk"),'</label></div>
+					<div><input type="text" defaultvalue="',$config->defaults["snmpwalk"],'" name="snmpwalk" value="',$config->ParameterArray["snmpwalk"],'"></div>
+				</div>
+				<div>
+					<div><label for="cut">',__("cut"),'</label></div>
+					<div><input type="text" defaultvalue="',$config->defaults["cut"],'" name="cut" value="',$config->ParameterArray["cut"],'"></div>
+				</div>
+			</div> <!-- end table -->
 		</div>
 		<div id="tt">
 			<div class="table">
@@ -558,6 +1177,60 @@ echo '<div class="main">
 			</div> <!-- end table -->
 			<br>
 			',$tooltip,'
+			<br>
+			<div class="table">
+				<div>
+					<div><label for="CDUToolTips">',__("CDU ToolTips"),'</label></div>
+					<div><select id="CDUToolTips" name="CDUToolTips" defaultvalue="',$config->defaults["CDUToolTips"],'" data="',$config->ParameterArray["CDUToolTips"],'">
+							<option value="disabled">',__("Disabled"),'</option>
+							<option value="enabled">',__("Enabled"),'</option>
+						</select>
+					</div>
+				</div>
+			</div> <!-- end table -->
+			<br>
+			',$cdutooltip,'
+		</div>
+		<div id="cc">
+			<h3>',__("Media Types"),'</h3>
+			<div class="table">
+				<div>
+					<div><label for="MediaEnforce">',__("Media Type Matching"),'</label></div>
+					<div><select id="MediaEnforce" name="MediaEnforce" defaultvalue="',$config->defaults["MediaEnforce"],'" data="',$config->ParameterArray["MediaEnforce"],'">
+							<option value="disabled">',__("Disabled"),'</option>
+							<option value="enabled">',__("Enforce"),'</option>
+						</select>
+					</div>
+				</div>
+			</div> <!-- end table -->
+			<br>
+			<div class="table" id="mediatypes">
+				<div>
+					<div></div>
+					<div>',__("Media Type"),'</div>
+					<div>',__("Default Color"),'</div>
+				</div>
+				',$mediatypes,'
+				<div>
+					<div id="newline"><img title="',__("Add new row"),'" src="images/add.gif"></div>
+					<div><input type="text" name="mediatype[]"></div>
+					<div>',$colorselector,'</div>
+				</div>
+			</div> <!-- end table -->
+			<h3>',__("Cable Colors"),'</h3>
+			<div class="table" id="cablecolor">
+				<div>
+					<div></div>
+					<div>',__("Color"),'</div>
+					<div>',__("Default Note"),'</div>
+				</div>
+				',$cablecolors,'
+				<div>
+					<div id="newline"><img title="',__("Add new row"),'" src="images/add.gif"></div>
+					<div><input type="text" name="colorcode[]"></div>
+					<div><input type="text" name="ccdefaulttext[]"></div>
+				</div>
+			</div> <!-- end table -->
 		</div>
 	</div>';
 
@@ -571,8 +1244,8 @@ echo '<div class="main">
    <div><input type="submit" name="action" value="Update"></div>
 </div>
 </div> <!-- END div.table -->
-</div>
 </form>
+</div>
 </div>
    <a href="index.php">Return to Main Menu</a>
   </div>

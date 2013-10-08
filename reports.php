@@ -1,16 +1,6 @@
 <?php
 	require_once( "db.inc.php" );
 	require_once( "facilities.inc.php" );
-
-	$user = new User();
-	$user->UserID = $_SERVER["REMOTE_USER"];
-	$user->GetUserRights( $facDB );
-
-	if(!$user->ReadAccess){
-		// No soup for you.
-		header('Location: '.redirect());
-		exit;
-	}
 ?>
 <!doctype html>
 <html>
@@ -47,6 +37,7 @@ echo '<div class="main">
 	<a href="search_export.php">',__("Search/Export by Data Center"),'</a>
 	<a href="report_contact.php">',__("Asset Report by Owner"),'</a>
 	<a href="report_asset.php">',__("Data Center Asset Report"),'</a>
+    <a href="report_asset_Excel.php">',__("Data Center Asset Report [Excel]"),'</a>
 	<a href="report_cost.php">',__("Data Center Asset Costing Report"),'</a>
 	<a href="report_aging.php">',__("Asset Aging Report"),'</a>
 	<a href="report_vm_by_department.php">',__("Virtual Machines by Department"),'</a>

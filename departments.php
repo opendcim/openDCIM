@@ -2,21 +2,17 @@
 	require_once('db.inc.php');
 	require_once('facilities.inc.php');
 
-	$dept=new Department();
-	$user=new User();
-
-	$user->UserID=$_SERVER['REMOTE_USER'];
-	$user->GetUserRights($facDB);
-
 	if(!$user->ContactAdmin){
 		// No soup for you.
 		header('Location: '.redirect());
 		exit;
 	}
 
+	$dept=new Department();
+
 	if(isset($_REQUEST['deptid'])&&($_REQUEST['deptid']>0)){
 		$dept->DeptID=(isset($_POST['deptid']) ? $_POST['deptid'] : $_GET['deptid']);
-		$dept->GetDeptByID($facDB);
+		$dept->GetDeptByID();
 	}
 
 	if(isset($_POST['action'])&& (($_POST['action']=='Create') || ($_POST['action']=='Update'))){
@@ -29,15 +25,15 @@
 
 		if($dept->Name!=''){
 			if($_POST['action']=='Create'){
-				$dept->CreateDepartment($facDB);
+				$dept->CreateDepartment();
 			}else{
-				$dept->UpdateDepartment($facDB);
+				$dept->UpdateDepartment();
 			}
 		}
 		// Refresh object
-		$dept->GetDeptByID($facDB);
+		$dept->GetDeptByID();
 	}
-	$deptList=$dept->GetDepartmentList($facDB);
+	$deptList=$dept->GetDepartmentList();
 ?>
 <!doctype html>
 <html>

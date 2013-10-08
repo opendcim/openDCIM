@@ -2,15 +2,6 @@
 	require_once( 'db.inc.php' );
 	require_once( 'facilities.inc.php' );
 
-	$user=new User();
-	$user->UserID=$_SERVER['REMOTE_USER'];
-	$user->GetUserRights($facDB);
-
-	if(!$user->ReadAccess){
-		header( "Location: ".redirect());
-		exit;
-	}
-
 	define('FPDF_FONTPATH','font/');
 	require('fpdf.php');
 
@@ -26,7 +17,7 @@ class PDF extends FPDF {
 	}
   
 	function Header() {
-		$this->pdfconfig = new Config($this->pdfDB);
+		$this->pdfconfig = new Config();
 		$this->Link( 10, 8, 100, 20, 'https://' . $_SERVER['SERVER_NAME'] . $_SERVER['PHP_SELF'] );
     	$this->Image( 'images/' . $this->pdfconfig->ParameterArray['PDFLogoFile'],10,8,100);
     	$this->SetFont($this->pdfconfig->ParameterArray['PDFfont'],'B',12);
@@ -136,7 +127,7 @@ class PDF extends FPDF {
 	$dept = new Department();
 	$con = new Contact();
 	
-	$pdf=new PDF($facDB);
+	$pdf=new PDF();
 	$pdf->AliasNbPages();
 	  
 	$pdf->SetFont($config->ParameterArray['PDFfont'],'',8);
@@ -150,7 +141,7 @@ class PDF extends FPDF {
 	$pdf->SetTextColor( 0 );
 
 	$pdf->Bookmark( 'Departments' );
-	$deptList = $dept->GetDepartmentList( $facDB );
+	$deptList = $dept->GetDepartmentList();
 
 	foreach( $deptList as $deptRow ) {
 		// Skip ITS for Now
@@ -186,7 +177,7 @@ class PDF extends FPDF {
 
 		$pdf->Ln();
 
-		$contactList = $con->GetContactsForDepartment( $deptRow->DeptID, $facDB );
+		$contactList=$con->GetContactsForDepartment($deptRow->DeptID);
 
 		$fill = 0;
 

@@ -2,10 +2,6 @@
 	require_once( "db.inc.php" );
 	require_once( "facilities.inc.php" );
 
-	$user=new User();
-	$user->UserID=$_SERVER["REMOTE_USER"];
-	$user->GetUserRights( $facDB );
-
 	if(!$user->SiteAdmin){
 		// No soup for you.
 		header('Location: '.redirect());
@@ -16,7 +12,7 @@
 
 	if(isset($_REQUEST["manufacturerid"]) && $_REQUEST["manufacturerid"] >0){
 		$mfg->ManufacturerID=(isset($_POST['manufacturerid']) ? $_POST['manufacturerid'] : $_GET['manufacturerid']);
-		$mfg->GetManufacturerByID($facDB);
+		$mfg->GetManufacturerByID();
 	}
 
 	$status="";
@@ -26,16 +22,16 @@
 
 		if($mfg->Name != null && $mfg->Name != ""){
 			if($_POST["action"]=="Create"){
-					$mfg->AddManufacturer($facDB);
+					$mfg->AddManufacturer();
 			}else{
 				$status="Updated";
-				$mfg->UpdateManufacturer($facDB);
+				$mfg->UpdateManufacturer();
 			}
 		}
 		//We either just created a manufacturer or updated it so reload from the db
-		$mfg->GetManufacturerByID($facDB);
+		$mfg->GetManufacturerByID();
 	}
-	$mfgList=$mfg->GetManufacturerList($facDB);
+	$mfgList=$mfg->GetManufacturerList();
 ?>
 <!doctype html>
 <html>

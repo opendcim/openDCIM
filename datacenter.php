@@ -2,16 +2,13 @@
 	require_once('db.inc.php');
 	require_once('facilities.inc.php');
 
-	$user=new User();
-
-	$user->UserID=$_SERVER['REMOTE_USER'];
-	$user->GetUserRights($facDB);
-
 	if(!$user->SiteAdmin){
 		// No soup for you.
 		header('Location: '.redirect());
 		exit;
 	}
+	
+	$status="";
 
 	$dc=new DataCenter();
 	if(isset($_POST['action'])&&(($_POST['action']=='Create')||($_POST['action']=='Update'))){
@@ -22,23 +19,47 @@
 		$dc->Administrator=$_POST['administrator'];
 		$dc->DrawingFileName=$_POST['drawingfilename'];
 		$dc->MaxkW=$_POST['maxkw'];
-
+		$dc->ContainerID=$_POST['container'];
+		$dc->MapX=$_POST['x'];
+		$dc->MapY=$_POST['y'];
+		
 		if($dc->Name!=""){
 			if($_POST['action']=='Create'){
-				$dc->CreateDataCenter($facDB);
+				$dc->CreateDataCenter();
 			}else{
-				$dc->UpdateDataCenter($facDB);
+				$status=__("Updated");
+				$dc->UpdateDataCenter();
 			}
 		}
 	}
 
-	if(isset($_REQUEST['datacenterid'])&&$_REQUEST['datacenterid'] >0){
-		$dc->DataCenterID=(isset($_POST['datacenterid']) ? $_POST['datacenterid'] : $_GET['datacenterid']);
-		$dc->GetDataCenter($facDB);
+	if(isset($_POST['cambio_cont'])&& $_POST['cambio_cont']=='SI'){
+		$dc->DataCenterID=$_POST['datacenterid'];
+		$dc->Name=trim($_POST['name']);
+		$dc->SquareFootage=$_POST['squarefootage'];
+		$dc->DeliveryAddress=$_POST['deliveryaddress'];
+		$dc->Administrator=$_POST['administrator'];
+		$dc->DrawingFileName=$_POST['drawingfilename'];
+		$dc->MaxkW=$_POST['maxkw'];
+		$dc->ContainerID=$_POST['container'];
+		if ($dc->ContainerID==0){
+			$dc->MapX=0;
+			$dc->MapY=0;
+		}else{
+			$dc->MapX=$_POST['x'];
+			$dc->MapY=$_POST['y'];
+		}
 	}
-	$dcList=$dc->GetDCList($facDB);
+	elseif(isset($_REQUEST['datacenterid'])&&$_REQUEST['datacenterid'] >0){
+		$dc->DataCenterID=(isset($_POST['datacenterid']) ? $_POST['datacenterid'] : $_GET['datacenterid']);
+		$dc->GetDataCenter();
+	}
+	$dcList=$dc->GetDCList();
 
-
+	if ( $config->ParameterArray["mUnits"] == "english" )
+		$vol = __("Square Feet");
+	else
+		$vol = __("Square Meters");
 
 	$imageselect='<div id="preview"></div><div id="filelist">';
 
@@ -121,6 +142,45 @@
 			});
 		});
 	});
+	function coords(evento){
+		mievento = evento || window.event;
+
+		yo=document.getElementById("yo");
+		x=mievento.layerX;
+		y=mievento.layerY;
+		yo.style.left=(x-12)+"px";
+		yo.style.top=(y-12)+"px";
+		yo.hidden=false;
+		CoorX=document.getElementById("x");
+		CoorX.value=x*2;
+		CoorY=document.getElementById("y");
+		CoorY.value=y*2;
+	}
+	function mueve(){
+		tam=50;
+		red=.5;
+		tam=tam*red;
+		yo=document.getElementById("yo");
+		cont=document.getElementById("containerimg");
+		CoorX=document.getElementById("x");
+		CoorY=document.getElementById("y");
+		if (CoorX.value<0) CoorX.value=0;
+		if (CoorX.value*red>cont.offsetWidth) CoorX.value=cont.offsetWidth/red;
+		if (CoorY.value<0) CoorY.value=0;
+		if (CoorY.value*red>cont.offsetHeight) CoorY.value=cont.offsetHeight/red;
+		yo.style.left=(CoorX.value*red-tam/2)+"px";
+		yo.style.top=(CoorY.value*red-tam/2)+"px";
+		if (CoorX.value<0 || CoorX.value*red>cont.offsetWidth
+			|| CoorY.value<0 || CoorY.value*red>cont.offsetHeight)
+			yo.hidden=true;
+		else
+			yo.hidden=false;
+	}
+
+	function cambio_container(){
+		document.getElementById("cambio_cont").value="SI";
+		document.getElementById("datacenterform").submit();
+	}
   </script>
 
 </head>
@@ -133,6 +193,7 @@
 echo '<div class="main">
 <h2>',$config->ParameterArray["OrgName"],'</h2>
 <h3>',__("Data Center Detail"),'</h3>
+<h3>',$status,'</h3>
 <div class="center"><div>
 <form id="datacenterform" action="',$_SERVER["PHP_SELF"],'" method="POST">
 <div class="table">
@@ -153,7 +214,7 @@ echo '	</select></div>
    <div><input class="validate[required,minSize[3],maxSize[80]]" type="text" name="name" id="dcname" size="50" maxlength="80" value="',$dc->Name,'"></div>
 </div>
 <div>
-   <div><label for="sqfootage">',__("Square Footage"),'</label></div>
+   <div><label for="sqfootage">',$vol,'</label></div>
    <div><input class="validate[optional,custom[onlyNumberSp]]" type="text" name="squarefootage" id="sqfootage" size="10" maxlength="11" value="',$dc->SquareFootage,'"></div>
 </div>
 <div>
@@ -172,7 +233,42 @@ echo '	</select></div>
 	<div><label for="maxkw">',__("Design Maximum (kW)"),'</label></div>
 	<div><input class="validate[optional,custom[onlyNumberSp]]" type="text" name="maxkw" id="maxkw" size="8" maxlength="8" value="',$dc->MaxkW,'"></div>
 </div>
-<div class="caption">';
+<div><input type="hidden" name="cambio_cont" id="cambio_cont" value=""></div>
+<div>
+	<div><label for="container">',__("Container"),'</label></div>
+  	<div><select name="container" id="container" onChange="cambio_container()">
+      <option value="0">',__("None"),'</option>';
+
+	$container=new Container();
+	$cList=$container->GetContainerList();
+	foreach($cList as $cRow){
+		if($cRow->ContainerID == $dc->ContainerID){$selected=" selected";}else{$selected="";}
+		print "<option value=\"$cRow->ContainerID\"$selected>$cRow->Name</option>\n";
+	}
+
+echo '	</select></div>
+</div>
+<div> 
+	<div><b>X</b></div> 
+ 	<div><input type="text" name="x" id="x" value="',$dc->MapX,'" onblur="mueve()"></div> 
+</div> 
+<div> 
+    <div><b>Y</b></div> 
+    <div><input type="text" name="y" id="y" value="',$dc->MapY,'" onblur="mueve()"></div> 
+</div>'; 
+
+print "<div id=divcontainer>\n"; 
+if ($dc->ContainerID>0){
+	print "  <div><b>".__("Click on the image to select DC coordinates")."</b></div>"; 
+	$container->ContainerID=$dc->ContainerID;
+	$container->GetContainer();
+	print "<div>";
+	print $container->MakeContainerMiniImage("dc",$dc->DataCenterID);
+	print "</div>"; 
+}
+print "</div>"; 
+
+echo '<div class="caption">';
 
 	if($dc->DataCenterID >0){
 		echo '   <button type="submit" name="action" value="Update">',__("Update"),'</button>';

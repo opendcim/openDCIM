@@ -4,6 +4,6 @@
   
   $esx = new ESX();
   
-  $esx->UpdateInventory( $facDB );
+  $esx->UpdateInventory();
   
 ?>

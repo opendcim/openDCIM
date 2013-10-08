@@ -4,7 +4,7 @@
 
 	$user=new User();
 	$user->UserID=$_SERVER["REMOTE_USER"];
-	$user->GetUserRights($facDB);
+	$user->GetUserRights();
 
 	if(!$user->WriteAccess){
 		// No soup for you.
@@ -15,8 +15,8 @@
 	$dept=new Department();
 	$sup=new Supplies();
 	
-	$supplyList=$sup->GetSuppliesList($facDB);
-	$deptList=$dept->GetDepartmentList($facDB);
+	$supplyList=$sup->GetSuppliesList();
+	$deptList=$dept->GetDepartmentList();
 
 	// Check to make sure this was a form submission
 	if(isset($_POST['action']) && $_POST['action']=="submit"){

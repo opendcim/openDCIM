@@ -66,3 +66,36 @@ INSERT INTO fac_CabinetToolTip VALUES(NULL, 'SNMPCommunity', 'SNMP Read Only Com
 INSERT INTO fac_CabinetToolTip VALUES(NULL, 'TemplateID', 'Device Class', 0);
 INSERT INTO fac_CabinetToolTip VALUES(NULL, 'WarrantyCo', 'Warranty Company', 0);
 INSERT INTO fac_CabinetToolTip VALUES(NULL, 'WarrantyExpire', 'Warranty Expiration', 0);
+
+--
+-- Table structure for table `fac_MediaTypes`
+--
+
+DROP TABLE IF EXISTS fac_MediaTypes;
+CREATE TABLE IF NOT EXISTS fac_MediaTypes (
+  MediaID int(11) NOT NULL AUTO_INCREMENT,
+  MediaType varchar(40) NOT NULL,
+  PRIMARY KEY (MediaID),
+  UNIQUE KEY MediaType (MediaType)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci AUTO_INCREMENT=1;
+
+--
+-- Table structure for table fac_DevicePorts
+--
+
+DROP TABLE IF EXISTS fac_DevicePorts;
+CREATE TABLE fac_DevicePorts (
+  ConnectionID int(11) NOT NULL AUTO_INCREMENT,
+  DeviceID int(11),
+  DevicePort int(11),
+  MediaID int(11),
+  Notes text NULL,
+  PRIMARY KEY (ConnectionID),
+  KEY DeviceID (DeviceID,DevicePort)
+) ENGINE=MyISAM AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
+
+--
+-- Add configuration item to allow english or metric values
+--
+
+INSERT INTO fac_Config VALUES ('mUnits', 'english', 'English/Metric', 'string', 'english');

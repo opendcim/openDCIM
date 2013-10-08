@@ -7,39 +7,25 @@
 	require_once( 'db.inc.php' );
 	require_once( 'facilities.inc.php' );
 
-	$user = new User();
-	$user->UserID = $_SERVER['REMOTE_USER'];
-	$user->GetUserRights( $facDB );
-	
 	// ITSD Statistics
-	$sql = 'select count(*) as Devices from fac_Device where DeviceType!=\'Server\'';
-	$res = mysql_query( $sql, $facDB );
-	$row = mysql_fetch_array( $res );
-	$ITSdevices = $row['Devices'];
-  
-	$sql = 'select count(*) as Servers from fac_Device where DeviceType=\'Server\'';
-	$res = mysql_query( $sql, $facDB );
-	$row = mysql_fetch_array( $res );  
-	$ITSservers = $row['Servers'];
-  
-	$sql = 'select sum(Height) as Size from fac_Device';
-	$res = mysql_query( $sql, $facDB );
-	$row = mysql_fetch_array( $res );
-	$ITSsize = $row['Size'];
+	$sql='SELECT SUM(NominalWatts) AS Power,
+		(SELECT COUNT(*) FROM fac_Device WHERE DeviceType!="Server" LIMIT 1) AS Devices, 
+		(SELECT COUNT(*) FROM fac_Device WHERE DeviceType="Server" LIMIT 1) AS Servers,
+		(SELECT SUM(Height) FROM fac_Device LIMIT 1) AS Size,
+		(SELECT COUNT(*) FROM fac_VMInventory LIMIT 1) AS VMcount
+		FROM fac_Device LIMIT 1;';
 
-	$sql = 'select count(*) as VMcount from fac_VMInventory';
-	$res = mysql_query( $sql, $facDB );
-	$row = mysql_fetch_array( $res );
-	$ITSVM = $row['VMcount'];
-  
-	$sql = 'select sum(NominalWatts) as Power from fac_Device';
-	$res = mysql_query( $sql, $facDB );
-	$row = mysql_fetch_array( $res );
-	$ITSpower = $row['Power'];
-	$ITSheat = $ITSpower * 3.412 / 12000;
+	$row=$dbh->query($sql)->fetch();
+
+	$ITSdevices=$row['Devices'];
+	$ITSservers=$row['Servers'];
+	$ITSsize=$row['Size'];
+	$ITSVM=$row['VMcount'];
+	$ITSpower=$row['Power'];
+	$ITSheat=$ITSpower * 3.412 / 12000;
   
 	$dc = new DataCenter();
-	$dcList = $dc->GetDCList( $facDB );
+	$dcList = $dc->GetDCList();
 
 	// Build table to display pending rack requests for inclusion later
 	$rackrequest='';
@@ -50,14 +36,14 @@
 		$tmpContact=new Contact();
 		$dept=new Department();
   
-		$rackList=$rack->GetOpenRequests($facDB);
+		$rackList=$rack->GetOpenRequests();
   
 		foreach($rackList as $request){
 			$tmpContact->ContactID=$request->RequestorID;
-			$tmpContact->GetContactByID($facDB);
+			$tmpContact->GetContactByID();
     
 			$dept->DeptID=$request->Owner;
-			$dept->GetDeptByID($facDB);
+			$dept->GetDeptByID();
     
 			$reqDate=getdate(strtotime($request->RequestTime));
 			$dueDate=date('M j Y H:i:s',mktime($reqDate['hours'],$reqDate['minutes'],$reqDate['seconds'],$reqDate['mon'],$reqDate['mday']+1,$reqDate['year']));

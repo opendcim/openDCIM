@@ -2,10 +2,6 @@
 	require_once("db.inc.php");
 	require_once("facilities.inc.php");
 
-	$user=new User();
-	$user->UserID=$_SERVER["REMOTE_USER"];
-	$user->GetUserRights($facDB);
-
 	if(!$user->SiteAdmin){
 		// No soup for you.
 		header('Location: '.redirect());
@@ -17,7 +13,7 @@
 	
 	if(isset($_REQUEST["supplyid"]) && $_REQUEST["supplyid"]>0) {
 		$sup->SupplyID=$_REQUEST["supplyid"];
-		$sup->GetSupplies($facDB);
+		$sup->GetSupplies();
 	}
 
 	$status="";
@@ -30,15 +26,15 @@
 
 		if($_REQUEST["action"]=="Create"){
 			if($sup->PartNum!=null && $sup->PartNum!=""){
-  				$sup->CreateSupplies($facDB);
+  				$sup->CreateSupplies();
 			}
 		}else{
 			$status="Updated";
-			$sup->UpdateSupplies($facDB);
+			$sup->UpdateSupplies();
 		}
 	}
 	
-	$supplyList=$sup->GetSuppliesList($facDB);
+	$supplyList=$sup->GetSuppliesList();
 
 ?>
 <!doctype html>

@@ -2,7 +2,7 @@
   require( 'db.inc.php' );
   require( 'facilities.inc.php' );
   
-  $PDU = new PowerDistribution();
+  $PDU=new PowerDistribution();
   
-  $PDU->UpdateStats( $facDB );
+  $PDU->UpdateStats();
 ?>

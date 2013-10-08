@@ -1,6 +1,11 @@
 <?php
 /* All functions contained herein will be general use functions */
 
+/* This is used on every page so we might as well just init it once */
+$user=new User();
+$user->UserID = @$_SERVER['REMOTE_USER'];
+$user->GetUserRights();
+	
 /* 
 Regex to make sure a valid URL is in the config before offering options for contact lookups
 http://www.php.net/manual/en/function.preg-match.php#93824
@@ -245,4 +250,276 @@ if(isset($devMode)&&$devMode){
 		header("Location: ".redirect('install.php'));
 	}
 }
+
+/**
+ * Parse a string which contains numeric or alpha repetition specifications. It
+ *  returns an array of tokens or a message of the parsing exception encountered
+ *  with the location of the failing character.
+ *
+ * @param string $pat
+ * @return mixed
+ */
+function parseGeneratorString($pat)
+{
+    $result = array();
+    $cstr = '';
+    $escape = false;
+    $patLen = strlen($pat);
+
+    for ($i=0; $i < $patLen; $i++) {
+        if ($escape) {
+            $cstr .= $pat[$i];
+            $escape = false;
+            continue;
+        }
+        if ($pat[$i] == '\\') {
+            $escape = true;
+            continue;
+        }
+        if ($pat[$i] == '(') {
+            // current string complete, start of a pattern
+            $result[] = array('String', array($cstr));
+            $cstr = '';
+            list($i, $patSpec, $msg) = parsePatternSpec($pat, $patLen, ++$i);
+            if (! $patSpec) {
+                echo 'Error: Parse pattern return error - \'', $msg, '\' ', $i, PHP_EOL;
+                return array(null, $msg, $i);
+            }
+            $result[] = $patSpec;
+            continue;
+        }
+        $cstr .= $pat[$i];
+    }
+    if ($cstr != '') {
+        $result[] = array('String', array($cstr));
+    }
+
+    return array($result, '', $i);
+}
+
+/**
+ * Parse the numeric or alpha pattern specification and return the specification
+ *  token or a the message explaining the exception encountered and the position
+ *  of the character where the exception was detected.
+ *
+ * @param type $pat
+ * @param type $patLen
+ * @param type $idx
+ * @return type
+ */
+function parsePatternSpec(&$pat, $patLen, $idx) {
+    $stopChars = array(';', ')');
+    $patSpec = array();
+    $msg = 'Wrong pattern specification';
+
+    $ValueStr = '';
+    $token = 'StartValue';
+    $startValue = null;
+    $increment = 1;
+    $patType = '';
+
+    for ($i = $idx; $i < $patLen; ++$i) {
+        if (ctype_digit($pat[$i])) {
+            list($ValueStr, $i, $msg) = getNumericString($pat, $i, $stopChars);
+            $patType = 'numeric';
+        } elseif (ctype_alpha($pat[$i])) {
+            list($ValueStr, $i, $msg) = getAlphaString($pat, $i, $stopChars);
+            $patType = 'alpha';
+        } else {
+            if ($token == 'StartValue') {
+                $msg = 'No start value detected.';
+            } elseif ($token == 'Increment') {
+                $msg = 'Missing increment value.';
+            } else {
+                $msg = 'Unexpected character \'' . $pat[$i] . '\'';
+            }
+            return array($i, null, $msg);
+        }
+        if (($token == 'StartValue') and ($i >= $patLen)) {
+            $msg = 'Incomplete pattern specification, missing stop character [\''
+                . implode('\',\'', $stopChars) . '\']';
+            return array($i, null, $msg);
+        }
+        if (($token == 'StartValue') and (in_array($pat[$i], $stopChars))) {
+            if ($ValueStr === '') {
+                $msg = 'Missing start value';
+                return array($i, null, $msg);
+            }
+            if ($patType == 'numeric') {
+                $startValue = intval($ValueStr);
+            } else {
+                $startValue = $ValueStr;
+            }
+            $ValueStr = '';
+            if ($pat[$i] == ')') {
+                $token = 'right_parenthesis';
+            } elseif ($pat[$i] == ';') {
+                $token = 'Increment';
+                continue;
+            }
+        }
+        if (($token == 'Increment')) {
+            if ($patType == 'numeric') {
+                $increment = intval($ValueStr);
+            } else {
+                $msg = 'Increment must be a number, wrong value \'' . $ValueStr . '\'';
+                return array($i, null, $msg);
+            }
+        }
+        if ($pat[$i] == ')') {
+            $patSpec = array('Pattern', array($patType, $startValue, $increment));
+            break;
+        }
+        $msg = 'Unexpected character \'' . $pat[$i] . '\' for token \'' . $token . '\'.';
+        return array($i, null, $msg);
+    }
+    if ((! $patSpec) and ($token == 'Increment')) {
+        $msg = 'Incomplete increment specification';
+        return array($i, null, $msg);
+    }
+    return array($i, $patSpec, $msg);
+}
+
+/**
+ * Parse a numeric string.
+ *
+ * @param string $pat
+ * @param int $idx
+ * @param array $stopChars
+ * @return mixed
+ */
+function getNumericString(&$pat, $idx, &$stopChars) {
+    $strValue = '';
+    for ($i=$idx; $i < strlen($pat); $i++) {
+        $char = $pat[$i];
+        if (in_array($char, $stopChars)) {
+                return array(intval($strValue), $i, 'NumericValue');
+        }
+        if (ctype_digit($char)) {
+            $strValue .= $char;
+        } else {
+            $msg = 'Non-numeric character encountered \'' . $char . '\' ';
+            return array(null, $i, $msg);
+        }
+    }
+    $msg = 'Stop character not encountered [\'' . implode('\',\'', $stopChars) . '\'].';
+    return array(null, $i, $msg);
+}
+
+/**
+ * Parse an alpha string.
+ *
+ * @param string $pat
+ * @param int $idx
+ * @param array $stopChars
+ * @return mixed
+ */
+function getAlphaString(&$pat, $idx, &$stopChars) {
+    $strValue = '';
+    $patType = 'alpha';
+    $escaped = false;
+
+    for ($i=$idx; $i < strlen($pat); $i++) {
+        $char = $pat[$i];
+        if ($char == '\\') {
+            $escaped= true;
+            continue;
+        }
+        if ($escaped) {
+            $strValue .= $char;
+            $escaped = false;
+            continue;
+        }
+        if (in_array($char, $stopChars)) {
+            return array($strValue, $i, 'AlphaValue');
+        }
+        if (ctype_alpha($char)) {
+            $strValue .= $char;
+        } else {
+            $msg = 'Non-numeric character encountered \'' . $char . '\' ';
+            return array(null, $i, $msg);
+        }
+    }
+    $msg = 'Stop character not encountered \'' . implode(',', $stopChars) . '\'.';
+    return array(null, $i, $msg);
+}
+
+// Code provided for num2alpha and alpha2num in
+// http://stackoverflow.com/questions/5554369/php-how-to-output-list-like-this-aa-ab-ac-all-the-way-to-zzzy-zzzz-zzzza
+//function num2alpha($n, $shift=0) {
+//    for ($r = ''; $n >= 0; $n = intval($n / 26) - 1)
+//        $r = chr($n % 26 + 0x41 + $shift) . $r;
+//    return $r;
+//}
+
+/**
+ * Return the alpha represenation of the integer based on Excel offset.
+ *
+ * @param int $n
+ * @param int $offset
+ * @return string
+ */
+function num2alpha($n, $offset = 0x40) {
+    for ($r = ''; $n >= 0; $n = intval($n / 26) - 1) {
+        $r = chr($n % 26 + ($offset + 1)) . $r;
+    }
+    return $r;
+}
+
+/**
+ * Return the numeric representation the alpha string  based on Excel offset.
+ * @param string $a
+ * @param int $offset
+ * @return int
+ */
+function alpha2num($a, $offset = 0x40)
+{
+    $base = 26;
+    $l = strlen($a);
+    $n = 0;
+    for ($i = 0; $i < $l; $i++) {
+        $n = $n*$base + ord($a[$i]) - $offset;
+    }
+    return $n-1;
+}
+
+/**
+ * Take the generator string specification produced by parseGeneratorString and
+ *  return a list of strings where the patterns are instantiated.
+ *
+ * @param array $patSpecs
+ * @param int $count
+ * @return array
+ */
+function generatePatterns($patSpecs, $count) {
+    $patternList = array();
+    for ($i=0; $i < $count; $i++) {
+        $str = '';
+        foreach ($patSpecs as $pat) {
+            if ($pat) {
+               if ($pat[0] == 'String') {
+                    $str .= $pat[1][0];
+                } elseif ($pat[0] == 'Pattern') {
+                    if ($pat[1][0] == 'numeric') {
+                        $str .= (integer)($pat[1][1] + $i*$pat[1][2]);
+                    } elseif ($pat[1][0] == 'alpha') {
+                        $charIntVal = ord($pat[1][1]);
+                        if (($charIntVal >= 65) and ($charIntVal <= 90)) {
+                            $offset = 0x40;
+                            $charIntVal = alpha2num($pat[1][1]);
+                        } else {
+                            $offset = 0x60;
+                            $charIntVal = alpha2num($pat[1][1], $offset);
+                        }
+                        $str .= num2alpha(($charIntVal + $i*$pat[1][2]), $offset);
+                    }
+                }
+            }
+        }
+        $patternList[] = $str;
+    }
+
+    return $patternList;
+}
+
 ?>

@@ -2,24 +2,44 @@
 	require_once( 'db.inc.php' );
 	require_once( 'facilities.inc.php' );
 
-	$user=new User();
-	$user->UserID=$_SERVER['REMOTE_USER'];
-	$user->GetUserRights($facDB);
+	$cab=new Cabinet();
+	$dept=new Department();
+	$taginsert="";
+	$status="";
 
-	if(!$user->WriteAccess){
+	// AJAX Requests
+		//Zone Lists
+		if(isset($_POST['zonelist'])){
+			$cab->DataCenterID=$_POST['zonelist'];
+			echo $cab->GetZoneSelectList();
+			exit;
+		}
+		if(isset($_POST['rowlist'])){
+			$cab->ZoneID=$_POST['rowlist'];
+			echo $cab->GetCabRowSelectList();
+			exit;
+		}
+	
+		//Row Lists
+
+	// END - AJAX Requests
+
+	$write=($user->WriteAccess)?true:false;
+
+	if(isset($_REQUEST['cabinetid'])){
+		$cab->CabinetID=(isset($_POST['cabinetid'])?$_POST['cabinetid']:$_GET['cabinetid']);
+		$cab->GetCabinet();
+		$write=($user->canWrite($cab->AssignedTo))?true:$write;
+	}
+
+	// this will allow a user to modify a rack but not create a new one
+	// creation is still limited to global write priviledges
+	if(!$write){
 		// No soup for you.
 		header('Location: '.redirect());
 		exit;
 	}
 
-	$cab=new Cabinet();
-	$dept=new Department();
-	$taginsert="";
-
-	if(isset($_REQUEST['cabinetid'])){
-		$cab->CabinetID=(isset($_POST['cabinetid'])?$_POST['cabinetid']:$_GET['cabinetid']);
-		$cab->GetCabinet($facDB);
-	}
 	$tagarray=array();
 	if(isset($_POST['tags'])){
 		$tagarray=json_decode($_POST['tags']);
@@ -28,6 +48,8 @@
 		$cab->DataCenterID=$_POST['datacenterid'];
 		$cab->Location=trim($_POST['location']);
 		$cab->AssignedTo=$_POST['assignedto'];
+		$cab->ZoneID=$_POST['zoneid'];
+		$cab->CabRowID=$_POST['cabrowid'];
 		$cab->CabinetHeight=$_POST['cabinetheight'];
 		$cab->Model=$_POST['model'];
 		$cab->Keylock=$_POST['keylock'];
@@ -36,22 +58,22 @@
 		$cab->InstallationDate=$_POST['installationdate'];
 		$cab->SensorIPAddress=$_POST['sensoripaddress'];
 		$cab->SensorCommunity=$_POST['sensorcommunity'];
-		$cab->SensorOID=$_POST['sensoroid'];
+		$cab->TempSensorOID=$_POST['tempsensoroid'];
+		$cab->HumiditySensorOID=$_POST['humiditysensoroid'];
 		$cab->Notes=trim($_POST['notes']);
 		$cab->Notes=($cab->Notes=="<br>")?"":$cab->Notes;
 		$cab->SetTags($tagarray);
 
 		if($cab->Location!=""){
 			if(($cab->CabinetID >0)&&($_POST['action']=='Update')){
-				$cab->UpdateCabinet($facDB);
+				$status=__("Updated");
+				$cab->UpdateCabinet();
 			}elseif($_POST['action']=='Create'){
-				$cab->CreateCabinet($facDB);
+				$cab->CreateCabinet();
 			}
 		}
-	}
-
-	if($cab->CabinetID >0){
-		$cab->GetCabinet($facDB);
+	}elseif($cab->CabinetID >0){
+		$cab->GetCabinet();
 
 		// Get any tags associated with this device
 		$tags=$cab->GetTags();
@@ -61,8 +83,14 @@
 		}
 	}else{
 		$cab->CabinetID=null;
-		$cab->DataCenterID=null;
+		//Set DataCenterID to first DC in dcList for getting zoneList
+		$dc=new DataCenter();
+		$dcList=$dc->GetDCList();
+		$keys=array_keys($dcList);
+		$cab->DataCenterID=$keys[0];
 		$cab->Location=null;
+		$cab->ZoneID=null;
+		$cab->CabRowID=null;
 		$cab->CabinetHeight=null;
 		$cab->Model=null;
 		$cab->Keylock=null;
@@ -72,8 +100,8 @@
 	}
 
 
-	$deptList=$dept->GetDepartmentList($facDB);
-	$cabList=$cab->ListCabinets($facDB);
+	$deptList=$dept->GetDepartmentList();
+	$cabList=$cab->ListCabinets();
 ?>
 <!doctype html>
 <html>
@@ -91,10 +119,9 @@
   <![endif]-->
   <script type="text/javascript" src="scripts/jquery.min.js"></script>
   <script type="text/javascript" src="scripts/jquery-ui.min.js"></script>
-  <script type="text/javascript" src="scripts/jquery-migrate-1.0.0.js"></script>
   <script type="text/javascript" src="scripts/jquery.validationEngine-en.js"></script>
   <script type="text/javascript" src="scripts/jquery.validationEngine.js"></script>
-  <script type="text/javascript" src="scripts/jHtmlArea-0.7.5.min.js"></script>
+  <script type="text/javascript" src="scripts/jHtmlArea-0.8.min.js"></script>
   <script type="text/javascript" src="scripts/jquery.textext.js"></script>
 
   <script type="text/javascript">
@@ -152,6 +179,25 @@
 				rendernotes(button);
 			}
 		});
+		$('#datacenterid').change(function(){
+			$.post('',{zonelist: $(this).val()}).done(function(data){
+				$('#zoneid').html('');
+				$(data).find('option').each(function(){
+					$('#zoneid').append($(this));	
+				});
+				$('#zoneid').val(0);
+				$('#zoneid').change();
+			});
+		});
+		$('#zoneid').change(function(){
+			$.post('',{rowlist: $(this).val()}).done(function(data){
+				$('#cabrowid').html('');
+				$(data).find('option').each(function(){
+					$('#cabrowid').append($(this));	
+				});
+				$('#cabrowid').val(0);
+			});
+		});
 		$('#rackform').validationEngine({});
 		$('input[name="installationdate"]').datepicker({});
 		$('#tags').width($('#tags').parent('div').parent('div').innerWidth()-$('#tags').parent('div').prev('div').outerWidth()-5);
@@ -176,6 +222,7 @@
 echo '<div class="main">
 <h2>',$config->ParameterArray["OrgName"],'</h2>
 <h3>',__("Data Center Cabinet Inventory"),'</h3>
+<h3>',$status,'</h3>
 <div class="center"><div>
 <form id="rackform" action="',$_SERVER["PHP_SELF"],'" method="POST">
 <div class="table">
@@ -193,7 +240,7 @@ echo '   </select></div>
 </div>
 <div>
    <div>',__("Data Center"),'</div>
-   <div>',$cab->GetDCSelectList($facDB),'</div>
+   <div>',$cab->GetDCSelectList(),'</div>
 </div>
 <div>
    <div>',__("Location"),'</div>
@@ -211,6 +258,14 @@ echo '   </select></div>
 
 echo '  </select>
   </div>
+</div>
+<div>
+   <div>',__("Zone"),'</div>
+   <div>',$cab->GetZoneSelectList(),'</div>
+</div>
+<div>
+   <div>',__("Cabinet Row"),'</div>
+   <div>',$cab->GetCabRowSelectList(),'</div>
 </div>
 <div>
    <div>',__("Cabinet Height"),' (U)</div>
@@ -246,7 +301,11 @@ echo '  </select>
 </div>
 <div>
 	<div>',__("Temperature Sensor OID"),'</div>
-	<div><input type="text" name="sensoroid" size=30 value="',$cab->SensorOID,'"></div>
+	<div><input type="text" name="tempsensoroid" size=30 value="',$cab->TempSensorOID,'"></div>
+</div>
+<div>
+	<div>',__("Humidity Sensor OID"),'</div>
+	<div><input type="text" name="humiditysensoroid" size=30 value="',$cab->HumiditySensorOID,'"></div>
 </div>
 <div>
 	<div><label for="tags">',__("Tags"),'</label></div>

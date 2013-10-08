@@ -2,15 +2,6 @@
 	require_once( 'db.inc.php' );
 	require_once( 'facilities.inc.php' );
 
-	$user=new User();
-	$user->UserID=$_SERVER['REMOTE_USER'];
-	$user->GetUserRights($facDB);
-
-	if(!$user->ReadAccess){
-		header( "Location: ".redirect());
-		exit;
-	}
-
 	define('FPDF_FONTPATH','font/');
 	require('fpdf.php');
 
@@ -26,7 +17,7 @@ class PDF extends FPDF {
 	}
   
 	function Header() {
-		$this->pdfconfig = new Config($this->pdfDB);
+		$this->pdfconfig = new Config();
     	$this->Image( 'images/' . $this->pdfconfig->ParameterArray['PDFLogoFile'],10,8,100);
     	$this->SetFont($this->pdfconfig->ParameterArray['PDFfont'],'B',12);
     	$this->Cell(120);
@@ -142,7 +133,7 @@ class PDF extends FPDF {
 	$dept = new Department();
 	$dc = new DataCenter();
 
-	$pdf=new PDF($facDB);
+	$pdf=new PDF();
 	$pdf->AliasNbPages();
 	  
 	$pdf->SetFont($config->ParameterArray['PDFfont'],'',8);
@@ -157,7 +148,7 @@ class PDF extends FPDF {
 
   $pdf->Bookmark( 'Data Centers' );
 	
-  $dcList = $dc->GetDCList( $facDB );
+  $dcList = $dc->GetDCList();
   
   foreach ( $dcList as $dcRow ) {
     $pdf->AddPage();
@@ -180,13 +171,13 @@ class PDF extends FPDF {
   	$fill = 0;
   	
     $cab->DataCenterID = $dcRow->DataCenterID;
-    $cabList = $cab->ListCabinetsByDC( $facDB );
+    $cabList = $cab->ListCabinetsByDC();
     
     foreach ( $cabList as $cabRow ) {
       $pdf->BookMark( $cabRow->Location, 2 );
       
-      $dev->Cabinet = $cabRow->CabinetID;
-      $devList = $dev->GetSinglePowerByCabinet( $facDB );
+      $dev->Cabinet=$cabRow->CabinetID;
+      $devList=$dev->GetSinglePowerByCabinet();
       
       if ( sizeof( $devList ) == 0 ) {
         $pdf->Cell( $cellWidths[0], 6, $cabRow->Location, 'LBRT', 0, 'L', $fill );
@@ -198,10 +189,10 @@ class PDF extends FPDF {
         $fill =! $fill;
       } else {
         foreach ( $devList as $devRow ) {
-          $sourceList = $devRow->GetDeviceDiversity( $facDB );
+          $sourceList = $devRow->GetDeviceDiversity();
           @$source->PowerSourceID = $sourceList[0];
           if ( $source->PowerSourceID > 0 ) {
-            $source->GetSource( $facDB );
+            $source->GetSource();
           } else {
             $source->SourceName = 'Unknown';
           }
@@ -215,7 +206,7 @@ WTF was this supposed to be doing?
             if ( $sourceID < 1 ) {
               $sources .= 'Unknown ';
             } else {
-              $source->GetSource( $facDB );
+              $source->GetSource();
               $sources .= $source->SourceName . ' ';
             }
           }
@@ -227,7 +218,7 @@ WTF was this supposed to be doing?
       		$pdf->Cell( $cellWidths[3], 6, $devRow->Position, 'LBRT', 0, 'L', $fill );
       		
       		$dept->DeptID = $devRow->Owner;
-      		$dept->GetDeptByID( $facDB );
+      		$dept->GetDeptByID();
       		
       		$pdf->Cell( $cellWidths[4], 6, $dept->Name, 'LBRT', 1, 'L', $fill );
           

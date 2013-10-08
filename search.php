@@ -2,58 +2,60 @@
 	require_once( 'db.inc.php' );
 	require_once( 'facilities.inc.php' );
 
-	$user=new User();
-	$user->UserID=$_SERVER['REMOTE_USER'];
-	$user->GetUserRights($facDB);
-
-	if(!$user->ReadAccess){
-		// No soup for you.
-		header('Location: '.redirect());
-		exit;
-	}
-
 	$searchKey=$_REQUEST['key'];
 	//Remove control characters tab, enter, etc
 	$searchTerm=preg_replace("/[[:cntrl:]]/","",$_REQUEST['search']);
 	//Remove any extra quotes that could get passed in from some funky js or something
 	$searchTerm=str_replace(array("'",'"'),"",$searchTerm);
 
-	$dc = new DataCenter();
-	$dcList = $dc->GetDCList( $facDB );
+	$dc=new DataCenter();
+	$dcList=$dc->GetDCList();
 	
 	$dev=new Device();
-	$parDev = new Device();
 	$esx=new ESX();
 	$cab=new Cabinet();
 	$pdu=new PowerDistribution();
+	$dept=new Department();
 	$resultcount=0;
 	$title=__("Search Results");
 
 	if($searchKey=='serial'){
 		$dev->SerialNo=$searchTerm;
-		$devList=$dev->SearchDevicebySerialNo($facDB);
+		$devList=$dev->SearchDevicebySerialNo();
 		$resultcount=count($devList);
 		$title=__("Serial number search results for")." &quot;$searchTerm&quot;";
 	}elseif($searchKey=='label'){
 		$dev->Label=$searchTerm;
-		$devList=$dev->SearchDevicebyLabel($facDB);
+		$devList=$dev->SearchDevicebyLabel();
 		//Virtual machines will never be search via asset tags or serial numbers
 		$esx->vmName=$dev->Label;
-		$vmList=$esx->SearchByVMName($facDB);
+		$vmList=$esx->SearchByVMName();
 		$cab->Location=$searchTerm;
-		$cabList=$cab->SearchByCabinetName($facDB);
+		$cabList=$cab->SearchByCabinetName();
 		$pdu->Label=$searchTerm;
-		$pduList=$pdu->SearchByPDUName($facDB);
+		$pduList=$pdu->SearchByPDUName();
 		$resultcount=count($devList)+count($cabList)+count($pduList)+count($vmList);
-		$title=__("Name tag search results for")." &quot;$searchTerm&quot;";
+		$title=__("Name search results for")." &quot;$searchTerm&quot;";
+	}elseif($searchKey=='owner'){
+		$dept->Name=$searchTerm;
+		$dept->GetDeptByName();
+		$dev->Owner=$dept->DeptID;
+		$devList=$dev->GetDevicesbyOwner();
+		$esx->Owner=$dept->DeptID;
+		$vmList=$esx->GetVMListbyOwner();
+		$cab->AssignedTo=$dept->DeptID;
+		$cabList=$cab->SearchByOwner();
+		//PDUs have no ownership information so don't search them
+		$resultcount=count($devList)+count($cabList)+count($vmList);
+		$title=__("Owner search results for")." &quot;$searchTerm&quot;";
 	}elseif($searchKey=='asset'){
 		$dev->AssetTag=$searchTerm;
-		$devList=$dev->SearchDevicebyAssetTag($facDB);
+		$devList=$dev->SearchDevicebyAssetTag();
 		$resultcount=count($devList);
 		$title=__("Asset tag search results for")." &quot;$searchTerm&quot;";
 	}elseif($searchKey=="ctag"){
-		$devList=$dev->SearchByCustomTag($facDB,$searchTerm);
-		$cabList=$cab->SearchByCustomTag($facDB,$searchTerm);
+		$devList=$dev->SearchByCustomTag($searchTerm);
+		$cabList=$cab->SearchByCustomTag($searchTerm);
 		$resultcount=count($devList)+count($cabList);
 		$title=__("Custom tag search results for")." &quot;$searchTerm&quot;";
 	}else{
@@ -71,17 +73,17 @@
 		$temp[$x]['type']='srv'; // empty chassis devices need no special treatment leave them as a server
 		$temp[$x]['cabinet']=$device->Cabinet;
 		$temp[$x]['parent']=$device->ParentDevice;
+		$temp[$x]['rights']=$device->Rights;
 		$cabtemp[$device->Cabinet]="";
 		++$x;
 		if($device->ParentDevice!=0){
 			$childList[$device->ParentDevice]=""; // Create a list of chassis devices based on children present
 		}
 	}
-	
 	if(isset($vmList)){
 		foreach($vmList as $vmRow){
 			$dev->DeviceID=$vmRow->DeviceID;
-			$dev->GetDevice($facDB);
+			$dev->GetDevice();
 			$a=ArraySearchRecursive($vmRow->DeviceID,$temp,'devid');
 			// if we find a matching server in the existing list set it to type vm so it will nest in the results
 			if(is_array($a)){
@@ -94,6 +96,7 @@
 				$temp[$x]['type']='vm';
 				$temp[$x]['cabinet']=$dev->Cabinet;
 				$temp[$x]['parent']=$dev->ParentDevice;
+				$temp[$x]['rights']=$device->Rights;
 				$cabtemp[$dev->Cabinet]['name']="";
 				++$x;
 				if($dev->ParentDevice!=0){
@@ -113,13 +116,14 @@
 			}else{
 				// Device doesn't exist so we need to add it to the list for display purposes
 				$dev->DeviceID=$key;
-				$dev->GetDevice($facDB);
+				$dev->GetDevice();
 
 				$temp[$x]['devid']=$dev->DeviceID;
 				$temp[$x]['label']=$dev->Label;
 				$temp[$x]['type']='chassis';
 				$temp[$x]['cabinet']=$dev->Cabinet;
 				$temp[$x]['parent']=$dev->ParentDevice;
+				$temp[$x]['rights']=$device->Rights;
 				$cabtemp[$dev->Cabinet]['name']="";
 				++$x;
 			}
@@ -151,12 +155,12 @@
 			$cab->Location='dc lookup error';
 			$cab->DataCenterID='0';
 			$cab->CabinetID=$key;
-			if($cab->GetCabinet($facDB)==-1){
-				unset($cabtemp[$key]);
-			}else{
+			if($cab->GetCabinet()){
 				$cabtemp[$key]['name']=$cab->Location;
 				$cabtemp[$key]['dc']=$cab->DataCenterID;
 				$dctemp[$cab->DataCenterID]=''; // Add datacenter id to list for loop
+			}else{
+				unset($cabtemp[$key]);
 			}
 		}else{
 			$cabtemp[$key]['name']="Storage Room";
@@ -168,7 +172,7 @@
 	foreach($dctemp as $DataCenterID => $Name){
 		if($DataCenterID>0){
 			$dc->DataCenterID=$DataCenterID;
-			$dc->GetDataCenter($facDB);
+			$dc->GetDataCenter();
 			$dctemp[$DataCenterID]=$dc->Name;
 		}
 	}
@@ -178,10 +182,17 @@
 		$devList=sort2d($temp,'label');
 	}
 
-	if(!empty($devList)){
-		$searchresults="Search complete. ($resultcount) results.";
+	if($resultcount>0){
+		$searchresults=sprintf(__("Search complete. (%s) results."),"<span id=\"resultcount\">$resultcount</span>");
 	}else{
-		$searchresults="No matching devices found.";
+		$searchresults=__("No matching devices found.");
+	}
+
+	// if json is set then return the device list as a json string
+	if(isset($_REQUEST['json'])){
+		header('Content-Type: application/json');
+		echo json_encode($devList);
+		exit;
 	}
 
 ?>
@@ -200,6 +211,7 @@
   
   <script type="text/javascript" src="scripts/jquery.min.js"></script>
   <script type="text/javascript" src="scripts/jquery-ui.min.js"></script>
+  <script type="text/javascript" src="scripts/jquery.timer.js"></script>
 
 <script type="text/javascript">
 $(document).ready(function() {
@@ -215,7 +227,43 @@ $(document).ready(function() {
 			}
 		});
 	});
+	if($('#resultcount').text()=='1'){
+		function pad(number, length) {
+			var str = '' + number;
+			while (str.length < length) {str = '0' + str;}
+			return str;
+		}
+		function formatTime(time) {
+			var min = parseInt(time / 6000),
+				sec = parseInt(time / 100) - (min * 60),
+				hundredths = pad(time - (sec * 100) - (min * 6000), 2);
+			return pad(sec, 2);
+		}
+		var msg=$('<p>').append('<?php printf(__("Only one result, will autoforward in %s seconds."),'<span id="countdown"></span>'); ?>').click(function(){timer.stop();$(this).remove();})
+		$('#resultcount').parent('p').append(msg);
+		var currentTime=500,
+		incrementTime=100,
+		updateTimer=function(){
+			$('#countdown').html(formatTime(currentTime));
+			if(currentTime==0){
+				// insert forward action here
+				var lastlink=$('.datacenter').find('a').last().attr("href");
+				location.href=lastlink;
+				timer.stop();
+			}
+			currentTime -= incrementTime / 10;
+			if (currentTime < 0) currentTime = 0;
+		}
+
+		var timer=$.timer(updateTimer, incrementTime, true);
+	}
 });
+	function showall(){
+		$('.center > div > ol').removeClass('hidecontents');
+	}
+	function hidedevices(){
+		$('.center > div > ol').addClass('hidecontents');
+	}
 </script>
 
 </head>
@@ -228,6 +276,7 @@ $(document).ready(function() {
 <div class="main">
 <h2><?php echo $config->ParameterArray['OrgName']; ?></h2>
 <h3><?php echo $title; ?></h3>
+<?php echo '<div id="searchfilters"><button type="button" onclick="showall()">'.__("Show All").'</button><button type="button" onclick="hidedevices()">'.__("Racks Only").'</button></div>'; ?>
 <div class="center"><div>
 	<ol>
 <?php
@@ -254,7 +303,11 @@ $(document).ready(function() {
 						if($cabID==$row['cabinet']){
 							//In case of VMHost missing from inventory, this shouldn't ever happen
 							if($row['label']=='' || is_null($row['label'])){$row['label']='VM Host Missing From Inventory';}
-							print "\t\t\t\t\t<li><a href=\"devices.php?deviceid={$row['devid']}\">{$row['label']}</a>\n";
+							if($row['rights']=="Write"){
+								print "\t\t\t\t\t<li><a href=\"devices.php?deviceid={$row['devid']}\">{$row['label']}</a>\n";
+							}else{
+								print "\t\t\t\t\t<li>{$row['label']}\n";
+							}
 							// Created a nested list showing all blades residing in this chassis
 							if($row['type']=='chassis'){
 								print "\t\t\t\t\t\t<ul>\n";
@@ -262,7 +315,8 @@ $(document).ready(function() {
 									if($chRow['parent']==$row['devid']){
 										//In case of VMHost missing from inventory, this shouldn't ever happen
 										if($chRow['label']=='' || is_null($chRow['label'])){$chRow['label']='VM Host Missing From Inventory';}
-										print "\t\t\t\t\t\t\t<li><div><img src=\"images/blade.png\" alt=\"blade icon\"></div><a href=\"devices.php?deviceid={$chRow['devid']}\">{$chRow['label']}</a>\n";
+										$vmhost=($chRow['rights']=="Write")?"<a href=\"devices.php?deviceid={$chRow['devid']}\">{$chRow['label']}</a>":$chRow['label'];
+										print "\t\t\t\t\t\t\t<li><div><img src=\"images/blade.png\" alt=\"blade icon\"></div>$vmhost\n";
 										// Create a nested list showing all VMs residing on this host.
 										if($chRow['type']=='vm'){
 											print "\t\t\t\t\t\t\t\t<ul>\n";

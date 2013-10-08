@@ -3,173 +3,250 @@
 	require_once( 'facilities.inc.php' );
 
 	$dev=new Device();
+	$dev=new Device();
 	$cab=new Cabinet();
-	$user=new User();
 	$contact=new Contact();
-	
-	$user->UserID=$_SERVER['REMOTE_USER'];
-	$user->GetUserRights( $facDB );
 
 	$taginsert="";
 
-	if(!$user->ReadAccess){
-		// No soup for you.
-		header('Location: '.redirect());
+	// Ajax functions
+	// Get cabinet height
+	if(isset($_POST['cab'])){
+		$cab->CabinetID=$_POST['cab'];
+		$cab->GetCabinet();
+		echo $cab->CabinetHeight;
 		exit;
 	}
-	// Ajax functions and we only want these exposed to people with write access
-	if($user->WriteAccess){
-		if(isset($_POST['cab'])){
-			$cab->CabinetID=$_POST['cab'];
-			$cab->GetCabinet($facDB);
-			echo $cab->CabinetHeight;
-			exit;
-		}
-		if(isset($_POST['swdev'])){
-			$dev->DeviceID=$_POST['swdev'];
-			$dev->GetDevice($facDB);
-			$patchCandidates=$dev->CreatePatchCandidateList($facDB);
-			$connect=new SwitchConnection();
-			$connect->SwitchDeviceID=$dev->DeviceID;
-			$connect->SwitchPortNumber=$_POST['sp'];
-			if(isset($_POST['devid'])){
-				$connect->EndpointDeviceID=$_POST['devid'];
-				if($connect->EndpointDeviceID==-1){
-					echo $connect->RemoveConnection($facDB,true);
-				}else{
-					// Since I can't be bothered to put in an actual update, just remove the existing connection first.
-					$connect->RemoveConnection($facDB,true);
-					$connect->EndpointPort=$_POST['dp'];
-					$connect->Notes=$_POST['n'];
-					// should kick back -1 if the insert fails and 1 if it is successful
-					echo $connect->CreateConnection($facDB);
-				}
-			}else{
-				$connect->GetSwitchPortConnector($facDB);
-				echo '<select name="endpointdeviceid" id="endpointdeviceid"><option value=-1>No Connection</option>';
-				foreach($patchCandidates as $key=>$devRow){
-					if($connect->EndpointDeviceID==$devRow->DeviceID){$selected=" selected";}else{$selected="";}
-					if($dev->ParentDevice>0 && $dev->ParentDevice==$devRow->DeviceID){$selected=" disabled";}
-					print "<option value=$devRow->DeviceID$selected>$devRow->Label</option>\n";
-				}
-				echo '</select>';
-			}
-			exit;
-		}
-		if(isset($_POST['pdev'])){
-			$patchConnect=new PatchConnection();
-			$patchConnect->PanelDeviceID=$_POST['pdev'];
-			if(isset($_POST['pdel'])){
-				$patchConnect->PanelPortNumber=$_POST['pdel'];
-				if($_POST['side']=='front'){
-					echo ($patchConnect->RemoveFrontConnection($facDB))?1:0;
-				}elseif($_POST['side']=='rear'){
-					echo ($patchConnect->RemoveRearConnection($facDB))?1:0;
-				}else{
-					echo '0';
-				}
-				exit;
-			}
-			if(isset($_POST['pget'])){
-				$patchConnect->PanelPortNumber=intval($_POST['pget']);
-				$patchConnect->GetConnectionRecord($facDB);
-				$frontdev=new Device();
-				$frontdev->DeviceID=$patchConnect->FrontEndpointDeviceID;
-				$frontdev->GetDevice($facDB);
-				$dev->DeviceID=$patchConnect->RearEndpointDeviceID;
-				$dev->GetDevice($facDB);
-				$rowarray=array();
-				$rowarray[1]="<a href=\"devices.php?deviceid=$frontdev->DeviceID\">$frontdev->Label</a>";
-				$rowarray[2]="$patchConnect->FrontEndpointPort";
-				$rowarray[3]="$patchConnect->FrontNotes";
-				$rowarray[4]="$patchConnect->PanelPortNumber";
-				$rowarray[5]="<a href=\"devices.php?deviceid=$dev->DeviceID\">$dev->Label</a>";
-				$rowarray[6]="$patchConnect->RearEndpointPort";
-				$rowarray[7]="$patchConnect->RearNotes";
-				echo json_encode($rowarray);
-				exit;
-			}
-			if(isset($_POST['psav'])){
-				$patchConnect->PanelPortNumber=$_POST['psav'];
-				if(isset($_POST['fdev'])){ // if set then we're dealing with a front connection
-					$patchConnect->FrontEndpointDeviceID=$_POST['fdev'];
-					$patchConnect->FrontEndpointPort=$_POST['fport'];
-					$patchConnect->FrontNotes=$_POST['fn'];
-					if($_POST['fdev']==-1){ // connection was saved as remove front half
-						if(!$patchConnect->RemoveFrontConnection($facDB)){ // something broke return an error
-							echo '0';
-							exit;
-						}
-					}else{
-						if(!$patchConnect->MakeFrontConnection($facDB)){
-							echo 0;
-							exit;
-						}
-					}
-				}elseif(isset($_POST['rdev'])){ // if set then we're dealing with a rear connection
-					$patchConnect->RearEndpointDeviceID=$_POST['rdev'];
-					$patchConnect->RearEndpointPort=$_POST['rport'];
-					$patchConnect->RearNotes=$_POST['rn'];
-					if($_POST['rdev']==-1){ // connection was saved as remove rear half
-						if(!$patchConnect->RemoveRearConnection($facDB)){
-							echo 0;
-							exit;
-						}
-					}elseif($_POST['rdev']=='note'){ // connection was saved as note only
-						$patchConnect->RearEndpointDeviceID=null;
-						$patchConnect->RearEndpointPort=null;
-						$patchConnect->RearNotes=$_POST['rn'];
-						if(!$patchConnect->MakeRearConnection($facDB)){
-							echo 0;
-							exit;
-						}
-					}else{
-						if(!$patchConnect->MakeRearConnection($facDB)){
-							echo 0;
-							exit;
-						}
-					}
-				}else{ // neither was set so I don't know wtf happened
-					echo 0;
-					exit;
-				}
-				$frontdev=new Device();
-				$frontdev->DeviceID=$patchConnect->FrontEndpointDeviceID;
-				$frontdev->GetDevice($facDB);
-				$dev->DeviceID=$patchConnect->RearEndpointDeviceID;
-				$dev->GetDevice($facDB);
-				$rowarray=array();
-				$rowarray[1]="<a href=\"devices.php?deviceid=$frontdev->DeviceID\">$frontdev->Label</a>";
-				$rowarray[2]="$patchConnect->FrontEndpointPort";
-				$rowarray[3]="$patchConnect->FrontNotes";
-				$rowarray[4]="$patchConnect->PanelPortNumber";
-				$rowarray[5]="<a href=\"devices.php?deviceid=$dev->DeviceID\">$dev->Label</a>";
-				$rowarray[6]="$patchConnect->RearEndpointPort";
-				$rowarray[7]="$patchConnect->RearNotes";
-				echo json_encode($rowarray);
-				exit;
-			}
-			$patchList=$dev::GetPatchPanels($facDB);
-			echo '<select name="devid"><option value=-1>No Connection</option><option value="note">Note Only</option>';
-			foreach($patchList as $devid=>$devRow){
-				$selected=($_POST['pdev']==$devid)?" disabled":"";
-				print "<option value=$devRow->DeviceID$selected>$devRow->Label</option>\n";
-			}
-			echo '</select>';
-			exit;
-		}
+	// Get list of color codes
+	if(isset($_GET['cc'])){
+		header('Content-Type: application/json');
+		echo json_encode(ColorCoding::GetCodeList());
+		exit;
 	}
+	// Get list of media types
+	if(isset($_GET['mt'])){
+		header('Content-Type: application/json');
+		echo json_encode(MediaTypes::GetMediaTypeList());
+		exit;
+	}
+	// Set all ports to the same media type or color code
+	if(isset($_POST['setall'])){
+		// Make a new method to set all the ports to a media type?
+		foreach(DevicePorts::getPortList($_POST['devid']) as $portnum => $port){
+			$port->MediaID=(($_POST['setall']=='true' || $port->MediaID==0) && isset($_POST['mt']) && ($_POST['setall']=='true' || intval($_POST['mt'])>0))?$_POST['mt']:$port->MediaID;
+			$port->ColorID=(($_POST['setall']=='true' || $port->ColorID==0) && isset($_POST['cc']) && ($_POST['setall']=='true' || intval($_POST['cc'])>0))?$_POST['cc']:$port->ColorID;
+			$port->updatePort();
+			// Update the other side to keep media types in sync if it is connected same
+			// rule applies that it will only be set if it is currently unset
+			if($port->ConnectedDeviceID!='NULL'){
+				$port->DeviceID=$port->ConnectedDeviceID;
+				$port->PortNumber=$port->ConnectedPort;
+				$port->getPort();
+				$port->MediaID=(($_POST['setall']=='true' || $port->MediaID==0) && isset($_POST['mt']) && ($_POST['setall']=='true' || intval($_POST['mt'])>0))?$_POST['mt']:$port->MediaID;
+				$port->ColorID=(($_POST['setall']=='true' || $port->ColorID==0) && isset($_POST['cc']) && ($_POST['setall']=='true' || intval($_POST['cc'])>0))?$_POST['cc']:$port->ColorID;
+				$port->updatePort();
+			}
+		}
+		// Return all the ports for the device then eval just the MT and CC
+		$dp=new DevicePorts();
+		$dp->DeviceID=$_POST['devid'];
+		header('Content-Type: application/json');
+		$ports=array(
+			'mt' => MediaTypes::GetMediaTypeList(),
+			'cc' => ColorCoding::GetCodeList(),
+			'ports' => $dp->getPorts()
+			);
+		echo json_encode($ports);
+		exit;
+	}
+	if(isset($_POST['fp'])){
+		$dev->DeviceID=$_POST['devid'];
+		$dev->GetDevice();
+		if($dev->Rights=="Write"){
+			if($_POST['fp']==''){ // querying possible first ports
+				$portCandidates=SwitchInfo::findFirstPort($dev->DeviceID);
+				if(count($portCandidates>0)){
+					foreach($portCandidates as $id => $portdesc){
+						$checked=($id==$dev->FirstPortNum)?' checked':'';
+						print '<input type="radio" name="firstportnum" id="fp'.$id.'" value="'.$id.'"'.$checked.'><label for="fp'.$id.'">'.$portdesc.'</label><br>';
+					}
+				}
+			}else{ // setting first port
+				$dev->FirstPortNum=$_POST['fp'];
+				if($dev->UpdateDevice()){
+					echo 'Updated';
+				}else{
+					echo 'Failure';
+				}
+			}
+		}else{
+			// The button to trigger this function is hidden if they don't have rights
+			// but users aren't to be trusted.
+			echo 'Failure';
+		}
+		exit;
+	};
+	if(isset($_POST['swdev'])){
+		$dev->DeviceID=$_POST['swdev'];
+		$dev->GetDevice();
+		if($dev->Rights=="Write"){
+			if(isset($_POST['saveport'])){
+				$dp=new DevicePorts();
+				$dp->DeviceID=$_POST['swdev'];
+				$dp->PortNumber=$_POST['pnum'];
+				$dp->Label=$_POST['pname'];
+				$dp->MediaID=$_POST['porttype'];
+				$dp->ColorID=$_POST['portcolor'];
+				$dp->Notes=$_POST['cnotes'];
+				$dp->ConnectedDeviceID=$_POST['cdevice'];
+				$dp->ConnectedPort=$_POST['cdeviceport'];
+
+				if($dp->updatePort()){
+					echo 1;
+				}else{
+					echo 0;
+				}
+				exit;
+			}
+			if(isset($_POST['delport'])){
+				$dp=new DevicePorts();
+				$dp->DeviceID=$_POST['swdev'];
+				$dp->PortNumber=$_POST['pnum'];
+				$ports=end($dp->getPorts());
+				function updatedevice($devid){
+					$dev=new Device();
+					$dev->DeviceID=$devid;
+					$dev->GetDevice();
+					$dev->Ports=$dev->Ports-1;
+					$dev->UpdateDevice();
+				}
+				// remove the selected port then shuffle the data to fill the hole if needed
+				if($ports->PortNumber!=$dp->PortNumber){
+					foreach($ports as $i=>$prop){
+						if($i!="PortNumber"){
+							$dp->$i=$prop;
+						}
+					}
+					if($dp->updatePort()){
+						if($ports->removePort()){
+							updatedevice($dp->DeviceID);
+							echo 1;
+							exit;
+						}
+					}
+					echo 0;
+				}else{ // Last available port. just delete it.
+					if($dp->removePort()){
+						updatedevice($dp->DeviceID);
+						echo 1;
+					}else{
+						echo 0;
+					}
+				}
+				exit;
+			}
+		}
+		if(isset($_POST['getport'])){
+			$dp=new DevicePorts();
+			$dp->DeviceID=$_POST['swdev'];
+			$dp->PortNumber=$_POST['pnum'];
+			$dp->getPort();
+
+			$cd=new DevicePorts();
+			$cd->DeviceID=$dp->ConnectedDeviceID;
+			$cd->PortNumber=$dp->ConnectedPort;
+			$cd->getPort();
+
+			$mt=MediaTypes::GetMediaTypeList();
+			$cc=ColorCoding::GetCodeList();
+			$dp->MediaName=(isset($mt[$dp->MediaID]))?$mt[$dp->MediaID]->MediaType:'';
+			$dp->ColorName=(isset($cc[$dp->ColorID]))?$cc[$dp->ColorID]->Name:'';
+			$dev->DeviceID=$dp->ConnectedDeviceID;
+			$dp->ConnectedDeviceLabel=($dev->GetDevice())?stripslashes($dev->Label):'';
+			$dp->ConnectedPort=$dp->ConnectedPort;
+			$dp->ConnectedPortLabel=(!is_null($cd->Label) && $cd->Label!='')?$cd->Label:$dp->ConnectedPort;
+			header('Content-Type: application/json');
+			echo json_encode($dp);
+			exit;
+		}
+		$list='';
+		if(isset($_POST['listports'])){
+			$dp=new DevicePorts();
+			$dp->DeviceID=$_POST['thisdev'];
+			$list=$dp->getPorts();
+			if($config->ParameterArray["MediaEnforce"]=='enabled'){
+				$dp->DeviceID=$_POST['thisdev'];
+				$dp->PortNumber=$_POST['pn'];
+				$dp->getPort();
+				foreach($list as $key => $port){
+					if($port['MediaID']!=$dp->MediaID){
+						unset($list[$key]); // remove the nonmatching ports
+					}
+				}
+			}
+			foreach($list as $key => $port){
+				if(!is_null($port->ConnectedDeviceID)){
+					if($port->ConnectedDeviceID==$_POST['swdev'] && $port->ConnectedPort==$_POST['pn']){
+						// This is what is currently connected so leave it in the list
+					}else{
+						// Remove any other ports that already have connections
+						unset($list[$key]);
+					}
+				}
+			}
+		}else{
+			$patchpanels=(isset($_POST['rear']))?"true":null;
+			$list=DevicePorts::getPatchCandidates($_POST['swdev'],$_POST['pn'],null,$patchpanels);
+		}
+		header('Content-Type: application/json');
+		echo json_encode($list);
+		exit;
+	}
+	if(isset($_POST['esxrefresh'])){
+		$dev->DeviceID=$_POST['esxrefresh'];
+		$dev->GetDevice();
+		if($dev->Rights=="Write"){
+			ESX::RefreshInventory($_POST['esxrefresh']);
+			buildesxtable($_POST['esxrefresh']);
+		}
+		exit;
+	}
+	if(isset($_POST['refreshswitch'])){
+		header('Content-Type: application/json');
+		if(isset($_POST['names'])){
+			$dev->DeviceID=$_POST['refreshswitch'];
+			$dev->GetDevice();
+			// This function should be hidden if they don't have rights, but just in case
+			if($dev->Rights=="Write"){
+				foreach(SwitchInfo::getPortNames($_POST['refreshswitch']) as $PortNumber => $Label){
+					$port=new DevicePorts();
+					$port->DeviceID=$_POST['refreshswitch'];
+					$port->PortNumber=$PortNumber;
+					$port->Label=$Label;
+					$port->updateLabel();
+				}
+			}
+			echo json_encode(SwitchInfo::getPortNames($_POST['refreshswitch']));
+		}else{
+			echo json_encode(SwitchInfo::getPortStatus($_POST['refreshswitch']));
+		}
+		exit;
+	}
+	// END AJAX
+
 
 	// These objects are used no matter what operation we're performing
 	$templ=new DeviceTemplate();
 	$mfg=new Manufacturer();
 	$esc=new Escalations();
 	$escTime=new EscalationTimes();
-	$contactList=$contact->GetContactList($facDB);
+	$contactList=$contact->GetContactList();
 	$Dept=new Department();
 	$pwrCords=null;
 	$chassis="";
 	$copy = false;
+	$copyerr=__("This device is a copy of an existing device.  Remember to set the new location before saving.");
+	$childList=array();
 
 	// This page was called from somewhere so let's do stuff.
 	// If this page wasn't called then present a blank record for device creation.
@@ -179,16 +256,17 @@
 			$dev->InstallDate=date("m/d/Y");
 			// Some fields are pre-populated when you click "Add device to this cabinet"
 			if(isset($_REQUEST['cabinet'])){
-				$dev->Cabinet = intval($_REQUEST['cabinet']);
-				$cab->CabinetID = $dev->Cabinet;
-				$cab->GetCabinet( $facDB );
-				
-				// If you are adding a device that is assined to a specific customer, assume that device is also owned by that customer
-				if ( $cab->AssignedTo > 0 )
-					$dev->Owner = $cab->AssignedTo;
+				$dev->Cabinet=$_REQUEST['cabinet'];
+				$cab->CabinetID=$dev->Cabinet;
+				$cab->GetCabinet();
+
+				// If you are adding a device that is assigned to a specific customer, assume that device is also owned by that customer
+				if($cab->AssignedTo >0){
+					$dev->Owner=$cab->AssignedTo;
+				}
 			}
 		}
-		
+
 		// if no device id requested then we must be making a new device so skip all data lookups.
 		if(isset($_REQUEST['deviceid'])){
 			$dev->DeviceID=intval($_REQUEST['deviceid']);
@@ -199,109 +277,110 @@
 				$tagarray=json_decode($_POST['tags']);
 			}
 			if(isset($_POST['action'])){
-				if($user->WriteAccess&&(($dev->DeviceID >0)&&($_POST['action']=='Update'))){
-					// User has changed the device type from chassis to something else and has said yes
-					// that they want to remove the dependant child devices
-					if(isset($_POST['killthechildren'])){
-						$childList=$dev->GetDeviceChildren($facDB);
-						foreach($childList as $childDev){
-							$childDev->DeleteDevice($facDB);
-						}
-					}
-					$dev->Label=$_POST['label'];
-					$dev->SerialNo=$_POST['serialno'];
-					$dev->AssetTag=$_POST['assettag'];
-					$dev->Owner=$_POST['owner'];
-					$dev->EscalationTimeID=$_POST['escalationtimeid'];
-					$dev->EscalationID=$_POST['escalationid'];
-					$dev->PrimaryContact=$_POST['primarycontact'];
-					$dev->Cabinet=$_POST['cabinetid'];
-					$dev->Position=$_POST['position'];
-					$dev->Height=$_POST['height'];
-					$dev->TemplateID=$_POST['templateid'];
-					$dev->DeviceType=$_POST['devicetype'];
-					$dev->MfgDate=date('Y-m-d',strtotime($_POST['mfgdate']));
-					$dev->InstallDate=date('Y-m-d',strtotime($_POST['installdate']));
-					$dev->WarrantyCo=$_POST['warrantyco'];
-					$dev->WarrantyExpire=date('Y-m-d',strtotime($_POST['warrantyexpire']));
-					$dev->Notes=trim($_POST['notes']);
-					$dev->Notes=($dev->Notes=="<br>")?"":$dev->Notes;
-					// All of the values below here are optional based on the type of device being dealt with
-					$dev->ChassisSlots=(isset($_POST['chassisslots']))?$_POST['chassisslots']:0;
-					$dev->RearChassisSlots=(isset($_POST['rearchassisslots']))?$_POST['rearchassisslots']:0;
-					$dev->Ports=(isset($_POST['ports']))?$_POST['ports']:"";
-					$dev->PowerSupplyCount=(isset($_POST['powersupplycount']))?$_POST['powersupplycount']:"";
-					$dev->ParentDevice=(isset($_POST['parentdevice']))?$_POST['parentdevice']:"";
-					$dev->PrimaryIP=(isset($_POST['primaryip']))?$_POST['primaryip']:"";
-					$dev->SNMPCommunity=(isset($_POST['snmpcommunity']))?$_POST['snmpcommunity']:"";
-					$dev->ESX=(isset($_POST['esx']))?$_POST['esx']:0;
-					$dev->Reservation=(isset($_POST['reservation']))?($_POST['reservation']=="on")?1:0:0;
-					$dev->NominalWatts=$_POST['nominalwatts'];
+				$dev->GetDevice();
 
-					if(($dev->TemplateID >0)&&(intval($dev->NominalWatts==0))){$dev->UpdateWattageFromTemplate($facDB);}
-			
-					$dev->SetTags($tagarray);
-					if($dev->Cabinet <0){
-						$dev->MoveToStorage($facDB);
-					}else{
-						$dev->UpdateDevice($facDB);
+				$dev->Label=$_POST['label'];
+				$dev->SerialNo=$_POST['serialno'];
+				$dev->AssetTag=$_POST['assettag'];
+				$dev->Owner=$_POST['owner'];
+				$dev->EscalationTimeID=$_POST['escalationtimeid'];
+				$dev->EscalationID=$_POST['escalationid'];
+				$dev->PrimaryContact=$_POST['primarycontact'];
+				$dev->Cabinet=$_POST['cabinetid'];
+				$dev->Position=$_POST['position'];
+				$dev->Height=$_POST['height'];
+				$dev->TemplateID=$_POST['templateid'];
+				$dev->DeviceType=$_POST['devicetype'];
+				$dev->MfgDate=date('Y-m-d',strtotime($_POST['mfgdate']));
+				$dev->InstallDate=date('Y-m-d',strtotime($_POST['installdate']));
+				$dev->WarrantyCo=$_POST['warrantyco'];
+				$dev->WarrantyExpire=date('Y-m-d',strtotime($_POST['warrantyexpire']));
+				$dev->Notes=trim($_POST['notes']);
+				$dev->Notes=($dev->Notes=="<br>")?"":$dev->Notes;
+				$dev->FirstPortNum=$_POST['firstportnum'];
+				// All of the values below here are optional based on the type of device being dealt with
+				$dev->ChassisSlots=(isset($_POST['chassisslots']))?$_POST['chassisslots']:0;
+				$dev->RearChassisSlots=(isset($_POST['rearchassisslots']))?$_POST['rearchassisslots']:0;
+				$dev->Ports=(isset($_POST['ports']))?$_POST['ports']:"";
+				$dev->PowerSupplyCount=(isset($_POST['powersupplycount']))?$_POST['powersupplycount']:"";
+				$dev->ParentDevice=(isset($_POST['parentdevice']))?$_POST['parentdevice']:"";
+				$dev->PrimaryIP=(isset($_POST['primaryip']))?$_POST['primaryip']:"";
+				$dev->SNMPCommunity=(isset($_POST['snmpcommunity']))?$_POST['snmpcommunity']:"";
+				$dev->ESX=(isset($_POST['esx']))?$_POST['esx']:0;
+				$dev->Reservation=(isset($_POST['reservation']))?($_POST['reservation']=="on")?1:0:0;
+				$dev->NominalWatts=$_POST['nominalwatts'];
+				$dev->HalfDepth=(isset($_POST['halfdepth']))?($_POST['halfdepth']=="on")?1:0:0;
+				$dev->BackSide=(isset($_POST['backside']))?($_POST['backside']=="on")?1:0:0;
+
+				if(($dev->TemplateID >0)&&(intval($dev->NominalWatts==0))){$dev->UpdateWattageFromTemplate();}
+
+				$write=false;
+				$write=($user->canWrite($cab->AssignedTo))?true:$write;
+				$write=($dev->Rights=="Write")?true:$write;
+
+				if($dev->Rights=="Write" && $dev->DeviceID >0){
+					switch($_POST['action']){
+						case 'Update':
+							// User has changed the device type from chassis to something else and has said yes
+							// that they want to remove the dependant child devices
+							if(isset($_POST['killthechildren'])){
+								$childList=$dev->GetDeviceChildren();
+								foreach($childList as $childDev){
+									$childDev->DeleteDevice();
+								}
+							}
+
+							$dev->SetTags($tagarray);
+							if($dev->Cabinet <0){
+								$dev->MoveToStorage();
+							}else{
+								$dev->UpdateDevice();
+							}
+							break;
+						case 'Delete':
+							$dev->DeleteDevice();
+							header('Location: '.redirect("cabnavigator.php?cabinetid=$dev->Cabinet"));
+							exit;
+							break; // the exit should handle it
+						case 'Copy':
+							$copy=true;
+							if(!$dev->CopyDevice()){
+								$copyerr=__("Device did not copy.  Error.");
+							}
+							break;
+						case 'Child':
+							foreach($dev as $prop => $value){
+								$dev->$prop=null;
+							}
+							$dev->ParentDevice=$_REQUEST["parentdevice"];
+
+							// sets install date to today when a new device is being created
+							$dev->InstallDate=date("m/d/Y");
+							break;
 					}
-				}elseif($user->WriteAccess&&($_POST['action']=='Create')){
-					$dev->Label=$_POST['label'];
-					$dev->SerialNo=$_POST['serialno'];
-					$dev->AssetTag=$_POST['assettag'];
-					$dev->Owner=$_POST['owner'];
-					$dev->EscalationTimeID=$_POST['escalationtimeid'];
-					$dev->EscalationID=$_POST['escalationid'];
-					$dev->PrimaryContact=$_POST['primarycontact'];
-					$dev->Cabinet=$_POST['cabinetid'];
-					$dev->Position=$_POST['position'];
-					$dev->Height=$_POST['height'];
-					$dev->Ports=$_POST['ports'];
-					$dev->TemplateID=$_POST['templateid'];
-					$dev->DeviceType=$_POST['devicetype'];
-					$dev->MfgDate=date('Y-m-d',strtotime($_POST['mfgdate']));
-					$dev->InstallDate=date('Y-m-d',strtotime($_POST['installdate']));
-					$dev->WarrantyCo=$_POST['warrantyco'];
-					$dev->WarrantyExpire=date('Y-m-d',strtotime($_POST['warrantyexpire']));
-					$dev->Notes=trim($_POST['notes']);
-					$dev->Notes=($dev->Notes=="<br>")?"":$dev->Notes;
-					// All of the values below here are optional based on the type of device being dealt with
-					$dev->ChassisSlots=(isset($_POST['chassisslots']))?$_POST['chassisslots']:0;
-					$dev->RearChassisSlots=(isset($_POST['rearchassisslots']))?$_POST['rearchassisslots']:0;
-					$dev->Ports=(isset($_POST['ports']))?$_POST['ports']:"";
-					$dev->PowerSupplyCount=(isset($_POST['powersupplycount']))?$_POST['powersupplycount']:"";
-					$dev->ParentDevice=(isset($_POST['parentdevice']))?$_POST['parentdevice']:"";
-					$dev->PrimaryIP=(isset($_POST['primaryip']))?$_POST['primaryip']:"";
-					$dev->SNMPCommunity=(isset($_POST['snmpcommunity']))?$_POST['snmpcommunity']:"";
-					$dev->ESX=(isset($_POST['esx']))?$_POST['esx']:0;
-					$dev->Reservation=(isset($_POST['reservation']))?($_POST['reservation']=="on")?1:0:0;
-					$dev->CreateDevice($facDB);
-					$dev->SetTags($tagarray);
-				}elseif($user->DeleteAccess&&($_REQUEST['action']=='Delete')){
-					$dev->GetDevice($facDB);
-					$dev->DeleteDevice($facDB);
-					header('Location: '.redirect("cabnavigator.php?cabinetid=$dev->Cabinet"));
-					exit;
-				} elseif ( $user->WriteAccess && $_REQUEST["action"] == "Copy" ) {
-					$dev->CopyDevice( $facDB );
-					$copy = true;
-				} elseif($user->WriteAccess&&$_REQUEST['action']=='child') {
-					if(isset($_REQUEST['parentdevice'])){
-						$dev->DeviceID=null;
-						$dev->ParentDevice=$_REQUEST["parentdevice"];
+				// Can't check the device for rights because it shouldn't exist yet
+				// but the user could have rights from the cabinet and it is checked above
+				// when the device object is populated.
+				}elseif($write && $_POST['action']=='Create'){
+					if($dev->TemplateID>0 && intval($dev->NominalWatts==0)){
+						$dev->UpdateWattageFromTemplate();
 					}
-					// sets install date to today when a new device is being created
-					$dev->InstallDate=date("m/d/Y");
+					$dev->CreateDevice();
+					$dev->SetTags($tagarray);
 				}
 			}
 
+			/*
+			 * Prepare data for display
+			 *
+			 */
+
 			// Finished updating devices or creating them.  Refresh the object with data from the DB
-			$dev->GetDevice($facDB);
+			$dev->GetDevice();
 
 			// Get any tags associated with this device
 			$tags=$dev->GetTags();
-			if(count($tags>0)){
+			if(count($tags)>0){
 				// We have some tags so build the javascript elements we need to create the tags themselves
 				$taginsert="\t\ttags: {items: ".json_encode($tags)."},\n";
 			}
@@ -311,60 +390,68 @@
 				$pwrConnection=new PowerConnection();
 				$pdu=new PowerDistribution();
 				$panel=new PowerPanel();
-				$networkPatches=new SwitchConnection();
-				$patchPanel=new PatchConnection();
 
-				$pwrConnection->DeviceID=($dev->ParentDevice>0)?$dev->ParentDevice:$dev->DeviceID;
-				$pwrCords=$pwrConnection->GetConnectionsByDevice($facDB);
+				$pwrConnection->DeviceID=($dev->ParentDevice>0)?$dev->GetRootDeviceID():$dev->DeviceID;
+				$pwrCords=$pwrConnection->GetConnectionsByDevice();
 
 				if($dev->DeviceType=='Switch'){
-					$networkPatches->SwitchDeviceID=$dev->DeviceID;
-					$patchList=$networkPatches->GetSwitchConnections($facDB);
-				}elseif($dev->DeviceType=='Patch Panel'){
-					$patchPanel->PanelDeviceID=$dev->DeviceID;
-					$patchList=$patchPanel->GetPanelConnections($facDB);
-				}else{
-					$networkPatches->EndpointDeviceID=($dev->ParentDevice>0)?$dev->ParentDevice:$dev->DeviceID;
-					$patchList=$networkPatches->GetEndpointConnections($facDB);
-					$patchPanel->FrontEndpointDeviceID=($dev->ParentDevice>0)?$dev->ParentDevice:$dev->DeviceID;
-					$panelList=$patchPanel->GetEndpointConnections($facDB);
+					$linkList=SwitchInfo::getPortStatus($dev->DeviceID);
 				}
-			}else{
-				// These are going to be empty however we'll generate an error if they aren't set.
-				$patchList=array();
-				$panelList=array();
+			}
+
+			if($dev->ChassisSlots>0 || $dev->RearChassisSlots>0){
+				$childList=$dev->GetDeviceChildren();
+			}
+
+			if($dev->ParentDevice >0){
+				$pDev=new Device();
+				$pDev->DeviceID=$dev->ParentDevice;
+				$pDev->GetDevice();
+
+				$parentList=$pDev->GetParentDevices();
+
+				//$cab->CabinetID=$pDev->Cabinet;
+				//JMGA: changed for multichassis
+				$cab->CabinetID=$pDev->GetDeviceCabinetID($facDB);
+				$cab->GetCabinet();
+				$chassis="Chassis";
+
+				// This is a child device and if the action of new is set let's assume the
+				// departmental owner, primary contact, etc are the same as the parent
+				if(isset($_POST['action']) && $_POST['action']=='Child'){
+					$dev->Owner=$pDev->Owner;
+					$dev->EscalationTimeID=$pDev->EscalationTimeID;
+					$dev->EscalationID=$pDev->EscalationID;
+					$dev->PrimaryContact=$pDev->PrimaryContact;
+				}
 			}
 		}
 		$cab->CabinetID=$dev->Cabinet;
-		$cab->GetCabinet($facDB);
+		$cab->GetCabinet();
 	}else{
+		/*
+		 * Everything below here will get processed when no deviceid is present
+		 * aka adding a new device
+		 */
+
 		// sets install date to today when a new device is being created
 		$dev->InstallDate=date("m/d/Y");
 	}
-	
-	if($dev->ParentDevice >0){
-		$pDev=new Device();
-		$pDev->DeviceID=$dev->ParentDevice;
-		$pDev->GetDevice($facDB);
-		
-		$parentList=$pDev->GetParentDevices($facDB);
-		
-		$cab->CabinetID=$pDev->Cabinet;
-		$cab->GetCabinet($facDB);
-		$chassis="Chassis";
 
-		// This is a child device and if the action of new is set let's assume the departmental owner, primary contact, etc are the same as the parent
-		if(isset($_REQUEST['action'])&&$_REQUEST['action']=='child'){
-			$dev->Owner=$pDev->Owner;
-			$dev->EscalationTimeID=$pDev->EscalationTimeID;
-			$dev->EscalationID=$pDev->EscalationID;
-			$dev->PrimaryContact=$pDev->PrimaryContact;
-		}
-	}
-	
-	$childList=array();
-	if($dev->ChassisSlots>0 || $dev->RearChassisSlots>0){
-		$childList=$dev->GetDeviceChildren($facDB);
+	// We don't want someone accidentally adding a chassis device inside of a chassis slot.
+	if($dev->ParentDevice>0){
+		$devarray=array('Server' => __("Server"),
+						'Appliance' => __("Appliance"),
+						'Storage Array' => __("Storage Array"),
+						'Switch' => __("Switch"));
+	}else{
+		$devarray=array('Server' => __("Server"),
+						'Appliance' => __("Appliance"),
+						'Storage Array' => __("Storage Array"),
+						'Switch' => __("Switch"),
+						'Chassis' => __("Chassis"),
+						'Patch Panel' => __("Patch Panel"),
+						'Physical Infrastructure' => __("Physical Infrastructure"));
 	}
 
 	if($config->ParameterArray["mDate"]=="now"){
@@ -372,50 +459,61 @@
 			$dev->MfgDate=date("Y-m-d");
 		}
 	}
-		
+
 	if($config->ParameterArray["wDate"]=="now"){
 		if($dev->WarrantyExpire <= "1970-01-01"){
 			$dev->WarrantyExpire=date("Y-m-d");
 		}
 	}
 
-	$templateList=$templ->GetTemplateList($facDB);
-	$escTimeList=$escTime->GetEscalationTimeList($facDB);
-	$escList=$esc->GetEscalationList($facDB);
-	$deptList=$Dept->GetDepartmentList($facDB); 
+	$portList=DevicePorts::getPortList($dev->DeviceID);
+	$mediaTypes=MediaTypes::GetMediaTypeList();
+	$colorCodes=ColorCoding::GetCodeList();
+	$templateList=$templ->GetTemplateList();
+	$escTimeList=$escTime->GetEscalationTimeList();
+	$escList=$esc->GetEscalationList();
+	$deptList=$Dept->GetDepartmentList();
 
-	// We have a slight issue with width if we get a really long escalation name
-	$widthfix=0;
-	foreach($escList as $tmp){
-		if(strlen($tmp->Details)>30){
-			if(strlen($tmp->Details)>$widthfix){
-				$widthfix=strlen($tmp->Details);
+	$title=($dev->Label!='')?"$dev->Label :: $dev->DeviceID":__("openDCIM Device Maintenance");
+
+	function buildesxtable($deviceid){
+		$esx=new ESX();
+		$esx->DeviceID=$deviceid;
+		$vmList=$esx->GetDeviceInventory();
+
+		print "\n<div class=\"table border\"><div><div>".__('VM Name')."</div><div>".__('Status')."</div><div>".__('Owner')."</div><div>".__('Last Updated')."</div></div>\n";
+		foreach($vmList as $vmRow){
+			if($vmRow->vmState=='poweredOff'){
+				$statColor='red';
+			}else{
+				$statColor='green';
 			}
-		}
-	}
-	foreach($deptList as $tmp){
-		if(strlen($tmp->Name)>30){
-			if(strlen($tmp->Name)>$widthfix){
-				$widthfix=strlen($tmp->Name);
+			$Dept=new Department();
+			$Dept->DeptID=$vmRow->Owner;
+			if($Dept->DeptID >0){
+				$Dept->GetDeptByID();
+			}else{
+				$Dept->Name=__('Unknown');
 			}
+			print "<div><div>$vmRow->vmName</div><div><font color=$statColor>$vmRow->vmState</font></div><div><a href=\"updatevmowner.php?vmindex=$vmRow->VMIndex\">$Dept->Name</a></div><div>$vmRow->LastUpdated</div></div>\n";
 		}
+		echo '</div> <!-- END div.table -->';
 	}
-	// 1150 default width 
-	// add 10px per character over 30
-	// 10px with a base font of 12px is 0.833em
-	if($widthfix>0){$widthfix2=(($widthfix)*0.75);
-	$widthfix=(($widthfix2*2)+18);
-	$css="<style type=\"text/css\">div.page.device {min-width:{$widthfix}em;}.device div.left, .device div.right {max-width:{$widthfix2}em;}</style>\n";}else{$css="";}
+
+// In the case of a child device we might define this above and in that case we
+// need to preserve the flag
+$write=(isset($write))?$write:false;
+$write=($user->canWrite($cab->AssignedTo))?true:$write;
+$write=($dev->Rights=="Write")?true:$write;
 
 
-	$title=($dev->Label!='')?"$dev->Label :: $dev->DeviceID":"openDCIM Device Maintenance";
 ?>
 <!doctype html>
 <html>
 <head>
   <meta http-equiv="X-UA-Compatible" content="IE=Edge">
   <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-  
+
   <title><?php echo $title; ?></title>
   <link rel="stylesheet" href="css/inventory.php" type="text/css">
   <link rel="stylesheet" href="css/print.css" type="text/css" media="print">
@@ -426,14 +524,12 @@
   <!--[if lt IE 9]>
   <link rel="stylesheet"  href="css/ie.css" type="text/css" />
   <![endif]-->
-  <?php echo $css; ?>
   <script type="text/javascript" src="scripts/jquery.min.js"></script>
   <script type="text/javascript" src="scripts/jquery-ui.min.js"></script>
-  <script type="text/javascript" src="scripts/jquery-migrate-1.0.0.js"></script>
   <script type="text/javascript" src="scripts/mdetect.js"></script>
   <script type="text/javascript" src="scripts/jquery.validationEngine-en.js"></script>
   <script type="text/javascript" src="scripts/jquery.validationEngine.js"></script>
-  <script type="text/javascript" src="scripts/jHtmlArea-0.7.5.min.js"></script>
+  <script type="text/javascript" src="scripts/jHtmlArea-0.8.min.js"></script>
   <script type="text/javascript" src="scripts/jquery.textext.js"></script>
 
 <SCRIPT type="text/javascript" >
@@ -469,7 +565,7 @@ function getHash(){
 </SCRIPT>
 
 <script type="text/javascript">
-/* 
+/*
 IE work around
 http://stackoverflow.com/questions/5227088/creating-style-node-adding-innerhtml-add-to-dom-and-ie-headaches
 */
@@ -481,28 +577,33 @@ function setCookie(c_name, value) {
 	document.cookie=c_name + "=" + c_value;
 }
 function swaplayout(){
-	var sheet = document.createElement('style');
-	sheet.type = 'text/css';
-	if (sheet.styleSheet) { // IE
-		sheet.styleSheet.cssText = ".device div.left { display: block; }";
-<?php echo '		document.getElementById(\'layout\').innerHTML = "',__("Landscape"),'";
-	} else {
-		sheet.innerHTML = ".device div.left { display: block; }";
-		document.getElementById(\'layout\').innerHTML = "',__("Landscape"),'";'; ?>
-	}
-	var s = document.getElementsByTagName('style')[0];
-	if (s.innerHTML == sheet.innerHTML){
-		if (sheet.styleSheet){ //IE
-			document.getElementsByTagName('style')[0].styleSheet.cssText = "";
-<?php echo '			document.getElementById(\'layout\').innerHTML = "',__("Portrait"),'";
-		}else{
-			document.getElementsByTagName(\'style\')[0].innerHTML = "";
-			document.getElementById(\'layout\').innerHTML = "',__("Portrait"),'";'; ?>
-		}
-		setCookie("layout","Landscape");
-	}else{
+	var sheet=document.createElement('style');
+	sheet.type='text/css';
+	var s=document.getElementsByTagName('style')[0];
+	var button=document.getElementById('layout');
+
+	function p(){ // set to portrait view
 		s.parentNode.insertBefore(sheet, s);
+		button.innerHTML="<?php echo __('Landscape'); ?>";
 		setCookie("layout","Portrait");
+	}
+
+	function l(){ // set to landscape view
+		if(sheet.styleSheet){ //IE
+			s.styleSheet.cssText = "";
+		}else{
+			s.innerHTML = "";
+		}
+		button.innerHTML="<?php echo __('Portrait'); ?>";
+		setCookie("layout","Landscape");
+	}
+
+	if(sheet.styleSheet){ // IE
+		sheet.styleSheet.cssText = ".device div.left { display: block; }";
+		(s.styleSheet.cssText==sheet.styleSheet.cssText)?l():p();
+	}else{
+		sheet.innerHTML = ".device div.left { display: block; }";
+		(s.innerHTML==sheet.innerHTML)?l():p();
 	}
 }
 $(document).ready(function() {
@@ -559,8 +660,12 @@ $(document).ready(function() {
 		$('.left').accordion({
 			autoHeight: false,
 			collapsible: true
-		}).removeClass('left');  
+		}).removeClass('left');
 	}
+
+	// add the current ports value to the document data store
+	$(document).data('ports',$('#ports').val());
+	$(document).data('devicetype', $('select[name="devicetype"]').val());
 
 	$('#notes').each(function(){
 		$(this).before('<button type="button" id="editbtn"></button>');
@@ -571,7 +676,7 @@ $(document).ready(function() {
 		}
 	});
 	function editnotes(button){
-		button.val('preview').text('Preview');
+		button.val('preview').text('<?php echo __("Preview");?>');
 		var a=button.next('div');
 		button.next('div').remove();
 		button.next('textarea').htmlarea({
@@ -584,7 +689,7 @@ $(document).ready(function() {
 	}
 
 	function rendernotes(button){
-		button.val('edit').text('Edit');
+		button.val('edit').text('<?php echo __("Edit");?>');
 		var w=button.next('div').outerWidth();
 		var h=$('.jHtmlArea').outerHeight();
 		if(h>0){
@@ -624,6 +729,44 @@ $(document).ready(function() {
 		window.open('contactpopup.php?deptid='+$('#owner').val(), 'Contacts Lookup', 'width=800, height=700, resizable=no, toolbar=no');
 		return false;
 	});
+
+	// Display modal with path information if a device port is clicked.
+	function devicepaths(row){
+		row.find('div[id^=dp] a, div[id^=fp] a, div[id^=rp] a').click(function(e){
+			e.preventDefault();
+			$.get($(e.target).attr('href'),{pathonly: ''}).done(function(data){
+				var modal=$('<div />', {id: 'modal'}).html('<div id="modaltext">'+data+'</div><br><div id="modalstatus"></div>').dialog({
+					appendTo: 'body',
+					modal: true,
+					minWidth: 400,
+					close: function(){$(this).dialog('destroy');}
+				});
+				$('#modal').dialog("option", "width", $('#parcheos').width()+75);
+			});
+		});
+	}
+	$('.patchpanel > div + div, .switch > div + div').each(function(){
+		devicepaths($(this));
+	});
+
+	// Make SNMP community visible
+	$('#snmpcommunity').focus(function(){$(this).attr('type','text');});
+	$('#snmpcommunity').blur(function(){$(this).attr('type','password');});
+
+
+	// Add in refresh functions for virtual machines
+	var esxtable=$('<div>').addClass('table border').append('<div><div>VM Name</div><div>Status</div><div>Owner</div><div>Last Updated</div></div>');
+	var esxbutton=$('<button>',{'type':'button'}).css({'position':'absolute','top':'10px','right':'2px'}).text('Refresh');
+	esxbutton.click(esxrefresh);
+	if($('#esx').val()==1){
+		$('#esxframe').css('position','relative').append(esxbutton);
+	}
+	function esxrefresh(){
+		$.post('',{esxrefresh: $('#deviceid').val()}).done(function(data){
+			$('#esxframe .table ~ .table').replaceWith(data);
+		});
+	}
+
 	// This is for adding blades to chassis devices
 	$('#adddevice').click(function() {
 		$(":input").attr("disabled","disabled");
@@ -643,22 +786,92 @@ $(document).ready(function() {
 			$('#height').trigger('change');
 		});
 	});
+
+	$('select[name=devicetype]').change(function(){
+		if($(this).val()=='Switch'){
+			if($(document).data('devicetype')!='Switch'){
+				$('#firstport button:not([name="firstport"])').hide();
+			}
+			if($('#deviceid').val()>0){
+				$('#firstport').show().removeClass('hide');
+				$('.switch div[id^="st"]').show();
+			}
+		}else{
+			$('#firstport').hide();
+			$('.switch div[id^="st"]').hide();
+		}
+		if($(this).val()=='Server'){
+			$('#esxframe').show();
+		}else{
+			$('#esxframe').hide();
+		}
+		// if true, then dealing with child device
+		if($('select[name="parentdevice"]').length){
+			if($(this).val()=='Switch'){
+				$('#dphtml').removeClass('hide');
+			}else{
+				$('#dphtml').addClass('hide');
+			}
+		}
+
+	}).change();
+	$('#firstport button[name=firstport]').click(function(){
+		var modal=$('<div />', {id: 'modal', title: 'Select switch first port'}).html('<div id="modaltext"></div><br><div id="modalstatus" class="warning"></div>').dialog({
+			appendTo: 'body',
+			modal: true,
+			close: function(){$(this).dialog('destroy');}
+		});
+		$.post('',{fp: '', devid: $('#deviceid').val()}).done(function(data){
+			$('#modaltext').html(data);
+			$('#modaltext input').change(function(){
+				var fpnum=$(this).val();
+				$.post('',{fp: fpnum, devid: $('#deviceid').val()}).done(function(data){
+					$('input[name=firstportnum]').val(fpnum);
+					$('#modalstatus').html(data);
+					$('#modal').dialog('destroy');
+				}).then(refreshswitch($('#deviceid').val(),true));
+			});
+		});
+	});
+	$('#firstport button[name=refresh]').click(function(){
+		refreshswitch($('#deviceid').val());
+	});
+	$('#firstport button[name=name]').click(function(){
+		refreshswitch($('#deviceid').val(),true);
+	});
+	function refreshswitch(devid,names){
+		if(names){
+			var modal=$('<div />', {id: 'modal', title: 'Please wait...'}).html('<div id="modaltext"><img src="images/animatedswitch.gif" style="width: 100%;"><br>Polling device...</div><br><div id="modalstatus" class="warning"></div>').dialog({
+				appendTo: 'body',
+				minWidth: 500,
+				closeOnEscape: false,
+				dialogClass: "no-close",
+				modal: true
+			});
+			$.post('',{refreshswitch: devid, names: names}).done(function(data){
+				$.each(data, function(i,label){
+					if(label){
+						$('#spn'+i).text(label);
+					}else{
+						$('#spn'+i).text('');
+					}
+				});
+				modal.dialog('destroy');
+			});
+		}else{
+			$.post('',{refreshswitch: devid}).done(function(data){
+				$.each(data, function(i,portstatus){
+					$('#st'+i).html($('<span>').addClass('ui-icon').addClass('status').addClass(portstatus));
+				});
+			});
+		}
+	}
 <?php
 	// hide all the js functions if they don't have write permissions
-	if($user->WriteAccess){
-		// if they switch device type to switch for a child blade add the dataports field
-		if($dev->ParentDevice>0){
-?>
-		$('select[name=devicetype]').change(function(){
-<?php echo '		var dphtml=\'<div id="dphtml"><div><label for="ports">',__("Number of Data Ports"),'</label></div><div><input class="optional,validate[custom[onlyNumberSp]]" name="ports" id="ports" size="4" value="" type="number"></div></div>\';'; ?>
-			if($(this).val()=='Switch' && $('#dphtml').length==0){
-				$('#nominalwatts').parent().parent().before(dphtml);
-			}else{
-				$('#dphtml').remove();
-			}
-		});
-<?php
-		}
+	if($write){
+
+print "		var dialog=$('<div>').prop('title','".__("Verify Delete Device")."').html('<p><span class=\"ui-icon ui-icon-alert\" style=\"float:left; margin:0 7px 20px 0;\"></span><span></span></p>');";
+
 		// Add an extra alert warning about child devices in chassis
 		if($dev->DeviceType=='Chassis'){
 ?>
@@ -666,19 +879,19 @@ $(document).ready(function() {
 			var form=$(this).parents('form');
 			var btn=$(this);
 			if($(this).val()!='Chassis'){
-<?php echo '				$(\'#dialog-confirm\').html(\'<p><span class="ui-icon ui-icon-alert" style="float:left; margin:0 7px 20px 0;"></span>',__("If this device has blades installed they will be deleted and there is no undo. Are you sure?"),'</p>\');'; ?>
-				$('#dialog-confirm').dialog({
+<?php echo '				dialog.find(\'span + span\').text("',__("If this device has blades installed they will be deleted and there is no undo. Are you sure?"),'");'; ?>
+				dialog.dialog({
 					resizable: false,
 					modal: true,
 					dialogClass: "no-close",
 					buttons: {
-						"Yes": function(){
+<?php echo '				',__("Yes"),': function(){'; ?>
 							$(this).dialog("destroy");
 							form.append('<input type="hidden" class="killthechildren" name="killthechildren" value="yes">');
 						},
-						"No": function(){
+<?php echo '				',__("No"),': function(){'; ?>
 							$('.killthechildren').remove();
-							$('select[name=devicetype]').val('Chassis');
+							$('select[name=devicetype]').val('Chassis').change();
 							$(this).dialog("destroy");
 						}
 					}
@@ -689,14 +902,16 @@ $(document).ready(function() {
 		});
 <?php
 		}
-		
+
 		// hide cabinet slot picker from child devices
 		if($dev->ParentDevice==0){
 ?>
 		$('#cabinetid').change(function(){
 			$.post('', {cab: $("select#cabinetid").val()}, function(data){
 				var posclass=$('#position').attr('class');
-				$('#position').attr('class',posclass.replace(/max\[([1-9]).*?\]/gi,"max["+data.trim()+"]")).trigger('focusout');
+				if(parseInt(data.trim())>0){
+					$('#position').attr('class',posclass.replace(/max\[([0-9]).*?\]/gi,"max["+data.trim()+"]")).trigger('focusout');
+				}
 			});
 		});
 		$('#height').change(function(){
@@ -711,7 +926,9 @@ $(document).ready(function() {
 		$('#height').trigger('change');
 		$('#position').focus(function()	{
 			var cab=$("select#cabinetid").val();
-			$.getJSON('scripts/ajax_cabinetuse.php?cabinet='+cab+'&deviceid='+$("#deviceid").val(), function(data) {
+			var hd=$('#halfdepth').is(':checked');
+			var bs=$('#backside').is(':checked');
+			$.getJSON('scripts/ajax_cabinetuse.php?cabinet='+cab+'&deviceid='+$("#deviceid").val()+'&halfdepth='+hd+'&backside='+bs, function(data) {
 				var ucount=0;
 				$.each(data, function(i,inuse){
 					ucount++;
@@ -778,271 +995,378 @@ $(document).ready(function() {
 <?php
 		}
 ?>
+
+		$('#ports').change(function(){
+			// not sure why .data() is turning an int into a string parseInt is fixing that
+			if($(this).val() > parseInt($(document).data('ports'))){
+				//make more ports and add the rows below
+				$('button[value="Update"]').click();
+			}else if($(this).val()==$(document).data('ports')){
+				// this is the I changed my mind condition.
+				$('div[id^="kp"]').remove();
+			}else{
+				var dt=['Switch','Patch Panel','Physical Infrastructure'];
+				if($.inArray($(document).data('devicetype'),dt)){
+					//S.U.T. present options to remove ports
+					var row=$('.switch > div:first-child > div:first-child').parent('div');
+					var icon=$('<span>').addClass('ui-icon').addClass('status').addClass('down');
+					$('<div>',{'id': 'kp'}).prependTo(row);
+					$('.switch div:first-child[id^=sp]').each(function(){
+						row=$(this).parent('div');
+						// this idea is crap and needs to be thought out better but it's time to go home so i'm submitting since it won't break anything
+						$('<div>',{'id': 'kp'+$(this).text()}).append(icon.clone()).click({row: row},deletethis).prependTo(row);
+					});
+				}
+			}
+		});
+		function deletethis(e){
+			var lastport=$('.switch > div:last-child div[id^="sp"]:not([id^="spn"])').text();
+			var portnum=e.data.row.find('div[id^="sp"]:not([id^="spn"])').text();
+			$.post('',{delport: '',swdev: $('#deviceid').val(),pnum: portnum}).done(function(data){
+				if(data.trim()==1){
+					if($(document).data('ports')>$('#ports').val()){
+						// port was removed and last port shuffled into this one's place
+						$(document).data('ports',$(document).data('ports')-1);
+						$('#ports').val();
+						var row=$('#sp'+portnum).parent('div');
+						var swaprow=$('#sp'+lastport).parent('div');
+						for(var i=2;i<$(swaprow).children('div').length;i++){
+							row.children('div').eq(i).html(swaprow.children('div').eq(i).html());
+						}
+						swaprow.remove();
+						if($(document).data('ports')==$('#ports').val()){$('#ports').change();}
+					}else{
+						$('#ports').change();
+					}
+				}
+			});
+		}
 		$('#reservation').change(function(){
 			if(!$(this).prop("checked")){
 				var d=new Date();
 				$('#installdate').datepicker("setDate",d);
 			}
 		});
-		$('.switch > div:first-child ~ div').each(function(){
-			var row=$(this);
-			$(this).find('div:first-child').click(function(){
-				$(this).css({'min-width': '35px','width': '35px'});
-				var swdev=$('#deviceid').val();
-				var sp=$(this).text();
-				if($(this).attr('edit')=='yes'){
-
-				}else{
-					$(this).attr('edit','yes');
-					var device=$(this).next();
-					var devid=device.attr('alt');
-					var devport=device.next();
-					devport.css({'min-width': '35px','width': '35px'});
-					var devportwidth=devport.width();
-					var notes=devport.next();
-					$.ajax({
-						type: 'POST',
-						url: 'devices.php',
-						data: 'swdev='+swdev+'&sp='+sp,
-						success: function(data){
-							var height=row.height();
-							device.html(data).css({'width': device.children('select').width()+'px', 'padding': '0px'});
-							device.children('select').css({'background-color': 'transparent'});
-							devport.html('<input type="text" name="dp" value="'+devport.text()+'">').css({'width': devportwidth+'px', 'padding': '0px'}).children('input').css({'width': devportwidth+'px', 'background-color': 'transparent'});
-							notes.html('<input type="text" name="n" value="'+notes.text()+'">').css({'width': notes.width()+'px', 'padding': '0px'}).children('input').css({'width': notes.width()+'px', 'background-color': 'transparent'});
-<?php echo '							row.append(\'<div style="padding: 0px;"><button type="button" value="save">',__("Save"),'</button><button type="button" value="delete">',__("Delete"),'</button><button type="button" value="cancel">',__("Cancel"),'</button></div>\');'; ?>
-							row.find('div > button').css({'height': height+'px', 'line-height': '1'});
-							var buttonwidth=15;
-							row.find('div > button').each(function(){
-								buttonwidth+=$(this).outerWidth();
-								var a=device.find('select');
-								var b=devport.find('input');
-								var c=notes.find('input');
-								if($(this).val()=="delete"){
-									$(this).click(function(e){
-										a.val("");
-										b.val("");
-										c.val("");
-										row.find('div > button[value="save"]').focus();
-										row.find('div > button[value="save"]').click();
-									});
-								}else if($(this).val()=="cancel"){
-									$(this).click(function(){
-										a.val(device.attr('alt'));
-										b.val(devport.attr('data'));
-										c.val(notes.attr('data'));
-										row.find('div > button[value="save"]').focus();
-										row.find('div > button[value="save"]').click();
-									});
-								}else if($(this).val()=="save"){
-									$(this).click(function(){
-										$.ajax({
-											type: 'POST',
-											url: 'devices.php',
-											data: 'swdev='+swdev+'&sp='+sp+'&devid='+a.val()+'&dp='+b.val()+'&n='+c.val(),
-											success: function(data){
-												if(data.trim()=="-1"){
-													//error
-													device.css('background-color', 'salmon');
-													devport.css('background-color', 'salmon');
-													notes.css('background-color', 'salmon');
-													setTimeout(function() {
-														device.css('background-color', 'white');
-														devport.css('background-color', 'white');
-														notes.css('background-color', 'white');
-													},1500);
-												}else if(data.trim()=="1"){
-													row.find('div:first-child').removeAttr('edit').css('width','auto');
-													// set the fields back to table cells
-													row.find('div:last-child').remove();
-													if(a.val()!='-1'){
-														device.html('<a href="devices.php?deviceid='+a.val()+'">'+a.find('option:selected').text()+'</a>').removeAttr('style');
-													}else{
-														device.html('').removeAttr('style');
-													}
-													devport.html(b.val()).removeAttr('style');
-													notes.html(c.val()).removeAttr('style');
-													device.css('background-color', 'lightgreen');
-													devport.css('background-color', 'lightgreen');
-													notes.css('background-color', 'lightgreen');
-													setTimeout(function() {
-														device.css('background-color', 'white');
-														devport.css('background-color', 'white');
-														notes.css('background-color', 'white');
-													},1500);
-												}else{
-													// something unexpected has happened
-												}
-											}
-										});
-									});
-								}
-								$(this).parent('div').css({'width': buttonwidth+'px', 'text-align': 'center'});
-							});
-							$('div.page').css('width', ($('#deviceform').outerWidth(true)+$('#sidebar').outerWidth(true)+22)+'px');
-						}
-					});
-				}
-			}).css({'cursor': 'pointer','text-decoration': 'underline'});
-		});
-		$('.patchpanel > div:first-child ~ div').each(function(){
-			var row=$(this);
-			$(this).click(function(){
-				var frontdev=row.find('div:first-child');
-				var frontport=row.find('div:nth-child(2)');
-				var frontnotes=row.find('div:nth-child(3)');
-				var patchport=row.find('div:nth-child(4)');
-				var reardev=row.find('div:nth-child(5)');
-				var rearport=row.find('div:nth-child(6)');
-				var rearnotes=row.find('div:nth-child(7)');
-				if($(this).attr('edit')=='yes'){
-
-				}else{
-					// create empty row below the current
-					$(this).after('<div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div>');
-					var btnrow=$(this).next(); // name it for easy reference
-					var frontbtn=btnrow.find('div:first-child'); // front table cell for buttons
-					var rearbtn=btnrow.find('div:nth-child(5)'); // rear table cell for buttons
-					$(this).attr('edit','yes');
-					function fixwidth(test){
-						setTimeout(function() {
-							$('.page').width($('.main').outerWidth()+$('#sidebar').outerWidth()+50);
-						},1000);
-					}
-<?php
-		if($user->SiteAdmin){
-?>
-// Rear panel controls
-<?php echo '							rearbtn.append(\'<div style="padding: 0px; border: 0px;"><button type="button" value="save">',__("Save"),'</button><button type="button" value="delete">',__("Delete"),'</button><button type="button" value="cancel">',__("Cancel"),'</button></div>\');'; ?>
-					rearbtn.css({'padding': 0, 'border': 0}).attr('data', 'rear');;
-					$.post('', {pdev: $('#deviceid').val()}, function(data){
-						var rdev=reardev.text();
-						reardev.html(data).css({'padding': 0});
-						reardev.find('select option').each(function(){
-							if($(this).text()==rdev){
-								$(this).attr('selected','selected');
-							}else if(rearnotes.text()!='' && rdev==''){
-								$(this).parent('select').val('note');
-							}
-						});					
-						rearport.html('<input type="text" value="'+rearport.text()+'">').css({'padding': 0});
-						rearnotes.html('<input type="text" value="'+rearnotes.text()+'">').css({'padding': 0}); // weird data will break the crap out of this.  fix later.
-					}).then(fixwidth());
-<?php
-		}
-?>
-// Front panel controls
-<?php echo '							frontbtn.append(\'<div style="padding: 0px; border: 0px;"><button type="button" value="save">',__("Save"),'</button><button type="button" value="delete">',__("Delete"),'</button><button type="button" value="cancel">',__("Cancel"),'</button></div>\');'; ?>
-					frontbtn.css({'padding': 0, 'border': 0}).attr('data', 'front');
-					$.post('', {sp: '0', swdev: $('#deviceid').val()}, function(data){
-						var fdev=frontdev.text();
-						frontdev.html(data).css({'padding': 0});
-						frontdev.find('select option').each(function(){
-							if($(this).text()==fdev){
-								$(this).attr('selected','selected');
-							}
-						});					
-						frontport.html('<input type="text" value="'+frontport.text()+'">').css({'padding': 0});
-						frontnotes.html('<input type="text" value="'+frontnotes.text()+'">').css({'padding': 0});
-					}).then(fixwidth());
-	// remove new row and set crap back to normal.
-					function btncleanup(e){
-						if(frontbtn.text()=='' && rearbtn.text()==''){ btnrow.remove(); row.removeAttr('edit');	}
-					}
-	// button functions
-					btnrow.find('div > button').each(function(){
-						var buttondiv=$(this).parent('div');
-						var side=buttondiv.parent('div').attr('data');
-						if($(this).val()=="delete"){
-							$(this).click(function(){
-								$.post('', {pdev: $('#deviceid').val(), pdel: patchport.text(), side: side}, function(data){
-									if(data!='1'){
-										alert('error, error, error');
-									}else{
-										buttondiv.remove();
-										if(side=='front'){
-											frontdev.html('');
-											frontport.html('');
-											frontnotes.html('');
-										}else{
-											reardev.html('');
-											rearport.html('');
-											rearnotes.html('');
-										}
-										btncleanup();
-									}
-								});
-							});
-						}else if($(this).val()=="cancel"){
-							// pull record from db and set back to original values
-							$(this).click(function(){
-								$.post('', {pdev: $('#deviceid').val(), pget: patchport.text()}, function(data){
-									var darray=$.parseJSON(data);
-									if(side=='front'){
-										frontdev.html((darray[1]!='NULL')?darray[1]:'');
-										frontport.html((darray[2]!='NULL')?darray[2]:'');
-										frontnotes.html((darray[3]!='NULL')?darray[3]:'');
-									}else{
-										reardev.html((darray[5]!='NULL')?darray[5]:'');
-										rearport.html((darray[6]!='NULL')?darray[6]:'');
-										rearnotes.html((darray[7]!='NULL')?darray[7]:'');
-									}
-									buttondiv.remove();
-									btncleanup();
-								});
-							});
-						}else if($(this).val()=="save"){
-							$(this).click(function(){
-								if(side=='front'){
-									$.post('', {pdev: $('#deviceid').val(), psav: patchport.text(), fdev:frontdev.find('select').val(), fport:frontport.find('input').val(), fn:frontnotes.find('input').val()}, function(data){
-										var darray=$.parseJSON(data);
-										frontdev.html(darray[1]);
-										frontport.html(darray[2]);
-										frontnotes.html(darray[3]);
-									});
-								}else{
-									$.post('', {pdev: $('#deviceid').val(), psav: patchport.text(), rdev:reardev.find('select').val(), rport:rearport.find('input').val(), rn:rearnotes.find('input').val()}, function(data){
-										var darray=$.parseJSON(data);
-										reardev.html(darray[5]);
-										rearport.html(darray[6]);
-										rearnotes.html(darray[7]);
-									});
-								}
-								buttondiv.remove();
-								btncleanup();
-							});
-						}
-					});
-				}
-			});
-		}).css({'cursor': 'pointer','text-decoration': 'underline'});
 		// Delete device confirmation dialog
 		$('button[value="Delete"]').click(function(e){
 			var form=$(this).parents('form');
 			var btn=$(this);
-<?php echo '			$(\'#dialog-confirm\').html(\'<p><span class="ui-icon ui-icon-alert" style="float:left; margin:0 7px 20px 0;"></span>',__("This device will be deleted and there is no undo. Are you sure?"),'</p>\');'; ?>
-			$('#dialog-confirm').dialog({
+<?php echo '				dialog.find(\'span + span\').text("',__("This device will be deleted and there is no undo. Are you sure?"),'");'; ?>
+			dialog.dialog({
 				resizable: false,
 				modal: true,
 				buttons: {
-					"Yes": function(){
+<?php echo '				',__("Yes"),': function(){'; ?>
 						$(this).dialog("destroy");
 						form.append('<input type="hidden" name="'+btn.attr("name")+'" value="'+btn.val()+'">');
 						form.submit();
 					},
-					"No": function(){
+<?php echo '				',__("No"),': function(){'; ?>
 						$(this).dialog("destroy");
 					}
 				}
 			});
 		});
-<?php 
+<?php
 	} // end of javascript editing functions
 ?>
+	// Make connections to other devices
+	$('.switch.table > div ~ div').each(function(){
+		var row=$(this);
+		var portnum=row.data('port');
+		if(portrights[portnum]){ // only bind edit functions if they have rights
+			row.find('div:first-child').click(function(){
+				if(!row.data('edit')){
+					row.data('edit',true);
+					var portname=$('#spn'+portnum);
+					var cdevice=$('#d'+portnum);
+					var cdeviceport=$('#dp'+portnum);
+					var cnotes=$('#n'+portnum);
+					var porttype=$('#mt'+portnum);
+					var portcolor=$('#cc'+portnum);
+					function getports(devid,portnum){
+						var cdeviceport=$('#dp'+portnum);
+						$.post('',{swdev: $('#deviceid').val(),pn: portnum,thisdev: devid,listports: ''}).done(function(data){
+							var portlist=$("<select>");
+							$.each(data, function(key,port){
+								var pn=port.PortNumber;
+								port.Label=(port.Label=="")?pn:port.Label;
+
+								// only allow positive values
+								if(pn>0){
+									portlist.append('<option value='+pn+'>'+port.Label+'</option>');
+									portlist.data(pn, {MediaID: port.MediaID, ColorID: port.ColorID});
+								}
+							});
+							portlist.change(function(){
+								//Match media type and color on incoming port
+								porttype.children('select').val($(this).data($(this).val()).MediaID);
+								portcolor.children('select').val($(this).data($(this).val()).ColorID);
+							});
+							cdeviceport.html(portlist).find('select').val(cdeviceport.data('default'));
+						});
+					}
+					function getmediatypes(portnum){
+						$.get('',{mt:''}).done(function(data){
+							var mlist=$("<select>").append('<option value=0></option>');
+							$.each(data, function(key,mt){
+								var option=$("<option>",({'value':mt.MediaID})).append(mt.MediaType);
+								mlist.append(option).data(mt.MediaID,mt.ColorID);
+							});
+							mlist.change(function(){
+								// default color is associated with this type so set it
+								if($(this).data($(this).val())!=""){
+									portcolor.children('select').val($(this).data($(this).val()));
+								}
+							});
+							porttype.html(mlist).find('select').val(porttype.data('default'));
+						});
+					}
+					function getcolortypes(portnum){
+						$.get('',{cc:''}).done(function(data){
+							var clist=$("<select>").append('<option value=0></option>');
+							$.each(data, function(key,cc){
+								var option=$("<option>",({'value':cc.ColorID})).append(cc.Name);
+								clist.append(option).data(cc.ColorID,cc.DefaultNote);
+							});
+							clist.change(function(){
+								// default note is associated with this color so set it
+								if($(this).data($(this).val())!=""){
+									cnotes.children('input').val($(this).data($(this).val()));
+								}
+							});
+							portcolor.html(clist).find('select').val(portcolor.data('default'));
+						});
+					}
+					$.post('',{swdev: $('#deviceid').val(),pn: portnum}).done(function(data){
+						var devlist=$("<select>").append('<option value=0></option>');
+						devlist.change(function(){
+							getports($(this).val(),portnum);
+						});
+
+						$.each(data, function(devid,device){
+							devlist.append('<option value='+device.DeviceID+'>'+device.Label+'</option>');
+						});
+						cdevice.html(devlist).find('select').val(cdevice.data('default'));
+						devlist.change();
+						cnotes.html('<input type="text" value="'+cnotes.text()+'">');
+						portname.html('<input type="text" value="'+portname.text()+'">');
+						getmediatypes(portnum);
+						getcolortypes(portnum);
+					});
+					function save(){
+						if(portname.children('input').val().trim().length){
+							$.post('',{
+								saveport: '',
+								swdev: $('#deviceid').val(),
+								pnum: portnum,
+								pname: portname.children('input').val(),
+								cdevice: cdevice.children('select').val(),
+								cdeviceport: cdeviceport.children('select').val(),
+								cnotes: cnotes.children('input').val(),
+								porttype: porttype.children('select').val(),
+								portcolor: portcolor.children('select').val()
+							}).done(function(data){
+								if(data.trim()==1){
+									redrawrow();
+								}else{
+									// something broke
+								}
+							});
+						}else{
+							// No port name set, DENIED!
+							row.effect('highlight', {color: 'salmon'}, 1500);
+						}
+					}
+					function clear(){
+						cdevice.children('select').val(0);
+						cdeviceport.children('select').val(0);
+						cnotes.children('input').val('');
+						save();
+					}
+					function redrawrow(){
+						$.post('',{getport: '',swdev: $('#deviceid').val(),pnum: portnum}).done(function(data){
+							portname.html(data.Label).data('default',data.Label);
+							cdevice.html('<a href="devices.php?deviceid='+data.ConnectedDeviceID+'">'+data.ConnectedDeviceLabel+'</a>').data('default',data.ConnectedDeviceID);
+							data.ConnectedPortLabel=(data.ConnectedPortLabel==null)?'':data.ConnectedPortLabel;
+							cdeviceport.html('<a href="paths.php?deviceid='+data.ConnectedDeviceID+'&portnumber='+data.ConnectedPort+'">'+data.ConnectedPortLabel+'</a>').data('default',data.ConnectedPort);
+							cnotes.html(data.Notes).data('default',data.Notes);
+							porttype.html(data.MediaName).data('default',data.MediaID);
+							portcolor.html(data.ColorName).data('default',data.ColorID);
+							$('#controls'+portnum).remove();
+							row.children('div ~ div').removeAttr('style');
+							row.data('edit',false);
+							devicepaths(row);
+						});
+					}
+					var controls=$('<div>',({'id':'controls'+portnum}));
+					var savebtn=$('<button>',{'type':'button'}).append('<?php echo __("Save"); ?>').click(save);
+					var cancelbtn=$('<button>',{'type':'button'}).append('<?php echo __("Cancel"); ?>').click(redrawrow);
+					var deletebtn=$('<button>',{'type':'button'}).append('<?php echo __("Delete"); ?>').click(clear);
+					controls.append(savebtn).append(cancelbtn).append(deletebtn);
+					var minwidth=0;
+					portcolor.after(controls);
+					controls.children('button').each(function(){
+						minwidth+=$(this).outerWidth()+14; // 14 padding and border
+					});
+					controls.css('min-width',minwidth);
+					row.children('div ~ div:not([id^=st])').css({'padding': '0px', 'background-color': 'transparent'});
+					setTimeout(function() {
+						resize();
+					},200);
+				}
+			}).css({'cursor': 'pointer','text-decoration': 'underline'});
+		}
+	});
+	$('.patchpanel > div ~ div').each(function(){
+		var row=$(this);
+		var portnum=row.data('port');
+		if(portrights[portnum]){ // only bind edit functions if they have rights
+			// create empty row below the current
+			var btnrow=$('<div>');
+			var i=row.children('div').length;
+			for(var a=0; a < i; a++){
+				btnrow.append($('<div>'));
+			}
+			var frontbtn=btnrow.find('div:first-child'); // front table cell for buttons
+			var rearbtn=btnrow.find('div:nth-child('+(Math.ceil(i/2)+1)+')'); // rear table cell for buttons
+			var frontdev=$('#fd'+portnum);
+			var frontport=$('#fp'+portnum);
+			var frontnotes=$('#fn'+portnum);
+			var patchport=$('#pp'+portnum);
+			var reardev=$('#rd'+portnum);
+			var rearport=$('#rp'+portnum);
+			var rearnotes=$('#rn'+portnum);
+			function clear(e){
+				var rear=($(e.currentTarget).parent().data('rear'));
+				var fr=(rear)?'r':'f';
+				$('#'+fr+'d'+portnum+' select').val('');
+				$('#'+fr+'p'+portnum+' select').val('');
+				save(e);
+			}
+			function save(e){
+				var rear=($(e.currentTarget).parent().data('rear'));
+				var fr=(rear)?'r':'f';
+				var cdevice=$('#'+fr+'d'+portnum+' select').val();
+				var cdeviceport=$('#'+fr+'p'+portnum+' select').val();
+				var porttype=$('#'+fr+'p'+portnum+' select').data(cdeviceport).MediaID;
+				var portcolor=$('#'+fr+'p'+portnum+' select').data(cdeviceport).ColorID;
+				var cnotes=$('#'+fr+'n'+portnum+' input').val();
+				var p=(rear)?portnum*-1:portnum;
+				porttype=(porttype===undefined)?0:porttype;
+				portcolor=(portcolor===undefined)?0:portcolor;
+				$.post('',{saveport: '', swdev: $('#deviceid').val(), pnum: p,
+							pname: '', cdevice: cdevice, cdeviceport: cdeviceport,
+							cnotes: cnotes, porttype: porttype,
+							portcolor: portcolor}).done(function(data){
+					if(data.trim()==1){
+						redrawrow(e);
+					}else{
+						// something broke
+					}
+				});
+			}
+			function devicelist(jsonObject){
+				var devlist=$("<select>").append('<option value=0></option>');
+				$.each(jsonObject, function(devid,device){
+					devlist.append('<option value='+device.DeviceID+'>'+device.Label+'</option>');
+				});
+				devlist.change(function(e){
+					var rear=($(e.currentTarget).parent().data('rear'));
+					getavailports($(this).val(),portnum,rear);
+				});
+				return devlist;
+			}
+			function getavailports(devid,portnum,rear){
+				var p=(rear)?portnum*-1:portnum;
+				$.post('',{swdev: $('#deviceid').val(),pn: p,thisdev: devid,listports: ''}).done(function(data){
+					var portlist=$("<select>");
+					$.each(data, function(key,port){
+						var pn=port.PortNumber;
+						if(port.Label==""){
+							port.Label=Math.abs(port.PortNumber);
+						}
+						if(rear){
+							if(pn<0){
+								portlist.prepend('<option value='+pn+'>'+port.Label+'</option>');
+								portlist.data(pn, {MediaID: port.MediaID, ColorID: port.ColorID});
+							}
+						}else{
+							if(pn>0){
+								portlist.append('<option value='+pn+'>'+port.Label+'</option>');
+								portlist.data(pn, {MediaID: port.MediaID, ColorID: port.ColorID});
+							}
+						}
+					});
+					if(rear){
+						rearport.html(portlist.val(rearport.data('default')));
+					}else{
+						frontport.html(portlist.val(frontport.data('default')));
+					}
+				});
+			}
+			function redrawrow(e){
+				var rear=($(e.currentTarget).parent().data('rear'));
+				var p=(rear)?portnum*-1:portnum;
+				$.post('',{getport: '',swdev: $('#deviceid').val(),pnum: p}).done(function(data){
+					if(rear){
+						reardev.html('<a href="devices.php?deviceid='+data.ConnectedDeviceID+'">'+data.ConnectedDeviceLabel+'</a>').data('default',data.ConnectedDeviceID);
+						var cp=(data.ConnectedPort<0)?data.ConnectedPort*-1:'';
+						rearport.html('<a href="paths.php?deviceid='+data.ConnectedDeviceID+'&portnumber='+data.ConnectedPort+'">'+cp+'</a>').data('default',data.ConnectedPort);
+						rearnotes.html(data.Notes).data('default',data.Notes);
+						row.children('div[id^=r]').removeAttr('style');
+					}else{
+						frontdev.html('<a href="devices.php?deviceid='+data.ConnectedDeviceID+'">'+data.ConnectedDeviceLabel+'</a>').data('default',data.ConnectedDeviceID);
+						frontport.html('<a href="paths.php?deviceid='+data.ConnectedDeviceID+'&portnumber='+data.ConnectedPort+'">'+data.ConnectedPortLabel+'</a>').data('default',data.ConnectedPort);
+						frontnotes.html(data.Notes).data('default',data.Notes);
+						row.children('div[id^=f]').removeAttr('style');
+					}
+					$(e.currentTarget).parent().remove();
+				});
+				if(btnrow.find('.controls').length===1){
+					row.data('edit',false);
+					btnrow.remove();
+					devicepaths(row);
+				}
+			}
+			var controls=$('<div>',({'class':'controls'})).css({'padding': 0, 'border': 0});
+			var savebtn=$('<button>',{'type':'button'}).append('<?php echo __("Save"); ?>').click(save);
+			var cancelbtn=$('<button>',{'type':'button'}).append('<?php echo __("Cancel"); ?>').click(redrawrow);
+			var deletebtn=$('<button>',{'type':'button'}).append('<?php echo __("Delete"); ?>').click(clear);
+			controls.append(savebtn).append(deletebtn).append(cancelbtn);
+			patchport.click(function(){
+				if(!row.data('edit')==true){
+					row.after(btnrow);
+					row.data('edit',true);
+<?php
+		if($user->SiteAdmin){
+?>
+// Rear panel controls
+					rearbtn.append(controls.clone(true).data('rear',true));
+					rearbtn.css({'padding': 0, 'border': 0}).attr('data', 'rear');;
+					$.post('', {pn: $(this).text(), swdev: $('#deviceid').val(), rear: ''}, function(data){
+						reardev.html(devicelist(data).val(reardev.data('default'))).data('rear',true).children().change();
+						rearnotes.html($('<input>').val(rearnotes.data('default')));
+					}).then(resize());
+<?php
+		}
+?>
+// Front panel controls
+					frontbtn.append(controls.clone(true).data('rear',false));
+					frontbtn.css({'padding': 0, 'border': 0}).attr('data', 'front');
+					$.post('', {pn: $(this).text(), swdev: $('#deviceid').val()}, function(data){
+						frontdev.html(devicelist(data).val(frontdev.data('default'))).children().change();
+						frontnotes.html($('<input>').val(frontnotes.text()));
+					}).then(resize()).then(resize());
+					row.children('div:not([id^=pp])').css({'padding': 0, 'border': 0});
+				}
+			}).css({'cursor': 'pointer','text-decoration': 'underline'});
+		}
+	});
 	function setPreferredLayout() {<?php if(isset($_COOKIE["layout"]) && strtolower($_COOKIE["layout"])==="portrait"){echo 'swaplayout();setCookie("layout","Portrait");';}else{echo 'setCookie("layout","Landscape");';} ?>}
 	setPreferredLayout();
 	$('#tags').width($('#tags').parent('div').parent('div').innerWidth()-$('#tags').parent('div').prev('div').outerWidth()-5);
-	
+
 	$('#tags').textext({
 		plugins : 'autocomplete tags ajax arrow prompt focus',
 <?php echo $taginsert; ?>
@@ -1052,7 +1376,7 @@ $(document).ready(function() {
 		}
 	});
 });
-	
+
 </script>
 
 </head>
@@ -1066,7 +1390,7 @@ echo '<div class="main">
 <button id="layout" onClick="swaplayout()">'.__("Portrait").'</button>
 <h2>'.$config->ParameterArray['OrgName'].'</h2>
 <h3>'.__("Data Center Device Detail").'</h3>';
-echo($copy)?'<h3>'.__("This device is a copy of an existing device.  Remember to set the new location before saving.").'</h3>':'';
+echo($copy)?"<h3>$copyerr</h3>":'';
 echo '<div class="center"><div>
 <div id="positionselector"></div>
 <form name="deviceform" id="deviceform" action="'.$_SERVER['PHP_SELF'].((isset($dev->DeviceID) && $dev->DeviceID>0)?"?deviceid=$dev->DeviceID":"").'" method="POST">
@@ -1097,6 +1421,15 @@ echo '<div class="center"><div>
 		   <button class="hide" type="button" onclick="getScan(\'assettag\')">',__("Scan Barcode"),'</button></div>
 		</div>
 		<div>
+		  <div><label for="primaryip">'.__("Primary IP").'</label></div>
+		  <div><input type="text" name="primaryip" id="primaryip" size="20" value="'.$dev->PrimaryIP.'">
+				<input type="hidden" name="firstportnum" value="'.$dev->FirstPortNum.'"></div>
+		</div>
+		<div>
+		  <div><label for="snmpcommunity">'.__("SNMP Read Only Community").'</label></div>
+		  <div><input type="password" name="snmpcommunity" id="snmpcommunity" size="40" value="'.$dev->SNMPCommunity.'"></div>
+		</div>
+		<div>
 		   <div><label for="mfgdate">'.__("Manufacture Date").'</label></div>
 		   <div><input type="text" class="validate[optional,custom[date]] datepicker" name="mfgdate" id="mfgdate" value="'.(($dev->MfgDate>'0000-00-00 00:00:00')?date('m/d/Y',strtotime($dev->MfgDate)):"").'">
 		   </div>
@@ -1112,7 +1445,7 @@ echo '<div class="center"><div>
 		<div>
 		   <div><label for="installdate">'.__("Warranty Expiration").'</label></div>
 		   <div><input type="text" class="validate[custom[date]] datepicker" name="warrantyexpire" id="warrantyexpire" value="'.date('m/d/Y',strtotime($dev->WarrantyExpire)).'"></div>
-		</div>		
+		</div>
 		<div>
 		   <div><label for="owner">'.__("Departmental Owner").'</label></div>
 		   <div>
@@ -1169,7 +1502,7 @@ echo '				</select></div>
 				if($contactRow->ContactID==$dev->PrimaryContact){$contactUserID=$contactRow->UserID;$selected=" selected";}else{$selected="";}
 				print "\t\t\t\t<option value=\"$contactRow->ContactID\"$selected>$contactRow->LastName, $contactRow->FirstName</option>\n";
 			}
-			
+
 			print "\t\t\t</select>\n";
 
 			if(isset($config->ParameterArray['UserLookupURL']) && isValidURL($config->ParameterArray['UserLookupURL']) && isset($contactUserID)){
@@ -1183,7 +1516,7 @@ echo '		   </div>
 			<div><textarea type="text" name="tags" id="tags" rows="1"></textarea></div>
 		</div>
 	</div> <!-- END div.table -->
-</fieldset>	
+</fieldset>
 	<div class="table">
 		<div>
 		  <div><label for="notes">',__("Notes"),'</label></div>
@@ -1199,14 +1532,14 @@ echo '		   </div>
 			<div><label for="cabinet">',__("Cabinet"),'</label></div>';
 
 		if($dev->ParentDevice==0){
-			print "\t\t\t<div>".$cab->GetCabinetSelectList($facDB)."</div>\n";
+			print "\t\t\t<div>".$cab->GetCabinetSelectList()."</div>\n";
 		}else{
 			print "\t\t\t<div>$cab->Location<input type=\"hidden\" name=\"cabinetid\" value=\"0\"></div>
 		</div>
 		<div>
 			<div><label for=\"parentdevice\">".__('Parent Device')."</label></div>
 			<div><select name=\"parentdevice\">\n";
-			
+
 			foreach($parentList as $parDev){
 				if($pDev->DeviceID==$parDev->DeviceID){$selected=" selected";}else{$selected="";}
 				print "\t\t\t\t<option value=\"$parDev->DeviceID\"$selected>$parDev->Label</option>\n";
@@ -1221,50 +1554,59 @@ echo '		</div>
 				<option value=0>',__("Select a template..."),'</option>';
 
 			foreach($templateList as $tempRow){
-				if($dev->TemplateID==$tempRow->TemplateID){$selected=" selected";}else{$selected="";}
-				$mfg->ManufacturerID=$tempRow->ManufacturerID;
-				$mfg->GetManufacturerByID($facDB);
-				print "\t\t\t\t<option value=\"$tempRow->TemplateID\"$selected>$mfg->Name - $tempRow->Model</option>\n";
+				// $devarray is helping to remove invalid device templates from child devices
+				if(in_array($tempRow->DeviceType, $devarray)){
+					if($dev->TemplateID==$tempRow->TemplateID){$selected=" selected";}else{$selected="";}
+					$mfg->ManufacturerID=$tempRow->ManufacturerID;
+					$mfg->GetManufacturerByID();
+					print "\t\t\t\t<option value=\"$tempRow->TemplateID\"$selected>$mfg->Name - $tempRow->Model</option>\n";
+				}
 			}
 
 echo '			</select>
 			</div>
 		</div>
 		<div>
+		   <div><label for="height">',__("Height"),'</label></div>
+		   <div><input type="number" class="required,validate[custom[onlyNumberSp]]" name="height" id="height" size="4" value="',$dev->Height,'"></div>
+		</div>
+		<div>
 		   <div><label for="position">',__("Position"),'</label></div>
 		   <div><input type="number" class="required,validate[custom[onlyNumberSp],min[1],max[',$cab->CabinetHeight,']]" name="position" id="position" size="4" value="',$dev->Position,'"></div>
 		</div>
-		<div>
-		   <div><label for="height">',__("Height"),'</label></div>
-		   <div><input type="number" class="required,validate[custom[onlyNumberSp]]" name="height" id="height" size="4" value="',$dev->Height,'"></div>
+		';
+
+		//JMGA: child devices not use HalfDepth
+		if($dev->ParentDevice==0){
+echo '		<div>
+			<div><label for="halfdepth">'.__("Half Depth").'</label></div>
+			<div><input type="checkbox" name="halfdepth" id="halfdepth"'.(($dev->HalfDepth)?" checked":"").'></div>
+		</div>';
+		}
+echo '		<div>
+			<div><label for="backside">'.__("Back Side").'</label></div>
+			<div><input type="checkbox" name="backside" id="backside"'.(($dev->BackSide)?" checked":"").'></div>
 		</div>';
 
+
 		// Blade devices don't have data ports unless they're a switch
-		if($dev->ParentDevice==0||($dev->ParentDevice>0&&$dev->DeviceType=='Switch')){
-			echo '		<div id="dphtml">
+		$hide=($dev->ParentDevice==0 || ($dev->ParentDevice>0 && $dev->DeviceType=='Switch'))?'':' class="hide"';
+
+		echo '		<div id="dphtml"',$hide,'>
 		   <div><label for="ports">',__("Number of Data Ports"),'</label></div>
 		   <div><input type="number" class="optional,validate[custom[onlyNumberSp]]" name="ports" id="ports" size="4" value="',$dev->Ports,'"></div>
 		</div>';
-		}
 
 echo '		<div>
 		   <div><label for="nominalwatts">',__("Nominal Draw (Watts)"),'</label></div>
 		   <div><input type="text" class="optional,validate[custom[onlyNumberSp]]" name="nominalwatts" id="nominalwatts" size=6 value="',$dev->NominalWatts,'"></div>
 		</div>';
 
-		// Blade devices don't have power supplies but they do have a front or back designation
+		// Blade devices don't have power supplies
 		if($dev->ParentDevice==0){
 			echo '		<div>
 		   <div><label for="powersupplycount">',__("Number of Power Supplies"),'</label></div>
 		   <div><input type="number" class="optional,validate[custom[onlyNumberSp]]" name="powersupplycount" id="powersupplycount" size=4 value="',$dev->PowerSupplyCount,'"></div>
-		</div>';
-		}else{
-			echo '		<div>
-			<div><label for="powersupplycount">',__("Front / Rear"),'</label></div>
-			<div><select id="chassisslots" name="chassisslots">
-		   		<option value=0'.(($dev->ChassisSlots==0)?' selected':'').'>',__("Front"),'</option>
-				<option value=1'.(($dev->ChassisSlots==1)?' selected':'').'>',__("Rear"),'</option>
-			</select></div>
 		</div>';
 		}
 
@@ -1273,32 +1615,20 @@ echo '		<div>
 		   <div><select name="devicetype">
 			<option value=0>',__("Select..."),'</option>';
 
-		// We don't want someone accidentally adding a chassis device inside of a chassis slot.
-		if($dev->ParentDevice>0){
-			$devarray=array('Server' => __("Server"),
-							'Appliance' => __("Appliance"),
-							'Storage Array' => __("Storage Array"),
-							'Switch' => __("Switch"));
-		}else{
-			$devarray=array('Server' => __("Server"),
-							'Appliance' => __("Appliance"),
-							'Storage Array' => __("Storage Array"),
-							'Switch' => __("Switch"),
-							'Chassis' => __("Chassis"),
-							'Patch Panel' => __("Patch Panel"),
-							'Physical Infrastructure' => __("Physical Infrastructure"));
-		}
-
 		foreach($devarray as $devType => $translation){
 			if($devType==$dev->DeviceType){$selected=" selected";}else{$selected="";}
-			print "\t\t\t<option value=\"$devType\"$selected>$translation</option>\n";  
+			print "\t\t\t<option value=\"$devType\"$selected>$translation</option>\n";
 		}
 ?>
 		   </select></div>
 		</div>
 	</div> <!-- END div.table -->
 </fieldset>
-<?php
+<fieldset id="firstport" class="hide">
+<?php echo '	<legend>'.__("Switch SNMP").'</legend>
+	<div><p>'.__("Use these buttons to set the first port for the switch, check the status of the ports again, or attempt to load the Port Name labels from the switch device.").'</p><button type="button" name="firstport">'.__("Set First Port").'</button><button type="button" name="refresh">'.__("Refresh Status").'</button><button type="button" name="name">'.__("Refresh Port Names").'</button></div>
+</fieldset>';
+
 	//
 	// Do not display the chassis contents block if this is a child device (ParentDevice > 0)
 	//
@@ -1316,8 +1646,11 @@ echo '<fieldset class="chassis">
 			<div><label for="chassisslots">',__("Number of Slots in Chassis:"),'</label></div>
 			<div><input type="text" id="chassisslots" class="optional,validate[custom[onlyNumberSp]]" name="chassisslots" size="4" value="',$dev->ChassisSlots,'"></div>
 			<div class="greybg"><input type="text" id="rearchassisslots" class="optional,validate[custom[onlyNumberSp]]" name="rearchassisslots" size="4" value="',$dev->RearChassisSlots,'"></div>
-		</div>
-	</div>
+		</div>';
+
+	if($dev->ChassisSlots >0){
+
+echo '	</div>
 	<div class="table">
 		<div>
 			<div>',__("Slot #"),'</div>
@@ -1327,19 +1660,20 @@ echo '<fieldset class="chassis">
 		</div>';
 
 	foreach($childList as $chDev){
-		print "\t\t<div".(($chDev->ChassisSlots)?' class="greybg"':'').">
+		print "\t\t<div".(($chDev->BackSide)?' class="greybg"':'').">
 			<div>$chDev->Position</div>
 			<div>$chDev->Height</div>
 			<div><a href=\"devices.php?deviceid=$chDev->DeviceID\">$chDev->Label</a></div>
 			<div>$chDev->DeviceType</div>
 		</div>\n";
 	}
-	
-	if($dev->ChassisSlots >0){
-
 echo '		<div class="caption">
-			<button type="submit" id="adddevice" value="child" name="action">',__("Add Device"),'</button>
+			<button type="submit" id="adddevice" value="Child" name="action">',__("Add Device"),'</button>
 			<input type="hidden" id="parentdevice" name="parentdevice" disabled value="',$dev->DeviceID,'">
+		</div>';
+	}else{
+echo '		<div class="caption">
+			',__("You must first define how many slots are in the chassis before you can add devices."),'
 		</div>';
 	}
 ?>
@@ -1347,62 +1681,35 @@ echo '		<div class="caption">
 </fieldset>
 <?php
 	}
-	
+
 	// Do not display ESX block if device isn't a virtual server and the user doesn't have write access
-	if(($user->WriteAccess || $dev->ESX) && ($dev->DeviceType=="Server" || $dev->DeviceType=="")){
-		echo '<fieldset>	<legend>',__("VMWare ESX Server Information"),'</legend>';
+	if(($write || $dev->ESX) && ($dev->DeviceType=="Server" || $dev->DeviceType=="")){
+		echo '<fieldset id="esxframe">	<legend>',__("VMWare ESX Server Information"),'</legend>';
 	// If the user doesn't have write access display the list of VMs but not the configuration information.
-		if($user->WriteAccess){
+		if($write){
 
 echo '	<div class="table">
 		<div>
 		   <div><label for="esx">'.__("ESX Server?").'</label></div>
 		   <div><select name="esx" id="esx"><option value="1"'.(($dev->ESX==1)?" selected":"").'>'.__("True").'</option><option value="0"'.(($dev->ESX==0)?" selected":"").'>'.__("False").'</option></select></div>
 		</div>
-		<div>
-		  <div><label for="primaryip">'.__("Primary IP").'</label></div>
-		  <div><input type="text" name="primaryip" id="primaryip" size="20" value="'.$dev->PrimaryIP.'"></div>
-		</div>
-		<div>
-		  <div><label for="snmpcommunity">'.__("SNMP Read Only Community").'</label></div>
-		  <div><input type="text" name="snmpcommunity" id="snmpcommunity" size="40" value="'.$dev->SNMPCommunity.'"></div>
-		</div>
 	</div><!-- END div.table -->';
 
 		}
 		if($dev->ESX){
-			$esx=new ESX();
-			$esx->DeviceID=$dev->DeviceID;
-			$vmList=$esx->GetDeviceInventory($facDB);
-    
-			print "\n<div class=\"table border\"><div><div>".__('VM Name')."</div><div>".__('Status')."</div><div>".__('Owner')."</div><div>".__('Last Updated')."</div></div>\n";
-			foreach($vmList as $vmRow){
-				if($vmRow->vmState=='poweredOff'){
-					$statColor='red';
-				}else{
-					$statColor='green';
-				}
-				$Dept->DeptID=$vmRow->Owner;
-				if($Dept->DeptID >0){
-					$Dept->GetDeptByID($facDB);
-				}else{
-					$Dept->Name=__('Unknown');
-				}
-				print "<div><div>$vmRow->vmName</div><div><font color=$statColor>$vmRow->vmState</font></div><div><a href=\"updatevmowner.php?vmindex=$vmRow->VMIndex\">$Dept->Name</a></div><div>$vmRow->LastUpdated</div></div>\n";
-			}
-			echo '</div> <!-- END div.table -->';
+			buildesxtable($dev->DeviceID);
 		}
 		print "</fieldset>\n";
 	}
 ?>
 </div><!-- END div.right -->
-<div class="table">
+<div class="table" id="pandn">
 <div><div>
 <div class="table style">
 <?php
 	//HTML content condensed for PHP logic clarity.
 	// If $pwrCords is null then we're creating a device record. Skip power checking.
-	if(!is_null($pwrCords)&&((isset($_POST['action'])&&$_POST['action']!='child')||!isset($_POST['action']))){
+	if(!is_null($pwrCords)&&((isset($_POST['action'])&&$_POST['action']!='Child')||!isset($_POST['action']))){
 		if(count($pwrCords)==0){
 			// We have no power information. Display links to PDU's in cabinet?
 			echo '	<div>		<div><a name="power"></a></div>		<div>',__("No power connections defined.  You can add connections from the power strip screen."),'</div></div><div><div>&nbsp;</div><div></div></div>';
@@ -1410,79 +1717,107 @@ echo '	<div class="table">
 			print "		<div>\n		  <div><a name=\"power\">$chassis ".__('Power Connections')."</a></div>\n		  <div><div class=\"table border\">\n			<div><div>".__('Panel')."</div><div>".__('Power Strip')."</div><div>".__('Plug #')."</div><div>".__('Power Supply')."</div></div>";
 			foreach($pwrCords as $cord){
 				$pdu->PDUID=$cord->PDUID;
-				$pdu->GetPDU($facDB);
+				$pdu->GetPDU();
 				$panel->PanelID=$pdu->PanelID;
-				$panel->GetPanel($facDB);
+				$panel->GetPanel();
 				print "			<div><div><a href=\"power_panel.php?panelid=$pdu->PanelID\">$panel->PanelLabel</a></div><div><a href=\"power_pdu.php?pduid=$pdu->PDUID\">$pdu->Label</a></div><div>$cord->PDUPosition</div><div>$cord->DeviceConnNumber</div></div>\n";
 			}
 			print "			</div><!-- END div.table --></div>\n		</div>\n		<div>\n			<div>&nbsp;</div><div></div>\n		</div>\n";
 		}
 	}
 
-	// If device is s switch or appliance show what the heck it is connected to.
-	if($dev->DeviceType=='Server' || $dev->DeviceType=='Appliance' || $dev->DeviceType=='Chassis' || $dev->DeviceType=='Storage Array'){
-		if((count($patchList)+count($panelList))==0){
-			// We have no network information. Display links to switches in cabinet?
-			echo '		<div>		<div><a name="power"></a></div>		<div>',("No network connections defined.  You can add connections from a switch device."),'</div></div>';
-		}else{
-			print "		<div>\n		  <div><a name=\"net\">$chassis ".__('Connections')."</a><br>(".__('Managed at Switch').")</div>\n		  <div><div class=\"table border\"><div><div>".__('Switch')."</div><div>".__('Switch Port')."</div><div>".__('Device Port')."</div><div>".__('Notes')."</div></div>\n";
-			$tmpDev=new Device();
-			foreach($patchList as $patchConn){
-				$tmpDev->DeviceID=$patchConn->SwitchDeviceID;
-				$tmpDev->GetDevice($facDB);
-				print "			<div><div><a href=\"devices.php?deviceid=$patchConn->SwitchDeviceID#net\">$tmpDev->Label</a></div><div>$patchConn->SwitchPortNumber</div><div>$patchConn->EndpointPort</div><div>$patchConn->Notes</div></div>\n";
-			}
-			print "			</div><!-- END div.table -->\n		  </div>\n		</div>\n";
+	$jsondata=array();// array to store user ability to modify a port. index=portnumber, value=true/false
+	// New simplified model will apply to all devices except for patch panels and physical infrastructure
+	if(!in_array($dev->DeviceType,array('Physical Infrastructure','Patch Panel')) && !empty($portList) ){
+		print "		<div>\n		  <div><a name=\"net\">".__('Connections')."</a></div>\n		  <div>\n			<div class=\"table border switch\">\n				<div>
+				<div>#</div>
+				<div>".__('Port Name')."</div>
+				<div>".__('Device')."</div>
+				<div>".__('Device Port')."</div>
+				<div>".__('Notes')."</div>";
+		if($dev->DeviceType=='Switch'){print "\t\t\t\t<div id=\"st\">".__("Status")."</div>";}
+		print "\t\t\t\t<div id=\"mt\">".__("Media Type")."</div>
+			<div>".__("Color Code")."</div>
+			</div>\n";
 
-			if(count($panelList)>0){
-				print "\t\t<div>\n\t\t\t<div>&nbsp;</div><div></div>\n\t\t</div>\n";				
-				print "\t\t<div>\n\t\t\t<div><a name=\"net\">$chassis ".__('Patches')."</a><br>(".__('Managed at Panel').")</div>\n\t\t\t<div>\n\t\t\t\t<div class=\"table border\">\n\t\t\t\t\t<div><div>".__('Panel')."</div><div>".__('Panel Port')."</div><div>".__('Device Port')."</div><div>".__('Notes')."</div></div>\n";
-				
-				if(is_array($panelList)){
-					foreach($panelList as $panelConn){
-						$tmpDev->DeviceID=$panelConn->PanelDeviceID;
-						$tmpDev->GetDevice($facDB);
-						print "\t\t\t\t\t<div><div><a href=\"devices.php?deviceid=$panelConn->PanelDeviceID#net\">$tmpDev->Label</a></div><div>$panelConn->PanelPortNumber</div><div>$panelConn->FrontEndpointPort</div><div>$panelConn->FrontNotes</div></div>\n";
-					}
-					print "\t\t\t\t</div><!-- END div.table -->\n\t\t\t</div>\n\t\t</div>\n";
-				}
-			}
-		}      
-	}
-		  
-	if($dev->DeviceType=='Switch'){
-		print "		<div>\n		  <div><a name=\"net\">".__('Connections')."</a></div>\n		  <div>\n			<div class=\"table border switch\">\n				<div><div>".__('Switch Port')."</div><div>".__('Device')."</div><div>".__('Device Port')."</div><div>".__('Notes')."</div></div>\n";
-		if(sizeof($patchList) >0){
-			foreach($patchList as $patchConn){
-				$tmpDev=new Device();
-				$tmpDev->DeviceID=$patchConn->EndpointDeviceID;
-				$tmpDev->GetDevice($facDB);
-				
-				print "\t\t\t\t<div><div>$patchConn->SwitchPortNumber</div><div alt=\"$patchConn->EndpointDeviceID\"><a href=\"devices.php?deviceid=$patchConn->EndpointDeviceID\">$tmpDev->Label</a></div><div data=\"$patchConn->EndpointPort\">$patchConn->EndpointPort</div><div data=\"$patchConn->Notes\">$patchConn->Notes</div></div>\n";
-			}
-		}      
+		foreach($portList as $i => $port){
+			$tmpDev=new Device();
+			$tmpDev->DeviceID=$port->ConnectedDeviceID;
+			$tmpDev->GetDevice();
+
+			// Allow the user to modify the port if they have rights over the switch itself or
+			// the attached device.
+			$jsondata[$i]=($dev->Rights=="Write")?true:($tmpDev->Rights=="Write")?true:false;
+
+			$cp=new DevicePorts();
+			$cp->DeviceID=$port->ConnectedDeviceID;
+			$cp->PortNumber=$port->ConnectedPort;
+			$cp->getPort();
+
+			if($cp->DeviceID >0 && $cp->Label==''){$cp->Label=$cp->PortNumber;};
+
+			$mt=(isset($mediaTypes[$port->MediaID]))?$mediaTypes[$port->MediaID]->MediaType:'';
+			$cc=(isset($colorCodes[$port->ColorID]))?$colorCodes[$port->ColorID]->Name:'';
+
+			if($dev->DeviceType=='Switch'){$linkList[$i]=(isset($linkList[$i]))?$linkList[$i]:'err';}
+
+			// the data attribute is used to store the previous value of the connection
+			print "\t\t\t\t<div data-port=$i>
+					<div id=\"sp$i\">$i</div>
+					<div id=\"spn$i\">$port->Label</div>
+					<div id=\"d$i\" data-default=\"$port->ConnectedDeviceID\"><a href=\"devices.php?deviceid=$port->ConnectedDeviceID\">$tmpDev->Label</a></div>
+					<div id=\"dp$i\" data-default=\"$port->ConnectedPort\"><a href=\"paths.php?deviceid=$port->ConnectedDeviceID&portnumber=$port->ConnectedPort\">$cp->Label</a></div>
+					<div id=\"n$i\" data-default=\"$port->Notes\">$port->Notes</div>";
+			if($dev->DeviceType=='Switch'){print "\t\t\t\t<div id=\"st$i\"><span class=\"ui-icon status {$linkList[$i]}\"></span></div>";}
+			print "\t\t\t\t<div id=\"mt$i\" data-default=$port->MediaID>$mt</div>
+					<div id=\"cc$i\" data-default=$port->ColorID>$cc</div>
+				</div>\n";
+		}
 		echo "			</div><!-- END div.table -->\n		  </div>\n		</div>";
 	}
 
 	if($dev->DeviceType=='Patch Panel'){
-		print "\n\t<div>\n\t\t<div><a name=\"net\">".__('Connections')."</a></div>\n\t\t<div>\n\t\t\t<div class=\"table border patchpanel\">\n\t\t\t\t<div><div>".__('Front')."</div><div>Device Port</div><div>".__('Notes')."</div><div>".__('Patch Port')."</div><div>".__('Back')."</div><div>Device Port</div><div>".__('Notes')."</div></div>\n";
-		if(sizeof($patchList) >0){
-			foreach($patchList as $patchConn){
-				$frontDev=new Device();
-				$rearDev=new Device();
-				$frontDev->DeviceID=$patchConn->FrontEndpointDeviceID;
-				$rearDev->DeviceID=$patchConn->RearEndpointDeviceID;
-				$frontDev->GetDevice($facDB);
-				$rearDev->GetDevice($facDB);
-				print "\n\t\t\t\t<div><div>$frontDev->Label</div><div>$patchConn->FrontEndpointPort</div><div>$patchConn->FrontNotes</div><div>$patchConn->PanelPortNumber</div><div>$rearDev->Label</div><div>$patchConn->RearEndpointPort</div><div>".htmlentities($patchConn->RearNotes)."</div></div>";
+		print "\n\t<div>\n\t\t<div><a name=\"net\">".__('Connections')."</a></div>\n\t\t<div>\n\t\t\t<div class=\"table border patchpanel\">\n\t\t\t\t<div><div>".__('Front')."</div><div>".__("Device Port")."</div><div>".__('Notes')."</div><div>".__('Patch Port')."</div><div>".__('Back')."</div><div>".__("Device Port")."</div><div>".__('Notes')."</div></div>\n";
+		for($n=0; $n< sizeof($portList)/2; $n++){
+			$i = $n + 1;	// The "port number" starting at 1
+			$frontDev=new Device();
+			$rearDev=new Device();
+
+			$frontDev->DeviceID=$portList[$i]->ConnectedDeviceID;
+			$rearDev->DeviceID=$portList[-$i]->ConnectedDeviceID;
+			$frontDev->GetDevice();
+			$rearDev->GetDevice();
+
+			// Allow the user to modify the port if they have rights over the patch panel itself or
+			// the attached device, but only the front port.  The rear is still reserved for administrators only.
+			$jsondata[$i]=($dev->Rights=="Write")?true:($frontDev->Rights=="Write")?true:false;
+
+			$fp=""; //front port label
+			$cPort=new DevicePorts();
+			if($frontDev->DeviceID >0){
+				$cPort->DeviceID=$frontDev->DeviceID;
+				$cPort->PortNumber=$portList[$i]->ConnectedPort;
+				$cPort->getPort();
+				$fp=($cPort->Label!="")?$cPort->Label:$cPort->PortNumber;
 			}
+
+			$rp=($portList[-$i]->ConnectedPort!='')?abs($portList[-$i]->ConnectedPort):''; //rear port label
+			print "\n\t\t\t\t<div data-port=$i>
+					<div id=\"fd$i\" data-default=$frontDev->DeviceID><a href=\"devices.php?deviceid=$frontDev->DeviceID\">$frontDev->Label</a></div>
+					<div id=\"fp$i\" data-default={$portList[$i]->ConnectedPort}><a href=\"paths.php?deviceid=$frontDev->DeviceID&portnumber={$portList[$i]->ConnectedPort}\">$fp</a></div>
+					<div id=\"fn$i\" data-default=\"{$portList[$i]->Notes}\">{$portList[$i]->Notes}</div>
+					<div id=\"pp$i\">$i</div>
+					<div id=\"rd$i\" data-default=$rearDev->DeviceID><a href=\"devices.php?deviceid=$rearDev->DeviceID\">$rearDev->Label</a></div>
+					<div id=\"rp$i\" data-default={$portList[-$i]->ConnectedPort}><a href=\"paths.php?deviceid=$rearDev->DeviceID&portnumber={$portList[-$i]->ConnectedPort}\">$rp</a></div>
+					<div id=\"rn$i\" data-default=\"{$portList[-$i]->Notes}\">{$portList[-$i]->Notes}</div>
+				</div>";
 		}
 		print "\t\t\t</div><!-- END div.table -->\n\t\t</div>\n\t</div>\n";
 	}
 ?>
 		<div class="caption">
 <?php
-	if($user->WriteAccess){
+	if($write){
 		if($dev->DeviceID >0){
 			echo '			<button type="submit" name="action" value="Update">',__("Update"),'</button>
 			<button type="submit" name="action" value="Copy">', __("Copy"), '</button>';
@@ -1493,6 +1828,9 @@ echo '	<div class="table">
 	// Delete rights are seperate from write rights
 	if($user->DeleteAccess && $dev->DeviceID >0){
 		echo '		<button type="button" name="action" value="Delete">',__("Delete"),'</button>';
+	}
+	if($dev->DeviceID >0){
+		echo '		<a href="export_port_connections.php?deviceid=',$dev->DeviceID,'"><button type="button">',__("Export Connections"),'</button></a>';
 	}
 ?>
 
@@ -1511,16 +1849,92 @@ echo '	<div class="table">
 		echo '   <div><a href="storageroom.php">[ ',__("Return to Navigator"),' ]</a></div>';
 	}
 ?>
-<div id="dialog-confirm" title="Verify Delete Device" class="hide"></div>
 
 </div><!-- END div.main -->
 </div><!-- END div.page -->
 <script type="text/javascript">
+	var portrights=$.parseJSON('<?php echo json_encode($jsondata); ?>');
+
+<?php
+	if(!$write){
+		print "\t\t//Disable all input if they don't have rights.
+		$('#firstport button[name=firstport],#firstport button[name=name]').hide();
+		$('.main input, .main select').prop('disabled', true);";
+	}
+?>
+
 	$(document).ready(function() {
-		// wait half a second after the page loads then open the tree
-		setTimeout(function(){
-			expandToItem('datacenters','cab<?php echo $cab->CabinetID;?>');
-		},500);
+		// Don't attempt to open the datacenter tree until it is loaded
+		function opentree(){
+			if($('#datacenters .bullet').length==0){
+				setTimeout(function(){
+					opentree();
+				},500);
+			}else{
+				expandToItem('datacenters','cab<?php echo $cab->CabinetID;?>');
+			}
+		}
+		opentree();
+
+		if(navigator.appName.indexOf("Internet Explorer")==-1){
+			// experimental print function
+			// only works with FF and Chrome.  Once again IE is a broken damnable mess.
+			$('<button>', { 'type': 'button' }).text('Print').click(function(e){
+				e.preventDefault();
+				var insert=$('#header').clone(); // clone header
+				var devinfo=$('<div>').addClass('device').addClass('page').append($('#deviceform').clone()); // clone devinfo
+				devinfo.find('#pandn .caption').remove(); // remove buttons
+				var popup=window.open('template.php',"Print", "menubar=0,location=0,height=700,width=700" );
+				popup.onload=function(){
+					$(popup.document.body).html(insert).after(devinfo); // put into the popup
+					popup.print(); //print
+				}
+			}).appendTo('#pandn .caption');
+		}
+
+		var setmediatype=$('<select>').css({'border':'none','position':'absolute','width':'auto'}).append($('<option>'));
+		setmediatype.append($('<option>').val('clear').text('Clear'));
+		setmediatype.change(function(){
+			var dialog=$('<div />', {id: 'modal', title: 'Override all types?'}).html('<div id="modaltext"></div><br><div id="modalstatus" class="warning">Do you want to override all media types?</div>');
+			dialog.dialog({
+				resizable: false,
+				modal: true,
+				dialogClass: "no-close",
+				buttons: {
+<?php echo '			',__("Yes"),': function(){'; ?>
+						$(this).dialog("destroy");
+						doit(true);
+					},
+<?php echo '			',__("No"),': function(){'; ?>
+						$(this).dialog("destroy");
+						doit(false);
+					}
+				}
+			});
+			function doit(override){
+				// set all the media types to the one selected from the drop down
+				$.post('',{setall: override, devid: $('#deviceid').val(), mt:setmediatype.val(), cc: setmediatype.data(setmediatype.val())}).done(function(data){
+					// setall kicked back every port run through them all and update note, media type, and color code
+					$.each(data.ports, function(key,p){
+						$('#n'+p.PortNumber).text(p.Notes);
+						$('#mt'+p.PortNumber).text((p.MediaID>0)?data.mt[p.MediaID].MediaType:'').data('default',p.MediaID);
+						$('#cc'+p.PortNumber).text((p.ColorID>0)?data.cc[p.ColorID].Name:'').data('default',p.ColorID);
+					});
+				});
+				setmediatype.val('');
+			}
+		});
+		$('#mt').append(setmediatype);
+		var pos=$('#mt').offset();
+		$.get('',{mt:''}).done(function(data){
+			$.each(data, function(key,mt){
+				var option=$("<option>",({'value':mt.MediaID})).append(mt.MediaType);
+				setmediatype.append(option).data(mt.MediaID,mt.ColorID);
+			});
+		}).then(function(){
+			setmediatype.offset({top: pos.top, left: pos.left+$('#mt').outerWidth()-setmediatype.width()});
+		});
+
 	});
 </script>
 
