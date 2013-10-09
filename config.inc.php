@@ -9,8 +9,9 @@ class Config{
 		
 		//Get parameter value pairs from fac_Config
 		$sql='select Parameter, Value, DefaultVal from fac_Config';
-			
-		foreach ($dbh->query( $sql ) as $row){
+                $sth=$dbh->prepare($sql);
+                $sth->execute();
+		while ($row = $sth->fetch()) {
 			if ($row['Parameter']== 'ClassList'){
 				$List = explode(', ', $row['Value']);
 				$this->ParameterArray[$row['Parameter']]=$List;
