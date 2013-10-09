@@ -102,7 +102,7 @@ CREATE TABLE fac_CDUTemplate (
   Managed int(1) NOT NULL,
   SNMPVersion enum('1','2c'),
   VersionOID varchar(80) NOT NULL,
-  Multiplier enum( '1', '10', '100' ),
+  Multiplier enum( '0.1', '1', '10', '100' ),
   OID1 varchar(80) NOT NULL,
   OID2 varchar(80) NOT NULL,
   OID3 varchar(80) NOT NULL,
