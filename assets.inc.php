@@ -2326,7 +2326,9 @@ class DevicePorts {
 			$sql="SELECT a.*, AssignedTo FROM fac_Device a, fac_Cabinet b WHERE Ports>0 
 				AND Cabinet=CabinetID AND Cabinet=$dev->Cabinet AND DeviceID!=$dev->DeviceID
 				$rights$mediaenforce$pp ORDER BY Position DESC, Label ASC;";
-			foreach($dbh->query($sql) as $row){
+                        $sth=$dbh->prepare($sql);
+                        $sth->execute();
+			while($row = $sth->fetch()) {
 				// false to skip rights check we filtered using sql above
 				$tmpDev=Device::RowToObject($row,false);
 				$candidates[]=array("DeviceID"=>$tmpDev->DeviceID, "Label"=>$tmpDev->Label);
@@ -2335,7 +2337,9 @@ class DevicePorts {
 			$sql="SELECT a.*, AssignedTo FROM fac_Device a, fac_Cabinet b WHERE Ports>0 
 				AND Cabinet=CabinetID AND Cabinet!=$dev->Cabinet AND Cabinet>-1 AND 
 				DeviceID!=$dev->DeviceID$rights$mediaenforce$pp ORDER BY Label ASC;";
-			foreach($dbh->query($sql) as $row){
+                        $sth=$dbh->prepare($sql);
+                        $sth->execute();
+			while($row = $sth->fetch()) {
 				// false to skip rights check we filtered using sql above
 				$tmpDev=Device::RowToObject($row,false);
 				$candidates[]=array("DeviceID"=>$tmpDev->DeviceID, "Label"=>$tmpDev->Label);
