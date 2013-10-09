@@ -1666,6 +1666,16 @@ echo '<div class="main">
 						</select>
 					</div>
 				</div>
+				<div>
+					<div><label for="PageSize">',__("Page Size"),'</label></div>
+					<div><select id="PageSize" name="PageSize" defaultvalue="',$config->defaults["PageSize"],'" data="',$config->ParameterArray["PageSize"],'">
+							<option value="A4"',(($config->ParameterArray["PageSize"]=="A4")?' selected="selected"':''),'>',__("A4"),'</option>
+							<option value="A3"',(($config->ParameterArray["PageSize"]=="A3")?' selected="selected"':''),'>',__("A3"),'</option>
+							<option value="Letter"',(($config->ParameterArray["PageSize"]=="Letter")?' selected="selected"':''),'>',__("Letter"),'</option>
+							<option value="Legal"',(($config->ParameterArray["PageSize"]=="Legal")?' selected="selected"':''),'>',__("Legal"),'</option>
+						</select>
+					</div>
+				</div>
 			</div> <!-- end table -->
 			<h3>',__("Users"),'</h3>
 			<div class="table">
@@ -1698,32 +1708,50 @@ echo '<div class="main">
 				<div>
 					<div><label for="SpaceRed">',__("Space Critical"),'</label></div>
 					<div><input type="text" defaultvalue="',$config->defaults["SpaceRed"],'" name="SpaceRed" value="',$config->ParameterArray["SpaceRed"],'"></div>
+					<div></div>
+					<div><label for="TemperatureRed">',__("Temperature Critical"),'</label></div>
+					<div><input type="text" defaultvalue="',$config->defaults["TemperatureRed"],'" name="TemperatureRed" value="',$config->ParameterArray["TemperatureRed"],'"></div>
 				</div>
 				<div>
 					<div><label for="SpaceYellow">',__("Space Warning"),'</label></div>
 					<div><input type="text" defaultvalue="',$config->defaults["SpaceYellow"],'" name="SpaceYellow" value="',$config->ParameterArray["SpaceYellow"],'"></div>
+					<div></div>
+					<div><label for="TemperatureYellow">',__("Temperature Warning"),'</label></div>
+					<div><input type="text" defaultvalue="',$config->defaults["TemperatureYellow"],'" name="TemperatureYellow" value="',$config->ParameterArray["TemperatureYellow"],'"></div>
 				</div>
 				<div>
 					<div><label for="WeightRed">',__("Weight Critical"),'</label></div>
 					<div><input type="text" defaultvalue="',$config->defaults["WeightRed"],'" name="WeightRed" value="',$config->ParameterArray["WeightRed"],'"></div>
+					<div></div>
+					<div><label for="HumidityRedHigh">',__("High Humidity Critical"),'</label></div>
+					<div><input type="text" defaultvalue="',$config->defaults["HumidityRedHigh"],'" name="HumidityRedHigh" value="',$config->ParameterArray["HumidityRedHigh"],'"></div>
 				</div>
 				<div>
 					<div><label for="WeightYellow">',__("Weight Warning"),'</label></div>
 					<div><input type="text" defaultvalue="',$config->defaults["WeightYellow"],'" name="WeightYellow" value="',$config->ParameterArray["WeightYellow"],'"></div>
+					<div></div>
+					<div><label for="HumidityRedLow">',__("Low Humidity Critical"),'</label></div>
+					<div><input type="text" defaultvalue="',$config->defaults["HumidityRedLow"],'" name="HumidityRedLow" value="',$config->ParameterArray["HumidityRedLow"],'"></div>
 				</div>
 				<div>
 					<div><label for="PowerRed">',__("Power Critical"),'</label></div>
 					<div><input type="text" defaultvalue="',$config->defaults["PowerRed"],'" name="PowerRed" value="',$config->ParameterArray["PowerRed"],'"></div>
+					<div></div>
+					<div><label for="HumidityYellowHigh">',__("High Humidity Caution"),'</label></div>
+					<div><input type="text" defaultvalue="',$config->defaults["HumidityYellowHigh"],'" name="HumidityYellowHigh" value="',$config->ParameterArray["HumidityYellowHigh"],'"></div>
 				</div>
 				<div>
 					<div><label for="PowerYellow">',__("Power Warning"),'</label></div>
 					<div><input type="text" defaultvalue="',$config->defaults["PowerYellow"],'" name="PowerYellow" value="',$config->ParameterArray["PowerYellow"],'"></div>
+					<div></div>
+					<div><label for="HumidityYellowLow">',__("Low Humidity Caution"),'</label></div>
+					<div><input type="text" defaultvalue="',$config->defaults["HumidityYellowLow"],'" name="HumidityYellowLow" value="',$config->ParameterArray["HumidityYellowLow"],'"></div>
 				</div>
 			</div> <!-- end table -->
 			<h3>',__("Virtual Machines"),'</h3>
 			<div class="table" id="rackusage">
 				<div>
-					<div><lable for="VMExpirationTime">',__("Expiration Time (Days)"),'</label></div>
+					<div><label for="VMExpirationTime">',__("Expiration Time (Days)"),'</label></div>
 					<div><input type="text" defaultvalue="',$config->defaults["VMExpirationTime"],'" name="VMExpirationTime" value="',$config->ParameterArray["VMExpirationTime"],'"></div>
 				</div>
 			</div> <!-- end table -->
@@ -1735,19 +1763,19 @@ echo '<div class="main">
 				<div>
 					<div><label for="CriticalColor">',__("Critical Color"),'</label></div>
 					<div><div class="cp"><input type="text" class="color-picker" name="CriticalColor" value="',$config->ParameterArray["CriticalColor"],'"></div></div>
-					<div><button type="button"><--</button></div>
+					<div><button type="button">&lt;--</button></div>
 					<div><span>',strtoupper($config->defaults["CriticalColor"]),'</span></div>
 				</div>
 				<div>
 					<div><label for="CautionColor">',__("Caution Color"),'</label></div>
 					<div><div class="cp"><input type="text" class="color-picker" name="CautionColor" value="',$config->ParameterArray["CautionColor"],'"></div></div>
-					<div><button type="button"><--</button></div>
+					<div><button type="button">&lt;--</button></div>
 					<div><span>',strtoupper($config->defaults["CautionColor"]),'</span></div>
 				</div>
 				<div>
 					<div><label for="GoodColor">',__("Good Color"),'</label></div>
 					<div><div class="cp"><input type="text" class="color-picker" name="GoodColor" value="',$config->ParameterArray["GoodColor"],'"></div></div>
-					<div><button type="button"><--</button></div>
+					<div><button type="button">&lt;--</button></div>
 					<div><span>',strtoupper($config->defaults["GoodColor"]),'</span></div>
 				</div>
 				<div>
@@ -1759,13 +1787,13 @@ echo '<div class="main">
 				<div>
 					<div><label for="ReservedColor">',__("Reserved Devices"),'</label></div>
 					<div><div class="cp"><input type="text" class="color-picker" name="ReservedColor" value="',$config->ParameterArray["ReservedColor"],'"></div></div>
-					<div><button type="button"><--</button></div>
+					<div><button type="button">&lt;--</button></div>
 					<div><span>',strtoupper($config->defaults["ReservedColor"]),'</span></div>
 				</div>
 				<div>
 					<div><label for="FreeSpaceColor">',__("Unused Spaces"),'</label></div>
 					<div><div class="cp"><input type="text" class="color-picker" name="FreeSpaceColor" value="',$config->ParameterArray["FreeSpaceColor"],'"></div></div>
-					<div><button type="button"><--</button></div>
+					<div><button type="button">&lt;--</button></div>
 					<div><span>',strtoupper($config->defaults["FreeSpaceColor"]),'</span></div>
 				</div>
 			</div> <!-- end table -->
@@ -1787,25 +1815,25 @@ echo '<div class="main">
 				<div>
 					<div><label for="HeaderColor">',__("Header Color"),'</label></div>
 					<div><div class="cp"><input type="text" class="color-picker" name="HeaderColor" value="',$config->ParameterArray["HeaderColor"],'"></div></div>
-					<div><button type="button"><--</button></div>
+					<div><button type="button">&lt;--</button></div>
 					<div><span>',strtoupper($config->defaults["HeaderColor"]),'</span></div>
 				</div>
 				<div>
 					<div><label for="BodyColor">',__("Body Color"),'</label></div>
 					<div><div class="cp"><input type="text" class="color-picker" name="BodyColor" value="',$config->ParameterArray["BodyColor"],'"></div></div>
-					<div><button type="button"><--</button></div>
+					<div><button type="button">&lt;--</button></div>
 					<div><span>',strtoupper($config->defaults["BodyColor"]),'</span></div>
 				</div>
 				<div>
 					<div><label for="LinkColor">',__("Link Color"),'</label></div>
 					<div><div class="cp"><input type="text" class="color-picker" name="LinkColor" value="',$config->ParameterArray["LinkColor"],'"></div></div>
-					<div><button type="button"><--</button></div>
+					<div><button type="button">&lt;--</button></div>
 					<div><span>',strtoupper($config->defaults["LinkColor"]),'</span></div>
 				</div>
 				<div>
 					<div><label for="VisitedLinkColor">',__("Viewed Link Color"),'</label></div>
 					<div><div class="cp"><input type="text" class="color-picker" name="VisitedLinkColor" value="',$config->ParameterArray["VisitedLinkColor"],'"></div></div>
-					<div><button type="button"><--</button></div>
+					<div><button type="button">&lt;--</button></div>
 					<div><span>',strtoupper($config->defaults["VisitedLinkColor"]),'</span></div>
 				</div>
 			</div> <!-- end table -->
