@@ -180,7 +180,7 @@ $(document).ready(function() {
 		$('#mapCanvas').parent('.canvas').css('width', $('.canvas > img[alt="clearmap over canvas"]').width()+'px');
 
 		$('map[name="datacenter"] area[name="cab"]').mouseenter(function(){
-			var pos=$(this).offset();
+			var pos=$('.canvas').offset();
 			var despl=$(this).attr('coords');
 			var coor=despl.split(',');
 			var tx=pos.left+(coor[2]*1)+17;
@@ -201,7 +201,7 @@ $(document).ready(function() {
 		});
 
 		$('map[name="datacenter"] area[name="zone"]').mouseenter(function(){
-			var pos=$(this).offset();
+			var pos=$('.canvas').offset();
 			var despl=$(this).attr('coords');
 			var coor=despl.split(',');
 			var tx=pos.left+(coor[0]*1);
