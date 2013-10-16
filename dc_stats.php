@@ -184,7 +184,7 @@ $(document).ready(function() {
 			var despl=$(this).attr('coords');
 			var coor=despl.split(',');
 			var tx=parseInt(pos.left)+parseInt(coor[2])+17;
-			var ty=parseInt(pos.top)+parseInt(coor[1])-7;
+			var ty=parseInt(pos.top)+(parseInt(coor[1])+parseInt(coor[3]))/2-17;
 			var tooltip=$('<div />').css({
 				'left':tx+'px',
 				'top':ty+'px'

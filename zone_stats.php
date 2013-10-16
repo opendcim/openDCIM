@@ -189,11 +189,11 @@ $(document).ready(function() {
 		$('#mapCanvas').parent('.canvas').css('width', $('.canvas > img[alt="clearmap over canvas"]').width()+'px');
 
 		$('map[name="datacenter"] area').mouseenter(function(){
-			var pos=$(this).offset();
+			var pos=$('.canvas').offset();
 			var despl=$(this).attr('coords');
 			var coor=despl.split(',');
-			var tx=pos.left+(coor[2]*1)+15;
-			var ty=pos.top+(coor[1]*1);
+			var tx=parseInt(pos.left)+parseInt(coor[2])+17;
+			var ty=parseInt(pos.top)+(parseInt(coor[1])+parseInt(coor[3]))/2-17;
 			var tooltip=$('<div />').css({
 				'left':tx+'px',
 				'top':ty+'px'
