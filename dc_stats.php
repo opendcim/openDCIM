@@ -183,8 +183,8 @@ $(document).ready(function() {
 			var pos=$('.canvas').offset();
 			var despl=$(this).attr('coords');
 			var coor=despl.split(',');
-			var tx=pos.left+(coor[2]*1)+17;
-			var ty=pos.top+(coor[1]*1)-7;
+			var tx=parseInt(pos.left)+parseInt(coor[2])+17;
+			var ty=parseInt(pos.top)+parseInt(coor[1])-7;
 			var tooltip=$('<div />').css({
 				'left':tx+'px',
 				'top':ty+'px'
@@ -204,46 +204,55 @@ $(document).ready(function() {
 			var pos=$('.canvas').offset();
 			var despl=$(this).attr('coords');
 			var coor=despl.split(',');
-			var tx=pos.left+(coor[0]*1);
-			var ty=pos.top+(coor[1]*1);
-			var tw=coor[2]-coor[0];
-			var th=coor[3]-coor[1];
+			var tx=parseInt(pos.left)+parseInt(coor[0]);
+			var ty=parseInt(pos.top)+parseInt(coor[1]);
+			var tw=parseInt(coor[2])-parseInt(coor[0]);
+			var th=parseInt(coor[3])-parseInt(coor[1]);
+			var ancho=2;
 			//alert(nombre);
 			var zoneborderl=$('<div id="zoneborderl" />').css({
 				'z-index': 99,
 				'position': 'absolute',
-				'border': '2px solid red',
-				'left':tx-1+'px',
-				'top':ty-1+'px',
-				'width':0+'px',
-				'height':th+2+'px'});
+				'border-style': 'none',
+				'border-left': ancho+'px solid red',
+				'background-color': 'red',
+				'left':(tx-ancho-1)+'px',
+				'top':(ty-ancho-1)+'px',
+				'width':'0px',
+				'height':(th+ancho*2+2)+'px'});
 			$('body').append(zoneborderl);
 			var zoneborderu=$('<div id="zoneborderu" />').css({
 				'z-index': 99,
 				'position': 'absolute',
-				'border': '2px solid red',
-				'left':tx-1+'px',
-				'top':ty-1+'px',
-				'width':tw+2+'px',
-				'height':0+'px'});
+				'border-style': 'none',
+				'border-top': ancho+'px solid red',
+				'background-color': 'red',
+				'left':(tx-ancho-1)+'px',
+				'top':(ty-ancho-1)+'px',
+				'width':(tw+ancho*2+2)+'px',
+				'height':'0px'});
 			$('body').append(zoneborderu);
 			var zoneborderr=$('<div id="zoneborderr" />').css({
 				'z-index': 99,
 				'position': 'absolute',
-				'border': '2px solid red',
-				'left':tx+tw+1+'px',
-				'top':ty-1+'px',
-				'width':0+'px',
-				'height':th+2+'px'});
+				'border-style': 'none',
+				'border-right': ancho+'px solid red',
+				'background-color': 'red',
+				'left':(tx+tw+1)+'px',
+				'top':(ty-ancho-1)+'px',
+				'width':'0px',
+				'height':(th+ancho*2+2)+'px'});
 			$('body').append(zoneborderr);
 			var zoneborderd=$('<div id="zoneborderd" />').css({
 				'z-index': 99,
 				'position': 'absolute',
-				'border': '2px solid red',
-				'left':tx-1+'px',
-				'top':ty+th+1+'px',
-				'width':tw+2+'px',
-				'height':0+'px'});
+				'border-style': 'none',
+				'border-bottom': ancho+'px solid red',
+				'background-color': 'red',
+				'left':(tx-ancho-1)+'px',
+				'top':(ty+th+1)+'px',
+				'width':(tw+ancho*2+2)+'px',
+				'height':'0px'});
 			$('body').append(zoneborderd);
 			$(this).mouseleave(function(){
 				var b=document.getElementById("zoneborderl");
