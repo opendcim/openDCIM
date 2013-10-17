@@ -334,25 +334,24 @@ class DataCenter {
 				 
 				if(is_null($nolinks)){
 					$sql="SELECT * FROM fac_Cabinet WHERE DataCenterID=$this->DataCenterID;";
-
 					if($racks=$this->query($sql)){ 
 						foreach($racks as $row){
 							$mapHTML.="<area name=\"cab\" href=\"cabnavigator.php?cabinetid={$row["CabinetID"]}\" shape=\"rect\"";
 							$mapHTML.=" coords=\"{$row["MapX1"]},{$row["MapY1"]},{$row["MapX2"]},{$row["MapY2"]}\"";
-//							$mapHTML.=" alt=\"{$row["Location"]}\" title=\"{$row["Location"]}\">\n";
-							$mapHTML.=" alt=\"{$row["Location"]}\">\n";
+							$mapHTML.=" alt=\"{$row["Location"]}\" data-zone=\"zone{$row["ZoneID"]}\">\n";
 						}
 					}
-					$sql="SELECT * FROM fac_Zone WHERE DataCenterID=$this->DataCenterID;";
 
+					$sql="SELECT * FROM fac_Zone WHERE DataCenterID=$this->DataCenterID;";
 					if($zones=$this->query($sql)){ 
 						foreach($zones as $row){
-							$mapHTML.="<area name=\"zone\" href=\"zone_stats.php?zone={$row["ZoneID"]}\" shape=\"rect\"";
+							$mapHTML.="<area name=\"zone{$row["ZoneID"]}\" href=\"zone_stats.php?zone={$row["ZoneID"]}\" shape=\"rect\"";
 							$mapHTML.=" coords=\"{$row["MapX1"]},{$row["MapY1"]},{$row["MapX2"]},{$row["MapY2"]}\"";
 							$mapHTML.=" alt=\"{$row["Description"]}\" title=\"{$row["Description"]}\">\n";
-//							$mapHTML.=" alt=\"{$row["Location"]}\">\n";
 						}
 					}
+
+					// What is this for?
 					$mapHTML.="<area name=\"dc\" shape=\"rect\"";
 					$mapHTML.=" coords=\"0,0,{$width},{$height}\"";
 					$mapHTML.=" alt=\"{$this->Name}\" title=\"{$this->Name}\">\n";
@@ -365,6 +364,46 @@ class DataCenter {
 			}
 		}
 		return $mapHTML;
+	}
+
+	function MakeZoneJS(){
+		$this->MakeSafe();
+		$js='';
+		
+		if(strlen($this->DrawingFileName)>0){
+			$sql="SELECT * FROM fac_Zone WHERE DataCenterID=$this->DataCenterID;";
+			if($zones=$this->query($sql)){ 
+				foreach($zones as $row){
+					$zone=Zone::RowToObject($row);
+					if($zone->MapX1==0 && $zone->MapX2==0 && $zone->MapY1==0 && $zone->MapY2==0){
+						// zone exists but has no shape, ignore it.
+					}else{
+						if(strlen($js)>0){
+							//Already have an initial if so add an else if
+							$else="} else ";
+						}else{
+							$else="";
+						}
+						$js.="\t\t\t".$else."if(e.pageX>(pos.left+$zone->MapX1) && e.pageX<(pos.left+$zone->MapX1+".($zone->MapX2-$zone->MapX1).")){\n";
+						$js.="\t\t\t\tif(e.pageY>(pos.top+$zone->MapY1) && e.pageY<(pos.top+$zone->MapY1+".($zone->MapY2-$zone->MapY1).")){\n";
+						$js.="\t\t\t\t\tif(!redraw){\n\t\t\t\t\t\tHilightZone('zone$zone->ZoneID');\n\t\t\t\t\t}\n\t\t\t\t\tredraw=true;\n";
+						$js.="\t\t\t\t}\n";
+					}
+				}
+				if(strlen($js)>0){
+					// add the first and last bits needs to make the loops function
+					$hilight="\n\t\tfunction HilightZone(area){\n\t\t\t$('.main .nav select').trigger('change');\n";
+					$hilight.="\t\t\t//there has to be a better way to do this.  stupid js\n\t\t\tarea=$('area[name='+area+']').prop('coords').split(',');\n";
+					$hilight.="\t\t\tcontext.lineWidth='4';\n\t\t\tcontext.strokeStyle='red';\n";
+					$hilight.="\t\t\tcontext.strokeRect(area[0],area[1],(area[2]-area[0]),(area[3]-area[1]));\n\t\t}\n";
+
+					$js="$hilight\t\tvar redraw=false;\n\t\tvar pos=$('#mapCanvas').offset();\n\t\t$('.canvas').mousemove(function(e){\n".$js;
+					$js.="\t\t\t}else if(redraw){\n\t\t\t\tredraw=false;\n\t\t\t\t$('.main .nav select').trigger('change');\n\t\t\t}\n\t\t});\n";
+				}
+			}
+		}
+
+		return $js;
 	}
 
 	function DrawCanvas(){
@@ -411,7 +450,7 @@ class DataCenter {
 				// get image file attributes and type
 				list($width, $height, $type, $attr)=getimagesize($mapfile);
 
-				$script.="\n\t\tvar maptitle=$('#maptitle');
+				$script.="\n\t\tvar maptitle=$('#maptitle span');
 		var mycanvas=document.getElementById(\"mapCanvas\");
 		var context=mycanvas.getContext('2d');
 		context.globalCompositeOperation='destination-over';

@@ -153,6 +153,12 @@ div#dcstats > div{ width: 100%;}
 div#dcstats .table + .table > div > div + div{white-space: pre; text-align: right;}
 .canvas {position: relative;}
 .canvas img {position: absolute; top: 0; left: 0;}
+.dcstats ~ #tt span {font-size: 1.5em; text-align: center; font-weight: bold;}
+.dcstats ~ #tt ul {list-style-type: none;}
+.dcstats ~ #tt ul li.red {background: url('../images/rs.png') left center no-repeat; line-height: 20px; padding-left: 20px;}
+.dcstats ~ #tt ul li.green {background: url('../images/gs.png') left center no-repeat; line-height: 20px; padding-left: 20px;}
+.dcstats ~ #tt ul li.yellow {background: url('../images/ys.png') left center no-repeat; line-height: 20px; padding-left: 20px;}
+.dcstats ~ #tt ul li.wtf {background: url('../images/us.png') left center no-repeat; line-height: 20px; padding-left: 20px;}
 
 /* Storage Room */
 .storage .table, .storage .table #title { background: white; }
