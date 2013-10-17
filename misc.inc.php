@@ -87,7 +87,7 @@ function redirect($target = null) {
 			return $target;
 		}
 	}
-	if(array_key_exists('HTTPS', $_SERVER) and ,$_SERVER["HTTPS"]=='on') {
+	if(array_key_exists('HTTPS', $_SERVER) && $_SERVER["HTTPS"]=='on') {
 		$url = "https://".$_SERVER['HTTP_HOST'].$target;
 	} else {
 		$url = "http://".$_SERVER['HTTP_HOST'].$target;
