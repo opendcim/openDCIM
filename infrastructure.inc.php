@@ -392,13 +392,13 @@ class DataCenter {
 				}
 				if(strlen($js)>0){
 					// add the first and last bits needs to make the loops function
-					$hilight="\n\t\tfunction HilightZone(area){\n\t\t\t$('.main .nav select').trigger('change');\n";
+					$hilight="\n\t\tfunction HilightZone(area){\n\t\t\tcontext.globalCompositeOperation='source-over';\n";
 					$hilight.="\t\t\t//there has to be a better way to do this.  stupid js\n\t\t\tarea=$('area[name='+area+']').prop('coords').split(',');\n";
 					$hilight.="\t\t\tcontext.lineWidth='4';\n\t\t\tcontext.strokeStyle='red';\n";
 					$hilight.="\t\t\tcontext.strokeRect(area[0],area[1],(area[2]-area[0]),(area[3]-area[1]));\n\t\t}\n";
 
 					$js="$hilight\t\tvar redraw=false;\n\t\tvar pos=$('#mapCanvas').offset();\n\t\t$('.canvas').mousemove(function(e){\n".$js;
-					$js.="\t\t\t}else if(redraw){\n\t\t\t\tredraw=false;\n\t\t\t\t$('.main .nav select').trigger('change');\n\t\t\t}\n\t\t});\n";
+					$js.="\t\t\t}else if(redraw){\n\t\t\t\t$('#maptitle .nav select').trigger('change');\n\t\t\t\tredraw=false;\n\t\t\t}\n\t\t});\n";
 				}
 			}
 		}
@@ -454,6 +454,7 @@ class DataCenter {
 		var mycanvas=document.getElementById(\"mapCanvas\");
 		var context=mycanvas.getContext('2d');
 		context.globalCompositeOperation='destination-over';
+		context.save();
 
 		function clearcanvas(){
 			// erase anything on the canvas
@@ -462,7 +463,9 @@ class DataCenter {
 			var img=new Image();
 			// draw after the image has loaded
 			img.onload=function(){
-				context.drawImage(img,0,0);
+				$('div.canvas').css('background','url(\"$mapfile\")');
+				// changed to eliminate the flickering of reloading the background image on a redraw
+				//context.drawImage(img,0,0);
 			}
 			// give it an image to load
 			img.src=\"$mapfile\";
