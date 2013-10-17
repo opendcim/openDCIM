@@ -463,7 +463,7 @@ class DataCenter {
 			var img=new Image();
 			// draw after the image has loaded
 			img.onload=function(){
-				$('div.canvas').css('background','url(\"$mapfile\")');
+				$('div.canvas').css('background-image','url(\"$mapfile\")');
 				// changed to eliminate the flickering of reloading the background image on a redraw
 				//context.drawImage(img,0,0);
 			}

@@ -151,7 +151,7 @@ div#imageselection { display: none;}
 div#dcstats { display: table;}
 div#dcstats > div{ width: 100%;}
 div#dcstats .table + .table > div > div + div{white-space: pre; text-align: right;}
-.canvas {position: relative; background-repeat: none;}
+.canvas {position: relative; background-repeat: no-repeat;}
 .canvas img {position: absolute; top: 0; left: 0;}
 .dcstats ~ #tt span {font-size: 1.5em; text-align: center; font-weight: bold;}
 .dcstats ~ #tt ul {list-style-type: none;}
