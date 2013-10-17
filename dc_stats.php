@@ -117,12 +117,12 @@ $(document).ready(function() {
 				
         	$used=$cab->CabinetOccupancy($cab->CabinetID);
 			// check to make sure the cabinet height is set to keep errors out of the logs
-			if(!isset($cab->CabinetHeight)||$cab->CabinetHeight==0){$SpacePercent=100;}else{$SpacePercent=number_format($used /$cab->CabinetHeight *100,0);}
+			if(!isset($cab->CabinetHeight)||$cab->CabinetHeight==0){$SpacePercent=100;}else{$SpacePercent=locale_number($used /$cab->CabinetHeight *100,0);}
 			// check to make sure there is a weight limit set to keep errors out of logs
-			if(!isset($cab->MaxWeight)||$cab->MaxWeight==0){$WeightPercent=0;}else{$WeightPercent=number_format($totalWeight /$cab->MaxWeight *100,0);}
+			if(!isset($cab->MaxWeight)||$cab->MaxWeight==0){$WeightPercent=0;}else{$WeightPercent=locale_number($totalWeight /$cab->MaxWeight *100,0);}
 			// check to make sure there is a kilowatt limit set to keep errors out of logs
-        	if(!isset($cab->MaxKW)||$cab->MaxKW==0){$PowerPercent=0;}else{$PowerPercent=number_format(($totalWatts /1000 ) /$cab->MaxKW *100,0);}
-			if(!isset($cab->MaxKW)||$cab->MaxKW==0){$RealPowerPercent=0;}else{$RealPowerPercent=number_format(($currentRealPower /1000 ) /$cab->MaxKW *100,0, ",", ".");}
+        	if(!isset($cab->MaxKW)||$cab->MaxKW==0){$PowerPercent=0;}else{$PowerPercent=locale_number(($totalWatts /1000 ) /$cab->MaxKW *100,0);}
+			if(!isset($cab->MaxKW)||$cab->MaxKW==0){$RealPowerPercent=0;}else{$RealPowerPercent=locale_number(($currentRealPower /1000 ) /$cab->MaxKW *100,0);}
 		
 			//Decide which color to paint on the canvas depending on the thresholds
 			if($SpacePercent>$SpaceRed){$scolor=$rs;}elseif($SpacePercent>$SpaceYellow){$scolor=$ys;}else{$scolor=$gs;}
@@ -134,12 +134,12 @@ $(document).ready(function() {
 			if($currentHumidity==0){$hcolor=$us;}elseif($currentHumidity>$HumidityMax || $currentHumidity<$HumidityMin){$hcolor=$rs;
 			}elseif($currentHumidity>$HumidityMedMax || $currentHumidity<$HumidityMedMin) {$hcolor=$ys;}else{$hcolor=$gs;}
 				
-			$labelsp=number_format($used,0, ",", ".")." / ".$cab->CabinetHeight." U";
-			$labelwe=number_format($totalWeight,0, ",", ".")." / ".$cab->MaxWeight." Kg";
-			$labelpo=number_format($totalWatts/1000,2, ",", ".")." / ".$cab->MaxKW." kW";
-			$labelte=(($currentTemperature>0)?number_format($currentTemperature,0, ",", ".")."&deg; (".$lastRead.")":__("no data"));
-			$labelhu=(($currentHumidity>0)?number_format($currentHumidity,0, ",", ".")." % (".$lastRead.")":__("no data"));
-			$labelrp=(($RPlastRead<>0)?number_format($currentRealPower/1000,2, ",", ".")." / ".$cab->MaxKW." kW (".$RPlastRead.")":__("no data"));
+			$labelsp=locale_number($used,0)." / ".$cab->CabinetHeight." U";
+			$labelwe=locale_number($totalWeight,0)." / ".$cab->MaxWeight." Kg";
+			$labelpo=locale_number($totalWatts/1000,2)." / ".$cab->MaxKW." kW";
+			$labelte=(($currentTemperature>0)?locale_number($currentTemperature,0)."&deg; (".$lastRead.")":__("no data"));
+			$labelhu=(($currentHumidity>0)?locale_number($currentHumidity,0)." % (".$lastRead.")":__("no data"));
+			$labelrp=(($RPlastRead<>0)?locale_number($currentRealPower/1000,2)." / ".$cab->MaxKW." kW (".$RPlastRead.")":__("no data"));
 						
 			$tooltip="<span>$cab->Location</span><ul>\n";
 			$tooltip.="<li class=\"$scolor\">".__("Space").": ".$labelsp."</li>\n";

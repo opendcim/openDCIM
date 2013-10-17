@@ -522,4 +522,10 @@ function generatePatterns($patSpecs, $count) {
     return $patternList;
 }
 
+function locale_number( $number, $decimals=2 ) {
+    $locale = localeconv();
+    return number_format($number,$decimals,
+               $locale['decimal_point'],
+               $locale['thousands_sep']);
+}
 ?>
