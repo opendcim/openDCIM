@@ -59,6 +59,7 @@
 		$cab->InstallationDate=$_POST['installationdate'];
 		$cab->SensorIPAddress=$_POST['sensoripaddress'];
 		$cab->SensorCommunity=$_POST['sensorcommunity'];
+		$cab->SensorTemplateID=$_POST['sensortemplateid'];
 		$cab->Notes=trim($_POST['notes']);
 		$cab->Notes=($cab->Notes=="<br>")?"":$cab->Notes;
 		$cab->SetTags($tagarray);

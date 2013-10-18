@@ -498,6 +498,7 @@ class Cabinet {
 	
 	static function UpdateSensors( $CabinetID = null ) {
 		global $dbh;
+		global $config;
 		
 		if ( ! function_exists( "snmpget" ) ) {
 			return;
@@ -533,8 +534,6 @@ class Cabinet {
 			if ( $row["HumidityMultiplier"] != 0 ) {
 				$humid *= $row["HumidityMultiplier"];
 			}
-			
-			printf( "Temp = %d\nHumidity=%d%%\n", $temp, $humid );
 			
 			$sensors->execute( array( "cabinetid"=>$row["CabinetID"], "temp"=>$temp, "humidity"=>$humid ) );
 		}

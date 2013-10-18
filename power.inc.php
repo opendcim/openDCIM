@@ -641,8 +641,8 @@ class PowerDistribution {
 			if($pollValue1!=""){
 				// The multiplier should be an int but no telling what voodoo the db might cause
 				$pollValue1=intval($pollValue1);
-				$pollValue2=intval($pollValue2);
-				$pollValue3=intval($pollValue3);
+				$pollValue2=@intval($pollValue2);
+				$pollValue3=@intval($pollValue3);
 				$row["Multiplier"]=intval($row["Multiplier"]);
 				$row["Voltage"]=intval($row["Voltage"]);
 

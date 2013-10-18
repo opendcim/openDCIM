@@ -56,14 +56,12 @@ $(document).ready(function() {
 	if(isset($_POST['tooltip'])){
 		
 		$sql="SELECT C.*, T.Temp, T.Humidity, P.RealPower, T.LastRead, PLR.RPLastRead 
-			FROM ((fac_Cabinet C LEFT JOIN fac_CabinetTemps T ON C.CabinetId = T.CabinetID) LEFT JOIN
-				(SELECT CabinetID, SUM(Wattage) RealPower
-				FROM fac_PowerDistribution PD LEFT JOIN fac_PDUStats PS ON PD.PDUID=PS.PDUID
-				GROUP BY CabinetID) P ON C.CabinetId = P.CabinetID) LEFT JOIN
-				(SELECT CabinetID, MAX(LastRead) RPLastRead
-				FROM fac_PowerDistribution PD LEFT JOIN fac_PDUStats PS ON PD.PDUID=PS.PDUID
-				GROUP BY CabinetID) PLR ON C.CabinetId = PLR.CabinetID
-		    WHERE C.CabinetId=".intval($_POST['tooltip']).";";
+			FROM ((fac_Cabinet C LEFT JOIN fac_CabinetTemps T ON C.CabinetID = T.CabinetID) 
+			LEFT JOIN (SELECT CabinetID, SUM(Wattage) RealPower FROM fac_PowerDistribution PD 
+			LEFT JOIN fac_PDUStats PS ON PD.PDUID=PS.PDUID GROUP BY CabinetID) P ON C.CabinetID = P.CabinetID) 
+			LEFT JOIN (SELECT CabinetID, MAX(LastRead) RPLastRead FROM fac_PowerDistribution PD 
+			LEFT JOIN fac_PDUStats PS ON PD.PDUID=PS.PDUID GROUP BY CabinetID) PLR 
+		ON C.CabinetID = PLR.CabinetID WHERE C.CabinetID=".intval($_POST['tooltip']);
 
 		if($cabRow=$dbh->query($sql)->fetch()){
 			$cab->CabinetID=$cabRow["CabinetID"];
@@ -117,18 +115,26 @@ $(document).ready(function() {
 				
         	$used=$cab->CabinetOccupancy($cab->CabinetID);
 			// check to make sure the cabinet height is set to keep errors out of the logs
-			if(!isset($cab->CabinetHeight)||$cab->CabinetHeight==0){$SpacePercent=100;}else{$SpacePercent=locale_number($used /$cab->CabinetHeight *100,0);}
+			if(!isset($cab->CabinetHeight)||$cab->CabinetHeight==0){$SpacePercent=100;}else{$SpacePercent=locale_number(($used/$cab->CabinetHeight*100),0);}
 			// check to make sure there is a weight limit set to keep errors out of logs
-			if(!isset($cab->MaxWeight)||$cab->MaxWeight==0){$WeightPercent=0;}else{$WeightPercent=locale_number($totalWeight /$cab->MaxWeight *100,0);}
+			if(!isset($cab->MaxWeight)||$cab->MaxWeight==0){$WeightPercent=0;}else{$WeightPercent=locale_number(($totalWeight/$cab->MaxWeight*100),0);}
 			// check to make sure there is a kilowatt limit set to keep errors out of logs
-        	if(!isset($cab->MaxKW)||$cab->MaxKW==0){$PowerPercent=0;}else{$PowerPercent=locale_number(($totalWatts /1000 ) /$cab->MaxKW *100,0);}
-			if(!isset($cab->MaxKW)||$cab->MaxKW==0){$RealPowerPercent=0;}else{$RealPowerPercent=locale_number(($currentRealPower /1000 ) /$cab->MaxKW *100,0);}
+        	if(!isset($cab->MaxKW)||$cab->MaxKW==0){$PowerPercent=0;}else{$PowerPercent=locale_number((($totalWatts/1000)/$cab->MaxKW*100),0);}
+			if(!isset($cab->MaxKW)||$cab->MaxKW==0){$RealPowerPercent=0;}else{$RealPowerPercent=locale_number((($currentRealPower/1000)/$cab->MaxKW *100),0);}
 		
 			//Decide which color to paint on the canvas depending on the thresholds
 			if($SpacePercent>$SpaceRed){$scolor=$rs;}elseif($SpacePercent>$SpaceYellow){$scolor=$ys;}else{$scolor=$gs;}
 			if($WeightPercent>$WeightRed){$wcolor=$rs;}elseif($WeightPercent>$WeightYellow){$wcolor=$ys;}else{$wcolor=$gs;}
 			if($PowerPercent>$PowerRed){$pcolor=$rs;}elseif($PowerPercent>$PowerYellow){$pcolor=$ys;}else{$pcolor=$gs;}
-			if($RPlastRead==0){$rpcolor=$us;}elseif($RealPowerPercent>$RealPowerRed){$rpcolor=$rs;}elseif($RealPowerPercent>$RealPowerYellow){$rpcolor=$ys;}else{$rpcolor=$gs;}
+			if($RPlastRead == null) {
+				$rpcolor=$us;
+			} elseif ( $RealPowerPercent>$RealPowerRed) {
+				$rpcolor=$rs;
+			} elseif ( $RealPowerPercent>$RealPowerYellow) {
+				$rpcolor=$ys;
+			} else {
+				$rpcolor=$gs;
+			}
         	if($currentTemperature==0){$tcolor=$us;}elseif($currentTemperature>$TemperatureRed){$tcolor=$rs;}elseif($currentTemperature>$TemperatureYellow){$tcolor=$ys;}else{$tcolor=$gs;}
 			
 			if($currentHumidity==0){$hcolor=$us;}elseif($currentHumidity>$HumidityMax || $currentHumidity<$HumidityMin){$hcolor=$rs;
@@ -139,8 +145,8 @@ $(document).ready(function() {
 			$labelpo=locale_number($totalWatts/1000,2)." / ".$cab->MaxKW." kW";
 			$labelte=(($currentTemperature>0)?locale_number($currentTemperature,0)."&deg; (".$lastRead.")":__("no data"));
 			$labelhu=(($currentHumidity>0)?locale_number($currentHumidity,0)." % (".$lastRead.")":__("no data"));
-			$labelrp=(($RPlastRead<>0)?locale_number($currentRealPower/1000,2)." / ".$cab->MaxKW." kW (".$RPlastRead.")":__("no data"));
-						
+			$labelrp=(($RPlastRead!=null)?locale_number($currentRealPower/1000,2)." / ".$cab->MaxKW." kW (".$RPlastRead.")":__("no data"));
+			
 			$tooltip="<span>$cab->Location</span><ul>\n";
 			$tooltip.="<li class=\"$scolor\">".__("Space").": ".$labelsp."</li>\n";
 			$tooltip.="<li class=\"$wcolor\">".__("Weight").": ".$labelwe."</li>\n";
@@ -148,6 +154,7 @@ $(document).ready(function() {
 			$tooltip.="<li class=\"$rpcolor\">".__("Measured Power").": ".$labelrp."</li>\n";
 			$tooltip.="<li class=\"$tcolor\">".__("Temperature").": ".$labelte."</li>\n";
 			$tooltip.="<li class=\"$hcolor\">".__("Humidity").": ".$labelhu."</li></ul>\n";
+			// $tooltip.="<li>" . print_r( $cabRow, true ) . "</li>";
 			
 			$tooltip="<div>$tooltip</div>";
 			print $tooltip;
