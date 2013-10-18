@@ -75,8 +75,8 @@ $(document).ready(function() {
 			$currentTemperature=$cabRow["Temp"];
 			$currentHumidity=$cabRow["Humidity"];
 			$currentRealPower=$cabRow["RealPower"];
-			$lastRead=(!is_null($cabRow["LastRead"]))?date('d-m-Y G:i',strtotime(($cabRow["LastRead"]))):0;
-			$RPlastRead=(!is_null($cabRow["RPLastRead"]))?date('d-m-Y G:i',strtotime(($cabRow["RPLastRead"]))):0;
+			$lastRead=(!is_null($cabRow["LastRead"]))?strftime('%c',strtotime(($cabRow["LastRead"]))):0;
+			$RPlastRead=(!is_null($cabRow["RPLastRead"]))?strftime('%c',strtotime(($cabRow["RPLastRead"]))):0;
 			$rs="<img src='images/rs.png'>";
 			$ys="<img src='images/ys.png'>";
 			$gs="<img src='images/gs.png'>";
