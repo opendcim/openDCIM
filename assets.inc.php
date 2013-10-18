@@ -44,8 +44,7 @@ class Cabinet {
 	var $InstallationDate;
 	var $SensorIPAddress;
 	var $SensorCommunity;
-	var $TempSensorOID;
-	var $HumiditySensorOID;
+	var $SensorTemplateID;
 	var $MapX1;
 	var $MapY1;
 	var $MapX2;
@@ -67,8 +66,7 @@ class Cabinet {
 		$this->InstallationDate=date("Y-m-d", strtotime($this->InstallationDate));
 		$this->SensorIPAddress=addslashes($this->SensorIPAddress);
 		$this->SensorCommunity=addslashes($this->SensorCommunity);
-		$this->TempSensorOID=addslashes($this->TempSensorOID);
-		$this->HumiditySensorOID=addslashes($this->HumiditySensorOID);
+		$this->SensorTemplateID=intval($this->SensorTemplateID);
 		$this->MapX1=abs($this->MapX1);
 		$this->MapY1=abs($this->MapY1);
 		$this->MapX2=abs($this->MapX2);
@@ -96,8 +94,7 @@ class Cabinet {
 		$cab->InstallationDate=$dbRow["InstallationDate"];
 		$cab->SensorIPAddress=$dbRow["SensorIPAddress"];
 		$cab->SensorCommunity=$dbRow["SensorCommunity"];
-		$cab->TempSensorOID=$dbRow["TempSensorOID"];
-		$cab->HumiditySensorOID=$dbRow["HumiditySensorOID"];
+		$cab->SensorTemplateID=$dbRow["SensorTemplateID"];
 		$cab->MapX1=$dbRow["MapX1"];
 		$cab->MapY1=$dbRow["MapY1"];
 		$cab->MapX2=$dbRow["MapX2"];
@@ -120,8 +117,7 @@ class Cabinet {
 			InstallationDate=\"$this->InstallationDate\", 
 			SensorIPAddress=\"$this->SensorIPAddress\", 
 			SensorCommunity=\"$this->SensorCommunity\", 
-			TempSensorOID=\"$this->TempSensorOID\", 
-			HumiditySensorOID=\"$this->HumiditySensorOID\", MapX1=$this->MapX1, 
+			SensorTemplateID=$this->SensorTemplateID, MapX1=$this->MapX1, 
 			MapY1=$this->MapY1, MapX2=$this->MapX2, MapY2=$this->MapY2, 
 			Notes=\"$this->Notes\";";
 
@@ -150,9 +146,8 @@ class Cabinet {
 			InstallationDate=\"".date("Y-m-d", strtotime($this->InstallationDate))."\", 
 			SensorIPAddress=\"$this->SensorIPAddress\", 
 			SensorCommunity=\"$this->SensorCommunity\", 
-			TempSensorOID=\"$this->TempSensorOID\", 
-			HumiditySensorOID=\"$this->HumiditySensorOID\", MapX1=$this->MapX1, 
-			MapY1=$this->MapY1, MapX2=$this->MapX2, MapY2=$this->MapY2, 
+			SensorTemplateID=$this->SensorTemplateID, 
+			MapX1=$this->MapX1, MapY1=$this->MapY1, MapX2=$this->MapX2, MapY2=$this->MapY2, 
 			Notes=\"$this->Notes\" WHERE CabinetID=$this->CabinetID;";
 
 		if(!$dbh->query($sql)){
@@ -500,6 +495,50 @@ class Cabinet {
 		}
 		return 0;
 	}
+	
+	static function UpdateSensors( $CabinetID = null ) {
+		global $dbh;
+		
+		if ( ! function_exists( "snmpget" ) ) {
+			return;
+		}
+		
+		if ( $CabinetID != null ) {
+			$sql = sprintf( "select a.CabinetID, a.SensorIPAddress, a.SensorCommunity, b.* from fac_Cabinet a, fac_SensorTemplate b where a.SensorTemplateID=b.TemplateID and a.CabinetID=%d and a.SensorIPAddress>'' and a.SensorTemplateID>0", $CabinetID );
+		} else {
+			$sql = "select a.CabinetID, a.SensorIPAddress, a.SensorCommunity, b.* from fac_Cabinet a, fac_SensorTemplate b where a.SensorTemplateID=b.TemplateID and a.SensorIPAddress>'' and a.SensorTemplateID>0";
+		}
+		
+		$sensors = $dbh->prepare( "insert into fac_CabinetTemps values (:cabinetid, now(), :temp, :humidity ) on duplicate key update LastRead=now(), Temp=:temp, Humidity=:humidity" );
+		
+		foreach ( $dbh->query( $sql ) as $row ) {
+			// if ( $row["SensorCommunity"] == "" ) {
+			// 	$Community = $config->ParameterArray["SNMPCommunity"];
+			// } else {
+				$Community = $row["SensorCommunity"];
+			// }
+			
+			if ( $row["SNMPVersion"] == "2c" ) {
+				list( $trash, $temp ) = explode( ":", snmp2_get( $row["SensorIPAddress"], $Community, $row["TemperatureOID"] ) );
+				list( $trash, $humid ) = explode( ":", snmp2_get( $row["SensorIPAddress"], $Community, $row["HumidityOID"] ) );
+			} else {
+				list( $trash, $temp ) = explode( ":", snmpget( $row["SensorIPAddress"], $Community, $row["TemperatureOID"] ) );
+				list( $trash, $humid ) = explode( ":", snmpget( $row["SensorIPAddress"], $Community, $row["HumidityOID"] ) );
+			}
+
+			if ( $row["TempMultiplier"] != 0 ) {
+				$temp *= $row["TempMultiplier"];
+			}
+			
+			if ( $row["HumidityMultiplier"] != 0 ) {
+				$humid *= $row["HumidityMultiplier"];
+			}
+			
+			printf( "Temp = %d\nHumidity=%d%%\n", $temp, $humid );
+			
+			$sensors->execute( array( "cabinetid"=>$row["CabinetID"], "temp"=>$temp, "humidity"=>$humid ) );
+		}
+	}
 }
 
 class CabinetAudit {
@@ -562,6 +601,46 @@ class CabinetAudit {
 	}
 }
 
+class SensorTemplate {
+	/* Sensor Template - Information about how to get temperature/humidity from various types of devices */
+	
+	var $TemplateID;
+	var $ManufacturerID;
+	var $Name;
+	var $SNMPVersion;
+	var $TemperatureOID;
+	var $HumidityOID;
+	var $TempMultiplier;
+	var $HumidityMultiplier;
+	
+	static function getTemplate( $templateID = null ) {
+		global $dbh;
+		
+		if ( $templateID != null ) {
+			$sql = sprintf( "select * from fac_SensorTemplate where TemplateID=%d", $templateID );
+		} else {
+			$sql = "select * from fac_SensorTemplate order by Name ASC";
+		}
+		
+		$tempList = array();
+		
+		foreach ( $dbh->query( $sql ) as $row ) {
+			$n = sizeof ( $tempList );
+			$tempList[$n] = new SensorTemplate();
+			$tempList[$n]->TemplateID = $row["TemplateID"];
+			$tempList[$n]->ManufacturerID = $row["ManufacturerID"];
+			$tempList[$n]->Name = $row["Name"];
+			$tempList[$n]->SNMPVersion = $row["SNMPVersion"];
+			$tempList[$n]->TemperatureOID = $row["TemperatureOID"];
+			$tempList[$n]->HumidityOID = $row["HumidityOID"];
+			$tempList[$n]->TempMultiplier = $row["TempMultiplier"];
+			$tempList[$n]->HumidityMultiplier = $row["HumidityMultiplier"];
+		}
+		
+		return $tempList;
+	}
+}
+
 class CabinetTemps {
 	/* CabinetTemps:	Temperature sensor readings from intelligent, SNMP readable temperature sensors */
 	
@@ -587,49 +666,6 @@ class CabinetTemps {
 		}
 		
 		return;
-	}
-	
-	function UpdateReading() {
-		global $dbh;
-		
-		$cab = new Cabinet();
-		$cab->CabinetID = $this->CabinetID;
-		$cab->GetCabinet();
-		
-		if ( ( strlen( $cab->SensorIPAddress ) == 0 ) || ( strlen( $cab->SensorCommunity ) == 0 ) || ( strlen( $cab->TempSensorOID ) == 0 ) )
-			return;
-
-		if ( ! function_exists( "snmpget" ) ) {
-			$pollCommand = sprintf( "%s -v 2c -c %s %s %s | %s -d: -f4", $config->ParameterArray["snmpget"], $cab->SensorCommunity, $cab->SensorIPAddress, $cab->TempSensorOID, $config->ParameterArray["cut"] );
-			
-			exec( $pollCommand, $statsOutput );
-			
-			$tempValue = intval( @$statsOutput[0] );
-		} else {
-			$result = explode( " ", snmp2_get( $cab->SensorIPAddress, $cab->SensorCommunity, $cab->TempSensorOID ));
-			
-			$tempValue = intval($result[1]);
-		}
-		
-		if ( $sensorValue > 0 ) {
-			$this->Temp = $sensorValue;
-			// Delete any existing record and then add in a new one
-			$sql = sprintf( "delete from fac_CabinetTemps where CabinetID=%d", $this->CabinetID );
-			if ( ! $dbh->exec( $sql ) ) {
-				$info = $dbh->errorInfo();
-
-				error_log( "PDO Error: " . $info[2] . " SQL=" . $sql );
-				return false;
-			}
-
-			$sql = sprintf( "insert into fac_CabinetTemps set CabinetID=%d, Temp=%d, Humidity=%d, LastRead=now()", $this->CabinetID, $this->Temp, $this->Humidity );
-			if ( ! $dbh->exec( $sql ) ) {
-				$info = $dbh->errorInfo();
-
-				error_log( "PDO Error: " . $info[2] . " SQL=" . $sql );
-				return false;
-			}
-		}
 	}	
 }
 

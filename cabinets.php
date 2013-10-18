@@ -4,6 +4,7 @@
 
 	$cab=new Cabinet();
 	$dept=new Department();
+
 	$taginsert="";
 	$status="";
 
@@ -58,8 +59,6 @@
 		$cab->InstallationDate=$_POST['installationdate'];
 		$cab->SensorIPAddress=$_POST['sensoripaddress'];
 		$cab->SensorCommunity=$_POST['sensorcommunity'];
-		$cab->TempSensorOID=$_POST['tempsensoroid'];
-		$cab->HumiditySensorOID=$_POST['humiditysensoroid'];
 		$cab->Notes=trim($_POST['notes']);
 		$cab->Notes=($cab->Notes=="<br>")?"":$cab->Notes;
 		$cab->SetTags($tagarray);
@@ -102,6 +101,7 @@
 
 	$deptList=$dept->GetDepartmentList();
 	$cabList=$cab->ListCabinets();
+	$sensorList = SensorTemplate::getTemplate();
 ?>
 <!doctype html>
 <html>
@@ -300,12 +300,19 @@ echo '  </select>
 	<div><input type="text" name="sensorcommunity" size=30 value="',$cab->SensorCommunity,'"></div>
 </div>
 <div>
-	<div>',__("Temperature Sensor OID"),'</div>
-	<div><input type="text" name="tempsensoroid" size=30 value="',$cab->TempSensorOID,'"></div>
-</div>
-<div>
-	<div>',__("Humidity Sensor OID"),'</div>
-	<div><input type="text" name="humiditysensoroid" size=30 value="',$cab->HumiditySensorOID,'"></div>
+	<div>',__("Sensor Template"),':</div>
+	<div><select name=sensortemplateid>
+		<option value=0>Select a template</option>';
+	foreach ( $sensorList as $template ) {
+		if ( $template->TemplateID == $cab->SensorTemplateID ) {
+			$selected = "selected";
+		} else {
+			$selected = "";
+		}
+		printf( "<option value=%d %s>%s</option>\n", $template->TemplateID, $selected, $template->Name );
+	}
+	
+	echo '</select></div>
 </div>
 <div>
 	<div><label for="tags">',__("Tags"),'</label></div>

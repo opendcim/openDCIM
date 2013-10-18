@@ -18,8 +18,7 @@ CREATE TABLE fac_Cabinet (
   InstallationDate date NOT NULL,
   SensorIPAddress varchar(20) NOT NULL,
   SensorCommunity varchar(40) NOT NULL,
-  TempSensorOID varchar(80) NOT NULL,
-  HumiditySensorOID varchar(80) NOT NULL,
+  SensorTemplateID int(11) NOT NULL,
   MapX1 int(11) NOT NULL,
   MapX2 int(11) NOT NULL,
   MapY1 int(11) NOT NULL,
@@ -74,8 +73,8 @@ DROP TABLE IF EXISTS fac_CabinetTemps;
 CREATE TABLE fac_CabinetTemps (
   CabinetID int(11) NOT NULL,
   LastRead datetime NOT NULL,
-  Temp int(11) NOT NULL,
-  Humidity int(11) NOT NULL,
+  Temp float(8) NOT NULL,
+  Humidity float(8) NOT NULL,
   PRIMARY KEY (CabinetID)
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
 
@@ -89,6 +88,23 @@ CREATE TABLE `fac_CabinetAudit` (
   UserID varchar(80) NOT NULL,
   AuditStamp datetime NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+--
+-- Add a new table for sensor probe templates
+--
+
+DROP TABLE IF EXISTS fac_SensorTemplate;
+CREATE TABLE fac_SensorTemplate (
+	TemplateID INT(11) NOT NULL AUTO_INCREMENT,
+	ManufacturerID INT(11) NOT NULL,
+	Name VARCHAR(80) NOT NULL,
+	SNMPVersion ENUM ('1','2c') NOT NULL DEFAULT '2c',
+	TemperatureOID VARCHAR(256) NOT NULL,
+	HumidityOID VARCHAR(256) NOT NULL,
+	TempMultiplier FLOAT(8) NOT NULL DEFAULT 1,
+	HumidityMultiplier FLOAT(8) NOT NULL DEFAULT 1,
+	PRIMARY KEY(TemplateID)
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
 
 --
 -- Table structure for table `fac_CDUTemplate`
@@ -762,6 +778,7 @@ INSERT INTO fac_Config VALUES
  	('mUnits', 'english', 'English/Metric', 'string', 'english'),
 	('snmpwalk', '/usr/bin/snmpwalk', 'path', 'string', '/usr/bin/snmpwalk'),
 	('snmpget', '/usr/bin/snmpget', 'path', 'string', '/usr/bin/snmpget'),
+	('SNMPCommunity','public', 'string', 'string', 'public' ),
 	('cut', '/bin/cut', 'path', 'string', '/bin/cut'),
  	('ToolTips', 'Disabled', 'Enabled/Disabled', 'string', 'Disabled'),
 	('CDUToolTips', 'Disabled', 'Enabled/Disabled', 'string', 'Disabled'),

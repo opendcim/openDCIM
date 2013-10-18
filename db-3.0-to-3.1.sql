@@ -53,8 +53,48 @@ INSERT INTO fac_Config VALUES ('TemperatureRed', '30', 'degrees', 'float', '30')
 
 ALTER TABLE fac_PDUStats ADD COLUMN LastRead datetime DEFAULT NULL AFTER Wattage;
 
----
---- Extend the fac_DeviceTemplate table to hold notes
----
+--
+-- Extend the fac_DeviceTemplate table to hold notes
+--
 
 ALTER TABLE fac_DeviceTemplate ADD COLUMN Notes text NOT NULL AFTER NumPorts;
+
+--
+-- Add a new table for sensor probe templates
+--
+
+DROP TABLE IF EXISTS fac_SensorTemplate;
+CREATE TABLE fac_SensorTemplate (
+	TemplateID INT(11) NOT NULL AUTO_INCREMENT,
+	ManufacturerID INT(11) NOT NULL,
+	Name VARCHAR(80) NOT NULL,
+	SNMPVersion ENUM('1','2c') NOT NULL DEFAULT '2c',
+	TemperatureOID VARCHAR(256) NOT NULL,
+	HumidityOID VARCHAR(256) NOT NULL,
+	TempMultiplier FLOAT(8) NOT NULL DEFAULT 1,
+	HumidityMultiplier FLOAT(8) NOT NULL DEFAULT 1,
+	PRIMARY KEY(TemplateID)
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
+
+--
+-- Alter the fac_Cabinet table to reference templates, rather than OIDs
+--
+
+ALTER TABLE fac_Cabinet DROP COLUMN TempSensorOID;
+ALTER TABLE fac_Cabinet DROP COLUMN HumiditySensorOID;
+ALTER TABLE fac_Cabinet ADD COLUMN SensorTemplateID INT(11) NOT NULL AFTER SensorCommunity;
+
+--
+-- Temperature and Humidity should be floats, not integers
+--
+
+ALTER TABLE fac_CabinetTemps MODIFY COLUMN Temp FLOAT(8) NOT NULL;
+ALTER TABLE fac_CabinetTemps MODIFY COLUMN Humidity FLOAT(8) NOT NULL;
+
+--
+-- New configuration item
+--
+
+INSERT INTO fac_Config VALUES (
+'SNMPCommunity', 'public', 'string', 'string', 'public' );
+
