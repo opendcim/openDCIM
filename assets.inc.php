@@ -512,11 +512,11 @@ class Cabinet {
 		$sensors = $dbh->prepare( "insert into fac_CabinetTemps values (:cabinetid, now(), :temp, :humidity ) on duplicate key update LastRead=now(), Temp=:temp, Humidity=:humidity" );
 		
 		foreach ( $dbh->query( $sql ) as $row ) {
-			// if ( $row["SensorCommunity"] == "" ) {
-			// 	$Community = $config->ParameterArray["SNMPCommunity"];
-			// } else {
+			if ( $row["SensorCommunity"] == "" ) {
+				$Community = $config->ParameterArray["SNMPCommunity"];
+			} else {
 				$Community = $row["SensorCommunity"];
-			// }
+			}
 			
 			if ( $row["SNMPVersion"] == "2c" ) {
 				list( $trash, $temp ) = explode( ":", snmp2_get( $row["SensorIPAddress"], $Community, $row["TemperatureOID"] ) );
