@@ -200,8 +200,8 @@ class DataCenter {
 		$this->DrawingFileName=addslashes(trim($this->DrawingFileName));
 		$this->EntryLogging=intval($this->EntryLogging);
 		$this->ContainerID=intval($this->ContainerID);
-		$this->MapX=intval($this->MapX);
-		$this->MapY=intval($this->MapY);
+		$this->MapX=abs($this->MapX);
+		$this->MapY=abs($this->MapY);
 	}
 
 	function MakeDisplay(){
@@ -380,25 +380,36 @@ class DataCenter {
 					}else{
 						if(strlen($js)>0){
 							//Already have an initial if so add an else if
-							$else="} else ";
+							$else="\t\t\t}else ";
 						}else{
 							$else="";
 						}
-						$js.="\t\t\t".$else."if(e.pageX>(pos.left+$zone->MapX1) && e.pageX<(pos.left+$zone->MapX1+".($zone->MapX2-$zone->MapX1).")){\n";
-						$js.="\t\t\t\tif(e.pageY>(pos.top+$zone->MapY1) && e.pageY<(pos.top+$zone->MapY1+".($zone->MapY2-$zone->MapY1).")){\n";
-						$js.="\t\t\t\t\tif(!redraw){\n\t\t\t\t\t\tHilightZone('zone$zone->ZoneID');\n\t\t\t\t\t}\n\t\t\t\t\tredraw=true;\n";
-						$js.="\t\t\t\t}\n";
+						$js.=$else."if((e.pageX>(pos.left+$zone->MapX1) && e.pageX<(pos.left+$zone->MapX2)) && (e.pageY>(pos.top+$zone->MapY1) && e.pageY<(pos.top+$zone->MapY2))){
+				$('#maptitle .nav select').trigger('change');
+				HilightZone('zone$zone->ZoneID');
+				redraw=true;\n";
 					}
 				}
 				if(strlen($js)>0){
 					// add the first and last bits needs to make the loops function
-					$hilight="\n\t\tfunction HilightZone(area){\n\t\t\tcontext.globalCompositeOperation='source-over';\n";
-					$hilight.="\t\t\t//there has to be a better way to do this.  stupid js\n\t\t\tarea=$('area[name='+area+']').prop('coords').split(',');\n";
-					$hilight.="\t\t\tcontext.lineWidth='4';\n\t\t\tcontext.strokeStyle='red';\n";
-					$hilight.="\t\t\tcontext.strokeRect(area[0],area[1],(area[2]-area[0]),(area[3]-area[1]));\n\t\t}\n";
-
-					$js="$hilight\t\tvar redraw=false;\n\t\tvar pos=$('#mapCanvas').offset();\n\t\t$('.canvas').mousemove(function(e){\n".$js;
-					$js.="\t\t\t}else if(redraw){\n\t\t\t\t$('#maptitle .nav select').trigger('change');\n\t\t\t\tredraw=false;\n\t\t\t}\n\t\t});\n";
+					$hilight="\n
+		function HilightZone(area){
+			context.globalCompositeOperation='source-over';
+			//there has to be a better way to do this.  stupid js
+			area=$('area[name='+area+']').prop('coords').split(',');
+			context.lineWidth='4';
+			context.strokeStyle='red';
+			context.strokeRect(area[0],area[1],(area[2]-area[0]),(area[3]-area[1]));
+		}\n";
+					$js="$hilight
+		var redraw=false;
+		var pos=$('#mapCanvas').offset();
+		$('.canvas').mousemove(function(e){
+			$js\t\t\t}else if(redraw){
+				$('#maptitle .nav select').trigger('change');
+				redraw=false;
+			}
+		});\n";
 				}
 			}
 		}
@@ -1223,11 +1234,12 @@ class Zone {
 		$this->ZoneID=intval($this->ZoneID);
 		$this->DataCenterID=intval($this->DataCenterID);
 		$this->Description=addslashes(trim($this->Description));
-		$this->MapX1=intval($this->MapX1);
-		$this->MapY1=intval($this->MapY1);
-		$this->MapX2=intval($this->MapX2);
-		$this->MapY2=intval($this->MapY2);
-		$this->MapZoom=intval($this->MapZoom);
+		// ensure all coordinates are positive values
+		$this->MapX1=abs($this->MapX1);
+		$this->MapY1=abs($this->MapY1);
+		$this->MapX2=abs($this->MapX2);
+		$this->MapY2=abs($this->MapY2);
+		$this->MapZoom=abs($this->MapZoom);
 	}
 
 	function MakeDisplay(){
@@ -1825,8 +1837,8 @@ class Container {
 		$this->Name=addslashes(trim($this->Name));
 		$this->ParentID=intval($this->ParentID);
 		$this->DrawingFileName=addslashes(trim($this->DrawingFileName));
-		$this->MapX=intval($this->MapX);
-		$this->MapY=intval($this->MapY);
+		$this->MapX=abs($this->MapX);
+		$this->MapY=abs($this->MapY);
 	}
 	
 	function MakeDisplay(){

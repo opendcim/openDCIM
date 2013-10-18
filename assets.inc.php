@@ -69,10 +69,10 @@ class Cabinet {
 		$this->SensorCommunity=addslashes($this->SensorCommunity);
 		$this->TempSensorOID=addslashes($this->TempSensorOID);
 		$this->HumiditySensorOID=addslashes($this->HumiditySensorOID);
-		$this->MapX1=intval($this->MapX1);
-		$this->MapY1=intval($this->MapY1);
-		$this->MapX2=intval($this->MapX2);
-		$this->MapY2=intval($this->MapY2);
+		$this->MapX1=abs($this->MapX1);
+		$this->MapY1=abs($this->MapY1);
+		$this->MapX2=abs($this->MapX2);
+		$this->MapY2=abs($this->MapY2);
 		$this->Notes=addslashes($this->Notes);
 	}
 	
