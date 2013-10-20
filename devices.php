@@ -3,7 +3,6 @@
 	require_once( 'facilities.inc.php' );
 
 	$dev=new Device();
-	$dev=new Device();
 	$cab=new Cabinet();
 	$contact=new Contact();
 
@@ -29,10 +28,33 @@
 		echo json_encode(MediaTypes::GetMediaTypeList());
 		exit;
 	}
+	// Get list of media types
+	if(isset($_GET['spn'])){
+		header('Content-Type: application/json');
+		$PortNamePatterns=array();
+		foreach(array('NIC(1)','Port(1)','Fa/(1)','Gi/(1)','Ti/(1)') as $pattern){
+			$PortNamePatterns[]['Pattern']=$pattern;
+		}
+		echo json_encode($PortNamePatterns);
+		exit;
+	}
 	// Set all ports to the same media type or color code
 	if(isset($_POST['setall'])){
+		$portnames=array();
+		if(isset($_POST['spn']) && strlen($_POST['spn'])>0){
+			//using premade patterns if the input differs and causes an error then fuck em
+			list($result, $msg, $idx) = parseGeneratorString($_POST['spn']);
+			if($result){
+				$dev->DeviceID=$_POST['devid'];
+				$dev->GetDevice();
+				$portnames=generatePatterns($result, $dev->Ports);
+				// generatePatterns starts the index at 0, it's more useful to us starting at 1
+				array_unshift($portnames, null);
+			}
+		}
 		// Make a new method to set all the ports to a media type?
 		foreach(DevicePorts::getPortList($_POST['devid']) as $portnum => $port){
+			$port->Label=(isset($_POST['spn']) && (($_POST['setall']=='true' && count($portnames)>0) || (count($portnames)>0 && strlen($port->Label)==0)))?$portnames[$port->PortNumber]:$port->Label;
 			$port->MediaID=(($_POST['setall']=='true' || $port->MediaID==0) && isset($_POST['mt']) && ($_POST['setall']=='true' || intval($_POST['mt'])>0))?$_POST['mt']:$port->MediaID;
 			$port->ColorID=(($_POST['setall']=='true' || $port->ColorID==0) && isset($_POST['cc']) && ($_POST['setall']=='true' || intval($_POST['cc'])>0))?$_POST['cc']:$port->ColorID;
 			$port->updatePort();
@@ -1731,13 +1753,13 @@ echo '	<div class="table">
 	if(!in_array($dev->DeviceType,array('Physical Infrastructure','Patch Panel')) && !empty($portList) ){
 		print "		<div>\n		  <div><a name=\"net\">".__('Connections')."</a></div>\n		  <div>\n			<div class=\"table border switch\">\n				<div>
 				<div>#</div>
-				<div>".__('Port Name')."</div>
+				<div id=\"spn\">".__('Port Name')."</div>
 				<div>".__('Device')."</div>
 				<div>".__('Device Port')."</div>
 				<div>".__('Notes')."</div>";
 		if($dev->DeviceType=='Switch'){print "\t\t\t\t<div id=\"st\">".__("Status")."</div>";}
 		print "\t\t\t\t<div id=\"mt\">".__("Media Type")."</div>
-			<div>".__("Color Code")."</div>
+			<div id=\"cc\">".__("Color Code")."</div>
 			</div>\n";
 
 		foreach($portList as $i => $port){
@@ -1892,6 +1914,17 @@ echo '	<div class="table">
 			}).appendTo('#pandn .caption');
 		}
 
+		// this will redraw the current ports based on the information given back from a json string
+		function redrawports(portsarr){
+			$.each(portsarr.ports, function(key,p){
+				$('#spn'+p.PortNumber).text(p.Label);
+				$('#n'+p.PortNumber).text(p.Notes);
+				$('#mt'+p.PortNumber).text((p.MediaID>0)?portsarr.mt[p.MediaID].MediaType:'').data('default',p.MediaID);
+				$('#cc'+p.PortNumber).text((p.ColorID>0)?portsarr.cc[p.ColorID].Name:'').data('default',p.ColorID);
+			});
+		}
+
+		// mass media type change controls
 		var setmediatype=$('<select>').css({'border':'none','position':'absolute','width':'auto'}).append($('<option>'));
 		setmediatype.append($('<option>').val('clear').text('Clear'));
 		setmediatype.change(function(){
@@ -1915,11 +1948,7 @@ echo '	<div class="table">
 				// set all the media types to the one selected from the drop down
 				$.post('',{setall: override, devid: $('#deviceid').val(), mt:setmediatype.val(), cc: setmediatype.data(setmediatype.val())}).done(function(data){
 					// setall kicked back every port run through them all and update note, media type, and color code
-					$.each(data.ports, function(key,p){
-						$('#n'+p.PortNumber).text(p.Notes);
-						$('#mt'+p.PortNumber).text((p.MediaID>0)?data.mt[p.MediaID].MediaType:'').data('default',p.MediaID);
-						$('#cc'+p.PortNumber).text((p.ColorID>0)?data.cc[p.ColorID].Name:'').data('default',p.ColorID);
-					});
+					redrawports(data);
 				});
 				setmediatype.val('');
 			}
@@ -1933,6 +1962,87 @@ echo '	<div class="table">
 			});
 		}).then(function(){
 			setmediatype.offset({top: pos.top, left: pos.left+$('#mt').outerWidth()-setmediatype.width()});
+		});
+
+
+		// color codes change controls
+		var setcolorcode=$('<select>').css({'border':'none','position':'absolute','width':'auto'}).append($('<option>'));
+		setcolorcode.append($('<option>').val('clear').text('Clear'));
+		setcolorcode.change(function(){
+			var dialog=$('<div />', {id: 'modal', title: 'Override all types?'}).html('<div id="modaltext"></div><br><div id="modalstatus" class="warning">Do you want to override all the color codes?</div>');
+			dialog.dialog({
+				resizable: false,
+				modal: true,
+				dialogClass: "no-close",
+				buttons: {
+<?php echo '			',__("Yes"),': function(){'; ?>
+						$(this).dialog("destroy");
+						doit(true);
+					},
+<?php echo '			',__("No"),': function(){'; ?>
+						$(this).dialog("destroy");
+						doit(false);
+					}
+				}
+			});
+			function doit(override){
+				// set all the color codes to the one selected from the drop down
+				$.post('',{setall: override, devid: $('#deviceid').val(), cc: setcolorcode.val()}).done(function(data){
+					// setall kicked back every port run through them all and update note, media type, and color code
+					redrawports(data);
+				});
+				setcolorcode.val('');
+			}
+		});
+		$('#cc').append(setcolorcode);
+		var ccpos=$('#cc').offset();
+		$.get('',{cc:''}).done(function(data){
+			$.each(data, function(key,cc){
+				var option=$("<option>",({'value':cc.ColorID})).append(cc.Name);
+				setcolorcode.append(option).data(cc.ColorID,cc.Name);
+			});
+		}).then(function(){
+			setcolorcode.offset({top: ccpos.top, left: ccpos.left+$('#cc').outerWidth()-setcolorcode.width()});
+		});
+
+
+		// port name generation change controls
+		var generateportnames=$('<select>').css({'border':'none','position':'absolute','width':'auto'}).append($('<option>'));
+		generateportnames.change(function(){
+			var dialog=$('<div />', {id: 'modal', title: 'Override all names?'}).html('<div id="modaltext"></div><br><div id="modalstatus" class="warning">Do you want to override all the port names?</div>');
+			dialog.dialog({
+				resizable: false,
+				modal: true,
+				dialogClass: "no-close",
+				buttons: {
+<?php echo '			',__("Yes"),': function(){'; ?>
+						$(this).dialog("destroy");
+						doit(true);
+					},
+<?php echo '			',__("No"),': function(){'; ?>
+						$(this).dialog("destroy");
+						doit(false);
+					}
+				}
+			});
+			function doit(override){
+				// gnerate port names based on the selected pattern for all the ports
+				$.post('',{setall: override, devid: $('#deviceid').val(), spn: generateportnames.val()}).done(function(data){
+					// setall kicked back every port run through them all and update note, media type, and color code
+					redrawports(data);
+				});
+				generateportnames.val('');
+			}
+		});
+		$('#spn').append(generateportnames);
+		var spnpos=$('#spn').offset();
+		$.get('',{spn:''}).done(function(data){
+			$.each(data, function(key,spn){
+				var option=$("<option>",({'value':spn.Pattern})).append(spn.Pattern.replace('(1)','x'));
+				generateportnames.append(option);
+			});
+		}).then(function(){
+			generateportnames.offset({top: spnpos.top, left: spnpos.left+$('#spn').outerWidth()-generateportnames.width()});
 		});
 
 	});
