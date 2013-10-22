@@ -1018,6 +1018,16 @@ print "		var dialog=$('<div>').prop('title','".__("Verify Delete Device")."').ht
 		}
 ?>
 
+		// this will redraw the current ports based on the information given back from a json string
+		function redrawports(portsarr){
+			$.each(portsarr.ports, function(key,p){
+				$('#spn'+p.PortNumber).text(p.Label);
+				$('#n'+p.PortNumber).text(p.Notes);
+				$('#mt'+p.PortNumber).text((p.MediaID>0)?portsarr.mt[p.MediaID].MediaType:'').data('default',p.MediaID);
+				$('#cc'+p.PortNumber).text((p.ColorID>0)?portsarr.cc[p.ColorID].Name:'').data('default',p.ColorID);
+			});
+		}
+
 		// mass media type change controls
 		setmediatype=$('<select>').css({'border':'none','position':'absolute','width':'auto'}).append($('<option>'));
 		setmediatype.append($('<option>').val('clear').text('Clear'));
@@ -2021,16 +2031,6 @@ echo '	<div class="table">
 					popup.print(); //print
 				}
 			}).appendTo('#pandn .caption');
-		}
-
-		// this will redraw the current ports based on the information given back from a json string
-		function redrawports(portsarr){
-			$.each(portsarr.ports, function(key,p){
-				$('#spn'+p.PortNumber).text(p.Label);
-				$('#n'+p.PortNumber).text(p.Notes);
-				$('#mt'+p.PortNumber).text((p.MediaID>0)?portsarr.mt[p.MediaID].MediaType:'').data('default',p.MediaID);
-				$('#cc'+p.PortNumber).text((p.ColorID>0)?portsarr.cc[p.ColorID].Name:'').data('default',p.ColorID);
-			});
 		}
 
 <?php if($dev->DeviceType!='Patch Panel'){ ?>
