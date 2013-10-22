@@ -1018,6 +1018,113 @@ print "		var dialog=$('<div>').prop('title','".__("Verify Delete Device")."').ht
 		}
 ?>
 
+		// mass media type change controls
+		setmediatype=$('<select>').css({'border':'none','position':'absolute','width':'auto'}).append($('<option>'));
+		setmediatype.append($('<option>').val('clear').text('Clear'));
+		setmediatype.change(function(){
+			var dialog=$('<div />', {id: 'modal', title: 'Override all types?'}).html('<div id="modaltext"></div><br><div id="modalstatus" class="warning">Do you want to override all media types?</div>');
+			dialog.dialog({
+				resizable: false,
+				modal: true,
+				dialogClass: "no-close",
+				buttons: {
+<?php echo '			',__("Yes"),': function(){'; ?>
+						$(this).dialog("destroy");
+						doit(true);
+					},
+<?php echo '			',__("No"),': function(){'; ?>
+						$(this).dialog("destroy");
+						doit(false);
+					}
+				}
+			});
+			function doit(override){
+				// set all the media types to the one selected from the drop down
+				$.post('',{setall: override, devid: $('#deviceid').val(), mt:setmediatype.val(), cc: setmediatype.data(setmediatype.val())}).done(function(data){
+					// setall kicked back every port run through them all and update note, media type, and color code
+					redrawports(data);
+				});
+				setmediatype.val('');
+			}
+		});
+		$('#mt').append(setmediatype);
+
+		// color codes change controls
+		setcolorcode=$('<select>').css({'border':'none','position':'absolute','width':'auto'}).append($('<option>'));
+		setcolorcode.append($('<option>').val('clear').text('Clear'));
+		setcolorcode.change(function(){
+			var dialog=$('<div />', {id: 'modal', title: 'Override all types?'}).html('<div id="modaltext"></div><br><div id="modalstatus" class="warning">Do you want to override all the color codes?</div>');
+			dialog.dialog({
+				resizable: false,
+				modal: true,
+				dialogClass: "no-close",
+				buttons: {
+<?php echo '			',__("Yes"),': function(){'; ?>
+						$(this).dialog("destroy");
+						doit(true);
+					},
+<?php echo '			',__("No"),': function(){'; ?>
+						$(this).dialog("destroy");
+						doit(false);
+					}
+				}
+			});
+			function doit(override){
+				// set all the color codes to the one selected from the drop down
+				$.post('',{setall: override, devid: $('#deviceid').val(), cc: setcolorcode.val()}).done(function(data){
+					// setall kicked back every port run through them all and update note, media type, and color code
+					redrawports(data);
+				});
+				setcolorcode.val('');
+			}
+		});
+		$('#cc').append(setcolorcode);
+
+		// port name generation change controls
+		generateportnames=$('<select>').css({'border':'none','position':'absolute','width':'auto'}).append($('<option>'));
+		generateportnames.change(function(){
+			var dialog=$('<div />', {id: 'modal', title: 'Override all names?'}).html('<div id="modaltext"></div><br><div id="modalstatus" class="warning">Do you want to override all the port names?</div>');
+			dialog.dialog({
+				resizable: false,
+				modal: true,
+				dialogClass: "no-close",
+				buttons: {
+<?php echo '			',__("Yes"),': function(){'; ?>
+						$(this).dialog("destroy");
+						doit(true);
+					},
+<?php echo '			',__("No"),': function(){'; ?>
+						$(this).dialog("destroy");
+						doit(false);
+					}
+				}
+			});
+			function doit(override){
+				// gnerate port names based on the selected pattern for all the ports
+				$.post('',{setall: override, devid: $('#deviceid').val(), spn: generateportnames.val()}).done(function(data){
+					// setall kicked back every port run through them all and update note, media type, and color code
+					redrawports(data);
+				});
+				generateportnames.val('');
+			}
+		});
+		$('#spn').append(generateportnames);
+
+		// hide all the mass edit functions when an individual row edit has been initiated.
+		function hidemassfunctions(hide){
+			if(hide){
+				setmediatype.hide();setcolorcode.hide();generateportnames.hide();
+			}else{
+				var show=true;
+				$('.switch.table > div ~ div').each(function(){
+					show=($(this).data('edit'))?false:show;
+				});
+				if(show){
+					setmediatype.show();setcolorcode.show();generateportnames.show();
+				}
+			}
+		}
+
 		$('#ports').change(function(){
 			// not sure why .data() is turning an int into a string parseInt is fixing that
 			if($(this).val() > parseInt($(document).data('ports'))){
@@ -1098,6 +1205,7 @@ print "		var dialog=$('<div>').prop('title','".__("Verify Delete Device")."').ht
 		var portnum=row.data('port');
 		if(portrights[portnum]){ // only bind edit functions if they have rights
 			row.find('div:first-child').click(function(){
+				hidemassfunctions(true);
 				if(!row.data('edit')){
 					row.data('edit',true);
 					var portname=$('#spn'+portnum);
@@ -1219,6 +1327,7 @@ print "		var dialog=$('<div>').prop('title','".__("Verify Delete Device")."').ht
 							row.children('div ~ div').removeAttr('style');
 							row.data('edit',false);
 							devicepaths(row);
+							hidemassfunctions(false);
 						});
 					}
 					var controls=$('<div>',({'id':'controls'+portnum}));
@@ -1924,36 +2033,9 @@ echo '	<div class="table">
 			});
 		}
 
-		// mass media type change controls
-		var setmediatype=$('<select>').css({'border':'none','position':'absolute','width':'auto'}).append($('<option>'));
-		setmediatype.append($('<option>').val('clear').text('Clear'));
-		setmediatype.change(function(){
-			var dialog=$('<div />', {id: 'modal', title: 'Override all types?'}).html('<div id="modaltext"></div><br><div id="modalstatus" class="warning">Do you want to override all media types?</div>');
-			dialog.dialog({
-				resizable: false,
-				modal: true,
-				dialogClass: "no-close",
-				buttons: {
-<?php echo '			',__("Yes"),': function(){'; ?>
-						$(this).dialog("destroy");
-						doit(true);
-					},
-<?php echo '			',__("No"),': function(){'; ?>
-						$(this).dialog("destroy");
-						doit(false);
-					}
-				}
-			});
-			function doit(override){
-				// set all the media types to the one selected from the drop down
-				$.post('',{setall: override, devid: $('#deviceid').val(), mt:setmediatype.val(), cc: setmediatype.data(setmediatype.val())}).done(function(data){
-					// setall kicked back every port run through them all and update note, media type, and color code
-					redrawports(data);
-				});
-				setmediatype.val('');
-			}
-		});
-		$('#mt').append(setmediatype);
+<?php if($dev->DeviceType!='Patch Panel'){ ?>
+
+		// the mass edit fuctions have to be done last because the page is resized when the sidebar loads and it throws the positioning off
 		var pos=$('#mt').offset();
 		$.get('',{mt:''}).done(function(data){
 			$.each(data, function(key,mt){
@@ -1964,37 +2046,6 @@ echo '	<div class="table">
 			setmediatype.offset({top: pos.top, left: pos.left+$('#mt').outerWidth()-setmediatype.width()});
 		});
 
-
-		// color codes change controls
-		var setcolorcode=$('<select>').css({'border':'none','position':'absolute','width':'auto'}).append($('<option>'));
-		setcolorcode.append($('<option>').val('clear').text('Clear'));
-		setcolorcode.change(function(){
-			var dialog=$('<div />', {id: 'modal', title: 'Override all types?'}).html('<div id="modaltext"></div><br><div id="modalstatus" class="warning">Do you want to override all the color codes?</div>');
-			dialog.dialog({
-				resizable: false,
-				modal: true,
-				dialogClass: "no-close",
-				buttons: {
-<?php echo '			',__("Yes"),': function(){'; ?>
-						$(this).dialog("destroy");
-						doit(true);
-					},
-<?php echo '			',__("No"),': function(){'; ?>
-						$(this).dialog("destroy");
-						doit(false);
-					}
-				}
-			});
-			function doit(override){
-				// set all the color codes to the one selected from the drop down
-				$.post('',{setall: override, devid: $('#deviceid').val(), cc: setcolorcode.val()}).done(function(data){
-					// setall kicked back every port run through them all and update note, media type, and color code
-					redrawports(data);
-				});
-				setcolorcode.val('');
-			}
-		});
-		$('#cc').append(setcolorcode);
 		var ccpos=$('#cc').offset();
 		$.get('',{cc:''}).done(function(data){
 			$.each(data, function(key,cc){
@@ -2005,36 +2056,6 @@ echo '	<div class="table">
 			setcolorcode.offset({top: ccpos.top, left: ccpos.left+$('#cc').outerWidth()-setcolorcode.width()});
 		});
 
-
-		// port name generation change controls
-		var generateportnames=$('<select>').css({'border':'none','position':'absolute','width':'auto'}).append($('<option>'));
-		generateportnames.change(function(){
-			var dialog=$('<div />', {id: 'modal', title: 'Override all names?'}).html('<div id="modaltext"></div><br><div id="modalstatus" class="warning">Do you want to override all the port names?</div>');
-			dialog.dialog({
-				resizable: false,
-				modal: true,
-				dialogClass: "no-close",
-				buttons: {
-<?php echo '			',__("Yes"),': function(){'; ?>
-						$(this).dialog("destroy");
-						doit(true);
-					},
-<?php echo '			',__("No"),': function(){'; ?>
-						$(this).dialog("destroy");
-						doit(false);
-					}
-				}
-			});
-			function doit(override){
-				// gnerate port names based on the selected pattern for all the ports
-				$.post('',{setall: override, devid: $('#deviceid').val(), spn: generateportnames.val()}).done(function(data){
-					// setall kicked back every port run through them all and update note, media type, and color code
-					redrawports(data);
-				});
-				generateportnames.val('');
-			}
-		});
-		$('#spn').append(generateportnames);
 		var spnpos=$('#spn').offset();
 		$.get('',{spn:''}).done(function(data){
 			$.each(data, function(key,spn){
@@ -2044,6 +2065,8 @@ echo '	<div class="table">
 		}).then(function(){
 			generateportnames.offset({top: spnpos.top, left: spnpos.left+$('#spn').outerWidth()-generateportnames.width()});
 		});
+
+<?php } ?>
 
 	});
 </script>
