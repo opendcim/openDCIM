@@ -2896,6 +2896,10 @@ class SwitchInfo {
 	static function getNumPorts($DeviceID) {
 		global $dbh;
 		
+		if ( ! function_exists( "snmpget" ) ) {
+			return;
+		}
+		
 		$dev = new Device();
 		$dev->DeviceID = $DeviceID;
 		
@@ -2906,11 +2910,15 @@ class SwitchInfo {
 		if ( $dev->PrimaryIP == "" || $dev->SNMPCommunity == "" )
 			return;
 			
-		return @end( explode( ":", snmp2_get( $dev->PrimaryIP, $dev->SNMPCommunity, 'IF-MIB::ifNumber.0' )));
+		return @end( explode( ":", snmpget( $dev->PrimaryIP, $dev->SNMPCommunity, 'IF-MIB::ifNumber.0' )));
 	}
 
 	static function findFirstPort( $DeviceID ) {
 		global $dbh;
+		
+		if ( ! function_exists( "snmpget" ) ) {
+			return;
+		}
 		
 		$dev=new Device();
 		$dev->DeviceID = $DeviceID;
@@ -2924,7 +2932,7 @@ class SwitchInfo {
 			
 		$x = array();
 		
-		$portList = snmp2_real_walk( $dev->PrimaryIP, $dev->SNMPCommunity, "IF-MIB::ifDescr" );
+		$portList = snmprealwalk( $dev->PrimaryIP, $dev->SNMPCommunity, "IF-MIB::ifDescr" );
 		foreach( $portList as $index => $port ) {
 			$head = @end( explode( ".", $index ) );
 			$portdesc = @end( explode( ":", $port));
@@ -2937,6 +2945,10 @@ class SwitchInfo {
 
 	static function getPortNames( $DeviceID, $portid = null ) {
 		global $dbh;
+		
+		if ( ! function_exists( "snmpget" ) ) {
+			return;
+		}
 		
 		$dev = new Device();
 		$dev->DeviceID = $DeviceID;
@@ -2954,7 +2966,7 @@ class SwitchInfo {
 		$baseOID = "IF-MIB::ifName"; 
 
 		if(is_null($portid)){		
-			if($reply=snmp2_real_walk($dev->PrimaryIP,$dev->SNMPCommunity,$baseOID)){
+			if($reply=snmprealwalk($dev->PrimaryIP,$dev->SNMPCommunity,$baseOID)){
 				// Skip the returned values until we get to the first port
 				$Saving = false;
 				foreach($reply as $oid => $label){
@@ -2981,6 +2993,10 @@ class SwitchInfo {
 	static function getPortStatus( $DeviceID, $portid = null ) {
 		global $dbh;
 		
+		if ( ! function_exists( "snmpget" ) ) {
+			return;
+		}
+		
 		$dev=new Device();
 		$dev->DeviceID=$DeviceID;
 		$statusList=array();
@@ -2993,11 +3009,11 @@ class SwitchInfo {
 			return $statusList;
 		}
 			
-		$baseOID = ".1.3.6.1.2.1.2.2.1.8.";
+		// $baseOID = ".1.3.6.1.2.1.2.2.1.8.";
 		$baseOID="IF-MIB::ifOperStatus"; // arguments for not using MIB?
 
 		if ( is_null($portid) ) {		
-			if($reply=@snmp2_real_walk($dev->PrimaryIP, $dev->SNMPCommunity, $baseOID, 10000, 2)){			
+			if($reply=@snmprealwalk($dev->PrimaryIP, $dev->SNMPCommunity, $baseOID, 10000, 2)){	
 				// Skip the returned values until we get to the first port
 				$Saving = false;
 				foreach($reply as $oid => $status){
@@ -3018,7 +3034,7 @@ class SwitchInfo {
 				}
 			}
 		}else{
-			@preg_match( "/(INTEGER: )(.+)(\(.*)/", snmp2_get( $dev->PrimaryIP, $dev->SNMPCommunity, $baseOID.$portid ), $matches);
+			@preg_match( "/(INTEGER: )(.+)(\(.*)/", snmpget( $dev->PrimaryIP, $dev->SNMPCommunity, $baseOID.$portid ), $matches);
 			// This will change the array that was getting kicked back to a single value for an individual port lookup
 			$statusList = @$matches[2];
 		}
@@ -3028,6 +3044,10 @@ class SwitchInfo {
 	
 	static function getPortAlias( $DeviceID, $portid = null ) {
 		global $dbh;
+		
+		if ( ! function_exists( "snmpget" ) ) {
+			return;
+		}
 		
 		$dev = new Device();
 		$dev->DeviceID = $DeviceID;
@@ -3045,13 +3065,13 @@ class SwitchInfo {
 
 		if ( is_null( $portid )) {
 			for ( $n=0; $n < $dev->Ports; $n++ ) {
-				if ( ! $reply = snmp2_get( $dev->PrimaryIP, $dev->SNMPCommunity, $baseOID.( $dev->FirstPortNum+$n )) )
+				if ( ! $reply = snmpget( $dev->PrimaryIP, $dev->SNMPCommunity, $baseOID.( $dev->FirstPortNum+$n )) )
 					break;
 				$query = @end( explode( ":", $reply ));
 				$aliasList[$n+1] = $query;
 			}
 		}else{
-			$query = @end( explode( ":", snmp2_get( $dev->PrimaryIP, $dev->SNMPCommunity, $baseOID.$portid )));
+			$query = @end( explode( ":", snmpget( $dev->PrimaryIP, $dev->SNMPCommunity, $baseOID.$portid )));
 			$aliasList = $query;
 		}
 		
