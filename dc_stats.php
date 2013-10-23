@@ -289,8 +289,8 @@ echo '<div class="main">
 		$('map[name="datacenter"] area[name^="cab"]').mouseenter(function(){
 			var pos=$('.canvas').offset();
 			var coor=$(this).attr('coords').split(',');
-			var tx=pos.left+parseInt(coor[2])+17;
-			var ty=pos.top+parseInt(coor[1])-7;
+			var tx=parseInt(pos.left)+parseInt(coor[2])+17;
+			var ty=parseInt(pos.top)+(parseInt(coor[1])+parseInt(coor[3]))/2-17;
 			var tooltip=$('<div />').css({
 				'left':tx+'px',
 				'top':ty+'px'
