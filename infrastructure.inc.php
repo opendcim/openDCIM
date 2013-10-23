@@ -675,7 +675,7 @@ class DataCenter {
 		$dcStats["Occupied"]=($test=$this->query($sql)->fetchColumn())?$test:0;
 
         $sql="SELECT SUM(a.Height) FROM fac_Device a,fac_Cabinet b WHERE
-			a.Cabinet=b.CabinetID AND b.DataCenterID=$this->DataCenterID;";
+			a.Cabinet=b.CabinetID AND a.Reservation=true AND b.DataCenterID=$this->DataCenterID;";
 		$dcStats["Allocated"]=($test=$this->query($sql)->fetchColumn())?$test:0;
 		
         $dcStats["Available"]=$dcStats["TotalU"] - $dcStats["Occupied"] - $dcStats["Infrastructure"] - $dcStats["Allocated"];
@@ -1400,7 +1400,7 @@ class Zone {
 		$zoneStats["Occupied"]=($test=$this->query($sql)->fetchColumn())?$test:0;
 
         $sql="SELECT SUM(a.Height) FROM fac_Device a,fac_Cabinet b WHERE
-			a.Cabinet=b.CabinetID AND b.ZoneID=$this->ZoneID;";
+			a.Cabinet=b.CabinetID AND a.Reservation=true AND b.ZoneID=$this->ZoneID;";
 		$zoneStats["Allocated"]=($test=$this->query($sql)->fetchColumn())?$test:0;
 		
         $zoneStats["Available"]=$zoneStats["TotalU"] - $zoneStats["Occupied"] - $zoneStats["Infrastructure"] - $zoneStats["Allocated"];
