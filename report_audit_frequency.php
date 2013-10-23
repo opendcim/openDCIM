@@ -9,12 +9,6 @@ class PDF extends FPDF {
   var $outlines=array();
   var $OutlineRoot;
   var $pdfconfig;
-  var $pdfDB;
-  
-	function PDF($db){
-		$this->pdfDB = $db;
-		parent::FPDF();
-	}
   
 	function Header() {
 		$this->pdfconfig = new Config();
