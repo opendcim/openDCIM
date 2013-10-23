@@ -97,6 +97,7 @@ echo '	<a href="reports.php"><li>',__("Reports"),'</li></a>';
 		<a href="power_panel.php"><li>',__("Edit Power Panels"),'</li></a>
 		<a href="device_manufacturers.php"><li>',__("Edit Manufacturers"),'</li></a>
 		<a href="cdu_templates.php"><li>',__("Edit CDU Templates"),'</li></a>
+		<a href="sensor_templates.php"><li>',__("Edit Sensor Templates"),'</li></a>
 		<a href="configuration.php"><li>',__("Edit Configuration"),'</li></a>
 		<a href="pathmaker.php"><li>',__("Make Path Connection"),'</li></a>';
 	}

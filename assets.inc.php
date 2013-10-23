@@ -611,7 +611,7 @@ class SensorTemplate {
 	var $HumidityOID;
 	var $TempMultiplier;
 	var $HumidityMultiplier;
-	
+		
 	static function getTemplate( $templateID = null ) {
 		global $dbh;
 		
@@ -636,7 +636,59 @@ class SensorTemplate {
 			$tempList[$n]->HumidityMultiplier = $row["HumidityMultiplier"];
 		}
 		
-		return $tempList;
+		if ( $templateID != null ) {
+			return array_pop($tempList);
+		} else {
+			return $tempList;
+		}
+	}
+	
+	function CreateTemplate() {
+		global $dbh;
+		global $dbh;
+		
+		$sql = $dbh->prepare( "insert into fac_SensorTemplate values ( 0, :ManufacturerID, :Name, :SNMPVersion, :TemperatureOID, :HumidityOID, :TempMultiplier, :HumidityMultiplier )" );
+		
+		$args = array( 	"ManufacturerID" => $this->ManufacturerID,
+						"Name" => $this->Name,
+						"SNMPVersion" => $this->SNMPVersion,
+						"TemperatureOID" => $this->TemperatureOID,
+						"HumidityOID" => $this->HumidityOID,
+						"TempMultiplier" => $this->TempMultiplier,
+						"HumidityMultiplier" => $this->HumidityMultiplier );
+		
+		$sql->execute( $args );
+		
+		$this->TemplateID = $sql->lastInsertId();
+	}
+	
+	function UpdateTemplate() {
+		global $dbh;
+		
+		$sql = $dbh->prepare( "update fac_SensorTemplate set ManufacturerID=:ManufacturerID, Name=:Name, SNMPVersion=:SNMPVersion, TemperatureOID=:TemperatureOID, HumidityOID=:HumidityOID, TempMultiplier=:TempMultiplier, HumidityMultiplier=:HumidityMultiplier where TemplateID=:TemplateID" );
+		
+		$args = array( 	"ManufacturerID" => $this->ManufacturerID,
+						"Name" => $this->Name,
+						"SNMPVersion" => $this->SNMPVersion,
+						"TemperatureOID" => $this->TemperatureOID,
+						"HumidityOID" => $this->HumidityOID,
+						"TempMultiplier" => $this->TempMultiplier,
+						"HumidityMultiplier" => $this->HumidityMultiplier,
+						"TemplateID" => $this->TemplateID );
+		
+		$sql->execute( $args );
+	}
+	
+	function DeleteTemplate() {
+		global $dbh;
+		
+		// Set any sensors using this template back to the default "no template" value
+		$sql = "update fac_Cabinet set SensorTemplateID=0 where SensorTemplateID=" . intval( $this->TemplateID );
+		$dbh->exec( $sql );
+		
+		// Now it is "safe" to delete the record as it will leave no orphans
+		$sql = "delete from fac_SensorTemplate where TemplateID=" . intval( $this->TemplateID );
+		$dbh->exec( $sql );
 	}
 }
 
