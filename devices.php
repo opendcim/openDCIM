@@ -434,7 +434,7 @@
 
 				//$cab->CabinetID=$pDev->Cabinet;
 				//JMGA: changed for multichassis
-				$cab->CabinetID=$pDev->GetDeviceCabinetID($facDB);
+				$cab->CabinetID=$pDev->GetDeviceCabinetID();
 				$cab->GetCabinet();
 				$chassis="Chassis";
 

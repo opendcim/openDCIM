@@ -331,7 +331,7 @@
 					//ending row
 					$path.="\t\t</td>\n\t\t<td>&nbsp;&nbsp;&nbsp;</td>\n\t</tr>\n";
 
-					if ($pp->GotoNextDevice($facDB)) {
+					if ($pp->GotoNextDevice()) {
 						$tipo_con=($pp->PortNumber>0)?"r":"f";  //In connection type
 
 						//row separation between patch rows: draw the connection between panels
