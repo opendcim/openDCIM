@@ -328,7 +328,7 @@ class DataCenter {
 		   
 			if(file_exists($mapfile)){
 				list($width, $height, $type, $attr)=getimagesize($mapfile);
-				$mapHTML.="<div class=\"canvas\">\n";
+				$mapHTML.="<div class=\"canvas\" style=\"background-image: url('drawings/$this->DrawingFileName')\">\n";
 				$mapHTML.="<img src=\"css/blank.gif\" usemap=\"#datacenter\" width=\"$width\" height=\"$height\" alt=\"clearmap over canvas\">\n";
 				$mapHTML.="<map name=\"datacenter\">\n";
 				 
@@ -474,7 +474,6 @@ class DataCenter {
 			var img=new Image();
 			// draw after the image has loaded
 			img.onload=function(){
-				$('div.canvas').css('background-image','url(\"$mapfile\")');
 				// changed to eliminate the flickering of reloading the background image on a redraw
 				//context.drawImage(img,0,0);
 			}
@@ -1440,7 +1439,7 @@ class Zone {
 				list($width, $height, $type, $attr)=getimagesize($mapfile);
 				$width=($this->MapX2-$this->MapX1)*$zoom;
 				$height=($this->MapY2-$this->MapY1)*$zoom;
-				$mapHTML.="<div class=\"canvas\">\n";
+				$mapHTML.="<div class=\"canvas\" style=\"background-image: url('drawings/$this->DrawingFileName')\">\n";
 				$mapHTML.="<img src=\"css/blank.gif\" usemap=\"#datacenter\" width=\"$width\" height=\"$height\" alt=\"clearmap over canvas\">\n";
 				$mapHTML.="<map name=\"datacenter\">\n";
 				if(is_null($nolinks)){
@@ -1513,14 +1512,22 @@ class Zone {
 		var mycanvas=document.getElementById(\"mapCanvas\");
 		var context=mycanvas.getContext('2d');
 		context.globalCompositeOperation='destination-over';
+
+
 		function clearcanvas(){
+			// erase anything on the canvas
 			context.clearRect(0,0, mycanvas.width, mycanvas.height);
+			// create a new image for the canvas
 			var img=new Image();
+			// draw after the image has loaded
 			img.onload=function(){
-				context.drawImage(img,-$this->MapX1*$zoom,-$this->MapY1*$zoom,$width*$zoom,$height*$zoom);
+				// changed to eliminate the flickering of reloading the background image on a redraw
+				//context.drawImage(img,0,0);
 			}
+			// give it an image to load
 			img.src=\"$mapfile\";
 		}
+
 		function loadCanvas(){\n\t\t\tclearcanvas();\n";
 
 				$space="\t\tfunction space(){\n\t\t\tclearcanvas();\n";
