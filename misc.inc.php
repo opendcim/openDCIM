@@ -3,7 +3,8 @@
 
 /* This is used on every page so we might as well just init it once */
 $user=new User();
-$user->UserID = @$_SERVER['REMOTE_USER'];
+// this condition should only happen when running from the console
+$user->UserID=isset($_SERVER['REMOTE_USER'])?$_SERVER['REMOTE_USER']:'';
 $user->GetUserRights();
 	
 /* 

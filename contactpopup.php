@@ -2,13 +2,9 @@
 	require_once( 'db.inc.php' );
 	require_once( 'facilities.inc.php' );
 	
-	$user=new User();
 	$dept=new Department();
 	$contact=new Contact();
 	
-	$user->UserID = $_SERVER['REMOTE_USER'];
-	$user->GetUserRights();
-
 	if(!$user->ReadAccess || !isset($_REQUEST['deptid'])){
 		// No soup for you.
 		header('Location: '.redirect());

@@ -17,10 +17,6 @@
 require_once 'db.inc.php';
 require_once 'facilities.inc.php';
 
-$user = new User();
-$user->UserID = $_SERVER['REMOTE_USER'];
-$user->GetUserRights();
-
 // TODO: Potentially sorting of rack inventory might need to be done not
 // according to the data center ID but to the names
 
