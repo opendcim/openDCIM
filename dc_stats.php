@@ -57,11 +57,11 @@ $(document).ready(function() {
 		
 		$sql="SELECT C.*, T.Temp, T.Humidity, P.RealPower, T.LastRead, PLR.RPLastRead 
 			FROM ((fac_Cabinet C LEFT JOIN fac_CabinetTemps T ON C.CabinetID = T.CabinetID) 
-			LEFT JOIN (SELECT CabinetID, SUM(Wattage) RealPower FROM fac_PowerDistribution PD 
-			LEFT JOIN fac_PDUStats PS ON PD.PDUID=PS.PDUID GROUP BY CabinetID) P ON C.CabinetID = P.CabinetID) 
+				LEFT JOIN (SELECT CabinetID, SUM(Wattage) RealPower FROM fac_PowerDistribution PD 
+				LEFT JOIN fac_PDUStats PS ON PD.PDUID=PS.PDUID GROUP BY CabinetID) P ON C.CabinetID = P.CabinetID) 
 			LEFT JOIN (SELECT CabinetID, MAX(LastRead) RPLastRead FROM fac_PowerDistribution PD 
-			LEFT JOIN fac_PDUStats PS ON PD.PDUID=PS.PDUID GROUP BY CabinetID) PLR 
-		ON C.CabinetID = PLR.CabinetID WHERE C.CabinetID=".intval($_POST['tooltip']);
+				LEFT JOIN fac_PDUStats PS ON PD.PDUID=PS.PDUID GROUP BY CabinetID) PLR 
+				ON C.CabinetID = PLR.CabinetID WHERE C.CabinetID=".intval($_POST['tooltip']);
 
 		if($cabRow=$dbh->query($sql)->fetch()){
 			$cab->CabinetID=$cabRow["CabinetID"];
@@ -75,10 +75,6 @@ $(document).ready(function() {
 			$currentRealPower=$cabRow["RealPower"];
 			$lastRead=(!is_null($cabRow["LastRead"]))?strftime('%c',strtotime(($cabRow["LastRead"]))):0;
 			$RPlastRead=(!is_null($cabRow["RPLastRead"]))?strftime('%c',strtotime(($cabRow["RPLastRead"]))):0;
-			$rs="<img src='images/rs.png'>";
-			$ys="<img src='images/ys.png'>";
-			$gs="<img src='images/gs.png'>";
-			$us="<img src='images/us.png'>";
 			$rs='red';
 			$ys='yellow';
 			$gs='green';
@@ -154,7 +150,6 @@ $(document).ready(function() {
 			$tooltip.="<li class=\"$rpcolor\">".__("Measured Power").": ".$labelrp."</li>\n";
 			$tooltip.="<li class=\"$tcolor\">".__("Temperature").": ".$labelte."</li>\n";
 			$tooltip.="<li class=\"$hcolor\">".__("Humidity").": ".$labelhu."</li></ul>\n";
-			// $tooltip.="<li>" . print_r( $cabRow, true ) . "</li>";
 			
 			$tooltip="<div>$tooltip</div>";
 			print $tooltip;
@@ -200,8 +195,6 @@ echo '<div class="main">
   <div>
 	<h2>',$config->ParameterArray["OrgName"],'</h2>
 	<h3>',__("Data Center Statistics"),'</h3>
-  </div>
-  <div class="nav">
   </div>
 </div>
 <div class="center"><div>
@@ -262,9 +255,24 @@ echo '<div class="main">
 </div> <!-- END div.table -->
 </div> <!-- END div.centermargin -->
 <br>
-<div id="maptitle"><span></span></div>';
+<div id="maptitle"><span></span><div class="nav">';
 
-  print $dc->MakeImageMap();
+$select='<select>';
+	foreach(array(
+		'loadCanvas' => __("Overview"),
+		'space' => __("Space"),
+		'weight' => __("Weight"),
+		'power' => __("Calculated Power"),
+		'realpower' => __("Measured Power"),
+		'temperatura' => __("Temperature"),
+		'humedad' => __("Humidity")
+		) as $value => $option){
+		$select.='<option value="'.$value.'">'.$option.'</option>';
+	}
+$select.='</select>';
+
+echo $select.'</div></div>'.$dc->MakeImageMap();
+
 ?>
 </div></div>
 </div><!-- END div.main -->
@@ -307,17 +315,9 @@ echo '<div class="main">
 			});
 
 		});
-		var menu=$('<select>').change(function(){
+		$('#maptitle .nav > select').change(function(){
 			eval($(this).val()+'()');
 		});
-		menu.append($('<option>').val('loadCanvas').text('<?php echo __("Overview") ?>'));
-		menu.append($('<option>').val('space').text('<?php echo __("Space") ?>'));
-		menu.append($('<option>').val('weight').text('<?php echo __("Weight") ?>'));
-		menu.append($('<option>').val('power').text('<?php echo __("Calculated Power") ?>'));
-		menu.append($('<option>').val('realpower').text('<?php echo __("Measured Power") ?>'));
-		menu.append($('<option>').val('temperatura').text('<?php echo __("Temperature") ?>'));
-		menu.append($('<option>').val('humedad').text('<?php echo __("Humidity") ?>'));
-		$('#maptitle').append($('.main .nav').html(menu).css('float','right'));
 
 		loadCanvas();
 		opentree();

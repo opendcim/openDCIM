@@ -64,14 +64,12 @@ $(document).ready(function() {
 		if(isset($_POST['tooltip'])){
 		
 		$sql="SELECT C.*, T.Temp, T.Humidity, P.RealPower, T.LastRead, PLR.RPLastRead 
-			FROM ((fac_Cabinet C LEFT JOIN fac_CabinetTemps T ON C.CabinetId = T.CabinetID) LEFT JOIN
-				(SELECT CabinetID, SUM(Wattage) RealPower
-				FROM fac_PowerDistribution PD LEFT JOIN fac_PDUStats PS ON PD.PDUID=PS.PDUID
-				GROUP BY CabinetID) P ON C.CabinetId = P.CabinetID) LEFT JOIN
-				(SELECT CabinetID, MAX(LastRead) RPLastRead
-				FROM fac_PowerDistribution PD LEFT JOIN fac_PDUStats PS ON PD.PDUID=PS.PDUID
-				GROUP BY CabinetID) PLR ON C.CabinetId = PLR.CabinetID
-		    WHERE C.CabinetId=".intval($_POST['tooltip']).";";
+			FROM ((fac_Cabinet C LEFT JOIN fac_CabinetTemps T ON C.CabinetID = T.CabinetID) 
+				LEFT JOIN (SELECT CabinetID, SUM(Wattage) RealPower FROM fac_PowerDistribution PD 
+				LEFT JOIN fac_PDUStats PS ON PD.PDUID=PS.PDUID GROUP BY CabinetID) P ON C.CabinetID = P.CabinetID) 
+			LEFT JOIN (SELECT CabinetID, MAX(LastRead) RPLastRead FROM fac_PowerDistribution PD 
+				LEFT JOIN fac_PDUStats PS ON PD.PDUID=PS.PDUID GROUP BY CabinetID) PLR 
+				ON C.CabinetID = PLR.CabinetID WHERE C.CabinetID=".intval($_POST['tooltip']);
 
 		if($cabRow=$dbh->query($sql)->fetch()){
 			$cab->CabinetID=$cabRow["CabinetID"];
@@ -85,11 +83,10 @@ $(document).ready(function() {
 			$currentRealPower=$cabRow["RealPower"];
 			$lastRead=(!is_null($cabRow["LastRead"]))?strftime('%c',strtotime(($cabRow["LastRead"]))):0;
 			$RPlastRead=(!is_null($cabRow["RPLastRead"]))?strftime('%c',strtotime(($cabRow["RPLastRead"]))):0;
-			
-			$rs="<img src='images/rs.png'>";
-			$ys="<img src='images/ys.png'>";
-			$gs="<img src='images/gs.png'>";
-			$us="<img src='images/us.png'>";
+			$rs='red';
+			$ys='yellow';
+			$gs='green';
+			$us='wtf';
 			
 			// get all limits for use with loop below
 			$dc->dcconfig=new Config();
@@ -134,15 +131,11 @@ $(document).ready(function() {
 			if($WeightPercent>$WeightRed){$wcolor=$rs;}elseif($WeightPercent>$WeightYellow){$wcolor=$ys;}else{$wcolor=$gs;}
 			if($PowerPercent>$PowerRed){$pcolor=$rs;}elseif($PowerPercent>$PowerYellow){$pcolor=$ys;}else{$pcolor=$gs;}
 			if($RPlastRead==0){$rpcolor=$us;}elseif($RealPowerPercent>$RealPowerRed){$rpcolor=$rs;}elseif($RealPowerPercent>$RealPowerYellow){$rpcolor=$ys;}else{$rpcolor=$gs;}
-        	if($currentTemperature==0){$tcolor=$us;}
-				elseif($currentTemperature>$TemperatureRed){$tcolor=$rs;}
-				elseif($currentTemperature>$TemperatureYellow){$tcolor=$ys;}
-				else{$tcolor=$gs;}
+        	if($currentTemperature==0){$tcolor=$us;}elseif($currentTemperature>$TemperatureRed){$tcolor=$rs;}elseif($currentTemperature>$TemperatureYellow){$tcolor=$ys;}else{$tcolor=$gs;}
 			
-			if($currentHumidity==0){$hcolor=$us;}
-				elseif($currentHumidity>$HumidityMax || $currentHumidity<$HumidityMin){$hcolor=$rs;}
-				elseif($currentHumidity>$HumidityMedMax || $currentHumidity<$HumidityMedMin) {$hcolor=$ys;}
-				else{$hcolor=$gs;}
+			if($currentHumidity==0){$hcolor=$us;}elseif($currentHumidity>$HumidityMax || $currentHumidity<$HumidityMin){$hcolor=$rs;
+			}elseif($currentHumidity>$HumidityMedMax || $currentHumidity<$HumidityMedMin) {$hcolor=$ys;}else{$hcolor=$gs;}
+
 				
 			$labelsp=locale_number($used,0)." / ".$cab->CabinetHeight." U";
 			$labelwe=locale_number($totalWeight,0)." / ".$cab->MaxWeight." Kg";
@@ -151,14 +144,14 @@ $(document).ready(function() {
 			$labelhu=(($currentHumidity>0)?locale_number($currentHumidity,0)." % (".$lastRead.")":__("no data"));
 			$labelrp=(($RPlastRead<>0)?locale_number($currentRealPower/1000,2)." / ".$cab->MaxKW." kW (".$RPlastRead.")":__("no data"));
 			
-			$tooltip="<span style='font-size: 1.5em; text-align: center; font-weight: bold;'>$cab->Location</span><br>\n";
-			$tooltip.=$scolor.__("Space").": ".$labelsp."<br>\n";
-			$tooltip.=$wcolor.__("Weight").": ".$labelwe."<br>\n";
-			$tooltip.=$pcolor.__("Power").": ".$labelpo."<br>\n";
-			$tooltip.=$tcolor.__("Temperature").": ".$labelte."<br>\n";
-			$tooltip.=$hcolor.__("Humidity").": ".$labelhu."<br>\n";
-			$tooltip.=$rpcolor.__("Measured Power").": ".$labelrp."<br>\n";
-			
+			$tooltip="<span>$cab->Location</span><ul>\n";
+			$tooltip.="<li class=\"$scolor\">".__("Space").": ".$labelsp."</li>\n";
+			$tooltip.="<li class=\"$wcolor\">".__("Weight").": ".$labelwe."</li>\n";
+			$tooltip.="<li class=\"$pcolor\">".__("Calculated Power").": ".$labelpo."</li>\n";
+			$tooltip.="<li class=\"$rpcolor\">".__("Measured Power").": ".$labelrp."</li>\n";
+			$tooltip.="<li class=\"$tcolor\">".__("Temperature").": ".$labelte."</li>\n";
+			$tooltip.="<li class=\"$hcolor\">".__("Humidity").": ".$labelhu."</li></ul>\n";
+
 			$tooltip="<div>$tooltip</div>";
 			print $tooltip;
 			exit;
@@ -223,8 +216,6 @@ echo '<div class="main">
 	<h2>',$config->ParameterArray["OrgName"],'</h2>
 	<h3>',__("Zone Statistics"),'</h3>
   </div>
-  <div class="nav">
-    </div>
 </div>
 <div class="center"><div>
 <div class="centermargin" id="dcstats">
@@ -280,9 +271,24 @@ echo '<div class="main">
 </div> <!-- END div.table -->
 </div> <!-- END div.centermargin -->
 <br>
-<div id="maptitle"></div>';
+<div id="maptitle"><span></span><div class="nav">';
 
-  print $zone->MakeImageMap();
+$select='<select>';
+	foreach(array(
+		'loadCanvas' => __("Overview"),
+		'space' => __("Space"),
+		'weight' => __("Weight"),
+		'power' => __("Calculated Power"),
+		'realpower' => __("Measured Power"),
+		'temperatura' => __("Temperature"),
+		'humedad' => __("Humidity")
+		) as $value => $option){
+		$select.='<option value="'.$value.'">'.$option.'</option>';
+	}
+$select.='</select>';
+
+echo $select.'</div></div>'.$zone->MakeImageMap();
+
 ?>
 </div></div>
 </div><!-- END div.main -->
@@ -303,17 +309,9 @@ echo '<div class="main">
 
   <?php print $zone->DrawCanvas();?>
 
-		var menu=$('<select>').change(function(){
+		$('#maptitle .nav > select').change(function(){
 			eval($(this).val()+'()');
 		});
-		menu.append($('<option>').val('loadCanvas').text('<?php echo __("Overview") ?>'));
-		menu.append($('<option>').val('space').text('<?php echo __("Space") ?>'));
-		menu.append($('<option>').val('weight').text('<?php echo __("Weight") ?>'));
-		menu.append($('<option>').val('power').text('<?php echo __("Calculated Power") ?>'));
-		menu.append($('<option>').val('realpower').text('<?php echo __("Measured Power") ?>'));
-		menu.append($('<option>').val('temperatura').text('<?php echo __("Temperature") ?>'));
-		menu.append($('<option>').val('humedad').text('<?php echo __("Humidity") ?>'));
-		$('.main .nav').html(menu);
 
 		loadCanvas();
 		opentree();

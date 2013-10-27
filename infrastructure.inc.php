@@ -618,13 +618,13 @@ class DataCenter {
 			}
 			
 			//Key
-			$leyenda="\t\t\tmaptitle.html('".__("OVERVIEW: worse state of cabinets")."');";
-			$leyendasp="\t\t\tmaptitle.html('".__("SPACE: occupation of cabinets")."');";
-			$leyendawe="\t\t\tmaptitle.html('".__("WEIGHT: Supported weight by cabinets")."');";
-			$leyendapo="\t\t\tmaptitle.html('".__("POWER: Computed from devices power supplies")."');";
-			$leyendate="\t\t\tmaptitle.html('".__("TEMPERATURE").": ".($fechaLecturaTemps>0?__("Measured on")." ".$fechaLecturaTemps:__("no data"))."');";
-			$leyendahu="\t\t\tmaptitle.html('".__("HUMIDITY").": ".($fechaLecturaTemps>0?__("Measured on")." ".$fechaLecturaTemps:__("no data"))."');";
-			$leyendarp="\t\t\tmaptitle.html('".__("REAL POWER").": ".($fechaLecturaRP>0?__("Measured on")." ".$fechaLecturaRP:__("no data"))."');";
+			$leyenda="\t\t\tmaptitle.html('".__("Worst state of cabinets")."');";
+			$leyendasp="\t\t\tmaptitle.html('".__("Occupied space")."');";
+			$leyendawe="\t\t\tmaptitle.html('".__("Calculated weight")."');";
+			$leyendapo="\t\t\tmaptitle.html('".__("Calculated power usage")."');";
+			$leyendate="\t\t\tmaptitle.html('".($fechaLecturaTemps>0?__("Measured on")." ".$fechaLecturaTemps:__("no data"))."');";
+			$leyendahu="\t\t\tmaptitle.html('".($fechaLecturaTemps>0?__("Measured on")." ".$fechaLecturaTemps:__("no data"))."');";
+			$leyendarp="\t\t\tmaptitle.html('".($fechaLecturaRP>0?__("Measured on")." ".$fechaLecturaRP:__("no data"))."');";
 						/*
 			$leyenda="\n\t\tcontext.fillStyle='#000000';\n\t\tcontext.font='15px arial';
 				\n\t\tcontext.fillText('".__("OVERVIEW: worse state of cabinets")."',5,20);";
@@ -1439,7 +1439,7 @@ class Zone {
 				list($width, $height, $type, $attr)=getimagesize($mapfile);
 				$width=($this->MapX2-$this->MapX1)*$zoom;
 				$height=($this->MapY2-$this->MapY1)*$zoom;
-				$mapHTML.="<div class=\"canvas\" style=\"background-image: url('drawings/$this->DrawingFileName')\">\n";
+				$mapHTML.="<div class=\"canvas\">\n";
 				$mapHTML.="<img src=\"css/blank.gif\" usemap=\"#datacenter\" width=\"$width\" height=\"$height\" alt=\"clearmap over canvas\">\n";
 				$mapHTML.="<map name=\"datacenter\">\n";
 				if(is_null($nolinks)){
@@ -1508,7 +1508,7 @@ class Zone {
 				// get image file attributes and type
 				list($width, $height, $type, $attr)=getimagesize($mapfile);
 
-				$script.="\n\t\tvar maptitle=$('#maptitle');
+				$script.="\n\t\tvar maptitle=$('#maptitle span');
 		var mycanvas=document.getElementById(\"mapCanvas\");
 		var context=mycanvas.getContext('2d');
 		context.globalCompositeOperation='destination-over';
@@ -1522,7 +1522,7 @@ class Zone {
 			// draw after the image has loaded
 			img.onload=function(){
 				// changed to eliminate the flickering of reloading the background image on a redraw
-				//context.drawImage(img,0,0);
+				context.drawImage(img,-$this->MapX1*$zoom,-$this->MapY1*$zoom,$width*$zoom,$height*$zoom);
 			}
 			// give it an image to load
 			img.src=\"$mapfile\";
@@ -1639,13 +1639,13 @@ class Zone {
 				}
 			}
 			//Key
-			$leyenda="\t\t\tmaptitle.html('".__("OVERVIEW: worse state of cabinets")."');";
-			$leyendasp="\t\t\tmaptitle.html('".__("SPACE: occupation of cabinets")."');";
-			$leyendawe="\t\t\tmaptitle.html('".__("WEIGHT: Supported weight by cabinets")."');";
-			$leyendapo="\t\t\tmaptitle.html('".__("POWER: Computed from devices power supplies")."');";
-			$leyendate="\t\t\tmaptitle.html('".__("TEMPERATURE").": ".($fechaLecturaTemps>0?__("Measured on")." ".$fechaLecturaTemps:__("no data"))."');";
-			$leyendahu="\t\t\tmaptitle.html('".__("HUMIDITY").": ".($fechaLecturaTemps>0?__("Measured on")." ".$fechaLecturaTemps:__("no data"))."');";
-			$leyendarp="\t\t\tmaptitle.html('".__("REAL POWER").": ".($fechaLecturaRP>0?__("Measured on")." ".$fechaLecturaRP:__("no data"))."');";
+			$leyenda="\t\t\tmaptitle.html('".__("Worst state of cabinets")."');";
+			$leyendasp="\t\t\tmaptitle.html('".__("Occupied space")."');";
+			$leyendawe="\t\t\tmaptitle.html('".__("Calculated weight")."');";
+			$leyendapo="\t\t\tmaptitle.html('".__("Calculated power usage")."');";
+			$leyendate="\t\t\tmaptitle.html('".($fechaLecturaTemps>0?__("Measured on")." ".$fechaLecturaTemps:__("no data"))."');";
+			$leyendahu="\t\t\tmaptitle.html('".($fechaLecturaTemps>0?__("Measured on")." ".$fechaLecturaTemps:__("no data"))."');";
+			$leyendarp="\t\t\tmaptitle.html('".($fechaLecturaRP>0?__("Measured on")." ".$fechaLecturaRP:__("no data"))."');";
 			/*
 			$leyenda="\n\t\tcontext.fillStyle='#000000';\n\t\tcontext.font='15px arial';
 				\n\t\tcontext.fillText('".__("OVERVIEW: worse state of cabinets")."',5,20);";

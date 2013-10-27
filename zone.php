@@ -76,27 +76,7 @@
   <link rel="stylesheet"  href="css/ie.css" type="text/css">
     <?php if(isset($ie8fix)){echo $ie8fix;} ?>
   <![endif]-->
-  <?php if(isset($screenadjustment)){echo $screenadjustment;} ?>
   
-<script type="text/javascript">
-function preview(img, selection) {
-    if (!selection.width || !selection.height)
-        return;
-    $('#x1').val(selection.x1);
-    $('#y1').val(selection.y1);
-    $('#x2').val(selection.x2);
-    $('#y2').val(selection.y2);
-}
-$(document).ready(function() {
-	$('#map').imgAreaSelect( {
-<?php
-	printf( "x1: %d, x2: %d, y1: %d, y2: %d,\n", $zone->MapX1, $zone->MapX2, $zone->MapY1, $zone->MapY2 );
-?>
-		handles: true,
-		onSelectChange: preview
-	});
-});
-</script>
 </head>
 <body>
 <div id="header"></div>
@@ -215,5 +195,28 @@ echo '
  ?>
 
 </div><!-- END div.page -->
+<script type="text/javascript">
+	$(document).ready(function() {
+		function preview(img, selection) {
+			if (!selection.width || !selection.height){
+				return;
+			}
+			$('#x1').val(selection.x1);
+			$('#y1').val(selection.y1);
+			$('#x2').val(selection.x2);
+			$('#y2').val(selection.y2);
+		}
+		$('#map').imgAreaSelect( {
+	<?php
+		print "\t\tx1: $zone->MapX1,
+			x2: $zone->MapX2,
+			y1: $zone->MapY1,
+			y2: $zone->MapY2,\n";
+	?>
+			handles: true,
+			onSelectChange: preview
+		});
+	});
+</script>
 </body>
 </html>
