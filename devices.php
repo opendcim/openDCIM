@@ -2066,8 +2066,17 @@ echo '	<div class="table">
 			generateportnames.offset({top: spnpos.top, left: spnpos.left+$('#spn').outerWidth()-generateportnames.width()});
 		});
 
+<?php }else{ ?>
+		// get list of other patch panels
+		var rearedit=$('<select>').append($('<option>'));
+		$.post('', {swdev: $('#deviceid').val(), rear: ''}, function(data){
+			$.each(data, function(key,pp){
+				var option=$("<option>").val(pp.DeviceID).append(pp.Label);
+				rearedit.append(option);
+			});
+		});
+		console.log(rearedit);
 <?php } ?>
-
 	});
 </script>
 

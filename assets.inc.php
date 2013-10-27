@@ -2416,7 +2416,7 @@ class DevicePorts {
 			foreach($dbh->query($sql) as $row){
 				// false to skip rights check we filtered using sql above
 				$tmpDev=Device::RowToObject($row,false);
-				$candidates[]=array("DeviceID"=>$tmpDev->DeviceID, "Label"=>$tmpDev->Label);
+				$candidates[]=array("DeviceID"=>$tmpDev->DeviceID, "Label"=>$tmpDev->Label, "CabinetID"=>$tmpDev->Cabinet);
 			}
 			// Then run the same query, but for the rest of the devices in the database
 			$sql="SELECT a.*, AssignedTo FROM fac_Device a, fac_Cabinet b WHERE Ports>0 
@@ -2425,14 +2425,14 @@ class DevicePorts {
 			foreach($dbh->query($sql) as $row){
 				// false to skip rights check we filtered using sql above
 				$tmpDev=Device::RowToObject($row,false);
-				$candidates[]=array("DeviceID"=>$tmpDev->DeviceID, "Label"=>$tmpDev->Label);
+				$candidates[]=array("DeviceID"=>$tmpDev->DeviceID, "Label"=>$tmpDev->Label, "CabinetID"=>$tmpDev->Cabinet);
 			}
 		}else{
-			$sql="SELECT a.* FROM fac_Ports a, fac_Device b WHERE Ports>0 AND Cabinet>-1 
-				AND a.DeviceID=b.DeviceID AND a.DeviceID!=$dev->DeviceID AND 
-				ConnectedDeviceID IS NULL$mediaenforce$pp;";
+			$sql="SELECT a.*, b.Cabinet as CabinetID FROM fac_Ports a, fac_Device b WHERE 
+				Ports>0 AND Cabinet>-1 AND a.DeviceID=b.DeviceID AND 
+				a.DeviceID!=$dev->DeviceID AND ConnectedDeviceID IS NULL$mediaenforce$pp;";
 			foreach($dbh->query($sql) as $row){
-				$candidates[]=array("DeviceID"=>$row["DeviceID"], "Label"=>$row["Label"]);
+				$candidates[]=array("DeviceID"=>$row["DeviceID"], "Label"=>$row["Label"], "CabinetID"=>$row["CabinetID"]);
 			}
 		}
 
