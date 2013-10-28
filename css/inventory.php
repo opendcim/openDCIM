@@ -509,6 +509,12 @@ table#cabprop span.text-label {
 .right .table + .table {margin-top: 1em;}
 
 .device .table.patchpanel > div > div {min-width: auto;}
+.device .table.patchpanel > div:first-child select, .device .table.switch > div:first-child select { position: absolute; background-color: transparent; border: 0px none; width: auto;}
+.device .table.patchpanel > div:first-child select::-moz-focus-inner, 
+.device .table.patchpanel > div:first-child select:focus::-moz-focus-inner, 
+.device .table.switch > div:first-child select::-moz-focus-inner, 
+.device .table.switch > div:first-child select:focus::-moz-focus-inner {border: none;}
+
 
 .device #tags { width: 95%; min-width: 250px;}
 

@@ -1029,7 +1029,7 @@ print "		var dialog=$('<div>').prop('title','".__("Verify Delete Device")."').ht
 		}
 
 		// mass media type change controls
-		setmediatype=$('<select>').css({'border':'none','position':'absolute','width':'auto'}).append($('<option>'));
+		setmediatype=$('<select>').append($('<option>'));
 		setmediatype.append($('<option>').val('clear').text('Clear'));
 		setmediatype.change(function(){
 			var dialog=$('<div />', {id: 'modal', title: 'Override all types?'}).html('<div id="modaltext"></div><br><div id="modalstatus" class="warning">Do you want to override all media types?</div>');
@@ -1060,7 +1060,7 @@ print "		var dialog=$('<div>').prop('title','".__("Verify Delete Device")."').ht
 		$('#mt').append(setmediatype);
 
 		// color codes change controls
-		setcolorcode=$('<select>').css({'border':'none','position':'absolute','width':'auto'}).append($('<option>'));
+		setcolorcode=$('<select>').append($('<option>'));
 		setcolorcode.append($('<option>').val('clear').text('Clear'));
 		setcolorcode.change(function(){
 			var dialog=$('<div />', {id: 'modal', title: 'Override all types?'}).html('<div id="modaltext"></div><br><div id="modalstatus" class="warning">Do you want to override all the color codes?</div>');
@@ -1091,7 +1091,7 @@ print "		var dialog=$('<div>').prop('title','".__("Verify Delete Device")."').ht
 		$('#cc').append(setcolorcode);
 
 		// port name generation change controls
-		generateportnames=$('<select>').css({'border':'none','position':'absolute','width':'auto'}).append($('<option>'));
+		generateportnames=$('<select>').append($('<option>'));
 		generateportnames.change(function(){
 			var dialog=$('<div />', {id: 'modal', title: 'Override all names?'}).html('<div id="modaltext"></div><br><div id="modalstatus" class="warning">Do you want to override all the port names?</div>');
 			dialog.dialog({
@@ -1918,7 +1918,7 @@ echo '	<div class="table">
 	}
 
 	if($dev->DeviceType=='Patch Panel'){
-		print "\n\t<div>\n\t\t<div><a name=\"net\">".__('Connections')."</a></div>\n\t\t<div>\n\t\t\t<div class=\"table border patchpanel\">\n\t\t\t\t<div><div>".__('Front')."</div><div>".__("Device Port")."</div><div>".__('Notes')."</div><div>".__('Patch Port')."</div><div>".__('Back')."</div><div>".__("Device Port")."</div><div>".__('Notes')."</div></div>\n";
+		print "\n\t<div>\n\t\t<div><a name=\"net\">".__('Connections')."</a></div>\n\t\t<div>\n\t\t\t<div class=\"table border patchpanel\">\n\t\t\t\t<div><div>".__('Front')."</div><div>".__("Device Port")."</div><div>".__('Notes')."</div><div>".__('Patch Port')."</div><div id=\"rear\">".__('Back')."</div><div>".__("Device Port")."</div><div>".__('Notes')."</div></div>\n";
 		for($n=0; $n< sizeof($portList)/2; $n++){
 			$i = $n + 1;	// The "port number" starting at 1
 			$frontDev=new Device();
@@ -2068,12 +2068,16 @@ echo '	<div class="table">
 
 <?php }else{ ?>
 		// get list of other patch panels
-		var rearedit=$('<select>').append($('<option>'));
+		rearedit=$('<select>').append($('<option>'));
+		var rearpos=$('#rear').offset();
 		$.post('', {swdev: $('#deviceid').val(), rear: ''}, function(data){
 			$.each(data, function(key,pp){
 				var option=$("<option>").val(pp.DeviceID).append(pp.Label);
 				rearedit.append(option);
 			});
+			$('#rear').append(rearedit);
+		}).then(function(){
+			rearedit.offset({top: rearpos.top, left: rearpos.left+$('#rear').outerWidth()-rearedit.width()});
 		});
 		console.log(rearedit);
 <?php } ?>
