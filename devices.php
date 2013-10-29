@@ -32,7 +32,7 @@
 	if(isset($_GET['spn'])){
 		header('Content-Type: application/json');
 		$PortNamePatterns=array();
-		foreach(array('NIC(1)','Port(1)','Fa/(1)','Gi/(1)','Ti/(1)') as $pattern){
+		foreach(array('NIC(1)','Port(1)','Fa/(1)','Gi/(1)','Ti/(1)','Custom') as $pattern){
 			$PortNamePatterns[]['Pattern']=$pattern;
 		}
 		echo json_encode($PortNamePatterns);
@@ -167,6 +167,29 @@
 				}
 				exit;
 			}
+			// Attach all rear ports of patch panel to another patch panel
+			if(isset($_POST['rear']) && isset($_POST['cdevice'])){
+					$ConnectTo=new Device();
+					$ConnectTo->DeviceID=$_POST['cdevice'];
+					// error out if connecting device doesn't exist
+					if(!$ConnectTo->GetDevice()){
+						echo 'false';
+						exit;
+					}
+					$cp=new DevicePorts();
+					$cp->DeviceID=$ConnectTo->DeviceID;
+					$cp=$cp->getPorts();
+					$dp=new DevicePorts();
+					$dp->DeviceID=$dev->DeviceID;
+					foreach($dp->getPorts() as $index => $port){
+						if($port->PortNumber<0 && isset($cp[$port->PortNumber])){
+							$port->ConnectedDeviceID=$ConnectTo->DeviceID;
+							$port->ConnectedPort=$port->PortNumber;
+							$port->updatePort();
+						}
+					}
+				exit;
+			}
 		}
 		if(isset($_POST['getport'])){
 			$dp=new DevicePorts();
@@ -218,7 +241,8 @@
 			}
 		}else{
 			$patchpanels=(isset($_POST['rear']))?"true":null;
-			$list=DevicePorts::getPatchCandidates($_POST['swdev'],$_POST['pn'],null,$patchpanels);
+			$portnumber=(isset($_POST['pn']))?$_POST['pn']:null;
+			$list=DevicePorts::getPatchCandidates($_POST['swdev'],$portnumber,null,$patchpanels);
 		}
 		header('Content-Type: application/json');
 		echo json_encode($list);
@@ -1018,6 +1042,17 @@ print "		var dialog=$('<div>').prop('title','".__("Verify Delete Device")."').ht
 		}
 ?>
 
+		// Call this function to move the mass edit buttons around after redrawing the ports, etc.
+		// Use anytime something could have changed the positioning around
+		function movebuttons(){
+			var pos=$('#mt').offset();
+			var ccpos=$('#cc').offset();
+			var spnpos=$('#spn').offset();
+			setmediatype.offset({top: pos.top, left: pos.left+$('#mt').outerWidth()-setmediatype.width()});
+			setcolorcode.offset({top: ccpos.top, left: ccpos.left+$('#cc').outerWidth()-setcolorcode.width()});
+			generateportnames.offset({top: spnpos.top, left: spnpos.left+$('#spn').outerWidth()-generateportnames.width()});
+		}
+
 		// this will redraw the current ports based on the information given back from a json string
 		function redrawports(portsarr){
 			$.each(portsarr.ports, function(key,p){
@@ -1026,6 +1061,7 @@ print "		var dialog=$('<div>').prop('title','".__("Verify Delete Device")."').ht
 				$('#mt'+p.PortNumber).text((p.MediaID>0)?portsarr.mt[p.MediaID].MediaType:'').data('default',p.MediaID);
 				$('#cc'+p.PortNumber).text((p.ColorID>0)?portsarr.cc[p.ColorID].Name:'').data('default',p.ColorID);
 			});
+			movebuttons();
 		}
 
 		// mass media type change controls
@@ -1045,6 +1081,10 @@ print "		var dialog=$('<div>').prop('title','".__("Verify Delete Device")."').ht
 <?php echo '			',__("No"),': function(){'; ?>
 						$(this).dialog("destroy");
 						doit(false);
+					},
+<?php echo '			',__("Cancel"),': function(){'; ?>
+						$(this).dialog("destroy");
+						setmediatype.val('');
 					}
 				}
 			});
@@ -1076,6 +1116,10 @@ print "		var dialog=$('<div>').prop('title','".__("Verify Delete Device")."').ht
 <?php echo '			',__("No"),': function(){'; ?>
 						$(this).dialog("destroy");
 						doit(false);
+					},
+<?php echo '			',__("Cancel"),': function(){'; ?>
+						$(this).dialog("destroy");
+						setcolorcode.val('');
 					}
 				}
 			});
@@ -1094,24 +1138,33 @@ print "		var dialog=$('<div>').prop('title','".__("Verify Delete Device")."').ht
 		generateportnames=$('<select>').append($('<option>'));
 		generateportnames.change(function(){
 			var dialog=$('<div />', {id: 'modal', title: 'Override all names?'}).html('<div id="modaltext"></div><br><div id="modalstatus" class="warning">Do you want to override all the port names?</div>');
+			if($(this).val()=='Custom'){
+				dialog.find('#modalstatus').prepend('<p>Custom pattern: <input></input></p><p><a href="http://opendcim.org/wiki/index.php?title=NetworkConnections#Custom_Port_Name_Generator_Example_Patterns" target=_blank>Pattern Examples</a></p>');
+			}
 			dialog.dialog({
 				resizable: false,
 				modal: true,
 				dialogClass: "no-close",
 				buttons: {
 <?php echo '			',__("Yes"),': function(){'; ?>
-						$(this).dialog("destroy");
 						doit(true);
+						$(this).dialog("destroy");
 					},
 <?php echo '			',__("No"),': function(){'; ?>
-						$(this).dialog("destroy");
 						doit(false);
+						$(this).dialog("destroy");
+					},
+<?php echo '			',__("Cancel"),': function(){'; ?>
+						$(this).dialog("destroy");
+						generateportnames.val('');
 					}
 				}
 			});
 			function doit(override){
+				var portpattern;
+				portpattern=(generateportnames.val()=='Custom')?dialog.find('input').val():generateportnames.val();
 				// gnerate port names based on the selected pattern for all the ports
-				$.post('',{setall: override, devid: $('#deviceid').val(), spn: generateportnames.val()}).done(function(data){
+				$.post('',{setall: override, devid: $('#deviceid').val(), spn: portpattern}).done(function(data){
 					// setall kicked back every port run through them all and update note, media type, and color code
 					redrawports(data);
 				});
@@ -2035,35 +2088,43 @@ echo '	<div class="table">
 
 <?php if($dev->DeviceType!='Patch Panel'){ ?>
 
+		// Call this function to move the mass edit buttons around after redrawing the ports, etc.
+		// Use anytime something could have changed the positioning around
+		function movebuttons(){
+			var pos=$('#mt').offset();
+			var ccpos=$('#cc').offset();
+			var spnpos=$('#spn').offset();
+			setmediatype.offset({top: pos.top, left: pos.left+$('#mt').outerWidth()-setmediatype.width()});
+			setcolorcode.offset({top: ccpos.top, left: ccpos.left+$('#cc').outerWidth()-setcolorcode.width()});
+			generateportnames.offset({top: spnpos.top, left: spnpos.left+$('#spn').outerWidth()-generateportnames.width()});
+		}
+
 		// the mass edit fuctions have to be done last because the page is resized when the sidebar loads and it throws the positioning off
-		var pos=$('#mt').offset();
 		$.get('',{mt:''}).done(function(data){
 			$.each(data, function(key,mt){
 				var option=$("<option>",({'value':mt.MediaID})).append(mt.MediaType);
 				setmediatype.append(option).data(mt.MediaID,mt.ColorID);
 			});
 		}).then(function(){
-			setmediatype.offset({top: pos.top, left: pos.left+$('#mt').outerWidth()-setmediatype.width()});
+			movebuttons();
 		});
 
-		var ccpos=$('#cc').offset();
 		$.get('',{cc:''}).done(function(data){
 			$.each(data, function(key,cc){
 				var option=$("<option>",({'value':cc.ColorID})).append(cc.Name);
 				setcolorcode.append(option).data(cc.ColorID,cc.Name);
 			});
 		}).then(function(){
-			setcolorcode.offset({top: ccpos.top, left: ccpos.left+$('#cc').outerWidth()-setcolorcode.width()});
+			movebuttons();
 		});
 
-		var spnpos=$('#spn').offset();
 		$.get('',{spn:''}).done(function(data){
 			$.each(data, function(key,spn){
 				var option=$("<option>",({'value':spn.Pattern})).append(spn.Pattern.replace('(1)','x'));
 				generateportnames.append(option);
 			});
 		}).then(function(){
-			generateportnames.offset({top: spnpos.top, left: spnpos.left+$('#spn').outerWidth()-generateportnames.width()});
+			movebuttons();
 		});
 
 <?php }else{ ?>
@@ -2079,7 +2140,10 @@ echo '	<div class="table">
 		}).then(function(){
 			rearedit.offset({top: rearpos.top, left: rearpos.left+$('#rear').outerWidth()-rearedit.width()});
 		});
-		console.log(rearedit);
+		rearedit.change(function(){
+			$.post('',{swdev: $('#deviceid').val(), rear: '', cdevice: $(this).val()});
+			rearedit.val('');
+		});
 <?php } ?>
 	});
 </script>

@@ -2078,7 +2078,7 @@ class DevicePorts {
 
 		$ports=array();
 		foreach($dbh->query($sql) as $row){
-			$ports[]=DevicePorts::RowToObject($row);
+			$ports[$row['PortNumber']]=DevicePorts::RowToObject($row);
 		}	
 		return $ports;
 	}
