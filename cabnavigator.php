@@ -638,11 +638,32 @@ $body.='</table>
 		}else{
 			$PDUPercent=0;
 		}
-
+		
 		$PDUColor=($PDUPercent>intval($config->ParameterArray["PowerRed"])?$CriticalColor:($PDUPercent>intval($config->ParameterArray["PowerYellow"])?$CautionColor:$GoodColor));
 
 		$body.=sprintf("			<a href=\"power_pdu.php?pduid=%d\">CDU %s</a><br>(%.2f kW) / (%.2f kW Max)</font><br>\n", $PDUdev->PDUID, $PDUdev->Label, $pduDraw / 1000, $maxDraw / 1000 );
-		$body.=sprintf("				<div class=\"meter-wrap\">\n\t<div class=\"meter-value\" style=\"background-color: %s; width: %d%%;\">\n\t\t<div class=\"meter-text\">%d%%</div>\n\t</div>\n</div><br>", $PDUColor, $PDUPercent, $PDUPercent );
+		$body.=sprintf("				<div class=\"meter-wrap\">\n\t<div class=\"meter-value\" style=\"background-color: %s; width: %d%%;\">\n\t\t<div class=\"meter-text\">%d%%</div>\n\t</div>\n</div><br>\n", $PDUColor, $PDUPercent, $PDUPercent );
+
+		if ( $PDUdev->FailSafe ) {
+			$tmpl = new CDUTemplate();
+			$tmpl->TemplateID = $PDUdev->TemplateID;
+			$tmpl->GetTemplate();
+			
+			$ATSStatus = $PDUdev->getATSStatus();
+			
+			if ( $ATSStatus == "" ) {
+				$ATSColor = "rs.png";
+				$ATSStatus = __("Unknown Status");
+			} elseif ( $ATSStatus == $tmpl->ATSDesiredResult ) {
+				$ATSColor = "gs.png";
+				$ATSStatus = __("ATS Feeds OK");
+			} else {
+				$ATSColor = "ys.png";
+				$ATSStatus = __("ATS Feeds Abnormal");
+			}
+			
+			$body .= sprintf( "<div><img src=\"images/%s\">%s</div>\n", $ATSColor, $ATSStatus );
+		}
 	}
 
 	if($user->CanWrite($cab->AssignedTo)){
