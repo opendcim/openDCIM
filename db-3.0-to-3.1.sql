@@ -10,6 +10,14 @@ ALTER TABLE fac_CDUTemplate DROP Multiplier;
 ALTER TABLE fac_CDUTemplate CHANGE new_mult Multiplier enum('0.1','1','10','100');
 
 --
+-- Add fields to CDU Templates for ATS monitoring
+--
+
+ALTER TABLE fac_CDUTemplate ADD COLUMN ATS INT(1) NOT NULL AFTER Managed;
+ALTER TABLE fac_CDUTemplate ADD COLUMN ATSStatusOID varchar(80) NOT NULL AFTER OID3;
+ALTER TABLE fac_CDUTemplate ADD COLUMN ATSDesiredResult varchar(80) NOT NULL AFTER ATSStatusOID;
+
+--
 -- Add coordinates and zoom defining zone in DC image
 --
 

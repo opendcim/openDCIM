@@ -28,12 +28,15 @@ class CDUTemplate {
 	var $ManufacturerID;
 	var $Model;
 	var $Managed;
+	var $ATS;
 	var $SNMPVersion;
 	var $VersionOID;
 	var $Multiplier;
 	var $OID1;
 	var $OID2;
 	var $OID3;
+	var $ATSStatusOID;
+	var $ATSDesiredResult;
 	var $ProcessingProfile;
 	var $Voltage;
 	var $Amperage;
@@ -49,12 +52,15 @@ class CDUTemplate {
 		$this->ManufacturerID=intval($this->ManufacturerID);
 		$this->Model=addslashes(trim($this->Model));
 		$this->Managed=intval($this->Managed);
+		$this->ATS=intval($this->ATS);
 		$this->SNMPVersion=(in_array($this->SNMPVersion, $validSNMPVersions))?$this->SNMPVersion:'2c';
 		$this->VersionOID=addslashes(trim($this->VersionOID));
 		$this->Multiplier=(in_array($this->Multiplier, $validMultipliers))?$this->Multiplier:1;
 		$this->OID1=addslashes(trim($this->OID1));
 		$this->OID2=addslashes(trim($this->OID2));
 		$this->OID3=addslashes(trim($this->OID3));
+		$this->ATSStatusOID=addslashes(trim($this->ATSStatusOID));
+		$this->ATSDesiredResult=addslashes(trim($this->ATSDesiredResult));
 		$this->ProcessingProfile=(in_array($this->ProcessingProfile, $validProcessingProfiles))?$this->ProcessingProfile:'SingleOIDWatts';
 		$this->Voltage=intval($this->Voltage);
 		$this->Amperage=intval($this->Amperage);
@@ -67,6 +73,8 @@ class CDUTemplate {
 		$this->OID1=stripslashes($this->OID1);
 		$this->OID2=stripslashes($this->OID2);
 		$this->OID3=stripslashes($this->OID3);
+		$this->ATSStatusOID=stripslashes($this->ATSStatusOID);
+		$this->ATSDesiredResult=stripslashes($this->ATSDesiredResult);
 	}
 
 	static function RowToObject($row){
@@ -75,12 +83,15 @@ class CDUTemplate {
 		$template->ManufacturerID=$row["ManufacturerID"];
 		$template->Model=$row["Model"];
 		$template->Managed=$row["Managed"];
+		$template->ATS=$row["ATS"];
 		$template->SNMPVersion=$row["SNMPVersion"];
 		$template->VersionOID=$row["VersionOID"];
 		$template->Multiplier=$row["Multiplier"];
 		$template->OID1=$row["OID1"];
 		$template->OID2=$row["OID2"];
 		$template->OID3=$row["OID3"];
+		$template->ATSStatusOID=$row["ATSStatusOID"];
+		$template->ATSDesiredResult=$row["ATSDesiredResult"];
 		$template->ProcessingProfile=$row["ProcessingProfile"];
 		$template->Voltage=$row["Voltage"];
 		$template->Amperage=$row["Amperage"];
@@ -127,10 +138,11 @@ class CDUTemplate {
 		$this->MakeSafe();
 		
 		$sql="INSERT INTO fac_CDUTemplate SET ManufacturerID=$this->ManufacturerID, 
-			Model=\"$this->Model\", Managed=$this->Managed, 
+			Model=\"$this->Model\", Managed=$this->Managed, ATS=$this->ATS,
 			SNMPVersion=\"$this->SNMPVersion\", VersionOID=\"$this->VersionOID\", 
 			Multiplier=\"$this->Multiplier\", OID1=\"$this->OID1\", OID2=\"$this->OID2\", 
-			OID3=\"$this->OID3\", ProcessingProfile=\"$this->ProcessingProfile\", 
+			OID3=\"$this->OID3\", ATSStatusOID=\"$this->ATSStatusOID\", ATSDesiredResult=\"$this->ATSDesiredResult\",
+			ProcessingProfile=\"$this->ProcessingProfile\", 
 			Voltage=$this->Voltage, Amperage=$this->Amperage, NumOutlets=$this->NumOutlets;";
 		
 		if(!$dbh->exec($sql)){
@@ -149,10 +161,11 @@ class CDUTemplate {
 		$this->MakeSafe();
 		
 		$sql="UPDATE fac_CDUTemplate SET ManufacturerID=$this->ManufacturerID, 
-			Model=\"$this->Model\", Managed=$this->Managed, 
+			Model=\"$this->Model\", Managed=$this->Managed, ATS=$this->ATS,
 			SNMPVersion=\"$this->SNMPVersion\", VersionOID=\"$this->VersionOID\", 
 			Multiplier=\"$this->Multiplier\", OID1=\"$this->OID1\", OID2=\"$this->OID2\", 
-			OID3=\"$this->OID3\", ProcessingProfile=\"$this->ProcessingProfile\", 
+			OID3=\"$this->OID3\", ATSStatusOID=\"$this->ATSStatusOID\", ATSDesiredResult=\"$this->ATSDesiredResult\",
+			ProcessingProfile=\"$this->ProcessingProfile\", 
 			Voltage=$this->Voltage, Amperage=$this->Amperage, NumOutlets=$this->NumOutlets
 			WHERE TemplateID=$this->TemplateID;";
 		

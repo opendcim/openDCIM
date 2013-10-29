@@ -21,12 +21,15 @@
 		$template->ManufacturerID = $_REQUEST['manufacturerid'];
 		$template->Model = transform( $_REQUEST['model'] );
 		$template->Managed = isset($_REQUEST['managed'])?1:0;
+		$template->ATS = isset($_REQUEST['ats'])?1:0;
 		$template->SNMPVersion = $_REQUEST['snmpversion'];
 		$template->VersionOID = $_REQUEST['versionoid'];
 		$template->Multiplier = $_REQUEST['multiplier'];
 		$template->OID1 = $_REQUEST['oid1'];
 		$template->OID2 = $_REQUEST['oid2'];
 		$template->OID3 = $_REQUEST['oid3'];
+		$template->ATSStatusOID = $_REQUEST['atsstatusoid'];
+		$template->ATSDesiredResult = $_REQUEST['atsdesiredresult'];
 		$template->ProcessingProfile = $_REQUEST['processingprofile'];
 		$template->Voltage = $_REQUEST["voltage"];
 		$template->Amperage = $_REQUEST["amperage"];
@@ -43,7 +46,8 @@
 	$templateList=$template->GetTemplateList();
 	$ManufacturerList=$manufacturer->GetManufacturerList();
 
-	$checked=($template->Managed)?" checked":"";
+	$managed=($template->Managed)?" checked":"";
+	$ats=($template->ATS)?" checked":"";
 ?>
 <!doctype html>
 <html>
@@ -107,7 +111,13 @@ echo '    </select>
 <div>
    <div><label for="managed">',__("Managed"),'</label></div>
    <div>
-		<input type="checkbox" name="managed" id="managed"',$checked,'>
+		<input type="checkbox" name="managed" id="managed"',$managed,'>
+   </div>
+</div>
+<div>
+   <div><label for="ats">',__("Automatic Transfer Switch"),'</label></div>
+   <div>
+		<input type="checkbox" name="ats" id="ats"',$ats,'>
    </div>
 </div>
 <div>
@@ -162,6 +172,14 @@ echo '   </select>
 <div>
    <div><label for="oid3">',__("OID3"),'</label></div>
    <div><input type="text" name="oid3" id="oid3" value="',$template->OID3,'" size=40></div>
+</div>
+<div>
+   <div><label for="atsstatusoid">',__("ATS Status OID"),'</label></div>
+   <div><input type="text" name="atsstatusoid" id="atsstatusoid" value="',$template->ATSStatusOID,'" size=40></div>
+</div>
+<div>
+   <div><label for="atsdesiredresult">',__("ATS Desired Result"),'</label></div>
+   <div><input type="text" name="atsdesiredresult" id="atsdesiredresult" value="',$template->ATSDesiredResult,'" size=40></div>
 </div>
 <div>
    <div><label for="processingprofile">',__("Processing Scheme"),'</label></div>
