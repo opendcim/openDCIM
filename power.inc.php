@@ -693,6 +693,28 @@ class PowerDistribution {
 		}
 	}
 	
+	function getATSStatus() {
+		if ( ! function_exists( "snmpget" ) ) {
+			return;
+		}
+		
+		$tmpl = new CDUTemplate();
+		$tmpl->TemplateID = $this->TemplateID;
+		$tmpl->GetTemplate();
+		
+		if ( ! $this->IPAddress || ! $this->SNMPCommunity || ! $tmpl->ATSStatusOID ) {
+			return;
+		}
+		
+		if ( $tmpl->SNMPVersion == "1" ) {
+			list( $trash, $result ) = explode( ":", snmpget( $this->IPAddress, $this->SNMPCommunity, $tmpl->ATSStatusOID ));
+		} else {
+			list( $trash, $result ) = explode( ":", snmp2_get( $this->IPAddress, $this->SNMPCommunity, $tmpl->ATSStatusOID ));
+		}
+		
+		return $result;
+	}
+	
 	function GetSmartCDUUptime(){
 		$config=new Config();
 		$this->GetPDU();

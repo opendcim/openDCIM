@@ -73,6 +73,11 @@
 		printf( "%s %s.</p>\n", __("Using SNMP Community string"), $pdu->SNMPCommunity );
 		
 		print "<div id=\"infopanel\"><fieldset><legend>".__("Results")."</legend>\n";
+
+		if ( $template->ATS ) {
+			$ATSStatus = $pdu->getATSStatus();
+			printf( "ATS Status returned = %s.  Desired status = %s.\n", $ATSStatus, $template->ATSDesiredResult );
+		}
 		
 		$upTime=$pdu->GetSmartCDUUptime();
 		if($upTime!=""){
