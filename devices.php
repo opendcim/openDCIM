@@ -172,22 +172,38 @@
 					$ConnectTo=new Device();
 					$ConnectTo->DeviceID=$_POST['cdevice'];
 					// error out if connecting device doesn't exist
-					if(!$ConnectTo->GetDevice()){
+					if(!$ConnectTo->GetDevice() || $_POST['cdevice']!='clear'){
 						echo 'false';
 						exit;
 					}
+
 					$cp=new DevicePorts();
 					$cp->DeviceID=$ConnectTo->DeviceID;
 					$cp=$cp->getPorts();
 					$dp=new DevicePorts();
 					$dp->DeviceID=$dev->DeviceID;
 					foreach($dp->getPorts() as $index => $port){
-						if($port->PortNumber<0 && isset($cp[$port->PortNumber])){
-							$port->ConnectedDeviceID=$ConnectTo->DeviceID;
-							$port->ConnectedPort=$port->PortNumber;
-							$port->updatePort();
+						if($port->PortNumber<0){
+							if($_POST['cdevice']=='clear'){
+								$port->removeConnection();
+							}elseif(isset($cp[$port->PortNumber]) && (is_null($port->ConnectedDeviceID) || (!is_null($port->ConnectedDeviceID) && $_POST['override']=='true'))){
+								$port->ConnectedDeviceID=$ConnectTo->DeviceID;
+								$port->ConnectedPort=$port->PortNumber;
+								$port->updatePort();
+							}
 						}
 					}
+
+					$ports=array();
+					$sql="SELECT p.*, d.Label as DeviceLabel, (SELECT Label FROM fac_Device 
+						WHERE DeviceID=p.ConnectedDeviceID) AS ConnectedDeviceLabel, (SELECT Label 
+						from fac_Ports WHERE DeviceID=p.ConnectedDeviceID AND 
+						PortNumber=p.ConnectedPort) AS ConnectedPortLabel FROM fac_Ports p, 
+						fac_Device d WHERE p.DeviceID=d.DeviceID AND p.DeviceID=$dev->DeviceID;";
+					foreach($dbh->query($sql) as $row){
+						$ports[$row['PortNumber']]=$row;
+					}
+					echo json_encode($ports);
 				exit;
 			}
 		}
@@ -1042,6 +1058,33 @@ print "		var dialog=$('<div>').prop('title','".__("Verify Delete Device")."').ht
 		}
 ?>
 
+		$('#reservation').change(function(){
+			if(!$(this).prop("checked")){
+				var d=new Date();
+				$('#installdate').datepicker("setDate",d);
+			}
+		});
+		// Delete device confirmation dialog
+		$('button[value="Delete"]').click(function(e){
+			var form=$(this).parents('form');
+			var btn=$(this);
+<?php echo '				dialog.find(\'span + span\').text("',__("This device will be deleted and there is no undo. Are you sure?"),'");'; ?>
+			dialog.dialog({
+				resizable: false,
+				modal: true,
+				buttons: {
+<?php echo '				',__("Yes"),': function(){'; ?>
+						$(this).dialog("destroy");
+						form.append('<input type="hidden" name="'+btn.attr("name")+'" value="'+btn.val()+'">');
+						form.submit();
+					},
+<?php echo '				',__("No"),': function(){'; ?>
+						$(this).dialog("destroy");
+					}
+				}
+			});
+		});
+
 		// Call this function to move the mass edit buttons around after redrawing the ports, etc.
 		// Use anytime something could have changed the positioning around
 		function movebuttons(){
@@ -1062,6 +1105,22 @@ print "		var dialog=$('<div>').prop('title','".__("Verify Delete Device")."').ht
 				$('#cc'+p.PortNumber).text((p.ColorID>0)?portsarr.cc[p.ColorID].Name:'').data('default',p.ColorID);
 			});
 			movebuttons();
+		}
+
+		// hide all the mass edit functions when an individual row edit has been initiated.
+		function hidemassfunctions(hide){
+			if(hide){
+				setmediatype.hide();setcolorcode.hide();generateportnames.hide();
+			}else{
+				var show=true;
+				$('.switch.table > div ~ div').each(function(){
+					show=($(this).data('edit'))?false:show;
+				});
+				if(show){
+					setmediatype.show();setcolorcode.show();generateportnames.show();
+					movebuttons();
+				}
+			}
 		}
 
 		// mass media type change controls
@@ -1173,21 +1232,6 @@ print "		var dialog=$('<div>').prop('title','".__("Verify Delete Device")."').ht
 		});
 		$('#spn').append(generateportnames);
 
-		// hide all the mass edit functions when an individual row edit has been initiated.
-		function hidemassfunctions(hide){
-			if(hide){
-				setmediatype.hide();setcolorcode.hide();generateportnames.hide();
-			}else{
-				var show=true;
-				$('.switch.table > div ~ div').each(function(){
-					show=($(this).data('edit'))?false:show;
-				});
-				if(show){
-					setmediatype.show();setcolorcode.show();generateportnames.show();
-				}
-			}
-		}
-
 		$('#ports').change(function(){
 			// not sure why .data() is turning an int into a string parseInt is fixing that
 			if($(this).val() > parseInt($(document).data('ports'))){
@@ -1233,32 +1277,6 @@ print "		var dialog=$('<div>').prop('title','".__("Verify Delete Device")."').ht
 				}
 			});
 		}
-		$('#reservation').change(function(){
-			if(!$(this).prop("checked")){
-				var d=new Date();
-				$('#installdate').datepicker("setDate",d);
-			}
-		});
-		// Delete device confirmation dialog
-		$('button[value="Delete"]').click(function(e){
-			var form=$(this).parents('form');
-			var btn=$(this);
-<?php echo '				dialog.find(\'span + span\').text("',__("This device will be deleted and there is no undo. Are you sure?"),'");'; ?>
-			dialog.dialog({
-				resizable: false,
-				modal: true,
-				buttons: {
-<?php echo '				',__("Yes"),': function(){'; ?>
-						$(this).dialog("destroy");
-						form.append('<input type="hidden" name="'+btn.attr("name")+'" value="'+btn.val()+'">');
-						form.submit();
-					},
-<?php echo '				',__("No"),': function(){'; ?>
-						$(this).dialog("destroy");
-					}
-				}
-			});
-		});
 <?php
 	} // end of javascript editing functions
 ?>
@@ -1412,6 +1430,71 @@ print "		var dialog=$('<div>').prop('title','".__("Verify Delete Device")."').ht
 			}).css({'cursor': 'pointer','text-decoration': 'underline'});
 		}
 	});
+
+	// Patch panel functions
+
+<?php
+		if($user->SiteAdmin){
+?>
+	// get list of other patch panels
+	rearedit=$('<select>').append($('<option>'));
+	rearedit.append($('<option>').val('clear').text('Clear Connections'));
+	rearedit.change(function(){
+		var dialog=$('<div />', {id: 'modal', title: 'Override all types?'}).html('<div id="modaltext"></div><br><div id="modalstatus" class="warning">Do you want to override existing connections?</div>');
+		dialog.dialog({
+			resizable: false,
+			modal: true,
+			dialogClass: "no-close",
+			buttons: {
+<?php echo '			',__("Yes"),': function(){'; ?>
+					$(this).dialog("destroy");
+					doit(true);
+				},
+<?php echo '			',__("No"),': function(){'; ?>
+					$(this).dialog("destroy");
+					doit(false);
+				},
+<?php echo '			',__("Cancel"),': function(){'; ?>
+					$(this).dialog("destroy");
+					rearedit.val('');
+				}
+			}
+		});
+		function doit(override){
+			var modal=$('<div />', {id: 'modal', title: 'Please wait...'}).html('<div id="modaltext"><img src="images/connectcable.gif" style="width: 100%;"><br>Connecting ports...</div><br><div id="modalstatus" class="warning"></div>').dialog({
+				appendTo: 'body',
+				minWidth: 500,
+				closeOnEscape: false,
+				dialogClass: "no-close",
+				modal: true
+			});
+			$.post('',{swdev: $('#deviceid').val(), rear: '', cdevice: rearedit.val(), override: override}).done(function(data){
+				modal.dialog('destroy');
+				$.each($.parseJSON(data), function(key,pp){
+					rear=(key>0)?false:true;
+					fr=(rear)?'r':'f';
+					pp.ConnectedDeviceLabel=(pp.ConnectedDeviceLabel==null)?'':pp.ConnectedDeviceLabel;
+					pp.ConnectedPortLabel=(pp.ConnectedPortLabel==null)?'':pp.ConnectedPortLabel;
+					var dev=$('<a>').prop('href','devices.php?deviceid='+pp.ConnectedDeviceID).text(pp.ConnectedDeviceLabel);
+					var port=$('<a>').prop('href','paths.php?deviceid='+pp.ConnectedDeviceID+'&portnumber='+pp.ConnectedPort).text(pp.ConnectedPortLabel);
+					$('#'+fr+'d'+Math.abs(key)).html(dev);
+					$('#'+fr+'p'+Math.abs(key)).html(port);
+					$('#'+fr+'n'+Math.abs(key)).text(pp.Notes);
+				});
+			});
+			rearedit.val('');
+		}
+	});
+
+<?php
+	}	
+?>
+
+
+
+
+
+
 	$('.patchpanel > div ~ div').each(function(){
 		var row=$(this);
 		var portnum=row.data('port');
@@ -2128,9 +2211,10 @@ echo '	<div class="table">
 		});
 
 <?php }else{ ?>
-		// get list of other patch panels
-		rearedit=$('<select>').append($('<option>'));
-		var rearpos=$('#rear').offset();
+		function movebuttons(){
+			var rearpos=$('#rear').offset();
+			rearedit.offset({top: rearpos.top, left: rearpos.left+$('#rear').outerWidth()-rearedit.width()});
+		}
 		$.post('', {swdev: $('#deviceid').val(), rear: ''}, function(data){
 			$.each(data, function(key,pp){
 				var option=$("<option>").val(pp.DeviceID).append(pp.Label);
@@ -2138,11 +2222,7 @@ echo '	<div class="table">
 			});
 			$('#rear').append(rearedit);
 		}).then(function(){
-			rearedit.offset({top: rearpos.top, left: rearpos.left+$('#rear').outerWidth()-rearedit.width()});
-		});
-		rearedit.change(function(){
-			$.post('',{swdev: $('#deviceid').val(), rear: '', cdevice: $(this).val()});
-			rearedit.val('');
+			movebuttons();
 		});
 <?php } ?>
 	});
