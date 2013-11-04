@@ -2247,7 +2247,6 @@ echo '	<div class="table">
 				rearedit.append(option);
 				var rack=$('#datacenters a[href$="cabinetid='+pp.CabinetID+'"]');
 				option.prepend('['+rack.text()+'] ');
-				console.log(rack.parent('li'));
 			});
 			$('#rear').append(rearedit);
 		}).then(function(){
