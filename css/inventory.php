@@ -508,6 +508,12 @@ table#cabprop span.text-label {
 .device .table .table .table > div > div {padding: 3px;}
 .right .table + .table {margin-top: 1em;}
 
+
+.device .table.patchpanel div[id^="pp"] { border-left: 2px solid black; min-width: 10px;}
+.device .table.patchpanel div[id^="pp"]:NOT([id="pp"]) { cursor: pointer; text-decoration: underline; }
+.device .table.patchpanel div[id^="mt"] { border-right: 2px solid black; }
+.device .table.patchpanel div[id^="pp"],
+.device .table.patchpanel div[id^="mt"] { background-color: rgba(211, 211, 211, 0.5);}
 .device .table.patchpanel > div > div {min-width: auto;}
 .device .table.patchpanel > div:first-child select, .device .table.switch > div:first-child select { position: absolute; background-color: transparent; border: 0px none; width: auto;}
 .device .table.patchpanel > div:first-child select::-moz-focus-inner, 

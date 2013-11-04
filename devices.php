@@ -1156,7 +1156,7 @@ print "		var dialog=$('<div>').prop('title','".__("Verify Delete Device")."').ht
 				setmediatype.val('');
 			}
 		});
-		$('#mt').append(setmediatype);
+		$('.switch #mt').append(setmediatype);
 
 		// color codes change controls
 		setcolorcode=$('<select>').append($('<option>'));
@@ -1529,7 +1529,7 @@ print "		var dialog=$('<div>').prop('title','".__("Verify Delete Device")."').ht
 				btnrow.append($('<div>'));
 			}
 			var frontbtn=btnrow.find('div:first-child'); // front table cell for buttons
-			var rearbtn=btnrow.find('div:nth-child('+(Math.ceil(i/2)+1)+')'); // rear table cell for buttons
+			var rearbtn=btnrow.find('div:nth-child('+(Math.ceil(i/2)+2)+')'); // rear table cell for buttons
 			var frontdev=$('#fd'+portnum);
 			var frontport=$('#fp'+portnum);
 			var frontnotes=$('#fn'+portnum);
@@ -1614,13 +1614,13 @@ print "		var dialog=$('<div>').prop('title','".__("Verify Delete Device")."').ht
 						var cp=(data.ConnectedPort<0)?data.ConnectedPort*-1:'';
 						rearport.html('<a href="paths.php?deviceid='+data.ConnectedDeviceID+'&portnumber='+data.ConnectedPort+'">'+cp+'</a>').data('default',data.ConnectedPort);
 						rearnotes.html(data.Notes).data('default',data.Notes);
-						row.children('div[id^=r]').removeAttr('style');
+						row.children('div:not([id^=f])').removeAttr('style');
 					}else{
 						data.ConnectedPortLabel=(data.ConnectedPortLabel==null)?'':data.ConnectedPortLabel;
 						frontdev.html('<a href="devices.php?deviceid='+data.ConnectedDeviceID+'">'+data.ConnectedDeviceLabel+'</a>').data('default',data.ConnectedDeviceID);
 						frontport.html('<a href="paths.php?deviceid='+data.ConnectedDeviceID+'&portnumber='+data.ConnectedPort+'">'+data.ConnectedPortLabel+'</a>').data('default',data.ConnectedPort);
 						frontnotes.html(data.Notes).data('default',data.Notes);
-						row.children('div[id^=f]').removeAttr('style');
+						row.children('div:not([id^=r])').removeAttr('style');
 					}
 					$(e.currentTarget).parent().remove();
 					hidemassfunctions(false);
@@ -1663,7 +1663,7 @@ print "		var dialog=$('<div>').prop('title','".__("Verify Delete Device")."').ht
 					}).then(resize()).then(resize());
 					row.children('div:not([id^=pp])').css({'padding': 0, 'border': 0});
 				}
-			}).css({'cursor': 'pointer','text-decoration': 'underline'});
+			});
 		}
 	});
 	function setPreferredLayout() {<?php if(isset($_COOKIE["layout"]) && strtolower($_COOKIE["layout"])==="portrait"){echo 'swaplayout();setCookie("layout","Portrait");';}else{echo 'setCookie("layout","Landscape");';} ?>}
@@ -2080,7 +2080,7 @@ echo '	<div class="table">
 	}
 
 	if($dev->DeviceType=='Patch Panel'){
-		print "\n\t<div>\n\t\t<div><a name=\"net\">".__('Connections')."</a></div>\n\t\t<div>\n\t\t\t<div class=\"table border patchpanel\">\n\t\t\t\t<div><div>".__('Front')."</div><div>".__("Device Port")."</div><div>".__('Notes')."</div><div>".__('Patch Port')."</div><div id=\"rear\">".__('Back')."</div><div>".__("Device Port")."</div><div>".__('Notes')."</div></div>\n";
+		print "\n\t<div>\n\t\t<div><a name=\"net\">".__('Connections')."</a></div>\n\t\t<div>\n\t\t\t<div class=\"table border patchpanel\">\n\t\t\t\t<div><div>".__('Front')."</div><div>".__("Device Port")."</div><div>".__('Notes')."</div><div id=\"pp\">".__('Patch Port')."</div><div id=\"mt\">".__('Media Type')."</div><div id=\"rear\">".__('Back')."</div><div>".__("Device Port")."</div><div>".__('Notes')."</div></div>\n";
 		for($n=0; $n< sizeof($portList)/2; $n++){
 			$i = $n + 1;	// The "port number" starting at 1
 			$frontDev=new Device();
@@ -2104,12 +2104,15 @@ echo '	<div class="table">
 				$fp=($cPort->Label!="")?$cPort->Label:$cPort->PortNumber;
 			}
 
+			$mt=(isset($mediaTypes[$portList[$i]->MediaID]))?$mediaTypes[$portList[$i]->MediaID]->MediaType:'';
+
 			$rp=($portList[-$i]->ConnectedPort!='')?abs($portList[-$i]->ConnectedPort):''; //rear port label
 			print "\n\t\t\t\t<div data-port=$i>
 					<div id=\"fd$i\" data-default=$frontDev->DeviceID><a href=\"devices.php?deviceid=$frontDev->DeviceID\">$frontDev->Label</a></div>
 					<div id=\"fp$i\" data-default={$portList[$i]->ConnectedPort}><a href=\"paths.php?deviceid=$frontDev->DeviceID&portnumber={$portList[$i]->ConnectedPort}\">$fp</a></div>
 					<div id=\"fn$i\" data-default=\"{$portList[$i]->Notes}\">{$portList[$i]->Notes}</div>
 					<div id=\"pp$i\">$i</div>
+					<div id=\"mt$i\" data-default={$portList[$i]->MediaID}>$mt</div>
 					<div id=\"rd$i\" data-default=$rearDev->DeviceID><a href=\"devices.php?deviceid=$rearDev->DeviceID\">$rearDev->Label</a></div>
 					<div id=\"rp$i\" data-default={$portList[-$i]->ConnectedPort}><a href=\"paths.php?deviceid=$rearDev->DeviceID&portnumber={$portList[-$i]->ConnectedPort}\">$rp</a></div>
 					<div id=\"rn$i\" data-default=\"{$portList[-$i]->Notes}\">{$portList[-$i]->Notes}</div>
