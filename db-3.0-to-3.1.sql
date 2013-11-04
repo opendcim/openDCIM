@@ -106,3 +106,8 @@ ALTER TABLE fac_CabinetTemps MODIFY COLUMN Humidity FLOAT(8) NOT NULL;
 INSERT INTO fac_Config VALUES (
 'SNMPCommunity', 'public', 'string', 'string', 'public' );
 
+--
+-- Disable media type enforcing until it is properly working
+--
+
+UPDATE fac_Config SET Value='disabled' WHERE Parameter='MediaEnforce';

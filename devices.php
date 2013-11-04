@@ -172,7 +172,7 @@
 					$ConnectTo=new Device();
 					$ConnectTo->DeviceID=$_POST['cdevice'];
 					// error out if connecting device doesn't exist
-					if(!$ConnectTo->GetDevice() || $_POST['cdevice']!='clear'){
+					if(!$ConnectTo->GetDevice() && $_POST['cdevice']!='clear'){
 						echo 'false';
 						exit;
 					}
@@ -184,7 +184,7 @@
 					$dp->DeviceID=$dev->DeviceID;
 					foreach($dp->getPorts() as $index => $port){
 						if($port->PortNumber<0){
-							if($_POST['cdevice']=='clear'){
+							if($_POST['cdevice']=='clear' && $_POST['override']=='true'){
 								$port->removeConnection();
 							}elseif(isset($cp[$port->PortNumber]) && (is_null($port->ConnectedDeviceID) || (!is_null($port->ConnectedDeviceID) && $_POST['override']=='true'))){
 								$port->ConnectedDeviceID=$ConnectTo->DeviceID;
@@ -1436,6 +1436,12 @@ print "		var dialog=$('<div>').prop('title','".__("Verify Delete Device")."').ht
 <?php
 		if($user->SiteAdmin){
 ?>
+	// move the edit button around
+	function movebuttons(){
+		var rearpos=$('#rear').offset();
+		rearedit.offset({top: rearpos.top, left: rearpos.left+$('#rear').outerWidth()-rearedit.width()});
+	}
+
 	// get list of other patch panels
 	rearedit=$('<select>').append($('<option>'));
 	rearedit.append($('<option>').val('clear').text('Clear Connections'));
@@ -1474,13 +1480,14 @@ print "		var dialog=$('<div>').prop('title','".__("Verify Delete Device")."').ht
 					rear=(key>0)?false:true;
 					fr=(rear)?'r':'f';
 					pp.ConnectedDeviceLabel=(pp.ConnectedDeviceLabel==null)?'':pp.ConnectedDeviceLabel;
-					pp.ConnectedPortLabel=(pp.ConnectedPortLabel==null)?'':pp.ConnectedPortLabel;
+					pp.ConnectedPortLabel=(pp.ConnectedPortLabel==null || pp.ConnectedPortLabel=='')?(pp.ConnectedPort==null)?'':Math.abs(pp.ConnectedPort):pp.ConnectedPortLabel;
 					var dev=$('<a>').prop('href','devices.php?deviceid='+pp.ConnectedDeviceID).text(pp.ConnectedDeviceLabel);
 					var port=$('<a>').prop('href','paths.php?deviceid='+pp.ConnectedDeviceID+'&portnumber='+pp.ConnectedPort).text(pp.ConnectedPortLabel);
 					$('#'+fr+'d'+Math.abs(key)).html(dev);
 					$('#'+fr+'p'+Math.abs(key)).html(port);
 					$('#'+fr+'n'+Math.abs(key)).text(pp.Notes);
 				});
+				movebuttons();
 			});
 			rearedit.val('');
 		}

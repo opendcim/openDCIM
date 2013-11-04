@@ -1195,12 +1195,15 @@ echo '<div class="main">
 			<h3>',__("Media Types"),'</h3>
 			<div class="table">
 				<div>
+					<input type="hidden" name="MediaEnforce" value="disabled">
+<!--
 					<div><label for="MediaEnforce">',__("Media Type Matching"),'</label></div>
 					<div><select id="MediaEnforce" name="MediaEnforce" defaultvalue="',$config->defaults["MediaEnforce"],'" data="',$config->ParameterArray["MediaEnforce"],'">
 							<option value="disabled">',__("Disabled"),'</option>
 							<option value="enabled">',__("Enforce"),'</option>
 						</select>
 					</div>
+-->
 				</div>
 			</div> <!-- end table -->
 			<br>
