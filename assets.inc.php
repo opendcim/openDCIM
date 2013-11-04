@@ -2136,8 +2136,8 @@ class DevicePorts {
 				$portList[$i]=new DevicePorts();
 				$portList[$i]->DeviceID=$dev->DeviceID;
 				$portList[$i]->PortNumber=$i;
-				$portList[$i]->Label=@$nameList[$n];
-				$portList[$i]->Notes=@$aliasList[$n];
+				$portList[$i]->Label=(isset($nameList[$n]))?$nameList[$n]:__('Port').$i;
+				$portList[$i]->Notes=(isset($aliasList[$n]))?$aliasList[$n]:'';
 
 				$portList[$i]->createPort();
 			}
@@ -2147,6 +2147,7 @@ class DevicePorts {
 				$portList[$i]=new DevicePorts();
 				$portList[$i]->DeviceID=$dev->DeviceID;
 				$portList[$i]->PortNumber=$i;
+				$portList[$i]->Label=__('Port').$i;
 
 				$portList[$i]->createPort();
 				if($dev->DeviceType=="Patch Panel"){
