@@ -1436,6 +1436,22 @@ print "		var dialog=$('<div>').prop('title','".__("Verify Delete Device")."').ht
 <?php
 		if($user->SiteAdmin){
 ?>
+	// hide all the mass edit functions when an individual row edit has been initiated.
+	function hidemassfunctions(hide){
+		if(hide){
+			rearedit.hide();
+		}else{
+			var show=true;
+			$('.patchpanel.table > div ~ div').each(function(){
+				show=($(this).data('edit'))?false:show;
+			});
+			if(show){
+				rearedit.show();
+				movebuttons();
+			}
+		}
+	}
+
 	// move the edit button around
 	function movebuttons(){
 		var rearpos=$('#rear').offset();
@@ -1607,6 +1623,7 @@ print "		var dialog=$('<div>').prop('title','".__("Verify Delete Device")."').ht
 						row.children('div[id^=f]').removeAttr('style');
 					}
 					$(e.currentTarget).parent().remove();
+					hidemassfunctions(false);
 				});
 				if(btnrow.find('.controls').length===1){
 					row.data('edit',false);
@@ -1621,6 +1638,7 @@ print "		var dialog=$('<div>').prop('title','".__("Verify Delete Device")."').ht
 			controls.append(savebtn).append(deletebtn).append(cancelbtn);
 			patchport.click(function(){
 				if(!row.data('edit')==true){
+					hidemassfunctions(true);
 					row.after(btnrow);
 					row.data('edit',true);
 <?php
