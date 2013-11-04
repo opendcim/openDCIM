@@ -1434,7 +1434,7 @@ print "		var dialog=$('<div>').prop('title','".__("Verify Delete Device")."').ht
 	// Patch panel functions
 
 <?php
-		if($user->SiteAdmin){
+		if($user->SiteAdmin && $dev->DeviceType=='Patch Panel'){
 ?>
 	// hide all the mass edit functions when an individual row edit has been initiated.
 	function hidemassfunctions(hide){
