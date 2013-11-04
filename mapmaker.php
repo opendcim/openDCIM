@@ -116,8 +116,21 @@
   <div style="float: left; width: 70%;"> 
     <p class="instructions"><?php echo __("Click and drag on the image to select an area for cabinet"),' ',$cab->Location; ?>.</p> 
  
-    <div class="frame" style="margin: 0 0.3em; width: 300px; height: 300px;"> 
-      <img id="map" src="<?php echo "drawings/$dc->DrawingFileName"; ?>" /> 
+    <div class="frame" style="margin: 0 0.3em; width: 300px; height: 300px;">
+		<?php
+			$errors=array();
+			$mapfile="drawings/$dc->DrawingFileName";
+			if(!strlen($dc->DrawingFileName)>0){$errors[]=__('You must configure an image for this datacenter before attempting to place a cabinet on its map.');}
+			if(!is_file($mapfile)){$errors[]=sprintf(__('Please check that &quot;%s&quot; is actually a file.'),$dc->DrawingFileName);}
+			if(!is_readable($mapfile)){$errors[]=sprintf(__('Please check the permissions on %s and make sure it is readable.'),$dc->DrawingFileName);}
+			if(count($errors)>0){
+				foreach($errors as $error){
+					print "<p class=\"warning\">$error</p>\n";
+				}
+			}else{
+				print "<img id=\"map\" src=\"drawings/$dc->DrawingFileName\">";
+			}
+		?>			
     </div> 
   </div> 
  
