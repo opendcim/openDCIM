@@ -117,7 +117,22 @@
     <p class="instructions"><?php echo __("Click and drag on the image to select an area for cabinet"),' ',$cab->Location; ?>.</p> 
  
     <div class="frame" style="margin: 0 0.3em; width: 300px; height: 300px;"> 
-      <img id="map" src="<?php echo "drawings/$dc->DrawingFileName"; ?>" /> 
+      <?php 
+        $mapfile = "drawings/$dc->DrawingFileName";
+        if (strlen($mapfile)) {
+            if (is_file($mapfile)) {
+                if (is_readable($mapfile)) {  
+                    echo "<img id=\"map\" src=\"$mapfile\" />";
+                } else {
+                    echo '<p class="warning">Please check the permissions on '.$dc->DrawingFileName.'.</p>';
+                }
+            } else {
+                echo '<p class="warning">Please check that '.$dc->DrawingFileName.' is actually a file.</p>';
+            }
+        } else { ?>
+          <p class="warning">Please configure an imagemap for this datacenter before setting coordinates.</p>
+          <p class="instructions">(Edit Data Centers&rarr;Data Center&rarr;Drawing URL)</p>
+      <?php } ?>
     </div> 
   </div> 
  
