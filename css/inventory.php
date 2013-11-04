@@ -522,6 +522,8 @@ table#cabprop span.text-label {
 
 .switch.table > div > div { min-width: 0px; }
 .switch.table > div > div:first-child { min-width: 15px; }
+/* can't explain where the 2px is coming from */
+.switch.table input, .patchpanel.table input { height: 18px; }
 .switch.table input, .switch.table select, 
 .patchpanel.table input, .patchpanel.table select { width: 99%; padding: 0; background-color: transparent;}
 .switch.table div[id^=n] input { width:98%; }
