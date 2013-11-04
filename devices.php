@@ -1446,7 +1446,7 @@ print "		var dialog=$('<div>').prop('title','".__("Verify Delete Device")."').ht
 	rearedit=$('<select>').append($('<option>'));
 	rearedit.append($('<option>').val('clear').text('Clear Connections'));
 	rearedit.change(function(){
-		var dialog=$('<div />', {id: 'modal', title: 'Override all types?'}).html('<div id="modaltext"></div><br><div id="modalstatus" class="warning">Do you want to override existing connections?</div>');
+		var dialog=$('<div />', {id: 'modal', title: 'Override all connections?'}).html('<div id="modaltext"></div><br><div id="modalstatus" class="warning"><h2>WARNING: This will detach any existing connections on the other device as well</h2>Do you want to override existing connections?</div>');
 		dialog.dialog({
 			resizable: false,
 			modal: true,
@@ -1483,9 +1483,9 @@ print "		var dialog=$('<div>').prop('title','".__("Verify Delete Device")."').ht
 					pp.ConnectedPortLabel=(pp.ConnectedPortLabel==null || pp.ConnectedPortLabel=='')?(pp.ConnectedPort==null)?'':Math.abs(pp.ConnectedPort):pp.ConnectedPortLabel;
 					var dev=$('<a>').prop('href','devices.php?deviceid='+pp.ConnectedDeviceID).text(pp.ConnectedDeviceLabel);
 					var port=$('<a>').prop('href','paths.php?deviceid='+pp.ConnectedDeviceID+'&portnumber='+pp.ConnectedPort).text(pp.ConnectedPortLabel);
-					$('#'+fr+'d'+Math.abs(key)).html(dev);
-					$('#'+fr+'p'+Math.abs(key)).html(port);
-					$('#'+fr+'n'+Math.abs(key)).text(pp.Notes);
+					$('#'+fr+'d'+Math.abs(key)).html(dev).data('default',pp.ConnectedDeviceID);
+					$('#'+fr+'p'+Math.abs(key)).html(port).data('default',pp.ConnectedPort);
+					$('#'+fr+'n'+Math.abs(key)).text(pp.Notes).data('default',pp.Notes);
 				});
 				movebuttons();
 			});
@@ -1600,6 +1600,7 @@ print "		var dialog=$('<div>').prop('title','".__("Verify Delete Device")."').ht
 						rearnotes.html(data.Notes).data('default',data.Notes);
 						row.children('div[id^=r]').removeAttr('style');
 					}else{
+						data.ConnectedPortLabel=(data.ConnectedPortLabel==null)?'':data.ConnectedPortLabel;
 						frontdev.html('<a href="devices.php?deviceid='+data.ConnectedDeviceID+'">'+data.ConnectedDeviceLabel+'</a>').data('default',data.ConnectedDeviceID);
 						frontport.html('<a href="paths.php?deviceid='+data.ConnectedDeviceID+'&portnumber='+data.ConnectedPort+'">'+data.ConnectedPortLabel+'</a>').data('default',data.ConnectedPort);
 						frontnotes.html(data.Notes).data('default',data.Notes);
