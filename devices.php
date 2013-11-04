@@ -2245,6 +2245,9 @@ echo '	<div class="table">
 			$.each(data, function(key,pp){
 				var option=$("<option>").val(pp.DeviceID).append(pp.Label);
 				rearedit.append(option);
+				var rack=$('#datacenters a[href$="cabinetid='+pp.CabinetID+'"]');
+				option.prepend('['+rack.text()+'] ');
+				console.log(rack.parent('li'));
 			});
 			$('#rear').append(rearedit);
 		}).then(function(){

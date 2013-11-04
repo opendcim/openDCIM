@@ -717,8 +717,8 @@ class DataCenter {
 				ZoneID=$myzone->ZoneID ORDER BY Fila;";
 			
 			foreach($this->query($sql) as $filaRow){
-				$tree.=str_repeat(" ",$lev+5)."<li class=\"liClosed\" id=\"fila{$filaRow['Fila']}\"><span class=\"CABROW\">".
-			  		"<a href=\"rowview.php?row={$filaRow['CabRowID']}\">".__("Row ")."{$filaRow['Fila']}</a></span>\n";
+				$tree.=str_repeat(" ",$lev+5)."<li class=\"liClosed\" id=\"fila{$filaRow['Fila']}\">".
+			  		"<a class=\"CABROW\" href=\"rowview.php?row={$filaRow['CabRowID']}\">".__("Row ")."{$filaRow['Fila']}</a>\n";
 				$tree.=str_repeat(" ",$lev+6)."<ul>\n";
 				// DataCenterID and ZoneID are redundant if fac_cabrow is defined and is CabrowID set in fac_cabinet
 				$cabsql="SELECT * FROM fac_Cabinet WHERE DataCenterID=$this->DataCenterID 

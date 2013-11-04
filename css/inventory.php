@@ -650,9 +650,8 @@ table#cabprop span.text-label {
 	ul.mktree  li { font-family: arial, helvetica; font-size: 11pt; font-weight: bold; }
 	ul.mktree  a.DC { color: #000088; font-weight: bold; }
 	ul.mktree  a.CONTAINER { color: #005500; }
-	ul.mktree  span.ZONE { color: #330066; }
-	ul.mktree  span.CABROW { color: #AA3300; }
-	ul.mktree  span:hover { color: red; }
+	ul.mktree  a.ZONE { color: #330066; }
+	ul.mktree  a.CABROW { color: #AA3300; }
 	ul.mktree  a.RACK { color: #660000; }
 	ul.mktree  a { text-decoration: none; }
 	ul.mktree  a:hover { color: red; }
