@@ -1168,22 +1168,23 @@ class PowerSource {
 	}
 
 	function GetCurrentLoad(){
+		global $config;
 		$totalLoad = 0;
 		
 		// Liebert UPS Query
 		// Query OID .1.3.6.1.4.1.476.1.1.1.1.1.2.0 to get the model number
 		// If model type is blank (NFinity), OID = 1.3.6.1.4.1.476.1.42.3.5.2.2.1.8.3
 		// If model type is Series 300 / 600, OID = .1.3.6.1.4.1.476.1.1.1.1.4.2.0
-		$pollCommand="/usr/bin/snmpget -v 1 -c $this->Community $this->IPAddress .1.3.6.1.4.1.476.1.1.1.1.1.2.0 | /bin/cut -d: -f4";
+		$pollCommand=$config->ParameterArray["snmpget"]." -v 1 -c $this->Community $this->IPAddress .1.3.6.1.4.1.476.1.1.1.1.1.2.0 | ".$config->ParameterArray["cut"]." -d: -f4";
 		exec($pollCommand,$snmpOutput);
 
 		if(@$snmpOutput[0]!=""){
-			$pollCommand="/usr/bin/snmpget -v 1 -c $this->Community $this->IPAddress .1.3.6.1.4.1.476.1.1.1.1.4.2.0 | /bin/cut -d: -f4";
+			$pollCommand=$config->ParameterArray["snmpget"]." -v 1 -c $this->Community $this->IPAddress .1.3.6.1.4.1.476.1.1.1.1.4.2.0 | ".$config->ParameterArray["cut"]." -d: -f4";
 			exec($pollCommand,$loadOutput);
 			
 			$totalLoad=($loadOutput[0] * $this->Capacity) / 100;
 		}else{
-			$pollCommand="/usr/bin/snmpget -v 1 -c $this->Community $this->IPAddress .1.3.6.1.4.1.476.1.42.3.5.2.2.1.8.3 | /bin/cut -d: -f4";
+			$pollCommand=$config->ParameterArray["snmpget"]." -v 1 -c $this->Community $this->IPAddress .1.3.6.1.4.1.476.1.42.3.5.2.2.1.8.3 | ".$config->ParameterArray["cut"]." -d: -f4";
 			exec($pollCommand,$loadOutput);
 			
 			$totalLoad=$loadOutput[0];
