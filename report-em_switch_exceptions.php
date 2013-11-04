@@ -79,15 +79,17 @@
 			$portList = $port->getPorts();	
 			$statusList = SwitchInfo::getPortStatus( $devRow->DeviceID );
 
-			if ( sizeof( $statusList ) == sizeof( $portList ) ) {
-				for ( $n = 0; $n < sizeof( $portList ); $n++ ) {
-					if ( ( $statusList[$n+1] == "up" && ( $portList[$n]->Notes=="" && $portList[$n]->ConnectedDeviceID == null )) || ( $statusList[$n+1] == "down" && ( $portList[$n]->Notes!="" || $portList[$n]->ConnectedDeviceID != null )) ) {
-						if ( $portList[$n]->ConnectedDeviceID > 0 ) {
-							$dev->DeviceID = $portList[$n]->ConnectedDeviceID;
+			if ( sizeof( $statusList ) == sizeof( $portList ) && ( sizeof( $portList ) > 0 ) ) {
+				for ( $n = 0; $n <= sizeof( $portList ); $n++ ) {
+					// The return from getPorts() is not a sequential array, it's associative, so you can't iterate through by number
+					$currPort = array_shift( $portList );
+					if ( ( $statusList[$n+1] == "up" && ( $currPort->Notes=="" && $currPort->ConnectedDeviceID == null )) || ( $statusList[$n+1] == "down" && ( $currPort->Notes!="" || $currPort->ConnectedDeviceID != null )) ) {
+						if ( $currPort->ConnectedDeviceID > 0 ) {
+							$dev->DeviceID = $currPort->ConnectedDeviceID;
 							$dev->GetDevice();
 							$devAnchor = "<a href=\"" . $urlBase . "devices.php?deviceid=" . $dev->DeviceID . "\">" . $dev->Label . "</a>";
-							$port->DeviceID = $portList[$n]->ConnectedDeviceID;
-							$port->PortNumber =$portList[$n]->ConnectedPort;
+							$port->DeviceID = $currPort->ConnectedDeviceID;
+							$port->PortNumber =$currPort->ConnectedPort;
 							$port->getPort();
 							$portName = $port->Label;
 						} else {
@@ -95,7 +97,7 @@
 							$portName = "&nbsp;";
 						}
 						
-						$exceptionRows .= sprintf( "<tr><td><a href=\"%sdevices.php?deviceid=%d\">%s</a></td><td>%s</td><td>%s</td><td>%s</td><td>%s</td><td>%s</td></tr>\n", $urlBase, $devRow->DeviceID, $devRow->Label, $portList[$n]->Label, $devAnchor, $portName, $portList[$n]->Notes, $statusList[$n+1] );
+						$exceptionRows .= sprintf( "<tr><td><a href=\"%sdevices.php?deviceid=%d\">%s</a></td><td>%s</td><td>%s</td><td>%s</td><td>%s</td><td>%s</td></tr>\n", $urlBase, $devRow->DeviceID, $devRow->Label, $currPort->Label, $devAnchor, $portName, $currPort->Notes, $statusList[$n+1] );
 					}
 				}
 			}
