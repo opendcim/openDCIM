@@ -130,7 +130,7 @@ $(document).ready(function() {
 			if($SpacePercent>$SpaceRed){$scolor=$rs;}elseif($SpacePercent>$SpaceYellow){$scolor=$ys;}else{$scolor=$gs;}
 			if($WeightPercent>$WeightRed){$wcolor=$rs;}elseif($WeightPercent>$WeightYellow){$wcolor=$ys;}else{$wcolor=$gs;}
 			if($PowerPercent>$PowerRed){$pcolor=$rs;}elseif($PowerPercent>$PowerYellow){$pcolor=$ys;}else{$pcolor=$gs;}
-			if($RPlastRead==0){$rpcolor=$us;}elseif($RealPowerPercent>$RealPowerRed){$rpcolor=$rs;}elseif($RealPowerPercent>$RealPowerYellow){$rpcolor=$ys;}else{$rpcolor=$gs;}
+			if($RPlastRead=='0'){$rpcolor=$us;}elseif($RealPowerPercent>$RealPowerRed){$rpcolor=$rs;}elseif($RealPowerPercent>$RealPowerYellow){$rpcolor=$ys;}else{$rpcolor=$gs;}
         	if($currentTemperature==0){$tcolor=$us;}elseif($currentTemperature>$TemperatureRed){$tcolor=$rs;}elseif($currentTemperature>$TemperatureYellow){$tcolor=$ys;}else{$tcolor=$gs;}
 			
 			if($currentHumidity==0){$hcolor=$us;}elseif($currentHumidity>$HumidityMax || $currentHumidity<$HumidityMin){$hcolor=$rs;
@@ -142,7 +142,7 @@ $(document).ready(function() {
 			$labelpo=locale_number($totalWatts/1000,2)." / ".$cab->MaxKW." kW";
 			$labelte=(($currentTemperature>0)?locale_number($currentTemperature,0)."&deg; (".$lastRead.")":__("no data"));
 			$labelhu=(($currentHumidity>0)?locale_number($currentHumidity,0)." % (".$lastRead.")":__("no data"));
-			$labelrp=(($RPlastRead<>0)?locale_number($currentRealPower/1000,2)." / ".$cab->MaxKW." kW (".$RPlastRead.")":__("no data"));
+			$labelrp=(($RPlastRead!='0')?locale_number($currentRealPower/1000,2)." / ".$cab->MaxKW." kW (".$RPlastRead.")":__("no data"));
 			
 			$tooltip="<span>$cab->Location</span><ul>\n";
 			$tooltip.="<li class=\"$scolor\">".__("Space").": ".$labelsp."</li>\n";
