@@ -1155,9 +1155,14 @@ print "		var dialog=$('<div>').prop('title','".__("Verify Delete Device")."').ht
 				});
 				setmediatype.val('');
 			}
-		});
-		$('.switch #mt').append(setmediatype);
-
+		}).css('z-index','3');
+<?php 
+	if(($dev->DeviceType=='Patch Panel' && $user->SiteAdmin) || $dev->DeviceType!='Patch Panel'){
+?>
+		$('#mt').append(setmediatype);
+<?php
+	}
+?>
 		// color codes change controls
 		setcolorcode=$('<select>').append($('<option>'));
 		setcolorcode.append($('<option>').val('clear').text('Clear'));
@@ -1454,6 +1459,8 @@ print "		var dialog=$('<div>').prop('title','".__("Verify Delete Device")."').ht
 
 	// move the edit button around
 	function movebuttons(){
+		var pos=$('#mt').offset();
+		setmediatype.offset({top: pos.top, left: pos.left+$('#mt').outerWidth()-setmediatype.width()});
 		var rearpos=$('#rear').offset();
 		rearedit.offset({top: rearpos.top, left: rearpos.left+$('#rear').outerWidth()-rearedit.width()});
 	}
@@ -1627,6 +1634,7 @@ print "		var dialog=$('<div>').prop('title','".__("Verify Delete Device")."').ht
 				});
 				if(btnrow.find('.controls').length===1){
 					row.data('edit',false);
+					row.children('div').removeAttr('style');
 					btnrow.remove();
 					devicepaths(row);
 				}
@@ -1661,6 +1669,10 @@ print "		var dialog=$('<div>').prop('title','".__("Verify Delete Device")."').ht
 						frontdev.html(devicelist(data).val(frontdev.data('default'))).children().change();
 						frontnotes.html($('<input>').val(frontnotes.text()));
 					}).then(resize()).then(resize());
+					// added for safari
+					setTimeout(function() {
+						resize();
+					},200);
 					row.children('div:not([id^=pp])').css({'padding': 0, 'border': 0});
 				}
 			});
@@ -2241,9 +2253,22 @@ echo '	<div class="table">
 
 <?php }else{ ?>
 		function movebuttons(){
+			var pos=$('#mt').offset();
+			setmediatype.offset({top: pos.top, left: pos.left+$('#mt').outerWidth()-setmediatype.width()});
 			var rearpos=$('#rear').offset();
 			rearedit.offset({top: rearpos.top, left: rearpos.left+$('#rear').outerWidth()-rearedit.width()});
 		}
+
+		// the mass edit fuctions have to be done last because the page is resized when the sidebar loads and it throws the positioning off
+		$.get('',{mt:''}).done(function(data){
+			$.each(data, function(key,mt){
+				var option=$("<option>",({'value':mt.MediaID})).append(mt.MediaType);
+				setmediatype.append(option).data(mt.MediaID,mt.ColorID);
+			});
+		}).then(function(){
+			movebuttons();
+		});
+
 		$.post('', {swdev: $('#deviceid').val(), rear: ''}, function(data){
 			$.each(data, function(key,pp){
 				var option=$("<option>").val(pp.DeviceID).append(pp.Label);

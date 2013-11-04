@@ -510,6 +510,10 @@ table#cabprop span.text-label {
 
 
 .device .table.patchpanel div[id^="pp"] { border-left: 2px solid black; min-width: 10px;}
+.device .table.patchpanel > div:first-child div[id^="pp"],
+.device .table.patchpanel > div:first-child div[id^="mt"] {border-top: 1px solid black; }
+.device .table.patchpanel > div:last-child div[id^="pp"],
+.device .table.patchpanel > div:last-child div[id^="mt"] {border-bottom: 1px solid black; }
 .device .table.patchpanel div[id^="pp"]:NOT([id="pp"]) { cursor: pointer; text-decoration: underline; }
 .device .table.patchpanel div[id^="mt"] { border-right: 2px solid black; }
 .device .table.patchpanel div[id^="pp"],
