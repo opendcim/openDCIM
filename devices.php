@@ -124,6 +124,14 @@
 				$dp->ConnectedPort=$_POST['cdeviceport'];
 
 				if($dp->updatePort()){
+					// when updating the media type on a rear port update the mediatype on the front port as well to make sure they match.
+					if($dp->PortNumber<0){
+						$dp->PortNumber=abs($dp->PortNumber);
+						$dp->GetPort();
+						$dp->MediaID=$_POST['porttype'];
+						$dp->ColorID=$_POST['portcolor'];
+						$dp->updatePort();
+					}
 					echo 1;
 				}else{
 					echo 0;
@@ -1444,14 +1452,14 @@ print "		var dialog=$('<div>').prop('title','".__("Verify Delete Device")."').ht
 	// hide all the mass edit functions when an individual row edit has been initiated.
 	function hidemassfunctions(hide){
 		if(hide){
-			rearedit.hide();
+			setmediatype.hide();rearedit.hide();
 		}else{
 			var show=true;
 			$('.patchpanel.table > div ~ div').each(function(){
 				show=($(this).data('edit'))?false:show;
 			});
 			if(show){
-				rearedit.show();
+				setmediatype.show();rearedit.show();
 				movebuttons();
 			}
 		}
@@ -1541,6 +1549,7 @@ print "		var dialog=$('<div>').prop('title','".__("Verify Delete Device")."').ht
 			var frontport=$('#fp'+portnum);
 			var frontnotes=$('#fn'+portnum);
 			var patchport=$('#pp'+portnum);
+			var mediatype=$('#mt'+portnum);
 			var reardev=$('#rd'+portnum);
 			var rearport=$('#rp'+portnum);
 			var rearnotes=$('#rn'+portnum);
@@ -1556,11 +1565,13 @@ print "		var dialog=$('<div>').prop('title','".__("Verify Delete Device")."').ht
 				var fr=(rear)?'r':'f';
 				var cdevice=$('#'+fr+'d'+portnum+' select').val();
 				var cdeviceport=$('#'+fr+'p'+portnum+' select').val();
-				var porttype=$('#'+fr+'p'+portnum+' select').data(cdeviceport).MediaID;
+				var porttype=$('#mt'+portnum+' select').val();
+				var porttype=(porttype===undefined)?$('#mt'+portnum).data('default'):porttype;
+				var porttypefront=$('#'+fr+'p'+portnum+' select').data(cdeviceport).MediaID;
 				var portcolor=$('#'+fr+'p'+portnum+' select').data(cdeviceport).ColorID;
 				var cnotes=$('#'+fr+'n'+portnum+' input').val();
 				var p=(rear)?portnum*-1:portnum;
-				porttype=(porttype===undefined)?0:porttype;
+				porttype=(porttype===undefined)?(porttypefront===undefined)?0:porttypefront:porttype;
 				portcolor=(portcolor===undefined)?0:portcolor;
 				$.post('',{saveport: '', swdev: $('#deviceid').val(), pnum: p,
 							pname: '', cdevice: cdevice, cdeviceport: cdeviceport,
@@ -1617,6 +1628,7 @@ print "		var dialog=$('<div>').prop('title','".__("Verify Delete Device")."').ht
 				var p=(rear)?portnum*-1:portnum;
 				$.post('',{getport: '',swdev: $('#deviceid').val(),pnum: p}).done(function(data){
 					if(rear){
+						mediatype.text(data.MediaName).data('default',data.MediaID);
 						reardev.html('<a href="devices.php?deviceid='+data.ConnectedDeviceID+'">'+data.ConnectedDeviceLabel+'</a>').data('default',data.ConnectedDeviceID);
 						var cp=(data.ConnectedPort<0)?data.ConnectedPort*-1:'';
 						rearport.html('<a href="paths.php?deviceid='+data.ConnectedDeviceID+'&portnumber='+data.ConnectedPort+'">'+cp+'</a>').data('default',data.ConnectedPort);
@@ -1655,6 +1667,15 @@ print "		var dialog=$('<div>').prop('title','".__("Verify Delete Device")."').ht
 // Rear panel controls
 					rearbtn.append(controls.clone(true).data('rear',true));
 					rearbtn.css({'padding': 0, 'border': 0}).attr('data', 'rear');;
+					$.get('',{mt:''}).done(function(data){
+						var mlist=$("<select>").append('<option value=0></option>');
+						$.each(data, function(key,mt){
+							var option=$("<option>",({'value':mt.MediaID})).append(mt.MediaType);
+							mlist.append(option).data(mt.MediaID,mt.ColorID);
+						});
+						mediatype.html(mlist).find('select').val(mediatype.data('default')).css('background-color', 'white');
+					});
+
 					$.post('', {pn: $(this).text(), swdev: $('#deviceid').val(), rear: ''}, function(data){
 						reardev.html(devicelist(data).val(reardev.data('default'))).data('rear',true).children().change();
 						rearnotes.html($('<input>').val(rearnotes.data('default')));
