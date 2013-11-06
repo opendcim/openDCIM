@@ -1,5 +1,5 @@
 <?php
-$codeversion="3.0";
+$codeversion="3.1";
 
 // Pre-Flight check
 	$tests=array();
@@ -626,6 +626,13 @@ function upgrade(){
 		echo "</tr></table>";
 
 		print "<br>\nPort conversion complete.<br>\n";
+
+		// Rebuild the config table just in case.
+		$config->rebuild();
+	}
+	if($version=="3.0"){
+		// First apply the schema updates needed.
+		$results[]=applyupdate("db-3.0-to-3.1.sql");
 
 		// Rebuild the config table just in case.
 		$config->rebuild();
