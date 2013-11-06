@@ -1131,6 +1131,10 @@ echo '<div class="main">
 					<div><label for="InstallURL">',__("Base URL for install"),'</label></div>
 					<div><input type="text" defaultvalue="',$href,'" name="InstallURL" value="',$config->ParameterArray["InstallURL"],'"></div>
 				</div>
+				<div>
+					<div><label for="SNMPCommunity">',__("Default SNMP Community"),'</label></div>
+					<div><input type="text" defaultvalue="',$config->ParameterArray["SNMPCommunity"],'" name="SNMPCommunity" value="',$config->ParameterArray["SNMPCommunity"],'"></div>
+				</div>
 			</div> <!-- end table -->
 			<h3>',__("Capacity Reporting"),'</h3>
 			<div class="table">
