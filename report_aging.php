@@ -11,25 +11,25 @@
 class DeviceAge extends Device{
  function GetAge() {
 	global $dbh;
-	$selectSQL = "select count(Label) as NumDevices,'<=1' as NumYears from fac_Device where (DATEDIFF(NOW(),IF(MfgDate>'1970-01-01',MfgDate,InstallDate))/365)<=1 and (DATEDIFF(NOW(), IF(MfgDate>'1970-01-01',MfgDate,InstallDate))/365)>0";
+	$selectSQL = "select count(Label) as NumDevices,'<=1' as NumYears from fac_Device where (DATEDIFF(NOW(),(CASE WHEN MfgDate>'1969-12-31' THEN MfgDate ELSE InstallDate END))/365)<=1 and (DATEDIFF(NOW(), (CASE WHEN MfgDate>'1969-12-31' THEN MfgDate ELSE InstallDate END))/365)>0";
 
 	foreach($dbh->query($selectSQL) as $row){
 		$deptList[$row['NumYears']] = $row['NumDevices'];
 	}
 
-	$selectSQL = "select count(*) as NumDevices,'<=2' as NumYears from fac_Device where (DATEDIFF(NOW(),IF(MfgDate>'1970-01-01',MfgDate,InstallDate))/365)<=2 and (DATEDIFF(NOW(), IF(MfgDate>'1970-01-01',MfgDate,InstallDate))/365)>1";
+	$selectSQL = "select count(*) as NumDevices,'<=2' as NumYears from fac_Device where (DATEDIFF(NOW(),(CASE WHEN MfgDate>'1969-12-31' THEN MfgDate ELSE InstallDate END))/365)<=2 and (DATEDIFF(NOW(), (CASE WHEN MfgDate>'1969-12-31' THEN MfgDate ELSE InstallDate END))/365)>1";
 	
 	foreach($dbh->query($selectSQL) as $row){
 		$deptList[$row['NumYears']] = $row['NumDevices'];
 	}
 
-	$selectSQL = "select count(*) as NumDevices,'<=3' as NumYears from fac_Device where (DATEDIFF(NOW(),IF(MfgDate>'1970-01-01',MfgDate,InstallDate))/365)<=3 and (DATEDIFF(NOW(), IF(MfgDate>'1970-01-01',MfgDate,InstallDate))/365)>2";
+	$selectSQL = "select count(*) as NumDevices,'<=3' as NumYears from fac_Device where (DATEDIFF(NOW(),(CASE WHEN MfgDate>'1969-12-31' THEN MfgDate ELSE InstallDate END))/365)<=3 and (DATEDIFF(NOW(), (CASE WHEN MfgDate>'1969-12-31' THEN MfgDate ELSE InstallDate END))/365)>2";
 	
 	foreach($dbh->query($selectSQL) as $row){
 		$deptList[$row['NumYears']] = $row['NumDevices'];
 	}
 
-	$selectSQL = "select count(*) as NumDevices,'<=4' as NumYears from fac_Device where (DATEDIFF(NOW(),IF(MfgDate>'1970-01-01',MfgDate,InstallDate))/365)<=4 and (DATEDIFF(NOW(), IF(MfgDate>'1970-01-01',MfgDate,InstallDate))/365)>3";
+	$selectSQL = "select count(*) as NumDevices,'<=4' as NumYears from fac_Device where (DATEDIFF(NOW(),(CASE WHEN MfgDate>'1969-12-31' THEN MfgDate ELSE InstallDate END))/365)<=4 and (DATEDIFF(NOW(), (CASE WHEN MfgDate>'1969-12-31' THEN MfgDate ELSE InstallDate END))/365)>3";
 	
 	foreach($dbh->query($selectSQL) as $row){
 		$deptList[$row['NumYears']] = $row['NumDevices'];
@@ -41,7 +41,7 @@ class DeviceAge extends Device{
 		$deptList[$row['NumYears']] = $row['NumDevices'];
 	}
 
-	$selectSQL = "select count(*) as NumDevices,'Unknown' as NumYears from fac_Device where IF(MfgDate>'1970-01-01',MfgDate,InstallDate)<'1970-01-01'";
+	$selectSQL = "select count(*) as NumDevices,'Unknown' as NumYears from fac_Device where (CASE WHEN MfgDate>'1969-12-31' THEN MfgDate ELSE InstallDate END)<'1970-01-01'";
 	
 	foreach($dbh->query($selectSQL) as $row){
 		$deptList[$row['NumYears']] = $row['NumDevices'];
@@ -55,12 +55,12 @@ function GetDeviceByAge($years){
 	$deviceList=array();
 	if($years<=3){
 		$yearsplus=$years+1;
-		$selectSQL = sprintf( "select * from fac_Device where (DATEDIFF(NOW(), IF(MfgDate>'1970-01-01',MfgDate,InstallDate))/365)<%d and (DATEDIFF(NOW(), IF(MfgDate>'1970-01-01',MfgDate,InstallDate))/365)>=%d", $yearsplus, $years );
+		$selectSQL = sprintf( "select * from fac_Device where (DATEDIFF(NOW(), (CASE WHEN MfgDate>'1969-12-31' THEN MfgDate ELSE InstallDate END))/365)<%d and (DATEDIFF(NOW(), (CASE WHEN MfgDate>'1969-12-31' THEN MfgDate ELSE InstallDate END))/365)>=%d", $yearsplus, $years );
 		foreach($dbh->query($selectSQL) as $deviceRow){
 			$deviceList[$deviceRow['DeviceID']]=Device::RowToObject($deviceRow);
 		}
 	}else{
-		$selectSQL="select * from fac_Device where (DATEDIFF(NOW(), IF(MfgDate>'1970-01-01',MfgDate,InstallDate))/365)>4 and IF(MfgDate>'1970-01-01',MfgDate,InstallDate)>'1970-01-01'";
+		$selectSQL="select * from fac_Device where (DATEDIFF(NOW(), (CASE WHEN MfgDate>'1969-12-31' THEN MfgDate ELSE InstallDate END))/365)>4 and (CASE WHEN MfgDate>'1969-12-31' THEN MfgDate ELSE InstallDate END)>'1970-01-01'";
 		foreach($dbh->query($selectSQL) as $deviceRow){
 			$deviceList[$deviceRow['DeviceID']]=Device::RowToObject($deviceRow);
 		}
