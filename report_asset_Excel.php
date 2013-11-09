@@ -45,23 +45,23 @@ require 'PHPExcel/Writer/Excel2007.php';
 $DProps = array(
     'Doc' => array(
         'version' => 1.0,
-        'Subject' => 'Asset Report',
-        'Description' => 'Data Center Statistics on all data centers assets.',
-        'Title' => 'Data Center Statistics',
-        'Keywords' => 'datacenter report assets\' statistic',
+        'Subject' => __('Asset Report'),
+        'Description' => __('Data Center Statistics on all data centers assets.'),
+        'Title' => __('Data Center Statistics'),
+        'Keywords' => __('datacenter report assets statistic'),
         'PageSize' => $config->ParameterArray['PageSize'],
         'User' => $user->Name,
         'UserID' => $user->UserID
     ),
     'Front Page' => array(
-        'Title' => '&L&BNotes on DC Statistics&R&A',
+        'Title' => '&L&B' . __('Notes on DC Statistics') . '&R&A',
         'FillColor' => 'DCE6F1',
         'HeadingFontColor' => '000000',
         'HeaderRange' => 'A1:B2',
         'HeaderHeight' => 60,
         'Border color' => '95B3D7',
-        'Logo Name' => 'Logo Name',
-        'Logo Description' => 'Logo Description',
+        'Logo Name' => __('Logo Name'),
+        'Logo Description' => __('Logo Description'),
         'PageSize' => $config->ParameterArray['PageSize'],
         'Orientation' => PHPExcel_Worksheet_PageSetup::ORIENTATION_PORTRAIT,
         'Columns' => array(
@@ -69,48 +69,48 @@ $DProps = array(
             array('', '', null, null)
         ),
         'remarks' => array(
-            '● This is the combined report on all data center assets. It '
-                . 'contains the list of all devices and a list of all cabinets.',
-            '● Using Excel\'s pivot capabilities many different anaylsis and '
-                . 'statistics can be performed.',
-            '● The terms \'cabinet\' and  \'rack\' are used interchangeable.',
-            '● For user who have only the \'Admin Own Devices\' right the report '
-                . 'is limited to the cabinets which are owned by this department.',
-            '● The \'DC Statistics\' page is only generated for users who are '
-                . 'not limited to \'Admin Own Devices\'.',
-            '● For a child device the column \'Parent Device\' shows the parent '
+            __('● This is the combined report on all data center assets. It '
+                . 'contains the list of all devices and a list of all cabinets.'),
+            __('● Using Excel\'s pivot capabilities many different anaylsis and '
+                . 'statistics can be performed.'),
+            __('● The terms \'cabinet\' and  \'rack\' are used interchangeable.'),
+            __('● For user who have only the \'Admin Own Devices\' right the report '
+                . 'is limited to the cabinets which are owned by this department.'),
+            __('● The \'DC Statistics\' page is only generated for users who are '
+                . 'not limited to \'Admin Own Devices\'.'),
+            __('● For a child device the column \'Parent Device\' shows the parent '
                 . 'device otherwise it is empty. A child devices is e.g. a '
-                . 'blade server.',
-            '● The \'Position\' for a child device is the slot position within '
-                . 'in the parent device.',
-            '● \'Half Depth\' contains a value \'front\' or \'rear\' only if the '
+                . 'blade server.'),
+            __('● The \'Position\' for a child device is the slot position within '
+                . 'in the parent device.'),
+            __('● \'Half Depth\' contains a value \'front\' or \'rear\' only if the '
                 . 'device is of half depth in which case this indicates the '
-                . 'location.',
-            '● Consecutive free rack space is indicated in worksheet \'DC Inventory'
-                .'\' with the string \'__EMPTY \' in column \'Device\'. '
+                . 'location.'),
+            __('● Consecutive free rack space is indicated in worksheet \'DC Inventory'
+                . '\' with the string \'__EMPTY \' in column \'Device\'. '
                 . '\'Position\' gives the start of the range and \'Height\' '
-                . 'specifies the size of the range of free rack space.',
-            '● A range of consecutive free slots in a chassis is indicacted in '
+                . 'specifies the size of the range of free rack space.'),
+            __('● A range of consecutive free slots in a chassis is indicacted in '
                 . 'worksheet \'DC Inventory\' with the string \'__EMPTYSLOT \' in '
                 . 'the column \'Device\'. \'Position\' gives the start of the '
-                . 'range and \'Height\' specifies the number of free slots.',
-            '● All free rack units (RU) within the racks sum up to the total '
+                . 'range and \'Height\' specifies the number of free slots.'),
+            __('● All free rack units (RU) within the racks sum up to the total '
                 . 'amount of free rack units. It is possible that devices of '
                 . 'different height are mounted at the same position within a '
-                . 'cabinet. Only the non occupied rack units are free RUs.',
-            '● Cabinets of \'Model\' equal \'RESERVED\' are placeholders on the '
+                . 'cabinet. Only the non occupied rack units are free RUs.'),
+            __('● Cabinets of \'Model\' equal \'RESERVED\' are placeholders on the '
                 . 'floor space in the DC for racks to come. Their number is '
                 . 'counted in the column \'No. Reserved Racks\'. Nevertheless, '
-                . 'the rack units are taken into account in all other statistics.',
+                . 'the rack units are taken into account in all other statistics.'),
             '',
-            'This file is confidential and shall not be used without permission of '
-                . 'the owner.',
+            __('This file is confidential and shall not be used without permission of '
+                . 'the owner.'),
             '',
-            'Generate by openDCIM'
+            __('Generate by openDCIM')
         )
     ),
     'DC Stats' => array(
-        'Title' => '&L&DC Summary Statistics&R&A',
+        'Title' => '&L&DC ' . __('Summary Statistics') . '&R&A',
         'FillColor' => 'DCE6F1',
         'HeadingFontColor' => '000000',
         'HeaderRange' => null,
@@ -130,17 +130,17 @@ $DProps = array(
         'Orientation' => PHPExcel_Worksheet_PageSetup::ORIENTATION_LANDSCAPE,
         // Columns format is <header_title>, <format_spec>, <width>, <special_attr>
         'Columns' => array(
-            array("DC Room", '', 21, 'wrap'),
-            array("Floor\nSpace\n(sqm)", '', 9, null),
-            array("No.\nRacks", '', 10, null),
-            array("No.\nReserved\nRacks", '', 10, null),
-            array("Sum of\nRack\nUnits (RU)", '', 12, null),
-            array("Sum of\nUsed\nRack\nUnits (RU)", '', 12, null),
-            array("Percentage\nUsed\nRack\nUnits", 'P', 12, null),
-            array("Sum of\nEmpty\nRack\nUnits (RU)", '', 12, null),
-            array("Percentage\nEmpty\nRack\nUnits", 'P', 12, null),
-            array("Sum of\nPower\n(kW)", 'F', 9, null),
-            array("Sum of\nDesign\nPower\n(kW)", '', 9, null)
+            array(__("DC Room"), '', 21, 'wrap'),
+            array(__("Floor\nSpace\n(sqm)"), '', 9, null),
+            array(__("No.\nRacks"), '', 10, null),
+            array(__("No.\nReserved\nRacks"), '', 10, null),
+            array(__("Sum of\nRack\nUnits (RU)"), '', 12, null),
+            array(__("Sum of\nUsed\nRack\nUnits (RU)"), '', 12, null),
+            array(__("Percentage\nUsed\nRack\nUnits"), 'P', 12, null),
+            array(__("Sum of\nEmpty\nRack\nUnits (RU)"), '', 12, null),
+            array(__("Percentage\nEmpty\nRack\nUnits"), 'P', 12, null),
+            array(__("Sum of\nPower\n(kW)"), 'F', 9, null),
+            array(__("Sum of\nDesign\nPower\n(kW)"), '', 9, null)
             ),
         'KPIs' => array(
             'Fl_Spc',      // - Fl_Spc      floor space
@@ -808,7 +808,8 @@ function getRowName($cab, $emptyVal = null)
  * @param Device $dev
  * @return string|null
  */
-function getDeviceDepthPos($dev) {
+function getDeviceDepthPos($dev)
+{
     $retval = null;
     if ($dev) {
         if ($dev->HalfDepth) {
@@ -856,11 +857,13 @@ function MergeArrays($Arr1, $Arr2)
 {
     foreach($Arr2 as $key => $Value)
     {
-        if(array_key_exists($key, $Arr1) && is_array($Value))
+        if(array_key_exists($key, $Arr1) && is_array($Value)) {
             $Arr1[$key] = MergeArrays($Arr1[$key], $Arr2[$key]);
-        else
+        }
+        else {
             $Arr1[$key] = $Value;
         }
+    }
 
   return $Arr1;
 }
@@ -873,7 +876,8 @@ function MergeArrays($Arr1, $Arr2)
  * @param DataCenter $dc
  * @param array $Stats
  */
-function assignStatsVal(&$dcStats, $dc, $Stats) {
+function assignStatsVal(&$dcStats, $dc, $Stats)
+{
     $arr = array();
     $tmp = &$arr;
     $dcContainerList = $dc->getContainerList();
