@@ -41,7 +41,7 @@ class DeviceAge extends Device{
 		$deptList[$row['NumYears']] = $row['NumDevices'];
 	}
 
-	$selectSQL = "select count(*) as NumDevices,'Unknown' as NumYears from fac_Device where (CASE WHEN MfgDate>'1969-12-31' THEN MfgDate ELSE InstallDate END)<'1970-01-01'";
+	$selectSQL = "select count(*) as NumDevices,'Unknown' as NumYears from fac_Device where (CASE WHEN MfgDate>'1969-12-31' THEN MfgDate ELSE InstallDate END)<='1970-01-01'";
 	
 	foreach($dbh->query($selectSQL) as $row){
 		$deptList[$row['NumYears']] = $row['NumDevices'];
