@@ -2411,18 +2411,24 @@ class DevicePorts {
 			}
 
 			// Run two queries - first, devices in the same cabinet as the device patching from
-			$sql="SELECT a.*, AssignedTo FROM fac_Device a, fac_Cabinet b WHERE Ports>0 
-				AND Cabinet=CabinetID AND Cabinet=$dev->Cabinet AND DeviceID!=$dev->DeviceID
-				$rights$mediaenforce$pp ORDER BY Position DESC, Label ASC;";
+			$sql="SELECT DISTINCT a.*, AssignedTo FROM fac_Device a, fac_Cabinet b, 
+				fac_Ports c WHERE Ports>0 AND (Cabinet=CabinetID OR a.ParentDevice>0) 
+				AND CASE WHEN a.ParentDevice>0 THEN (SELECT Cabinet FROM fac_Device WHERE 
+				DeviceID=a.ParentDevice) ELSE a.Cabinet END=$dev->Cabinet AND 
+				a.DeviceID!=$dev->DeviceID AND a.DeviceID=c.DeviceID $rights$mediaenforce$pp 
+				GROUP BY DeviceID ORDER BY Position DESC, Label ASC;";
 			foreach($dbh->query($sql) as $row){
 				// false to skip rights check we filtered using sql above
 				$tmpDev=Device::RowToObject($row,false);
 				$candidates[]=array("DeviceID"=>$tmpDev->DeviceID, "Label"=>$tmpDev->Label, "CabinetID"=>$tmpDev->Cabinet);
 			}
 			// Then run the same query, but for the rest of the devices in the database
-			$sql="SELECT a.*, AssignedTo FROM fac_Device a, fac_Cabinet b WHERE Ports>0 
-				AND Cabinet=CabinetID AND Cabinet!=$dev->Cabinet AND Cabinet>-1 AND 
-				DeviceID!=$dev->DeviceID$rights$mediaenforce$pp ORDER BY Label ASC;";
+			$sql="SELECT DISTINCT a.*, AssignedTo FROM fac_Device a, fac_Cabinet b, 
+				fac_Ports c WHERE Ports>0 AND (Cabinet=CabinetID OR a.ParentDevice>0) 
+				AND CASE WHEN a.ParentDevice>0 THEN (SELECT Cabinet FROM fac_Device WHERE 
+				DeviceID=a.ParentDevice) ELSE a.Cabinet END!=$dev->Cabinet AND 
+				a.DeviceID!=$dev->DeviceID AND a.DeviceID=c.DeviceID $rights$mediaenforce$pp 
+				GROUP BY DeviceID ORDER BY Position DESC, Label ASC;";
 			foreach($dbh->query($sql) as $row){
 				// false to skip rights check we filtered using sql above
 				$tmpDev=Device::RowToObject($row,false);

@@ -244,11 +244,11 @@
 			$dp->DeviceID=$_POST['thisdev'];
 			$list=$dp->getPorts();
 			if($config->ParameterArray["MediaEnforce"]=='enabled'){
-				$dp->DeviceID=$_POST['thisdev'];
+				$dp->DeviceID=$_POST['swdev'];
 				$dp->PortNumber=$_POST['pn'];
 				$dp->getPort();
 				foreach($list as $key => $port){
-					if($port['MediaID']!=$dp->MediaID){
+					if($port->MediaID!=$dp->MediaID){
 						unset($list[$key]); // remove the nonmatching ports
 					}
 				}
@@ -875,15 +875,6 @@ $(document).ready(function() {
 		}else{
 			$('#esxframe').hide();
 		}
-		// if true, then dealing with child device
-		if($('select[name="parentdevice"]').length){
-			if($(this).val()=='Switch'){
-				$('#dphtml').removeClass('hide');
-			}else{
-				$('#dphtml').addClass('hide');
-			}
-		}
-
 	}).change();
 	$('#firstport button[name=firstport]').click(function(){
 		var modal=$('<div />', {id: 'modal', title: 'Select switch first port'}).html('<div id="modaltext"></div><br><div id="modalstatus" class="warning"></div>').dialog({
@@ -1924,11 +1915,7 @@ echo '		<div>
 			<div><input type="checkbox" name="backside" id="backside"'.(($dev->BackSide)?" checked":"").'></div>
 		</div>';
 
-
-		// Blade devices don't have data ports unless they're a switch
-		$hide=($dev->ParentDevice==0 || ($dev->ParentDevice>0 && $dev->DeviceType=='Switch'))?'':' class="hide"';
-
-		echo '		<div id="dphtml"',$hide,'>
+		echo '		<div id="dphtml">
 		   <div><label for="ports">',__("Number of Data Ports"),'</label></div>
 		   <div><input type="number" class="optional,validate[custom[onlyNumberSp]]" name="ports" id="ports" size="4" value="',$dev->Ports,'"></div>
 		</div>';
