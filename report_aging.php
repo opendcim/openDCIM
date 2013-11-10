@@ -41,7 +41,7 @@ class DeviceAge extends Device{
 		$deptList[$row['NumYears']] = $row['NumDevices'];
 	}
 
-	$selectSQL = "select count(*) as NumDevices,'Unknown' as NumYears from fac_Device where (CASE WHEN MfgDate>'1969-12-31' THEN MfgDate ELSE InstallDate END)<'1970-01-01'";
+	$selectSQL = "select count(*) as NumDevices,'Unknown' as NumYears from fac_Device where (CASE WHEN MfgDate>'1969-12-31' THEN MfgDate ELSE InstallDate END)<='1970-01-01'";
 	
 	foreach($dbh->query($selectSQL) as $row){
 		$deptList[$row['NumYears']] = $row['NumDevices'];
@@ -316,7 +316,7 @@ class PDF_Diag extends PDF_Sector {
         $angleEnd = 0;
         $i = 0;
         foreach($data as $val) {
-            $angle = round(($val * 360) / doubleval($this->sum));
+            $angle = ($this->sum == 0) ? 0 : round(($val * 360) / doubleval($this->sum));
             if ($angle != 0) {
                 $angleEnd = $angleStart + $angle;
                 $this->SetFillColor($colors[$i][0],$colors[$i][1],$colors[$i][2]);
