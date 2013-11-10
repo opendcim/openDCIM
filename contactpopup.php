@@ -5,7 +5,7 @@
 	$dept=new Department();
 	$contact=new Contact();
 	
-	if(!$user->ReadAccess || !isset($_REQUEST['deptid'])){
+	if(!isset($_REQUEST['deptid'])){
 		// No soup for you.
 		header('Location: '.redirect());
 		exit;

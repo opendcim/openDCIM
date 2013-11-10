@@ -20,17 +20,6 @@ require_once 'facilities.inc.php';
 // TODO: Potentially sorting of rack inventory might need to be done not
 // according to the data center ID but to the names
 
-if ((! $user->ReadAccess) and (! $user->AdminOwnDevices)) {
-    header("Refresh: 3; " . redirect());
-    echo '<html>
-        <head><link rel="stylesheet" href="css/inventory.php" type="text/css">
-    </head>
-    <body><p class="errormsg">' . __('Missing rights to execute the report')
-    . '</p>
-    </body></html>', PHP_EOL;
-    exit();
-}
-
 // Error reporting
 error_reporting(E_ALL);
 ini_set('memory_limit', '840M');
@@ -109,51 +98,51 @@ $DProps = array(
             __('Generate by openDCIM')
         )
     ),
-    'DC Stats' => array(
-        'Title' => '&L&DC ' . __('Summary Statistics') . '&R&A',
-        'FillColor' => 'DCE6F1',
-        'HeadingFontColor' => '000000',
-        'HeaderRange' => null,
-        'HeaderHeight' => 51,
-        'Border color' => '95B3D7',
-        'Border Style' => array(
-            'borders' => array(
-                'bottom' => array(
-                    'style' => PHPExcel_Style_Border::BORDER_THIN,
-                    'color' => array(
-                        'rgb' => '95B3D7'
-                    )
-                )
-            )
-        ),
-        'PageSize' => $config->ParameterArray['PageSize'],
-        'Orientation' => PHPExcel_Worksheet_PageSetup::ORIENTATION_LANDSCAPE,
-        // Columns format is <header_title>, <format_spec>, <width>, <special_attr>
-        'Columns' => array(
-            array(__("DC Room"), '', 21, 'wrap'),
-            array(__("Floor\nSpace\n(sqm)"), '', 9, null),
-            array(__("No.\nRacks"), '', 10, null),
-            array(__("No.\nReserved\nRacks"), '', 10, null),
-            array(__("Sum of\nRack\nUnits (RU)"), '', 12, null),
-            array(__("Sum of\nUsed\nRack\nUnits (RU)"), '', 12, null),
-            array(__("Percentage\nUsed\nRack\nUnits"), 'P', 12, null),
-            array(__("Sum of\nEmpty\nRack\nUnits (RU)"), '', 12, null),
-            array(__("Percentage\nEmpty\nRack\nUnits"), 'P', 12, null),
-            array(__("Sum of\nPower\n(kW)"), 'F', 9, null),
-            array(__("Sum of\nDesign\nPower\n(kW)"), '', 9, null)
-            ),
-        'KPIs' => array(
-            'Fl_Spc',      // - Fl_Spc      floor space
-            'Rk_Num',      // - Rk_Num      no. racks
-            'Rk_UtT',      // - Rk_UtT      rack units Total
-            'Rk_UtU',      // - Rk_UtU      rack units used
-            'Rk_UtE',      // - Rk_UtE      rack units empty
-            'Rk_Res',      // - Rk_Res      racks reserved
-            'Watts',       // - Watts       power allocated
-            'DesignPower'  // - DesignPower design power of DC
-        ),
-        'ColIdx' => array(),
-        'ExpStr' => array()
+	'DC Stats' => array(
+		'Title' => '&L&DC ' . __('Summary Statistics') . '&R&A',
+		'FillColor' => 'DCE6F1',
+		'HeadingFontColor' => '000000',
+		'HeaderRange' => null,
+		'HeaderHeight' => 51,
+		'Border color' => '95B3D7',
+		'Border Style' => array(
+			'borders' => array(
+				'bottom' => array(
+					'style' => PHPExcel_Style_Border::BORDER_THIN,
+					'color' => array(
+						'rgb' => '95B3D7'
+					)
+				)
+			)
+		),
+		'PageSize' => $config->ParameterArray['PageSize'],
+		'Orientation' => PHPExcel_Worksheet_PageSetup::ORIENTATION_LANDSCAPE,
+		// Columns format is <header_title>, <format_spec>, <width>, <special_attr>
+		'Columns' => array(
+			array(__("DC Room"), '', 21, 'wrap'),
+			array(__("Floor\nSpace\n(sqm)"), '', 9, null),
+			array(__("No.\nRacks"), '', 10, null),
+			array(__("No.\nReserved\nRacks"), '', 10, null),
+			array(__("Sum of\nRack\nUnits (RU)"), '', 12, null),
+			array(__("Sum of\nUsed\nRack\nUnits (RU)"), '', 12, null),
+			array(__("Percentage\nUsed\nRack\nUnits"), 'P', 12, null),
+			array(__("Sum of\nEmpty\nRack\nUnits (RU)"), '', 12, null),
+			array(__("Percentage\nEmpty\nRack\nUnits"), 'P', 12, null),
+			array(__("Sum of\nPower\n(kW)"), 'F', 9, null),
+			array(__("Sum of\nDesign\nPower\n(kW)"), '', 9, null)
+		),
+		'KPIs' => array(
+			'Fl_Spc',      // - Fl_Spc      floor space
+			'Rk_Num',      // - Rk_Num      no. racks
+			'Rk_UtT',      // - Rk_UtT      rack units Total
+			'Rk_UtU',      // - Rk_UtU      rack units used
+			'Rk_UtE',      // - Rk_UtE      rack units empty
+			'Rk_Res',      // - Rk_Res      racks reserved
+			'Watts',       // - Watts       power allocated
+			'DesignPower'  // - DesignPower design power of DC
+		),
+		'ColIdx' => array(),
+		'ExpStr' => array()
     ),
     'DC Inventory' => array(
         'Title' => '&L&BDC Inventory - Devices&R&A',
