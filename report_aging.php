@@ -407,7 +407,7 @@ class PDF_Diag extends PDF_Sector {
         $this->NbVal=count($data);
         foreach($data as $l=>$val)
         {
-            $p=sprintf('%.2f',$val/$this->sum*100).'%';
+            $p=sprintf('%.2f',(($this->sum>0)?$val/$this->sum*100:0)).'%';
             $legend=str_replace(array('%l','%v','%p'),array($l,$val,$p),$format);
             $this->legends[]=$legend;
             $this->wLegend=max($this->GetStringWidth($legend),$this->wLegend);
