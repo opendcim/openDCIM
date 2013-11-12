@@ -6,6 +6,16 @@ GitHub, at http://github.com/samilliken/openDCIM/issues, where you can also down
 the latest development version.  However, it is not advised to pull from GitHub unless you
 are simply testing, as some functionality can break between releases.
 
+Changes in 3.1
+--------------
+* Expanded UserID field (80 characters)
+* When viewing a zone, will now compile statistics based upon cabinets defined for that zone
+* Added a new data center asset report in Excel format with full device and rack inventory
+* Zones are now highlighted on the map when hovering over them with the mouse, tooltip generated
+* Sensor Templates added
+* Temperature/Humidity polling function added, and display in tooltips
+* Ability to set sitewide default SNMP community
+* Many bug fixes
 
 Changes in 3.0
 --------------
