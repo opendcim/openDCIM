@@ -2069,7 +2069,7 @@ function showgroup(obj){
 <div class="table centermargin">
 <div>
    <div>Department</div>
-   <div><input type="hidden" name="deptaction" value="query"><select name="deptid" onChange="form.submit()" <?php echo $nodeptdrop;?>>
+   <div><input type="hidden" name="deptaction" value="query"><select name="deptid" onChange="form.submit()" <?php echo $nodeptdrop;  print "data=\"$dept->DeptID\""; ?>>
    <option value=0>New Department</option>
 <?php
 	foreach($deptList as $deptRow){
@@ -2096,7 +2096,7 @@ function showgroup(obj){
 </div>
 <div>
    <div><label for="deptclass">Classification</label></div>
-   <div><select name="classification" id="deptclass">
+   <div><select name="classification" id="deptclass" data="<?php echo $dept->Classification; ?>">
 <?php
   foreach($config->ParameterArray['ClassList'] as $className){
 	  echo "<option value=\"$className\"";
@@ -2151,7 +2151,7 @@ function showgroup(obj){
 <div class="table">
 <div>
    <div><label for="datacenterid">Data Center ID</label></div>
-   <div><select name="datacenterid" id="datacenterid" onChange="form.submit()" <?php echo $nodcdrop;?>>
+   <div><select name="datacenterid" id="datacenterid" onChange="form.submit()" <?php echo $nodcdrop; print "data=\"$dc->DataCenterID\""; ?>>
       <option value="0">New Data Center</option>
 <?php
 	foreach($dcList as $dcRow){
@@ -2242,7 +2242,7 @@ function showgroup(obj){
 <div class='table'>
 <div>
    <div>Cabinet</div>
-   <div><select name='cabinetid' onChange='form.submit()' <?php echo $nodcdrop; ?>>
+   <div><select name='cabinetid' onChange='form.submit()' <?php echo $nodcdrop;  print "data=\"$cab->CabinetID\"";?>>
    <option value='0'>New Cabinet</option>
 <?php
 	foreach($cabList as $cabRow){
@@ -2265,7 +2265,7 @@ function showgroup(obj){
 </div>
 <div>
   <div>Assigned To:</div>
-  <div><select name='assignedto' <?php echo $nodcdrop;?>>
+  <div><select name='assignedto' <?php echo $nodcdrop; print "data=\"$cab->AssignedTo\"";?>>
     <option value='0'>General Use</option>
 <?php
 	foreach($deptList as $deptRow){
