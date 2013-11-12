@@ -1,29 +1,6 @@
 <?php
 /* All functions contained herein will be general use functions */
 
-/*
-	Check if we are doing a new install or an upgrade has been applied.  
-	If found then force the user into only running that function.
-
-	To bypass the installer check from running, simply add
-	$devMode = true;
-	to the db.inc.php file.
-*/
-
-if(isset($devMode)&&$devMode){
-	// Development mode, so don't apply the upgrades
-}else{
-	if(file_exists("install.php") && basename($_SERVER['PHP_SELF'])!="install.php" ){
-		// new installs need to run the install first.
-		header("Location: ".redirect('install.php'));
-	}
-}
-/* This is used on every page so we might as well just init it once */
-$user=new User();
-// this condition should only happen when running from the console
-$user->UserID=isset($_SERVER['REMOTE_USER'])?$_SERVER['REMOTE_USER']:'';
-$user->GetUserRights();
-	
 /* 
 Regex to make sure a valid URL is in the config before offering options for contact lookups
 http://www.php.net/manual/en/function.preg-match.php#93824
@@ -529,4 +506,29 @@ function locale_number( $number, $decimals=2 ) {
                $locale['decimal_point'],
                $locale['thousands_sep']);
 }
+
+/*
+	Check if we are doing a new install or an upgrade has been applied.  
+	If found then force the user into only running that function.
+
+	To bypass the installer check from running, simply add
+	$devMode = true;
+	to the db.inc.php file.
+*/
+
+if(isset($devMode)&&$devMode){
+	// Development mode, so don't apply the upgrades
+}else{
+	if(file_exists("install.php") && basename($_SERVER['PHP_SELF'])!="install.php" ){
+		// new installs need to run the install first.
+		header("Location: ".redirect('install.php'));
+	}
+}
+
+/* This is used on every page so we might as well just init it once */
+$user=new User();
+// this condition should only happen when running from the console
+$user->UserID=isset($_SERVER['REMOTE_USER'])?$_SERVER['REMOTE_USER']:'';
+$user->GetUserRights();
+	
 ?>
