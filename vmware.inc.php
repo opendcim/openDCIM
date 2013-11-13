@@ -14,7 +14,7 @@ class ESX {
     $pollCommand = $config->ParameterArray["snmpwalk"]." -v 2c -c $community $serverIP .1.3.6.1.4.1.6876.2.1.1.6 | ".$config->ParameterArray["cut"]." -d: -f4 | /bin/cut -d\\\" -f2";
     exec( $pollCommand, $statesOutput );
     
-	if ( ( count( $namesOutput ) > 0 ) && ( count( $statesOutput ) > 0 ) ) }
+	if ( ( count( $namesOutput ) > 0 ) && ( count( $statesOutput ) > 0 ) ) {
 		$tempVMs = array_combine( $namesOutput, $statesOutput );
 		
 		$vmID = 0;
