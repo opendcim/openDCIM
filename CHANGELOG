@@ -15,6 +15,7 @@ Changes in 3.1
 * Sensor Templates added
 * Temperature/Humidity polling function added, and display in tooltips
 * Ability to set sitewide default SNMP community
+* New email report for switch capacity alerts
 * Many bug fixes
 
 Changes in 3.0
