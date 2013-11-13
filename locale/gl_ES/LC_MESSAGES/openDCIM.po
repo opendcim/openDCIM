@@ -3,14 +3,14 @@ msgstr ""
 "Project-Id-Version: openDCIM.po\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2013-11-04 18:54-0600\n"
-"PO-Revision-Date: 2013-09-09 14:16+0100\n"
+"PO-Revision-Date: 2013-11-13 15:10+0100\n"
 "Last-Translator: Jose Miguel Gomez <jomigom@iies.es>\n"
 "Language-Team: openDCIM <discussion@list.opendcim.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Language: English\n"
-"X-Generator: Poedit 1.5.5\n"
+"X-Generator: Poedit 1.5.7\n"
 
 #: openDCIM/cabaudit.php:50 openDCIM/report_aging.php:91
 #: openDCIM/report_department.php:25
@@ -183,9 +183,8 @@ msgid "Sensor SNMP Community"
 msgstr "Comunidade SNMP do Sensor"
 
 #: openDCIM/cabinets.php:304
-#, fuzzy
 msgid "Sensor Template"
-msgstr "Nova Plantilla"
+msgstr "Plantilla de Sensor"
 
 #: openDCIM/cabinets.php:319 openDCIM/cabnavigator.php:100
 #: openDCIM/devices.debug.php:1534 openDCIM/devices.php:1851
@@ -271,14 +270,12 @@ msgid "Never"
 msgstr "Nunca"
 
 #: openDCIM/cabnavigator.php:304
-#, fuzzy
 msgid "Reservation"
-msgstr "¿Reserva?"
+msgstr "Reserva"
 
 #: openDCIM/cabnavigator.php:307
-#, fuzzy
 msgid "Free Space"
-msgstr "Espazo"
+msgstr "Espazo Libre"
 
 #: openDCIM/cabnavigator.php:314 openDCIM/cabnavigator.php:415
 #: openDCIM/rowview.php:79
@@ -351,17 +348,16 @@ msgid "Power Distribution"
 msgstr "Distribución de Enerxía Eléctrica"
 
 #: openDCIM/cabnavigator.php:656
-#, fuzzy
 msgid "Unknown Status"
-msgstr "Descoñecido"
+msgstr "Estado Descoñecido"
 
 #: openDCIM/cabnavigator.php:659
 msgid "ATS Feeds OK"
-msgstr ""
+msgstr "Alimentación do CTA correcta"
 
 #: openDCIM/cabnavigator.php:662
 msgid "ATS Feeds Abnormal"
-msgstr ""
+msgstr "Alimentación do CTA anormal"
 
 #: openDCIM/cabnavigator.php:670
 msgid "Add CDU"
@@ -490,14 +486,12 @@ msgid "OID3"
 msgstr "OID3"
 
 #: openDCIM/cdu_templates.php:177
-#, fuzzy
 msgid "ATS Status OID"
-msgstr "Estado"
+msgstr "OID do estado do CTA"
 
 #: openDCIM/cdu_templates.php:181
-#, fuzzy
 msgid "ATS Desired Result"
-msgstr "Resultados da Procura"
+msgstr "Resultado Deseado do CTA"
 
 #: openDCIM/cdu_templates.php:185
 msgid "Processing Scheme"
@@ -657,26 +651,24 @@ msgid "Metric"
 msgstr "Métrica"
 
 #: openDCIM/configuration.php:894 openDCIM/install.php:1670
-#, fuzzy
 msgid "Page Size"
-msgstr "Páxina"
+msgstr "Tamaño de Páxina"
 
 #: openDCIM/configuration.php:896 openDCIM/install.php:1672
 msgid "A4"
-msgstr ""
+msgstr "A4"
 
 #: openDCIM/configuration.php:897 openDCIM/install.php:1673
 msgid "A3"
-msgstr ""
+msgstr "A3"
 
 #: openDCIM/configuration.php:898 openDCIM/install.php:1674
 msgid "Letter"
-msgstr ""
+msgstr "Carta"
 
 #: openDCIM/configuration.php:899 openDCIM/install.php:1675
-#, fuzzy
 msgid "Legal"
-msgstr "Nemónico"
+msgstr "Legal"
 
 #: openDCIM/configuration.php:904 openDCIM/install.php:1680
 msgid "Users"
@@ -715,36 +707,32 @@ msgid "Space Critical"
 msgstr "Ocupación Crítica"
 
 #: openDCIM/configuration.php:936 openDCIM/install.php:1712
-#, fuzzy
 msgid "Temperature Critical"
-msgstr "Ocupación Crítica"
+msgstr "Temperatura Critica"
 
 #: openDCIM/configuration.php:940 openDCIM/install.php:1716
 msgid "Space Warning"
 msgstr "Ocupación Perigosa"
 
 #: openDCIM/configuration.php:943 openDCIM/install.php:1719
-#, fuzzy
 msgid "Temperature Warning"
-msgstr "Ocupación Perigosa"
+msgstr "Temperatura Perigosa"
 
 #: openDCIM/configuration.php:947 openDCIM/install.php:1723
 msgid "Weight Critical"
 msgstr "Peso Crítico"
 
 #: openDCIM/configuration.php:950 openDCIM/install.php:1726
-#, fuzzy
 msgid "High Humidity Critical"
-msgstr "Peso Crítico"
+msgstr "Humidade Alta Crítica"
 
 #: openDCIM/configuration.php:954 openDCIM/install.php:1730
 msgid "Weight Warning"
 msgstr "Peso Perigoso"
 
 #: openDCIM/configuration.php:957 openDCIM/install.php:1733
-#, fuzzy
 msgid "Low Humidity Critical"
-msgstr "Consumo Enerxético Crítico"
+msgstr "Humedad Baixa Crítica"
 
 #: openDCIM/configuration.php:961 openDCIM/install.php:1737
 msgid "Power Critical"
@@ -752,7 +740,7 @@ msgstr "Consumo Enerxético Crítico"
 
 #: openDCIM/configuration.php:964 openDCIM/install.php:1740
 msgid "High Humidity Caution"
-msgstr ""
+msgstr "Humidade Alta Perigosa"
 
 #: openDCIM/configuration.php:968 openDCIM/install.php:1744
 msgid "Power Warning"
@@ -760,7 +748,7 @@ msgstr "Consumo Enerxético Perigoso"
 
 #: openDCIM/configuration.php:971 openDCIM/install.php:1747
 msgid "Low Humidity Caution"
-msgstr ""
+msgstr "Humidade Baixa Perigosa"
 
 #: openDCIM/configuration.php:975 openDCIM/index.php:116
 #: openDCIM/install.php:1751
@@ -1094,9 +1082,8 @@ msgid "None"
 msgstr "Ningún"
 
 #: openDCIM/container.php:235
-#, fuzzy
 msgid "Click on the image to select container coordinates"
-msgstr "Pulse na imaxe para indicar as coordenadas do CPD"
+msgstr "Pulse na imaxe para seleccionar as coordenadas do colector"
 
 #: openDCIM/container_stats.php:41 openDCIM/datacenter.php:60
 #: openDCIM/dc_dashboard.php:38 openDCIM/dc_stats.php:49
@@ -1262,29 +1249,27 @@ msgstr ""
 #: openDCIM/infrastructure.inc.php:1648 openDCIM/zone_stats.php:143
 #: openDCIM/zone_stats.php:144 openDCIM/zone_stats.php:145
 msgid "no data"
-msgstr ""
+msgstr "Sen datos"
 
 #: openDCIM/dc_stats.php:149 openDCIM/dc_stats.php:265
 #: openDCIM/zone_stats.php:150 openDCIM/zone_stats.php:281
 msgid "Calculated Power"
-msgstr ""
+msgstr "Potencia Calculada"
 
 #: openDCIM/dc_stats.php:150 openDCIM/dc_stats.php:266
 #: openDCIM/zone_stats.php:151 openDCIM/zone_stats.php:282
-#, fuzzy
 msgid "Measured Power"
-msgstr "Potencia Medida (W)"
+msgstr "Potencia Medida"
 
 #: openDCIM/dc_stats.php:151 openDCIM/dc_stats.php:267
 #: openDCIM/zone_stats.php:152 openDCIM/zone_stats.php:283
-#, fuzzy
 msgid "Temperature"
-msgstr "Plantilla"
+msgstr "Temperatura"
 
 #: openDCIM/dc_stats.php:152 openDCIM/dc_stats.php:268
 #: openDCIM/zone_stats.php:153 openDCIM/zone_stats.php:284
 msgid "Humidity"
-msgstr ""
+msgstr "Humidade"
 
 #: openDCIM/dc_stats.php:203
 msgid "Export"
@@ -1753,7 +1738,7 @@ msgstr "Voltar ao Dispositivo Pai"
 
 #: openDCIM/device_templates.php:34
 msgid "An error has occured, template not created"
-msgstr ""
+msgstr "Ocorreu un erro, a plantilla non se creou"
 
 #: openDCIM/device_templates.php:37 openDCIM/device_templates.php:44
 #: openDCIM/device_templates.php:46 openDCIM/paths.php:154
@@ -1781,19 +1766,16 @@ msgid "No. Ports"
 msgstr "Nº de Portos"
 
 #: openDCIM/device_templates.php:239
-#, fuzzy
 msgid "Update Template"
-msgstr "Nova Plantilla"
+msgstr "Actualizar Plantilla"
 
 #: openDCIM/device_templates.php:239
-#, fuzzy
 msgid "Clone Template"
-msgstr "Nova Plantilla"
+msgstr "Replicar Plantilla"
 
 #: openDCIM/device_templates.php:239
-#, fuzzy
 msgid "Update Devices"
-msgstr "Actualización da Solicitude"
+msgstr "Actualizar Dispositivos"
 
 #: openDCIM/escalations.php:62
 msgid "Data Center Escalation Rules"
@@ -1860,30 +1842,26 @@ msgid "Heat Produced"
 msgstr "Calor Producido"
 
 #: openDCIM/infrastructure.inc.php:621 openDCIM/infrastructure.inc.php:1642
-#, fuzzy
 msgid "Worst state of cabinets"
-msgstr "Filas de Armarios"
+msgstr "Peor estado dos armarios"
 
 #: openDCIM/infrastructure.inc.php:622 openDCIM/infrastructure.inc.php:1643
-#, fuzzy
 msgid "Occupied space"
-msgstr "Ocupado"
+msgstr "Espazo ocupado"
 
 #: openDCIM/infrastructure.inc.php:623 openDCIM/infrastructure.inc.php:1644
 msgid "Calculated weight"
-msgstr ""
+msgstr "Peso Calculado"
 
 #: openDCIM/infrastructure.inc.php:624 openDCIM/infrastructure.inc.php:1645
-#, fuzzy
 msgid "Calculated power usage"
-msgstr "Informe de Potencia de Saída Simulada"
+msgstr "Potencia calculada"
 
 #: openDCIM/infrastructure.inc.php:625 openDCIM/infrastructure.inc.php:626
 #: openDCIM/infrastructure.inc.php:627 openDCIM/infrastructure.inc.php:1646
 #: openDCIM/infrastructure.inc.php:1647 openDCIM/infrastructure.inc.php:1648
-#, fuzzy
 msgid "Measured on"
-msgstr "Watios Medidos"
+msgstr "Medido o"
 
 #: openDCIM/infrastructure.inc.php:721
 msgid "Row "
@@ -1910,16 +1888,19 @@ msgid ""
 "You must configure an image for this datacenter before attempting to place a "
 "cabinet on its map."
 msgstr ""
+"Debe configurar unha imaxe para este CPD antes de intentar colocar un "
+"armario no seu plano."
 
 #: openDCIM/mapmaker.php:124
 #, php-format
 msgid "Please check that &quot;%s&quot; is actually a file."
-msgstr ""
+msgstr "Por favor comprobe que o ficheiro &quot;%s&quot; existe"
 
 #: openDCIM/mapmaker.php:125
 #, php-format
 msgid "Please check the permissions on %s and make sure it is readable."
 msgstr ""
+"Por favor, revise os permisos sobre %s e comprobe que ten permiso de lectura."
 
 #: openDCIM/mapmaker.php:138
 msgid "Selection Preview"
@@ -2329,8 +2310,8 @@ msgid ""
 "this request has been completed.\n"
 "\t\t\tPlease allow up to 2 business days for requests to be completed."
 msgstr ""
-"Recibiouse a súa solicitude de enrackado para o dispositivo etiquetado %1"
-"$s.\n"
+"Recibiouse a súa solicitude de enrackado para o dispositivo etiquetado "
+"%1$s.\n"
 "\t\t\tO Centro de Gestión de Rede examinará a solicitude e contactará con "
 "vostede se precisa máis información\n"
 "\t\t\tantes de tramitar a solicitude. Recibirá unha notificación cando a "
@@ -2481,7 +2462,7 @@ msgstr "Dispositivos de máis de 4 anos"
 
 #: openDCIM/report_asset_Excel.php:28
 msgid "Missing rights to execute the report"
-msgstr ""
+msgstr "Non ten permiso para executar este informe"
 
 #: openDCIM/report_department.php:28
 msgid "Departmental Contacts Report"
@@ -2590,9 +2571,8 @@ msgid "Data Center Asset Report"
 msgstr "Informe de Equipos do CPD"
 
 #: openDCIM/reports.php:40
-#, fuzzy
 msgid "Data Center Asset Report [Excel]"
-msgstr "Informe de Equipos do CPD"
+msgstr "Informe de Equipos do CPD [Excel]"
 
 #: openDCIM/reports.php:41
 msgid "Data Center Asset Costing Report"
@@ -2746,27 +2726,23 @@ msgstr "Só os Armarios"
 
 #: openDCIM/sensor_templates.php:54 openDCIM/sensor_templates.php:72
 msgid "openDCIM Cabinet Temperature/Humidity Sensor Templates"
-msgstr ""
+msgstr "Plantillas dos sensores de temperatura e humidade de armarios"
 
 #: openDCIM/sensor_templates.php:121
-#, fuzzy
 msgid "Temperature OID"
-msgstr "OID do Sensor de Temperatura"
+msgstr "OID da Temperatura"
 
 #: openDCIM/sensor_templates.php:125
-#, fuzzy
 msgid "Humidity OID"
-msgstr "OID do Sensor de Temperatura"
+msgstr "OID da Humidade"
 
 #: openDCIM/sensor_templates.php:129
-#, fuzzy
 msgid "Temperature Multiplier"
-msgstr "OID do Sensor de Temperatura"
+msgstr "Multiplicador da Temperatura"
 
 #: openDCIM/sensor_templates.php:141
-#, fuzzy
 msgid "Humidity Multiplier"
-msgstr "Factor Multiplicador"
+msgstr "Multiplicador da Humidade"
 
 #: openDCIM/sidebar.inc.php:6
 msgid "Search by Name:"
@@ -2865,9 +2841,8 @@ msgid "Edit CDU Templates"
 msgstr "Editar Plantillas de PDUs"
 
 #: openDCIM/sidebar.inc.php:100
-#, fuzzy
 msgid "Edit Sensor Templates"
-msgstr "Editar Plantillas de PDUs"
+msgstr "Editar Plantillas de Sensores"
 
 #: openDCIM/sidebar.inc.php:101
 msgid "Edit Configuration"
@@ -3054,7 +3029,6 @@ msgstr ""
 "\t\tsistema de inventario."
 
 #: openDCIM/zone.php:67
-#, fuzzy
 msgid "openDCIM Data Center Zones"
 msgstr "Zoas do CPD"
 
@@ -3068,25 +3042,23 @@ msgstr "Nova Zoa"
 
 #: openDCIM/zone.php:156
 msgid "Zoom"
-msgstr ""
+msgstr "Zoom"
 
 #: openDCIM/zone.php:183
-#, fuzzy
 msgid "Click and drag on the image to select an area for this zone"
-msgstr "Pulse e desprace pola imaxen para seleccionar unha área para o armario"
+msgstr "Pulse e desprace pola imaxen para seleccionar unha área para esta zoa"
 
 #: openDCIM/zone_stats.php:217
-#, fuzzy
 msgid "Zone Statistics"
-msgstr "Estatísticas do CPD"
+msgstr "Estatísticas da Zoa"
 
 #: openDCIM/zone_stats.php:260
 msgid "Zone Size (approximate)"
-msgstr ""
+msgstr "Tamaño da Zoa (aproximado)"
 
 #: openDCIM/zone_stats.php:264
 msgid "approximate"
-msgstr ""
+msgstr "aproximado"
 
 #~ msgid "Clone"
 #~ msgstr "Clonar"
