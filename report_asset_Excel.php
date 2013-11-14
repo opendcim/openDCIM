@@ -261,7 +261,7 @@ class ReportStats
          * object|null $_fp file handle to the open reporting file or null
          */
         if (self::$_instance === null) {
-            self::$_instance =& new ReportStats();
+            self::$_instance = new ReportStats();
         }
         return self::$_instance;
     }
@@ -1206,7 +1206,7 @@ function computeSheetBodyDCInventory($DProps)
                 }
             }
         }
-        assignStatsVal(&$Stats, $dc, $dcStats);
+        assignStatsVal($Stats, $dc, $dcStats);
     }
 
     return array($Stats, $invData, $invCab, $limitedUser);
@@ -1368,7 +1368,7 @@ function writeDCStatsContent($wsProps, $worksheet, &$DCStats, $level, &$row,
     foreach ($DCStats as $StatKey => $val) {
         if (is_array($val)) {
             writeDCStatsContent($wsProps, $worksheet, $DCStats[$StatKey],
-                $level, &$row, $StatKey);
+                $level, $row, $StatKey);
         }
     }
     if ($level == 1) {
