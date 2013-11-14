@@ -152,22 +152,22 @@
 		
 		switch($template->ProcessingProfile){
 			case "SingleOIDAmperes":
-				$amps=intval($result1)/intval($template->Multiplier);
+				$amps=intval($result1)/floatval($template->Multiplier);
 				$watts=$amps*intval($template->Voltage);
 				break;
 			case "Combine3OIDAmperes":
-				$amps=(intval($result1)+intval($result2)+intval($result3))/intval($template->Multiplier);
+				$amps=(intval($result1)+intval($result2)+intval($result3))/floatval($template->Multiplier);
 				$watts=$amps*intval($template->Voltage);
 				break;
 			case "Convert3PhAmperes":
-				$amps=(intval($result1)+intval($result2)+intval($result3))/intval($template->Multiplier)/3;
+				$amps=(intval($result1)+intval($result2)+intval($result3))/floatval($template->Multiplier)/3;
 				$watts=$amps*1.732*intval($template->Voltage);
 				break;
 			case "Combine3OIDWatts":
-				$watts=(intval($result1)+intval($result2)+intval($result3))/intval($template->Multiplier);
+				$watts=(intval($result1)+intval($result2)+intval($result3))/floatval($template->Multiplier);
 				break;
 			default:
-				$watts=intval($result1)/intval($template->Multiplier);
+				$watts=intval($result1)/floatval($template->Multiplier);
 				break;
 		}
 		
