@@ -656,7 +656,7 @@ class PowerDistribution {
 				$pollValue1=intval($pollValue1);
 				$pollValue2=@intval($pollValue2);
 				$pollValue3=@intval($pollValue3);
-				$row["Multiplier"]=intval($row["Multiplier"]);
+				$row["Multiplier"]=floatval($row["Multiplier"]);
 				$row["Voltage"]=intval($row["Voltage"]);
 
 				switch ( $row["ProcessingProfile"] ) {
