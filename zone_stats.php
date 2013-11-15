@@ -60,7 +60,8 @@ $(document).ready(function() {
 	}
 	//aproximate proportion between zone/DC 
 	$prop_zone_dc=($zone->MapX2-$zone->MapX1)*($zone->MapY2-$zone->MapY1)/$width/$height;
-	
+	$prop_zone_dc=($prop_zone_dc>0)?$prop_zone_dc:1;
+
 		if(isset($_POST['tooltip'])){
 		
 		$sql="SELECT C.*, T.Temp, T.Humidity, P.RealPower, T.LastRead, PLR.RPLastRead 
