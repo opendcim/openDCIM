@@ -142,32 +142,49 @@ $("#sidebar .nav a").each(function(){
 	}
 });
 function resize(){
-	// page width is calcuated different between ie, chrome, and ff
-	$('#header').width(Math.floor($(window).outerWidth()-(16*3))); //16px = 1em per side padding
-	var widesttab=0;
-	// make all the tabs on the config page the same width
-	$('#configtabs > ul ~ div').each(function(){
-		widesttab=($(this).width()>widesttab)?$(this).width():widesttab;
-	});
-	$('#configtabs > ul ~ div').each(function(){
-		$(this).width(widesttab);
-	});
-	var pnw=$('#pandn').outerWidth(),hw=$('#header').outerWidth(),maindiv=$('div.main').outerWidth(),
-		sbw=$('#sidebar').outerWidth(),width,mw=$('div.left').outerWidth()+$('div.right').outerWidth(),
-		main;
-	widesttab+=58;
-	// find widths
-	maindiv=(maindiv>mw)?maindiv:mw;
-	main=(maindiv>pnw)?maindiv:pnw; // find largest possible value for maindiv
-	main=(maindiv>widesttab)?maindiv:widesttab; // find largest possible value for maindiv
-	width=((sbw+main)>hw)?sbw+main:hw; // which is bigger sidebar + main or the header
+	// This function will run each 500ms for 2.5s to account for slow loading content
+	var count=0;
+	var longload=setInterval(function(){
+		subresize();
+		if(count>4){
+			clearInterval(longload);
+		}
+		++count;
+	},500);
 
-	// The math just isn't adding up across browsers and FUCK IE
-	if((maindiv+sbw)<width){ // page is larger than content expand main to fit
-		$('div.main').width(width-sbw-16); 
-	}else{ // page is smaller than content expand the page to fit
-		$('#header').width(width+4);
-		$('div.page').width(width+6);
+	function subresize(){
+		// page width is calcuated different between ie, chrome, and ff
+		$('#header').width(Math.floor($(window).outerWidth()-(16*3))); //16px = 1em per side padding
+		var widesttab=0;
+		// make all the tabs on the config page the same width
+		$('#configtabs > ul ~ div').each(function(){
+			widesttab=($(this).width()>widesttab)?$(this).width():widesttab;
+		});
+		$('#configtabs > ul ~ div').each(function(){
+			$(this).width(widesttab);
+		});
+		var pnw=$('#pandn').outerWidth(),hw=$('#header').outerWidth(),maindiv=$('div.main').outerWidth(),
+			sbw=$('#sidebar').outerWidth(),width,mw=$('div.left').outerWidth()+$('div.right').outerWidth(),
+			main;
+		widesttab+=58;
+		// find widths
+		maindiv=(maindiv>mw)?maindiv:mw;
+		main=(maindiv>pnw)?maindiv:pnw; // find largest possible value for maindiv
+		main=(maindiv>widesttab)?maindiv:widesttab; // find largest possible value for maindiv
+		width=((sbw+main)>hw)?sbw+main:hw; // which is bigger sidebar + main or the header
+
+		// The math just isn't adding up across browsers and FUCK IE
+		if((maindiv+sbw)<width){ // page is larger than content expand main to fit
+			$('div.main').width(width-sbw-16); 
+		}else{ // page is smaller than content expand the page to fit
+			$('#header').width(width+4);
+			$('div.page').width(width+6);
+		}
+
+		// If the function MoveButtons is defined run it
+		if(typeof movebuttons=='function'){
+			movebuttons();
+		}
 	}
 }
 $(document).ready(function(){
@@ -176,7 +193,7 @@ $(document).ready(function(){
 	$(window).resize(function(){
 		if(this.resizeTO){ clearTimeout(this.resizeTO);}
 		this.resizeTO=setTimeout(function(){
-			resize();resize();
+			resize();
 		}, 500);
 	});
 	$('#header').append($('.langselect'));
