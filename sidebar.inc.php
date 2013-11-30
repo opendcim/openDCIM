@@ -148,6 +148,7 @@ function resize(){
 		subresize();
 		if(count>4){
 			clearInterval(longload);
+			window.resized=true;
 		}
 		++count;
 	},500);

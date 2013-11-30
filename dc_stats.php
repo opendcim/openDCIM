@@ -279,6 +279,7 @@ echo $select.'</div></div>'.$dc->MakeImageMap();
 </div><!-- END div.page -->
 <script type="text/javascript">
 	$(document).ready(function() {
+	resize();
 		var firstcabinet=$('#dc<?php echo $dc->DataCenterID;?> > ul > li:first-child').attr('id');
 		// Don't attempt to open the datacenter tree until it is loaded
 		function opentree(){
@@ -291,8 +292,14 @@ echo $select.'</div></div>'.$dc->MakeImageMap();
 			}
 		}
 
-  <?php print $dc->DrawCanvas();
-		print $dc->MakeZoneJS();?>
+		  <?php print $dc->DrawCanvas();?>
+		// Don't attempt anything with the canvas position until the resize of the screen is complete
+		var ready=setInterval(function(){
+			if(window.resized){
+			<?php print $dc->MakeZoneJS();?>
+				clearInterval(ready);
+			}
+		},500);
 
 		$('map[name="datacenter"] area[name^="cab"]').mouseenter(function(){
 			var pos=$('.canvas').offset();
