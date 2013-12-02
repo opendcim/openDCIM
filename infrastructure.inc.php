@@ -1296,7 +1296,7 @@ class Zone {
 	function UpdateZone(){
 		$this->MakeSafe();
 			
-		//update cabinets in this zone
+		//update all cabinets in this zone
 		$sql="UPDATE fac_Cabinet SET DataCenterID=$this->DataCenterID WHERE 
 			ZoneID=$this->ZoneID;";
 		if(!$this->query($sql)){
@@ -1754,7 +1754,8 @@ class CabRow {
 	function UpdateCabRow(){
 		$this->MakeSafe();
 
-		$sql="UPDATE fac_Cabinet SET ZoneID=$this->ZoneID WHERE CabRowID=$this->CabRowID;";
+		//update all cabinets in this cabrow
+		$sql="UPDATE fac_Cabinet SET ZoneID=$this->ZoneID, DataCenterID=(SELECT DataCenterID FROM fac_Zone WHERE ZoneID=$this->ZoneID) WHERE CabRowID=$this->CabRowID;";
 		if(!$this->query($sql)){
 			return false;
 		}
