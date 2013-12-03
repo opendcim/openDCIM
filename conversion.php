@@ -95,7 +95,7 @@
 	// All the ports should be in the array now, use the prepared statement to load them all
 	$populate = $dbh->prepare('INSERT INTO fac_Ports VALUES ( :deviceid, :portnumber, :label, 0, 0, "", :cdeviceid, :cport, :notes )
 		ON DUPLICATE KEY UPDATE Label=:label, ConnectedDeviceID=:cdeviceid, ConnectedPort=:cport, Notes=:notes' );
-
+print_r($ports);
 	foreach($ports as $deviceid => $row){
 		printf( "Saving %d ports for device %d.<br>\n", sizeof( $row ), $deviceid );
 		foreach($row as $portnum => $port){
@@ -104,8 +104,8 @@
 			$cport=(isset($port['Connected Port']))?$port['Connected Port']:null;
 			$notes=(isset($port['Notes']))?$port['Notes']:'';
 			
-			$populate->execute( array( ":deviceid" => $deviceid, ":portnumber" => $portnum, ":label" => $label,
-				":cdeviceid" => $cdevice, ":cport" => $cport, ":notes" => $notes ) );
+//			$populate->execute( array( ":deviceid" => $deviceid, ":portnumber" => $portnum, ":label" => $label,
+//				":cdeviceid" => $cdevice, ":cport" => $cport, ":notes" => $notes ) );
 		}
 	}
 	
