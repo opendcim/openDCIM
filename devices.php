@@ -1386,7 +1386,7 @@ print "		var dialog=$('<div>').prop('title','".__("Verify Delete Device")."').ht
 							cdeviceport.html('<a href="paths.php?deviceid='+data.ConnectedDeviceID+'&portnumber='+data.ConnectedPort+'">'+data.ConnectedPortLabel+'</a>').data('default',data.ConnectedPort);
 							cnotes.html(data.Notes).data('default',data.Notes);
 							porttype.html(data.MediaName).data('default',data.MediaID);
-							portcolor.html(data.ColorName+'<div class="colorbox" style="background-color:'+data.ColorName+';" </div>').data('default',data.ColorID);
+							portcolor.html(data.ColorName).data('default',data.ColorID);
 							$('#controls'+portnum).remove();
 							row.children('div ~ div').removeAttr('style');
 							row.data('edit',false);
@@ -2068,7 +2068,7 @@ echo '	<div class="table">
 					<div id=\"n$i\" data-default=\"$port->Notes\">$port->Notes</div>";
 			if($dev->DeviceType=='Switch'){print "\t\t\t\t<div id=\"st$i\"><span class=\"ui-icon status {$linkList[$i]}\"></span></div>";}
 			print "\t\t\t\t<div id=\"mt$i\" data-default=$port->MediaID>$mt</div>
-					<div id=\"cc$i\" data-default=$port->ColorID>$cc<div class=\"colorbox\" style=\"background-color:$cc;\" ></div></div>
+					<div id=\"cc$i\" data-default=$port->ColorID>$cc</div>
 				</div>\n";
 		}
 		echo "			</div><!-- END div.table -->\n		  </div>\n		</div>";
@@ -2184,7 +2184,7 @@ function redrawports(portsarr){
 		$('#spn'+p.PortNumber).text(p.Label);
 		$('#n'+p.PortNumber).text(p.Notes);
 		$('#mt'+p.PortNumber).text((p.MediaID>0)?portsarr.mt[p.MediaID].MediaType:'').data('default',p.MediaID);
-        $('#cc'+p.PortNumber).text((p.ColorID>0)?portsarr.cc[p.ColorID].Name:'').data('default',p.ColorID).append('<div class="colorbox" style="background-color: '+((p.ColorID>0)?portsarr.cc[p.ColorID].Name:'')+'"');
+		$('#cc'+p.PortNumber).text((p.ColorID>0)?portsarr.cc[p.ColorID].Name:'').data('default',p.ColorID);
 	});
 	movebuttons();
 }

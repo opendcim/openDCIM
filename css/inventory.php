@@ -542,15 +542,6 @@ table#cabprop span.text-label {
 .switch .down { background-position: left; }
 .switch .up { background-position: right; }
 
-.colorbox  {
-    float: right;
-    width: 20px;
-    height: 0.9em;
-    margin: 0px;
-    padding: 0px;
-    border-style: none;
-    border-color: rgba(0,0,0,.2);
-}
 .chassis .table input{text-align:center;}
 .chassis .table > div > div{text-align:center;}
 .chassis .table + .table > div > div{text-align:left;}
