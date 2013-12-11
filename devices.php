@@ -1857,7 +1857,7 @@ echo '		</div>
 
 			foreach($templateList as $tempRow){
 				// $devarray is helping to remove invalid device templates from child devices
-				if(in_array($tempRow->DeviceType, $devarray)){
+				if(in_array($tempRow->DeviceType, array_keys($devarray))){
 					if($dev->TemplateID==$tempRow->TemplateID){$selected=" selected";}else{$selected="";}
 					$mfg->ManufacturerID=$tempRow->ManufacturerID;
 					$mfg->GetManufacturerByID();
