@@ -645,7 +645,6 @@ class SensorTemplate {
 	
 	function CreateTemplate() {
 		global $dbh;
-		global $dbh;
 		
 		$sql = $dbh->prepare( "insert into fac_SensorTemplate values ( 0, :ManufacturerID, :Name, :SNMPVersion, :TemperatureOID, :HumidityOID, :TempMultiplier, :HumidityMultiplier )" );
 		
@@ -659,7 +658,7 @@ class SensorTemplate {
 		
 		$sql->execute( $args );
 		
-		$this->TemplateID = $sql->lastInsertId();
+		$this->TemplateID = $dbh->lastInsertId();
 	}
 	
 	function UpdateTemplate() {
