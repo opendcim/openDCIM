@@ -645,7 +645,6 @@ class SensorTemplate {
 	
 	function CreateTemplate() {
 		global $dbh;
-		global $dbh;
 		
 		$sql = $dbh->prepare( "insert into fac_SensorTemplate values ( 0, :ManufacturerID, :Name, :SNMPVersion, :TemperatureOID, :HumidityOID, :TempMultiplier, :HumidityMultiplier )" );
 		
@@ -659,7 +658,7 @@ class SensorTemplate {
 		
 		$sql->execute( $args );
 		
-		$this->TemplateID = $sql->lastInsertId();
+		$this->TemplateID = $dbh->lastInsertId();
 	}
 	
 	function UpdateTemplate() {
@@ -1523,6 +1522,20 @@ class Device {
 		}
 		
 		return $parentList;
+	}
+	
+	function WhosYourDaddy() {
+		global $dbh;
+	
+		$dev = new Device();
+		
+		if ( $this->ParentDevice == 0 ) {
+			return $dev;
+		} else {
+			$dev->DeviceID = $this->ParentDevice;
+			$dev->GetDevice();
+			return $dev;
+		}
 	}
 
 	function ViewDevicesByCabinet($includechildren=false){
@@ -2410,25 +2423,45 @@ class DevicePorts {
 				$rights=null;
 			}
 
+			// Gets a little complicated if you are on a blade device and looking for other patch candidates
+			// But putting this logic into the SQL is extremely processor intensive, so do the conditional on the outside
+			// and only take the processing hit when there's a child device as the source
+			if ( $dev->ParentDevice == 0 ) {
+				$sql="SELECT DISTINCT a.* from fac_Device a, fac_Cabinet b where 
+				a.DeviceID!=$dev->DeviceID AND a.Ports>0 and ((Cabinet=CabinetID and Cabinet=$dev->Cabinet) or 
+				(Cabinet=0 and ParentDevice in (select DeviceID from fac_Device where Cabinet=$dev->Cabinet and ChassisSlots>0)))
+				$rights$pp GROUP BY DeviceID ORDER BY Position DESC, Label ASC;";
+			} else {
+				$parent = $dev->WhosYourDaddy();
+				
+				$sql="SELECT DISTINCT a.* from fac_Device a, fac_Cabinet b where 
+				a.DeviceID!=$dev->DeviceID AND a.Ports>0 and ((Cabinet=CabinetID and Cabinet=$parent->Cabinet) or 
+				(Cabinet=0 and ParentDevice in (select DeviceID from fac_Device where Cabinet=$parent->Cabinet and ChassisSlots>0)))
+				$rights$pp GROUP BY DeviceID ORDER BY Position DESC, Label ASC;";
+			}
+			
 			// Run two queries - first, devices in the same cabinet as the device patching from
-			$sql="SELECT DISTINCT a.*, AssignedTo FROM fac_Device a, fac_Cabinet b, 
-				fac_Ports c WHERE Ports>0 AND (Cabinet=CabinetID OR a.ParentDevice>0) 
-				AND CASE WHEN a.ParentDevice>0 THEN (SELECT Cabinet FROM fac_Device WHERE 
-				DeviceID=a.ParentDevice) ELSE a.Cabinet END=$dev->Cabinet AND 
-				a.DeviceID!=$dev->DeviceID AND a.DeviceID=c.DeviceID $rights$mediaenforce$pp 
-				GROUP BY DeviceID ORDER BY Position DESC, Label ASC;";
+
 			foreach($dbh->query($sql) as $row){
 				// false to skip rights check we filtered using sql above
 				$tmpDev=Device::RowToObject($row,false);
 				$candidates[]=array("DeviceID"=>$tmpDev->DeviceID, "Label"=>$tmpDev->Label, "CabinetID"=>$tmpDev->Cabinet);
 			}
 			// Then run the same query, but for the rest of the devices in the database
-			$sql="SELECT DISTINCT a.*, AssignedTo FROM fac_Device a, fac_Cabinet b, 
-				fac_Ports c WHERE Ports>0 AND (Cabinet=CabinetID OR a.ParentDevice>0) 
-				AND CASE WHEN a.ParentDevice>0 THEN (SELECT Cabinet FROM fac_Device WHERE 
-				DeviceID=a.ParentDevice) ELSE a.Cabinet END!=$dev->Cabinet AND 
-				a.DeviceID!=$dev->DeviceID AND a.DeviceID=c.DeviceID $rights$mediaenforce$pp 
-				GROUP BY DeviceID ORDER BY Position DESC, Label ASC;";
+			if ( $dev->ParentDevice == 0 ) {
+				$sql="SELECT DISTINCT a.* from fac_Device a, fac_Cabinet b where 
+				a.DeviceID!=$dev->DeviceID AND a.Ports>0 and ((Cabinet=CabinetID and Cabinet!=$dev->Cabinet) or 
+				(Cabinet=0 and ParentDevice in (select DeviceID from fac_Device where Cabinet!=$dev->Cabinet and ChassisSlots>0)))
+				$rights$pp GROUP BY DeviceID ORDER BY Label ASC;";
+			} else {
+				$sql="SELECT DISTINCT a.* from fac_Device a, fac_Cabinet b where 
+				a.DeviceID!=$dev->DeviceID AND a.Ports>0 and ((Cabinet=CabinetID and Cabinet!=$parent->Cabinet) or 
+				(Cabinet=0 and ParentDevice in (select DeviceID from fac_Device where Cabinet!=$parent->Cabinet and ChassisSlots>0)))
+				$rights$pp GROUP BY DeviceID ORDER BY Label ASC;";
+			}
+			
+			// error_log( strtr( $sql, array( "\n"=>"", "\t"=>"" )) );
+			
 			foreach($dbh->query($sql) as $row){
 				// false to skip rights check we filtered using sql above
 				$tmpDev=Device::RowToObject($row,false);
