@@ -676,6 +676,7 @@ function swaplayout(){
 		(s.innerHTML==sheet.innerHTML)?l():p();
 	}
 }
+
 $(document).ready(function() {
 	var isMobile = {
 		Android: function() {
@@ -1084,28 +1085,6 @@ print "		var dialog=$('<div>').prop('title','".__("Verify Delete Device")."').ht
 			});
 		});
 
-		// Call this function to move the mass edit buttons around after redrawing the ports, etc.
-		// Use anytime something could have changed the positioning around
-		function movebuttons(){
-			var pos=$('#mt').offset();
-			var ccpos=$('#cc').offset();
-			var spnpos=$('#spn').offset();
-			setmediatype.offset({top: pos.top, left: pos.left+$('#mt').outerWidth()-setmediatype.width()});
-			setcolorcode.offset({top: ccpos.top, left: ccpos.left+$('#cc').outerWidth()-setcolorcode.width()});
-			generateportnames.offset({top: spnpos.top, left: spnpos.left+$('#spn').outerWidth()-generateportnames.width()});
-		}
-
-		// this will redraw the current ports based on the information given back from a json string
-		function redrawports(portsarr){
-			$.each(portsarr.ports, function(key,p){
-				$('#spn'+p.PortNumber).text(p.Label);
-				$('#n'+p.PortNumber).text(p.Notes);
-				$('#mt'+p.PortNumber).text((p.MediaID>0)?portsarr.mt[p.MediaID].MediaType:'').data('default',p.MediaID);
-				$('#cc'+p.PortNumber).text((p.ColorID>0)?portsarr.cc[p.ColorID].Name:'').data('default',p.ColorID);
-			});
-			movebuttons();
-		}
-
 		// hide all the mass edit functions when an individual row edit has been initiated.
 		function hidemassfunctions(hide){
 			if(hide){
@@ -1465,7 +1444,6 @@ print "		var dialog=$('<div>').prop('title','".__("Verify Delete Device")."').ht
 	}
 
 	// get list of other patch panels
-	rearedit=$('<select>').append($('<option>'));
 	rearedit.append($('<option>').val('clear').text('Clear Connections'));
 	rearedit.change(function(){
 		var dialog=$('<div />', {id: 'modal', title: 'Override all connections?'}).html('<div id="modaltext"></div><br><div id="modalstatus" class="warning"><h2>WARNING: This will detach any existing connections on the other device as well</h2>Do you want to override existing connections?</div>');
@@ -1680,11 +1658,8 @@ print "		var dialog=$('<div>').prop('title','".__("Verify Delete Device")."').ht
 					$.post('', {pn: $(this).text(), swdev: $('#deviceid').val()}, function(data){
 						frontdev.html(devicelist(data).val(frontdev.data('default'))).children().change();
 						frontnotes.html($('<input>').val(frontnotes.text()));
-					}).then(resize()).then(resize());
+					}).then(resize());
 					// added for safari
-					setTimeout(function() {
-						resize();
-					},200);
 					row.children('div:not([id^=pp])').css({'padding': 0, 'border': 0});
 				}
 			});
@@ -1882,7 +1857,7 @@ echo '		</div>
 
 			foreach($templateList as $tempRow){
 				// $devarray is helping to remove invalid device templates from child devices
-				if(in_array($tempRow->DeviceType, $devarray)){
+				if(in_array($tempRow->DeviceType, array_keys($devarray))){
 					if($dev->TemplateID==$tempRow->TemplateID){$selected=" selected";}else{$selected="";}
 					$mfg->ManufacturerID=$tempRow->ManufacturerID;
 					$mfg->GetManufacturerByID();
@@ -2189,6 +2164,31 @@ echo '	<div class="table">
 	}
 ?>
 
+// Call this function to move the mass edit buttons around after redrawing the ports, etc.
+// Use anytime something could have changed the positioning around
+	rearedit=$('<select>').append($('<option>'));
+function movebuttons(){
+	window.pos=$('#mt').offset();
+	window.ccpos=$('#cc').offset();
+	window.spnpos=$('#spn').offset();
+	window.rearpos=$('#rear').offset();
+	if(typeof pos!='undefined' && typeof setmediatype!='undefined'){setmediatype.offset({top: pos.top, left: pos.left+$('#mt').outerWidth()-setmediatype.width()});}
+	if(typeof ccpos!='undefined' && typeof setcolorcode!='undefined'){setcolorcode.offset({top: ccpos.top, left: ccpos.left+$('#cc').outerWidth()-setcolorcode.width()});}
+	if(typeof spnpos!='undefined' && typeof generateportnames!='undefined'){generateportnames.offset({top: spnpos.top, left: spnpos.left+$('#spn').outerWidth()-generateportnames.width()});}
+	if(typeof rearpos!='undefined' && typeof rearedit!='undefined'){rearedit.offset({top: rearpos.top, left: rearpos.left+$('#rear').outerWidth()-rearedit.width()});}
+}
+
+// this will redraw the current ports based on the information given back from a json string
+function redrawports(portsarr){
+	$.each(portsarr.ports, function(key,p){
+		$('#spn'+p.PortNumber).text(p.Label);
+		$('#n'+p.PortNumber).text(p.Notes);
+		$('#mt'+p.PortNumber).text((p.MediaID>0)?portsarr.mt[p.MediaID].MediaType:'').data('default',p.MediaID);
+		$('#cc'+p.PortNumber).text((p.ColorID>0)?portsarr.cc[p.ColorID].Name:'').data('default',p.ColorID);
+	});
+	movebuttons();
+}
+
 	$(document).ready(function() {
 		// Don't attempt to open the datacenter tree until it is loaded
 		function opentree(){
@@ -2218,76 +2218,54 @@ echo '	<div class="table">
 			}).appendTo('#pandn .caption');
 		}
 
-<?php if($dev->DeviceType!='Patch Panel'){ ?>
-
-		// Call this function to move the mass edit buttons around after redrawing the ports, etc.
-		// Use anytime something could have changed the positioning around
-		function movebuttons(){
-			var pos=$('#mt').offset();
-			var ccpos=$('#cc').offset();
-			var spnpos=$('#spn').offset();
-			setmediatype.offset({top: pos.top, left: pos.left+$('#mt').outerWidth()-setmediatype.width()});
-			setcolorcode.offset({top: ccpos.top, left: ccpos.left+$('#cc').outerWidth()-setcolorcode.width()});
-			generateportnames.offset({top: spnpos.top, left: spnpos.left+$('#spn').outerWidth()-generateportnames.width()});
+		// the mass edit fuctions have to be done last because the page is resized when the sidebar loads and it throws the positioning off
+		if(typeof setmediatype!='undefined'){
+			$.get('',{mt:''}).done(function(data){
+				$.each(data, function(key,mt){
+					var option=$("<option>",({'value':mt.MediaID})).append(mt.MediaType);
+					setmediatype.append(option).data(mt.MediaID,mt.ColorID);
+				});
+			}).then(function(){
+				resize();
+			});
 		}
 
-		// the mass edit fuctions have to be done last because the page is resized when the sidebar loads and it throws the positioning off
-		$.get('',{mt:''}).done(function(data){
-			$.each(data, function(key,mt){
-				var option=$("<option>",({'value':mt.MediaID})).append(mt.MediaType);
-				setmediatype.append(option).data(mt.MediaID,mt.ColorID);
+<?php if($dev->DeviceType!='Patch Panel'){ ?>
+		if(typeof setcolorcode!='undefined'){
+			$.get('',{cc:''}).done(function(data){
+				$.each(data, function(key,cc){
+					var option=$("<option>",({'value':cc.ColorID})).append(cc.Name);
+					setcolorcode.append(option).data(cc.ColorID,cc.Name);
+				});
+			}).then(function(){
+				resize();
 			});
-		}).then(function(){
-			movebuttons();
-		});
-
-		$.get('',{cc:''}).done(function(data){
-			$.each(data, function(key,cc){
-				var option=$("<option>",({'value':cc.ColorID})).append(cc.Name);
-				setcolorcode.append(option).data(cc.ColorID,cc.Name);
+		}
+		if(typeof generateportnames!='undefined'){
+			$.get('',{spn:''}).done(function(data){
+				$.each(data, function(key,spn){
+					var option=$("<option>",({'value':spn.Pattern})).append(spn.Pattern.replace('(1)','x'));
+					generateportnames.append(option);
+				});
+			}).then(function(){
+				resize();
 			});
-		}).then(function(){
-			movebuttons();
-		});
-
-		$.get('',{spn:''}).done(function(data){
-			$.each(data, function(key,spn){
-				var option=$("<option>",({'value':spn.Pattern})).append(spn.Pattern.replace('(1)','x'));
-				generateportnames.append(option);
-			});
-		}).then(function(){
-			movebuttons();
-		});
+		}
 
 <?php }else{ ?>
-		function movebuttons(){
-			var pos=$('#mt').offset();
-			setmediatype.offset({top: pos.top, left: pos.left+$('#mt').outerWidth()-setmediatype.width()});
-			var rearpos=$('#rear').offset();
-			rearedit.offset({top: rearpos.top, left: rearpos.left+$('#rear').outerWidth()-rearedit.width()});
+		if(typeof rearedit!='undefined'){
+			$.post('', {swdev: $('#deviceid').val(), rear: ''}, function(data){
+				$.each(data, function(key,pp){
+					var option=$("<option>").val(pp.DeviceID).append(pp.Label);
+					rearedit.append(option);
+					var rack=$('#datacenters a[href$="cabinetid='+pp.CabinetID+'"]');
+					option.prepend('['+rack.text()+'] ');
+				});
+				$('#rear').append(rearedit);
+			}).then(function(){
+				resize();
+			});
 		}
-
-		// the mass edit fuctions have to be done last because the page is resized when the sidebar loads and it throws the positioning off
-		$.get('',{mt:''}).done(function(data){
-			$.each(data, function(key,mt){
-				var option=$("<option>",({'value':mt.MediaID})).append(mt.MediaType);
-				setmediatype.append(option).data(mt.MediaID,mt.ColorID);
-			});
-		}).then(function(){
-			movebuttons();
-		});
-
-		$.post('', {swdev: $('#deviceid').val(), rear: ''}, function(data){
-			$.each(data, function(key,pp){
-				var option=$("<option>").val(pp.DeviceID).append(pp.Label);
-				rearedit.append(option);
-				var rack=$('#datacenters a[href$="cabinetid='+pp.CabinetID+'"]');
-				option.prepend('['+rack.text()+'] ');
-			});
-			$('#rear').append(rearedit);
-		}).then(function(){
-			movebuttons();
-		});
 <?php } ?>
 	});
 </script>

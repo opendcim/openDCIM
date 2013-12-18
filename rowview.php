@@ -59,7 +59,7 @@ function get_cabinet_owner_color($cabinet, &$deptswithcolor) {
 	$cabinets=$cab->GetCabinetByRow();
 
 //start loop to parse all cabinets in the row
-foreach($cabinets as $i => $cabinet){
+foreach($cabinets as $index => $cabinet){
 		$dev->Cabinet=$cabinet->CabinetID;
 		$devList=$dev->ViewDevicesByCabinet();
 
@@ -75,7 +75,7 @@ foreach($cabinets as $i => $cabinet){
 
 		$body.="<div class=\"cabinet\">
 	<table>
-		<tr><th id=\"cabid\" data-cabinetid=$cabinet->CabinetID colspan=2 $cab_color ><a href=\"cabnavigator.php?cabinetid=$cabinet->CabinetID\">".__("Cabinet")." $cabinet->Location</a></th></tr>
+		<tr><th id=\"cabid$cabinet->CabinetID\" data-cabinetid=$cabinet->CabinetID colspan=2 $cab_color ><a href=\"cabnavigator.php?cabinetid=$cabinet->CabinetID\">".__("Cabinet")." $cabinet->Location</a></th></tr>
 		<tr><td>".__("Pos")."</td><td>".__("Device")."</td></tr>\n";
 
 		$heighterr="";
@@ -203,6 +203,7 @@ echo $head,'  <script type="text/javascript" src="scripts/jquery.min.js"></scrip
 		function FlipItGood(){
 			var container=$("#centeriehack");
 			container.children().each(function(i,cab){container.prepend(cab)});
+			resize();
 		}
 		$("<button>",{id: "reverse", type: "button"}).text("Reverse Cabinet Order").click(function(){
 			$.post("",{FlipDirection: "", row: '.$cabrow->CabRowID.'}).done(FlipItGood);
@@ -268,7 +269,7 @@ if($cabrow->CabOrder=="DESC"){echo '		FlipItGood();';}
 					resize();
 				},500);
 			}else{
-				expandToItem('datacenters','cab<?php echo $cab->CabinetID;?>');
+				expandToItem('datacenters','cab<?php echo $cabinet->CabinetID;?>');
 				resize();
 			}
 		}

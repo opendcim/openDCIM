@@ -22,7 +22,7 @@
 		$template->SNMPVersion = $_REQUEST['snmpversion'];
 		$template->TemperatureOID = $_REQUEST['temperatureoid'];
 		$template->HumidityOID = $_REQUEST['humidityoid'];
-		$template->TempMultiplier = $_REQUEST['multiplier'];
+		$template->TempMultiplier = $_REQUEST['tempmultiplier'];
 		$template->HumidityMultiplier = $_REQUEST['humiditymultiplier'];
 
 		if ( $_REQUEST['action']=='Create' ) {
@@ -129,7 +129,7 @@ echo '</select>
    <div><label for="tempmultiplier">',__("Temperature Multiplier"),'</label></div>
    <div><select name="tempmultiplier" id="tempmultiplier">';
 
-	foreach ( array( "0.1", "1", "10", "100" ) as $unit ) {
+	foreach ( array( "0.01", "0.1", "1", "10", "100" ) as $unit ) {
 		$selected = ($unit==$template->TempMultiplier)?' selected' : '';
 		print "\t\t<option value=\"$unit\"$selected>$unit</option>\n";
 	}
@@ -141,7 +141,7 @@ echo '   </select>
    <div><label for="humiditymultiplier">',__("Humidity Multiplier"),'</label></div>
    <div><select name="humiditymultiplier" id="humiditymultiplier">';
 
-	foreach ( array( "0.1", "1", "10", "100" ) as $unit ) {
+	foreach ( array( "0.01", "0.1", "1", "10", "100" ) as $unit ) {
 		$selected = ($unit==$template->HumidityMultiplier)?' selected' : '';
 		print "\t\t<option value=\"$unit\"$selected>$unit</option>\n";
 	}

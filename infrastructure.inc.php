@@ -384,7 +384,7 @@ class DataCenter {
 						}else{
 							$else="";
 						}
-						$js.=$else."if((e.pageX>(pos.left+$zone->MapX1) && e.pageX<(pos.left+$zone->MapX2)) && (e.pageY>(pos.top+$zone->MapY1) && e.pageY<(pos.top+$zone->MapY2))){
+						$js.=$else."if((e.pageX>(cpos.left+$zone->MapX1) && e.pageX<(cpos.left+$zone->MapX2)) && (e.pageY>(cpos.top+$zone->MapY1) && e.pageY<(cpos.top+$zone->MapY2))){
 				$('#maptitle .nav select').trigger('change');
 				HilightZone('zone$zone->ZoneID');
 				redraw=true;\n";
@@ -403,7 +403,7 @@ class DataCenter {
 		}\n";
 					$js="$hilight
 		var redraw=false;
-		var pos=$('#mapCanvas').offset();
+		var cpos=$('#mapCanvas').offset();
 		$('.canvas').mousemove(function(e){
 			$js\t\t\t}else if(redraw){
 				$('#maptitle .nav select').trigger('change');
@@ -1296,7 +1296,7 @@ class Zone {
 	function UpdateZone(){
 		$this->MakeSafe();
 			
-		//update cabinets in this zone
+		//update all cabinets in this zone
 		$sql="UPDATE fac_Cabinet SET DataCenterID=$this->DataCenterID WHERE 
 			ZoneID=$this->ZoneID;";
 		if(!$this->query($sql)){
@@ -1754,7 +1754,8 @@ class CabRow {
 	function UpdateCabRow(){
 		$this->MakeSafe();
 
-		$sql="UPDATE fac_Cabinet SET ZoneID=$this->ZoneID WHERE CabRowID=$this->CabRowID;";
+		//update all cabinets in this cabrow
+		$sql="UPDATE fac_Cabinet SET ZoneID=$this->ZoneID, DataCenterID=(SELECT DataCenterID FROM fac_Zone WHERE ZoneID=$this->ZoneID) WHERE CabRowID=$this->CabRowID;";
 		if(!$this->query($sql)){
 			return false;
 		}
