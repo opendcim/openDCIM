@@ -144,6 +144,7 @@ $("#sidebar .nav a").each(function(){
 function resize(){
 	// This function will run each 500ms for 2.5s to account for slow loading content
 	var count=0;
+	subresize();
 	var longload=setInterval(function(){
 		subresize();
 		if(count>4){
