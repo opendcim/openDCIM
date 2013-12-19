@@ -587,6 +587,8 @@ class PowerDistribution {
 
   
 	function UpdateStats(){
+		global $config;
+		
 		if(function_exists("snmpget")){
 			$usePHPSNMP=true;
 		}else{
@@ -611,20 +613,26 @@ class PowerDistribution {
 			$amps=0;
 			$watts=0;
 			
+			if ( $row["SNMPCommunity"] == "" ) {
+				$Community = $config->ParameterArray["SNMPCommunity"];
+			} else {
+				$Community = $row["SNMPCommunity"];
+			}
+			
 			if ( $usePHPSNMP ) {
 				if ( $row["SNMPVersion"] == "2c" ){
-					$tmp = explode( " ", @snmp2_get( $row["IPAddress"], $row["SNMPCommunity"], $row["OID1"] ));
+					$tmp = explode( " ", @snmp2_get( $row["IPAddress"], $Community, $row["OID1"] ));
 				}else{
-					$tmp = explode( " ", @snmpget( $row["IPAddress"], $row["SNMPCommunity"], $row["OID1"] ));
+					$tmp = explode( " ", @snmpget( $row["IPAddress"], $Community, $row["OID1"] ));
 				}
 				
 				$pollValue1 = @$tmp[1];
 				
 				if ( $row["OID2"] != "" ) {
 					if ( $row["SNMPVersion"] == "2c" ){
-						$tmp2 = explode( " ", @snmp2_get( $row["IPAddress"], $row["SNMPCommunity"], $row["OID2"] ));
+						$tmp2 = explode( " ", @snmp2_get( $row["IPAddress"], $Community, $row["OID2"] ));
 					}else{
-						$tmp2 = explode( " ", @snmpget( $row["IPAddress"], $row["SNMPCommunity"], $row["OID2"] ));
+						$tmp2 = explode( " ", @snmpget( $row["IPAddress"], $Community, $row["OID2"] ));
 					}
 					if ( sizeof( $tmp2 ) > 0 ){
 						$pollValue2 = $tmp2[1];
@@ -633,16 +641,16 @@ class PowerDistribution {
 				
 				if ( $row["OID3"] != "" ) {
 					if ( $row["SNMPVersion"] == "2c" ){
-						$tmp3 = explode( " ", @snmp2_get( $row["IPAddress"], $row["SNMPCommunity"], $row["OID3"] ));
+						$tmp3 = explode( " ", @snmp2_get( $row["IPAddress"], $Community, $row["OID3"] ));
 					}else{
-						$tmp3 = explode( " ", @snmpget( $row["IPAddress"], $row["SNMPCommunity"], $row["OID3"] ));
+						$tmp3 = explode( " ", @snmpget( $row["IPAddress"], $Community, $row["OID3"] ));
 					}
 					if ( sizeof( $tmp3 ) > 0 ){
 						$pollValue3 = $tmp3[1];
 					}
 				}
 			} else {
-				$pollCommand="{$config->ParameterArray["snmpget"]} -v {$row["SNMPVersion"]} -t 0.5 -r 2 -c {$row["SNMPCommunity"]} {$row["IPAddress"]} $OIDString | {$config->ParameterArray["cut"]} -d: -f4";
+				$pollCommand="{$config->ParameterArray["snmpget"]} -v {$row["SNMPVersion"]} -t 0.5 -r 2 -c $Community {$row["IPAddress"]} $OIDString | {$config->ParameterArray["cut"]} -d: -f4";
 				
 				exec( $pollCommand, $statsOutput );
 				
@@ -694,6 +702,8 @@ class PowerDistribution {
 	}
 	
 	function getATSStatus() {
+		global $config;
+		
 		if ( ! function_exists( "snmpget" ) ) {
 			return;
 		}
@@ -702,34 +712,45 @@ class PowerDistribution {
 		$tmpl->TemplateID = $this->TemplateID;
 		$tmpl->GetTemplate();
 		
-		if ( ! $this->IPAddress || ! $this->SNMPCommunity || ! $tmpl->ATSStatusOID ) {
+		if ( ! $this->IPAddress || ! $tmpl->ATSStatusOID ) {
 			return;
 		}
 		
-		if ( $tmpl->SNMPVersion == "1" ) {
-			list( $trash, $result ) = explode( ":", snmpget( $this->IPAddress, $this->SNMPCommunity, $tmpl->ATSStatusOID ));
+		if ( $this->SNMPCommunity == "" ) {
+			$Community = $config->ParameterArray["SNMPCommunity"];
 		} else {
-			list( $trash, $result ) = explode( ":", snmp2_get( $this->IPAddress, $this->SNMPCommunity, $tmpl->ATSStatusOID ));
+			$Community = $this->SNMPCommunity;
+		}
+		
+		if ( $tmpl->SNMPVersion == "1" ) {
+			list( $trash, $result ) = explode( ":", snmpget( $this->IPAddress, $Community, $tmpl->ATSStatusOID ));
+		} else {
+			list( $trash, $result ) = explode( ":", snmp2_get( $this->IPAddress, $Community, $tmpl->ATSStatusOID ));
 		}
 		
 		return $result;
 	}
 	
 	function GetSmartCDUUptime(){
-		$config=new Config();
+		global $config;
+
 		$this->GetPDU();
 		$tmpl=new CDUTemplate();
 		$tmpl->TemplateID=$this->TemplateID;
 		$tmpl->GetTemplate();
 
-		if (!($this->IPAddress)||!($this->SNMPCommunity)) {
+		if ( ! $this->IPAddress ) {
 			return "Not Configured";
 		} else {
 			$serverIP = $this->IPAddress;
-			$community = $this->SNMPCommunity;
+			if ( $this->SNMPCommunity == "" ) {
+				$Community = $config->ParameterArray["SNMPCommunity"];
+			} else {
+				$Community = $this->SNMPCommunity;
+			}
 			
 			if(!function_exists("snmpget")){
-				$pollCommand ="{$config->ParameterArray["snmpget"]} -v 2c -t 0.5 -r 2 -c $community $serverIP sysUpTimeInstance";
+				$pollCommand ="{$config->ParameterArray["snmpget"]} -v 2c -t 0.5 -r 2 -c $Community $serverIP sysUpTimeInstance";
 
 				exec($pollCommand, $statsOutput);
 				// need error checking here
@@ -742,9 +763,9 @@ class PowerDistribution {
 				}
 			}else{
 				if($tmpl->SNMPVersion=="2c"){
-					$result = explode( ")", @snmp2_get( $this->IPAddress, $this->SNMPCommunity, "sysUpTimeInstance" ));
+					$result = explode( ")", @snmp2_get( $this->IPAddress, $Community, "sysUpTimeInstance" ));
 				}else{
-					$result = explode( ")", @snmpget( $this->IPAddress, $this->SNMPCommunity, "sysUpTimeInstance" ));
+					$result = explode( ")", @snmpget( $this->IPAddress, $Community, "sysUpTimeInstance" ));
 				}				
 				$upTime = trim( @$result[1] );
 			}
@@ -754,20 +775,27 @@ class PowerDistribution {
 	}
   
 	function GetSmartCDUVersion(){
+		global $config;
+		
 		$this->GetPDU();
 		
 		$template=new CDUTemplate();
 		$template->TemplateID=$this->TemplateID;
 		$template->GetTemplate();
 
-		if (!($this->IPAddress)||!($this->SNMPCommunity)) {
+		if ( ! $this->IPAddress ) {
 			return "Not Configured";
 		} else {
 			$serverIP = $this->IPAddress;
-			$community = $this->SNMPCommunity;
+			
+			if ( $this->SNMPCommunity == "" ) {
+				$Community = $config->ParameterArray["SNMPCommunity"];
+			} else {
+				$Community = $this->SNMPCommunity;
+			}
 			
 			if(!function_exists("snmpget")){
-				$pollCommand="{$config->ParameterArray["snmpget"]} -v 2c -t 0.5 -r 2 -c $this->SNMPCommunity $this->IPAddress $template->VersionOID";
+				$pollCommand="{$config->ParameterArray["snmpget"]} -v 2c -t 0.5 -r 2 -c $Community $this->IPAddress $template->VersionOID";
 
 				exec( $pollCommand, $statsOutput );
 				// need error checking here
@@ -779,9 +807,9 @@ class PowerDistribution {
 				}
 			}else{
 				if($template->SNMPVersion=="2c"){
-					$result = explode( "\"", @snmp2_get( $this->IPAddress, $this->SNMPCommunity, $template->VersionOID ));
+					$result = explode( "\"", @snmp2_get( $this->IPAddress, $Community, $template->VersionOID ));
 				}else{
-					$result = explode( "\"", @snmpget( $this->IPAddress, $this->SNMPCommunity, $template->VersionOID ));
+					$result = explode( "\"", @snmpget( $this->IPAddress, $Community, $template->VersionOID ));
 				}
 				$version = @$result[1];
 			}
@@ -1169,22 +1197,29 @@ class PowerSource {
 
 	function GetCurrentLoad(){
 		global $config;
+		
+		if ( $this->Community == "" ) {
+			$Community = $config->ParameterArray["SNMPCommunity"];
+		} else {
+			$Community = $this->Community;
+		}
+		
 		$totalLoad = 0;
 		
 		// Liebert UPS Query
 		// Query OID .1.3.6.1.4.1.476.1.1.1.1.1.2.0 to get the model number
 		// If model type is blank (NFinity), OID = 1.3.6.1.4.1.476.1.42.3.5.2.2.1.8.3
 		// If model type is Series 300 / 600, OID = .1.3.6.1.4.1.476.1.1.1.1.4.2.0
-		$pollCommand=$config->ParameterArray["snmpget"]." -v 1 -c $this->Community $this->IPAddress .1.3.6.1.4.1.476.1.1.1.1.1.2.0 | ".$config->ParameterArray["cut"]." -d: -f4";
+		$pollCommand=$config->ParameterArray["snmpget"]." -v 1 -c $Community $this->IPAddress .1.3.6.1.4.1.476.1.1.1.1.1.2.0 | ".$config->ParameterArray["cut"]." -d: -f4";
 		exec($pollCommand,$snmpOutput);
 
 		if(@$snmpOutput[0]!=""){
-			$pollCommand=$config->ParameterArray["snmpget"]." -v 1 -c $this->Community $this->IPAddress .1.3.6.1.4.1.476.1.1.1.1.4.2.0 | ".$config->ParameterArray["cut"]." -d: -f4";
+			$pollCommand=$config->ParameterArray["snmpget"]." -v 1 -c $Community $this->IPAddress .1.3.6.1.4.1.476.1.1.1.1.4.2.0 | ".$config->ParameterArray["cut"]." -d: -f4";
 			exec($pollCommand,$loadOutput);
 			
 			$totalLoad=($loadOutput[0] * $this->Capacity) / 100;
 		}else{
-			$pollCommand=$config->ParameterArray["snmpget"]." -v 1 -c $this->Community $this->IPAddress .1.3.6.1.4.1.476.1.42.3.5.2.2.1.8.3 | ".$config->ParameterArray["cut"]." -d: -f4";
+			$pollCommand=$config->ParameterArray["snmpget"]." -v 1 -c $Community $this->IPAddress .1.3.6.1.4.1.476.1.42.3.5.2.2.1.8.3 | ".$config->ParameterArray["cut"]." -d: -f4";
 			exec($pollCommand,$loadOutput);
 			
 			$totalLoad=$loadOutput[0];
