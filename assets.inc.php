@@ -520,12 +520,15 @@ class Cabinet {
 			}
 			
 			if ( $row["SNMPVersion"] == "2c" ) {
-				list( $trash, $temp ) = explode( ":", snmp2_get( $row["SensorIPAddress"], $Community, $row["TemperatureOID"] ) );
-				list( $trash, $humid ) = explode( ":", snmp2_get( $row["SensorIPAddress"], $Community, $row["HumidityOID"] ) );
+				@list( $trash, $temp ) = explode( ":", @snmp2_get( $row["SensorIPAddress"], $Community, $row["TemperatureOID"] ) );
+				@list( $trash, $humid ) = explode( ":", @snmp2_get( $row["SensorIPAddress"], $Community, $row["HumidityOID"] ) );
 			} else {
-				list( $trash, $temp ) = explode( ":", snmpget( $row["SensorIPAddress"], $Community, $row["TemperatureOID"] ) );
-				list( $trash, $humid ) = explode( ":", snmpget( $row["SensorIPAddress"], $Community, $row["HumidityOID"] ) );
+				@list( $trash, $temp ) = explode( ":", @snmpget( $row["SensorIPAddress"], $Community, $row["TemperatureOID"] ) );
+				@list( $trash, $humid ) = explode( ":", @snmpget( $row["SensorIPAddress"], $Community, $row["HumidityOID"] ) );
 			}
+			
+			$temp = preg_replace( "/[^0-9.,+]/", "", $temp );
+			$humid = preg_replace( "/[^0-9.'+]/", "", $humid );
 
 			if ( $row["TempMultiplier"] != 0 ) {
 				$temp *= $row["TempMultiplier"];
