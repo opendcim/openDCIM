@@ -74,13 +74,6 @@
 		}
 	}elseif($cab->CabinetID >0){
 		$cab->GetCabinet();
-
-		// Get any tags associated with this device
-		$tags=$cab->GetTags();
-		if(count($tags>0)){
-			// We have some tags so build the javascript elements we need to create the tags themselves
-			$taginsert="\t\ttags: {items: ".json_encode($tags)."},\n";
-		}
 	}else{
 		$cab->CabinetID=null;
 		//Set DataCenterID to first DC in dcList for getting zoneList
@@ -103,6 +96,16 @@
 	$deptList=$dept->GetDepartmentList();
 	$cabList=$cab->ListCabinets();
 	$sensorList = SensorTemplate::getTemplate();
+
+	if($cab->CabinetID > 0) {
+		// Get any tags associated with this device
+		$tags=$cab->GetTags();
+		if(count($tags>0)){
+			// We have some tags so build the javascript elements we need to create the tags themselves
+			$taginsert="\t\ttags: {items: ".json_encode($tags)."},\n";
+		}
+	}
+
 ?>
 <!doctype html>
 <html>

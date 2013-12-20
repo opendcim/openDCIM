@@ -420,7 +420,7 @@ class Cabinet {
 		$cabinetList=array();
 
 		foreach ( $dbh->query( $sql ) as $cabinetRow ){
-			$cabID=sizeof($cabinetList);
+			$cabID=$cabinetRow["CabinetID"];
 			$cabinetList[$cabID]=Cabinet::RowToObject($cabinetRow);
 		}
 
@@ -435,7 +435,7 @@ class Cabinet {
 		$cabinetList=array();
 
 		foreach ( $dbh->query( $sql ) as $cabinetRow ) {
-			$cabID=sizeof($cabinetList);
+			$cabID=$cabinetRow["CabinetID"];
 			$cabinetList[$cabID]=Cabinet::RowToObject($cabinetRow);
 		}
 
@@ -450,7 +450,7 @@ class Cabinet {
 		$cabinetList=array();
 
 		foreach ( $dbh->query( $sql ) as $cabinetRow ) {
-			$cabID=sizeof($cabinetList);
+			$cabID=$cabinetRow["CabinetID"];
 			$cabinetList[$cabID]=Cabinet::RowToObject($cabinetRow);
 		}
 		return $cabinetList;
