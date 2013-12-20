@@ -70,7 +70,13 @@
 		
 		printf( "<p>%s %s.<br>\n", __("Testing SNMP communication to CDU"), $pdu->Label );
 		printf( "%s %s.<br>\n", __("Connecting to IP address"), $pdu->IPAddress );
-		printf( "%s %s.</p>\n", __("Using SNMP Community string"), $pdu->SNMPCommunity );
+		if ( $pdu->SNMPCommunity != "" ) {
+			$Community = $pdu->SNMPCommunity;
+			printf( "%s %s.</p>\n", __("Using SNMP Community string"), $Community );
+		} else {
+			$Community = $config->ParameterArray["SNMPCommunity"];
+			printf( "%s %s.</p>\n", __("Using default SNMP Community string"), $Community );
+		}
 		
 		print "<div id=\"infopanel\"><fieldset><legend>".__("Results")."</legend>\n";
 
@@ -95,7 +101,7 @@
 		
 		if ( ! function_exists( "snmpget" ) ) {
 			$OIDString=$template->OID1." ".$template->OID2." ".$template->OID3;
-			$pollCommand=sprintf( "%s -v %s -c %s %s %s | %s -d: -f4", $config->ParameterArray["snmpget"], $template->SNMPVersion, $pdu->SNMPCommunity, $pdu->IPAddress, $OIDString, $config->ParameterArray["cut"] );
+			$pollCommand=sprintf( "%s -v %s -c %s %s %s | %s -d: -f4", $config->ParameterArray["snmpget"], $template->SNMPVersion, $Community, $pdu->IPAddress, $OIDString, $config->ParameterArray["cut"] );
 			
 			exec($pollCommand,$statsOutput);
 			
@@ -104,29 +110,29 @@
 			$result3 = @$statsOutput[2];
 		} else {
 			if ( $template->SNMPVersion == "2c" ) {
-				$tmp1 = explode( " ", snmp2_get( $pdu->IPAddress, $pdu->SNMPCommunity, $template->OID1 ));
+				$tmp1 = explode( " ", snmp2_get( $pdu->IPAddress, $Community, $template->OID1 ));
 				$result1 = $tmp1[1];
 				
 				if ( $template->OID2 != "" ) {
-					$tmp2 = explode( " ", snmp2_get( $pdu->IPAddress, $pdu->SNMPCommunity, $template->OID2 ));
+					$tmp2 = explode( " ", snmp2_get( $pdu->IPAddress, $Community, $template->OID2 ));
 					$result2 = $tmp2[1];
 				}
 				
 				if ( $template->OID3 != "" ) {
-					$tmp3 = explode( " ", snmp2_get( $pdu->IPAddress, $pdu->SNMPCommunity, $template->OID3 ));
+					$tmp3 = explode( " ", snmp2_get( $pdu->IPAddress, $Community, $template->OID3 ));
 					$result3 = $tmp3[1];
 				}
 			} else {
-				$tmp1 = explode( " ", snmpget( $pdu->IPAddress, $pdu->SNMPCommunity, $template->OID1 ));
+				$tmp1 = explode( " ", snmpget( $pdu->IPAddress, $Community, $template->OID1 ));
 				$result1 = $tmp1[1];
 				
 				if ( $template->OID2 != "" ) {
-					$tmp2 = explode( " ", snmpget( $pdu->IPAddress, $pdu->SNMPCommunity, $template->OID2 ));
+					$tmp2 = explode( " ", snmpget( $pdu->IPAddress, $Community, $template->OID2 ));
 					$result2 = $tmp2[1];
 				}
 				
 				if ( $template->OID3 != "" ) {
-					$tmp3 = explode( " ", snmpget( $pdu->IPAddress, $pdu->SNMPCommunity, $template->OID3 ));
+					$tmp3 = explode( " ", snmpget( $pdu->IPAddress, $Community, $template->OID3 ));
 					$result3 = $tmp3[1];
 				}
 			}

@@ -520,12 +520,15 @@ class Cabinet {
 			}
 			
 			if ( $row["SNMPVersion"] == "2c" ) {
-				list( $trash, $temp ) = explode( ":", snmp2_get( $row["SensorIPAddress"], $Community, $row["TemperatureOID"] ) );
-				list( $trash, $humid ) = explode( ":", snmp2_get( $row["SensorIPAddress"], $Community, $row["HumidityOID"] ) );
+				@list( $trash, $temp ) = explode( ":", @snmp2_get( $row["SensorIPAddress"], $Community, $row["TemperatureOID"] ) );
+				@list( $trash, $humid ) = explode( ":", @snmp2_get( $row["SensorIPAddress"], $Community, $row["HumidityOID"] ) );
 			} else {
-				list( $trash, $temp ) = explode( ":", snmpget( $row["SensorIPAddress"], $Community, $row["TemperatureOID"] ) );
-				list( $trash, $humid ) = explode( ":", snmpget( $row["SensorIPAddress"], $Community, $row["HumidityOID"] ) );
+				@list( $trash, $temp ) = explode( ":", @snmpget( $row["SensorIPAddress"], $Community, $row["TemperatureOID"] ) );
+				@list( $trash, $humid ) = explode( ":", @snmpget( $row["SensorIPAddress"], $Community, $row["HumidityOID"] ) );
 			}
+			
+			$temp = preg_replace( "/[^0-9.,+]/", "", $temp );
+			$humid = preg_replace( "/[^0-9.'+]/", "", $humid );
 
 			if ( $row["TempMultiplier"] != 0 ) {
 				$temp *= $row["TempMultiplier"];
@@ -2987,6 +2990,7 @@ class SwitchInfo {
 	/* All of these functions will REQUIRE the built-in SNMP functions - the external calls are simply too slow */
 	static function getNumPorts($DeviceID) {
 		global $dbh;
+		global $config;
 		
 		if ( ! function_exists( "snmpget" ) ) {
 			return;
@@ -2999,14 +3003,21 @@ class SwitchInfo {
 			return false;
 		}
 		
-		if ( $dev->PrimaryIP == "" || $dev->SNMPCommunity == "" )
+		if ( $dev->PrimaryIP == "" )
 			return;
-			
-		return @end( explode( ":", snmpget( $dev->PrimaryIP, $dev->SNMPCommunity, 'IF-MIB::ifNumber.0' )));
+		
+		if ( $dev->SNMPCommunity == "" ) {
+			$Community = $config->ParameterArray["SNMPCommunity"];
+		} else {
+			$Community = $dev->SNMPCommunity;
+		}
+		
+		return @end( explode( ":", snmpget( $dev->PrimaryIP, $Community, 'IF-MIB::ifNumber.0' )));
 	}
 
 	static function findFirstPort( $DeviceID ) {
 		global $dbh;
+		global $config;
 		
 		if ( ! function_exists( "snmpget" ) ) {
 			return;
@@ -3019,12 +3030,18 @@ class SwitchInfo {
 			return false;
 		}
 
-		if ( $dev->PrimaryIP == "" || $dev->SNMPCommunity == "" )
+		if ( $dev->PrimaryIP == "" )
 			return;
-			
+		
+		if ( $dev->SNMPCommunity == "" ) {
+			$Community = $config->ParameterArray["SNMPCommunity"];
+		} else {
+			$Community = $dev->SNMPCommunity;
+		}
+		
 		$x = array();
 		
-		$portList = snmprealwalk( $dev->PrimaryIP, $dev->SNMPCommunity, "IF-MIB::ifDescr" );
+		$portList = snmprealwalk( $dev->PrimaryIP, $Community, "IF-MIB::ifDescr" );
 		foreach( $portList as $index => $port ) {
 			$head = @end( explode( ".", $index ) );
 			$portdesc = @end( explode( ":", $port));
@@ -3037,6 +3054,7 @@ class SwitchInfo {
 
 	static function getPortNames( $DeviceID, $portid = null ) {
 		global $dbh;
+		global $config;
 		
 		if ( ! function_exists( "snmpget" ) ) {
 			return;
@@ -3050,15 +3068,21 @@ class SwitchInfo {
 			return $nameList;
 		}
 		
-		if($dev->PrimaryIP=="" || $dev->SNMPCommunity==""){
+		if( $dev->PrimaryIP=="" ){
 			return $nameList;
+		}
+		
+		if ( $dev->SNMPCommunity == "" ) {
+			$Community = $config->ParameterArray["SNMPCommunity"];
+		} else {
+			$Community = $dev->SNMPCommunity;
 		}
 			
 		$baseOID = ".1.3.6.1.2.1.31.1.1.1.1";
 		$baseOID = "IF-MIB::ifName"; 
 
 		if(is_null($portid)){		
-			if($reply=snmprealwalk($dev->PrimaryIP,$dev->SNMPCommunity,$baseOID)){
+			if($reply=snmprealwalk($dev->PrimaryIP,$Community,$baseOID)){
 				// Skip the returned values until we get to the first port
 				$Saving = false;
 				foreach($reply as $oid => $label){
@@ -3075,7 +3099,7 @@ class SwitchInfo {
 				}
 			}
 		} else {
-				$query = @end( explode( ":", snmp2_get( $dev->PrimaryIP, $dev->SNMPCommunity, $baseOID.'.'.$portid )));
+				$query = @end( explode( ":", snmp2_get( $dev->PrimaryIP, $Community, $baseOID.'.'.$portid )));
 				$nameList = $query;
 		}
 		
@@ -3084,6 +3108,7 @@ class SwitchInfo {
 	
 	static function getPortStatus( $DeviceID, $portid = null ) {
 		global $dbh;
+		global $config;
 		
 		if ( ! function_exists( "snmpget" ) ) {
 			return;
@@ -3097,15 +3122,21 @@ class SwitchInfo {
 			return $statusList;
 		}
 		
-		if($dev->PrimaryIP=="" || $dev->SNMPCommunity==""){
+		if( $dev->PrimaryIP=="" ){
 			return $statusList;
+		}
+		
+		if ( $dev->SNMPCommunity == "" ) {
+			$Community = $config->ParameterArray["SNMPCommunity"];
+		} else {
+			$Community = $dev->SNMPCommunity;
 		}
 			
 		// $baseOID = ".1.3.6.1.2.1.2.2.1.8.";
 		$baseOID="IF-MIB::ifOperStatus"; // arguments for not using MIB?
 
 		if ( is_null($portid) ) {		
-			if($reply=@snmprealwalk($dev->PrimaryIP, $dev->SNMPCommunity, $baseOID, 10000, 2)){	
+			if($reply=@snmprealwalk($dev->PrimaryIP, $Community, $baseOID, 10000, 2)){	
 				// Skip the returned values until we get to the first port
 				$Saving = false;
 				foreach($reply as $oid => $status){
@@ -3136,6 +3167,7 @@ class SwitchInfo {
 	
 	static function getPortAlias( $DeviceID, $portid = null ) {
 		global $dbh;
+		global $config;
 		
 		if ( ! function_exists( "snmpget" ) ) {
 			return;
@@ -3148,22 +3180,28 @@ class SwitchInfo {
 			return false;
 		}
 		
-		if ( $dev->PrimaryIP == "" || $dev->SNMPCommunity == "" )
+		if ( $dev->PrimaryIP == "" )
 			return;
-			
+		
+		if ( $dev->SNMPCommunity == "" ) {
+			$Community = $config->ParameterArray["SNMPCommunity"];
+		} else {
+			$Community = $dev->SNMPCommunity;
+		}
+		
 		$baseOID=".1.3.6.1.2.1.31.1.1.1.18.";
 		
 		$aliasList = array();
 
 		if ( is_null( $portid )) {
 			for ( $n=0; $n < $dev->Ports; $n++ ) {
-				if ( ! $reply = snmpget( $dev->PrimaryIP, $dev->SNMPCommunity, $baseOID.( $dev->FirstPortNum+$n )) )
+				if ( ! $reply = snmpget( $dev->PrimaryIP, $Community, $baseOID.( $dev->FirstPortNum+$n )) )
 					break;
 				$query = @end( explode( ":", $reply ));
 				$aliasList[$n+1] = $query;
 			}
 		}else{
-			$query = @end( explode( ":", snmpget( $dev->PrimaryIP, $dev->SNMPCommunity, $baseOID.$portid )));
+			$query = @end( explode( ":", snmpget( $dev->PrimaryIP, $Community, $baseOID.$portid )));
 			$aliasList = $query;
 		}
 		
