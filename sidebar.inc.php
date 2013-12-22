@@ -68,41 +68,73 @@
   <script type="text/javascript" src="scripts/mktree.js"></script> 
   <script type="text/javascript" src="scripts/konami.js"></script> 
 	<hr>
-	<ul class="nav">
 <?php
-echo '	<a href="reports.php"><li>',__("Reports"),'</li></a>';
+
+	/* 
+	 * This is an attempt to be sane about the rights management and the menu.
+	 * The menu will be built off a master array that is a merger of what options
+	 * the user has available.  
+	 *
+	 * Array structure:
+	 * 	[]->Top Level Menu Item
+	 *	[top level menu item]->Array(repeat previous structure)
+	 *
+	 */
+
+	$menu=$rackrequest=$contactadmin=$writeaccess=$siteadmin=array();
+
+	$menu[]='<a href="reports.php"><span>'.__("Reports").'</span></a>';
 
 	if ( $user->RackRequest ) {
-		echo '		<a href="rackrequest.php"><li>',__("Rack Request Form"),'</li></a>';
+		$rackrequest[]='<a href="rackrequest.php"><span>'.__("Rack Request Form").'</span></a>';
 	}
 	if ( $user->ContactAdmin ) {
-		echo '		<a href="contacts.php"><li>',__("Contact Administration"),'</li></a>
-		<a href="departments.php"><li>',__("Dept. Administration"),'</li></a>
-		<a href="timeperiods.php"><li>',__("Time Periods"),'</li></a>
-		<a href="escalations.php"><li>',__("Escalation Rules"),'</li></a>';
+		$contactadmin[__("User Administration")][]='<a href="contacts.php"><span>'.__("Contact Administration").'</span></a>';
+		$contactadmin[__("User Administration")][]='<a href="departments.php"><span>'.__("Dept. Administration").'</span></a>';
+		$contactadmin[__("Issue Escalation")][]='<a href="timeperiods.php"><span>'.__("Time Periods").'</span></a>';
+		$contactadmin[__("Issue Escalation")][]='<a href="escalations.php"><span>'.__("Escalation Rules").'</span></a>';
 	}
 	if ( $user->WriteAccess ) {
-		echo '<a href="cabinets.php"><li>',__("Edit Cabinets"),'</li></a>
-		<a href="device_templates.php"><li>',__("Edit Device Templates"),'</li></a>';
+		$writeaccess[__("Template Management")][]='<a href="cabinets.php"><span>'.__("Edit Cabinets").'</span></a>';
+		$writeaccess[__("Template Management")][]='<a href="device_templates.php"><span>'.__("Edit Device Templates").'</span></a>';
 	}
 	if ( $user->SiteAdmin ) {
-		echo '		<a href="usermgr.php"><li>',__("Manage Users"),'</li></a>
-		<a href="supplybin.php"><li>',__("Manage Supply Bins"),'</li></a>
-		<a href="supplies.php"><li>',__("Manage Supplies"),'</li></a>
-		<a href="container.php"><li>',__("Edit Containers"),'</li></a>
-		<a href="datacenter.php"><li>',__("Edit Data Centers"),'</li></a>
-		<a href="zone.php"><li>',__("Edit Zones"),'</li></a>
-		<a href="cabrow.php"><li>',__("Edit Rows of Cabinets"),'</li></a>
-		<a href="power_source.php"><li>',__("Edit Power Sources"),'</li></a>
-		<a href="power_panel.php"><li>',__("Edit Power Panels"),'</li></a>
-		<a href="device_manufacturers.php"><li>',__("Edit Manufacturers"),'</li></a>
-		<a href="cdu_templates.php"><li>',__("Edit CDU Templates"),'</li></a>
-		<a href="sensor_templates.php"><li>',__("Edit Sensor Templates"),'</li></a>
-		<a href="configuration.php"><li>',__("Edit Configuration"),'</li></a>
-		<a href="pathmaker.php"><li>',__("Make Path Connection"),'</li></a>';
+		$siteadmin[__("User Administration")][]='<a href="usermgr.php"><span>'.__("Manage Users").'</span></a>';
+		$siteadmin[__("Template Management")][]='<a href="device_manufacturers.php"><span>'.__("Edit Manufacturers").'</span></a>';
+		$siteadmin[__("Template Management")][]='<a href="cdu_templates.php"><span>'.__("Edit CDU Templates").'</span></a>';
+		$siteadmin[__("Template Management")][]='<a href="sensor_templates.php"><span>'.__("Edit Sensor Templates").'</span></a>';
+		$siteadmin[__("Supplies Management")][]='<a href="supplybin.php"><span>'.__("Manage Supply Bins").'</span></a>';
+		$siteadmin[__("Supplies Management")][]='<a href="suppspanes.php"><span>'.__("Manage Suppspanes").'</span></a>';
+		$siteadmin[__("Infrastructure Management")][]='<a href="datacenter.php"><span>'.__("Edit Data Centers").'</span></a>';
+		$siteadmin[__("Infrastructure Management")][]='<a href="container.php"><span>'.__("Edit Containers").'</span></a>';
+		$siteadmin[__("Infrastructure Management")][]='<a href="zone.php"><span>'.__("Edit Zones").'</span></a>';
+		$siteadmin[__("Infrastructure Management")][]='<a href="cabrow.php"><span>'.__("Edit Rows of Cabinets").'</span></a>';
+		$siteadmin[__("Power Management")][]='<a href="power_source.php"><span>'.__("Edit Power Sources").'</span></a>';
+		$siteadmin[__("Power Management")][]='<a href="power_panel.php"><span>'.__("Edit Power Panels").'</span></a>';
+		$siteadmin[__("Power Management")][]='<a href="cdu_templates.php"><span>'.__("Edit CDU Templates").'</span></a>';
+		$siteadmin[]='<a href="configuration.php"><span>'.__("Edit Configuration").'</span></a>';
+		$siteadmin[]='<a href="pathmaker.php"><span>'.__("Make Path Connection").'</span></a>';
 	}
 
-	print "	</ul>
+	function buildmenu($menu){
+		$level='';
+		foreach($menu as $key => $item){
+			$level.="<li>";
+			if(!is_array($item)){
+				$level.="<li>$item</li>";
+			}else{
+				$level.="<a>$key</a><ul>";
+				$level.=buildmenu($item);
+				$level.="</ul>";
+			}
+			$level.="</li>";
+		}
+		return $level;
+	}
+
+	$menu=buildmenu(array_merge_recursive($rackrequest,$contactadmin,$writeaccess,$siteadmin));
+	
+	print "<ul class=\"nav\">$menu</ul>
 	<hr>
 	<a href=\"index.php\">".__("Home")."</a>\n";
 
@@ -141,6 +173,8 @@ $("#sidebar .nav a").each(function(){
 		$(this).children().addClass("active");
 	}
 });
+$("#sidebar .nav").menu();
+
 function resize(){
 	// This function will run each 500ms for 2.5s to account for slow loading content
 	var count=0;
