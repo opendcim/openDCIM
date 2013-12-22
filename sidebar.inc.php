@@ -121,7 +121,7 @@
 		foreach($menu as $key => $item){
 			$level.="<li>";
 			if(!is_array($item)){
-				$level.="<li>$item</li>";
+				$level.="$item";
 			}else{
 				$level.="<a>$key</a><ul>";
 				$level.=buildmenu($item);
@@ -170,7 +170,7 @@ if (typeof jQuery.ui == 'undefined') {
 
 $("#sidebar .nav a").each(function(){
 	if($(this).attr("href")=="<?php echo basename($_SERVER['PHP_SELF']);?>"){
-		$(this).children().addClass("active");
+		$(this).addClass("active");
 	}
 });
 $("#sidebar .nav").menu();

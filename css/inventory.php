@@ -701,7 +701,7 @@ table#cabprop span.text-label {
 .installer #sidebar a:hover li, .nav a:hover li {background-color: darkGray;border-color: lightGray;}
 .installer #sidebar a:hover li.active, .nav a:hover li.active {background-color: white;border-color: lightGray;}
 .installer .active, .nav .active {background-color: white;border: 1px solid darkGray;}
-.installer .active:after, .nav .active:after {content:">>";float: right;}
+//.installer .active:after, .nav .active:after {content:">>";float: right;}
 .installer div.table > div > div + div {width: 300px;}
 .installer .rights > div:nth-last-child(2) div {padding-top: 0;padding-bottom: 2em;text-align: left;}
 .installer .center input {width: 97%;}
