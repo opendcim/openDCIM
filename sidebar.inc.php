@@ -53,10 +53,6 @@
 		}).next().after(arrow);
 		arrow.css({'top': inputpos.top+'px', 'left': inputpos.left+inputobj.width()-(arrow.width()/2)});
 	}
-	addlookup($('#searchname'),'name');
-	$('#searchadv ~ select[name="key"]').change(function(){
-		addlookup($('#searchadv'),$(this).val())
-	}).height($('#searchadv').outerHeight());
 	$('#advsrch, #searchadv ~ .ui-icon.ui-icon-close').click(function(){
 		var here=$(this).position();
 		$('#searchadv, #searchname').val('');
@@ -171,9 +167,16 @@ if (typeof jQuery.ui == 'undefined') {
 $("#sidebar .nav a").each(function(){
 	if($(this).attr("href")=="<?php echo basename($_SERVER['PHP_SELF']);?>"){
 		$(this).addClass("active");
+		$(this).parentsUntil("#ui-id-1","li").children('a:first-child').addClass("active");
 	}
 });
 $("#sidebar .nav").menu();
+
+$('#searchname').width($('#sidebar').innerWidth() - $('#searchname ~ button').outerWidth());
+addlookup($('#searchname'),'name');
+$('#searchadv ~ select[name="key"]').change(function(){
+	addlookup($('#searchadv'),$(this).val())
+}).height($('#searchadv').outerHeight());
 
 function resize(){
 	// This function will run each 500ms for 2.5s to account for slow loading content
