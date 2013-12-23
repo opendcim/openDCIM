@@ -91,8 +91,8 @@
 		$camenu[__("Issue Escalation")][]='<a href="escalations.php"><span>'.__("Escalation Rules").'</span></a>';
 	}
 	if ( $user->WriteAccess ) {
-		$wamenu[__("Template Management")][]='<a href="cabinets.php"><span>'.__("Edit Cabinets").'</span></a>';
 		$wamenu[__("Template Management")][]='<a href="device_templates.php"><span>'.__("Edit Device Templates").'</span></a>';
+		$wamenu[__("Infrastructure Management")][]='<a href="cabinets.php"><span>'.__("Edit Cabinets").'</span></a>';
 	}
 	if ( $user->SiteAdmin ) {
 		$samenu[__("User Administration")][]='<a href="usermgr.php"><span>'.__("Manage Users").'</span></a>';
