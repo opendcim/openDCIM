@@ -385,6 +385,17 @@ div.error {margin-top: 2em;margin-bottom: 2em;border: 1px dotted gray;}
 #deptgroup select {width: 440px;}
 #displaynone {display: none !important;}
 
+/* color indication */
+.colorbox  {
+    #float: none;
+    width: 1em;
+    display: inline-block;
+    height: 1.2em;
+    margin: 0px;
+    padding: 0px;
+    border: solid rgba(0,0,0,.5) 1px;
+}
+
 /* Rack Content */
 #infopanel {
 		position: relative;
