@@ -5,6 +5,7 @@
 	$status="";
 	$path="";
 	$pathid="";
+	$dp=new DevicePorts();
 
 	function builddclist($id=null){
 		$dc=new DataCenter();
@@ -228,9 +229,13 @@
 					}
 					
 					//device
+					$dp->DeviceID=$dev->DeviceID;
+					$dp->PortNumber=abs($cp->PortNumber);
+					$dp->getPort();
+					$label=($dp->Label!='')?$dp->Label:abs($cp->PortNumber);
 					$path.=str_repeat("\t",$t--)."<td>".
 							"<a href=\"devices.php?deviceid=$dev->DeviceID\">$dev->Label</a>
-							<br>".__("Port").": ".abs($cp->PortNumber)."</td>\n";
+							<br>".__("Port").": $label</td>\n";
 					$path.=str_repeat("\t",$t--)."</tr>\n";
 					
 					//Ending device table
@@ -298,9 +303,13 @@
 					}
 					
 					//Device
+					$dp->DeviceID=$dev->DeviceID;
+					$dp->PortNumber=abs($cp->PortNumber);
+					$dp->getPort();
+					$label=($dp->Label!='')?$dp->Label:abs($cp->PortNumber);
 					$path.=str_repeat("\t",$t--)."<td>".
 							"<a href=\"devices.php?deviceid=$dev->DeviceID\">$dev->Label".
-							"</a><br>".__("Port").": ".abs($cp->PortNumber)."</td>\n";
+							"</a><br>".__("Port").": $label</td>\n";
 					$path.=str_repeat("\t",$t--)."</tr>\n";
 					$path.=str_repeat("\t",$t--)."</table>\n";
 					
@@ -379,9 +388,13 @@
 						}
 						
 						//device
+						$dp->DeviceID=$dev->DeviceID;
+						$dp->PortNumber=abs($cp->PortNumber);
+						$dp->getPort();
+						$label=($dp->Label!='')?$dp->Label:abs($cp->PortNumber);
 						$path.=str_repeat("\t",$t--)."<td>".
 								"<a href=\"devices.php?deviceid=$dev->DeviceID\">$dev->Label".
-								"</a><br>".__("Port").": ".abs($cp->PortNumber)."</td>\n";
+								"</a><br>".__("Port").": $label</td>\n";
 						$path.=str_repeat("\t",$t--)."</tr>\n";
 						
 						//ending device table
