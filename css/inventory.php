@@ -173,7 +173,6 @@ div#dcstats .table + .table > div > div + div{white-space: pre; text-align: righ
 #sidebar {
 	position: relative;
 	min-width: 200px;
-	width: 210px;
 	display: inline-block;
 	vertical-align: top;
 }
@@ -705,14 +704,13 @@ table#cabprop span.text-label {
 	display: block;
 	padding: 1.5em;
 	background-color: lightGray;
-	border: 0px dashed darkGray;
+	border: 0px solid lightGray;
 }
 .installer ul li{border: 1px dashed darkGray;}
 .installer #sidebar a, .nav a {text-decoration: none;}
-.installer #sidebar a:hover li, .nav a:hover li {background-color: darkGray;border-color: lightGray;}
 .installer #sidebar a:hover li.active, .nav a:hover li.active {background-color: white;border-color: lightGray;}
 .installer .active, .nav .active {background-color: white;border: 1px solid darkGray;}
-.installer .active:after, .nav .active:after {content:">>";float: right;}
+.installer a.active span:first-child, .nav a.active span:first-child {background-position: -144px 0;}
 .installer div.table > div > div + div {width: 300px;}
 .installer .rights > div:nth-last-child(2) div {padding-top: 0;padding-bottom: 2em;text-align: left;}
 .installer .center input {width: 97%;}
@@ -727,6 +725,14 @@ div.page.installer .main{max-width: 850px;}
 /* Menu */
 ul.nav li {padding: .5em;}
 .nav a:visited {color: #000000;}
+#sidebar .nav li a { border: 1px solid lightGray; margin: 0;}
+#sidebar .nav .ui-state-focus {
+	background: white;
+	border-color: black;
+	border-width: 1px;
+	border-style: solid;
+	margin: 0;
+}
 
 /* Search Export */
 div.center div table#export { margin: auto; max-width: none; }
