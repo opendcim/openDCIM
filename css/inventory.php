@@ -241,6 +241,7 @@ div#dcstats .table + .table > div > div + div{white-space: pre; text-align: righ
 .ui-menu {z-index: 100;}
 .ui-autocomplete { max-height: 100px; overflow-y: auto; overflow-x: hidden; padding-right: 20px;}
 * html .ui-autocomplete {height: 100px;}
+.ui-autocomplete li.ui-menu-item {display: inline-block;}
 .ui-menu .ui-menu-item a { line-height: 1 !important; white-space: nowrap !important; overflow: hidden;}
 
 #gandalf {
