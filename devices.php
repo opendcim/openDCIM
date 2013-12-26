@@ -1539,11 +1539,13 @@ print "		var dialog=$('<div>').prop('title','".__("Verify Delete Device")."').ht
 				var porttypefront=$('#'+fr+'p'+portnum+' select').data(cdeviceport).MediaID;
 				var portcolor=$('#'+fr+'p'+portnum+' select').data(cdeviceport).ColorID;
 				var cnotes=$('#'+fr+'n'+portnum+' input').val();
+				var pname=$('#pp'+portnum+' input').val();
 				var p=(rear)?portnum*-1:portnum;
+				pname=(pname===undefined)?$('#pp'+portnum).data('default'):pname;
 				porttype=(porttype===undefined)?(porttypefront===undefined)?0:porttypefront:porttype;
 				portcolor=(portcolor===undefined)?0:portcolor;
 				$.post('',{saveport: '', swdev: $('#deviceid').val(), pnum: p,
-							pname: '', cdevice: cdevice, cdeviceport: cdeviceport,
+							pname: '', cdevice: cdevice, pname: pname, cdeviceport: cdeviceport,
 							cnotes: cnotes, porttype: porttype,
 							portcolor: portcolor}).done(function(data){
 					if(data.trim()==1){
@@ -1608,6 +1610,8 @@ print "		var dialog=$('<div>').prop('title','".__("Verify Delete Device")."').ht
 						frontdev.html('<a href="devices.php?deviceid='+data.ConnectedDeviceID+'">'+data.ConnectedDeviceLabel+'</a>').data('default',data.ConnectedDeviceID);
 						frontport.html('<a href="paths.php?deviceid='+data.ConnectedDeviceID+'&portnumber='+data.ConnectedPort+'">'+data.ConnectedPortLabel+'</a>').data('default',data.ConnectedPort);
 						frontnotes.html(data.Notes).data('default',data.Notes);
+						data.Label=(data.Label=='')?data.PortNumber:data.Label;
+						patchport.text(data.Label);
 						row.children('div:not([id^=r])').removeAttr('style');
 					}
 					$(e.currentTarget).parent().remove();
@@ -1658,6 +1662,7 @@ print "		var dialog=$('<div>').prop('title','".__("Verify Delete Device")."').ht
 					$.post('', {pn: $(this).text(), swdev: $('#deviceid').val()}, function(data){
 						frontdev.html(devicelist(data).val(frontdev.data('default'))).children().change();
 						frontnotes.html($('<input>').val(frontnotes.text()));
+						patchport.html($('<input>').val(patchport.text()).css('background-color', 'white'));
 					}).then(resize());
 					// added for safari
 					row.children('div:not([id^=pp])').css({'padding': 0, 'border': 0});
@@ -2102,11 +2107,12 @@ echo '	<div class="table">
 			$mt=(isset($mediaTypes[$portList[$i]->MediaID]))?$mediaTypes[$portList[$i]->MediaID]->MediaType:'';
 
 			$rp=($portList[-$i]->ConnectedPort!='')?abs($portList[-$i]->ConnectedPort):''; //rear port label
+			$portList[$i]->Label=($portList[$i]->Label=='')?$i:$portList[$i]->Label;
 			print "\n\t\t\t\t<div data-port=$i>
 					<div id=\"fd$i\" data-default=$frontDev->DeviceID><a href=\"devices.php?deviceid=$frontDev->DeviceID\">$frontDev->Label</a></div>
 					<div id=\"fp$i\" data-default={$portList[$i]->ConnectedPort}><a href=\"paths.php?deviceid=$frontDev->DeviceID&portnumber={$portList[$i]->ConnectedPort}\">$fp</a></div>
 					<div id=\"fn$i\" data-default=\"{$portList[$i]->Notes}\">{$portList[$i]->Notes}</div>
-					<div id=\"pp$i\">$i</div>
+					<div id=\"pp$i\">{$portList[$i]->Label}</div>
 					<div id=\"mt$i\" data-default={$portList[$i]->MediaID}>$mt</div>
 					<div id=\"rd$i\" data-default=$rearDev->DeviceID><a href=\"devices.php?deviceid=$rearDev->DeviceID\">$rearDev->Label</a></div>
 					<div id=\"rp$i\" data-default={$portList[-$i]->ConnectedPort}><a href=\"paths.php?deviceid=$rearDev->DeviceID&portnumber={$portList[-$i]->ConnectedPort}\">$rp</a></div>
