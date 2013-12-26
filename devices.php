@@ -1601,8 +1601,8 @@ print "		var dialog=$('<div>').prop('title','".__("Verify Delete Device")."').ht
 					if(rear){
 						mediatype.text(data.MediaName).data('default',data.MediaID);
 						reardev.html('<a href="devices.php?deviceid='+data.ConnectedDeviceID+'">'+data.ConnectedDeviceLabel+'</a>').data('default',data.ConnectedDeviceID);
-						var cp=(data.ConnectedPort<0)?data.ConnectedPort*-1:'';
-						rearport.html('<a href="paths.php?deviceid='+data.ConnectedDeviceID+'&portnumber='+data.ConnectedPort+'">'+cp+'</a>').data('default',data.ConnectedPort);
+						data.ConnectedPortLabel=(data.ConnectedPortLabel=='')?(data.ConnectedPort===undefined)?'':Math.abs(data.ConnectedPort):data.ConnectedPortLabel;
+						rearport.html('<a href="paths.php?deviceid='+data.ConnectedDeviceID+'&portnumber='+data.ConnectedPort+'">'+data.ConnectedPortLabel+'</a>').data('default',data.ConnectedPort);
 						rearnotes.html(data.Notes).data('default',data.Notes);
 						row.children('div:not([id^=f])').removeAttr('style');
 					}else{

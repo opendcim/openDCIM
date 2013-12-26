@@ -2262,6 +2262,16 @@ class DevicePorts {
 			return false;
 		}
 
+		// If this is a patch panel and a front port then set the label on the rear 
+		// to match only after a successful update, done above.
+		if($dev->DeviceType=="Patch Panel" && $this->PortNumber>0){
+			$tmpport->DeviceID=$this->DeviceID;
+			$tmpport->PortNumber=-$this->PortNumber;
+			$tmpport->getPort();
+			$tmpport->Label=$this->Label;
+			$tmpport->updateLabel();
+		}
+
 		return true;
 	}
 
