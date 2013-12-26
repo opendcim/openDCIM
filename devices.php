@@ -2106,7 +2106,17 @@ echo '	<div class="table">
 
 			$mt=(isset($mediaTypes[$portList[$i]->MediaID]))?$mediaTypes[$portList[$i]->MediaID]->MediaType:'';
 
-			$rp=($portList[-$i]->ConnectedPort!='')?abs($portList[-$i]->ConnectedPort):''; //rear port label
+			// rear port label
+			if($portList[-$i]->ConnectedPort!=''){
+				$p=new DevicePorts();
+				$p->DeviceID=$portList[-$i]->ConnectedDeviceID;
+				$p->PortNumber=$i;
+				$p->getPort();
+				$rp=($p->Label=='')?$i:$p->Label;
+			}else{
+				$rp='';
+			}
+
 			$portList[$i]->Label=($portList[$i]->Label=='')?$i:$portList[$i]->Label;
 			print "\n\t\t\t\t<div data-port=$i>
 					<div id=\"fd$i\" data-default=$frontDev->DeviceID><a href=\"devices.php?deviceid=$frontDev->DeviceID\">$frontDev->Label</a></div>
