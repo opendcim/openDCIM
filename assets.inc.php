@@ -2604,7 +2604,7 @@ class ESX {
 				print "Querying host $esxDev->Label @ $esxDev->PrimaryIP...\n";
 			}
 
-			$vmList = ESX::RefreshInventory( $esxDev );
+			$vmList = ESX::RefreshInventory( $esxDev, $debug );
 
 			if($debug){
 				print_r($vmList);
@@ -2627,7 +2627,7 @@ class ESX {
 		$update = $dbh->prepare( "update fac_VMInventory set DeviceID=:DeviceID, LastUpdated=:LastUpdated, vmID=:vmID, vmState=:vmState where vmName=:vmName" );
 		$insert = $dbh->prepare( "insert into fac_VMInventory set DeviceID=:DeviceID, LastUpdated=:LastUpdated, vmID=:vmID, vmState=:vmState, vmName=:vmName" );
 		
-		$vmList = ESX::EnumerateVMs( $dev );
+		$vmList = ESX::EnumerateVMs( $dev, $debug );
 		if ( count( $vmList ) > 0 ) {
 			foreach( $vmList as $vm ) {
 				$search->execute( array( ":vmName"=>$vm->vmName ) );
