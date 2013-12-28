@@ -2262,6 +2262,16 @@ class DevicePorts {
 			return false;
 		}
 
+		// If this is a patch panel and a front port then set the label on the rear 
+		// to match only after a successful update, done above.
+		if($dev->DeviceType=="Patch Panel" && $this->PortNumber>0){
+			$tmpport->DeviceID=$this->DeviceID;
+			$tmpport->PortNumber=-$this->PortNumber;
+			$tmpport->getPort();
+			$tmpport->Label=$this->Label;
+			$tmpport->updateLabel();
+		}
+
 		return true;
 	}
 
@@ -2604,7 +2614,7 @@ class ESX {
 				print "Querying host $esxDev->Label @ $esxDev->PrimaryIP...\n";
 			}
 
-			$vmList = ESX::RefreshInventory( $esxDev );
+			$vmList = ESX::RefreshInventory( $esxDev, $debug );
 
 			if($debug){
 				print_r($vmList);
@@ -2627,7 +2637,7 @@ class ESX {
 		$update = $dbh->prepare( "update fac_VMInventory set DeviceID=:DeviceID, LastUpdated=:LastUpdated, vmID=:vmID, vmState=:vmState where vmName=:vmName" );
 		$insert = $dbh->prepare( "insert into fac_VMInventory set DeviceID=:DeviceID, LastUpdated=:LastUpdated, vmID=:vmID, vmState=:vmState, vmName=:vmName" );
 		
-		$vmList = ESX::EnumerateVMs( $dev );
+		$vmList = ESX::EnumerateVMs( $dev, $debug );
 		if ( count( $vmList ) > 0 ) {
 			foreach( $vmList as $vm ) {
 				$search->execute( array( ":vmName"=>$vm->vmName ) );
