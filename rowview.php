@@ -217,7 +217,7 @@ if($config->ParameterArray["ToolTips"]=='enabled'){
 				'left':pos.left+$(this).outerWidth()+15+'px',
 				'top':pos.top+($(this).outerHeight()/2)-15+'px'
 			}).addClass('arrow_left border cabnavigator tooltip').append('<span class="ui-icon ui-icon-refresh rotate"></span>');
-			$.post('cabnavigator.php',{tooltip: $(this).data('deviceid'), cabinetid: 1}, function(data){
+			$.post('scripts/ajax_tooltip.php',{tooltip: $(this).data('deviceid'), dev: 1}, function(data){
 				tooltip.html(data);
 			});
 			$('body').append(tooltip);
