@@ -1951,7 +1951,7 @@ echo '<fieldset class="chassis">
 			<div class="greybg"><input type="text" id="rearchassisslots" class="optional,validate[custom[onlyNumberSp]]" name="rearchassisslots" size="4" value="',$dev->RearChassisSlots,'"></div>
 		</div>';
 
-	if($dev->ChassisSlots >0){
+	if($dev->ChassisSlots >0 || $dev->RearChassisSlots>0){
 
 echo '	</div>
 	<div class="table">
