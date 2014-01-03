@@ -53,110 +53,6 @@ $(document).ready(function() {
 		$density = __("Watts per Square Meter" );
 	}
 	
-	if(isset($_POST['tooltip'])){
-		
-		$sql="SELECT C.*, T.Temp, T.Humidity, P.RealPower, T.LastRead, PLR.RPLastRead 
-			FROM ((fac_Cabinet C LEFT JOIN fac_CabinetTemps T ON C.CabinetID = T.CabinetID) 
-				LEFT JOIN (SELECT CabinetID, SUM(Wattage) RealPower FROM fac_PowerDistribution PD 
-				LEFT JOIN fac_PDUStats PS ON PD.PDUID=PS.PDUID GROUP BY CabinetID) P ON C.CabinetID = P.CabinetID) 
-			LEFT JOIN (SELECT CabinetID, MAX(LastRead) RPLastRead FROM fac_PowerDistribution PD 
-				LEFT JOIN fac_PDUStats PS ON PD.PDUID=PS.PDUID GROUP BY CabinetID) PLR 
-				ON C.CabinetID = PLR.CabinetID WHERE C.CabinetID=".intval($_POST['tooltip']);
-
-		if($cabRow=$dbh->query($sql)->fetch()){
-			$cab->CabinetID=$cabRow["CabinetID"];
-			$cab->GetCabinet();
-			$dev->Cabinet=$cab->CabinetID;
-        	$devList=$dev->ViewDevicesByCabinet();
-			$currentHeight = $cab->CabinetHeight;
-        	$totalWatts = $totalWeight = $totalMoment =0;
-			$currentTemperature=$cabRow["Temp"];
-			$currentHumidity=$cabRow["Humidity"];
-			$currentRealPower=$cabRow["RealPower"];
-			$lastRead=(!is_null($cabRow["LastRead"]))?strftime('%c',strtotime(($cabRow["LastRead"]))):0;
-			$RPlastRead=(!is_null($cabRow["RPLastRead"]))?strftime('%c',strtotime(($cabRow["RPLastRead"]))):0;
-			$rs='red';
-			$ys='yellow';
-			$gs='green';
-			$us='wtf';
-			
-			// get all color codes and limits for use with loop below
-			$dc->dcconfig=new Config();
-			$SpaceRed=intval($dc->dcconfig->ParameterArray["SpaceRed"]);
-			$SpaceYellow=intval($dc->dcconfig->ParameterArray["SpaceYellow"]);
-			$WeightRed=intval($dc->dcconfig->ParameterArray["WeightRed"]);
-			$WeightYellow=intval($dc->dcconfig->ParameterArray["WeightYellow"]);
-			$PowerRed=intval($dc->dcconfig->ParameterArray["PowerRed"]);
-			$PowerYellow=intval($dc->dcconfig->ParameterArray["PowerYellow"]);
-			$RealPowerRed=intval($dc->dcconfig->ParameterArray["PowerRed"]);
-			$RealPowerYellow=intval($dc->dcconfig->ParameterArray["PowerYellow"]);
-			
-			// Temperature 
-			$TemperatureYellow=intval($dc->dcconfig->ParameterArray["TemperatureYellow"]);
-			$TemperatureRed=intval($dc->dcconfig->ParameterArray["TemperatureRed"]);
-			
-			// Humidity
-			$HumidityMin=intval($dc->dcconfig->ParameterArray["HumidityRedLow"]);
-			$HumidityMedMin=intval($dc->dcconfig->ParameterArray["HumidityYellowLow"]);			
-			$HumidityMedMax=intval($dc->dcconfig->ParameterArray["HumidityYellowHigh"]);				
-			$HumidityMax=intval($dc->dcconfig->ParameterArray["HumidityRedHigh"]);
-						
-			
-			while(list($devID,$device)=each($devList)){
-				$totalWatts+=$device->GetDeviceTotalPower();
-				$DeviceTotalWeight=$device->GetDeviceTotalWeight();
-				$totalWeight+=$DeviceTotalWeight;
-				$totalMoment+=($DeviceTotalWeight*($device->Position+($device->Height/2)));
-			}
-				
-        	$used=$cab->CabinetOccupancy($cab->CabinetID);
-			// check to make sure the cabinet height is set to keep errors out of the logs
-			if(!isset($cab->CabinetHeight)||$cab->CabinetHeight==0){$SpacePercent=100;}else{$SpacePercent=locale_number(($used/$cab->CabinetHeight*100),0);}
-			// check to make sure there is a weight limit set to keep errors out of logs
-			if(!isset($cab->MaxWeight)||$cab->MaxWeight==0){$WeightPercent=0;}else{$WeightPercent=locale_number(($totalWeight/$cab->MaxWeight*100),0);}
-			// check to make sure there is a kilowatt limit set to keep errors out of logs
-        	if(!isset($cab->MaxKW)||$cab->MaxKW==0){$PowerPercent=0;}else{$PowerPercent=locale_number((($totalWatts/1000)/$cab->MaxKW*100),0);}
-			if(!isset($cab->MaxKW)||$cab->MaxKW==0){$RealPowerPercent=0;}else{$RealPowerPercent=locale_number((($currentRealPower/1000)/$cab->MaxKW *100),0);}
-		
-			//Decide which color to paint on the canvas depending on the thresholds
-			if($SpacePercent>$SpaceRed){$scolor=$rs;}elseif($SpacePercent>$SpaceYellow){$scolor=$ys;}else{$scolor=$gs;}
-			if($WeightPercent>$WeightRed){$wcolor=$rs;}elseif($WeightPercent>$WeightYellow){$wcolor=$ys;}else{$wcolor=$gs;}
-			if($PowerPercent>$PowerRed){$pcolor=$rs;}elseif($PowerPercent>$PowerYellow){$pcolor=$ys;}else{$pcolor=$gs;}
-			if($RPlastRead == null) {
-				$rpcolor=$us;
-			} elseif ( $RealPowerPercent>$RealPowerRed) {
-				$rpcolor=$rs;
-			} elseif ( $RealPowerPercent>$RealPowerYellow) {
-				$rpcolor=$ys;
-			} else {
-				$rpcolor=$gs;
-			}
-        	if($currentTemperature==0){$tcolor=$us;}elseif($currentTemperature>$TemperatureRed){$tcolor=$rs;}elseif($currentTemperature>$TemperatureYellow){$tcolor=$ys;}else{$tcolor=$gs;}
-			
-			if($currentHumidity==0){$hcolor=$us;}elseif($currentHumidity>$HumidityMax || $currentHumidity<$HumidityMin){$hcolor=$rs;
-			}elseif($currentHumidity>$HumidityMedMax || $currentHumidity<$HumidityMedMin) {$hcolor=$ys;}else{$hcolor=$gs;}
-				
-			$labelsp=locale_number($used,0)." / ".$cab->CabinetHeight." U";
-			$labelwe=locale_number($totalWeight,0)." / ".$cab->MaxWeight." Kg";
-			$labelpo=locale_number($totalWatts/1000,2)." / ".$cab->MaxKW." kW";
-			$labelte=(($currentTemperature>0)?locale_number($currentTemperature,0)."&deg; (".$lastRead.")":__("no data"));
-			$labelhu=(($currentHumidity>0)?locale_number($currentHumidity,0)." % (".$lastRead.")":__("no data"));
-			$labelrp=(($RPlastRead!=null)?locale_number($currentRealPower/1000,2)." / ".$cab->MaxKW." kW (".$RPlastRead.")":__("no data"));
-			
-			$tooltip="<span>$cab->Location</span><ul>\n";
-			$tooltip.="<li class=\"$scolor\">".__("Space").": ".$labelsp."</li>\n";
-			$tooltip.="<li class=\"$wcolor\">".__("Weight").": ".$labelwe."</li>\n";
-			$tooltip.="<li class=\"$pcolor\">".__("Calculated Power").": ".$labelpo."</li>\n";
-			$tooltip.="<li class=\"$rpcolor\">".__("Measured Power").": ".$labelrp."</li>\n";
-			$tooltip.="<li class=\"$tcolor\">".__("Temperature").": ".$labelte."</li>\n";
-			$tooltip.="<li class=\"$hcolor\">".__("Humidity").": ".$labelhu."</li></ul>\n";
-			
-			$tooltip="<div>$tooltip</div>";
-			print $tooltip;
-			exit;
-		}
-	}
-	
 ?>
 <!doctype html>
 <html>
@@ -312,7 +208,7 @@ echo $select.'</div></div>'.$dc->MakeImageMap();
 			}).addClass('arrow_left border cabnavigator tooltip').attr('id','tt').append('<span class="ui-icon ui-icon-refresh rotate"></span>');
 			var id=$(this).attr('href');
 			id=id.substring(id.lastIndexOf('=')+1,id.length);
-			$.post('',{tooltip: id}, function(data){
+			$.post('scripts/ajax_tooltip.php',{tooltip: id, cab: 1}, function(data){
 				tooltip.html(data);
 			});
 			$('body').append(tooltip);
