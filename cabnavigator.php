@@ -127,129 +127,6 @@ function renderCabinetProps($cab, $audit, $AuditorName)
 		exit;
 	}
 
-	if(isset($_POST['tooltip'])){
-		if(isset($_POST['cdu']) && $config->ParameterArray["CDUToolTips"]=='enabled'){
-			$pdu=new PowerDistribution();
-			$pdu->PDUID=$_POST['tooltip'];
-			$pdu->GetPDU();
-			$ttconfig=$dbh->query("SELECT * FROM fac_CDUToolTip WHERE Enabled=1 ORDER BY SortOrder ASC, Enabled DESC, Label ASC;");
-		}elseif($config->ParameterArray["ToolTips"]=='enabled'){
-			$dev=new Device();
-			$dev->DeviceID=$_POST['tooltip'];
-			$dev->GetDevice();
-
-			if($dev->Rights=='None'){
-				print __("Details Restricted");
-				exit;
-			}
-			$ttconfig=$dbh->query("SELECT * FROM fac_CabinetToolTip WHERE Enabled=1 ORDER BY SortOrder ASC, Enabled DESC, Label ASC;");
-		}
-
-		$tooltip="";
-		foreach($ttconfig as $row){
-			switch($row["Field"]){
-				case "SNMPCommunity":
-					if(isset($pdu->SNMPCommunity)){
-						$tooltip.=__($row["Label"]).": ".$pdu->$row["Field"]."<br>\n";
-					}else{
-						if($dev->ESX){
-							$tooltip.=__($row["Label"]).": ".$dev->$row["Field"]."<br>\n";
-						}
-					}
-					break;
-				case "ESX":
-					if($dev->ESX){
-						$tooltip.=__($row["Label"]).": ".$dev->$row["Field"]."<br>\n";
-					}
-					break;
-				case "EscalationID":
-					$esc=new Escalations();
-					$esc->EscalationID=$dev->$row["Field"];
-					$esc->GetEscalation();
-					$tooltip.=__($row["Label"]).": $esc->Details<br>\n";
-					break;
-				case "EscalationTimeID":
-					$escTime=new EscalationTimes();
-					$escTime->EscalationTimeID=$dev->$row["Field"];
-					$escTime->GetEscalationTime();
-					$tooltip.=__($row["Label"]).": $escTime->TimePeriod<br>\n";
-					break;
-				case "Owner":
-					$dept=new Department();
-					$dept->DeptID=$dev->Owner;
-					$dept->GetDeptByID();
-					$tooltip.=__($row["Label"]).": $dept->Name<br>\n";
-					break;
-				case "TemplateID":
-					$tmpl=new DeviceTemplate();
-					$tmpl->TemplateID=$dev->TemplateID;
-					$tmpl->GetTemplateByID();
-					$man=new Manufacturer();
-					$man->ManufacturerID=$tmpl->ManufacturerID;
-					$man->GetManufacturerByID();
-					$tooltip.=__($row["Label"]).": [$man->Name] $tmpl->Model<br>\n";
-					break;
-				case "ChassisSlots":
-					if($dev->DeviceType=='Chassis'){
-						$tooltip.=__($row["Label"])." ".$dev->$row["Field"]."<br>\n";
-					}
-					break;
-				case "Model":
-					$template=new CDUTemplate();
-					$manufacturer=new Manufacturer();
-
-					$template->TemplateID=$pdu->TemplateID;
-					$template->GetTemplate();
-
-					$manufacturer->ManufacturerID=$template->ManufacturerID;
-					$manufacturer->GetManufacturerByID();
-					$tooltip.=__($row["Label"]).": [$manufacturer->Name] $template->Model<br>\n";
-					break;
-				case "NumOutlets":
-					$template=new CDUTemplate();
-					$powerConn=new PowerConnection();
-
-					$template->TemplateID=$pdu->TemplateID;
-					$template->GetTemplate();
-
-					$powerConn->PDUID=$pdu->PDUID;
-					$connList=$powerConn->GetConnectionsByPDU();
-
-					$tooltip.=__($row["Label"]).": ".count($connList)."/".($template->NumOutlets+1)."<br>\n";
-					break;
-				case "Uptime":
-					$tooltip.=__($row["Label"]).": ".$pdu->GetSmartCDUUptime()."<br>\n";
-					break;
-				case "PanelID":
-					$pan=new PowerPanel();
-					$pan->PanelID=$pdu->PanelID;
-					$pan->GetPanel();
-					$tooltip.=__($row["Label"]).": $pan->PanelLabel<br>\n";
-					break;
-				case "PanelVoltage":
-					$pan=new PowerPanel();
-					$pan->PanelID=$pdu->PanelID;
-					$pan->GetPanel();
-
-					$tooltip.=__($row["Label"]).": ".$pan->PanelVoltage." / ".intval($pan->PanelVoltage/1.73)."<br>\n";
-					break;
-				case "DeviceType":
-					// if this is a chassis device display the number of blades?
-				default:
-					if(isset($_POST['cdu'])){
-						$tooltip.=__($row["Label"]).": ".$pdu->$row["Field"]."<br>\n";
-					}else{
-						$tooltip.=__($row["Label"]).": ".$dev->$row["Field"]."<br>\n";
-					}
-			}
-		}
-		if($tooltip==""){$tooltip=__("Tooltips are enabled with no options selected.");}
-		$tooltip="<div>$tooltip</div>";
-		print $tooltip;
-		exit;
-	}
-
-
 	$head=$legend=$zeroheight=$body=$deptcolor=$AuditorName="";
 	$audit=new CabinetAudit();
 	$dev=new Device();
@@ -749,7 +626,7 @@ if($config->ParameterArray["ToolTips"]=='enabled'){
 				'left':pos.left+$(this).outerWidth()+15+'px',
 				'top':pos.top+($(this).outerHeight()/2)-15+'px'
 			}).addClass('arrow_left border cabnavigator tooltip').attr('id','tt').append('<span class="ui-icon ui-icon-refresh rotate"></span>');
-			$.post('',{tooltip: $(this).data('deviceid')}, function(data){
+			$.post('scripts/ajax_tooltip.php',{tooltip: $(this).data('deviceid'), dev: 1}, function(data){
 				tooltip.html(data);
 			});
 			$('body').append(tooltip);
@@ -769,7 +646,7 @@ if($config->ParameterArray["CDUToolTips"]=='enabled'){
 			}).addClass('arrow_left border cabnavigator tooltip').attr('id','tt').append('<span class="ui-icon ui-icon-refresh rotate"></span>');
 			var id=$(this).attr('href');
 			id=id.substring(id.lastIndexOf('=')+1,id.length);
-			$.post('',{tooltip: id, cdu: ''}, function(data){
+			$.post('scripts/ajax_tooltip.php',{tooltip: id, cdu: 1}, function(data){
 				tooltip.html(data);
 			});
 			$('body').append(tooltip);
