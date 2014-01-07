@@ -37,6 +37,7 @@
             this._trigger( "select", event, {
               item: ui.item.option
             });
+		  $(ui.item.option).parent('select').change();
           },
  
           autocompletechange: "_removeIfInvalid"

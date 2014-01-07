@@ -527,7 +527,7 @@ table#cabprop span.text-label {
 
 #pandn.table .custom-combobox input, #pandn.table .custom-combobox a {border-top: 2px; border-bottom: 2px; border-style: inset;  width: auto; height: 18px;}
 #pandn.table .custom-combobox input {background-image: none; border-left: 2px; border-right: 0px; padding-left: 4px; font-size: inherit;} 
-#pandn.table .custom-combobox a {margin: 0; vertical-align: top; width: 18px; border-left: 0px; border-right: 2px;} 
+#pandn.table .custom-combobox a {margin: 0; vertical-align: top; width: 18px; border-left: 0px; border-right: 2px; position: absolute; top: 0; right: 0;} 
 .device #tags { width: 95%; min-width: 250px;}
 
 #firstport.hide { display: none; }
