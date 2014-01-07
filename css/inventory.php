@@ -22,7 +22,7 @@ textarea {white-space: pre;word-wrap: break-word;}
 .warning {text-align: center; color: red; text-transform: uppercase;}
 .right {text-align: right;}
 .left {text-align: left;}
-
+.custom-combobox {position: relative;display: inline-block;}
 
 [readonly],[disabled] {
 	background-color: #dcdcdc;
@@ -509,7 +509,6 @@ table#cabprop span.text-label {
 .device .table .table .table > div > div {padding: 3px;}
 .right .table + .table {margin-top: 1em;}
 
-
 .device .table.patchpanel div[id^="pp"] { border-left: 2px solid black; min-width: 10px;}
 .device .table.patchpanel > div:first-child div[id^="pp"],
 .device .table.patchpanel > div:first-child div[id^="mt"] {border-top: 1px solid black; }
@@ -526,7 +525,9 @@ table#cabprop span.text-label {
 .device .table.switch > div:first-child select::-moz-focus-inner, 
 .device .table.switch > div:first-child select:focus::-moz-focus-inner {border: none;}
 
-
+#pandn.table .custom-combobox input, #pandn.table .custom-combobox a {border-top: 2px; border-bottom: 2px; border-style: inset;  width: auto; height: 18px;}
+#pandn.table .custom-combobox input {background-image: none; border-left: 2px; border-right: 0px; padding-left: 4px; font-size: inherit;} 
+#pandn.table .custom-combobox a {margin: 0; vertical-align: top; width: 18px; border-left: 0px; border-right: 2px;} 
 .device #tags { width: 95%; min-width: 250px;}
 
 #firstport.hide { display: none; }

@@ -24,6 +24,11 @@
 		$devList=$dev->SearchDevicebySerialNo();
 		$resultcount=count($devList);
 		$title=__("Serial number search results for")." &quot;$searchTerm&quot;";
+	}elseif($searchKey=='ip'){
+		$dev->PrimaryIP=$searchTerm;
+		$devList=$dev->SearchDevicebyIP();
+		$resultcount=count($devList);
+		$title=__("PrimaryIP search results for")." &quot;$searchTerm&quot;";
 	}elseif($searchKey=='label'){
 		$dev->Label=$searchTerm;
 		$devList=$dev->SearchDevicebyLabel();

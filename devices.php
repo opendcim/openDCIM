@@ -601,6 +601,7 @@ $write=($dev->Rights=="Write")?true:$write;
   <script type="text/javascript" src="scripts/jquery.validationEngine.js"></script>
   <script type="text/javascript" src="scripts/jHtmlArea-0.8.min.js"></script>
   <script type="text/javascript" src="scripts/jquery.textext.js"></script>
+  <script type="text/javascript" src="scripts/combobox.js"></script>
 
 <SCRIPT type="text/javascript" >
 var nextField;
@@ -1342,6 +1343,8 @@ print "		var dialog=$('<div>').prop('title','".__("Verify Delete Device")."').ht
 							devlist.append('<option value='+device.DeviceID+'>'+device.Label+'</option>');
 						});
 						cdevice.html(devlist).find('select').val(cdevice.data('default'));
+//						devlist.combobox();
+//						devlist.on('select',function(e){devlist.change();console.log('test');});
 						devlist.change();
 						cnotes.html('<input type="text" value="'+cnotes.text()+'">');
 						portname.html('<input type="text" value="'+portname.text()+'">');

@@ -18,6 +18,8 @@
 			$field="CustomTag";
 		}elseif(isset($_REQUEST["owner"])){
 			$field="Owner";
+		}elseif(isset($_REQUEST["ip"])){
+			$field="PrimaryIP";
 		}
 	}
 		
