@@ -1120,6 +1120,15 @@ class Device {
 		}
 	}
 	
+	function query($sql){
+		global $dbh;
+		return $dbh->query($sql);
+	}
+	
+	function exec($sql){
+		global $dbh;
+		return $dbh->exec($sql);
+	}
 
 	function CreateDevice(){
 		global $dbh;
@@ -1625,6 +1634,19 @@ class Device {
 		$deviceList = array();
 
 		foreach($dbh->query($sql) as $deviceRow){
+			$deviceList[$deviceRow["DeviceID"]]=Device::RowToObject($deviceRow);
+		}
+
+		return $deviceList;
+	}
+
+	function SearchDevicebyIP(){
+		$this->MakeSafe();
+		
+		$sql="SELECT * FROM fac_Device WHERE PrimaryIP LIKE \"%$this->PrimaryIP%\" ORDER BY Label;";
+
+		$deviceList = array();
+		foreach($this->query($sql) as $deviceRow){
 			$deviceList[$deviceRow["DeviceID"]]=Device::RowToObject($deviceRow);
 		}
 

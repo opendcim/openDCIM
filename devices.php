@@ -601,6 +601,7 @@ $write=($dev->Rights=="Write")?true:$write;
   <script type="text/javascript" src="scripts/jquery.validationEngine.js"></script>
   <script type="text/javascript" src="scripts/jHtmlArea-0.8.min.js"></script>
   <script type="text/javascript" src="scripts/jquery.textext.js"></script>
+  <script type="text/javascript" src="scripts/combobox.js"></script>
 
 <SCRIPT type="text/javascript" >
 var nextField;
@@ -1298,6 +1299,7 @@ print "		var dialog=$('<div>').prop('title','".__("Verify Delete Device")."').ht
 								portcolor.children('select').val($(this).data($(this).val()).ColorID);
 							});
 							cdeviceport.html(portlist).find('select').val(cdeviceport.data('default'));
+							portlist.combobox();
 						});
 					}
 					function getmediatypes(portnum){
@@ -1314,6 +1316,7 @@ print "		var dialog=$('<div>').prop('title','".__("Verify Delete Device")."').ht
 								}
 							});
 							porttype.html(mlist).find('select').val(porttype.data('default'));
+							mlist.combobox();
 						});
 					}
 					function getcolortypes(portnum){
@@ -1330,6 +1333,7 @@ print "		var dialog=$('<div>').prop('title','".__("Verify Delete Device")."').ht
 								}
 							});
 							portcolor.html(clist).find('select').val(portcolor.data('default'));
+							clist.combobox();
 						});
 					}
 					$.post('',{swdev: $('#deviceid').val(),pn: portnum}).done(function(data){
@@ -1342,6 +1346,7 @@ print "		var dialog=$('<div>').prop('title','".__("Verify Delete Device")."').ht
 							devlist.append('<option value='+device.DeviceID+'>'+device.Label+'</option>');
 						});
 						cdevice.html(devlist).find('select').val(cdevice.data('default'));
+						devlist.combobox();
 						devlist.change();
 						cnotes.html('<input type="text" value="'+cnotes.text()+'">');
 						portname.html('<input type="text" value="'+portname.text()+'">');

@@ -18,6 +18,7 @@
 	<option value="serial">',__("Serial Number"),'</option>
 	<option value="asset">',__("Asset Tag"),'</option>
 	<option value="owner">',__("Owner"),'</option>
+	<option value="ip">',__("PrimaryIP"),'</option>
 </select>';
 ?>
 <div class="ui-icon ui-icon-close"></div>
