@@ -267,6 +267,11 @@
 			$patchpanels=(isset($_POST['rear']))?"true":null;
 			$portnumber=(isset($_POST['pn']))?$_POST['pn']:null;
 			$list=DevicePorts::getPatchCandidates($_POST['swdev'],$portnumber,null,$patchpanels);
+                        $labelList = array();
+                        foreach ($list as $key => $row) {
+                            $labelList[$key] = $row['Label'];
+                        }
+                        array_multisort($labelList, SORT_ASC, $list);
 		}
 		header('Content-Type: application/json');
 		echo json_encode($list);
