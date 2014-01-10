@@ -321,16 +321,20 @@
 	// This page was called from somewhere so let's do stuff.
 	// If this page wasn't called then present a blank record for device creation.
 	if(isset($_REQUEST['action'])||isset($_REQUEST['deviceid'])){
+		if ( isset( $_REQUEST['cabinetid'])) {
+				$cab->CabinetID=$_REQUEST["cabinetid"];
+				$cab->GetCabinet();
+		}
+		
 		if(isset($_REQUEST['action'])&&$_REQUEST['action']=='new'){
 			// sets install date to today when a new device is being created
 			$dev->InstallDate=date("m/d/Y");
 			// Some fields are pre-populated when you click "Add device to this cabinet"
-			if(isset($_REQUEST['cabinet'])){
-				$dev->Cabinet=$_REQUEST['cabinet'];
-				$cab->CabinetID=$dev->Cabinet;
+			// If you are adding a device that is assigned to a specific customer, assume that device is also owned by that customer
+			if ( isset( $_REQUEST['cabinet']) ) {
+				$cab->CabinetID=$_REQUEST["cabinet"];
 				$cab->GetCabinet();
-
-				// If you are adding a device that is assigned to a specific customer, assume that device is also owned by that customer
+				$dev->Cabinet = $cab->CabinetID;
 				if($cab->AssignedTo >0){
 					$dev->Owner=$cab->AssignedTo;
 				}
@@ -387,6 +391,8 @@
 				$write=false;
 				$write=($user->canWrite($cab->AssignedTo))?true:$write;
 				$write=($dev->Rights=="Write")?true:$write;
+				
+				// printf( "<h2>Debug:  AssignedTo: [%d]  AdminOwnDevices: [%d]   canWrite: [%d]</h2>", $cab->AssignedTo, $user->AdminOwnDevices, $user->canWrite( $cab->AssignedTo ) );
 
 				if($dev->Rights=="Write" && $dev->DeviceID >0){
 					switch($_POST['action']){
@@ -431,10 +437,11 @@
 				// Can't check the device for rights because it shouldn't exist yet
 				// but the user could have rights from the cabinet and it is checked above
 				// when the device object is populated.
-				}elseif($write && $_POST['action']=='Create'){
+				}elseif( $write && $_POST['action']=='Create'){
 					if($dev->TemplateID>0 && intval($dev->NominalWatts==0)){
 						$dev->UpdateWattageFromTemplate();
 					}
+					
 					$dev->CreateDevice();
 					$dev->SetTags($tagarray);
 				}
@@ -2148,7 +2155,7 @@ echo '	<div class="table">
 		}
 	}
 	// Delete rights are seperate from write rights
-	if($user->DeleteAccess && $dev->DeviceID >0){
+	if(($user->canWrite( $dev->Owner ) || $user->DeleteAccess ) && $dev->DeviceID >0){
 		echo '		<button type="button" name="action" value="Delete">',__("Delete"),'</button>';
 	}
 	if($dev->DeviceID >0){
