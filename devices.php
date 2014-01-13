@@ -1790,7 +1790,7 @@ echo '	<div class="table">
 		}
 	}
 	// Delete rights are seperate from write rights
-	if($write) || $user->DeleteAccess && $dev->DeviceID >0){
+	if(($write || $user->DeleteAccess) && $dev->DeviceID >0){
 		echo '		<button type="button" name="action" value="Delete">',__("Delete"),'</button>';
 	}
 	if($dev->DeviceID >0){
