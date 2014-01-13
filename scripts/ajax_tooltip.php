@@ -24,6 +24,7 @@ $tooltip=__('Error');
 // Init Objects
 $cab=new Cabinet();
 $dev=new Device();
+$dep=new Department();
 
 if($config->ParameterArray["mUnits"]=="english"){
 	$weightunit="lbs";
@@ -47,6 +48,12 @@ if($object>0){
 		if($cabRow=$dbh->query($sql)->fetch()){
 			$cab->CabinetID=$cabRow["CabinetID"];
 			$cab->GetCabinet();
+			$dep->DeptID = $cab->AssignedTo;
+			if ( $dep->DeptID > 0 ) {
+				$dep->GetDeptByID();
+			} else {
+				$dep->Name = __("General Use");
+			}
 			$dev->Cabinet=$cab->CabinetID;
 			$devList=$dev->ViewDevicesByCabinet();
 			$curHeight = $cab->CabinetHeight;
@@ -114,6 +121,7 @@ if($object>0){
 			$labelrp=(($RPlastRead!='0')?locale_number($curRealPower/1000,2)." / $cab->MaxKW kW ($RPlastRead)":__("no data"));
 			
 			$tooltip="<span>$cab->Location</span><ul>\n";
+			$tooltip.="<li>".$dep->Name."</li>";
 			$tooltip.="<li class=\"$scolor\">".__("Space").": $labelsp</li>\n";
 			$tooltip.="<li class=\"$wcolor\">".__("Weight").": $labelwe</li>\n";
 			$tooltip.="<li class=\"$pcolor\">".__("Calculated Power").": $labelpo</li>\n";
