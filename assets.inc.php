@@ -1536,6 +1536,56 @@ class Device {
 		return $parentList;
 	}
 	
+	static function GetReservationsByDate( $Days = null ) {
+		global $dbh;
+
+		// Since we are only concerned with physical space being occupied in terms of capacity, don't worry about child devices
+		if ( $Days == null ) {
+			$sql = "select * from fac_Device where Reservation=true order by InstallDate ASC";
+		} else {
+			$sql = sprintf( "select * from fac_Device where Reservation=true and InstallDate<=(CURDATE()+%d) ORDER BY InstallDate ASC", $Days );
+		}
+		
+		$devList = array();
+
+		foreach($dbh->query($sql) as $row){
+			$devList[]=Device::RowToObject($row);
+		}
+
+		return $devList;
+	}
+	
+	static function GetReservationsByDC( $dc ) {
+		global $dbh;
+
+		// Since we are only concerned with physical space being occupied in terms of capacity, don't worry about child devices
+		$sql = sprintf( "select a.* from fac_Device a, fac_Cabinet b where a.Cabinet=b.CabinetID and b.DataCenterID=%d and Reservation=true order by a.InstallDate ASC, a.Cabinet ASC", $dc );
+		
+		$devList = array();
+
+		foreach($dbh->query($sql) as $row){
+			$devList[]=Device::RowToObject($row);
+		}
+
+		return $devList;
+	}
+	
+	static function GetReservationsByOwner( $Owner ) {
+		global $dbh;
+
+		// Since we are only concerned with physical space being occupied in terms of capacity, don't worry about child devices
+		$sql = sprintf( "select * from fac_Device where Owner=%d and Reservation=true order by InstallDate ASC, Cabinet ASC", $Owner );
+		
+		$devList = array();
+
+		foreach($dbh->query($sql) as $row){
+			$devList[]=Device::RowToObject($row);
+		}
+
+		return $devList;
+	}
+	
+	
 	function WhosYourDaddy() {
 		global $dbh;
 	
