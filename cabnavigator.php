@@ -709,65 +709,7 @@ echo $head,'  <script type="text/javascript" src="scripts/jquery.min.js"></scrip
 ';
 if($config->ParameterArray["ToolTips"]=='enabled'){
 ?>
-		/*$('.cabinet td.device:has(a), #zerou div > a').mouseenter(function(){*/
-		$('img.picture, img.bladepict').mouseenter(function(){
-			var pos=$(this).offset();
-			var tx=pos.left;
-			var ty=pos.top;
-			var tw=$(this).width();
-			var th=$(this).height();
-			var elemborderl=$('<div class="elemborder" />').css({ 
-				'z-index': 99, 
-				'position': 'absolute', 
-				'border': '1px solid red', 
-				'left':tx-2+'px', 
-				'top':ty-2+'px', 
-				'width':0+'px', 
-				'height':th+'px'}); 
-			$('body').append(elemborderl); 
-			var elemborderu=$('<div class="elemborder" />').css({ 
-				'z-index': 99, 
-				'position': 'absolute', 
-				'border': '1px solid red', 
-				'left':tx+'px', 
-				'top':ty-2+'px', 
-				'width':tw+'px', 
-				'height':0+'px'}); 
-			$('body').append(elemborderu); 
-			var elemborderr=$('<div class="elemborder" />').css({ 
-				'z-index': 99, 
-				'position': 'absolute', 
-				'border': '1px solid red', 
-				'left':tx+tw+'px', 
-				'top':ty+'px', 
-				'width':0+'px', 
-				'height':th+'px'}); 
-			$('body').append(elemborderr); 
-			var elemborderd=$('<div class="elemborder" />').css({ 
-				'z-index': 99, 
-				'position': 'absolute', 
-				'border': '1px solid red', 
-				'left':tx-2+'px', 
-				'top':ty+th+'px', 
-				'width':tw+'px', 
-				'height':0+'px'}); 
-			$('body').append(elemborderd);
-			
-			var tooltip=$('<div />').css({
-				'left':pos.left+$(this).outerWidth()+15+'px',
-				'top':pos.top+($(this).outerHeight()/2)-15+'px'
-			}).addClass('arrow_left border cabnavigator tooltip').attr('id','tt').append('<span class="ui-icon ui-icon-refresh rotate"></span>');
-			$.post('scripts/ajax_tooltip.php',{tooltip: $(this).data('deviceid'), dev: 1}, function(data){
-				tooltip.html(data);
-			});
-			$('body').append(tooltip);
-			$(this).mouseleave(function(){
-				tooltip.remove();
-				$('div.elemborder').remove();
-			});
-		});
-
-		$('.cabinet td.cabdev_t:has(a), #zerou div > a').mouseenter(function(){
+		$('.cabinet td.cabdev_t:has(a), #zerou div > a, img.picture, img.bladepict, img.picturerot').mouseenter(function(){
 			var pos=$(this).offset();
 			var tooltip=$('<div />').css({
 				'left':pos.left+$(this).outerWidth()+15+'px',
@@ -779,62 +721,6 @@ if($config->ParameterArray["ToolTips"]=='enabled'){
 			$('body').append(tooltip);
 			$(this).mouseleave(function(){
 				tooltip.remove();
-			});
-		});
-
-		$('img.picturerot').mouseenter(function(){
-			var pos=$(this).offset();
-			var tx=pos.left;
-			var ty=pos.top;
-			var th=$(this).width();
-			var tw=$(this).height();
-			var elemborderl=$('<div class="elemborder" />').css({ 
-				'z-index': 99, 
-				'position': 'absolute', 
-				'border': '1px solid red', 
-				'left':tx-2+'px', 
-				'top':ty-2+'px', 
-				'width':0+'px', 
-				'height':th+'px'}); 
-			$('body').append(elemborderl); 
-			var elemborderu=$('<div class="elemborder" />').css({ 
-				'z-index': 99, 
-				'position': 'absolute', 
-				'border': '1px solid red', 
-				'left':tx+'px', 
-				'top':ty-2+'px', 
-				'width':tw+'px', 
-				'height':0+'px'}); 
-			$('body').append(elemborderu); 
-			var elemborderr=$('<div class="elemborder" />').css({ 
-				'z-index': 99, 
-				'position': 'absolute', 
-				'border': '1px solid red', 
-				'left':tx+tw+'px', 
-				'top':ty+'px', 
-				'width':0+'px', 
-				'height':th+'px'}); 
-			$('body').append(elemborderr); 
-			var elemborderd=$('<div class="elemborder" />').css({ 
-				'z-index': 99, 
-				'position': 'absolute', 
-				'border': '1px solid red', 
-				'left':tx-2+'px', 
-				'top':ty+th+'px', 
-				'width':tw+'px', 
-				'height':0+'px'}); 
-			$('body').append(elemborderd);
-			var tooltip=$('<div />').css({
-				'left':pos.left+$(this).outerHeight()+15+'px',
-				'top':pos.top+($(this).outerWidth()/2)-15+'px'
-			}).addClass('arrow_left border cabnavigator tooltip').attr('id','tt').append('<span class="ui-icon ui-icon-refresh rotate"></span>');
-			$.post('scripts/ajax_tooltip.php',{tooltip: $(this).data('deviceid'), dev: 1}, function(data){
-				tooltip.html(data);
-			});
-			$('body').append(tooltip);
-			$(this).mouseleave(function(){
-				tooltip.remove();
-				$('div.elemborder').remove();
 			});
 		});
 

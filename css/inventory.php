@@ -433,6 +433,8 @@ div.cabinet {
 .cabinet th{font-size: 1.5em;padding: 0.25em;text-align: center;}
 #zerou a{display: block;}
 
+.cabnavigator img.picture:hover, .cabnavigator img.bladepict:hover, .cabnavigator img.picturerot:hover { border: 2px solid red; margin: -2px; }
+
 .cabnavigator .nav { text-align: center; }
 .cabnavigator .nav li { margin-top: 0.1em; border: 1px solid darkGray;}
 .cabnavigator .nav a:hover li { border-color: black; }
