@@ -519,6 +519,26 @@ class DataCenter {
 						if ($cab->MapX1==$cab->MapX2 || $cab->MapY1==$cab->MapY2){
 							continue;
 						}
+						/* This is ready for a JS implementation of drawArrow() to show to air flow
+ 
+						$midX = $cab->MapX1 + intval((($cab->MapX2 - $cab->MapX1) / 2 ));
+						$midY = $cab->MapY1 + intval((($cab->MapY2 - $cab->MapY2) / 2 ));
+						
+						switch ( $cab->FrontEdge ) {
+							case "Top":
+								$arrow = sprintf( "drawArrow( %d, %d, %d, %d );\n", $midX, $cab->MapY1, $midX, $cab->MapY2 );
+								break;
+							case "Right":
+								$arrow = sprintf( "drawArrow( %d, %d, %d, %d );\n", $cab->MapX2, $midY, $cab->MapX1, $midY );
+								break;
+							case "Bottom":
+								$arrow = sprintf( "drawArrow( %d, %d, %d, %d );\n", $midX, $cab->MapY2, $midX, $cab->MapY1 );
+								break;
+							default:
+								$arrow = sprintf( "drawArrow( %d, %d, %d, %d );\n", $cab->MapX1, $midY, $cab->MapX2, $midY );
+								break;
+						}
+						*/
 						$dev->Cabinet=$cab->CabinetID;
 						$dev->Location=$cab->Location;  //$dev->Location ???
 	    	    		$devList=$dev->ViewDevicesByCabinet();
