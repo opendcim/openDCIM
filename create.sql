@@ -309,6 +309,10 @@ CREATE TABLE fac_DeviceTemplate (
   PSCount int(11) NOT NULL,
   NumPorts int(11) NOT NULL,
   Notes text NOT NULL,
+  FrontPictureFile VARCHAR(45) NOT NULL,
+  RearPictureFile VARCHAR(45) NOT NULL,
+  ChassisSlots SMALLINT(6) NOT NULL,
+  RearChassisSlots SMALLINT(6) NOT NULL,
   PRIMARY KEY (TemplateID),
   UNIQUE KEY ManufacturerID (ManufacturerID,Model)
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
@@ -811,3 +815,17 @@ INSERT INTO fac_CDUTemplate set ManufacturerID=(select ManufacturerID from fac_M
 INSERT INTO fac_CDUTemplate set ManufacturerID=(select ManufacturerID from fac_Manufacturer where Name='ServerTech'), Model="Generic Single-Phase CDU", Managed=TRUE, VersionOID=".1.3.6.1.4.1.1718.3.1.1.0", Multiplier=100, OID1=".1.3.6.1.4.1.1718.3.2.2.1.7.1.1", OID2="", OID3="", ProcessingProfile="SingleOIDAmperes", Voltage="", Amperage="", NumOutlets="";
 INSERT INTO fac_CDUTemplate set ManufacturerID=(select ManufacturerID from fac_Manufacturer where Name='ServerTech'), Model="Generic 3-Phase CDU", Managed=TRUE, VersionOID=".1.3.6.1.4.1.1718.3.1.1.0", Multiplier=100, OID1=".1.3.6.1.4.1.1718.3.2.2.1.7.1.1", OID2=".1.3.6.1.4.1.1718.3.2.2.1.7.1.2", OID3=".1.3.6.1.4.1.1718.3.2.2.1.7.1.3", ProcessingProfile="Convert3PhAmperes", Voltage="", Amperage="", NumOutlets="";
 
+--
+-- Table structure for fac_Slots
+--
+DROP TABLE IF EXISTS fac_Slots;
+CREATE TABLE fac_Slots (
+	TelmpateID INT(11) NOT NULL,
+	Position INT(11) NOT NULL,
+	BackSide TINYINT(1) NOT NULL,
+	X INT(11) NULL,
+	Y INT(11) NULL,
+	W INT(11) NULL,
+	H INT(11) NULL,
+	PRIMARY KEY (TelmpateID, Position, BackSide)
+) ENGINE = InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;

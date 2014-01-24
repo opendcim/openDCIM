@@ -171,8 +171,8 @@ echo '
 echo '
 				</div><!-- END div.table -->
 			</form>
-		</div></div>
-	</div><!-- END div.mapmaker -->';
+		</div></div><!-- END div.center -->
+	</div><!-- END div.zonemaker -->';
 
 if(strlen($dc_zone->DrawingFileName) >0){
 	echo '

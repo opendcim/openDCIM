@@ -212,7 +212,9 @@ class Cabinet {
 
 		$CabinetID=intval($CabinetID);
 		
-		$sql="SELECT SUM(Height) AS Occupancy FROM fac_Device WHERE Cabinet=$CabinetID;";
+		//$sql="SELECT SUM(Height) AS Occupancy FROM fac_Device WHERE Cabinet=$CabinetID;";
+		//JMGA halfdepth height calculation
+		$sql = "select sum(if(HalfDepth,Height/2,Height)) as Occupancy from fac_Device where Cabinet=$CabinetID";
 
 		if(!$row=$dbh->query($sql)->fetch()){
 			$info=$dbh->errorInfo();
@@ -1508,7 +1510,10 @@ class Device {
 	
 		$this->MakeSafe();
 	
-		$sql="SELECT * FROM fac_Device WHERE ParentDevice=$this->DeviceID ORDER BY ChassisSlots, Position ASC;";
+
+		// $sql="SELECT * FROM fac_Device WHERE ParentDevice=$this->DeviceID ORDER BY ChassisSlots, Position ASC;";
+		// JMGA
+		$sql="SELECT * FROM fac_Device WHERE ParentDevice=$this->DeviceID ORDER BY BackSide, Position ASC;";
 
 		$childList = array();
 
@@ -1522,8 +1527,10 @@ class Device {
 	function GetParentDevices(){
 		global $dbh;
 		
-		$sql="SELECT * FROM fac_Device WHERE ChassisSlots>0 AND ParentDevice=0 ORDER BY Label ASC;";
-		
+		// $sql="SELECT * FROM fac_Device WHERE ChassisSlots>0 AND ParentDevice=0 ORDER BY Label ASC;";
+		// JMGA multichassis
+		$sql="SELECT * FROM fac_Device WHERE ChassisSlots>0 ORDER BY Label ASC;";
+
 		$parentList=array();
 		foreach($dbh->query($sql) as $row){
 			// Assigning here will trigger the FilterRights method and check the cabinet rights
@@ -2088,6 +2095,125 @@ class Device {
 			}
 		}
 		return $TotalWeight;	
+	}
+	function GetChildDevicePicture($zoom){
+		global $dbh;
+
+		$resp="";
+		
+		$templ=new DeviceTemplate();
+		$templ->TemplateID=$this->TemplateID;
+		$templ->GetTemplateByID();
+		
+		$parentDev=new Device();
+		$parentDev->DeviceID=$this->ParentDevice;
+		$parentDev->GetDevice();
+		
+		if ($templ->FrontPictureFile<>""){
+			$picturefile="pictures/".$templ->FrontPictureFile;
+			list($width, $height, $type, $attr)=getimagesize($picturefile);
+			$hor_blade=($width>$height);
+			$slot=new Slot();
+			$slot->TemplateID=$parentDev->TemplateID;
+			$slot->Position=$this->Position;
+			$slot->BackSide=$this->BackSide;
+			if ($slot->GetSlot()){
+				$hor_slot=($slot->W>$slot->H);
+				$rotar="";
+				if($hor_slot){
+					if(!$hor_blade)
+						$rotar=" rotar_i";
+				}else{
+					if($hor_blade)
+						$rotar=" rotar_d";
+				}
+				if($this->Rights!="None")
+					$resp.="<a href=\"devices.php?deviceid=$this->DeviceID\">";
+				if ($rotar==""){
+					$resp.="<div style='position:absolute; left:".$slot->X*$zoom."px; top:".$slot->Y*$zoom."px;'>";
+					$resp.="<img class='bladepict' data-deviceid=$this->DeviceID width='".$slot->W*$zoom."px' height='".$slot->H*$zoom."px' data-deviceid=$this->DeviceID src='pictures/".$templ->FrontPictureFile."' alt='".$this->Label."'>";
+				}
+				else {
+					//como la rotaci�n es desde el centro del div, lo posiciono en el centro del slot
+					$resp.="<div style='position:absolute; left:".(($slot->X-abs($slot->W-$slot->H)/2)*$zoom)."px; top:".(($slot->Y+abs($slot->W-$slot->H)/2)*$zoom)."px;'>";
+					$resp.="<img class='picturerot$rotar' data-deviceid=$this->DeviceID width='".$slot->H*$zoom."px' height='".$slot->W*$zoom."px' src='pictures/".$templ->FrontPictureFile."' alt='".$this->Label."'>";
+				}
+				//$resp.="</div>";
+				if ( $this->ChassisSlots > 0 ) {
+					//multichassis
+					$childList = $this->GetDeviceChildren();
+					foreach ( $childList as $tmpDev ) {
+						if (!$tmpDev->BackSide){
+								$resp.=$tmpDev->GetChildDevicePicture($zoom);
+						}
+					}
+				}
+				$resp.="</div>";
+				if($this->Rights!="None")
+					$resp.="</a>";
+			}
+		}
+		return $resp;
+	}
+	function GetDeviceFrontPicture(){
+		global $dbh;
+		
+		$templ=new DeviceTemplate();
+		$templ->TemplateID=$this->TemplateID;
+		$templ->GetTemplateByID();
+		if ($templ->FrontPictureFile=="")
+			$resp="";
+		else {
+			//Device (front)
+			$picturefile="pictures/".$templ->FrontPictureFile;
+			list($width, $height, $type, $attr)=getimagesize($picturefile);
+			$ancho=220;
+			$zoom=$ancho/$width;
+			
+			$resp="<div class='picture'>";
+			$resp.="<img class='picture' data-deviceid=$this->DeviceID width='".$ancho."px' src='".$picturefile."' alt='".$this->Label."'>";
+			//Front childs
+			if ( $this->ChassisSlots > 0 ) {
+				$childList = $this->GetDeviceChildren();
+				foreach ( $childList as $tmpDev ) {
+					if (!$tmpDev->BackSide){
+						$resp.=$tmpDev->GetChildDevicePicture($zoom);
+					}  //if (!$tmpdev->BackSide){
+				} //foreach
+			}
+			$resp.="</div>";
+		}
+		return $resp;
+	}
+	function GetDeviceRearPicture(){
+		global $dbh;
+		
+		$templ=new DeviceTemplate();
+		$templ->TemplateID=$this->TemplateID;
+		$templ->GetTemplateByID();
+		if ($templ->RearPictureFile=="")
+			$resp="";
+		else {
+			//Device (rear)
+			$picturefile="pictures/".$templ->RearPictureFile;
+			list($width, $height, $type, $attr)=getimagesize($picturefile);
+			$ancho=220;
+			$zoom=$ancho/$width;
+			
+			$resp="<div class='picture'>";
+			$resp.="<img class='picture' data-deviceid=$this->DeviceID width='".$ancho."px' src='".$picturefile."' alt='".$this->Label."'>";
+			//Rear childs
+			if ( $this->RearChassisSlots > 0 ) {
+				$childList = $this->GetDeviceChildren();
+				foreach ( $childList as $tmpDev ) {
+					if ($tmpDev->BackSide){
+						$resp.=$tmpDev->GetChildDevicePicture($zoom);
+					}  //if (!$tmpdev->BackSide){
+				}  //foreach
+			}
+			$resp.="</div>";
+		}
+		return $resp;
 	}
 }
 

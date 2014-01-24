@@ -188,7 +188,7 @@ function renderCabinetProps($cab, $audit, $AuditorName)
 	$body.="<div class=\"cabinet\">
 <table>
 	<tr><th id=\"cabid\" data-cabinetid=$cab->CabinetID colspan=2 $cab_color>".__("Cabinet")." $cab->Location</th></tr>
-	<tr><td>".__("Pos")."</td><td>".__("Device")."</td></tr>\n";
+	<tr><td class=\"cabpos\">".__("Pos")."</td><td class=\"cabdev_t\">".__("Device")."</td></tr>\n";
 
 	$heighterr="";
 	$ownership_unassigned = false;
@@ -204,7 +204,7 @@ function renderCabinetProps($cab, $audit, $AuditorName)
 			}
 		}
 
-		//JMGA only fulldepth devices and front devices
+		//only fulldepth devices and front devices
 		if (!$device->HalfDepth || !$device->BackSide){
 			if ($device->HalfDepth) $backside=true;
 			$devTop=$device->Position + $device->Height - 1;
@@ -241,29 +241,71 @@ function renderCabinetProps($cab, $audit, $AuditorName)
 			$reserved=($device->Reservation==false)?"":" reserved";
 			if($devTop<$currentHeight && $currentHeight>0){
 				for($i=$currentHeight;($i>$devTop);$i--){
-					$errclass=($i>$cab->CabinetHeight)?' class="error"':'';
+					$errclass=($i>$cab->CabinetHeight)?' error':'';
 					if($errclass!=''){$heighterr="yup";}
 					if($i==$currentHeight){
 						$blankHeight=$currentHeight-$devTop;
 						if($devTop==-1){--$blankHeight;}
-						$body.="<tr><td$errclass>$i</td><td class=\"freespace\" rowspan=$blankHeight>&nbsp;</td></tr>\n";
+						$body.="<tr><td class=\"cabpos freespace$errclass\">$i</td><td class=\"cabdev_t freespace\" rowspan=$blankHeight>&nbsp;</td></tr>\n";
 					} else {
-						$body.="<tr><td$errclass>$i</td></tr>\n";
+						$body.="<tr><td class=\"cabpos freespace$errclass\">$i</td></tr>\n";
 						if($i==1){break;}
 					}
 				}
 			}
 			for($i=$devTop;$i>=$device->Position;$i--){
-				$errclass=($i>$cab->CabinetHeight)?' class="error"':'';
+				$errclass=($i>$cab->CabinetHeight)?' error':'';
 				if($errclass!=''){$heighterr="yup";}
 				if($i==$devTop){
 					if($device->Rights!="None"){
-						$body.="<tr><td$errclass>$i</td><td class=\"device$reserved dept$device->Owner\" rowspan=$device->Height data-deviceid=$device->DeviceID><a href=\"devices.php?deviceid=$device->DeviceID\">$highlight $device->Label</a></td></tr>\n";
+						if (!$device->BackSide){
+							if ($templ->FrontPictureFile==""){
+								//text
+								$body.="<tr><td class=\"cabpos$reserved dept$device->Owner$errclass\">$i</td><td class=\"cabdev_t$reserved dept$device->Owner\" rowspan=$device->Height data-deviceid=$device->DeviceID><a href=\"devices.php?deviceid=$device->DeviceID\">$highlight $device->Label</a></td></tr>\n";
+							}else {
+								//Picture
+								$body.="<tr><td class=\"cabpos$reserved dept$device->Owner$errclass\">$i</td><td class=\"cabdev_p\" rowspan=$device->Height data-deviceid=$device->DeviceID>";
+								$body.="<a href=\"devices.php?deviceid=$device->DeviceID\">";
+								$body.=$device->GetDeviceFrontPicture();
+								$body.="</a></td></tr>\n";
+							}
+						}else{
+							if ($templ->RearPictureFile==""){
+								//text
+								$body.="<tr><td class=\"cabpos$reserved dept$device->Owner$errclass\">$i</td><td class=\"cabdev_t$reserved dept$device->Owner\" rowspan=$device->Height data-deviceid=$device->DeviceID><a href=\"devices.php?deviceid=$device->DeviceID\">$highlight $device->Label (".__("Rear").")</a></td></tr>\n";
+							}else {
+								//Picture
+								$body.="<tr><td class=\"cabpos$reserved dept$device->Owner$errclass\">$i</td><td class=\"cabdev_p\" rowspan=$device->Height data-deviceid=$device->DeviceID>";
+								$body.="<a href=\"devices.php?deviceid=$device->DeviceID\">";
+								$body.=$device->GetDeviceRearPicture();
+								$body.="</a></td></tr>\n";
+							}
+						}
 					}else{
-						$body.="<tr><td$errclass>$i</td><td class=\"device$reserved dept$device->Owner\" rowspan=$device->Height data-deviceid=$device->DeviceID>$highlight $device->Label</td></tr>\n";
+						if (!$device->BackSide){
+							if ($templ->FrontPictureFile==""){
+								//text
+								$body.="<tr><td class=\"cabpos$reserved dept$device->Owner$errclass\">$i</td><td class=\"cabdev_t$reserved dept$device->Owner\" rowspan=$device->Height data-deviceid=$device->DeviceID>$highlight $device->Label</td></tr>\n";
+							}else {
+								//Picture
+								$body.="<tr><td class=\"cabpos$reserved dept$device->Owner$errclass\">$i</td><td class=\"cabdev_p\" rowspan=$device->Height data-deviceid=$device->DeviceID>";
+								$body.=$device->GetDeviceFrontPicture();
+								$body.="</td></tr>\n";
+							}
+						}else{
+							if ($templ->FrontPictureFile==""){
+								//text
+								$body.="<tr><td class=\"cabpos$reserved dept$device->Owner$errclass\">$i</td><td class=\"cabdev_t$reserved dept$device->Owner\" rowspan=$device->Height data-deviceid=$device->DeviceID>$highlight $device->Label (".__("Rear").")</td></tr>\n";
+							}else {
+								//Picture
+								$body.="<tr><td class=\"cabpos$reserved dept$device->Owner$errclass\">$i</td><td class=\"cabdev_p\" rowspan=$device->Height data-deviceid=$device->DeviceID>";
+								$body.=$device->GetDeviceRearPicture();
+								$body.="</td></tr>\n";
+							}
+						}
 					}
 				}else{
- 					$body.="<tr><td$errclass>$i</td></tr>\n";
+ 					$body.="<tr><td class=\"cabpos$reserved dept$device->Owner$errclass\">$i</td></tr>\n";
 				}
 			}
 			$currentHeight=$device->Position - 1;
@@ -277,9 +319,9 @@ function renderCabinetProps($cab, $audit, $AuditorName)
 		if($i==$currentHeight){
 			$blankHeight=$currentHeight;
 
-			$body.="<tr><td>$i</td><td class=\"freespace\" rowspan=$blankHeight>&nbsp;</td></tr>\n";
+			$body.="<tr><td class=\"cabpos freespace\">$i</td><td class=\"cabdev_t freespace\" rowspan=$blankHeight>&nbsp;</td></tr>\n";
 		}else{
-			$body.="<tr><td>$i</td></tr>\n";
+			$body.="<tr><td class=\"cabpos freespace\">$i</td></tr>\n";
 		}
 	}
 
@@ -289,7 +331,7 @@ function renderCabinetProps($cab, $audit, $AuditorName)
 		$body.="</table></div><div class=\"cabinet\">
 	<table>
 		<tr><th colspan=2 $cab_color >".__("Cabinet")." $cab->Location (".__("Rear").")</th></tr>
-		<tr><td>".__("Pos")."</td><td>".__("Device")."</td></tr>\n";
+		<tr><td class=\"cabpos\">".__("Pos")."</td><td class=\"cabdev_t\">".__("Device")."</td></tr>\n";
 
 		while(list($dev_index,$device)=each($devList)){
 			if (!$device->HalfDepth || $device->BackSide){
@@ -324,34 +366,81 @@ function renderCabinetProps($cab, $audit, $AuditorName)
 				$reserved=($device->Reservation==false)?"":" reserved";
 				if($devTop<$currentHeight && $currentHeight>0){
 					for($i=$currentHeight;$i>$devTop;$i--){
-						$errclass=($i>$cab->CabinetHeight)?' class="error"':'';
+						$errclass=($i>$cab->CabinetHeight)?' error':'';
 						if($errclass!=''){$heighterr="yup";}
 						if($i==$currentHeight){
 							$blankHeight=$currentHeight-$devTop;
 							if($devTop==-1){--$blankHeight;}
-							$body.="<tr><td $errclass>$i</td><td class=\"freespace\" rowspan=$blankHeight>&nbsp;</td></tr>\n";
+							$body.="<tr><td class=\"cabpos freespace$errclass\">$i</td><td class=\"cabdev_t freespace\" rowspan=$blankHeight>&nbsp;</td></tr>\n";
 						} else {
-							$body.="<tr><td $errclass>$i</td></tr>\n";
+							$body.="<tr><td class=\"cabpos freespace$errclass\">$i</td></tr>\n";
 							if($i==1){break;}
 						}
 					}
 				}
 				for($i=$devTop;$i>=$device->Position;$i--){
-					$errclass=($i>$cab->CabinetHeight)?' class="error"':'';
+					$errclass=($i>$cab->CabinetHeight)?' error':'';
 					if($errclass!=''){$heighterr="yup";}
 					if($i==$devTop){
 						if($device->Rights!="None"){
-							$body.="<tr><td$errclass>$i</td><td class=\"device$reserved dept".
-								"$device->Owner\" rowspan=$device->Height data-deviceid=$device->DeviceID><a".
-								" href=\"devices.php?deviceid=$device->DeviceID\">$highlight $device->Label".
-								(!$device->BackSide?" (".__("Rear").")":"")."</a></td></tr>\n";
+							if ($device->BackSide) {
+								if ($templ->FrontPictureFile=="")
+									//text
+									$body.="<tr><td class=\"cabpos$reserved dept$device->Owner$errclass\">$i</td><td class=\"cabdev_t$reserved dept".
+										"$device->Owner\" rowspan=$device->Height data-deviceid=$device->DeviceID><a".
+										" href=\"devices.php?deviceid=$device->DeviceID\">$highlight $device->Label".
+										"</a></td></tr>\n";
+								else {
+									//Picture
+									$body.="<tr><td class=\"cabpos$reserved dept$device->Owner$errclass\">$i</td><td class=\"cabdev_p\" rowspan=$device->Height data-deviceid=$device->DeviceID>";
+									$body.="<a href=\"devices.php?deviceid=$device->DeviceID\">";
+									$body.=$device->GetDeviceFrontPicture();
+									$body.="</a></td></tr>\n";
+								}
+							}else{
+								if ($templ->RearPictureFile=="")
+									//text
+									$body.="<tr><td class=\"cabpos$reserved dept$device->Owner$errclass\">$i</td><td class=\"cabdev_t$reserved dept".
+										"$device->Owner\" rowspan=$device->Height data-deviceid=$device->DeviceID><a".
+										" href=\"devices.php?deviceid=$device->DeviceID\">$highlight $device->Label (".
+										__("Rear").")</a></td></tr>\n";
+								else {
+									//Picture
+									$body.="<tr><td class=\"cabpos$reserved dept$device->Owner$errclass\">$i</td><td class=\"cabdev_p\" rowspan=$device->Height data-deviceid=$device->DeviceID>";
+									$body.="<a href=\"devices.php?deviceid=$device->DeviceID\">";
+									$body.=$device->GetDeviceRearPicture();
+									$body.="</a></td></tr>\n";
+								}
+							}
 						}else{
-							$body.="<tr><td$errclass>$i</td><td class=\"device$reserved dept".
-								"$device->Owner\" rowspan=$device->Height data-deviceid=$device->DeviceID>".
-								"$highlight $device->Label".(!$device->BackSide?" (".__("Rear").")":"")."</td></tr>\n";
+							if ($device->BackSide) {
+								if ($templ->FrontPictureFile=="")
+									//text
+									$body.="<tr><td class=\"cabpos$reserved dept$device->Owner$errclass\">$i</td><td class=\"cabdev_t$reserved dept".
+									"$device->Owner\" rowspan=$device->Height data-deviceid=$device->DeviceID>".
+									"$highlight $device->Label"."</td></tr>\n";
+								else {
+									//Picture
+									$body.="<tr><td class=\"cabpos$reserved dept$device->Owner$errclass\">$i</td><td class=\"cabdev_p\" rowspan=$device->Height data-deviceid=$device->DeviceID>";
+									$body.=$device->GetDeviceFrontPicture();
+									$body.="</td></tr>\n";
+								}
+							}else{
+								if ($templ->RearPictureFile=="")
+									//text
+									$body.="<tr><td class=\"cabpos$reserved dept$device->Owner$errclass\">$i</td><td class=\"cabdev_t$reserved dept".
+									"$device->Owner\" rowspan=$device->Height data-deviceid=$device->DeviceID>".
+									"$highlight $device->Label (".__("Rear").")</td></tr>\n";
+								else {
+									//Picture
+									$body.="<tr><td class=\"cabpos$reserved dept$device->Owner$errclass\">$i</td><td class=\"cabdev_p\" rowspan=$device->Height data-deviceid=$device->DeviceID>";
+									$body.=$device->GetDeviceRearPicture();
+									$body.="</td></tr>\n";
+								}
+							}
 						}
 					}else{
-						$body.="<tr><td$errclass>$i</td></tr>\n";
+						$body.="<tr><td class=\"cabpos$reserved dept$device->Owner$errclass\">$i</td></tr>\n";
 					}
 				}
 				$currentHeight=$device->Position - 1;
@@ -362,9 +451,9 @@ function renderCabinetProps($cab, $audit, $AuditorName)
 			if($i==$currentHeight){
 				$blankHeight=$currentHeight;
 
-				$body.="<tr><td>$i</td><td class=\"freespace\" rowspan=$blankHeight>&nbsp;</td></tr>\n";
+				$body.="<tr><td class=\"cabpos freespace\">$i</td><td class=\"freespace\" rowspan=$blankHeight>&nbsp;</td></tr>\n";
 			}else{
-				$body.="<tr><td>$i</td></tr>\n";
+				$body.="<tr><td class=\"cabpos freespace\">$i</td></tr>\n";
 			}
 		}
 	}
@@ -620,7 +709,65 @@ echo $head,'  <script type="text/javascript" src="scripts/jquery.min.js"></scrip
 ';
 if($config->ParameterArray["ToolTips"]=='enabled'){
 ?>
-		$('.cabinet td.device:has(a), #zerou div > a').mouseenter(function(){
+		/*$('.cabinet td.device:has(a), #zerou div > a').mouseenter(function(){*/
+		$('img.picture, img.bladepict').mouseenter(function(){
+			var pos=$(this).offset();
+			var tx=pos.left;
+			var ty=pos.top;
+			var tw=$(this).width();
+			var th=$(this).height();
+			var elemborderl=$('<div class="elemborder" />').css({ 
+				'z-index': 99, 
+				'position': 'absolute', 
+				'border': '1px solid red', 
+				'left':tx-2+'px', 
+				'top':ty-2+'px', 
+				'width':0+'px', 
+				'height':th+'px'}); 
+			$('body').append(elemborderl); 
+			var elemborderu=$('<div class="elemborder" />').css({ 
+				'z-index': 99, 
+				'position': 'absolute', 
+				'border': '1px solid red', 
+				'left':tx+'px', 
+				'top':ty-2+'px', 
+				'width':tw+'px', 
+				'height':0+'px'}); 
+			$('body').append(elemborderu); 
+			var elemborderr=$('<div class="elemborder" />').css({ 
+				'z-index': 99, 
+				'position': 'absolute', 
+				'border': '1px solid red', 
+				'left':tx+tw+'px', 
+				'top':ty+'px', 
+				'width':0+'px', 
+				'height':th+'px'}); 
+			$('body').append(elemborderr); 
+			var elemborderd=$('<div class="elemborder" />').css({ 
+				'z-index': 99, 
+				'position': 'absolute', 
+				'border': '1px solid red', 
+				'left':tx-2+'px', 
+				'top':ty+th+'px', 
+				'width':tw+'px', 
+				'height':0+'px'}); 
+			$('body').append(elemborderd);
+			
+			var tooltip=$('<div />').css({
+				'left':pos.left+$(this).outerWidth()+15+'px',
+				'top':pos.top+($(this).outerHeight()/2)-15+'px'
+			}).addClass('arrow_left border cabnavigator tooltip').attr('id','tt').append('<span class="ui-icon ui-icon-refresh rotate"></span>');
+			$.post('scripts/ajax_tooltip.php',{tooltip: $(this).data('deviceid'), dev: 1}, function(data){
+				tooltip.html(data);
+			});
+			$('body').append(tooltip);
+			$(this).mouseleave(function(){
+				tooltip.remove();
+				$('div.elemborder').remove();
+			});
+		});
+
+		$('.cabinet td.cabdev_t:has(a), #zerou div > a').mouseenter(function(){
 			var pos=$(this).offset();
 			var tooltip=$('<div />').css({
 				'left':pos.left+$(this).outerWidth()+15+'px',
@@ -634,6 +781,63 @@ if($config->ParameterArray["ToolTips"]=='enabled'){
 				tooltip.remove();
 			});
 		});
+
+		$('img.picturerot').mouseenter(function(){
+			var pos=$(this).offset();
+			var tx=pos.left;
+			var ty=pos.top;
+			var th=$(this).width();
+			var tw=$(this).height();
+			var elemborderl=$('<div class="elemborder" />').css({ 
+				'z-index': 99, 
+				'position': 'absolute', 
+				'border': '1px solid red', 
+				'left':tx-2+'px', 
+				'top':ty-2+'px', 
+				'width':0+'px', 
+				'height':th+'px'}); 
+			$('body').append(elemborderl); 
+			var elemborderu=$('<div class="elemborder" />').css({ 
+				'z-index': 99, 
+				'position': 'absolute', 
+				'border': '1px solid red', 
+				'left':tx+'px', 
+				'top':ty-2+'px', 
+				'width':tw+'px', 
+				'height':0+'px'}); 
+			$('body').append(elemborderu); 
+			var elemborderr=$('<div class="elemborder" />').css({ 
+				'z-index': 99, 
+				'position': 'absolute', 
+				'border': '1px solid red', 
+				'left':tx+tw+'px', 
+				'top':ty+'px', 
+				'width':0+'px', 
+				'height':th+'px'}); 
+			$('body').append(elemborderr); 
+			var elemborderd=$('<div class="elemborder" />').css({ 
+				'z-index': 99, 
+				'position': 'absolute', 
+				'border': '1px solid red', 
+				'left':tx-2+'px', 
+				'top':ty+th+'px', 
+				'width':tw+'px', 
+				'height':0+'px'}); 
+			$('body').append(elemborderd);
+			var tooltip=$('<div />').css({
+				'left':pos.left+$(this).outerHeight()+15+'px',
+				'top':pos.top+($(this).outerWidth()/2)-15+'px'
+			}).addClass('arrow_left border cabnavigator tooltip').attr('id','tt').append('<span class="ui-icon ui-icon-refresh rotate"></span>');
+			$.post('scripts/ajax_tooltip.php',{tooltip: $(this).data('deviceid'), dev: 1}, function(data){
+				tooltip.html(data);
+			});
+			$('body').append(tooltip);
+			$(this).mouseleave(function(){
+				tooltip.remove();
+				$('div.elemborder').remove();
+			});
+		});
+
 <?php
 }
 if($config->ParameterArray["CDUToolTips"]=='enabled'){
