@@ -78,9 +78,9 @@
 	 *
 	 */
 
-	$menu=$rrmenu=$camenu=$wamenu=$samenu=array();
+	$menu=$rmenu=$rrmenu=$camenu=$wamenu=$samenu=array();
 
-	$menu[]='<a href="reports.php"><span>'.__("Reports").'</span></a>';
+	$rmenu[]='<a href="reports.php"><span>'.__("Reports").'</span></a>';
 
 	if ( $user->RackRequest ) {
 		$rrmenu[]='<a href="rackrequest.php"><span>'.__("Rack Request Form").'</span></a>';
@@ -129,7 +129,7 @@
 		return $level;
 	}
 
-	$menu=buildmenu(array_merge_recursive($rrmenu,$camenu,$wamenu,$samenu));
+	$menu=buildmenu(array_merge_recursive($rmenu,$rrmenu,$camenu,$wamenu,$samenu));
 	
 	print "<ul class=\"nav\">$menu</ul>
 	<hr>

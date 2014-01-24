@@ -4,7 +4,7 @@
 ALTER TABLE fac_CabRow ADD COLUMN CabOrder ENUM( 'ASC', 'DESC' ) NOT NULL DEFAULT 'ASC';
 
 --
--- Add de picture fields for front/rear views, and front/rear slots in device template 
+-- Add the picture fields for front/rear views, and front/rear slots in device template 
 --
 ALTER TABLE fac_DeviceTemplate
 	ADD COLUMN FrontPictureFile VARCHAR(45) NOT NULL AFTER Notes,
@@ -16,13 +16,18 @@ ALTER TABLE fac_DeviceTemplate
 -- Slots table content the coodinates os slots in a picture of a chassis device template 
 --
 CREATE TABLE fac_Slots (
-	TelmpateID INT(11) NOT NULL,
+	TemplateID INT(11) NOT NULL,
 	Position INT(11) NOT NULL,
 	BackSide TINYINT(1) NOT NULL,
 	X INT(11) NULL,
 	Y INT(11) NULL,
 	W INT(11) NULL,
 	H INT(11) NULL,
-	PRIMARY KEY (TelmpateID, Position, BackSide)
+	PRIMARY KEY (TemplateID, Position, BackSide)
 ) ENGINE = InnoDB;
 
+--
+-- Add field to indicate the intake/front edge of a cabinet
+--
+
+ALTER TABLE fac_Cabinet ADD COLUMN FrontEdge ENUM("Top","Right","Bottom","Left") NOT NULL DEFAULT "Top" AFTER MapX2;

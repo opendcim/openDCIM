@@ -49,6 +49,7 @@ class Cabinet {
 	var $MapY1;
 	var $MapX2;
 	var $MapY2;
+	var $FrontEdge;
 	var $Notes;
 
 	function MakeSafe() {
@@ -71,6 +72,7 @@ class Cabinet {
 		$this->MapY1=abs($this->MapY1);
 		$this->MapX2=abs($this->MapX2);
 		$this->MapY2=abs($this->MapY2);
+		$this->FrontEdge=in_array($this->FrontEdge, array("Top","Right","Left","Bottom"))?$this->FrontEdge:"Top";
 		$this->Notes=addslashes($this->Notes);
 	}
 	
@@ -99,6 +101,7 @@ class Cabinet {
 		$cab->MapY1=$dbRow["MapY1"];
 		$cab->MapX2=$dbRow["MapX2"];
 		$cab->MapY2=$dbRow["MapY2"];
+		$cab->FrontEdge=$dbRow["FrontEdge"];
 		$cab->Notes=$dbRow["Notes"];
 
 		return $cab;
@@ -118,7 +121,7 @@ class Cabinet {
 			SensorIPAddress=\"$this->SensorIPAddress\", 
 			SensorCommunity=\"$this->SensorCommunity\", 
 			SensorTemplateID=$this->SensorTemplateID, MapX1=$this->MapX1, 
-			MapY1=$this->MapY1, MapX2=$this->MapX2, MapY2=$this->MapY2, 
+			MapY1=$this->MapY1, MapX2=$this->MapX2, MapY2=$this->MapY2, FrontEdge=\"$this->FrontEdge\",
 			Notes=\"$this->Notes\";";
 
 		if(!$dbh->exec($sql)){
@@ -147,7 +150,7 @@ class Cabinet {
 			SensorIPAddress=\"$this->SensorIPAddress\", 
 			SensorCommunity=\"$this->SensorCommunity\", 
 			SensorTemplateID=$this->SensorTemplateID, 
-			MapX1=$this->MapX1, MapY1=$this->MapY1, MapX2=$this->MapX2, MapY2=$this->MapY2, 
+			MapX1=$this->MapX1, MapY1=$this->MapY1, MapX2=$this->MapX2, MapY2=$this->MapY2, FrontEdge=\"$this->FrontEdge\",
 			Notes=\"$this->Notes\" WHERE CabinetID=$this->CabinetID;";
 
 		if(!$dbh->query($sql)){
