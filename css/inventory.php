@@ -454,6 +454,22 @@ div.cabinet {
 }
 .cabinet .error { background-color: <?php echo $config->ParameterArray['CriticalColor']; ?>; }
 
+/* PICTURES */
+div.picture {position:relative; left:0px; top:0px; margin-bottom: -3px;}
+.rotar_d{
+	transform:rotate(90deg);
+	-webkit-transform:rotate(90deg);
+	-moz-transform:rotate(90deg);
+	-ms-transform:rotate(90deg);
+	-o-transform:rotate(90deg);}
+.rotar_i{
+	transform:rotate(-90deg);
+	-webkit-transform:rotate(-90deg);
+	-moz-transform:rotate(-90deg);
+	-ms-transform:rotate(-90deg);
+	-o-transform:rotate(-90deg);}
+
+
 /* Cabinet Properties */
 
 #infopanel table#cabprop {
@@ -783,18 +799,4 @@ table#parcheos tr td:first-child + td table {margin-left: auto;}
 
 p.errormsg {padding: 20px; background-color: #DDDDDD; font-size: 120%; font-weight: bold; color: red;}
 
-/* PICTURES */
-div.picture {position:relative; left:0px; top:0px;}
-.rotar_d{
-	transform:rotate(90deg);
-	-webkit-transform:rotate(90deg);
-	-moz-transform:rotate(90deg);
-	-ms-transform:rotate(90deg);
-	-o-transform:rotate(90deg);}
-.rotar_i{
-	transform:rotate(-90deg);
-	-webkit-transform:rotate(-90deg);
-	-moz-transform:rotate(-90deg);
-	-ms-transform:rotate(-90deg);
-	-o-transform:rotate(-90deg);]
 

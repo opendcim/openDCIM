@@ -265,9 +265,8 @@ function renderCabinetProps($cab, $audit, $AuditorName)
 							}else {
 								//Picture
 								$body.="<tr><td class=\"cabpos$reserved dept$device->Owner$errclass\">$i</td><td class=\"cabdev_p\" rowspan=$device->Height data-deviceid=$device->DeviceID>";
-								$body.="<a href=\"devices.php?deviceid=$device->DeviceID\">";
 								$body.=$device->GetDeviceFrontPicture();
-								$body.="</a></td></tr>\n";
+								$body.="</td></tr>\n";
 							}
 						}else{
 							if ($templ->RearPictureFile==""){
