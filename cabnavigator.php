@@ -712,8 +712,8 @@ if($config->ParameterArray["ToolTips"]=='enabled'){
 		$('.cabinet td.cabdev_t:has(a), #zerou div > a, img.picture, img.bladepict, img.picturerot').mouseenter(function(){
 			var pos=$(this).offset();
 			var tooltip=$('<div />').css({
-				'left':pos.left+$(this).outerWidth()+15+'px',
-				'top':pos.top+($(this).outerHeight()/2)-15+'px'
+				'left':pos.left+$(this)[0].getBoundingClientRect().width+15+'px',
+				'top':pos.top+($(this)[0].getBoundingClientRect().height/2)-15+'px'
 			}).addClass('arrow_left border cabnavigator tooltip').attr('id','tt').append('<span class="ui-icon ui-icon-refresh rotate"></span>');
 			$.post('scripts/ajax_tooltip.php',{tooltip: $(this).data('deviceid'), dev: 1}, function(data){
 				tooltip.html(data);
