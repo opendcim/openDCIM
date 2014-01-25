@@ -820,12 +820,12 @@ INSERT INTO fac_CDUTemplate set ManufacturerID=(select ManufacturerID from fac_M
 --
 DROP TABLE IF EXISTS fac_Slots;
 CREATE TABLE fac_Slots (
-	TelmpateID INT(11) NOT NULL,
+	TemplateID INT(11) NOT NULL,
 	Position INT(11) NOT NULL,
 	BackSide TINYINT(1) NOT NULL,
 	X INT(11) NULL,
 	Y INT(11) NULL,
 	W INT(11) NULL,
 	H INT(11) NULL,
-	PRIMARY KEY (TelmpateID, Position, BackSide)
+	PRIMARY KEY (TemplateID, Position, BackSide)
 ) ENGINE = InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
