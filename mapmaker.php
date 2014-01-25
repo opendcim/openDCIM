@@ -22,6 +22,7 @@
 		$cab->MapX2=intval($_REQUEST["x2"]);
 		$cab->MapY1=intval($_REQUEST["y1"]);
 		$cab->MapY2=intval($_REQUEST["y2"]);
+		$cab->FrontEdge=$_REQUEST["frontedge"];
 		$cab->UpdateCabinet();
 
 		$url=redirect("cabnavigator.php?cabinetid=$cab->CabinetID");
@@ -101,6 +102,17 @@
           <div></div> 
           <div></div> 
         </div>
+		<div>
+			<div><b><?php print __("Front Edge"); ?></b></div>
+			<div><select name="frontedge">
+<?php
+				foreach ( array( "Top","Right","Bottom","Left") as $edge ) {
+					printf( "<option value=\"%s\" %s>%s</option>\n", $edge, $edge == $cab->FrontEdge ? "SELECTED" : "", $edge );
+				}
+?>
+			</select></div>
+			<div></div>
+		</div>
 	<div class="caption">
 	  <input type="submit" name="action" value="Submit">
 	  <button type="reset" onclick="document.location.href='cabnavigator.php?cabinetid=<?php echo $cab->CabinetID; ?>'; return false;">Cancel</button>

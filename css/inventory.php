@@ -273,6 +273,15 @@ div#dcstats .table + .table > div > div + div{white-space: pre; text-align: righ
 .zonemaker + .center div{position: relative;width: 100%;}
 .zonemaker + .center > div > div.container {position: absolute;top: 0px;left: 0px;}
 
+/* templatemaker */
+.templatemaker > div{width: 100%;display: inline-block;vertical-align: middle;}
+.templatemaker .table .table {margin-left: auto;}
+.templatemaker + .center div{position: relative;width: 100%;}
+.templatemaker + .center > div > div.container {position: absolute; top: 0px; left: 0px;}
+table.coordinates th {background-color: #CCC; text-align: center; padding-left: .5em; padding-right: .5em; padding-top: .2em;padding-bottom: .2em;}
+table.coordinates td {text-align: center; padding-left: .5em; padding-right: .5em; padding-top: 0.1em;padding-bottom: 0.1em;}
+table.coordinates input {text-align: center; border: 0px;}
+
 /* Basic Page Layout */
 .page {position: relative;width: 100%;}
 .clear {clear: both;}
@@ -416,9 +425,15 @@ div.cabinet {
 	margin-right: 20px;
 }
 
-.cabinet td + td {vertical-align: middle;padding: 0.25em 0.5em;width: 90%;}
+/*.cabinet td + td {vertical-align: middle;padding: 0.25em 0.5em;width: 90%;}*/
+/*JMGA*/
+.cabinet td.cabpos {text-align: center; vertical-align: middle;padding: 0.25em 0.5em;width: 10%;}
+.cabinet td.cabdev_t {vertical-align: middle;padding: 0.25em 0.5em;width: 90%;}
+.cabinet td.cabdev_p {vertical-align: middle;padding: 0em;width: 90%;}
 .cabinet th{font-size: 1.5em;padding: 0.25em;text-align: center;}
 #zerou a{display: block;}
+
+.cabnavigator img.picture:hover, .cabnavigator img.bladepict:hover, .cabnavigator img.picturerot:hover { border: 2px solid red; margin: -2px; }
 
 .cabnavigator .nav { text-align: center; }
 .cabnavigator .nav li { margin-top: 0.1em; border: 1px solid darkGray;}
@@ -767,4 +782,19 @@ table#parcheos table tr td {padding: 2px; border: 1px solid grey; text-align: le
 table#parcheos tr td:first-child + td table {margin-left: auto;}
 
 p.errormsg {padding: 20px; background-color: #DDDDDD; font-size: 120%; font-weight: bold; color: red;}
+
+/* PICTURES */
+div.picture {position:relative; left:0px; top:0px;}
+.rotar_d{
+	transform:rotate(90deg);
+	-webkit-transform:rotate(90deg);
+	-moz-transform:rotate(90deg);
+	-ms-transform:rotate(90deg);
+	-o-transform:rotate(90deg);}
+.rotar_i{
+	transform:rotate(-90deg);
+	-webkit-transform:rotate(-90deg);
+	-moz-transform:rotate(-90deg);
+	-ms-transform:rotate(-90deg);
+	-o-transform:rotate(-90deg);]
 

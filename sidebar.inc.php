@@ -78,9 +78,9 @@
 	 *
 	 */
 
-	$menu=$rrmenu=$camenu=$wamenu=$samenu=array();
+	$menu=$rmenu=$rrmenu=$camenu=$wamenu=$samenu=array();
 
-	$menu[]='<a href="reports.php"><span>'.__("Reports").'</span></a>';
+	$rmenu[]='<a href="reports.php"><span>'.__("Reports").'</span></a>';
 
 	if ( $user->RackRequest ) {
 		$rrmenu[]='<a href="rackrequest.php"><span>'.__("Rack Request Form").'</span></a>';
@@ -101,7 +101,7 @@
 		$samenu[__("Template Management")][]='<a href="cdu_templates.php"><span>'.__("Edit CDU Templates").'</span></a>';
 		$samenu[__("Template Management")][]='<a href="sensor_templates.php"><span>'.__("Edit Sensor Templates").'</span></a>';
 		$samenu[__("Supplies Management")][]='<a href="supplybin.php"><span>'.__("Manage Supply Bins").'</span></a>';
-		$samenu[__("Supplies Management")][]='<a href="suppspanes.php"><span>'.__("Manage Suppspanes").'</span></a>';
+		$samenu[__("Supplies Management")][]='<a href="supplies.php"><span>'.__("Manage Supplies").'</span></a>';
 		$samenu[__("Infrastructure Management")][]='<a href="datacenter.php"><span>'.__("Edit Data Centers").'</span></a>';
 		$samenu[__("Infrastructure Management")][]='<a href="container.php"><span>'.__("Edit Containers").'</span></a>';
 		$samenu[__("Infrastructure Management")][]='<a href="zone.php"><span>'.__("Edit Zones").'</span></a>';
@@ -129,7 +129,7 @@
 		return $level;
 	}
 
-	$menu=buildmenu(array_merge_recursive($rrmenu,$camenu,$wamenu,$samenu));
+	$menu=buildmenu(array_merge_recursive($rmenu,$rrmenu,$camenu,$wamenu,$samenu));
 	
 	print "<ul class=\"nav\">$menu</ul>
 	<hr>

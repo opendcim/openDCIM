@@ -519,6 +519,26 @@ class DataCenter {
 						if ($cab->MapX1==$cab->MapX2 || $cab->MapY1==$cab->MapY2){
 							continue;
 						}
+						/* This is ready for a JS implementation of drawArrow() to show to air flow
+ 
+						$midX = $cab->MapX1 + intval((($cab->MapX2 - $cab->MapX1) / 2 ));
+						$midY = $cab->MapY1 + intval((($cab->MapY2 - $cab->MapY2) / 2 ));
+						
+						switch ( $cab->FrontEdge ) {
+							case "Top":
+								$arrow = sprintf( "drawArrow( %d, %d, %d, %d );\n", $midX, $cab->MapY1, $midX, $cab->MapY2 );
+								break;
+							case "Right":
+								$arrow = sprintf( "drawArrow( %d, %d, %d, %d );\n", $cab->MapX2, $midY, $cab->MapX1, $midY );
+								break;
+							case "Bottom":
+								$arrow = sprintf( "drawArrow( %d, %d, %d, %d );\n", $midX, $cab->MapY2, $midX, $cab->MapY1 );
+								break;
+							default:
+								$arrow = sprintf( "drawArrow( %d, %d, %d, %d );\n", $cab->MapX1, $midY, $cab->MapX2, $midY );
+								break;
+						}
+						*/
 						$dev->Cabinet=$cab->CabinetID;
 						$dev->Location=$cab->Location;  //$dev->Location ???
 	    	    		$devList=$dev->ViewDevicesByCabinet();
@@ -771,7 +791,11 @@ class DeviceTemplate {
 	var $PSCount;
 	var $NumPorts;
     var $Notes;
-
+    var $FrontPictureFile;
+    var $RearPictureFile;
+	var $ChassisSlots;
+	var $RearChassisSlots;
+    
 	function MakeSafe(){
 		$validDeviceTypes=array('Server','Appliance','Storage Array','Switch','Chassis','Patch Panel','Physical Infrastructure');
 
@@ -785,11 +809,17 @@ class DeviceTemplate {
 		$this->PSCount=intval($this->PSCount);
 		$this->NumPorts=intval($this->NumPorts);
         $this->Notes=addslashes(trim($this->Notes));
+        $this->FrontPictureFile=addslashes(trim($this->FrontPictureFile));
+	    $this->RearPictureFile=addslashes(trim($this->RearPictureFile));
+		$this->ChassisSlots=intval($this->ChassisSlots);
+		$this->RearChassisSlots=intval($this->RearChassisSlots);
 	}
 
 	function MakeDisplay(){
 		$this->Model=stripslashes($this->Model);
         $this->Notes=stripslashes($this->Notes);
+        $this->FrontPictureFile=stripslashes($this->FrontPictureFile);
+	    $this->RearPictureFile=stripslashes($this->RearPictureFile);
 	}
 
 	static function RowToObject($row){
@@ -804,7 +834,11 @@ class DeviceTemplate {
 		$Template->PSCount=$row["PSCount"];
 		$Template->NumPorts=$row["NumPorts"];
         $Template->Notes=$row["Notes"];
-		$Template->MakeDisplay();
+        $Template->FrontPictureFile=$row["FrontPictureFile"];
+        $Template->RearPictureFile=$row["RearPictureFile"];
+		$Template->ChassisSlots=$row["ChassisSlots"];
+		$Template->RearChassisSlots=$row["RearChassisSlots"];
+        $Template->MakeDisplay();
 
 		return $Template;
 	}
@@ -827,8 +861,9 @@ class DeviceTemplate {
 		$sql="INSERT INTO fac_DeviceTemplate SET ManufacturerID=$this->ManufacturerID, 
 			Model=\"$this->Model\", Height=$this->Height, Weight=$this->Weight, 
 			Wattage=$this->Wattage, DeviceType=\"$this->DeviceType\", 
-			PSCount=$this->PSCount, NumPorts=$this->NumPorts,
-			Notes=\"$this->Notes\";";
+			PSCount=$this->PSCount, NumPorts=$this->NumPorts, Notes=\"$this->Notes\", 
+			FrontPictureFile=\"$this->FrontPictureFile\", RearPictureFile=\"$this->RearPictureFile\",
+			ChassisSlots=$this->ChassisSlots, RearChassisSlots=$this->RearChassisSlots;";
 
 		if(!$dbh->exec($sql)){
 			error_log( "SQL Error: " . $sql );
@@ -845,9 +880,10 @@ class DeviceTemplate {
         $sql="UPDATE fac_DeviceTemplate SET ManufacturerID=$this->ManufacturerID,
 			Model=\"$this->Model\", Height=$this->Height, Weight=$this->Weight, 
 			Wattage=$this->Wattage, DeviceType=\"$this->DeviceType\", 
-			PSCount=$this->PSCount, NumPorts=$this->NumPorts,
-			Notes=\"$this->Notes\" WHERE
-			TemplateID=$this->TemplateID;";
+			PSCount=$this->PSCount, NumPorts=$this->NumPorts, Notes=\"$this->Notes\", 
+			FrontPictureFile=\"$this->FrontPictureFile\", RearPictureFile=\"$this->RearPictureFile\",
+			ChassisSlots=$this->ChassisSlots, RearChassisSlots=$this->RearChassisSlots
+			WHERE TemplateID=$this->TemplateID;";
 
 		if(!$this->query($sql)){
 			return false;
@@ -869,10 +905,24 @@ class DeviceTemplate {
 
 		$sql="SELECT * FROM fac_DeviceTemplate WHERE TemplateID=$this->TemplateID;";
 
+		//JMGA Reset object in case of a lookup failure
+		$this->ManufacturerID=0;
+		$this->Model="";
+		$this->Height=0;
+		$this->Weight=0;
+		$this->Wattage=0;
+		$this->DeviceType='Server';
+		$this->PSCount=0;
+		$this->NumPorts=0;
+        $this->Notes="";
+        $this->FrontPictureFile="";
+	    $this->RearPictureFile="";
+		$this->ChassisSlots=0;
+		$this->RearChassisSlots=0;
 		// Reset object in case of a lookup failure
-		foreach($this as $prop => $value){
-			$value=($prop!='TemplateID')?null:$value;
-		}
+		//foreach($this as $prop => $value){
+		//	$value=($prop!='TemplateID')?null:$value;
+		//}
 		
 		if($row=$this->query($sql)->fetch()){
 			foreach(DeviceTemplate::RowToObject($row) as $prop => $value){
@@ -944,6 +994,18 @@ class DeviceTemplate {
 			PowerSupplyCount=$this->PSCount WHERE TemplateID=$this->TemplateID;";
 
 		return $this->query($sql);
+	}
+	
+	function DeleteSlots(){
+		$this->MakeSafe();
+		
+		//delete zone
+		$sql="DELETE FROM fac_Slots WHERE TemplateID=$this->TemplateID";
+		if(!$this->query($sql)){
+			return false;
+		}
+		return true;
+		
 	}
 }
 
@@ -1831,7 +1893,7 @@ class CabRow {
 	}
 }
 
-//JMGA: containerobjects may contain DCs or other containers
+//JMGA: container objects may contain DCs or other containers
 class Container {
 	var $ContainerID;
 	var $Name;
@@ -2226,4 +2288,124 @@ class Container {
 	
 }
 //END Class Container
+
+//Class Slots (coordinates of front/rear slots in device front/rear picture)
+class Slot {
+	var $TemplateID;
+	var $Position;
+	var $BackSide;
+	var $X;
+	var $Y;
+	var $W;
+	var $H;
+
+	function MakeSafe(){
+		$this->TemplateID=intval($this->TemplateID);
+		$this->Position=intval($this->Position);
+		$this->BackSide=intval($this->BackSide);
+		$this->X=abs($this->X);
+		$this->Y=abs($this->Y);
+		$this->W=abs($this->W);
+		$this->H=abs($this->H);
+	}
+
+	static function RowToObject($row){
+		$slot=New Slot();
+		$slot->TemplateID=$row["TemplateID"];
+		$slot->Position=$row["Position"];
+		$slot->BackSide=$row["BackSide"];
+		$slot->X=$row["X"];
+		$slot->Y=$row["Y"];
+		$slot->W=$row["W"];
+		$slot->H=$row["H"];
+
+		return $slot;
+	}
+ 
+	function query($sql){
+		global $dbh;
+		return $dbh->query($sql);
+	}
+	
+	function exec($sql){
+		global $dbh;
+		return $dbh->exec($sql);
+	}
+	
+	function CreateSlot(){
+		global $dbh;
+			
+		$this->MakeSafe();
+			
+		$sql="INSERT INTO fac_Slots SET TemplateID=$this->TemplateID, 
+			Position=$this->Position,
+			BackSide=$this->BackSide,
+			X=$this->X,
+			Y=$this->Y,
+			W=$this->W,
+			H=$this->H
+			;";
+		if(!$dbh->exec($sql)){
+			$info=$dbh->errorInfo();
+			error_log("PDO Error: {$info[2]} SQL=$sql");
+			return false;
+		}else{
+			return true;
+		}
+	}
+	
+	function UpdateSlot(){
+		$this->MakeSafe();
+			
+		$sql="UPDATE fac_Slots SET  
+			X=$this->X,
+			Y=$this->Y,
+			W=$this->W, 
+			H=$this->H 
+			WHERE TemplateID=$this->TemplateID AND Position=$this->Position AND BackSide=$this->BackSide;";
+		if(!$this->query($sql)){
+			return false;
+		}
+		return true;
+	}
+	
+	function DeleteSlot(){
+		$this->MakeSafe();
+		
+		//delete slot
+		$sql="DELETE FROM fac_Slots WHERE TemplateID=$this->TemplateID AND Position=$this->Position AND BackSide=$this->BackSide;";
+		if(!$this->query($sql)){
+			return false;
+		}
+		return true;
+	}
+  
+	function GetSlot(){
+		$this->MakeSafe();
+		
+		$sql="SELECT * FROM fac_Slots WHERE TemplateID=$this->TemplateID AND Position=$this->Position AND BackSide=$this->BackSide;";
+		if($row=$this->query($sql)->fetch()){
+			foreach(Slot::RowToObject($row) as $prop => $value){
+				$this->$prop=$value;
+			}
+			return true;
+		}else{
+			return false;
+		}
+	}
+	function GetFistSlot(){
+		$this->MakeSafe();
+		
+		$sql="SELECT * FROM fac_Slots WHERE TemplateID=$this->TemplateID ORDER BY BackSide,Position;";
+		if($row=$this->query($sql)->fetch()){
+			foreach(Slot::RowToObject($row) as $prop => $value){
+				$this->$prop=$value;
+			}
+			return true;
+		}else{
+			return false;
+		}
+	} 
+} //END of Class Slot
+
 ?>
