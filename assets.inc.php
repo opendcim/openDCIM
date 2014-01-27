@@ -2122,26 +2122,26 @@ class Device {
 			$slot->BackSide=$this->BackSide;
 			if ($slot->GetSlot()){
 				$hor_slot=($slot->W>$slot->H);
+
+				// Determine if the element needs to be rotated or not
 				$rotar="";
-				if($hor_slot){
-					if(!$hor_blade)
-						$rotar=" rotar_i";
-				}else{
-					if($hor_blade)
-						$rotar=" rotar_d";
-				}
-				if($this->Rights!="None")
-					$resp.="<a href=\"devices.php?deviceid=$this->DeviceID\">";
-				if ($rotar==""){
-					$resp.="<div style='position:absolute; left:".$slot->X*$zoom."px; top:".$slot->Y*$zoom."px;'>";
-					$resp.="<img class='bladepict' data-deviceid=$this->DeviceID width='".$slot->W*$zoom."px' height='".$slot->H*$zoom."px' data-deviceid=$this->DeviceID src='pictures/".$templ->FrontPictureFile."' alt='".$this->Label."'>";
-				}
-				else {
-					//como la rotaci�n es desde el centro del div, lo posiciono en el centro del slot
-					$resp.="<div style='position:absolute; left:".(($slot->X-abs($slot->W-$slot->H)/2)*$zoom)."px; top:".(($slot->Y+abs($slot->W-$slot->H)/2)*$zoom)."px;'>";
-					$resp.="<img class='picturerot$rotar' data-deviceid=$this->DeviceID width='".$slot->H*$zoom."px' height='".$slot->W*$zoom."px' src='pictures/".$templ->FrontPictureFile."' alt='".$this->Label."'>";
-				}
-				//$resp.="</div>";
+				$rotar=($hor_slot)?(!$hor_blade)?" rotar_i":"":($hor_blade)?" rotar_d":"";
+
+				// If they have rights to the device then make the picture clickable
+				$clickable=($this->Rights!="None")?"\t\t\t<a href=\"devices.php?deviceid=$this->DeviceID\">\n":"";
+				$clickableend=($this->Rights!="None")?"\t\t\t</a>\n":"";
+
+				$left=($rotar=='')?$slot->X*$zoom:($slot->X-abs($slot->W-$slot->H)/2)*$zoom;
+				$top=($rotar=='')?$slot->Y*$zoom:($slot->Y+abs($slot->W-$slot->H)/2)*$zoom;
+				$left=intval($left).'px';$top=intval($top).'px';
+				// swap height and width on rotated objects
+				$height=($rotar=='')?$slot->H*$zoom:$slot->W*$zoom;
+				$width=($rotar=='')?$slot->W*$zoom:$slot->H*$zoom;
+				$height=intval($height);$width=intval($width);
+
+				$resp.="\t\t<div class='$rotar' style='position:absolute; left: $left; top: $top;'>\n$clickable";
+				$resp.="\t\t\t\t<img class='picturerot' data-deviceid=$this->DeviceID width=$width height=$height src='pictures/$templ->FrontPictureFile' alt='$this->Label'>\n";
+				$resp.="$clickableend";
 				if ( $this->ChassisSlots > 0 ) {
 					//multichassis
 					$childList = $this->GetDeviceChildren();
@@ -2151,70 +2151,51 @@ class Device {
 						}
 					}
 				}
-				$resp.="</div>";
-				if($this->Rights!="None")
-					$resp.="</a>";
+				$resp.="\t\t</div>\n";
 			}
 		}
 		return $resp;
 	}
-	function GetDeviceFrontPicture(){
-		global $dbh;
-		
+	function GetDevicePicture($rear=false){
 		$templ=new DeviceTemplate();
 		$templ->TemplateID=$this->TemplateID;
 		$templ->GetTemplateByID();
-		if ($templ->FrontPictureFile=="")
-			$resp="";
-		else {
-			//Device (front)
-			$picturefile="pictures/".$templ->FrontPictureFile;
-			list($width, $height, $type, $attr)=getimagesize($picturefile);
-			$ancho=220;
-			$zoom=$ancho/$width;
-			
-			$resp="<div class='picture'>";
-			$resp.="<img class='picture' data-deviceid=$this->DeviceID width='".$ancho."px' src='".$picturefile."' alt='".$this->Label."'>";
-			//Front childs
-			if ( $this->ChassisSlots > 0 ) {
-				$childList = $this->GetDeviceChildren();
-				foreach ( $childList as $tmpDev ) {
-					if (!$tmpDev->BackSide){
-						$resp.=$tmpDev->GetChildDevicePicture($zoom);
-					}  //if (!$tmpdev->BackSide){
-				} //foreach
-			}
-			$resp.="</div>";
-		}
-		return $resp;
-	}
-	function GetDeviceRearPicture(){
-		global $dbh;
+		$resp="";
 		
-		$templ=new DeviceTemplate();
-		$templ->TemplateID=$this->TemplateID;
-		$templ->GetTemplateByID();
-		if ($templ->RearPictureFile=="")
-			$resp="";
-		else {
-			//Device (rear)
-			$picturefile="pictures/".$templ->RearPictureFile;
+		if(($templ->FrontPictureFile!="" && !$rear) || ($templ->RearPictureFile!="" && $rear)){
+			//Device
+			$picturefile="pictures/";
+			$picturefile.=($rear)?$templ->RearPictureFile:$templ->FrontPictureFile;
 			list($width, $height, $type, $attr)=getimagesize($picturefile);
 			$ancho=220;
 			$zoom=$ancho/$width;
-			
-			$resp="<div class='picture'>";
-			$resp.="<img class='picture' data-deviceid=$this->DeviceID width='".$ancho."px' src='".$picturefile."' alt='".$this->Label."'>";
-			//Rear childs
-			if ( $this->RearChassisSlots > 0 ) {
-				$childList = $this->GetDeviceChildren();
-				foreach ( $childList as $tmpDev ) {
-					if ($tmpDev->BackSide){
-						$resp.=$tmpDev->GetChildDevicePicture($zoom);
-					}  //if (!$tmpdev->BackSide){
-				}  //foreach
+
+			// URLEncode the image file name just to be compliant.
+			$picturefile=str_replace(' ',"%20",$picturefile);
+	
+			// If they have rights to the device then make the picture clickable
+			$clickable=($this->Rights!="None")?"\t\t<a href=\"devices.php?deviceid=$this->DeviceID\">\n\t":"";
+			$clickableend=($this->Rights!="None")?"\n\t\t</a>\n":"";
+
+			$resp.="\n\t<div class=\"picture\">\n";
+			$resp.="$clickable\t\t<img class=\"picture\" data-deviceid=$this->DeviceID width=$ancho src=\"$picturefile\" alt=\"$this->Label\">$clickableend\n";
+
+			//Children
+			if(($this->ChassisSlots >0 && !$rear) || ($this->RearChassisSlots >0 && $rear)){
+				$childList=$this->GetDeviceChildren();
+				foreach($childList as $tmpDev){
+					if($rear){
+						if ($tmpDev->BackSide){
+							$resp.=$tmpDev->GetChildDevicePicture($zoom);
+						}
+					}else{
+						if (!$tmpDev->BackSide){
+							$resp.=$tmpDev->GetChildDevicePicture($zoom);
+						}
+					}
+				}
 			}
-			$resp.="</div>";
+			$resp.="\t</div>\n";
 		}
 		return $resp;
 	}

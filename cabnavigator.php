@@ -66,41 +66,41 @@ function renderTagsToString($obj)
  */
 function renderCabinetProps($cab, $audit, $AuditorName)
 {
-    $renderedHTML = "    <table id=\"cabprop\">\n"
-        . '      <tr><td class="left">' . __('Last Audit') . ':</td>'
+    $renderedHTML = "\t\t<table id=\"cabprop\">\n"
+        . '			<tr><td class="left">' . __('Last Audit') . ':</td>'
 	    . '<td class="right">' . $audit->AuditStamp . '';
     	    if ($AuditorName != '') {
     	        $renderedHTML .= "<br>$AuditorName";
     	    }
     $renderedHTML .= "</td></tr>\n";
-    $renderedHTML .= "      <tr><td class=\"left\">" . __('Model') . ":</td>"
-        . "<td class=\"right\">".$cab->Model."</td></tr>";
+    $renderedHTML .= "\t\t\t<tr><td class=\"left\">" . __('Model') . ":</td>"
+        . "<td class=\"right\">".$cab->Model."</td></tr>\n";
 
-    $renderedHTML .= '      <tr><td class="left">' . __('Data Center');
+    $renderedHTML .= '			<tr><td class="left">' . __('Data Center');
     $tmpDC = new DataCenter();
     $tmpDC->DataCenterID = $cab->DataCenterID;
     $tmpDC->GetDataCenter();
-    $renderedHTML .= ':</td><td class="right">' . $tmpDC->Name . '</td></tr>';
-    $renderedHTML .= '      <tr><td class="left">' . __('Install Date')
-        . ':</td><td class="right">' . $cab->InstallationDate . '</td></tr>';
+    $renderedHTML.=":</td><td class=\"right\">$tmpDC->Name</td></tr>\n";
+    $renderedHTML.="\t\t\t<tr><td class=\"left\">".__('Install Date')
+        . ":</td><td class=\"right\">$cab->InstallationDate</td></tr>\n";
 	if ($cab->ZoneID) {
         $zone = new Zone();
         $zone->ZoneID = $cab->ZoneID;
         $zone->GetZone();
-        $renderedHTML .= '      <tr><td class="left">' . __('Zone') . ':</td>'
+        $renderedHTML .= '			<tr><td class="left">' . __('Zone') . ':</td>'
             . '<td class="right">' . $zone->Description . "</td></tr>\n";
     }
     if ($cab->CabRowID) {
         $cabrow = new CabRow();
         $cabrow->CabRowID = $cab->CabRowID;
         $cabrow->GetCabRow();
-        $renderedHTML .= '      <tr><td class="left">' . __('Row') . ':</td>'
+        $renderedHTML .= '			<tr><td class="left">' . __('Row') . ':</td>'
             . '<td class="right">' . $cabrow->Name . "</td></tr>\n";
     }
-    $renderedHTML .= '      <tr><td class="left">' . __('Tags') . ':</td>';
+    $renderedHTML .= '			<tr><td class="left">' . __('Tags') . ':</td>';
     $renderedHTML .= '<td class="right">' . renderTagsToString($cab)
         . "</td></tr>\n";
-    $renderedHTML .= "</table>";
+    $renderedHTML .= "\t\t</table>\n";
 
     return $renderedHTML;
 }
@@ -197,10 +197,10 @@ function renderCabinetProps($cab, $audit, $AuditorName)
 	while(list($dev_index,$device)=each($devList)){
 		if($device->Height<1){
 			if($device->Rights!="None"){
-				$zeroheight.="				<a href=\"devices.php?deviceid=$device->DeviceID\" data-deviceid=$device->DeviceID>$highlight $device->Label</a>\n";
+				$zeroheight.="\t\t\t<a href=\"devices.php?deviceid=$device->DeviceID\" data-deviceid=$device->DeviceID>$highlight $device->Label</a>\n";
 			}else{
 				// empty html anchor for a line break
-				$zeroheight.="              $highlight $device->Label\n<a></a>";
+				$zeroheight.="\t\t\t$highlight $device->Label\n<a></a>";
 			}
 		}
 
@@ -265,9 +265,8 @@ function renderCabinetProps($cab, $audit, $AuditorName)
 							}else {
 								//Picture
 								$body.="<tr><td class=\"cabpos$reserved dept$device->Owner$errclass\">$i</td><td class=\"cabdev_p\" rowspan=$device->Height data-deviceid=$device->DeviceID>";
-								$body.="<a href=\"devices.php?deviceid=$device->DeviceID\">";
-								$body.=$device->GetDeviceFrontPicture();
-								$body.="</a></td></tr>\n";
+								$body.=$device->GetDevicePicture();
+								$body.="</td></tr>\n";
 							}
 						}else{
 							if ($templ->RearPictureFile==""){
@@ -277,7 +276,7 @@ function renderCabinetProps($cab, $audit, $AuditorName)
 								//Picture
 								$body.="<tr><td class=\"cabpos$reserved dept$device->Owner$errclass\">$i</td><td class=\"cabdev_p\" rowspan=$device->Height data-deviceid=$device->DeviceID>";
 								$body.="<a href=\"devices.php?deviceid=$device->DeviceID\">";
-								$body.=$device->GetDeviceRearPicture();
+								$body.=$device->GetDevicePicture('rear');
 								$body.="</a></td></tr>\n";
 							}
 						}
@@ -289,7 +288,7 @@ function renderCabinetProps($cab, $audit, $AuditorName)
 							}else {
 								//Picture
 								$body.="<tr><td class=\"cabpos$reserved dept$device->Owner$errclass\">$i</td><td class=\"cabdev_p\" rowspan=$device->Height data-deviceid=$device->DeviceID>";
-								$body.=$device->GetDeviceFrontPicture();
+								$body.=$device->GetDevicePicture();
 								$body.="</td></tr>\n";
 							}
 						}else{
@@ -299,7 +298,7 @@ function renderCabinetProps($cab, $audit, $AuditorName)
 							}else {
 								//Picture
 								$body.="<tr><td class=\"cabpos$reserved dept$device->Owner$errclass\">$i</td><td class=\"cabdev_p\" rowspan=$device->Height data-deviceid=$device->DeviceID>";
-								$body.=$device->GetDeviceRearPicture();
+								$body.=$device->GetDevicePicture('rear');
 								$body.="</td></tr>\n";
 							}
 						}
@@ -394,7 +393,7 @@ function renderCabinetProps($cab, $audit, $AuditorName)
 									//Picture
 									$body.="<tr><td class=\"cabpos$reserved dept$device->Owner$errclass\">$i</td><td class=\"cabdev_p\" rowspan=$device->Height data-deviceid=$device->DeviceID>";
 									$body.="<a href=\"devices.php?deviceid=$device->DeviceID\">";
-									$body.=$device->GetDeviceFrontPicture();
+									$body.=$device->GetDevicePicture();
 									$body.="</a></td></tr>\n";
 								}
 							}else{
@@ -408,7 +407,7 @@ function renderCabinetProps($cab, $audit, $AuditorName)
 									//Picture
 									$body.="<tr><td class=\"cabpos$reserved dept$device->Owner$errclass\">$i</td><td class=\"cabdev_p\" rowspan=$device->Height data-deviceid=$device->DeviceID>";
 									$body.="<a href=\"devices.php?deviceid=$device->DeviceID\">";
-									$body.=$device->GetDeviceRearPicture();
+									$body.=$device->GetDevicePicture('rear');
 									$body.="</a></td></tr>\n";
 								}
 							}
@@ -422,7 +421,7 @@ function renderCabinetProps($cab, $audit, $AuditorName)
 								else {
 									//Picture
 									$body.="<tr><td class=\"cabpos$reserved dept$device->Owner$errclass\">$i</td><td class=\"cabdev_p\" rowspan=$device->Height data-deviceid=$device->DeviceID>";
-									$body.=$device->GetDeviceFrontPicture();
+									$body.=$device->GetDevicePicture();
 									$body.="</td></tr>\n";
 								}
 							}else{
@@ -434,7 +433,7 @@ function renderCabinetProps($cab, $audit, $AuditorName)
 								else {
 									//Picture
 									$body.="<tr><td class=\"cabpos$reserved dept$device->Owner$errclass\">$i</td><td class=\"cabdev_p\" rowspan=$device->Height data-deviceid=$device->DeviceID>";
-									$body.=$device->GetDeviceRearPicture();
+									$body.=$device->GetDevicePicture('rear');
 									$body.="</td></tr>\n";
 								}
 							}
@@ -565,15 +564,17 @@ $body.='</table>
 		<div>
 			'.$cab->Keylock.'
 		</div>
-	</fieldset>';
+	</fieldset>
+';
 
 	if($zeroheight!=""){
 		$body.='	<fieldset id="zerou">
 		<legend>'.__("Zero-U Devices").'</legend>
 		<div>
-			'.$zeroheight.'
+'.$zeroheight.'
 		</div>
-	</fieldset>';
+	</fieldset>
+';
 	}
 	$body.='	<fieldset name="pdu">
 		<legend>'.__("Power Distribution").'</legend>';
@@ -600,15 +601,15 @@ $body.='</table>
 		$maxDraw*=0.8;
 
 		if($maxDraw>0){
-			$PDUPercent=$pduDraw/$maxDraw*100;
+			$PDUPercent=intval($pduDraw/$maxDraw*100);
 		}else{
 			$PDUPercent=0;
 		}
 		
 		$PDUColor=($PDUPercent>intval($config->ParameterArray["PowerRed"])?$CriticalColor:($PDUPercent>intval($config->ParameterArray["PowerYellow"])?$CautionColor:$GoodColor));
 
-		$body.=sprintf("			<a href=\"power_pdu.php?pduid=%d\">CDU %s</a><br>(%.2f kW) / (%.2f kW Max)</font><br>\n", $PDUdev->PDUID, $PDUdev->Label, $pduDraw / 1000, $maxDraw / 1000 );
-		$body.=sprintf("				<div class=\"meter-wrap\">\n\t<div class=\"meter-value\" style=\"background-color: %s; width: %d%%;\">\n\t\t<div class=\"meter-text\">%d%%</div>\n\t</div>\n</div><br>\n", $PDUColor, $PDUPercent, $PDUPercent );
+		$body.=sprintf("\n\t\t\t<a href=\"power_pdu.php?pduid=%d\">CDU %s</a><br>(%.2f kW) / (%.2f kW Max)<br>\n", $PDUdev->PDUID, $PDUdev->Label, $pduDraw / 1000, $maxDraw / 1000 );
+		$body.="\t\t\t\t<div class=\"meter-wrap\">\n\t\t\t\t\t<div class=\"meter-value\" style=\"background-color: $PDUColor; width: $PDUPercent%;\">\n\t\t\t\t\t\t<div class=\"meter-text\">$PDUPercent%</div>\n\t\t\t\t\t</div>\n\t\t\t\t</div>\n\t\t\t<br>\n";
 
 		if ( $PDUdev->FailSafe ) {
 			$tmpl = new CDUTemplate();
@@ -628,7 +629,7 @@ $body.='</table>
 				$ATSStatus = __("ATS Feeds Abnormal");
 			}
 			
-			$body .= sprintf( "<div><img src=\"images/%s\">%s</div>\n", $ATSColor, $ATSStatus );
+			$body.="<div><img src=\"images/$ATSColor\">$ATSStatus</div>\n";
 		}
 	}
 
@@ -636,25 +637,25 @@ $body.='</table>
 		$body.="			<ul class=\"nav\"><a href=\"power_pdu.php?pduid=0&cabinetid=$cab->CabinetID\"><li>".__("Add CDU")."</li></a></ul>\n";
 	}
 
-	$body.="	</fieldset>";
+	$body.="\t</fieldset>\n";
 	if ($user->CanWrite($cab->AssignedTo) || $user->SiteAdmin) {
-	    $body.="    <fieldset> ";
+	    $body.="\t<fieldset>\n";
         if ($user->CanWrite($cab->AssignedTo) ) {
             $body .= renderCabinetProps($cab, $audit, $AuditorName);
         }
-	    $body.="    <ul class=\"nav\">\n";
+	    $body.="\t\t<ul class=\"nav\">";
         if($user->CanWrite($cab->AssignedTo)){
             $body.="
-        <a href=\"#\" onclick=\"javascript:verifyAudit(this.form)\"><li>".__("Certify Audit")."</li></a>
-        <a href=\"devices.php?action=new&cabinet=$cab->CabinetID\"><li>".__("Add Device")."</li></a>
-        <a href=\"cabaudit.php?cabinetid=$cab->CabinetID\"><li>".__("Audit Report")."</li></a>
-        <a href=\"mapmaker.php?cabinetid=$cab->CabinetID\"><li>".__("Map Coordinates")."</li></a>
-        <a href=\"cabinets.php?cabinetid=$cab->CabinetID\"><li>".__("Edit Cabinet")."</li></a>\n";
+			<a href=\"#\" onclick=\"javascript:verifyAudit(this.form)\"><li>".__("Certify Audit")."</li></a>
+			<a href=\"devices.php?action=new&cabinet=$cab->CabinetID\"><li>".__("Add Device")."</li></a>
+			<a href=\"cabaudit.php?cabinetid=$cab->CabinetID\"><li>".__("Audit Report")."</li></a>
+			<a href=\"mapmaker.php?cabinetid=$cab->CabinetID\"><li>".__("Map Coordinates")."</li></a>
+			<a href=\"cabinets.php?cabinetid=$cab->CabinetID\"><li>".__("Edit Cabinet")."</li></a>\n";
         }
 		if($user->SiteAdmin){
-		    $body.="<a href=\"#\" onclick=\"javascript:verifyDelete(this.form)\"><li>".__("Delete Cabinet")."</li></a>";
+		    $body.="\t\t\t<a href=\"#\" onclick=\"javascript:verifyDelete(this.form)\"><li>".__("Delete Cabinet")."</li></a>";
 		}
-	    $body.="      </ul>\n    </fieldset>";
+	    $body.="\n\t\t</ul>\n    </fieldset>";
 	}
 	$body.='
 </div> <!-- END div#infopanel -->';
@@ -709,7 +710,7 @@ echo $head,'  <script type="text/javascript" src="scripts/jquery.min.js"></scrip
 ';
 if($config->ParameterArray["ToolTips"]=='enabled'){
 ?>
-		$('.cabinet td.cabdev_t:has(a), #zerou div > a, img.picture, img.bladepict, img.picturerot').mouseenter(function(){
+		$('.cabinet td.cabdev_t:has(a), #zerou div > a, .cabinet .picture a img').mouseenter(function(){
 			var pos=$(this).offset();
 			var tooltip=$('<div />').css({
 				'left':pos.left+this.getBoundingClientRect().width+15+'px',

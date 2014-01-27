@@ -97,7 +97,7 @@
 						$status=($slot->CreateSlot())?$status:__('Error');
 					}
 				}
-				if(Status==__('Updated')){
+				if($status==__('Updated')){
 					$status=($template->UpdateDevices())?__('Updated'):__('Error');
 				}
 				break;
@@ -225,7 +225,6 @@
             }
         });
 
-//new
 		$('#FrontPictureFile').click(function(){
 			$("#imageselection").dialog({
 				resizable: false,
@@ -485,7 +484,6 @@ echo '	</select>
    <div><label for="RearChassisSlots">',__("Rear Chassis Slots"),'</label></div>
    <div><input type="text" name="RearChassisSlots" id="RearChassisSlots" value="',$template->RearChassisSlots,'"></div>
 </div>';
-//Poner un if para esta parte
 echo '<div id="DivSlots" style="display: ',(($template->ChassisSlots+$template->RearChassisSlots>0)?'table-row':'none'),';">
 	<div><label for="Slots">',__("Coordinates of Slots"),'</label></div>';
 print "<div><table class='coordinates' style='margin-top: 3px; margin-left: 0px; margin-bottom: 3px;'>";
@@ -501,9 +499,6 @@ for ($i=1; $i<=$template->ChassisSlots;$i++){
 	print "<td><input type='text' name='YF".$i."' id='YF".$i."' value='".$slot->Y."' size='4'></td>\n"; 
 	print "<td><input type='text' name='WF".$i."' id='WF".$i."' value='".$slot->W."' size='4'></td>\n"; 
 	print "<td><input type='text' name='HF".$i."' id='HF".$i."' value='".$slot->H."' size='4'></td>\n"; 
-	//print "<td><a rel='lightbox' href='pictures/".$template->FrontPictureFile."' title='".__("Edit coordinates of front slot")." ".$i."'>".__("Edit")."</a></td>\n</tr>\n";
-	//print "<td><a rel='lightbox' href='pictures/".$template->FrontPictureFile."' title='".__("Edit coordinates of front slot")." ".$i."' onClick='show(\"F".$i."\")' >".__("Edit")."</a></td>\n</tr>\n";
-	//print "<td><a rel='lightbox' id='F".$i."' href='pictures/".$template->FrontPictureFile."' title='".__("Edit coordinates of front slot")." ".$i."'>".__("Edit")."</a></td>\n</tr>\n";
 	print "<td><a id='F".$i."' href='pictures/".$template->FrontPictureFile."' title='".__("Edit coordinates of front slot")." ".$i."' onClick='show(\"F".$i."\")' >".__("Edit")."</a></td>\n</tr>\n"; 
 }
 for ($i=1; $i<=$template->RearChassisSlots;$i++){
@@ -517,10 +512,6 @@ for ($i=1; $i<=$template->RearChassisSlots;$i++){
 	print "<td><input type='text' name='YR".$i."' id='YR".$i."' value='".$slot->Y."' size='4'></td>\n"; 
 	print "<td><input type='text' name='WR".$i."' id='WR".$i."' value='".$slot->W."' size='4'></td>\n"; 
 	print "<td><input type='text' name='HR".$i."' id='HR".$i."' value='".$slot->H."' size='4'></td>\n";
-	//print "<td><a rel='lightbox' href='pictures/".$template->RearPictureFile."' title='".__("Edit coordinates of rear slot")." ".$i."'>".__("Edit")."</a></td>\n</tr>\n";
-	//print "<td><a rel='lightbox' href='pictures/".$template->RearPictureFile."' title='".__("Edit coordinates of rear slot")." ".$i."' onClick='show(\"R".$i."\")' >".__("Edit")."</a></td>\n</tr>\n";
-	//print "<td><a rel='lightbox' id='R".$i."' href='pictures/".$template->RearPictureFile."' title='".__("Edit coordinates of rear slot")." ".$i."'>".__("Edit")."</a></td>\n</tr>\n";
-	//print "<td><a id='R".$i."' href='pictures/".$template->RearPictureFile."' title='".__("Edit coordinates of rear slot")." ".$i."' onClick='show(\"R".$i."\")' >".__("Edit")."</a></td>\n</tr>\n";
 	print "<td><a id='R".$i."' href='pictures/".$template->RearPictureFile."' title='".__("Edit coordinates of rear slot")." ".$i."' onClick='show(\"R".$i."\")' >".__("Edit")."</a></td>\n</tr>\n"; 
 }
 

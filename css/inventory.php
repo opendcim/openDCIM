@@ -433,7 +433,7 @@ div.cabinet {
 .cabinet th{font-size: 1.5em;padding: 0.25em;text-align: center;}
 #zerou a{display: block;}
 
-.cabnavigator img.picture:hover, .cabnavigator img.bladepict:hover, .cabnavigator img.picturerot:hover { border: 2px solid red; margin: -2px; }
+.cabnavigator .picture div img:hover { border: 2px solid red; margin: -2px; }
 
 .cabnavigator .nav { text-align: center; }
 .cabnavigator .nav li { margin-top: 0.1em; border: 1px solid darkGray;}
@@ -453,6 +453,24 @@ div.cabinet {
 	padding: 3px;
 }
 .cabinet .error { background-color: <?php echo $config->ParameterArray['CriticalColor']; ?>; }
+
+/* PICTURES */
+.cabnavigator div.picture {position:relative; left:0px; top:0px; margin-bottom: -3px; z-index: 5;}
+.cabnavigator div.picture div { z-index: 10;}
+.cabinet .picture img {min-height: 1px;}
+.rotar_d{
+	transform:rotate(90deg);
+	-webkit-transform:rotate(90deg);
+	-moz-transform:rotate(90deg);
+	-ms-transform:rotate(90deg);
+	-o-transform:rotate(90deg);}
+.rotar_i{
+	transform:rotate(-90deg);
+	-webkit-transform:rotate(-90deg);
+	-moz-transform:rotate(-90deg);
+	-ms-transform:rotate(-90deg);
+	-o-transform:rotate(-90deg);}
+
 
 /* Cabinet Properties */
 
@@ -783,18 +801,4 @@ table#parcheos tr td:first-child + td table {margin-left: auto;}
 
 p.errormsg {padding: 20px; background-color: #DDDDDD; font-size: 120%; font-weight: bold; color: red;}
 
-/* PICTURES */
-div.picture {position:relative; left:0px; top:0px;}
-.rotar_d{
-	transform:rotate(90deg);
-	-webkit-transform:rotate(90deg);
-	-moz-transform:rotate(90deg);
-	-ms-transform:rotate(90deg);
-	-o-transform:rotate(90deg);}
-.rotar_i{
-	transform:rotate(-90deg);
-	-webkit-transform:rotate(-90deg);
-	-moz-transform:rotate(-90deg);
-	-ms-transform:rotate(-90deg);
-	-o-transform:rotate(-90deg);]
 
