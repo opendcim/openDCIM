@@ -433,7 +433,7 @@ div.cabinet {
 .cabinet th{font-size: 1.5em;padding: 0.25em;text-align: center;}
 #zerou a{display: block;}
 
-.cabnavigator img.picture:hover, .cabnavigator img.bladepict:hover, .cabnavigator img.picturerot:hover { border: 2px solid red; margin: -2px; }
+.cabnavigator .picture div img:hover { border: 2px solid red; margin: -2px; }
 
 .cabnavigator .nav { text-align: center; }
 .cabnavigator .nav li { margin-top: 0.1em; border: 1px solid darkGray;}
@@ -455,7 +455,9 @@ div.cabinet {
 .cabinet .error { background-color: <?php echo $config->ParameterArray['CriticalColor']; ?>; }
 
 /* PICTURES */
-div.picture {position:relative; left:0px; top:0px; margin-bottom: -3px;}
+.cabnavigator div.picture {position:relative; left:0px; top:0px; margin-bottom: -3px; z-index: 5;}
+.cabnavigator div.picture div { z-index: 10;}
+.cabinet .picture img {min-height: 1px;}
 .rotar_d{
 	transform:rotate(90deg);
 	-webkit-transform:rotate(90deg);

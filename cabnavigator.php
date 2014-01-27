@@ -265,7 +265,7 @@ function renderCabinetProps($cab, $audit, $AuditorName)
 							}else {
 								//Picture
 								$body.="<tr><td class=\"cabpos$reserved dept$device->Owner$errclass\">$i</td><td class=\"cabdev_p\" rowspan=$device->Height data-deviceid=$device->DeviceID>";
-								$body.=$device->GetDeviceFrontPicture();
+								$body.=$device->GetDevicePicture();
 								$body.="</td></tr>\n";
 							}
 						}else{
@@ -276,7 +276,7 @@ function renderCabinetProps($cab, $audit, $AuditorName)
 								//Picture
 								$body.="<tr><td class=\"cabpos$reserved dept$device->Owner$errclass\">$i</td><td class=\"cabdev_p\" rowspan=$device->Height data-deviceid=$device->DeviceID>";
 								$body.="<a href=\"devices.php?deviceid=$device->DeviceID\">";
-								$body.=$device->GetDeviceRearPicture();
+								$body.=$device->GetDevicePicture('rear');
 								$body.="</a></td></tr>\n";
 							}
 						}
@@ -288,7 +288,7 @@ function renderCabinetProps($cab, $audit, $AuditorName)
 							}else {
 								//Picture
 								$body.="<tr><td class=\"cabpos$reserved dept$device->Owner$errclass\">$i</td><td class=\"cabdev_p\" rowspan=$device->Height data-deviceid=$device->DeviceID>";
-								$body.=$device->GetDeviceFrontPicture();
+								$body.=$device->GetDevicePicture();
 								$body.="</td></tr>\n";
 							}
 						}else{
@@ -298,7 +298,7 @@ function renderCabinetProps($cab, $audit, $AuditorName)
 							}else {
 								//Picture
 								$body.="<tr><td class=\"cabpos$reserved dept$device->Owner$errclass\">$i</td><td class=\"cabdev_p\" rowspan=$device->Height data-deviceid=$device->DeviceID>";
-								$body.=$device->GetDeviceRearPicture();
+								$body.=$device->GetDevicePicture('rear');
 								$body.="</td></tr>\n";
 							}
 						}
@@ -393,7 +393,7 @@ function renderCabinetProps($cab, $audit, $AuditorName)
 									//Picture
 									$body.="<tr><td class=\"cabpos$reserved dept$device->Owner$errclass\">$i</td><td class=\"cabdev_p\" rowspan=$device->Height data-deviceid=$device->DeviceID>";
 									$body.="<a href=\"devices.php?deviceid=$device->DeviceID\">";
-									$body.=$device->GetDeviceFrontPicture();
+									$body.=$device->GetDevicePicture();
 									$body.="</a></td></tr>\n";
 								}
 							}else{
@@ -407,7 +407,7 @@ function renderCabinetProps($cab, $audit, $AuditorName)
 									//Picture
 									$body.="<tr><td class=\"cabpos$reserved dept$device->Owner$errclass\">$i</td><td class=\"cabdev_p\" rowspan=$device->Height data-deviceid=$device->DeviceID>";
 									$body.="<a href=\"devices.php?deviceid=$device->DeviceID\">";
-									$body.=$device->GetDeviceRearPicture();
+									$body.=$device->GetDevicePicture('rear');
 									$body.="</a></td></tr>\n";
 								}
 							}
@@ -421,7 +421,7 @@ function renderCabinetProps($cab, $audit, $AuditorName)
 								else {
 									//Picture
 									$body.="<tr><td class=\"cabpos$reserved dept$device->Owner$errclass\">$i</td><td class=\"cabdev_p\" rowspan=$device->Height data-deviceid=$device->DeviceID>";
-									$body.=$device->GetDeviceFrontPicture();
+									$body.=$device->GetDevicePicture();
 									$body.="</td></tr>\n";
 								}
 							}else{
@@ -433,7 +433,7 @@ function renderCabinetProps($cab, $audit, $AuditorName)
 								else {
 									//Picture
 									$body.="<tr><td class=\"cabpos$reserved dept$device->Owner$errclass\">$i</td><td class=\"cabdev_p\" rowspan=$device->Height data-deviceid=$device->DeviceID>";
-									$body.=$device->GetDeviceRearPicture();
+									$body.=$device->GetDevicePicture('rear');
 									$body.="</td></tr>\n";
 								}
 							}
@@ -708,7 +708,7 @@ echo $head,'  <script type="text/javascript" src="scripts/jquery.min.js"></scrip
 ';
 if($config->ParameterArray["ToolTips"]=='enabled'){
 ?>
-		$('.cabinet td.cabdev_t:has(a), #zerou div > a, img.picture, img.bladepict, img.picturerot').mouseenter(function(){
+		$('.cabinet td.cabdev_t:has(a), #zerou div > a, .cabinet .picture a img').mouseenter(function(){
 			var pos=$(this).offset();
 			var tooltip=$('<div />').css({
 				'left':pos.left+this.getBoundingClientRect().width+15+'px',
