@@ -110,7 +110,8 @@
 		$samenu[__("Power Management")][]='<a href="power_panel.php"><span>'.__("Edit Power Panels").'</span></a>';
 		$samenu[__("Power Management")][]='<a href="cdu_templates.php"><span>'.__("Edit CDU Templates").'</span></a>';
 		$samenu[]='<a href="configuration.php"><span>'.__("Edit Configuration").'</span></a>';
-		$samenu[]='<a href="pathmaker.php"><span>'.__("Make Path Connection").'</span></a>';
+		$samenu[__("Path Connections")][]='<a href="paths.php"><span>'.__("View Path Connection").'</span></a>';
+		$samenu[__("Path Connections")][]='<a href="pathmaker.php"><span>'.__("Make Path Connection").'</span></a>';
 	}
 
 	function buildmenu($menu){
