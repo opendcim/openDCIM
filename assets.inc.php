@@ -1287,6 +1287,7 @@ class Device {
 	function MoveToStorage() {
 		// Cabinet ID of -1 means that the device is in the storage area
 		$this->Cabinet=-1;
+		$this->Position=$this->GetDeviceDCID();
 		$this->UpdateDevice();
 		
 		// While the child devices will automatically get moved to storage as part of the UpdateDevice() call above, it won't sever their network connections
@@ -1619,11 +1620,19 @@ class Device {
 			$sql="SELECT * FROM fac_Device WHERE ParentDevice IN (SELECT DeviceID FROM 
 				fac_Device WHERE Cabinet=$this->Cabinet) UNION SELECT * FROM fac_Device 
 				WHERE Cabinet=$this->Cabinet ORDER BY ParentDevice ASC, Position DESC;";
-		}else{		
+		}elseif ($this->Cabinet<0){
+			//StorageRoom
+			if ($this->Position>0)
+				$sql="SELECT * FROM fac_Device WHERE Cabinet=$this->Cabinet AND Position=$this->Position 
+					ORDER BY Position DESC;";
+			else
+				$sql="SELECT * FROM fac_Device WHERE Cabinet=$this->Cabinet 
+					ORDER BY Position DESC;";
+		}else{
 			$sql="SELECT * FROM fac_Device WHERE Cabinet=$this->Cabinet AND Cabinet!=0 
 				ORDER BY Position DESC;";
 		}
-
+		
 		$deviceList = array();
 
 		foreach($dbh->query($sql) as $deviceRow){
@@ -2016,16 +2025,26 @@ class Device {
 	
 	function GetDeviceCabinetID(){
 		$tmpDev = new Device();
-		$tmpDev->DeviceID = $this->DeviceID;
+		$tmpDev->DeviceID = GetRootDeviceID();
 		$tmpDev->GetDevice();
-		
-		while ( $tmpDev->ParentDevice <> 0) {
-			$tmpDev->DeviceID = $tmpDev->ParentDevice;
-			$tmpDev->GetDevice();
-		}
 		return $tmpDev->Cabinet;	
 	}
-
+	
+	function GetDeviceDCID(){
+		$rootDev = new Device();
+		$rootDev->DeviceID = $this->GetRootDeviceID();
+		$rootDev->GetDevice();
+		if ($rootDev->Cabinet>0){
+			$cab = new Cabinet();
+			$cab->CabinetID = $rootDev->Cabinet;
+			$cab->GetCabinet();
+			return $cab->DataCenterID;
+		}else{
+			//root device is in StorageRomm. DataCenterID is in his Position field.
+			return $rootDev->Position;
+		}
+	}
+	
 	function GetDeviceLineage() {
 		$devList=array();
 		$num=1;

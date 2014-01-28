@@ -771,7 +771,10 @@ class DataCenter {
 		foreach($this->query($cabsql) as $cabRow){
 			$tree.=str_repeat(" ",$lev+3)."<li id=\"cab{$cabRow['CabinetID']}\"><a class=\"RACK\" href=\"cabnavigator.php?cabinetid={$cabRow['CabinetID']}\">{$cabRow['Location']}</a></li>\n";
 		}
-
+		
+		//StorageRoom for this DC
+		$tree.="<li class=\"liOpen\" id=\"dc-1\"><a href=\"storageroom.php?dc=$this->DataCenterID\">".__("Storage Room")."</a></li>\n";
+		
 		$tree.=str_repeat(" ",$lev+2)."</ul>\n";
 		$tree.=str_repeat(" ",$lev+1)."</li>\n";
 		
@@ -2019,7 +2022,7 @@ class Container {
 		$tree="\n<ul class=\"mktree\" id=\"datacenters\">\n";;
 		//Add root children
 		$tree.=$c->AddContainerToTree();
-		$tree.="<li class=\"liOpen\" id=\"dc-1\"><a href=\"storageroom.php\">".__("Storage Room")."</a></li>\n";
+		$tree.="<li class=\"liOpen\" id=\"dc-1\"><a href=\"storageroom.php\">".__("General Storage Room")."</a></li>\n";
 		$tree.="</ul>\n";
 
 		return $tree;

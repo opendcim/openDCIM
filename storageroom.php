@@ -12,6 +12,18 @@
 
 	// Cabinet -1 is the Storage Area
 	$dev->Cabinet=-1;
+	
+	if (isset($_GET['dc'])){
+		$dev->Position=$_GET['dc'];
+		$dc=new DataCenter();
+		$dc->DataCenterID=$_GET['dc'];
+		$dc->GetDataCenter();
+		$srname=sprintf(__("%s Storage Room"), $dc->Name);
+	}else{
+		$dev->Position=0;
+		$srname=__("General Storage Room");
+	}
+	
 	$devList=$dev->ViewDevicesByCabinet();
 ?>
 <!doctype html>
@@ -20,7 +32,7 @@
   <meta http-equiv="X-UA-Compatible" content="IE=Edge">
   <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
   
-  <title>Facilities Cabinet Maintenance</title>
+  <title><?php echo __("Storage Room Maintenance");?></title>
   <link rel="stylesheet" href="css/inventory.php" type="text/css">
   <link rel="stylesheet" href="css/jquery-ui.css" type="text/css">
   <!--[if lt IE 9]>
@@ -38,10 +50,10 @@
 <div class="main">
 <?php echo '
 <h2>',$config->ParameterArray['OrgName'],'</h2>
-<h3>',__("Data Center Cabinet Inventory"),'</h3>
+<h3>',__("Storage Room Maintenance"),'</h3>
 <div class="center"><div>
 <div class="table">
-	<div class="title" id="title">Storage Room</div>
+	<div class="title" id="title">',$srname,'</div>
 	<div>
 		<div>',__("Device"),'</div>
 		<div>',__("Asset Tag"),'</div>
