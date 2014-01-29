@@ -169,6 +169,7 @@ $DProps = array(
             array('Asset Number', 'T', 11, null),
             array('Serial No.', 'T', 11, null),
             array('Install Date', 'D', 11, null),
+            array('Warranty Expire', 'D', 11, null),
             array('Owner', '', 11, null),
             array('Power (W)', '', 11, null),
             array('Reservation', '', null, null),
@@ -963,6 +964,7 @@ function computeDeviceChildren($sheetColumns, $invData, $parentDev, $DCName,
             $devSpec['Asset Number'] = $child->AssetTag;
             $devSpec['Serial No.'] = $child->SerialNo;
             $devSpec['Install Date'] = $child->InstallDate;
+            $devSpec['Warranty Expire'] = $child->WarrantyExpire;
             $devSpec['Owner'] = getOwnerName($child, $deptList);
             $devSpec['Power (W)'] = $child->NominalWatts;
             $devSpec['Reservation'] = $reserved;
@@ -1158,6 +1160,7 @@ function computeSheetBodyDCInventory($DProps)
                         $devSpec['Asset Number'] = $dev->AssetTag;
                         $devSpec['Serial No.'] = $dev->SerialNo;
                         $devSpec['Install Date'] = $dev->InstallDate;
+                        $devSpec['Warranty Expire'] = $dev->WarrantyExpire;
                         $devSpec['Owner'] = getOwnerName($dev, $deptList);
                         $devSpec['Power (W)'] = $dev->NominalWatts;
                         $devSpec['Reservation'] = $reserved;
