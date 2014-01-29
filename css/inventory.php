@@ -425,11 +425,8 @@ div.cabinet {
 	margin-right: 20px;
 }
 
-/*.cabinet td + td {vertical-align: middle;padding: 0.25em 0.5em;width: 90%;}*/
-/*JMGA*/
+.cabinet td + td {vertical-align: middle;padding: 0.25em 0.5em;width: 90%;}
 .cabinet td.cabpos {text-align: center; vertical-align: middle;padding: 0.25em 0.5em;width: 10%;}
-.cabinet td.cabdev_t {vertical-align: middle;padding: 0.25em 0.5em;width: 90%;}
-.cabinet td.cabdev_p {vertical-align: middle;padding: 0em;width: 90%;}
 .cabinet th{font-size: 1.5em;padding: 0.25em;text-align: center;}
 #zerou a{display: block;}
 
@@ -455,7 +452,7 @@ div.cabinet {
 .cabinet .error { background-color: <?php echo $config->ParameterArray['CriticalColor']; ?>; }
 
 /* PICTURES */
-.cabnavigator div.picture {position:relative; left:0px; top:0px; margin-bottom: -3px; z-index: 5;}
+.cabnavigator div.picture {position:relative; left:0px; top:0px; margin: -0.25em -0.5em -0.4em; z-index: 5;}
 .cabnavigator div.picture div { z-index: 10;}
 .cabinet .picture img {min-height: 1px;}
 .rotar_d{
