@@ -164,7 +164,6 @@ function renderCabinetProps($cab, $audit, $AuditorName)
 	$dev->Cabinet=$cab->CabinetID;
 	$devList=$dev->ViewDevicesByCabinet();
 
-	$currentHeight=$cab->CabinetHeight;
 	$totalWatts=0;
 	$totalWeight=0;
 	$totalMoment=0;
@@ -185,155 +184,37 @@ function renderCabinetProps($cab, $audit, $AuditorName)
 		}
 	}
 
-	$body.="<div class=\"cabinet\">
-<table>
-	<tr><th id=\"cabid\" data-cabinetid=$cab->CabinetID colspan=2 $cab_color>".__("Cabinet")." $cab->Location</th></tr>
-	<tr><td class=\"cabpos\">".__("Pos")."</td><td class=\"cabdev_t\">".__("Device")."</td></tr>\n";
-
-	$heighterr="";
 	$ownership_unassigned = false;
 	$template_unassigned = false;
 	$backside=false;
-	while(list($dev_index,$device)=each($devList)){
-		if($device->Height<1){
-			if($device->Rights!="None"){
-				$zeroheight.="\t\t\t<a href=\"devices.php?deviceid=$device->DeviceID\" data-deviceid=$device->DeviceID>$highlight $device->Label</a>\n";
-			}else{
-				// empty html anchor for a line break
-				$zeroheight.="\t\t\t$highlight $device->Label\n<a></a>";
-			}
-		}
 
-		//only fulldepth devices and front devices
-		if (!$device->HalfDepth || !$device->BackSide){
-			if ($device->HalfDepth) $backside=true;
-			$devTop=$device->Position + $device->Height - 1;
+	// This function with no argument will build the front cabinet face. Specify
+	// rear and it will build that back.
+	function BuildCabinet($rear=false){
+		// This is fucking horrible, there has to be a better way to accomplish this.
+		global $cab_color, $cab, $device, $body, $highlight, $currentHeight, $heighterr, 
+				$devList, $templ, $tempDept, $backside, $deptswithcolor, $tempDept,
+				$totalWeight, $totalWatts, $totalMoment, $zeroheight;
 
-			$templ->TemplateID=$device->TemplateID;
-			$templ->GetTemplateByID();
-
-			$tempDept->DeptID=$device->Owner;
-			$tempDept->GetDeptByID();
-
-			// If a dept has been changed from white then it needs to be added to the stylesheet, legend, and device
-			if(!$device->Reservation && strtoupper($tempDept->DeptColor)!="#FFFFFF"){
-				// Fill array with deptid and color so we can process the list once for the legend and style information
-				$deptswithcolor[$device->Owner]["color"]=$tempDept->DeptColor;
-				$deptswithcolor[$device->Owner]["name"]=$tempDept->Name;
-			}
-
-			$highlight="<blink><font color=red>";
-			if($device->TemplateID==0){
-				$highlight.="(T)";
-	            $template_unassigned = true;
-			}
-			if($device->Owner==0){
-				$highlight.="(O)";
-	            $ownership_unassigned = true;
-			}
-			$highlight.= "</font></blink>";
-
-			$totalWatts+=$device->GetDeviceTotalPower();
-			$DeviceTotalWeight=$device->GetDeviceTotalWeight();
-			$totalWeight+=$DeviceTotalWeight;
-			$totalMoment+=($DeviceTotalWeight*($device->Position+($device->Height/2)));
-
-			$reserved=($device->Reservation==false)?"":" reserved";
-			if($devTop<$currentHeight && $currentHeight>0){
-				for($i=$currentHeight;($i>$devTop);$i--){
-					$errclass=($i>$cab->CabinetHeight)?' error':'';
-					if($errclass!=''){$heighterr="yup";}
-					if($i==$currentHeight){
-						$blankHeight=$currentHeight-$devTop;
-						if($devTop==-1){--$blankHeight;}
-						$body.="<tr><td class=\"cabpos freespace$errclass\">$i</td><td class=\"cabdev_t freespace\" rowspan=$blankHeight>&nbsp;</td></tr>\n";
-					} else {
-						$body.="<tr><td class=\"cabpos freespace$errclass\">$i</td></tr>\n";
-						if($i==1){break;}
-					}
-				}
-			}
-			for($i=$devTop;$i>=$device->Position;$i--){
-				$errclass=($i>$cab->CabinetHeight)?' error':'';
-				if($errclass!=''){$heighterr="yup";}
-				if($i==$devTop){
-					if($device->Rights!="None"){
-						if (!$device->BackSide){
-							if ($templ->FrontPictureFile==""){
-								//text
-								$body.="<tr><td class=\"cabpos$reserved dept$device->Owner$errclass\">$i</td><td class=\"cabdev_t$reserved dept$device->Owner\" rowspan=$device->Height data-deviceid=$device->DeviceID><a href=\"devices.php?deviceid=$device->DeviceID\">$highlight $device->Label</a></td></tr>\n";
-							}else {
-								//Picture
-								$body.="<tr><td class=\"cabpos$reserved dept$device->Owner$errclass\">$i</td><td class=\"cabdev_p\" rowspan=$device->Height data-deviceid=$device->DeviceID>";
-								$body.=$device->GetDevicePicture();
-								$body.="</td></tr>\n";
-							}
-						}else{
-							if ($templ->RearPictureFile==""){
-								//text
-								$body.="<tr><td class=\"cabpos$reserved dept$device->Owner$errclass\">$i</td><td class=\"cabdev_t$reserved dept$device->Owner\" rowspan=$device->Height data-deviceid=$device->DeviceID><a href=\"devices.php?deviceid=$device->DeviceID\">$highlight $device->Label (".__("Rear").")</a></td></tr>\n";
-							}else {
-								//Picture
-								$body.="<tr><td class=\"cabpos$reserved dept$device->Owner$errclass\">$i</td><td class=\"cabdev_p\" rowspan=$device->Height data-deviceid=$device->DeviceID>";
-								$body.="<a href=\"devices.php?deviceid=$device->DeviceID\">";
-								$body.=$device->GetDevicePicture('rear');
-								$body.="</a></td></tr>\n";
-							}
-						}
-					}else{
-						if (!$device->BackSide){
-							if ($templ->FrontPictureFile==""){
-								//text
-								$body.="<tr><td class=\"cabpos$reserved dept$device->Owner$errclass\">$i</td><td class=\"cabdev_t$reserved dept$device->Owner\" rowspan=$device->Height data-deviceid=$device->DeviceID>$highlight $device->Label</td></tr>\n";
-							}else {
-								//Picture
-								$body.="<tr><td class=\"cabpos$reserved dept$device->Owner$errclass\">$i</td><td class=\"cabdev_p\" rowspan=$device->Height data-deviceid=$device->DeviceID>";
-								$body.=$device->GetDevicePicture();
-								$body.="</td></tr>\n";
-							}
-						}else{
-							if ($templ->FrontPictureFile==""){
-								//text
-								$body.="<tr><td class=\"cabpos$reserved dept$device->Owner$errclass\">$i</td><td class=\"cabdev_t$reserved dept$device->Owner\" rowspan=$device->Height data-deviceid=$device->DeviceID>$highlight $device->Label (".__("Rear").")</td></tr>\n";
-							}else {
-								//Picture
-								$body.="<tr><td class=\"cabpos$reserved dept$device->Owner$errclass\">$i</td><td class=\"cabdev_p\" rowspan=$device->Height data-deviceid=$device->DeviceID>";
-								$body.=$device->GetDevicePicture('rear');
-								$body.="</td></tr>\n";
-							}
-						}
-					}
-				}else{
- 					$body.="<tr><td class=\"cabpos$reserved dept$device->Owner$errclass\">$i</td></tr>\n";
-				}
-			}
-			$currentHeight=$device->Position - 1;
-		} else {
-			$backside=true;
-		}
-	}
-
-	// Fill in to the bottom
-	for($i=$currentHeight;$i>0;$i--){
-		if($i==$currentHeight){
-			$blankHeight=$currentHeight;
-
-			$body.="<tr><td class=\"cabpos freespace\">$i</td><td class=\"cabdev_t freespace\" rowspan=$blankHeight>&nbsp;</td></tr>\n";
-		}else{
-			$body.="<tr><td class=\"cabpos freespace\">$i</td></tr>\n";
-		}
-	}
-
-	if($backside){
 		$currentHeight=$cab->CabinetHeight;
-		reset($devList);
-		$body.="</table></div><div class=\"cabinet\">
-	<table>
-		<tr><th colspan=2 $cab_color >".__("Cabinet")." $cab->Location (".__("Rear").")</th></tr>
+
+		$body.="<div class=\"cabinet\">\n\t<table>
+		<tr><th id=\"cabid\" data-cabinetid=$cab->CabinetID colspan=2 $cab_color>".__("Cabinet")." $cab->Location</th></tr>
 		<tr><td class=\"cabpos\">".__("Pos")."</td><td class=\"cabdev_t\">".__("Device")."</td></tr>\n";
 
+		$heighterr="";
 		while(list($dev_index,$device)=each($devList)){
-			if (!$device->HalfDepth || $device->BackSide){
+			if($device->Height<1 && !$rear){
+				if($device->Rights!="None"){
+					$zeroheight.="\t\t\t<a href=\"devices.php?deviceid=$device->DeviceID\" data-deviceid=$device->DeviceID>$highlight $device->Label</a>\n";
+				}else{
+					// empty html anchor for a line break
+					$zeroheight.="\t\t\t$highlight $device->Label\n<a></a>";
+				}
+			}
+
+			if ((!$device->HalfDepth || !$device->BackSide)&&!$rear || (!$device->HalfDepth || $device->BackSide)&&$rear){
+				$backside=($device->HalfDepth)?true:$backside;
 				$devTop=$device->Position + $device->Height - 1;
 
 				$templ->TemplateID=$device->TemplateID;
@@ -343,28 +224,31 @@ function renderCabinetProps($cab, $audit, $AuditorName)
 				$tempDept->GetDeptByID();
 
 				// If a dept has been changed from white then it needs to be added to the stylesheet, legend, and device
-				if(strtoupper($tempDept->DeptColor)!="#FFFFFF"){
+				if(!$device->Reservation && strtoupper($tempDept->DeptColor)!="#FFFFFF"){
 					// Fill array with deptid and color so we can process the list once for the legend and style information
 					$deptswithcolor[$device->Owner]["color"]=$tempDept->DeptColor;
 					$deptswithcolor[$device->Owner]["name"]=$tempDept->Name;
 				}
 
 				$highlight="<blink><font color=red>";
-				if($device->TemplateID==0){$highlight.="(T)";}
-				if($device->Owner==0){$highlight.="(O)";}
+				if($device->TemplateID==0){
+					$highlight.="(T)";
+					$template_unassigned = true;
+				}
+				if($device->Owner==0){
+					$highlight.="(O)";
+					$ownership_unassigned = true;
+				}
 				$highlight.= "</font></blink>";
 
-				if ($device->HalfDepth) {
-					// (if fulldepth device, already accounted in frontside)
-					$totalWatts+=$device->GetDeviceTotalPower();
-					$DeviceTotalWeight=$device->GetDeviceTotalWeight();
-					$totalWeight+=$DeviceTotalWeight;
-					$totalMoment+=($DeviceTotalWeight*($device->Position+($device->Height/2)));
-				}
+				$totalWatts+=$device->GetDeviceTotalPower();
+				$DeviceTotalWeight=$device->GetDeviceTotalWeight();
+				$totalWeight+=$DeviceTotalWeight;
+				$totalMoment+=($DeviceTotalWeight*($device->Position+($device->Height/2)));
 
 				$reserved=($device->Reservation==false)?"":" reserved";
 				if($devTop<$currentHeight && $currentHeight>0){
-					for($i=$currentHeight;$i>$devTop;$i--){
+					for($i=$currentHeight;($i>$devTop);$i--){
 						$errclass=($i>$cab->CabinetHeight)?' error':'';
 						if($errclass!=''){$heighterr="yup";}
 						if($i==$currentHeight){
@@ -381,81 +265,41 @@ function renderCabinetProps($cab, $audit, $AuditorName)
 					$errclass=($i>$cab->CabinetHeight)?' error':'';
 					if($errclass!=''){$heighterr="yup";}
 					if($i==$devTop){
-						if($device->Rights!="None"){
-							if ($device->BackSide) {
-								if ($templ->FrontPictureFile=="")
-									//text
-									$body.="<tr><td class=\"cabpos$reserved dept$device->Owner$errclass\">$i</td><td class=\"cabdev_t$reserved dept".
-										"$device->Owner\" rowspan=$device->Height data-deviceid=$device->DeviceID><a".
-										" href=\"devices.php?deviceid=$device->DeviceID\">$highlight $device->Label".
-										"</a></td></tr>\n";
-								else {
-									//Picture
-									$body.="<tr><td class=\"cabpos$reserved dept$device->Owner$errclass\">$i</td><td class=\"cabdev_p\" rowspan=$device->Height data-deviceid=$device->DeviceID>";
-									$body.="<a href=\"devices.php?deviceid=$device->DeviceID\">";
-									$body.=$device->GetDevicePicture();
-									$body.="</a></td></tr>\n";
-								}
-							}else{
-								if ($templ->RearPictureFile=="")
-									//text
-									$body.="<tr><td class=\"cabpos$reserved dept$device->Owner$errclass\">$i</td><td class=\"cabdev_t$reserved dept".
-										"$device->Owner\" rowspan=$device->Height data-deviceid=$device->DeviceID><a".
-										" href=\"devices.php?deviceid=$device->DeviceID\">$highlight $device->Label (".
-										__("Rear").")</a></td></tr>\n";
-								else {
-									//Picture
-									$body.="<tr><td class=\"cabpos$reserved dept$device->Owner$errclass\">$i</td><td class=\"cabdev_p\" rowspan=$device->Height data-deviceid=$device->DeviceID>";
-									$body.="<a href=\"devices.php?deviceid=$device->DeviceID\">";
-									$body.=$device->GetDevicePicture('rear');
-									$body.="</a></td></tr>\n";
-								}
-							}
-						}else{
-							if ($device->BackSide) {
-								if ($templ->FrontPictureFile=="")
-									//text
-									$body.="<tr><td class=\"cabpos$reserved dept$device->Owner$errclass\">$i</td><td class=\"cabdev_t$reserved dept".
-									"$device->Owner\" rowspan=$device->Height data-deviceid=$device->DeviceID>".
-									"$highlight $device->Label"."</td></tr>\n";
-								else {
-									//Picture
-									$body.="<tr><td class=\"cabpos$reserved dept$device->Owner$errclass\">$i</td><td class=\"cabdev_p\" rowspan=$device->Height data-deviceid=$device->DeviceID>";
-									$body.=$device->GetDevicePicture();
-									$body.="</td></tr>\n";
-								}
-							}else{
-								if ($templ->RearPictureFile=="")
-									//text
-									$body.="<tr><td class=\"cabpos$reserved dept$device->Owner$errclass\">$i</td><td class=\"cabdev_t$reserved dept".
-									"$device->Owner\" rowspan=$device->Height data-deviceid=$device->DeviceID>".
-									"$highlight $device->Label (".__("Rear").")</td></tr>\n";
-								else {
-									//Picture
-									$body.="<tr><td class=\"cabpos$reserved dept$device->Owner$errclass\">$i</td><td class=\"cabdev_p\" rowspan=$device->Height data-deviceid=$device->DeviceID>";
-									$body.=$device->GetDevicePicture('rear');
-									$body.="</td></tr>\n";
-								}
-							}
-						}
+						// Create the filler for the rack either text or a picture
+						// if rear and half depth get a front picture file
+						$picture=(!$rear)?$device->GetDevicePicture():($rear && $device->HalfDepth)?$device->GetDevicePicture():$device->GetDevicePicture($rear);
+						$text=($device->Rights!="None")?"<a href=\"devices.php?deviceid=$device->DeviceID\">$highlight $device->Label</a>":$device->Label;
+
+						// Put the device in the rack
+						$body.="<tr><td class=\"cabpos$reserved dept$device->Owner$errclass\">$i</td><td class=\"dept$device->Owner$reserved\" rowspan=$device->Height data-deviceid=$device->DeviceID>";
+						$body.=($picture)?$picture:$text;
+						$body.="</td></tr>\n";
 					}else{
 						$body.="<tr><td class=\"cabpos$reserved dept$device->Owner$errclass\">$i</td></tr>\n";
 					}
 				}
 				$currentHeight=$device->Position - 1;
+			}elseif(!$rear){
+				$backside=true;
 			}
 		}
+
 		// Fill in to the bottom
 		for($i=$currentHeight;$i>0;$i--){
 			if($i==$currentHeight){
 				$blankHeight=$currentHeight;
 
-				$body.="<tr><td class=\"cabpos freespace\">$i</td><td class=\"freespace\" rowspan=$blankHeight>&nbsp;</td></tr>\n";
+				$body.="<tr><td class=\"cabpos freespace\">$i</td><td class=\"cabdev_t freespace\" rowspan=$blankHeight>&nbsp;</td></tr>\n";
 			}else{
 				$body.="<tr><td class=\"cabpos freespace\">$i</td></tr>\n";
 			}
 		}
+		$body.="</table></div>";
+		reset($devList);
 	}
+
+	BuildCabinet();
+	($backside)?BuildCabinet('rear'):'';
 
 	if($heighterr!=''){$legend.='<p>* - '.__("Above defined rack height").'</p>';}
 
@@ -510,9 +354,7 @@ function renderCabinetProps($cab, $audit, $AuditorName)
         }
 
 
-$body.='</table>
-</div>
-<div id="infopanel">
+$body.='<div id="infopanel">
 	<fieldset id="legend">
 		<legend>'.__("Markup Key")."</legend>\n".$legend_flags."\n"
 .$legend.'
