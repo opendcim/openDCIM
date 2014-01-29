@@ -199,7 +199,7 @@ function renderCabinetProps($cab, $audit, $AuditorName)
 		$currentHeight=$cab->CabinetHeight;
 
 		$body.="<div class=\"cabinet\">\n\t<table>
-		<tr><th id=\"cabid\" data-cabinetid=$cab->CabinetID colspan=2 $cab_color>".__("Cabinet")." $cab->Location</th></tr>
+		<tr><th id=\"cabid\" data-cabinetid=$cab->CabinetID colspan=2 $cab_color>".__("Cabinet")." $cab->Location".($rear?" (".__("Rear").")":"")."</th></tr>
 		<tr><td class=\"cabpos\">".__("Pos")."</td><td class=\"cabdev_t\">".__("Device")."</td></tr>\n";
 
 		$heighterr="";
