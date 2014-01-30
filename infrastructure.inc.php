@@ -476,6 +476,7 @@ class DataCenter {
 			img.onload=function(){
 				// changed to eliminate the flickering of reloading the background image on a redraw
 				//context.drawImage(img,0,0);
+				airflow();
 			}
 			// give it an image to load
 			img.src=\"$mapfile\";
@@ -1571,6 +1572,7 @@ class Zone {
 			img.onload=function(){
 				// changed to eliminate the flickering of reloading the background image on a redraw
 				context.drawImage(img,-$this->MapX1*$zoom,-$this->MapY1*$zoom,$width*$zoom,$height*$zoom);
+				airflow();
 			}
 			// give it an image to load
 			img.src=\"$mapfile\";

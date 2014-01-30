@@ -216,7 +216,6 @@ echo $select.'</div></div>'.$zone->MakeImageMap();
 
 		$('#maptitle .nav > select').change(function(){
 			eval($(this).val()+'()');
-			airflow();
 		});
 
 		loadCanvas();
