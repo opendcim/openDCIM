@@ -193,6 +193,7 @@
 				$('#zoneid').change();
 			});
 		});
+		$('#datacenterid').trigger('change');
 		$('#zoneid').change(function(){
 			$.post('',{rowlist: $(this).val()}).done(function(data){
 				$('#cabrowid').html('');
