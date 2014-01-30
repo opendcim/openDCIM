@@ -385,9 +385,11 @@ class DataCenter {
 							$else="";
 						}
 						$js.=$else."if((e.pageX>(cpos.left+$zone->MapX1) && e.pageX<(cpos.left+$zone->MapX2)) && (e.pageY>(cpos.top+$zone->MapY1) && e.pageY<(cpos.top+$zone->MapY2))){
-				$('#maptitle .nav select').trigger('change');
-				HilightZone('zone$zone->ZoneID');
-				redraw=true;\n";
+				if(!redraw){
+					$('#maptitle .nav select').trigger('change');
+					HilightZone('zone$zone->ZoneID');
+					redraw=true;
+				}\n";
 					}
 				}
 				if(strlen($js)>0){
@@ -397,9 +399,11 @@ class DataCenter {
 			context.globalCompositeOperation='source-over';
 			//there has to be a better way to do this.  stupid js
 			area=$('area[name='+area+']').prop('coords').split(',');
+			context.save();
 			context.lineWidth='4';
 			context.strokeStyle='red';
 			context.strokeRect(area[0],area[1],(area[2]-area[0]),(area[3]-area[1]));
+			context.restore();
 		}\n";
 					$js="$hilight
 		var redraw=false;

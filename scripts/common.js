@@ -43,9 +43,8 @@ function drawArrow(canvas,startx,starty,width,height,direction){
 			var p7={x: startx,              y: starty+(height-((height-arrowH)))};
 			break;
     }
-
 	canvas.save();
-    
+
 	canvas.globalCompositeOperation="source-over";
 	canvas.fillStyle="rgba(255, 0, 0, .35)";
 	canvas.strokeStyle="rgba(0, 0, 0, .55)";
