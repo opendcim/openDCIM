@@ -48,6 +48,7 @@ function drawArrow(canvas,startx,starty,width,height,direction){
     
 	canvas.globalCompositeOperation="source-over";
 	canvas.fillStyle="rgba(255, 0, 0, .35)";
+	canvas.strokeStyle="rgba(0, 0, 0, .55)";
 
 	canvas.beginPath();
 
@@ -61,6 +62,7 @@ function drawArrow(canvas,startx,starty,width,height,direction){
 
 	canvas.closePath();
 	canvas.fill();
+	canvas.stroke();
 
 	canvas.restore();
 }
