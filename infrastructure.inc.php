@@ -488,7 +488,8 @@ class DataCenter {
 				$power="\t\tfunction power(){\n\t\t\tclearcanvas();\n";
 				$temperature="\t\tfunction temperatura(){\n\t\t\tclearcanvas();\n";
 				$humidity="\t\tfunction humedad(){\n\t\t\tclearcanvas();\n";				
-				$realpower="\t\tfunction realpower(){\n\t\t\tclearcanvas();\n";				
+				$realpower="\t\tfunction realpower(){\n\t\t\tclearcanvas();\n";
+				$airflow="\t\tfunction airflow(){\n\t\t\t\n";
 				/*
 				$sql="SELECT C.*, Temps.Temp, Temps.Humidity, Stats.Wattage AS RealPower, 
 					Temps.LastRead, Temps.LastRead AS RPLastRead FROM fac_Cabinet AS C
@@ -519,26 +520,6 @@ class DataCenter {
 						if ($cab->MapX1==$cab->MapX2 || $cab->MapY1==$cab->MapY2){
 							continue;
 						}
-						/* This is ready for a JS implementation of drawArrow() to show to air flow
- 
-						$midX = $cab->MapX1 + intval((($cab->MapX2 - $cab->MapX1) / 2 ));
-						$midY = $cab->MapY1 + intval((($cab->MapY2 - $cab->MapY2) / 2 ));
-						
-						switch ( $cab->FrontEdge ) {
-							case "Top":
-								$arrow = sprintf( "drawArrow( %d, %d, %d, %d );\n", $midX, $cab->MapY1, $midX, $cab->MapY2 );
-								break;
-							case "Right":
-								$arrow = sprintf( "drawArrow( %d, %d, %d, %d );\n", $cab->MapX2, $midY, $cab->MapX1, $midY );
-								break;
-							case "Bottom":
-								$arrow = sprintf( "drawArrow( %d, %d, %d, %d );\n", $midX, $cab->MapY2, $midX, $cab->MapY1 );
-								break;
-							default:
-								$arrow = sprintf( "drawArrow( %d, %d, %d, %d );\n", $cab->MapX1, $midY, $cab->MapX2, $midY );
-								break;
-						}
-						*/
 						$dev->Cabinet=$cab->CabinetID;
 						$dev->Location=$cab->Location;  //$dev->Location ???
 	    	    		$devList=$dev->ViewDevicesByCabinet();
@@ -611,6 +592,7 @@ class DataCenter {
 	
 						$border="\n\t\t\tcontext.strokeStyle='#000000';\n\t\t\tcontext.lineWidth=1;\n\t\t\tcontext.strokeRect($cab->MapX1,$cab->MapY1,$width,$height);";
 						$statuscolor="\n\t\t\tcontext.fillRect($cab->MapX1,$cab->MapY1,$width,$height);";
+						$airflow.="\n\t\t\tdrawArrow(context,$cab->MapX1,$cab->MapY1,$width,$height,'$cab->FrontEdge');";
 						$label="\n\t\t\tcontext.fillStyle='#000000';\n\t\t\tcontext.font='10px arial';\n\t\t\tcontext.fillText('$dev->Location',$textXcoord,$textYcoord);\n";
 						$labelsp="\n\t\t\tcontext.fillStyle='#000000';\n\t\t\tcontext.font='bold 12px arial';\n\t\t\tcontext.fillText('".number_format($used,0, ",", ".")."',$textXcoord,$textYcoord);\n";
 						$labelwe="\n\t\t\tcontext.fillStyle='#000000';\n\t\t\tcontext.font='bold 12px arial';\n\t\t\tcontext.fillText('".number_format($totalWeight,0, ",", ".")."',$textXcoord,$textYcoord);\n";
@@ -667,9 +649,10 @@ class DataCenter {
 			$temperature.=$leyendate."\n\t\t}\n";
 			$humidity.=$leyendahu."\n\t\t}\n";
 			$realpower.=$leyendarp."\n\t\t}\n";
+			$airflow.="\n\t\t}\n";
 			
 			$script.=$leyenda."\n\t\t}\n";
-			$script.=$space.$weight.$power.$temperature.$humidity.$realpower;
+			$script.=$space.$weight.$power.$temperature.$humidity.$realpower.$airflow;
 		}
 		return $script;
 	}
@@ -1601,6 +1584,7 @@ class Zone {
 				$temperature="\t\tfunction temperatura(){\n\t\t\tclearcanvas();\n";
 				$humidity="\t\tfunction humedad(){\n\t\t\tclearcanvas();\n";				
 				$realpower="\t\tfunction realpower(){\n\t\t\tclearcanvas();\n";				
+				$airflow="\t\tfunction airflow(){\n";				
 								
 				$sql="SELECT C.*, Temps.Temp, Temps.Humidity, Stats.Wattage AS RealPower, 
 					Temps.LastRead, Temps.LastRead AS RPLastRead FROM fac_Cabinet AS C
@@ -1678,6 +1662,7 @@ class Zone {
 	        				
 						$border="\n\t\t\tcontext.strokeStyle='#000000';\n\t\t\tcontext.lineWidth=1;\n\t\t\tcontext.strokeRect(($cab->MapX1-$this->MapX1)*$zoom,($cab->MapY1-$this->MapY1)*$zoom,$width,$height);";
 						$statuscolor="\n\t\t\tcontext.fillRect(($cab->MapX1-$this->MapX1)*$zoom,($cab->MapY1-$this->MapY1)*$zoom,$width,$height);";
+						$airflow.="\n\t\t\tdrawArrow(context,($cab->MapX1-$this->MapX1)*$zoom,($cab->MapY1-$this->MapY1)*$zoom,$width,$height,'$cab->FrontEdge');";
 						$label="\n\t\t\tcontext.fillStyle='#000000';\n\t\t\tcontext.font='10px arial';\n\t\t\tcontext.fillText('$dev->Location',$textXcoord,$textYcoord);\n";
 						$labelsp="\n\t\t\tcontext.fillStyle='#000000';\n\t\t\tcontext.font='bold 12px arial';\n\t\t\tcontext.fillText('".number_format($used,0, ",", ".")."',$textXcoord,$textYcoord);\n";
 						$labelwe="\n\t\t\tcontext.fillStyle='#000000';\n\t\t\tcontext.font='bold 12px arial';\n\t\t\tcontext.fillText('".number_format($totalWeight,0, ",", ".")."',$textXcoord,$textYcoord);\n";
@@ -1734,9 +1719,10 @@ class Zone {
 			$temperature.=$leyendate."\n\t\t}\n";
 			$humidity.=$leyendahu."\n\t\t}\n";
 			$realpower.=$leyendarp."\n\t\t}\n";
+			$airflow.="\n\t\t}\n";
 			
 			$script.=$leyenda."\n\t\t}\n";
-			$script.=$space.$weight.$power.$temperature.$humidity.$realpower;
+			$script.=$space.$weight.$power.$temperature.$humidity.$realpower.$airflow;
 		}
 		return $script;
 	}

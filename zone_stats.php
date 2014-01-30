@@ -80,6 +80,7 @@ $(document).ready(function() {
   <![endif]-->
   <script type="text/javascript" src="scripts/jquery.min.js"></script>
   <script type="text/javascript" src="scripts/jquery-ui.min.js"></script>
+  <script type="text/javascript" src="scripts/common.js"></script>
   <script type="text/javascript">
 	$(document).ready(function(){
 		$('#mapCanvas').css('width', $('.canvas > img[alt="clearmap over canvas"]').width()+'px');
@@ -185,7 +186,7 @@ $select='<select>';
 		'power' => __("Calculated Power"),
 		'realpower' => __("Measured Power"),
 		'temperatura' => __("Temperature"),
-		'humedad' => __("Humidity")
+		'humedad' => __("Humidity"),
 		) as $value => $option){
 		$select.='<option value="'.$value.'">'.$option.'</option>';
 	}
@@ -215,6 +216,7 @@ echo $select.'</div></div>'.$zone->MakeImageMap();
 
 		$('#maptitle .nav > select').change(function(){
 			eval($(this).val()+'()');
+			airflow();
 		});
 
 		loadCanvas();

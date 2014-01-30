@@ -66,6 +66,7 @@ $(document).ready(function() {
   <link rel="stylesheet" href="css/jquery-ui.css" type="text/css">
   <script type="text/javascript" src="scripts/jquery.min.js"></script>
   <script type="text/javascript" src="scripts/jquery-ui.min.js"></script>
+  <script type="text/javascript" src="scripts/common.js"></script>
   <!--[if lte IE 8]>
     <link rel="stylesheet"  href="css/ie.css" type="text/css">
     <?php if(isset($ie8fix)){print $ie8fix;} ?>
@@ -220,6 +221,7 @@ echo $select.'</div></div>'.$dc->MakeImageMap();
 		});
 		$('#maptitle .nav > select').change(function(){
 			eval($(this).val()+'()');
+			airflow();
 		});
 
 		loadCanvas();

@@ -1,3 +1,71 @@
+
+
+// draw arrows on a canvas
+function drawArrow(canvas,startx,starty,width,height,direction){
+	var arrowW = 0.20 * width;
+	var arrowH = 0.70 * height;
+    
+	switch(direction){
+		case 'Bottom':
+			var p1={x: startx+arrowH, y: starty};
+			var p2={x: startx+arrowH, y: starty+height-arrowW};
+			var p3={x: startx+(arrowH/2), y: starty+height-arrowW};
+			var p4={x: startx+(width/2), y: starty+height};
+			var p5={x: startx+width-(arrowH/2), y: starty+height-arrowW};
+			var p6={x: startx+(width-arrowH), y: starty+height-arrowW};
+			var p7={x: startx+(width-arrowH), y: starty};
+			break;
+		case 'Top':
+			var p1={x: startx+arrowH, y: starty+height};
+			var p2={x: startx+arrowH, y: starty+arrowW};
+			var p3={x: startx+(arrowH/2), y: starty+arrowW};
+			var p4={x: startx+(width/2), y: starty};
+			var p5={x: startx+width-(arrowH/2), y: starty+arrowW};
+			var p6={x: startx+(width-arrowH), y: starty+arrowW};
+			var p7={x: startx+(width-arrowH), y: starty+height};
+			break;
+		case 'Left':
+			var p1={x: startx+width,  y: starty+(height-arrowH)};
+			var p2={x: startx+arrowW, y: starty+(height-arrowH)};
+			var p3={x: startx+arrowW, y: starty};
+			var p4={x: startx,        y: starty+(height/2)};
+			var p5={x: startx+arrowW, y: starty+height};
+			var p6={x: startx+arrowW, y: starty+(height-((height-arrowH)))};
+			var p7={x: startx+width,  y: starty+(height-((height-arrowH)))};
+			break;
+		default:
+			var p1={x: startx,              y: starty+(height-arrowH)};
+			var p2={x: startx+(width-arrowW), y: starty+(height-arrowH)};
+			var p3={x: startx+(width-arrowW), y: starty};
+			var p4={x: startx+width,          y: starty+(height/2)};
+			var p5={x: startx+(width-arrowW), y: starty+height};
+			var p6={x: startx+(width-arrowW), y: starty+(height-((height-arrowH)))};
+			var p7={x: startx,              y: starty+(height-((height-arrowH)))};
+			break;
+    }
+
+	canvas.save();
+    
+	canvas.globalCompositeOperation="source-over";
+	canvas.fillStyle="rgba(255, 0, 0, .35)";
+
+	canvas.beginPath();
+
+	canvas.moveTo(p1.x, p1.y);
+	canvas.lineTo(p2.x, p2.y); // end of main block
+	canvas.lineTo(p3.x, p3.y); // topmost point     
+	canvas.lineTo(p4.x, p4.y); // endpoint 
+	canvas.lineTo(p5.x, p5.y); // bottommost point 
+	canvas.lineTo(p6.x, p6.y); // end at bottom point 
+	canvas.lineTo(p7.x, p7.y);
+
+	canvas.closePath();
+	canvas.fill();
+
+	canvas.restore();
+}
+
+
 (function( $ ) {
     $.widget( "opendcim.massedit", {
 		_create: function(){
