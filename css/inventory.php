@@ -514,6 +514,9 @@ table#cabprop span.text-label {
 }
 
 /* image_management */
+.imagem div.center > div { width: 350px; }
+.imagem div.center > div + div { width: 550px; }
+
 .imagem div.preview {
 	background-color: #FFFFFF;
 	border: 1px solid #808080;
