@@ -513,6 +513,34 @@ table#cabprop span.text-label {
      font: 11px "lucida grande",tahoma,verdana,arial,sans-serif;
 }
 
+/* image_management */
+.imagem div.preview {
+	background-color: #FFFFFF;
+	border: 1px solid #808080;
+	height: 300px;
+	padding: 5px;
+	width: 500px;
+	overflow: scroll;
+}
+
+.imagem .preview > div {
+	border: 1px solid #000000;
+	display: inline-block;
+	margin: 3px;
+	padding: 5px;
+}
+.imagem .preview > div > div:first-child { 
+	background-size: contain;
+	height: 100px;
+	width: 100px;
+	background-repeat: no-repeat; 
+	background-position: center center;
+	margin: -1px auto 5px;
+	padding: 2px;
+}
+.preview .filename { max-width: 100px; word-break: break-all; }
+.imagem .heading { border-bottom: 1px solid; font-size: 2em; margin-bottom: 5px; text-align: right; }
+
 /* devices.php  Device Detail */
 .device fieldset {
 	display: inline-block;
