@@ -14,7 +14,7 @@ $fileTypes = array('jpg', 'jpeg', 'gif', 'png'); // Allowed file extensions
 
 $verifyToken = md5('unique_salt' . $_POST['timestamp']);
 
-if (!empty($_FILES) && $_POST['token'] == $verifyToken) {
+if (!empty($_FILES) && $_POST['token'] == $verifyToken && ($user->WriteAccess || $user->SiteAdmin)) {
 	$tempFile   = $_FILES['Filedata']['tmp_name'];
 	$uploadDir  = $_SERVER['DOCUMENT_ROOT'] . $uploadDir;
 	$targetFile = $uploadDir.DIRECTORY_SEPARATOR.str_replace(' ','_',$_FILES['Filedata']['name']);

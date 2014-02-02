@@ -558,6 +558,7 @@ if ( $user->ContactAdmin ) {
 if ( $user->WriteAccess ) {
 	$wamenu[__("Template Management")][]='<a href="device_templates.php"><span>'.__("Edit Device Templates").'</span></a>';
 	$wamenu[__("Infrastructure Management")][]='<a href="cabinets.php"><span>'.__("Edit Cabinets").'</span></a>';
+	$wamenu[__("Template Management")][]='<a href="image_management.php#pictures"><span>'.__("Device Image Management").'</span></a>';
 }
 if ( $user->SiteAdmin ) {
 	$samenu[__("User Administration")][]='<a href="usermgr.php"><span>'.__("Manage Users").'</span></a>';
@@ -570,11 +571,12 @@ if ( $user->SiteAdmin ) {
 	$samenu[__("Infrastructure Management")][]='<a href="container.php"><span>'.__("Edit Containers").'</span></a>';
 	$samenu[__("Infrastructure Management")][]='<a href="zone.php"><span>'.__("Edit Zones").'</span></a>';
 	$samenu[__("Infrastructure Management")][]='<a href="cabrow.php"><span>'.__("Edit Rows of Cabinets").'</span></a>';
+	$samenu[__("Infrastructure Management")][]='<a href="image_management.php#drawings"><span>'.__("Facilities Image Management").'</span></a>';
 	$samenu[__("Power Management")][]='<a href="power_source.php"><span>'.__("Edit Power Sources").'</span></a>';
 	$samenu[__("Power Management")][]='<a href="power_panel.php"><span>'.__("Edit Power Panels").'</span></a>';
 	$samenu[__("Power Management")][]='<a href="cdu_templates.php"><span>'.__("Edit CDU Templates").'</span></a>';
-	$samenu[]='<a href="configuration.php"><span>'.__("Edit Configuration").'</span></a>';
 	$samenu[__("Path Connections")][]='<a href="paths.php"><span>'.__("View Path Connection").'</span></a>';
 	$samenu[__("Path Connections")][]='<a href="pathmaker.php"><span>'.__("Make Path Connection").'</span></a>';
+	$samenu[]='<a href="configuration.php"><span>'.__("Edit Configuration").'</span></a>';
 }
 ?>

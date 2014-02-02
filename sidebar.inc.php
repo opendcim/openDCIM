@@ -121,7 +121,8 @@ if (typeof jQuery.ui == 'undefined') {
 }
 
 $("#sidebar .nav a").each(function(){
-	if($(this).attr("href")=="<?php echo basename($_SERVER['PHP_SELF']);?>"){
+	var loc=window.location;
+	if($(this).attr("href")=="<?php echo basename($_SERVER['PHP_SELF']);?>" || $(this).attr("href")==loc.href.substr(loc.href.indexOf(loc.host)+loc.host.length+1)){
 		$(this).addClass("active");
 		$(this).parentsUntil("#ui-id-1","li").children('a:first-child').addClass("active");
 	}

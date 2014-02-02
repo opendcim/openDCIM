@@ -69,7 +69,7 @@
   <script type="text/javascript" src="scripts/jquery.uploadifive.min.js"></script>
   <script type="text/javascript">
 	function makeThumb(path,file){
-		return $('<div>').append($('<div>').css('background-image', 'url('+path+'/'+file+')')).append($('<div>').addClass('filename').text(file))
+		return $('<div>').append($('<div>').css('background-image', 'url("'+path+'/'+file+'")')).append($('<div>').addClass('filename').text(file))
 	}
 	function reload(target){
 		$('#'+target).children().remove();
@@ -94,6 +94,12 @@
 <div class="main">
 <h2><?php echo $config->ParameterArray['OrgName']; ?></h2>
 <h2>OpenDCIM Image File Management</h2>
+
+<?php
+// Only show the device pictures if they have global write access or site admin.
+if($user->SiteAdmin || $user->WriteAccess){
+?>
+
 <div class="center"><div>
 <div class="heading">Device Type Pictures</div>
 <input type="file" name="dev_file_upload" data-dir="pictures" id="dev_file_upload" />
@@ -121,13 +127,27 @@ $(function() {
 });
 </script>
 </div><div>
-<?php echo $devimageselect; ?>
+
+<div class="preview" id="pictures">
+</div>
+
 </div></div><!-- END div.center -->
+
+<?php
+}
+
+// Only show the site drawings if they have site admin rights.
+if($user->SiteAdmin){
+?>
 
 <div class="center"><div>
 <div class="heading">Datacenter / Room Drawings</div>
 <input type="file" name="drawing_file_upload" data-dir="drawings" id="drawing_file_upload" />
 
+</div><div>
+
+<div class="preview" id="drawings">
+</div>
 <script type="text/javascript">
 <?php $timestamp = time();?>
 $(function() {
@@ -150,11 +170,17 @@ $(function() {
     });
 });
 </script>
-</div><div>
-<?php echo $facimageselect; ?>
 </div></div><!-- END div.center -->
+
+<?php } ?>
+
 
 </div><!-- END div.main -->
 </div><!-- END div.page -->
+<script type="text/javascript">
+	$('.center input').each(function(){
+		reload($(this).data('dir'));
+	});
+</script>
 </body>
 </html>
