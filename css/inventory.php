@@ -531,6 +531,17 @@ table#cabprop span.text-label {
 	display: inline-block;
 	margin: 3px;
 	padding: 5px;
+	position: relative;
+}
+.imagem .preview > div > .del {
+	position: absolute;
+	top: 0;
+	right: 0;
+	height: 20px;
+	width: 20px;
+	background-image: url('../images/x.gif');
+	opacity: .4;
+	z-index: 5;
 }
 .imagem .preview > div > div:first-child { 
 	background-size: contain;

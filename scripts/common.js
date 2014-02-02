@@ -66,6 +66,58 @@ function drawArrow(canvas,startx,starty,width,height,direction){
 	canvas.restore();
 }
 
+// Image management
+	function makeThumb(path,file){
+		var device=$('<div>').css('background-image', 'url("'+path+'/'+file+'")');
+		var image=$('<div>').append(device).append($('<div>').addClass('filename').text(file));
+		var del=$('<div>').addClass('del').hide();
+		del.on('click', function(){
+			if(delimage(path,file)){
+				image.remove();
+			}
+		});
+		device.on('click', function(){
+			$('<div>').append($('<img>').attr('src',path+'/'+file)).attr('title',path+'/'+file).dialog({
+				width: 450,
+				modal: true
+			});
+		});
+
+		image.append(del);
+		image.mouseover(function(){del.toggle()});
+		image.mouseout(function(){del.toggle()});
+		return image; 
+	}
+	function delimage(path,file){
+		var exit=1;
+		$.post('scripts/check-exists.php',{dir: path, filename: file}).done(function(e){
+			if(e==1){
+				$.post('scripts/uploadifive.php',{dir: path, filename: file, timestamp : '<?php echo $timestamp;?>', token : '<?php echo $salt;?>'}).done(function(e){
+					if(e){
+					}else{
+						// if the file doesn't delete for some reason return false
+						alert("Blarg! File didn't delete");
+						exit=0;
+					}
+				});
+			}else{
+				alert("File doesn't exist");
+			}
+		});
+		return exit;
+	}
+	function reload(target){
+		$('#'+target).children().remove();
+		$.post('',{dir: target}).done(function(a){
+			$.each(a,function(dir,files){
+				$.each(files,function(i,file){
+					$('#'+target).append(makeThumb(dir,file));
+				});
+			});
+		});
+	}
+
+// END - Image Management
 
 (function( $ ) {
     $.widget( "opendcim.massedit", {
