@@ -67,52 +67,6 @@
 	<hr>
 <?php
 
-	/* 
-	 * This is an attempt to be sane about the rights management and the menu.
-	 * The menu will be built off a master array that is a merger of what options
-	 * the user has available.  
-	 *
-	 * Array structure:
-	 * 	[]->Top Level Menu Item
-	 *	[top level menu item]->Array(repeat previous structure)
-	 *
-	 */
-
-	$menu=$rmenu=$rrmenu=$camenu=$wamenu=$samenu=array();
-
-	$rmenu[]='<a href="reports.php"><span>'.__("Reports").'</span></a>';
-
-	if ( $user->RackRequest ) {
-		$rrmenu[]='<a href="rackrequest.php"><span>'.__("Rack Request Form").'</span></a>';
-	}
-	if ( $user->ContactAdmin ) {
-		$camenu[__("User Administration")][]='<a href="contacts.php"><span>'.__("Contact Administration").'</span></a>';
-		$camenu[__("User Administration")][]='<a href="departments.php"><span>'.__("Dept. Administration").'</span></a>';
-		$camenu[__("Issue Escalation")][]='<a href="timeperiods.php"><span>'.__("Time Periods").'</span></a>';
-		$camenu[__("Issue Escalation")][]='<a href="escalations.php"><span>'.__("Escalation Rules").'</span></a>';
-	}
-	if ( $user->WriteAccess ) {
-		$wamenu[__("Template Management")][]='<a href="device_templates.php"><span>'.__("Edit Device Templates").'</span></a>';
-		$wamenu[__("Infrastructure Management")][]='<a href="cabinets.php"><span>'.__("Edit Cabinets").'</span></a>';
-	}
-	if ( $user->SiteAdmin ) {
-		$samenu[__("User Administration")][]='<a href="usermgr.php"><span>'.__("Manage Users").'</span></a>';
-		$samenu[__("Template Management")][]='<a href="device_manufacturers.php"><span>'.__("Edit Manufacturers").'</span></a>';
-		$samenu[__("Template Management")][]='<a href="cdu_templates.php"><span>'.__("Edit CDU Templates").'</span></a>';
-		$samenu[__("Template Management")][]='<a href="sensor_templates.php"><span>'.__("Edit Sensor Templates").'</span></a>';
-		$samenu[__("Supplies Management")][]='<a href="supplybin.php"><span>'.__("Manage Supply Bins").'</span></a>';
-		$samenu[__("Supplies Management")][]='<a href="supplies.php"><span>'.__("Manage Supplies").'</span></a>';
-		$samenu[__("Infrastructure Management")][]='<a href="datacenter.php"><span>'.__("Edit Data Centers").'</span></a>';
-		$samenu[__("Infrastructure Management")][]='<a href="container.php"><span>'.__("Edit Containers").'</span></a>';
-		$samenu[__("Infrastructure Management")][]='<a href="zone.php"><span>'.__("Edit Zones").'</span></a>';
-		$samenu[__("Infrastructure Management")][]='<a href="cabrow.php"><span>'.__("Edit Rows of Cabinets").'</span></a>';
-		$samenu[__("Power Management")][]='<a href="power_source.php"><span>'.__("Edit Power Sources").'</span></a>';
-		$samenu[__("Power Management")][]='<a href="power_panel.php"><span>'.__("Edit Power Panels").'</span></a>';
-		$samenu[__("Power Management")][]='<a href="cdu_templates.php"><span>'.__("Edit CDU Templates").'</span></a>';
-		$samenu[]='<a href="configuration.php"><span>'.__("Edit Configuration").'</span></a>';
-		$samenu[__("Path Connections")][]='<a href="paths.php"><span>'.__("View Path Connection").'</span></a>';
-		$samenu[__("Path Connections")][]='<a href="pathmaker.php"><span>'.__("Make Path Connection").'</span></a>';
-	}
 
 	function buildmenu($menu){
 		$level='';
