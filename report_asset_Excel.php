@@ -169,7 +169,7 @@ $DProps = array(
             array('Asset Number', 'T', 11, null),
             array('Serial No.', 'T', 11, null),
             array('Install Date', 'D', 11, null),
-            array('Warranty Expire', 'D', 11, null),
+            array('Warranty End', 'D', 11, null),
             array('Owner', '', 11, null),
             array('Power (W)', '', 11, null),
             array('Reservation', '', null, null),
