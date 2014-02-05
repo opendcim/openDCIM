@@ -2025,7 +2025,7 @@ class Device {
 	
 	function GetDeviceCabinetID(){
 		$tmpDev = new Device();
-		$tmpDev->DeviceID = GetRootDeviceID();
+		$tmpDev->DeviceID = $this->GetRootDeviceID();
 		$tmpDev->GetDevice();
 		return $tmpDev->Cabinet;	
 	}
