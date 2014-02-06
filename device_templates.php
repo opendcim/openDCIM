@@ -11,12 +11,22 @@
 	$template=new DeviceTemplate();
 	$manufacturer=new Manufacturer();
 
+	$status='';
+	
+	if(isset($_FILES['templateFile'])){
+		$tmpFile="pictures/".basename($_FILES['templateFile']['tmp_name']);
+		move_uploaded_file($_FILES['templateFile']['tmp_name'], $tmpFile);
+		$result=$template->ImportTemplate($tmpFile);
+		$status=($result["status"]=="")?__("Template File Imported"):$result["status"]."<a id='import_err' style='margin-left: 1em;' title='".__("View errors")."' href='#'><img src='images/info.png'/></a>" ;
+		unlink($tmpFile);
+	}
+	
 	if(isset($_REQUEST['templateid']) && $_REQUEST['templateid'] >0){
+		//get template
 		$template->TemplateID=$_REQUEST['templateid'];
 		$template->GetTemplateByID();
 	}
-
-	$status='';
+	
 	if(isset($_POST['action'])){
 		$template->ManufacturerID=$_POST['manufacturerid'];
 		$template->Model=transform($_POST['model']);
@@ -26,19 +36,19 @@
 		$template->DeviceType=$_POST['devicetype'];
 		$template->PSCount=$_POST['pscount'];
 		$template->NumPorts=$_POST['numports'];
-        $template->Notes=trim($_POST['notes']);
+		$template->Notes=trim($_POST['notes']);
 		$template->Notes=($template->Notes=="<br>")?"":$template->Notes;
 		$template->FrontPictureFile=$_POST['FrontPictureFile'];
-        $template->RearPictureFile=$_POST['RearPictureFile'];
-        $template->ChassisSlots=($template->DeviceType=="Chassis")?$_POST['ChassisSlots']:0;
-        $template->RearChassisSlots=($template->DeviceType=="Chassis")?$_POST['RearChassisSlots']:0;
+		$template->RearPictureFile=$_POST['RearPictureFile'];
+		$template->ChassisSlots=($template->DeviceType=="Chassis")?$_POST['ChassisSlots']:0;
+		$template->RearChassisSlots=($template->DeviceType=="Chassis")?$_POST['RearChassisSlots']:0;
         
 		switch($_POST['action']){
 			case 'Create':
 				$status=(!$template->CreateTemplate())?__('An error has occured, template not created'):'';
 				break;
 			case 'Update':
-				$status=($template->UpdateTemplate())?__('Updated'):__('Error');
+				$status=($template->UpdateTemplate())?__('Updated'):__('Error updating template');
 				if ($status==__('Updated')){
 					//Update slots
 					$template->DeleteSlots();
@@ -51,7 +61,7 @@
 						$slot->Y=isset($_POST["YF".$i])?$_POST["YF".$i]:0;
 						$slot->W=isset($_POST["WF".$i])?$_POST["WF".$i]:0;
 						$slot->H=isset($_POST["HF".$i])?$_POST["HF".$i]:0;
-						$status=($slot->CreateSlot())?$status:__('Error');
+						$status=($slot->CreateSlot())?$status:__('Error updating front slots');
 					}
 					for ($i=1; $i<=$template->RearChassisSlots;$i++){
 						$slot=new Slot();
@@ -62,7 +72,19 @@
 						$slot->Y=isset($_POST["YR".$i])?$_POST["YR".$i]:0;
 						$slot->W=isset($_POST["WR".$i])?$_POST["WR".$i]:0;
 						$slot->H=isset($_POST["HR".$i])?$_POST["HR".$i]:0;
-						$status=($slot->CreateSlot())?$status:__('Error');
+						$status=($slot->CreateSlot())?$status:__('Error updating rear slots');
+					}
+					//update template ports
+					$template->DeletePorts();
+					for ($i=1; $i<=$template->NumPorts;$i++){
+						$tport=new TemplatePorts();
+						$tport->TemplateID=$template->TemplateID;
+						$tport->PortNumber=$i;
+						$tport->Label=isset($_POST["label".$i])?$_POST["label".$i]:"";
+						$tport->MediaID=(isset($_POST["mt".$i]) && $_POST["mt".$i]>0)?$_POST["mt".$i]:0;
+						$tport->ColorID=(isset($_POST["cc".$i]) && $_POST["cc".$i]>0)?$_POST["cc".$i]:0;
+						$tport->PortNotes=isset($_POST["portnotes".$i])?$_POST["portnotes".$i]:"";
+						$status=($tport->CreatePort())?$status:__('Error updating template ports');
 					}
 				}
 				break;
@@ -70,6 +92,51 @@
 				// someone will inevitibly try to update the template values and just click 
 				// update devices so make sure the template will update before trying to 
 				// update the device values to match the template
+				$status=($template->UpdateTemplate())?__('Updated'):__('Error updating template');
+				if ($status==__('Updated')){
+					//Update slots
+					$template->DeleteSlots();
+					for ($i=1; $i<=$template->ChassisSlots;$i++){
+						$slot=new Slot();
+						$slot->TemplateID=$template->TemplateID;
+						$slot->Position=$i;
+						$slot->BackSide=False;
+						$slot->X=$_POST["XF".$i];
+						$slot->Y=$_POST["YF".$i];
+						$slot->W=$_POST["WF".$i];
+						$slot->H=$_POST["HF".$i];
+						$status=($slot->CreateSlot())?$status:__('Error updating front slots');
+					}
+					for ($i=1; $i<=$template->RearChassisSlots;$i++){
+						$slot=new Slot();
+						$slot->TemplateID=$template->TemplateID;
+						$slot->Position=$i;
+						$slot->BackSide=True;
+						$slot->X=$_POST["XR".$i];
+						$slot->Y=$_POST["YR".$i];
+						$slot->W=$_POST["WR".$i];
+						$slot->H=$_POST["HR".$i];
+						$status=($slot->CreateSlot())?$status:__('Error updating rear slots');
+					}
+					//update template ports
+					$template->DeletePorts();
+					for ($i=1; $i<=$template->NumPorts;$i++){
+						$tport=new TemplatePorts();
+						$tport->TemplateID=$template->TemplateID;
+						$tport->PortNumber=$i;
+						$tport->Label=isset($_POST["label".$i])?$_POST["label".$i]:"";
+						$tport->MediaID=(isset($_POST["mt".$i]) && $_POST["mt".$i]>0)?$_POST["mt".$i]:0;
+						$tport->ColorID=(isset($_POST["cc".$i]) && $_POST["cc".$i]>0)?$_POST["cc".$i]:0;
+						$tport->PortNotes=isset($_POST["portnotes".$i])?$_POST["portnotes".$i]:"";
+						$status=($tport->CreatePort())?$status:__('Error updating template ports');
+					}
+				}
+				if($status==__('Updated')){
+					$status=($template->UpdateDevices())?__('Updated'):__('Error updating devices');
+				}
+				break;
+			case 'Export':
+				//update template before export
 				$status=($template->UpdateTemplate())?__('Updated'):__('Error');
 				if ($status==__('Updated')){
 					//Update slots
@@ -96,9 +163,21 @@
 						$slot->H=$_POST["HR".$i];
 						$status=($slot->CreateSlot())?$status:__('Error');
 					}
+					//update template ports
+					$template->DeletePorts();
+					for ($i=1; $i<=$template->NumPorts;$i++){
+						$tport=new TemplatePorts();
+						$tport->TemplateID=$template->TemplateID;
+						$tport->PortNumber=$i;
+						$tport->Label=isset($_POST["label".$i])?$_POST["label".$i]:"";
+						$tport->MediaID=(isset($_POST["mt".$i]) && $_POST["mt".$i]>0)?$_POST["mt".$i]:0;
+						$tport->ColorID=(isset($_POST["cc".$i]) && $_POST["cc".$i]>0)?$_POST["cc".$i]:0;
+						$tport->PortNotes=isset($_POST["portnotes".$i])?$_POST["portnotes".$i]:"";
+						$status=($tport->CreatePort())?$status:__('Error updating template ports');
+					}
 				}
 				if($status==__('Updated')){
-					$status=($template->UpdateDevices())?__('Updated'):__('Error');
+					$status=($template->ExportTemplate())?__('Exported'):__('Error');
 				}
 				break;
 			default:
@@ -108,7 +187,9 @@
 
 	$templateList=$template->GetTemplateList();
 	$ManufacturerList=$manufacturer->GetManufacturerList();
-	
+	$mtList=MediaTypes::GetMediaTypeList();
+	$ccList=ColorCoding::GetCodeList();
+			
 	$imageselect='<div id="preview"></div><div id="filelist">';
 
 	$path='./pictures';
@@ -169,61 +250,61 @@
 			$('#device, #clone').remove();
 		});
 
-        $('#notes').each(function(){
-            $(this).before('<button type="button" id="editbtn"></button>');
-            if($(this).val()!=''){
-                rendernotes($('#editbtn'));
-            }else{
-                editnotes($('#editbtn'));
-            }
-        });
+		$('#notes').each(function(){
+			$(this).before('<button type="button" id="editbtn"></button>');
+			if($(this).val()!=''){
+				rendernotes($('#editbtn'));
+			}else{
+				editnotes($('#editbtn'));
+			}
+		});
     
-        function editnotes(button){
-            button.val('preview').text('<?php echo __("Preview");?>');
-            var a=button.next('div');
-            button.next('div').remove();
-            button.next('textarea').htmlarea({
-                toolbar: [
-                "link", "unlink", "image"
-                ],
-                css: 'css/jHtmlArea.Editor.css'
-            });
-            $('.jHtmlArea div iframe').height(a.innerHeight());
-        }
+		function editnotes(button){
+			button.val('preview').text('<?php echo __("Preview");?>');
+			var a=button.next('div');
+			button.next('div').remove();
+			button.next('textarea').htmlarea({
+				toolbar: [
+					"link", "unlink", "image"
+				],
+				css: 'css/jHtmlArea.Editor.css'
+			});
+			$('.jHtmlArea div iframe').height(a.innerHeight());
+		}
 
-        function rendernotes(button){
-            button.val('edit').text('<?php echo __("Edit");?>');
-            var w=button.next('div').outerWidth();
-            var h=$('.jHtmlArea').outerHeight();
-            if(h>0){
-                h=h+'px';
-            }else{
-                h="auto";
-            }
-            $('#notes').htmlarea('dispose');
-            button.after('<div id="preview">'+$('#notes').val()+'</div>');
-            button.next('div').css({'width': w+'px', 'height' : h}).find('a').each(function(){
-                $(this).attr('target', '_new');
-            });
-            $('#notes').html($('#notes').val()).hide(); // we still need this field to submit it with the form
-            h=0; // recalculate height in case they added an image that is gonna hork the layout
-            // need a slight delay here to allow the load of large images before the height calculations are done
-            setTimeout(function(){
-                $('#preview').find("*").each(function(){
-                    h+=$(this).outerHeight();
-                });
-                $('#preview').height(h);
-            },2000);
-        }
+		function rendernotes(button){
+			button.val('edit').text('<?php echo __("Edit");?>');
+			var w=button.next('div').outerWidth();
+			var h=$('.jHtmlArea').outerHeight();
+			if(h>0){
+				h=h+'px';
+			}else{
+				h="auto";
+			}
+			$('#notes').htmlarea('dispose');
+			button.after('<div id="preview">'+$('#notes').val()+'</div>');
+			button.next('div').css({'width': w+'px', 'height' : h}).find('a').each(function(){
+				$(this).attr('target', '_new');
+			});
+			$('#notes').html($('#notes').val()).hide(); // we still need this field to submit it with the form
+			h=0; // recalculate height in case they added an image that is gonna hork the layout
+			// need a slight delay here to allow the load of large images before the height calculations are done
+			setTimeout(function(){
+				$('#preview').find("*").each(function(){
+					h+=$(this).outerHeight();
+					});
+				$('#preview').height(h);
+			},2000);
+		}
 
-        $('#editbtn').click(function(){
-            var button=$(this);
-            if($(this).val()=='edit'){
-                editnotes(button);
-            }else{
-                rendernotes(button);
-            }
-        });
+		$('#editbtn').click(function(){
+			var button=$(this);
+			if($(this).val()=='edit'){
+				editnotes(button);
+			}else{
+				rendernotes(button);
+			}
+		});
 
 		$('#FrontPictureFile').click(function(){
 			$("#imageselection").dialog({
@@ -268,7 +349,7 @@
 					$(this).click();
 				}
 			});
-		});
+		});  
 		
 		$('#RearPictureFile').click(function(){
 			$("#imageselection").dialog({
@@ -337,12 +418,6 @@
 			}
 		});
 
-		/*
-		var lbsettings = {
-				containerBorderSize: 10,
-				txtImage:'<?php print __("Slot"); ?>',
-				txtOf:'<?php print __("of"); ?>'}
-		*/
 <?php 
 if (isset($template->ChassisSlots) && $template->ChassisSlots>0){
 ?>		
@@ -360,7 +435,40 @@ if (isset($template->RearChassisSlots) && $template->RearChassisSlots>0){
 <?php
 }
 ?>
-	});
+
+		$( "#importButton" ).click(function() {
+			$("#dlg_importfile").dialog({
+				resizable: false,
+				width: 400,
+				height: 200,
+				modal: true,					
+				buttons: {	
+					<?php echo __("Import");?>: function() {  			
+						//  Llamamos al Formulario 
+						$('#frmImport').submit();
+					},
+					<?php echo __("Cancel");?>: function() {  							     				       
+					    $("#dlg_importfile").dialog("close");
+					}
+				}
+			});
+		});
+
+		$( "#import_err" ).click(function() {
+			$("#dlg_import_err").dialog({
+				resizable: false,
+				width: 500,
+				height: 400,
+				modal: true,					
+				buttons: {	
+					<?php echo __("Close");?>: function() {  							     				       
+					    $("#dlg_import_err").dialog("close");  								   
+					}
+				}
+			});
+		});
+		
+	});/* END of $(document).ready function() */
 
 	function show(slot) {
 		if ($('#lightbox-image').is(':visible')) {
@@ -512,11 +620,42 @@ for ($i=1; $i<=$template->RearChassisSlots;$i++){
 	print "<td><input type='text' name='YR".$i."' id='YR".$i."' value='".$slot->Y."' size='4'></td>\n"; 
 	print "<td><input type='text' name='WR".$i."' id='WR".$i."' value='".$slot->W."' size='4'></td>\n"; 
 	print "<td><input type='text' name='HR".$i."' id='HR".$i."' value='".$slot->H."' size='4'></td>\n";
-	print "<td><a id='R".$i."' href='pictures/".$template->RearPictureFile."' title='".__("Edit coordinates of rear slot")." ".$i."' onClick='show(\"R".$i."\")' >".__("Edit")."</a></td>\n</tr>\n"; 
+	print "<td><a id='R".$i."' href='pictures/".$template->RearPictureFile."' title='".__("Edit coordinates of rear slot")." ".$i."' onClick='show(\"R".$i."\")' >".__("Edit")."</a></td>\n</tr>\n";
 }
+print "</table>\n</div>\n</div>\n";
 
-print "</table></div>";
-echo '</div>
+echo '<div id="DivPorts" style="display: ',(($template->NumPorts>0)?'table-row':'none'),';">
+	<div><label for="Ports">',__("Features of ports"),'</label></div>';
+print "<div><table class='coordinates' style='margin-top: 3px; margin-left: 0px; margin-bottom: 3px;'>";
+print "<tr><th>".__("Port Number")."</th><th>".__("Label")."</th><th>".__("Media")."</th><th>".__("Color")."</th><th>".__("Notes")."</th></tr>\n";
+for ($i=1; $i<=$template->NumPorts;$i++){
+	$tport=new TemplatePorts();
+	$tport->TemplateID=$template->TemplateID;
+	$tport->PortNumber=$i;
+	$tport->GetPort();
+	print "<td>".$i."</td>\n"; 
+	print "<td><input type='text' name='label".$i."' id='label".$i."' value='".$tport->Label."' size='6' maxlength='40'></td>\n"; 
+	print "<td><select name='mt".$i."' id='mt".$i."'>";
+	print "<option value=0></option>";
+	foreach($mtList as $mtRow){
+		if($tport->MediaID==$mtRow->MediaID){$selected=" selected";}else{$selected="";}
+		print "		<option value=\"$mtRow->MediaID\"$selected>$mtRow->MediaType</option>\n";
+	}
+	print "</select></td>";    
+	
+	print "<td><select name='cc".$i."' id='cc".$i."'>";
+	print "<option value=0></option>";
+	foreach($ccList as $ccRow){
+		if($tport->ColorID==$ccRow->ColorID){$selected=" selected";}else{$selected="";}
+		print "		<option value=\"$ccRow->ColorID\"$selected>$ccRow->Name</option>\n";
+	}
+	print "</select></td>";    
+	print "<td><input type='text' name='portnotes".$i."' id='portnotes".$i."' value='".$tport->PortNotes."' size='20' maxlength='80'></td>\n"; 
+	print "</tr>\n";
+}
+print "</table></div></div>";
+
+echo '
 <div>
    <div><label for="notes">',__('Notes'),'</label></div>
    <div><textarea name="notes" id="notes" cols="40" rows="8">',$template->Notes,'</textarea></div>
@@ -524,10 +663,11 @@ echo '</div>
 <div class="caption">';
 
 	if($template->TemplateID >0){
-		echo '   <button type="submit" name="action" value="Update">',__("Update Template"),'</button><button type="button" id="clone">',__("Clone Template"),'</button><button type="submit" name="action" value="Device" id="device">',__("Update Devices"),'</button>';
+		echo '   <button type="submit" name="action" value="Update">',__("Update Template"),'</button><button type="button" id="clone">',__("Clone Template"),'</button><button type="submit" name="action" value="Device" id="device">',__("Update Devices"),'</button><button type="submit" name="action" value="Export">',__("Export"),'</button>';
 	}else{
 		echo '	 <button type="submit" name="action" value="Create">',__("Create"),'</button>';
 	}
+	echo '<button type="button" name="importButton" id="importButton" value="Import">',__("Import"),'</button>';
 ?>
 </div>
 </div><!-- END div.table -->
@@ -538,12 +678,36 @@ echo '</div>
 <?php 
 echo '<a href="index.php">[ ',__("Return to Main Menu"),' ]</a>';
 
-echo '<div id="imageselection" title="Image file selector">
+echo '<div id="imageselection" title="',__("Image file selector"),'">
 	',$imageselect,'
 </div>';
 ?>
 
 </div><!-- END div.main -->
 </div><!-- END div.page -->
+
+<!-- dialog: importFile -->  
+<div id='dlg_importfile' style='display:none;' title='<?php echo __("Import Template From File");?>'>  
+	<br>
+	<form enctype="multipart/form-data" name="frmImport" id="frmImport" action="<?php echo $_SERVER["PHP_SELF"];?>" method="POST">
+		<input type="hidden" name="MAX_FILE_SIZE" value="1000000" />			
+		<input type="file" size="60" id="templateFile" name="templateFile" />
+	</form>  
+</div>
+<!-- end dialog: importFile -->  
+<!-- dialog: import_err -->  
+<div id='dlg_import_err' style='display:none;' title='<?php echo __("Import log");?>'>  
+<?php 	
+if (isset($result["log"])){
+	print "<ul style='list-style-type:disc; padding: 5px;'>";
+	foreach($result["log"] as $logline){
+		print "<li style='padding: 5px;'>".$logline."</li>";
+	}
+	print "</ul>";
+}
+?>
+</div>
+<!-- end dialog: importFile -->  
+
 </body>
 </html>

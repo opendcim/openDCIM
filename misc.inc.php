@@ -579,4 +579,35 @@ if ( $user->SiteAdmin ) {
 	$samenu[__("Path Connections")][]='<a href="pathmaker.php"><span>'.__("Make Path Connection").'</span></a>';
 	$samenu[]='<a href="configuration.php"><span>'.__("Edit Configuration").'</span></a>';
 }
+
+function download_file($archivo, $downloadfilename = null) {
+	if (file_exists($archivo)) {
+		$downloadfilename = $downloadfilename !== null ? $downloadfilename : basename($archivo);
+		header('Content-Description: File Transfer');
+		header('Content-Type: application/octet-stream');
+		header('Content-Disposition: attachment; filename=' . $downloadfilename);
+		header('Content-Transfer-Encoding: binary');
+		header('Expires: 0');
+		header('Cache-Control: must-revalidate, post-check=0, pre-check=0');
+		header('Pragma: public');
+		header('Content-Length: ' . filesize($archivo));
+		ob_clean();
+		flush();
+		readfile($archivo);
+	}
+}
+function download_file_from_string($string, $downloadfilename) {
+	//download_file_from_string("Hola Pepe ¿Qué tal?", "pepe.txt");
+	header('Content-Description: File Transfer');
+	header('Content-Type: application/octet-stream');
+	header('Content-Disposition: attachment; filename=' . $downloadfilename);
+	header('Content-Transfer-Encoding: binary');
+	header('Expires: 0');
+	header('Cache-Control: must-revalidate, post-check=0, pre-check=0');
+	header('Pragma: public');
+	header('Content-Length: ' . strlen($string));
+	flush();
+	echo $string;
+}
+
 ?>

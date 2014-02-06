@@ -829,3 +829,18 @@ CREATE TABLE fac_Slots (
 	H INT(11) NULL,
 	PRIMARY KEY (TemplateID, Position, BackSide)
 ) ENGINE = InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+
+--
+-- Table structure for fac_TemplatePorts
+--
+DROP TABLE IF EXISTS fac_TemplatePorts;
+CREATE TABLE IF NOT EXISTS `fac_TemplatePorts` (
+  `TemplateID` int(11) NOT NULL,
+  `PortNumber` int(11) NOT NULL,
+  `Label` varchar(40) NOT NULL,
+  `MediaID` int(11) NOT NULL DEFAULT '0',
+  `ColorID` int(11) NOT NULL DEFAULT '0',
+  `PortNotes` varchar(80) NOT NULL,
+  PRIMARY KEY (`TemplateID`,`PortNumber`),
+  UNIQUE KEY `LabeledPort` (`TemplateID`,`PortNumber`,`Label`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;

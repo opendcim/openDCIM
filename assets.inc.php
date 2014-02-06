@@ -797,6 +797,22 @@ class ColorCoding {
 		return true;
 	}
 	
+	function GetCodeByName() {
+		global $dbh;
+		
+		$sql="SELECT * FROM fac_ColorCoding WHERE Name='".transform($this->Name)."';";
+
+		if($row=$dbh->query($sql)->fetch()){
+			$this->ColorID=$row["ColorID"];
+			$this->DefaultNote=$row["DefaultNote"];
+		}else{
+			return false;
+		}
+			
+		return true;
+	}
+	
+	
 	static function GetCodeList() {
 		global $dbh;
 		
@@ -2339,15 +2355,57 @@ class DevicePorts {
 		// Check the user's permissions to modify this device
 		if($dev->Rights!='Write'){return false;}
 		$portList=array();
-
-		// Build the DevicePorts from the existing info in the following priority:
-		//  - Existing switchconnection table
-		//  - SNMP data (if it exists)
-		//  - Placeholders
+		
 		if($dev->DeviceType=="Switch"){
 			$nameList=SwitchInfo::getPortNames($dev->DeviceID);
 			$aliasList=SwitchInfo::getPortAlias($dev->DeviceID);
-			
+		}
+
+		// Build the DevicePorts from the existing info in the following priority:
+		//  (- Existing switchconnection table)  --> this comment is obsolete
+		//  - Template ports table
+		//  - SNMP data (if it exists)
+		//  - Placeholders
+		
+		//Search template ports
+		if($dev->TemplateID>0){
+			for ($i=1; $i<=$dev->Ports;$i++){
+				$tport=new TemplatePorts();
+				$tport->TemplateID=$dev->TemplateID;
+				$tport->PortNumber=$i;
+				$portList[$i]=new DevicePorts();
+				if ($tport->GetPort()){
+					//from template ports
+					$portList[$i]->DeviceID=$dev->DeviceID;
+					$portList[$i]->PortNumber=$i;
+					$portList[$i]->Label=$tport->Label;
+					$portList[$i]->MediaID=$tport->MediaID;
+					$portList[$i]->ColorID=$tport->ColorID;
+					$portList[$i]->PortNotes=$tport->PortNotes;
+				}elseif($dev->DeviceType=="Switch"){
+					//from SNMP info
+					$portList[$i]->DeviceID=$dev->DeviceID;
+					$portList[$i]->PortNumber=$i;
+					$portList[$i]->Label=(isset($nameList[$n]))?$nameList[$n]:__('Port').$i;
+					$portList[$i]->Notes=(isset($aliasList[$n]))?$aliasList[$n]:'';
+				}else{
+					//default info
+					$portList[$i]->DeviceID=$dev->DeviceID;
+					$portList[$i]->PortNumber=$i;
+					$portList[$i]->Label=__('Port').$i;
+				}
+				$portList[$i]->createPort();
+				if($dev->DeviceType=="Patch Panel"){
+					$i=$i*-1;
+					$portList[$i]=new DevicePorts();
+					$portList[$i]->DeviceID=$dev->DeviceID;
+					$portList[$i]->PortNumber=$i;
+					$portList[$i]->createPort();
+				}
+			}
+		} 
+		
+		if($dev->DeviceType=="Switch"){
 			for( $n=0; $n<$dev->Ports; $n++ ){
 				$i=$n+1;
 				$portList[$i]=new DevicePorts();
@@ -2355,7 +2413,6 @@ class DevicePorts {
 				$portList[$i]->PortNumber=$i;
 				$portList[$i]->Label=(isset($nameList[$n]))?$nameList[$n]:__('Port').$i;
 				$portList[$i]->Notes=(isset($aliasList[$n]))?$aliasList[$n]:'';
-
 				$portList[$i]->createPort();
 			}
 		}else{
@@ -2365,14 +2422,12 @@ class DevicePorts {
 				$portList[$i]->DeviceID=$dev->DeviceID;
 				$portList[$i]->PortNumber=$i;
 				$portList[$i]->Label=__('Port').$i;
-
 				$portList[$i]->createPort();
 				if($dev->DeviceType=="Patch Panel"){
 					$i=$i*-1;
 					$portList[$i]=new DevicePorts();
 					$portList[$i]->DeviceID=$dev->DeviceID;
 					$portList[$i]->PortNumber=$i;
-
 					$portList[$i]->createPort();
 				}
 			}
@@ -2988,6 +3043,21 @@ class MediaTypes {
 		}
 	}
 	
+	function GetTypeByName() {
+		global $dbh;
+		
+		$sql="SELECT * FROM fac_MediaTypes WHERE MediaType='".addslashes($this->MediaID)."';";
+		
+		if(!$row=$dbh->query($sql)->fetch()){
+			return false;
+		}else{
+			$this->MediaID = $row["MediaID"];
+			$this->ColorID = $row["ColorID"];
+			
+			return true;
+		}
+	}
+	
 	static function GetMediaTypeList() {
 		global $dbh;
 		
@@ -3293,7 +3363,7 @@ class SwitchInfo {
 		$baseOID = "IF-MIB::ifName"; 
 
 		if(is_null($portid)){		
-			if($reply=snmprealwalk($dev->PrimaryIP,$Community,$baseOID)){
+			if($reply=@snmprealwalk($dev->PrimaryIP,$Community,$baseOID)){
 				// Skip the returned values until we get to the first port
 				$Saving = false;
 				foreach($reply as $oid => $label){
@@ -3406,7 +3476,7 @@ class SwitchInfo {
 
 		if ( is_null( $portid )) {
 			for ( $n=0; $n < $dev->Ports; $n++ ) {
-				if ( ! $reply = snmpget( $dev->PrimaryIP, $Community, $baseOID.( $dev->FirstPortNum+$n )) )
+				if ( ! $reply = @snmpget( $dev->PrimaryIP, $Community, $baseOID.( $dev->FirstPortNum+$n )) )
 					break;
 				$query = @end( explode( ":", $reply ));
 				$aliasList[$n+1] = $query;

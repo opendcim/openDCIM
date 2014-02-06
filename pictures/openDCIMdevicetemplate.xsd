@@ -1,0 +1,147 @@
+<?xml version="1.0"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
+elementFormDefault="qualified">
+
+<xs:element name="Template">
+	<xs:complexType>
+		<xs:sequence>
+		
+			<xs:element name="ManufacturerName">
+				<xs:simpleType>
+					<xs:restriction base="xs:string">
+						<xs:maxLength value="80"/>
+					</xs:restriction>
+				</xs:simpleType>
+			</xs:element>
+			 
+			<xs:element name="TemplateReg">
+				<xs:complexType>
+					<xs:sequence>
+					
+						<xs:element name="Model">
+							<xs:simpleType>
+								<xs:restriction base="xs:string">
+								<xs:maxLength value="80"/>
+								</xs:restriction>
+							</xs:simpleType>
+						</xs:element> 
+					
+						<xs:element name="Height" type="xs:nonNegativeInteger"/>
+						
+						<xs:element name="Weight" type="xs:nonNegativeInteger"/>
+						 
+						<xs:element name="Wattage" type="xs:nonNegativeInteger"/>
+						
+						<xs:element name="DeviceType">
+							<xs:simpleType>
+								<xs:restriction base="xs:string">
+									<xs:enumeration value="Server"/>
+									<xs:enumeration value="Appliance"/>
+									<xs:enumeration value="Storage Array"/>
+									<xs:enumeration value="Switch"/>
+									<xs:enumeration value="Chassis"/>
+									<xs:enumeration value="Patch Panel"/>
+									<xs:enumeration value="Physical Infrastructure"/>
+								</xs:restriction>
+							</xs:simpleType>
+						</xs:element>
+						 
+						<xs:element name="PSCount" type="xs:nonNegativeInteger"/>
+						 
+						<xs:element name="NumPorts" type="xs:nonNegativeInteger"/>
+						 
+						<xs:element name="Notes" type="xs:string"/>
+						
+						<xs:element name="FrontPictureFile">
+							<xs:simpleType>
+								<xs:restriction base="xs:string">
+									<xs:maxLength value="45"/>
+								</xs:restriction>
+							</xs:simpleType>
+						</xs:element>
+				
+						<xs:element name="RearPictureFile">
+							<xs:simpleType>
+								<xs:restriction base="xs:string">
+									<xs:maxLength value="45"/>
+								</xs:restriction>
+							</xs:simpleType>
+						</xs:element>
+								
+						<xs:element name="ChassisSlots" type="xs:nonNegativeInteger"/>
+				 
+						<xs:element name="RearChassisSlots" type="xs:nonNegativeInteger"/>
+						
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
+			
+			<xs:element name="SlotReg" minOccurs="0" maxOccurs="unbounded">
+				<xs:complexType>
+					<xs:sequence>
+					
+						<xs:element name="Position" type="xs:positiveInteger"/>
+
+						<xs:element name="BackSide" type="xs:boolean"/>
+
+						<xs:element name="X" type="xs:nonNegativeInteger"/>
+		
+						<xs:element name="Y" type="xs:nonNegativeInteger"/>
+						
+						<xs:element name="W" type="xs:nonNegativeInteger"/>
+
+						<xs:element name="H" type="xs:nonNegativeInteger"/>
+		
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
+
+			<xs:element name="PortReg" minOccurs="0" maxOccurs="unbounded">
+				<xs:complexType>
+					<xs:sequence>
+					
+						<xs:element name="PortNumber" type="xs:positiveInteger"/>
+
+						<xs:element name="Label">
+							<xs:simpleType>
+								<xs:restriction base="xs:string">
+								<xs:maxLength value="40"/>
+								</xs:restriction>
+							</xs:simpleType>
+						</xs:element> 
+
+						<xs:element name="PortMedia">
+							<xs:simpleType>
+								<xs:restriction base="xs:string">
+								<xs:maxLength value="40"/>
+								</xs:restriction>
+							</xs:simpleType>
+						</xs:element> 
+		
+						<xs:element name="PortColor">
+							<xs:simpleType>
+								<xs:restriction base="xs:string">
+								<xs:maxLength value="20"/>
+								</xs:restriction>
+							</xs:simpleType>
+						</xs:element> 
+						
+						<xs:element name="PortNotes">
+							<xs:simpleType>
+								<xs:restriction base="xs:string">
+								<xs:maxLength value="80"/>
+								</xs:restriction>
+							</xs:simpleType>
+						</xs:element> 
+
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
+			
+			<xs:element name="FrontPicture" type="xs:base64Binary" minOccurs="0"/>
+			<xs:element name="RearPicture" type="xs:base64Binary" minOccurs="0"/>
+		</xs:sequence>
+	</xs:complexType>
+</xs:element>
+
+</xs:schema>

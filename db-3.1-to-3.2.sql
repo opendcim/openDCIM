@@ -31,3 +31,17 @@ CREATE TABLE fac_Slots (
 --
 
 ALTER TABLE fac_Cabinet ADD COLUMN FrontEdge ENUM("Top","Right","Bottom","Left") NOT NULL DEFAULT "Top" AFTER MapX2;
+
+--
+-- TempaltePorts table content the ports of a device template 
+--
+CREATE TABLE IF NOT EXISTS `fac_TemplatePorts` (
+  `TemplateID` int(11) NOT NULL,
+  `PortNumber` int(11) NOT NULL,
+  `Label` varchar(40) NOT NULL,
+  `MediaID` int(11) NOT NULL DEFAULT '0',
+  `ColorID` int(11) NOT NULL DEFAULT '0',
+  `PortNotes` varchar(80) NOT NULL,
+  PRIMARY KEY (`TemplateID`,`PortNumber`),
+  UNIQUE KEY `LabeledPort` (`TemplateID`,`PortNumber`,`Label`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;

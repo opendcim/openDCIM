@@ -278,9 +278,10 @@ div#dcstats .table + .table > div > div + div{white-space: pre; text-align: righ
 .templatemaker .table .table {margin-left: auto;}
 .templatemaker + .center div{position: relative;width: 100%;}
 .templatemaker + .center > div > div.container {position: absolute; top: 0px; left: 0px;}
-table.coordinates th {background-color: #CCC; text-align: center; padding-left: .5em; padding-right: .5em; padding-top: .2em;padding-bottom: .2em;}
+table.coordinates th {background-color: #CCC; text-align: center; vertical-align: middle; padding-left: .5em; padding-right: .5em; padding-top: .2em;padding-bottom: .2em;}
 table.coordinates td {text-align: center; padding-left: .5em; padding-right: .5em; padding-top: 0.1em;padding-bottom: 0.1em;}
 table.coordinates input {text-align: center; border: 0px;}
+table.coordinates select {text-align: center; border: 0px;}
 
 /* Basic Page Layout */
 .page {position: relative;width: 100%;}

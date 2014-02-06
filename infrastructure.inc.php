@@ -990,14 +990,284 @@ class DeviceTemplate {
 	function DeleteSlots(){
 		$this->MakeSafe();
 		
-		//delete zone
 		$sql="DELETE FROM fac_Slots WHERE TemplateID=$this->TemplateID";
 		if(!$this->query($sql)){
 			return false;
 		}
 		return true;
-		
 	}
+	
+	function DeletePorts(){
+		$this->MakeSafe();
+		
+		$sql="DELETE FROM fac_TemplatePorts WHERE TemplateID=$this->TemplateID";
+		if(!$this->query($sql)){
+			return false;
+		}
+		return true;
+	}
+	
+	function ExportTemplate(){
+		$this->MakeSafe();
+
+		//Get manufacturer name
+		$manufacturer=new Manufacturer();
+		$manufacturer->ManufacturerID=$this->ManufacturerID;
+		$manufacturer->GetManufacturerByID();
+		
+		$fileContent='<?xml version="1.0" encoding="UTF-8"?>
+<Template xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+xsi:noNamespaceSchemaLocation="openDCIMdevicetemplate.xsd">
+	<ManufacturerName>'.$manufacturer->Name.'</ManufacturerName>
+	<TemplateReg>
+		<Model>'.$this->Model.'</Model> 
+	  <Height>'.$this->Height.'</Height> 
+	  <Weight>'.$this->Weight.'</Weight> 
+	  <Wattage>'.$this->Wattage.'</Wattage> 
+	  <DeviceType>'.$this->DeviceType.'</DeviceType> 
+	  <PSCount>'.$this->PSCount.'</PSCount> 
+	  <NumPorts>'.$this->NumPorts.'</NumPorts> 
+	  <Notes>'.$this->Notes.'</Notes> 
+	  <FrontPictureFile>'.$this->FrontPictureFile.'</FrontPictureFile> 
+	  <RearPictureFile>'.$this->RearPictureFile.'</RearPictureFile> 
+	  <ChassisSlots>'.$this->ChassisSlots.'</ChassisSlots> 
+	  <RearChassisSlots>'.$this->RearChassisSlots.'</RearChassisSlots> 
+	</TemplateReg>';
+
+		//Slots
+		for ($i=1; $i<=$this->ChassisSlots;$i++){
+			$slot=new Slot();
+			$slot->TemplateID=$this->TemplateID;
+			$slot->Position=$i;
+			$slot->BackSide=False;
+			$slot->GetSlot();
+			$fileContent.='
+	<SlotReg>
+		<Position>'.$slot->Position.'</Position>
+		<BackSide>0</BackSide>
+		<X>'.$slot->X.'</X>
+		<Y>'.$slot->Y.'</Y>
+		<W>'.$slot->W.'</W>
+		<H>'.$slot->H.'</H>
+	</SlotReg>';
+		}
+		for ($i=1; $i<=$this->RearChassisSlots;$i++){
+			$slot=new Slot();
+			$slot->TemplateID=$this->TemplateID;
+			$slot->Position=$i;
+			$slot->BackSide=True;
+			$slot->GetSlot();
+			$fileContent.='
+	<SlotReg>
+		<Position>'.$slot->Position.'</Position>
+		<BackSide>1</BackSide>
+		<X>'.$slot->X.'</X>
+		<Y>'.$slot->Y.'</Y>
+		<W>'.$slot->W.'</W>
+		<H>'.$slot->H.'</H>
+	</SlotReg>';
+		}
+		//Ports
+		for ($i=1; $i<=$this->NumPorts;$i++){
+			$tport=new TemplatePorts();
+			$tport->TemplateID=$this->TemplateID;
+			$tport->PortNumber=$i;
+			$tport->GetPort();
+			//Get media name
+			$mt=new MediaTypes();
+			$mt->MediaID=$tport->MediaID;
+			$mt->GetType();
+			//Get color name
+			$cc=new ColorCoding();
+			$cc->ColorID=$tport->ColorID;
+			$cc->GetCode();
+			$fileContent.='
+	<PortReg>
+		<PortNumber>'.$tport->PortNumber.'</PortNumber>
+		<Label>'.$tport->Label.'</Label>
+		<PortMedia>'.$mt->MediaType.'</PortMedia>
+		<PortColor>'.$cc->Name.'</PortColor>
+		<PortNotes>'.$tport->PortNotes.'</PortNotes>
+	</PortReg>';
+		}
+		//Pictures
+		if ($this->FrontPictureFile!="" && file_exists("pictures/".$this->FrontPictureFile)){
+			$im=file_get_contents("pictures/".$this->FrontPictureFile);
+			$fileContent.='
+	<FrontPicture>
+'.base64_encode($im).'
+	</FrontPicture>';
+		}
+		if ($this->RearPictureFile!="" && file_exists("pictures/".$this->RearPictureFile)){
+			$im=file_get_contents("pictures/".$this->RearPictureFile);
+			$fileContent.='
+	<RearPicture>
+'.base64_encode($im).'
+	</RearPicture>';
+		}
+		
+		//End of template
+		$fileContent.='
+</Template>';
+		
+		//dounload file
+		download_file_from_string($fileContent, str_replace(' ', '', $manufacturer->Name."-".$this->Model).".xml");
+		
+		return true;
+	}
+
+	function ImportTemplate($file){
+		$result=array();
+		$result["status"]="";
+		$result["log"]=array();
+		$ierror=0;
+		
+		//validate xml template file with openDCIMdevicetemplate.xsd
+		libxml_use_internal_errors(true);
+		$xml=new XMLReader();
+		$xml->open($file);
+		$resp=$xml->setSchema ("pictures/openDCIMdevicetemplate.xsd");
+		while (@$xml->read()) {}; // empty loop
+		$errors = libxml_get_errors();
+		if (count($errors)>0){
+			$result["status"]=__("No valid file");
+			foreach ($errors as $error) {
+				$result["log"][$ierror++]=$error->message;
+			}
+			return $result;
+		}
+    libxml_clear_errors();
+		$xml->close();
+		
+		//read xml template file
+		$xmltemplate=simplexml_load_file($file);
+		
+		//manufacturer
+		$manufacturer=new Manufacturer();
+		$manufacturer->Name=transform($xmltemplate->ManufacturerName);
+		if (!$manufacturer->GetManufacturerByName()){
+			//New Manufacturer
+			$manufacturer->AddManufacturer();
+		}
+		$template=new DeviceTemplate();
+		$template->ManufacturerID=$manufacturer->ManufacturerID;
+		$template->Model=transform($xmltemplate->TemplateReg->Model);
+		$template->Height=$xmltemplate->TemplateReg->Height;
+		$template->Weight=$xmltemplate->TemplateReg->Weight;
+		$template->Wattage=$xmltemplate->TemplateReg->Wattage;
+		$template->DeviceType=$xmltemplate->TemplateReg->DeviceType;
+		$template->PSCount=$xmltemplate->TemplateReg->PSCount;
+		$template->NumPorts=$xmltemplate->TemplateReg->NumPorts;
+		$template->Notes=trim($xmltemplate->TemplateReg->Notes);
+		$template->Notes=($template->Notes=="<br>")?"":$template->Notes;
+		$template->FrontPictureFile=$xmltemplate->TemplateReg->FrontPictureFile;
+		$template->RearPictureFile=$xmltemplate->TemplateReg->RearPictureFile;
+		$template->ChassisSlots=($template->DeviceType=="Chassis")?$xmltemplate->TemplateReg->ChassisSlots:0;
+		$template->RearChassisSlots=($template->DeviceType=="Chassis")?$xmltemplate->TemplateReg->RearChassisSlots:0;
+		
+		//Check if picture files exist
+		if (file_exists("pictures/".$template->FrontPictureFile)){
+			$result["status"]=__("Import Error");
+			$result["log"][0]= __("Front picture file already exists");
+			return $result;
+		}
+		if (file_exists("pictures/".$template->RearPictureFile)){
+			$result["status"]=__("Import Error");
+			$result["log"][0]= __("Rear picture file already exists");
+			return $result;
+		}
+		
+		//create the template
+		if (!$template->CreateTemplate()){
+			$result["status"]=__("Import Error");
+			$result["log"][0]=__("An error has occurred creating the template.<br>Possibly there is already a template of the same manufacturer and model");
+			return $result;
+		}
+		
+		//get template to this object
+		$this->TemplateID=$template->TemplateID;
+		$this->GetTemplateByID();
+		
+		//slots
+		foreach ($xmltemplate->SlotReg as $xmlslot){
+			$slot=new Slot();
+			$slot->TemplateID=$this->TemplateID;
+			$slot->Position=intval($xmlslot->Position);
+			$slot->BackSide=intval($xmlslot->BackSide);
+			$slot->X=intval($xmlslot->X);
+			$slot->Y=intval($xmlslot->Y);
+			$slot->W=intval($xmlslot->W);
+			$slot->H=intval($xmlslot->H);
+			if (($slot->Position<=$this->ChassisSlots && !$slot->BackSide) || ($slot->Position<=$this->RearChassisSlots && $slot->BackSide)){
+				if(!$slot->CreateSlot()){
+					$result["status"]=__("Import Warning");
+					$result["log"][$ierror++]=sprintf(__("An error has occurred creating the slot %s"),$slot->Position."-".($slot->BackSide)?__("Rear"):__("Front"));
+				}
+			}else{
+				$result["status"]=__("Import Warning");
+				$result["log"][$ierror++]=sprintf(__("Ignored slot %s"),$slot->Position."-".($slot->BackSide)?__("Rear"):__("Front"));
+			}
+		}
+		
+		//ports
+		foreach ($xmltemplate->PortReg as $xmlport){
+			//media type
+			$mt=new MediaTypes();
+			$mt->MediaType=transform($xmlport->PortMedia);
+			if (!$mt->GetMediaByType()){
+				//New media type
+				$mt->CreateType();
+			}
+			
+			//color
+			$cc=new ColorCoding();
+			$cc->Name=transform($xmlport->PortColor);
+			if (!$cc->GetCodeByName()){
+				//New color
+				$cc->CreateCode();
+			}
+			
+			$tport=new TemplatePorts();
+			$tport->TemplateID=$this->TemplateID;
+			$tport->PortNumber=intval($xmlport->PortNumber);
+			$tport->Label=$xmlport->Label;
+			$tport->MediaID=$mt->MediaID; 
+			$tport->ColorID=$cc->ColorID;
+			$tport->PortNotes=$xmlport->PortNotes;
+			if ($tport->PortNumber<=$this->NumPorts){
+				if(!$tport->CreatePort()){
+					$result["status"]=__("Import Warning");
+					$result["log"][$ierror++]=sprintf(__("An error has occurred creating the port %s"),$tport->PortNumber);
+				}
+			}else{
+				$result["status"]=__("Import Warning");
+				$result["log"][$ierror++]=sprintf(__("Ignored port %s"),$tport->PortNumber);
+			}
+		}
+
+		//files
+		if($this->FrontPictureFile!=""){
+			$im=base64_decode($xmltemplate->FrontPicture);
+			file_put_contents("pictures/".$this->FrontPictureFile, $im);
+		}
+		if($this->RearPictureFile!=""){
+			$im=base64_decode($xmltemplate->RearPicture);
+			file_put_contents("pictures/".$this->RearPictureFile, $im);
+		}
+		return $result;
+	}
+	
+	function removePorts(){
+		/*	Remove all ports from a template */
+		global $dbh;
+
+		$sql="DELETE FROM fac_TemplatePorts WHERE TemplateID=$this->TemplateID;";
+
+		$dbh->exec($sql);
+
+		return true;
+	}
+	
 }
 
 class Manufacturer {
@@ -1046,7 +1316,22 @@ class Manufacturer {
 			return false;
 		}
 	}
+	
+	function GetManufacturerByName(){
+		$this->MakeSafe();
 
+		$sql="SELECT * FROM fac_Manufacturer WHERE Name='".$this->Name."';";
+
+		if($row=$this->query($sql)->fetch()){
+			foreach(Manufacturer::RowToObject($row) as $prop => $value){
+				$this->$prop=$value;
+			}	
+			return true;
+		}else{
+			return false;
+		}
+	}
+	
 	function GetManufacturerList(){
 		$sql="SELECT * FROM fac_Manufacturer ORDER BY Name ASC;";
 
@@ -1059,12 +1344,20 @@ class Manufacturer {
 	}
 
 	function AddManufacturer(){
+		global $dbh;
+		
 		$this->MakeSafe();
 
 		$sql="INSERT INTO fac_Manufacturer SET Name=\"$this->Name\";";
 
-		$this->MakeDisplay();
-		return $this->exec($sql);
+		if(!$dbh->exec($sql)){
+			error_log( "SQL Error: " . $sql );
+			return false;
+		}else{
+			$this->ManufacturerID=$dbh->lastInsertID();
+			$this->MakeDisplay();
+			return true;
+		}
 	}
 
 	function UpdateManufacturer(){
@@ -2402,5 +2695,130 @@ class Slot {
 		}
 	} 
 } //END of Class Slot
+
+//Class TemplatePorts (Features of ports for a device template)
+class TemplatePorts {
+	var $TemplateID;
+	var $PortNumber;
+	var $Label;
+	var $MediaID;
+	var $ColorID;
+	var $PortNotes;
+	
+	function MakeSafe() {
+		$this->TemplateID=intval($this->TemplateID);
+		$this->PortNumber=intval($this->PortNumber);
+		$this->Label=addslashes(trim($this->Label));
+		$this->MediaID=intval($this->MediaID);
+		$this->ColorID=intval($this->ColorID);
+		$this->PortNotes=addslashes(trim($this->PortNotes));
+	}
+
+	function MakeDisplay(){
+		$this->Label=stripslashes(trim($this->Label));
+		$this->PortNotes=stripslashes(trim($this->PortNotes));
+	}
+
+	static function RowToObject($dbRow){
+		$tp=new TemplatePorts();
+		$tp->TemplateID=$dbRow['TemplateID'];
+		$tp->PortNumber=$dbRow['PortNumber'];
+		$tp->Label=$dbRow['Label'];
+		$tp->MediaID=$dbRow['MediaID'];
+		$tp->ColorID=$dbRow['ColorID'];
+		$tp->PortNotes=$dbRow['PortNotes'];
+
+		$tp->MakeDisplay();
+
+		return $tp;
+	}
+
+	function getPort(){
+		global $dbh;
+		$this->MakeSafe();
+
+		$sql="SELECT * FROM fac_TemplatePorts WHERE TemplateID=$this->TemplateID AND PortNumber=$this->PortNumber;";
+
+		if(!$row=$dbh->query($sql)->fetch()){
+			return false;
+		}else{
+			foreach(TemplatePorts::RowToObject($row) as $prop => $value){
+				$this->$prop=$value;
+			}
+			return true;
+		}
+	}
+
+	function getPorts(){
+		global $dbh;
+		$this->MakeSafe();
+
+		$sql="SELECT * FROM fac_TemplatePorts WHERE TemplateID=$this->TemplateID ORDER BY PortNumber ASC;";
+
+		$ports=array();
+		foreach($dbh->query($sql) as $row){
+			$ports[$row['PortNumber']]=TemplatePorts::RowToObject($row);
+		}	
+		return $ports;
+	}
+	
+	function createPort() {
+		global $dbh;
+		
+		$this->MakeSafe();
+
+		$sql="INSERT INTO fac_TemplatePorts SET TemplateID=$this->TemplateID, PortNumber=$this->PortNumber, 
+			Label=\"$this->Label\", MediaID=$this->MediaID, ColorID=$this->ColorID, 
+			PortNotes=\"$this->PortNotes\";";
+			
+		if(!$dbh->query($sql)){
+			$info=$dbh->errorInfo();
+
+			error_log("createPort::PDO Error: {$info[2]} SQL=$sql");
+			return false;
+		}
+
+		return true;
+	}
+
+	function updatePort() {
+		global $dbh;
+
+		$this->MakeSafe();
+
+		// update port
+		$sql="UPDATE fac_TemplatePorts SET Label=\"$this->Label\", MediaID=$this->MediaID, 
+			ColorID=$this->ColorID,	PortNotes=\"$this->PortNotes\", 
+			WHERE TemplateID=$this->TemplateID AND PortNumber=$this->PortNumber;";
+
+		if(!$dbh->query($sql)){
+			$info=$dbh->errorInfo();
+
+			error_log("updatePort::PDO Error: {$info[2]} SQL=$sql");
+			
+			return false;
+		}
+		return true;
+	}
+
+	function removePort(){
+		/*	Remove a single port from a template */
+		global $dbh;
+
+		if(!$this->getport()){
+			return false;
+		}
+
+		$sql="DELETE FROM fac_TemplatePorts WHERE TemplateID=$this->TemplateID AND PortNumber=$this->PortNumber;";
+
+		if(!$dbh->query($sql)){
+			//delete failed, wtf
+			return false;
+		}else{
+			return true;
+		}		
+	} //END of Class TemplatePorts
+	
+}
 
 ?>
