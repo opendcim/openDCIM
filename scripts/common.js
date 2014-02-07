@@ -379,7 +379,7 @@ function drawArrow(canvas,startx,starty,width,height,direction){
 
 		show: function(){
 			var edit=true;
-			$('.switch.table > div ~ div').each(function(){
+			$('.switch.table > div ~ div, .patchpanel.table > div ~ div').each(function(){
 				edit=($(this).data('edit'))?false:edit;
 			});
 			if(edit){
@@ -389,69 +389,133 @@ function drawArrow(canvas,startx,starty,width,height,direction){
 	});
 
 	// Network Connections Management
-    $.widget( "opendcim.row", {
+	$.widget( "opendcim.row", {
 		_create: function() {
 			var row=this;
-			this.portnum     = this.element.data('port');
-        	this.portname    = this.element.find('div[id^=spn]');
-        	this.cdevice     = this.element.find('div[id^=d]:not([id^=dp])');
-        	this.cdeviceport = this.element.find('div[id^=dp]');
-        	this.cnotes      = this.element.find('div[id^=n]');
-        	this.porttype    = this.element.find('div[id^=mt]');
-        	this.portcolor   = this.element.find('div[id^=cc]');
 
-			$.post('',{swdev: $('#deviceid').val(),pn: this.portnum}).done(function(data){
+			// Determine if we are looking at a patch panel or a device
+			var pp=this.element.find('div[id^="pp"]');
+			var ct=(pp.length==0)?this.element.find('div[id^="sp"]:not([id^="spn"])'):pp;
+			ct.css({'text-decoration':'underline','cursor':'pointer'});
+
+			// Define all the ports we might need later
+			this.portnum     = this.element.data('port');
+			this.portname    = this.element.find('div[id^=spn],div[id^=pp]');
+			this.cdevice     = this.element.find('div[id^=d]:not([id^=dp]),div[id^=fd]');
+			this.cdeviceport = this.element.find('div[id^=dp],div[id^=fp]');
+			this.cnotes      = this.element.find('div[id^=n],div[id^=fn]');
+			this.rdevice     = this.element.find('div[id^=rd]');
+			this.rdeviceport = this.element.find('div[id^=rp]');
+			this.rnotes      = this.element.find('div[id^=rn]');
+			this.porttype    = this.element.find('div[id^=mt]');
+			this.portcolor   = this.element.find('div[id^=cc]');
+
+			// Create a blank row for controls on a patch panel
+			this.btnrow      = $('<div>');
+			for(var a=0; a < this.element[0].children.length; a++){
+				this.btnrow.append($('<div>'));
+			}
+			this.btnrow.front = this.btnrow.find('div:first-child');
+			this.btnrow.rear  = this.btnrow.find('div:nth-child('+(Math.ceil(this.element[0].children.length/2)+2)+')');
+
+			// Row Controls
+			var controls=$('<div>',({'id':'controls'+this.portnum}));
+			var savebtn=$('<button>',{'type':'button'}).append('Save').on('click',function(e){row.save(e)});
+			var cancelbtn=$('<button>',{'type':'button'}).append('Cancel').on('click',function(e){row.checkredraw(e)});
+			var deletebtn=$('<button>',{'type':'button'}).append('Delete').on('click',function(e){row.delete(e)});
+			controls.append(savebtn).append(cancelbtn).append(deletebtn);
+			var minwidth=0;
+			controls.children('button').each(function(){
+				minwidth+=$(this).outerWidth()+14; // 14 padding and border
+			});
+			controls.css('min-width',minwidth);
+
+			this.controls	= controls;
+
+			// Bind edit event to the click target
+			ct.click(function(e){
+				if(!row.element.data('edit')){
+					row.edit();
+				}
+			});
+		},
+		edit: function() {
+			var row=this;
+			row.getdevices(this.cdevice);
+			row.getdevices(this.rdevice);
+
+			row.cnotes.html('<input type="text" style="min-width: 200px;" value="'+row.cnotes.text()+'">');
+			row.rnotes.html('<input type="text" style="min-width: 200px;" value="'+row.rnotes.text()+'">');
+			row.portname.html('<input type="text" style="min-width: 60px;" value="'+row.portname.text()+'">');
+			row.getmediatypes();
+			row.getcolortypes();
+			row.element.data('edit',true);
+
+			if($(this.element[0]).parent().hasClass('patchpanel')){
+				this.btnrow.front.append(this.controls.clone(true).data('rear',false));
+				this.btnrow.rear.append(this.controls.clone(true).data('rear',true));
+				this.element.after(this.btnrow);
+			}else if($(this.element[0]).parent().hasClass('switch')){
+				this.portcolor.after(this.controls.clone(true));
+			}
+
+			this.element.children('div ~ div:not([id^=st])').css({'padding': '0px', 'background-color': 'transparent'});
+			setTimeout(function() {
+				resize();
+			},200);
+			// Hide mass edit controls
+			$('.switch.table, .patchpanel.table').massedit('hide');
+		},
+
+		getdevices: function(target){
+			var row=this;
+			var postoptions={swdev: $('#deviceid').val(),pn: this.portnum};
+			if(target===this.rdevice){
+				postoptions=$.extend(postoptions,{rear: ''});
+			}
+			$.post('',postoptions).done(function(data){
 				var devlist=$("<select>").append('<option value=0>&nbsp;</option>');
-				devlist.change(function(){
-					row.getports();
+				devlist.change(function(e){
+					row.getports(e);
 				});
 
 				$.each(data, function(devid,device){
 					devlist.append('<option value='+device.DeviceID+'>'+device.Label+'</option>');
 				});
-				row.cdevice.html(devlist).find('select').val(row.cdevice.data('default'));
+				target.html(devlist).find('select').val(target.data('default'));
 				devlist.combobox();
 				devlist.change();
-				row.cnotes.html('<input type="text" style="min-width: 200px;" value="'+row.cnotes.text()+'">');
-				row.portname.html('<input type="text" style="min-width: 60px;" value="'+row.portname.text()+'">');
-				row.getmediatypes();
-				row.getcolortypes();
-				row.element.data('edit',true);
 			});
 
-			// Row Controls
-			var controls=$('<div>',({'id':'controls'+this.portnum}));
-			var savebtn=$('<button>',{'type':'button'}).append('Save').on('click',function(){row.save()});
-			var cancelbtn=$('<button>',{'type':'button'}).append('Cancel').on('click',function(){row.destroy()});
-			var deletebtn=$('<button>',{'type':'button'}).append('Delete').click();
-			controls.append(savebtn).append(cancelbtn).append(deletebtn);
-			var minwidth=0;
-			this.portcolor.after(controls);
-			controls.children('button').each(function(){
-				minwidth+=$(this).outerWidth()+14; // 14 padding and border
-			});
-			controls.css('min-width',minwidth);
-			this.element.children('div ~ div:not([id^=st])').css({'padding': '0px', 'background-color': 'transparent'});
-			setTimeout(function() {
-				resize();
-			},200);
-
-			// Hide mass edit controls
-			$('.switch.table, .patchpanel.table').massedit('hide');
 		},
 
-		getports: function(){
+		getports: function(e){
 			var row=this;
-			$.post('',{swdev: $('#deviceid').val(),pn: this.portnum,thisdev: this.cdevice.find('select').val(),listports: ''}).done(function(data){
+			var rear=(e.target.parentElement!=null)?(e.target.parentElement.id.indexOf('r')==0)?true:false:false;
+			var postoptions={swdev: $('#deviceid').val(),listports: ''};
+			if(rear){
+				postoptions=$.extend(postoptions, {thisdev: this.rdevice.find('select').val(), pn: (this.portnum)*-1});
+			}else{
+				postoptions=$.extend(postoptions, {thisdev: this.cdevice.find('select').val(), pn: this.portnum});
+			}
+			
+			$.post('',postoptions).done(function(data){
 				var portlist=$("<select>");
 				$.each(data, function(key,port){
-					var pn=port.PortNumber;
-					port.Label=(port.Label=="")?pn:port.Label;
+					// If no label is specified use the absolute value of the port number
+					port.Label=(port.Label=="")?Math.abs(port.PortNumber):port.Label;
 
 					// only allow positive values
-					if(pn>0){
-						portlist.append('<option value='+pn+'>'+port.Label+'</option>');
-						portlist.data(pn, {MediaID: port.MediaID, ColorID: port.ColorID});
+					if(rear){
+						if(port.PortNumber<0){
+							portlist.prepend('<option value='+port.PortNumber+'>'+port.Label+'</option>');
+							portlist.data(port.PortNumber, {MediaID: port.MediaID, ColorID: port.ColorID});
+						}
+					}else{
+						if(port.PortNumber>0){
+							portlist.append('<option value='+port.PortNumber+'>'+port.Label+'</option>');
+							portlist.data(port.PortNumber, {MediaID: port.MediaID, ColorID: port.ColorID});
+						}
 					}
 				});
 				portlist.change(function(){
@@ -459,15 +523,39 @@ function drawArrow(canvas,startx,starty,width,height,direction){
 					row.porttype.children('select').val($(this).data($(this).val()).MediaID);
 					row.portcolor.children('select').val($(this).data($(this).val()).ColorID);
 				});
-				row.cdeviceport.html(portlist).find('select').val(row.cdeviceport.data('default'));
+				if(rear){
+					row.rdeviceport.html(portlist).find('select').val(row.rdeviceport.data('default'));
+				}else{
+					row.cdeviceport.html(portlist).find('select').val(row.cdeviceport.data('default'));
+				}
 				portlist.combobox();
 			});
 
 		},
 
+		delete: function(e) {
+			var row=this;
+			var rear=(e.target.parentElement!=null)?(e.target.parentElement.id.indexOf('r')==0)?true:false:false;
+			if(rear){
+				$(row.rdevice).find('input').val('');
+				row.rdevice.children('select').val(0).trigger('change');
+			}else{
+				$(row.cdevice).find('input').val('')
+				row.cdevice.children('select').val(0).trigger('change');
+			}
+			$(e.currentTarget.parentNode.children[0]).click();
+		},
+
 		list: function() {
+			var row=this;
 			console.log(this);
 			console.log(this.portnum);
+			if (typeof resize=='undefined'){
+				console.log('resize not detected');
+			}else{
+				console.log(typeof resize);
+				resize();
+			}
 		},
 
 		getcolortypes: function(){
@@ -508,22 +596,40 @@ function drawArrow(canvas,startx,starty,width,height,direction){
 			});
 		},
 
-		save: function() {
+		save: function(e) {
 			var row=this;
-			if(row.portname.children('input').val().trim().length){
+			var rear=1;
+			var device=row.cdevice;
+			var deviceport=row.cdeviceport;
+			var notes=row.cnotes;
+
+			var check=$(e.target.parentElement).data('rear');
+
+			// If this is any type of device other than a patch panel the save is straight forward
+			if(check){
+				// if we're dealing with the back side of a patch panel the port number is negative
+				rear=-1;
+				device=row.rdevice;
+				deviceport=row.rdeviceport;
+				notes=row.rnotes;
+			}
+
+			// save the port
+			// if not a rear port make sure the port name isn't blank
+			if(check || row.portname.children('input').val().trim().length){
 				$.post('',{
 					saveport: '',
 					swdev: $('#deviceid').val(),
-					pnum: row.portnum,
+					pnum: row.portnum*rear,
 					pname: row.portname.children('input').val(),
-					cdevice: row.cdevice.children('select').val(),
-					cdeviceport: row.cdeviceport.children('select').val(),
-					cnotes: row.cnotes.children('input').val(),
+					cdevice: device.children('select').val(),
+					cdeviceport: deviceport.children('select').val(),
+					cnotes: notes.children('input').val(),
 					porttype: row.porttype.children('select').val(),
 					portcolor: row.portcolor.children('select').val()
 				}).done(function(data){
 					if(data.trim()==1){
-						row.destroy();
+						row.checkredraw(e);
 					}else{
 						// something broke
 					}
@@ -534,22 +640,65 @@ function drawArrow(canvas,startx,starty,width,height,direction){
 			}
 		},
 
-		_destroy: function() {
+		checkredraw: function(e) {
 			var row=this;
-			$.post('',{getport: '',swdev: $('#deviceid').val(),pnum: this.portnum}).done(function(data){
-				row.portname.html(data.Label).data('default',data.Label);
-				row.cdevice.html('<a href="devices.php?deviceid='+data.ConnectedDeviceID+'">'+data.ConnectedDeviceLabel+'</a>').data('default',data.ConnectedDeviceID);
-				data.ConnectedPortLabel=(data.ConnectedPortLabel==null)?'':data.ConnectedPortLabel;
-				row.cdeviceport.html('<a href="paths.php?deviceid='+data.ConnectedDeviceID+'&portnumber='+data.ConnectedPort+'">'+data.ConnectedPortLabel+'</a>').data('default',data.ConnectedPort);
-				row.cnotes.html(data.Notes).data('default',data.Notes);
-				row.porttype.html(data.MediaName).data('default',data.MediaID);
-				row.portcolor.html(data.ColorName).data('default',data.ColorID);
-				$('#controls'+row.portnum).remove();
-				$(row.element[0]).children('div ~ div').removeAttr('style');
-				$(row.element[0]).data('edit',false);
-				// Attempt to show mass edit controls
-				$('.switch.table, .patchpanel.table').massedit('show');
-			});
+			var check=$(e.target.parentElement).data('rear');
+			function editcheck(e){
+				if(!row.btnrow.front[0].childNodes.length && !row.btnrow.rear[0].childNodes.length){
+					$(row.element[0]).data('edit',false);
+					row.btnrow.remove();
+					row.destroy(e);
+				}
+			}
+
+			if(check){ // true = rear of patch panel
+				row.btnrow.rear[0].childNodes[0].remove();
+				editcheck(e);
+			}else if(check!==undefined){ // false = front of patch panel
+				row.btnrow.front[0].childNodes[0].remove();
+				editcheck(e);
+			}
+			row.destroy(check);
+		},
+
+		destroy: function(check) {
+			var row=this;
+
+			function front(){
+				$.post('',{getport: '',swdev: $('#deviceid').val(),pnum: row.portnum}).done(function(data){
+					row.portname.html(data.Label).data('default',data.Label);
+					row.cdevice.html('<a href="devices.php?deviceid='+data.ConnectedDeviceID+'">'+data.ConnectedDeviceLabel+'</a>').data('default',data.ConnectedDeviceID);
+					data.ConnectedPortLabel=(data.ConnectedPortLabel==null)?'':data.ConnectedPortLabel;
+					row.cdeviceport.html('<a href="paths.php?deviceid='+data.ConnectedDeviceID+'&portnumber='+data.ConnectedPort+'">'+data.ConnectedPortLabel+'</a>').data('default',data.ConnectedPort);
+					row.cnotes.html(data.Notes).data('default',data.Notes);
+					row.porttype.html(data.MediaName).data('default',data.MediaID);
+					row.portcolor.html(data.ColorName).data('default',data.ColorID);
+					$(row.element[0]).children('div ~ div').removeAttr('style');
+					// Attempt to show mass edit controls
+					$('.switch.table, .patchpanel.table').massedit('show');
+				});
+			}
+
+			function rear(){
+				$.post('',{getport: '',swdev: $('#deviceid').val(),pnum: row.portnum*-1}).done(function(data){
+					data.ConnectedPortLabel=(data.ConnectedPortLabel==null)?'':data.ConnectedPortLabel;
+					row.rdevice.html('<a href="devices.php?deviceid='+data.ConnectedDeviceID+'">'+data.ConnectedDeviceLabel+'</a>').data('default',data.ConnectedDeviceID);
+					row.rdeviceport.html('<a href="paths.php?deviceid='+data.ConnectedDeviceID+'&portnumber='+data.ConnectedPort+'">'+data.ConnectedPortLabel+'</a>').data('default',data.ConnectedPort);
+					row.rnotes.html(data.Notes).data('default',data.Notes);
+					row.porttype.html(data.MediaName).data('default',data.MediaID);
+					// Attempt to show mass edit controls
+					$('.switch.table, .patchpanel.table').massedit('show');
+				});
+			}
+			if(check===undefined || check==false){
+				front();
+				if($(row.element[0]).parent().hasClass('switch')){
+					$(row.element[0]).data('edit',false);
+					$('#controls'+row.portnum).remove();
+				}
+			}else{
+				rear();
+			}
 		}
 	});
 })( jQuery );
