@@ -636,7 +636,7 @@ function drawArrow(canvas,startx,starty,width,height,direction){
 				});
 			}else{
 				// No port name set, DENIED!
-				row.effect('highlight', {color: 'salmon'}, 1500);
+				row.element.effect('highlight', {color: 'salmon'}, 1500);
 			}
 		},
 
