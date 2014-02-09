@@ -21,7 +21,9 @@ textarea {white-space: pre;word-wrap: break-word;}
 .greybg {background-color: lightGrey;}
 .warning {text-align: center; color: red; text-transform: uppercase;}
 .right {text-align: right;}
-.left {text-align: left;}
+.left {text-align: left;
+       min-width: 6em;
+      }
 .custom-combobox {position: relative;display: inline-block;}
 
 [readonly],[disabled] {
@@ -493,14 +495,13 @@ table#cabprop tr {
     margin: 2px 2px 2px 0px;
 }
 #infopanel fieldset table#cabprop td.right {
-    /* width: 50%; */
     text-align: left;
     padding: 3px 2px 3px 4px;
     border: 0px none;
     border-bottom: 1px solid gray;
     border-right: 2px solid gray;
     margin: 2px 0px 2px 2px;
-    /* max-width: 280px; */
+    max-width: 13em;
 }
 table#cabprop span.text-label {
      -webkit-border-radius: 2px;
@@ -512,6 +513,7 @@ table#cabprop span.text-label {
      padding: 0px 3px 0px 3px;
      margin: 0 2px 0px 0;
      font: 11px "lucida grande",tahoma,verdana,arial,sans-serif;
+     display: inline-block;
 }
 
 /* image_management */
