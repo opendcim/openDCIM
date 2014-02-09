@@ -21,9 +21,7 @@ textarea {white-space: pre;word-wrap: break-word;}
 .greybg {background-color: lightGrey;}
 .warning {text-align: center; color: red; text-transform: uppercase;}
 .right {text-align: right;}
-.left {text-align: left;
-       min-width: 6em;
-      }
+.left {text-align: left;}
 .custom-combobox {position: relative;display: inline-block;}
 
 [readonly],[disabled] {
@@ -501,7 +499,7 @@ table#cabprop tr {
     border-bottom: 1px solid gray;
     border-right: 2px solid gray;
     margin: 2px 0px 2px 2px;
-    max-width: 13em;
+    max-width: 175px;
 }
 table#cabprop span.text-label {
      -webkit-border-radius: 2px;
@@ -511,7 +509,7 @@ table#cabprop span.text-label {
      background: #e2e6f0;
      color: #000;
      padding: 0px 3px 0px 3px;
-     margin: 0 2px 0px 0;
+     margin: 0 2px 2px 0;
      font: 11px "lucida grande",tahoma,verdana,arial,sans-serif;
      display: inline-block;
 }
