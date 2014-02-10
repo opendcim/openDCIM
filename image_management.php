@@ -31,7 +31,7 @@
   <meta http-equiv="X-UA-Compatible" content="IE=Edge">
   <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
   
-  <title>openDCIM Data Center Inventory</title>
+  <title><?php echo __("openDCIM Data Center Inventory");?></title>
   <link rel="stylesheet" href="css/inventory.php" type="text/css">
   <link rel="stylesheet" href="css/jquery-ui.css" type="text/css">
   <link rel="stylesheet" href="css/uploadifive.css" type="text/css">
@@ -52,7 +52,7 @@
 ?>
 <div class="main">
 <h2><?php echo $config->ParameterArray['OrgName']; ?></h2>
-<h2>OpenDCIM Image File Management</h2>
+<h2><?php echo __("OpenDCIM Image File Management");?></h2>
 
 <?php
 // Only show the device pictures if they have global write access or site admin.
@@ -60,7 +60,7 @@ if($user->SiteAdmin || $user->WriteAccess){
 ?>
 
 <div class="center"><div>
-<div class="heading">Device Type Pictures</div>
+<div class="heading"><?php print __("Device Type Pictures");?></div>
 <input type="file" name="dev_file_upload" data-dir="pictures" id="dev_file_upload" />
 
 <script type="text/javascript">
@@ -100,7 +100,7 @@ if($user->SiteAdmin){
 ?>
 
 <div class="center"><div>
-<div class="heading">Datacenter / Room Drawings</div>
+<div class="heading"><?php print __("Datacenter / Container Drawings");?></div>
 <input type="file" name="drawing_file_upload" data-dir="drawings" id="drawing_file_upload" />
 
 </div><div>
