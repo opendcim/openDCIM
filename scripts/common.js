@@ -438,6 +438,10 @@ function drawArrow(canvas,startx,starty,width,height,direction){
 					row.edit();
 				}
 			});
+
+			// Bind popup event to the device port for pathing
+			row.showpath();
+		
 		},
 		edit: function() {
 			var row=this;
@@ -640,6 +644,28 @@ function drawArrow(canvas,startx,starty,width,height,direction){
 			}
 		},
 
+		// Display modal with path information if a device port is clicked.
+		showpath: function(){
+			var row=this;
+			$([row.cdeviceport,row.rdeviceport]).each(function(){
+				$(this).find('a').each(function(i){
+					$(this).unbind('click');
+					$(this).click(function(e){
+						e.preventDefault();
+						$.get($(e.target).attr('href'),{pathonly: ''}).done(function(data){
+							var modal=$('<div />', {id: 'modal'}).html('<div id="modaltext">'+data+'</div><br><div id="modalstatus"></div>').dialog({
+								appendTo: 'body',
+								modal: true,
+								minWidth: 400,
+								close: function(){$(this).dialog('destroy');}
+							});
+							$('#modal').dialog("option", "width", $('#parcheos').width()+75);
+						});
+					});
+				});
+			});
+		},
+
 		checkredraw: function(e) {
 			var row=this;
 			var check=$(e.target.parentElement).data('rear');
@@ -676,6 +702,7 @@ function drawArrow(canvas,startx,starty,width,height,direction){
 					$(row.element[0]).children('div ~ div').removeAttr('style');
 					// Attempt to show mass edit controls
 					$('.switch.table, .patchpanel.table').massedit('show');
+					row.showpath();
 				});
 			}
 
@@ -688,6 +715,7 @@ function drawArrow(canvas,startx,starty,width,height,direction){
 					row.porttype.html(data.MediaName).data('default',data.MediaID);
 					// Attempt to show mass edit controls
 					$('.switch.table, .patchpanel.table').massedit('show');
+					row.showpath();
 				});
 			}
 			if(check===undefined || check==false){

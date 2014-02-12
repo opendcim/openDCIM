@@ -233,7 +233,7 @@
 			$dev->DeviceID=$dp->ConnectedDeviceID;
 			$dp->ConnectedDeviceLabel=($dev->GetDevice())?stripslashes($dev->Label):'';
 			$dp->ConnectedPort=$dp->ConnectedPort;
-			$dp->ConnectedPortLabel=(!is_null($cd->Label) && $cd->Label!='')?$cd->Label:$dp->ConnectedPort;
+			$dp->ConnectedPortLabel=(!is_null($cd->Label) && $cd->Label!='')?$cd->Label:abs($dp->ConnectedPort);
 			header('Content-Type: application/json');
 			echo json_encode($dp);
 			exit;
@@ -803,24 +803,6 @@ $(document).ready(function() {
 		return false;
 	});
 
-	// Display modal with path information if a device port is clicked.
-	function devicepaths(row){
-		row.find('div[id^=dp] a, div[id^=fp] a, div[id^=rp] a').click(function(e){
-			e.preventDefault();
-			$.get($(e.target).attr('href'),{pathonly: ''}).done(function(data){
-				var modal=$('<div />', {id: 'modal'}).html('<div id="modaltext">'+data+'</div><br><div id="modalstatus"></div>').dialog({
-					appendTo: 'body',
-					modal: true,
-					minWidth: 400,
-					close: function(){$(this).dialog('destroy');}
-				});
-				$('#modal').dialog("option", "width", $('#parcheos').width()+75);
-			});
-		});
-	}
-	$('.patchpanel > div + div, .switch > div + div').each(function(){
-		devicepaths($(this));
-	});
 
 	// Make SNMP community visible
 	$('#snmpcommunity').focus(function(){$(this).attr('type','text');});
