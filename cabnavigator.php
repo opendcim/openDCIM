@@ -271,8 +271,11 @@ function renderCabinetProps($cab, $audit, $AuditorName)
 						$text=($device->Rights!="None")?"<a href=\"devices.php?deviceid=$device->DeviceID\">$highlight $device->Label</a>":$device->Label;
 
 						// Put the device in the rack
-						$body.="<tr><td class=\"cabpos$reserved dept$device->Owner$errclass\">$i</td><td class=\"dept$device->Owner$reserved\" rowspan=$device->Height data-deviceid=$device->DeviceID>";
-						$body.=($picture)?$picture:$text;
+						if($picture){
+							$body.="<tr><td class=\"cabpos$reserved dept$device->Owner$errclass\">$i</td><td class=\"dept$device->Owner$reserved\" rowspan=$device->Height data-deviceid=$device->DeviceID>$picture";
+						}else{
+							$body.="<tr><td class=\"cabpos$reserved dept$device->Owner$errclass\">$i</td><td class=\"cabdev_t dept$device->Owner$reserved\" rowspan=$device->Height data-deviceid=$device->DeviceID>$text";
+						}
 						$body.="</td></tr>\n";
 					}else{
 						$body.="<tr><td class=\"cabpos$reserved dept$device->Owner$errclass\">$i</td></tr>\n";
@@ -552,7 +555,7 @@ echo $head,'  <script type="text/javascript" src="scripts/jquery.min.js"></scrip
 ';
 if($config->ParameterArray["ToolTips"]=='enabled'){
 ?>
-		$('.cabinet td.cabdev_t:has(a), #zerou div > a, .cabinet .picture a img').mouseenter(function(){
+		$('.cabinet td.cabdev_t:has(a), #zerou div > a, .cabinet .picture a img, .cabinet .picture a div').mouseenter(function(){
 			var pos=$(this).offset();
 			var tooltip=$('<div />').css({
 				'left':pos.left+this.getBoundingClientRect().width+15+'px',

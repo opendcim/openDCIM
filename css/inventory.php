@@ -431,7 +431,7 @@ div.cabinet {
 .cabinet th{font-size: 1.5em;padding: 0.25em;text-align: center;}
 #zerou a{display: block;}
 
-.cabnavigator .picture div img:hover { border: 2px solid red; margin: -2px; }
+.cabnavigator .picture div img:hover, .cabnavigator .picture div div:hover { border: 2px solid red; margin: -2px; }
 
 .cabnavigator .nav { text-align: center; }
 .cabnavigator .nav li { margin-top: 0.1em; border: 1px solid darkGray;}

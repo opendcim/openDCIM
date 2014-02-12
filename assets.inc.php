@@ -2149,6 +2149,9 @@ class Device {
 		
 		if ($templ->FrontPictureFile<>""){
 			$picturefile="pictures/".$templ->FrontPictureFile;
+		}else{
+			$picturefile="pictures/P_ERROR.png";
+		}
 			list($width, $height, $type, $attr)=getimagesize($picturefile);
 			$hor_blade=($width>$height);
 			$slot=new Slot();
@@ -2156,6 +2159,30 @@ class Device {
 			$slot->Position=$this->Position;
 			$slot->BackSide=$this->BackSide;
 			if ($slot->GetSlot()){
+				if ($this->Height>1){
+					//get last slot
+					$lslot=new Slot();
+					$lslot->TemplateID=$parentDev->TemplateID;  
+					$lslot->Position=$this->Position+$this->Height-1;
+					$lslot->BackSide=$this->BackSide;
+					if ($lslot->GetSlot()){
+						//calculate total size
+						$xmin=min($slot->X, $lslot->X);
+						$ymin=min($slot->Y, $lslot->Y);
+						$xmax=max($slot->X+$slot->W, $lslot->X+$lslot->W);
+						$ymax=max($slot->Y+$slot->H, $lslot->Y+$lslot->H);
+						//checking for non consecutive slots or slots of different sizes
+						$err=2; //error pixels by slot
+						if(abs($xmax-$xmin-$slot->W*$this->Height)<$this->Height*$err && abs($ymax-$ymin-$slot->H)<$err 
+							|| abs($ymax-$ymin-$slot->H*$this->Height)<$this->Height*$err && abs($xmax-$xmin-$slot->W)<$err){
+							//put new size in $slot
+							$slot->X=$xmin;
+							$slot->Y=$ymin;
+							$slot->W=$xmax-$xmin;
+							$slot->H=$ymax-$ymin;
+						} 
+					}
+				} //if Height==1 or there is an error, $slot is considered a simple slot
 				$hor_slot=($slot->W>$slot->H);
 
 				// Determine if the element needs to be rotated or not
@@ -2175,7 +2202,11 @@ class Device {
 				$height=intval($height);$width=intval($width);
 
 				$resp.="\t\t<div class='$rotar' style='position:absolute; left: $left; top: $top;'>\n$clickable";
-				$resp.="\t\t\t\t<img class='picturerot' data-deviceid=$this->DeviceID width=$width height=$height src='pictures/$templ->FrontPictureFile' alt='$this->Label'>\n";
+				if ($templ->FrontPictureFile<>""){
+					$resp.="\t\t\t\t<img class='picturerot' data-deviceid=$this->DeviceID width=$width height=$height src='$picturefile' alt='$this->Label'>\n";
+				}else{
+					$resp.="\t\t\t\t<div data-deviceid=$this->DeviceID class='dept$this->Owner' style='font-size: ".($height*0.6)."px; width: ".$width."px; height: ".$height."px;'>$this->Label</div>\n";
+				}
 				$resp.="$clickableend";
 				if ( $this->ChassisSlots > 0 ) {
 					//multichassis
@@ -2188,7 +2219,6 @@ class Device {
 				}
 				$resp.="\t\t</div>\n";
 			}
-		}
 		return $resp;
 	}
 	function GetDevicePicture($rear=false){
