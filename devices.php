@@ -28,7 +28,7 @@
 		echo json_encode(MediaTypes::GetMediaTypeList());
 		exit;
 	}
-	// Get list of media types
+	// Get list of name patterns
 	if(isset($_GET['spn'])){
 		header('Content-Type: application/json');
 		$PortNamePatterns=array();
@@ -38,7 +38,7 @@
 		echo json_encode($PortNamePatterns);
 		exit;
 	}
-	// Set all ports to the same media type or color code
+	// Set all ports to the same label pattern, media type or color code
 	if(isset($_POST['setall'])){
 		$portnames=array();
 		if(isset($_POST['spn']) && strlen($_POST['spn'])>0){
@@ -1615,11 +1615,15 @@ echo '	<div class="table">
 </div></div>
 <?php
 	if($dev->ParentDevice >0){
-		print "   <a href=\"devices.php?deviceid=$pDev->DeviceID\">[ ".__('Return to Parent Device')." ]</a>\n";
+		print "   <a href=\"devices.php?deviceid=$pDev->DeviceID\">[ ".__('Return to Parent Device')." ]</a><br>\n";
+		print "   <a href=\"cabnavigator.php?cabinetid=".$dev->GetDeviceCabinetID()."\">[ ".__('Return to Navigator')." ]</a>";
 	}elseif($dev->Cabinet >0){
 		print "   <a href=\"cabnavigator.php?cabinetid=$cab->CabinetID\">[ ".__('Return to Navigator')." ]</a>";
 	}else{
-		echo '   <div><a href="storageroom.php">[ ',__("Return to Navigator"),' ]</a></div>';
+		if ($dev->Position>0){
+			print "   <div><a href=\"storageroom.php?dc=$dev->Position\">[ ".__("Return to Storage Room")." ]</a></div>";
+		}
+		print "   <div><a href=\"storageroom.php\">[ ".__("Return to General Storage Room")." ]</a></div>";
 	}
 ?>
 
