@@ -230,6 +230,7 @@
   <script type="text/javascript" src="scripts/jquery.textext.js"></script>
   <script type="text/javascript" src="scripts/jquery.imgareaselect.pack.js"></script>
   <script type="text/javascript" src="scripts/jquery.lightbox.min.js"></script>
+  <script type="text/javascript" src="scripts/common.js"></script>
   <script type="text/javascript">
 	$(document).ready(function(){
 		var oModel=$('#model').val();
@@ -250,63 +251,8 @@
 			$('#device, #clone').remove();
 		});
 
-		$('#notes').each(function(){
-			$(this).before('<button type="button" id="editbtn"></button>');
-			if($(this).val()!=''){
-				rendernotes($('#editbtn'));
-			}else{
-				editnotes($('#editbtn'));
-			}
-		});
-    
-		function editnotes(button){
-			button.val('preview').text('<?php echo __("Preview");?>');
-			var a=button.next('div');
-			button.next('div').remove();
-			button.next('textarea').htmlarea({
-				toolbar: [
-					"link", "unlink", "image"
-				],
-				css: 'css/jHtmlArea.Editor.css'
-			});
-			$('.jHtmlArea div iframe').height(a.innerHeight());
-		}
-
-		function rendernotes(button){
-			button.val('edit').text('<?php echo __("Edit");?>');
-			var w=button.next('div').outerWidth();
-			var h=$('.jHtmlArea').outerHeight();
-			if(h>0){
-				h=h+'px';
-			}else{
-				h="auto";
-			}
-			$('#notes').htmlarea('dispose');
-			button.after('<div id="preview">'+$('#notes').val()+'</div>');
-			button.next('div').css({'width': w+'px', 'height' : h}).find('a').each(function(){
-				$(this).attr('target', '_new');
-			});
-			$('#notes').html($('#notes').val()).hide(); // we still need this field to submit it with the form
-			h=0; // recalculate height in case they added an image that is gonna hork the layout
-			// need a slight delay here to allow the load of large images before the height calculations are done
-			setTimeout(function(){
-				$('#preview').find("*").each(function(){
-					h+=$(this).outerHeight();
-					});
-				$('#preview').height(h);
-			},2000);
-		}
-
-		$('#editbtn').click(function(){
-			var button=$(this);
-			if($(this).val()=='edit'){
-				editnotes(button);
-			}else{
-				rendernotes(button);
-			}
-		});
-
-		$('#FrontPictureFile').click(function(){
+		$('#FrontPictureFile,#RearPictureFile').click(function(){
+			var input=this;
 			$("#imageselection").dialog({
 				resizable: false,
 				height:500,
@@ -315,7 +261,7 @@
 				buttons: {
 <?php echo '					',__("Select"),': function() {'; ?>
 						if($('#imageselection #preview').attr('image')!=""){
-							$('#FrontPictureFile').val($('#imageselection #preview').attr('image'));
+							$(input).val($('#imageselection #preview').attr('image'));
 						}
 						$(this).dialog("close");
 					}
@@ -345,56 +291,12 @@
 					});
 					$(this).css('border','1px dotted black')
 				});
-				if($('#FrontPictureFile').val()==$(this).text()){
+				if($(input).val()==$(this).text()){
 					$(this).click();
 				}
 			});
 		});  
 		
-		$('#RearPictureFile').click(function(){
-			$("#imageselection").dialog({
-				resizable: false,
-				height:500,
-				width: 600,
-				modal: true,
-				buttons: {
-<?php echo '					',__("Select"),': function() {'; ?>
-						if($('#imageselection #preview').attr('image')!=""){
-							$('#RearPictureFile').val($('#imageselection #preview').attr('image'));
-						}
-						$(this).dialog("close");
-					}
-				}
-			});
-			$("#imageselection span").each(function(){
-				var preview=$('#imageselection #preview');
-				$(this).click(function(){
-					preview.css({'border-width': '5px', 'width': '380px', 'height': '380px'});
-					preview.html('<img src="pictures/'+$(this).text()+'" alt="preview">').attr('image',$(this).text());
-					preview.children('img').load(function(){
-						var topmargin=0;
-						var leftmargin=0;
-						if($(this).height()<$(this).width()){
-							$(this).width(preview.innerHeight());
-							$(this).css({'max-width': preview.innerWidth()+'px'});
-							topmargin=Math.floor((preview.innerHeight()-$(this).height())/2);
-						}else{
-							$(this).height(preview.innerHeight());
-							$(this).css({'max-height': preview.innerWidth()+'px'});
-							leftmargin=Math.floor((preview.innerWidth()-$(this).width())/2);
-						}
-						$(this).css({'margin-top': topmargin+'px', 'margin-left': leftmargin+'px'});
-					});
-					$("#imageselection span").each(function(){
-						$(this).removeAttr('style');
-					});
-					$(this).css('border','1px dotted black')
-				});
-				if($('#RearPictureFile').val()==$(this).text()){
-					$(this).click();
-				}
-			});
-		});
 
 		$('#devicetype').change(function(){
 			if($('#devicetype').val()=="Chassis"){

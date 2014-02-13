@@ -127,62 +127,10 @@
   <script type="text/javascript" src="scripts/jquery.validationEngine.js"></script>
   <script type="text/javascript" src="scripts/jHtmlArea-0.8.min.js"></script>
   <script type="text/javascript" src="scripts/jquery.textext.js"></script>
+  <script type="text/javascript" src="scripts/common.js"></script>
 
   <script type="text/javascript">
 	$(document).ready(function() {
-		$('#notes').each(function(){
-			$(this).before('<button type="button" id="editbtn"></button>');
-			if($(this).val()!=''){
-				rendernotes($('#editbtn'));
-			}else{
-				editnotes($('#editbtn'));
-			}
-		});
-		function editnotes(button){
-			button.val('preview').text('Preview');
-			var a=button.next('div');
-			button.next('div').remove();
-			button.next('textarea').htmlarea({
-				toolbar: [
-				"link", "unlink", "image"
-				],
-				css: 'css/jHtmlArea.Editor.css'
-			});
-			$('.jHtmlArea div iframe').height(a.innerHeight());
-		}
-
-		function rendernotes(button){
-			button.val('edit').text('Edit');
-			var w=button.next('div').outerWidth();
-			var h=$('.jHtmlArea').outerHeight();
-			if(h>0){
-				h=h+'px';
-			}else{
-				h="auto";
-			}
-			$('#notes').htmlarea('dispose');
-			button.after('<div id="preview">'+$('#notes').val()+'</div>');
-			button.next('div').css({'width': w+'px', 'height' : h}).find('a').each(function(){
-				$(this).attr('target', '_new');
-			});
-			$('#notes').html($('#notes').val()).hide(); // we still need this field to submit it with the form
-			h=0; // recalculate height in case they added an image that is gonna hork the layout
-			// need a slight delay here to allow the load of large images before the height calculations are done
-			setTimeout(function(){
-				$('#preview').find("*").each(function(){
-					h+=$(this).outerHeight();
-				});
-				$('#preview').height(h);
-			},2000);
-		}
-		$('#editbtn').click(function(){
-			var button=$(this);
-			if($(this).val()=='edit'){
-				editnotes(button);
-			}else{
-				rendernotes(button);
-			}
-		});
 		$('#datacenterid').change(function(){
 			$.post('',{zonelist: $(this).val()}).done(function(data){
 				$('#zoneid').html('');

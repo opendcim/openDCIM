@@ -431,9 +431,6 @@ div.cabinet {
 .cabinet th{font-size: 1.5em;padding: 0.25em;text-align: center;}
 #zerou a{display: block;}
 
-.cabnavigator .picture img:hover, .cabnavigator .picture div.childpict div:hover { border: 2px solid red; margin: -2px; overflow: hidden;}
-.cabnavigator .picture div.childpict:hover, .cabnavigator .picture div.textpict:hover {z-index:99;}
-
 .cabnavigator .nav { text-align: center; }
 .cabnavigator .nav li { margin-top: 0.1em; border: 1px solid darkGray;}
 .cabnavigator .nav a:hover li { border-color: black; }
@@ -455,7 +452,10 @@ div.cabinet {
 
 /* PICTURES */
 .cabnavigator div.picture {position:relative; left:0px; top:0px; margin: -0.25em -0.5em -0.4em; z-index: 5;}
-.cabnavigator div.picture div { z-index: 10;}
+.cabnavigator div.picture div {position:absolute; z-index: 10;}
+.cabnavigator .picture div img:hover, .cabnavigator .picture div div:hover { border: 2px solid red; margin: -2px; }
+.cabnavigator .picture div span {overflow: hidden; vertical-align: sub; padding-left: 0.3em;}
+
 .cabinet .picture img {min-height: 1px;}
 .rotar_d{
 	transform:rotate(90deg);

@@ -4,10 +4,12 @@
         this.wrapper = $( "<span>" )
           .addClass( "custom-combobox" )
           .insertAfter( this.element );
- 
-        this.element.hide();
-        this._createAutocomplete();
-        this._createShowAllButton();
+
+		if(this.element.is(":visible")){ 
+			this.element.hide();
+			this._createAutocomplete();
+			this._createShowAllButton();
+		}
       },
  
       _createAutocomplete: function() {

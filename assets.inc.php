@@ -2195,17 +2195,17 @@ class Device {
 
 				$left=($rotar=='')?$slot->X*$zoom:($slot->X-abs($slot->W-$slot->H)/2)*$zoom;
 				$top=($rotar=='')?$slot->Y*$zoom:($slot->Y+abs($slot->W-$slot->H)/2)*$zoom;
-				$left=round($left).'px';$top=round($top).'px';
+				$left=intval($left).'px';$top=intval($top).'px';
 				// swap height and width on rotated objects
 				$height=($rotar=='')?$slot->H*$zoom:$slot->W*$zoom;
 				$width=($rotar=='')?$slot->W*$zoom:$slot->H*$zoom;
-				$height=round($height);$width=round($width);
+				$height=intval($height);$width=intval($width);
 
-				$resp.="\t\t<div class='childpict$rotar' style='position:absolute; left: $left; top: $top; width: ".$width."px; height:".$height."px;'>\n$clickable";
-				if ($templ->FrontPictureFile<>""){
+				$resp.="\t\t<div class='$rotar' style='left: $left; top: $top; width: ".$width."px; height:".$height."px;'>\n$clickable";
+				if ($templ->FrontPictureFile!=""){
 					$resp.="\t\t\t\t<img class='picturerot' data-deviceid=$this->DeviceID width=$width height=$height src='$picturefile' alt='$this->Label'>\n";
 				}else{
-					$resp.="\t\t\t\t<div class='textpict dept$this->Owner' data-deviceid=$this->DeviceID style='font-size: ".($height*0.6)."px; width: ".$width."px; height: ".$height."px;'><div style='padding: 0.3em;'>$this->Label</div></div>\n";
+					$resp.="\t\t\t\t<div class='dept$this->Owner' data-deviceid=$this->DeviceID style='font-size: ".intval($height*0.6)."px; width: ".$width."px; height: ".$height."px;'><span>$this->Label</span></div>\n";
 				}
 				$resp.="$clickableend";
 				if ( $this->ChassisSlots > 0 ) {

@@ -232,8 +232,8 @@
 			$dp->ColorName=(isset($cc[$dp->ColorID]))?$cc[$dp->ColorID]->Name:'';
 			$dev->DeviceID=$dp->ConnectedDeviceID;
 			$dp->ConnectedDeviceLabel=($dev->GetDevice())?stripslashes($dev->Label):'';
-			$dp->ConnectedPort=$dp->ConnectedPort;
-			$dp->ConnectedPortLabel=(!is_null($cd->Label) && $cd->Label!='')?$cd->Label:abs($dp->ConnectedPort);
+			$dp->ConnectedPort=($dp->ConnectedPort==0)?'':abs($dp->ConnectedPort);
+			$dp->ConnectedPortLabel=(!is_null($cd->Label) && $cd->Label!='')?$cd->Label:$dp->ConnectedPort;
 			header('Content-Type: application/json');
 			echo json_encode($dp);
 			exit;
@@ -739,59 +739,6 @@ $(document).ready(function() {
 	$(document).data('ports',$('#ports').val());
 	$(document).data('devicetype', $('select[name="devicetype"]').val());
 
-	$('#notes').each(function(){
-		$(this).before('<button type="button" id="editbtn"></button>');
-		if($(this).val()!=''){
-			rendernotes($('#editbtn'));
-		}else{
-			editnotes($('#editbtn'));
-		}
-	});
-	function editnotes(button){
-		button.val('preview').text('<?php echo __("Preview");?>');
-		var a=button.next('div');
-		button.next('div').remove();
-		button.next('textarea').htmlarea({
-			toolbar: [
-			"link", "unlink", "image"
-			],
-			css: 'css/jHtmlArea.Editor.css'
-		});
-		$('.jHtmlArea div iframe').height(a.innerHeight());
-	}
-
-	function rendernotes(button){
-		button.val('edit').text('<?php echo __("Edit");?>');
-		var w=button.next('div').outerWidth();
-		var h=$('.jHtmlArea').outerHeight();
-		if(h>0){
-			h=h+'px';
-		}else{
-			h="auto";
-		}
-		$('#notes').htmlarea('dispose');
-		button.after('<div id="preview">'+$('#notes').val()+'</div>');
-		button.next('div').css({'width': w+'px', 'height' : h}).find('a').each(function(){
-			$(this).attr('target', '_new');
-		});
-		$('#notes').html($('#notes').val()).hide(); // we still need this field to submit it with the form
-		h=0; // recalculate height in case they added an image that is gonna hork the layout
-		// need a slight delay here to allow the load of large images before the height calculations are done
-		setTimeout(function(){
-			$('#preview').find("*").each(function(){
-				h+=$(this).outerHeight();
-			});
-			$('#preview').height(h);
-		},2000);
-	}
-	$('#editbtn').click(function(){
-		var button=$(this);
-		if($(this).val()=='edit'){
-			editnotes(button);
-		}else{
-			rendernotes(button);
-		}
-	});
 
 
 	$('#deviceform').validationEngine();
@@ -1631,7 +1578,7 @@ echo '	<div class="table">
 </div><!-- END div.page -->
 <script type="text/javascript">
 	var portrights=$.parseJSON('<?php echo json_encode($jsondata); ?>');
-
+	portrights['admin']=<?php echo ($user->SiteAdmin)?'true':'false'; ?>;
 <?php
 	if(!$write){
 		print "\t\t//Disable all input if they don't have rights.

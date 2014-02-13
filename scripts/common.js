@@ -1,4 +1,60 @@
+//Notes render function
+function editnotes(button){
+	button.val('preview').text('Preview');
+	var a=button.next('div');
+	button.next('div').remove();
+	button.next('textarea').htmlarea({
+		toolbar: [
+		"link", "unlink", "image"
+		],
+		css: 'css/jHtmlArea.Editor.css'
+	});
+	$('.jHtmlArea div iframe').height(a.innerHeight());
+}
 
+function rendernotes(button){
+	button.val('edit').text('Edit');
+	var w=button.next('div').outerWidth();
+	var h=$('.jHtmlArea').outerHeight();
+	if(h>0){
+		h=h+'px';
+	}else{
+		h="auto";
+	}
+	$('#notes').htmlarea('dispose');
+	button.after('<div id="preview">'+$('#notes').val()+'</div>');
+	button.next('div').css({'width': w+'px', 'height' : h}).find('a').each(function(){
+		$(this).attr('target', '_new');
+	});
+	$('#notes').html($('#notes').val()).hide(); // we still need this field to submit it with the form
+	h=0; // recalculate height in case they added an image that is gonna hork the layout
+	// need a slight delay here to allow the load of large images before the height calculations are done
+	setTimeout(function(){
+		$('#preview').find("*").each(function(){
+			h+=$(this).outerHeight();
+		});
+		$('#preview').height(h);
+	},2000);
+}
+$(document).ready(function(){
+	$('#notes').each(function(){
+		$(this).before('<button type="button" id="editbtn"></button>');
+		if($(this).val()!=''){
+			rendernotes($('#editbtn'));
+		}else{
+			editnotes($('#editbtn'));
+		}
+	});
+
+	$('#editbtn').click(function(){
+		var button=$(this);
+		if($(this).val()=='edit'){
+			editnotes(button);
+		}else{
+			rendernotes(button);
+		}
+	});
+});
 
 // draw arrows on a canvas
 function drawArrow(canvas,startx,starty,width,height,direction){
@@ -446,18 +502,24 @@ function drawArrow(canvas,startx,starty,width,height,direction){
 		edit: function() {
 			var row=this;
 			row.getdevices(this.cdevice);
-			row.getdevices(this.rdevice);
-
 			row.cnotes.html('<input type="text" style="min-width: 200px;" value="'+row.cnotes.text()+'">');
-			row.rnotes.html('<input type="text" style="min-width: 200px;" value="'+row.rnotes.text()+'">');
 			row.portname.html('<input type="text" style="min-width: 60px;" value="'+row.portname.text()+'">');
 			row.getmediatypes();
 			row.getcolortypes();
+
+			// rear panel edit
+			if(portrights.admin){
+				row.getdevices(this.rdevice);
+				row.rnotes.html('<input type="text" style="min-width: 200px;" value="'+row.rnotes.text()+'">');
+			}
+
 			row.element.data('edit',true);
 
 			if($(this.element[0]).parent().hasClass('patchpanel')){
 				this.btnrow.front.append(this.controls.clone(true).data('rear',false));
-				this.btnrow.rear.append(this.controls.clone(true).data('rear',true));
+				if(portrights.admin){
+					this.btnrow.rear.append(this.controls.clone(true).data('rear',true));
+				}
 				this.element.after(this.btnrow);
 			}else if($(this.element[0]).parent().hasClass('switch')){
 				this.portcolor.after(this.controls.clone(true));
@@ -595,7 +657,13 @@ function drawArrow(canvas,startx,starty,width,height,direction){
 						row.portcolor.children('select').val($(this).data($(this).val()));
 					}
 				});
-				row.porttype.html(mlist).find('select').val(row.porttype.data('default'));
+				if(portrights.admin){
+					row.porttype.html(mlist);
+				}else{
+					row.porttype.append(mlist);
+					mlist.hide();
+				}
+				row.porttype.find('select').val(row.porttype.data('default'));
 				mlist.combobox();
 			});
 		},
