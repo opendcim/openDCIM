@@ -46,8 +46,9 @@
 	$sheet->getActiveSheet()->SetCellValue('B1','SourcePort');
 	$sheet->getActiveSheet()->SetCellValue('C1','TargetDevice');
 	$sheet->getActiveSheet()->SetCellValue('D1','TargetPort');
-	$sheet->getActiveSheet()->SetCellValue('E1','MediaType');
-	$sheet->getActiveSheet()->SetCellValue('F1','Color');
+	$sheet->getActiveSheet()->SetCellValue('E1','Notes');
+	$sheet->getActiveSheet()->SetCellValue('F1','MediaType');
+	$sheet->getActiveSheet()->SetCellValue('G1','Color');
 	
 	$sheet->getActiveSheet()->setTitle("Connections");
 	
@@ -82,8 +83,9 @@
 		$sheet->getActiveSheet()->SetCellValue('B' . $row, $devPort->Label);
 		$sheet->getActiveSheet()->SetCellValue('C' . $row, $targetDev->Label);
 		$sheet->getActiveSheet()->SetCellValue('D' . $row, $targetPort->Label);
-		$sheet->getActiveSheet()->SetCellValue('E' . $row, $mediaType->MediaType);
-		$sheet->getActiveSheet()->SetCellValue('F' . $row, $color->Name);
+		$sheet->getActiveSheet()->SetCellValue('E' . $row, $devPort->Notes);
+		$sheet->getActiveSheet()->SetCellValue('F' . $row, $mediaType->MediaType);
+		$sheet->getActiveSheet()->SetCellValue('G' . $row, $color->Name);
 
 		$row++;
 	}
