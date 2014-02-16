@@ -323,7 +323,7 @@ function drawArrow(canvas,startx,starty,width,height,direction){
 						generateportnames.append(option);
 					});
 				});
-				$('#spn').append(generateportnames);
+				$('#spn,#pp').append(generateportnames.css('z-index','4'));
 			}
 
 
@@ -379,54 +379,35 @@ function drawArrow(canvas,startx,starty,width,height,direction){
 
 			// Generate list of other patch panel devices that can be used for rear connections
 			function massedit_rear(){
-				$.post('', {swdev: $('#deviceid').val(), rear: ''}, function(data){
-					$.each(data, function(key,pp){
-						var option=$("<option>").val(pp.DeviceID).append(pp.Label);
-						rearedit.append(option);
-						var rack=$('#datacenters a[href$="cabinetid='+pp.CabinetID+'"]');
-						option.prepend('['+rack.text()+'] ');
+				if(portrights.admin){
+					$.post('', {swdev: $('#deviceid').val(), rear: ''}, function(data){
+						$.each(data, function(key,pp){
+							var option=$("<option>").val(pp.DeviceID).append(pp.Label);
+							rearedit.append(option);
+							var rack=$('#datacenters a[href$="cabinetid='+pp.CabinetID+'"]');
+							option.prepend('['+rack.text()+'] ');
+						});
 					});
-				});
-				$('#rear').append(rearedit);
+					$('#rear').append(rearedit);
+				}
 			}
 
 			// this will redraw the current ports based on the information given back from a json string
 			function redrawports(portsarr){
 				$.each(portsarr.ports, function(key,p){
-					$('#spn'+p.PortNumber).text(p.Label);
-					$('#n'+p.PortNumber).text(p.Notes);
-					$('#mt'+p.PortNumber).text((p.MediaID>0)?portsarr.mt[p.MediaID].MediaType:'').data('default',p.MediaID);
-					$('#cc'+p.PortNumber).text((p.ColorID>0)?portsarr.cc[p.ColorID].Name:'').data('default',p.ColorID);
+					var row=($('#pp'+p.PortNumber).parent('div').length)?$('#pp'+p.PortNumber).parent('div'):($('#sp'+p.PortNumber).parent('div'))?$('#sp'+p.PortNumber).parent('div'):0;
+					row.row('destroy');
 				});
 			}
 
-			// Determine which controls to add to the page
-			if(this.element.hasClass('switch')){
-				massedit_mt();
-				massedit_cc();
-				massedit_pn();
-
-			}else if(this.element.hasClass('patchpanel')){
-				massedit_mt();
-				massedit_rear();
-			}
+			// Add controls the page
+			massedit_mt();
+			massedit_cc();
+			massedit_pn();
+			massedit_rear();
 
 			// Nest the mass edit buttons inside of divs so they won't have to moved around
-			$(this.element).find('div:first-child > div + div[id]').wrapInner($('<div>').css({'position':'relative','border':0,'margin':'-3px'}));
-
-			// Adjust the button positions
-			this.movebuttons();
-		},
-
-		movebuttons: function (){
-			window.pos=$('#mt').offset();
-			window.ccpos=$('#cc').offset();
-			window.spnpos=$('#spn').offset();
-			window.rearpos=$('#rear').offset();
-			if(typeof pos!='undefined' && typeof setmediatype!='undefined'){setmediatype.css({top: '-3px', right: 0});}
-			if(typeof ccpos!='undefined' && typeof setcolorcode!='undefined'){setcolorcode.css({top: '-3px', right: 0});}
-			if(typeof spnpos!='undefined' && typeof generateportnames!='undefined'){generateportnames.css({top: '-3px', right: 0});}
-			if(typeof rearpos!='undefined' && typeof rearedit!='undefined'){rearedit.css({top: '-3px', right: 0});}
+			$(this.element).find('div:first-child > div + div[id]').wrapInner($('<div>'));
 		},
 
 		hide: function(){

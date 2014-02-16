@@ -586,6 +586,12 @@ table#cabprop span.text-label {
 .device .table .table .table > div > div {padding: 3px;}
 .right .table + .table {margin-top: 1em;}
 
+
+.table.patchpanel > div:first-child > div > div,
+.table.switch > div:first-child > div > div { position: relative; border: 0px none; margin: -3px; padding-right: 20px; }
+.table.patchpanel > div:first-child > div select,
+.table.switch > div:first-child > div select { position: absolute; top: -3px; right: 0px; }
+
 .device .table.patchpanel div[id^="pp"] { border-left: 2px solid black; min-width: 10px;}
 .device .table.patchpanel > div:first-child div[id^="pp"],
 .device .table.patchpanel > div:first-child div[id^="mt"] {border-top: 1px solid black; }
