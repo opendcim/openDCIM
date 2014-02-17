@@ -231,6 +231,7 @@
 			$dp->MediaName=(isset($mt[$dp->MediaID]))?$mt[$dp->MediaID]->MediaType:'';
 			$dp->ColorName=(isset($cc[$dp->ColorID]))?$cc[$dp->ColorID]->Name:'';
 			$dev->DeviceID=$dp->ConnectedDeviceID;
+			$dp->Label=($dp->Label=='')?abs($dp->PortNumber):$dp->Label;
 			$dp->ConnectedDeviceLabel=($dev->GetDevice())?stripslashes($dev->Label):'';
 			$dp->ConnectedPort=($dp->ConnectedPort==0)?'':abs($dp->ConnectedPort);
 			$dp->ConnectedPortLabel=(!is_null($cd->Label) && $cd->Label!='')?$cd->Label:$dp->ConnectedPort;
