@@ -164,15 +164,15 @@ function resize(){
 			main;
 		widesttab+=58;
 		// find widths
-		maindiv=(maindiv>mw)?maindiv:mw;
-		main=(maindiv>pnw)?maindiv:pnw; // find largest possible value for maindiv
-		main=(maindiv>widesttab)?maindiv:widesttab; // find largest possible value for maindiv
-		width=((sbw+main)>hw)?sbw+main:hw; // which is bigger sidebar + main or the header
+		main=(mw>pnw)?mw:pnw; // Find the largest width of possible content in maindiv
+		main+=16; // add in padding and borders
+		width=((main+sbw)>hw)?main+sbw:hw; // find the widest point of the page
 
 		// The math just isn't adding up across browsers and FUCK IE
-		if((maindiv+sbw)<width){ // page is larger than content expand main to fit
+		if((main+sbw)<width){ // page is larger than content expand main to fit
 			$('div.main').width(width-sbw-16); 
 		}else{ // page is smaller than content expand the page to fit
+			$('div.main').width(width-sbw-12); 
 			$('#header').width(width+4);
 			$('div.page').width(width+6);
 		}

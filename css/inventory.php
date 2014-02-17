@@ -592,6 +592,8 @@ table#cabprop span.text-label {
 .table.patchpanel > div:first-child > div select,
 .table.switch > div:first-child > div select { position: absolute; top: -3px; right: 0px; }
 
+.device div[id^="controls"] { border: 0 none; white-space: nowrap; }
+
 .device .table.patchpanel div[id^="pp"] { border-left: 2px solid black; min-width: 10px;}
 .device .table.patchpanel > div:first-child div[id^="pp"],
 .device .table.patchpanel > div:first-child div[id^="mt"] {border-top: 1px solid black; }
