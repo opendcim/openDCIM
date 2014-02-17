@@ -727,10 +727,10 @@ function drawArrow(canvas,startx,starty,width,height,direction){
 			}
 
 			if(check){ // true = rear of patch panel
-				row.btnrow.rear[0].childNodes[0].remove();
+				$(row.btnrow.rear[0].childNodes[0]).remove(); //stupid ie
 				editcheck(e);
 			}else if(check!==undefined){ // false = front of patch panel
-				row.btnrow.front[0].childNodes[0].remove();
+				$(row.btnrow.front[0].childNodes[0]).remove();
 				editcheck(e);
 			}
 			row.destroy(check);

@@ -172,7 +172,7 @@ function resize(){
 		if((main+sbw)<width){ // page is larger than content expand main to fit
 			$('div.main').width(width-sbw-16); 
 		}else{ // page is smaller than content expand the page to fit
-			$('div.main').width(width-sbw-12); 
+			$('div.main').width(width-sbw-16); 
 			$('#header').width(width+4);
 			$('div.page').width(width+6);
 		}
