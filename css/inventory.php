@@ -139,9 +139,8 @@ div#imageselection { display: none;}
 .errmsg {display:block;font-style:italic;margin-left:2em;}
 .hlight {color: red;}
 .legenditem {padding: 0.2em; }
-.colorbox {width: 1em; display: inline-block; height: 1.2em; margin: 0px;
-    padding: 0px; }
-}
+.colorbox {width: 1em; display: inline-block; vertical-align: sub;height: 1.2em; margin: 0px; padding: 0px;}
+
 
 
 /* Datacenter Stats */
