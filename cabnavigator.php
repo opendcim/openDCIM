@@ -320,7 +320,7 @@ function renderUnassignedTemplateOwnership($device) {
 	BuildCabinet();
 	($backside)?BuildCabinet('rear'):'';
 
-	if($heighterr!=''){$legend.='<p>* - '.__("Above defined rack height").'</p>';}
+	if($heighterr!=''){$legend.='<div class="legenditem">* - '.__("Above defined rack height").'</div>';}
 
 	$CenterofGravity=@round($totalMoment/$totalWeight);
 
@@ -363,7 +363,7 @@ function renderUnassignedTemplateOwnership($device) {
 
 // This will add an item to the legend for a white box. If we ever get a good name for it.
 if ($legend != "") {
-//		$legend.='<p><span class="border">&nbsp;&nbsp;&nbsp;&nbsp;</span> - Custom Color Not Assigned</p>';
+//		$legend.='<div class="legenditem"><span class="colorbox border"></span> - Custom Color Not Assigned</div>';
 }
 // add legend for the flags which actually are used in the cabinet
 $legend_flags = '';
