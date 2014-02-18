@@ -611,7 +611,7 @@ function drawArrow(canvas,startx,starty,width,height,direction){
 			var lastrow=$('.switch > div:last-child, .patchpanel > div:last-child');
 			$.post('',{delport: '',swdev: $('#deviceid').val(),pnum: row.portnum}).done(function(data){
 				if(data.trim()==1){
-                    if($(document).data('ports')>$('#ports').val()){
+					if($(document).data('ports')>$('#ports').val()){
 						// if this is the last port just remove it
 						if(row.element[0]==lastrow[0]){
 							row.element.remove();
@@ -620,7 +620,7 @@ function drawArrow(canvas,startx,starty,width,height,direction){
 							row.destroy();
 							lastrow.remove();
 						}
-                        // decrease counter
+						// decrease counter
 						$(document).data('ports',$(document).data('ports')-1);
 						if($(document).data('ports')==$('#ports').val()){$('#ports').change();}
 					}else{
