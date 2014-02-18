@@ -161,10 +161,11 @@ function resize(){
 		});
 		var pnw=$('#pandn').outerWidth(),hw=$('#header').outerWidth(),maindiv=$('div.main').outerWidth(),
 			sbw=$('#sidebar').outerWidth(),width,mw=$('div.left').outerWidth()+$('div.right').outerWidth(),
-			main;
+			main,cw=$('.main > .center').outerWidth();
 		widesttab+=58;
 		// find widths
-		main=(mw>pnw)?mw:pnw; // Find the largest width of possible content in maindiv
+		width=(cw>pnw)?cw:pnw;
+		main=(mw>width)?mw:width; // Find the largest width of possible content in maindiv
 		main+=16; // add in padding and borders
 		width=((main+sbw)>hw)?main+sbw:hw; // find the widest point of the page
 
