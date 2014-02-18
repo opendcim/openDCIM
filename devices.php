@@ -740,7 +740,8 @@ $(document).ready(function() {
 	$(document).data('ports',$('#ports').val());
 	$(document).data('devicetype', $('select[name="devicetype"]').val());
 
-
+	$('#cabinetid').combobox();
+	$('#templateid').combobox();
 
 	$('#deviceform').validationEngine();
 	$('#mfgdate').datepicker();
