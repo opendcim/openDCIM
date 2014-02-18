@@ -372,7 +372,7 @@ if ($ownership_unassigned) {
         . __("Owner Unassigned") . '</div>';
 }
 if ($template_unassigned) {
-    $legend_flags .= '		<div class="legenditem"><span class="hlight"> - '
+    $legend_flags .= '		<div class="legenditem"><span class="hlight">(T)</span> - '
         . __("Template Unassigned") . '</div>';
 }
 
