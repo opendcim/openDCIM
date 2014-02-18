@@ -202,10 +202,10 @@ function renderUnassignedTemplateOwnership($device) {
 			.freespace {background-color: {$config->ParameterArray['FreeSpaceColor']};}\n";
 
 		if($config->ParameterArray["ReservedColor"] != "#FFFFFF"){
-			$legend.='<p><span class="reserved colorbox border"></span> - '.__("Reservation").'</p>';
+			$legend.='<div class="legenditem"><span class="reserved colorbox border"></span> - '.__("Reservation").'</div>';
 		}
 		if($config->ParameterArray["FreeSpaceColor"] != "#FFFFFF"){
-			$legend.='<p><span class="freespace color border"></span> - '.__("Free Space").'</p>';
+			$legend.='<div class="legenditem"><span class="freespace color border"></span> - '.__("Free Space").'</div>';
 		}
 	}
 
