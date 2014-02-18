@@ -11,7 +11,7 @@
 
 /**
  * Determines ownership of the cabinet and returns the CSS class in case a
- * color unequal white is assigned to the owner
+ * color unequal white is assigned to the owner.
  *
  * @param Cabinet $cabinet
  * @param array $deptswithcolor
@@ -105,6 +105,31 @@ function renderCabinetProps($cab, $audit, $AuditorName)
     return $renderedHTML;
 }
 
+/**
+ * Render the indicator that a device has no ownership or template assigned.
+ *
+ * @param Device $device
+ * @return (boolean|boolean|string)[] CSS class or empty stringtype
+ */
+function renderUnassignedTemplateOwnership($device) {
+    $retstr = '';
+    if ($device->TemplateID == 0) {
+        $noTemplate = '(T)';
+        $template_unassigned = true;
+    }
+    if ($device->Owner == 0) {
+        $noOwnership = '(O)';
+        $ownership_unassigned = true;
+    }
+    if ($template_unassigned or $ownership_unassigned) {
+        // most modern browsers don't display anymore the blinking text therefore
+        // it is dropped. 
+        # $retstr = '<span class="hlight blink">' . $noTemplate . $noOwnership . '</span>';
+        $retstr = '<span class="hlight">' . $noTemplate . $noOwnership . '</span>';
+    }
+    return array($template_unassigned, $ownership_unassigned, $retstr);
+}
+
 	$cab=new Cabinet();
 	$cab->CabinetID=$_REQUEST["cabinetid"];
 	$cab->GetCabinet();
@@ -172,15 +197,15 @@ function renderCabinetProps($cab, $audit, $AuditorName)
 	list($cab_color, $deptswithcolor) = getColorofCabinetOwner($cab, $deptswithcolor);
 
 	if($config->ParameterArray["ReservedColor"] != "#FFFFFF" || $config->ParameterArray["FreeSpaceColor"] != "#FFFFFF"){
-		$head.="		<style type=\"text/css\">
-			.reserved{background-color: {$config->ParameterArray['ReservedColor']};}
-			.freespace{background-color: {$config->ParameterArray['FreeSpaceColor']};}\n";
+		$head .= "		<style type=\"text/css\">
+			.reserved {background-color: {$config->ParameterArray['ReservedColor']};}
+			.freespace {background-color: {$config->ParameterArray['FreeSpaceColor']};}\n";
 
 		if($config->ParameterArray["ReservedColor"] != "#FFFFFF"){
-			$legend.='<p><span class="reserved border">&nbsp;&nbsp;&nbsp;&nbsp;</span> - '.__("Reservation").'</p>';
+			$legend.='<p><span class="reserved colorbox border"></span> - '.__("Reservation").'</p>';
 		}
 		if($config->ParameterArray["FreeSpaceColor"] != "#FFFFFF"){
-			$legend.='<p><span class="freespace border">&nbsp;&nbsp;&nbsp;&nbsp;</span> - '.__("Free Space").'</p>';
+			$legend.='<p><span class="freespace color border"></span> - '.__("Free Space").'</p>';
 		}
 	}
 
@@ -194,7 +219,8 @@ function renderCabinetProps($cab, $audit, $AuditorName)
 		// This is fucking horrible, there has to be a better way to accomplish this.
 		global $cab_color, $cab, $device, $body, $highlight, $currentHeight, $heighterr, 
 				$devList, $templ, $tempDept, $backside, $deptswithcolor, $tempDept,
-				$totalWeight, $totalWatts, $totalMoment, $zeroheight;
+				$totalWeight, $totalWatts, $totalMoment, $zeroheight,
+                $template_unassigned, $ownership_unassigned;
 
 		$currentHeight=$cab->CabinetHeight;
 
@@ -205,6 +231,8 @@ function renderCabinetProps($cab, $audit, $AuditorName)
 		$heighterr="";
 		while(list($dev_index,$device)=each($devList)){
 			if($device->Height<1 && !$rear){
+                list($template_unassigned, $ownership_unassigned, $highlight) =
+                    renderUnassignedTemplateOwnership($device);
 				if($device->Rights!="None"){
 					$zeroheight.="\t\t\t<a href=\"devices.php?deviceid=$device->DeviceID\" data-deviceid=$device->DeviceID>$highlight $device->Label</a>\n";
 				}else{
@@ -229,17 +257,8 @@ function renderCabinetProps($cab, $audit, $AuditorName)
 					$deptswithcolor[$device->Owner]["color"]=$tempDept->DeptColor;
 					$deptswithcolor[$device->Owner]["name"]=$tempDept->Name;
 				}
-
-				$highlight="<blink><font color=red>";
-				if($device->TemplateID==0){
-					$highlight.="(T)";
-					$template_unassigned = true;
-				}
-				if($device->Owner==0){
-					$highlight.="(O)";
-					$ownership_unassigned = true;
-				}
-				$highlight.= "</font></blink>";
+				list($template_unassigned, $ownership_unassigned, $highlight) =
+                    renderUnassignedTemplateOwnership($device);
 
 				$totalWatts+=$device->GetDeviceTotalPower();
 				$DeviceTotalWeight=$device->GetDeviceTotalWeight();
@@ -331,27 +350,31 @@ function renderCabinetProps($cab, $audit, $AuditorName)
 	if(isset($deptswithcolor[""])){unset($deptswithcolor[""]);}
 
 	// We're done processing devices so build the legend and style blocks
-	if(!empty($deptswithcolor)){
-		foreach($deptswithcolor as $deptid => $row){
-			// If head is empty then we don't have any custom colors defined above so add a style container for these
-			if($head==""){$head.="        <style type=\"text/css\">\n";}
-			$head.="			.dept$deptid{background-color: {$row['color']};}\n";
-			$legend.="<p><span class=\"border dept$deptid\">&nbsp;&nbsp;&nbsp;&nbsp;</span> - <span>{$row['name']}</span></p>\n";
-		}
-	}
+    if (!empty($deptswithcolor)) {
+        foreach ($deptswithcolor as $deptid => $row) {
+            // If head is empty then we don't have any custom colors defined above so add a style container for these
+            if ($head == "") {
+                $head .= "        <style type=\"text/css\">\n";
+            }
+            $head .= "			.dept$deptid {background-color: {$row['color']};}\n";
+            $legend .= "<div class=\"legenditem\"><span class=\"border colorbox dept$deptid\"></span> - <span>{$row['name']}</span></div>\n";
+        }
+    }
 
-	// This will add an item to the legend for a white box. If we ever get a good name for it.
-	if($legend!=""){
+// This will add an item to the legend for a white box. If we ever get a good name for it.
+if ($legend != "") {
 //		$legend.='<p><span class="border">&nbsp;&nbsp;&nbsp;&nbsp;</span> - Custom Color Not Assigned</p>';
-	}
-        // add legend for the flags which actually used in the cabinet
-        $legend_flags = '';
-        if ($ownership_unassigned) {
-          $legend_flags.= '		<p><font color=red>(O)</font> - '.__("Owner Unassigned").'</p>';
-        }
-        if ($template_unassigned) {
-          $legend_flags .= '		<p><font color=red>(T)</font> - '.__("Template Unassigned").'</p>';
-        }
+}
+// add legend for the flags which actually are used in the cabinet
+$legend_flags = '';
+if ($ownership_unassigned) {
+    $legend_flags .= '		<div class="legenditem"><span class="hlight">(O)</span> - '
+        . __("Owner Unassigned") . '</div>';
+}
+if ($template_unassigned) {
+    $legend_flags .= '		<div class="legenditem"><span class="hlight"> - '
+        . __("Template Unassigned") . '</div>';
+}
 
 
 $body.='<div id="infopanel">
