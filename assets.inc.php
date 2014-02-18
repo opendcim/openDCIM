@@ -1382,6 +1382,7 @@ class Device {
 				for($n=$tmpDev->Ports; $n<$this->Ports; ++$n){
 					$p=new DevicePorts;
 					$p->DeviceID=$this->DeviceID;
+					$p->Label=__('Port').($n+1);
 					$p->PortNumber=$n+1;
 					$p->createPort();
 					if($this->DeviceType=='Patch Panel'){
