@@ -1617,6 +1617,8 @@ echo '	<div class="table">
 			}).appendTo('#pandn .caption');
 		}
 
+		// Add a spacer for use when/if port removal options are triggered
+		$('.switch > div:first-child, .patchpanel > div:first-child').prepend($('<div>').addClass('delete').hide());
 		// Endable Mass Change Options
 		$('.switch.table, .patchpanel.table').massedit();
 	});

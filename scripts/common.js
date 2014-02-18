@@ -435,6 +435,11 @@ function drawArrow(canvas,startx,starty,width,height,direction){
 			var ct=(pp.length==0)?this.element.find('div[id^="sp"]:not([id^="spn"])'):pp;
 			ct.css({'text-decoration':'underline','cursor':'pointer'});
 
+			// Create a button to delete the row if the number of ports on a device is 
+			// decreased
+			var del=$('<div>').addClass('delete').append($('<span>').addClass('ui-icon status down')).hide();
+			this.element.prepend(del);
+
 			// Define all the ports we might need later
 			this.portnum     = this.element.data('port');
 			this.portname    = this.element.find('div[id^=spn],div[id^=pp]');
@@ -452,7 +457,8 @@ function drawArrow(canvas,startx,starty,width,height,direction){
 			for(var a=0; a < this.element[0].children.length; a++){
 				this.btnrow.append($('<div>'));
 			}
-			this.btnrow.front = this.btnrow.find('div:first-child');
+			this.btnrow.find('div:first-child').addClass('delete').hide();
+			this.btnrow.front = this.btnrow.find('div:nth-child(2)');
 			this.btnrow.rear  = this.btnrow.find('div:nth-child('+(Math.ceil(this.element[0].children.length/2)+2)+')');
 
 			// Row Controls
@@ -495,6 +501,13 @@ function drawArrow(canvas,startx,starty,width,height,direction){
 			}
 
 			row.element.data('edit',true);
+
+			// Adjust the spacer if the delete row option has been triggered
+			if(this.element.find('.delete:visible').length){
+				this.btnrow.find('.delete').show();
+			}else{
+				this.btnrow.find('.delete').hide();
+			}
 
 			if($(this.element[0]).parent().hasClass('patchpanel')){
 				this.btnrow.front.append(this.controls.clone(true).data('rear',false));
