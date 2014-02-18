@@ -137,6 +137,12 @@ div#imageselection { display: none;}
 }
 .request legend {border: 1px <?php echo $config->ParameterArray['HeaderColor']; ?> solid;background-color: white; padding: .15em;}
 .errmsg {display:block;font-style:italic;margin-left:2em;}
+.hlight {color: red;}
+.legenditem { }
+.colorbox {width: 1em; display: inline-block; height: 1.2em; margin: 0px;
+    padding: 0px; }
+}
+
 
 /* Datacenter Stats */
 .dcstats .heading > div{width: 89%;display: inline-block;vertical-align: middle;}
