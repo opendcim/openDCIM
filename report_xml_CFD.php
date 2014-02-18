@@ -83,6 +83,7 @@
 	print "<datacenter>\n";
 	printf( "\t<ID>%d</ID>\n", $datacenter->DataCenterID );
 	printf( "\t<Name>%s</Name>\n", $datacenter->Name );
+	printf( "\t<Size>%d</Size>\n", $datacenter->SquareFootage );
 	
 	$cab->DataCenterID = $datacenter->DataCenterID;
 	$cabList = $cab->ListCabinetsByDC();
@@ -92,6 +93,7 @@
 		printf( "\t\t<ID>%d</ID>\n", $cabRow->CabinetID );
 		printf( "\t\t<Location>%s</Location>\n", $cabRow->Location );
 		printf( "\t\t<Height>%d</Height>\n", $cabRow->CabinetHeight );
+		printf( "\t\t<FrontEdge>%s</FrontEdge>\n", $cabRow->FrontEdge );
 		printf( "\t\t<MapX1>%d</MapX1>\n", $cabRow->MapX1 );
 		printf( "\t\t<MapY1>%d</MapY1>\n", $cabRow->MapY1 );
 		printf( "\t\t<MapX2>%d</MapX2>\n", $cabRow->MapX2 );

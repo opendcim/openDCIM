@@ -63,22 +63,22 @@ function drawArrow(canvas,startx,starty,width,height,direction){
     
 	switch(direction){
 		case 'Top':
-			var p1={x: startx+arrowH, y: starty};
-			var p2={x: startx+arrowH, y: starty+height-arrowW};
-			var p3={x: startx+(arrowH/2), y: starty+height-arrowW};
+			var p1={x: startx+arrowW, y: starty};
+			var p2={x: startx+arrowW, y: starty+height-arrowH};
+			var p3={x: startx+(arrowW/2), y: starty+height-arrowH};
 			var p4={x: startx+(width/2), y: starty+height};
-			var p5={x: startx+width-(arrowH/2), y: starty+height-arrowW};
-			var p6={x: startx+(width-arrowH), y: starty+height-arrowW};
-			var p7={x: startx+(width-arrowH), y: starty};
+			var p5={x: startx+width-(arrowW/2), y: starty+height-arrowH};
+			var p6={x: startx+(width-arrowW), y: starty+height-arrowH};
+			var p7={x: startx+(width-arrowW), y: starty};
 			break;
 		case 'Bottom':
-			var p1={x: startx+arrowH, y: starty+height};
-			var p2={x: startx+arrowH, y: starty+arrowW};
-			var p3={x: startx+(arrowH/2), y: starty+arrowW};
+			var p1={x: startx+arrowW, y: starty+height};
+			var p2={x: startx+arrowW, y: starty+arrowH};
+			var p3={x: startx+(arrowW/2), y: starty+arrowH};
 			var p4={x: startx+(width/2), y: starty};
-			var p5={x: startx+width-(arrowH/2), y: starty+arrowW};
-			var p6={x: startx+(width-arrowH), y: starty+arrowW};
-			var p7={x: startx+(width-arrowH), y: starty+height};
+			var p5={x: startx+width-(arrowW/2), y: starty+arrowH};
+			var p6={x: startx+(width-arrowW), y: starty+arrowH};
+			var p7={x: startx+(width-arrowW), y: starty+height};
 			break;
 		case 'Right':
 			var p1={x: startx+width,  y: starty+(height-arrowH)};
