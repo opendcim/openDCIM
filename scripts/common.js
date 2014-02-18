@@ -437,7 +437,7 @@ function drawArrow(canvas,startx,starty,width,height,direction){
 
 			// Create a button to delete the row if the number of ports on a device is 
 			// decreased
-			var del=$('<div>').addClass('delete').append($('<span>').addClass('ui-icon status down')).hide();
+			var del=$('<div>').addClass('delete').append($('<span>').addClass('ui-icon status down').on('click',function(e){row.deleteport()})).hide();
 			this.element.prepend(del);
 
 			// Define all the ports we might need later
@@ -606,6 +606,30 @@ function drawArrow(canvas,startx,starty,width,height,direction){
 			$(e.currentTarget.parentNode.children[0]).click();
 		},
 
+		deleteport: function(e){
+			var row=this;
+			var lastrow=$('.switch > div:last-child, .patchpanel > div:last-child');
+			$.post('',{delport: '',swdev: $('#deviceid').val(),pnum: row.portnum}).done(function(data){
+				if(data.trim()==1){
+                    if($(document).data('ports')>$('#ports').val()){
+						// if this is the last port just remove it
+						if(row.element[0]==lastrow[0]){
+							row.element.remove();
+						// else redraw this port and remove the last one
+						}else{
+							row.destroy();
+							lastrow.remove();
+						}
+                        // decrease counter
+						$(document).data('ports',$(document).data('ports')-1);
+						if($(document).data('ports')==$('#ports').val()){$('#ports').change();}
+					}else{
+						$('#ports').change();
+					}
+				}
+			});
+		},
+
 		list: function() {
 			var row=this;
 			console.log(this);
@@ -761,7 +785,7 @@ function drawArrow(canvas,startx,starty,width,height,direction){
 					row.cnotes.html(data.Notes).data('default',data.Notes);
 					row.porttype.html(data.MediaName).data('default',data.MediaID);
 					row.portcolor.html(data.ColorName).data('default',data.ColorID);
-					$(row.element[0]).children('div ~ div').removeAttr('style');
+					$(row.element[0]).children('div ~ div + div').removeAttr('style');
 					// Attempt to show mass edit controls
 					$('.switch.table, .patchpanel.table').massedit('show');
 					row.showpath();

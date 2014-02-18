@@ -1024,44 +1024,12 @@ print "		var dialog=$('<div>').prop('title','".__("Verify Delete Device")."').ht
 				$('button[value="Update"]').click();
 			}else if($(this).val()==$(document).data('ports')){
 				// this is the I changed my mind condition.
-				$('div[id^="kp"]').remove();
+				$('.device .delete').hide();
 			}else{
-				var dt=['Switch','Patch Panel','Physical Infrastructure'];
-				if($.inArray($(document).data('devicetype'),dt)){
-					//S.U.T. present options to remove ports
-					var row=$('.switch > div:first-child > div:first-child').parent('div');
-					var icon=$('<span>').addClass('ui-icon').addClass('status').addClass('down');
-					$('<div>',{'id': 'kp'}).prependTo(row);
-					$('.switch div:first-child[id^=sp]').each(function(){
-						row=$(this).parent('div');
-						// this idea is crap and needs to be thought out better but it's time to go home so i'm submitting since it won't break anything
-						$('<div>',{'id': 'kp'+$(this).text()}).append(icon.clone()).click({row: row},deletethis).prependTo(row);
-					});
-				}
+				//S.U.T. present options to remove ports
+				$('.device .delete').show();
 			}
 		});
-		function deletethis(e){
-			var lastport=$('.switch > div:last-child div[id^="sp"]:not([id^="spn"])').text();
-			var portnum=e.data.row.find('div[id^="sp"]:not([id^="spn"])').text();
-			$.post('',{delport: '',swdev: $('#deviceid').val(),pnum: portnum}).done(function(data){
-				if(data.trim()==1){
-					if($(document).data('ports')>$('#ports').val()){
-						// port was removed and last port shuffled into this one's place
-						$(document).data('ports',$(document).data('ports')-1);
-						$('#ports').val();
-						var row=$('#sp'+portnum).parent('div');
-						var swaprow=$('#sp'+lastport).parent('div');
-						for(var i=2;i<$(swaprow).children('div').length;i++){
-							row.children('div').eq(i).html(swaprow.children('div').eq(i).html());
-						}
-						swaprow.remove();
-						if($(document).data('ports')==$('#ports').val()){$('#ports').change();}
-					}else{
-						$('#ports').change();
-					}
-				}
-			});
-		}
 
 <?php
 	} // end of javascript editing functions
