@@ -58,6 +58,7 @@ if ((!empty($_FILES) || isset($_POST['filename']) ) && $_POST['token'] == $verif
 			}
 		}else{
 			// The file type wasn't allowed
+			$status['status']=1;
 			$status['msg']=__("Invalid file type.");
 		}
 	}
