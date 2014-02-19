@@ -108,26 +108,30 @@ function renderCabinetProps($cab, $audit, $AuditorName)
 /**
  * Render the indicator that a device has no ownership or template assigned.
  *
+ * @param boolean $noTemplFlag flag indicating no template is assigned to device
+ * @param boolean $noOwnerFlag flag indicating no ownership is assigned to device
  * @param Device $device
  * @return (boolean|boolean|string)[] CSS class or empty stringtype
  */
-function renderUnassignedTemplateOwnership($device) {
+function renderUnassignedTemplateOwnership($noTemplFlag, $noOwnerFlag, $device) {
     $retstr = '';
+    $noTemplate = '';
+    $noOwnership = '';
     if ($device->TemplateID == 0) {
         $noTemplate = '(T)';
-        $template_unassigned = true;
+        $noTemplFlag = true;
     }
     if ($device->Owner == 0) {
         $noOwnership = '(O)';
-        $ownership_unassigned = true;
+        $noOwnerFlag = true;
     }
-    if ($template_unassigned or $ownership_unassigned) {
+    if ($noTemplFlag or $noOwnerFlag) {
         // most modern browsers don't display anymore the blinking text therefore
-        // it is dropped. 
+        // it is dropped.
         # $retstr = '<span class="hlight blink">' . $noTemplate . $noOwnership . '</span>';
         $retstr = '<span class="hlight">' . $noTemplate . $noOwnership . '</span>';
     }
-    return array($template_unassigned, $ownership_unassigned, $retstr);
+    return array($noTemplFlag, $noOwnerFlag, $retstr);
 }
 
 	$cab=new Cabinet();
@@ -202,25 +206,26 @@ function renderUnassignedTemplateOwnership($device) {
 			.freespace {background-color: {$config->ParameterArray['FreeSpaceColor']};}\n";
 
 		if($config->ParameterArray["ReservedColor"] != "#FFFFFF"){
-			$legend.='<div class="legenditem"><span class="reserved colorbox border"></span> - '.__("Reservation").'</div>';
+			$legend.='<div class="legenditem"><span class="reserved colorbox border"></span> - '.__("Reservation").'</div>'."\n";
 		}
 		if($config->ParameterArray["FreeSpaceColor"] != "#FFFFFF"){
-			$legend.='<div class="legenditem"><span class="freespace color border"></span> - '.__("Free Space").'</div>';
+			$legend.='<div class="legenditem"><span class="freespace colorbox border"></span> - '.__("Free Space").'</div>'."\n";
 		}
 	}
 
-	$ownership_unassigned = false;
-	$template_unassigned = false;
+	$noOwnerFlag = false;
+	$noTemplFlag = false;
 	$backside=false;
 
 	// This function with no argument will build the front cabinet face. Specify
 	// rear and it will build that back.
 	function BuildCabinet($rear=false){
 		// This is fucking horrible, there has to be a better way to accomplish this.
-		global $cab_color, $cab, $device, $body, $highlight, $currentHeight, $heighterr, 
+		global $cab_color, $cab, $device, $body, $currentHeight, $heighterr,
 				$devList, $templ, $tempDept, $backside, $deptswithcolor, $tempDept,
 				$totalWeight, $totalWatts, $totalMoment, $zeroheight,
-                $template_unassigned, $ownership_unassigned;
+                $noTemplFlag, $noOwnerFlag;
+        // global $highlight;
 
 		$currentHeight=$cab->CabinetHeight;
 
@@ -230,9 +235,9 @@ function renderUnassignedTemplateOwnership($device) {
 
 		$heighterr="";
 		while(list($dev_index,$device)=each($devList)){
+            list($noTemplFlag, $noOwnerFlag, $highlight) =
+                renderUnassignedTemplateOwnership($noTemplFlag, $noOwnerFlag, $device);
 			if($device->Height<1 && !$rear){
-                list($template_unassigned, $ownership_unassigned, $highlight) =
-                    renderUnassignedTemplateOwnership($device);
 				if($device->Rights!="None"){
 					$zeroheight.="\t\t\t<a href=\"devices.php?deviceid=$device->DeviceID\" data-deviceid=$device->DeviceID>$highlight $device->Label</a>\n";
 				}else{
@@ -257,8 +262,8 @@ function renderUnassignedTemplateOwnership($device) {
 					$deptswithcolor[$device->Owner]["color"]=$tempDept->DeptColor;
 					$deptswithcolor[$device->Owner]["name"]=$tempDept->Name;
 				}
-				list($template_unassigned, $ownership_unassigned, $highlight) =
-                    renderUnassignedTemplateOwnership($device);
+				// list($noTemplFlag, $noOwnerFlag, $highlight) =
+                //     renderUnassignedTemplateOwnership($noTemplFlag, $noOwnerFlag, $device);
 
 				$totalWatts+=$device->GetDeviceTotalPower();
 				$DeviceTotalWeight=$device->GetDeviceTotalWeight();
@@ -320,7 +325,11 @@ function renderUnassignedTemplateOwnership($device) {
 	BuildCabinet();
 	($backside)?BuildCabinet('rear'):'';
 
-	if($heighterr!=''){$legend.='<div class="legenditem">* - '.__("Above defined rack height").'</div>';}
+	if($heighterr!=''){
+        $legend.='<div class="legenditem"><span style="background-color:'
+            . $config->ParameterArray['CriticalColor'] . '; text-align:center" class="error colorbox border">*</span> - '
+            . __("Above defined rack height").'</div>'."\n";
+    }
 
 	$CenterofGravity=@round($totalMoment/$totalWeight);
 
@@ -367,15 +376,14 @@ if ($legend != "") {
 }
 // add legend for the flags which actually are used in the cabinet
 $legend_flags = '';
-if ($ownership_unassigned) {
+if ($noOwnerFlag) {
     $legend_flags .= '		<div class="legenditem"><span class="hlight">(O)</span> - '
-        . __("Owner Unassigned") . '</div>';
+        . __("Owner Unassigned") . '</div>' . "\n";
 }
-if ($template_unassigned) {
+if ($noTemplFlag) {
     $legend_flags .= '		<div class="legenditem"><span class="hlight">(T)</span> - '
-        . __("Template Unassigned") . '</div>';
+        . __("Template Unassigned") . '</div>' . "\n";
 }
-
 
 $body.='<div id="infopanel">
 	<fieldset id="legend">
@@ -470,7 +478,7 @@ $body.='<div id="infopanel">
 		}else{
 			$PDUPercent=0;
 		}
-		
+
 		$PDUColor=($PDUPercent>intval($config->ParameterArray["PowerRed"])?$CriticalColor:($PDUPercent>intval($config->ParameterArray["PowerYellow"])?$CautionColor:$GoodColor));
 
 		$body.=sprintf("\n\t\t\t<a href=\"power_pdu.php?pduid=%d\">CDU %s</a><br>(%.2f kW) / (%.2f kW Max)<br>\n", $PDUdev->PDUID, $PDUdev->Label, $pduDraw / 1000, $maxDraw / 1000 );
@@ -480,9 +488,9 @@ $body.='<div id="infopanel">
 			$tmpl = new CDUTemplate();
 			$tmpl->TemplateID = $PDUdev->TemplateID;
 			$tmpl->GetTemplate();
-			
+
 			$ATSStatus = $PDUdev->getATSStatus();
-			
+
 			if ( $ATSStatus == "" ) {
 				$ATSColor = "rs.png";
 				$ATSStatus = __("Unknown Status");
@@ -493,7 +501,7 @@ $body.='<div id="infopanel">
 				$ATSColor = "ys.png";
 				$ATSStatus = __("ATS Feeds Abnormal");
 			}
-			
+
 			$body.="<div><img src=\"images/$ATSColor\">$ATSStatus</div>\n";
 		}
 	}
