@@ -554,6 +554,9 @@ table#cabprop span.text-label {
 .preview .filename { max-width: 100px; word-break: break-all; }
 .imagem .heading { border-bottom: 1px solid; font-size: 2em; margin-bottom: 5px; text-align: right; }
 
+.uploadifive-queue-item .close { cursor: pointer; }
+
+
 /* devices.php  Device Detail */
 .device fieldset {
 	display: inline-block;

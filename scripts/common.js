@@ -128,7 +128,8 @@ function drawArrow(canvas,startx,starty,width,height,direction){
 		var image=$('<div>').append(device).append($('<div>').addClass('filename').text(file));
 		var del=$('<div>').addClass('del').hide();
 		del.on('click', function(){
-			if(delimage(path,file)){
+			var rc=delimage(path,file);
+			if(rc){
 				image.remove();
 			}
 		});
@@ -145,22 +146,35 @@ function drawArrow(canvas,startx,starty,width,height,direction){
 		return image; 
 	}
 	function delimage(path,file){
-		var exit=1;
-		$.post('scripts/check-exists.php',{dir: path, filename: file}).done(function(e){
-			if(e==1){
-				$.post('scripts/uploadifive.php',{dir: path, filename: file, timestamp : '<?php echo $timestamp;?>', token : '<?php echo $salt;?>'}).done(function(e){
-					if(e){
-					}else{
-						// if the file doesn't delete for some reason return false
-						alert("Blarg! File didn't delete");
-						exit=0;
-					}
-				});
-			}else{
-				alert("File doesn't exist");
-			}
+		var test=1;
+		$.ajax({
+			url: 'scripts/check-exists.php',
+			type: "post",
+			async: false,
+			data: {dir: path, filename: file},
+			success: function(d){
+				if(d==1){
+					$.ajax({
+						url: 'scripts/uploadifive.php',
+						data: {dir: path, filename: file, timestamp : timestamp, token : token},
+						async: false,
+						type: "post",
+						success: function(e){
+							if(e.status==1){
+								// if the file doesn't delete for some reason return false
+								alert(e.msg);
+								test=0;
+							}else{
+								test=1;
+							}
+						}
+					});
+				}else{
+					test=0;
+				}
+			},
 		});
-		return exit;
+		return test;
 	}
 	function reload(target){
 		$('#'+target).children().remove();
