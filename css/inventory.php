@@ -138,8 +138,6 @@ div#imageselection { display: none;}
 .request legend {border: 1px <?php echo $config->ParameterArray['HeaderColor']; ?> solid;background-color: white; padding: .15em;}
 .errmsg {display:block;font-style:italic;margin-left:2em;}
 .hlight {color: red;}
-.legenditem {padding: 0.2em; }
-.colorbox {width: 1em; display: inline-block; vertical-align: sub;height: 1.2em; margin: 0px; padding: 0px;}
 
 
 
@@ -402,10 +400,12 @@ div.error {margin-top: 2em;margin-bottom: 2em;border: 1px dotted gray;}
 #displaynone {display: none !important;}
 
 /* Rack Content */
+.legenditem {padding: 0.2em;height: 1.1em;line-height: 1.2em;overflow: hidden;padding: 0.2em;white-space: nowrap;width: 210px;}
+.colorbox {width: 1em; display: inline-block; vertical-align: text-bottom;height: 1.1em; margin: 0px; padding: 0px;}
 #infopanel {
 		position: relative;
 		display: inline-block;
-		min-width: 200px;
+		max-width: 240px;
 }
 #infopanel fieldset, .reports fieldset {
 		background-color: white;
@@ -415,14 +415,6 @@ div.error {margin-top: 2em;margin-bottom: 2em;border: 1px dotted gray;}
 }
 #infopanel fieldset button, #infopanel fieldset input[type=submit], #infopanel fieldset input[type=button],.reports fieldset button, .reports fieldset input[type=submit], .reports fieldset input[type=button] {width: 100%;}
 #infopanel legend, .device legend, .reports legend {border: 1px <?php echo $config->ParameterArray['HeaderColor']; ?> solid;background-color: white;}
-#infopanel fieldset > p > span + span {
-	display: inline-block;
-	vertical-align: middle;
-	height: 1.1em;
-	line-height: 1.2em;
-	width: 150px;
-	overflow: hidden;
-}
 div.cabinet {
 	display: inline-block;
 	vertical-align: top;
@@ -764,7 +756,7 @@ table#cabprop span.text-label {
 	ul.mktree  li ul li { font-family: arial, helvetica; font-size: 11pt; font-weight: normal;}
 }
 .meter-wrap{position: relative;background-color: lightgrey;}
-.meter-wrap, .meter-value, .meter-text {width: 155px; height: 1em;}
+.meter-wrap, .meter-value, .meter-text {width: 210px; height: 1em;}
 .meter-text {
     position: absolute;
     top:0; left:0;
