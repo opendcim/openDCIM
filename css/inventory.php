@@ -401,7 +401,7 @@ div.error {margin-top: 2em;margin-bottom: 2em;border: 1px dotted gray;}
 
 /* Rack Content */
 .legenditem {padding: 0.2em;height: 1.1em;line-height: 1.2em;overflow: hidden;padding: 0.2em;white-space: nowrap;width: 210px;}
-.colorbox {width: 1em; display: inline-block; vertical-align: text-bottom;height: 1.1em; margin: 0px; padding: 0px;}
+.colorbox {width: 1.1em; display: inline-block; vertical-align: text-bottom;height: 1.1em; margin: 0px; padding: 0px;}
 #infopanel {
 		position: relative;
 		display: inline-block;
@@ -564,9 +564,9 @@ table#cabprop span.text-label {
 	border: 1px dotted gray;
 	padding: 0.25em;
 }
-.device fieldset .custom-combobox a {
-	padding: 1px 0;
-}
+.device fieldset .custom-combobox{margin: 0;padding: 0 32px 0 2px;}
+.device fieldset .custom-combobox input{margin: 0;}
+.device fieldset .custom-combobox a {padding: 1px 0;position: absolute; top: 0; right: 0;}
 .device div.left, .device div.right {
 	max-width: 485px;
 	margin-bottom: 1.5em;
