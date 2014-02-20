@@ -60,7 +60,7 @@ if($user->SiteAdmin || $user->WriteAccess){
 ?>
 
 <div class="center"><div>
-<div class="heading"><?php print __("Device Type Pictures");?></div>
+<div class="heading"><?php print __("Device Pictures");?></div>
 <input type="file" name="dev_file_upload" data-dir="pictures" id="dev_file_upload" />
 
 <script type="text/javascript">
@@ -100,7 +100,7 @@ if($user->SiteAdmin){
 ?>
 
 <div class="center"><div>
-<div class="heading"><?php print __("Datacenter / Container Drawings");?></div>
+<div class="heading"><?php print __("Infrastructure Drawings");?></div>
 <input type="file" name="drawing_file_upload" data-dir="drawings" id="drawing_file_upload" />
 
 </div><div>
