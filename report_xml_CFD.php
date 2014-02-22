@@ -2,75 +2,79 @@
 	require_once( "db.inc.php" );
 	require_once( "facilities.inc.php" );
 	
-	$user = new User();
-	$user->UserID = $_SERVER["REMOTE_USER"];
-	$user->GetUserRights();
-
-	if(!$user->ReadAccess){
-		// No soup for you.
-		header('Location: '.redirect());
-		exit;
-	}
-
-	
 	$datacenter = new DataCenter();
 	$dcList = $datacenter->GetDCList();
 	
 	$cab = new Cabinet();
 	$dev = new Device();
 	
-	if (!isset($_REQUEST['action'])) {
+	if (!isset($_REQUEST['datacenterid'])) {
 ?>
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<!doctype html>
 <html>
 <head>
   <meta http-equiv="X-UA-Compatible" content="IE=Edge">
   <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-  <title>openDCIM Inventory Reporting</title>
+  
+  <title>openDCIM Data Center Inventory</title>
   <link rel="stylesheet" href="css/inventory.php" type="text/css">
   <link rel="stylesheet" href="css/jquery-ui.css" type="text/css">
+  <!--[if lt IE 9]>
+  <link rel="stylesheet"  href="css/ie.css" type="text/css" />
+  <![endif]-->
+  
   <script type="text/javascript" src="scripts/jquery.min.js"></script>
   <script type="text/javascript" src="scripts/jquery-ui.min.js"></script>
 
+  <script type="text/javascript">
+	$(document).ready(function(){
+		$('#generate').hide();
+		$('select[name="datacenterid"]').change(function(){
+			if($(this).val()!=""){
+				$('#generate').show();
+			}else{
+				$('#generate').hide();
+			}
+		});
+	});
+  </script>
 </head>
 <body>
-<div style="height: 66px;" id="header"></div>
+<div id="header"></div>
+<div class="page index">
 <?php
 	include( 'sidebar.inc.php' );
-	
-?>
-</div>
+
+echo '
 <div class="main">
-<h2>openDCIM</h2>
-<h3><?php __("XML Output for CFD Simulation"); ?></h3>
-<form action="<?php printf( "%s", $_SERVER['PHP_SELF'] ); ?>" method="post">
-<table align="center" border=0>
-<?php
-	if ( @$_REQUEST['datacenterid'] == 0 ) {
-		printf( "<tr><td>%s:</td><td>\n", __("Data Center") );
-		printf( "<select name=\"datacenterid\" onChange=\"form.submit()\">\n" );
-		printf( "<option value=\"\">%s</option>\n", __("Select data center") );
-		
-		foreach ( $dcList as $dc )
-			printf( "<option value=\"%d\">%s</option>\n", $dc->DataCenterID, $dc->Name );
-		
-		printf( "</td></tr>" );
-		
-	} else {
-		$datacenter->DataCenterID = $_REQUEST['datacenterid'];
-		$datacenter->GetDataCenter();
-
-		printf( "<h3>%s : %s</h3>\n", __("Data Center"), $datacenter->Name );
-		
-		printf( "<input type=\"hidden\" name=\"datacenterid\" value=\"%d\">\n", $datacenter->DataCenterID );
-		
-		printf( "<input type=submit name=\"action\" value=\"%s\"><br>\n", __("Generate") );
-	}
-
-?>
-</table>
+<h2>'.$config->ParameterArray['OrgName'].'</h2>
+<h3>'.__("XML Output for CFD Simulation").'</h3>
+<div class="center"><div>
+<form method="post">
+<div class="table">
+	<div>
+		<div>'.__("Data Center").'</div>
+		<div>
+			<select name="datacenterid">
+				<option value="">'.__("Select Data Center").'</option>';
+				foreach($dcList as $dc){
+					print "\t\t\t\t<option value=\"$dc->DataCenterID\">$dc->Name</option>\n";
+				}
+echo '			</select>
+		</div>
+		<div>
+			<button id="generate" type="submit">'.__("Generate").'</button>
+		</div>
+	</div>
+</div>		
 </form>
-<?php
+</div> <!-- END .center -->
+</div> <!-- END .main -->
+</div> <!-- END .page -->
+</body>
+</html>';
+
+
 } else {
 	$datacenter->DataCenterID = $_REQUEST["datacenterid"];
 	$datacenter->GetDataCenter();

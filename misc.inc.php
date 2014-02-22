@@ -1,6 +1,19 @@
 <?php
 /* All functions contained herein will be general use functions */
 
+/* Generic html sanitization routine */
+
+function sanitize($string){
+
+	// first convert any special characters to their normal parts
+	$string=html_entity_decode($string);
+
+	// strip out the shit we don't allow
+	$clean=$string;
+
+	return $clean;
+}
+
 /* 
 Regex to make sure a valid URL is in the config before offering options for contact lookups
 http://www.php.net/manual/en/function.preg-match.php#93824
