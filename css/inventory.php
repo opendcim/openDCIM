@@ -357,7 +357,7 @@ div.center div table {
 	border-collapse: collapse;
 	margin-left: auto;
 	margin-right: auto;
-	max-width: 400px;
+/*	max-width: 400px; */
 }
 div.center div table table{min-width: 150px;}
 div.center div table, div.center div tr, div.center div td {border: 1px solid gray;}
