@@ -964,7 +964,7 @@ function computeDeviceChildren($sheetColumns, $invData, $parentDev, $DCName,
             $devSpec['Asset Number'] = $child->AssetTag;
             $devSpec['Serial No.'] = $child->SerialNo;
             $devSpec['Install Date'] = $child->InstallDate;
-            $devSpec['Warranty Expire'] = $child->WarrantyExpire;
+            $devSpec['Warranty End'] = $child->WarrantyExpire;
             $devSpec['Owner'] = getOwnerName($child, $deptList);
             $devSpec['Power (W)'] = $child->NominalWatts;
             $devSpec['Reservation'] = $reserved;
@@ -1160,7 +1160,7 @@ function computeSheetBodyDCInventory($DProps)
                         $devSpec['Asset Number'] = $dev->AssetTag;
                         $devSpec['Serial No.'] = $dev->SerialNo;
                         $devSpec['Install Date'] = $dev->InstallDate;
-                        $devSpec['Warranty Expire'] = $dev->WarrantyExpire;
+                        $devSpec['Warranty End'] = $dev->WarrantyExpire;
                         $devSpec['Owner'] = getOwnerName($dev, $deptList);
                         $devSpec['Power (W)'] = $dev->NominalWatts;
                         $devSpec['Reservation'] = $reserved;
