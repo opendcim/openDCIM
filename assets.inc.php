@@ -2235,6 +2235,7 @@ class Device {
 			list($width, $height, $type, $attr)=getimagesize($picturefile);
 			$ancho=220;
 			$zoom=$ancho/$width;
+			$height=intval($height*$zoom);
 
 			// URLEncode the image file name just to be compliant.
 			$picturefile=str_replace(' ',"%20",$picturefile);
@@ -2244,7 +2245,7 @@ class Device {
 			$clickableend=($this->Rights!="None")?"\n\t\t</a>\n":"";
 
 			$resp.="\n\t<div class=\"picture\">\n";
-			$resp.="$clickable\t\t<img class=\"picture\" data-deviceid=$this->DeviceID width=$ancho src=\"$picturefile\" alt=\"$this->Label\">$clickableend\n";
+			$resp.="$clickable\t\t<img class=\"picture\" data-deviceid=$this->DeviceID height=$height width=$ancho src=\"$picturefile\" alt=\"$this->Label\">$clickableend\n";
 			$resp.="\t\t<div class=\"label\"><div>$this->Label</div></div>\n";
 
 			//Children
