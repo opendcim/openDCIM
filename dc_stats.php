@@ -97,7 +97,7 @@ echo '<div class="main">
 <div class="center"><div>
 <div class="centermargin" id="dcstats">
 <div class="table border">
-  <div class="title">',$dc->Name,'<span><a href="search_export.php?datacenterid=',$dc->DataCenterID,'">',__("Export"),'</a></span></div>
+  <div class="title">',$dc->Name,'<span><a href="search_export.php?datacenterid=',$dc->DataCenterID,'">',__("Export"),'</a>&nbsp;,&nbsp;<a href="report_xml_CFD.php?datacenterid=',$dc->DataCenterID,'">',__("XML"),'</a></span></div>
   <div>
 	<div></div>
 	<div>',__("Infrastructure"),'</div>
