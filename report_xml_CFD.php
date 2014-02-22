@@ -1,14 +1,11 @@
 <?php
-	require_once( "db.inc.php" );
-	require_once( "facilities.inc.php" );
+	require_once("db.inc.php");
+	require_once("facilities.inc.php");
 	
-	$datacenter = new DataCenter();
-	$dcList = $datacenter->GetDCList();
+	$datacenter=new DataCenter();
+	$dcList=$datacenter->GetDCList();
 	
-	$cab = new Cabinet();
-	$dev = new Device();
-	
-	if (!isset($_REQUEST['datacenterid'])) {
+	if(!isset($_REQUEST['datacenterid'])){
 ?>
 <!doctype html>
 <html>
@@ -74,57 +71,56 @@ echo '			</select>
 </body>
 </html>';
 
-
-} else {
-	$datacenter->DataCenterID = $_REQUEST["datacenterid"];
-	$datacenter->GetDataCenter();
+}else{
+	$cab=new Cabinet();
+	$dev=new Device();
 	
-	header("Content-type: text/xml");
-	header("Cache-Control: no-store, no-cache");
+	$datacenter->DataCenterID=$_REQUEST["datacenterid"];
+	$datacenter->GetDataCenter();
+	$cab->DataCenterID=$datacenter->DataCenterID;
+	$cabList=$cab->ListCabinetsByDC();
+	
+	header('Content-type: text/xml');
+	header('Cache-Control: no-store, no-cache');
 	header('Content-Disposition: attachment; filename="opendcim.xml"');
 	
-	print "<?xml version=\"1.0\" encoding=\"ISO-8859-1\"?>\n";
-	print "<datacenter>\n";
-	printf( "\t<ID>%d</ID>\n", $datacenter->DataCenterID );
-	printf( "\t<Name>%s</Name>\n", $datacenter->Name );
-	printf( "\t<Size>%d</Size>\n", $datacenter->SquareFootage );
+	print "<?xml version=\"1.0\" encoding=\"ISO-8859-1\"?>\n<datacenter>\n
+	<ID>$datacenter->DataCenterID</ID>
+	<Name>$datacenter->Name</Name>
+	<Size>$datacenter->SquareFootage</Size>\n";
 	
-	$cab->DataCenterID = $datacenter->DataCenterID;
-	$cabList = $cab->ListCabinetsByDC();
-	
-	foreach ( $cabList as $cabRow ) {
-		print "\t<cabinet>\n";
-		printf( "\t\t<ID>%d</ID>\n", $cabRow->CabinetID );
-		printf( "\t\t<Location>%s</Location>\n", $cabRow->Location );
-		printf( "\t\t<Height>%d</Height>\n", $cabRow->CabinetHeight );
-		printf( "\t\t<FrontEdge>%s</FrontEdge>\n", $cabRow->FrontEdge );
-		printf( "\t\t<MapX1>%d</MapX1>\n", $cabRow->MapX1 );
-		printf( "\t\t<MapY1>%d</MapY1>\n", $cabRow->MapY1 );
-		printf( "\t\t<MapX2>%d</MapX2>\n", $cabRow->MapX2 );
-		printf( "\t\t<MapY2>%d</MapY2>\n", $cabRow->MapY2 );
+	foreach($cabList as $cabRow){
+		print "\t<cabinet>
+		<ID>$cabRow->CabinetID</ID>
+		<Location>$cabRow->Location</Location>
+		<Height>$cabRow->CabinetHeight</Height>
+		<FrontEdge>$cabRow->FrontEdge</FrontEdge>
+		<MapX1>$cabRow->MapX1</MapX1>
+		<MapY1>$cabRow->MapY1</MapY1>
+		<MapX2>$cabRow->MapX2</MapX2>
+		<MapY2>$cabRow->MapY2</MapY2>\n";
 		
-		$dev->Cabinet = $cabRow->CabinetID;
-		$devList = $dev->ViewDevicesByCabinet( false );
+		$dev->Cabinet=$cabRow->CabinetID;
+		$devList=$dev->ViewDevicesByCabinet();
 		
-		$totalWatts = 0;
+		$totalWatts=0;
 		
-		foreach ( $devList as $devRow ) {
-			print "\t\t<Device>\n";
-			printf( "\t\t\t<ID>%d</ID>\n", $devRow->DeviceID );
-			printf( "\t\t\t<Label>%s</Label>\n", $devRow->Label );
-			printf( "\t\t\t<Position>%d</Position>\n", $devRow->Position );
-			printf( "\t\t\t<Height>%d</Height>\n", $devRow->Height );
-			printf( "\t\t\t<Watts>%d</Watts>\n", $devRow->GetDeviceTotalPower() );
-			print "\t\t</Device>\n";
+		foreach($devList as $devRow){
+			$power=$devRow->GetDeviceTotalPower();
+			$totalWatts+=$power;
+			print "\t\t<Device>
+			<ID>$devRow->DeviceID</ID>
+			<Label>$devRow->Label</Label>
+			<Position>$devRow->Position</Position>
+			<Height>$devRow->Height</Height>
+			<Watts>$power</Watts>
+		</Device>\n";
 			
-			$totalWatts += $devRow->GetDeviceTotalPower();
 		}
 		
-		printf( "\t\t<TotalWatts>%d</TotalWatts>\n", $totalWatts );
-		print "\t</cabinet>\n";
+		print "\t\t<TotalWatts>$totalWatts</TotalWatts>\n\t</cabinet>\n";
 	}
 
-	print "</datacenter>\n";
-	print "</xml>\n";
+	print "</datacenter>\n</xml>\n";
 }
 ?>
