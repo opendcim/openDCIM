@@ -652,6 +652,13 @@ if($config->ParameterArray["CDUToolTips"]=='enabled'){
 </div>
 <script type="text/javascript">
 	$(document).ready(function() {
+		// Move the cabinet labels around
+		$('.cabnavigator div.picture > div.label > div').each(function(){
+			var offset=this.getBoundingClientRect().height;
+			var container=$(this).parents('.picture')[0].getBoundingClientRect().height;
+			$(this).parent('.label').css('top', (container-offset)/2/2);
+		});
+
 		// Don't attempt to open the datacenter tree until it is loaded
 		function opentree(){
 			if($('#datacenters .bullet').length==0){

@@ -450,7 +450,16 @@ div.cabinet {
 /* PICTURES */
 .cabnavigator div.picture {position:relative; left:0px; top:0px; margin: -0.25em -0.5em -0.4em; z-index: 5;}
 .cabnavigator div.picture div {position:absolute; z-index: 10;}
-.cabnavigator .picture div img:hover, .cabnavigator .picture div div:hover { border: 2px solid red; margin: -2px; }
+.cabnavigator div.picture > div.label {top: 50%; z-index: 11; width: 100%; width: calc(100% - 10px); margin-top: 0.25em;}
+.cabnavigator div.picture > div.label > div { 
+	margin: 0 10px;
+	text-align: center;
+	background-image: url("../images/white-25.png");
+	width: 200px;
+	padding: 3px 0;
+	
+}
+.cabnavigator .picture div img:hover, .cabnavigator .picture div:not(.label) div:hover { border: 2px solid red; margin: -2px; }
 .cabnavigator .picture div span {overflow: hidden; vertical-align: sub; padding-left: 0.3em;}
 
 .cabinet .picture img {min-height: 1px;}

@@ -2245,6 +2245,7 @@ class Device {
 
 			$resp.="\n\t<div class=\"picture\">\n";
 			$resp.="$clickable\t\t<img class=\"picture\" data-deviceid=$this->DeviceID width=$ancho src=\"$picturefile\" alt=\"$this->Label\">$clickableend\n";
+			$resp.="\t\t<div class=\"label\"><div>$this->Label</div></div>\n";
 
 			//Children
 			if(($this->ChassisSlots >0 && !$rear) || ($this->RearChassisSlots >0 && $rear)){
