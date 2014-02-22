@@ -450,7 +450,7 @@ div.cabinet {
 /* PICTURES */
 .cabnavigator div.picture {position:relative; left:0px; top:0px; margin: -0.25em -0.5em -0.4em; z-index: 5;}
 .cabnavigator div.picture div {position:absolute; z-index: 10;}
-.cabnavigator div.picture > div.label {top: 50%; z-index: 11; width: 100%; width: calc(100% - 10px); margin-top: 0.25em;}
+.cabnavigator div.picture > div.label {top: 50%; z-index: 11; width: 100%; width: calc(100% - 10px); margin-top: 0.25em; pointer-events: none;}
 .cabnavigator div.picture > div.label > div { 
 	margin: 0 10px;
 	text-align: center;
