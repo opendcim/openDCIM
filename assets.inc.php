@@ -2402,7 +2402,7 @@ class DevicePorts {
 		
 		//Search template ports
 		if($dev->TemplateID>0){
-			for ($n=0; $n<=$dev->Ports;$n++){
+			for ($n=0; $n<$dev->Ports;$n++){
 				$i=$n+1;
 				$tport=new TemplatePorts();
 				$tport->TemplateID=$dev->TemplateID;
