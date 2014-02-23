@@ -768,7 +768,7 @@ table#cabprop span.text-label {
 	ul.mktree  li ul li { font-family: arial, helvetica; font-size: 11pt; font-weight: normal;}
 }
 .meter-wrap{position: relative;background-color: lightgrey;}
-.meter-wrap, .meter-value, .meter-text {width: 210px; height: 1em;}
+.meter-wrap, .meter-value, .meter-text {width: 210px; height: 1.1em;}
 .meter-text {
     position: absolute;
     top:0; left:0;
