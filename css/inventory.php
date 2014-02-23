@@ -568,7 +568,7 @@ table#cabprop span.text-label {
 
 /* devices.php  Device Detail */
 .device fieldset {
-	display: inline-block;
+	display: block;
 	vertical-align: top;
 	margin-bottom: 1.5em;
 	margin-top: 1em;
