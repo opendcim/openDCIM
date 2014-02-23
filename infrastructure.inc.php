@@ -799,7 +799,7 @@ class DeviceTemplate {
 		$this->DeviceType=(in_array($this->DeviceType, $validDeviceTypes))?$this->DeviceType:'Server';
 		$this->PSCount=intval($this->PSCount);
 		$this->NumPorts=intval($this->NumPorts);
-        $this->Notes=addslashes(trim($this->Notes));
+        $this->Notes=addslashes(trim(sanitize($this->Notes)));
         $this->FrontPictureFile=addslashes(trim($this->FrontPictureFile));
 	    $this->RearPictureFile=addslashes(trim($this->RearPictureFile));
 		$this->ChassisSlots=intval($this->ChassisSlots);

@@ -9,7 +9,7 @@ function sanitize($string){
 	$string=html_entity_decode($string);
 
 	// strip out the shit we don't allow
-	$clean=$string;
+	$clean=strip_tags($string, '<a><b><i><img><u>');
 
 	return $clean;
 }

@@ -73,7 +73,7 @@ class Cabinet {
 		$this->MapX2=abs($this->MapX2);
 		$this->MapY2=abs($this->MapY2);
 		$this->FrontEdge=in_array($this->FrontEdge, array("Top","Right","Left","Bottom"))?$this->FrontEdge:"Top";
-		$this->Notes=addslashes($this->Notes);
+		$this->Notes=addslashes(sanitize($this->Notes));
 	}
 	
 	static function RowToObject($dbRow){
@@ -1042,7 +1042,7 @@ class Device {
 		$this->InstallDate=addslashes($this->InstallDate);
 		$this->WarrantyCo=addslashes(trim($this->WarrantyCo));
 		$this->WarrantyExpire=addslashes($this->WarrantyExpire);
-		$this->Notes=addslashes(trim($this->Notes));
+		$this->Notes=addslashes(trim(sanitize($this->Notes)));
 		$this->Reservation=intval($this->Reservation);
 		$this->HalfDepth=intval($this->HalfDepth);
 		$this->BackSide=intval($this->BackSide);
@@ -2289,7 +2289,7 @@ class DevicePorts {
 		$this->PortNotes=addslashes(trim($this->PortNotes));
 		$this->ConnectedDeviceID=intval($this->ConnectedDeviceID);
 		$this->ConnectedPort=intval($this->ConnectedPort);
-		$this->Notes=addslashes(trim($this->Notes));
+		$this->Notes=addslashes(trim(sanitize($this->Notes)));
 
 		if($this->ConnectedDeviceID==0 || $this->ConnectedPort==0){
 			$this->ConnectedDeviceID="NULL";
