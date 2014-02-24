@@ -73,7 +73,7 @@ class Cabinet {
 		$this->MapX2=abs($this->MapX2);
 		$this->MapY2=abs($this->MapY2);
 		$this->FrontEdge=in_array($this->FrontEdge, array("Top","Right","Left","Bottom"))?$this->FrontEdge:"Top";
-		$this->Notes=addslashes(sanitize($this->Notes));
+		$this->Notes=addslashes(sanitize($this->Notes,false));
 	}
 	
 	static function RowToObject($dbRow){
@@ -1042,7 +1042,7 @@ class Device {
 		$this->InstallDate=addslashes($this->InstallDate);
 		$this->WarrantyCo=addslashes(trim($this->WarrantyCo));
 		$this->WarrantyExpire=addslashes($this->WarrantyExpire);
-		$this->Notes=addslashes(trim(sanitize($this->Notes)));
+		$this->Notes=addslashes(trim(sanitize($this->Notes,false)));
 		$this->Reservation=intval($this->Reservation);
 		$this->HalfDepth=intval($this->HalfDepth);
 		$this->BackSide=intval($this->BackSide);

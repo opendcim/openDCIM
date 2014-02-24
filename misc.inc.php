@@ -3,13 +3,18 @@
 
 /* Generic html sanitization routine */
 
-function sanitize($string){
-
+function sanitize($string,$stripall=true){
 	// first convert any special characters to their normal parts
 	$string=html_entity_decode($string);
 
+	// By default strip all html
+	$allowedtags=($stripall)?'':'<a><b><i><img><u>';
+
 	// strip out the shit we don't allow
-	$clean=strip_tags($string, '<a><b><i><img><u>');
+	$clean=strip_tags($string, $allowedtags);
+
+	// Trim any leading or trailing whitespace
+	$clean=trim($clean);
 
 	return $clean;
 }
