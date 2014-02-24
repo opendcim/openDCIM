@@ -1016,11 +1016,11 @@ class Device {
 		$validdevicetypes=array('Server','Appliance','Storage Array','Switch','Chassis','Patch Panel','Physical Infrastructure');
 
 		$this->DeviceID=intval($this->DeviceID);
-		$this->Label=addslashes(trim($this->Label));
-		$this->SerialNo=addslashes(trim($this->SerialNo));
-		$this->AssetTag=addslashes(trim($this->AssetTag));
-		$this->PrimaryIP=addslashes(trim($this->PrimaryIP));
-		$this->SNMPCommunity=addslashes(trim($this->SNMPCommunity));
+		$this->Label=sanitize($this->Label);
+		$this->SerialNo=sanitize($this->SerialNo);
+		$this->AssetTag=sanitize($this->AssetTag);
+		$this->PrimaryIP=sanitize($this->PrimaryIP);
+		$this->SNMPCommunity=sanitize($this->SNMPCommunity);
 		$this->ESX=intval($this->ESX);
 		$this->Owner=intval($this->Owner);
 		$this->EscalationTimeID=intval($this->EscalationTimeID);
@@ -1038,11 +1038,11 @@ class Device {
 		$this->ChassisSlots=intval($this->ChassisSlots);
 		$this->RearChassisSlots=intval($this->RearChassisSlots);
 		$this->ParentDevice=intval($this->ParentDevice);
-		$this->MfgDate=addslashes($this->MfgDate);
-		$this->InstallDate=addslashes($this->InstallDate);
-		$this->WarrantyCo=addslashes(trim($this->WarrantyCo));
-		$this->WarrantyExpire=addslashes($this->WarrantyExpire);
-		$this->Notes=addslashes(trim(sanitize($this->Notes,false)));
+		$this->MfgDate=sanitize($this->MfgDate);
+		$this->InstallDate=sanitize($this->InstallDate);
+		$this->WarrantyCo=sanitize($this->WarrantyCo);
+		$this->WarrantyExpire=sanitize($this->WarrantyExpire);
+		$this->Notes=sanitize($this->Notes,false);
 		$this->Reservation=intval($this->Reservation);
 		$this->HalfDepth=intval($this->HalfDepth);
 		$this->BackSide=intval($this->BackSide);

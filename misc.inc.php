@@ -4,17 +4,23 @@
 /* Generic html sanitization routine */
 
 function sanitize($string,$stripall=true){
-	// first convert any special characters to their normal parts
+	// Trim any leading or trailing whitespace
+	$clean=trim($clean);
+
+	// Convert any special characters to their normal parts
 	$string=html_entity_decode($string);
 
 	// By default strip all html
 	$allowedtags=($stripall)?'':'<a><b><i><img><u>';
 
-	// strip out the shit we don't allow
+	// Strip out the shit we don't allow
 	$clean=strip_tags($string, $allowedtags);
 
-	// Trim any leading or trailing whitespace
-	$clean=trim($clean);
+	// What is this gonna do ?
+	$clean=filter_var($clean, FILTER_SANITIZE_SPECIAL_CHARS);
+
+	// There shoudln't be anything left to escape but wtf do it anyway
+	$clean=addslashes($clean);
 
 	return $clean;
 }
