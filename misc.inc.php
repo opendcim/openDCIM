@@ -5,10 +5,10 @@
 
 function sanitize($string,$stripall=true){
 	// Trim any leading or trailing whitespace
-	$clean=trim($clean);
+	$clean=trim($string);
 
 	// Convert any special characters to their normal parts
-	$string=html_entity_decode($string);
+	$clean=html_entity_decode($clean,"UTF-8");
 
 	// By default strip all html
 	$allowedtags=($stripall)?'':'<a><b><i><img><u>';
