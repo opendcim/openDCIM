@@ -8,13 +8,16 @@ function sanitize($string,$stripall=true){
 	$clean=trim($string);
 
 	// Convert any special characters to their normal parts
-	$clean=html_entity_decode($clean,"UTF-8");
+	$clean=html_entity_decode($clean,ENT_COMPAT,"UTF-8");
 
 	// By default strip all html
 	$allowedtags=($stripall)?'':'<a><b><i><img><u>';
 
 	// Strip out the shit we don't allow
-	$clean=strip_tags($string, $allowedtags);
+	$clean=strip_tags($clean, $allowedtags);
+	// If we decide to strip double quotes instead of encoding them uncomment the 
+	//	next line
+//	$clean=($stripall)?str_replace('"','',$clean):$clean;
 
 	// What is this gonna do ?
 	$clean=filter_var($clean, FILTER_SANITIZE_SPECIAL_CHARS);
