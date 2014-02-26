@@ -2565,6 +2565,33 @@ class DevicePorts {
 		return true;
 	}
 
+	static function followPathToEndpoint( $DeviceID, $PortNumber ) {
+		$path = array();
+		$n = sizeof( $path );
+		
+		$path[$n] = new DevicePorts();
+		$path[$n]->DeviceID = $DeviceID;
+		$path[$n]->PortNumber = $PortNumber;
+		$path[$n]->getPort();
+		
+		// Follow the trail until you get no more connections
+		while ( $path[$n]->ConnectedDeviceID > 0 ) {
+			$path[++$n] = new DevicePorts();
+			$path[$n]->DeviceID = $path[$n-1]->ConnectedDeviceID;
+			// Patch panels have +/- port numbers to designate front/rear, so as you
+			// traverse the path, you have to flip
+			$path[$n]->PortNumber = -($path[$n-1]->ConnectedPort);
+			$path[$n]->getPort();
+		}
+		
+		// This should always execute, but just in case we exited the while loop for some unforeseen reason...
+		if ( $path[$n]->ConnectedDeviceID == 0 ) {
+			array_pop( $path );
+		}
+		
+		return $path;		
+	}
+
 	static function makeConnection($port1,$port2){
 		global $dbh;
 
@@ -2649,7 +2676,7 @@ class DevicePorts {
 
 		return true;
 	}
-
+	
 	static function removePorts($DeviceID){
 		/*	Remove all ports from a device prior to delete, etc */
 		global $dbh;

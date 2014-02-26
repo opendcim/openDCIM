@@ -1420,7 +1420,7 @@ echo '	<div class="table">
 			$tmpDev=new Device();
 			$tmpDev->DeviceID=$port->ConnectedDeviceID;
 			$tmpDev->GetDevice();
-
+			
 			// Allow the user to modify the port if they have rights over the switch itself or
 			// the attached device.
 			$jsondata[$i]=($dev->Rights=="Write")?true:($tmpDev->Rights=="Write")?true:false;
@@ -1441,8 +1441,31 @@ echo '	<div class="table">
 			print "\t\t\t\t<div data-port=$i>
 					<div id=\"sp$i\">$i</div>
 					<div id=\"spn$i\">$port->Label</div>
-					<div id=\"d$i\" data-default=\"$port->ConnectedDeviceID\"><a href=\"devices.php?deviceid=$port->ConnectedDeviceID\">$tmpDev->Label</a></div>
-					<div id=\"dp$i\" data-default=\"$port->ConnectedPort\"><a href=\"paths.php?deviceid=$port->ConnectedDeviceID&portnumber=$port->ConnectedPort\">$cp->Label</a></div>
+					<div id=\"d$i\" data-default=\"$port->ConnectedDeviceID\"><a href=\"devices.php?deviceid=$port->ConnectedDeviceID\">$tmpDev->Label</a>";
+					
+			if ( $tmpDev->DeviceType == "Patch Panel" ) {
+				$path = DevicePorts::followPathToEndPoint( $port->ConnectedDeviceID, -$port->ConnectedPort );
+				$td = new Device();
+				foreach ( $path as $p ) {
+					$td->DeviceID = $p->ConnectedDeviceID;
+					$td->GetDevice();
+					print "<br>$td->Label";
+				}
+			}
+					
+			print "</div>
+					<div id=\"dp$i\" data-default=\"$port->ConnectedPort\"><a href=\"paths.php?deviceid=$port->ConnectedDeviceID&portnumber=$port->ConnectedPort\">$cp->Label</a>";
+
+			if ( $tmpDev->DeviceType == "Patch Panel" ) {
+				$path = DevicePorts::followPathToEndPoint( $port->ConnectedDeviceID, -$port->ConnectedPort );
+				foreach ( $path as $p ) {
+					print "<br>" . abs($p->ConnectedPort);
+				}
+			}
+			
+			// It's an inefficient as hell to do it this way, but I'm open to suggestions, or revisiting after more caffeine
+			
+			print "</div>
 					<div id=\"n$i\" data-default=\"$port->Notes\">$port->Notes</div>";
 			if($dev->DeviceType=='Switch'){print "\t\t\t\t<div id=\"st$i\"><span class=\"ui-icon status {$linkList[$i]}\"></span></div>";}
 			print "\t\t\t\t<div id=\"mt$i\" data-default=$port->MediaID>$mt</div>
