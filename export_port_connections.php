@@ -88,6 +88,48 @@
 		$sheet->getActiveSheet()->SetCellValue('G' . $row, $color->Name);
 
 		$row++;
+		
+		if ( $targetDev->DeviceType == "Patch Panel" ) {
+			$path = DevicePorts::followPathToEndPoint( $devPort->ConnectedDeviceID, -$devPort->ConnectedPort );
+			$pDev = new Device();
+			$tDev = new Device();
+			$pPort = new DevicePorts();
+			$tPort = new DevicePorts();
+			
+			foreach ( $path as $p ) {
+				// Skip any rear port connections
+				if ( $p->PortNumber > 0 && $p->ConnectedPort > 0 ) {
+					$pDev->DeviceID = $p->DeviceID;
+					$pDev->GetDevice();
+					$tDev->DeviceID = $p->ConnectedDeviceID;
+					$tDev->GetDevice();
+					
+					$pPort->DeviceID = $p->DeviceID;
+					$pPort->PortNumber = $p->PortNumber;
+					$pPort->getPort();
+					
+					if ( $pPort->Label == "" )
+						$pPort->Label = $pPort->PortNumber;
+						
+					$tPort->DeviceID = $p->ConnectedDeviceID;
+					$tPort->PortNumber = $p->ConnectedPort;
+					$tPort->getPort();
+					
+					if ( $tPort->Label == "" )
+						$tPort->Label = $tPort->PortNumber;
+					
+					$sheet->getActiveSheet()->SetCellValue('A' . $row, $pDev->Label);
+					$sheet->getActiveSheet()->SetCellValue('B' . $row, $pPort->Label);
+					$sheet->getActiveSheet()->SetCellValue('C' . $row, $tDev->Label);
+					$sheet->getActiveSheet()->SetCellValue('D' . $row, $tPort->Label);
+					$sheet->getActiveSheet()->SetCellValue('E' . $row, $pPort->Notes);
+					$sheet->getActiveSheet()->SetCellValue('F' . $row, $mediaType->MediaType);
+					$sheet->getActiveSheet()->SetCellValue('G' . $row, $color->Name);
+
+					$row++;
+				}
+			}
+		}
 	}
 	
 	header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
