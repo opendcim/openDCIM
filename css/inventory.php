@@ -461,6 +461,7 @@ div.cabinet {
 }
 .cabnavigator .picture div img:hover, .cabnavigator .picture div:not(.label) div:hover { border: 2px solid red; margin: -2px; }
 .cabnavigator .picture div span {overflow: hidden; vertical-align: sub; padding-left: 0.3em;}
+.cabnavigator .picture div.label span {vertical-align: text-top;}
 
 .cabinet .picture img {min-height: 1px;}
 .rotar_d{

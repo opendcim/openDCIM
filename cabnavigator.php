@@ -205,16 +205,14 @@ function renderUnassignedTemplateOwnership($noTemplFlag, $noOwnerFlag, $device) 
 			.reserved {background-color: {$config->ParameterArray['ReservedColor']};}
 			.freespace {background-color: {$config->ParameterArray['FreeSpaceColor']};}\n";
 
-		if($config->ParameterArray["ReservedColor"] != "#FFFFFF"){
-			$legend.='<div class="legenditem"><span class="reserved colorbox border"></span> - '.__("Reservation").'</div>'."\n";
-		}
 		if($config->ParameterArray["FreeSpaceColor"] != "#FFFFFF"){
 			$legend.='<div class="legenditem"><span class="freespace colorbox border"></span> - '.__("Free Space").'</div>'."\n";
 		}
 	}
 
-	$noOwnerFlag = false;
-	$noTemplFlag = false;
+	$noOwnerFlag=false;
+	$noTemplFlag=false;
+	$noReservationFlag=false;
 	$backside=false;
 
 	// This function with no argument will build the front cabinet face. Specify
@@ -224,7 +222,7 @@ function renderUnassignedTemplateOwnership($noTemplFlag, $noOwnerFlag, $device) 
 		global $cab_color, $cab, $device, $body, $currentHeight, $heighterr,
 				$devList, $templ, $tempDept, $backside, $deptswithcolor, $tempDept,
 				$totalWeight, $totalWatts, $totalMoment, $zeroheight,
-                $noTemplFlag, $noOwnerFlag;
+				$noTemplFlag, $noOwnerFlag, $noReservationFlag;
         // global $highlight;
 
 		$currentHeight=$cab->CabinetHeight;
@@ -270,7 +268,11 @@ function renderUnassignedTemplateOwnership($noTemplFlag, $noOwnerFlag, $device) 
 				$totalWeight+=$DeviceTotalWeight;
 				$totalMoment+=($DeviceTotalWeight*($device->Position+($device->Height/2)));
 
-				$reserved=($device->Reservation==false)?"":" reserved";
+				$reserved="";
+				if($device->Reservation==true){
+					$reserved=" reserved";
+					$noReservationFlag=true;
+				}
 				if($devTop<$currentHeight && $currentHeight>0){
 					for($i=$currentHeight;($i>$devTop);$i--){
 						$errclass=($i>$cab->CabinetHeight)?' error':'';
@@ -322,7 +324,9 @@ function renderUnassignedTemplateOwnership($noTemplFlag, $noOwnerFlag, $device) 
 		reset($devList);
 	}
 
+	// Generate rack view
 	BuildCabinet();
+	// Generate rear rack view if needed
 	($backside)?BuildCabinet('rear'):'';
 
 	if($heighterr!=''){
@@ -362,32 +366,31 @@ function renderUnassignedTemplateOwnership($noTemplFlag, $noOwnerFlag, $device) 
     if (!empty($deptswithcolor)) {
         foreach ($deptswithcolor as $deptid => $row) {
             // If head is empty then we don't have any custom colors defined above so add a style container for these
-            if ($head == "") {
-                $head .= "        <style type=\"text/css\">\n";
+            if($head==""){
+                $head.="\t\t<style type=\"text/css\">\n";
             }
-            $head .= "			.dept$deptid {background-color: {$row['color']};}\n";
-            $legend .= "<div class=\"legenditem\"><span class=\"border colorbox dept$deptid\"></span> - <span>{$row['name']}</span></div>\n";
+            $head.="\t\t\t.dept$deptid {background-color: {$row['color']};}\n";
+            $legend.="<div class=\"legenditem\"><span class=\"border colorbox dept$deptid\"></span> - <span>{$row['name']}</span></div>\n";
         }
     }
 
-// This will add an item to the legend for a white box. If we ever get a good name for it.
-if ($legend != "") {
-//		$legend.='<div class="legenditem"><span class="colorbox border"></span> - Custom Color Not Assigned</div>';
-}
-// add legend for the flags which actually are used in the cabinet
-$legend_flags = '';
-if ($noOwnerFlag) {
-    $legend_flags .= '		<div class="legenditem"><span class="hlight">(O)</span> - '
-        . __("Owner Unassigned") . '</div>' . "\n";
-}
-if ($noTemplFlag) {
-    $legend_flags .= '		<div class="legenditem"><span class="hlight">(T)</span> - '
-        . __("Template Unassigned") . '</div>' . "\n";
-}
+	// This will add an item to the legend for a white box. If we ever get a good name for it.
+	if($legend!=""){
+	//	$legend.='<div class="legenditem"><span class="colorbox border"></span> - Custom Color Not Assigned</div>';
+	}
+
+	// add legend for the flags which actually are used in the cabinet
+	$legend=($noOwnerFlag)?"\t\t<div class=\"legenditem\"><span class=\"hlight\">(O)</span> - ".__("Owner Unassigned")."</div>\n".$legend:$legend;
+	$legend=($noTemplFlag)?"\t\t<div class=\"legenditem\"><span class=\"hlight\">(T)</span> - ".__("Template Unassigned")."</div>\n".$legend:$legend;
+
+	// Only show reserved in the legend if a device is set to reserved AND the color is something other than white
+	if($config->ParameterArray["ReservedColor"] != "#FFFFFF" && $noTemplFlag){
+		$legend.='<div class="legenditem"><span class="reserved colorbox border"></span> - '.__("Reservation").'</div>'."\n";
+	}
 
 $body.='<div id="infopanel">
 	<fieldset id="legend">
-		<legend>'.__("Markup Key")."</legend>\n".$legend_flags."\n"
+		<legend>'.__("Markup Key")."</legend>\n"
 .$legend.'
 	</fieldset>
 	<fieldset id="metrics">

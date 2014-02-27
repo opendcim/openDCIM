@@ -2244,9 +2244,14 @@ class Device {
 			$clickable=($this->Rights!="None")?"\t\t<a href=\"devices.php?deviceid=$this->DeviceID\">\n\t":"";
 			$clickableend=($this->Rights!="None")?"\n\t\t</a>\n":"";
 
+			// Add in flags for missing ownership
+			// Device pictures are set on the template so always assume template has been set
+			$flags=($this->Owner==0)?'(O)':'';
+			$flags=($flags!='')?'<span class="hlight">'.$flags.'</span>':'';
+
 			$resp.="\n\t<div class=\"picture\">\n";
 			$resp.="$clickable\t\t<img class=\"picture\" data-deviceid=$this->DeviceID height=$height width=$ancho src=\"$picturefile\" alt=\"$this->Label\">$clickableend\n";
-			$resp.="\t\t<div class=\"label\"><div>$this->Label</div></div>\n";
+			$resp.="\t\t<div class=\"label\"><div>$flags$this->Label</div></div>\n";
 
 			//Children
 			if(($this->ChassisSlots >0 && !$rear) || ($this->RearChassisSlots >0 && $rear)){
