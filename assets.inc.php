@@ -2202,11 +2202,17 @@ class Device {
 				$width=($rotar=='')?$slot->W*$zoom:$slot->H*$zoom;
 				$height=intval($height);$width=intval($width);
 
+				// Add in flags for missing ownership
+				// Device pictures are set on the template so always assume template has been set
+				$flags=($this->Owner==0)?'(O)&nbsp;':'';
+				$flags=($this->TemplateID==0)?$flags.'(T)&nbsp;':$flags;
+				$flags=($flags!='')?'<span class="hlight">'.$flags.'</span>':'';
+
 				$resp.="\t\t<div class='$rotar' style='left: $left; top: $top; width: ".$width."px; height:".$height."px;'>\n$clickable";
 				if ($templ->FrontPictureFile!=""){
 					$resp.="\t\t\t\t<img class='picturerot' data-deviceid=$this->DeviceID width=$width height=$height src='$picturefile' alt='$this->Label'>\n";
 				}else{
-					$resp.="\t\t\t\t<div class='dept$this->Owner' data-deviceid=$this->DeviceID style='font-size: ".intval($height*0.6)."px; width: ".$width."px; height: ".$height."px;'><span>$this->Label</span></div>\n";
+					$resp.="\t\t\t\t<div class='dept$this->Owner' data-deviceid=$this->DeviceID style='font-size: ".intval($height*0.6)."px; width: ".$width."px; height: ".$height."px;'><span>$flags$this->Label</span></div>\n";
 				}
 				$resp.="$clickableend";
 				if ( $this->ChassisSlots > 0 ) {
