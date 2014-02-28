@@ -26,7 +26,7 @@
             minLength: 0,
             source: $.proxy( this, "_source" ),
 			open: function(){
-				$(this).autocomplete("widget").css({'width': $(this).width()+6+'px'});
+				$(this).autocomplete("widget").css({'width': $(this).width()+26+'px'}).addClass('monospace');
 			}
           })
           .tooltip({

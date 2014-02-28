@@ -23,6 +23,7 @@ textarea {white-space: pre;word-wrap: break-word;}
 .right {text-align: right;}
 .left {text-align: left;}
 .custom-combobox {position: relative;display: inline-block;}
+.monospace {font-family: monospace !important;}
 
 [readonly],[disabled] {
 	background-color: #dcdcdc;
