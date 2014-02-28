@@ -2412,61 +2412,46 @@ class DevicePorts {
 		//  - Placeholders
 		
 		//Search template ports
+		$tports=array();
 		if($dev->TemplateID>0){
-			for ($n=0; $n<$dev->Ports;$n++){
-				$i=$n+1;
-				$tport=new TemplatePorts();
-				$tport->TemplateID=$dev->TemplateID;
-				$tport->PortNumber=$i;
-				$portList[$i]=new DevicePorts();
-				if ($tport->GetPort()){
-					//from template ports
-					$portList[$i]->DeviceID=$dev->DeviceID;
-					$portList[$i]->PortNumber=$i;
-					$portList[$i]->Label=$tport->Label;
-					$portList[$i]->MediaID=$tport->MediaID;
-					$portList[$i]->ColorID=$tport->ColorID;
-					$portList[$i]->PortNotes=$tport->PortNotes;
-				}elseif($dev->DeviceType=="Switch"){
-					//from SNMP info
-					$portList[$i]->DeviceID=$dev->DeviceID;
-					$portList[$i]->PortNumber=$i;
-					$portList[$i]->Label=(isset($nameList[$n]))?$nameList[$n]:__('Port').$i;
-					$portList[$i]->Notes=(isset($aliasList[$n]))?$aliasList[$n]:'';
-				}else{
-					//default info
-					$portList[$i]->DeviceID=$dev->DeviceID;
-					$portList[$i]->PortNumber=$i;
-					$portList[$i]->Label=__('Port').$i;
-				}
-				$portList[$i]->createPort();
-				if($dev->DeviceType=="Patch Panel"){
-					$i=$i*-1;
-					$portList[$i]=new DevicePorts();
-					$portList[$i]->DeviceID=$dev->DeviceID;
-					$portList[$i]->PortNumber=$i;
-					$portList[$i]->createPort();
-				}
-			}
-		} 
+			$tport=new TemplatePorts();
+			$tport->TemplateID=$dev->TemplateID;
+			$tports=$tport->getPorts();
+		}
 		
 		if($dev->DeviceType=="Switch"){
-			for( $n=0; $n<$dev->Ports; $n++ ){
+			for($n=0; $n<$dev->Ports; $n++){
 				$i=$n+1;
 				$portList[$i]=new DevicePorts();
 				$portList[$i]->DeviceID=$dev->DeviceID;
 				$portList[$i]->PortNumber=$i;
+				if(isset($tports[$i])){
+					// Get any attributes from the device template
+					foreach($tports[$i] as $key => $value){
+						if(array_key_exists($key,$portList[$i])){
+							$portList[$i]->$key=$value;
+						}
+					}
+				}
 				$portList[$i]->Label=(isset($nameList[$n]))?$nameList[$n]:__('Port').$i;
 				$portList[$i]->Notes=(isset($aliasList[$n]))?$aliasList[$n]:'';
 				$portList[$i]->createPort();
 			}
 		}else{
-			for( $n=0; $n<$dev->Ports; $n++ ){
+			for($n=0; $n<$dev->Ports; $n++){
 				$i=$n+1;
 				$portList[$i]=new DevicePorts();
 				$portList[$i]->DeviceID=$dev->DeviceID;
 				$portList[$i]->PortNumber=$i;
-				$portList[$i]->Label=__('Port').$i;
+				if(isset($tports[$i])){
+					// Get any attributes from the device template
+					foreach($tports[$i] as $key => $value){
+						if(array_key_exists($key,$portList[$i])){
+							$portList[$i]->$key=$value;
+						}
+					}
+				}
+				$portList[$i]->Label=($portList[$i]->Label=="")?__('Port').$i:$portList[$i]->Label;
 				$portList[$i]->createPort();
 				if($dev->DeviceType=="Patch Panel"){
 					$i=$i*-1;
