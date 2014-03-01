@@ -106,7 +106,7 @@ echo '
 </div>
 <div>
   <div>',__("Power Consumption"),'</div>
-  <div>',sprintf("%.2f kiloWatts/hour",$ITSpower/1000),'</div>
+  <div>',sprintf("%.2f kW",$ITSpower/1000),'</div>
 </div>
 <div>
   <div>',__("Heat Produced"),'</div>
