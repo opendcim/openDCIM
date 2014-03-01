@@ -310,7 +310,7 @@ div.center > div {display: inline-block;text-align: left;}
 .centermargin {margin-left: auto;margin-right: auto;}
 
 .table {display: table;text-align: left;border-collapse: collapse;}
-.caption {caption-side: bottom; text-align: center; display: table-caption !important;}
+.caption {caption-side: bottom; text-align: center; display: table-caption !important; white-space: nowrap;}
 .title {caption-side: top; text-align: center; display: table-caption !important;}
 div.table > div {display: table-row;}
 div.table > div > div {display: table-cell;vertical-align: middle; /* padding-bottom: .75em; */}

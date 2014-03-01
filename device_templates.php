@@ -12,13 +12,10 @@
 	$manufacturer=new Manufacturer();
 
 	$status='';
-	
-	if(isset($_FILES['templateFile'])){
-		$tmpFile="pictures/".basename($_FILES['templateFile']['tmp_name']);
-		move_uploaded_file($_FILES['templateFile']['tmp_name'], $tmpFile);
-		$result=$template->ImportTemplate($tmpFile);
-		$status=($result["status"]=="")?__("Template File Imported"):$result["status"]."<a id='import_err' style='margin-left: 1em;' title='".__("View errors")."' href='#'><img src='images/info.png'/></a>" ;
-		unlink($tmpFile);
+
+	if(isset($_FILES['templateFile']) && $_FILES['templateFile']['error']==0 && $_FILES['templateFile']['type']='text/xml'){
+		$result=$template->ImportTemplate($_FILES['templateFile']['tmp_name']);
+		$status=($result["status"]=="")?__("Template File Imported"):$result["status"].'<a id="import_err" style="margin-left: 1em;" title="'.__("View errors").'" href="#"><img src="images/info.png"></a>';
 	}
 	
 	if(isset($_REQUEST['templateid']) && $_REQUEST['templateid'] >0){
@@ -43,6 +40,47 @@
 		$template->ChassisSlots=($template->DeviceType=="Chassis")?$_POST['ChassisSlots']:0;
 		$template->RearChassisSlots=($template->DeviceType=="Chassis")?$_POST['RearChassisSlots']:0;
         
+		function UpdateSlotsPorts($template,$status){
+			//Update slots
+			$template->DeleteSlots();
+			for ($i=1; $i<=$template->ChassisSlots;$i++){
+				$slot=new Slot();
+				$slot->TemplateID=$template->TemplateID;
+				$slot->Position=$i;
+				$slot->BackSide=False;
+				$slot->X=isset($_POST["XF".$i])?$_POST["XF".$i]:0;
+				$slot->Y=isset($_POST["YF".$i])?$_POST["YF".$i]:0;
+				$slot->W=isset($_POST["WF".$i])?$_POST["WF".$i]:0;
+				$slot->H=isset($_POST["HF".$i])?$_POST["HF".$i]:0;
+				$status=($slot->CreateSlot())?$status:__('Error updating front slots');
+			}
+			for ($i=1; $i<=$template->RearChassisSlots;$i++){
+				$slot=new Slot();
+				$slot->TemplateID=$template->TemplateID;
+				$slot->Position=$i;
+				$slot->BackSide=True;
+				$slot->X=isset($_POST["XR".$i])?$_POST["XR".$i]:0;
+				$slot->Y=isset($_POST["YR".$i])?$_POST["YR".$i]:0;
+				$slot->W=isset($_POST["WR".$i])?$_POST["WR".$i]:0;
+				$slot->H=isset($_POST["HR".$i])?$_POST["HR".$i]:0;
+				$status=($slot->CreateSlot())?$status:__('Error updating rear slots');
+			}
+			//update template ports
+			$template->DeletePorts();
+			for ($i=1; $i<=$template->NumPorts;$i++){
+				$tport=new TemplatePorts();
+				$tport->TemplateID=$template->TemplateID;
+				$tport->PortNumber=$i;
+				$tport->Label=isset($_POST["label".$i])?$_POST["label".$i]:"";
+				$tport->MediaID=(isset($_POST["mt".$i]) && $_POST["mt".$i]>0)?$_POST["mt".$i]:0;
+				$tport->ColorID=(isset($_POST["cc".$i]) && $_POST["cc".$i]>0)?$_POST["cc".$i]:0;
+				$tport->PortNotes=isset($_POST["portnotes".$i])?$_POST["portnotes".$i]:"";
+				$status=($tport->CreatePort())?$status:__('Error updating template ports');
+			}
+
+			return $status;
+		}
+
 		switch($_POST['action']){
 			case 'Create':
 				$status=(!$template->CreateTemplate())?__('An error has occured, template not created'):'';
@@ -50,42 +88,7 @@
 			case 'Update':
 				$status=($template->UpdateTemplate())?__('Updated'):__('Error updating template');
 				if ($status==__('Updated')){
-					//Update slots
-					$template->DeleteSlots();
-					for ($i=1; $i<=$template->ChassisSlots;$i++){
-						$slot=new Slot();
-						$slot->TemplateID=$template->TemplateID;
-						$slot->Position=$i;
-						$slot->BackSide=False;
-						$slot->X=isset($_POST["XF".$i])?$_POST["XF".$i]:0;
-						$slot->Y=isset($_POST["YF".$i])?$_POST["YF".$i]:0;
-						$slot->W=isset($_POST["WF".$i])?$_POST["WF".$i]:0;
-						$slot->H=isset($_POST["HF".$i])?$_POST["HF".$i]:0;
-						$status=($slot->CreateSlot())?$status:__('Error updating front slots');
-					}
-					for ($i=1; $i<=$template->RearChassisSlots;$i++){
-						$slot=new Slot();
-						$slot->TemplateID=$template->TemplateID;
-						$slot->Position=$i;
-						$slot->BackSide=True;
-						$slot->X=isset($_POST["XR".$i])?$_POST["XR".$i]:0;
-						$slot->Y=isset($_POST["YR".$i])?$_POST["YR".$i]:0;
-						$slot->W=isset($_POST["WR".$i])?$_POST["WR".$i]:0;
-						$slot->H=isset($_POST["HR".$i])?$_POST["HR".$i]:0;
-						$status=($slot->CreateSlot())?$status:__('Error updating rear slots');
-					}
-					//update template ports
-					$template->DeletePorts();
-					for ($i=1; $i<=$template->NumPorts;$i++){
-						$tport=new TemplatePorts();
-						$tport->TemplateID=$template->TemplateID;
-						$tport->PortNumber=$i;
-						$tport->Label=isset($_POST["label".$i])?$_POST["label".$i]:"";
-						$tport->MediaID=(isset($_POST["mt".$i]) && $_POST["mt".$i]>0)?$_POST["mt".$i]:0;
-						$tport->ColorID=(isset($_POST["cc".$i]) && $_POST["cc".$i]>0)?$_POST["cc".$i]:0;
-						$tport->PortNotes=isset($_POST["portnotes".$i])?$_POST["portnotes".$i]:"";
-						$status=($tport->CreatePort())?$status:__('Error updating template ports');
-					}
+					$status=UpdateSlotsPorts($template,$status);
 				}
 				break;
 			case 'Device':
@@ -94,42 +97,7 @@
 				// update the device values to match the template
 				$status=($template->UpdateTemplate())?__('Updated'):__('Error updating template');
 				if ($status==__('Updated')){
-					//Update slots
-					$template->DeleteSlots();
-					for ($i=1; $i<=$template->ChassisSlots;$i++){
-						$slot=new Slot();
-						$slot->TemplateID=$template->TemplateID;
-						$slot->Position=$i;
-						$slot->BackSide=False;
-						$slot->X=$_POST["XF".$i];
-						$slot->Y=$_POST["YF".$i];
-						$slot->W=$_POST["WF".$i];
-						$slot->H=$_POST["HF".$i];
-						$status=($slot->CreateSlot())?$status:__('Error updating front slots');
-					}
-					for ($i=1; $i<=$template->RearChassisSlots;$i++){
-						$slot=new Slot();
-						$slot->TemplateID=$template->TemplateID;
-						$slot->Position=$i;
-						$slot->BackSide=True;
-						$slot->X=$_POST["XR".$i];
-						$slot->Y=$_POST["YR".$i];
-						$slot->W=$_POST["WR".$i];
-						$slot->H=$_POST["HR".$i];
-						$status=($slot->CreateSlot())?$status:__('Error updating rear slots');
-					}
-					//update template ports
-					$template->DeletePorts();
-					for ($i=1; $i<=$template->NumPorts;$i++){
-						$tport=new TemplatePorts();
-						$tport->TemplateID=$template->TemplateID;
-						$tport->PortNumber=$i;
-						$tport->Label=isset($_POST["label".$i])?$_POST["label".$i]:"";
-						$tport->MediaID=(isset($_POST["mt".$i]) && $_POST["mt".$i]>0)?$_POST["mt".$i]:0;
-						$tport->ColorID=(isset($_POST["cc".$i]) && $_POST["cc".$i]>0)?$_POST["cc".$i]:0;
-						$tport->PortNotes=isset($_POST["portnotes".$i])?$_POST["portnotes".$i]:"";
-						$status=($tport->CreatePort())?$status:__('Error updating template ports');
-					}
+					$status=UpdateSlotsPorts($template,$status);
 				}
 				if($status==__('Updated')){
 					$status=($template->UpdateDevices())?__('Updated'):__('Error updating devices');
@@ -139,42 +107,7 @@
 				//update template before export
 				$status=($template->UpdateTemplate())?__('Updated'):__('Error');
 				if ($status==__('Updated')){
-					//Update slots
-					$template->DeleteSlots();
-					for ($i=1; $i<=$template->ChassisSlots;$i++){
-						$slot=new Slot();
-						$slot->TemplateID=$template->TemplateID;
-						$slot->Position=$i;
-						$slot->BackSide=False;
-						$slot->X=$_POST["XF".$i];
-						$slot->Y=$_POST["YF".$i];
-						$slot->W=$_POST["WF".$i];
-						$slot->H=$_POST["HF".$i];
-						$status=($slot->CreateSlot())?$status:__('Error');
-					}
-					for ($i=1; $i<=$template->RearChassisSlots;$i++){
-						$slot=new Slot();
-						$slot->TemplateID=$template->TemplateID;
-						$slot->Position=$i;
-						$slot->BackSide=True;
-						$slot->X=$_POST["XR".$i];
-						$slot->Y=$_POST["YR".$i];
-						$slot->W=$_POST["WR".$i];
-						$slot->H=$_POST["HR".$i];
-						$status=($slot->CreateSlot())?$status:__('Error');
-					}
-					//update template ports
-					$template->DeletePorts();
-					for ($i=1; $i<=$template->NumPorts;$i++){
-						$tport=new TemplatePorts();
-						$tport->TemplateID=$template->TemplateID;
-						$tport->PortNumber=$i;
-						$tport->Label=isset($_POST["label".$i])?$_POST["label".$i]:"";
-						$tport->MediaID=(isset($_POST["mt".$i]) && $_POST["mt".$i]>0)?$_POST["mt".$i]:0;
-						$tport->ColorID=(isset($_POST["cc".$i]) && $_POST["cc".$i]>0)?$_POST["cc".$i]:0;
-						$tport->PortNotes=isset($_POST["portnotes".$i])?$_POST["portnotes".$i]:"";
-						$status=($tport->CreatePort())?$status:__('Error updating template ports');
-					}
+					$status=UpdateSlotsPorts($template,$status);
 				}
 				if($status==__('Updated')){
 					$status=($template->ExportTemplate())?__('Exported'):__('Error');
@@ -196,7 +129,8 @@
 	$dir=scandir($path);
 	foreach($dir as $i => $f){
 		if(is_file($path.DIRECTORY_SEPARATOR.$f)){
-			$imageinfo=getimagesize($path.DIRECTORY_SEPARATOR.$f);
+			// Suppress the getimagesize because it will error out on non-image files
+			@$imageinfo=getimagesize($path.DIRECTORY_SEPARATOR.$f);
 			if(preg_match('/^image/i', $imageinfo['mime'])){
 				$imageselect.="<span>$f</span>\n";
 			}

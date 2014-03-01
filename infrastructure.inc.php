@@ -1126,7 +1126,7 @@ xsi:noNamespaceSchemaLocation="openDCIMdevicetemplate.xsd">
 		libxml_use_internal_errors(true);
 		$xml=new XMLReader();
 		$xml->open($file);
-		$resp=$xml->setSchema ("pictures/openDCIMdevicetemplate.xsd");
+		$resp=$xml->setSchema ("openDCIMdevicetemplate.xsd");
 		while (@$xml->read()) {}; // empty loop
 		$errors = libxml_get_errors();
 		if (count($errors)>0){
