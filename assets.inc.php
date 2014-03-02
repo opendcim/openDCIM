@@ -55,25 +55,25 @@ class Cabinet {
 	function MakeSafe() {
 		$this->CabinetID=intval($this->CabinetID);
 		$this->DataCenterID=intval($this->DataCenterID);
-		$this->Location=addslashes($this->Location);
+		$this->Location=sanitize($this->Location);
 		$this->AssignedTo=intval($this->AssignedTo);
 		$this->ZoneID=intval($this->ZoneID);
 		$this->CabRowID=intval($this->CabRowID);
 		$this->CabinetHeight=intval($this->CabinetHeight);
-		$this->Model=addslashes($this->Model);
-		$this->Keylock=addslashes($this->Keylock);
+		$this->Model=sanitize($this->Model);
+		$this->Keylock=sanitize($this->Keylock);
 		$this->MaxKW=floatval($this->MaxKW);
 		$this->MaxWeight=intval($this->MaxWeight);
 		$this->InstallationDate=date("Y-m-d", strtotime($this->InstallationDate));
-		$this->SensorIPAddress=addslashes($this->SensorIPAddress);
-		$this->SensorCommunity=addslashes($this->SensorCommunity);
+		$this->SensorIPAddress=sanitize($this->SensorIPAddress);
+		$this->SensorCommunity=sanitize($this->SensorCommunity);
 		$this->SensorTemplateID=intval($this->SensorTemplateID);
 		$this->MapX1=abs($this->MapX1);
 		$this->MapY1=abs($this->MapY1);
 		$this->MapX2=abs($this->MapX2);
 		$this->MapY2=abs($this->MapY2);
 		$this->FrontEdge=in_array($this->FrontEdge, array("Top","Right","Left","Bottom"))?$this->FrontEdge:"Top";
-		$this->Notes=addslashes(sanitize($this->Notes,false));
+		$this->Notes=sanitize($this->Notes,false);
 	}
 	
 	static function RowToObject($dbRow){
@@ -450,7 +450,7 @@ class Cabinet {
 	function SearchByCustomTag( $tag=null ) {
 		global $dbh;
 		
-		$sql="SELECT a.* from fac_Cabinet a, fac_CabinetTags b, fac_Tags c WHERE a.CabinetID=b.CabinetID AND b.TagID=c.TagID AND UCASE(c.Name) LIKE UCASE('%".addslashes($tag)."%');";
+		$sql="SELECT a.* from fac_Cabinet a, fac_CabinetTags b, fac_Tags c WHERE a.CabinetID=b.CabinetID AND b.TagID=c.TagID AND UCASE(c.Name) LIKE UCASE('%".sanitize($tag)."%');";
 
 		$cabinetList=array();
 
@@ -735,8 +735,8 @@ class ColorCoding {
 	function CreateCode() {
 		global $dbh;
 		
-		$sql="INSERT INTO fac_ColorCoding SET Name=\"".addslashes($this->Name)."\", 
-			DefaultNote=\"".addslashes($this->DefaultNote)."\"";
+		$sql="INSERT INTO fac_ColorCoding SET Name=\"".sanitize($this->Name)."\", 
+			DefaultNote=\"".sanitize($this->DefaultNote)."\"";
 		
 		if($dbh->exec($sql)){
 			$this->ColorID=$dbh->lastInsertId();
@@ -753,8 +753,8 @@ class ColorCoding {
 	function UpdateCode() {
 		global $dbh;
 		
-		$sql="UPDATE fac_ColorCoding SET Name=\"".addslashes($this->Name)."\", 
-			DefaultNote=\"".addslashes($this->DefaultNote)."\" WHERE ColorID=".intval($this->ColorID).";";
+		$sql="UPDATE fac_ColorCoding SET Name=\"".sanitize($this->Name)."\", 
+			DefaultNote=\"".sanitize($this->DefaultNote)."\" WHERE ColorID=".intval($this->ColorID).";";
 		
 		if(!$dbh->query($sql)){
 			$info=$dbh->errorInfo();
@@ -2294,13 +2294,13 @@ class DevicePorts {
 	function MakeSafe() {
 		$this->DeviceID=intval($this->DeviceID);
 		$this->PortNumber=intval($this->PortNumber);
-		$this->Label=addslashes(trim($this->Label));
+		$this->Label=sanitize($this->Label);
 		$this->MediaID=intval($this->MediaID);
 		$this->ColorID=intval($this->ColorID);
-		$this->PortNotes=addslashes(trim($this->PortNotes));
+		$this->PortNotes=sanitize($this->PortNotes);
 		$this->ConnectedDeviceID=intval($this->ConnectedDeviceID);
 		$this->ConnectedPort=intval($this->ConnectedPort);
-		$this->Notes=addslashes(trim(sanitize($this->Notes)));
+		$this->Notes=sanitize($this->Notes);
 
 		if($this->ConnectedDeviceID==0 || $this->ConnectedPort==0){
 			$this->ConnectedDeviceID="NULL";
@@ -3045,7 +3045,7 @@ class MediaTypes {
 	function CreateType() {
 		global $dbh;
 		
-		$sql="INSERT INTO fac_MediaTypes SET MediaType=\"".addslashes($this->MediaType)."\", 
+		$sql="INSERT INTO fac_MediaTypes SET MediaType=\"".sanitize($this->MediaType)."\", 
 			ColorID=".intval($this->ColorID);
 			
 		if($dbh->exec($sql)){
@@ -3063,7 +3063,7 @@ class MediaTypes {
 	function UpdateType() {
 		global $dbh;
 		
-		$sql="UPDATE fac_MediaTypes SET MediaType=\"".addslashes($this->MediaType)."\", 
+		$sql="UPDATE fac_MediaTypes SET MediaType=\"".sanitize($this->MediaType)."\", 
 			ColorID=".intval($this->ColorID)." WHERE MediaID=".intval($this->MediaID);
 			
 		if(!$dbh->query($sql)){
@@ -3103,7 +3103,7 @@ class MediaTypes {
 	function GetTypeByName() {
 		global $dbh;
 		
-		$sql="SELECT * FROM fac_MediaTypes WHERE MediaType='".addslashes($this->MediaID)."';";
+		$sql="SELECT * FROM fac_MediaTypes WHERE MediaType='".sanitize($this->MediaType)."';";
 		
 		if(!$row=$dbh->query($sql)->fetch()){
 			return false;
@@ -3194,20 +3194,22 @@ class RackRequest {
   var $CurrentLocation;
   var $SpecialInstructions;
   var $MfgDate;
+
+	// Create MakeSafe / MakeDisplay functions
   
   function CreateRequest($db=null){
 	global $dbh;
     $sql="INSERT INTO fac_RackRequest SET RequestTime=now(), RequestorID=\"".intval($this->RequestorID)."\",
-		Label=\"".addslashes(transform($this->Label))."\", SerialNo=\"".addslashes(transform($this->SerialNo))."\",
+		Label=\"".sanitize(transform($this->Label))."\", SerialNo=\"".sanitize(transform($this->SerialNo))."\",
 		MfgDate=\"".date("Y-m-d", strtotime($this->MfgDate))."\", 
-		AssetTag=\"".addslashes(transform($this->AssetTag))."\", ESX=\"".intval($this->ESX)."\",
+		AssetTag=\"".sanitize(transform($this->AssetTag))."\", ESX=\"".intval($this->ESX)."\",
 		Owner=\"".intval($this->Owner)."\", DeviceHeight=\"".intval($this->DeviceHeight)."\",
-		EthernetCount=\"".intval($this->EthernetCount)."\", VLANList=\"".addslashes($this->VLANList)."\",
-		SANCount=\"".intval($this->SANCount)."\", SANList=\"".addslashes($this->SANList)."\",
-		DeviceClass=\"".addslashes($this->DeviceClass)."\", DeviceType=\"".addslashes($this->DeviceType)."\",
-		LabelColor=\"".addslashes($this->LabelColor)."\", 
-		CurrentLocation=\"".addslashes(transform($this->CurrentLocation))."\",
-		SpecialInstructions=\"".addslashes($this->SpecialInstructions)."\"";
+		EthernetCount=\"".intval($this->EthernetCount)."\", VLANList=\"".sanitize($this->VLANList)."\",
+		SANCount=\"".intval($this->SANCount)."\", SANList=\"".sanitize($this->SANList)."\",
+		DeviceClass=\"".sanitize($this->DeviceClass)."\", DeviceType=\"".sanitize($this->DeviceType)."\",
+		LabelColor=\"".sanitize($this->LabelColor)."\", 
+		CurrentLocation=\"".sanitize(transform($this->CurrentLocation))."\",
+		SpecialInstructions=\"".sanitize($this->SpecialInstructions)."\"";
     
 	if(!$dbh->exec($sql)){
 		$info=$dbh->errorInfo();
@@ -3304,16 +3306,16 @@ class RackRequest {
   function UpdateRequest($db=null){
 	global $dbh;
     $sql="UPDATE fac_RackRequest SET RequestTime=now(), RequestorID=\"".intval($this->RequestorID)."\",
-		Label=\"".addslashes(transform($this->Label))."\", SerialNo=\"".addslashes(transform($this->SerialNo))."\",
+		Label=\"".sanitize(transform($this->Label))."\", SerialNo=\"".sanitize(transform($this->SerialNo))."\",
 		MfgDate=\"".date("Y-m-d", strtotime($this->MfgDate))."\", 
-		AssetTag=\"".addslashes(transform($this->AssetTag))."\", ESX=\"".intval($this->ESX)."\",
+		AssetTag=\"".sanitize(transform($this->AssetTag))."\", ESX=\"".intval($this->ESX)."\",
 		Owner=\"".intval($this->Owner)."\", DeviceHeight=\"".intval($this->DeviceHeight)."\",
-		EthernetCount=\"".intval($this->EthernetCount)."\", VLANList=\"".addslashes($this->VLANList)."\",
-		SANCount=\"".intval($this->SANCount)."\", SANList=\"".addslashes($this->SANList)."\",
-		DeviceClass=\"".addslashes($this->DeviceClass)."\", DeviceType=\"".addslashes($this->DeviceType)."\",
-		LabelColor=\"".addslashes($this->LabelColor)."\", 
-		CurrentLocation=\"".addslashes(transform($this->CurrentLocation))."\",
-		SpecialInstructions=\"".addslashes($this->SpecialInstructions)."\" 
+		EthernetCount=\"".intval($this->EthernetCount)."\", VLANList=\"".sanitize($this->VLANList)."\",
+		SANCount=\"".intval($this->SANCount)."\", SANList=\"".sanitize($this->SANList)."\",
+		DeviceClass=\"".sanitize($this->DeviceClass)."\", DeviceType=\"".sanitize($this->DeviceType)."\",
+		LabelColor=\"".sanitize($this->LabelColor)."\", 
+		CurrentLocation=\"".sanitize(transform($this->CurrentLocation))."\",
+		SpecialInstructions=\"".sanitize($this->SpecialInstructions)."\" 
 		WHERE RequestID=\"".intval($this->RequestID)."\";";
     
 	if($dbh->query($sql)){
@@ -3556,7 +3558,7 @@ class Tags {
 		global $dbh;
 
 		if(!is_null($TagName)){
-			$TagName=addslashes($TagName);
+			$TagName=sanitize($TagName);
 			$sql="INSERT INTO fac_Tags VALUES (NULL, '$TagName');";
 			if(!$dbh->exec($sql)){
 				return null;
@@ -3573,7 +3575,7 @@ class Tags {
 		global $dbh;
 
 		if(!is_null($TagName)){
-			$TagName=addslashes($TagName);
+			$TagName=sanitize($TagName);
 			$sql="SELECT TagID FROM fac_Tags WHERE Name = '$TagName';";
 			if($TagID=$dbh->query($sql)->fetchColumn()){
 				return $TagID;
