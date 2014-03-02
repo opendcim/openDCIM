@@ -100,6 +100,9 @@ function renderCabinetProps($cab, $audit, $AuditorName)
     $renderedHTML .= '			<tr><td class="left">' . __('Tags') . ':</td>';
     $renderedHTML .= '<td class="right">' . renderTagsToString($cab)
         . "</td></tr>\n";
+    $renderedHTML .= '			<tr><td class="left">' . __('Front Edge') . ':</td>';
+    $renderedHTML .= '<td class="right">' . ($cab->FrontEdge ? $cab->FrontEdge : '')
+        . "</td></tr>\n";
     $renderedHTML .= "\t\t</table>\n";
 
     return $renderedHTML;
