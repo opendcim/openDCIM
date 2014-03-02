@@ -203,6 +203,7 @@ $DProps = array(
             array('Install Date', 'D', 10, null),
             array('Auditor', '', 10, null),
             array('Timestamp', 'D', 18, null),
+            array('Front Edge', '', null, null),
             array('Notes', '', 40, 'wrap')),
         'ColIdx' => array(),
         'ExpStr' => array()
@@ -1029,6 +1030,7 @@ function addRackStat(&$invCab, $cab, $cabinetColumns, $dc, $dcContainerList)
     $rack['MaxWeight'] = $cab->MaxWeight;
     $rack['Install Date'] = $cab->InstallationDate;
     $rack['Auditor'] = getAuditorName($cab);
+    $rack['Front Edge'] = ($cab->FrontEdge? $cab->FrontEdge : '');
     $rack['Timestamp'] = getAuditTimestamp($cab);
     $rack['Notes'] = html_entity_decode(strip_tags($cab->Notes), ENT_COMPAT,
         'UTF-8');
