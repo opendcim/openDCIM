@@ -1030,7 +1030,7 @@ function addRackStat(&$invCab, $cab, $cabinetColumns, $dc, $dcContainerList)
     $rack['MaxWeight'] = $cab->MaxWeight;
     $rack['Install Date'] = $cab->InstallationDate;
     $rack['Auditor'] = getAuditorName($cab);
-    $rack['Front Edge'] = ($cab->FrontEdge? $cab->FrontEdge : '');
+    $rack['Front Edge'] = $cab->FrontEdge;
     $rack['Timestamp'] = getAuditTimestamp($cab);
     $rack['Notes'] = html_entity_decode(strip_tags($cab->Notes), ENT_COMPAT,
         'UTF-8');
