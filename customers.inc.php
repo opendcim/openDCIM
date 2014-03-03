@@ -41,13 +41,13 @@ class Contact {
 
 	function MakeSafe(){
 		$this->ContactID=intval($this->ContactID);
-		$this->UserID=addslashes(trim($this->UserID));
-		$this->LastName=addslashes(trim($this->LastName));
-		$this->FirstName=addslashes(trim($this->FirstName));
-		$this->Phone1=addslashes(trim($this->Phone1));
-		$this->Phone2=addslashes(trim($this->Phone2));
-		$this->Phone3=addslashes(trim($this->Phone3));
-		$this->Email=addslashes(trim($this->Email));
+		$this->UserID=sanitize($this->UserID);
+		$this->LastName=sanitize($this->LastName);
+		$this->FirstName=sanitize($this->FirstName);
+		$this->Phone1=sanitize($this->Phone1);
+		$this->Phone2=sanitize($this->Phone2);
+		$this->Phone3=sanitize($this->Phone3);
+		$this->Email=sanitize($this->Email);
 	}
 
 	function MakeDisplay(){
@@ -225,11 +225,11 @@ class Department {
 
 	function MakeSafe(){
 		$this->DeptID=intval($this->DeptID);
-		$this->Name=addslashes(trim($this->Name));
-		$this->ExecSponsor=addslashes(trim($this->ExecSponsor));
-		$this->SDM=addslashes(trim($this->SDM));
-		$this->Classification=addslashes(trim($this->Classification));
-		$this->DeptColor=addslashes(trim($this->DeptColor));
+		$this->Name=sanitize($this->Name);
+		$this->ExecSponsor=sanitize($this->ExecSponsor);
+		$this->SDM=sanitize($this->SDM);
+		$this->Classification=sanitize($this->Classification);
+		$this->DeptColor=sanitize($this->DeptColor);
 	}
 
 	function MakeDisplay(){
@@ -372,7 +372,7 @@ class Department {
 	function GetDepartmentByContact($UserID){
 		$sql="SELECT a.* FROM fac_Department a, fac_DeptContacts b, fac_Contact c 
 			WHERE a.DeptID=b.DeptID AND b.ContactID=c.ContactID AND 
-			c.UserID=\"".addslashes($UserID)."\";";
+			c.UserID=\"".sanitize($UserID)."\";";
 	 
 		// If someone is assigned to more than one department, just return the first hit
 		if($row=$this->query($sql)->fetch()){
@@ -388,7 +388,7 @@ class Escalations {
 
 	function MakeSafe(){
 		$this->EscalationID=intval($this->EscalationID);
-		$this->Details=addslashes(trim($this->Details));
+		$this->Details=sanitize($this->Details);
 	}
 
 	function MakeDisplay(){
@@ -475,7 +475,7 @@ class EscalationTimes {
 
 	function MakeSafe(){
 		$this->EscalationTimeID=intval($this->EscalationTimeID);
-		$this->TimePeriod=addslashes(trim($this->TimePeriod));
+		$this->TimePeriod=sanitize($this->TimePeriod);
 	}
 
 	function MakeDisplay(){
@@ -573,8 +573,8 @@ class User {
 	var $Disabled;
 
 	function MakeSafe(){
-		$this->UserID=addslashes(trim($this->UserID));
-		$this->Name=addslashes(trim($this->Name));
+		$this->UserID=sanitize($this->UserID);
+		$this->Name=sanitize($this->Name);
 		$this->AdminOwnDevices=intval($this->AdminOwnDevices);
 		$this->ReadAccess=intval($this->ReadAccess);
 		$this->WriteAccess=intval($this->WriteAccess);

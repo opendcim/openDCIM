@@ -62,8 +62,8 @@ class BinAudits {
 
 	function MakeSafe(){
 		$this->BinID=intval($this->BinID);
-		$this->UserID=addslashes(trim($this->UserID));
-		$this->AuditStamp=addslashes(trim($this->AuditStamp));
+		$this->UserID=sanitize($this->UserID);
+		$this->AuditStamp=sanitize($this->AuditStamp);
 	}
 
 	function MakeDisplay(){
@@ -192,12 +192,12 @@ class DataCenter {
 	
 	function MakeSafe(){
 		$this->DataCenterID=intval($this->DataCenterID);
-		$this->Name=addslashes(trim($this->Name));
+		$this->Name=sanitize($this->Name);
 		$this->SquareFootage=intval($this->SquareFootage);
-		$this->DeliveryAddress=addslashes(trim($this->DeliveryAddress));
-		$this->Administrator=addslashes(trim($this->Administrator));
+		$this->DeliveryAddress=sanitize($this->DeliveryAddress);
+		$this->Administrator=sanitize($this->Administrator);
 		$this->MaxkW=intval($this->MaxkW);
-		$this->DrawingFileName=addslashes(trim($this->DrawingFileName));
+		$this->DrawingFileName=sanitize($this->DrawingFileName);
 		$this->EntryLogging=intval($this->EntryLogging);
 		$this->ContainerID=intval($this->ContainerID);
 		$this->MapX=abs($this->MapX);
@@ -792,16 +792,16 @@ class DeviceTemplate {
 
 		$this->TemplateID=intval($this->TemplateID);
 		$this->ManufacturerID=intval($this->ManufacturerID);
-		$this->Model=addslashes(trim($this->Model));
+		$this->Model=sanitize($this->Model);
 		$this->Height=intval($this->Height);
 		$this->Weight=intval($this->Weight);
 		$this->Wattage=intval($this->Wattage);
 		$this->DeviceType=(in_array($this->DeviceType, $validDeviceTypes))?$this->DeviceType:'Server';
 		$this->PSCount=intval($this->PSCount);
 		$this->NumPorts=intval($this->NumPorts);
-        $this->Notes=addslashes(trim(sanitize($this->Notes,false)));
-        $this->FrontPictureFile=addslashes(trim($this->FrontPictureFile));
-	    $this->RearPictureFile=addslashes(trim($this->RearPictureFile));
+        $this->Notes=sanitize($this->Notes,false);
+        $this->FrontPictureFile=sanitize($this->FrontPictureFile);
+	    $this->RearPictureFile=sanitize($this->RearPictureFile);
 		$this->ChassisSlots=intval($this->ChassisSlots);
 		$this->RearChassisSlots=intval($this->RearChassisSlots);
 	}
@@ -1276,7 +1276,7 @@ class Manufacturer {
 
 	function MakeSafe(){
 		$this->ManufacturerID=intval($this->ManufacturerID);
-		$this->Name=addslashes(trim($this->Name));
+		$this->Name=sanitize($this->Name);
 	}
 
 	function MakeDisplay(){
@@ -1379,8 +1379,8 @@ class Supplies {
 
 	function MakeSafe(){
 		$this->SupplyID=intval($this->SupplyID);
-		$this->PartNum=addslashes(trim($this->PartNum));
-		$this->PartName=addslashes(trim($this->PartName));
+		$this->PartNum=sanitize($this->PartNum);
+		$this->PartName=sanitize($this->PartName);
 		$this->MinQty=intval($this->MinQty);
 		$this->MaxQty=intval($this->MaxQty);
 	}
@@ -1478,7 +1478,7 @@ class SupplyBin {
 	
 	function MakeSafe(){
 		$this->BinID=intval($this->BinID);
-		$this->Location=addslashes(trim($this->Location));
+		$this->Location=sanitize($this->Location);
 	}
 
 	function MakeDisplay(){
@@ -1578,7 +1578,7 @@ class Zone {
 	function MakeSafe(){
 		$this->ZoneID=intval($this->ZoneID);
 		$this->DataCenterID=intval($this->DataCenterID);
-		$this->Description=addslashes(trim($this->Description));
+		$this->Description=sanitize($this->Description);
 		// ensure all coordinates are positive values
 		$this->MapX1=abs($this->MapX1);
 		$this->MapY1=abs($this->MapY1);
@@ -2058,7 +2058,7 @@ class CabRow {
 
 	function MakeSafe() {
 		$this->CabRowID=intval($this->CabRowID);
-		$this->Name=addslashes(trim($this->Name));
+		$this->Name=sanitize($this->Name);
 		$this->ZoneID=intval($this->ZoneID);
 		$this->CabOrder=($this->CabOrder=="ASC")?"ASC":"DESC";
 	}
@@ -2192,9 +2192,9 @@ class Container {
 
 	function MakeSafe(){
 		$this->ContainerID=intval($this->ContainerID);
-		$this->Name=addslashes(trim($this->Name));
+		$this->Name=sanitize($this->Name);
 		$this->ParentID=intval($this->ParentID);
-		$this->DrawingFileName=addslashes(trim($this->DrawingFileName));
+		$this->DrawingFileName=sanitize($this->DrawingFileName);
 		$this->MapX=abs($this->MapX);
 		$this->MapY=abs($this->MapY);
 	}
@@ -2708,10 +2708,10 @@ class TemplatePorts {
 	function MakeSafe() {
 		$this->TemplateID=intval($this->TemplateID);
 		$this->PortNumber=intval($this->PortNumber);
-		$this->Label=addslashes(trim($this->Label));
+		$this->Label=sanitize($this->Label);
 		$this->MediaID=intval($this->MediaID);
 		$this->ColorID=intval($this->ColorID);
-		$this->PortNotes=addslashes(trim($this->PortNotes));
+		$this->PortNotes=sanitize($this->PortNotes);
 	}
 
 	function MakeDisplay(){

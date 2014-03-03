@@ -40,13 +40,13 @@ class Config{
 					$i++;
 				}
 					
-				$sql='update fac_Config set Value=\''.addslashes($valueStr).'\' where Parameter=\''.$key.'\'';
+				$sql='update fac_Config set Value=\''.sanitize($valueStr).'\' where Parameter=\''.$key.'\'';
 				$dbh->query( $sql );
 			}else{
 				if(preg_match('/[m|w]Date/',$key)){
 					if($value!='now'){$value='blank';} // if someone puts a weird value in default it back to blank
 				}
-				$sql="update fac_Config set Value=\"".addslashes($value)."\" where Parameter=\"$key\";";
+				$sql="update fac_Config set Value=\"".sanitize($value)."\" where Parameter=\"$key\";";
 				$dbh->query($sql);
 			}
 		}
