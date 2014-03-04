@@ -1550,7 +1550,7 @@ class Device {
 		
 		// $sql="SELECT * FROM fac_Device WHERE ChassisSlots>0 AND ParentDevice=0 ORDER BY Label ASC;";
 		// JMGA multichassis
-		$sql="SELECT * FROM fac_Device WHERE ChassisSlots>0 ORDER BY Label ASC;";
+		$sql="SELECT * FROM fac_Device WHERE ChassisSlots>0 OR RearChassisSlots>0 ORDER BY Label ASC;";
 
 		$parentList=array();
 		foreach($dbh->query($sql) as $row){
