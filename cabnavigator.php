@@ -266,10 +266,13 @@ function renderUnassignedTemplateOwnership($noTemplFlag, $noOwnerFlag, $device) 
 				// list($noTemplFlag, $noOwnerFlag, $highlight) =
                 //     renderUnassignedTemplateOwnership($noTemplFlag, $noOwnerFlag, $device);
 
-				$totalWatts+=$device->GetDeviceTotalPower();
-				$DeviceTotalWeight=$device->GetDeviceTotalWeight();
-				$totalWeight+=$DeviceTotalWeight;
-				$totalMoment+=($DeviceTotalWeight*($device->Position+($device->Height/2)));
+				//only compute this device if is not a rear side
+				if (!$device->BackSide && !$rear || $device->BackSide && $rear){
+					$totalWatts+=$device->GetDeviceTotalPower();
+					$DeviceTotalWeight=$device->GetDeviceTotalWeight();
+					$totalWeight+=$DeviceTotalWeight;
+					$totalMoment+=($DeviceTotalWeight*($device->Position+($device->Height/2)));
+				}
 
 				$reserved="";
 				if($device->Reservation==true){
@@ -295,10 +298,10 @@ function renderUnassignedTemplateOwnership($noTemplFlag, $noOwnerFlag, $device) 
 					if($errclass!=''){$heighterr="yup";}
 					if($i==$devTop){
 						// Create the filler for the rack either text or a picture
-						// if rear and half depth get a front picture file
-						$picture=(!$rear)?$device->GetDevicePicture():($rear && $device->HalfDepth)?$device->GetDevicePicture():$device->GetDevicePicture($rear);
-						$text=($device->Rights!="None")?"<a href=\"devices.php?deviceid=$device->DeviceID\">$highlight $device->Label</a>":$device->Label;
-
+						$picture=(!$device->BackSide && !$rear || $device->BackSide && $rear)?$device->GetDevicePicture():$device->GetDevicePicture("rear");
+						$devlabel=$device->Label.(((!$device->BackSide && $rear || $device->BackSide && !$rear) && !$device->HalfDepth)?"(".__("Rear").")":"");
+						$text=($device->Rights!="None")?"<a href=\"devices.php?deviceid=$device->DeviceID\">$highlight $devlabel</a>":$devlabel;
+						
 						// Put the device in the rack
 						$body.="<tr><td class=\"cabpos$reserved dept$device->Owner$errclass\">$i</td><td class=\"dept$device->Owner$reserved\" rowspan=$device->Height data-deviceid=$device->DeviceID>";
 						$body.=($picture)?$picture:$text;
@@ -325,7 +328,7 @@ function renderUnassignedTemplateOwnership($noTemplFlag, $noOwnerFlag, $device) 
 		}
 		$body.="</table></div>";
 		reset($devList);
-	}
+	}  //END OF BuildCabinet
 
 	// Generate rack view
 	BuildCabinet();
