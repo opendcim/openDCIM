@@ -203,7 +203,7 @@
 				buttons: {
 <?php echo '					',__("Select"),': function() {'; ?>
 						if($('#imageselection #preview').attr('image')!=""){
-							$(input).val($('#imageselection #preview').attr('image'));
+							$(input).val($('#imageselection #preview').attr('image')).trigger('change');
 						}
 						$(this).dialog("close");
 					}
@@ -238,7 +238,6 @@
 				}
 			});
 		});  
-		
 
 		$('#devicetype').change(function(){
 			if($('#devicetype').val()=="Chassis"){
@@ -283,34 +282,6 @@
 		});
 		
 	});/* END of $(document).ready function() */
-
-	function show(slot) {
-		if ($('#lightbox-image').is(':visible')) {
-	    	var x=parseInt($('#X'+slot).val());
-	    	var y=parseInt($('#Y'+slot).val());
-			var w=parseInt($('#W'+slot).val());
-			var h=parseInt($('#H'+slot).val());
-			
-			$('#lightbox-image').imgAreaSelect({
-				x1: x,
-				x2: (x+w),
-				y1: y,
-				y2: (y+h),
-				handles: true
-				,parent: '#jquery-lightbox'
-				,onSelectEnd: function (img, selection) {
-					$('#X'+slot).val(selection.x1);
-					$('#Y'+slot).val(selection.y1);
-					$('#W'+slot).val(selection.width);
-					$('#H'+slot).val(selection.height);            
-		        }
-	        });
-	        $('#jquery-lightbox').unbind('click');
-	        $('#lightbox-nav').remove();
-	    }else{
-	        setTimeout(function(){show(slot)}, 50);
-	    }
-	}
 
 $(document).ready(function(){
 	FetchSlots();
