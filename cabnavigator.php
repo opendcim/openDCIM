@@ -266,7 +266,7 @@ function renderUnassignedTemplateOwnership($noTemplFlag, $noOwnerFlag, $device) 
 				// list($noTemplFlag, $noOwnerFlag, $highlight) =
                 //     renderUnassignedTemplateOwnership($noTemplFlag, $noOwnerFlag, $device);
 
-				//only compute this device if is not a rear side
+				//only computes this device if it is its front side
 				if (!$device->BackSide && !$rear || $device->BackSide && $rear){
 					$totalWatts+=$device->GetDeviceTotalPower();
 					$DeviceTotalWeight=$device->GetDeviceTotalWeight();
