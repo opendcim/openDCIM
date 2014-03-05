@@ -2681,7 +2681,21 @@ class Slot {
 			return false;
 		}
 	}
-	function GetFistSlot(){
+
+	// Return all the slots for a single template in one object
+	static function GetAll($templateid){
+		global $dbh;
+		
+		$sql="SELECT * FROM fac_Slots WHERE TemplateID=".intval($templateid)." ORDER 
+			BY BackSide ASC, Position ASC;";
+		$slots=array();
+		foreach($dbh->query($sql) as $row){
+			$slots[$row['BackSide']][$row['Position']]=Slot::RowToObject($row);
+		}	
+		return $slots;
+	}
+
+	function GetFirstSlot(){
 		$this->MakeSafe();
 		
 		$sql="SELECT * FROM fac_Slots WHERE TemplateID=$this->TemplateID ORDER BY BackSide,Position;";

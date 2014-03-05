@@ -2,6 +2,14 @@
 	require_once('db.inc.php');
 	require_once('facilities.inc.php');
 
+	if(isset($_POST['getslots']) && isset($_POST['templateid'])){
+		$slots=Slot::GetAll($_POST['templateid']);
+
+		header('Content-Type: application/json');
+		echo json_encode($slots);  
+		exit;
+	}
+
 	if(!$user->WriteAccess){
 		// No soup for you.
 		header('Location: '.redirect());
@@ -333,7 +341,98 @@ if (isset($template->RearChassisSlots) && $template->RearChassisSlots>0){
 	        setTimeout(function(){show(slot)}, 50);
 	    }
 	}
+//previewimage,coordstable
+	function Poopup(){
+		$('<div>').append($('#hiddencoords > div')).
+			dialog({
+				closeOnEscape: false,
+				minHeight: 500,
+				width: 740,
+				modal: true,
+				resizable: false,
+				show: { effect: "blind", duration: 800 },
+				beforeClose: function(event,ui){
+					$('#hiddencoords').append($(this).children('div:first-child'));
+				}
+			});
+	}
 
+	function CoordinateRow(slot,front){
+		front=(front=='undefined')?0:1;
+		var fr=(front==0)?'F':'R';
+		var row=$('<div>');
+		var input=$('<input>').attr({'size':'4','type':'number'});
+		var label=$('<div>').text(slot).append((front=='0')?' Front':' Rear');
+		var x=input.clone().attr('name','X'+fr+slot);
+		var y=input.clone().attr('name','Y'+fr+slot);
+		var w=input.clone().attr('name','W'+fr+slot);
+		var h=input.clone().attr('name','H'+fr+slot);
+		var edit=$('<button>').attr('type','button').append('Edit');
+		row.append(label).
+			append($('<div>').append(x)).
+			append($('<div>').append(y)).
+			append($('<div>').append(w)).
+			append($('<div>').append(h)).
+			append($('<div>').append(edit));
+
+		// If a slot has been defined already set the values
+		if(slots[front][slot]!='undefined'){
+			x.val(slots[front][slot].X);
+			y.val(slots[front][slot].Y);
+			w.val(slots[front][slot].W);
+			h.val(slots[front][slot].H);
+		}
+
+		return row;
+	}
+
+	function TemplateButtons(){
+		var pf=$('#FrontPictureFile');
+		var rf=$('#RearPictureFile');
+		var cs=$('#ChassisSlots');
+		var rs=$('#RearChassisSlots');
+
+		if(pf.val()!='' && cs.val()>0){cs.next('button').show();}else{cs.next('button').hide();}
+		if(rf.val()!='' && rs.val()>0){rs.next('button').show();}else{rs.next('button').hide();}
+	}
+
+$(document).ready(function(){
+	$('.templatemaker input + button').each(function(){
+		$(this).on('click',function(){
+			$.ajax({
+				url: '',
+				type: "post",
+				async: false,
+				data: {getslots:'',templateid: $('#templateid').val()},
+				success: function(d){
+					slots=d;
+				}
+			});
+
+			var table=$('<div>').addClass('table');
+			table.append($('<div>').
+				append($('<div>').append('Position')).
+				append($('<div>').append('X')).
+				append($('<div>').append('Y')).
+				append($('<div>').append('W')).
+				append($('<div>').append('H')).
+				append($('<div>')));
+
+			$('#coordstable').html(table);
+
+			var front=($(this).prev('input').attr('id')=='ChassisSlots')?true:false;
+			var picture=(front)?$('#FrontPictureFile'):$('#RearPictureFile');
+			$('#previewimage').html($('<img>').attr('src','pictures/'+picture.val()).width(400));
+
+			for(var i=1;i<=$(this).prev('input').val(); i++){
+				table.append(CoordinateRow(i,front));
+			}
+
+			// Open the dialog
+			Poopup();
+		});
+	});
+});
 </script>
 </head>
 <body>
@@ -422,11 +521,11 @@ echo '	</select>
 </div>
 <div id="DivChassisSlots" style="display: ',(($template->DeviceType=="Chassis")?'table-row':'none'),';">
    <div><label for="ChassisSlots">',__("Chassis Slots"),'</label></div>
-   <div><input type="text" name="ChassisSlots" id="ChassisSlots" value="',$template->ChassisSlots,'"></div>
+   <div><input type="text" name="ChassisSlots" id="ChassisSlots" value="',$template->ChassisSlots,'"><button type="button">',__("Edit Coordinates"),'</button></div>
 </div>
 <div id="DivRearChassisSlots" style="display: ',(($template->DeviceType=="Chassis")?'table-row':'none'),';">
    <div><label for="RearChassisSlots">',__("Rear Chassis Slots"),'</label></div>
-   <div><input type="text" name="RearChassisSlots" id="RearChassisSlots" value="',$template->RearChassisSlots,'"></div>
+   <div><input type="text" name="RearChassisSlots" id="RearChassisSlots" value="',$template->RearChassisSlots,'"><button type="button">',__("Edit Coordinates"),'</button></div>
 </div>';
 echo '<div id="DivSlots" style="display: ',(($template->ChassisSlots+$template->RearChassisSlots>0)?'table-row':'none'),';">
 	<div><label for="Slots">',__("Coordinates of Slots"),'</label></div>';
@@ -507,6 +606,19 @@ echo '
 ?>
 </div>
 </div><!-- END div.table -->
+
+
+<div id="hiddencoords">
+<div class="table">
+	<div>
+		<div id="previewimage">
+		</div>
+		<div id="coordstable">
+		</div>
+	</div>
+</div>
+</div>
+
 </form>
 </div></div><!-- END div.center -->
 </div> <!-- END div.templatemaker-->

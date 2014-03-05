@@ -282,6 +282,11 @@ div#dcstats .table + .table > div > div + div{white-space: pre; text-align: righ
 .templatemaker .table .table {margin-left: auto;}
 .templatemaker + .center div{position: relative;width: 100%;}
 .templatemaker + .center > div > div.container {position: absolute; top: 0px; left: 0px;}
+.templatemaker input + button { line-height: 1em; vertical-align: middle; height: 1.5em; margin-top: -1px; }
+.templatemaker #hiddencoords { position: absolute; left: -1000px; }
+.templatemaker #previewimage { width: 400px; }
+.templatemaker #coordstable { width: 320px; }
+#coordstable > .table > div:first-child { text-align: center; }
 table.coordinates th {background-color: #CCC; text-align: center; vertical-align: middle; padding-left: .5em; padding-right: .5em; padding-top: .2em;padding-bottom: .2em;}
 table.coordinates td {text-align: center; padding-left: .5em; padding-right: .5em; padding-top: 0.1em;padding-bottom: 0.1em;}
 table.coordinates input {text-align: center; border: 0px;}
