@@ -283,7 +283,7 @@ div#dcstats .table + .table > div > div + div{white-space: pre; text-align: righ
 .templatemaker + .center div{position: relative;width: 100%;}
 .templatemaker + .center > div > div.container {position: absolute; top: 0px; left: 0px;}
 .templatemaker input + button { line-height: 1em; vertical-align: middle; height: 1.5em; margin-top: -1px; }
-.templatemaker #hiddencoords { position: absolute; left: -1000px; }
+.templatemaker #hiddencoords { position: absolute; left: -10000px; top: -10000px;}
 .templatemaker #previewimage { width: 400px; }
 .templatemaker #coordstable { width: 320px; }
 #coordstable > .table > div:first-child { text-align: center; }

@@ -342,8 +342,9 @@ if (isset($template->RearChassisSlots) && $template->RearChassisSlots>0){
 	    }
 	}
 //previewimage,coordstable
-	function Poopup(){
-		$('<div>').append($('#hiddencoords > div')).
+	function Poopup(front){
+		var target=(front)?'.front':'.rear';
+		$('<div>').append($('#hiddencoords > div'+target)).
 			dialog({
 				closeOnEscape: false,
 				minHeight: 500,
@@ -352,13 +353,13 @@ if (isset($template->RearChassisSlots) && $template->RearChassisSlots>0){
 				resizable: false,
 				show: { effect: "blind", duration: 800 },
 				beforeClose: function(event,ui){
-					$('#hiddencoords').append($(this).children('div:first-child'));
+					$('#hiddencoords').append($(this).children('div'));
 				}
 			});
 	}
 
 	function CoordinateRow(slot,front){
-		front=(front=='undefined')?0:1;
+		front=(front=='undefined' || front)?0:1;
 		var fr=(front==0)?'F':'R';
 		var row=$('<div>');
 		var input=$('<input>').attr({'size':'4','type':'number'});
@@ -386,6 +387,43 @@ if (isset($template->RearChassisSlots) && $template->RearChassisSlots>0){
 		return row;
 	}
 
+	function InsertCoordsTable(front,btn){
+		var picture=(front)?$('#FrontPictureFile'):$('#RearPictureFile');
+		var targetdiv=(front)?'.front':'.rear';
+
+		var table=$('<div>').addClass('table');
+		table.append($('<div>').
+			append($('<div>').append('Position')).
+			append($('<div>').append('X')).
+			append($('<div>').append('Y')).
+			append($('<div>').append('W')).
+			append($('<div>').append('H')).
+			append($('<div>')));
+
+		$(targetdiv+' #coordstable').html(table);
+
+		var front=(btn.prev('input').attr('id')=='ChassisSlots')?true:false;
+		var picture=(front)?$('#FrontPictureFile'):$('#RearPictureFile');
+		$(targetdiv+' #previewimage').html($('<img>').attr('src','pictures/'+picture.val()).width(400));
+
+		for(var i=1;i<=btn.prev('input').val(); i++){
+			table.append(CoordinateRow(i,front));
+		}
+	}
+
+	function FetchSlots(){
+		// fetch all the existing slots and put them in a global variable
+		$.ajax({
+			url: '',
+			type: "post",
+			async: false,
+			data: {getslots:'',templateid: $('#templateid').val()},
+			success: function(d){
+				slots=d;
+			}
+		});
+	}
+
 	function TemplateButtons(){
 		var pf=$('#FrontPictureFile');
 		var rf=$('#RearPictureFile');
@@ -397,41 +435,23 @@ if (isset($template->RearChassisSlots) && $template->RearChassisSlots>0){
 	}
 
 $(document).ready(function(){
+	FetchSlots();
 	$('.templatemaker input + button').each(function(){
+		var front=($(this).prev('input').attr('id')=='ChassisSlots')?true:false;
+		InsertCoordsTable(front,$(this));
 		$(this).on('click',function(){
-			$.ajax({
-				url: '',
-				type: "post",
-				async: false,
-				data: {getslots:'',templateid: $('#templateid').val()},
-				success: function(d){
-					slots=d;
-				}
-			});
+			FetchSlots();
 
-			var table=$('<div>').addClass('table');
-			table.append($('<div>').
-				append($('<div>').append('Position')).
-				append($('<div>').append('X')).
-				append($('<div>').append('Y')).
-				append($('<div>').append('W')).
-				append($('<div>').append('H')).
-				append($('<div>')));
-
-			$('#coordstable').html(table);
-
-			var front=($(this).prev('input').attr('id')=='ChassisSlots')?true:false;
-			var picture=(front)?$('#FrontPictureFile'):$('#RearPictureFile');
-			$('#previewimage').html($('<img>').attr('src','pictures/'+picture.val()).width(400));
-
-			for(var i=1;i<=$(this).prev('input').val(); i++){
-				table.append(CoordinateRow(i,front));
-			}
+			// Fill in the coords table
+			InsertCoordsTable(front,$(this));
 
 			// Open the dialog
-			Poopup();
+			Poopup(front);
 		});
 	});
+
+	$('#FrontPictureFile,#RearPictureFile,#ChassisSlots,#RearChassisSlots').on('change keyup keydown', function(){ TemplateButtons(); });
+
 });
 </script>
 </head>
@@ -527,37 +547,6 @@ echo '	</select>
    <div><label for="RearChassisSlots">',__("Rear Chassis Slots"),'</label></div>
    <div><input type="text" name="RearChassisSlots" id="RearChassisSlots" value="',$template->RearChassisSlots,'"><button type="button">',__("Edit Coordinates"),'</button></div>
 </div>';
-echo '<div id="DivSlots" style="display: ',(($template->ChassisSlots+$template->RearChassisSlots>0)?'table-row':'none'),';">
-	<div><label for="Slots">',__("Coordinates of Slots"),'</label></div>';
-print "<div><table class='coordinates' style='margin-top: 3px; margin-left: 0px; margin-bottom: 3px;'>";
-print "<tr><th>".__("Position")."</th><th>".__("X")."</th><th>".__("Y")."</th><th>".__("W")."</th><th>".__("H")."</th><th></th></tr>\n";
-for ($i=1; $i<=$template->ChassisSlots;$i++){
-	$slot=new Slot();
-	$slot->TemplateID=$template->TemplateID;
-	$slot->Position=$i;
-	$slot->BackSide=False;
-	$slot->GetSlot();
-	print "<td>".$i." ".__("Front")."</td>\n"; 
-	print "<td><input type='text' name='XF".$i."' id='XF".$i."' value='".$slot->X."' size='4'></td>\n"; 
-	print "<td><input type='text' name='YF".$i."' id='YF".$i."' value='".$slot->Y."' size='4'></td>\n"; 
-	print "<td><input type='text' name='WF".$i."' id='WF".$i."' value='".$slot->W."' size='4'></td>\n"; 
-	print "<td><input type='text' name='HF".$i."' id='HF".$i."' value='".$slot->H."' size='4'></td>\n"; 
-	print "<td><a id='F".$i."' href='pictures/".$template->FrontPictureFile."' title='".__("Edit coordinates of front slot")." ".$i."' onClick='show(\"F".$i."\")' >".__("Edit")."</a></td>\n</tr>\n"; 
-}
-for ($i=1; $i<=$template->RearChassisSlots;$i++){
-	$slot=new Slot();
-	$slot->TemplateID=$template->TemplateID;
-	$slot->Position=$i;
-	$slot->BackSide=True;
-	$slot->GetSlot();
-	print "<td>".$i." ".__("Rear")."</td>\n"; 
-	print "<td><input type='text' name='XR".$i."' id='XR".$i."' value='".$slot->X."' size='4'></td>\n"; 
-	print "<td><input type='text' name='YR".$i."' id='YR".$i."' value='".$slot->Y."' size='4'></td>\n"; 
-	print "<td><input type='text' name='WR".$i."' id='WR".$i."' value='".$slot->W."' size='4'></td>\n"; 
-	print "<td><input type='text' name='HR".$i."' id='HR".$i."' value='".$slot->H."' size='4'></td>\n";
-	print "<td><a id='R".$i."' href='pictures/".$template->RearPictureFile."' title='".__("Edit coordinates of rear slot")." ".$i."' onClick='show(\"R".$i."\")' >".__("Edit")."</a></td>\n</tr>\n";
-}
-print "</table>\n</div>\n</div>\n";
 
 echo '<div id="DivPorts" style="display: ',(($template->NumPorts>0)?'table-row':'none'),';">
 	<div><label for="Ports">',__("Features of ports"),'</label></div>';
@@ -609,14 +598,22 @@ echo '
 
 
 <div id="hiddencoords">
-<div class="table">
-	<div>
-		<div id="previewimage">
-		</div>
-		<div id="coordstable">
+	<div class="table front">
+		<div>
+			<div id="previewimage">
+			</div>
+			<div id="coordstable">
+			</div>
 		</div>
 	</div>
-</div>
+	<div class="table rear">
+		<div>
+			<div id="previewimage">
+			</div>
+			<div id="coordstable">
+			</div>
+		</div>
+	</div>
 </div>
 
 </form>
