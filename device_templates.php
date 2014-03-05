@@ -488,7 +488,9 @@ echo '
 	</div>
 	<div class="table rear">
 		<div>
-			<div id="previewimage">
+			<div>
+				<div id="previewimage">
+				</div>
 			</div>
 			<div id="coordstable">
 			</div>
