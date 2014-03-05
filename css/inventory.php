@@ -284,7 +284,8 @@ div#dcstats .table + .table > div > div + div{white-space: pre; text-align: righ
 .templatemaker + .center > div > div.container {position: absolute; top: 0px; left: 0px;}
 .templatemaker input + button { line-height: 1em; vertical-align: middle; height: 1.5em; margin-top: -1px; }
 .templatemaker #hiddencoords { position: absolute; left: -10000px; top: -10000px;}
-.templatemaker #previewimage { width: 400px; }
+.templatemaker #previewimage { width: 400px;}
+.table.front #previewimage, .table.rear #previewimage { position: relative; }
 .templatemaker #coordstable { width: 320px; }
 #coordstable > .table > div:first-child { text-align: center; }
 table.coordinates th {background-color: #CCC; text-align: center; vertical-align: middle; padding-left: .5em; padding-right: .5em; padding-top: .2em;padding-bottom: .2em;}

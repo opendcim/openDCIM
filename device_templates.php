@@ -250,36 +250,6 @@
 			}
 		});
 
-		$('#ChassisSlots').change(function(){
-			if($('#ChassisSlots').val()+$('#RearChassisSlots').val()==0 && $('#FrontPictureFile').val().length>0){
-				$('#DivSlots').css({'display': 'none'});
-			}
-		});
-
-		$('#RearChassisSlots').change(function(){
-			if($('#ChassisSlots').val()+$('#RearChassisSlots').val()==0 && $('#RearPictureFile').val().length>0){
-				$('#DivSlots').css({'display': 'none'});
-			}
-		});
-
-<?php 
-if (isset($template->ChassisSlots) && $template->ChassisSlots>0){
-?>		
-		//init individual lightBoxes
-		for (var i=1; i<=<?php print $template->ChassisSlots; ?>;i++){
-			$('a[id=F'+i+']').lightBox();
-		}
-<?php
-}
-if (isset($template->RearChassisSlots) && $template->RearChassisSlots>0){
-?>
-		for (var i=1; i<=<?php print $template->RearChassisSlots; ?>;i++){
-			$('a[id=R'+i+']').lightBox();
-		}
-<?php
-}
-?>
-
 		$( "#importButton" ).click(function() {
 			$("#dlg_importfile").dialog({
 				resizable: false,
@@ -340,98 +310,6 @@ if (isset($template->RearChassisSlots) && $template->RearChassisSlots>0){
 	    }else{
 	        setTimeout(function(){show(slot)}, 50);
 	    }
-	}
-//previewimage,coordstable
-	function Poopup(front){
-		var target=(front)?'.front':'.rear';
-		$('<div>').append($('#hiddencoords > div'+target)).
-			dialog({
-				closeOnEscape: false,
-				minHeight: 500,
-				width: 740,
-				modal: true,
-				resizable: false,
-				show: { effect: "blind", duration: 800 },
-				beforeClose: function(event,ui){
-					$('#hiddencoords').append($(this).children('div'));
-				}
-			});
-	}
-
-	function CoordinateRow(slot,front){
-		front=(front=='undefined' || front)?0:1;
-		var fr=(front==0)?'F':'R';
-		var row=$('<div>');
-		var input=$('<input>').attr({'size':'4','type':'number'});
-		var label=$('<div>').text(slot).append((front=='0')?' Front':' Rear');
-		var x=input.clone().attr('name','X'+fr+slot);
-		var y=input.clone().attr('name','Y'+fr+slot);
-		var w=input.clone().attr('name','W'+fr+slot);
-		var h=input.clone().attr('name','H'+fr+slot);
-		var edit=$('<button>').attr('type','button').append('Edit');
-		row.append(label).
-			append($('<div>').append(x)).
-			append($('<div>').append(y)).
-			append($('<div>').append(w)).
-			append($('<div>').append(h)).
-			append($('<div>').append(edit));
-
-		// If a slot has been defined already set the values
-		if(slots[front][slot]!='undefined'){
-			x.val(slots[front][slot].X);
-			y.val(slots[front][slot].Y);
-			w.val(slots[front][slot].W);
-			h.val(slots[front][slot].H);
-		}
-
-		return row;
-	}
-
-	function InsertCoordsTable(front,btn){
-		var picture=(front)?$('#FrontPictureFile'):$('#RearPictureFile');
-		var targetdiv=(front)?'.front':'.rear';
-
-		var table=$('<div>').addClass('table');
-		table.append($('<div>').
-			append($('<div>').append('Position')).
-			append($('<div>').append('X')).
-			append($('<div>').append('Y')).
-			append($('<div>').append('W')).
-			append($('<div>').append('H')).
-			append($('<div>')));
-
-		$(targetdiv+' #coordstable').html(table);
-
-		var front=(btn.prev('input').attr('id')=='ChassisSlots')?true:false;
-		var picture=(front)?$('#FrontPictureFile'):$('#RearPictureFile');
-		$(targetdiv+' #previewimage').html($('<img>').attr('src','pictures/'+picture.val()).width(400));
-
-		for(var i=1;i<=btn.prev('input').val(); i++){
-			table.append(CoordinateRow(i,front));
-		}
-	}
-
-	function FetchSlots(){
-		// fetch all the existing slots and put them in a global variable
-		$.ajax({
-			url: '',
-			type: "post",
-			async: false,
-			data: {getslots:'',templateid: $('#templateid').val()},
-			success: function(d){
-				slots=d;
-			}
-		});
-	}
-
-	function TemplateButtons(){
-		var pf=$('#FrontPictureFile');
-		var rf=$('#RearPictureFile');
-		var cs=$('#ChassisSlots');
-		var rs=$('#RearChassisSlots');
-
-		if(pf.val()!='' && cs.val()>0){cs.next('button').show();}else{cs.next('button').hide();}
-		if(rf.val()!='' && rs.val()>0){rs.next('button').show();}else{rs.next('button').hide();}
 	}
 
 $(document).ready(function(){
@@ -600,7 +478,9 @@ echo '
 <div id="hiddencoords">
 	<div class="table front">
 		<div>
-			<div id="previewimage">
+			<div>
+				<div id="previewimage">
+				</div>
 			</div>
 			<div id="coordstable">
 			</div>
