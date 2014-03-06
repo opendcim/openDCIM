@@ -129,9 +129,6 @@ function renderUnassignedTemplateOwnership($noTemplFlag, $noOwnerFlag, $device) 
         $noOwnerFlag = true;
     }
     if ($noTemplFlag or $noOwnerFlag) {
-        // most modern browsers don't display anymore the blinking text therefore
-        // it is dropped.
-        # $retstr = '<span class="hlight blink">' . $noTemplate . $noOwnership . '</span>';
         $retstr = '<span class="hlight">' . $noTemplate . $noOwnership . '</span>';
     }
     return array($noTemplFlag, $noOwnerFlag, $retstr);
@@ -204,19 +201,19 @@ function renderUnassignedTemplateOwnership($noTemplFlag, $noOwnerFlag, $device) 
 	list($cab_color, $deptswithcolor) = getColorofCabinetOwner($cab, $deptswithcolor);
 
 	if($config->ParameterArray["ReservedColor"] != "#FFFFFF" || $config->ParameterArray["FreeSpaceColor"] != "#FFFFFF"){
-		$head .= "		<style type=\"text/css\">
-			.reserved {background-color: {$config->ParameterArray['ReservedColor']} !important;}
-			.freespace {background-color: {$config->ParameterArray['FreeSpaceColor']};}\n";
+		$head .= "  <style type=\"text/css\">\n"
+			. "    .reserved {background-color: {$config->ParameterArray['ReservedColor']} !important;}\n"
+			. "    .freespace {background-color: {$config->ParameterArray['FreeSpaceColor']};}\n";
 
 		if($config->ParameterArray["FreeSpaceColor"] != "#FFFFFF"){
 			$legend.='<div class="legenditem"><span class="freespace colorbox border"></span> - '.__("Free Space").'</div>'."\n";
 		}
 	}
 
-	$noOwnerFlag=false;
-	$noTemplFlag=false;
-	$noReservationFlag=false;
-	$backside=false;
+	$noOwnerFlag = false;
+	$noTemplFlag = false;
+	$ReservationFlag = false;
+	$backside = false;
 
 	// This function with no argument will build the front cabinet face. Specify
 	// rear and it will build that back.
@@ -225,8 +222,7 @@ function renderUnassignedTemplateOwnership($noTemplFlag, $noOwnerFlag, $device) 
 		global $cab_color, $cab, $device, $body, $currentHeight, $heighterr,
 				$devList, $templ, $tempDept, $backside, $deptswithcolor, $tempDept,
 				$totalWeight, $totalWatts, $totalMoment, $zeroheight,
-				$noTemplFlag, $noOwnerFlag, $noReservationFlag;
-        // global $highlight;
+				$noTemplFlag, $noOwnerFlag, $ReservationFlag;
 
 		$currentHeight=$cab->CabinetHeight;
 
@@ -263,8 +259,6 @@ function renderUnassignedTemplateOwnership($noTemplFlag, $noOwnerFlag, $device) 
 					$deptswithcolor[$device->Owner]["color"]=$tempDept->DeptColor;
 					$deptswithcolor[$device->Owner]["name"]=$tempDept->Name;
 				}
-				// list($noTemplFlag, $noOwnerFlag, $highlight) =
-                //     renderUnassignedTemplateOwnership($noTemplFlag, $noOwnerFlag, $device);
 
 				//only computes this device if it is its front side
 				if (!$device->BackSide && !$rear || $device->BackSide && $rear){
@@ -274,10 +268,10 @@ function renderUnassignedTemplateOwnership($noTemplFlag, $noOwnerFlag, $device) 
 					$totalMoment+=($DeviceTotalWeight*($device->Position+($device->Height/2)));
 				}
 
-				$reserved="";
-				if($device->Reservation==true){
-					$reserved=" reserved";
-					$noReservationFlag=true;
+				$reserved = "";
+				if ($device->Reservation == true) {
+					$reserved = " reserved";
+					$ReservationFlag = true;
 				}
 				if($devTop<$currentHeight && $currentHeight>0){
 					for($i=$currentHeight;($i>$devTop);$i--){
@@ -372,10 +366,10 @@ function renderUnassignedTemplateOwnership($noTemplFlag, $noOwnerFlag, $device) 
     if (!empty($deptswithcolor)) {
         foreach ($deptswithcolor as $deptid => $row) {
             // If head is empty then we don't have any custom colors defined above so add a style container for these
-            if($head==""){
-                $head.="\t\t<style type=\"text/css\">\n";
+            if ($head == "") {
+                $head .= "  <style type=\"text/css\">\n";
             }
-            $head.="\t\t\t.dept$deptid {background-color: {$row['color']};}\n";
+            $head .= "    .dept$deptid {background-color: {$row['color']};}\n";
             $legend.="<div class=\"legenditem\"><span class=\"border colorbox dept$deptid\"></span> - <span>{$row['name']}</span></div>\n";
         }
     }
@@ -389,8 +383,9 @@ function renderUnassignedTemplateOwnership($noTemplFlag, $noOwnerFlag, $device) 
 	$legend=($noOwnerFlag)?"\t\t<div class=\"legenditem\"><span class=\"hlight\">(O)</span> - ".__("Owner Unassigned")."</div>\n".$legend:$legend;
 	$legend=($noTemplFlag)?"\t\t<div class=\"legenditem\"><span class=\"hlight\">(T)</span> - ".__("Template Unassigned")."</div>\n".$legend:$legend;
 
-	// Only show reserved in the legend if a device is set to reserved AND the color is something other than white
-	if($config->ParameterArray["ReservedColor"] != "#FFFFFF" && $noTemplFlag){
+	// Only show reserved in the legend if a device is set to reserved AND the
+    // color is something other than white
+	if ($ReservationFlag && $config->ParameterArray["ReservedColor"] != "#FFFFFF" ) {
 		$legend.='<div class="legenditem"><span class="reserved colorbox border"></span> - '.__("Reservation").'</div>'."\n";
 	}
 
@@ -542,9 +537,10 @@ $body.='<div id="infopanel">
 	$body.='
 </div> <!-- END div#infopanel -->';
 
-	// If $head isn't empty then we must have added some style information so close the tag up.
-	if($head!=""){
-		$head.='		</style>';
+	// If $head isn't empty then we must have added some style information so
+    // close the tag up.
+	if ($head != "") {
+		$head .= '  </style>' . "\n";
 	}
 
 	$title=($cab->Location!='')?"$cab->Location :: $dc->Name":__("Facilities Cabinet Maintenance");
@@ -588,8 +584,7 @@ echo $head,'  <script type="text/javascript" src="scripts/jquery.min.js"></scrip
 	$(document).ready(function() {
 		$(".cabinet .error").append("*");
 		if($("#legend *").length==1){$("#legend").hide();}
-		if($("#keylock div").text().trim()==""){$("#keylock").hide();}
-';
+		if($("#keylock div").text().trim()==""){$("#keylock").hide();}';
 if($config->ParameterArray["ToolTips"]=='enabled'){
 ?>
 		$('.cabinet td:has(a):not(:has(img)), #zerou div > a, .cabinet .picture a img, .cabinet .picture a div').mouseenter(function(){
