@@ -141,7 +141,6 @@
 				$('#zoneid').change();
 			});
 		});
-		$('#datacenterid').trigger('change');
 		$('#zoneid').change(function(){
 			$.post('',{rowlist: $(this).val()}).done(function(data){
 				$('#cabrowid').html('');
@@ -151,6 +150,12 @@
 				$('#cabrowid').val(0);
 			});
 		});
+
+		// Init form
+		if($('#zoneid').val()==0 || $('#cabrowid').val()==0){
+			$('#datacenterid').trigger('change');
+		}
+
 		$('#rackform').validationEngine({});
 		$('input[name="installationdate"]').datepicker({});
 		$('#tags').width($('#tags').parent('div').parent('div').innerWidth()-$('#tags').parent('div').prev('div').outerWidth()-5);
