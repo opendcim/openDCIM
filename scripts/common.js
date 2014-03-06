@@ -122,7 +122,7 @@ function drawArrow(canvas,startx,starty,width,height,direction){
 	canvas.restore();
 }
 
-// Template management
+// Template management  device_template.php
 function Poopup(front){
 	var target=(front)?'.front':'.rear';
 	$('<div>').append($('#hiddencoords > div'+target)).
@@ -170,19 +170,24 @@ function CoordinateRow(slot,front){
 		$(this).closest('#coordstable').find('.table > div').removeClass('greybg');
 		var templateimage=$(this).closest('#coordstable').prev('div').children('#previewimage').children('img');
 		var modal=templateimage.parent('div');
+
+		// This will take into account the size of the image on the screen
+		// vs the actual size of the image
+		var zoom=templateimage.width()/templateimage.naturalWidth();
+
 		templateimage.imgAreaSelect({
-			x1: parseInt(x.val()),
-			x2: parseInt(x.val()) + parseInt(w.val()),
-			y1: parseInt(y.val()),
-			y2: parseInt(y.val()) + parseInt(h.val()),
+			x1: parseInt((x.val())*zoom),
+			x2: (parseInt(x.val()) + parseInt(w.val()))*zoom,
+			y1: parseInt((y.val())*zoom),
+			y2: (parseInt(y.val()) + parseInt(h.val()))*zoom,
 			parent: modal,
 			handles: true,
 			show: true,
 			onSelectEnd: function (img, selection) {
-				x.val(selection.x1);
-				y.val(selection.y1);
-				w.val(selection.width);
-				h.val(selection.height);
+				x.val(parseInt(selection.x1/zoom));
+				y.val(parseInt(selection.y1/zoom));
+				w.val(parseInt(selection.width/zoom));
+				h.val(parseInt(selection.height/zoom));
 			}
 		});
 		row.addClass('greybg');
@@ -949,3 +954,34 @@ function TemplateButtons(){
 		}
 	});
 })( jQuery );
+
+
+// adds .naturalWidth() and .naturalHeight() methods to jQuery
+// for retreaving a normalized naturalWidth and naturalHeight.
+(function($){
+	var
+	props = ['Width', 'Height'],
+	prop;
+
+	while (prop = props.pop()) {
+	(function (natural, prop) {
+		$.fn[natural] = (natural in new Image()) ? 
+		function () {
+		return this[0][natural];
+		} : 
+		function () {
+		var 
+		node = this[0],
+		img,
+		value;
+
+		if (node.tagName.toLowerCase() === 'img') {
+			img = new Image();
+			img.src = node.src,
+			value = img[prop];
+		}
+		return value;
+		};
+	}('natural' + prop, prop.toLowerCase()));
+	}
+}(jQuery));
