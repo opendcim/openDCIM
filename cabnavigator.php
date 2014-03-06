@@ -129,9 +129,6 @@ function renderUnassignedTemplateOwnership($noTemplFlag, $noOwnerFlag, $device) 
         $noOwnerFlag = true;
     }
     if ($noTemplFlag or $noOwnerFlag) {
-        // most modern browsers don't display anymore the blinking text therefore
-        // it is dropped.
-        # $retstr = '<span class="hlight blink">' . $noTemplate . $noOwnership . '</span>';
         $retstr = '<span class="hlight">' . $noTemplate . $noOwnership . '</span>';
     }
     return array($noTemplFlag, $noOwnerFlag, $retstr);
@@ -226,7 +223,6 @@ function renderUnassignedTemplateOwnership($noTemplFlag, $noOwnerFlag, $device) 
 				$devList, $templ, $tempDept, $backside, $deptswithcolor, $tempDept,
 				$totalWeight, $totalWatts, $totalMoment, $zeroheight,
 				$noTemplFlag, $noOwnerFlag, $ReservationFlag;
-        // global $highlight;
 
 		$currentHeight=$cab->CabinetHeight;
 
