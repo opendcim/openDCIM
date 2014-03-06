@@ -152,7 +152,7 @@
 		});
 
 		// Init form
-		if($('#zoneid').val()==0 || $('#cabrowid').val()==0){
+		if($('#zoneid').val()==0 && $('#cabrowid').val()==0){
 			$('#datacenterid').trigger('change');
 		}
 
