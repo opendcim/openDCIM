@@ -147,6 +147,33 @@ function applyupdate ($updatefile){
 }
 	$upgrade=false;
 
+/* Generic html sanitization routine */
+
+function sanitize($string,$stripall=true){
+	// Trim any leading or trailing whitespace
+	$clean=trim($string);
+
+	// Convert any special characters to their normal parts
+	$clean=html_entity_decode($clean,ENT_COMPAT,"UTF-8");
+
+	// By default strip all html
+	$allowedtags=($stripall)?'':'<a><b><i><img><u><br>';
+
+	// Strip out the shit we don't allow
+	$clean=strip_tags($clean, $allowedtags);
+	// If we decide to strip double quotes instead of encoding them uncomment the 
+	//	next line
+//	$clean=($stripall)?str_replace('"','',$clean):$clean;
+	// What is this gonna do ?
+	$clean=filter_var($clean, FILTER_SANITIZE_SPECIAL_CHARS);
+
+	// There shoudln't be anything left to escape but wtf do it anyway
+	$clean=addslashes($clean);
+
+	return $clean;
+}
+
+
 // Check to see if we are doing an upgrade or an install
 	$result=$dbh->prepare("SHOW TABLES;");
 	$result->execute();
