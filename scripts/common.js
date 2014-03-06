@@ -132,6 +132,7 @@ function Poopup(front){
 			width: 740,
 			modal: true,
 			resizable: false,
+			position: { my: "center", at: "top", of: window },
 			show: { effect: "blind", duration: 800 },
 			beforeClose: function(event,ui){
 				$('#hiddencoords').append($(this).children('div'));
@@ -166,6 +167,7 @@ function CoordinateRow(slot,front){
 	}
 
 	edit.on('click',function(){
+		$(this).closest('#coordstable').find('.table > div').removeClass('greybg');
 		var templateimage=$(this).closest('#coordstable').prev('div').children('#previewimage').children('img');
 		var modal=templateimage.parent('div');
 		templateimage.imgAreaSelect({
@@ -183,6 +185,7 @@ function CoordinateRow(slot,front){
 				h.val(selection.height);
 			}
 		});
+		row.addClass('greybg');
 	});
 
 	return row;

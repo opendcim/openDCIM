@@ -286,7 +286,7 @@ div#dcstats .table + .table > div > div + div{white-space: pre; text-align: righ
 .templatemaker #hiddencoords { position: absolute; left: -10000px; top: -10000px;}
 .templatemaker #previewimage { width: 400px;}
 .table.front #previewimage, .table.rear #previewimage { position: relative; }
-.templatemaker #coordstable { width: 320px; }
+.table.front #coordstable, .table.rear #coordstable { width: 320px; padding-left: 10px;}
 #coordstable input { width: 40px; }
 #coordstable > .table > div:first-child { text-align: center; }
 table.coordinates th {background-color: #CCC; text-align: center; vertical-align: middle; padding-left: .5em; padding-right: .5em; padding-top: .2em;padding-bottom: .2em;}
