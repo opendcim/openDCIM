@@ -64,48 +64,38 @@ function renderTagsToString($obj)
  * @param CabinetAudit $audit
  * @param string $AuditorName
  */
-function renderCabinetProps($cab, $audit, $AuditorName)
-{
-    $renderedHTML = "\t\t<table id=\"cabprop\">\n"
-        . '			<tr><td class="left">' . __('Last Audit') . ':</td>'
-	    . '<td class="right">' . $audit->AuditStamp . '';
-    	    if ($AuditorName != '') {
-    	        $renderedHTML .= "<br>$AuditorName";
-    	    }
-    $renderedHTML .= "</td></tr>\n";
-    $renderedHTML .= "\t\t\t<tr><td class=\"left\">" . __('Model') . ":</td>"
-        . "<td class=\"right\">".$cab->Model."</td></tr>\n";
+function renderCabinetProps($cab, $audit, $AuditorName){
+	$tmpDC=new DataCenter();
+	$tmpDC->DataCenterID=$cab->DataCenterID;
+	$tmpDC->GetDataCenter();
+	$AuditorName=($AuditorName!='')?"<br>$AuditorName":"";
 
-    $renderedHTML .= '			<tr><td class="left">' . __('Data Center');
-    $tmpDC = new DataCenter();
-    $tmpDC->DataCenterID = $cab->DataCenterID;
-    $tmpDC->GetDataCenter();
-    $renderedHTML.=":</td><td class=\"right\">$tmpDC->Name</td></tr>\n";
-    $renderedHTML.="\t\t\t<tr><td class=\"left\">".__('Install Date')
-        . ":</td><td class=\"right\">$cab->InstallationDate</td></tr>\n";
-	if ($cab->ZoneID) {
-        $zone = new Zone();
-        $zone->ZoneID = $cab->ZoneID;
-        $zone->GetZone();
-        $renderedHTML .= '			<tr><td class="left">' . __('Zone') . ':</td>'
-            . '<td class="right">' . $zone->Description . "</td></tr>\n";
-    }
-    if ($cab->CabRowID) {
-        $cabrow = new CabRow();
-        $cabrow->CabRowID = $cab->CabRowID;
-        $cabrow->GetCabRow();
-        $renderedHTML .= '			<tr><td class="left">' . __('Row') . ':</td>'
-            . '<td class="right">' . $cabrow->Name . "</td></tr>\n";
-    }
-    $renderedHTML .= '			<tr><td class="left">' . __('Tags') . ':</td>';
-    $renderedHTML .= '<td class="right">' . renderTagsToString($cab)
-        . "</td></tr>\n";
-    $renderedHTML .= '			<tr><td class="left">' . __('Front Edge') . ':</td>';
-    $renderedHTML .= '<td class="right">' . $cab->FrontEdge
-        . "</td></tr>\n";
-    $renderedHTML .= "\t\t</table>\n";
+	$renderedHTML="\t\t<table id=\"cabprop\">
+	\t\t<tr><td class=\"left\">".__("Last Audit").":</td><td class=\"right\">$audit->AuditStamp$AuditorName</td></tr>
+	\t\t<tr><td class=\"left\">".__("Model").":</td><td class=\"right\">$cab->Model</td></tr>
+	\t\t<tr><td class=\"left\">".__("Data Center").":</td><td class=\"right\">$tmpDC->Name</td></tr>
+	\t\t<tr><td class=\"left\">".__("Install Date").":</td><td class=\"right\">$cab->InstallationDate</td></tr>\n";
 
-    return $renderedHTML;
+	if($cab->ZoneID){
+		$zone=new Zone();
+		$zone->ZoneID=$cab->ZoneID;
+		$zone->GetZone();
+		$renderedHTML.="\t\t\t<tr><td class=\"left\">".__("Zone").":</td><td class=\"right\">$zone->Description</td></tr>\n";
+	}
+	if($cab->CabRowID){
+		$cabrow=new CabRow();
+		$cabrow->CabRowID=$cab->CabRowID;
+		$cabrow->GetCabRow();
+		$renderedHTML.="\t\t\t<tr><td class=\"left\">".__("Row").":</td><td class=\"right\">$cabrow->Name</td></tr>\n";
+	}
+	$renderedHTML.="\t\t\t<tr><td class=\"left\">".__("Tags").":</td><td class=\"right\">".renderTagsToString($cab)."</td></tr>\n";
+
+	//   This is out of context here and makes the information confusing.
+	//    $renderedHTML .= '			<tr><td class="left">' . __('Front Edge') . ':</td>';
+	//    $renderedHTML .= "<td class=\"right\">$cab->FrontEdge </td></tr>\n";
+	$renderedHTML.="\t\t</table>\n";
+
+	return $renderedHTML;
 }
 
 /**
