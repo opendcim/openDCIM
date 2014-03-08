@@ -129,9 +129,6 @@ function renderUnassignedTemplateOwnership($noTemplFlag, $noOwnerFlag, $device) 
         $noOwnerFlag = true;
     }
     if ($noTemplFlag or $noOwnerFlag) {
-        // most modern browsers don't display anymore the blinking text therefore
-        // it is dropped.
-        # $retstr = '<span class="hlight blink">' . $noTemplate . $noOwnership . '</span>';
         $retstr = '<span class="hlight">' . $noTemplate . $noOwnership . '</span>';
     }
     return array($noTemplFlag, $noOwnerFlag, $retstr);
@@ -219,20 +216,19 @@ function renderUnassignedTemplateOwnership($noTemplFlag, $noOwnerFlag, $device) 
 	$backside=false;
 
 	// This function with no argument will build the front cabinet face. Specify
-	// rear and it will build that back.
+	// rear and it will build the back.
 	function BuildCabinet($rear=false){
 		// This is fucking horrible, there has to be a better way to accomplish this.
 		global $cab_color, $cab, $device, $body, $currentHeight, $heighterr,
 				$devList, $templ, $tempDept, $backside, $deptswithcolor, $tempDept,
 				$totalWeight, $totalWatts, $totalMoment, $zeroheight,
 				$noTemplFlag, $noOwnerFlag, $noReservationFlag;
-        // global $highlight;
 
 		$currentHeight=$cab->CabinetHeight;
 
 		$body.="<div class=\"cabinet\">\n\t<table>
 		<tr><th id=\"cabid\" data-cabinetid=$cab->CabinetID colspan=2 $cab_color>".__("Cabinet")." $cab->Location".($rear?" (".__("Rear").")":"")."</th></tr>
-		<tr><td class=\"cabpos\">".__("Pos")."</td><td class=\"cabdev_t\">".__("Device")."</td></tr>\n";
+		<tr><td class=\"cabpos\">".__("Pos")."</td><td>".__("Device")."</td></tr>\n";
 
 		$heighterr="";
 		while(list($dev_index,$device)=each($devList)){
@@ -263,8 +259,6 @@ function renderUnassignedTemplateOwnership($noTemplFlag, $noOwnerFlag, $device) 
 					$deptswithcolor[$device->Owner]["color"]=$tempDept->DeptColor;
 					$deptswithcolor[$device->Owner]["name"]=$tempDept->Name;
 				}
-				// list($noTemplFlag, $noOwnerFlag, $highlight) =
-                //     renderUnassignedTemplateOwnership($noTemplFlag, $noOwnerFlag, $device);
 
 				//only computes this device if it is its front side
 				if (!$device->BackSide && !$rear || $device->BackSide && $rear){
@@ -286,9 +280,9 @@ function renderUnassignedTemplateOwnership($noTemplFlag, $noOwnerFlag, $device) 
 						if($i==$currentHeight){
 							$blankHeight=$currentHeight-$devTop;
 							if($devTop==-1){--$blankHeight;}
-							$body.="<tr><td class=\"cabpos freespace$errclass\">$i</td><td class=\"cabdev_t freespace\" rowspan=$blankHeight>&nbsp;</td></tr>\n";
+							$body.="\t\t<tr><td class=\"cabpos freespace$errclass\">$i</td><td class=\"freespace\" rowspan=$blankHeight>&nbsp;</td></tr>\n";
 						} else {
-							$body.="<tr><td class=\"cabpos freespace$errclass\">$i</td></tr>\n";
+							$body.="\t\t<tr><td class=\"cabpos freespace$errclass\">$i</td></tr>\n";
 							if($i==1){break;}
 						}
 					}
@@ -303,11 +297,11 @@ function renderUnassignedTemplateOwnership($noTemplFlag, $noOwnerFlag, $device) 
 						$text=($device->Rights!="None")?"<a href=\"devices.php?deviceid=$device->DeviceID\">$highlight $devlabel</a>":$devlabel;
 						
 						// Put the device in the rack
-						$body.="<tr><td class=\"cabpos$reserved dept$device->Owner$errclass\">$i</td><td class=\"dept$device->Owner$reserved\" rowspan=$device->Height data-deviceid=$device->DeviceID>";
+						$body.="\t\t<tr><td class=\"cabpos$reserved dept$device->Owner$errclass\">$i</td><td class=\"dept$device->Owner$reserved\" rowspan=$device->Height data-deviceid=$device->DeviceID>";
 						$body.=($picture)?$picture:$text;
 						$body.="</td></tr>\n";
 					}else{
-						$body.="<tr><td class=\"cabpos$reserved dept$device->Owner$errclass\">$i</td></tr>\n";
+						$body.="\t\t<tr><td class=\"cabpos$reserved dept$device->Owner$errclass\">$i</td></tr>\n";
 					}
 				}
 				$currentHeight=$device->Position - 1;
@@ -321,12 +315,12 @@ function renderUnassignedTemplateOwnership($noTemplFlag, $noOwnerFlag, $device) 
 			if($i==$currentHeight){
 				$blankHeight=$currentHeight;
 
-				$body.="<tr><td class=\"cabpos freespace\">$i</td><td class=\"cabdev_t freespace\" rowspan=$blankHeight>&nbsp;</td></tr>\n";
+				$body.="\t\t<tr><td class=\"cabpos freespace\">$i</td><td class=\"freespace\" rowspan=$blankHeight>&nbsp;</td></tr>\n";
 			}else{
-				$body.="<tr><td class=\"cabpos freespace\">$i</td></tr>\n";
+				$body.="\t\t<tr><td class=\"cabpos freespace\">$i</td></tr>\n";
 			}
 		}
-		$body.="</table></div>";
+		$body.="\t</table>\n</div>\n";
 		reset($devList);
 	}  //END OF BuildCabinet
 
@@ -376,7 +370,7 @@ function renderUnassignedTemplateOwnership($noTemplFlag, $noOwnerFlag, $device) 
                 $head.="\t\t<style type=\"text/css\">\n";
             }
             $head.="\t\t\t.dept$deptid {background-color: {$row['color']};}\n";
-            $legend.="<div class=\"legenditem\"><span class=\"border colorbox dept$deptid\"></span> - <span>{$row['name']}</span></div>\n";
+            $legend.="\t\t<div class=\"legenditem\"><span class=\"border colorbox dept$deptid\"></span> - <span>{$row['name']}</span></div>\n";
         }
     }
 
@@ -391,7 +385,7 @@ function renderUnassignedTemplateOwnership($noTemplFlag, $noOwnerFlag, $device) 
 
 	// Only show reserved in the legend if a device is set to reserved AND the color is something other than white
 	if($config->ParameterArray["ReservedColor"] != "#FFFFFF" && $noReservationFlag){
-		$legend.='<div class="legenditem"><span class="reserved colorbox border"></span> - '.__("Reservation").'</div>'."\n";
+		$legend.="\t\t<div class=\"legenditem\"><span class=\"reserved colorbox border\"></span> - ".__("Reservation")."</div>\n";
 	}
 
 $body.='<div id="infopanel">
@@ -516,7 +510,7 @@ $body.='<div id="infopanel">
 	}
 
 	if($user->CanWrite($cab->AssignedTo)){
-		$body.="			<ul class=\"nav\"><a href=\"power_pdu.php?pduid=0&cabinetid=$cab->CabinetID\"><li>".__("Add CDU")."</li></a></ul>\n";
+		$body.="\n\t\t<ul class=\"nav\"><a href=\"power_pdu.php?pduid=0&cabinetid=$cab->CabinetID\"><li>".__("Add CDU")."</li></a></ul>\n";
 	}
 
 	$body.="\t</fieldset>\n";
