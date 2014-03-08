@@ -159,7 +159,6 @@
   <link rel="stylesheet" href="css/imgareaselect-default.css" type="text/css">
   <link rel="stylesheet" href="css/validationEngine.jquery.css" type="text/css">
   <link rel="stylesheet" href="css/jHtmlArea.css" type="text/css">
-  <link rel="stylesheet" type="text/css" href="css/jquery.lightbox.css" media="screen" />
   <!--[if lt IE 9]>
   <link rel="stylesheet"  href="css/ie.css" type="text/css">
   <![endif]-->
@@ -171,7 +170,6 @@
   <script type="text/javascript" src="scripts/jHtmlArea-0.8.min.js"></script>
   <script type="text/javascript" src="scripts/jquery.textext.js"></script>
   <script type="text/javascript" src="scripts/jquery.imgareaselect.pack.js"></script>
-  <script type="text/javascript" src="scripts/jquery.lightbox.min.js"></script>
   <script type="text/javascript" src="scripts/common.js"></script>
   <script type="text/javascript">
 	$(document).ready(function(){
@@ -285,6 +283,7 @@
 
 $(document).ready(function(){
 	FetchSlots();
+	TemplateButtons();
 	$('.templatemaker input + button').each(function(){
 		var front=($(this).prev('input').attr('id')=='ChassisSlots')?true:false;
 		InsertCoordsTable(front,$(this));

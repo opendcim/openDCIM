@@ -488,46 +488,39 @@ div.cabinet {
 
 /* Cabinet Properties */
 
-#infopanel table#cabprop {
-    margin: 0px 0px 2px 0px;
+#infopanel #cabprop {
+	margin: 0px 0px 2px 0px;
 	border-collapse: separate;
-    border: 0px none;
+	border: 0px none;
 	border-spacing: 3px;
 	width: 100%;
 	min-width: 200px; max-width: 350px;
 }
-table#cabprop tr {
-    width: 100%;
-    padding: 2px;
-    margin: 1px 0px 1px 1px;
+#infopanel #cabprop td:first-child{
+	padding: 3px 2px 3px 2px;
+	font-weight: bold;
+	border: 0px none;
+	border-bottom: 1px solid gray;
+	margin: 2px 2px 2px 0px;
+	white-space: nowrap;
 }
-#infopanel fieldset table#cabprop td.left {
-    padding: 3px 2px 3px 2px;
-    font-weight: bold;
-    border: 0px none;
-    border-bottom: 1px solid gray;
-    margin: 2px 2px 2px 0px;
+#infopanel #cabprop td:nth-child(2){
+	text-align: left;
+	padding: 3px 2px 3px 4px;
+	border-style: none solid solid none;
+	border-width: 0 2px 1px 0;
+	margin: 2px 0px 2px 2px;
 }
-#infopanel fieldset table#cabprop td.right {
-    text-align: left;
-    padding: 3px 2px 3px 4px;
-    border: 0px none;
-    border-bottom: 1px solid gray;
-    border-right: 2px solid gray;
-    margin: 2px 0px 2px 2px;
-    max-width: 175px;
-}
-table#cabprop span.text-label {
-     -webkit-border-radius: 2px;
-     border-radius: 2px;
-     box-sizing: border-box;
-     border: 1px solid #9daccc;
-     background: #e2e6f0;
-     color: #000;
-     padding: 0px 3px 0px 3px;
-     margin: 0 2px 2px 0;
-     font: 11px "lucida grande",tahoma,verdana,arial,sans-serif;
-     display: inline-block;
+#infopanel #cabprop td:nth-child(2) > span {
+	-webkit-border-radius: 2px;
+	border-radius: 2px;
+	box-sizing: border-box;
+	border: 1px solid #9daccc;
+	background: #e2e6f0;
+	padding: 0px 3px 0px 3px;
+	margin: 0 2px 2px 0;
+	font: 11px "lucida grande",tahoma,verdana,arial,sans-serif;
+	display: inline-block;
 }
 
 /* image_management */
@@ -779,12 +772,12 @@ table#cabprop span.text-label {
 .meter-wrap{position: relative;background-color: lightgrey;}
 .meter-wrap, .meter-value, .meter-text {width: 210px; height: 1.1em;}
 .meter-text {
-    position: absolute;
-    top:0; left:0;
-    padding-top: 0px;
-    color: #000;
-    text-align: center;
-    width: 100%;
+	position: absolute;
+	top:0; left:0;
+	padding-top: 0px;
+	color: #000;
+	text-align: center;
+	width: 100%;
 }
 /* Supplies */
 .supply .table > div:first-child > div {padding-bottom:0.5em;font-weight: bold;}

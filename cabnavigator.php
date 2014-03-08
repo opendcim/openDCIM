@@ -71,24 +71,24 @@ function renderCabinetProps($cab, $audit, $AuditorName){
 	$AuditorName=($AuditorName!='')?"<br>$AuditorName":"";
 
 	$renderedHTML="\t\t<table id=\"cabprop\">
-	\t\t<tr><td class=\"left\">".__("Last Audit").":</td><td class=\"right\">$audit->AuditStamp$AuditorName</td></tr>
-	\t\t<tr><td class=\"left\">".__("Model").":</td><td class=\"right\">$cab->Model</td></tr>
-	\t\t<tr><td class=\"left\">".__("Data Center").":</td><td class=\"right\">$tmpDC->Name</td></tr>
-	\t\t<tr><td class=\"left\">".__("Install Date").":</td><td class=\"right\">$cab->InstallationDate</td></tr>\n";
+	\t\t<tr><td>".__("Last Audit").":</td><td>$audit->AuditStamp$AuditorName</td></tr>
+	\t\t<tr><td>".__("Model").":</td><td>$cab->Model</td></tr>
+	\t\t<tr><td>".__("Data Center").":</td><td>$tmpDC->Name</td></tr>
+	\t\t<tr><td>".__("Install Date").":</td><td>$cab->InstallationDate</td></tr>\n";
 
 	if($cab->ZoneID){
 		$zone=new Zone();
 		$zone->ZoneID=$cab->ZoneID;
 		$zone->GetZone();
-		$renderedHTML.="\t\t\t<tr><td class=\"left\">".__("Zone").":</td><td class=\"right\">$zone->Description</td></tr>\n";
+		$renderedHTML.="\t\t\t<tr><td>".__("Zone").":</td><td>$zone->Description</td></tr>\n";
 	}
 	if($cab->CabRowID){
 		$cabrow=new CabRow();
 		$cabrow->CabRowID=$cab->CabRowID;
 		$cabrow->GetCabRow();
-		$renderedHTML.="\t\t\t<tr><td class=\"left\">".__("Row").":</td><td class=\"right\">$cabrow->Name</td></tr>\n";
+		$renderedHTML.="\t\t\t<tr><td>".__("Row").":</td><td>$cabrow->Name</td></tr>\n";
 	}
-	$renderedHTML.="\t\t\t<tr><td class=\"left\">".__("Tags").":</td><td class=\"right\">".renderTagsToString($cab)."</td></tr>\n";
+	$renderedHTML.="\t\t\t<tr><td>".__("Tags").":</td><td>".renderTagsToString($cab)."</td></tr>\n";
 
 	//   This is out of context here and makes the information confusing.
 	//    $renderedHTML .= '			<tr><td class="left">' . __('Front Edge') . ':</td>';
@@ -107,21 +107,19 @@ function renderCabinetProps($cab, $audit, $AuditorName){
  * @return (boolean|boolean|string)[] CSS class or empty stringtype
  */
 function renderUnassignedTemplateOwnership($noTemplFlag, $noOwnerFlag, $device) {
-    $retstr = '';
-    $noTemplate = '';
-    $noOwnership = '';
-    if ($device->TemplateID == 0) {
-        $noTemplate = '(T)';
-        $noTemplFlag = true;
-    }
-    if ($device->Owner == 0) {
-        $noOwnership = '(O)';
-        $noOwnerFlag = true;
-    }
-    if ($noTemplFlag or $noOwnerFlag) {
-        $retstr = '<span class="hlight">' . $noTemplate . $noOwnership . '</span>';
-    }
-    return array($noTemplFlag, $noOwnerFlag, $retstr);
+	$retstr=$noTemplate=$noOwnership='';
+	if ($device->TemplateID == 0) {
+		$noTemplate = '(T)';
+		$noTemplFlag = true;
+	}
+	if ($device->Owner == 0) {
+		$noOwnership = '(O)';
+		$noOwnerFlag = true;
+	}
+	if ($noTemplFlag or $noOwnerFlag) {
+		$retstr = '<span class="hlight">' . $noTemplate . $noOwnership . '</span>';
+	}
+	return array($noTemplFlag, $noOwnerFlag, $retstr);
 }
 
 	$cab=new Cabinet();
