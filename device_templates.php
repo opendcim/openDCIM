@@ -91,7 +91,11 @@
 
 		switch($_POST['action']){
 			case 'Create':
-				$status=(!$template->CreateTemplate())?__('An error has occured, template not created'):'';
+				if($template->CreateTemplate()){
+					$status=UpdateSlotsPorts($template,$status);
+				}else{
+					$status=__('An error has occured, template not created');
+				}
 				break;
 			case 'Update':
 				$status=($template->UpdateTemplate())?__('Updated'):__('Error updating template');
@@ -145,6 +149,7 @@
 		}
 	}
 	$imageselect.="</div>";
+
 	
 ?>
 <!doctype html>
@@ -325,7 +330,7 @@ echo '<div class="main">
 	foreach($templateList as $templateRow){
 		$manufacturer->ManufacturerID=$templateRow->ManufacturerID;
 		$manufacturer->GetManufacturerByID();
-		if($template->TemplateID==$templateRow->TemplateID){$selected=" selected";}else{$selected="";}
+		$selected=($template->TemplateID==$templateRow->TemplateID)?" selected":"";
 		print "		<option value=\"$templateRow->TemplateID\"$selected>[$manufacturer->Name] $templateRow->Model</option>\n";
 	}
 
