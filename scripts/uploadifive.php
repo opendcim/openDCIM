@@ -62,6 +62,14 @@ if ((!empty($_FILES) || isset($_POST['filename']) ) && $_POST['token'] == $verif
 			$status['msg']=__("Invalid file type.");
 		}
 	}
+}else{
+	// Token wasn't set or user doesn't have appropriate rights
+	$status['status']=1;
+
+	if(!empty($_FILES) || isset($_POST['filename'])){}else{$status['msg']=__("No files uploaded");}
+	if($user->WriteAccess || $user->SiteAdmin){}else{$status['msg']=__("You must be a site admin to add images");}
+	if($_POST['token']!=$verifyToken){$status['msg']=__("Token mismatch");}
+	$status['msg']=($status['msg']=='')?__("God help us something has gone horrible wrong"):$status['msg'];
 }
 
 echo json_encode($status);

@@ -75,8 +75,17 @@ $(function() {
 		'checkScript' : 'scripts/check-exists.php',
 		'uploadScript' : 'scripts/uploadifive.php',
 		'onUploadComplete'	: function(file, data) {
-			if(data!='1'){
+			data=$.parseJSON(data);
+			if(data.status=='1'){
 				// something broke, deal with it
+				var toast=$('<div>').addClass('uploadifive-queue-item complete');
+				var close=$('<a>').addClass('close').text('X').click(function(){$(this).parent('div').remove();});
+				var span=$('<span>');
+				var error=$('<div>').addClass('border').css({'margin-top': '2px', 'padding': '3px'}).text(data.msg);
+				toast.append(close);
+				toast.append($('<div>').append(span.clone().addClass('filename').text(file.name)).append(span.clone().addClass('fileinfo').text(' - Error')));
+				toast.append(error);
+				$('#uploadifive-'+this[0].id+'-queue').append(toast);
 			}else{
 				// fuck yeah, reload the thumbnails
 				reload($(this).data('dir'));
