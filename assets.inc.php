@@ -311,12 +311,16 @@ class Cabinet {
 		switch($fe){
 			case "Right":
 				$order="MapY1 DESC,";
+				break;
 			case "Left":
 				$order="MapY1 ASC,";
+				break;
 			case "Top":
 				$order="MapX1 DESC,";
+				break;
 			case "Bottom":
 				$order="MapX1 ASC,";
+				break;
 		}
 		$order.="Location ASC";
 		$sql="SELECT * FROM fac_Cabinet WHERE CabRowID=$this->CabRowID ORDER BY $order;";
