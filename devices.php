@@ -38,6 +38,21 @@
 		echo json_encode($PortNamePatterns);
 		exit;
 	}
+	// Get connection path for a patch panel connection
+	if(isset($_GET['path'])){
+		$path=DevicePorts::followPathToEndPoint($_GET['ConnectedDeviceID'], -$_GET['ConnectedPort']);
+
+		foreach($path as $port){
+			$dev->DeviceID=$port->DeviceID;
+			$dev->GetDevice();
+			$port->DeviceName=$dev->Label;
+		}
+
+		header('Content-Type: application/json');
+		echo json_encode($path);
+		exit;
+	}
+
 	// Set all ports to the same label pattern, media type or color code
 	if(isset($_POST['setall'])){
 		$portnames=array();
@@ -233,6 +248,7 @@
 			$dev->DeviceID=$dp->ConnectedDeviceID;
 			$dp->Label=($dp->Label=='')?abs($dp->PortNumber):$dp->Label;
 			$dp->ConnectedDeviceLabel=($dev->GetDevice())?stripslashes($dev->Label):'';
+			$dp->ConnectedDeviceType=$dev->DeviceType;
 			$dp->ConnectedPort=($dp->ConnectedPort==0)?'':abs($dp->ConnectedPort);
 			$dp->ConnectedPortLabel=(!is_null($cd->Label) && $cd->Label!='')?$cd->Label:$dp->ConnectedPort;
 			header('Content-Type: application/json');
@@ -1441,31 +1457,8 @@ echo '	<div class="table">
 			print "\t\t\t\t<div data-port=$i>
 					<div id=\"sp$i\">$i</div>
 					<div id=\"spn$i\">$port->Label</div>
-					<div id=\"d$i\" data-default=\"$port->ConnectedDeviceID\"><a href=\"devices.php?deviceid=$port->ConnectedDeviceID\">$tmpDev->Label</a>";
-					
-			if ( $tmpDev->DeviceType == "Patch Panel" ) {
-				$path = DevicePorts::followPathToEndPoint( $port->ConnectedDeviceID, -$port->ConnectedPort );
-				$td = new Device();
-				foreach ( $path as $p ) {
-					$td->DeviceID = $p->ConnectedDeviceID;
-					$td->GetDevice();
-					print "<br>$td->Label";
-				}
-			}
-					
-			print "</div>
-					<div id=\"dp$i\" data-default=\"$port->ConnectedPort\"><a href=\"paths.php?deviceid=$port->ConnectedDeviceID&portnumber=$port->ConnectedPort\">$cp->Label</a>";
-
-			if ( $tmpDev->DeviceType == "Patch Panel" ) {
-				$path = DevicePorts::followPathToEndPoint( $port->ConnectedDeviceID, -$port->ConnectedPort );
-				foreach ( $path as $p ) {
-					print "<br>" . abs($p->ConnectedPort);
-				}
-			}
-			
-			// It's an inefficient as hell to do it this way, but I'm open to suggestions, or revisiting after more caffeine
-			
-			print "</div>
+					<div id=\"d$i\" data-default=\"$port->ConnectedDeviceID\"><a href=\"devices.php?deviceid=$port->ConnectedDeviceID\">$tmpDev->Label</a></div>
+					<div id=\"dp$i\" data-default=\"$port->ConnectedPort\"><a href=\"paths.php?deviceid=$port->ConnectedDeviceID&portnumber=$port->ConnectedPort\">$cp->Label</a></div>
 					<div id=\"n$i\" data-default=\"$port->Notes\">$port->Notes</div>";
 			if($dev->DeviceType=='Switch'){print "\t\t\t\t<div id=\"st$i\"><span class=\"ui-icon status {$linkList[$i]}\"></span></div>";}
 			print "\t\t\t\t<div id=\"mt$i\" data-default=$port->MediaID>$mt</div>

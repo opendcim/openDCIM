@@ -621,6 +621,12 @@ div.cabinet {
 .device .table.switch > div:first-child select::-moz-focus-inner, 
 .device .table.switch > div:first-child select:focus::-moz-focus-inner {border: none;}
 
+.device .path div { border: 0px none; }
+.device .path > div > div { position: relative; height: 1em; }
+.device .path > div > div > div { position: absolute; top: 0; min-width: 550px; padding-left: 25px;}
+.device .path span:after{ content: " -> ";}
+.device .path span:last-child:after{ content: "";}
+
 #pandn.table .custom-combobox input, #pandn.table .custom-combobox a {border-top: 2px; border-bottom: 2px; border-style: inset;  width: auto; height: 18px;}
 #pandn.table .custom-combobox input {background-image: none; border-left: 2px; border-right: 0px; padding-left: 4px; font-size: inherit;} 
 #pandn.table .custom-combobox a {margin: 0; vertical-align: top; width: 18px; border-left: 0px; border-right: 2px; position: absolute; top: 0; right: 0;} 

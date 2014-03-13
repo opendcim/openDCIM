@@ -579,6 +579,7 @@ function TemplateButtons(){
 			this.element.prepend(del);
 
 			// Define all the ports we might need later
+			this.ct			 = ct;
 			this.portnum     = this.element.data('port');
 			this.portname    = this.element.find('div[id^=spn],div[id^=pp]');
 			this.cdevice     = this.element.find('div[id^=d]:not([id^=dp]),div[id^=fd]');
@@ -598,6 +599,15 @@ function TemplateButtons(){
 			this.btnrow.find('div:first-child').addClass('delete').hide();
 			this.btnrow.front = this.btnrow.find('div:nth-child(2)');
 			this.btnrow.rear  = this.btnrow.find('div:nth-child('+(Math.ceil(this.element[0].children.length/2)+2)+')');
+
+			// Create a blank row for showing patch panel connections on devices
+			this.pathrow	= $('<div>').addClass('path');
+			for(var a=0; a < this.element[0].children.length; a++){
+				this.pathrow.append($('<div>'));
+			}
+			this.pathrow.path = $('<div>');
+			this.pathrow.find('div:first-child').addClass('delete').hide();
+			this.pathrow.find('div:nth-child(2)').append($('<div>').append(this.pathrow.path));
 
 			// Row Controls
 			var controls=$('<div>',({'id':'controls'+this.portnum}));
@@ -622,6 +632,11 @@ function TemplateButtons(){
 
 			// Bind popup event to the device port for pathing
 			row.showpath();
+
+			// Be lazy and redraw the port to see if we need to add path data
+			if(this.cdevice.data('default')>0){
+				this.destroy();
+			}
 		
 		},
 		edit: function() {
@@ -638,7 +653,11 @@ function TemplateButtons(){
 				row.rnotes.html('<input type="text" style="min-width: 200px;" value="'+row.rnotes.text()+'">');
 			}
 
+			// Flag row as being in edit mode
 			row.element.data('edit',true);
+
+			// Hide the patch path if there is one
+			row.pathrow.hide();
 
 			// Adjust the spacer if the delete row option has been triggered
 			if(this.element.find('.delete:visible').length){
@@ -663,6 +682,32 @@ function TemplateButtons(){
 			},200);
 			// Hide mass edit controls
 			$('.switch.table, .patchpanel.table').massedit('hide');
+		},
+
+		updatepath: function(e){
+			var row=this;
+			if($(this.element[0]).parent().hasClass('switch')){
+				function makespan(label,port){
+					return $('<span>').append(label+'['+port+']');
+				}
+
+				// Add the path row to the dom
+				this.element.after(this.pathrow);
+
+				// Add this device as the start of the connection chain
+				row.pathrow.path.html(makespan($('#label').val(),row.portnum));
+
+				// Retreive the path
+				$.get('',{path: '', ConnectedDeviceID: row.cdevice.data('default'), ConnectedPort: row.cdeviceport.data('default')}).done(function(data){
+					$.each(data, function(port){
+						// Add the next link in the chain
+						row.pathrow.path.append(makespan(data[port].DeviceName,(data[port].Label=='')?Math.abs(data[port].PortNumber):data[port].Label));
+					});
+				});
+			}
+
+			// Assuming we added something show it
+			row.pathrow.show();
 		},
 
 		getdevices: function(target){
@@ -916,6 +961,7 @@ function TemplateButtons(){
 
 			function front(){
 				$.post('',{getport: '',swdev: $('#deviceid').val(),pnum: row.portnum}).done(function(data){
+					row.ct.css('padding','');
 					row.portname.html(data.Label).data('default',data.Label);
 					row.cdevice.html('<a href="devices.php?deviceid='+data.ConnectedDeviceID+'">'+data.ConnectedDeviceLabel+'</a>').data('default',data.ConnectedDeviceID);
 					data.ConnectedPortLabel=(data.ConnectedPortLabel==null)?'':data.ConnectedPortLabel;
@@ -926,6 +972,9 @@ function TemplateButtons(){
 					$(row.element[0]).children('div ~ div + div').removeAttr('style');
 					// Attempt to show mass edit controls
 					$('.switch.table, .patchpanel.table').massedit('show');
+					if(data.ConnectedDeviceType=='Patch Panel'){
+						row.updatepath();
+					}
 					row.showpath();
 				});
 			}

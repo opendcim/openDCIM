@@ -2561,7 +2561,7 @@ class DevicePorts {
 		return true;
 	}
 
-	static function followPathToEndpoint( $DeviceID, $PortNumber ) {
+	static function followPathToEndPoint( $DeviceID, $PortNumber ) {
 		$path = array();
 		$n = sizeof( $path );
 		
@@ -2578,11 +2578,6 @@ class DevicePorts {
 			// traverse the path, you have to flip
 			$path[$n]->PortNumber = -($path[$n-1]->ConnectedPort);
 			$path[$n]->getPort();
-		}
-		
-		// This should always execute, but just in case we exited the while loop for some unforeseen reason...
-		if ( $path[$n]->ConnectedDeviceID == 0 ) {
-			array_pop( $path );
 		}
 		
 		return $path;		
