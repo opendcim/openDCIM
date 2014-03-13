@@ -293,17 +293,31 @@ class Cabinet {
 		$fe=$cr->GetCabRowFrontEdge();
 		if ($rear){
 			//opposite view
-			$fe=($fe=="Right")?"Left":(($fe=="Left")?"Right":(($fe=="Top")?"Bottom":(($fe=="Bottom")?"Top":"")));
+			switch($fe){
+				case "Right":
+					$fe="Left";
+					break;
+				case "Left":
+					$fe="Right";
+					break;
+				case "Top":
+					$fe="Bottom";
+					break;
+				case "Bottom":
+					$fe="Top";
+					break;
+			}
 		}
-		$order="";
-		if ($fe=="Right")
-			$order="MapY1 DESC,";
-		elseif($fe=="Left")
-			$order="MapY1 ASC,";
-		elseif($fe=="Top")
-			$order="MapX1 DESC,";
-		elseif($fe=="Bottom")
-			$order="MapX1 ASC,";
+		switch($fe){
+			case "Right":
+				$order="MapY1 DESC,";
+			case "Left":
+				$order="MapY1 ASC,";
+			case "Top":
+				$order="MapX1 DESC,";
+			case "Bottom":
+				$order="MapX1 ASC,";
+		}
 		$order.="Location ASC";
 		$sql="SELECT * FROM fac_Cabinet WHERE CabRowID=$this->CabRowID ORDER BY $order;";
 		

@@ -61,7 +61,6 @@ function drawArrow(canvas,startx,starty,width,height,direction){
 	var arrowW = 0.30 * width;
 	var arrowH = 0.30 * height;
     
-	canvas.save();
 	switch(direction){
 		case 'Top':
 			var p1={x: startx+arrowW, y: starty};

@@ -169,9 +169,7 @@ function renderUnassignedTemplateOwnership($noTemplFlag, $noOwnerFlag, $device) 
 	$head=$legend=$zeroheight=$body=$deptcolor="";
 	$deptswithcolor=array();
 	$dev=new Device();
-	//$pan=new PowerPanel();  //not used
 	$templ=new DeviceTemplate();
-	//$tempPDU=new PowerDistribution();  //not used
 	$tempDept=new Department();
 	$dc=new DataCenter();
 	$cabrow=new CabRow();
@@ -263,7 +261,6 @@ if($config->ParameterArray["ToolTips"]=='enabled'){
 		});
 <?php
 }
-if($cabrow->CabOrder=="DESC"){echo '		FlipItGood();';}
 ?>
 
 	});

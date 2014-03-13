@@ -2056,13 +2056,11 @@ class CabRow {
 	var $CabRowID;
 	var $Name;
 	var $ZoneID;
-	var $CabOrder;  //obsolete 
 
 	function MakeSafe() {
 		$this->CabRowID=intval($this->CabRowID);
 		$this->Name=sanitize($this->Name);
 		$this->ZoneID=intval($this->ZoneID);
-		$this->CabOrder=($this->CabOrder=="ASC")?"ASC":"DESC";  //obsolete
 	}
 
 	function MakeDisplay(){
@@ -2074,7 +2072,6 @@ class CabRow {
 		$cabrow->CabRowID=$row["CabRowID"];
 		$cabrow->Name=$row["Name"];
 		$cabrow->ZoneID=$row["ZoneID"];
-		$cabrow->CabOrder=$row["CabOrder"];  //obsolete
 		$cabrow->MakeDisplay();
 
 		return $cabrow;
@@ -2187,8 +2184,9 @@ class CabRow {
 		//It returns the FrontEdge of most cabinets
 		$this->MakeSafe();
 
-		$sql="SELECT FrontEdge, count(*) as num FROM fac_cabinet WHERE CabRowID=$this->CabRowID GROUP BY FrontEdge
+		$sql="SELECT FrontEdge, count(*) as num FROM fac_Cabinet WHERE CabRowID=$this->CabRowID GROUP BY FrontEdge
 					ORDER BY num DESC	LIMIT 1;";
+
 		if($cabinetRow=$this->query($sql)->fetch()){
 			return $cabinetRow["FrontEdge"];
 		}
