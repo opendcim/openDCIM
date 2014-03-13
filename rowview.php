@@ -5,19 +5,6 @@
 	// Get the list of departments that this user is a member of
 	$viewList = $user->isMemberOf();
 
-	// Ajax
-		if(isset($_POST['FlipDirection'])){
-			$cabrow=New CabRow();
-			$cabrow->CabRowID=$_POST['row'];
-			$cabrow->GetCabRow();
-			$cabrow->CabOrder=($cabrow->CabOrder=='ASC')?'DESC':'ASC';
-			$cabrow->SetDirection();
-
-			// no need to load the rest of the page
-			exit;
-		}
-	// Ajax - END
-
 /**
  * Determines ownership of the cabinet and returns the CSS class in case a
  * color unequal white is assigned to the owner
@@ -182,9 +169,9 @@ function renderUnassignedTemplateOwnership($noTemplFlag, $noOwnerFlag, $device) 
 	$head=$legend=$zeroheight=$body=$deptcolor="";
 	$deptswithcolor=array();
 	$dev=new Device();
-	$pan=new PowerPanel();
+	//$pan=new PowerPanel();  //not used
 	$templ=new DeviceTemplate();
-	$tempPDU=new PowerDistribution();
+	//$tempPDU=new PowerDistribution();  //not used
 	$tempDept=new Department();
 	$dc=new DataCenter();
 	$cabrow=new CabRow();
@@ -192,7 +179,12 @@ function renderUnassignedTemplateOwnership($noTemplFlag, $noOwnerFlag, $device) 
 	$cabrow->CabRowID=$_REQUEST['row'];
 	$cabrow->GetCabRow();
 	$cab->CabRowID=$cabrow->CabRowID;
-	$cabinets=$cab->GetCabinetByRow();
+	$cabinets=$cab->GetCabinetsByRow(isset($_GET["rear"])?"rear":"");
+	$fe=$cabrow->GetCabRowFrontEdge();
+	if (isset($_GET["rear"])){
+		//opposite view
+		$fe=($fe=="Right")?"Left":(($fe=="Left")?"Right":(($fe=="Top")?"Bottom":(($fe=="Bottom")?"Top":"")));
+	}
 
 	//start loop to parse all cabinets in the row
 	foreach($cabinets as $index => $cabinet){
@@ -209,10 +201,10 @@ function renderUnassignedTemplateOwnership($noTemplFlag, $noOwnerFlag, $device) 
 			.freespace{background-color: {$config->ParameterArray['FreeSpaceColor']};}\n";
 		}
 
-		buildcabinet();
+		buildcabinet(($fe==$cabinet->FrontEdge)?"":"rear");
 	}
 
-	$dcID=$cab->DataCenterID;
+	$dcID=$cabinets[0]->DataCenterID;
 	$dc->DataCenterID=$dcID;
 	$dc->GetDataCenterbyID();
 
@@ -221,7 +213,7 @@ function renderUnassignedTemplateOwnership($noTemplFlag, $noOwnerFlag, $device) 
 		$head.='		</style>';
 	}
 
-	$title=($cabrow->Name!='')?__("Row")." $cabrow->Name :: ".count($cabinets)." ".__("Cabinets")." :: $dc->Name":'Facilities Cabinet Maintenance';
+	$title=($cabrow->Name!='')?__("Row")." $cabrow->Name".(isset($_GET["rear"])?"(".__("Rear").")":"")." :: ".count($cabinets)." ".__("Cabinets")." :: $dc->Name":__('Facilities Cabinet Maintenance');
 
 ?>
 <!doctype html>
@@ -239,7 +231,6 @@ function renderUnassignedTemplateOwnership($noTemplFlag, $noOwnerFlag, $device) 
   <![endif]-->
  
 <?php 
-
 echo $head,'  <script type="text/javascript" src="scripts/jquery.min.js"></script>
   <script type="text/javascript" src="scripts/jquery-ui.min.js"></script>
   <script type="text/javascript">
@@ -250,18 +241,18 @@ echo $head,'  <script type="text/javascript" src="scripts/jquery.min.js"></scrip
 			container.children().each(function(i,cab){container.prepend(cab)});
 			resize();
 		}
-		$("<button>",{id: "reverse", type: "button"}).text("Reverse Cabinet Order").click(function(){
-			$.post("",{FlipDirection: "", row: '.$cabrow->CabRowID.'}).done(FlipItGood);
+		$("<button>",{id: "reverse", type: "button"}).text("'.(isset($_GET["rear"])?__("Front View"):__("Rear View")).'").click(function(){
+			document.location.href="rowview.php?row=',$cabrow->CabRowID.(isset($_GET["rear"])?"":"&rear"),'";
 		}).prependTo($(".main"));
 ';
 if($config->ParameterArray["ToolTips"]=='enabled'){
 ?>
-		$('.cabinet td.device:has("a")').mouseenter(function(){
+		$('.cabinet td:has(a):not(:has(img)), #zerou div > a, .cabinet .picture a img, .cabinet .picture a div').mouseenter(function(){
 			var pos=$(this).offset();
 			var tooltip=$('<div />').css({
-				'left':pos.left+$(this).outerWidth()+15+'px',
-				'top':pos.top+($(this).outerHeight()/2)-15+'px'
-			}).addClass('arrow_left border cabnavigator tooltip').append('<span class="ui-icon ui-icon-refresh rotate"></span>');
+				'left':pos.left+this.getBoundingClientRect().width+15+'px',
+				'top':pos.top+(this.getBoundingClientRect().height/2)-15+'px'
+			}).addClass('arrow_left border cabnavigator tooltip').attr('id','tt').append('<span class="ui-icon ui-icon-refresh rotate"></span>');
 			$.post('scripts/ajax_tooltip.php',{tooltip: $(this).data('deviceid'), dev: 1}, function(data){
 				tooltip.html(data);
 			});

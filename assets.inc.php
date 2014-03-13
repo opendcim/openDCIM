@@ -283,13 +283,30 @@ class Cabinet {
 		return $selectList;
 	}
 
-	function GetCabinetByRow(){
+	function GetCabinetsByRow($rear=false){
 		global $dbh;
 
 		$this->MakeSafe();
 		
-		$sql="SELECT * FROM fac_Cabinet WHERE CabRowID=$this->CabRowID ORDER BY LENGTH(Location),Location ASC;";
-
+		$cr=new CabRow();
+		$cr->CabRowID=$this->CabRowID;
+		$fe=$cr->GetCabRowFrontEdge();
+		if ($rear){
+			//opposite view
+			$fe=($fe=="Right")?"Left":(($fe=="Left")?"Right":(($fe=="Top")?"Bottom":(($fe=="Bottom")?"Top":"")));
+		}
+		$order="";
+		if ($fe=="Right")
+			$order="MapY1 DESC,";
+		elseif($fe=="Left")
+			$order="MapY1 ASC,";
+		elseif($fe=="Top")
+			$order="MapX1 DESC,";
+		elseif($fe=="Bottom")
+			$order="MapX1 ASC,";
+		$order.="Location ASC";
+		$sql="SELECT * FROM fac_Cabinet WHERE CabRowID=$this->CabRowID ORDER BY $order;";
+		
 		$cabinetList=array();
 		foreach($dbh->query($sql) as $cabinetRow){
 			$cabinetList[]=Cabinet::RowToObject($cabinetRow);

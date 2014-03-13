@@ -480,7 +480,7 @@ class DataCenter {
 			img.onload=function(){
 				// changed to eliminate the flickering of reloading the background image on a redraw
 				//context.drawImage(img,0,0);
-				airflow();
+				//airflow();
 			}
 			// give it an image to load
 			img.src=\"$mapfile\";
@@ -494,7 +494,7 @@ class DataCenter {
 				$temperature="\t\tfunction temperatura(){\n\t\t\tclearcanvas();\n";
 				$humidity="\t\tfunction humedad(){\n\t\t\tclearcanvas();\n";				
 				$realpower="\t\tfunction realpower(){\n\t\t\tclearcanvas();\n";
-				$airflow="\t\tfunction airflow(){\n\t\t\t\n";
+				$airflow="\t\tfunction airflow(){\n\t\t\tclearcanvas();\n";
 				/*
 				$sql="SELECT C.*, Temps.Temp, Temps.Humidity, Stats.Wattage AS RealPower, 
 					Temps.LastRead, Temps.LastRead AS RPLastRead FROM fac_Cabinet AS C
@@ -632,6 +632,7 @@ class DataCenter {
 			$leyendate="\t\t\tmaptitle.html('".($fechaLecturaTemps>0?__("Measured on")." ".$fechaLecturaTemps:__("no data"))."');";
 			$leyendahu="\t\t\tmaptitle.html('".($fechaLecturaTemps>0?__("Measured on")." ".$fechaLecturaTemps:__("no data"))."');";
 			$leyendarp="\t\t\tmaptitle.html('".($fechaLecturaRP>0?__("Measured on")." ".$fechaLecturaRP:__("no data"))."');";
+			$leyendaaf="\t\t\tmaptitle.html('".__("Air flow")."');";
 						/*
 			$leyenda="\n\t\tcontext.fillStyle='#000000';\n\t\tcontext.font='15px arial';
 				\n\t\tcontext.fillText('".__("OVERVIEW: worse state of cabinets")."',5,20);";
@@ -654,7 +655,7 @@ class DataCenter {
 			$temperature.=$leyendate."\n\t\t}\n";
 			$humidity.=$leyendahu."\n\t\t}\n";
 			$realpower.=$leyendarp."\n\t\t}\n";
-			$airflow.="\n\t\t}\n";
+			$airflow.=$leyendaaf."\n\t\t}\n";
 			
 			$script.=$leyenda."\n\t\t}\n";
 			$script.=$space.$weight.$power.$temperature.$humidity.$realpower.$airflow;
@@ -2055,12 +2056,13 @@ class CabRow {
 	var $CabRowID;
 	var $Name;
 	var $ZoneID;
+	var $CabOrder;  //obsolete 
 
 	function MakeSafe() {
 		$this->CabRowID=intval($this->CabRowID);
 		$this->Name=sanitize($this->Name);
 		$this->ZoneID=intval($this->ZoneID);
-		$this->CabOrder=($this->CabOrder=="ASC")?"ASC":"DESC";
+		$this->CabOrder=($this->CabOrder=="ASC")?"ASC":"DESC";  //obsolete
 	}
 
 	function MakeDisplay(){
@@ -2072,7 +2074,7 @@ class CabRow {
 		$cabrow->CabRowID=$row["CabRowID"];
 		$cabrow->Name=$row["Name"];
 		$cabrow->ZoneID=$row["ZoneID"];
-		$cabrow->CabOrder=$row["CabOrder"];
+		$cabrow->CabOrder=$row["CabOrder"];  //obsolete
 		$cabrow->MakeDisplay();
 
 		return $cabrow;
@@ -2172,6 +2174,7 @@ class CabRow {
 		return $cabrowList;
 	}
 
+	//obsolete
 	function SetDirection(){
 		$this->MakeSafe();
 
@@ -2179,7 +2182,19 @@ class CabRow {
 
 		return $this->query($sql);
 	}
-}
+	
+	function GetCabRowFrontEdge(){
+		//It returns the FrontEdge of most cabinets
+		$this->MakeSafe();
+
+		$sql="SELECT FrontEdge, count(*) as num FROM fac_cabinet WHERE CabRowID=$this->CabRowID GROUP BY FrontEdge
+					ORDER BY num DESC	LIMIT 1;";
+		if($cabinetRow=$this->query($sql)->fetch()){
+			return $cabinetRow["FrontEdge"];
+		}
+		return "";
+	}
+}  //END OF CLASS CabRow
 
 //JMGA: container objects may contain DCs or other containers
 class Container {

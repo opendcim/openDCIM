@@ -2,16 +2,36 @@
 	require_once("db.inc.php");
 	require_once("facilities.inc.php");
 
+	$cab=new Cabinet();
+	$dc=new DataCenter();
+	$dev=new Device();
+	
+	//setting airflow
+	if(isset($_POST["cabinetid"]) && isset($_POST["airflow"])){
+		$cab->CabinetID=$_POST["cabinetid"];
+		if ($cab->GetCabinet()){
+			if ($cab->CabRowID>0 && isset($_POST["row"]) && $_POST["row"]=="true"){
+				//update all row
+				$cabinets=$cab->GetCabinetsByRow();
+				foreach($cabinets as $index => $cabinet){
+					$cabinet->FrontEdge=$_POST["airflow"];
+					$cabinet->UpdateCabinet();
+				}
+			}else{
+				//update cabinet
+				$cab->FrontEdge=$_POST["airflow"];
+				$cab->UpdateCabinet();
+			}
+		}
+		exit;
+	}
+	
 	if(!isset($_GET["dc"])){
 		// No soup for you.
 		header('Location: '.redirect());
 		exit;
 	}
-
-	$cab=new Cabinet();
-	$dc=new DataCenter();
-	$dev=new Device();
-
+	
 	$dc->DataCenterID=$_GET["dc"];
 	$dc->GetDataCenterbyID();
 	$dcStats=$dc->GetDCStatistics();
@@ -162,7 +182,8 @@ $select='<select>';
 		'power' => __("Calculated Power"),
 		'realpower' => __("Measured Power"),
 		'temperatura' => __("Temperature"),
-		'humedad' => __("Humidity")
+		'humedad' => __("Humidity"),
+		'airflow' => __("Air Flow")
 		) as $value => $option){
 		$select.='<option value="'.$value.'">'.$option.'</option>';
 	}
@@ -203,6 +224,10 @@ echo $select.'</div></div>'.$dc->MakeImageMap();
 			var coor=$(this).attr('coords').split(',');
 			var tx=pos.left+parseInt(coor[2])+17;
 			var ty=pos.top+(parseInt(coor[1])+parseInt(coor[3]))/2-17;
+			var cx1=parseInt(coor[0])+parseInt(pos.left);
+			var cx2=parseInt(coor[2])+parseInt(pos.left)
+			var cy1=parseInt(coor[1])+parseInt(pos.top);
+			var cy2=parseInt(coor[3])+parseInt(pos.top);
 			var tooltip=$('<div />').css({
 				'left':tx+'px',
 				'top':ty+'px'
@@ -214,16 +239,28 @@ echo $select.'</div></div>'.$dc->MakeImageMap();
 			});
 			$('body').append(tooltip);
 			
-			$(this).mouseleave(function(){
+			$(this).mouseleave(function(e){
 				tooltip.remove();
+				if (cx1>0 && e.shiftKey && $('#maptitle .nav > select').val()=="airflow"){
+					var frontedge;
+					if(e.pageX<=cx1)
+						frontedge="Right";
+					else if (e.pageX>=cx2)
+						frontedge="Left";
+					else if (e.pageY<=cy1)
+						frontedge="Bottom";
+					else if (e.pageY>=cy2)
+						frontedge="Top";
+					$.post("",{cabinetid: id, airflow: frontedge, row: e.ctrlKey}).done(function(){location.reload();});
+				}
+				cx1=0;
 			});
-
 		});
 		$('#maptitle .nav > select').change(function(){
 			eval($(this).val()+'()');
 		});
-
-		loadCanvas();
+		eval($('#maptitle .nav > select').val()+'()');
+		//loadCanvas();
 		opentree();
 	});
 </script>

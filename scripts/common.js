@@ -58,9 +58,10 @@ $(document).ready(function(){
 
 // draw arrows on a canvas
 function drawArrow(canvas,startx,starty,width,height,direction){
-	var arrowW = 0.20 * width;
-	var arrowH = 0.70 * height;
+	var arrowW = 0.30 * width;
+	var arrowH = 0.30 * height;
     
+	canvas.save();
 	switch(direction){
 		case 'Top':
 			var p1={x: startx+arrowW, y: starty};
@@ -70,6 +71,7 @@ function drawArrow(canvas,startx,starty,width,height,direction){
 			var p5={x: startx+width-(arrowW/2), y: starty+height-arrowH};
 			var p6={x: startx+(width-arrowW), y: starty+height-arrowH};
 			var p7={x: startx+(width-arrowW), y: starty};
+			var my_gradient=canvas.createLinearGradient(0,starty,0,starty+height);
 			break;
 		case 'Bottom':
 			var p1={x: startx+arrowW, y: starty+height};
@@ -79,30 +81,33 @@ function drawArrow(canvas,startx,starty,width,height,direction){
 			var p5={x: startx+width-(arrowW/2), y: starty+arrowH};
 			var p6={x: startx+(width-arrowW), y: starty+arrowH};
 			var p7={x: startx+(width-arrowW), y: starty+height};
+			var my_gradient=canvas.createLinearGradient(0,starty+height,0,starty);
 			break;
 		case 'Right':
 			var p1={x: startx+width,  y: starty+(height-arrowH)};
 			var p2={x: startx+arrowW, y: starty+(height-arrowH)};
-			var p3={x: startx+arrowW, y: starty};
+			var p3={x: startx+arrowW, y: starty+height};
 			var p4={x: startx,        y: starty+(height/2)};
-			var p5={x: startx+arrowW, y: starty+height};
-			var p6={x: startx+arrowW, y: starty+(height-((height-arrowH)))};
-			var p7={x: startx+width,  y: starty+(height-((height-arrowH)))};
+			var p5={x: startx+arrowW, y: starty};
+			var p6={x: startx+arrowW, y: starty+arrowH};
+			var p7={x: startx+width,  y: starty+arrowH};
+			var my_gradient=canvas.createLinearGradient(startx+width,0,startx,0);
 			break;
 		default:
 			var p1={x: startx,              y: starty+(height-arrowH)};
 			var p2={x: startx+(width-arrowW), y: starty+(height-arrowH)};
-			var p3={x: startx+(width-arrowW), y: starty};
+			var p3={x: startx+(width-arrowW), y: starty+height};
 			var p4={x: startx+width,          y: starty+(height/2)};
-			var p5={x: startx+(width-arrowW), y: starty+height};
-			var p6={x: startx+(width-arrowW), y: starty+(height-((height-arrowH)))};
-			var p7={x: startx,              y: starty+(height-((height-arrowH)))};
+			var p5={x: startx+(width-arrowW), y: starty};
+			var p6={x: startx+(width-arrowW), y: starty+arrowH};
+			var p7={x: startx,              y: starty+arrowH};
+			var my_gradient=canvas.createLinearGradient(startx,0,startx+width,0);
 			break;
     }
-	canvas.save();
-
+	my_gradient.addColorStop(0.2,"rgba(0, 0, 255, .35)");
+	my_gradient.addColorStop(0.8,"rgba(255, 0, 0, .35)");
 	canvas.globalCompositeOperation="source-over";
-	canvas.fillStyle="rgba(255, 0, 0, .35)";
+	canvas.fillStyle=my_gradient;
 	canvas.strokeStyle="rgba(0, 0, 0, .55)";
 
 	canvas.beginPath();
