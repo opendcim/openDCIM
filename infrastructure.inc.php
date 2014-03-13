@@ -1870,7 +1870,7 @@ class Zone {
 			img.onload=function(){
 				// changed to eliminate the flickering of reloading the background image on a redraw
 				context.drawImage(img,-$this->MapX1*$zoom,-$this->MapY1*$zoom,$width*$zoom,$height*$zoom);
-				airflow();
+				//airflow();
 			}
 			// give it an image to load
 			img.src=\"$mapfile\";
@@ -1884,7 +1884,7 @@ class Zone {
 				$temperature="\t\tfunction temperatura(){\n\t\t\tclearcanvas();\n";
 				$humidity="\t\tfunction humedad(){\n\t\t\tclearcanvas();\n";				
 				$realpower="\t\tfunction realpower(){\n\t\t\tclearcanvas();\n";				
-				$airflow="\t\tfunction airflow(){\n";				
+				$airflow="\t\tfunction airflow(){\n\t\t\tclearcanvas();\n";			
 								
 				$sql="SELECT C.*, Temps.Temp, Temps.Humidity, Stats.Wattage AS RealPower, 
 					Temps.LastRead, Temps.LastRead AS RPLastRead FROM fac_Cabinet AS C
