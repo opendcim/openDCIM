@@ -60,7 +60,7 @@ $DProps = array(
         'remarks' => array(
             __('● This is the combined report on all data center assets. It '
                 . 'contains the list of all devices and a list of all cabinets.'),
-            __('● Using Excel\'s pivot capabilities many different anaylsis and '
+            __('● Using Excel\'s pivot capabilities many different analysis and '
                 . 'statistics can be performed.'),
             __('● The terms \'cabinet\' and  \'rack\' are used interchangeable.'),
             __('● For user who have only the \'Admin Own Devices\' right the report '
@@ -79,7 +79,7 @@ $DProps = array(
                 . '\' with the string \'__EMPTY \' in column \'Device\'. '
                 . '\'Position\' gives the start of the range and \'Height\' '
                 . 'specifies the size of the range of free rack space.'),
-            __('● A range of consecutive free slots in a chassis is indicacted in '
+            __('● A range of consecutive free slots in a chassis is indicated in '
                 . 'worksheet \'DC Inventory\' with the string \'__EMPTYSLOT \' in '
                 . 'the column \'Device\'. \'Position\' gives the start of the '
                 . 'range and \'Height\' specifies the number of free slots.'),
