@@ -1859,7 +1859,7 @@ class Zone {
 		var mycanvas=document.getElementById(\"mapCanvas\");
 		var context=mycanvas.getContext('2d');
 		context.globalCompositeOperation='destination-over';
-
+		context.save();
 
 		function clearcanvas(){
 			// erase anything on the canvas

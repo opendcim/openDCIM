@@ -105,6 +105,7 @@ function drawArrow(canvas,startx,starty,width,height,direction){
     }
 	my_gradient.addColorStop(0.2,"rgba(0, 0, 255, .35)");
 	my_gradient.addColorStop(0.8,"rgba(255, 0, 0, .35)");
+	canvas.save();
 	canvas.globalCompositeOperation="source-over";
 	canvas.fillStyle=my_gradient;
 	canvas.strokeStyle="rgba(0, 0, 0, .55)";
