@@ -2243,13 +2243,18 @@ class Device {
 				$flags=($this->TemplateID==0)?$flags.'(T)&nbsp;':$flags;
 				$flags=($flags!='')?'<span class="hlight">'.$flags.'</span>':'';
 
+				$label="";
 				$resp.="\t\t<div class='$rotar' style='left: $left; top: $top; width: ".$width."px; height:".$height."px;'>\n$clickable";
 				if ($templ->FrontPictureFile!=""){
 					$resp.="\t\t\t\t<img class='picturerot' data-deviceid=$this->DeviceID width=$width height=$height src='$picturefile' alt='$this->Label'>\n";
+					if($rotar!='' || ($rotar=='' && $hor_slot)){  // this layout is just bad, need to revisit this later
+						$css=($height-3)."px; padding-bottom: 0px; top: -3px;";
+						$label="<div class=\"label\" style=\"top: 0px; left: -10px;\"><div style=\"width:".$width."px; $css\">$flags$this->Label</div></div>";
+					}
 				}else{
 					$resp.="\t\t\t\t<div class='dept$this->Owner' data-deviceid=$this->DeviceID style='font-size: ".intval($height*0.6)."px; width: ".$width."px; height: ".$height."px;'><span>$flags$this->Label</span></div>\n";
 				}
-				$resp.="$clickableend";
+				$resp.="$clickableend$label";
 				if ( $this->ChassisSlots > 0 ) {
 					//multichassis
 					$childList = $this->GetDeviceChildren();
