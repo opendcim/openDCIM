@@ -2248,7 +2248,7 @@ class Device {
 				if ($templ->FrontPictureFile!=""){
 					$resp.="\t\t\t\t<img class='picturerot' data-deviceid=$this->DeviceID width=$width height=$height src='$picturefile' alt='$this->Label'>\n";
 					if($rotar!='' || ($rotar=='' && $hor_slot)){  // this layout is just bad, need to revisit this later
-						$css=($height-3)."px; padding-bottom: 0px; top: -3px;";
+						$css="height: ".($height-3)."px; padding-bottom: 0px; top: -3px;";
 						$label="<div class=\"label\" style=\"top: 0px; left: -10px;\"><div style=\"width:".$width."px; $css\">$flags$this->Label</div></div>";
 					}
 				}else{
