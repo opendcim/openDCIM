@@ -130,14 +130,15 @@ $(document).ready(function() {
 				tooltip.remove();
 				if (cx1>0 && e.shiftKey && $('#maptitle .nav > select').val()=="airflow"){
 					var frontedge;
-					if(e.pageX<=cx1)
+					if(e.pageX<=cx1){
 						frontedge="Right";
-					else if (e.pageX>=cx2)
+					}else if (e.pageX>=cx2){
 						frontedge="Left";
-					else if (e.pageY<=cy1)
+					}else if (e.pageY<=cy1){
 						frontedge="Bottom";
-					else if (e.pageY>=cy2)
+					}else if (e.pageY>=cy2){
 						frontedge="Top";
+					}
 					$.post("",{cabinetid: id, airflow: frontedge, row: e.ctrlKey}).done(function(){location.reload();});
 				}
 				cx1=0;
@@ -254,10 +255,7 @@ echo $select.'</div></div>'.$zone->MakeImageMap();
 
 		$('#maptitle .nav > select').change(function(){
 			eval($(this).val()+'()');
-		});
-
-		eval($('#maptitle .nav > select').val()+'()');
-		//loadCanvas();
+		}).trigger('change');
 		opentree();
 	});
 </script>

@@ -259,8 +259,7 @@ echo $select.'</div></div>'.$dc->MakeImageMap();
 		});
 		$('#maptitle .nav > select').change(function(){
 			eval($(this).val()+'()');
-		});
-		loadCanvas();
+		}).trigger('change');
 		opentree();
 	});
 </script>
