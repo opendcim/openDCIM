@@ -139,7 +139,7 @@ $(document).ready(function() {
 					}else if (e.pageY>=cy2){
 						frontedge="Top";
 					}
-					$.post("",{cabinetid: id, airflow: frontedge, row: e.ctrlKey}).done(function(){document.location.href='zone_stats.php?dc=<?php echo $zone->ZoneID;?>&airflow';});
+					$.post("",{cabinetid: id, airflow: frontedge, row: e.ctrlKey}).done(function(){document.location.href='zone_stats.php?zone=<?php echo $zone->ZoneID;?>&airflow';});
 				}
 				cx1=0;
 			});
