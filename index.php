@@ -7,6 +7,10 @@
 	require_once( 'db.inc.php' );
 	require_once( 'facilities.inc.php' );
 
+	$sql = 'select count(*) as DCs from fac_DataCenter';
+	$row=$dbh->query($sql)->fetch();
+	$DCs = $row['DCs'];
+
 	// ITSD Statistics
 	$sql='SELECT SUM(NominalWatts) AS Power,
 		(SELECT COUNT(*) FROM fac_Device WHERE DeviceType!="Server" LIMIT 1) AS Devices, 
@@ -91,7 +95,13 @@ echo '
 <div class="table border centermargin">
 <div class="title">
 ',__("Hosted Systems"),'
-</div>
+</div>';
+echo '
+<div>
+  <div>',__("DC Count"),'</div>
+  <div>',$DCs,'</div>
+</div>';
+echo '
 <div>
   <div>',__("Server Count"),'</div>
   <div>',$ITSservers,'</div>
