@@ -42,8 +42,8 @@
 	$dc->DataCenterID=$zone->DataCenterID;
 	$dc->GetDataCenterbyID();
 	
-	$height=0;
-	$width=0;
+	$height=1;
+	$width=1;
 	$ie8fix="";
 	if(strlen($dc->DrawingFileName) >0){
 		$mapfile="drawings/$dc->DrawingFileName";
