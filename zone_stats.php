@@ -139,7 +139,7 @@ $(document).ready(function() {
 					}else if (e.pageY>=cy2){
 						frontedge="Top";
 					}
-					$.post("",{cabinetid: id, airflow: frontedge, row: e.ctrlKey}).done(function(){location.reload();});
+					$.post("",{cabinetid: id, airflow: frontedge, row: e.ctrlKey}).done(function(){document.location.href='zone_stats.php?dc=<?php echo $zone->ZoneID;?>&airflow';});
 				}
 				cx1=0;
 			});
@@ -227,7 +227,11 @@ $select='<select>';
 		'humedad' => __("Humidity"),
 		'airflow' => __("Air Flow")
 		) as $value => $option){
-		$select.='<option value="'.$value.'">'.$option.'</option>';
+		$select.='<option value="'.$value.'"';
+		if($value=="airflow" && isset($_GET["airflow"])){
+			$select.=' selected';
+		}
+		$select.='>'.$option.'</option>';
 	}
 $select.='</select>';
 

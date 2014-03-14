@@ -185,7 +185,11 @@ $select='<select>';
 		'humedad' => __("Humidity"),
 		'airflow' => __("Air Flow")
 		) as $value => $option){
-		$select.='<option value="'.$value.'">'.$option.'</option>';
+		$select.='<option value="'.$value.'"';
+		if($value=="airflow" && isset($_GET["airflow"])){
+			$select.=' selected';
+		}
+		$select.='>'.$option.'</option>';
 	}
 $select.='</select>';
 
@@ -252,7 +256,7 @@ echo $select.'</div></div>'.$dc->MakeImageMap();
 					}else if (e.pageY>=cy2){
 						frontedge="Top";
 					}
-					$.post("",{cabinetid: id, airflow: frontedge, row: e.ctrlKey}).done(function(){location.reload();});
+					$.post("",{cabinetid: id, airflow: frontedge, row: e.ctrlKey}).done(function(){document.location.href='dc_stats.php?dc=<?php echo $dc->DataCenterID;?>&airflow';});
 				}
 				cx1=0;
 			});
