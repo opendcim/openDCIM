@@ -653,7 +653,7 @@ function TemplateButtons(){
 			row.getcolortypes();
 
 			// rear panel edit
-			if(portrights.admin){
+			if(portrights.admin && row.rdevice.length>0){
 				row.getdevices(this.rdevice);
 				row.rnotes.html('<input type="text" style="min-width: 200px;" value="'+row.rnotes.text()+'">');
 			}
@@ -899,12 +899,12 @@ function TemplateButtons(){
 					saveport: '',
 					swdev: $('#deviceid').val(),
 					pnum: row.portnum*rear,
-					pname: row.portname.children('input').val(),
+					pname: (row.portname.children('input').length==0)?row.portname.data('default'):row.portname.children('input').val(),
 					cdevice: device.children('select').val(),
 					cdeviceport: deviceport.children('select').val(),
 					cnotes: notes.children('input').val(),
-					porttype: row.porttype.children('select').val(),
-					portcolor: row.portcolor.children('select').val()
+					porttype: (row.porttype.children('select').length==0)?row.porttype.data('default'):row.porttype.children('select').val(),
+					portcolor: (row.portcolor.length==0)?row.porttype.data('color'):row.portcolor.children('select').val()
 				}).done(function(data){
 					if(data.trim()==1){
 						row.checkredraw(e);
@@ -990,7 +990,7 @@ function TemplateButtons(){
 					row.rdevice.html('<a href="devices.php?deviceid='+data.ConnectedDeviceID+'">'+data.ConnectedDeviceLabel+'</a>').data('default',data.ConnectedDeviceID);
 					row.rdeviceport.html('<a href="paths.php?deviceid='+data.ConnectedDeviceID+'&portnumber='+data.ConnectedPort+'">'+data.ConnectedPortLabel+'</a>').data('default',data.ConnectedPort);
 					row.rnotes.html(data.Notes).data('default',data.Notes);
-					row.porttype.html(data.MediaName).data('default',data.MediaID);
+					row.porttype.html(data.MediaName).data('default',data.MediaID).data('color',data.ColorID);
 					// Attempt to show mass edit controls
 					$('.switch.table, .patchpanel.table').massedit('show');
 					row.showpath();
