@@ -45,3 +45,9 @@ CREATE TABLE IF NOT EXISTS `fac_TemplatePorts` (
   PRIMARY KEY (`TemplateID`,`PortNumber`),
   UNIQUE KEY `LabeledPort` (`TemplateID`,`PortNumber`,`Label`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+--
+-- Disable MediaType Enforcing, again.
+--
+
+UPDATE fac_Config SET Value='Disabled' WHERE Parameter='MediaEnforce' LIMIT 1;
