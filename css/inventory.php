@@ -623,7 +623,7 @@ div.cabinet {
 
 .device .path div { border: 0px none; }
 .device .path > div > div { position: relative; height: 1em; }
-.device .path > div > div > div { position: absolute; top: 0; min-width: 550px; padding-left: 25px;}
+.device .path > div > div > div { position: absolute; top: 0; min-width: 550px; padding-left: 25px; white-space: nowrap;}
 .device .path span:after{ content: " -> ";}
 .device .path span:last-child:after{ content: "";}
 

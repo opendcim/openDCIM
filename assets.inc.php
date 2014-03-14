@@ -2620,6 +2620,16 @@ class DevicePorts {
 			$path[$n]->getPort();
 		}
 		
+		// If the connected device id is null and the label is empty then the port failed to lookup
+		// invert the sign and try to get the port again cause this might be a device and not a 
+		// patch panel
+		if($path[$n]->ConnectedDeviceID=="NULL" && $path[$n]->Label==""){
+			$path[$n]->PortNumber=$path[$n]->PortNumber*-1;
+			$path[$n]->getPort();
+		}
+
+
+
 		return $path;		
 	}
 

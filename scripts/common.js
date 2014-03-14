@@ -700,7 +700,7 @@ function TemplateButtons(){
 				this.element.after(this.pathrow);
 
 				// Add this device as the start of the connection chain
-				row.pathrow.path.html(makespan($('#label').val(),row.portnum));
+				row.pathrow.path.html(makespan($('#label').val(),row.portname.data('default')));
 
 				// Retreive the path
 				$.get('',{path: '', ConnectedDeviceID: row.cdevice.data('default'), ConnectedPort: row.cdeviceport.data('default')}).done(function(data){
