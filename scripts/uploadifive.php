@@ -46,15 +46,49 @@ if ((!empty($_FILES) || isset($_POST['filename']) ) && $_POST['token'] == $verif
 		$tempFile   = $_FILES['Filedata']['tmp_name'];
 		$targetFile = $uploadDir.DIRECTORY_SEPARATOR.str_replace(' ','_',$_FILES['Filedata']['name']);
 
+		// Hide some debug info in the response
+		$status['debug']=$_FILES;
+
 		// Validate the filetype
 		$fileParts=pathinfo($_FILES['Filedata']['name']);
 		if(in_array(strtolower($fileParts['extension']), $fileTypes)){
-			// Save the file
-			move_uploaded_file($tempFile, $targetFile);
-			// Verify the file was written out
-			if(!file_exists($targetFile)){
+
+			if($_FILES['Filedata']['error']==0){
+				// Save the file
+				move_uploaded_file($tempFile, $targetFile);
+				// Verify the file was written out
+				if(!file_exists($targetFile)){
+					$status['status']=1;
+					$status['msg']=__("Couldn't complete file move");
+				}
+			}else{
 				$status['status']=1;
-				$status['msg']=__("Couldn't complete file move");
+				switch ($_FILES['Filedata']['error']){
+					case 1:
+						$status['msg']=__("The file is bigger than this PHP installation allows");
+						break;
+					case 2:
+						$status['msg']=__("The file is bigger than this form allows");
+						break;
+					case 3:
+						$status['msg']=__("Only part of the file was uploaded");
+						break;
+					case 4:
+						$status['msg']=__("No file was uploaded");
+						break;
+					case 6:
+						$status['msg']=__("Missing a temporary folder");
+						break;
+					case 7:
+						$status['msg']=__("Failed to write file to disk");
+						break;
+					case 8:
+						$status['msg']=__("File upload stopped by extension");
+						break;
+					default:
+						$status['msg']=__("Unknown Error");
+						break;
+				}
 			}
 		}else{
 			// The file type wasn't allowed

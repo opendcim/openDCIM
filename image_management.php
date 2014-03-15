@@ -154,6 +154,13 @@ $(function() {
 
 </div><!-- END div.main -->
 </div><!-- END div.page -->
+
+<?php 
+echo '<div id="delete-confirm" title="'.__("Delete image file?").'" class="hide">
+	<p><span class="ui-icon ui-icon-alert" style="float:left; margin:0 7px 20px 0;"></span>'.__("This image will be permanently deleted and cannot be recovered. Are you sure?").'</p>
+</div>';
+?>
+
 <script type="text/javascript">
 	$('.center input').each(function(){
 		reload($(this).data('dir'));

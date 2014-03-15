@@ -257,10 +257,23 @@ function TemplateButtons(){
 		var image=$('<div>').append(device).append($('<div>').addClass('filename').text(file));
 		var del=$('<div>').addClass('del').hide();
 		del.on('click', function(){
-			var rc=delimage(path,file);
-			if(rc){
-				image.remove();
-			}
+			$('#delete-confirm').dialog({
+				resizable: false,
+				height: 170,
+				modal: true,
+				buttons: {
+					"Yes": function(){
+						var rc=delimage(path,file);
+						if(rc){
+							image.remove();
+						}
+						$(this).dialog("close");
+					},
+					Cancel: function(){
+						$(this).dialog("close");
+					}
+				}
+			}).removeClass('hide');
 		});
 		device.on('click', function(){
 			$('<div>').append($('<img>').attr('src',path+'/'+file)).attr('title',path+'/'+file).dialog({
