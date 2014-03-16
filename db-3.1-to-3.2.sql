@@ -51,3 +51,18 @@ CREATE TABLE IF NOT EXISTS `fac_TemplatePorts` (
 --
 
 UPDATE fac_Config SET Value='Disabled' WHERE Parameter='MediaEnforce' LIMIT 1;
+
+--
+-- Table structure for table `fac_GenericLog`
+--
+
+CREATE TABLE `fac_GenericLog` (
+  UserID varchar(80) NOT NULL,
+  Class varchar(40) NOT NULL,
+  ObjectID int(11) NOT NULL,
+  Action varchar(40) NOT NULL,
+  Property varchar(40) NOT NULL,
+  OldVal varchar(255) NOT NULL,
+  NewVal varchar(255) NOT NULL,
+  Time timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;

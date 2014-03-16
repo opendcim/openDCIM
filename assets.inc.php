@@ -1490,6 +1490,7 @@ class Device {
 			return false;
 		}
 		
+		(class_exists('LogActions'))?LogActions::LogThis($this,$tmpDev):'';
 		return true;
 	}
 

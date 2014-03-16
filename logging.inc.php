@@ -36,16 +36,32 @@
 
 class LogActions {
 	var $UserID;
-	var $DeviceID;
+	var $Class;
+	var $ObjectID;
 	var $Action;
-	var $Notes;
+	var $Property;
+	var $OldVal;
+	var $NewVal;
 	var $Time;
 
-	// Generic catch all logging function
-	static function LogThis($object){
-		global $dbh;
+	function __construct(){
+		$this->UserID=$_SERVER['REMOTE_USER'];
+	}
 
-		$userid=$_SERVER['REMOTE_USER'];
+	function query($sql){
+		global $dbh;
+		return $dbh->query($sql);
+	}
+	
+	function exec($sql){
+		global $dbh;
+		return $dbh->exec($sql);
+	}
+
+	// Generic catch all logging function
+	static function LogThis($object,$originalobject=null){
+		$log=new LogActions();
+
 		$trace=debug_backtrace();
 		// we're only concerned with the 2nd record $trace can be read for a full debug if something calls for it
 		$caller=$trace[1];
@@ -53,17 +69,38 @@ class LogActions {
 		if(preg_match("/create/i", $caller['function'])){$action='1';}
 		if(preg_match("/delete/i", $caller['function'])){$action='2';}
 		if(preg_match("/update/i", $caller['function'])){$action='3';}
-		switch(get_class($object)){
+
+		// Move the action onto the object
+		$log->Action=$action;
+		$log->Class=get_class($object);
+
+		// Will return true/false for key and value comparison
+		function key_comp($v1, $v2) {
+			return ($v1 == $v2)?0:1;
+		}
+
+		function val_comp($v1, $v2) {
+			return ($v1 == $v2)?0:1;
+		}
+
+		$diff=array();
+		// Find the difference between the original object and the altered object, if present
+		if(!is_null($originalobject)){
+			$diff=(array_udiff_uassoc((array)$object,(array)$originalobject, "key_comp", "val_comp"));
+
+			// Note the changed values
+			foreach($diff as $key => $value){
+				$diff[$key]=$key.": ".$originalobject->$key." => ".$object->$key;
+			}
+		}
+
+		switch($log->Class){
 			case "Device":
-				$sql="INSERT INTO fac_DeviceLog set UserID='$userid', DeviceID='$object->DeviceID', Action=$action, Time=NOW();";
+				$log->ObjectID=$object->DeviceID;
 				break;
 			case "Cabinet":
-			case "SwitchConnection":
-				// not sure what should be logged here exactly if anything, probably just create, update and remove
-				//create connection
-				//remove connection
-				//drop endpoint connections?
-				//drop switch connections?
+				$log->ObjectID=$object->CabinetID;
+				break;
 			case "SupplyBin":
 			case "Supplies":
 			case "Config":
@@ -79,10 +116,36 @@ class LogActions {
 				// same as PowerPanel
 			case "DeviceTemplate":
 			default:
-				// default action to keep log anything we don't understand
-				$sql="INSERT INTO fac_GenericLog set UserID='$userid', Object='{$caller['class']}', Action='{$caller['function']}', Time=NOW();";
 		}
-		$dbh->query($sql);
+		$return=true;
+		// If there are any differences then we are upating an object otherwise
+		// this is a new object so just log the action as a create
+		if(count($diff)){
+			foreach($diff as $key => $value){
+				$log->Property=$key;
+				$log->OldVal=$originalobject->$key;
+				$log->NewVal=$object->$key;
+				$return=($log->WriteToDB())?$return:false;
+			}
+		}else{
+			$return=$log->WriteToDB();
+		}
+		return $return;
+	}
+
+	function WriteToDB(){
+		$sql="INSERT INTO fac_GenericLog set UserID=\"$this->UserID\", 
+			Class=\"$this->Class\", ObjectID=\"$this->ObjectID\", Action=\"$this->Action\", 
+			Property=\"$this->Property\", OldVal=\"$this->OldVal\", NewVal=\"$this->NewVal\";";
+
+		if(!$this->exec($sql)){
+			global $dbh;
+			$info=$dbh->errorInfo();
+
+			error_log("PDO Error::LogActions:WriteToDB {$info[2]} SQL=$sql");
+			return false;
+		}
+		return true;
 	}
 
 	// Add in functions here for actions lookup by device, user, date, etc
