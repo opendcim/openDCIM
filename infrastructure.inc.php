@@ -2274,7 +2274,8 @@ class Container {
 	function GetContainer(){
 		$this->MakeSafe();
 
-		$sql="SELECT * FROM fac_Container WHERE ContainerID=$this->ContainerID;";
+		$sql="SELECT * FROM fac_Container WHERE ContainerID=$this->ContainerID 
+			ORDER BY LENGTH(Name), Name ASC;";
 
 		if($row=$this->query($sql)->fetch()){
 			foreach(Container::RowToObject($row) as $prop => $value){
@@ -2290,11 +2291,11 @@ class Container {
 		$this->MakeSafe();
 
 		$sql="SELECT * FROM fac_Container WHERE ParentID=$this->ContainerID 
-			ORDER BY Name ASC;";
+			ORDER BY LENGTH(Name), Name ASC;";
 
 		$containerList=array();
 		foreach($this->query($sql) as $row){
-			$containerList[$row["ContainerID"]]=Container::RowToObject($row);
+			$containerList[]=Container::RowToObject($row);
 		}
 
 		return $containerList;
@@ -2577,11 +2578,11 @@ class Container {
 	}
 	
 	function GetContainerList(){
-		$sql="SELECT * FROM fac_Container ORDER BY Name ASC;";
+		$sql="SELECT * FROM fac_Container ORDER BY LENGTH(Name), Name ASC;";
 
 		$containerList=array();
 		foreach($this->query($sql) as $row){
-			$containerList[$row["ContainerID"]]=Container::RowToObject($row);
+			$containerList[]=Container::RowToObject($row);
 		}
 
 		return $containerList;

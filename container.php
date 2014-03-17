@@ -48,8 +48,6 @@
 	}
 	$cList=$c->GetContainerList();
 
-
-
 	$imageselect='<div id="preview"></div><div id="filelist">';
 
 	$path='./drawings';
@@ -211,8 +209,6 @@ echo '	</select></div>
   	<div><select name="parentid" id="parentid" onChange="cambio_container()">
       <option value="0">',__("None"),'</option>';
 
-//	$container=new Container();
-//	$cList=$container->GetContainerList();
 	foreach($cList as $cRow){
 		if ($cRow->ContainerID<>$c->ContainerID){
 			if($cRow->ContainerID == $c->ParentID){$selected=" selected";}else{$selected="";}
