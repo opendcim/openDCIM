@@ -1167,12 +1167,12 @@ xsi:noNamespaceSchemaLocation="openDCIMdevicetemplate.xsd">
 		$template->RearChassisSlots=($template->DeviceType=="Chassis")?$xmltemplate->TemplateReg->RearChassisSlots:0;
 		
 		//Check if picture files exist
-		if (file_exists("pictures/".$template->FrontPictureFile)){
+		if ($template->FrontPictureFile!="" && file_exists("pictures/".$template->FrontPictureFile)){
 			$result["status"]=__("Import Error");
 			$result["log"][0]= __("Front picture file already exists");
 			return $result;
 		}
-		if (file_exists("pictures/".$template->RearPictureFile)){
+		if ($template->RearPictureFile!="" && file_exists("pictures/".$template->RearPictureFile)){
 			$result["status"]=__("Import Error");
 			$result["log"][0]= __("Rear picture file already exists");
 			return $result;
