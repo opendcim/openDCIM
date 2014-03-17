@@ -11,6 +11,7 @@
 	$status="";
 
 	$dc=new DataCenter();
+	$container=new Container();
 	if(isset($_POST['action'])&&(($_POST['action']=='Create')||($_POST['action']=='Update'))){
 		$dc->DataCenterID=$_POST['datacenterid'];
 		$dc->Name=trim($_POST['name']);
@@ -55,6 +56,8 @@
 		$dc->GetDataCenter();
 	}
 	$dcList=$dc->GetDCList();
+	$cList=$container->GetContainerList();
+	$cListFlat=json_decode(json_encode($cList), true);
 
 	if ( $config->ParameterArray["mUnits"] == "english" )
 		$vol = __("Square Feet");
@@ -204,7 +207,8 @@ echo '<div class="main">
 
 	foreach($dcList as $dcRow){
 		if($dcRow->DataCenterID == $dc->DataCenterID){$selected=" selected";}else{$selected="";}
-		print "<option value=\"$dcRow->DataCenterID\"$selected>$dcRow->Name</option>\n";
+		$cID = $dcRow->ContainerID; $cName = $cListFlat[$cID]['Name'];
+		print "<option value=\"$dcRow->DataCenterID\"$selected>$dcRow->Name / $cName</option>\n";
 	}
 
 echo '	</select></div>
@@ -239,8 +243,6 @@ echo '	</select></div>
   	<div><select name="container" id="container" onChange="cambio_container()">
       <option value="0">',__("None"),'</option>';
 
-	$container=new Container();
-	$cList=$container->GetContainerList();
 	foreach($cList as $cRow){
 		if($cRow->ContainerID == $dc->ContainerID){$selected=" selected";}else{$selected="";}
 		print "<option value=\"$cRow->ContainerID\"$selected>$cRow->Name</option>\n";
