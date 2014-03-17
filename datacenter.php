@@ -207,7 +207,7 @@ echo '<div class="main">
 
 	foreach($dcList as $dcRow){
 		if($dcRow->DataCenterID == $dc->DataCenterID){$selected=" selected";}else{$selected="";}
-		$cID = $dcRow->ContainerID; $cName = $cListFlat[$cID][Name];
+		$cID = $dcRow->ContainerID; $cName = $cListFlat[$cID]['Name'];
 		print "<option value=\"$dcRow->DataCenterID\"$selected>$dcRow->Name / $cName</option>\n";
 	}
 
