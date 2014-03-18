@@ -126,13 +126,11 @@ function renderUnassignedTemplateOwnership($noTemplFlag, $noOwnerFlag, $device) 
 	$cab->CabinetID=$_REQUEST["cabinetid"];
 	$cab->GetCabinet();
 
-	if($cab->AssignedTo >0){
-		// Check to see if this user is allowed to see anything in here
-		if( ! $user->canRead($cab->AssignedTo) ){
-			// This cabinet belongs to a department you don't have affiliation with, so no viewing at all
-			header('Location: '.redirect());
-			exit;
-		}
+	// Check to see if this user is allowed to see anything in ihere
+	if($cab->AssignedTo >0 && !array_intersect($user->isMemberOf(),Cabinet::GetOccupants($cab->CabinetID))){
+		// This cabinet belongs to a department you don't have affiliation with, so no viewing at all
+		header('Location: '.redirect());
+		exit;
 	}
 
 	// If you're deleting the cabinet, no need to pull in the rest of the information, so get it out of the way

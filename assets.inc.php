@@ -229,6 +229,19 @@ class Cabinet {
 		return $row["Occupancy"];
 	}
 
+	static function GetOccupants($CabinetID){
+		global $dbh;
+
+		$sql="SELECT Owner FROM fac_Device WHERE Cabinet=".intval($CabinetID)." Group By Owner;";
+
+		$occupants=array();
+		foreach($dbh->query($sql) as $row){
+			$occupants[]=$row[0];
+		}
+
+		return $occupants;
+	}
+
 	function GetDCSelectList(){
 		global $dbh;
 		
@@ -1161,7 +1174,7 @@ class Device {
 			$par->GetDevice();
 			$this->Rights=($par->Rights=="Write")?"Write":$this->Rights;
 		}elseif($cab->GetCabinet()){
-			if($user->canWrite($cab->AssignedTo)){$this->Rights="Write";} // write because the cabinet is assigned
+			if($cab->AssignedTo!=0 && $user->canWrite($cab->AssignedTo)){$this->Rights="Write";} // write because the cabinet is assigned
 		}
 		if($user->SiteAdmin && $this->DeviceType=='Patch Panel'){$this->Rights="Write";} // admin override of rights for patch panels
 

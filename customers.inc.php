@@ -689,6 +689,7 @@ class User {
 			(SELECT ContactID FROM fac_Contact WHERE UserID=\"$this->UserID\");";
 
 		$deptList=array();
+		$deptList[]=0; // This is allowing anyone to use an unassigned rack / device
 		if($query=$this->query($sql)){
 			foreach($query as $row){
 				$deptList[]=$row["DeptID"];
