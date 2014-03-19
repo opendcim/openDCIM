@@ -743,7 +743,8 @@ function TemplateButtons(){
 			var row=this;
 			var postoptions={swdev: $('#deviceid').val(),pn: this.portnum};
 			if(target===this.rdevice){
-				postoptions=$.extend(postoptions,{rear: ''});
+		//	Uncomment this line to restrict the device list to just patch panels
+		//		postoptions=$.extend(postoptions,{rear: ''});
 			}
 			$.post('',postoptions).done(function(data){
 				var devlist=$("<select>").append('<option value=0>&nbsp;</option>');

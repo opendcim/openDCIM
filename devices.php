@@ -281,8 +281,7 @@
 				}
 			}
 		}else{
-		//	uncomment the next line to restrict patch panels to just rear connections
-		//	$patchpanels=(isset($_POST['rear']))?"true":null;
+			$patchpanels=(isset($_POST['rear']))?"true":null;
 			$portnumber=(isset($_POST['pn']))?$_POST['pn']:null;
 			$list=DevicePorts::getPatchCandidates($_POST['swdev'],$portnumber,null,$patchpanels);
 		}
