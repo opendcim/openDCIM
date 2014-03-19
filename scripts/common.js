@@ -728,6 +728,17 @@ function TemplateButtons(){
 			row.pathrow.show();
 		},
 
+		adjustdisplay: function(e){
+			var row=this;
+			// We might need to expand the table if this is really long
+			// this is really hacky but it's working, surely there is a cleaner method than a timer
+			setTimeout(function(){
+				var pw=row.pathrow.path[0].getBoundingClientRect().width;
+				var tw=row.element.parent('.table')[0].getBoundingClientRect().width;
+				if(tw < pw){row.element.parent('.table').width(pw+10);resize();}
+			},500);
+		},
+
 		getdevices: function(target){
 			var row=this;
 			var postoptions={swdev: $('#deviceid').val(),pn: this.portnum};
@@ -766,17 +777,13 @@ function TemplateButtons(){
 					// If no label is specified use the absolute value of the port number
 					port.Label=(port.Label=="")?Math.abs(port.PortNumber):port.Label;
 
-					// only allow positive values
-					if(rear){
-						if(port.PortNumber<0){
-							portlist.prepend('<option value='+port.PortNumber+'>'+port.Label+'</option>');
-							portlist.data(port.PortNumber, {MediaID: port.MediaID, ColorID: port.ColorID});
-						}
+					// We don't care about order! Fronts to backs, backs to fronts, it's CHAOS!
+					if(port.PortNumber<0){
+						portlist.prepend('<option value='+port.PortNumber+'>'+port.Label+' (rear)</option>');
+						portlist.data(port.PortNumber, {MediaID: port.MediaID, ColorID: port.ColorID});
 					}else{
-						if(port.PortNumber>0){
-							portlist.append('<option value='+port.PortNumber+'>'+port.Label+'</option>');
-							portlist.data(port.PortNumber, {MediaID: port.MediaID, ColorID: port.ColorID});
-						}
+						portlist.append('<option value='+port.PortNumber+'>'+port.Label+'</option>');
+						portlist.data(port.PortNumber, {MediaID: port.MediaID, ColorID: port.ColorID});
 					}
 				});
 				portlist.change(function(){
@@ -935,7 +942,7 @@ function TemplateButtons(){
 		showpath: function(){
 			var row=this;
 			$([row.cdeviceport,row.rdeviceport]).each(function(){
-				$(this).find('a').each(function(i){
+				$(this).find('a:not([class])').each(function(i){
 					$(this).unbind('click');
 					$(this).click(function(e){
 						e.preventDefault();
@@ -992,6 +999,7 @@ function TemplateButtons(){
 					$('.switch.table, .patchpanel.table').massedit('show');
 					if(data.ConnectedDeviceType=='Patch Panel'){
 						row.updatepath();
+						row.adjustdisplay();
 					}
 					row.showpath();
 				});
