@@ -66,3 +66,12 @@ CREATE TABLE `fac_GenericLog` (
   NewVal varchar(255) NOT NULL,
   Time timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+--
+-- Add configuration items for path weights
+-- I honestly don't understand this so I didn't fill in what the UnitOfMeasure is 
+--
+
+INSERT INTO fac_Config VALUES ('path_weight_cabinet', '1', '', 'int', '1'),
+	('path_weight_rear', '1', '', 'int', '1'),
+	('path_weight_row', '4', '', 'int', '4');

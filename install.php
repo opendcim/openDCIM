@@ -2009,12 +2009,13 @@ echo '<div class="main">
 			<h3>',__("Media Types"),'</h3>
 			<div class="table">
 				<div>
-					<div><label for="MediaEnforce">',__("Media Type Matching"),'</label></div>
+					<!-- <div><label for="MediaEnforce">',__("Media Type Matching"),'</label></div>
 					<div><select id="MediaEnforce" name="MediaEnforce" defaultvalue="',$config->defaults["MediaEnforce"],'" data="',$config->ParameterArray["MediaEnforce"],'">
 							<option value="disabled">',__("Disabled"),'</option>
 							<option value="enabled">',__("Enforce"),'</option>
 						</select>
-					</div>
+					</div> -->
+					<input type="hidden" name="MediaEnforce" value="disabled">
 				</div>
 			</div> <!-- end table -->
 			<br>
@@ -2043,6 +2044,21 @@ echo '<div class="main">
 					<div id="newline"><img title="',__("Add new row"),'" src="images/add.gif"></div>
 					<div><input type="text" name="colorcode[]"></div>
 					<div><input type="text" name="ccdefaulttext[]"></div>
+				</div>
+			</div> <!-- end table -->
+			<h3>',__("Connection Pathing"),'</h3>
+			<div class="table" id="pathweights">
+				<div>
+					<div><label for="path_weight_cabinet">',__("Cabinet Weight"),'</label></div>
+					<div><input type="text" defaultvalue="',$config->defaults["path_weight_cabinet"],'" name="path_weight_cabinet" value="',$config->ParameterArray["path_weight_cabinet"],'"></div>
+				</div>
+				<div>
+					<div><label for="path_weight_rear">',__("Weight for rear connections between panels"),'</label></div>
+					<div><input type="text" defaultvalue="',$config->defaults["path_weight_rear"],'" name="path_weight_cabinet" value="',$config->ParameterArray["path_weight_rear"],'"></div>
+				</div>
+				<div>
+					<div><label for="path_weight_row">',__("Weight for patches in the same row"),'</label></div>
+					<div><input type="text" defaultvalue="',$config->defaults["path_weight_row"],'" name="path_weight_row" value="',$config->ParameterArray["path_weight_row"],'"></div>
 				</div>
 			</div> <!-- end table -->
 		</div>

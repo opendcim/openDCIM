@@ -3807,15 +3807,16 @@ class PlannedPath {
 	}
 	
 	private function UpdateList () {
+		global $config;
 		//find posible next devices with lower weight in list from actual node 
 		//for each device found, if already it exists and it is not useded, update it if (new weight) < (old weight)
 		//if it does not exist, insert in list with his actual weight and $used=false
 		//Destination device is $this->devID2
 		
 		//weights
-		$weight_cabinet=1; 	//weight for patches on actual cabinet
-		$weight_rear=1;		//weight fot rear connetcion between panels
-		$weight_row=4;		//weigth for patches on same row of cabinets (except actual cabinet)
+		$weight_cabinet=$config->ParameterArray["path_weight_cabinet"]; 	//weight for patches on actual cabinet
+		$weight_rear=$config->ParameterArray["path_weight_rear"];		//weight fot rear connetcion between panels
+		$weight_row=$config->ParameterArray["path_weight_row"];		//weigth for patches on same row of cabinets (except actual cabinet)
 		//It is possible to assign a weight proportional to the distance between the actual cabinet and each cabinet of actual row, 
 		//so you can prioritize closest cabinets in the actual row. In the future...
 		
