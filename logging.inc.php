@@ -38,6 +38,7 @@ class LogActions {
 	var $UserID;
 	var $Class;
 	var $ObjectID;
+	var $ChildID; // for use in cases like power and network connections that don't have individual id values
 	var $Action;
 	var $Property;
 	var $OldVal;
@@ -67,6 +68,7 @@ class LogActions {
 		$log->UserID=$dbRow["UserID"];
 		$log->Class=$dbRow["Class"];
 		$log->ObjectID=$dbRow["ObjectID"];
+		$log->ChildID=$dbRow["ChildID"];
 		$log->Property=$dbRow["Property"];
 		$log->Action=$dbRow["Action"];
 		$log->OldVal=$dbRow["OldVal"];
@@ -92,12 +94,26 @@ class LogActions {
 		$log->Class=get_class($object);
 
 		// Will return true/false for key and value comparison
-		function key_comp($v1, $v2) {
-			return ($v1 == $v2)?0:1;
+		if(!function_exists("key_comp")){
+			function key_comp($v1, $v2) {
+				return ($v1 == $v2)?0:1;
+			}
+
+			function val_comp($v1, $v2) {
+				return ($v1 == $v2)?0:1;
+			}
 		}
 
-		function val_comp($v1, $v2) {
-			return ($v1 == $v2)?0:1;
+		// The diff function is acting retarded with some values so scrub em
+		foreach($object as $key => $value){
+			if($value=='NULL' || $value=='0'){
+				$object->$key='';
+			}
+		}
+		foreach($originalobject as $key => $value){
+			if($value=='NULL' || $value=='0'){
+				$originalobject->$key='';
+			}
 		}
 
 		$diff=array();
@@ -118,6 +134,10 @@ class LogActions {
 			case "Cabinet":
 				$log->ObjectID=$object->CabinetID;
 				break;
+			case "DevicePorts":
+				$log->ObjectID=$object->DeviceID;
+				$log->ChildID=$object->PortNumber;
+				break;
 			case "SupplyBin":
 			case "Supplies":
 			case "Config":
@@ -137,13 +157,17 @@ class LogActions {
 		$return=true;
 		// If there are any differences then we are upating an object otherwise
 		// this is a new object so just log the action as a create
-		if(count($diff)){
-			foreach($diff as $key => $value){
-				$log->Property=$key;
-				$log->OldVal=$originalobject->$key;
-				$log->NewVal=$object->$key;
-				$return=($log->WriteToDB())?$return:false;
+		if(!is_null($originalobject)){
+			if(count($diff)){
+				foreach($diff as $key => $value){
+					$log->Property=$key;
+					$log->OldVal=$originalobject->$key;
+					$log->NewVal=$object->$key;
+					$return=($log->WriteToDB())?$return:false;
+				}
 			}
+			// in the event that two objects were passed but no changes found, 
+			// we just wrote the same info back to the db, nothing to log
 		}else{
 			$return=$log->WriteToDB();
 		}
@@ -151,8 +175,10 @@ class LogActions {
 	}
 
 	function WriteToDB(){
+		$child=($this->ChildID==null)?', ChildID=NULL':", ChildID=$this->ChildID";
+
 		$sql="INSERT INTO fac_GenericLog set UserID=\"$this->UserID\", 
-			Class=\"$this->Class\", ObjectID=\"$this->ObjectID\", Action=\"$this->Action\", 
+			Class=\"$this->Class\", ObjectID=\"$this->ObjectID\"$child, Action=\"$this->Action\", 
 			Property=\"$this->Property\", OldVal=\"$this->OldVal\", NewVal=\"$this->NewVal\";";
 
 		if(!$this->exec($sql)){

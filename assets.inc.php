@@ -2442,6 +2442,7 @@ class DevicePorts {
 			return false;
 		}
 
+		(class_exists('LogActions'))?LogActions::LogThis($this):'';
 		return true;
 	}
 
@@ -2525,15 +2526,18 @@ class DevicePorts {
 
 		$this->MakeSafe();
 
-		$label=$this->Label;
-		if(!$this->getPort()){return false;}
+		$oldport=new DevicePorts();
+		$oldport->DeviceID=$this->DeviceID;
+		$oldport->PortNumber=$this->PortNumber;
+		if(!$oldport->getPort()){return false;}
 
-		$sql="UPDATE fac_Ports SET Label=\"$label\" WHERE 
+		$sql="UPDATE fac_Ports SET Label=\"$this->Label\" WHERE 
 			DeviceID=$this->DeviceID AND PortNumber=$this->PortNumber;";
 
 		if(!$dbh->query($sql)){
 			return false;
 		}else{
+			(class_exists('LogActions'))?LogActions::LogThis($this,$oldport):'';
 			return true;
 		}
 	}
@@ -2549,6 +2553,10 @@ class DevicePorts {
 		$tmpport->DeviceID=$this->ConnectedDeviceID;
 		$tmpport->PortNumber=$this->ConnectedPort;
 		$tmpport->getPort();
+		$oldtmpport=new DevicePorts(); // used for logging
+		$oldtmpport->DeviceID=$oldport->ConnectedDeviceID;
+		$oldtmpport->PortNumber=$oldport->ConnectedPort;
+		$oldtmpport->getPort();
 
 		//check rights before we go any further
 		$dev=new Device();
@@ -2579,6 +2587,10 @@ class DevicePorts {
 		if($this->ConnectedDeviceID==0 || $this->PortNumber==0 || $this->ConnectedPort==0){
 			// when any of the above equal 0 this is a delete request
 			// skip making any new connections but go ahead and update the device
+			// reload tmpport with data from the other device
+			$tmpport->DeviceID=$oldport->ConnectedDeviceID;
+			$tmpport->PortNumber=$oldport->ConnectedPort;
+			$tmpport->getPort();
 		}else{
 			// make new connection
 			$tmpport->ConnectedDeviceID=$this->DeviceID;
@@ -2604,14 +2616,18 @@ class DevicePorts {
 
 		// If this is a patch panel and a front port then set the label on the rear 
 		// to match only after a successful update, done above.
-		if($dev->DeviceType=="Patch Panel" && $this->PortNumber>0){
-			$tmpport->DeviceID=$this->DeviceID;
-			$tmpport->PortNumber=-$this->PortNumber;
-			$tmpport->getPort();
-			$tmpport->Label=$this->Label;
-			$tmpport->updateLabel();
+		if($dev->DeviceType=="Patch Panel" && $this->PortNumber>0 && $this->Label!=$oldport->Label){
+			$pport=new DevicePorts();
+			$pport->DeviceID=$this->DeviceID;
+			$pport->PortNumber=-$this->PortNumber;
+			$pport->getPort();
+			$pport->Label=$this->Label;
+			$pport->updateLabel();
 		}
 
+		// two logs, because we probably modified two devices
+		(class_exists('LogActions'))?LogActions::LogThis($this,$oldport):'';
+		(class_exists('LogActions'))?LogActions::LogThis($tmpport,$oldtmpport):'';
 		return true;
 	}
 
@@ -2641,8 +2657,6 @@ class DevicePorts {
 			$path[$n]->PortNumber=$path[$n]->PortNumber*-1;
 			$path[$n]->getPort();
 		}
-
-
 
 		return $path;		
 	}
