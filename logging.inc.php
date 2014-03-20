@@ -58,6 +58,23 @@ class LogActions {
 		return $dbh->exec($sql);
 	}
 
+	static function RowToObject($dbRow){
+		/*
+		 * Generic function that will take any row returned from the fac_Cabinet
+		 * table and convert it to an object for use in array or other
+		 */
+		$log=new LogActions();
+		$log->UserID=$dbRow["UserID"];
+		$log->Class=$dbRow["Class"];
+		$log->ObjectID=$dbRow["ObjectID"];
+		$log->Property=$dbRow["Property"];
+		$log->Action=$dbRow["Action"];
+		$log->OldVal=$dbRow["OldVal"];
+		$log->NewVal=$dbRow["NewVal"];
+		$log->Time=$dbRow["Time"];
+
+		return $log;
+	}
 	// Generic catch all logging function
 	static function LogThis($object,$originalobject=null){
 		$log=new LogActions();
@@ -146,6 +163,43 @@ class LogActions {
 			return false;
 		}
 		return true;
+	}
+
+	static function GetLog($object=null){
+		$log=new LogActions();
+
+		if(!is_null($object)){
+			$log->Class=get_class($object);
+
+			// Attempt to autofind the id of the object we've been handed
+			foreach($object as $prop => $value){
+				if(preg_match("/id/i", $prop)){
+					$log->ObjectID=$value;
+					break;
+				}
+			}
+		}
+
+		function sql($sql,$prop,$var){
+			$sql=(($sql=='')?" WHERE":" AND")." $prop=\"$var\"";
+			return $sql;
+		}
+
+		// build out the query using all available data
+		$sql="SELECT * FROM fac_GenericLog";
+
+		$add='';
+		$add=($log->Class!='')?sql($add,'Class',$log->Class):$add;
+		$add=($log->ObjectID!='')?sql($add,'ObjectID',$log->ObjectID):$add;
+
+		$sql.=$add.' ORDER BY Time ASC;';
+
+		$events=array();		
+		foreach($log->query($sql) as $dbRow){
+			$events[]=LogActions::RowToObject($dbRow);
+		}
+
+		return $events;
 	}
 
 	// Add in functions here for actions lookup by device, user, date, etc

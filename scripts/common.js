@@ -1167,7 +1167,3 @@ function TemplateButtons(){
 		}
 	});
 })( jQuery );
-
-
-(function($){
-}(jQuery));
