@@ -777,15 +777,11 @@ function TemplateButtons(){
 				$.each(data, function(key,port){
 					// If no label is specified use the absolute value of the port number
 					port.Label=(port.Label=="")?Math.abs(port.PortNumber):port.Label;
+					port.Label=(port.PortNumber>0)?port.Label:port.Label+' (rear)';
 
-					// We don't care about order! Fronts to backs, backs to fronts, it's CHAOS!
-					if(port.PortNumber<0){
-						portlist.prepend('<option value='+port.PortNumber+'>'+port.Label+' (rear)</option>');
-						portlist.data(port.PortNumber, {MediaID: port.MediaID, ColorID: port.ColorID});
-					}else{
-						portlist.append('<option value='+port.PortNumber+'>'+port.Label+'</option>');
-						portlist.data(port.PortNumber, {MediaID: port.MediaID, ColorID: port.ColorID});
-					}
+					// Add the port to the list of options
+					portlist.append('<option value='+port.PortNumber+'>'+port.Label+'</option>');
+					portlist.data(port.PortNumber, {MediaID: port.MediaID, ColorID: port.ColorID});
 				});
 				portlist.change(function(){
 					//Match Media type and color on incoming port

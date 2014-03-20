@@ -280,6 +280,24 @@
 					}
 				}
 			}
+
+			// Sort the ports so that all front ports will be first then the rear ports.
+			$front=array();
+			$rear=array();
+
+			foreach($list as $pn => $port){
+				if($pn>0){
+					$front[$pn]=$port;
+				}else{
+					$rear[$pn]=$port;
+				}
+			}
+
+			// Positive and negative numbers have different sorts to make sure that 1 is on top of the list
+			ksort($front);
+			krsort($rear);
+
+			$list=array_replace($front,$rear);
 		}else{
 			$patchpanels=(isset($_POST['rear']))?"true":null;
 			$portnumber=(isset($_POST['pn']))?$_POST['pn']:null;
