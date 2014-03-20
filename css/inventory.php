@@ -603,6 +603,8 @@ div.cabinet {
 .table.patchpanel > div:first-child > div select,
 .table.switch > div:first-child > div select { position: absolute; top: -3px; right: 0px; }
 
+.table.patchpanel > div:first-child, .table.switch > div:first-child { white-space: nowrap; }
+
 .device div[id^="controls"] { border: 0 none; white-space: nowrap; }
 
 .device .table.patchpanel div[id^="pp"] { border-left: 2px solid black; min-width: 10px;}
