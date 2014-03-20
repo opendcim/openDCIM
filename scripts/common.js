@@ -800,7 +800,7 @@ function TemplateButtons(){
 
 		delete: function(e) {
 			var row=this;
-			var rear=(e.target.parentElement!=null)?(e.target.parentElement.id.indexOf('r')==0)?true:false:false;
+			var rear=$(e.target.parentElement).data('rear');
 			if(rear){
 				$(row.rdevice).find('input').val('');
 				row.rdevice.children('select').val(0).trigger('change');
