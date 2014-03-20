@@ -635,7 +635,6 @@ $write=($dev->Rights=="Write")?true:$write;
   <script type="text/javascript" src="scripts/jquery.validationEngine.js"></script>
   <script type="text/javascript" src="scripts/jHtmlArea-0.8.min.js"></script>
   <script type="text/javascript" src="scripts/jquery.textext.js"></script>
-  <script type="text/javascript" src="scripts/combobox.js"></script>
   <script type="text/javascript" src="scripts/common.js"></script>
 
 <SCRIPT type="text/javascript" >

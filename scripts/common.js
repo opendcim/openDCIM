@@ -581,6 +581,147 @@ function TemplateButtons(){
 		}
 	});
 
+	// searchable combobox
+	$.widget( "custom.combobox", {
+		_create: function() {
+			this.wrapper=$("<span>").addClass("custom-combobox").insertAfter(this.element);
+
+			if(this.element.is(":visible")){ 
+				this.element.hide();
+				this._createAutocomplete();
+				this._createShowAllButton();
+			}
+		},
+ 
+		_createAutocomplete: function() {
+			var selected=this.element.children(":selected"),
+				value=selected.val()?selected.text():"";
+ 
+			this.input=$("<input>").appendTo(this.wrapper).val(value).attr("title","")
+				.addClass("custom-combobox-input ui-widget ui-widget-content ui-state-default")
+				.autocomplete({
+					delay: 0,
+					minLength: 0,
+					source: $.proxy( this, "_source" ),
+					open: function(){
+						$(this).autocomplete("widget").css({'width': $(this).width()+26+'px'}).addClass('monospace');
+					}
+				}).tooltip({tooltipClass: "ui-state-highlight"});
+
+			this._on(this.input,{
+				autocompleteselect: function(event, ui){
+					ui.item.option.selected=true;
+					this._trigger("select", event,{
+						item: ui.item.option
+					});
+					$(ui.item.option).parent('select').change();
+				},
+
+				autocompletechange: "_removeIfInvalid"
+			});
+		},
+ 
+		_createShowAllButton: function() {
+			var input=this.input,
+			wasOpen=false;
+ 
+			$("<a>").attr("tabIndex", -1)
+				.attr("title", "Show All Items")
+				.height($(this.wrapper).children('input').height())
+				.css({'vertical-align':'top','padding':$(this.wrapper).children('input').css('padding')})
+				.tooltip()
+				.appendTo(this.wrapper)
+				.button({icons:{primary: "ui-icon-triangle-1-s"},text: false})
+				.removeClass("ui-corner-all")
+				.addClass("custom-combobox-toggle")
+				.mousedown(function(){wasOpen=input.autocomplete("widget").is(":visible");})
+				.click(function(){
+					input.focus();
+ 
+					// Close if already visible
+					if(wasOpen){return;}
+
+					// Pass empty string as value to search for, displaying all results
+					input.autocomplete( "search", "" );
+				});
+		},
+ 
+		_source: function(request,response){
+			var matcher=new RegExp( $.ui.autocomplete.escapeRegex(request.term), "i" );
+			response(this.element.children("option").map(function() {
+				var text=$(this).text();
+				if(this.value && (!request.term || matcher.test(text))){
+					return {
+						label: text,
+						value: text,
+						option: this
+					};
+				}
+			}));
+		},
+ 
+		_removeIfInvalid: function(event,ui){
+			// Selected an item, nothing to do
+			if(ui.item){
+				return;
+			}
+ 
+			// Search for a match (case-insensitive)
+			var value=this.input.val(),
+				valueLowerCase=value.toLowerCase(),
+				valid=false;
+
+			this.element.children("option").each(function(){
+				if($(this).text().toLowerCase()===valueLowerCase){
+					this.selected=valid=true;
+					return false;
+				}
+			});
+ 
+			// Found a match, nothing to do
+			if(valid){return;}
+ 
+			// Remove invalid value
+			this.input.val("").attr("title", value+" didn't match any item").tooltip("open");
+			this.element.val("");
+			this._delay(function(){
+				this.input.tooltip("close").attr("title","");
+			},2500);
+			this.input.data("ui-autocomplete").term="";
+		},
+
+		_destroy: function() {
+			this.wrapper.remove();
+			this.element.show();
+		}
+	});
+
+	// adds .naturalWidth() and .naturalHeight() methods to jQuery
+	// for retreaving a normalized naturalWidth and naturalHeight.
+	var props=['Width', 'Height'], prop;
+
+	while (prop = props.pop()) {
+		(function (natural, prop) {
+			$.fn[natural] = (natural in new Image()) ? 
+			function () {
+			return this[0][natural];
+			} : 
+			function () {
+			var 
+			node = this[0],
+			img,
+			value;
+
+			if (node.tagName.toLowerCase() === 'img') {
+				img = new Image();
+				img.src = node.src,
+				value = img[prop];
+			}
+			return value;
+			};
+		}('natural' + prop, prop.toLowerCase()));
+	}
+
 	// Network Connections Management
 	$.widget( "opendcim.row", {
 		_create: function() {
@@ -1028,32 +1169,5 @@ function TemplateButtons(){
 })( jQuery );
 
 
-// adds .naturalWidth() and .naturalHeight() methods to jQuery
-// for retreaving a normalized naturalWidth and naturalHeight.
 (function($){
-	var
-	props = ['Width', 'Height'],
-	prop;
-
-	while (prop = props.pop()) {
-	(function (natural, prop) {
-		$.fn[natural] = (natural in new Image()) ? 
-		function () {
-		return this[0][natural];
-		} : 
-		function () {
-		var 
-		node = this[0],
-		img,
-		value;
-
-		if (node.tagName.toLowerCase() === 'img') {
-			img = new Image();
-			img.src = node.src,
-			value = img[prop];
-		}
-		return value;
-		};
-	}('natural' + prop, prop.toLowerCase()));
-	}
 }(jQuery));
