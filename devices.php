@@ -547,7 +547,9 @@
 		$devarray=array('Server' => __("Server"),
 						'Appliance' => __("Appliance"),
 						'Storage Array' => __("Storage Array"),
-						'Switch' => __("Switch"));
+						'Switch' => __("Switch"),
+						'Patch Panel' => __("Patch Panel"),
+);
 	}else{
 		$devarray=array('Server' => __("Server"),
 						'Appliance' => __("Appliance"),

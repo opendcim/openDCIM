@@ -2879,6 +2879,11 @@ class DevicePorts {
 			foreach($dbh->query($sql) as $row){
 				// false to skip rights check we filtered using sql above
 				$tmpDev=Device::RowToObject($row,false);
+				if ( $tmpDev->ParentDevice != 0 ) {
+					/* Child device of a chassis */
+					$parent = $tmpDev->WhosYourDaddy();
+					$tmpDev->Cabinet = $parent->Cabinet;
+				}				
 				$candidates[]=array("DeviceID"=>$tmpDev->DeviceID, "Label"=>$tmpDev->Label, "CabinetID"=>$tmpDev->Cabinet);
 			}
 			// Then run the same query, but for the rest of the devices in the database
@@ -2899,6 +2904,11 @@ class DevicePorts {
 			foreach($dbh->query($sql) as $row){
 				// false to skip rights check we filtered using sql above
 				$tmpDev=Device::RowToObject($row,false);
+				if ( $tmpDev->ParentDevice != 0 ) {
+					/* Child device of a chassis */
+					$parent = $tmpDev->WhosYourDaddy();
+					$tmpDev->Cabinet = $parent->Cabinet;
+				}
 				$candidates[]=array("DeviceID"=>$tmpDev->DeviceID, "Label"=>$tmpDev->Label, "CabinetID"=>$tmpDev->Cabinet);
 			}
 		}else{
