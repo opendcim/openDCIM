@@ -110,12 +110,13 @@ class LogActions {
 				$object->$key='';
 			}
 		}
-		foreach($originalobject as $key => $value){
-			if($value=='NULL' || $value=='0'){
-				$originalobject->$key='';
+		if(!is_null($originalobject)){
+			foreach($originalobject as $key => $value){
+				if($value=='NULL' || $value=='0'){
+					$originalobject->$key='';
+				}
 			}
 		}
-
 		$diff=array();
 		// Find the difference between the original object and the altered object, if present
 		if(!is_null($originalobject)){
@@ -158,6 +159,8 @@ class LogActions {
 			case "PowerSource":
 				// same as PowerPanel
 			case "DeviceTemplate":
+				// The following function isn't logged
+				// UpdateDevice()
 			default:
 				// Attempt to autofind the id of the object we've been handed
 				foreach($object as $prop => $value){

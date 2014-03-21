@@ -240,6 +240,7 @@ class DataCenter {
 	}
 	
 	function CreateDataCenter(){
+		global $dbh;
 		$this->MakeSafe();
 		
 		$sql="INSERT INTO fac_DataCenter SET Name=\"$this->Name\", 
@@ -248,7 +249,17 @@ class DataCenter {
 			DrawingFileName=\"$this->DrawingFileName\", EntryLogging=0,	
 			ContainerID=$this->ContainerID,	MapX=$this->MapX, MapY=$this->MapY;";
 
-		return $this->exec($sql);
+		$this->exec($sql);
+		if(!$dbh->exec($sql)){
+			$info=$dbh->errorInfo();
+
+			error_log("PDO Error::DataCenter:CreateDataCenter {$info[2]} SQL=$sql");
+			return false;
+		}
+
+		$this->DataCenterID=$dbh->lastInsertId();
+		(class_exists('LogActions'))?LogActions::LogThis($this):'';
+		return true; 
 	}
 
 	function UpdateDataCenter(){
@@ -263,6 +274,11 @@ class DataCenter {
 
 		$this->MakeDisplay();
 	
+		$old=new DataCenter();
+		$old->DataCenterID=$this->DataCenterID;
+		$old->GetDataCenter();
+
+		(class_exists('LogActions'))?LogActions::LogThis($this,$old):'';
 		return $this->query($sql);		
 	}
 
@@ -862,6 +878,7 @@ class DeviceTemplate {
 			return false;
 		}else{
 			$this->TemplateID=$dbh->lastInsertID();
+			(class_exists('LogActions'))?LogActions::LogThis($this):'';
 			$this->MakeDisplay();
 			return true;
 		}
@@ -877,9 +894,14 @@ class DeviceTemplate {
 			ChassisSlots=$this->ChassisSlots, RearChassisSlots=$this->RearChassisSlots
 			WHERE TemplateID=$this->TemplateID;";
 
+		$old=new DeviceTemplate();
+		$old->TemplateID=$this->TemplateID;
+		$old->GetTemplateByID();
+
 		if(!$this->query($sql)){
 			return false;
 		}else{
+			(class_exists('LogActions'))?LogActions::LogThis($this,$old):'';
 			$this->MakeDisplay();
 			return true;
 		}
@@ -889,6 +911,7 @@ class DeviceTemplate {
 		$this->MakeSafe();
 
 		$sql="DELETE FROM fac_DeviceTemplate WHERE TemplateID=$this->TemplateID;";
+		(class_exists('LogActions'))?LogActions::LogThis($this):'';
 		return $this->exec($sql);
 	}
   
@@ -941,7 +964,6 @@ class DeviceTemplate {
     /**
      * Return a list of the templates indexed by the TemplateID
      *
-     * @param DbLink $db
      * @return multitype:DeviceTemplate
      */
     function getTemplateListIndexedbyID ()
@@ -1006,6 +1028,12 @@ class DeviceTemplate {
 			return false;
 		}
 		return true;
+	}
+
+	// This was a double of the DeletePorts function need to come back later
+	// and see if this thing is even being used.	
+	function removePorts(){
+		return $this->DeletePorts();
 	}
 	
 	function ExportTemplate(){
@@ -1258,17 +1286,6 @@ xsi:noNamespaceSchemaLocation="openDCIMdevicetemplate.xsd">
 		return $result;
 	}
 	
-	function removePorts(){
-		/*	Remove all ports from a template */
-		global $dbh;
-
-		$sql="DELETE FROM fac_TemplatePorts WHERE TemplateID=$this->TemplateID;";
-
-		$dbh->exec($sql);
-
-		return true;
-	}
-	
 }
 
 class Manufacturer {
@@ -1356,6 +1373,7 @@ class Manufacturer {
 			return false;
 		}else{
 			$this->ManufacturerID=$dbh->lastInsertID();
+			(class_exists('LogActions'))?LogActions::LogThis($this):'';
 			$this->MakeDisplay();
 			return true;
 		}
@@ -1366,7 +1384,12 @@ class Manufacturer {
 
 		$sql="UPDATE fac_Manufacturer SET Name=\"$this->Name\" WHERE ManufacturerID=$this->ManufacturerID;";
 
+		$old=new Manufacturer();
+		$old->ManufacturerID=$this->ManufacturerID;
+		$old->GetManufacturer();
+
 		$this->MakeDisplay();
+		(class_exists('LogActions'))?LogActions::LogThis($this,$old):'';
 		return $this->query($sql);
 	}
 }
