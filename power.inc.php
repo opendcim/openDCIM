@@ -544,6 +544,7 @@ class PowerDistribution {
 		return $PDUList;
 	}
 
+	/* These fac_PDUStats functions are UGLY.  When we build out RESTful API, they should be moved to a separate class and return objects */
 	function GetWattage(){
 		$this->MakeSafe();
 
@@ -552,6 +553,18 @@ class PowerDistribution {
 		if($wattage=$this->query($sql)->fetchColumn()){
 			return $wattage;	
 		}else{
+			return false;
+		}
+	}
+	
+	function GetLastReadingTime() {
+		$this->MakeSafe();
+		
+		$sql = "select LastRead FROM fac_PDUStats where PDUID=$this->PDUID";
+		
+		if($LastRead=$this->query($sql)->fetchColumn()){
+			return $LastRead;
+		} else {
 			return false;
 		}
 	}
@@ -585,7 +598,13 @@ class PowerDistribution {
 		return $wattage;
 	}
 
-  
+	function LogManualWattage( $Wattage ) {
+		$this->MakeSafe();
+		
+		$sql = "insert into fac_PDUStats set Wattage=$Wattage, PDUID=$this->PDUID, LastRead=NOW() ON DUPLICATE KEY UPDATE Wattage=$Wattage, LastRead=NOW()";
+		$this->query( $sql );
+	}
+	
 	function UpdateStats(){
 		global $config;
 		

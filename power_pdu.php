@@ -224,6 +224,8 @@
 			$pdu->PDUID = $_REQUEST['pduid'];
 			$pdu->UpdatePDU();
 		}
+	} elseif ( isset( $_REQUEST["action"] ) && ( $user->canWrite( $cab->AssignedTo ) && $_REQUEST["action"]=="log" && $pdu->PDUID > 0 )) {
+		$pdu->LogManualWattage( intval( $_REQUEST["currwatts"] ) );
 	}
 
 	if($pdu->PDUID >0){
@@ -233,6 +235,17 @@
 		$template->GetTemplate();
 	} else {
 		$pdu->CabinetID=$_REQUEST['cabinetid'];
+	}
+	
+	$LastWattage = $pdu->GetWattage();
+	if ( $LastWattage == false ) {
+		$LastWattage = 0;
+	}
+	$LastRead = $pdu->GetLastReadingTime();
+	if ( $LastRead == false ) {
+		$LastRead = "Never";
+	} else {
+		$LastRead = strftime( "%c", strtotime( $LastRead ));
 	}
 
 	$cab->CabinetID=$pdu->CabinetID;
@@ -477,6 +490,14 @@ echo '   </select></div>
 <div>
    <div><label for="snmpcommunity">',__("SNMP Community"),'</label></div>
    <div><input type="text" name="snmpcommunity" id="snmpcommunity" size=15 value="',$pdu->SNMPCommunity,'"><a id="pdutestlink" href="#">', __("Test Communications"), '</a></div>
+</div>
+<div>
+	<div><label for="currwatts">',__("Wattage"),'</label></div>
+	<div><input type="text" name="currwatts" id="currwatts" size=4 value="',$LastWattage,'"><button type="submit" name="action" value="log">',__("Manual Entry"),'</button></div>
+</div>
+<div>
+	<div>',__("Last Update Date/Time"),':</div>
+	<div>',$LastRead,'</div>
 </div>
 <div class="caption">
 <h3>',__("Automatic Transfer Switch"),'</h3>
