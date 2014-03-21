@@ -466,8 +466,8 @@ div.cabinet {
 	width: 100%;
 	padding: 0px 0;
 }
-.cabnavigator div.picture div.label > div.parentlab {text-shadow: -1px -1px 3px #FFCC88, 1px 1px 3px #FFCC88, -1px 1px 3px #FFCC88, 1px -1px 3px #FFCC88;} 
-.cabnavigator div.picture div.label > div.childlab {overflow: hidden; text-shadow: -1px -1px 3px #FFFF00, 1px 1px 3px #FFFF00, -1px 1px 3px #FFFF00, 1px -1px 3px #FFFF00;}
+.cabnavigator div.picture div.label > div.parentlab {text-shadow: -1px -1px 3px #FFCC88, 1px 1px 3px #FFCC88, -1px 1px 3px #FFCC88, 1px -1px 3px #FFCC88; filter: glow(color=#FFCC88,strength=2), alpha(opacity=90); } 
+.cabnavigator div.picture div.label > div.childlab {overflow: hidden; text-shadow: -1px -1px 3px #FFFF00, 1px 1px 3px #FFFF00, -1px 1px 3px #FFFF00, 1px -1px 3px #FFFF00;filter: glow(color=#FFFF00,strength=2), alpha(opacity=90);}
 
 .cabnavigator .picture div img:hover, .cabnavigator .picture div:not(.label) div:hover { border: 2px solid red; margin: -2px; }
 .cabnavigator .picture div span {overflow: hidden; vertical-align: sub; padding-left: 0.3em;}
