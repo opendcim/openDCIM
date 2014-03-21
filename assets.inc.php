@@ -133,6 +133,7 @@ class Cabinet {
 			$this->CabinetID=$dbh->lastInsertID();
 		}
 		
+		(class_exists('LogActions'))?LogActions::LogThis($this):'';
 		return $this->CabinetID;
 	}
 
@@ -140,6 +141,10 @@ class Cabinet {
 		global $dbh;
 		
 		$this->MakeSafe();
+
+		$old=new Cabinet();
+		$old->CabinetID=$this->CabinetID;
+		$old->GetCabinet();
 
 		$sql="UPDATE fac_Cabinet SET DataCenterID=$this->DataCenterID, 
 			Location=\"$this->Location\", AssignedTo=$this->AssignedTo, 
@@ -160,6 +165,7 @@ class Cabinet {
 			return false;
 		}
 
+		(class_exists('LogActions'))?LogActions::LogThis($this,$old):'';
 		return true;
 	}
 
@@ -461,7 +467,8 @@ class Cabinet {
 			error_log("PDO Error::DeleteCabinet: {$info[2]} SQL=$sql");
 			return false;
 		}
-		
+	
+		(class_exists('LogActions'))?LogActions::LogThis($this):'';
 		return true;
 	}
 
@@ -715,11 +722,14 @@ class SensorTemplate {
 		$sql->execute( $args );
 		
 		$this->TemplateID = $dbh->lastInsertId();
+		(class_exists('LogActions'))?LogActions::LogThis($this):'';
 	}
 	
 	function UpdateTemplate() {
 		global $dbh;
 		
+		$old=SensorTemplate::getTemplate($this->TemplateID);
+
 		$sql = $dbh->prepare( "update fac_SensorTemplate set ManufacturerID=:ManufacturerID, Name=:Name, SNMPVersion=:SNMPVersion, TemperatureOID=:TemperatureOID, HumidityOID=:HumidityOID, TempMultiplier=:TempMultiplier, HumidityMultiplier=:HumidityMultiplier where TemplateID=:TemplateID" );
 		
 		$args = array( 	"ManufacturerID" => $this->ManufacturerID,
@@ -732,6 +742,7 @@ class SensorTemplate {
 						"TemplateID" => $this->TemplateID );
 		
 		$sql->execute( $args );
+		(class_exists('LogActions'))?LogActions::LogThis($this,$old):'';
 	}
 	
 	function DeleteTemplate() {
@@ -744,6 +755,8 @@ class SensorTemplate {
 		// Now it is "safe" to delete the record as it will leave no orphans
 		$sql = "delete from fac_SensorTemplate where TemplateID=" . intval( $this->TemplateID );
 		$dbh->exec( $sql );
+
+		(class_exists('LogActions'))?LogActions::LogThis($this):'';
 	}
 }
 
@@ -2721,6 +2734,7 @@ class DevicePorts {
 			//delete failed, wtf
 			return false;
 		}else{
+			(class_exists('LogActions'))?LogActions::LogThis($this):'';
 			return true;
 		}		
 	}
@@ -3270,7 +3284,7 @@ class RackRequest {
 
 	// Create MakeSafe / MakeDisplay functions
   
-  function CreateRequest($db=null){
+  function CreateRequest(){
 	global $dbh;
     $sql="INSERT INTO fac_RackRequest SET RequestTime=now(), RequestorID=\"".intval($this->RequestorID)."\",
 		Label=\"".sanitize(transform($this->Label))."\", SerialNo=\"".sanitize(transform($this->SerialNo))."\",
@@ -3290,6 +3304,7 @@ class RackRequest {
 		return false;
 	}else{		
 		$this->RequestID=$dbh->lastInsertId();
+		(class_exists('LogActions'))?LogActions::LogThis($this):'';
         return $this->RequestID;
 	}
   }
@@ -3358,8 +3373,15 @@ class RackRequest {
   
   function CompleteRequest($db=null){
 	global $dbh;
+
+	$old=new RackRequest();
+	$old->RequestID=$this->RequestID;
+	$old->GetRequest();
+
     $sql="UPDATE fac_RackRequest SET CompleteTime=now() WHERE RequestID=\"".$this->RequestID."\";";
 	if($dbh->query($sql)){
+		$this->GetRequest();
+		(class_exists('LogActions'))?LogActions::LogThis($this,$old):'';
 		return true;
 	}else{
 		return false;
@@ -3370,6 +3392,7 @@ class RackRequest {
 	global $dbh;
     $sql="DELETE FROM fac_RackRequest WHERE RequestID=\"".intval($this->RequestID)."\";";
 	if($dbh->query($sql)){
+		(class_exists('LogActions'))?LogActions::LogThis($this):'';
 		return true;
 	}else{
 		return false;
@@ -3378,6 +3401,11 @@ class RackRequest {
 
   function UpdateRequest($db=null){
 	global $dbh;
+
+	$old=new RackRequest();
+	$old->RequestID=$this->RequestID;
+	$old->GetRequest();
+
     $sql="UPDATE fac_RackRequest SET RequestTime=now(), RequestorID=\"".intval($this->RequestorID)."\",
 		Label=\"".sanitize(transform($this->Label))."\", SerialNo=\"".sanitize(transform($this->SerialNo))."\",
 		MfgDate=\"".date("Y-m-d", strtotime($this->MfgDate))."\", 
@@ -3392,6 +3420,7 @@ class RackRequest {
 		WHERE RequestID=\"".intval($this->RequestID)."\";";
     
 	if($dbh->query($sql)){
+		(class_exists('LogActions'))?LogActions::LogThis($this,$old):'';
 		return true;
 	}else{
 		return false;

@@ -137,6 +137,12 @@ class LogActions {
 			case "DevicePorts":
 				$log->ObjectID=$object->DeviceID;
 				$log->ChildID=$object->PortNumber;
+				// The two following functions are not logged
+				// DevicePorts::removeConnections()
+				// DevicePorts::removePorts()
+				break;
+			case "RackRequest":
+				$log->ObjectID=$object->RequestID;
 				break;
 			case "SupplyBin":
 			case "Supplies":
@@ -153,6 +159,13 @@ class LogActions {
 				// same as PowerPanel
 			case "DeviceTemplate":
 			default:
+				// Attempt to autofind the id of the object we've been handed
+				foreach($object as $prop => $value){
+					if(preg_match("/id/i", $prop)){
+						$log->ObjectID=$value;
+						break;
+					}
+				}
 		}
 		$return=true;
 		// If there are any differences then we are upating an object otherwise
