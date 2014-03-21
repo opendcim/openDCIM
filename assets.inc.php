@@ -2197,7 +2197,7 @@ class Device {
 		}
 		return $TotalWeight;	
 	}
-	function GetChildDevicePicture($zoom){
+	function GetChildDevicePicture($zoomX, $zoomY){
 		global $dbh;
 
 		$resp="";
@@ -2250,20 +2250,24 @@ class Device {
 
 				// Determine if the element needs to be rotated or not
 				$rotar="";
-				$rotar=($hor_slot)?(!$hor_blade)?" rotar_i":"":($hor_blade)?" rotar_d":"";
+				$rotar=($hor_slot)?(!$hor_blade)?"rotar_i":"":($hor_blade)?"rotar_d":"";
 
 				// If they have rights to the device then make the picture clickable
 				$clickable=($this->Rights!="None")?"\t\t\t<a href=\"devices.php?deviceid=$this->DeviceID\">\n":"";
 				$clickableend=($this->Rights!="None")?"\t\t\t</a>\n":"";
 
-				$left=($rotar=='')?$slot->X*$zoom:($slot->X-abs($slot->W-$slot->H)/2)*$zoom;
-				$top=($rotar=='')?$slot->Y*$zoom:($slot->Y+abs($slot->W-$slot->H)/2)*$zoom;
+				$slot->X=$slot->X*$zoomX;
+				$slot->Y=$slot->Y*$zoomY;
+				$slot->W=$slot->W*$zoomX;
+				$slot->H=$slot->H*$zoomY;
+				$left=($rotar=='')?$slot->X:$slot->X-abs($slot->W-$slot->H)/2;
+				$top=($rotar=='')?$slot->Y:$slot->Y+abs($slot->W-$slot->H)/2;
 				$left=intval($left).'px';$top=intval($top).'px';
 				// swap height and width on rotated objects
-				$height=($rotar=='')?$slot->H*$zoom:$slot->W*$zoom;
-				$width=($rotar=='')?$slot->W*$zoom:$slot->H*$zoom;
+				$height=($rotar=='')?$slot->H:$slot->W;
+				$width=($rotar=='')?$slot->W:$slot->H;
 				$height=intval($height);$width=intval($width);
-
+				
 				// Add in flags for missing ownership
 				// Device pictures are set on the template so always assume template has been set
 				$flags=($this->Owner==0)?'(O)&nbsp;':'';
@@ -2275,11 +2279,21 @@ class Device {
 				if ($templ->FrontPictureFile!=""){
 					$resp.="\t\t\t\t<img class='picturerot' data-deviceid=$this->DeviceID width=$width height=$height src='$picturefile' alt='$this->Label'>\n";
 					if($rotar!='' || ($rotar=='' && $hor_slot)){  // this layout is just bad, need to revisit this later
-						$css="height: ".($height-3)."px; padding-bottom: 0px; top: -3px;";
-						$label="<div class=\"label\" style=\"top: 0px; left: -10px;\"><div style=\"width:".$width."px; $css\">$flags$this->Label</div></div>";
+						$label="<div class=\"label\" style=\"top: 30%; left: 0; width: ".$width."px; height:".$height."px; ".(($height*0.6<12)?"font-size: ".intval($height*0.6)."px; ":"")."\">";
+						$label.="<div class=\"childlab\" style=\"width:".$width."px;\">$flags$this->Label</div></div>";
+					}else{
+						$left=-abs($slot->W-$slot->H)/2;
+						$top=-$left;
+						$left=intval($left).'px';$top=intval($top).'px';
+						$height=$slot->W;
+						$width=$slot->H;
+						$height=intval($height);$width=intval($width);
+						
+						$label="<div class=\"rotar_d label\" style=\"top: $top; left: $left; width: ".$width."px; height:".$height."px; ".(($height*0.6<12)?"font-size: ".intval($height*0.6)."px;":"")."\">";
+						$label.="<div class=\"childlab\">$flags$this->Label</div></div>";
 					}
 				}else{
-					$resp.="\t\t\t\t<div class='dept$this->Owner' data-deviceid=$this->DeviceID style='font-size: ".intval($height*0.6)."px; width: ".$width."px; height: ".$height."px;'><span>$flags$this->Label</span></div>\n";
+					$resp.="\t\t\t\t<div class='dept$this->Owner' data-deviceid=$this->DeviceID style='".(($height*0.6<12)?"font-size: ".intval($height*0.6)."px; ":"")."width: ".$width."px; height: ".$height."px;'><span>$flags$this->Label</span></div>\n";
 				}
 				$resp.="$clickableend$label";
 				if ( $this->ChassisSlots > 0 ) {
@@ -2287,7 +2301,7 @@ class Device {
 					$childList = $this->GetDeviceChildren();
 					foreach ( $childList as $tmpDev ) {
 						if (!$tmpDev->BackSide){
-								$resp.=$tmpDev->GetChildDevicePicture($zoom);
+								$resp.=$tmpDev->GetChildDevicePicture($zoomX,$zoomY);
 						}
 					}
 				}
@@ -2305,10 +2319,17 @@ class Device {
 			//Device
 			$picturefile="pictures/";
 			$picturefile.=($rear)?$templ->RearPictureFile:$templ->FrontPictureFile;
-			list($width, $height, $type, $attr)=getimagesize($picturefile);
-			$ancho=220;
-			$zoom=$ancho/$width;
-			$height=intval($height*$zoom);
+			if (!file_exists($picturefile)){
+				$picturefile="pictures/P_ERROR.png";
+			}
+			list($pictW, $pictH, $type, $attr)=getimagesize($picturefile);
+			$holeW=220;
+			//$aspect1u=44.45/482.26; //with fins (19'')
+			$aspect1u=44.45/450.85; //without fins (19''-fins)
+			$holeH=$holeW*$aspect1u*$templ->Height;
+			$zoomX=$holeW/$pictW;
+			$zoomY=$holeH/$pictH;
+			$holeH=intval($holeH);
 
 			// URLEncode the image file name just to be compliant.
 			$picturefile=str_replace(' ',"%20",$picturefile);
@@ -2323,8 +2344,8 @@ class Device {
 			$flags=($flags!='')?'<span class="hlight">'.$flags.'</span>':'';
 
 			$resp.="\n\t<div class=\"picture\">\n";
-			$resp.="$clickable\t\t<img class=\"picture\" data-deviceid=$this->DeviceID height=$height width=$ancho src=\"$picturefile\" alt=\"$this->Label\">$clickableend\n";
-			$resp.="\t\t<div class=\"label\"><div>$flags$this->Label</div></div>\n";
+			$resp.="$clickable\t\t<img class=\"picture\" data-deviceid=$this->DeviceID width=$holeW height=$holeH src=\"$picturefile\" alt=\"$this->Label\">$clickableend\n";
+			$resp.="\t\t<div class=\"label\"><div class=\"parentlab\" >$flags$this->Label</div></div>\n";
 
 			//Children
 			if(($this->ChassisSlots >0 && !$rear) || ($this->RearChassisSlots >0 && $rear)){
@@ -2332,11 +2353,11 @@ class Device {
 				foreach($childList as $tmpDev){
 					if($rear){
 						if ($tmpDev->BackSide){
-							$resp.=$tmpDev->GetChildDevicePicture($zoom);
+							$resp.=$tmpDev->GetChildDevicePicture($zoomX, $zoomY);
 						}
 					}else{
 						if (!$tmpDev->BackSide){
-							$resp.=$tmpDev->GetChildDevicePicture($zoom);
+							$resp.=$tmpDev->GetChildDevicePicture($zoomX, $zoomY);
 						}
 					}
 				}

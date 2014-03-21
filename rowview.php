@@ -43,7 +43,7 @@ function BuildCabinet($rear=false){
 	$currentHeight=$cabinet->CabinetHeight;
 
 	$body.="<div class=\"cabinet\">\n\t<table>
-	<tr><th id=\"cabid\" data-cabinetid=$cabinet->CabinetID colspan=2 $cab_color>".__("Cabinet")." $cabinet->Location".($rear?" (".__("Rear").")":"")."</th></tr>
+	<tr><th id=\"cabid\" data-cabinetid=$cabinet->CabinetID colspan=2 $cab_color><a href=\"cabnavigator.php?cabinetid=$cabinet->CabinetID\">".__("Cabinet")." $cabinet->Location".($rear?" (".__("Rear").")":"")."</a></th></tr>
 	<tr><td class=\"cabpos\">".__("Pos")."</td><td>".__("Device")."</td></tr>\n";
 
 	$heighterr="";
@@ -234,15 +234,8 @@ echo $head,'  <script type="text/javascript" src="scripts/jquery.min.js"></scrip
   <script type="text/javascript">
 	$(document).ready(function() {
 		$(".cabinet .error").append("*");
-		function FlipItGood(){
-			var container=$("#centeriehack");
-			container.children().each(function(i,cab){container.prepend(cab)});
-			resize();
-		}
-		$("<button>",{id: "reverse", type: "button"}).text("'.(isset($_GET["rear"])?__("Front View"):__("Rear View")).'").click(function(){
-			document.location.href="rowview.php?row=',$cabrow->CabRowID.(isset($_GET["rear"])?"":"&rear"),'";
-		}).prependTo($(".main"));
 ';
+
 if($config->ParameterArray["ToolTips"]=='enabled'){
 ?>
 		$('.cabinet td:has(a):not(:has(img)), #zerou div > a, .cabinet .picture a img, .cabinet .picture a div').mouseenter(function(){
