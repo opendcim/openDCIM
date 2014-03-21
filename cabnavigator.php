@@ -1,7 +1,7 @@
 <?php
 	require_once( "db.inc.php" );
 	require_once( "facilities.inc.php" );
-
+ 
 	if((isset($_REQUEST["cabinetid"]) && (intval($_REQUEST["cabinetid"])==0)) || !isset($_REQUEST["cabinetid"])){
 		// No soup for you.
 		header('Location: '.redirect());
@@ -127,7 +127,7 @@ function renderUnassignedTemplateOwnership($noTemplFlag, $noOwnerFlag, $device) 
 	$cab->GetCabinet();
 
 	// Check to see if this user is allowed to see anything in ihere
-	if($cab->AssignedTo >0 && !array_intersect($user->isMemberOf(),Cabinet::GetOccupants($cab->CabinetID))){
+	if(! $user->SiteAdmin && ! $user->ReadAccess && $cab->AssignedTo >0 && !array_intersect($user->isMemberOf(),Cabinet::GetOccupants($cab->CabinetID))){
 		// This cabinet belongs to a department you don't have affiliation with, so no viewing at all
 		header('Location: '.redirect());
 		exit;
