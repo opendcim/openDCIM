@@ -573,6 +573,8 @@ echo $head,'  <script type="text/javascript" src="scripts/jquery.min.js"></scrip
 if($config->ParameterArray["ToolTips"]=='enabled'){
 ?>
 		$('.cabinet td:has(a):not(:has(img)), #zerou div > a, .cabinet .picture a img, .cabinet .picture a div').mouseenter(function(){
+			$('div.label').show();
+			$(this).parents('div').children('div.label').hide();
 			var pos=$(this).offset();
 			var tooltip=$('<div />').css({
 				'left':pos.left+this.getBoundingClientRect().width+15+'px',
@@ -583,6 +585,7 @@ if($config->ParameterArray["ToolTips"]=='enabled'){
 			});
 			$('body').append(tooltip);
 			$(this).mouseleave(function(){
+				$('div.label').show();
 				tooltip.remove();
 			});
 		});

@@ -431,7 +431,7 @@ div.cabinet {
 	margin-right: 20px;
 }
 
-.cabinet td + td {vertical-align: middle;padding: 0.25em 0.5em;width: 90%;}
+.cabinet td + td {vertical-align: middle;padding: 0.25em 0.5em;width: 220px; }
 .cabinet td.cabpos {text-align: center; vertical-align: middle;padding: 0.25em 0.5em;width: 10%;}
 .cabinet th{font-size: 1.5em;padding: 0.25em;text-align: center;}
 #zerou a{display: block;}
@@ -458,15 +458,17 @@ div.cabinet {
 /* PICTURES */
 .cabnavigator div.picture {position:relative; left:0px; top:0px; margin: -0.25em -0.5em -0.4em; z-index: 5;}
 .cabnavigator div.picture div {position:absolute; z-index: 10;}
-.cabnavigator div.picture div.label {z-index: 11; width: 100%; margin-top: 0.25em; pointer-events: none;}
-.cabnavigator div.picture div.label > div { 
-	margin: 0 10px;
+.cabnavigator div.picture div.label {z-index: 11; width: 100%; margin-top: 0em; pointer-events: none;} 
+.cabnavigator div.picture div.label > div {
+	margin: 0px;
 	text-align: center;
-	background-image: url("../images/white-25.png");
-	width: 200px;
-	padding: 3px 0;
-	
+	vertical-align: middle;
+	width: 100%;
+	padding: 0px 0;
 }
+.cabnavigator div.picture div.label > div.parentlab {text-shadow: -1px -1px 3px #FFCC88, 1px 1px 3px #FFCC88, -1px 1px 3px #FFCC88, 1px -1px 3px #FFCC88;} 
+.cabnavigator div.picture div.label > div.childlab {overflow: hidden; text-shadow: -1px -1px 3px #FFFF00, 1px 1px 3px #FFFF00, -1px 1px 3px #FFFF00, 1px -1px 3px #FFFF00;}
+
 .cabnavigator .picture div img:hover, .cabnavigator .picture div:not(.label) div:hover { border: 2px solid red; margin: -2px; }
 .cabnavigator .picture div span {overflow: hidden; vertical-align: sub; padding-left: 0.3em;}
 .cabnavigator .picture div.label span, .cabnavigator .picture div span > span {vertical-align: text-top;}
