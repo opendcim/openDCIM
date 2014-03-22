@@ -183,6 +183,24 @@
 		exit;
 	}
 
+
+	if(isset($_POST["currwatts"]) && isset($_POST['pduid']) && $_POST['pduid'] >0){
+		$pdu->PDUID=$_POST['pduid'];
+		$wattage->Wattage='Err';
+		$wattage->LastRead='Err';
+		if($pdu->GetPDU()){
+			$cab->CabinetID=$pdu->CabinetID;
+			$cab->GetCabinet();
+			if($user->canWrite($cab->AssignedTo)){
+				$wattage=$pdu->LogManualWattage($_POST["currwatts"]);
+				$wattage->LastRead=strftime("%c",strtotime($wattage->LastRead));
+			}
+		}
+		header('Content-Type: application/json');
+		echo json_encode($wattage);
+		exit;
+	}
+
 	// END - Ajax
 
 
@@ -224,8 +242,6 @@
 			$pdu->PDUID = $_REQUEST['pduid'];
 			$pdu->UpdatePDU();
 		}
-	} elseif ( isset( $_REQUEST["action"] ) && ( $user->canWrite( $cab->AssignedTo ) && $_REQUEST["action"]=="log" && $pdu->PDUID > 0 )) {
-		$pdu->LogManualWattage( intval( $_REQUEST["currwatts"] ) );
 	}
 
 	if($pdu->PDUID >0){
@@ -236,17 +252,10 @@
 	} else {
 		$pdu->CabinetID=$_REQUEST['cabinetid'];
 	}
-	
-	$LastWattage = $pdu->GetWattage();
-	if ( $LastWattage == false ) {
-		$LastWattage = 0;
-	}
-	$LastRead = $pdu->GetLastReadingTime();
-	if ( $LastRead == false ) {
-		$LastRead = "Never";
-	} else {
-		$LastRead = strftime( "%c", strtotime( $LastRead ));
-	}
+
+	$lastreading=$pdu->GetLastReading();
+	$LastWattage=($lastreading)?$lastreading->Wattage:0;
+	$LastRead=($lastreading)?strftime("%c",strtotime($lastreading->LastRead)):"Never";	
 
 	$cab->CabinetID=$pdu->CabinetID;
 	$cab->GetCabinet();
@@ -294,6 +303,22 @@
 			});
 			$('#pdutest').dialog({minWidth: 450, maxWidth: 450, closeOnEscape: true });
 		});
+		$('.pdu #btn_override').on('click',function(e){
+			var btn=$(e.currentTarget);
+			var target=$(e.currentTarget.previousSibling);
+			if(btn.val()=='edit'){
+				btn.val('submit').text(btn.data('submit')).css('height','2em');
+				target.replaceWith($('<input>').attr('size',5).val(target.text()));
+			}else{
+				btn.val('edit').text(btn.data('edit')).css('height','');
+				$.post('',{currwatts: target.val(), pduid:$('#pduid').val()}).done(function(data){
+					target.replaceWith($('<span>').text(data.Wattage));
+					$('#lastread').text(data.LastRead);
+				});
+			}
+		});
+
+
 		$('.center > div + div > .table > div:first-child ~ div').each(function(){
 			var row=$(this);
 			var output=row.find('div:first-child');
@@ -480,6 +505,14 @@ echo '   </select></div>
    <div><input type="text" name="ipaddress" id="ipaddress" size=15 value="',$pdu->IPAddress,'">',((strlen($pdu->IPAddress)>0)?"<a href=\"http://$pdu->IPAddress\" target=\"new\">http://$pdu->IPAddress</a>":""),'</div>
 </div>
 <div>
+   <div><label for="snmpcommunity">',__("SNMP Community"),'</label></div>
+   <div><input type="text" name="snmpcommunity" id="snmpcommunity" size=15 value="',$pdu->SNMPCommunity,'"><a id="pdutestlink" href="#">', __("Test Communications"), '</a></div>
+</div>';
+
+// Only show the version, etc if we aren't creating a CDU
+if($pdu->PDUID>0){
+echo '
+<div>
     <div>',__("Uptime"),'</div>
     <div>',$upTime,'</div>
 </div>
@@ -488,17 +521,16 @@ echo '   </select></div>
     <div>',$pdu->FirmwareVersion,'</div>
 </div>
 <div>
-   <div><label for="snmpcommunity">',__("SNMP Community"),'</label></div>
-   <div><input type="text" name="snmpcommunity" id="snmpcommunity" size=15 value="',$pdu->SNMPCommunity,'"><a id="pdutestlink" href="#">', __("Test Communications"), '</a></div>
-</div>
-<div>
 	<div><label for="currwatts">',__("Wattage"),'</label></div>
-	<div><input type="text" name="currwatts" id="currwatts" size=4 value="',$LastWattage,'"><button type="submit" name="action" value="log">',__("Manual Entry"),'</button></div>
+	<div><span>',$LastWattage,'</span><button type="button" id="btn_override" value="edit" data-edit="',__("Manual Entry"),'" data-submit="',__("Submit"),'">',__("Manual Entry"),'</button></div>
 </div>
 <div>
-	<div>',__("Last Update Date/Time"),':</div>
-	<div>',$LastRead,'</div>
-</div>
+	<div>',__("Last Update"),':</div>
+	<div id="lastread">',$LastRead,'</div>
+</div>';
+}
+
+echo '
 <div class="caption">
 <h3>',__("Automatic Transfer Switch"),'</h3>
 <fieldset id="powerinfo">

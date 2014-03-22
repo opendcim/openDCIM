@@ -442,11 +442,8 @@ $body.='<div id="infopanel">
 		<legend>'.__("Power Distribution").'</legend>';
 
 	foreach($PDUList as $PDUdev){
-		if($PDUdev->IPAddress<>""){
-			$pduDraw=$PDUdev->GetWattage();
-		}else{
-			$pduDraw=0;
-		}
+		$lastreading=$pdu->GetLastReading();
+		$pduDraw=($lastreading)?$lastreading->Wattage:0;
 
 		$pan->PanelID=$PDUdev->PanelID;
 		$pan->GetPanel();

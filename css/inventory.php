@@ -356,6 +356,7 @@ div.table > div + div + div + div > div + div label {float: none;}
 
 /* PDU Info */
 .pdu .center > div + div > .table > div > div{padding: 3px;}
+.pdu #btn_override { height: 1.2em; line-height: 1em; margin: 3px 0 3px 10px; vertical-align: middle; }
 
 /* Power Panels */
 div.center > div + div {vertical-align: top;padding-left: 1em;}
