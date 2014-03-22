@@ -530,7 +530,8 @@ if(isset($_GET['pathonly'])){
 								select.children().detach();
 								select.append(opt.clone()).attr('name','portnumber');
 								$.each(data, function(i,por){
-									var o=opt.clone().val(por.PortNumber).text(por.PortNumber);
+									por.Label=(por.Label=='')?Math.abs(por.PortNumber):por.Label;
+									var o=opt.clone().val(por.PortNumber).text(por.Label);
 									select.append(o);
 								});
 								porl.text('Port');
