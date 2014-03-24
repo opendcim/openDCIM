@@ -1642,7 +1642,7 @@ class Zone {
 				$height=($this->MapY2-$this->MapY1)*$zoom;
 				$mapHTML.="<div class=\"canvas\">\n";
 				$mapHTML.="<img src=\"css/blank.gif\" usemap=\"#datacenter\" width=\"$width\" height=\"$height\" alt=\"clearmap over canvas\">\n";
-				$mapHTML.="<map name=\"datacenter\">\n";
+				$mapHTML.="<map name=\"datacenter\" data-dc=$dc->DataCenterID>\n";
 				if(is_null($nolinks)){
 					$sql="SELECT * FROM fac_Cabinet WHERE DataCenterID=$this->DataCenterID;";
 

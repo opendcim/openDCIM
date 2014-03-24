@@ -464,15 +464,17 @@ function startmap(){
 		if(typeof c=='undefined'){
 			context.save();
 			context.lineWidth='4';
-			context.strokeStyle='red';
+			context.strokeStyle="rgba(255,0,0,1)";
 			context.strokeRect(area[0],area[1],(area[2]-area[0]),(area[3]-area[1]));
 			context.restore();
 		}else if(typeof c=='string'){
 			// draw arrow
 			drawArrow(context,area[0],area[1],(area[2]-area[0]),(area[3]-area[1]),c);
 		}else{
+			context.save();
 			context.fillStyle="rgba("+c.r+", "+c.g+", "+c.b+", 0.35)";
 			context.fillRect(area[0],area[1],(area[2]-area[0]),(area[3]-area[1]));
+			context.restore();
 		}
 	}
 
@@ -482,7 +484,8 @@ function startmap(){
 		var label=(zone)?obj.Description:obj.Location;
 		var name=(zone)?'zone'+obj.ZoneID:'cab'+obj.CabinetID;
 		var href=(zone)?'zone_stats.php?zone='+obj.ZoneID:'cabnavigator.php?cabinetid='+obj.CabinetID;
-		return $('<area>').attr({'shape':'rect','coords':obj.MapX1+','+obj.MapY1+','+obj.MapX2+','+obj.MapY2,'alt':label,'href':href,'name':name}).data('hilight',false).data('zone',obj.ZoneID);
+		var row=(zone)?false:(obj.CabRowID==0)?false:true;
+		return $('<area>').attr({'shape':'rect','coords':obj.MapX1+','+obj.MapY1+','+obj.MapX2+','+obj.MapY2,'alt':label,'href':href,'name':name}).data({'hilight':false,'zone':obj.ZoneID,'row':row});
 	}
 
 	// Color the map
@@ -538,7 +541,7 @@ function bindmaptooltips(){
 				}else if (e.pageY>=cy2){
 					frontedge="Top";
 				}
-				$.post("",{cabinetid: id, airflow: frontedge, row: e.ctrlKey}).done(function(){go();});
+				$.post("",{cabinetid: id, airflow: frontedge, row: e.ctrlKey}).done(function(){startmap();});
 			}
 			cx1=0;
 		});

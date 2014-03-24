@@ -26,6 +26,25 @@
 		}
 		exit;
 	}
+
+	// explain later
+	if(isset($_POST['dc']) && (isset($_POST['getobjects']) || isset($_POST['getoverview']))){
+		$payload=array();
+		if(isset($_POST['getobjects'])){
+			$cab->DataCenterID=$_POST['dc'];
+			$zone=new Zone();
+			$zone->DataCenterID=$cab->DataCenterID;
+			$payload=array('cab'=>$cab->ListCabinetsByDC(true),'zone'=>$zone->GetZonesByDC(true));
+		}else{
+			$dc->DataCenterID=$_POST['dc'];
+			$dc->GetDataCenterByID();
+			$payload=$dc->GetOverview();
+		}
+
+		header('Content-Type: application/json');
+		echo json_encode($payload);
+		exit;
+	}
 	
 	if(!isset($_GET["zone"])){
 		// No soup for you.
