@@ -165,6 +165,7 @@ div#dcstats .table + .table > div > div + div{white-space: pre; text-align: righ
 .dcstats ~ #tt ul li.wtf {background: url('../images/us.png') left center no-repeat; line-height: 20px; padding-left: 20px;}
 #maptitle {padding: 8px; font-size: 120%; font-weight: bold;} 
 #maptitle .nav {float: right;}
+#mapCanvas { margin-bottom: 50px; }
 
 /* Storage Room */
 .storage .table, .storage .table #title { background: white; }

@@ -26,6 +26,25 @@
 		exit;
 	}
 	
+	if(isset($_POST['dc']) && (isset($_POST['getobjects']) || isset($_POST['getoverview']))){
+		$payload=array();
+		if(isset($_POST['getobjects'])){
+			$cab->DataCenterID=$_POST['dc'];
+			$zone=new Zone();
+			$zone->DataCenterID=$cab->DataCenterID;
+			$payload=array('cab'=>$cab->ListCabinetsByDC(true),'zone'=>$zone->GetZonesByDC(true));
+		}else{
+			$dc->DataCenterID=$_POST['dc'];
+			$dc->GetDataCenterByID();
+			$payload=$dc->GetOverview();
+		}
+
+		header('Content-Type: application/json');
+		echo json_encode($payload);
+		exit;
+	}
+
+
 	if(!isset($_GET["dc"])){
 		// No soup for you.
 		header('Location: '.redirect());
@@ -36,6 +55,24 @@
 	$dc->GetDataCenterbyID();
 	$dcStats=$dc->GetDCStatistics();
 	
+	function MakeImageMap($dc){
+		$mapHTML="";
+	 
+		if(strlen($dc->DrawingFileName)>0){
+			$mapfile="drawings".DIRECTORY_SEPARATOR.$dc->DrawingFileName;
+		   
+			if(file_exists($mapfile)){
+				list($width, $height, $type, $attr)=getimagesize($mapfile);
+				$mapHTML="<div class=\"canvas\" style=\"background-image: url('drawings/$dc->DrawingFileName')\">
+	<img src=\"css/blank.gif\" usemap=\"#datacenter\" width=\"$width\" height=\"$height\" alt=\"clearmap over canvas\">
+	<map name=\"datacenter\" data-dc=$dc->DataCenterID>
+	</map>
+	<canvas id=\"mapCanvas\" width=\"$width\" height=\"$height\"></canvas>\n</div>\n";
+			}
+		}
+		return $mapHTML;
+	}
+
 	$height=0;
 	$width=0;
 	$ie8fix="";
@@ -174,26 +211,22 @@ echo '<div class="main">
 <br>
 <div id="maptitle"><span></span><div class="nav">';
 
-$select='<select>';
+$select="\n\t<select>\n";
 	foreach(array(
-		'loadCanvas' => __("Overview"),
+		'overview' => __("Overview"),
 		'space' => __("Space"),
 		'weight' => __("Weight"),
 		'power' => __("Calculated Power"),
 		'realpower' => __("Measured Power"),
-		'temperatura' => __("Temperature"),
-		'humedad' => __("Humidity"),
+		'temperature' => __("Temperature"),
+		'humidity' => __("Humidity"),
 		'airflow' => __("Air Flow")
 		) as $value => $option){
-		$select.='<option value="'.$value.'"';
-		if($value=="airflow" && isset($_GET["airflow"])){
-			$select.=' selected';
-		}
-		$select.='>'.$option.'</option>';
+		$select.="\t\t<option value=\"$value\">$option</option>\n";
 	}
-$select.='</select>';
+$select.="\t</select>\n";
 
-echo $select.'</div></div>'.$dc->MakeImageMap();
+echo $select."</div></div>\n".MakeImageMap($dc);
 
 ?>
 </div></div>
@@ -201,7 +234,6 @@ echo $select.'</div></div>'.$dc->MakeImageMap();
 </div><!-- END div.page -->
 <script type="text/javascript">
 	$(document).ready(function() {
-	resize();
 		var firstcabinet=$('#dc<?php echo $dc->DataCenterID;?> > ul > li:first-child').attr('id');
 		// Don't attempt to open the datacenter tree until it is loaded
 		function opentree(){
@@ -213,57 +245,8 @@ echo $select.'</div></div>'.$dc->MakeImageMap();
 				expandToItem('datacenters',firstcabinet);
 			}
 		}
-
-		  <?php print $dc->DrawCanvas();?>
-		// Don't attempt anything with the canvas position until the resize of the screen is complete
-		var ready=setInterval(function(){
-			if(window.resized){
-			<?php print $dc->MakeZoneJS();?>
-				clearInterval(ready);
-			}
-		},500);
-
-		$('map[name="datacenter"] area[name^="cab"]').mouseenter(function(){
-			var pos=$('.canvas').offset();
-			var coor=$(this).attr('coords').split(',');
-			var tx=pos.left+parseInt(coor[2])+17;
-			var ty=pos.top+(parseInt(coor[1])+parseInt(coor[3]))/2-17;
-			var cx1=parseInt(coor[0])+parseInt(pos.left);
-			var cx2=parseInt(coor[2])+parseInt(pos.left)
-			var cy1=parseInt(coor[1])+parseInt(pos.top);
-			var cy2=parseInt(coor[3])+parseInt(pos.top);
-			var tooltip=$('<div />').css({
-				'left':tx+'px',
-				'top':ty+'px'
-			}).addClass('arrow_left border cabnavigator tooltip').attr('id','tt').append('<span class="ui-icon ui-icon-refresh rotate"></span>');
-			var id=$(this).attr('href');
-			id=id.substring(id.lastIndexOf('=')+1,id.length);
-			$.post('scripts/ajax_tooltip.php',{tooltip: id, cab: 1}, function(data){
-				tooltip.html(data);
-			});
-			$('body').append(tooltip);
-			
-			$(this).mouseleave(function(e){
-				tooltip.remove();
-				if (cx1>0 && e.shiftKey && $('#maptitle .nav > select').val()=="airflow"){
-					var frontedge;
-					if(e.pageX<=cx1){
-						frontedge="Right";
-					}else if (e.pageX>=cx2){
-						frontedge="Left";
-					}else if (e.pageY<=cy1){
-						frontedge="Bottom";
-					}else if (e.pageY>=cy2){
-						frontedge="Top";
-					}
-					$.post("",{cabinetid: id, airflow: frontedge, row: e.ctrlKey}).done(function(){document.location.href='dc_stats.php?dc=<?php echo $dc->DataCenterID;?>&airflow';});
-				}
-				cx1=0;
-			});
-		});
-		$('#maptitle .nav > select').change(function(){
-			eval($(this).val()+'()');
-		}).trigger('change');
+		// load the data for the datacenter map
+		startmap();
 		opentree();
 	});
 </script>

@@ -201,12 +201,14 @@ class Cabinet {
 		return $cabinetList;
 	}
 
-	function ListCabinetsByDC(){
+	function ListCabinetsByDC($limit=false){
 		global $dbh;
 		
 		$this->MakeSafe();
 		
-		$sql="SELECT * FROM fac_Cabinet WHERE DataCenterID=$this->DataCenterID ORDER BY Location;";
+		$hascoords=($limit)?'AND MapX1!=MapX2 AND MapY1!=MapY2':'';
+
+		$sql="SELECT * FROM fac_Cabinet WHERE DataCenterID=$this->DataCenterID $hascoords ORDER BY Location;";
 
 		$cabinetList=array();
 		foreach($dbh->query($sql) as $cabinetRow){

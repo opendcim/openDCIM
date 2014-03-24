@@ -54,13 +54,22 @@ $(document).ready(function(){
 			rendernotes(button);
 		}
 	});
+
+	// The document has to be loaded before the event handler can be bound for the map
+	bindmaptooltips();
 });
 
 // draw arrows on a canvas
 function drawArrow(canvas,startx,starty,width,height,direction){
+	// math is retarded
+	startx=parseInt(startx);
+	starty=parseInt(starty);
+	width=parseInt(width);
+	height=parseInt(height);
+
 	var arrowW = 0.30 * width;
 	var arrowH = 0.30 * height;
-    
+ 
 	switch(direction){
 		case 'Top':
 			var p1={x: startx+arrowW, y: starty};
@@ -111,7 +120,6 @@ function drawArrow(canvas,startx,starty,width,height,direction){
 	canvas.strokeStyle="rgba(0, 0, 0, .55)";
 
 	canvas.beginPath();
-
 	canvas.moveTo(p1.x, p1.y);
 	canvas.lineTo(p2.x, p2.y); // end of main block
 	canvas.lineTo(p3.x, p3.y); // topmost point     
@@ -330,6 +338,218 @@ function TemplateButtons(){
 	}
 
 // END - Image Management
+
+
+// DataCenter map / cabinet information
+function startmap(){
+	var maptitle=$('#maptitle span');
+	var mycanvas=document.getElementById("mapCanvas");
+	var context=mycanvas.getContext('2d');
+
+	// arrays used for tracking states
+	var stat;
+	var areas={'cabs':[],'zones':[]};
+	var defaultstate={'cabs':[],'zones':[]};
+	var currentstate={'cabs':[],'zones':[]};
+
+	context.globalCompositeOperation='destination-over';
+	context.save();
+
+	function clearcanvas(){
+		// erase anything on the canvas
+		context.clearRect(0,0, mycanvas.width, mycanvas.height);
+		// create a new image for the canvas
+		var img=new Image();
+		// draw after the image has loaded
+		img.onload=function(){
+			// changed to eliminate the flickering of reloading the background image on a redraw
+			//context.drawImage(img,0,0);
+			//airflow();
+		}
+		// give it an image to load
+		img.src="drawings/example.png";
+	}
+
+	// Remove all the existing cabinets and zones
+	$('.canvas > map > area').remove();
+
+	// Get a list of areas for the DC
+	$.ajax({
+		url: '',
+		type: "post",
+		async: false,
+		data: {dc: $('map[name=datacenter]').data('dc'), getobjects: ''}, 
+		success: function(data){
+			var temp={'cabs':[],'zones':[]}; // array of areas we're using
+			var temphilight={'cabs':[],'zones':[]}; // array of areas and their outline state
+
+			var map=$('.canvas > map');
+			$(data.cab).each(function(){
+				map.append(buildarea(this));
+				temp.cabs.push({'CabinetID':this.CabinetID,'MapX1':this.MapX1,'MapX2':this.MapX2,'MapY1':this.MapY1,'MapY2':this.MapY2});
+				temphilight.cabs[this.CabinetID]=false;
+			});
+			$(data.zone).each(function(){
+				map.append(buildarea(this));
+				temp.zones.push({'ZoneID':this.ZoneID,'MapX1':this.MapX1,'MapX2':this.MapX2,'MapY1':this.MapY1,'MapY2':this.MapY2});
+				temphilight.zones[this.ZoneID]=false;
+			});
+
+			// Move these arrays out to where they can be used.
+			areas=$.extend(true,{},temp);
+			defaultstate=$.extend(true,{},temphilight);
+		}
+	});
+
+	// Get the status of all the cabinets
+	$.ajax({
+		url: '',
+		type: "post",
+		async: false,
+		data: {dc: $('map[name=datacenter]').data('dc'), getoverview: ''}, 
+		success: function(d){
+			stat=$.extend(true,{},d);
+		}
+	});
+
+	// Clear the canvas and redraw the outlines
+	function ToggleHilight(e){
+		$('#maptitle .nav > select').change();
+		$.each(currentstate,function(i,cabszones){
+			$.each(cabszones,function(x,obj){
+				if(obj){
+					if(i=='zones'){
+						Hilight($('.canvas > map > area[name=zone'+x+']'));
+					}else{
+						Hilight($('.canvas > map > area[name=cab'+x+']'));
+					}
+				}	
+			});
+		});
+	}
+
+	// Watch the mouse when it is over the canvas element
+	$('.canvas').mousemove(function(e){
+		var cpos=$('#mapCanvas').offset();
+		// clone the index of all the highlights
+		var tempstate=$.extend(true,{},defaultstate);
+		// modify the cloned index to add in the elements under the pointer currently
+		$.each(areas,function(i,cabszones){
+			$.each(cabszones,function(x,obj){
+				// Check to see if we're over any of the objects we defined.
+				if(e.pageX>(cpos.left+parseInt(obj.MapX1)) && e.pageX<(cpos.left+parseInt(obj.MapX2)) && e.pageY>(cpos.top+parseInt(obj.MapY1)) && e.pageY<(cpos.top+parseInt(obj.MapY2))){
+					var id=(i=='zones')?'ZoneID':'CabinetID';
+					if(i=='zones'){
+						tempstate.zones[obj.ZoneID]=true;
+					}else{
+						tempstate.cabs[obj.CabinetID]=true;
+					}
+				}
+			});
+		});
+		// compare the cloned index to the current state of the canvas
+		if(currentstate!=tempstate){
+			// the states don't match so move the clone to the live index
+			currentstate=$.extend(true,{},tempstate);
+			// redraw the canvas with the objects highlighted
+			ToggleHilight();
+		}
+	});
+
+	// Draw an outline over an area
+	function Hilight(obj,c){
+		//there has to be a better way to do this.  stupid js
+		area=obj.prop('coords').split(',');
+		// if color isn't given then just outline the object
+		if(typeof c=='undefined'){
+			context.save();
+			context.lineWidth='4';
+			context.strokeStyle='red';
+			context.strokeRect(area[0],area[1],(area[2]-area[0]),(area[3]-area[1]));
+			context.restore();
+		}else if(typeof c=='string'){
+			// draw arrow
+			drawArrow(context,area[0],area[1],(area[2]-area[0]),(area[3]-area[1]),c);
+		}else{
+			context.fillStyle="rgba("+c.r+", "+c.g+", "+c.b+", 0.35)";
+			context.fillRect(area[0],area[1],(area[2]-area[0]),(area[3]-area[1]));
+		}
+	}
+
+	// Build the area objects
+	function buildarea(obj){
+		var zone=typeof obj.Location=='undefined';
+		var label=(zone)?obj.Description:obj.Location;
+		var name=(zone)?'zone'+obj.ZoneID:'cab'+obj.CabinetID;
+		var href=(zone)?'zone_stats.php?zone='+obj.ZoneID:'cabnavigator.php?cabinetid='+obj.CabinetID;
+		return $('<area>').attr({'shape':'rect','coords':obj.MapX1+','+obj.MapY1+','+obj.MapX2+','+obj.MapY2,'alt':label,'href':href,'name':name}).data('hilight',false).data('zone',obj.ZoneID);
+	}
+
+	// Color the map
+	function showstatus(state){
+		clearcanvas();
+		$.each(eval('stat.'+state),function(i,s){
+			if(!isNaN(i)){
+				var p=(state=='airflow')?stat.airflow[i]:stat.colors[s];
+				Hilight($('.canvas > map > area[name=cab'+i+']'),p);
+			}
+		});
+		maptitle.text(eval("stat."+state+"['title']"));
+
+	}
+
+	// Draw the map and bind the change action to the menu
+	$('#maptitle .nav > select').change(function(){
+		showstatus($(this).val());
+	}).trigger('change');
+}
+
+function bindmaptooltips(){
+	$('map[name="datacenter"]').on('mouseenter','area[name^="cab"]',function(){
+		var pos=$('.canvas').offset();
+		var coor=$(this).attr('coords').split(',');
+		var tx=pos.left+parseInt(coor[2])+17;
+		var ty=pos.top+(parseInt(coor[1])+parseInt(coor[3]))/2-17;
+		var cx1=parseInt(coor[0])+parseInt(pos.left);
+		var cx2=parseInt(coor[2])+parseInt(pos.left)
+		var cy1=parseInt(coor[1])+parseInt(pos.top);
+		var cy2=parseInt(coor[3])+parseInt(pos.top);
+		var tooltip=$('<div />').css({
+			'left':tx+'px',
+			'top':ty+'px'
+		}).addClass('arrow_left border cabnavigator tooltip').attr('id','tt').append('<span class="ui-icon ui-icon-refresh rotate"></span>');
+		var id=$(this).attr('href');
+		id=id.substring(id.lastIndexOf('=')+1,id.length);
+		$.post('scripts/ajax_tooltip.php',{tooltip: id, cab: 1}, function(data){
+			tooltip.html(data);
+		});
+		$('body').append(tooltip);
+		
+		$(this).mouseleave(function(e){
+			tooltip.remove();
+			if (cx1>0 && e.shiftKey && $('#maptitle .nav > select').val()=="airflow"){
+				var frontedge;
+				if(e.pageX<=cx1){
+					frontedge="Right";
+				}else if (e.pageX>=cx2){
+					frontedge="Left";
+				}else if (e.pageY<=cy1){
+					frontedge="Bottom";
+				}else if (e.pageY>=cy2){
+					frontedge="Top";
+				}
+				$.post("",{cabinetid: id, airflow: frontedge, row: e.ctrlKey}).done(function(){go();});
+			}
+			cx1=0;
+		});
+	});
+}
+
+
+
+
+// END - DataCenter map / cabinet information
+
 
 (function( $ ) {
     $.widget( "opendcim.massedit", {

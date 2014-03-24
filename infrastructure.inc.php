@@ -334,116 +334,22 @@ class DataCenter {
         }
         return $containerList;
     }
-	
-	function MakeImageMap($nolinks=null) {
+
+	function GetOverview(){
 		$this->MakeSafe();
-		$mapHTML="";
-	 
-		if(strlen($this->DrawingFileName)>0){
-			$mapfile="drawings".DIRECTORY_SEPARATOR.$this->DrawingFileName;
-		   
-			if(file_exists($mapfile)){
-				list($width, $height, $type, $attr)=getimagesize($mapfile);
-				$mapHTML.="<div class=\"canvas\" style=\"background-image: url('drawings/$this->DrawingFileName')\">\n";
-				$mapHTML.="<img src=\"css/blank.gif\" usemap=\"#datacenter\" width=\"$width\" height=\"$height\" alt=\"clearmap over canvas\">\n";
-				$mapHTML.="<map name=\"datacenter\">\n";
-				 
-				if(is_null($nolinks)){
-					$sql="SELECT * FROM fac_Cabinet WHERE DataCenterID=$this->DataCenterID;";
-					if($racks=$this->query($sql)){ 
-						foreach($racks as $row){
-							$mapHTML.="<area name=\"cab\" href=\"cabnavigator.php?cabinetid={$row["CabinetID"]}\" shape=\"rect\"";
-							$mapHTML.=" coords=\"{$row["MapX1"]},{$row["MapY1"]},{$row["MapX2"]},{$row["MapY2"]}\"";
-							$mapHTML.=" alt=\"{$row["Location"]}\" data-zone=\"zone{$row["ZoneID"]}\">\n";
-						}
-					}
-
-					$sql="SELECT * FROM fac_Zone WHERE DataCenterID=$this->DataCenterID;";
-					if($zones=$this->query($sql)){ 
-						foreach($zones as $row){
-							$mapHTML.="<area name=\"zone{$row["ZoneID"]}\" href=\"zone_stats.php?zone={$row["ZoneID"]}\" shape=\"rect\"";
-							$mapHTML.=" coords=\"{$row["MapX1"]},{$row["MapY1"]},{$row["MapX2"]},{$row["MapY2"]}\"";
-							$mapHTML.=" alt=\"{$row["Description"]}\" title=\"{$row["Description"]}\">\n";
-						}
-					}
-
-					// What is this for?
-					$mapHTML.="<area name=\"dc\" shape=\"rect\"";
-					$mapHTML.=" coords=\"0,0,{$width},{$height}\"";
-					$mapHTML.=" alt=\"{$this->Name}\" title=\"{$this->Name}\">\n";
-				}
-				 
-				$mapHTML.="</map>\n";
-				$mapHTML.="<canvas id=\"mapCanvas\" width=\"$width\" height=\"$height\"></canvas>\n";
-					 
-				$mapHTML .= "<br><br><br><br><br><br><br><br></div>\n";
-			}
-		}
-		return $mapHTML;
-	}
-
-	function MakeZoneJS(){
-		$this->MakeSafe();
-		$js='';
-		
-		if(strlen($this->DrawingFileName)>0){
-			$sql="SELECT * FROM fac_Zone WHERE DataCenterID=$this->DataCenterID;";
-			if($zones=$this->query($sql)){ 
-				foreach($zones as $row){
-					$zone=Zone::RowToObject($row);
-					if($zone->MapX1==0 && $zone->MapX2==0 && $zone->MapY1==0 && $zone->MapY2==0){
-						// zone exists but has no shape, ignore it.
-					}else{
-						if(strlen($js)>0){
-							//Already have an initial if so add an else if
-							$else="\t\t\t}else ";
-						}else{
-							$else="";
-						}
-						$js.=$else."if((e.pageX>(cpos.left+$zone->MapX1) && e.pageX<(cpos.left+$zone->MapX2)) && (e.pageY>(cpos.top+$zone->MapY1) && e.pageY<(cpos.top+$zone->MapY2))){
-				if(!redraw){
-					$('#maptitle .nav select').trigger('change');
-					HilightZone('zone$zone->ZoneID');
-					redraw=true;
-				}\n";
-					}
-				}
-				if(strlen($js)>0){
-					// add the first and last bits needs to make the loops function
-					$hilight="\n
-		function HilightZone(area){
-			context.globalCompositeOperation='source-over';
-			//there has to be a better way to do this.  stupid js
-			area=$('area[name='+area+']').prop('coords').split(',');
-			context.save();
-			context.lineWidth='4';
-			context.strokeStyle='red';
-			context.strokeRect(area[0],area[1],(area[2]-area[0]),(area[3]-area[1]));
-			context.restore();
-		}\n";
-					$js="$hilight
-		var redraw=false;
-		var cpos=$('#mapCanvas').offset();
-		$('.canvas').mousemove(function(e){
-			$js\t\t\t}else if(redraw){
-				$('#maptitle .nav select').trigger('change');
-				redraw=false;
-			}
-		});\n";
-				}
-			}
-		}
-
-		return $js;
-	}
-
-	function DrawCanvas(){
-		$this->MakeSafe();
-		$script="";	
+		$statusarray=array();	
 		// check to see if map was set
 		if(strlen($this->DrawingFileName)){
 			$mapfile="drawings".DIRECTORY_SEPARATOR.$this->DrawingFileName;
 
+			$overview=array();
+			$space=array();
+			$weight=array();
+			$power=array();
+			$temperature=array();
+			$humidity=array();
+			$realpower=array();
+			$colors=array();
 			// map was set in config check to ensure a file exists before we attempt to use it
 			if(file_exists($mapfile)){
 				$this->dcconfig=new Config();
@@ -461,10 +367,22 @@ class DataCenter {
 				$WeightYellow=intval($this->dcconfig->ParameterArray["WeightYellow"]);
 				$PowerRed=intval($this->dcconfig->ParameterArray["PowerRed"]);
 				$PowerYellow=intval($this->dcconfig->ParameterArray["PowerYellow"]);
-				
-				// Temperature 
-				$unknounColor=html2rgb('FFFFFF');
-				//$TemperatureGreen=20;
+				$unknown=html2rgb('FFFFFF');
+
+				// Copy all colors into an array to export
+				$color['unk']=array('r' => $unknown[0], 'g' => $unknown[1], 'b' => $unknown[2]);
+				$color['bad']=array('r' => $CriticalColor[0], 'g' => $CriticalColor[1], 'b' => $CriticalColor[2]);
+				$color['med']=array('r' => $CautionColor[0], 'g' => $CautionColor[1], 'b' => $CautionColor[2]);
+				$color['low']=array('r' => $GoodColor[0], 'g' => $GoodColor[1], 'b' => $GoodColor[2]);
+				$colors=$color;
+
+				// Assign color variables 
+				$CriticalColor='bad';
+				$CautionColor='med';
+				$GoodColor='low';
+				$unknownColor='unk';
+
+				// Temperature
 				$TemperatureYellow=intval($this->dcconfig->ParameterArray["TemperatureYellow"]);
 				$TemperatureRed=intval($this->dcconfig->ParameterArray["TemperatureRed"]);
 				
@@ -481,44 +399,6 @@ class DataCenter {
 				// get image file attributes and type
 				list($width, $height, $type, $attr)=getimagesize($mapfile);
 
-				$script.="\n\t\tvar maptitle=$('#maptitle span');
-		var mycanvas=document.getElementById(\"mapCanvas\");
-		var context=mycanvas.getContext('2d');
-		context.globalCompositeOperation='destination-over';
-		context.save();
-
-		function clearcanvas(){
-			// erase anything on the canvas
-			context.clearRect(0,0, mycanvas.width, mycanvas.height);
-			// create a new image for the canvas
-			var img=new Image();
-			// draw after the image has loaded
-			img.onload=function(){
-				// changed to eliminate the flickering of reloading the background image on a redraw
-				//context.drawImage(img,0,0);
-				//airflow();
-			}
-			// give it an image to load
-			img.src=\"$mapfile\";
-		}
-
-		function loadCanvas(){\n\t\t\tclearcanvas();\n";
-
-				$space="\t\tfunction space(){\n\t\t\tclearcanvas();\n";
-				$weight="\t\tfunction weight(){\n\t\t\tclearcanvas();\n";
-				$power="\t\tfunction power(){\n\t\t\tclearcanvas();\n";
-				$temperature="\t\tfunction temperatura(){\n\t\t\tclearcanvas();\n";
-				$humidity="\t\tfunction humedad(){\n\t\t\tclearcanvas();\n";				
-				$realpower="\t\tfunction realpower(){\n\t\t\tclearcanvas();\n";
-				$airflow="\t\tfunction airflow(){\n\t\t\tclearcanvas();\n";
-				/*
-				$sql="SELECT C.*, Temps.Temp, Temps.Humidity, Stats.Wattage AS RealPower, 
-					Temps.LastRead, Temps.LastRead AS RPLastRead FROM fac_Cabinet AS C
-					LEFT JOIN fac_CabinetTemps AS Temps ON C.CabinetID=Temps.CabinetID
-					LEFT JOIN fac_PowerDistribution AS P ON C.CabinetID=P.CabinetID
-					LEFT JOIN fac_PDUStats AS Stats ON P.PDUID=Stats.PDUID 
-					WHERE C.DataCenterID=$this->DataCenterID GROUP BY CabinetID;";
-				*/
 				$sql="SELECT C.*, T.Temp, T.Humidity, P.RealPower, T.LastRead, PLR.RPLastRead 
 					FROM ((fac_Cabinet C LEFT JOIN fac_CabinetTemps T ON C.CabinetId = T.CabinetID) LEFT JOIN
 						(SELECT CabinetID, SUM(Wattage) RealPower
@@ -529,10 +409,10 @@ class DataCenter {
 						GROUP BY CabinetID) PLR ON C.CabinetId = PLR.CabinetID
 				    WHERE C.DataCenterID=".intval($this->DataCenterID).";";
 				
-				$fechaLecturaTemps=0;
-				$fechaLecturaRP=0;
+				$titletemp=0;
+				$titlerp=0;
 				if($racks=$this->query($sql)){ 
-					// read all cabinets and draw image map
+					// read all cabinets and calculate the color to display on the cabinet
 					foreach($racks as $cabRow){
 						$cab->CabinetID=$cabRow["CabinetID"];
 						if (!$cab->GetCabinet()){
@@ -542,19 +422,16 @@ class DataCenter {
 							continue;
 						}
 						$dev->Cabinet=$cab->CabinetID;
-						$dev->Location=$cab->Location;  //$dev->Location ???
 	    	    		$devList=$dev->ViewDevicesByCabinet();
-						$currentHeight = $cab->CabinetHeight;
-	        			$totalWatts = $totalWeight = $totalMoment =0;
+						$currentHeight=$cab->CabinetHeight;
+	        			$totalWatts=$totalWeight=0;
 						$currentTemperature=$cabRow["Temp"];
 						$currentHumidity=$cabRow["Humidity"];
 						$currentRealPower=$cabRow["RealPower"];
 						
 						while(list($devID,$device)=each($devList)){
 							$totalWatts+=$device->GetDeviceTotalPower();
-							$DeviceTotalWeight=$device->GetDeviceTotalWeight();
-							$totalWeight+=$DeviceTotalWeight;
-							$totalMoment+=($DeviceTotalWeight*($device->Position+($device->Height/2)));
+							$totalWeight+=$device->GetDeviceTotalWeight();
 						}
 							
 	        			$used=$cab->CabinetOccupancy($cab->CabinetID);
@@ -572,111 +449,63 @@ class DataCenter {
 						if($PowerPercent>$PowerRed){$pcolor=$CriticalColor;}elseif($PowerPercent>$PowerYellow){$pcolor=$CautionColor;}else{$pcolor=$GoodColor;}
 						if($RealPowerPercent>$RealPowerRed){$rpcolor=$CriticalColor;}elseif($RealPowerPercent>$RealPowerYellow){$rpcolor=$CautionColor;}else{$rpcolor=$GoodColor;}
 						
-						/* Example for continuous color range for temperature
-						if($currentTemperature==0){$tcolor=$unknounColor;}
-							elseif($currentTemperature>$TemperatureRed){$tcolor=$CriticalColor;}
-							elseif($currentTemperature<$TemperatureGreen){$tcolor=$GoodColor;}
-							elseif($currentTemperature<$TemperatureYellow){
-								$tcolor[0]=intval(($CautionColor[0]-$GoodColor[0])/($TemperatureYellow-$TemperatureGreen)*($currentTemperature-$TemperatureGreen)+$GoodColor[0]);
-								$tcolor[1]=intval(($CautionColor[1]-$GoodColor[1])/($TemperatureYellow-$TemperatureGreen)*($currentTemperature-$TemperatureGreen)+$GoodColor[1]);
-								$tcolor[2]=intval(($CautionColor[2]-$GoodColor[2])/($TemperatureYellow-$TemperatureGreen)*($currentTemperature-$TemperatureGreen)+$GoodColor[2]);}
-							else{
-								$tcolor[0]=intval(($CriticalColor[0]-$CautionColor[0])/($TemperatureRed-$TemperatureYellow)*($currentTemperature-$TemperatureYellow)+$CautionColor[0]);
-								$tcolor[1]=intval(($CriticalColor[1]-$CautionColor[1])/($TemperatureRed-$TemperatureYellow)*($currentTemperature-$TemperatureYellow)+$CautionColor[1]);
-								$tcolor[2]=intval(($CriticalColor[2]-$CautionColor[2])/($TemperatureRed-$TemperatureYellow)*($currentTemperature-$TemperatureYellow)+$CautionColor[2]);}
-						*/
-						if($currentTemperature==0){$tcolor=$unknounColor;}
+						if($currentTemperature==0){$tcolor=$unknownColor;}
 							elseif($currentTemperature>$TemperatureRed){$tcolor=$CriticalColor;}
 							elseif($currentTemperature>$TemperatureYellow){$tcolor=$CautionColor;}
 							else{$tcolor=$GoodColor;}
 						
-						if($currentHumidity==0){$hcolor=$unknounColor;}
+						if($currentHumidity==0){$hcolor=$unknownColor;}
 							elseif($currentHumidity>$HumidityMax || $currentHumidity<$HumidityMin){$hcolor=$CriticalColor;}
 							elseif($currentHumidity>$HumidityMedMax || $currentHumidity<$HumidityMedMin) {$hcolor=$CautionColor;}
 							else{$hcolor=$GoodColor;}
-												
-						if($SpacePercent>$SpaceRed || $WeightPercent>$WeightRed || $PowerPercent>$PowerRed || 
-							$currentTemperature>$TemperatureRed || $currentHumidity>$HumidityMax || 
-							$currentHumidity<$HumidityMin && $currentHumidity!=0 || 
-							$RealPowerPercent>$RealPowerRed){$color=$CriticalColor;}
-	        			elseif($SpacePercent>$SpaceYellow || $WeightPercent>$WeightYellow || $PowerPercent>$PowerYellow || 
-	        				$currentTemperature>$TemperatureYellow || $currentHumidity>$HumidityMedMax || 
-	        				$currentHumidity<$HumidityMedMin && $currentHumidity!=0  || 
-	        				$RealPowerPercent>$RealPowerYellow){$color=$CautionColor;}
-	        			else{$color=$GoodColor;}
-	        			
-						$width=$cab->MapX2-$cab->MapX1;
-						$height=$cab->MapY2-$cab->MapY1;
-						$textstrlen=strlen($dev->Location);
-						$textXcoord=$cab->MapX1+3;
-						$textYcoord=$cab->MapY1+floor($height*2/3);
+											
+						foreach(array($scolor,$wcolor,$pcolor,$tcolor,$hcolor,$rpcolor) as $cc){
+							if($cc=='bad'){
+								$color='bad';break;
+							}elseif($cc=='med'){
+								$color='med';break;
+							}else{
+								$color='low';
+							}
+						}
 	
-						$border="\n\t\t\tcontext.strokeStyle='#000000';\n\t\t\tcontext.lineWidth=1;\n\t\t\tcontext.strokeRect($cab->MapX1,$cab->MapY1,$width,$height);";
-						$statuscolor="\n\t\t\tcontext.fillRect($cab->MapX1,$cab->MapY1,$width,$height);";
-						$airflow.="\n\t\t\tdrawArrow(context,$cab->MapX1,$cab->MapY1,$width,$height,'$cab->FrontEdge');";
-						$label="\n\t\t\tcontext.fillStyle='#000000';\n\t\t\tcontext.font='10px arial';\n\t\t\tcontext.fillText('$dev->Location',$textXcoord,$textYcoord);\n";
-						$labelsp="\n\t\t\tcontext.fillStyle='#000000';\n\t\t\tcontext.font='bold 12px arial';\n\t\t\tcontext.fillText('".number_format($used,0, ",", ".")."',$textXcoord,$textYcoord);\n";
-						$labelwe="\n\t\t\tcontext.fillStyle='#000000';\n\t\t\tcontext.font='bold 12px arial';\n\t\t\tcontext.fillText('".number_format($totalWeight,0, ",", ".")."',$textXcoord,$textYcoord);\n";
-						$labelpo="\n\t\t\tcontext.fillStyle='#000000';\n\t\t\tcontext.font='10px arial';\n\t\t\tcontext.fillText('".number_format($totalWatts/1000,2, ",", ".")."',$textXcoord,$textYcoord);\n";
-						$labelte="\n\t\t\tcontext.fillStyle='#000000';\n\t\t\tcontext.font='10px arial';\n\t\t\tcontext.fillText('".(($currentTemperature>0)?number_format($currentTemperature,0, ",", "."):"")."',$textXcoord,$textYcoord);\n";
-						$labelhu="\n\t\t\tcontext.fillStyle='#000000';\n\t\t\tcontext.font='10px arial';\n\t\t\tcontext.fillText('".(($currentHumidity>0)?number_format($currentHumidity,0, ",", ".")."%":"")."',$textXcoord,$textYcoord);\n";
-						$labelrp="\n\t\t\tcontext.fillStyle='#000000';\n\t\t\tcontext.font='10px arial';\n\t\t\tcontext.fillText('".(($currentRealPower>0)?number_format($currentRealPower/1000,2, ",", "."):"")."',$textXcoord,$textYcoord);\n";
-	
-						// Comment this to add borders and rack labels to the canvas drawing of the data center.
-						// Discuss moving this into a configuration item for the future.
-						$border=$label=$labelsp=$labelwe=$labelpo=$labelte=$labelhu=$labelrp="";
-	
-						$script.="\t\t\tcontext.fillStyle=\"rgba({$color[0]}, {$color[1]}, {$color[2]}, 0.35)\";$border$statuscolor$label\n";
-						$space.="\t\t\tcontext.fillStyle=\"rgba({$scolor[0]}, {$scolor[1]}, {$scolor[2]}, .35)\";$border$statuscolor$labelsp\n";
-						$weight.="\t\t\tcontext.fillStyle=\"rgba({$wcolor[0]}, {$wcolor[1]}, {$wcolor[2]}, 0.35)\";$border$statuscolor$labelwe\n";
-						$power.="\t\t\tcontext.fillStyle=\"rgba({$pcolor[0]}, {$pcolor[1]}, {$pcolor[2]}, 0.35)\";$border$statuscolor$labelpo\n";
-						$temperature.="\t\t\tcontext.fillStyle=\"rgba({$tcolor[0]}, {$tcolor[1]}, {$tcolor[2]}, 0.35)\";$border$statuscolor$labelte\n";
-						$humidity.="\t\t\tcontext.fillStyle=\"rgba({$hcolor[0]}, {$hcolor[1]}, {$hcolor[2]}, 0.35)\";$border$statuscolor$labelhu\n";
-						$realpower.="\t\t\tcontext.fillStyle=\"rgba({$rpcolor[0]}, {$rpcolor[1]}, {$rpcolor[2]}, 0.35)\";$border$statuscolor$labelrp\n";
-						
-						$fechaLecturaTemps=(!is_null($cabRow["LastRead"])&&($cabRow["LastRead"]>$fechaLecturaTemps))?date('d-m-Y',strtotime(($cabRow["LastRead"]))):$fechaLecturaTemps;
-						$fechaLecturaRP=(!is_null($cabRow["RPLastRead"])&&($cabRow["RPLastRead"]>$fechaLecturaRP))?date('d-m-Y',strtotime(($cabRow["RPLastRead"]))):$fechaLecturaRP;
+						$titletemp=(!is_null($cabRow["LastRead"])&&($cabRow["LastRead"]>$titletemp))?date('%c',strtotime(($cabRow["LastRead"]))):$titletemp;
+						$titlerp=(!is_null($cabRow["RPLastRead"])&&($cabRow["RPLastRead"]>$titlerp))?date('%c',strtotime(($cabRow["RPLastRead"]))):$titlerp;
+
+						$overview[$cab->CabinetID]=$color;
+						$space[$cab->CabinetID]=$scolor;
+						$weight[$cab->CabinetID]=$wcolor;
+						$power[$cab->CabinetID]=$pcolor;
+						$temperature[$cab->CabinetID]=$tcolor;
+						$humidity[$cab->CabinetID]=$hcolor;
+						$realpower[$cab->CabinetID]=$rpcolor;
+						$airflow[$cab->CabinetID]=$cab->FrontEdge;
 					}
 				}
 			}
 			
 			//Key
-			$leyenda="\t\t\tmaptitle.html('".__("Worst state of cabinets")."');";
-			$leyendasp="\t\t\tmaptitle.html('".__("Occupied space")."');";
-			$leyendawe="\t\t\tmaptitle.html('".__("Calculated weight")."');";
-			$leyendapo="\t\t\tmaptitle.html('".__("Calculated power usage")."');";
-			$leyendate="\t\t\tmaptitle.html('".($fechaLecturaTemps>0?__("Measured on")." ".$fechaLecturaTemps:__("no data"))."');";
-			$leyendahu="\t\t\tmaptitle.html('".($fechaLecturaTemps>0?__("Measured on")." ".$fechaLecturaTemps:__("no data"))."');";
-			$leyendarp="\t\t\tmaptitle.html('".($fechaLecturaRP>0?__("Measured on")." ".$fechaLecturaRP:__("no data"))."');";
-			$leyendaaf="\t\t\tmaptitle.html('".__("Air flow")."');";
-						/*
-			$leyenda="\n\t\tcontext.fillStyle='#000000';\n\t\tcontext.font='15px arial';
-				\n\t\tcontext.fillText('".__("OVERVIEW: worse state of cabinets")."',5,20);";
-			$leyendasp="\n\t\tcontext.fillStyle='#000000';\n\t\tcontext.font='15px arial';
-				\n\t\tcontext.fillText('".__("SPACE: occupation of cabinets")."',5,20);";
-			$leyendawe="\n\t\tcontext.fillStyle='#000000';\n\t\tcontext.font='15px arial';
-				\n\t\tcontext.fillText('".__("WEIGHT: Supported weight by cabinets")."',5,20);";
-			$leyendapo="\n\t\tcontext.fillStyle='#000000';\n\t\tcontext.font='15px arial';
-				\n\t\tcontext.fillText('".__("POWER: Computed from devices power supplies")."',5,20);";
-			$leyendate="\n\t\tcontext.fillStyle='#000000';\n\t\tcontext.font='15px arial';
-				\n\t\tcontext.fillText('".__("TEMPERATURE: Measured on")." ".$fechaLecturaTemps."',5,20);";
-			$leyendahu="\n\t\tcontext.fillStyle='#000000';\n\t\tcontext.font='15px arial';
-				\n\t\tcontext.fillText('".__("HUMIDITY: % Measured on")." ".$fechaLecturaTemps."',5,20);";
-			$leyendarp="\n\t\tcontext.fillStyle='#000000';\n\t\tcontext.font='15px arial';
-				\n\t\tcontext.fillText('".__("REAL POWER: Measured on")." ".$fechaLecturaRP."',5,20);";
-			*/
-			$space.=$leyendasp."\n\t\t}\n";
-			$weight.=$leyendawe."\n\t\t}\n";
-			$power.=$leyendapo."\n\t\t}\n";
-			$temperature.=$leyendate."\n\t\t}\n";
-			$humidity.=$leyendahu."\n\t\t}\n";
-			$realpower.=$leyendarp."\n\t\t}\n";
-			$airflow.=$leyendaaf."\n\t\t}\n";
-			
-			$script.=$leyenda."\n\t\t}\n";
-			$script.=$space.$weight.$power.$temperature.$humidity.$realpower.$airflow;
+			$overview['title']=__("Worst state of cabinets");
+			$space['title']=__("Occupied space");
+			$weight['title']=__("Calculated weight");
+			$power['title']=__("Calculated power usage");
+			$temperature['title']=($titletemp>0)?__("Measured on")." ".$titletemp:__("no data");
+			$humidity['title']=($titletemp>0)?__("Measured on")." ".$titletemp:__("no data");
+			$realpower['title']=($titlerp>0)?__("Measured on")." ".$titlerp:__("no data");
+			$airflow['title']=__("Air flow");
+
+			$statusarray=array('overview' => $overview,
+								'space' => $space,
+								'weight' => $weight,
+								'power' => $power,
+								'humidity' => $humidity,
+								'temperature' => $temperature,
+								'realpower' => $realpower,
+								'airflow' => $airflow,
+								'colors' => $colors
+							);
 		}
-		return $script;
+		return $statusarray;
 	}
 
 
@@ -1726,11 +1555,13 @@ class Zone {
 		}
 	}
   
-	function GetZonesByDC(){
+	function GetZonesByDC($limit=false){
 		$this->MakeSafe();
 		
-		$sql="SELECT * FROM fac_Zone WHERE DataCenterID=$this->DataCenterID ORDER BY 
-			Description;";
+		$hascoords=($limit)?'AND MapX1!=MapX2 AND MapY1!=MapY2':'';
+
+		$sql="SELECT * FROM fac_Zone WHERE DataCenterID=$this->DataCenterID $hascoords 
+			ORDER BY Description;";
 		
 		$zoneList=array();
 		foreach($this->query($sql) as $row){
