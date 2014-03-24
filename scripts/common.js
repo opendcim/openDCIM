@@ -463,6 +463,7 @@ function startmap(){
 		// if color isn't given then just outline the object
 		if(typeof c=='undefined'){
 			context.save();
+			context.globalCompositeOperation='source-over';
 			context.lineWidth='4';
 			context.strokeStyle="rgba(255,0,0,1)";
 			context.strokeRect(area[0],area[1],(area[2]-area[0]),(area[3]-area[1]));
