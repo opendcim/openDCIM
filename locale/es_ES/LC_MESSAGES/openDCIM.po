@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: openDCIM.po\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2014-03-24 11:30-0400\n"
-"PO-Revision-Date: 2014-03-24 08:48-0500\n"
+"PO-Revision-Date: 2014-03-25 10:00+0100\n"
 "Last-Translator: Jose Miguel Gomez <jomigom@iies.es>\n"
 "Language-Team: openDCIM <discussion@list.opendcim.org>\n"
 "MIME-Version: 1.0\n"
@@ -11,6 +11,7 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Language: en\n"
 "X-Generator: Poedit 1.6.3\n"
+"X-Poedit-Basepath: Z:\\xampp\\htdocs\\github\\openDCIMp\n"
 
 #: openDCIM/cabaudit.php:50 openDCIM/report_aging.php:91
 #: openDCIM/report_department.php:24
@@ -44,7 +45,7 @@ msgstr "NºSerie"
 
 #: openDCIM/cabaudit.php:405
 msgid "AssetTag"
-msgstr "Etiqueta del Equipo"
+msgstr "Etiqueta del Activo"
 
 #: openDCIM/cabaudit.php:405 openDCIM/devices.php:1289
 #: openDCIM/rackrequest.php:475 openDCIM/report_outage_simulator.php:276
@@ -969,22 +970,20 @@ msgid "Default Note"
 msgstr "Nota por Defecto"
 
 #: openDCIM/configuration.php:1239 openDCIM/install.php:2049
-#, fuzzy
 msgid "Connection Pathing"
-msgstr "Conexiones"
+msgstr "Encaminamiento de Conexiones"
 
 #: openDCIM/configuration.php:1242 openDCIM/install.php:2052
-#, fuzzy
 msgid "Cabinet Weight"
-msgstr "Altura del Armario"
+msgstr "Peso del Armario"
 
 #: openDCIM/configuration.php:1246 openDCIM/install.php:2056
 msgid "Weight for rear connections between panels"
-msgstr ""
+msgstr "Peso de las conexiones traseras entre paneles"
 
 #: openDCIM/configuration.php:1250 openDCIM/install.php:2060
 msgid "Weight for patches in the same row"
-msgstr ""
+msgstr "Peso de los parcheos en la misma fila"
 
 #: openDCIM/conflicts.php:575 openDCIM/devices.php:1428
 msgid "Power Strip"
@@ -1270,7 +1269,7 @@ msgstr "Humedad"
 
 #: openDCIM/dc_stats.php:223 openDCIM/zone_stats.php:247
 msgid "Air Flow"
-msgstr ""
+msgstr "Flujo de Aire"
 
 #: openDCIM/departments.php:84
 msgid "Data Center Department Detail"
@@ -1445,7 +1444,7 @@ msgstr "Detalle de Dispositivos del CPD"
 
 #: openDCIM/devices.php:1114
 msgid "Asset Tracking"
-msgstr "Seguimiento de equipos"
+msgstr "Seguimiento de Activos"
 
 #: openDCIM/devices.php:1117
 msgid "Device ID"
@@ -1468,7 +1467,7 @@ msgstr "Escanear Código de Barras"
 #: openDCIM/search_export.php:36 openDCIM/sidebar.inc.php:19
 #: openDCIM/storageroom.php:59
 msgid "Asset Tag"
-msgstr "Etiqueta del Equipo"
+msgstr "Etiqueta del Activo"
 
 #: openDCIM/devices.php:1139
 msgid "Primary IP"
@@ -1780,9 +1779,8 @@ msgid "Chassis Slots"
 msgstr "Ranuras del Chasis"
 
 #: openDCIM/device_templates.php:397 openDCIM/device_templates.php:401
-#, fuzzy
 msgid "Edit Coordinates"
-msgstr "Coordenadas"
+msgstr "Editar Coordenadas"
 
 #: openDCIM/device_templates.php:400
 msgid "Rear Chassis Slots"
@@ -1853,15 +1851,13 @@ msgid "Infrastructure Drawings"
 msgstr "Imágenes de las Infraestructuras"
 
 #: openDCIM/image_management.php:159
-#, fuzzy
 msgid "Delete image file?"
-msgstr "Eliminar Armario"
+msgstr "¿Eliminar fichero de imagen?"
 
 #: openDCIM/image_management.php:160
-#, fuzzy
 msgid ""
 "This image will be permanently deleted and cannot be recovered. Are you sure?"
-msgstr "Este dispositivo será eliminado y no se podrá deshacer. ¿Está seguro?"
+msgstr "Esta imagen será eliminada y no se podrá recuperar. ¿Está seguro?"
 
 #: openDCIM/index.php:37
 msgid "Pending Rack Requests"
@@ -1900,9 +1896,8 @@ msgid "Hosted Systems"
 msgstr "Sistemas Alojados"
 
 #: openDCIM/index.php:101
-#, fuzzy
 msgid "DC Count"
-msgstr "Cantidad"
+msgstr "Número de CPDs"
 
 #: openDCIM/index.php:106
 msgid "Server Count"
@@ -1950,7 +1945,7 @@ msgstr "Sin datos"
 
 #: openDCIM/infrastructure.inc.php:495
 msgid "Air flow"
-msgstr ""
+msgstr "Flujo de aire"
 
 #: openDCIM/infrastructure.inc.php:575
 msgid "Row "
@@ -2535,10 +2530,9 @@ msgstr "Versión de Frimware"
 
 #: openDCIM/power_pdu.php:525
 msgid "Manual Entry"
-msgstr ""
+msgstr "Entrada Manual"
 
 #: openDCIM/power_pdu.php:528
-#, fuzzy
 msgid "Last Update"
 msgstr "Última Actualización"
 
@@ -2606,8 +2600,8 @@ msgid ""
 "this request has been completed.\n"
 "\t\t\tPlease allow up to 2 business days for requests to be completed."
 msgstr ""
-"Se ha recibido su solicitud de enrackado para el dispositivo etiquetado %1"
-"$s.\n"
+"Se ha recibido su solicitud de enrackado para el dispositivo etiquetado "
+"%1$s.\n"
 "\t\t\tEl Centro de Gestión de Red examinará la solicitud y contactará con "
 "usted si precisa más información\n"
 "\t\t\tantes de tramitar la solicitud. Recibirá una notificación cuando la "
@@ -2717,7 +2711,7 @@ msgstr "Mover a Rack"
 
 #: openDCIM/report_aging.php:94
 msgid "Data Center Asset Aging Report"
-msgstr "Informe de Antigüedad de Equipos del CPD"
+msgstr "Informe de Antigüedad de Activos del CPD"
 
 #: openDCIM/report_aging.php:95 openDCIM/report_department.php:28
 msgid "Date"
@@ -2759,7 +2753,7 @@ msgstr "Dispositivos de más de 4 años"
 
 #: openDCIM/report_asset_Excel.php:37
 msgid "Asset Report"
-msgstr "Informe de Equipos"
+msgstr "Informe de Activos"
 
 #: openDCIM/report_asset_Excel.php:38
 msgid "Data Center Statistics on all data centers assets."
@@ -2791,13 +2785,12 @@ msgstr ""
 "armarios."
 
 #: openDCIM/report_asset_Excel.php:63
-#, fuzzy
 msgid ""
 "● Using Excel's pivot capabilities many different analysis and statistics "
 "can be performed."
 msgstr ""
 "● Utilizando las capacidades de pivote de Excel se pueden realizar muchos "
-"analysis y estadísticas diferentes."
+"analisis y estadísticas diferentes."
 
 #: openDCIM/report_asset_Excel.php:65
 msgid "● The terms 'cabinet' and  'rack' are used interchangeable."
@@ -2857,14 +2850,13 @@ msgstr ""
 "rack libre."
 
 #: openDCIM/report_asset_Excel.php:82
-#, fuzzy
 msgid ""
 "● A range of consecutive free slots in a chassis is indicated in worksheet "
 "'DC Inventory' with the string '__EMPTYSLOT ' in the column 'Device'. "
 "'Position' gives the start of the range and 'Height' specifies the number of "
 "free slots."
 msgstr ""
-"● Un rango de ranuras libres consecutivas en un chasis se indican en la hoja "
+"● Un rango de ranuras libres consecutivas en un chasis se indica en la hoja "
 "de trabajo 'Inventario del CPD ' con la cadena ' __EMPTYSLOT ' en la columna "
 "'Dispositivo'. 'Posición' da el inicio del rango y 'Altura' especifica el "
 "número de ranuras libres."
@@ -3139,7 +3131,7 @@ msgstr "Informe de Departamentos/Contactos"
 
 #: openDCIM/reports.php:36
 msgid "Asset Reports"
-msgstr "Informe de Equipos"
+msgstr "Informe de Activos"
 
 #: openDCIM/reports.php:37
 msgid "Search/Export by Data Center"
@@ -3151,23 +3143,23 @@ msgstr "Exportar CPD para CDF (XML)"
 
 #: openDCIM/reports.php:39
 msgid "Asset Report by Owner"
-msgstr "Informe de Equipos por Propietario"
+msgstr "Informe de Activos por Propietario"
 
 #: openDCIM/reports.php:40
 msgid "Data Center Asset Report"
-msgstr "Informe de Equipos del CPD"
+msgstr "Informe de Activos del CPD"
 
 #: openDCIM/reports.php:41
 msgid "Data Center Asset Report [Excel]"
-msgstr "Informe de Equipos del CPD [Excel]"
+msgstr "Informe de Activos del CPD [Excel]"
 
 #: openDCIM/reports.php:42
 msgid "Data Center Asset Costing Report"
-msgstr "Informe de Costes de Equipos del CPD"
+msgstr "Informe de Costes de Activos del CPD"
 
 #: openDCIM/reports.php:43
 msgid "Asset Aging Report"
-msgstr "Informe de Edad de los Equipos"
+msgstr "Informe de Edad de los Activos"
 
 #: openDCIM/reports.php:44
 msgid "Virtual Machines by Department"
@@ -3250,7 +3242,6 @@ msgid "XML Output for CFD Simulation"
 msgstr "Salida XML para Simulación CFD"
 
 #: openDCIM/report_xml_CFD.php:56
-#, fuzzy
 msgid "Select Data Center"
 msgstr "Selecionar un CPD"
 
@@ -3296,7 +3287,7 @@ msgstr "Resultados de la búsqueda por propietario para"
 
 #: openDCIM/search.php:60
 msgid "Asset tag search results for"
-msgstr "Resultados de la búsqueda por etiqueta del aparato para"
+msgstr "Resultados de la búsqueda por etiqueta del activo para"
 
 #: openDCIM/search.php:65
 msgid "Custom tag search results for"
@@ -3361,7 +3352,6 @@ msgid "Custom Tag"
 msgstr "Etiqueta Personalizada"
 
 #: openDCIM/sidebar.inc.php:21
-#, fuzzy
 msgid "PrimaryIP"
 msgstr "IP Principal"
 
