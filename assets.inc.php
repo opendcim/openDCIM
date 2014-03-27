@@ -207,7 +207,7 @@ class Cabinet {
 		$this->MakeSafe();
 		
 		$hascoords=($limit)?'AND MapX1!=MapX2 AND MapY1!=MapY2':'';
-		$limitzone=($zone && $this->ZoneID>0)?" AND ZoneID=$this->ZoneID":'';
+		$limitzone=($limitzone && $this->ZoneID>0)?" AND ZoneID=$this->ZoneID":'';
 
 		$sql="SELECT * FROM fac_Cabinet WHERE DataCenterID=$this->DataCenterID $hascoords$limitzone ORDER BY Location;";
 
