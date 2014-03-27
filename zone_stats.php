@@ -32,9 +32,10 @@
 		$payload=array();
 		if(isset($_POST['getobjects'])){
 			$cab->DataCenterID=$_POST['dc'];
+			$cab->GetCabinet();
 			$zone=new Zone();
 			$zone->DataCenterID=$cab->DataCenterID;
-			$payload=array('cab'=>$cab->ListCabinetsByDC(true),'zone'=>$zone->GetZonesByDC(true));
+			$payload=array('cab'=>$cab->ListCabinetsByDC(true,true),'zone'=>$zone->GetZonesByDC(true));
 		}else{
 			$dc->DataCenterID=$_POST['dc'];
 			$dc->GetDataCenterByID();
@@ -60,6 +61,27 @@
 	$zoneStats=$zone->GetZoneStatistics();
 	$dc->DataCenterID=$zone->DataCenterID;
 	$dc->GetDataCenterbyID();
+
+	function MakeImageMap($dc,$zone) {
+		$zoom=$zone->MapZoom/100;
+		$mapHTML="";
+
+		if(strlen($dc->DrawingFileName)>0){
+			$mapfile="drawings/".$dc->DrawingFileName;
+			if(file_exists($mapfile)){
+				list($width, $height, $type, $attr)=getimagesize($mapfile);
+				$width=($zone->MapX2-$zone->MapX1)*$zoom;
+				$height=($zone->MapY2-$zone->MapY1)*$zoom;
+				$mapHTML.="\t<div class=\"canvas\">
+		<canvas id=\"background\" width=\"$width\" height=\"$height\" data-image=$mapfile></canvas>
+		<img src=\"css/blank.gif\" usemap=\"#datacenter\" width=\"$width\" height=\"$height\" alt=\"clearmap over canvas\">
+		<map name=\"datacenter\" data-dc=$dc->DataCenterID data-zoom=$zoom data-x1=$zone->MapX1 data-y1=$zone->MapY1>
+		</map>
+		<canvas id=\"mapCanvas\" width=\"$width\" height=\"$height\"></canvas>\n\t</div>\n";
+			}
+		}
+		return $mapHTML;
+	}
 	
 	$height=1;
 	$width=1;
@@ -237,13 +259,13 @@ echo '<div class="main">
 
 $select='<select>';
 	foreach(array(
-		'loadCanvas' => __("Overview"),
+		'overview' => __("Overview"),
 		'space' => __("Space"),
 		'weight' => __("Weight"),
 		'power' => __("Calculated Power"),
 		'realpower' => __("Measured Power"),
-		'temperatura' => __("Temperature"),
-		'humedad' => __("Humidity"),
+		'temperature' => __("Temperature"),
+		'humidity' => __("Humidity"),
 		'airflow' => __("Air Flow")
 		) as $value => $option){
 		$select.='<option value="'.$value.'"';
@@ -254,7 +276,7 @@ $select='<select>';
 	}
 $select.='</select>';
 
-echo $select.'</div></div>'.$zone->MakeImageMap();
+echo $select.'</div></div>'.MakeImageMap($dc,$zone);
 
 ?>
 </div></div>
@@ -274,11 +296,7 @@ echo $select.'</div></div>'.$zone->MakeImageMap();
 			}
 		}
 
-  <?php print $zone->DrawCanvas();?>
-
-		$('#maptitle .nav > select').change(function(){
-			eval($(this).val()+'()');
-		}).trigger('change');
+		startmap();
 		opentree();
 	});
 </script>

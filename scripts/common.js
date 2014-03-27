@@ -345,6 +345,24 @@ function startmap(){
 	var maptitle=$('#maptitle span');
 	var mycanvas=document.getElementById("mapCanvas");
 	var context=mycanvas.getContext('2d');
+	var zoom=$('.canvas > map').data('zoom');
+	var zx1=$('.canvas > map').data('x1');
+	var zy1=$('.canvas > map').data('y1');
+
+
+	function background(){
+		var bgcanvas=document.getElementById("background");
+		var bgcontext=bgcanvas.getContext('2d');
+		bgcontext.globalCompositeOperation='destination-over';
+
+		bgcontext.clearRect(0,0, bgcanvas.width, bgcanvas.height);
+		var bgimg=new Image();
+		bgimg.onload=function(){
+			bgcontext.drawImage(bgimg,-80*0.5,-236*0.5,800*0.5,1182*0.5);
+		}
+		bgimg.src=$(bgcanvas).data('image');
+	}
+	($('canvas#background').data('image'))?background():'';
 
 	// arrays used for tracking states
 	var stat;
@@ -358,16 +376,6 @@ function startmap(){
 	function clearcanvas(){
 		// erase anything on the canvas
 		context.clearRect(0,0, mycanvas.width, mycanvas.height);
-		// create a new image for the canvas
-		var img=new Image();
-		// draw after the image has loaded
-		img.onload=function(){
-			// changed to eliminate the flickering of reloading the background image on a redraw
-			//context.drawImage(img,0,0);
-			//airflow();
-		}
-		// give it an image to load
-		img.src="drawings/example.png";
 	}
 
 	// Remove all the existing cabinets and zones
@@ -436,8 +444,12 @@ function startmap(){
 		// modify the cloned index to add in the elements under the pointer currently
 		$.each(areas,function(i,cabszones){
 			$.each(cabszones,function(x,obj){
+				var x1=parseInt(obj.MapX1-zx1)*zoom;
+				var x2=parseInt(obj.MapX2-zx1)*zoom;
+				var y1=parseInt(obj.MapY1-zy1)*zoom;
+				var y2=parseInt(obj.MapY2-zy1)*zoom;
 				// Check to see if we're over any of the objects we defined.
-				if(e.pageX>(cpos.left+parseInt(obj.MapX1)) && e.pageX<(cpos.left+parseInt(obj.MapX2)) && e.pageY>(cpos.top+parseInt(obj.MapY1)) && e.pageY<(cpos.top+parseInt(obj.MapY2))){
+				if(e.pageX>(cpos.left+x1) && e.pageX<(cpos.left+x2) && e.pageY>(cpos.top+y1) && e.pageY<(cpos.top+y2)){
 					var id=(i=='zones')?'ZoneID':'CabinetID';
 					if(i=='zones'){
 						tempstate.zones[obj.ZoneID]=true;
@@ -460,21 +472,26 @@ function startmap(){
 	function Hilight(obj,c){
 		//there has to be a better way to do this.  stupid js
 		area=obj.prop('coords').split(',');
+		var x=(area[0]);
+		var y=(area[1]);
+		var w=(area[2]-area[0]);
+		var h=(area[3]-area[1]);
+
 		// if color isn't given then just outline the object
 		if(typeof c=='undefined'){
 			context.save();
 			context.globalCompositeOperation='source-over';
 			context.lineWidth='4';
 			context.strokeStyle="rgba(255,0,0,1)";
-			context.strokeRect(area[0],area[1],(area[2]-area[0]),(area[3]-area[1]));
+			context.strokeRect(x,y,w,h);
 			context.restore();
 		}else if(typeof c=='string'){
 			// draw arrow
-			drawArrow(context,area[0],area[1],(area[2]-area[0]),(area[3]-area[1]),c);
+			drawArrow(context,x,y,w,h,c);
 		}else{
 			context.save();
 			context.fillStyle="rgba("+c.r+", "+c.g+", "+c.b+", 0.35)";
-			context.fillRect(area[0],area[1],(area[2]-area[0]),(area[3]-area[1]));
+			context.fillRect(x,y,w,h);
 			context.restore();
 		}
 	}
@@ -486,7 +503,11 @@ function startmap(){
 		var name=(zone)?'zone'+obj.ZoneID:'cab'+obj.CabinetID;
 		var href=(zone)?'zone_stats.php?zone='+obj.ZoneID:'cabnavigator.php?cabinetid='+obj.CabinetID;
 		var row=(zone)?false:(obj.CabRowID==0)?false:true;
-		return $('<area>').attr({'shape':'rect','coords':obj.MapX1+','+obj.MapY1+','+obj.MapX2+','+obj.MapY2,'alt':label,'href':href,'name':name}).data({'hilight':false,'zone':obj.ZoneID,'row':row});
+		var x1=(obj.MapX1-zx1)*zoom;
+		var x2=(obj.MapX2-zx1)*zoom;
+		var y1=(obj.MapY1-zy1)*zoom;
+		var y2=(obj.MapY2-zy1)*zoom;
+		return $('<area>').attr({'shape':'rect','coords':x1+','+y1+','+x2+','+y2,'alt':label,'href':href,'name':name}).data({'hilight':false,'zone':obj.ZoneID,'row':row});
 	}
 
 	// Color the map

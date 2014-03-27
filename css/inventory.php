@@ -156,7 +156,7 @@ div#dcstats { display: table;}
 div#dcstats > div{ width: 100%;}
 div#dcstats .table + .table > div > div + div{white-space: pre; text-align: right;}
 .canvas {position: relative; background-repeat: no-repeat;}
-.canvas img {position: absolute; top: 0; left: 0;}
+.canvas img {position: absolute; top: 0; left: 0; z-index: 10;}
 .dcstats ~ #tt span {font-size: 1.5em; text-align: center; font-weight: bold;}
 .dcstats ~ #tt ul {list-style-type: none;}
 .dcstats ~ #tt ul li.red {background: url('../images/rs.png') left center no-repeat; line-height: 20px; padding-left: 20px;}
@@ -165,7 +165,8 @@ div#dcstats .table + .table > div > div + div{white-space: pre; text-align: righ
 .dcstats ~ #tt ul li.wtf {background: url('../images/us.png') left center no-repeat; line-height: 20px; padding-left: 20px;}
 #maptitle {padding: 8px; font-size: 120%; font-weight: bold;} 
 #maptitle .nav {float: right;}
-#mapCanvas { margin-bottom: 50px; }
+#mapCanvas { margin-bottom: 50px; position: relative;}
+canvas#background { position: absolute; }
 
 /* Storage Room */
 .storage .table, .storage .table #title { background: white; }
