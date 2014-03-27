@@ -460,7 +460,7 @@ div.cabinet {
 /* PICTURES */
 .cabnavigator div.picture {position:relative; left:0px; top:0px; margin: -0.25em -0.5em -0.4em; z-index: 5;}
 .cabnavigator div.picture div {position:absolute; z-index: 10;}
-.cabnavigator div.picture div.label {z-index: 11; width: 100%; margin-top: 0em; pointer-events: none;} 
+.cabnavigator div.picture div.label {z-index: 11; width: 100%; margin-top: 0em; pointer-events: none; text-align: center; vertical-align: middle;} 
 .cabnavigator div.picture div.label > div {
 	margin: 0px;
 	text-align: center;
@@ -471,8 +471,8 @@ div.cabinet {
 .cabnavigator div.picture div.label > div.parentlab {text-shadow: -1px -1px 3px #FFCC88, 1px 1px 3px #FFCC88, -1px 1px 3px #FFCC88, 1px -1px 3px #FFCC88; filter: glow(color=#FFCC88,strength=2), alpha(opacity=90); } 
 .cabnavigator div.picture div.label > div.childlab {overflow: hidden; text-shadow: -1px -1px 3px #FFFF00, 1px 1px 3px #FFFF00, -1px 1px 3px #FFFF00, 1px -1px 3px #FFFF00;filter: glow(color=#FFFF00,strength=2), alpha(opacity=90);}
 
-.cabnavigator .picture div img:hover, .cabnavigator .picture div:not(.label) div:hover { border: 2px solid red; margin: -2px; }
-.cabnavigator .picture div span {overflow: hidden; vertical-align: sub; padding-left: 0.3em;}
+.cabnavigator .picture div img:hover, .cabnavigator .picture a > div:hover { border: 2px solid red; margin: -2px;}*/
+.cabnavigator .picture div div.textlab {overflow: hidden; vertical-align: sub; padding-left: 0.3em;}
 .cabnavigator .picture div.label span, .cabnavigator .picture div span > span {vertical-align: text-top;}
 
 .cabinet .picture img {min-height: 1px;}

@@ -1,7 +1,7 @@
 <?php
 	require_once( "db.inc.php" );
 	require_once( "facilities.inc.php" );
- 
+
 	if((isset($_REQUEST["cabinetid"]) && (intval($_REQUEST["cabinetid"])==0)) || !isset($_REQUEST["cabinetid"])){
 		// No soup for you.
 		header('Location: '.redirect());
@@ -569,7 +569,7 @@ echo $head,'  <script type="text/javascript" src="scripts/jquery.min.js"></scrip
 ';
 if($config->ParameterArray["ToolTips"]=='enabled'){
 ?>
-		$('.cabinet td:has(a):not(:has(img)), #zerou div > a, .cabinet .picture a img, .cabinet .picture a div').mouseenter(function(){
+		$('.cabinet td:has(a):not(:has(img)), #zerou div > a, .cabinet .picture a img, .cabinet .picture a > div').mouseenter(function(){
 			$('div.label').show();
 			$(this).parents('div').children('div.label').hide();
 			var pos=$(this).offset();
