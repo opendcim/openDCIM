@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: openDCIM.po\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2014-03-24 11:30-0400\n"
-"PO-Revision-Date: 2014-03-25 10:00+0100\n"
+"PO-Revision-Date: 2014-03-28 10:33+0100\n"
 "Last-Translator: Jose Miguel Gomez <jomigom@iies.es>\n"
 "Language-Team: openDCIM <discussion@list.opendcim.org>\n"
 "MIME-Version: 1.0\n"
@@ -872,7 +872,7 @@ msgstr "URL base para instalar"
 
 #: openDCIM/configuration.php:1135 openDCIM/install.php:1945
 msgid "Default SNMP Community"
-msgstr "Comunidad SMTP por Defecto"
+msgstr "Comunidad SNMP por Defecto"
 
 #: openDCIM/configuration.php:1139 openDCIM/install.php:1949
 msgid "Capacity Reporting"
@@ -1475,7 +1475,7 @@ msgstr "IP Principal"
 
 #: openDCIM/devices.php:1144
 msgid "SNMP Read Only Community"
-msgstr "Comunidad SMTP de Sólo Lectura"
+msgstr "Comunidad SNMP de Sólo Lectura"
 
 #: openDCIM/devices.php:1157
 msgid "Warranty Company"
@@ -2514,7 +2514,7 @@ msgstr "Dirección IP"
 
 #: openDCIM/power_pdu.php:508 openDCIM/power_source.php:98
 msgid "SNMP Community"
-msgstr "Comunidad SMTP"
+msgstr "Comunidad SNMP"
 
 #: openDCIM/power_pdu.php:509
 msgid "Test Communications"
