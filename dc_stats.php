@@ -230,30 +230,30 @@ $select.="\t</select>\n";
 
 echo $select."</div></div>\n".MakeImageMap($dc);
 
-?>
+echo '
 </div></div>
 
-
 <ul id="options"> 
-	<li class="ui-state-disabled">Set the air intake direction</li>
+	<li class="ui-state-disabled">',__("Set the air intake direction"),'</li>
 	<li>----</li>
-	<li><a>Cabinet</a>
+	<li><a>',__("Cabinet"),'</a>
 		<ul data-context="cabinet">
-			<li><a href="#Top">Top</a></li>
-			<li><a href="#Right">Right</a></li>
-			<li><a href="#Bottom">Bottom</a></li>
-			<li><a href="#Left">Left</a></li>
+			<li><a href="#Top">',__("Top"),'</a></li>
+			<li><a href="#Right">',__("Right"),'</a></li>
+			<li><a href="#Bottom">',__("Bottom"),'</a></li>
+			<li><a href="#Left">',__("Left"),'</a></li>
 		</ul>
 	</li>
-	<li><a href="#row">Row</a>
+	<li><a href="#row">',__("Row"),'</a>
 		<ul data-context="row">
-			<li><a href="#Test">Top</a></li>
-			<li><a href="#Right">Right</a></li>
-			<li><a href="#Bottom">Bottom</a></li>
-			<li><a href="#Left">Left</a></li>
+			<li><a href="#Test">',__("Top"),'</a></li>
+			<li><a href="#Right">',__("Right"),'</a></li>
+			<li><a href="#Bottom">',__("Bottom"),'</a></li>
+			<li><a href="#Left">',__("Left"),'</a></li>
 		</ul>
 	</li>
-</ul>
+</ul>';
+?>
 
 </div><!-- END div.main -->
 </div><!-- END div.page -->

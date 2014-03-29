@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: openDCIM.po\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2014-03-24 11:30-0400\n"
+"POT-Creation-Date: 2014-03-28 21:17-0400\n"
 "PO-Revision-Date: 2014-03-24 08:49-0500\n"
 "Last-Translator: Dario Delpiano <dario.delpiano@postemobile.it>\n"
 "Language-Team: openDCIM <discussion@list.opendcim.org>\n"
@@ -121,10 +121,11 @@ msgid "Data Center Cabinet Inventory"
 msgstr "Inventario Armadi Data Center"
 
 #: openDCIM/cabinets.php:188 openDCIM/cabnavigator.php:216
-#: openDCIM/devices.php:1247 openDCIM/pathmaker.php:215
-#: openDCIM/pathmaker.php:292 openDCIM/paths.php:213 openDCIM/paths.php:288
-#: openDCIM/paths.php:373 openDCIM/power_pdu.php:440
-#: openDCIM/report_outage_simulator.php:276 openDCIM/rowview.php:46
+#: openDCIM/dc_stats.php:239 openDCIM/devices.php:1247
+#: openDCIM/pathmaker.php:215 openDCIM/pathmaker.php:292
+#: openDCIM/paths.php:213 openDCIM/paths.php:288 openDCIM/paths.php:373
+#: openDCIM/power_pdu.php:440 openDCIM/report_outage_simulator.php:276
+#: openDCIM/rowview.php:46
 msgid "Cabinet"
 msgstr "Armadio"
 
@@ -253,7 +254,7 @@ msgid "Install Date"
 msgstr "Data Installazione"
 
 #: openDCIM/cabnavigator.php:89 openDCIM/cabrow.php:70
-#: openDCIM/rowview.php:214
+#: openDCIM/dc_stats.php:247 openDCIM/rowview.php:214
 msgid "Row"
 msgstr "Fila"
 
@@ -306,14 +307,14 @@ msgid "Cabinet Metrics"
 msgstr "Statistiche Armadio"
 
 #: openDCIM/cabnavigator.php:386 openDCIM/dc_dashboard.php:78
-#: openDCIM/dc_stats.php:217 openDCIM/index.php:114
-#: openDCIM/zone_stats.php:241
+#: openDCIM/dc_stats.php:219 openDCIM/index.php:114
+#: openDCIM/zone_stats.php:263
 msgid "Space"
 msgstr "Spazio"
 
 #: openDCIM/cabnavigator.php:395 openDCIM/dc_dashboard.php:79
-#: openDCIM/dc_stats.php:218 openDCIM/device_templates.php:360
-#: openDCIM/zone_stats.php:242
+#: openDCIM/dc_stats.php:220 openDCIM/device_templates.php:360
+#: openDCIM/zone_stats.php:264
 msgid "Weight"
 msgstr "Peso"
 
@@ -1087,24 +1088,24 @@ msgid "Click on the image to select container coordinates"
 msgstr "Clicca sull'immagine per definire le coordinate del contenitore"
 
 #: openDCIM/container_stats.php:41 openDCIM/datacenter.php:60
-#: openDCIM/dc_dashboard.php:38 openDCIM/dc_stats.php:106
-#: openDCIM/install.php:2217 openDCIM/zone_stats.php:94
+#: openDCIM/dc_dashboard.php:38 openDCIM/dc_stats.php:107
+#: openDCIM/install.php:2217 openDCIM/zone_stats.php:116
 msgid "Square Feet"
 msgstr "Piedi Quadri"
 
 #: openDCIM/container_stats.php:42 openDCIM/dc_dashboard.php:39
-#: openDCIM/dc_stats.php:107 openDCIM/zone_stats.php:95
+#: openDCIM/dc_stats.php:108 openDCIM/zone_stats.php:117
 msgid "Watts per Square Foot"
 msgstr "Watt per Piede Quadro"
 
 #: openDCIM/container_stats.php:44 openDCIM/datacenter.php:62
-#: openDCIM/dc_dashboard.php:41 openDCIM/dc_stats.php:109
-#: openDCIM/install.php:2219 openDCIM/zone_stats.php:97
+#: openDCIM/dc_dashboard.php:41 openDCIM/dc_stats.php:110
+#: openDCIM/install.php:2219 openDCIM/zone_stats.php:119
 msgid "Square Meters"
 msgstr "Metri Quadri"
 
 #: openDCIM/container_stats.php:45 openDCIM/dc_dashboard.php:42
-#: openDCIM/dc_stats.php:110 openDCIM/zone_stats.php:98
+#: openDCIM/dc_stats.php:111 openDCIM/zone_stats.php:120
 msgid "Watts per Square Meter"
 msgstr "Watt per Metro Quadro"
 
@@ -1113,32 +1114,32 @@ msgid "Data Centers Statistics"
 msgstr "Statistiche Data Center"
 
 #: openDCIM/container_stats.php:61 openDCIM/dc_dashboard.php:89
-#: openDCIM/dc_stats.php:160 openDCIM/zone_stats.php:188
+#: openDCIM/dc_stats.php:162 openDCIM/zone_stats.php:210
 msgid "Infrastructure"
 msgstr "Infrastruttura"
 
 #: openDCIM/container_stats.php:62 openDCIM/dc_dashboard.php:90
-#: openDCIM/dc_stats.php:161 openDCIM/zone_stats.php:189
+#: openDCIM/dc_stats.php:163 openDCIM/zone_stats.php:211
 msgid "Occupied"
 msgstr "Occupato"
 
 #: openDCIM/container_stats.php:63 openDCIM/dc_dashboard.php:91
-#: openDCIM/dc_stats.php:162 openDCIM/zone_stats.php:190
+#: openDCIM/dc_stats.php:164 openDCIM/zone_stats.php:212
 msgid "Allocated"
 msgstr "Assegnato"
 
 #: openDCIM/container_stats.php:64 openDCIM/dc_dashboard.php:92
-#: openDCIM/dc_stats.php:163 openDCIM/zone_stats.php:191
+#: openDCIM/dc_stats.php:165 openDCIM/zone_stats.php:213
 msgid "Available"
 msgstr "Disponibile"
 
 #: openDCIM/container_stats.php:67 openDCIM/dc_dashboard.php:95
-#: openDCIM/dc_stats.php:166 openDCIM/zone_stats.php:194
+#: openDCIM/dc_stats.php:168 openDCIM/zone_stats.php:216
 msgid "Total U"
 msgstr "U Totali"
 
 #: openDCIM/container_stats.php:74 openDCIM/dc_dashboard.php:102
-#: openDCIM/dc_stats.php:173 openDCIM/zone_stats.php:201
+#: openDCIM/dc_stats.php:175 openDCIM/zone_stats.php:223
 msgid "Percentage"
 msgstr "Percentuale"
 
@@ -1147,26 +1148,26 @@ msgid "Data Centers"
 msgstr "Data Center"
 
 #: openDCIM/container_stats.php:87 openDCIM/dc_dashboard.php:111
-#: openDCIM/dc_stats.php:182 openDCIM/zone_stats.php:210
+#: openDCIM/dc_stats.php:184 openDCIM/zone_stats.php:232
 msgid "Computed Wattage"
 msgstr "Assorbimento Calcolato"
 
 #: openDCIM/container_stats.php:88 openDCIM/container_stats.php:92
 #: openDCIM/container_stats.php:108 openDCIM/dc_dashboard.php:112
 #: openDCIM/dc_dashboard.php:116 openDCIM/dc_dashboard.php:132
-#: openDCIM/dc_stats.php:183 openDCIM/dc_stats.php:187
-#: openDCIM/dc_stats.php:203 openDCIM/zone_stats.php:211
-#: openDCIM/zone_stats.php:215 openDCIM/zone_stats.php:227
+#: openDCIM/dc_stats.php:185 openDCIM/dc_stats.php:189
+#: openDCIM/dc_stats.php:205 openDCIM/zone_stats.php:233
+#: openDCIM/zone_stats.php:237 openDCIM/zone_stats.php:249
 msgid "Watts"
 msgstr "Watt"
 
 #: openDCIM/container_stats.php:91 openDCIM/dc_dashboard.php:115
-#: openDCIM/dc_stats.php:186 openDCIM/zone_stats.php:214
+#: openDCIM/dc_stats.php:188 openDCIM/zone_stats.php:236
 msgid "Measured Wattage"
 msgstr "Assorbimento Effettivo"
 
 #: openDCIM/container_stats.php:95 openDCIM/datacenter.php:233
-#: openDCIM/dc_dashboard.php:119 openDCIM/dc_stats.php:190
+#: openDCIM/dc_dashboard.php:119 openDCIM/dc_stats.php:192
 msgid "Design Maximum (kW)"
 msgstr "Massimo Progettuale (kW)"
 
@@ -1175,12 +1176,12 @@ msgid "BTU Computation from Watts"
 msgstr "Calcolo BTU da Watt"
 
 #: openDCIM/container_stats.php:100 openDCIM/dc_dashboard.php:124
-#: openDCIM/dc_stats.php:195 openDCIM/zone_stats.php:219
+#: openDCIM/dc_stats.php:197 openDCIM/zone_stats.php:241
 msgid "BTU"
 msgstr "BTU"
 
 #: openDCIM/container_stats.php:103 openDCIM/dc_dashboard.php:127
-#: openDCIM/dc_stats.php:198
+#: openDCIM/dc_stats.php:200
 msgid "Data Center Size"
 msgstr "Dimensioni Data Center"
 
@@ -1189,7 +1190,7 @@ msgid "Minimum Cooling Tonnage Required"
 msgstr "Capacità Minima Richiesta di Refrigerazione"
 
 #: openDCIM/container_stats.php:112 openDCIM/dc_dashboard.php:136
-#: openDCIM/dc_stats.php:207 openDCIM/zone_stats.php:231
+#: openDCIM/dc_stats.php:209 openDCIM/zone_stats.php:253
 msgid "Tons"
 msgstr "Tons"
 
@@ -1218,13 +1219,13 @@ msgstr "Amministratore"
 msgid "Click on the image to select DC coordinates"
 msgstr "Clicca sull'immagine per definire le coordinate del datacenter"
 
-#: openDCIM/dc_dashboard.php:74 openDCIM/dc_stats.php:151
+#: openDCIM/dc_dashboard.php:74 openDCIM/dc_stats.php:153
 #: openDCIM/report_asset_Excel.php:39
 msgid "Data Center Statistics"
 msgstr "Statistiche Data Center"
 
-#: openDCIM/dc_dashboard.php:77 openDCIM/dc_stats.php:216
-#: openDCIM/zone_stats.php:240
+#: openDCIM/dc_dashboard.php:77 openDCIM/dc_stats.php:218
+#: openDCIM/zone_stats.php:262
 msgid "Overview"
 msgstr "Riepilogo"
 
@@ -1232,48 +1233,71 @@ msgstr "Riepilogo"
 msgid "Power"
 msgstr "Energia"
 
-#: openDCIM/dc_dashboard.php:123 openDCIM/dc_stats.php:194
-#: openDCIM/zone_stats.php:218
+#: openDCIM/dc_dashboard.php:123 openDCIM/dc_stats.php:196
+#: openDCIM/zone_stats.php:240
 msgid "BTU Computation from Computed Watts"
 msgstr "Calcolo BTU da Watt Calcolati"
 
-#: openDCIM/dc_dashboard.php:135 openDCIM/dc_stats.php:206
-#: openDCIM/zone_stats.php:230
+#: openDCIM/dc_dashboard.php:135 openDCIM/dc_stats.php:208
+#: openDCIM/zone_stats.php:252
 msgid "Minimum Cooling Tonnage (Based on Computed Watts)"
 msgstr "Capacità Minima Richiesta di Refrigerazione (Basata su Watt Calcolati)"
 
-#: openDCIM/dc_stats.php:120
+#: openDCIM/dc_stats.php:121
 #, fuzzy
 msgid "openDCIM Data Center Information Management"
 msgstr "Zone Data Center openDCIM"
 
-#: openDCIM/dc_stats.php:157 openDCIM/device_templates.php:443
+#: openDCIM/dc_stats.php:159 openDCIM/device_templates.php:443
 msgid "Export"
 msgstr "Esporta"
 
-#: openDCIM/dc_stats.php:157
+#: openDCIM/dc_stats.php:159
 msgid "XML"
 msgstr ""
 
-#: openDCIM/dc_stats.php:219 openDCIM/zone_stats.php:243
+#: openDCIM/dc_stats.php:221 openDCIM/zone_stats.php:265
 msgid "Calculated Power"
 msgstr "Potenza Calcolata"
 
-#: openDCIM/dc_stats.php:220 openDCIM/zone_stats.php:244
+#: openDCIM/dc_stats.php:222 openDCIM/zone_stats.php:266
 msgid "Measured Power"
 msgstr "Potenza Misurata"
 
-#: openDCIM/dc_stats.php:221 openDCIM/zone_stats.php:245
+#: openDCIM/dc_stats.php:223 openDCIM/zone_stats.php:267
 msgid "Temperature"
 msgstr "Temperatura"
 
-#: openDCIM/dc_stats.php:222 openDCIM/zone_stats.php:246
+#: openDCIM/dc_stats.php:224 openDCIM/zone_stats.php:268
 msgid "Humidity"
 msgstr "Umidità"
 
-#: openDCIM/dc_stats.php:223 openDCIM/zone_stats.php:247
+#: openDCIM/dc_stats.php:225 openDCIM/zone_stats.php:269
 msgid "Air Flow"
 msgstr ""
+
+#: openDCIM/dc_stats.php:237
+msgid "Set the air intake direction"
+msgstr ""
+
+#: openDCIM/dc_stats.php:241 openDCIM/dc_stats.php:249
+msgid "Top"
+msgstr ""
+
+#: openDCIM/dc_stats.php:242 openDCIM/dc_stats.php:250
+#, fuzzy
+msgid "Right"
+msgstr "Permessi"
+
+#: openDCIM/dc_stats.php:243 openDCIM/dc_stats.php:251
+#, fuzzy
+msgid "Bottom"
+msgstr "Zoom"
+
+#: openDCIM/dc_stats.php:244 openDCIM/dc_stats.php:252
+#, fuzzy
+msgid "Left"
+msgstr "lettera"
 
 #: openDCIM/departments.php:84
 msgid "Data Center Department Detail"
@@ -1938,31 +1962,29 @@ msgstr "Consumo Energia"
 msgid "Heat Produced"
 msgstr "Calore Prodotto"
 
-#: openDCIM/infrastructure.inc.php:488 openDCIM/infrastructure.inc.php:1846
+#: openDCIM/infrastructure.inc.php:488
 msgid "Worst state of cabinets"
 msgstr "Occupazione Armadi"
 
-#: openDCIM/infrastructure.inc.php:489 openDCIM/infrastructure.inc.php:1847
+#: openDCIM/infrastructure.inc.php:489
 msgid "Occupied space"
 msgstr "Spazio Occupato"
 
-#: openDCIM/infrastructure.inc.php:490 openDCIM/infrastructure.inc.php:1848
+#: openDCIM/infrastructure.inc.php:490
 msgid "Calculated weight"
 msgstr "Peso Calcolato"
 
-#: openDCIM/infrastructure.inc.php:491 openDCIM/infrastructure.inc.php:1849
+#: openDCIM/infrastructure.inc.php:491
 msgid "Calculated power usage"
 msgstr "Consumo elettrico calcolato"
 
 #: openDCIM/infrastructure.inc.php:492 openDCIM/infrastructure.inc.php:493
-#: openDCIM/infrastructure.inc.php:494 openDCIM/infrastructure.inc.php:1850
-#: openDCIM/infrastructure.inc.php:1851 openDCIM/infrastructure.inc.php:1852
+#: openDCIM/infrastructure.inc.php:494
 msgid "Measured on"
 msgstr "Misurato su"
 
 #: openDCIM/infrastructure.inc.php:492 openDCIM/infrastructure.inc.php:493
-#: openDCIM/infrastructure.inc.php:494 openDCIM/infrastructure.inc.php:1850
-#: openDCIM/infrastructure.inc.php:1851 openDCIM/infrastructure.inc.php:1852
+#: openDCIM/infrastructure.inc.php:494
 msgid "no data"
 msgstr "nessun dato"
 
@@ -2027,7 +2049,7 @@ msgstr "si è verificato un errore. Template non creato."
 msgid "Ignored port %s"
 msgstr "Report  Inventario"
 
-#: openDCIM/infrastructure.inc.php:2178 openDCIM/storageroom.php:24
+#: openDCIM/infrastructure.inc.php:1898 openDCIM/storageroom.php:24
 #, fuzzy
 msgid "General Storage Room"
 msgstr "Magazzino"
@@ -3527,15 +3549,15 @@ msgstr "Zoom"
 msgid "Click and drag on the image to select an area for this zone"
 msgstr "Clicca e trascina sull'immagine per definire la superficie della zona"
 
-#: openDCIM/zone_stats.php:179
+#: openDCIM/zone_stats.php:201
 msgid "Zone Statistics"
 msgstr "Statistiche Zona"
 
-#: openDCIM/zone_stats.php:222
+#: openDCIM/zone_stats.php:244
 msgid "Zone Size (approximate)"
 msgstr "Dimensioni Zona (approssimative)"
 
-#: openDCIM/zone_stats.php:226
+#: openDCIM/zone_stats.php:248
 msgid "approximate"
 msgstr "approssimativo"
 
