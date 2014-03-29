@@ -358,7 +358,7 @@ function startmap(){
 		bgcontext.clearRect(0,0, bgcanvas.width, bgcanvas.height);
 		var bgimg=new Image();
 		bgimg.onload=function(){
-			bgcontext.drawImage(bgimg,-80*0.5,-236*0.5,800*0.5,1182*0.5);
+			bgcontext.drawImage(bgimg,-zx1*zoom,-zy1*zoom,bgimg.width*zoom,bgimg.height*zoom);
 		}
 		bgimg.src=$(bgcanvas).data('image');
 	}

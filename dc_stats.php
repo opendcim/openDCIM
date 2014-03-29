@@ -125,6 +125,7 @@ $(document).ready(function() {
   <script type="text/javascript" src="scripts/jquery.min.js"></script>
   <script type="text/javascript" src="scripts/jquery-ui.min.js"></script>
   <script type="text/javascript" src="scripts/common.js"></script>
+  <script type="text/javascript" src="scripts/jquery.ui-contextmenu.js"></script>
   <!--[if lte IE 8]>
     <link rel="stylesheet"  href="css/ie.css" type="text/css">
     <?php if(isset($ie8fix)){print $ie8fix;} ?>
@@ -231,6 +232,29 @@ echo $select."</div></div>\n".MakeImageMap($dc);
 
 ?>
 </div></div>
+
+
+<ul id="options"> 
+	<li class="ui-state-disabled">Set the air intake direction</li>
+	<li>----</li>
+	<li><a>Cabinet</a>
+		<ul data-context="cabinet">
+			<li><a href="#Top">Top</a></li>
+			<li><a href="#Right">Right</a></li>
+			<li><a href="#Bottom">Bottom</a></li>
+			<li><a href="#Left">Left</a></li>
+		</ul>
+	</li>
+	<li><a href="#row">Row</a>
+		<ul data-context="row">
+			<li><a href="#Test">Top</a></li>
+			<li><a href="#Right">Right</a></li>
+			<li><a href="#Bottom">Bottom</a></li>
+			<li><a href="#Left">Left</a></li>
+		</ul>
+	</li>
+</ul>
+
 </div><!-- END div.main -->
 </div><!-- END div.page -->
 <script type="text/javascript">
@@ -246,6 +270,22 @@ echo $select."</div></div>\n".MakeImageMap($dc);
 				expandToItem('datacenters',firstcabinet);
 			}
 		}
+
+
+		$(".canvas > map").contextmenu({
+			delegate: "area[name^=cab]",
+			menu: "#options",
+			select: function(event, ui) {
+				$('.center .nav > select').val('airflow').trigger('change');
+				var row=(ui.item.context.parentElement.getAttribute('data-context')=='row')?true:false;
+				var cabid=ui.target.context.attributes.name.value.substr(3);
+				$.post('',{cabinetid: cabid, airflow: ui.cmd, row: row}).done(function(){startmap()}); 
+    		},
+			beforeOpen: function(event, ui) {
+				$(".canvas > map").contextmenu("showEntry", "row", $(ui.target.context).data('row'));
+			}
+		});
+
 		// load the data for the datacenter map
 		startmap();
 		opentree();
