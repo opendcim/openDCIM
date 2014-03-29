@@ -160,12 +160,12 @@ function resize(){
 			$(this).width(widesttab);
 		});
 		var pnw=$('#pandn').outerWidth(),hw=$('#header').outerWidth(),maindiv=$('div.main').outerWidth(),
-			sbw=$('#sidebar').outerWidth(),width,mw=$('div.left').outerWidth()+$('div.right').outerWidth(),
+			sbw=$('#sidebar').outerWidth(),width,mw=$('div.left').outerWidth()+$('div.right').outerWidth()+20,
 			main,cw=$('.main > .center').outerWidth();
 		widesttab+=58;
 		// find widths
-		width=(cw>pnw)?cw:pnw;
-		main=(mw>width)?mw:width; // Find the largest width of possible content in maindiv
+		width=(cw>mw)?cw:mw;
+		main=(pnw>width)?pnw:width; // Find the largest width of possible content in maindiv
 		main+=12; // add in padding and borders
 		width=((main+sbw)>hw)?main+sbw:hw; // find the widest point of the page
 
