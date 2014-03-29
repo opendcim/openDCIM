@@ -844,6 +844,7 @@ $(document).ready(function() {
 		}else{
 			$('#esxframe').hide();
 		}
+		resize();
 	}).change();
 	$('#firstport button[name=firstport]').click(function(){
 		var modal=$('<div />', {id: 'modal', title: 'Select switch first port'}).html('<div id="modaltext"></div><br><div id="modalstatus" class="warning"></div>').dialog({

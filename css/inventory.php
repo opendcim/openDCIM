@@ -586,6 +586,7 @@ div.cabinet {
 .device fieldset .custom-combobox{margin: 0;padding: 0 32px 0 2px;}
 .device fieldset .custom-combobox input{margin: 0;}
 .device fieldset .custom-combobox a {padding: 1px 0;position: absolute; top: 0; right: 0;}
+.device div.right { max-width: 495px; }
 .device div.left, .device div.right {
 	margin-bottom: 1.5em;
 	display: inline-block;
