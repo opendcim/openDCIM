@@ -16,11 +16,12 @@ CREATE TABLE fac_Cabinet (
   MaxKW float(11) NOT NULL,
   MaxWeight int(11) NOT NULL,
   InstallationDate date NOT NULL,
-  SensorIPAddress varchar(20) NOT NULL,
+  SensorIPAddress varchar(254) NOT NULL,
   SensorCommunity varchar(40) NOT NULL,
   SensorTemplateID int(11) NOT NULL,
   MapX1 int(11) NOT NULL,
   MapX2 int(11) NOT NULL,
+  FrontEdge ENUM("Top","Right","Bottom","Left") NOT NULL DEFAULT "Top",
   MapY1 int(11) NOT NULL,
   MapY2 int(11) NOT NULL,
   Notes text NULL,
@@ -106,6 +107,36 @@ CREATE TABLE fac_SensorTemplate (
 	HumidityMultiplier FLOAT(8) NOT NULL DEFAULT 1,
 	PRIMARY KEY(TemplateID)
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
+
+--
+-- Table structure for fac_Slots
+--
+DROP TABLE IF EXISTS fac_Slots;
+CREATE TABLE fac_Slots (
+	TemplateID INT(11) NOT NULL,
+	Position INT(11) NOT NULL,
+	BackSide TINYINT(1) NOT NULL,
+	X INT(11) NULL,
+	Y INT(11) NULL,
+	W INT(11) NULL,
+	H INT(11) NULL,
+	PRIMARY KEY (TemplateID, Position, BackSide)
+) ENGINE = InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+
+--
+-- Table structure for fac_TemplatePorts
+--
+DROP TABLE IF EXISTS fac_TemplatePorts;
+CREATE TABLE IF NOT EXISTS `fac_TemplatePorts` (
+  `TemplateID` int(11) NOT NULL,
+  `PortNumber` int(11) NOT NULL,
+  `Label` varchar(40) NOT NULL,
+  `MediaID` int(11) NOT NULL DEFAULT '0',
+  `ColorID` int(11) NOT NULL DEFAULT '0',
+  `PortNotes` varchar(80) NOT NULL,
+  PRIMARY KEY (`TemplateID`,`PortNumber`),
+  UNIQUE KEY `LabeledPort` (`TemplateID`,`PortNumber`,`Label`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 --
 -- Table structure for table `fac_CDUTemplate`
@@ -340,6 +371,23 @@ CREATE TABLE fac_Escalations (
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
 
 --
+-- Table structure for table `fac_GenericLog`
+--
+
+DROP TABLE IF EXISTS fac_GenericLog;
+CREATE TABLE `fac_GenericLog` (
+  UserID varchar(80) NOT NULL,
+  Class varchar(40) NOT NULL,
+  ObjectID int(11) NOT NULL,
+  ChildID int(11) DEFAULT NULL,
+  Action varchar(40) NOT NULL,
+  Property varchar(40) NOT NULL,
+  OldVal varchar(255) NOT NULL,
+  NewVal varchar(255) NOT NULL,
+  Time timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+--
 -- Table structure for table fac_Manufacturer
 --
 
@@ -451,7 +499,7 @@ CREATE TABLE fac_PowerDistribution (
   Label varchar(40) NOT NULL,
   CabinetID int(11) NOT NULL,
   TemplateID int(11) NOT NULL,
-  IPAddress varchar(16) NOT NULL,
+  IPAddress varchar(254) NOT NULL,
   SNMPCommunity varchar(50) NOT NULL,
   FirmwareVersion varchar(40) NOT NULL,
   PanelID int(11) NOT NULL,
@@ -489,7 +537,7 @@ CREATE TABLE fac_PowerSource (
   PowerSourceID int(11) NOT NULL AUTO_INCREMENT,
   SourceName varchar(80) NOT NULL,
   DataCenterID int(11) NOT NULL,
-  IPAddress varchar(20) NOT NULL,
+  IPAddress varchar(254) NOT NULL,
   Community varchar(40) NOT NULL,
   LoadOID varchar(80) NOT NULL,
   Capacity int(11) NOT NULL,
@@ -791,6 +839,9 @@ INSERT INTO fac_Config VALUES
  	('ToolTips', 'Disabled', 'Enabled/Disabled', 'string', 'Disabled'),
 	('CDUToolTips', 'Disabled', 'Enabled/Disabled', 'string', 'Disabled'),
 	('PageSize', 'Letter', 'string', 'string', 'Letter'),
+	('path_weight_cabinet', '1', '', 'int', '1'),
+	('path_weight_rear', '1', '', 'int', '1'),
+	('path_weight_row', '4', '', 'int', '4'),
 	('TemperatureRed', '30', 'degrees', 'float', '30'),
 	('TemperatureYellow', '25', 'degrees', 'float', '25'),
 	('HumidityRedHigh', '75', 'percentage', 'float', '75'),
@@ -815,32 +866,3 @@ INSERT INTO fac_CDUTemplate set ManufacturerID=(select ManufacturerID from fac_M
 INSERT INTO fac_CDUTemplate set ManufacturerID=(select ManufacturerID from fac_Manufacturer where Name='ServerTech'), Model="Generic Single-Phase CDU", Managed=TRUE, VersionOID=".1.3.6.1.4.1.1718.3.1.1.0", Multiplier=100, OID1=".1.3.6.1.4.1.1718.3.2.2.1.7.1.1", OID2="", OID3="", ProcessingProfile="SingleOIDAmperes", Voltage="", Amperage="", NumOutlets="";
 INSERT INTO fac_CDUTemplate set ManufacturerID=(select ManufacturerID from fac_Manufacturer where Name='ServerTech'), Model="Generic 3-Phase CDU", Managed=TRUE, VersionOID=".1.3.6.1.4.1.1718.3.1.1.0", Multiplier=100, OID1=".1.3.6.1.4.1.1718.3.2.2.1.7.1.1", OID2=".1.3.6.1.4.1.1718.3.2.2.1.7.1.2", OID3=".1.3.6.1.4.1.1718.3.2.2.1.7.1.3", ProcessingProfile="Convert3PhAmperes", Voltage="", Amperage="", NumOutlets="";
 
---
--- Table structure for fac_Slots
---
-DROP TABLE IF EXISTS fac_Slots;
-CREATE TABLE fac_Slots (
-	TemplateID INT(11) NOT NULL,
-	Position INT(11) NOT NULL,
-	BackSide TINYINT(1) NOT NULL,
-	X INT(11) NULL,
-	Y INT(11) NULL,
-	W INT(11) NULL,
-	H INT(11) NULL,
-	PRIMARY KEY (TemplateID, Position, BackSide)
-) ENGINE = InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
-
---
--- Table structure for fac_TemplatePorts
---
-DROP TABLE IF EXISTS fac_TemplatePorts;
-CREATE TABLE IF NOT EXISTS `fac_TemplatePorts` (
-  `TemplateID` int(11) NOT NULL,
-  `PortNumber` int(11) NOT NULL,
-  `Label` varchar(40) NOT NULL,
-  `MediaID` int(11) NOT NULL DEFAULT '0',
-  `ColorID` int(11) NOT NULL DEFAULT '0',
-  `PortNotes` varchar(80) NOT NULL,
-  PRIMARY KEY (`TemplateID`,`PortNumber`),
-  UNIQUE KEY `LabeledPort` (`TemplateID`,`PortNumber`,`Label`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;

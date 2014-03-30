@@ -1137,7 +1137,7 @@ echo '<div class="center"><div>
 		   <button class="hide" type="button" onclick="getScan(\'assettag\')">',__("Scan Barcode"),'</button></div>
 		</div>
 		<div>
-		  <div><label for="primaryip">'.__("Primary IP").'</label></div>
+		  <div><label for="primaryip">'.__("Primary IP / Host Name").'</label></div>
 		  <div><input type="text" name="primaryip" id="primaryip" size="20" value="'.$dev->PrimaryIP.'">
 				<input type="hidden" name="firstportnum" value="'.$dev->FirstPortNum.'"></div>
 		</div>

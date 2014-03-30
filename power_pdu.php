@@ -501,7 +501,7 @@ echo '	</select>
 echo '   </select></div>
 </div>
 <div>
-   <div><label for="ipaddress">',__("IP Address"),'</label></div>
+   <div><label for="ipaddress">',__("IP Address / Host Name"),'</label></div>
    <div><input type="text" name="ipaddress" id="ipaddress" size=15 value="',$pdu->IPAddress,'">',((strlen($pdu->IPAddress)>0)?"<a href=\"http://$pdu->IPAddress\" target=\"new\">http://$pdu->IPAddress</a>":""),'</div>
 </div>
 <div>

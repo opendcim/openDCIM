@@ -250,7 +250,7 @@ echo '  </select>
    <div><input type="text" name="installationdate" size=15 value="',date('m/d/Y', strtotime($cab->InstallationDate)),'"></div>
 </div>
 <div>
-	<div>',__("Sensor IP Address"),'</div>
+	<div>',__("Sensor IP Address / Host Name"),'</div>
 	<div><input type="text" name="sensoripaddress" size=15 value="',$cab->SensorIPAddress,'"></div>
 </div>
 <div>

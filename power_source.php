@@ -91,7 +91,7 @@ echo '							</select></div>
 echo '							</select></div>
 						</div>
 						<div>
-							<div><label for="ipaddress">',__("IP Address"),'</label></div>
+							<div><label for="ipaddress">',__("IP Address / Host Name"),'</label></div>
 							<div><input type="text" name="ipaddress" id="ipaddress" size="20" value="',$ps->IPAddress,'"></div>
 						</div>
 						<div>

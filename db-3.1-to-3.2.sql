@@ -76,3 +76,16 @@ CREATE TABLE `fac_GenericLog` (
 INSERT INTO fac_Config VALUES ('path_weight_cabinet', '1', '', 'int', '1'),
 	('path_weight_rear', '1', '', 'int', '1'),
 	('path_weight_row', '4', '', 'int', '4');
+
+--
+-- Extend the length on the ip address field to allow for ipv6 and/or dns hosts
+--
+ALTER TABLE fac_PowerDistribution CHANGE IPAddress IPAddress VARCHAR(254);
+ALTER TABLE fac_Device CHANGE IPAddress IPAddress VARCHAR(254);
+ALTER TABLE fac_PowerSource CHANGE IPAddress IPAddress VARCHAR(254);
+ALTER TABLE fac_Cabinet CHANGE SensorIPAddress IPAddress VARCHAR(254);
+
+--
+-- Add in 0.1 as a possible multiplier value for the CDU Templates
+--
+ALTER TABLE fac_CDUTemplate CHANGE Multiplier Multiplier ENUM( '0.1', '1', '10', '100' );
