@@ -9,6 +9,17 @@
 	$taginsert="";
 
 	// Ajax functions
+	// Get log entries
+	if(isset($_POST['logging'])){
+		$dev->DeviceID=$_POST['devid'];
+		$actions=array();
+		if($dev->GetDevice()){
+			$actions=LogActions::GetLog($dev,false);
+		}
+		header('Content-Type: application/json');
+		echo json_encode($actions);
+		exit;
+	}
 	// Get cabinet height
 	if(isset($_POST['cab'])){
 		$cab->CabinetID=$_POST['cab'];
@@ -1626,6 +1637,10 @@ echo '	<div class="table">
 		$('.switch > div:first-child, .patchpanel > div:first-child').prepend($('<div>').addClass('delete').hide());
 		// Endable Mass Change Options
 		$('.switch.table, .patchpanel.table').massedit();
+
+
+		<?php echo (class_exists('LogActions'))?'LameLogDisplay();':''; ?>
+
 	});
 </script>
 

@@ -575,6 +575,50 @@ function bindmaptooltips(){
 
 // END - DataCenter map / cabinet information
 
+// logging functions
+function LameLogDisplay(){
+	var table=$('<div>').addClass('table').attr('id','logtable');
+	var header='<div><div>Time</div><div>User</div><div>Action</div><div>Property</div><div>Old Value</div><div>New Value</div></div>';
+	table.append(header);
+	var test=$('<button>').attr('type','button').text('Log Test').click(function(){
+		$.post('',{devid: $('#deviceid').val(), logging: true}).done(function(data){
+			$.each(data, function(i, logitem){
+				switch(logitem.Action){
+					case '1':
+						logitem.Action='Create';
+						break;
+					case '2':
+						logitem.Action='Delete';
+						break;
+					case '3':
+						logitem.Action='Change';
+						break;
+					default:
+						break;
+				}
+
+				logitem.Property=(logitem.ChildID!=null)?'[Port '+logitem.ChildID+']   '+logitem.Property:logitem.Property;
+
+				var row=$('<div>');
+				row.append($('<div>').text(logitem.Time));
+				row.append($('<div>').text(logitem.UserID));
+				row.append($('<div>').text(logitem.Action));
+				row.append($('<div>').text(logitem.Property));
+				row.append($('<div>').text(logitem.OldVal));
+				row.append($('<div>').text(logitem.NewVal));
+				table.append(row);
+			});
+			$('<div>').append(table).dialog({
+				width: $('#pandn').width(),
+				height: $(window).height()-50,
+				modal: true
+			})
+		});
+	});
+	$('.caption').append(test);
+}
+
+// ENG - Logging functions
 
 (function( $ ) {
     $.widget( "opendcim.massedit", {

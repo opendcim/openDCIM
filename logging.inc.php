@@ -207,7 +207,7 @@ class LogActions {
 		return true;
 	}
 
-	static function GetLog($object=null){
+	static function GetLog($object=null,$limitbyclass=true){
 		$log=new LogActions();
 
 		if(!is_null($object)){
@@ -223,7 +223,7 @@ class LogActions {
 		}
 
 		function sql($sql,$prop,$var){
-			$sql=(($sql=='')?" WHERE":" AND")." $prop=\"$var\"";
+			$sql=$sql.(($sql=='')?" WHERE":" AND")." $prop=\"$var\"";
 			return $sql;
 		}
 
@@ -231,11 +231,10 @@ class LogActions {
 		$sql="SELECT * FROM fac_GenericLog";
 
 		$add='';
-		$add=($log->Class!='')?sql($add,'Class',$log->Class):$add;
+		$add=($limitbyclass && $log->Class!='')?sql($add,'Class',$log->Class):$add;
 		$add=($log->ObjectID!='')?sql($add,'ObjectID',$log->ObjectID):$add;
 
 		$sql.=$add.' ORDER BY Time ASC;';
-
 		$events=array();		
 		foreach($log->query($sql) as $dbRow){
 			$events[]=LogActions::RowToObject($dbRow);

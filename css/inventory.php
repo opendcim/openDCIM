@@ -683,6 +683,16 @@ div.cabinet {
 #preview img { display: block; border: 0px; max-width: 330px;}
 .jHtmlArea iframe { background-color: white; border: 1px inset; min-height: 100px;}
 
+/* Logging style */
+#logtable { width: 100%; border: 1px solid black; }
+#logtable > div:first-child { border-bottom: 1px solid black; font-size: large;}
+#logtable > div:nth-child(2n) { background-color: lightgray; border-bottom: 1px dotted black; }
+#logtable > div ~ div > div:first-child{ padding: 3px; }
+#logtable > div ~ div > div:nth-child(4){ border-left: 2px dotted black; padding-left: 3px; }
+#logtable > div ~ div > div:nth-child(5){ text-align: right; }
+#logtable > div ~ div > div:nth-child(5):before{ content:"'"; }
+#logtable > div ~ div > div:nth-child(5):after{ content:"' => "; }
+
 
 /* Button code primarily from http://somadesign.ca */
 /* Button */
