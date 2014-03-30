@@ -142,51 +142,7 @@ $(document).ready(function() {
   <script type="text/javascript" src="scripts/jquery.min.js"></script>
   <script type="text/javascript" src="scripts/jquery-ui.min.js"></script>
   <script type="text/javascript" src="scripts/common.js"></script>
-  <script type="text/javascript">
-	$(document).ready(function(){
-		$('#mapCanvas').css('width', $('.canvas > img[alt="clearmap over canvas"]').width()+'px');
-		$('#mapCanvas').parent('.canvas').css('width', $('.canvas > img[alt="clearmap over canvas"]').width()+'px');
-
-		$('map[name="datacenter"] area').mouseenter(function(){
-			var pos=$('.canvas').offset();
-			var despl=$(this).attr('coords');
-			var coor=despl.split(',');
-			var tx=parseInt(pos.left)+parseInt(coor[2])+17;
-			var ty=parseInt(pos.top)+(parseInt(coor[1])+parseInt(coor[3]))/2-17;
-			var cx1=parseInt(coor[0])+parseInt(pos.left);
-			var cx2=parseInt(coor[2])+parseInt(pos.left)
-			var cy1=parseInt(coor[1])+parseInt(pos.top);
-			var cy2=parseInt(coor[3])+parseInt(pos.top);
-			var tooltip=$('<div />').css({
-				'left':tx+'px',
-				'top':ty+'px'
-			}).addClass('arrow_left border cabnavigator tooltip').attr('id','tt').append('<span class="ui-icon ui-icon-refresh rotate"></span>');
-			var id=$(this).attr('href');
-			id=id.substring(id.lastIndexOf('=')+1,id.length);
-			$.post('scripts/ajax_tooltip.php',{tooltip: id, cab: 1}, function(data){
-				tooltip.html(data);
-			});
-			$('body').append(tooltip);
-			$(this).mouseleave(function(e){
-				tooltip.remove();
-				if (cx1>0 && e.shiftKey && $('#maptitle .nav > select').val()=="airflow"){
-					var frontedge;
-					if(e.pageX<=cx1){
-						frontedge="Right";
-					}else if (e.pageX>=cx2){
-						frontedge="Left";
-					}else if (e.pageY<=cy1){
-						frontedge="Bottom";
-					}else if (e.pageY>=cy2){
-						frontedge="Top";
-					}
-					$.post("",{cabinetid: id, airflow: frontedge, row: e.ctrlKey}).done(function(){document.location.href='zone_stats.php?zone=<?php echo $zone->ZoneID;?>&airflow';});
-				}
-				cx1=0;
-			});
-		});
-	});
-  </script>
+  <script type="text/javascript" src="scripts/jquery.ui-contextmenu.js"></script>
 </head>
 <body>
 <div id="header"></div>
@@ -268,22 +224,44 @@ $select='<select>';
 		'humidity' => __("Humidity"),
 		'airflow' => __("Air Flow")
 		) as $value => $option){
-		$select.='<option value="'.$value.'"';
-		if($value=="airflow" && isset($_GET["airflow"])){
-			$select.=' selected';
-		}
-		$select.='>'.$option.'</option>';
+		$select.="\t<option value=\"$value\">$option</option>\n";
 	}
 $select.='</select>';
 
 echo $select.'</div></div>'.MakeImageMap($dc,$zone);
 
-?>
+echo '
 </div></div>
+<ul id="options"> 
+	<li class="ui-state-disabled">',__("Set the air intake direction"),'</li>
+	<li>----</li>
+	<li><a>',__("Cabinet"),'</a>
+		<ul data-context="cabinet">
+			<li><a href="#Top">',__("Top"),'</a></li>
+			<li><a href="#Right">',__("Right"),'</a></li>
+			<li><a href="#Bottom">',__("Bottom"),'</a></li>
+			<li><a href="#Left">',__("Left"),'</a></li>
+		</ul>
+	</li>
+	<li><a href="#row">',__("Row"),'</a>
+		<ul data-context="row">
+			<li><a href="#Test">',__("Top"),'</a></li>
+			<li><a href="#Right">',__("Right"),'</a></li>
+			<li><a href="#Bottom">',__("Bottom"),'</a></li>
+			<li><a href="#Left">',__("Left"),'</a></li>
+		</ul>
+	</li>
+</ul>';
+?>
+
 </div><!-- END div.main -->
 </div><!-- END div.page -->
 <script type="text/javascript">
 	$(document).ready(function() {
+		// Hard set widths to stop IE from being retarded
+		$('#mapCanvas').css('width', $('.canvas > img[alt="clearmap over canvas"]').width()+'px');
+		$('#mapCanvas').parent('.canvas').css('width', $('.canvas > img[alt="clearmap over canvas"]').width()+'px');
+
 		var firstcabinet=$('#dc<?php echo $dc->DataCenterID;?> > ul > li:first-child').attr('id');
 		// Don't attempt to open the datacenter tree until it is loaded
 		function opentree(){
@@ -296,6 +274,22 @@ echo $select.'</div></div>'.MakeImageMap($dc,$zone);
 			}
 		}
 
+		// Bind context menu to the cabinets
+		$(".canvas > map").contextmenu({
+			delegate: "area[name^=cab]",
+			menu: "#options",
+			select: function(event, ui) {
+				var row=(ui.item.context.parentElement.getAttribute('data-context')=='row')?true:false;
+				var cabid=ui.target.context.attributes.name.value.substr(3);
+				$.post('',{cabinetid: cabid, airflow: ui.cmd, row: row}).done(function(){startmap()}); 
+    		},
+			beforeOpen: function(event, ui) {
+				$('.center .nav > select').val('airflow').trigger('change');
+				$(".canvas > map").contextmenu("showEntry", "row", $(ui.target.context).data('row'));
+			}
+		});
+
+		// Bind tooltips, highlight functions to the map
 		startmap();
 		opentree();
 	});

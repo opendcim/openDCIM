@@ -131,14 +131,6 @@ $(document).ready(function() {
     <?php if(isset($ie8fix)){print $ie8fix;} ?>
     <script src="scripts/excanvas.js"></script>
   <![endif]-->
-  <script type="text/javascript">
-	$(document).ready(function(){
-		$('#mapCanvas').css('width', $('.canvas > img[alt="clearmap over canvas"]').width()+'px');
-		$('#mapCanvas').parent('.canvas').css('width', $('.canvas > img[alt="clearmap over canvas"]').width()+'px');
-
-	});
-	
-  </script>
 </head>
 <body>
 <div id="header"></div>
@@ -259,6 +251,10 @@ echo '
 </div><!-- END div.page -->
 <script type="text/javascript">
 	$(document).ready(function() {
+		// Hard set widths to stop IE from being retarded
+		$('#mapCanvas').css('width', $('.canvas > img[alt="clearmap over canvas"]').width()+'px');
+		$('#mapCanvas').parent('.canvas').css('width', $('.canvas > img[alt="clearmap over canvas"]').width()+'px');
+
 		var firstcabinet=$('#dc<?php echo $dc->DataCenterID;?> > ul > li:first-child').attr('id');
 		// Don't attempt to open the datacenter tree until it is loaded
 		function opentree(){
@@ -271,22 +267,22 @@ echo '
 			}
 		}
 
-
+		// Bind context menu to the cabinets
 		$(".canvas > map").contextmenu({
 			delegate: "area[name^=cab]",
 			menu: "#options",
 			select: function(event, ui) {
-				$('.center .nav > select').val('airflow').trigger('change');
 				var row=(ui.item.context.parentElement.getAttribute('data-context')=='row')?true:false;
 				var cabid=ui.target.context.attributes.name.value.substr(3);
 				$.post('',{cabinetid: cabid, airflow: ui.cmd, row: row}).done(function(){startmap()}); 
     		},
 			beforeOpen: function(event, ui) {
+				$('.center .nav > select').val('airflow').trigger('change');
 				$(".canvas > map").contextmenu("showEntry", "row", $(ui.target.context).data('row'));
 			}
 		});
 
-		// load the data for the datacenter map
+		// Bind tooltips, highlight functions to the map
 		startmap();
 		opentree();
 	});
