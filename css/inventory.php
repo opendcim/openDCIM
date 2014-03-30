@@ -804,6 +804,8 @@ div.cabinet {
 	text-align: center;
 	width: 100%;
 }
+fieldset[name=pdu] > div > img { vertical-align: text-bottom; }
+
 /* Supplies */
 .supply .table > div:first-child > div {padding-bottom:0.5em;font-weight: bold;}
 .supply .table > div > div {padding-right: 0.25em;}
