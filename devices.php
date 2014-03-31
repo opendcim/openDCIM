@@ -64,9 +64,16 @@
 		exit;
 	}
 
+	// This will allow any jackass to certify an audit but the function is hidden and 
+	// this is the type of function that will be fixed with the API so i'm not fixing it
+	// as long as logging is enabled we'll know who triggered it.
 	if(isset($_POST['audit'])){
 		$dev->DeviceID=$_POST['audit'];
 		$dev->Audit();
+
+		$dev->AuditStamp=date('r',strtotime($dev->AuditStamp));
+		header('Content-Type: application/json');
+		echo json_encode($dev);
 		exit;
 	};
 
@@ -1602,7 +1609,8 @@ echo '	<div class="table">
 	if($write){
 		if($dev->DeviceID >0){
 			echo '			<button type="submit" name="action" value="Update">',__("Update"),'</button>
-			<button type="submit" name="action" value="Copy">', __("Copy"), '</button>';
+			<button type="submit" name="action" value="Copy">', __("Copy"), '</button>
+			<button type="button" name="audit">',__("Certify Audit"),'</button>';
 		} else {
 			echo '			<button type="submit" name="action" value="Create">',__("Create"),'</button>';
 		}
@@ -1635,6 +1643,10 @@ echo '	<div class="table">
 		print "   <div><a href=\"storageroom.php\">[ ".__("Return to General Storage Room")." ]</a></div>";
 	}
 ?>
+
+<div id="auditconfirm" class="hide">
+	<p><?php print __("Do you certify that you have completed an audit of this device?"); ?></p>
+</div>
 
 </div><!-- END div.main -->
 </div><!-- END div.page -->
@@ -1683,8 +1695,25 @@ echo '	<div class="table">
 		// Endable Mass Change Options
 		$('.switch.table, .patchpanel.table').massedit();
 
-
 		<?php echo (class_exists('LogActions'))?'LameLogDisplay();':''; ?>
+
+		$('.caption > button[name="audit"]').click(function(){
+			$('#auditconfirm').removeClass('hide').dialog({
+				modal: true,
+				width: 'auto',
+				buttons: {
+					Yes: function(){
+						$.post('',{audit: $('#deviceid').val()}).done(function(data){
+							$('#auditdate').text(data.AuditStamp);
+						});
+						$(this).dialog("close");
+					},
+					No: function(){
+						$(this).dialog("close");
+					}
+				}
+			});
+		});
 
 	});
 </script>
