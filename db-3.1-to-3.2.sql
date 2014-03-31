@@ -89,3 +89,8 @@ ALTER TABLE fac_Cabinet CHANGE SensorIPAddress IPAddress VARCHAR(254);
 -- Add in 0.1 as a possible multiplier value for the CDU Templates
 --
 ALTER TABLE fac_CDUTemplate CHANGE Multiplier Multiplier ENUM( '0.1', '1', '10', '100' );
+
+--
+-- Add in column to track an audit date on a device
+--
+ALTER TABLE fac_Device ADD AuditStamp DATETIME NOT NULL;

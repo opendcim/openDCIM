@@ -64,6 +64,12 @@
 		exit;
 	}
 
+	if(isset($_POST['audit'])){
+		$dev->DeviceID=$_POST['audit'];
+		$dev->Audit();
+		exit;
+	};
+
 	// Set all ports to the same label pattern, media type or color code
 	if(isset($_POST['setall'])){
 		$portnames=array();
@@ -1200,6 +1206,10 @@ echo '<div class="center"><div>
 		<div>
 		   <div><label for="installdate">'.__("Warranty Expiration").'</label></div>
 		   <div><input type="text" class="validate[custom[date]] datepicker" name="warrantyexpire" id="warrantyexpire" value="'.date('m/d/Y',strtotime($dev->WarrantyExpire)).'"></div>
+		</div>
+		<div>
+		   <div>'.__("Last Audit Completed").'</div>
+		   <div><span id="auditdate">'.((strtotime($dev->AuditStamp)>0)?date('r',strtotime($dev->AuditStamp)):__("Audit not yet completed")).'</span></div>
 		</div>
 		<div>
 		   <div><label for="owner">'.__("Departmental Owner").'</label></div>

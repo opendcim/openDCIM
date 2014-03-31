@@ -1067,9 +1067,10 @@ class Device {
 	var $Notes;
 	var $Reservation;
 	var $Rights;
-	var $HalfDepth ;
-	var $BackSide ;
-	
+	var $HalfDepth;
+	var $BackSide;
+	var $AuditStamp;
+
 	function MakeSafe() {
 		if ( ! is_object( $this ) ) {
 			// If called from a static procedure, $this is not a valid object and the routine will throw an error
@@ -1167,6 +1168,7 @@ class Device {
 		$dev->Reservation=$dbRow["Reservation"];
 		$dev->HalfDepth=$dbRow["HalfDepth"];
 		$dev->BackSide=$dbRow["BackSide"];
+		$dev->AuditStamp=$dbRow["AuditStamp"];
 		
 		$dev->MakeDisplay();
 		if($filterrights){
@@ -1519,6 +1521,33 @@ class Device {
 			return false;
 		}
 		
+		(class_exists('LogActions'))?LogActions::LogThis($this,$tmpDev):'';
+		return true;
+	}
+
+	function Audit() {
+		global $dbh;
+
+		// Make sure we're not trying to decommission a device that doesn't exist
+		if(!$this->GetDevice()){
+			return false;
+		}
+
+		$tmpDev=new Device();
+		$tmpDev->DeviceID=$this->DeviceID;
+		$tmpDev->GetDevice();
+
+		$sql="UPDATE fac_Device SET AuditStamp=NOW() WHERE DeviceID=$this->DeviceID;";
+
+		if(!$dbh->exec($sql)){
+			$info=$dbh->errorInfo();
+
+			error_log("Device:Audit::PDO Error: {$info[2]} SQL=$sql");
+			return false;
+		}
+		
+		$this->GetDevice();
+
 		(class_exists('LogActions'))?LogActions::LogThis($this,$tmpDev):'';
 		return true;
 	}
