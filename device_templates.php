@@ -2,11 +2,30 @@
 	require_once('db.inc.php');
 	require_once('facilities.inc.php');
 
-	if(isset($_POST['getslots']) && isset($_POST['templateid'])){
-		$slots=Slot::GetAll($_POST['templateid']);
+	if((isset($_POST['getslots']) || isset($_POST['getports'])) && isset($_POST['templateid'])){
+		$returndata=array();
+		if(isset($_POST['getports'])){
+			$tport=new TemplatePorts();
+			$tport->TemplateID=$_POST['templateid'];
+			$returndata=$tport->GetPorts();
+		}else{
+			$returndata=Slot::GetAll($_POST['templateid']);
+		}
 
 		header('Content-Type: application/json');
-		echo json_encode($slots);  
+		echo json_encode($returndata);  
+		exit;
+	}
+	// Get list of color codes
+	if(isset($_GET['cc'])){
+		header('Content-Type: application/json');
+		echo json_encode(ColorCoding::GetCodeList());
+		exit;
+	}
+	// Get list of media types
+	if(isset($_GET['mt'])){
+		header('Content-Type: application/json');
+		echo json_encode(MediaTypes::GetMediaTypeList());
 		exit;
 	}
 
@@ -289,7 +308,7 @@
 $(document).ready(function(){
 	FetchSlots();
 	TemplateButtons();
-	$('.templatemaker input + button').each(function(){
+	$('.templatemaker input[id*=Chassis] + button').each(function(){
 		var front=($(this).prev('input').attr('id')=='ChassisSlots')?true:false;
 		InsertCoordsTable(front,$(this));
 		$(this).on('click',function(){
@@ -382,7 +401,7 @@ echo '	</select>
 </div>
 <div>
    <div><label for="numports">',__("No. Ports"),'</label></div>
-   <div><input type="text" name="numports" id="numports" value="',$template->NumPorts,'"></div>
+   <div><input type="text" name="numports" id="numports" value="',$template->NumPorts,'"><button type="button">',__("Edit Ports"),'</button></div>
 </div>
 <div>
    <div><label for="FrontPictureFile">',__("Front Picture File"),'</label></div>
@@ -399,40 +418,7 @@ echo '	</select>
 <div id="DivRearChassisSlots" style="display: ',(($template->DeviceType=="Chassis")?'table-row':'none'),';">
    <div><label for="RearChassisSlots">',__("Rear Chassis Slots"),'</label></div>
    <div><input type="text" name="RearChassisSlots" id="RearChassisSlots" value="',$template->RearChassisSlots,'"><button type="button">',__("Edit Coordinates"),'</button></div>
-</div>';
-
-echo '<div id="DivPorts" style="display: ',(($template->NumPorts>0)?'table-row':'none'),';">
-	<div><label for="Ports">',__("Features of ports"),'</label></div>';
-print "<div><table class='coordinates' style='margin-top: 3px; margin-left: 0px; margin-bottom: 3px;'>";
-print "<tr><th>".__("Port Number")."</th><th>".__("Label")."</th><th>".__("Media")."</th><th>".__("Color")."</th><th>".__("Notes")."</th></tr>\n";
-for ($i=1; $i<=$template->NumPorts;$i++){
-	$tport=new TemplatePorts();
-	$tport->TemplateID=$template->TemplateID;
-	$tport->PortNumber=$i;
-	$tport->GetPort();
-	print "<td>".$i."</td>\n"; 
-	print "<td><input type='text' name='label".$i."' id='label".$i."' value='".$tport->Label."' size='6' maxlength='40'></td>\n"; 
-	print "<td><select name='mt".$i."' id='mt".$i."'>";
-	print "<option value=0></option>";
-	foreach($mtList as $mtRow){
-		if($tport->MediaID==$mtRow->MediaID){$selected=" selected";}else{$selected="";}
-		print "		<option value=\"$mtRow->MediaID\"$selected>$mtRow->MediaType</option>\n";
-	}
-	print "</select></td>";    
-	
-	print "<td><select name='cc".$i."' id='cc".$i."'>";
-	print "<option value=0></option>";
-	foreach($ccList as $ccRow){
-		if($tport->ColorID==$ccRow->ColorID){$selected=" selected";}else{$selected="";}
-		print "		<option value=\"$ccRow->ColorID\"$selected>$ccRow->Name</option>\n";
-	}
-	print "</select></td>";    
-	print "<td><input type='text' name='portnotes".$i."' id='portnotes".$i."' value='".$tport->PortNotes."' size='20' maxlength='80'></td>\n"; 
-	print "</tr>\n";
-}
-print "</table></div></div>";
-
-echo '
+</div>
 <div>
    <div><label for="notes">',__('Notes'),'</label></div>
    <div><textarea name="notes" id="notes" cols="40" rows="8">',$template->Notes,'</textarea></div>
@@ -449,6 +435,8 @@ echo '
 </div>
 </div><!-- END div.table -->
 
+<div id="hiddenports">
+</div>
 
 <div id="hiddencoords">
 	<div class="table front">
@@ -510,6 +498,94 @@ if (isset($result["log"])){
 ?>
 </div>
 <!-- end dialog: importFile -->  
+<script type="text/javascript">
+function PortsPoopup(){
+	$('<div>').append($('#hiddenports > div')).
+		dialog({
+			closeOnEscape: false,
+			minHeight: 500,
+			width: 740,
+			modal: true,
+			resizable: false,
+			position: { my: "center", at: "top", of: window },
+			show: { effect: "blind", duration: 800 },
+			beforeClose: function(event,ui){
+				$('#hiddenports').append($(this).children('div'));
+			}
+		});
+}
 
+function buildportstable(){
+	var table=$('<div>').addClass('table');
+	var colorcodes=$('<select>');
+	var mediatypes=$('<select>');
+	var ports=[];
+
+	function buildrow(TemplatePortObj){
+		var pn=(typeof TemplatePortObj.PortNumber=='undefined')?'':TemplatePortObj.PortNumber;
+		var label=(typeof TemplatePortObj.Label=='undefined')?'':TemplatePortObj.Label;
+		var mt=(typeof TemplatePortObj.MediaID=='undefined')?'0':TemplatePortObj.MediaID;
+		var c=(typeof TemplatePortObj.ColorID=='undefined')?'0':TemplatePortObj.ColorID;
+		var n=(typeof TemplatePortObj.PortNotes=='undefined')?'':TemplatePortObj.PortNotes;
+
+		var row=$('<div>').
+			append($('<div>').html(pn)).
+			append($('<div>').html($('<input>').val(label).text(label).attr('name','label'+pn))).
+			append($('<div>').html(mediatypes.clone().val(mt)).attr('name','mt'+pn)).
+			append($('<div>').html(colorcodes.clone().val(c)).attr('name','cc'+pn)).
+			append($('<div>').html($('<input>').val(n).text(n)).attr('name','portnotes'+pn));
+
+		return row;
+	}
+
+	function buildrows(){
+		for(var i=1;i<=$('#numports').val();i++){
+			if(typeof ports[i]!='undefined'){
+				table.append(buildrow(ports[i]));
+			}else{
+				table.append(buildrow({PortNumber: i}));
+			}
+		}
+	}
+
+	table.append('<div><div>Port Number</div><div>Label</div><div>Media Type</div><div>Color</div><div>Notes</div></div>');
+
+	$.ajax({url: '',type: "get",async: false,data: {cc: ''},success: function(data){
+			$.each(data, function(i,color){
+				colorcodes.append($('<option>').val(color.ColorID).text(color.Name));
+			});
+		}
+	});
+	$.ajax({url: '',type: "get",async: false,data: {mt: ''},success: function(data){
+			$.each(data, function(i,mediatype){
+				mediatypes.append($('<option>').val(mediatype.MediaID).text(mediatype.MediaType));
+			});
+		}
+	});
+
+	$.ajax({
+		url: '',
+		type: "post",
+		async: false,
+		data: {templateid: $('#templateid').val(), getports: ''},
+		success: function(data){
+			ports=data;
+		}
+	});
+
+	buildrows();
+	$('#hiddenports').html(table);
+}
+$('.templatemaker input#numports + button').each(function(){
+	buildportstable();
+	$(this).on('click',function(){
+		// Fill in the ports table
+		buildportstable();
+
+		// Open the dialog
+		PortsPoopup();
+	});
+});
+</script>
 </body>
 </html>
