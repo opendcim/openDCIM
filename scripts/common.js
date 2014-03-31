@@ -153,6 +153,22 @@ function Poopup(front){
 		});
 }
 
+function PortsPoopup(){
+	$('<div>').append($('#hiddenports > div')).
+		dialog({
+			closeOnEscape: false,
+			minHeight: 500,
+			width: 740,
+			modal: true,
+			resizable: false,
+			position: { my: "center", at: "top", of: window },
+			show: { effect: "blind", duration: 800 },
+			beforeClose: function(event,ui){
+				$('#hiddenports').append($(this).children('div'));
+			}
+		});
+}
+
 function CoordinateRow(slot,front){
 	front=(front=='undefined' || front)?0:1;
 	var fr=(front==0)?'F':'R';
@@ -251,12 +267,72 @@ function TemplateButtons(){
 	var rf=$('#RearPictureFile');
 	var cs=$('#ChassisSlots');
 	var rs=$('#RearChassisSlots');
+	var np=$('#numports');
 
+	if(np.val()>0){np.next('button').show();}else{np.next('button').hide();}
 	if(pf.val()!='' && cs.val()>0){cs.next('button').show();}else{cs.next('button').hide();}
 	if(rf.val()!='' && rs.val()>0){rs.next('button').show();}else{rs.next('button').hide();}
+}
+
+function buildportstable(){
+	var table=$('<div>').addClass('table');
+	table.append('<div><div>Port Number</div><div>Label</div><div>Media Type</div><div>Color</div><div>Notes</div></div>');
+	var colorcodes=$('<select>');
+	var mediatypes=$('<select>');
+	var ports=[];
+
+	function buildrow(TemplatePortObj){
+		var pn=(typeof TemplatePortObj.PortNumber=='undefined')?'':TemplatePortObj.PortNumber;
+		var label=(typeof TemplatePortObj.Label=='undefined')?'':TemplatePortObj.Label;
+		var mt=(typeof TemplatePortObj.MediaID=='undefined')?'0':TemplatePortObj.MediaID;
+		var c=(typeof TemplatePortObj.ColorID=='undefined')?'0':TemplatePortObj.ColorID;
+		var n=(typeof TemplatePortObj.PortNotes=='undefined')?'':TemplatePortObj.PortNotes;
+
+		var row=$('<div>').
+			append($('<div>').html(pn)).
+			append($('<div>').html($('<input>').val(label).text(label).attr('name','label'+pn))).
+			append($('<div>').html(mediatypes.clone().val(mt)).attr('name','mt'+pn)).
+			append($('<div>').html(colorcodes.clone().val(c)).attr('name','cc'+pn)).
+			append($('<div>').html($('<input>').val(n).text(n)).attr('name','portnotes'+pn));
+
+		return row;
 	}
 
+	function buildrows(){
+		for(var i=1;i<=$('#numports').val();i++){
+			if(typeof ports[i]!='undefined'){
+				table.append(buildrow(ports[i]));
+			}else{
+				table.append(buildrow({PortNumber: i}));
+			}
+		}
+	}
 
+	$.ajax({url: '',type: "get",async: false,data: {cc: ''},success: function(data){
+			$.each(data, function(i,color){
+				colorcodes.append($('<option>').val(color.ColorID).text(color.Name));
+			});
+		}
+	});
+
+	$.ajax({url: '',type: "get",async: false,data: {mt: ''},success: function(data){
+			$.each(data, function(i,mediatype){
+				mediatypes.append($('<option>').val(mediatype.MediaID).text(mediatype.MediaType));
+			});
+		}
+	});
+
+	$.ajax({url: '',type: "post",async: false,data: {templateid: $('#templateid').val(), getports: ''},
+		success: function(data){
+			ports=data;
+		}
+	});
+
+	// Add rows to the table
+	buildrows();
+	// Add the table to the page
+	$('#hiddenports').html(table);
+}
 
 
 // Image management

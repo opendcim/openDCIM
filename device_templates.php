@@ -322,7 +322,18 @@ $(document).ready(function(){
 		});
 	});
 
-	$('#FrontPictureFile,#RearPictureFile,#ChassisSlots,#RearChassisSlots').on('change keyup keydown', function(){ TemplateButtons(); });
+	buildportstable();
+	$('.templatemaker input#numports + button').each(function(){
+		$(this).on('click',function(){
+			// Fill in the ports table
+			buildportstable();
+
+			// Open the dialog
+			PortsPoopup();
+		});
+	});
+
+	$('#FrontPictureFile,#RearPictureFile,#ChassisSlots,#RearChassisSlots,#numports').on('change keyup keydown', function(){ TemplateButtons(); });
 
 });
 </script>
@@ -477,115 +488,25 @@ echo '<div id="imageselection" title="',__("Image file selector"),'">
 </div><!-- END div.page -->
 
 <!-- dialog: importFile -->  
-<div id='dlg_importfile' style='display:none;' title='<?php echo __("Import Template From File");?>'>  
+<div id="dlg_importfile" style="display:none;" title="<?php echo __("Import Template From File");?>">  
 	<br>
-	<form enctype="multipart/form-data" name="frmImport" id="frmImport" action="<?php echo $_SERVER["PHP_SELF"];?>" method="POST">
-		<input type="hidden" name="MAX_FILE_SIZE" value="1000000" />			
+	<form enctype="multipart/form-data" name="frmImport" id="frmImport" method="POST">
 		<input type="file" size="60" id="templateFile" name="templateFile" />
 	</form>  
 </div>
 <!-- end dialog: importFile -->  
 <!-- dialog: import_err -->  
-<div id='dlg_import_err' style='display:none;' title='<?php echo __("Import log");?>'>  
+<div id="dlg_import_err" style="display:none;" title="<?php echo __("Import log");?>">  
 <?php 	
 if (isset($result["log"])){
-	print "<ul style='list-style-type:disc; padding: 5px;'>";
+	print '<ul style="list-style-type:disc; padding: 5px;">';
 	foreach($result["log"] as $logline){
-		print "<li style='padding: 5px;'>".$logline."</li>";
+		print "<li style=\"padding: 5px;\">$logline</li>";
 	}
 	print "</ul>";
 }
 ?>
 </div>
 <!-- end dialog: importFile -->  
-<script type="text/javascript">
-function PortsPoopup(){
-	$('<div>').append($('#hiddenports > div')).
-		dialog({
-			closeOnEscape: false,
-			minHeight: 500,
-			width: 740,
-			modal: true,
-			resizable: false,
-			position: { my: "center", at: "top", of: window },
-			show: { effect: "blind", duration: 800 },
-			beforeClose: function(event,ui){
-				$('#hiddenports').append($(this).children('div'));
-			}
-		});
-}
-
-function buildportstable(){
-	var table=$('<div>').addClass('table');
-	var colorcodes=$('<select>');
-	var mediatypes=$('<select>');
-	var ports=[];
-
-	function buildrow(TemplatePortObj){
-		var pn=(typeof TemplatePortObj.PortNumber=='undefined')?'':TemplatePortObj.PortNumber;
-		var label=(typeof TemplatePortObj.Label=='undefined')?'':TemplatePortObj.Label;
-		var mt=(typeof TemplatePortObj.MediaID=='undefined')?'0':TemplatePortObj.MediaID;
-		var c=(typeof TemplatePortObj.ColorID=='undefined')?'0':TemplatePortObj.ColorID;
-		var n=(typeof TemplatePortObj.PortNotes=='undefined')?'':TemplatePortObj.PortNotes;
-
-		var row=$('<div>').
-			append($('<div>').html(pn)).
-			append($('<div>').html($('<input>').val(label).text(label).attr('name','label'+pn))).
-			append($('<div>').html(mediatypes.clone().val(mt)).attr('name','mt'+pn)).
-			append($('<div>').html(colorcodes.clone().val(c)).attr('name','cc'+pn)).
-			append($('<div>').html($('<input>').val(n).text(n)).attr('name','portnotes'+pn));
-
-		return row;
-	}
-
-	function buildrows(){
-		for(var i=1;i<=$('#numports').val();i++){
-			if(typeof ports[i]!='undefined'){
-				table.append(buildrow(ports[i]));
-			}else{
-				table.append(buildrow({PortNumber: i}));
-			}
-		}
-	}
-
-	table.append('<div><div>Port Number</div><div>Label</div><div>Media Type</div><div>Color</div><div>Notes</div></div>');
-
-	$.ajax({url: '',type: "get",async: false,data: {cc: ''},success: function(data){
-			$.each(data, function(i,color){
-				colorcodes.append($('<option>').val(color.ColorID).text(color.Name));
-			});
-		}
-	});
-	$.ajax({url: '',type: "get",async: false,data: {mt: ''},success: function(data){
-			$.each(data, function(i,mediatype){
-				mediatypes.append($('<option>').val(mediatype.MediaID).text(mediatype.MediaType));
-			});
-		}
-	});
-
-	$.ajax({
-		url: '',
-		type: "post",
-		async: false,
-		data: {templateid: $('#templateid').val(), getports: ''},
-		success: function(data){
-			ports=data;
-		}
-	});
-
-	buildrows();
-	$('#hiddenports').html(table);
-}
-$('.templatemaker input#numports + button').each(function(){
-	buildportstable();
-	$(this).on('click',function(){
-		// Fill in the ports table
-		buildportstable();
-
-		// Open the dialog
-		PortsPoopup();
-	});
-});
-</script>
 </body>
 </html>
