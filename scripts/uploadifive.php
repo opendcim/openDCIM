@@ -30,7 +30,7 @@ $fileTypes = array('jpg', 'jpeg', 'gif', 'png'); // Allowed file extensions
 $verifyToken = md5('unique_salt' . $_POST['timestamp']);
 
 if ((!empty($_FILES) || isset($_POST['filename']) ) && $_POST['token'] == $verifyToken && ($user->WriteAccess || $user->SiteAdmin)) {
-	$uploadDir  = $_SERVER['DOCUMENT_ROOT'] . $uploadDir;
+	$uploadDir  = $_SERVER['DOCUMENT_ROOT'] .((in_array(substr($_SERVER['DOCUMENT_ROOT'], -1), array('/',"\\")))?'':DIRECTORY_SEPARATOR). $uploadDir;
 	// if a filename is set then we're looking to remove it
 	if(empty($_FILES)){
 		if(!preg_match('/^(\.*)?(\/|\\\)/',$_POST['filename'])){	
