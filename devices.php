@@ -591,6 +591,9 @@
 	$escList=$esc->GetEscalationList();
 	$deptList=$Dept->GetDepartmentList();
 
+	$templ->TemplateID=$dev->TemplateID;
+	$templ->GetTemplateByID();
+
 	$title=($dev->Label!='')?"$dev->Label :: $dev->DeviceID":__("openDCIM Device Maintenance");
 
 	function buildesxtable($deviceid){
@@ -825,6 +828,29 @@ $(document).ready(function() {
 		$(this).submit();
 		$(":input").removeAttr("disabled"); // if they hit back it makes sure the fields aren't disabled
 	});
+
+	// Device image previews
+	$('#deviceimages > div > img').
+		on('error',function(){$(this).hide();toggledeviceimages();}).
+		on('load',function(){
+			if($(this).context.width < $(this).context.height){
+				$(this).css({'height':'275px','width':'auto'});
+			}else{
+				$(this).css({'height':'','width':''});
+			}
+			$(this).show();
+			toggledeviceimages();
+		});
+
+	function toggledeviceimages(){
+		$('#deviceimages').show();
+		var n=0;
+		$('#deviceimages > div > img').each(function(){
+			if($(this).is(":visible")){ n++;}
+		});
+		if(n==0){$('#deviceimages').hide();}
+	}
+
 	// Auto-Populate fields based on device templates
 	$('#templateid').change( function(){
 		$.get('scripts/ajax_template.php?q='+$(this).val(), function(data) {
@@ -834,6 +860,8 @@ $(document).ready(function() {
 			$('#powersupplycount').val(data['PSCount']);
 			$('select[name=devicetype]').val(data['DeviceType']).trigger('change');
 			$('#height').trigger('change');
+			$('#devicefront').attr('src','pictures/'+data['FrontPictureFile']);
+			$('#devicerear').attr('src','pictures/'+data['RearPictureFile']);
 		});
 	});
 
@@ -1342,13 +1370,20 @@ echo '		<div>
 			if($devType==$dev->DeviceType){$selected=" selected";}else{$selected="";}
 			print "\t\t\t<option value=\"$devType\"$selected>$translation</option>\n";
 		}
-?>
+echo '
 		   </select></div>
 		</div>
 	</div> <!-- END div.table -->
 </fieldset>
+<fieldset id="deviceimages">
+	<legend>Device Images</legend>
+	<div>
+		<img id="devicefront" src="pictures/'.$templ->FrontPictureFile.'" alt="front of device">
+        <img id="devicerear" src="pictures/'.$templ->RearPictureFile.'" alt="rear of device">
+	</div>
+</fieldset>
 <fieldset id="firstport" class="hide">
-<?php echo '	<legend>'.__("Switch SNMP").'</legend>
+	<legend>'.__("Switch SNMP").'</legend>
 	<div><p>'.__("Use these buttons to set the first port for the switch, check the status of the ports again, or attempt to load the Port Name labels from the switch device.").'</p><button type="button" name="firstport">'.__("Set First Port").'</button><button type="button" name="refresh">'.__("Refresh Status").'</button><button type="button" name="name">'.__("Refresh Port Names").'</button></div>
 </fieldset>';
 

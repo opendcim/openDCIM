@@ -991,7 +991,6 @@ function LameLogDisplay(){
 			wasOpen=false;
  
 			$("<a>").attr("tabIndex", -1)
-				.attr("title", "Show All Items")
 				.height($(this.wrapper).children('input').height())
 				.css({'vertical-align':'top','padding':$(this.wrapper).children('input').css('padding')})
 				.tooltip()

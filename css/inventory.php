@@ -599,6 +599,10 @@ div.cabinet {
 	vertical-align: top;
 	text-align: left;
 }
+
+.device #deviceimages > div { width: 355px; margin-left: auto; margin-right: auto; }
+.device #deviceimages > div > img { width: 175px; }
+
 .device .table {width: 100%;}
 .device .table.style > div:nth-child(2n+1) > div {border-top: 1px solid grey;vertical-align: top;}
 .device .table.style > div:nth-child(2n+1) > div:first-child {background-color: lightGray;border-left: 1px solid grey;}
