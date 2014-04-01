@@ -83,7 +83,7 @@ INSERT INTO fac_Config VALUES ('path_weight_cabinet', '1', '', 'int', '1'),
 ALTER TABLE fac_PowerDistribution CHANGE IPAddress IPAddress VARCHAR(254);
 ALTER TABLE fac_Device CHANGE PrimaryIP PrimaryIP VARCHAR(254);
 ALTER TABLE fac_PowerSource CHANGE IPAddress IPAddress VARCHAR(254);
-ALTER TABLE fac_Cabinet CHANGE SensorIPAddress IPAddress VARCHAR(254);
+ALTER TABLE fac_Cabinet CHANGE SensorIPAddress SensorIPAddress VARCHAR(254);
 
 --
 -- Add in 0.1 as a possible multiplier value for the CDU Templates
