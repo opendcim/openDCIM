@@ -81,7 +81,7 @@ INSERT INTO fac_Config VALUES ('path_weight_cabinet', '1', '', 'int', '1'),
 -- Extend the length on the ip address field to allow for ipv6 and/or dns hosts
 --
 ALTER TABLE fac_PowerDistribution CHANGE IPAddress IPAddress VARCHAR(254);
-ALTER TABLE fac_Device CHANGE IPAddress IPAddress VARCHAR(254);
+ALTER TABLE fac_Device CHANGE PrimaryIP PrimaryIP VARCHAR(254);
 ALTER TABLE fac_PowerSource CHANGE IPAddress IPAddress VARCHAR(254);
 ALTER TABLE fac_Cabinet CHANGE SensorIPAddress IPAddress VARCHAR(254);
 

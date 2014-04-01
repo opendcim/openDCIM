@@ -265,7 +265,7 @@ CREATE TABLE fac_Device (
   Label varchar(80) NOT NULL,
   SerialNo varchar(40) NOT NULL,
   AssetTag varchar(20) NOT NULL,
-  PrimaryIP varchar(20) NOT NULL,
+  PrimaryIP varchar(254) NOT NULL,
   SNMPCommunity varchar(80) NOT NULL,
   ESX tinyint(1) NOT NULL,
   Owner int(11) NOT NULL,
