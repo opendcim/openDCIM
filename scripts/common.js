@@ -363,8 +363,8 @@ function buildportstable(){
 			}).removeClass('hide');
 		});
 		device.on('click', function(){
-			$('<div>').append($('<img>').attr('src',path+'/'+file)).attr('title',path+'/'+file).dialog({
-				width: 450,
+			$('<div>').append($('<img>').attr('src',path+'/'+file).css({'max-width':'600px','max-height':'400px'})).attr('title',path+'/'+file).dialog({
+				width: 'auto',
 				modal: true
 			});
 		});
