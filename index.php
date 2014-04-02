@@ -91,7 +91,7 @@ echo '
 <h2>',__("Data Center Operations Metrics"),'</h2>
 <div class="center"><div>
 ',$rackrequest,'
-<h3>',__("Data Center Inventory"),' <a href="report_realtimemetrics.php">(',__("View as Excel"),')</a></h3>
+<h3>',__("Data Center Inventory"),' <a href="search_export.php">(',__("Export Inventory"),')</a></h3>
 <div class="table border centermargin">
 <div class="title">
 ',__("Hosted Systems"),'
