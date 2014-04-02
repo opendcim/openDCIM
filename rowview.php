@@ -234,6 +234,9 @@ echo $head,'  <script type="text/javascript" src="scripts/jquery.min.js"></scrip
   <script type="text/javascript">
 	$(document).ready(function() {
 		$(".cabinet .error").append("*");
+		$("<button>",{id: "reverse", type: "button"}).text("'.(isset($_GET["rear"])?__("Front View"):__("Rear View")).'").click(function(){
+			document.location.href="rowview.php?row=',$cabrow->CabRowID.(isset($_GET["rear"])?"":"&rear"),'";
+		}).prependTo($(".main"));
 ';
 
 if($config->ParameterArray["ToolTips"]=='enabled'){
