@@ -306,7 +306,7 @@
 			}
 
 			// S.U.T. #2342 I touch myself
-			if(isset($list[$_POST['pn']])){
+			if($dp->DeviceID == $_POST['swdev'] && isset($list[$_POST['pn']])){
 				unset($list[$_POST['pn']]);
 			}
 
