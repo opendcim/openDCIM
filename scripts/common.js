@@ -350,6 +350,9 @@ function buildportstable(){
 						var rc=delimage(path,file);
 						if(rc){
 							image.remove();
+						}else{
+							// file check failed so we have a problem
+							alert("File doesn't exist, how did that happen?");
 						}
 						$(this).dialog("close");
 					},
