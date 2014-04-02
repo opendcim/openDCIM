@@ -2935,14 +2935,14 @@ class DevicePorts {
 			// and only take the processing hit when there's a child device as the source
 			if ( $dev->ParentDevice == 0 ) {
 				$sql="SELECT DISTINCT a.* from fac_Device a, fac_Cabinet b where 
-				a.DeviceID!=$dev->DeviceID AND a.Ports>0 and ((Cabinet=CabinetID and Cabinet=$dev->Cabinet) or 
+				a.Ports>0 and ((Cabinet=CabinetID and Cabinet=$dev->Cabinet) or 
 				(Cabinet=0 and ParentDevice in (select DeviceID from fac_Device where Cabinet=$dev->Cabinet and ChassisSlots>0)))
 				$rights$pp GROUP BY DeviceID ORDER BY Position DESC, Label ASC;";
 			} else {
 				$parent = $dev->WhosYourDaddy();
 				
 				$sql="SELECT DISTINCT a.* from fac_Device a, fac_Cabinet b where 
-				a.DeviceID!=$dev->DeviceID AND a.Ports>0 and ((Cabinet=CabinetID and Cabinet=$parent->Cabinet) or 
+				a.Ports>0 and ((Cabinet=CabinetID and Cabinet=$parent->Cabinet) or 
 				(Cabinet=0 and ParentDevice in (select DeviceID from fac_Device where Cabinet=$parent->Cabinet and ChassisSlots>0)))
 				$rights$pp GROUP BY DeviceID ORDER BY Position DESC, Label ASC;";
 			}
@@ -2962,12 +2962,12 @@ class DevicePorts {
 			// Then run the same query, but for the rest of the devices in the database
 			if ( $dev->ParentDevice == 0 ) {
 				$sql="SELECT DISTINCT a.* from fac_Device a, fac_Cabinet b where 
-				a.DeviceID!=$dev->DeviceID AND a.Ports>0 and ((Cabinet=CabinetID and Cabinet!=$dev->Cabinet) or 
+				a.Ports>0 and ((Cabinet=CabinetID and Cabinet!=$dev->Cabinet) or 
 				(Cabinet=0 and ParentDevice in (select DeviceID from fac_Device where Cabinet!=$dev->Cabinet and ChassisSlots>0)))
 				$rights$pp GROUP BY DeviceID ORDER BY Label ASC;";
 			} else {
 				$sql="SELECT DISTINCT a.* from fac_Device a, fac_Cabinet b where 
-				a.DeviceID!=$dev->DeviceID AND a.Ports>0 and ((Cabinet=CabinetID and Cabinet!=$parent->Cabinet) or 
+				a.Ports>0 and ((Cabinet=CabinetID and Cabinet!=$parent->Cabinet) or 
 				(Cabinet=0 and ParentDevice in (select DeviceID from fac_Device where Cabinet!=$parent->Cabinet and ChassisSlots>0)))
 				$rights$pp GROUP BY DeviceID ORDER BY Label ASC;";
 			}

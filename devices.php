@@ -303,6 +303,10 @@
 						unset($list[$key]);
 					}
 				}
+				if (( $_POST['thisdev'] == $port->DeviceID ) && ( $_PORT['pn'] == $port->PortNumber )) {
+					// This is the case when you are making a patch panel cross connect - remove the current port from the list
+					unset($list[$key]);
+				}
 			}
 
 			// Sort the ports so that all front ports will be first then the rear ports.
