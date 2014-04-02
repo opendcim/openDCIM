@@ -656,6 +656,8 @@ function upgrade(){
 
 		// Rebuild the config table just in case.
 		$config->rebuild();
+
+		$version="3.0";
 	}
 	if($version=="3.0"){
 		// First apply the schema updates needed.
@@ -663,6 +665,8 @@ function upgrade(){
 
 		// Rebuild the config table just in case.
 		$config->rebuild();
+
+		$version="3.1";
 	}
 	if($version=="3.1"){
 		// First apply the schema updates needed.
