@@ -115,7 +115,7 @@ echo '<div class="main">
 </div>
 
 <br>
-<div class="JMGA" style="center width: 1200px; overflow: auto">';
+<div class="JMGA" style="center width: 1200px; overflow: hidden">';
 
   print $c->MakeContainerImage();
 ?>
