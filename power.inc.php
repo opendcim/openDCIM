@@ -549,7 +549,7 @@ class PowerDistribution {
 		$this->MakeSafe();
 
 		$sql="SELECT * FROM fac_PDUStats WHERE PDUID=$this->PDUID;";
-		$stats='';
+		$stats=new stdClass();
 		foreach($this->query($sql) as $row){
 			foreach($row as $prop => $value){
 				if(!is_int($prop)){
