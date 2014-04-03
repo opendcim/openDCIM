@@ -292,9 +292,9 @@ function buildportstable(){
 		var row=$('<div>').
 			append($('<div>').html(pn)).
 			append($('<div>').html($('<input>').val(label).text(label).attr('name','label'+pn))).
-			append($('<div>').html(mediatypes.clone().val(mt)).attr('name','mt'+pn)).
-			append($('<div>').html(colorcodes.clone().val(c)).attr('name','cc'+pn)).
-			append($('<div>').html($('<input>').val(n).text(n)).attr('name','portnotes'+pn));
+			append($('<div>').html(mediatypes.clone().val(mt).attr('name','mt'+pn))).
+			append($('<div>').html(colorcodes.clone().val(c).attr('name','cc'+pn))).
+			append($('<div>').html($('<input>').val(n).text(n).attr('name','portnotes'+pn)));
 
 		return row;
 	}
