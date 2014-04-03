@@ -249,7 +249,6 @@ class DataCenter {
 			DrawingFileName=\"$this->DrawingFileName\", EntryLogging=0,	
 			ContainerID=$this->ContainerID,	MapX=$this->MapX, MapY=$this->MapY;";
 
-		$this->exec($sql);
 		if(!$dbh->exec($sql)){
 			$info=$dbh->errorInfo();
 
