@@ -442,7 +442,7 @@ $body.='<div id="infopanel">
 		<legend>'.__("Power Distribution").'</legend>';
 
 	foreach($PDUList as $PDUdev){
-		$lastreading=$pdu->GetLastReading();
+		$lastreading=$PDUdev->GetLastReading();
 		$pduDraw=($lastreading)?$lastreading->Wattage:0;
 
 		$pan->PanelID=$PDUdev->PanelID;
