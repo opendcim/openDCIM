@@ -297,10 +297,10 @@ table.coordinates input {text-align: center; border: 0px;}
 table.coordinates select {text-align: center; border: 0px;}
 
 #hiddenports { position: absolute; left: -10000px; top: -10000px;}
-#hiddenports > .table { border: 1px solid black; }
-#hiddenports > .table > div:first-child { text-align: center; background-color: lightgray; border: 1px solid black;}
-#hiddenports > .table > div { background-color: white; }
-#hiddenports > .table > div > div { padding: 3px; }
+.hiddenports .table { border: 1px solid black; }
+.hiddenports .table > div:first-child { text-align: center; background-color: lightgray; border: 1px solid black;}
+.hiddenports .table > div { background-color: white; }
+.hiddenports .table > div > div { padding: 3px; }
 
 /* Basic Page Layout */
 .page {position: relative;width: 100%;}

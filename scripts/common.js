@@ -161,6 +161,7 @@ function PortsPoopup(){
 			width: 740,
 			modal: true,
 			resizable: false,
+			dialogClass: 'hiddenports',
 			position: { my: "center", at: "top", of: window },
 			show: { effect: "blind", duration: 800 },
 			beforeClose: function(event,ui){
