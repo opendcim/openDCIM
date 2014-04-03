@@ -94,3 +94,8 @@ ALTER TABLE fac_CDUTemplate CHANGE Multiplier Multiplier ENUM( '0.1', '1', '10',
 -- Add in column to track an audit date on a device
 --
 ALTER TABLE fac_Device ADD AuditStamp DATETIME NOT NULL;
+
+--
+-- Bump up the database version
+--
+UPDATE fac_Config set Value='3.2' WHERE Parameter='Version';

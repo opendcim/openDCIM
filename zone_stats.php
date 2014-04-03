@@ -232,7 +232,7 @@ echo $select.'</div></div>'.MakeImageMap($dc,$zone);
 
 echo '
 </div></div>
-<ul id="options"> 
+<ul id="options" class="hide"> 
 	<li class="ui-state-disabled">',__("Set the air intake direction"),'</li>
 	<li>----</li>
 	<li><a>',__("Cabinet"),'</a>
@@ -284,6 +284,7 @@ echo '
 				$.post('',{cabinetid: cabid, airflow: ui.cmd, row: row}).done(function(){startmap()}); 
     		},
 			beforeOpen: function(event, ui) {
+				$('#options').removeClass('hide');
 				$('.center .nav > select').val('airflow').trigger('change');
 				$(".canvas > map").contextmenu("showEntry", "row", $(ui.target.context).data('row'));
 			}

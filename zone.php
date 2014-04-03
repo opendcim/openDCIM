@@ -36,8 +36,11 @@
 				$zone->UpdateZone();
 			}
 		}
-		$formpatch="?zoneid={$_REQUEST['zoneid']}";
+		$formpatch="?zoneid=$zone->ZoneID";
 	}
+
+	$zone->MapZoom=($zone->ZoneID==0)?100:$zone->MapZoom;
+
 	$dc_zone->DataCenterID=$zone->DataCenterID;
 	$dc_zone->GetDataCenterbyID();
 	
@@ -103,8 +106,7 @@ echo '
 		if($zone->ZoneID==$zoneRow->ZoneID){$selected=" selected";}else{$selected="";}
 		$dc->DataCenterID=$zoneRow->DataCenterID;
 		$dc->GetDataCenter();
-		print "
-							<option value=\"$zoneRow->ZoneID\"$selected>[".$dc->Name."] ".$zoneRow->Description."</option>\n";
+		print "\t\t\t\t\t\t\t<option value=\"$zoneRow->ZoneID\"$selected>[".$dc->Name."] ".$zoneRow->Description."</option>\n";
 	}
 
 echo '
@@ -122,36 +124,29 @@ echo '
 
 foreach($DCList as $DCRow){
 		if($zone->DataCenterID==$DCRow->DataCenterID){$selected=" selected";}else{$selected="";}
-		print "
-							<option value=\"$DCRow->DataCenterID\"$selected>$DCRow->Name</option>\n";
+		print "\t\t\t\t\t\t\t<option value=\"$DCRow->DataCenterID\"$selected>$DCRow->Name</option>\n";
 	}
 
 echo '
 							</select>
 						</div>
-					</div>';
-
-echo '
+					</div>
 					<div>
 						<div><label for="x1">X1</label></div>
 						<div><input type="text" name="x1" id="x1" value="',$zone->MapX1,'"></div>
-						</div>';
-echo '
+						</div>
 					<div>
 						<div><label for="y1">Y1</label></div>
 						<div><input type="text" name="y1" id="y1" value="',$zone->MapY1,'"></div>
-					</div>';
-echo '
+					</div>
 					<div>
 						<div><label for="x2">X2</label></div>
 						<div><input type="text" name="x2" id="x2" value="',$zone->MapX2,'"></div>
-					</div>';
-echo '
+					</div>
 					<div>
 						<div><label for="y2">Y2</label></div>
 						<div><input type="text" name="y2" id="y2" value="',$zone->MapY2,'"></div>
-					</div>';
-echo '
+					</div>
 					<div>
 						<div><label for="zoom">',__("Zoom"),' (%)</label></div>
 						<div><input type="text" name="mapzoom" id="mapzoom" value="',$zone->MapZoom,'"></div>

@@ -104,7 +104,6 @@
 				$tport->PortNotes=isset($_POST["portnotes".$i])?$_POST["portnotes".$i]:"";
 				$status=($tport->CreatePort())?$status:__('Error updating template ports');
 			}
-
 			return $status;
 		}
 

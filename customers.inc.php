@@ -230,6 +230,9 @@ class Department {
 		$this->SDM=sanitize($this->SDM);
 		$this->Classification=sanitize($this->Classification);
 		$this->DeptColor=sanitize($this->DeptColor);
+		if($this->DeptColor==""){
+			$this->DeptColor="#FFFFFF"; // New color picker was allowing for an empty value
+		}
 	}
 
 	function MakeDisplay(){
@@ -282,10 +285,6 @@ class Department {
 	}
 
 	function UpdateDepartment() {
-		if($this->DeptColor==""){
-			$this->DeptColor="#FFFFFF"; // New color picker was allowing for an empty value
-		}
-
 		$this->MakeSafe();
 
 		$sql="UPDATE fac_Department SET Name=\"$this->Name\", 
