@@ -14,6 +14,9 @@
 	if(isset($_REQUEST["supplyid"]) && $_REQUEST["supplyid"]>0) {
 		$sup->SupplyID=$_REQUEST["supplyid"];
 		$sup->GetSupplies();
+		
+		$bc->SupplyID = $sup->SupplyID;
+		$inventory = $bc->FindSupplies();
 	}
 
 	$status="";
@@ -73,7 +76,7 @@
 	foreach ( $supplyList as $supplyRow ) {
 		echo "<option value=\"$supplyRow->SupplyID\"";
 		if($sup->SupplyID == $supplyRow->SupplyID){echo " selected";}
-		echo ">$supplyRow->PartNum</option>\n";
+		echo ">($supplyRow->PartNum) $supplyRow->PartName</option>\n";
 	}
 ?>
 	</select></div>
@@ -103,8 +106,30 @@
 ?>
 </div>
 </div><!-- END div.table -->
+<?php
+	if ( sizeof( $inventory ) > 0 ) {
+	
+		$sb = new SupplyBin();
+?>
+<div class="table border">
+<div>
+	<div>Bin ID</div>
+	<div>Count</div>
+</div>
+<?php
+		foreach ( $inventory as $binContent ) {
+			$sb->BinID = $binContent->BinID;
+			$sb->GetBin();
+			printf( "<div><div><a href=\"supplybin.php?binid=%d\">%s</a></div>\n<div>%s</div>\n</div>\n", $sb->BinID, $sb->Location, $binContent->Count );
+		}
+?>
+</div>
+<?php
+	}	// endif of sizeof( $inventory ) > 0 block
+?>
 </form>
-</div></div>
+</div>
+</div>
 <a href="index.php">[ Return to Main Menu ]</a>
 </div><!-- END div.main -->
 </div><!-- END div.page -->

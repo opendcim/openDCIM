@@ -1268,7 +1268,7 @@ class Supplies {
 		global $dbh;
 
 		$sql="INSERT INTO fac_Supplies SET PartNum=\"$this->PartNum\", 
-			PartName=\"$this->PartNum\", MinQty=$this->MinQty, MaxQty=$this->MaxQty;";
+			PartName=\"$this->PartName\", MinQty=$this->MinQty, MaxQty=$this->MaxQty;";
 
 		if(!$this->exec($sql)){
 			return false;
@@ -1309,7 +1309,7 @@ class Supplies {
 		$this->MakeSafe();
 
 		$sql="UPDATE fac_Supplies SET PartNum=\"$this->PartNum\", 
-			PartName=\"$this->PartNum\", MinQty=$this->MinQty, MaxQty=$this->MaxQty WHERE 
+			PartName=\"$this->PartName\", MinQty=$this->MinQty, MaxQty=$this->MaxQty WHERE 
 			SupplyID=$this->SupplyID;";
 
 		return $this->query($sql);
