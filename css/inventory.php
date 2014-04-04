@@ -829,6 +829,10 @@ fieldset[name=pdu] > div > img { vertical-align: text-bottom; }
 .supply .table:first-child > div > div:first-child {width: auto;}
 .supply #location {width: 97%;}
 
+.supply .table ~ .table { background-color: white; }
+.supply .table ~ .table > div > div:first-child { width: auto; }
+.supply .table ~ .table > div > div { padding: 3px; }
+
 
 /* Installer */
 .installer ul li, ul.nav li{

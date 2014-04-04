@@ -10,7 +10,8 @@
 
 	$sup=new Supplies();
 	$bc=new BinContents();
-	
+
+	$inventory=array();	
 	if(isset($_REQUEST["supplyid"]) && $_REQUEST["supplyid"]>0) {
 		$sup->SupplyID=$_REQUEST["supplyid"];
 		$sup->GetSupplies();
@@ -39,6 +40,22 @@
 	
 	$supplyList=$sup->GetSuppliesList();
 
+	$supplytable='';
+	if(sizeof($inventory) >0){
+		$sb=new SupplyBin();
+
+		$supplytable='<div class="table border">
+	<div>
+		<div>'.__("Bin ID").'</div>
+		<div>'.__("Count").'</div>
+	</div>';
+		foreach($inventory as $binContent){
+			$sb->BinID=$binContent->BinID;
+			$sb->GetBin();
+			$supplytable.="\t<div>\t\t<div><a href=\"supplybin.php?binid=$sb->BinID\">$sb->Location</a></div>\n\t\t<div>$binContent->Count</div>\n\t</div>\n";
+		}
+		$supplytable.='</div>';
+	}	// endif of sizeof( $inventory ) > 0 block
 ?>
 <!doctype html>
 <html>
@@ -57,81 +74,60 @@
 </head>
 <body>
 <div id="header"></div>
-<div class="page">
+<div class="page supply">
 <?php
 	include( "sidebar.inc.php" );
-?>
-<div class="main">
-<h2><?php echo $config->ParameterArray["OrgName"]; ?></h2>
-<h3>Data Center Stockroom Supplies</h3>
-<h3><?php echo $status; ?></h3>
+
+echo '<div class="main">
+<h2>'.$config->ParameterArray["OrgName"].'</h2>
+<h3>'.__("Data Center Stockroom Supplies").'</h3>
+<h3>'.$status.'</h3>
 <div class="center"><div>
-<form action="<?php echo $_SERVER["PHP_SELF"]; ?>" method="POST">
+<form method="POST">
 <div class="table">
 <div>
-   <div><label for="supplyid">Part Number</label></div>
+   <div><label for="supplyid">'.__("Part Number").'</label></div>
    <div><input type="hidden" name="action" value="query"><select name="supplyid" id="supplyid" onChange="form.submit()">
-   <option value=0>New Supplies</option>
-<?php
-	foreach ( $supplyList as $supplyRow ) {
-		echo "<option value=\"$supplyRow->SupplyID\"";
-		if($sup->SupplyID == $supplyRow->SupplyID){echo " selected";}
-		echo ">($supplyRow->PartNum) $supplyRow->PartName</option>\n";
+   <option value=0>'.__("New Supplies").'</option>';
+
+	foreach($supplyList as $supplyRow){
+		$selected=($sup->SupplyID==$supplyRow->SupplyID)?" selected":"";
+		print "\t\t<option value=\"$supplyRow->SupplyID\"$selected>($supplyRow->PartNum) $supplyRow->PartName</option>\n";
 	}
-?>
-	</select></div>
+
+echo '	</select></div>
 </div>
 <div>
-   <div><label for="partnum">Part Number</label></div>
-   <div><input type="text" name="partnum" id="partnum" value="<?php echo $sup->PartNum; ?>"></div>
+   <div><label for="partnum">'.__("Part Number").'</label></div>
+   <div><input type="text" name="partnum" id="partnum" value="'.$sup->PartNum.'"></div>
 </div>
 <div>
-   <div><label for="partname">Part Name</label></div>
-   <div><input type="text" name="partname" id="partname" value="<?php echo $sup->PartName; ?>"></div>
+   <div><label for="partname">'.__("Part Name").'</label></div>
+   <div><input type="text" name="partname" id="partname" value="'.$sup->PartName.'"></div>
 </div>
 <div>
-   <div><label for="minqty">Min Qty</label></div>
-   <div><input type="text" name="minqty" id="minqty" value="<?php echo $sup->MinQty; ?>"></div>
+   <div><label for="minqty">'.__("Min Qty").'</label></div>
+   <div><input type="text" name="minqty" id="minqty" value='.$sup->MinQty.'></div>
 </div>
 <div>
-   <div><label for="maxqty">Max Qty</label></div>
-   <div><input type="text" name="maxqty" id="maxqty" value="<?php echo $sup->MaxQty; ?>"></div>
+   <div><label for="maxqty">'.__("Max Qty").'</label></div>
+   <div><input type="text" name="maxqty" id="maxqty" value='.$sup->MaxQty.'></div>
 </div>
 <div class="caption">
-   <input type="submit" name="action" value="Create">
-<?php
+   <input type="submit" name="action" value="Create">';
 	if($sup->SupplyID >0){
 		echo '   <input type="submit" name="action" value="Update">';
 	}
-?>
+echo '
 </div>
 </div><!-- END div.table -->
-<?php
-	if ( sizeof( $inventory ) > 0 ) {
-	
-		$sb = new SupplyBin();
-?>
-<div class="table border">
-<div>
-	<div>Bin ID</div>
-	<div>Count</div>
-</div>
-<?php
-		foreach ( $inventory as $binContent ) {
-			$sb->BinID = $binContent->BinID;
-			$sb->GetBin();
-			printf( "<div><div><a href=\"supplybin.php?binid=%d\">%s</a></div>\n<div>%s</div>\n</div>\n", $sb->BinID, $sb->Location, $binContent->Count );
-		}
-?>
-</div>
-<?php
-	}	// endif of sizeof( $inventory ) > 0 block
-?>
+'.$supplytable.'
 </form>
 </div>
 </div>
-<a href="index.php">[ Return to Main Menu ]</a>
+<a href="index.php">[ '.__("Return to Main Menu).' ]</a>
 </div><!-- END div.main -->
 </div><!-- END div.page -->
 </body>
-</html>
+</html>';
+?>
