@@ -550,6 +550,8 @@ class PowerDistribution {
 
 		$sql="SELECT * FROM fac_PDUStats WHERE PDUID=$this->PDUID;";
 		$stats=new stdClass();
+		$stats->Wattage=0;
+		$stats->LastRead=date('Y-m-d G:i:s',0);
 		foreach($this->query($sql) as $row){
 			foreach($row as $prop => $value){
 				if(!is_int($prop)){
