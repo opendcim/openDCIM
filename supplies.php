@@ -125,7 +125,7 @@ echo '
 </form>
 </div>
 </div>
-<a href="index.php">[ '.__("Return to Main Menu).' ]</a>
+<a href="index.php">[ '.__("Return to Main Menu").' ]</a>
 </div><!-- END div.main -->
 </div><!-- END div.page -->
 </body>
