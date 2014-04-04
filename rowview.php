@@ -108,7 +108,7 @@ function BuildCabinet($rear=false){
 				if($errclass!=''){$heighterr="yup";}
 				if($i==$devTop){
 					// Create the filler for the rack either text or a picture
-					$picture=(!$device->BackSide && !$rear || $device->BackSide && $rear)?$device->GetDevicePicture():$device->GetDevicePicture("rear");
+					$picture=(!$device->BackSide && !$rear || $device->BackSide && $rear)?$device->GetDevicePicture(220):$device->GetDevicePicture(220,"rear");
 					$devlabel=$device->Label.(((!$device->BackSide && $rear || $device->BackSide && !$rear) && !$device->HalfDepth)?"(".__("Rear").")":"");
 					$text=($device->Rights!="None")?"<a href=\"devices.php?deviceid=$device->DeviceID\">$highlight $devlabel</a>":$devlabel;
 					
@@ -241,7 +241,7 @@ echo $head,'  <script type="text/javascript" src="scripts/jquery.min.js"></scrip
 
 if($config->ParameterArray["ToolTips"]=='enabled'){
 ?>
-		$('.cabinet td:has(a):not(:has(img)), #zerou div > a, .cabinet .picture a img, .cabinet .picture a div').mouseenter(function(){
+		$('.cabinet td:has(a):not(:has(img)), #zerou div > a, .cabinet .picture a img, .cabinet .picture a > div').mouseenter(function(){
 			var pos=$(this).offset();
 			var tooltip=$('<div />').css({
 				'left':pos.left+this.getBoundingClientRect().width+15+'px',

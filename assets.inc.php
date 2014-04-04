@@ -2229,7 +2229,7 @@ class Device {
 		}
 		return $TotalWeight;	
 	}
-	function GetChildDevicePicture($zoomX, $zoomY){
+	function GetChildDevicePicture($holeW, $zoomX, $zoomY, $rear=false){
 		global $dbh;
 
 		$resp="";
@@ -2241,10 +2241,22 @@ class Device {
 		$parentDev=new Device();
 		$parentDev->DeviceID=$this->ParentDevice;
 		$parentDev->GetDevice();
+				
+		$parenttempl=new DeviceTemplate();
+		$parenttempl->TemplateID=$parentDev->TemplateID;
+		$parenttempl->GetTemplateByID();
 		
-		if ($templ->FrontPictureFile<>""){
-			$picturefile="pictures/".$templ->FrontPictureFile;
+		$picturefile="";
+		if(!$rear){
+			if ($templ->FrontPictureFile<>""){
+				$picturefile="pictures/".$templ->FrontPictureFile;
+			}
 		}else{
+			if ($templ->RearPictureFile<>""){
+				$picturefile="pictures/".$templ->RearPictureFile;
+			}
+		}
+		if (!file_exists($picturefile)){
 			$picturefile="pictures/P_ERROR.png";
 		}
 		list($pictW, $pictH, $type, $attr)=getimagesize($picturefile);
@@ -2253,38 +2265,86 @@ class Device {
 		$hor_blade=($width>$height);
 		$slot=new Slot();
 		$slotOK=true;
-		
-		//get slot from DB
-		$slot->TemplateID=$parentDev->TemplateID;
-		$slot->Position=$this->Position;
-		$slot->BackSide=$this->BackSide;
-		if ($slot->GetSlot()){
-			if ($this->Height>1){
-				//get last slot
-				$lslot=new Slot();
-				$lslot->TemplateID=$parentDev->TemplateID;  
-				$lslot->Position=$this->Position+$this->Height-1;
-				$lslot->BackSide=$this->BackSide;
-				if ($lslot->GetSlot()){
-					//calculate total size
-					$xmin=min($slot->X, $lslot->X);
-					$ymin=min($slot->Y, $lslot->Y);
-					$xmax=max($slot->X+$slot->W, $lslot->X+$lslot->W);
-					$ymax=max($slot->Y+$slot->H, $lslot->Y+$lslot->H);
-					//checking for non consecutive slots or slots of different sizes
-					$err=2; //error pixels by slot
-					if(abs($xmax-$xmin-$slot->W*$this->Height)<$this->Height*$err && abs($ymax-$ymin-$slot->H)<$err 
-						|| abs($ymax-$ymin-$slot->H*$this->Height)<$this->Height*$err && abs($xmax-$xmin-$slot->W)<$err){
-						//put new size in $slot
-						$slot->X=$xmin;
-						$slot->Y=$ymin;
-						$slot->W=$xmax-$xmin;
-						$slot->H=$ymax-$ymin;
-					} 
+		if ($parenttempl->Model=="VTRAY" ||$parenttempl->Model=="HTRAY" ){
+			if ($parentDev->ChassisSlots>0 && ($this->Position+$this->Height-1)<=$parentDev->ChassisSlots){
+				$aspect1u=44.45/450.85; 
+				$holeH=$holeW*$aspect1u*$parentDev->Height;
+				$zoomX=1; $zoomY=1;  //reset zoom
+				$max=max($width,$height);
+				$min=min($width,$height);
+				if ($parenttempl->Model=="VTRAY"){
+					//calculate slot for VTRAY
+					$slot->X=0;
+					$slot->Y=$holeH-$holeH/$parentDev->ChassisSlots*($this->Position+$this->Height-1);
+					$slot->W=$holeW;
+					$slot->H=$holeH/$parentDev->ChassisSlots*$this->Height;
+					if(($templ->FrontPictureFile!="" && !$rear) || ($templ->RearPictureFile!="" && $rear)){
+						//recalculate the slot to adapt it to aspect ratio of device
+						$z=min($slot->W/$max,$slot->H/$min);
+						$sW=$max*$z;
+						$sH=$min*$z;
+						$slot->X=($slot->W-$sW)/2;
+						$slot->Y=$slot->Y+$slot->H-$sH;
+						$slot->W=$sW;
+						$slot->H=$sH;
+					}
+				} else{
+					//calculate slot for HTRAY
+					if(!$rear){
+						$slot->X=$holeW/$parentDev->ChassisSlots*($this->Position-1);
+					}else{
+						$slot->X=$holeW/$parentDev->ChassisSlots*($parentDev->ChassisSlots-$this->Position-$this->Height+1);
+					}
+					$slot->Y=0;
+					$slot->W=$holeW/$parentDev->ChassisSlots*$this->Height;
+					$slot->H=$holeH;
+					if(($templ->FrontPictureFile!="" && !$rear) || ($templ->RearPictureFile!="" && $rear)){
+						//recalculate the slot to adapt it to aspect ratio of device
+						$z=min($slot->W/$min,$slot->H/$max);
+						$sW=$min*$z;
+						$sH=$max*$z;
+						$slot->X=$slot->X+($slot->W-$sW)/2;
+						$slot->Y=$slot->H-$sH;
+						$slot->W=$sW;
+						$slot->H=$sH;
+					}
 				}
-			} //if Height==1 or there is an error, $slot is considered a simple slot
+			}else{
+				$slotOK=false;
+			}
 		}else{
-			$slotOK=false;
+			//get slot from DB
+			$slot->TemplateID=$parentDev->TemplateID;
+			$slot->Position=$this->Position;
+			$slot->BackSide=$this->BackSide;
+			if ($slot->GetSlot()){
+				if ($this->Height>1){
+					//get last slot
+					$lslot=new Slot();
+					$lslot->TemplateID=$parentDev->TemplateID;  
+					$lslot->Position=$this->Position+$this->Height-1;
+					$lslot->BackSide=$this->BackSide;
+					if ($lslot->GetSlot()){
+						//calculate total size
+						$xmin=min($slot->X, $lslot->X);
+						$ymin=min($slot->Y, $lslot->Y);
+						$xmax=max($slot->X+$slot->W, $lslot->X+$lslot->W);
+						$ymax=max($slot->Y+$slot->H, $lslot->Y+$lslot->H);
+						//checking for non consecutive slots or slots of different sizes
+						$err=2; //error pixels by slot
+						if(abs($xmax-$xmin-$slot->W*$this->Height)<$this->Height*$err && abs($ymax-$ymin-$slot->H)<$err 
+							|| abs($ymax-$ymin-$slot->H*$this->Height)<$this->Height*$err && abs($xmax-$xmin-$slot->W)<$err){
+							//put new size in $slot
+							$slot->X=$xmin;
+							$slot->Y=$ymin;
+							$slot->W=$xmax-$xmin;
+							$slot->H=$ymax-$ymin;
+						} 
+					}
+				} //if Height==1 or there is an error, $slot is considered a simple slot
+			}else{
+				$slotOK=false;
+			}
 		}
 		if ($slotOK){
 			$hor_slot=($slot->W>$slot->H);
@@ -2338,7 +2398,7 @@ class Device {
 
 			$label="";
 			$resp.="\t\t<div class='$rotar' style='left: $left; top: $top; width: ".$width."px; height:".$height."px;'>\n$clickable";
-			if ($templ->FrontPictureFile!=""){
+			if(($templ->FrontPictureFile!="" && !$rear) || ($templ->RearPictureFile!="" && $rear)){
 				// IMAGE
 				$resp.="\t\t\t\t<img class='picturerot' style='vertical-align: text-top;' data-deviceid=$this->DeviceID width='".$width."px' height='".$height."px' src='$picturefile' alt='$this->Label'>\n";
 				
@@ -2361,12 +2421,12 @@ class Device {
 					$lleft=intval($lleft).'px';$ltop=intval($ltop).'px';
 					$lheight=intval($lheight);$lwidth=intval($lwidth);
 					$label="\t\t\t<div class=\"rotar_d label\" style=\"top: $ltop; left: $lleft; width: ".$lwidth."px; height:".$lheight."px;\">";
-					$label.="<div class=\"childlab\" style=\"top: 10%; width:".$lwidth."px;  height: 80%;".(($lheight*0.8<13)?" font-size: ".intval($lheight*0.8)."px; ":"")."\">$flags$this->Label</div></div>\n";
+					$label.="<div class=\"childlab\" style=\"top: 10%; width:".$lwidth."px;  height: 80%;".(($lheight*0.8<13)?" font-size: ".intval($lheight*0.8)."px; ":"")."\">$flags$this->Label".(($rear)?" (".__("Rear").")":"")."</div></div>\n";
 				}
 			}else{
 				//LABEL for child device without image
 				$resp.="\t\t\t\t<div class='dept$this->Owner' data-deviceid=$this->DeviceID style='width: ".$width."px; height: ".$height."px;'>";
-				$resp.="<div class=\"textlab\" style=\"top: 10%; height: 80%;".(($height*0.8<13)?" font-size: ".intval($height*0.8)."px; ":"")."\">$flags$this->Label</div></div>\n";
+				$resp.="<div class=\"textlab\" style=\"top: 10%; height: 80%;".(($height*0.8<13)?" font-size: ".intval($height*0.8)."px; ":"")."\">$flags$this->Label".(($rear)?" (".__("Rear").")":"")."</div></div>\n";
 			}
 			$resp.=$clickableend.$label;
 			if ( $this->ChassisSlots > 0 ) {
@@ -2374,7 +2434,7 @@ class Device {
 				$childList = $this->GetDeviceChildren();
 				foreach ( $childList as $tmpDev ) {
 					if (!$tmpDev->BackSide){
-							$resp.=$tmpDev->GetChildDevicePicture($childzoomX,$childzoomY);
+							$resp.=$tmpDev->GetChildDevicePicture($holeW,$childzoomX,$childzoomY);
 					}
 				}
 			}
@@ -2382,7 +2442,7 @@ class Device {
 		}
 		return $resp;
 	}
-	function GetDevicePicture($rear=false){
+	function GetDevicePicture($holeW,$rear=false){
 		$templ=new DeviceTemplate();
 		$templ->TemplateID=$this->TemplateID;
 		$templ->GetTemplateByID();
@@ -2395,7 +2455,6 @@ class Device {
 				$picturefile="pictures/P_ERROR.png";
 			}
 			list($pictW, $pictH, $type, $attr)=getimagesize($picturefile);
-			$holeW=220;
 			//$aspect1u=44.45/482.26; //with fins (19'')
 			$aspect1u=44.45/450.85; //without fins (19''-fins)
 			$holeH=$holeW*$aspect1u*$this->Height;
@@ -2418,19 +2477,45 @@ class Device {
 
 			$resp.="\n\t<div class=\"picture\">\n";
 			$resp.="$clickable\t\t<img class=\"picture\" data-deviceid=$this->DeviceID width=$holeW height=$holeH src=\"$picturefile\" alt=\"$this->Label\">$clickableend\n";
-			$resp.="\t\t<div class=\"label\"><div class=\"parentlab\" >$flags$this->Label</div></div>\n";
+			$resp.="\t\t<div class=\"label\"><div class=\"parentlab\" >$flags$this->Label".(((!$this->BackSide && $rear || $this->BackSide && !$rear) && !$this->HalfDepth)?" (".__("Rear").")":"")."</div></div>\n";
 
 			//Children
-			if(($this->ChassisSlots >0 && !$rear) || ($this->RearChassisSlots >0 && $rear)){
-				$childList=$this->GetDeviceChildren();
-				foreach($childList as $tmpDev){
-					if($rear){
-						if ($tmpDev->BackSide){
-							$resp.=$tmpDev->GetChildDevicePicture($zoomX, $zoomY);
+			$childList=$this->GetDeviceChildren();
+			if (count($childList)>0){
+				if (!$rear){
+					if($this->ChassisSlots >0){
+						//chils in front face
+						foreach($childList as $tmpDev){
+							if (!$tmpDev->BackSide){
+								$resp.=$tmpDev->GetChildDevicePicture($holeW,$zoomX, $zoomY);
+							}
 						}
 					}else{
-						if (!$tmpDev->BackSide){
-							$resp.=$tmpDev->GetChildDevicePicture($zoomX, $zoomY);
+						if (($templ->Model=="HTRAY" || $templ->Model=="HTRAY") && $this->RearChassisSlots >0){
+							//rearside of chils in rear side
+							foreach($childList as $tmpDev){
+								if ($tmpDev->BackSide){
+									$resp.=$tmpDev->GetChildDevicePicture($holeW,$zoomX, $zoomY, true);
+								}
+							}
+						}
+					}
+				}else{
+					if($this->RearChassisSlots >0){
+						//chils in rear face
+						foreach($childList as $tmpDev){
+							if ($tmpDev->BackSide){
+								$resp.=$tmpDev->GetChildDevicePicture($holeW,$zoomX, $zoomY);
+							}
+						}						
+					}else{
+						if (($templ->Model=="HTRAY" || $templ->Model=="VTRAY") && $this->ChassisSlots >0){
+							//rearside of chils in front side
+							foreach($childList as $tmpDev){
+								if (!$tmpDev->BackSide){
+									$resp.=$tmpDev->GetChildDevicePicture($holeW,$zoomX, $zoomY, true);
+								}
+							}
 						}
 					}
 				}
@@ -3637,7 +3722,7 @@ class SwitchInfo {
 						$Saving = true;
 						
 					if ( $Saving == true )
-						$nameList[sizeof($nameList) + 1] = trim(end(explode(":",$label)));
+						$nameList[sizeof($nameList) + 1] = trim(@end(explode(":",$label)));
 					
 					// Once we have captured enough values that match the number of ports, stop
 					if ( sizeof( $nameList ) == $dev->Ports )
@@ -3682,7 +3767,7 @@ class SwitchInfo {
 		$baseOID="IF-MIB::ifOperStatus"; // arguments for not using MIB?
 
 		if ( is_null($portid) ) {		
-			if($reply=@snmprealwalk($dev->PrimaryIP, $Community, $baseOID, 10000, 2)){	
+			if($reply=@snmprealwalk($dev->PrimaryIP, $Community, $baseOID)){	
 				// Skip the returned values until we get to the first port
 				$Saving = false;
 				foreach($reply as $oid => $status){

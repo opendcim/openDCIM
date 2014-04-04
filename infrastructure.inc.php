@@ -1071,7 +1071,7 @@ xsi:noNamespaceSchemaLocation="openDCIMdevicetemplate.xsd">
 			//media type
 			$mt=new MediaTypes();
 			$mt->MediaType=transform($xmlport->PortMedia);
-			if (!$mt->GetMediaByType()){
+			if (!$mt->GetTypeByName()){
 				//New media type
 				$mt->CreateType();
 			}
@@ -1107,7 +1107,7 @@ xsi:noNamespaceSchemaLocation="openDCIMdevicetemplate.xsd">
 			$im=base64_decode($xmltemplate->FrontPicture);
 			file_put_contents("pictures/".$this->FrontPictureFile, $im);
 		}
-		if($this->RearPictureFile!=""){
+		if($this->RearPictureFile!="" && $this->RearPictureFile!=$this->FrontPictureFile){
 			$im=base64_decode($xmltemplate->RearPicture);
 			file_put_contents("pictures/".$this->RearPictureFile, $im);
 		}
