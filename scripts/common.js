@@ -709,7 +709,8 @@ function LameLogDisplay(){
 			$('<div>').append(table).dialog({
 				width: $('#pandn').width(),
 				height: $(window).height()-50,
-				modal: true
+				modal: true,
+				dialogClass: 'logtable'
 			})
 		});
 	});
