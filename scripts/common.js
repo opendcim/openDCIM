@@ -1,3 +1,21 @@
+function getISODateTime(d){
+	// padding function
+	var s = function(a,b){return(1e15+a+"").slice(-b)};
+
+	// default date parameter
+	if (typeof d === 'undefined'){
+		d = new Date();
+	};
+
+	// return ISO datetime
+	return d.getFullYear() + '-' +
+		s(d.getMonth()+1,2) + '-' +
+		s(d.getDate(),2) + ' ' +
+		s(d.getHours(),2) + ':' +
+		s(d.getMinutes(),2) + ':' +
+		s(d.getSeconds(),2);
+}
+
 //Notes render function
 function editnotes(button){
 	button.val('preview').text('Preview');

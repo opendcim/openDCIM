@@ -77,6 +77,19 @@
 		exit;
 	};
 
+	if(isset($_POST['olog'])){
+		$dev->DeviceID=$_POST['devid'];
+		$dev->GetDevice();
+		$dev->OMessage=sanitize($_POST['olog']);
+		$tmpDev=new Device();
+		$tmpDev->DeviceID=$dev->DeviceID;
+		$tmpDev->GetDevice();
+		$return=(class_exists('LogActions'))?LogActions::LogThis($dev,$tmpDev):false;
+		header('Content-Type: application/json');
+		echo json_encode($return);
+		exit;
+	};
+
 	// Set all ports to the same label pattern, media type or color code
 	if(isset($_POST['setall'])){
 		$portnames=array();
@@ -1487,6 +1500,23 @@ echo '	<div class="table">
 <div><div>
 <div class="table style">
 <?php
+	// Operational log
+	// This is an optional block if logging is enabled
+	if(class_exists('LogActions')){
+		print "\t<div>\n\t\t  <div><a name=\"olog\">".__('Operational Log')."</a></div>\n\t\t  <div><div id=\"olog\" class=\"table border\">\n\t\t\t<div><div>".__('Date')."</div><div></div></div>\n";
+
+		foreach(LogActions::GetLog($dev,false) as $logitem){
+			if($logitem->Property=="OMessage"){
+				print "\t\t\t<div><div>$logitem->Time</div><div>$logitem->NewVal</div></div>\n";
+			}
+		}
+
+		print "\t\t\t<div><div></div><div><button type=\"button\">Add note</button><div><input /></div></div></div>\n";
+
+		print "\t\t  </div></div>\n\t\t</div>\n";
+		print "\t\t<div>\n\t\t\t<div>&nbsp;</div><div></div>\n\t\t</div>\n"; // spacer row
+	}
+
 	//HTML content condensed for PHP logic clarity.
 	// If $pwrCords is null then we're creating a device record. Skip power checking.
 	if(!is_null($pwrCords)&&((isset($_POST['action'])&&$_POST['action']!='Child')||!isset($_POST['action']))&&(!in_array($dev->DeviceType,array('Physical Infrastructure','Patch Panel')))){
@@ -1701,6 +1731,20 @@ echo '	<div class="table">
 		$('.switch.table, .patchpanel.table').massedit();
 
 		<?php echo (class_exists('LogActions'))?'LameLogDisplay();':''; ?>
+
+		$('#olog button').click(function(){
+			$.post('',{devid: $('#deviceid').val(), olog: $('#olog input').val()}).done(function(data){
+				if(data){
+					var row=$('<div>')
+						.append($('<div>').text(getISODateTime(new Date())))
+						.append($('<div>').text($('#olog input').val()));
+					$('#olog button').parent('div').parent('div').before(row);
+					$('#olog input').val('');
+				}else{
+					$('#olog input').effect('highlight', {color: 'salmon'}, 1500);
+				}
+			});
+		});
 
 		$('.caption > button[name="audit"]').click(function(){
 			$('#auditconfirm').removeClass('hide').dialog({

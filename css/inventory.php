@@ -651,6 +651,19 @@ div.cabinet {
 #pandn.table .custom-combobox input {width: calc(100% - 18px);}
 #pandn.table .custom-combobox input {background-image: none; border-left: 2px; border-right: 0px; padding-left: 4px; font-size: inherit;} 
 #pandn.table .custom-combobox a {margin: 0; vertical-align: top; width: 18px; border-left: 0px; border-right: 2px; position: absolute; top: 0; right: 0;} 
+
+#olog > div:first-child { border-bottom: 2px solid black; }
+#olog > div > div:first-child { width: 100px; padding-right: 5px; white-space: nowrap; }
+#olog > div:first-child > div:first-child,
+#olog > div:last-child > div:first-child { border-right: 0 none; }
+#olog > div:first-child > div:first-child ~ div,
+#olog > div:last-child > div:first-child ~ div { border-left: 0 none; }
+
+#olog > div:last-child > div > button { float: right; line-height: 1em; height: 1.75em;}
+#olog > div:last-child > div > button ~ div { overflow: hidden; padding-right: 1em; border: 0 none; }
+#olog > div:last-child > div > button ~ div > input { width: 100%; } 
+
+
 .device #tags { width: 95%; min-width: 250px;}
 
 #firstport.hide { display: none; }
