@@ -713,7 +713,8 @@ function LameLogDisplay(){
 			})
 		});
 	});
-	$('.caption').append(test);
+	// the tabs are to match the existing page layout
+	$('.caption').append("\t\t").append(test);
 }
 
 // ENG - Logging functions
