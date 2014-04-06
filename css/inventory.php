@@ -664,7 +664,7 @@ div.cabinet {
 #olog > div:last-child > div > button ~ div { overflow: hidden; padding-right: 1em; border: 0 none; }
 #olog > div:last-child > div > button ~ div > input { width: 100%; } 
 
-#olog .table > div > div ~ div {white-space: pre-wrap; max-width: 995px;}
+#olog .table > div > div ~ div {white-space: pre-wrap; max-width: 800px; word-wrap: break-word;}
 
 .device #tags { width: 95%; min-width: 250px;}
 
