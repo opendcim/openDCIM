@@ -1742,6 +1742,21 @@ echo '	<div class="table">
 		// Scroll the operations log to the bottom
 		scrollolog();
 
+		var zoom=$('<span>').addClass('ui-icon ui-icon-circle-zoomin').css('float','right');
+		$('#olog > div:first-child > div').prepend(zoom);
+		zoom.click(function(e){
+			var dialog=$('<div>').html($('#olog .table').clone().addClass('border'));
+			dialog.dialog({
+				modal: true,
+				width: $(window).width()-50,
+				height: $(window).height()-50,
+				beforeClose: function(){
+					$(this).attr('id','');
+				}
+			}).attr('id','olog').find('div > div > div').css('padding','3px');
+			dialog.find('div > div > div ~ div').css({'max-width':$(window).width()-114-$('#olog .table > div:first-child > div:first-child').width()});
+		});
+
 		// Setup an event listener for the enter key and prevent it from submitting the form
 		$('#olog input').keypress(function (e) {    
 			var charCode = e.charCode || e.keyCode || e.which;
