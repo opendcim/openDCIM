@@ -1502,8 +1502,11 @@ echo '	<div class="table">
 <?php
 	// Operational log
 	// This is an optional block if logging is enabled
-	if(class_exists('LogActions')){
-		print "\t<div>\n\t\t  <div><a name=\"olog\">".__('Operational Log')."</a></div>\n\t\t  <div><div id=\"olog\" class=\"table border\">\n\t\t\t<div><div>".__('Date')."</div><div></div></div>\n";
+	if(class_exists('LogActions') && $dev->DeviceID >0){
+		print "\t<div>\n\t\t  <div><a name=\"olog\">".__('Operational Log')."</a></div>\n\t\t  <div><div id=\"olog\" class=\"table border\">\n\t\t\t<div><div>".__('Date')."</div></div>\n";
+
+		// Wrapping the actual log events with a table of their own and a div that we can style
+		print "\t<div><div><div><div class=\"table\">\n";
 
 		foreach(LogActions::GetLog($dev,false) as $logitem){
 			if($logitem->Property=="OMessage"){
@@ -1511,7 +1514,11 @@ echo '	<div class="table">
 			}
 		}
 
-		print "\t\t\t<div><div></div><div><button type=\"button\">Add note</button><div><input /></div></div></div>\n";
+		// Closing the row, table for the log events, and the stylable div
+		print "\t</div></div></div></div>\n";
+
+		// The input box and button
+		print "\t\t\t<div><div><button type=\"button\">Add note</button><div><input /></div></div></div>\n";
 
 		print "\t\t  </div></div>\n\t\t</div>\n";
 		print "\t\t<div>\n\t\t\t<div>&nbsp;</div><div></div>\n\t\t</div>\n"; // spacer row
@@ -1732,14 +1739,29 @@ echo '	<div class="table">
 
 		<?php echo (class_exists('LogActions'))?'LameLogDisplay();':''; ?>
 
+		// Scroll the operations log to the bottom
+		scrollolog();
+
+		// Setup an event listener for the enter key and prevent it from submitting the form
+		$('#olog input').keypress(function (e) {    
+			var charCode = e.charCode || e.keyCode || e.which;
+			if (charCode  == 13) {
+				// if enter is pressed and there is something in this line then submit a new operations event
+				if($(this).val().trim()!=''){
+					$('#olog button').trigger('click');
+				}
+				return false;
+			}
+		});
 		$('#olog button').click(function(){
 			$.post('',{devid: $('#deviceid').val(), olog: $('#olog input').val()}).done(function(data){
 				if(data){
 					var row=$('<div>')
 						.append($('<div>').text(getISODateTime(new Date())))
 						.append($('<div>').text($('#olog input').val()));
-					$('#olog button').parent('div').parent('div').before(row);
+					$('#olog .table').append(row);
 					$('#olog input').val('');
+					scrollolog();
 				}else{
 					$('#olog input').effect('highlight', {color: 'salmon'}, 1500);
 				}

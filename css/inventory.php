@@ -654,10 +654,11 @@ div.cabinet {
 
 #olog > div:first-child { border-bottom: 2px solid black; }
 #olog > div > div:first-child { width: 100px; padding-right: 5px; white-space: nowrap; }
-#olog > div:first-child > div:first-child,
-#olog > div:last-child > div:first-child { border-right: 0 none; }
-#olog > div:first-child > div:first-child ~ div,
-#olog > div:last-child > div:first-child ~ div { border-left: 0 none; }
+#olog > div:first-child > div:first-child { border-right: 0 none; }
+#olog > div:first-child > div:first-child ~ div { border-left: 0 none; }
+
+#olog > div:nth-child(2) > div { padding: 0px; }
+#olog > div:nth-child(2) > div > div { max-height: 9em; overflow-y: scroll; overflow-x: hidden; border: 0;}
 
 #olog > div:last-child > div > button { float: right; line-height: 1em; height: 1.75em;}
 #olog > div:last-child > div > button ~ div { overflow: hidden; padding-right: 1em; border: 0 none; }

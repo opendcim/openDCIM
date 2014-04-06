@@ -16,6 +16,12 @@ function getISODateTime(d){
 		s(d.getSeconds(),2);
 }
 
+// a way too specific function for scrolling a div
+function scrollolog(){
+	var olog=$('#olog .table').parent('div');
+	olog[0].scrollTop=olog[0].scrollHeight;
+}
+
 //Notes render function
 function editnotes(button){
 	button.val('preview').text('Preview');
