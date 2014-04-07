@@ -869,7 +869,15 @@ $(document).ready(function() {
 			}else{
 				$(this).css({'height':'','width':''});
 			}
-			$(this).show();
+			$(this).show().on('click',function(){
+				var pop=$(this).clone();
+				pop.attr('style','');
+				$('<div>').html(pop.css({'max-width':'600px','max-height':'600px'})).dialog({
+					width: 'auto',
+					height: 'auto',
+					modal: true
+				});
+			});
 			toggledeviceimages();
 		});
 
@@ -1800,7 +1808,6 @@ echo '	<div class="table">
 				}
 			});
 		});
-
 	});
 </script>
 
