@@ -2442,7 +2442,7 @@ class Device {
 		}
 		return $resp;
 	}
-	function GetDevicePicture($holeW,$rear=false){
+	function GetDevicePicture($holeW,$rear=false,$label=true){
 		$templ=new DeviceTemplate();
 		$templ->TemplateID=$this->TemplateID;
 		$templ->GetTemplateByID();
@@ -2477,7 +2477,10 @@ class Device {
 
 			$resp.="\n\t<div class=\"picture\">\n";
 			$resp.="$clickable\t\t<img class=\"picture\" data-deviceid=$this->DeviceID width=$holeW height=$holeH src=\"$picturefile\" alt=\"$this->Label\">$clickableend\n";
-			$resp.="\t\t<div class=\"label\"><div class=\"parentlab\" >$flags$this->Label".(((!$this->BackSide && $rear || $this->BackSide && !$rear) && !$this->HalfDepth)?" (".__("Rear").")":"")."</div></div>\n";
+			if ( $label ) {
+				$resp.="\t\t<div class=\"label\"><div class=\"parentlab\" >$flags$this->Label".(((!$this->BackSide && $rear || $this->BackSide && !$rear) && !$this->HalfDepth)?" (".__("Rear").")":"");
+			}
+			$resp.="</div></div>\n";
 
 			//Children
 			$childList=$this->GetDeviceChildren();
