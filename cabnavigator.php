@@ -230,7 +230,7 @@ function renderUnassignedTemplateOwnership($noTemplFlag, $noOwnerFlag, $device) 
 			}
 
 			if ((!$device->HalfDepth || !$device->BackSide)&&!$rear || (!$device->HalfDepth || $device->BackSide)&&$rear){
-				$backside=($device->HalfDepth)?true:$backside;
+				$backside=($device->HalfDepth || $device->BackSide)?true:$backside;
 				$devTop=$device->Position + $device->Height - 1;
 
 				$templ->TemplateID=$device->TemplateID;

@@ -77,6 +77,19 @@
 		exit;
 	};
 
+	if(isset($_POST['olog'])){
+		$dev->DeviceID=$_POST['devid'];
+		$dev->GetDevice();
+		$dev->OMessage=sanitize($_POST['olog']);
+		$tmpDev=new Device();
+		$tmpDev->DeviceID=$dev->DeviceID;
+		$tmpDev->GetDevice();
+		$return=(class_exists('LogActions'))?LogActions::LogThis($dev,$tmpDev):false;
+		header('Content-Type: application/json');
+		echo json_encode($return);
+		exit;
+	};
+
 	// Set all ports to the same label pattern, media type or color code
 	if(isset($_POST['setall'])){
 		$portnames=array();
@@ -856,7 +869,15 @@ $(document).ready(function() {
 			}else{
 				$(this).css({'height':'','width':''});
 			}
-			$(this).show();
+			$(this).show().on('click',function(){
+				var pop=$(this).clone();
+				pop.attr('style','');
+				$('<div>').html(pop.css({'max-width':'600px','max-height':'600px'})).dialog({
+					width: 'auto',
+					height: 'auto',
+					modal: true
+				});
+			});
 			toggledeviceimages();
 		});
 
@@ -1487,6 +1508,30 @@ echo '	<div class="table">
 <div><div>
 <div class="table style">
 <?php
+	// Operational log
+	// This is an optional block if logging is enabled
+	if(class_exists('LogActions') && $dev->DeviceID >0){
+		print "\t<div>\n\t\t  <div><a name=\"olog\">".__('Operational Log')."</a></div>\n\t\t  <div><div id=\"olog\" class=\"table border\">\n\t\t\t<div><div>".__('Date')."</div></div>\n";
+
+		// Wrapping the actual log events with a table of their own and a div that we can style
+		print "\t<div><div><div><div class=\"table\">\n";
+
+		foreach(LogActions::GetLog($dev,false) as $logitem){
+			if($logitem->Property=="OMessage"){
+				print "\t\t\t<div><div>$logitem->Time</div><div>$logitem->NewVal</div></div>\n";
+			}
+		}
+
+		// Closing the row, table for the log events, and the stylable div
+		print "\t</div></div></div></div>\n";
+
+		// The input box and button
+		print "\t\t\t<div><div><button type=\"button\">Add note</button><div><input /></div></div></div>\n";
+
+		print "\t\t  </div></div>\n\t\t</div>\n";
+		print "\t\t<div>\n\t\t\t<div>&nbsp;</div><div></div>\n\t\t</div>\n"; // spacer row
+	}
+
 	//HTML content condensed for PHP logic clarity.
 	// If $pwrCords is null then we're creating a device record. Skip power checking.
 	if(!is_null($pwrCords)&&((isset($_POST['action'])&&$_POST['action']!='Child')||!isset($_POST['action']))&&(!in_array($dev->DeviceType,array('Physical Infrastructure','Patch Panel')))){
@@ -1702,6 +1747,50 @@ echo '	<div class="table">
 
 		<?php echo (class_exists('LogActions'))?'LameLogDisplay();':''; ?>
 
+		// Scroll the operations log to the bottom
+		scrollolog();
+
+		var zoom=$('<span>').addClass('ui-icon ui-icon-circle-zoomin').css('float','right');
+		$('#olog > div:first-child > div').prepend(zoom);
+		zoom.click(function(e){
+			var dialog=$('<div>').html($('#olog .table').clone().addClass('border'));
+			dialog.dialog({
+				modal: true,
+				width: $(window).width()-50,
+				height: $(window).height()-50,
+				beforeClose: function(){
+					$(this).attr('id','');
+				}
+			}).attr('id','olog').find('div > div > div').css('padding','3px');
+			dialog.find('div > div > div ~ div').css({'max-width':$(window).width()-114-$('#olog .table > div:first-child > div:first-child').width()});
+		});
+
+		// Setup an event listener for the enter key and prevent it from submitting the form
+		$('#olog input').keypress(function (e) {    
+			var charCode = e.charCode || e.keyCode || e.which;
+			if (charCode  == 13) {
+				// if enter is pressed and there is something in this line then submit a new operations event
+				if($(this).val().trim()!=''){
+					$('#olog button').trigger('click');
+				}
+				return false;
+			}
+		});
+		$('#olog button').click(function(){
+			$.post('',{devid: $('#deviceid').val(), olog: $('#olog input').val()}).done(function(data){
+				if(data){
+					var row=$('<div>')
+						.append($('<div>').text(getISODateTime(new Date())))
+						.append($('<div>').text($('#olog input').val()));
+					$('#olog .table').append(row);
+					$('#olog input').val('');
+					scrollolog();
+				}else{
+					$('#olog input').effect('highlight', {color: 'salmon'}, 1500);
+				}
+			});
+		});
+
 		$('.caption > button[name="audit"]').click(function(){
 			$('#auditconfirm').removeClass('hide').dialog({
 				modal: true,
@@ -1719,7 +1808,6 @@ echo '	<div class="table">
 				}
 			});
 		});
-
 	});
 </script>
 

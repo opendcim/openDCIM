@@ -1,3 +1,27 @@
+function getISODateTime(d){
+	// padding function
+	var s = function(a,b){return(1e15+a+"").slice(-b)};
+
+	// default date parameter
+	if (typeof d === 'undefined'){
+		d = new Date();
+	};
+
+	// return ISO datetime
+	return d.getFullYear() + '-' +
+		s(d.getMonth()+1,2) + '-' +
+		s(d.getDate(),2) + ' ' +
+		s(d.getHours(),2) + ':' +
+		s(d.getMinutes(),2) + ':' +
+		s(d.getSeconds(),2);
+}
+
+// a way too specific function for scrolling a div
+function scrollolog(){
+	var olog=$('#olog .table').parent('div');
+	olog[0].scrollTop=olog[0].scrollHeight;
+}
+
 //Notes render function
 function editnotes(button){
 	button.val('preview').text('Preview');
@@ -691,11 +715,13 @@ function LameLogDisplay(){
 			$('<div>').append(table).dialog({
 				width: $('#pandn').width(),
 				height: $(window).height()-50,
-				modal: true
+				modal: true,
+				dialogClass: 'logtable'
 			})
 		});
 	});
-	$('.caption').append(test);
+	// the tabs are to match the existing page layout
+	$('.caption').append("\t\t").append(test);
 }
 
 // ENG - Logging functions

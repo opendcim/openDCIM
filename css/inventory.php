@@ -651,6 +651,21 @@ div.cabinet {
 #pandn.table .custom-combobox input {width: calc(100% - 18px);}
 #pandn.table .custom-combobox input {background-image: none; border-left: 2px; border-right: 0px; padding-left: 4px; font-size: inherit;} 
 #pandn.table .custom-combobox a {margin: 0; vertical-align: top; width: 18px; border-left: 0px; border-right: 2px; position: absolute; top: 0; right: 0;} 
+
+#olog > div:first-child { border-bottom: 2px solid black; }
+#olog > div > div:first-child { width: 100px; padding-right: 5px; white-space: nowrap; }
+#olog > div:first-child > div:first-child { border-right: 0 none; }
+#olog > div:first-child > div:first-child ~ div { border-left: 0 none; }
+
+#olog > div:nth-child(2) > div { padding: 0px; }
+#olog > div:nth-child(2) > div > div { max-height: 9em; overflow-y: scroll; overflow-x: hidden; border: 0;}
+
+#olog > div:last-child > div > button { float: right; line-height: 1em; height: 1.75em;}
+#olog > div:last-child > div > button ~ div { overflow: hidden; padding-right: 1em; border: 0 none; }
+#olog > div:last-child > div > button ~ div > input { width: 100%; } 
+
+#olog .table > div > div ~ div {white-space: pre-wrap; max-width: 800px; word-wrap: break-word;}
+
 .device #tags { width: 95%; min-width: 250px;}
 
 #firstport.hide { display: none; }
@@ -696,15 +711,15 @@ div.cabinet {
 .jHtmlArea iframe { background-color: white; border: 1px inset; min-height: 100px;}
 
 /* Logging style */
-#logtable { width: 100%; border: 1px solid black; }
+#logtable { width: 100%; width: calc(100% - 36px); border: 1px solid black; }
 #logtable > div:first-child { border-bottom: 1px solid black; font-size: large;}
 #logtable > div:nth-child(2n) { background-color: lightgray; border-bottom: 1px dotted black; }
-#logtable > div ~ div > div:first-child{ padding: 3px; }
-#logtable > div ~ div > div:nth-child(4){ border-left: 2px dotted black; padding-left: 3px; }
+#logtable > div ~ div > div:first-child{ padding: 3px; white-space: nowrap;}
+#logtable > div ~ div > div:nth-child(4){ border-left: 2px dotted black; padding-left: 3px; white-space: nowrap;}
 #logtable > div ~ div > div:nth-child(5){ text-align: right; }
 #logtable > div ~ div > div:nth-child(5):before{ content:"'"; }
 #logtable > div ~ div > div:nth-child(5):after{ content:"' => "; }
-
+.logtable > div.ui-dialog-content { overflow-y: auto; overflow-x: hidden; }
 
 /* Button code primarily from http://somadesign.ca */
 /* Button */

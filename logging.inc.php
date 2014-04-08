@@ -83,7 +83,7 @@ class LogActions {
 
 		$trace=debug_backtrace();
 		// we're only concerned with the 2nd record $trace can be read for a full debug if something calls for it
-		$caller=$trace[1];
+		$caller=(isset($trace[1]))?$trace[1]:array('function' => 'direct');
 		$action=$caller['function'];
 		if(preg_match("/create/i", $caller['function'])){$action='1';}
 		if(preg_match("/delete/i", $caller['function'])){$action='2';}
@@ -124,7 +124,9 @@ class LogActions {
 
 			// Note the changed values
 			foreach($diff as $key => $value){
-				$diff[$key]=$key.": ".$originalobject->$key." => ".$object->$key;
+				// Suppressing errors here because if a new value exists on the object there won't be one in the 
+				// original and it will throw an error on the web server
+				@$diff[$key]=$key.": ".$originalobject->$key." => ".$object->$key;
 			}
 		}
 
@@ -177,7 +179,9 @@ class LogActions {
 			if(count($diff)){
 				foreach($diff as $key => $value){
 					$log->Property=$key;
-					$log->OldVal=$originalobject->$key;
+					// Suppressing errors here because if a new value exists on the object there won't be one in the 
+					// original and it will throw an error on the web server
+					@$log->OldVal=$originalobject->$key;
 					$log->NewVal=$object->$key;
 					$return=($log->WriteToDB())?$return:false;
 				}
