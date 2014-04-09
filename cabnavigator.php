@@ -684,10 +684,8 @@ if($config->ParameterArray["CDUToolTips"]=='enabled'){
 	icon.on('click',function(){
 		if($(this).data('show')){
 			serutciPoN();
-			$(this).data('show',false);
 		}else{
 			NoPictures();
-			$(this).data('show',true);
 		}
 		
 	});
@@ -697,12 +695,14 @@ if($config->ParameterArray["CDUToolTips"]=='enabled'){
 	// Read the cookie and do stuff
 	if(typeof $.cookie('cabpics')=='undefined' || $.cookie('cabpics')=='show'){
 		// we're all good do nothing
+		serutciPoN();
 	}else{
 		NoPictures();
 	}
 		
 	$('#centeriehack > .cabinet:first-child > table:first-child th:first-child').append(icon);
 	function serutciPoN(){
+		icon.data('show',false);
 		setCookie('cabpics', 'show');
 		$('div.picture, .picture > div:not(.label)').css({'border':''});
 		$('.picture img').each(function(){
@@ -715,6 +715,7 @@ if($config->ParameterArray["CDUToolTips"]=='enabled'){
 		});
 	}
 	function NoPictures(){
+		icon.data('show',true);
 		setCookie('cabpics', 'hide');
 		$('div.label').css('display','block');
 		$('div.picture, .picture > div:not(.label)').css({'border':'1px inset black'});
