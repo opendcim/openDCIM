@@ -484,7 +484,9 @@ div.cabinet {
 	filter: glow(color=#063,strength=2), alpha(opacity=90);
 } 
 .cabnavigator .picture div .label {overflow: hidden;}
-
+.cabnavigator .picture .label > div,
+.cabnavigator .picture div > a > div > div { top: 10%; height: 80%; padding-left: 0.3em;}
+.cabnavigator .picture div > a > div > div {overflow: hidden;}
 .cabnavigator .picture div img:hover, .cabnavigator .picture a > div:hover { border: 2px solid red; margin: -2px;}
 
 .rotar_d{
