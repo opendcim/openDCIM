@@ -92,19 +92,19 @@ starting at 1, as they appear in the .ttc file e.g.
 */
 
 $this->fontdata = array(
-	"dejavusanscondensed" => array(
+/*	"dejavusanscondensed" => array(
 		'R' => "DejaVuSansCondensed.ttf",
 		'B' => "DejaVuSansCondensed-Bold.ttf",
 		'I' => "DejaVuSansCondensed-Oblique.ttf",
 		'BI' => "DejaVuSansCondensed-BoldOblique.ttf",
-		),
+		), */
 	"dejavusans" => array(
 		'R' => "DejaVuSans.ttf",
 		'B' => "DejaVuSans-Bold.ttf",
 		'I' => "DejaVuSans-Oblique.ttf",
 		'BI' => "DejaVuSans-BoldOblique.ttf",
 		),
-	"dejavuserif" => array(
+/*	"dejavuserif" => array(
 		'R' => "DejaVuSerif.ttf",
 		'B' => "DejaVuSerif-Bold.ttf",
 		'I' => "DejaVuSerif-Italic.ttf",
@@ -122,14 +122,15 @@ $this->fontdata = array(
 		'I' => "DejaVuSansMono-Oblique.ttf",
 		'BI' => "DejaVuSansMono-BoldOblique.ttf",
 		),
-
+*/
 
 /* OCR-B font for Barcodes */
 	"ocrb" => array(
 		'R' => "ocrb10.ttf",
 		),
 
-/* Thai fonts */
+/*
+// Thai fonts
 	"garuda" => array(
 		'R' => "Garuda.ttf",
 		'B' => "Garuda-Bold.ttf",
@@ -144,7 +145,7 @@ $this->fontdata = array(
 		),
 
 
-/* Indic fonts */
+// Indic fonts
 	"ind_bn_1_001" => array(
 		'R' => "ind_bn_1_001.ttf",
 		'indic' => true,
@@ -183,7 +184,7 @@ $this->fontdata = array(
 		),
 
 
-/* XW Zar Arabic fonts */
+// XW Zar Arabic fonts
 	"xbriyaz" => array(
 		'R' => "XB Riyaz.ttf",
 		'B' => "XB RiyazBd.ttf",
@@ -199,11 +200,8 @@ $this->fontdata = array(
 		'unAGlyphs' => true,
 		),
 
+// Examples of some CJK fonts
 
-
-
-/* Examples of some CJK fonts */
-/*
 	"unbatang_0613" => array(
 		'R' => "UnBatang_0613.ttf",
 		),
