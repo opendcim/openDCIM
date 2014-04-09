@@ -213,7 +213,7 @@ function renderUnassignedTemplateOwnership($noTemplFlag, $noOwnerFlag, $device) 
 		$currentHeight=$cab->CabinetHeight;
 
 		$body.="<div class=\"cabinet\">\n\t<table>
-		<tr><th id=\"cabid\" data-cabinetid=$cab->CabinetID colspan=2 $cab_color><a href='javascript:conmutePictures();'>".__("Cabinet")." $cab->Location".($rear?" (".__("Rear").")":"")."</a></th></tr>
+		<tr><th id=\"cabid\" data-cabinetid=$cab->CabinetID colspan=2 $cab_color>".__("Cabinet")." $cab->Location".($rear?" (".__("Rear").")":"")."</th></tr>
 		<tr><td class=\"cabpos\">".__("Pos")."</td><td>".__("Device")."</td></tr>\n";
 
 		$heighterr="";
@@ -280,12 +280,11 @@ function renderUnassignedTemplateOwnership($noTemplFlag, $noOwnerFlag, $device) 
 						// Create the filler for the rack either text or a picture
 						$picture=(!$device->BackSide && !$rear || $device->BackSide && $rear)?$device->GetDevicePicture(220):$device->GetDevicePicture(220,"rear");
 						$devlabel=$device->Label.(((!$device->BackSide && $rear || $device->BackSide && !$rear) && !$device->HalfDepth)?"(".__("Rear").")":"");
-						//$text=($device->Rights!="None")?"<a href=\"devices.php?deviceid=$device->DeviceID\">$highlight $devlabel</a>":$devlabel;
-						$text="<div style='position:absolute; margin: -0.25em 0em -0.4em;'>".(($device->Rights!="None")?"<a href=\"devices.php?deviceid=$device->DeviceID\">$highlight $devlabel</a>":$devlabel)."</div>";
+						$text=($device->Rights!="None")?"<a href=\"devices.php?deviceid=$device->DeviceID\">$highlight $devlabel</a>":$devlabel;
 						
 						// Put the device in the rack
 						$body.="\t\t<tr><td class=\"cabpos$reserved dept$device->Owner$errclass\">$i</td><td class=\"dept$device->Owner$reserved\" rowspan=$device->Height data-deviceid=$device->DeviceID>";
-						$body.=($picture)?$text.$picture:$text;
+						$body.=($picture)?$picture:$text;
 						$body.="</td></tr>\n";
 					}else{
 						$body.="\t\t<tr><td class=\"cabpos$reserved dept$device->Owner$errclass\">$i</td></tr>\n";
@@ -572,7 +571,10 @@ if($config->ParameterArray["ToolTips"]=='enabled'){
 ?>
 		$('.cabinet td:has(a):not(:has(img)), #zerou div > a, .cabinet .picture a img, .cabinet .picture a > div').mouseenter(function(){
 			$('div.label').show();
-			$(this).parents('div').children('div.label').hide();
+			var srctest=(typeof $(this).attr('src')==="undefined")?'css/blank.gif':$(this).attr('src');
+			if(srctest!='css/blank.gif'){
+				$(this).parents('div').children('div.label').hide();
+			}
 			var pos=$(this).offset();
 			var tooltip=$('<div />').css({
 				'left':pos.left+this.getBoundingClientRect().width+15+'px',
@@ -612,16 +614,6 @@ if($config->ParameterArray["CDUToolTips"]=='enabled'){
 }
 ?>
 	});
-	var visiblepict=true;
-	function conmutePictures(){
-		if (visiblepict){ 
-			$(".picture").hide();
-		}else{
-			$(".picture").show();
-		}
-		visiblepict=!visiblepict;
-	}
-	
   </script>
 </head>
 
@@ -685,6 +677,40 @@ if($config->ParameterArray["CDUToolTips"]=='enabled'){
 			$('.cabinet').width(width*2).css('max-width',width*2+'px');
 		}
 	});
+
+	var icon=$('<span>').addClass('ui-icon ui-icon-circle-zoomin').css('float','left').data('show',false);
+	icon.on('click',function(){
+		if($(this).data('show')){
+			serutciPoN();
+			$(this).data('show',false);
+		}else{
+			NoPictures();
+			$(this).data('show',true);
+		}
+		
+	});
+		
+	$('#centeriehack > .cabinet:first-child > table:first-child th:first-child').append(icon);
+	function serutciPoN(){
+		$('div.picture, .picture > div:not(.label)').css({'border':''});
+		$('.picture img').each(function(){
+			if($(this).attr('src')=='css/blank.gif'){
+				$(this).attr('src',$(this).data('src'));
+			}
+		});
+	}
+	function NoPictures(){
+		$('div.label').css('display','block');
+		$('div.picture, .picture > div:not(.label)').css({'border':'1px inset black'});
+		$('.picture img').each(function(){
+			var pic=$(this);
+			if(pic.attr('src')!='css/blank.gif'){
+				pic.data('src',pic.attr('src'));
+				pic.attr('src','css/blank.gif');
+			}
+		});
+		$('.picture img').attr('src','css/blank.gif');
+	}
 </script>
 </body>
 </html>
