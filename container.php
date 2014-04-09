@@ -28,7 +28,14 @@
 			}
 		}
 	}
-
+	
+	if(isset($_POST['action']) && $_POST['action']=='Delete'){
+		$c->ContainerID=$_POST['containerid'];
+		$c->DeleteContainer();
+		header('Location: container.php');
+		exit;
+	}
+	
 	if(isset($_POST['cambio_cont'])&& $_POST['cambio_cont']=='SI'){
 		$c->ContainerID=$_POST['containerid'];
 		$c->Name=trim($_POST['name']);
@@ -240,6 +247,7 @@ echo '<div class="caption">';
 
 	if($c->ContainerID >0){
 		echo '   <button type="submit" name="action" value="Update">',__("Update"),'</button>';
+		echo '   <button type="submit" name="action" value="Delete">',__("Delete"),'</button>';
 	}else{
 		echo '   <button type="submit" name="action" value="Create">',__("Create"),'</button>';
 	}

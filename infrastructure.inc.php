@@ -1844,6 +1844,33 @@ class Container {
 		}
 	}
 
+	function DeleteContainer(){
+		global $dbh;
+		$this->MakeSafe();
+		
+		$ChildContainerList=$this->GetChildContainerList();
+		foreach($ChildContainerList as $cRow){
+			$cRow->ParentID=0;
+			$cRow->UpdateContainer();
+		}
+		$ChildDCList=$this->GetChildDCList();
+		foreach($ChildDCList as $dcRow){
+			$dcRow->ContainerID=0;
+			$dcRow->UpdateDataCenter();
+		}
+
+		// Now delete the container itself
+		$sql="DELETE FROM fac_Container WHERE ContainerID=$this->ContainerID;";
+
+		if(!$dbh->exec($sql)){
+			$info=$dbh->errorInfo();
+
+			error_log("PDO Error: {$info[2]} SQL=$sql");
+			return false;
+		}
+		return;
+	}
+	
 	function GetContainer(){
 		$this->MakeSafe();
 
