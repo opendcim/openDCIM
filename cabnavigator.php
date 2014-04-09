@@ -544,6 +544,8 @@ $body.='<div id="infopanel">
 
 echo $head,'  <script type="text/javascript" src="scripts/jquery.min.js"></script>
   <script type="text/javascript" src="scripts/jquery-ui.min.js"></script>
+  <script type="text/javascript" src="scripts/jquery.cookie.js"></script>
+  <script type="text/javascript" src="scripts/common.js"></script>
   <script type="text/javascript">
 	var form=$("<form>").attr({ method: "post", action: "cabnavigator.php" });
 	$("<input>").attr({ type: "hidden", name: "cabinetid", value: "',$cab->CabinetID,'"}).appendTo(form);
@@ -689,17 +691,31 @@ if($config->ParameterArray["CDUToolTips"]=='enabled'){
 		}
 		
 	});
+
+	// TODO : Clean this shit up.  Make it more generic and get it into the common.js and outta here
+
+	// Read the cookie and do stuff
+	if(typeof $.cookie('cabpics')=='undefined' || $.cookie('cabpics')=='show'){
+		// we're all good do nothing
+	}else{
+		NoPictures();
+	}
 		
 	$('#centeriehack > .cabinet:first-child > table:first-child th:first-child').append(icon);
 	function serutciPoN(){
+		setCookie('cabpics', 'show');
 		$('div.picture, .picture > div:not(.label)').css({'border':''});
 		$('.picture img').each(function(){
+			var pic=$(this);
 			if($(this).attr('src')=='css/blank.gif'){
 				$(this).attr('src',$(this).data('src'));
+				pic.width(pic.width()+2);
+				pic.height(pic.height()+2);
 			}
 		});
 	}
 	function NoPictures(){
+		setCookie('cabpics', 'hide');
 		$('div.label').css('display','block');
 		$('div.picture, .picture > div:not(.label)').css({'border':'1px inset black'});
 		$('.picture img').each(function(){
@@ -707,6 +723,8 @@ if($config->ParameterArray["CDUToolTips"]=='enabled'){
 			if(pic.attr('src')!='css/blank.gif'){
 				pic.data('src',pic.attr('src'));
 				pic.attr('src','css/blank.gif');
+				pic.width(pic.width()-2);
+				pic.height(pic.height()-2);
 			}
 		});
 		$('.picture img').attr('src','css/blank.gif');

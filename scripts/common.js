@@ -16,6 +16,14 @@ function getISODateTime(d){
 		s(d.getSeconds(),2);
 }
 
+// Function to set a cookie
+function setCookie(c_name, value) {
+	var exdate=new Date();
+	exdate.setDate(exdate.getDate() + 365);
+	var c_value=escape(value) + ";expires="+exdate.toUTCString();
+	document.cookie=c_name + "=" + c_value;
+}
+
 // a way too specific function for scrolling a div
 function scrollolog(){
 	var olog=$('#olog .table').parent('div');
