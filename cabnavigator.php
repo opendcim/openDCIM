@@ -213,7 +213,7 @@ function renderUnassignedTemplateOwnership($noTemplFlag, $noOwnerFlag, $device) 
 		$currentHeight=$cab->CabinetHeight;
 
 		$body.="<div class=\"cabinet\">\n\t<table>
-		<tr><th id=\"cabid\" data-cabinetid=$cab->CabinetID colspan=2 $cab_color>".__("Cabinet")." $cab->Location".($rear?" (".__("Rear").")":"")."</th></tr>
+		<tr><th id=\"cabid\" data-cabinetid=$cab->CabinetID colspan=2 $cab_color><a href='javascript:conmutePictures();'>".__("Cabinet")." $cab->Location".($rear?" (".__("Rear").")":"")."</a></th></tr>
 		<tr><td class=\"cabpos\">".__("Pos")."</td><td>".__("Device")."</td></tr>\n";
 
 		$heighterr="";
@@ -280,11 +280,12 @@ function renderUnassignedTemplateOwnership($noTemplFlag, $noOwnerFlag, $device) 
 						// Create the filler for the rack either text or a picture
 						$picture=(!$device->BackSide && !$rear || $device->BackSide && $rear)?$device->GetDevicePicture(220):$device->GetDevicePicture(220,"rear");
 						$devlabel=$device->Label.(((!$device->BackSide && $rear || $device->BackSide && !$rear) && !$device->HalfDepth)?"(".__("Rear").")":"");
-						$text=($device->Rights!="None")?"<a href=\"devices.php?deviceid=$device->DeviceID\">$highlight $devlabel</a>":$devlabel;
+						//$text=($device->Rights!="None")?"<a href=\"devices.php?deviceid=$device->DeviceID\">$highlight $devlabel</a>":$devlabel;
+						$text="<div style='position:absolute; margin: -0.25em 0em -0.4em;'>".(($device->Rights!="None")?"<a href=\"devices.php?deviceid=$device->DeviceID\">$highlight $devlabel</a>":$devlabel)."</div>";
 						
 						// Put the device in the rack
 						$body.="\t\t<tr><td class=\"cabpos$reserved dept$device->Owner$errclass\">$i</td><td class=\"dept$device->Owner$reserved\" rowspan=$device->Height data-deviceid=$device->DeviceID>";
-						$body.=($picture)?$picture:$text;
+						$body.=($picture)?$text.$picture:$text;
 						$body.="</td></tr>\n";
 					}else{
 						$body.="\t\t<tr><td class=\"cabpos$reserved dept$device->Owner$errclass\">$i</td></tr>\n";
@@ -611,6 +612,16 @@ if($config->ParameterArray["CDUToolTips"]=='enabled'){
 }
 ?>
 	});
+	var visiblepict=true;
+	function conmutePictures(){
+		if (visiblepict){ 
+			$(".picture").hide();
+		}else{
+			$(".picture").show();
+		}
+		visiblepict=!visiblepict;
+	}
+	
   </script>
 </head>
 
