@@ -121,6 +121,6 @@ echo '			</select>
 		print "\t\t<TotalWatts>$totalWatts</TotalWatts>\n\t</cabinet>\n";
 	}
 
-	print "</datacenter>\n</xml>\n";
+	print "</datacenter>\n";
 }
 ?>
