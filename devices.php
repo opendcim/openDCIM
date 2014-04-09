@@ -722,12 +722,6 @@ IE work around
 http://stackoverflow.com/questions/5227088/creating-style-node-adding-innerhtml-add-to-dom-and-ie-headaches
 */
 
-function setCookie(c_name, value) {
-	var exdate=new Date();
-	exdate.setDate(exdate.getDate() + 365);
-	var c_value=escape(value) + ";expires="+exdate.toUTCString();
-	document.cookie=c_name + "=" + c_value;
-}
 function swaplayout(){
 	var sheet=document.createElement('style');
 	sheet.type='text/css';
