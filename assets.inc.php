@@ -2406,7 +2406,7 @@ class Device {
 					// LABEL FOR IMAGE
 					if($rotar=='' && $hor_slot || $rotar!='' && !$hor_slot){
 						$label="\t\t\t<div class=\"label\" style=\"top: 0; left: 0; width: ".$width."px; height:".$height."px;\">";
-						$label.="<div class=\"childlab\" style=\"top: 10%; width:".$width."px; height: 80%;".(($height*0.8<13)?" font-size: ".intval($height*0.8)."px; ":"")."\">$flags$this->Label</div></div>\n";
+						$label.="<div style=\"width:".$width."px;".(($height*0.8<13)?" font-size: ".intval($height*0.8)."px; ":"")."\">$flags$this->Label</div></div>\n";
 					}else{
 						if ($rotar=="rotar_i"){
 							$ltop=abs($slot->W-$slot->H)/2;
@@ -2422,13 +2422,13 @@ class Device {
 						$lleft=intval($lleft).'px';$ltop=intval($ltop).'px';
 						$lheight=intval($lheight);$lwidth=intval($lwidth);
 						$label="\t\t\t<div class=\"rotar_d label\" style=\"top: $ltop; left: $lleft; width: ".$lwidth."px; height:".$lheight."px;\">";
-						$label.="<div class=\"childlab\" style=\"top: 10%; width:".$lwidth."px;  height: 80%;".(($lheight*0.8<13)?" font-size: ".intval($lheight*0.8)."px; ":"")."\">$flags$this->Label".(($rear)?" (".__("Rear").")":"")."</div></div>\n";
+						$label.="<div style=\"width:".$lwidth."px;".(($lheight*0.8<13)?" font-size: ".intval($lheight*0.8)."px; ":"")."\">$flags$this->Label".(($rear)?" (".__("Rear").")":"")."</div></div>\n";
 					}
 				}
 			}else{
 				//LABEL for child device without image - Always show, even if ShowLabel is false
 				$resp.="\t\t\t\t<div class='dept$this->Owner' data-deviceid=$this->DeviceID style='width: ".$width."px; height: ".$height."px;'>";
-				$resp.="<div class=\"textlab\" style=\"top: 10%; height: 80%;".(($height*0.8<13)?" font-size: ".intval($height*0.8)."px; ":"")."\">$flags$this->Label".(($rear)?" (".__("Rear").")":"")."</div></div>\n";
+				$resp.="<div".(($height*0.8<13)?" style=\" font-size: ".intval($height*0.8)."px; \"":"").">$flags$this->Label".(($rear)?" (".__("Rear").")":"")."</div></div>\n";
 			}
 			$resp.=$clickableend.$label;
 			if ( $this->ChassisSlots > 0 ) {
@@ -2480,7 +2480,7 @@ class Device {
 			$resp.="\n\t<div class=\"picture\">\n";
 			$resp.="$clickable\t\t<img class=\"picture\" data-deviceid=$this->DeviceID width=$holeW height=$holeH src=\"$picturefile\" alt=\"$this->Label\">$clickableend\n";
 			if ( $ShowLabel ) {
-				$resp.="\t\t<div class=\"label\"><div class=\"parentlab\" >$flags$this->Label".(((!$this->BackSide && $rear || $this->BackSide && !$rear) && !$this->HalfDepth)?" (".__("Rear").")":"");
+				$resp.="\t\t<div class=\"label\"><div>$flags$this->Label".(((!$this->BackSide && $rear || $this->BackSide && !$rear) && !$this->HalfDepth)?" (".__("Rear").")":"");
 				$resp.="</div></div>\n";
 			}
 
