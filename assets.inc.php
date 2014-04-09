@@ -2229,7 +2229,7 @@ class Device {
 		}
 		return $TotalWeight;	
 	}
-	function GetChildDevicePicture($holeW, $zoomX, $zoomY, $rear=false){
+	function GetChildDevicePicture($holeW, $zoomX, $zoomY, $rear=false, $ShowLabel=true){
 		global $dbh;
 
 		$resp="";
@@ -2402,29 +2402,31 @@ class Device {
 				// IMAGE
 				$resp.="\t\t\t\t<img class='picturerot' style='vertical-align: text-top;' data-deviceid=$this->DeviceID width='".$width."px' height='".$height."px' src='$picturefile' alt='$this->Label'>\n";
 				
-				// LABEL FOR IMAGE
-				if($rotar=='' && $hor_slot || $rotar!='' && !$hor_slot){
-					$label="\t\t\t<div class=\"label\" style=\"top: 0; left: 0; width: ".$width."px; height:".$height."px;\">";
-					$label.="<div class=\"childlab\" style=\"top: 10%; width:".$width."px; height: 80%;".(($height*0.8<13)?" font-size: ".intval($height*0.8)."px; ":"")."\">$flags$this->Label</div></div>\n";
-				}else{
-					if ($rotar=="rotar_i"){
-						$ltop=abs($slot->W-$slot->H)/2;
-						$lleft=-$ltop;
-						$lheight=$slot->H;
-						$lwidth=$slot->W;
+				if ( $ShowLabel ) {
+					// LABEL FOR IMAGE
+					if($rotar=='' && $hor_slot || $rotar!='' && !$hor_slot){
+						$label="\t\t\t<div class=\"label\" style=\"top: 0; left: 0; width: ".$width."px; height:".$height."px;\">";
+						$label.="<div class=\"childlab\" style=\"top: 10%; width:".$width."px; height: 80%;".(($height*0.8<13)?" font-size: ".intval($height*0.8)."px; ":"")."\">$flags$this->Label</div></div>\n";
 					}else{
-						$lleft=-abs($slot->W-$slot->H)/2;
-						$ltop=-$lleft;
-						$lheight=$slot->W;
-						$lwidth=$slot->H;
+						if ($rotar=="rotar_i"){
+							$ltop=abs($slot->W-$slot->H)/2;
+							$lleft=-$ltop;
+							$lheight=$slot->H;
+							$lwidth=$slot->W;
+						}else{
+							$lleft=-abs($slot->W-$slot->H)/2;
+							$ltop=-$lleft;
+							$lheight=$slot->W;
+							$lwidth=$slot->H;
+						}
+						$lleft=intval($lleft).'px';$ltop=intval($ltop).'px';
+						$lheight=intval($lheight);$lwidth=intval($lwidth);
+						$label="\t\t\t<div class=\"rotar_d label\" style=\"top: $ltop; left: $lleft; width: ".$lwidth."px; height:".$lheight."px;\">";
+						$label.="<div class=\"childlab\" style=\"top: 10%; width:".$lwidth."px;  height: 80%;".(($lheight*0.8<13)?" font-size: ".intval($lheight*0.8)."px; ":"")."\">$flags$this->Label".(($rear)?" (".__("Rear").")":"")."</div></div>\n";
 					}
-					$lleft=intval($lleft).'px';$ltop=intval($ltop).'px';
-					$lheight=intval($lheight);$lwidth=intval($lwidth);
-					$label="\t\t\t<div class=\"rotar_d label\" style=\"top: $ltop; left: $lleft; width: ".$lwidth."px; height:".$lheight."px;\">";
-					$label.="<div class=\"childlab\" style=\"top: 10%; width:".$lwidth."px;  height: 80%;".(($lheight*0.8<13)?" font-size: ".intval($lheight*0.8)."px; ":"")."\">$flags$this->Label".(($rear)?" (".__("Rear").")":"")."</div></div>\n";
 				}
 			}else{
-				//LABEL for child device without image
+				//LABEL for child device without image - Always show, even if ShowLabel is false
 				$resp.="\t\t\t\t<div class='dept$this->Owner' data-deviceid=$this->DeviceID style='width: ".$width."px; height: ".$height."px;'>";
 				$resp.="<div class=\"textlab\" style=\"top: 10%; height: 80%;".(($height*0.8<13)?" font-size: ".intval($height*0.8)."px; ":"")."\">$flags$this->Label".(($rear)?" (".__("Rear").")":"")."</div></div>\n";
 			}
@@ -2442,7 +2444,7 @@ class Device {
 		}
 		return $resp;
 	}
-	function GetDevicePicture($holeW,$rear=false,$label=true){
+	function GetDevicePicture($holeW,$rear=false,$ShowLabel=true){
 		$templ=new DeviceTemplate();
 		$templ->TemplateID=$this->TemplateID;
 		$templ->GetTemplateByID();
@@ -2477,10 +2479,10 @@ class Device {
 
 			$resp.="\n\t<div class=\"picture\">\n";
 			$resp.="$clickable\t\t<img class=\"picture\" data-deviceid=$this->DeviceID width=$holeW height=$holeH src=\"$picturefile\" alt=\"$this->Label\">$clickableend\n";
-			if ( $label ) {
+			if ( $ShowLabel ) {
 				$resp.="\t\t<div class=\"label\"><div class=\"parentlab\" >$flags$this->Label".(((!$this->BackSide && $rear || $this->BackSide && !$rear) && !$this->HalfDepth)?" (".__("Rear").")":"");
+				$resp.="</div></div>\n";
 			}
-			$resp.="</div></div>\n";
 
 			//Children
 			$childList=$this->GetDeviceChildren();
@@ -2490,7 +2492,7 @@ class Device {
 						//chils in front face
 						foreach($childList as $tmpDev){
 							if (!$tmpDev->BackSide){
-								$resp.=$tmpDev->GetChildDevicePicture($holeW,$zoomX, $zoomY);
+								$resp.=$tmpDev->GetChildDevicePicture($holeW,$zoomX, $zoomY,false,$ShowLabel);
 							}
 						}
 					}else{
@@ -2498,7 +2500,7 @@ class Device {
 							//rearside of chils in rear side
 							foreach($childList as $tmpDev){
 								if ($tmpDev->BackSide){
-									$resp.=$tmpDev->GetChildDevicePicture($holeW,$zoomX, $zoomY, true);
+									$resp.=$tmpDev->GetChildDevicePicture($holeW,$zoomX, $zoomY, true, $ShowLabel);
 								}
 							}
 						}
@@ -2508,7 +2510,7 @@ class Device {
 						//chils in rear face
 						foreach($childList as $tmpDev){
 							if ($tmpDev->BackSide){
-								$resp.=$tmpDev->GetChildDevicePicture($holeW,$zoomX, $zoomY);
+								$resp.=$tmpDev->GetChildDevicePicture($holeW,$zoomX, $zoomY,false,$ShowLabel);
 							}
 						}						
 					}else{
@@ -2516,7 +2518,7 @@ class Device {
 							//rearside of chils in front side
 							foreach($childList as $tmpDev){
 								if (!$tmpDev->BackSide){
-									$resp.=$tmpDev->GetChildDevicePicture($holeW,$zoomX, $zoomY, true);
+									$resp.=$tmpDev->GetChildDevicePicture($holeW,$zoomX, $zoomY, true, $ShowLabel);
 								}
 							}
 						}
