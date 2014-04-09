@@ -1293,6 +1293,18 @@ class Supplies {
 		}
 	}
 	
+	static function GetSupplyCount( $SupplyID ) {
+		global $dbh;
+		
+		$sql = "select sum(Count) as TotalQty from fac_BinContents where SupplyID=" . intval( $SupplyID );
+		
+		if ( $row=$dbh->query($sql)->fetch()) {
+			return $row["TotalQty"];
+		} else {
+			return 0;
+		}
+	}
+	
 	function GetSuppliesList($indexbyid=false){
 		$sql="SELECT * FROM fac_Supplies ORDER BY PartNum ASC;";
 		

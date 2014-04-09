@@ -59,6 +59,7 @@ echo '<div class="main">
 		<a href="report_audit.php">',__("Cabinet Audit Logs"),'</a>
 		<a href="report_audit_frequency.php">',__("Cabinet Audit Frequency"),'</a>
 		<a href="report_surplus.php">',__("Surplus/Salvage Audit Report"),'</a>
+		<a href="report_supply_status.php">',__("Supplies Status Report"),'</a>
 </fieldset>
 </div>';
 
