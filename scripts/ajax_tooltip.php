@@ -136,6 +136,7 @@ if($object>0){
 			$pdu->PDUID=$object;
 			$pdu->GetPDU();
 			$ttconfig=$dbh->query("SELECT * FROM fac_CDUToolTip WHERE Enabled=1 ORDER BY SortOrder ASC, Enabled DESC, Label ASC;");
+			$tooltip = __("Name") . ": " . $pdu->Label . "<br>\n";
 		}elseif($config->ParameterArray["ToolTips"]=='enabled'){
 			$dev=new Device();
 			$dev->DeviceID=$object;
@@ -146,9 +147,9 @@ if($object>0){
 				exit;
 			}
 			$ttconfig=$dbh->query("SELECT * FROM fac_CabinetToolTip WHERE Enabled=1 ORDER BY SortOrder ASC, Enabled DESC, Label ASC;");
+			$tooltip = __("Name") . ": " . $dev->Label . "<br>\n";
 		}
 
-		$tooltip="";
 		foreach($ttconfig as $row){
 			switch($row["Field"]){
 				case "SNMPCommunity":
