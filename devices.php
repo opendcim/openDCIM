@@ -1710,7 +1710,6 @@ echo '	<div class="table">
 		$('.main input, .main select').prop('disabled', true);";
 	}
 ?>
-
 	$(document).ready(function() {
 		// Don't attempt to open the datacenter tree until it is loaded
 		function opentree(){
