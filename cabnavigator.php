@@ -572,7 +572,6 @@ echo $head,'  <script type="text/javascript" src="scripts/jquery.min.js"></scrip
 if($config->ParameterArray["ToolTips"]=='enabled'){
 ?>
 		$('.cabinet td:has(a):not(:has(img)), #zerou div > a, .cabinet .picture a img, .cabinet .picture a > div').mouseenter(function(){
-			$('div.label').show();
 			var srctest=(typeof $(this).attr('src')==="undefined")?'css/blank.gif':$(this).attr('src');
 			if(srctest!='css/blank.gif'){
 				$(this).parents('div').children('div.label').hide();
@@ -587,7 +586,9 @@ if($config->ParameterArray["ToolTips"]=='enabled'){
 			});
 			$('body').append(tooltip);
 			$(this).mouseleave(function(){
-				$('div.label').show();
+				if(!lblbtn.data('show')){
+					$(this).parents('div').children('div.label').show();
+				}
 				tooltip.remove();
 			});
 		});
@@ -678,31 +679,67 @@ if($config->ParameterArray["CDUToolTips"]=='enabled'){
 			$('#centeriehack > .cabinet:first-child').remove();
 			$('.cabinet').width(width*2).css('max-width',width*2+'px');
 		}
+
+		// Add contrals to the rack
+		$('.cabinet table').prepend(controlrow);
 	});
 
-	var icon=$('<span>').addClass('ui-icon ui-icon-circle-zoomin').css('float','left').data('show',false);
-	icon.on('click',function(){
+	var controlrow=$('<tr>').append($('<td>').attr('colspan','4').css('text-align','left'));
+	controlrow.td=controlrow.find('td');
+	var imgbtn=$('<button>').attr('type','button').css({'line-height': '1em', 'height': '1.5em'}).data('show',false).text('Images');
+	var lblbtn=imgbtn.clone().text('Labels');
+	controlrow.td.append(imgbtn);
+	controlrow.td.append(lblbtn);
+
+	imgbtn.on('click',function(){
 		if($(this).data('show')){
 			serutciPoN();
 		}else{
 			NoPictures();
 		}
-		
 	});
+
+	lblbtn.on('click',function(){
+		if($(this).data('show')){
+			slebaLoN();
+		}else{
+			NoLabels();
+		}
+	});
+
+	function NoLabels(){
+		lblbtn.data('show',true);
+		setCookie('devlabels', 'hide');
+		$('.picture .label').hide();
+	}
+
+	function slebaLoN(){
+		lblbtn.data('show',false);
+		setCookie('devlabels', 'show');
+		$('.picture .label').show();
+	}
+
+	// Read the cookie and do stuff
+	if(typeof $.cookie('devlabels')=='undefined' || $.cookie('devlabels')=='show'){
+		slebaLoN();
+	}else{
+		NoLabels();
+	}
 
 	// TODO : Clean this shit up.  Make it more generic and get it into the common.js and outta here
 
 	// Read the cookie and do stuff
 	if(typeof $.cookie('cabpics')=='undefined' || $.cookie('cabpics')=='show'){
-		// we're all good do nothing
 		serutciPoN();
 	}else{
 		NoPictures();
 	}
 		
-	$('#centeriehack > .cabinet:first-child > table:first-child th:first-child').append(icon);
 	function serutciPoN(){
-		icon.data('show',false);
+		// We're showing device images so labels are optional
+		lblbtn.show();
+
+		imgbtn.data('show',false);
 		setCookie('cabpics', 'show');
 		$('div.picture, .picture > div:not(.label)').css({'border':''});
 		$('.picture img').each(function(){
@@ -715,7 +752,11 @@ if($config->ParameterArray["CDUToolTips"]=='enabled'){
 		});
 	}
 	function NoPictures(){
-		icon.data('show',true);
+		// We're hiding the device pictures so the labels are a must.
+		slebaLoN();
+		lblbtn.hide();
+
+		imgbtn.data('show',true);
 		setCookie('cabpics', 'hide');
 		$('div.label').css('display','block');
 		$('div.picture, .picture > div:not(.label)').css({'border':'1px inset black'});
