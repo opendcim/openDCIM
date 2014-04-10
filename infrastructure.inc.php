@@ -1572,7 +1572,7 @@ class Zone {
 		$this->MakeSafe();
 		
 		//update cabinets in this zone
-		$sql="UPDATE FROM fac_Cabinet SET CabRowID=0, ZoneID=0 WHERE 
+		$sql="UPDATE fac_Cabinet SET CabRowID=0, ZoneID=0 WHERE 
 			ZoneID=$this->ZoneID;";
 		if(!$this->query($sql)){
 			return false;

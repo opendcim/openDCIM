@@ -172,7 +172,7 @@
 					$(this).dialog("destroy");
 				}
 			}
-<?php echo "			var modal=$('<div />', {id: 'modal', title: '".__("Data Center Deletion Confirmation")."'}).html('<div id=\"modaltext\"><img src=\"images/mushroom_cloud.jpg\" align=\"left\">".__("Are you sure that you want to delete this data center and all contents within it?")."</div>').dialog({"; ?>
+<?php echo "			var modal=$('<div />', {id: 'modal', title: '".__("Data Center Deletion Confirmation")."'}).html('<div id=\"modaltext\"><img src=\"images/mushroom_cloud.jpg\" align=\"left\" style=\"margin-right:3px;\">".__("Are you sure that you want to delete this data center and all contents within it?")."</div>').dialog({"; ?>
 				dialogClass: 'no-close',
 				appendTo: 'body',
 				modal: true,
