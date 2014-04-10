@@ -210,7 +210,7 @@ $(document).ready(function(){
 		});
 
 	});
-	$('ul#datacenters').parent('div').height($(window).height()-$('#sidebar ul ~ hr').offset().top).css('overflow-y','scroll');
+	$('ul#datacenters').parent('div').height($(window).height()-$('#sidebar ul ~ hr').offset().top-20).css('overflow-y','scroll');
 	$('#sidebar').width($('#sidebar').outerWidth()).wrapInner($('<div>').css('position','fixed'));
 });
 
