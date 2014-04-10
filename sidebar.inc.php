@@ -88,6 +88,7 @@
 	
 	print "<ul class=\"nav\">$menu</ul>
 	<hr>
+	<div>
 	<a href=\"index.php\">".__("Home")."</a>\n";
 
 	$lang=GetValidTranslations();
@@ -110,6 +111,7 @@
 	echo $container->BuildMenuTree();
 	
 ?>
+	</div>
 <script type="text/javascript">
 if (typeof jQuery == 'undefined') {
 	alert('jQuery is not loaded');
@@ -208,6 +210,8 @@ $(document).ready(function(){
 		});
 
 	});
+	$('ul#datacenters').parent('div').height($(window).height()-$('#sidebar ul ~ hr').offset().top).css('overflow-y','scroll');
+	$('#sidebar').width($('#sidebar').outerWidth()).wrapInner($('<div>').css('position','fixed'));
 });
 
 </script>
