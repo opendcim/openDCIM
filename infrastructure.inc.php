@@ -265,6 +265,15 @@ class DataCenter {
 		$this->MakeSafe();
 		
 		// Have to make sure that we delete EVERYTHING and not create orphans
+		// Also, if we are down to the last data center, refuse to delete it
+		$sql = "select count(*) as Total from fac_DataCenter";
+		if ( ! $row = $this->query($sql)->fetch() ) {
+			return false;
+		}
+		
+		if ( $row["Total"] < 2 ) {
+			return false;
+		}
 
 		// The Cabinet delete function already deletes all children within it, first, so just delete all of them
 		$cab = new Cabinet();
