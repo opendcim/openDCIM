@@ -157,12 +157,12 @@
 		$('#delete-btn').click(function(){
 				var defaultbutton={
 				"<?php echo __("Yes"); ?>": function(){
-					$.post('', {datacenterid: $('#datacenterid').val(),confirmdelete: ''}, function(data){
+					$.post('', {datacenterid: $('#datacenterid').val(),confirmdelete: '',junkremoval: $('#deletemodal select').val()}, function(data){
 						if(data.trim()=='ok'){
 							self.location=$('.main > a').last().attr('href');
 							$(this).dialog("destroy");
 						}else{
-							alert('Nope');
+							alert("Danger, Will Robinson! DANGER!  Something didn't go as planned.");
 						}
 					});
 				}
@@ -172,10 +172,10 @@
 					$(this).dialog("destroy");
 				}
 			}
-<?php echo "			var modal=$('<div />', {id: 'modal', title: '".__("Data Center Deletion Confirmation")."'}).html('<div id=\"modaltext\"><img src=\"images/mushroom_cloud.jpg\" align=\"left\" style=\"margin-right:3px;\">".__("Are you sure that you want to delete this data center and all contents within it?")."</div>').dialog({"; ?>
+			var modal=$('#deletemodal').dialog({
 				dialogClass: 'no-close',
-				appendTo: 'body',
 				modal: true,
+				width: 'auto',
 				buttons: $.extend({}, defaultbutton, cancelbutton)
 			});
 		});
@@ -325,6 +325,15 @@ echo '<div class="caption">';
 				',$imageselect,'
 			</div>
 </div></div>
+<!-- hiding modal dialogs here so they can be translated easily -->
+<div class="hide">
+	<div title="',__("Data Center Deletion Confirmation"),'" id="deletemodal">
+		<div id="modaltext"><img src="images/mushroom_cloud.jpg" class="floatleft">',__("Are you sure that you want to delete this data center and all contents within it?"),'
+			<p><b>',__("Move the contents of this datacenter's storage room to the general storage or delete them?"),'</b> &nbsp;&nbsp;<select><option value="delete">',__("Delete"),'</option><option value="move">',__("Move"),'</option></select></p>
+		</div>
+	</div>
+</div>
+
 <a href="index.php">[ ',__("Return to Main Menu"),' ]</a>'; ?>
 </div><!-- END div.main -->
 </div><!-- END div.page -->
