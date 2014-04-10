@@ -16,6 +16,13 @@
 	$formpatch="";
 	$status="";
 
+	if(isset($_POST['action']) && $_POST['action']=='Delete'){
+		$cabrow->CabRowID=$_POST['cabrowid'];
+		$cabrow->DeleteCabRow();
+		header('Location: cabrow.php');
+		exit;
+	}
+
 	if(isset($_REQUEST["cabrowid"])) {
 		$cabrow->CabRowID=(isset($_POST['cabrowid'])?$_POST['cabrowid']:$_GET['cabrowid']);
 		$cabrow->GetCabRow();
@@ -52,6 +59,35 @@
   <![endif]-->
   <script type="text/javascript" src="scripts/jquery.min.js"></script>
   <script type="text/javascript" src="scripts/jquery-ui.min.js"></script>
+
+<script type="text/javascript">
+	$(document).ready(function() {
+		// Delete container confirmation dialog
+		$('button[value="Delete"]').click(function(e){
+			var form=$(this).parents('form');
+			var btn=$(this);
+<?php
+print "		var dialog=$('<div>').prop('title','".__("Verify Delete Row")."').html('<p><span class=\"ui-icon ui-icon-alert\" style=\"float:left; margin:0 7px 20px 0;\"></span><span></span></p>');";
+print "		dialog.find('span + span').html('".__("This Row will be deleted and there is no undo.  Assets within the row will remain as members of the Data Center.")."<br>".__("Are you sure?")."');"; 
+?>
+			dialog.dialog({
+				resizable: false,
+				modal: true,
+				dialogClass: "no-close",
+				buttons: {
+<?php echo '				',__("Yes"),': function(){'; ?>
+						$(this).dialog("destroy");
+						form.append('<input type="hidden" name="'+btn.attr("name")+'" value="'+btn.val()+'">');
+						form.submit();
+					},
+<?php echo '				',__("No"),': function(){'; ?>
+						$(this).dialog("destroy");
+					}
+				}
+			});
+		});
+	});
+</script>
 </head>
 <body>
 <div id="header"></div>
@@ -107,7 +143,9 @@ echo '	</select></div>
 	}
 	else{
 		echo '<div><div>&nbsp;</div><div></div></div>
-		<div class="caption"><button type="submit" name="action" value="Update">',__("Update"),'</button></div>';
+		<div class="caption"><button type="submit" name="action" value="Update">',__("Update"),'</button>
+		<button type="button" name="action" value="Delete">',__("Delete"),'</button></div>';
+
 	}
 ?>
 </div><!-- END div.table -->

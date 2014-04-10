@@ -168,7 +168,7 @@ echo '
 		echo '
 					<div><div>&nbsp;</div><div></div></div>
 					<div class="caption"><button type="submit" name="action" value="Update">',__("Update"),'</button>
-					<button type="button" name="action" value="Delete">',__("Delete"),'</button>';
+					<button type="button" name="action" value="Delete">',__("Delete"),'</button></div>';
 	}
 
 echo '
