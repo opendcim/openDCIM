@@ -135,6 +135,31 @@
 				}
 			});
 		});
+		
+		// Delete container confirmation dialog
+		$('button[value="Delete"]').click(function(e){
+			var form=$(this).parents('form');
+			var btn=$(this);
+<?php
+print "		var dialog=$('<div>').prop('title','".__("Verify Delete Container")."').html('<p><span class=\"ui-icon ui-icon-alert\" style=\"float:left; margin:0 7px 20px 0;\"></span><span></span></p>');";
+print "		dialog.find('span + span').html('".__("This container will be deleted and there is no undo. Their direct descendants will be moved to \'home\'.")."<br>".__("Are you sure?")."');"; 
+?>
+			dialog.dialog({
+				resizable: false,
+				modal: true,
+				dialogClass: "no-close",
+				buttons: {
+<?php echo '				',__("Yes"),': function(){'; ?>
+						$(this).dialog("destroy");
+						form.append('<input type="hidden" name="'+btn.attr("name")+'" value="'+btn.val()+'">');
+						form.submit();
+					},
+<?php echo '				',__("No"),': function(){'; ?>
+						$(this).dialog("destroy");
+					}
+				}
+			});
+		});
 	});
 	function coords(evento){
 		mievento = evento || window.event;
@@ -170,7 +195,7 @@
 		else
 			yo.hidden=false;
 	}
-  	function cambio_container(){
+	function cambio_container(){
 		document.getElementById("cambio_cont").value="SI";
 		document.getElementById("containerform").submit();
 	}
@@ -246,10 +271,10 @@ if ($c->ParentID>0){
 echo '<div class="caption">';
 
 	if($c->ContainerID >0){
-		echo '   <button type="submit" name="action" value="Update">',__("Update"),'</button>';
-		echo '   <button type="submit" name="action" value="Delete">',__("Delete"),'</button>';
+		print "\t<button type=\"submit\" name=\"action\" value=\"Update\">".__("Update")."</button>\n";
+		print "\t<button type=\"button\" name=\"action\" value=\"Delete\">".__("Delete")."</button>\n";
 	}else{
-		echo '   <button type="submit" name="action" value="Create">',__("Create"),'</button>';
+		print "\t<button type=\"submit\" name=\"action\" value=\"Create\">".__("Create")."</button>\n";
 	}
 ?>
 </div>
