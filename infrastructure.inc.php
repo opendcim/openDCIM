@@ -261,6 +261,10 @@ class DataCenter {
 		return true; 
 	}
 
+	function DeleteDataCenter() {
+		return true;
+	}
+	
 	function UpdateDataCenter(){
 		$this->MakeSafe();
 

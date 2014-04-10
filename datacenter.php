@@ -11,6 +11,19 @@
 	$status="";
 
 	$dc=new DataCenter();
+	
+	// AJAX Action
+	if ( isset( $_POST['confirmdelete'] ) && isset($_POST['datacenterid'])) {
+		// About the nuke this place from orbit
+		$dc->DataCenterID = $_POST['datacenterid'];
+		if ( $dc->DeleteDataCenter() ) {
+			echo 'ok';
+		} else {
+			echo 'no';
+		}
+		exit;
+	}
+	
 	if(isset($_POST['action'])&&(($_POST['action']=='Create')||($_POST['action']=='Update'))){
 		$dc->DataCenterID=$_POST['datacenterid'];
 		$dc->Name=trim($_POST['name']);
@@ -141,6 +154,31 @@
 				}
 			});
 		});
+		$('#delete-btn').click(function(){
+				var defaultbutton={
+				"<?php echo __("Yes"); ?>": function(){
+					$.post('', {datacenterid: $('#datacenterid').val(),confirmdelete: ''}, function(data){
+						if(data.trim()=='ok'){
+							self.location=$('.main > a').last().attr('href');
+							$(this).dialog("destroy");
+						}else{
+							alert('Nope');
+						}
+					});
+				}
+			}
+			var cancelbutton={
+				"<?php echo __("No"); ?>": function(){
+					$(this).dialog("destroy");
+				}
+			}
+<?php echo "			var modal=$('<div />', {id: 'modal', title: '".__("Data Center Deletion Confirmation")."'}).html('<div id=\"modaltext\"><img src=\"images/mushroom_cloud.jpg\" align=\"left\">".__("Are you sure that you want to delete this data center and all contents within it?")."</div>').dialog({"; ?>
+				dialogClass: 'no-close',
+				appendTo: 'body',
+				modal: true,
+				buttons: $.extend({}, defaultbutton, cancelbutton)
+			});
+		});
 	});
 	function coords(evento){
 		mievento = evento || window.event;
@@ -182,7 +220,6 @@
 		document.getElementById("datacenterform").submit();
 	}
   </script>
-
 </head>
 <body>
 <div id="header"></div>
@@ -273,7 +310,11 @@ echo '<div class="caption">';
 	if($dc->DataCenterID >0){
 		echo '   <button type="submit" name="action" value="Update">',__("Update"),'</button>';
 	}else{
-		echo '   <button type="submit" name="action" value="Create">',__("Create"),'</button>';
+		echo '   <button type="button" name="action" value="Create">',__("Create"),'</button>';
+	}
+	
+	if ( $user->SiteAdmin && $dc->DataCenterID > 0 ) {
+		echo '    <button type="button" id="delete-btn" name="action" value="Delete">',__("Delete"),'</button>';
 	}
 ?>
 </div>
