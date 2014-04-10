@@ -56,7 +56,7 @@ UPDATE fac_Config SET Value='Disabled' WHERE Parameter='MediaEnforce' LIMIT 1;
 -- Table structure for table `fac_GenericLog`
 --
 
-CREATE TABLE `fac_GenericLog` (
+CREATE TABLE IF NOT EXISTS `fac_GenericLog` (
   UserID varchar(80) NOT NULL,
   Class varchar(40) NOT NULL,
   ObjectID int(11) NOT NULL,
