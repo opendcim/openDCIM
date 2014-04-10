@@ -310,7 +310,7 @@ echo '<div class="caption">';
 	if($dc->DataCenterID >0){
 		echo '   <button type="submit" name="action" value="Update">',__("Update"),'</button>';
 	}else{
-		echo '   <button type="button" name="action" value="Create">',__("Create"),'</button>';
+		echo '   <button type="submit" name="action" value="Create">',__("Create"),'</button>';
 	}
 	
 	if ( $user->SiteAdmin && $dc->DataCenterID > 0 ) {

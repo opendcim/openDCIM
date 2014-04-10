@@ -993,6 +993,18 @@ class PowerPanel {
 		}
 	}
 
+	function DeletePanel() {
+		global $dbh;
+		$this->MakeSafe();
+		
+		// First, set any CDUs attached to this panel to simply not have an assigned panel
+		$sql = "update fac_PowerDistribution set PanelID='' where PanelID='".$this->PanelID."'";
+		$dbh->exec( $sql );
+		
+		$sql = "delete from fac_PowerPanel where PanelID='".$this->PanelID."'";
+		$dbh->exec( $sql );
+	}
+		
 	function UpdatePanel(){
 		global $dbh;
 		$this->MakeSafe();
@@ -1145,6 +1157,23 @@ class PowerSource {
 		}
 		
 		return $this->PowerSourceID;
+	}
+	
+	function DeletePowerSource() {
+		global $dbh;
+		
+		$this->MakeSafe();
+		
+		$pp = new PowerPanel();
+		$pp->PowerSourceID = $this->PowerSourceID;
+		$ppList = $pp->GetPanelListBySource();
+		
+		foreach( $ppList as $p ) {
+			$p->DeletePanel();
+		}
+		
+		$sql = "delete from fac_PowerSource where PowerSourceID='".$this->PowerSourceID."'";
+		$dbh->exec( $sql );
 	}
 
 	function UpdatePowerSource(){

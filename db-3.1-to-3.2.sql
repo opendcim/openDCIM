@@ -15,7 +15,7 @@ ALTER TABLE fac_DeviceTemplate
 --
 -- Slots table content the coodinates os slots in a picture of a chassis device template 
 --
-CREATE TABLE fac_Slots (
+CREATE TABLE IF NOT EXISTS fac_Slots (
 	TemplateID INT(11) NOT NULL,
 	Position INT(11) NOT NULL,
 	BackSide TINYINT(1) NOT NULL,

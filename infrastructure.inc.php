@@ -262,6 +262,42 @@ class DataCenter {
 	}
 
 	function DeleteDataCenter() {
+		$this->MakeSafe();
+		
+		// Have to make sure that we delete EVERYTHING and not create orphans
+
+		// The Cabinet delete function already deletes all children within it, first, so just delete all of them
+		$cab = new Cabinet();
+		$cab->DataCenterID = $this->DataCenterID;
+		$cabList = $cab->ListCabinetsByDC();
+		
+		foreach( $cabList as $c ) {
+			$c->DeleteCabinet();
+		}
+		
+		// Now delete any Zones or Rows that are attached to this data center
+		$zn = new Zone();
+		$zn->DataCenterID = $this->DataCenterID;
+		$zoneList = $zn->GetZonesByDC();
+		
+		foreach ( $zoneList as $z ) {
+			// This function already deletes any rows within the zone
+			$z->DeleteZone();
+		}
+		
+		// Power Sources are next, and should also delete any power panels fed from them
+		$ps = new PowerSource();
+		$ps->DataCenterID = $this->DataCenterID;
+		$psList = $ps->GetSourcesByDataCenter();
+		
+		foreach ( $psList as $p ) {
+			$p->DeletePowerSource();
+		}
+		
+		// Finally, delete the data center itself
+		$sql = "delete from fac_DataCenter where DataCenterID='".$this->DataCenterID."'";
+		$this->exec($sql);
+		
 		return true;
 	}
 	
