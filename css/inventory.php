@@ -827,6 +827,9 @@ div.cabinet {
 	ul.mktree  a:hover { color: red; }
 	ul.mktree  li ul li { font-family: arial, helvetica; font-size: 11pt; font-weight: normal;}
 }
+@media print {
+	.noprint { display: none; }
+}
 .meter-wrap{position: relative;background-color: lightgrey;}
 .meter-wrap, .meter-value, .meter-text {width: 210px; height: 1.1em;}
 .meter-text {

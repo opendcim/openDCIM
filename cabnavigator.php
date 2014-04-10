@@ -684,7 +684,7 @@ if($config->ParameterArray["CDUToolTips"]=='enabled'){
 		$('.cabinet table').prepend(controlrow);
 	});
 
-	var controlrow=$('<tr>').append($('<td>').attr('colspan','4').css('text-align','left'));
+	var controlrow=$('<tr>').append($('<td>').attr('colspan','4').css('text-align','left')).addClass('noprint');
 	controlrow.td=controlrow.find('td');
 	var imgbtn=$('<button>').attr('type','button').css({'line-height': '1em', 'height': '1.5em'}).data('show',false).text('Images');
 	var lblbtn=imgbtn.clone().text('Labels');
@@ -771,6 +771,19 @@ if($config->ParameterArray["CDUToolTips"]=='enabled'){
 		});
 		$('.picture img').attr('src','css/blank.gif');
 	}
+
+	var btnprint=$('<span>').addClass('ui-icon ui-icon-print').css('float','right').on('click',printcab);
+	controlrow.td.append(btnprint);
+	function printcab(){
+		$('div#infopanel,div#sidebar,div#header,h2,h3,.center ~ a').hide();
+		$('.cabinet').css('transform','scale(0.8)');
+		$('.main').css('width','');
+		window.print();
+		$('div#infopanel,div#sidebar,div#header,h2,h3,.center ~ a').show();
+		$('.cabinet').css('transform','');
+		resize();
+	}
+
 </script>
 </body>
 </html>
