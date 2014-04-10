@@ -15,7 +15,14 @@
 	$DCList=$dc->GetDCList();
 	$formpatch="";
 	$status="";
-
+	
+	if(isset($_POST['action']) && $_POST['action']=='Delete'){
+		$zone->ZoneID=$_POST['zoneid'];
+		$zone->DeleteZone();
+		header('Location: zone.php');
+		exit;
+	}
+	
 	if(isset($_REQUEST["zoneid"])) {
 		$zone->ZoneID=(isset($_POST['zoneid'])?$_POST['zoneid']:$_GET['zoneid']);
 		$zone->GetZone();
@@ -160,7 +167,8 @@ echo '
 	else{
 		echo '
 					<div><div>&nbsp;</div><div></div></div>
-					<div class="caption"><button type="submit" name="action" value="Update">',__("Update"),'</button></div>';
+					<div class="caption"><button type="submit" name="action" value="Update">',__("Update"),'</button>
+					<button type="button" name="action" value="Delete">',__("Delete"),'</button>';
 	}
 
 echo '
@@ -210,6 +218,31 @@ echo '
 	?>
 			handles: true,
 			onSelectChange: preview
+		});
+		
+		// Delete container confirmation dialog
+		$('button[value="Delete"]').click(function(e){
+			var form=$(this).parents('form');
+			var btn=$(this);
+<?php
+print "		var dialog=$('<div>').prop('title','".__("Verify Delete Zone")."').html('<p><span class=\"ui-icon ui-icon-alert\" style=\"float:left; margin:0 7px 20px 0;\"></span><span></span></p>');";
+print "		dialog.find('span + span').html('".__("This Zone will be deleted and there is no undo.  Assets within the zone will remain as members of the Data Center.")."<br>".__("Are you sure?")."');"; 
+?>
+			dialog.dialog({
+				resizable: false,
+				modal: true,
+				dialogClass: "no-close",
+				buttons: {
+<?php echo '				',__("Yes"),': function(){'; ?>
+						$(this).dialog("destroy");
+						form.append('<input type="hidden" name="'+btn.attr("name")+'" value="'+btn.val()+'">');
+						form.submit();
+					},
+<?php echo '				',__("No"),': function(){'; ?>
+						$(this).dialog("destroy");
+					}
+				}
+			});
 		});
 	});
 </script>
