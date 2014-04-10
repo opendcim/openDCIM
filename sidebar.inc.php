@@ -184,6 +184,9 @@ function resize(){
 		if(typeof movebuttons=='function'){
 			movebuttons();
 		}
+
+		// While we're dicking with things, resize the tree at the bottom of the menu bar too
+		$('ul#datacenters').parent('div').height($(window).height()-$('#sidebar ul ~ hr').offset().top-20).css('overflow-y','scroll');
 	}
 }
 $(document).ready(function(){
@@ -210,7 +213,8 @@ $(document).ready(function(){
 		});
 
 	});
-	$('ul#datacenters').parent('div').height($(window).height()-$('#sidebar ul ~ hr').offset().top-20).css('overflow-y','scroll');
+
+	// Make the side bar sit in a fixed position that doesn't move with the rest of the page
 	$('#sidebar').width($('#sidebar').outerWidth()).wrapInner($('<div>').css('position','fixed'));
 });
 
