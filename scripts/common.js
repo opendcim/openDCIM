@@ -310,8 +310,8 @@ function TemplateButtons(){
 function buildportstable(){
 	var table=$('<div>').addClass('table');
 	table.append('<div><div>Port Number</div><div>Label</div><div>Media Type</div><div>Color</div><div>Notes</div></div>');
-	var colorcodes=$('<select>');
-	var mediatypes=$('<select>');
+	var colorcodes=$('<select>').append($('<option>').val(0));
+	var mediatypes=$('<select>').append($('<option>').val(0));
 	var ports=[];
 
 	function buildrow(TemplatePortObj){

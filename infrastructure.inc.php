@@ -1571,12 +1571,17 @@ class Zone {
 			return false;
 		}else{
 			$this->ZoneID=$dbh->lastInsertID();
+			(class_exists('LogActions'))?LogActions::LogThis($this):'';
 			return $this->ZoneID;
 		}
 	}
 	
 	function UpdateZone(){
 		$this->MakeSafe();
+
+		$oldzone=new Zone();
+		$oldzone->ZoneID=$this->ZoneID;
+		$oldzone->GetZone();
 			
 		//update all cabinets in this zone
 		$sql="UPDATE fac_Cabinet SET DataCenterID=$this->DataCenterID WHERE 
@@ -1597,23 +1602,34 @@ class Zone {
 		if(!$this->query($sql)){
 			return false;
 		}
+
+		(class_exists('LogActions'))?LogActions::LogThis($this,$oldzone):'';
 		return true;
 	}
 	
 	function DeleteZone(){
 		$this->MakeSafe();
 		
-		//update cabinets in this zone
-		$sql="UPDATE fac_Cabinet SET CabRowID=0, ZoneID=0 WHERE 
-			ZoneID=$this->ZoneID;";
-		if(!$this->query($sql)){
-			return false;
+		//delete CabRows in this zone
+		$sql="SELECT * FROM fac_CabRow WHERE ZoneID=$this->ZoneID;";
+		$rows=array();
+		foreach($dbh->query($sql) as $row){
+			$rows[]=Zone::RowToObject($row);
+		}
+		foreach($rows as $cabRow){
+			$cabRow->DeleteCabRow();
 		}
 
-		//delete CabRows in this zone
-		$sql="DELETE FROM fac_CabRow WHERE ZoneID=$this->ZoneID;";
-		if(!$this->query($sql)){
-			return false;
+		//update any remaining cabinets in this zone that weren't part of rows
+		$sql="SELECT * FROM fac_Cabinet WHERE ZoneID=$this->ZoneID;";
+		$cabinetList=array();
+		foreach($dbh->query($sql) as $cabinetRow){
+			$cabinetList[]=Cabinet::RowToObject($cabinetRow);
+		}
+		foreach($cabinetList as $cab){
+			$cab->CabRowID=0;
+			$cab->ZoneID=0;
+			$cab->UpdateCabinet();
 		}
 
 		//delete zone
@@ -1621,6 +1637,7 @@ class Zone {
 		if(!$this->query($sql)){
 			return false;
 		}
+		(class_exists('LogActions'))?LogActions::LogThis($this):'';
 		return true;
 	}
   
@@ -1751,6 +1768,7 @@ class CabRow {
 		$sql="INSERT INTO fac_CabRow SET Name=\"$this->Name\", ZoneID=$this->ZoneID;";
 		if($dbh->exec($sql)){
 			$this->CabRowID=$dbh->lastInsertID();
+			(class_exists('LogActions'))?LogActions::LogThis($this):'';
 			return $this->CabRowID;
 		}else{
 			return false;
@@ -1760,6 +1778,11 @@ class CabRow {
 	function UpdateCabRow(){
 		$this->MakeSafe();
 
+		$oldcabrow=new CabRow();
+		$oldcabrow->CabRowID=$this->CabRowID;
+		$oldcabrow->GetCabRow();
+
+		// TODO this here can lead to untracked changes on the cabinets. fix this to use the update method
 		//update all cabinets in this cabrow
 		$sql="UPDATE fac_Cabinet SET ZoneID=$this->ZoneID, DataCenterID=(SELECT DataCenterID FROM fac_Zone WHERE ZoneID=$this->ZoneID) WHERE CabRowID=$this->CabRowID;";
 		if(!$this->query($sql)){
@@ -1771,16 +1794,23 @@ class CabRow {
 			return false;
 		}
 		
+		(class_exists('LogActions'))?LogActions::LogThis($this,$oldcabrow):'';
 		return true;
 	}
 	
 	function DeleteCabRow(){
 		$this->MakeSafe();
 
-		//update cabinets in this cabrow
-		$sql="UPDATE fac_Cabinet SET CabRowID=0 WHERE CabRowID=$this->CabRowID AND ZoneID=$this->ZoneID;";
-		if(!$this->query($sql)){
-			return false;
+		//update cabinets in this zone
+		$sql="SELECT * FROM fac_Cabinet WHERE ZoneID=$this->ZoneID;";
+		$cabinetList=array();
+		foreach($dbh->query($sql) as $cabinetRow){
+			$cabinetList[]=Cabinet::RowToObject($cabinetRow);
+		}
+		foreach($cabinetList as $cab){
+			$cab->CabRowID=0;
+			$cab->ZoneID=0;
+			$cab->UpdateCabinet();
 		}
 
 		//delete cabrow
@@ -1788,6 +1818,8 @@ class CabRow {
 		if(!$this->query($sql)){
 			return false;
 		}
+
+		(class_exists('LogActions'))?LogActions::LogThis($this):'';
 		return true;
 	}
 
@@ -1828,21 +1860,12 @@ class CabRow {
 		return $cabrowList;
 	}
 
-	//obsolete
-	function SetDirection(){
-		$this->MakeSafe();
-
-		$sql="UPDATE fac_CabRow SET CabOrder=\"$this->CabOrder\" WHERE CabRowID=$this->CabRowID;";
-
-		return $this->query($sql);
-	}
-	
 	function GetCabRowFrontEdge(){
 		//It returns the FrontEdge of most cabinets
 		$this->MakeSafe();
 
-		$sql="SELECT FrontEdge, count(*) as num FROM fac_Cabinet WHERE CabRowID=$this->CabRowID GROUP BY FrontEdge
-					ORDER BY num DESC	LIMIT 1;";
+		$sql="SELECT FrontEdge, count(*) as num FROM fac_Cabinet WHERE 
+			CabRowID=$this->CabRowID GROUP BY FrontEdge ORDER BY num DESC LIMIT 1;";
 
 		if($cabinetRow=$this->query($sql)->fetch()){
 			return $cabinetRow["FrontEdge"];
@@ -1911,11 +1934,17 @@ class Container {
 		} else {
 			$this->ContainerID = $dbh->lastInsertID();
 		}
+
+		(class_exists('LogActions'))?LogActions::LogThis($this):'';
 		return $this->ContainerID;
 	}
 
 	function UpdateContainer(){
 		$this->MakeSafe();
+
+		$oldcontainer=new Container();
+		$oldcontainer->ContainerID=$this->ContainerID;
+		$oldcontainer->GetContainer();
 
 		$sql="UPDATE fac_Container SET Name=\"$this->Name\", ParentID=$this->ParentID, 
 			DrawingFileName=\"$this->DrawingFileName\", MapX=$this->MapX, MapY=$this->MapY 
@@ -1924,6 +1953,7 @@ class Container {
 		if(!$this->query($sql)){
 			return false;
 		}else{
+			(class_exists('LogActions'))?LogActions::LogThis($this,$oldcontainer):'';
 			return true;
 		}
 	}
@@ -1952,6 +1982,8 @@ class Container {
 			error_log("PDO Error: {$info[2]} SQL=$sql");
 			return false;
 		}
+
+		(class_exists('LogActions'))?LogActions::LogThis($this):'';
 		return;
 	}
 	
@@ -2336,22 +2368,29 @@ class Slot {
 			error_log("PDO Error: {$info[2]} SQL=$sql");
 			return false;
 		}else{
+			(class_exists('LogActions'))?LogActions::LogThis($this):'';
 			return true;
 		}
 	}
 	
 	function UpdateSlot(){
 		$this->MakeSafe();
+
+		$oldslot=new Slot();
+		$oldslot->TemplateID=$this->TemplateID;
+		$oldslot->Position=$this->Position;
+		$oldslot->BackSide=$this->BackSide;
+		$oldslot->GetSlot();
 			
-		$sql="UPDATE fac_Slots SET  
-			X=$this->X,
-			Y=$this->Y,
-			W=$this->W, 
-			H=$this->H 
-			WHERE TemplateID=$this->TemplateID AND Position=$this->Position AND BackSide=$this->BackSide;";
+		$sql="UPDATE fac_Slots SET X=$this->X, Y=$this->Y, W=$this->W, H=$this->H 
+			WHERE TemplateID=$this->TemplateID AND Position=$this->Position AND 
+			BackSide=$this->BackSide;";
+
 		if(!$this->query($sql)){
 			return false;
 		}
+
+		(class_exists('LogActions'))?LogActions::LogThis($this,$oldslot):'';
 		return true;
 	}
 	
@@ -2363,6 +2402,8 @@ class Slot {
 		if(!$this->query($sql)){
 			return false;
 		}
+
+		(class_exists('LogActions'))?LogActions::LogThis($this):'';
 		return true;
 	}
   
@@ -2490,6 +2531,7 @@ class TemplatePorts {
 			return false;
 		}
 
+		(class_exists('LogActions'))?LogActions::LogThis($this):'';
 		return true;
 	}
 
@@ -2497,6 +2539,11 @@ class TemplatePorts {
 		global $dbh;
 
 		$this->MakeSafe();
+
+		$oldport=new TemplatePort();
+		$oldport->TemplateID=$this->TemplateID;
+		$oldport->PortNumber=$this->PortNumber;
+		$oldport->getPort();
 
 		// update port
 		$sql="UPDATE fac_TemplatePorts SET Label=\"$this->Label\", MediaID=$this->MediaID, 
@@ -2510,6 +2557,8 @@ class TemplatePorts {
 			
 			return false;
 		}
+
+		(class_exists('LogActions'))?LogActions::LogThis($this,$oldport):'';
 		return true;
 	}
 
@@ -2527,6 +2576,7 @@ class TemplatePorts {
 			//delete failed, wtf
 			return false;
 		}else{
+			(class_exists('LogActions'))?LogActions::LogThis($this):'';
 			return true;
 		}		
 	} //END of Class TemplatePorts

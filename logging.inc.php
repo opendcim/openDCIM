@@ -144,8 +144,16 @@ class LogActions {
 				// DevicePorts::removeConnections()
 				// DevicePorts::removePorts()
 				break;
+			case "TemplatePorts":
+				$log->ObjectID=$object->TemplateID;
+				$log->ChildID=$object->PortNumber;
+				break;
 			case "RackRequest":
 				$log->ObjectID=$object->RequestID;
+				break;
+			case "Slot":
+				$log->ObjectID=$object->TemplateID;
+				$log->ChildID=$object->Position;
 				break;
 			case "SupplyBin":
 			case "Supplies":
