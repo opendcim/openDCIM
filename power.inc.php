@@ -978,16 +978,16 @@ class PowerPanel {
 			foreach(PowerPanel::RowToObject($row) as $prop => $value){
 				$this->$prop=$value;
 			}
+			return true;
 		}else{
 			foreach($this as $prop => $value){
 				if($prop!='PanelID'){
 					$this->$prop=null;
 				}
 			}
+			return false;
 		}
-		return true;
 	}
-
   
 	function CreatePanel(){
 		global $dbh;

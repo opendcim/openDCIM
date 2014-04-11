@@ -11,6 +11,19 @@
 	$panel=new PowerPanel();
 	$pdu=new PowerDistribution();
 	$cab=new Cabinet();
+
+	// AJAX
+
+	if(isset($_POST['deletepanel'])){
+		$panel->PanelID=$_POST["panelid"];
+		$return='no';
+		if($panel->GetPanel()){
+			$panel->DeletePanel();
+			$return='ok';
+		}
+		echo $return;
+		exit;
+	}
 	
 	// Set a default panel voltage based upon the configuration screen
 	$panel->PanelVoltage=$config->ParameterArray["DefaultPanelVoltage"];
@@ -132,7 +145,8 @@ echo '</select></div>
 <div class="caption">
 <?php
 	if($panel->PanelID >0){
-		echo '   <button type="submit" name="action" value="Update">',__("Update"),'</button>';
+		echo '   <button type="submit" name="action" value="Update">',__("Update"),'</button>
+	<button type="button" name="action" value="Delete">',__("Delete"),'</button>';
 	} else {
 		echo '   <button type="submit" name="action" value="Create">',__("Create"),'</button>';
   }
@@ -308,8 +322,43 @@ echo '</select></div>
 	}
 ?>
 </div></div>
-<?php echo '<a href="index.php">[ ',__("Return to Main Menu"),' ]</a>'; ?>
+<?php echo '<a href="index.php">[ ',__("Return to Main Menu"),' ]</a>
+<!-- hiding modal dialogs here so they can be translated easily -->
+<div class="hide">
+	<div title="',__("Power panel delete confirmation"),'" id="deletemodal">
+		<div id="modaltext"><span style="float:left; margin:0 7px 20px 0;" class="ui-icon ui-icon-alert"></span>',__("Are you sure that you want to delete this power panel?"),'
+		</div>
+	</div>
+</div>'; ?>
 </div><!-- END div.main -->
 </div><!-- END div.page -->
+<script type="text/javascript">
+$('button[value=Delete]').click(function(){
+	var defaultbutton={
+		"<?php echo __("Yes"); ?>": function(){
+			$.post('', {panelid: $('#panelid').val(),deletepanel: '' }, function(data){
+				if(data.trim()=='ok'){
+					self.location=$('.main > a').last().attr('href');
+					$(this).dialog("destroy");
+				}else{
+					alert("Danger, Will Robinson! DANGER!  Something didn't go as planned.");
+				}
+			});
+		}
+	}
+	var cancelbutton={
+		"<?php echo __("No"); ?>": function(){
+			$(this).dialog("destroy");
+		}
+	}
+	var modal=$('#deletemodal').dialog({
+		dialogClass: 'no-close',
+		modal: true,
+		width: 'auto',
+		buttons: $.extend({}, defaultbutton, cancelbutton)
+	});
+});
+
+</script>
 </body>
 </html>
