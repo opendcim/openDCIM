@@ -1608,13 +1608,15 @@ class Zone {
 	}
 	
 	function DeleteZone(){
+		global $dbh;
+		
 		$this->MakeSafe();
 		
 		//delete CabRows in this zone
 		$sql="SELECT * FROM fac_CabRow WHERE ZoneID=$this->ZoneID;";
 		$rows=array();
 		foreach($dbh->query($sql) as $row){
-			$rows[]=Zone::RowToObject($row);
+			$rows[]=CabRow::RowToObject($row);
 		}
 		foreach($rows as $cabRow){
 			$cabRow->DeleteCabRow();
@@ -1799,6 +1801,8 @@ class CabRow {
 	}
 	
 	function DeleteCabRow(){
+		global $dbh;
+		
 		$this->MakeSafe();
 
 		//update cabinets in this row
