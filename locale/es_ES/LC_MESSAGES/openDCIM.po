@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: openDCIM.po\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2014-04-11 01:24-0400\n"
-"PO-Revision-Date: 2014-03-28 10:33+0100\n"
+"PO-Revision-Date: 2014-04-11 11:47+0100\n"
 "Last-Translator: Jose Miguel Gomez <jomigom@iies.es>\n"
 "Language-Team: openDCIM <discussion@list.opendcim.org>\n"
 "MIME-Version: 1.0\n"
@@ -181,9 +181,8 @@ msgid "Date of Installation"
 msgstr "Fecha de Instalación"
 
 #: openDCIM/cabinets.php:253
-#, fuzzy
 msgid "Sensor IP Address / Host Name"
-msgstr "Dirección IP del Sensor"
+msgstr "Dirección IP del Sensor / Nombre"
 
 #: openDCIM/cabinets.php:257
 msgid "Sensor SNMP Community"
@@ -406,19 +405,20 @@ msgid "Return to"
 msgstr "Volver a"
 
 #: openDCIM/cabrow.php:70
-#, fuzzy
 msgid "Verify Delete Row"
-msgstr "Verificar Borrado del Dispositivo"
+msgstr "Verificar Borrado de la Fila"
 
 #: openDCIM/cabrow.php:71
 msgid ""
 "This Row will be deleted and there is no undo.  Assets within the row will "
 "remain as members of the Data Center."
 msgstr ""
+"Esta Fila se borrará y no se podrá deshacer. Los activos en la fila "
+"permanecerán como miembros del CPD."
 
 #: openDCIM/cabrow.php:71 openDCIM/container.php:145 openDCIM/zone.php:229
 msgid "Are you sure?"
-msgstr ""
+msgstr "¿Está seguro?"
 
 #: openDCIM/cabrow.php:78 openDCIM/container.php:152
 #: openDCIM/datacenter.php:160 openDCIM/devices.php:1001
@@ -1087,16 +1087,16 @@ msgid "Phone 3"
 msgstr "Teléfono 3"
 
 #: openDCIM/container.php:144
-#, fuzzy
 msgid "Verify Delete Container"
-msgstr "Verificar Borrado del Dispositivo"
+msgstr "Verificar Borrado del Conenedor"
 
 #: openDCIM/container.php:145
-#, fuzzy
 msgid ""
 "This container will be deleted and there is no undo. Their direct "
 "descendants will be moved to \\'home\\'."
-msgstr "Este dispositivo será eliminado y no se podrá deshacer. ¿Está seguro?"
+msgstr ""
+"Este contenedor se borrará y no se podrá deshacer. Sus descendientes "
+"directos se moverán a  \\'Inicio\\'."
 
 #: openDCIM/container.php:213
 msgid "Container Detail"
@@ -1259,27 +1259,25 @@ msgid "Click on the image to select DC coordinates"
 msgstr "Pulse en la imagen para indicar las coordenadas del CPD"
 
 #: openDCIM/datacenter.php:331
-#, fuzzy
 msgid "Data Center Deletion Confirmation"
-msgstr "Configuración del CPD"
+msgstr "Confirmación de Borrado del CPD"
 
 #: openDCIM/datacenter.php:332
-#, fuzzy
 msgid ""
 "Are you sure that you want to delete this data center and all contents "
 "within it?"
-msgstr "¿Seguro que quiere borrar esta PDU y todas sus conexiones eléctricas?"
+msgstr "¿Seguro que quiere borrar este CPD y todo su contenido?"
 
 #: openDCIM/datacenter.php:333
 msgid ""
 "Move the contents of this datacenter's storage room to the general storage "
 "or delete them?"
 msgstr ""
+"¿Mover el contenido del almacén de este CPD al almacén general o eliminarlo?"
 
 #: openDCIM/datacenter.php:333
-#, fuzzy
 msgid "Move"
-msgstr "Modelo"
+msgstr "Mover"
 
 #: openDCIM/dc_dashboard.php:74 openDCIM/dc_stats.php:145
 #: openDCIM/report_asset_Excel.php:39
@@ -1340,30 +1338,27 @@ msgstr "Flujo de Aire"
 
 #: openDCIM/dc_stats.php:229 openDCIM/zone_stats.php:236
 msgid "Set the air intake direction"
-msgstr ""
+msgstr "Poner toma de aire"
 
 #: openDCIM/dc_stats.php:233 openDCIM/dc_stats.php:241
 #: openDCIM/zone_stats.php:240 openDCIM/zone_stats.php:248
 msgid "Top"
-msgstr ""
+msgstr "Arriba"
 
 #: openDCIM/dc_stats.php:234 openDCIM/dc_stats.php:242
 #: openDCIM/zone_stats.php:241 openDCIM/zone_stats.php:249
-#, fuzzy
 msgid "Right"
-msgstr "Permisos"
+msgstr "Derecha"
 
 #: openDCIM/dc_stats.php:235 openDCIM/dc_stats.php:243
 #: openDCIM/zone_stats.php:242 openDCIM/zone_stats.php:250
-#, fuzzy
 msgid "Bottom"
-msgstr "Zoom"
+msgstr "Abajo"
 
 #: openDCIM/dc_stats.php:236 openDCIM/dc_stats.php:244
 #: openDCIM/zone_stats.php:243 openDCIM/zone_stats.php:251
-#, fuzzy
 msgid "Left"
-msgstr "Carta"
+msgstr "Izquierda"
 
 #: openDCIM/departments.php:84
 msgid "Data Center Department Detail"
@@ -1554,9 +1549,8 @@ msgid "Asset Tag"
 msgstr "Etiqueta del Activo"
 
 #: openDCIM/devices.php:1222
-#, fuzzy
 msgid "Primary IP / Host Name"
-msgstr "IP Principal"
+msgstr "IP Principal / Nombre"
 
 #: openDCIM/devices.php:1227
 msgid "SNMP Read Only Community"
@@ -1571,13 +1565,12 @@ msgid "Warranty Expiration"
 msgstr "Caducidad de la Garantía"
 
 #: openDCIM/devices.php:1248
-#, fuzzy
 msgid "Last Audit Completed"
-msgstr "Última Auditoría"
+msgstr "Última Auditoría Completada"
 
 #: openDCIM/devices.php:1249
 msgid "Audit not yet completed"
-msgstr ""
+msgstr "Auditoría sin completar"
 
 #: openDCIM/devices.php:1252 openDCIM/rackrequest.php:394
 msgid "Departmental Owner"
@@ -1735,9 +1728,8 @@ msgid "False"
 msgstr "Falso"
 
 #: openDCIM/devices.php:1518
-#, fuzzy
 msgid "Operational Log"
-msgstr "Informes Operacionales"
+msgstr "Log de Operaciones"
 
 #: openDCIM/devices.php:1518 openDCIM/report_aging.php:95
 #: openDCIM/report_department.php:28 openDCIM/report_supply_status.php:60
@@ -1802,11 +1794,9 @@ msgid "Return to General Storage Room"
 msgstr "Volver ao Almacén Xeral"
 
 #: openDCIM/devices.php:1702
-#, fuzzy
 msgid "Do you certify that you have completed an audit of this device?"
 msgstr ""
-"¿Quiere certificar que se ha completado una auditoría del armario "
-"seleccionado?"
+"¿Quiere certificar que se ha completado una auditoría de este dispositivo?"
 
 #: openDCIM/device_templates.php:45
 msgid "Template File Imported"
@@ -1878,9 +1868,8 @@ msgid "No. Ports"
 msgstr "Nº de Puertos"
 
 #: openDCIM/device_templates.php:414
-#, fuzzy
 msgid "Edit Ports"
-msgstr "Editar Zonas"
+msgstr "Editar Puertos"
 
 #: openDCIM/device_templates.php:417
 msgid "Front Picture File"
@@ -1992,9 +1981,8 @@ msgid "Data Center Inventory"
 msgstr "Inventario del CPD"
 
 #: openDCIM/index.php:94
-#, fuzzy
 msgid "Export Inventory"
-msgstr "Exportar Conexiones"
+msgstr "Exportar Inventario"
 
 #: openDCIM/index.php:97
 msgid "Hosted Systems"
@@ -2612,9 +2600,8 @@ msgid "CDU Template"
 msgstr "Plantilla de PDU"
 
 #: openDCIM/power_pdu.php:504 openDCIM/power_source.php:94
-#, fuzzy
 msgid "IP Address / Host Name"
-msgstr "Dirección IP"
+msgstr "Dirección IP / Nombre"
 
 #: openDCIM/power_pdu.php:508 openDCIM/power_source.php:98
 msgid "SNMP Community"
@@ -2704,8 +2691,8 @@ msgid ""
 "this request has been completed.\n"
 "\t\t\tPlease allow up to 2 business days for requests to be completed."
 msgstr ""
-"Se ha recibido su solicitud de enrackado para el dispositivo etiquetado %1"
-"$s.\n"
+"Se ha recibido su solicitud de enrackado para el dispositivo etiquetado "
+"%1$s.\n"
 "\t\t\tEl Centro de Gestión de Red examinará la solicitud y contactará con "
 "usted si precisa más información\n"
 "\t\t\tantes de tramitar la solicitud. Recibirá una notificación cuando la "
@@ -3173,50 +3160,44 @@ msgid "Data Center Switch Capacity Exceptions Report"
 msgstr "Informe de Excepciones de Capacidad de Conmutadores"
 
 #: openDCIM/report_logging.php:18
-#, fuzzy
 msgid "Time"
-msgstr "Zona Horaria"
+msgstr "Hora"
 
 #: openDCIM/report_logging.php:19 openDCIM/usermgr.php:89
 msgid "User"
 msgstr "Usuario"
 
 #: openDCIM/report_logging.php:20
-#, fuzzy
 msgid "Class"
-msgstr "Chasis"
+msgstr "Clase"
 
 #: openDCIM/report_logging.php:21
 msgid "ObjectID"
-msgstr ""
+msgstr "ID del Objeto"
 
 #: openDCIM/report_logging.php:22
 msgid "ChildID"
-msgstr ""
+msgstr "ID del Hijo"
 
 #: openDCIM/report_logging.php:23
-#, fuzzy
 msgid "Action"
-msgstr "Posición"
+msgstr "Acción"
 
 #: openDCIM/report_logging.php:24
-#, fuzzy
 msgid "Property"
-msgstr "Puerto"
+msgstr "Propiedad"
 
 #: openDCIM/report_logging.php:25
 msgid "Old Value"
-msgstr ""
+msgstr "Valor Anterior"
 
 #: openDCIM/report_logging.php:26
-#, fuzzy
 msgid "New Value"
-msgstr "Nuevo Cuadro"
+msgstr "Nuevo Valor"
 
 #: openDCIM/report_logging.php:89
-#, fuzzy
 msgid "Logging View/Export"
-msgstr "Ver/Exportar CPD"
+msgstr "Ver/Exportar el Log"
 
 #: openDCIM/report_outage_simulator.php:53 openDCIM/search_export.php:186
 msgid "Select data center"
@@ -3352,21 +3333,20 @@ msgid "Surplus/Salvage Audit Report"
 msgstr "Informe de Auditoría Excedente/Rescate"
 
 #: openDCIM/reports.php:62 openDCIM/report_supply_status.php:74
-#, fuzzy
 msgid "Supplies Status Report"
-msgstr "Informe de Auditoría Excedente/Rescate"
+msgstr "Informe de Suministros"
 
 #: openDCIM/reports.php:63
 msgid "Actions Log"
-msgstr ""
+msgstr "Log de Acciones"
 
 #: openDCIM/report_supply_status.php:15
 msgid "Supply Status Report"
-msgstr ""
+msgstr "Informe del Estado de Suministros"
 
 #: openDCIM/report_supply_status.php:78
 msgid "Stock No"
-msgstr ""
+msgstr "Núm de Stock"
 
 #: openDCIM/report_supply_status.php:79 openDCIM/timeperiods.php:80
 #: openDCIM/zone.php:124
@@ -3374,13 +3354,12 @@ msgid "Description"
 msgstr "Descripción"
 
 #: openDCIM/report_supply_status.php:80
-#, fuzzy
 msgid "Minimum"
-msgstr "Máx."
+msgstr "Mínimo"
 
 #: openDCIM/report_supply_status.php:82
 msgid "On Hand"
-msgstr ""
+msgstr "Disponible"
 
 #: openDCIM/report_tags.php:24
 msgid "Device Label"
@@ -3427,14 +3406,12 @@ msgid "Cabinets"
 msgstr "Armarios"
 
 #: openDCIM/rowview.php:237
-#, fuzzy
 msgid "Front View"
-msgstr "Borde Frontal"
+msgstr "Vista Frontal"
 
 #: openDCIM/rowview.php:237
-#, fuzzy
 msgid "Rear View"
-msgstr "Trasera"
+msgstr "Vista Trasera"
 
 #: openDCIM/search_export.php:41
 msgid "Installation Date"
@@ -3565,16 +3542,15 @@ msgstr "Nº Serie"
 
 #: openDCIM/supplies.php:49
 msgid "Bin ID"
-msgstr ""
+msgstr "ID del Almacén"
 
 #: openDCIM/supplies.php:50 openDCIM/supplybin.php:177
 msgid "Count"
 msgstr "Cantidad"
 
 #: openDCIM/supplies.php:83
-#, fuzzy
 msgid "Data Center Stockroom Supplies"
-msgstr "Almacenes de suministros del CPD"
+msgstr "Suministros del CPD"
 
 #: openDCIM/supplies.php:89 openDCIM/supplies.php:101
 #: openDCIM/supplybin.php:176
@@ -3582,22 +3558,20 @@ msgid "Part Number"
 msgstr "Part Number"
 
 #: openDCIM/supplies.php:91
-#, fuzzy
 msgid "New Supplies"
-msgstr "Gestionar Suministros"
+msgstr "Nuevos Suministros"
 
 #: openDCIM/supplies.php:105
-#, fuzzy
 msgid "Part Name"
-msgstr "Nombre de Puerto"
+msgstr "Nombre de la Pieza"
 
 #: openDCIM/supplies.php:109
 msgid "Min Qty"
-msgstr ""
+msgstr "Cant Mín"
 
 #: openDCIM/supplies.php:113
 msgid "Max Qty"
-msgstr ""
+msgstr "Cant Máx"
 
 #: openDCIM/supplybin.php:141
 msgid "Data Center Stockroom Supply Bins"
@@ -3772,15 +3746,16 @@ msgid "Click and drag on the image to select an area for this zone"
 msgstr "Pulse y desplace por la imagen para seleccionar un área para esta zona"
 
 #: openDCIM/zone.php:228
-#, fuzzy
 msgid "Verify Delete Zone"
-msgstr "Verificar Borrado del Dispositivo"
+msgstr "Verificar Borrado de la Zona"
 
 #: openDCIM/zone.php:229
 msgid ""
 "This Zone will be deleted and there is no undo.  Assets within the zone will "
 "remain as members of the Data Center."
 msgstr ""
+"Esta Zona se borrará y no se podrá deshacer. Los activos en la zona "
+"permanecerán como miembros del CPD."
 
 #: openDCIM/zone_stats.php:157
 msgid "Zone Statistics"
