@@ -54,7 +54,7 @@ class CDUTemplate {
 		$this->Managed=intval($this->Managed);
 		$this->ATS=intval($this->ATS);
 		$this->SNMPVersion=(in_array($this->SNMPVersion, $validSNMPVersions))?$this->SNMPVersion:'2c';
-		$this->VersionOID=sanitize($this->VersionOID));
+		$this->VersionOID=sanitize($this->VersionOID);
 		$this->Multiplier=(in_array($this->Multiplier, $validMultipliers))?$this->Multiplier:1;
 		$this->OID1=sanitize($this->OID1);
 		$this->OID2=sanitize($this->OID2);
