@@ -1807,7 +1807,6 @@ class CabRow {
 		$cabinetList=$cabinet->GetCabinetsByRow();
 		foreach($cabinetList as $cab){
 			$cab->CabRowID=0;
-			$cab->ZoneID=0;			//Why can not remain in the zone where they were?
 			$cab->UpdateCabinet();
 		}
 
