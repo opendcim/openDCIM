@@ -136,6 +136,7 @@ class Contact {
 		if($this->exec($sql)){
 			$this->ContactID=$dbh->lastInsertId();
 			$this->MakeDisplay();
+			(class_exists('LogActions'))?LogActions::LogThis($this):'';
 			return $this->ContactID;
 		}else{
 			return false;
@@ -145,11 +146,16 @@ class Contact {
 	function UpdateContact(){
 		$this->MakeSafe();
 
+		$oldcontact=new Contact();
+		$oldcontact->ContactID=$this->ContactID;
+		$oldcontact->GetContactiById();
+
 		$sql="UPDATE fac_Contact SET UserID=\"$this->UserID\", 
 			LastName=\"$this->LastName\", FirstName=\"$this->FirstName\", 
 			Phone1=\"$this->Phone1\", Phone2=\"$this->Phone2\",	Phone3=\"$this->Phone3\", 
 			Email=\"$this->Email\" WHERE ContactID=$this->ContactID;";
        
+		(class_exists('LogActions'))?LogActions::LogThis($this,$oldcontact):'';
 		$this->query($sql); 
 		$this->MakeDisplay();
 	}
@@ -159,6 +165,7 @@ class Contact {
 		// Clear up any records that might have still had this contact set as the primary contact.
 		$this->query("UPDATE fac_Device SET PrimaryContact=0 WHERE PrimaryContact=$this->ContactID;");
 		if($this->exec("DELETE FROM fac_Contact WHERE ContactID=$this->ContactID;")){
+			(class_exists('LogActions'))?LogActions::LogThis($this):'';
 			return true;
 		}else{
 			return false;
@@ -278,6 +285,7 @@ class Department {
 		if($this->exec($sql)){
 			$this->DeptID=$dbh->lastInsertId();
 			$this->MakeDisplay();
+			(class_exists('LogActions'))?LogActions::LogThis($this):'';
 			return $this->DeptID;
 		}else{
 			return false;
@@ -287,11 +295,16 @@ class Department {
 	function UpdateDepartment() {
 		$this->MakeSafe();
 
+		$olddept=new Department();
+		$olddept->DeptID=$this->DeptID;
+		$olddept->GetDeptByID();
+
 		$sql="UPDATE fac_Department SET Name=\"$this->Name\", 
 			ExecSponsor=\"$this->ExecSponsor\", SDM=\"$this->SDM\", 
 			Classification=\"$this->Classification\" , DeptColor=\"$this->DeptColor\" 
 			WHERE DeptID=\"$this->DeptID\";";
 
+		(class_exists('LogActions'))?LogActions::LogThis($this,$olddept):'';
 		$this->query($sql); 
 		$this->MakeDisplay();
 	}
@@ -413,6 +426,7 @@ class Escalations {
 		if($this->exec($sql)){
 			$this->EscalationID=$dbh->lastInsertId();
 			$this->MakeDisplay();
+			(class_exists('LogActions'))?LogActions::LogThis($this):'';
 			return $this->EscalationID;
 		}else{
 			return false;
@@ -424,6 +438,7 @@ class Escalations {
 
 		$sql="DELETE FROM fac_Escalations WHERE EscalationID=$this->EscalationID;";
 
+		(class_exists('LogActions'))?LogActions::LogThis($this):'';
 		return $this->exec($sql);
 	}
 	
@@ -459,11 +474,16 @@ class Escalations {
 	function UpdateEscalation(){
 		$this->MakeSafe();
 
+		$oldesc=new Escalations();
+		$oldesc->EscalationID=$this->EscalationID;
+		$oldesc->GetEscalation();
+
 		$sql="UPDATE fac_Escalations SET Details=\"$this->Details\" WHERE 
 			EscalationID=$this->EscalationID;";
 
 		$this->MakeDisplay();
 			
+		(class_exists('LogActions'))?LogActions::LogThis($this,$oldesc):'';
 		return $this->query($sql);
 	}
 }
@@ -500,6 +520,7 @@ class EscalationTimes {
 		if($this->exec($sql)){
 			$this->EscalationTimeID=$dbh->lastInsertId();
 			$this->MakeDisplay();
+			(class_exists('LogActions'))?LogActions::LogThis($this):'';
 			return $this->EscalationTimeID;
 		}else{
 			return false;
@@ -511,6 +532,7 @@ class EscalationTimes {
 
 		$sql="DELETE FROM fac_EscalationTimes WHERE EscalationTimeID=$this->EscalationTimeID;";
 		
+		(class_exists('LogActions'))?LogActions::LogThis($this):'';
 		return $this->exec($sql);
 	}
 	
@@ -544,9 +566,14 @@ class EscalationTimes {
 	function UpdatePeriod(){
 		$this->MakeSafe();
 
+		$oldperiod=new EscalationTimes();
+		$oldperiod->EscalationTimeID=$this->EscalationTimeID;
+		$oldperiod->GetEscalationTime();
+
 		$sql="UPDATE fac_EscalationTimes SET TimePeriod=\"$this->TimePeriod\" WHERE 
 			EscalationTimeID=$this->EscalationTimeID;";
 		
+		(class_exists('LogActions'))?LogActions::LogThis($this,$oldperiod):'';
 		return $this->query($sql);
 	}
 }
@@ -711,6 +738,7 @@ class User {
 
 		$this->MakeDisplay();
 
+		(class_exists('LogActions'))?LogActions::LogThis($this):'';
 		return $dbh->exec($sql);
 	}
 
@@ -718,6 +746,10 @@ class User {
 		global $dbh;
 		
 		$this->MakeSafe();
+
+		$olduser=new User();
+		$olduser->UserID=$this->UserID;
+		$olduser->GetUserRights();
 
 		/* Update a user record based upon the current object attribute values, with UserID as key. */
 		$sql="UPDATE fac_User SET Name=\"$this->Name\", ReadAccess=$this->ReadAccess, 
@@ -729,6 +761,7 @@ class User {
 
 		$this->MakeDisplay();
 
+		(class_exists('LogActions'))?LogActions::LogThis($this,$olduser):'';
 		return $dbh->exec($sql);
 	}
 

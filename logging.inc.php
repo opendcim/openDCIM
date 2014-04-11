@@ -155,17 +155,16 @@ class LogActions {
 				$log->ObjectID=$object->TemplateID;
 				$log->ChildID=$object->Position;
 				break;
-			case "SupplyBin":
-			case "Supplies":
-			case "Config":
-				// do we want to track when the default system config has been updated?
-			case "Contact":
-			case "PowerDistribution":
 			case "PowerConnection":
 				$log->ObjectID=$object->DeviceID;
 				$log->ChildID=$object->DeviceConnNumber;
 				break;
 				// similar questions as to the switch connections. are we going to track this?
+			case "SupplyBin":
+			case "Supplies":
+			case "Config":
+				// do we want to track when the default system config has been updated?
+			case "PowerDistribution":
 			case "CDUTemplate":
 			case "PowerPanel":
 				// only has create and update. should changes here be logged or figure out what changed and log that?
@@ -174,6 +173,8 @@ class LogActions {
 			case "DeviceTemplate":
 				// The following function isn't logged
 				// UpdateDevice()
+			case "Department":
+				// Not sure how to go about tracking the changes in membership
 			default:
 				// Attempt to autofind the id of the object we've been handed
 				foreach($object as $prop => $value){
@@ -200,7 +201,16 @@ class LogActions {
 			// in the event that two objects were passed but no changes found, 
 			// we just wrote the same info back to the db, nothing to log
 		}else{
-			$return=$log->WriteToDB();
+			// if we're creating a new object make a note of all the values
+			if($log->Action==1){
+				foreach($object as $prop => $value){
+					$log->Property=$prop;
+					$log->NewVal=$value;
+					$return=$log->WriteToDB();
+				}
+			}else{
+				$return=$log->WriteToDB();
+			}
 		}
 		return $return;
 	}

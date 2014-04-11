@@ -93,11 +93,13 @@
 		// Update all devices that had the contact as the primary contact and 
 		// change to the alternate they chose. If no records are updated return
 		// an error
+		$return='yes';
 		if(isset($_POST['n'])){
 			$sth=$dbh->prepare("UPDATE fac_Device SET PrimaryContact=".intval($_POST['n'])." WHERE PrimaryContact=$contactid;");
 			$sth->execute();
+			$return=($sth->rowCount>0)?'yes':'no';
 		}
-		echo($sth->rowCount>0)?'yes':'no';
+		echo $return;
 		exit;
 	}
 	// END - AJAX
