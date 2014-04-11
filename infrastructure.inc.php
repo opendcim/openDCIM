@@ -1801,15 +1801,15 @@ class CabRow {
 	function DeleteCabRow(){
 		$this->MakeSafe();
 
-		//update cabinets in this zone
-		$sql="SELECT * FROM fac_Cabinet WHERE ZoneID=$this->ZoneID;";
+		//update cabinets in this row
+		$sql="SELECT * FROM fac_Cabinet WHERE CabRowID=$this->CabRowID AND ZoneID=$this->ZoneID;";
 		$cabinetList=array();
 		foreach($dbh->query($sql) as $cabinetRow){
 			$cabinetList[]=Cabinet::RowToObject($cabinetRow);
 		}
 		foreach($cabinetList as $cab){
 			$cab->CabRowID=0;
-			$cab->ZoneID=0;
+			$cab->ZoneID=0;			//Why can not remain in the zone where they were?
 			$cab->UpdateCabinet();
 		}
 
