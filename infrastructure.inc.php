@@ -1613,21 +1613,17 @@ class Zone {
 		$this->MakeSafe();
 		
 		//delete CabRows in this zone
-		$sql="SELECT * FROM fac_CabRow WHERE ZoneID=$this->ZoneID;";
-		$rows=array();
-		foreach($dbh->query($sql) as $row){
-			$rows[]=CabRow::RowToObject($row);
-		}
-		foreach($rows as $cabRow){
+		$cabrow=new CabRow();
+		$cabrow->ZoneID=$this->ZoneID;
+		$cabrowlist=$cabrow->GetCabRowsByZones();
+		foreach($cabrowlist as $cabRow){
 			$cabRow->DeleteCabRow();
 		}
 
 		//update any remaining cabinets in this zone that weren't part of rows
-		$sql="SELECT * FROM fac_Cabinet WHERE ZoneID=$this->ZoneID;";
-		$cabinetList=array();
-		foreach($dbh->query($sql) as $cabinetRow){
-			$cabinetList[]=Cabinet::RowToObject($cabinetRow);
-		}
+		$cabinet=new Cabinet();
+		$cabinet->ZoneID=$this->ZoneID;
+		$cabinetList=$cabinet->GetCabinetsByZone();
 		foreach($cabinetList as $cab){
 			$cab->CabRowID=0;
 			$cab->ZoneID=0;
@@ -1806,11 +1802,9 @@ class CabRow {
 		$this->MakeSafe();
 
 		//update cabinets in this row
-		$sql="SELECT * FROM fac_Cabinet WHERE CabRowID=$this->CabRowID AND ZoneID=$this->ZoneID;";
-		$cabinetList=array();
-		foreach($dbh->query($sql) as $cabinetRow){
-			$cabinetList[]=Cabinet::RowToObject($cabinetRow);
-		}
+		$cabinet=new Cabinet();
+		$cabinet->CabRowID=$this->CabRowID;
+		$cabinetList=$cabinet->GetCabinetsByRow();
 		foreach($cabinetList as $cab){
 			$cab->CabRowID=0;
 			$cab->ZoneID=0;			//Why can not remain in the zone where they were?
