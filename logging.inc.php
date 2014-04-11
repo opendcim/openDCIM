@@ -206,7 +206,9 @@ class LogActions {
 				foreach($object as $prop => $value){
 					$log->Property=$prop;
 					$log->NewVal=$value;
-					$return=$log->WriteToDB();
+					// Log only new object properties that have values
+					// this should cut down on the amount of useless junk we are putting into the log
+					$return=($log->NewVal)?$log->WriteToDB():true;
 				}
 			}else{
 				$return=$log->WriteToDB();
