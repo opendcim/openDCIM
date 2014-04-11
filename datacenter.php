@@ -13,12 +13,13 @@
 	$dc=new DataCenter();
 	
 	// AJAX Action
-	if ( isset( $_POST['confirmdelete'] ) && isset($_POST['datacenterid'])) {
+	if(isset($_POST['confirmdelete']) && isset($_POST['datacenterid'])){
 		// About the nuke this place from orbit
-		$dc->DataCenterID = $_POST['datacenterid'];
-		if ( $dc->DeleteDataCenter() ) {
+		$junkremoval=($_POST['junkremoval']=='delete')?true:false;
+		$dc->DataCenterID=$_POST['datacenterid'];
+		if($dc->DeleteDataCenter($junkremoval)){
 			echo 'ok';
-		} else {
+		}else{
 			echo 'no';
 		}
 		exit;

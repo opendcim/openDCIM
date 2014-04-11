@@ -261,12 +261,12 @@ class DataCenter {
 		return true; 
 	}
 
-	function DeleteDataCenter() {
+	function DeleteDataCenter($junkremoval=true) {
 		$this->MakeSafe();
 		
 		// Have to make sure that we delete EVERYTHING and not create orphans
 		// Also, if we are down to the last data center, refuse to delete it
-		$sql = "select count(*) as Total from fac_DataCenter";
+		$sql = "SELECT COUNT(*) AS Total FROM fac_DataCenter;";
 		if ( ! $row = $this->query($sql)->fetch() ) {
 			return false;
 		}
@@ -302,11 +302,34 @@ class DataCenter {
 		foreach ( $psList as $p ) {
 			$p->DeletePowerSource();
 		}
-		
+
+		// Time to deal with the crap in storage
+
+		// Get a list of all the devices that are in this data center's storage room
+		$sql="SELECT * FROM fac_Device WHERE Cabinet=-1 AND Position=$this->DataCenterID;";
+		$devices=array();
+
+		foreach($this->query($sql) as $row){
+			$devices[]=Device::RowToObject($row);
+		}
+
+		// Default action is just to delete them
+		if($junkremoval){
+			foreach($devices as $dev){
+				$dev->DeleteDevice();
+			}
+		}else{ // move it to the general storage room
+			foreach($devices as $dev){
+				$dev->Position=0;
+				$dev->UpdateDevice();
+			}
+		}
+	
 		// Finally, delete the data center itself
-		$sql = "delete from fac_DataCenter where DataCenterID='".$this->DataCenterID."'";
+		$sql="DELETE FROM fac_DataCenter WHERE DataCenterID=$this->DataCenterID;";
 		$this->exec($sql);
 		
+		(class_exists('LogActions'))?LogActions::LogThis($this):'';
 		return true;
 	}
 	
