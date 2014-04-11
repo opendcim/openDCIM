@@ -33,6 +33,17 @@
 		$write=($user->canWrite($cab->AssignedTo))?true:$write;
 	}
 
+	// If you're deleting the cabinet, no need to pull in the rest of the information, so get it out of the way
+	// Only a site administrator can create or delete a cabinet
+	if(isset($_POST["delete"]) && $_POST["delete"]=="yes" && $user->SiteAdmin ) {
+		$cab->DeleteCabinet();
+		$status['code']=200;
+		$status['msg']=redirect("dc_stats.php?dc=$cab->DataCenterID");
+		header('Content-Type: application/json');
+		echo json_encode($status);
+		exit;
+	}
+
 	// this will allow a user to modify a rack but not create a new one
 	// creation is still limited to global write priviledges
 	if(!$write){
@@ -285,7 +296,8 @@ echo '  </select>
 <div class="caption">';
 
 	if($cab->CabinetID >0){
-		echo '   <button type="submit" name="action" value="Update">',__("Update"),'</button>';
+		echo '   <button type="submit" name="action" value="Update">',__("Update"),'</button>
+	<button type="button" name="action" value="Delete">',__("Delete"),'</button>';
 	}else{
 		echo '   <button type="submit" name="action" value="Create">',__("Create"),'</button>';
 	}
@@ -299,8 +311,43 @@ echo '  </select>
 	}else{ 
 		echo '<a href="index.php">[ ',__("Return to Main Menu"),' ]</a>';
 	}
-?>
+
+echo '
+<!-- hiding modal dialogs here so they can be translated easily -->
+<div class="hide">
+	<div title="',__("Cabinet delete confirmation"),'" id="deletemodal">
+		<div id="modaltext"><span style="float:left; margin:0 7px 20px 0;" class="ui-icon ui-icon-alert"></span>',__("Are you sure that you want to delete this cabinet and all the devices in it?<br><br><b>THERE IS NO UNDO</b>"),'
+		</div>
+	</div>
+</div>'; ?>
 </div><!-- END div.main -->
 </div><!-- END div.page -->
+<script type="text/javascript">
+$('button[value=Delete]').click(function(){
+	var defaultbutton={
+		"<?php echo __("Yes"); ?>": function(){
+			$.post('', {cabinetid: $('select[name=cabinetid]').val(),delete: 'yes' }, function(data){
+				if(data.code==200){
+					window.location.assign(data.msg);
+				}else{
+					alert("Danger, Will Robinson! DANGER!  Something didn't go as planned.");
+				}
+			});
+		}
+	}
+	var cancelbutton={
+		"<?php echo __("No"); ?>": function(){
+			$(this).dialog("destroy");
+		}
+	}
+	var modal=$('#deletemodal').dialog({
+		dialogClass: 'no-close',
+		modal: true,
+		width: 'auto',
+		buttons: $.extend({}, defaultbutton, cancelbutton)
+	});
+});
+
+</script>
 </body>
 </html>
