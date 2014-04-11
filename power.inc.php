@@ -50,17 +50,17 @@ class CDUTemplate {
 
 		$this->TemplateID=intval($this->TemplateID);
 		$this->ManufacturerID=intval($this->ManufacturerID);
-		$this->Model=addslashes(trim($this->Model));
+		$this->Model=sanitize($this->Model);
 		$this->Managed=intval($this->Managed);
 		$this->ATS=intval($this->ATS);
 		$this->SNMPVersion=(in_array($this->SNMPVersion, $validSNMPVersions))?$this->SNMPVersion:'2c';
-		$this->VersionOID=addslashes(trim($this->VersionOID));
+		$this->VersionOID=sanitize($this->VersionOID));
 		$this->Multiplier=(in_array($this->Multiplier, $validMultipliers))?$this->Multiplier:1;
-		$this->OID1=addslashes(trim($this->OID1));
-		$this->OID2=addslashes(trim($this->OID2));
-		$this->OID3=addslashes(trim($this->OID3));
-		$this->ATSStatusOID=addslashes(trim($this->ATSStatusOID));
-		$this->ATSDesiredResult=addslashes(trim($this->ATSDesiredResult));
+		$this->OID1=sanitize($this->OID1);
+		$this->OID2=sanitize($this->OID2);
+		$this->OID3=sanitize($this->OID3);
+		$this->ATSStatusOID=sanitize($this->ATSStatusOID);
+		$this->ATSDesiredResult=sanitize($this->ATSDesiredResult);
 		$this->ProcessingProfile=(in_array($this->ProcessingProfile, $validProcessingProfiles))?$this->ProcessingProfile:'SingleOIDWatts';
 		$this->Voltage=intval($this->Voltage);
 		$this->Amperage=intval($this->Amperage);
@@ -902,7 +902,7 @@ class PowerPanel {
 	function MakeSafe(){
 		$this->PanelID=intval($this->PanelID);
 		$this->PowerSourceID=intval($this->PowerSourceID);
-		$this->PanelLabel=addslashes(trim($this->PanelLabel));
+		$this->PanelLabel=sanitize($this->PanelLabel);
 		$this->NumberOfPoles=intval($this->NumberOfPoles);
 		$this->MainBreakerSize=intval($this->MainBreakerSize);
 		$this->PanelVoltage=intval($this->PanelVoltage);
@@ -1050,7 +1050,7 @@ class PanelSchedule {
 		$this->PanelID=intval($this->PanelID);
 		$this->PolePosition=intval($this->PolePosition);
 		$this->NumPoles=intval($this->NumPoles);
-		$this->Label=addslashes(trim($this->Label));
+		$this->Label=sanitize($this->Label);
 	}
 
 	function MakeDisplay(){
@@ -1128,11 +1128,11 @@ class PowerSource {
 
 	function MakeSafe(){
 		$this->PowerSourceID=intval($this->PowerSourceID);
-		$this->SourceName=addslashes(trim($this->SourceName));
+		$this->SourceName=sanitize($this->SourceName);
 		$this->DataCenterID=intval($this->DataCenterID);
-		$this->IPAddress=addslashes(trim($this->IPAddress));
-		$this->Community=addslashes(trim($this->Community));
-		$this->LoadOID=addslashes(trim($this->LoadOID));
+		$this->IPAddress=sanitize($this->IPAddress);
+		$this->Community=sanitize($this->Community);
+		$this->LoadOID=sanitize($this->LoadOID);
 		$this->Capacity=intval($this->Capacity);
 	}
 
