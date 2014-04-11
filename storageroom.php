@@ -9,13 +9,14 @@
 	}
 
 	$dev=new Device();
+	$dc=new DataCenter();
 
 	// Cabinet -1 is the Storage Area
 	$dev->Cabinet=-1;
+	$dc->DataCenterID=0;
 	
 	if (isset($_GET['dc'])){
 		$dev->Position=$_GET['dc'];
-		$dc=new DataCenter();
 		$dc->DataCenterID=$_GET['dc'];
 		$dc->GetDataCenter();
 		$srname=sprintf(__("%s Storage Room"), $dc->Name);
@@ -23,7 +24,6 @@
 		$dev->Position=0;
 		$srname=__("General Storage Room");
 	}
-	
 	$devList=$dev->ViewDevicesByCabinet();
 ?>
 <!doctype html>
@@ -61,7 +61,10 @@
 		<div></div>
 	</div>';
 	while(list($devID,$device)=each($devList)){
-		echo "<div><div><a href=\"devices.php?deviceid=$device->DeviceID\">$device->Label</a></div><div>$device->AssetTag</div><div>$device->SerialNo</div><div><a href=\"surplus.php?deviceid=$device->DeviceID\">Surplus</a></div></div>\n";
+		// filter the list of devices in storage rooms to only show the devices for this room
+		if($device->Position==$dc->DataCenterID){
+			echo "<div><div><a href=\"devices.php?deviceid=$device->DeviceID\">$device->Label</a></div><div>$device->AssetTag</div><div>$device->SerialNo</div><div><a href=\"surplus.php?deviceid=$device->DeviceID\">Surplus</a></div></div>\n";
+		}
 	}
 ?>
 </div> <!-- END div.table -->

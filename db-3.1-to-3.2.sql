@@ -99,3 +99,8 @@ ALTER TABLE fac_Device ADD AuditStamp DATETIME NOT NULL;
 -- Bump up the database version
 --
 UPDATE fac_Config set Value='3.2' WHERE Parameter='Version';
+
+--
+-- We've changed how we're handling devices in storage move them all to the general storage room
+--
+UPDATE fac_Device SET Position=0 WHERE Cabinet=-1;

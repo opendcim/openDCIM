@@ -884,6 +884,16 @@ $(document).ready(function() {
 		if(n==0){$('#deviceimages').hide();}
 	}
 
+	// Need to make some changes to the UI for the storage room
+	$('#cabinetid').change(function(){
+		var positionrow=$('#position').parent('div').parent('div');
+		if($(this).val()==-1){
+			positionrow.hide();
+		}else{
+			positionrow.show();
+		}
+	}).trigger('change');
+
 	// Auto-Populate fields based on device templates
 	$('#templateid').change( function(){
 		$.get('scripts/ajax_template.php?q='+$(this).val(), function(data) {
