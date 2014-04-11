@@ -102,7 +102,7 @@ class CDUTemplate {
 		return $template;
 	}
 	
-	function GetTemplateList( $db = null ) {
+	function GetTemplateList(){
 		global $dbh;
 		
 		$sql="SELECT a.* FROM fac_CDUTemplate a, fac_Manufacturer b WHERE 
@@ -116,7 +116,7 @@ class CDUTemplate {
 		return $tmpList;
 	}
 	
-	function GetTemplate( $db = null ) {
+	function GetTemplate(){
 		global $dbh;
 
 		$this->MakeSafe();
@@ -152,6 +152,7 @@ class CDUTemplate {
 			$this->TemplateID = $dbh->lastInsertID();
 		}
 		
+		(class_exists('LogActions'))?LogActions::LogThis($this):'';
 		return $this->TemplateID;
 	}
 	
@@ -159,6 +160,10 @@ class CDUTemplate {
 		global $dbh;
 
 		$this->MakeSafe();
+
+		$oldtemplate=new CDUTemplate();
+		$oldtemplate->TemplateID=$this->TemplateID;
+		$oldtemplate->GetTemplate();
 		
 		$sql="UPDATE fac_CDUTemplate SET ManufacturerID=$this->ManufacturerID, 
 			Model=\"$this->Model\", Managed=$this->Managed, ATS=$this->ATS,
@@ -172,6 +177,7 @@ class CDUTemplate {
 		if(!$dbh->query($sql)){
 			return false;
 		}else{
+			(class_exists('LogActions'))?LogActions::LogThis($this,$oldtemplate):'';
 			return true;
 		}
 	}
@@ -188,6 +194,7 @@ class CDUTemplate {
 		$sql="DELETE FROM fac_CDUTemplate WHERE TemplateID=$this->TemplateID;";
 		$dbh->exec($sql);
 		
+		(class_exists('LogActions'))?LogActions::LogThis($this):'';
 		return true;
 	}
 }
@@ -265,6 +272,7 @@ class PowerConnection {
 
 		if($this->CanWrite()){
 			if($dbh->query($sql)){
+				(class_exists('LogActions'))?LogActions::LogThis($this):'';
 				return true;
 			}
 		}
@@ -283,6 +291,7 @@ class PowerConnection {
 
 		if($this->CanWrite()){
 			if($dbh->exec($sql)){
+				(class_exists('LogActions'))?LogActions::LogThis($this):'';
 				return true;
 			}
 		}
@@ -302,6 +311,7 @@ class PowerConnection {
 
 		if($this->CanWrite()){
 			if($dbh->exec($sql)){
+				(class_exists('LogActions'))?LogActions::LogThis($this):'';
 				return true;
 			}
 		}
@@ -380,12 +390,12 @@ class PowerDistribution {
 
 	function MakeSafe(){
 		$this->PDUID=intval($this->PDUID);
-		$this->Label=addslashes(trim($this->Label));
+		$this->Label=sanitize($this->Label);
 		$this->CabinetID=intval($this->CabinetID);
 		$this->TemplateID=intval($this->TemplateID);
-		$this->IPAddress=addslashes(trim($this->IPAddress));
-		$this->SNMPCommunity=addslashes(trim($this->SNMPCommunity));
-		$this->FirmwareVersion=addslashes(trim($this->FirmwareVersion));
+		$this->IPAddress=sanitize($this->IPAddress);
+		$this->SNMPCommunity=sanitize($this->SNMPCommunity);
+		$this->FirmwareVersion=sanitize($this->FirmwareVersion);
 		$this->PanelID=intval($this->PanelID);
 		$this->BreakerSize=intval($this->BreakerSize);
 		$this->PanelPole=intval($this->PanelPole);
@@ -449,6 +459,7 @@ class PowerDistribution {
 		if($this->exec($sql)){
 			$this->PDUID=$dbh->lastInsertId();
 
+			(class_exists('LogActions'))?LogActions::LogThis($this):'';
 			return $this->PDUID;
 		}else{
 			$info=$dbh->errorInfo();
@@ -462,6 +473,10 @@ class PowerDistribution {
 	function UpdatePDU(){
 		$this->MakeSafe();
 
+		$oldpdu=new PowerDistribution();
+		$oldpdu->PDUID=$this->PDUID;
+		$oldpdu->GetPDU();
+
 		$sql="UPDATE fac_PowerDistribution SET Label=\"$this->Label\", 
 			CabinetID=$this->CabinetID, TemplateID=$this->TemplateID, 
 			IPAddress=\"$this->IPAddress\", SNMPCommunity=\"$this->SNMPCommunity\", 
@@ -470,6 +485,7 @@ class PowerDistribution {
 			FailSafe=$this->FailSafe, PanelID2=$this->PanelID2, PanelPole2=$this->PanelPole2
 			WHERE PDUID=$this->PDUID;";
 
+		(class_exists('LogActions'))?LogActions::LogThis($this,$oldpdu):'';
 		return $this->query($sql);
 	}
 
@@ -600,6 +616,7 @@ class PowerDistribution {
 		$sql="INSERT INTO fac_PDUStats SET Wattage=$Wattage, PDUID=$this->PDUID, 
 			LastRead=NOW() ON DUPLICATE KEY UPDATE Wattage=$Wattage, LastRead=NOW();";
 		
+		(class_exists('LogActions'))?LogActions::LogThis($this):'';
 		return ($this->query($sql))?$this->GetLastReading():false;
 	}
 	
@@ -861,6 +878,7 @@ class PowerDistribution {
 			// Something went south and this didn't delete.
 			return false;
 		}else{
+			(class_exists('LogActions'))?LogActions::LogThis($this):'';
 			return true;
 		}
 	}

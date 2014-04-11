@@ -162,6 +162,9 @@ class LogActions {
 			case "Contact":
 			case "PowerDistribution":
 			case "PowerConnection":
+				$log->ObjectID=$object->DeviceID;
+				$log->ChildID=$object->DeviceConnNumber;
+				break;
 				// similar questions as to the switch connections. are we going to track this?
 			case "CDUTemplate":
 			case "PowerPanel":
