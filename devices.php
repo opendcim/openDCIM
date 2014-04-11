@@ -1748,7 +1748,7 @@ echo '	<div class="table">
 		// Endable Mass Change Options
 		$('.switch.table, .patchpanel.table').massedit();
 
-		<?php echo (class_exists('LogActions'))?'LameLogDisplay();':''; ?>
+		<?php echo (class_exists('LogActions') && $dev->DeviceID>0)?'LameLogDisplay();':''; ?>
 
 		// Scroll the operations log to the bottom
 		scrollolog();

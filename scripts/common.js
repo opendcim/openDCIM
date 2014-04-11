@@ -689,7 +689,7 @@ function bindmaptooltips(){
 
 // logging functions
 function LameLogDisplay(){
-	var test=$('<button>').attr('type','button').text('Log Test').click(function(){
+	var test=$('<button>').attr('type','button').text('Log View').click(function(){
 		var table=$('<div>').addClass('table').attr('id','logtable');
 		var header='<div><div>Time</div><div>User</div><div>Action</div><div>Property</div><div>Old Value</div><div>New Value</div></div>';
 		table.append(header);

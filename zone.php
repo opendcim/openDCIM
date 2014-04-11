@@ -19,7 +19,7 @@
 	if(isset($_POST['action']) && $_POST['action']=='Delete'){
 		$zone->ZoneID=$_POST['zoneid'];
 		$zone->DeleteZone();
-		header('Location: zone.php');
+		header('Location: '.redirect('zone.php'));
 		exit;
 	}
 	
@@ -226,11 +226,12 @@ echo '
 			var btn=$(this);
 <?php
 print "		var dialog=$('<div>').prop('title','".__("Verify Delete Zone")."').html('<p><span class=\"ui-icon ui-icon-alert\" style=\"float:left; margin:0 7px 20px 0;\"></span><span></span></p>');";
-print "		dialog.find('span + span').html('".__("This Zone will be deleted and there is no undo.  Assets within the zone will remain as members of the Data Center.")."<br>".__("Are you sure?")."');"; 
+print "		dialog.find('span + span').html('".__("This Zone will be deleted and there is no undo.  Assets within the zone will remain as members of the Data Center.")."<br><br>".__("Are you sure?")."');"; 
 ?>
 			dialog.dialog({
 				resizable: false,
 				modal: true,
+				width: 'auto',
 				dialogClass: "no-close",
 				buttons: {
 <?php echo '				',__("Yes"),': function(){'; ?>
