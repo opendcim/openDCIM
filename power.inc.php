@@ -1001,6 +1001,7 @@ class PowerPanel {
 		if($dbh->exec($sql)){
 			$this->PanelID=$dbh->lastInsertId();
 
+			(class_exists('LogActions'))?LogActions::LogThis($this):'';
 			return $this->PanelID;
 		}else{
 			$info=$dbh->errorInfo();
@@ -1016,22 +1017,28 @@ class PowerPanel {
 		$this->MakeSafe();
 		
 		// First, set any CDUs attached to this panel to simply not have an assigned panel
-		$sql = "update fac_PowerDistribution set PanelID='' where PanelID='".$this->PanelID."'";
-		$dbh->exec( $sql );
+		$sql="UPDATE fac_PowerDistribution SET PanelID='' WHERE PanelID=$this->PanelID;";
+		$dbh->exec($sql);
 		
-		$sql = "delete from fac_PowerPanel where PanelID='".$this->PanelID."'";
-		$dbh->exec( $sql );
+		$sql="DELETE FROM fac_PowerPanel WHERE PanelID=$this->PanelID;";
+		$dbh->exec($sql);
+		(class_exists('LogActions'))?LogActions::LogThis($this):'';
 	}
 		
 	function UpdatePanel(){
 		global $dbh;
 		$this->MakeSafe();
 
+		$oldpanel=new PowerPanel();
+		$oldpanel->PanelID=$this->PanelID;
+		$oldpanel->GetPanel();
+
 		$sql="UPDATE fac_PowerPanel SET PowerSourceID=$this->PowerSourceID, 
 			PanelLabel=\"$this->PanelLabel\", NumberOfPoles=$this->NumberOfPoles, 
 			MainBreakerSize=$this->MainBreakerSize, PanelVoltage=$this->PanelVoltage, 
 			NumberScheme=\"$this->NumberScheme\" WHERE PanelID=$this->PanelID;";
 
+		(class_exists('LogActions'))?LogActions::LogThis($this,$oldpanel):'';
 		return $dbh->query($sql);
 	}
 }
@@ -1067,6 +1074,7 @@ class PanelSchedule {
 			Label=\"$this->Label\" ON DUPLICATE KEY UPDATE Label=\"$this->Label\", 
 			NumPoles=$this->NumPoles;";
 
+		(class_exists('LogActions'))?LogActions::LogThis($this):'';
 		return $dbh->query($sql);
 	}
 
@@ -1174,6 +1182,7 @@ class PowerSource {
 			$this->PowerSourceID = $dbh->lastInsertID();
 		}
 		
+		(class_exists('LogActions'))?LogActions::LogThis($this):'';
 		return $this->PowerSourceID;
 	}
 	
@@ -1190,8 +1199,10 @@ class PowerSource {
 			$p->DeletePanel();
 		}
 		
-		$sql = "delete from fac_PowerSource where PowerSourceID='".$this->PowerSourceID."'";
-		$dbh->exec( $sql );
+		$sql="DELETE FROM fac_PowerSource WHERE PowerSourceID=$this->PowerSourceID;";
+		$dbh->exec($sql);
+
+		(class_exists('LogActions'))?LogActions::LogThis($this):'';
 	}
 
 	function UpdatePowerSource(){
@@ -1199,11 +1210,16 @@ class PowerSource {
 
 		$this->MakeSafe();
 
+		$oldsource=new PowerSource();
+		$oldsource->PowerSourceID=$this->PowerSourceID;
+		$oldsource->GetSource();
+
 		$sql="UPDATE fac_PowerSource SET SourceName=\"$this->SourceName\", 
 			DataCenterID=$this->DataCenterID, IPAddress=\"$this->IPAddress\", 
 			Community=\"$this->Community\", LoadOID=\"$this->LoadOID\", 
 			Capacity=$this->Capacity WHERE PowerSourceID=$this->PowerSourceID;";
 
+		(class_exists('LogActions'))?LogActions::LogThis($this,$oldsource):'';
 		return $dbh->query($sql);
 	}
 
