@@ -367,6 +367,7 @@
 						function redraw(){
 							$.post('',{pdu: $('#pduid').val(), output: output.text()}).done(function(data){
 								var link=$('<a>').text(data.DeviceLabel).prop('href','devices.php?deviceid='+data.DeviceID);
+								data.DeviceConnNumber=(data.DeviceID==0)?'':data.DeviceConnNumber;
 								device.data('device',data.DeviceID).html(link).prop('style','');
 								devinput.data('input',data.DeviceConnNumber).text(data.DeviceConnNumber).prop('style','');
 								controls.remove();
@@ -383,6 +384,7 @@
 							row.append(controls);
 						});
 					}
+					resize();
 				}).css({'cursor': 'pointer', 'text-decoration': 'underline'});
 			}
 		});
@@ -425,7 +427,7 @@
 echo '<div class="main">
 <h2>',$config->ParameterArray["OrgName"],'</h2>
 <h3>',__("Data Center PDU Detail"),'</h3>
-<div class="center"><div>
+<div class="center"><div class="left">
 <form name="pduform" id="pduform" action="',$_SERVER["PHP_SELF"],'" method="POST">
 <div class="table">
 <div>
@@ -575,7 +577,7 @@ echo '</div>
 </div> <!-- END div.table -->
 </form>
 
-</div><div>
+</div><div class="right">
 
 <div class="table border">
 	<div>

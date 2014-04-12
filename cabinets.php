@@ -297,7 +297,9 @@ echo '  </select>
 
 	if($cab->CabinetID >0){
 		echo '   <button type="submit" name="action" value="Update">',__("Update"),'</button>
-	<button type="button" name="action" value="Delete">',__("Delete"),'</button>';
+	<button type="button" name="action" value="Delete">',__("Delete"),'</button>
+	<button type="button" value="AuditReport">',__("Audit Report"),'</button>
+	<button type="button" value="MapCoordinates">',__("Map Coordinates"),'</button>';
 	}else{
 		echo '   <button type="submit" name="action" value="Create">',__("Create"),'</button>';
 	}
@@ -323,6 +325,12 @@ echo '
 </div><!-- END div.main -->
 </div><!-- END div.page -->
 <script type="text/javascript">
+$('button[value=AuditReport]').click(function(){
+	window.location.assign('cabaudit.php?cabinetid='+$('select[name=cabinetid]').val());
+});
+$('button[value=MapCoordinates]').click(function(){
+	window.location.assign('mapmaker.php?cabinetid='+$('select[name=cabinetid]').val());
+});
 $('button[value=Delete]').click(function(){
 	var defaultbutton={
 		"<?php echo __("Yes"); ?>": function(){
