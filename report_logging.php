@@ -28,6 +28,18 @@
 
 	// suppressing errors for when there is a fake data set in place
 	foreach($result as $logitem){
+		switch($logitem->Action){
+			case 1:
+				$logitem->Action=__("Create");
+				break;
+			case 2:
+				$logitem->Action=__("Delete");
+				break;
+			case 3:
+				$logitem->Action=__("Update");
+				break;
+			default:
+		}
 		$body.="\t\t<tr>
 		\t<td>$logitem->Time</td>
 		\t<td>$logitem->UserID</td>
