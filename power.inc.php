@@ -611,12 +611,20 @@ class PowerDistribution {
 	function LogManualWattage($Wattage){
 		$this->MakeSafe();
 
+		$oldpdu=new PowerDistribution();
+		$oldpdu->PDUID=$this->PDUID;
+		$oldpdu->GetPDU();
+
+		$oldreading=$oldpdu->GetLastReading();
+		$oldpdu->Wattage=$oldreading->Wattage;
+
 		$Wattage=intval($Wattage);
+		$this->Wattage=$Wattage;
 	
 		$sql="INSERT INTO fac_PDUStats SET Wattage=$Wattage, PDUID=$this->PDUID, 
 			LastRead=NOW() ON DUPLICATE KEY UPDATE Wattage=$Wattage, LastRead=NOW();";
 		
-		(class_exists('LogActions'))?LogActions::LogThis($this):'';
+		(class_exists('LogActions'))?LogActions::LogThis($this,$oldpdu):'';
 		return ($this->query($sql))?$this->GetLastReading():false;
 	}
 	
