@@ -746,10 +746,11 @@ if($config->ParameterArray["CDUToolTips"]=='enabled'){
 			var pic=$(this);
 			if($(this).attr('src')=='css/blank.gif'){
 				$(this).attr('src',$(this).data('src'));
-				pic.width(pic.width()+2);
-				pic.height(pic.height()+2);
+				pic.width(pic.width());
+				pic.height(pic.height());
 			}
 		});
+		$('.picture .label').css({'color':'','text-shadow':''});
 	}
 	function NoPictures(){
 		// We're hiding the device pictures so the labels are a must.
@@ -759,17 +760,18 @@ if($config->ParameterArray["CDUToolTips"]=='enabled'){
 		imgbtn.data('show',true);
 		setCookie('cabpics', 'hide');
 		$('div.label').css('display','block');
-		$('div.picture, .picture > div:not(.label)').css({'border':'1px inset black'});
+		$('.picture > div:not(.label)').css({'border':'1px inset black'});
 		$('.picture img').each(function(){
 			var pic=$(this);
 			if(pic.attr('src')!='css/blank.gif'){
 				pic.data('src',pic.attr('src'));
 				pic.attr('src','css/blank.gif');
-				pic.width(pic.width()-2);
-				pic.height(pic.height()-2);
+				pic.width(pic.width());
+				pic.height(pic.height());
 			}
 		});
 		$('.picture img').attr('src','css/blank.gif');
+		$('.picture .label').css({'color':'#000','text-shadow':'0 0 0'});
 	}
 
 	var btnprint=$('<span>').addClass('ui-icon ui-icon-print').css('float','right').on('click',printcab);
