@@ -681,11 +681,116 @@ function bindmaptooltips(){
 		});
 	});
 }
-
-
-
-
 // END - DataCenter map / cabinet information
+
+// Cabinet image / label controls
+function cabinetimagecontrols(){
+	var controlrow=$('<tr>').append($('<td>').attr('colspan','4').css('text-align','left')).addClass('noprint');
+	controlrow.td=controlrow.find('td');
+	var imgbtn=$('<button>').attr('type','button').css({'line-height': '1em', 'height': '1.5em'}).data('show',false).text('Images');
+	var lblbtn=imgbtn.clone().text('Labels');
+	controlrow.td.append(imgbtn);
+	controlrow.td.append(lblbtn);
+
+	imgbtn.on('click',function(){
+		if($(this).data('show')){
+			serutciPoN();
+		}else{
+			NoPictures();
+		}
+	});
+
+	lblbtn.on('click',function(){
+		if($(this).data('show')){
+			slebaLoN();
+		}else{
+			NoLabels();
+		}
+	});
+
+	function NoLabels(){
+		lblbtn.data('show',true);
+		setCookie('devlabels', 'hide');
+		$('.picture .label').hide();
+	}
+
+	function slebaLoN(){
+		lblbtn.data('show',false);
+		setCookie('devlabels', 'show');
+		$('.picture .label').show();
+	}
+
+	// Read the cookie and do stuff
+	if(typeof $.cookie('devlabels')=='undefined' || $.cookie('devlabels')=='show'){
+		slebaLoN();
+	}else{
+		NoLabels();
+	}
+
+	// TODO : Clean this shit up.  Make it more generic and get it into the common.js and outta here
+
+	// Read the cookie and do stuff
+	if(typeof $.cookie('cabpics')=='undefined' || $.cookie('cabpics')=='show'){
+		serutciPoN();
+	}else{
+		NoPictures();
+	}
+		
+	function serutciPoN(){
+		// We're showing device images so labels are optional
+		lblbtn.show();
+
+		imgbtn.data('show',false);
+		setCookie('cabpics', 'show');
+		$('div.picture, .picture > div:not(.label)').css({'border':''});
+		$('.picture img').each(function(){
+			var pic=$(this);
+			if($(this).attr('src')=='css/blank.gif'){
+				$(this).attr('src',$(this).data('src'));
+				pic.width(pic.width());
+				pic.height(pic.height());
+			}
+		});
+		$('.picture .label > div').css({'color':'','text-shadow':'','font-family':'','font-weight':'','text-decoration':''});
+	}
+	function NoPictures(){
+		// We're hiding the device pictures so the labels are a must.
+		slebaLoN();
+		lblbtn.hide();
+
+		imgbtn.data('show',true);
+		setCookie('cabpics', 'hide');
+		$('div.label').css('display','block');
+		$('.picture > div:not(.label)').css({'border':'1px inset black'});
+		$('.picture img').each(function(){
+			var pic=$(this);
+			if(pic.attr('src')!='css/blank.gif'){
+				pic.data('src',pic.attr('src'));
+				pic.attr('src','css/blank.gif');
+				pic.width(pic.width());
+				pic.height(pic.height());
+			}
+		});
+		$('.picture img').attr('src','css/blank.gif');
+		$('.picture .label > div').css({'color':'#000','text-shadow':'0 0 0','font-family':'helvetica, arial','font-weight':'100','text-decoration':'underline'});
+	}
+
+	var btnprint=$('<span>').addClass('ui-icon ui-icon-print').css('float','right').on('click',printcab);
+	controlrow.td.append(btnprint);
+	function printcab(){
+		$('div#infopanel,div#sidebar,div#header,h2,h3,.center ~ a').hide();
+		$('.cabinet').css('transform','scale(0.8)');
+		$('.main').css('width','');
+		window.print();
+		$('div#infopanel,div#sidebar,div#header,h2,h3,.center ~ a').show();
+		$('.cabinet').css('transform','');
+		resize();
+	}
+
+	// Add controls to the rack
+	$('.center .cabinet:first-child table').prepend(controlrow);
+}
+// END = Cabinet image / label controls
 
 // logging functions
 function LameLogDisplay(){
