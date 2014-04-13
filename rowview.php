@@ -271,7 +271,7 @@ if($config->ParameterArray["ToolTips"]=='enabled'){
 <?php
 	include( "sidebar.inc.php" );
 ?>
-<div class="main cabnavigator">
+<div class="main cabnavigator rowview">
 <h2><?php print $config->ParameterArray["OrgName"]; ?></h2>
 <h3><?php print __("Data Center Cabinet Inventory"); ?></h3>
 <div class="center"><div>

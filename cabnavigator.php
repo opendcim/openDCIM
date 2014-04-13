@@ -619,6 +619,9 @@ if($config->ParameterArray["CDUToolTips"]=='enabled'){
 ?>
 	});
   </script>
+  <style type="text/css">
+	@page{size: <?php echo $config->ParameterArray['PageSize']; ?> portrait}
+  </style>
 </head>
 
 <body>

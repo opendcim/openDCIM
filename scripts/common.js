@@ -779,9 +779,14 @@ function cabinetimagecontrols(){
 	controlrow.td.append(btnprint);
 	function printcab(){
 		$('div#infopanel,div#sidebar,div#header,h2,h3,.center ~ a').hide();
-		$('.cabinet').css('transform','scale(0.8)');
-		$('.main').css('width','');
+		$('.cabinet').css({'transform':'scale(1.5)','transform-origin':'left top'});
+		$('.main').css({'width':'','border':'0','background-color':'#fff'});
+		$('.cabinet td').css('border','1px solid black');
+		$('.cabinet').insertBefore('.center');
 		window.print();
+		$('#centeriehack').prepend($('.cabinet'));
+		$('.cabinet td').css('border','');
+		$('.main').css({'border':'','background-color':''});
 		$('div#infopanel,div#sidebar,div#header,h2,h3,.center ~ a').show();
 		$('.cabinet').css('transform','');
 		resize();

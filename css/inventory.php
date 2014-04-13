@@ -465,6 +465,7 @@ div.cabinet {
 	margin: 5px;
 	padding: 3px;
 }
+.rowview .noprint span:last-child {display: none;}
 .cabinet .error { background-color: <?php echo $config->ParameterArray['CriticalColor']; ?>; }
 
 /* PICTURES */
@@ -832,6 +833,9 @@ div.cabinet {
 }
 @media print {
 	.noprint { display: none; }
+	.page {
+		page-break-after: always;
+	}
 }
 .meter-wrap{position: relative;background-color: lightgrey;}
 .meter-wrap, .meter-value, .meter-text {width: 210px; height: 1.1em;}
