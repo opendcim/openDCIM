@@ -6,6 +6,26 @@ GitHub, at http://github.com/samilliken/openDCIM/issues, where you can also down
 the latest development version.  However, it is not advised to pull from GitHub unless you
 are simply testing, as some functionality can break between releases.
 
+Changes in 3.2
+--------------
+* Ability to track spare/consumable parts supplies in a basic bin system with min/max quantities
+* Full audit log of every transaction
+* Per-device auditing
+* Storage Room view per Data Center
+* Auto-Transfer Switches will poll SNMP for redundancy status
+* XML Export for Computational Fluid Dynamic Analysis software
+* Per-device running operational log of notes
+* Allow for customized port names
+* Allow templates for devices to pre-define ports and names
+* Ability to upload images for devices (similar to designing cabinet elevations in Visio)
+* Added Primary IP as a searchable field
+* Complete redesign of the menu - functions grouped together
+* When looking at a port connected to a patch panel, full path to endpoint is displayed automatically
+* Ability to specify front edge of a cabinet to indicate airflow
+* Ability to manually enter values for power strip load
+* Ability to make patch panels a chassis device
+* Ability to delete Containers, Zones, Rows, Data Centers, Power Panels, and Power Sources
+
 Changes in 3.1
 --------------
 * Expanded UserID field (80 characters)
