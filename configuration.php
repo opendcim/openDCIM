@@ -1244,7 +1244,7 @@ echo '<div class="main">
 				</div>
 				<div>
 					<div><label for="path_weight_rear">',__("Weight for rear connections between panels"),'</label></div>
-					<div><input type="text" defaultvalue="',$config->defaults["path_weight_rear"],'" name="path_weight_cabinet" value="',$config->ParameterArray["path_weight_rear"],'"></div>
+					<div><input type="text" defaultvalue="',$config->defaults["path_weight_rear"],'" name="path_weight_rear" value="',$config->ParameterArray["path_weight_rear"],'"></div>
 				</div>
 				<div>
 					<div><label for="path_weight_row">',__("Weight for patches in the same row"),'</label></div>
