@@ -9,6 +9,19 @@
 	}
 
 	$ps=new PowerSource();
+	
+	// AJAX
+
+	if(isset($_POST['deletepowersource'])){
+		$ps->PowerSourceID=$_POST["powersourceid"];
+		$return='no';
+		if($ps->GetSource()){
+			$ps->DeletePowerSource();
+			$return='ok';
+		}
+		echo $return;
+		exit;
+	}
 
 	if(isset($_REQUEST['action']) && (($_REQUEST['action']=='Create')||($_REQUEST['action']=='Update'))){
 		$ps->PowerSourceID=$_REQUEST['powersourceid'];
@@ -109,7 +122,8 @@ echo '							</select></div>
 						<div class="caption">';
 
 	if($ps->PowerSourceID >0){
-		echo '							<button type="submit" name="action" value="Update">',__("Update"),'</button>';
+		echo '							<button type="submit" name="action" value="Update">',__("Update"),'</button>
+										<button type="button" name="action" value="Delete">',__("Delete"),'</button>';
 	} else {
 		echo '							<button type="submit" name="action" value="Create">',__("Create"),'</button>';
 }
@@ -120,7 +134,43 @@ echo '							</select></div>
 				</form>
 			</div></div>
 <?php echo '			<a href="index.php">[ ',__("Return to Main Menu"),' ]</a>'; ?>
+<?php echo '<a href="index.php">[ ',__("Return to Main Menu"),' ]</a>
+<!-- hiding modal dialogs here so they can be translated easily -->
+<div class="hide">
+	<div title="',__("Power Source delete confirmation"),'" id="deletemodal">
+		<div id="modaltext"><span style="float:left; margin:0 7px 20px 0;" class="ui-icon ui-icon-alert"></span>',__("Are you sure that you want to delete this power source and all panels fed from it?"),'
+		</div>
+	</div>
+</div>'; ?>
 		</div><!-- END div.main -->
 	</div><!-- END div.page -->
+<script type="text/javascript">
+$('button[value=Delete]').click(function(){
+	var defaultbutton={
+		"<?php echo __("Yes"); ?>": function(){
+			$.post('', {powersourceid: $('#powersourceid').val(),deletepowersource: '' }, function(data){
+				if(data.trim()=='ok'){
+					self.location=$('.main > a').last().attr('href');
+					$(this).dialog("destroy");
+				}else{
+					alert("Danger, Will Robinson! DANGER!  Something didn't go as planned.");
+				}
+			});
+		}
+	}
+	var cancelbutton={
+		"<?php echo __("No"); ?>": function(){
+			$(this).dialog("destroy");
+		}
+	}
+	var modal=$('#deletemodal').dialog({
+		dialogClass: 'no-close',
+		modal: true,
+		width: 'auto',
+		buttons: $.extend({}, defaultbutton, cancelbutton)
+	});
+});
+
+</script>
 </body>
 </html>
