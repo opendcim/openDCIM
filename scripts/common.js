@@ -205,10 +205,10 @@ function PortsPoopup(){
 function CoordinateRow(slot,front){
 	front=(front=='undefined' || front)?0:1;
 	var fr=(front==0)?'F':'R';
-	var row=$('<div>');
+	var row=$('<div>').data('change',false);
 	var input=$('<input>').attr({'size':'4','type':'number'});
 	var label=$('<div>').text(slot).append((front=='0')?' Front':' Rear');
-	var x=input.clone().attr('name','X'+fr+slot).data('change',false);
+	var x=input.clone().attr('name','X'+fr+slot);
 	var y=input.clone().attr('name','Y'+fr+slot);
 	var w=input.clone().attr('name','W'+fr+slot);
 	var h=input.clone().attr('name','H'+fr+slot);
