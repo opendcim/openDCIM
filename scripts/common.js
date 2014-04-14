@@ -227,8 +227,8 @@ function CoordinateRow(slot,front){
 
 	// If a slot has been defined already set the values
 	// This is will value changes to the table over the values from the json if the button is hit a second time
-	if((typeof slots[front]!='undefined' && typeof slots[front][slot]!='undefined') || $('input[name=X'+fr+slot+']').val()!='undefined'){
-		var rrow=$('input[name=X'+fr+slot+']').parent('div').parent('div');
+	var rrow=$('input[name=X'+fr+slot+']').parent('div').parent('div');
+	if((typeof slots[front]!='undefined' && typeof slots[front][slot]!='undefined') || ($('input[name=X'+fr+slot+']').val()!='undefined' && rrow.data('change'))){
 		var xval=$('input[name=X'+fr+slot+']').val();
 		var yval=$('input[name=Y'+fr+slot+']').val();
 		var wval=$('input[name=W'+fr+slot+']').val();
