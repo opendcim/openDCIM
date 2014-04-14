@@ -208,7 +208,7 @@ function CoordinateRow(slot,front){
 	var row=$('<div>');
 	var input=$('<input>').attr({'size':'4','type':'number'});
 	var label=$('<div>').text(slot).append((front=='0')?' Front':' Rear');
-	var x=input.clone().attr('name','X'+fr+slot);
+	var x=input.clone().attr('name','X'+fr+slot).data('change',false);
 	var y=input.clone().attr('name','Y'+fr+slot);
 	var w=input.clone().attr('name','W'+fr+slot);
 	var h=input.clone().attr('name','H'+fr+slot);
@@ -220,12 +220,23 @@ function CoordinateRow(slot,front){
 		append($('<div>').append(h)).
 		append($('<div>').append(edit));
 
+	// mark the coordinates as changed to snag manual entries and not just selections
+	row.find('input').on('change',function(){
+		row.data('change',true);
+	});
+
 	// If a slot has been defined already set the values
-	if(typeof slots[front]!='undefined' && typeof slots[front][slot]!='undefined'){
-		x.val(slots[front][slot].X);
-		y.val(slots[front][slot].Y);
-		w.val(slots[front][slot].W);
-		h.val(slots[front][slot].H);
+	// This is will value changes to the table over the values from the json if the button is hit a second time
+	if((typeof slots[front]!='undefined' && typeof slots[front][slot]!='undefined') || $('input[name=X'+fr+slot+']').val()!='undefined'){
+		var rrow=$('input[name=X'+fr+slot+']').parent('div').parent('div');
+		var xval=$('input[name=X'+fr+slot+']').val();
+		var yval=$('input[name=Y'+fr+slot+']').val();
+		var wval=$('input[name=W'+fr+slot+']').val();
+		var hval=$('input[name=H'+fr+slot+']').val();
+		x.val(((xval!='undefined' && rrow.data('change'))?xval:slots[front][slot].X));
+		y.val(((yval!='undefined' && rrow.data('change'))?yval:slots[front][slot].Y));
+		w.val(((wval!='undefined' && rrow.data('change'))?wval:slots[front][slot].W));
+		h.val(((hval!='undefined' && rrow.data('change'))?hval:slots[front][slot].H));
 	}
 
 	edit.on('click',function(){
@@ -250,6 +261,7 @@ function CoordinateRow(slot,front){
 				y.val(parseInt(selection.y1/zoom));
 				w.val(parseInt(selection.width/zoom));
 				h.val(parseInt(selection.height/zoom));
+				row.data('change',true);
 			}
 		});
 		row.addClass('greybg');
@@ -271,8 +283,6 @@ function InsertCoordsTable(front,btn){
 		append($('<div>').append('H')).
 		append($('<div>')));
 
-	$(targetdiv+' #coordstable').html(table);
-
 	var front=(btn.prev('input').attr('id')=='ChassisSlots')?true:false;
 	var picture=(front)?$('#FrontPictureFile'):$('#RearPictureFile');
 	$(targetdiv+' #previewimage').html($('<img>').attr('src','pictures/'+picture.val()).width(400));
@@ -280,6 +290,10 @@ function InsertCoordsTable(front,btn){
 	for(var i=1;i<=btn.prev('input').val(); i++){
 		table.append(CoordinateRow(i,front));
 	}
+
+	// moved this to the end so that the previous values could be read in the case that the 
+	// edit coordinates button is pressed again
+	$(targetdiv+' #coordstable').html(table);
 }
 
 function FetchSlots(){
