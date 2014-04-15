@@ -1,5 +1,4 @@
 <div id="sidebar">
-<div id="fixedsidebar">
 <br>
 <form action="search.php" method="post">
 <input type="hidden" name="key" value="label">
@@ -89,8 +88,7 @@
 	
 	print "<ul class=\"nav\">$menu</ul>
 	<hr>
-	</div>
-	<div id='cabinettree' style='overflow-y: auto;'>
+	<div>
 	<a href=\"index.php\">".__("Home")."</a>\n";
 
 	$lang=GetValidTranslations();
@@ -111,8 +109,9 @@
 
 	$container = new Container();
 	echo $container->BuildMenuTree();
-	echo '</div>';  //End of div cabinettree
+	
 ?>
+	</div>
 <script type="text/javascript">
 if (typeof jQuery == 'undefined') {
 	alert('jQuery is not loaded');
@@ -180,11 +179,6 @@ function resize(){
 			$('#header').width(width+4);
 			$('div.page').width(width+6);
 		}
-
-		//HEIGHT
-		var windowheight=Math.floor($(window).outerHeight()-19);
-		$('#cabinettree').height(windowheight-$('#header').height()-$('#fixedsidebar').height());
-		$('div.main').height(windowheight-$('#header').height()-3).css({'overflow-y':'auto'});
 
 		// If the function MoveButtons is defined run it
 		if(typeof movebuttons=='function'){

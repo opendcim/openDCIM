@@ -2008,7 +2008,7 @@ class Container {
 
 		$containerList=array();
 		foreach($this->query($sql) as $row){
-			$containerList[$row["ContainerID"]]=Container::RowToObject($row);
+			$containerList[]=Container::RowToObject($row);
 		}
 
 		return $containerList;
@@ -2120,16 +2120,16 @@ class Container {
 					if (is_null($container->MapX) || $container->MapX==0 
 						|| is_null($container->MapY) || $container->MapY==0 ){
 						$mapHTML.="<div>\n";
-						$mapHTML.="<a title=\"".$container->Name."\" href=\"container_stats.php?container=".$cID."\">";
-						$mapHTML.="<br><div style='background-color: #dcdcdc;'>".$container->Name."</div></a>";
+						$mapHTML.="<a title=\"$container->Name\" href=\"container_stats.php?container=$container->ContainerID\">";
+						$mapHTML.="<br><div style='background-color: #dcdcdc;'>$container->Name</div></a>";
 						$mapHTML.= "</div>\n";
 						}
 					else {
 						$mapHTML.="<div style='position:absolute; top:".($container->MapY-$tam/2)."px; left:".($container->MapX-$tam/2)."px;'>\n";
-						$mapHTML.="<a title=\"".$container->Name."\" href=\"container_stats.php?container=".$cID."\">";
+						$mapHTML.="<a title=\"$container->Name\" href=\"container_stats.php?container=$container->ContainerID\">";
 						$mapHTML.="<img src=\"images/Container.png\" width=$tam height=$tam alt=\"Container\">\n</div>\n";
 						$mapHTML.="<div style='position:absolute; top:".($container->MapY+$tam/2)."px; left:".($container->MapX-$tam/2)."px; background-color: #dcdcdc;'>";
-						$mapHTML.="<a title=\"".$container->Name."\" href=\"container_stats.php?container=".$cID."\">";
+						$mapHTML.="<a title=\"$container->Name\" href=\"container_stats.php?container=$container->ContainerID\">";
 						$mapHTML.= $container->Name."</a></div>";
 					}
 				}
@@ -2184,14 +2184,14 @@ class Container {
 				while ( list( $cID, $container ) = each( $cList ) ) {
 					if ((is_null($container->MapX) || $container->MapX<0 || $container->MapX>$width 
 						|| is_null($container->MapY) || $container->MapY<0 || $container->MapY>$height)
-						&& $tipo=="container" && $id==$cID ){
+						&& $tipo=="container" && $id==$container->ContainerID ){
 							$mapHTML.="<div id='yo' hidden style='position:absolute;'>\n";
 							$mapHTML.="<img src=\"images/Container.png\" width=$tam height=$tam alt=\"Container\">\n</div>\n";
 							$yo_ok=true;
 						}
 					else {
 						
-						if ($tipo=="container" && $id==$cID) {
+						if ($tipo=="container" && $id==$container->ContainerID) {
 							$mapHTML.="<div id='yo' style='position:absolute; top:".($container->MapY*$red-$tam/2)."px; left:".($container->MapX*$red-$tam/2)."px;'>\n";
 							$mapHTML.="<img src=\"images/Container.png\" width=$tam height=$tam alt=\"Container\">\n</div>\n";
 							$yo_ok=true;
