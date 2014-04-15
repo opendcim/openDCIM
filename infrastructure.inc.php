@@ -2008,7 +2008,7 @@ class Container {
 
 		$containerList=array();
 		foreach($this->query($sql) as $row){
-			$containerList[]=Container::RowToObject($row);
+			$containerList[$row["ContainerID"]]=Container::RowToObject($row);
 		}
 
 		return $containerList;
