@@ -335,12 +335,16 @@ function buildportstable(){
 		var c=(typeof TemplatePortObj.ColorID=='undefined')?'0':TemplatePortObj.ColorID;
 		var n=(typeof TemplatePortObj.PortNotes=='undefined')?'':TemplatePortObj.PortNotes;
 
+//		var hval=$('input[name=H'+fr+slot+']').val();
+//		x.val(((xval!='undefined' && rrow.data('change'))?xval:slots[front][slot].X));
+
 		var row=$('<div>').
 			append($('<div>').html(pn)).
 			append($('<div>').html($('<input>').val(label).text(label).attr('name','label'+pn))).
 			append($('<div>').html(mediatypes.clone().val(mt).attr('name','mt'+pn))).
 			append($('<div>').html(colorcodes.clone().val(c).attr('name','cc'+pn))).
-			append($('<div>').html($('<input>').val(n).text(n).attr('name','portnotes'+pn)));
+			append($('<div>').html($('<input>').val(n).text(n).attr('name','portnotes'+pn))).
+			data('change',false);
 
 		return row;
 	}
@@ -1420,7 +1424,9 @@ function LameLogDisplay(){
 				});
 
 				$.each(data, function(devid,device){
-					devlist.append('<option value='+device.DeviceID+'>'+device.Label+'</option>');
+					var rack=$('#datacenters a[href$="cabinetid='+device.CabinetID+'"]');
+					var dc=rack.parentsUntil('li[id^=dc]').last().prev('a').text();
+					devlist.append('<option value='+device.DeviceID+'>'+dc+' '+rack.text()+' '+device.Label+'</option>');
 				});
 				target.html(devlist).find('select').val(target.data('default'));
 				devlist.combobox();

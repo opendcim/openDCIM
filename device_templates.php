@@ -219,7 +219,7 @@
 			$("#imageselection").dialog({
 				resizable: false,
 				height:500,
-				width: 600,
+				width: 670,
 				modal: true,
 				buttons: {
 <?php echo '					',__("Select"),': function() {'; ?>
