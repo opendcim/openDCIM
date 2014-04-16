@@ -379,6 +379,18 @@
 		}
 		exit;
 	}
+	
+	// Get device picture preview
+	if(isset($_POST['pic'])){
+		$dev->DeviceID=$_POST['devid'];
+		if($dev->GetDevice()){
+			echo '<div class="cabnavigator" data-side="front" style="width:auto; display:inline-block; margin:10px;">';
+			echo $dev->GetDevicePicture(600,($_POST['pic']=="rear"),true,false);
+			echo '</div>';
+		}
+		exit;
+	}
+	
 	// END AJAX
 
 
@@ -855,21 +867,32 @@ $(document).ready(function() {
 	});
 
 	// Device image previews
-	$('#deviceimages > div > img').
+	$('#deviceimages > div > div > div > img.picture').
 		on('error',function(){$(this).hide();toggledeviceimages();}).
 		on('load',function(){
-			if($(this).context.width < $(this).context.height){
-				$(this).css({'height':'275px','width':'auto'});
-			}else{
-				$(this).css({'height':'','width':''});
-			}
 			$(this).show().on('click',function(){
-				var pop=$(this).clone();
-				pop.attr('style','');
-				$('<div>').html(pop.css({'max-width':'600px','max-height':'600px'})).dialog({
-					width: 'auto',
-					height: 'auto',
-					modal: true
+				var pic_container=$(this).parents('.cabnavigator');
+				$.post('',{pic: pic_container.data('side'), devid: $('#deviceid').val()}).done(function(data){
+					var modal=$('<div />');
+					modal.html(data).dialog({
+						title: '<?php echo __("Device Picture Preview");?>',
+						modal: true,
+						width: 'auto',
+						height: 'auto'
+					});
+					modal.css({'max-width':'850px','max-height':'600px','overflow': 'auto'});
+					$('.cabnavigator div.picture > div.label > div').each(function(){
+						var offset=this.getBoundingClientRect().height;
+						var container=$(this).parents('.picture')[0].getBoundingClientRect().height;
+						$(this).parent('.label').css({'top': (container-offset)/2/2});
+					});
+					$('.cabnavigator .picture img, .cabinet .picture > div').mouseenter(function(){
+						$('div.label').show();
+						$(this).parents('div').children('div.label').hide();
+						$(this).mouseleave(function(){
+							$('div.label').show();
+						});
+					});
 				});
 			});
 			toggledeviceimages();
@@ -878,7 +901,7 @@ $(document).ready(function() {
 	function toggledeviceimages(){
 		$('#deviceimages').show();
 		var n=0;
-		$('#deviceimages > div > img').each(function(){
+		$('#deviceimages > div > div > div > img.picture').each(function(){
 			if($(this).is(":visible")){ n++;}
 		});
 		if(n==0){$('#deviceimages').hide();}
@@ -1422,11 +1445,22 @@ echo '
 		</div>
 	</div> <!-- END div.table -->
 </fieldset>
-<fieldset id="deviceimages">
+<fieldset id="deviceimages" style="max-height: 300px; overflow-y: auto;">
 	<legend>Device Images</legend>
-	<div>
-		<img id="devicefront" src="pictures/'.$templ->FrontPictureFile.'" alt="front of device">
-        <img id="devicerear" src="pictures/'.$templ->RearPictureFile.'" alt="rear of device">
+	<div>';
+
+/*PICTURES */
+if ($templ->FrontPictureFile<>""){
+	echo '<div class="cabnavigator" data-side="front" style="width:auto; display:inline-block; margin:10px;">';
+	echo $dev->GetDevicePicture(340,false,true,false);
+	echo '</div><br>';
+}
+if ($templ->RearPictureFile<>""){
+	echo '<div class="cabnavigator" data-side="rear" style="width:auto; display:inline-block; margin:10px;">';
+	echo $dev->GetDevicePicture(340,"rear",true,false);
+	echo '</div>';
+}
+echo '
 	</div>
 </fieldset>
 <fieldset id="firstport" class="hide">
@@ -1811,6 +1845,22 @@ echo '	<div class="table">
 				}
 			});
 		});
+
+		// Move the cabinet labels around
+		$('.cabnavigator div.picture > div.label > div').each(function(){
+			var offset=this.getBoundingClientRect().height;
+			var container=$(this).parents('.picture')[0].getBoundingClientRect().height;
+			$(this).parent('.label').css({'top': (container-offset)/2/2});
+		});
+		
+		$('.cabnavigator .picture img, .cabinet .picture > div').mouseenter(function(){
+			$('div.label').show();
+			$(this).parents('div').children('div.label').hide();
+			$(this).mouseleave(function(){
+				$('div.label').show();
+			});
+		});
+	
 	});
 </script>
 
