@@ -211,10 +211,7 @@ echo '
 		}
 		$('#map').imgAreaSelect( {
 	<?php
-		print "\t\tx1: $zone->MapX1,
-			x2: $zone->MapX2,
-			y1: $zone->MapY1,
-			y2: $zone->MapY2,\n";
+		printf( "\t\tx1: %d,\n\tx2: %d,\n\ty1: %d,\n\ty2: %d,\n", $zone->MapX1, $zone->MapY1, $zone->MapX2, $zone->MapY2 );
 	?>
 			handles: true,
 			onSelectChange: preview
