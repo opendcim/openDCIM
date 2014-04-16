@@ -7,7 +7,7 @@
 	$dev=new Device();
 	
 	//setting airflow
-	if(isset($_POST["cabinetid"]) && isset($_POST["airflow"])){
+	if(isset($_POST["cabinetid"]) && isset($_POST["airflow"]) && $user->SiteAdmin){
 		$cab->CabinetID=$_POST["cabinetid"];
 		if ($cab->GetCabinet()){
 			if ($cab->CabRowID>0 && isset($_POST["row"]) && $_POST["row"]=="true"){
@@ -266,7 +266,10 @@ echo '
 				expandToItem('datacenters',firstcabinet);
 			}
 		}
-
+<?php
+	if ( $user->SiteAdmin ) {
+		// Only Site Administrators should even have the option to change the air flow
+?>
 		// Bind context menu to the cabinets
 		$(".canvas > map").contextmenu({
 			delegate: "area[name^=cab]",
@@ -282,7 +285,9 @@ echo '
 				$(".canvas > map").contextmenu("showEntry", "row", $(ui.target.context).data('row'));
 			}
 		});
-
+<?php
+	}
+?>
 		// Bind tooltips, highlight functions to the map
 		startmap();
 		opentree();
