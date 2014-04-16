@@ -1620,7 +1620,6 @@ class Zone {
 			$cabRow->DeleteCabRow();
 		}
 
-		/* Cabinets should have never been in a zone without being in a row to begin with
 		//update any remaining cabinets in this zone that weren't part of rows
 		$cb=new Cabinet();
 		$cb->ZoneID=$this->ZoneID;
@@ -1630,7 +1629,6 @@ class Zone {
 			$cab->ZoneID=0;
 			$cab->UpdateCabinet();
 		}
-		*/
 
 		//delete zone
 		$sql="DELETE FROM fac_Zone WHERE ZoneID=$this->ZoneID;";
@@ -1808,7 +1806,6 @@ class CabRow {
 		$cabinet->CabRowID=$this->CabRowID;
 		$cabinetList=$cabinet->GetCabinetsByRow();
 		foreach($cabinetList as $cab){
-			$cab->ZoneID=0;	// Cabinets can not be in zones without being in a row
 			$cab->CabRowID=0;
 			$cab->UpdateCabinet();
 		}

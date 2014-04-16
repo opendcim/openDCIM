@@ -354,7 +354,21 @@ class Cabinet {
 
 		return $cabinetList;
 	}
+
+	function GetCabinetsByZone(){
+		global $dbh;
+
+		$this->MakeSafe();
 		
+		$sql="SELECT * FROM fac_Cabinet WHERE ZoneID=$this->ZoneID;";
+		
+		$cabinetList=array();
+		foreach($dbh->query($sql) as $cabinetRow){
+			$cabinetList[]=Cabinet::RowToObject($cabinetRow);
+		}
+		return $cabinetList;
+	}
+	
 	function GetCabRowSelectList(){
 		global $dbh;
 
@@ -2444,7 +2458,7 @@ class Device {
 		}
 		return $resp;
 	}
-	function GetDevicePicture($holeW,$rear=false,$ShowLabel=true){
+	function GetDevicePicture($holeW,$rear=false,$ShowLabel=true,$withLink=true){
 		$templ=new DeviceTemplate();
 		$templ->TemplateID=$this->TemplateID;
 		$templ->GetTemplateByID();
@@ -2468,9 +2482,14 @@ class Device {
 			// URLEncode the image file name just to be compliant.
 			$picturefile=str_replace(' ',"%20",$picturefile);
 	
-			// If they have rights to the device then make the picture clickable
-			$clickable=($this->Rights!="None")?"\t\t<a href=\"devices.php?deviceid=$this->DeviceID\">\n\t":"";
-			$clickableend=($this->Rights!="None")?"\n\t\t</a>\n":"";
+			if ($withLink){
+				// If they have rights to the device then make the picture clickable
+				$clickable=($this->Rights!="None")?"\t\t<a href=\"devices.php?deviceid=$this->DeviceID\">\n\t":"";
+				$clickableend=($this->Rights!="None")?"\n\t\t</a>\n":"";
+			}else{
+				$clickable="";
+				$clickableend="";
+			}
 
 			// Add in flags for missing ownership
 			// Device pictures are set on the template so always assume template has been set
@@ -2489,36 +2508,36 @@ class Device {
 			if (count($childList)>0){
 				if (!$rear){
 					if($this->ChassisSlots >0){
-						//chils in front face
+						//children in front face
 						foreach($childList as $tmpDev){
 							if (!$tmpDev->BackSide){
-								$resp.=$tmpDev->GetChildDevicePicture($holeW,$zoomX, $zoomY,false,$ShowLabel);
+								$resp.=$tmpDev->GetChildDevicePicture($holeW,$zoomX,$zoomY,false,$ShowLabel);
 							}
 						}
 					}else{
 						if (($templ->Model=="HTRAY" || $templ->Model=="HTRAY") && $this->RearChassisSlots >0){
-							//rearside of chils in rear side
+							//rearside of children in rear side
 							foreach($childList as $tmpDev){
 								if ($tmpDev->BackSide){
-									$resp.=$tmpDev->GetChildDevicePicture($holeW,$zoomX, $zoomY, true, $ShowLabel);
+									$resp.=$tmpDev->GetChildDevicePicture($holeW,$zoomX,$zoomY,true,$ShowLabel);
 								}
 							}
 						}
 					}
 				}else{
 					if($this->RearChassisSlots >0){
-						//chils in rear face
+						//children in rear face
 						foreach($childList as $tmpDev){
 							if ($tmpDev->BackSide){
-								$resp.=$tmpDev->GetChildDevicePicture($holeW,$zoomX, $zoomY,false,$ShowLabel);
+								$resp.=$tmpDev->GetChildDevicePicture($holeW,$zoomX,$zoomY,false,$ShowLabel);
 							}
 						}						
 					}else{
 						if (($templ->Model=="HTRAY" || $templ->Model=="VTRAY") && $this->ChassisSlots >0){
-							//rearside of chils in front side
+							//rearside of children in front side
 							foreach($childList as $tmpDev){
 								if (!$tmpDev->BackSide){
-									$resp.=$tmpDev->GetChildDevicePicture($holeW,$zoomX, $zoomY, true, $ShowLabel);
+									$resp.=$tmpDev->GetChildDevicePicture($holeW,$zoomX, $zoomY,true,$ShowLabel);
 								}
 							}
 						}
