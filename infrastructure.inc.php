@@ -1612,22 +1612,22 @@ class Zone {
 		
 		$this->MakeSafe();
 		
+		//update all cabinets in this zone
+		$cabinet=new Cabinet();
+		$cabinet->ZoneID=$this->ZoneID;
+		$cabinetList=$cabinet->GetCabinetsByZone();
+		foreach($cabinetList as $cab){
+			$cab->CabRowID=0;
+			$cab->ZoneID=0;
+			$cab->UpdateCabinet();
+		}
+
 		//delete CabRows in this zone
 		$cabrow=new CabRow();
 		$cabrow->ZoneID=$this->ZoneID;
 		$cabrowlist=$cabrow->GetCabRowsByZones();
 		foreach($cabrowlist as $cabRow){
 			$cabRow->DeleteCabRow();
-		}
-
-		//update any remaining cabinets in this zone that weren't part of rows
-		$cb=new Cabinet();
-		$cb->ZoneID=$this->ZoneID;
-		$cabinetList=$cb->GetCabinetsByZone();
-		foreach($cabinetList as $cab){
-			$cab->CabRowID=0;
-			$cab->ZoneID=0;
-			$cab->UpdateCabinet();
 		}
 
 		//delete zone
