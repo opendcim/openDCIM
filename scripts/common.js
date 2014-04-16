@@ -1115,7 +1115,7 @@ function LameLogDisplay(){
 	// searchable combobox
 	$.widget( "custom.combobox", {
 		_create: function() {
-			this.wrapper=$("<span>").addClass("custom-combobox").insertAfter(this.element);
+			this.wrapper=$("<span>").width(this.element.parent(0).width()).addClass("custom-combobox").insertAfter(this.element);
 
 			if(this.element.is(":visible")){ 
 				this.element.hide();
@@ -1127,8 +1127,8 @@ function LameLogDisplay(){
 		_createAutocomplete: function() {
 			var selected=this.element.children(":selected"),
 				value=selected.val()?selected.text():"";
- 
-			this.input=$("<input>").appendTo(this.wrapper).val(value).attr("title","")
+
+			this.input=$("<input>").css('width','100%').appendTo(this.wrapper).val(value).attr("title","")
 				.addClass("custom-combobox-input ui-widget ui-widget-content ui-state-default")
 				.autocomplete({
 					delay: 0,

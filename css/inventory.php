@@ -689,7 +689,7 @@ div.cabinet {
 /* can't explain where the 2px is coming from */
 .switch.table input, .patchpanel.table input { height: 18px; }
 .switch.table input, .switch.table select, 
-.patchpanel.table input, .patchpanel.table select { width: 99%; padding: 0; background-color: transparent;}
+.patchpanel.table input, .patchpanel.table select { padding: 0; background-color: transparent;}
 .switch.table div[id^=n] input { width:98%; }
 
 .switch .status, .patchpanel .down { background-image: url("../images/portstatus.png");}
