@@ -1286,7 +1286,7 @@ class Manufacturer {
 
 		$old=new Manufacturer();
 		$old->ManufacturerID=$this->ManufacturerID;
-		$old->GetManufacturer();
+		$old->GetManufacturerByID();
 
 		$this->MakeDisplay();
 		(class_exists('LogActions'))?LogActions::LogThis($this,$old):'';
