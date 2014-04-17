@@ -1424,7 +1424,8 @@ function LameLogDisplay(){
 				});
 
 				$.each(data, function(devid,device){
-/*					var rack=$('#datacenters a[href$="cabinetid='+device.CabinetID+'"]');
+/*
+					var rack=$('#datacenters a[href$="cabinetid='+device.CabinetID+'"]');
 					var dc=rack.parentsUntil('li[id^=dc]').last().prev('a').text();
 					devlist.append('<option value='+device.DeviceID+'>'+dc+' '+rack.text()+' '+device.Label+'</option>');
 */
