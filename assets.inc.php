@@ -3700,7 +3700,7 @@ class SwitchInfo {
 		foreach( $portList as $index => $port ) {
 			$head = @end( explode( ".", $index ) );
 			$portdesc = @end( explode( ":", $port));
-			if ( preg_match( "/\/1$/", $portdesc )) {
+			if ( preg_match( "/\/[01]$/", $portdesc )) {
 				$x[$head] = $portdesc;
 			} // Find lines that end with /1
 		}
