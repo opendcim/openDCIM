@@ -1115,7 +1115,8 @@ function LameLogDisplay(){
 	// searchable combobox
 	$.widget( "custom.combobox", {
 		_create: function() {
-			this.wrapper=$("<span>").width(this.element.parent(0).width()).addClass("custom-combobox").insertAfter(this.element);
+			this.element.parent(0).width($(this.element.parent(0)).width());
+			this.wrapper=$("<span>").width(this.element.parent(0).width()-3).addClass("custom-combobox").insertAfter(this.element);
 
 			if(this.element.is(":visible")){ 
 				this.element.hide();
@@ -1128,7 +1129,7 @@ function LameLogDisplay(){
 			var selected=this.element.children(":selected"),
 				value=selected.val()?selected.text():"";
 
-			this.input=$("<input>").css('width','100%').appendTo(this.wrapper).val(value).attr("title","")
+			this.input=$("<input>").css('width',this.wrapper.width()-24+'px').appendTo(this.wrapper).val(value).attr("title","")
 				.addClass("custom-combobox-input ui-widget ui-widget-content ui-state-default")
 				.autocomplete({
 					delay: 0,
@@ -1158,7 +1159,7 @@ function LameLogDisplay(){
  
 			$("<a>").attr("tabIndex", -1)
 				.height($(this.wrapper).children('input').height())
-				.css({'vertical-align':'top','padding':$(this.wrapper).children('input').css('padding')})
+				.css({'width':'18px','vertical-align':'top','padding':$(this.wrapper).children('input').css('padding')})
 				.tooltip()
 				.appendTo(this.wrapper)
 				.button({icons:{primary: "ui-icon-triangle-1-s"},text: false})

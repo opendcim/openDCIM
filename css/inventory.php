@@ -599,9 +599,10 @@ div.cabinet {
 	border: 1px dotted gray;
 	padding: 0.25em;
 }
-.device fieldset .custom-combobox{margin: 0;padding: 0 32px 0 2px;}
+//.device fieldset .custom-combobox{margin: 0;padding: 0 0 0 2px;}
+.device fieldset .custom-combobox{margin: 0;padding: 0;}
 .device fieldset .custom-combobox input{margin: 0;}
-.device fieldset .custom-combobox a {padding: 1px 0;position: absolute; top: 0; right: 0;}
+.device fieldset .custom-combobox a {padding: 1px 0;position: absolute;}
 .device div.right { max-width: 495px; }
 .device div.left, .device div.right {
 	margin-bottom: 1.5em;
@@ -660,7 +661,7 @@ div.cabinet {
 #pandn.table .custom-combobox input, #pandn.table .custom-combobox a {border-top: 2px; border-bottom: 2px; border-style: inset;  width: auto; height: 18px;}
 #pandn.table .custom-combobox input {width: calc(100% - 18px);}
 #pandn.table .custom-combobox input {background-image: none; border-left: 2px; border-right: 0px; padding-left: 4px; font-size: inherit;} 
-#pandn.table .custom-combobox a {margin: 0; vertical-align: top; width: 18px; border-left: 0px; border-right: 2px; position: absolute; top: 0; right: 0;} 
+#pandn.table .custom-combobox a {margin: 0; vertical-align: top; border-left: 0px; border-right: 2px; position: absolute;} 
 
 #olog > div:first-child { border-bottom: 2px solid black; }
 #olog > div > div:first-child { width: 100px; padding-right: 5px; white-space: nowrap; }
@@ -679,6 +680,8 @@ div.cabinet {
 .device #tags { width: 95%; min-width: 250px;}
 
 #firstport.hide { display: none; }
+
+.device fieldset .table label { white-space: nowrap;}
 
 .device .delete .ui-icon.status.down {cursor: pointer;}
 .switch .delete, .patchpanel .delete { border: 0 none; }
