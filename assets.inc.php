@@ -2742,18 +2742,12 @@ class DevicePorts {
 
 		$this->MakeSafe();
 
-		$oldport=new DevicePorts();
-		$oldport->DeviceID=$this->DeviceID;
-		$oldport->PortNumber=$this->PortNumber;
-		if(!$oldport->getPort()){return false;}
-
 		$sql="UPDATE fac_Ports SET Label=\"$this->Label\" WHERE 
 			DeviceID=$this->DeviceID AND PortNumber=$this->PortNumber;";
 
 		if(!$dbh->query($sql)){
 			return false;
 		}else{
-			(class_exists('LogActions'))?LogActions::LogThis($this,$oldport):'';
 			return true;
 		}
 	}
@@ -3821,42 +3815,45 @@ class SwitchInfo {
 	}
 	
 	static function getPortAlias( $DeviceID, $portid = null ) {
-		global $dbh;
 		global $config;
-		
-		if ( ! function_exists( "snmpget" ) ) {
-			return;
-		}
-		
-		$dev = new Device();
-		$dev->DeviceID = $DeviceID;
-		
-		if ( ! $dev->GetDevice() ) {
+
+		if(!function_exists("snmpget")){
 			return false;
 		}
-		
-		if ( $dev->PrimaryIP == "" )
-			return;
-		
-		if ( $dev->SNMPCommunity == "" ) {
-			$Community = $config->ParameterArray["SNMPCommunity"];
-		} else {
-			$Community = $dev->SNMPCommunity;
+
+		$dev=new Device();
+		$dev->DeviceID=$DeviceID;
+
+		if(!$dev->GetDevice()){
+			return false;
 		}
-		
+
+		if($dev->PrimaryIP==""){
+			return false;
+		}
+
+		// Get SNMP community from the device, fall back to default if one isn't set on the device
+		$Community=($dev->SNMPCommunity=="")?$config->ParameterArray["SNMPCommunity"]:$dev->SNMPCommunity;
+		if($Community==""){
+			return false;
+		}
+
 		$baseOID=".1.3.6.1.2.1.31.1.1.1.18.";
-		
+		$baseOID="IF-MIB::ifAlias";
+
 		$aliasList = array();
 
-		if ( is_null( $portid )) {
-			for ( $n=0; $n < $dev->Ports; $n++ ) {
-				if ( ! $reply = @snmpget( $dev->PrimaryIP, $Community, $baseOID.( $dev->FirstPortNum+$n )) )
-					break;
-				$query = @end( explode( ":", $reply ));
-				$aliasList[$n+1] = $query;
+		if(is_null($portid)){
+			// Offset for the real first port index
+			$n=($dev->FirstPortNum * -1);
+			$reply=snmprealwalk($dev->PrimaryIP,$Community,$baseOID); 
+			foreach($reply as $i => $string){
+				@preg_match( "/(STRING: )(.*)/", $string, $matches);
+				$aliasList[$n+$dev->FirstPortNum]=$matches[2];
+				$n++;
 			}
 		}else{
-			$query = @end( explode( ":", snmpget( $dev->PrimaryIP, $Community, $baseOID.$portid )));
+			$query = @end( explode( ":", snmpget( $dev->PrimaryIP, $Community, $baseOID.'.'.$portid )));
 			$aliasList = $query;
 		}
 		

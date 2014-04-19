@@ -374,23 +374,26 @@
 				}
 			}
 			echo json_encode(SwitchInfo::getPortNames($_POST['refreshswitch']));
+		}elseif(isset($_POST['notes'])){
+			$dev->DeviceID=$_POST['refreshswitch'];
+			$dev->GetDevice();
+			// This function should be hidden if they don't have rights, but just in case
+			if($dev->Rights=="Write"){
+				foreach(SwitchInfo::getPortAlias($_POST['refreshswitch']) as $PortNumber => $Notes){
+					$port=new DevicePorts();
+					$port->DeviceID=$_POST['refreshswitch'];
+					$port->PortNumber=$PortNumber;
+					$port->getPort();
+					$port->Notes=$Notes;
+					$port->updatePort();
+				}
+			}
+			echo json_encode(SwitchInfo::getPortAlias($_POST['refreshswitch']));
 		}else{
 			echo json_encode(SwitchInfo::getPortStatus($_POST['refreshswitch']));
 		}
 		exit;
 	}
-	
-	// Get device picture preview
-	if(isset($_POST['pic'])){
-		$dev->DeviceID=$_POST['devid'];
-		if($dev->GetDevice()){
-			echo '<div class="cabnavigator" data-side="front" style="width:auto; display:inline-block; margin:10px;">';
-			echo $dev->GetDevicePicture(600,($_POST['pic']=="rear"),true,false);
-			echo '</div>';
-		}
-		exit;
-	}
-	
 	// END AJAX
 
 
@@ -867,32 +870,21 @@ $(document).ready(function() {
 	});
 
 	// Device image previews
-	$('#deviceimages > div > div > div > img.picture').
+	$('#deviceimages > div > img').
 		on('error',function(){$(this).hide();toggledeviceimages();}).
 		on('load',function(){
+			if($(this).context.width < $(this).context.height){
+				$(this).css({'height':'275px','width':'auto'});
+			}else{
+				$(this).css({'height':'','width':''});
+			}
 			$(this).show().on('click',function(){
-				var pic_container=$(this).parents('.cabnavigator');
-				$.post('',{pic: pic_container.data('side'), devid: $('#deviceid').val()}).done(function(data){
-					var modal=$('<div />');
-					modal.html(data).dialog({
-						title: '<?php echo __("Device Picture Preview");?>',
-						modal: true,
-						width: 'auto',
-						height: 'auto'
-					});
-					modal.css({'max-width':'850px','max-height':'600px','overflow': 'auto'});
-					$('.cabnavigator div.picture > div.label > div').each(function(){
-						var offset=this.getBoundingClientRect().height;
-						var container=$(this).parents('.picture')[0].getBoundingClientRect().height;
-						$(this).parent('.label').css({'top': (container-offset)/2/2});
-					});
-					$('.cabnavigator .picture img, .cabinet .picture > div').mouseenter(function(){
-						$('div.label').show();
-						$(this).parents('div').children('div.label').hide();
-						$(this).mouseleave(function(){
-							$('div.label').show();
-						});
-					});
+				var pop=$(this).clone();
+				pop.attr('style','');
+				$('<div>').html(pop.css({'max-width':'600px','max-height':'600px'})).dialog({
+					width: 'auto',
+					height: 'auto',
+					modal: true
 				});
 			});
 			toggledeviceimages();
@@ -901,7 +893,7 @@ $(document).ready(function() {
 	function toggledeviceimages(){
 		$('#deviceimages').show();
 		var n=0;
-		$('#deviceimages > div > div > div > img.picture').each(function(){
+		$('#deviceimages > div > img').each(function(){
 			if($(this).is(":visible")){ n++;}
 		});
 		if(n==0){$('#deviceimages').hide();}
@@ -973,32 +965,49 @@ $(document).ready(function() {
 		refreshswitch($('#deviceid').val());
 	});
 	$('#firstport button[name=name]').click(function(){
-		refreshswitch($('#deviceid').val(),true);
+		refreshswitch($('#deviceid').val(),'names');
+	});
+	$('#firstport button[name=notes]').click(function(){
+		refreshswitch($('#deviceid').val(),'notes');
 	});
 	function refreshswitch(devid,names){
+		var modal=$('<div />', {id: 'modal', title: 'Please wait...'}).html('<div id="modaltext"><img src="images/animatedswitch.gif" style="width: 100%;"><br>Polling device...</div><br><div id="modalstatus" class="warning"></div>').dialog({
+			appendTo: 'body',
+			minWidth: 500,
+			closeOnEscape: false,
+			dialogClass: "no-close",
+			modal: true
+		});
 		if(names){
-			var modal=$('<div />', {id: 'modal', title: 'Please wait...'}).html('<div id="modaltext"><img src="images/animatedswitch.gif" style="width: 100%;"><br>Polling device...</div><br><div id="modalstatus" class="warning"></div>').dialog({
-				appendTo: 'body',
-				minWidth: 500,
-				closeOnEscape: false,
-				dialogClass: "no-close",
-				modal: true
-			});
-			$.post('',{refreshswitch: devid, names: names}).done(function(data){
-				$.each(data, function(i,label){
-					if(label){
-						$('#spn'+i).text(label);
-					}else{
-						$('#spn'+i).text('');
-					}
+			if(names=='names'){
+				$.post('',{refreshswitch: devid, names: names}).done(function(data){
+					$.each(data, function(i,label){
+						if(label){
+							$('#spn'+i).text(label);
+						}else{
+							$('#spn'+i).text('');
+						}
+					});
+					modal.dialog('destroy');
 				});
-				modal.dialog('destroy');
-			});
+			}else{
+				$.post('',{refreshswitch: devid, notes: names}).done(function(data){
+					$.each(data, function(i,notes){
+						if(notes){
+							$('#n'+i).text(notes);
+						}else{
+							$('#n'+i).text('');
+						}
+					});
+					modal.dialog('destroy');
+				});
+			}
 		}else{
 			$.post('',{refreshswitch: devid}).done(function(data){
 				$.each(data, function(i,portstatus){
 					$('#st'+i).html($('<span>').addClass('ui-icon').addClass('status').addClass(portstatus));
 				});
+				modal.dialog('destroy');
 			});
 		}
 	}
@@ -1445,27 +1454,16 @@ echo '
 		</div>
 	</div> <!-- END div.table -->
 </fieldset>
-<fieldset id="deviceimages" style="max-height: 300px; overflow-y: auto;">
+<fieldset id="deviceimages">
 	<legend>Device Images</legend>
-	<div>';
-
-/*PICTURES */
-if ($templ->FrontPictureFile<>""){
-	echo '<div class="cabnavigator" data-side="front" style="width:auto; display:inline-block; margin:10px;">';
-	echo $dev->GetDevicePicture(340,false,true,false);
-	echo '</div><br>';
-}
-if ($templ->RearPictureFile<>""){
-	echo '<div class="cabnavigator" data-side="rear" style="width:auto; display:inline-block; margin:10px;">';
-	echo $dev->GetDevicePicture(340,"rear",true,false);
-	echo '</div>';
-}
-echo '
+	<div>
+		<img id="devicefront" src="pictures/'.$templ->FrontPictureFile.'" alt="front of device">
+        <img id="devicerear" src="pictures/'.$templ->RearPictureFile.'" alt="rear of device">
 	</div>
 </fieldset>
 <fieldset id="firstport" class="hide">
 	<legend>'.__("Switch SNMP").'</legend>
-	<div><p>'.__("Use these buttons to set the first port for the switch, check the status of the ports again, or attempt to load the Port Name labels from the switch device.").'</p><button type="button" name="firstport">'.__("Set First Port").'</button><button type="button" name="refresh">'.__("Refresh Status").'</button><button type="button" name="name">'.__("Refresh Port Names").'</button></div>
+	<div><p>'.__("Use these buttons to set the first port for the switch, check the status of the ports again, or attempt to load the Port Name labels from the switch device.").'</p><button type="button" name="firstport">'.__("Set First Port").'</button><button type="button" name="refresh">'.__("Refresh Status").'</button><button type="button" name="name">'.__("Refresh Port Names").'</button><button type="button" name="notes">'.__("Refresh Port Notes").'</button></div>
 </fieldset>';
 
 	//
@@ -1845,22 +1843,6 @@ echo '	<div class="table">
 				}
 			});
 		});
-
-		// Move the cabinet labels around
-		$('.cabnavigator div.picture > div.label > div').each(function(){
-			var offset=this.getBoundingClientRect().height;
-			var container=$(this).parents('.picture')[0].getBoundingClientRect().height;
-			$(this).parent('.label').css({'top': (container-offset)/2/2});
-		});
-		
-		$('.cabnavigator .picture img, .cabinet .picture > div').mouseenter(function(){
-			$('div.label').show();
-			$(this).parents('div').children('div.label').hide();
-			$(this).mouseleave(function(){
-				$('div.label').show();
-			});
-		});
-	
 	});
 </script>
 
