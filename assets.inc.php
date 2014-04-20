@@ -2704,7 +2704,8 @@ class DevicePorts {
 						}
 					}
 				}
-				$portList[$i]->Label=(isset($nameList[$n]))?$nameList[$n]:__('Port').$i;
+				// pull port name first from snmp then from template then just call it port x
+				$portList[$i]->Label=(isset($nameList[$n]))?$nameList[$n]:(isset($tports[$i]) && $tports[$i]->Label)?$tports[$i]->Label:__('Port').$i;
 				$portList[$i]->Notes=(isset($aliasList[$n]))?$aliasList[$n]:'';
 				$portList[$i]->createPort();
 			}
@@ -3824,24 +3825,24 @@ class SwitchInfo {
 		$dev=new Device();
 		$dev->DeviceID=$DeviceID;
 
+		$aliasList=array();
+
 		if(!$dev->GetDevice()){
-			return false;
+			return $aliasList;
 		}
 
 		if($dev->PrimaryIP==""){
-			return false;
+			return $aliasList;
 		}
 
 		// Get SNMP community from the device, fall back to default if one isn't set on the device
 		$Community=($dev->SNMPCommunity=="")?$config->ParameterArray["SNMPCommunity"]:$dev->SNMPCommunity;
 		if($Community==""){
-			return false;
+			return $aliasList;
 		}
 
 		$baseOID=".1.3.6.1.2.1.31.1.1.1.18.";
 		$baseOID="IF-MIB::ifAlias";
-
-		$aliasList = array();
 
 		if(is_null($portid)){
 			// Offset for the real first port index
