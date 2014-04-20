@@ -239,6 +239,9 @@ function CoordinateRow(slot,front){
 		h.val(((hval!='undefined' && rrow.data('change'))?hval:slots[front][slot].H));
 	}
 
+	// Update change status on the row assholes clicking buttons multiple times
+	row.data('change',rrow.data('change'));
+
 	edit.on('click',function(){
 		$(this).closest('#coordstable').find('.table > div').removeClass('greybg');
 		var templateimage=$(this).closest('#coordstable').prev('div').children('#previewimage').children('img');
@@ -329,14 +332,12 @@ function buildportstable(){
 	var ports=[];
 
 	function buildrow(TemplatePortObj){
-		var pn=(typeof TemplatePortObj.PortNumber=='undefined')?'':TemplatePortObj.PortNumber;
-		var label=(typeof TemplatePortObj.Label=='undefined')?'':TemplatePortObj.Label;
-		var mt=(typeof TemplatePortObj.MediaID=='undefined')?'0':TemplatePortObj.MediaID;
-		var c=(typeof TemplatePortObj.ColorID=='undefined')?'0':TemplatePortObj.ColorID;
-		var n=(typeof TemplatePortObj.PortNotes=='undefined')?'':TemplatePortObj.PortNotes;
-
-//		var hval=$('input[name=H'+fr+slot+']').val();
-//		x.val(((xval!='undefined' && rrow.data('change'))?xval:slots[front][slot].X));
+		var rrow=$('.table input[name=label'+TemplatePortObj.PortNumber+']').parent('div').parent('div');
+		var pn=TemplatePortObj.PortNumber;
+		var label=(rrow.data('change'))?rrow.find('input[name^=label]').val():(typeof TemplatePortObj.Label=='undefined')?'':TemplatePortObj.Label;
+		var mt=(rrow.data('change'))?rrow.find('select[name^=mt]').val():(typeof TemplatePortObj.MediaID=='undefined')?'0':TemplatePortObj.MediaID;
+		var c=(rrow.data('change'))?rrow.find('select[name^=cc]').val():(typeof TemplatePortObj.ColorID=='undefined')?'0':TemplatePortObj.ColorID;
+		var n=(rrow.data('change'))?rrow.find('input[name^=portnotes]').val():(typeof TemplatePortObj.PortNotes=='undefined')?'':TemplatePortObj.PortNotes;
 
 		var row=$('<div>').
 			append($('<div>').html(pn)).
@@ -344,7 +345,12 @@ function buildportstable(){
 			append($('<div>').html(mediatypes.clone().val(mt).attr('name','mt'+pn))).
 			append($('<div>').html(colorcodes.clone().val(c).attr('name','cc'+pn))).
 			append($('<div>').html($('<input>').val(n).text(n).attr('name','portnotes'+pn))).
-			data('change',false);
+			data('change',((rrow.data('change'))?true:false));
+
+		// mark the port as changed to snag manual entries
+		row.find('input,select').on('change keyup',function(){
+			row.data('change',true);
+		});
 
 		return row;
 	}
