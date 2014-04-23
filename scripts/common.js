@@ -1395,6 +1395,10 @@ function LameLogDisplay(){
 
 				// Retreive the path
 				$.get('',{path: '', ConnectedDeviceID: row.cdevice.data('default'), ConnectedPort: row.cdeviceport.data('default')}).done(function(data){
+					if(data[(data.length - 1)].DeviceID ==$('#deviceid').val() && data.length==2){
+						// remove the last item in the chain to prevent a display loop if a device is only connected to a patch panel and nothing else
+						data.pop();
+					}
 					$.each(data, function(port){
 						// Add the next link in the chain
 						row.pathrow.path.append(makespan(data[port].DeviceName,(data[port].Label=='')?Math.abs(data[port].PortNumber):data[port].Label));

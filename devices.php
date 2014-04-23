@@ -51,7 +51,7 @@
 	}
 	// Get connection path for a patch panel connection
 	if(isset($_GET['path'])){
-		$path=DevicePorts::followPathToEndPoint($_GET['ConnectedDeviceID'], -$_GET['ConnectedPort']);
+		$path=DevicePorts::followPathToEndPoint($_GET['ConnectedDeviceID'], $_GET['ConnectedPort']);
 
 		foreach($path as $port){
 			$dev->DeviceID=$port->DeviceID;
