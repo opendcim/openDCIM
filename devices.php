@@ -286,7 +286,7 @@
 			$dp->Label=($dp->Label=='')?abs($dp->PortNumber):$dp->Label;
 			$dp->ConnectedDeviceLabel=($dev->GetDevice())?stripslashes($dev->Label):'';
 			$dp->ConnectedDeviceType=$dev->DeviceType;
-			$dp->ConnectedPort=($dp->ConnectedPort==0)?'':abs($dp->ConnectedPort);
+			$dp->ConnectedPort=($dp->ConnectedPort==0)?'':$dp->ConnectedPort;
 			$dp->ConnectedPortLabel=(!is_null($cd->Label) && $cd->Label!='')?$cd->Label:$dp->ConnectedPort;
 			header('Content-Type: application/json');
 			echo json_encode($dp);
@@ -1623,8 +1623,8 @@ echo '	<div class="table">
 			print "\t\t\t\t<div data-port=$i>
 					<div id=\"sp$i\">$i</div>
 					<div id=\"spn$i\">$port->Label</div>
-					<div id=\"d$i\" data-default=\"$port->ConnectedDeviceID\"><a href=\"devices.php?deviceid=$port->ConnectedDeviceID\">$tmpDev->Label</a></div>
-					<div id=\"dp$i\" data-default=\"$port->ConnectedPort\"><a href=\"paths.php?deviceid=$port->ConnectedDeviceID&portnumber=$port->ConnectedPort\">$cp->Label</a></div>
+					<div id=\"d$i\" data-default=$port->ConnectedDeviceID><a href=\"devices.php?deviceid=$port->ConnectedDeviceID\">$tmpDev->Label</a></div>
+					<div id=\"dp$i\" data-default=$port->ConnectedPort><a href=\"paths.php?deviceid=$port->ConnectedDeviceID&portnumber=$port->ConnectedPort\">$cp->Label</a></div>
 					<div id=\"n$i\" data-default=\"$port->Notes\">$port->Notes</div>";
 			if($dev->DeviceType=='Switch'){print "\t\t\t\t<div id=\"st$i\"><span class=\"ui-icon status {$linkList[$i]}\"></span></div>";}
 			print "\t\t\t\t<div id=\"mt$i\" data-default=$port->MediaID>$mt</div>
@@ -1665,7 +1665,7 @@ echo '	<div class="table">
 			if($portList[-$i]->ConnectedPort!=''){
 				$p=new DevicePorts();
 				$p->DeviceID=$portList[-$i]->ConnectedDeviceID;
-				$p->PortNumber=$i;
+				$p->PortNumber=$portList[-$i]->ConnectedPort;
 				$p->getPort();
 				$rp=($p->Label=='')?$i:$p->Label;
 			}else{

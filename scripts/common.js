@@ -1454,7 +1454,7 @@ function LameLogDisplay(){
 			var rear=(e.target.parentElement!=null)?(e.target.parentElement.id.indexOf('r')==0)?true:false:false;
 			var postoptions={swdev: $('#deviceid').val(),listports: ''};
 			if(rear){
-				postoptions=$.extend(postoptions, {thisdev: this.rdevice.find('select').val(), pn: (this.portnum)*-1});
+				postoptions=$.extend(postoptions, {thisdev: this.rdevice.find('select').val(), pn: this.portnum});
 			}else{
 				postoptions=$.extend(postoptions, {thisdev: this.cdevice.find('select').val(), pn: this.portnum});
 			}
@@ -1475,6 +1475,7 @@ function LameLogDisplay(){
 					row.porttype.children('select').val($(this).data($(this).val()).MediaID);
 					row.portcolor.children('select').val($(this).data($(this).val()).ColorID);
 				});
+				// set the value of the select list to the current connection
 				if(rear){
 					row.rdeviceport.html(portlist).find('select').val(row.rdeviceport.data('default'));
 				}else{
@@ -1602,7 +1603,7 @@ function LameLogDisplay(){
 				$.post('',{
 					saveport: '',
 					swdev: $('#deviceid').val(),
-					pnum: row.portnum*rear,
+					pnum: row.portnum,
 					pname: (row.portname.children('input').length==0)?row.portname.data('default'):row.portname.children('input').val(),
 					cdevice: device.children('select').val(),
 					cdeviceport: deviceport.children('select').val(),
