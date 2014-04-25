@@ -928,8 +928,9 @@ $(document).ready(function() {
 			$('#powersupplycount').val(data['PSCount']);
 			$('select[name=devicetype]').val(data['DeviceType']).trigger('change');
 			$('#height').trigger('change');
-			$('#devicefront').attr('src','pictures/'+data['FrontPictureFile']);
-			$('#devicerear').attr('src','pictures/'+data['RearPictureFile']);
+			(data['FrontPictureFile']!='')?$('#devicefront').attr('src','pictures/'+data['FrontPictureFile']):$('#devicefront').removeAttr('src').hide();
+			(data['RearPictureFile']!='')?$('#devicerear').attr('src','pictures/'+data['RearPictureFile']):$('#devicerear').removeAttr('src').hide();
+			toggledeviceimages();
 		});
 	});
 
@@ -1466,9 +1467,12 @@ echo '
 </fieldset>
 <fieldset id="deviceimages">
 	<legend>Device Images</legend>
-	<div>
+	<div>';
+		$frontpic=($templ->FrontPictureFile!='')?' src="pictures/'.$templ->FrontPictureFile.'"':'';
+		$rearpic=($templ->RearPictureFile!='')?' src="pictures/'.$templ->RearPictureFile.'"':'';
+echo '
 		<img id="devicefront" src="pictures/'.$templ->FrontPictureFile.'" alt="front of device">
-        <img id="devicerear" src="pictures/'.$templ->RearPictureFile.'" alt="rear of device">
+		<img id="devicerear" src="pictures/'.$templ->RearPictureFile.'" alt="rear of device">
 	</div>
 </fieldset>
 <fieldset id="firstport" class="hide">
