@@ -1454,7 +1454,7 @@ function LameLogDisplay(){
 			var rear=(e.target.parentElement!=null)?(e.target.parentElement.id.indexOf('r')==0)?true:false:false;
 			var postoptions={swdev: $('#deviceid').val(),listports: ''};
 			if(rear){
-				postoptions=$.extend(postoptions, {thisdev: this.rdevice.find('select').val(), pn: this.portnum});
+				postoptions=$.extend(postoptions, {thisdev: this.rdevice.find('select').val(), pn: (this.portnum)*-1});
 			}else{
 				postoptions=$.extend(postoptions, {thisdev: this.cdevice.find('select').val(), pn: this.portnum});
 			}
@@ -1603,7 +1603,7 @@ function LameLogDisplay(){
 				$.post('',{
 					saveport: '',
 					swdev: $('#deviceid').val(),
-					pnum: row.portnum,
+					pnum: row.portnum*rear,
 					pname: (row.portname.children('input').length==0)?row.portname.data('default'):row.portname.children('input').val(),
 					cdevice: device.children('select').val(),
 					cdeviceport: deviceport.children('select').val(),
@@ -1679,7 +1679,7 @@ function LameLogDisplay(){
 					row.cnotes.html(data.Notes).data('default',data.Notes);
 					row.porttype.html(data.MediaName).data('default',data.MediaID);
 					row.portcolor.html(data.ColorName).data('default',data.ColorID);
-					$(row.element[0]).children('div ~ div + div').removeAttr('style');
+					$(row.element[0]).children('div ~ div:not([id^=sp])').removeAttr('style');
 					// Attempt to show mass edit controls
 					$('.switch.table, .patchpanel.table').massedit('show');
 					if(data.ConnectedDeviceType=='Patch Panel'){

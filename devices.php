@@ -106,7 +106,7 @@
 		}
 		// Make a new method to set all the ports to a media type?
 		foreach(DevicePorts::getPortList($_POST['devid']) as $portnum => $port){
-			$port->Label=(isset($_POST['spn']) && (($_POST['setall']=='true' && count($portnames)>0) || (count($portnames)>0 && strlen($port->Label)==0)))?$portnames[$port->PortNumber]:$port->Label;
+			$port->Label=(isset($_POST['spn']) && (($_POST['setall']=='true' && count($portnames)>0) || (count($portnames)>0 && strlen($port->Label)==0)))?$portnames[abs($port->PortNumber)]:$port->Label;
 			$port->MediaID=(($_POST['setall']=='true' || $port->MediaID==0) && isset($_POST['mt']) && ($_POST['setall']=='true' || intval($_POST['mt'])>0))?$_POST['mt']:$port->MediaID;
 			$port->ColorID=(($_POST['setall']=='true' || $port->ColorID==0) && isset($_POST['cc']) && ($_POST['setall']=='true' || intval($_POST['cc'])>0))?$_POST['cc']:$port->ColorID;
 			$port->updatePort();
@@ -286,8 +286,9 @@
 			$dp->Label=($dp->Label=='')?abs($dp->PortNumber):$dp->Label;
 			$dp->ConnectedDeviceLabel=($dev->GetDevice())?stripslashes($dev->Label):'';
 			$dp->ConnectedDeviceType=$dev->DeviceType;
-			$dp->ConnectedPort=($dp->ConnectedPort==0)?'':$dp->ConnectedPort;
+			$dp->ConnectedPort=(!is_null($cd->DeviceID) && $dp->ConnectedPort==0)?'':$dp->ConnectedPort;
 			$dp->ConnectedPortLabel=(!is_null($cd->Label) && $cd->Label!='')?$cd->Label:$dp->ConnectedPort;
+			($dp->ConnectedPort<0)?$dp->ConnectedPortLabel.=' ('.__("Rear").')':'';
 			header('Content-Type: application/json');
 			echo json_encode($dp);
 			exit;
@@ -1668,6 +1669,7 @@ echo '	<div class="table">
 				$p->PortNumber=$portList[-$i]->ConnectedPort;
 				$p->getPort();
 				$rp=($p->Label=='')?$i:$p->Label;
+				($p->PortNumber<0)?$rp.=' ('.__("Rear").')':'';
 			}else{
 				$rp='';
 			}
