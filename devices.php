@@ -877,6 +877,7 @@ $(document).ready(function() {
 		$('#adddevice').removeAttr("disabled");
 		$(this).submit();
 		$(":input").removeAttr("disabled"); // if they hit back it makes sure the fields aren't disabled
+		$('#parentdevice').attr("disabled","disabled"); // if they hit back disable this so a chassis doesn't become its own parent
 	});
 
 	// Device image previews
