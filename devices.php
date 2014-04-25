@@ -441,6 +441,18 @@
 			if(isset($_POST['action'])){
 				$dev->GetDevice();
 
+				// Pull all properties from a template and apply to the device before we add the values set 
+				// on the screen.  This will make sure things like slots are pulled from the template that aren't
+				// available to the end user initially
+				if($_POST['action']=='Create' && $_POST['templateid']>0){
+					$templ->TemplateID=$_POST['templateid'];
+					if($templ->GetTemplateByID()){
+						foreach($templ as $prop => $value){
+							$dev->$prop=$value;
+						}
+					}
+				}
+
 				$dev->Label=$_POST['label'];
 				$dev->SerialNo=$_POST['serialno'];
 				$dev->AssetTag=$_POST['assettag'];
@@ -461,10 +473,10 @@
 				$dev->Notes=($dev->Notes=="<br>")?"":$dev->Notes;
 				$dev->FirstPortNum=$_POST['firstportnum'];
 				// All of the values below here are optional based on the type of device being dealt with
-				$dev->ChassisSlots=(isset($_POST['chassisslots']))?$_POST['chassisslots']:0;
-				$dev->RearChassisSlots=(isset($_POST['rearchassisslots']))?$_POST['rearchassisslots']:0;
-				$dev->Ports=(isset($_POST['ports']))?$_POST['ports']:"";
-				$dev->PowerSupplyCount=(isset($_POST['powersupplycount']))?$_POST['powersupplycount']:"";
+				(isset($_POST['chassisslots']))?$dev->ChassisSlots=$_POST['chassisslots']:'';
+				(isset($_POST['rearchassisslots']))?$dev->RearChassisSlots=$_POST['rearchassisslots']:'';
+				(isset($_POST['ports']))?$dev->Ports=$_POST['ports']:'';
+				(isset($_POST['powersupplycount']))?$dev->PowerSupplyCount=$_POST['powersupplycount']:'';
 				$dev->ParentDevice=(isset($_POST['parentdevice']))?$_POST['parentdevice']:"";
 				$dev->PrimaryIP=(isset($_POST['primaryip']))?$_POST['primaryip']:"";
 				$dev->SNMPCommunity=(isset($_POST['snmpcommunity']))?$_POST['snmpcommunity']:"";
