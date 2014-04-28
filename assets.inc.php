@@ -2498,7 +2498,16 @@ class Device {
 
 			$resp.="\n\t<div class=\"picture\">\n";
 			$resp.="$clickable\t\t<img class=\"picture\" data-deviceid=$this->DeviceID width=$holeW height=$holeH src=\"$picturefile\" alt=\"$this->Label\">$clickableend\n";
-			if ( $ShowLabel ) {
+
+			/*
+			 * Labels on chassis devices were getting silly with smaller devices.  For aesthetic 
+			 * reasons we are going to hide the label for the chassis devices that are less than 3U
+			 * in height and have slots defined.  If it is just a chassis with nothing defined then 
+			 * go ahead and show the chassis label.
+			 */
+			if($this->Height<3 && $this->DeviceType=='Chassis' && (($rear && $this->RearChassisSlots > 0) || (!$rear && $this->ChassisSlots > 0))  ){
+
+			}else{
 				$resp.="\t\t<div class=\"label\"><div>$flags$this->Label".(((!$this->BackSide && $rear || $this->BackSide && !$rear) && !$this->HalfDepth)?" (".__("Rear").")":"");
 				$resp.="</div></div>\n";
 			}
