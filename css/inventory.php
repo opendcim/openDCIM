@@ -116,7 +116,7 @@ div.cp { position: relative;}
 div#imageselection { display: none;}
 #imageselection span { display: block; padding: 0.25em 0 0.5em 0.5em; cursor: pointer; text-decoration: underline; border: 1px solid white;}
 #imageselection #preview { position: absolute; top: 0; right: 0; height: 180px; width: 180px; margin: 0.1em 0 0 0; padding: 0; border: 0px solid black;}
-#imageselection #filelist { position: absolute; top: 0; left: 1em; height: 210px; width: 245px; overflow-y: scroll; overflow-x: hidden; white-space: nowrap;}
+#imageselection #filelist { position: absolute; top: 0; left: 1em; height: 380px; width: 245px; overflow-y: scroll; overflow-x: hidden; white-space: nowrap;}
 
 .ui-menu-item ul { max-height: 200px; overflow: auto; }
 #tzmenu {display: none;}
