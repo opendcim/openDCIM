@@ -1687,7 +1687,7 @@ echo '	<div class="table">
 				$p->DeviceID=$portList[-$i]->ConnectedDeviceID;
 				$p->PortNumber=$portList[-$i]->ConnectedPort;
 				$p->getPort();
-				$rp=($p->Label=='')?$i:$p->Label;
+				$rp=($p->Label=='')?$p->PortNumber:$p->Label;
 				($p->PortNumber<0)?$rp.=' ('.__("Rear").')':'';
 			}else{
 				$rp='';
