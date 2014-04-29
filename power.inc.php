@@ -213,9 +213,13 @@ class PowerConnection {
 
 	private function MakeSafe(){
 		$this->PDUID=intval($this->PDUID);
-		$this->PDUPosition=intval($this->PDUPosition);
+		$this->PDUPosition=sanitize($this->PDUPosition);
 		$this->DeviceID=intval($this->DeviceID);
 		$this->DeviceConnNumber=intval($this->DeviceConnNumber);
+	}
+
+	private function MakeDisplay(){
+		$this->PDUPosition=stripslashes($this->PDUPosition);
 	}
 
 	static function RowToObject($row){
@@ -224,6 +228,7 @@ class PowerConnection {
 		$conn->PDUPosition=$row["PDUPosition"];
 		$conn->DeviceID=$row["DeviceID"];
 		$conn->DeviceConnNumber=$row["DeviceConnNumber"];
+		$conn->MakeDisplay();
 
 		return $conn;
 	}
@@ -267,7 +272,7 @@ class PowerConnection {
 
 		$sql="INSERT INTO fac_PowerConnection SET DeviceID=$this->DeviceID, 
 			DeviceConnNumber=$this->DeviceConnNumber, PDUID=$this->PDUID, 
-			PDUPosition=$this->PDUPosition ON DUPLICATE KEY UPDATE DeviceID=$this->DeviceID,
+			PDUPosition=\"$this->PDUPosition\" ON DUPLICATE KEY UPDATE DeviceID=$this->DeviceID,
 			DeviceConnNumber=$this->DeviceConnNumber;";
 
 		if($this->CanWrite()){
@@ -307,7 +312,7 @@ class PowerConnection {
 
 		$this->MakeSafe();
 		$sql="DELETE FROM fac_PowerConnection WHERE PDUID=$this->PDUID AND 
-			PDUPosition=$this->PDUPosition;";
+			PDUPosition=\"$this->PDUPosition\";";
 
 		if($this->CanWrite()){
 			if($dbh->exec($sql)){
@@ -323,7 +328,7 @@ class PowerConnection {
 
 		$this->MakeSafe();
 		$sql="SELECT * FROM fac_PowerConnection WHERE PDUID=$this->PDUID AND 
-			PDUPosition=$this->PDUPosition;";
+			PDUPosition=\"$this->PDUPosition\";";
     
 		if($row=$dbh->query($sql)->fetch()){
 			foreach(PowerConnection::RowToObject($row) as $prop => $value){
