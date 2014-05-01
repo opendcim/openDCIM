@@ -239,6 +239,9 @@ if($object>0){
 					break;
 				case "DeviceType":
 					// if this is a chassis device display the number of blades?
+				case "PanelPole":
+					$tooltip.=__($row["Label"]).": ".$pdu->GetAllBreakerPoles()."<br>\n";
+					break;
 				default:
 					if(isset($_POST['cdu'])){
 						$tooltip.=__($row["Label"]).": ".$pdu->$row["Field"]."<br>\n";

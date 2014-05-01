@@ -865,6 +865,28 @@ class PowerDistribution {
 		}
 	}
 
+        function GetAllBreakerPoles() {
+                $this->GetPDU();
+
+                $panel=new PowerPanel();
+                $panel->PanelID=$this->PanelID;
+                if($panel->GetPanel()) {
+                        $ret = "$this->PanelPole";
+                        for($i=1;$i<$this->BreakerSize;$i++) {
+                                $adder = $i;
+                                if($panel->NumberScheme=="Odd/Even") {
+                                        $adder = $i*2;
+                                }
+                                $next = $this->PanelPole+$adder;
+                                $ret = $ret . "-$next";
+                        }
+                        return $ret;
+
+                } else {
+                        return "Error, source power panel not valid";
+                }
+        }
+
 	function DeletePDU(){
 		$this->MakeSafe();
 

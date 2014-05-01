@@ -483,7 +483,16 @@ echo '	</select>
 <div>
   <div><label for="panelpole">',__("Panel Pole Number"),'</label></div>
   <div><input type="text" name="panelpole" id="panelpole" size=5 value="',$pdu->PanelPole,'"></div>
-</div>
+</div>';
+
+if($pdu->BreakerSize>1) {
+	echo '
+	<div>
+  	  <div><label for="allbreakerpoles">',__("All Breaker Poles"),'</label></div>
+  	  <div>',$pdu->GetAllBreakerPoles(),'</div>
+	</div>';
+}
+echo '
 <div>
    <div><label for="inputamperage">',__("Input Amperage"),'</label></div>
    <div><input type="text" name="inputamperage" id="inputamperage" size=5 value="',$pdu->InputAmperage,'"></div>
