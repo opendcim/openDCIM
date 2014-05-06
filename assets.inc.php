@@ -1595,6 +1595,19 @@ class Device {
 		return $dev;
 	}
 
+	static function GetDevicesByTemplate( $templateID ) {
+		global $dbh;
+		
+		$sql = "select * from fac_Device where TemplateID='" . intval( $templateID ) . "' order by Label ASC";
+		
+		$deviceList = array();
+		foreach ( $dbh->query( $sql ) as $deviceRow ) {
+			$deviceList[]=Device::RowToObject( $deviceRow );
+		}
+		
+		return $deviceList;
+	}
+	
 	static function GetSwitchesToReport() {
 		global $dbh;
 		global $config;

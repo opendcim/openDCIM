@@ -49,6 +49,7 @@
 		//get template
 		$template->TemplateID=$_REQUEST['templateid'];
 		$template->GetTemplateByID();
+		$deviceList = Device::GetDevicesByTemplate( $template->TemplateID );
 	}
 	
 	if(isset($_POST['action'])){
@@ -428,7 +429,15 @@ echo '	</select>
 <div id="DivRearChassisSlots" style="display: ',(($template->DeviceType=="Chassis")?'table-row':'none'),';">
    <div><label for="RearChassisSlots">',__("Rear Chassis Slots"),'</label></div>
    <div><input type="text" name="RearChassisSlots" id="RearChassisSlots" value="',$template->RearChassisSlots,'"><button type="button">',__("Edit Coordinates"),'</button></div>
-</div>
+</div>';
+if ( $template->TemplateID > 0 ) {
+	echo '
+<div>
+	<div>&nbsp;</div>
+	<div>' . __("Number of Devices Using This Template:") . ' ' . sizeof( $deviceList ) . '</div>
+</div>';
+}
+	echo '
 <div>
    <div><label for="notes">',__('Notes'),'</label></div>
    <div><textarea name="notes" id="notes" cols="40" rows="8">',$template->Notes,'</textarea></div>
