@@ -93,7 +93,7 @@ function BuildCabinet($rear=false){
 				for($i=$currentHeight;($i>$devTop);$i--){
 					$errclass=($i>$cabinet->CabinetHeight)?' error':'';
 					if($errclass!=''){$heighterr="yup";}
-					if($i==$currentHeight){
+					if($i==$currentHeight && $i>1){
 						$blankHeight=$currentHeight-$devTop;
 						if($devTop==-1){--$blankHeight;}
 						$body.="\t\t<tr><td class=\"cabpos freespace$errclass\">$i</td><td class=\"freespace\" rowspan=$blankHeight>&nbsp;</td></tr>\n";
