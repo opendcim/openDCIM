@@ -43,7 +43,7 @@
 	if(isset($_GET['spn'])){
 		header('Content-Type: application/json');
 		$PortNamePatterns=array();
-		foreach(array('NIC(1)','Port(1)','Fa/(1)','Gi/(1)','Ti/(1)','Custom') as $pattern){
+		foreach(array('NIC(1)','Port(1)','Fa/(1)','Gi/(1)','Ti/(1)','Custom',__('From Template')) as $pattern){
 			$PortNamePatterns[]['Pattern']=$pattern;
 		}
 		echo json_encode($PortNamePatterns);
@@ -94,14 +94,25 @@
 	if(isset($_POST['setall'])){
 		$portnames=array();
 		if(isset($_POST['spn']) && strlen($_POST['spn'])>0){
-			//using premade patterns if the input differs and causes an error then fuck em
-			list($result, $msg, $idx) = parseGeneratorString($_POST['spn']);
-			if($result){
+			// Special Condition to load ports from the device template and use those names
+			if($_POST['spn']==__('From Template')){
 				$dev->DeviceID=$_POST['devid'];
 				$dev->GetDevice();
-				$portnames=generatePatterns($result, $dev->Ports);
-				// generatePatterns starts the index at 0, it's more useful to us starting at 1
-				array_unshift($portnames, null);
+				$ports=new TemplatePorts();
+				$ports->TemplateID=$dev->TemplateID;
+				foreach($ports->getPorts() as $pn => $portobject){
+					$portnames[$pn]=$portobject->Label;
+				}
+			}else{
+				//using premade patterns if the input differs and causes an error then fuck em
+				list($result, $msg, $idx) = parseGeneratorString($_POST['spn']);
+				if($result){
+					$dev->DeviceID=$_POST['devid'];
+					$dev->GetDevice();
+					$portnames=generatePatterns($result, $dev->Ports);
+					// generatePatterns starts the index at 0, it's more useful to us starting at 1
+					array_unshift($portnames, null);
+				}
 			}
 		}
 		// Make a new method to set all the ports to a media type?
