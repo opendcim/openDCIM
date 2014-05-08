@@ -240,8 +240,15 @@ if($object>0){
 				case "PanelPole":
 					$tooltip.=__($row["Label"]).": ".$pdu->GetAllBreakerPoles()."<br>\n";
 					break;
+				case "Weight":
+					$dev->$row["Field"]=$dev->GetDeviceTotalWeight();
+					goto end; // cringe now
+				case "NominalWatts":
+					$dev->$row["Field"]=$dev->GetDeviceTotalPower();
+					goto end; // fuck you, yeah I really did that
 				case "DeviceType":
 					// if this is a chassis device display the number of blades?
+				end:
 				default:
 					if(isset($_POST['cdu'])){
 						$tooltip.=__($row["Label"]).": ".$pdu->$row["Field"]."<br>\n";
