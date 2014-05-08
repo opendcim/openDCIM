@@ -1465,6 +1465,18 @@ echo '		<div>
 		</div>';
 		}
 
+		// Show extra info for chassis devices
+		if($dev->DeviceType=="Chassis"){
+			echo '		<div>
+			<div><label>'.__("Chassis Total Draw").'</label></div>
+			<div><input value="'.$dev->GetDeviceTotalPower().'" size="6" disabled></input></div>
+		</div>
+		<div>
+			<div><label>'.__("Chassis Total Weight").'</label></div>
+			<div><input value="'.$dev->GetDeviceTotalWeight().'" size="6" disabled></input></div>
+		</div>';
+		}
+
 echo '		<div>
 		   <div>',__("Device Type"),'</div>
 		   <div><select name="devicetype">
