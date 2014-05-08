@@ -3513,21 +3513,58 @@ class RackRequest {
   var $MfgDate;
 
 	// Create MakeSafe / MakeDisplay functions
-  
+	function MakeSafe(){
+		//Keep weird values out of DeviceType
+		$validdevicetypes=array('Server','Appliance','Storage Array','Switch','Chassis','Patch Panel','Physical Infrastructure');
+
+		$this->RequestID=intval($this->RequestID);
+		$this->RequestorID=intval($this->RequestorID);
+		$this->RequestTime=sanitize($this->RequestTime); //datetime
+		$this->CompleteTime=sanitize($this->CompleteTime); //datetime
+		$this->Label=sanitize(transform($this->Label));
+		$this->SerialNo=sanitize(transform($this->SerialNo));
+		$this->AssetTag=sanitize($this->AssetTag);
+		$this->ESX=intval($this->ESX);
+		$this->Owner=intval($this->Owner);
+		$this->DeviceHeight=intval($this->DeviceHeight);
+		$this->EthernetCount=intval($this->EthernetCount);
+		$this->VLANList=sanitize($this->VLANList);
+		$this->SANCount=intval($this->SANCount);
+		$this->SANList=sanitize($this->SANList);
+		$this->DeviceClass=sanitize($this->DeviceClass);
+		$this->DeviceType=(in_array($this->DeviceType,$validdevicetypes))?$this->DeviceType:'Server';
+		$this->LabelColor=sanitize($this->LabelColor);
+		$this->CurrentLocation=sanitize(transform($this->CurrentLocation));
+		$this->SpecialInstructions=sanitize($this->SpecialInstructions);
+		$this->MfgDate=date("Y-m-d", strtotime($this->MfgDate)); //date
+	}
+
+	function MakeDisplay(){
+		$this->Label=stripslashes($this->Label);
+		$this->SerialNo=stripslashes($this->SerialNo);
+		$this->AssetTag=stripslashes($this->AssetTag);
+		$this->VLANList=stripslashes($this->VLANList);
+		$this->SANList=stripslashes($this->SANList);
+		$this->DeviceClass=stripslashes($this->DeviceClass);
+		$this->LabelColor=stripslashes($this->LabelColor);
+		$this->CurrentLocation=stripslashes($this->CurrentLocation);
+		$this->SpecialInstructions=stripslashes($this->SpecialInstructions);
+	}
+ 
   function CreateRequest(){
 	global $dbh;
-    $sql="INSERT INTO fac_RackRequest SET RequestTime=now(), RequestorID=\"".intval($this->RequestorID)."\",
-		Label=\"".sanitize(transform($this->Label))."\", SerialNo=\"".sanitize(transform($this->SerialNo))."\",
-		MfgDate=\"".date("Y-m-d", strtotime($this->MfgDate))."\", 
-		AssetTag=\"".sanitize(transform($this->AssetTag))."\", ESX=\"".intval($this->ESX)."\",
-		Owner=\"".intval($this->Owner)."\", DeviceHeight=\"".intval($this->DeviceHeight)."\",
-		EthernetCount=\"".intval($this->EthernetCount)."\", VLANList=\"".sanitize($this->VLANList)."\",
-		SANCount=\"".intval($this->SANCount)."\", SANList=\"".sanitize($this->SANList)."\",
-		DeviceClass=\"".sanitize($this->DeviceClass)."\", DeviceType=\"".sanitize($this->DeviceType)."\",
-		LabelColor=\"".sanitize($this->LabelColor)."\", 
-		CurrentLocation=\"".sanitize(transform($this->CurrentLocation))."\",
-		SpecialInstructions=\"".sanitize($this->SpecialInstructions)."\"";
-    
+
+	$this->MakeSafe();
+
+    $sql="INSERT INTO fac_RackRequest SET RequestTime=now(), RequestorID=$this->RequestorID,
+		Label=\"$this->Label\", SerialNo=\"$this->SerialNo\", MfgDate=\"$this->MfgDate\", 
+		AssetTag=\"$this->AssetTag\", ESX=$this->ESX, Owner=$this->Owner, 
+		DeviceHeight=\"$this->DeviceHeight\", EthernetCount=$this->EthernetCount, 
+		VLANList=\"$this->VLANList\", SANCount=$this->SANCount, SANList=\"$this->SANList\",
+		DeviceClass=\"$this->DeviceClass\", DeviceType=\"$this->DeviceType\",
+		LabelColor=\"$this->LabelColor\", CurrentLocation=\"$this->CurrentLocation\",
+		SpecialInstructions=\"$this->SpecialInstructions\";";
+
 	if(!$dbh->exec($sql)){
 		$info=$dbh->errorInfo();
 		error_log("PDO Error: {$info[2]}");
@@ -3535,6 +3572,7 @@ class RackRequest {
 	}else{		
 		$this->RequestID=$dbh->lastInsertId();
 		(class_exists('LogActions'))?LogActions::LogThis($this):'';
+		$this->MakeDisplay();
         return $this->RequestID;
 	}
   }
@@ -3567,12 +3605,13 @@ class RackRequest {
 		$requestList[$requestNum]->LabelColor=$row["LabelColor"];
 		$requestList[$requestNum]->CurrentLocation=$row["CurrentLocation"];
 		$requestList[$requestNum]->SpecialInstructions=$row["SpecialInstructions"];
+		$requestList[$requestNum]->MakeDisplay();
     }
     
     return $requestList;
   }
   
-  function GetRequest($db=null){
+  function GetRequest(){
 	global $dbh;
     $sql="SELECT * FROM fac_RackRequest WHERE RequestID=\"".intval($this->RequestID)."\";";
 
@@ -3596,12 +3635,13 @@ class RackRequest {
 		$this->LabelColor=$row["LabelColor"];
 		$this->CurrentLocation=$row["CurrentLocation"];
 		$this->SpecialInstructions=$row["SpecialInstructions"];
+		$this->MakeDisplay();
 	}else{
 		//something bad happened maybe tell someone
 	}
   }
   
-  function CompleteRequest($db=null){
+  function CompleteRequest(){
 	global $dbh;
 
 	$old=new RackRequest();
@@ -3618,7 +3658,7 @@ class RackRequest {
 	}
   }
   
-  function DeleteRequest($db=null){
+  function DeleteRequest(){
 	global $dbh;
     $sql="DELETE FROM fac_RackRequest WHERE RequestID=\"".intval($this->RequestID)."\";";
 	if($dbh->query($sql)){
@@ -3629,28 +3669,28 @@ class RackRequest {
 	}
   }
 
-  function UpdateRequest($db=null){
+  function UpdateRequest(){
 	global $dbh;
+
+	$this->MakeSafe();
 
 	$old=new RackRequest();
 	$old->RequestID=$this->RequestID;
 	$old->GetRequest();
 
-    $sql="UPDATE fac_RackRequest SET RequestTime=now(), RequestorID=\"".intval($this->RequestorID)."\",
-		Label=\"".sanitize(transform($this->Label))."\", SerialNo=\"".sanitize(transform($this->SerialNo))."\",
-		MfgDate=\"".date("Y-m-d", strtotime($this->MfgDate))."\", 
-		AssetTag=\"".sanitize(transform($this->AssetTag))."\", ESX=\"".intval($this->ESX)."\",
-		Owner=\"".intval($this->Owner)."\", DeviceHeight=\"".intval($this->DeviceHeight)."\",
-		EthernetCount=\"".intval($this->EthernetCount)."\", VLANList=\"".sanitize($this->VLANList)."\",
-		SANCount=\"".intval($this->SANCount)."\", SANList=\"".sanitize($this->SANList)."\",
-		DeviceClass=\"".sanitize($this->DeviceClass)."\", DeviceType=\"".sanitize($this->DeviceType)."\",
-		LabelColor=\"".sanitize($this->LabelColor)."\", 
-		CurrentLocation=\"".sanitize(transform($this->CurrentLocation))."\",
-		SpecialInstructions=\"".sanitize($this->SpecialInstructions)."\" 
-		WHERE RequestID=\"".intval($this->RequestID)."\";";
+    $sql="UPDATE fac_RackRequest SET RequestTime=now(), RequestorID=$this->RequestorID,
+		Label=\"$this->Label\", SerialNo=\"$this->SerialNo\", MfgDate=\"$this->MfgDate\", 
+		AssetTag=\"$this->AssetTag\", ESX=$this->ESX, Owner=$this->Owner, 
+		DeviceHeight=\"$this->DeviceHeight\", EthernetCount=$this->EthernetCount, 
+		VLANList=\"$this->VLANList\", SANCount=$this->SANCount, SANList=\"$this->SANList\",
+		DeviceClass=\"$this->DeviceClass\", DeviceType=\"$this->DeviceType\",
+		LabelColor=\"$this->LabelColor\", CurrentLocation=\"$this->CurrentLocation\",
+		SpecialInstructions=\"$this->SpecialInstructions\"
+		WHERE RequestID=$this->RequestID;";
     
 	if($dbh->query($sql)){
 		(class_exists('LogActions'))?LogActions::LogThis($this,$old):'';
+		$this->MakeDisplay();
 		return true;
 	}else{
 		return false;
