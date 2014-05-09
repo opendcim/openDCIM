@@ -457,9 +457,10 @@ class PowerDistribution {
 		$sql="INSERT INTO fac_PowerDistribution SET Label=\"$this->Label\", 
 			CabinetID=$this->CabinetID, TemplateID=$this->TemplateID, 
 			IPAddress=\"$this->IPAddress\", SNMPCommunity=\"$this->SNMPCommunity\", 
-			PanelID=$this->PanelID, BreakerSize=$this->BreakerSize, 
-			PanelPole=$this->PanelPole, InputAmperage=$this->InputAmperage, 
-			FailSafe=$this->FailSafe, PanelID2=$this->PanelID2, PanelPole2=$this->PanelPole2;";
+			FirmwareVersion=$this->FirmwareVersion, PanelID=$this->PanelID, 
+			BreakerSize=$this->BreakerSize, PanelPole=$this->PanelPole, 
+			InputAmperage=$this->InputAmperage, FailSafe=$this->FailSafe, 
+			PanelID2=$this->PanelID2, PanelPole2=$this->PanelPole2;";
 
 		if($this->exec($sql)){
 			$this->PDUID=$dbh->lastInsertId();
