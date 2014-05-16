@@ -150,11 +150,13 @@
 		if($dev->Rights=="Write"){
 			if($_POST['fp']==''){ // querying possible first ports
 				$portCandidates=SwitchInfo::findFirstPort($dev->DeviceID);
-				if(count($portCandidates>0)){
+				if(count($portCandidates)>0){
 					foreach($portCandidates as $id => $portdesc){
 						$checked=($id==$dev->FirstPortNum)?' checked':'';
 						print '<input type="radio" name="firstportnum" id="fp'.$id.'" value="'.$id.'"'.$checked.'><label for="fp'.$id.'">'.$portdesc.'</label><br>';
 					}
+				}else{
+					print __("ERROR: No ports found");
 				}
 			}else{ // setting first port
 				$dev->FirstPortNum=$_POST['fp'];
