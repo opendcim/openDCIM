@@ -2212,7 +2212,14 @@ class Device {
 	}
 	
 	function GetDeviceTotalPower(){
-	//calculate device power including child devices power
+		// Make sure we read the device from the db and didn't just get the device ID
+		if(!isset($this->Rights)){
+			if(!$this->GetDevice()){
+				return 0;
+			}
+		}
+
+		//calculate device power including child devices power
 		$TotalPower=0;
 		//own device power
 		if($this->NominalWatts>0){
@@ -2223,11 +2230,11 @@ class Device {
 			$templ->GetTemplateByID();
 			$TotalPower=$templ->Wattage;
 		}
-		
+
 		//child device power
-		if ( $this->ChassisSlots > 0 ) {
-			$childList = $this->GetDeviceChildren();
-			foreach ( $childList as $tmpDev ) {
+		if($this->ChassisSlots >0 || $this->RearChassisSlots >0){
+			$childList=$this->GetDeviceChildren();
+			foreach($childList as $tmpDev){
 				$TotalPower+=$tmpDev->GetDeviceTotalPower();
 			}
 		}
@@ -2235,7 +2242,13 @@ class Device {
 	}
 
 	function GetDeviceTotalWeight(){
-	//calculate device weight including child devices weight
+		// Make sure we read the device from the db and didn't just get the device ID
+		if(!isset($this->Rights)){
+			if(!$this->GetDevice()){
+				return 0;
+			}
+		}
+		//calculate device weight including child devices weight
 		
 		$TotalWeight=0;
 		
@@ -2248,7 +2261,7 @@ class Device {
 		}
 		
 		//child device weight
-		if ( $this->ChassisSlots > 0 ) {
+		if($this->ChassisSlots >0 || $this->RearChassisSlots >0){
 			$childList = $this->GetDeviceChildren();
 			foreach ( $childList as $tmpDev ) {
 				$TotalWeight+=$tmpDev->GetDeviceTotalWeight();
