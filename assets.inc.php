@@ -3920,13 +3920,18 @@ class SwitchInfo {
 		$baseOID="IF-MIB::ifAlias";
 
 		if(is_null($portid)){
-			// Offset for the real first port index
-			$n=($dev->FirstPortNum * -1);
-			$reply=snmprealwalk($dev->PrimaryIP,$Community,$baseOID); 
-			foreach($reply as $i => $string){
-				@preg_match( "/(STRING: )(.*)/", $string, $matches);
-				$aliasList[$n+$dev->FirstPortNum]=$matches[2];
-				$n++;
+			if($reply=snmprealwalk($dev->PrimaryIP,$Community,$baseOID)){
+				$n=1; // Start our index at 1
+				foreach($reply as $oid => $string){
+					if(@end(explode( ".", $oid ))>=$dev->FirstPortNum){
+						@preg_match( "/(STRING: )(.*)/", $string, $matches);
+						$aliasList[$n++]=$matches[2];
+					}
+					// Once we have captured enough values that match the number of ports, stop
+					if(sizeof($aliasList)==$dev->Ports){
+						break;
+					}
+				}
 			}
 		}else{
 			$query = @end( explode( ":", snmpget( $dev->PrimaryIP, $Community, $baseOID.'.'.$portid )));
