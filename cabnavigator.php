@@ -651,11 +651,14 @@ if ( $config->ParameterArray["WorkOrderBuilder"]=='enabled' ) {
 		var workOrder = $.fn.cookieList("workOrder");
 		
 		$('.cabinet td:has(a):not(:has(img)), #zerou div > a, .cabinet .picture a img, .cabinet	.picture a > div').each( function(){
+			var devid=$(this).data('deviceid');
 			var target=(this.nodeName=="IMG")?this.parentElement.parentElement:this;
 			var style=(this.nodeName=="IMG")?'position: absolute; top: 0; right: 0; background-color: white;':'float: right;';
-			var span=$('<span>').attr('style',style);
-			span.on('click', workOrder.add($(this).data('deviceid')));
-			$(target).append('<span class="ui-icon ui-icon-circlesmall-plus" style="'+style+'"></span>'););
+			$(target).append('<span class="ui-icon ui-icon-circlesmall-plus workorder'+devid+'" style="'+style+'"></span>');
+			$('.workorder'+devid).on( 'click', function() {
+				console.log('click fired for '+devid);
+				workOrder.add(devid);
+			});
 		});
 
 <?php
