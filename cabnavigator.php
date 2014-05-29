@@ -582,14 +582,14 @@ echo $head,'  <script type="text/javascript" src="scripts/jquery.min.js"></scrip
 						var index = items.indexOf(val);
 						if ( index == -1) {
 							items.push(val);
-							$.cookie(cookieName, $.toJSON(items), {expires: expireTime, path: "/" });
+							$.cookie(cookieName, $.toJSON(items), {expires: expireTime });
 						}
 					},
 					remove: function (val) {
 						var index = items.indexOf(val);
 						if ( index != -1 ) {
 							items.splice(index, 1);
-							$.cookie(cookieName, $.toJSON(items), {expires: expireTime, path: "/" });
+							$.cookie(cookieName, $.toJSON(items), {expires: expireTime });
 						}
 					},
 					indexOf: function(val) {
@@ -597,7 +597,7 @@ echo $head,'  <script type="text/javascript" src="scripts/jquery.min.js"></scrip
 					},
 					clear: function() {
 						items = null;
-						$.cookie(cookieName, null, { expires: expireTime, path: "/" });
+						$.cookie(cookieName, null, { expires: expireTime });
 					},
 					items: function() {
 						return items;
