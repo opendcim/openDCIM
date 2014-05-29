@@ -6,4 +6,4 @@ ALTER TABLE fac_PowerConnection CHANGE PDUPosition PDUPosition VARCHAR(11) CHARA
 --
 -- Add Config item for the Work Order Builder
 --
-INSERT INTO fac_Config set Parameter='WorkOrderBuilder', Value='enabled', UnitOfMeasure='Enabled/Disabled', ValType='string', DefaultVal='disabled';
+INSERT INTO fac_Config set Parameter='WorkOrderBuilder', Value='disabled', UnitOfMeasure='Enabled/Disabled', ValType='string', DefaultVal='disabled';
