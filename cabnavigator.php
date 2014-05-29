@@ -550,6 +550,7 @@ $body.='<div id="infopanel">
 echo $head,'  <script type="text/javascript" src="scripts/jquery.min.js"></script>
   <script type="text/javascript" src="scripts/jquery-ui.min.js"></script>
   <script type="text/javascript" src="scripts/jquery.cookie.js"></script>
+  <script type="text/javascript" src="scripts/jquery-json.min.js"></script>
   <script type="text/javascript" src="scripts/common.js"></script>
   <script type="text/javascript">
 	var form=$("<form>").attr({ method: "post", action: "cabnavigator.php" });
@@ -569,12 +570,55 @@ echo $head,'  <script type="text/javascript" src="scripts/jquery.min.js"></scrip
 			form.submit();
 		}
 	}
+	
+	(function ($) {
+		$.fn.extend({
+			cookieList: function (cookieName, expireTime) {
+				var cookie = $.cookie(cookieName);
+				var items = cookie ? $.secureEvalJSON(cookie) : [];
+				
+				return {
+					add: function (val) {
+						var index = items.indexOf(val);
+						if ( index == -1) {
+							items.push(val);
+							$.cookie(cookieName, $.toJSON(items), {expires: expireTime, path: "/" });
+						}
+					},
+					remove: function (val) {
+						var index = items.indexOf(val);
+						if ( index != -1 ) {
+							items.splice(index, 1);
+							$.cookie(cookieName, $.toJSON(items), {expires: expireTime, path: "/" });
+						}
+					},
+					indexOf: function(val) {
+						return items.indexOf(val);
+					},
+					clear: function() {
+						items = null;
+						$.cookie(cookieName, null, { expires: expireTime, path: "/" });
+					},
+					items: function() {
+						return items;
+					},
+					length: function() {
+						return items.length;
+					},
+					join: function( separator ) {
+						return items.join(separator);
+					}
+				};
+			}
+		});
+	})(jQuery);
+	
 	$(document).ready(function() {
 		$(".cabinet .error").append("*");
 		if($("#legend *").length==1){$("#legend").hide();}
 		if($("#keylock div").text().trim()==""){$("#keylock").hide();}
 ';
-if($config->ParameterArray["ToolTips"]=='enabled'){
+if( $config->ParameterArray["ToolTips"]=='enabled' ){
 ?>
 		$('.cabinet td:has(a):not(:has(img)), #zerou div > a, .cabinet .picture a img, .cabinet .picture a > div').mouseenter(function(){
 			var lblbtn=$('.cabinet tr:first-child button + button');
@@ -601,6 +645,22 @@ if($config->ParameterArray["ToolTips"]=='enabled'){
 
 <?php
 }
+
+if ( $config->ParameterArray["WorkOrderBuilder"]=='enabled' ) {
+?>
+		var workOrder = $.fn.cookieList("workOrder");
+		
+		$('.cabinet td:has(a):not(:has(img)), #zerou div > a, .cabinet .picture a img, .cabinet	.picture a > div').each( function(){
+			var target=(this.nodeName=="IMG")?this.parentElement.parentElement:this;
+			var style=(this.nodeName=="IMG")?'position: absolute; top: 0; right: 0; background-color: white;':'float: right;';
+			var span=$('<span>').attr('style',style);
+			span.on('click', workOrder.add($(this).data('deviceid')));
+			$(target).append('<span class="ui-icon ui-icon-circlesmall-plus" style="'+style+'"></span>'););
+		});
+
+<?php
+}
+
 if($config->ParameterArray["CDUToolTips"]=='enabled'){
 ?>
 		$('fieldset[name="pdu"] legend ~ a').mouseenter(function(){
