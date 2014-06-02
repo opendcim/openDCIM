@@ -654,11 +654,29 @@ if ( $config->ParameterArray["WorkOrderBuilder"]=='enabled' ) {
 			var devid=$(this).data('deviceid');
 			var target=(this.nodeName=="IMG")?this.parentElement.parentElement:this;
 			var style=(this.nodeName=="IMG")?'position: absolute; top: 0; right: 0; background-color: white;':'float: right;';
-			$(target).append('<span class="ui-icon ui-icon-circlesmall-plus workorder'+devid+'" style="'+style+'"></span>');
-			$('.workorder'+devid).on( 'click', function() {
-				console.log('click fired for '+devid);
-				workOrder.add(devid);
+
+			// Make a point for us to click to add to this nonsense
+			var span=$('<span>').attr('style',style).addClass('ui-icon');
+			span.addClass(($.parseJSON($.cookie('workOrder')).indexOf(devid)==-1)?'ui-icon-circlesmall-plus':'ui-icon-circlesmall-minus');
+
+			// Bind the click action
+			span.on('click', function(){
+				flippyfloppy();
 			});
+
+			// Set the sign on the element according to if it is in the array or not
+			function flippyfloppy(){
+				if($.parseJSON($.cookie('workOrder')).indexOf(devid)==-1){
+					workOrder.add(devid);
+					span.removeClass('ui-icon-circlesmall-plus').addClass('ui-icon-circlesmall-minus');
+				}else{
+					workOrder.remove(devid);
+					span.addClass('ui-icon-circlesmall-plus').removeClass('ui-icon-circlesmall-minus');
+				}
+			}
+
+			// Add the click target to the page
+			$(target).append(span);
 		});
 
 <?php
