@@ -74,33 +74,35 @@
 			
 			$color = new ColorCoding();
 			$mediaType = new MediaTypes();
+			
+			if ( $devPort->ConnectedDeviceID > 0 || $devPort->Notes != "" ) {
+				$targetDev->DeviceID = $devPort->ConnectedDeviceID;
+				$targetDev->GetDevice();
+				
+				$targetPort->DeviceID = $targetDev->DeviceID;
+				$targetPort->PortNumber = $devPort->ConnectedPort;
+				$targetPort->getPort();
+				
+				if ( $targetPort->Label == '' ) {
+					$targetPort->Label = $devPort->ConnectedDeviceID > 0 ? $devPort->ConnectedPort : '';
+				}
+				
+				$color->ColorID = $devPort->ColorID;
+				$color->GetCode();
+				
+				$mediaType->MediaID = $devPort->MediaID;
+				$mediaType->GetType();
+				
+				$sheet->getActiveSheet()->SetCellValue('A' . $row, $dev->Label);
+				$sheet->getActiveSheet()->SetCellValue('B' . $row, $devPort->Label);
+				$sheet->getActiveSheet()->SetCellValue('C' . $row, $targetDev->Label);
+				$sheet->getActiveSheet()->SetCellValue('D' . $row, $targetPort->Label);
+				$sheet->getActiveSheet()->SetCellValue('E' . $row, $devPort->Notes);
+				$sheet->getActiveSheet()->SetCellValue('F' . $row, $mediaType->MediaType);
+				$sheet->getActiveSheet()->SetCellValue('G' . $row, $color->Name);
 
-			$targetDev->DeviceID = $devPort->ConnectedDeviceID;
-			$targetDev->GetDevice();
-			
-			$targetPort->DeviceID = $targetDev->DeviceID;
-			$targetPort->PortNumber = $devPort->ConnectedPort;
-			$targetPort->getPort();
-			
-			if ( $targetPort->Label == '' ) {
-				$targetPort->Label = $devPort->ConnectedDeviceID > 0 ? $devPort->ConnectedPort : '';
+				$row++;
 			}
-			
-			$color->ColorID = $devPort->ColorID;
-			$color->GetCode();
-			
-			$mediaType->MediaID = $devPort->MediaID;
-			$mediaType->GetType();
-			
-			$sheet->getActiveSheet()->SetCellValue('A' . $row, $dev->Label);
-			$sheet->getActiveSheet()->SetCellValue('B' . $row, $devPort->Label);
-			$sheet->getActiveSheet()->SetCellValue('C' . $row, $targetDev->Label);
-			$sheet->getActiveSheet()->SetCellValue('D' . $row, $targetPort->Label);
-			$sheet->getActiveSheet()->SetCellValue('E' . $row, $devPort->Notes);
-			$sheet->getActiveSheet()->SetCellValue('F' . $row, $mediaType->MediaType);
-			$sheet->getActiveSheet()->SetCellValue('G' . $row, $color->Name);
-
-			$row++;
 			
 			if ( $targetDev->DeviceType == "Patch Panel" ) {
 				$path = DevicePorts::followPathToEndPoint( $devPort->ConnectedDeviceID, -$devPort->ConnectedPort );
