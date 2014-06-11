@@ -24,10 +24,12 @@
   <script type="text/javascript" src="scripts/jquery-ui.min.js"></script>
   <script type="text/javascript" src="scripts/jquery.cookie.js"></script>
 <script>
-	function deleteCookie() {
-		document.cookie = encodeURIComponent("workOrder") + "=; expired=" + new Date(0).toUTCString();
-		location.href="index.php";
-	}
+	$(document).ready(function(){
+		$('#clear').click(function(){
+			$.removeCookie('workOrder');
+			location.href="index.php)";
+		});
+	});
 </script>
 </head>
 <body>
@@ -75,7 +77,7 @@
 	print '<a href="export_port_connections.php?deviceid=wo"><button type="button">' . __("Export Connections") . '</button></a>';
 ?>
 
-<a href="javascript:deleteCookie()"><button type="button"><?php print __("Clear"); ?></button></a>
+<button type="button" id="clear"><?php print __("Clear"); ?></button>
 </div></div>
 </div><!-- END div.main -->
 </div><!-- END div.page -->

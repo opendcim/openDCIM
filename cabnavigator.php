@@ -678,6 +678,10 @@ if ( $config->ParameterArray["WorkOrderBuilder"]=='enabled' ) {
 					workOrder.remove(devid);
 					span.addClass('ui-icon-circlesmall-plus').removeClass('ui-icon-circlesmall-minus');
 				}
+				// need to add an eval for the scrollbar position and reset it after the page load
+				// this hack solves the problem of the other side of the device not changing signs 
+				// at the same time and causes the workorder button to appear
+				location.href="";
 			}
 
 			// Add the click target to the page
