@@ -649,7 +649,12 @@ if( $config->ParameterArray["ToolTips"]=='enabled' ){
 if ( $config->ParameterArray["WorkOrderBuilder"]=='enabled' ) {
 ?>
 		var workOrder = $.fn.cookieList("workOrder");
-		
+
+		// This is a shitty hack and we should do something better
+		if(!$.cookie('workOrder')){
+			workOrder.add(0);
+		}
+
 		$('.cabinet td:has(a):not(:has(img)), #zerou div > a, .cabinet .picture a img, .cabinet	.picture a > div').each( function(){
 			var devid=$(this).data('deviceid');
 			var target=(this.nodeName=="IMG")?this.parentElement.parentElement:this;
