@@ -570,8 +570,9 @@ $user->GetUserRights();
  *
  */
 
-$menu=$rmenu=$rrmenu=$camenu=$wamenu=$samenu=array();
+$menu=$rmenu=$rrmenu=$camenu=$wamenu=$samenu=$womenu=array();
 
+$womenu[]='<a href="workorder.php"><span>'.__("Work Order").'</span></a>';
 $rmenu[]='<a href="reports.php"><span>'.__("Reports").'</span></a>';
 
 if ( $user->RackRequest ) {

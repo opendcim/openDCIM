@@ -14,16 +14,22 @@
 		exit;
 	}
 	
+	$devTmpl = new DeviceTemplate();
+	$cab = new Cabinet();
+	$mfg = new Manufacturer();
+	
 	$devList = array();
 	
 	if ( $_REQUEST["deviceid"] == "wo" ) {
 		// Special case, we are printing all connections for a work order, which has a cookie associated with it
 		$woList = json_decode( $_COOKIE["workOrder"] );
 		foreach ( $woList as $woDev ) {
-			$n = sizeof( $devList );
-			$devList[$n] = new Device();
-			$devList[$n]->DeviceID = $woDev;
-			$devList[$n]->GetDevice();
+			if ( $woDev > 0 ) {
+				$n = sizeof( $devList );
+				$devList[$n] = new Device();
+				$devList[$n]->DeviceID = $woDev;
+				$devList[$n]->GetDevice();
+			}
 		}
 	} else {
 		$devList[0] = new Device();
@@ -53,8 +59,54 @@
 	
 	$sheet->getActiveSheet()->setTitle(__("Connections"));
 	$row = 2;
+	$devNum = 1;
 	
 	foreach ( $devList as $dev ) {
+		// Create a worksheet for each device with details
+		$sheet->createSheet($devNum);
+		$sheet->setActiveSheetIndex($devNum);
+		
+		$cab->CabinetID = $dev->Cabinet;
+		$cab->GetCabinet();
+
+		$devTmpl->TemplateID = $dev->TemplateID;
+		$devTmpl->GetTemplateByID();
+		
+		$mfg->ManufacturerID = $devTmpl->ManufacturerID;
+		$mfg->GetManufacturerByID();
+		
+		$sheet->getActiveSheet()->SetCellValue('A1',__('Device Label'));
+		$sheet->getActiveSheet()->SetCellValue('B1', $dev->Label );
+		$sheet->getActiveSheet()->SetCellValue('A2',__('Manufacturer'));
+		$sheet->getActiveSheet()->SetCellValue('B2', $mfg->Name );
+		$sheet->getActiveSheet()->SetCellValue('A3',__('Model'));
+		$sheet->getActiveSheet()->SetCellValue('B3', $devTmpl->Model );
+		$sheet->getActiveSheet()->SetCellValue('A4',__('Serial Number'));
+		$sheet->getActiveSheet()->SetCellValue('B4', $dev->SerialNo );
+		$sheet->getActiveSheet()->SetCellValue('A5',__('Asset Tag'));
+		$sheet->getActiveSheet()->SetCellValue('B5', $dev->AssetTag );	
+		$sheet->getActiveSheet()->SetCellValue('A6',__('Target Cabinet'));
+		$sheet->getActiveSheet()->SetCellValue('B6', $cab->Location );		
+		$sheet->getActiveSheet()->SetCellValue('A7',__('Position'));
+		$sheet->getActiveSheet()->SetCellValue('B7', $dev->Position );
+
+		$sheet->getActiveSheet()->setTitle($dev->Label);
+		
+		// Insert a picture into the device specific worksheet
+		$img = new PHPExcel_Worksheet_Drawing();
+		$img->setWorksheet($sheet->setActiveSheetIndex($devNum));
+		$img->setName($dev->Label);
+		$img->setPath("pictures/".$devTmpl->FrontPictureFile);
+		$img->setCoordinates('B9');
+		$img->setOffsetX(1);
+		$img->setOffsetY(5);
+		
+		foreach( range('A','B') as $columnID) {
+			$sheet->getActiveSheet()->getColumnDimension($columnID)->setAutoSize(true);
+		}
+		
+		$sheet->setActiveSheetIndex(0);
+		
 		$port = new DevicePorts();
 		$port->DeviceID = $dev->DeviceID;
 		$portList = $port->getPorts();
@@ -146,6 +198,10 @@
 				}
 			}
 		}
+	}
+	
+	foreach( range('A','G') as $columnID) {
+		$sheet->getActiveSheet()->getColumnDimension($columnID)->setAutoSize(true);
 	}
 	
 	header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
