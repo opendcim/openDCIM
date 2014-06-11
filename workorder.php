@@ -47,10 +47,12 @@
 	$devList = array();
 	$woList = json_decode( $_COOKIE["workOrder"] );
 	foreach ( $woList as $woDev ) {
-		$n = sizeof( $devList );
-		$devList[$n] = new Device();
-		$devList[$n]->DeviceID = $woDev;
-		$devList[$n]->GetDevice();
+		if ( $woDev > 1 ) {
+			$n = sizeof( $devList );
+			$devList[$n] = new Device();
+			$devList[$n]->DeviceID = $woDev;
+			$devList[$n]->GetDevice();
+		}
 	}
 	
 	print "<div class=\"table\">\n";
