@@ -46,12 +46,11 @@
 
 	$devList = array();
 	$woList = json_decode( $_COOKIE["workOrder"] );
-	foreach ( $woList as $woDev ) {
-		if ( $woDev > 1 ) {
-			$n = sizeof( $devList );
-			$devList[$n] = new Device();
-			$devList[$n]->DeviceID = $woDev;
-			$devList[$n]->GetDevice();
+	foreach($woList as $woDev){
+		$dev=new Device();
+		$dev->DeviceID=$woDev;
+		if($dev->GetDevice()){
+			$devList[]=$dev;
 		}
 	}
 	

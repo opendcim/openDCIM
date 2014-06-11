@@ -84,11 +84,7 @@
 		return $level;
 	}
 	
-	if ( $config->ParameterArray["WorkOrderBuilder"] ) {
-		$menu=buildmenu(array_merge_recursive($womenu, $rmenu,$rrmenu,$camenu,$wamenu,$samenu));
-	} else {
-		$menu=buildmenu(array_merge_recursive($rmenu,$rrmenu,$camenu,$wamenu,$samenu));
-	}
+	$menu=buildmenu(array_merge_recursive($rmenu,$rrmenu,$camenu,$wamenu,$samenu));
 	
 	print "<ul class=\"nav\">$menu</ul>
 	<hr>

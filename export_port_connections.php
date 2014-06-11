@@ -23,12 +23,11 @@
 	if ( $_REQUEST["deviceid"] == "wo" ) {
 		// Special case, we are printing all connections for a work order, which has a cookie associated with it
 		$woList = json_decode( $_COOKIE["workOrder"] );
-		foreach ( $woList as $woDev ) {
-			if ( $woDev > 0 ) {
-				$n = sizeof( $devList );
-				$devList[$n] = new Device();
-				$devList[$n]->DeviceID = $woDev;
-				$devList[$n]->GetDevice();
+		foreach($woList as $woDev){
+			$dev=new Device();
+			$dev->DeviceID=$woDev;
+			if($dev->GetDevice()){
+				$devList[]=$dev;
 			}
 		}
 	} else {

@@ -570,10 +570,15 @@ $user->GetUserRights();
  *
  */
 
-$menu=$rmenu=$rrmenu=$camenu=$wamenu=$samenu=$womenu=array();
+$menu=$rmenu=$rrmenu=$camenu=$wamenu=$samenu=array();
 
-$womenu[]='<a href="workorder.php"><span>'.__("Work Order").'</span></a>';
 $rmenu[]='<a href="reports.php"><span>'.__("Reports").'</span></a>';
+
+if($config->ParameterArray["WorkOrderBuilder"]){
+	if(isset($_COOKIE['workOrder']) && $_COOKIE['workOrder']!='[0]'){
+		array_unshift($rmenu , '<a href="workorder.php"><span>'.__("Work Order").'</span></a>');
+	}
+}
 
 if ( $user->RackRequest ) {
 	$rrmenu[]='<a href="rackrequest.php"><span>'.__("Rack Request Form").'</span></a>';
