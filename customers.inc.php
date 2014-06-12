@@ -148,7 +148,7 @@ class Contact {
 
 		$oldcontact=new Contact();
 		$oldcontact->ContactID=$this->ContactID;
-		$oldcontact->GetContactiById();
+		$oldcontact->GetContactById();
 
 		$sql="UPDATE fac_Contact SET UserID=\"$this->UserID\", 
 			LastName=\"$this->LastName\", FirstName=\"$this->FirstName\", 
