@@ -662,7 +662,7 @@ if ( $config->ParameterArray["WorkOrderBuilder"]=='enabled' ) {
 
 			// Make a point for us to click to add to this nonsense
 			var span=$('<span>').attr('style',style).addClass('ui-icon');
-			span.addClass(($.parseJSON($.cookie('workOrder')).indexOf(devid)==-1)?'ui-icon-circlesmall-plus':'ui-icon-circlesmall-minus');
+			span.addClass(($.parseJSON($.cookie('workOrder')).indexOf(devid)==-1)?'ui-icon-circle-plus':'ui-icon-circle-check');
 
 			// Bind the click action
 			span.on('click', function(){
@@ -675,10 +675,10 @@ if ( $config->ParameterArray["WorkOrderBuilder"]=='enabled' ) {
 			function flippyfloppy(){
 				if($.parseJSON($.cookie('workOrder')).indexOf(devid)==-1){
 					workOrder.add(devid);
-					span.removeClass('ui-icon-circlesmall-plus').addClass('ui-icon-circlesmall-minus');
+					span.removeClass('ui-icon-circle-plus').addClass('ui-icon-circle-plus');
 				}else{
 					workOrder.remove(devid);
-					span.addClass('ui-icon-circlesmall-plus').removeClass('ui-icon-circlesmall-minus');
+					span.addClass('ui-icon-circle-plus').removeClass('ui-icon-circle-check');
 				}
 			}
 
