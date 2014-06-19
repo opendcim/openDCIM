@@ -27,7 +27,7 @@
 	$(document).ready(function(){
 		$('#clear').click(function(){
 			$.removeCookie('workOrder');
-			location.href="index.php)";
+			location.href="index.php";
 		});
 	});
 </script>
@@ -69,7 +69,7 @@
 		$devTmpl->TemplateID = $dev->TemplateID;
 		$devTmpl->GetTemplateByID();
 		
-		printf( "<div><div>%s</div><div>%s</div><div>%s</div><div><img src=\"pictures/%s\" width=\"300\"></div></div>\n", $cab->Location, $dev->Height==1 ? $dev->Position : $dev->Position."-".($dev->Position+$dev->Height-1), $dev->Label, $devTmpl->FrontPictureFile ? $devTmpl->FrontPictureFile :  "P_ERROR.png");
+		printf( "<div><div>%s</div><div>%s</div><div>%s</div>%s</div>\n", $cab->Location, $dev->Height==1 ? $dev->Position : $dev->Position."-".($dev->Position+$dev->Height-1), $dev->Label, $dev->GetDevicePicture(220) );
 	}
 	
 	print "</div>\n";
