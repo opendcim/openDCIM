@@ -7,3 +7,8 @@ ALTER TABLE fac_PowerConnection CHANGE PDUPosition PDUPosition VARCHAR(11) CHARA
 -- Add Config item for the Work Order Builder
 --
 INSERT INTO fac_Config set Parameter='WorkOrderBuilder', Value='disabled', UnitOfMeasure='Enabled/Disabled', ValType='string', DefaultVal='disabled';
+
+--
+-- Add mUnits for the temperature sensors
+--
+ALTER TABLE fac_SensorTemplate ADD COLUMN mUnits ENUM( 'english', 'metric' ) NOT NULL DEFAULT 'english';

@@ -606,6 +606,12 @@ class Cabinet {
 			
 			$temp = preg_replace( "/[^0-9.,+]/", "", $temp );
 			$humid = preg_replace( "/[^0-9.'+]/", "", $humid );
+			
+			if (($row["mUnits"] == "english") && ($config->ParameterArray["mUnits"] == "metric")) {
+				$temp = (($temp-32)*5/9);
+			} elseif (($row["mUnits"] == "metric") && ($config->ParameterArray["mUnits"] == "english")) {
+				$temp = (($temp*9/5)+32);
+			}
 
 			if ( $row["TempMultiplier"] != 0 ) {
 				$temp *= $row["TempMultiplier"];
@@ -714,6 +720,7 @@ class SensorTemplate {
 			$tempList[$n]->HumidityOID = $row["HumidityOID"];
 			$tempList[$n]->TempMultiplier = $row["TempMultiplier"];
 			$tempList[$n]->HumidityMultiplier = $row["HumidityMultiplier"];
+			$tempList[$n]->mUnits = $row["mUnits"];
 		}
 		
 		if ( $templateID != null ) {
@@ -726,7 +733,7 @@ class SensorTemplate {
 	function CreateTemplate() {
 		global $dbh;
 		
-		$sql = $dbh->prepare( "insert into fac_SensorTemplate values ( 0, :ManufacturerID, :Name, :SNMPVersion, :TemperatureOID, :HumidityOID, :TempMultiplier, :HumidityMultiplier )" );
+		$sql = $dbh->prepare( "insert into fac_SensorTemplate values ( 0, :ManufacturerID, :Name, :SNMPVersion, :TemperatureOID, :HumidityOID, :TempMultiplier, :HumidityMultiplier, :mUnits )" );
 		
 		$args = array( 	"ManufacturerID" => $this->ManufacturerID,
 						"Name" => $this->Name,
@@ -734,7 +741,8 @@ class SensorTemplate {
 						"TemperatureOID" => $this->TemperatureOID,
 						"HumidityOID" => $this->HumidityOID,
 						"TempMultiplier" => $this->TempMultiplier,
-						"HumidityMultiplier" => $this->HumidityMultiplier );
+						"HumidityMultiplier" => $this->HumidityMultiplier,
+						"mUnits" => $this->mUnits );
 		
 		$sql->execute( $args );
 		
@@ -747,7 +755,7 @@ class SensorTemplate {
 		
 		$old=SensorTemplate::getTemplate($this->TemplateID);
 
-		$sql = $dbh->prepare( "update fac_SensorTemplate set ManufacturerID=:ManufacturerID, Name=:Name, SNMPVersion=:SNMPVersion, TemperatureOID=:TemperatureOID, HumidityOID=:HumidityOID, TempMultiplier=:TempMultiplier, HumidityMultiplier=:HumidityMultiplier where TemplateID=:TemplateID" );
+		$sql = $dbh->prepare( "update fac_SensorTemplate set ManufacturerID=:ManufacturerID, Name=:Name, SNMPVersion=:SNMPVersion, TemperatureOID=:TemperatureOID, HumidityOID=:HumidityOID, TempMultiplier=:TempMultiplier, HumidityMultiplier=:HumidityMultiplier, mUnits=:mUnits where TemplateID=:TemplateID" );
 		
 		$args = array( 	"ManufacturerID" => $this->ManufacturerID,
 						"Name" => $this->Name,
@@ -756,6 +764,7 @@ class SensorTemplate {
 						"HumidityOID" => $this->HumidityOID,
 						"TempMultiplier" => $this->TempMultiplier,
 						"HumidityMultiplier" => $this->HumidityMultiplier,
+						"mUnits" => $this->mUnits,
 						"TemplateID" => $this->TemplateID );
 		
 		$sql->execute( $args );

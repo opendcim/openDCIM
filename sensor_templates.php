@@ -24,6 +24,7 @@
 		$template->HumidityOID = $_REQUEST['humidityoid'];
 		$template->TempMultiplier = $_REQUEST['tempmultiplier'];
 		$template->HumidityMultiplier = $_REQUEST['humiditymultiplier'];
+		$template->mUnits = $_REQUEST['munits'];
 
 		if ( $_REQUEST['action']=='Create' ) {
 			$template->CreateTemplate();
@@ -144,6 +145,19 @@ echo '   </select>
 	foreach ( array( "0.01", "0.1", "1", "10", "100" ) as $unit ) {
 		$selected = ($unit==$template->HumidityMultiplier)?' selected' : '';
 		print "\t\t<option value=\"$unit\"$selected>$unit</option>\n";
+	}
+
+echo '   </select>
+   </div>
+</div>
+<div>
+	<div><label for="munits">',__("Temperature Units"),'</label></div>
+	<div><select name="munits" id="munits">';
+
+	$unitofmeasurev = array( "english", "metric" );
+	foreach ( $unitofmeasurev as $unit ) {
+		$selected = ( $unit == $template->UnitOfMeasure ) ? 'selected':'';
+		print "\t\t<option value=\"$unit\" $selected>$unit</option>\n";
 	}
 	
 echo '   </select>
