@@ -202,7 +202,7 @@ echo '<div class="main">
   </div>
   <div>
         <div>',__("Average Temperature"),'</div>
-        <div>',sprintf("%7d %s", $dcStats["AvgTemp"], __("°C")),'</div>
+        <div>',sprintf("%7d %s", $dcStats["AvgTemp"], __("°")),'</div>
   </div>
   <div>
         <div>',__("Average Humidity"), '</div>

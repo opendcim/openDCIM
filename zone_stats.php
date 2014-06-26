@@ -210,7 +210,7 @@ echo '<div class="main">
   </div>
   <div>
         <div>',__("Average Temperature"),'</div>
-        <div>',sprintf("%7d %s", $zoneStats["AvgTemp"], __("°C")),'</div>
+        <div>',sprintf("%7d %s", $zoneStats["AvgTemp"], __("°")),'</div>
   </div>
   <div>
         <div>',__("Average Humidity"), '</div>
