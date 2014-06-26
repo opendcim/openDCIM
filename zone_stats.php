@@ -208,6 +208,14 @@ echo '<div class="main">
         <div>',__("Minimum Cooling Tonnage (Based on Computed Watts)"),'</div>
         <div>',sprintf("%7d ".__("Tons"),$zoneStats["ComputedWatts"]*3.412*1.15/12000),'</div>
   </div>
+  <div>
+        <div>',__("Average Temperature"),'</div>
+        <div>',sprintf("%7d %s", $zoneStats["AvgTemp"], __("°C")),'</div>
+  </div>
+  <div>
+        <div>',__("Average Humidity"), '</div>
+        <div>',sprintf("%7d %s", $zoneStats["AvgHumidity"], __("%")),'</div>
+  </div>
 </div> <!-- END div.table -->
 </div> <!-- END div.centermargin -->
 <br>
