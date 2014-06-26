@@ -646,7 +646,7 @@ if( $config->ParameterArray["ToolTips"]=='enabled' ){
 <?php
 }
 
-if ( $config->ParameterArray["WorkOrderBuilder"]=='enabled' ) {
+if ( isset($config->ParameterArray["WorkOrderBuilder"]) and $config->ParameterArray['WorkOrderBuilder']=='enabled' ) {
 ?>
 		var workOrder = $.fn.cookieList("workOrder");
 
