@@ -654,7 +654,7 @@ div.cabinet {
 .device .path div { border: 0px none; }
 .device .path > div > div { position: relative; height: 1em; }
 .device .path > div > div > div { position: absolute; top: 0.15em; min-width: 550px; padding-left: 25px; white-space: nowrap; font-weight: 100; font-size: 0.85em;}
-.device .path span:after{ content: " -> ";}
+.device .path span:after{ content: "\2192";}
 .device .path span:last-child:after{ content: "";}
 
 #pandn.table span.custom-combobox { width: 100%;}
