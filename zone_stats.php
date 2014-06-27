@@ -114,9 +114,11 @@ $(document).ready(function() {
 		
 	if ( $config->ParameterArray["mUnits"] == "english" ) {
 		$vol = __("Square Feet");
+		$tempUnits = "F";
 		$density = __("Watts per Square Foot");
 	} else {
 		$vol = __("Square Meters");
+		$tempUnits = "C";
 		$density = __("Watts per Square Meter" );
 	}
 	//aproximate proportion between zone/DC 
@@ -210,7 +212,7 @@ echo '<div class="main">
   </div>
   <div>
         <div>',__("Average Temperature"),'</div>
-        <div>',sprintf("%7d %s", $zoneStats["AvgTemp"], __("°")),'</div>
+        <div>',sprintf("%7d %s", $zoneStats["AvgTemp"], __("°". $tempUnits)),'</div>
   </div>
   <div>
         <div>',__("Average Humidity"), '</div>
