@@ -882,7 +882,6 @@ fieldset[name=pdu] > div > img { vertical-align: text-bottom; }
 .installer a.active span:first-child, .nav a.active span:first-child {background-position: -144px 0;}
 .installer div.table > div > div + div {width: 300px;}
 .installer .rights > div:nth-last-child(2) div {padding-top: 0;padding-bottom: 2em;text-align: left;}
-.installer .center input {width: 97%;}
 .installer #configtabs div.table > div > div + div {width: auto;}
 .installer .center #configtabs ~ div input {width: auto;}
 div.page.installer {min-width: 1100px;}
