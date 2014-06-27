@@ -526,7 +526,12 @@
 							break;
 						case 'Delete':
 							$dev->DeleteDevice();
-							header('Location: '.redirect("cabnavigator.php?cabinetid=$dev->Cabinet"));
+							//the $dev object should still exist even though we've deleted the db entry now
+							if($dev->ParentDevice >0){
+								header('Location: '.redirect("devices.php?deviceid=$dev->ParentDevice"));
+							}else{
+								header('Location: '.redirect("cabnavigator.php?cabinetid=$dev->Cabinet"));
+							}
 							exit;
 							break; // the exit should handle it
 						case 'Copy':
