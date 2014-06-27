@@ -237,7 +237,7 @@ class LogActions {
 		if(!$stmt->execute()){
 			$info=$dbh->errorInfo();
 
-			error_log("PDO Error::LogActions:WriteToDB {$info[2]} SQL=$sql");
+			error_log("PDO Error::LogActions:WriteToDB {$info[2]}");
 			return false;
 		}
 		return true;
