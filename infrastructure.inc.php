@@ -615,7 +615,17 @@ class DataCenter {
 			a.TemplateID=c.TemplateID AND a.NominalWatts=0 AND 
 			b.DataCenterID=$this->DataCenterID;";
 		$dcStats["ComputedWatts"]+=($test=$this->query($sql)->fetchColumn())?$test:0;
-		
+
+		$sql="SELECT AVG(a.Temp) as AvgTemp FROM fac_CabinetTemps a, fac_Cabinet b
+			WHERE a.CabinetID=b.CabinetID AND
+			b.DataCenterID=$this->DataCenterID;";
+		$dcStats["AvgTemp"]=($test=round($this->query($sql)->fetchColumn()))?$test:0;
+
+		$sql="SELECT AVG(a.Humidity) as AvgHumidity FROM fac_CabinetTemps a, fac_Cabinet b
+			WHERE a.CabinetID=b.CabinetID AND
+			b.DataCenterID=$this->DataCenterID;";
+		$dcStats["AvgHumidity"]=($test=round($this->query($sql)->fetchColumn()))?$test:0;
+
 		$pdu=new PowerDistribution();
 		$dcStats["MeasuredWatts"]=$pdu->GetWattageByDC($this->DataCenterID);
 		
@@ -1720,6 +1730,14 @@ class Zone {
 			(SELECT CabinetID FROM fac_Cabinet WHERE ZoneID=$this->ZoneID))";
 		$zoneStats["MeasuredWatts"]=($test=$this->query($sql)->fetchColumn())?$test:0;
 		
+		$sql="SELECT AVG(a.Temp) AS AvgTemp FROM fac_CabinetTemps a, fac_Cabinet b WHERE
+			a.CabinetID=b.CabinetID AND b.ZoneID=$this->ZoneID;";
+		$zoneStats["AvgTemp"]=($test=round($this->query($sql)->fetchColumn()))?$test:0;
+
+		$sql="SELECT AVG(a.Humidity) AS AvgHumitdity FROM fac_CabinetTemps a, fac_Cabinet b WHERE
+			a.CabinetID=b.CabinetID AND b.ZoneID=$this->ZoneID;";
+		$zoneStats["AvgHumidity"]=($test=round($this->query($sql)->fetchColumn()))?$test:0;
+
 		return $zoneStats;
 	}
 }

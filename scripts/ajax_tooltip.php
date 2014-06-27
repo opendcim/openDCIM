@@ -28,8 +28,10 @@ $dep=new Department();
 
 if($config->ParameterArray["mUnits"]=="english"){
 	$weightunit="lbs";
+	$tempunit="F";
 }else{
 	$weightunit="Kg";
+	$tempunit="C";
 }
 
 // If the object id isn't set then don't bother with anything else.
@@ -116,7 +118,7 @@ if($object>0){
 			$labelsp=locale_number($used,0)." / $cab->CabinetHeight U";
 			$labelwe=locale_number($totalWeight,0)." / $cab->MaxWeight $weightunit";
 			$labelpo=locale_number($totalWatts/1000,2)." / $cab->MaxKW kW";
-			$labelte=(($curTemp>0)?locale_number($curTemp,0)."&deg; ($lastRead)":__("no data"));
+			$labelte=(($curTemp>0)?locale_number($curTemp,0)."&deg;$tempunit ($lastRead)":__("no data"));
 			$labelhu=(($curHum>0)?locale_number($curHum,0)." % ($lastRead)":__("no data"));
 			$labelrp=(($RPlastRead!='0')?locale_number($curRealPower/1000,2)." / $cab->MaxKW kW ($RPlastRead)":__("no data"));
 			
