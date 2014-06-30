@@ -142,6 +142,15 @@
             "whitesmoke", "yellow", "yellow1", "yellow2", "yellow3", "yellow4",
             "yellowgreen"
         );
+        $safeDeviceColors = array(
+            "cadetblue2", "deepskyblue4", "palegreen", "forestgreen",
+            "lightpink", "red", "navajowhite", "darkorange", "plum", "purple",
+            "khaki", "sienna", "black"
+        );
+        $deviceTypes = array(
+                'Server','Appliance','Storage Array','Switch','Chassis',
+                'Patch Panel','Physical Infrastructure'
+        );
         # handle the request variables and build the device lists.
         if(isset($_REQUEST['containerid'])){
             $containerid=isset($_POST['containerid'])?$_POST['containerid']:$_GET['containerid'];
@@ -284,15 +293,27 @@ overlap = scale;
             $tkeypair = array($port->DeviceID, $port->ConnectedDeviceID);
             # add the device to the dotfile, if it wasn't sent already
             if(!isset($nodessent[$tkeypair[0]])) {
+                $dt = $devList[$tkeypair[0]]->DeviceType;
+                if(in_array($dt, $deviceTypes)){
+                        $color = $safeDeviceColors[array_search($dt, $deviceTypes)];
+                }else{
+                        $color = $safeDeviceColors[array_rand($safeDeviceColors)];
+                }
                 $graphstr .= "\t".$tkeypair[0]." [shape=box,URL=\"".$baseURI
                         .'/devices.php?deviceid='.$tkeypair[0]."\",label=\""
-                        .$devList[$tkeypair[0]]->Label."\"];\n";
+                        .$devList[$tkeypair[0]]->Label."\",color=".$color."];\n";
                 $nodessent[$tkeypair[0]] = true;
             }
             if(!isset($nodessent[$tkeypair[1]])) {
+                $dt = $devList[$tkeypair[1]]->DeviceType;
+                if(in_array($dt, $deviceTypes)){
+                        $color = $safeDeviceColors[array_search($dt, $deviceTypes)];
+                }else{
+                        $color = $safeDeviceColors[array_rand($safeDeviceColors)];
+                }
                 $graphstr .= "\t".$tkeypair[1]." [shape=box,URL=\"".$baseURI
                         .'/devices.php?deviceid='.$tkeypair[1]."\",label=\""
-                        .$devList[$tkeypair[1]]->Label."\"];\n";
+                        .$devList[$tkeypair[1]]->Label."\",color=".$color."];\n";
                 $nodessent[$tkeypair[1]] = true;
             }
             sort($tkeypair);
@@ -432,10 +453,10 @@ overlap = scale;
                     }
                 } elseif($containmentType == 4){
                     # filter by cabinet
-                    $tstr = "cabinet";
+                    $tstr = "cab";
                     $cList = new Cabinet();    
                     $cList = $cList->ListCabinets();
-                    $body .= "<select name=cabinetid id=cabinetid>";
+                    $body .= "<select name=cabid id=cabid>";
                     foreach($cList as $cabinet){
                         $body .= "<option value=".$cabinet->CabinetID.">".$cabinet->Location."</option>";
                     }
