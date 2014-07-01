@@ -343,8 +343,11 @@ overlap = scale;
             }
             # grab the current devices label for the port, allows cleaner labeling of connections
             $devportmapping[$tkey][$pkey][$port->DeviceID] = $port->Label;
-            # set the cable color. tries to use the color from the db, if we can identify it.
+            # 0: tries to use the color from the db, if we can identify it.
             # otherwise uses a random color from the list above.
+            # 1: randomizes the colors by colorid
+            # 2: randomizes the colors by mediaid
+            # 3: randomizes the colors by both 1 and 2. 
             if(($colorType == 0)||($colorType == 1)){
                 $portColorKey = $port->ColorID;
             }elseif($colorType == 2){
@@ -373,37 +376,80 @@ overlap = scale;
         foreach ($devportmapping as $tkey => $value){
             $tkeypair = explode(":", $tkey, 2);
             foreach($value as $pkey => $devid) {
-                    $pkeys = explode(":", $pkey);
-                    # choose the style of connection. just went with a modulus to keep things simple.
+                $pkeys = explode(":", $pkey);
+                # choose the style of connection. just went with a modulus to keep things simple.
+                # Only modify the style if the colors can't distinguish media id.
+                if(($colorType == 1 )||($colorType == 2)) {
                     $styleList = array('bold', 'dashed', 'solid');
                     $style = ",style=".$styleList[$devid['mediaid']%3];
-                    # if we can't find a label for either side, the side without is considered outside
-                    # the filter specified within your view.
-                    if(!isset($devid[$tkeypair[0]])) {
-                        $devid[$tkeypair[0]] = "outside filter";
-                        $style = ",style=dotted";
-                    }
-                    if(!isset($devid[$tkeypair[1]])) {
-                        $devid[$tkeypair[1]] = "outside filter";
-                        $style = ",style=dotted";
-                    }
-                    # add the connection to the dotfile.
-                    $graphstr .= "\t".$tkeypair[0]." -- ".$tkeypair[1]
-                            ." [color=".$devid['color'].$style;
-                    # label the connections if so desired.
-                    if (isset($_REQUEST["edgelabels"])) {
-                            $graphstr .= ",label=\"".$devid[$tkeypair[0]]."--"
-                            .$devid[$tkeypair[1]]."\"";
-                    }
-                    $graphstr .= "];\n";
+                } else {
+                    $style = "";
+                }
+                # if we can't find a label for either side, the side without is considered outside
+                # the filter specified within your view.
+                if(!isset($devid[$tkeypair[0]])) {
+                    $devid[$tkeypair[0]] = "outside filter";
+                    $style = ",style=dotted";
+                }
+                if(!isset($devid[$tkeypair[1]])) {
+                    $devid[$tkeypair[1]] = "outside filter";
+                    $style = ",style=dotted";
+                }
+                # add the connection to the dotfile.
+                $graphstr .= "\t".$tkeypair[0]." -- ".$tkeypair[1]
+                        ." [color=".$devid['color'].$style;
+                # label the connections if so desired.
+                if (isset($_REQUEST["edgelabels"])) {
+                    $graphstr .= ",label=\"".$devid[$tkeypair[0]]."--"
+                    .$devid[$tkeypair[1]]."\"";
+                }
+                $graphstr .= "];\n";
             }
         }
-        $graphstr .= "}";
+
+        # Lets add a legend. prefixing with cluster puts a box around it.
+        $graphstr .= "\tsubgraph cluster_legend {\n"
+                    ."\t\tlabel = Legend\n\n";
+        # put all the device types into the legend.
+        foreach($deviceTypes as $dt){
+            $color = $safeDeviceColors[array_search($dt, $deviceTypes)];
+            $graphstr .= "\t\t\"".md5($dt)."\" [shape=box,color=".$color.",label=\"".$dt."\"];\n";
+        }
+        # add a couple invisible nodes for cabling
+        $graphstr .="\t\tinvis1 [shape=box,style=invis];\n";
+        $graphstr .="\t\tinvis2 [shape=box,style=invis];\n";
+        # colorize the cables in the legend
+        foreach($myCableColorList as $colorKey => $color) {
+            if(($colorType == 0) || ($colorType == 1)){
+                $cc = new ColorCoding();
+                $cc->ColorID = $colorKey;
+                $cc->GetCode();
+                $label = $cc->Name!=""?$cc->Name:"Unset";
+            } elseif ($colorType == 2){
+                $mt = new MediaTypes();
+                $mt->MediaID = $colorKey;
+                $mt->GetType();
+                $label = $mt->MediaType!=""?$mt->MediaType:"Unset";
+            } else {
+                $keys = explode(':', $colorKey);
+                $cc = new ColorCoding();
+                $cc->ColorID = $keys[0];
+                $cc->GetCode();
+                $mt = new MediaTypes();
+                $mt->MediaID = $keys[1];
+                $mt->GetType();
+                $colorname = $cc->Name!=""?$cc->Name:"Unset";
+                $mediatype = $mt->MediaType!=""?$mt->MediaType:"Unset";
+                $label = $mediatype."--".$colorname;
+            }
+            $graphstr .= "\t\tinvis1 -- invis2 [color=".$color.",label=\"".$label."\"];\n";
+        }
+        $graphstr .= "\t}\n}";
 
         # safe format types. newer versions of graphviz also support pdf. maybe
         # we should add it when the ability is more prevalent.
         $formatTypes = array(
-                'svg', 'png', 'jpg', 'gif', 'dot'
+            'svg', 'png', 'jpg', 'gif', 'dot'
         );
         if(!isset($formatTypes[$_REQUEST['format']])) {
             exit;
@@ -494,7 +540,7 @@ overlap = scale;
                         ."<option value=0>Try to use colors from the database</option>"
                         ."<option value=1>Randomize colors, per color</option>"
                         ."<option value=2>Randomize colors, per mediatype</option>"
-                        ."<option value=3>Randomize colors, per color and mediatype</option>"
+                        ."<option value=3 selected>Randomize colors, per color and mediatype</option>"
                         ."</select>"
                         ."<input type=\"checkbox\" name=edgelabels checked value=true>Label Cables"
                         ."<select name=format id=format onchange='this.form.submit()'>"
