@@ -6,6 +6,14 @@
         # find the directory that dcim is being hosted out of (used when we build
         # the url for each node
         $baseURI = dirname($_SERVER['REQUEST_URI']);
+        # way to randomize the colors/styles
+        # 0 == randomize colors if color can't be identified from db
+        # 1 == Randomize colors, keeping same color for each colorid
+        # 2 == Randomize colors, keeping same color for each mediaid
+        # 3 == Randomize colors, keeping same color for each mediaid/colorid pair
+        $colorType = isset($_REQUEST['colortype'])?$_REQUEST['colortype']:0;
+        # mediaid to filter on. 0 for all.
+        $mediaID = isset($_REQUEST['mediaid'])?$_REQUEST['mediaid']:-1;
         $graphname = "Network Map for ";
         $graphstr = "";
         $devList=array();
@@ -263,15 +271,17 @@ overlap = scale;
         foreach($devList as $devid => $dev) {
             $ports=DevicePorts::getPortList($dev->DeviceID);
             foreach($ports as $port) {
-                if(isset($port->ConnectedDeviceID)) {
-                    $portList[]=$port;
-                    # if the connected device isn't in out list of devices, add it so we 
-                    # at least get nice names for the devices outside the selected scope
-                    if(!isset($devList[$port->ConnectedDeviceID])) {
-                        $tdev = new Device();
-                        $tdev->DeviceID = $port->ConnectedDeviceID;
-                        $tdev->GetDevice();
-                        $devList[$port->ConnectedDeviceID] = $tdev;
+                if(($mediaID == -1) || ($port->MediaID == $mediaID)) {
+                    if(isset($port->ConnectedDeviceID)) {
+                        $portList[]=$port;
+                        # if the connected device isn't in out list of devices, add it so we 
+                        # at least get nice names for the devices outside the selected scope
+                        if(!isset($devList[$port->ConnectedDeviceID])) {
+                            $tdev = new Device();
+                            $tdev->DeviceID = $port->ConnectedDeviceID;
+                            $tdev->GetDevice();
+                            $devList[$port->ConnectedDeviceID] = $tdev;
+                        }
                     }
                 }
             }
@@ -335,18 +345,25 @@ overlap = scale;
             $devportmapping[$tkey][$pkey][$port->DeviceID] = $port->Label;
             # set the cable color. tries to use the color from the db, if we can identify it.
             # otherwise uses a random color from the list above.
-            if(!isset($myCableColorList[$port->ColorID])) {
+            if(($colorType == 0)||($colorType == 1)){
+                $portColorKey = $port->ColorID;
+            }elseif($colorType == 2){
+                $portColorKey = $port->MediaID;
+            }else{
+                $portColorKey = $port->ColorID.":".$port->MediaID;
+            }
+            if(!isset($myCableColorList[$portColorKey])) {
                 $cc = new ColorCoding();
                 $cc->ColorID = $port->ColorID;
                 $cc->GetCode();
                 $color = strtolower($cc->Name);
-                if(!in_array($color, $colorList)) {
+                if((!in_array($color, $colorList))||($colorType != 0)) {
                     $color = $colorList[array_rand($colorList)];
                 }
             } else {
-                $color = $myCableColorList[$port->ColorID];
+                $color = $myCableColorList[$portColorKey];
             }
-            $myCableColorList[$port->ColorID] = $color;
+            $myCableColorList[$portColorKey] = $color;
             $devportmapping[$tkey][$pkey]['color'] = $color;
             # store the media id. we only have 3 "styles" of cables we can use
             # we'll use this later to decide the style we should use. most useful
@@ -360,21 +377,25 @@ overlap = scale;
                     # choose the style of connection. just went with a modulus to keep things simple.
                     $styleList = array('bold', 'dashed', 'solid');
                     $style = ",style=".$styleList[$devid['mediaid']%3];
-                    # if we can't find a label for either side, the side without is considered outside scope
-                    # or outside the filter specified within your view.
+                    # if we can't find a label for either side, the side without is considered outside
+                    # the filter specified within your view.
                     if(!isset($devid[$tkeypair[0]])) {
-                        $devid[$tkeypair[0]] = "outside scope";
+                        $devid[$tkeypair[0]] = "outside filter";
                         $style = ",style=dotted";
                     }
                     if(!isset($devid[$tkeypair[1]])) {
-                        $devid[$tkeypair[1]] = "outside scope";
+                        $devid[$tkeypair[1]] = "outside filter";
                         $style = ",style=dotted";
                     }
                     # add the connection to the dotfile.
                     $graphstr .= "\t".$tkeypair[0]." -- ".$tkeypair[1]
-                            ." [label=\"".$devid[$tkeypair[0]]."--"
-                            .$devid[$tkeypair[1]]."\",color=".$devid['color']
-                            .$style."];\n";
+                            ." [color=".$devid['color'].$style;
+                    # label the connections if so desired.
+                    if (isset($_REQUEST["edgelabels"])) {
+                            $graphstr .= ",label=\"".$devid[$tkeypair[0]]."--"
+                            .$devid[$tkeypair[1]]."\"";
+                    }
+                    $graphstr .= "];\n";
             }
         }
         $graphstr .= "}";
@@ -382,27 +403,27 @@ overlap = scale;
         # safe format types. newer versions of graphviz also support pdf. maybe
         # we should add it when the ability is more prevalent.
         $formatTypes = array(
-                'gif', 'jpg', 'png', 'svg', 'dot'
+                'svg', 'png', 'jpg', 'gif', 'dot'
         );
-        if(!in_array($_REQUEST['format'], $formatTypes)) {
+        if(!isset($formatTypes[$_REQUEST['format']])) {
             exit;
         }
-
+        $ft = $formatTypes[$_REQUEST['format']];
         $dotfile = tempnam('/tmp/', 'graph_');
         file_put_contents($dotfile, $graphstr);
-        if($_REQUEST['format'] == 'svg') {
+        if($ft == 'svg') {
             header("Content-Type: image/svg+xml");
             passthru("dot -Tsvg -o/dev/stdout ".$dotfile, $retval);
-        } elseif($_REQUEST['format'] == 'png') {
+        } elseif($ft == 'png') {
             header("Content-Type: image/png");
             passthru("dot -Tpng -o/dev/stdout ".$dotfile, $retval);
-        } elseif($_REQUEST['format'] == 'jpg') {
+        } elseif($ft == 'jpg') {
             header("Content-Type: image/jpeg");
             passthru("dot -Tjpg -o/dev/stdout ".$dotfile, $retval);
-        } elseif($_REQUEST['format'] == 'gif') {
+        } elseif($ft == 'gif') {
             header("Content-Type: image/gif");
             passthru("dot -Tgif -o/dev/stdout ".$dotfile, $retval);
-        } elseif($_REQUEST['format'] == 'dot') {
+        } elseif($ft == 'dot') {
             header("Content-Type: text/plain");
             echo $graphstr;
         }
@@ -462,13 +483,27 @@ overlap = scale;
                     }
                 }
                 $body .= "</select>"
+                        ."<select name=mediaid id=mediaid>"
+                        ."<option value=-1>All Media Types</option>"
+                        ."<option value=0>Unknown Media Types</option>";
+                foreach(MediaTypes::GetMediaTypeList() as $mt) {
+                        $body .= "<option value=".$mt->MediaID.">".$mt->MediaType."</option>";
+                }
+                $body .= "</select>"
+                        ."<select name=colortype id=colortype>"
+                        ."<option value=0>Try to use colors from the database</option>"
+                        ."<option value=1>Randomize colors, per color</option>"
+                        ."<option value=2>Randomize colors, per mediatype</option>"
+                        ."<option value=3>Randomize colors, per color and mediatype</option>"
+                        ."</select>"
+                        ."<input type=\"checkbox\" name=edgelabels checked value=true>Label Cables"
                         ."<select name=format id=format onchange='this.form.submit()'>"
                         ."<option value=''>Select format</option>"
-                        ."<option value='svg'>SVG</option>"
-                        ."<option value='png'>PNG</option>"
-                        ."<option value='jpg'>JPG</option>"
-                        ."<option value='gif'>GIF</option>"
-                        ."<option value='dot'>DOT</option>"
+                        ."<option value=0>SVG</option>"
+                        ."<option value=1>PNG</option>"
+                        ."<option value=2>JPG</option>"
+                        ."<option value=3>GIF</option>"
+                        ."<option value=4>DOT</option>"
                         ."</select>"
                         ."</form>";
             }
