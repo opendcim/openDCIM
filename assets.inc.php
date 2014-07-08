@@ -2440,7 +2440,8 @@ class Device {
 
 			$label="";
 			$resp.="\t\t<div class='$rotar' style='left: ".round($left/$parentDetails->targetWidth*100,2)."%; top: ".round($top/$parentDetails->targetHeight*100,2)."%; width: ".round($width/$parentDetails->targetWidth*100,2)."%; height:".round($height/$parentDetails->targetHeight*100,2)."%;'>\n$clickable";
-			if(($templ->FrontPictureFile!="" && !$rear) || ($templ->RearPictureFile!="" && $rear)){
+//			if(($templ->FrontPictureFile!="" && !$rear) || ($templ->RearPictureFile!="" && $rear)){
+			if($picturefile!='pictures/'){
 				// IMAGE
 				// this rotate should only happen for a horizontal slot with a vertical image
 				$rotateimage=($hor_slot && !$hor_blade)?" class=\"rotar_d rlt\"  style=\"height: ".round($width/$height*100,2)."%; left: 100%; width: ".round($height/$width*100,2)."%; top: 0; position: absolute;\"":"";
@@ -2475,8 +2476,8 @@ class Device {
 				//multichassis
 				$childList=$this->GetDeviceChildren();
 				foreach($childList as $tmpDev){
-					if (!$tmpDev->BackSide){
-						$resp.=$tmpDev->GetChildDevicePicture($kidsHavingKids);
+					if ((!$tmpDev->BackSide && !$rear) || ($tmpDev->BackSide && $rear)){
+						$resp.=$tmpDev->GetChildDevicePicture($kidsHavingKids,$rear);
 					}
 				}
 			}
@@ -2546,14 +2547,13 @@ class Device {
 			$parent->parentDev=$this;
 			$parent->parentTempl=$templ;
 
-//print_r($parent);
 			//Children
 			$childList=$this->GetDeviceChildren();
 			if (count($childList)>0){
 				if(($this->ChassisSlots >0 && !$rear) || ($this->RearChassisSlots >0 && $rear) || ($templ->Model=='HTRAY' || $templ->Model=='VTRAY')){
 					//children in front face
 					foreach($childList as $tmpDev){
-						if ((!$tmpDev->BackSide && !$rear) || ($tmpDev->BackSide && $rear)){
+						if (($templ->Model=='HTRAY' || $templ->Model=='VTRAY') || ((!$tmpDev->BackSide && !$rear) || ($tmpDev->BackSide && $rear))){
 							$resp.=$tmpDev->GetChildDevicePicture($parent,$rear);
 						}
 					}
