@@ -636,6 +636,7 @@
 						'Appliance' => __("Appliance"),
 						'Storage Array' => __("Storage Array"),
 						'Switch' => __("Switch"),
+						'Chassis' => __("Chassis"),
 						'Patch Panel' => __("Patch Panel"),
 );
 	}else{

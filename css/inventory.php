@@ -477,9 +477,6 @@ div.cabinet {
 }
 .cabnavigator .picture .label {
 	z-index: 11;
-	width: 100%;
-	margin-top: 0em;
-	pointer-events: none;
 	text-align: center;
 	vertical-align: middle;
 	color: white;
@@ -493,19 +490,58 @@ div.cabinet {
 .cabnavigator .picture div > a > div > div {overflow: hidden;}
 .cabnavigator .picture div img:hover, .cabnavigator .picture a > div:hover { border: 2px solid red; margin: -2px;}
 
+.picture {
+	left: 0;
+	margin: -0.25em -0.5em -0.4em;
+	position: relative;
+	top: 0;
+	z-index: 5;
+	display: inline-block;
+}
+.picture div {
+	position: absolute;
+}
+.picture img {
+	height: 100%;
+	width: 100%;
+	position: absolute;
+}
+.picture div > a ~ .label {
+	pointer-events: none;
+}
+.picture > .label {
+	text-align: center;
+	pointer-events: none;
+}
+.picture > div > .label {
+	pointer-events: none;
+}
+.picture > div .label {
+	top: 0;
+}
+.label {
+	display: block;
+	z-index: 5;
+	top: 25%;
+	width: 90%;
+	height: 13px;
+	left: 5%;
+	overflow: hidden;
+	word-break: break-all;
+}
 .rotar_d{
 	transform:rotate(90deg);
 	-webkit-transform:rotate(90deg);
 	-moz-transform:rotate(90deg);
 	-ms-transform:rotate(90deg);
 	-o-transform:rotate(90deg);}
-.rotar_i{
-	transform:rotate(-90deg);
-	-webkit-transform:rotate(-90deg);
-	-moz-transform:rotate(-90deg);
-	-ms-transform:rotate(-90deg);
-	-o-transform:rotate(-90deg);}
-
+.rlt {
+	transform-origin: left top;
+	-webkit-transform-origin: left top;
+	-moz-transform-origin: left top;
+	-ms-transform-origin: left top;
+	-o-transform-origin: left top;
+}
 
 /* Cabinet Properties */
 

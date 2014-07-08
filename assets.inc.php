@@ -2278,161 +2278,154 @@ class Device {
 		}
 		return $TotalWeight;	
 	}
-	function GetChildDevicePicture($holeW, $zoomX, $zoomY, $rear=false, $ShowLabel=true){
-		global $dbh;
 
+
+	function GetChildDevicePicture($parentDetails, $rear=false){
+		/*
+		 * The following section will make a few assumptions
+		 * - All dimensions will be given back as a percentage of the whole for scalability
+		 * -- Labels will be the exception to that, we're just going to assign them values
+		 * - Child devices will only have one face, front
+		 * -- This makes the pictures on the templates easier to manage
+		 * --- Children of an HTRAY or VTRAY will be treated as any other device with a front
+		 *		and a rear image.  This makes this just stupidly complicated but has to be done
+		 * -- Child devices defined with rear slots will have the rear slots ignored
+		 * --- This logic needs to be applied to the functions that figure power usage and weight
+		 *		so we don't end up with phantom sources
+		 * - Child devices shouldn't need to conform to the 1.75:19 ratio we use for devices 
+		 *		directly in a cabinet they will target the slot that they are inside
+		 */
 		$resp="";
 		
 		$templ=new DeviceTemplate();
 		$templ->TemplateID=$this->TemplateID;
 		$templ->GetTemplateByID();
 		
-		$parentDev=new Device();
-		$parentDev->DeviceID=$this->ParentDevice;
-		$parentDev->GetDevice();
-				
-		$parenttempl=new DeviceTemplate();
-		$parenttempl->TemplateID=$parentDev->TemplateID;
-		$parenttempl->GetTemplateByID();
-		
-		$picturefile="";
-		if(!$rear){
-			if ($templ->FrontPictureFile<>""){
-				$picturefile="pictures/".$templ->FrontPictureFile;
-			}
+		$parentDev=$parentDetails->parentDev;
+		$parentTempl=$parentDetails->parentTempl;
+
+		// We'll only consider checking a rear image on a child if it is sitting on a shelf
+		if(($parentTempl->Model=='HTRAY' || $parentTempl->Model=='VTRAY') && $rear){
+			$picturefile="pictures/$templ->RearPictureFile";
 		}else{
-			if ($templ->RearPictureFile<>""){
-				$picturefile="pictures/".$templ->RearPictureFile;
-			}
+			$picturefile="pictures/$templ->FrontPictureFile";
 		}
 		if (!file_exists($picturefile)){
 			$picturefile="pictures/P_ERROR.png";
 		}
-		list($pictW, $pictH, $type, $attr)=getimagesize($picturefile);
-		$width=$pictW;
-		$height=$pictH;
-		$hor_blade=($width>$height);
+		@list($width, $height)=getimagesize($picturefile);
+		// In the event of read error this will rotate a horizontal text label
+		$hor_blade=($width=="" || $height=="")?true:($width>$height);
+
+		// We only need these numbers in the event that we have a nested device
+		// and need to scale the coordinates based off the original image size
+		$kidsHavingKids=new stdClass();
+		$kidsHavingKids->Height=$height;
+		$kidsHavingKids->Width=$width;
+
 		$slot=new Slot();
-		$slotOK=true;
-		if ($parenttempl->Model=="VTRAY" ||$parenttempl->Model=="HTRAY" ){
-			if ($parentDev->ChassisSlots>0 && ($this->Position+$this->Height-1)<=$parentDev->ChassisSlots){
-				$aspect1u=44.45/450.85; 
-				$holeH=$holeW*$aspect1u*$parentDev->Height;
-				$zoomX=1; $zoomY=1;  //reset zoom
-				$max=max($width,$height);
-				$min=min($width,$height);
-				if ($parenttempl->Model=="VTRAY"){
-					//calculate slot for VTRAY
+		$slotOK=false;
+
+		//get slot from DB
+		$slot->TemplateID=$parentDev->TemplateID;
+		$slot->Position=$this->Position;
+		$slot->BackSide=$this->BackSide;
+		if(($parentTempl->Model=='HTRAY' || $parentTempl->Model=='VTRAY') || $slot->GetSlot()){
+			// If we're dealing with a shelf mimic what GetSlot() would have done for our fake slot
+			if($parentTempl->Model=='HTRAY' || $parentTempl->Model=='VTRAY'){
+				$imageratio=($hor_blade)?($width/$height):($height/$width);
+				$slot->W=($parentTempl->Model=='HTRAY')?$parentDetails->targetWidth/$parentDev->ChassisSlots:$parentDetails->targetWidth;
+				$slot->H=($parentTempl->Model=='HTRAY')?$parentDetails->targetHeight:$parentDetails->targetHeight/$parentDev->ChassisSlots;
+				$slot->X=($parentTempl->Model=='HTRAY')?($rear)?($parentDev->ChassisSlots-$this->Position-$this->Height+1)*$slot->W:($slot->Position-1)*$slot->W:0;
+				$slot->Y=($parentTempl->Model=='HTRAY')?0:$parentDetails->targetHeight-$parentDetails->targetHeight/$parentDev->ChassisSlots*($this->Position+$this->Height-1);
+
+				// Enlarge the slot if needed
+				$slot->H=($parentTempl->Model=='HTRAY')?$parentDetails->targetHeight:$parentDetails->targetHeight/$parentDev->ChassisSlots*$this->Height;
+				$slot->W=($parentTempl->Model=='HTRAY')?$parentDetails->targetWidth/$parentDev->ChassisSlots*$this->Height:$slot->H*$imageratio;
+
+				// To center the devices in the slot we first needed to know the width figured just above
+				$slot->X=($parentTempl->Model=='VTRAY')?($parentDetails->targetWidth-$slot->W)/2:$slot->X;
+
+				// This covers the event that an image scaled properly will be too wide for the slot.
+				// Recalculate all the things!
+				if($parentTempl->Model=='VTRAY' && $slot->W>$parentDetails->targetWidth){
+					$originalH=$slot->H;
+					$originalY=$slot->Y;
+					$slot->W=$parentDetails->targetWidth;
+					$slot->H=$slot->W/$imageratio;
 					$slot->X=0;
-					$slot->Y=$holeH-$holeH/$parentDev->ChassisSlots*($this->Position+$this->Height-1);
-					$slot->W=$holeW;
-					$slot->H=$holeH/$parentDev->ChassisSlots*$this->Height;
-					if(($templ->FrontPictureFile!="" && !$rear) || ($templ->RearPictureFile!="" && $rear)){
-						//recalculate the slot to adapt it to aspect ratio of device
-						$z=min($slot->W/$max,$slot->H/$min);
-						$sW=$max*$z;
-						$sH=$min*$z;
-						$slot->X=($slot->W-$sW)/2;
-						$slot->Y=$slot->Y+$slot->H-$sH;
-						$slot->W=$sW;
-						$slot->H=$sH;
-					}
-				} else{
-					//calculate slot for HTRAY
-					if(!$rear){
-						$slot->X=$holeW/$parentDev->ChassisSlots*($this->Position-1);
-					}else{
-						$slot->X=$holeW/$parentDev->ChassisSlots*($parentDev->ChassisSlots-$this->Position-$this->Height+1);
-					}
-					$slot->Y=0;
-					$slot->W=$holeW/$parentDev->ChassisSlots*$this->Height;
-					$slot->H=$holeH;
-					if(($templ->FrontPictureFile!="" && !$rear) || ($templ->RearPictureFile!="" && $rear)){
-						//recalculate the slot to adapt it to aspect ratio of device
-						$z=min($slot->W/$min,$slot->H/$max);
-						$sW=$min*$z;
-						$sH=$max*$z;
-						$slot->X=$slot->X+($slot->W-$sW)/2;
-						$slot->Y=$slot->H-$sH;
-						$slot->W=$sW;
-						$slot->H=$sH;
-					}
+					$slot->Y=$originalH-$slot->H;
 				}
-			}else{
-				$slotOK=false;
+				// Reset the zoome on the parent to 1 just for trays
+				$parentDetails->zoomX=1;
+				$parentDetails->zoomY=1;
 			}
-		}else{
-			//get slot from DB
-			$slot->TemplateID=$parentDev->TemplateID;
-			$slot->Position=$this->Position;
-			$slot->BackSide=$this->BackSide;
-			if ($slot->GetSlot()){
-				if ($this->Height>1){
+
+			// Check for slot orientation before we possibly modify it via height
+			$hor_slot=($slot->W>$slot->H);
+
+			// We dealt with the slot sizing above for trays this will bypass the next bit
+			if($parentTempl->Model=='HTRAY' || $parentTempl->Model=='VTRAY'){$slotOK=true;$this->Height=0;}
+
+			// This will prevent the freak occurance of a child device with a 0 height
+			if($this->Height>=1){
+				// If height==1 then just accept the defined slot as is
+				if($this->Height>1){
 					//get last slot
 					$lslot=new Slot();
-					$lslot->TemplateID=$parentDev->TemplateID;  
-					$lslot->Position=$this->Position+$this->Height-1;
-					$lslot->BackSide=$this->BackSide;
-					if ($lslot->GetSlot()){
+					$lslot->TemplateID=$slot->TemplateID;
+					$lslot->Position=$slot->Position+$this->Height-1;
+					// If the height extends past the defined slots then just get the last slot
+					if($lslot->Position>(($slot->BackSide)?$parentDev->RearChassisSlots:$parentDev->ChassisSlots)){
+						$lslot->Position=($slot->BackSide)?$parentDev->RearChassisSlots:$parentDev->ChassisSlots;
+					}
+					$lslot->BackSide=$slot->BackSide;
+					if($lslot->GetSlot()){
 						//calculate total size
 						$xmin=min($slot->X, $lslot->X);
 						$ymin=min($slot->Y, $lslot->Y);
 						$xmax=max($slot->X+$slot->W, $lslot->X+$lslot->W);
 						$ymax=max($slot->Y+$slot->H, $lslot->Y+$lslot->H);
-						//checking for non consecutive slots or slots of different sizes
-						$err=2; //error pixels by slot
-						if(abs($xmax-$xmin-$slot->W*$this->Height)<$this->Height*$err && abs($ymax-$ymin-$slot->H)<$err 
-							|| abs($ymax-$ymin-$slot->H*$this->Height)<$this->Height*$err && abs($xmax-$xmin-$slot->W)<$err){
-							//put new size in $slot
-							$slot->X=$xmin;
-							$slot->Y=$ymin;
-							$slot->W=$xmax-$xmin;
-							$slot->H=$ymax-$ymin;
-						} 
+
+						//put new size in $slot
+						$slot->X=$xmin;
+						$slot->Y=$ymin;
+						$slot->W=$xmax-$xmin;
+						$slot->H=$ymax-$ymin;
+					}else{
+						// Last slot isn't defined so just error out
+						break;
 					}
-				} //if Height==1 or there is an error, $slot is considered a simple slot
-			}else{
-				$slotOK=false;
+				}
+				$slotOK=true;
 			}
 		}
+
 		if ($slotOK){
-			$hor_slot=($slot->W>$slot->H);
-
 			// Determine if the element needs to be rotated or not
-			$rotar="";
-			$rotar=$hor_slot?(!$hor_blade?"rotar_i":""):($hor_blade?"rotar_d":"");
+			// This only evaluates if we have a horizontal image in a vertical slot
+			$rotar=(!$hor_slot && $hor_blade)?"rotar_d":"";
 
+			// Scale the slot to fit the forced aspect ratio
+			$zoomX=$parentDetails->zoomX;
+			$zoomY=$parentDetails->zoomY;
 			$slot->X=$slot->X*$zoomX;
 			$slot->Y=$slot->Y*$zoomY;
 			$slot->W=$slot->W*$zoomX;
 			$slot->H=$slot->H*$zoomY;
 			
-			switch ($rotar){
-				case "":
-					$left=$slot->X;
-					$top=$slot->Y;
-					$height=$slot->H;
-					$width=$slot->W;
-					break;
-				case "rotar_d":
-					$left=$slot->X-abs($slot->W-$slot->H)/2;
-					$top=$slot->Y+abs($slot->W-$slot->H)/2;
-					$height=$slot->W;
-					$width=$slot->H;
-					break;
-				case "rotar_i":
-					$left=$slot->X+abs($slot->W-$slot->H)/2;
-					$top=$slot->Y-abs($slot->W-$slot->H)/2;
-					$height=$slot->W;
-					$width=$slot->H;
-					break;
+			if($rotar){
+				$left=$slot->X-abs($slot->W-$slot->H)/2;
+				$top=$slot->Y+abs($slot->W-$slot->H)/2;
+				$height=$slot->W;
+				$width=$slot->H;
+			}else{
+				$left=$slot->X;
+				$top=$slot->Y;
+				$height=$slot->H;
+				$width=$slot->W;
 			}
-			//I need to round before taking the integer part
-			$left=intval(round($left)).'px';$top=intval(round($top)).'px';
-			//I calculate the zoom for his children, before rounding
-			$childzoomX=$width/$pictW;  //$width is affected by parent zoom
-			$childzoomY=$height/$pictH; //$height is affected by parent zoom
-			//I need to round before taking the integer part
+			$left=intval(round($left));$top=intval(round($top));
 			$height=intval(round($height));$width=intval(round($width));
 
 			// If they have rights to the device then make the picture clickable
@@ -2446,46 +2439,44 @@ class Device {
 			$flags=($flags!='')?'<span class="hlight">'.$flags.'</span>':'';
 
 			$label="";
-			$resp.="\t\t<div class='$rotar' style='left: $left; top: $top; width: ".$width."px; height:".$height."px;'>\n$clickable";
+			$resp.="\t\t<div class='$rotar' style='left: ".round($left/$parentDetails->targetWidth*100,2)."%; top: ".round($top/$parentDetails->targetHeight*100,2)."%; width: ".round($width/$parentDetails->targetWidth*100,2)."%; height:".round($height/$parentDetails->targetHeight*100,2)."%;'>\n$clickable";
 			if(($templ->FrontPictureFile!="" && !$rear) || ($templ->RearPictureFile!="" && $rear)){
 				// IMAGE
-				$resp.="\t\t\t\t<img class='picturerot' style='vertical-align: text-top;' data-deviceid=$this->DeviceID width='".$width."px' height='".$height."px' src='$picturefile' alt='$this->Label'>\n";
+				// this rotate should only happen for a horizontal slot with a vertical image
+				$rotateimage=($hor_slot && !$hor_blade)?" class=\"rotar_d rlt\"  style=\"height: ".round($width/$height*100,2)."%; left: 100%; width: ".round($height/$width*100,2)."%; top: 0; position: absolute;\"":"";
+				$resp.="\t\t\t\t<img data-deviceid=$this->DeviceID src='$picturefile'$rotateimage alt='$this->Label'>\n";
 				
-				if ( $ShowLabel ) {
-					// LABEL FOR IMAGE
-					if($rotar=='' && $hor_slot || $rotar!='' && !$hor_slot){
-						$label="\t\t\t<div class=\"label\" style=\"top: 0; left: 0; width: ".$width."px; height:".$height."px;\">";
-						$label.="<div style=\"width:".$width."px;".(($height*0.8<13)?" font-size: ".intval($height*0.8)."px; ":"")."\">$flags$this->Label</div></div>\n";
-					}else{
-						if ($rotar=="rotar_i"){
-							$ltop=abs($slot->W-$slot->H)/2;
-							$lleft=-$ltop;
-							$lheight=$slot->H;
-							$lwidth=$slot->W;
-						}else{
-							$lleft=-abs($slot->W-$slot->H)/2;
-							$ltop=-$lleft;
-							$lheight=$slot->W;
-							$lwidth=$slot->H;
-						}
-						$lleft=intval($lleft).'px';$ltop=intval($ltop).'px';
-						$lheight=intval($lheight);$lwidth=intval($lwidth);
-						$label="\t\t\t<div class=\"rotar_d label\" style=\"top: $ltop; left: $lleft; width: ".$lwidth."px; height:".$lheight."px;\">";
-						$label.="<div style=\"width:".$lwidth."px;".(($lheight*0.8<13)?" font-size: ".intval($lheight*0.8)."px; ":"")."\">$flags$this->Label".(($rear)?" (".__("Rear").")":"")."</div></div>\n";
-					}
+				// LABEL FOR IMAGE
+				if($hor_slot || $rotar && !$hor_slot){
+					$label="\t\t\t<div class=\"label\" style=\"line-height:".$height."px; height:".$height."px;".(($height*0.8<13)?" font-size: ".intval($height*0.8)."px;":"")."\">";
+				}else{
+					// This is a vertical slot with a vertical picture so we have to rotate the label
+					$label="\t\t\t<div class=\"rotar_d rlt label\" style=\"top: calc(".$height."px * 0.05); left: ".$width."px; width: calc(".$height."px * 0.9); line-height:".$width."px; height:".$width."px;".(($width*0.8<13)?" font-size: ".intval($width*0.8)."px; ":"")."\">";
 				}
+				$label.="<div>$flags$this->Label".(($rear)?" (".__("Rear").")":"")."</div></div>\n";
 			}else{
-				//LABEL for child device without image - Always show, even if ShowLabel is false
-				$resp.="\t\t\t\t<div class='dept$this->Owner' data-deviceid=$this->DeviceID style='width: ".$width."px; height: ".$height."px;'>";
-				$resp.="<div".(($height*0.8<13)?" style=\" font-size: ".intval($height*0.8)."px; \"":"").">$flags$this->Label".(($rear)?" (".__("Rear").")":"")."</div></div>\n";
+				//LABEL for child device without image - Always show
+				$resp.="\t\t\t\t<div class='dept$this->Owner label' data-deviceid=$this->DeviceID style='height: ".$height."px; line-height:".$height."px; ".(($height*0.8<13)?" font-size: ".intval($height*0.8)."px;":"")."'>";
+				$resp.="<div>$flags$this->Label".(($rear)?" (".__("Rear").")":"")."</div></div>\n";
 			}
 			$resp.=$clickableend.$label;
-			if ( $this->ChassisSlots > 0 ) {
+
+// If the label on a nested chassis device proves to be a pita remove the label
+// above and uncomment the following if
+// if($this->ChassisSlots<4){$resp.=$label;}
+
+			if($this->ChassisSlots >0){
+				$kidsHavingKids->targetWidth=$width;
+				$kidsHavingKids->targetHeight=$height;
+				$kidsHavingKids->zoomX=$width/$kidsHavingKids->Width;
+				$kidsHavingKids->zoomY=$height/$kidsHavingKids->Height;
+				$kidsHavingKids->parentDev=$this;
+				$kidsHavingKids->parentTempl=$templ;
 				//multichassis
-				$childList = $this->GetDeviceChildren();
-				foreach ( $childList as $tmpDev ) {
+				$childList=$this->GetDeviceChildren();
+				foreach($childList as $tmpDev){
 					if (!$tmpDev->BackSide){
-							$resp.=$tmpDev->GetChildDevicePicture($holeW,$childzoomX,$childzoomY);
+						$resp.=$tmpDev->GetChildDevicePicture($kidsHavingKids);
 					}
 				}
 			}
@@ -2493,46 +2484,43 @@ class Device {
 		}
 		return $resp;
 	}
-	function GetDevicePicture($holeW,$rear=false,$ShowLabel=true,$withLink=true){
+	function GetDevicePicture($targetWidth=220,$rear=false){
 		$templ=new DeviceTemplate();
 		$templ->TemplateID=$this->TemplateID;
 		$templ->GetTemplateByID();
 		$resp="";
-		
+
 		if(($templ->FrontPictureFile!="" && !$rear) || ($templ->RearPictureFile!="" && $rear)){
 			$picturefile="pictures/";
 			$picturefile.=($rear)?$templ->RearPictureFile:$templ->FrontPictureFile;
 			if (!file_exists($picturefile)){
 				$picturefile="pictures/P_ERROR.png";
 			}
-			list($pictW, $pictH, $type, $attr)=getimagesize($picturefile);
-			//$aspect1u=44.45/482.26; //with fins (19'')
-			$aspect1u=44.45/450.85; //without fins (19''-fins)
-			$holeH=$holeW*$aspect1u*$this->Height;
-			$zoomX=$holeW/$pictW;
-			$zoomY=$holeH/$pictH;
-			//I need to round before taking the integer part
-			$holeH=intval(round($holeH));
+
+			// Get the true size of the template image
+			list($pictW, $pictH)=getimagesize($picturefile);
+
+			// adjusted height = targetWidth * height:width ratio for 1u * height of device in U
+			$targetHeight=$targetWidth*1.75/19*$this->Height;
+
+			// We need integers for the height and width because browsers act funny with decimals
+			$targetHeight=intval($targetHeight);
+			$targetWidth=intval($targetWidth);
 			
 			// URLEncode the image file name just to be compliant.
 			$picturefile=str_replace(' ',"%20",$picturefile);
-	
-			if ($withLink){
-				// If they have rights to the device then make the picture clickable
-				$clickable=($this->Rights!="None")?"\t\t<a href=\"devices.php?deviceid=$this->DeviceID\">\n\t":"";
-				$clickableend=($this->Rights!="None")?"\n\t\t</a>\n":"";
-			}else{
-				$clickable="";
-				$clickableend="";
-			}
+
+			// If they have rights to the device then make the picture clickable
+			$clickable=($this->Rights!="None")?"\t\t<a href=\"devices.php?deviceid=$this->DeviceID\">\n\t":"";
+			$clickableend=($this->Rights!="None")?"\n\t\t</a>\n":"";
 
 			// Add in flags for missing ownership
 			// Device pictures are set on the template so always assume template has been set
 			$flags=($this->Owner==0)?'(O)':'';
 			$flags=($flags!='')?'<span class="hlight">'.$flags.'</span>':'';
 
-			$resp.="\n\t<div class=\"picture\">\n";
-			$resp.="$clickable\t\t<img class=\"picture\" data-deviceid=$this->DeviceID width=$holeW height=$holeH src=\"$picturefile\" alt=\"$this->Label\">$clickableend\n";
+			$resp.="\n\t<div class=\"picture\" style=\"width: ".$targetWidth."px; height: ".$targetHeight."px;\">\n";
+			$resp.="$clickable\t\t<img data-deviceid=$this->DeviceID src=\"$picturefile\" alt=\"$this->Label\">$clickableend\n";
 
 			/*
 			 * Labels on chassis devices were getting silly with smaller devices.  For aesthetic 
@@ -2540,50 +2528,33 @@ class Device {
 			 * in height and have slots defined.  If it is just a chassis with nothing defined then 
 			 * go ahead and show the chassis label.
 			 */
-			if($this->Height<3 && $this->DeviceType=='Chassis' && (($rear && $this->RearChassisSlots > 0) || (!$rear && $this->ChassisSlots > 0))  ){
+			if(($this->Height<3 && $this->DeviceType=='Chassis' && (($rear && $this->RearChassisSlots > 0) || (!$rear && $this->ChassisSlots > 0))) || ($templ->Model=='HTRAY' || $templ->Model=='VTRAY') ){
 
 			}else{
-				$resp.="\t\t<div class=\"label\"><div>$flags$this->Label".(((!$this->BackSide && $rear || $this->BackSide && !$rear) && !$this->HalfDepth)?" (".__("Rear").")":"");
+				$resp.="\t\t<div class=\"label\"><div>$flags$this->Label".
+					(((!$this->BackSide && $rear || $this->BackSide && !$rear) && !$this->HalfDepth)?" (".__("Rear").")":"");
 				$resp.="</div></div>\n";
 			}
 
+			$parent=new stdClass();
+			$parent->zoomX=$targetWidth/$pictW;
+			$parent->zoomY=$targetHeight/$pictH;
+			$parent->targetWidth=$targetWidth;
+			$parent->targetHeight=$targetHeight;
+			$parent->Height=$pictH;
+			$parent->Width=$pictW;
+			$parent->parentDev=$this;
+			$parent->parentTempl=$templ;
+
+//print_r($parent);
 			//Children
 			$childList=$this->GetDeviceChildren();
 			if (count($childList)>0){
-				if (!$rear){
-					if($this->ChassisSlots >0){
-						//children in front face
-						foreach($childList as $tmpDev){
-							if (!$tmpDev->BackSide){
-								$resp.=$tmpDev->GetChildDevicePicture($holeW,$zoomX,$zoomY,false,$ShowLabel);
-							}
-						}
-					}else{
-						if (($templ->Model=="HTRAY" || $templ->Model=="HTRAY") && $this->RearChassisSlots >0){
-							//rearside of children in rear side
-							foreach($childList as $tmpDev){
-								if ($tmpDev->BackSide){
-									$resp.=$tmpDev->GetChildDevicePicture($holeW,$zoomX,$zoomY,true,$ShowLabel);
-								}
-							}
-						}
-					}
-				}else{
-					if($this->RearChassisSlots >0){
-						//children in rear face
-						foreach($childList as $tmpDev){
-							if ($tmpDev->BackSide){
-								$resp.=$tmpDev->GetChildDevicePicture($holeW,$zoomX,$zoomY,false,$ShowLabel);
-							}
-						}						
-					}else{
-						if (($templ->Model=="HTRAY" || $templ->Model=="VTRAY") && $this->ChassisSlots >0){
-							//rearside of children in front side
-							foreach($childList as $tmpDev){
-								if (!$tmpDev->BackSide){
-									$resp.=$tmpDev->GetChildDevicePicture($holeW,$zoomX, $zoomY,true,$ShowLabel);
-								}
-							}
+				if(($this->ChassisSlots >0 && !$rear) || ($this->RearChassisSlots >0 && $rear) || ($templ->Model=='HTRAY' || $templ->Model=='VTRAY')){
+					//children in front face
+					foreach($childList as $tmpDev){
+						if ((!$tmpDev->BackSide && !$rear) || ($tmpDev->BackSide && $rear)){
+							$resp.=$tmpDev->GetChildDevicePicture($parent,$rear);
 						}
 					}
 				}
