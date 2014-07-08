@@ -803,7 +803,7 @@
 
 		// Reporting - Utilities
 
-		$('input[id^="snmp"],input[id="cut"]').each(function(){
+		$('input[id^="snmp"],input[id="cut"],input[id="dot"]').each(function(){
 			var a=$(this);
 			var icon=$('<span>',{style: 'float:right;margin-top:5px;'}).addClass('ui-icon').addClass('ui-icon-info');
 			a.parent('div').append(icon);
@@ -1168,6 +1168,10 @@ echo '<div class="main">
 				<div>
 					<div><label for="cut">',__("cut"),'</label></div>
 					<div><input type="text" defaultvalue="',$config->defaults["cut"],'" name="cut" value="',$config->ParameterArray["cut"],'"></div>
+				</div>
+				<div>
+					<div><label for="dot">',__("dot"),'</label></div>
+					<div><input type="text" defaultvalue="',$config->defaults["dot"],'" name="dot" value="',$config->ParameterArray["dot"],'"></div>
 				</div>
 			</div> <!-- end table -->
 		</div>

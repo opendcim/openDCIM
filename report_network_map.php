@@ -1,6 +1,7 @@
 <?php
     require_once "db.inc.php";
     require_once "facilities.inc.php";
+    $dotCommand = $config->ParameterArray["dot"];
     # if format is set, graph options should be set and ready to be rendered
     if(isset($_REQUEST['format'])) {
         # find the directory that dcim is being hosted out of (used when we build
@@ -459,16 +460,16 @@ overlap = scale;
         file_put_contents($dotfile, $graphstr);
         if($ft == 'svg') {
             header("Content-Type: image/svg+xml");
-            passthru("dot -Tsvg -o/dev/stdout ".$dotfile, $retval);
+            passthru($dotCommand." -Tsvg -o/dev/stdout ".$dotfile, $retval);
         } elseif($ft == 'png') {
             header("Content-Type: image/png");
-            passthru("dot -Tpng -o/dev/stdout ".$dotfile, $retval);
+            passthru($dotCommand." -Tpng -o/dev/stdout ".$dotfile, $retval);
         } elseif($ft == 'jpg') {
             header("Content-Type: image/jpeg");
-            passthru("dot -Tjpg -o/dev/stdout ".$dotfile, $retval);
+            passthru($dotCommand." -Tjpg -o/dev/stdout ".$dotfile, $retval);
         } elseif($ft == 'gif') {
             header("Content-Type: image/gif");
-            passthru("dot -Tgif -o/dev/stdout ".$dotfile, $retval);
+            passthru($dotCommand." -Tgif -o/dev/stdout ".$dotfile, $retval);
         } elseif($ft == 'dot') {
             header("Content-Type: text/plain");
             echo $graphstr;
@@ -606,6 +607,10 @@ echo '          <div class="main">
                         <div id="datacontainer">
 <?php echo $body; ?>
                         </div>
+<?php if(!is_executable($dotCommand)) {
+echo '                  <span class="errmsg">ERROR: You must have the dot command (from the graphviz package) installed and its location specified in the configuration</span>';
+}
+?>
                 </div><!-- END div.main -->
         </div><!-- END div.page -->
 </body>
