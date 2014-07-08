@@ -658,7 +658,8 @@ if ( $config->ParameterArray["WorkOrderBuilder"]=='enabled' ) {
 		$('.cabinet td:has(a):not(:has(img)), #zerou div > a, .cabinet .picture a img, .cabinet	.picture a > div').each( function(){
 			var devid=$(this).data('deviceid');
 			var target=(this.nodeName=="IMG")?this.parentElement.parentElement:this;
-			var style=(this.nodeName=="IMG")?'position: absolute; top: 0; right: 0; background-color: white;':'float: right;';
+			var clickpos=(this.parentNode.parentNode.className=="rotar_d")?' left: 0;':' right: 0;';
+			var style=(this.nodeName=="IMG")?'position: absolute; top: 0; background-color: white;'+clickpos:'float: right;';
 
 			// Make a point for us to click to add to this nonsense
 			var span=$('<span>').attr('style',style).addClass('ui-icon');
@@ -681,7 +682,6 @@ if ( $config->ParameterArray["WorkOrderBuilder"]=='enabled' ) {
 					span.addClass('ui-icon-circle-plus').removeClass('ui-icon-circle-check');
 				}
 			}
-
 			// Add the click target to the page
 			$(target).append(span);
 		});
