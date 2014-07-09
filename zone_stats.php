@@ -73,7 +73,7 @@
 				$width=($zone->MapX2-$zone->MapX1)*$zoom;
 				$height=($zone->MapY2-$zone->MapY1)*$zoom;
 				$mapHTML.="\t<div class=\"canvas\">
-		<canvas id=\"background\" width=\"$width\" height=\"$height\" data-image=$mapfile></canvas>
+		<canvas id=\"background\" width=\"$width\" height=\"$height\" data-image=\"$mapfile\"></canvas>
 		<img src=\"css/blank.gif\" usemap=\"#datacenter\" width=\"$width\" height=\"$height\" alt=\"clearmap over canvas\">
 		<map name=\"datacenter\" data-dc=$dc->DataCenterID data-zoom=$zoom data-x1=$zone->MapX1 data-y1=$zone->MapY1>
 		</map>

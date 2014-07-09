@@ -211,7 +211,7 @@ echo '
 		}
 		$('#map').imgAreaSelect( {
 	<?php
-		printf( "\t\tx1: %d,\n\tx2: %d,\n\ty1: %d,\n\ty2: %d,\n", $zone->MapX1, $zone->MapY1, $zone->MapX2, $zone->MapY2 );
+		printf( "\t\tx1: %d,\n\tx2: %d,\n\ty1: %d,\n\ty2: %d,\n", $zone->MapX1, $zone->MapX2, $zone->MapY1, $zone->MapY2 );
 	?>
 			handles: true,
 			onSelectChange: preview
@@ -246,3 +246,4 @@ print "		dialog.find('span + span').html('".__("This Zone will be deleted and th
 </script>
 </body>
 </html>
+
