@@ -18,7 +18,7 @@
         $graphname = "Network Map for ";
         $graphstr = "";
         $devList=array();
-        # a *long* list of colors recognized by graphviz. could be pruned some.
+        # a list of colors recognized by graphviz. not all of them.
         $colorList = array(
               "antiquewhite", "aqua", "aquamarine", "azure", "beige", "bisque",
               "black", "blue", "blueviolet", "brown", "burlywood", "cadetblue",
@@ -55,6 +55,7 @@
               "tan", "teal", "thistle", "tomato", "turquoise", "violet",
               "violetred", "wheat", "whitesmoke", "yellow", "yellowgreen"
         );
+        # decent default color palette for identifying device types
         $safeDeviceColors = array(
             "cadetblue2", "deepskyblue4", "palegreen", "forestgreen",
             "lightpink", "red", "navajowhite", "darkorange", "plum", "purple",
@@ -387,51 +388,58 @@ overlap = scale;
             $containmentType = isset($_POST['containmenttype'])?$_POST['containmenttype']:$_GET['containmenttype'];
             if($containmentType != "") {
                 $body = "<form method='post'>";
+                $options = array();
                 if($containmentType == 0){
                     # filtering by container
-                    $tstr = "container";
                     $cList = new Container();    
                     $cList = $cList->GetContainerList();
                     $body .= "<select name=containerid id=containerid>";
                     foreach($cList as $c){
-                        $body .= "<option value=".$c->ContainerID.">".$c->Name."</option>";
+                        $options[$c->ContainerID] = $c->Name;
                     }
                 } elseif($containmentType == 1){
                     # filtering by dc
-                    $tstr = "datacenter";
                     $dcList = new DataCenter();    
                     $dcList = $dcList->GetDCList();
                     $body .= "<select name=datacenterid id=datacenterid>";
                     foreach($dcList as $dc){
-                        $body .= "<option value=".$dc->DataCenterID.">".$dc->Name."</option>";
+                        $options[$dc->DataCenterID] = $dc->Name;
                     }
                 } elseif($containmentType == 2){
-                    #filtering by zone (perhaps this should also mention dc it is in)
-                    $tstr = "zone";
+                    #filtering by zone
                     $zList = new Zone();    
                     $zList = $zList->GetZoneList();
                     $body .= "<select name=zoneid id=zoneid>";
                     foreach($zList as $zone){
-                        $body .= "<option value=".$zone->ZoneID.">".$zone->Description."</option>";
+                        $dc = new DataCenter();
+                        $dc->DataCenterID = $zone->DataCenterID;
+                        $dc->GetDataCenter();
+                        $options[$zone->ZoneID] = $dc->Name."::".$zone->Description;
                     }
                 } elseif($containmentType == 3){
                     # filter by cabrow
-                    $tstr = "cabrow";
                     $crList = new CabRow();    
                     $crList = $crList->GetCabRowList();
                     $body .= "<select name=cabrowid id=cabrowid>";
                     foreach($crList as $cabrow){
-                        $body .= "<option value=".$cabrow->CabRowID.">".$cabrow->Name."</option>";
+                        $options[$cabrow->CabRowID] = $cabrow->Name;
                     }
                 } elseif($containmentType == 4){
                     # filter by cabinet
-                    $tstr = "cab";
                     $cList = new Cabinet();    
                     $cList = $cList->ListCabinets();
                     $body .= "<select name=cabid id=cabid>";
                     foreach($cList as $cabinet){
-                        $body .= "<option value=".$cabinet->CabinetID.">".$cabinet->Location."</option>";
+                        $dc = new DataCenter();
+                        $dc->DataCenterID = $cabinet->DataCenterID;
+                        $dc->GetDataCenter();
+                        $options[$cabinet->CabinetID] = $dc->Name."::".$cabinet->Location;
                     }
+                }
+                # sort and output the options based on the name of the option
+                asort($options);
+                foreach($options as $key => $val) {
+                    $body .= "<option value=".$key.">".$val."</option>";
                 }
                 $body .= "</select>"
                         ."<select name=mediaid id=mediaid>"
@@ -487,6 +495,7 @@ overlap = scale;
                                 $('#datacontainer').html(data);
                         });
                 });
+                $('#containmenttype').val("");
         });
   </script>
 </head>
