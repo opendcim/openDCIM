@@ -309,47 +309,43 @@ class Cabinet {
 		global $dbh;
 
 		$this->MakeSafe();
-		
-		$cr=new CabRow();
-		$cr->CabRowID=$this->CabRowID;
-		$fe=$cr->GetCabRowFrontEdge();
-		if ($rear){
-			//opposite view
-			switch($fe){
-				case "Right":
-					$fe="Left";
-					break;
-				case "Left":
-					$fe="Right";
-					break;
-				case "Top":
-					$fe="Bottom";
-					break;
-				case "Bottom":
-					$fe="Top";
-					break;
-			}
-		}
-		switch($fe){
-			case "Right":
-				$order="MapY1 DESC,";
-				break;
-			case "Left":
-				$order="MapY1 ASC,";
-				break;
-			case "Top":
-				$order="MapX1 DESC,";
-				break;
-			case "Bottom":
-				$order="MapX1 ASC,";
-				break;
-		}
-		$order.="Location ASC";
-		$sql="SELECT * FROM fac_Cabinet WHERE CabRowID=$this->CabRowID ORDER BY $order;";
-		
+
+		$cabrow=new CabRow();
+		$cabrow->CabRowID=$this->CabRowID;
+
+		$sql="SELECT MIN(MapX1) AS MapX1, MAX(MapX2) AS MapX2, AVG(MapX1) AS AvgX1, 
+			AVG(MapX2) AS AvgX2, COUNT(*) AS CabCount FROM fac_Cabinet WHERE 
+			CabRowID=$cabrow->CabRowID AND MapX1>0 AND MapX2>0 AND MapY1>0 and MapY2>0;";
+		$shape=$dbh->query($sql)->fetch();
+
+		// size of average cabinet
+		$sX=$shape["AvgX2"]-$shape["AvgX1"];
+		// change in x and y to give overall shape of row
+		$cX=$shape["MapX2"]-$shape["MapX1"];
+
+		/*
+		 * In rows with more than one cabinet we can determine the layout based on
+		 * their size.  The side of a row will be close to the change in x or y while
+		 * the front/rear of a row will be equal to the average of the sides 
+		 * multiplied by the number of objects in the set
+		 *
+		 * change = size * number of cabinets
+		 */
+		$layout=($cX==$sX*$shape["CabCount"])?"Horizontal":"Vertical";
+		$order=($layout=="Horizontal")?"MapX1,":"MapY1,";
+		$frontedge=$cabrow->GetCabRowFrontEdge($layout);
+
+		// Order first by row layout then by natural sort
+		$sql="SELECT * FROM fac_Cabinet WHERE CabRowID=$cabrow->CabRowID ORDER BY $order 
+			length(Location), Location ASC;";
+
 		$cabinetList=array();
 		foreach($dbh->query($sql) as $cabinetRow){
 			$cabinetList[]=Cabinet::RowToObject($cabinetRow);
+		}
+
+		if($frontedge=="Left" || $frontedge=="Top"){
+			$cabinetList=array_reverse($cabinetList);
 		}
 
 		return $cabinetList;

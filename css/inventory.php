@@ -466,6 +466,7 @@ div.cabinet {
 	padding: 3px;
 }
 .rowview .noprint span:last-child {display: none;}
+.rowview div.cabinet { vertical-align: bottom; }
 .cabinet .error { background-color: <?php echo $config->ParameterArray['CriticalColor']; ?>; }
 
 /* PICTURES */
@@ -866,7 +867,7 @@ div.cabinet {
 	ul.mktree  a.ZONE { color: #330066; }
 	ul.mktree  a.CABROW { color: #AA3300; }
 	ul.mktree  a.RACK { color: #660000; }
-	ul.mktree  a { text-decoration: none; }
+	ul.mktree  a { text-decoration: none; white-space: pre;}
 	ul.mktree  a:hover { color: red; }
 	ul.mktree  li ul li { font-family: arial, helvetica; font-size: 11pt; font-weight: normal;}
 }

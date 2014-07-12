@@ -177,11 +177,11 @@ function renderUnassignedTemplateOwnership($noTemplFlag, $noOwnerFlag, $device) 
 	$cabrow->CabRowID=$_REQUEST['row'];
 	$cabrow->GetCabRow();
 	$cab->CabRowID=$cabrow->CabRowID;
-	$cabinets=$cab->GetCabinetsByRow(isset($_GET["rear"])?"rear":"");
-	$fe=$cabrow->GetCabRowFrontEdge();
+	$cabinets=$cab->GetCabinetsByRow();
+	$frontedge=$cabrow->GetCabRowFrontEdge();
 	if (isset($_GET["rear"])){
 		//opposite view
-		$fe=($fe=="Right")?"Left":(($fe=="Left")?"Right":(($fe=="Top")?"Bottom":(($fe=="Bottom")?"Top":"")));
+		$cabinets=array_reverse($cabinets);
 	}
 
 	//start loop to parse all cabinets in the row
@@ -199,7 +199,10 @@ function renderUnassignedTemplateOwnership($noTemplFlag, $noOwnerFlag, $device) 
 			.freespace{background-color: {$config->ParameterArray['FreeSpaceColor']};}\n";
 		}
 
-		buildcabinet(($fe==$cabinet->FrontEdge)?"":"rear");
+		// Here we have a decision, for now I am just making it front and rear,
+		// in the future we can eval for the left and right as well to make the view 
+		// more realistic
+		buildcabinet((($frontedge!=$cabinet->FrontEdge && !isset($_GET["rear"])) || $frontedge==$cabinet->FrontEdge && isset($_GET["rear"])));
 	}
 
 	$dcID=$cabinets[0]->DataCenterID;

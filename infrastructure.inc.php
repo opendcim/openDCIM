@@ -1875,16 +1875,30 @@ class CabRow {
 		return $cabrowList;
 	}
 
-	function GetCabRowFrontEdge(){
+	function GetCabRowFrontEdge($layout=""){
 		//It returns the FrontEdge of most cabinets
 		$this->MakeSafe();
 
-		$sql="SELECT FrontEdge, count(*) as num FROM fac_Cabinet WHERE 
-			CabRowID=$this->CabRowID GROUP BY FrontEdge ORDER BY num DESC LIMIT 1;";
+		// If we know for sure a row is horizontal or vertical this will further limit
+		// the results to valid faces only
+		if($layout){
+			if($layout=="Horizontal"){
+				// top / bottom
+				$layout=" AND (FrontEdge='Bottom' OR FrontEdge='Top')";
+			}else{
+				// right / left
+				$layout=" AND (FrontEdge='Right' OR FrontEdge='Left')";
+			}
+		}
+
+		$sql="SELECT FrontEdge, count(*) as CabCount FROM fac_Cabinet WHERE 
+			CabRowID=$this->CabRowID$layout GROUP BY FrontEdge ORDER BY CabCount DESC 
+			LIMIT 1;";
 
 		if($cabinetRow=$this->query($sql)->fetch()){
 			return $cabinetRow["FrontEdge"];
 		}
+
 		return "";
 	}
 }  //END OF CLASS CabRow
