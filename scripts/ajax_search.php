@@ -25,7 +25,8 @@
 		
 	//This will ensure that an empty json record set is returned if this is called directly or in some strange manner
 	if($field!=""){
-		$searchTerm=addslashes($searchTerm);
+		// Remove extra % since we are already doing a wildcard search
+		$searchTerm=addslashes(str_replace('_','\_',str_replace('%','',$searchTerm)));
 		if($field=="Label"){
 			$sql="SELECT DISTINCT Label FROM fac_Device WHERE Label LIKE '%$searchTerm%' 
 				UNION SELECT DISTINCT Location AS Label FROM fac_Cabinet WHERE Location 
