@@ -283,6 +283,10 @@ if($config->ParameterArray["ToolTips"]=='enabled'){
 	echo $body;
 ?>
 </div> <!-- END div#centeriehack -->
+<script type="text/javascript">
+// 258 width of cabinet + 20 margin
+$('#centeriehack').width($('#centeriehack .cabinet').length * 278);
+</script>
 </div></div>
 <?php
 	if($dcID>0){
