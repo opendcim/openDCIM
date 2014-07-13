@@ -465,6 +465,7 @@ div.cabinet {
 	margin: 5px;
 	padding: 3px;
 }
+.blackout { background-color: black; }
 .rowview .noprint span:last-child {display: none;}
 .rowview div.cabinet { vertical-align: bottom; }
 .cabinet .error { background-color: <?php echo $config->ParameterArray['CriticalColor']; ?>; }

@@ -33,17 +33,26 @@ function get_cabinet_owner_color($cabinet, &$deptswithcolor) {
 
 // This function with no argument will build the front cabinet face. Specify
 // rear and it will build the back.
-function BuildCabinet($rear=false){
+function BuildCabinet($rear=false,$side=null){
 	// This is fucking horrible, there has to be a better way to accomplish this.
 	global $cab_color, $cabinet, $device, $body, $currentHeight, $heighterr,
 			$devList, $templ, $tempDept, $backside, $deptswithcolor, $tempDept,
 			$totalWeight, $totalWatts, $totalMoment, $zeroheight,
-			$noTemplFlag, $noOwnerFlag, $noReservationFlag;
+			$noTemplFlag, $noOwnerFlag;
 
 	$currentHeight=$cabinet->CabinetHeight;
 
+	// Determine which label to put on the rack, if any
+	$rs="";
+	if($rear){
+		$rs=__("Rear");
+	}
+	if(!is_null($side)){
+		$rs=__("Side");
+	}
+	$RearOrSide=($rs=="")?"":" ($rs)";
 	$body.="<div class=\"cabinet\">\n\t<table>
-	<tr><th id=\"cabid\" data-cabinetid=$cabinet->CabinetID colspan=2 $cab_color><a href=\"cabnavigator.php?cabinetid=$cabinet->CabinetID\">".__("Cabinet")." $cabinet->Location".($rear?" (".__("Rear").")":"")."</a></th></tr>
+	<tr><th id=\"cabid\" data-cabinetid=$cabinet->CabinetID colspan=2 $cab_color><a href=\"cabnavigator.php?cabinetid=$cabinet->CabinetID\">".__("Cabinet")." $cabinet->Location$RearOrSide</a></th></tr>
 	<tr><td class=\"cabpos\">".__("Pos")."</td><td>".__("Device")."</td></tr>\n";
 
 	$heighterr="";
@@ -76,18 +85,9 @@ function BuildCabinet($rear=false){
 				$deptswithcolor[$device->Owner]["name"]=$tempDept->Name;
 			}
 
-			//only computes this device if it is its front side
-			if (!$device->BackSide && !$rear || $device->BackSide && $rear){
-				$totalWatts+=$device->GetDeviceTotalPower();
-				$DeviceTotalWeight=$device->GetDeviceTotalWeight();
-				$totalWeight+=$DeviceTotalWeight;
-				$totalMoment+=($DeviceTotalWeight*($device->Position+($device->Height/2)));
-			}
-
 			$reserved="";
 			if($device->Reservation==true){
 				$reserved=" reserved";
-				$noReservationFlag=true;
 			}
 			if($devTop<$currentHeight && $currentHeight>0){
 				for($i=$currentHeight;($i>$devTop);$i--){
@@ -107,13 +107,21 @@ function BuildCabinet($rear=false){
 				$errclass=($i>$cabinet->CabinetHeight)?' error':'';
 				if($errclass!=''){$heighterr="yup";}
 				if($i==$devTop){
-					// Create the filler for the rack either text or a picture
-					$picture=(!$device->BackSide && !$rear || $device->BackSide && $rear)?$device->GetDevicePicture(220):$device->GetDevicePicture(220,"rear");
-					$devlabel=$device->Label.(((!$device->BackSide && $rear || $device->BackSide && !$rear) && !$device->HalfDepth)?"(".__("Rear").")":"");
-					$text=($device->Rights!="None")?"<a href=\"devices.php?deviceid=$device->DeviceID\">$highlight $devlabel</a>":$devlabel;
+					// If we're looking at the side of the rack don't give any details but show the
+					// space as being occupied.
+					$sideview="";
+					if(!is_null($side)){
+						$picture=$text="";
+						$sideview=" blackout";
+					}else{
+						// Create the filler for the rack either text or a picture
+						$picture=(!$device->BackSide && !$rear || $device->BackSide && $rear)?$device->GetDevicePicture(220):$device->GetDevicePicture(220,"rear");
+						$devlabel=$device->Label.(((!$device->BackSide && $rear || $device->BackSide && !$rear) && !$device->HalfDepth)?"(".__("Rear").")":"");
+						$text=($device->Rights!="None")?"<a href=\"devices.php?deviceid=$device->DeviceID\">$highlight $devlabel</a>":$devlabel;
+					}
 					
 					// Put the device in the rack
-					$body.="\t\t<tr><td class=\"cabpos$reserved dept$device->Owner$errclass\">$i</td><td class=\"dept$device->Owner$reserved\" rowspan=$device->Height data-deviceid=$device->DeviceID>";
+					$body.="\t\t<tr><td class=\"cabpos$reserved dept$device->Owner$errclass\">$i</td><td class=\"dept$device->Owner$reserved$sideview\" rowspan=$device->Height data-deviceid=$device->DeviceID>";
 					$body.=($picture)?$picture:$text;
 					$body.="</td></tr>\n";
 				}else{
@@ -199,15 +207,33 @@ function renderUnassignedTemplateOwnership($noTemplFlag, $noOwnerFlag, $device) 
 			.freespace{background-color: {$config->ParameterArray['FreeSpaceColor']};}\n";
 		}
 
+		$side=null;
+		if($frontedge=="Top" || $frontedge=="Bottom"){
+			$side=($cabinet->FrontEdge=="Left" || $cabinet->FrontEdge=="Right")?true:null;
+		}else{ // else it's Left or Right
+			$side=($cabinet->FrontEdge=="Top" || $cabinet->FrontEdge=="Bottom")?true:null;
+		}
+
 		// Here we have a decision, for now I am just making it front and rear,
 		// in the future we can eval for the left and right as well to make the view 
 		// more realistic
-		buildcabinet((($frontedge!=$cabinet->FrontEdge && !isset($_GET["rear"])) || $frontedge==$cabinet->FrontEdge && isset($_GET["rear"])));
+		buildcabinet((($frontedge!=$cabinet->FrontEdge && !isset($_GET["rear"])) || $frontedge==$cabinet->FrontEdge && isset($_GET["rear"])),$side);
 	}
 
 	$dcID=$cabinets[0]->DataCenterID;
 	$dc->DataCenterID=$dcID;
 	$dc->GetDataCenterbyID();
+
+	// We're done processing devices so build the legend and style blocks
+    if (!empty($deptswithcolor)) {
+        foreach ($deptswithcolor as $deptid => $row) {
+            // If head is empty then we don't have any custom colors defined above so add a style container for these
+            if($head==""){
+                $head.="\t\t<style type=\"text/css\">\n";
+            }
+            $head.="\t\t\t.dept$deptid {background-color: {$row['color']};}\n";
+        }
+    }
 
 	// If $head isn't empty then we must have added some style information so close the tag up.
 	if($head!=""){
