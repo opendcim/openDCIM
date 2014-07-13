@@ -7,8 +7,7 @@ $codeversion="3.2";
 	if (isset($_SERVER['REMOTE_USER'])) {
 		$tests['Remote User']['state']="good";
 		$tests['Remote User']['message']='';
-	}
-	else {
+	}else{
 		$tests['Remote User']['state']="fail";
 		$tests['Remote User']['message']='<a href="http://httpd.apache.org/docs/2.2/howto/auth.html">http://httpd.apache.org/docs/2.2/howto/auth.html</a>';
 		$errors++;
@@ -17,8 +16,7 @@ $codeversion="3.2";
 	if (extension_loaded('mbstring')) {
 		$tests['mbstring']['state']="good";
 		$tests['mbstring']['message']='';
-	}
-	else {
+	}else{
 		$tests['mbstring']['state']="fail";
 		$tests['mbstring']['message']='PHP is missing the <a href="http://php.net/mbstring">mbstring extension</a>';
 		$errors++;
@@ -32,20 +30,46 @@ $codeversion="3.2";
 		$tests['gettext']['message']='PHP is missing the <a href="http://php.net/manual/book.gettext.php">Gettext extension</a>. Please install it.';
 	}
 
+	if(extension_loaded('snmp')) {
+		$tests['snmp']['state']="good";
+		$tests['snmp']['message']='';
+	}else{
+		$tests['snmp']['state']="fail";
+		$tests['snmp']['message']='PHP is missing the <a href="http://php.net/manual/book.snmp.php">snmp extension</a>. Please install it.';
+	}
+
 	$tests['pdo']['message']='';
 	if (extension_loaded('PDO')) {
 		$tests['pdo']['state']="good";
 		if (count(PDO::getAvailableDrivers())>0) {
 			$tests['pdodrivers']['message']='Available drivers: '.implode(", ",PDO::getAvailableDrivers());
 			$tests['pdodrivers']['state']="good";
-		}
-		else {
+			// pdo is loaded check for the db.inc
+			if(file_exists("db.inc.php")){
+				$tests['db.inc']['state']="good";
+				$tests['db.inc']['message']="db.inc.php has been detected and in the proper place";
+				require_once("db.inc.php");
+				// check for strict_trans_tables
+				if(strpos(@end($dbh->query("select @@global.sql_mode;")->fetch()),'STRICT_TRANS_TABLES') === false){
+					$tests['strictdb']['state']="good";
+					$tests['strictdb']['message']='';
+				}else{
+					$tests['strictdb']['state']="fail";
+					$tests['strictdb']['message']='openDCIM does not support STRICT_TRANS_TABLES. The following SQL statement might clear the error for this session.  More information can be found <a href="https://github.com/samilliken/openDCIM/issues/457">here</a>.<br><br><i>SET GLOBAL sql_mode = "";</i>';
+					$errors++;
+				}
+			}else{
+				$tests['db.inc']['state']="fail";
+				$tests['db.inc']['message']="Please copy db.inc.php-dist to db.inc.php and edit appropriately";
+				$errors++;
+			}
+
+		}else{
 			$tests['pdodrivers']['message']='Available drivers: none';
 			$tests['pdodrivers']['state']="fail";
 			$errors++;
 		}
-	}
-	else {
+	}else{
 		$tests['pdo']['state']="fail";
 		$tests['pdo']['message']='openDCIM requires the <a href="http://php.net/manual/pdo.installation.php">PDO extention</a> and you do not appear to have it loaded';
 		$tests['pdodrivers']['state']="fail";
@@ -56,8 +80,7 @@ $codeversion="3.2";
 	if (function_exists('json_encode')) {
 		$tests['json']['state']="good";
 		$tests['json']['message']='PHP json module detected';
-	}
-	else {
+	}else{
 		$tests['json']['state']="fail";
 		$tests['json']['message']='PHP is missing the <a href="http://php.net/manual/book.json.php">JavaScript Object Notation (JSON) extension</a>.  Please install it.';
 		$errors++;
