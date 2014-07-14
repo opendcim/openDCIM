@@ -52,7 +52,7 @@
               "royalblue", "saddlebrown", "salmon", "sandybrown", "seagreen",
               "seashell", "sienna", "silver", "skyblue", "slateblue",
               "slategray", "slategrey", "snow", "springgreen", "steelblue",
-              "tan", "teal", "thistle", "tomato", "turquoise", "violet",
+              "tan", "thistle", "tomato", "turquoise", "violet",
               "violetred", "wheat", "whitesmoke", "yellow", "yellowgreen"
         );
         # decent default color palette for identifying device types
@@ -361,26 +361,41 @@ overlap = scale;
             exit;
         }
         $ft = $formatTypes[$_REQUEST['format']];
-        $dotfile = tempnam('/tmp/', 'graph_');
-        file_put_contents($dotfile, $graphstr);
-        if($ft == 'svg') {
-            header("Content-Type: image/svg+xml");
-            passthru($dotCommand." -Tsvg -o/dev/stdout ".$dotfile, $retval);
-        } elseif($ft == 'png') {
-            header("Content-Type: image/png");
-            passthru($dotCommand." -Tpng -o/dev/stdout ".$dotfile, $retval);
-        } elseif($ft == 'jpg') {
-            header("Content-Type: image/jpeg");
-            passthru($dotCommand." -Tjpg -o/dev/stdout ".$dotfile, $retval);
-        } elseif($ft == 'gif') {
-            header("Content-Type: image/gif");
-            passthru($dotCommand." -Tgif -o/dev/stdout ".$dotfile, $retval);
-        } elseif($ft == 'dot') {
-            header("Content-Type: text/plain");
+        $header = "Content-Type: ";
+        if ($ft == 'dot') {
+            $header .= "text/plain";
             echo $graphstr;
+            exit;
         }
-        unlink($dotfile);
-        exit;
+        $dotfile = tempnam('/tmp/', 'dot_');
+        $graphfile = tempnam('/tmp/', 'graph_');
+        file_put_contents($dotfile, $graphstr);
+        $graph = array();
+        $retval = 0;
+        if($ft == 'svg') {
+            $header .= "image/svg+xml";
+            exec($dotCommand." -Tsvg -o".$graphfile." ".$dotfile, $graph, $retval);
+        } elseif($ft == 'png') {
+            $header .= "image/png";
+            exec($dotCommand." -Tpng -o".$graphfile." ".$dotfile, $graph, $retval);
+        } elseif($ft == 'jpg') {
+            $header .= "image/jpeg";
+            exec($dotCommand." -Tjpg -o".$graphfile." ".$dotfile, $graph, $retval);
+        } elseif($ft == 'gif') {
+            $header .= "image/gif";
+            exec($dotCommand." -Tgif -o".$graphfile." ".$dotfile, $graph, $retval);
+        }
+        if($retval == 0) {
+            header($header);
+            unlink($dotfile);
+            print file_get_contents($graphfile);
+            unlink($graphfile);
+            exit;
+        } elseif ($ft == 'svg') {
+            $body = "<span class=\"errmsg\">ERROR: There was a problem processing the graph. Probably a bug, please submit a report containing the contents of ".$dotfile." to the openDCIM bug tracker</span>";
+        } else {
+            $body = "<span class=\"errmsg\">ERROR: There was a problem processing the graph. Try choosing 'svg' as the output type.</span>";
+        }
     } else {
         $body="";
         if(isset($_REQUEST['containmenttype'])) {
