@@ -313,15 +313,17 @@ class Cabinet {
 		$cabrow=new CabRow();
 		$cabrow->CabRowID=$this->CabRowID;
 
-		$sql="SELECT MIN(MapX1) AS MapX1, MAX(MapX2) AS MapX2, AVG(MapX1) AS AvgX1, 
-			AVG(MapX2) AS AvgX2, COUNT(*) AS CabCount FROM fac_Cabinet WHERE 
-			CabRowID=$cabrow->CabRowID AND MapX1>0 AND MapX2>0 AND MapY1>0 and MapY2>0;";
+		$sql="SELECT MIN(MapX1) AS MapX1, MAX(MapX2) AS MapX2, MIN(MapY1) AS MapY1, 
+			MAX(MapY2) AS MapY2, AVG(MapX1) AS AvgX1, AVG(MapX2) AS AvgX2, COUNT(*) AS 
+			CabCount FROM fac_Cabinet WHERE CabRowID=$cabrow->CabRowID AND MapX1>0 
+			AND MapX2>0 AND MapY1>0 and MapY2>0;";
 		$shape=$dbh->query($sql)->fetch();
 
 		// size of average cabinet
 		$sX=$shape["AvgX2"]-$shape["AvgX1"];
 		// change in x and y to give overall shape of row
 		$cX=$shape["MapX2"]-$shape["MapX1"];
+		$cY=$shape["MapY2"]-$shape["MapY1"];
 
 		/*
 		 * In rows with more than one cabinet we can determine the layout based on
@@ -331,7 +333,7 @@ class Cabinet {
 		 *
 		 * change = size * number of cabinets
 		 */
-		$layout=($cX==$sX*$shape["CabCount"])?"Horizontal":"Vertical";
+		$layout=($cX==$sX*$shape["CabCount"] || $cX>$cY)?"Horizontal":"Vertical";
 		$order=($layout=="Horizontal")?"MapX1,":"MapY1,";
 		$frontedge=$cabrow->GetCabRowFrontEdge($layout);
 
