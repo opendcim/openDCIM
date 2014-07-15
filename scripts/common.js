@@ -1236,8 +1236,9 @@ function LameLogDisplay(){
  
 		_source: function(request,response){
 			var matcher=new RegExp( $.ui.autocomplete.escapeRegex(request.term), "i" );
-			response(this.element.children("option").map(function() {
-				var text=$(this).text();
+			var cachetest=this.element.children("option");
+			response(cachetest.map(function() {
+				var text=this.text;
 				if(this.value && (!request.term || matcher.test(text))){
 					return {
 						label: text,
@@ -1494,7 +1495,10 @@ function LameLogDisplay(){
 					devlist.append('<option value='+device.DeviceID+'>'+device.Label+'</option>');
 				});
 				target.html(devlist).find('select').val(target.data('default'));
-				devlist.combobox();
+				// if more than 2200 items returned don't use the combo box. we can look at this number later
+				if(data.length<2200){
+					devlist.combobox();
+				}
 				devlist.change();
 			});
 

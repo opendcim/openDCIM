@@ -3050,56 +3050,31 @@ class DevicePorts {
 			// Gets a little complicated if you are on a blade device and looking for other patch candidates
 			// But putting this logic into the SQL is extremely processor intensive, so do the conditional on the outside
 			// and only take the processing hit when there's a child device as the source
-			if ( $dev->ParentDevice == 0 ) {
-				$sql="SELECT DISTINCT a.* from fac_Device a, fac_Cabinet b where 
-				a.Ports>0 and ((Cabinet=CabinetID and Cabinet=$dev->Cabinet) or 
-				(Cabinet=0 and ParentDevice in (select DeviceID from fac_Device where Cabinet=$dev->Cabinet and ChassisSlots>0)))
-				$rights$pp GROUP BY DeviceID ORDER BY Position DESC, Label ASC;";
-			} else {
-				$parent = $dev->WhosYourDaddy();
-				
-				$sql="SELECT DISTINCT a.* from fac_Device a, fac_Cabinet b where 
-				a.Ports>0 and ((Cabinet=CabinetID and Cabinet=$parent->Cabinet) or 
-				(Cabinet=0 and ParentDevice in (select DeviceID from fac_Device where Cabinet=$parent->Cabinet and ChassisSlots>0)))
-				$rights$pp GROUP BY DeviceID ORDER BY Position DESC, Label ASC;";
-			}
-			
-			// Run two queries - first, devices in the same cabinet as the device patching from
+			$cabinetID=($dev->ParentDevice==0)?$dev->Cabinet:$dev->WhosYourDaddy()->Cabinet;
+			$sqlSameCabDevice="SELECT * FROM fac_Device WHERE Ports>0 AND 
+				Cabinet=$cabinetID $rights$pp GROUP BY DeviceID ORDER BY Position 
+				DESC, Label ASC;";
+			$sqlSameCabChildDevice="SELECT * FROM fac_Device WHERE Ports>0 AND 
+				Cabinet=0 AND ParentDevice IN (SELECT DeviceID FROM fac_Device WHERE 
+				Cabinet=$cabinetID AND (ChassisSlots>0 OR RearChassisSlots>0)) $rights$pp 
+				GROUP BY DeviceID ORDER BY Position DESC, Label ASC;";
+			$sqlDiffCabDevice="SELECT * FROM fac_Device WHERE Ports>0 AND 
+				Cabinet!=$cabinetID $rights$pp GROUP BY DeviceID ORDER BY Position DESC, 
+				Label ASC;";
+			$sqlDiffCabChildDevice="SELECT * FROM fac_Device WHERE Ports>0 AND Cabinet=0 
+				AND ParentDevice IN (SELECT DeviceID FROM fac_Device WHERE 
+				Cabinet!=$cabinetID AND (ChassisSlots>0 OR RearChassisSlots>0)) $rights$pp 
+				GROUP BY DeviceID ORDER BY Position DESC, Label ASC;";
 
-			foreach($dbh->query($sql) as $row){
-				// false to skip rights check we filtered using sql above
-				$tmpDev=Device::RowToObject($row,false);
-				if ( $tmpDev->ParentDevice != 0 ) {
-					/* Child device of a chassis */
-					$parent = $tmpDev->WhosYourDaddy();
-					$tmpDev->Cabinet = $parent->Cabinet;
-				}				
-				$candidates[]=array("DeviceID"=>$tmpDev->DeviceID, "Label"=>$tmpDev->Label, "CabinetID"=>$tmpDev->Cabinet);
-			}
-			// Then run the same query, but for the rest of the devices in the database
-			if ( $dev->ParentDevice == 0 ) {
-				$sql="SELECT DISTINCT a.* from fac_Device a, fac_Cabinet b where 
-				a.Ports>0 and ((Cabinet=CabinetID and Cabinet!=$dev->Cabinet) or 
-				(Cabinet=0 and ParentDevice in (select DeviceID from fac_Device where Cabinet!=$dev->Cabinet and ChassisSlots>0)))
-				$rights$pp GROUP BY DeviceID ORDER BY Label ASC;";
-			} else {
-				$sql="SELECT DISTINCT a.* from fac_Device a, fac_Cabinet b where 
-				a.Ports>0 and ((Cabinet=CabinetID and Cabinet!=$parent->Cabinet) or 
-				(Cabinet=0 and ParentDevice in (select DeviceID from fac_Device where Cabinet!=$parent->Cabinet and ChassisSlots>0)))
-				$rights$pp GROUP BY DeviceID ORDER BY Label ASC;";
-			}
-			
-			// error_log( strtr( $sql, array( "\n"=>"", "\t"=>"" )) );
-			
-			foreach($dbh->query($sql) as $row){
-				// false to skip rights check we filtered using sql above
-				$tmpDev=Device::RowToObject($row,false);
-				if ( $tmpDev->ParentDevice != 0 ) {
-					/* Child device of a chassis */
-					$parent = $tmpDev->WhosYourDaddy();
-					$tmpDev->Cabinet = $parent->Cabinet;
+			// Running these four simple queries is supposed to be faster than the previous complicated ones
+			foreach(array($sqlSameCabDevice, $sqlSameCabChildDevice, $sqlDiffCabDevice, $sqlDiffCabChildDevice) as $sql){
+				foreach($dbh->query($sql) as $row){
+					// false to skip rights check we filtered using sql above
+					$tmpDev=Device::RowToObject($row,false);
+					// Child devices the cabinet will be 0 this will fix that
+					$tmpDev->Cabinet=($tmpDev->ParentDevice!=0)?$tmpDev->WhosYourDaddy()->Cabinet:$tmpDev->Cabinet;
+					$candidates[]=array("DeviceID" => $tmpDev->DeviceID, "Label" => $tmpDev->Label, "CabinetID" => $tmpDev->Cabinet);
 				}
-				$candidates[]=array("DeviceID"=>$tmpDev->DeviceID, "Label"=>$tmpDev->Label, "CabinetID"=>$tmpDev->Cabinet);
 			}
 		}else{
 			$sql="SELECT a.*, b.Cabinet as CabinetID FROM fac_Ports a, fac_Device b WHERE 
