@@ -222,9 +222,9 @@ class LogActions {
 		// a prepared statement and hope for the best.  We'll just need to be careful on
 		// the display end of it to make sure we don't allow something crazy out.
 		global $dbh;
-		$stmt=$dbh->prepare("INSERT INTO fac_GenericLog (UserID, Class, ObjectID, ChildID, Action, Property, OldVal, NewVal) 
-			VALUES (:UserID, :Class, :ObjectID, :ChildID, :Action, :Property, :OldVal, :NewVal)");
 
+		$stmt=$dbh->prepare('INSERT INTO fac_GenericLog (UserID, Class, ObjectID, ChildID, Property, Action, OldVal, NewVal, Time) 
+			VALUES (:UserID, :Class, :ObjectID, :ChildID, :Property, :Action, :OldVal, :NewVal, CURRENT_TIMESTAMP)');
 		$stmt->bindParam(':UserID', $this->UserID);
 		$stmt->bindParam(':Class', $this->Class);
 		$stmt->bindParam(':ObjectID', $this->ObjectID);
@@ -234,10 +234,15 @@ class LogActions {
 		$stmt->bindParam(':OldVal', $this->OldVal);
 		$stmt->bindParam(':NewVal', $this->NewVal);
 
-		if(!$stmt->execute()){
-			$info=$dbh->errorInfo();
+		// These values can't be null and the PDO statement was being a bitch about it
+		$this->Action=(is_null($this->Action))?'':$this->Action;
+		$this->Property=(is_null($this->Property))?'':$this->Property;
+		$this->OldVal=(is_null($this->OldVal))?'':$this->OldVal;
+		$this->NewVal=(is_null($this->NewVal))?'':$this->NewVal;
 
-			error_log("PDO Error::LogActions:WriteToDB {$info[2]}");
+		if(!$stmt->execute()){
+			$info=$stmt->errorInfo();
+			error_log("PDO Error::LogActions:WriteToDB {$info[1]}::{$info[2]}");
 			return false;
 		}
 		return true;
