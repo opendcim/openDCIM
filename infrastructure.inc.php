@@ -556,14 +556,14 @@ class DataCenter {
 			}
 			
 			//Key
-			$overview['title']=__("Worst state of cabinets");
-			$space['title']=__("Occupied space");
-			$weight['title']=__("Calculated weight");
-			$power['title']=__("Calculated power usage");
+			$overview['title']=__("Composite View of Cabinets");
+			$space['title']=__("Occupied Space");
+			$weight['title']=__("Calculated Weight");
+			$power['title']=__("Calculated Power Usage");
 			$temperature['title']=($titletemp>0)?__("Measured on")." ".$titletemp:__("no data");
 			$humidity['title']=($titletemp>0)?__("Measured on")." ".$titletemp:__("no data");
 			$realpower['title']=($titlerp>0)?__("Measured on")." ".$titlerp:__("no data");
-			$airflow['title']=__("Air flow");
+			$airflow['title']=__("Air Flow");
 
 			$statusarray=array('overview' => $overview,
 								'space' => $space,
