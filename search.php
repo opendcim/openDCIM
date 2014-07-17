@@ -75,23 +75,20 @@
 	while(list($devID,$device)=each($devList)){
 		$temp[$x]['devid']=$devID;
 		$temp[$x]['label']=$device->Label;
-		$temp[$x]['type']=$device->DeviceType;
-		$temp[$x]['order']=($device->BackSide?"R":(($device->ParentDevice==0)?"Z":"F")).sprintf("%02d",$device->Position);
+		$temp[$x]['type']='srv'; // empty chassis devices need no special treatment leave them as a server
 		$temp[$x]['cabinet']=$device->Cabinet;
 		$temp[$x]['parent']=$device->ParentDevice;
 		$temp[$x]['rights']=$device->Rights;
 		$cabtemp[$device->Cabinet]="";
 		++$x;
-
 		if($device->ParentDevice!=0){
-			$ascendencia=array();
-			$ascendencia=$device->GetDeviceLineage();
-			for ($i=2; $i<=sizeof($ascendencia); $i++){
-				$childList[$ascendencia[$i]->DeviceID]=""; // Create a list of chassis devices based on children present
+			foreach($uncleDaddy=$device->GetDeviceLineage() as $branches){
+				if($branches->ParentDevice>0){
+					$childList[$branches->ParentDevice]=""; // Create a list of chassis devices based on children present
+				}
 			}
 		}
 	}
-	
 	if(isset($vmList)){
 		foreach($vmList as $vmRow){
 			$dev->DeviceID=$vmRow->DeviceID;
@@ -111,15 +108,9 @@
 				$temp[$x]['rights']=$device->Rights;
 				$cabtemp[$dev->Cabinet]['name']="";
 				++$x;
-
 				if($dev->ParentDevice!=0){
-					$ascendencia=array();
-					$ascendencia=$dev->GetDeviceLineage();
-					for ($i=2; $i<=sizeof($ascendencia); $i++){
-						$childList[$ascendencia[$i]->DeviceID]=""; // Create a list of chassis devices based on children present
-					}
+					$childList[$dev->ParentDevice]=""; // Create a list of chassis devices based on children present
 				}
-				
 			}
 		}
 	}
@@ -130,7 +121,7 @@
 		foreach($childList as $key => $blank){
 			$a=ArraySearchRecursive($key,$temp,'devid');
 			if(is_array($a)){
-				$temp[$a[0]]['type']='Chassis'; // Device already in the list so set it to chassis
+				$temp[$a[0]]['type']='chassis'; // Device already in the list so set it to chassis
 			}else{
 				// Device doesn't exist so we need to add it to the list for display purposes
 				$dev->DeviceID=$key;
@@ -138,8 +129,7 @@
 
 				$temp[$x]['devid']=$dev->DeviceID;
 				$temp[$x]['label']=$dev->Label;
-				$temp[$x]['type']='Chassis';
-				$temp[$x]['order']=($dev->BackSide?"R":(($dev->ParentDevice==0)?"Z":"F")).sprintf("%02d",$dev->Position);
+				$temp[$x]['type']='chassis';
 				$temp[$x]['cabinet']=$dev->Cabinet;
 				$temp[$x]['parent']=$dev->ParentDevice;
 				$temp[$x]['rights']=$dev->Rights;
@@ -150,7 +140,7 @@
 	}
 
 	// Add racks that matched the search term to the rack list
-	if(isset($cabList) && is_array($cabList)){
+	if(isset($cabList)&&is_array($cabList)){
 		foreach($cabList as $CabinetID => $row){
 			$cabtemp[$CabinetID]['name']=$row->Location;
 		}
@@ -187,10 +177,6 @@
 			$dctemp[0]='Storage Room'; // Add datacenter id to list for loop
 		}
 	}
-	// Sort cabinet array
-	if(!empty($cabtemp)){
-		$cabtemp=sort2d($cabtemp,'name');
-	}	
 	// Add Datacenter names to temp array
 	foreach($dctemp as $DataCenterID => $Name){
 		if($DataCenterID>0){
@@ -199,11 +185,18 @@
 			$dctemp[$DataCenterID]=$dc->Name;
 		}
 	}
-
-	// Sort device array
+	/*  SORT ALL THE THINGS!  */
+	// Sort the dc list
+	if(!empty($dctemp)){
+		natcasesort($dctemp);
+	}
+	// Sort cabinet array
+	if(!empty($cabtemp)){
+		$cabtemp=sort2d($cabtemp,'name');
+	}
+	// Sort array based on device label
 	if(!empty($temp)){
-		$devList=arsort2d($temp,'order');
-		$devList2=sort2d($temp,'order');
+		$devList=sort2d($temp,'label');
 	}
 
 	if($resultcount>0){
@@ -219,50 +212,64 @@
 		exit;
 	}
 
-	function NestedBladesList ($key){
-	//Print blades info if actual device ($key) is a chassis
-	
-		global $devList2, $vmList;
-		
-		$strBlades= "\t\t\t\t\t\t<ul>\n";
-		foreach($devList2 as $chKey => $chRow){
-			if($chRow['parent']==$devList2[$key]['devid']){
-				//In case of VMHost missing from inventory, this shouldn't ever happen
-				if($chRow['label']=='' || is_null($chRow['label'])){$chRow['label']='VM Host Missing From Inventory';}
-				
-				if($chRow['rights']=="Write"){
-					$strBlades.= "\t\t\t\t\t\t<li>[S:".($chRow['order'][0]=="Z"?substr($chRow['order'],1):$chRow['order'])."] <a href=\"devices.php?deviceid={$chRow['devid']}\">".$chRow['label']."</a> (".$chRow['type'].")\n";
-				}else{
-					$strBlades.= "\t\t\t\t\t\t<li>[S:".($chRow['order'][0]=="Z"?substr($chRow['order'],1):$chRow['order'])."] ".$chRow['label']." (".$chRow['type'].")\n";
-				}
-				// Create a nested list showing all VMs residing on this host.
-				$strVM="";
-				if($chRow['type']=='vm'){
-					foreach($vmList as $usedkey => $vm){
-						if($vm->DeviceID==$chRow['devid']){
-							$strVM.= "\t\t\t\t\t\t\t\t<li><div><img src=\"images/vmcube.png\" alt=\"vm icon\"></div>$vm->vmName</li>\n";
-							// Remove VMs that have already been processed
-							unset($vmList[$usedkey]);
-						}
-					}
-				}
-				if ($strVM!=""){
-					$strBlades.="\t\t\t\t\t\t<ul>\n\t\t\t\t\t\t\t<li>".__("VMs").":<ol>\n".$strVM."\t\t\t\t\t</ol></li>\t\t\t\t\t\t</ul>\n";
-				}
-				//recursive call for children
-				if($chRow['type']=='Chassis'){
-					$strBlades.= NestedBladesList($chKey);
-				}
-				
-				// Remove devices that we have already processed.
-				unset($devList2[$chKey]);
-				$strBlades.= "\t\t\t\t\t\t\t</li>\n"; // Close out current list item
+	// This is the looping portion that we'll call for each device
+	function printDevice($row,$skip=false){
+		global $devList,$vmList;
+
+		if(!$skip){
+			//In case of VMHost missing from inventory, this shouldn't ever happen
+			if($row['label']=='' || is_null($row['label'])){$row['label']='VM Host Missing From Inventory';}
+			if($row['rights']=="Write"){
+				print "\t\t\t\t\t<li><a href=\"devices.php?deviceid={$row['devid']}\">{$row['label']}</a>\n";
+			}else{
+				print "\t\t\t\t\t<li>{$row['label']}\n";
 			}
 		}
-		$strBlades.= "\t\t\t\t\t\t</ul>\n";
-		return $strBlades;
-	}
-	
+		// Created a nested list showing all blades residing in this chassis
+		if($row['type']=='chassis'){
+			print "\t\t\t\t\t\t<ul>\n";
+			foreach($devList as $chKey => $chRow){
+				if($chRow['parent']==$row['devid']){
+					//In case of VMHost missing from inventory, this shouldn't ever happen
+					if($chRow['label']=='' || is_null($chRow['label'])){$chRow['label']='VM Host Missing From Inventory';}
+					$vmhost=($chRow['rights']=="Write")?"<a href=\"devices.php?deviceid={$chRow['devid']}\">{$chRow['label']}</a>":$chRow['label'];
+					print "\t\t\t\t\t\t\t<li><div><img src=\"images/blade.png\" alt=\"blade icon\"></div>$vmhost\n";
+					// Create a nested list showing all VMs residing on this host.
+					if($chRow['type']=='vm'){
+						print "\t\t\t\t\t\t\t\t<ul>\n";
+						foreach($vmList as $usedkey => $vm){
+							if($vm->DeviceID==$chRow['devid']){
+								print "\t\t\t\t\t\t\t\t\t<li><div><img src=\"images/vmcube.png\" alt=\"vm icon\"></div>$vm->vmName</li>\n";
+								// Remove VMs that have already been processed
+								unset($vmList[$usedkey]);
+							}
+						}
+						print "\t\t\t\t\t\t\t\t</ul>\n";
+					}
+					if($chRow['type']=='chassis'){
+						printDevice($chRow,true);
+					}
+					// Remove devices that we have already processed.
+					unset($devList[$chKey]);
+					print "\t\t\t\t\t\t\t</li>\n"; // Close out current list item
+				}
+			}
+			print "\t\t\t\t\t\t</ul>\n";
+		}
+		// Create a nested list showing all VMs residing on this host.
+		if($row['type']=='vm'){
+			echo "\t\t\t\t\t\t<ul>\n";
+			foreach($vmList as $usedkey => $vm){
+				if($vm->DeviceID==$row['devid']){
+					echo "\t\t\t\t\t\t\t<li><div><img src=\"images/vmcube.png\" alt=\"vm icon\"></div>$vm->vmName</li>\n";
+					// Remove VMs that have already been processed
+					unset($vmList[$usedkey]);
+				}
+			}
+			echo "\t\t\t\t\t\t</ul>\n";
+		}
+		echo "\t\t\t\t\t</li>\n";
+	}				
 ?>
 <!doctype html>
 <html>
@@ -359,91 +366,17 @@ $(document).ready(function() {
 				if(isset($pduList)&&is_array($pduList)){
 					// In theory this should be a short list so just parse the entire thing each time we read a cabinet.
 					// if this ends up being a huge time sink, optimize this above then fix logic
-					$strPDU="";
 					foreach($pduList as $key => $row){
 						if($cabID == $row->CabinetID){
-							$strPDU.= "\t\t\t\t\t\t<li class=\"pdu\"><a href=\"power_pdu.php?pduid=$row->PDUID\">$row->Label</a>\n";
+							print "\t\t\t\t\t<li class=\"pdu\"><a href=\"power_pdu.php?pduid=$row->PDUID\">$row->Label</a>\n";
 						}
 					}
-					if ($strPDU!=""){
-						print "\t\t\t\t\t<li>".__("Power Distribution").":<ol>\n".$strPDU."\t\t\t\t\t</ol></li>";
-					}
 				}
-				
 				if(!empty($devList)){
-					$strDEV="";
 					foreach($devList as $key => $row){
-						if($cabID==$row['cabinet'] && $row['order'][0]=="Z"){
-							//In case of VMHost missing from inventory, this shouldn't ever happen
-							if($row['label']=='' || is_null($row['label'])){$row['label']='VM Host Missing From Inventory';}
-							
-							if($row['rights']=="Write"){
-								$strDEV.= "\t\t\t\t\t\t<li>[U:".(substr($row['order'],1))."] <a href=\"devices.php?deviceid={$row['devid']}\">".$row['label']."</a> (".$row['type'].")\n";
-							}else{
-								$strDEV.= "\t\t\t\t\t\t<li>[U:".(substr($row['order'],1))."] ".$row['label']." (".$row['type'].")\n";
-							}
-							// Created a nested list showing all blades residing in this chassis
-							if($row['type']=='Chassis'){
-								$strDEV.= NestedBladesList($key);
-							}
-							
-							// Create a nested list showing all VMs residing on this host.
-							$strVM="";
-							if($row['type']=='vm'){
-								foreach($vmList as $usedkey => $vm){
-									if($vm->DeviceID==$row['devid']){
-										$strVM.= "\t\t\t\t\t\t\t\t<li><div><img src=\"images/vmcube.png\" alt=\"vm icon\"></div>$vm->vmName</li>\n";
-										// Remove VMs that have already been processed
-										unset($vmList[$usedkey]);
-									}
-								}
-							}
-							if ($strVM!=""){
-								$strDEV.="\t\t\t\t\t\t<ul>\n\t\t\t\t\t\t\t<li>".__("VMs").":<ol>\n".$strVM."\t\t\t\t\t</ol></li>\t\t\t\t\t\t</ul>\n";
-							}
-							$strDEV.= "\t\t\t\t\t</li>\n";
-							unset($devList[$key]);
+						if($cabID==$row['cabinet']){
+							printDevice($row);
 						} 
-					}
-					if ($strDEV!=""){
-						print "\t\t\t\t\t<li>".__("Front Devices").":<ol>\n".$strDEV."\t\t\t\t\t</ol></li>";
-					}
-					$strDEV="";
-					foreach($devList as $key => $row){
-						if($cabID==$row['cabinet'] && $row['order'][0]!="Z"){
-							//In case of VMHost missing from inventory, this shouldn't ever happen
-							if($row['label']=='' || is_null($row['label'])){$row['label']='VM Host Missing From Inventory';}
-							
-							if($row['rights']=="Write"){
-								$strDEV.= "\t\t\t\t\t\t<li>[U:".($row['order'])."] <a href=\"devices.php?deviceid={$row['devid']}\">".$row['label']."</a> (".$row['type'].")\n";
-							}else{
-								$strDEV.= "\t\t\t\t\t\t<li>[U:".($row['order'])."] ".$row['label']." (".$row['type'].")\n";
-							}
-							// Created a nested list showing all blades residing in this chassis
-							if($row['type']=='Chassis'){
-								$strDEV.= NestedBladesList($key);
-							}
-							
-							// Create a nested list showing all VMs residing on this host.
-							$strVM="";
-							if($row['type']=='vm'){
-								foreach($vmList as $usedkey => $vm){
-									if($vm->DeviceID==$row['devid']){
-										$strVM.= "\t\t\t\t\t\t\t\t<li><div><img src=\"images/vmcube.png\" alt=\"vm icon\"></div>$vm->vmName</li>\n";
-										// Remove VMs that have already been processed
-										unset($vmList[$usedkey]);
-									}
-								}
-							}
-							if ($strVM!=""){
-								$strDEV.="\t\t\t\t\t\t<ul>\n\t\t\t\t\t\t\t<li>".__("VMs").":<ol>\n".$strVM."\t\t\t\t\t</ol></li>\t\t\t\t\t\t</ul>\n";
-							}
-							$strDEV.= "\t\t\t\t\t</li>\n";
-							unset($devList[$key]);
-						} 
-					}
-					if ($strDEV!=""){
-						print "\t\t\t\t\t<li>".__("Rear Devices").":<ol>\n".$strDEV."\t\t\t\t\t</ol></li>";
 					}
 				}
 				print "\t\t\t\t</ol>\n\t\t\t</li>\n";
