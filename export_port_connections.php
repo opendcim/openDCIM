@@ -92,13 +92,15 @@
 		$sheet->getActiveSheet()->setTitle($dev->Label);
 		
 		// Insert a picture into the device specific worksheet
-		$img = new PHPExcel_Worksheet_Drawing();
-		$img->setWorksheet($sheet->setActiveSheetIndex($devNum));
-		$img->setName($dev->Label);
-		$img->setPath("pictures/".$devTmpl->FrontPictureFile);
-		$img->setCoordinates('B9');
-		$img->setOffsetX(1);
-		$img->setOffsetY(5);
+		if ( file_exists( "pictures/".$devTmpl->FrontPictureFile ) ) {
+			$img = new PHPExcel_Worksheet_Drawing();
+			$img->setWorksheet($sheet->setActiveSheetIndex($devNum));
+			$img->setName($dev->Label);
+			$img->setPath("pictures/".$devTmpl->FrontPictureFile);
+			$img->setCoordinates('B9');
+			$img->setOffsetX(1);
+			$img->setOffsetY(5);
+		}
 		
 		foreach( range('A','B') as $columnID) {
 			$sheet->getActiveSheet()->getColumnDimension($columnID)->setAutoSize(true);
