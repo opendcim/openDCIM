@@ -453,6 +453,25 @@ class PDF_Diag extends PDF_Sector {
 			$mfg->GetManufacturerByID();
 			$pdf->Cell( $cellWidths[9], 6, $mfg->Name." ".$templ->Model, 'LBRT', 1, 'L', $fill );
 
+			if (count($connList) > 2) {
+				for ($connCount = 2; $connCount < count($connList); $connCount += 2 ) {
+					$pdf->Cell( $cellWidths[0], 6, '', 'LBRT', 0, 'L', $fill );
+					$pdf->Cell( $cellWidths[1], 6, '', 'LBRT', 0, 'L', $fill );
+					$pdf->Cell( $cellWidths[2], 6, '', 'LBRT', 0, 'L', $fill );
+					$pdf->Cell( $cellWidths[3], 6, '', 'LBRT', 0, 'L', $fill );
+					$pdf->Cell( $cellWidths[4], 6, '', 'LBRT', 0, 'L', $fill );
+					$pdf->Cell( $cellWidths[5], 6, '', 'LBRT', 0, 'L', $fill );
+					$pdf->Cell( $cellWidths[6], 6, '', 'LBRT', 0, 'L', $fill );
+					@$pdu->PDUID=$connList[$connCount]->PDUID;
+					$pdu->GetPDU();
+					$pdf->Cell( $cellWidths[7], 6, (isset($connList[$connCount]))?$pdu->Label.' ['.$connList[$connCount]->PDUPosition.']':"", 'LBRT', 0, 'L', $fill );
+					@$pdu->PDUID=$connList[$connCount+1]->PDUID;
+					$pdu->GetPDU();
+					$pdf->Cell( $cellWidths[8], 6, (isset($connList[$connCount+1]))?$pdu->Label.' ['.$connList[$connCount+1]->PDUPosition.']':"", 'LBRT', 0, 'L', $fill );
+					$pdf->Cell( $cellWidths[9], 6, '', 'LBRT', 1, 'L', $fill );
+				}
+			}
+
 			$pdf->Cell( $cellWidths[0], 6, '', 'LBRT', 0, 'L', $fill );
 			$pdf->Cell( $cellWidths[1], 6, '', 'LBRT', 0, 'L', $fill );
 			$pdf->Cell( $cellWidths[2], 6, '', 'LBRT', 0, 'L', $fill );
