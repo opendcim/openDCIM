@@ -2331,7 +2331,7 @@ class Device {
 		if(($parentTempl->Model=='HTRAY' || $parentTempl->Model=='VTRAY') || $slot->GetSlot()){
 			// If we're dealing with a shelf mimic what GetSlot() would have done for our fake slot
 			if($parentTempl->Model=='HTRAY' || $parentTempl->Model=='VTRAY'){
-				$imageratio=($hor_blade)?($width/$height):($height/$width);
+				$imageratio=($hor_blade || (!$hor_blade && $parentTempl->Model=='HTRAY'))?($width/$height):($height/$width);
 				$slot->W=($parentTempl->Model=='HTRAY')?$parentDetails->targetWidth/$parentDev->ChassisSlots:$parentDetails->targetWidth;
 				$slot->H=($parentTempl->Model=='HTRAY')?$parentDetails->targetHeight:$parentDetails->targetHeight/$parentDev->ChassisSlots;
 				$slot->X=($parentTempl->Model=='HTRAY')?($rear)?($parentDev->ChassisSlots-$this->Position-$this->Height+1)*$slot->W:($slot->Position-1)*$slot->W:0;
@@ -2345,7 +2345,7 @@ class Device {
 				$slot->X=($parentTempl->Model=='VTRAY')?($parentDetails->targetWidth-$slot->W)/2:$slot->X;
 
 				// This covers the event that an image scaled properly will be too wide for the slot.
-				// Recalculate all the things!
+				// Recalculate all the things!  Shelves are stupid.
 				if($parentTempl->Model=='VTRAY' && $slot->W>$parentDetails->targetWidth){
 					$originalH=$slot->H;
 					$originalY=$slot->Y;
@@ -2353,6 +2353,12 @@ class Device {
 					$slot->H=$slot->W/$imageratio;
 					$slot->X=0;
 					$slot->Y=$originalH-$slot->H;
+				}
+				if($parentTempl->Model=='HTRAY' && $slot->W>$slot->H*$imageratio){
+					$originalW=$slot->W;
+					$originalX=$slot->X;
+					$slot->W=$slot->H*$imageratio;
+					$slot->X=($rear)?$originalX+($originalW-$slot->W):$slot->X;
 				}
 				// Reset the zoome on the parent to 1 just for trays
 				$parentDetails->zoomX=1;
