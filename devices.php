@@ -1434,7 +1434,7 @@ echo '			</select>
 			</div>
 		</div>
 		<div>
-		   <div><label for="height">',__("Height"),'</label></div>
+		   <div><label for="height">',($dev->ParentDevice==0)?__("Height"):__("Number of slots"),'</label></div>
 		   <div><input type="number" class="required,validate[custom[onlyNumberSp]]" name="height" id="height" size="4" value="',$dev->Height,'"></div>
 		</div>
 		<div>
@@ -1896,6 +1896,7 @@ echo '	<div class="table">
 		// Make the cabinet and template selections smart comboboxes
 		$('#cabinetid').combobox();
 		$('#templateid').combobox();
+		$('select[name=parentdevice]').combobox();
 
 	});
 </script>
