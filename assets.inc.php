@@ -2348,7 +2348,6 @@ class Device {
 				// Recalculate all the things!  Shelves are stupid.
 				if($parentTempl->Model=='VTRAY' && $slot->W>$parentDetails->targetWidth){
 					$originalH=$slot->H;
-					$originalY=$slot->Y;
 					$slot->W=$parentDetails->targetWidth;
 					$slot->H=$slot->W/$imageratio;
 					$slot->X=0;
@@ -2359,6 +2358,10 @@ class Device {
 					$originalX=$slot->X;
 					$slot->W=$slot->H*$imageratio;
 					$slot->X=($rear)?$originalX+($originalW-$slot->W):$slot->X;
+				}elseif($parentTempl->Model=='HTRAY' && $slot->H>$slot->W*$this->Height/$imageratio){
+					$originalH=$slot->H;
+					$slot->H=($rear)?$slot->W*$imageratio:$slot->W/$imageratio;
+					$slot->Y=$originalH-$slot->H;
 				}
 				// Reset the zoome on the parent to 1 just for trays
 				$parentDetails->zoomX=1;
