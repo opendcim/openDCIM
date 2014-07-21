@@ -410,6 +410,7 @@ class PDF_Diag extends PDF_Sector {
 	$pdf->Ln();
 
 	function printRow($devRow,$connection,$pdf,$templ,$fill,$cellWidths,$pdu,$mfg){
+		global $fill;
 		$connection->DeviceID=$devRow->DeviceID;
 		$connList=$connection->GetConnectionsByDevice();
 
