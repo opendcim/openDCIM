@@ -3,7 +3,7 @@
 	require_once( 'facilities.inc.php' );
 	require_once( 'swiftmailer/swift_required.php' );
 	
-	if(!$user->RackRequest){
+	if($config->ParameterArray["RackRequests"] != "enabled" || !$user->RackRequest){
 		// No soup for you.
 		header('Location: '.redirect());
 		exit;

@@ -594,7 +594,7 @@ if($config->ParameterArray["WorkOrderBuilder"]){
 	}
 }
 
-if ( $user->RackRequest ) {
+if ( $config->ParameterArray["RackRequests"] == "enabled" && $user->RackRequest ) {
 	$rrmenu[]='<a href="rackrequest.php"><span>'.__("Rack Request Form").'</span></a>';
 }
 if ( $user->ContactAdmin ) {
