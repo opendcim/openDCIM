@@ -27,7 +27,9 @@ function setCookie(c_name, value) {
 // a way too specific function for scrolling a div
 function scrollolog(){
 	var olog=$('#olog .table').parent('div');
-	olog[0].scrollTop=olog[0].scrollHeight;
+	if(typeof olog[0]!='undefined'){
+		olog[0].scrollTop=olog[0].scrollHeight;
+	}
 }
 
 //Notes render function
