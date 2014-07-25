@@ -55,20 +55,20 @@
       
 		$htmlMessage="<html>
 			<head>
-			   <title>".__('Virtual Machine Inventory Exception Report')."</title>
+			   <title>".__("Virtual Machine Inventory Exception Report")."</title>
 			</head>
 			<body>
-			<p>".__('This is an automated message from the')." {$config->ParameterArray["OrgName"]} ".__('Inventory
+			<p>".__("This is an automated message from the")." {$config->ParameterArray["OrgName"]} ".__("Inventory
 			Process.  This process is scheduled to run once each business day.</p>
-			<p>The following')." $esxCount ".__('Virtual Machines were detected in the environment
+			<p>The following")." $esxCount ".__("Virtual Machines were detected in the environment
 			and do not have an associated owner record.  It is assumed that
 			these are new Virtual Machines.  Please click on the links below to update
-			ownership information.')."</p>
-			<p>".__('If the appropriate department is not listed as an option for ownership, please
-			send an email to')." {$config->ParameterArray["FacMgrMail"]} ".__('to have it added.')."</p>
+			ownership information.")."</p>
+			<p>".__("If the appropriate department is not listed as an option for ownership, please
+			send an email to")." {$config->ParameterArray["FacMgrMail"]} ".__("to have it added.")."</p>
 			<p>
 			<table width=\"100%\" border=\"1\" padding=\"0\" bgcolor=white>
-			<tr><td>".__('Server Name')."</td><td>".__('VM Name')."</td><td>".__('Status')."</td><td>".__('Last Updated')."</td></tr>";
+			<tr><td>".__("Server Name")."</td><td>".__("VM Name")."</td><td>".__("Status")."</td><td>".__("Last Updated")."</td></tr>";
 
 		foreach($esxList as $esxRow){
 			$dev->DeviceID=$esxRow->DeviceID;
@@ -103,16 +103,16 @@
       
 		$htmlMessage="<html>
 			<head>
-			   <title>".__('Virtual Machine Inventory Expiration Report')."</title>
+			   <title>".__("Virtual Machine Inventory Expiration Report")."</title>
 			</head>
 			<body>
-			<p>".__('This is an automated message from the')." {$config->ParameterArray["OrgName"]} ".__('Virtual Machine Inventory
-			Process.  This process is scheduled to run once each business day.')."</p>
-			<p>".__('The following')." $esxCount ".__('Virtual Machines have not been detected within the
-			past')." {$config->ParameterArray["VMExpirationTime"]} ".__('days and are assumed to be expired.  They are being removed from the
-			inventory system.')."</p>
+			<p>".__("This is an automated message from the")." {$config->ParameterArray["OrgName"]} ".__("Virtual Machine Inventory
+			Process.  This process is scheduled to run once each business day.")."</p>
+			<p>".__("The following")." $esxCount ".__("Virtual Machines have not been detected within the
+			past")." {$config->ParameterArray["VMExpirationTime"]} ".__("days and are assumed to be expired.  They are being removed from the
+			inventory system.")."</p>
 			<table width=\"100%\" border=\"1\" padding=\"0\" bgcolor=white>
-			<tr><td>".__('Server Name')."</td><td>".__('VM Name')."</td><td>".__('Status')."</td><td>".__('Last Updated')."</td></tr>";
+			<tr><td>".__("Server Name")."</td><td>".__("VM Name")."</td><td>".__("Status")."</td><td>".__("Last Updated")."</td></tr>";
 
 		foreach($esxList as $esxRow){
 			$dev->DeviceID=$esxRow->DeviceID;

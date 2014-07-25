@@ -735,7 +735,7 @@ if($config->ParameterArray["CDUToolTips"]=='enabled'){
 </div></div>
 <?php
 	if($dcID>0){
-		print "	<a href=\"dc_stats.php?dc=$dcID\">[ ".__('Return to')." $dc->Name ]</a>";
+		print "	<a href=\"dc_stats.php?dc=$dcID\">[ ".__("Return to")." $dc->Name ]</a>";
 	}
 ?>
 </div>  <!-- END div.main -->

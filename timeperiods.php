@@ -22,7 +22,7 @@
 						break;
 					case 'Update':
 						$period->TimePeriod=$_POST['timeperiod'];
-						$status=__('Updated');
+						$status=__("Updated");
 						$period->UpdatePeriod();
 						break;
 					case 'Delete':

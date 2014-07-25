@@ -34,7 +34,7 @@
 	// Build table to display pending rack requests for inclusion later
 	$rackrequest='';
 	if($config->ParamaterArray["RackRequests"] == "enabled" && $user->RackAdmin){
-		$rackrequest="<h3>".__('Pending Rack Requests')."</h3>\n<div class=\"table whiteborder rackrequest\">\n<div>\n  <div>".__('Submit Time')."</div>\n  <div>".__('Requestor')."</div>\n  <div>".__('System Name')."</div>\n  <div>".__('Department')."</div>\n  <div>".__('Due By')."</div>\n</div>\n";
+		$rackrequest="<h3>".__("Pending Rack Requests")."</h3>\n<div class=\"table whiteborder rackrequest\">\n<div>\n  <div>".__("Submit Time")."</div>\n  <div>".__("Requestor")."</div>\n  <div>".__("System Name")."</div>\n  <div>".__("Department")."</div>\n  <div>".__("Due By")."</div>\n</div>\n";
 
 		$rack=new RackRequest();
 		$tmpContact=new Contact();

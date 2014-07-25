@@ -402,7 +402,7 @@ class PDF_Diag extends PDF_Sector {
 	$pdf->Cell(0,5,$cabmessage,0,1,'C',0);
 	$pdf->SetFont($config->ParameterArray['PDFfont'],'',10);
 	$deviceList = $device->ViewDevicesByCabinet();
-	$headerTags = array( __('Label'), __('SerialNo'), __('AssetTag'), __('Position'), __('Rack Units'), __('#Ports'), __('#PS'), __('PowerConnection1'), __('PowerConnection2'), __('DeviceType') );
+	$headerTags = array( __("Label"), __("SerialNo"), __("AssetTag"), __("Position"), __("Rack Units"), __("#Ports"), __("#PS"), __("PowerConnection1"), __("PowerConnection2"), __("DeviceType") );
 	$cellWidths = array( 45, 40, 20, 18, 20, 15, 10, 35, 35, 50 );
 	$maxval = count( $headerTags );
 	for ( $col = 0; $col < $maxval; $col++ )
@@ -504,7 +504,7 @@ class PDF_Diag extends PDF_Sector {
 	$pdf->SetFont($config->ParameterArray['PDFfont'],'',10);
 	$PDUList=$pdu->GetPDUbyCabinet();
 
-	$headerTags = array( __('Label'), __('NumOutputs'),__('Model'),__('PanelLabel'), __('PanelPole') );
+	$headerTags = array( __("Label"), __("NumOutputs"),__("Model"),__("PanelLabel"), __("PanelPole") );
 	$cellWidths = array(50,30,118,70,20);
 	$maxval = count( $headerTags );
 	for ( $col = 0; $col < $maxval; $col++ )

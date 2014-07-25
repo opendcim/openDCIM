@@ -1469,7 +1469,7 @@ class Device {
 				for($n=$tmpDev->Ports; $n<$this->Ports; ++$n){
 					$p=new DevicePorts;
 					$p->DeviceID=$this->DeviceID;
-					$p->Label=__('Port').($n+1);
+					$p->Label=__("Port").($n+1);
 					$p->PortNumber=$n+1;
 					$p->createPort();
 					if($this->DeviceType=='Patch Panel'){
@@ -2727,7 +2727,7 @@ class DevicePorts {
 					}
 				}
 				// pull port name first from snmp then from template then just call it port x
-				$portList[$i]->Label=(isset($nameList[$n]))?$nameList[$n]:(isset($tports[$i]) && $tports[$i]->Label)?$tports[$i]->Label:__('Port').$i;
+				$portList[$i]->Label=(isset($nameList[$n]))?$nameList[$n]:(isset($tports[$i]) && $tports[$i]->Label)?$tports[$i]->Label:__("Port").$i;
 				$portList[$i]->Notes=(isset($aliasList[$n]))?$aliasList[$n]:'';
 				$portList[$i]->createPort();
 			}
@@ -2745,7 +2745,7 @@ class DevicePorts {
 						}
 					}
 				}
-				$portList[$i]->Label=($portList[$i]->Label=="")?__('Port').$i:$portList[$i]->Label;
+				$portList[$i]->Label=($portList[$i]->Label=="")?__("Port").$i:$portList[$i]->Label;
 				$portList[$i]->createPort();
 				if($dev->DeviceType=="Patch Panel"){
 					$i=$i*-1;

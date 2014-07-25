@@ -80,7 +80,7 @@
 				$slot->Y=isset($_POST["YF".$i])?$_POST["YF".$i]:0;
 				$slot->W=isset($_POST["WF".$i])?$_POST["WF".$i]:0;
 				$slot->H=isset($_POST["HF".$i])?$_POST["HF".$i]:0;
-				$status=($slot->CreateSlot())?$status:__('Error updating front slots');
+				$status=($slot->CreateSlot())?$status:__("Error updating front slots");
 			}
 			for ($i=1; $i<=$template->RearChassisSlots;$i++){
 				$slot=new Slot();
@@ -91,7 +91,7 @@
 				$slot->Y=isset($_POST["YR".$i])?$_POST["YR".$i]:0;
 				$slot->W=isset($_POST["WR".$i])?$_POST["WR".$i]:0;
 				$slot->H=isset($_POST["HR".$i])?$_POST["HR".$i]:0;
-				$status=($slot->CreateSlot())?$status:__('Error updating rear slots');
+				$status=($slot->CreateSlot())?$status:__("Error updating rear slots");
 			}
 			//update template ports
 			$template->DeletePorts();
@@ -103,7 +103,7 @@
 				$tport->MediaID=(isset($_POST["mt".$i]) && $_POST["mt".$i]>0)?$_POST["mt".$i]:0;
 				$tport->ColorID=(isset($_POST["cc".$i]) && $_POST["cc".$i]>0)?$_POST["cc".$i]:0;
 				$tport->PortNotes=isset($_POST["portnotes".$i])?$_POST["portnotes".$i]:"";
-				$status=($tport->CreatePort())?$status:__('Error updating template ports');
+				$status=($tport->CreatePort())?$status:__("Error updating template ports");
 			}
 			return $status;
 		}
@@ -113,12 +113,12 @@
 				if($template->CreateTemplate()){
 					$status=UpdateSlotsPorts($template,$status);
 				}else{
-					$status=__('An error has occured, template not created');
+					$status=__("An error has occured, template not created");
 				}
 				break;
 			case 'Update':
-				$status=($template->UpdateTemplate())?__('Updated'):__('Error updating template');
-				if ($status==__('Updated')){
+				$status=($template->UpdateTemplate())?__("Updated"):__("Error updating template");
+				if ($status==__("Updated")){
 					$status=UpdateSlotsPorts($template,$status);
 				}
 				break;
@@ -126,22 +126,22 @@
 				// someone will inevitibly try to update the template values and just click 
 				// update devices so make sure the template will update before trying to 
 				// update the device values to match the template
-				$status=($template->UpdateTemplate())?__('Updated'):__('Error updating template');
-				if ($status==__('Updated')){
+				$status=($template->UpdateTemplate())?__("Updated"):__("Error updating template");
+				if ($status==__("Updated")){
 					$status=UpdateSlotsPorts($template,$status);
 				}
-				if($status==__('Updated')){
-					$status=($template->UpdateDevices())?__('Updated'):__('Error updating devices');
+				if($status==__("Updated")){
+					$status=($template->UpdateDevices())?__("Updated"):__("Error updating devices");
 				}
 				break;
 			case 'Export':
 				//update template before export
-				$status=($template->UpdateTemplate())?__('Updated'):__('Error');
-				if ($status==__('Updated')){
+				$status=($template->UpdateTemplate())?__("Updated"):__("Error");
+				if ($status==__("Updated")){
 					$status=UpdateSlotsPorts($template,$status);
 				}
-				if($status==__('Updated')){
-					$status=($template->ExportTemplate())?__('Exported'):__('Error');
+				if($status==__("Updated")){
+					$status=($template->ExportTemplate())?__("Exported"):__("Error");
 				}
 				break;
 			default:
@@ -198,7 +198,7 @@
   <script type="text/javascript">
 	$(document).ready(function(){
 		var oModel=$('#model').val();
-		var chgmsg='<?php echo __('This value must be different than'); ?>'+' '+oModel;
+		var chgmsg="<?php echo __("This value must be different than"); ?>"+" "+oModel;
 		$('#deviceform').validationEngine();
 		$('#model').change(function(){
 			if($('#model').val()==oModel){
@@ -210,7 +210,7 @@
         
 		$('#clone').click(function(){
 			$('#templateid').val(0);
-			$('button[name="action"]').val('Create').text('<?php echo __('Create');?>');
+			$('button[name="action"]').val('Create').text("<?php echo __("Create");?>");
 			$('#model').trigger('change');
 			$('#device, #clone').remove();
 		});
@@ -439,7 +439,7 @@ if ( $template->TemplateID > 0 ) {
 }
 	echo '
 <div>
-   <div><label for="notes">',__('Notes'),'</label></div>
+   <div><label for="notes">',__("Notes"),'</label></div>
    <div><textarea name="notes" id="notes" cols="40" rows="8">',$template->Notes,'</textarea></div>
 </div>
 <div class="caption">';

@@ -34,23 +34,23 @@ require 'PHPExcel/Writer/Excel2007.php';
 $DProps = array(
     'Doc' => array(
         'version' => 1.0,
-        'Subject' => __('Asset Report'),
-        'Description' => __('Data Center Statistics on all data centers assets.'),
-        'Title' => __('Data Center Statistics'),
-        'Keywords' => __('datacenter report assets statistic'),
+        'Subject' => __("Asset Report"),
+        'Description' => __("Data Center Statistics on all data centers assets."),
+        'Title' => __("Data Center Statistics"),
+        'Keywords' => __("datacenter report assets statistic"),
         'PageSize' => $config->ParameterArray['PageSize'],
         'User' => $user->Name,
         'UserID' => $user->UserID
     ),
     'Front Page' => array(
-        'Title' => '&L&B' . __('Notes on DC Statistics') . '&R&A',
+        'Title' => '&L&B' . __("Notes on DC Statistics") . '&R&A',
         'FillColor' => 'DCE6F1',
         'HeadingFontColor' => '000000',
         'HeaderRange' => 'A1:B2',
         'HeaderHeight' => 60,
         'Border color' => '95B3D7',
-        'Logo Name' => __('Logo Name'),
-        'Logo Description' => __('Logo Description'),
+        'Logo Name' => __("Logo Name"),
+        'Logo Description' => __("Logo Description"),
         'PageSize' => $config->ParameterArray['PageSize'],
         'Orientation' => PHPExcel_Worksheet_PageSetup::ORIENTATION_PORTRAIT,
         'Columns' => array(
@@ -58,48 +58,48 @@ $DProps = array(
             array('', '', null, null)
         ),
         'remarks' => array(
-            __('● This is the combined report on all data center assets. It '
-                . 'contains the list of all devices and a list of all cabinets.'),
-            __('● Using Excel\'s pivot capabilities many different analysis and '
-                . 'statistics can be performed.'),
-            __('● The terms \'cabinet\' and  \'rack\' are used interchangeable.'),
-            __('● For user who have only the \'Admin Own Devices\' right the report '
-                . 'is limited to the cabinets which are owned by this department.'),
-            __('● The \'DC Statistics\' page is only generated for users who are '
-                . 'not limited to \'Admin Own Devices\'.'),
-            __('● For a child device the column \'Parent Device\' shows the parent '
-                . 'device otherwise it is empty. A child devices is e.g. a '
-                . 'blade server.'),
-            __('● The \'Position\' for a child device is the slot position within '
-                . 'in the parent device.'),
-            __('● \'Half Depth\' contains a value \'front\' or \'rear\' only if the '
-                . 'device is of half depth in which case this indicates the '
-                . 'location.'),
-            __('● Consecutive free rack space is indicated in worksheet \'DC Inventory'
-                . '\' with the string \'__EMPTY \' in column \'Device\'. '
-                . '\'Position\' gives the start of the range and \'Height\' '
-                . 'specifies the size of the range of free rack space.'),
-            __('● A range of consecutive free slots in a chassis is indicated in '
-                . 'worksheet \'DC Inventory\' with the string \'__EMPTYSLOT \' in '
-                . 'the column \'Device\'. \'Position\' gives the start of the '
-                . 'range and \'Height\' specifies the number of free slots.'),
-            __('● All free rack units (RU) within the racks sum up to the total '
-                . 'amount of free rack units. It is possible that devices of '
-                . 'different height are mounted at the same position within a '
-                . 'cabinet. Only the non occupied rack units are free RUs.'),
-            __('● Cabinets of \'Model\' equal \'RESERVED\' are placeholders on the '
-                . 'floor space in the DC for racks to come. Their number is '
-                . 'counted in the column \'No. Reserved Racks\'. Nevertheless, '
-                . 'the rack units are taken into account in all other statistics.'),
-            '',
-            __('This file is confidential and shall not be used without permission of '
-                . 'the owner.'),
-            '',
-            __('Generate by openDCIM')
+            __("● This is the combined report on all data center assets. It "
+                . "contains the list of all devices and a list of all cabinets."),
+            __("● Using Excel\"s pivot capabilities many different analysis and "
+                . "statistics can be performed."),
+            __("● The terms \"cabinet\" and  \"rack\" are used interchangeable."),
+            __("● For user who have only the \"Admin Own Devices\" right the report "
+                . "is limited to the cabinets which are owned by this department."),
+            __("● The \"DC Statistics\" page is only generated for users who are "
+                . "not limited to \"Admin Own Devices\"."),
+            __("● For a child device the column \"Parent Device\" shows the parent "
+                . "device otherwise it is empty. A child devices is e.g. a "
+                . "blade server."),
+            __("● The \"Position\" for a child device is the slot position within "
+                . "in the parent device."),
+            __("● \"Half Depth\" contains a value \"front\" or \"rear\" only if the "
+                . "device is of half depth in which case this indicates the "
+                . "location."),
+            __("● Consecutive free rack space is indicated in worksheet \"DC Inventory"
+                . "\" with the string \"__EMPTY \" in column \"Device\". "
+                . "\"Position\" gives the start of the range and \"Height\" "
+                . "specifies the size of the range of free rack space."),
+            __("● A range of consecutive free slots in a chassis is indicated in "
+                . "worksheet \"DC Inventory\" with the string \"__EMPTYSLOT \" in "
+                . "the column \"Device\". \"Position\" gives the start of the "
+                . "range and \"Height\" specifies the number of free slots."),
+            __("● All free rack units (RU) within the racks sum up to the total "
+                . "amount of free rack units. It is possible that devices of "
+                . "different height are mounted at the same position within a "
+                . "cabinet. Only the non occupied rack units are free RUs."),
+            __("● Cabinets of \"Model\" equal \"RESERVED\" are placeholders on the "
+                . "floor space in the DC for racks to come. Their number is "
+                . "counted in the column \"No. Reserved Racks\". Nevertheless, "
+                . "the rack units are taken into account in all other statistics."),
+            "",
+            __("This file is confidential and shall not be used without permission of "
+                . "the owner."),
+            "",
+            __("Generate by openDCIM")
         )
     ),
 	'DC Stats' => array(
-		'Title' => '&L&DC ' . __('Summary Statistics') . '&R&A',
+		'Title' => '&L&DC ' . __("Summary Statistics") . '&R&A',
 		'FillColor' => 'DCE6F1',
 		'HeadingFontColor' => '000000',
 		'HeaderRange' => null,

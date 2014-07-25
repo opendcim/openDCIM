@@ -22,7 +22,7 @@
 						break;
 					case 'Update':
 						$esc->Details=$_POST['details'];
-						$status=__('Updated');
+						$status=__("Updated");
 						$esc->UpdateEscalation();
 						break;
 					case 'Delete':

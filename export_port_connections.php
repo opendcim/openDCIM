@@ -48,13 +48,13 @@
 	$sheet->getProperties()->setSubject(__("Device Port Detail"));
 	
 	$sheet->setActiveSheetIndex(0);
-	$sheet->getActiveSheet()->SetCellValue('A1',__('SourceDevice'));
-	$sheet->getActiveSheet()->SetCellValue('B1',__('SourcePort'));
-	$sheet->getActiveSheet()->SetCellValue('C1',__('TargetDevice'));
-	$sheet->getActiveSheet()->SetCellValue('D1',__('TargetPort'));
-	$sheet->getActiveSheet()->SetCellValue('E1',__('Notes'));
-	$sheet->getActiveSheet()->SetCellValue('F1',__('MediaType'));
-	$sheet->getActiveSheet()->SetCellValue('G1',__('Color'));
+	$sheet->getActiveSheet()->SetCellValue('A1',__("SourceDevice"));
+	$sheet->getActiveSheet()->SetCellValue('B1',__("SourcePort"));
+	$sheet->getActiveSheet()->SetCellValue('C1',__("TargetDevice"));
+	$sheet->getActiveSheet()->SetCellValue('D1',__("TargetPort"));
+	$sheet->getActiveSheet()->SetCellValue('E1',__("Notes"));
+	$sheet->getActiveSheet()->SetCellValue('F1',__("MediaType"));
+	$sheet->getActiveSheet()->SetCellValue('G1',__("Color"));
 	
 	$sheet->getActiveSheet()->setTitle(__("Connections"));
 	$row = 2;
@@ -74,19 +74,19 @@
 		$mfg->ManufacturerID = $devTmpl->ManufacturerID;
 		$mfg->GetManufacturerByID();
 		
-		$sheet->getActiveSheet()->SetCellValue('A1',__('Device Label'));
+		$sheet->getActiveSheet()->SetCellValue('A1',__("Device Label"));
 		$sheet->getActiveSheet()->SetCellValue('B1', $dev->Label );
-		$sheet->getActiveSheet()->SetCellValue('A2',__('Manufacturer'));
+		$sheet->getActiveSheet()->SetCellValue('A2',__("Manufacturer"));
 		$sheet->getActiveSheet()->SetCellValue('B2', $mfg->Name );
-		$sheet->getActiveSheet()->SetCellValue('A3',__('Model'));
+		$sheet->getActiveSheet()->SetCellValue('A3',__("Model"));
 		$sheet->getActiveSheet()->SetCellValue('B3', $devTmpl->Model );
-		$sheet->getActiveSheet()->SetCellValue('A4',__('Serial Number'));
+		$sheet->getActiveSheet()->SetCellValue('A4',__("Serial Number"));
 		$sheet->getActiveSheet()->SetCellValue('B4', $dev->SerialNo );
-		$sheet->getActiveSheet()->SetCellValue('A5',__('Asset Tag'));
+		$sheet->getActiveSheet()->SetCellValue('A5',__("Asset Tag"));
 		$sheet->getActiveSheet()->SetCellValue('B5', $dev->AssetTag );	
-		$sheet->getActiveSheet()->SetCellValue('A6',__('Target Cabinet'));
+		$sheet->getActiveSheet()->SetCellValue('A6',__("Target Cabinet"));
 		$sheet->getActiveSheet()->SetCellValue('B6', $cab->Location );		
-		$sheet->getActiveSheet()->SetCellValue('A7',__('Position'));
+		$sheet->getActiveSheet()->SetCellValue('A7',__("Position"));
 		$sheet->getActiveSheet()->SetCellValue('B7', $dev->Position );
 
 		$sheet->getActiveSheet()->setTitle($dev->Label);

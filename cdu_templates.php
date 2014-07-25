@@ -38,7 +38,7 @@
 		if ( $_REQUEST['action']=='Create' ) {
 			$template->CreateTemplate();
 		} else {
-			$status=__('Updated');
+			$status=__("Updated");
 			$template->UpdateTemplate();
 		}
 	}

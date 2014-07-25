@@ -240,7 +240,7 @@ function renderUnassignedTemplateOwnership($noTemplFlag, $noOwnerFlag, $device) 
 		$head.='		</style>';
 	}
 
-	$title=($cabrow->Name!='')?__("Row")." $cabrow->Name".(isset($_GET["rear"])?"(".__("Rear").")":"")." :: ".count($cabinets)." ".__("Cabinets")." :: $dc->Name":__('Facilities Cabinet Maintenance');
+	$title=($cabrow->Name!='')?__("Row")." $cabrow->Name".(isset($_GET["rear"])?"(".__("Rear").")":"")." :: ".count($cabinets)." ".__("Cabinets")." :: $dc->Name":__("Facilities Cabinet Maintenance");
 
 ?>
 <!doctype html>
@@ -316,7 +316,7 @@ $('#centeriehack').width($('#centeriehack .cabinet').length * 278);
 </div></div>
 <?php
 	if($dcID>0){
-		print "	<br><br><br><a href=\"dc_stats.php?dc=$dcID\">[ ".__('Return to')." $dc->Name ]</a>";
+		print "	<br><br><br><a href=\"dc_stats.php?dc=$dcID\">[ ".__("Return to")." $dc->Name ]</a>";
 	}
 ?>
 </div>  <!-- END div.main -->
