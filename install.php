@@ -729,7 +729,7 @@ if(isset($results)){
 		}
 	}
 	fclose($fh);
-	print "<p>Anything show here is just a notice.  It is not necessarily an error.  We will occasionally have to repeat database modifications that will fail and will show here. <b>This is behavior is to be expected</b>. Take note of any errors displayed in red then press F5 to reload this page until it goes to the configuration screen.</p>";
+	print "<p>Anything shown here is just a notice.  It is not necessarily an error.  We will occasionally have to repeat database modifications that will fail and will show here. <b>This is behavior is to be expected</b>. Take note of any errors displayed in red then press F5 to reload this page until it goes to the configuration screen.</p>";
 }else{
 	echo '<p class="success">All is well.  Please remove install.php to return to normal functionality</p>';
 }
