@@ -40,6 +40,24 @@
 	$template=new DeviceTemplate();
 	$manufacturer=new Manufacturer();
 
+	if(isset($_POST['deleteme'])){
+		$template->TemplateID=$_POST['templateid'];
+		if($template->GetTemplateByID()){
+			// First deal with the case that we are transferring
+			if($template->TemplateID!=$_POST['transferid'] && $_POST['transferid']==0){
+				// We should do this in bulk,  this has potential to be a real time sink
+				foreach(Device::GetDevicesByTemplate($template->TemplateID) as $dev){
+					$dev->TemplateID->$_POST['transferid'];
+					$dev->UpdateDevice();
+				}
+			}
+			// Transfers are done, delete this shit
+			$template->DeleteTemplate();
+		}
+		echo '1';
+		exit;
+	}
+
 	$status='';
 
 	if(isset($_FILES['templateFile']) && $_FILES['templateFile']['error']==0 && $_FILES['templateFile']['type']='text/xml'){
@@ -304,40 +322,99 @@
 				}
 			});
 		});
-		
-	});/* END of $(document).ready function() */
 
-$(document).ready(function(){
-	FetchSlots();
-	TemplateButtons();
-	$('.templatemaker input[id*=Chassis] + button').each(function(){
-		var front=($(this).prev('input').attr('id')=='ChassisSlots')?true:false;
-		InsertCoordsTable(front,$(this));
-		$(this).on('click',function(){
-			FetchSlots();
-
-			// Fill in the coords table
+		FetchSlots();
+		TemplateButtons();
+		$('.templatemaker input[id*=Chassis] + button').each(function(){
+			var front=($(this).prev('input').attr('id')=='ChassisSlots')?true:false;
 			InsertCoordsTable(front,$(this));
+			$(this).on('click',function(){
+				FetchSlots();
 
-			// Open the dialog
-			Poopup(front);
+				// Fill in the coords table
+				InsertCoordsTable(front,$(this));
+
+				// Open the dialog
+				Poopup(front);
+			});
 		});
+
+		buildportstable();
+		$('.templatemaker input#numports + button').each(function(){
+			$(this).on('click',function(){
+				// Fill in the ports table
+				buildportstable();
+
+				// Open the dialog
+				PortsPoopup();
+			});
+		});
+
+		$('#FrontPictureFile,#RearPictureFile,#ChassisSlots,#RearChassisSlots,#numports').on('change keyup keydown', function(){ TemplateButtons(); });
+
+
+	$('#delete').on('click',function(){
+		// setup shit we might reuse
+		var dlg_content=$('<div>');
+		var dlg_select=$('<select>').append($('<option>').text('No').val('false')).append($('<option>').text('Yes').val('true'));
+		var dlg_transfer=$('<div>');
+
+		// make the dialog
+		dlg_content.append($('<p>').append("There is no undo").addClass('warning'));
+		dlg_content.append($('<label>').html("Would you like to transfer all devices using this template to another template?&nbsp;&nbsp;"));
+		dlg_content.append(dlg_select);
+		dlg_content.append(dlg_transfer);
+
+		var templateid2;
+
+		// logic for dealing someone saying yes they want to swap to another template
+		dlg_select.on('change',function(){
+			// Clone the existing device template list
+			templateid2=$('#templateid').clone().prop('id','templateid2').removeAttr('onchange');
+			// Remove the 'New Template' option
+			templateid2.find('option:first-child').remove();
+
+			if(eval(this.value)){
+				dlg_transfer.append('<br><br>');
+				dlg_transfer.append($('<label>').prop('for','templateid2').html("Transfer all devices using this template to:&nbsp;&nbsp;"));
+				dlg_transfer.append(templateid2);
+			}else{
+				dlg_transfer.html('');
+			}
+
+		});
+
+		var dialog=$('<div>').attr('title',"Are you sure you want to delete this template?").html(dlg_content);
+			dialog.dialog({
+				closeOnEscape: false,
+				minHeight: 250,
+				width: 840,
+				modal: true,
+				resizable: false,
+				position: { my: "center", at: "top", of: window },
+				show: { effect: "blind", duration: 800 },
+				beforeClose: function(event,ui){
+				},
+				buttons: {
+					Yes: function(){
+						$.post('',{templateid: $('#templateid').val(), transferid: ((typeof templateid2=='undefined')?0:templateid2.val()), deleteme: ''}).done(function(data){
+							if(data.trim()==1){
+								dialog.dialog("destroy");
+								window.location=window.location.href;
+							}else{
+								alert("something is broken");
+							}
+						});
+					},
+					No: function(){
+						$(this).dialog("destroy");
+					}
+				}
+			});
 	});
 
-	buildportstable();
-	$('.templatemaker input#numports + button').each(function(){
-		$(this).on('click',function(){
-			// Fill in the ports table
-			buildportstable();
 
-			// Open the dialog
-			PortsPoopup();
-		});
-	});
-
-	$('#FrontPictureFile,#RearPictureFile,#ChassisSlots,#RearChassisSlots,#numports').on('change keyup keydown', function(){ TemplateButtons(); });
-
-});
+	});/* END of $(document).ready function() */
 </script>
 </head>
 <body>
@@ -445,7 +522,7 @@ if ( $template->TemplateID > 0 ) {
 <div class="caption">';
 
 	if($template->TemplateID >0){
-		echo '   <button type="submit" name="action" value="Update">',__("Update Template"),'</button><button type="button" id="clone">',__("Clone Template"),'</button><button type="submit" name="action" value="Device" id="device">',__("Update Devices"),'</button><button type="submit" name="action" value="Export">',__("Export"),'</button>';
+		echo '   <button type="submit" name="action" value="Update">',__("Update Template"),'</button><button type="button" id="clone">',__("Clone Template"),'</button><button id="delete" type="button">',__("Delete Template"),'</button><button type="submit" name="action" value="Device" id="device">',__("Update Devices"),'</button><button type="submit" name="action" value="Export">',__("Export"),'</button>';
 	}else{
 		echo '	 <button type="submit" name="action" value="Create">',__("Create"),'</button>';
 	}

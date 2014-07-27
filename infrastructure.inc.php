@@ -820,6 +820,10 @@ class DeviceTemplate {
 	function DeleteTemplate(){
 		$this->MakeSafe();
 
+		// If we're removing the template clean up the children
+		$this->DeleteSlots();
+		$this->DeletePorts();
+
 		$sql="DELETE FROM fac_DeviceTemplate WHERE TemplateID=$this->TemplateID;";
 		(class_exists('LogActions'))?LogActions::LogThis($this):'';
 		return $this->exec($sql);
