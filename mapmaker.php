@@ -2,6 +2,8 @@
 	require_once( "db.inc.php" );
 	require_once( "facilities.inc.php" );
 
+	$subheader=__("Map Selector");
+
 	if(!$user->SiteAdmin){
 		// No soup for you.
 		header("Location: ".redirect());
@@ -65,7 +67,7 @@
   
 </head>
 <body>
-<div id="header"></div>
+<?php include( 'header.inc.php' ); ?>
 <div class="page" id="mapadjust">
 <?php
 	include( "sidebar.inc.php" );
@@ -73,8 +75,6 @@
 <div class="main">
 <div class="mapmaker">
 <div>
-<h2><?php echo $config->ParameterArray["OrgName"]; ?></h2>
-<h3><?php echo __("Map Selector"); ?></h3>
 </div>
 
 	<div class="table">

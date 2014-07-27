@@ -2,6 +2,9 @@
 	require_once('db.inc.php');
 	require_once('facilities.inc.php');
 
+	$header=$config->ParameterArray['OrgName'].__(" Power Sources");
+	$subheader=__("Data Center Detail");
+
 	if(!$user->SiteAdmin){
 		// No soup for you.
 		header('Location: '.redirect());
@@ -65,14 +68,12 @@
 	<script type="text/javascript" src="scripts/jquery-ui.min.js"></script>
 </head>
 <body>
-	<div id="header"></div>
+<?php include( 'header.inc.php' ); ?>
 	<div class="page">
 <?php
 	include( 'sidebar.inc.php' );
 
 echo '		<div class="main">
-			<h2>',$config->ParameterArray['OrgName'],' Power Sources</h2>
-			<h3>',__("Data Center Detail"),'</h3>
 			<div class="center"><div>
 				<form action="',$_SERVER['PHP_SELF'],'" method="POST">
 					<div class="table">

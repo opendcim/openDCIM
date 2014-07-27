@@ -1,6 +1,8 @@
 <?php
 	require_once( "db.inc.php" );
 	require_once( "facilities.inc.php" );
+
+	$subheader=__("Inventory Reports");
 ?>
 <!doctype html>
 <html>
@@ -18,14 +20,12 @@
   <script type="text/javascript" src="scripts/jquery-ui.min.js"></script>
 </head>
 <body>
-<div id="header"></div>
+<?php include( 'header.inc.php' ); ?>
 <div class="page reports">
 <?php
 	include( "sidebar.inc.php" );
 
 echo '<div class="main">
-<h2>',$config->ParameterArray["OrgName"],'</h2>
-<h3>',__("Inventory Reports"),'</h3>
 <div class="center"><div id="reports">
 <div>
 <fieldset>

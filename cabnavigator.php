@@ -2,6 +2,8 @@
 	require_once( "db.inc.php" );
 	require_once( "facilities.inc.php" );
 
+	$subheader=__("Data Center Cabinet Inventory");
+
 	if((isset($_REQUEST["cabinetid"]) && (intval($_REQUEST["cabinetid"])==0)) || !isset($_REQUEST["cabinetid"])){
 		// No soup for you.
 		header('Location: '.redirect());
@@ -718,14 +720,12 @@ if($config->ParameterArray["CDUToolTips"]=='enabled'){
 </head>
 
 <body>
-<div id="header"></div>
+<?php include( 'header.inc.php' ); ?>
 <div class="page">
 <?php
 	include( "sidebar.inc.php" );
 ?>
 <div class="main cabnavigator">
-<h2><?php print $config->ParameterArray["OrgName"]; ?></h2>
-<h3><?php print __("Data Center Cabinet Inventory"); ?></h3>
 <div class="center"><div>
 <div id="centeriehack">
 <?php

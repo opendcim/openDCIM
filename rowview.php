@@ -2,6 +2,8 @@
 	require_once( "db.inc.php" );
 	require_once( "facilities.inc.php" );
 
+	$subheader=__("Data Center Cabinet Inventory");
+
 	// Get the list of departments that this user is a member of
 	$viewList = $user->isMemberOf();
 
@@ -295,14 +297,12 @@ if($config->ParameterArray["ToolTips"]=='enabled'){
 </head>
 
 <body>
-<div id="header"></div>
+<?php include( 'header.inc.php' ); ?>
 <div class="page">
 <?php
 	include( "sidebar.inc.php" );
 ?>
 <div class="main cabnavigator rowview">
-<h2><?php print $config->ParameterArray["OrgName"]; ?></h2>
-<h3><?php print __("Data Center Cabinet Inventory"); ?></h3>
 <div class="center"><div>
 <div id="centeriehack">
 <?php

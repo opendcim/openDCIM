@@ -28,7 +28,7 @@ if (!isset($_REQUEST['action'])){
 
 </head>
 <body>
-<div style="height: 66px;" id="header"></div>
+<?php include( 'header.inc.php' ); ?>
 <?php
 	include( 'sidebar.inc.php' );
 	
@@ -143,12 +143,11 @@ if (!isset($_REQUEST['action'])){
 
 </head>
 <body>
-	<div id="header"></div>
+<?php include( 'header.inc.php' ); ?>
 	<div class="page">
 <?php
 	include('sidebar.inc.php');
 echo '		<div class="main">
-			<h2>',$config->ParameterArray['OrgName'],'</h2>
 			<div class="center">
 				<div id="tablecontainer">';
 

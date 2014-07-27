@@ -1,6 +1,8 @@
 <?php
 	require_once("db.inc.php");
 	require_once("facilities.inc.php");
+
+	$subheader=__("XML Output for CFD Simulation");
 	
 	$datacenter=new DataCenter();
 	$dcList=$datacenter->GetDCList();
@@ -37,15 +39,13 @@
   </script>
 </head>
 <body>
-<div id="header"></div>
+<?php include( 'header.inc.php' ); ?>
 <div class="page index">
 <?php
 	include( 'sidebar.inc.php' );
 
 echo '
 <div class="main">
-<h2>'.$config->ParameterArray['OrgName'].'</h2>
-<h3>'.__("XML Output for CFD Simulation").'</h3>
 <div class="center"><div>
 <form method="post">
 <div class="table">

@@ -1,6 +1,9 @@
 <?php
     require_once "db.inc.php";
     require_once "facilities.inc.php";
+
+	$subheader=__("Network Map Viewer");
+
     $dotCommand = $config->ParameterArray["dot"];
     # if format is set, graph options should be set and ready to be rendered
     if(isset($_REQUEST['format'])) {
@@ -515,13 +518,11 @@ overlap = scale;
   </script>
 </head>
 <body>
-        <div id="header"></div>
+<?php include( 'header.inc.php' ); ?>
         <div class="page">
 <?php
         include('sidebar.inc.php');
 echo '          <div class="main">
-                        <h2>',$config->ParameterArray['OrgName'],'</h2>
-                        <h3>',__("Network Map Viewer"),'</h3>
                         <label for="containmenttype">',__("Filter type:"),'</label>
                         <select name="containmenttype" id="containmenttype">
                                 <option value="">',__("Select filter type"),'</option>

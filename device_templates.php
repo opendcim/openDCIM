@@ -2,6 +2,8 @@
 	require_once('db.inc.php');
 	require_once('facilities.inc.php');
 
+	$subheader=__("Data Center Device Templates");
+
 	if((isset($_POST['getslots']) || isset($_POST['getports'])) && isset($_POST['templateid'])){
 		$returndata=array();
 		if(isset($_POST['getports'])){
@@ -339,15 +341,13 @@ $(document).ready(function(){
 </script>
 </head>
 <body>
-<div id="header"></div>
+<?php include( 'header.inc.php' ); ?>
 <div class="page">
 <?php
 	include( 'sidebar.inc.php' );
 
 echo '<div class="main">
 <div class="templatemaker">
-<h2>',$config->ParameterArray["OrgName"],'</h2>
-<h3>',__("Data Center Device Templates"),'</h3>
 <h3>',$status,'</h3>
 <div class="center"><div>
 <form id="deviceform" action="',$_SERVER["PHP_SELF"],'" method="POST">

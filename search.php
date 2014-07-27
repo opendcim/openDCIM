@@ -269,7 +269,9 @@
 			echo "\t\t\t\t\t\t</ul>\n";
 		}
 		echo "\t\t\t\t\t</li>\n";
-	}				
+	}
+
+	$subheader=(isset($title))?$title:"";				
 ?>
 <!doctype html>
 <html>
@@ -343,14 +345,12 @@ $(document).ready(function() {
 
 </head>
 <body>
-<div id="header"></div>
+<?php include( 'header.inc.php' ); ?>
 <div class="page search">
 <?php
 	include( 'sidebar.inc.php' );
 ?>
 <div class="main">
-<h2><?php echo $config->ParameterArray['OrgName']; ?></h2>
-<h3><?php echo $title; ?></h3>
 <?php echo '<div id="searchfilters"><button type="button" onclick="showall()">'.__("Show All").'</button><button type="button" onclick="hidedevices()">'.__("Racks Only").'</button></div>'; ?>
 <div class="center"><div>
 	<ol>

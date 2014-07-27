@@ -2,6 +2,8 @@
 	require_once("db.inc.php");
 	require_once("facilities.inc.php");
 
+	$subheader=__("Zone Statistics");
+
 	$cab=new Cabinet();
 	$zone=new Zone();
 	$dc=new DataCenter();
@@ -147,18 +149,12 @@ $(document).ready(function() {
   <script type="text/javascript" src="scripts/jquery.ui-contextmenu.js"></script>
 </head>
 <body>
-<div id="header"></div>
+<?php include( 'header.inc.php' ); ?>
 <div class="page dcstats" id="mapadjust">
 <?php
 	include( "sidebar.inc.php" );
 
 echo '<div class="main">
-<div class="heading">
-  <div>
-	<h2>',$config->ParameterArray["OrgName"],'</h2>
-	<h3>',__("Zone Statistics"),'</h3>
-  </div>
-</div>
 <div class="center"><div>
 <div class="centermargin" id="dcstats">
 <div class="table border">

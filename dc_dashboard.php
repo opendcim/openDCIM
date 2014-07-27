@@ -2,6 +2,8 @@
 	require_once("db.inc.php");
 	require_once("facilities.inc.php");
 
+	$subheader=__("Data Center Statistics");
+
 	$cab=new Cabinet();
 	$dc=new DataCenter();
 
@@ -63,15 +65,13 @@
   <script type="text/javascript" src="scripts/jquery-ui.min.js"></script>
 </head>
 <body onload="loadCanvas(),uselessie()">
-<div id="header"></div>
+<?php include( 'header.inc.php' ); ?>
 <div class="page dcstats" id="mapadjust">
 <?php
 
 echo '<div class="main">
 <div class="heading">
   <div>
-	<h2>',$config->ParameterArray["OrgName"],'</h2>
-	<h3>',__("Data Center Statistics"),'</h3>
   </div>
   <div>
 	<button onclick="loadCanvas()">',__("Overview"),'</button>

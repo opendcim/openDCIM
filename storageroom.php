@@ -2,6 +2,8 @@
 	require_once( 'db.inc.php' );
 	require_once( 'facilities.inc.php' );
 
+	$subheader=__("Storage Room Maintenance");
+
 	if(!$user->ReadAccess){
 		// No soup for you.
 		header('Location: '.redirect());
@@ -42,15 +44,13 @@
   <script type="text/javascript" src="scripts/jquery-ui.min.js"></script>
 </head>
 <body>
-<div id="header"></div>
+<?php include( 'header.inc.php' ); ?>
 <div class="page storage">
 <?php
 	include( 'sidebar.inc.php' );
 ?>
 <div class="main">
 <?php echo '
-<h2>',$config->ParameterArray['OrgName'],'</h2>
-<h3>',__("Storage Room Maintenance"),'</h3>
 <div class="center"><div>
 <div class="table">
 	<div class="title" id="title">',$srname,'</div>

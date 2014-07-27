@@ -2,6 +2,8 @@
 	require_once( 'db.inc.php' );
 	require_once( 'facilities.inc.php' );
 
+	$subheader=__("Data Center Device Detail");
+
 	$dev=new Device();
 	$cab=new Cabinet();
 	$contact=new Contact();
@@ -1244,15 +1246,13 @@ print "		var dialog=$('<div>').prop('title',\"".__("Verify Delete Device")."\").
 
 </head>
 <body onhashchange="getHash()">
-<div id="header"></div>
+<?php include( 'header.inc.php' ); ?>
 <div class="page device">
 <?php
 	include( 'sidebar.inc.php' );
 
 echo '<div class="main">
-<button id="layout" onClick="swaplayout()">'.__("Portrait").'</button>
-<h2>'.$config->ParameterArray['OrgName'].'</h2>
-<h3>'.__("Data Center Device Detail").'</h3>';
+<button id="layout" onClick="swaplayout()">'.__("Portrait").'</button>';
 echo($copy)?"<h3>$copyerr</h3>":'';
 echo '<div class="center"><div>
 <div id="positionselector"></div>

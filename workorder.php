@@ -1,6 +1,8 @@
 <?php
 	require_once('db.inc.php');
 	require_once('facilities.inc.php');
+
+	$subheader=__("Data Center Operations Work Order Builder");
 	
 	if ( ! isset( $_COOKIE["workOrder"] ) || ( isset( $_COOKIE["workOrder"] ) && $_COOKIE["workOrder"]=="" )) {
 		header( "Location: " . redirect() );
@@ -33,14 +35,12 @@
 </script>
 </head>
 <body>
-<div id="header"></div>
+<?php include( 'header.inc.php' ); ?>
 <div class="page index">
 <?php
 	include( 'sidebar.inc.php' );
 ?>
 <div class="main">
-<h2><?php echo $config->ParameterArray['OrgName']; ?></h2>
-<h2><?php print __("Data Center Operations Work Order Builder"); ?></h2>
 <div class="center"><div>
 <!-- CONTENT GOES HERE -->
 <?php

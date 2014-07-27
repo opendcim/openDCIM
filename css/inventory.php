@@ -92,9 +92,17 @@ textarea {white-space: pre;word-wrap: break-word;}
 /*  Header/logo */
 #header{
 	padding:5px 0;
-	background:<?php echo $config->ParameterArray['HeaderColor']; ?> url(../images/<?php echo $config->ParameterArray['PDFLogoFile']; ?>) no-repeat center center;
+	background:<?php echo $config->ParameterArray['HeaderColor']; ?> url(../images/<?php echo $config->ParameterArray['PDFLogoFile']; ?>) no-repeat left center;
 	height:66px;
 	position: relative;
+}
+#header > span {color: white;display: block;margin-top: 5px;text-align: center;
+	text-shadow: 2px 2px 0 #063, 2px 2px 0 #000, -2px -2px 0 #000, 2px -2px 0 #000, -2px 2px 0 #000;
+}
+#header1 {font-size: xx-large;}
+#header2 {font-size: x-large;}
+#header > #version {bottom: 2px;position: absolute;right: 4px;font-size:small;
+	text-shadow: 1px 1px 0 #063, 1px 1px 0 #000, -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000;
 }
 
 /* Configuration Page */

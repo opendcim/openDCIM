@@ -2,6 +2,8 @@
 	require_once( 'db.inc.php' );
 	require_once( 'facilities.inc.php' );
 
+	$subheader=__("Data Center PDU Detail");
+
 	$pdu=new PowerDistribution();
 	$cab=new Cabinet();
 	$powerConn=new PowerConnection();
@@ -419,14 +421,12 @@
 
 </head>
 <body>
-<div id="header"></div>
+<?php include( 'header.inc.php' ); ?>
 <div class="page pdu">
 <?php
 	include( 'sidebar.inc.php' );
 
 echo '<div class="main">
-<h2>',$config->ParameterArray["OrgName"],'</h2>
-<h3>',__("Data Center PDU Detail"),'</h3>
 <div class="center"><div class="left">
 <form name="pduform" id="pduform" action="',$_SERVER["PHP_SELF"],'" method="POST">
 <div class="table">

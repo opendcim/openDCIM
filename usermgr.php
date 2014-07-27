@@ -2,6 +2,8 @@
 	require_once('db.inc.php');
 	require_once('facilities.inc.php');
 
+	$subversion=__("Data Center Contact Detail");
+
 	if(!$user->SiteAdmin){
 		header('Location: '.redirect());
 		exit;
@@ -71,15 +73,13 @@
   <script type="text/javascript" src="scripts/jquery-ui.min.js"></script>
 </head>
 <body>
-<div id="header"></div>
+<?php include( 'header.inc.php' ); ?>
 
 <div class="page">
 <?php
     include( 'sidebar.inc.php' );
 
 echo '<div class="main">
-<h2>',$config->ParameterArray["OrgName"],'</h2>
-<h3>',__("Data Center Contact Detail"),'</h3>
 <h3>',$status,'</h3>
 <div class="center"><div>
 <form action="',$_SERVER["PHP_SELF"],'" method="POST">

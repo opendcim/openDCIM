@@ -2,6 +2,8 @@
 	require_once( 'db.inc.php' );
 	require_once( 'facilities.inc.php' );
 
+	$subheader=__("Data Center Virtual Machine Detail");
+
 	if(!$user->WriteAccess || !isset($_REQUEST['vmindex'])){
 		// No soup for you.
 		header('Location: '.redirect());
@@ -46,14 +48,12 @@
   <script type="text/javascript" src="scripts/jquery-ui.min.js"></script>
 </head>
 <body>
-<div id="header"></div>
+<?php include( 'header.inc.php' ); ?>
 <div class="page">
 <?php
 	include( 'sidebar.inc.php' );
 ?>
 <div class="main">
-<h2><?php print $config->ParameterArray["OrgName"]; ?></h2>
-<h3>Data Center Virtual Machine Detail</h3>
 <div class="center"><div>
 
 <form action="<?php echo $_SERVER['PHP_SELF']; ?>" method="POST">

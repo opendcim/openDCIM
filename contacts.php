@@ -2,6 +2,8 @@
 	require_once( 'db.inc.php' );
 	require_once( 'facilities.inc.php' );
 
+	$subheader=__("Data Center Contact Detail");
+
 	if(!$user->ContactAdmin){
 		// No soup for you.
 		header('Location: '.redirect());
@@ -208,15 +210,14 @@
   </script>
 </head>
 <body>
-<div id="header"></div>
+<?php include( 'header.inc.php' ); ?>
 <div class="page">
 <?php
     include( 'sidebar.inc.php' );
 ?>
 <div class="main">
-<h2><?php print $config->ParameterArray['OrgName']; ?></h2>
 <?php
-echo '<h3>',__("Data Center Contact Detail"),'</h3>
+echo '
 <div class="center"><div>
 <form id="cform" action="',$_SERVER['PHP_SELF'].$formfix,'" method="POST">
 <div class="table">
