@@ -105,7 +105,7 @@
 				$temp[$x]['type']='vm';
 				$temp[$x]['cabinet']=$dev->Cabinet;
 				$temp[$x]['parent']=$dev->ParentDevice;
-				$temp[$x]['rights']=$device->Rights;
+				$temp[$x]['rights']=$dev->Rights;
 				$cabtemp[$dev->Cabinet]['name']="";
 				++$x;
 				if($dev->ParentDevice!=0){
