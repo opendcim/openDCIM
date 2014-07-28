@@ -14,9 +14,9 @@ INSERT INTO fac_Config set Parameter='RackRequests', Value='enabled', UnitOfMeas
 --
 ALTER TABLE fac_SensorTemplate ADD COLUMN mUnits ENUM( 'english', 'metric' ) NOT NULL DEFAULT 'english';
 
----
---- Add dot to fac_Config to handle network map reporting
----
+--
+-- Add dot to fac_Config to handle network map reporting
+--
 INSERT INTO fac_Config VALUES ('dot', '/usr/bin/dot', 'path', 'string', '/usr/bin/dot');
 
 --
