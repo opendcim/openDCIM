@@ -73,6 +73,7 @@
 		$cab->SensorTemplateID=$_POST['sensortemplateid'];
 		$cab->Notes=trim($_POST['notes']);
 		$cab->Notes=($cab->Notes=="<br>")?"":$cab->Notes;
+		$cab->SetTags($tagarray);
 
 		if($cab->Location!=""){
 			if(($cab->CabinetID >0)&&($_POST['action']=='Update')){
@@ -80,10 +81,6 @@
 				$cab->UpdateCabinet();
 			}elseif($_POST['action']=='Create'){
 				$cab->CreateCabinet();
-			}
-
-			if($cab->CabinetID > 0) {
-				$cab->SetTags($tagarray);
 			}
 		}
 	}elseif($cab->CabinetID >0){
@@ -186,7 +183,7 @@
   </script>
 </head>
 <body>
-<?php include( 'header.inc.php' ); ?>
+<div id="header"></div>
 <div class="page">
 <?php
 	include( 'sidebar.inc.php' );

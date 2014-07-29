@@ -2,8 +2,6 @@
 	require_once('db.inc.php');
 	require_once('facilities.inc.php');
 
-	$subheader=__("Data Center View/Export");
-
 	$datacenter=new DataCenter();
 	$dcList=$datacenter->GetDCList();
 	
@@ -176,11 +174,13 @@
   </script>
 </head>
 <body>
-<?php include( 'header.inc.php' ); ?>
+	<div id="header"></div>
 	<div class="page">
 <?php
 	include('sidebar.inc.php');
 echo '		<div class="main">
+			<h2>',$config->ParameterArray['OrgName'],'</h2>
+			<h3>',__("Data Center View/Export"),'</h3>
 			<label for="datacenterid">',__("Data Center:"),'</label>
 			<select name="datacenterid" id="datacenterid">
 				<option value="">',__("Select data center"),'</option>

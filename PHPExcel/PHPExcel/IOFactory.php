@@ -2,7 +2,7 @@
 /**
  * PHPExcel
  *
- * Copyright (c) 2006 - 2014 PHPExcel
+ * Copyright (c) 2006 - 2012 PHPExcel
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -20,9 +20,9 @@
  *
  * @category   PHPExcel
  * @package    PHPExcel
- * @copyright  Copyright (c) 2006 - 2014 PHPExcel (http://www.codeplex.com/PHPExcel)
+ * @copyright  Copyright (c) 2006 - 2012 PHPExcel (http://www.codeplex.com/PHPExcel)
  * @license    http://www.gnu.org/licenses/old-licenses/lgpl-2.1.txt	LGPL
- * @version    1.8.0, 2014-03-02
+ * @version    1.7.8, 2012-10-12
  */
 
 
@@ -40,7 +40,7 @@ if (!defined('PHPEXCEL_ROOT')) {
  *
  * @category   PHPExcel
  * @package    PHPExcel
- * @copyright  Copyright (c) 2006 - 2014 PHPExcel (http://www.codeplex.com/PHPExcel)
+ * @copyright  Copyright (c) 2006 - 2012 PHPExcel (http://www.codeplex.com/PHPExcel)
  */
 class PHPExcel_IOFactory
 {
@@ -96,13 +96,13 @@ class PHPExcel_IOFactory
 	 * @static
 	 * @access	public
 	 * @param	array $value
-	 * @throws	PHPExcel_Reader_Exception
+	 * @throws	Exception
 	 */
 	public static function setSearchLocations($value) {
 		if (is_array($value)) {
 			self::$_searchLocations = $value;
 		} else {
-			throw new PHPExcel_Reader_Exception('Invalid parameter passed.');
+			throw new Exception('Invalid parameter passed.');
 		}
 	}	//	function setSearchLocations()
 
@@ -127,7 +127,7 @@ class PHPExcel_IOFactory
 	 * @param	PHPExcel $phpExcel
 	 * @param	string  $writerType	Example: Excel2007
 	 * @return	PHPExcel_Writer_IWriter
-	 * @throws	PHPExcel_Reader_Exception
+	 * @throws	Exception
 	 */
 	public static function createWriter(PHPExcel $phpExcel, $writerType = '') {
 		// Search type
@@ -146,7 +146,7 @@ class PHPExcel_IOFactory
 		}
 
 		// Nothing found...
-		throw new PHPExcel_Reader_Exception("No $searchType found for type $writerType");
+		throw new Exception("No $searchType found for type $writerType");
 	}	//	function createWriter()
 
 	/**
@@ -156,7 +156,7 @@ class PHPExcel_IOFactory
 	 * @access	public
 	 * @param	string $readerType	Example: Excel2007
 	 * @return	PHPExcel_Reader_IReader
-	 * @throws	PHPExcel_Reader_Exception
+	 * @throws	Exception
 	 */
 	public static function createReader($readerType = '') {
 		// Search type
@@ -175,7 +175,7 @@ class PHPExcel_IOFactory
 		}
 
 		// Nothing found...
-		throw new PHPExcel_Reader_Exception("No $searchType found for type $readerType");
+		throw new Exception("No $searchType found for type $readerType");
 	}	//	function createReader()
 
 	/**
@@ -183,9 +183,9 @@ class PHPExcel_IOFactory
 	 *
 	 * @static
 	 * @access public
-	 * @param 	string 		$pFilename		The name of the spreadsheet file
+	 * @param 	string 		$pFileName		The name of the spreadsheet file
 	 * @return	PHPExcel
-	 * @throws	PHPExcel_Reader_Exception
+	 * @throws	Exception
 	 */
 	public static function load($pFilename) {
 		$reader = self::createReaderForFile($pFilename);
@@ -197,9 +197,9 @@ class PHPExcel_IOFactory
 	 *
 	 * @static
 	 * @access public
-	 * @param 	string 		$pFilename		The name of the spreadsheet file to identify
+	 * @param 	string 		$pFileName		The name of the spreadsheet file to identify
 	 * @return	string
-	 * @throws	PHPExcel_Reader_Exception
+	 * @throws	Exception
 	 */
 	public static function identify($pFilename) {
 		$reader = self::createReaderForFile($pFilename);
@@ -214,9 +214,9 @@ class PHPExcel_IOFactory
 	 *
 	 * @static
 	 * @access	public
-	 * @param 	string 		$pFilename		The name of the spreadsheet file
+	 * @param 	string 		$pFileName		The name of the spreadsheet file
 	 * @return	PHPExcel_Reader_IReader
-	 * @throws	PHPExcel_Reader_Exception
+	 * @throws	Exception
 	 */
 	public static function createReaderForFile($pFilename) {
 
@@ -283,6 +283,6 @@ class PHPExcel_IOFactory
 			}
 		}
 
-		throw new PHPExcel_Reader_Exception('Unable to identify a reader for this file');
+		throw new Exception('Unable to identify a reader for this file');
 	}	//	function createReaderForFile()
 }

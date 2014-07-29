@@ -2,7 +2,7 @@
 /**
  * PHPExcel
  *
- * Copyright (c) 2006 - 2014 PHPExcel
+ * Copyright (c) 2006 - 2012 PHPExcel
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -20,9 +20,9 @@
  *
  * @category   PHPExcel
  * @package    PHPExcel_CachedObjectStorage
- * @copyright  Copyright (c) 2006 - 2014 PHPExcel (http://www.codeplex.com/PHPExcel)
+ * @copyright  Copyright (c) 2006 - 2012 PHPExcel (http://www.codeplex.com/PHPExcel)
  * @license    http://www.gnu.org/licenses/old-licenses/lgpl-2.1.txt	LGPL
- * @version    1.8.0, 2014-03-02
+ * @version    1.7.8, 2012-10-12
  */
 
 
@@ -31,7 +31,7 @@
  *
  * @category   PHPExcel
  * @package    PHPExcel_CachedObjectStorage
- * @copyright  Copyright (c) 2006 - 2014 PHPExcel (http://www.codeplex.com/PHPExcel)
+ * @copyright  Copyright (c) 2006 - 2012 PHPExcel (http://www.codeplex.com/PHPExcel)
  */
 class PHPExcel_CachedObjectStorage_DiscISAM extends PHPExcel_CachedObjectStorage_CacheBase implements PHPExcel_CachedObjectStorage_ICache {
 
@@ -40,14 +40,14 @@ class PHPExcel_CachedObjectStorage_DiscISAM extends PHPExcel_CachedObjectStorage
 	 *
 	 * @var string
 	 */
-	private $_fileName = NULL;
+	private $_fileName = null;
 
 	/**
 	 * File handle for this cache file
 	 *
 	 * @var resource
 	 */
-	private $_fileHandle = NULL;
+	private $_fileHandle = null;
 
 	/**
 	 * Directory/Folder where the cache file is located
@@ -62,10 +62,10 @@ class PHPExcel_CachedObjectStorage_DiscISAM extends PHPExcel_CachedObjectStorage
      *     and the 'nullify' the current cell object
      *
 	 * @return	void
-     * @throws	PHPExcel_Exception
+     * @throws	Exception
      */
-	protected function _storeData() {
-		if ($this->_currentCellIsDirty && !empty($this->_currentObjectID)) {
+	private function _storeData() {
+		if ($this->_currentCellIsDirty) {
 			$this->_currentObject->detach();
 
 			fseek($this->_fileHandle,0,SEEK_END);
@@ -86,7 +86,7 @@ class PHPExcel_CachedObjectStorage_DiscISAM extends PHPExcel_CachedObjectStorage
      * @param	string			$pCoord		Coordinate address of the cell to update
      * @param	PHPExcel_Cell	$cell		Cell to update
 	 * @return	void
-     * @throws	PHPExcel_Exception
+     * @throws	Exception
      */
 	public function addCacheData($pCoord, PHPExcel_Cell $cell) {
 		if (($pCoord !== $this->_currentObjectID) && ($this->_currentObjectID !== null)) {
@@ -105,7 +105,7 @@ class PHPExcel_CachedObjectStorage_DiscISAM extends PHPExcel_CachedObjectStorage
      * Get cell at a specific coordinate
      *
      * @param 	string 			$pCoord		Coordinate of the cell
-     * @throws 	PHPExcel_Exception
+     * @throws 	Exception
      * @return 	PHPExcel_Cell 	Cell that was found, or null if not found
      */
 	public function getCacheData($pCoord) {
@@ -124,26 +124,12 @@ class PHPExcel_CachedObjectStorage_DiscISAM extends PHPExcel_CachedObjectStorage
 		$this->_currentObjectID = $pCoord;
 		fseek($this->_fileHandle,$this->_cellCache[$pCoord]['ptr']);
 		$this->_currentObject = unserialize(fread($this->_fileHandle,$this->_cellCache[$pCoord]['sz']));
-        //    Re-attach this as the cell's parent
-        $this->_currentObject->attach($this);
+		//	Re-attach the parent worksheet
+		$this->_currentObject->attach($this->_parent);
 
 		//	Return requested entry
 		return $this->_currentObject;
 	}	//	function getCacheData()
-
-
-	/**
-	 * Get a list of all cell addresses currently held in cache
-	 *
-	 * @return  array of string
-	 */
-	public function getCellList() {
-		if ($this->_currentObjectID !== null) {
-			$this->_storeData();
-		}
-
-		return parent::getCellList();
-	}
 
 
 	/**

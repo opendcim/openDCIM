@@ -2,8 +2,6 @@
 	require_once("db.inc.php");
 	require_once("facilities.inc.php");
 
-	$subheader=__("Data Center Stockroom Supply Bins");
-
 	if(!$user->SiteAdmin){
 		// No soup for you.
 		header('Location: '.redirect());
@@ -133,12 +131,14 @@
   </script>
 </head>
 <body>
-<?php include( 'header.inc.php' ); ?>
+<div id="header"></div>
 <div class="page supply">
 <?php
 	include( "sidebar.inc.php" );
 
 echo '<div class="main">
+<h2>',$config->ParameterArray["OrgName"],'</h2>
+<h3>',__("Data Center Stockroom Supply Bins"),'</h3>
 <h3>',$status,'</h3>
 <div class="center"><div>
 <form action="',$_SERVER["PHP_SELF"].$formpatch,'" method="POST">

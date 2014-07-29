@@ -2,8 +2,6 @@
 	require_once("db.inc.php");
 	require_once("facilities.inc.php");
 
-	$subheader=__("Data Center Stockroom Supplies");
-
 	$user=new User();
 	$user->UserID=$_SERVER["REMOTE_USER"];
 	$user->GetUserRights();
@@ -65,12 +63,14 @@
   </script>
 </head>
 <body>
-<?php include( 'header.inc.php' ); ?>
+<div id="header"></div>
 <div class="page supply">
 <?php
 	include( "sidebar.inc.php" );
 ?>
 <div class="main">
+<h2><?php echo $config->ParameterArray["OrgName"]; ?></h2>
+<h3>Data Center Stockroom Supplies</h3>
 <div class="center"><div>
 <form action="<?php echo $_SERVER["PHP_SELF"]; ?>" method="POST">
 <div class="table">

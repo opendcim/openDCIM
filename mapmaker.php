@@ -2,8 +2,6 @@
 	require_once( "db.inc.php" );
 	require_once( "facilities.inc.php" );
 
-	$subheader=__("Map Selector");
-
 	if(!$user->SiteAdmin){
 		// No soup for you.
 		header("Location: ".redirect());
@@ -67,7 +65,7 @@
   
 </head>
 <body>
-<?php include( 'header.inc.php' ); ?>
+<div id="header"></div>
 <div class="page" id="mapadjust">
 <?php
 	include( "sidebar.inc.php" );
@@ -75,6 +73,8 @@
 <div class="main">
 <div class="mapmaker">
 <div>
+<h2><?php echo $config->ParameterArray["OrgName"]; ?></h2>
+<h3><?php echo __("Map Selector"); ?></h3>
 </div>
 
 	<div class="table">
@@ -132,9 +132,9 @@
 		<?php
 			$errors=array();
 			$mapfile="drawings/$dc->DrawingFileName";
-			if(!strlen($dc->DrawingFileName)>0){$errors[]=__("You must configure an image for this datacenter before attempting to place a cabinet on its map.");}
-			if(!is_file($mapfile)){$errors[]=sprintf(__("Please check that &quot;%s&quot; is actually a file."),$dc->DrawingFileName);}
-			if(!is_readable($mapfile)){$errors[]=sprintf(__("Please check the permissions on %s and make sure it is readable."),$dc->DrawingFileName);}
+			if(!strlen($dc->DrawingFileName)>0){$errors[]=__('You must configure an image for this datacenter before attempting to place a cabinet on its map.');}
+			if(!is_file($mapfile)){$errors[]=sprintf(__('Please check that &quot;%s&quot; is actually a file.'),$dc->DrawingFileName);}
+			if(!is_readable($mapfile)){$errors[]=sprintf(__('Please check the permissions on %s and make sure it is readable.'),$dc->DrawingFileName);}
 			if(count($errors)>0){
 				foreach($errors as $error){
 					print "<p class=\"warning\">$error</p>\n";

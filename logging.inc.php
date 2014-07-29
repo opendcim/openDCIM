@@ -218,31 +218,17 @@ class LogActions {
 	}
 
 	function WriteToDB(){
-		// Since we don't know what kind of funky data might be passed here let's just use
-		// a prepared statement and hope for the best.  We'll just need to be careful on
-		// the display end of it to make sure we don't allow something crazy out.
-		global $dbh;
+		$child=($this->ChildID==null)?', ChildID=NULL':", ChildID=$this->ChildID";
 
-		$stmt=$dbh->prepare('INSERT INTO fac_GenericLog (UserID, Class, ObjectID, ChildID, Property, Action, OldVal, NewVal, Time) 
-			VALUES (:UserID, :Class, :ObjectID, :ChildID, :Property, :Action, :OldVal, :NewVal, CURRENT_TIMESTAMP)');
-		$stmt->bindParam(':UserID', $this->UserID);
-		$stmt->bindParam(':Class', $this->Class);
-		$stmt->bindParam(':ObjectID', $this->ObjectID);
-		$stmt->bindParam(':ChildID', $this->ChildID);
-		$stmt->bindParam(':Action', $this->Action);
-		$stmt->bindParam(':Property', $this->Property);
-		$stmt->bindParam(':OldVal', $this->OldVal);
-		$stmt->bindParam(':NewVal', $this->NewVal);
+		$sql="INSERT INTO fac_GenericLog set UserID=\"$this->UserID\", 
+			Class=\"$this->Class\", ObjectID=\"$this->ObjectID\"$child, Action=\"$this->Action\", 
+			Property=\"$this->Property\", OldVal=\"$this->OldVal\", NewVal=\"$this->NewVal\";";
 
-		// These values can't be null and the PDO statement was being a bitch about it
-		$this->Action=(is_null($this->Action))?'':$this->Action;
-		$this->Property=(is_null($this->Property))?'':$this->Property;
-		$this->OldVal=(is_null($this->OldVal))?'':$this->OldVal;
-		$this->NewVal=(is_null($this->NewVal))?'':$this->NewVal;
+		if(!$this->exec($sql)){
+			global $dbh;
+			$info=$dbh->errorInfo();
 
-		if(!$stmt->execute()){
-			$info=$stmt->errorInfo();
-			error_log("PDO Error::LogActions:WriteToDB {$info[1]}::{$info[2]}");
+			error_log("PDO Error::LogActions:WriteToDB {$info[2]} SQL=$sql");
 			return false;
 		}
 		return true;

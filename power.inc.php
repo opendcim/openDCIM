@@ -44,7 +44,7 @@ class CDUTemplate {
 
 	function MakeSafe(){
 		$validSNMPVersions=array(1,'2c');
-		$validMultipliers=array(0.1,1,10,100);
+		$validMultipliers=array(0.1,1,10,100,1000);
 		$validProcessingProfiles=array('SingleOIDWatts','SingleOIDAmperes',
 			'Combine3OIDWatts','Combine3OIDAmperes','Convert3PhAmperes');
 
@@ -213,13 +213,9 @@ class PowerConnection {
 
 	private function MakeSafe(){
 		$this->PDUID=intval($this->PDUID);
-		$this->PDUPosition=sanitize($this->PDUPosition);
+		$this->PDUPosition=intval($this->PDUPosition);
 		$this->DeviceID=intval($this->DeviceID);
 		$this->DeviceConnNumber=intval($this->DeviceConnNumber);
-	}
-
-	private function MakeDisplay(){
-		$this->PDUPosition=stripslashes($this->PDUPosition);
 	}
 
 	static function RowToObject($row){
@@ -228,7 +224,6 @@ class PowerConnection {
 		$conn->PDUPosition=$row["PDUPosition"];
 		$conn->DeviceID=$row["DeviceID"];
 		$conn->DeviceConnNumber=$row["DeviceConnNumber"];
-		$conn->MakeDisplay();
 
 		return $conn;
 	}
@@ -272,7 +267,7 @@ class PowerConnection {
 
 		$sql="INSERT INTO fac_PowerConnection SET DeviceID=$this->DeviceID, 
 			DeviceConnNumber=$this->DeviceConnNumber, PDUID=$this->PDUID, 
-			PDUPosition=\"$this->PDUPosition\" ON DUPLICATE KEY UPDATE DeviceID=$this->DeviceID,
+			PDUPosition=$this->PDUPosition ON DUPLICATE KEY UPDATE DeviceID=$this->DeviceID,
 			DeviceConnNumber=$this->DeviceConnNumber;";
 
 		if($this->CanWrite()){
@@ -312,7 +307,7 @@ class PowerConnection {
 
 		$this->MakeSafe();
 		$sql="DELETE FROM fac_PowerConnection WHERE PDUID=$this->PDUID AND 
-			PDUPosition=\"$this->PDUPosition\";";
+			PDUPosition=$this->PDUPosition;";
 
 		if($this->CanWrite()){
 			if($dbh->exec($sql)){
@@ -328,7 +323,7 @@ class PowerConnection {
 
 		$this->MakeSafe();
 		$sql="SELECT * FROM fac_PowerConnection WHERE PDUID=$this->PDUID AND 
-			PDUPosition=\"$this->PDUPosition\";";
+			PDUPosition=$this->PDUPosition;";
     
 		if($row=$dbh->query($sql)->fetch()){
 			foreach(PowerConnection::RowToObject($row) as $prop => $value){
@@ -413,7 +408,7 @@ class PowerDistribution {
 	function MakeDisplay(){
 		$this->Label=stripslashes($this->Label);
 		$this->IPAddress=stripslashes($this->IPAddress);
-		$this->SNMPCommunity=stripslashes($this->SNMPCommunity);
+		$this->SNMPCommunity=sanitize($this->SNMPCommunity);
 		$this->FirmwareVersion=stripslashes($this->FirmwareVersion);
 	}
 
@@ -865,28 +860,6 @@ class PowerDistribution {
 		}
 	}
 
-        function GetAllBreakerPoles() {
-                $this->GetPDU();
-
-                $panel=new PowerPanel();
-                $panel->PanelID=$this->PanelID;
-                if($panel->GetPanel()) {
-                        $ret = "$this->PanelPole";
-                        for($i=1;$i<$this->BreakerSize;$i++) {
-                                $adder = $i;
-                                if($panel->NumberScheme=="Odd/Even") {
-                                        $adder = $i*2;
-                                }
-                                $next = $this->PanelPole+$adder;
-                                $ret = $ret . "-$next";
-                        }
-                        return $ret;
-
-                } else {
-                        return "Error, source power panel not valid";
-                }
-        }
-
 	function DeletePDU(){
 		$this->MakeSafe();
 
@@ -932,7 +905,15 @@ class PowerPanel {
 	var $NumberOfPoles;
 	var $MainBreakerSize;
 	var $PanelVoltage;
+	var $PanelPole;
 	var $NumberScheme;
+	var $Managed;
+	var $IPAddress;
+	var $SNMPCommunity;
+	var $SNMPVersion;
+	var $PanelOID;
+	var $Multiplier;
+	var $ProcessingProfile;
 
 	function MakeSafe(){
 		$this->PanelID=intval($this->PanelID);
@@ -942,6 +923,18 @@ class PowerPanel {
 		$this->MainBreakerSize=intval($this->MainBreakerSize);
 		$this->PanelVoltage=intval($this->PanelVoltage);
 		$this->NumberScheme=($this->NumberScheme=='Sequential')?$this->NumberScheme:'Odd/Even';
+		$this->NumberScheme=($this->NumberScheme=='Sequential')?$this->NumberScheme:'Odd/Even';
+		$this->Managed=intval($this->Managed);
+		$this->PanelIPAddress=sanitize($this->IPAddress);
+		$this->SNMPCommunity=sanitize($this->SNMPCommunity);
+		$this->PanelOID=sanitize($this->PanelOID);
+		$validSNMPVersions=array(1,'2c');
+		$validMultipliers=array(0.1,1,10,100,1000);
+		$this->SNMPVersion=(in_array($this->SNMPVersion, $validSNMPVersions))?$this->SNMPVersion:'2c';
+		$this->Multiplier=(in_array($this->Multiplier, $validMultipliers))?$this->Multiplier:1;
+		$validProcessingProfiles=array('SingleOIDWatts','SingleOIDAmperes',
+			'Combine3OIDWatts','Combine3OIDAmperes','Convert3PhAmperes');
+		$this->ProcessingProfile=(in_array($this->ProcessingProfile, $validProcessingProfiles))?$this->ProcessingProfile:'SingleOIDWatts';
 	}
 
 	function MakeDisplay(){
@@ -957,7 +950,14 @@ class PowerPanel {
 		$panel->MainBreakerSize=$row["MainBreakerSize"];
 		$panel->PanelVoltage=$row["PanelVoltage"];
 		$panel->NumberScheme=$row["NumberScheme"];
-
+		$panel->Managed=$row["Managed"];
+		$panel->IPAddress=$row["IPAddress"];
+		$panel->SNMPCommunity=$row["SNMPCommunity"];
+		$panel->SNMPVersion=$row["SNMPVersion"];
+		$panel->Multiplier=$row["Multiplier"];
+		$panel->PanelOID=$row["PanelOID"];
+		$panel->ProcessingProfile=$row["ProcessingProfile"];
+		$panel->PanelPole=2 ;
 		$panel->MakeDisplay();
 
 		return $panel;
@@ -1031,7 +1031,9 @@ class PowerPanel {
 		$sql="INSERT INTO fac_PowerPanel SET PowerSourceID=$this->PowerSourceID, 
 			PanelLabel=\"$this->PanelLabel\", NumberOfPoles=$this->NumberOfPoles, 
 			MainBreakerSize=$this->MainBreakerSize, PanelVoltage=$this->PanelVoltage, 
-			NumberScheme=\"$this->NumberScheme\";";
+			NumberScheme=\"$this->NumberScheme\", Managed=$this->Managed, IPAddress=\"$this->IPAddress\",
+			SNMPCommunity=\"$this->SNMPCommunity\", SNMPVersion=\"$this->SNMPVersion\", Multiplier=\"$this->Multiplier\",
+			ProcessingProfile=\"$this->ProcessingProfile\", PanelOID=\"$this->PanelOID\"   ;";
 
 		if($dbh->exec($sql)){
 			$this->PanelID=$dbh->lastInsertId();
@@ -1071,12 +1073,156 @@ class PowerPanel {
 		$sql="UPDATE fac_PowerPanel SET PowerSourceID=$this->PowerSourceID, 
 			PanelLabel=\"$this->PanelLabel\", NumberOfPoles=$this->NumberOfPoles, 
 			MainBreakerSize=$this->MainBreakerSize, PanelVoltage=$this->PanelVoltage, 
-			NumberScheme=\"$this->NumberScheme\" WHERE PanelID=$this->PanelID;";
+			NumberScheme=\"$this->NumberScheme\" , Managed=$this->Managed, IPAddress=\"$this->IPAddress\",
+                        PanelOID=\"$this->PanelOID\" , SNMPCommunity=\"$this->SNMPCommunity\" , SNMPVersion=\"$this->SNMPVersion\", Multiplier=\"$this->Multiplier\",
+			ProcessingProfile=\"$this->ProcessingProfile\" WHERE PanelID=$this->PanelID;";
 
 		(class_exists('LogActions'))?LogActions::LogThis($this,$oldpanel):'';
 		return $dbh->query($sql);
 	}
-}
+
+	/* These fac_PanelStats functions */
+	function GetLastReading(){
+		$this->MakeSafe();
+
+		$sql="SELECT * FROM fac_PanelStats WHERE PanelID=$this->PanelID and PanelPole=$this->PanelPole";
+		$stats=new stdClass();
+		$stats->Wattage=0;
+		$stats->LastRead=date('Y-m-d G:i:s',0);
+		foreach($this->query($sql) as $row){
+			foreach($row as $prop => $value){
+				if(!is_int($prop)){
+					$stats->$prop=$value;
+				}
+			}
+		}
+		return (is_object($stats))?$stats:false;
+	}
+
+
+	function GetWattageByCabinet($CabinetID){
+		$CabinetID=intval($CabinetID);
+		if($CabinetID <1){
+			return 0;
+		}
+		
+		$sql ="SELECT SUM(Wattage) AS Wattage FROM fac_PanelStats JOIN (fac_PowerDistribution) ON  
+			( fac_PanelStats.PanelID = fac_PowerDistribution.PanelID AND fac_PanelStats.PanelPole = fac_PowerDistribution.PanelPole )  
+			WHERE CabinetID=$CabinetID)" ; 
+
+
+
+		if(!$wattage=$this->query($sql)->fetchColumn()){
+			$wattage=0;
+		}
+		
+		return $wattage;
+	}
+
+
+	function UpdateStats(){
+
+		//Read Panel Information from a Branch Circuit Management system or BMS
+		//The panel OID shall have .<breakerID> appended to it to get the read for each
+		//breaker in the panel.
+		//Initial release tested on Canara BCM system
+
+		global $config;
+		
+		if(function_exists("snmpget")){
+			$usePHPSNMP=true;
+		}else{
+			$usePHPSNMP=false;
+		}
+		
+		$config=new Config();
+		
+		$sql="SELECT PanelID, IPAddress, SNMPCommunity, SNMPVersion, Multiplier, PanelOID, 
+			ProcessingProfile, PanelVoltage, NumberOfPoles FROM fac_PowerPanel WHERE Managed=true 
+			AND IPAddress>'' AND SNMPCommunity>''";
+		
+		// The result set should have no Panels with blank IP Addresses or SNMP Community, so we can forge ahead with processing them all
+		foreach($this->query($sql) as $row){
+			// Build the OIDs to be fetched (one for each Pole in the Panel)
+			$OIDS = [] ;	
+			for ($pole=1; $pole < $row["NumberOfPoles"]; $pole++) {
+				$OIDS[]= $row["PanelOID"] . ".$pole"  ;
+			}
+
+			print "OID String for Panel " . $row["PanelID"] ;
+			print_r($OIDS) ;
+			
+			// Have to reset this every time, otherwise the exec() will append
+			unset($statsOutput);
+			$amps=0;
+			$watts=0;
+			
+			if ( $row["SNMPCommunity"] == "" ) {
+				$Community = $config->ParameterArray["SNMPCommunity"];
+			} else {
+				$Community = $row["SNMPCommunity"];
+			}
+			
+			if ( $usePHPSNMP ) {
+				if ( $row["SNMPVersion"] == "2c" ){
+					$session = new SNMP(SNMP::VERSION_2C, $row["IPAddress"], $row["Community"]);
+				}else{
+					$session = new SNMP(SNMP::VERSION_1, $row["IPAddress"], $row["Community"]);
+				}
+
+				$results = $session->get(array("sysDescr.0", "sysName.0"));		
+		
+								
+			} else {
+				$OIDString = implode(" ",$OIDS);
+				$pollCommand="{$config->ParameterArray["snmpget"]} -v {$row["SNMPVersion"]} -t 0.5 -r 2 -c $Community {$row["IPAddress"]} $OIDString | {$config->ParameterArray["cut"]} -d: -f4";
+				print "$pollCommand \n";	
+				//exec( $pollCommand, $results );
+			}
+
+
+
+			$results = array ( "0.9.9.9.1"=>1, "0.8.777.3"=>2, "0.1.2"=>4) ;
+			foreach($results as $oid=>$val) {
+    				#echo $oid . ": " . $val . "\n";
+				$PanelPole = substr( strrchr($oid, "."),1)  ;
+				print "panel ". $row["PanelID"] . "pole $PanelPole $val\n";
+
+
+				if($val!=""){
+					// The multiplier should be an int but no telling what voodoo the db might cause
+					$pollValue=intval($val);
+					$row["Multiplier"]=floatval($row["Multiplier"]);
+					$row["PanelVoltage"]=intval($row["PanelVoltage"]);
+
+					switch ( $row["ProcessingProfile"] ) {
+						case "SingleOIDAmperes":
+							$amps=$val/$row["Multiplier"];
+							$watts=$amps * $row["PanelVoltage"];
+							break;
+						case "SingleOIDWatts":
+							$watts=($val) / $row["Multiplier"];
+							$amps=$watts / $row["PanelVoltage"];
+							break;
+					}
+				} else {
+					$amps=0;
+					$watt=0;
+				}
+			
+				$sql="INSERT INTO fac_PanelStats SET PanelID={$row["PanelID"]}, PanelPole=$PanelPole,  Wattage=$watts, Amps=$amps, LastRead=now() ON 
+					DUPLICATE KEY UPDATE Wattage=$watts, Amps=$amps, LastRead=now();";
+				print $sql . "\n" ;
+				$this->exec($sql);
+			
+			} //foreach pole 
+
+		} //foreach row
+	} //GetStats
+
+	
+
+} //Class 
 
 class PanelSchedule {
 	/* PanelSchedule:	Create a panel schedule based upon all of the known connections.  In

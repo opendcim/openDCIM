@@ -2,8 +2,6 @@
 	require_once( 'db.inc.php' );
 	require_once( 'facilities.inc.php' );
 	
-	$header=__("Department Contact Listing");
-
 	$dept=new Department();
 	$contact=new Contact();
 	
@@ -24,7 +22,6 @@
 		$el=0; //default to not showing lookup options
 	}
 
-	$subheader=$dept->Name;
 ?>
 <!doctype html>
 <html>
@@ -39,8 +36,10 @@
   <![endif]-->
 </head>
 <body>
-<?php include( 'header.inc.php' ); ?>
+<div id="header"></div>
 <div class="main">
+<h3>Department Contact Listing</h3>
+<h3><?php echo $dept->Name; ?></h3>
 <div class="table border centermargin">
 	<div>
 		<div>Last Name</div>

@@ -2,8 +2,6 @@
 	require_once( 'db.inc.php' );
 	require_once( 'facilities.inc.php' );
 
-	$subheader=__("End to end connection path");
-
 	$status="";
 	$path="";
 	$pathid="";
@@ -555,12 +553,14 @@ if(isset($_GET['pathonly'])){
   </script>
 </head>
 <body>
-<?php include( 'header.inc.php' ); ?>
+<div id="header"></div>
 <div class="page">
 <?php
 	include( 'sidebar.inc.php' );
 
 echo '<div class="main">
+<h2>',$config->ParameterArray["OrgName"],'</h2>
+<h3>',__("End to end connection path"),'</h3>
 <h3>',$status,'</h3>
 <div class="center"><div><div>
 <table id="crit_busc">

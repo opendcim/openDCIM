@@ -139,7 +139,7 @@ function ArraySearchRecursive($Needle,$Haystack,$NeedleKey="",$Strict=false,$Pat
 }
 
 /*
- * Sort multidimentional array in natural order
+ * Sort multidimentional array
  *
  * $array = sort2d ( $array, 'key to sort on')
  */
@@ -148,20 +148,6 @@ function sort2d ($array, $index){
 	foreach(array_keys($array) as $key){$temp[$key]=$array[$key][$index];}
 	//Case insensative natural sorting of temp array.
 	natcasesort($temp);
-	//Rebuild original array using the newly sorted order.
-	foreach(array_keys($temp) as $key){$sorted[$key]=$array[$key];}
-	return $sorted;
-}  
-/*
- * Sort multidimentional array in reverse order
- *
- * $array = sort2d ( $array, 'key to sort on')
- */
-function arsort2d ($array, $index){
-	//Create array of key and label to sort on.
-	foreach(array_keys($array) as $key){$temp[$key]=$array[$key][$index];}
-	//Case insensative natural sorting of temp array.
-	arsort($temp);
 	//Rebuild original array using the newly sorted order.
 	foreach(array_keys($temp) as $key){$sorted[$key]=$array[$key];}
 	return $sorted;
@@ -588,13 +574,7 @@ $menu=$rmenu=$rrmenu=$camenu=$wamenu=$samenu=array();
 
 $rmenu[]='<a href="reports.php"><span>'.__("Reports").'</span></a>';
 
-if($config->ParameterArray["WorkOrderBuilder"]){
-	if(isset($_COOKIE['workOrder']) && $_COOKIE['workOrder']!='[0]'){
-		array_unshift($rmenu , '<a href="workorder.php"><span>'.__("Work Order").'</span></a>');
-	}
-}
-
-if ( $config->ParameterArray["RackRequests"] == "enabled" && $user->RackRequest ) {
+if ( $user->RackRequest ) {
 	$rrmenu[]='<a href="rackrequest.php"><span>'.__("Rack Request Form").'</span></a>';
 }
 if ( $user->ContactAdmin ) {

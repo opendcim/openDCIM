@@ -105,7 +105,6 @@ CREATE TABLE fac_SensorTemplate (
 	HumidityOID VARCHAR(256) NOT NULL,
 	TempMultiplier FLOAT(8) NOT NULL DEFAULT 1,
 	HumidityMultiplier FLOAT(8) NOT NULL DEFAULT 1,
-	mUnits ENUM( 'english', 'metric' ) NOT NULL DEFAULT 'english',
 	PRIMARY KEY(TemplateID)
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
 
@@ -848,8 +847,7 @@ INSERT INTO fac_Config VALUES
 	('HumidityRedHigh', '75', 'percentage', 'float', '75'),
 	('HumidityRedLow', '35', 'percentage', 'float', '35'),
 	('HumidityYellowHigh', '55', 'percentage', 'float', '55'),
-	('HumidityYellowLow', '45', 'percentage', 'float', '45'),	
-	('dot', '/usr/bin/dot', 'path', 'string', '/usr/bin/dot')
+	('HumidityYellowLow', '45', 'percentage', 'float', '45')	
 ;
 
 --

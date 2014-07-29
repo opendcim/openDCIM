@@ -1,11 +1,6 @@
 <?php
 	require_once('db.inc.php');
 	require_once('facilities.inc.php');
-
-//	Uncomment these if you need/want to set a title in the header
-//	$header=__("");
-	$subheader=__("Data Center Operations Metrics");
-
 ?>
 <!doctype html>
 <html>
@@ -24,12 +19,14 @@
   <script type="text/javascript" src="scripts/jquery-ui.min.js"></script>
 </head>
 <body>
-<?php include( 'header.inc.php' ); ?>
+<div id="header"></div>
 <div class="page index">
 <?php
 	include( 'sidebar.inc.php' );
 ?>
 <div class="main">
+<h2><?php echo $config->ParameterArray['OrgName']; ?></h2>
+<h2>Data Center Operations Metrics</h2>
 <div class="center"><div>
 
 

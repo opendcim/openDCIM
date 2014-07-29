@@ -2,8 +2,6 @@
 	require_once("db.inc.php");
 	require_once("facilities.inc.php");
 
-	$subheader=__("Data Center Zones");
-
 	if(!$user->SiteAdmin){
 		// No soup for you.
 		header('Location: '.redirect());
@@ -91,7 +89,7 @@
   
 </head>
 <body>
-<?php include( 'header.inc.php' ); ?>
+<div id="header"></div>
 <div class="page" id="mapadjust">
 <?php
 	include( "sidebar.inc.php" );
@@ -99,6 +97,8 @@
 echo '
 <div class="main">
 	<div class="zonemaker">
+		<h2>',$config->ParameterArray["OrgName"],'</h2>
+		<h3>',__("Data Center Zones"),'</h3>
 		<h3>',$status,'</h3>
 		<div class="center" style="min-height: 0px;"><div>
 			<form action="',$_SERVER["PHP_SELF"].$formpatch,'" method="POST">
@@ -211,7 +211,10 @@ echo '
 		}
 		$('#map').imgAreaSelect( {
 	<?php
-		printf( "\t\tx1: %d,\n\tx2: %d,\n\ty1: %d,\n\ty2: %d,\n", $zone->MapX1, $zone->MapX2, $zone->MapY1, $zone->MapY2 );
+		print "\t\tx1: $zone->MapX1,
+			x2: $zone->MapX2,
+			y1: $zone->MapY1,
+			y2: $zone->MapY2,\n";
 	?>
 			handles: true,
 			onSelectChange: preview
@@ -246,4 +249,3 @@ print "		dialog.find('span + span').html('".__("This Zone will be deleted and th
 </script>
 </body>
 </html>
-

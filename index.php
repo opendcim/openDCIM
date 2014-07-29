@@ -7,8 +7,6 @@
 	require_once( 'db.inc.php' );
 	require_once( 'facilities.inc.php' );
 
-	$subheader=__("Data Center Operations Metrics");
-
 	$sql = 'select count(*) as DCs from fac_DataCenter';
 	$row=$dbh->query($sql)->fetch();
 	$DCs = $row['DCs'];
@@ -35,8 +33,8 @@
 
 	// Build table to display pending rack requests for inclusion later
 	$rackrequest='';
-	if($config->ParameterArray["RackRequests"]=="enabled" && $user->RackAdmin){
-		$rackrequest="<h3>".__("Pending Rack Requests")."</h3>\n<div class=\"table whiteborder rackrequest\">\n<div>\n  <div>".__("Submit Time")."</div>\n  <div>".__("Requestor")."</div>\n  <div>".__("System Name")."</div>\n  <div>".__("Department")."</div>\n  <div>".__("Due By")."</div>\n</div>\n";
+	if($user->RackAdmin){
+		$rackrequest="<h3>".__('Pending Rack Requests')."</h3>\n<div class=\"table whiteborder rackrequest\">\n<div>\n  <div>".__('Submit Time')."</div>\n  <div>".__('Requestor')."</div>\n  <div>".__('System Name')."</div>\n  <div>".__('Department')."</div>\n  <div>".__('Due By')."</div>\n</div>\n";
 
 		$rack=new RackRequest();
 		$tmpContact=new Contact();
@@ -83,12 +81,14 @@
   <script type="text/javascript" src="scripts/jquery-ui.min.js"></script>
 </head>
 <body>
-<?php include( 'header.inc.php' ); ?>
+<div id="header"></div>
 <div class="page index">
 <?php
 	include( 'sidebar.inc.php' );
 echo '
 <div class="main">
+<h2>',$config->ParameterArray["OrgName"],'</h2>
+<h2>',__("Data Center Operations Metrics"),'</h2>
 <div class="center"><div>
 ',$rackrequest,'
 <h3>',__("Data Center Inventory"),' <a href="search_export.php">(',__("Export Inventory"),')</a></h3>

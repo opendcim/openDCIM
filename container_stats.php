@@ -2,8 +2,6 @@
 	require_once("db.inc.php");
 	require_once("facilities.inc.php");
 
-	$subheader=__("Data Center Statistics");
-
 	if(!isset($_GET["container"])){
 		// No soup for you.
 		header('Location: '.redirect());
@@ -34,7 +32,7 @@
   <script type="text/javascript" src="scripts/jquery-ui.min.js"></script>
 </head>
 <body>
-<?php include( 'header.inc.php' ); ?>
+<div id="header"></div>
 <div class="page dcstats" id="mapadjust">
 <?php
 include( "sidebar.inc.php" );
@@ -48,6 +46,12 @@ if ( $config->ParameterArray["mUnits"] == "english" ) {
 }
 
 echo '<div class="main">
+<div class="heading">
+  <div>
+	<h2>',$config->ParameterArray["OrgName"],'</h2>
+	<h3>',__("Data Centers Statistics"),'</h3>
+  </div>
+</div>
 <div class="center"><div>
 <div class="centermargin" id="dcstats">
 <div class="table border">

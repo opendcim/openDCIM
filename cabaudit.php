@@ -402,99 +402,71 @@ class PDF_Diag extends PDF_Sector {
 	$pdf->Cell(0,5,$cabmessage,0,1,'C',0);
 	$pdf->SetFont($config->ParameterArray['PDFfont'],'',10);
 	$deviceList = $device->ViewDevicesByCabinet();
-	$headerTags = array( __("Label"), __("SerialNo"), __("AssetTag"), __("Position"), __("Rack Units"), __("#Ports"), __("#PS"), __("PowerConnection1"), __("PowerConnection2"), __("DeviceType") );
+	$headerTags = array( __('Label'), __('SerialNo'), __('AssetTag'), __('Position'), __('Rack Units'), __('#Ports'), __('#PS'), __('PowerConnection1'), __('PowerConnection2'), __('DeviceType') );
 	$cellWidths = array( 45, 40, 20, 18, 20, 15, 10, 35, 35, 50 );
 	$maxval = count( $headerTags );
 	for ( $col = 0; $col < $maxval; $col++ )
 		$pdf->Cell( $cellWidths[$col], 7, $headerTags[$col], 1, 0, 'C', 1 );
 	$pdf->Ln();
 
-	function printRow($devRow,$connection,$pdf,$templ,$fill,$cellWidths,$pdu,$mfg){
-		global $fill;
-		$connection->DeviceID=$devRow->DeviceID;
-		$connList=$connection->GetConnectionsByDevice();
-
-		$pdf->Cell( $cellWidths[0], 6, $devRow->Label, 'LBRT', 0, 'L', $fill );
-		$pdf->Cell( $cellWidths[1], 6, $devRow->SerialNo, 'LBRT', 0, 'L', $fill );
-		$pdf->Cell( $cellWidths[2], 6, $devRow->AssetTag, 'LBRT', 0, 'L', $fill );
-		$pdf->Cell( $cellWidths[3], 6, $devRow->Position, 'LBRT', 0, 'L', $fill );
-		$pdf->Cell( $cellWidths[4], 6, $devRow->Height, 'LBRT', 0, 'L', $fill );
-		$pdf->Cell( $cellWidths[5], 6, $devRow->Ports, 'LBRT', 0, 'L', $fill );
-		$pdf->Cell( $cellWidths[6], 6, $devRow->PowerSupplyCount, 'LBRT', 0, 'L', $fill );
-		@$pdu->PDUID=$connList[0]->PDUID;
-		$pdu->GetPDU();
-		$pdf->Cell( $cellWidths[7], 6, (isset($connList[0]))?$pdu->Label.' ['.$connList[0]->PDUPosition.']':"", 'LBRT', 0, 'L', $fill );
-		@$pdu->PDUID=$connList[1]->PDUID;
-		$pdu->GetPDU();
-		$pdf->Cell( $cellWidths[8], 6, (isset($connList[1]))?$pdu->Label.' ['.$connList[1]->PDUPosition.']':"", 'LBRT', 0, 'L', $fill );
-		$templ->TemplateID=$devRow->TemplateID;
-		$templ->GetTemplateByID();
-		$mfg->ManufacturerID=$templ->ManufacturerID;
-		$mfg->GetManufacturerByID();
-		$pdf->Cell( $cellWidths[9], 6, $mfg->Name." ".$templ->Model, 'LBRT', 1, 'L', $fill );
-
-		if(count($connList) >2){
-			for($connCount=2; $connCount < count($connList); $connCount += 2 ) {
-				$pdf->Cell( $cellWidths[0], 6, '', 'LBRT', 0, 'L', $fill );
-				$pdf->Cell( $cellWidths[1], 6, '', 'LBRT', 0, 'L', $fill );
-				$pdf->Cell( $cellWidths[2], 6, '', 'LBRT', 0, 'L', $fill );
-				$pdf->Cell( $cellWidths[3], 6, '', 'LBRT', 0, 'L', $fill );
-				$pdf->Cell( $cellWidths[4], 6, '', 'LBRT', 0, 'L', $fill );
-				$pdf->Cell( $cellWidths[5], 6, '', 'LBRT', 0, 'L', $fill );
-				$pdf->Cell( $cellWidths[6], 6, '', 'LBRT', 0, 'L', $fill );
-				@$pdu->PDUID=$connList[$connCount]->PDUID;
-				$pdu->GetPDU();
-				$pdf->Cell( $cellWidths[7], 6, (isset($connList[$connCount]))?$pdu->Label.' ['.$connList[$connCount]->PDUPosition.']':"", 'LBRT', 0, 'L', $fill );
-				@$pdu->PDUID=$connList[$connCount+1]->PDUID;
-				$pdu->GetPDU();
-				$pdf->Cell( $cellWidths[8], 6, (isset($connList[$connCount+1]))?$pdu->Label.' ['.$connList[$connCount+1]->PDUPosition.']':"", 'LBRT', 0, 'L', $fill );
-				$pdf->Cell( $cellWidths[9], 6, '', 'LBRT', 1, 'L', $fill );
+	foreach( $deviceList as $devRow ) {
+		// Skip ITS for Now
+		// if ( $deptRow->Name == 'ITS' )
+		// 	continue;
+			if ( $devRow->Cabinet != $cab->CabinetID ) {
+				$cab->CabinetID = $devRow->Cabinet;
+				$cab->GetCabinet();
 			}
-		}
 
-		$pdf->Cell( $cellWidths[0], 6, '', 'LBRT', 0, 'L', $fill );
-		$pdf->Cell( $cellWidths[1], 6, '', 'LBRT', 0, 'L', $fill );
-		$pdf->Cell( $cellWidths[2], 6, '', 'LBRT', 0, 'L', $fill );
-		$pdf->Cell( $cellWidths[3], 6, '', 'LBRT', 0, 'L', $fill );
-		$pdf->Cell( $cellWidths[4], 6, '', 'LBRT', 0, 'L', $fill );
-		$pdf->Cell( $cellWidths[5], 6, '', 'LBRT', 0, 'L', $fill );
-		$pdf->Cell( $cellWidths[6], 6, '', 'LBRT', 0, 'L', $fill );
-		$pdf->Cell( $cellWidths[7], 6, '', 'LBRT', 0, 'L', $fill );
-		$pdf->Cell( $cellWidths[8], 6, '', 'LBRT', 0, 'L', $fill );
-		$pdf->Cell( $cellWidths[9], 6, '', 'LBRT', 1, 'L', $fill );
+			if ( $cab->DataCenterID != $dc->DataCenterID ) {
+			  if ( $dc->DataCenterID > 0 ) {
+			     $pdf->Cell( 0, 5, 'Total Rack Units for ' . $dc->Name . ': ' . $DCRU, '', 1, 'L', '' );
+			     $pdf->Cell( 0, 5, 'Total BTU Output for ' . $dc->Name . ': ' . sprintf( '%d (%.2f Tons)', $DCBTU, $DCBTU/12000 ), '', 1, 'L', '' );
+			  }
+			  
+				$dc->DataCenterID = $cab->DataCenterID;
+				$dc->GetDataCenterbyID();
+				
+				$DCRU = 0;
+				$DCBTU = 0;
+			}
 		
-		$fill=!$fill;
+			$connection->DeviceID=$devRow->DeviceID;
+			$connList=$connection->GetConnectionsByDevice();
+    
+			$pdf->Cell( $cellWidths[0], 6, $devRow->Label, 'LBRT', 0, 'L', $fill );
+			$pdf->Cell( $cellWidths[1], 6, $devRow->SerialNo, 'LBRT', 0, 'L', $fill );
+			$pdf->Cell( $cellWidths[2], 6, $devRow->AssetTag, 'LBRT', 0, 'L', $fill );
+			$pdf->Cell( $cellWidths[3], 6, $devRow->Position, 'LBRT', 0, 'L', $fill );
+			$pdf->Cell( $cellWidths[4], 6, $devRow->Height, 'LBRT', 0, 'L', $fill );
+			$pdf->Cell( $cellWidths[5], 6, $devRow->Ports, 'LBRT', 0, 'L', $fill );
+			$pdf->Cell( $cellWidths[6], 6, $devRow->PowerSupplyCount, 'LBRT', 0, 'L', $fill );
+			@$pdu->PDUID=$connList[0]->PDUID;
+			$pdu->GetPDU();
+			$pdf->Cell( $cellWidths[7], 6, (isset($connList[0]))?$pdu->Label.$connList[0]->PDUPosition:"", 'LBRT', 0, 'L', $fill );
+			@$pdu->PDUID=$connList[1]->PDUID;
+			$pdu->GetPDU();
+			$pdf->Cell( $cellWidths[8], 6, (isset($connList[1]))?$pdu->Label.$connList[1]->PDUPosition:"", 'LBRT', 0, 'L', $fill );
+			$templ->TemplateID=$devRow->TemplateID;
+			$templ->GetTemplateByID();
+			$mfg->ManufacturerID=$templ->ManufacturerID;
+			$mfg->GetManufacturerByID();
+			$pdf->Cell( $cellWidths[9], 6, $mfg->Name." ".$templ->Model, 'LBRT', 1, 'L', $fill );
 
-		if($devRow->DeviceType="Chassis1"){
-			$childList=$devRow->GetDeviceChildren();
-			foreach($childList as $childDev){
-				printRow($childDev,$connection,$pdf,$templ,$fill,$cellWidths,$pdu,$mfg);
-			}
+			
+			$pdf->Cell( $cellWidths[0], 6, '', 'LBRT', 0, 'L', $fill );
+			$pdf->Cell( $cellWidths[1], 6, '', 'LBRT', 0, 'L', $fill );
+			$pdf->Cell( $cellWidths[2], 6, '', 'LBRT', 0, 'L', $fill );
+			$pdf->Cell( $cellWidths[3], 6, '', 'LBRT', 0, 'L', $fill );
+			$pdf->Cell( $cellWidths[4], 6, '', 'LBRT', 0, 'L', $fill );
+			$pdf->Cell( $cellWidths[5], 6, '', 'LBRT', 0, 'L', $fill );
+			$pdf->Cell( $cellWidths[6], 6, '', 'LBRT', 0, 'L', $fill );
+			$pdf->Cell( $cellWidths[7], 6, '', 'LBRT', 0, 'L', $fill );
+			$pdf->Cell( $cellWidths[8], 6, '', 'LBRT', 0, 'L', $fill );
+			$pdf->Cell( $cellWidths[9], 6, '', 'LBRT', 1, 'L', $fill );
+			
+			$fill =! $fill;
 		}
-	}
-
-	foreach($deviceList as $devRow){
-		if($devRow->Cabinet!=$cab->CabinetID){
-			$cab->CabinetID=$devRow->Cabinet;
-			$cab->GetCabinet();
-		}
-
-		if($cab->DataCenterID!=$dc->DataCenterID){
-			if($dc->DataCenterID >0){
-				$pdf->Cell( 0, 5, 'Total Rack Units for ' . $dc->Name . ': ' . $DCRU, '', 1, 'L', '' );
-				$pdf->Cell( 0, 5, 'Total BTU Output for ' . $dc->Name . ': ' . sprintf( '%d (%.2f Tons)', $DCBTU, $DCBTU/12000 ), '', 1, 'L', '' );
-			}
-		  
-			$dc->DataCenterID=$cab->DataCenterID;
-			$dc->GetDataCenterbyID();
-			$DCRU=0;
-			$DCBTU=0;
-		}
-
-		printRow($devRow,$connection,$pdf,$templ,$fill,$cellWidths,$pdu,$mfg);
-
-	}
-
 	$pdf->AddPage();
 	$fill=0;
 	
@@ -505,7 +477,7 @@ class PDF_Diag extends PDF_Sector {
 	$pdf->SetFont($config->ParameterArray['PDFfont'],'',10);
 	$PDUList=$pdu->GetPDUbyCabinet();
 
-	$headerTags = array( __("Label"), __("NumOutputs"),__("Model"),__("PanelLabel"), __("PanelPole") );
+	$headerTags = array( __('Label'), __('NumOutputs'),__('Model'),__('PanelLabel'), __('PanelPole') );
 	$cellWidths = array(50,30,118,70,20);
 	$maxval = count( $headerTags );
 	for ( $col = 0; $col < $maxval; $col++ )

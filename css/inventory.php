@@ -92,17 +92,9 @@ textarea {white-space: pre;word-wrap: break-word;}
 /*  Header/logo */
 #header{
 	padding:5px 0;
-	background:<?php echo $config->ParameterArray['HeaderColor']; ?> url(../images/<?php echo $config->ParameterArray['PDFLogoFile']; ?>) no-repeat left center;
+	background:<?php echo $config->ParameterArray['HeaderColor']; ?> url(../images/<?php echo $config->ParameterArray['PDFLogoFile']; ?>) no-repeat center center;
 	height:66px;
 	position: relative;
-}
-#header > span {color: white;display: block;margin-top: 5px;text-align: center;
-	text-shadow: 2px 2px 0 #063, 2px 2px 0 #000, -2px -2px 0 #000, 2px -2px 0 #000, -2px 2px 0 #000;
-}
-#header1 {font-size: xx-large;}
-#header2 {font-size: x-large;}
-#header > #version {bottom: 2px;position: absolute;right: 4px;font-size:small;
-	text-shadow: 1px 1px 0 #063, 1px 1px 0 #000, -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000;
 }
 
 /* Configuration Page */
@@ -124,7 +116,7 @@ div.cp { position: relative;}
 div#imageselection { display: none;}
 #imageselection span { display: block; padding: 0.25em 0 0.5em 0.5em; cursor: pointer; text-decoration: underline; border: 1px solid white;}
 #imageselection #preview { position: absolute; top: 0; right: 0; height: 180px; width: 180px; margin: 0.1em 0 0 0; padding: 0; border: 0px solid black;}
-#imageselection #filelist { position: absolute; top: 0; left: 1em; height: 380px; width: 245px; overflow-y: scroll; overflow-x: hidden; white-space: nowrap;}
+#imageselection #filelist { position: absolute; top: 0; left: 1em; height: 210px; width: 175px; overflow-y: scroll; overflow-x: hidden; }
 
 .ui-menu-item ul { max-height: 200px; overflow: auto; }
 #tzmenu {display: none;}
@@ -316,7 +308,7 @@ table.coordinates select {text-align: center; border: 0px;}
 /* Basic Page Layout */
 .page {position: relative;width: 100%;}
 .clear {clear: both;}
-p, h2, h3, h1 {margin-top: 1em;margin-bottom: 1em;}
+/*ALANp, h2, h3, h1 {margin-top: 1em;margin-bottom: 1em;}*/
 h2 {font-size: 1.5em;text-align: center;}
 h3 {font-size: 1.16em;text-align: center;}
 h3 + h3 {color: red;font-weight: bold;}
@@ -389,9 +381,9 @@ div.center div table {
 }
 div.center div table table{min-width: 150px;}
 div.center div table, div.center div tr, div.center div td {border: 1px solid gray;}
-.cabinet tr > td:first-child, .panelmgr .polenumber {padding: 0.25em 0.5em;text-align: center;}
+.cabinet tr > td:first-child, .panelmgr .polenumber {padding: 0.25em 0.5em;text-align: left;}
 .panelmgr .polelabel {
-	min-width: 150px;
+	min-width: 350px;
 	max-width: 400px;
 	padding: 0.25em 0.5em 0.25em 1em;
 	vertical-align: middle;
@@ -473,20 +465,21 @@ div.cabinet {
 	margin: 5px;
 	padding: 3px;
 }
-.blackout { background-color: black; }
 .rowview .noprint span:last-child {display: none;}
-.rowview div.cabinet { vertical-align: bottom; }
 .cabinet .error { background-color: <?php echo $config->ParameterArray['CriticalColor']; ?>; }
 
 /* PICTURES */
 .cabnavigator div.picture {position:relative; left:0px; top:0px; margin: -0.25em -0.5em -0.4em; z-index: 5;}
 .cabnavigator div.picture div {position:absolute; z-index: 10;}
-.picture .label > div {
+.cabnavigator .picture .label > div {
 	text-align: center;
 	width: 100%;
 }
-.picture .label {
+.cabnavigator .picture .label {
 	z-index: 11;
+	width: 100%;
+	margin-top: 0em;
+	pointer-events: none;
 	text-align: center;
 	vertical-align: middle;
 	color: white;
@@ -494,63 +487,25 @@ div.cabinet {
 	text-shadow: 1px 1px 0 #063, 1px 1px 0 #000, -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000;
 	filter: glow(color=#063,strength=2), alpha(opacity=90);
 } 
-.picture div .label {overflow: hidden;}
-.picture .label > div,
-.picture div > a > div > div { top: 10%; height: 80%; padding-left: 0.3em;}
-.picture div > a > div > div {overflow: hidden;}
+.cabnavigator .picture div .label {overflow: hidden;}
+.cabnavigator .picture .label > div,
+.cabnavigator .picture div > a > div > div { top: 10%; height: 80%; padding-left: 0.3em;}
+.cabnavigator .picture div > a > div > div {overflow: hidden;}
 .cabnavigator .picture div img:hover, .cabnavigator .picture a > div:hover { border: 2px solid red; margin: -2px;}
 
-.picture {
-	left: 0;
-	position: relative;
-	top: 0;
-	z-index: 5;
-	display: inline-block;
-}
-.picture div {
-	position: absolute;
-}
-.picture img {
-	height: 100%;
-	width: 100%;
-	position: absolute;
-}
-.picture div > a ~ .label {
-	pointer-events: none;
-}
-.picture > .label {
-	text-align: center;
-	pointer-events: none;
-}
-.picture > div > .label {
-	pointer-events: none;
-}
-.picture > div .label {
-	top: 0;
-}
-.label {
-	display: block;
-	z-index: 5;
-	top: 25%;
-	width: 90%;
-	height: 13px;
-	left: 5%;
-	overflow: hidden;
-	word-break: break-all;
-}
 .rotar_d{
 	transform:rotate(90deg);
 	-webkit-transform:rotate(90deg);
 	-moz-transform:rotate(90deg);
 	-ms-transform:rotate(90deg);
 	-o-transform:rotate(90deg);}
-.rlt {
-	transform-origin: left top;
-	-webkit-transform-origin: left top;
-	-moz-transform-origin: left top;
-	-ms-transform-origin: left top;
-	-o-transform-origin: left top;
-}
+.rotar_i{
+	transform:rotate(-90deg);
+	-webkit-transform:rotate(-90deg);
+	-moz-transform:rotate(-90deg);
+	-ms-transform:rotate(-90deg);
+	-o-transform:rotate(-90deg);}
+
 
 /* Cabinet Properties */
 
@@ -644,10 +599,9 @@ div.cabinet {
 	border: 1px dotted gray;
 	padding: 0.25em;
 }
-//.device fieldset .custom-combobox{margin: 0;padding: 0 0 0 2px;}
-.device fieldset .custom-combobox{margin: 0;padding: 0;}
+.device fieldset .custom-combobox{margin: 0;padding: 0 32px 0 2px;}
 .device fieldset .custom-combobox input{margin: 0;}
-.device fieldset .custom-combobox a {padding: 1px 0;position: absolute;}
+.device fieldset .custom-combobox a {padding: 1px 0;position: absolute; top: 0; right: 0;}
 .device div.right { max-width: 495px; }
 .device div.left, .device div.right {
 	margin-bottom: 1.5em;
@@ -699,14 +653,14 @@ div.cabinet {
 .device .path div { border: 0px none; }
 .device .path > div > div { position: relative; height: 1em; }
 .device .path > div > div > div { position: absolute; top: 0.15em; min-width: 550px; padding-left: 25px; white-space: nowrap; font-weight: 100; font-size: 0.85em;}
-.device .path span:after{ content: "\2192";}
+.device .path span:after{ content: " -> ";}
 .device .path span:last-child:after{ content: "";}
 
 #pandn.table span.custom-combobox { width: 100%;}
 #pandn.table .custom-combobox input, #pandn.table .custom-combobox a {border-top: 2px; border-bottom: 2px; border-style: inset;  width: auto; height: 18px;}
 #pandn.table .custom-combobox input {width: calc(100% - 18px);}
 #pandn.table .custom-combobox input {background-image: none; border-left: 2px; border-right: 0px; padding-left: 4px; font-size: inherit;} 
-#pandn.table .custom-combobox a {margin: 0; vertical-align: top; border-left: 0px; border-right: 2px; position: absolute;} 
+#pandn.table .custom-combobox a {margin: 0; vertical-align: top; width: 18px; border-left: 0px; border-right: 2px; position: absolute; top: 0; right: 0;} 
 
 #olog > div:first-child { border-bottom: 2px solid black; }
 #olog > div > div:first-child { width: 100px; padding-right: 5px; white-space: nowrap; }
@@ -726,8 +680,6 @@ div.cabinet {
 
 #firstport.hide { display: none; }
 
-.device fieldset .table label { white-space: nowrap;}
-
 .device .delete .ui-icon.status.down {cursor: pointer;}
 .switch .delete, .patchpanel .delete { border: 0 none; }
 .switch.table > div > div,
@@ -737,7 +689,7 @@ div.cabinet {
 /* can't explain where the 2px is coming from */
 .switch.table input, .patchpanel.table input { height: 18px; }
 .switch.table input, .switch.table select, 
-.patchpanel.table input, .patchpanel.table select { padding: 0; background-color: transparent;}
+.patchpanel.table input, .patchpanel.table select { width: 99%; padding: 0; background-color: transparent;}
 .switch.table div[id^=n] input { width:98%; }
 
 .switch .status, .patchpanel .down { background-image: url("../images/portstatus.png");}
@@ -875,7 +827,7 @@ div.cabinet {
 	ul.mktree  a.ZONE { color: #330066; }
 	ul.mktree  a.CABROW { color: #AA3300; }
 	ul.mktree  a.RACK { color: #660000; }
-	ul.mktree  a { text-decoration: none; white-space: pre;}
+	ul.mktree  a { text-decoration: none; }
 	ul.mktree  a:hover { color: red; }
 	ul.mktree  li ul li { font-family: arial, helvetica; font-size: 11pt; font-weight: normal;}
 }
@@ -927,6 +879,7 @@ fieldset[name=pdu] > div > img { vertical-align: text-bottom; }
 .installer a.active span:first-child, .nav a.active span:first-child {background-position: -144px 0;}
 .installer div.table > div > div + div {width: 300px;}
 .installer .rights > div:nth-last-child(2) div {padding-top: 0;padding-bottom: 2em;text-align: left;}
+.installer .center input {width: 97%;}
 .installer #configtabs div.table > div > div + div {width: auto;}
 .installer .center #configtabs ~ div input {width: auto;}
 div.page.installer {min-width: 1100px;}

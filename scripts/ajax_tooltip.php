@@ -28,10 +28,8 @@ $dep=new Department();
 
 if($config->ParameterArray["mUnits"]=="english"){
 	$weightunit="lbs";
-	$tempunit="F";
 }else{
 	$weightunit="Kg";
-	$tempunit="C";
 }
 
 // If the object id isn't set then don't bother with anything else.
@@ -118,7 +116,7 @@ if($object>0){
 			$labelsp=locale_number($used,0)." / $cab->CabinetHeight U";
 			$labelwe=locale_number($totalWeight,0)." / $cab->MaxWeight $weightunit";
 			$labelpo=locale_number($totalWatts/1000,2)." / $cab->MaxKW kW";
-			$labelte=(($curTemp>0)?locale_number($curTemp,0)."&deg;$tempunit ($lastRead)":__("no data"));
+			$labelte=(($curTemp>0)?locale_number($curTemp,0)."&deg; ($lastRead)":__("no data"));
 			$labelhu=(($curHum>0)?locale_number($curHum,0)." % ($lastRead)":__("no data"));
 			$labelrp=(($RPlastRead!='0')?locale_number($curRealPower/1000,2)." / $cab->MaxKW kW ($RPlastRead)":__("no data"));
 			
@@ -239,18 +237,8 @@ if($object>0){
 
 					$tooltip.=__($row["Label"]).": ".$pan->PanelVoltage." / ".intval($pan->PanelVoltage/1.73)."<br>\n";
 					break;
-				case "PanelPole":
-					$tooltip.=__($row["Label"]).": ".$pdu->GetAllBreakerPoles()."<br>\n";
-					break;
-				case "Weight":
-					$dev->$row["Field"]=$dev->GetDeviceTotalWeight();
-					goto end; // cringe now
-				case "NominalWatts":
-					$dev->$row["Field"]=$dev->GetDeviceTotalPower();
-					goto end; // fuck you, yeah I really did that
 				case "DeviceType":
 					// if this is a chassis device display the number of blades?
-				end:
 				default:
 					if(isset($_POST['cdu'])){
 						$tooltip.=__($row["Label"]).": ".$pdu->$row["Field"]."<br>\n";

@@ -2,8 +2,6 @@
 	require_once('db.inc.php');
 	require_once('facilities.inc.php');
 
-	$subheader=__("Data Center Device Templates");
-
 	if((isset($_POST['getslots']) || isset($_POST['getports'])) && isset($_POST['templateid'])){
 		$returndata=array();
 		if(isset($_POST['getports'])){
@@ -40,24 +38,6 @@
 	$template=new DeviceTemplate();
 	$manufacturer=new Manufacturer();
 
-	if(isset($_POST['deleteme'])){
-		$template->TemplateID=$_POST['templateid'];
-		if($template->GetTemplateByID()){
-			// First deal with the case that we are transferring
-			if($template->TemplateID!=$_POST['transferid'] && $_POST['transferid']==0){
-				// We should do this in bulk,  this has potential to be a real time sink
-				foreach(Device::GetDevicesByTemplate($template->TemplateID) as $dev){
-					$dev->TemplateID->$_POST['transferid'];
-					$dev->UpdateDevice();
-				}
-			}
-			// Transfers are done, delete this shit
-			$template->DeleteTemplate();
-		}
-		echo '1';
-		exit;
-	}
-
 	$status='';
 
 	if(isset($_FILES['templateFile']) && $_FILES['templateFile']['error']==0 && $_FILES['templateFile']['type']='text/xml'){
@@ -69,7 +49,6 @@
 		//get template
 		$template->TemplateID=$_REQUEST['templateid'];
 		$template->GetTemplateByID();
-		$deviceList = Device::GetDevicesByTemplate( $template->TemplateID );
 	}
 	
 	if(isset($_POST['action'])){
@@ -100,7 +79,7 @@
 				$slot->Y=isset($_POST["YF".$i])?$_POST["YF".$i]:0;
 				$slot->W=isset($_POST["WF".$i])?$_POST["WF".$i]:0;
 				$slot->H=isset($_POST["HF".$i])?$_POST["HF".$i]:0;
-				$status=($slot->CreateSlot())?$status:__("Error updating front slots");
+				$status=($slot->CreateSlot())?$status:__('Error updating front slots');
 			}
 			for ($i=1; $i<=$template->RearChassisSlots;$i++){
 				$slot=new Slot();
@@ -111,7 +90,7 @@
 				$slot->Y=isset($_POST["YR".$i])?$_POST["YR".$i]:0;
 				$slot->W=isset($_POST["WR".$i])?$_POST["WR".$i]:0;
 				$slot->H=isset($_POST["HR".$i])?$_POST["HR".$i]:0;
-				$status=($slot->CreateSlot())?$status:__("Error updating rear slots");
+				$status=($slot->CreateSlot())?$status:__('Error updating rear slots');
 			}
 			//update template ports
 			$template->DeletePorts();
@@ -123,7 +102,7 @@
 				$tport->MediaID=(isset($_POST["mt".$i]) && $_POST["mt".$i]>0)?$_POST["mt".$i]:0;
 				$tport->ColorID=(isset($_POST["cc".$i]) && $_POST["cc".$i]>0)?$_POST["cc".$i]:0;
 				$tport->PortNotes=isset($_POST["portnotes".$i])?$_POST["portnotes".$i]:"";
-				$status=($tport->CreatePort())?$status:__("Error updating template ports");
+				$status=($tport->CreatePort())?$status:__('Error updating template ports');
 			}
 			return $status;
 		}
@@ -133,12 +112,12 @@
 				if($template->CreateTemplate()){
 					$status=UpdateSlotsPorts($template,$status);
 				}else{
-					$status=__("An error has occured, template not created");
+					$status=__('An error has occured, template not created');
 				}
 				break;
 			case 'Update':
-				$status=($template->UpdateTemplate())?__("Updated"):__("Error updating template");
-				if ($status==__("Updated")){
+				$status=($template->UpdateTemplate())?__('Updated'):__('Error updating template');
+				if ($status==__('Updated')){
 					$status=UpdateSlotsPorts($template,$status);
 				}
 				break;
@@ -146,22 +125,22 @@
 				// someone will inevitibly try to update the template values and just click 
 				// update devices so make sure the template will update before trying to 
 				// update the device values to match the template
-				$status=($template->UpdateTemplate())?__("Updated"):__("Error updating template");
-				if ($status==__("Updated")){
+				$status=($template->UpdateTemplate())?__('Updated'):__('Error updating template');
+				if ($status==__('Updated')){
 					$status=UpdateSlotsPorts($template,$status);
 				}
-				if($status==__("Updated")){
-					$status=($template->UpdateDevices())?__("Updated"):__("Error updating devices");
+				if($status==__('Updated')){
+					$status=($template->UpdateDevices())?__('Updated'):__('Error updating devices');
 				}
 				break;
 			case 'Export':
 				//update template before export
-				$status=($template->UpdateTemplate())?__("Updated"):__("Error");
-				if ($status==__("Updated")){
+				$status=($template->UpdateTemplate())?__('Updated'):__('Error');
+				if ($status==__('Updated')){
 					$status=UpdateSlotsPorts($template,$status);
 				}
-				if($status==__("Updated")){
-					$status=($template->ExportTemplate())?__("Exported"):__("Error");
+				if($status==__('Updated')){
+					$status=($template->ExportTemplate())?__('Exported'):__('Error');
 				}
 				break;
 			default:
@@ -218,7 +197,7 @@
   <script type="text/javascript">
 	$(document).ready(function(){
 		var oModel=$('#model').val();
-		var chgmsg="<?php echo __("This value must be different than"); ?>"+" "+oModel;
+		var chgmsg='<?php echo __('This value must be different than'); ?>'+' '+oModel;
 		$('#deviceform').validationEngine();
 		$('#model').change(function(){
 			if($('#model').val()==oModel){
@@ -230,7 +209,7 @@
         
 		$('#clone').click(function(){
 			$('#templateid').val(0);
-			$('button[name="action"]').val('Create').text("<?php echo __("Create");?>");
+			$('button[name="action"]').val('Create').text('<?php echo __('Create');?>');
 			$('#model').trigger('change');
 			$('#device, #clone').remove();
 		});
@@ -240,7 +219,7 @@
 			$("#imageselection").dialog({
 				resizable: false,
 				height:500,
-				width: 670,
+				width: 600,
 				modal: true,
 				buttons: {
 <?php echo '					',__("Select"),': function() {'; ?>
@@ -322,109 +301,52 @@
 				}
 			});
 		});
+		
+	});/* END of $(document).ready function() */
 
-		FetchSlots();
-		TemplateButtons();
-		$('.templatemaker input[id*=Chassis] + button').each(function(){
-			var front=($(this).prev('input').attr('id')=='ChassisSlots')?true:false;
+$(document).ready(function(){
+	FetchSlots();
+	TemplateButtons();
+	$('.templatemaker input[id*=Chassis] + button').each(function(){
+		var front=($(this).prev('input').attr('id')=='ChassisSlots')?true:false;
+		InsertCoordsTable(front,$(this));
+		$(this).on('click',function(){
+			FetchSlots();
+
+			// Fill in the coords table
 			InsertCoordsTable(front,$(this));
-			$(this).on('click',function(){
-				FetchSlots();
 
-				// Fill in the coords table
-				InsertCoordsTable(front,$(this));
-
-				// Open the dialog
-				Poopup(front);
-			});
+			// Open the dialog
+			Poopup(front);
 		});
-
-		buildportstable();
-		$('.templatemaker input#numports + button').each(function(){
-			$(this).on('click',function(){
-				// Fill in the ports table
-				buildportstable();
-
-				// Open the dialog
-				PortsPoopup();
-			});
-		});
-
-		$('#FrontPictureFile,#RearPictureFile,#ChassisSlots,#RearChassisSlots,#numports').on('change keyup keydown', function(){ TemplateButtons(); });
-
-
-	$('#delete').on('click',function(){
-		// setup shit we might reuse
-		var dlg_content=$('<div>');
-		var dlg_select=$('<select>').append($('<option>').text('No').val('false')).append($('<option>').text('Yes').val('true'));
-		var dlg_transfer=$('<div>');
-
-		// make the dialog
-		dlg_content.append($('<p>').append("There is no undo").addClass('warning'));
-		dlg_content.append($('<label>').html("Would you like to transfer all devices using this template to another template?&nbsp;&nbsp;"));
-		dlg_content.append(dlg_select);
-		dlg_content.append(dlg_transfer);
-
-		var templateid2;
-
-		// logic for dealing someone saying yes they want to swap to another template
-		dlg_select.on('change',function(){
-			// Clone the existing device template list
-			templateid2=$('#templateid').clone().prop('id','templateid2').removeAttr('onchange');
-			// Remove the 'New Template' option
-			templateid2.find('option:first-child').remove();
-
-			if(eval(this.value)){
-				dlg_transfer.append('<br><br>');
-				dlg_transfer.append($('<label>').prop('for','templateid2').html("Transfer all devices using this template to:&nbsp;&nbsp;"));
-				dlg_transfer.append(templateid2);
-			}else{
-				dlg_transfer.html('');
-			}
-
-		});
-
-		var dialog=$('<div>').attr('title',"Are you sure you want to delete this template?").html(dlg_content);
-			dialog.dialog({
-				closeOnEscape: false,
-				minHeight: 250,
-				width: 840,
-				modal: true,
-				resizable: false,
-				position: { my: "center", at: "top", of: window },
-				show: { effect: "blind", duration: 800 },
-				beforeClose: function(event,ui){
-				},
-				buttons: {
-					Yes: function(){
-						$.post('',{templateid: $('#templateid').val(), transferid: ((typeof templateid2=='undefined')?0:templateid2.val()), deleteme: ''}).done(function(data){
-							if(data.trim()==1){
-								dialog.dialog("destroy");
-								window.location=window.location.href;
-							}else{
-								alert("something is broken");
-							}
-						});
-					},
-					No: function(){
-						$(this).dialog("destroy");
-					}
-				}
-			});
 	});
 
+	buildportstable();
+	$('.templatemaker input#numports + button').each(function(){
+		$(this).on('click',function(){
+			// Fill in the ports table
+			buildportstable();
 
-	});/* END of $(document).ready function() */
+			// Open the dialog
+			PortsPoopup();
+		});
+	});
+
+	$('#FrontPictureFile,#RearPictureFile,#ChassisSlots,#RearChassisSlots,#numports').on('change keyup keydown', function(){ TemplateButtons(); });
+
+});
 </script>
 </head>
 <body>
-<?php include( 'header.inc.php' ); ?>
+<div id="header"></div>
 <div class="page">
 <?php
 	include( 'sidebar.inc.php' );
 
 echo '<div class="main">
 <div class="templatemaker">
+<h2>',$config->ParameterArray["OrgName"],'</h2>
+<h3>',__("Data Center Device Templates"),'</h3>
 <h3>',$status,'</h3>
 <div class="center"><div>
 <form id="deviceform" action="',$_SERVER["PHP_SELF"],'" method="POST">
@@ -506,23 +428,15 @@ echo '	</select>
 <div id="DivRearChassisSlots" style="display: ',(($template->DeviceType=="Chassis")?'table-row':'none'),';">
    <div><label for="RearChassisSlots">',__("Rear Chassis Slots"),'</label></div>
    <div><input type="text" name="RearChassisSlots" id="RearChassisSlots" value="',$template->RearChassisSlots,'"><button type="button">',__("Edit Coordinates"),'</button></div>
-</div>';
-if ( $template->TemplateID > 0 ) {
-	echo '
+</div>
 <div>
-	<div>&nbsp;</div>
-	<div>' . __("Number of Devices Using This Template:") . ' ' . sizeof( $deviceList ) . '</div>
-</div>';
-}
-	echo '
-<div>
-   <div><label for="notes">',__("Notes"),'</label></div>
+   <div><label for="notes">',__('Notes'),'</label></div>
    <div><textarea name="notes" id="notes" cols="40" rows="8">',$template->Notes,'</textarea></div>
 </div>
 <div class="caption">';
 
 	if($template->TemplateID >0){
-		echo '   <button type="submit" name="action" value="Update">',__("Update Template"),'</button><button type="button" id="clone">',__("Clone Template"),'</button><button id="delete" type="button">',__("Delete Template"),'</button><button type="submit" name="action" value="Device" id="device">',__("Update Devices"),'</button><button type="submit" name="action" value="Export">',__("Export"),'</button>';
+		echo '   <button type="submit" name="action" value="Update">',__("Update Template"),'</button><button type="button" id="clone">',__("Clone Template"),'</button><button type="submit" name="action" value="Device" id="device">',__("Update Devices"),'</button><button type="submit" name="action" value="Export">',__("Export"),'</button>';
 	}else{
 		echo '	 <button type="submit" name="action" value="Create">',__("Create"),'</button>';
 	}

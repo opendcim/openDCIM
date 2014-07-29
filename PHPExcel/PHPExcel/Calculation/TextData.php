@@ -2,7 +2,7 @@
 /**
  * PHPExcel
  *
- * Copyright (c) 2006 - 2014 PHPExcel
+ * Copyright (c) 2006 - 2012 PHPExcel
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -20,9 +20,9 @@
  *
  * @category	PHPExcel
  * @package		PHPExcel_Calculation
- * @copyright	Copyright (c) 2006 - 2014 PHPExcel (http://www.codeplex.com/PHPExcel)
+ * @copyright	Copyright (c) 2006 - 2012 PHPExcel (http://www.codeplex.com/PHPExcel)
  * @license		http://www.gnu.org/licenses/old-licenses/lgpl-2.1.txt	LGPL
- * @version		1.8.0, 2014-03-02
+ * @version		1.7.8, 2012-10-12
  */
 
 
@@ -41,7 +41,7 @@ if (!defined('PHPEXCEL_ROOT')) {
  *
  * @category	PHPExcel
  * @package		PHPExcel_Calculation
- * @copyright	Copyright (c) 2006 - 2014 PHPExcel (http://www.codeplex.com/PHPExcel)
+ * @copyright	Copyright (c) 2006 - 2012 PHPExcel (http://www.codeplex.com/PHPExcel)
  */
 class PHPExcel_Calculation_TextData {
 
@@ -89,7 +89,7 @@ class PHPExcel_Calculation_TextData {
 	/**
 	 * TRIMNONPRINTABLE
 	 *
-	 * @param	mixed	$stringValue	Value to check
+	 * @param	mixed	$value	Value to check
 	 * @return	string
 	 */
 	public static function TRIMNONPRINTABLE($stringValue = '') {
@@ -113,7 +113,7 @@ class PHPExcel_Calculation_TextData {
 	/**
 	 * TRIMSPACES
 	 *
-	 * @param	mixed	$stringValue	Value to check
+	 * @param	mixed	$value	Value to check
 	 * @return	string
 	 */
 	public static function TRIMSPACES($stringValue = '') {
@@ -133,7 +133,7 @@ class PHPExcel_Calculation_TextData {
 	/**
 	 * ASCIICODE
 	 *
-	 * @param	string	$characters		Value
+	 * @param	string	$character	Value
 	 * @return	int
 	 */
 	public static function ASCIICODE($characters) {
@@ -208,17 +208,16 @@ class PHPExcel_Calculation_TextData {
 		}
 		$decimals = floor($decimals);
 
-		$mask = '$#,##0';
 		if ($decimals > 0) {
-			$mask .= '.' . str_repeat('0',$decimals);
+			return money_format('%.'.$decimals.'n',$value);
 		} else {
 			$round = pow(10,abs($decimals));
 			if ($value < 0) { $round = 0-$round; }
-			$value = PHPExcel_Calculation_MathTrig::MROUND($value, $round);
+			$value = PHPExcel_Calculation_MathTrig::MROUND($value,$round);
+			//	The implementation of money_format used if the standard PHP function is not available can't handle decimal places of 0,
+			//		so we display to 1 dp and chop off that character and the decimal separator using substr
+			return substr(money_format('%.1n',$value),0,-2);
 		}
-
-		return PHPExcel_Style_NumberFormat::toFormattedString($value, $mask);
-
 	}	//	function DOLLAR()
 
 
@@ -297,9 +296,7 @@ class PHPExcel_Calculation_TextData {
 	/**
 	 * FIXEDFORMAT
 	 *
-	 * @param	mixed		$value	Value to check
-	 * @param	integer		$decimals
-	 * @param	boolean		$no_commas
+	 * @param	mixed	$value	Value to check
 	 * @return	boolean
 	 */
 	public static function FIXEDFORMAT($value, $decimals = 2, $no_commas = FALSE) {
@@ -410,6 +407,7 @@ class PHPExcel_Calculation_TextData {
 	 * STRINGLENGTH
 	 *
 	 * @param	string	$value	Value
+	 * @param	int		$chars	Number of characters
 	 * @return	string
 	 */
 	public static function STRINGLENGTH($value = '') {
@@ -442,7 +440,11 @@ class PHPExcel_Calculation_TextData {
 			$mixedCaseString = ($mixedCaseString) ? PHPExcel_Calculation::getTRUE() : PHPExcel_Calculation::getFALSE();
 		}
 
-		return PHPExcel_Shared_String::StrToLower($mixedCaseString);
+		if (function_exists('mb_convert_case')) {
+			return mb_convert_case($mixedCaseString, MB_CASE_LOWER, 'UTF-8');
+		} else {
+			return strtoupper($mixedCaseString);
+		}
 	}	//	function LOWERCASE()
 
 
@@ -461,7 +463,11 @@ class PHPExcel_Calculation_TextData {
 			$mixedCaseString = ($mixedCaseString) ? PHPExcel_Calculation::getTRUE() : PHPExcel_Calculation::getFALSE();
 		}
 
-		return PHPExcel_Shared_String::StrToUpper($mixedCaseString);
+		if (function_exists('mb_convert_case')) {
+			return mb_convert_case($mixedCaseString, MB_CASE_UPPER, 'UTF-8');
+		} else {
+			return strtoupper($mixedCaseString);
+		}
 	}	//	function UPPERCASE()
 
 
@@ -480,17 +486,20 @@ class PHPExcel_Calculation_TextData {
 			$mixedCaseString = ($mixedCaseString) ? PHPExcel_Calculation::getTRUE() : PHPExcel_Calculation::getFALSE();
 		}
 
-		return PHPExcel_Shared_String::StrToTitle($mixedCaseString);
+		if (function_exists('mb_convert_case')) {
+			return mb_convert_case($mixedCaseString, MB_CASE_TITLE, 'UTF-8');
+		} else {
+			return ucwords($mixedCaseString);
+		}
 	}	//	function PROPERCASE()
 
 
 	/**
 	 * REPLACE
 	 *
-	 * @param	string	$oldText	String to modify
-	 * @param	int		$start		Start character
-	 * @param	int		$chars		Number of characters
-	 * @param	string	$newText	String to replace in defined position 
+	 * @param	string	$value	Value
+	 * @param	int		$start	Start character
+	 * @param	int		$chars	Number of characters
 	 * @return	string
 	 */
 	public static function REPLACE($oldText = '', $start = 1, $chars = null, $newText) {
@@ -556,7 +565,7 @@ class PHPExcel_Calculation_TextData {
 	/**
 	 * RETURNSTRING
 	 *
-	 * @param	mixed	$testValue	Value to check
+	 * @param	mixed	$value	Value to check
 	 * @return	boolean
 	 */
 	public static function RETURNSTRING($testValue = '') {
@@ -573,7 +582,6 @@ class PHPExcel_Calculation_TextData {
 	 * TEXTFORMAT
 	 *
 	 * @param	mixed	$value	Value to check
-	 * @param	string	$format	Format mask to use
 	 * @return	boolean
 	 */
 	public static function TEXTFORMAT($value,$format) {
