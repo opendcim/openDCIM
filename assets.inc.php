@@ -346,7 +346,7 @@ class Cabinet {
 			$cabinetList[]=Cabinet::RowToObject($cabinetRow);
 		}
 
-		if($frontedge=="Left" || $frontedge=="Top"){
+		if($frontedge=="Right" || $frontedge=="Top"){
 			$cabinetList=array_reverse($cabinetList);
 		}
 
