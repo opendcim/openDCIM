@@ -1789,38 +1789,13 @@ class Device {
 		$powercon->DeviceID=$this->DeviceID;
 		$powercon->DeleteConnections();
 
-		// Place in deleted device table
-		$sql="INSERT INTO fac_DeletedDevice select *, NOW()  from fac_Device where DeviceID=$this->DeviceID";
-		
-		if(!$dbh->exec($sql)){
-			$info=$dbh->errorInfo();
-			error_log("PDO Error: {$info[2]} SQL=$sql");
-			error_log("Device $this->DeviceID NOT deleted.");
-			
-			// If we could not record the deletion, stop now.
-			return false;
-		}
-
-		// log the delete date & guilty party
-		$sql = "UPDATE fac_DeletedDevice set Notes=CONCAT(Notes,'DELETED on ', NOW(), ' by " . User::Current()->UserID  . "') 
-			WHERE DeviceID=$this->DeviceID" ;
-		
-		if(!$dbh->exec($sql)){
-			$info=$dbh->errorInfo();
-			error_log("PDO Error: {$info[2]} SQL=$sql");
-			error_log("Device $this->DeviceID NOT deleted.");
-			
-			// If we could not record the deletion, stop now.
-			return false;
-		}
-		
-
 		// Now delete the device itself
 		$sql="DELETE FROM fac_Device WHERE DeviceID=$this->DeviceID;";
+
 		if(!$dbh->exec($sql)){
 			$info=$dbh->errorInfo();
+
 			error_log("PDO Error: {$info[2]} SQL=$sql");
-			error_log("Device $this->DeviceID NOT deleted.");
 			return false;
 		}
 

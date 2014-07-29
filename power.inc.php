@@ -1105,10 +1105,10 @@ class PowerPanel {
 		if($CabinetID <1){
 			return 0;
 		}
-		
-		$sql ="SELECT SUM(Wattage) AS Wattage FROM fac_PanelStats JOIN (fac_PowerDistribution) ON  
-			( fac_PanelStats.PanelID = fac_PowerDistribution.PanelID AND fac_PanelStats.PanelPole = fac_PowerDistribution.PanelPole )  
-			WHERE CabinetID=$CabinetID)" ; 
+	
+		$sql = "select sum(Wattage)  from fac_PanelStats, fac_PowerDistribution  where fac_PanelStats.PanelID = fac_PowerDistribution.PanelID AND fac_PanelStats.PanelPole = fac_PowerDistribution.PanelPole and fac_PowerDistribution.CabinetID=$CabinetID" ;
+	
+		//$sql ="SELECT SUM(Wattage) AS Wattage FROM fac_PanelStats JOIN (fac_PowerDistribution) ON  ( fac_PanelStats.PanelID = fac_PowerDistribution.PanelID AND fac_PanelStats.PanelPole = fac_PowerDistribution.PanelPole )  WHERE CabinetID=$CabinetID)" ; 
 
 
 
@@ -1144,13 +1144,13 @@ class PowerPanel {
 		// The result set should have no Panels with blank IP Addresses or SNMP Community, so we can forge ahead with processing them all
 		foreach($this->query($sql) as $row){
 			// Build the OIDs to be fetched (one for each Pole in the Panel)
-			$OIDS = [] ;	
-			for ($pole=1; $pole < $row["NumberOfPoles"]; $pole++) {
+			$OIDS = array() ;	
+			for ($pole=1; $pole <= $row["NumberOfPoles"]; $pole++) {
 				$OIDS[]= $row["PanelOID"] . ".$pole"  ;
 			}
 
-			print "OID String for Panel " . $row["PanelID"] ;
-			print_r($OIDS) ;
+			//print "OID String for Panel " . $row["PanelID"] ;
+			//print_r($OIDS) ;
 			
 			// Have to reset this every time, otherwise the exec() will append
 			unset($statsOutput);
@@ -1165,29 +1165,24 @@ class PowerPanel {
 			
 			if ( $usePHPSNMP ) {
 				if ( $row["SNMPVersion"] == "2c" ){
-					$session = new SNMP(SNMP::VERSION_2C, $row["IPAddress"], $row["Community"]);
+					$session = new SNMP(SNMP::VERSION_2C, $row["IPAddress"], $row["SNMPCommunity"]);
 				}else{
-					$session = new SNMP(SNMP::VERSION_1, $row["IPAddress"], $row["Community"]);
+					$session = new SNMP(SNMP::VERSION_1, $row["IPAddress"], $row["SNMPCommunity"]);
 				}
 
-				$results = $session->get(array("sysDescr.0", "sysName.0"));		
+				$results = $session->get($OIDS);		
 		
 								
 			} else {
 				$OIDString = implode(" ",$OIDS);
-				$pollCommand="{$config->ParameterArray["snmpget"]} -v {$row["SNMPVersion"]} -t 0.5 -r 2 -c $Community {$row["IPAddress"]} $OIDString | {$config->ParameterArray["cut"]} -d: -f4";
-				print "$pollCommand \n";	
-				//exec( $pollCommand, $results );
+				$pollCommand="{$config->ParameterArray["snmpget"]} -v {$row["SNMPVersion"]} -t 0.5 -r 2 -c $Community {$row["IPAddress"]} $OIDString ";
+				exec( $pollCommand, $results );
 			}
 
-
-
-			$results = array ( "0.9.9.9.1"=>1, "0.8.777.3"=>2, "0.1.2"=>4) ;
 			foreach($results as $oid=>$val) {
-    				#echo $oid . ": " . $val . "\n";
 				$PanelPole = substr( strrchr($oid, "."),1)  ;
-				print "panel ". $row["PanelID"] . "pole $PanelPole $val\n";
-
+				$val = substr( strrchr($val, ":"),1) ;
+				//print "panel ". $row["PanelID"] . "pole $PanelPole $val\n";
 
 				if($val!=""){
 					// The multiplier should be an int but no telling what voodoo the db might cause
@@ -1212,7 +1207,6 @@ class PowerPanel {
 			
 				$sql="INSERT INTO fac_PanelStats SET PanelID={$row["PanelID"]}, PanelPole=$PanelPole,  Wattage=$watts, Amps=$amps, LastRead=now() ON 
 					DUPLICATE KEY UPDATE Wattage=$watts, Amps=$amps, LastRead=now();";
-				print $sql . "\n" ;
 				$this->exec($sql);
 			
 			} //foreach pole 

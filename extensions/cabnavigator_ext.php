@@ -1,5 +1,8 @@
 <?php
 
+include( "../db.inc.php" );
+include( "../facilities.inc.php" );
+
 if(  !($user->ReadBilling)  ){
 	exit();
 }

@@ -676,7 +676,6 @@ class User {
 
 	function GetUserRights(){
 		$this->MakeSafe();
-
 		$sql="SELECT * FROM fac_User WHERE UserID=\"$this->UserID\";";
 
 		if($row=$this->query($sql)->fetch()){

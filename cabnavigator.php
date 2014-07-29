@@ -327,7 +327,15 @@ function renderUnassignedTemplateOwnership($noTemplFlag, $noOwnerFlag, $device) 
 	@$SpacePercent=($cab->CabinetHeight>0)?number_format($used/$cab->CabinetHeight*100,0):0;
 	@$WeightPercent=number_format($totalWeight/$cab->MaxWeight*100,0);
 	@$PowerPercent=number_format(($totalWatts/1000)/$cab->MaxKW*100,0);
-	$measuredWatts = $pdu->GetWattageByCabinet( $cab->CabinetID );
+	
+	// Here we have a fudge. If both the panel breakers and the PDU are managed
+	// and reporting power consumption then measured watts is the sum of both..
+
+	$PDUMeasuredWatts = $pdu->GetWattageByCabinet( $cab->CabinetID );
+	$pan->GetPanel();
+        $PANMeasuredWatts = $pan->GetWattageByCabinet( $cab->CabinetID );
+	$measuredWatts = $PDUMeasuredWatts + $PANMeasuredWatts ;
+
 	@$MeasuredPercent=number_format(($measuredWatts/1000)/$cab->MaxKW*100,0);
 	$CriticalColor=$config->ParameterArray["CriticalColor"];
 	$CautionColor=$config->ParameterArray["CautionColor"];

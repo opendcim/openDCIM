@@ -1,11 +1,11 @@
 <?php
 
 	$dbhost = 'localhost';
-	$dbname = 'devaccounts';
-	$dbuser = 'devaccountsro';
+	$dbname = 'accounts';
+	$dbuser = 'accountsro';
 	$dbpass = 'adbread';
 
-	$adbbase = "/devaccounts/customer_services/";
+	$adbbase = "https://intranet.network-i.net/accounts/customer_services/";
 
 	$locale = "en_US";
 	$codeset = "UTF-8";
