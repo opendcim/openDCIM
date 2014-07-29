@@ -4,9 +4,19 @@
 
 	$subheader=__("Data Center Operations Work Order Builder");
 	
-	if ( ! isset( $_COOKIE["workOrder"] ) || ( isset( $_COOKIE["workOrder"] ) && $_COOKIE["workOrder"]=="" )) {
-		header( "Location: " . redirect() );
+	if(!isset($_COOKIE["workOrder"]) || (isset($_COOKIE["workOrder"]) && $_COOKIE["workOrder"]=="" )){
+		header("Location: ".redirect());
 		exit;
+	}
+
+	$devList=array();
+	$woList=json_decode($_COOKIE["workOrder"]);
+	foreach($woList as $woDev){
+		$dev=new Device();
+		$dev->DeviceID=$woDev;
+		if($dev->GetDevice()){
+			$devList[]=$dev;
+		}
 	}
 ?>
 <!doctype html>
@@ -44,37 +54,28 @@
 <div class="center"><div>
 <!-- CONTENT GOES HERE -->
 <?php
-	printf( "<h2>%s</h2>", __("Work Order Contents" ));
-
-	$devList = array();
-	$woList = json_decode( $_COOKIE["workOrder"] );
-	foreach($woList as $woDev){
-		$dev=new Device();
-		$dev->DeviceID=$woDev;
-		if($dev->GetDevice()){
-			$devList[]=$dev;
-		}
-	}
+	print "<h2>".__("Work Order Contents")."</h2>
+<div class=\"table\">
+	<div><div>".__("Cabinet")."</div><div>".__("Position")."</div><div>".__("Label")."</div><div>".__("Image")."</div></div>\n";
 	
-	print "<div class=\"table\">\n";
-	printf( "<div><div>%s</div><div>%s</div><div>%s</div><div>%s</div></div>\n", __("Cabinet"), __("Position"), __("Label"), __("Image"));
-	
-	$devTmpl = new DeviceTemplate();
-	$cab = new Cabinet();
-	
-	foreach ( $devList as $dev ) {
+	foreach($devList as $dev){
+		// including the $cab and $devTempl in here so it gets reset each time and there 
+		// is no chance for phantom data
+		$cab=new Cabinet();
 		$cab->CabinetID=$dev->Cabinet;
 		$cab->GetCabinet();
 		
-		$devTmpl->TemplateID = $dev->TemplateID;
+		$devTmpl=new DeviceTemplate();
+		$devTmpl->TemplateID=$dev->TemplateID;
 		$devTmpl->GetTemplateByID();
-		
-		printf( "<div><div>%s</div><div>%s</div><div>%s</div>%s</div>\n", $cab->Location, $dev->Height==1 ? $dev->Position : $dev->Position."-".($dev->Position+$dev->Height-1), $dev->Label, $dev->GetDevicePicture(220) );
+
+		$position=($dev->Height==1)?$dev->Position:$dev->Position."-".($dev->Position+$dev->Height-1);
+
+		print "<div><div>$cab->Location</div><div>$position</div><div>$dev->Label</div><div>".$dev->GetDevicePicture()."</div></div>\n";
 	}
 	
-	print "</div>\n";
-
-	print '<a href="export_port_connections.php?deviceid=wo"><button type="button">' . __("Export Connections") . '</button></a>';
+	print '</div>
+<a href="export_port_connections.php?deviceid=wo"><button type="button">'.__("Export Connections").'</button></a>';
 ?>
 
 <button type="button" id="clear"><?php print __("Clear"); ?></button>
