@@ -481,11 +481,11 @@ div.cabinet {
 /* PICTURES */
 .cabnavigator div.picture {position:relative; left:0px; top:0px; margin: -0.25em -0.5em -0.4em; z-index: 5;}
 .cabnavigator div.picture div {position:absolute; z-index: 10;}
-.cabnavigator .picture .label > div {
+.picture .label > div {
 	text-align: center;
 	width: 100%;
 }
-.cabnavigator .picture .label {
+.picture .label {
 	z-index: 11;
 	text-align: center;
 	vertical-align: middle;
@@ -494,10 +494,10 @@ div.cabinet {
 	text-shadow: 1px 1px 0 #063, 1px 1px 0 #000, -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000;
 	filter: glow(color=#063,strength=2), alpha(opacity=90);
 } 
-.cabnavigator .picture div .label {overflow: hidden;}
-.cabnavigator .picture .label > div,
-.cabnavigator .picture div > a > div > div { top: 10%; height: 80%; padding-left: 0.3em;}
-.cabnavigator .picture div > a > div > div {overflow: hidden;}
+.picture div .label {overflow: hidden;}
+.picture .label > div,
+.picture div > a > div > div { top: 10%; height: 80%; padding-left: 0.3em;}
+.picture div > a > div > div {overflow: hidden;}
 .cabnavigator .picture div img:hover, .cabnavigator .picture a > div:hover { border: 2px solid red; margin: -2px;}
 
 .picture {
