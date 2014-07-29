@@ -502,7 +502,6 @@ div.cabinet {
 
 .picture {
 	left: 0;
-	margin: -0.25em -0.5em -0.4em;
 	position: relative;
 	top: 0;
 	z-index: 5;
