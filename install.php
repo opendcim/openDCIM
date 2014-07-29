@@ -1,5 +1,5 @@
 <?php
-$codeversion="3.2";
+$codeversion="3.3";
 
 // Pre-Flight check
 	$tests=array();
@@ -694,6 +694,15 @@ function upgrade(){
 	if($version=="3.1"){
 		// First apply the schema updates needed.
 		$results[]=applyupdate("db-3.1-to-3.2.sql");
+
+		// Rebuild the config table just in case.
+		$config->rebuild();
+
+		$version="3.2";
+	}
+	if($version=="3.2"){
+		// First apply the schema updates needed.
+		$results[]=applyupdate("db-3.2-to-3.3.sql");
 
 		// Rebuild the config table just in case.
 		$config->rebuild();
