@@ -32,3 +32,9 @@ ALTER TABLE fac_Device ADD INDEX TemplateID(TemplateID);
 -- Clean up - we transitioned off of this table 2 releases ago
 --
 DROP TABLE IF EXISTS fac_DevicePorts;
+
+--
+-- Bump up the database version
+--
+UPDATE fac_Config set Value='3.3' WHERE Parameter='Version';
+
