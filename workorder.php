@@ -62,7 +62,14 @@
 		// including the $cab and $devTempl in here so it gets reset each time and there 
 		// is no chance for phantom data
 		$cab=new Cabinet();
-		$cab->CabinetID=$dev->Cabinet;
+		if($dev->ParentDevice>0){
+			$pdev=new Device();
+			$pdev->DeviceID=$dev->GetRootDeviceID();
+			$pdev->GetDevice();
+			$cab->CabinetID=$pdev->Cabinet;
+		}else{
+			$cab->CabinetID=$dev->Cabinet;
+		}
 		$cab->GetCabinet();
 		
 		$devTmpl=new DeviceTemplate();
