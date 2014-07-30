@@ -2492,7 +2492,12 @@ class Device {
 		}
 		return $resp;
 	}
-	function GetDevicePicture($targetWidth=220,$rear=false){
+	function GetDevicePicture($rear=false,$targetWidth=220,$nolinks=false){
+		// Just in case
+		$targetWidth=($targetWidth==0)?220:$targetWidth;
+		$rear=($rear==true || $rear==false)?$rear:true;
+		$nolinks=($nolinks==true || $nolinks==false)?$nolinks:false;
+
 		$templ=new DeviceTemplate();
 		$templ->TemplateID=$this->TemplateID;
 		$templ->GetTemplateByID();
@@ -2527,7 +2532,10 @@ class Device {
 			$flags=($this->Owner==0)?'(O)':'';
 			$flags=($flags!='')?'<span class="hlight">'.$flags.'</span>':'';
 
-			$resp.="\n\t<div class=\"picture\" style=\"width: ".$targetWidth."px; height: ".$targetHeight."px;\">\n";
+			// This is for times when you want to use the image on a report but don't want links
+			$nolinks=($nolinks)?' disabled':'';
+
+			$resp.="\n\t<div class=\"picture$nolinks\" style=\"width: ".$targetWidth."px; height: ".$targetHeight."px;\">\n";
 			$resp.="$clickable\t\t<img data-deviceid=$this->DeviceID src=\"$picturefile\" alt=\"$this->Label\">$clickableend\n";
 
 			/*

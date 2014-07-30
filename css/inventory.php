@@ -479,6 +479,7 @@ div.cabinet {
 .cabinet .error { background-color: <?php echo $config->ParameterArray['CriticalColor']; ?>; }
 
 /* PICTURES */
+.disabled {pointer-events: none;cursor: default;}
 .cabnavigator div.picture {position:relative; left:0px; top:0px; margin: -0.25em -0.5em -0.4em; z-index: 5;}
 .picture div {position:absolute; z-index: 10; padding: 0 !important;}
 .picture .label {
