@@ -2876,9 +2876,13 @@ class DevicePorts {
 		$path = array();
 		$n = sizeof( $path );
 		
+		$dev = new Device();
+		$dev->DeviceID=$DeviceID;
+		$dev->getDevice();
+		
 		$path[$n] = new DevicePorts();
 		$path[$n]->DeviceID = $DeviceID;
-		$path[$n]->PortNumber = $PortNumber;
+		$path[$n]->PortNumber = ($dev->DeviceType=="Patch Panel")?-$PortNumber:$PortNumber;
 		$path[$n]->getPort();
 		
 		// Follow the trail until you get no more connections
