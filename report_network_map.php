@@ -2,7 +2,7 @@
     require_once "db.inc.php";
     require_once "facilities.inc.php";
 
-	$subheader=__("Network Map Viewer");
+	  $subheader=__("Network Map Viewer");
 
     $dotCommand = $config->ParameterArray["dot"];
     # if format is set, graph options should be set and ready to be rendered
@@ -83,7 +83,10 @@
                     $device = new Device();
                     $device->Cabinet = $cab->CabinetID;
                     foreach($device->ViewDevicesByCabinet(true) as $dev) {
-                        $devList[$dev->DeviceID]=$dev;
+                        if(!isset($devList[$dev->DeviceType])) {
+                          $devList[$dev->DeviceType] = array();
+                        }
+                        $devList[$dev->DeviceType][$dev->DeviceID]=$dev->Label;
                     }
                 }
             }
@@ -95,11 +98,14 @@
             $graphname .= "Data Center ".$datacenter->Name;
             $cabinet = new Cabinet();
             $cabinet->DataCenterID = $dcid;
-            foreach($cabinet->ListCabinetsByDC(false, false) as $cab) {
+            foreach($cabinet->ListCabinetsByDC() as $cab) {
                 $device = new Device();
                 $device->Cabinet = $cab->CabinetID;
                 foreach($device->ViewDevicesByCabinet(true) as $dev) {
-                    $devList[$dev->DeviceID]=$dev;
+                    if(!isset($devList[$dev->DeviceType])) {
+                        $devList[$dev->DeviceType] = array();
+                    }
+                    $devList[$dev->DeviceType][$dev->DeviceID]=$dev->Label;
                 }
             }
         } elseif(isset($_REQUEST['zoneid'])){
@@ -119,7 +125,10 @@
                 $device = new Device();
                 $device->Cabinet = $cab->CabinetID;
                 foreach($device->ViewDevicesByCabinet(true) as $dev) {
-                    $devList[$dev->DeviceID]=$dev;
+                    if(!isset($devList[$dev->DeviceType])) {
+                      $devList[$dev->DeviceType] = array();
+                    }
+                    $devList[$dev->DeviceType][$dev->DeviceID]=$dev->Label;
                 }
             }
         } elseif(isset($_REQUEST['cabrowid'])){
@@ -140,7 +149,10 @@
                     $device = new Device();
                     $device->Cabinet = $cab->CabinetID;
                     foreach($device->ViewDevicesByCabinet(true) as $dev) {
-                        $devList[$dev->DeviceID]=$dev;
+                        if(!isset($devList[$dev->DeviceType])) {
+                          $devList[$dev->DeviceType] = array();
+                        }
+                        $devList[$dev->DeviceType][$dev->DeviceID]=$dev->Label;
                     }
                 }
             }
@@ -157,7 +169,10 @@
             $device = new Device();
             $device->Cabinet = $cabid;
             foreach($device->ViewDevicesByCabinet(true) as $dev) {
-                $devList[$dev->DeviceID]=$dev;
+                if(!isset($devList[$dev->DeviceType])) {
+                  $devList[$dev->DeviceType] = array();
+                }
+                $devList[$dev->DeviceType][$dev->DeviceID]=$dev->Label;
             }
 
         }
@@ -177,19 +192,30 @@ overlap = scale;
 
         # Generate a list of ports from the device lists.
         $portList=array();
-        foreach($devList as $devid => $dev) {
-            $ports=DevicePorts::getPortList($dev->DeviceID);
-            foreach($ports as $port) {
-                if(($mediaID == -1) || ($port->MediaID == $mediaID)) {
-                    if(isset($port->ConnectedDeviceID)) {
-                        $portList[]=$port;
-                        # if the connected device isn't in out list of devices, add it so we 
-                        # at least get nice names for the devices outside the selected scope
-                        if(!isset($devList[$port->ConnectedDeviceID])) {
-                            $tdev = new Device();
-                            $tdev->DeviceID = $port->ConnectedDeviceID;
-                            $tdev->GetDevice();
-                            $devList[$port->ConnectedDeviceID] = $tdev;
+        foreach($devList as $deviceType => $dev) {
+            foreach($dev as $devid => $label) {
+                $ports=DevicePorts::getPortList($devid);
+                foreach($ports as $port) {
+                    if(($mediaID == -1) || ($port->MediaID == $mediaID)) {
+                        if(isset($port->ConnectedDeviceID)) {
+                            $portList[]=array(
+                                    'ConnectedDeviceID'=>$port->ConnectedDeviceID,
+                                    'DeviceID'=>$port->DeviceID,
+                                    'ConnectedPort'=>$port->ConnectedPort,
+                                    'PortNumber'=>$port->PortNumber,
+                                    'ColorID'=>$port->ColorID,
+                                    'MediaID'=>$port->MediaID,
+                                    'Label'=>$port->Label
+                                );
+                            # if the connected device isn't in out list of devices, add it so we 
+                            # at least get nice names for the devices outside the selected scope
+                            if(!isset($devList[$port->ConnectedDeviceID])) {
+                                $tdev = new Device();
+                                $tdev->DeviceID = $port->ConnectedDeviceID;
+                                $tdev->GetDevice();
+                                $devList[$tdev->DeviceType][$tdev->DeviceID] = $tdev->Label;
+                            }
+                            unset($tdev);
                         }
                     }
                 }
@@ -198,10 +224,6 @@ overlap = scale;
         # create a lookup table for colors on the fly. This helps make sure that
         # the random colors we select (for colors we can't match) stay consistent
         $myCableColorList = array();
-        # keep a list of nodes we've added to the graph already. multiples
-        # *shouldn't* cause issues with graphviz, but the final dot will be
-        # smaller
-        $nodessent = array();
         # build the following datastructure:
         # array[devicepair][portpair][deviceid] = label
         # and add all the devices as nodes on the graph
@@ -209,31 +231,37 @@ overlap = scale;
         foreach($portList as $port){
             # sorted device pair to be used as a key. this keeps connections
             # between two hosts together and lets us match them up better later
-            $tkeypair = array($port->DeviceID, $port->ConnectedDeviceID);
+            $tkeypair = array($port['DeviceID'], $port['ConnectedDeviceID']);
             # add the device to the dotfile, if it wasn't sent already
-            if(!isset($nodessent[$tkeypair[0]])) {
-                $dt = $devList[$tkeypair[0]]->DeviceType;
-                if(in_array($dt, $deviceTypes)){
+            foreach($devList as $deviceType => $dev) {
+                if(array_key_exists($tkeypair[0], $dev)) {
+                    $dt = $deviceType;
+                    if(in_array($dt, $deviceTypes)){
                         $color = $safeDeviceColors[array_search($dt, $deviceTypes)];
-                }else{
+                    }else{
                         $color = $safeDeviceColors[array_rand($safeDeviceColors)];
+                    }
+                    $graphstr .= "\t".$tkeypair[0]." [shape=box,URL=\"".$baseURI
+                            .'/devices.php?deviceid='.$tkeypair[0]."\",label=\""
+                            .$devList[$dt][$tkeypair[0]]."\",color=".$color."];\n";
+                    unset($devList[$dt][$tkeypair[0]]);
+                    break;
                 }
-                $graphstr .= "\t".$tkeypair[0]." [shape=box,URL=\"".$baseURI
-                        .'/devices.php?deviceid='.$tkeypair[0]."\",label=\""
-                        .$devList[$tkeypair[0]]->Label."\",color=".$color."];\n";
-                $nodessent[$tkeypair[0]] = true;
             }
-            if(!isset($nodessent[$tkeypair[1]])) {
-                $dt = $devList[$tkeypair[1]]->DeviceType;
-                if(in_array($dt, $deviceTypes)){
+            foreach($devList as $deviceType => $dev) {
+                if(array_key_exists($tkeypair[1], $dev)) {
+                    $dt = $deviceType;
+                    if(in_array($dt, $deviceTypes)){
                         $color = $safeDeviceColors[array_search($dt, $deviceTypes)];
-                }else{
+                    }else{
                         $color = $safeDeviceColors[array_rand($safeDeviceColors)];
+                    }
+                    $graphstr .= "\t".$tkeypair[1]." [shape=box,URL=\"".$baseURI
+                            .'/devices.php?deviceid='.$tkeypair[1]."\",label=\""
+                            .$devList[$dt][$tkeypair[1]]."\",color=".$color."];\n";
+                    unset($devList[$dt][$tkeypair[1]]);
+                    break;
                 }
-                $graphstr .= "\t".$tkeypair[1]." [shape=box,URL=\"".$baseURI
-                        .'/devices.php?deviceid='.$tkeypair[1]."\",label=\""
-                        .$devList[$tkeypair[1]]->Label."\",color=".$color."];\n";
-                $nodessent[$tkeypair[1]] = true;
             }
             sort($tkeypair);
             $tkey = $tkeypair[0].":".$tkeypair[1];
@@ -242,31 +270,31 @@ overlap = scale;
             }
             # create a port key, 1st device gets first port number.
             # allows for matching up port numbers.
-            if($port->DeviceID == $tkeypair[0]) {
-                $pkey = $port->PortNumber.":".$port->ConnectedPort;
+            if($port['DeviceID'] == $tkeypair[0]) {
+                $pkey = $port['PortNumber'].":".$port['ConnectedPort'];
             } else {
-                $pkey = $port->ConnectedPort.":".$port->PortNumber;
+                $pkey = $port['ConnectedPort'].":".$port['PortNumber'];
             }
             if(!isset($devportmapping[$tkey][$pkey])) {
                $devportmapping[$tkey][$pkey] = array();
             }
             # grab the current devices label for the port, allows cleaner labeling of connections
-            $devportmapping[$tkey][$pkey][$port->DeviceID] = $port->Label;
+            $devportmapping[$tkey][$pkey][$port['DeviceID']] = $port['Label'];
             # 0: tries to use the color from the db, if we can identify it.
             # otherwise uses a random color from the list above.
             # 1: randomizes the colors by colorid
             # 2: randomizes the colors by mediaid
             # 3: randomizes the colors by both 1 and 2. 
             if(($colorType == 0)||($colorType == 1)){
-                $portColorKey = $port->ColorID;
+                $portColorKey = $port['ColorID'];
             }elseif($colorType == 2){
-                $portColorKey = $port->MediaID;
+                $portColorKey = $port['MediaID'];
             }else{
-                $portColorKey = $port->ColorID.":".$port->MediaID;
+                $portColorKey = $port['ColorID'].":".$port['MediaID'];
             }
             if(!isset($myCableColorList[$portColorKey])) {
                 $cc = new ColorCoding();
-                $cc->ColorID = $port->ColorID;
+                $cc->ColorID = $port['ColorID'];
                 $cc->GetCode();
                 $color = strtolower($cc->Name);
                 if((!in_array($color, $colorList))||($colorType != 0)) {
@@ -280,8 +308,10 @@ overlap = scale;
             # store the media id. we only have 3 "styles" of cables we can use
             # we'll use this later to decide the style we should use. most useful
             # with media enforcement, otherwise the style might fluctuate between views
-            $devportmapping[$tkey][$pkey]['mediaid'] = $port->MediaID;
+            $devportmapping[$tkey][$pkey]['mediaid'] = $port['MediaID'];
         }
+        unset($devList);
+        unset($portList);
         foreach ($devportmapping as $tkey => $value){
             $tkeypair = explode(":", $tkey, 2);
             foreach($value as $pkey => $devid) {
@@ -367,37 +397,39 @@ overlap = scale;
         $header = "Content-Type: ";
         if ($ft == 'dot') {
             $header .= "text/plain";
+            header($header);
             echo $graphstr;
             exit;
         }
         $dotfile = tempnam('/tmp/', 'dot_');
         $graphfile = tempnam('/tmp/', 'graph_');
-        file_put_contents($dotfile, $graphstr);
-        $graph = array();
-        $retval = 0;
-        if($ft == 'svg') {
-            $header .= "image/svg+xml";
-            exec($dotCommand." -Tsvg -o".$graphfile." ".$dotfile, $graph, $retval);
-        } elseif($ft == 'png') {
-            $header .= "image/png";
-            exec($dotCommand." -Tpng -o".$graphfile." ".$dotfile, $graph, $retval);
-        } elseif($ft == 'jpg') {
-            $header .= "image/jpeg";
-            exec($dotCommand." -Tjpg -o".$graphfile." ".$dotfile, $graph, $retval);
-        } elseif($ft == 'gif') {
-            $header .= "image/gif";
-            exec($dotCommand." -Tgif -o".$graphfile." ".$dotfile, $graph, $retval);
-        }
-        if($retval == 0) {
-            header($header);
-            unlink($dotfile);
-            print file_get_contents($graphfile);
-            unlink($graphfile);
-            exit;
-        } elseif ($ft == 'svg') {
-            $body = "<span class=\"errmsg\">ERROR: There was a problem processing the graph. Probably a bug, please submit a report containing the contents of ".$dotfile." to the openDCIM bug tracker</span>";
+        $file_written = file_put_contents($dotfile, $graphstr);
+        if(!$file_written) {
+            $body = "<span class=\"errmsg\">ERROR: There was a problem writing out the temp dot file. Check that php can write to /tmp</span>";
         } else {
-            $body = "<span class=\"errmsg\">ERROR: There was a problem processing the graph. Try choosing 'svg' as the output type.</span>";
+            $graph = array();
+            $retval = 0;
+            if($ft == 'svg') {
+                $header .= "image/svg+xml";
+            } elseif($ft == 'png') {
+                $header .= "image/png";
+            } elseif($ft == 'jpg') {
+                $header .= "image/jpeg";
+            } elseif($ft == 'gif') {
+                $header .= "image/gif";
+            }
+            exec($dotCommand." -T".$ft." -o".$graphfile." ".$dotfile, $graph, $retval);
+            if($retval == 0) {
+                header($header);
+                unlink($dotfile);
+                print file_get_contents($graphfile);
+                unlink($graphfile);
+                exit;
+            } elseif ($ft == 'svg') {
+                $body = "<span class=\"errmsg\">ERROR: There was a problem processing the graph. Probably a bug, please submit a report containing the contents of ".$dotfile." to the openDCIM bug tracker</span>";
+            } else {
+                $body = "<span class=\"errmsg\">ERROR: There was a problem processing the graph. Try choosing 'svg' as the output type.</span>";
+            }
         }
     } else {
         $body="";
