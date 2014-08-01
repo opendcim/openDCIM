@@ -2,7 +2,7 @@
     require_once "db.inc.php";
     require_once "facilities.inc.php";
 
-	  $subheader=__("Network Map Viewer");
+    $subheader=__("Network Map Viewer");
 
     $dotCommand = $config->ParameterArray["dot"];
     # if format is set, graph options should be set and ready to be rendered
