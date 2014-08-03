@@ -497,6 +497,7 @@ div.cabinet {
 .picture div > a > div > div {overflow: hidden;}
 .picture div .label {overflow: hidden;}
 .cabnavigator .picture div img:hover, .cabnavigator .picture a > div:hover { border: 2px solid red; margin: -2px;}
+.cabnavigator .picture div img.rlt:hover { margin: -2px 0 0 2px;}
 
 .picture {
 	left: 0;

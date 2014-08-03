@@ -2360,7 +2360,7 @@ class Device {
 					$slot->X=($rear)?$originalX+($originalW-$slot->W):$slot->X;
 				}elseif($parentTempl->Model=='HTRAY' && $slot->H>$slot->W*$this->Height/$imageratio){
 					$originalH=$slot->H;
-					$slot->H=($rear)?$slot->W*$imageratio:$slot->W/$imageratio;
+					$slot->H=($hor_blade)?$slot->W*$imageratio:$slot->W/$imageratio;
 					$slot->Y=$originalH-$slot->H;
 				}
 				// Reset the zoome on the parent to 1 just for trays
