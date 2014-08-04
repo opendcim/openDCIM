@@ -1,11 +1,11 @@
 msgid ""
 msgstr ""
-"Project-Id-Version: \n"
+"Project-Id-Version: openDCIM.po\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2014-07-27 13:07-0400\n"
-"PO-Revision-Date: \n"
+"PO-Revision-Date: 2014-08-04 14:00-0500\n"
 "Last-Translator: Scott Milliken <scott@themillikens.com>\n"
-"Language-Team: \n"
+"Language-Team: openDCIM <discussion@list.opendcim.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -181,7 +181,6 @@ msgid "Date of Installation"
 msgstr "Date d'installation"
 
 #: openDCIM/cabinets.php:267
-#, fuzzy
 msgid "Sensor IP Address / Host Name"
 msgstr "Adresse Ip de la sonde"
 
@@ -270,18 +269,14 @@ msgid "Return to Main Menu"
 msgstr "Retourner au menu principal"
 
 #: openDCIM/cabinets.php:323
-#, fuzzy
 msgid "Cabinet delete confirmation"
-msgstr "Configuration du centre informatique"
+msgstr ""
 
 #: openDCIM/cabinets.php:324
-#, fuzzy
 msgid ""
 "Are you sure that you want to delete this cabinet and all the devices in it?"
 "<br><br><b>THERE IS NO UNDO</b>"
 msgstr ""
-"Etes vous sûr de vouloir supprimer le bandeau de prise et toutes ces "
-"connexions"
 
 #: openDCIM/cabinets.php:339 openDCIM/cabrow.php:80 openDCIM/container.php:154
 #: openDCIM/datacenter.php:162 openDCIM/devices.php:1068
@@ -453,7 +448,6 @@ msgid "Rows of Cabinets"
 msgstr "Travée"
 
 #: openDCIM/cabrow.php:72
-#, fuzzy
 msgid "Verify Delete Row"
 msgstr "Vérifier l'équipement supprimer"
 
@@ -787,9 +781,8 @@ msgid "Expiration Time (Days)"
 msgstr "Délai d'expiration (jour)"
 
 #: openDCIM/configuration.php:975
-#, fuzzy
 msgid "Work Order Builder"
-msgstr "Opérations du data center"
+msgstr ""
 
 #: openDCIM/configuration.php:977 openDCIM/configuration.php:988
 #: openDCIM/configuration.php:1203 openDCIM/configuration.php:1216
@@ -947,7 +940,6 @@ msgid "Base URL for install"
 msgstr "Adresse de l'installation"
 
 #: openDCIM/configuration.php:1158
-#, fuzzy
 msgid "Default SNMP Community"
 msgstr "Communauté SNMP"
 
@@ -1037,12 +1029,10 @@ msgid "Default Note"
 msgstr "Annotation par défaut"
 
 #: openDCIM/configuration.php:1266
-#, fuzzy
 msgid "Connection Pathing"
 msgstr "Connexions"
 
 #: openDCIM/configuration.php:1269
-#, fuzzy
 msgid "Cabinet Weight"
 msgstr "Hauteur de la baie"
 
@@ -1081,9 +1071,8 @@ msgid "Device Port"
 msgstr "Port de l'équipement"
 
 #: openDCIM/contactpopup.php:5
-#, fuzzy
 msgid "Department Contact Listing"
-msgstr "Département/rapport sur les contact"
+msgstr ""
 
 #: openDCIM/contacts.php:5 openDCIM/usermgr.php:5
 msgid "Data Center Contact Detail"
@@ -1127,12 +1116,10 @@ msgid "Container Detail"
 msgstr "Description du site"
 
 #: openDCIM/container.php:146
-#, fuzzy
 msgid "Verify Delete Container"
 msgstr "Vérifier l'équipement supprimer"
 
 #: openDCIM/container.php:147
-#, fuzzy
 msgid ""
 "This container will be deleted and there is no undo. Their direct "
 "descendants will be moved to \\'home\\'."
@@ -1299,12 +1286,10 @@ msgid "Click on the image to select DC coordinates"
 msgstr "Cliquer sur l'image pour définir la localisation du data center"
 
 #: openDCIM/datacenter.php:331
-#, fuzzy
 msgid "Data Center Deletion Confirmation"
 msgstr "Configuration du centre informatique"
 
 #: openDCIM/datacenter.php:332
-#, fuzzy
 msgid ""
 "Are you sure that you want to delete this data center and all contents "
 "within it?"
@@ -1319,7 +1304,6 @@ msgid ""
 msgstr ""
 
 #: openDCIM/datacenter.php:333
-#, fuzzy
 msgid "Move"
 msgstr "Modèle"
 
@@ -1343,7 +1327,6 @@ msgid "Minimum Cooling Tonnage (Based on Computed Watts)"
 msgstr "Tonnage Minimum de refroidissement"
 
 #: openDCIM/dc_stats.php:125
-#, fuzzy
 msgid "openDCIM Data Center Information Management"
 msgstr "openDCIM salle du data center"
 
@@ -1356,18 +1339,16 @@ msgid "XML"
 msgstr ""
 
 #: openDCIM/dc_stats.php:202 openDCIM/zone_stats.php:210
-#, fuzzy
 msgid "Average Temperature"
-msgstr "Température"
+msgstr ""
 
 #: openDCIM/dc_stats.php:203 openDCIM/zone_stats.php:211
 msgid "°"
 msgstr ""
 
 #: openDCIM/dc_stats.php:206 openDCIM/zone_stats.php:214
-#, fuzzy
 msgid "Average Humidity"
-msgstr "Hygrométrie"
+msgstr ""
 
 #: openDCIM/dc_stats.php:207 openDCIM/zone_stats.php:215
 msgid "%"
@@ -1405,19 +1386,16 @@ msgstr ""
 
 #: openDCIM/dc_stats.php:240 openDCIM/dc_stats.php:248
 #: openDCIM/zone_stats.php:247 openDCIM/zone_stats.php:255
-#, fuzzy
 msgid "Right"
 msgstr "droits"
 
 #: openDCIM/dc_stats.php:241 openDCIM/dc_stats.php:249
 #: openDCIM/zone_stats.php:248 openDCIM/zone_stats.php:256
-#, fuzzy
 msgid "Bottom"
 msgstr "Echelle"
 
 #: openDCIM/dc_stats.php:242 openDCIM/dc_stats.php:250
 #: openDCIM/zone_stats.php:249 openDCIM/zone_stats.php:257
-#, fuzzy
 msgid "Left"
 msgstr "Lettre"
 
@@ -1480,14 +1458,12 @@ msgid "Data Center Device Detail"
 msgstr "Détail de l'équipement"
 
 #: openDCIM/devices.php:48 openDCIM/devices.php:100
-#, fuzzy
 msgid "From Template"
-msgstr "Modèle"
+msgstr ""
 
 #: openDCIM/devices.php:161
-#, fuzzy
 msgid "ERROR: No ports found"
-msgstr "Non trouvé"
+msgstr ""
 
 #: openDCIM/devices.php:426
 msgid ""
@@ -1624,7 +1600,6 @@ msgid "Asset Tag"
 msgstr "numéro d'inventaire"
 
 #: openDCIM/devices.php:1287
-#, fuzzy
 msgid "Primary IP / Host Name"
 msgstr "IP principal"
 
@@ -1641,7 +1616,6 @@ msgid "Warranty Expiration"
 msgstr "Date d'expiration de la garantie"
 
 #: openDCIM/devices.php:1313
-#, fuzzy
 msgid "Last Audit Completed"
 msgstr "Dernier audit"
 
@@ -1708,9 +1682,8 @@ msgid "Height"
 msgstr "Hauteur"
 
 #: openDCIM/devices.php:1437
-#, fuzzy
 msgid "Number of slots"
-msgstr "Nombre de départ"
+msgstr ""
 
 #: openDCIM/devices.php:1449
 msgid "Half Depth"
@@ -1733,14 +1706,12 @@ msgid "Number of Power Supplies"
 msgstr "Nombre d'allimentation"
 
 #: openDCIM/devices.php:1479
-#, fuzzy
 msgid "Chassis Total Draw"
-msgstr "Contenu du châssis"
+msgstr ""
 
 #: openDCIM/devices.php:1483
-#, fuzzy
 msgid "Chassis Total Weight"
-msgstr "Contenu du châssis"
+msgstr ""
 
 #: openDCIM/devices.php:1489 openDCIM/devices.php:1544
 #: openDCIM/device_templates.php:398 openDCIM/rackrequest.php:451
@@ -1775,9 +1746,8 @@ msgid "Refresh Port Names"
 msgstr "Rafraichir le nom des ports"
 
 #: openDCIM/devices.php:1514
-#, fuzzy
 msgid "Refresh Port Notes"
-msgstr "Rafraichir le nom des ports"
+msgstr ""
 
 #: openDCIM/devices.php:1523
 msgid "Chassis Contents"
@@ -1826,7 +1796,6 @@ msgid "False"
 msgstr "Faux"
 
 #: openDCIM/devices.php:1598
-#, fuzzy
 msgid "Operational Log"
 msgstr "Rapport d'opération"
 
@@ -1885,7 +1854,6 @@ msgid "Return to Parent Device"
 msgstr "Retourner à l'équipement parents"
 
 #: openDCIM/devices.php:1776
-#, fuzzy
 msgid "Return to Storage Room"
 msgstr "Salle de stockage"
 
@@ -1894,7 +1862,6 @@ msgid "Return to General Storage Room"
 msgstr ""
 
 #: openDCIM/devices.php:1783
-#, fuzzy
 msgid "Do you certify that you have completed an audit of this device?"
 msgstr "Certifiez vous avoir complété l'audit sur la baie séléctionnée ?"
 
@@ -1907,7 +1874,6 @@ msgid "Template File Imported"
 msgstr ""
 
 #: openDCIM/device_templates.php:47
-#, fuzzy
 msgid "View errors"
 msgstr "Délai"
 
@@ -1928,12 +1894,10 @@ msgid "An error has occured, template not created"
 msgstr "Une Erreur est survenu, le modèle n'a pas été créé"
 
 #: openDCIM/device_templates.php:122 openDCIM/device_templates.php:131
-#, fuzzy
 msgid "Error updating template"
 msgstr "Mettre à jour le modèle"
 
 #: openDCIM/device_templates.php:136
-#, fuzzy
 msgid "Error updating devices"
 msgstr "Erreur d'obtention des données de l'équipement d'arrivé"
 
@@ -1943,7 +1907,6 @@ msgid "Error"
 msgstr "Erreur"
 
 #: openDCIM/device_templates.php:146
-#, fuzzy
 msgid "Exported"
 msgstr "Exporter"
 
@@ -1952,12 +1915,10 @@ msgid "This value must be different than"
 msgstr "Cette valeur doit être différent de"
 
 #: openDCIM/device_templates.php:283 openDCIM/device_templates.php:452
-#, fuzzy
 msgid "Import"
 msgstr "Exporter"
 
 #: openDCIM/device_templates.php:301
-#, fuzzy
 msgid "Close"
 msgstr "Couleur"
 
@@ -1974,7 +1935,6 @@ msgid "No. Ports"
 msgstr "Nombre de ports"
 
 #: openDCIM/device_templates.php:415
-#, fuzzy
 msgid "Edit Ports"
 msgstr "Edition des salles"
 
@@ -1987,17 +1947,14 @@ msgid "Rear Picture File"
 msgstr ""
 
 #: openDCIM/device_templates.php:426
-#, fuzzy
 msgid "Chassis Slots"
 msgstr "Contenu du châssis"
 
 #: openDCIM/device_templates.php:427 openDCIM/device_templates.php:431
-#, fuzzy
 msgid "Edit Coordinates"
 msgstr "Coordonées"
 
 #: openDCIM/device_templates.php:430
-#, fuzzy
 msgid "Rear Chassis Slots"
 msgstr "Contenu du châssis"
 
@@ -2042,75 +1999,62 @@ msgid "New Escalation Rule"
 msgstr "Nouvelle règle d'éscalade"
 
 #: openDCIM/export_port_connections.php:47
-#, fuzzy
 msgid "Device Port Connections"
-msgstr "Connexions électrique"
+msgstr ""
 
 #: openDCIM/export_port_connections.php:48
-#, fuzzy
 msgid "Device Port Detail"
-msgstr "Port de l'équipement"
+msgstr ""
 
 #: openDCIM/export_port_connections.php:51
-#, fuzzy
 msgid "SourceDevice"
-msgstr "Equipement"
+msgstr ""
 
 #: openDCIM/export_port_connections.php:52
-#, fuzzy
 msgid "SourcePort"
-msgstr "Tableau éléctrique"
+msgstr ""
 
 #: openDCIM/export_port_connections.php:53
-#, fuzzy
 msgid "TargetDevice"
-msgstr "Equipement parents"
+msgstr ""
 
 #: openDCIM/export_port_connections.php:54
-#, fuzzy
 msgid "TargetPort"
-msgstr "Port du Panneau"
+msgstr ""
 
 #: openDCIM/export_port_connections.php:56
-#, fuzzy
 msgid "MediaType"
-msgstr "Type de câble"
+msgstr ""
 
 #: openDCIM/export_port_connections.php:77 openDCIM/report_tags.php:26
 msgid "Device Label"
 msgstr "Identifiant de l'équipement"
 
 #: openDCIM/export_port_connections.php:87
-#, fuzzy
 msgid "Target Cabinet"
-msgstr "Nouvelle Baie"
+msgstr ""
 
 #: openDCIM/image_management.php:5
 msgid "OpenDCIM Image File Management"
 msgstr ""
 
 #: openDCIM/image_management.php:36
-#, fuzzy
 msgid "openDCIM Data Center Inventory"
 msgstr "Inventaire du data center"
 
 #: openDCIM/image_management.php:63
-#, fuzzy
 msgid "Device Pictures"
 msgstr "Port de l'équipement"
 
 #: openDCIM/image_management.php:112
-#, fuzzy
 msgid "Infrastructure Drawings"
 msgstr "Infrastructure"
 
 #: openDCIM/image_management.php:159
-#, fuzzy
 msgid "Delete image file?"
 msgstr "Supprimer la baie"
 
 #: openDCIM/image_management.php:160
-#, fuzzy
 msgid ""
 "This image will be permanently deleted and cannot be recovered. Are you sure?"
 msgstr ""
@@ -2146,7 +2090,6 @@ msgid "Data Center Inventory"
 msgstr "Inventaire du data center"
 
 #: openDCIM/index.php:94
-#, fuzzy
 msgid "Export Inventory"
 msgstr "Exporter les connexions"
 
@@ -2155,7 +2098,6 @@ msgid "Hosted Systems"
 msgstr "Equipements hébérgés"
 
 #: openDCIM/index.php:101
-#, fuzzy
 msgid "DC Count"
 msgstr "Compte"
 
@@ -2176,24 +2118,20 @@ msgid "Heat Produced"
 msgstr "Chaleur produite"
 
 #: openDCIM/infrastructure.inc.php:559
-#, fuzzy
 msgid "Composite View of Cabinets"
-msgstr "Edition des travées"
+msgstr ""
 
 #: openDCIM/infrastructure.inc.php:560
-#, fuzzy
 msgid "Occupied Space"
-msgstr "Espace occupé"
+msgstr ""
 
 #: openDCIM/infrastructure.inc.php:561
-#, fuzzy
 msgid "Calculated Weight"
-msgstr "Poids calculé"
+msgstr ""
 
 #: openDCIM/infrastructure.inc.php:562
-#, fuzzy
 msgid "Calculated Power Usage"
-msgstr "Puissance calculé"
+msgstr ""
 
 #: openDCIM/infrastructure.inc.php:563 openDCIM/infrastructure.inc.php:564
 #: openDCIM/infrastructure.inc.php:565
@@ -2238,14 +2176,13 @@ msgstr ""
 
 #: openDCIM/infrastructure.inc.php:1142 openDCIM/infrastructure.inc.php:1146
 #: openDCIM/infrastructure.inc.php:1178 openDCIM/infrastructure.inc.php:1182
-#, fuzzy
 msgid "Import Warning"
 msgstr "Seuil de puissance élevé"
 
 #: openDCIM/infrastructure.inc.php:1143
-#, fuzzy, php-format
+#, php-format
 msgid "An error has occurred creating the slot %s"
-msgstr "Une Erreur est survenu, le modèle n'a pas été créé"
+msgstr "Une Erreur est survenu, le modèle n'a pas été créé %s"
 
 #: openDCIM/infrastructure.inc.php:1147
 #, php-format
@@ -2253,17 +2190,16 @@ msgid "Ignored slot %s"
 msgstr ""
 
 #: openDCIM/infrastructure.inc.php:1179
-#, fuzzy, php-format
+#, php-format
 msgid "An error has occurred creating the port %s"
-msgstr "Une Erreur est survenu, le modèle n'a pas été créé"
+msgstr "Une Erreur est survenu, le modèle n'a pas été créé %s"
 
 #: openDCIM/infrastructure.inc.php:1183
-#, fuzzy, php-format
+#, php-format
 msgid "Ignored port %s"
-msgstr "Rapport d'inventaire"
+msgstr "Rapport d'inventaire %s"
 
 #: openDCIM/infrastructure.inc.php:2069 openDCIM/storageroom.php:27
-#, fuzzy
 msgid "General Storage Room"
 msgstr "Salle de stockage"
 
@@ -2276,7 +2212,6 @@ msgid "Coordinates"
 msgstr "Coordonées"
 
 #: openDCIM/mapmaker.php:106
-#, fuzzy
 msgid "Front Edge"
 msgstr "Face avant"
 
@@ -2321,7 +2256,6 @@ msgstr "Regrouper les formulaires de demande"
 
 #: openDCIM/misc.inc.php:601 openDCIM/misc.inc.php:602
 #: openDCIM/misc.inc.php:612
-#, fuzzy
 msgid "User Administration"
 msgstr "Gestion des départements"
 
@@ -2334,7 +2268,6 @@ msgid "Dept. Administration"
 msgstr "Gestion des départements"
 
 #: openDCIM/misc.inc.php:603 openDCIM/misc.inc.php:604
-#, fuzzy
 msgid "Issue Escalation"
 msgstr "Nouvelle règle d'éscalade"
 
@@ -2349,7 +2282,6 @@ msgstr "Régles d'escalades"
 #: openDCIM/misc.inc.php:607 openDCIM/misc.inc.php:609
 #: openDCIM/misc.inc.php:613 openDCIM/misc.inc.php:614
 #: openDCIM/misc.inc.php:615
-#, fuzzy
 msgid "Template Management"
 msgstr "Modèle non défini"
 
@@ -2360,7 +2292,6 @@ msgstr "Edition des modèles d'équipements"
 #: openDCIM/misc.inc.php:608 openDCIM/misc.inc.php:618
 #: openDCIM/misc.inc.php:619 openDCIM/misc.inc.php:620
 #: openDCIM/misc.inc.php:621 openDCIM/misc.inc.php:622
-#, fuzzy
 msgid "Infrastructure Management"
 msgstr "Infrastructure"
 
@@ -2417,13 +2348,11 @@ msgid "Edit Rows of Cabinets"
 msgstr "Edition des travées"
 
 #: openDCIM/misc.inc.php:622
-#, fuzzy
 msgid "Facilities Image Management"
 msgstr "Entretien des équipements des baies"
 
 #: openDCIM/misc.inc.php:623 openDCIM/misc.inc.php:624
 #: openDCIM/misc.inc.php:625
-#, fuzzy
 msgid "Power Management"
 msgstr "Tableau électrique"
 
@@ -2436,12 +2365,10 @@ msgid "Edit Power Panels"
 msgstr "Edition des tableaux électrique"
 
 #: openDCIM/misc.inc.php:626 openDCIM/misc.inc.php:627
-#, fuzzy
 msgid "Path Connections"
 msgstr "Crée une connexion réseau"
 
 #: openDCIM/misc.inc.php:626
-#, fuzzy
 msgid "View Path Connection"
 msgstr "Crée une connexion réseau"
 
@@ -2660,16 +2587,12 @@ msgstr ""
 "ne peuvent pas êtres représenté.Merci de vérifier l'attribution des départs."
 
 #: openDCIM/power_panel.php:328
-#, fuzzy
 msgid "Power panel delete confirmation"
-msgstr "Confirmation de la suppression du bandeau de prise"
+msgstr ""
 
 #: openDCIM/power_panel.php:329
-#, fuzzy
 msgid "Are you sure that you want to delete this power panel?"
 msgstr ""
-"Etes vous sûr de vouloir supprimer le bandeau de prise et toutes ces "
-"connexions"
 
 #: openDCIM/power_pdu.php:5
 msgid "Data Center PDU Detail"
@@ -2688,7 +2611,6 @@ msgid "Using SNMP Community string"
 msgstr "Utlisation de la communauté SNMP"
 
 #: openDCIM/power_pdu.php:80
-#, fuzzy
 msgid "Using default SNMP Community string"
 msgstr "Utlisation de la communauté SNMP"
 
@@ -2786,9 +2708,8 @@ msgid "Panel Pole Number"
 msgstr "Numéro du départ sur le tableau électrique"
 
 #: openDCIM/power_pdu.php:491
-#, fuzzy
 msgid "All Breaker Poles"
-msgstr "Nombre de départ (phases) du Disjoncteur"
+msgstr ""
 
 #: openDCIM/power_pdu.php:497
 msgid "Input Amperage"
@@ -2799,7 +2720,6 @@ msgid "CDU Template"
 msgstr "Modèle de bandeau de prises"
 
 #: openDCIM/power_pdu.php:515 openDCIM/power_source.php:108
-#, fuzzy
 msgid "IP Address / Host Name"
 msgstr "adresse IP"
 
@@ -2824,7 +2744,6 @@ msgid "Manual Entry"
 msgstr ""
 
 #: openDCIM/power_pdu.php:539
-#, fuzzy
 msgid "Last Update"
 msgstr "Dernière mise à jour"
 
@@ -2849,9 +2768,8 @@ msgid "Dev Input No"
 msgstr "Numéroe de l'alimentation de l'équipement"
 
 #: openDCIM/power_source.php:5
-#, fuzzy
 msgid " Power Sources"
-msgstr "Source de puissance"
+msgstr ""
 
 #: openDCIM/power_source.php:81
 msgid "Power Source ID"
@@ -2870,18 +2788,14 @@ msgid "Capacity"
 msgstr "Capacité"
 
 #: openDCIM/power_source.php:141
-#, fuzzy
 msgid "Power Source delete confirmation"
-msgstr "Confirmation de la suppression du bandeau de prise"
+msgstr ""
 
 #: openDCIM/power_source.php:142
-#, fuzzy
 msgid ""
 "Are you sure that you want to delete this power source and all panels fed "
 "from it?"
 msgstr ""
-"Etes vous sûr de vouloir supprimer le bandeau de prise et toutes ces "
-"connexions"
 
 #: openDCIM/rackrequest.php:6
 msgid "Data Center Rack Request"
@@ -3061,32 +2975,26 @@ msgid "Devices Greater Than 4 Years Old"
 msgstr "Equipemnts de plus de 4 ans"
 
 #: openDCIM/report_asset_Excel.php:37
-#, fuzzy
 msgid "Asset Report"
 msgstr "Rapport d'inventaire"
 
 #: openDCIM/report_asset_Excel.php:38
-#, fuzzy
 msgid "Data Center Statistics on all data centers assets."
 msgstr "Statistiques du data center"
 
 #: openDCIM/report_asset_Excel.php:40
-#, fuzzy
 msgid "datacenter report assets statistic"
 msgstr "Statistiques du centre informatique"
 
 #: openDCIM/report_asset_Excel.php:46
-#, fuzzy
 msgid "Notes on DC Statistics"
 msgstr "Statistique de la salle"
 
 #: openDCIM/report_asset_Excel.php:52
-#, fuzzy
 msgid "Logo Name"
 msgstr "Nom"
 
 #: openDCIM/report_asset_Excel.php:53
-#, fuzzy
 msgid "Logo Description"
 msgstr "Description"
 
@@ -3179,7 +3087,6 @@ msgid "Generate by openDCIM"
 msgstr ""
 
 #: openDCIM/report_asset_Excel.php:102
-#, fuzzy
 msgid "Summary Statistics"
 msgstr "Statistique de la salle"
 
@@ -3195,7 +3102,6 @@ msgid ""
 msgstr ""
 
 #: openDCIM/report_asset_Excel.php:124
-#, fuzzy
 msgid ""
 "No.\n"
 "Racks"
@@ -3263,14 +3169,12 @@ msgid ""
 msgstr ""
 
 #: openDCIM/report_audit_frequency.php:5
-#, fuzzy
 msgid "Cabinet Audit Frequency Report"
-msgstr "Féquence d'audition des baies"
+msgstr ""
 
 #: openDCIM/report_audit.php:5
-#, fuzzy
 msgid "Cabinet Audit Reporting"
-msgstr "Rapport d'audit de baie"
+msgstr ""
 
 #: openDCIM/report_department.php:27
 msgid "Departmental Contacts Report"
@@ -3303,12 +3207,10 @@ msgid "Facility Manager email address"
 msgstr "Adresse e-mail du dirécteur d'établissement"
 
 #: openDCIM/report-em_reservations.php:21
-#, fuzzy
 msgid "Data Center Reserved Space Report"
 msgstr "Rapport d'inventaire du data center"
 
 #: openDCIM/report-em_reservations.php:49
-#, fuzzy
 msgid "Data Center Inventory Reservations"
 msgstr "Inventaire du data center"
 
@@ -3317,7 +3219,6 @@ msgid "There are no reserved installations within the date range specified"
 msgstr ""
 
 #: openDCIM/report-em_reservations.php:76
-#, fuzzy
 msgid "Scheduled Installations for Department"
 msgstr "Date d'installation"
 
@@ -3334,12 +3235,10 @@ msgid "Data Center Switch Capacity Exceptions Report"
 msgstr "Rapport d'éxeption sur la capacité des switches"
 
 #: openDCIM/report_logging.php:5
-#, fuzzy
 msgid "Logging View/Export"
 msgstr "Data center Visualiser/Exporter"
 
 #: openDCIM/report_logging.php:20
-#, fuzzy
 msgid "Time"
 msgstr "Fuseaux horaire"
 
@@ -3348,7 +3247,6 @@ msgid "User"
 msgstr "Utilisateur"
 
 #: openDCIM/report_logging.php:22
-#, fuzzy
 msgid "Class"
 msgstr "Châssis"
 
@@ -3361,12 +3259,10 @@ msgid "ChildID"
 msgstr ""
 
 #: openDCIM/report_logging.php:25
-#, fuzzy
 msgid "Action"
 msgstr "Localisation"
 
 #: openDCIM/report_logging.php:26
-#, fuzzy
 msgid "Property"
 msgstr "Port"
 
@@ -3375,23 +3271,20 @@ msgid "Old Value"
 msgstr ""
 
 #: openDCIM/report_logging.php:28
-#, fuzzy
 msgid "New Value"
 msgstr "Nouveau tableau électrique"
 
 #: openDCIM/report_network_map.php:5
-#, fuzzy
 msgid "Network Map Viewer"
-msgstr "Réseaux et Energies"
+msgstr ""
 
 #: openDCIM/report_network_map.php:526
 msgid "Filter type:"
 msgstr ""
 
 #: openDCIM/report_network_map.php:528
-#, fuzzy
 msgid "Select filter type"
-msgstr "Séléctionner un modèle"
+msgstr ""
 
 #: openDCIM/report_outage_simulator.php:53 openDCIM/search_export.php:186
 msgid "Select data center"
@@ -3461,7 +3354,6 @@ msgid "Search/Export by Data Center"
 msgstr "Chercher/Exporter par data center"
 
 #: openDCIM/reports.php:38
-#, fuzzy
 msgid "Export Data Center for CFD (XML)"
 msgstr "Chercher/Exporter par data center"
 
@@ -3490,9 +3382,8 @@ msgid "Virtual Machines by Department"
 msgstr "Machine virtuelle par département"
 
 #: openDCIM/reports.php:45
-#, fuzzy
 msgid "Network Map"
-msgstr "Réseaux et Energies"
+msgstr ""
 
 #: openDCIM/reports.php:51
 msgid "Operational Reports"
@@ -3535,7 +3426,6 @@ msgid "Surplus/Salvage Audit Report"
 msgstr "Rapport d'audit sur les surplus/récupérations"
 
 #: openDCIM/reports.php:63 openDCIM/report_supply_status.php:74
-#, fuzzy
 msgid "Supplies Status Report"
 msgstr "Rapport d'audit sur les surplus/récupérations"
 
@@ -3557,7 +3447,6 @@ msgid "Description"
 msgstr "Description"
 
 #: openDCIM/report_supply_status.php:80
-#, fuzzy
 msgid "Minimum"
 msgstr "Puissance maximal"
 
@@ -3566,9 +3455,8 @@ msgid "On Hand"
 msgstr ""
 
 #: openDCIM/report_surplusexcel.php:5 openDCIM/report_surplus.php:5
-#, fuzzy
 msgid "Surplus/Salvage Device Reporting"
-msgstr "Rapport d'audit sur les surplus/récupérations"
+msgstr ""
 
 #: openDCIM/report_tags.php:5
 msgid "Inventory Reporting By Tag"
@@ -3603,26 +3491,22 @@ msgid "XML Output for CFD Simulation"
 msgstr ""
 
 #: openDCIM/report_xml_CFD.php:56
-#, fuzzy
 msgid "Select Data Center"
 msgstr "Séléctionner un data center"
 
 #: openDCIM/rowview.php:53
-#, fuzzy
 msgid "Side"
-msgstr "Charte graphique d'openDCIM"
+msgstr ""
 
 #: openDCIM/rowview.php:245
 msgid "Cabinets"
 msgstr "Baies"
 
 #: openDCIM/rowview.php:270
-#, fuzzy
 msgid "Front View"
 msgstr "Face avant"
 
 #: openDCIM/rowview.php:270
-#, fuzzy
 msgid "Rear View"
 msgstr "Arrière"
 
@@ -3651,7 +3535,6 @@ msgid "Serial number search results for"
 msgstr "Résultat pour la recherche par numéro de série"
 
 #: openDCIM/search.php:31
-#, fuzzy
 msgid "PrimaryIP search results for"
 msgstr "Résultat pour la recherche par identifiant"
 
@@ -3714,9 +3597,8 @@ msgid "Humidity Multiplier"
 msgstr "Multiplicateur pour l'hygrométrie"
 
 #: openDCIM/sensor_templates.php:154
-#, fuzzy
 msgid "Temperature Units"
-msgstr "Température"
+msgstr ""
 
 #: openDCIM/sidebar.inc.php:6
 msgid "Search by Name:"
@@ -3735,7 +3617,6 @@ msgid "Custom Tag"
 msgstr "Etiquette personnalisé"
 
 #: openDCIM/sidebar.inc.php:21
-#, fuzzy
 msgid "PrimaryIP"
 msgstr "IP principal"
 
@@ -3748,21 +3629,19 @@ msgid "Home"
 msgstr "Acceuil"
 
 #: openDCIM/storageroom.php:5 openDCIM/storageroom.php:37
-#, fuzzy
 msgid "Storage Room Maintenance"
 msgstr "Salle de stockage"
 
 #: openDCIM/storageroom.php:24
-#, fuzzy, php-format
+#, php-format
 msgid "%s Storage Room"
-msgstr "Salle de stockage"
+msgstr "Salle de stockage %s"
 
 #: openDCIM/storageroom.php:60
 msgid "Serial No."
 msgstr "Numéro de série"
 
 #: openDCIM/supplies.php:5 openDCIM/supplycheckout.php:5
-#, fuzzy
 msgid "Data Center Stockroom Supplies"
 msgstr "Bacs d'entreposage en Salle de stockage"
 
@@ -3780,12 +3659,10 @@ msgid "Part Number"
 msgstr "Numéro de la pièce"
 
 #: openDCIM/supplies.php:91
-#, fuzzy
 msgid "New Supplies"
 msgstr "Gestion des alimentations"
 
 #: openDCIM/supplies.php:105
-#, fuzzy
 msgid "Part Name"
 msgstr "Nom du port"
 
@@ -3826,9 +3703,8 @@ msgid "New Time Period"
 msgstr "Nouveau délai                      "
 
 #: openDCIM/updatevmowner.php:5
-#, fuzzy
 msgid "Data Center Virtual Machine Detail"
-msgstr "Détail de l'équipement"
+msgstr ""
 
 #: openDCIM/usermgr.php:91
 msgid "New User"
@@ -3952,23 +3828,20 @@ msgid ""
 msgstr "La date est supposé avoir expiré. Elles ont été retiré depuis le"
 
 #: openDCIM/workorder.php:5
-#, fuzzy
 msgid "Data Center Operations Work Order Builder"
-msgstr "Opérations du data center"
+msgstr ""
 
 #: openDCIM/workorder.php:47
 msgid "Work Order Contents"
 msgstr ""
 
 #: openDCIM/workorder.php:60
-#, fuzzy
 msgid "Image"
-msgstr "Page"
+msgstr ""
 
 #: openDCIM/workorder.php:80
-#, fuzzy
 msgid "Clear"
-msgstr "Tout supprimer"
+msgstr ""
 
 #: openDCIM/zone.php:5
 msgid "Data Center Zones"
@@ -3993,7 +3866,6 @@ msgstr ""
 "cette salle"
 
 #: openDCIM/zone.php:225
-#, fuzzy
 msgid "Verify Delete Zone"
 msgstr "Vérifier l'équipement supprimer"
 
@@ -4014,41 +3886,3 @@ msgstr "Taille de la salle (Approximation)"
 #: openDCIM/zone_stats.php:202
 msgid "approximate"
 msgstr "Approximatif"
-
-#~ msgid "Database Version"
-#~ msgstr "Version de la base de donnée"
-
-#~ msgid "Data Centers Statistics"
-#~ msgstr "Statistiques du centre informatique"
-
-#~ msgid "Worst state of cabinets"
-#~ msgstr "Pire état des baies"
-
-#, fuzzy
-#~ msgid "Port Number"
-#~ msgstr "Numéro de la pièce"
-
-#, fuzzy
-#~ msgid "Media"
-#~ msgstr "Type de câble"
-
-#~ msgid "View as Excel"
-#~ msgstr "Afficher dans Excel"
-
-#~ msgid "Details Restricted"
-#~ msgstr "Détail des restrictions"
-
-#~ msgid "Tooltips are enabled with no options selected."
-#~ msgstr "Les Info-bulles sont activés mais aucune option n'est séléctionnée."
-
-#~ msgid "Preview"
-#~ msgstr "Aperçu"
-
-#~ msgid "Edit"
-#~ msgstr "Edition"
-
-#~ msgid "Save"
-#~ msgstr "Sauvegarder"
-
-#~ msgid "Missing rights to execute the report"
-#~ msgstr "Vous n'avez pas les droits pour éxécuter ces rapports"

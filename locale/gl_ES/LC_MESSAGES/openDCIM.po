@@ -3,15 +3,13 @@ msgstr ""
 "Project-Id-Version: openDCIM.po\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2014-07-27 13:07-0400\n"
-"PO-Revision-Date: 2014-04-11 11:47+0100\n"
-"Last-Translator: Jose Miguel Gomez <jomigom@iies.es>\n"
+"PO-Revision-Date: 2014-08-04 14:01-0500\n"
+"Last-Translator: Scott Milliken <scott@themillikens.com>\n"
 "Language-Team: openDCIM <discussion@list.opendcim.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Language: en\n"
-"X-Generator: Poedit 1.6.3\n"
-"X-Poedit-Basepath: Z:\\xampp\\htdocs\\github\\openDCIMp\n"
+"Language: gl_ES\n"
 
 #: openDCIM/cabaudit.php:50 openDCIM/report_aging.php:91
 #: openDCIM/report_department.php:24
@@ -272,17 +270,16 @@ msgid "Return to Main Menu"
 msgstr "Voltar ao Menú Principal"
 
 #: openDCIM/cabinets.php:323
-#, fuzzy
 msgid "Cabinet delete confirmation"
-msgstr "Confirmación de Borrado do CPD"
+msgstr "Confirmación de eliminación de armario"
 
 #: openDCIM/cabinets.php:324
-#, fuzzy
 msgid ""
 "Are you sure that you want to delete this cabinet and all the devices in it?"
 "<br><br><b>THERE IS NO UNDO</b>"
 msgstr ""
-"¿Seguro que quere borrar esta PDU e todas as súas conexións eléctricas?"
+"¿Está seguro de que quere eliminar este armario e todos os dispositivos que "
+"contén?<br><br><b>NON SE PODRÁ DESFACER</b>"
 
 #: openDCIM/cabinets.php:339 openDCIM/cabrow.php:80 openDCIM/container.php:154
 #: openDCIM/datacenter.php:162 openDCIM/devices.php:1068
@@ -624,9 +621,8 @@ msgid "General"
 msgstr "Xeral"
 
 #: openDCIM/configuration.php:844
-#, fuzzy
 msgid "Workflow"
-msgstr "Fuxo de aire"
+msgstr "Fluxo de traballo"
 
 #: openDCIM/configuration.php:845
 msgid "Style"
@@ -791,9 +787,8 @@ msgid "Expiration Time (Days)"
 msgstr "Tempo de Caucidade (Días)"
 
 #: openDCIM/configuration.php:975
-#, fuzzy
 msgid "Work Order Builder"
-msgstr "Medidas Operativas do Centro de Proceso de Datos"
+msgstr "Creador de Ordes de Traballo"
 
 #: openDCIM/configuration.php:977 openDCIM/configuration.php:988
 #: openDCIM/configuration.php:1203 openDCIM/configuration.php:1216
@@ -992,7 +987,7 @@ msgstr "cortar"
 
 #: openDCIM/configuration.php:1193
 msgid "dot"
-msgstr ""
+msgstr "punto"
 
 #: openDCIM/configuration.php:1201
 msgid "Cabinet ToolTips"
@@ -1082,9 +1077,8 @@ msgid "Device Port"
 msgstr "Porto do Dispositivo"
 
 #: openDCIM/contactpopup.php:5
-#, fuzzy
 msgid "Department Contact Listing"
-msgstr "Informe de Departamentos/Contactos"
+msgstr "Listado de Contactos de Departamentos"
 
 #: openDCIM/contacts.php:5 openDCIM/usermgr.php:5
 msgid "Data Center Contact Detail"
@@ -1351,22 +1345,20 @@ msgid "XML"
 msgstr "XML"
 
 #: openDCIM/dc_stats.php:202 openDCIM/zone_stats.php:210
-#, fuzzy
 msgid "Average Temperature"
-msgstr "Temperatura"
+msgstr "Temperatura Media"
 
 #: openDCIM/dc_stats.php:203 openDCIM/zone_stats.php:211
 msgid "°"
-msgstr ""
+msgstr "º"
 
 #: openDCIM/dc_stats.php:206 openDCIM/zone_stats.php:214
-#, fuzzy
 msgid "Average Humidity"
-msgstr "Humidade"
+msgstr "Humidade Media"
 
 #: openDCIM/dc_stats.php:207 openDCIM/zone_stats.php:215
 msgid "%"
-msgstr ""
+msgstr "%"
 
 #: openDCIM/dc_stats.php:219 openDCIM/zone_stats.php:227
 msgid "Calculated Power"
@@ -1472,14 +1464,12 @@ msgid "Data Center Device Detail"
 msgstr "Detalle de Dispositivos do CPD"
 
 #: openDCIM/devices.php:48 openDCIM/devices.php:100
-#, fuzzy
 msgid "From Template"
-msgstr "Plantilla"
+msgstr "Dende a Plantilla"
 
 #: openDCIM/devices.php:161
-#, fuzzy
 msgid "ERROR: No ports found"
-msgstr "Non atopado"
+msgstr "ERRO: Portos non atopados"
 
 #: openDCIM/devices.php:426
 msgid ""
@@ -1697,9 +1687,8 @@ msgid "Height"
 msgstr "Altura"
 
 #: openDCIM/devices.php:1437
-#, fuzzy
 msgid "Number of slots"
-msgstr "Número de Circuitos"
+msgstr "Número de ranuras"
 
 #: openDCIM/devices.php:1449
 msgid "Half Depth"
@@ -1722,14 +1711,12 @@ msgid "Number of Power Supplies"
 msgstr "Número de Fontes de Alimentación"
 
 #: openDCIM/devices.php:1479
-#, fuzzy
 msgid "Chassis Total Draw"
-msgstr "Ranuras do Chasis"
+msgstr "Potencia Total do Chasis"
 
 #: openDCIM/devices.php:1483
-#, fuzzy
 msgid "Chassis Total Weight"
-msgstr "Contenido do Chasis"
+msgstr "Refrescar Notas dos Portos"
 
 #: openDCIM/devices.php:1489 openDCIM/devices.php:1544
 #: openDCIM/device_templates.php:398 openDCIM/rackrequest.php:451
@@ -1764,9 +1751,8 @@ msgid "Refresh Port Names"
 msgstr "Refrescar Nomes de Portos"
 
 #: openDCIM/devices.php:1514
-#, fuzzy
 msgid "Refresh Port Notes"
-msgstr "Refrescar Nomes de Portos"
+msgstr "Refrescar Notas dos Puertos"
 
 #: openDCIM/devices.php:1523
 msgid "Chassis Contents"
@@ -1977,7 +1963,7 @@ msgstr "Ranuras Traseiras do Chasis"
 
 #: openDCIM/device_templates.php:437
 msgid "Number of Devices Using This Template:"
-msgstr ""
+msgstr "Número de dispositivos que utilizan esta plantilla"
 
 #: openDCIM/device_templates.php:448
 msgid "Update Template"
@@ -2016,48 +2002,40 @@ msgid "New Escalation Rule"
 msgstr "Nova Regra de Escalado"
 
 #: openDCIM/export_port_connections.php:47
-#, fuzzy
 msgid "Device Port Connections"
-msgstr "Conexións Eléctricas"
+msgstr "Conexións dos Portos do Dispositivo"
 
 #: openDCIM/export_port_connections.php:48
-#, fuzzy
 msgid "Device Port Detail"
-msgstr "Porto do Dispositivo"
+msgstr "Detalles dos Portos do Dispositivo"
 
 #: openDCIM/export_port_connections.php:51
-#, fuzzy
 msgid "SourceDevice"
-msgstr "Dispositivo"
+msgstr "DispositivoOrixe"
 
 #: openDCIM/export_port_connections.php:52
-#, fuzzy
 msgid "SourcePort"
-msgstr "Cadro Eléctrico"
+msgstr "PortoOrixe"
 
 #: openDCIM/export_port_connections.php:53
-#, fuzzy
 msgid "TargetDevice"
-msgstr "Dispositivo Pai"
+msgstr "DispositivoDestino"
 
 #: openDCIM/export_port_connections.php:54
-#, fuzzy
 msgid "TargetPort"
-msgstr "Porto de Parcheo"
+msgstr "PortoDestino"
 
 #: openDCIM/export_port_connections.php:56
-#, fuzzy
 msgid "MediaType"
-msgstr "Tipo de Medio"
+msgstr "TipoDeMedio"
 
 #: openDCIM/export_port_connections.php:77 openDCIM/report_tags.php:26
 msgid "Device Label"
 msgstr "Nemónico do Dispositivo"
 
 #: openDCIM/export_port_connections.php:87
-#, fuzzy
 msgid "Target Cabinet"
-msgstr "Novo Armario"
+msgstr "Armario Destino"
 
 #: openDCIM/image_management.php:5
 msgid "OpenDCIM Image File Management"
@@ -2141,24 +2119,20 @@ msgid "Heat Produced"
 msgstr "Calor Producido"
 
 #: openDCIM/infrastructure.inc.php:559
-#, fuzzy
 msgid "Composite View of Cabinets"
-msgstr "Editar Filas de Armarios"
+msgstr "Vista Composta de Armarios"
 
 #: openDCIM/infrastructure.inc.php:560
-#, fuzzy
 msgid "Occupied Space"
-msgstr "Espazo ocupado"
+msgstr "Espazo Ocupado"
 
 #: openDCIM/infrastructure.inc.php:561
-#, fuzzy
 msgid "Calculated Weight"
 msgstr "Peso Calculado"
 
 #: openDCIM/infrastructure.inc.php:562
-#, fuzzy
 msgid "Calculated Power Usage"
-msgstr "Potencia calculada"
+msgstr "Cálculo de Potencia Utilizada"
 
 #: openDCIM/infrastructure.inc.php:563 openDCIM/infrastructure.inc.php:564
 #: openDCIM/infrastructure.inc.php:565
@@ -2277,7 +2251,7 @@ msgstr "Informes"
 
 #: openDCIM/misc.inc.php:593
 msgid "Work Order"
-msgstr ""
+msgstr "Orde de Traballo"
 
 #: openDCIM/misc.inc.php:598
 msgid "Rack Request Form"
@@ -2615,15 +2589,12 @@ msgstr ""
 "cadro."
 
 #: openDCIM/power_panel.php:328
-#, fuzzy
 msgid "Power panel delete confirmation"
-msgstr "Confirmación de Eliminación de PDU"
+msgstr "Confirmación de eliminación de cadro eléctrico"
 
 #: openDCIM/power_panel.php:329
-#, fuzzy
 msgid "Are you sure that you want to delete this power panel?"
-msgstr ""
-"¿Seguro que quere borrar esta PDU e todas as súas conexións eléctricas?"
+msgstr "¿Está seguro de que quere eliminar este cadro eléctrico?"
 
 #: openDCIM/power_pdu.php:5
 msgid "Data Center PDU Detail"
@@ -2738,9 +2709,8 @@ msgid "Panel Pole Number"
 msgstr "Numero de Toma do Cadro"
 
 #: openDCIM/power_pdu.php:491
-#, fuzzy
 msgid "All Breaker Poles"
-msgstr "Tamaño do Interruptor (Nº de Polos)"
+msgstr "Polos no Cadro"
 
 #: openDCIM/power_pdu.php:497
 msgid "Input Amperage"
@@ -2799,9 +2769,8 @@ msgid "Dev Input No"
 msgstr "Nº entrada Disp."
 
 #: openDCIM/power_source.php:5
-#, fuzzy
 msgid " Power Sources"
-msgstr "Fonte de Enerxía"
+msgstr "Fontes de Enexía"
 
 #: openDCIM/power_source.php:81
 msgid "Power Source ID"
@@ -2820,16 +2789,16 @@ msgid "Capacity"
 msgstr "Capacidade"
 
 #: openDCIM/power_source.php:141
-#, fuzzy
 msgid "Power Source delete confirmation"
-msgstr "Confirmación de Eliminación de PDU"
+msgstr "Confirmación de eliminación de Fonte de Enerxía"
 
 #: openDCIM/power_source.php:142
-#, fuzzy
 msgid ""
 "Are you sure that you want to delete this power source and all panels fed "
 "from it?"
-msgstr "¿Seguro que quere borrar este CPD e todo o seu contido?"
+msgstr ""
+"¿Está seguro da eliminación desta fonte de enerxía e todos os paneis que "
+"dependen de el?"
 
 #: openDCIM/rackrequest.php:6
 msgid "Data Center Rack Request"
@@ -2863,8 +2832,8 @@ msgid ""
 "this request has been completed.\n"
 "\t\t\tPlease allow up to 2 business days for requests to be completed."
 msgstr ""
-"Recibiouse a súa solicitude de enrackado para o dispositivo etiquetado %1"
-"$s.\n"
+"Recibiouse a súa solicitude de enrackado para o dispositivo etiquetado "
+"%1$s.\n"
 "\t\t\tO Centro de Gestión de Rede examinará a solicitude e contactará con "
 "vostede se precisa máis información\n"
 "\t\t\tantes de tramitar a solicitude. Recibirá unha notificación cando a "
@@ -3038,89 +3007,81 @@ msgstr ""
 "a lista de todos os dispositivos e máis unha lista de todos os armarios."
 
 #: openDCIM/report_asset_Excel.php:63
-#, fuzzy
 msgid ""
 "● Using Excel\"s pivot capabilities many different analysis and statistics "
 "can be performed."
 msgstr ""
-"● Utilizando as capacidades de pivote de Excel pódense realizar moitas "
-"análise e estatísticas diferentes."
+"● A utilización das capacidades dinámicas de Excel fai que se podan realizar "
+"moitas anáises e estatísticas diferentes."
 
 #: openDCIM/report_asset_Excel.php:65
-#, fuzzy
 msgid "● The terms \"cabinet\" and  \"rack\" are used interchangeable."
-msgstr "● Os termos 'armario' e 'rack' úsanse indistintamente."
+msgstr "● Os termos \"armario\" e \"rack\" utilizanse indistintamente."
 
 #: openDCIM/report_asset_Excel.php:66
-#, fuzzy
 msgid ""
 "● For user who have only the \"Admin Own Devices\" right the report is "
 "limited to the cabinets which are owned by this department."
 msgstr ""
-"● Para o usuario que só ten permiso de 'administrar dispositivos propios' o "
-"informe limítase aos armarios que son propiedade deste departamento."
+"● Para os usuarios que ten só o permiso \"Administrar Dispositivos Propios\" "
+"o informe está limitado aos armarios que son propiadade do seu departmento."
 
 #: openDCIM/report_asset_Excel.php:68
-#, fuzzy
 msgid ""
 "● The \"DC Statistics\" page is only generated for users who are not limited "
 "to \"Admin Own Devices\"."
 msgstr ""
-"● A páxina 'Estatísticas do CPD' só se xenera para os usuarios que non se "
-"limitan a 'administrar dispositivos propios'."
+"● A páxina \"Estatísticas do CPD\" só se xenera para usuarios que non esteán "
+"limitados a \"Administrar Dispositivos Propios\"."
 
 #: openDCIM/report_asset_Excel.php:70
-#, fuzzy
 msgid ""
 "● For a child device the column \"Parent Device\" shows the parent device "
 "otherwise it is empty. A child devices is e.g. a blade server."
 msgstr ""
-"● Para un dispositivo fillo, a columna 'Dispositivo Pai' mostra o "
-"dispositivo pai, pola contra está baleira. Un dispositivo fillo é, por "
-"exemplo, un servidor blade."
+"● Para un dispositivo fillo, a columna \"Dispositivo Pai\" mostra o "
+"dispositivo pai; noutro caso está valeira. Un dispositivo fillo é por "
+"exemplo un servidor blade."
 
 #: openDCIM/report_asset_Excel.php:73
-#, fuzzy
 msgid ""
 "● The \"Position\" for a child device is the slot position within in the "
 "parent device."
 msgstr ""
-"● A 'Posición' para un dispositivo fillo é a posición da ranura que ocupa no "
+"● A \"Posición\" para un dispositivo fillo é a ranura que ocupa no "
 "dispositivo pai."
 
 #: openDCIM/report_asset_Excel.php:75
-#, fuzzy
 msgid ""
 "● \"Half Depth\" contains a value \"front\" or \"rear\" only if the device "
 "is of half depth in which case this indicates the location."
 msgstr ""
-"● 'Medio fondo' contén un valor 'frente' ou 'traseiro' só se o dispositivo é "
-"de medio fondo, que indica a súa colocación."
+"● \"Medio Fondo\" conten un valor \"delanteiro\" o \"traseiro\" só se o "
+"dispositivo ten medio fondo. Nese caso, indica a súa situación."
 
 #: openDCIM/report_asset_Excel.php:78
-#, fuzzy
 msgid ""
 "● Consecutive free rack space is indicated in worksheet \"DC Inventory\" "
 "with the string \"__EMPTY \" in column \"Device\". \"Position\" gives the "
 "start of the range and \"Height\" specifies the size of the range of free "
 "rack space."
 msgstr ""
-"● O espazo consecutivo libre indícase na folla de traballo \"Inventario do "
-"CPD' coa cadea '__EMPTY' na columna 'Dispositivo'. 'Posición' da o inicio do "
-"rango e 'Altura' especifica o tamaño do rango de espazo de rack libre."
+"● Un rango de ranuras libres nun chasis indicase na folla \"Inventario do CPD"
+"\" coa cadea \"__SLOTVALEIRO \" na columna \"Dispositivo\". \"Posición\" "
+"sinala o principio e \"Altura\" especifica o tamaño do rango de ranuras "
+"libres."
 
 #: openDCIM/report_asset_Excel.php:82
-#, fuzzy
 msgid ""
 "● A range of consecutive free slots in a chassis is indicated in worksheet "
 "\"DC Inventory\" with the string \"__EMPTYSLOT \" in the column \"Device\". "
 "\"Position\" gives the start of the range and \"Height\" specifies the "
 "number of free slots."
 msgstr ""
-"● Un rango de ranuras libres consecutivas nun chasis indícase na folla de "
-"traballo 'Inventario do CPD ' coa cadea ' __EMPTYSLOT ' na columna "
-"'Dispositivo'. 'Posición' da o inicio do rango e 'Altura' especifica o "
-"número de ranuras libres."
+"● Armarios con \"Modelo\" igual a \"RESERVADO\" son marcadores de posición "
+"no espazo do CPD para armarios previstos. O seu número cóntase na columna "
+"\"Nº Armarios Reservados\". Porén, as unidades de rack si se ten en conta en "
+"todas as demais estatísticas."
 
 #: openDCIM/report_asset_Excel.php:86
 msgid ""
@@ -3135,17 +3096,16 @@ msgstr ""
 "ocupadas son RU libres."
 
 #: openDCIM/report_asset_Excel.php:90
-#, fuzzy
 msgid ""
 "● Cabinets of \"Model\" equal \"RESERVED\" are placeholders on the floor "
 "space in the DC for racks to come. Their number is counted in the column "
 "\"No. Reserved Racks\". Nevertheless, the rack units are taken into account "
 "in all other statistics."
 msgstr ""
-"● Armarios con 'Modelo' igua a 'RESERVED' son marcas no plano do CPD para "
-"armarios que se instalarán no futuro. O seu número cóntase na columna \"Nº "
-"de Armarios Reservados'. Con todo, as unidades de rack tense en conta en "
-"todas as outras estatísticas."
+"● Armarios con \"Modelo\" igual a \"RESERVADO\" son marcadores de posición "
+"no espazo do CPD para armarios previstos. O seu número cóntase na columna "
+"\"Nº Armarios Reservados\". Porén, as unidades de rack si se ten en conta en "
+"todas as demais estatísticas."
 
 #: openDCIM/report_asset_Excel.php:95
 msgid ""
@@ -3276,14 +3236,12 @@ msgstr ""
 "(kW)"
 
 #: openDCIM/report_audit_frequency.php:5
-#, fuzzy
 msgid "Cabinet Audit Frequency Report"
-msgstr "Frecuencia de Auditoría de Armarios"
+msgstr "Informe de Frecuencia de Auditoría de Armario"
 
 #: openDCIM/report_audit.php:5
-#, fuzzy
 msgid "Cabinet Audit Reporting"
-msgstr "Informe de Auditoría de Armarios"
+msgstr "Informe de Auditoría de Armario"
 
 #: openDCIM/report_department.php:27
 msgid "Departmental Contacts Report"
@@ -3384,18 +3342,16 @@ msgid "New Value"
 msgstr "Novo Valor"
 
 #: openDCIM/report_network_map.php:5
-#, fuzzy
 msgid "Network Map Viewer"
-msgstr "Rede e Enerxía"
+msgstr "Visor do Mapa de Rede"
 
 #: openDCIM/report_network_map.php:526
 msgid "Filter type:"
-msgstr ""
+msgstr "Tipo de ficheiro:"
 
 #: openDCIM/report_network_map.php:528
-#, fuzzy
 msgid "Select filter type"
-msgstr "Selecionar unha plantilla"
+msgstr "Seleccione o tipo de filtro"
 
 #: openDCIM/report_outage_simulator.php:53 openDCIM/search_export.php:186
 msgid "Select data center"
@@ -3491,9 +3447,8 @@ msgid "Virtual Machines by Department"
 msgstr "Máquinas Virtuais por Departamento"
 
 #: openDCIM/reports.php:45
-#, fuzzy
 msgid "Network Map"
-msgstr "Rede e Enerxía"
+msgstr "Mapa da Rede"
 
 #: openDCIM/reports.php:51
 msgid "Operational Reports"
@@ -3565,9 +3520,8 @@ msgid "On Hand"
 msgstr "Dispoñible"
 
 #: openDCIM/report_surplusexcel.php:5 openDCIM/report_surplus.php:5
-#, fuzzy
 msgid "Surplus/Salvage Device Reporting"
-msgstr "Informe de Auditoría Excedente/Rescate"
+msgstr ""
 
 #: openDCIM/report_tags.php:5
 msgid "Inventory Reporting By Tag"
@@ -3606,9 +3560,8 @@ msgid "Select Data Center"
 msgstr "Selecionar un CPD"
 
 #: openDCIM/rowview.php:53
-#, fuzzy
 msgid "Side"
-msgstr "Sitio"
+msgstr "Lado"
 
 #: openDCIM/rowview.php:245
 msgid "Cabinets"
@@ -3709,9 +3662,8 @@ msgid "Humidity Multiplier"
 msgstr "Multiplicador da Humidade"
 
 #: openDCIM/sensor_templates.php:154
-#, fuzzy
 msgid "Temperature Units"
-msgstr "Temperatura"
+msgstr "Unidades de Temperatura"
 
 #: openDCIM/sidebar.inc.php:6
 msgid "Search by Name:"
@@ -3816,9 +3768,8 @@ msgid "New Time Period"
 msgstr "Novo Periodo de Tempo"
 
 #: openDCIM/updatevmowner.php:5
-#, fuzzy
 msgid "Data Center Virtual Machine Detail"
-msgstr "Detalle de Dispositivos do CPD"
+msgstr "Detalle das Máquinas Virtuais do CPD"
 
 #: openDCIM/usermgr.php:91
 msgid "New User"
@@ -3945,23 +3896,20 @@ msgstr ""
 "\t\tsistema de inventario."
 
 #: openDCIM/workorder.php:5
-#, fuzzy
 msgid "Data Center Operations Work Order Builder"
-msgstr "Medidas Operativas do Centro de Proceso de Datos"
+msgstr "Creador de Ordes de Traballo do CPD"
 
 #: openDCIM/workorder.php:47
 msgid "Work Order Contents"
-msgstr ""
+msgstr "Contido da Orde de Traballo"
 
 #: openDCIM/workorder.php:60
-#, fuzzy
 msgid "Image"
-msgstr "Páxina"
+msgstr "Imaxe"
 
 #: openDCIM/workorder.php:80
-#, fuzzy
 msgid "Clear"
-msgstr "Borrar todo"
+msgstr "Borrar"
 
 #: openDCIM/zone.php:5
 msgid "Data Center Zones"
@@ -4006,108 +3954,3 @@ msgstr "Tamaño da Zoa (aproximado)"
 #: openDCIM/zone_stats.php:202
 msgid "approximate"
 msgstr "aproximado"
-
-#~ msgid "Database Version"
-#~ msgstr "Versión da Base de Datos"
-
-#~ msgid "Data Centers Statistics"
-#~ msgstr "Estatísticas dos CPD"
-
-#~ msgid "Worst state of cabinets"
-#~ msgstr "Peor estado dos armarios"
-
-#~ msgid "Features of ports"
-#~ msgstr "Características de los puertos"
-
-#~ msgid "Port Number"
-#~ msgstr "Número de Porto"
-
-#~ msgid "Media"
-#~ msgstr "Tipo de Medio"
-
-#~ msgid "View as Excel"
-#~ msgstr "Ver como Excel"
-
-#~ msgid "Coordinates of Slots"
-#~ msgstr "Coordenadas das Ranuras"
-
-#~ msgid "X"
-#~ msgstr "X"
-
-#~ msgid "Y"
-#~ msgstr "Y"
-
-#~ msgid "W"
-#~ msgstr "Ancho"
-
-#~ msgid "H"
-#~ msgstr "Alto"
-
-#~ msgid "Edit coordinates of front slot"
-#~ msgstr "Editar las coordenadas de la ranura frontal"
-
-#~ msgid "Edit"
-#~ msgstr "Editar"
-
-#~ msgid "Edit coordinates of rear slot"
-#~ msgstr "Editar las coordenadas de la ranura trasera"
-
-#~ msgid "Details Restricted"
-#~ msgstr "Detalles Restringidos"
-
-#~ msgid "Tooltips are enabled with no options selected."
-#~ msgstr "Os tooltips están abilitados sen opcións seleccionadas"
-
-#~ msgid "Preview"
-#~ msgstr "Revisión"
-
-#~ msgid "Save"
-#~ msgstr "Gardar"
-
-#~ msgid "Missing rights to execute the report"
-#~ msgstr "Non ten permiso para executar este informe"
-
-#~ msgid "CPDs"
-#~ msgstr "CPDs"
-
-#~ msgid "Front / Rear"
-#~ msgstr "Parte Delanteira/Traseira"
-
-#~ msgid "There is a loop in the port"
-#~ msgstr "Hai un bucle en esel puerto"
-
-#~ msgid "Not found the device"
-#~ msgstr "Non se atopa o dispositivo"
-
-#~ msgid "Raw Wattage"
-#~ msgstr "Potencia Requerida Actualmente"
-
-#~ msgid "Managed at Switch"
-#~ msgstr "Xestionado no Conmutador"
-
-#~ msgid "Patches"
-#~ msgstr "Parcheos"
-
-#~ msgid "Managed at Panel"
-#~ msgstr "Xestionado no Panel"
-
-#~ msgid "Panel Port"
-#~ msgstr "Porto do Panel"
-
-#~ msgid "Square Footage"
-#~ msgstr "Metros Cadrados"
-
-#~ msgid "Possible Contacts"
-#~ msgstr "Contactos Posibles"
-
-#~ msgid "Assigned Contacts"
-#~ msgstr "Contactos Asignados"
-
-#~ msgid "Your Request ID is"
-#~ msgstr "O ID da súa solicitude é"
-
-#~ msgid "has been completed"
-#~ msgstr "completouse"
-
-#~ msgid "Search by Asset Tag:"
-#~ msgstr "Buscar por Etiqueta do Equipo"
