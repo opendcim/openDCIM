@@ -3080,12 +3080,11 @@ class DevicePorts {
 				Cabinet=$cabinetID AND (ChassisSlots>0 OR RearChassisSlots>0)) $rights$pp 
 				GROUP BY DeviceID ORDER BY Position DESC, Label ASC;";
 			$sqlDiffCabDevice="SELECT * FROM fac_Device WHERE Ports>0 AND 
-				Cabinet!=$cabinetID $rights$pp GROUP BY DeviceID ORDER BY Position DESC, 
-				Label ASC;";
+				Cabinet!=$cabinetID $rights$pp GROUP BY DeviceID ORDER BY Label ASC;";
 			$sqlDiffCabChildDevice="SELECT * FROM fac_Device WHERE Ports>0 AND Cabinet=0 
 				AND ParentDevice IN (SELECT DeviceID FROM fac_Device WHERE 
 				Cabinet!=$cabinetID AND (ChassisSlots>0 OR RearChassisSlots>0)) $rights$pp 
-				GROUP BY DeviceID ORDER BY Position DESC, Label ASC;";
+				GROUP BY DeviceID ORDER BY Label ASC;";
 
 			// Running these four simple queries is supposed to be faster than the previous complicated ones
 			foreach(array($sqlSameCabDevice, $sqlSameCabChildDevice, $sqlDiffCabDevice, $sqlDiffCabChildDevice) as $sql){
