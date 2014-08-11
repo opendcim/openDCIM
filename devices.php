@@ -648,7 +648,8 @@
 						'Switch' => __("Switch"),
 						'Chassis' => __("Chassis"),
 						'Patch Panel' => __("Patch Panel"),
-						'Physical Infrastructure' => __("Physical Infrastructure"));
+						'Physical Infrastructure' => __("Physical Infrastructure"),
+						'CDU' => __("CDU"));
 	}
 
 	if($config->ParameterArray["mDate"]=="now"){
@@ -959,6 +960,8 @@ $(document).ready(function() {
 	});
 
 	$('select[name=devicetype]').change(function(){
+// redo this to support a list of special frames hide all special frames except the category
+// we're currently dealing with
 		if($(this).val()=='Switch'){
 			if($(document).data('devicetype')!='Switch'){
 				$('#firstport button:not([name="firstport"])').hide();
@@ -975,6 +978,11 @@ $(document).ready(function() {
 			$('#esxframe').show();
 		}else{
 			$('#esxframe').hide();
+		}
+		if($(this).val()=='CDU'){
+			$('#cdu').show().removeClass('hide');
+		}else{
+			$('#cdu').hide();
 		}
 		resize();
 	}).change();
@@ -1507,6 +1515,114 @@ echo '
 echo '
 		<img id="devicefront" src="pictures/'.$templ->FrontPictureFile.'" alt="front of device">
 		<img id="devicerear" src="pictures/'.$templ->RearPictureFile.'" alt="rear of device">
+	</div>
+</fieldset>
+<fieldset id="cdu" class="hide">
+	<legend>'.__("Power Specifications").'</legend>
+	<div class="table">
+		<div>
+		   <div><label for="panelid">',__("Source Panel"),'</label></div>
+		   <div><select name="panelid" id="panelid" ><option value=0>',__("Select Panel"),'</option>';
+
+		$Panel=new PowerPanel();
+		$PanelList=$Panel->GetPanelList();
+		foreach($PanelList as $key=>$value){
+			if($value->PanelID == $pdu->PanelID){$selected=' selected';}else{$selected="";}
+			print "<option value=\"$value->PanelID\"$selected>$value->PanelLabel</option>\n"; 
+		}
+
+		echo '   </select></div>
+		</div>
+		<div>
+			<div><label for="voltage">',__("Voltages:"),'</label></div>
+			<div id="voltage">';
+
+			if($pdu->PanelID >0){
+				$pnl=new PowerPanel();
+				$pnl->PanelID=$pdu->PanelID;
+				$pnl->GetPanel();
+			
+				print $pnl->PanelVoltage." / ".intval($pnl->PanelVoltage/1.73);
+			}
+
+		echo '	</div>
+		</div>
+		<div>
+		  <div><label for="breakersize">',__("Breaker Size (# of Poles)"),'</label></div>
+		  <div>
+			<select name="breakersize">';
+
+			for($i=1;$i<4;$i++){
+				if($i==$pdu->BreakerSize){$selected=" selected";}else{$selected="";}
+				print "<option value=\"$i\"$selected>$i</option>";
+			}
+
+		echo '	</select>
+		  </div>
+		</div>
+		<div>
+		  <div><label for="panelpole">',__("Panel Pole Number"),'</label></div>
+		  <div><input type="text" name="panelpole" id="panelpole" size=5 value="',$pdu->PanelPole,'"></div>
+		</div>';
+
+		if($pdu->BreakerSize>1) {
+			echo '
+			<div>
+			  <div><label for="allbreakerpoles">',__("All Breaker Poles"),'</label></div>
+			  <div>',$pdu->GetAllBreakerPoles(),'</div>
+			</div>';
+		}
+		echo '
+		<div>
+		   <div><label for="inputamperage">',__("Input Amperage"),'</label></div>
+		   <div><input type="text" name="inputamperage" id="inputamperage" size=5 value="',$pdu->InputAmperage,'"></div>
+		</div>';
+
+		// Only show the version, etc if we aren't creating a CDU
+		if($dev->DeviceID>0){
+		echo '
+		<div>
+			<div>',__("Uptime"),'</div>
+			<div>',$upTime,'</div>
+		</div>
+		<div>
+			<div>',__("Firmware Version"),'</div>
+			<div>',$pdu->FirmwareVersion,'</div>
+		</div>
+		<div>
+			<div><label for="currwatts">',__("Wattage"),'</label></div>
+			<div><span>',$LastWattage,'</span><button type="button" id="btn_override" value="edit" data-edit="',__("Manual Entry"),'" data-submit="',__("Submit"),'">',__("Manual Entry"),'</button></div>
+		</div>
+		<div>
+			<div>',__("Last Update"),':</div>
+			<div id="lastread">',$LastRead,'</div>
+		</div>';
+		}
+		echo '
+		<div class="caption">
+		<fieldset class="noborder">
+			<legend>',__("Automatic Transfer Switch"),'</legend>
+			<div class="table centermargin border">
+			<div>
+			  <div><label for="failsafe">',__("Fail Safe Switch?"),'</label></div>
+			  <div><input type="checkbox" name="failsafe" id="failsafe"',(($pdu->FailSafe)?" checked":""),'></div>
+			</div>
+			<div>
+			   <div><label for="panelid2">',__("Source Panel (Secondary Source)"),'</label></div>
+			   <div><select name="panelid2" id="panelid2"><option value=0>',__("Select Panel"),'</option>';
+
+				foreach($PanelList as $key=>$value){
+					if($value->PanelID==$pdu->PanelID2){$selected=" selected";}else{$selected="";}
+					print "		<option value=$value->PanelID$selected>$value->PanelLabel</option>\n";
+				}
+
+			echo '   </select></div>
+			</div>
+			<div>
+			  <div><label for="panelpole2">',__("Panel Pole Number (Secondary Source)"),'</label></div>
+			  <div><input type="text" name="panelpole2" id="panelpole2" size=4 value="',$pdu->PanelPole2,'"></div>
+			</div>
+		</fieldset>
 	</div>
 </fieldset>
 <fieldset id="firstport" class="hide">

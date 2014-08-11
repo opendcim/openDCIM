@@ -24,6 +24,7 @@ textarea {white-space: pre;word-wrap: break-word;}
 .left {text-align: left;}
 .custom-combobox {position: relative;display: inline-block;}
 .monospace {font-family: monospace !important;}
+.noborder {border: 0px !important;}
 
 .floatleft { float: left; margin-right: 5px; }
 .floatright { float: right; margin-left: 5px; }

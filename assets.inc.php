@@ -1099,7 +1099,7 @@ class Device {
 		}
 		
 		//Keep weird values out of DeviceType
-		$validdevicetypes=array('Server','Appliance','Storage Array','Switch','Chassis','Patch Panel','Physical Infrastructure');
+		$validdevicetypes=array('Server','Appliance','Storage Array','Switch','Chassis','Patch Panel','Physical Infrastructure','CDU');
 
 		$this->DeviceID=intval($this->DeviceID);
 		$this->Label=sanitize($this->Label);
@@ -3501,7 +3501,7 @@ class RackRequest {
 	// Create MakeSafe / MakeDisplay functions
 	function MakeSafe(){
 		//Keep weird values out of DeviceType
-		$validdevicetypes=array('Server','Appliance','Storage Array','Switch','Chassis','Patch Panel','Physical Infrastructure');
+		$validdevicetypes=array('Server','Appliance','Storage Array','Switch','Chassis','Patch Panel','Physical Infrastructure','CDU');
 
 		$this->RequestID=intval($this->RequestID);
 		$this->RequestorID=intval($this->RequestorID);
