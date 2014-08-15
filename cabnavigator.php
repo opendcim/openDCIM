@@ -162,6 +162,7 @@ function renderUnassignedTemplateOwnership($noTemplFlag, $noOwnerFlag, $device) 
 
 	// You just have WriteAccess in order to perform/certify a rack audit
 	if(isset($_REQUEST["audit"]) && $_REQUEST["audit"]=="yes" && $user->CanWrite($cab->AssignedTo)){
+		$audit->Comments=$_REQUEST["comment"];
 		$audit->UserID=$user->UserID;
 		$audit->CertifyAudit();
 	}
@@ -559,7 +560,9 @@ echo $head,'  <script type="text/javascript" src="scripts/jquery.min.js"></scrip
 	$("<input>").attr({ type: "hidden", name: "cabinetid", value: "',$cab->CabinetID,'"}).appendTo(form);
 	function verifyAudit(formname){
 		if(confirm("',__("Do you certify that you have completed an audit of the selected cabinet?"),'")){
+			var comment = prompt("',_("Enter any comments here."),'");
 			$("<input>").attr({ type: "hidden", name: "audit", value: "yes"}).appendTo(form);
+			$("<input>").attr({ type: "hidden", name: "comment", value: comment}).appendTo(form);
 			form.appendTo("body");
 			form.submit();
 		}

@@ -309,8 +309,8 @@ $(function(){
 	$pdf->Cell( 80, 5, "Activity by Date" );
 	$pdf->Ln();
 	
-	$headerTags = array( "Date", "Location", "Auditor" );
-	$cellWidths = array( 40, 40, 50 );
+	$headerTags = array( "Date", "Location", "Auditor", "Comments" );
+	$cellWidths = array( 30, 30, 40, 70 );
 	
 	$fill = 0;
 	
@@ -329,7 +329,7 @@ $(function(){
 		$showDate = true;
 		$pdf->Bookmark( $auditDate, 1, 0 );
 		
-		$sql = sprintf( "select b.Location, c.Name as Auditor from fac_CabinetAudit a, fac_Cabinet b, fac_User c where a.UserID=c.UserID and a.CabinetID=b.CabinetID and date(a.AuditStamp)=\"%s\"", $row["AuditDate"] );
+		$sql = sprintf( "select b.Location, c.Name as Auditor, a.Comments from fac_CabinetAudit a, fac_Cabinet b, fac_User c where a.UserID=c.UserID and a.CabinetID=b.CabinetID and date(a.AuditStamp)=\"%s\"", $row["AuditDate"] );
 
 		foreach($dbh->query($sql) as $resRow){		
 			if ( $showDate ) {
@@ -348,6 +348,7 @@ $(function(){
 			
 			$pdf->Cell( $cellWidths[1], 6, $resRow["Location"], $borders, 0, 'L', $fill );
 			$pdf->Cell( $cellWidths[2], 6, $resRow["Auditor"], $borders, 0, 'L', $fill );
+			$pdf->Cell( $cellWidths[3], 6, $resRow["Comments"], $borders, 0, 'L', $fill );
 		
 			$pdf->Ln();
 			
@@ -399,8 +400,8 @@ $(function(){
 	$pdf->Cell( 80, 5, "Activity by Location" );
 	$pdf->Ln();
 	
-	$headerTags = array( "Location", "Date", "Auditor" );
-	$cellWidths = array( 40, 40, 50 );
+	$headerTags = array( "Location", "Date", "Auditor", "Comments" );
+	$cellWidths = array( 30, 30, 40, 70 );
 	
 	$fill = 0;
 	
@@ -412,7 +413,7 @@ $(function(){
 	$pdf->Ln();
 	
 	foreach ( $cabList as $tmpCab ) {
-		$sql = sprintf( "select a.AuditStamp as AuditDate, b.Name as Auditor from fac_CabinetAudit a, fac_User b where a.UserID=b.UserID and CabinetID='%d' and date(AuditStamp)>='%s' and date(AuditStamp)<='%s' order by AuditStamp DESC", $tmpCab->CabinetID, $startDate, $endDate );
+		$sql = sprintf( "select a.AuditStamp as AuditDate, b.Name as Auditor, a.Comments from fac_CabinetAudit a, fac_User b where a.UserID=b.UserID and CabinetID='%d' and date(AuditStamp)>='%s' and date(AuditStamp)<='%s' order by AuditStamp DESC", $tmpCab->CabinetID, $startDate, $endDate );
 
 		$showCab = true;
 
@@ -432,6 +433,7 @@ $(function(){
 			
 			$pdf->Cell( $cellWidths[1], 6, $resRow["AuditDate"], $borders, 0, 'L', $fill );
 			$pdf->Cell( $cellWidths[2], 6, $resRow["Auditor"], $borders, 0, 'L', $fill );
+			$pdf->Cell( $cellWidths[3], 6, $resRow["Comments"], $borders, 0, 'L', $fill );
 		
 			$pdf->Ln();
 			

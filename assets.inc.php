@@ -631,11 +631,14 @@ class CabinetAudit {
 	var $CabinetID;
 	var $UserID;
 	var $AuditStamp;
+	var $Comments;
 
 	function CertifyAudit( $db = null ) {
 		global $dbh;
 		
-		$sql = "insert into fac_CabinetAudit set CabinetID=\"" . intval( $this->CabinetID ) . "\", UserID=\"" . addslashes( $this->UserID ) . "\", AuditStamp=now()";
+		$this->Comments=sanitize($this->Comments);
+
+		$sql = "insert into fac_CabinetAudit set CabinetID=\"" . intval( $this->CabinetID ) . "\", UserID=\"" . addslashes( $this->UserID ) . "\", AuditStamp=now(), Comments=\"$this->Comments\";";
 
 		if ( ! $dbh->exec( $sql ) ) {
 			$info = $dbh->errorInfo();
