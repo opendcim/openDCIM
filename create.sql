@@ -293,6 +293,7 @@ CREATE TABLE fac_Device (
   Reservation tinyint(1) NOT NULL,
   HalfDepth tinyint(1) NOT NULL DEFAULT '0',
   BackSide tinyint(1) NOT NULL DEFAULT '0',
+  AuditStamp DATETIME NOT NULL,
   PRIMARY KEY (DeviceID),
   KEY SerialNo (SerialNo,`AssetTag`,`PrimaryIP`),
   KEY AssetTag (AssetTag),
