@@ -278,7 +278,7 @@ function renderUnassignedTemplateOwnership($noTemplFlag, $noOwnerFlag, $device) 
 					if($errclass!=''){$heighterr="yup";}
 					if($i==$devTop){
 						// Create the filler for the rack either text or a picture
-						$picture=(!$device->BackSide && !$rear || $device->BackSide && $rear)?$device->GetDevicePicture(220):$device->GetDevicePicture(220,"rear");
+						$picture=(!$device->BackSide && !$rear || $device->BackSide && $rear)?$device->GetDevicePicture():$device->GetDevicePicture("rear");
 						$devlabel=$device->Label.(((!$device->BackSide && $rear || $device->BackSide && !$rear) && !$device->HalfDepth)?"(".__("Rear").")":"");
 						$text=($device->Rights!="None")?"<a href=\"devices.php?deviceid=$device->DeviceID\">$highlight $devlabel</a>":$devlabel;
 						
@@ -618,6 +618,50 @@ if($config->ParameterArray["ToolTips"]=='enabled'){
 
 <?php
 }
+
+if ( $config->ParameterArray["WorkOrderBuilder"]=='enabled' ) {
+?>
+		var workOrder = $.fn.cookieList("workOrder");
+
+		// This is a shitty hack and we should do something better
+		if(!$.cookie('workOrder')){
+			workOrder.add(0);
+		}
+
+		$('.cabinet td:has(a):not(:has(img)), #zerou div > a, .cabinet .picture a img, .cabinet	.picture a > div').each( function(){
+			var devid=$(this).data('deviceid');
+			var target=(this.nodeName=="IMG"||this.parentNode.parentNode.parentNode.nodeName=="DIV")?this.parentElement.parentElement:this;
+			var clickpos=(this.parentNode.parentNode.className=="rotar_d")?' left: 0;':' right: 0;';
+			var style=(this.nodeName=="IMG")?'position: absolute; top: 0; background-color: white;'+clickpos:'float: right; background-color: white;';
+
+			// Make a point for us to click to add to this nonsense
+			var span=$('<span>').attr('style',style).addClass('ui-icon');
+			span.addClass(($.parseJSON($.cookie('workOrder')).indexOf(devid)==-1)?'ui-icon-circle-plus':'ui-icon-circle-check');
+
+			// Bind the click action
+			span.on('click', function(){
+				location.reload();
+				sneaky.sneak();
+				flippyfloppy();
+			});
+
+			// Set the sign on the element according to if it is in the array or not
+			function flippyfloppy(){
+				if($.parseJSON($.cookie('workOrder')).indexOf(devid)==-1){
+					workOrder.add(devid);
+					span.removeClass('ui-icon-circle-plus').addClass('ui-icon-circle-plus');
+				}else{
+					workOrder.remove(devid);
+					span.addClass('ui-icon-circle-plus').removeClass('ui-icon-circle-check');
+				}
+			}
+			// Add the click target to the page
+			$(target).append(span);
+		});
+
+<?php
+}
+
 if($config->ParameterArray["CDUToolTips"]=='enabled'){
 ?>
 		$('fieldset[name="pdu"] legend ~ a').mouseenter(function(){

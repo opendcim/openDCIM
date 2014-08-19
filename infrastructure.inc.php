@@ -866,8 +866,7 @@ class DeviceTemplate {
      *
      * @return multitype:DeviceTemplate
      */
-    function getTemplateListIndexedbyID ()
-    {
+    public static function getTemplateListIndexedbyID() {
         global $dbh;
         $templateList = array();
         $stmt = $dbh->prepare('select * from fac_DeviceTemplate');
@@ -876,7 +875,6 @@ class DeviceTemplate {
             $devTempl = DeviceTemplate::RowToObject($row);
             $templateList[$devTempl->TemplateID] = $devTempl;
         }
-
         return $templateList;
     }
 

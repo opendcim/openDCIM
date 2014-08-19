@@ -1078,7 +1078,7 @@ class Device {
 		}
 		
 		//Keep weird values out of DeviceType
-		$validdevicetypes=array('Server','Appliance','Storage Array','Switch','Chassis','Patch Panel','Physical Infrastructure', 'Firewall', 'Tape Library', 'External Storage', 'PC', 'KVM', 'Laptop', 'NTU');
+		$validdevicetypes=array('Server','Appliance','Storage Array','Switch','Chassis','Patch Panel','Physical Infrastructure', 'Firewall', 'Tape Library', 'External Storage', 'PC', 'KVM', 'Laptop', 'NTU', 'CDU');
 
 		$this->DeviceID=intval($this->DeviceID);
 		$this->Label=sanitize($this->Label);
@@ -2300,39 +2300,17 @@ class Device {
 				if ($parenttempl->Model=="VTRAY"){
 					//calculate slot for VTRAY
 					$slot->X=0;
-					$slot->Y=$holeH-$holeH/$parentDev->ChassisSlots*($this->Position+$this->Height-1);
-					$slot->W=$holeW;
-					$slot->H=$holeH/$parentDev->ChassisSlots*$this->Height;
-					if(($templ->FrontPictureFile!="" && !$rear) || ($templ->RearPictureFile!="" && $rear)){
-						//recalculate the slot to adapt it to aspect ratio of device
-						$z=min($slot->W/$max,$slot->H/$min);
-						$sW=$max*$z;
-						$sH=$min*$z;
-						$slot->X=($slot->W-$sW)/2;
-						$slot->Y=$slot->Y+$slot->H-$sH;
-						$slot->W=$sW;
-						$slot->H=$sH;
-					}
-				} else{
-					//calculate slot for HTRAY
-					if(!$rear){
-						$slot->X=$holeW/$parentDev->ChassisSlots*($this->Position-1);
-					}else{
-						$slot->X=$holeW/$parentDev->ChassisSlots*($parentDev->ChassisSlots-$this->Position-$this->Height+1);
-					}
-					$slot->Y=0;
-					$slot->W=$holeW/$parentDev->ChassisSlots*$this->Height;
-					$slot->H=$holeH;
-					if(($templ->FrontPictureFile!="" && !$rear) || ($templ->RearPictureFile!="" && $rear)){
-						//recalculate the slot to adapt it to aspect ratio of device
-						$z=min($slot->W/$min,$slot->H/$max);
-						$sW=$min*$z;
-						$sH=$max*$z;
-						$slot->X=$slot->X+($slot->W-$sW)/2;
-						$slot->Y=$slot->H-$sH;
-						$slot->W=$sW;
-						$slot->H=$sH;
-					}
+					$slot->Y=$originalH-$slot->H;
+				}
+				if($parentTempl->Model=='HTRAY' && $slot->W>$slot->H*$imageratio){
+					$originalW=$slot->W;
+					$originalX=$slot->X;
+					$slot->W=$slot->H*$imageratio;
+					$slot->X=($rear)?$originalX+($originalW-$slot->W):$slot->X;
+				}elseif($parentTempl->Model=='HTRAY' && $slot->H>$slot->W*$this->Height/$imageratio){
+					$originalH=$slot->H;
+					$slot->H=($hor_blade)?$slot->W*$imageratio:$slot->W/$imageratio;
+					$slot->Y=$originalH-$slot->H;
 				}
 			}else{
 				$slotOK=false;
@@ -2469,7 +2447,12 @@ class Device {
 		}
 		return $resp;
 	}
-	function GetDevicePicture($holeW,$rear=false,$ShowLabel=true){
+	function GetDevicePicture($rear=false,$targetWidth=220,$nolinks=false){
+		// Just in case
+		$targetWidth=($targetWidth==0)?220:$targetWidth;
+		$rear=($rear==true || $rear==false)?$rear:true;
+		$nolinks=($nolinks==true || $nolinks==false)?$nolinks:false;
+
 		$templ=new DeviceTemplate();
 		$templ->TemplateID=$this->TemplateID;
 		$templ->GetTemplateByID();
@@ -2502,10 +2485,23 @@ class Device {
 			$flags=($this->Owner==0)?'(O)':'';
 			$flags=($flags!='')?'<span class="hlight">'.$flags.'</span>':'';
 
-			$resp.="\n\t<div class=\"picture\">\n";
-			$resp.="$clickable\t\t<img class=\"picture\" data-deviceid=$this->DeviceID width=$holeW height=$holeH src=\"$picturefile\" alt=\"$this->Label\">$clickableend\n";
-			if ( $ShowLabel ) {
-				$resp.="\t\t<div class=\"label\"><div>$flags$this->Label".(((!$this->BackSide && $rear || $this->BackSide && !$rear) && !$this->HalfDepth)?" (".__("Rear").")":"");
+			// This is for times when you want to use the image on a report but don't want links
+			$nolinks=($nolinks)?' disabled':'';
+
+			$resp.="\n\t<div class=\"picture$nolinks\" style=\"width: ".$targetWidth."px; height: ".$targetHeight."px;\">\n";
+			$resp.="$clickable\t\t<img data-deviceid=$this->DeviceID src=\"$picturefile\" alt=\"$this->Label\">$clickableend\n";
+
+			/*
+			 * Labels on chassis devices were getting silly with smaller devices.  For aesthetic 
+			 * reasons we are going to hide the label for the chassis devices that are less than 3U
+			 * in height and have slots defined.  If it is just a chassis with nothing defined then 
+			 * go ahead and show the chassis label.
+			 */
+			if(($this->Height<3 && $this->DeviceType=='Chassis' && (($rear && $this->RearChassisSlots > 0) || (!$rear && $this->ChassisSlots > 0))) || ($templ->Model=='HTRAY' || $templ->Model=='VTRAY') ){
+
+			}else{
+				$resp.="\t\t<div class=\"label\"><div>$flags$this->Label".
+					(((!$this->BackSide && $rear || $this->BackSide && !$rear) && !$this->HalfDepth)?" (".__("Rear").")":"");
 				$resp.="</div></div>\n";
 			}
 
@@ -2865,9 +2861,13 @@ class DevicePorts {
 		$path = array();
 		$n = sizeof( $path );
 		
+		$dev = new Device();
+		$dev->DeviceID=$DeviceID;
+		$dev->getDevice();
+		
 		$path[$n] = new DevicePorts();
 		$path[$n]->DeviceID = $DeviceID;
-		$path[$n]->PortNumber = $PortNumber;
+		$path[$n]->PortNumber = ($dev->DeviceType=="Patch Panel")?-$PortNumber:$PortNumber;
 		$path[$n]->getPort();
 		
 		// Follow the trail until you get no more connections
@@ -3056,54 +3056,29 @@ class DevicePorts {
 			// Gets a little complicated if you are on a blade device and looking for other patch candidates
 			// But putting this logic into the SQL is extremely processor intensive, so do the conditional on the outside
 			// and only take the processing hit when there's a child device as the source
-			if ( $dev->ParentDevice == 0 ) {
-				$sql="SELECT DISTINCT a.* from fac_Device a, fac_Cabinet b where 
-				a.Ports>0 and ((Cabinet=CabinetID and Cabinet=$dev->Cabinet) or 
-				(Cabinet=0 and ParentDevice in (select DeviceID from fac_Device where Cabinet=$dev->Cabinet and ChassisSlots>0)))
-				$rights$pp GROUP BY DeviceID ORDER BY Position DESC, Label ASC;";
-			} else {
-				$parent = $dev->WhosYourDaddy();
-				
-				$sql="SELECT DISTINCT a.* from fac_Device a, fac_Cabinet b where 
-				a.Ports>0 and ((Cabinet=CabinetID and Cabinet=$parent->Cabinet) or 
-				(Cabinet=0 and ParentDevice in (select DeviceID from fac_Device where Cabinet=$parent->Cabinet and ChassisSlots>0)))
-				$rights$pp GROUP BY DeviceID ORDER BY Position DESC, Label ASC;";
-			}
-			
-			// Run two queries - first, devices in the same cabinet as the device patching from
+			$cabinetID=($dev->ParentDevice==0)?$dev->Cabinet:$dev->WhosYourDaddy()->Cabinet;
+			$sqlSameCabDevice="SELECT * FROM fac_Device WHERE Ports>0 AND 
+				Cabinet=$cabinetID $rights$pp GROUP BY DeviceID ORDER BY Position 
+				DESC, Label ASC;";
+			$sqlSameCabChildDevice="SELECT * FROM fac_Device WHERE Ports>0 AND 
+				Cabinet=0 AND ParentDevice IN (SELECT DeviceID FROM fac_Device WHERE 
+				Cabinet=$cabinetID AND (ChassisSlots>0 OR RearChassisSlots>0)) $rights$pp 
+				GROUP BY DeviceID ORDER BY Position DESC, Label ASC;";
+			$sqlDiffCabDevice="SELECT * FROM fac_Device WHERE Ports>0 AND 
+				Cabinet!=$cabinetID $rights$pp GROUP BY DeviceID ORDER BY Label ASC;";
+			$sqlDiffCabChildDevice="SELECT * FROM fac_Device WHERE Ports>0 AND Cabinet=0 
+				AND ParentDevice IN (SELECT DeviceID FROM fac_Device WHERE 
+				Cabinet!=$cabinetID AND (ChassisSlots>0 OR RearChassisSlots>0)) $rights$pp 
+				GROUP BY DeviceID ORDER BY Label ASC;";
 
-			foreach($dbh->query($sql) as $row){
-				// false to skip rights check we filtered using sql above
-				$tmpDev=Device::RowToObject($row,false);
-				if ( $tmpDev->ParentDevice != 0 ) {
-					/* Child device of a chassis */
-					$parent = $tmpDev->WhosYourDaddy();
-					$tmpDev->Cabinet = $parent->Cabinet;
-				}				
-				$candidates[]=array("DeviceID"=>$tmpDev->DeviceID, "Label"=>$tmpDev->Label, "CabinetID"=>$tmpDev->Cabinet);
-			}
-			// Then run the same query, but for the rest of the devices in the database
-			if ( $dev->ParentDevice == 0 ) {
-				$sql="SELECT DISTINCT a.* from fac_Device a, fac_Cabinet b where 
-				a.Ports>0 and ((Cabinet=CabinetID and Cabinet!=$dev->Cabinet) or 
-				(Cabinet=0 and ParentDevice in (select DeviceID from fac_Device where Cabinet!=$dev->Cabinet and ChassisSlots>0)))
-				$rights$pp GROUP BY DeviceID ORDER BY Label ASC;";
-			} else {
-				$sql="SELECT DISTINCT a.* from fac_Device a, fac_Cabinet b where 
-				a.Ports>0 and ((Cabinet=CabinetID and Cabinet!=$parent->Cabinet) or 
-				(Cabinet=0 and ParentDevice in (select DeviceID from fac_Device where Cabinet!=$parent->Cabinet and ChassisSlots>0)))
-				$rights$pp GROUP BY DeviceID ORDER BY Label ASC;";
-			}
-			
-			// error_log( strtr( $sql, array( "\n"=>"", "\t"=>"" )) );
-			
-			foreach($dbh->query($sql) as $row){
-				// false to skip rights check we filtered using sql above
-				$tmpDev=Device::RowToObject($row,false);
-				if ( $tmpDev->ParentDevice != 0 ) {
-					/* Child device of a chassis */
-					$parent = $tmpDev->WhosYourDaddy();
-					$tmpDev->Cabinet = $parent->Cabinet;
+			// Running these four simple queries is supposed to be faster than the previous complicated ones
+			foreach(array($sqlSameCabDevice, $sqlSameCabChildDevice, $sqlDiffCabDevice, $sqlDiffCabChildDevice) as $sql){
+				foreach($dbh->query($sql) as $row){
+					// false to skip rights check we filtered using sql above
+					$tmpDev=Device::RowToObject($row,false);
+					// Child devices the cabinet will be 0 this will fix that
+					$tmpDev->Cabinet=($tmpDev->ParentDevice!=0)?$tmpDev->WhosYourDaddy()->Cabinet:$tmpDev->Cabinet;
+					$candidates[]=array("DeviceID" => $tmpDev->DeviceID, "Label" => $tmpDev->Label, "CabinetID" => $tmpDev->Cabinet);
 				}
 				$candidates[]=array("DeviceID"=>$tmpDev->DeviceID, "Label"=>$tmpDev->Label, "CabinetID"=>$tmpDev->Cabinet);
 			}
@@ -3510,7 +3485,44 @@ class RackRequest {
   var $MfgDate;
 
 	// Create MakeSafe / MakeDisplay functions
-  
+	function MakeSafe(){
+		//Keep weird values out of DeviceType
+		$validdevicetypes=array('Server','Appliance','Storage Array','Switch','Chassis','Patch Panel','Physical Infrastructure','CDU');
+
+		$this->RequestID=intval($this->RequestID);
+		$this->RequestorID=intval($this->RequestorID);
+		$this->RequestTime=sanitize($this->RequestTime); //datetime
+		$this->CompleteTime=sanitize($this->CompleteTime); //datetime
+		$this->Label=sanitize(transform($this->Label));
+		$this->SerialNo=sanitize(transform($this->SerialNo));
+		$this->AssetTag=sanitize($this->AssetTag);
+		$this->ESX=intval($this->ESX);
+		$this->Owner=intval($this->Owner);
+		$this->DeviceHeight=intval($this->DeviceHeight);
+		$this->EthernetCount=intval($this->EthernetCount);
+		$this->VLANList=sanitize($this->VLANList);
+		$this->SANCount=intval($this->SANCount);
+		$this->SANList=sanitize($this->SANList);
+		$this->DeviceClass=sanitize($this->DeviceClass);
+		$this->DeviceType=(in_array($this->DeviceType,$validdevicetypes))?$this->DeviceType:'Server';
+		$this->LabelColor=sanitize($this->LabelColor);
+		$this->CurrentLocation=sanitize(transform($this->CurrentLocation));
+		$this->SpecialInstructions=sanitize($this->SpecialInstructions);
+		$this->MfgDate=date("Y-m-d", strtotime($this->MfgDate)); //date
+	}
+
+	function MakeDisplay(){
+		$this->Label=stripslashes($this->Label);
+		$this->SerialNo=stripslashes($this->SerialNo);
+		$this->AssetTag=stripslashes($this->AssetTag);
+		$this->VLANList=stripslashes($this->VLANList);
+		$this->SANList=stripslashes($this->SANList);
+		$this->DeviceClass=stripslashes($this->DeviceClass);
+		$this->LabelColor=stripslashes($this->LabelColor);
+		$this->CurrentLocation=stripslashes($this->CurrentLocation);
+		$this->SpecialInstructions=stripslashes($this->SpecialInstructions);
+	}
+ 
   function CreateRequest(){
 	global $dbh;
     $sql="INSERT INTO fac_RackRequest SET RequestTime=now(), RequestorID=\"".intval($this->RequestorID)."\",

@@ -6,6 +6,20 @@ GitHub, at http://github.com/samilliken/openDCIM/issues, where you can also down
 the latest development version.  However, it is not advised to pull from GitHub unless you
 are simply testing, as some functionality can break between releases.
 
+Changes in 3.3
+--------------
+* Primarily bug fixes
+* Upgraded PHPExcel to 1.8.0
+* Improvements to device template import/export functions
+* More streamlined upgrade procedure
+* SQL Optimizations for some of the roll-up statistics screens
+* Chassis devices within a chassis now supported
+* Ability to mass edit port names via patterns
+* Ability to delete device templates, and assign any devices using that template to another
+* Creation of a Shopping-Cart like feature for building work orders, exports to Excel (for label printers)
+* Improvements to the UI for device images
+* Ability to turn Rack Requests on/off at a site level
+
 Changes in 3.2
 --------------
 * Ability to track spare/consumable parts supplies in a basic bin system with min/max quantities

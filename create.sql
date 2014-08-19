@@ -292,25 +292,12 @@ CREATE TABLE fac_Device (
   Reservation tinyint(1) NOT NULL,
   HalfDepth tinyint(1) NOT NULL DEFAULT '0',
   BackSide tinyint(1) NOT NULL DEFAULT '0',
+  AuditStamp DATETIME NOT NULL,
   PRIMARY KEY (DeviceID),
-  KEY SerialNo (SerialNo,`AssetTag`,`PrimaryIP`)
-) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
-
---
--- Table structure for table fac_DevicePorts
---
-
-DROP TABLE IF EXISTS fac_DevicePorts;
-CREATE TABLE fac_DevicePorts (
-  ConnectionID int(11) NOT NULL AUTO_INCREMENT,
-  DeviceID int(11),
-  DevicePort int(11),
-  MediaID int(11),
-  PortDescriptor varchar(30),
-  ColorID int(11),
-  Notes text NULL,
-  PRIMARY KEY (ConnectionID),
-  KEY DeviceID (DeviceID,DevicePort)
+  KEY SerialNo (SerialNo,`AssetTag`,`PrimaryIP`),
+  KEY AssetTag (AssetTag),
+  KEY Cabinet (Cabinet),
+  KEY TemplateID (TemplateID)
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
 
 --
@@ -446,24 +433,6 @@ CREATE TABLE fac_PanelSchedule (
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
 
 --
--- Table structure for table fac_PatchConnection
---
-
-DROP TABLE IF EXISTS fac_PatchConnection;
-CREATE TABLE fac_PatchConnection (
-  PanelDeviceID int(11) NOT NULL,
-  PanelPortNumber int(11) NOT NULL,
-  FrontEndpointDeviceID int(11) DEFAULT NULL,
-  FrontEndpointPort int(11) DEFAULT NULL,
-  RearEndpointDeviceID int(11) DEFAULT NULL,
-  RearEndpointPort int(11) DEFAULT NULL,
-  FrontNotes varchar(80) DEFAULT NULL,
-  RearNotes varchar(80) DEFAULT NULL,
-  PRIMARY KEY (PanelDeviceID,PanelPortNumber)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-
-
---
 -- Table structure for table fac_PDUStats
 --
 
@@ -482,7 +451,7 @@ create table fac_PDUStats(
 DROP TABLE IF EXISTS fac_PowerConnection;
 CREATE TABLE fac_PowerConnection (
   PDUID int(11) NOT NULL,
-  PDUPosition int(11) NOT NULL,
+  PDUPosition VARCHAR(11) NOT NULL,
   DeviceID int(11) NOT NULL,
   DeviceConnNumber int(11) NOT NULL,
   UNIQUE KEY PDUID (PDUID,PDUPosition),
@@ -509,7 +478,9 @@ CREATE TABLE fac_PowerDistribution (
   FailSafe tinyint(1) NOT NULL,
   PanelID2 int(11) NOT NULL,
   PanelPole2 int(11) NOT NULL,
-  PRIMARY KEY (PDUID)
+  PRIMARY KEY (PDUID),
+  KEY CabinetID (CabinetID),
+  KEY PanelID (PanelID)
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
 
 --
@@ -574,22 +545,6 @@ CREATE TABLE fac_RackRequest (
   PRIMARY KEY (RequestID),
   KEY RequestorID (RequestorID)
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
-
---
--- Table structure for table fac_SwitchConnection
---
-
-DROP TABLE IF EXISTS fac_SwitchConnection;
-CREATE TABLE fac_SwitchConnection (
-  SwitchDeviceID int(11) NOT NULL,
-  SwitchPortNumber int(11) NOT NULL,
-  EndpointDeviceID int(11) NOT NULL,
-  EndpointPort int(11) NOT NULL,
-  Notes varchar(80) NOT NULL,
-  PRIMARY KEY (SwitchDeviceID,SwitchPortNumber),
-  UNIQUE KEY EndpointDeviceID (EndpointDeviceID,EndpointPort),
-  UNIQUE KEY SwitchDeviceID (SwitchDeviceID,SwitchPortNumber)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 --
 -- Table structure for table fac_Tags
@@ -818,7 +773,7 @@ INSERT INTO fac_Config VALUES
 	('NetworkThreshold', '75', 'Percentage', 'integer', '75' ),
 	('FacMgrMail','DataCenterMgr@your.domain','Email','string','DataCenterMgr@your.domain'),
 	('InstallURL','','URL','string','https://dcim.your.domain'),
-	('Version','3.2','','',''),
+	('Version','3.3','','',''),
 	('UserLookupURL','https://','URL','string','https://'),
 	('ReservedColor','#00FFFF','HexColor','string','#FFFFFF'),
 	('FreeSpaceColor','#FFFFFF','HexColor','string','#FFFFFF'),
@@ -847,7 +802,10 @@ INSERT INTO fac_Config VALUES
 	('HumidityRedHigh', '75', 'percentage', 'float', '75'),
 	('HumidityRedLow', '35', 'percentage', 'float', '35'),
 	('HumidityYellowHigh', '55', 'percentage', 'float', '55'),
-	('HumidityYellowLow', '45', 'percentage', 'float', '45')	
+	('HumidityYellowLow', '45', 'percentage', 'float', '45'),
+	('WorkOrderBuilder', 'disabled', 'Enabled/Disabled', 'string', 'Disabled'),
+	('RackRequests', 'enabled', 'Enabled/Disabled', 'string', 'Enabled'),
+	('dot', '/usr/bin/dot', 'path', 'string', '/usr/bin/dot')
 ;
 
 --

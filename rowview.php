@@ -107,10 +107,18 @@ function BuildCabinet($rear=false){
 				$errclass=($i>$cabinet->CabinetHeight)?' error':'';
 				if($errclass!=''){$heighterr="yup";}
 				if($i==$devTop){
-					// Create the filler for the rack either text or a picture
-					$picture=(!$device->BackSide && !$rear || $device->BackSide && $rear)?$device->GetDevicePicture(220):$device->GetDevicePicture(220,"rear");
-					$devlabel=$device->Label.(((!$device->BackSide && $rear || $device->BackSide && !$rear) && !$device->HalfDepth)?"(".__("Rear").")":"");
-					$text=($device->Rights!="None")?"<a href=\"devices.php?deviceid=$device->DeviceID\">$highlight $devlabel</a>":$devlabel;
+					// If we're looking at the side of the rack don't give any details but show the
+					// space as being occupied.
+					$sideview="";
+					if(!is_null($side)){
+						$picture=$text="";
+						$sideview=" blackout";
+					}else{
+						// Create the filler for the rack either text or a picture
+						$picture=(!$device->BackSide && !$rear || $device->BackSide && $rear)?$device->GetDevicePicture():$device->GetDevicePicture("rear");
+						$devlabel=$device->Label.(((!$device->BackSide && $rear || $device->BackSide && !$rear) && !$device->HalfDepth)?"(".__("Rear").")":"");
+						$text=($device->Rights!="None")?"<a href=\"devices.php?deviceid=$device->DeviceID\">$highlight $devlabel</a>":$devlabel;
+					}
 					
 					// Put the device in the rack
 					$body.="\t\t<tr><td class=\"cabpos$reserved dept$device->Owner$errclass\">$i</td><td class=\"dept$device->Owner$reserved\" rowspan=$device->Height data-deviceid=$device->DeviceID>";

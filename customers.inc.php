@@ -191,7 +191,7 @@ class Contact {
      * @global PDO $dbh
      * @return (Contact)[]
      */
-    public function GetContactListIndexedbyID() {
+    public static function GetContactListIndexedbyID() {
         global $dbh;
         $deptList = array();
         $stmt = $dbh->prepare('SELECT * FROM fac_Contact');
@@ -200,7 +200,6 @@ class Contact {
             $contact = Contact::RowToObject($row);
             $deptList[$contact->ContactID] = $contact;
         }
-
 		return $deptList;
     }
 
@@ -352,7 +351,7 @@ class Department {
      * @global PDO $dbh
      * @return (Department)[]
      */
-    public function GetDepartmentListIndexedbyID() {
+    public static function GetDepartmentListIndexedbyID() {
         global $dbh;
         $deptList = array();
         $stmt = $dbh->prepare('SELECT * FROM fac_Department ORDER BY Name ASC');
@@ -361,7 +360,6 @@ class Department {
             $dept = Department::RowToObject($row);
             $deptList[$dept->DeptID] = $dept;
         }
-
 		return $deptList;
 	}
 

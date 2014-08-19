@@ -62,7 +62,14 @@
 		// including the $cab and $devTempl in here so it gets reset each time and there 
 		// is no chance for phantom data
 		$cab=new Cabinet();
-		$cab->CabinetID=$dev->Cabinet;
+		if($dev->ParentDevice>0){
+			$pdev=new Device();
+			$pdev->DeviceID=$dev->GetRootDeviceID();
+			$pdev->GetDevice();
+			$cab->CabinetID=$pdev->Cabinet;
+		}else{
+			$cab->CabinetID=$dev->Cabinet;
+		}
 		$cab->GetCabinet();
 		
 		$devTmpl=new DeviceTemplate();
@@ -71,7 +78,7 @@
 
 		$position=($dev->Height==1)?$dev->Position:$dev->Position."-".($dev->Position+$dev->Height-1);
 
-		print "<div><div>$cab->Location</div><div>$position</div><div>$dev->Label</div><div>".$dev->GetDevicePicture()."</div></div>\n";
+		print "<div><div>$cab->Location</div><div>$position</div><div>$dev->Label</div><div>".$dev->GetDevicePicture('','','nolinks')."</div></div>\n";
 	}
 	
 	print '</div>
