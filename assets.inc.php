@@ -1078,7 +1078,7 @@ class Device {
 		}
 		
 		//Keep weird values out of DeviceType
-		$validdevicetypes=array('Server','Appliance','Storage Array','Switch','Chassis','Patch Panel','Physical Infrastructure');
+		$validdevicetypes=array('Server','Appliance','Storage Array','Switch','Chassis','Patch Panel','Physical Infrastructure', 'Firewall', 'Tape Library', 'External Storage', 'PC', 'KVM', 'Laptop', 'NTU');
 
 		$this->DeviceID=intval($this->DeviceID);
 		$this->Label=sanitize($this->Label);
@@ -1789,13 +1789,38 @@ class Device {
 		$powercon->DeviceID=$this->DeviceID;
 		$powercon->DeleteConnections();
 
-		// Now delete the device itself
-		$sql="DELETE FROM fac_Device WHERE DeviceID=$this->DeviceID;";
-
+		// Place in deleted device table
+		$sql="INSERT INTO fac_DeletedDevice select *, NOW()  from fac_Device where DeviceID=$this->DeviceID";
+		
 		if(!$dbh->exec($sql)){
 			$info=$dbh->errorInfo();
-
 			error_log("PDO Error: {$info[2]} SQL=$sql");
+			error_log("Device $this->DeviceID NOT deleted.");
+			
+			// If we could not record the deletion, stop now.
+			return false;
+		}
+
+		// log the delete date & guilty party
+		$sql = "UPDATE fac_DeletedDevice set Notes=CONCAT(Notes,'DELETED on ', NOW(), ' by " . User::Current()->UserID  . "\n') 
+			WHERE DeviceID=$this->DeviceID" ;
+		
+		if(!$dbh->exec($sql)){
+			$info=$dbh->errorInfo();
+			error_log("PDO Error: {$info[2]} SQL=$sql");
+			error_log("Device $this->DeviceID NOT deleted.");
+			
+			// If we could not record the deletion, stop now.
+			return false;
+		}
+		
+
+		// Now delete the device itself
+		$sql="DELETE FROM fac_Device WHERE DeviceID=$this->DeviceID;";
+		if(!$dbh->exec($sql)){
+			$info=$dbh->errorInfo();
+			error_log("PDO Error: {$info[2]} SQL=$sql");
+			error_log("Device $this->DeviceID NOT deleted.");
 			return false;
 		}
 
@@ -2626,6 +2651,11 @@ class DevicePorts {
 		global $dbh;
 		
 		$this->MakeSafe();
+		
+
+		if ($this->PortNumber < 0) {
+			$this->Label = $this->Label . " (rear)" ;
+		}
 
 		$sql="INSERT INTO fac_Ports SET DeviceID=$this->DeviceID, PortNumber=$this->PortNumber, 
 			Label=\"$this->Label\", MediaID=$this->MediaID, ColorID=$this->ColorID, 
@@ -2728,6 +2758,9 @@ class DevicePorts {
 		$oldport->PortNumber=$this->PortNumber;
 		if(!$oldport->getPort()){return false;}
 
+		if ($this->PortNumber < 0) {
+			$this->Label = $this->Label . " (rear)" ;
+		}
 		$sql="UPDATE fac_Ports SET Label=\"$this->Label\" WHERE 
 			DeviceID=$this->DeviceID AND PortNumber=$this->PortNumber;";
 

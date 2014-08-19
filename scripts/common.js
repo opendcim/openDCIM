@@ -1647,13 +1647,18 @@ function LameLogDisplay(){
 
 		destroy: function(check) {
 			var row=this;
-
 			function front(){
 				$.post('',{getport: '',swdev: $('#deviceid').val(),pnum: row.portnum}).done(function(data){
 					row.ct.css('padding','');
 					row.portname.html(data.Label).data('default',data.Label);
 					row.cdevice.html('<a href="devices.php?deviceid='+data.ConnectedDeviceID+'">'+data.ConnectedDeviceLabel+'</a>').data('default',data.ConnectedDeviceID);
-					data.ConnectedPortLabel=(data.ConnectedPortLabel==null)?'':data.ConnectedPortLabel;
+					if (data.ConnectedPort <0 ) {
+						rearb=' (rear)';
+					}
+					if (data.ConnectedPortLabel!=null) {
+						data.ConnectedPortLabel = data.ConnectedPortLabel + rearb ;
+					}
+					data.ConnectedPortLabel=(data.ConnectedPortLabel==null)?'':data.ConnectedPort + rearb;
 					row.cdeviceport.html('<a href="paths.php?deviceid='+data.ConnectedDeviceID+'&portnumber='+data.ConnectedPort+'">'+data.ConnectedPortLabel+'</a>').data('default',data.ConnectedPort);
 					row.cnotes.html(data.Notes).data('default',data.Notes);
 					row.porttype.html(data.MediaName).data('default',data.MediaID);
@@ -1671,7 +1676,13 @@ function LameLogDisplay(){
 
 			function rear(){
 				$.post('',{getport: '',swdev: $('#deviceid').val(),pnum: row.portnum*-1}).done(function(data){
-					data.ConnectedPortLabel=(data.ConnectedPortLabel==null)?'':data.ConnectedPortLabel;
+					if (data.ConnectedPort <0 ) {
+						rearb=' (rear)';
+					}
+					if (data.ConnectedPortLabel!=null) {
+						data.ConnectedPortLabel = data.ConnectedPortLabel + rearb ;
+					}
+					data.ConnectedPortLabel=(data.ConnectedPortLabel==null)?'':data.ConnectedPort + rearb ;
 					row.rdevice.html('<a href="devices.php?deviceid='+data.ConnectedDeviceID+'">'+data.ConnectedDeviceLabel+'</a>').data('default',data.ConnectedDeviceID);
 					row.rdeviceport.html('<a href="paths.php?deviceid='+data.ConnectedDeviceID+'&portnumber='+data.ConnectedPort+'">'+data.ConnectedPortLabel+'</a>').data('default',data.ConnectedPort);
 					row.rnotes.html(data.Notes).data('default',data.Notes);

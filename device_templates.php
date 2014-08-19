@@ -397,7 +397,7 @@ echo '    </select>
    <div><label for="devicetype">',__("Device Type"),'</label></div>
    <div><select name="devicetype" id="devicetype">';
 
-	foreach(array('Server','Appliance','Storage Array','Switch','Chassis','Patch Panel','Physical Infrastructure') as $DevType){
+	foreach(array('Server','Appliance','Storage Array','Switch','Chassis','Patch Panel','Physical Infrastructure', 'Firewall', 'Tape Library', 'External Storage', 'PC', 'KVM', 'Laptop', 'NTU') as $DevType){
 		if($DevType==$template->DeviceType){$selected=" selected";}else{$selected="";}
 		print "		<option value=\"$DevType\"$selected>$DevType</option>\n";
 	}

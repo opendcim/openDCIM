@@ -13,3 +13,6 @@ locale/*/LC_MESSAGES/openDCIM.po*
 #user extensions
 extensions/*
 
+pictures/*
+drawings/*
+

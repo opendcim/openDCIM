@@ -286,7 +286,7 @@
 			$dp->Label=($dp->Label=='')?abs($dp->PortNumber):$dp->Label;
 			$dp->ConnectedDeviceLabel=($dev->GetDevice())?stripslashes($dev->Label):'';
 			$dp->ConnectedDeviceType=$dev->DeviceType;
-			$dp->ConnectedPort=($dp->ConnectedPort==0)?'':abs($dp->ConnectedPort);
+			$dp->ConnectedPort=($dp->ConnectedPort==0)?'':($dp->ConnectedPort);
 			$dp->ConnectedPortLabel=(!is_null($cd->Label) && $cd->Label!='')?$cd->Label:$dp->ConnectedPort;
 			header('Content-Type: application/json');
 			echo json_encode($dp);
@@ -1582,7 +1582,6 @@ echo '	<div class="table">
 			$cp->DeviceID=$port->ConnectedDeviceID;
 			$cp->PortNumber=$port->ConnectedPort;
 			$cp->getPort();
-
 			if($cp->DeviceID >0 && $cp->Label==''){$cp->Label=$cp->PortNumber;};
 
 			$mt=(isset($mediaTypes[$port->MediaID]))?$mediaTypes[$port->MediaID]->MediaType:'';
@@ -1636,11 +1635,20 @@ echo '	<div class="table">
 			if($portList[-$i]->ConnectedPort!=''){
 				$p=new DevicePorts();
 				$p->DeviceID=$portList[-$i]->ConnectedDeviceID;
-				$p->PortNumber=$i;
+				//$p->PortNumber=$i;
+				$p->PortNumber=$portList[-$i]->ConnectedPort ;
 				$p->getPort();
-				$rp=($p->Label=='')?$i:$p->Label;
+				$rp=($p->Label=='')?$p->PortNumber:$p->Label ;
 			}else{
 				$rp='';
+			}
+
+			if ( $portList[-$i]->ConnectedPort < 0 ) {
+				$rp = $rp . " (rear)" ;
+			}
+
+			if ( $portList[$i]->ConnectedPort < 0 ) {
+				$fp = $fp . " (rear)" ;
 			}
 
 			$portList[$i]->Label=($portList[$i]->Label=='')?$i:$portList[$i]->Label;
