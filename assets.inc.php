@@ -631,11 +631,18 @@ class CabinetAudit {
 	var $CabinetID;
 	var $UserID;
 	var $AuditStamp;
+	var $Comments;
 
 	function CertifyAudit( $db = null ) {
 		global $dbh;
 		
-		$sql = "insert into fac_CabinetAudit set CabinetID=\"" . intval( $this->CabinetID ) . "\", UserID=\"" . addslashes( $this->UserID ) . "\", AuditStamp=now()";
+		if($this->Comments){
+			$tmpAudit=new CabinetAudit();
+			$tmpAudit->CabinetID=$this->CabinetID;
+			(class_exists('LogActions'))?LogActions::LogThis($this,$tmpAudit):'';
+		}else{
+			(class_exists('LogActions'))?LogActions::LogThis($this):'';
+		}
 
 		if ( ! $dbh->exec( $sql ) ) {
 			$info = $dbh->errorInfo();
@@ -650,12 +657,12 @@ class CabinetAudit {
 	function GetLastAudit( $db = null ) {
 		global $dbh;
 		
-		$sql = "select * from fac_CabinetAudit where CabinetID=\"" . intval( $this->CabinetID ) . "\" order by AuditStamp DESC Limit 1";
+		$sql = "select * from fac_GenericLog where ObjectID=\"" . intval( $this->CabinetID ) . "\" and Class=\"CabinetAudit\" order by Time DESC Limit 1";
 
 		if($row=$dbh->query($sql)->fetch()){
-			$this->CabinetID=$row["CabinetID"];
+			$this->CabinetID=$row["ObjectID"];
 			$this->UserID=$row["UserID"];
-			$this->AuditStamp=date("M d, Y H:i", strtotime($row["AuditStamp"]));
+			$this->AuditStamp=date("M d, Y H:i", strtotime($row["Time"]));
 
 			return true;
 		} else {
@@ -667,12 +674,12 @@ class CabinetAudit {
 	function GetLastAuditByUser( $db = null ) {
 		global $dbh;
 		
-		$sql = "select * from fac_CabinetAudit where UserID=\"" . addslashes( $this->UserID ) . "\" order by AuditStamp DESC Limit 1";
+		$sql = "select * from fac_GenericLog where UserID=\"" . addslashes( $this->UserID ) . "\" and Class=\"CabinetAudit\" order by Time DESC Limit 1";
 
 		if ( $row = $dbh->query( $sql )->fetch() ) {
-			$this->CabinetID = $row["CabinetID"];
+			$this->CabinetID = $row["ObjectID"];
 			$this->UserID = $row["UserID"];
-			$this->AuditStamp = date( "M d, Y H:i", strtotime( $row["AuditStamp"] ) );
+			$this->AuditStamp = date( "M d, Y H:i", strtotime( $row["Time"] ) );
 		} else {
 			$info = $dbh->errorInfo();
 

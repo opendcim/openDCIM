@@ -137,6 +137,9 @@ class LogActions {
 			case "Cabinet":
 				$log->ObjectID=$object->CabinetID;
 				break;
+			case "CabinetAudit";
+				$log->ObjectID=$object->CabinetID;
+				break;
 			case "DevicePorts":
 				$log->ObjectID=$object->DeviceID;
 				$log->ChildID=$object->PortNumber;

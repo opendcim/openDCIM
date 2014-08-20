@@ -245,12 +245,12 @@ $(function(){
 	
 	// First query - Summary of all auditors, including the total within the selected period and the date of the last audit
 	
-	$sql = sprintf( "select count(*) as TotalCabinets, a.*, b.Name from fac_CabinetAudit a, fac_User b where a.UserID=b.UserID and %s date(AuditStamp)>='%s' and date(AuditStamp)<='%s' group by UserID order by count(*) ASC", $dcLimit, $startDate, $endDate );
+	$sql = sprintf( "select count(*) as TotalCabinets, a.*, b.Name from fac_GenericLog a, fac_User b where a.Action=\"CertifyAudit\" and a.UserID=b.UserID and %s date(Time)>='%s' and date(Time)<='%s' group by UserID order by count(*) ASC", $dcLimit, $startDate, $endDate );
 	$summaryResult=$dbh->query($sql);
 	
 	// Second query - List of all cabinets audits in the time period, sorted and grouped by date
 	
-	$sql = sprintf( "select count(*) as TotalCabinets, date(a.AuditStamp) as AuditDate from fac_CabinetAudit a where %s date(AuditStamp)>='%s' and date(AuditStamp)<='%s' group by date(a.AuditStamp) order by a.AuditStamp ASC", $dcLimit, $startDate, $endDate );
+	$sql = sprintf( "select count(*) as TotalCabinets, date(a.Time) as AuditDate from fac_GenericLog a where a.Action=\"CertifyAudit\" and %s date(Time)>='%s' and date(Time)<='%s' group by date(a.Time) order by a.Time ASC", $dcLimit, $startDate, $endDate );
 	$dateSumResult=$dbh->query($sql);
 	
 	$pdf=new PDF();
@@ -309,8 +309,8 @@ $(function(){
 	$pdf->Cell( 80, 5, "Activity by Date" );
 	$pdf->Ln();
 	
-	$headerTags = array( "Date", "Location", "Auditor" );
-	$cellWidths = array( 40, 40, 50 );
+	$headerTags = array( "Date", "Location", "Auditor", "Comments" );
+	$cellWidths = array( 30, 30, 40, 70 );
 	
 	$fill = 0;
 	
@@ -329,7 +329,7 @@ $(function(){
 		$showDate = true;
 		$pdf->Bookmark( $auditDate, 1, 0 );
 		
-		$sql = sprintf( "select b.Location, c.Name as Auditor from fac_CabinetAudit a, fac_Cabinet b, fac_User c where a.UserID=c.UserID and a.CabinetID=b.CabinetID and date(a.AuditStamp)=\"%s\"", $row["AuditDate"] );
+		$sql = sprintf( "select b.Location, c.Name as Auditor, a.NewVal as Comments from fac_GenericLog a, fac_Cabinet b, fac_User c where a.Action=\"CertifyAudit\" and a.UserID=c.UserID and a.ObjectID=b.CabinetID and date(a.Time)=\"%s\"", $row["AuditDate"] );
 
 		foreach($dbh->query($sql) as $resRow){		
 			if ( $showDate ) {
@@ -348,6 +348,7 @@ $(function(){
 			
 			$pdf->Cell( $cellWidths[1], 6, $resRow["Location"], $borders, 0, 'L', $fill );
 			$pdf->Cell( $cellWidths[2], 6, $resRow["Auditor"], $borders, 0, 'L', $fill );
+			$pdf->Cell( $cellWidths[3], 6, $resRow["Comments"], $borders, 0, 'L', $fill );
 		
 			$pdf->Ln();
 			
@@ -399,8 +400,8 @@ $(function(){
 	$pdf->Cell( 80, 5, "Activity by Location" );
 	$pdf->Ln();
 	
-	$headerTags = array( "Location", "Date", "Auditor" );
-	$cellWidths = array( 40, 40, 50 );
+	$headerTags = array( "Location", "Date", "Auditor", "Comments" );
+	$cellWidths = array( 30, 30, 40, 70 );
 	
 	$fill = 0;
 	
@@ -412,7 +413,7 @@ $(function(){
 	$pdf->Ln();
 	
 	foreach ( $cabList as $tmpCab ) {
-		$sql = sprintf( "select a.AuditStamp as AuditDate, b.Name as Auditor from fac_CabinetAudit a, fac_User b where a.UserID=b.UserID and CabinetID='%d' and date(AuditStamp)>='%s' and date(AuditStamp)<='%s' order by AuditStamp DESC", $tmpCab->CabinetID, $startDate, $endDate );
+		$sql = sprintf( "select a.Time as AuditDate, b.Name as Auditor, a.NewVal as Comments from fac_GenericLog a, fac_User b where a.Action=\"CertifyAudit\" and a.UserID=b.UserID and ObjectID='%d' and date(Time)>='%s' and date(Time)<='%s' order by Time DESC", $tmpCab->CabinetID, $startDate, $endDate );
 
 		$showCab = true;
 
@@ -432,6 +433,7 @@ $(function(){
 			
 			$pdf->Cell( $cellWidths[1], 6, $resRow["AuditDate"], $borders, 0, 'L', $fill );
 			$pdf->Cell( $cellWidths[2], 6, $resRow["Auditor"], $borders, 0, 'L', $fill );
+			$pdf->Cell( $cellWidths[3], 6, $resRow["Comments"], $borders, 0, 'L', $fill );
 		
 			$pdf->Ln();
 			
