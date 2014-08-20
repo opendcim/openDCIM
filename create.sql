@@ -81,18 +81,6 @@ CREATE TABLE fac_CabinetTemps (
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
 
 --
--- Table structure for table `fac_CabinetAudit`
---
-
-DROP TABLE IF EXISTS `fac_CabinetAudit`;
-CREATE TABLE `fac_CabinetAudit` (
-  CabinetID int(11) NOT NULL,
-  UserID varchar(80) NOT NULL,
-  AuditStamp datetime NOT NULL,
-  Comments text NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-
---
 -- Add a new table for sensor probe templates
 --
 
