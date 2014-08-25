@@ -157,23 +157,6 @@ CREATE TABLE fac_CDUTemplate (
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
 
 --
--- Table structure for table `fac_Contact`
---
-
-DROP TABLE IF EXISTS fac_Contact;
-CREATE TABLE fac_Contact (
-  ContactID int(11) NOT NULL AUTO_INCREMENT,
-  UserID varchar(80) NOT NULL,
-  LastName varchar(40) NOT NULL,
-  FirstName varchar(40) NOT NULL,
-  Phone1 varchar(20) NOT NULL,
-  Phone2 varchar(20) NOT NULL,
-  Phone3 varchar(20) NOT NULL,
-  Email varchar(80) NOT NULL,
-  PRIMARY KEY (ContactID)
-) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
-
---
 -- Add ColorCoding Table
 --
 
@@ -435,6 +418,29 @@ create table fac_PDUStats(
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 --
+-- Table structure for table fac_People
+--
+CREATE TABLE fac_People (
+  UserID varchar(80) NOT NULL,
+  LastName varchar(40) NOT NULL,
+  FirstName varchar(40) NOT NULL,
+  Phone1 varchar(20) NOT NULL,
+  Phone2 varchar(20) NOT NULL,
+  Phone3 varchar(20) NOT NULL,
+  Email varchar(80) NOT NULL,
+  AdminOwnDevices tinyint(1) NOT NULL,
+  ReadAccess tinyint(1) NOT NULL,
+  WriteAccess tinyint(1) NOT NULL,
+  DeleteAccess tinyint(1) NOT NULL,
+  ContactAdmin tinyint(1) NOT NULL,
+  RackRequest tinyint(1) NOT NULL,
+  RackAdmin tinyint(1) NOT NULL,
+  SiteAdmin tinyint(1) NOT NULL,
+  Disabled tinyint(1) NOT NULL,
+  PRIMARY KEY(UserID)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+--
 -- Table structure for table fac_PowerConnection
 --
 
@@ -550,25 +556,6 @@ CREATE TABLE fac_Tags (
 
 INSERT INTO fac_Tags VALUES (NULL, 'Report');
 INSERT INTO fac_Tags VALUES (NULL , 'NoReport');
---
--- Table structure for table fac_User
---
-
-DROP TABLE IF EXISTS fac_User;
-CREATE TABLE fac_User (
-  UserID varchar(80) NOT NULL,
-  Name varchar(80) NOT NULL,
-  AdminOwnDevices tinyint(1) NOT NULL,
-  ReadAccess tinyint(1) NOT NULL,
-  WriteAccess tinyint(1) NOT NULL,
-  DeleteAccess tinyint(1) NOT NULL,
-  ContactAdmin tinyint(1) NOT NULL,
-  RackRequest tinyint(1) NOT NULL,
-  RackAdmin tinyint(1) NOT NULL,
-  SiteAdmin tinyint(1) NOT NULL,
-  Disabled tinyint(1) NOT NULL,
-  PRIMARY KEY (UserID)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 --
 -- Table structure for table fac_VMInventory

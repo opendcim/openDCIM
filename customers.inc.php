@@ -23,13 +23,131 @@
 	For further details on the license, see http://www.gnu.org/licenses
 */
 
+class People {
+	/*  People:		A merged construct that was previous split into both users (of the system)
+					and contacts (users of the data center).  In early versions the security
+					model did not allow for easy segregation of data, but at this point with
+					the ability to hide data for which a user has no rights, this simplifies
+					things greatly.
+	*/
+
+	var $UserID;
+	var $LastName;
+	var $FirstName;
+	var $Phone1;
+	var $Phone2;
+	var $Phone3;
+	var $Email;
+	var $AdminOwnDevices;
+	var $ReadAccess;
+	var $WriteAccess;
+	var $DeleteAccess;
+	var $ContactAdmin;
+	var $RackRequest;
+	var $RackAdmin;
+	var $SiteAdmin;
+	var $Disabled;
+	
+	function MakeSafe(){
+		$this->UserID=sanitize($this->UserID);
+		$this->LastName=sanitize($this->LastName);
+		$this->FirstName=sanitize($this->FirstName);
+		$this->Phone1=sanitize($this->Phone1);
+		$this->Phone2=sanitize($this->Phone2);
+		$this->Phone3=sanitize($this->Phone3);
+		$this->Email=sanitize($this->Email);
+		$this->AdminOwnDevices=intval($this->AdminOwnDevices);
+		$this->ReadAccess=intval($this->ReadAccess);
+		$this->WriteAccess=intval($this->WriteAccess);
+		$this->DeleteAccess=intval($this->DeleteAccess);
+		$this->ContactAdmin=intval($this->ContactAdmin);
+		$this->RackRequest=intval($this->RackRequest);
+		$this->RackAdmin=intval($this->RackAdmin);
+		$this->SiteAdmin=intval($this->SiteAdmin);
+		$this->Disabled=intval($this->Disabled);
+	}
+	
+	function MakeDisplay(){
+		$this->UserID=sanitize($this->UserID);
+		$this->LastName=stripslashes($this->LastName);
+		$this->FirstName=stripslashes($this->FirstName);
+		$this->Phone1=stripslashes($this->Phone1);
+		$this->Phone2=stripslashes($this->Phone2);
+		$this->Phone3=stripslashes($this->Phone3);
+		$this->Email=stripslashes($this->Email);
+		$this->Name=sanitize($this->Name);
+		$this->AdminOwnDevices=intval($this->AdminOwnDevices);
+		$this->ReadAccess=intval($this->ReadAccess);
+		$this->WriteAccess=intval($this->WriteAccess);
+		$this->DeleteAccess=intval($this->DeleteAccess);
+		$this->ContactAdmin=intval($this->ContactAdmin);
+		$this->RackRequest=intval($this->RackRequest);
+		$this->RackAdmin=intval($this->RackAdmin);
+		$this->SiteAdmin=intval($this->SiteAdmin);
+		$this->Disabled=intval($this->Disabled);
+	}
+
+	static function RowToObject($row){
+		$person=new People();
+		$person->UserID=$row["UserID"];
+		$person->LastName=$row["LastName"];
+		$person->FirstName=$row["FirstName"];
+		$person->Phone1=$row["Phone1"];
+		$person->Phone2=$row["Phone2"];
+		$person->Phone3=$row["Phone3"];
+		$person->Email=$row["Email"];
+		$person->AdminOwnDevices=$row["AdminOwnDevices"];
+		$person->ReadAccess=$row["ReadAccess"];
+		$person->WriteAccess=$row["WriteAccess"];
+		$person->DeleteAccess=$row["DeleteAccess"];
+		$person->ContactAdmin=$row["ContactAdmin"];
+		$person->RackRequest=$row["RackRequest"];
+		$person->RackAdmin=$row["RackAdmin"];
+		$person->SiteAdmin=$row["SiteAdmin"];
+		$person->Disabled=$row["Disabled"];
+
+		$person->MakeDisplay();
+
+		return $person;
+	}
+
+	function query($sql){
+		global $dbh;
+		return $dbh->query($sql);
+	}
+
+	function exec($sql){
+		global $dbh;
+		return $dbh->exec($sql);
+	}
+	
+	function GetPerson() {
+		$this->MakeSafe();
+		
+		$sql = "select * from fac_People where UserID=\"". $this->UserID . "\"";
+		
+		if ( $row = $this->query( $sql )->fetch() ) {
+			foreach( People::RowToObject( $row ) as $prop=>$value ) {
+				$this->$prop=$value;
+			}
+		} else {
+			// Kick back a blank record if the UserID was not found
+			foreach ( $this as $prop => $value ) {
+				if ( $prop!='UserID' ) {
+					$this->$prop = '';
+				}
+			}
+		}
+	}
+}
+
 class Contact {
 	/*	Contact:	A responsible party associated with one or more assets.
 					Not to be confused with a user, who is an actual
 					user of the DCIM software, and is typically limited
 					to data center personnel.
 	*/
-	
+
 	var $ContactID;
 	var $UserID;
 	var $LastName;
