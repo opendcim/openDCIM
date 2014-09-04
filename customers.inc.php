@@ -266,7 +266,7 @@ class Contact {
 
 		$oldcontact=new Contact();
 		$oldcontact->ContactID=$this->ContactID;
-		$oldcontact->GetContactById();
+		$oldcontact->GetContactiById();
 
 		$sql="UPDATE fac_Contact SET UserID=\"$this->UserID\", 
 			LastName=\"$this->LastName\", FirstName=\"$this->FirstName\", 
@@ -712,6 +712,7 @@ class User {
 	var $RackRequest;
 	var $RackAdmin;
 	var $SiteAdmin;
+	var $ReadBilling;
 	var $Disabled;
 
 	function MakeSafe(){
@@ -725,6 +726,7 @@ class User {
 		$this->RackRequest=intval($this->RackRequest);
 		$this->RackAdmin=intval($this->RackAdmin);
 		$this->SiteAdmin=intval($this->SiteAdmin);
+		$this->ReadBilling=intval($this->ReadBilling);
 		$this->Disabled=intval($this->Disabled);
 	}
 
@@ -745,6 +747,7 @@ class User {
 		$user->RackRequest=$row["RackRequest"];
 		$user->RackAdmin=$row["RackAdmin"];
 		$user->SiteAdmin=$row["SiteAdmin"];
+		$user->ReadBilling=$row["ReadBilling"];
 		$user->Disabled=$row["Disabled"];
 		$user->MakeDisplay();
 
@@ -789,7 +792,6 @@ class User {
 
 	function GetUserRights(){
 		$this->MakeSafe();
-
 		$sql="SELECT * FROM fac_User WHERE UserID=\"$this->UserID\";";
 
 		if($row=$this->query($sql)->fetch()){
@@ -850,7 +852,7 @@ class User {
 		$sql="INSERT INTO fac_User VALUES (\"$this->UserID\", \"$this->Name\", 
 			$this->AdminOwnDevices, $this->ReadAccess, $this->WriteAccess, 
 			$this->DeleteAccess, $this->ContactAdmin, $this->RackRequest, $this->RackAdmin, 
-			$this->SiteAdmin, $this->Disabled);";
+			$this->SiteAdmin, $this->ReadBilling, $this->Disabled);";
 
 		$this->MakeDisplay();
 
@@ -872,7 +874,7 @@ class User {
 			AdminOwnDevices=$this->AdminOwnDevices, WriteAccess=$this->WriteAccess, 
 			DeleteAccess=$this->DeleteAccess, ContactAdmin=$this->ContactAdmin, 
 			RackRequest=$this->RackRequest, RackAdmin=$this->RackAdmin, 
-			SiteAdmin=$this->SiteAdmin, Disabled=$this->Disabled 
+			SiteAdmin=$this->SiteAdmin, ReadBilling=$this->ReadBilling,Disabled=$this->Disabled 
 			WHERE UserID=\"$this->UserID\";";
 
 		$this->MakeDisplay();

@@ -2,8 +2,6 @@
 	require_once( 'db.inc.php' );
 	require_once( 'facilities.inc.php' );
 
-	$subheader=__("Cabinet Audit Reporting");
-
 	define('FPDF_FONTPATH','font/');
 	require('fpdf.php');
 
@@ -162,12 +160,14 @@ $(function(){
 
 </head>
 <body>
-<?php include( 'header.inc.php' ); ?>
+<div id="header"></div>
 <div class="page">
 <?php
 	include( 'sidebar.inc.php' );
 ?>
 <div class="main">
+<h2><?php echo $config->ParameterArray['OrgName']; ?></h2>
+<h3>Cabinet Audit Reporting</h3>
 <div class="center"><div>
 <form action="<?php echo $_SERVER['PHP_SELF']; ?>" method="post" id="auditform">
 <div class="table">

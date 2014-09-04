@@ -2,8 +2,6 @@
 	require_once("db.inc.php");
 	require_once("facilities.inc.php");
 
-	$subheader=__("Data Center Detail");
-
 	if(!$user->SiteAdmin){
 		// No soup for you.
 		header('Location: '.redirect());
@@ -38,6 +36,14 @@
 		$panel->MainBreakerSize=$_POST["mainbreakersize"];
 		$panel->PanelVoltage=$_POST["panelvoltage"];
 		$panel->NumberScheme=$_POST["numberscheme"];
+		$panel->Managed=isset($_POST['managed'])?1:0;
+
+		$panel->IPAddress=$_POST["ipaddress"];
+		$panel->SNMPCommunity=$_POST["snmpcommunity"];
+		$panel->PanelOID=$_POST["paneloid"];
+		$panel->SNMPVersion = $_POST['snmpversion'];
+                $panel->Multiplier = $_POST['multiplier'];
+                $panel->ProcessingProfile = $_POST['processingprofile'];
 		
 		if($_POST["action"]=="Create"){
 			$panel->CreatePanel();
@@ -56,6 +62,9 @@
 	$panelList=$panel->GetPanelList();
 	$ps=new PowerSource();
   	$psList=$ps->GetPSList();
+
+        $managed=($panel->Managed)?" checked":"";
+
 ?>
 <!doctype html>
 <html>
@@ -74,12 +83,14 @@
   <script type="text/javascript" src="scripts/jquery-ui.min.js"></script>
 </head>
 <body>
-<?php include( 'header.inc.php' ); ?>
+<div id="header"></div>
 <div class="page panelmgr">
 <?php
 	include( "sidebar.inc.php" );
 
 echo '<div class="main">
+<h2>',$config->ParameterArray["OrgName"],' Power Panels</h2>
+<h3>',__("Data Center Detail"),'</h3>
 <div class="center"><div>
 <form action="',$_SERVER["PHP_SELF"],'" method="POST">
 <div class="table">
@@ -130,6 +141,7 @@ echo '</select></div>
    <div><label for="numberscheme">',__("Numbering Scheme"),'</label></div>
    <div><select name="numberscheme" id="numberscheme">';
 
+
 // This is messy but since we are actually storing this value in the db and we use it elsewhere this
 // worked out best
 	if($panel->NumberScheme=="Odd/Even"){$selected=" selected";}else{$selected="";}
@@ -140,8 +152,86 @@ echo '</select></div>
 
 ?>
    </select>
+
    </div>
 </div>
+<?php
+echo '
+<div>
+   <div><label for="Managed">',__("Managed"),'</label></div>
+   <div><input type="checkbox" name="managed" id="managed"',  $managed, '></div>
+</div>
+<div>
+   <div><label for="IPAddress">',__("IP Address"),'</label></div>
+   <div><input type="text" size="15" name="ipaddress" id="ipaddress"  value="',$panel->IPAddress,'"></div>
+</div>
+<div>
+   <div><label for="SNMPCommunity">',__("SNMP Community"),'</label></div>
+   <div><input type="text" size="15" name="snmpcommunity" id="snmpcommunity"  value="',$panel->SNMPCommunity,'"></div>
+</div>
+
+<div>
+        <div><label for="snmpversion">',__("SNMP Version"),'</label></div>
+        <div><select name="snmpversion" id="snmpversion">';
+
+        $snmpv = array( "1", "2c" );
+        foreach ( $snmpv as $unit ) {
+                $selected = ( $unit == $panel->SNMPVersion ) ? 'selected':'';
+                print "\t\t<option value=\"$unit\" $selected>$unit</option>\n";
+        }
+
+echo '</select>
+        </div>
+</div>
+
+
+<div>
+   <div><label for="PanelOID">',__("Panel OID"),'</label></div>
+   <div><input type="text" size="25" name="paneloid" id="paneloid"  value="',$panel->PanelOID,'"></div>
+</div>
+
+<div>
+   <div><label for="processingprofile">',__("Processing Scheme"),'</label></div>
+   <div><select name="processingprofile" id="processingprofile">';
+
+        $ProfileList=array("SingleOIDWatts","SingleOIDAmperes","Combine3OIDWatts","Combine3OIDAmperes","Convert3PhAmperes");
+        foreach($ProfileList as $prof){
+                $selected=($prof == $panel->ProcessingProfile)?' selected':'';
+                print "<option value=\"$prof\"$selected>$prof</option>";
+        }
+
+echo '   </select></div>
+</div>
+
+
+<div>
+   <div><label for="multiplier">',__("Multiplier"),'</label></div>
+   <div><select name="multiplier" id="multiplier">';
+
+        $Multi=array("0.1", "1","10","100","1000");
+        $mult = 1;
+
+        // Loop to find the panel default multiplier, if any
+        foreach($Multi as $unit) {
+            //$selected = ($unit==$panel->Multiplier)?' selected' : '';
+            if ($unit == $panel->Multiplier) {
+                $mult = $panel->Multiplier;
+                break;
+            }
+        }
+        // Set the "selected" option, using $mult as set above
+        foreach($Multi as $unit){
+            $selected = ( $unit == $mult ) ? ' selected' : '';
+            print "\t\t<option value=\"$unit\"$selected>$unit</option>\n";
+        }
+
+echo '   </select>
+   </div>
+</div>';
+
+
+
+?>
 <div class="caption">
 <?php
 	if($panel->PanelID >0){
@@ -244,6 +334,7 @@ echo '</select></div>
 							$cab->GetCabinet(  );
 							
 							if ($lastCabinet<>$pduvar->CabinetID)
+								$pn.="<B>x " . $pduvar->InputAmperage . "</B> ";
 								$pn.="<a href=\"cabnavigator.php?cabinetid=$pduvar->CabinetID\">$cab->Location</a>";
                             $pn.="<a href=\"power_pdu.php?pduid=$pduvar->PDUID\"><span>$pduvar->Label</span></a>";
                             $lastCabinet=$pduvar->CabinetID;
@@ -284,8 +375,9 @@ echo '</select></div>
 							$cab->GetCabinet(  );
 							
 							if ($lastCabinet<>$pduvar->CabinetID)
-								$pn.="<a href=\"cabnavigator.php?cabinetid=$pduvar->CabinetID\">$cab->Location</a>";
-                            $pn.="<a href=\"power_pdu.php?pduid=$pduvar->PDUID\"><span>$pduvar->Label</span></a>";
+								$pn.="<a href=\"cabnavigator.php?cabinetid=$pduvar->CabinetID\">$cab->Location </a> ";
+                            $pn.="<a href=\"power_pdu.php?pduid=$pduvar->PDUID\">$pduvar->Label</a> ";
+								$pn.="<B><I>" . $pduvar->InputAmperage . "A</I></B> ";
                             $lastCabinet=$pduvar->CabinetID;
 							
                             switch($pduvar->BreakerSize){

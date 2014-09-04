@@ -82,11 +82,7 @@
 		$cabtemp[$device->Cabinet]="";
 		++$x;
 		if($device->ParentDevice!=0){
-			foreach($uncleDaddy=$device->GetDeviceLineage() as $branches){
-				if($branches->ParentDevice>0){
-					$childList[$branches->ParentDevice]=""; // Create a list of chassis devices based on children present
-				}
-			}
+			$childList[$device->ParentDevice]=""; // Create a list of chassis devices based on children present
 		}
 	}
 	if(isset($vmList)){
@@ -105,7 +101,7 @@
 				$temp[$x]['type']='vm';
 				$temp[$x]['cabinet']=$dev->Cabinet;
 				$temp[$x]['parent']=$dev->ParentDevice;
-				$temp[$x]['rights']=$dev->Rights;
+				$temp[$x]['rights']=$device->Rights;
 				$cabtemp[$dev->Cabinet]['name']="";
 				++$x;
 				if($dev->ParentDevice!=0){
@@ -185,15 +181,7 @@
 			$dctemp[$DataCenterID]=$dc->Name;
 		}
 	}
-	/*  SORT ALL THE THINGS!  */
-	// Sort the dc list
-	if(!empty($dctemp)){
-		natcasesort($dctemp);
-	}
-	// Sort cabinet array
-	if(!empty($cabtemp)){
-		$cabtemp=sort2d($cabtemp,'name');
-	}
+
 	// Sort array based on device label
 	if(!empty($temp)){
 		$devList=sort2d($temp,'label');
@@ -212,66 +200,6 @@
 		exit;
 	}
 
-	// This is the looping portion that we'll call for each device
-	function printDevice($row,$skip=false){
-		global $devList,$vmList;
-
-		if(!$skip){
-			//In case of VMHost missing from inventory, this shouldn't ever happen
-			if($row['label']=='' || is_null($row['label'])){$row['label']='VM Host Missing From Inventory';}
-			if($row['rights']=="Write"){
-				print "\t\t\t\t\t<li><a href=\"devices.php?deviceid={$row['devid']}\">{$row['label']}</a>\n";
-			}else{
-				print "\t\t\t\t\t<li>{$row['label']}\n";
-			}
-		}
-		// Created a nested list showing all blades residing in this chassis
-		if($row['type']=='chassis'){
-			print "\t\t\t\t\t\t<ul>\n";
-			foreach($devList as $chKey => $chRow){
-				if($chRow['parent']==$row['devid']){
-					//In case of VMHost missing from inventory, this shouldn't ever happen
-					if($chRow['label']=='' || is_null($chRow['label'])){$chRow['label']='VM Host Missing From Inventory';}
-					$vmhost=($chRow['rights']=="Write")?"<a href=\"devices.php?deviceid={$chRow['devid']}\">{$chRow['label']}</a>":$chRow['label'];
-					print "\t\t\t\t\t\t\t<li><div><img src=\"images/blade.png\" alt=\"blade icon\"></div>$vmhost\n";
-					// Create a nested list showing all VMs residing on this host.
-					if($chRow['type']=='vm'){
-						print "\t\t\t\t\t\t\t\t<ul>\n";
-						foreach($vmList as $usedkey => $vm){
-							if($vm->DeviceID==$chRow['devid']){
-								print "\t\t\t\t\t\t\t\t\t<li><div><img src=\"images/vmcube.png\" alt=\"vm icon\"></div>$vm->vmName</li>\n";
-								// Remove VMs that have already been processed
-								unset($vmList[$usedkey]);
-							}
-						}
-						print "\t\t\t\t\t\t\t\t</ul>\n";
-					}
-					if($chRow['type']=='chassis'){
-						printDevice($chRow,true);
-					}
-					// Remove devices that we have already processed.
-					unset($devList[$chKey]);
-					print "\t\t\t\t\t\t\t</li>\n"; // Close out current list item
-				}
-			}
-			print "\t\t\t\t\t\t</ul>\n";
-		}
-		// Create a nested list showing all VMs residing on this host.
-		if($row['type']=='vm'){
-			echo "\t\t\t\t\t\t<ul>\n";
-			foreach($vmList as $usedkey => $vm){
-				if($vm->DeviceID==$row['devid']){
-					echo "\t\t\t\t\t\t\t<li><div><img src=\"images/vmcube.png\" alt=\"vm icon\"></div>$vm->vmName</li>\n";
-					// Remove VMs that have already been processed
-					unset($vmList[$usedkey]);
-				}
-			}
-			echo "\t\t\t\t\t\t</ul>\n";
-		}
-		echo "\t\t\t\t\t</li>\n";
-	}
-
-	$subheader=(isset($title))?$title:"";				
 ?>
 <!doctype html>
 <html>
@@ -345,12 +273,14 @@ $(document).ready(function() {
 
 </head>
 <body>
-<?php include( 'header.inc.php' ); ?>
+<div id="header"></div>
 <div class="page search">
 <?php
 	include( 'sidebar.inc.php' );
 ?>
 <div class="main">
+<h2><?php echo $config->ParameterArray['OrgName']; ?></h2>
+<h3><?php echo $title; ?></h3>
 <?php echo '<div id="searchfilters"><button type="button" onclick="showall()">'.__("Show All").'</button><button type="button" onclick="hidedevices()">'.__("Racks Only").'</button></div>'; ?>
 <div class="center"><div>
 	<ol>
@@ -372,10 +302,58 @@ $(document).ready(function() {
 						}
 					}
 				}
+				
 				if(!empty($devList)){
 					foreach($devList as $key => $row){
 						if($cabID==$row['cabinet']){
-							printDevice($row);
+							//In case of VMHost missing from inventory, this shouldn't ever happen
+							if($row['label']=='' || is_null($row['label'])){$row['label']='VM Host Missing From Inventory';}
+							if($row['rights']=="Write"){
+								print "\t\t\t\t\t<li><a href=\"devices.php?deviceid={$row['devid']}\">{$row['label']}</a>\n";
+							}else{
+								print "\t\t\t\t\t<li>{$row['label']}\n";
+							}
+							// Created a nested list showing all blades residing in this chassis
+							if($row['type']=='chassis'){
+								print "\t\t\t\t\t\t<ul>\n";
+								foreach($devList as $chKey => $chRow){
+									if($chRow['parent']==$row['devid']){
+										//In case of VMHost missing from inventory, this shouldn't ever happen
+										if($chRow['label']=='' || is_null($chRow['label'])){$chRow['label']='VM Host Missing From Inventory';}
+										$vmhost=($chRow['rights']=="Write")?"<a href=\"devices.php?deviceid={$chRow['devid']}\">{$chRow['label']}</a>":$chRow['label'];
+										print "\t\t\t\t\t\t\t<li><div><img src=\"images/blade.png\" alt=\"blade icon\"></div>$vmhost\n";
+										// Create a nested list showing all VMs residing on this host.
+										if($chRow['type']=='vm'){
+											print "\t\t\t\t\t\t\t\t<ul>\n";
+											foreach($vmList as $usedkey => $vm){
+												if($vm->DeviceID==$chRow['devid']){
+													print "\t\t\t\t\t\t\t\t\t<li><div><img src=\"images/vmcube.png\" alt=\"vm icon\"></div>$vm->vmName</li>\n";
+													// Remove VMs that have already been processed
+													unset($vmList[$usedkey]);
+												}
+											}
+											print "\t\t\t\t\t\t\t\t</ul>\n";
+										}
+										// Remove devices that we have already processed.
+										unset($devList[$chKey]);
+										print "\t\t\t\t\t\t\t</li>\n"; // Close out current list item
+									}
+								}
+								print "\t\t\t\t\t\t</ul>\n";
+							}
+							// Create a nested list showing all VMs residing on this host.
+							if($row['type']=='vm'){
+								echo "\t\t\t\t\t\t<ul>\n";
+								foreach($vmList as $usedkey => $vm){
+									if($vm->DeviceID==$row['devid']){
+										echo "\t\t\t\t\t\t\t<li><div><img src=\"images/vmcube.png\" alt=\"vm icon\"></div>$vm->vmName</li>\n";
+										// Remove VMs that have already been processed
+										unset($vmList[$usedkey]);
+									}
+								}
+								echo "\t\t\t\t\t\t</ul>\n";
+							}
+							echo "\t\t\t\t\t</li>\n";
 						} 
 					}
 				}

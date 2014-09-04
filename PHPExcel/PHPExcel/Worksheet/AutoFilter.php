@@ -2,7 +2,7 @@
 /**
  * PHPExcel
  *
- * Copyright (c) 2006 - 2014 PHPExcel
+ * Copyright (c) 2006 - 2012 PHPExcel
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -20,9 +20,9 @@
  *
  * @category   PHPExcel
  * @package    PHPExcel_Worksheet
- * @copyright  Copyright (c) 2006 - 2014 PHPExcel (http://www.codeplex.com/PHPExcel)
+ * @copyright  Copyright (c) 2006 - 2012 PHPExcel (http://www.codeplex.com/PHPExcel)
  * @license    http://www.gnu.org/licenses/old-licenses/lgpl-2.1.txt	LGPL
- * @version    1.8.0, 2014-03-02
+ * @version    1.7.8, 2012-10-12
  */
 
 
@@ -31,7 +31,7 @@
  *
  * @category   PHPExcel
  * @package    PHPExcel_Worksheet
- * @copyright  Copyright (c) 2006 - 2014 PHPExcel (http://www.codeplex.com/PHPExcel)
+ * @copyright  Copyright (c) 2006 - 2012 PHPExcel (http://www.codeplex.com/PHPExcel)
  */
 class PHPExcel_Worksheet_AutoFilter
 {
@@ -61,9 +61,6 @@ class PHPExcel_Worksheet_AutoFilter
 
     /**
      * Create a new PHPExcel_Worksheet_AutoFilter
-	 *
-	 *	@param	string		$pRange		Cell range (i.e. A1:E10)
-	 * @param PHPExcel_Worksheet $pSheet
      */
     public function __construct($pRange = '', PHPExcel_Worksheet $pSheet = NULL)
     {
@@ -83,7 +80,7 @@ class PHPExcel_Worksheet_AutoFilter
 	/**
 	 * Set AutoFilter Parent Worksheet
 	 *
-	 * @param PHPExcel_Worksheet $pSheet
+	 * @param PHPExcel_Worksheet
 	 * @return PHPExcel_Worksheet_AutoFilter
 	 */
 	public function setParent(PHPExcel_Worksheet $pSheet = NULL) {
@@ -246,7 +243,7 @@ class PHPExcel_Worksheet_AutoFilter
 	/**
 	 * Clear a specified AutoFilter Column
 	 *
-	 * @param	string  $pColumn    Column name (e.g. A)
+	 * @param	string	$pColumn		Column name (e.g. A)
 	 * @throws	PHPExcel_Exception
 	 * @return PHPExcel_Worksheet_AutoFilter
 	 */
@@ -350,10 +347,10 @@ class PHPExcel_Worksheet_AutoFilter
 	 *	Test if cell value is within a set of values defined by a ruleset
 	 *
 	 *	@param	mixed		$cellValue
-	 *	@param	mixed[]		$ruleSet
+	 *	@param	mixed[]		$dataSet
 	 *	@return boolean
 	 */
-	private static function _filterTestInCustomDataSet($cellValue, $ruleSet)
+	private static function _filterTestInCustomDataSet($cellValue,$ruleSet)
 	{
 		$dataSet = $ruleSet['filterRules'];
 		$join = $ruleSet['join'];
@@ -427,10 +424,10 @@ class PHPExcel_Worksheet_AutoFilter
 	 *	Test if cell date value is matches a set of values defined by a set of months
 	 *
 	 *	@param	mixed		$cellValue
-	 *	@param	mixed[]		$monthSet
+	 *	@param	mixed[]		$dataSet
 	 *	@return boolean
 	 */
-	private static function _filterTestInPeriodDateSet($cellValue, $monthSet)
+	private static function _filterTestInPeriodDateSet($cellValue,$monthSet)
 	{
 		//	Blank cells are always ignored, so return a FALSE
 		if (($cellValue == '') || ($cellValue === NULL)) {
@@ -460,7 +457,7 @@ class PHPExcel_Worksheet_AutoFilter
 	 *	Convert a dynamic rule daterange to a custom filter range expression for ease of calculation
 	 *
 	 *	@param	string										$dynamicRuleType
-	 *	@param	PHPExcel_Worksheet_AutoFilter_Column		&$filterColumn
+	 *	@param	PHPExcel_Worksheet_AutoFilter_Column		$filterColumn
 	 *	@return mixed[]
 	 */
 	private function _dynamicFilterDateRange($dynamicRuleType, &$filterColumn)
@@ -728,7 +725,7 @@ class PHPExcel_Worksheet_AutoFilter
 							//	Date based
 							if ($dynamicRuleType{0} == 'M' || $dynamicRuleType{0} == 'Q') {
 								//	Month or Quarter
-								sscanf($dynamicRuleType,'%[A-Z]%d', $periodType, $period);
+								list($periodType,$period) = sscanf($dynamicRuleType,'%[A-Z]%d');
 								if ($periodType == 'M') {
 									$ruleValues = array($period);
 								} else {
@@ -829,20 +826,20 @@ class PHPExcel_Worksheet_AutoFilter
 			if (is_object($value)) {
 				if ($key == '_workSheet') {
 					//	Detach from worksheet
-					$this->{$key} = NULL;
+					$this->$key = NULL;
 				} else {
-					$this->{$key} = clone $value;
+					$this->$key = clone $value;
 				}
 			} elseif ((is_array($value)) && ($key == '_columns')) {
 				//	The columns array of PHPExcel_Worksheet_AutoFilter objects
-				$this->{$key} = array();
+				$this->$key = array();
 				foreach ($value as $k => $v) {
-					$this->{$key}[$k] = clone $v;
+					$this->$key[$k] = clone $v;
 					// attach the new cloned Column to this new cloned Autofilter object
-					$this->{$key}[$k]->setParent($this);
+					$this->$key[$k]->setParent($this);
 				}
 			} else {
-				$this->{$key} = $value;
+				$this->$key = $value;
 			}
 		}
 	}

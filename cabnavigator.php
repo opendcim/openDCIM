@@ -2,8 +2,6 @@
 	require_once( "db.inc.php" );
 	require_once( "facilities.inc.php" );
 
-	$subheader=__("Data Center Cabinet Inventory");
-
 	if((isset($_REQUEST["cabinetid"]) && (intval($_REQUEST["cabinetid"])==0)) || !isset($_REQUEST["cabinetid"])){
 		// No soup for you.
 		header('Location: '.redirect());
@@ -231,11 +229,6 @@ function renderUnassignedTemplateOwnership($noTemplFlag, $noOwnerFlag, $device) 
 				}
 			}
 
-			// This entire function needs to be reworked.
-			if($device->DeviceType=='Chassis' && $device->RearChassisSlots>0){
-				$backside=true;
-			}
-
 			if ((!$device->HalfDepth || !$device->BackSide)&&!$rear || (!$device->HalfDepth || $device->BackSide)&&$rear){
 				$backside=($device->HalfDepth || $device->BackSide)?true:$backside;
 				$devTop=$device->Position + $device->Height - 1;
@@ -270,7 +263,7 @@ function renderUnassignedTemplateOwnership($noTemplFlag, $noOwnerFlag, $device) 
 					for($i=$currentHeight;($i>$devTop);$i--){
 						$errclass=($i>$cab->CabinetHeight)?' error':'';
 						if($errclass!=''){$heighterr="yup";}
-						if($i==$currentHeight && $i>1){
+						if($i==$currentHeight){
 							$blankHeight=$currentHeight-$devTop;
 							if($devTop==-1){--$blankHeight;}
 							$body.="\t\t<tr><td class=\"cabpos freespace$errclass\">$i</td><td class=\"freespace\" rowspan=$blankHeight>&nbsp;</td></tr>\n";
@@ -334,7 +327,15 @@ function renderUnassignedTemplateOwnership($noTemplFlag, $noOwnerFlag, $device) 
 	@$SpacePercent=($cab->CabinetHeight>0)?number_format($used/$cab->CabinetHeight*100,0):0;
 	@$WeightPercent=number_format($totalWeight/$cab->MaxWeight*100,0);
 	@$PowerPercent=number_format(($totalWatts/1000)/$cab->MaxKW*100,0);
-	$measuredWatts = $pdu->GetWattageByCabinet( $cab->CabinetID );
+	
+	// Here we have a fudge. If both the panel breakers and the PDU are managed
+	// and reporting power consumption then measured watts is the sum of both..
+
+	$PDUMeasuredWatts = $pdu->GetWattageByCabinet( $cab->CabinetID );
+	$pan->GetPanel();
+        $PANMeasuredWatts = $pan->GetWattageByCabinet( $cab->CabinetID );
+	$measuredWatts = $PDUMeasuredWatts + $PANMeasuredWatts ;
+
 	@$MeasuredPercent=number_format(($measuredWatts/1000)/$cab->MaxKW*100,0);
 	$CriticalColor=$config->ParameterArray["CriticalColor"];
 	$CautionColor=$config->ParameterArray["CautionColor"];
@@ -449,11 +450,21 @@ $body.='<div id="infopanel">
 		<legend>'.__("Power Distribution").'</legend>';
 
 	foreach($PDUList as $PDUdev){
-		$lastreading=$PDUdev->GetLastReading();
-		$pduDraw=($lastreading)?$lastreading->Wattage:0;
 
+		//Get panel details
 		$pan->PanelID=$PDUdev->PanelID;
 		$pan->GetPanel();
+
+		//Now set the panel pole we want
+		$pan->PanelPole=$PDUdev->PanelPole;
+
+		if ($pan->Managed == 1) {
+			$lastreading=$pan->GetLastReading();
+		} else {
+			$lastreading=$PDUdev->GetLastReading();
+		}
+
+		$pduDraw=($lastreading)?$lastreading->Wattage:0;
 
 		if($PDUdev->BreakerSize==1){
 			$maxDraw=$PDUdev->InputAmperage * $pan->PanelVoltage / 1.732;
@@ -468,14 +479,18 @@ $body.='<div id="infopanel">
 
 		if($maxDraw>0){
 			$PDUPercent=intval($pduDraw/$maxDraw*100);
+			$BarWidth = $PDUPercent ;
+			if ($BarWidth > 100) { $BarWidth = 100; } 
 		}else{
 			$PDUPercent=0;
 		}
 
 		$PDUColor=($PDUPercent>intval($config->ParameterArray["PowerRed"])?$CriticalColor:($PDUPercent>intval($config->ParameterArray["PowerYellow"])?$CautionColor:$GoodColor));
 
-		$body.=sprintf("\n\t\t\t<a href=\"power_pdu.php?pduid=%d\">CDU %s</a><br>(%.2f kW) / (%.2f kW Max)<br>\n", $PDUdev->PDUID, $PDUdev->Label, $pduDraw / 1000, $maxDraw / 1000 );
-		$body.="\t\t\t\t<div class=\"meter-wrap\">\n\t\t\t\t\t<div class=\"meter-value\" style=\"background-color: $PDUColor; width: $PDUPercent%;\">\n\t\t\t\t\t\t<div class=\"meter-text\">$PDUPercent%</div>\n\t\t\t\t\t</div>\n\t\t\t\t</div>\n\t\t\t<br>\n";
+		$body.=sprintf("\n\t\t\t<a href=\"power_pdu.php?pduid=%d\">%s</a> (<B>%dA</B>)<br>(%.2fKw) / (%.2fA)<br>\n", $PDUdev->PDUID, $PDUdev->Label, $PDUdev->InputAmperage, $pduDraw / 1000, $lastreading->Amps );
+		//$body.=sprintf("\n\t\t\t<a href=\"power_pdu.php?pduid=%d\">CDU %s</a><br>(%.2f kW) / (%.2f kW Max)<br>\n", $PDUdev->PDUID, $PDUdev->Label, $pduDraw / 1000, $maxDraw / 1000 );
+		$body.="\t\t\t\t<div class=\"meter-wrap\">\n\t\t\t\t\t<div class=\"meter-value\" style=\"background-color: $PDUColor; width: $BarWidth%;\">\n\t\t\t\t\t\t<div class=\"meter-text\">$PDUPercent%</div>\n\t\t\t\t\t</div>\n\t\t\t\t</div>\n";
+		$body .= "<font size=-3>$lastreading->LastRead</font><BR>\n\t\t\n<BR>";
 
 		if ( $PDUdev->FailSafe ) {
 			$tmpl = new CDUTemplate();
@@ -552,7 +567,6 @@ $body.='<div id="infopanel">
 echo $head,'  <script type="text/javascript" src="scripts/jquery.min.js"></script>
   <script type="text/javascript" src="scripts/jquery-ui.min.js"></script>
   <script type="text/javascript" src="scripts/jquery.cookie.js"></script>
-  <script type="text/javascript" src="scripts/jquery-json.min.js"></script>
   <script type="text/javascript" src="scripts/common.js"></script>
   <script type="text/javascript">
 	var form=$("<form>").attr({ method: "post", action: "cabnavigator.php" });
@@ -574,55 +588,12 @@ echo $head,'  <script type="text/javascript" src="scripts/jquery.min.js"></scrip
 			form.submit();
 		}
 	}
-	
-	(function ($) {
-		$.fn.extend({
-			cookieList: function (cookieName, expireTime) {
-				var cookie = $.cookie(cookieName);
-				var items = cookie ? $.secureEvalJSON(cookie) : [];
-				
-				return {
-					add: function (val) {
-						var index = items.indexOf(val);
-						if ( index == -1) {
-							items.push(val);
-							$.cookie(cookieName, $.toJSON(items), {expires: expireTime });
-						}
-					},
-					remove: function (val) {
-						var index = items.indexOf(val);
-						if ( index != -1 ) {
-							items.splice(index, 1);
-							$.cookie(cookieName, $.toJSON(items), {expires: expireTime });
-						}
-					},
-					indexOf: function(val) {
-						return items.indexOf(val);
-					},
-					clear: function() {
-						items = null;
-						$.cookie(cookieName, null, { expires: expireTime });
-					},
-					items: function() {
-						return items;
-					},
-					length: function() {
-						return items.length;
-					},
-					join: function( separator ) {
-						return items.join(separator);
-					}
-				};
-			}
-		});
-	})(jQuery);
-	
 	$(document).ready(function() {
 		$(".cabinet .error").append("*");
 		if($("#legend *").length==1){$("#legend").hide();}
 		if($("#keylock div").text().trim()==""){$("#keylock").hide();}
 ';
-if( $config->ParameterArray["ToolTips"]=='enabled' ){
+if($config->ParameterArray["ToolTips"]=='enabled'){
 ?>
 		$('.cabinet td:has(a):not(:has(img)), #zerou div > a, .cabinet .picture a img, .cabinet .picture a > div').mouseenter(function(){
 			var lblbtn=$('.cabinet tr:first-child button + button');
@@ -722,12 +693,14 @@ if($config->ParameterArray["CDUToolTips"]=='enabled'){
 </head>
 
 <body>
-<?php include( 'header.inc.php' ); ?>
+<div id="header"></div>
 <div class="page">
 <?php
 	include( "sidebar.inc.php" );
 ?>
 <div class="main cabnavigator">
+<h2><?php print $config->ParameterArray["OrgName"]; ?></h2>
+<h3><?php print __("Data Center Cabinet Inventory"); ?></h3>
 <div class="center"><div>
 <div id="centeriehack">
 <?php
@@ -737,7 +710,7 @@ if($config->ParameterArray["CDUToolTips"]=='enabled'){
 </div></div>
 <?php
 	if($dcID>0){
-		print "	<a href=\"dc_stats.php?dc=$dcID\">[ ".__("Return to")." $dc->Name ]</a>";
+		print "	<a href=\"dc_stats.php?dc=$dcID\">[ ".__('Return to')." $dc->Name ]</a>";
 	}
 ?>
 </div>  <!-- END div.main -->
@@ -782,5 +755,10 @@ if($config->ParameterArray["CDUToolTips"]=='enabled'){
 		cabinetimagecontrols();
 	});
 </script>
+
+<?php
+include "extensions/cabnavigator_ext.php" ;
+?>
+
 </body>
 </html>

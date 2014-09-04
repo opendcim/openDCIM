@@ -2,8 +2,6 @@
 	require_once('db.inc.php');
 	require_once('facilities.inc.php');
 
-	$subheader=__("Inventory Reporting By Tag");
-
 	$tagsList=Tags::FindAll();
 	$body="";
 
@@ -103,11 +101,13 @@
   </script>
 </head>
 <body>
-<?php include( 'header.inc.php' ); ?>
+	<div id="header"></div>
 	<div class="page">
 <?php
 	include('sidebar.inc.php');
 echo '		<div class="main">
+			<h2>',$config->ParameterArray['OrgName'],'</h2>
+			<h3>',__("Inventory Reporting By Tag"),'</h3>
 			<label for="tagid">',__("Tag:"),'</label>
 			<select name="tagid" id="tagid">
 				<option value="">',__("Select Tag"),'</option>

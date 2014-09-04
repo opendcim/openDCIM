@@ -2,8 +2,6 @@
 	require_once('db.inc.php');
 	require_once('facilities.inc.php');
 
-	$subheader=__("openDCIM Cabinet Temperature/Humidity Sensor Templates");
-
 	if(!$user->SiteAdmin){
 		// No soup for you.
 		header('Location: '.redirect());
@@ -26,12 +24,11 @@
 		$template->HumidityOID = $_REQUEST['humidityoid'];
 		$template->TempMultiplier = $_REQUEST['tempmultiplier'];
 		$template->HumidityMultiplier = $_REQUEST['humiditymultiplier'];
-		$template->mUnits = $_REQUEST['munits'];
 
 		if ( $_REQUEST['action']=='Create' ) {
 			$template->CreateTemplate();
 		} else {
-			$status=__("Updated");
+			$status=__('Updated');
 			$template->UpdateTemplate();
 		}
 	}
@@ -65,12 +62,14 @@
   <script type="text/javascript" src="scripts/jquery-ui.min.js"></script>
 </head>
 <body>
-<?php include( 'header.inc.php' ); ?>
+<div id="header"></div>
 <div class="page">
 <?php
 	include( 'sidebar.inc.php' );
 
 echo '<div class="main">
+<h2>',$config->ParameterArray["OrgName"],'</h2>
+<h3>',__("openDCIM Cabinet Temperature/Humidity Sensor Templates"),'</h3>
 <h3>',$status,'</h3>
 <div class="center"><div>
 <form action="',$_SERVER["PHP_SELF"],'" method="POST">
@@ -145,19 +144,6 @@ echo '   </select>
 	foreach ( array( "0.01", "0.1", "1", "10", "100" ) as $unit ) {
 		$selected = ($unit==$template->HumidityMultiplier)?' selected' : '';
 		print "\t\t<option value=\"$unit\"$selected>$unit</option>\n";
-	}
-
-echo '   </select>
-   </div>
-</div>
-<div>
-	<div><label for="munits">',__("Temperature Units"),'</label></div>
-	<div><select name="munits" id="munits">';
-
-	$unitofmeasurev = array( "english", "metric" );
-	foreach ( $unitofmeasurev as $unit ) {
-		$selected = ( $unit == $template->UnitOfMeasure ) ? 'selected':'';
-		print "\t\t<option value=\"$unit\" $selected>$unit</option>\n";
 	}
 	
 echo '   </select>

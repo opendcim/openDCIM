@@ -94,7 +94,6 @@ CREATE TABLE fac_SensorTemplate (
 	HumidityOID VARCHAR(256) NOT NULL,
 	TempMultiplier FLOAT(8) NOT NULL DEFAULT 1,
 	HumidityMultiplier FLOAT(8) NOT NULL DEFAULT 1,
-	mUnits ENUM( 'english', 'metric' ) NOT NULL DEFAULT 'english',
 	PRIMARY KEY(TemplateID)
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
 

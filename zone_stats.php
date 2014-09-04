@@ -2,15 +2,13 @@
 	require_once("db.inc.php");
 	require_once("facilities.inc.php");
 
-	$subheader=__("Zone Statistics");
-
 	$cab=new Cabinet();
 	$zone=new Zone();
 	$dc=new DataCenter();
 	$dev=new Device();
 	
 	//setting airflow
-	if(isset($_POST["cabinetid"]) && isset($_POST["airflow"]) && $user->SiteAdmin){
+	if(isset($_POST["cabinetid"]) && isset($_POST["airflow"])){
 		$cab->CabinetID=$_POST["cabinetid"];
 		if ($cab->GetCabinet()){
 			if ($cab->CabRowID>0 && isset($_POST["row"]) && $_POST["row"]=="true"){
@@ -75,7 +73,7 @@
 				$width=($zone->MapX2-$zone->MapX1)*$zoom;
 				$height=($zone->MapY2-$zone->MapY1)*$zoom;
 				$mapHTML.="\t<div class=\"canvas\">
-		<canvas id=\"background\" width=\"$width\" height=\"$height\" data-image=\"$mapfile\"></canvas>
+		<canvas id=\"background\" width=\"$width\" height=\"$height\" data-image=$mapfile></canvas>
 		<img src=\"css/blank.gif\" usemap=\"#datacenter\" width=\"$width\" height=\"$height\" alt=\"clearmap over canvas\">
 		<map name=\"datacenter\" data-dc=$dc->DataCenterID data-zoom=$zoom data-x1=$zone->MapX1 data-y1=$zone->MapY1>
 		</map>
@@ -116,11 +114,9 @@ $(document).ready(function() {
 		
 	if ( $config->ParameterArray["mUnits"] == "english" ) {
 		$vol = __("Square Feet");
-		$tempUnits = "F";
 		$density = __("Watts per Square Foot");
 	} else {
 		$vol = __("Square Meters");
-		$tempUnits = "C";
 		$density = __("Watts per Square Meter" );
 	}
 	//aproximate proportion between zone/DC 
@@ -149,12 +145,18 @@ $(document).ready(function() {
   <script type="text/javascript" src="scripts/jquery.ui-contextmenu.js"></script>
 </head>
 <body>
-<?php include( 'header.inc.php' ); ?>
+<div id="header"></div>
 <div class="page dcstats" id="mapadjust">
 <?php
 	include( "sidebar.inc.php" );
 
 echo '<div class="main">
+<div class="heading">
+  <div>
+	<h2>',$config->ParameterArray["OrgName"],'</h2>
+	<h3>',__("Zone Statistics"),'</h3>
+  </div>
+</div>
 <div class="center"><div>
 <div class="centermargin" id="dcstats">
 <div class="table border">
@@ -205,14 +207,6 @@ echo '<div class="main">
   <div>
         <div>',__("Minimum Cooling Tonnage (Based on Computed Watts)"),'</div>
         <div>',sprintf("%7d ".__("Tons"),$zoneStats["ComputedWatts"]*3.412*1.15/12000),'</div>
-  </div>
-  <div>
-        <div>',__("Average Temperature"),'</div>
-        <div>',sprintf("%7d %s", $zoneStats["AvgTemp"], __("°". $tempUnits)),'</div>
-  </div>
-  <div>
-        <div>',__("Average Humidity"), '</div>
-        <div>',sprintf("%7d %s", $zoneStats["AvgHumidity"], __("%")),'</div>
   </div>
 </div> <!-- END div.table -->
 </div> <!-- END div.centermargin -->
@@ -279,10 +273,7 @@ echo '
 				expandToItem('datacenters',firstcabinet);
 			}
 		}
-<?php
-	if ( $user->SiteAdmin ) {
-		// Only a Site Administrator can change cabinet air flow
-?>
+
 		// Bind context menu to the cabinets
 		$(".canvas > map").contextmenu({
 			delegate: "area[name^=cab]",
@@ -298,9 +289,7 @@ echo '
 				$(".canvas > map").contextmenu("showEntry", "row", $(ui.target.context).data('row'));
 			}
 		});
-<?php
-	}
-?>
+
 		// Bind tooltips, highlight functions to the map
 		startmap();
 		opentree();

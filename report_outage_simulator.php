@@ -28,7 +28,7 @@ if (!isset($_REQUEST['action'])){
 
 </head>
 <body>
-<?php include( 'header.inc.php' ); ?>
+<div style="height: 66px;" id="header"></div>
 <?php
 	include( 'sidebar.inc.php' );
 	
@@ -143,11 +143,12 @@ if (!isset($_REQUEST['action'])){
 
 </head>
 <body>
-<?php include( 'header.inc.php' ); ?>
+	<div id="header"></div>
 	<div class="page">
 <?php
 	include('sidebar.inc.php');
 echo '		<div class="main">
+			<h2>',$config->ParameterArray['OrgName'],'</h2>
 			<div class="center">
 				<div id="tablecontainer">';
 
@@ -268,11 +269,11 @@ echo '		<div class="main">
 	printf( "<h2>%s</h2>", __("Power Outage Simulation Report") );
 	
 	if ( $skipNormal )  {
-		printf( "<h3>%s</h3>\n", __("Only listing systems which are down or unknown.") );
+		printf( "<h3>%s</h3>\n", __('Only listing systems which are down or unknown.') );
 	}
 	
 	echo "<table id=\"report\" class=\"display\">\n<thead>\n";
-	foreach ( array( __("Cabinet"), __("Device Name"), __("Status"), __("Position"), __("Owner") ) as $header )
+	foreach ( array( __('Cabinet'), __('Device Name'), __('Status'), __('Position'), __('Owner') ) as $header )
 		printf( "<th>%s</th>\n", $header );
 	echo "</thead>\n<tbody>\n";
 		
@@ -301,7 +302,7 @@ echo '		<div class="main">
 						// If a circuit was entered with no panel ID, or a device has no connections documented, mark it as unknown
 						// The only way to be sure a device will stay up is if we have a connection to an unaffected circuit,
 						// or to a failsafe switch (ATS) connected to at least one unaffected circuit.
-						$outageStatus = __("Down");
+						$outageStatus = __('Down');
 						
 						$pwrConn->DeviceID = $devRow->DeviceID;
 						$connList = $pwrConn->GetConnectionsByDevice();
@@ -310,7 +311,7 @@ echo '		<div class="main">
 						$fsDiverse = false;
 						
 						if ( count( $connList ) == 0 ) {
-							$outageStatus = __("Unknown");
+							$outageStatus = __('Unknown');
 						}
 
 						foreach ( $connList as $connection ) {
@@ -329,16 +330,16 @@ echo '		<div class="main">
 						
 						if ( count( $devPDUList ) > 0 ) {
 							if ( count( $devPDUList ) < $devRow->PowerSupplyCount )
-								$outageStatus = __("Degraded");
+								$outageStatus = __('Degraded');
 							elseif ( $fsDiverse )
-								$outageStatus = __("Degraded/Fail-Safe");
+								$outageStatus = __('Degraded/Fail-Safe');
 							else
-								$outageStatus = __("Normal");
+								$outageStatus = __('Normal');
 						}
 						
 					}
 					
-					if ( ! $skipNormal || ( $skipNormal && ( $outageStatus == __("Down") || $outageStatus == __("Unknown") ) ) ) {
+					if ( ! $skipNormal || ( $skipNormal && ( $outageStatus == __('Down') || $outageStatus == __('Unknown') ) ) ) {
 						echo "<tr>\n";
 						printf( "<td>%s</td>\n", $cabRow->Location );
 						printf( "<td>%s</td>\n", $devRow->Label );

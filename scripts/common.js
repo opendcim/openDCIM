@@ -27,9 +27,7 @@ function setCookie(c_name, value) {
 // a way too specific function for scrolling a div
 function scrollolog(){
 	var olog=$('#olog .table').parent('div');
-	if(typeof olog[0]!='undefined'){
-		olog[0].scrollTop=olog[0].scrollHeight;
-	}
+	olog[0].scrollTop=olog[0].scrollHeight;
 }
 
 //Notes render function
@@ -70,58 +68,7 @@ function rendernotes(button){
 		$('#preview').height(h);
 	},2000);
 }
-
-/*!
- * Scroll Sneak
- * http://mrcoles.com/scroll-sneak/
- *
- * Copyright 2010, Peter Coles
- * Licensed under the MIT licenses.
- * http://mrcoles.com/media/mit-license.txt
- *
- * Date: Mon Mar 8 10:00:00 2010 -0500
- */
-var ScrollSneak = function(prefix, wait) {
-	// clean up arguments (allows prefix to be optional - a bit of overkill)
-	if (typeof(wait) == 'undefined' && prefix === true) prefix = null, wait = true;
-	prefix = (typeof(prefix) == 'string' ? prefix : window.location.host).split('_').join('');
-	var pre_name;
-
-	// scroll function, if window.name matches, then scroll to that position and clean up window.name
-	this.scroll = function() {
-		if (window.name.search('^'+prefix+'_(\\d+)_(\\d+)_') == 0) {
-			var name = window.name.split('_');
-			window.scrollTo(name[1], name[2]);
-			window.name = name.slice(3).join('_');
-		}
-	}
-	// if not wait, scroll immediately
-	if (!wait) this.scroll();
-
-	this.sneak = function() {
-		// prevent multiple clicks from getting stored on window.name
-		if (typeof(pre_name) == 'undefined') pre_name = window.name;
-		// get the scroll positions
-		var top = 0, left = 0;
-		if (typeof(window.pageYOffset) == 'number') { // netscape
-			top = window.pageYOffset, left = window.pageXOffset;
-		} else if (document.body && (document.body.scrollLeft || document.body.scrollTop)) { // dom
-			top = document.body.scrollTop, left = document.body.scrollLeft;
-		} else if (document.documentElement && (document.documentElement.scrollLeft || document.documentElement.scrollTop)) { // ie6
-			top = document.documentElement.scrollTop, left = document.documentElement.scrollLeft;
-		}
-		// store the scroll
-		if (top || left) window.name = prefix + '_' + left + '_' + top + '_' + pre_name;
-		return true;
-	}
-}
-
 $(document).ready(function(){
-	// Scroll to function for a page reload
-	(function() {
-		sneaky = new ScrollSneak(location.hostname);
-	})();
-
 	$('#notes').each(function(){
 		$(this).before('<button type="button" id="editbtn"></button>');
 		if($(this).val()!=''){
@@ -292,9 +239,6 @@ function CoordinateRow(slot,front){
 		h.val(((hval!='undefined' && rrow.data('change'))?hval:slots[front][slot].H));
 	}
 
-	// Update change status on the row assholes clicking buttons multiple times
-	row.data('change',rrow.data('change'));
-
 	edit.on('click',function(){
 		$(this).closest('#coordstable').find('.table > div').removeClass('greybg');
 		var templateimage=$(this).closest('#coordstable').prev('div').children('#previewimage').children('img');
@@ -385,25 +329,18 @@ function buildportstable(){
 	var ports=[];
 
 	function buildrow(TemplatePortObj){
-		var rrow=$('.table input[name=label'+TemplatePortObj.PortNumber+']').parent('div').parent('div');
-		var pn=TemplatePortObj.PortNumber;
-		var label=(rrow.data('change'))?rrow.find('input[name^=label]').val():(typeof TemplatePortObj.Label=='undefined')?'':TemplatePortObj.Label;
-		var mt=(rrow.data('change'))?rrow.find('select[name^=mt]').val():(typeof TemplatePortObj.MediaID=='undefined')?'0':TemplatePortObj.MediaID;
-		var c=(rrow.data('change'))?rrow.find('select[name^=cc]').val():(typeof TemplatePortObj.ColorID=='undefined')?'0':TemplatePortObj.ColorID;
-		var n=(rrow.data('change'))?rrow.find('input[name^=portnotes]').val():(typeof TemplatePortObj.PortNotes=='undefined')?'':TemplatePortObj.PortNotes;
+		var pn=(typeof TemplatePortObj.PortNumber=='undefined')?'':TemplatePortObj.PortNumber;
+		var label=(typeof TemplatePortObj.Label=='undefined')?'':TemplatePortObj.Label;
+		var mt=(typeof TemplatePortObj.MediaID=='undefined')?'0':TemplatePortObj.MediaID;
+		var c=(typeof TemplatePortObj.ColorID=='undefined')?'0':TemplatePortObj.ColorID;
+		var n=(typeof TemplatePortObj.PortNotes=='undefined')?'':TemplatePortObj.PortNotes;
 
 		var row=$('<div>').
 			append($('<div>').html(pn)).
 			append($('<div>').html($('<input>').val(label).text(label).attr('name','label'+pn))).
 			append($('<div>').html(mediatypes.clone().val(mt).attr('name','mt'+pn))).
 			append($('<div>').html(colorcodes.clone().val(c).attr('name','cc'+pn))).
-			append($('<div>').html($('<input>').val(n).text(n).attr('name','portnotes'+pn))).
-			data('change',((rrow.data('change'))?true:false));
-
-		// mark the port as changed to snag manual entries
-		row.find('input,select').on('change keyup',function(){
-			row.data('change',true);
-		});
+			append($('<div>').html($('<input>').val(n).text(n).attr('name','portnotes'+pn)));
 
 		return row;
 	}
@@ -916,7 +853,7 @@ function LameLogDisplay(){
 		});
 	});
 	// the tabs are to match the existing page layout
-	$('.caption').last().append("\t\t").append(test);
+	$('.caption').append("\t\t").append(test);
 }
 
 // ENG - Logging functions
@@ -1174,8 +1111,7 @@ function LameLogDisplay(){
 	// searchable combobox
 	$.widget( "custom.combobox", {
 		_create: function() {
-			this.element.parent(0).width($(this.element.parent(0)).width());
-			this.wrapper=$("<span>").width(this.element.parent(0).width()-3).addClass("custom-combobox").insertAfter(this.element);
+			this.wrapper=$("<span>").addClass("custom-combobox").insertAfter(this.element);
 
 			if(this.element.is(":visible")){ 
 				this.element.hide();
@@ -1187,8 +1123,8 @@ function LameLogDisplay(){
 		_createAutocomplete: function() {
 			var selected=this.element.children(":selected"),
 				value=selected.val()?selected.text():"";
-
-			this.input=$("<input>").css('width',this.wrapper.width()-24+'px').appendTo(this.wrapper).val(value).attr("title","")
+ 
+			this.input=$("<input>").appendTo(this.wrapper).val(value).attr("title","")
 				.addClass("custom-combobox-input ui-widget ui-widget-content ui-state-default")
 				.autocomplete({
 					delay: 0,
@@ -1218,7 +1154,7 @@ function LameLogDisplay(){
  
 			$("<a>").attr("tabIndex", -1)
 				.height($(this.wrapper).children('input').height())
-				.css({'width':'18px','vertical-align':'top','padding':$(this.wrapper).children('input').css('padding')})
+				.css({'vertical-align':'top','padding':$(this.wrapper).children('input').css('padding')})
 				.tooltip()
 				.appendTo(this.wrapper)
 				.button({icons:{primary: "ui-icon-triangle-1-s"},text: false})
@@ -1238,9 +1174,8 @@ function LameLogDisplay(){
  
 		_source: function(request,response){
 			var matcher=new RegExp( $.ui.autocomplete.escapeRegex(request.term), "i" );
-			var cachetest=this.element.children("option");
-			response(cachetest.map(function() {
-				var text=this.text;
+			response(this.element.children("option").map(function() {
+				var text=$(this).text();
 				if(this.value && (!request.term || matcher.test(text))){
 					return {
 						label: text,
@@ -1449,10 +1384,6 @@ function LameLogDisplay(){
 
 				// Retreive the path
 				$.get('',{path: '', ConnectedDeviceID: row.cdevice.data('default'), ConnectedPort: row.cdeviceport.data('default')}).done(function(data){
-					if(data[(data.length - 1)].DeviceID ==$('#deviceid').val() && data.length==2){
-						// remove the last item in the chain to prevent a display loop if a device is only connected to a patch panel and nothing else
-						data.pop();
-					}
 					$.each(data, function(port){
 						// Add the next link in the chain
 						row.pathrow.path.append(makespan(data[port].DeviceName,(data[port].Label=='')?Math.abs(data[port].PortNumber):data[port].Label));
@@ -1489,18 +1420,10 @@ function LameLogDisplay(){
 				});
 
 				$.each(data, function(devid,device){
-/*
-					var rack=$('#datacenters a[href$="cabinetid='+device.CabinetID+'"]');
-					var dc=rack.parentsUntil('li[id^=dc]').last().prev('a').text();
-					devlist.append('<option value='+device.DeviceID+'>'+dc+' '+rack.text()+' '+device.Label+'</option>');
-*/
 					devlist.append('<option value='+device.DeviceID+'>'+device.Label+'</option>');
 				});
 				target.html(devlist).find('select').val(target.data('default'));
-				// if more than 2200 items returned don't use the combo box. we can look at this number later
-				if(data.length<2200){
-					devlist.combobox();
-				}
+				devlist.combobox();
 				devlist.change();
 			});
 
@@ -1532,7 +1455,6 @@ function LameLogDisplay(){
 					row.porttype.children('select').val($(this).data($(this).val()).MediaID);
 					row.portcolor.children('select').val($(this).data($(this).val()).ColorID);
 				});
-				// set the value of the select list to the current connection
 				if(rear){
 					row.rdeviceport.html(portlist).find('select').val(row.rdeviceport.data('default'));
 				}else{
@@ -1725,18 +1647,23 @@ function LameLogDisplay(){
 
 		destroy: function(check) {
 			var row=this;
-
 			function front(){
 				$.post('',{getport: '',swdev: $('#deviceid').val(),pnum: row.portnum}).done(function(data){
 					row.ct.css('padding','');
 					row.portname.html(data.Label).data('default',data.Label);
 					row.cdevice.html('<a href="devices.php?deviceid='+data.ConnectedDeviceID+'">'+data.ConnectedDeviceLabel+'</a>').data('default',data.ConnectedDeviceID);
-					data.ConnectedPortLabel=(data.ConnectedPortLabel==null)?'':data.ConnectedPortLabel;
+					if (data.ConnectedPort <0 ) {
+						rearb=' (rear)';
+					}
+					if (data.ConnectedPortLabel!=null) {
+						data.ConnectedPortLabel = data.ConnectedPortLabel + rearb ;
+					}
+					data.ConnectedPortLabel=(data.ConnectedPortLabel==null)?'':data.ConnectedPort + rearb;
 					row.cdeviceport.html('<a href="paths.php?deviceid='+data.ConnectedDeviceID+'&portnumber='+data.ConnectedPort+'">'+data.ConnectedPortLabel+'</a>').data('default',data.ConnectedPort);
 					row.cnotes.html(data.Notes).data('default',data.Notes);
 					row.porttype.html(data.MediaName).data('default',data.MediaID);
 					row.portcolor.html(data.ColorName).data('default',data.ColorID);
-					$(row.element[0]).children('div ~ div:not([id^=sp])').removeAttr('style');
+					$(row.element[0]).children('div ~ div + div').removeAttr('style');
 					// Attempt to show mass edit controls
 					$('.switch.table, .patchpanel.table').massedit('show');
 					if(data.ConnectedDeviceType=='Patch Panel'){
@@ -1749,7 +1676,13 @@ function LameLogDisplay(){
 
 			function rear(){
 				$.post('',{getport: '',swdev: $('#deviceid').val(),pnum: row.portnum*-1}).done(function(data){
-					data.ConnectedPortLabel=(data.ConnectedPortLabel==null)?'':data.ConnectedPortLabel;
+					if (data.ConnectedPort <0 ) {
+						rearb=' (rear)';
+					}
+					if (data.ConnectedPortLabel!=null) {
+						data.ConnectedPortLabel = data.ConnectedPortLabel + rearb ;
+					}
+					data.ConnectedPortLabel=(data.ConnectedPortLabel==null)?'':data.ConnectedPort + rearb ;
 					row.rdevice.html('<a href="devices.php?deviceid='+data.ConnectedDeviceID+'">'+data.ConnectedDeviceLabel+'</a>').data('default',data.ConnectedDeviceID);
 					row.rdeviceport.html('<a href="paths.php?deviceid='+data.ConnectedDeviceID+'&portnumber='+data.ConnectedPort+'">'+data.ConnectedPortLabel+'</a>').data('default',data.ConnectedPort);
 					row.rnotes.html(data.Notes).data('default',data.Notes);

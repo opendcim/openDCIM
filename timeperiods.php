@@ -2,8 +2,6 @@
 	require_once( 'db.inc.php' );
 	require_once( 'facilities.inc.php' );
 
-	$subheader=__("Data Center Time Periods Listing");
-
 	if(!$user->ContactAdmin){
 		// No soup for you.
 		header('Location: '.redirect());
@@ -24,7 +22,7 @@
 						break;
 					case 'Update':
 						$period->TimePeriod=$_POST['timeperiod'];
-						$status=__("Updated");
+						$status=__('Updated');
 						$period->UpdatePeriod();
 						break;
 					case 'Delete':
@@ -54,12 +52,14 @@
   <script type="text/javascript" src="scripts/jquery-ui.min.js"></script>
 </head>
 <body>
-<?php include( 'header.inc.php' ); ?>
+<div id="header"></div>
 <div class="page">
 <?php
 	include( 'sidebar.inc.php' );
 
 echo '<div class="main">
+<h2>',$config->ParameterArray["OrgName"],'</h2>
+<h3>',__("Data Center Time Periods Listing"),'</h3>
 <h3>',$status,'</h3>
 <div class="center"><div>
 <form action="',$_SERVER["PHP_SELF"],'" method="POST">

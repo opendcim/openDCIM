@@ -2,8 +2,6 @@
 	require_once('db.inc.php');
 	require_once('facilities.inc.php');
 
-	$subheader=__("Data Center Department Detail");
-
 	if(!$user->ContactAdmin){
 		// No soup for you.
 		header('Location: '.redirect());
@@ -77,11 +75,13 @@ function showgroup(obj){
 </script>
 </head>
 <body>
-<?php include( 'header.inc.php' ); ?>
+<div id="header"></div>
 <div class="page">
 <?php
 	include( 'sidebar.inc.php' );
 	echo '<div class="main">
+<h2>',$config->ParameterArray["OrgName"],'</h2>
+<h3>',__("Data Center Department Detail"),'</h3>
 <div class="center"><div>
 <form action="',$_SERVER["PHP_SELF"],'" method="POST">
 <div class="table centermargin">

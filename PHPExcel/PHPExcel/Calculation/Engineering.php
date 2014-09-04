@@ -2,7 +2,7 @@
 /**
  * PHPExcel
  *
- * Copyright (c) 2006 - 2014 PHPExcel
+ * Copyright (c) 2006 - 2012 PHPExcel
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -20,9 +20,9 @@
  *
  * @category	PHPExcel
  * @package		PHPExcel_Calculation
- * @copyright	Copyright (c) 2006 - 2014 PHPExcel (http://www.codeplex.com/PHPExcel)
+ * @copyright	Copyright (c) 2006 - 2012 PHPExcel (http://www.codeplex.com/PHPExcel)
  * @license		http://www.gnu.org/licenses/old-licenses/lgpl-2.1.txt	LGPL
- * @version		1.8.0, 2014-03-02
+ * @version		1.7.8, 2012-10-12
  */
 
 
@@ -45,7 +45,7 @@ define('EULER', 2.71828182845904523536);
  *
  * @category	PHPExcel
  * @package		PHPExcel_Calculation
- * @copyright	Copyright (c) 2006 - 2014 PHPExcel (http://www.codeplex.com/PHPExcel)
+ * @copyright	Copyright (c) 2006 - 2012 PHPExcel (http://www.codeplex.com/PHPExcel)
  */
 class PHPExcel_Calculation_Engineering {
 
@@ -741,6 +741,8 @@ class PHPExcel_Calculation_Engineering {
 
 
 	/**
+	 * _cleanComplex
+	 *
 	 * Cleans the leading characters in a complex number string
 	 *
 	 * @param	string		$complexNumber	The complex number to clean
@@ -754,24 +756,19 @@ class PHPExcel_Calculation_Engineering {
 		return $complexNumber;
 	}
 
-	/**
-	 * Formats a number base string value with leading zeroes
-	 *
-	 * @param	string		$xVal		The "number" to pad
-	 * @param	integer		$places		The length that we want to pad this value
-	 * @return	string		The padded "number"
-	 */
-	private static function _nbrConversionFormat($xVal, $places) {
+
+	private static function _nbrConversionFormat($xVal,$places) {
 		if (!is_null($places)) {
 			if (strlen($xVal) <= $places) {
-				return substr(str_pad($xVal, $places, '0', STR_PAD_LEFT), -10);
+				return substr(str_pad($xVal,$places,'0',STR_PAD_LEFT),-10);
 			} else {
 				return PHPExcel_Calculation_Functions::NaN();
 			}
 		}
 
-		return substr($xVal, -10);
+		return substr($xVal,-10);
 	}	//	function _nbrConversionFormat()
+
 
 	/**
 	 *	BESSELI
@@ -1935,7 +1932,7 @@ class PHPExcel_Calculation_Engineering {
 	/**
 	 * IMLOG2
 	 *
-	 * Returns the base-2 logarithm of a complex number in x + yi or x + yj text format.
+	 * Returns the common logarithm (base 10) of a complex number in x + yi or x + yj text format.
 	 *
 	 * Excel Function:
 	 *		IMLOG2(complexNumber)
@@ -2359,6 +2356,7 @@ class PHPExcel_Calculation_Engineering {
 	 *	Returns an array of units of measure, for a specified conversion group, or for all groups
 	 *
 	 *	@param	string	$group	The group whose units of measure you want to retrieve
+	 *
 	 *	@return	array
 	 */
 	public static function getConversionGroupUnits($group = NULL) {
@@ -2375,7 +2373,6 @@ class PHPExcel_Calculation_Engineering {
 	/**
 	 *	getConversionGroupUnitDetails
 	 *
-	 *	@param	string	$group	The group whose units of measure you want to retrieve
 	 *	@return	array
 	 */
 	public static function getConversionGroupUnitDetails($group = NULL) {

@@ -556,14 +556,14 @@ class DataCenter {
 			}
 			
 			//Key
-			$overview['title']=__("Composite View of Cabinets");
-			$space['title']=__("Occupied Space");
-			$weight['title']=__("Calculated Weight");
-			$power['title']=__("Calculated Power Usage");
+			$overview['title']=__("Worst state of cabinets");
+			$space['title']=__("Occupied space");
+			$weight['title']=__("Calculated weight");
+			$power['title']=__("Calculated power usage");
 			$temperature['title']=($titletemp>0)?__("Measured on")." ".$titletemp:__("no data");
 			$humidity['title']=($titletemp>0)?__("Measured on")." ".$titletemp:__("no data");
 			$realpower['title']=($titlerp>0)?__("Measured on")." ".$titlerp:__("no data");
-			$airflow['title']=__("Air Flow");
+			$airflow['title']=__("Air flow");
 
 			$statusarray=array('overview' => $overview,
 								'space' => $space,
@@ -615,17 +615,7 @@ class DataCenter {
 			a.TemplateID=c.TemplateID AND a.NominalWatts=0 AND 
 			b.DataCenterID=$this->DataCenterID;";
 		$dcStats["ComputedWatts"]+=($test=$this->query($sql)->fetchColumn())?$test:0;
-
-		$sql="SELECT AVG(a.Temp) as AvgTemp FROM fac_CabinetTemps a, fac_Cabinet b
-			WHERE a.CabinetID=b.CabinetID AND
-			b.DataCenterID=$this->DataCenterID;";
-		$dcStats["AvgTemp"]=($test=round($this->query($sql)->fetchColumn()))?$test:0;
-
-		$sql="SELECT AVG(a.Humidity) as AvgHumidity FROM fac_CabinetTemps a, fac_Cabinet b
-			WHERE a.CabinetID=b.CabinetID AND
-			b.DataCenterID=$this->DataCenterID;";
-		$dcStats["AvgHumidity"]=($test=round($this->query($sql)->fetchColumn()))?$test:0;
-
+		
 		$pdu=new PowerDistribution();
 		$dcStats["MeasuredWatts"]=$pdu->GetWattageByDC($this->DataCenterID);
 		
@@ -819,10 +809,6 @@ class DeviceTemplate {
   
 	function DeleteTemplate(){
 		$this->MakeSafe();
-
-		// If we're removing the template clean up the children
-		$this->DeleteSlots();
-		$this->DeletePorts();
 
 		$sql="DELETE FROM fac_DeviceTemplate WHERE TemplateID=$this->TemplateID;";
 		(class_exists('LogActions'))?LogActions::LogThis($this):'';
@@ -1298,7 +1284,7 @@ class Manufacturer {
 
 		$old=new Manufacturer();
 		$old->ManufacturerID=$this->ManufacturerID;
-		$old->GetManufacturerByID();
+		$old->GetManufacturer();
 
 		$this->MakeDisplay();
 		(class_exists('LogActions'))?LogActions::LogThis($this,$old):'';
@@ -1624,7 +1610,15 @@ class Zone {
 		
 		$this->MakeSafe();
 		
-		//update all cabinets in this zone
+		//delete CabRows in this zone
+		$cabrow=new CabRow();
+		$cabrow->ZoneID=$this->ZoneID;
+		$cabrowlist=$cabrow->GetCabRowsByZones();
+		foreach($cabrowlist as $cabRow){
+			$cabRow->DeleteCabRow();
+		}
+
+		//update any remaining cabinets in this zone that weren't part of rows
 		$cabinet=new Cabinet();
 		$cabinet->ZoneID=$this->ZoneID;
 		$cabinetList=$cabinet->GetCabinetsByZone();
@@ -1632,14 +1626,6 @@ class Zone {
 			$cab->CabRowID=0;
 			$cab->ZoneID=0;
 			$cab->UpdateCabinet();
-		}
-
-		//delete CabRows in this zone
-		$cabrow=new CabRow();
-		$cabrow->ZoneID=$this->ZoneID;
-		$cabrowlist=$cabrow->GetCabRowsByZones();
-		foreach($cabrowlist as $cabRow){
-			$cabRow->DeleteCabRow();
 		}
 
 		//delete zone
@@ -1732,14 +1718,6 @@ class Zone {
 			(SELECT CabinetID FROM fac_Cabinet WHERE ZoneID=$this->ZoneID))";
 		$zoneStats["MeasuredWatts"]=($test=$this->query($sql)->fetchColumn())?$test:0;
 		
-		$sql="SELECT AVG(a.Temp) AS AvgTemp FROM fac_CabinetTemps a, fac_Cabinet b WHERE
-			a.CabinetID=b.CabinetID AND b.ZoneID=$this->ZoneID;";
-		$zoneStats["AvgTemp"]=($test=round($this->query($sql)->fetchColumn()))?$test:0;
-
-		$sql="SELECT AVG(a.Humidity) AS AvgHumitdity FROM fac_CabinetTemps a, fac_Cabinet b WHERE
-			a.CabinetID=b.CabinetID AND b.ZoneID=$this->ZoneID;";
-		$zoneStats["AvgHumidity"]=($test=round($this->query($sql)->fetchColumn()))?$test:0;
-
 		return $zoneStats;
 	}
 }
@@ -1877,30 +1855,16 @@ class CabRow {
 		return $cabrowList;
 	}
 
-	function GetCabRowFrontEdge($layout=""){
+	function GetCabRowFrontEdge(){
 		//It returns the FrontEdge of most cabinets
 		$this->MakeSafe();
 
-		// If we know for sure a row is horizontal or vertical this will further limit
-		// the results to valid faces only
-		if($layout){
-			if($layout=="Horizontal"){
-				// top / bottom
-				$layout=" AND (FrontEdge='Bottom' OR FrontEdge='Top')";
-			}else{
-				// right / left
-				$layout=" AND (FrontEdge='Right' OR FrontEdge='Left')";
-			}
-		}
-
-		$sql="SELECT FrontEdge, count(*) as CabCount FROM fac_Cabinet WHERE 
-			CabRowID=$this->CabRowID$layout GROUP BY FrontEdge ORDER BY CabCount DESC 
-			LIMIT 1;";
+		$sql="SELECT FrontEdge, count(*) as num FROM fac_Cabinet WHERE 
+			CabRowID=$this->CabRowID GROUP BY FrontEdge ORDER BY num DESC LIMIT 1;";
 
 		if($cabinetRow=$this->query($sql)->fetch()){
 			return $cabinetRow["FrontEdge"];
 		}
-
 		return "";
 	}
 }  //END OF CLASS CabRow
@@ -2154,16 +2118,16 @@ class Container {
 					if (is_null($container->MapX) || $container->MapX==0 
 						|| is_null($container->MapY) || $container->MapY==0 ){
 						$mapHTML.="<div>\n";
-						$mapHTML.="<a title=\"$container->Name\" href=\"container_stats.php?container=$container->ContainerID\">";
-						$mapHTML.="<br><div style='background-color: #dcdcdc;'>$container->Name</div></a>";
+						$mapHTML.="<a title=\"".$container->Name."\" href=\"container_stats.php?container=".$cID."\">";
+						$mapHTML.="<br><div style='background-color: #dcdcdc;'>".$container->Name."</div></a>";
 						$mapHTML.= "</div>\n";
 						}
 					else {
 						$mapHTML.="<div style='position:absolute; top:".($container->MapY-$tam/2)."px; left:".($container->MapX-$tam/2)."px;'>\n";
-						$mapHTML.="<a title=\"$container->Name\" href=\"container_stats.php?container=$container->ContainerID\">";
+						$mapHTML.="<a title=\"".$container->Name."\" href=\"container_stats.php?container=".$cID."\">";
 						$mapHTML.="<img src=\"images/Container.png\" width=$tam height=$tam alt=\"Container\">\n</div>\n";
 						$mapHTML.="<div style='position:absolute; top:".($container->MapY+$tam/2)."px; left:".($container->MapX-$tam/2)."px; background-color: #dcdcdc;'>";
-						$mapHTML.="<a title=\"$container->Name\" href=\"container_stats.php?container=$container->ContainerID\">";
+						$mapHTML.="<a title=\"".$container->Name."\" href=\"container_stats.php?container=".$cID."\">";
 						$mapHTML.= $container->Name."</a></div>";
 					}
 				}
@@ -2218,14 +2182,14 @@ class Container {
 				while ( list( $cID, $container ) = each( $cList ) ) {
 					if ((is_null($container->MapX) || $container->MapX<0 || $container->MapX>$width 
 						|| is_null($container->MapY) || $container->MapY<0 || $container->MapY>$height)
-						&& $tipo=="container" && $id==$container->ContainerID ){
+						&& $tipo=="container" && $id==$cID ){
 							$mapHTML.="<div id='yo' hidden style='position:absolute;'>\n";
 							$mapHTML.="<img src=\"images/Container.png\" width=$tam height=$tam alt=\"Container\">\n</div>\n";
 							$yo_ok=true;
 						}
 					else {
 						
-						if ($tipo=="container" && $id==$container->ContainerID) {
+						if ($tipo=="container" && $id==$cID) {
 							$mapHTML.="<div id='yo' style='position:absolute; top:".($container->MapY*$red-$tam/2)."px; left:".($container->MapX*$red-$tam/2)."px;'>\n";
 							$mapHTML.="<img src=\"images/Container.png\" width=$tam height=$tam alt=\"Container\">\n</div>\n";
 							$yo_ok=true;

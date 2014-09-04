@@ -83,7 +83,7 @@
 		}
 		return $level;
 	}
-	
+
 	$menu=buildmenu(array_merge_recursive($rmenu,$rrmenu,$camenu,$wamenu,$samenu));
 	
 	print "<ul class=\"nav\">$menu</ul>
@@ -137,10 +137,6 @@ $('#searchadv ~ select[name="key"]').change(function(){
 	addlookup($('#searchadv'),$(this).val())
 }).height($('#searchadv').outerHeight());
 
-// Really long cabinet / zone / dc combinations are making the screen jump around.
-// If they make this thing so big it's unusable, fuck em.
-$('#sidebar > hr ~ div').css({'width':$('#sidebar > hr ~ ul').width()+'px','overflow':'hidden'});
-
 function resize(){
 	// This function will run each 500ms for 2.5s to account for slow loading content
 	var count=0;
@@ -165,20 +161,10 @@ function resize(){
 		$('#configtabs > ul ~ div').each(function(){
 			$(this).width(widesttab);
 		});
-
-		// edge case where a ridiculously long device type can expand the field selector out too far
-		var rdivwidth=$('div.right').outerWidth();
-		$('div.right fieldset').each(function(){
-			rdivwidth=($(this).outerWidth()>rdivwidth)?$(this).outerWidth():rdivwidth;
-		});
-		// offset for being centered
-		rdivwidth=(rdivwidth>495)?(rdivwidth-495)+rdivwidth:rdivwidth;
-
 		var pnw=$('#pandn').outerWidth(),hw=$('#header').outerWidth(),maindiv=$('div.main').outerWidth(),
-			sbw=$('#sidebar').outerWidth(),width,mw=$('div.left').outerWidth()+rdivwidth+20,
+			sbw=$('#sidebar').outerWidth(),width,mw=$('div.left').outerWidth()+$('div.right').outerWidth()+20,
 			main,cw=$('.main > .center').outerWidth();
 		widesttab+=58;
-
 		// find widths
 		width=(cw>mw)?cw:mw;
 		main=(pnw>width)?pnw:width; // Find the largest width of possible content in maindiv

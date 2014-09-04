@@ -2,10 +2,8 @@
 	require_once( 'db.inc.php' );
 	require_once( 'facilities.inc.php' );
 	require_once( 'swiftmailer/swift_required.php' );
-
-	$subheader=__("Data Center Rack Request");
 	
-	if($config->ParameterArray["RackRequests"] != "enabled" || !$user->RackRequest){
+	if(!$user->RackRequest){
 		// No soup for you.
 		header('Location: '.redirect());
 		exit;
@@ -326,12 +324,14 @@ print "			$('#deviceform').validationEngine({'custom_error_messages' : {
 
 </head>
 <body>
-<?php include( 'header.inc.php' ); ?>
+<div id="header"></div>
 <div class="page request">
 <?php
     include('sidebar.inc.php');
 
-echo '<div class="main">';
+echo '<div class="main">
+<h2>',$config->ParameterArray['OrgName'],'</h2>
+<h3>',__("Data Center Rack Request"),'</h3>';
 
 if($error!=""){echo '<fieldset class="exception border error"><legend>Errors</legend>'.$error.'</fieldset>';}
 

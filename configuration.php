@@ -1,11 +1,6 @@
 <?php
-	// Allow the installer to link to the config page
-	$devMode=true;
-
 	require_once( "db.inc.php" );
 	require_once( "facilities.inc.php" );
-
-	$subheader=__("Data Center Configuration");
 
 	if(!$user->SiteAdmin){
 		// No soup for you.
@@ -805,7 +800,7 @@
 
 		// Reporting - Utilities
 
-		$('input[id^="snmp"],input[id="cut"],input[id="dot"]').each(function(){
+		$('input[id^="snmp"],input[id="cut"]').each(function(){
 			var a=$(this);
 			var icon=$('<span>',{style: 'float:right;margin-top:5px;'}).addClass('ui-icon').addClass('ui-icon-info');
 			a.parent('div').append(icon);
@@ -828,12 +823,15 @@
   </script>
 </head>
 <body>
-<?php include( 'header.inc.php' ); ?>
+<div id="header"></div>
 <div class="page config">
 <?php
 	include( "sidebar.inc.php" );
 
 echo '<div class="main">
+<h2>',$config->ParameterArray["OrgName"],'</h2>
+<h3>',__("Data Center Configuration"),'</h3>
+<h3>',__("Database Version"),': ',$config->ParameterArray["Version"],'</h3>
 <div class="center"><div>
 <form enctype="multipart/form-data" action="',$_SERVER["PHP_SELF"],'" method="POST">
    <input type="hidden" name="Version" value="',$config->ParameterArray["Version"],'">
@@ -841,7 +839,6 @@ echo '<div class="main">
 	<div id="configtabs">
 		<ul>
 			<li><a href="#general">',__("General"),'</a></li>
-			<li><a href="#workflow">',__("Workflow"),'</a></li>
 			<li><a href="#style">',__("Style"),'</a></li>
 			<li><a href="#email">',__("Email"),'</a></li>
 			<li><a href="#reporting">',__("Reporting"),'</a></li>
@@ -915,6 +912,21 @@ echo '<div class="main">
 					<div><input type="text" defaultvalue="',$config->defaults["UserLookupURL"],'" name="UserLookupURL" value="',$config->ParameterArray["UserLookupURL"],'"></div>
 				</div>
 			</div> <!-- end table -->
+			<h3>',__("Rack Requests"),'</h3>
+			<div class="table">
+				<div>
+					<div><label for="MailSubject">',__("Mail Subject"),'</label></div>
+					<div><input type="text" defaultvalue="',$config->defaults["MailSubject"],'" name="MailSubject" value="',$config->ParameterArray["MailSubject"],'"></div>
+				</div>
+				<div>
+					<div><label for="RackWarningHours">',__("Warning (Hours)"),'</label></div>
+					<div><input type="text" defaultvalue="',$config->defaults["RackWarningHours"],'" name="RackWarningHours" value="',$config->ParameterArray["RackWarningHours"],'"></div>
+				</div>
+				<div>
+					<div><label for="RackOverdueHours">',__("Critical (Hours)"),'</label></div>
+					<div><input type="text" defaultvalue="',$config->defaults["RackOverdueHours"],'" name="RackOverdueHours" value="',$config->ParameterArray["RackOverdueHours"],'"></div>
+				</div>
+			</div> <!-- end table -->
 			<h3>',__("Rack Usage"),'</h3>
 			<div class="table" id="rackusage">
 				<div>
@@ -968,41 +980,6 @@ echo '<div class="main">
 				</div>
 			</div> <!-- end table -->
 			',$tzmenu,'
-		</div>
-		<div id="workflow">
-			<div class="table">
-				<div>
-					<div><label for="WorkOrderBuilder">',__("Work Order Builder"),'</label></div>
-					<div><select id="WorkOrderBuilder" name="WorkOrderBuilder" defaultvalue="',$config->defaults["WorkOrderBuilder"],'" data="',$config->ParameterArray["WorkOrderBuilder"],'">
-							<option value="disabled">',__("Disabled"),'</option>
-							<option value="enabled">',__("Enabled"),'</option>
-						</select>
-					</div>
-				</div>
-			</div> <!-- end table -->
-			<h3>',__("Rack Requests"),'</h3>
-			<div class="table">
-				<div>
-					<div><label for="RackRequests">',__("Rack Requests"),'</label></div>
-					<div><select id="RackRequests" name="RackRequests" defaultvalue="',$config->defaults["RackRequests"],'" data="',$config->ParameterArray["RackRequests"],'">
-							<option value="disabled">',__("Disabled"),'</option>
-							<option value="enabled">',__("Enabled"),'</option>
-						</select>
-					</div>
-				</div>
-				<div>
-					<div><label for="MailSubject">',__("Mail Subject"),'</label></div>
-					<div><input type="text" defaultvalue="',$config->defaults["MailSubject"],'" name="MailSubject" value="',$config->ParameterArray["MailSubject"],'"></div>
-				</div>
-				<div>
-					<div><label for="RackWarningHours">',__("Warning (Hours)"),'</label></div>
-					<div><input type="text" defaultvalue="',$config->defaults["RackWarningHours"],'" name="RackWarningHours" value="',$config->ParameterArray["RackWarningHours"],'"></div>
-				</div>
-				<div>
-					<div><label for="RackOverdueHours">',__("Critical (Hours)"),'</label></div>
-					<div><input type="text" defaultvalue="',$config->defaults["RackOverdueHours"],'" name="RackOverdueHours" value="',$config->ParameterArray["RackOverdueHours"],'"></div>
-				</div>
-			</div> <!-- end table -->
 		</div>
 		<div id="style">
 			<h3>',__("Racks & Maps"),'</h3>
@@ -1188,10 +1165,6 @@ echo '<div class="main">
 				<div>
 					<div><label for="cut">',__("cut"),'</label></div>
 					<div><input type="text" defaultvalue="',$config->defaults["cut"],'" name="cut" value="',$config->ParameterArray["cut"],'"></div>
-				</div>
-				<div>
-					<div><label for="dot">',__("dot"),'</label></div>
-					<div><input type="text" defaultvalue="',$config->defaults["dot"],'" name="dot" value="',$config->ParameterArray["dot"],'"></div>
 				</div>
 			</div> <!-- end table -->
 		</div>

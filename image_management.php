@@ -2,8 +2,6 @@
 	require_once('db.inc.php');
 	require_once('facilities.inc.php');
 
-	$subheader=__("OpenDCIM Image File Management");
-
 	$timestamp=time();
 	$salt=md5('unique_salt' . $timestamp);
 
@@ -43,16 +41,18 @@
   
   <script type="text/javascript" src="scripts/jquery.min.js"></script>
   <script type="text/javascript" src="scripts/jquery-ui.min.js"></script>
-  <script type="text/javascript" src="scripts/jquery.uploadifive.js"></script>
+  <script type="text/javascript" src="scripts/jquery.uploadifive.min.js"></script>
   <script type="text/javascript" src="scripts/common.js"></script>
 </head>
 <body>
-<?php include( 'header.inc.php' ); ?>
+<div id="header"></div>
 <div class="page imagem">
 <?php
 	include( 'sidebar.inc.php' );
 ?>
 <div class="main">
+<h2><?php echo $config->ParameterArray['OrgName']; ?></h2>
+<h2><?php echo __("OpenDCIM Image File Management");?></h2>
 
 <?php
 // Only show the device pictures if they have global write access or site admin.
