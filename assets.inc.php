@@ -1098,6 +1098,7 @@ class Device {
 	var $HalfDepth;
 	var $BackSide;
 	var $AuditStamp;
+	var $CustomValues;
 
 	function MakeSafe() {
 		if ( ! is_object( $this ) ) {
@@ -1197,6 +1198,7 @@ class Device {
 		$dev->HalfDepth=$dbRow["HalfDepth"];
 		$dev->BackSide=$dbRow["BackSide"];
 		$dev->AuditStamp=$dbRow["AuditStamp"];
+		$dev->GetCustomValues();
 		
 		$dev->MakeDisplay();
 		if($filterrights){
@@ -1340,7 +1342,11 @@ class Device {
 				// Make sure the position updated before creating a new device
 				if((isset($pos) && $pos!=$this->Position) || !is_null($clonedparent)){
 					(!is_null($clonedparent))?$this->ParentDevice=$clonedparent:'';
+					$olddev=new Device();
+					$olddev->DeviceID=$this->DeviceID;
+					$olddev->GetDevice();
 					$this->CreateDevice();
+					$olddev->CopyDeviceCustomValues($this);
 				}else{
 					return false;
 				}
@@ -1358,8 +1364,13 @@ class Device {
 				$childList=$this->GetDeviceChildren();
 			}	
 
+			$olddev=new Device();
+			$olddev->DeviceID=$this->DeviceID;
+			$olddev->GetDevice();
+
 			// And finally create a new device based on the exact same info
 			$this->CreateDevice();
+			$olddev->CopyDeviceCustomValues($this);
 
 			// If this is a chassis device and children are present clone them
 			if(isset($childList)){
@@ -1370,6 +1381,22 @@ class Device {
 
 		}
 		return true;
+	}
+
+	function CopyDeviceCustomValues($new) {
+		// in this context, "$this" is the old device we are copying from, "$new" is where we are copying to
+		global $dbh;
+		if($this->GetDevice() && $new->GetDevice()) {
+			$sql="INSERT INTO fac_DeviceCustomValue(DeviceID, AttributeID, Value) 
+				SELECT $new->DeviceID, dcv.AttributeID, dcv.Value FROM fac_DeviceCustomValue dcv WHERE dcv.DeviceID=$this->DeviceID;";
+
+			if(!$dbh->query($sql)){
+				$info=$dbh->errorInfo();
+				error_log("CopyDeviceCustomValues::PDO Error: {$info[2]} SQL=$sql");
+				return false;
+			}
+			return true;
+		} else { return false; }
 	}
 	
 	function Surplus() {
@@ -1829,6 +1856,7 @@ class Device {
 		$powercon=new PowerConnection();
 		$powercon->DeviceID=$this->DeviceID;
 		$powercon->DeleteConnections();
+		$this->DeleteCustomValues();
 
 		// Now delete the device itself
 		$sql="DELETE FROM fac_Device WHERE DeviceID=$this->DeviceID;";
@@ -2015,6 +2043,84 @@ class Device {
 		$sql .= "GROUP BY a.DeviceID HAVING COUNT(c.TagID) >= $num_want_tags";
 
 		//error_log(">> $sql\n");
+
+		$deviceList = array();
+
+		foreach($dbh->query($sql) as $deviceRow){
+			$deviceList[$deviceRow["DeviceID"]]=Device::RowToObject($deviceRow);
+		}
+		
+		return $deviceList;
+	}
+
+	function SearchByCustomAttribute($searchTerm=null){
+		global $dbh;
+		
+		//
+		//Build a somewhat ugly SQL expression in order to do 
+		//semi-complicated attribute searches.  All attributes are
+		//logically AND'ed togther.  Thus, if you search for attributes 
+		//'foo' and 'bar' and '!quux', the results should be only 
+		//those systems with both 'foo' and 'bar' attributes while 
+		//excluding those with 'quux'.
+		//
+
+		// Basic start of the query.
+		$sql = "SELECT DISTINCT a.* FROM fac_Device a, fac_DeviceCustomValue b WHERE a.DeviceID=b.DeviceID ";
+
+		//split the searchTerm if needed, and strip whitespace
+		//note that search terms can contain spaces, so we have to use
+		//something else in the search string (commas seem logical)
+		$terms = explode(",", $searchTerm);
+		$terms = array_map("trim", $terms);
+
+		//Two arrays, one of terms we want, and one of those we don't want.
+		$want_terms = array();
+		$not_want_terms = array();
+
+		foreach ( $terms as $t ) {
+			//If the term starts with a "!" character, we want to 
+			//specifically exclude it from the search.
+			if (strpos($t, '!') !== false ) {
+				$t=preg_replace('/^!/', '', $t,1);	//remove the leading "!" from the term
+			$not_want_terms[].= $t;
+			} else {
+				$want_terms[] .= $t;
+			}
+		}
+		/*
+		error_log(join(',',$want_terms));
+		error_log(join(',',$not_want_terms));
+		*/
+		$num_want_terms = count($want_terms);
+		if (count($want_terms)) {
+			// This builds the part of the query that looks for all terms we want.
+
+			$sql .= " AND a.DeviceID IN ( SELECT DeviceID from fac_DeviceCustomValue WHERE ";
+			// Loop over the terms  we want.
+			$want_sql = sprintf("UCASE(Value) LIKE UCASE('%%%s%%')", array_shift($want_terms));
+			foreach ($want_terms as $t) {
+				$want_sql .= sprintf(" OR UCASE(Value) LIKE UCASE('%%%s%%')", $t);
+			}
+
+			$sql .= " $want_sql ) "; //extra parens for closing sub-select
+
+		}
+
+		//only include this section if we have negative terms
+		if (count($not_want_terms)) {
+
+			$sql .= " AND a.DeviceID NOT IN (SELECT DeviceID from fac_DeviceCustomValue WHERE ";
+
+			$not_want_sql = sprintf("UCASE(Value) LIKE UCASE('%%%s%%')", array_shift($not_want_terms));
+			foreach ($not_want_terms as $t) {
+				$not_want_sql .= sprintf(" OR UCASE(Value) LIKE UCASE('%%%s%%')", $t);
+			}
+			$sql .= "  $not_want_sql ) "; //extra parens to close sub-select
+		}
+
+		// This bit of magic filters out the results that don't match enough terms.
+		$sql .= "GROUP BY a.DeviceID HAVING COUNT(b.AttributeID) >= $num_want_terms";
 
 		$deviceList = array();
 
@@ -2584,6 +2690,53 @@ class Device {
 			$resp.="\t</div>\n";
 		}
 		return $resp;
+	}
+
+	function GetCustomValues() {
+		global $dbh;
+
+		$this->MakeSafe();
+		$dcv = array();
+		$sql = "SELECT DeviceID, AttributeID, Value
+			FROM fac_DeviceCustomValue
+			WHERE DeviceID = $this->DeviceID;";
+		foreach($dbh->query($sql) as $dcvrow){
+			$dcv[$dcvrow["AttributeID"]]=$dcvrow["Value"];
+		}
+		$this->CustomValues=$dcv;
+	}	
+
+	function DeleteCustomValues() {
+		global $dbh;
+
+		$this->MakeSafe();
+		$sql="DELETE FROM fac_DeviceCustomValue WHERE DeviceID = $this->DeviceID;";
+		if($dbh->query($sql)) {
+			$this->GetCustomValues();
+			(class_exists('LogActions'))?LogActions::LogThis($this):'';
+			return true;
+		}
+		return false;
+	}
+
+	function InsertCustomValue($AttributeID, $Value) {
+		global $dbh;
+	
+		$this->MakeSafe();
+		// make the custom attribute stuff safe
+		$AttributeID = intval($AttributeID);
+		$Value=sanitize(trim($Value));
+
+		$sql = "INSERT INTO fac_DeviceCustomValue 
+			SET DeviceID = $this->DeviceID,
+			AttributeID = $AttributeID,
+			Value = \"$Value\";";
+		if($dbh->query($sql)) {
+			$this->GetCustomValues();
+			(class_exists('LogActions'))?LogActions::LogThis($this):'';
+			return true;
+		}
+		return false;
 	}
 }
 
@@ -4397,5 +4550,234 @@ class PlannedPath {
 	
 } //END OF PLANNEDPATH
 
+class DeviceCustomAttribute {
+	var $AttributeID;
+	var $Label;
+	var $AttributeType='string';
+	var $Required=0;
+	var $AllDevices=0;
+	var $DefaultValue;
 
+	function MakeSafe() {
+		$this->AttributeID=intval($this->AttributeID);
+		$this->Label=sanitize($this->Label);
+		$this->AttributeType=sanitize($this->AttributeType);
+		$this->Required=intval($this->Required);
+		$this->Required=($this->Required>=1)?1:0;
+		$this->AllDevices=intval($this->AllDevices);
+		$this->AllDevices=($this->AllDevices>=1)?1:0;
+		$this->DefaultValue=sanitize($this->DefaultValue);
+	}
+	
+	function CheckInput() {
+		$this->MakeSafe();
+		
+		if(!in_array($this->AttributeType, DeviceCustomAttribute::GetDeviceCustomAttributeTypeList())){
+			return false;
+		}
+		if(trim($this->DefaultValue) != "") {
+			switch($this->AttributeType){
+				case "number":
+					if(!filter_var($this->DefaultValue, FILTER_VALIDATE_FLOAT)) { return false; }
+					break;
+				case "integer":
+					if(!filter_var($this->DefaultValue, FILTER_VALIDATE_INT)) { return false; }
+					break;
+				case "date":
+					$dateparts = preg_split("/\/|-/", $this->DefaultValue);
+					if(count($dateparts)!=3 || !checkdate($dateparts[0], $dateparts[1], $dateparts[2])) { return false; }
+					break;
+				case "phone":
+					// stole this regex out of the jquery.validationEngine-en.js source
+					if(!preg_match("/^([\+][0-9]{1,3}[\ \.\-])?([\(]{1}[0-9]{2,6}[\)])?([0-9\ \.\-\/]{3,20})((x|ext|extension)[\ ]?[0-9]{1,4})?$/", $this->DefaultValue)) { return false; }
+					break;
+				case "email":
+					if(!filter_var($this->DefaultValue, FILTER_VALIDATE_EMAIL)) { return false; }
+					break;
+				case "ipv4":
+					if(!filter_var($this->DefaultValue, FILTER_VALIDATE_IP)) { return false; }
+					break;
+				case "url":
+					if(!filter_var($this->DefaultValue, FILTER_VALIDATE_URL)) { return false; }
+					break;
+				case "checkbox":
+					$acceptable = array("0", "1", "true", "false", "on", "off");
+					if(!in_array($this->DefaultValue, $acceptable)) { return false; }		
+					break;
+			}
+		}
+		return true;
+	}
+
+	static function RowToObject($dbRow) {
+		$dca = new DeviceCustomAttribute();
+		$dca->AttributeID=$dbRow["AttributeID"];
+		$dca->Label=$dbRow["Label"];
+		$dca->AttributeType=$dbRow["AttributeType"];
+		$dca->Required=$dbRow["Required"];
+		$dca->AllDevices=$dbRow["AllDevices"];
+		$dca->DefaultValue=$dbRow["DefaultValue"];
+		return $dca;
+	}
+
+	function CreateDeviceCustomAttribute() {
+		global $dbh;
+		$this->MakeSafe();
+		if(!$this->CheckInput()) { return false; }
+		$sql="INSERT INTO fac_DeviceCustomAttribute SET Label=\"$this->Label\",
+			AttributeType=\"$this->AttributeType\", Required=$this->Required,
+			AllDevices=$this->AllDevices,DefaultValue=\"$this->DefaultValue\";";
+
+		if(!$dbh->exec($sql)) {
+			$info=$dbh->errorInfo();
+			error_log("CreateDeviceCustomAttribute::PDO Error: {$info[2]} SQL=$sql");
+			return false;
+		} else {
+			$this->AttributeID=$dbh->LastInsertID();
+		}
+
+		// If something is marked "AllDevices", we don't actually add it to all devices
+		// in the database, we just check when displaying devices/templates and 
+		// display any that are AllDevices to help reduce db size/complexity
+
+		(class_exists('LogActions'))?LogActions::LogThis($this):'';
+
+		return $this->AttributeID;
+
+	}
+
+	function UpdateDeviceCustomAttribute() {
+		global $dbh;
+		$this->MakeSafe();
+		if(!$this->CheckInput()) { return false; }
+
+		$old = new DeviceCustomAttribute();
+		$old->AttributeID = $this->AttributeID;
+		$old->GetDeviceCustomAttribute();
+
+		$sql="UPDATE fac_DeviceCustomAttribute SET Label=\"$this->Label\",
+			AttributeType=\"$this->AttributeType\", Required=$this->Required,
+			AllDevices=$this->AllDevices,DefaultValue=\"$this->DefaultValue\"
+			WHERE AttributeID=$this->AttributeID;";
+
+		if(!$dbh->query($sql)) {
+			$info=$dbh->errorInfo();
+			error_log("UpdateDeviceCustomAttribute::PDO Error: {$info[2]} SQL=$sql");
+			return false;
+		}
+
+		(class_exists('LogActions'))?LogActions::LogThis($this,$old):'';
+
+		return true;
+	}
+
+	function GetDeviceCustomAttribute() {
+		global $dbh;
+		$this->MakeSafe();
+		$sql="SELECT AttributeID, Label, AttributeType, Required, AllDevices, DefaultValue 
+			FROM fac_DeviceCustomAttribute
+			WHERE AttributeID=$this->AttributeID;";
+
+		if($dcaRow=$dbh->query($sql)->fetch()) {
+			foreach(DeviceCustomAttribute::RowToObject($dcaRow) as $prop => $value) {
+				$this->$prop=$value;
+			}
+			return true;
+		} else {
+			return false;
+		}
+	}
+	
+	function RemoveDeviceCustomAttribute() {
+		global $dbh;
+		$this->AttributeID=intval($this->AttributeID);
+	
+		$sql="DELETE FROM fac_DeviceTemplateCustomValue WHERE AttributeID=$this->AttributeID;";
+                if(!$dbh->query($sql)){
+                        $info=$dbh->errorInfo();
+                        error_log("RemoveDeviceCustomAttribute::PDO Error: {$info[2]} SQL=$sql" );
+                        return false;
+                }
+		$sql="DELETE FROM fac_DeviceCustomValue WHERE AttributeID=$this->AttributeID;";
+                if(!$dbh->query($sql)){
+                        $info=$dbh->errorInfo();
+                        error_log("RemoveDeviceCustomAttribute::PDO Error: {$info[2]} SQL=$sql" );
+                        return false;
+                }
+
+		$sql="DELETE FROM fac_DeviceCustomAttribute WHERE AttributeID=$this->AttributeID;";
+                if(!$dbh->query($sql)){
+                        $info=$dbh->errorInfo();
+                        error_log("RemoveDeviceCustomAttribute::PDO Error: {$info[2]} SQL=$sql" );
+                        return false;
+                }
+
+                (class_exists('LogActions'))?LogActions::LogThis($this):'';
+		return true;
+
+	}
+
+	function RemoveFromTemplatesAndDevices() {
+		global $dbh;
+		$this->AttributeID=intval($this->AttributeID);
+	
+		$sql="DELETE FROM fac_DeviceTemplateCustomValue WHERE AttributeID=$this->AttributeID;";
+                if(!$dbh->query($sql)){
+                        $info=$dbh->errorInfo();
+                        error_log("RemoveDeviceCustomAttribute::PDO Error: {$info[2]} SQL=$sql" );
+                        return false;
+                }
+		$sql="DELETE FROM fac_DeviceCustomValue WHERE AttributeID=$this->AttributeID;";
+                if(!$dbh->query($sql)){
+                        $info=$dbh->errorInfo();
+                        error_log("RemoveDeviceCustomAttribute::PDO Error: {$info[2]} SQL=$sql" );
+                        return false;
+                }
+
+                (class_exists('LogActions'))?LogActions::LogThis($this):'';
+		return true;
+
+	}
+
+	static function GetDeviceCustomAttributeList() {
+		global $dbh;
+		$dcaList=array();
+		
+		$sql="SELECT AttributeID, Label, AttributeType, Required, AllDevices, DefaultValue
+			FROM fac_DeviceCustomAttribute
+			ORDER BY Label, AttributeID;";
+
+		foreach($dbh->query($sql) as $dcaRow) {
+			$dcaList[$dcaRow["AttributeID"]]=DeviceCustomAttribute::RowToObject($dcaRow);
+		}
+
+		return $dcaList;
+	}
+
+	static function GetDeviceCustomAttributeTypeList() {
+		global $dbh;
+		$typeList = array();
+		$sql="SHOW COLUMNS FROM fac_DeviceCustomAttribute LIKE 'AttributeType'";
+		$row = $dbh->query($sql)->fetch();
+		preg_match('#^enum\((.*?)\)$#ism', $row['Type'], $matches);
+		//use of str_getcsv requires php5.3.0+
+		$typeList = str_getcsv($matches[1], ",", "'");
+		return $typeList;
+	}	
+
+	static function TimesUsed($AttributeID) {
+		global $dbh;
+		$AttributeID=intval($AttributeID);
+
+                // get a count of the number of times this attribute is in templates or devices
+                $sql="SELECT COUNT(*) + (SELECT COUNT(*) FROM fac_DeviceCustomValue WHERE AttributeID=$AttributeID)
+                        AS Result FROM fac_DeviceTemplateCustomValue WHERE AttributeID=$AttributeID";
+                $count=$dbh->prepare($sql);
+                $count->execute();
+
+
+                return $count->fetchColumn();
+
+	}
+}
 ?>

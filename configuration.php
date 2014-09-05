@@ -1,7 +1,6 @@
 <?php
 	// Allow the installer to link to the config page
 	$devMode=true;
-
 	require_once( "db.inc.php" );
 	require_once( "facilities.inc.php" );
 
@@ -166,6 +165,87 @@
 		echo $output;
 		exit;		
 	}
+
+	if(isset($_POST['dcal'])){
+		$dca = new DeviceCustomAttribute();
+		$dca->Label=trim($_POST['dcal']);
+		$dca->AttributeType=trim($_POST['dcat']);
+		if(isset($_POST['dcar']) && trim($_POST['dcar'])=="true"){
+			$dca->Required=1;
+		}else{
+			$dca->Required=0;
+		}
+		if(isset($_POST['dcaa']) && trim($_POST['dcaa'])=="true"){
+			$dca->AllDevices=1;
+		}else{
+			$dca->AllDevices=0;
+		}
+		if($dca->AttributeType == "checkbox") {
+			if(trim($_POST['dcav'])=="true") {
+				$dca->DefaultValue="1";
+			} else {
+				$dca->DefaultValue="0";
+			}
+		} else {
+			$dca->DefaultValue=trim($_POST['dcav']);
+		}
+		if(isset($_POST['dcaid'])){
+			$dca->AttributeID=$_POST['dcaid'];
+			if(isset($_POST['original'])){
+				$dca->GetDeviceCustomAttribute();
+				header('Content-Type: application/json');
+				echo json_encode($dca);
+				exit;
+			}
+			if(isset($_POST['clear'])){
+				if($dca->RemoveDeviceCustomAttribute()){
+					echo 'u';
+				}else{
+					echo 'f';
+				}
+				exit;
+			}
+			if(isset($_POST['removeuses'])){
+				if($dca->RemoveFromTemplatesAndDevices()){
+					echo 'u';
+				} else{
+					echo 'f';
+				}
+				exit;
+			} 
+			if($dca->UpdateDeviceCustomAttribute()){
+				echo 'u';
+			}else{
+				echo 'f';
+			}
+			exit;
+		}else{
+			if($dca->CreateDeviceCustomAttribute()){
+				echo $dca->AttributeID;
+			}else{
+				echo 'f';
+			}
+			exit;
+		}
+
+		exit;
+	}
+	if(isset($_POST['dcaused'])){
+		$count=DeviceCustomAttribute::TimesUsed($_POST['dcaused']);
+		if($count==0 && isset($_POST['remove'])){
+			$dca=new DeviceCustomAttribute();
+			$dca->AttributeID=$_POST['dcaused'];
+			if($dca->RemoveDeviceCustomAttribute()){
+				echo $count;
+				exit;
+			}else{
+				echo "fail";
+				exit;
+			}
+		}
+		echo $count;
+		exit;
+	}
 	// END AJAX Requests
 
 	if(isset($_REQUEST["action"]) && $_REQUEST["action"]=="Update"){
@@ -287,6 +367,50 @@
 				</div>';
 		}
 	}
+
+	// build list of existing device custom attributes
+	$customattrs="";
+	$dcaTypeList=DeviceCustomAttribute::GetDeviceCustomAttributeTypeList();
+	$dcaList=DeviceCustomAttribute::GetDeviceCustomAttributeList();
+	if(count($dcaList)>0) {
+		foreach($dcaList as $dca) {
+			$customattrs.='<div>
+					<div><img src="images/del.gif"></div>
+					<div><input type="text" name="dcalabel[]" data='.$dca->AttributeID.' value="'.$dca->Label.'"></div>
+					<div><select name="dcatype[]" id="dcatype">';
+			foreach($dcaTypeList as $dcatype){
+				$selected=($dca->AttributeType==$dcatype)?' selected':'';
+				$customattrs.="<option value=\"$dcatype\"$selected>$dcatype</option>";
+			}
+			$customattrs.='</select></div>
+					<div><input type="checkbox" name="dcarequired[]"';
+			if($dca->Required) { $customattrs.=' checked'; }
+			$customattrs.='></div>
+					<div><input type="checkbox" name="dcaalldevices[]"';
+			if($dca->AllDevices) { $customattrs.=' checked'; }
+			$currinputtype="text";
+			$currchecked="";
+			if($dca->AttributeType=="checkbox") { 
+				$currinputtype="checkbox"; 
+				if($dca->DefaultValue) {
+					$currchecked=" checked";
+				}
+			}
+			$customattrs.='></div>
+					<div><input type="'.$currinputtype.'" name="dcavalue[]" value="'.$dca->DefaultValue.'" '.$currchecked.'></div>
+					</div>';
+		}
+	}
+
+        $dcaTypeSelector='<select name="dcatype[]" id="dcatype">';
+        if(count($dcaTypeList)>0){
+                foreach($dcaTypeList as $dcatype){
+			$selected=($dcatype=='string')?' selected':'';
+                        $dcaTypeSelector.="<option value=\"$dcatype\"$selected>$dcatype</option>";
+                }
+        }
+        $dcaTypeSelector.="</select>";
+
 
 	// Figure out what the URL to this page
 	$href="";
@@ -803,6 +927,286 @@
 			bindrow($(this).parent('div'));
 		});
 
+		// device custom attribute rows
+		var blankdcarow=$('<div />').html('<div><img src="images/del.gif"></div><div><input type="text" name="dcalabel[]"></div><div><select name="dcatype[]" id="dcatype"></select></div></div><div><input type="checkbox" name="dcarequired[]"></div><div><input type="checkbox" name=dcaalldevices[]"></div><div><input type="text" name="dcavalue[]"></div>');
+		function binddcarow(row) {
+			var addrem=row.find('div:first-child');
+			var dcal=row.find('div:nth-child(2) input');
+			var dcat=row.find('div:nth-child(3) select');
+			var dcar=row.find('div:nth-child(4) input');
+			var dcaa=row.find('div:nth-child(5) input');
+			var dcav=row.find('div:nth-child(6) input');
+			if(dcal.val().trim()!='' && addrem.attr('id')!='newline'){
+				addrem.click(function(){
+					removedca(row,true);
+				});
+			}
+			dcal.keypress(function(event){
+				if(event.keyCode==10 || event.keyCode==13){
+					event.preventDefault();
+					dcal.change();
+				}
+			});
+			dcar.keypress(function(event){
+				if(event.keyCode==10 || event.keyCode==13){
+					event.preventDefault();
+					dcar.change();
+				}
+			});
+			dcaa.keypress(function(event){
+				if(event.keyCode==10 || event.keyCode==13){
+					event.preventDefault();
+					dcaa.change();
+				}
+			});
+			dcav.keypress(function(event){
+				if(event.keyCode==10 || event.keyCode==13){
+					event.preventDefault();
+					dcav.change();
+				}
+			});
+			if(dcat.length>0){dcat.data('current', dcat.val());}
+			function update(inputobj){
+				var dcavtosend=dcav.val();
+				if(dcat.val()=='checkbox'){
+					dcavtosend=dcav.prop('checked');
+				}	
+				if(dcal.val().trim()==''){
+					//reset to previous value
+					$.post('',{dcal: dcal.val(), dcaid: dcal.attr('data'), dcat: dcat.val(),dcar: dcar.prop('checked'),dcaa: dcaa.prop('checked'),dcav: dcavtosend,original:''}).done(function(jsondata){
+						dcal.val(jsondata.Label);
+						dcat.val(jsondata.AttributeType);
+						dcar.val(jsondata.Required);
+						dcaa.val(jsondata.AllDevices);
+						dcav.val(jsondata.DefaultValue);
+					});
+					dcal.effect('highlight', {color: 'salmon'}, 1500);
+					dcat.effect('highlight', {color: 'salmon'}, 1500);
+					dcar.effect('highlight', {color: 'salmon'}, 1500);
+					dcaa.effect('highlight', {color: 'salmon'}, 1500);
+					dcav.effect('highlight', {color: 'salmon'}, 1500);
+				} else {
+					// attempt to update
+					$.post('',{dcal: dcal.val(), dcaid: dcal.attr('data'), dcat: dcat.val(), dcar: dcar.prop('checked'), dcaa: dcaa.prop('checked'), dcav: dcavtosend}).done(function(data){
+						if(data.trim()=='f'){ //fail
+							$.post('',{dcal: dcal.val(), dcaid:dcal.attr('data'), dcat: dcat.val(), dcar: dcar.prop('checked'), dcaa: dcaa.prop('checked'), dcav: dcavtosend,original:''}).done(function(jsondata){
+							dcal.val(jsondata.Label);
+							dcat.val(jsondata.AttributeType);
+							dcar.val(jsondata.Required);
+							dcaa.val(jsondata.AllDevices);
+							dcav.val(jsondata.DefaultValue);
+							});
+							dcal.effect('highlight', {color: 'salmon'}, 1500);
+							dcat.effect('highlight', {color: 'salmon'}, 1500);
+							dcar.effect('highlight', {color: 'salmon'}, 1500);
+							dcaa.effect('highlight', {color: 'salmon'}, 1500);
+							dcav.effect('highlight', {color: 'salmon'}, 1500);
+						} else if(data.trim()=='u') { // updated
+							dcal.effect('highlight', {color: 'lightgreen'}, 2500);
+							dcat.effect('highlight', {color: 'lightgreen'}, 2500);
+							dcar.effect('highlight', {color: 'lightgreen'}, 2500);
+							dcaa.effect('highlight', {color: 'lightgreen'}, 2500);
+							dcav.effect('highlight', {color: 'lightgreen'}, 2500);
+						} else { // created
+							var newitem=blankdcarow.clone();
+							newitem.find('div:nth-child(2) input').val(dcal.val()).attr('data',data.trim());
+							newitem.find('div:nth-child(3) select').replaceWith(dcat.clone());
+							newitem.find('div:nth-child(3) select').val(dcat.val());
+							newitem.find('div:nth-child(4) input').replaceWith(dcar.clone());
+							newitem.find('div:nth-child(5) input').replaceWith(dcaa.clone());
+							if(newitem.find('div:nth-child(3) select').val() == "checkbox") {
+								newitem.find('div:nth-child(6) input').attr('type', 'checkbox');
+								newitem.find('div:nth-child(6) input').prop('checked', dcav.prop('checked'));
+							}
+							newitem.find('div:nth-child(6) input').val(dcav.val());
+							binddcarow(newitem);
+							row.before(newitem);
+							newitem.find('div:nth-child(6) input').val(dcav.val()).focus();
+							if(addrem.attr('id')=='newline'){
+								dcal.val('');
+								dcat.val('string');
+								dcar.prop('checked',false);
+								dcaa.prop('checked',false);
+								dcav.attr('type', 'text');
+								dcav.val('');
+							} else {
+								row.remove();
+							}	
+						}
+					});
+				}
+			}
+			dcal.change(function(){
+				update($(this));
+			});
+			dcat.change(function(){
+				var row=$(this).parent('div').parent('div');
+				var currtype=$(this);
+				function processChange() { 
+					if(currtype.val() == "checkbox") {
+						row.find('div:nth-child(6) input').attr('type', 'checkbox');
+						row.find('div:nth-child(6) input').prop('checked', false);
+						row.find('div:nth-child(6) input').val('');
+						
+					} else {
+						row.find('div:nth-child(6) input').attr('type', 'text');
+						row.find('div:nth-child(6) input').val('');
+					}
+					if(row.find('div:first-child').attr('id')!='newline'){
+						update(currtype);
+					} else if(row.find('div:nth-child(2) input').val().trim()!=''){
+						update(currtype);
+					}
+					currtype.data('current', currtype.val());
+				}
+				
+				if(row.find('div:first-child').attr('id')=='newline') { 
+					processChange();
+				} else {
+					$.post('',{dcaused: row.find('div:nth-child(2) input').attr('data')}).done(function(data){
+						if(data.trim()==0){
+							// if not in use, just let the type change
+							processChange();
+						} else if(data.trim()=="fail") {
+							var cancelbutton={
+								"<?php echo __("Cancel"); ?>": function(){
+									currtype.val(currtype.data('current'));
+									$(this).dialog("destroy");
+								}
+							}
+							<?php echo "				var modal=$('<div />', {id: 'modal', title: '".__("Custom Device Attribute Type Change Error")."'}).html('<div id=\"modaltext\">AAAAAAAAAAHHHHHHHHHH!!!  *crash* *fire* *chaos*<br><br>".__("Something just went horribly wrong.")."</div>').dialog({"; ?>
+							dialogClass: 'no-close',
+							appendTo: 'body',
+							modal: true,
+							buttons: $.extend({}, cancelbutton)
+							});
+						} else {
+							var defaultbutton={
+								"<?php echo __("Change Type and Clear all uses"); ?>": function(){
+									$.post('',{dcaid: row.find('div:nth-child(2) input').attr('data'),dcal: '', dcar: '', dcaa: '', dcav: '', dcat: '', removeuses: ''}).done(function(data){
+										if(data.trim()=='u'){ // success
+											$('#modal').dialog("destroy");
+											processChange();
+										}else{ // failed to delete
+											$('#modaltext').html('AAAAAAAAAAHHHHHHHHHH!!!  *crash* *fire* *chaos*<br><br><?php echo __("Something just went horribly wrong."); ?>');
+											$('#modal').dialog('option','buttons',cancelbutton);
+											currtype.val(currtype.data('current'));
+										}
+									});
+								}
+							}
+							var cancelbutton={
+								"<?php echo __("Cancel"); ?>": function(){
+									currtype.val(currtype.data('current'));
+									$(this).dialog("destroy");
+								}
+							}
+							<?php echo "				var modal=$('<div />', {id: 'modal', title: '".__("Custom Device Attribute Type Change Override")."'}).html('<div id=\"modaltext\">".__("This custom device attribute is in use somewhere. If you choose to change the attribute type, it will be cleared from all devices and device templates.")."</div>').dialog({"; ?>
+							dialogClass: 'no-close',
+							appendTo: 'body',
+							modal: true,
+							buttons: $.extend({}, defaultbutton, cancelbutton)
+							});
+						}
+				});
+			}
+		});
+			// TODO it seems like these 3 could be condensed, but when i made it a single function everything freaked out
+			dcar.change(function(){
+				var row=$(this).parent('div').parent('div');
+				if(row.find('div:first-child').attr('id')!='newline'){
+					update($(this));
+				} else if(row.find('div:nth-child(2) input').val().trim()!=''){
+					update($(this));
+				}
+			});
+			dcaa.change(function(){
+				var row=$(this).parent('div').parent('div');
+				if(row.find('div:first-child').attr('id')!='newline'){
+					update($(this));
+				} else if(row.find('div:nth-child(2) input').val().trim()!=''){
+					update($(this));
+				}
+			});
+			dcav.change(function(){
+				var row=$(this).parent('div').parent('div');
+				if(row.find('div:first-child').attr('id')!='newline'){
+					update($(this));
+				} else if(row.find('div:nth-child(2) input').val().trim()!=''){
+					update($(this));
+				}
+			});
+		}
+		$('#customattrs > div ~ div > div:first-child').each(function(){
+			if($(this).attr('id')=='newline'){
+				var row=$(this).parent('div');
+				$(this).click(function(){
+					var newitem=blankdcarow.clone();
+					newitem.find('select[name="dcatype[]"]').replaceWith((row.find('select[name="dcatype[]"]').clone()));
+					newitem.find('div:first-child').click(function(){
+						removedca($(this).parent('div'),false);
+					});
+					binddcarow(newitem);
+					row.before(newitem);
+				});
+			}
+			binddcarow($(this).parent('div'));
+		});
+
+                function removedca(row,lookup){
+		  if(!lookup) {
+			row.remove();
+		  } else {
+			$.post('',{dcaused: row.find('div:nth-child(2) input').attr('data'), remove: ''}).done(function(data){
+				if(data.trim()==0){
+					row.effect('explode', {}, 500, function(){
+						$(this).remove();
+					});
+				}else if(data.trim()=="fail") {
+					var cancelbutton={
+						"<?php echo __("Cancel"); ?>": function(){
+							$(this).dialog("destroy");
+						}
+					}
+<?php echo "				var modal=$('<div />', {id: 'modal', title: '".__("Custom Device Attribute Delete Error")."'}).html('<div id=\"modaltext\">AAAAAAAAAAHHHHHHHHHH!!!  *crash* *fire* *chaos*<br><br>".__("Something just went horribly wrong.")."</div>').dialog({"; ?>
+					dialogClass: 'no-close',
+					appendTo: 'body',
+					modal: true,
+					buttons: $.extend({}, cancelbutton)
+					});
+
+				}else{
+					var defaultbutton={
+						"<?php echo __("Delete from All Devices/Templates"); ?>": function(){
+							$.post('',{dcaid: row.find('div:nth-child(2) input').attr('data'),dcal: '', dcar: '', dcaa: '', dcav: '', clear: ''}).done(function(data){
+								if(data.trim()=='u'){ // success
+									$('#modal').dialog("destroy");
+									row.effect('explode', {}, 500, function(){
+										$(this).remove();
+									});
+								}else{ // failed to delete
+									$('#modaltext').html('AAAAAAAAAAHHHHHHHHHH!!!  *crash* *fire* *chaos*<br><br><?php echo __("Something just went horribly wrong."); ?>');
+									$('#modal').dialog('option','buttons',cancelbutton);
+								}
+							});
+						}
+					}
+					var cancelbutton={
+						"<?php echo __("Cancel"); ?>": function(){
+							$(this).dialog("destroy");
+						}
+					}
+<?php echo "				var modal=$('<div />', {id: 'modal', title: '".__("Custom Device Attribute Delete Override")."'}).html('<div id=\"modaltext\">".__("This custom device attribute is in use somewhere. If you choose to delete the attribute, it will be removed from all devices and device templates.")."</div>').dialog({"; ?>
+					dialogClass: 'no-close',
+					appendTo: 'body',
+					modal: true,
+					buttons: $.extend({}, defaultbutton, cancelbutton)
+                                        });
+                                }
+                        });
+		  }
+                }
+
 		// Reporting - Utilities
 
 		$('input[id^="snmp"],input[id="cut"],input[id="dot"]').each(function(){
@@ -847,6 +1251,7 @@ echo '<div class="main">
 			<li><a href="#reporting">',__("Reporting"),'</a></li>
 			<li><a href="#tt">',__("ToolTips"),'</a></li>
 			<li><a href="#cc">',__("Cabling"),'</a></li>
+			<li><a href="#dca">',__("Custom Device Attributes"),'</a></li>
 		</ul>
 		<div id="general">
 			<div class="table">
@@ -1278,6 +1683,29 @@ echo '<div class="main">
 					<div><input type="text" defaultvalue="',$config->defaults["path_weight_row"],'" name="path_weight_row" value="',$config->ParameterArray["path_weight_row"],'"></div>
 				</div>
 			</div> <!-- end table -->
+		</div>
+		<div id="dca">
+			<h3>',__("Custom Device Attributes"),'</h3>
+			<div class="table" id="customattrs">
+				<div>
+					<div></div>
+					<div class="customattrsheader">',__("Label"),'</div>
+					<div class="customattrsheader">',__("Type"),'</div>
+					<div class="customattrsheader">',__("Required"),'</div>
+					<div class="customattrsheader">',__("Apply to<br>All Devices"),'</div>
+					<div class="customattrsheader">',__("Default Value"),'</div>
+				</div>
+				',$customattrs,'
+				<div>
+					<div id="newline"><img title="',__("Add new row"),'" src="images/add.gif"></div>
+					<div><input type="text" name="dcalabel[]"></div>
+					<div>',$dcaTypeSelector,'</div>
+					<div><input type="checkbox" name="dcarequired[]"></div>
+					<div><input type="checkbox" name="dcaalldevices[]"></div>
+					<div><input type="text" name="dcavalue[]"></div>
+				</div>
+			</div>
+
 		</div>
 	</div>';
 

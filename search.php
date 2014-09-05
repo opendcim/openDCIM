@@ -59,10 +59,15 @@
 		$resultcount=count($devList);
 		$title=__("Asset tag search results for")." &quot;$searchTerm&quot;";
 	}elseif($searchKey=="ctag"){
+		// TODO: this could be enhanced to allow searching for a specific custom attribute
 		$devList=$dev->SearchByCustomTag($searchTerm);
 		$cabList=$cab->SearchByCustomTag($searchTerm);
 		$resultcount=count($devList)+count($cabList);
 		$title=__("Custom tag search results for")." &quot;$searchTerm&quot;";
+	}elseif($searchKey=="cattr"){
+		$devList=$dev->SearchByCustomAttribute($searchTerm);
+		$resultcount=count($devList);
+		$title=__("Custom attribute search results for")." &quot$searchTerm&quot;";
 	}else{
 		$devList=array();
 	}

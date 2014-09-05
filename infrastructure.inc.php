@@ -713,6 +713,7 @@ class DeviceTemplate {
     var $RearPictureFile;
 	var $ChassisSlots;
 	var $RearChassisSlots;
+	var $CustomValues;
     
 	function MakeSafe(){
 		$validDeviceTypes=array('Server','Appliance','Storage Array','Switch','Chassis','Patch Panel','Physical Infrastructure');
@@ -757,6 +758,7 @@ class DeviceTemplate {
 		$Template->ChassisSlots=$row["ChassisSlots"];
 		$Template->RearChassisSlots=$row["RearChassisSlots"];
         $Template->MakeDisplay();
+		$Template->GetCustomValues();
 
 		return $Template;
 	}
@@ -1196,6 +1198,50 @@ xsi:noNamespaceSchemaLocation="openDCIMdevicetemplate.xsd">
 			file_put_contents("pictures/".$this->RearPictureFile, $im);
 		}
 		return $result;
+	}
+	
+	function GetCustomValues() {
+		$this->MakeSafe();
+
+		$tdca = array();
+		$sql = "SELECT TemplateID, AttributeID, Required, Value
+			FROM fac_DeviceTemplateCustomValue
+			WHERE TemplateID=$this->TemplateID;";
+		foreach($this->query($sql) as $tdcrow) {
+			$tdca[$tdcrow["AttributeID"]]["value"]=$tdcrow["Value"];
+			$tdca[$tdcrow["AttributeID"]]["required"]=$tdcrow["Required"];
+		}	
+		$this->CustomValues = $tdca;
+	}	
+
+	function DeleteCustomValues() {
+		$this->MakeSafe();
+		
+		$sql="DELETE FROM fac_DeviceTemplateCustomValue WHERE TemplateID=$this->TemplateID;";
+		if($this->query($sql)){
+			$this->GetCustomValues();
+			return true;
+		}
+		return false;
+	}
+
+	function InsertCustomValue($AttributeID, $Value, $Required) {
+		$this->MakeSafe();
+		// make the custom attirubte stuff safe
+		$AttributeID=intval($AttributeID);
+		$Required=intval($Required);
+		$Value=sanitize(trim($Value));
+
+		$sql="INSERT INTO fac_DeviceTemplateCustomValue
+			SET TemplateID=$this->TemplateID,
+			    AttributeID=$AttributeID,
+			    Required=$Required,
+			    Value=\"$Value\";";
+		if($this->query($sql)) {
+			$this->GetCustomValues();
+			return true;
+		}
+		return false;
 	}
 	
 }
