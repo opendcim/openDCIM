@@ -72,3 +72,22 @@ CREATE TABLE fac_DeviceCustomValue (
   PRIMARY KEY (DeviceID, AttributeID)
 ) ENGINE=InnoDB CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
+--
+-- Add new device type for CDUs
+--
+ALTER TABLE fac_Device CHANGE DeviceType DeviceType ENUM( 'Server', 'Appliance', 'Storage Array', 'Switch', 'Patch Panel', 'Physical Infrastructure', 'Chassis', 'CDU' ) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL;
+
+--
+-- Create new table for power ports
+--
+CREATE TABLE fac_PowerPorts (
+	DeviceID int(11) NOT NULL,
+	PortNumber int(11) NOT NULL,
+	Label varchar(40) NOT NULL,
+	ConnectedDeviceID int(11) DEFAULT NULL,
+	ConnectedPort int(11) DEFAULT NULL,
+	Notes varchar(80) NOT NULL,
+	PRIMARY KEY (DeviceID,PortNumber),
+	UNIQUE KEY LabeledPort (DeviceID,PortNumber,Label),
+	UNIQUE KEY ConnectedDevice (ConnectedDeviceID,ConnectedPort)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
