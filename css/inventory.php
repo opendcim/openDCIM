@@ -132,6 +132,8 @@ div#imageselection { display: none;}
 
 #tooltip, #cdutooltip { min-height: 300px; min-width: 550px; }
 
+.customattrsheader { padding-right: 10px; }
+
 /* index */
 .index .table, .index .table .title {background-color: white;}
 .index .table .title {font-weight: bold; font-size: 1.25em;}
@@ -321,6 +323,7 @@ p, h2, h3, h1 {margin-top: 1em;margin-bottom: 1em;}
 h2 {font-size: 1.5em;text-align: center;}
 h3 {font-size: 1.16em;text-align: center;}
 h3 + h3 {color: red;font-weight: bold;}
+h4 {font-size: 1.1em;text-align: center;}
 a:link, a:hover, a:visited:hover {color:<?php echo $config->ParameterArray['LinkColor']; ?>;}
 a:visited {color: <?php echo $config->ParameterArray['VisitedLinkColor']; ?>;}
 

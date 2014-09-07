@@ -374,6 +374,15 @@
 		}
 		exit;
 	}
+	if(isset($_POST['customattrrefresh'])){
+		$template=new DeviceTemplate();
+		$template->TemplateID=$_POST['customattrrefresh'];
+		$template->GetTemplateByID();
+		$dev->DeviceID=$_POST['deviceid'];
+		$dev->GetDevice();	
+		buildCustomAttributes($template, $dev);
+		exit;
+	}
 	if(isset($_POST['refreshswitch'])){
 		header('Content-Type: application/json');
 		if(isset($_POST['names'])){
@@ -524,6 +533,7 @@
 								$dev->MoveToStorage();
 							}else{
 								$dev->UpdateDevice();
+								updateCustomValues($dev);
 							}
 							break;
 						case 'Delete':
@@ -561,6 +571,7 @@
 					}
 					$dev->CreateDevice();
 					$dev->SetTags($tagarray);
+					updateCustomValues($dev);
 				}
 			}
 
@@ -675,6 +686,8 @@
 	$templ->TemplateID=$dev->TemplateID;
 	$templ->GetTemplateByID();
 
+
+	
 	$title=($dev->Label!='')?"$dev->Label :: $dev->DeviceID":__("openDCIM Device Maintenance");
 
 	function buildesxtable($deviceid){
@@ -700,7 +713,110 @@
 		}
 		echo '</div> <!-- END div.table -->';
 	}
+	
+	function buildCustomAttributes($template, $device) {
+		$dcaList=DeviceCustomAttribute::GetDeviceCustomAttributeList();
+		$tdcaList=$template->CustomValues;
+		$dcvList=$device->CustomValues;
 
+		$customvalues = array();
+
+		// pull the "all devices" custom attributes
+		if(isset($dcaList)) {
+			foreach($dcaList as $dca) {
+				if($dca->AllDevices==1) {
+					$customvalues[$dca->AttributeID]["value"]=$dca->DefaultValue;	
+					$customvalues[$dca->AttributeID]["type"]=$dca->AttributeType;
+					$customvalues[$dca->AttributeID]["required"]=$dca->Required;
+				}
+			}
+		}
+		if(isset($tdcaList)) {
+			// pull the device template level custom attributes (done second so we overwrite all devices)
+			foreach($tdcaList as $AttributeID=>$tdca) {
+				$customvalues[$AttributeID]["value"]=$tdca["value"];
+				$customvalues[$AttributeID]["type"]=$dcaList[$AttributeID]->AttributeType;
+				$customvalues[$AttributeID]["required"]=$tdca["required"];
+
+			}
+		}
+		if(isset($dcvList)) {
+			// pull the values set at this device level if any exist, the assumption being that one of the 2 loops above has already populated the type and required fields
+			foreach($dcvList as $AttributeID=>$dcv) {
+				if(array_key_exists($AttributeID, $customvalues)) {
+					$customvalues[$AttributeID]["value"]=$dcv;
+				} else {
+					// this is probably an  error, what do?
+				}
+			}
+		}
+		echo '<div class="table">';	
+		foreach($customvalues as $customkey=>$customdata) {
+			$inputname = "customvalue[$customkey]";
+			$validation="";
+			$cvtype = $customvalues[$customkey]["type"];
+			if($customvalues[$customkey]["required"]==1 || $cvtype!="string"){
+				$validation=' class="validate[';
+				$validationrules=array();
+				if($customvalues[$customkey]["required"]==1) {
+					$validationrules[]="required";
+				}
+				if($cvtype!="string" && $cvtype != "checkbox"){
+					$validationrules[]='custom['.$cvtype.']';
+				}
+				$validation.=implode(",",$validationrules);
+				$validation.=']" ';
+			}
+			echo '<div>
+				<div><label for="',$inputname,'">',$dcaList[$customkey]->Label,'</label></div>';
+			if($cvtype=="checkbox"){
+				$checked = "";
+				if($customdata["value"] == "1" || $customdata["value"]=="on"){
+					$checked = " checked";
+				}
+				echo '<div><input type="checkbox" name="',$inputname,'" id="',$inputname,'"',$checked,'></div>';
+			} else {
+				echo '<div><input type="text"',$validation,' name="',$inputname,'" id="',$inputname,'" value="',$customdata["value"],'"></div>';
+
+			}
+		     	echo '</div>';
+		}
+		echo '</div>';
+	}
+	function updateCustomValues($device) {
+		$template=new DeviceTemplate();
+		$template->TemplateID=$device->TemplateID;
+		$template->GetTemplateByID();
+		
+		$dcaList=DeviceCustomAttribute::GetDeviceCustomAttributeList();
+		$tdcaList=$template->CustomValues;
+		$defaultvalues = array();
+		if(isset($dcaList)) {
+			foreach($dcaList as $dca) {
+				if($dca->AllDevices==1) {
+					$defaultvalues[$dca->AttributeID]["value"]=$dca->DefaultValue;
+					$defaultvalues[$dca->AttributeID]["required"]=$dca->Required;
+				}
+			}
+		}
+		if(isset($tdcaList)) {
+			foreach($tdcaList as $AttributeID=>$tdca) {
+				$defaultvalues[$AttributeID]["value"]=$tdca["value"];
+				$defaultvalues[$AttributeID]["required"]=$tdca["required"];
+			}
+		}
+
+		$device->DeleteCustomValues();
+
+		// TODO: what of server-side validation if this is a "required" attribute?
+		foreach($_POST["customvalue"] as $AttributeID=>$value) {
+			if(trim($value) != trim($defaultvalues[$AttributeID]["value"])) {
+				$device->InsertCustomValue($AttributeID, $value);	
+			}
+			
+		}
+		
+	}
 // In the case of a child device we might define this above and in that case we
 // need to preserve the flag
 $write=(isset($write))?$write:false;
@@ -934,6 +1050,15 @@ $(document).ready(function() {
 		if(n==0){$('#deviceimages').hide();}
 	}
 
+	function customattrrefresh(templateid){
+		$.post('',{customattrrefresh: templateid, deviceid:  $('#deviceid').val() }).done(function(data){
+console.log($('#customattrs .table ~ .table'));
+			$('#customattrs .table ').replaceWith(data);
+		});
+
+
+	}
+
 	// Need to make some changes to the UI for the storage room
 	$('#cabinetid').change(function(){
 		var positionrow=$('#position').parent('div').parent('div');
@@ -956,6 +1081,7 @@ $(document).ready(function() {
 			(data['FrontPictureFile']!='')?$('#devicefront').attr('src','pictures/'+data['FrontPictureFile']):$('#devicefront').removeAttr('src').hide();
 			(data['RearPictureFile']!='')?$('#devicerear').attr('src','pictures/'+data['RearPictureFile']):$('#devicerear').removeAttr('src').hide();
 			toggledeviceimages();
+			customattrrefresh($('#templateid').val());
 		});
 	});
 
@@ -1391,6 +1517,11 @@ echo '		   </div>
 			<div><textarea type="text" name="tags" id="tags" rows="1"></textarea></div>
 		</div>
 	</div> <!-- END div.table -->
+</fieldset>
+<fieldset id="customattrs">
+<legend>',__("Custom Attributes"),'</legend>';
+buildCustomAttributes($templ,$dev);
+echo '
 </fieldset>
 	<div class="table">
 		<div>
