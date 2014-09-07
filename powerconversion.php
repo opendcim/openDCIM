@@ -2,8 +2,9 @@
 	require_once( 'db.inc.php' );
 	require_once( 'facilities.inc.php' );
 
-$reset="DELETE FROM fac_Device WHERE DeviceID>2170;TRUNCATE TABLE fac_PowerPorts;DELETE FROM fac_Ports WHERE DeviceID>2170;";
-$dbh->query($reset);
+// DOH! this is for rapid resetting while testing.  Adjust the DeviceID accordingly
+//$reset="DELETE FROM fac_Device WHERE DeviceID>2170;TRUNCATE TABLE fac_PowerPorts;DELETE FROM fac_Ports WHERE DeviceID>2170;";
+//$dbh->query($reset);
 	/*
 	 * Initial conversion from fac_PowerConnection to fac_PowerPorts
 	 * to lay the groundwork for conversion of the CDUs to standard devices
