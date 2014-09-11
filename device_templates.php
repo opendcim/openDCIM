@@ -128,10 +128,52 @@
 			return $status;
 		}
 
+		function UpdateCustomValues($template,$status) {
+			/* Note: if a user changes the value or required status of an attribute that is not "all devices" and does not
+				enable it on the device_templates screen, it won't update here. it is a weird ui experience, but it
+				seems like the proper functionality since we aren't saving data for anything that isn't enabled */
+			$dcaList=DeviceCustomAttribute::GetDeviceCustomAttributeList();
+			$template->DeleteCustomValues();
+			foreach($_POST["tdca"] as $dcaid=>$currentdca) {
+				if((isset($currentdca["enabled"]) && $currentdca["enabled"]==="on")) {
+					$insertval = '';
+					$requiredval = 0;
+					if(isset($currentdca["value"]) && trim($currentdca["value"] != '')) {
+						$insertval = trim($currentdca["value"]);
+					}
+					if(isset($currentdca["required"]) && $currentdca["required"] == "on") {
+						$requiredval = 1;
+					}
+					$status=($template->InsertCustomValue($dcaid, $insertval,$requiredval))?$status:__('Error updating device template custom values');
+				} elseif(array_key_exists($dcaid, $dcaList) && $dcaList[$dcaid]->AllDevices==1) {
+				/* since the enabled checkbox for attributes marked as "all devices" is disabled, it doesn't get passed in with the form,
+					so parse through and if the value or required status are different than the defaults, add a row for them as well. this
+					helps keep the table clean of a bunch of default values too */
+					$insertval = $dcaList[$dcaid]->DefaultValue;
+					$requiredval = $dcaList[$dcaid]->Required;
+					// don't check if the value is empty - this lets us overwrite a default value from the config page with empty here
+					if(isset($currentdca["value"])) {
+						$insertval = trim($currentdca["value"]);
+					}
+					if(isset($currentdca["required"]) && $currentdca["required"] == "on") {
+						$requiredval = 1;
+					}
+					if(($insertval != $dcaList[$dcaid]->DefaultValue) || ($requiredval != $dcaList[$dcaid]->Required)) {
+						$status=($template->InsertCustomValue($dcaid, $insertval, $requiredval))?$status:__('Error updating device template custom values');
+					}
+				}
+			}
+			return $status;
+		}
+
 		switch($_POST['action']){
 			case 'Create':
 				if($template->CreateTemplate()){
+					$oldstatus = $status;
 					$status=UpdateSlotsPorts($template,$status);
+					if($oldstatus == $status) {
+						$status=UpdateCustomValues($template,$status);
+					}
 				}else{
 					$status=__("An error has occured, template not created");
 				}
@@ -141,14 +183,20 @@
 				if ($status==__("Updated")){
 					$status=UpdateSlotsPorts($template,$status);
 				}
+				if ($status==__("Updated")){
+					$status=UpdateCustomValues($template,$status);
+				}
 				break;
 			case 'Device':
-				// someone will inevitibly try to update the template values and just click 
-				// update devices so make sure the template will update before trying to 
+				// someone will inevitibly try to update the template values and just click
+				// update devices so make sure the template will update before trying to
 				// update the device values to match the template
 				$status=($template->UpdateTemplate())?__("Updated"):__("Error updating template");
 				if ($status==__("Updated")){
 					$status=UpdateSlotsPorts($template,$status);
+				}
+				if ($status==__("Updated")){
+					$status=UpdateCustomValues($template,$status);
 				}
 				if($status==__("Updated")){
 					$status=($template->UpdateDevices())?__("Updated"):__("Error updating devices");
@@ -159,6 +207,9 @@
 				$status=($template->UpdateTemplate())?__("Updated"):__("Error");
 				if ($status==__("Updated")){
 					$status=UpdateSlotsPorts($template,$status);
+				}
+				if ($status==__("Updated")){
+					$status=UpdateCustomValues($template,$status);
 				}
 				if($status==__("Updated")){
 					$status=($template->ExportTemplate())?__("Exported"):__("Error");
@@ -173,7 +224,8 @@
 	$ManufacturerList=$manufacturer->GetManufacturerList();
 	$mtList=MediaTypes::GetMediaTypeList();
 	$ccList=ColorCoding::GetCodeList();
-			
+	$dcaList=DeviceCustomAttribute::GetDeviceCustomAttributeList();
+
 	$imageselect='<div id="preview"></div><div id="filelist">';
 
 	$path='./pictures';
@@ -507,6 +559,76 @@ echo '	</select>
    <div><label for="RearChassisSlots">',__("Rear Chassis Slots"),'</label></div>
    <div><input type="text" name="RearChassisSlots" id="RearChassisSlots" value="',$template->RearChassisSlots,'"><button type="button">',__("Edit Coordinates"),'</button></div>
 </div>';
+foreach($dcaList as $dca) {
+	$templatedcaChecked = "";
+	$templatedcaDisabled = "";
+	$templatedcaValue = "";
+	$templatedcaRequired = "";
+	if($dca->AllDevices) {
+		$templatedcaChecked=" checked";
+		$templatedcaDisabled=" disabled";
+	}
+	//TODO the ui seems weird if the default value gets set and this row isn't enabled
+	if($dca->DefaultValue != '') {
+		$templatedcaValue=$dca->DefaultValue;
+	}
+	if($dca->Required == 1) {
+		$templatedcaRequired = " checked";
+	}
+	// this check goes after the all devices check so that the template value overwrites any system-wide default value
+	if(isset($template->CustomValues) && array_key_exists($dca->AttributeID, $template->CustomValues)){
+		$templatedcaChecked=" checked";
+		$templatedcaValue=$template->CustomValues[$dca->AttributeID]["value"];
+		$templatedcaRequired=($template->CustomValues[$dca->AttributeID]["required"]==1)?" checked":"";
+	}
+	echo '<div>
+		<div>',$dca->Label,'</div>';
+	echo '<div>';
+	if($dca->AttributeType=="checkbox") {
+		$checked="";
+		if($templatedcaValue=="1" || $templatedcaValue=="on"){
+			$checked=" checked";
+		}
+		echo __("Default:").' <input type="checkbox" name="tdca[',$dca->AttributeID,'][value]" ',$checked,'>';
+	} else {
+		$validation="";
+		if($templatedcaChecked != "" && $dca->AttributeType!="string" && $dca->AttributeType!="checked") {
+			$validation=' class="validate[custom['.$dca->AttributeType.']]"';
+		}
+		echo '<input type="text" name="tdca[',$dca->AttributeID,'][value]"',$validation,' id="tdca[',$dca->AttributeID,'][value]" value="',$templatedcaValue,'">';
+		echo '<input type="button" name=tdca[',$dca->AttributeID,'][revert]" id="tdca[',$dca->AttributeID,'][revert]" value="'.__("Revert").'" title="'.__("Revert to default value from configuration page").'" data-val="',$dca->DefaultValue,'" data-id="',$dca->AttributeID,'">';
+		echo '<script>
+			$("#tdca\\\[',$dca->AttributeID,'\\\]\\\[revert\\\]").click(function(){
+				var defaultVal = this.getAttribute("data-val");
+				var id = this.getAttribute("data-id");
+				var inputid = "tdca\\\["+id+"\\\]\\\[value\\\]";
+				$("#"+inputid).val(defaultVal);
+			});
+			</script>';
+	}
+	echo __("Enabled?").'<input type="checkbox" name="tdca[',$dca->AttributeID,'][enabled]" id="tdca[',$dca->AttributeID,'][enabled]" data=',$dca->AttributeID,' title="'.__("Enabled?").'"',$templatedcaChecked,$templatedcaDisabled,'>
+		'.__("Required?").'<input type="checkbox" name="tdca[',$dca->AttributeID,'][required]" title="'.__("Required?").'"',$templatedcaRequired,'>
+		<input type="hidden" name="tdca[',$dca->AttributeID,'][attributetype]" id="tdca[',$dca->AttributeID,'][attributetype]" value="',$dca->AttributeType,'">
+		<script>
+			$("#tdca\\\[',$dca->AttributeID,'\\\]\\\[enabled\\\]").click(function(){
+				var id = this.getAttribute("data");
+				var typeid = "tdca\\\["+id+"\\\]\\\[attributetype\\\]";
+				var inputid = "tdca\\\["+id+"\\\]\\\[value\\\]";
+				var type = $("#"+typeid).val();
+				if(this.checked){
+					$("#"+inputid).removeClass();
+					if(type!="checkbox" && type!="string"){
+						$("#"+inputid).addClass("validate[custom["+type+"]]");
+					}
+				} else {
+					$("#"+inputid).removeClass();
+				}
+			});
+		</script>
+		</div>
+	</div>';
+}
+
 if ( $template->TemplateID > 0 ) {
 	echo '
 <div>

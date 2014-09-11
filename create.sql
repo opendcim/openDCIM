@@ -807,3 +807,41 @@ INSERT INTO fac_CDUTemplate set ManufacturerID=(select ManufacturerID from fac_M
 INSERT INTO fac_CDUTemplate set ManufacturerID=(select ManufacturerID from fac_Manufacturer where Name='ServerTech'), Model="Generic Single-Phase CDU", Managed=TRUE, VersionOID=".1.3.6.1.4.1.1718.3.1.1.0", Multiplier=100, OID1=".1.3.6.1.4.1.1718.3.2.2.1.7.1.1", OID2="", OID3="", ProcessingProfile="SingleOIDAmperes", Voltage="", Amperage="", NumOutlets="24";
 INSERT INTO fac_CDUTemplate set ManufacturerID=(select ManufacturerID from fac_Manufacturer where Name='ServerTech'), Model="Generic 3-Phase CDU", Managed=TRUE, VersionOID=".1.3.6.1.4.1.1718.3.1.1.0", Multiplier=100, OID1=".1.3.6.1.4.1.1718.3.2.2.1.7.1.1", OID2=".1.3.6.1.4.1.1718.3.2.2.1.7.1.2", OID3=".1.3.6.1.4.1.1718.3.2.2.1.7.1.3", ProcessingProfile="Convert3PhAmperes", Voltage="", Amperage="", NumOutlets="24";
 
+
+---
+--- Table structure for fac_DeviceCustomAttribute
+---
+DROP TABLE IF EXISTS fac_DeviceCustomAttribute;
+CREATE TABLE fac_DeviceCustomAttribute(
+  AttributeID int(11) NOT NULL AUTO_INCREMENT,
+  Label varchar(80) NOT NULL,
+  AttributeType enum('string', 'number', 'integer', 'date', 'phone', 'email', 'ipv4', 'url', 'checkbox') NOT NULL DEFAULT 'string',
+  Required tinyint(1) NOT NULL DEFAULT 0,
+  AllDevices tinyint(1) NOT NULL DEFAULT 0,
+  DefaultValue varchar(65000),
+  PRIMARY KEY (AttributeID)
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+
+---
+--- Table structure for fac_DeviceTemplateCustomValue
+---
+DROP TABLE IF EXISTS fac_DeviceTemplateCustomValue;
+CREATE TABLE fac_DeviceTemplateCustomValue (
+  TemplateID int(11) NOT NULL,
+  AttributeID int(11) NOT NULL,
+  Required tinyint(1) NOT NULL DEFAULT 0,
+  Value varchar(65000),
+  PRIMARY KEY (TemplateID, AttributeID)
+) ENGINE=InnoDB CHARSET=utf8 COLLATE=utf8_unicode_ci;
+
+---
+--- Table structure for fac_DeviceCustomValue
+---
+DROP TABLE IF EXISTS fac_DeviceCustomValue;
+CREATE TABLE fac_DeviceCustomValue (
+  DeviceID int(11) NOT NULL,
+  AttributeID int(11) NOT NULL,
+  Value varchar(65000),
+  PRIMARY KEY (DeviceID, AttributeID)
+) ENGINE=InnoDB CHARSET=utf8 COLLATE=utf8_unicode_ci;
+
