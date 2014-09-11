@@ -15,8 +15,10 @@ INSERT INTO fac_GenericLog (UserID, Class, ObjectID, Action, Time) SELECT fac_Ca
 -- Time to merge Contacts and Users - create a new fac_People table and delete the two old ones in the next release
 --
 
+DROP TABLE IF EXISTS fac_People;
 CREATE TABLE fac_People (
-  UserID varchar(80) NOT NULL,
+  PersonID int(11) NOT NULL AUTO_INCREMENT,
+  UserID varchar(255) NOT NULL,
   LastName varchar(40) NOT NULL,
   FirstName varchar(40) NOT NULL,
   Phone1 varchar(20) NOT NULL,
@@ -32,5 +34,6 @@ CREATE TABLE fac_People (
   RackAdmin tinyint(1) NOT NULL,
   SiteAdmin tinyint(1) NOT NULL,
   Disabled tinyint(1) NOT NULL,
-  PRIMARY KEY(UserID)
+  PRIMARY KEY(PersonID),
+  KEY(UserID)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;

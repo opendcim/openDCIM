@@ -31,6 +31,7 @@ class People {
 					things greatly.
 	*/
 
+	var $PersonID;
 	var $UserID;
 	var $LastName;
 	var $FirstName;
@@ -49,6 +50,7 @@ class People {
 	var $Disabled;
 	
 	function MakeSafe(){
+		$this->PersonID=intval($this->PersonID);
 		$this->UserID=sanitize($this->UserID);
 		$this->LastName=sanitize($this->LastName);
 		$this->FirstName=sanitize($this->FirstName);
@@ -68,6 +70,7 @@ class People {
 	}
 	
 	function MakeDisplay(){
+		$this->PersonID=intval($this->PersonID);
 		$this->UserID=sanitize($this->UserID);
 		$this->LastName=stripslashes($this->LastName);
 		$this->FirstName=stripslashes($this->FirstName);
@@ -124,7 +127,26 @@ class People {
 	function GetPerson() {
 		$this->MakeSafe();
 		
-		$sql = "select * from fac_People where UserID=\"". $this->UserID . "\"";
+		$sql = "select * from fac_People where PersonID=\"". $this->PersonID . "\"";
+		
+		if ( $row = $this->query( $sql )->fetch() ) {
+			foreach( People::RowToObject( $row ) as $prop=>$value ) {
+				$this->$prop=$value;
+			}
+		} else {
+			// Kick back a blank record if the PersonID was not found
+			foreach ( $this as $prop => $value ) {
+				if ( $prop!='PersonID' ) {
+					$this->$prop = '';
+				}
+			}
+		}
+	}
+	
+	function GetUserID() {
+		$this->MakeSafe();
+		
+		$sql = "select * from fac_People where UserID=\"" . $this->UserID . "\"";
 		
 		if ( $row = $this->query( $sql )->fetch() ) {
 			foreach( People::RowToObject( $row ) as $prop=>$value ) {
@@ -138,7 +160,7 @@ class People {
 				}
 			}
 		}
-	}
+	}		
 }
 
 class Contact {
