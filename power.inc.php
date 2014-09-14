@@ -199,6 +199,141 @@ class CDUTemplate {
 	}
 }
 
+class PowerPorts {
+	var $DeviceID;
+	var $PortNumber;
+	var $Label;
+	var $ConnectedDeviceID;
+	var $ConnectedPort;
+	var $Notes;
+
+	function MakeSafe() {
+		$this->DeviceID=intval($this->DeviceID);
+		$this->PortNumber=intval($this->PortNumber);
+		$this->Label=sanitize($this->Label);
+		$this->ConnectedDeviceID=intval($this->ConnectedDeviceID);
+		$this->ConnectedPort=intval($this->ConnectedPort);
+		$this->Notes=sanitize($this->Notes);
+
+		if($this->ConnectedDeviceID==0 || $this->ConnectedPort==0){
+			$this->ConnectedDeviceID="NULL";
+			$this->ConnectedPort="NULL";
+		}
+	}
+
+	function MakeDisplay(){
+		$this->Label=stripslashes(trim($this->Label));
+		$this->Notes=stripslashes(trim($this->Notes));
+	}
+
+	static function RowToObject($dbRow){
+		$pp=new PowerPorts();
+		$pp->DeviceID=$dbRow['DeviceID'];
+		$pp->PortNumber=$dbRow['PortNumber'];
+		$pp->Label=$dbRow['Label'];
+		$pp->ConnectedDeviceID=$dbRow['ConnectedDeviceID'];
+		$pp->ConnectedPort=$dbRow['ConnectedPort'];
+		$pp->Notes=$dbRow['Notes'];
+
+		$pp->MakeDisplay();
+
+		return $pp;
+	}
+
+	function getPort(){
+		global $dbh;
+		$this->MakeSafe();
+
+		$sql="SELECT * FROM fac_PowerPorts WHERE DeviceID=$this->DeviceID AND PortNumber=$this->PortNumber;";
+
+		if(!$row=$dbh->query($sql)->fetch()){
+			return false;
+		}else{
+			foreach(PowerPorts::RowToObject($row) as $prop => $value){
+				$this->$prop=$value;
+			}
+			return true;
+		}
+	}
+
+	function getPorts(){
+		global $dbh;
+		$this->MakeSafe();
+
+		$sql="SELECT * FROM fac_PowerPorts WHERE DeviceID=$this->DeviceID ORDER BY PortNumber ASC;";
+
+		$ports=array();
+		foreach($dbh->query($sql) as $row){
+			$ports[$row['PortNumber']]=PowerPorts::RowToObject($row);
+		}	
+		return $ports;
+	}
+
+	function createPort() {
+		global $dbh;
+		
+		$this->MakeSafe();
+
+		$sql="INSERT INTO fac_PowerPorts SET DeviceID=$this->DeviceID, 
+			PortNumber=$this->PortNumber, Label=\"$this->Label\", 
+			ConnectedDeviceID=$this->ConnectedDeviceID, ConnectedPort=$this->ConnectedPort, 
+			Notes=\"$this->Notes\";";
+			
+		if(!$dbh->query($sql)){
+			$info=$dbh->errorInfo();
+
+			error_log("createPort::PDO Error: {$info[2]} SQL=$sql");
+			return false;
+		}
+
+		(class_exists('LogActions'))?LogActions::LogThis($this):'';
+		return true;
+	}
+
+	static function createPorts($DeviceID){
+		$dev=New Device;
+		$dev->DeviceID=$DeviceID;
+		if(!$dev->GetDevice()){return false;}
+
+		// Check the user's permissions to modify this device
+		if($dev->Rights!='Write'){return false;}
+		$portList=array();
+
+		// This will need to be expanded after the template system is expanded to allow for naming ports
+
+		for($n=0; $n<$dev->Ports; $n++){
+			$i=$n+1;
+			$portList[$i]=new PowerPorts();
+			$portList[$i]->DeviceID=$dev->DeviceID;
+			$portList[$i]->PortNumber=$i;
+			$portList[$i]->Label=__("Power Supply").$i;
+			$portList[$i]->createPort();
+		}
+		return $portList;
+	}
+
+	function updateLabel(){
+		global $dbh;
+
+		$this->MakeSafe();
+
+		$oldport=new PowerPorts(); // originating port prior to modification
+		$oldport->DeviceID=$this->DeviceID;
+		$oldport->PortNumber=$this->PortNumber;
+		$oldport->getPort();
+
+		$sql="UPDATE fac_PowerPorts SET Label=\"$this->Label\" WHERE 
+			DeviceID=$this->DeviceID AND PortNumber=$this->PortNumber;";
+
+		if(!$dbh->query($sql)){
+			return false;
+		}else{
+			(class_exists('LogActions'))?LogActions::LogThis($this,$oldport):'';
+			return true;
+		}
+	}
+}
+
 class PowerConnection {
 	/* PowerConnection:		A mapping of power strip (PDU) ports to the devices connected to them.
 							Devices are limited to those within the same cabinet as the power strip,

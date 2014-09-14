@@ -2739,7 +2739,6 @@ class Device {
 		return false;
 	}
 }
-
 class DevicePorts {
 	var $DeviceID;
 	var $PortNumber;
@@ -2867,7 +2866,6 @@ class DevicePorts {
 		}
 
 		// Build the DevicePorts from the existing info in the following priority:
-		//  (- Existing switchconnection table)  --> this comment is obsolete
 		//  - Template ports table
 		//  - SNMP data (if it exists)
 		//  - Placeholders
