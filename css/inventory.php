@@ -127,7 +127,7 @@ div#imageselection { display: none;}
 #imageselection #preview { position: absolute; top: 0; right: 0; height: 180px; width: 180px; margin: 0.1em 0 0 0; padding: 0; border: 0px solid black;}
 #imageselection #filelist { position: absolute; top: 0; left: 1em; height: 380px; width: 245px; overflow-y: scroll; overflow-x: hidden; white-space: nowrap;}
 
-.ui-menu-item ul { max-height: 200px; overflow: auto; }
+#configtabs .ui-menu-item ul { max-height: 200px; overflow: auto; }
 #tzmenu {display: none;}
 
 #tooltip, #cdutooltip { min-height: 300px; min-width: 550px; }
@@ -735,6 +735,7 @@ div.cabinet {
 .device .delete .ui-icon.status.down {cursor: pointer;}
 .switch .delete, .patchpanel .delete { border: 0 none; }
 .switch.table > div > div,
+.power.table > div > div,
 .patchpanel.table > div > div { min-width: 0px; }
 .switch.table > div > div:first-child,
 .patchpanel.table > div > div:first-child { min-width: 15px; }
