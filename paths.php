@@ -33,19 +33,23 @@
 	}
 
 	if(isset($_POST['bot_eliminar'])){
-		$port=new DevicePorts();
-		for ($i=1;$i<$_POST['elem_path'];$i++){
-			if ($_POST["PortNumber"][$i]>0){
-				$port->DeviceID=$_POST["DeviceID"][$i];
-				$port->PortNumber=$_POST["PortNumber"][$i];
-				$port->getPort();
-				//only remove connections between front ports
-				if ($port->ConnectedPort>0){
-					$port->removeConnection();
+		if($user->WriteAccess){
+			$port=new DevicePorts();
+			for ($i=1;$i<$_POST['elem_path'];$i++){
+				if ($_POST["PortNumber"][$i]>0){
+					$port->DeviceID=$_POST["DeviceID"][$i];
+					$port->PortNumber=$_POST["PortNumber"][$i];
+					$port->getPort();
+					//only remove connections between front ports
+					if ($port->ConnectedPort>0){
+						$port->removeConnection();
+					}
 				}
 			}
+			$status.=__("Front connections Deleted");
+		}else{
+			$status.=__("You have no privileges!");
 		}
-		$status.=__("Front connections Deleted");
 	}
 	
 	if(isset($_POST['action']) || isset($_REQUEST['pathid']) || (isset($_REQUEST['deviceid']) && isset($_REQUEST['portnumber']))){
@@ -455,7 +459,7 @@
 			$path.="\t<tr>\n\t\t<td colspan=6>&nbsp;</td>\n\t</tr></table></div>";
 		
 			// need to add an additional check for permission here if they can write
-			if(!isset($_GET['pathonly'])){
+			if(!isset($_GET['pathonly']) && $user->WriteAccess){
 				//Delete Form
 				$path.= "<form action=\"{$_SERVER["PHP_SELF"]}\" method=\"POST\">\n";
 				$path.= "<br>\n"; 
