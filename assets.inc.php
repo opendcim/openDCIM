@@ -1216,7 +1216,7 @@ class Device {
 		$user=User::Current();
 		if($user->canRead($this->Owner)){$this->Rights="Read";}
 		if($user->canWrite($this->Owner)){$this->Rights="Write";} // write by device
-		if($this->Cabinet==0){ // cabinet=0 this is a child device of a chassis
+		if($this->ParentDevice>0){ // this is a child device of a chassis
 			$par=new Device();
 			$par->DeviceID=$this->ParentDevice;
 			$par->GetDevice();
@@ -1710,8 +1710,6 @@ class Device {
 	function GetParentDevices(){
 		global $dbh;
 		
-		// $sql="SELECT * FROM fac_Device WHERE ChassisSlots>0 AND ParentDevice=0 ORDER BY Label ASC;";
-		// JMGA multichassis
 		$sql="SELECT * FROM fac_Device WHERE ChassisSlots>0 OR RearChassisSlots>0 ORDER BY Label ASC;";
 
 		$parentList=array();
@@ -1796,9 +1794,8 @@ class Device {
 		$this->MakeSafe();
 
 		if($includechildren){
-			$sql="SELECT * FROM fac_Device WHERE ParentDevice IN (SELECT DeviceID FROM 
-				fac_Device WHERE Cabinet=$this->Cabinet) UNION SELECT * FROM fac_Device 
-				WHERE Cabinet=$this->Cabinet ORDER BY ParentDevice ASC, Position DESC;";
+			$sql="SELECT * FROM fac_Device WHERE Cabinet=$this->Cabinet 
+				ORDER BY Position DESC;";
 		}elseif ($this->Cabinet<0){
 			//StorageRoom
 			if ($this->Position>0)
@@ -1808,7 +1805,7 @@ class Device {
 				$sql="SELECT * FROM fac_Device WHERE Cabinet=$this->Cabinet 
 					ORDER BY Position DESC;";
 		}else{
-			$sql="SELECT * FROM fac_Device WHERE Cabinet=$this->Cabinet AND Cabinet!=0 
+			$sql="SELECT * FROM fac_Device WHERE Cabinet=$this->Cabinet AND ParentDevice=0 
 				ORDER BY Position DESC;";
 		}
 		
@@ -3229,23 +3226,34 @@ class DevicePorts {
 			// Gets a little complicated if you are on a blade device and looking for other patch candidates
 			// But putting this logic into the SQL is extremely processor intensive, so do the conditional on the outside
 			// and only take the processing hit when there's a child device as the source
-			$cabinetID=($dev->ParentDevice==0)?$dev->Cabinet:$dev->WhosYourDaddy()->Cabinet;
+			
+			//JMGA #511
+			//$cabinetID=($dev->ParentDevice==0)?$dev->Cabinet:$dev->WhosYourDaddy()->Cabinet;
+			$cabinetID=$dev->GetDeviceCabinetID();
+			
 			$sqlSameCabDevice="SELECT * FROM fac_Device WHERE Ports>0 AND 
 				Cabinet=$cabinetID $rights$pp GROUP BY DeviceID ORDER BY Position 
 				DESC, Label ASC;";
+			/*JMGA #511
 			$sqlSameCabChildDevice="SELECT * FROM fac_Device WHERE Ports>0 AND 
 				Cabinet=0 AND ParentDevice IN (SELECT DeviceID FROM fac_Device WHERE 
 				Cabinet=$cabinetID AND (ChassisSlots>0 OR RearChassisSlots>0)) $rights$pp 
 				GROUP BY DeviceID ORDER BY Position DESC, Label ASC;";
+			*/
 			$sqlDiffCabDevice="SELECT * FROM fac_Device WHERE Ports>0 AND 
 				Cabinet!=$cabinetID $rights$pp GROUP BY DeviceID ORDER BY Label ASC;";
+			
+			/*JMGA #511
 			$sqlDiffCabChildDevice="SELECT * FROM fac_Device WHERE Ports>0 AND Cabinet=0 
 				AND ParentDevice IN (SELECT DeviceID FROM fac_Device WHERE 
 				Cabinet!=$cabinetID AND (ChassisSlots>0 OR RearChassisSlots>0)) $rights$pp 
 				GROUP BY DeviceID ORDER BY Label ASC;";
+			*/
 
 			// Running these four simple queries is supposed to be faster than the previous complicated ones
-			foreach(array($sqlSameCabDevice, $sqlSameCabChildDevice, $sqlDiffCabDevice, $sqlDiffCabChildDevice) as $sql){
+			//JMGA #511
+			//foreach(array($sqlSameCabDevice, $sqlSameCabChildDevice, $sqlDiffCabDevice, $sqlDiffCabChildDevice) as $sql){
+			foreach(array($sqlSameCabDevice, $sqlDiffCabDevice) as $sql){
 				foreach($dbh->query($sql) as $row){
 					// false to skip rights check we filtered using sql above
 					$tmpDev=Device::RowToObject($row,false);
