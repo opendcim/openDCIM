@@ -92,6 +92,7 @@ class People {
 
 	static function RowToObject($row){
 		$person=new People();
+		$person->PersonID=$row["PersonID"];
 		$person->UserID=$row["UserID"];
 		$person->LastName=$row["LastName"];
 		$person->FirstName=$row["FirstName"];
@@ -114,14 +115,38 @@ class People {
 		return $person;
 	}
 
+	function exec($sql){
+		global $dbh;
+		return $dbh->exec($sql);
+	}
+
 	function query($sql){
 		global $dbh;
 		return $dbh->query($sql);
 	}
-
-	function exec($sql){
+	
+	function lastID($sql) {
 		global $dbh;
-		return $dbh->exec($sql);
+		return $dbh->lastInsertID();
+	}
+	
+	function CreatePerson() {
+		$this->MakeSafe();
+		
+		$sql = "insert into fac_People set UserID=\"" . $this->UserID . "\", LastName=\"" . $this->LastName . "\", FirstName=\"" . $this->FirstName . "\",
+			Phone1=\"" . $this->Phone1 . "\", Phone2=\"" . $this->Phone2 . "\", Phone3=\"" . $this->Phone3 . "\", Email=\"" . $this->Email . "\",
+			AdminOwnDevices=" . $this->AdminOwnDevices . ", ReadAccess=" . $this->ReadAccess . ", WriteAccess=" . $this->WriteAccess . ",
+			DeleteAccess=" . $this->DeleteAccess . ", ContactAdmin=" . $this->ContactAdmin . ", RackRequest=" . $this->RackRequest . ", RackAdmin=" . $this->RackAdmin . ",
+			SiteAdmin=" . $this->SiteAdmin . ", Disabled=" . $this->Disabled;
+		
+		if ( $this->query( $sql ) ) {
+			$this->PersonID = $this->lastID();
+			(class_exists('LogActions'))?LogActions::LogThis($this):'';
+			return $this->PersonID;
+		} else {
+			error_log( "Unable to insert record into fac_People with SQL: " . $sql );
+			return false;
+		}
 	}
 	
 	function GetPerson() {
@@ -160,7 +185,25 @@ class People {
 				}
 			}
 		}
-	}		
+	}
+	
+	function UpdatePerson() {
+		$this->MakeSafe();
+		
+		$sql = "update fac_People set UserID=\"" . $this->UserID . "\", LastName=\"" . $this->LastName . "\", FirstName=\"" . $this->FirstName . "\",
+			Phone1=\"" . $this->Phone1 . "\", Phone2=\"" . $this->Phone2 . "\", Phone3=\"" . $this->Phone3 . "\", Email=\"" . $this->Email . "\",
+			AdminOwnDevices=" . $this->AdminOwnDevices . ", ReadAccess=" . $this->ReadAccess . ", WriteAccess=" . $this->WriteAccess . ",
+			DeleteAccess=" . $this->DeleteAccess . ", ContactAdmin=" . $this->ContactAdmin . ", RackRequest=" . $this->RackRequest . ", RackAdmin=" . $this->RackAdmin . ",
+			SiteAdmin=" . $this->SiteAdmin . ", Disabled=" . $this->Disabled . ", where PersonID=" . $this->PersonID;
+			
+		if ( $this->query( $sql ) ) {
+			(class_exists('LogActions'))?LogActions::LogThis($this):'';
+			return;
+		} else {
+			error_log( "Unable to modify record in fac_People with SQL: " . $sql );
+			return false;
+		}
+	}
 }
 
 class Contact {
