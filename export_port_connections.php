@@ -120,6 +120,14 @@
 	}	
 */
 	
+		// Make power cable labels based on the number of power supplies
+		for ( $n = 1; $n <= $dev->PowerSupplyCount; $n++ ) {
+			$sheet->getActiveSheet()->SetCellValue('A' . $row, $dev->Label );
+			$sheet->getActiveSheet()->SetCellValue('B' . $row, 'Power Supply ' . $n );
+			
+			$row++;
+		}
+		
 		foreach ( $portList as $devPort ) {
 			// These are created inside the loop, because they need to be clean instances each time
 			$targetDev = new Device();
