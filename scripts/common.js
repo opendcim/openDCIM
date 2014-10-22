@@ -1186,7 +1186,7 @@ function LameLogDisplay(){
  
 		_createAutocomplete: function() {
 			var selected=this.element.children(":selected"),
-				value=selected.val()?selected.text():"";
+				value=selected.val()?selected.text().trim():"";
 
 			this.input=$("<input>").css('width',this.wrapper.width()-24+'px').appendTo(this.wrapper).val(value).attr("title","")
 				.addClass("custom-combobox-input ui-widget ui-widget-content ui-state-default")
