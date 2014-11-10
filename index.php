@@ -6,7 +6,17 @@
 
 	require_once( 'db.inc.php' );
 	require_once( 'facilities.inc.php' );
-
+	
+	if ( ! People::Current() ) {
+		if ( $Authentication == "Google" ) {
+			header( "Location: loginGoogle.php" );
+			exit;
+		} elseif ( $Authentication == "Apache" ) {
+			print "<h1>You must have some form of Authentication enabled to use openDCIM.</h1>";
+			exit;
+		}
+	}
+	
 	$subheader=__("Data Center Operations Metrics");
 
 	$sql = 'select count(*) as DCs from fac_DataCenter';

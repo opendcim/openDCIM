@@ -149,6 +149,39 @@ class People {
 		}
 	}
 	
+	static function Current(){
+		$cperson=new People();
+
+		if ( php_sapi_name() == "cli" ) {
+			// If the script is being called from the command line, just give God priveleges and be done with it
+			$cperson->ReadAccess = true;
+			$cperson->WriteAccess = true;
+			$cperson->SiteAdmin = true;
+		} elseif ( AUTHENTICATION == "Apache" ) {
+			if ( isset( $_SERVER["REMOTE_USER"] ) ) {
+				$cperson->UserID=@$_SERVER['REMOTE_USER'];
+				$cperson->GetUserRights();
+			} else {
+				return false;
+			}
+		} elseif ( AUTHENTICATION == "Google" ) {
+			if ( ! isset( $_SESSION['access_token'] ) ) {
+				error_log( "Enable to retrieve Google OAuth Access Token." );
+				return false;
+			}
+			
+			$client= new Google_Client();
+			$client->setAccessToken($_SESSION['access_token']);
+			$plus = new Google_Service_Plus( $client );
+			$me = $plus->people->get('me');
+			
+			$cperson->UserID = $me[emails][0][value];
+			$cperson->GetUserRights();
+		}
+		
+		return $cperson;
+	}
+	
 	function GetPerson() {
 		$this->MakeSafe();
 		
@@ -185,6 +218,29 @@ class People {
 				}
 			}
 		}
+	}
+	
+	function GetUserRights() {
+		$this->MakeSafe();
+
+		$sql="SELECT * FROM fac_People WHERE UserID=\"$this->UserID\";";
+
+		if($row=$this->query($sql)->fetch()){
+			foreach(People::RowToObject($row) as $prop => $value){
+				$this->$prop=$value;
+			}
+		}
+
+		/* Just in case someone disabled a user, but didn't remove all of their individual rights */
+		if($this->Disabled){
+			foreach($this as $prop => $value){
+				if($prop!='Name' || $prop!='UserID'){
+					$this->$prop=false;
+				}
+			}
+		}
+		
+		return;
 	}
 	
 	function UpdatePerson() {

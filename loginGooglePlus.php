@@ -63,7 +63,7 @@ if ($client->getAccessToken() ) {
 //      print "<pre>";
 //      print_r( $me );
 //      print "</pre>";
-        print "Email: {$me[emails][0][value]}<br>";
+        print "Email: {$me['emails'][0]['value']}<br>";
 }
 
 ?>
