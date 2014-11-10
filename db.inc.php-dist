@@ -15,6 +15,11 @@
 			printf( "Error!  %s\n", $e->getMessage() );
 			die();
 	}
+	
+	$Authentication = "Apache";
+	/* If you want to use Google Plus API authentication, uncomment the next line
+	   and follow the instructions in loginGooglePlus.php to enable. */
+	// $Authentication = "Google";
 
 	require_once( 'config.inc.php');
 	$config=new Config();
