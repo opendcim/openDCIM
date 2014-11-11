@@ -5,7 +5,7 @@
 	$subheader=__("Data Center Cabinet Inventory");
 
 	// Get the list of departments that this user is a member of
-	$viewList = $user->isMemberOf();
+	$viewList = $person->isMemberOf();
 
 /**
  * Determines ownership of the cabinet and returns the CSS class in case a

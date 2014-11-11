@@ -4,7 +4,7 @@
 
 	$subheader=__("Storage Room Maintenance");
 
-	if(!$user->ReadAccess){
+	if(!$person->ReadAccess){
 		// No soup for you.
 		header('Location: '.redirect());
 		exit;

@@ -8,7 +8,7 @@
 	$user->UserID=$_SERVER["REMOTE_USER"];
 	$user->GetUserRights();
 
-	if(!$user->WriteAccess){
+	if(!$person->WriteAccess){
 		// No soup for you.
 		header('Location: '.redirect());
 		exit;

@@ -6,7 +6,7 @@
 
 	$subheader=__("Data Center Configuration");
 
-	if(!$user->SiteAdmin){
+	if(!$person->SiteAdmin){
 		// No soup for you.
 		header('Location: '.redirect());
 		exit;

@@ -4,10 +4,6 @@
 	require_once( "PHPExcel/PHPExcel.php" );
 	require_once( "PHPExcel/PHPExcel/Writer/Excel2007.php" );
 	
-	$user=new User();
-	$user->UserID=$_SERVER["REMOTE_USER"];
-	$user->GetUserRights();
-	
 	if((isset($_REQUEST["deviceid"]) && ($_REQUEST["deviceid"]=="" || $_REQUEST["deviceid"]==null)) || !isset($_REQUEST["deviceid"])){
 		// No soup for you.
 		header('Location: '.redirect());
@@ -154,13 +150,13 @@
 				$mediaType->MediaID = $devPort->MediaID;
 				$mediaType->GetType();
 				
-				$sheet->getActiveSheet()->SetCellValue('A' . $row, $dev->Label);
-				$sheet->getActiveSheet()->SetCellValue('B' . $row, $devPort->Label);
-				$sheet->getActiveSheet()->SetCellValue('C' . $row, $targetDev->Label);
-				$sheet->getActiveSheet()->SetCellValue('D' . $row, $targetPort->Label);
-				$sheet->getActiveSheet()->SetCellValue('E' . $row, $devPort->Notes);
-				$sheet->getActiveSheet()->SetCellValue('F' . $row, $mediaType->MediaType);
-				$sheet->getActiveSheet()->SetCellValue('G' . $row, $color->Name);
+				$sheet->getActiveSheet()->SetCellValue('A' . $row, '="'.$dev->Label.'"');
+				$sheet->getActiveSheet()->SetCellValue('B' . $row, '="'.$devPort->Label.'"');
+				$sheet->getActiveSheet()->SetCellValue('C' . $row, '="'.$targetDev->Label.'"');
+				$sheet->getActiveSheet()->SetCellValue('D' . $row, '="'.$targetPort->Label.'"');
+				$sheet->getActiveSheet()->SetCellValue('E' . $row, '="'.$devPort->Notes.'"');
+				$sheet->getActiveSheet()->SetCellValue('F' . $row, '="'.$mediaType->MediaType.'"');
+				$sheet->getActiveSheet()->SetCellValue('G' . $row, '="'.$color->Name.'"');
 
 				$row++;
 			}
@@ -194,13 +190,13 @@
 						if ( $tPort->Label == "" )
 							$tPort->Label = $tPort->PortNumber;
 						
-						$sheet->getActiveSheet()->SetCellValue('A' . $row, $pDev->Label);
-						$sheet->getActiveSheet()->SetCellValue('B' . $row, $pPort->Label);
-						$sheet->getActiveSheet()->SetCellValue('C' . $row, $tDev->Label);
-						$sheet->getActiveSheet()->SetCellValue('D' . $row, $tPort->Label);
-						$sheet->getActiveSheet()->SetCellValue('E' . $row, $pPort->Notes);
-						$sheet->getActiveSheet()->SetCellValue('F' . $row, $mediaType->MediaType);
-						$sheet->getActiveSheet()->SetCellValue('G' . $row, $color->Name);
+						$sheet->getActiveSheet()->SetCellValue('A' . $row, '="'.$pDev->Label.'"');
+						$sheet->getActiveSheet()->SetCellValue('B' . $row, '="'.$pPort->Label.'"');
+						$sheet->getActiveSheet()->SetCellValue('C' . $row, '="'.$tDev->Label.'"');
+						$sheet->getActiveSheet()->SetCellValue('D' . $row, '="'.$tPort->Label.'"');
+						$sheet->getActiveSheet()->SetCellValue('E' . $row, '="'.$pPort->Notes.'"');
+						$sheet->getActiveSheet()->SetCellValue('F' . $row, '="'.$mediaType->MediaType.'"');
+						$sheet->getActiveSheet()->SetCellValue('G' . $row, '="'.$color->Name.'"');
 
 						$row++;
 					}

@@ -395,7 +395,7 @@ class PowerConnection {
 		$cab=new Cabinet();
 		$cab->CabinetID=$pdu->CabinetID;
 		$cab->GetCabinet();
-		$write=(User::Current()->canWrite($cab->AssignedTo))?true:$write;
+		$write=(People::Current()->canWrite($cab->AssignedTo))?true:$write;
 
 		return $write;
 	}
@@ -1032,7 +1032,7 @@ class PowerDistribution {
 		$cab=new Cabinet();
 		$cab->CabinetID=$this->CabinetID;
 		$cab->GetCabinet();
-		if(!User::Current()->canWrite($cab->AssignedTo)){return false;}
+		if(!People::Current()->canWrite($cab->AssignedTo)){return false;}
 
 		// First, remove any connections to the PDU
 		$tmpConn=new PowerConnection();

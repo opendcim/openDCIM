@@ -4,7 +4,7 @@
 
 	$subheader=__("Data Center Virtual Machine Detail");
 
-	if(!$user->WriteAccess || !isset($_REQUEST['vmindex'])){
+	if(!$person->WriteAccess || !isset($_REQUEST['vmindex'])){
 		// No soup for you.
 		header('Location: '.redirect());
 		exit;

@@ -5,7 +5,7 @@
 
 	$subheader=__("Data Center Rack Request");
 	
-	if($config->ParameterArray["RackRequests"] != "enabled" || !$user->RackRequest){
+	if($config->ParameterArray["RackRequests"] != "enabled" || !$person->RackRequest){
 		// No soup for you.
 		header('Location: '.redirect());
 		exit;
@@ -19,7 +19,7 @@
 	$tmpContact=new Contact();
 	$formfix=$error='';	
 	$contactList=$contact->GetContactList();
-	$contact->UserID=$user->UserID;
+	$contact->UserID=$person->UserID;
 	$contact->GetContactByUserID();
 
 	//We only need to worry about sending email in the event this is a new submission and no other time.
@@ -118,7 +118,7 @@
 			}catch(Swift_TransportException $e){
 				$error.="Server: <span class=\"errmsg\">".$e->getMessage()."</span><br>\n";
 			}
-		}elseif(($_POST['action']=='Update Request'||$_POST['action']=='Move to Rack') && (($user->RackRequest && $user->UserID==$contact->UserID)||$user->RackAdmin)){
+		}elseif(($_POST['action']=='Update Request'||$_POST['action']=='Move to Rack') && (($person->RackRequest && $person->UserID==$contact->UserID)||$person->RackAdmin)){
 			$req->RequestorID=$_POST['requestorid'];
 			$req->Label=$_POST['label'];
 			$req->SerialNo=$_POST['serialno'];
@@ -139,7 +139,7 @@
 
 			$req->UpdateRequest();
 
-			if($user->RackAdmin && $_POST['action']=='Move to Rack'){
+			if($person->RackAdmin && $_POST['action']=='Move to Rack'){
 				$req->CompleteRequest();
 				
 				$dev->Label=$req->Label;
@@ -176,7 +176,7 @@
 				exit;
 			}
 	  }elseif($_POST['action']=='Delete Request'){
-		  if($user->RackAdmin||$user->UserID==$contact->UserID){
+		  if($person->RackAdmin||$person->UserID==$contact->UserID){
 			$req->DeleteRequest();
 			header('Location: '.redirect('index.php'));
 			exit;
@@ -252,7 +252,7 @@ print "			$('#deviceform').validationEngine({'custom_error_messages' : {
 			$('#deviceform').validationEngine('detach');
 		});
 <?php
-	if($user->RackAdmin && ($req->RequestID>0)){
+	if($person->RackAdmin && ($req->RequestID>0)){
 ?>
 		$('#position').focus(function()	{
 			var cab=$("select#cabinetid").val();
@@ -471,19 +471,19 @@ echo '			</select>
 		<div><textarea name="specialinstructions" id="specialinstructions" cols=50 rows=5>',$req->SpecialInstructions,'</textarea></div>
 	</div>';
 
-	if($user->RackAdmin && ($req->RequestID>0)){
+	if($person->RackAdmin && ($req->RequestID>0)){
 		echo '<div><div><label for="cabinetid">',__("Select Rack Location"),':</label></div><div>'.$cab->GetCabinetSelectList().'&nbsp;&nbsp;<label for="position">',__("Position"),':</label> <input type="text" name="position" id="position" size=5></div></div>';
 	}
 ?>
 	<div class="caption">
 <?php
-	if($user->RackRequest||$user->RackAdmin){
+	if($person->RackRequest||$person->RackAdmin){
 		if($req->RequestID >0){
-			if($user->RackAdmin||($user->UserID==$contact->UserID)){
+			if($person->RackAdmin||($person->UserID==$contact->UserID)){
 				echo '<button type="submit" name="action" value="Update Request">',__("Update Request"),'</button>';
 				echo '<button type="submit" name="action" value="Delete Request">',__("Delete Request"),'</button>';
 			}
-			if($user->RackAdmin){
+			if($person->RackAdmin){
 				echo '<button type="submit" name="action" value="Move to Rack">',__("Move to Rack"),'</button>';
 			}
 		}else{

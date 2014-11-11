@@ -8,10 +8,10 @@
 	require_once( 'facilities.inc.php' );
 	
 	if ( ! People::Current() ) {
-		if ( $Authentication == "Google" ) {
-			header( "Location: loginGoogle.php" );
+		if ( AUTHENTICATION == "Oauth" ) {
+			header( "Location: login.php" );
 			exit;
-		} elseif ( $Authentication == "Apache" ) {
+		} elseif ( AUTHENTICATION == "Apache" ) {
 			print "<h1>You must have some form of Authentication enabled to use openDCIM.</h1>";
 			exit;
 		}
@@ -45,7 +45,7 @@
 
 	// Build table to display pending rack requests for inclusion later
 	$rackrequest='';
-	if($config->ParameterArray["RackRequests"]=="enabled" && $user->RackAdmin){
+	if($config->ParameterArray["RackRequests"]=="enabled" && $person->RackAdmin){
 		$rackrequest="<h3>".__("Pending Rack Requests")."</h3>\n<div class=\"table whiteborder rackrequest\">\n<div>\n  <div>".__("Submit Time")."</div>\n  <div>".__("Requestor")."</div>\n  <div>".__("System Name")."</div>\n  <div>".__("Department")."</div>\n  <div>".__("Due By")."</div>\n</div>\n";
 
 		$rack=new RackRequest();

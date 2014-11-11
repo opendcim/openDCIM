@@ -4,7 +4,7 @@
 
 	$subheader=__("Rows of Cabinets");
 
-	if(!$user->SiteAdmin){
+	if(!$person->SiteAdmin){
 		// No soup for you.
 		header('Location: '.redirect());
 		exit;

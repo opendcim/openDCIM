@@ -78,7 +78,6 @@ class People {
 		$this->Phone2=stripslashes($this->Phone2);
 		$this->Phone3=stripslashes($this->Phone3);
 		$this->Email=stripslashes($this->Email);
-		$this->Name=sanitize($this->Name);
 		$this->AdminOwnDevices=intval($this->AdminOwnDevices);
 		$this->ReadAccess=intval($this->ReadAccess);
 		$this->WriteAccess=intval($this->WriteAccess);
@@ -129,7 +128,33 @@ class People {
 		global $dbh;
 		return $dbh->lastInsertID();
 	}
+
+	function canRead( $Owner ) {
+		// If the user has Global rights, don't waste compute cycles on more granular checks
+		if ( $this->ReadAccess ) {
+			return true;
+		}
+		
+		if ( in_array( $Owner, $this->isMemberOf() ) ) {
+			return true;
+		} else {
+			return false;
+		}
+	}
 	
+	function canWrite( $Owner ) {
+		// If the user has Global rights, don't wast compute cycles on more granular checks
+		if ( $this->WriteAccess ) {
+			return true;
+		}
+		
+		if ( in_array( $Owner, $this->isMemberOf() ) && $this->AdminOwnDevices ) {
+			return true;
+		} else {
+			return false;
+		}
+	}
+
 	function CreatePerson() {
 		$this->MakeSafe();
 		
@@ -164,18 +189,12 @@ class People {
 			} else {
 				return false;
 			}
-		} elseif ( AUTHENTICATION == "Google" ) {
-			if ( ! isset( $_SESSION['access_token'] ) ) {
-				error_log( "Enable to retrieve Google OAuth Access Token." );
+		} elseif ( AUTHENTICATION == "Oauth" ) {
+			if ( ! isset( $_SESSION['userid'] ) ) {
 				return false;
 			}
 			
-			$client= new Google_Client();
-			$client->setAccessToken($_SESSION['access_token']);
-			$plus = new Google_Service_Plus( $client );
-			$me = $plus->people->get('me');
-			
-			$cperson->UserID = $me[emails][0][value];
+			$cperson->UserID = $_SESSION['userid'];
 			$cperson->GetUserRights();
 		}
 		
@@ -220,6 +239,17 @@ class People {
 		}
 	}
 	
+	function GetUserList(){
+		$sql="SELECT * FROM fac_People ORDER BY LastName ASC, FirstName ASC";
+		
+		$userList=array();
+		foreach($this->query($sql) as $row){
+			$userList[]=People::RowToObject($row);
+		}
+
+		return $userList;
+	}
+	
 	function GetUserRights() {
 		$this->MakeSafe();
 
@@ -243,6 +273,23 @@ class People {
 		return;
 	}
 	
+	function isMemberOf(){
+		$this->GetUserRights();
+		
+		$sql="SELECT DeptID FROM fac_DeptContacts WHERE ContactID IN 
+			(SELECT ContactID FROM fac_Contact WHERE UserID=\"$this->UserID\");";
+
+		$deptList=array();
+		$deptList[]=0; // This is allowing anyone to use an unassigned rack / device
+		if($query=$this->query($sql)){
+			foreach($query as $row){
+				$deptList[]=$row["DeptID"];
+			}
+		}
+
+		return $deptList;
+	}
+	
 	function UpdatePerson() {
 		$this->MakeSafe();
 		
@@ -250,7 +297,7 @@ class People {
 			Phone1=\"" . $this->Phone1 . "\", Phone2=\"" . $this->Phone2 . "\", Phone3=\"" . $this->Phone3 . "\", Email=\"" . $this->Email . "\",
 			AdminOwnDevices=" . $this->AdminOwnDevices . ", ReadAccess=" . $this->ReadAccess . ", WriteAccess=" . $this->WriteAccess . ",
 			DeleteAccess=" . $this->DeleteAccess . ", ContactAdmin=" . $this->ContactAdmin . ", RackRequest=" . $this->RackRequest . ", RackAdmin=" . $this->RackAdmin . ",
-			SiteAdmin=" . $this->SiteAdmin . ", Disabled=" . $this->Disabled . ", where PersonID=" . $this->PersonID;
+			SiteAdmin=" . $this->SiteAdmin . ", Disabled=" . $this->Disabled . " where PersonID=" . $this->PersonID;
 			
 		if ( $this->query( $sql ) ) {
 			(class_exists('LogActions'))?LogActions::LogThis($this):'';

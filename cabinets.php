@@ -25,17 +25,17 @@
 
 	// END - AJAX Requests
 
-	$write=($user->WriteAccess)?true:false;
+	$write=($person->WriteAccess)?true:false;
 
 	if(isset($_REQUEST['cabinetid'])){
 		$cab->CabinetID=(isset($_POST['cabinetid'])?$_POST['cabinetid']:$_GET['cabinetid']);
 		$cab->GetCabinet();
-		$write=($user->canWrite($cab->AssignedTo))?true:$write;
+		$write=($person->canWrite($cab->AssignedTo))?true:$write;
 	}
 
 	// If you're deleting the cabinet, no need to pull in the rest of the information, so get it out of the way
 	// Only a site administrator can create or delete a cabinet
-	if(isset($_POST["delete"]) && $_POST["delete"]=="yes" && $user->SiteAdmin ) {
+	if(isset($_POST["delete"]) && $_POST["delete"]=="yes" && $person->SiteAdmin ) {
 		$cab->DeleteCabinet();
 		$status['code']=200;
 		$status['msg']=redirect("dc_stats.php?dc=$cab->DataCenterID");

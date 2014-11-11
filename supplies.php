@@ -4,7 +4,7 @@
 
 	$subheader=__("Data Center Stockroom Supplies");
 
-	if(!$user->SiteAdmin){
+	if(!$person->SiteAdmin){
 		// No soup for you.
 		header('Location: '.redirect());
 		exit;

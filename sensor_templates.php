@@ -4,7 +4,7 @@
 
 	$subheader=__("openDCIM Cabinet Temperature/Humidity Sensor Templates");
 
-	if(!$user->SiteAdmin){
+	if(!$person->SiteAdmin){
 		// No soup for you.
 		header('Location: '.redirect());
 		exit;

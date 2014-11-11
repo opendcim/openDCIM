@@ -39,8 +39,8 @@ $DProps = array(
         'Title' => __("Data Center Statistics"),
         'Keywords' => __("datacenter report assets statistic"),
         'PageSize' => $config->ParameterArray['PageSize'],
-        'User' => $user->Name,
-        'UserID' => $user->UserID
+        'User' => $person->LastName . ", " . $person->FirstName,
+        'UserID' => $person->UserID
     ),
     'Front Page' => array(
         'Title' => '&L&B' . __("Notes on DC Statistics") . '&R&A',
@@ -708,10 +708,10 @@ function getAuditorName($cab, $emptyVal = null)
     $cab_audit->CabinetID = $cab->CabinetID;
     $cab_audit->GetLastAudit();
     if ($cab_audit->UserID) {
-        $tmpUser=new User();
+        $tmpUser=new People();
         $tmpUser->UserID = $cab_audit->UserID;
         $tmpUser->GetUserRights();
-		$auditorName = $tmpUser->Name;
+		$auditorName = $tmpUser->LastName . ", " . $tmpUser->FirstName;
     }
 
     return $auditorName;
@@ -1084,9 +1084,9 @@ function computeSheetBodyDCInventory($DProps)
             $invData[] = $devSpec;
         } else {
             foreach ($cabList as $cab) {
-                if (((! $user->ReadAccess) and ($cab->AssignedTo == 0))
+                if (((! $person->ReadAccess) and ($cab->AssignedTo == 0))
                     or (($cab->AssignedTo > 0)
-                        and (! $user->canRead($cab->AssignedTo)))) {
+                        and (! $person->canRead($cab->AssignedTo)))) {
                     // User is not allowed to see anything in here
                     $limitedUser = true;
                     continue;

@@ -9,7 +9,7 @@ require_once 'Google/Client.php';
   Remove any .htaccess file in the main DCIM directory
   Make a symbolic link for this file:
   
-    $ ln -s loginGoogle.php login.php
+    $ ln -s loginGooglePlus.php login.php
 	
   Create your API Access Key at the Google API Developer Console
   and be sure to select the Google+ API.  Note that you are
@@ -21,9 +21,9 @@ require_once 'Google/Client.php';
   ATTENTION: Fill in these values! Make sure
   the redirect URI is to this page.
  ************************************************/
- $client_id = '[Place your API Client ID Here]';
- $client_secret = '[Place your API Secret Key Here]';
- $redirect_uri = 'https://yourdomain/login.php';
+ $client_id = '861442472439-uok4p7v854medfp4uvdsh7ptng9593a9.apps.googleusercontent.com';
+ $client_secret = 'Y6SyabiTj5ydI6YjQ1PCxauP';
+ $redirect_uri = 'https://demo.opendcim.org/login.php';
 
 /************************************************
   Change nothing else below here.
@@ -37,11 +37,13 @@ $client->addScope("https://www.googleapis.com/auth/plus.profile.emails.read");
 
 if (isset($_REQUEST['logout'])) {
   unset($_SESSION['access_token']);
+  unset($_SESSION['userid']);
 }
 
 if (isset($_GET['code'])) {
   $client->authenticate($_GET['code']);
   $_SESSION['access_token'] = $client->getAccessToken();
+  $_SESSION['refresh_token'] = $client->getRefreshToken();
   $redirect = 'http://' . $_SERVER['HTTP_HOST'] . $_SERVER['PHP_SELF'];
   header('Location: ' . filter_var($redirect, FILTER_SANITIZE_URL));
 }
@@ -58,12 +60,14 @@ if (isset($_SESSION['access_token']) && $_SESSION['access_token']) {
   access token and move along to the index.
  ************************************************/
 if ($client->getAccessToken() ) {
+	if ( ! $client->isAccessTokenExpired() ) {
         $me = $plus->people->get('me');
         $_SESSION['access_token'] = $client->getAccessToken();
-//      print "<pre>";
-//      print_r( $me );
-//      print "</pre>";
-        print "Email: {$me['emails'][0]['value']}<br>";
+		$_SESSION['userid'] = $me['emails'][0]['value'];
+	} else {
+		$client->setAccessToken($_SESSION['refresh_token']);
+		$_SESSION['access_token'] = $client->getAccessToken();
+	}
 }
 
 ?>

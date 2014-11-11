@@ -4,7 +4,7 @@
 
 	$subheader=__("Data Center Detail");
 
-	if(!$user->SiteAdmin){
+	if(!$person->SiteAdmin){
 		// No soup for you.
 		header('Location: '.redirect());
 		exit;
@@ -314,7 +314,7 @@ echo '<div class="caption">';
 		echo '   <button type="submit" name="action" value="Create">',__("Create"),'</button>';
 	}
 	
-	if ( $user->SiteAdmin && $dc->DataCenterID > 0 ) {
+	if ( $person->SiteAdmin && $dc->DataCenterID > 0 ) {
 		echo '    <button type="button" id="delete-btn" name="action" value="Delete">',__("Delete"),'</button>';
 	}
 ?>

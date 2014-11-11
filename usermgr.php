@@ -4,12 +4,12 @@
 
 	$subversion=__("Data Center Contact Detail");
 
-	if(!$user->SiteAdmin){
+	if(!$person->SiteAdmin){
 		header('Location: '.redirect());
 		exit;
 	}
 
-	$userRights=new User();
+	$userRights=new People();
 	$status="";
 
 	if(isset($_REQUEST['seluserid']) && strlen($_REQUEST['seluserid']) >0){
@@ -18,9 +18,14 @@
 	}
 	
 	if(isset($_POST['action'])&&isset($_POST['userid'])){
-		if((($_POST['action']=='Create')||($_POST['action']=='Update'))&&(isset($_POST['name'])&&$_POST['name']!=null&&$_POST['name']!='')){
+		if((($_POST['action']=='Create')||($_POST['action']=='Update'))&&(isset($_POST['lastname'])&&$_POST['lastname']!=null&&$_POST['lastname']!='')){
 			$userRights->UserID=$_POST['userid'];
-			$userRights->Name=$_POST['name'];
+			$userRights->LastName=$_POST['lastname'];
+			$userRights->FirstName=$_POST['firstname'];
+			$userRights->Phone1=$_POST['phone1'];
+			$userRights->Phone2=$_POST['phone2'];
+			$userRights->Phone3=$_POST['phone3'];
+			$userRights->Email=$_POST['email'];
 			$userRights->AdminOwnDevices=(isset($_POST['adminowndevices']))?1:0;
 			$userRights->ReadAccess=(isset($_POST['readaccess']))?1:0;
 			$userRights->WriteAccess=(isset($_POST['writeaccess']))?1:0;
@@ -32,10 +37,10 @@
 			$userRights->Disabled=(isset($_POST['disabled']))?1:0;
 
 			if($_POST['action']=='Create'){
-  				$userRights->CreateUser();
+  				$userRights->CreatePerson();
 			}else{
 				$status=__("Updated");
-				$userRights->UpdateUser();
+				$userRights->UpdatePerson();
 			}
 		}else{
 		//Should we ever add a delete user function it will go here
@@ -92,7 +97,7 @@ echo '<div class="main">
 
 	foreach($userList as $userRow){
 		if($userRights->UserID == $userRow->UserID){$selected=' selected';}else{$selected="";}
-		print "<option value=\"$userRow->UserID\"$selected>$userRow->Name</option>\n";
+		print "<option value=\"$userRow->UserID\" $selected>" . $userRow->LastName . ", " . $userRow->FirstName. "</option>\n";
 	}
 
 echo '	</select></div>
@@ -102,8 +107,28 @@ echo '	</select></div>
    <div><input type="text" name="userid" id="userid" value="',$userRights->UserID,'"></div>
 </div>
 <div>
-   <div><label for="name">',__("Name"),'</label></div>
-   <div><input type="text" name="name" id="name" value="',$userRights->Name,'"></div>
+   <div><label for="name">',__("Last Name"),'</label></div>
+   <div><input type="text" name="lastname" id="lastname" value="',$userRights->LastName,'"></div>
+</div>
+<div>
+   <div><label for="name">',__("First Name"),'</label></div>
+   <div><input type="text" name="firstname" id="firstname" value="',$userRights->FirstName,'"></div>
+</div>
+<div>
+   <div><label for="name">',__("Phone 1"),'</label></div>
+   <div><input type="text" name="phone1" id="phone1" value="',$userRights->Phone1,'"></div>
+</div>
+<div>
+   <div><label for="name">',__("Phone 2"),'</label></div>
+   <div><input type="text" name="phone2" id="phone2" value="',$userRights->Phone2,'"></div>
+</div>
+<div>
+   <div><label for="name">',__("Phone 3"),'</label></div>
+   <div><input type="text" name="phone3" id="phone3" value="',$userRights->Phone3,'"></div>
+</div>
+<div>
+   <div><label for="name">',__("Email Address"),'</label></div>
+   <div><input type="text" name="email" id="email" value="',$userRights->Email,'"></div>
 </div>
 <div>
    <div><label>',__("Rights"),'</label></div>

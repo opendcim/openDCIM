@@ -129,7 +129,7 @@ function renderUnassignedTemplateOwnership($noTemplFlag, $noOwnerFlag, $device) 
 	$cab->GetCabinet();
 
 	// Check to see if this user is allowed to see anything in ihere
-	if(! $user->SiteAdmin && ! $user->ReadAccess && $cab->AssignedTo >0 && !array_intersect($user->isMemberOf(),Cabinet::GetOccupants($cab->CabinetID))){
+	if(! $person->SiteAdmin && ! $person->ReadAccess && $cab->AssignedTo >0 && !array_intersect($person->isMemberOf(),Cabinet::GetOccupants($cab->CabinetID))){
 		// This cabinet belongs to a department you don't have affiliation with, so no viewing at all
 		header('Location: '.redirect());
 		exit;
@@ -137,7 +137,7 @@ function renderUnassignedTemplateOwnership($noTemplFlag, $noOwnerFlag, $device) 
 
 	// If you're deleting the cabinet, no need to pull in the rest of the information, so get it out of the way
 	// Only a site administrator can create or delete a cabinet
-	if(isset($_POST["delete"]) && $_POST["delete"]=="yes" && $user->SiteAdmin ) {
+	if(isset($_POST["delete"]) && $_POST["delete"]=="yes" && $person->SiteAdmin ) {
 		$cab->DeleteCabinet();
 		$url=redirect("dc_stats.php?dc=$dcID");
 		header("Location: $url");
@@ -161,7 +161,7 @@ function renderUnassignedTemplateOwnership($noTemplFlag, $noOwnerFlag, $device) 
 	$audit->CabinetID=$cab->CabinetID;
 
 	// You just have WriteAccess in order to perform/certify a rack audit
-	if(isset($_REQUEST["audit"]) && $_REQUEST["audit"]=="yes" && $user->CanWrite($cab->AssignedTo)){
+	if(isset($_REQUEST["audit"]) && $_REQUEST["audit"]=="yes" && $person->CanWrite($cab->AssignedTo)){
 		$audit->Comments=sanitize($_REQUEST["comment"]);
 		$audit->CertifyAudit();
 	}
@@ -169,7 +169,7 @@ function renderUnassignedTemplateOwnership($noTemplFlag, $noOwnerFlag, $device) 
 	$audit->AuditStamp=__("Never");
 	$audit->GetLastAudit();
 	if($audit->UserID!=""){
-		$tmpUser=new User();
+		$tmpUser=new People();
 		$tmpUser->UserID=$audit->UserID;
 		$tmpUser->GetUserRights();
 		$AuditorName=$tmpUser->Name;
@@ -499,18 +499,18 @@ $body.='<div id="infopanel">
 		}
 	}
 
-	if($user->CanWrite($cab->AssignedTo)){
+	if($person->CanWrite($cab->AssignedTo)){
 		$body.="\n\t\t<ul class=\"nav\"><a href=\"power_pdu.php?pduid=0&cabinetid=$cab->CabinetID\"><li>".__("Add CDU")."</li></a></ul>\n";
 	}
 
 	$body.="\t</fieldset>\n";
-	if ($user->CanWrite($cab->AssignedTo) || $user->SiteAdmin) {
+	if ($person->CanWrite($cab->AssignedTo) || $person->SiteAdmin) {
 	    $body.="\t<fieldset>\n";
-        if ($user->CanWrite($cab->AssignedTo) ) {
+        if ($person->CanWrite($cab->AssignedTo) ) {
             $body .= renderCabinetProps($cab, $audit, $AuditorName);
         }
 	    $body.="\t\t<ul class=\"nav\">";
-        if($user->CanWrite($cab->AssignedTo)){
+        if($person->CanWrite($cab->AssignedTo)){
             $body.="
 			<a href=\"#\" onclick=\"javascript:verifyAudit(this.form)\"><li>".__("Certify Audit")."</li></a>
 			<a href=\"devices.php?action=new&cabinet=$cab->CabinetID\"><li>".__("Add Device")."</li></a>
@@ -518,7 +518,7 @@ $body.='<div id="infopanel">
 			<a href=\"mapmaker.php?cabinetid=$cab->CabinetID\"><li>".__("Map Coordinates")."</li></a>
 			<a href=\"cabinets.php?cabinetid=$cab->CabinetID\"><li>".__("Edit Cabinet")."</li></a>\n";
         }
-		if($user->SiteAdmin){
+		if($person->SiteAdmin){
 		    $body.="\t\t\t<a href=\"#\" onclick=\"javascript:verifyDelete(this.form)\"><li>".__("Delete Cabinet")."</li></a>";
 		}
 	    $body.="\n\t\t</ul>\n    </fieldset>";

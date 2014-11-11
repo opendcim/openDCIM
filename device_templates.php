@@ -31,7 +31,7 @@
 		exit;
 	}
 
-	if(!$user->WriteAccess){
+	if(!$person->WriteAccess){
 		// No soup for you.
 		header('Location: '.redirect());
 		exit;

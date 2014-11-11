@@ -4,7 +4,7 @@
 
 	$subheader=__("Data Center Escalation Rules");
 
-	if(!$user->ContactAdmin){
+	if(!$person->ContactAdmin){
 		// No soup for you.
 		header('Location: '.redirect());
 		exit;

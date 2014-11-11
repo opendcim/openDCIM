@@ -9,7 +9,7 @@
 	$dev=new Device();
 	
 	//setting airflow
-	if(isset($_POST["cabinetid"]) && isset($_POST["airflow"]) && $user->SiteAdmin){
+	if(isset($_POST["cabinetid"]) && isset($_POST["airflow"]) && $person->SiteAdmin){
 		$cab->CabinetID=$_POST["cabinetid"];
 		if ($cab->GetCabinet()){
 			if ($cab->CabRowID>0 && isset($_POST["row"]) && $_POST["row"]=="true"){
@@ -273,7 +273,7 @@ echo '
 			}
 		}
 <?php
-	if ( $user->SiteAdmin ) {
+	if ( $person->SiteAdmin ) {
 		// Only Site Administrators should even have the option to change the air flow
 ?>
 		// Bind context menu to the cabinets

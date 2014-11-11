@@ -564,14 +564,17 @@ if(isset($devMode)&&$devMode){
 	if(file_exists("install.php") && basename($_SERVER['PHP_SELF'])!="install.php" ){
 		// new installs need to run the install first.
 		header("Location: ".redirect('install.php'));
+		exit;
 	}
 }
 
+if (( AUTHENTICATION == "Oauth" ) && !isset( $_SESSION['userid'] )) {
+	header("Location: ".redirect('login.php'));
+	exit;
+}
+
 /* This is used on every page so we might as well just init it once */
-$user=new User();
-// this condition should only happen when running from the console
-$user->UserID=isset($_SERVER['REMOTE_USER'])?$_SERVER['REMOTE_USER']:'';
-$user->GetUserRights();
+$person=People::Current();
 	
 /* 
  * This is an attempt to be sane about the rights management and the menu.
@@ -594,21 +597,21 @@ if($config->ParameterArray["WorkOrderBuilder"]){
 	}
 }
 
-if ( $config->ParameterArray["RackRequests"] == "enabled" && $user->RackRequest ) {
+if ( $config->ParameterArray["RackRequests"] == "enabled" && $person->RackRequest ) {
 	$rrmenu[]='<a href="rackrequest.php"><span>'.__("Rack Request Form").'</span></a>';
 }
-if ( $user->ContactAdmin ) {
+if ( $person->ContactAdmin ) {
 	$camenu[__("User Administration")][]='<a href="contacts.php"><span>'.__("Contact Administration").'</span></a>';
 	$camenu[__("User Administration")][]='<a href="departments.php"><span>'.__("Dept. Administration").'</span></a>';
 	$camenu[__("Issue Escalation")][]='<a href="timeperiods.php"><span>'.__("Time Periods").'</span></a>';
 	$camenu[__("Issue Escalation")][]='<a href="escalations.php"><span>'.__("Escalation Rules").'</span></a>';
 }
-if ( $user->WriteAccess ) {
+if ( $person->WriteAccess ) {
 	$wamenu[__("Template Management")][]='<a href="device_templates.php"><span>'.__("Edit Device Templates").'</span></a>';
 	$wamenu[__("Infrastructure Management")][]='<a href="cabinets.php"><span>'.__("Edit Cabinets").'</span></a>';
 	$wamenu[__("Template Management")][]='<a href="image_management.php#pictures"><span>'.__("Device Image Management").'</span></a>';
 }
-if ( $user->SiteAdmin ) {
+if ( $person->SiteAdmin ) {
 	$samenu[__("User Administration")][]='<a href="usermgr.php"><span>'.__("Manage Users").'</span></a>';
 	$samenu[__("Template Management")][]='<a href="device_manufacturers.php"><span>'.__("Edit Manufacturers").'</span></a>';
 	$samenu[__("Template Management")][]='<a href="cdu_templates.php"><span>'.__("Edit CDU Templates").'</span></a>';

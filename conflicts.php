@@ -4,7 +4,7 @@
 	require_once('db.inc.php');
 	require_once('facilities.inc.php');
 
-	if(!$user->SiteAdmin){
+	if(!$person->SiteAdmin){
 		// No soup for you.
 		header('Location: '.redirect());
 		exit;

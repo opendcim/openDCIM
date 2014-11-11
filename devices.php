@@ -514,7 +514,7 @@
 					if(($dev->TemplateID >0)&&(intval($dev->NominalWatts==0))){$dev->UpdateWattageFromTemplate();}
 	
 					$write=false;
-					$write=($user->canWrite($cab->AssignedTo))?true:$write;
+					$write=($person->canWrite($cab->AssignedTo))?true:$write;
 					$write=($dev->Rights=="Write")?true:$write;
 	
 					if($dev->Rights=="Write" && $dev->DeviceID >0){
@@ -816,7 +816,7 @@
 // In the case of a child device we might define this above and in that case we
 // need to preserve the flag
 $write=(isset($write))?$write:false;
-$write=($user->canWrite($cab->AssignedTo))?true:$write;
+$write=($person->canWrite($cab->AssignedTo))?true:$write;
 $write=($dev->Rights=="Write")?true:$write;
 
 
@@ -1999,7 +1999,7 @@ echo '	<div class="table">
 		}
 	}
 	// Delete rights are seperate from write rights
-	if(($write || $user->DeleteAccess) && $dev->DeviceID >0){
+	if(($write || $person->DeleteAccess) && $dev->DeviceID >0){
 		echo '		<button type="button" name="action" value="Delete">',__("Delete"),'</button>';
 	}
 	if($dev->DeviceID >0){
@@ -2035,7 +2035,7 @@ echo '	<div class="table">
 </div><!-- END div.page -->
 <script type="text/javascript">
 	var portrights=$.parseJSON('<?php echo json_encode($jsondata); ?>');
-	portrights['admin']=<?php echo ($user->SiteAdmin)?'true':'false'; ?>;
+	portrights['admin']=<?php echo ($person->SiteAdmin)?'true':'false'; ?>;
 <?php
 	if(!$write){
 		print "\t\t//Disable all input if they don't have rights.

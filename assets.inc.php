@@ -397,7 +397,7 @@ class Cabinet {
 		$selectList="<select name=\"cabinetid\" id=\"cabinetid\"><option value=\"-1\">Storage Room</option>";
 
 		foreach($dbh->query($sql) as $selectRow){
-			if($selectRow["CabinetID"]==$this->CabinetID || User::Current()->canWrite($selectRow["AssignedTo"])){
+			if($selectRow["CabinetID"]==$this->CabinetID || People::Current()->canWrite($selectRow["AssignedTo"])){
 				$selected=($selectRow["CabinetID"]==$this->CabinetID)?' selected':'';
 				$selectList.="<option value=\"{$selectRow["CabinetID"]}\"$selected>{$selectRow["Name"]} / {$selectRow["Location"]}</option>";
 			}
@@ -1213,18 +1213,18 @@ class Device {
 		$cab->CabinetID=$this->Cabinet;
 
 		$this->Rights='None';
-		$user=User::Current();
-		if($user->canRead($this->Owner)){$this->Rights="Read";}
-		if($user->canWrite($this->Owner)){$this->Rights="Write";} // write by device
+		$person=People::Current();
+		if($person->canRead($this->Owner)){$this->Rights="Read";}
+		if($person->canWrite($this->Owner)){$this->Rights="Write";} // write by device
 		if($this->ParentDevice>0){ // this is a child device of a chassis
 			$par=new Device();
 			$par->DeviceID=$this->ParentDevice;
 			$par->GetDevice();
 			$this->Rights=($par->Rights=="Write")?"Write":$this->Rights;
 		}elseif($cab->GetCabinet()){
-			if($cab->AssignedTo!=0 && $user->canWrite($cab->AssignedTo)){$this->Rights="Write";} // write because the cabinet is assigned
+			if($cab->AssignedTo!=0 && $person->canWrite($cab->AssignedTo)){$this->Rights="Write";} // write because the cabinet is assigned
 		}
-		if($user->SiteAdmin && $this->DeviceType=='Patch Panel'){$this->Rights="Write";} // admin override of rights for patch panels
+		if($person->SiteAdmin && $this->DeviceType=='Patch Panel'){$this->Rights="Write";} // admin override of rights for patch panels
 
 		// Remove information that this user isn't allowed to see
 		if($this->Rights=='None'){
@@ -1468,7 +1468,7 @@ class Device {
 			$cab->CabinetID=$this->Cabinet;
 			$cab->GetCabinet();
 			// Make sure the user has rights to save a device into the new cabinet
-			if(!User::Current()->canWrite($cab->AssignedTo)){
+			if(!People::Current()->canWrite($cab->AssignedTo)){
 				return false;
 			}
 			$powercon=new PowerConnection();
@@ -3207,9 +3207,9 @@ class DevicePorts {
 		$candidates=array();
 
 		if(is_null($listports)){
-			$currentuser=User::Current();
-			if(!$currentuser->WriteAccess){
-				$groups=$currentuser->isMemberOf();  // list of groups the current user is member of
+			$currentperson=People::Current();
+			if(!$currentperson->WriteAccess){
+				$groups=$currentperson->isMemberOf();  // list of groups the current user is member of
 				$rights=null;
 				foreach($groups as $index => $DeptID){
 					if(is_null($rights)){

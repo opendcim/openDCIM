@@ -56,7 +56,7 @@
 
 <?php
 // Only show the device pictures if they have global write access or site admin.
-if($user->SiteAdmin || $user->WriteAccess){
+if($person->SiteAdmin || $person->WriteAccess){
 ?>
 
 <div class="center"><div>
@@ -105,7 +105,7 @@ $(function() {
 }
 
 // Only show the site drawings if they have site admin rights.
-if($user->SiteAdmin){
+if($person->SiteAdmin){
 ?>
 
 <div class="center"><div>

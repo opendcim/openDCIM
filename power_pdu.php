@@ -193,7 +193,7 @@
 		if($pdu->GetPDU()){
 			$cab->CabinetID=$pdu->CabinetID;
 			$cab->GetCabinet();
-			if($user->canWrite($cab->AssignedTo)){
+			if($person->canWrite($cab->AssignedTo)){
 				$wattage=$pdu->LogManualWattage($_POST["currwatts"]);
 				$wattage->LastRead=strftime("%c",strtotime($wattage->LastRead));
 			}
@@ -217,7 +217,7 @@
 	$cab->CabinetID=(isset($_REQUEST['cabinetid']))?$_REQUEST['cabinetid']:$pdu->CabinetID;
 	$cab->GetCabinet();
 
-	if(isset($_REQUEST['action']) && (($_REQUEST['action']=='Create') || ($_REQUEST['action']=='Update')) && $user->canWrite($cab->AssignedTo)) {
+	if(isset($_REQUEST['action']) && (($_REQUEST['action']=='Create') || ($_REQUEST['action']=='Update')) && $person->canWrite($cab->AssignedTo)) {
 		$pdu->Label=$_REQUEST['label'];
 		$pdu->CabinetID=$_REQUEST['cabinetid'];
 		$pdu->TemplateID=$_REQUEST['templateid'];
@@ -262,7 +262,7 @@
 	$cab->CabinetID=$pdu->CabinetID;
 	$cab->GetCabinet();
 
-	$write=$user->canWrite($cab->AssignedTo);
+	$write=$person->canWrite($cab->AssignedTo);
 	
 	$Panel=new PowerPanel();
 	$PanelList=$Panel->GetPanelList();
@@ -568,14 +568,14 @@ echo '   </select></div>
 <div class="caption">';
 
 	if($pdu->PDUID >0){
-		if($write || $user->SiteAdmin){
+		if($write || $person->SiteAdmin){
 			echo '   <button type="submit" name="action" value="Update">',__("Update"),'</button>';
-			if($user->SiteAdmin){
+			if($person->SiteAdmin){
 				echo '   <button type="button" name="action" value="Delete">',__("Delete"),'</button>';
 			}
 		}
 	}else{
-		if($write || $user->SiteAdmin){
+		if($write || $person->SiteAdmin){
 			echo '   <button type="submit" name="action" value="Create">',__("Create"),'</button>';
 		}
 	}

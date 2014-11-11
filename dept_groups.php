@@ -2,7 +2,7 @@
 	require_once( "db.inc.php" );
 	require_once( "facilities.inc.php" );
 
-	if(!$user->ContactAdmin){
+	if(!$person->ContactAdmin){
 		// No soup for you.
 		header('Location: '.redirect());
 		exit;

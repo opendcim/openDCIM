@@ -16,10 +16,10 @@
 			die();
 	}
 	
-	$Authentication = "Apache";
-	/* If you want to use Google Plus API authentication, uncomment the next line
-	   and follow the instructions in loginGooglePlus.php to enable. */
-	// $Authentication = "Google";
+	define( "AUTHENTICATION", "Apache" );
+	/* If you want to use Oauth authentication, uncomment the next line
+	   and place your authentication handler in login.php (create symbolic link). */
+	// define( "AUTHENTICATION", "OAuth" );
 
 	require_once( 'config.inc.php');
 	$config=new Config();
