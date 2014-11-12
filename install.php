@@ -4,15 +4,18 @@ $codeversion="3.3";
 // Pre-Flight check
 	$tests=array();
 	$errors=0;
-	if (isset($_SERVER['REMOTE_USER'])) {
+/*	if ( isset($_SERVER['REMOTE_USER'])) {
 		$tests['Remote User']['state']="good";
 		$tests['Remote User']['message']='';
+	} elseif ( isset( $_SESSION['userid'] ) ) {
+		$tests['Remote User']['state']="good";
+		$tests['Remote User']['message']='Authenticated as UserID='.$_SESSION['userid'];
 	}else{
 		$tests['Remote User']['state']="fail";
 		$tests['Remote User']['message']='<a href="http://httpd.apache.org/docs/2.2/howto/auth.html">http://httpd.apache.org/docs/2.2/howto/auth.html</a>';
 		$errors++;
 	}
-
+*/
 	if (extension_loaded('mbstring')) {
 		$tests['mbstring']['state']="good";
 		$tests['mbstring']['message']='';
@@ -208,37 +211,41 @@ function sanitize($string,$stripall=true){
 	// New install so create a user
 	require_once("customers.inc.php");
 
-	$user=new User();
-	$user->UserID=$_SERVER['REMOTE_USER'];
+	$person=new People();
+	if ( AUTHENTICATION == "Apache" ) {
+		$person->UserID=$_SERVER['REMOTE_USER'];
+	} elseif ( AUTHENTICATION == "Oauth" ) {
+		$person->UserID=$_SESSION['userid'];
+	}
 
 	/* Check the table to see if there are any users
 	   defined, yet.  If not, this is a new install, so
 	   create an admin user (all rights) as the current
 	   user.  */
 	
-	$sql="SELECT COUNT(*) AS TotalUsers FROM fac_User;";
+	$sql="SELECT COUNT(*) AS TotalUsers FROM fac_People;";
 	$users=$dbh->query($sql)->fetchColumn();
 
 	if($users==0){
-		$user->Name="Default Admin";
-		foreach($user as $prop => $value){
-			if($prop!='Name' && $prop!='UserID'){
-				$user->$prop=true;
+		$person->Name="Default Admin";
+		foreach($person as $prop => $value){
+			if(strstr( $prop, 'Admin' ) || strstr( $prop, 'Access' )){
+				$person->$prop=true;
 			}
 		}
-		$user->Disabled=false;
+		$person->Disabled=false;
 
-		$user->CreateUser();
+		$person->CreatePerson();
 	}
 
 	// This will be reloading the rights for a new install but for upgrades
 	// it will be the actual rights load
-	$user->GetUserRights();
+	$person->GetUserRights();
 
 	// Re-read the config
 	$config->Config();
 // Check to see if we have any users in the database.
-	$sth=$dbh->prepare("SELECT * FROM fac_User WHERE SiteAdmin=1;");
+	$sth=$dbh->prepare("SELECT * FROM fac_People WHERE SiteAdmin=1;");
 	$sth->execute();
 	if($sth->rowCount()<1){
 		// no users in the system or no users with site admin rights, either way we're missing the class of people we need
@@ -249,11 +256,9 @@ function sanitize($string,$stripall=true){
 	}else{ // so we have users and at least one site admin
 		require_once("customers.inc.php");
 
-		$user=new User();
-		$user->UserID=$_SERVER['REMOTE_USER'];
-		$user->GetUserRights();
+		$person=People::Current();
 
-		if(!$user->SiteAdmin){
+		if(!$person->SiteAdmin){
 			// dolemite says you aren't an admin so you can't apply the update
 			print "An update has been applied to the system but the system hasn't been taken out of maintenance mode. Please contact a site Administrator to correct this issue.";
 			exit;

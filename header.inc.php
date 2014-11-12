@@ -7,7 +7,7 @@ echo '
 <div id="header">
 	<span id="header1">',$header,'</span>
 	<span id="header2">',$subheader,'</span>
-	<span id="version">',$version,'</span>
+	<span id="version">',$_SESSION["userid"],'/',$version,'</span>
 </div>
 ';
 ?>

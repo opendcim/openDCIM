@@ -550,6 +550,16 @@ function locale_number( $number, $decimals=2 ) {
 }
 
 /*
+	If we are using Oauth authentication, go ahead and figure out who
+	we are.  It may be needed for the installation.
+*/
+
+if ( !isset($_SERVER["REMOTE_USER"] ) && !isset( $_SESSION['userid'] )) {
+	header("Location: ".redirect('login.php'));
+	exit;
+}
+
+/*
 	Check if we are doing a new install or an upgrade has been applied.  
 	If found then force the user into only running that function.
 
@@ -566,11 +576,6 @@ if(isset($devMode)&&$devMode){
 		header("Location: ".redirect('install.php'));
 		exit;
 	}
-}
-
-if (( AUTHENTICATION == "Oauth" ) && !isset( $_SESSION['userid'] )) {
-	header("Location: ".redirect('login.php'));
-	exit;
 }
 
 /* This is used on every page so we might as well just init it once */

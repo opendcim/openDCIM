@@ -17,10 +17,11 @@
 	}
 	
 	define( "AUTHENTICATION", "Apache" );
-	/* If you want to use Oauth authentication, uncomment the next line
+	/* If you want to use Oauth authentication, uncomment the next 2 lines
 	   and place your authentication handler in login.php (create symbolic link). */
-	// define( "AUTHENTICATION", "OAuth" );
-
+	// define( "AUTHENTICATION", "Oauth" );
+	// session_start();
+	
 	require_once( 'config.inc.php');
 	$config=new Config();
 	
