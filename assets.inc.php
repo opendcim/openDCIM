@@ -226,7 +226,7 @@ class Cabinet {
 		
 		//$sql="SELECT SUM(Height) AS Occupancy FROM fac_Device WHERE Cabinet=$CabinetID;";
 		//JMGA halfdepth height calculation
-		$sql = "select sum(if(HalfDepth,Height/2,Height)) as Occupancy from fac_Device where Cabinet=$CabinetID";
+		$sql = "select sum(if(HalfDepth,Height/2,Height)) as Occupancy from fac_Device where ParentDevice=0 AND Cabinet=$CabinetID";
 
 		if(!$row=$dbh->query($sql)->fetch()){
 			$info=$dbh->errorInfo();
@@ -1428,9 +1428,10 @@ class Device {
 		$this->UpdateDevice();
 		
 		// While the child devices will automatically get moved to storage as part of the UpdateDevice() call above, it won't sever their network connections
-		if($this->DeviceType=="Chassis"){
-			$childList=$this->GetDeviceChildren();
-			foreach($childList as $child){
+		// Multilevel chassis
+		if ($this->ChassisSlots>0 || $this->RearChassisSlots>0){
+			$descList=$this->GetDeviceDescendants();
+			foreach($descList as $child){
 				DevicePorts::removeConnections($child->DeviceID);
 			}
 		}
@@ -1576,6 +1577,11 @@ class Device {
 			return false;
 		}
 		
+		//Update children, if necesary
+		if ($this->ChassisSlots>0 || $this->RearChassisSlots>0){
+				$this->SetChildDevicesCabinet();
+		}
+		
 		(class_exists('LogActions'))?LogActions::LogThis($this,$tmpDev):'';
 		return true;
 	}
@@ -1636,7 +1642,7 @@ class Device {
 		return $dev;
 	}
 
-	static function GetDevicesByTemplate( $templateID ) {
+	static function GetDevicesByTemplate($templateID) {
 		global $dbh;
 		
 		$sql = "select * from fac_Device where TemplateID='" . intval( $templateID ) . "' order by Label ASC";
@@ -1705,6 +1711,31 @@ class Device {
 		}
 		
 		return $childList;
+	}
+	
+  function GetDeviceDescendants() {
+		global $dbh;
+		
+		$dev=New Device();
+	
+		$this->MakeSafe();
+	
+
+		$sql="SELECT * FROM fac_Device WHERE ParentDevice=$this->DeviceID ORDER BY BackSide, Position ASC;";
+
+		$descList = array();
+		$descList2 = array();
+
+		foreach($dbh->query($sql) as $row){
+			$dev=Device::RowToObject($row);
+			$descList[]=$dev;
+			if ($dev->ChassisSlots>0 || $dev->RearChassisSlots>0){
+				$descList2=$dev->GetDeviceDescendants();
+				$descList=array_merge($descList,$descList2);
+			}
+		}
+		
+		return $descList;
 	}
 	
 	function GetParentDevices(){
@@ -2735,7 +2766,22 @@ class Device {
 		}
 		return false;
 	}
+	function SetChildDevicesCabinet(){
+		global $dbh;
+		
+		$sql="SELECT * FROM fac_Device WHERE ParentDevice=".$this->DeviceID;
+
+		foreach($dbh->query($sql) as $row){
+			$dev=Device::RowToObject($row);
+			$dev->Cabinet=$dev->GetDeviceCabinetID();
+			$dev->UpdateDevice();
+			if ($dev->ChassisSlots>0 || $dev->RearChassisSlots>0){
+				$dev->SetChildDevicesCabinet();
+			}
+		}
+	}
 }
+
 class DevicePorts {
 	var $DeviceID;
 	var $PortNumber;
