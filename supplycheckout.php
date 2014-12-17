@@ -4,10 +4,6 @@
 
 	$subheader=__("Data Center Stockroom Supplies");
 
-	$user=new User();
-	$user->UserID=$_SERVER["REMOTE_USER"];
-	$user->GetUserRights();
-
 	if(!$person->WriteAccess){
 		// No soup for you.
 		header('Location: '.redirect());

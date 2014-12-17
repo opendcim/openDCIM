@@ -21,10 +21,10 @@
 	$audit->AuditStamp="Never";
 	$audit->GetLastAudit();
 	if($audit->UserID!=""){
-		$tmpUser=new User();
-		$tmpUser->UserID=$audit->UserID;
-		$tmpUser->GetUserRights();
-		$AuditorName=$tmpUser->Name;
+		$tmpPerson=new People();
+		$tmpPerson->UserID=$audit->UserID;
+		$tmpPerson->GetUserRights();
+		$AuditorName=$tmpPerson->Name;
 	}else{
 		//If no audit has been completed $AuditorName will return an error
 		$AuditorName="";

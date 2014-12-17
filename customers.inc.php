@@ -220,7 +220,7 @@ class People {
 		}
 	}
 	
-	function GetUserID() {
+	function GetPersonByUserID() {
 		$this->MakeSafe();
 		
 		$sql = "select * from fac_People where UserID=\"" . $this->UserID . "\"";
@@ -657,8 +657,8 @@ class Department {
 		$this->exec($sql);
 
 		if(is_array($MemberList)){
-		  foreach($MemberList as $ContactID){
-				$sql="INSERT INTO fac_DeptContacts SET DeptID=$this->DeptID, ContactID=".intval($ContactID).";";
+		  foreach($MemberList as $PersonID){
+				$sql="INSERT INTO fac_DeptContacts SET DeptID=$this->DeptID, PersonID=".intval($PersonID).";";
 	 			$this->exec($sql); 
 			}
 		}
@@ -666,8 +666,8 @@ class Department {
 	}
 	
 	function GetDepartmentByContact($UserID){
-		$sql="SELECT a.* FROM fac_Department a, fac_DeptContacts b, fac_Contact c 
-			WHERE a.DeptID=b.DeptID AND b.ContactID=c.ContactID AND 
+		$sql="SELECT a.* FROM fac_Department a, fac_DeptContacts b, fac_People c 
+			WHERE a.DeptID=b.DeptID AND b.PersonID=c.PersonID AND 
 			c.UserID=\"".sanitize($UserID)."\";";
 	 
 		// If someone is assigned to more than one department, just return the first hit

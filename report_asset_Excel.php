@@ -1048,7 +1048,7 @@ function addRackStat(&$invCab, $cab, $cabinetColumns, $dc, $dcContainerList)
  */
 function computeSheetBodyDCInventory($DProps)
 {
-    global $user;
+    global $person;
     $dc = new DataCenter();
     $cab = new Cabinet();
     $device = new Device();
