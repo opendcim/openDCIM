@@ -85,7 +85,7 @@
 		$sheet->getActiveSheet()->SetCellValue('A7',__("Position"));
 		$sheet->getActiveSheet()->SetCellValue('B7', $dev->Position );
 
-		$sheet->getActiveSheet()->setTitle($dev->Label);
+		$sheet->getActiveSheet()->setTitle(substr( $dev->Label, 1, 30 ));
 		
 		// Insert a picture into the device specific worksheet
 		if ( file_exists( "pictures/".$devTmpl->FrontPictureFile ) ) {
