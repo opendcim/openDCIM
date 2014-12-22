@@ -7,16 +7,6 @@
 	require_once( 'db.inc.php' );
 	require_once( 'facilities.inc.php' );
 	
-	if ( ! People::Current() ) {
-		if ( AUTHENTICATION == "Oauth" ) {
-			header( "Location: login.php" );
-			exit;
-		} elseif ( AUTHENTICATION == "Apache" ) {
-			print "<h1>You must have some form of Authentication enabled to use openDCIM.</h1>";
-			exit;
-		}
-	}
-	
 	$subheader=__("Data Center Operations Metrics");
 
 	$sql = 'select count(*) as DCs from fac_DataCenter';

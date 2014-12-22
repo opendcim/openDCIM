@@ -550,16 +550,6 @@ function locale_number( $number, $decimals=2 ) {
 }
 
 /*
-	If we are using Oauth authentication, go ahead and figure out who
-	we are.  It may be needed for the installation.
-*/
-
-if ( !isset($_SERVER["REMOTE_USER"] ) && !isset( $_SESSION['userid'] )) {
-	header("Location: ".redirect('login.php'));
-	exit;
-}
-
-/*
 	Check if we are doing a new install or an upgrade has been applied.  
 	If found then force the user into only running that function.
 
@@ -575,6 +565,77 @@ if(isset($devMode)&&$devMode){
 		// new installs need to run the install first.
 		header("Location: ".redirect('install.php'));
 		exit;
+	}
+}
+
+/*
+	If we are using Oauth authentication, go ahead and figure out who
+	we are.  It may be needed for the installation.
+*/
+
+//if ( !isset($_SERVER["REMOTE_USER"] ) && !isset( $_SESSION['userid'] )) {
+//	header("Location: ".redirect('login.php'));
+//	exit;
+//}
+	
+if ( ! People::Current() ) {
+ 	if ( AUTHENTICATION == "Oauth" ) {
+		header( "Location: login.php" );
+		exit;
+	} elseif ( AUTHENTICATION == "Apache" ) {
+		print "<h1>You must have some form of Authentication enabled to use openDCIM.</h1>";
+		exit;
+	}
+}
+
+/*	New in 4.0
+
+	Got rid of the separate User vs Contact tables.  Now all merged into People table.
+	This section will just do a sanity check to make sure that the People table is
+	populated - if it's empty, slurp in the data from the User and Contact tables
+	to build it.
+	
+	Will need to be moved to the installer once we're ready for release.  This is just
+	a fix to let developers easily migrate real data into test.
+*/
+
+$p = new People;
+$c = new Contact;
+$u = new User;
+
+$plist = $p->GetUserList();
+if ( sizeof( $plist ) == 0 ) {
+	// We've got an empty fac_People table, so merge the user and contact tables to create it
+	$clist = $c->GetContactList();
+	foreach( $clist as $tmpc ) {
+		$p->PersonID = $tmpc->PersonID;
+		$p->UserID = $tmpc->UserID;
+		$p->LastName = $tmpc->LastName;
+		$p->FirstName = $tmpc->FirstName;
+		$p->Phone1 = $tmpc->Phone1;
+		$p->Phone2 = $tmpc->Phone2;
+		$p->Phone3 = $tmpc->Phone3;
+		$p->Email = $tmpc->Email;
+		
+		$u->UserID = $p->UserID;
+		$u->GetUserRights();
+		$p->AdminOwnDevices = $u->AdminOwnDevices;
+		$p->ReadAccess = $u->ReadAccess;
+		$p->WriteAccess = $u->WriteAccess;
+		$p->DeleteAccess = $u->DeleteAccess;
+		$p->ContactAdmin = $u->ContactAdmin;
+		$p->RackRequest = $u->RackRequest;
+		$p->RackAdmin = $u->RackAdmin;
+		$p->SiteAdmin = $u->SiteAdmin;
+		$p->Disabled = $u->Disabled;
+		
+		$sql = sprintf( "insert into fac_People set PersonID=%d, UserID='%s', AdminOwnDevices=%d, ReadAccess=%d, WriteAccess=%d,
+			DeleteAccess=%d, ContactAdmin=%d, RackRequest=%d, RackAdmin=%d, SiteAdmin=%d, Disabled=%d, LastName='%s',
+			FirstName='%s', Phone1='%s', Phone2='%s', Phone3='%s', Email='%s'", $p->PersonID, $p->UserID, $p->AdminOwnDevices,
+			$p->ReadAccess, $p->WriteAccess, $p->DeleteAccess, $p->ContactAdmin, $p->RackRequest, $p->RackAdmin, $p->SiteAdmin,
+			$p->Disabled, $p->LastName, $p->FirstName, $p->Phone1, $p->Phone2, $p->Phone3, $p->Email );
+
+		$dbh->query( $sql );
 	}
 }
 
