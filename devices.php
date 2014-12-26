@@ -592,6 +592,9 @@
 				$pdu=new PowerDistribution();
 				$panel=new PowerPanel();
 
+				// clearing errors for now
+				$LastWattage=$LastRead=$upTime=0;
+
 				$pwrConnection->DeviceID=($dev->ParentDevice>0)?$dev->GetRootDeviceID():$dev->DeviceID;
 				$pwrCords=$pwrConnection->GetConnectionsByDevice();
 

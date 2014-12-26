@@ -115,3 +115,9 @@ echo $insertsql;
 	$dbh->exec('INSERT INTO fac_PowerPorts VALUES'.$insertsql);
 print "\n";
 				print_r($dbh->errorInfo());
+
+	// Update all the records with their new deviceid
+	foreach($ConvertedCDUs as $oldid => $newid){
+		dbh->query("UPDATE fac_PowerDistribution SET PDUID = '$newid' WHERE PDUID=$oldid;");
+	}
+

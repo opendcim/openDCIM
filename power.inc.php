@@ -301,12 +301,12 @@ class PowerPorts {
 
 		// This will need to be expanded after the template system is expanded to allow for naming ports
 
-		for($n=0; $n<$dev->Ports; $n++){
+		for($n=0; $n<$dev->PowerSupplyCount; $n++){
 			$i=$n+1;
 			$portList[$i]=new PowerPorts();
 			$portList[$i]->DeviceID=$dev->DeviceID;
 			$portList[$i]->PortNumber=$i;
-			$portList[$i]->Label=__("Power Supply").$i;
+			$portList[$i]->Label=__("Power Connection")." $i";
 			$portList[$i]->createPort();
 		}
 		return $portList;
@@ -329,6 +329,28 @@ class PowerPorts {
 			return false;
 		}else{
 			(class_exists('LogActions'))?LogActions::LogThis($this,$oldport):'';
+			return true;
+		}
+	}
+
+	function removePort(){
+		/* Remove a single power port from a device */
+		global $dbh;
+
+		if(!$this->getport()){
+			return false;
+		}
+
+		// Disconnect anything that might be connected in the db
+//		$this->removeConnection();
+
+		$sql="DELETE FROM fac_PowerPorts WHERE DeviceID=$this->DeviceID AND 
+			PortNumber=$this->PortNumber;";
+
+		if(!$dbh->query($sql)){
+			return false;
+		}else{
+			(class_exists('LogActions'))?LogActions::LogThis($this):'';
 			return true;
 		}
 	}

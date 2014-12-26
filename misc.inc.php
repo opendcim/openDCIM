@@ -577,6 +577,11 @@ if(isset($devMode)&&$devMode){
 //	header("Location: ".redirect('login.php'));
 //	exit;
 //}
+
+// Using to offset errors from the header additions
+if(!isset($_SESSION['userid']) && isset($_SERVER["REMOTE_USER"])){
+	$_SESSION['userid']=$_SERVER["REMOTE_USER"];
+}
 	
 if ( ! People::Current() ) {
  	if ( AUTHENTICATION == "Oauth" ) {

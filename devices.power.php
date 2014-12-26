@@ -521,7 +521,7 @@
 				if(($dev->TemplateID >0)&&(intval($dev->NominalWatts==0))){$dev->UpdateWattageFromTemplate();}
 
 				$write=false;
-				$write=($user->canWrite($cab->AssignedTo))?true:$write;
+				$write=($person->canWrite($cab->AssignedTo))?true:$write;
 				$write=($dev->Rights=="Write")?true:$write;
 
 				if($dev->Rights=="Write" && $dev->DeviceID >0){
@@ -603,6 +603,9 @@
 				$pwrConnection=new PowerPorts();
 				$pdu=new PowerDistribution();
 				$panel=new PowerPanel();
+
+				// clearing errors for now
+				$LastWattage=$LastRead=$upTime=0;
 
 				$pwrConnection->DeviceID=($dev->ParentDevice>0)?$dev->GetRootDeviceID():$dev->DeviceID;
 				$pwrCords=$pwrConnection->getPorts();
@@ -828,7 +831,7 @@
 // In the case of a child device we might define this above and in that case we
 // need to preserve the flag
 $write=(isset($write))?$write:false;
-$write=($user->canWrite($cab->AssignedTo))?true:$write;
+$write=($person->canWrite($cab->AssignedTo))?true:$write;
 $write=($dev->Rights=="Write")?true:$write;
 
 
@@ -856,7 +859,7 @@ $write=($dev->Rights=="Write")?true:$write;
   <script type="text/javascript" src="scripts/jquery.validationEngine.js"></script>
   <script type="text/javascript" src="scripts/jHtmlArea-0.8.min.js"></script>
   <script type="text/javascript" src="scripts/jquery.textext.js"></script>
-  <script type="text/javascript" src="scripts/common.js"></script>
+  <script type="text/javascript" src="scripts/common.power.js"></script>
 
 <SCRIPT type="text/javascript" >
 var nextField;
@@ -1370,6 +1373,11 @@ print "		var dialog=$('<div>').prop('title',\"".__("Verify Delete Device")."\").
 		}
 	});
 
+	$('.power > div ~ div').each(function(){
+		var row=$(this);
+		row.power();
+	});
+
 	function setPreferredLayout() {<?php if(isset($_COOKIE["layout"]) && strtolower($_COOKIE["layout"])==="portrait"){echo 'swaplayout();setCookie("layout","Portrait");';}else{echo 'setCookie("layout","Landscape");';} ?>}
 	setPreferredLayout();
 	$('#tags').width($('#tags').parent('div').parent('div').innerWidth()-$('#tags').parent('div').prev('div').outerWidth()-5);
@@ -1868,27 +1876,38 @@ echo '	<div class="table">
 		print "\t\t\t<div><div><button type=\"button\">Add note</button><div><input /></div></div></div>\n";
 
 		print "\t\t  </div></div>\n\t\t</div>\n";
-		print "\t\t<div>\n\t\t\t<div>&nbsp;</div><div></div>\n\t\t</div>\n"; // spacer row
+		print "\t\t<!-- Spacer --><div><div>&nbsp;</div><div></div></div><!-- END Spacer -->\n"; // spacer row
 	}
 
 	//HTML content condensed for PHP logic clarity.
 	// If $pwrCords is null then we're creating a device record. Skip power checking.
 	if(!is_null($pwrCords)&&((isset($_POST['action'])&&$_POST['action']!='Child')||!isset($_POST['action']))&&(!in_array($dev->DeviceType,array('Physical Infrastructure','Patch Panel')))){
-		if(count($pwrCords)==0){
-			// We have no power information. Display links to PDU's in cabinet?
-			echo '	<div>		<div><a name="power"></a></div>		<div>',__("No power connections defined.  You can add connections from the power strip screen."),'</div></div><div><div>&nbsp;</div><div></div></div>';
-		}else{
-			print "		<div>\n		  <div><a name=\"power\">$chassis ".__("Power Connections")."</a></div>\n		  <div><div class=\"table border\">\n			<div><div>".__("Panel")."</div><div>".__("Power Strip")."</div><div>".__("Plug #")."</div><div>".__("Power Supply")."</div></div>";
-			foreach($pwrCords as $cord){
+		print "		<div>\n\t\t\t<div><a name=\"power\">$chassis ".__("Power Connections")."</a></div>
+			<div><div class=\"table border power\">
+				<div>
+					<div class=\"delete\" style=\"display: none;\"></div>
+					<div>#</div>
+					<div>".__("Port Name")."</div>
+					<div>".__("Device")."</div>
+					<div>".__("Device Port")."</div>
+					<div>".__("Notes")."</div>
+<!--				<div>".__("Panel")."</div> -->
+				</div>\n";
+			foreach($pwrCords as $i => $cord){
 				$tmppdu=new Device();
 				$tmppdu->DeviceID=$cord->ConnectedDeviceID;
 				$tmppdu->GetDevice();
 //				$panel->PanelID=$pdu->PanelID;
 //				$panel->GetPanel();
-				print "			<div><div><a href=\"power_panel.php?panelid=$pdu->PanelID\">$panel->PanelLabel</a></div><div><a href=\"devices.php?pduid=$cord->ConnectedDeviceID\">$tmppdu->Label</a></div><div>$cord->ConnectedPort</div><div>$cord->Label</div></div>\n";
+				print "\t\t\t\t<div data-port=$i>
+					<div>$i</div>
+					<div data-default=\"$cord->Label\">$cord->Label</div>
+					<div data-default=$cord->ConnectedDeviceID><a href=\"devices.php?deviceid=$cord->ConnectedDeviceID\">$tmppdu->Label</a></div>
+					<div data-default=$cord->ConnectedPort>$cord->ConnectedPort</div>
+					<div data-default=\"$cord->Notes\">$cord->Notes</div>
+				</div>\n";
 			}
-			print "			</div><!-- END div.table --></div>\n		</div>\n		<div>\n			<div>&nbsp;</div><div></div>\n		</div>\n";
-		}
+			print "			</div><!-- END div.table --></div>\n		</div><!-- END power connections -->\n		<!-- Spacer --><div><div>&nbsp;</div><div></div></div><!-- END Spacer -->\n";
 	}
 
 	$jsondata=array();// array to store user ability to modify a port. index=portnumber, value=true/false
@@ -2007,7 +2026,7 @@ echo '	<div class="table">
 		}
 	}
 	// Delete rights are seperate from write rights
-	if(($write || $user->DeleteAccess) && $dev->DeviceID >0){
+	if(($write || $person->DeleteAccess) && $dev->DeviceID >0){
 		echo '		<button type="button" name="action" value="Delete">',__("Delete"),'</button>';
 	}
 	if($dev->DeviceID >0){
@@ -2043,7 +2062,7 @@ echo '	<div class="table">
 </div><!-- END div.page -->
 <script type="text/javascript">
 	var portrights=$.parseJSON('<?php echo json_encode($jsondata); ?>');
-	portrights['admin']=<?php echo ($user->SiteAdmin)?'true':'false'; ?>;
+	portrights['admin']=<?php echo ($person->SiteAdmin)?'true':'false'; ?>;
 <?php
 	if(!$write){
 		print "\t\t//Disable all input if they don't have rights.

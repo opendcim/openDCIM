@@ -1515,6 +1515,26 @@ class Device {
 
 			}
 		}
+
+		// If we made it to a device update and the number of power ports available don't match the device, just fix it.
+		if($tmpDev->PowerSupplyCount!=$this->PowerSupplyCount){
+			if($tmpDev->PowerSupplyCount>$this->PowerSupplyCount){ // old device has more ports
+				for($n=$this->PowerSupplyCount; $n<$tmpDev->PowerSupplyCount; $n++){
+					$p=new PowerPorts();
+					$p->DeviceID=$this->DeviceID;
+					$p->PortNumber=$n+1;
+					$p->removePort();
+				}
+			}else{ // new devices has more ports
+				for($n=$tmpDev->PowerSupplyCount; $n<$this->PowerSupplyCount; ++$n){
+					$p=new PowerPorts;
+					$p->DeviceID=$this->DeviceID;
+					$p->Label=__("Power Connection")." ".($n+1);
+					$p->PortNumber=$n+1;
+					$p->createPort();
+				}
+			}
+		}
 		
 		if(($tmpDev->DeviceType=="Switch" || $tmpDev->DeviceType=="Patch Panel") && $tmpDev->DeviceType!=$this->DeviceType){
 			// SUT #417 - Changed a Switch or Patch Panel to something else (even if you change a switch to a Patch Panel, the connections are different)
