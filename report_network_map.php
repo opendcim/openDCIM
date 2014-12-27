@@ -174,8 +174,16 @@
                 }
                 $devList[$dev->DeviceType][$dev->DeviceID]=$dev->Label;
             }
-
-        }
+        } elseif(isset($_REQUEST['tagname'])){
+			$graphname .= "Custom Tag " . $_REQUEST['tagname'];
+			$device = new Device();
+			foreach ( $device->SearchByCustomTag( $_REQUEST['tagname'] ) as $dev ) {
+                if(!isset($devList[$dev->DeviceType])) {
+                  $devList[$dev->DeviceType] = array();
+                }
+                $devList[$dev->DeviceType][$dev->DeviceID]=$dev->Label;
+            }
+		}
         # start building the graphfile.
         $graphstr .= "graph openDCIM {
 
@@ -485,6 +493,13 @@ overlap = scale;
                         $dc->GetDataCenter();
                         $options[$cabinet->CabinetID] = $dc->Name."::".$cabinet->Location;
                     }
+				} elseif($containmentType == 5) {
+					# filter by custom tag
+					$tList = Tags::FindAll();
+					$body .= "<select name=tagname id=tagname>";
+					foreach( $tList as $TagID=>$Name ){
+						$options[$Name] = $Name;
+					}
                 }
                 # sort and output the options based on the name of the option
                 asort($options);
@@ -563,6 +578,7 @@ echo '          <div class="main">
                                 <option value="2">',__("Zone"),'</option>
                                 <option value="3">',__("Cabinet Row"),'</option>
                                 <option value="4">',__("Cabinet"),'</option>
+								<option value="5">',__("Custom Tag"),'</option>
                         </select>';?>
                         <br><br>
                         <div id="datacontainer">

@@ -4207,7 +4207,7 @@ class Tags {
 	static function FindAll(){
 		global $dbh;
 
-		$sql="SELECT * FROM fac_Tags;";
+		$sql="SELECT * FROM fac_Tags order by Name ASC";
 
 		$tagarray=array();
 		foreach($dbh->query($sql) as $row){
