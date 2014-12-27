@@ -1335,6 +1335,20 @@ function LameLogDisplay(){
 			this.cdeviceport = this.element.find('div:nth-child(5)');
 			this.cnotes      = this.element.find('div:nth-child(6)');
 
+			// Row Controls
+			var controls=$('<div>',({'id':'controls'+this.portnum}));
+			var savebtn=$('<button>',{'type':'button'}).append('Save').on('click',function(e){row.save(e)});
+			var cancelbtn=$('<button>',{'type':'button'}).append('Cancel').on('click',function(e){row.destroy(e)});
+			var deletebtn=$('<button>',{'type':'button'}).append('Delete').on('click',function(e){row.delete(e)});
+			controls.append(savebtn).append(cancelbtn).append(deletebtn);
+			var minwidth=0;
+			controls.children('button').each(function(){
+				minwidth+=$(this).outerWidth()+14; // 14 padding and border
+			});
+			controls.css('min-width',minwidth);
+
+			this.controls	= controls;
+
 			ct.click(function(e){
 				if(!row.element.data('edit')){
 					row.edit();
@@ -1346,6 +1360,9 @@ function LameLogDisplay(){
 
 			row.getdevices(this.cdevice);
 			row.portname.html('<input type="text" style="min-width: 60px;" value="'+row.portname.text()+'">');
+			row.cnotes.html('<input type="text" style="min-width: 200px;" value="'+row.cnotes.text()+'">');
+
+			this.element.append(this.controls.clone(true));
 
 			// Flag row as being in edit mode
 			row.element.data('edit',true);
@@ -1353,8 +1370,8 @@ function LameLogDisplay(){
 		getdevices: function(target){
 			var row=this;
 
-			var postoptions={deviceid: $('#deviceid').val(),pn: this.portnum};
-			$.post("scripts/power.php",postoptions).done(function(data){
+			var getoptions={deviceid: $('#deviceid').val(),pn: this.portnum};
+			$.get("scripts/power.php",getoptions).done(function(data){
 				var devlist=$("<select>").append('<option value=0>&nbsp;</option>');
 				devlist.change(function(e){
 					row.getports(e);
@@ -1370,10 +1387,10 @@ function LameLogDisplay(){
 		getports: function(target){
 			var row=this;
 
-			var postoptions={deviceid: $('#deviceid').val(),pn: this.portnum};
-			postoptions=$.extend(postoptions, {thisdev: this.cdevice.find('select').val()});
+			var getoptions={deviceid: $('#deviceid').val(),pn: this.portnum};
+			getoptions=$.extend(getoptions, {thisdev: this.cdevice.find('select').val()});
 
-			$.post("scripts/power.php",postoptions).done(function(data){
+			$.get("scripts/power.php",getoptions).done(function(data){
 				var portlist=$("<select>").append('<option value=0>&nbsp;</option>');
 				portlist.change(function(e){
 				});
@@ -1385,6 +1402,49 @@ function LameLogDisplay(){
 				});
 				row.cdeviceport.html(portlist).find('select').val(row.cdeviceport.data('default'));
 			});
+		},
+		delete: function(e) {
+			var row=this;
+
+			$(row.cdevice).find('input').val('')
+			row.cdevice.children('select').val(0).trigger('change');
+			$(e.currentTarget.parentNode.children[0]).click();
+		},
+		save: function(e) {
+			var row=this;
+			// save the port
+			// if not a rear port make sure the port name isn't blank
+			$.post("scripts/power.php",{
+				saveport: '',
+				deviceid: $('#deviceid').val(),
+				pnum: row.portnum,
+				pname: (row.portname.children('input').length==0)?row.portname.data('default'):row.portname.children('input').val(),
+				cdevice: row.cdevice.children('select').val(),
+				cdeviceport: row.cdeviceport.children('select').val(),
+				cnotes: row.cnotes.children('input').val(),
+			}).done(function(data){
+				if(data.toString().trim()==1){
+					row.destroy(e);
+				}else{
+					// something broke
+				}
+			});
+		},
+		destroy: function(check) {
+			var row=this;
+			var getoptions={deviceid: $('#deviceid').val(),pn: this.portnum, getport: ""};
+
+			$.get("scripts/power.php",getoptions).done(function(data){
+				row.portname.html(data.Label).data('default',data.Label);
+				data.ConnectedDeviceLabel=(data.ConnectedDeviceLabel==null)?'':data.ConnectedDeviceLabel;
+				data.ConnectedPortLabel=(data.ConnectedPortLabel==null)?'':data.ConnectedPortLabel;
+				row.cdevice.html('<a href="devices.php?deviceid='+data.ConnectedDeviceID+'">'+data.ConnectedDeviceLabel+'</a>').data('default',data.ConnectedDeviceID);
+				row.cdeviceport.html(data.ConnectedPortLabel).data('default',data.ConnectedPort);
+				row.cnotes.html(data.Notes).data('default',data.Notes);
+			});
+
+			$(row.element[0]).data('edit',false);
+			row.element[0].lastChild.remove();
 		}
 	});
 

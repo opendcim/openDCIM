@@ -1899,11 +1899,17 @@ echo '	<div class="table">
 				$tmppdu->GetDevice();
 //				$panel->PanelID=$pdu->PanelID;
 //				$panel->GetPanel();
+				$tmpcord=new PowerPorts();
+				if($cord->ConnectedDeviceID>0 && !is_null($cord->ConnectedDeviceID)){
+					$tmpcord->DeviceID=$cord->ConnectedDeviceID;
+					$tmpcord->PortNumber=$cord->ConnectedPort;
+					$tmpcord->getPort();
+				}
 				print "\t\t\t\t<div data-port=$i>
 					<div>$i</div>
 					<div data-default=\"$cord->Label\">$cord->Label</div>
 					<div data-default=$cord->ConnectedDeviceID><a href=\"devices.php?deviceid=$cord->ConnectedDeviceID\">$tmppdu->Label</a></div>
-					<div data-default=$cord->ConnectedPort>$cord->ConnectedPort</div>
+					<div data-default=$cord->ConnectedPort>$tmpcord->Label</div>
 					<div data-default=\"$cord->Notes\">$cord->Notes</div>
 				</div>\n";
 			}
