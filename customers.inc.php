@@ -156,6 +156,8 @@ class People {
 	}
 
 	function CreatePerson() {
+		global $dbh;
+		
 		$this->MakeSafe();
 		
 		$sql = "insert into fac_People set UserID=\"" . $this->UserID . "\", LastName=\"" . $this->LastName . "\", FirstName=\"" . $this->FirstName . "\",
@@ -165,7 +167,7 @@ class People {
 			SiteAdmin=" . $this->SiteAdmin . ", Disabled=" . $this->Disabled;
 		
 		if ( $this->query( $sql ) ) {
-			$this->PersonID = $this->lastID();
+			$this->PersonID = $dbh->lastInsertId();
 			(class_exists('LogActions'))?LogActions::LogThis($this):'';
 			return $this->PersonID;
 		} else {
@@ -191,6 +193,7 @@ class People {
 			}
 		} elseif ( AUTHENTICATION == "Oauth" ) {
 			if ( ! isset( $_SESSION['userid'] ) ) {
+				error_log( "No UserID passed by authentication mechanism." );
 				return false;
 			}
 			
@@ -229,6 +232,8 @@ class People {
 			foreach( People::RowToObject( $row ) as $prop=>$value ) {
 				$this->$prop=$value;
 			}
+			
+			return true;
 		} else {
 			// Kick back a blank record if the UserID was not found
 			foreach ( $this as $prop => $value ) {
@@ -236,6 +241,8 @@ class People {
 					$this->$prop = '';
 				}
 			}
+			
+			return false;
 		}
 	}
 	
@@ -252,8 +259,16 @@ class People {
 	
 	function GetUserRights() {
 		$this->MakeSafe();
+		
+		/* Set all rights to false just in case the object being called is reused */
+		foreach($this as $prop => $value){
+			if($prop!='LastName' && $prop!='UserID'){
+				$this->$prop=false;
+			}
+		}
 
 		$sql="SELECT * FROM fac_People WHERE UserID=\"$this->UserID\";";
+
 
 		if($row=$this->query($sql)->fetch()){
 			foreach(People::RowToObject($row) as $prop => $value){
@@ -264,7 +279,7 @@ class People {
 		/* Just in case someone disabled a user, but didn't remove all of their individual rights */
 		if($this->Disabled){
 			foreach($this as $prop => $value){
-				if($prop!='Name' || $prop!='UserID'){
+				if($prop!='Name' && $prop!='UserID'){
 					$this->$prop=false;
 				}
 			}
@@ -957,6 +972,14 @@ class User {
 
 	function GetUserRights(){
 		$this->MakeSafe();
+		
+		/* Clear out all rights in case the object calling this has been called before */
+		foreach($this as $prop => $value){
+			if($prop!='Name' && $prop!='UserID'){
+				$this->$prop=false;
+			}
+		}
+
 
 		$sql="SELECT * FROM fac_User WHERE UserID=\"$this->UserID\";";
 
@@ -969,7 +992,7 @@ class User {
 		/* Just in case someone disabled a user, but didn't remove all of their individual rights */
 		if($this->Disabled){
 			foreach($this as $prop => $value){
-				if($prop!='Name' || $prop!='UserID'){
+				if($prop!='Name' && $prop!='UserID'){
 					$this->$prop=false;
 				}
 			}

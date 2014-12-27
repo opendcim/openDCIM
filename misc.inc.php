@@ -573,10 +573,10 @@ if(isset($devMode)&&$devMode){
 	we are.  It may be needed for the installation.
 */
 
-//if ( !isset($_SERVER["REMOTE_USER"] ) && !isset( $_SESSION['userid'] )) {
-//	header("Location: ".redirect('login.php'));
-//	exit;
-//}
+if ( !isset($_SERVER["REMOTE_USER"] ) && !isset( $_SESSION['userid'] ) && AUTHENTICATION=="Oauth" ) {
+	header("Location: ".redirect('login.php'));
+	exit;
+}
 
 // Using to offset errors from the header additions
 if(!isset($_SESSION['userid']) && isset($_SERVER["REMOTE_USER"])){
@@ -641,6 +641,26 @@ if ( sizeof( $plist ) == 0 ) {
 			$p->Disabled, $p->LastName, $p->FirstName, $p->Phone1, $p->Phone2, $p->Phone3, $p->Email );
 
 		$dbh->query( $sql );
+	}
+	
+	$ulist = $u->GetUserList();
+	foreach ( $ulist as $tmpu ) {
+		/* This time around we have to see if the User is already in the fac_People table */
+		$p->UserID = $tmpu->UserID;
+		if ( ! $p->GetPersonByUserID() ) {
+			$p->LastName = $tmpu->Name;
+			$p->AdminOwnDevices = $tmpu->AdminOwnDevices;
+			$p->ReadAccess = $tmpu->ReadAccess;
+			$p->WriteAccess = $tmpu->WriteAccess;
+			$p->DeleteAccess = $tmpu->DeleteAccess;
+			$p->ContactAdmin = $tmpu->ContactAdmin;
+			$p->RackRequest = $tmpu->RackRequest;
+			$p->RackAdmin = $tmpu->RackAdmin;
+			$p->SiteAdmin = $tmpu->SiteAdmin;
+			$p->Disabled = $tmpu->Disabled;
+			
+			$p->CreatePerson();
+		}
 	}
 }
 
