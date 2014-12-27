@@ -611,6 +611,9 @@
 
 				if($dev->DeviceType=='Switch'){
 					$linkList=SwitchInfo::getPortStatus($dev->DeviceID);
+				}elseif($dev->DeviceType=='CDU'){
+					$pdu->PDUID=$dev->DeviceID;
+					$pdu->GetPDU();
 				}
 			}
 
@@ -1483,7 +1486,7 @@ echo '			</select>
 		   <legend>',__("Escalation Information"),'</legend>
 		   <div class="table">
 			<div>
-				<div><label for="escaltationtimeid">',__("Time Period"),'</label></div>
+				<div><label for="escalationtimeid">',__("Time Period"),'</label></div>
 				<div><select name="escalationtimeid" id="escalationtimeid">
 					<option value="">',__("Select..."),'</option>';
 
@@ -1550,7 +1553,7 @@ echo '
 	<legend>',__("Physical Infrastructure"),'</legend>
 	<div class="table">
 		<div>
-			<div><label for="cabinet">',__("Cabinet"),'</label></div>';
+			<div><label for="cabinetid">',__("Cabinet"),'</label></div>';
 
 		if($dev->ParentDevice==0){
 			print "\t\t\t<div>".$cab->GetCabinetSelectList()."</div>\n";
@@ -1589,11 +1592,11 @@ echo '			</select>
 		</div>
 		<div>
 		   <div><label for="height">',($dev->ParentDevice==0)?__("Height"):__("Number of slots"),'</label></div>
-		   <div><input type="number" class="required,validate[custom[onlyNumberSp]]" name="height" id="height" size="4" value="',$dev->Height,'"></div>
+		   <div><input type="number" class="required,validate[custom[onlyNumberSp]]" name="height" id="height" value="',$dev->Height,'"></div>
 		</div>
 		<div>
 		   <div><label for="position">',__("Position"),'</label></div>
-		   <div><input type="number" class="required,validate[custom[onlyNumberSp],min[1],max[',$cab->CabinetHeight,']]" name="position" id="position" size="4" value="',$dev->Position,'"></div>
+		   <div><input type="number" class="required,validate[custom[onlyNumberSp],min[1],max[',$cab->CabinetHeight,']]" name="position" id="position" value="',$dev->Position,'"></div>
 		</div>
 		';
 
@@ -1611,19 +1614,19 @@ echo '		<div>
 
 		echo '		<div id="dphtml">
 		   <div><label for="ports">',__("Number of Data Ports"),'</label></div>
-		   <div><input type="number" class="optional,validate[custom[onlyNumberSp]]" name="ports" id="ports" size="4" value="',$dev->Ports,'"></div>
+		   <div><input type="number" class="optional,validate[custom[onlyNumberSp]]" name="ports" id="ports" value="',$dev->Ports,'"></div>
 		</div>';
 
 echo '		<div>
 		   <div><label for="nominalwatts">',__("Nominal Draw (Watts)"),'</label></div>
-		   <div><input type="text" class="optional,validate[custom[onlyNumberSp]]" name="nominalwatts" id="nominalwatts" size=6 value="',$dev->NominalWatts,'"></div>
+		   <div><input type="text" class="optional,validate[custom[onlyNumberSp]]" name="nominalwatts" id="nominalwatts" value="',$dev->NominalWatts,'"></div>
 		</div>';
 
 		// Blade devices don't have power supplies
 		if($dev->ParentDevice==0){
 			echo '		<div>
 		   <div><label for="powersupplycount">',__("Power Connections"),'</label></div>
-		   <div><input type="number" class="optional,validate[custom[onlyNumberSp]]" name="powersupplycount" id="powersupplycount" size=4 value="',$dev->PowerSupplyCount,'"></div>
+		   <div><input type="number" class="optional,validate[custom[onlyNumberSp]]" name="powersupplycount" id="powersupplycount" value="',$dev->PowerSupplyCount,'"></div>
 		</div>';
 		}
 
@@ -1667,17 +1670,21 @@ echo '
 	<legend>'.__("Power Specifications").'</legend>
 	<div class="table">
 		<div>
-		   <div><label for="panelid">',__("Source Panel"),'</label></div>
-		   <div><select name="panelid" id="panelid" ><option value=0>',__("Select Panel"),'</option>';
+			<div><label for="panelid">',__("Source Panel"),'</label></div>
+			<div>
+				<select name="panelid" id="panelid" >
+					<option value=0>',__("Select Panel"),'</option>';
 
 		$Panel=new PowerPanel();
 		$PanelList=$Panel->GetPanelList();
 		foreach($PanelList as $key=>$value){
-			if($value->PanelID == $pdu->PanelID){$selected=' selected';}else{$selected="";}
-			print "<option value=\"$value->PanelID\"$selected>$value->PanelLabel</option>\n"; 
+			$selected=($value->PanelID == $pdu->PanelID)?' selected':"";
+			print "\n\t\t\t\t\t<option value=\"$value->PanelID\"$selected>$value->PanelLabel</option>\n"; 
 		}
 
-		echo '   </select></div>
+		echo '
+				</select>
+			</div>
 		</div>
 		<div>
 			<div><label for="voltage">',__("Voltages:"),'</label></div>
@@ -1691,37 +1698,38 @@ echo '
 				print $pnl->PanelVoltage." / ".intval($pnl->PanelVoltage/1.73);
 			}
 
-		echo '	</div>
+		echo '</div>
 		</div>
 		<div>
-		  <div><label for="breakersize">',__("Breaker Size (# of Poles)"),'</label></div>
-		  <div>
-			<select name="breakersize">';
+			<div><label for="breakersize">',__("Breaker Size (# of Poles)"),'</label></div>
+			<div>
+				<select name="breakersize" id="breakersize">';
 
 			for($i=1;$i<4;$i++){
 				if($i==$pdu->BreakerSize){$selected=" selected";}else{$selected="";}
-				print "<option value=\"$i\"$selected>$i</option>";
+				print "\n\t\t\t\t\t<option value=\"$i\"$selected>$i</option>";
 			}
 
-		echo '	</select>
-		  </div>
+		echo '
+				</select>
+			</div>
 		</div>
 		<div>
-		  <div><label for="panelpole">',__("Panel Pole Number"),'</label></div>
-		  <div><input type="text" name="panelpole" id="panelpole" size=5 value="',$pdu->PanelPole,'"></div>
+			<div><label for="panelpole">',__("Panel Pole Number"),'</label></div>
+			<div><input type="text" name="panelpole" id="panelpole" size=5 value="',$pdu->PanelPole,'"></div>
 		</div>';
 
 		if($pdu->BreakerSize>1) {
 			echo '
-			<div>
-			  <div><label for="allbreakerpoles">',__("All Breaker Poles"),'</label></div>
-			  <div>',$pdu->GetAllBreakerPoles(),'</div>
-			</div>';
+		<div>
+			<div><label for="allbreakerpoles">',__("All Breaker Poles"),'</label></div>
+			<div>',$pdu->GetAllBreakerPoles(),'</div>
+		</div>';
 		}
 		echo '
 		<div>
-		   <div><label for="inputamperage">',__("Input Amperage"),'</label></div>
-		   <div><input type="text" name="inputamperage" id="inputamperage" size=5 value="',$pdu->InputAmperage,'"></div>
+			<div><label for="inputamperage">',__("Input Amperage"),'</label></div>
+			<div><input type="text" name="inputamperage" id="inputamperage" size=5 value="',$pdu->InputAmperage,'"></div>
 		</div>';
 
 		// Only show the version, etc if we aren't creating a CDU
@@ -1746,29 +1754,35 @@ echo '
 		}
 		echo '
 		<div class="caption">
-		<fieldset class="noborder">
-			<legend>',__("Automatic Transfer Switch"),'</legend>
-			<div class="table centermargin border">
-			<div>
-			  <div><label for="failsafe">',__("Fail Safe Switch?"),'</label></div>
-			  <div><input type="checkbox" name="failsafe" id="failsafe"',(($pdu->FailSafe)?" checked":""),'></div>
-			</div>
-			<div>
-			   <div><label for="panelid2">',__("Source Panel (Secondary Source)"),'</label></div>
-			   <div><select name="panelid2" id="panelid2"><option value=0>',__("Select Panel"),'</option>';
+			<fieldset class="noborder">
+				<legend>',__("Automatic Transfer Switch"),'</legend>
+				<div class="table centermargin border">
+					<div>
+						<div><label for="failsafe">',__("Fail Safe Switch?"),'</label></div>
+						<div><input type="checkbox" name="failsafe" id="failsafe"',(($pdu->FailSafe)?" checked":""),'></div>
+					</div>
+					<div>
+						<div><label for="panelid2">',__("Source Panel (Secondary Source)"),'</label></div>
+						<div>
+							<select name="panelid2" id="panelid2">
+								<option value=0>',__("Select Panel"),'</option>';
 
 				foreach($PanelList as $key=>$value){
 					if($value->PanelID==$pdu->PanelID2){$selected=" selected";}else{$selected="";}
-					print "		<option value=$value->PanelID$selected>$value->PanelLabel</option>\n";
+					print "\n\t\t\t\t\t\t<option value=$value->PanelID$selected>$value->PanelLabel</option>";
 				}
 
-			echo '   </select></div>
-			</div>
-			<div>
-			  <div><label for="panelpole2">',__("Panel Pole Number (Secondary Source)"),'</label></div>
-			  <div><input type="text" name="panelpole2" id="panelpole2" size=4 value="',$pdu->PanelPole2,'"></div>
-			</div>
-		</fieldset>
+			echo '
+							</select>
+						</div>
+					</div>
+					<div>
+						<div><label for="panelpole2">',__("Panel Pole Number (Secondary Source)"),'</label></div>
+						<div><input type="text" name="panelpole2" id="panelpole2" size=4 value="',$pdu->PanelPole2,'"></div>
+					</div>
+				</div>
+			</fieldset>
+		</div>
 	</div>
 </fieldset>
 <fieldset id="firstport" class="hide">
@@ -1857,7 +1871,7 @@ echo '	<div class="table">
 	// Operational log
 	// This is an optional block if logging is enabled
 	if(class_exists('LogActions') && $dev->DeviceID >0){
-		print "\t<div>\n\t\t  <div><a name=\"olog\">".__("Operational Log")."</a></div>\n\t\t  <div><div id=\"olog\" class=\"table border\">\n\t\t\t<div><div>".__("Date")."</div></div>\n";
+		print "\t<div>\n\t\t  <div><a>".__("Operational Log")."</a></div>\n\t\t  <div><div id=\"olog\" class=\"table border\">\n\t\t\t<div><div>".__("Date")."</div></div>\n";
 
 		// Wrapping the actual log events with a table of their own and a div that we can style
 		print "\t<div><div><div><div class=\"table\">\n";
@@ -1881,7 +1895,7 @@ echo '	<div class="table">
 	//HTML content condensed for PHP logic clarity.
 	// If $pwrCords is null then we're creating a device record. Skip power checking.
 	if(!is_null($pwrCords)&&((isset($_POST['action'])&&$_POST['action']!='Child')||!isset($_POST['action']))&&(!in_array($dev->DeviceType,array('Physical Infrastructure','Patch Panel')))){
-		print "		<div>\n\t\t\t<div><a name=\"power\">$chassis ".__("Power Connections")."</a></div>
+		print "		<div>\n\t\t\t<div><a id=\"power\">$chassis ".__("Power Connections")."</a></div>
 			<div><div class=\"table border power\">
 				<div>
 					<div class=\"delete\" style=\"display: none;\"></div>
@@ -1903,6 +1917,9 @@ echo '	<div class="table">
 					$tmpcord->DeviceID=$cord->ConnectedDeviceID;
 					$tmpcord->PortNumber=$cord->ConnectedPort;
 					$tmpcord->getPort();
+				}else{
+					$cord->ConnectedDeviceID=0;
+					$cord->ConnectedPort=0;
 				}
 				print "\t\t\t\t<div data-port=$i>
 					<div>$i</div>
@@ -1918,7 +1935,7 @@ echo '	<div class="table">
 	$jsondata=array();// array to store user ability to modify a port. index=portnumber, value=true/false
 	// New simplified model will apply to all devices except for patch panels and physical infrastructure
 	if(!in_array($dev->DeviceType,array('Physical Infrastructure','Patch Panel')) && !empty($portList) ){
-		print "		<div>\n		  <div><a name=\"net\">".__("Connections")."</a></div>\n		  <div>\n			<div class=\"table border switch\">\n				<div>
+		print "		<div>\n		  <div><a id=\"net\">".__("Connections")."</a></div>\n		  <div>\n			<div class=\"table border switch\">\n				<div>
 				<div>#</div>
 				<div id=\"spn\">".__("Port Name")."</div>
 				<div>".__("Device")."</div>
@@ -1939,9 +1956,15 @@ echo '	<div class="table">
 			$jsondata[$i]=($dev->Rights=="Write")?true:($tmpDev->Rights=="Write")?true:false;
 
 			$cp=new DevicePorts();
-			$cp->DeviceID=$port->ConnectedDeviceID;
-			$cp->PortNumber=$port->ConnectedPort;
-			$cp->getPort();
+			if($port->ConnectedDeviceID>0 && !is_null($port->ConnectedDeviceID)){
+				$cp->DeviceID=$port->ConnectedDeviceID;
+				$cp->PortNumber=$port->ConnectedPort;
+				$cp->getPort();
+			}else{
+				$port->ConnectedDeviceID=0;
+				$port->ConnectedPort=0;
+				$cp->Label="";
+			}
 
 			if($cp->DeviceID >0 && $cp->Label==''){$cp->Label=$cp->PortNumber;};
 
