@@ -151,6 +151,10 @@ class LogActions {
 				// DevicePorts::removeConnections()
 				// DevicePorts::removePorts()
 				break;
+			case "PowerPorts":
+				$log->ObjectID=$object->DeviceID;
+				$log->ChildID=$object->PortNumber;
+				break;
 			case "TemplatePorts":
 				$log->ObjectID=$object->TemplateID;
 				$log->ChildID=$object->PortNumber;

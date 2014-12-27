@@ -354,6 +354,126 @@ class PowerPorts {
 			return true;
 		}
 	}
+
+	function updatePort() {
+		global $dbh;
+
+		$oldport=new PowerPorts(); // originating port prior to modification
+		$oldport->DeviceID=$this->DeviceID;
+		$oldport->PortNumber=$this->PortNumber;
+		$oldport->getPort();
+		$tmpport=new PowerPorts(); // connecting to here
+		$tmpport->DeviceID=$this->ConnectedDeviceID;
+		$tmpport->PortNumber=$this->ConnectedPort;
+		$tmpport->getPort();
+		$oldtmpport=new PowerPorts(); // used for logging
+		$oldtmpport->DeviceID=$oldport->ConnectedDeviceID;
+		$oldtmpport->PortNumber=$oldport->ConnectedPort;
+		$oldtmpport->getPort();
+
+		//check rights before we go any further
+		$dev=new Device();
+		$dev->DeviceID=$this->DeviceID;
+		$dev->GetDevice();
+		$replacingdev=new Device();
+		$replacingdev->DeviceID=$oldport->ConnectedDeviceID;
+		$replacingdev->GetDevice();
+		$connecteddev=new Device();
+		$connecteddev->DeviceID=$this->ConnectedDeviceID;
+		$connecteddev->GetDevice();
+
+		$rights=false;
+		$rights=($dev->Rights=="Write")?true:$rights;
+		$rights=($replacingdev->Rights=="Write")?true:$rights;
+		$rights=($connecteddev->Rights=="Write")?true:$rights;
+
+		if(!$rights){
+			return false;
+		}
+	
+		$this->MakeSafe();
+
+		// clear previous connection
+		$oldport->removeConnection();
+		$tmpport->removeConnection();
+
+		if($this->ConnectedDeviceID==0 || $this->PortNumber==0 || $this->ConnectedPort==0){
+			// when any of the above equal 0 this is a delete request
+			// skip making any new connections but go ahead and update the device
+			// reload tmpport with data from the other device
+			$tmpport->DeviceID=$oldport->ConnectedDeviceID;
+			$tmpport->PortNumber=$oldport->ConnectedPort;
+			$tmpport->getPort();
+		}else{
+			// make new connection
+			$tmpport->ConnectedDeviceID=$this->DeviceID;
+			$tmpport->ConnectedPort=$this->PortNumber;
+			$tmpport->Notes=$this->Notes;
+			PowerPorts::makeConnection($tmpport,$this);
+		}
+
+		// update port
+		$sql="UPDATE fac_PowerPorts SET ConnectedDeviceID=$this->ConnectedDeviceID,
+			Label=\"$this->Label\", ConnectedPort=$this->ConnectedPort, 
+			Notes=\"$this->Notes\" WHERE DeviceID=$this->DeviceID AND 
+			PortNumber=$this->PortNumber;";
+		if(!$dbh->query($sql)){
+			$info=$dbh->errorInfo();
+
+			error_log("updatePort::PDO Error: {$info[2]} SQL=$sql");
+			
+			return false;
+		}
+
+		// two logs, because we probably modified two devices
+		(class_exists('LogActions'))?LogActions::LogThis($this,$oldport):'';
+		(class_exists('LogActions'))?LogActions::LogThis($tmpport,$oldtmpport):'';
+		return true;
+	}
+
+	static function makeConnection($port1,$port2){
+		global $dbh;
+
+		$port1->MakeSafe();
+		$port2->MakeSafe();
+
+		$sql="UPDATE fac_PowerPorts SET ConnectedDeviceID=$port2->DeviceID, 
+			ConnectedPort=$port2->PortNumber, Notes=\"$port2->Notes\" WHERE 
+			DeviceID=$port1->DeviceID AND PortNumber=$port1->PortNumber;
+			UPDATE fac_PowerPorts SET ConnectedDeviceID=$port1->DeviceID, 
+			ConnectedPort=$port1->PortNumber, Notes=\"$port1->Notes\" WHERE 
+			DeviceID=$port2->DeviceID AND PortNumber=$port2->PortNumber;";
+
+		if(!$dbh->exec($sql)){
+			$info=$dbh->errorInfo();
+
+			error_log("updatePort::PDO Error: {$info[2]} SQL=$sql");
+			return false;
+		}
+
+		return true;
+	}
+
+	function removeConnection(){
+		global $dbh;
+
+		$this->getPort();
+
+		$sql="UPDATE fac_PowerPorts SET ConnectedDeviceID=NULL, ConnectedPort=NULL WHERE
+			(DeviceID=$this->DeviceID AND PortNumber=$this->PortNumber) OR 
+			(ConnectedDeviceID=$this->DeviceID AND ConnectedPort=$this->PortNumber);";
+
+		/* not sure the best way to catch these errors this should modify 2 lines
+		   per run. */
+		try{
+			$dbh->exec($sql);
+		}catch(PDOException $e){
+			echo $e->getMessage();
+			die();
+		}
+
+		return true;
+	}
 }
 
 class PowerConnection {

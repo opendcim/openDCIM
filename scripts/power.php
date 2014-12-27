@@ -10,18 +10,38 @@
 
 header('Content-Type: application/json');
 
-if(isset($_POST['deviceid'])){
+if(isset($_GET['deviceid'])){
 	$targets=array();
 
 	$dev=new Device();
-	$dev->DeviceID=$_POST['deviceid'];
+	$dev->DeviceID=$_GET['deviceid'];
 	$dev->GetDevice();
 
 	// If we get a second device id we're looking for the ports on that device
-	if(isset($_POST['thisdev'])){
+	if(isset($_GET['thisdev'])){
 		$cdevice=new PowerPorts();
-		$cdevice->DeviceID=$_POST['thisdev'];
+		$cdevice->DeviceID=$_GET['thisdev'];
 		$targets=$cdevice->GetPorts();
+	}elseif(isset($_GET['getport'])){
+		$pp=new PowerPorts();
+		$pp->DeviceID=$_GET['deviceid'];
+		$pp->PortNumber=$_GET['pn'];
+		$pp->getPort();
+		$pp->ConnectedDeviceLabel=null;
+		$pp->ConnectedPortLabel=null;
+
+		if(!is_null($pp->ConnectedDeviceID) && $pp->ConnectedDeviceID>0){
+			$opp=new PowerPorts();
+			$opp->DeviceID=$pp->ConnectedDeviceID;
+			$opp->PortNumber=$pp->ConnectedPort;
+			$opp->getPort();
+			$pp->ConnectedPortLabel=$opp->Label;
+			$tempdev=new Device();
+			$tempdev->DeviceID=$opp->DeviceID;
+			$tempdev->GetDevice();
+			$pp->ConnectedDeviceLabel=$tempdev->Label;
+		}
+		$targets=$pp;
 	}else{
 		// Default action :: get list of devices
 		$sqladdon=($dev->DeviceType!="CDU")?" AND DeviceType=\"CDU\" ":" AND DeviceType!=\"Physical Infrastructure\" AND DeviceType!=\"Patch Panel\" ";
@@ -38,4 +58,20 @@ if(isset($_POST['deviceid'])){
 	echo json_encode($targets);
 	exit;
 }
+
+if(isset($_POST['saveport'])){
+	$pp=new PowerPorts();
+	$pp->DeviceID=$_POST['deviceid'];
+	$pp->PortNumber=$_POST['pnum'];
+	$pp->Label=($_POST['pname']=='')?$pp->PortNumber:$_POST['pname'];
+	$pp->ConnectedDeviceID=($_POST['cdevice']=='')?null:$_POST['cdevice'];
+	$pp->ConnectedPort=($_POST['cdeviceport']=='')?null:$_POST['cdeviceport'];
+	$pp->Notes=$_POST['cnotes'];
+
+	$outcome=($pp->updatePort())?1:0;
+
+	echo json_encode($outcome);
+	exit;
+}
+
 ?>
