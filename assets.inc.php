@@ -1278,6 +1278,7 @@ class Device {
 		$this->DeviceID = $dbh->lastInsertId();
 
 		DevicePorts::createPorts($this->DeviceID);
+		PowerPorts::createPorts($this->DeviceID);
 
 		(class_exists('LogActions'))?LogActions::LogThis($this):'';
 

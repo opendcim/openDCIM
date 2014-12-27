@@ -429,6 +429,9 @@
 	$escTime=new EscalationTimes();
 	$contactList=$contact->GetContactList();
 	$Dept=new Department();
+	$pwrConnection=new PowerConnection();
+	$pdu=new PowerDistribution();
+	$panel=new PowerPanel();
 	$pwrCords=null;
 	$chassis="";
 	$copy = false;
@@ -588,10 +591,6 @@
 
 			// Since a device exists we're gonna need some additional info, but only if it's not a copy
 			if(!$copy){
-				$pwrConnection=new PowerConnection();
-				$pdu=new PowerDistribution();
-				$panel=new PowerPanel();
-
 				// clearing errors for now
 				$LastWattage=$LastRead=$upTime=0;
 

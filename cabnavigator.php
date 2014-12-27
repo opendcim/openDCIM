@@ -172,7 +172,7 @@ function renderUnassignedTemplateOwnership($noTemplFlag, $noOwnerFlag, $device) 
 		$tmpUser=new People();
 		$tmpUser->UserID=$audit->UserID;
 		$tmpUser->GetUserRights();
-		$AuditorName=$tmpUser->Name;
+		$AuditorName=$tmpUser->FirstName." ".$tmpUser->LastName;
 	}
 
 	$pdu->CabinetID=$cab->CabinetID;
