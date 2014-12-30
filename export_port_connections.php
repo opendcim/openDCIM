@@ -85,7 +85,11 @@
 		$sheet->getActiveSheet()->SetCellValue('A7',__("Position"));
 		$sheet->getActiveSheet()->SetCellValue('B7', $dev->Position );
 
-		$sheet->getActiveSheet()->setTitle(substr( $dev->Label, 1, 30 ));
+		// Excel limits sheet titles to 31 characters or less
+		// Also invalid chars of /\*?[]
+		$sheetTitle = substr( $dev->Label, 1, 31 );
+		$sheetTitle = preg_replace( '/[\\/\*\?\[\]]/', '_', $sheetTitle ); 
+		$sheet->getActiveSheet()->setTitle( $sheetTitle );
 		
 		// Insert a picture into the device specific worksheet
 		if ( file_exists( "pictures/".$devTmpl->FrontPictureFile ) ) {

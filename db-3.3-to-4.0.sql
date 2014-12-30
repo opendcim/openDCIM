@@ -38,9 +38,10 @@ CREATE TABLE fac_People (
   KEY(UserID)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
----
---- Table structure for fac_DeviceCustomAttribute
----
+--
+-- Table structure for fac_DeviceCustomAttribute
+--
+
 DROP TABLE IF EXISTS fac_DeviceCustomAttribute;
 CREATE TABLE fac_DeviceCustomAttribute(
   AttributeID int(11) NOT NULL AUTO_INCREMENT,
@@ -52,9 +53,10 @@ CREATE TABLE fac_DeviceCustomAttribute(
   PRIMARY KEY (AttributeID)
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
----
---- Table structure for fac_DeviceTemplateCustomValue
----
+--
+-- Table structure for fac_DeviceTemplateCustomValue
+--
+
 DROP TABLE IF EXISTS fac_DeviceTemplateCustomValue;
 CREATE TABLE fac_DeviceTemplateCustomValue (
   TemplateID int(11) NOT NULL,
@@ -64,9 +66,10 @@ CREATE TABLE fac_DeviceTemplateCustomValue (
   PRIMARY KEY (TemplateID, AttributeID)
 ) ENGINE=InnoDB CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
----
---- Table structure for fac_DeviceCustomValue
----
+--
+-- Table structure for fac_DeviceCustomValue
+--
+
 DROP TABLE IF EXISTS fac_DeviceCustomValue;
 CREATE TABLE fac_DeviceCustomValue (
   DeviceID int(11) NOT NULL,
