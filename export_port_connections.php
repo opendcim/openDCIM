@@ -166,7 +166,7 @@
 			}
 			
 			if ( $targetDev->DeviceType == "Patch Panel" ) {
-				$path = DevicePorts::followPathToEndPoint( $devPort->ConnectedDeviceID, -$devPort->ConnectedPort );
+				$path = DevicePorts::followPathToEndPoint( $devPort->ConnectedDeviceID, $devPort->ConnectedPort );
 				$pDev = new Device();
 				$tDev = new Device();
 				$pPort = new DevicePorts();
