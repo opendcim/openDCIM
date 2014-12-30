@@ -702,6 +702,7 @@ class SensorTemplate {
 	var $HumidityOID;
 	var $TempMultiplier;
 	var $HumidityMultiplier;
+	var $mUnits;
 		
 	static function getTemplate( $templateID = null ) {
 		global $dbh;
