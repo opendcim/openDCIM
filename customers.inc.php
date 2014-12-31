@@ -316,7 +316,7 @@ class People {
 			
 		if ( $this->query( $sql ) ) {
 			(class_exists('LogActions'))?LogActions::LogThis($this):'';
-			return;
+			return true;
 		} else {
 			error_log( "Unable to modify record in fac_People with SQL: " . $sql );
 			return false;
