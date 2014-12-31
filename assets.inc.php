@@ -1656,6 +1656,17 @@ class Device {
 			return false;
 		}
 	}
+	
+	function GetDeviceList() {
+		$sql = "select a.* from fac_Device a, fac_Cabinet b where a.Cabinet=b.CabinetID order by b.DataCenterID ASC, Label ASC";
+		
+		$deviceList = array();
+		foreach ( $this->query( $sql ) as $deviceRow ) {
+			$deviceList[]=Device::RowToObject( $deviceRow );
+		}
+		
+		return $deviceList;
+	}	
 
 	static function GetDeviceByID($DeviceID){
 		$dev=New Device();

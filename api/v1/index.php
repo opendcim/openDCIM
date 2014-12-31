@@ -209,7 +209,203 @@ $app->get( '/datacenter/:id', function( $DataCenterID ) {
 		echoRespnse(200, $response);
 	}
 });
+
+//
+//	URL:	/api/v1/cabinet
+//	Method:	GET
+//	Params: None
+//	Returns: All cabinet information
+//
+
+$app->get( '/cabinet', function() {
+	$cab = new Cabinet;
+	$dc = new DataCenter();
+	$cList = $cab->ListCabinets();
 	
+	$response['error'] = false;
+	$response['errorcode'] = 200;
+	$response['cabinet'] = array();
+	
+	foreach( $cList as $c ) {
+		$tmp = array();
+		foreach( $c as $prop=>$value ) {
+			$tmp[$prop] = $value;
+		}
+		if ( $dc->DataCenterID != $c->DataCenterID ) {
+			$dc->DataCenterID = $c->DataCenterID;
+			$dc->GetDataCenter();
+		}
+		
+		$tmp['DataCenterName'] = $dc->Name;
+		
+		array_push( $response['cabinet'], $tmp );
+	}
+	
+	echoRespnse( 200, $response );
+});
+
+//
+//	URL:	/api/v1/cabinet/:cabinetid
+//	Method:	GET
+//	Params: cabinetid (passed in URL)
+//	Returns: All cabinet information for given ID
+//
+
+$app->get( '/cabinet/:cabinetid', function($cabinetid) {
+	$cab = new Cabinet;
+	$dc = new DataCenter();
+	if ( ! $cab->CabinetID = $cabinetid ) {
+		$response['error'] = true;
+		$response['errorcode'] = 404;
+		$response['message'] = 'No cabinet found with CabinetID of '. $cabinetid;
+		echoRespnse( 404, $response );
+	} else {
+		$response['error'] = false;
+		$response['errorcode'] = 200;
+		$response['cabinet'] = array();
+		
+		$tmp = array();
+		foreach( $cab as $prop=>$value ) {
+			$tmp[$prop] = $value;
+		}
+		$dc->DataCenterID = $cab->DataCenterID;
+		$dc->GetDataCenter();
+		
+		$tmp['DataCenterName'] = $dc->Name;
+		
+		array_push( $response['cabinet'], $tmp );
+		
+		echoRespnse( 200, $response );
+	}
+});
+
+//
+//	URL:	/api/v1/cabinet/bydc/:datacenterid
+//	Method:	GET
+//	Params: datacenterid (passed in URL)
+//	Returns: All cabinet information within the given data center, if any
+//
+
+$app->get( '/cabinet/bydc/:datacenterid', function($datacenterid) {
+	$cab = new Cabinet;
+	$dc = new DataCenter();
+	$cab->DataCenterID = $datacenterid;
+	$cList = $cab->ListCabinetsByDC();
+	
+	$response['error'] = false;
+	$response['errorcode'] = 200;
+	$response['cabinet'] = array();
+	
+	foreach( $cList as $c ) {
+		$tmp = array();
+		foreach( $c as $prop=>$value ) {
+			$tmp[$prop] = $value;
+		}
+		if ( $dc->DataCenterID != $c->DataCenterID ) {
+			$dc->DataCenterID = $c->DataCenterID;
+			$dc->GetDataCenter();
+		}
+		
+		$tmp['DataCenterName'] = $dc->Name;
+		
+		array_push( $response['cabinet'], $tmp );
+	}
+	
+	echoRespnse( 200, $response );
+});
+
+//
+//	URL:	/api/v1/cabinet/bydept/:deptid
+//	Method:	GET
+//	Params: deptid (passed in URL)
+//	Returns: All cabinet information for cabinets assigned to supplied deptid
+//
+
+$app->get( '/cabinet/bydept/:deptid', function($deptid) {
+	$cab = new Cabinet;
+	$dc = new DataCenter();
+	$cList = $cab->ListCabinets($deptid);
+	
+	$response['error'] = false;
+	$response['errorcode'] = 200;
+	$response['cabinet'] = array();
+	
+	foreach( $cList as $c ) {
+		$tmp = array();
+		foreach( $c as $prop=>$value ) {
+			$tmp[$prop] = $value;
+		}
+		if ( $dc->DataCenterID != $c->DataCenterID ) {
+			$dc->DataCenterID = $c->DataCenterID;
+			$dc->GetDataCenter();
+		}
+		
+		$tmp['DataCenterName'] = $dc->Name;
+		
+		array_push( $response['cabinet'], $tmp );
+	}
+	
+	echoRespnse( 200, $response );
+});
+
+//
+//	URL:	/api/v1/device
+//	Method:	GET
+//	Params:	none
+//	Returns:  All devices for which the user's rights have access to view
+//
+
+$app->get( '/device', function() {
+	$dev = new Device();
+	$devList = $dev->GetDeviceList();
+	
+	$response['error'] = false;
+	$response['errorcode'] = 200;
+	$response['device'] = array();
+	
+	foreach ( $devList as $d ) {
+		$tmp = array();
+		foreach( $d as $prop=>$value ) {
+			$tmp[$prop] = $value;
+		}
+		
+		array_push( $response['device'], $tmp );
+	}
+	
+	echoRespnse( 200, $response );
+});
+
+//
+//	URL:	/api/v1/device/:deviceid
+//	Method:	GET
+//	Params:	deviceid (passed in URL)
+//	Returns:  All devices for which the user's rights have access to view
+//
+
+$app->get( '/device/:deviceid', function($deviceid) {
+	$dev = new Device();
+	$dev->DeviceID = $deviceid;
+	
+	if ( ! $dev->GetDevice() ) {
+		$response['error'] = true;
+		$response['errorcode'] = 404;
+		$response['message'] = 'No device found with DeviceID ' . $deviceid;
+		echoRespnse( 404, $response );
+	} else {
+		$response['error'] = false;
+		$response['errorcode'] = 200;
+		$response['device'] = array();
+		
+		$tmp = array();
+		foreach( $dev as $prop=>$value ) {
+			$tmp[$prop] = $value;
+		}
+		
+		array_push( $response['device'], $tmp );
+		
+		echoRespnse( 200, $response );
+	}
+});
 
 /**
   *
