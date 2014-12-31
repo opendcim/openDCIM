@@ -234,6 +234,7 @@ $app->post('/people', function() use ($app) {
 	$person->GetUserRights();
 	if ( !$person->ContactAdmin ) {
 		$response['error'] = true;
+		$response['errorcode'] = 400;
 		$response['message'] = "Insufficient privilege level";
 		echoRespnse(400, $response);
 		$app->stop();
@@ -247,6 +248,7 @@ $app->post('/people', function() use ($app) {
 	$p->UserID = $app->request->post('userid');
 	if ( $p->GetPersonByUserID() ) {
 		$response['error'] = true;
+		$response['errorcode'] = 403;
 		$response['message'] = 'UserID already in database.  Use the update API to modify record.';
 		echoRespnse(403, $response );
 	} else {	
@@ -271,10 +273,12 @@ $app->post('/people', function() use ($app) {
 		
 		if ( $p->PersonID == false ) {
 			$response['error'] = true;
+			$response['errorcode'] = 403;
 			$response['message'] = 'Unable to create People resource with the given parameters.';
-			echoRespnse(404,$response);
+			echoRespnse(403,$response);
 		} else {
 			$response['error'] = false;
+			$responde['errorcode'] = 200;
 			$response['message'] = 'People resource created successfully.';
 			$response['people'] = array();
 			foreach( $p as $prop=>$value ) {
@@ -310,6 +314,7 @@ $app->put('/people/:userid', function($userid) use ($app) {
 	$person->GetUserRights();
 	if ( !$person->ContactAdmin ) {
 		$response['error'] = true;
+		$response['errorcode'] = 400;
 		$response['message'] = "Insufficient privilege level";
 		echoRespnse(400, $response);
 		$app->stop();
@@ -320,8 +325,9 @@ $app->put('/people/:userid', function($userid) use ($app) {
 	$p->UserID = $userid;
 	if ( ! $p->GetPersonByUserID() ) {
 		$response['error'] = true;
+		$response['errorcode'] = 404;
 		$response['message'] = 'UserID not found in database.';
-		echoRespnse(403, $response );
+		echoRespnse(404, $response );
 	} else {	
 		// Slim Framework will simply return null for any variables that were not passed, so this is safe to call without blowing up the script
 		$p->LastName = $app->request->put('lastname');
@@ -342,10 +348,12 @@ $app->put('/people/:userid', function($userid) use ($app) {
 		
 		if ( ! $p->UpdatePerson() ) {
 			$response['error'] = true;
+			$response['errorcode'] = 403;
 			$response['message'] = 'Unable to update People resource with the given parameters.';
-			echoRespnse(404,$response);
+			echoRespnse(403,$response);
 		} else {
 			$response['error'] = false;
+			$response['errorcode'] = 200;
 			$response['message'] = 'People resource for UserID=' . $p->UserID . ' updated successfully.';
 			$response['people'] = array();
 			foreach( $p as $prop=>$value ) {
