@@ -135,11 +135,13 @@ $app->get('/people', function() {
 	$person->GetUserRights();
 	if ( !$person->ContactAdmin ) {
 		$response['error'] = true;
+		$response['errorcode'] = 400;
 		$response['message'] = "Insufficient privilege level";
 		echoRespnse(400, $response);
 	} else {
 		$pList = $person->GetUserList();
 		$response['error'] = false;
+		$response['errorcode'] = 200;
 		$response['people'] = array();
 		foreach ( $pList as $p ) {
 			$tmp = array();
@@ -166,13 +168,14 @@ $app->get('/datacenter', function() {
 	$dc = new DataCenter();
 	$dcList = $dc->GetDCList();
 	$response['error'] = false;
-	$response['datacenters'] = array();
+	$responde['errorcode'] = 200;
+	$response['datacenter'] = array();
 	foreach ( $dcList as $d ) {
 		$tmp = array();
 		foreach( $d as $prop=>$value ) {
 			$tmp[$prop] = $value;
 		}
-		array_push( $response['datacenters'], $tmp );
+		array_push( $response['datacenter'], $tmp );
 	}
 	
 	echoRespnse( 200, $response );
@@ -190,13 +193,19 @@ $app->get( '/datacenter/:id', function( $DataCenterID ) {
 	$dc->DataCenterID = $DataCenterID;
 	if ( ! $dc->GetDataCenter() ) {
 		$response['error'] = true;
+		$response['errorcode'] = 404;
 		$response['message'] = 'The requested resource does not exist.';
 		echoRespnse(404, $response);
 	} else {
 		$response['error'] = false;
+		$response['errorcode'] = 200;
+		$response['datacenter'] = array();
+		$tmp = array();
 		foreach( $dc as $prop=>$value ) {
-			$response[$prop] = $value;
+			$tmp[$prop] = $value;
 		}
+		array_push( $response['datacenter'], $tmp );
+		
 		echoRespnse(200, $response);
 	}
 });
