@@ -21,10 +21,51 @@
 	// These should only apply to me but the possibility exists
 	$PreNamedPorts=array();
 
+class PowerDevice extends Device {
+	/*
+		to be efficient we don't want to create ports right now so we're extending 
+		the class to overrie the create function
+	*/
+	function CreateDevice(){
+		global $dbh;
+		
+		$this->MakeSafe();
+		
+		$this->Label=transform($this->Label);
+		$this->SerialNo=transform($this->SerialNo);
+		$this->AssetTag=transform($this->AssetTag);
+		
+		$sql="INSERT INTO fac_Device SET Label=\"$this->Label\", SerialNo=\"$this->SerialNo\", AssetTag=\"$this->AssetTag\", 
+			PrimaryIP=\"$this->PrimaryIP\", SNMPCommunity=\"$this->SNMPCommunity\", ESX=$this->ESX, Owner=$this->Owner, 
+			EscalationTimeID=$this->EscalationTimeID, EscalationID=$this->EscalationID, PrimaryContact=$this->PrimaryContact, 
+			Cabinet=$this->Cabinet, Position=$this->Position, Height=$this->Height, Ports=$this->Ports, 
+			FirstPortNum=$this->FirstPortNum, TemplateID=$this->TemplateID, NominalWatts=$this->NominalWatts, 
+			PowerSupplyCount=$this->PowerSupplyCount, DeviceType=\"$this->DeviceType\", ChassisSlots=$this->ChassisSlots, 
+			RearChassisSlots=$this->RearChassisSlots,ParentDevice=$this->ParentDevice, 
+			MfgDate=\"".date("Y-m-d", strtotime($this->MfgDate))."\", 
+			InstallDate=\"".date("Y-m-d", strtotime($this->InstallDate))."\", WarrantyCo=\"$this->WarrantyCo\", 
+			WarrantyExpire=\"".date("Y-m-d", strtotime($this->WarrantyExpire))."\", Notes=\"$this->Notes\", 
+			Reservation=$this->Reservation, HalfDepth=$this->HalfDepth, BackSide=$this->BackSide;";
+
+		if ( ! $dbh->exec( $sql ) ) {
+			$info = $dbh->errorInfo();
+
+			error_log( "PDO Error: {$info[2]} SQL=$sql" );
+			return false;
+		}
+
+		$this->DeviceID = $dbh->lastInsertId();
+
+		(class_exists('LogActions'))?LogActions::LogThis($this):'';
+
+		return $this->DeviceID;
+	}
+}
+
 	// Create new devices from existing CDUs
 	$sql="SELECT * FROM fac_PowerDistribution;";
 	foreach($dbh->query($sql) as $row){
-		$dev=new Device();
+		$dev=new PowerDevice();
 		$dev->Label=$row['Label'];
 		$dev->Cabinet=$row['CabinetID'];
 		$dev->TemplateID=$row['TemplateID'];
@@ -88,7 +129,12 @@
 	workdamnit(); // First time through setting up all numeric ports
 	workdamnit(false); // Run through again but this time only deal with named ports and append them to the end of the numeric
 
+print "Converted CDUs:\n<br>";
+	print_r($ConvertedCDUs);
+print "Port list:\n<br>";
 	print_r($PowerPorts);
+
+print "SQL entries:\n<br>";
 	$n=1; $insertsql=''; $insertlimit=100;
 	foreach($PowerPorts as $DeviceID => $PowerPort){
 		foreach($PowerPort as $PortNum => $PortDetails){
@@ -102,7 +148,7 @@
 			}else{
 echo $insertsql;
 				$dbh->exec('INSERT INTO fac_PowerPorts VALUES'.$insertsql);
-print "\n";
+print "\n\n<br><br>";
 				print_r($dbh->errorInfo());
 				$insertsql='';
 			}
@@ -113,11 +159,11 @@ print "\n";
 	$insertsql=substr($insertsql, 0, -1);// shave off that last comma
 echo $insertsql;
 	$dbh->exec('INSERT INTO fac_PowerPorts VALUES'.$insertsql);
-print "\n";
+print "\n\n<br><br>";
 				print_r($dbh->errorInfo());
 
 	// Update all the records with their new deviceid
 	foreach($ConvertedCDUs as $oldid => $newid){
-		dbh->query("UPDATE fac_PowerDistribution SET PDUID = '$newid' WHERE PDUID=$oldid;");
+		$dbh->query("UPDATE fac_PowerDistribution SET PDUID = '$newid' WHERE PDUID=$oldid;");
 	}
 

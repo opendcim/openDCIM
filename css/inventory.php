@@ -745,7 +745,7 @@ div.cabinet {
 .patchpanel.table input, .patchpanel.table select { padding: 0; background-color: transparent;}
 .switch.table div[id^=n] input { width:98%; }
 
-.switch .status, .patchpanel .down { background-image: url("../images/portstatus.png");}
+.switch .status, .power .status, .patchpanel .down { background-image: url("../images/portstatus.png");}
 .switch .down, .patchpanel .down { background-position: left; }
 .switch .up { background-position: right; }
 

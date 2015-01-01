@@ -373,7 +373,7 @@ $(document).ready(function() {
 					// if this ends up being a huge time sink, optimize this above then fix logic
 					foreach($pduList as $key => $row){
 						if($cabID == $row->CabinetID){
-							print "\t\t\t\t\t<li class=\"pdu\"><a href=\"power_pdu.php?pduid=$row->PDUID\">$row->Label</a>\n";
+							print "\t\t\t\t\t<li class=\"pdu\"><a href=\"devices.php?deviceid=$row->PDUID\">$row->Label</a>\n";
 						}
 					}
 				}

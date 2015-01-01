@@ -185,7 +185,7 @@ echo '</select></div>
 				// store the value and deal with it later.
 				if(isset($pduarray[$nextPole])&&$odd!=0){
 					foreach($pduarray[$nextPole] as $pduvar){
-					$errors[]="<a href=\"power_pdu.php?pduid=$pduvar->PDUID\">$pduvar->Label</a>";
+					$errors[]="<a href=\"devices.php?deviceid=$pduvar->PDUID\">$pduvar->Label</a>";
 					}
 				}
 				// Get info for pdu on this pole if it is populated.
@@ -199,7 +199,7 @@ echo '</select></div>
 							
 							if ($lastCabinet<>$pduvar->CabinetID)
 								$pn.="<a href=\"cabnavigator.php?cabinetid=$pduvar->CabinetID\">$cab->Location</a>";
-                            $pn.="<a href=\"power_pdu.php?pduid=$pduvar->PDUID\"><span>$pduvar->Label</span></a>";
+                            $pn.="<a href=\"devices.php?deviceid=$pduvar->PDUID\"><span>$pduvar->Label</span></a>";
                             $lastCabinet=$pduvar->CabinetID;
 							
 							switch($pduvar->BreakerSize){
@@ -231,7 +231,7 @@ echo '</select></div>
 				// store the value and deal with it later.
 				if(isset($pduarray[$nextPole])&&$odd!=0){
 					foreach($pduarray[$nextPole] as $pduvar){
-					$errors[]="<a href=\"power_pdu.php?pduid=$pduvar->PDUID\">$pduvar->Label</a>";
+					$errors[]="<a href=\"devices.php?deviceid=$pduvar->PDUID\">$pduvar->Label</a>";
 					}
 				}
 				// Get info for pdu on this pole if it is populated.
@@ -245,7 +245,7 @@ echo '</select></div>
 							
 							if ($lastCabinet<>$pduvar->CabinetID)
 								$pn.="<a href=\"cabnavigator.php?cabinetid=$pduvar->CabinetID\">$cab->Location</a>";
-                            $pn.="<a href=\"power_pdu.php?pduid=$pduvar->PDUID\"><span>$pduvar->Label</span></a>";
+                            $pn.="<a href=\"devices.php?deviceid=$pduvar->PDUID\"><span>$pduvar->Label</span></a>";
                             $lastCabinet=$pduvar->CabinetID;
 							
 							switch($pduvar->BreakerSize){
@@ -273,7 +273,7 @@ echo '</select></div>
 				// store the value and deal with it later.
 				if(isset($pduarray[$nextPole])&&$even!=0){ 
 					foreach($pduarray[$nextPole] as $pduvar){
-					$errors[]="<a href=\"power_pdu.php?pduid=".$pduvar->PDUID."\">".$pduvar->Label."</a>";
+					$errors[]="<a href=\"devices.php?deviceid=".$pduvar->PDUID."\">".$pduvar->Label."</a>";
 					}
 				}
 				if($even==0){
@@ -285,7 +285,7 @@ echo '</select></div>
 							
 							if ($lastCabinet<>$pduvar->CabinetID)
 								$pn.="<a href=\"cabnavigator.php?cabinetid=$pduvar->CabinetID\">$cab->Location</a>";
-                            $pn.="<a href=\"power_pdu.php?pduid=$pduvar->PDUID\"><span>$pduvar->Label</span></a>";
+                            $pn.="<a href=\"devices.php?deviceid=$pduvar->PDUID\"><span>$pduvar->Label</span></a>";
                             $lastCabinet=$pduvar->CabinetID;
 							
                             switch($pduvar->BreakerSize){

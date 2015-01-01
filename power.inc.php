@@ -342,7 +342,7 @@ class PowerPorts {
 		}
 
 		// Disconnect anything that might be connected in the db
-//		$this->removeConnection();
+		$this->removeConnection();
 
 		$sql="DELETE FROM fac_PowerPorts WHERE DeviceID=$this->DeviceID AND 
 			PortNumber=$this->PortNumber;";
@@ -353,6 +353,26 @@ class PowerPorts {
 			(class_exists('LogActions'))?LogActions::LogThis($this):'';
 			return true;
 		}
+	}
+
+	static function removePorts($DeviceID){
+		/* Remove all ports from a device prior to delete, etc */
+		global $dbh;
+
+		$dev=new Device();
+		$dev->DeviceID=$DeviceID;
+		if(!$dev->GetDevice()){return false;}
+
+		// Check the user's permissions to modify this device
+		if($dev->Rights!='Write'){return false;}
+
+		PowerPorts::removeConnections($DeviceID);
+
+		$sql="DELETE FROM fac_PowerPorts WHERE DeviceID=$dev->DeviceID;";
+
+		$dbh->exec($sql);
+
+		return true;
 	}
 
 	function updatePort() {
@@ -471,6 +491,24 @@ class PowerPorts {
 			echo $e->getMessage();
 			die();
 		}
+
+		return true;
+	}
+
+	static function removeConnections($DeviceID){
+		/* Drop all power connections on a device */
+		global $dbh;
+
+		$dev=new Device();
+		$dev->DeviceID=$DeviceID;
+		if(!$dev->GetDevice()){return false;}
+
+		// Check the user's permissions to modify this device
+		if($dev->Rights!='Write'){return false;}
+
+		$sql="UPDATE fac_PowerPorts SET ConnectedDeviceID=NULL, ConnectedPort=NULL WHERE DeviceID=$dev->DeviceID OR ConnectedDeviceID=$dev->DeviceID;";
+
+		$dbh->exec($sql);
 
 		return true;
 	}
@@ -726,17 +764,20 @@ class PowerDistribution {
 		return $dbh->exec($sql);
 	}
 
-	function CreatePDU(){
+	function CreatePDU($pduid=null){
 		global $dbh;
 
 		$this->MakeSafe();
+
+		$sqladdon=(!is_null($pduid))?", PDUID=".intval($pduid):"";
 
 		$sql="INSERT INTO fac_PowerDistribution SET Label=\"$this->Label\", 
 			CabinetID=$this->CabinetID, TemplateID=$this->TemplateID, 
 			IPAddress=\"$this->IPAddress\", SNMPCommunity=\"$this->SNMPCommunity\", 
 			PanelID=$this->PanelID, BreakerSize=$this->BreakerSize, 
 			PanelPole=$this->PanelPole, InputAmperage=$this->InputAmperage, 
-			FailSafe=$this->FailSafe, PanelID2=$this->PanelID2, PanelPole2=$this->PanelPole2;";
+			FailSafe=$this->FailSafe, PanelID2=$this->PanelID2, 
+			PanelPole2=$this->PanelPole2$sqladdon;";
 
 		if($this->exec($sql)){
 			$this->PDUID=$dbh->lastInsertId();

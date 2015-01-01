@@ -1313,6 +1313,170 @@ function LameLogDisplay(){
 		}('natural' + prop, prop.toLowerCase()));
 	}
 
+	// Power Connections Management
+	$.widget( "opendcim.power", {
+		_create: function() {
+			var row=this;
+
+			// Create the click target
+			var ct=this.element.find('div:first-child');
+			ct.css({'text-decoration':'underline','cursor':'pointer'});
+
+			// Create a button to delete the row if the number of ports on a device is 
+			// decreased
+			var del=$('<div>').addClass('delete').append($('<span>').addClass('ui-icon status down').on('click',function(e){row.deleteport()})).hide();
+			this.element.prepend(del);
+
+			// Define all the ports we might need later
+			this.ct			 = ct;
+			this.portnum     = this.element.data('port');
+			this.portname    = this.element.find('div:nth-child(3)');
+			this.cdevice     = this.element.find('div:nth-child(4)');
+			this.cdeviceport = this.element.find('div:nth-child(5)');
+			this.cnotes      = this.element.find('div:nth-child(6)');
+
+			// Row Controls
+			var controls=$('<div>',({'id':'controls'+this.portnum}));
+			var savebtn=$('<button>',{'type':'button'}).append('Save').on('click',function(e){row.save(e)});
+			var cancelbtn=$('<button>',{'type':'button'}).append('Cancel').on('click',function(e){row.destroy(e)});
+			var deletebtn=$('<button>',{'type':'button'}).append('Delete').on('click',function(e){row.delete(e)});
+			controls.append(savebtn).append(cancelbtn).append(deletebtn);
+			var minwidth=0;
+			controls.children('button').each(function(){
+				minwidth+=$(this).outerWidth()+14; // 14 padding and border
+			});
+			controls.css('min-width',minwidth);
+
+			this.controls	= controls;
+
+			ct.click(function(e){
+				if(!row.element.data('edit')){
+					row.edit();
+				}
+			});
+		},
+		edit: function() {
+			var row=this;
+
+			row.getdevices(this.cdevice);
+			row.portname.html('<input type="text" style="min-width: 60px;" value="'+row.portname.text()+'">');
+			row.cnotes.html('<input type="text" style="min-width: 200px;" value="'+row.cnotes.text()+'">');
+
+			this.element.append(this.controls.clone(true));
+
+			this.element.children('div:nth-child(2) ~ div').css({'padding': '0px', 'background-color': 'transparent'});
+			setTimeout(function() {
+				resize();
+			},200);
+
+			// Flag row as being in edit mode
+			row.element.data('edit',true);
+		},
+		getdevices: function(target){
+			var row=this;
+
+			var getoptions={deviceid: $('#deviceid').val(),pn: this.portnum};
+			$.get("scripts/power.php",getoptions).done(function(data){
+				var devlist=$("<select>").append('<option value=0>&nbsp;</option>');
+				devlist.change(function(e){
+					row.getports(e);
+				});
+
+				$.each(data, function(i,device){
+					devlist.append('<option value='+device.DeviceID+'>'+device.Label+'</option>');
+				});
+				target.html(devlist).find('select').val(target.data('default'));
+				devlist.change();
+			});
+		},
+		getports: function(target){
+			var row=this;
+
+			var getoptions={deviceid: $('#deviceid').val(),pn: this.portnum};
+			getoptions=$.extend(getoptions, {thisdev: this.cdevice.find('select').val()});
+
+			$.get("scripts/power.php",getoptions).done(function(data){
+				var portlist=$("<select>").append('<option value=0>&nbsp;</option>');
+				portlist.change(function(e){
+				});
+
+				$.each(data, function(i,port){
+					if(port.ConnectedDeviceID==null || (port.ConnectedDeviceID==$('#deviceid').val() && port.ConnectedPort==row.portnum)){
+						portlist.append('<option value='+port.PortNumber+'>'+port.Label+'</option>');
+					}
+				});
+				row.cdeviceport.html(portlist).find('select').val(row.cdeviceport.data('default'));
+			});
+		},
+		delete: function(e) {
+			var row=this;
+
+			$(row.cdevice).find('input').val('')
+			row.cdevice.children('select').val(0).trigger('change');
+			$(e.currentTarget.parentNode.children[0]).click();
+		},
+		deleteport: function(e){
+			var row=this;
+			var lastrow=$('.power > div:last-child');
+			$.post('scripts/power.php',{delport: '',deviceid: $('#deviceid').val(),pnum: row.portnum}).done(function(data){
+				if(data.toString().trim()==1){
+					if($(document).data('powersupplycount')>$('#powersupplycount').val()){
+						// if this is the last port just remove it
+						if(row.element[0]==lastrow[0]){
+							row.element.remove();
+						// else redraw this port and remove the last one
+						}else{
+							row.destroy();
+							lastrow.remove();
+						}
+						// decrease counter
+						$(document).data('powersupplycount',$(document).data('powersupplycount')-1);
+						if($(document).data('powersupplycount')==$('#powersupplycount').val()){$('#powersupplycount').change();}
+					}else{
+						$('#powersupplycount').change();
+					}
+				}
+			});
+		},
+		save: function(e) {
+			var row=this;
+			// save the port
+			$.post("scripts/power.php",{
+				saveport: '',
+				deviceid: $('#deviceid').val(),
+				pnum: row.portnum,
+				pname: (row.portname.children('input').length==0)?row.portname.data('default'):row.portname.children('input').val(),
+				cdevice: row.cdevice.children('select').val(),
+				cdeviceport: row.cdeviceport.children('select').val(),
+				cnotes: row.cnotes.children('input').val(),
+			}).done(function(data){
+				if(data.toString().trim()==1){
+					row.destroy(e);
+				}else{
+					// something broke
+				}
+			});
+		},
+		destroy: function(check) {
+			var row=this;
+			var getoptions={deviceid: $('#deviceid').val(),pn: this.portnum, getport: ""};
+
+			$.get("scripts/power.php",getoptions).done(function(data){
+				row.portname.html(data.Label).data('default',data.Label);
+				data.ConnectedDeviceLabel=(data.ConnectedDeviceLabel==null)?'':data.ConnectedDeviceLabel;
+				data.ConnectedPortLabel=(data.ConnectedPortLabel==null)?'':data.ConnectedPortLabel;
+				row.cdevice.html('<a href="devices.php?deviceid='+data.ConnectedDeviceID+'">'+data.ConnectedDeviceLabel+'</a>').data('default',data.ConnectedDeviceID);
+				row.cdeviceport.html(data.ConnectedPortLabel).data('default',data.ConnectedPort);
+				row.cnotes.html(data.Notes).data('default',data.Notes);
+				row.ct.css('padding','');
+				$(row.element[0]).children('div:nth-child(2) ~ div').removeAttr('style');
+			});
+
+			$(row.element[0]).data('edit',false);
+			row.element[0].lastChild.remove();
+		}
+	});
+
 	// Network Connections Management
 	$.widget( "opendcim.row", {
 		_create: function() {

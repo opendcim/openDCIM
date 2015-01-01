@@ -222,7 +222,7 @@ function renderUnassignedTemplateOwnership($noTemplFlag, $noOwnerFlag, $device) 
 		while(list($dev_index,$device)=each($devList)){
             list($noTemplFlag, $noOwnerFlag, $highlight) =
                 renderUnassignedTemplateOwnership($noTemplFlag, $noOwnerFlag, $device);
-			if($device->Height<1 && !$rear){
+			if($device->Height<1 && !$rear && $device->DeviceType!="CDU"){
 				if($device->Rights!="None"){
 					$zeroheight.="\t\t\t<a href=\"devices.php?deviceid=$device->DeviceID\" data-deviceid=$device->DeviceID>$highlight $device->Label</a>\n";
 				}else{
@@ -474,7 +474,7 @@ $body.='<div id="infopanel">
 
 		$PDUColor=($PDUPercent>intval($config->ParameterArray["PowerRed"])?$CriticalColor:($PDUPercent>intval($config->ParameterArray["PowerYellow"])?$CautionColor:$GoodColor));
 
-		$body.=sprintf("\n\t\t\t<a href=\"power_pdu.php?pduid=%d\">CDU %s</a><br>(%.2f kW) / (%.2f kW Max)<br>\n", $PDUdev->PDUID, $PDUdev->Label, $pduDraw / 1000, $maxDraw / 1000 );
+		$body.=sprintf("\n\t\t\t<a href=\"devices.php?deviceid=%d\">CDU %s</a><br>(%.2f kW) / (%.2f kW Max)<br>\n", $PDUdev->PDUID, $PDUdev->Label, $pduDraw / 1000, $maxDraw / 1000 );
 		$body.="\t\t\t\t<div class=\"meter-wrap\">\n\t\t\t\t\t<div class=\"meter-value\" style=\"background-color: $PDUColor; width: $PDUPercent%;\">\n\t\t\t\t\t\t<div class=\"meter-text\">$PDUPercent%</div>\n\t\t\t\t\t</div>\n\t\t\t\t</div>\n\t\t\t<br>\n";
 
 		if ( $PDUdev->FailSafe ) {
@@ -500,7 +500,7 @@ $body.='<div id="infopanel">
 	}
 
 	if($person->CanWrite($cab->AssignedTo)){
-		$body.="\n\t\t<ul class=\"nav\"><a href=\"power_pdu.php?pduid=0&cabinetid=$cab->CabinetID\"><li>".__("Add CDU")."</li></a></ul>\n";
+		$body.="\n\t\t<ul class=\"nav\"><a href=\"devices.php?action=new&cabinetid=$cab->CabinetID\"><li>".__("Add CDU")."</li></a></ul>\n";
 	}
 
 	$body.="\t</fieldset>\n";

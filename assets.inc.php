@@ -1489,6 +1489,17 @@ class Device {
 			}
 		}
 
+		// Device has been changed to be a CDU from something else so we need to create the extra records
+		if($this->DeviceType=="CDU" && $tmpDev->DeviceType!=$this->DeviceType){
+			$pdu=new PowerDistribution();
+			$pdu->CreatePDU($dev->DeviceID);
+		// Device was changed from CDU to something else, clean up the extra shit
+		}elseif($tmpDev->DeviceType=="CDU" && $tmpDev->DeviceType!=$this->DeviceType){
+			$pdu=new PowerDistribution();
+			$pdu->PDUID=$this->DeviceID;
+			$pdu->DeletePDU();
+		}
+
 		// If we made it to a device update and the number of ports available don't match the device, just fix it.
 		if($tmpDev->Ports!=$this->Ports){
 			if($tmpDev->Ports>$this->Ports){ // old device has more ports
@@ -1898,8 +1909,11 @@ class Device {
 
 	function DeleteDevice(){
 		global $dbh;
-	
-		$this->MakeSafe();
+
+		// Can't delete something that doesn't exist
+		if(!$this->GetDevice()){
+			return false;
+		}
 	
 		// First, see if this is a chassis that has children, if so, delete all of the children first
 		if($this->ChassisSlots >0){
@@ -1909,14 +1923,21 @@ class Device {
 				$tmpDev->DeleteDevice();
 			}
 		}
-		
+
+		// If this is a CDU then remove it from the other table
+		if($this->DeviceType=="CDU"){
+			$pdu=new PowerDistribution();
+			$pdu->PDUID=$this->DeviceID;
+			$pdu->DeletePDU();
+		}
+	
 		// Delete all network connections first
 		DevicePorts::removePorts($this->DeviceID);
 		
 		// Delete power connections next
-		$powercon=new PowerConnection();
-		$powercon->DeviceID=$this->DeviceID;
-		$powercon->DeleteConnections();
+		PowerPorts::removePorts($this->DeviceID);
+
+		// Remove custom values
 		$this->DeleteCustomValues();
 
 		// Now delete the device itself

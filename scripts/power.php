@@ -59,6 +59,50 @@ if(isset($_GET['deviceid'])){
 	exit;
 }
 
+if(isset($_POST['delport'])){
+	$pp=new PowerPorts();
+	$pp->DeviceID=$_POST['deviceid'];
+	$pp->PortNumber=$_POST['pnum'];
+	$ports=end($pp->getPorts());
+	$outcome=0;
+
+	function updatedevice($deviceid){
+		$dev=new Device();
+		$dev->DeviceID=$deviceid;
+		$dev->GetDevice();
+		$dev->PowerSupplyCount=$dev->PowerSupplyCount-1;
+		$dev->UpdateDevice();
+	}
+
+	if($ports->PortNumber!=$pp->PortNumber){
+		foreach($ports as $i=>$prop){
+			if($i!="PortNumber"){
+				$pp->$i=$prop;
+			}
+		}
+		if($pp->updatePort()){
+			if($ports->removePort()){
+				updatedevice($pp->DeviceID);
+				$outcome=1;
+			}else{
+				$outcome=0;
+			}
+		}else{
+			$outcome=0;
+		}
+	}else{ // Last available port. just delete it.
+		if($pp->removePort()){
+			updatedevice($pp->DeviceID);
+			$outcome=1;
+		}else{
+			$outcome=0;
+		}
+	}
+
+	echo json_encode($outcome);
+	exit;
+}
+
 if(isset($_POST['saveport'])){
 	$pp=new PowerPorts();
 	$pp->DeviceID=$_POST['deviceid'];
