@@ -33,6 +33,7 @@ CREATE TABLE fac_People (
   RackRequest tinyint(1) NOT NULL,
   RackAdmin tinyint(1) NOT NULL,
   SiteAdmin tinyint(1) NOT NULL,
+  APIToken varchar(80) NOT NULL,
   Disabled tinyint(1) NOT NULL,
   PRIMARY KEY(PersonID),
   KEY(UserID)

@@ -8,6 +8,19 @@
 	
 	$app = new \Slim\Slim();
 
+/*
+ *
+ *	General notes about the API
+ *
+ *  All API access will require a valid credential, and at a minimum will require that the supplied credential
+ *	has global Read access.
+ *
+ *	Also, technically RESTful API should not require a session (such as login via Apache), but we will support
+ *	either using an API Token/Key or a user:token authentication such as what Apache passes back to the
+ *	environment.
+ *
+ */
+ 
 	$user_id = NULL;
 	
 /**
@@ -190,7 +203,7 @@ $app->get('/datacenter', function() {
 
 $app->get( '/datacenter/:id', function( $DataCenterID ) {
 	$dc = new DataCenter();
-	$dc->DataCenterID = $DataCenterID;
+	$dc->DataCenterID = intval($DataCenterID);
 	if ( ! $dc->GetDataCenter() ) {
 		$response['error'] = true;
 		$response['errorcode'] = 404;
@@ -254,7 +267,7 @@ $app->get( '/cabinet', function() {
 $app->get( '/cabinet/:cabinetid', function($cabinetid) {
 	$cab = new Cabinet;
 	$dc = new DataCenter();
-	if ( ! $cab->CabinetID = $cabinetid ) {
+	if ( ! $cab->CabinetID = intval($cabinetid) ) {
 		$response['error'] = true;
 		$response['errorcode'] = 404;
 		$response['message'] = 'No cabinet found with CabinetID of '. $cabinetid;
@@ -289,7 +302,7 @@ $app->get( '/cabinet/:cabinetid', function($cabinetid) {
 $app->get( '/cabinet/bydc/:datacenterid', function($datacenterid) {
 	$cab = new Cabinet;
 	$dc = new DataCenter();
-	$cab->DataCenterID = $datacenterid;
+	$cab->DataCenterID = intval($datacenterid);
 	$cList = $cab->ListCabinetsByDC();
 	
 	$response['error'] = false;
@@ -324,7 +337,7 @@ $app->get( '/cabinet/bydc/:datacenterid', function($datacenterid) {
 $app->get( '/cabinet/bydept/:deptid', function($deptid) {
 	$cab = new Cabinet;
 	$dc = new DataCenter();
-	$cList = $cab->ListCabinets($deptid);
+	$cList = $cab->ListCabinets(intval($deptid));
 	
 	$response['error'] = false;
 	$response['errorcode'] = 200;
@@ -384,7 +397,7 @@ $app->get( '/device', function() {
 
 $app->get( '/device/:deviceid', function($deviceid) {
 	$dev = new Device();
-	$dev->DeviceID = $deviceid;
+	$dev->DeviceID = intval($deviceid);
 	
 	if ( ! $dev->GetDevice() ) {
 		$response['error'] = true;
@@ -416,7 +429,7 @@ $app->get( '/device/:deviceid', function($deviceid) {
 
 $app->get( '/device/bycabinet/:cabinetid', function( $cabinetid ) {
 	$dev = new Device();
-	$dev->Cabinet = $cabinetid;
+	$dev->Cabinet = intval($cabinetid);
 	$devList = $dev->ViewDevicesByCabinet(true);
 	
 	$response['error'] = false;
@@ -444,7 +457,7 @@ $app->get( '/device/bycabinet/:cabinetid', function( $cabinetid ) {
 
 $app->get( '/device/bydatacenter/:datacenterid', function( $datacenterid ) {
 	$dev = new Device();
-	$devList = $dev->GetDeviceList( $datacenterid );
+	$devList = $dev->GetDeviceList( intval($datacenterid) );
 	
 	$response['error'] = false;
 	$response['errorcode'] = 200;
@@ -462,6 +475,33 @@ $app->get( '/device/bydatacenter/:datacenterid', function( $datacenterid ) {
 	echoRespnse( 200, $response );
 });
 
+//
+//	URL:	/api/v1/device/byowner/:departmentid
+//	Method:	GET
+//	Params:	departmentid (passed in URL)
+//	Returns:  All devices owned by the specified department
+//
+
+$app->get( '/device/byowner/:departmentid', function( $departmentid ) {
+	$dev = new Device();
+	$dev->Owner = intval($departmentid);
+	$devList = $dev->GetDevicesByOwner();
+	
+	$response['error'] = false;
+	$response['errorcode'] = 200;
+	$response['device'] = array();
+
+	foreach ( $devList as $d ) {
+		$tmp = array();
+		foreach( $d as $prop=>$value ) {
+			$tmp[$prop] = $value;
+		}
+		
+		array_push( $response['device'], $tmp );
+	}
+		
+	echoRespnse( 200, $response );
+});
 
 /**
   *

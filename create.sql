@@ -420,6 +420,7 @@ create table fac_PDUStats(
 --
 -- Table structure for table fac_People
 --
+
 DROP TABLE IF EXISTS fac_People;
 CREATE TABLE fac_People (
   PersonID int(11) NOT NULL AUTO_INCREMENT,
@@ -438,6 +439,7 @@ CREATE TABLE fac_People (
   RackRequest tinyint(1) NOT NULL,
   RackAdmin tinyint(1) NOT NULL,
   SiteAdmin tinyint(1) NOT NULL,
+  APIToken varchar(80) NOT NULL,
   Disabled tinyint(1) NOT NULL,
   PRIMARY KEY(PersonID),
   KEY(UserID)
