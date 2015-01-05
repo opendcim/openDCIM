@@ -407,6 +407,62 @@ $app->get( '/device/:deviceid', function($deviceid) {
 	}
 });
 
+//
+//	URL:	/api/v1/device/bycabinet/:cabinetid
+//	Method:	GET
+//	Params:	cabinetid (passed in URL)
+//	Returns:  All devices for which the user's rights have access to view
+//
+
+$app->get( '/device/bycabinet/:cabinetid', function( $cabinetid ) {
+	$dev = new Device();
+	$dev->Cabinet = $cabinetid;
+	$devList = $dev->ViewDevicesByCabinet(true);
+	
+	$response['error'] = false;
+	$response['errorcode'] = 200;
+	$response['device'] = array();
+
+	foreach ( $devList as $d ) {
+		$tmp = array();
+		foreach( $d as $prop=>$value ) {
+			$tmp[$prop] = $value;
+		}
+		
+		array_push( $response['device'], $tmp );
+	}
+		
+	echoRespnse( 200, $response );
+});
+
+//
+//	URL:	/api/v1/device/bydatacenter/:datacenterid
+//	Method:	GET
+//	Params:	datacenterid (passed in URL)
+//	Returns:  All devices for which the user's rights have access to view
+//
+
+$app->get( '/device/bydatacenter/:datacenterid', function( $datacenterid ) {
+	$dev = new Device();
+	$devList = $dev->GetDeviceList( $datacenterid );
+	
+	$response['error'] = false;
+	$response['errorcode'] = 200;
+	$response['device'] = array();
+
+	foreach ( $devList as $d ) {
+		$tmp = array();
+		foreach( $d as $prop=>$value ) {
+			$tmp[$prop] = $value;
+		}
+		
+		array_push( $response['device'], $tmp );
+	}
+		
+	echoRespnse( 200, $response );
+});
+
+
 /**
   *
   *		API POST Methods go here
