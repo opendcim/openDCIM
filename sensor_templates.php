@@ -156,7 +156,7 @@ echo '   </select>
 
 	$unitofmeasurev = array( "english", "metric" );
 	foreach ( $unitofmeasurev as $unit ) {
-		$selected = ( $unit == $template->UnitOfMeasure ) ? 'selected':'';
+		$selected = ( $unit == $template->mUnits ) ? 'selected':'';
 		print "\t\t<option value=\"$unit\" $selected>$unit</option>\n";
 	}
 	
