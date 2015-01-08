@@ -603,7 +603,9 @@
 						$dev->UpdateWattageFromTemplate();
 					}
 					$dev->CreateDevice();
-					$pdu->CreatePDU($dev->DeviceID);
+					if($dev->DeviceType="CDU"){
+						$pdu->CreatePDU($dev->DeviceID);
+					}
 					$dev->SetTags($tagarray);
 					updateCustomValues($dev);
 				}
