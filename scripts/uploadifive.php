@@ -29,7 +29,7 @@ $fileTypes = array('jpg', 'jpeg', 'gif', 'png'); // Allowed file extensions
 
 $verifyToken = md5('unique_salt' . $_POST['timestamp']);
 
-if ((!empty($_FILES) || isset($_POST['filename']) ) && $_POST['token'] == $verifyToken && ($user->WriteAccess || $user->SiteAdmin)) {
+if ((!empty($_FILES) || isset($_POST['filename']) ) && $_POST['token'] == $verifyToken && ($person->WriteAccess || $person->SiteAdmin)) {
 	$uploadDir  = '..'.DIRECTORY_SEPARATOR.$uploadDir;
 	// if a filename is set then we're looking to remove it
 	if(empty($_FILES)){
@@ -101,7 +101,7 @@ if ((!empty($_FILES) || isset($_POST['filename']) ) && $_POST['token'] == $verif
 	$status['status']=1;
 
 	if(!empty($_FILES) || isset($_POST['filename'])){}else{$status['msg']=__("No files uploaded");}
-	if($user->WriteAccess || $user->SiteAdmin){}else{$status['msg']=__("You must be a site admin to add images");}
+	if($person->WriteAccess || $person->SiteAdmin){}else{$status['msg']=__("You must be a site admin to add images");}
 	if($_POST['token']!=$verifyToken){$status['msg']=__("Token mismatch");}
 	$status['msg']=($status['msg']=='')?__("God help us something has gone horrible wrong"):$status['msg'];
 }
