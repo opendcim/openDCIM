@@ -1334,6 +1334,9 @@ function LameLogDisplay(){
 			this.cdevice     = this.element.find('div:nth-child(4)');
 			this.cdeviceport = this.element.find('div:nth-child(5)');
 			this.cnotes      = this.element.find('div:nth-child(6)');
+			// As we only track power connections on the primary chassis but display them 
+			// on children we need a common place to check for the correct device id
+			this.deviceid    = (typeof $('select[name=parentdevice]').val()=='undefined')?$('#deviceid').val():$('select[name=parentdevice]').val();
 
 			// Row Controls
 			var controls=$('<div>',({'id':'controls'+this.portnum}));
@@ -1375,7 +1378,7 @@ function LameLogDisplay(){
 		getdevices: function(target){
 			var row=this;
 
-			var getoptions={deviceid: $('#deviceid').val(),pn: this.portnum};
+			var getoptions={deviceid: row.deviceid,pn: this.portnum};
 			$.get("scripts/power.php",getoptions).done(function(data){
 				var devlist=$("<select>").append('<option value=0>&nbsp;</option>');
 				devlist.change(function(e){
@@ -1383,7 +1386,13 @@ function LameLogDisplay(){
 				});
 
 				$.each(data, function(i,device){
-					devlist.append('<option value='+device.DeviceID+'>'+device.Label+'</option>');
+					if($(document).data('showdc')==true){
+						var rack=$('#datacenters a[href$="cabinetid='+device.CabinetID+'"]');
+						var dc=rack.parentsUntil('li[id^=dc]').last().prev('a').text();
+						devlist.append('<option value='+device.DeviceID+'>'+dc+' '+rack.text()+' '+device.Label+'</option>');
+					}else{
+						devlist.append('<option value='+device.DeviceID+'>'+device.Label+'</option>');
+					}
 				});
 				target.html(devlist).find('select').val(target.data('default'));
 				devlist.change();
@@ -1392,7 +1401,7 @@ function LameLogDisplay(){
 		getports: function(target){
 			var row=this;
 
-			var getoptions={deviceid: $('#deviceid').val(),pn: this.portnum};
+			var getoptions={deviceid: row.deviceid,pn: this.portnum};
 			getoptions=$.extend(getoptions, {thisdev: this.cdevice.find('select').val()});
 
 			$.get("scripts/power.php",getoptions).done(function(data){
@@ -1401,7 +1410,7 @@ function LameLogDisplay(){
 				});
 
 				$.each(data, function(i,port){
-					if(port.ConnectedDeviceID==null || (port.ConnectedDeviceID==$('#deviceid').val() && port.ConnectedPort==row.portnum)){
+					if(port.ConnectedDeviceID==null || (port.ConnectedDeviceID==row.deviceid && port.ConnectedPort==row.portnum)){
 						portlist.append('<option value='+port.PortNumber+'>'+port.Label+'</option>');
 					}
 				});
@@ -1418,7 +1427,7 @@ function LameLogDisplay(){
 		deleteport: function(e){
 			var row=this;
 			var lastrow=$('.power > div:last-child');
-			$.post('scripts/power.php',{delport: '',deviceid: $('#deviceid').val(),pnum: row.portnum}).done(function(data){
+			$.post('scripts/power.php',{delport: '',deviceid: row.deviceid,pnum: row.portnum}).done(function(data){
 				if(data.toString().trim()==1){
 					if($(document).data('powersupplycount')>$('#powersupplycount').val()){
 						// if this is the last port just remove it
@@ -1443,7 +1452,7 @@ function LameLogDisplay(){
 			// save the port
 			$.post("scripts/power.php",{
 				saveport: '',
-				deviceid: $('#deviceid').val(),
+				deviceid: row.deviceid,
 				pnum: row.portnum,
 				pname: (row.portname.children('input').length==0)?row.portname.data('default'):row.portname.children('input').val(),
 				cdevice: row.cdevice.children('select').val(),
@@ -1459,7 +1468,7 @@ function LameLogDisplay(){
 		},
 		destroy: function(check) {
 			var row=this;
-			var getoptions={deviceid: $('#deviceid').val(),pn: this.portnum, getport: ""};
+			var getoptions={deviceid: row.deviceid,pn: this.portnum, getport: ""};
 
 			$.get("scripts/power.php",getoptions).done(function(data){
 				row.portname.html(data.Label).data('default',data.Label);
@@ -1653,12 +1662,13 @@ function LameLogDisplay(){
 				});
 
 				$.each(data, function(devid,device){
-/*
-					var rack=$('#datacenters a[href$="cabinetid='+device.CabinetID+'"]');
-					var dc=rack.parentsUntil('li[id^=dc]').last().prev('a').text();
-					devlist.append('<option value='+device.DeviceID+'>'+dc+' '+rack.text()+' '+device.Label+'</option>');
-*/
-					devlist.append('<option value='+device.DeviceID+'>'+device.Label+'</option>');
+					if($(document).data('showdc')==true){
+						var rack=$('#datacenters a[href$="cabinetid='+device.CabinetID+'"]');
+						var dc=rack.parentsUntil('li[id^=dc]').last().prev('a').text();
+						devlist.append('<option value='+device.DeviceID+'>'+dc+' '+rack.text()+' '+device.Label+'</option>');
+					}else{
+						devlist.append('<option value='+device.DeviceID+'>'+device.Label+'</option>');
+					}
 				});
 				target.html(devlist).find('select').val(target.data('default'));
 				// if more than 2200 items returned don't use the combo box. we can look at this number later

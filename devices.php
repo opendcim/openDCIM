@@ -488,7 +488,7 @@
 					}
 				}
 
-				if($dev->DeviceType=="CDU" || $_POST['devicetype']=="CDU"){
+				if($dev->DeviceType=="CDU" || (isset($_POST['devicetype']) && $_POST['devicetype']=="CDU")){
 					$pdu->PDUID=$dev->DeviceID;
 					$pdu->GetPDU();
 				}
@@ -603,7 +603,7 @@
 						$dev->UpdateWattageFromTemplate();
 					}
 					$dev->CreateDevice();
-					if($dev->DeviceType="CDU"){
+					if($dev->DeviceType=="CDU"){
 						$pdu->CreatePDU($dev->DeviceID);
 					}
 					$dev->SetTags($tagarray);
@@ -1020,6 +1020,7 @@ $(document).ready(function() {
 	$(document).data('ports',$('#ports').val());
 	$(document).data('powersupplycount',$('#powersupplycount').val());
 	$(document).data('devicetype', $('select[name="devicetype"]').val());
+	$(document).data('showdc',true);
 
 	$('#deviceform').validationEngine();
 	$('#mfgdate').datepicker();
