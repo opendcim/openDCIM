@@ -98,3 +98,16 @@ CREATE TABLE fac_PowerPorts (
 	UNIQUE KEY LabeledPort (DeviceID,PortNumber,Label),
 	UNIQUE KEY ConnectedDevice (ConnectedDeviceID,ConnectedPort)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+--
+-- TempaltePowerPorts table content the power connections of a device template 
+--
+CREATE TABLE IF NOT EXISTS fac_TemplatePowerPorts (
+  TemplateID int(11) NOT NULL,
+  PortNumber int(11) NOT NULL,
+  Label varchar(40) NOT NULL,
+  PortNotes varchar(80) NOT NULL,
+  PRIMARY KEY (TemplateID,PortNumber),
+  UNIQUE KEY LabeledPort (TemplateID,PortNumber,Label)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+

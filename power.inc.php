@@ -301,12 +301,28 @@ class PowerPorts {
 
 		// This will need to be expanded after the template system is expanded to allow for naming ports
 
+		//Search template ports
+		$tports=array();
+		if($dev->TemplateID>0){
+			$tport=new TemplatePowerPorts();
+			$tport->TemplateID=$dev->TemplateID;
+			$tports=$tport->getPorts();
+		}
+
 		for($n=0; $n<$dev->PowerSupplyCount; $n++){
 			$i=$n+1;
 			$portList[$i]=new PowerPorts();
 			$portList[$i]->DeviceID=$dev->DeviceID;
 			$portList[$i]->PortNumber=$i;
-			$portList[$i]->Label=__("Power Connection")." $i";
+			if(isset($tports[$i])){
+				// Get any attributes from the template
+				foreach($tports[$i] as $key => $value){
+					if(array_key_exists($key,$portList[$i])){
+						$portList[$i]->$key=$value;
+					}
+				}
+			}
+			$portList[$i]->Label=($portList[$i]->Label=="")?__("Power Connection")." $i":$portList[$i]->Label;
 			$portList[$i]->createPort();
 		}
 		return $portList;

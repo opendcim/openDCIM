@@ -255,6 +255,22 @@ function PortsPoopup(){
 		});
 }
 
+function PowerPortsPoopup(){
+	$('<div>').append($('#hiddenpowerports > div')).
+		dialog({
+			closeOnEscape: false,
+			minHeight: 500,
+			width: 740,
+			modal: true,
+			resizable: false,
+			dialogClass: 'hiddenports',
+			position: { my: "center", at: "top", of: window },
+			show: { effect: "blind", duration: 800 },
+			beforeClose: function(event,ui){
+				$('#hiddenpowerports').append($(this).children('div'));
+			}
+		});
+}
 function CoordinateRow(slot,front){
 	front=(front=='undefined' || front)?0:1;
 	var fr=(front==0)?'F':'R';
@@ -371,8 +387,10 @@ function TemplateButtons(){
 	var cs=$('#ChassisSlots');
 	var rs=$('#RearChassisSlots');
 	var np=$('#numports');
+	var pp=$('#pscount');
 
 	if(np.val()>0){np.next('button').show();}else{np.next('button').hide();}
+	if(pp.val()>0){pp.next('button').show();}else{pp.next('button').hide();}
 	if(pf.val()!='' && cs.val()>0){cs.next('button').show();}else{cs.next('button').hide();}
 	if(rf.val()!='' && rs.val()>0){rs.next('button').show();}else{rs.next('button').hide();}
 }
@@ -444,6 +462,52 @@ function buildportstable(){
 	$('#hiddenports').html(table);
 }
 
+function buildpowerportstable(){
+	var table=$('<div>').addClass('table');
+	table.append('<div><div>Port Number</div><div>Label</div><div>Notes</div></div>');
+	var ports=[];
+
+	function buildrow(TemplatePortObj){
+		var rrow=$('.table input[name=powerlabel'+TemplatePortObj.PortNumber+']').parent('div').parent('div');
+		var pn=TemplatePortObj.PortNumber;
+		var label=(rrow.data('change'))?rrow.find('input[name^=powerlabel]').val():(typeof TemplatePortObj.Label=='undefined')?'':TemplatePortObj.Label;
+		var n=(rrow.data('change'))?rrow.find('input[name^=powerportnotes]').val():(typeof TemplatePortObj.PortNotes=='undefined')?'':TemplatePortObj.PortNotes;
+
+		var row=$('<div>').
+			append($('<div>').html(pn)).
+			append($('<div>').html($('<input>').val(label).text(label).attr('name','powerlabel'+pn))).
+			append($('<div>').html($('<input>').val(n).text(n).attr('name','powerportnotes'+pn))).
+			data('change',((rrow.data('change'))?true:false));
+
+		// mark the port as changed to snag manual entries
+		row.find('input,select').on('change keyup',function(){
+			row.data('change',true);
+		});
+
+		return row;
+	}
+
+	function buildrows(){
+		for(var i=1;i<=$('#pscount').val();i++){
+			if(typeof ports[i]!='undefined'){
+				table.append(buildrow(ports[i]));
+			}else{
+				table.append(buildrow({PortNumber: i}));
+			}
+		}
+	}
+
+	$.ajax({url: '',type: "post",async: false,data: {templateid: $('#templateid').val(), getpowerports: ''},
+		success: function(data){
+			ports=data;
+		}
+	});
+
+	// Add rows to the table
+	buildrows();
+	// Add the table to the page
+	$('#hiddenpowerports').html(table);
+}
 
 // Image management
 	function makeThumb(path,file){

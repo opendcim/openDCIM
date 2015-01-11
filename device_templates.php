@@ -4,10 +4,10 @@
 
 	$subheader=__("Data Center Device Templates");
 
-	if((isset($_POST['getslots']) || isset($_POST['getports'])) && isset($_POST['templateid'])){
+	if((isset($_POST['getslots']) || isset($_POST['getports']) || isset($_POST['getpowerports'])) && isset($_POST['templateid'])){
 		$returndata=array();
-		if(isset($_POST['getports'])){
-			$tport=new TemplatePorts();
+		if(isset($_POST['getports']) || isset($_POST['getpowerports'])){
+			$tport=(isset($_POST['getports']))?new TemplatePorts():new TemplatePowerPorts();
 			$tport->TemplateID=$_POST['templateid'];
 			$returndata=$tport->GetPorts();
 		}else{
@@ -125,6 +125,19 @@
 				$tport->PortNotes=isset($_POST["portnotes".$i])?$_POST["portnotes".$i]:"";
 				$status=($tport->CreatePort())?$status:__("Error updating template ports");
 			}
+			$template->DeletePowerPorts();
+			//update template power connections
+			for ($i=1; $i<=$template->PSCount;$i++){
+				$tport=new TemplatePowerPorts();
+				$tport->TemplateID=$template->TemplateID;
+				$tport->PortNumber=$i;
+				$tport->Label=isset($_POST["powerlabel".$i])?$_POST["powerlabel".$i]:"";
+				$tport->PortNotes=isset($_POST["powerportnotes".$i])?$_POST["powerportnotes".$i]:"";
+				$status=($tport->CreatePort())?$status:__("Error updating template power connections");
+			}
+
+
+
 			return $status;
 		}
 
@@ -402,7 +415,18 @@
 			});
 		});
 
-		$('#FrontPictureFile,#RearPictureFile,#ChassisSlots,#RearChassisSlots,#numports').on('change keyup keydown', function(){ TemplateButtons(); });
+		buildpowerportstable();
+		$('.templatemaker input#pscount + button').each(function(){
+			$(this).on('click',function(){
+				// Fill in the ports table
+				buildpowerportstable();
+
+				// Open the dialog
+				PowerPortsPoopup();
+			});
+		});
+
+		$('#FrontPictureFile,#RearPictureFile,#ChassisSlots,#RearChassisSlots,#numports,#pscount').on('change keyup keydown', function(){ TemplateButtons(); });
 
 
 	$('#delete').on('click',function(){
@@ -536,8 +560,8 @@ echo '	</select>
    </div>
 </div>
 <div>
-   <div><label for="pscount">',__("No. Power Supplies"),'</label></div>
-   <div><input type="text" name="pscount" id="pscount" value="',$template->PSCount,'"></div>
+   <div><label for="pscount">',__("No. Power Connections"),'</label></div>
+   <div><input type="text" name="pscount" id="pscount" value="',$template->PSCount,'"><button type="button">',__("Edit Ports"),'</button></div>
 </div>
 <div>
    <div><label for="numports">',__("No. Ports"),'</label></div>
@@ -654,6 +678,9 @@ if ( $template->TemplateID > 0 ) {
 </div><!-- END div.table -->
 
 <div id="hiddenports">
+</div>
+
+<div id="hiddenpowerports">
 </div>
 
 <div id="hiddencoords">
