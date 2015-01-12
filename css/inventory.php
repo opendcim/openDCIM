@@ -294,6 +294,7 @@ canvas#background { position: absolute; }
 .zonemaker + .center > div > div.container {position: absolute;top: 0px;left: 0px;}
 
 /* templatemaker */
+#regulartemplateattributes, #hiddencdudata {display:inline-block;vertical-align:top;}
 .templatemaker > div{width: 100%;display: inline-block;vertical-align: middle;}
 .templatemaker .table .table {margin-left: auto;}
 .templatemaker + .center div{position: relative;width: 100%;}

@@ -12,6 +12,31 @@
 	 * this is meant for the dev branches only to do an immediate conversion.
 	 */
 
+
+	// CDU template conversion, to be done prior to device conversion
+
+	$ct=new CDUTemplate(); //cdu templates
+	$et=$ct->GetTemplateList(); //existing templates
+
+	$converted=array(); //index old id, value new id
+	foreach($et as $i => $cdutemplate){
+		$dt=new DeviceTemplate();
+		$dt->ManufacturerID=$cdutemplate->ManufacturerID;
+		$dt->Model=$cdutemplate->Model;
+		$dt->PSCount=$cdutemplate->NumOutlets;
+		$dt->DeviceType="CDU";
+		$dt->CreateTemplate();
+		$converted[$cdutemplate->TemplateID]=$dt->TemplateID;
+	}
+
+	// Update all the records with their new templateid
+	foreach($converted as $oldid => $newid){
+		$dbh->query("UPDATE fac_CDUTemplate SET TemplateID = '$newid' WHERE TemplateID=$oldid;");
+		$dbh->query("UPDATE fac_Device SET TemplateID = '$newid' WHERE TemplateID=$oldid AND DeviceType='CDU';");
+	}
+
+	// END - CDU template conversion
+
 	// Store a list of existing CDU ids and their converted DeviceID
 	$ConvertedCDUs=array();
 	// Store a list of the cdu template ids and the number of power connections they support

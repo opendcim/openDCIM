@@ -716,7 +716,7 @@ class DeviceTemplate {
 	var $CustomValues;
     
 	function MakeSafe(){
-		$validDeviceTypes=array('Server','Appliance','Storage Array','Switch','Chassis','Patch Panel','Physical Infrastructure');
+		$validDeviceTypes=array('Server','Appliance','Storage Array','Switch','Chassis','Patch Panel','Physical Infrastructure','CDU');
 
 		$this->TemplateID=intval($this->TemplateID);
 		$this->ManufacturerID=intval($this->ManufacturerID);
@@ -790,6 +790,15 @@ class DeviceTemplate {
 			return false;
 		}else{
 			$this->TemplateID=$dbh->lastInsertID();
+
+			if($this->DeviceType=="CDU"){
+				// If this is a cdu make the corresponding other hidden template
+				$cdut=new CDUTemplate();
+				$cdut->Model=$this->Model;
+				$cdut->ManufacturerID=$this->ManufacturerID;
+				$cdut->CreateTemplate($this->TemplateID);
+			}
+
 			(class_exists('LogActions'))?LogActions::LogThis($this):'';
 			$this->MakeDisplay();
 			return true;
@@ -809,6 +818,19 @@ class DeviceTemplate {
 		$old=new DeviceTemplate();
 		$old->TemplateID=$this->TemplateID;
 		$old->GetTemplateByID();
+
+		if($old->DeviceType=="CDU" && $this->DeviceType!=$old->DeviceType){
+			// Template changed from CDU to something else, clean up the mess
+			$cdut=new CDUTemplate();
+			$cdut->TemplateID=$this->TemplateID;
+			$cdut->DeleteTemplate();
+		}elseif($this->DeviceType=="CDU" && $this->DeviceType!=$old->DeviceType){
+			// Template changed to CDU from something else, make the extra stuff
+			$cdut=new CDUTemplate();
+			$cdut->Model=$this->Model;
+			$cdut->ManufacturerID=$this->ManufacturerID;
+			$cdut->CreateTemplate($this->TemplateID);
+		}
 
 		if(!$this->query($sql)){
 			return false;

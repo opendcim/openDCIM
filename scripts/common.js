@@ -395,6 +395,18 @@ function TemplateButtons(){
 	if(rf.val()!='' && rs.val()>0){rs.next('button').show();}else{rs.next('button').hide();}
 }
 
+function buildcdutable(){
+	$('#hiddencdudata').removeClass('hide');
+	$.ajax({url: '',type: "get",async: false,data: {cdutemplate: $('#templateid').val()},success: function(data){
+			$.each(data, function(i,val){
+				($('#'+i.toLowerCase()).is(':checkbox'))?(val==1)?$('#'+i.toLowerCase()).click():'':'';
+				$('#'+i.toLowerCase()).val(val);
+			});
+		}
+	});
+
+}
+
 function buildportstable(){
 	var table=$('<div>').addClass('table');
 	table.append('<div><div>Port Number</div><div>Label</div><div>Media Type</div><div>Color</div><div>Notes</div></div>');

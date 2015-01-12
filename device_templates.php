@@ -18,6 +18,15 @@
 		echo json_encode($returndata);  
 		exit;
 	}
+	if(isset($_GET['cdutemplate'])){
+		$cdut=new CDUTemplate();
+		$cdut->TemplateID=$_GET['cdutemplate'];
+		$cdut->GetTemplate();
+
+		header('Content-Type: application/json');
+		echo json_encode($cdut);  
+		exit;
+	}
 	// Get list of color codes
 	if(isset($_GET['cc'])){
 		header('Content-Type: application/json');
@@ -87,7 +96,7 @@
 		$template->RearPictureFile=$_POST['RearPictureFile'];
 		$template->ChassisSlots=($template->DeviceType=="Chassis")?$_POST['ChassisSlots']:0;
 		$template->RearChassisSlots=($template->DeviceType=="Chassis")?$_POST['RearChassisSlots']:0;
-        
+
 		function UpdateSlotsPorts($template,$status){
 			//Update slots
 			$template->DeleteSlots();
@@ -135,9 +144,6 @@
 				$tport->PortNotes=isset($_POST["powerportnotes".$i])?$_POST["powerportnotes".$i]:"";
 				$status=($tport->CreatePort())?$status:__("Error updating template power connections");
 			}
-
-
-
 			return $status;
 		}
 
@@ -179,13 +185,39 @@
 			return $status;
 		}
 
+		function updatecdu($template,$status){
+			$cdutemplate=new CDUTemplate();
+			$cdutemplate->TemplateID=$template->TemplateID;
+			$cdutemplate->ManufacturerID=$template->ManufacturerID;
+			$cdutemplate->Model=$template->Model;
+			$cdutemplate->Managed=isset($_POST['managed'])?1:0;
+			$cdutemplate->ATS=isset($_POST['ats'])?1:0;
+			$cdutemplate->SNMPVersion=$_POST['snmpversion'];
+			$cdutemplate->VersionOID=$_POST['versionoid'];
+			$cdutemplate->Multiplier=$_POST['multiplier'];
+			$cdutemplate->OID1=$_POST['oid1'];
+			$cdutemplate->OID2=$_POST['oid2'];
+			$cdutemplate->OID3=$_POST['oid3'];
+			$cdutemplate->ATSStatusOID=$_POST['atsstatusoid'];
+			$cdutemplate->ATSDesiredResult=$_POST['atsdesiredresult'];
+			$cdutemplate->ProcessingProfile=$_POST['processingprofile'];
+			$cdutemplate->Voltage=$_POST["voltage"];
+			$cdutemplate->Amperage=$_POST["amperage"];
+			$status=($cdutemplate->UpdateTemplate())?$status:__('Error updating cdu attributes');
+
+			return $status;
+		}
+
 		switch($_POST['action']){
 			case 'Create':
 				if($template->CreateTemplate()){
-					$oldstatus = $status;
+					$oldstatus=$status;
 					$status=UpdateSlotsPorts($template,$status);
-					if($oldstatus == $status) {
+					if($oldstatus==$status){
 						$status=UpdateCustomValues($template,$status);
+					}
+					if($oldstatus==$status){
+						$status=updatecdu($template,$status);
 					}
 				}else{
 					$status=__("An error has occured, template not created");
@@ -193,11 +225,14 @@
 				break;
 			case 'Update':
 				$status=($template->UpdateTemplate())?__("Updated"):__("Error updating template");
-				if ($status==__("Updated")){
+				if($status==__("Updated")){
 					$status=UpdateSlotsPorts($template,$status);
 				}
-				if ($status==__("Updated")){
+				if($status==__("Updated")){
 					$status=UpdateCustomValues($template,$status);
+				}
+				if($status==__("Updated")){
+					$status=updatecdu($template,$status);
 				}
 				break;
 			case 'Device':
@@ -212,6 +247,9 @@
 					$status=UpdateCustomValues($template,$status);
 				}
 				if($status==__("Updated")){
+					$status=updatecdu($template,$status);
+				}
+				if($status==__("Updated")){
 					$status=($template->UpdateDevices())?__("Updated"):__("Error updating devices");
 				}
 				break;
@@ -223,6 +261,9 @@
 				}
 				if ($status==__("Updated")){
 					$status=UpdateCustomValues($template,$status);
+				}
+				if($status==__("Updated")){
+					$status=updatecdu($template,$status);
 				}
 				if($status==__("Updated")){
 					$status=($template->ExportTemplate())?__("Exported"):__("Error");
@@ -354,7 +395,12 @@
 				$('#DivChassisSlots').css({'display': 'none'});
 				$('#DivRearChassisSlots').css({'display': 'none'});
 			}
-		});
+			if($('#devicetype').val()=="CDU"){
+				buildcdutable();
+			}else{
+				$('#hiddencdudata').addClass('hide');
+			}
+		}).change();
 
 		$( "#importButton" ).click(function() {
 			$("#dlg_importfile").dialog({
@@ -503,7 +549,7 @@ echo '<div class="main">
 <div class="templatemaker">
 <h3>',$status,'</h3>
 <div class="center"><div>
-<form id="deviceform" action="',$_SERVER["PHP_SELF"],'" method="POST">
+<form id="deviceform" action="',$_SERVER["PHP_SELF"],'" method="POST"><div id="regulartemplateattributes">
 <div class="table">
 	<div>
 		<div><label for="templateid">',__("Template"),'</label></div>
@@ -551,7 +597,7 @@ echo '    </select>
    <div><label for="devicetype">',__("Device Type"),'</label></div>
    <div><select name="devicetype" id="devicetype">';
 
-	foreach(array('Server','Appliance','Storage Array','Switch','Chassis','Patch Panel','Physical Infrastructure') as $DevType){
+	foreach(array('Server','Appliance','Storage Array','Switch','Chassis','Patch Panel','Physical Infrastructure','CDU') as $DevType){
 		if($DevType==$template->DeviceType){$selected=" selected";}else{$selected="";}
 		print "		<option value=\"$DevType\"$selected>$DevType</option>\n";
 	}
@@ -672,8 +718,8 @@ if ( $template->TemplateID > 0 ) {
 	}else{
 		echo '	 <button type="submit" name="action" value="Create">',__("Create"),'</button>';
 	}
-	echo '<button type="button" name="importButton" id="importButton" value="Import">',__("Import"),'</button>';
-?>
+	echo '<button type="button" name="importButton" id="importButton" value="Import">',__("Import"),'</button>
+
 </div>
 </div><!-- END div.table -->
 
@@ -705,13 +751,97 @@ if ( $template->TemplateID > 0 ) {
 		</div>
 	</div>
 </div>
+</div><!-- end regular template attributes -->
+<div id="hiddencdudata" class="hide">
+	<div class="table">
+		<div>
+		   <div><label for="managed">',__("Managed"),'</label></div>
+		   <div>
+				<input type="checkbox" name="managed" id="managed">
+		   </div>
+		</div>
+		<div>
+		   <div><label for="ats">',__("Automatic Transfer Switch"),'</label></div>
+		   <div>
+				<input type="checkbox" name="ats" id="ats">
+		   </div>
+		</div>
+		<div>
+			<div><label for="snmpversion">',__("SNMP Version"),'</label></div>
+			<div><select name="snmpversion" id="snmpversion">';
+
+			$snmpv=array("1","2c");
+			foreach($snmpv as $unit){
+				print "\t\t<option value=\"$unit\">$unit</option>\n";
+			}
+			
+		echo '</select>	
+			</div>
+		</div>
+		<div>
+			<div><label for="versionoid">',__("Firmware Version OID"),'</label></div>
+			<div><input type="text" name="versionoid" id="versionoid" size=40></div>
+		</div>
+		<div>
+		   <div><label for="multiplier">',__("Multiplier"),'</label></div>
+		   <div><select name="multiplier" id="multiplier">';
+		   
+			$Multi=array("0.1", "1","10","100");
+			foreach($Multi as $unit){
+					print "\t\t<option value=\"$unit\">$unit</option>\n";
+				}
+			
+		echo '   </select>
+		   </div>
+		</div>
+		<div>
+		   <div><label for="oid1">',__("OID for Phase1"),'</label></div>
+		   <div><input type="text" name="oid1" id="oid1" size=40></div>
+		</div>
+		<div>
+		   <div><label for="oid2">',__("OID2"),'</label></div>
+		   <div><input type="text" name="oid2" id="oid2" size=40></div>
+		</div>
+		<div>
+		   <div><label for="oid3">',__("OID3"),'</label></div>
+		   <div><input type="text" name="oid3" id="oid3" size=40></div>
+		</div>
+		<div>
+		   <div><label for="atsstatusoid">',__("ATS Status OID"),'</label></div>
+		   <div><input type="text" name="atsstatusoid" id="atsstatusoid" size=40></div>
+		</div>
+		<div>
+		   <div><label for="atsdesiredresult">',__("ATS Desired Result"),'</label></div>
+		   <div><input type="text" name="atsdesiredresult" id="atsdesiredresult" size=40></div>
+		</div>
+		<div>
+		   <div><label for="processingprofile">',__("Processing Scheme"),'</label></div>
+		   <div><select name="processingprofile" id="processingprofile">';
+
+			$ProfileList=array("SingleOIDWatts","SingleOIDAmperes","Combine3OIDWatts","Combine3OIDAmperes","Convert3PhAmperes");
+			foreach($ProfileList as $prof){
+				print "<option value=\"$prof\">$prof</option>";
+			}
+			
+		echo '   </select></div>
+		</div>
+		<div>
+		   <div><label for="voltage">',__("Voltage"),'</label></div>
+		   <div><input type="text" name="voltage" id="voltage"></div>
+		</div>
+		<div>
+		   <div><label for="amperage">',__("Amperage"),'</label></div>
+		   <div><input type="text" name="amperage" id="amperage"></div>
+		</div>
+	</div>
+</div>
 
 </form>
+
 </div></div><!-- END div.center -->
 </div> <!-- END div.templatemaker-->
 
-<?php 
-echo '<a href="index.php">[ ',__("Return to Main Menu"),' ]</a>';
+<a href="index.php">[ ',__("Return to Main Menu"),' ]</a>';
 
 echo '<div id="imageselection" title="',__("Image file selector"),'">
 	',$imageselect,'
