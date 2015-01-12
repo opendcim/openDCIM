@@ -94,10 +94,10 @@
 		$dc=new DataCenter();
 		$dcList=$dc->GetDCList();
 		$keys=array_keys($dcList);
-		$cab->DataCenterID=$keys[0];
+		$cab->DataCenterID=(isset($_GET['dcid']))?intval($_GET['dcid']):$keys[0];
 		$cab->Location=null;
-		$cab->ZoneID=null;
-		$cab->CabRowID=null;
+		$cab->ZoneID=(isset($_GET['zoneid']))?intval($_GET['zoneid']):null;
+		$cab->CabRowID=(isset($_GET['cabrowid']))?intval($_GET['cabrowid']):null;
 		$cab->CabinetHeight=null;
 		$cab->Model=null;
 		$cab->Keylock=null;
@@ -105,7 +105,6 @@
 		$cab->MaxWeight=null;
 		$cab->InstallationDate=date('m/d/Y');
 	}
-
 
 	$deptList=$dept->GetDepartmentList();
 	$cabList=$cab->ListCabinets();
