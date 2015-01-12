@@ -3319,9 +3319,9 @@ class DevicePorts {
 				$rights=null;
 				foreach($groups as $index => $DeptID){
 					if(is_null($rights)){
-						$rights="AssignedTo=$DeptID OR Owner=$DeptID";
+						$rights="Owner=$DeptID";
 					}else{
-						$rights.="OR AssignedTo=$DeptID OR Owner=$DeptID";
+						$rights.=" OR Owner=$DeptID";
 					}
 				}
 				$rights=(is_null($rights))?null:" AND ($rights)";
