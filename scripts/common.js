@@ -396,7 +396,6 @@ function TemplateButtons(){
 }
 
 function buildcdutable(){
-	$('#hiddencdudata').removeClass('hide');
 	$.ajax({url: '',type: "get",async: false,data: {cdutemplate: $('#templateid').val()},success: function(data){
 			$.each(data, function(i,val){
 				($('#'+i.toLowerCase()).is(':checkbox'))?(val==1)?$('#'+i.toLowerCase()).click():'':'';

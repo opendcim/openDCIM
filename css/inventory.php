@@ -302,6 +302,8 @@ canvas#background { position: absolute; }
 .templatemaker input + button { line-height: 1em; vertical-align: middle; height: 1.5em; margin-top: -1px; }
 .templatemaker #hiddencoords { position: absolute; left: -10000px; top: -10000px;}
 .templatemaker #previewimage { width: 400px;}
+.templatemaker fieldset label {padding-right: 1em;padding-left:0.25em;}
+.templatemaker #atsbox {border: 1px solid black;padding:0.25em;margin-top: 1em;}
 .table.front #previewimage, .table.rear #previewimage { position: relative; }
 .table.front #coordstable, .table.rear #coordstable { width: 320px; padding-left: 10px;}
 #coordstable input { width: 40px; }
@@ -310,6 +312,7 @@ table.coordinates th {background-color: #CCC; text-align: center; vertical-align
 table.coordinates td {text-align: center; padding-left: .5em; padding-right: .5em; padding-top: 0.1em;padding-bottom: 0.1em;}
 table.coordinates input {text-align: center; border: 0px;}
 table.coordinates select {text-align: center; border: 0px;}
+span.cdudisclaimer {color:red;font-weight:bold;}
 
 #hiddenports,#hiddenpowerports { position: absolute; left: -10000px; top: -10000px;}
 .hiddenports .table { border: 1px solid black; }

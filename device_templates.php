@@ -86,7 +86,7 @@
 		$template->Model=transform($_POST['model']);
 		$template->Height=$_POST['height'];
 		$template->Weight=$_POST['weight'];
-		$template->Wattage=$_POST['wattage'];
+		$template->Wattage=(isset($_POST['wattage']))?$_POST['wattage']:0;
 		$template->DeviceType=$_POST['devicetype'];
 		$template->PSCount=$_POST['pscount'];
 		$template->NumPorts=$_POST['numports'];
@@ -396,9 +396,12 @@
 				$('#DivRearChassisSlots').css({'display': 'none'});
 			}
 			if($('#devicetype').val()=="CDU"){
+				$('#wattage').parent('div').parent('div').addClass('hide');
+				$('.cdudisclaimer').removeClass('hide');
 				buildcdutable();
 			}else{
-				$('#hiddencdudata').addClass('hide');
+				$('#wattage').parent('div').parent('div').removeClass('hide');
+				$('.cdudisclaimer').addClass('hide');
 			}
 		}).change();
 
@@ -583,7 +586,7 @@ echo '    </select>
 </div>
 <div>
    <div><label for="height">',__("Height"),'</label></div>
-   <div><input type="text" name="height" id="height" value="',$template->Height,'"></div>
+   <div><input type="text" name="height" id="height" value="',$template->Height,'">&nbsp;&nbsp;<span class="cdudisclaimer hide">',__("0 for a vertical mounting"),'</span></div>
 </div>
 <div>
    <div><label for="weight">',__("Weight"),'</label></div>
@@ -666,7 +669,7 @@ foreach($dcaList as $dca) {
 			$validation=' class="validate[custom['.$dca->AttributeType.']]"';
 		}
 		echo '<input type="text" name="tdca[',$dca->AttributeID,'][value]"',$validation,' id="tdca[',$dca->AttributeID,'][value]" value="',$templatedcaValue,'">';
-		echo '<input type="button" name=tdca[',$dca->AttributeID,'][revert]" id="tdca[',$dca->AttributeID,'][revert]" value="'.__("Revert").'" title="'.__("Revert to default value from configuration page").'" data-val="',$dca->DefaultValue,'" data-id="',$dca->AttributeID,'">';
+		echo '<button type="button" name=tdca[',$dca->AttributeID,'][revert]" id="tdca[',$dca->AttributeID,'][revert]" title="'.__("Revert to default value from configuration page").'" data-val="',$dca->DefaultValue,'" data-id="',$dca->AttributeID,'">'.__("Revert").'</button>';
 		echo '<script>
 			$("#tdca\\\[',$dca->AttributeID,'\\\]\\\[revert\\\]").click(function(){
 				var defaultVal = this.getAttribute("data-val");
@@ -752,18 +755,12 @@ if ( $template->TemplateID > 0 ) {
 	</div>
 </div>
 </div><!-- end regular template attributes -->
-<div id="hiddencdudata" class="hide">
+<div id="hiddencdudata" class="cdudisclaimer hide">
 	<div class="table">
 		<div>
 		   <div><label for="managed">',__("Managed"),'</label></div>
 		   <div>
 				<input type="checkbox" name="managed" id="managed">
-		   </div>
-		</div>
-		<div>
-		   <div><label for="ats">',__("Automatic Transfer Switch"),'</label></div>
-		   <div>
-				<input type="checkbox" name="ats" id="ats">
 		   </div>
 		</div>
 		<div>
@@ -799,20 +796,12 @@ if ( $template->TemplateID > 0 ) {
 		   <div><input type="text" name="oid1" id="oid1" size=40></div>
 		</div>
 		<div>
-		   <div><label for="oid2">',__("OID2"),'</label></div>
+		   <div><label for="oid2">',__("OID for Phase2"),'</label></div>
 		   <div><input type="text" name="oid2" id="oid2" size=40></div>
 		</div>
 		<div>
-		   <div><label for="oid3">',__("OID3"),'</label></div>
+		   <div><label for="oid3">',__("OID for Phase3"),'</label></div>
 		   <div><input type="text" name="oid3" id="oid3" size=40></div>
-		</div>
-		<div>
-		   <div><label for="atsstatusoid">',__("ATS Status OID"),'</label></div>
-		   <div><input type="text" name="atsstatusoid" id="atsstatusoid" size=40></div>
-		</div>
-		<div>
-		   <div><label for="atsdesiredresult">',__("ATS Desired Result"),'</label></div>
-		   <div><input type="text" name="atsdesiredresult" id="atsdesiredresult" size=40></div>
 		</div>
 		<div>
 		   <div><label for="processingprofile">',__("Processing Scheme"),'</label></div>
@@ -833,6 +822,22 @@ if ( $template->TemplateID > 0 ) {
 		   <div><label for="amperage">',__("Amperage"),'</label></div>
 		   <div><input type="text" name="amperage" id="amperage"></div>
 		</div>
+		<div class="caption" id="atsbox">
+			<fieldset class="noborder">
+				<legend>Automatic Transfer Switch <input type="checkbox" name="ats" id="ats"></legend>
+				<div class="table centermargin border">
+					<div>
+					   <div><label for="atsstatusoid">',__("ATS Status OID"),'</label></div>
+					   <div><input type="text" name="atsstatusoid" id="atsstatusoid" size=40></div>
+					</div>
+					<div>
+					   <div><label for="atsdesiredresult">',__("ATS Desired Result"),'</label></div>
+					   <div><input type="text" name="atsdesiredresult" id="atsdesiredresult" size=40></div>
+					</div>
+				</div>
+			</fieldset>
+		</div>
+
 	</div>
 </div>
 
