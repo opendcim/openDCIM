@@ -223,6 +223,17 @@ class People {
 		}
 	}
 	
+	function GetPeopleByDepartment( $DeptID ) {
+		$sql = "select * from fac_People where PersonID in (select ContactID from fac_DeptContacts where DeptID=$DeptID) order by LastName ASC, FirstName ASC";
+		
+		$personList=array();
+		foreach($this->query($sql) as $row){
+			$personList[]=People::RowToObject($row);
+		}
+
+		return $personList;
+	}		
+	
 	function GetPersonByUserID() {
 		$this->MakeSafe();
 		
@@ -673,7 +684,7 @@ class Department {
 
 		if(is_array($MemberList)){
 		  foreach($MemberList as $PersonID){
-				$sql="INSERT INTO fac_DeptContacts SET DeptID=$this->DeptID, PersonID=".intval($PersonID).";";
+				$sql="INSERT INTO fac_DeptContacts SET DeptID=$this->DeptID, ContactID=".intval($PersonID).";";
 	 			$this->exec($sql); 
 			}
 		}
