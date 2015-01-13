@@ -65,7 +65,7 @@ echo '<form action="',$_SERVER["PHP_SELF"],'" method="POST">
 <input type="hidden" name="deptid" value="',$dept->DeptID,'">
 <h3>',__("Group to Administer"),': ',$dept->Name,'<button type="submit" value="Submit" name="action">',__("Submit"),'</button></h3>
 <div>
-	<select name="chosen[]" id="chosenList" size="6" multiple="multiple">';
+	<select name="chosen[]" id="chosenList" size="15" multiple="multiple">';
 	foreach($deptList as $personRow){
 		print "\t\t<option value=\"$personRow->PersonID\" selected=\"selected\">$personRow->LastName, $personRow->FirstName</option>\n";
 	}
