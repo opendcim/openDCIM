@@ -1194,8 +1194,10 @@ console.log($('#customattrs .table ~ .table'));
 		}
 		if($(this).val()=='CDU'){
 			$('#cdu').show().removeClass('hide');
+			$('#nominalwatts').parent('div').parent('div').addClass('hide');
 		}else{
 			$('#cdu').hide();
+			$('#nominalwatts').parent('div').parent('div').removeClass('hide');
 		}
 		resize();
 	}).change();

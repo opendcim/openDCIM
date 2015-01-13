@@ -470,6 +470,39 @@ class DataCenter {
 				// get image file attributes and type
 				list($width, $height, $type, $attr)=getimagesize($mapfile);
 
+				$cdus=array();
+				$sql="SELECT C.CabinetID, P.RealPower, P.BreakerSize, P.InputAmperage * PP.PanelVoltage AS VoltAmp 
+					FROM ((fac_Cabinet C LEFT JOIN fac_CabinetTemps T ON C.CabinetId = T.CabinetID) LEFT JOIN
+						(SELECT CabinetID, Wattage AS RealPower, BreakerSize, InputAmperage, PanelID FROM 
+						fac_PowerDistribution PD LEFT JOIN fac_PDUStats PS ON PD.PDUID=PS.PDUID ) P 
+						ON C.CabinetId = P.CabinetID)
+					LEFT JOIN (SELECT PanelVoltage, PanelID FROM fac_PowerPanel) PP ON PP.PanelID=P.PanelID
+					WHERE PanelVoltage IS NOT NULL AND RealPower IS NOT NULL AND 
+					C.DataCenterID=".intval($this->DataCenterID).";";
+
+				$rpvalues=$this->query($sql);
+				foreach($rpvalues as $cduRow){
+					$cabid=$cduRow['CabinetID'];
+					$voltamp=$cduRow['VoltAmp'];
+					$rp=$cduRow['RealPower'];
+					$bs=$cduRow['BreakerSize'];
+
+					if($bs==1){
+						$maxDraw=$voltamp / 1.732;
+					}elseif($bs==2){
+						$maxDraw=$voltamp;
+					}else{
+						$maxDraw=$voltamp * 1.732;
+					}
+
+					// De-rate all breakers to 80% sustained load
+					$maxDraw*=0.8;
+
+					// Only keep the highest percentage of any single CDU in a cabinet
+					$pp=intval($rp / $maxDraw * 100);
+					$cdus[$cabid]=(isset($cdus[$cabid]) && $cdus[$cabid]>$pp)?$cdus[$cabid]:$pp;
+				}
+
 				$sql="SELECT C.*, T.Temp, T.Humidity, P.RealPower, T.LastRead, PLR.RPLastRead 
 					FROM ((fac_Cabinet C LEFT JOIN fac_CabinetTemps T ON C.CabinetId = T.CabinetID) LEFT JOIN
 						(SELECT CabinetID, SUM(Wattage) RealPower
@@ -513,6 +546,9 @@ class DataCenter {
 						// check to make sure there is a kilowatt limit set to keep errors out of logs
 	    	    		if(!isset($cab->MaxKW)||$cab->MaxKW==0){$PowerPercent=0;}else{$PowerPercent=number_format(($totalWatts /1000 ) /$cab->MaxKW *100,0);}
 						if(!isset($cab->MaxKW)||$cab->MaxKW==0){$RealPowerPercent=0;}else{$RealPowerPercent=number_format(($currentRealPower /1000 ) /$cab->MaxKW *100,0, ",", ".");}
+
+						// check for individual cdu's being weird
+						if(isset($cdus[$cab->CabinetID])){$RealPowerPercent=($RealPowerPercent>$cdus[$cab->CabinetID])?$RealPowerPercent:$cdus[$cab->CabinetID];}
 					
 						//Decide which color to paint on the canvas depending on the thresholds
 						if($SpacePercent>$SpaceRed){$scolor=$CriticalColor;}elseif($SpacePercent>$SpaceYellow){$scolor=$CautionColor;}else{$scolor=$GoodColor;}
