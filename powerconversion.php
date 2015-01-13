@@ -14,13 +14,37 @@
 
 
 	// CDU template conversion, to be done prior to device conversion
+class PowerTemplate extends DeviceTemplate {
+	function CreateTemplate(){
+		global $dbh;
+		
+		$this->MakeSafe();
 
+		$sql="INSERT INTO fac_DeviceTemplate SET ManufacturerID=$this->ManufacturerID, 
+			Model=\"$this->Model\", Height=$this->Height, Weight=$this->Weight, 
+			Wattage=$this->Wattage, DeviceType=\"$this->DeviceType\", 
+			PSCount=$this->PSCount, NumPorts=$this->NumPorts, Notes=\"$this->Notes\", 
+			FrontPictureFile=\"$this->FrontPictureFile\", RearPictureFile=\"$this->RearPictureFile\",
+			ChassisSlots=$this->ChassisSlots, RearChassisSlots=$this->RearChassisSlots;";
+
+		if(!$dbh->exec($sql)){
+			error_log( "SQL Error: " . $sql );
+			return false;
+		}else{
+			$this->TemplateID=$dbh->lastInsertId();
+
+			(class_exists('LogActions'))?LogActions::LogThis($this):'';
+			$this->MakeDisplay();
+			return true;
+		}
+	}
+}
 	$ct=new CDUTemplate(); //cdu templates
 	$et=$ct->GetTemplateList(); //existing templates
 
 	$converted=array(); //index old id, value new id
 	foreach($et as $i => $cdutemplate){
-		$dt=new DeviceTemplate();
+		$dt=new PowerTemplate();
 		$dt->ManufacturerID=$cdutemplate->ManufacturerID;
 		$dt->Model="CDU ".$cdutemplate->Model;
 		$dt->PSCount=$cdutemplate->NumOutlets;
