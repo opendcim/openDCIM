@@ -427,6 +427,24 @@
 		}
 		exit;
 	}
+
+	if(isset($_POST["currwatts"]) && isset($_POST['pduid']) && $_POST['pduid'] >0){
+		$pdu=new PowerDistribution();
+		$pdu->PDUID=$_POST['pduid'];
+		$wattage->Wattage='Err';
+		$wattage->LastRead='Err';
+		if($pdu->GetPDU()){
+			$cab->CabinetID=$pdu->CabinetID;
+			$cab->GetCabinet();
+			if($person->canWrite($cab->AssignedTo)){
+				$wattage=$pdu->LogManualWattage($_POST["currwatts"]);
+				$wattage->LastRead=strftime("%c",strtotime($wattage->LastRead));
+			}
+		}
+		header('Content-Type: application/json');
+		echo json_encode($wattage);
+		exit;
+	}
 	// END AJAX
 
 
@@ -639,6 +657,10 @@
 				}elseif($dev->DeviceType=='CDU'){
 					$pdu->PDUID=$dev->DeviceID;
 					$pdu->GetPDU();
+
+					$lastreading=$pdu->GetLastReading();
+					$LastWattage=($lastreading)?$lastreading->Wattage:0;
+					$LastRead=($lastreading)?strftime("%c",strtotime($lastreading->LastRead)):"Never";
 				}
 			}
 
@@ -1031,6 +1053,29 @@ $(document).ready(function() {
 		return false;
 	});
 
+	// CDU functions
+	$('#btn_override').on('click',function(e){
+		var btn=$(e.currentTarget);
+		var target=$(e.currentTarget.previousSibling);
+		if(btn.val()=='edit'){
+			var specialinput=$('<input>').attr('size',5).val(target.text());
+			specialinput.keypress(function(event){
+				if(event.keyCode==10 || event.keyCode==13){
+					event.preventDefault();
+					btn.click();
+				}
+			});
+			btn.val('submit').text(btn.data('submit')).css('height','2em');
+			target.replaceWith(specialinput);
+			specialinput.focus().select();
+		}else{
+			btn.val('edit').text(btn.data('edit')).css('height','');
+			$.post('',{currwatts: target.val(), pduid:$('#deviceid').val()}).done(function(data){
+				target.replaceWith($('<span>').text(data.Wattage));
+				$('#lastread').text(data.LastRead);
+			});
+		}
+	});
 
 	// Make SNMP community visible
 	$('#snmpcommunity').focus(function(){$(this).attr('type','text');});

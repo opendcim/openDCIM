@@ -1301,7 +1301,7 @@ function LameLogDisplay(){
 				.addClass("custom-combobox-toggle")
 				.mousedown(function(){wasOpen=input.autocomplete("widget").is(":visible");})
 				.click(function(){
-					input.focus();
+					input.focus().select();
  
 					// Close if already visible
 					if(wasOpen){return;}
