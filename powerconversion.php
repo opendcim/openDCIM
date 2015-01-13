@@ -22,7 +22,7 @@
 	foreach($et as $i => $cdutemplate){
 		$dt=new DeviceTemplate();
 		$dt->ManufacturerID=$cdutemplate->ManufacturerID;
-		$dt->Model=$cdutemplate->Model;
+		$dt->Model="CDU ".$cdutemplate->Model;
 		$dt->PSCount=$cdutemplate->NumOutlets;
 		$dt->DeviceType="CDU";
 		$dt->CreateTemplate();
