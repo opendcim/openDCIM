@@ -4745,7 +4745,7 @@ class DeviceCustomAttribute {
 			error_log("CreateDeviceCustomAttribute::PDO Error: {$info[2]} SQL=$sql");
 			return false;
 		} else {
-			$this->AttributeID=$dbh->LastInsertID();
+			$this->AttributeID=$dbh->LastInsertId();
 		}
 
 		// If something is marked "AllDevices", we don't actually add it to all devices

@@ -825,7 +825,7 @@ class DeviceTemplate {
 			error_log( "SQL Error: " . $sql );
 			return false;
 		}else{
-			$this->TemplateID=$dbh->lastInsertID();
+			$this->TemplateID=$dbh->lastInsertId();
 
 			if($this->DeviceType=="CDU"){
 				// If this is a cdu make the corresponding other hidden template

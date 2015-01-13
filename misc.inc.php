@@ -613,7 +613,7 @@ if ( sizeof( $plist ) == 0 ) {
 	// We've got an empty fac_People table, so merge the user and contact tables to create it
 	$clist = $c->GetContactList();
 	foreach( $clist as $tmpc ) {
-		$p->PersonID = $tmpc->PersonID;
+		$p->PersonID = $tmpc->ContactID;
 		$p->UserID = $tmpc->UserID;
 		$p->LastName = $tmpc->LastName;
 		$p->FirstName = $tmpc->FirstName;
