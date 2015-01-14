@@ -204,6 +204,23 @@ class People {
 		return $cperson;
 	}
 	
+	function GetDeptsByPerson() {
+		$sql="SELECT DeptID FROM fac_DeptContacts WHERE ContactID=" . intval( $this->PersonID );
+
+		$deptList=array();
+
+		if($query=$this->query($sql)){
+			foreach($query as $row){
+				$n = sizeof( $deptList );
+				$deptList[$n]=new Department();
+				$deptList[$n]->DeptID = $row["DeptID"];
+				$deptList[$n]->GetDeptByID();
+			}
+		}
+
+		return $deptList;
+	}
+	
 	function GetPerson() {
 		$this->MakeSafe();
 		

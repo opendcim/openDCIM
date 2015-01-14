@@ -692,7 +692,7 @@ if ( $config->ParameterArray["RackRequests"] == "enabled" && $person->RackReques
 	$rrmenu[]='<a href="rackrequest.php"><span>'.__("Rack Request Form").'</span></a>';
 }
 if ( $person->ContactAdmin ) {
-	$camenu[__("User Administration")][]='<a href="contacts.php"><span>'.__("Contact Administration").'</span></a>';
+	$camenu[__("User Administration")][]='<a href="usermgr.php"><span>'.__("User Administration").'</span></a>';
 	$camenu[__("User Administration")][]='<a href="departments.php"><span>'.__("Dept. Administration").'</span></a>';
 	$camenu[__("Issue Escalation")][]='<a href="timeperiods.php"><span>'.__("Time Periods").'</span></a>';
 	$camenu[__("Issue Escalation")][]='<a href="escalations.php"><span>'.__("Escalation Rules").'</span></a>';
