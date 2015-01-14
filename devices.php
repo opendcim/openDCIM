@@ -1647,7 +1647,7 @@ echo '
 		if($dev->ParentDevice==0){
 			print "\t\t\t<div>".$cab->GetCabinetSelectList()."</div>\n";
 		}else{
-			print "\t\t\t<div>$cab->Location<input type=\"hidden\" name=\"cabinetid\" value=\"0\"></div>
+			print "\t\t\t<div>$cab->Location<input type=\"hidden\" name=\"cabinetid\" value=$cab->CabinetID></div>
 		</div>
 		<div>
 			<div><label for=\"parentdevice\">".__("Parent Device")."</label></div>
