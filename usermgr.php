@@ -78,16 +78,10 @@
   <script type="text/javascript" src="scripts/jquery-ui.min.js"></script>
 <script type="text/javascript">
 function showdept(obj){
+	$('#nofloat').parent('div').addClass('hide');
+	$('.center input').attr('readonly','true');
 	self.frames['groupadmin'].location.href='people_depts.php?personid='+obj;
 	document.getElementById('groupadmin').style.display = "block";
-	document.getElementById('userid').readOnly = true
-	document.getElementById('lastname').readOnly = true
-	document.getElementById('firstname').readOnly = true
-	document.getElementById('phone1').readOnly = true
-	document.getElementById('phone2').readOnly = true
-	document.getElementById('phone3').readOnly = true
-	document.getElementById('email').readOnly = true
-	document.getElementById('adminowndevices').readOnly = true
 	document.getElementById('controls').id = "displaynone";
 }
 </script>
@@ -104,7 +98,7 @@ echo '<div class="main">
 <div class="center"><div>
 <form action="',$_SERVER["PHP_SELF"],'" method="POST">
 <input type="hidden" name="action" value="query">
-<div class="table">
+<div class="table centermargin">
 <div>
    <div><label for="personid">',__("User"),'</label></div>
    <div><select name="personid" id="personid" onChange="form.submit()">

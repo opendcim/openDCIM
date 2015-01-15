@@ -369,6 +369,8 @@ div.table > div > div {display: table-cell;vertical-align: middle; /* padding-bo
 .rights > div:nth-last-child(2) div {text-align: center;padding-top: .75em;padding-bottom: .75em;}
 div.table > div + div + div + div > div + div label {float: none;}
 
+#deptgroup .ui-multiselect ul.available li { overflow-x: hidden; }
+
 /* Contact Editor */
 #deletedialog {display: none;}
 #deletedialog p {font-weight: bold;}
