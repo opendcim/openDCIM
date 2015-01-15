@@ -78,8 +78,8 @@
   <script type="text/javascript" src="scripts/jquery-ui.min.js"></script>
 <script type="text/javascript">
 function showdept(obj){
-	self.frames['deptadmin'].location.href='people_depts.php?personid='+obj;
-	document.getElementById('deptadmin').style.display = "block";
+	self.frames['groupadmin'].location.href='people_depts.php?personid='+obj;
+	document.getElementById('groupadmin').style.display = "block";
 	document.getElementById('userid').readOnly = true
 	document.getElementById('lastname').readOnly = true
 	document.getElementById('firstname').readOnly = true
@@ -170,11 +170,17 @@ echo '	</select></div>
 </div>
 </div> <!-- END div.table -->
 </form>
-<iframe name="deptadmin" id="deptadmin" frameborder=0 scrolling="no"></iframe>
+<iframe name="groupadmin" id="groupadmin" frameborder=0 scrolling="no"></iframe>
 <br>
 </div></div>
 <?php echo '<a href="index.php">[ ',__("Return to Main Menu"),' ]</a>'; ?>
 </div> <!-- END div.main -->
 </div> <!-- END div.page -->
 </body>
+<script type="text/javascript">
+$('iframe').load(function() {
+    this.style.height =
+    this.contentWindow.document.body.offsetHeight + 'px';
+});
+</script>
 </html>

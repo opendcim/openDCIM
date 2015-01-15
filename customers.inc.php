@@ -128,6 +128,18 @@ class People {
 		global $dbh;
 		return $dbh->lastInsertID();
 	}
+	
+	function AssignDepartments( $DeptList ) {
+		$this->MakeSafe();
+		
+		$sql = "delete from fac_DeptContacts where ContactID=" . $this->PersonID;
+		$this->exec( $sql );
+		
+		foreach ( $DeptList as $DeptID ) {
+			$sql = "insert into fac_DeptContacts set ContactID=" . $this->PersonID . ", DeptID=$DeptID";
+			$this->exec( $sql );
+		}
+	}
 
 	function canRead( $Owner ) {
 		// If the user has Global rights, don't waste compute cycles on more granular checks
