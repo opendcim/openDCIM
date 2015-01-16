@@ -53,8 +53,14 @@
 	if(isset($_GET['spn'])){
 		header('Content-Type: application/json');
 		$PortNamePatterns=array();
-		foreach(array('NIC(1)','Port(1)','Fa/(1)','Gi/(1)','Ti/(1)','Custom',__("From Template")) as $pattern){
-			$PortNamePatterns[]['Pattern']=$pattern;
+		if(isset($_GET['power'])){
+			foreach(array('PS(1)','R(1)','Custom',__("From Template")) as $pattern){
+				$PortNamePatterns[]['Pattern']=$pattern;
+			}
+		}else{
+			foreach(array('NIC(1)','Port(1)','Fa/(1)','Gi/(1)','Ti/(1)','Custom',__("From Template")) as $pattern){
+				$PortNamePatterns[]['Pattern']=$pattern;
+			}
 		}
 		echo json_encode($PortNamePatterns);
 		exit;
@@ -108,7 +114,7 @@
 			if($_POST['spn']==__("From Template")){
 				$dev->DeviceID=$_POST['devid'];
 				$dev->GetDevice();
-				$ports=new TemplatePorts();
+				$ports=(isset($_POST['power']))?new TemplatePowerPorts():new TemplatePorts();
 				$ports->TemplateID=$dev->TemplateID;
 				foreach($ports->getPorts() as $pn => $portobject){
 					$portnames[$pn]=$portobject->Label;
@@ -119,17 +125,20 @@
 				if($result){
 					$dev->DeviceID=$_POST['devid'];
 					$dev->GetDevice();
-					$portnames=generatePatterns($result, $dev->Ports);
+					$portnames=generatePatterns($result, (isset($_POST['power']))?$dev->PowerSupplyCount:$dev->Ports);
 					// generatePatterns starts the index at 0, it's more useful to us starting at 1
 					array_unshift($portnames, null);
 				}
 			}
 		}
 		// Make a new method to set all the ports to a media type?
-		foreach(DevicePorts::getPortList($_POST['devid']) as $portnum => $port){
+		$blurg=(isset($_POST['power']))?PowerPorts::getPortList($_POST['devid']):DevicePorts::getPortList($_POST['devid']);
+		foreach($blurg as $portnum => $port){
 			$port->Label=(isset($_POST['spn']) && (($_POST['setall']=='true' && count($portnames)>0) || (count($portnames)>0 && strlen($port->Label)==0)))?$portnames[abs($port->PortNumber)]:$port->Label;
-			$port->MediaID=(($_POST['setall']=='true' || $port->MediaID==0) && isset($_POST['mt']) && ($_POST['setall']=='true' || intval($_POST['mt'])>0))?$_POST['mt']:$port->MediaID;
-			$port->ColorID=(($_POST['setall']=='true' || $port->ColorID==0) && isset($_POST['cc']) && ($_POST['setall']=='true' || intval($_POST['cc'])>0))?$_POST['cc']:$port->ColorID;
+			if(!isset($_POST['power'])){
+				$port->MediaID=(($_POST['setall']=='true' || $port->MediaID==0) && isset($_POST['mt']) && ($_POST['setall']=='true' || intval($_POST['mt'])>0))?$_POST['mt']:$port->MediaID;
+				$port->ColorID=(($_POST['setall']=='true' || $port->ColorID==0) && isset($_POST['cc']) && ($_POST['setall']=='true' || intval($_POST['cc'])>0))?$_POST['cc']:$port->ColorID;
+			}
 			$port->updatePort();
 			// Update the other side to keep media types in sync if it is connected same
 			// rule applies that it will only be set if it is currently unset
@@ -137,13 +146,15 @@
 				$port->DeviceID=$port->ConnectedDeviceID;
 				$port->PortNumber=$port->ConnectedPort;
 				$port->getPort();
-				$port->MediaID=(($_POST['setall']=='true' || $port->MediaID==0) && isset($_POST['mt']) && ($_POST['setall']=='true' || intval($_POST['mt'])>0))?$_POST['mt']:$port->MediaID;
-				$port->ColorID=(($_POST['setall']=='true' || $port->ColorID==0) && isset($_POST['cc']) && ($_POST['setall']=='true' || intval($_POST['cc'])>0))?$_POST['cc']:$port->ColorID;
+				if(!isset($_POST['power'])){
+					$port->MediaID=(($_POST['setall']=='true' || $port->MediaID==0) && isset($_POST['mt']) && ($_POST['setall']=='true' || intval($_POST['mt'])>0))?$_POST['mt']:$port->MediaID;
+					$port->ColorID=(($_POST['setall']=='true' || $port->ColorID==0) && isset($_POST['cc']) && ($_POST['setall']=='true' || intval($_POST['cc'])>0))?$_POST['cc']:$port->ColorID;
+				}
 				$port->updatePort();
 			}
 		}
 		// Return all the ports for the device then eval just the MT and CC
-		$dp=new DevicePorts();
+		$dp=(isset($_POST['power']))?new PowerPorts():new DevicePorts();
 		$dp->DeviceID=$_POST['devid'];
 		header('Content-Type: application/json');
 		$ports=array(
@@ -1989,7 +2000,7 @@ echo '	<div class="table">
 				<div>
 					<div class=\"delete\" style=\"display: none;\"></div>
 					<div>#</div>
-					<div>".__("Port Name")."</div>
+					<div id=\"ppcn\">".__("Port Name")."</div>
 					<div>".__("Device")."</div>
 					<div>".__("Device Port")."</div>
 					<div>".__("Notes")."</div>
@@ -2219,7 +2230,7 @@ echo '	<div class="table">
 		// Add a spacer for use when/if port removal options are triggered
 		$('.switch > div:first-child, .patchpanel > div:first-child').prepend($('<div>').addClass('delete').hide());
 		// Endable Mass Change Options
-		$('.switch.table, .patchpanel.table').massedit();
+		$('.switch.table, .patchpanel.table, .power.table').massedit();
 
 		<?php echo (class_exists('LogActions') && $dev->DeviceID>0)?'LameLogDisplay();':''; ?>
 

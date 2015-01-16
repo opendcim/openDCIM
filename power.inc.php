@@ -431,6 +431,9 @@ class PowerPorts {
 	
 		$this->MakeSafe();
 
+		// Quick sanity check so we aren't depending on the user
+		$this->Label=($this->Label=="")?$this->PortNumber:$this->Label;
+
 		// clear previous connection
 		$oldport->removeConnection();
 		$tmpport->removeConnection();
@@ -529,6 +532,30 @@ class PowerPorts {
 		$dbh->exec($sql);
 
 		return true;
+	}
+
+	static function getPortList($DeviceID){
+		global $dbh;
+		
+		$dev=new Device();
+		$dev->DeviceID=$DeviceID;
+		if(!$dev->GetDevice()){
+			return false;	// This device doesn't exist
+		}
+		
+		$sql="SELECT * FROM fac_PowerPorts WHERE DeviceID=$dev->DeviceID;";
+		
+		$portList=array();
+		foreach($dbh->query($sql) as $row){
+			$portList[$row['PortNumber']]=PowerPorts::RowToObject($row);
+		}
+		
+		if( sizeof($portList)==0 && $dev->DeviceType!="Physical Infrastructure" ){
+			// somehow this device doesn't have ports so make them now
+			$portList=PowerPorts::createPorts($dev->DeviceID);
+		}
+		
+		return $portList;
 	}
 }
 

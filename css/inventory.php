@@ -682,9 +682,11 @@ div.cabinet {
 
 
 .table.patchpanel > div:first-child > div > div,
-.table.switch > div:first-child > div > div { position: relative; border: 0px none; margin: -3px; padding-right: 20px; }
+.table.switch > div:first-child > div > div,
+.table.power > div:first-child > div > div { position: relative; border: 0px none; margin: -3px; padding-right: 20px; }
 .table.patchpanel > div:first-child > div select,
-.table.switch > div:first-child > div select { position: absolute; top: -3px; right: 0px; }
+.table.switch > div:first-child > div select,
+.table.power > div:first-child > div select { position: absolute; top: -3px; right: 0px; }
 
 .table.patchpanel > div:first-child, .table.switch > div:first-child { white-space: nowrap; }
 
@@ -700,7 +702,9 @@ div.cabinet {
 .device .table.patchpanel div[id^="pp"],
 .device .table.patchpanel div[id^="mt"] { background-color: rgba(211, 211, 211, 0.5);}
 .device .table.patchpanel > div > div {min-width: auto;}
-.device .table.patchpanel > div:first-child select, .device .table.switch > div:first-child select { position: absolute; background-color: transparent; border: 0px none; width: auto;}
+.device .table.patchpanel > div:first-child select,
+.device .table.switch > div:first-child select,
+.device .table.power > div:first-child select { position: absolute; background-color: transparent; border: 0px none; width: auto;}
 .device .table.patchpanel > div:first-child select::-moz-focus-inner, 
 .device .table.patchpanel > div:first-child select:focus::-moz-focus-inner, 
 .device .table.switch > div:first-child select::-moz-focus-inner, 

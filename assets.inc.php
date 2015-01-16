@@ -3082,6 +3082,9 @@ class DevicePorts {
 	
 		$this->MakeSafe();
 
+		// Quick sanity check so we aren't depending on the user
+		$this->Label=($this->Label=="")?$this->PortNumber:$this->Label;
+
 		// clear previous connection
 		$oldport->removeConnection();
 		$tmpport->removeConnection();

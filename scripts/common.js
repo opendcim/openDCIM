@@ -1099,7 +1099,7 @@ function LameLogDisplay(){
 			}
 
 			// port name generation change controls
-			generateportnames=$('<select>').append($('<option>'));
+			var generateportnames=$('<select>').append($('<option>'));
 			generateportnames.change(function(){
 				var dialog=$('<div />', {id: 'modal', title: 'Override all names?'}).html('<div id="modaltext"></div><br><div id="modalstatus" class="warning">Do you want to override all the port names?</div>');
 				if($(this).val()=='Custom'){
@@ -1147,6 +1147,56 @@ function LameLogDisplay(){
 				$('#spn,#pp').append(generateportnames.css('z-index','4'));
 			}
 
+			// port name generation change controls
+			var generatepowerportnames=$('<select>').append($('<option>'));
+			generatepowerportnames.change(function(){
+				var dialog=$('<div />', {id: 'modal', title: 'Override all names?'}).html('<div id="modaltext"></div><br><div id="modalstatus" class="warning">Do you want to override all the port names?</div>');
+				if($(this).val()=='Custom'){
+					dialog.find('#modalstatus').prepend('<p>Custom pattern: <input></input></p><p><a href="http://opendcim.org/wiki/index.php?title=NetworkConnections#Custom_Port_Name_Generator_Example_Patterns" target=_blank>Pattern Examples</a></p>');
+				}
+				dialog.dialog({
+					resizable: false,
+					modal: true,
+					dialogClass: "no-close",
+					buttons: {
+						Yes: function(){
+							doit(true);
+							$(this).dialog("destroy");
+						},
+						No: function(){
+							doit(false);
+							$(this).dialog("destroy");
+						},
+						Cancel: function(){
+							$(this).dialog("destroy");
+							generatepowerportnames.val('');
+						}
+					}
+				});
+				function doit(override){
+					var portpattern;
+					portpattern=(generatepowerportnames.val()=='Custom')?dialog.find('input').val():generatepowerportnames.val();
+					// gnerate port names based on the selected pattern for all the ports
+					$.post('',{setall: override, power: '', devid: $('#deviceid').val(), spn: portpattern}).done(function(data){
+						// setall kicked back every port run through them all and update note, media type, and color code
+						$.each(data.ports, function(key,p){
+							$('.power.table > div[data-port='+p.PortNumber+']').power('destroy');
+						});
+					});
+					generatepowerportnames.val('');
+				}
+			});
+
+			// Populate name generation choices
+			function massedit_ppn(){
+				$.get('',{spn:'',power:''}).done(function(data){
+					$.each(data, function(key,spn){
+						var option=$("<option>",({'value':spn.Pattern})).append(spn.Pattern.replace('(1)','x'));
+						generatepowerportnames.append(option);
+					});
+				});
+				$('#ppcn').append(generatepowerportnames.css('z-index','4'));
+			}
 
 			// get list of other patch panels
 			rearedit=$('<select>').append($('<option>'));
@@ -1222,10 +1272,16 @@ function LameLogDisplay(){
 			}
 
 			// Add controls the page
-			massedit_mt();
-			massedit_cc();
-			massedit_pn();
-			massedit_rear();
+			if(this.element.hasClass('switch') || this.element.hasClass('patchpanel')){
+				massedit_mt();
+				massedit_cc();
+				massedit_pn();
+				if(this.element.hasClass('patchpanel')){
+					massedit_rear();
+				}
+			}else if(this.element.hasClass('power')){
+				massedit_ppn();
+			}
 
 			// Nest the mass edit buttons inside of divs so they won't have to moved around
 			$(this.element).find('div:first-child > div + div[id]').wrapInner($('<div>'));
@@ -1237,7 +1293,7 @@ function LameLogDisplay(){
 
 		show: function(){
 			var edit=true;
-			$('.switch.table > div ~ div, .patchpanel.table > div ~ div').each(function(){
+			$(this.element).find('> div ~ div').each(function(){
 				edit=($(this).data('edit'))?false:edit;
 			});
 			if(edit){
@@ -1436,11 +1492,17 @@ function LameLogDisplay(){
 		edit: function() {
 			var row=this;
 
+			// Each time we invoke an edit, clone the control then add it back to the row model
+			//  this way we can just destory the row.controlsdiv and not have to try to see if they
+			//  exist first.
+			this.controlsdiv=this.controls.clone(true);
+			this.element.append(this.controlsdiv);
+
 			row.getdevices(this.cdevice);
 			row.portname.html('<input type="text" style="min-width: 60px;" value="'+row.portname.text()+'">');
 			row.cnotes.html('<input type="text" style="min-width: 200px;" value="'+row.cnotes.text()+'">');
 
-			this.element.append(this.controls.clone(true));
+//			this.element.append(this.controls.clone(true));
 
 			this.element.children('div:nth-child(2) ~ div').css({'padding': '0px', 'background-color': 'transparent'});
 			setTimeout(function() {
@@ -1449,6 +1511,8 @@ function LameLogDisplay(){
 
 			// Flag row as being in edit mode
 			row.element.data('edit',true);
+			// Hide mass edit controls
+			$('.power.table').massedit('hide');
 		},
 		getdevices: function(target){
 			var row=this;
@@ -1557,7 +1621,12 @@ function LameLogDisplay(){
 			});
 
 			$(row.element[0]).data('edit',false);
-			row.element[0].lastChild.remove();
+			// if the controlsdiv exists we'll remove it, otherwise move on
+			if(typeof row.controlsdiv){
+				row.controlsdiv.remove();
+			}
+			// Hide mass edit controls
+			$('.power.table').massedit('show');
 		}
 	});
 
