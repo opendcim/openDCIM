@@ -1405,6 +1405,8 @@ print "		var dialog=$('<div>').prop('title',\"".__("Verify Delete Device")."\").
 					});
 				},100);
 			}, 'json');
+		}).click(function(){
+			$(this).trigger('focus');
 		});
 <?php
 		}
