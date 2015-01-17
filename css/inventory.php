@@ -900,7 +900,7 @@ div.cabinet {
 		page-break-after: always;
 	}
 }
-.meter-wrap{position: relative;background-color: lightgrey;}
+.meter-wrap{position: relative;background-color: lightgrey;overflow:hidden;}
 .meter-wrap, .meter-value, .meter-text {width: 210px; height: 1.1em;}
 .meter-text {
 	position: absolute;
