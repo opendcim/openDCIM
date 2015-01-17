@@ -76,15 +76,27 @@
   
   <script type="text/javascript" src="scripts/jquery.min.js"></script>
   <script type="text/javascript" src="scripts/jquery-ui.min.js"></script>
-<script type="text/javascript">
-function showdept(obj){
-	$('#nofloat').parent('div').addClass('hide');
-	$('.center input').attr('readonly','true');
-	self.frames['groupadmin'].location.href='people_depts.php?personid='+obj;
-	document.getElementById('groupadmin').style.display = "block";
-	document.getElementById('controls').id = "displaynone";
-}
-</script>
+  <script type="text/javascript">
+	$(document).ready(function(){
+		$('#showdept').click(showdept);
+	});
+	function showdept(){
+		// Serialize the form data
+		var formdata=$(".main form").serializeArray();
+		// Set the action of the form to Update
+		formdata.push({name:'action',value:"Update"});
+		// Update the user just incase they altered it before clicking on department
+		$.post('',formdata);
+		// Hide the rights selections
+		$('#nofloat').parent('div').addClass('hide');
+		// Set the remaining fields to read only
+		$('.center input').attr('readonly','true');
+		// Hide the form controls
+		$('#controls').hide().removeClass('caption');
+		// Load the group controls inside the iframe
+		$('#groupadmin').css('display','block').attr('src', 'people_depts.php?personid='+$('#userid').val());
+	}
+  </script>
 </head>
 <body>
 <?php include( 'header.inc.php' ); ?>
@@ -96,8 +108,7 @@ function showdept(obj){
 echo '<div class="main">
 <h3>',$status,'</h3>
 <div class="center"><div>
-<form action="',$_SERVER["PHP_SELF"],'" method="POST">
-<input type="hidden" name="action" value="query">
+<form method="POST">
 <div class="table centermargin">
 <div>
    <div><label for="personid">',__("User"),'</label></div>
@@ -142,21 +153,21 @@ echo '	</select></div>
 <div>
    <div><label>',__("Rights"),'</label></div>
    <div id="nofloat">
-	<input name="adminowndevices" id="adminowndevices" type="checkbox"',$adminown,'><label for="adminowndevices">',__("Admin Own Devices"),'</label><br>
-	<input name="readaccess" id="readaccess" type="checkbox"',$read,'><label for="readaccess">',__("Read/Report Access (Global)"),'</label><br>
-	<input name="writeaccess" id="writeaccess" type="checkbox"',$write,'><label for="writeaccess">',__("Modify/Enter Devices (Global)"),'</label><br>
-	<input name="deleteaccess" id="deleteaccess" type="checkbox"',$delete,'><label for="deleteaccess">',__("Delete Devices (Global)"),'</label><br>
-	<input name="contactadmin" id="contactadmin" type="checkbox"',$contact,'><label for="contactadmin">',__("Enter/Modify Contacts and Departments"),'</label><br>
-	<input name="rackrequest" id="rackrequest" type="checkbox"',$request,'><label for="rackrequest">',__("Enter Rack Requests"),'</label><br>
-	<input name="rackadmin" id="rackadmin" type="checkbox"',$rackadmin,'><label for="rackadmin">',__("Complete Rack Requests"),'</label><br>
-	<input name="siteadmin" id="siteadmin" type="checkbox"',$admin,'><label for="siteadmin">',__("Manage Site and Users"),'</label><br>
-	<input name="disabled" id="disabled" type="checkbox"',$disabled,'><label for="disabled">',__("Disabled"),'</label><br>	
+	<input name="adminowndevices" id="adminowndevices" type="checkbox" ',$adminown,'><label for="adminowndevices">',__("Admin Own Devices"),'</label><br>
+	<input name="readaccess" id="readaccess" type="checkbox" ',$read,'><label for="readaccess">',__("Read/Report Access (Global)"),'</label><br>
+	<input name="writeaccess" id="writeaccess" type="checkbox" ',$write,'><label for="writeaccess">',__("Modify/Enter Devices (Global)"),'</label><br>
+	<input name="deleteaccess" id="deleteaccess" type="checkbox" ',$delete,'><label for="deleteaccess">',__("Delete Devices (Global)"),'</label><br>
+	<input name="contactadmin" id="contactadmin" type="checkbox" ',$contact,'><label for="contactadmin">',__("Enter/Modify Contacts and Departments"),'</label><br>
+	<input name="rackrequest" id="rackrequest" type="checkbox" ',$request,'><label for="rackrequest">',__("Enter Rack Requests"),'</label><br>
+	<input name="rackadmin" id="rackadmin" type="checkbox" ',$rackadmin,'><label for="rackadmin">',__("Complete Rack Requests"),'</label><br>
+	<input name="siteadmin" id="siteadmin" type="checkbox" ',$admin,'><label for="siteadmin">',__("Manage Site and Users"),'</label><br>
+	<input name="disabled" id="disabled" type="checkbox" ',$disabled,'><label for="disabled">',__("Disabled"),'</label><br>	
    </div>
 </div>
 <div class="caption" id="controls">';
 
 	if($userRights->PersonID>0){
-		echo '<button type="submit" name="action" value="Update">',__("Update"),'</button><button type="button" onClick="showdept(',$userRights->PersonID,')">',__("Department Membership"),'</button>';
+		echo '<button type="submit" name="action" value="Update">',__("Update"),'</button><button type="button" id="showdept">',__("Department Membership"),'</button>';
 	}else{
 		echo '	 <button type="submit" name="action" value="Create">',__("Create"),'</button>';
 	}
