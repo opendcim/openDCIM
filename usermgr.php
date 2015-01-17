@@ -94,7 +94,7 @@
 		// Hide the form controls
 		$('#controls').hide().removeClass('caption');
 		// Load the group controls inside the iframe
-		$('#groupadmin').css('display','block').attr('src', 'people_depts.php?personid='+$('#userid').val());
+		$('#groupadmin').css('display','block').attr('src', 'people_depts.php?personid='+$('#personid').val());
 	}
   </script>
 </head>
@@ -127,27 +127,27 @@ echo '	</select></div>
    <div><input type="text" name="userid" id="userid" value="',$userRights->UserID,'"></div>
 </div>
 <div>
-   <div><label for="name">',__("Last Name"),'</label></div>
+   <div><label for="lastname">',__("Last Name"),'</label></div>
    <div><input type="text" name="lastname" id="lastname" value="',$userRights->LastName,'"></div>
 </div>
 <div>
-   <div><label for="name">',__("First Name"),'</label></div>
+   <div><label for="firstname">',__("First Name"),'</label></div>
    <div><input type="text" name="firstname" id="firstname" value="',$userRights->FirstName,'"></div>
 </div>
 <div>
-   <div><label for="name">',__("Phone 1"),'</label></div>
+   <div><label for="phone1">',__("Phone 1"),'</label></div>
    <div><input type="text" name="phone1" id="phone1" value="',$userRights->Phone1,'"></div>
 </div>
 <div>
-   <div><label for="name">',__("Phone 2"),'</label></div>
+   <div><label for="phone2">',__("Phone 2"),'</label></div>
    <div><input type="text" name="phone2" id="phone2" value="',$userRights->Phone2,'"></div>
 </div>
 <div>
-   <div><label for="name">',__("Phone 3"),'</label></div>
+   <div><label for="phone3">',__("Phone 3"),'</label></div>
    <div><input type="text" name="phone3" id="phone3" value="',$userRights->Phone3,'"></div>
 </div>
 <div>
-   <div><label for="name">',__("Email Address"),'</label></div>
+   <div><label for="email">',__("Email Address"),'</label></div>
    <div><input type="text" name="email" id="email" value="',$userRights->Email,'"></div>
 </div>
 <div>
@@ -175,17 +175,17 @@ echo '	</select></div>
 </div>
 </div> <!-- END div.table -->
 </form>
-<iframe name="groupadmin" id="groupadmin" frameborder=0 scrolling="no"></iframe>
+<iframe name="groupadmin" id="groupadmin" scrolling="no"></iframe>
 <br>
 </div></div>
 <?php echo '<a href="index.php">[ ',__("Return to Main Menu"),' ]</a>'; ?>
 </div> <!-- END div.main -->
 </div> <!-- END div.page -->
-</body>
 <script type="text/javascript">
 $('iframe').load(function() {
     this.style.height =
     this.contentWindow.document.body.offsetHeight + 'px';
-});
+}).attr({frameborder:0,scrolling:'no'});
 </script>
+</body>
 </html>
