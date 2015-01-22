@@ -1245,7 +1245,7 @@ class Device {
 			$par->GetDevice();
 			$this->Rights=($par->Rights=="Write")?"Write":$this->Rights;
 		}elseif($cab->GetCabinet()){
-			if($cab->AssignedTo!=0 && $person->canWrite($cab->AssignedTo)){$this->Rights="Write";} // write because the cabinet is assigned
+			$this->Rights=($cab->Rights=="Write")?"Write":$this->Rights; // write because the cabinet is assigned
 		}
 		if($person->SiteAdmin && $this->DeviceType=='Patch Panel'){$this->Rights="Write";} // admin override of rights for patch panels
 

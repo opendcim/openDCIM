@@ -4,12 +4,6 @@
 
 	$subheader=__("Creating an end to end connection");
 
-	if(!$person->SiteAdmin){
-		// No soup for you.
-		header('Location: '.redirect());
-		exit;
-	}
-
 	$status="";
 	$path="";
 	$pathid="";
@@ -55,19 +49,35 @@
 	if(isset($_POST['cab'])){
 		$dev=new Device();
 		$dev->Cabinet=$_POST['cab'];
-		
-		displayjson($dev->ViewDevicesByCabinet(true));
+
+		// Filter devices by rights
+		$devs=array();
+		foreach($dev->ViewDevicesByCabinet(true) as $d){
+			if($d->Rights=="Write"){
+				$devs[]=$d;
+			}
+		}
+		displayjson($devs);
 	}
 
 	if(isset($_POST['dev'])){
 		$dp=new DevicePorts();
 		$dp->DeviceID=$_POST['dev'];
-		
-		displayjson($dp->getPorts());
+		$dev=new Device();
+		$dev->DeviceID=$dp->DeviceID;
+		$dev->GetDevice();
+		$ports=($dev->Rights=="Write")?$dp->getPorts():array();
+		displayjson($ports);
 	}
 
 	// AJAX - End
 	
+	if(!$person->SiteAdmin){
+		// No soup for you.
+		header('Location: '.redirect());
+		exit;
+	}
+
 	if(isset($_POST['bot_implementar'])){
 		for ($i=1;$i<$_POST['elem_path'];$i++){
 			if ($_POST["PortNumber"][$i]>0 && $_POST["PortNumber"][$i+1]<0) {

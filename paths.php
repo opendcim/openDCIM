@@ -32,23 +32,33 @@
 		return $dcpicklist;
 	}
 
-	if(isset($_POST['bot_eliminar'])){
-		if($user->WriteAccess){
-			$port=new DevicePorts();
-			for ($i=1;$i<$_POST['elem_path'];$i++){
-				if ($_POST["PortNumber"][$i]>0){
-					$port->DeviceID=$_POST["DeviceID"][$i];
-					$port->PortNumber=$_POST["PortNumber"][$i];
-					$port->getPort();
-					//only remove connections between front ports
-					if ($port->ConnectedPort>0){
-						$port->removeConnection();
-					}
+	if(isset($_POST['action']) && $_POST['action']=='delete'){
+		$port=new DevicePorts();
+		$ports=array();// list of ports we want to remove
+		$rights="None";
+		for ($i=1;$i<count($_POST["PortNumber"]);$i++){
+			if ($_POST["PortNumber"][$i]>0){
+				$port->DeviceID=$_POST["DeviceID"][$i];
+				$port->PortNumber=$_POST["PortNumber"][$i];
+				$port->getPort();
+				$dev=new Device();
+				$dev->DeviceID=$port->DeviceID;
+				$dev->GetDevice();
+				$rights=($dev->Rights=="Write")?"Write":$rights;
+				//only remove connections between front ports
+				if ($port->ConnectedPort>0){
+					// Add to the list
+					$ports[]=$port;
 				}
 			}
-			$status.=__("Front connections Deleted");
+		}
+		if($rights=="Write"){
+			foreach($ports as $p){
+				$p->removeConnection();
+			}
+			$status.=__("Front connections deleted");
 		}else{
-			$status.=__("You have no privileges!");
+			$status.=__("Come back when you have device rights");
 		}
 	}
 	
@@ -459,15 +469,14 @@
 			$path.="\t<tr>\n\t\t<td colspan=6>&nbsp;</td>\n\t</tr></table></div>";
 		
 			// need to add an additional check for permission here if they can write
-			if(!isset($_GET['pathonly']) && $user->WriteAccess){
+			if(!isset($_GET['pathonly'])){
 				//Delete Form
-				$path.= "<form action=\"{$_SERVER["PHP_SELF"]}\" method=\"POST\">\n";
+				$path.= "<form method=\"POST\">\n";
 				$path.= "<br>\n"; 
 				$path.= "<div>\n";
 				//PATH INFO
-				$path.= "<input type=\"hidden\" name=\"elem_path\" value=\"$elem_path\">\n";
 				$path.=$form_eliminar;	
-				$path.= "	<button type=\"submit\" name=\"bot_eliminar\" value=\"delete\">".__("Delete front connections in DataBase")."</button>\n";
+				$path.= "	<button type=\"submit\" name=\"action\" value=\"delete\">".__("Delete front connections in DataBase")."</button>\n";
 				$path.= "</div>\n";
 				$path.= "</form>\n";
 			}
@@ -587,7 +596,7 @@ echo '<div class="main">
 
 <td><fieldset class=crit_busc>
 		<legend>'.__("Search by label/port").'</legend>
-		<form action="',$_SERVER["PHP_SELF"],'" method="POST">
+		<form method="POST">
 <div class="table">
 	<div>
 		<div><label for="dc-rear">',__("Data Center"),'</label></div>
