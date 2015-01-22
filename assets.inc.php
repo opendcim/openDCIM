@@ -76,7 +76,7 @@ class Cabinet {
 		$this->Notes=sanitize($this->Notes,false);
 	}
 	
-	static function RowToObject($dbRow){
+	static function RowToObject($dbRow,$filterrights=true){
 		/*
 		 * Generic function that will take any row returned from the fac_Cabinet
 		 * table and convert it to an object for use in array or other
@@ -104,9 +104,31 @@ class Cabinet {
 		$cab->FrontEdge=$dbRow["FrontEdge"];
 		$cab->Notes=$dbRow["Notes"];
 
+		if($filterrights){
+			$cab->FilterRights();
+		}
+
 		return $cab;
 	}
-	
+
+	private function FilterRights(){
+		$this->Rights='None';
+		$person=People::Current();
+		if($person->canRead($this->AssignedTo)){$this->Rights="Read";}
+		if($person->canWrite($this->AssignedTo)){$this->Rights="Write";}
+
+		// Remove information that they shouldn't have access to
+		if($this->Rights=='None'){
+			// ZoneID and CabRowID are probably both not important but meh
+			$publicfields=array('CabinetID','DataCenterID','Location','ZoneID','CabRowID','Rights');
+			foreach($this as $prop => $value){
+				if(!in_array($prop,$publicfields)){
+					$this->$prop=null;
+				}
+			}
+		}
+	}
+
 	function CreateCabinet(){
 		global $dbh;
 		

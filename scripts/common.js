@@ -657,9 +657,11 @@ function startmap(){
 
 			var map=$('.canvas > map');
 			$(data.cab).each(function(){
-				map.append(buildarea(this));
-				temp.cabs.push({'CabinetID':this.CabinetID,'MapX1':this.MapX1,'MapX2':this.MapX2,'MapY1':this.MapY1,'MapY2':this.MapY2});
-				temphilight.cabs[this.CabinetID]=false;
+				if(this.Rights!="None"){
+					map.append(buildarea(this));
+					temp.cabs.push({'CabinetID':this.CabinetID,'MapX1':this.MapX1,'MapX2':this.MapX2,'MapY1':this.MapY1,'MapY2':this.MapY2});
+					temphilight.cabs[this.CabinetID]=false;
+				}
 			});
 			$(data.zone).each(function(){
 				map.append(buildarea(this));

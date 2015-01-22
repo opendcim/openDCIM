@@ -50,124 +50,127 @@ if($object>0){
 		if($cabRow=$dbh->query($sql)->fetch()){
 			$cab->CabinetID=$cabRow["CabinetID"];
 			$cab->GetCabinet();
-			$dep->DeptID = $cab->AssignedTo;
-			if ( $dep->DeptID > 0 ) {
-				$dep->GetDeptByID();
-			} else {
-				$dep->Name = __("General Use");
-			}
-			$dev->Cabinet=$cab->CabinetID;
-			$devList=$dev->ViewDevicesByCabinet();
-			$curHeight = $cab->CabinetHeight;
-			$totalWatts = $totalWeight = $totalMoment =0;
-			$curTemp=$cabRow["Temp"];
-			$curHum=$cabRow["Humidity"];
-			$curRealPower=$cabRow["RealPower"];
-			$lastRead=(!is_null($cabRow["LastRead"]))?strftime('%c',strtotime(($cabRow["LastRead"]))):0;
-			$RPlastRead=(!is_null($cabRow["RPLastRead"]))?strftime('%c',strtotime(($cabRow["RPLastRead"]))):0;
-			$rs='red';
-			$ys='yellow';
-			$gs='green';
-			$us='wtf';
-			
-			// get all limits for use with loop below
-			$SpaceRed=intval($config->ParameterArray["SpaceRed"]);
-			$SpaceYellow=intval($config->ParameterArray["SpaceYellow"]);
-			$WeightRed=intval($config->ParameterArray["WeightRed"]);
-			$WeightYellow=intval($config->ParameterArray["WeightYellow"]);
-			$PowerRed=intval($config->ParameterArray["PowerRed"]);
-			$PowerYellow=intval($config->ParameterArray["PowerYellow"]);
-			$RealPowerRed=intval($config->ParameterArray["PowerRed"]);
-			$RealPowerYellow=intval($config->ParameterArray["PowerYellow"]);
-			
-			// Temperature 
-			$TempYellow=intval($config->ParameterArray["TemperatureYellow"]);
-			$TempRed=intval($config->ParameterArray["TemperatureRed"]);
-			
-			// Humidity
-			$HumMin=intval($config->ParameterArray["HumidityRedLow"]);
-			$HumMedMin=intval($config->ParameterArray["HumidityYellowLow"]);			
-			$HumMedMax=intval($config->ParameterArray["HumidityYellowHigh"]);				
-			$HumMax=intval($config->ParameterArray["HumidityRedHigh"]);
-						
-			
-			while(list($devID,$device)=each($devList)){
-				$totalWatts+=$device->GetDeviceTotalPower();
-				$DeviceTotalWeight=$device->GetDeviceTotalWeight();
-				$totalWeight+=$DeviceTotalWeight;
-				$totalMoment+=($DeviceTotalWeight*($device->Position+($device->Height/2)));
-			}
+			if($cab->Rights!="None"){
+				$dep->DeptID = $cab->AssignedTo;
+				if ( $dep->DeptID > 0 ) {
+					$dep->GetDeptByID();
+				} else {
+					$dep->Name = __("General Use");
+				}
+				$dev->Cabinet=$cab->CabinetID;
+				$devList=$dev->ViewDevicesByCabinet();
+				$curHeight = $cab->CabinetHeight;
+				$totalWatts = $totalWeight = $totalMoment =0;
+				$curTemp=$cabRow["Temp"];
+				$curHum=$cabRow["Humidity"];
+				$curRealPower=$cabRow["RealPower"];
+				$lastRead=(!is_null($cabRow["LastRead"]))?strftime('%c',strtotime(($cabRow["LastRead"]))):0;
+				$RPlastRead=(!is_null($cabRow["RPLastRead"]))?strftime('%c',strtotime(($cabRow["RPLastRead"]))):0;
+				$rs='red';
+				$ys='yellow';
+				$gs='green';
+				$us='wtf';
 				
-			$used=$cab->CabinetOccupancy($cab->CabinetID);
-			// check to make sure the cabinet height is set to keep errors out of the logs
-			if(!isset($cab->CabinetHeight)||$cab->CabinetHeight==0){$SpacePercent=100;}else{$SpacePercent=locale_number($used /$cab->CabinetHeight *100,0);}
-			// check to make sure there is a weight limit set to keep errors out of logs
-			if(!isset($cab->MaxWeight)||$cab->MaxWeight==0){$WeightPercent=0;}else{$WeightPercent=locale_number($totalWeight /$cab->MaxWeight *100,0);}
-			// check to make sure there is a kilowatt limit set to keep errors out of logs
-			if(!isset($cab->MaxKW)||$cab->MaxKW==0){$PowerPercent=0;}else{$PowerPercent=locale_number(($totalWatts /1000 ) /$cab->MaxKW *100,0);}
-			if(!isset($cab->MaxKW)||$cab->MaxKW==0){$RealPowerPercent=0;}else{$RealPowerPercent=locale_number(($curRealPower /1000 ) /$cab->MaxKW *100,0);}
-		
-			//Decide which color to paint on the canvas depending on the thresholds
-			if($SpacePercent>$SpaceRed){$scolor=$rs;}elseif($SpacePercent>$SpaceYellow){$scolor=$ys;}else{$scolor=$gs;}
-			if($WeightPercent>$WeightRed){$wcolor=$rs;}elseif($WeightPercent>$WeightYellow){$wcolor=$ys;}else{$wcolor=$gs;}
-			if($PowerPercent>$PowerRed){$pcolor=$rs;}elseif($PowerPercent>$PowerYellow){$pcolor=$ys;}else{$pcolor=$gs;}
-			if($RPlastRead=='0'){$rpcolor=$us;}elseif($RealPowerPercent>$RealPowerRed){$rpcolor=$rs;}elseif($RealPowerPercent>$RealPowerYellow){$rpcolor=$ys;}else{$rpcolor=$gs;}
-			if($curTemp==0){$tcolor=$us;}elseif($curTemp>$TempRed){$tcolor=$rs;}elseif($curTemp>$TempYellow){$tcolor=$ys;}else{$tcolor=$gs;}
-			if($curHum==0){$hcolor=$us;}elseif($curHum>$HumMax || $curHum<$HumMin){$hcolor=$rs;}elseif($curHum>$HumMedMax || $curHum<$HumMedMin){$hcolor=$ys;}else{$hcolor=$gs;}
+				// get all limits for use with loop below
+				$SpaceRed=intval($config->ParameterArray["SpaceRed"]);
+				$SpaceYellow=intval($config->ParameterArray["SpaceYellow"]);
+				$WeightRed=intval($config->ParameterArray["WeightRed"]);
+				$WeightYellow=intval($config->ParameterArray["WeightYellow"]);
+				$PowerRed=intval($config->ParameterArray["PowerRed"]);
+				$PowerYellow=intval($config->ParameterArray["PowerYellow"]);
+				$RealPowerRed=intval($config->ParameterArray["PowerRed"]);
+				$RealPowerYellow=intval($config->ParameterArray["PowerYellow"]);
 				
-			$labelsp=locale_number($used,0)." / $cab->CabinetHeight U";
-			$labelwe=locale_number($totalWeight,0)." / $cab->MaxWeight $weightunit";
-			$labelpo=locale_number($totalWatts/1000,2)." / $cab->MaxKW kW";
-			$labelte=(($curTemp>0)?locale_number($curTemp,0)."&deg;$tempunit ($lastRead)":__("no data"));
-			$labelhu=(($curHum>0)?locale_number($curHum,0)." % ($lastRead)":__("no data"));
-			$labelrp=(($RPlastRead!='0')?locale_number($curRealPower/1000,2)." / $cab->MaxKW kW ($RPlastRead)":__("no data"));
+				// Temperature 
+				$TempYellow=intval($config->ParameterArray["TemperatureYellow"]);
+				$TempRed=intval($config->ParameterArray["TemperatureRed"]);
+				
+				// Humidity
+				$HumMin=intval($config->ParameterArray["HumidityRedLow"]);
+				$HumMedMin=intval($config->ParameterArray["HumidityYellowLow"]);			
+				$HumMedMax=intval($config->ParameterArray["HumidityYellowHigh"]);				
+				$HumMax=intval($config->ParameterArray["HumidityRedHigh"]);
+							
+				
+				while(list($devID,$device)=each($devList)){
+					$totalWatts+=$device->GetDeviceTotalPower();
+					$DeviceTotalWeight=$device->GetDeviceTotalWeight();
+					$totalWeight+=$DeviceTotalWeight;
+					$totalMoment+=($DeviceTotalWeight*($device->Position+($device->Height/2)));
+				}
+					
+				$used=$cab->CabinetOccupancy($cab->CabinetID);
+				// check to make sure the cabinet height is set to keep errors out of the logs
+				if(!isset($cab->CabinetHeight)||$cab->CabinetHeight==0){$SpacePercent=100;}else{$SpacePercent=locale_number($used /$cab->CabinetHeight *100,0);}
+				// check to make sure there is a weight limit set to keep errors out of logs
+				if(!isset($cab->MaxWeight)||$cab->MaxWeight==0){$WeightPercent=0;}else{$WeightPercent=locale_number($totalWeight /$cab->MaxWeight *100,0);}
+				// check to make sure there is a kilowatt limit set to keep errors out of logs
+				if(!isset($cab->MaxKW)||$cab->MaxKW==0){$PowerPercent=0;}else{$PowerPercent=locale_number(($totalWatts /1000 ) /$cab->MaxKW *100,0);}
+				if(!isset($cab->MaxKW)||$cab->MaxKW==0){$RealPowerPercent=0;}else{$RealPowerPercent=locale_number(($curRealPower /1000 ) /$cab->MaxKW *100,0);}
 			
-			$tooltip="<span>$cab->Location</span><ul>\n";
-			$tooltip.="<li>".__("Owner").": $dep->Name</li>\n";
-			$tooltip.="<li class=\"$scolor\">".__("Space").": $labelsp</li>\n";
-			$tooltip.="<li class=\"$wcolor\">".__("Weight").": $labelwe</li>\n";
-			$tooltip.="<li class=\"$pcolor\">".__("Calculated Power").": $labelpo</li>\n";
-			$tooltip.="<li class=\"$rpcolor\">".__("Measured Power Combined").": $labelrp</li>\n";
+				//Decide which color to paint on the canvas depending on the thresholds
+				if($SpacePercent>$SpaceRed){$scolor=$rs;}elseif($SpacePercent>$SpaceYellow){$scolor=$ys;}else{$scolor=$gs;}
+				if($WeightPercent>$WeightRed){$wcolor=$rs;}elseif($WeightPercent>$WeightYellow){$wcolor=$ys;}else{$wcolor=$gs;}
+				if($PowerPercent>$PowerRed){$pcolor=$rs;}elseif($PowerPercent>$PowerYellow){$pcolor=$ys;}else{$pcolor=$gs;}
+				if($RPlastRead=='0'){$rpcolor=$us;}elseif($RealPowerPercent>$RealPowerRed){$rpcolor=$rs;}elseif($RealPowerPercent>$RealPowerYellow){$rpcolor=$ys;}else{$rpcolor=$gs;}
+				if($curTemp==0){$tcolor=$us;}elseif($curTemp>$TempRed){$tcolor=$rs;}elseif($curTemp>$TempYellow){$tcolor=$ys;}else{$tcolor=$gs;}
+				if($curHum==0){$hcolor=$us;}elseif($curHum>$HumMax || $curHum<$HumMin){$hcolor=$rs;}elseif($curHum>$HumMedMax || $curHum<$HumMedMin){$hcolor=$ys;}else{$hcolor=$gs;}
+					
+				$labelsp=locale_number($used,0)." / $cab->CabinetHeight U";
+				$labelwe=locale_number($totalWeight,0)." / $cab->MaxWeight $weightunit";
+				$labelpo=locale_number($totalWatts/1000,2)." / $cab->MaxKW kW";
+				$labelte=(($curTemp>0)?locale_number($curTemp,0)."&deg;$tempunit ($lastRead)":__("no data"));
+				$labelhu=(($curHum>0)?locale_number($curHum,0)." % ($lastRead)":__("no data"));
+				$labelrp=(($RPlastRead!='0')?locale_number($curRealPower/1000,2)." / $cab->MaxKW kW ($RPlastRead)":__("no data"));
+				
+				$tooltip="<span>$cab->Location</span><ul>\n";
+				$tooltip.="<li>".__("Owner").": $dep->Name</li>\n";
+				$tooltip.="<li class=\"$scolor\">".__("Space").": $labelsp</li>\n";
+				$tooltip.="<li class=\"$wcolor\">".__("Weight").": $labelwe</li>\n";
+				$tooltip.="<li class=\"$pcolor\">".__("Calculated Power").": $labelpo</li>\n";
+				$tooltip.="<li class=\"$rpcolor\">".__("Measured Power Combined").": $labelrp</li>\n";
 
-			// Individual CDUs
-			$sql="SELECT C.CabinetID, P.Label, P.RealPower, P.BreakerSize, P.InputAmperage * PP.PanelVoltage AS VoltAmp 
-				FROM ((fac_Cabinet C LEFT JOIN fac_CabinetTemps T ON C.CabinetId = T.CabinetID) LEFT JOIN
-					(SELECT CabinetID, Label, Wattage AS RealPower, BreakerSize, InputAmperage, PanelID FROM 
-					fac_PowerDistribution PD LEFT JOIN fac_PDUStats PS ON PD.PDUID=PS.PDUID ) P 
-					ON C.CabinetId = P.CabinetID)
-				LEFT JOIN (SELECT PanelVoltage, PanelID FROM fac_PowerPanel) PP ON PP.PanelID=P.PanelID
-				WHERE PanelVoltage IS NOT NULL AND RealPower IS NOT NULL AND 
-				C.CabinetID=$object;";
+				// Individual CDUs
+				$sql="SELECT C.CabinetID, P.Label, P.RealPower, P.BreakerSize, P.InputAmperage * PP.PanelVoltage AS VoltAmp 
+					FROM ((fac_Cabinet C LEFT JOIN fac_CabinetTemps T ON C.CabinetId = T.CabinetID) LEFT JOIN
+						(SELECT CabinetID, Label, Wattage AS RealPower, BreakerSize, InputAmperage, PanelID FROM 
+						fac_PowerDistribution PD LEFT JOIN fac_PDUStats PS ON PD.PDUID=PS.PDUID ) P 
+						ON C.CabinetId = P.CabinetID)
+					LEFT JOIN (SELECT PanelVoltage, PanelID FROM fac_PowerPanel) PP ON PP.PanelID=P.PanelID
+					WHERE PanelVoltage IS NOT NULL AND RealPower IS NOT NULL AND 
+					C.CabinetID=$object;";
 
-			$rpvalues=$dbh->query($sql);
-			foreach($rpvalues as $cduRow){
-				$cabid=$cduRow['CabinetID'];
-				$voltamp=$cduRow['VoltAmp'];
-				$rp=$cduRow['RealPower'];
-				$bs=$cduRow['BreakerSize'];
-				$label=$cduRow['Label'];
+				$rpvalues=$dbh->query($sql);
+				foreach($rpvalues as $cduRow){
+					$cabid=$cduRow['CabinetID'];
+					$voltamp=$cduRow['VoltAmp'];
+					$rp=$cduRow['RealPower'];
+					$bs=$cduRow['BreakerSize'];
+					$label=$cduRow['Label'];
 
-				if($bs==1){
-					$maxDraw=$voltamp / 1.732;
-				}elseif($bs==2){
-					$maxDraw=$voltamp;
-				}else{
-					$maxDraw=$voltamp * 1.732;
+					if($bs==1){
+						$maxDraw=$voltamp / 1.732;
+					}elseif($bs==2){
+						$maxDraw=$voltamp;
+					}else{
+						$maxDraw=$voltamp * 1.732;
+					}
+
+					// De-rate all breakers to 80% sustained load
+					$maxDraw*=0.8;
+
+					// Only keep the highest percentage of any single CDU in a cabinet
+					$pp=intval($rp / $maxDraw * 100);
+					if($pp>$RealPowerRed){$rpcolor=$rs;}elseif($pp>$RealPowerYellow){$rpcolor=$ys;}else{$rpcolor=$gs;}
+					$tooltip.="<li class=\"$rpcolor\">$label: $pp%</li>\n";
 				}
 
-				// De-rate all breakers to 80% sustained load
-				$maxDraw*=0.8;
 
-				// Only keep the highest percentage of any single CDU in a cabinet
-				$pp=intval($rp / $maxDraw * 100);
-				if($pp>$RealPowerRed){$rpcolor=$rs;}elseif($pp>$RealPowerYellow){$rpcolor=$ys;}else{$rpcolor=$gs;}
-				$tooltip.="<li class=\"$rpcolor\">$label: $pp%</li>\n";
+				$tooltip.="<li class=\"$tcolor\">".__("Temperature").": $labelte</li>\n";
+				$tooltip.="<li class=\"$hcolor\">".__("Humidity").": $labelhu</li></ul>\n";
+			}else{
+				$tooltip=__("Quit that! You don't have rights to view this.");
 			}
-
-
-			$tooltip.="<li class=\"$tcolor\">".__("Temperature").": $labelte</li>\n";
-			$tooltip.="<li class=\"$hcolor\">".__("Humidity").": $labelhu</li></ul>\n";
-
 		}
 	}elseif(isset($_POST['cdu']) || isset($_POST['dev'])){
 		if(isset($_POST['cdu']) && $config->ParameterArray["CDUToolTips"]=='enabled'){

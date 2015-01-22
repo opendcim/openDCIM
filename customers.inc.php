@@ -332,7 +332,7 @@ class People {
 		$this->GetUserRights();
 		
 		$sql="SELECT DeptID FROM fac_DeptContacts WHERE ContactID IN 
-			(SELECT ContactID FROM fac_Contact WHERE UserID=\"$this->UserID\");";
+			(SELECT PersonID FROM fac_People WHERE UserID=\"$this->UserID\");";
 
 		$deptList=array();
 		$deptList[]=0; // This is allowing anyone to use an unassigned rack / device
