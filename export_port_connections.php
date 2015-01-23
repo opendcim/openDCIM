@@ -119,12 +119,31 @@
 		exit;
 	}	
 */
-	
+		$pport=new PowerPorts();
+		$pport->DeviceID=$dev->DeviceID;
+		$pportList=$pport->getPorts();
+
 		// Make power cable labels based on the number of power supplies
-		for ( $n = 1; $n <= $dev->PowerSupplyCount; $n++ ) {
+		foreach($pportList as $powerPort){
 			$sheet->getActiveSheet()->SetCellValue('A' . $row, $dev->Label );
-			$sheet->getActiveSheet()->SetCellValue('B' . $row, 'Power Supply ' . $n );
+			$sheet->getActiveSheet()->SetCellValue('B' . $row, $powerPort->Label );
 			
+			if($powerPort->ConnectedDeviceID >0 || $devPort->Notes!=""){
+				$targetDev=new Device();
+				$targetPort=new PowerPorts();
+
+				$targetDev->DeviceID=$powerPort->ConnectedDeviceID;
+				$targetDev->GetDevice();
+
+				$targetPort->DeviceID=$targetDev->DeviceID;
+				$targetPort->PortNumber=$powerPort->ConnectedPort;
+				$targetPort->getPort();
+
+				$sheet->getActiveSheet()->SetCellValue('C' . $row, $targetDev->Label);
+				$sheet->getActiveSheet()->SetCellValue('D' . $row, $targetPort->Label);
+				$sheet->getActiveSheet()->SetCellValue('E' . $row, $devPort->Notes);
+				$sheet->getActiveSheet()->SetCellValue('H' . $row, __("Power Connection"));
+			}
 			$row++;
 		}
 		

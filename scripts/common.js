@@ -1624,7 +1624,7 @@ function LameLogDisplay(){
 
 			$(row.element[0]).data('edit',false);
 			// if the controlsdiv exists we'll remove it, otherwise move on
-			if(typeof row.controlsdiv){
+			if(typeof row.controlsdiv!='undefined'){
 				row.controlsdiv.remove();
 			}
 			// Hide mass edit controls
