@@ -128,7 +128,7 @@
 			$sheet->getActiveSheet()->SetCellValue('A' . $row, $dev->Label );
 			$sheet->getActiveSheet()->SetCellValue('B' . $row, $powerPort->Label );
 			
-			if($powerPort->ConnectedDeviceID >0 || $devPort->Notes!=""){
+			if($powerPort->ConnectedDeviceID >0 || $powerPort->Notes!=""){
 				$targetDev=new Device();
 				$targetPort=new PowerPorts();
 
