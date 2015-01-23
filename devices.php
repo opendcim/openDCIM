@@ -1110,7 +1110,7 @@ $(document).ready(function() {
 	$('#snmpcommunity').blur(function(){$(this).attr('type','password');});
 
 	// What what?! an SNMP test function!?
-	$('#primaryip,#snmpcommunity').on('change keyup keydown', function(){ SNMPTest(); });
+	$('#primaryip,#snmpcommunity').on('change keyup keydown', function(){ SNMPTest(); }).change();
 
 	function SNMPTest(){
 		var ip=$('#primaryip');
