@@ -45,7 +45,9 @@ function isValidURL($url){
 	$urlregex.="(\/([a-z0-9+\$_-]\.?)+)*\/?"; // Path
 	$urlregex.="(\?[a-z+&\$_.-][a-z0-9;:@&%=+\/\$_.-]*)?"; // GET Query
 	$urlregex.="(#[a-z_.-][a-z0-9+\$_.-]*)?"; // Anchor 
-	if(preg_match("/^$urlregex$/",$url)){return true;}
+// Testing out the php url validation, leaving the regex for now
+//	if(preg_match("/^$urlregex$/",$url)){return true;}
+	return filter_var($url, FILTER_VALIDATE_URL);
 }
 
 //Convert hex color codes to rgb values
