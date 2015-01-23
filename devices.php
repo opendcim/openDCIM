@@ -19,6 +19,18 @@
 	$taginsert="";
 
 	// Ajax functions
+	// SNMP Test
+	if(isset($_POST['snmptest'])){
+		$snmpresults=snmprealwalk($_POST['ip'],$_POST['community'],'1.3.6.1.2.1.1');
+		if($snmpresults){
+			foreach($snmpresults as $oid => $value){
+				print "$oid => $value <br>\n";
+			}
+		}else{
+			print __("Something isn't working correctly");
+		}
+		exit;
+	}
 	// Get log entries
 	if(isset($_POST['logging'])){
 		$dev->DeviceID=$_POST['devid'];
@@ -1065,6 +1077,11 @@ $(document).ready(function() {
 	});
 
 	// CDU functions
+	$('#panelid').change( function(){
+		$.get('scripts/ajax_panel.php?q='+$(this).val(), function(data) {
+			$('#voltage').html(data['PanelVoltage'] +'/'+ Math.floor(data['PanelVoltage']/1.73));
+		});
+	});
 	$('#btn_override').on('click',function(e){
 		var btn=$(e.currentTarget);
 		var target=$(e.currentTarget.previousSibling);
@@ -1092,6 +1109,24 @@ $(document).ready(function() {
 	$('#snmpcommunity').focus(function(){$(this).attr('type','text');});
 	$('#snmpcommunity').blur(function(){$(this).attr('type','password');});
 
+	// What what?! an SNMP test function!?
+	$('#primaryip,#snmpcommunity').on('change keyup keydown', function(){ SNMPTest(); });
+
+	function SNMPTest(){
+		var ip=$('#primaryip');
+		var snmp=$('#snmpcommunity');
+
+		if(ip.val()!='' && snmp.val()!=''){snmp.next('button').show().removeClass('hide');}else{snmp.next('button').hide();}
+	}
+
+	$('#btn_snmptest').click(function(e){
+		e.preventDefault();
+		$('#pdutest').html('<img src="images/mimesearch.gif" height="150px">Checking...');
+		$.post('', {snmptest: $('#deviceid').val(),ip: $('#primaryip').val(),community: $('#snmpcommunity').val()}, function(data){
+			$('#pdutest').html(data);
+		});
+		$('#pdutest').dialog({minWidth: 850, position: { my: "center", at: "top", of: window },closeOnEscape: true });
+	});
 
 	// Add in refresh functions for virtual machines
 	var esxtable=$('<div>').addClass('table border').append('<div><div>VM Name</div><div>Status</div><div>Owner</div><div>Last Updated</div></div>');
@@ -1544,7 +1579,7 @@ echo '<div class="center"><div>
 		</div>
 		<div>
 		  <div><label for="snmpcommunity">'.__("SNMP Read Only Community").'</label></div>
-		  <div><input type="password" name="snmpcommunity" id="snmpcommunity" size="40" value="'.$dev->SNMPCommunity.'"></div>
+		  <div><input type="password" name="snmpcommunity" id="snmpcommunity" size="40" value="'.$dev->SNMPCommunity.'"><button type="button" class="hide" id="btn_snmptest">'.__("Test SNMP").'</button></div>
 		</div>
 		<div>
 		   <div><label for="mfgdate">'.__("Manufacture Date").'</label></div>
@@ -2187,6 +2222,8 @@ echo '	<div class="table">
 <div id="auditconfirm" class="hide">
 	<p><?php print __("Do you certify that you have completed an audit of this device?"); ?></p>
 </div>
+
+<div id="pdutest" title="Testing SNMP Communications"></div>
 
 </div><!-- END div.main -->
 </div><!-- END div.page -->

@@ -299,7 +299,7 @@ canvas#background { position: absolute; }
 .templatemaker .table .table {margin-left: auto;}
 .templatemaker + .center div{position: relative;width: 100%;}
 .templatemaker + .center > div > div.container {position: absolute; top: 0px; left: 0px;}
-.templatemaker input + button, #btn_override { line-height: 1em; vertical-align: middle; height: 1.5em; margin-top: -1px; }
+.templatemaker input + button, #btn_override, #btn_snmptest { line-height: 1em; vertical-align: middle; height: 1.5em; margin-top: -1px; }
 .templatemaker #hiddencoords { position: absolute; left: -10000px; top: -10000px;}
 .templatemaker #previewimage { width: 400px;}
 .templatemaker fieldset label {padding-right: 1em;padding-left:0.25em;}
