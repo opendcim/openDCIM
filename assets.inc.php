@@ -214,7 +214,7 @@ class Cabinet {
 		$cabinetList=array();
 
 		$dept=(!is_null($deptid))?" WHERE AssignedTo=".intval($deptid):'';
-		$sql="SELECT * FROM fac_Cabinet$dept ORDER BY DataCenterID, Location;";
+		$sql="SELECT * FROM fac_Cabinet$dept ORDER BY DataCenterID, Location ASC, LENGTH(Location);";
 
 		foreach($dbh->query($sql) as $cabinetRow){
 			$cabinetList[]=Cabinet::RowToObject($cabinetRow);
@@ -231,7 +231,7 @@ class Cabinet {
 		$hascoords=($limit)?'AND MapX1!=MapX2 AND MapY1!=MapY2':'';
 		$limitzone=($limitzone && $this->ZoneID>0)?" AND ZoneID=$this->ZoneID":'';
 
-		$sql="SELECT * FROM fac_Cabinet WHERE DataCenterID=$this->DataCenterID $hascoords$limitzone ORDER BY Location;";
+		$sql="SELECT * FROM fac_Cabinet WHERE DataCenterID=$this->DataCenterID $hascoords$limitzone ORDER BY Location ASC, LENGTH(Location);";
 
 		$cabinetList=array();
 		foreach($dbh->query($sql) as $cabinetRow){
@@ -361,7 +361,7 @@ class Cabinet {
 
 		// Order first by row layout then by natural sort
 		$sql="SELECT * FROM fac_Cabinet WHERE CabRowID=$cabrow->CabRowID ORDER BY $order 
-			length(Location), Location ASC;";
+			Location ASC, LENGTH(Location);";
 
 		$cabinetList=array();
 		foreach($dbh->query($sql) as $cabinetRow){
@@ -414,7 +414,7 @@ class Cabinet {
 		
 		$sql="SELECT Name, CabinetID, Location, AssignedTo FROM fac_DataCenter, fac_Cabinet WHERE 
 			fac_DataCenter.DataCenterID=fac_Cabinet.DataCenterID ORDER BY Name ASC, 
-			Location ASC;";
+			Location ASC, LENGTH(Location);";
 
 		$selectList="<select name=\"cabinetid\" id=\"cabinetid\"><option value=\"-1\">Storage Room</option>";
 
@@ -451,7 +451,7 @@ class Cabinet {
 
 				$tree.="\t<li class=\"$classType\" id=\"dc$dcID\"><a href=\"dc_stats.php?dc=$datacenter->DataCenterID\">$datacenter->Name</a>/\n\t\t<ul>\n";
 
-				$sql="SELECT * FROM fac_Cabinet WHERE DataCenterID=\"$dcID\" ORDER BY Location ASC;";
+				$sql="SELECT * FROM fac_Cabinet WHERE DataCenterID=\"$dcID\" ORDER BY Location ASC, LENGTH(Location);";
 
 				foreach($dbh->query($sql) as $cabRow){
 					$dept->DeptID = $cabRow["AssignedTo"];
@@ -512,7 +512,7 @@ class Cabinet {
 	function SearchByCabinetName( $db = null ) {
 		global $dbh;
 		
-		$sql="select * from fac_Cabinet where ucase(Location) like \"%" . transform($this->Location) . "%\" order by Location;";
+		$sql="select * from fac_Cabinet where ucase(Location) like \"%" . transform($this->Location) . "%\" order by Location ASC, LENGTH(Location);";
 
 		$cabinetList=array();
 
@@ -527,7 +527,7 @@ class Cabinet {
 	function SearchByOwner( $db = null ) {
 		global $dbh;
 		
-		$sql="select * from fac_Cabinet WHERE AssignedTo=".intval($this->AssignedTo)." ORDER BY Location;";
+		$sql="select * from fac_Cabinet WHERE AssignedTo=".intval($this->AssignedTo)." ORDER BY Location ASC, LENGTH(Location);";
 
 		$cabinetList=array();
 

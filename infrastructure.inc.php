@@ -694,7 +694,7 @@ class DataCenter {
 				// DataCenterID and ZoneID are redundant if fac_cabrow is defined and is CabrowID set in fac_cabinet
 				$cabsql="SELECT * FROM fac_Cabinet WHERE DataCenterID=$this->DataCenterID 
 					AND ZoneID=$myzone->ZoneID AND CabRowID={$filaRow['CabRowID']} ORDER 
-					BY LENGTH(Location),Location ASC;";
+					BY Location ASC,LENGTH(Location);";
 			  
 				foreach($this->query($cabsql) as $cabRow){
 					$tree.=str_repeat(" ",$lev+7)."<li id=\"cab{$cabRow['CabinetID']}\"><a class=\"RACK\" href=\"cabnavigator.php?cabinetid={$cabRow['CabinetID']}\">{$cabRow['Location']}</a></li>\n";
