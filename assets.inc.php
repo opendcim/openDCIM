@@ -2879,11 +2879,11 @@ class Device {
 	function SetChildDevicesCabinet(){
 		global $dbh;
 		
-		$sql="SELECT * FROM fac_Device WHERE ParentDevice=".$this->DeviceID;
+		$sql="SELECT * FROM fac_Device WHERE ParentDevice=$this->DeviceID;";
 
 		foreach($dbh->query($sql) as $row){
 			$dev=Device::RowToObject($row);
-			$dev->Cabinet=$dev->GetDeviceCabinetID();
+			$dev->Cabinet=$this->Cabinet;
 			$dev->UpdateDevice();
 			if ($dev->ChassisSlots>0 || $dev->RearChassisSlots>0){
 				$dev->SetChildDevicesCabinet();
