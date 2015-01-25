@@ -490,8 +490,8 @@
 	// This page was called from somewhere so let's do stuff.
 	// If this page wasn't called then present a blank record for device creation.
 	if(isset($_REQUEST['action'])||isset($_REQUEST['deviceid'])){
-		if(isset($_REQUEST['cabinet'])){
-			$dev->Cabinet=$_REQUEST['cabinet'];
+		if(isset($_REQUEST['cabinetid'])){
+			$dev->Cabinet=$_REQUEST['cabinetid'];
 			$cab->CabinetID=$dev->Cabinet;
 			$cab->GetCabinet();
 		}

@@ -1493,9 +1493,9 @@ class Device {
 			$cab->CabinetID=$this->Cabinet;
 			$cab->GetCabinet();
 			// Make sure the user has rights to save a device into the new cabinet
-			if(!People::Current()->canWrite($cab->AssignedTo)){
-				return false;
-			}
+			if($cab->Rights!="Write"){return false;}
+
+			// They have rights to do this so clear the power connections now
 			$powercon=new PowerConnection();
 			$powercon->DeviceID=$this->DeviceID;
 			$powercon->DeleteConnections();
@@ -1537,10 +1537,24 @@ class Device {
 				}
 			}else{ // new device has more ports
 				for($n=$tmpDev->Ports; $n<$this->Ports; ++$n){
+					$i=$n+1;
+					// if a template is set get its port names from the template if they exist
+					if($this->TemplateID>0){
+						$tport=new TemplatePorts();
+						$tport->TemplateID=$this->TemplateID;
+						$tports=$tport->getPorts();
+					}
 					$p=new DevicePorts;
 					$p->DeviceID=$this->DeviceID;
-					$p->Label=__("Port").($n+1);
-					$p->PortNumber=$n+1;
+					$p->PortNumber=$i;
+					if(isset($tports[$i])){
+						// Get any attributes from the device template
+						foreach($tports[$i] as $key => $value){
+							$p->$key=$value;
+						}
+					}else{ // port isn't defined in the template use a default name
+						$p->Label=__("Port")." $i";
+					}
 					$p->createPort();
 					if($this->DeviceType=='Patch Panel'){
 						$p->PortNumber=$p->PortNumber*-1;
@@ -1560,12 +1574,26 @@ class Device {
 					$p->PortNumber=$n+1;
 					$p->removePort();
 				}
-			}else{ // new devices has more ports
+			}else{ // new device has more ports
 				for($n=$tmpDev->PowerSupplyCount; $n<$this->PowerSupplyCount; ++$n){
+					$i=$n+1;
+					// if a template is set get its port names from the template if they exist
+					if($this->TemplateID>0){
+						$tport=new TemplatePowerPorts();
+						$tport->TemplateID=$this->TemplateID;
+						$tports=$tport->getPorts();
+					}
 					$p=new PowerPorts;
 					$p->DeviceID=$this->DeviceID;
-					$p->Label=__("Power Connection")." ".($n+1);
-					$p->PortNumber=$n+1;
+					$p->PortNumber=$i;
+					if(isset($tports[$i])){
+						// Get any attributes from the device template
+						foreach($tports[$i] as $key => $value){
+							$p->$key=$value;
+						}
+					}else{ // port isn't defined in the template use a default name
+						$p->Label=__("Power Connection")." $i";
+					}
 					$p->createPort();
 				}
 			}
