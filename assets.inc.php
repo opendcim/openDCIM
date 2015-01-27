@@ -1487,6 +1487,30 @@ class Device {
 			return false;
 		}		
 
+		// Force all uppercase for labels
+		$this->Label=transform($this->Label);
+		$this->SerialNo=transform($this->SerialNo);
+		$this->AssetTag=transform($this->AssetTag);
+
+		$sql="UPDATE fac_Device SET Label=\"$this->Label\", SerialNo=\"$this->SerialNo\", AssetTag=\"$this->AssetTag\", 
+			PrimaryIP=\"$this->PrimaryIP\", SNMPCommunity=\"$this->SNMPCommunity\", ESX=$this->ESX, Owner=$this->Owner, 
+			EscalationTimeID=$this->EscalationTimeID, EscalationID=$this->EscalationID, PrimaryContact=$this->PrimaryContact, 
+			Cabinet=$this->Cabinet, Position=$this->Position, Height=$this->Height, Ports=$this->Ports, 
+			FirstPortNum=$this->FirstPortNum, TemplateID=$this->TemplateID, NominalWatts=$this->NominalWatts, 
+			PowerSupplyCount=$this->PowerSupplyCount, DeviceType=\"$this->DeviceType\", ChassisSlots=$this->ChassisSlots, 
+			RearChassisSlots=$this->RearChassisSlots,ParentDevice=$this->ParentDevice, 
+			MfgDate=\"".date("Y-m-d", strtotime($this->MfgDate))."\", 
+			InstallDate=\"".date("Y-m-d", strtotime($this->InstallDate))."\", WarrantyCo=\"$this->WarrantyCo\", 
+			WarrantyExpire=\"".date("Y-m-d", strtotime($this->WarrantyExpire))."\", Notes=\"$this->Notes\", 
+			Reservation=$this->Reservation, HalfDepth=$this->HalfDepth, BackSide=$this->BackSide WHERE DeviceID=$this->DeviceID;";
+
+		// If the device won't update for some reason there is no cause to touch anything else about it
+		if(!$dbh->query($sql)){
+			$info=$dbh->errorInfo();
+			error_log("UpdateDevice::PDO Error: {$info[2]} SQL=$sql");
+			return false;
+		}
+		
 		// If you changed cabinets then the power connections need to be removed
 		if($row["Cabinet"]!=$this->Cabinet){
 			$cab=new Cabinet();
@@ -1536,32 +1560,7 @@ class Device {
 					}
 				}
 			}else{ // new device has more ports
-				for($n=$tmpDev->Ports; $n<$this->Ports; ++$n){
-					$i=$n+1;
-					// if a template is set get its port names from the template if they exist
-					if($this->TemplateID>0){
-						$tport=new TemplatePorts();
-						$tport->TemplateID=$this->TemplateID;
-						$tports=$tport->getPorts();
-					}
-					$p=new DevicePorts;
-					$p->DeviceID=$this->DeviceID;
-					$p->PortNumber=$i;
-					if(isset($tports[$i])){
-						// Get any attributes from the device template
-						foreach($tports[$i] as $key => $value){
-							$p->$key=$value;
-						}
-					}else{ // port isn't defined in the template use a default name
-						$p->Label=__("Port")." $i";
-					}
-					$p->createPort();
-					if($this->DeviceType=='Patch Panel'){
-						$p->PortNumber=$p->PortNumber*-1;
-						$p->createPort();
-					}
-				}
-
+				DevicePorts::createPorts($this->DeviceID,true);
 			}
 		}
 
@@ -1575,27 +1574,7 @@ class Device {
 					$p->removePort();
 				}
 			}else{ // new device has more ports
-				for($n=$tmpDev->PowerSupplyCount; $n<$this->PowerSupplyCount; ++$n){
-					$i=$n+1;
-					// if a template is set get its port names from the template if they exist
-					if($this->TemplateID>0){
-						$tport=new TemplatePowerPorts();
-						$tport->TemplateID=$this->TemplateID;
-						$tports=$tport->getPorts();
-					}
-					$p=new PowerPorts;
-					$p->DeviceID=$this->DeviceID;
-					$p->PortNumber=$i;
-					if(isset($tports[$i])){
-						// Get any attributes from the device template
-						foreach($tports[$i] as $key => $value){
-							$p->$key=$value;
-						}
-					}else{ // port isn't defined in the template use a default name
-						$p->Label=__("Power Connection")." $i";
-					}
-					$p->createPort();
-				}
+				PowerPorts::createPorts($this->DeviceID,true);
 			}
 		}
 		
@@ -1635,29 +1614,6 @@ class Device {
 					$port->createPort();
 				}
 			}
-		}
-		
-		// Force all uppercase for labels
-		$this->Label=transform($this->Label);
-		$this->SerialNo=transform($this->SerialNo);
-		$this->AssetTag=transform($this->AssetTag);
-
-		$sql="UPDATE fac_Device SET Label=\"$this->Label\", SerialNo=\"$this->SerialNo\", AssetTag=\"$this->AssetTag\", 
-			PrimaryIP=\"$this->PrimaryIP\", SNMPCommunity=\"$this->SNMPCommunity\", ESX=$this->ESX, Owner=$this->Owner, 
-			EscalationTimeID=$this->EscalationTimeID, EscalationID=$this->EscalationID, PrimaryContact=$this->PrimaryContact, 
-			Cabinet=$this->Cabinet, Position=$this->Position, Height=$this->Height, Ports=$this->Ports, 
-			FirstPortNum=$this->FirstPortNum, TemplateID=$this->TemplateID, NominalWatts=$this->NominalWatts, 
-			PowerSupplyCount=$this->PowerSupplyCount, DeviceType=\"$this->DeviceType\", ChassisSlots=$this->ChassisSlots, 
-			RearChassisSlots=$this->RearChassisSlots,ParentDevice=$this->ParentDevice, 
-			MfgDate=\"".date("Y-m-d", strtotime($this->MfgDate))."\", 
-			InstallDate=\"".date("Y-m-d", strtotime($this->InstallDate))."\", WarrantyCo=\"$this->WarrantyCo\", 
-			WarrantyExpire=\"".date("Y-m-d", strtotime($this->WarrantyExpire))."\", Notes=\"$this->Notes\", 
-			Reservation=$this->Reservation, HalfDepth=$this->HalfDepth, BackSide=$this->BackSide WHERE DeviceID=$this->DeviceID;";
-
-		if(!$dbh->query($sql)){
-			$info=$dbh->errorInfo();
-			error_log("UpdateDevice::PDO Error: {$info[2]} SQL=$sql");
-			return false;
 		}
 		
 		//Update children, if necesary
@@ -2983,7 +2939,7 @@ class DevicePorts {
 		return $row["ActivePorts"];
 	}
 		
-	function createPort() {
+	function createPort($ignore_errors=false) {
 		global $dbh;
 		
 		$this->MakeSafe();
@@ -2993,7 +2949,7 @@ class DevicePorts {
 			PortNotes=\"$this->PortNotes\", ConnectedDeviceID=$this->ConnectedDeviceID, 
 			ConnectedPort=$this->ConnectedPort, Notes=\"$this->Notes\";";
 			
-		if(!$dbh->query($sql)){
+		if(!$dbh->query($sql) && !$ignore_errors){
 			$info=$dbh->errorInfo();
 
 			error_log("createPort::PDO Error: {$info[2]} SQL=$sql");
@@ -3004,7 +2960,10 @@ class DevicePorts {
 		return true;
 	}
 
-	static function createPorts($DeviceID){
+	static function createPorts($DeviceID,$update_existing=false){
+		// If $update_existing is true then we'll try to create all the ports and as a by product
+		// create any new ports.  The setting here will ensure we don't log any errors from the
+		// ports that already exist.
 		$dev=New Device;
 		$dev->DeviceID=$DeviceID;
 		if(!$dev->GetDevice()){return false;}
@@ -3048,7 +3007,7 @@ class DevicePorts {
 				// pull port name first from snmp then from template then just call it port x
 				$portList[$i]->Label=(isset($nameList[$n]))?$nameList[$n]:(isset($tports[$i]) && $tports[$i]->Label)?$tports[$i]->Label:__("Port").$i;
 				$portList[$i]->Notes=(isset($aliasList[$n]))?$aliasList[$n]:'';
-				$portList[$i]->createPort();
+				$portList[$i]->createPort($update_existing);
 			}
 		}else{
 			for($n=0; $n<$dev->Ports; $n++){
@@ -3071,7 +3030,7 @@ class DevicePorts {
 					$portList[$i]=new DevicePorts();
 					$portList[$i]->DeviceID=$dev->DeviceID;
 					$portList[$i]->PortNumber=$i;
-					$portList[$i]->createPort();
+					$portList[$i]->createPort($update_existing);
 				}
 			}
 		}

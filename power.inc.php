@@ -271,7 +271,7 @@ class PowerPorts {
 		return $ports;
 	}
 
-	function createPort() {
+	function createPort($ignore_errors=false) {
 		global $dbh;
 		
 		$this->MakeSafe();
@@ -281,7 +281,7 @@ class PowerPorts {
 			ConnectedDeviceID=$this->ConnectedDeviceID, ConnectedPort=$this->ConnectedPort, 
 			Notes=\"$this->Notes\";";
 			
-		if(!$dbh->query($sql)){
+		if(!$dbh->query($sql) && !$ignore_errors){
 			$info=$dbh->errorInfo();
 
 			error_log("createPort::PDO Error: {$info[2]} SQL=$sql");
@@ -292,7 +292,10 @@ class PowerPorts {
 		return true;
 	}
 
-	static function createPorts($DeviceID){
+	static function createPorts($DeviceID,$update_existing=false){
+		// If $update_existing is true then we'll try to create all the ports and as a by product
+		// create any new ports.  The setting here will ensure we don't log any errors from the
+		// ports that already exist.
 		$dev=New Device;
 		$dev->DeviceID=$DeviceID;
 		if(!$dev->GetDevice()){return false;}
@@ -325,7 +328,7 @@ class PowerPorts {
 				}
 			}
 			$portList[$i]->Label=($portList[$i]->Label=="")?__("Power Connection")." $i":$portList[$i]->Label;
-			$portList[$i]->createPort();
+			$portList[$i]->createPort($update_existing);
 		}
 		return $portList;
 	}
