@@ -358,6 +358,26 @@ $('button[value=Delete]').click(function(){
 		buttons: $.extend({}, defaultbutton, cancelbutton)
 	});
 });
+<?php
+if( $config->ParameterArray["ToolTips"]=='enabled' ){
+?>
+		$('.polelabel > a > span').mouseenter(function(){
+			var pos=$(this).offset();
+			var tooltip=$('<div />').css({
+				'left':pos.left+this.getBoundingClientRect().width+15+'px',
+				'top':pos.top+(this.getBoundingClientRect().height/2)-15+'px'
+			}).addClass('arrow_left border cabnavigator tooltip').attr('id','tt').append('<span class="ui-icon ui-icon-refresh rotate"></span>');
+			$.post('scripts/ajax_tooltip.php',{tooltip: this.parentNode.search.split('=').pop(), dev: 1}, function(data){
+				tooltip.html(data);
+			});
+			$('body').append(tooltip);
+			$(this).mouseleave(function(){
+				tooltip.remove();
+			});
+		});
+<?php
+}
+?>
 
 </script>
 </body>
