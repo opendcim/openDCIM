@@ -31,6 +31,16 @@
 		}
 		exit;
 	}
+
+	// Get CDU uptime
+	if(isset($_POST['cduuptime'])){
+		$pdu=new PowerDistribution();
+		$pdu->PDUID=$_POST['deviceid'];
+		
+		echo $pdu->GetSmartCDUUptime();
+		exit;
+	}
+
 	// Get log entries
 	if(isset($_POST['logging'])){
 		$dev->DeviceID=$_POST['devid'];
@@ -1106,6 +1116,14 @@ $(document).ready(function() {
 		}
 	});
 
+	// Do a call after the page loads to get the CDU uptime to speed up the initial page load
+	if($('select[name=devicetype]').val()=='CDU'){
+		$.post('',{cduuptime: '',deviceid: $('#deviceid').val()}, function(data) {
+			$('#cduuptime').text(data);
+		});
+	}
+
+
 	// Make SNMP community visible
 	$('#snmpcommunity').focus(function(){$(this).attr('type','text');});
 	$('#snmpcommunity').blur(function(){$(this).attr('type','password');});
@@ -1880,7 +1898,7 @@ echo '
 		echo '
 		<div>
 			<div>',__("Uptime"),'</div>
-			<div>',$upTime,'</div>
+			<div id="cduuptime">',$upTime,'</div>
 		</div>
 		<div>
 			<div>',__("Firmware Version"),'</div>
