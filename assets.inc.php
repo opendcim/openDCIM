@@ -3024,7 +3024,7 @@ class DevicePorts {
 					}
 				}
 				$portList[$i]->Label=($portList[$i]->Label=="")?__("Port").$i:$portList[$i]->Label;
-				$portList[$i]->createPort();
+				$portList[$i]->createPort($update_existing);
 				if($dev->DeviceType=="Patch Panel"){
 					$i=$i*-1;
 					$portList[$i]=new DevicePorts();
