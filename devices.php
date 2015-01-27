@@ -1065,7 +1065,8 @@ $(document).ready(function() {
 	$(document).data('ports',$('#ports').val());
 	$(document).data('powersupplycount',$('#powersupplycount').val());
 	$(document).data('devicetype', $('select[name="devicetype"]').val());
-	$(document).data('showdc',true);
+	$(document).data('defaultsnmp','<?php echo $config->ParameterArray["SNMPCommunity"]; ?>');
+	$(document).data('showdc','<?php echo $config->ParameterArray["AppendCabDC"]; ?>');
 
 	$('#deviceform').validationEngine();
 	$('#mfgdate').datepicker();
@@ -1115,14 +1116,19 @@ $(document).ready(function() {
 	function SNMPTest(){
 		var ip=$('#primaryip');
 		var snmp=$('#snmpcommunity');
+		var dc=$(document).data('defaultsnmp');
+		var community=(snmp.val()!='')?snmp.val():(dc!='')?dc:'';
 
-		if(ip.val()!='' && snmp.val()!=''){snmp.next('button').show().removeClass('hide');}else{snmp.next('button').hide();}
+		if(ip.val()!='' && community!=''){snmp.next('button').show().removeClass('hide');}else{snmp.next('button').hide();}
 	}
 
 	$('#btn_snmptest').click(function(e){
 		e.preventDefault();
+		var snmp=$('#snmpcommunity');
+		var dc=$(document).data('defaultsnmp');
+		var community=(snmp.val()!='')?snmp.val():(dc!='')?dc:'';
 		$('#pdutest').html('<img src="images/mimesearch.gif" height="150px">Checking...');
-		$.post('', {snmptest: $('#deviceid').val(),ip: $('#primaryip').val(),community: $('#snmpcommunity').val()}, function(data){
+		$.post('', {snmptest: $('#deviceid').val(),ip: $('#primaryip').val(),community: community}, function(data){
 			$('#pdutest').html(data);
 		});
 		$('#pdutest').dialog({minWidth: 850, position: { my: "center", at: "top", of: window },closeOnEscape: true });

@@ -116,3 +116,7 @@ CREATE TABLE fac_TemplatePowerPorts (
   UNIQUE KEY LabeledPort (TemplateID,PortNumber,Label)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
+--
+-- Add Config item for appending the datacenter / cabinet to device lists 
+--
+INSERT INTO fac_Config set Parameter='AppendCabDC', Value='disabled', UnitOfMeasure='Enabled/Disabled', ValType='string', DefaultVal='disabled';

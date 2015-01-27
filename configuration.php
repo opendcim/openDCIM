@@ -1461,6 +1461,14 @@ echo '<div class="main">
 						</select>
 					</div>
 				</div>
+				<div>
+					<div><label for="AppendCabDC">',__("Device Lists"),'</label></div>
+					<div><select id="AppendCabDC" name="AppendCabDC" defaultvalue="',$config->defaults["AppendCabDC"],'" data="',$config->ParameterArray["AppendCabDC"],'">
+							<option value="disabled">',__("Just Devices"),'</option>
+							<option value="enabled">',__("Show Datacenter and Cabinet"),'</option>
+						</select>
+					</div>
+				</div>
 			</div> <!-- end table -->
 			<h3>',__("Site"),'</h3>
 			<div class="table">

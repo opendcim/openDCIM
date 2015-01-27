@@ -1527,7 +1527,7 @@ function LameLogDisplay(){
 				});
 
 				$.each(data, function(i,device){
-					if($(document).data('showdc')==true){
+					if($(document).data('showdc')==true || $(document).data('showdc')=='enabled'){
 						var rack=$('#datacenters a[href$="cabinetid='+device.CabinetID+'"]');
 						var dc=rack.parentsUntil('li[id^=dc]').last().prev('a').text();
 						devlist.append('<option value='+device.DeviceID+'>'+dc+' '+rack.text()+' '+device.Label+'</option>');
