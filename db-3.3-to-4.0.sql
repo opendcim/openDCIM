@@ -120,3 +120,8 @@ CREATE TABLE fac_TemplatePowerPorts (
 -- Add Config item for appending the datacenter / cabinet to device lists 
 --
 INSERT INTO fac_Config set Parameter='AppendCabDC', Value='disabled', UnitOfMeasure='Enabled/Disabled', ValType='string', DefaultVal='disabled';
+
+--
+-- Extend fac_PowerSource table for more load options to match CDUs
+-- 
+ALTER TABLE fac_PowerSource ADD OID2 VARCHAR( 80 ) NOT NULL AFTER LoadOID, ADD OID3 VARCHAR( 80 ) NOT NULL AFTER OID2;

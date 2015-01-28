@@ -26,16 +26,18 @@
 		exit;
 	}
 
-	if(isset($_REQUEST['action']) && (($_REQUEST['action']=='Create')||($_REQUEST['action']=='Update'))){
-		$ps->PowerSourceID=$_REQUEST['powersourceid'];
-		$ps->SourceName=$_REQUEST['sourcename'];
-		$ps->DataCenterID=$_REQUEST['datacenterid'];
-		$ps->IPAddress=$_REQUEST['ipaddress'];
-		$ps->Community=$_REQUEST['community'];
-		$ps->LoadOID=$_REQUEST['loadoid'];
-		$ps->Capacity=$_REQUEST['capacity'];
+	if(isset($_POST['action']) && (($_POST['action']=='Create')||($_POST['action']=='Update'))){
+		$ps->PowerSourceID=$_POST['powersourceid'];
+		$ps->SourceName=$_POST['sourcename'];
+		$ps->DataCenterID=$_POST['datacenterid'];
+		$ps->IPAddress=$_POST['ipaddress'];
+		$ps->Community=$_POST['community'];
+		$ps->LoadOID=$_POST['loadoid'];
+		$ps->OID2=$_POST['oid2'];
+		$ps->OID3=$_POST['oid3'];
+		$ps->Capacity=$_POST['capacity'];
 		
-		if($_REQUEST['action']=='Create'){
+		if($_POST['action']=='Create'){
 			$ps->CreatePowerSource();
 		}else{
 			$ps->UpdatePowerSource();
@@ -117,6 +119,14 @@ echo '							</select></div>
 							<div><input type="text" name="loadoid" id="loadoid" size=60 value="',$ps->LoadOID,'"></div>
 						</div>
 						<div>
+							<div><label for="oid2">',__("Load OID2"),'</label></div>
+							<div><input type="text" name="oid2" id="oid2" size=60 value="',$ps->OID2,'"></div>
+						</div>
+						<div>
+							<div><label for="oid3">',__("Load OID3"),'</label></div>
+							<div><input type="text" name="oid3" id="oid3" size=60 value="',$ps->OID3,'"></div>
+						</div>
+						<div>
 							<div><label for="capacity">',__("Capacity"),' (kW)</label></div>
 							<div><input type="number" name="capacity" id="capacity" size=8 value="',$ps->Capacity,'"></div>
 						</div>
@@ -134,8 +144,7 @@ echo '							</select></div>
 					</div> <!-- END div.table -->
 				</form>
 			</div></div>
-<?php echo '			<a href="index.php">[ ',__("Return to Main Menu"),' ]</a>'; ?>
-<?php echo '<a href="index.php">[ ',__("Return to Main Menu"),' ]</a>
+<?php echo '			<a href="index.php">[ ',__("Return to Main Menu"),' ]</a>
 <!-- hiding modal dialogs here so they can be translated easily -->
 <div class="hide">
 	<div title="',__("Power Source delete confirmation"),'" id="deletemodal">

@@ -1533,6 +1533,8 @@ class PowerSource {
 	var $IPAddress;
 	var $Community;
 	var $LoadOID;
+	var $OID2;
+	var $OID3;
 	var $Capacity;
 
 	function MakeSafe(){
@@ -1542,6 +1544,8 @@ class PowerSource {
 		$this->IPAddress=sanitize($this->IPAddress);
 		$this->Community=sanitize($this->Community);
 		$this->LoadOID=sanitize($this->LoadOID);
+		$this->OID2=sanitize($this->OID2);
+		$this->OID3=sanitize($this->OID3);
 		$this->Capacity=intval($this->Capacity);
 	}
 
@@ -1550,6 +1554,8 @@ class PowerSource {
 		$this->IPAddress=stripslashes($this->IPAddress);
 		$this->Community=stripslashes($this->Community);
 		$this->LoadOID=stripslashes($this->LoadOID);
+		$this->OID2=stripslashes($this->OID2);
+		$this->OID3=stripslashes($this->OID3);
 	}
 
 	static function RowToObject($row){
@@ -1560,6 +1566,8 @@ class PowerSource {
 		$source->IPAddress=$row["IPAddress"];
 		$source->Community=$row["Community"];
 		$source->LoadOID=$row["LoadOID"];
+		$source->OID2=$row["OID2"];
+		$source->OID3=$row["OID3"];
 		$source->Capacity=$row["Capacity"];
 
 		$source->MakeDisplay();
@@ -1575,12 +1583,12 @@ class PowerSource {
 		$sql="INSERT INTO fac_PowerSource SET SourceName=\"$this->SourceName\", 
 			DataCenterID=$this->DataCenterID, IPAddress=\"$this->IPAddress\", 
 			Community=\"$this->Community\", LoadOID=\"$this->LoadOID\", 
-			Capacity=$this->Capacity;";
+			OID2=\"$this->OID2\", OID3=\"$this->OID3\", Capacity=$this->Capacity;";
 
 		if(!$dbh->exec($sql)){
 			return false;
 		}else{
-			$this->PowerSourceID = $dbh->lastInsertID();
+			$this->PowerSourceID = $dbh->lastInsertId();
 		}
 		
 		(class_exists('LogActions'))?LogActions::LogThis($this):'';
@@ -1618,7 +1626,8 @@ class PowerSource {
 		$sql="UPDATE fac_PowerSource SET SourceName=\"$this->SourceName\", 
 			DataCenterID=$this->DataCenterID, IPAddress=\"$this->IPAddress\", 
 			Community=\"$this->Community\", LoadOID=\"$this->LoadOID\", 
-			Capacity=$this->Capacity WHERE PowerSourceID=$this->PowerSourceID;";
+			OID2=\"$this->OID2\", OID3=\"$this->OID3\", Capacity=$this->Capacity 
+			WHERE PowerSourceID=$this->PowerSourceID;";
 
 		(class_exists('LogActions'))?LogActions::LogThis($this,$oldsource):'';
 		return $dbh->query($sql);
