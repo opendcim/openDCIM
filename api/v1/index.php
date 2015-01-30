@@ -337,7 +337,8 @@ $app->get( '/cabinet/bydc/:datacenterid', function($datacenterid) {
 $app->get( '/cabinet/bydept/:deptid', function($deptid) {
 	$cab = new Cabinet;
 	$dc = new DataCenter();
-	$cList = $cab->ListCabinets(intval($deptid));
+	$cab->DeptID=$deptid;
+	$cList = $cab->GetCabinetsByDept();
 	
 	$response['error'] = false;
 	$response['errorcode'] = 200;

@@ -125,3 +125,9 @@ INSERT INTO fac_Config set Parameter='AppendCabDC', Value='disabled', UnitOfMeas
 -- Extend fac_PowerSource table for more load options to match CDUs
 -- 
 ALTER TABLE fac_PowerSource ADD OID2 VARCHAR( 80 ) NOT NULL AFTER LoadOID, ADD OID3 VARCHAR( 80 ) NOT NULL AFTER OID2;
+
+--
+-- Extend fac_Cabinet table for better sorting
+--
+ALTER TABLE fac_Cabinet ADD LocationSortable VARCHAR( 20 ) NOT NULL AFTER Location;
+UPDATE fac_Cabinet SET LocationSortable = REPLACE(Location, ' ', '');

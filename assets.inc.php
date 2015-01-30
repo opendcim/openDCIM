@@ -208,13 +208,15 @@ class Cabinet {
 		}
 	}
 
-	static function ListCabinets($deptid=null) {
+	static function ListCabinets($orderbydc=null){
 		global $dbh;
-		
+		global $config;
+
 		$cabinetList=array();
 
-		$dept=(!is_null($deptid))?" WHERE AssignedTo=".intval($deptid):'';
-		$sql="SELECT * FROM fac_Cabinet$dept ORDER BY DataCenterID, Location ASC, LENGTH(Location);";
+		// if AppendCabDC is set then we will be appending the DC to lists so sort them accordingly
+		$orderbydc=(!is_null($orderby) || $config->ParameterArray['AppendCabDC']=='enabled')?'DataCenterID, ':'';
+		$sql="SELECT * FROM fac_Cabinet ORDER BY $orderbydc LocationSortable ASC;";
 
 		foreach($dbh->query($sql) as $cabinetRow){
 			$cabinetList[]=Cabinet::RowToObject($cabinetRow);
@@ -228,19 +230,45 @@ class Cabinet {
 		
 		$this->MakeSafe();
 		
-		$hascoords=($limit)?'AND MapX1!=MapX2 AND MapY1!=MapY2':'';
-		$limitzone=($limitzone && $this->ZoneID>0)?" AND ZoneID=$this->ZoneID":'';
-
-		$sql="SELECT * FROM fac_Cabinet WHERE DataCenterID=$this->DataCenterID $hascoords$limitzone ORDER BY Location ASC, LENGTH(Location);";
-
-		$cabinetList=array();
-		foreach($dbh->query($sql) as $cabinetRow){
-			$cabinetList[]=Cabinet::RowToObject($cabinetRow);
+		$cabinetList=$this->ListCabinets(true);
+		foreach($cabinetList as $i => $cab){
+			if(
+				($cab->DataCenterID!=$this->DataCenterID) &&
+				($limitzone && $this->ZoneID>0 && $cab->ZoneID!=$this->ZoneID) &&
+				($limit && $cab->MapX1!=$cab->MapX2 && $cab->MapY1!=$cab->MapY2)
+			)
+			{unset($cabinetList[$i]);}
 		}
 
 		return $cabinetList;
 	}
 
+	function GetCabinetsByDept(){
+		global $dbh;
+
+		$this->MakeSafe();
+		
+		$cabinetList=$this->ListCabinets();
+		foreach($cabinetList as $i => $cab){
+			if($cab->DeptID!=$this->DeptID){unset($cabinetList[$i]);}
+		}
+
+		return $cabinetList;
+	}
+
+	function GetCabinetsByZone(){
+		global $dbh;
+
+		$this->MakeSafe();
+		
+		$cabinetList=$this->ListCabinets();
+		foreach($cabinetList as $i => $cab){
+			if($cab->ZoneID!=$this->ZoneID){unset($cabinetList[$i]);}
+		}
+
+		return $cabinetList;
+	}
+	
 	function CabinetOccupancy($CabinetID){
 		global $dbh;
 
@@ -361,7 +389,7 @@ class Cabinet {
 
 		// Order first by row layout then by natural sort
 		$sql="SELECT * FROM fac_Cabinet WHERE CabRowID=$cabrow->CabRowID ORDER BY $order 
-			Location ASC, LENGTH(Location);";
+			LocationSortable ASC;";
 
 		$cabinetList=array();
 		foreach($dbh->query($sql) as $cabinetRow){
@@ -375,20 +403,6 @@ class Cabinet {
 		return $cabinetList;
 	}
 
-	function GetCabinetsByZone(){
-		global $dbh;
-
-		$this->MakeSafe();
-		
-		$sql="SELECT * FROM fac_Cabinet WHERE ZoneID=$this->ZoneID;";
-		
-		$cabinetList=array();
-		foreach($dbh->query($sql) as $cabinetRow){
-			$cabinetList[]=Cabinet::RowToObject($cabinetRow);
-		}
-		return $cabinetList;
-	}
-	
 	function GetCabRowSelectList(){
 		global $dbh;
 
@@ -434,9 +448,9 @@ class Cabinet {
 		global $dbh;
 		
 		$dc=new DataCenter();
-		$dept=new Department();
-
+		$deptList=Department::GetDepartmentListIndexedbyID();
 		$dcList=$dc->GetDCList();
+		$cabList=Cabinet::ListCabinets(true);
 
 		if(count($dcList) >0){
 			$tree="<ul class=\"mktree\" id=\"datacenters\">\n";
@@ -451,18 +465,10 @@ class Cabinet {
 
 				$tree.="\t<li class=\"$classType\" id=\"dc$dcID\"><a href=\"dc_stats.php?dc=$datacenter->DataCenterID\">$datacenter->Name</a>/\n\t\t<ul>\n";
 
-				$sql="SELECT * FROM fac_Cabinet WHERE DataCenterID=\"$dcID\" ORDER BY Location ASC, LENGTH(Location);";
-
-				foreach($dbh->query($sql) as $cabRow){
-					$dept->DeptID = $cabRow["AssignedTo"];
-				  
-					if($dept->DeptID==0){
-						$dept->Name = "General Use";
-					}else{
-						$dept->GetDeptByID();
-					}
+				foreach($cabList as $cab){
+					$deptName=($cab->AssignedTo==0)?"General Use":$deptList[$cab->AssignedTo]->Name;
 				    
-					$tree.="\t\t\t<li id=\"cab{$cabRow['CabinetID']}\"><a href=\"cabnavigator.php?cabinetid={$cabRow['CabinetID']}\">{$cabRow['Location']} [$dept->Name]</a></li>\n";
+					$tree.="\t\t\t<li id=\"cab$cab->CabinetID\"><a href=\"cabnavigator.php?cabinetid=$cab->CabinetID\">$cab->Location [$deptName]</a></li>\n";
 				}
 
 				$tree.="\t\t</ul>\n	</li>\n";
@@ -542,7 +548,9 @@ class Cabinet {
 	function SearchByCustomTag( $tag=null ) {
 		global $dbh;
 		
-		$sql="SELECT a.* from fac_Cabinet a, fac_CabinetTags b, fac_Tags c WHERE a.CabinetID=b.CabinetID AND b.TagID=c.TagID AND UCASE(c.Name) LIKE UCASE('%".sanitize($tag)."%');";
+		$sql="SELECT a.* from fac_Cabinet a, fac_CabinetTags b, fac_Tags c WHERE 
+			a.CabinetID=b.CabinetID AND b.TagID=c.TagID AND UCASE(c.Name) LIKE 
+			UCASE('%".sanitize($tag)."%') ORDER BY LocationSortable;";
 
 		$cabinetList=array();
 
