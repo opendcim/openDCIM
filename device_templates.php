@@ -18,13 +18,13 @@
 		echo json_encode($returndata);  
 		exit;
 	}
-	if(isset($_GET['cdutemplate'])){
-		$cdut=new CDUTemplate();
-		$cdut->TemplateID=$_GET['cdutemplate'];
-		$cdut->GetTemplate();
+	if(isset($_GET['cdutemplate']) || isset($_GET['sensortemplate'])){
+		$t=(isset($_GET['cdutemplate']))?new CDUTemplate():new SensorTemplate();
+		$t->TemplateID=(isset($_GET['cdutemplate']))?$_GET['cdutemplate']:$_GET['sensortemplate'];
+		$t->GetTemplate();
 
 		header('Content-Type: application/json');
-		echo json_encode($cdut);  
+		echo json_encode($t);  
 		exit;
 	}
 	// Get list of color codes
@@ -397,12 +397,25 @@
 			}
 			if($('#devicetype').val()=="CDU"){
 				$('#wattage').parent('div').parent('div').addClass('hide');
-				$('.cdudisclaimer').removeClass('hide');
+				$('#hiddencdudata').removeClass('hide').show();
 				buildcdutable();
 			}else{
 				$('#wattage').parent('div').parent('div').removeClass('hide');
-				$('.cdudisclaimer').addClass('hide');
+				$('#hiddencdudata').hide();
 			}
+			if($('#devicetype').val()=="Sensor"){
+				$('#hiddensensordata').removeClass('hide').show();
+				buildsensortable();
+			}else{
+				$('#hiddensensordata').hide();
+			}
+			(function hidedisclaimer(){
+				if($('#devicetype').val()=="CDU" || $('#devicetype').val()=="Sensor"){
+					$('.cdudisclaimer').removeClass('hide').show();
+				}else{
+					$('.cdudisclaimer').hide();
+				}
+			})();	
 		}).change();
 
 		$( "#importButton" ).click(function() {
@@ -586,7 +599,7 @@ echo '    </select>
 </div>
 <div>
    <div><label for="height">',__("Height"),'</label></div>
-   <div><input type="text" name="height" id="height" value="',$template->Height,'">&nbsp;&nbsp;<span class="cdudisclaimer hide">',__("0 for a vertical mounting"),'</span></div>
+   <div><input type="text" name="height" id="height" value="',$template->Height,'">&nbsp;&nbsp;<span class="cdudisclaimer sensordisclaimer hide">',__("0 for a vertical mounting"),'</span></div>
 </div>
 <div>
    <div><label for="weight">',__("Weight"),'</label></div>
@@ -600,7 +613,7 @@ echo '    </select>
    <div><label for="devicetype">',__("Device Type"),'</label></div>
    <div><select name="devicetype" id="devicetype">';
 
-	foreach(array('Server','Appliance','Storage Array','Switch','Chassis','Patch Panel','Physical Infrastructure','CDU') as $DevType){
+	foreach(array('Server','Appliance','Storage Array','Switch','Chassis','Patch Panel','Physical Infrastructure','CDU','Sensor') as $DevType){
 		if($DevType==$template->DeviceType){$selected=" selected";}else{$selected="";}
 		print "		<option value=\"$DevType\"$selected>$DevType</option>\n";
 	}
@@ -755,7 +768,7 @@ if ( $template->TemplateID > 0 ) {
 	</div>
 </div>
 </div><!-- end regular template attributes -->
-<div id="hiddencdudata" class="cdudisclaimer hide">
+<div id="hiddencdudata" class="hide">
 	<div class="table">
 		<div>
 		   <div><label for="managed">',__("Managed"),'</label></div>
@@ -839,7 +852,66 @@ if ( $template->TemplateID > 0 ) {
 		</div>
 
 	</div>
-</div>
+</div><!-- END div#hiddencdudata -->
+<div id="hiddensensordata" class="sensordisclaimer hide">
+	<div class="table">
+		<div>
+			<div><label for="snmpversion">',__("SNMP Version"),'</label></div>
+			<div><select name="snmpversion" id="snmpversion">';
+
+			$snmpv=array("1","2c");
+			foreach($snmpv as $unit){
+				print "\t\t<option value=\"$unit\">$unit</option>\n";
+			}
+			
+		echo '</select>	
+			</div>
+		</div>
+		<div>
+		   <div><label for="temperatureoid">',__("Temperature OID"),'</label></div>
+		   <div><input type="text" name="temperatureoid" id="temperatureoid" size=40></div>
+		</div>
+		<div>
+		   <div><label for="humidityoid">',__("Humidity OID"),'</label></div>
+		   <div><input type="text" name="humidityoid" id="humidityoid" size=40></div>
+		</div>
+		<div>
+		   <div><label for="tempmultiplier">',__("Temperature Multiplier"),'</label></div>
+		   <div><select name="tempmultiplier" id="tempmultiplier">';
+
+			foreach(array("0.01","0.1","1","10","100") as $unit){
+				print "\t\t<option value=\"$unit\">$unit</option>\n";
+			}
+			
+		echo '   </select>
+		   </div>
+		</div>
+		<div>
+		   <div><label for="humiditymultiplier">',__("Humidity Multiplier"),'</label></div>
+		   <div><select name="humiditymultiplier" id="humiditymultiplier">';
+
+			foreach(array("0.01","0.1","1","10","100") as $unit){
+				print "\t\t<option value=\"$unit\">$unit</option>\n";
+			}
+
+		echo '   </select>
+		   </div>
+		</div>
+		<div>
+			<div><label for="munits">',__("Temperature Units"),'</label></div>
+			<div><select name="munits" id="munits">';
+
+			$unitofmeasurev=array("english","metric");
+			foreach($unitofmeasurev as $unit){
+				print "\t\t<option value=\"$unit\">$unit</option>\n";
+			}
+			
+		echo '   </select>
+		   </div>
+		</div>
+
+	</div>
+</div><!-- END div#hiddensensordata -->
 
 </form>
 

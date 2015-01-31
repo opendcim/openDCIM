@@ -403,9 +403,16 @@ function buildcdutable(){
 			});
 		}
 	});
-
 }
-
+function buildsensortable(){
+	$.ajax({url: '',type: "get",async: false,data: {sensortemplate: $('#templateid').val()},success: function(data){
+			$.each(data, function(i,val){
+				($('#'+i.toLowerCase()).is(':checkbox'))?(val==1)?$('#'+i.toLowerCase()).click():'':'';
+				$('#'+i.toLowerCase()).val(val);
+			});
+		}
+	});
+}
 function buildportstable(){
 	var table=$('<div>').addClass('table');
 	table.append('<div><div>Port Number</div><div>Label</div><div>Media Type</div><div>Color</div><div>Notes</div></div>');
