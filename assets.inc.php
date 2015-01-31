@@ -1102,6 +1102,7 @@ class Device {
 	var $AssetTag;
 	var $PrimaryIP;
 	var $SNMPCommunity;
+	var $SNMPFailureCount;
 	var $ESX;
 	var $Owner;
 	var $EscalationTimeID;
@@ -1146,6 +1147,7 @@ class Device {
 		$this->AssetTag=sanitize($this->AssetTag);
 		$this->PrimaryIP=sanitize($this->PrimaryIP);
 		$this->SNMPCommunity=sanitize($this->SNMPCommunity);
+		$this->SNMPFailureCount=intval($this->SNMPFailureCount);
 		$this->ESX=intval($this->ESX);
 		$this->Owner=intval($this->Owner);
 		$this->EscalationTimeID=intval($this->EscalationTimeID);
@@ -1202,6 +1204,7 @@ class Device {
 		$dev->AssetTag=$dbRow["AssetTag"];
 		$dev->PrimaryIP=$dbRow["PrimaryIP"];
 		$dev->SNMPCommunity=$dbRow["SNMPCommunity"];
+		$dev->SNMPFailureCount=$dbRow["SNMPFailureCount"];
 		$dev->ESX=$dbRow["ESX"];
 		$dev->Owner=$dbRow["Owner"];
 		// Suppressing errors on the following two because they can be null and that generates an apache error
@@ -1287,6 +1290,7 @@ class Device {
 		$this->SerialNo=transform($this->SerialNo);
 		$this->AssetTag=transform($this->AssetTag);
 		
+		// SNMPFailureCount isn't in this list, because it should always start at zero (default) on new devices
 		$sql="INSERT INTO fac_Device SET Label=\"$this->Label\", SerialNo=\"$this->SerialNo\", AssetTag=\"$this->AssetTag\", 
 			PrimaryIP=\"$this->PrimaryIP\", SNMPCommunity=\"$this->SNMPCommunity\", ESX=$this->ESX, Owner=$this->Owner, 
 			EscalationTimeID=$this->EscalationTimeID, EscalationID=$this->EscalationID, PrimaryContact=$this->PrimaryContact, 
@@ -1431,6 +1435,47 @@ class Device {
 		} else { return false; }
 	}
 	
+	static function IncrementFailures($dev=null) {
+		global $dbh;
+		
+		if ( $dev == null && $this->DeviceID == null ) {
+			error_log("Device::IncrementFailures - no device ID supplied");
+			return false;
+		}
+		
+		if ( $dev == null ) {
+			$dev = $this->DeviceID;
+		}
+		
+		$sql = "update fac_Device set SNMPFailureCount=SNMPFailureCount+1 where DeviceID=" . $dev;
+		
+		if ( ! $dbh->query( $sql ) ) {
+			error_log( "Device::IncrementFailures::PDO Error: {$info[2]} SQL=$sql");
+			return false;
+		} else {
+			return true;
+		}
+	}
+	
+	static function ResetFailures($dev=null) {
+		global $dbh;
+		
+		if ( $dev == null && $this->DeviceID == null ) {
+			error_log("Device::ResetFailures - no device ID supplied");
+			return false;
+		}
+		
+		$sql = "update fac_Device set SNMPFailureCount=0 where DeviceID=" . ($dev == null) ? $this->DeviceID : $dev;
+		
+		if ( ! $dbh->query( $sql ) ) {
+			error_log( "Device::ResetFailures::PDO Error: {$info[2]} SQL=$sql");
+			return false;
+		} else {
+			return true;
+		}
+	}
+
+	
 	function Surplus() {
 		global $dbh;
 		
@@ -1501,8 +1546,8 @@ class Device {
 		$this->AssetTag=transform($this->AssetTag);
 
 		$sql="UPDATE fac_Device SET Label=\"$this->Label\", SerialNo=\"$this->SerialNo\", AssetTag=\"$this->AssetTag\", 
-			PrimaryIP=\"$this->PrimaryIP\", SNMPCommunity=\"$this->SNMPCommunity\", ESX=$this->ESX, Owner=$this->Owner, 
-			EscalationTimeID=$this->EscalationTimeID, EscalationID=$this->EscalationID, PrimaryContact=$this->PrimaryContact, 
+			PrimaryIP=\"$this->PrimaryIP\", SNMPCommunity=\"$this->SNMPCommunity\", SNMPFailureCount=$this->SNMPFailureCount, ESX=$this->ESX,
+			Owner=$this->Owner, EscalationTimeID=$this->EscalationTimeID, EscalationID=$this->EscalationID, PrimaryContact=$this->PrimaryContact, 
 			Cabinet=$this->Cabinet, Position=$this->Position, Height=$this->Height, Ports=$this->Ports, 
 			FirstPortNum=$this->FirstPortNum, TemplateID=$this->TemplateID, NominalWatts=$this->NominalWatts, 
 			PowerSupplyCount=$this->PowerSupplyCount, DeviceType=\"$this->DeviceType\", ChassisSlots=$this->ChassisSlots, 
@@ -3507,6 +3552,9 @@ class ESX {
 				$vmList[$vmID]->vmName = trim( str_replace( '"', '', @end( explode( ":", $name ) ) ) );
 				$vmList[$vmID]->vmState = trim( str_replace( '"', '', @end( explode( ":", $state ) ) ) );
 			}
+			$dev->ResetFailures();
+		} else {
+			$dev->IncrementFailures();
 		}
 
 		return $vmList;
@@ -3522,7 +3570,9 @@ class ESX {
 				print "Querying host $esxDev->Label @ $esxDev->PrimaryIP...\n";
 			}
 
-			$vmList = ESX::RefreshInventory( $esxDev, $debug );
+			if ( $esxDev->SNMPFailureCount < 3 ) {
+				$vmList = ESX::RefreshInventory( $esxDev, $debug );
+			}
 
 			if($debug){
 				print_r($vmList);

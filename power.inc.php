@@ -1010,10 +1010,10 @@ class PowerDistribution {
 		
 		$config=new Config();
 		
-		$sql="SELECT PDUID, IPAddress, SNMPCommunity, SNMPVersion, Multiplier, OID1, 
-			OID2, OID3, ProcessingProfile, Voltage FROM fac_PowerDistribution a, 
-			fac_CDUTemplate b WHERE a.TemplateID=b.TemplateID AND b.Managed=true 
-			AND IPAddress>'' AND SNMPCommunity>''";
+		$sql="SELECT a.PDUID, a.IPAddress, a.SNMPCommunity, b.SNMPVersion, b.Multiplier, b.OID1, 
+			b.OID2, b.OID3, b.ProcessingProfile, b.Voltage, c.SNMPFailureCount FROM fac_PowerDistribution a, 
+			fac_CDUTemplate b, fac_Device c WHERE a.PDUID=c.DeviceID and a.TemplateID=b.TemplateID AND b.Managed=true 
+			AND IPAddress>'' and c.SNMPFailureCount<3";
 		
 		// The result set should have no PDU's with blank IP Addresses or SNMP Community, so we can forge ahead with processing them all
 		
@@ -1101,6 +1101,10 @@ class PowerDistribution {
 						$watts=$pollValue1 / $row["Multiplier"];
 						break;
 				}
+				
+				Device::ResetFailures( $row["PDUID"] );
+			} else {
+				Device::IncrementFailures( $row["PDUID"] );
 			}
 			
 			$sql="INSERT INTO fac_PDUStats SET PDUID={$row["PDUID"]}, Wattage=$watts, LastRead=now() ON 
