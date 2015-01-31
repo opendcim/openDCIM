@@ -108,7 +108,7 @@
 
 	$deptList=$dept->GetDepartmentList();
 	$cabList=$cab->ListCabinets();
-	$sensorList = SensorTemplate::getTemplate();
+	$sensorList = SensorTemplate::getTemplates();
 
 	if($cab->CabinetID > 0) {
 		// Get any tags associated with this device

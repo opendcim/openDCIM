@@ -733,78 +733,120 @@ class SensorTemplate {
 	var $TempMultiplier;
 	var $HumidityMultiplier;
 	var $mUnits;
-		
-	static function getTemplate( $templateID = null ) {
+
+	function MakeSafe(){
+		$validSNMPVersions=array(1,'2c');
+		$validMultipliers=array(0.01,0.1,1,10,100);
+		$validmUnits=array('english','metric');
+
+		$this->TemplateID=intval($this->TemplateID);
+		$this->ManufacturerID=intval($this->ManufacturerID);
+		$this->Name=sanitize($this->Name);
+		$this->SNMPVersion=(in_array($this->SNMPVersion, $validSNMPVersions))?$this->SNMPVersion:'2c';
+		$this->TemperatureOID=sanitize($this->TemperatureOID);
+		$this->HumidityOID=sanitize($this->HumidityOID);
+		$this->TempMultiplier=(in_array($this->TempMultiplier, $validMultipliers))?$this->TempMultiplier:1;
+		$this->HumidityMultiplier=(in_array($this->HumidityMultiplier, $validMultipliers))?$this->HumidityMultiplier:1;
+		$this->mUnits=(in_array($this->mUnits, $validmUnits))?$this->mUnits:'english';
+	}
+
+	function MakeDisplay() {
+		$this->TemperatureOID=stripslashes($this->TemperatureOID);
+		$this->HumidityOID=stripslashes($this->HumidityOID);
+	}
+
+	static function RowToObject($dbRow){
+		$st=new SensorTemplate();
+		$st->TemplateID=$dbRow["TemplateID"];
+		$st->ManufacturerID=$dbRow["ManufacturerID"];
+		$st->Name=$dbRow["Name"];
+		$st->SNMPVersion=$dbRow["SNMPVersion"];
+		$st->TemperatureOID=$dbRow["TemperatureOID"];
+		$st->HumidityOID=$dbRow["HumidityOID"];
+		$st->TempMultiplier=$dbRow["TempMultiplier"];
+		$st->HumidityMultiplier=$dbRow["HumidityMultiplier"];
+		$st->mUnits=$dbRow["mUnits"];
+
+		return $st;
+	}
+
+	function GetTemplate(){
 		global $dbh;
-		
-		if ( $templateID != null ) {
-			$sql = sprintf( "select * from fac_SensorTemplate where TemplateID=%d", $templateID );
-		} else {
-			$sql = "select * from fac_SensorTemplate order by Name ASC";
-		}
-		
-		$tempList = array();
-		
-		foreach ( $dbh->query( $sql ) as $row ) {
-			$n = sizeof ( $tempList );
-			$tempList[$n] = new SensorTemplate();
-			$tempList[$n]->TemplateID = $row["TemplateID"];
-			$tempList[$n]->ManufacturerID = $row["ManufacturerID"];
-			$tempList[$n]->Name = $row["Name"];
-			$tempList[$n]->SNMPVersion = $row["SNMPVersion"];
-			$tempList[$n]->TemperatureOID = $row["TemperatureOID"];
-			$tempList[$n]->HumidityOID = $row["HumidityOID"];
-			$tempList[$n]->TempMultiplier = $row["TempMultiplier"];
-			$tempList[$n]->HumidityMultiplier = $row["HumidityMultiplier"];
-			$tempList[$n]->mUnits = $row["mUnits"];
-		}
-		
-		if ( $templateID != null ) {
-			return array_pop($tempList);
-		} else {
-			return $tempList;
+
+		$this->MakeSafe();
+
+		$sql="SELECT * FROM fac_SensorTemplate WHERE TemplateID=$this->TemplateID;";
+
+		if($sensorRow=$dbh->query($sql)->fetch()){
+			foreach(SensorTemplate::RowToObject($sensorRow) as $prop => $value){
+				$this->$prop=$value;
+			}
+			return true;
+		}else{
+			return false;
 		}
 	}
-	
-	function CreateTemplate() {
+
+	static function getTemplates(){
 		global $dbh;
 		
-		$sql = $dbh->prepare( "insert into fac_SensorTemplate values ( 0, :ManufacturerID, :Name, :SNMPVersion, :TemperatureOID, :HumidityOID, :TempMultiplier, :HumidityMultiplier, :mUnits )" );
+		$sql="SELECT * FROM fac_SensorTemplate ORDER BY Name ASC;";
 		
-		$args = array( 	"ManufacturerID" => $this->ManufacturerID,
-						"Name" => $this->Name,
-						"SNMPVersion" => $this->SNMPVersion,
-						"TemperatureOID" => $this->TemperatureOID,
-						"HumidityOID" => $this->HumidityOID,
-						"TempMultiplier" => $this->TempMultiplier,
-						"HumidityMultiplier" => $this->HumidityMultiplier,
-						"mUnits" => $this->mUnits );
+		$tempList = array();
+		foreach($dbh->query($sql) as $row){
+			$tempList[]=SensorTemplate::RowToObject($row);
+		}
 		
-		$sql->execute( $args );
-		
-		$this->TemplateID = $dbh->lastInsertId();
+		return $tempList;
+	}
+	
+	function CreateTemplate($templateid=null){
+		global $dbh;
+
+		$sqladdon=(!is_null($templateid))?", TemplateID=".intval($templateid):"";
+
+		$sql="INSERT INTO fac_SensorTemplate SET ManufacturerID=$this->ManufacturerID, 
+			Name=\"$this->Name\", SNMPVersion=\"$this->SNMPVersion\", 
+			TemperatureOID=\"$this->TemperatureOID\", HumidityOID=\"$this->HumidityOID\", 
+			TempMultiplier=$this->TempMultiplier, 
+			HumidityMultiplier=$this->HumidityMultiplier, mUnits=\"$this->mUnits\"$sqladdon;";
+
+		if(!$dbh->exec($sql)){
+			$info=$dbh->errorInfo();
+
+			error_log("CreateTemplate::PDO Error: {$info[2]} SQL=$sql");
+			return false;
+		}else{
+			$this->TemplateID=$dbh->lastInsertID();
+		}
+
 		(class_exists('LogActions'))?LogActions::LogThis($this):'';
+		return $this->TemplateID;
 	}
 	
 	function UpdateTemplate() {
 		global $dbh;
 		
-		$old=SensorTemplate::getTemplate($this->TemplateID);
+		$this->MakeSafe();	
 
-		$sql = $dbh->prepare( "update fac_SensorTemplate set ManufacturerID=:ManufacturerID, Name=:Name, SNMPVersion=:SNMPVersion, TemperatureOID=:TemperatureOID, HumidityOID=:HumidityOID, TempMultiplier=:TempMultiplier, HumidityMultiplier=:HumidityMultiplier, mUnits=:mUnits where TemplateID=:TemplateID" );
+		$old=new SensorTemplate();
+		$old->TemplateID=$this->TemplateID;
+		$old->GetTemplate();
+
+		$sql="UPDATE fac_SensorTemplate SET ManufacturerID=$this->ManufacturerID, 
+			Name=\"$this->Name\", SNMPVersion=\"$this->SNMPVersion\", 
+			TemperatureOID=\"$this->TemperatureOID\", HumidityOID=\"$this->HumidityOID\", 
+			TempMultiplier=$this->TempMultiplier, 
+			HumidityMultiplier=$this->HumidityMultiplier, mUnits=\"$this->mUnits\"
+			WHERE TemplateID=$this->TemplateID;";
 		
-		$args = array( 	"ManufacturerID" => $this->ManufacturerID,
-						"Name" => $this->Name,
-						"SNMPVersion" => $this->SNMPVersion,
-						"TemperatureOID" => $this->TemperatureOID,
-						"HumidityOID" => $this->HumidityOID,
-						"TempMultiplier" => $this->TempMultiplier,
-						"HumidityMultiplier" => $this->HumidityMultiplier,
-						"mUnits" => $this->mUnits,
-						"TemplateID" => $this->TemplateID );
-		
-		$sql->execute( $args );
+		if(!$dbh->query($sql)){
+			$info=$dbh->errorInfo();
+			error_log("UpdateTemplate::PDO Error: {$info[2]} SQL=$sql");
+			return false;
+		}
 		(class_exists('LogActions'))?LogActions::LogThis($this,$old):'';
+		return true;
 	}
 	
 	function DeleteTemplate() {
@@ -1139,7 +1181,7 @@ class Device {
 		}
 		
 		//Keep weird values out of DeviceType
-		$validdevicetypes=array('Server','Appliance','Storage Array','Switch','Chassis','Patch Panel','Physical Infrastructure','CDU');
+		$validdevicetypes=array('Server','Appliance','Storage Array','Switch','Chassis','Patch Panel','Physical Infrastructure','CDU','Sensor');
 
 		$this->DeviceID=intval($this->DeviceID);
 		$this->Label=sanitize($this->Label);

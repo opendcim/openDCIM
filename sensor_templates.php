@@ -14,7 +14,8 @@
 	$manufacturer=new Manufacturer();
 
 	if(isset($_REQUEST['templateid']) && $_REQUEST['templateid'] >0){
-		$template = SensorTemplate::getTemplate( $_REQUEST["templateid"] );
+		$template->TemplateID=$_REQUEST["templateid"];
+		$template->GetTemplate();
 	}
 
 	$status='';
@@ -36,7 +37,7 @@
 		}
 	}
 
-	$templateList=$template->getTemplate();
+	$templateList=$template->getTemplates();
 	$ManufacturerList=$manufacturer->GetManufacturerList();
 
 	// Set the default multipliers for new templates

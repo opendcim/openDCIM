@@ -185,6 +185,21 @@
 			return $status;
 		}
 
+		function updatesensor($template,$status){
+			$sensortemplate=new SensorTemplate();
+			$sensortemplate->TemplateID=$template->TemplateID;
+			$sensortemplate->ManufacturerID=$template->ManufacturerID;
+			$sensortemplate->Name=$template->Model;
+			$sensortemplate->SNMPVersion=$_POST['snmpversion'];
+			$sensortemplate->TemperatureOID=$_POST['temperatureoid'];
+			$sensortemplate->HumidityOID=$_POST['humidityoid'];
+			$sensortemplate->TempMultiplier=$_POST['tempmultiplier'];
+			$sensortemplate->HumidityMultiplier=$_POST['humiditymultiplier'];
+			$sensortemplate->mUnits=$_POST['munits'];
+			$status=($sensortemplate->UpdateTemplate())?$status:__('Error updating cdu attributes');
+			return $status;
+		}
+
 		function updatecdu($template,$status){
 			$cdutemplate=new CDUTemplate();
 			$cdutemplate->TemplateID=$template->TemplateID;
@@ -218,6 +233,7 @@
 					}
 					if($oldstatus==$status){
 						$status=updatecdu($template,$status);
+						$status=updatesensor($template,$status);
 					}
 				}else{
 					$status=__("An error has occured, template not created");
@@ -233,6 +249,7 @@
 				}
 				if($status==__("Updated")){
 					$status=updatecdu($template,$status);
+					$status=updatesensor($template,$status);
 				}
 				break;
 			case 'Device':
@@ -248,6 +265,7 @@
 				}
 				if($status==__("Updated")){
 					$status=updatecdu($template,$status);
+					$status=updatesensor($template,$status);
 				}
 				if($status==__("Updated")){
 					$status=($template->UpdateDevices())?__("Updated"):__("Error updating devices");
@@ -264,6 +282,7 @@
 				}
 				if($status==__("Updated")){
 					$status=updatecdu($template,$status);
+					$status=updatesensor($template,$status);
 				}
 				if($status==__("Updated")){
 					$status=($template->ExportTemplate())?__("Exported"):__("Error");

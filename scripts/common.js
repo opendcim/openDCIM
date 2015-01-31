@@ -399,7 +399,7 @@ function buildcdutable(){
 	$.ajax({url: '',type: "get",async: false,data: {cdutemplate: $('#templateid').val()},success: function(data){
 			$.each(data, function(i,val){
 				($('#'+i.toLowerCase()).is(':checkbox'))?(val==1)?$('#'+i.toLowerCase()).click():'':'';
-				$('#'+i.toLowerCase()).val(val);
+				$('#hiddencdudata #'+i.toLowerCase()).val(val);
 			});
 		}
 	});
@@ -408,7 +408,7 @@ function buildsensortable(){
 	$.ajax({url: '',type: "get",async: false,data: {sensortemplate: $('#templateid').val()},success: function(data){
 			$.each(data, function(i,val){
 				($('#'+i.toLowerCase()).is(':checkbox'))?(val==1)?$('#'+i.toLowerCase()).click():'':'';
-				$('#'+i.toLowerCase()).val(val);
+				$('#hiddensensordata #'+i.toLowerCase()).val(val);
 			});
 		}
 	});
