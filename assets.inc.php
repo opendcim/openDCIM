@@ -215,7 +215,7 @@ class Cabinet {
 		$cabinetList=array();
 
 		// if AppendCabDC is set then we will be appending the DC to lists so sort them accordingly
-		$orderbydc=(!is_null($orderby) || $config->ParameterArray['AppendCabDC']=='enabled')?'DataCenterID, ':'';
+		$orderbydc=(!is_null($orderbydc) || $config->ParameterArray['AppendCabDC']=='enabled')?'DataCenterID, ':'';
 		$sql="SELECT * FROM fac_Cabinet ORDER BY $orderbydc LocationSortable ASC;";
 
 		foreach($dbh->query($sql) as $cabinetRow){
@@ -263,7 +263,7 @@ class Cabinet {
 		
 		$cabinetList=$this->ListCabinets();
 		foreach($cabinetList as $i => $cab){
-			if($cab->ZoneID!=$this->ZoneID){unset($cabinetList[$i]);}
+			if($cab->ZoneID!=$this->ZoneID || $cab->ZoneID==0){unset($cabinetList[$i]);}
 		}
 
 		return $cabinetList;

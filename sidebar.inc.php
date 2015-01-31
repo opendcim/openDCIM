@@ -108,6 +108,8 @@
 	echo '		</select>
 	</div>';
 
+// Work in progress
+//	buildNavTreeHTML();
 	$container = new Container();
 	echo $container->BuildMenuTree();
 	

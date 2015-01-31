@@ -3,7 +3,7 @@
 
 /* Generic html sanitization routine */
 
-if ( ! function_exists( "sanitize" ) ) {
+if(!function_exists("sanitize")){
 	function sanitize($string,$stripall=true){
 		// Trim any leading or trailing whitespace
 		$clean=trim($string);
@@ -550,6 +550,143 @@ function locale_number( $number, $decimals=2 ) {
                $locale['decimal_point'],
                $locale['thousands_sep']);
 }
+
+// This will build an array that can be json encoded to represent the makeup of
+// the installations containers, zones, rows, etc.  It didn't seem appropriate
+// to be on any single class
+if(!function_exists("buildNavTreeArray")){
+	function buildNavTreeArray(){
+		$con=new Container();
+		$cabs=Cabinet::ListCabinets();
+
+		$menu=array();
+
+		function processcontainer($container,$cabs){
+			$menu=array($container);
+			foreach($container->GetChildren() as $child){
+				if(get_class($child)=='Container'){
+					$menu[]=processcontainer($child,$cabs);
+				}elseif(get_class($child)=='DataCenter'){
+					$menu[]=processdatacenter($child,$cabs);
+				}
+			}
+			return $menu;
+		}
+		function processdatacenter($dc,$cabs){
+			$menu=array($dc);
+			foreach($dc->GetChildren() as $child){
+				if(get_class($child)=='Zone'){
+					$menu[]=processzone($child,$cabs);
+				}elseif(get_class($child)=='CabRow'){
+					$menu[]=processcabrow($child,$cabs);
+				}else{
+					$menu[]=processcab($child,$cabs);
+				}
+			}
+			return $menu;
+		}
+		function processzone($zone,$cabs){
+			$menu=array($zone);
+			foreach($zone->GetChildren() as $child){
+				if(get_class($child)=='CabRow'){
+					$menu[]=processcabrow($child,$cabs);
+				}else{
+					$menu[]=processcab($child,$cabs);
+				}
+			}
+			return $menu;
+		}
+		function processcabrow($row,$cabs){
+			$menu=array($row);
+			foreach($cabs as $cab){
+				if($cab->CabRowID==$row->CabRowID){
+					$menu[]=processcab($cab,$cabs);
+				}
+			}
+			return $menu;
+		}
+		function processcab($cab,$cabs){
+			return $cab;
+		}
+
+		foreach($con->GetChildren() as $child){
+			if(get_class($child)=='Container'){
+				$menu[]=processcontainer($child,$cabs);
+			}elseif(get_class($child)=='DataCenter'){
+				$menu[]=processdatacenter($child,$cabs);
+			}
+		}
+
+		return $menu;
+	}
+}
+
+// This will format the array above into the format needed for the side bar navigation
+// menu. 
+if(!function_exists("buildNavTreeHTML")){
+	function buildNavTreeHTML($menu=null){
+		$tl=1; //tree level
+
+		$menu=(is_null($menu))?buildNavTreeArray():$menu;
+
+		function buildnavmenu($ma,&$tl){
+			foreach($ma as $i => $level){
+				if(is_object($level)){
+					if(isset($level->Name)){
+						$name=$level->Name;
+					}elseif(isset($level->Location)){
+						$name=$level->Location;
+					}else{
+						$name=$level->Description;
+					}
+					if($i==0){--$tl;}
+					foreach($level as $prop => $value){
+						if(preg_match("/id/i", $prop)){
+							$ObjectID=$value;
+							break;
+						}
+					}
+					$class=get_class($level);
+					$cabclose='';
+					if($class=="Container"){
+						$href="container_stats.php?container=";
+						$id="c$ObjectID";
+					}elseif($class=="Cabinet"){
+						$href="cabnavigator.php?cabinetid=";
+						$id="cab$ObjectID";
+						$cabclose="</li>";
+					}elseif($class=="Zone"){
+						$href="zone_stats.php?zone=";
+						$id="zone$ObjectID";
+					}elseif($class=="DataCenter"){
+						$href="dc_stats.php?dc=";
+						$id="dc$ObjectID";
+					}elseif($class=="CabRow"){
+						$href="rowview.php?row=";
+						$id="cr$ObjectID";
+					}
+
+					print str_repeat("\t",$tl).'<li class="liClosed" id="'.$id.'"><a class="'.$class.'" href="'.$href.$ObjectID."\">$name</a>$cabclose\n";
+					if($i==0){
+						++$tl;
+						print str_repeat("\t",$tl)."<ul>\n";
+					}
+				}else{
+					$tl++;
+					buildnavmenu($level,&$tl);
+					print str_repeat("\t",$tl)."</ul>\n";
+					$tl--;
+					print str_repeat("\t",$tl)."</li>\n";
+				}
+			}
+		}
+
+		print '<ul class="mktree" id="datacenters">'."\n";
+		buildnavmenu($menu,$tl);
+		print '</ul>';
+	}
+}
+
 
 /*
 	Check if we are doing a new install or an upgrade has been applied.  

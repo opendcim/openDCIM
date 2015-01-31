@@ -383,6 +383,26 @@ class DataCenter {
 		return $this->GetDataCenter();
 	}
 
+	// Return an array of the immediate children
+	function GetChildren(){
+		$children=array();
+		$zone=new Zone();
+		$zone->DataCenterID=$this->DataCenterID;
+		foreach($zone->GetZonesByDC() as $child){
+			$children[]=$child;
+		}
+		$cab=new Cabinet();
+		$cab->DataCenterID=$this->DataCenterID;
+		foreach($cab->ListCabinetsByDC() as $child){
+			if($child->ZoneID>0 || $child->CabRowID>0 || $child->DataCenterID!=$this->DataCenterID){
+			}else{
+				$children[]=$child;
+			}
+		}
+
+		return $children;
+	}
+
     /**
      * Returns an array with all the hierarchy of containers the data center
      *  belongs to.
@@ -1765,7 +1785,27 @@ class Zone {
 		(class_exists('LogActions'))?LogActions::LogThis($this):'';
 		return true;
 	}
-  
+
+	// return array of immediate children
+	function GetChildren(){
+		$children=array();
+		$cabrow=new CabRow();
+		$cabrow->ZoneID=$this->ZoneID;
+		foreach($cabrow->GetCabRowsByZones() as $row){
+			$children[]=$row;
+		}
+		// While not currently supported this will us to nest cabinets into zones directly without a cabinet row
+		$cab=new Cabinet();
+		$cab->ZoneID=$this->ZoneID;
+		foreach($cab->GetCabinetsByZone() as $cab){
+			if($cab->CabRowID==0){
+				$children[]=$cab;
+			}
+		}
+
+		return $children;
+	}
+ 
 	function GetZone(){
 		$this->MakeSafe();
 		
@@ -1796,11 +1836,13 @@ class Zone {
 		return $zoneList;
 	}
 
-	function GetZoneList(){
+	static function GetZoneList(){
+		global $dbh;
+
 		$sql="SELECT * FROM fac_Zone ORDER BY Description ASC;";
 
 		$zoneList=array();
-		foreach($this->query($sql) as $row){
+		foreach($dbh->query($sql) as $row){
 			$zoneList[]=Zone::RowToObject($row);
 		}
 		
@@ -2148,7 +2190,19 @@ class Container {
 			return false;
 		}
 	}
-	
+
+	function GetChildren(){
+		$children=array();
+		foreach($this->GetChildContainerList() as $con){
+			$children[]=$con;
+		}
+		foreach($this->GetChildDCList() as $dc){
+			$children[]=$dc;
+		}
+
+		return $children;
+	}
+
 	function GetChildContainerList(){
 		$this->MakeSafe();
 
@@ -2439,11 +2493,13 @@ class Container {
 		return $cStats;
 	}
 	
-	function GetContainerList(){
+	static function GetContainerList(){
+		global $dbh;
+
 		$sql="SELECT * FROM fac_Container ORDER BY LENGTH(Name), Name ASC;";
 
 		$containerList=array();
-		foreach($this->query($sql) as $row){
+		foreach($dbh->query($sql) as $row){
 			$containerList[]=Container::RowToObject($row);
 		}
 
