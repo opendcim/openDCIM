@@ -240,6 +240,7 @@ CREATE TABLE fac_Device (
   AssetTag varchar(20) NOT NULL,
   PrimaryIP varchar(254) NOT NULL,
   SNMPCommunity varchar(80) NOT NULL,
+  SNMPFailureCount TINYINT(1) NOT NULL,
   ESX tinyint(1) NOT NULL,
   Owner int(11) NOT NULL,
   EscalationTimeID int(11) NOT NULL,

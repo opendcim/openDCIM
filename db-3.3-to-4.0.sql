@@ -131,3 +131,11 @@ ALTER TABLE fac_PowerSource ADD OID2 VARCHAR( 80 ) NOT NULL AFTER LoadOID, ADD O
 --
 ALTER TABLE fac_Cabinet ADD LocationSortable VARCHAR( 20 ) NOT NULL AFTER Location;
 UPDATE fac_Cabinet SET LocationSortable = REPLACE(Location, ' ', '');
+
+--
+-- Add a failure counter to all devices to keep track of whether or not they've gone silent
+--
+
+ALTER TABLE fac_Device ADD SNMPFailureCount TINYINT(1) NOT NULL AFTER SNMPCommunity;
+
+
