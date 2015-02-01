@@ -391,6 +391,11 @@ class DataCenter {
 		foreach($zone->GetZonesByDC() as $child){
 			$children[]=$child;
 		}
+		$row=new CabRow();
+		$row->DataCenterID=$this->DataCenterID;
+		foreach($row->GetCabRowsByDC(true) as $child){
+			$children[]=$child;
+		}
 		$cab=new Cabinet();
 		$cab->DataCenterID=$this->DataCenterID;
 		foreach($cab->ListCabinetsByDC() as $child){
@@ -1925,11 +1930,13 @@ class Zone {
 class CabRow {
 	var $CabRowID;
 	var $Name;
+	var $DataCenterID;
 	var $ZoneID;
 
 	function MakeSafe() {
 		$this->CabRowID=intval($this->CabRowID);
 		$this->Name=sanitize($this->Name);
+		$this->DataCenterID=intval($this->DataCenterID);
 		$this->ZoneID=intval($this->ZoneID);
 	}
 
@@ -1941,6 +1948,7 @@ class CabRow {
 		$cabrow=new CabRow();
 		$cabrow->CabRowID=$row["CabRowID"];
 		$cabrow->Name=$row["Name"];
+		$cabrow->DataCenterID=$row["DataCenterID"];
 		$cabrow->ZoneID=$row["ZoneID"];
 		$cabrow->MakeDisplay();
 
@@ -1961,9 +1969,10 @@ class CabRow {
 		global $dbh;
 		$this->MakeSafe();
 
-		$sql="INSERT INTO fac_CabRow SET Name=\"$this->Name\", ZoneID=$this->ZoneID;";
+		$sql="INSERT INTO fac_CabRow SET Name=\"$this->Name\", 
+			DataCenterID=$this->DataCenterID, ZoneID=$this->ZoneID;";
 		if($dbh->exec($sql)){
-			$this->CabRowID=$dbh->lastInsertID();
+			$this->CabRowID=$dbh->lastInsertId();
 			(class_exists('LogActions'))?LogActions::LogThis($this):'';
 			return $this->CabRowID;
 		}else{
@@ -1980,12 +1989,12 @@ class CabRow {
 
 		// TODO this here can lead to untracked changes on the cabinets. fix this to use the update method
 		//update all cabinets in this cabrow
-		$sql="UPDATE fac_Cabinet SET ZoneID=$this->ZoneID, DataCenterID=(SELECT DataCenterID FROM fac_Zone WHERE ZoneID=$this->ZoneID) WHERE CabRowID=$this->CabRowID;";
+		$sql="UPDATE fac_Cabinet SET ZoneID=$this->ZoneID, DataCenterID=$this->DataCenterID WHERE CabRowID=$this->CabRowID;";
 		if(!$this->query($sql)){
 			return false;
 		}
 		
-		$sql="UPDATE fac_CabRow SET Name=\"$this->Name\", ZoneID=$this->ZoneID WHERE CabRowID=$this->CabRowID;";
+		$sql="UPDATE fac_CabRow SET Name=\"$this->Name\", DataCenterID=$this->DataCenterID, ZoneID=$this->ZoneID WHERE CabRowID=$this->CabRowID;";
 		if(!$this->query($sql)){
 			return false;
 		}
@@ -2034,7 +2043,7 @@ class CabRow {
 	function GetCabRowsByZones(){
 		$this->MakeSafe();
 
-		$sql="SELECT * FROM fac_CabRow WHERE ZoneID=$this->ZoneID ORDER BY Name";
+		$sql="SELECT * FROM fac_CabRow WHERE ZoneID=$this->ZoneID ORDER BY Name;";
 
 		$cabrowList=array();
 		foreach($this->query($sql) as $row){
@@ -2044,6 +2053,21 @@ class CabRow {
 		return $cabrowList;
 	}
 
+	function GetCabRowsByDC($nozone=false){
+		$this->MakeSafe();
+
+		// If true return only rows that don't have a zone set, aka they're just part of the dc
+		$sqladdon=($nozone)?"ZoneID=0":"ZoneID>0";
+
+		$sql="SELECT * FROM fac_CabRow WHERE DataCenterID=$this->DataCenterID AND $sqladdon ORDER BY Name;";
+
+		$cabrowList=array();
+		foreach($this->query($sql) as $row){
+			$cabrowList[]=CabRow::RowToObject($row);
+		}
+
+		return $cabrowList;
+	}
 	function GetCabRowList(){
 		$sql="SELECT * FROM fac_CabRow ORDER BY Name ASC;";
 		

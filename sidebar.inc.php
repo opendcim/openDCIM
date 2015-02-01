@@ -109,9 +109,9 @@
 	</div>';
 
 // Work in progress
-//	buildNavTreeHTML();
-	$container = new Container();
-	echo $container->BuildMenuTree();
+	buildNavTreeHTML();
+//	$container = new Container();
+//	echo $container->BuildMenuTree();
 	
 ?>
 	</div>

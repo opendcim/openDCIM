@@ -686,7 +686,7 @@ if(!function_exists("buildNavTreeHTML")){
 
 		print '<ul class="mktree" id="datacenters">'."\n";
 		buildnavmenu($menu,$tl);
-		print '</ul>';
+		print '<li id="dc-1"><a href="storageroom.php">'.__("General Storage Room")."</a></li>\n</ul>";
 	}
 }
 

@@ -135,7 +135,10 @@ UPDATE fac_Cabinet SET LocationSortable = REPLACE(Location, ' ', '');
 --
 -- Add a failure counter to all devices to keep track of whether or not they've gone silent
 --
-
 ALTER TABLE fac_Device ADD SNMPFailureCount TINYINT(1) NOT NULL AFTER SNMPCommunity;
 
-
+--
+-- Extend fac_CabRow table to allow for rows directly in a datacenter not just a zone
+--
+ALTER TABLE fac_CabRow ADD DataCenterID INT( 11 ) NOT NULL AFTER Name;
+UPDATE fac_CabRow SET DataCenterID=(SELECT DataCenterID FROM fac_Zone WHERE fac_CabRow.ZoneID=fac_Zone.ZoneID);
