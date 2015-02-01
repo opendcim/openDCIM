@@ -31,6 +31,7 @@
 		
 		if(isset($_POST["action"]) && (($_POST["action"]=="Create") || ($_POST["action"]=="Update"))){
 			$cabrow->Name=$_POST["name"];
+			$cabrow->DataCenterID=$_POST["datacenterid"];
 			$cabrow->ZoneID=$_POST["zoneid"];
 			
 			if($_POST["action"]=="Create"){
@@ -42,7 +43,10 @@
 		}
 		$formpatch="?cabrowid={$_REQUEST['cabrowid']}";
 	}
-	
+
+	$dcList=$DC->GetDCList();
+	$idcList=$DC->GetDCList(true); //indexed by id
+	$izoneList=$zone->GetZoneList(true); //indexed by id
 	$cabrowList=$cabrow->GetCabRowList();
 
 ?>
@@ -64,6 +68,33 @@
 
 <script type="text/javascript">
 	$(document).ready(function() {
+		// Enforce datacenter <-> zone relationship
+		$('#zoneid').on('change',function(){
+			if(this.value>0){
+				$('#datacenterid').attr('disabled','');
+				$('#datacenterid').val($(this.options[this.selectedIndex]).data('dcid'));
+			}else{
+				$('#datacenterid').removeAttr('disabled');
+			}
+		}).change();
+
+		// Input options that are disabled don't submit
+		$('.caption > button').on('click',function(e){
+			$('#datacenterid').removeAttr('disabled');
+		});
+
+		// Don't attempt to open the datacenter tree until it is loaded
+		function opentree(){
+			if($('#datacenters .bullet').length==0){
+				setTimeout(function(){
+					opentree();
+				},500);
+			}else{
+				expandToItem('datacenters','cr<?php echo $cabrow->CabRowID;?>');
+			}
+		}
+		opentree();
+
 		// Delete container confirmation dialog
 		$('button[value="Delete"]').click(function(e){
 			var form=$(this).parents('form');
@@ -109,12 +140,8 @@ echo '<div class="main">
    <option value=0>',__("New Row"),'</option>';
 
 	foreach($cabrowList as $cabrowRow){
-		if($cabrow->CabRowID==$cabrowRow->CabRowID){$selected=" selected";}else{$selected="";}
-		$zone->ZoneID=$cabrowRow->ZoneID;
-		$zone->GetZone();
-		$DC->DataCenterID=$zone->DataCenterID;
-		$DC->GetDataCenter();
-		print "<option value=\"$cabrowRow->CabRowID\"$selected>[".$DC->Name."/".$zone->Description."] ".$cabrowRow->Name."</option>\n";
+		$selected=($cabrow->CabRowID==$cabrowRow->CabRowID)?" selected":"";
+		print "<option value=\"$cabrowRow->CabRowID\"$selected>[{$idcList[$cabrowRow->DataCenterID]->Name}/{$izoneList[$cabrowRow->ZoneID]->Description}] $cabrowRow->Name</option>\n";
 	}
 
 echo '	</select></div>
@@ -124,14 +151,25 @@ echo '	</select></div>
    <div><input type="text" size="50" name="name" id="name" value="',$cabrow->Name,'"></div>
 </div>
 <div>
+   <div><label for="datacenterid">',__("Data Center"),'</label></div>
+   <div><select name="datacenterid" id="datacenterid">
+		<option value=0></option>';
+
+	foreach($dcList as $dc){
+		$selected=($cabrow->DataCenterID==$dc->DataCenterID)?" selected":"";
+		print "<option value=\"$dc->DataCenterID\"$selected>$dc->Name</option>\n";
+	}
+
+echo '	</select></div>
+</div>
+<div>
    <div><label for="zoneid">',__("Data Center Zone"),'</label></div>
-   <div><select name="zoneid" id="zoneid">';
+   <div><select name="zoneid" id="zoneid">
+		<option value=0></option>';
 
 	foreach($zoneList as $zoneRow){
-		if($cabrow->ZoneID==$zoneRow->ZoneID){$selected=" selected";}else{$selected="";}
-		$DC->DataCenterID=$zoneRow->DataCenterID;
-		$DC->GetDataCenter();
-		print "<option value=\"$zoneRow->ZoneID\"$selected>[".$DC->Name."] ".$zoneRow->Description."</option>\n";
+		$selected=($cabrow->ZoneID==$zoneRow->ZoneID)?" selected":"";
+		print "<option data-dcid=$zoneRow->DataCenterID value=\"$zoneRow->ZoneID\"$selected>[{$idcList[$zoneRow->DataCenterID]->Name}] $zoneRow->Description</option>\n";
 	}
 
 echo '	</select></div>

@@ -367,12 +367,16 @@ class DataCenter {
 		}
 	}
 		
-	function GetDCList(){
+	function GetDCList($indexedbyid=false){
 		$sql="SELECT * FROM fac_DataCenter ORDER BY Name ASC;";
 
 		$datacenterList=array();
 		foreach($this->query($sql) as $row){
-			$datacenterList[]=DataCenter::RowToObject($row);
+			if($indexedbyid){
+				$datacenterList[$row['DataCenterID']]=DataCenter::RowToObject($row);
+			}else{
+				$datacenterList[]=DataCenter::RowToObject($row);
+			}
 		}
 
 		return $datacenterList;
@@ -1862,14 +1866,18 @@ class Zone {
 		return $zoneList;
 	}
 
-	static function GetZoneList(){
+	static function GetZoneList($indexedbyid=false){
 		global $dbh;
 
 		$sql="SELECT * FROM fac_Zone ORDER BY Description ASC;";
 
 		$zoneList=array();
 		foreach($dbh->query($sql) as $row){
-			$zoneList[]=Zone::RowToObject($row);
+			if($indexedbyid){
+				$zoneList[$row['ZoneID']]=Zone::RowToObject($row);
+			}else{
+				$zoneList[]=Zone::RowToObject($row);
+			}
 		}
 		
 		return $zoneList;
