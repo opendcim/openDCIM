@@ -141,7 +141,8 @@ echo '<div class="main">
 
 	foreach($cabrowList as $cabrowRow){
 		$selected=($cabrow->CabRowID==$cabrowRow->CabRowID)?" selected":"";
-		print "<option value=\"$cabrowRow->CabRowID\"$selected>[{$idcList[$cabrowRow->DataCenterID]->Name}/{$izoneList[$cabrowRow->ZoneID]->Description}] $cabrowRow->Name</option>\n";
+		// Suppressing errors because there shouldn't be any value for 0 in the dc and zone lists
+		@print "<option value=\"$cabrowRow->CabRowID\"$selected>[{$idcList[$cabrowRow->DataCenterID]->Name}/{$izoneList[$cabrowRow->ZoneID]->Description}] $cabrowRow->Name</option>\n";
 	}
 
 echo '	</select></div>
