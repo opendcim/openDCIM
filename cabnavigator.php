@@ -554,7 +554,6 @@ echo $head,'  <script type="text/javascript" src="scripts/jquery.min.js"></scrip
   <script type="text/javascript" src="scripts/jquery.cookie.js"></script>
   <script type="text/javascript" src="scripts/jquery-json.min.js"></script>
   <script type="text/javascript" src="scripts/common.js"></script>
-  <script type="text/javascript" src="scripts/masonry.pkgd.min.js"></script>
   <script type="text/javascript">
 	var form=$("<form>").attr({ method: "post", action: "cabnavigator.php" });
 	$("<input>").attr({ type: "hidden", name: "cabinetid", value: "',$cab->CabinetID,'"}).appendTo(form);
