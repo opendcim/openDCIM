@@ -673,7 +673,7 @@ if(!function_exists("buildNavTreeHTML")){
 					}
 				}else{
 					$tl++;
-					buildnavmenu($level,&$tl);
+					buildnavmenu($level,$tl);
 					if(get_class($level[0])=="DataCenter"){
 						print str_repeat("\t",$tl).'<li id="dc-'.$level[0]->DataCenterID.'"><a href="storageroom.php?dc='.$level[0]->DataCenterID.'">Storage Room</a></li>'."\n";
 					}
