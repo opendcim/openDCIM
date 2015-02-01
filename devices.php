@@ -744,7 +744,8 @@
 						'Switch' => __("Switch"),
 						'Chassis' => __("Chassis"),
 						'Patch Panel' => __("Patch Panel"),
-);
+						'Sensor' => __("Sensor"),
+						);
 	}else{
 		$devarray=array('Server' => __("Server"),
 						'Appliance' => __("Appliance"),
@@ -753,7 +754,9 @@
 						'Chassis' => __("Chassis"),
 						'Patch Panel' => __("Patch Panel"),
 						'Physical Infrastructure' => __("Physical Infrastructure"),
-						'CDU' => __("CDU"));
+						'CDU' => __("CDU"),
+						'Sensor' => __("Sensor"),
+						);
 	}
 
 	if($config->ParameterArray["mDate"]=="now"){

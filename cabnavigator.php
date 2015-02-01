@@ -513,7 +513,7 @@ $body.='<div id="infopanel">
         if($person->CanWrite($cab->AssignedTo)){
             $body.="
 			<a href=\"#\" onclick=\"javascript:verifyAudit(this.form)\"><li>".__("Certify Audit")."</li></a>
-			<a href=\"devices.php?action=new&cabinet=$cab->CabinetID\"><li>".__("Add Device")."</li></a>
+			<a href=\"devices.php?action=new&cabinetid=$cab->CabinetID\"><li>".__("Add Device")."</li></a>
 			<a href=\"cabaudit.php?cabinetid=$cab->CabinetID\"><li>".__("Audit Report")."</li></a>
 			<a href=\"mapmaker.php?cabinetid=$cab->CabinetID\"><li>".__("Map Coordinates")."</li></a>
 			<a href=\"cabinets.php?cabinetid=$cab->CabinetID\"><li>".__("Edit Cabinet")."</li></a>\n";

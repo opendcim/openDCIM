@@ -1786,6 +1786,19 @@ class Device {
 		return $deviceList;
 	}	
 
+	static function GetSensorDevices(){
+		global $dbh;
+
+		$sql="SELECT * FROM fac_Device WHERE TemplateID IN (SELECT TemplateID FROM fac_DeviceTemplate WHERE DeviceType='Sensor');";
+
+		$deviceList=array();
+		foreach($dbh->query($sql) as $deviceRow){
+			$deviceList[]=Device::RowToObject($deviceRow);
+		}
+
+		return $deviceList;
+	}
+
 	static function GetDeviceByID($DeviceID){
 		$dev=New Device();
 		$dev->DeviceID=$DeviceID;
