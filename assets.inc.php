@@ -235,7 +235,7 @@ class Cabinet {
 			if(
 				($cab->DataCenterID!=$this->DataCenterID) ||
 				($limitzone && $this->ZoneID>0 && $cab->ZoneID!=$this->ZoneID) ||
-				($limit && $cab->MapX1==$cab->MapX2 && $cab->MapY1==$cab->MapY2)
+				($limit && ($cab->MapX1==$cab->MapX2 || $cab->MapY1==$cab->MapY2))
 			)
 			{unset($cabinetList[$i]);}
 		}
