@@ -663,18 +663,20 @@ function startmap(){
 			var temphilight={'cabs':[],'zones':[]}; // array of areas and their outline state
 
 			var map=$('.canvas > map');
-			$(data.cab).each(function(){
-				if(this.Rights!="None"){
-					map.append(buildarea(this));
-					temp.cabs.push({'CabinetID':this.CabinetID,'MapX1':this.MapX1,'MapX2':this.MapX2,'MapY1':this.MapY1,'MapY2':this.MapY2});
-					temphilight.cabs[this.CabinetID]=false;
+			for(var i in data.cab){
+				var thiscab=data.cab[i];
+				if(thiscab.Rights!="None"){
+					map.append(buildarea(thiscab));
+					temp.cabs.push({'CabinetID':thiscab.CabinetID,'MapX1':thiscab.MapX1,'MapX2':thiscab.MapX2,'MapY1':thiscab.MapY1,'MapY2':thiscab.MapY2});
+					temphilight.cabs[thiscab.CabinetID]=false;
 				}
-			});
-			$(data.zone).each(function(){
-				map.append(buildarea(this));
-				temp.zones.push({'ZoneID':this.ZoneID,'MapX1':this.MapX1,'MapX2':this.MapX2,'MapY1':this.MapY1,'MapY2':this.MapY2});
-				temphilight.zones[this.ZoneID]=false;
-			});
+			};
+			for(var i in data.zone){
+				var thiszone=data.zone[i];
+				map.append(buildarea(thiszone));
+				temp.zones.push({'ZoneID':thiszone.ZoneID,'MapX1':thiszone.MapX1,'MapX2':thiszone.MapX2,'MapY1':thiszone.MapY1,'MapY2':thiszone.MapY2});
+				temphilight.zones[thiszone.ZoneID]=false;
+			};
 
 			// Move these arrays out to where they can be used.
 			areas=$.extend(true,{},temp);

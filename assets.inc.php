@@ -233,9 +233,9 @@ class Cabinet {
 		$cabinetList=$this->ListCabinets(true);
 		foreach($cabinetList as $i => $cab){
 			if(
-				($cab->DataCenterID!=$this->DataCenterID) &&
-				($limitzone && $this->ZoneID>0 && $cab->ZoneID!=$this->ZoneID) &&
-				($limit && $cab->MapX1!=$cab->MapX2 && $cab->MapY1!=$cab->MapY2)
+				($cab->DataCenterID!=$this->DataCenterID) ||
+				($limitzone && $this->ZoneID>0 && $cab->ZoneID!=$this->ZoneID) ||
+				($limit && $cab->MapX1==$cab->MapX2 && $cab->MapY1==$cab->MapY2)
 			)
 			{unset($cabinetList[$i]);}
 		}
