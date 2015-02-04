@@ -342,7 +342,7 @@ $('#centeriehack').width($('#centeriehack .cabinet').length * 278);
 					resize();
 				},500);
 			}else{
-				expandToItem('datacenters','cab<?php echo $cabinet->CabinetID;?>');
+				expandToItem('datacenters','cr<?php echo $cabrow->CabRowID;?>');
 				resize();
 			}
 		}
