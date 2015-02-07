@@ -2303,6 +2303,14 @@ echo '	<div class="table">
 		// Scroll the operations log to the bottom
 		scrollolog();
 
+		// Linkify URLs in the olog.
+		function linkifyolog(){
+			$('#olog .table > div').find('div + div').each(function(){
+				$(this).html(urlify($(this).text()));
+			});
+		}
+		linkifyolog();
+
 		var zoom=$('<span>').addClass('ui-icon ui-icon-circle-zoomin').css('float','right');
 		$('#olog > div:first-child > div').prepend(zoom);
 		zoom.click(function(e){
@@ -2330,18 +2338,21 @@ echo '	<div class="table">
 			}
 		});
 		$('#olog button').click(function(){
-			$.post('',{devid: $('#deviceid').val(), olog: $('#olog input').val()}).done(function(data){
-				if(data){
-					var row=$('<div>')
-						.append($('<div>').text(getISODateTime(new Date())))
-						.append($('<div>').text($('#olog input').val()));
-					$('#olog .table').append(row);
-					$('#olog input').val('');
-					scrollolog();
-				}else{
-					$('#olog input').effect('highlight', {color: 'salmon'}, 1500);
-				}
-			});
+			if($('#olog input').val().trim()!=''){
+				$.post('',{devid: $('#deviceid').val(), olog: $('#olog input').val()}).done(function(data){
+					if(data){
+						var row=$('<div>')
+							.append($('<div>').text(getISODateTime(new Date())))
+							.append($('<div>').text($('#olog input').val()));
+						$('#olog .table').append(row);
+						$('#olog input').val('');
+						scrollolog();
+						linkifyolog();
+					}else{
+						$('#olog input').effect('highlight', {color: 'salmon'}, 1500);
+					}
+				});
+			}
 		});
 
 		$('.caption > button[name="audit"]').click(function(){
