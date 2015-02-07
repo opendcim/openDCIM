@@ -33,6 +33,7 @@ class Cabinet {
 	var $CabinetID;
 	var $DataCenterID;
 	var $Location;
+	var $LocationSortable;
 	var $AssignedTo;
 	var $ZoneID;
 	var $CabRowID;      //JMGA: Row of this cabinet
@@ -56,6 +57,7 @@ class Cabinet {
 		$this->CabinetID=intval($this->CabinetID);
 		$this->DataCenterID=intval($this->DataCenterID);
 		$this->Location=sanitize($this->Location);
+		$this->LocationSortable=str_replace(' ','',$this->Location);
 		$this->AssignedTo=intval($this->AssignedTo);
 		$this->ZoneID=intval($this->ZoneID);
 		$this->CabRowID=intval($this->CabRowID);
@@ -85,6 +87,7 @@ class Cabinet {
 		$cab->CabinetID=$dbRow["CabinetID"];
 		$cab->DataCenterID=$dbRow["DataCenterID"];
 		$cab->Location=$dbRow["Location"];
+		$cab->LocationSortable=$dbRow["LocationSortable"];
 		$cab->AssignedTo=$dbRow["AssignedTo"];
 		$cab->ZoneID=$dbRow["ZoneID"];
 		$cab->CabRowID=$dbRow["CabRowID"];
@@ -120,7 +123,7 @@ class Cabinet {
 		// Remove information that they shouldn't have access to
 		if($this->Rights=='None'){
 			// ZoneID and CabRowID are probably both not important but meh
-			$publicfields=array('CabinetID','DataCenterID','Location','ZoneID','CabRowID','Rights');
+			$publicfields=array('CabinetID','DataCenterID','Location','LocationSortable','ZoneID','CabRowID','Rights');
 			foreach($this as $prop => $value){
 				if(!in_array($prop,$publicfields)){
 					$this->$prop=null;
@@ -135,16 +138,16 @@ class Cabinet {
 		$this->MakeSafe();
 
 		$sql="INSERT INTO fac_Cabinet SET DataCenterID=$this->DataCenterID, 
-			Location=\"$this->Location\", AssignedTo=$this->AssignedTo, 
-			ZoneID=$this->ZoneID, CabRowID=$this->CabRowID, 
+			Location=\"$this->Location\", LocationSortable=\"$this->LocationSortable\", 
+			AssignedTo=$this->AssignedTo, ZoneID=$this->ZoneID, CabRowID=$this->CabRowID,
 			CabinetHeight=$this->CabinetHeight, Model=\"$this->Model\", 
 			Keylock=\"$this->Keylock\", MaxKW=\"$this->MaxKW\", MaxWeight=$this->MaxWeight, 
 			InstallationDate=\"$this->InstallationDate\", 
 			SensorIPAddress=\"$this->SensorIPAddress\", 
 			SensorCommunity=\"$this->SensorCommunity\", 
 			SensorTemplateID=$this->SensorTemplateID, MapX1=$this->MapX1, 
-			MapY1=$this->MapY1, MapX2=$this->MapX2, MapY2=$this->MapY2, FrontEdge=\"$this->FrontEdge\",
-			Notes=\"$this->Notes\";";
+			MapY1=$this->MapY1, MapX2=$this->MapX2, MapY2=$this->MapY2, 
+			FrontEdge=\"$this->FrontEdge\", Notes=\"$this->Notes\";";
 
 		if(!$dbh->exec($sql)){
 			$info=$dbh->errorInfo();
@@ -169,16 +172,17 @@ class Cabinet {
 		$old->GetCabinet();
 
 		$sql="UPDATE fac_Cabinet SET DataCenterID=$this->DataCenterID, 
-			Location=\"$this->Location\", AssignedTo=$this->AssignedTo, 
-			ZoneID=$this->ZoneID, CabRowID=$this->CabRowID, 
+			Location=\"$this->Location\", LocationSortable=\"$this->LocationSortable\",
+			AssignedTo=$this->AssignedTo, ZoneID=$this->ZoneID, CabRowID=$this->CabRowID, 
 			CabinetHeight=$this->CabinetHeight, Model=\"$this->Model\", 
 			Keylock=\"$this->Keylock\", MaxKW=$this->MaxKW, MaxWeight=$this->MaxWeight, 
 			InstallationDate=\"".date("Y-m-d", strtotime($this->InstallationDate))."\", 
 			SensorIPAddress=\"$this->SensorIPAddress\", 
 			SensorCommunity=\"$this->SensorCommunity\", 
 			SensorTemplateID=$this->SensorTemplateID, 
-			MapX1=$this->MapX1, MapY1=$this->MapY1, MapX2=$this->MapX2, MapY2=$this->MapY2, FrontEdge=\"$this->FrontEdge\",
-			Notes=\"$this->Notes\" WHERE CabinetID=$this->CabinetID;";
+			MapX1=$this->MapX1, MapY1=$this->MapY1, MapX2=$this->MapX2, MapY2=$this->MapY2, 
+			FrontEdge=\"$this->FrontEdge\", Notes=\"$this->Notes\" WHERE 
+			CabinetID=$this->CabinetID;";
 
 		if(!$dbh->query($sql)){
 			$info=$dbh->errorInfo();
@@ -301,40 +305,6 @@ class Cabinet {
 		return $occupants;
 	}
 
-	function GetDCSelectList(){
-		global $dbh;
-		
-		$sql="SELECT * FROM fac_DataCenter ORDER BY Name";
-
-		$selectList='<select name="datacenterid" id="datacenterid">';
-
-		foreach($dbh->query($sql) as $selectRow){
-			$selected=($selectRow["DataCenterID"]==$this->DataCenterID)?' selected':'';
-			$selectList.="<option value=\"{$selectRow["DataCenterID"]}\"$selected>{$selectRow["Name"]}</option>";
-		}
-
-		$selectList.='</select>';
-
-		return $selectList;
-	}
-	
-	function GetDCSelectListSubmit(){
-		global $dbh;
-
-		$sql="SELECT * FROM fac_DataCenter ORDER BY Name;";
-
-		$selectList='<select name="datacenterid" id="datacenterid" onChange="form.submit()">';
-
-		foreach($dbh->query($sql) as $selectRow){
-			$selected=($selectRow[ "DataCenterID"]==$this->DataCenterID)?' selected':'';
-			$selectList.="<option value={$selectRow["DataCenterID"]}$selected>{$selectRow["Name"]}</option>";
-		}
-
-		$selectList.='</select>';
-
-		return $selectList;
-	}
-	
 	function GetZoneSelectList(){
 		global $dbh;
 		

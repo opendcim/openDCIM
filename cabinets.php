@@ -195,7 +195,7 @@ echo '<div class="main">
 <h3>',__("Data Center Cabinet Inventory"),'</h3>
 <h3>',$status,'</h3>
 <div class="center"><div>
-<form id="rackform" action="',$_SERVER["PHP_SELF"],'" method="POST">
+<form id="rackform" method="POST">
 <div class="table">
 <div>
    <div>',__("Cabinet"),'</div>
@@ -203,7 +203,7 @@ echo '<div class="main">
    <option value=0>',__("New Cabinet"),'</option>';
 
 	foreach($cabList as $cabRow){
-		if($cabRow->CabinetID == $cab->CabinetID){$selected=' selected';}else{$selected="";}
+		$selected=($cabRow->CabinetID==$cab->CabinetID)?' selected':'';
 		print "<option value=\"$cabRow->CabinetID\"$selected>$cabRow->Location</option>\n";
 	}
 
@@ -211,7 +211,17 @@ echo '   </select></div>
 </div>
 <div>
    <div>',__("Data Center"),'</div>
-   <div>',$cab->GetDCSelectList(),'</div>
+   <div>
+		<select name="datacenterid" id="datacenterid">
+';
+
+	foreach(DataCenter::GetDCList() as $dc){
+		$selected=($dc->DataCenterID==$cab->DataCenterID)?' selected':'';
+		print "\t\t\t<option value=\"$dc->DataCenterID\"$selected>$dc->Name</option>\n";
+	}
+
+echo '		</select>
+	</div>
 </div>
 <div>
    <div>',__("Location"),'</div>

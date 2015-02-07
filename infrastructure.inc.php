@@ -367,11 +367,13 @@ class DataCenter {
 		}
 	}
 		
-	function GetDCList($indexedbyid=false){
+	static function GetDCList($indexedbyid=false){
+		global $dbh;
+
 		$sql="SELECT * FROM fac_DataCenter ORDER BY Name ASC;";
 
 		$datacenterList=array();
-		foreach($this->query($sql) as $row){
+		foreach($dbh->query($sql) as $row){
 			if($indexedbyid){
 				$datacenterList[$row['DataCenterID']]=DataCenter::RowToObject($row);
 			}else{

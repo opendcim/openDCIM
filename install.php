@@ -1780,7 +1780,16 @@ function showgroup(obj){
 </div>
 <div>
    <div>Data Center</div>
-   <div><?php echo $cab->GetDCSelectList(); ?></div>
+   <div>
+		<select name="datacenterid" id="datacenterid">
+<?php
+	foreach(DataCenter::GetDCList() as $dc){
+		$selected=($dc->DataCenterID==$cab->DataCenterID)?' selected':'';
+		print "\t\t\t<option value=\"$dc->DataCenterID\"$selected>$dc->Name</option>\n";
+	}
+?>
+		</select>
+	</div>
 </div>
 <div>
    <div>Location</div>
