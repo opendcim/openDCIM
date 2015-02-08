@@ -2093,7 +2093,24 @@ echo '	<div class="table">
 					<div data-default=\"$cord->Notes\">$cord->Notes</div>
 				</div>\n";
 			}
-			print "			</div><!-- END div.table --></div>\n		</div><!-- END power connections -->\n		<!-- Spacer --><div><div>&nbsp;</div><div></div></div><!-- END Spacer -->\n";
+$connectioncontrols=($dev->DeviceID>0)?'
+<span style="display: inline-block; vertical-align: super;">'.__("Limit device selection to").':</span>
+<div id="connection-limitor" data-role="controlgroup" data-type="horizontal">
+	<input type="radio" name="connection-limitor" id="radio-choice-1" value="row" />
+	<label for="radio-choice-1">Row</label>
+	<input type="radio" name="connection-limitor" id="radio-choice-2" value="zone" />
+	<label for="radio-choice-2">Zone</label>
+	<input type="radio" name="connection-limitor" id="radio-choice-3" value="dc" />
+	<label for="radio-choice-3">Datacenter</label>
+	<input type="radio" name="connection-limitor" id="radio-choice-4" value="global" />
+	<label for="radio-choice-4">Global</label>
+</div>':'';
+
+			print "			</div><!-- END div.table --></div>\n		</div><!-- END power connections -->\n		<!-- Spacer --><div><div>&nbsp;</div><div>$connectioncontrols</div></div><!-- END Spacer -->\n";
+
+
+
+
 	}
 
 	$jsondata=array();// array to store user ability to modify a port. index=portnumber, value=true/false
@@ -2377,6 +2394,9 @@ echo '	<div class="table">
 		$('#cabinetid').combobox();
 		$('#templateid').combobox();
 		$('select[name=parentdevice]').combobox();
+
+		// Connection limitation selection
+		$('#connection-limitor').buttonset().parent('div').css('text-align','right');
 
 	});
 </script>

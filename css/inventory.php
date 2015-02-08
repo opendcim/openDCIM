@@ -736,6 +736,11 @@ div.cabinet {
 
 #olog .table > div > div ~ div {white-space: pre-wrap; max-width: 800px; word-wrap: break-word;}
 
+#connection-limitor { display: inline-block; margin-top: 10px; margin-bottom: 2px; vertical-align: super; }
+#connection-limitor .ui-button-text-only .ui-button-text { padding: 0.2em; }
+#connection-limitor label { width: auto; }
+
+
 .device #tags { width: 95%; min-width: 250px;}
 
 #firstport.hide { display: none; }
