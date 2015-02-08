@@ -2398,6 +2398,14 @@ $connectioncontrols=($dev->DeviceID>0)?'
 
 		// Connection limitation selection
 		$('#connection-limiter').buttonset().parent('div').css('text-align','right');
+		$('#connection-limiter input').click(function(){
+			$('.table.switch > div ~ div').each(function(){
+				var row=$(this);
+				if(row.data('edit')){
+					row.row('getdevices');
+				}
+			});
+		});
 
 	});
 </script>

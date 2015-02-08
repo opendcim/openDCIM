@@ -1862,6 +1862,9 @@ function LameLogDisplay(){
 		},
 
 		getdevices: function(target){
+			if(target==undefined){
+				target=this.cdevice;
+			}
 			var row=this;
 			var postoptions={swdev: $('#deviceid').val(),pn: this.portnum};
 
