@@ -3364,7 +3364,7 @@ class DevicePorts {
 	}
 
 
-	static function getPatchCandidates($DeviceID,$PortNum=null,$listports=null,$patchpanels=null){
+	static function getPatchCandidates($DeviceID,$PortNum=null,$listports=null,$patchpanels=null,$scopelimit=null){
 		/*
 		 * $DeviceID = ID of the device that you are wanting to make a connection from
 		 * $PortNum(optional) = Port Number on the device you are wanting to connect,
@@ -3396,6 +3396,29 @@ class DevicePorts {
 			return false;
 		}
 
+		$limiter='';
+		if(!is_null($scopelimit)){
+			$cab=new Cabinet();
+			$cab->CabinetID=$dev->Cabinet;
+			$cab->GetCabinet();
+			switch ($scopelimit){
+				case 'cabinet':
+					$limiter=" AND Cabinet=$dev->Cabinet";
+					break;
+				case 'row':
+					$limiter=" AND Cabinet IN (SELECT CabinetID FROM fac_Cabinet WHERE CabRowID=$cab->CabRowID)";
+					break;
+				case 'zone':
+					$limiter=" AND Cabinet IN (SELECT CabinetID FROM fac_Cabinet WHERE ZoneID=$cab->ZoneID)";
+					break;
+				case 'datacenter':
+					$limiter=" AND Cabinet IN (SELECT CabinetID FROM fac_Cabinet WHERE DataCenterID=$cab->DataCenterID)";
+					break;
+				default:
+					break;
+			}
+		}
+
 		$pp="";
 		if(!is_null($patchpanels)){
 			$pp=' AND DeviceType="Patch Panel"';
@@ -3419,43 +3442,19 @@ class DevicePorts {
 				$rights=null;
 			}
 
-			// Gets a little complicated if you are on a blade device and looking for other patch candidates
-			// But putting this logic into the SQL is extremely processor intensive, so do the conditional on the outside
-			// and only take the processing hit when there's a child device as the source
-			
-			//JMGA #511
-			//$cabinetID=($dev->ParentDevice==0)?$dev->Cabinet:$dev->WhosYourDaddy()->Cabinet;
 			$cabinetID=$dev->GetDeviceCabinetID();
 			
 			$sqlSameCabDevice="SELECT * FROM fac_Device WHERE Ports>0 AND 
-				Cabinet=$cabinetID $rights$pp GROUP BY DeviceID ORDER BY Position 
+				Cabinet=$cabinetID $rights$pp$limiter GROUP BY DeviceID ORDER BY Position 
 				DESC, Label ASC;";
-			/*JMGA #511
-			$sqlSameCabChildDevice="SELECT * FROM fac_Device WHERE Ports>0 AND 
-				Cabinet=0 AND ParentDevice IN (SELECT DeviceID FROM fac_Device WHERE 
-				Cabinet=$cabinetID AND (ChassisSlots>0 OR RearChassisSlots>0)) $rights$pp 
-				GROUP BY DeviceID ORDER BY Position DESC, Label ASC;";
-			*/
 			$sqlDiffCabDevice="SELECT * FROM fac_Device WHERE Ports>0 AND 
-				Cabinet!=$cabinetID $rights$pp GROUP BY DeviceID ORDER BY Label ASC;";
+				Cabinet!=$cabinetID $rights$pp$limiter GROUP BY DeviceID ORDER BY Label ASC;";
 			
-			/*JMGA #511
-			$sqlDiffCabChildDevice="SELECT * FROM fac_Device WHERE Ports>0 AND Cabinet=0 
-				AND ParentDevice IN (SELECT DeviceID FROM fac_Device WHERE 
-				Cabinet!=$cabinetID AND (ChassisSlots>0 OR RearChassisSlots>0)) $rights$pp 
-				GROUP BY DeviceID ORDER BY Label ASC;";
-			*/
-
-			// Running these four simple queries is supposed to be faster than the previous complicated ones
-			//JMGA #511
-			//foreach(array($sqlSameCabDevice, $sqlSameCabChildDevice, $sqlDiffCabDevice, $sqlDiffCabChildDevice) as $sql){
 			foreach(array($sqlSameCabDevice, $sqlDiffCabDevice) as $sql){
 				foreach($dbh->query($sql) as $row){
 					// false to skip rights check we filtered using sql above
 					$tmpDev=Device::RowToObject($row,false);
-					// Child devices the cabinet will be 0 this will fix that
-					$tmpDev->Cabinet=($tmpDev->ParentDevice!=0)?$tmpDev->WhosYourDaddy()->Cabinet:$tmpDev->Cabinet;
-					$candidates[]=array("DeviceID" => $tmpDev->DeviceID, "Label" => $tmpDev->Label, "CabinetID" => $tmpDev->Cabinet);
+					$candidates[]=array("DeviceID"=>$tmpDev->DeviceID,"Label"=>$tmpDev->Label,"CabinetID"=>$tmpDev->Cabinet);
 				}
 			}
 		}else{

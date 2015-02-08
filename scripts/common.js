@@ -1864,6 +1864,12 @@ function LameLogDisplay(){
 		getdevices: function(target){
 			var row=this;
 			var postoptions={swdev: $('#deviceid').val(),pn: this.portnum};
+
+			// extend out basic options to allow for a scope limiter
+			var limiter=$('#connection-limiter  input:checked').val();
+			limiter=(limiter==undefined || limiter=='')?'global':limiter;
+			postoptions=$.extend(postoptions,{limiter: limiter});
+
 			if(target===this.rdevice){
 		//	Uncomment this line to restrict the device list to just patch panels
 		//		postoptions=$.extend(postoptions,{rear: ''});

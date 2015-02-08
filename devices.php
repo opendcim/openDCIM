@@ -400,7 +400,8 @@
 		}else{
 			$patchpanels=(isset($_POST['rear']))?"true":null;
 			$portnumber=(isset($_POST['pn']))?$_POST['pn']:null;
-			$list=DevicePorts::getPatchCandidates($_POST['swdev'],$portnumber,null,$patchpanels);
+			$limiter=(isset($_POST['limiter']))?$_POST['limiter']:null;
+			$list=DevicePorts::getPatchCandidates($_POST['swdev'],$portnumber,null,$patchpanels,$limiter);
 		}
 		header('Content-Type: application/json');
 		echo json_encode($list);
@@ -2095,14 +2096,14 @@ echo '	<div class="table">
 			}
 $connectioncontrols=($dev->DeviceID>0)?'
 <span style="display: inline-block; vertical-align: super;">'.__("Limit device selection to").':</span>
-<div id="connection-limitor" data-role="controlgroup" data-type="horizontal">
-	<input type="radio" name="connection-limitor" id="radio-choice-1" value="row" />
+<div id="connection-limiter" data-role="controlgroup" data-type="horizontal">
+	<input type="radio" name="connection-limiter" id="radio-choice-1" value="row" />
 	<label for="radio-choice-1">Row</label>
-	<input type="radio" name="connection-limitor" id="radio-choice-2" value="zone" />
+	<input type="radio" name="connection-limiter" id="radio-choice-2" value="zone" />
 	<label for="radio-choice-2">Zone</label>
-	<input type="radio" name="connection-limitor" id="radio-choice-3" value="dc" />
+	<input type="radio" name="connection-limiter" id="radio-choice-3" value="datacenter" />
 	<label for="radio-choice-3">Datacenter</label>
-	<input type="radio" name="connection-limitor" id="radio-choice-4" value="global" />
+	<input type="radio" name="connection-limiter" id="radio-choice-4" value="global" />
 	<label for="radio-choice-4">Global</label>
 </div>':'';
 
@@ -2396,7 +2397,7 @@ $connectioncontrols=($dev->DeviceID>0)?'
 		$('select[name=parentdevice]').combobox();
 
 		// Connection limitation selection
-		$('#connection-limitor').buttonset().parent('div').css('text-align','right');
+		$('#connection-limiter').buttonset().parent('div').css('text-align','right');
 
 	});
 </script>
