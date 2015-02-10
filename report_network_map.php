@@ -9,7 +9,7 @@
     if(isset($_REQUEST['format'])) {
         # find the directory that dcim is being hosted out of (used when we build
         # the url for each node
-        $baseURI = dirname($_SERVER['REQUEST_URI']);
+        $baseURI = $config->ParameterArray["InstallURL"];
         # way to randomize the colors/styles
         # 0 == randomize colors if color can't be identified from db
         # 1 == Randomize colors, keeping same color for each colorid
@@ -205,7 +205,32 @@ overlap = scale;
                 $ports=DevicePorts::getPortList($devid);
                 foreach($ports as $port) {
                     if(($mediaID == -1) || ($port->MediaID == $mediaID)) {
-                        if(isset($port->ConnectedDeviceID)) {
+                        if(isset($port->ConnectedDeviceID) && ($port->ConnectedDeviceID>0)) {
+                            # if the connected device isn't in our list of devices, add it so we 
+                            # at least get nice names for the devices outside the selected scope
+                            if(!isset($devList[$port->ConnectedDeviceID])) {
+                                $tdev = new Device();
+                                $tdev->DeviceID = $port->ConnectedDeviceID;
+                                $tdev->GetDevice();
+                                $devList[$tdev->DeviceType][$tdev->DeviceID] = $tdev->Label;
+								
+								$tPort = new DevicePorts();
+								$tPort->DeviceID = $port->ConnectedDeviceID;
+								$tPort->PortNumber = $port->ConnectedPort;
+								$tPort->getPort();
+								$portList[]=array(
+                                    'ConnectedDeviceID'=>$port->DeviceID,
+                                    'DeviceID'=>$port->ConnectedDeviceID,
+                                    'ConnectedPort'=>$port->PortNumber,
+                                    'PortNumber'=>$port->ConnectedPort,
+                                    'ColorID'=>$port->ColorID,
+                                    'MediaID'=>$port->MediaID,
+                                    'Label'=>$tPort->Label
+                                );
+								unset($tPort);
+	                            unset($tdev);
+                            }
+
                             $portList[]=array(
                                     'ConnectedDeviceID'=>$port->ConnectedDeviceID,
                                     'DeviceID'=>$port->DeviceID,
@@ -215,15 +240,6 @@ overlap = scale;
                                     'MediaID'=>$port->MediaID,
                                     'Label'=>$port->Label
                                 );
-                            # if the connected device isn't in out list of devices, add it so we 
-                            # at least get nice names for the devices outside the selected scope
-                            if(!isset($devList[$port->ConnectedDeviceID])) {
-                                $tdev = new Device();
-                                $tdev->DeviceID = $port->ConnectedDeviceID;
-                                $tdev->GetDevice();
-                                $devList[$tdev->DeviceType][$tdev->DeviceID] = $tdev->Label;
-                            }
-                            unset($tdev);
                         }
                     }
                 }
@@ -250,7 +266,7 @@ overlap = scale;
                         $color = $safeDeviceColors[array_rand($safeDeviceColors)];
                     }
                     $graphstr .= "\t".$tkeypair[0]." [shape=box,URL=\"".$baseURI
-                            .'/devices.php?deviceid='.$tkeypair[0]."\",label=\""
+                            .'devices.php?deviceid='.$tkeypair[0]."\",label=\""
                             .$devList[$dt][$tkeypair[0]]."\",color=".$color."];\n";
                     unset($devList[$dt][$tkeypair[0]]);
                     break;
@@ -265,7 +281,7 @@ overlap = scale;
                         $color = $safeDeviceColors[array_rand($safeDeviceColors)];
                     }
                     $graphstr .= "\t".$tkeypair[1]." [shape=box,URL=\"".$baseURI
-                            .'/devices.php?deviceid='.$tkeypair[1]."\",label=\""
+                            .'devices.php?deviceid='.$tkeypair[1]."\",label=\""
                             .$devList[$dt][$tkeypair[1]]."\",color=".$color."];\n";
                     unset($devList[$dt][$tkeypair[1]]);
                     break;
