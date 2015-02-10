@@ -115,8 +115,8 @@ class Cabinet {
 	}
 
 	private function FilterRights(){
+		global $person;
 		$this->Rights='None';
-		$person=People::Current();
 		if($person->canRead($this->AssignedTo)){$this->Rights="Read";}
 		if($person->canWrite($this->AssignedTo)){$this->Rights="Write";}
 
@@ -395,6 +395,7 @@ class Cabinet {
 	
 	function GetCabinetSelectList(){
 		global $dbh;
+		global $person;
 		
 		$sql="SELECT Name, CabinetID, Location, AssignedTo FROM fac_DataCenter, fac_Cabinet WHERE 
 			fac_DataCenter.DataCenterID=fac_Cabinet.DataCenterID ORDER BY Name ASC, 
@@ -403,7 +404,7 @@ class Cabinet {
 		$selectList="<select name=\"cabinetid\" id=\"cabinetid\"><option value=\"-1\">Storage Room</option>";
 
 		foreach($dbh->query($sql) as $selectRow){
-			if($selectRow["CabinetID"]==$this->CabinetID || People::Current()->canWrite($selectRow["AssignedTo"])){
+			if($selectRow["CabinetID"]==$this->CabinetID || $person->canWrite($selectRow["AssignedTo"])){
 				$selected=($selectRow["CabinetID"]==$this->CabinetID)?' selected':'';
 				$selectList.="<option value=\"{$selectRow["CabinetID"]}\"$selected>{$selectRow["Name"]} / {$selectRow["Location"]}</option>";
 			}
@@ -1255,11 +1256,12 @@ class Device {
 	}
 
 	private function FilterRights(){
+		global $person;
+		
 		$cab=new Cabinet();
 		$cab->CabinetID=$this->Cabinet;
 
 		$this->Rights='None';
-		$person=People::Current();
 		if($person->canRead($this->Owner)){$this->Rights="Read";}
 		if($person->canWrite($this->Owner)){$this->Rights="Write";} // write by device
 		if($this->ParentDevice>0){ // this is a child device of a chassis
@@ -3375,6 +3377,7 @@ class DevicePorts {
 		 */
 		global $dbh;
 		global $config;
+		global $person;
 
 		$dev=new Device(); // make sure we have a real device first
 		$dev->DeviceID=$DeviceID;
@@ -3426,7 +3429,7 @@ class DevicePorts {
 		$candidates=array();
 
 		if(is_null($listports)){
-			$currentperson=People::Current();
+			$currentperson=$person;
 			if(!$currentperson->WriteAccess){
 				$groups=$currentperson->isMemberOf();  // list of groups the current user is member of
 				$rights=null;

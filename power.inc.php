@@ -597,6 +597,7 @@ class PowerConnection {
 	}
 
 	function CanWrite(){
+		global $person;
 		// check rights
 		$write=false;
 
@@ -623,7 +624,7 @@ class PowerConnection {
 		$cab=new Cabinet();
 		$cab->CabinetID=$pdu->CabinetID;
 		$cab->GetCabinet();
-		$write=(People::Current()->canWrite($cab->AssignedTo))?true:$write;
+		$write=($person->canWrite($cab->AssignedTo))?true:$write;
 
 		return $write;
 	}
@@ -1258,6 +1259,7 @@ class PowerDistribution {
         }
 
 	function DeletePDU(){
+		global $person;
 		$this->MakeSafe();
 
 		// Do not attempt anything else if the lookup fails
@@ -1267,7 +1269,7 @@ class PowerDistribution {
 		$cab=new Cabinet();
 		$cab->CabinetID=$this->CabinetID;
 		$cab->GetCabinet();
-		if(!People::Current()->canWrite($cab->AssignedTo)){return false;}
+		if(!$person->canWrite($cab->AssignedTo)){return false;}
 
 		// First, remove any connections to the PDU
 		$tmpConn=new PowerConnection();

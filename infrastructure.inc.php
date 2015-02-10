@@ -550,15 +550,13 @@ class DataCenter {
 					// read all cabinets and calculate the color to display on the cabinet
 					foreach($racks as $cabRow){
 						$cab->CabinetID=$cabRow["CabinetID"];
-						if (!$cab->GetCabinet()){
-							continue;
-						}
-						if ($cab->MapX1==$cab->MapX2 || $cab->MapY1==$cab->MapY2){
+
+						if ($cabRow["MapX1"]==$cabRow["MapX2"] || $cabRow["MapY1"]==$cabRow["MapY2"]){
 							continue;
 						}
 						$dev->Cabinet=$cab->CabinetID;
 	    	    		$devList=$dev->ViewDevicesByCabinet();
-						$currentHeight=$cab->CabinetHeight;
+						$currentHeight=$cabRow["CabinetHeight"];
 	        			$totalWatts=$totalWeight=0;
 						$currentTemperature=$cabRow["Temp"];
 						$currentHumidity=$cabRow["Humidity"];
@@ -571,12 +569,12 @@ class DataCenter {
 							
 	        			$used=$cab->CabinetOccupancy($cab->CabinetID);
 						// check to make sure the cabinet height is set to keep errors out of the logs
-						if(!isset($cab->CabinetHeight)||$cab->CabinetHeight==0){$SpacePercent=100;}else{$SpacePercent=number_format($used /$cab->CabinetHeight *100,0);}
+						if(!isset($cabRow["CabinetHeight"])||$cabRow["CabinetHeight"]==0){$SpacePercent=100;}else{$SpacePercent=number_format($used /$cabRow["CabinetHeight"] *100,0);}
 						// check to make sure there is a weight limit set to keep errors out of logs
-						if(!isset($cab->MaxWeight)||$cab->MaxWeight==0){$WeightPercent=0;}else{$WeightPercent=number_format($totalWeight /$cab->MaxWeight *100,0);}
+						if(!isset($cabRow["MaxWeight"])||$cabRow["MaxWeight"]==0){$WeightPercent=0;}else{$WeightPercent=number_format($totalWeight /$cabRow["MaxWeight"] *100,0);}
 						// check to make sure there is a kilowatt limit set to keep errors out of logs
-	    	    		if(!isset($cab->MaxKW)||$cab->MaxKW==0){$PowerPercent=0;}else{$PowerPercent=number_format(($totalWatts /1000 ) /$cab->MaxKW *100,0);}
-						if(!isset($cab->MaxKW)||$cab->MaxKW==0){$RealPowerPercent=0;}else{$RealPowerPercent=number_format(($currentRealPower /1000 ) /$cab->MaxKW *100,0, ",", ".");}
+	    	    		if(!isset($cabRow["MaxKW"])||$cabRow["MaxKW"]==0){$PowerPercent=0;}else{$PowerPercent=number_format(($totalWatts /1000 ) /$cabRow["MaxKW"] *100,0);}
+						if(!isset($cabRow["MaxKW"])||$cabRow["MaxKW"]==0){$RealPowerPercent=0;}else{$RealPowerPercent=number_format(($currentRealPower /1000 ) /$cabRow["MaxKW"] *100,0, ",", ".");}
 
 						// check for individual cdu's being weird
 						if(isset($cdus[$cab->CabinetID])){$RealPowerPercent=($RealPowerPercent>$cdus[$cab->CabinetID])?$RealPowerPercent:$cdus[$cab->CabinetID];}
