@@ -1366,6 +1366,15 @@ class PowerPanel {
 		return $this->Search($sql);
 	}
   
+	function GetPanelLoad() {
+		$sql = "select sum(Wattage) as TotalWatts from fac_PDUStats where PDUID in (select PDUID from fac_PowerDistribution where PanelID=" . $this->PanelID . ")";
+		if ( $row = $this->query( $sql )->fetch()) {
+			return $row["TotalWatts"];
+		} else {
+			return 0;
+		}
+	}
+	
 	function GetPanelListBySource(){
 		$this->MakeSafe();
 
