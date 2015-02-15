@@ -181,7 +181,7 @@ $app->get('/datacenter', function() {
 	$dc = new DataCenter();
 	$dcList = $dc->GetDCList();
 	$response['error'] = false;
-	$responde['errorcode'] = 200;
+	$response['errorcode'] = 200;
 	$response['datacenter'] = array();
 	foreach ( $dcList as $d ) {
 		$tmp = array();
