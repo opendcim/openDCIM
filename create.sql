@@ -95,6 +95,9 @@ CREATE TABLE fac_SensorTemplate (
 	TempMultiplier FLOAT(8) NOT NULL DEFAULT 1,
 	HumidityMultiplier FLOAT(8) NOT NULL DEFAULT 1,
 	mUnits ENUM( 'english', 'metric' ) NOT NULL DEFAULT 'english',
+	GlobalID int(11) NOT NULL,
+	ShareToRepo tinyint(1) NOT NULL DEFAULT 0,
+	KeepLocal tinyint(1) NOT NULL DEFAULT 0,
 	PRIMARY KEY(TemplateID)
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
 
@@ -151,6 +154,9 @@ CREATE TABLE fac_CDUTemplate (
   Voltage int(11) NOT NULL,
   Amperage int(11) NOT NULL,
   NumOutlets int(11) NOT NULL,
+  GlobalID int(11) NOT NULL,
+  ShareToRepo tinyint(1) NOT NULL DEFAULT 0,
+  KeepLocal tinyint(1) NOT NULL DEFAULT 0,
   PRIMARY KEY (TemplateID),
   KEY ManufacturerID (ManufacturerID),
   UNIQUE KEY (ManufacturerID, Model)
@@ -305,6 +311,9 @@ CREATE TABLE fac_DeviceTemplate (
   RearPictureFile VARCHAR(45) NOT NULL,
   ChassisSlots SMALLINT(6) NOT NULL,
   RearChassisSlots SMALLINT(6) NOT NULL,
+  GlobalID int(11) NOT NULL,
+  ShareToRepo tinyint(1) NOT NULL DEFAULT 0,
+  KeepLocal tinyint(1) NOT NULL DEFAULT 0,
   PRIMARY KEY (TemplateID),
   UNIQUE KEY ManufacturerID (ManufacturerID,Model)
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
@@ -356,6 +365,9 @@ DROP TABLE IF EXISTS fac_Manufacturer;
 CREATE TABLE fac_Manufacturer (
   ManufacturerID int(11) NOT NULL AUTO_INCREMENT,
   Name varchar(80) NOT NULL,
+  GlobalID int(11) NOT NULL,
+  ShareToRepo tinyint(1) NOT NULL DEFAULT 0,
+  KeepLocal tinyint(1) NOT NULL DEFAULT 0,
   PRIMARY KEY (ManufacturerID),
   UNIQUE KEY Name (Name)
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;

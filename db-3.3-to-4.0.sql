@@ -142,3 +142,24 @@ ALTER TABLE fac_Device ADD SNMPFailureCount TINYINT(1) NOT NULL AFTER SNMPCommun
 --
 ALTER TABLE fac_CabRow ADD DataCenterID INT( 11 ) NOT NULL AFTER Name;
 UPDATE fac_CabRow SET DataCenterID=(SELECT DataCenterID FROM fac_Zone WHERE fac_CabRow.ZoneID=fac_Zone.ZoneID);
+
+--
+-- Add some fields needed to keep the local database in sync (if enabled) with the global repository
+--
+
+ALTER TABLE fac_CDUTemplate ADD GlobalID int(11) NOT NULL;
+ALTER TABLE fac_CDUTemplate ADD ShareToRepo tinyint(1) NOT NULL DEFAULT 0;
+ALTER TABLE fac_CDUTemplate ADD KeepLocal tinyint(1) NOT NULL DEFAULT 0;
+
+ALTER TABLE fac_DeviceTemplate ADD GlobalID int(11) NOT NULL;
+ALTER TABLE fac_DeviceTemplate ADD ShareToRepo tinyint(1) NOT NULL DEFAULT 0;
+ALTER TABLE fac_DeviceTemplate ADD KeepLocal tinyint(1) NOT NULL DEFAULT 0;
+
+ALTER TABLE fac_Manufacturer ADD GlobalID int(11) NOT NULL;
+ALTER TABLE fac_Manufacturer ADD ShareToRepo tinyint(1) NOT NULL DEFAULT 0;
+ALTER TABLE fac_Manufacturer ADD KeepLocal tinyint(1) NOT NULL DEFAULT 0;
+
+ALTER TABLE fac_SensorTemplate ADD GlobalID int(11) NOT NULL;
+ALTER TABLE fac_SensorTemplate ADD ShareToRepo tinyint(1) NOT NULL DEFAULT 0;
+ALTER TABLE fac_SensorTemplate ADD KeepLocal tinyint(1) NOT NULL DEFAULT 0;
+
