@@ -704,6 +704,9 @@ class SensorTemplate {
 	var $TempMultiplier;
 	var $HumidityMultiplier;
 	var $mUnits;
+	var $GlobalID;
+	var $ShareToRepo;
+	var $KeepLocal;
 
 	function MakeSafe(){
 		$validSNMPVersions=array(1,'2c');
@@ -719,6 +722,9 @@ class SensorTemplate {
 		$this->TempMultiplier=(in_array($this->TempMultiplier, $validMultipliers))?$this->TempMultiplier:1;
 		$this->HumidityMultiplier=(in_array($this->HumidityMultiplier, $validMultipliers))?$this->HumidityMultiplier:1;
 		$this->mUnits=(in_array($this->mUnits, $validmUnits))?$this->mUnits:'english';
+		$this->GlobalID = intval( $this->GlobalID );
+		$this->ShareToRepo = intval( $this->ShareToRepo );
+		$this->KeepLocal = intval( $this->KeepLocal );
 	}
 
 	function MakeDisplay() {
@@ -737,6 +743,9 @@ class SensorTemplate {
 		$st->TempMultiplier=$dbRow["TempMultiplier"];
 		$st->HumidityMultiplier=$dbRow["HumidityMultiplier"];
 		$st->mUnits=$dbRow["mUnits"];
+		$st->GlobalID = $dbRow["GlobalID"];
+		$st->ShareToRepo = $dbRow["ShareToRepo"];
+		$st->KeepLocal = $dbRow["KeepLocal"];
 
 		return $st;
 	}
@@ -780,7 +789,9 @@ class SensorTemplate {
 			Name=\"$this->Name\", SNMPVersion=\"$this->SNMPVersion\", 
 			TemperatureOID=\"$this->TemperatureOID\", HumidityOID=\"$this->HumidityOID\", 
 			TempMultiplier=$this->TempMultiplier, 
-			HumidityMultiplier=$this->HumidityMultiplier, mUnits=\"$this->mUnits\"$sqladdon;";
+			HumidityMultiplier=$this->HumidityMultiplier, mUnits=\"$this->mUnits\",
+			GlobalID=$this->GlobalID, ShareToRepo=$this->ShareToRepo,
+			KeepLocal=$this->KeepLocal $sqladdon;";
 
 		if(!$dbh->exec($sql)){
 			$info=$dbh->errorInfo();
@@ -808,7 +819,8 @@ class SensorTemplate {
 			Name=\"$this->Name\", SNMPVersion=\"$this->SNMPVersion\", 
 			TemperatureOID=\"$this->TemperatureOID\", HumidityOID=\"$this->HumidityOID\", 
 			TempMultiplier=$this->TempMultiplier, 
-			HumidityMultiplier=$this->HumidityMultiplier, mUnits=\"$this->mUnits\"
+			HumidityMultiplier=$this->HumidityMultiplier, mUnits=\"$this->mUnits\",
+			GlobalID=$this->GlobalID, ShareToRepo=$this->ShareToRepo, KeepLocal=$this->KeepLocal
 			WHERE TemplateID=$this->TemplateID;";
 		
 		if(!$dbh->query($sql)){

@@ -780,6 +780,9 @@ class DeviceTemplate {
 	var $ChassisSlots;
 	var $RearChassisSlots;
 	var $CustomValues;
+	var $GlobalID;
+	var $ShareToRepo;
+	var $KeepLocal;
     
 	function MakeSafe(){
 		$validDeviceTypes=array('Server','Appliance','Storage Array','Switch','Chassis','Patch Panel','Physical Infrastructure','CDU','Sensor');
@@ -798,6 +801,9 @@ class DeviceTemplate {
 	    $this->RearPictureFile=sanitize($this->RearPictureFile);
 		$this->ChassisSlots=intval($this->ChassisSlots);
 		$this->RearChassisSlots=intval($this->RearChassisSlots);
+		$this->GlobalID = intval( $this->GlobalID );
+		$this->ShareToRepo = intval( $this->ShareToRepo );
+		$this->KeepLocal = intval( $this->KeepLocal );
 	}
 
 	function MakeDisplay(){
@@ -823,6 +829,9 @@ class DeviceTemplate {
         $Template->RearPictureFile=$row["RearPictureFile"];
 		$Template->ChassisSlots=$row["ChassisSlots"];
 		$Template->RearChassisSlots=$row["RearChassisSlots"];
+		$Template->GlobalID = $row["GlobalID"];
+		$Template->ShareToRepo = $row["ShareToRepo"];
+		$Template->KeepLocal = $row["KeepLocal"];
         $Template->MakeDisplay();
 		$Template->GetCustomValues();
 
@@ -849,7 +858,8 @@ class DeviceTemplate {
 			Wattage=$this->Wattage, DeviceType=\"$this->DeviceType\", 
 			PSCount=$this->PSCount, NumPorts=$this->NumPorts, Notes=\"$this->Notes\", 
 			FrontPictureFile=\"$this->FrontPictureFile\", RearPictureFile=\"$this->RearPictureFile\",
-			ChassisSlots=$this->ChassisSlots, RearChassisSlots=$this->RearChassisSlots;";
+			ChassisSlots=$this->ChassisSlots, RearChassisSlots=$this->RearChassisSlots,
+			GlobalID=$this->GlobalID, ShareToRepo=$this->ShareToRepo, KeepLocal=$this->KeepLocal;";
 
 		if(!$dbh->exec($sql)){
 			error_log( "SQL Error: " . $sql );
@@ -886,7 +896,8 @@ class DeviceTemplate {
 			Wattage=$this->Wattage, DeviceType=\"$this->DeviceType\", 
 			PSCount=$this->PSCount, NumPorts=$this->NumPorts, Notes=\"$this->Notes\", 
 			FrontPictureFile=\"$this->FrontPictureFile\", RearPictureFile=\"$this->RearPictureFile\",
-			ChassisSlots=$this->ChassisSlots, RearChassisSlots=$this->RearChassisSlots
+			ChassisSlots=$this->ChassisSlots, RearChassisSlots=$this->RearChassisSlots,
+			GlobalID=$this->GlobalID, ShareToRepo=$this->ShareToRepo, KeepLocal=$this->KeepLocal
 			WHERE TemplateID=$this->TemplateID;";
 
 		$old=new DeviceTemplate();
@@ -959,6 +970,9 @@ class DeviceTemplate {
 	    $this->RearPictureFile="";
 		$this->ChassisSlots=0;
 		$this->RearChassisSlots=0;
+		$this->GlobalID=0;
+		$this->ShareToRepo=false;
+		$this->KeepLocal=false;
 		// Reset object in case of a lookup failure
 		//foreach($this as $prop => $value){
 		//	$value=($prop!='TemplateID')?null:$value;
@@ -1368,10 +1382,16 @@ xsi:noNamespaceSchemaLocation="openDCIMdevicetemplate.xsd">
 class Manufacturer {
 	var $ManufacturerID;
 	var $Name;
+	var $GlobalID;
+	var $ShareToRepo;
+	var $KeepLocal;
 
 	function MakeSafe(){
 		$this->ManufacturerID=intval($this->ManufacturerID);
 		$this->Name=sanitize($this->Name);
+		$this->GlobalID = intval( $this->GlobalID );
+		$this->ShareToRepo = intval( $this->ShareToRepo );
+		$this->KeepLocal = intval( $this->KeepLocal );
 	}
 
 	function MakeDisplay(){
@@ -1382,6 +1402,9 @@ class Manufacturer {
 		$m=new Manufacturer();
 		$m->ManufacturerID=$row["ManufacturerID"];
 		$m->Name=$row["Name"];
+		$m->GlobalID = $row["GlobalID"];
+		$m->ShareToRepo = $row["ShareToRepo"];
+		$m->KeepLocal = $row["KeepLocal"];
 		$m->MakeDisplay();
 
 		return $m;
@@ -1443,7 +1466,8 @@ class Manufacturer {
 		
 		$this->MakeSafe();
 
-		$sql="INSERT INTO fac_Manufacturer SET Name=\"$this->Name\";";
+		$sql="INSERT INTO fac_Manufacturer SET Name=\"$this->Name\", GlobalID=$this->GlobalID,
+		ShareToRepo=$this->ShareToRepo, KeepLocal=$this->KeepLocal;";
 
 		if(!$dbh->exec($sql)){
 			error_log( "SQL Error: " . $sql );
@@ -1459,7 +1483,7 @@ class Manufacturer {
 	function UpdateManufacturer(){
 		$this->MakeSafe();
 
-		$sql="UPDATE fac_Manufacturer SET Name=\"$this->Name\" WHERE ManufacturerID=$this->ManufacturerID;";
+		$sql="UPDATE fac_Manufacturer SET Name=\"$this->Name\", GlobalID=$this->GlobalID, ShareToRepo=$this->ShareToRepo, KeepLocal=$this->KeepLocal WHERE ManufacturerID=$this->ManufacturerID;";
 
 		$old=new Manufacturer();
 		$old->ManufacturerID=$this->ManufacturerID;
