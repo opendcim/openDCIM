@@ -800,7 +800,9 @@ INSERT INTO fac_Config VALUES
 	('HumidityYellowLow', '45', 'percentage', 'float', '45'),
 	('WorkOrderBuilder', 'disabled', 'Enabled/Disabled', 'string', 'Disabled'),
 	('RackRequests', 'enabled', 'Enabled/Disabled', 'string', 'Enabled'),
-	('dot', '/usr/bin/dot', 'path', 'string', '/usr/bin/dot')
+	('dot', '/usr/bin/dot', 'path', 'string', '/usr/bin/dot'),
+	('ShareToRepo', 'disabled', 'Enabled/Disabled', 'string', 'Disabled'),
+	('KeepLocal', 'enabled', 'Enabled/Disabled', 'string', 'Enabled')
 ;
 
 --

@@ -1408,6 +1408,28 @@ echo '<div class="main">
 					<div><input type="text" defaultvalue="',$config->defaults["RackOverdueHours"],'" name="RackOverdueHours" value="',$config->ParameterArray["RackOverdueHours"],'"></div>
 				</div>
 			</div> <!-- end table -->
+			<h3>',__("Online Repository"),'</h3>
+			<div class="table" id="repository">
+				<div>
+					<div><u>',__("Default Behavior for Site (Can Override Per Template)"),'</u></div>
+				</div>
+				<div>
+					<div><label for="share_to_repo">',__("Share your templates to the repository"),'</label></div>
+					<div><select name="share_to_repo" id="share_to_repo" defaultvalue="',$config->defaults["ShareToRepo"],'" data="',$config->ParameterArray["ShareToRepo"],'">
+						<option value="disabled">',__("Disabled"),'</option>
+						<option value="enabled">',__("Enabled"),'</option>
+						</select>
+					</div>
+				</div>
+				<div>
+					<div><label for="keep_local">',__("Keep local values when synchronizing"),'</label></div>
+					<div><select name="KeepLocal" id="KeepLocal" defaultvalue="',$config->defaults["KeepLocal"],'" data="',$config->ParameterArray["KeepLocal"],'">
+						<option value="disabled">',__("Disabled"),'</option>
+						<option value="enabled">',__("Enabled"),'</option>
+						</select>
+					</div>
+				</div>
+			</div>
 		</div>
 		<div id="style">
 			<h3>',__("Racks & Maps"),'</h3>

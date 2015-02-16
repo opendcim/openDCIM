@@ -163,3 +163,5 @@ ALTER TABLE fac_SensorTemplate ADD GlobalID int(11) NOT NULL;
 ALTER TABLE fac_SensorTemplate ADD ShareToRepo tinyint(1) NOT NULL DEFAULT 0;
 ALTER TABLE fac_SensorTemplate ADD KeepLocal tinyint(1) NOT NULL DEFAULT 0;
 
+INSERT INTO fac_Config set Parameter="ShareToRepo", Value="disabled", UnitOfMeasure="Enabled/Disabled", ValType="string", DefaultVal="disabled";
+INSERT INTO fac_Config set Parameter="KeepLocal", Value="enabled", UnitOfMeasure="Enabled/Disabled", ValType="string", DefaultVal="enabled";
