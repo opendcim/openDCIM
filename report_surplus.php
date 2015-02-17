@@ -33,18 +33,18 @@ class PDF extends FPDF {
     	$this->Image( 'images/' . $this->pdfconfig->ParameterArray['PDFLogoFile'],10,8,100);
     	$this->SetFont($this->pdfconfig->ParameterArray['PDFfont'],'B',12);
     	$this->Cell(120);
-    	$this->Cell(30,20,'Information Technology Services',0,0,'C');
-    	$this->Ln(20);
+    	$this->Cell(30,20,__("Information Technology Services"),0,0,'C');
+    	$this->Ln(25);
 		$this->SetFont( $this->pdfconfig->ParameterArray['PDFfont'],'',10 );
-		$this->Cell( 50, 6, 'Surplus/Salvage Devices Report', 0, 1, 'L' );
-		$this->Cell( 50, 6, 'Dates: ' . $startDate . ' - ' . $endDate, 0, 1, 'L' );
+		$this->Cell( 50, 6, __("Surplus/Salvage Audit Report"), 0, 1, 'L' );
+		$this->Cell( 50, 6, __("Dates").': ' . $startDate . ' - ' . $endDate, 0, 1, 'L' );
 		$this->Ln(10);
 	}
 
 	function Footer() {
 	    	$this->SetY(-15);
     		$this->SetFont($this->pdfconfig->ParameterArray['PDFfont'],'I',8);
-    		$this->Cell(0,10,'Page '.$this->PageNo().'/{nb}',0,0,'C');
+    		$this->Cell(0,10,__("Page").' '.$this->PageNo().'/{nb}',0,0,'C');
 	}
 	
   function Bookmark($txt,$level=0,$y=0) {
@@ -203,7 +203,7 @@ $(function(){
 	
 	$pdf=new PDF();
 	$pdf->AliasNbPages();
-
+	include_once("loadfonts.php");
 	$pdf->SetFont($config->ParameterArray['PDFfont'],'',8);
 
 	$pdf->SetFillColor( 0, 0, 0 );
@@ -220,10 +220,10 @@ $(function(){
 	$pdf->AddPage();
 	$pdf->Bookmark( "Surplus/Salvage by Date" );
 	
-	$pdf->Cell( 80, 5, "Surplus/Salvage by Date" );
+	$pdf->Cell( 80, 5, __("Surplus/Salvage by Date") );
 	$pdf->Ln();
 	
-	$headerTags = array( "Surplus Date", "Name", "Serial Number", "Property Number", "Surplused By" );
+	$headerTags = array( __("Surplus Date"), __("Name"), __("Serial Number"), __("Asset Tag"), __("UserName") );
 	$cellWidths = array( 30, 40, 40, 30, 30 );
 	
 	$fill = 0;
