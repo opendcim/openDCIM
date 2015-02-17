@@ -33,18 +33,18 @@ class PDF extends FPDF {
     	$this->Image( 'images/' . $this->pdfconfig->ParameterArray['PDFLogoFile'],10,8,100);
     	$this->SetFont($this->pdfconfig->ParameterArray['PDFfont'],'B',12);
     	$this->Cell(120);
-    	$this->Cell(30,20,'Information Technology Services',0,0,'C');
-    	$this->Ln(20);
+    	$this->Cell(30,20,__("Information Technology Services"),0,0,'C');
+    	$this->Ln(25);
 		$this->SetFont( $this->pdfconfig->ParameterArray['PDFfont'],'',10 );
-		$this->Cell( 50, 6, 'Cabinet Audits Report', 0, 1, 'L' );
-		$this->Cell( 50, 6, 'Dates: ' . $startDate . ' - ' . $endDate, 0, 1, 'L' );
+		$this->Cell( 50, 6, __("Cabinet Audits Report"), 0, 1, 'L' );
+		$this->Cell( 50, 6, __("Dates").': ' . $startDate . ' - ' . $endDate, 0, 1, 'L' );
 		$this->Ln(10);
 	}
 
 	function Footer() {
 	    	$this->SetY(-15);
     		$this->SetFont($this->pdfconfig->ParameterArray['PDFfont'],'I',8);
-    		$this->Cell(0,10,'Page '.$this->PageNo().'/{nb}',0,0,'C');
+    		$this->Cell(0,10,__("Page").' '.$this->PageNo().'/{nb}',0,0,'C');
 	}
 	
   function Bookmark($txt,$level=0,$y=0) {
@@ -255,7 +255,7 @@ $(function(){
 	
 	$pdf=new PDF();
 	$pdf->AliasNbPages();
-
+	include_once("loadfonts.php");
 	$pdf->SetFont($config->ParameterArray['PDFfont'],'',8);
 
 	$pdf->SetFillColor( 0, 0, 0 );
@@ -272,10 +272,10 @@ $(function(){
 	$pdf->AddPage();
 	$pdf->Bookmark( "Auditor Summary" );
 	
-	$pdf->Cell( 80, 5, "Auditor Summary" );
+	$pdf->Cell( 80, 5, __("Auditor Summary") );
 	$pdf->Ln();
 	
-	$headerTags = array( 'User ID', 'Name', 'Count', 'Last Audit' );
+	$headerTags = array( __("UserID"), __("UserName"), __("Count"), __("Last Audit") );
 	$cellWidths = array( 20, 50, 20, 40 );
 
 	$fill = 0;
@@ -306,10 +306,10 @@ $(function(){
 	$pdf->AddPage();
 	$pdf->Bookmark( "Activity by Date" );
 	
-	$pdf->Cell( 80, 5, "Activity by Date" );
+	$pdf->Cell( 80, 5, __("Activity by Date") );
 	$pdf->Ln();
 	
-	$headerTags = array( "Date", "Location", "Auditor", "Comments" );
+	$headerTags = array( __("Date"), __("Cabinet Location"), __("UserName"), __("Comments") );
 	$cellWidths = array( 30, 30, 40, 70 );
 	
 	$fill = 0;
@@ -321,15 +321,20 @@ $(function(){
 		
 	$pdf->Ln();
 	
-	$dowCount = array( "Sun"=>0, "Mon"=>0, "Tue"=>0, "Wed"=>0, "Thu"=>0, "Fri"=>0, "Sat"=>0 );
-
+	//Check for locale
+	if(sprintf('%.1f',1.0)!='1.0') {
+		$dowCount = array( __("Mon")=>0, __("Tue")=>0, __("Wed")=>0, __("Thu")=>0, __("Fri")=>0, __("Sat")=>0, __("Sun")=>0 );
+	} else {
+		$dowCount = array( __("Sun")=>0, __("Mon")=>0, __("Tue")=>0, __("Wed")=>0, __("Thu")=>0, __("Fri")=>0, __("Sat")=>0 );
+	}
+	
 	foreach($dateSumResult as $row){
 		$auditDate = date( "D, M d, Y", strtotime( $row["AuditDate"] ) );
 		$dow = date( "D", strtotime( $row["AuditDate"] ) );
 		$showDate = true;
 		$pdf->Bookmark( $auditDate, 1, 0 );
 		
-		$sql = sprintf( "select b.Location, c.Name as Auditor, a.NewVal as Comments from fac_GenericLog a, fac_Cabinet b, fac_User c where a.Action=\"CertifyAudit\" and a.UserID=c.UserID and a.ObjectID=b.CabinetID and date(a.Time)=\"%s\"", $row["AuditDate"] );
+		$sql = sprintf( "select b.Location as 'Cabinet Location', c.Name as Auditor, a.NewVal as Comments from fac_GenericLog a, fac_Cabinet b, fac_User c where a.Action=\"CertifyAudit\" and a.UserID=c.UserID and a.ObjectID=b.CabinetID and date(a.Time)=\"%s\"", $row["AuditDate"] );
 
 		foreach($dbh->query($sql) as $resRow){		
 			if ( $showDate ) {
@@ -346,7 +351,7 @@ $(function(){
 			// Only show the date on the first row of consecutive audits
 			$showDate = false;
 			
-			$pdf->Cell( $cellWidths[1], 6, $resRow["Location"], $borders, 0, 'L', $fill );
+			$pdf->Cell( $cellWidths[1], 6, $resRow["Cabinet Location"], $borders, 0, 'L', $fill );
 			$pdf->Cell( $cellWidths[2], 6, $resRow["Auditor"], $borders, 0, 'L', $fill );
 			$pdf->Cell( $cellWidths[3], 6, $resRow["Comments"], $borders, 0, 'L', $fill );
 		
@@ -367,11 +372,11 @@ $(function(){
 		$totalAudits = 1;
 	
 	$pdf->AddPage();
-	$pdf->Cell( 80, 5, "Day of Week Frequency" );
+	$pdf->Cell( 80, 5, __("Day of Week Frequency") );
 	$pdf->Ln();
 	$pdf->Bookmark( "Day of Week Frequency" );
 	
-	$headerTags = array( "Day of Week", "Audits", "Percentage" );
+	$headerTags = array( __("Day of Week"), __("Audits"), __("Percentage") );
 	$cellWidths = array( 50, 30, 30 );
 	
 	$fill = 0;
@@ -397,10 +402,10 @@ $(function(){
 	$pdf->AddPage();
 	$pdf->Bookmark( "Activity by Location" );
 	
-	$pdf->Cell( 80, 5, "Activity by Location" );
+	$pdf->Cell( 80, 5, __("Activity by Location") );
 	$pdf->Ln();
 	
-	$headerTags = array( "Location", "Date", "Auditor", "Comments" );
+	$headerTags = array( __("Cabinet Location"), __("Date"), __("UserName"), __("Comments") );
 	$cellWidths = array( 30, 30, 40, 70 );
 	
 	$fill = 0;
