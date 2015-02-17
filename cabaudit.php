@@ -47,11 +47,11 @@ class PDF extends FPDF {
     	$this->Image( 'images/' . $this->pdfconfig->ParameterArray['PDFLogoFile'],10,8,100);
     	$this->SetFont($this->pdfconfig->ParameterArray['PDFfont'],'B',12);
     	$this->Cell(120);
-    	$this->Cell(30,20,__("Information Technology Services"),0,0,'C');
-    	$this->Ln(20);
+    	$this->Cell(40,20,__("Information Technology Services"),0,0,'C');
+    	$this->Ln(25);
 		$this->SetFont( $this->pdfconfig->ParameterArray['PDFfont'],'',10 );
 		$this->Cell( 50, 6, __("Cabinet Audit Report"), 0, 1, 'L' );
-		$this->Cell( 50, 6, 'Date: ' . date( 'm/d/y' ), 0, 0, 'L' );
+		$this->Cell( 50, 6, __("Date").': ' . date('d F Y'), 0, 1, 'L' );
 		$this->Cell( 0, 6, __("Last Audit").": {$_SESSION['AuditStamp']} ({$_SESSION['AuditorName']})", 0, 1, 'R' );
 		$this->Ln(10);
 	}
@@ -60,7 +60,7 @@ class PDF extends FPDF {
 	function Footer() {
 	    	$this->SetY(-15);
     		$this->SetFont($this->pdfconfig->ParameterArray['PDFfont'],'I',8);
-    		$this->Cell(0,10,'Page '.$this->PageNo().'/{nb}',0,0,'C');
+    		$this->Cell(0,10,__("Page").' '.$this->PageNo().'/{nb}',0,0,'C');
 	}
 	
 
@@ -388,7 +388,7 @@ class PDF_Diag extends PDF_Sector {
 	$pdf=new PDF();
 	$pdf->SetLeftMargin(5);	
 	$pdf->SetRightMargin(5);
-
+	include_once("loadfonts.php");
 	$cab->CabinetID=$_REQUEST['cabinetid'];
 	$cab->GetCabinet();
 	$device->Cabinet=$cab->CabinetID;
