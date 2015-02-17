@@ -20,18 +20,18 @@ class PDF extends FPDF {
     	$this->Image( 'images/' . $this->pdfconfig->ParameterArray["PDFLogoFile"],10,8,100);
     	$this->SetFont($this->pdfconfig->ParameterArray["PDFfont"],'B',12);
     	$this->Cell(120);
-    	$this->Cell(30,20,'Information Technology Services',0,0,'C');
-    	$this->Ln(20);
+    	$this->Cell(30,20,__("Information Technology Services"),0,0,'C');
+    	$this->Ln(25);
 		$this->SetFont( $this->pdfconfig->ParameterArray["PDFfont"],'',10 );
-		$this->Cell( 50, 6, "Devices Without Diverse (Tier III) Power", 0, 1, "L" );
-		$this->Cell( 50, 6, "Date: " . date( "m/d/y" ), 0, 1, "L" );
+		$this->Cell( 50, 6, __("Devices Without Diverse (Tier III) Power"), 0, 1, "L" );
+		$this->Cell( 50, 6, __("Date").': ' . date('d F Y'), 0, 1, 'L' );
 		$this->Ln(10);
 	}
 
 	function Footer() {
 	    	$this->SetY(-15);
     		$this->SetFont($this->pdfconfig->ParameterArray["PDFfont"],'I',8);
-    		$this->Cell(0,10,'Page '.$this->PageNo().'/{nb}',0,0,'C');
+    		$this->Cell(0,10,__("Page").' '.$this->PageNo().'/{nb}',0,0,'C');
 	}
 	
   function Bookmark($txt,$level=0,$y=0) {
@@ -134,7 +134,7 @@ class PDF extends FPDF {
 
 	$pdf=new PDF();
 	$pdf->AliasNbPages();
-	  
+	include_once("loadfonts.php");
 	$pdf->SetFont($config->ParameterArray["PDFfont"],'',8);
 
 	$pdf->SetFillColor( 0, 0, 0 );
@@ -153,11 +153,11 @@ class PDF extends FPDF {
     $pdf->AddPage();
     $pdf->BookMark( $dcRow->Name, 1 );
     $pdf->SetFont( $config->ParameterArray["PDFfont"], "B", 12 );
-    $pdf->Cell( 80, 5, "Data Center: " . $dcRow->Name );
+    $pdf->Cell( 80, 5, __("Data Center").': ' . $dcRow->Name );
     $pdf->SetFont( $config->ParameterArray["PDFfont"], "", 8 );
     $pdf->Ln();
 
-  	$headerTags = array( "Cabinet", "Device Name", "Dependency", "Position", "Owner" );
+  	$headerTags = array( __("Cabinet Location"), __("Device Name"), __("Dependency"), __("Position"), __("Owner") );
   	$cellWidths = array( 15, 50, 30, 15, 60 );
 
   	for ( $col = 0; $col < count( $headerTags ); $col++ )
