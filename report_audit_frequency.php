@@ -18,18 +18,18 @@ class PDF extends FPDF {
     	$this->Image( 'images/' . $this->pdfconfig->ParameterArray['PDFLogoFile'],10,8,100);
     	$this->SetFont($this->pdfconfig->ParameterArray['PDFfont'],'B',12);
     	$this->Cell(120);
-    	$this->Cell(30,20,'Information Technology Services',0,0,'C');
-    	$this->Ln(20);
+    	$this->Cell(30,20,__("Information Technology Services"),0,0,'C');
+    	$this->Ln(25);
 		$this->SetFont( $this->pdfconfig->ParameterArray['PDFfont'],'',10 );
-		$this->Cell( 50, 6, 'Cabinet Audit Frequency Report', 0, 1, 'L' );
-		$this->Cell( 50, 6, 'Date: ' . date( "l, M d, Y" ), 0, 1, 'L' );
+		$this->Cell( 50, 6, __("Cabinet Audit Frequency Report"), 0, 1, 'L' );
+		$this->Cell( 50, 6, __("Date").': ' . date('d F Y'), 0, 1, 'L' );
 		$this->Ln(10);
 	}
 
 	function Footer() {
 	    	$this->SetY(-15);
     		$this->SetFont($this->pdfconfig->ParameterArray['PDFfont'],'I',8);
-    		$this->Cell(0,10,'Page '.$this->PageNo().'/{nb}',0,0,'C');
+    		$this->Cell(0,10,__("Page").' '.$this->PageNo().'/{nb}',0,0,'C');
 	}
 	
   function Bookmark($txt,$level=0,$y=0) {
@@ -211,7 +211,7 @@ $(function(){
 	
 	$pdf=new PDF();
 	$pdf->AliasNbPages();
-
+	include_once("loadfonts.php");
 	$pdf->SetFont($config->ParameterArray['PDFfont'],'',8);
 
 	$pdf->SetFillColor( 0, 0, 0 );
@@ -228,10 +228,10 @@ $(function(){
 	$pdf->AddPage();
 	$pdf->Bookmark( "Activity by Location" );
 	
-	$pdf->Cell( 80, 5, "Activity by Location" );
+	$pdf->Cell( 80, 5, __("Activity by Location") );
 	$pdf->Ln();
 	
-	$headerTags = array( "Location", "Last Audit", "Times Audited", "Installation Date", "Days Since Last Audit" );
+	$headerTags = array( __("Cabinet Location"), __("Last Audit"), __("Times Audited"), __("Installation Date"), __("Days Since Last Audit") );
 	$cellWidths = array( 40, 30, 30, 30, 60 );
 	
 	$fill = 0;
@@ -304,10 +304,10 @@ $(function(){
 	
 	$pdf->Bookmark( "Summary by Period" );
 	
-	$pdf->Cell( 80, 5, "Summary by Period" );
+	$pdf->Cell( 80, 5, __("Summary by Period") );
 	$pdf->Ln();
 	
-	$headerTags = array( "Days Since Last Audit", "Number of Cabinets", "Percentage" );
+	$headerTags = array( __("Days Since Last Audit"), __("Number of Cabinets"), __("Percentage") );
 	$cellWidths = array( 40, 40, 40 );
 	
 	$fill = 0;
