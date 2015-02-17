@@ -75,10 +75,10 @@ mpdf-->
 <table class="items" width="100%" style="font-size: 9pt; border-collapse: collapse;" cellpadding="8">
 <thead>
 <tr>
-<td width="20%">'.__("Stock No").'</td>
-<td width="50%">'.__("Description").'</td>
-<td width="10%">'.__("Minimum").'</td>
-<td width="10%">'.__("Maximum").'</td>
+<td width="20%">'.__("Part Number").'</td>
+<td width="50%">'.__("Part Name").'</td>
+<td width="10%">'.__("Min Qty").'</td>
+<td width="10%">'.__("Max Qty").'</td>
 <td width="10%">'.__("On Hand").'</td>
 </tr>
 </thead>
