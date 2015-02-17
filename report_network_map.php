@@ -396,7 +396,7 @@ overlap = scale;
         # safe format types. newer versions of graphviz also support pdf. maybe
         # we should add it when the ability is more prevalent.
         $formatTypes = array(
-            'svg', 'png', 'jpg', 'gif', 'dot'
+            'svg', 'png', 'jpg', 'dot'
         );
         if(!isset($formatTypes[$_REQUEST['format']])) {
             exit;
@@ -423,8 +423,6 @@ overlap = scale;
                 $header .= "image/png";
             } elseif($ft == 'jpg') {
                 $header .= "image/jpeg";
-            } elseif($ft == 'gif') {
-                $header .= "image/gif";
             }
             exec($dotCommand." -T".$ft." -o".$graphfile." ".$dotfile, $graph, $retval);
             if($retval == 0) {
@@ -526,7 +524,6 @@ overlap = scale;
                         ."<option value=0>SVG</option>"
                         ."<option value=1>PNG</option>"
                         ."<option value=2>JPG</option>"
-                        ."<option value=3>GIF</option>"
                         ."<option value=4>DOT</option>"
                         ."</select>"
                         ."</form>";
