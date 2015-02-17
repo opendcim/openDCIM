@@ -89,10 +89,10 @@ class PDF extends FPDF {
     	$this->SetFont($this->pdfconfig->ParameterArray['PDFfont'],'B',12);
     	$this->Cell(120);
     	$this->Cell(30,20,__("Information Technology Services"),0,0,'C');
-    	$this->Ln(20);
+    	$this->Ln(25);
 		$this->SetFont( $this->pdfconfig->ParameterArray['PDFfont'],'',10 );
 		$this->Cell( 50, 6, __("Data Center Asset Aging Report"), 0, 1, 'L' );
-		$this->Cell( 50, 6, __("Date").': ' . date( 'm/d/y' ), 0, 1, 'L' );
+		$this->Cell( 50, 6, __("Date").': ' . date('d F Y'), 0, 1, 'L' );
 		$this->Ln(10);
 	}
 
@@ -189,6 +189,9 @@ class PDF_Sector extends PDF
 {
     function Sector($xc, $yc, $r, $a, $b, $style='FD', $cw=true, $o=90)
     {
+        //Check for locale-related bug
+        if(sprintf('%.1f',1.0)!='1.0')
+        	setlocale(LC_NUMERIC,'C');
         if($cw){
             $d = $b;
             $b = $o - $a;
@@ -269,6 +272,8 @@ class PDF_Sector extends PDF
         }
         //terminate drawing
         $this->_out($op);
+        //Return to the original numeric formatting
+        setlocale(LC_NUMERIC,NULL);
     }
 
     function _Arc($x1, $y1, $x2, $y2, $x3, $y3 )
@@ -433,7 +438,7 @@ class PDF_Diag extends PDF_Sector {
 	$pdf=new PDF_Diag();
 	$pdf->AliasNbPages();
 	$pdf->AddPage();
-	
+	include_once("loadfonts.php");
 	$colors[0]=array(100,100,255);
 	$colors[1]=array(255,100,100);
 	$colors[2]=array(255,255,100);
@@ -450,7 +455,7 @@ class PDF_Diag extends PDF_Sector {
 
 	$pdf->Cell( 0, 18, __("Device Ages by Count"), '', 1, 'C', 0 );
 	$pdf->SetXY( 10, 70 );
-	$pdf->PieChart(200, 80, $agingList, '%l years %v machines (%p)', $colors);
+	$pdf->PieChart(200, 80, $agingList, '%l years: %v machines (%p)', $colors);
 
 	$pdf->AddPage();
 	$pdf->SetFillColor(224,235,255);
