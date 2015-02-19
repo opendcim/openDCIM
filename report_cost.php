@@ -31,18 +31,18 @@ class PDF extends FPDF {
     	$this->Image( 'images/' . $this->pdfconfig->ParameterArray["PDFLogoFile"],10,8,100);
     	$this->SetFont($this->pdfconfig->ParameterArray["PDFfont"],'B',12);
     	$this->Cell(120);
-    	$this->Cell(30,20,'Information Technology Services',0,0,'C');
-    	$this->Ln(20);
+    	$this->Cell(30,20,__("Information Technology Services"),0,0,'C');
+    	$this->Ln(25);
 		$this->SetFont( $this->pdfconfig->ParameterArray["PDFfont"],'',10 );
-		$this->Cell( 50, 6, "Data Center Asset and Contact Report", 0, 1, "L" );
-		$this->Cell( 50, 6, "Date: " . date( "m/d/y" ), 0, 1, "L" );
+		$this->Cell( 50, 6, __("Data Center Asset Costing Report"), 0, 1, "L" );
+		$this->Cell( 50, 6, __("Date").': ' . date('d F Y'), 0, 1, 'L' );
 		$this->Ln(10);
 	}
 
 	function Footer() {
 	    	$this->SetY(-15);
     		$this->SetFont($this->pdfconfig->ParameterArray["PDFfont"],'I',8);
-    		$this->Cell(0,10,'Page '.$this->PageNo().'/{nb}',0,0,'C');
+    		$this->Cell(0,10,__("Page").' '.$this->PageNo().'/{nb}',0,0,'C');
 	}
 	
 
@@ -373,7 +373,7 @@ class PDF_Diag extends PDF_Sector {
 	$pdf=new PDF_Diag();
 	$pdf->AliasNbPages();
 	$pdf->AddPage();
-	
+	include_once("loadfonts.php");
 	$pdf->SetFont($config->ParameterArray["PDFfont"],'',8);
 
 	$pdf->SetFillColor( 0, 0, 0 );
@@ -386,11 +386,11 @@ class PDF_Diag extends PDF_Sector {
 	
 	$pdf->SetFont( $config->ParameterArray["PDFfont"], "", 12 );
 	if(function_exists('money_format')){
-		$pdf->Cell( 300, 5, "Annual Base Cost Per 1U (1.75\"): " . money_format( "%.2n", $annualCostPerUYear ), "", 1, "L", "" );
-		$pdf->Cell( 300, 5, "Annual Base Cost Per Watt: " . money_format( "%.4n", $annualCostPerWattYear ), "", 1, "L", "" );
+		$pdf->Cell( 300, 5, __("Annual Cost Per Rack Unit (Year)").': ' . money_format( "%.2n", $annualCostPerUYear ), "", 1, "L", "" );
+		$pdf->Cell( 300, 5, __("Annual Cost Per Watt (Year)").': ' . money_format( "%.4n", $annualCostPerWattYear ), "", 1, "L", "" );
 	}else{
-		$pdf->Cell( 300, 5, "Annual Base Cost Per 1U (1.75\"): " . sprintf( $annualCostPerUYear, "%.2n" ), "", 1, "L", "" );
-		$pdf->Cell( 300, 5, "Annual Base Cost Per Watt: " . sprintf( $annualCostPerWattYear, "%.4n" ), "", 1, "L", "" );
+		$pdf->Cell( 300, 5, __("Annual Cost Per Rack Unit (Year)").': ' . sprintf( $annualCostPerUYear, "%.2n" ), "", 1, "L", "" );
+		$pdf->Cell( 300, 5, __("Annual Cost Per Watt (Year)").': ' . sprintf( $annualCostPerWattYear, "%.4n" ), "", 1, "L", "" );
 	}
 	$pdf->Ln();
   $pdf->Ln(); 
@@ -406,17 +406,17 @@ class PDF_Diag extends PDF_Sector {
 		$pdf->AddPage();
 		$pdf->Bookmark( $deptRow->Name, 1, 0 );
 		$pdf->SetFont( $config->ParameterArray["PDFfont"], "B", 12 );
-		$pdf->Cell( 80, 5, "Department:" );
+		$pdf->Cell( 80, 5, __("Department").":" );
 		$pdf->SetFont( $config->ParameterArray["PDFfont"], "", 12 );
 		$pdf->Cell( 0, 5, $deptRow->Name );
 		$pdf->Ln();
 		$pdf->SetFont( $config->ParameterArray["PDFfont"], "B", 12 );
-		$pdf->Cell( 80, 5, "Executive Sponsor:" );
+		$pdf->Cell( 80, 5, __("Executive Sponsor").":" );
 		$pdf->SetFont( $config->ParameterArray["PDFfont"], "", 12 );
 		$pdf->Cell( 0, 5, $deptRow->ExecSponsor );
 		$pdf->Ln();
 		$pdf->SetFont( $config->ParameterArray["PDFfont"], "B", 12 );
-		$pdf->Cell( 80, 5, "Service Delivery Manager:" );
+		$pdf->Cell( 80, 5, __("Service Delivery Manager").":" );
 		$pdf->SetFont( $config->ParameterArray["PDFfont"], "", 12 );
 		$pdf->Cell( 0, 5, $deptRow->SDM );
 		$pdf->Ln();
@@ -424,7 +424,7 @@ class PDF_Diag extends PDF_Sector {
 
 		$pdf->SetFont( $config->ParameterArray["PDFfont"], "", 8 );
 
-		$headerTags = array( "Name", "UCAMS ID", "Phone1", "Phone2", "Phone3", "Email" );
+		$headerTags = array( __("UserName"), __("UserID"), __("Phone1"), __("Phone2"), __("Phone3"), __("Email") );
 		$cellWidths = array( 50, 20, 25, 25, 25, 50 );
 		for ( $col = 0; $col < count( $headerTags ); $col++ )
 			$pdf->Cell( $cellWidths[$col], 7, $headerTags[$col], 1, 0, "C", 1 );
@@ -458,7 +458,7 @@ class PDF_Diag extends PDF_Sector {
 		
 		$dc->DataCenterID = 0;
 
-		$headerTags = array( "Device Name", "Serial Number", "Asset Tag", "Room", "Cabinet", "Position", "Rack Units", "Watts", "Rack Cost" );
+		$headerTags = array( __("Device Name"), __("Serial Number"), __("Asset Tag"), __("DC Room"), __("Cabinet"), __("Position"), __("Rack Units"), __("Watts"), __("Rack Cost") );
 		$cellWidths = array( 50, 30, 20, 20, 15, 15, 15, 15, 15 );
 
 		for ( $col = 0; $col < count( $headerTags ); $col++ )
@@ -478,8 +478,8 @@ class PDF_Diag extends PDF_Sector {
 
 			if ( $cab->DataCenterID != $dc->DataCenterID ) {
 			  if ( $dc->DataCenterID > 0 ) {
-			     $pdf->Cell( 0, 5, "Total Rack Units for " . $dc->Name . ": " . $DCRU, "", 1, "L", "" );
-			     $pdf->Cell( 0, 5, "Total BTU Output for " . $dc->Name . ": " . sprintf( "%d (%.2f Tons)", $DCBTU, $DCBTU/12000 ), "", 1, "L", "" );
+			     $pdf->Cell( 0, 5, __("Total Rack Units for ") . $dc->Name . ": " . $DCRU, "", 1, "L", "" );
+			     $pdf->Cell( 0, 5, __("Total BTU Output for ") . $dc->Name . ": " . sprintf( "%d (%.2f Tons)", $DCBTU, $DCBTU/12000 ), "", 1, "L", "" );
 			  }
 			  
 				$dc->DataCenterID = $cab->DataCenterID;
@@ -517,14 +517,14 @@ class PDF_Diag extends PDF_Sector {
 			$fill =! $fill;
 		}
 
-		$pdf->Cell( 0, 5, "Total Rack Units for All Data Centers: " . $TotalRU, "", 1, "L", "" );
-		$pdf->Cell( 0, 5, "Total BTU Output for All Data Centers: " . sprintf( "%d (%.2f Tons)", $TotalBTU, $TotalBTU/12000 ), "", 1, "L", "" );
+		$pdf->Cell( 0, 5, __("Total Rack Units for All Data Centers").': ' . $TotalRU, "", 1, "L", "" );
+		$pdf->Cell( 0, 5, __("Total BTU Output for All Data Centers").': ' . sprintf( "%d (%.2f Tons)", $TotalBTU, $TotalBTU/12000 ), "", 1, "L", "" );
 		if(function_exists('money_format')){
-			$pdf->Cell( 0, 5, "Annual Electrical Cost for Department:" . money_format( "%.2n", $totalElectricalCost ), "", 1, "L", "" );
-			$pdf->Cell( 0, 5, "Annual Infrastructure Cost for Department:" . money_format( "%.2n", $totalHostingCost ), "", 1, "L", "" );
+			$pdf->Cell( 0, 5, __("Annual Electrical Cost for Department").': ' . money_format( "%.2n", $totalElectricalCost ), "", 1, "L", "" );
+			$pdf->Cell( 0, 5, __("Annual Infrastructure Cost for Department").': ' . money_format( "%.2n", $totalHostingCost ), "", 1, "L", "" );
 		}else{
-			$pdf->Cell( 0, 5, "Annual Electrical Cost for Department:" . sprintf( $totalElectricalCost, "%.2n" ), "", 1, "L", "" );
-			$pdf->Cell( 0, 5, "Annual Infrastructure Cost for Department:" . sprintf( $totalHostingCost, "%.2n" ), "", 1, "L", "" );
+			$pdf->Cell( 0, 5, __("Annual Electrical Cost for Department").': ' . sprintf( $totalElectricalCost, "%.2n" ), "", 1, "L", "" );
+			$pdf->Cell( 0, 5, __("Annual Infrastructure Cost for Department").': ' . sprintf( $totalHostingCost, "%.2n" ), "", 1, "L", "" );
 		}
 	}
 

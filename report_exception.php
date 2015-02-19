@@ -25,18 +25,18 @@ class PDF extends FPDF {
     	$this->Image( 'images/' . $this->pdfconfig->ParameterArray['PDFLogoFile'],10,8,100);
     	$this->SetFont($this->pdfconfig->ParameterArray['PDFfont'],'B',12);
     	$this->Cell(120);
-    	$this->Cell(30,20,'Information Technology Services',0,0,'C');
-    	$this->Ln(20);
+    	$this->Cell(30,20,__("Information Technology Services"),0,0,'C');
+    	$this->Ln(25);
 		$this->SetFont( $this->pdfconfig->ParameterArray['PDFfont'],'',10 );
-		$this->Cell( 50, 6, 'Data Center Inventory Exception Report', 0, 1, 'L' );
-		$this->Cell( 50, 6, 'Date: ' . date( 'm/d/y' ), 0, 1, 'L' );
+		$this->Cell( 50, 6, __("Data Exceptions Report"), 0, 1, 'L' );
+		$this->Cell( 50, 6, __("Date").': ' . date('d F Y'), 0, 1, 'L' );
 		$this->Ln(10);
 	}
 
 	function Footer() {
 	    	$this->SetY(-15);
     		$this->SetFont($this->pdfconfig->ParameterArray['PDFfont'],'I',8);
-    		$this->Cell(0,10,'Page '.$this->PageNo().'/{nb}',0,0,'C');
+    		$this->Cell(0,10,__("Page").' '.$this->PageNo().'/{nb}',0,0,'C');
 	}
 	
   function Bookmark($txt,$level=0,$y=0) {
@@ -131,7 +131,7 @@ class PDF extends FPDF {
 
 	$pdf=new PDF();
 	$pdf->AliasNbPages();
-	  
+	include_once("loadfonts.php");
 	$pdf->SetFont($config->ParameterArray['PDFfont'],'',8);
 
 	$pdf->SetFillColor( 0, 0, 0 );
@@ -147,14 +147,14 @@ class PDF extends FPDF {
   $pdf->Bookmark( 'Unknown Owner', 1, 0 );
 
 	$pdf->SetFont( $config->ParameterArray['PDFfont'], 'B', 12 );
-	$pdf->Cell( 80, 5, 'Department:  Unknown' );
+	$pdf->Cell( 80, 5, __("Department").': '. __("Unknown") );
 	$pdf->SetFont( $config->ParameterArray['PDFfont'], '', 8 );
 	$pdf->Ln();
 
 	$dev->Owner = 0;
 	$devList = $dev->GetDevicesbyOwner();
 
-	$headerTags = array( 'Device Name', 'Serial Number', 'Template?', 'Power Cords', 'Room', 'Cabinet', 'Position', 'Rack Units' );
+	$headerTags = array( __("Device Name"), __("Serial Number"), __("From Template"), __("Power Cords"), __("DC Room"), __("Cabinet"), __("Position"), __("Rack Units") );
 	$cellWidths = array( 50, 30, 20, 20, 20, 20, 20, 20 );
 	$maxval = count( $headerTags );
 
@@ -202,17 +202,17 @@ class PDF extends FPDF {
 		$pdf->AddPage();
 		$pdf->Bookmark( $deptRow->Name, 1, 0 );
 		$pdf->SetFont( $config->ParameterArray['PDFfont'], 'B', 12 );
-		$pdf->Cell( 80, 5, 'Department:' );
+		$pdf->Cell( 80, 5, __("Department").':' );
 		$pdf->SetFont( $config->ParameterArray['PDFfont'], '', 12 );
 		$pdf->Cell( 0, 5, $deptRow->Name );
 		$pdf->Ln();
 		$pdf->SetFont( $config->ParameterArray['PDFfont'], 'B', 12 );
-		$pdf->Cell( 80, 5, 'Executive Sponsor:' );
+		$pdf->Cell( 80, 5, __("Executive Sponsor").':' );
 		$pdf->SetFont( $config->ParameterArray['PDFfont'], '', 12 );
 		$pdf->Cell( 0, 5, $deptRow->ExecSponsor );
 		$pdf->Ln();
 		$pdf->SetFont( $config->ParameterArray['PDFfont'], 'B', 12 );
-		$pdf->Cell( 80, 5, 'Service Delivery Manager:' );
+		$pdf->Cell( 80, 5, __("Service Delivery Manager").':' );
 		$pdf->SetFont( $config->ParameterArray['PDFfont'], '', 12 );
 		$pdf->Cell( 0, 5, $deptRow->SDM );
 		$pdf->Ln();
@@ -224,7 +224,7 @@ class PDF extends FPDF {
 		$devList = $dev->GetDevicesbyOwner();
 
 
-		$headerTags = array( 'Device Name', 'Serial Number', 'Template?', 'Power Cords', 'Room', 'Cabinet', 'Position', 'Rack Units' );
+		$headerTags = array( __("Device Name"), __("Serial Number"), __("From Template"), __("Power Cords"), __("DC Room"), __("Cabinet"), __("Position"), __("Rack Units") );
 		$cellWidths = array( 50, 30, 20, 20, 20, 20, 20, 20 );
 		$maxval = count( $headerTags );
 
@@ -250,9 +250,9 @@ class PDF extends FPDF {
 			}
 
       if ( $devRow->TemplateID > 0 )
-        $template = 'Yes';
+        $template = __("Yes");
       else
-        $template = 'No';
+        $template = __("No");
         
 			$pdf->Cell( $cellWidths[0], 6, $devRow->Label, 'LBRT', 0, 'L', $fill );
 			$pdf->Cell( $cellWidths[1], 6, $devRow->SerialNo, 'LBRT', 0, 'L', $fill );

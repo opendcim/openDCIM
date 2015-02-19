@@ -3820,3 +3820,183 @@ msgstr ""
 #: openDCIM/zone_stats.php:202
 msgid "approximate"
 msgstr ""
+
+#: openDCIM/report_contact.php:388
+msgid "Top 10 Data Center Occupancy Rates"
+msgstr ""
+
+#: openDCIM/report_contact.php:396
+msgid "Top 10 Data Center Power Users"
+msgstr ""
+
+#: openDCIM/report_contact.php:493
+msgid "Total Rack Units for "
+msgstr ""
+
+#: openDCIM/report_contact.php:494
+msgid "Total BTU Output for "
+msgstr ""
+
+#: openDCIM/report_contact.php:526
+msgid "Total Rack Units for All Data Centers"
+msgstr ""
+
+#: openDCIM/report_contact.php:527
+msgid "Total BTU Output for All Data Centers"
+msgstr ""
+
+#: openDCIM/report_contact.php:534
+msgid "Virtual Machine Image Name"
+msgstr ""
+
+#: openDCIM/report_contact.php:534
+msgid "Current Host Server"
+msgstr ""
+
+#: openDCIM/report_contact.php:534
+msgid "State"
+msgstr ""
+
+#: openDCIM/report_contact.php:534
+msgid "Last Polled"
+msgstr ""
+
+#: openDCIM/report_contact.php:32
+msgid "Data Center Asset and Contact Report"
+msgstr ""
+
+#: openDCIM/report_audit.php:39
+msgid "Cabinet Audits Report"
+msgstr ""
+
+#: openDCIM/report_audit.php:40
+msgid "Dates"
+msgstr ""
+
+#: openDCIM/report_audit.php:275
+msgid "Auditor Summary"
+msgstr ""
+
+#: openDCIM/report_audit.php:309
+msgid "Activity by Date"
+msgstr ""
+
+#: openDCIM/report_audit.php:312
+msgid "Auditor"
+msgstr ""
+
+#: openDCIM/report_audit.php:369
+msgid "Day of Week Frequency"
+msgstr ""
+
+#: openDCIM/report_audit.php:373
+msgid "Day of Week"
+msgstr ""
+
+#: openDCIM/report_audit.php:373
+msgid "Audits"
+msgstr ""
+
+#: openDCIM/report_audit.php:399
+msgid "Activity by Location"
+msgstr ""
+
+#: openDCIM/report_audit.php:324
+msgid "Sun"
+msgstr ""
+
+#: openDCIM/report_audit.php:324
+msgid "Mon"
+msgstr ""
+
+#: openDCIM/report_audit.php:324
+msgid "Tue"
+msgstr ""
+
+#: openDCIM/report_audit.php:324
+msgid "Wed"
+msgstr ""
+
+#: openDCIM/report_audit.php:324
+msgid "Thu"
+msgstr ""
+
+#: openDCIM/report_audit.php:324
+msgid "Fri"
+msgstr ""
+
+#: openDCIM/report_audit.php:324
+msgid "Sat"
+msgstr ""
+
+#: openDCIM/report_audit_frequency.php:234
+msgid "Times Audited"
+msgstr ""
+
+#: openDCIM/report_audit_frequency.php:234 openDCIM/report_audit_frequency.php:310
+msgid "Days Since Last Audit"
+msgstr ""
+
+#: openDCIM/report_audit_frequency.php:307
+msgid "Summary by Period"
+msgstr ""
+
+#: openDCIM/report_audit_frequency.php:310
+msgid "Number of Cabinets"
+msgstr ""
+
+#: openDCIM/report_cost.php:523 openDCIM/report_cost.php:526
+msgid "Annual Electrical Cost for Department"
+msgstr ""
+
+#: openDCIM/report_cost.php:524 openDCIM/report_cost.php:527
+msgid "Annual Infrastructure Cost for Department"
+msgstr ""
+
+#: openDCIM/report_cost.php:461
+msgid "Rack Cost"
+msgstr ""
+
+#: openDCIM/report_diverse_power_exceptions.php:160
+msgid "Dependency"
+msgstr ""
+
+#: openDCIM/report_diverse_power_exceptions.php:26
+msgid "Devices Without Diverse (Tier III) Power"
+msgstr ""
+
+#: openDCIM/report_exception.php:157 openDCIM/report_exception.php:227
+msgid "Power Cords"
+msgstr ""
+
+#: openDCIM/report_power_distribution.php:189 openDCIM/report_power_distribution.php:195
+msgid "PDU"
+msgstr ""
+
+#: openDCIM/report_surplus.php:223
+msgid "Surplus/Salvage by Date"
+msgstr ""
+
+#: openDCIM/report_surplus.php:226
+msgid "Surplus Date"
+msgstr ""
+
+#: openDCIM/report_vm_by_department.php:152
+msgid "Total Number of VMs"
+msgstr ""
+
+#: openDCIM/report_vm_by_department.php:159
+msgid "Virtual Machines Unassigned to a Department"
+msgstr ""
+
+#: openDCIM/report_vm_by_department.php:162
+msgid "Index"
+msgstr ""
+
+#: openDCIM/report_vm_by_department.php:214
+msgid "UserName"
+msgstr ""
+
+#: openDCIM/report_audit.php:312
+msgid "Comments"
+msgstr ""

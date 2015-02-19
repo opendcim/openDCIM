@@ -26,18 +26,18 @@ class PDF extends FPDF {
     	$this->Image( 'images/' . $this->pdfconfig->ParameterArray['PDFLogoFile'],10,8,100);
     	$this->SetFont($this->pdfconfig->ParameterArray['PDFfont'],'B',12);
     	$this->Cell(120);
-    	$this->Cell(30,20,'Information Technology Services',0,0,'C');
-    	$this->Ln(20);
+    	$this->Cell(30,20,__("Information Technology Services"),0,0,'C');
+    	$this->Ln(25);
 		$this->SetFont( $this->pdfconfig->ParameterArray['PDFfont'],'',10 );
-		$this->Cell( 50, 6, 'Data Center Asset and Contact Report', 0, 1, 'L' );
-		$this->Cell( 50, 6, 'Date: ' . date( 'm/d/y' ), 0, 1, 'L' );
+		$this->Cell( 50, 6, __("Data Center Asset and Contact Report"), 0, 1, 'L' );
+		$this->Cell( 50, 6, __("Date").': ' . date('d F Y'), 0, 1, 'L' );
 		$this->Ln(10);
 	}
 
 	function Footer() {
 	    	$this->SetY(-15);
     		$this->SetFont($this->pdfconfig->ParameterArray['PDFfont'],'I',8);
-    		$this->Cell(0,10,'Page '.$this->PageNo().'/{nb}',0,0,'C');
+    		$this->Cell(0,10,__("Page").' '.$this->PageNo().'/{nb}',0,0,'C');
 	}
 	
 
@@ -127,6 +127,9 @@ class PDF_Sector extends PDF
 {
     function Sector($xc, $yc, $r, $a, $b, $style='FD', $cw=true, $o=90)
     {
+        //Check for locale-related bug
+        if(sprintf('%.1f',1.0)!='1.0')
+        	setlocale(LC_NUMERIC,'C');
         if($cw){
             $d = $b;
             $b = $o - $a;
@@ -207,6 +210,8 @@ class PDF_Sector extends PDF
         }
         //terminate drawing
         $this->_out($op);
+        //Return to the original numeric formatting
+        setlocale(LC_NUMERIC,NULL);
     }
 
     function _Arc($x1, $y1, $x2, $y2, $x3, $y3 )
@@ -368,7 +373,7 @@ class PDF_Diag extends PDF_Sector {
 	$pdf=new PDF_Diag();
 	$pdf->AliasNbPages();
 	$pdf->AddPage();
-	
+	include_once("loadfonts.php");
   $colors[0]=array(100,100,255);
   $colors[1]=array(255,100,100);
   $colors[2]=array(255,255,100);
@@ -383,17 +388,17 @@ class PDF_Diag extends PDF_Sector {
 	$pdf->Bookmark( 'Graphs' );
 	$pdf->Bookmark( 'Occupancy' ,1 ,0 );
 	$pdf->SetFont( $config->ParameterArray['PDFfont'],'B', 16 );
-	$pdf->Cell( 0, 18, 'Top 10 Data Center Occupancy Rates', '', 1, 'C', 0 );
+	$pdf->Cell( 0, 18, __("Top 10 Data Center Occupancy Rates"), '', 1, 'C', 0 );
 	$pdf->SetXY( 10, 70 );
-	$pdf->PieChart(200, 80, $tenantList, '%l %v RU (%p)', $colors);
+	$pdf->PieChart(250, 80, $tenantList, '%l: %v RU (%p)', $colors);
   
 	$pdf->AddPage();
 
 	$pdf->Bookmark( 'Power Usage' , 1 ,0 );
 	$pdf->SetFont( $config->ParameterArray['PDFfont'],'B', 16 );
-	$pdf->Cell( 0, 18, 'Top 10 Data Center Power Users', '', 1, 'C', 0 );
+	$pdf->Cell( 0, 18, __("Top 10 Data Center Power Users"), '', 1, 'C', 0 );
 	$pdf->SetXY( 10, 70 );
-	$pdf->PieChart( 200, 80, $powerList, '%l %v Watts (%p)', $colors);
+	$pdf->PieChart( 250, 80, $powerList, '%l: %v Watts (%p)', $colors);
   
 	$pdf->SetFont($config->ParameterArray['PDFfont'],'',8);
 
@@ -416,17 +421,17 @@ class PDF_Diag extends PDF_Sector {
 		$pdf->AddPage();
 		$pdf->Bookmark( $deptRow->Name, 1, 0 );
 		$pdf->SetFont( $config->ParameterArray['PDFfont'], 'B', 12 );
-		$pdf->Cell( 80, 5, 'Department:' );
+		$pdf->Cell( 80, 5, __("Department").":" );
 		$pdf->SetFont( $config->ParameterArray['PDFfont'], '', 12 );
 		$pdf->Cell( 0, 5, $deptRow->Name );
 		$pdf->Ln();
 		$pdf->SetFont( $config->ParameterArray['PDFfont'], 'B', 12 );
-		$pdf->Cell( 80, 5, 'Executive Sponsor:' );
+		$pdf->Cell( 80, 5, __("Executive Sponsor").":" );
 		$pdf->SetFont( $config->ParameterArray['PDFfont'], '', 12 );
 		$pdf->Cell( 0, 5, $deptRow->ExecSponsor );
 		$pdf->Ln();
 		$pdf->SetFont( $config->ParameterArray['PDFfont'], 'B', 12 );
-		$pdf->Cell( 80, 5, 'Service Delivery Manager:' );
+		$pdf->Cell( 80, 5, __("Service Delivery Manager").":" );
 		$pdf->SetFont( $config->ParameterArray['PDFfont'], '', 12 );
 		$pdf->Cell( 0, 5, $deptRow->SDM );
 		$pdf->Ln();
@@ -434,7 +439,7 @@ class PDF_Diag extends PDF_Sector {
 
 		$pdf->SetFont( $config->ParameterArray['PDFfont'], '', 8 );
 
-		$headerTags = array( 'Name', 'UserID', 'Phone1', 'Phone2', 'Phone3', 'Email' );
+		$headerTags = array( __("UserName"), __("UserID"), __("Phone1"), __("Phone2"), __("Phone3"), __("Email") );
 		$cellWidths = array( 50, 20, 25, 25, 25, 50 );
 		$maxval = count( $headerTags );
 		for ( $col = 0; $col < $maxval; $col++ )
@@ -469,7 +474,7 @@ class PDF_Diag extends PDF_Sector {
 		
 		$dc->DataCenterID = 0;
 
-		$headerTags = array( 'Device Name', 'Serial Number', 'Asset Tag', 'Room', 'Cabinet', 'Position', 'Rack Units' );
+		$headerTags = array( __("Device Name"), __("Serial Number"), __("Asset Tag"), __("DC Room"), __("Cabinet"), __("Position"), __("Rack Units") );
 		$cellWidths = array( 50, 30, 20, 30, 20, 20, 20 );
 		$maxval = count( $headerTags );
 
@@ -488,8 +493,8 @@ class PDF_Diag extends PDF_Sector {
 
 			if ( $cab->DataCenterID != $dc->DataCenterID ) {
 			  if ( $dc->DataCenterID > 0 ) {
-			     $pdf->Cell( 0, 5, 'Total Rack Units for ' . $dc->Name . ': ' . $DCRU, '', 1, 'L', '' );
-			     $pdf->Cell( 0, 5, 'Total BTU Output for ' . $dc->Name . ': ' . sprintf( '%d (%.2f Tons)', $DCBTU, $DCBTU/12000 ), '', 1, 'L', '' );
+			     $pdf->Cell( 0, 5, __("Total Rack Units for ") . $dc->Name . ': ' . $DCRU, '', 1, 'L', '' );
+			     $pdf->Cell( 0, 5, __("Total BTU Output for ") . $dc->Name . ': ' . sprintf( '%d (%.2f Tons)', $DCBTU, $DCBTU/12000 ), '', 1, 'L', '' );
 			  }
 			  
 				$dc->DataCenterID = $cab->DataCenterID;
@@ -500,7 +505,7 @@ class PDF_Diag extends PDF_Sector {
 			}
 			
 			if ( $devRow->Height > 1 )
-				$Position = sprintf( "[%d-%d]", $devRow->Position, $devRow->Position + $devRow->Height );
+				$Position = sprintf( "[%d-%d]", $devRow->Position, $devRow->Position + $devRow->Height - 1 );
 			else
 				$Position = $devRow->Position;
     
@@ -521,15 +526,15 @@ class PDF_Diag extends PDF_Sector {
 			$fill =! $fill;
 		}
 
-		$pdf->Cell( 0, 5, 'Total Rack Units for All Data Centers: ' . $TotalRU, '', 1, 'L', '' );
-    $pdf->Cell( 0, 5, 'Total BTU Output for All Data Centers: ' . sprintf( '%d (%.2f Tons)', $TotalBTU, $TotalBTU/12000 ), '', 1, 'L', '' );
+		$pdf->Cell( 0, 5, __("Total Rack Units for All Data Centers").': ' . $TotalRU, '', 1, 'L', '' );
+    $pdf->Cell( 0, 5, __("Total BTU Output for All Data Centers").': ' . sprintf( '%d (%.2f Tons)', $TotalBTU, $TotalBTU/12000 ), '', 1, 'L', '' );
     
     $esx = new ESX();
     
     $esx->Owner = $deptRow->DeptID;
     $esxList = $esx->GetVMListbyOwner();
     
-		$headerTags = array( 'Virtual Machine Image Name', 'Current Host Server', 'State', 'Last Polled' );
+		$headerTags = array( __("Virtual Machine Image Name"), __("Current Host Server"), __("State"), __("Last Polled") );
 		$cellWidths = array( 60, 40, 30, 40 );
 		$maxval = count( $headerTags );
 

@@ -20,18 +20,18 @@ class PDF extends FPDF {
     	$this->Image( 'images/' . $this->pdfconfig->ParameterArray['PDFLogoFile'],10,8,100);
     	$this->SetFont($this->pdfconfig->ParameterArray['PDFfont'],'B',12);
     	$this->Cell(120);
-    	$this->Cell(30,20,'Information Technology Services',0,0,'C');
-    	$this->Ln(20);
+    	$this->Cell(30,20,__("Information Technology Services"),0,0,'C');
+    	$this->Ln(25);
 		$this->SetFont( $this->pdfconfig->ParameterArray['PDFfont'],'',10 );
-		$this->Cell( 50, 6, 'Data Center Asset Report', 0, 1, 'L' );
-		$this->Cell( 50, 6, 'Date: ' . date( 'm/d/y' ), 0, 1, 'L' );
+		$this->Cell( 50, 6, __("Data Center Asset Report"), 0, 1, 'L' );
+		$this->Cell( 50, 6, __("Date").': ' . date('d F Y'), 0, 1, 'L' );
 		$this->Ln(10);
 	}
 
 	function Footer() {
 	    	$this->SetY(-15);
     		$this->SetFont($this->pdfconfig->ParameterArray['PDFfont'],'I',8);
-    		$this->Cell(0,10,'Page '.$this->PageNo().'/{nb}',0,0,'C');
+    		$this->Cell(0,10,__("Page").' '.$this->PageNo().'/{nb}',0,0,'C');
 	}
 }
 
@@ -39,6 +39,7 @@ class PDF extends FPDF {
 	$DataCenterID = @$_REQUEST['datacenterid'];
   
 	$pdf=new PDF();
+	include_once("loadfonts.php");
 	$pdf->AliasNbPages();
 	$pdf->AddPage();
 	$pdf->SetFont($config->ParameterArray['PDFfont'],'',8);
@@ -48,7 +49,7 @@ class PDF extends FPDF {
 	$pdf->SetDrawColor( 128, 0, 0 );
 	$pdf->SetLineWidth( .3 );
 
-	$headerTags = array( 'Room', 'Rack', 'Position', 'Label', 'Serial Number', 'Asset Tag' );
+	$headerTags = array( __("DC Room"), __("Rack"), __("Position"), __("Label"), __("Serial Number"), __("Asset Tag") );
 	$cellWidths = array( 15, 15, 15, 70, 30, 30 );
 	$maxval = count( $headerTags );
 
@@ -78,7 +79,7 @@ class PDF extends FPDF {
 		$DataCenter = $reportRow['Name'];
 		$Location = $reportRow['Location'];
 		if ( $reportRow["Height"] > 1 )
-			$Position = '[' . $reportRow['Position'] . '-' . intval($reportRow['Position']+$reportRow['Height']) . ']';
+			$Position = '[' . $reportRow['Position'] . '-' . intval($reportRow['Position']+$reportRow['Height']-1) . ']';
 		else
 			$Position = $reportRow['Position'];
 			

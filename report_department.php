@@ -22,10 +22,10 @@ class PDF extends FPDF {
     	$this->SetFont($this->pdfconfig->ParameterArray['PDFfont'],'B',12);
     	$this->Cell(120);
     	$this->Cell(30,20,__("Information Technology Services"),0,0,'C');
-    	$this->Ln(20);
+    	$this->Ln(25);
 		$this->SetFont( $this->pdfconfig->ParameterArray['PDFfont'],'',10 );
 		$this->Cell( 50, 6, __("Departmental Contacts Report"), 0, 1, 'L' );
-		$this->Cell( 50, 6, __("Date").': ' . date( "M d, Y" ), 0, 1, 'L' );
+		$this->Cell( 50, 6, __("Date").': ' . date('d F Y'), 0, 1, 'L' );
 		$this->Ln(10);
 	}
 
@@ -128,7 +128,7 @@ class PDF extends FPDF {
 	
 	$pdf=new PDF();
 	$pdf->AliasNbPages();
-	  
+	include_once("loadfonts.php");
 	$pdf->SetFont($config->ParameterArray['PDFfont'],'',8);
 
 	$pdf->SetFillColor( 0, 0, 0 );
@@ -155,12 +155,12 @@ class PDF extends FPDF {
 		$pdf->Cell( 0, 5, $deptRow->Name );
 		$pdf->Ln();
 		$pdf->SetFont( $config->ParameterArray['PDFfont'], 'B', 12 );
-		$pdf->Cell( 80, 5, __("Executive Sponsor"),':' );
+		$pdf->Cell( 80, 5, __("Executive Sponsor").":" );
 		$pdf->SetFont( $config->ParameterArray['PDFfont'], '', 12 );
 		$pdf->Cell( 0, 5, $deptRow->ExecSponsor );
 		$pdf->Ln();
 		$pdf->SetFont( $config->ParameterArray['PDFfont'], 'B', 12 );
-		$pdf->Cell( 80, 5, __("Service Delivery Manager"),':' );
+		$pdf->Cell( 80, 5, __("Service Delivery Manager").":" );
 		$pdf->SetFont( $config->ParameterArray['PDFfont'], '', 12 );
 		$pdf->Cell( 0, 5, $deptRow->SDM );
 		$pdf->Ln();
@@ -168,7 +168,7 @@ class PDF extends FPDF {
 
 		$pdf->SetFont( $config->ParameterArray['PDFfont'], '', 8 );
 
-		$headerTags = array( __("Name"), __("UserID"), __("Phone1"), __("Phone2"), __("Phone3"), __("Email") );
+		$headerTags = array( __("UserName"), __("UserID"), __("Phone1"), __("Phone2"), __("Phone3"), __("Email") );
 		$cellWidths = array( 50, 20, 25, 25, 25, 50 );
 		$maxval = count( $headerTags );
 		for ( $col = 0; $col < $maxval; $col++ )

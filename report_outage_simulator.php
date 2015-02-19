@@ -289,7 +289,7 @@ echo '		<div class="main">
 		if ( sizeof( $devList ) > 0 ) {
 			foreach ( $devList as $devRow ) {
 				// If there is not a circuit to the cabinet that is unaffected, no need to even check
-				$outageStatus = 'Down';
+				$outageStatus = __("Down");
 				
 				if ( ! $devRow->Reservation ) {	// No need to even process devices that aren't installed, yet
 					if ( $diversity ) {

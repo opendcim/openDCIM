@@ -18,7 +18,7 @@
 	// Left these expanded in case we need to add or remove columns.  Otherwise I would have just collapsed entirely.
 	$body="<table id=\"export\" class=\"display\">\n\t<thead>\n\t\t<tr>\n
 		\t<th>".__("Time")."</th>
-		\t<th>".__("User")."</th>
+		\t<th>".__("UserID")."</th>
 		\t<th>".__("Class")."</th>
 		\t<th>".__("ObjectID")."</th>
 		\t<th>".__("ChildID")."</th>
