@@ -1,0 +1,13 @@
+
+Please refer to the INSTALL file for a complete documentation, this file is just an addon for Ubuntu Server
+
+These are the basic packages you need to run OpenDCIM on ubuntu server 14.04.1 LTS
+
+sudo apt-get install  apache2 php5-mysql mysql-server apache2-utils snmp graphviz
+
+If you plan to query your switches with snmp you need to download the snmp MIBS that in Ubuntu are in a different package:
+
+sudo apt-get install snmp-mibs-downloader
+sudo download-mibs
+sudo sed -i 's/^mibs/#mibs/g' /etc/snmp/snmp.conf
+
