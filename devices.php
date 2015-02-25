@@ -19,6 +19,28 @@
 	$taginsert="";
 
 	// Ajax functions
+	// SNMP Test
+	if(isset($_POST['snmptest'])){
+		$snmpresults=snmprealwalk($_POST['ip'],$_POST['community'],'1.3.6.1.2.1.1');
+		if($snmpresults){
+			foreach($snmpresults as $oid => $value){
+				print "$oid => $value <br>\n";
+			}
+		}else{
+			print __("Something isn't working correctly");
+		}
+		exit;
+	}
+
+	// Get CDU uptime
+	if(isset($_POST['cduuptime'])){
+		$pdu=new PowerDistribution();
+		$pdu->PDUID=$_POST['deviceid'];
+		
+		echo $pdu->GetSmartCDUUptime();
+		exit;
+	}
+
 	// Get log entries
 	if(isset($_POST['logging'])){
 		$dev->DeviceID=$_POST['devid'];
@@ -53,8 +75,14 @@
 	if(isset($_GET['spn'])){
 		header('Content-Type: application/json');
 		$PortNamePatterns=array();
-		foreach(array('NIC(1)','Port(1)','Fa/(1)','Gi/(1)','Ti/(1)','Custom',__("From Template")) as $pattern){
-			$PortNamePatterns[]['Pattern']=$pattern;
+		if(isset($_GET['power'])){
+			foreach(array('PS(1)','R(1)','Custom',__("From Template")) as $pattern){
+				$PortNamePatterns[]['Pattern']=$pattern;
+			}
+		}else{
+			foreach(array('NIC(1)','Port(1)','Fa/(1)','Gi/(1)','Ti/(1)','Custom',__("From Template")) as $pattern){
+				$PortNamePatterns[]['Pattern']=$pattern;
+			}
 		}
 		echo json_encode($PortNamePatterns);
 		exit;
@@ -108,7 +136,7 @@
 			if($_POST['spn']==__("From Template")){
 				$dev->DeviceID=$_POST['devid'];
 				$dev->GetDevice();
-				$ports=new TemplatePorts();
+				$ports=(isset($_POST['power']))?new TemplatePowerPorts():new TemplatePorts();
 				$ports->TemplateID=$dev->TemplateID;
 				foreach($ports->getPorts() as $pn => $portobject){
 					$portnames[$pn]=$portobject->Label;
@@ -119,17 +147,20 @@
 				if($result){
 					$dev->DeviceID=$_POST['devid'];
 					$dev->GetDevice();
-					$portnames=generatePatterns($result, $dev->Ports);
+					$portnames=generatePatterns($result, (isset($_POST['power']))?$dev->PowerSupplyCount:$dev->Ports);
 					// generatePatterns starts the index at 0, it's more useful to us starting at 1
 					array_unshift($portnames, null);
 				}
 			}
 		}
 		// Make a new method to set all the ports to a media type?
-		foreach(DevicePorts::getPortList($_POST['devid']) as $portnum => $port){
+		$blurg=(isset($_POST['power']))?PowerPorts::getPortList($_POST['devid']):DevicePorts::getPortList($_POST['devid']);
+		foreach($blurg as $portnum => $port){
 			$port->Label=(isset($_POST['spn']) && (($_POST['setall']=='true' && count($portnames)>0) || (count($portnames)>0 && strlen($port->Label)==0)))?$portnames[abs($port->PortNumber)]:$port->Label;
-			$port->MediaID=(($_POST['setall']=='true' || $port->MediaID==0) && isset($_POST['mt']) && ($_POST['setall']=='true' || intval($_POST['mt'])>0))?$_POST['mt']:$port->MediaID;
-			$port->ColorID=(($_POST['setall']=='true' || $port->ColorID==0) && isset($_POST['cc']) && ($_POST['setall']=='true' || intval($_POST['cc'])>0))?$_POST['cc']:$port->ColorID;
+			if(!isset($_POST['power'])){
+				$port->MediaID=(($_POST['setall']=='true' || $port->MediaID==0) && isset($_POST['mt']) && ($_POST['setall']=='true' || intval($_POST['mt'])>0))?$_POST['mt']:$port->MediaID;
+				$port->ColorID=(($_POST['setall']=='true' || $port->ColorID==0) && isset($_POST['cc']) && ($_POST['setall']=='true' || intval($_POST['cc'])>0))?$_POST['cc']:$port->ColorID;
+			}
 			$port->updatePort();
 			// Update the other side to keep media types in sync if it is connected same
 			// rule applies that it will only be set if it is currently unset
@@ -137,13 +168,15 @@
 				$port->DeviceID=$port->ConnectedDeviceID;
 				$port->PortNumber=$port->ConnectedPort;
 				$port->getPort();
-				$port->MediaID=(($_POST['setall']=='true' || $port->MediaID==0) && isset($_POST['mt']) && ($_POST['setall']=='true' || intval($_POST['mt'])>0))?$_POST['mt']:$port->MediaID;
-				$port->ColorID=(($_POST['setall']=='true' || $port->ColorID==0) && isset($_POST['cc']) && ($_POST['setall']=='true' || intval($_POST['cc'])>0))?$_POST['cc']:$port->ColorID;
+				if(!isset($_POST['power'])){
+					$port->MediaID=(($_POST['setall']=='true' || $port->MediaID==0) && isset($_POST['mt']) && ($_POST['setall']=='true' || intval($_POST['mt'])>0))?$_POST['mt']:$port->MediaID;
+					$port->ColorID=(($_POST['setall']=='true' || $port->ColorID==0) && isset($_POST['cc']) && ($_POST['setall']=='true' || intval($_POST['cc'])>0))?$_POST['cc']:$port->ColorID;
+				}
 				$port->updatePort();
 			}
 		}
 		// Return all the ports for the device then eval just the MT and CC
-		$dp=new DevicePorts();
+		$dp=(isset($_POST['power']))?new PowerPorts():new DevicePorts();
 		$dp->DeviceID=$_POST['devid'];
 		header('Content-Type: application/json');
 		$ports=array(
@@ -367,7 +400,8 @@
 		}else{
 			$patchpanels=(isset($_POST['rear']))?"true":null;
 			$portnumber=(isset($_POST['pn']))?$_POST['pn']:null;
-			$list=DevicePorts::getPatchCandidates($_POST['swdev'],$portnumber,null,$patchpanels);
+			$limiter=(isset($_POST['limiter']))?$_POST['limiter']:null;
+			$list=DevicePorts::getPatchCandidates($_POST['swdev'],$portnumber,null,$patchpanels,$limiter);
 		}
 		header('Content-Type: application/json');
 		echo json_encode($list);
@@ -427,6 +461,24 @@
 		}
 		exit;
 	}
+
+	if(isset($_POST["currwatts"]) && isset($_POST['pduid']) && $_POST['pduid'] >0){
+		$pdu=new PowerDistribution();
+		$pdu->PDUID=$_POST['pduid'];
+		$wattage->Wattage='Err';
+		$wattage->LastRead='Err';
+		if($pdu->GetPDU()){
+			$cab->CabinetID=$pdu->CabinetID;
+			$cab->GetCabinet();
+			if($person->canWrite($cab->AssignedTo)){
+				$wattage=$pdu->LogManualWattage($_POST["currwatts"]);
+				$wattage->LastRead=strftime("%c",strtotime($wattage->LastRead));
+			}
+		}
+		header('Content-Type: application/json');
+		echo json_encode($wattage);
+		exit;
+	}
 	// END AJAX
 
 
@@ -449,8 +501,8 @@
 	// This page was called from somewhere so let's do stuff.
 	// If this page wasn't called then present a blank record for device creation.
 	if(isset($_REQUEST['action'])||isset($_REQUEST['deviceid'])){
-		if(isset($_REQUEST['cabinet'])){
-			$dev->Cabinet=$_REQUEST['cabinet'];
+		if(isset($_REQUEST['cabinetid'])){
+			$dev->Cabinet=$_REQUEST['cabinetid'];
 			$cab->CabinetID=$dev->Cabinet;
 			$cab->GetCabinet();
 		}
@@ -488,7 +540,7 @@
 					}
 				}
 
-				if($dev->DeviceType=="CDU" || $_POST['devicetype']=="CDU"){
+				if($dev->DeviceType=="CDU" || (isset($_POST['devicetype']) && $_POST['devicetype']=="CDU")){
 					$pdu->PDUID=$dev->DeviceID;
 					$pdu->GetPDU();
 				}
@@ -603,7 +655,9 @@
 						$dev->UpdateWattageFromTemplate();
 					}
 					$dev->CreateDevice();
-					$pdu->CreatePDU($dev->DeviceID);
+					if($dev->DeviceType=="CDU"){
+						$pdu->CreatePDU($dev->DeviceID);
+					}
 					$dev->SetTags($tagarray);
 					updateCustomValues($dev);
 				}
@@ -637,6 +691,10 @@
 				}elseif($dev->DeviceType=='CDU'){
 					$pdu->PDUID=$dev->DeviceID;
 					$pdu->GetPDU();
+
+					$lastreading=$pdu->GetLastReading();
+					$LastWattage=($lastreading)?$lastreading->Wattage:0;
+					$LastRead=($lastreading)?strftime("%c",strtotime($lastreading->LastRead)):"Never";
 				}
 			}
 
@@ -687,7 +745,8 @@
 						'Switch' => __("Switch"),
 						'Chassis' => __("Chassis"),
 						'Patch Panel' => __("Patch Panel"),
-);
+						'Sensor' => __("Sensor"),
+						);
 	}else{
 		$devarray=array('Server' => __("Server"),
 						'Appliance' => __("Appliance"),
@@ -696,7 +755,9 @@
 						'Chassis' => __("Chassis"),
 						'Patch Panel' => __("Patch Panel"),
 						'Physical Infrastructure' => __("Physical Infrastructure"),
-						'CDU' => __("CDU"));
+						'CDU' => __("CDU"),
+						'Sensor' => __("Sensor"),
+						);
 	}
 
 	if($config->ParameterArray["mDate"]=="now"){
@@ -1018,6 +1079,8 @@ $(document).ready(function() {
 	$(document).data('ports',$('#ports').val());
 	$(document).data('powersupplycount',$('#powersupplycount').val());
 	$(document).data('devicetype', $('select[name="devicetype"]').val());
+	$(document).data('defaultsnmp','<?php echo $config->ParameterArray["SNMPCommunity"]; ?>');
+	$(document).data('showdc','<?php echo $config->ParameterArray["AppendCabDC"]; ?>');
 
 	$('#deviceform').validationEngine();
 	$('#mfgdate').datepicker();
@@ -1028,11 +1091,70 @@ $(document).ready(function() {
 		return false;
 	});
 
+	// CDU functions
+	$('#panelid').change( function(){
+		$.get('scripts/ajax_panel.php?q='+$(this).val(), function(data) {
+			$('#voltage').html(data['PanelVoltage'] +'/'+ Math.floor(data['PanelVoltage']/1.73));
+		});
+	});
+	$('#btn_override').on('click',function(e){
+		var btn=$(e.currentTarget);
+		var target=$(e.currentTarget.previousSibling);
+		if(btn.val()=='edit'){
+			var specialinput=$('<input>').attr('size',5).val(target.text());
+			specialinput.keypress(function(event){
+				if(event.keyCode==10 || event.keyCode==13){
+					event.preventDefault();
+					btn.click();
+				}
+			});
+			btn.val('submit').text(btn.data('submit')).css('height','2em');
+			target.replaceWith(specialinput);
+			specialinput.focus().select();
+		}else{
+			btn.val('edit').text(btn.data('edit')).css('height','');
+			$.post('',{currwatts: target.val(), pduid:$('#deviceid').val()}).done(function(data){
+				target.replaceWith($('<span>').text(data.Wattage));
+				$('#lastread').text(data.LastRead);
+			});
+		}
+	});
+
+	// Do a call after the page loads to get the CDU uptime to speed up the initial page load
+	if($('select[name=devicetype]').val()=='CDU'){
+		$.post('',{cduuptime: '',deviceid: $('#deviceid').val()}, function(data) {
+			$('#cduuptime').text(data);
+		});
+	}
+
 
 	// Make SNMP community visible
 	$('#snmpcommunity').focus(function(){$(this).attr('type','text');});
 	$('#snmpcommunity').blur(function(){$(this).attr('type','password');});
 
+	// What what?! an SNMP test function!?
+	$('#primaryip,#snmpcommunity').on('change keyup keydown', function(){ SNMPTest(); }).change();
+
+	function SNMPTest(){
+		var ip=$('#primaryip');
+		var snmp=$('#snmpcommunity');
+		var dc=$(document).data('defaultsnmp');
+		var community=(snmp.val()!='')?snmp.val():(dc!='')?dc:'';
+
+		if(ip.val()!='' && community!=''){snmp.next('button').show().removeClass('hide');}else{snmp.next('button').hide();}
+	}
+
+	$('#btn_snmptest').click(function(e){
+		e.preventDefault();
+		var snmp=$('#snmpcommunity');
+		var dc=$(document).data('defaultsnmp');
+		var community=(snmp.val()!='')?snmp.val():(dc!='')?dc:'';
+		$('#pdutest').html('<img src="images/mimesearch.gif" height="150px">Checking...');
+		$.post('', {snmptest: $('#deviceid').val(),ip: $('#primaryip').val(),community: community}, function(data){
+			$('#pdutest').html(data);
+		});
+		$('#pdutest').dialog({minWidth: 850, position: { my: "center", at: "top", of: window },closeOnEscape: true });
+	});
 
 	// Add in refresh functions for virtual machines
 	var esxtable=$('<div>').addClass('table border').append('<div><div>VM Name</div><div>Status</div><div>Owner</div><div>Last Updated</div></div>');
@@ -1146,8 +1268,10 @@ console.log($('#customattrs .table ~ .table'));
 		}
 		if($(this).val()=='CDU'){
 			$('#cdu').show().removeClass('hide');
+			$('#nominalwatts').parent('div').parent('div').addClass('hide');
 		}else{
 			$('#cdu').hide();
+			$('#nominalwatts').parent('div').parent('div').removeClass('hide');
 		}
 		resize();
 	}).change();
@@ -1344,6 +1468,8 @@ print "		var dialog=$('<div>').prop('title',\"".__("Verify Delete Device")."\").
 					});
 				},100);
 			}, 'json');
+		}).click(function(){
+			$(this).trigger('focus');
 		});
 <?php
 		}
@@ -1481,7 +1607,7 @@ echo '<div class="center"><div>
 		</div>
 		<div>
 		  <div><label for="snmpcommunity">'.__("SNMP Read Only Community").'</label></div>
-		  <div><input type="password" name="snmpcommunity" id="snmpcommunity" size="40" value="'.$dev->SNMPCommunity.'"></div>
+		  <div><input type="password" name="snmpcommunity" id="snmpcommunity" size="40" value="'.$dev->SNMPCommunity.'"><button type="button" class="hide" id="btn_snmptest">'.__("Test SNMP").'</button></div>
 		</div>
 		<div>
 		   <div><label for="mfgdate">'.__("Manufacture Date").'</label></div>
@@ -1597,7 +1723,7 @@ echo '
 		if($dev->ParentDevice==0){
 			print "\t\t\t<div>".$cab->GetCabinetSelectList()."</div>\n";
 		}else{
-			print "\t\t\t<div>$cab->Location<input type=\"hidden\" name=\"cabinetid\" value=\"0\"></div>
+			print "\t\t\t<div>$cab->Location<input type=\"hidden\" name=\"cabinetid\" value=$cab->CabinetID></div>
 		</div>
 		<div>
 			<div><label for=\"parentdevice\">".__("Parent Device")."</label></div>
@@ -1696,7 +1822,7 @@ echo '
 	</div> <!-- END div.table -->
 </fieldset>
 <fieldset id="deviceimages">
-	<legend>Device Images</legend>
+	<legend>',__("Device Images"),'</legend>
 	<div>';
 		$frontpic=($templ->FrontPictureFile!='')?' src="pictures/'.$templ->FrontPictureFile.'"':'';
 		$rearpic=($templ->RearPictureFile!='')?' src="pictures/'.$templ->RearPictureFile.'"':'';
@@ -1776,7 +1902,7 @@ echo '
 		echo '
 		<div>
 			<div>',__("Uptime"),'</div>
-			<div>',$upTime,'</div>
+			<div id="cduuptime">',$upTime,'</div>
 		</div>
 		<div>
 			<div>',__("Firmware Version"),'</div>
@@ -1939,7 +2065,7 @@ echo '	<div class="table">
 				<div>
 					<div class=\"delete\" style=\"display: none;\"></div>
 					<div>#</div>
-					<div>".__("Port Name")."</div>
+					<div id=\"ppcn\">".__("Port Name")."</div>
 					<div>".__("Device")."</div>
 					<div>".__("Device Port")."</div>
 					<div>".__("Notes")."</div>
@@ -1968,7 +2094,24 @@ echo '	<div class="table">
 					<div data-default=\"$cord->Notes\">$cord->Notes</div>
 				</div>\n";
 			}
-			print "			</div><!-- END div.table --></div>\n		</div><!-- END power connections -->\n		<!-- Spacer --><div><div>&nbsp;</div><div></div></div><!-- END Spacer -->\n";
+$connectioncontrols=($dev->DeviceID>0)?'
+<span style="display: inline-block; vertical-align: super;">'.__("Limit device selection to").':</span>
+<div id="connection-limiter" data-role="controlgroup" data-type="horizontal">
+	<input type="radio" name="connection-limiter" id="radio-choice-1" value="row" />
+	<label for="radio-choice-1">Row</label>
+	<input type="radio" name="connection-limiter" id="radio-choice-2" value="zone" />
+	<label for="radio-choice-2">Zone</label>
+	<input type="radio" name="connection-limiter" id="radio-choice-3" value="datacenter" />
+	<label for="radio-choice-3">Datacenter</label>
+	<input type="radio" name="connection-limiter" id="radio-choice-4" value="global" />
+	<label for="radio-choice-4">Global</label>
+</div>':'';
+
+			print "			</div><!-- END div.table --></div>\n		</div><!-- END power connections -->\n		<!-- Spacer --><div><div>&nbsp;</div><div>$connectioncontrols</div></div><!-- END Spacer -->\n";
+
+
+
+
 	}
 
 	$jsondata=array();// array to store user ability to modify a port. index=portnumber, value=true/false
@@ -2125,6 +2268,8 @@ echo '	<div class="table">
 	<p><?php print __("Do you certify that you have completed an audit of this device?"); ?></p>
 </div>
 
+<div id="pdutest" title="Testing SNMP Communications"></div>
+
 </div><!-- END div.main -->
 </div><!-- END div.page -->
 <script type="text/javascript">
@@ -2169,12 +2314,20 @@ echo '	<div class="table">
 		// Add a spacer for use when/if port removal options are triggered
 		$('.switch > div:first-child, .patchpanel > div:first-child').prepend($('<div>').addClass('delete').hide());
 		// Endable Mass Change Options
-		$('.switch.table, .patchpanel.table').massedit();
+		$('.switch.table, .patchpanel.table, .power.table').massedit();
 
 		<?php echo (class_exists('LogActions') && $dev->DeviceID>0)?'LameLogDisplay();':''; ?>
 
 		// Scroll the operations log to the bottom
 		scrollolog();
+
+		// Linkify URLs in the olog.
+		function linkifyolog(){
+			$('#olog .table > div').find('div + div').each(function(){
+				$(this).html(urlify($(this).text()));
+			});
+		}
+		linkifyolog();
 
 		var zoom=$('<span>').addClass('ui-icon ui-icon-circle-zoomin').css('float','right');
 		$('#olog > div:first-child > div').prepend(zoom);
@@ -2203,18 +2356,21 @@ echo '	<div class="table">
 			}
 		});
 		$('#olog button').click(function(){
-			$.post('',{devid: $('#deviceid').val(), olog: $('#olog input').val()}).done(function(data){
-				if(data){
-					var row=$('<div>')
-						.append($('<div>').text(getISODateTime(new Date())))
-						.append($('<div>').text($('#olog input').val()));
-					$('#olog .table').append(row);
-					$('#olog input').val('');
-					scrollolog();
-				}else{
-					$('#olog input').effect('highlight', {color: 'salmon'}, 1500);
-				}
-			});
+			if($('#olog input').val().trim()!=''){
+				$.post('',{devid: $('#deviceid').val(), olog: $('#olog input').val()}).done(function(data){
+					if(data){
+						var row=$('<div>')
+							.append($('<div>').text(getISODateTime(new Date())))
+							.append($('<div>').text($('#olog input').val()));
+						$('#olog .table').append(row);
+						$('#olog input').val('');
+						scrollolog();
+						linkifyolog();
+					}else{
+						$('#olog input').effect('highlight', {color: 'salmon'}, 1500);
+					}
+				});
+			}
 		});
 
 		$('.caption > button[name="audit"]').click(function(){
@@ -2239,6 +2395,17 @@ echo '	<div class="table">
 		$('#cabinetid').combobox();
 		$('#templateid').combobox();
 		$('select[name=parentdevice]').combobox();
+
+		// Connection limitation selection
+		$('#connection-limiter').buttonset().parent('div').css('text-align','right');
+		$('#connection-limiter input').click(function(){
+			$('.table.switch > div ~ div').each(function(){
+				var row=$(this);
+				if(row.data('edit')){
+					row.row('getdevices');
+				}
+			});
+		});
 
 	});
 </script>

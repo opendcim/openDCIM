@@ -408,6 +408,10 @@
 					$(this).dialog("destroy");
 				}
 			}
+/* WARNING: if translation into other language of the message "__("Are you sure that you..." contains the character " ' ",
+in the po-file of localization it is necessary to apply double escaping to it, i.e. \\'
+Otherwise, there will be impossible an execution of a call "Test Communications" and links in the table power connections of PDU!
+*/
 <?php echo "			var modal=$('<div />', {id: 'modal', title: '".__("PDU Deletion Confirmation")."'}).html('<div id=\"modaltext\">".__("Are you sure that you want to delete this PDU and all the power connections on it?")."</div>').dialog({"; ?>
 				dialogClass: 'no-close',
 				appendTo: 'body',
