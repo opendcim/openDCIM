@@ -69,7 +69,7 @@ echo '<div class="main">
 
 
 </div></div>
-
+<?php echo '<a href="index.php">[ ',__("Return to Main Menu"),' ]</a>'; ?>
 </div>
 <div class="clear"></div>
 </div>
