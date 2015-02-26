@@ -1746,8 +1746,9 @@ echo '<div class="main">
 	<div>&nbsp;</div>
 </div>
 <div>
-   <div><input type="submit" name="action" value="Update"></div>
+   <?php echo '<button type="submit" name="action" value="Update">',__("Update"),'</button></div>'; ?>
 </div>
+   <?php echo '<a href="index.php">[ ',__("Return to Main Menu"),' ]</a>'; ?>
 </div> <!-- END div.table -->
 </form>
 </div>
