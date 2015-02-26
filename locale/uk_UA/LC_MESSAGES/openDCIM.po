@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: openDCIM.po\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2014-07-27 13:07-0400\n"
-"PO-Revision-Date: 2015-02-24 16:47+0200\n"
+"PO-Revision-Date: 2015-02-26 11:42+0200\n"
 "Last-Translator: Oleksiy O. Loktev <spezialist@email.ua>\n"
 "Language-Team: openDCIM <discussion@list.opendcim.org>\n"
 "MIME-Version: 1.0\n"
@@ -1019,19 +1019,19 @@ msgstr "Примітка за промовчанням"
 
 #: openDCIM/configuration.php:1266
 msgid "Connection Pathing"
-msgstr "Параметри комутації"
+msgstr "Вагові коефіцієнти для автоматичної комутації"
 
 #: openDCIM/configuration.php:1269
 msgid "Cabinet Weight"
-msgstr ""
+msgstr "Для з'єднань в межах шафи (чим менше, тим впливовіше)"
 
 #: openDCIM/configuration.php:1273
 msgid "Weight for rear connections between panels"
-msgstr ""
+msgstr "Для міжпанельних з'єднань (чим менше, тим впливовіше)"
 
 #: openDCIM/configuration.php:1277
 msgid "Weight for patches in the same row"
-msgstr ""
+msgstr "Для з'єднань в межах ряда шаф (чим менше, тим впливовіше)"
 
 #: openDCIM/conflicts.php:575 openDCIM/devices.php:1626
 msgid "Power Strip"
@@ -1782,7 +1782,7 @@ msgstr "Модульний БРЖ"
 #: openDCIM/devices.php:1641 openDCIM/devices.php:1689
 #: openDCIM/export_port_connections.php:59 openDCIM/pathmaker.php:189
 msgid "Connections"
-msgstr "Таблиця комутації"
+msgstr "Схема комутації"
 
 #: openDCIM/devices.php:1643
 msgid "Port Name"
@@ -2319,11 +2319,11 @@ msgstr "Комутація"
 
 #: openDCIM/misc.inc.php:626
 msgid "View Path Connection"
-msgstr "Перегляд комутації"
+msgstr "Пошук та перегляд комутації"
 
 #: openDCIM/misc.inc.php:627
 msgid "Make Path Connection"
-msgstr "Виконати комутацію"
+msgstr "Майстер автоматичної комутації"
 
 #: openDCIM/misc.inc.php:628
 msgid "Edit Configuration"
@@ -2331,7 +2331,7 @@ msgstr "Налаштовки"
 
 #: openDCIM/pathmaker.php:5
 msgid "Creating an end to end connection"
-msgstr "Виконати комутацію"
+msgstr "Майстер автоматичної комутації"
 
 #: openDCIM/pathmaker.php:86 openDCIM/pathmaker.php:88
 msgid "Connection implemented"
@@ -2409,7 +2409,7 @@ msgstr "Міжпанельна комутація"
 
 #: openDCIM/pathmaker.php:386
 msgid "Implement in DataBase"
-msgstr "Внести зміни в БД"
+msgstr "Зберегти запропоновану комутацію"
 
 #: openDCIM/pathmaker.php:482
 msgid "Initial device"
@@ -2421,7 +2421,7 @@ msgstr "Кінцевий пристрій"
 
 #: openDCIM/pathmaker.php:504
 msgid "Make Path"
-msgstr "Виконати комутацію"
+msgstr "Запустити майстер"
 
 #: openDCIM/paths.php:5
 msgid "End to end connection path"
@@ -2458,15 +2458,15 @@ msgstr "Схема комутації з"
 
 #: openDCIM/paths.php:466
 msgid "Delete front connections in DataBase"
-msgstr "Видалити патчкорди з БД"
+msgstr "Роз'єднати патчкорди та застосувати зміни"
 
 #: openDCIM/paths.php:569
 msgid "Search by path identifier"
-msgstr "Пошук за ідентифікатором"
+msgstr "Пошук за маркуванням"
 
 #: openDCIM/paths.php:574
 msgid "Identifier"
-msgstr "Ідентифікатор"
+msgstr "Примітки"
 
 #: openDCIM/paths.php:578 openDCIM/paths.php:594
 msgid "Search"
