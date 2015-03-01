@@ -200,6 +200,10 @@
 				type: 'put',
 				url: 'https://repository.opendcim.org/api/manufacturer',
 				async: false,
+				headers:{
+					'APIKey':'e807f1fcf82d132f9bb018ca6738a19f',
+					'UserID':'wilbur@wilpig.org'
+				},
 				data: {Name:row.local.Name},
 				success: function(data){
 

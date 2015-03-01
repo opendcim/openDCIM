@@ -165,3 +165,18 @@ ALTER TABLE fac_SensorTemplate ADD KeepLocal tinyint(1) NOT NULL DEFAULT 0;
 
 INSERT INTO fac_Config set Parameter="ShareToRepo", Value="disabled", UnitOfMeasure="Enabled/Disabled", ValType="string", DefaultVal="disabled";
 INSERT INTO fac_Config set Parameter="KeepLocal", Value="enabled", UnitOfMeasure="Enabled/Disabled", ValType="string", DefaultVal="enabled";
+
+--
+-- Compatability updates below
+--
+ALTER TABLE fac_Cabinet CHANGE FrontEdge FrontEdge VARCHAR( 7 ) NOT NULL DEFAULT "Top";
+ALTER TABLE fac_CabRow DROP CabOrder;
+ALTER TABLE fac_SensorTemplate CHANGE SNMPVersion SNMPVersion VARCHAR( 2 ) NOT NULL DEFAULT "2c";
+ALTER TABLE fac_CDUTemplate CHANGE Multiplier Multiplier VARCHAR( 6 ) NULL DEFAULT NULL;
+ALTER TABLE fac_CDUTemplate CHANGE SNMPVersion SNMPVersion VARCHAR( 2 ) NOT NULL DEFAULT "2c";
+ALTER TABLE fac_CDUTemplate CHANGE ProcessingProfile ProcessingProfile VARCHAR( 20 ) NOT NULL DEFAULT "SingleOIDWatts";
+ALTER TABLE fac_PowerPanel CHANGE NumberScheme NumberScheme VARCHAR( 10 ) NOT NULL DEFAULT "Sequential";
+ALTER TABLE fac_Device CHANGE DeviceType DeviceType VARCHAR( 23 ) NOT NULL DEFAULT "Server";
+ALTER TABLE fac_RackRequest CHANGE DeviceType DeviceType VARCHAR( 23 ) NOT NULL DEFAULT "Server";
+ALTER TABLE fac_DeviceTemplate CHANGE DeviceType DeviceType VARCHAR( 23 ) NOT NULL DEFAULT "Server";
+ALTER TABLE fac_DeviceCustomAttribute CHANGE AttributeType AttributeType VARCHAR( 8 ) NOT NULL DEFAULT "string";

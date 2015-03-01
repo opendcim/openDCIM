@@ -4780,13 +4780,13 @@ class DeviceCustomAttribute {
 	var $DefaultValue;
 
 	function MakeSafe() {
+		$validtypes=array("string","number","integer","date","phone","email","ipv4","url","checkbox");
+
 		$this->AttributeID=intval($this->AttributeID);
 		$this->Label=sanitize($this->Label);
-		$this->AttributeType=sanitize($this->AttributeType);
-		$this->Required=intval($this->Required);
-		$this->Required=($this->Required>=1)?1:0;
-		$this->AllDevices=intval($this->AllDevices);
-		$this->AllDevices=($this->AllDevices>=1)?1:0;
+		$this->AttributeType=(in_array($this->AttributeType,$validtypes))?$this->AttributeType:'string';
+		$this->Required=(intval($this->Required)>=1)?1:0;
+		$this->AllDevices=(intval($this->AllDevices)>=1)?1:0;
 		$this->DefaultValue=sanitize($this->DefaultValue);
 	}
 	
