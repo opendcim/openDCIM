@@ -481,7 +481,7 @@ class PDF_Diag extends PDF_Sector {
 			
 		$date2=new DateTime('now');
 		$interval=$date1->diff($date2);
-		$years=$interval->format('%y years %d days');
+		$years=$interval->format('%m months %d days');
 		
 		$cellHeight = 6;
 		
@@ -514,7 +514,7 @@ class PDF_Diag extends PDF_Sector {
 			$date1=new DateTime($devRow->MfgDate);
 			$date2=new DateTime('now');
 			$interval=$date1->diff($date2);
-			$years=$interval->format('%y years %d days');
+			$years=$interval->format('%y years %m months %d days');
 
 			$pdf->Cell( $cellWidths[0], 6, $devRow->Label, 'LBRT', 0, 'L', $fill );
 					$pdf->Cell( $cellWidths[1], 6, $years, 'LBRT', 0, 'L', $fill );
@@ -546,7 +546,7 @@ class PDF_Diag extends PDF_Sector {
 			$date1=new DateTime($devRow->MfgDate);
 			$date2=new DateTime('now');
 			$interval=$date1->diff($date2);
-			$years=$interval->format('%y years %d days');
+			$years=$interval->format('%y years %m months %d days');
 
 			$pdf->Cell( $cellWidths[0], 6, $devRow->Label, 'LBRT', 0, 'L', $fill );
 					$pdf->Cell( $cellWidths[1], 6, $years, 'LBRT', 0, 'L', $fill );
@@ -578,7 +578,7 @@ class PDF_Diag extends PDF_Sector {
 			$date1=new DateTime($devRow->MfgDate);
 			$date2=new DateTime('now');
 			$interval=$date1->diff($date2);
-			$years=$interval->format('%y years %d days');
+			$years=$interval->format('%y years %m months %d days');
 
 			$pdf->Cell( $cellWidths[0], 6, $devRow->Label, 'LBRT', 0, 'L', $fill );
 					$pdf->Cell( $cellWidths[1], 6, $years, 'LBRT', 0, 'L', $fill );
@@ -610,7 +610,7 @@ class PDF_Diag extends PDF_Sector {
 			$date1=new DateTime($devRow->MfgDate);
 			$date2=new DateTime('now');
 			$interval=$date1->diff($date2);
-			$years=$interval->format('%y years %d days');
+			$years=$interval->format('%y years %m months %d days');
 
 			$pdf->Cell( $cellWidths[0], 6, $devRow->Label, 'LBRT', 0, 'L', $fill );
 					$pdf->Cell( $cellWidths[1], 6, $years, 'LBRT', 0, 'L', $fill );
