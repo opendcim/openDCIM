@@ -1450,12 +1450,16 @@ class Manufacturer {
 		}
 	}
 	
-	function GetManufacturerList(){
+	function GetManufacturerList($indexbyid=false){
 		$sql="SELECT * FROM fac_Manufacturer ORDER BY Name ASC;";
 
 		$ManufacturerList=array();
 		foreach($this->query($sql) as $row){
-			$ManufacturerList[]=Manufacturer::RowToObject($row);
+			if($indexbyid){
+				$ManufacturerList[$row['ManufacturerID']]=Manufacturer::RowToObject($row);
+			}else{
+				$ManufacturerList[]=Manufacturer::RowToObject($row);
+			}
 		}
 
 		return $ManufacturerList;

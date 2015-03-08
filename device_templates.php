@@ -295,6 +295,7 @@
 
 	$templateList=$template->GetTemplateList();
 	$ManufacturerList=$manufacturer->GetManufacturerList();
+	$ManufacturerListByID=$manufacturer->GetManufacturerList(true);
 	$mtList=MediaTypes::GetMediaTypeList();
 	$ccList=ColorCoding::GetCodeList();
 	$dcaList=DeviceCustomAttribute::GetDeviceCustomAttributeList();
@@ -592,10 +593,8 @@ echo '<div class="main">
 		<option value=0>',__("New Template"),'</option>';
 
 	foreach($templateList as $templateRow){
-		$manufacturer->ManufacturerID=$templateRow->ManufacturerID;
-		$manufacturer->GetManufacturerByID();
 		$selected=($template->TemplateID==$templateRow->TemplateID)?" selected":"";
-		print "		<option value=\"$templateRow->TemplateID\"$selected>[$manufacturer->Name] $templateRow->Model</option>\n";
+		print "		<option value=\"$templateRow->TemplateID\"$selected>[{$ManufacturerListByID[$templateRow->ManufacturerID]->Name}] $templateRow->Model</option>\n";
 	}
 
 echo '	</select></div>
