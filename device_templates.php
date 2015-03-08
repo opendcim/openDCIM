@@ -343,6 +343,10 @@
   <script type="text/javascript" src="scripts/common.js"></script>
   <script type="text/javascript">
 	$(document).ready(function(){
+		$('#TemplateID').change(function(e){
+			location.href='device_templates.php?TemplateID='+this.value;
+		});
+
 		var oModel=$('#Model').val();
 		var chgmsg="<?php echo __("This value must be different than"); ?>"+" "+oModel;
 		$('#deviceform').validationEngine();
@@ -589,7 +593,7 @@ echo '<div class="main">
 <div class="table">
 	<div>
 		<div><label for="TemplateID">',__("Template"),'</label></div>
-		<div><input type="hidden"><select name="TemplateID" id="TemplateID" onChange="form.submit()">
+		<div><input type="hidden"><select name="TemplateID" id="TemplateID">
 		<option value=0>',__("New Template"),'</option>';
 
 	foreach($templateList as $templateRow){
