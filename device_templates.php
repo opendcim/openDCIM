@@ -191,11 +191,11 @@
 			$sensortemplate->ManufacturerID=$template->ManufacturerID;
 			$sensortemplate->Name=$template->Model;
 			$sensortemplate->SNMPVersion=$_POST['SNMPVersion'];
-			$sensortemplate->TemperatureOID=$_POST['temperatureoid'];
-			$sensortemplate->HumidityOID=$_POST['humidityoid'];
-			$sensortemplate->TempMultiplier=$_POST['tempMultiplier'];
-			$sensortemplate->HumidityMultiplier=$_POST['humidityMultiplier'];
-			$sensortemplate->mUnits=$_POST['munits'];
+			$sensortemplate->TemperatureOID=$_POST['TemperatureOID'];
+			$sensortemplate->HumidityOID=$_POST['HumidityOID'];
+			$sensortemplate->TempMultiplier=$_POST['TempMultiplier'];
+			$sensortemplate->HumidityMultiplier=$_POST['HumidityMultiplier'];
+			$sensortemplate->mUnits=$_POST['mUnits'];
 			$status=($sensortemplate->UpdateTemplate())?$status:__('Error updating cdu attributes');
 			return $status;
 		}
@@ -364,7 +364,7 @@
 			var input=this;
 			$("#imageselection").dialog({
 				resizable: false,
-				Height:500,
+				height:500,
 				width: 670,
 				modal: true,
 				buttons: {
@@ -384,13 +384,13 @@
 					preview.children('img').load(function(){
 						var topmargin=0;
 						var leftmargin=0;
-						if($(this).Height()<$(this).width()){
+						if($(this).height()<$(this).width()){
 							$(this).width(preview.innerHeight());
 							$(this).css({'max-width': preview.innerWidth()+'px'});
-							topmargin=Math.floor((preview.innerHeight()-$(this).Height())/2);
+							topmargin=Math.floor((preview.innerHeight()-$(this).height())/2);
 						}else{
-							$(this).Height(preview.innerHeight());
-							$(this).css({'max-Height': preview.innerWidth()+'px'});
+							$(this).height(preview.innerHeight());
+							$(this).css({'max-height': preview.innerWidth()+'px'});
 							leftmargin=Math.floor((preview.innerWidth()-$(this).width())/2);
 						}
 						$(this).css({'margin-top': topmargin+'px', 'margin-left': leftmargin+'px'});
@@ -441,7 +441,7 @@
 			$("#dlg_importfile").dialog({
 				resizable: false,
 				width: 400,
-				Height: 200,
+				height: 200,
 				modal: true,					
 				buttons: {	
 					<?php echo __("Import");?>: function() {  			
@@ -459,7 +459,7 @@
 			$("#dlg_import_err").dialog({
 				resizable: false,
 				width: 500,
-				Height: 400,
+				height: 400,
 				modal: true,					
 				buttons: {	
 					<?php echo __("Close");?>: function() {  							     				       
@@ -887,16 +887,16 @@ if ( $template->TemplateID > 0 ) {
 			</div>
 		</div>
 		<div>
-		   <div><label for="temperatureoid">',__("Temperature OID"),'</label></div>
-		   <div><input type="text" name="temperatureoid" id="temperatureoid" size=40></div>
+		   <div><label for="TemperatureOID">',__("Temperature OID"),'</label></div>
+		   <div><input type="text" name="TemperatureOID" id="TemperatureOID" size=40></div>
 		</div>
 		<div>
-		   <div><label for="humidityoid">',__("Humidity OID"),'</label></div>
-		   <div><input type="text" name="humidityoid" id="humidityoid" size=40></div>
+		   <div><label for="HumidityOID">',__("Humidity OID"),'</label></div>
+		   <div><input type="text" name="HumidityOID" id="HumidityOID" size=40></div>
 		</div>
 		<div>
-		   <div><label for="tempMultiplier">',__("Temperature Multiplier"),'</label></div>
-		   <div><select name="tempMultiplier" id="tempMultiplier">';
+		   <div><label for="TempMultiplier">',__("Temperature Multiplier"),'</label></div>
+		   <div><select name="TempMultiplier" id="TempMultiplier">';
 
 			foreach(array("0.01","0.1","1","10","100") as $unit){
 				print "\t\t<option value=\"$unit\">$unit</option>\n";
@@ -906,8 +906,8 @@ if ( $template->TemplateID > 0 ) {
 		   </div>
 		</div>
 		<div>
-		   <div><label for="humidityMultiplier">',__("Humidity Multiplier"),'</label></div>
-		   <div><select name="humidityMultiplier" id="humidityMultiplier">';
+		   <div><label for="HumidityMultiplier">',__("Humidity Multiplier"),'</label></div>
+		   <div><select name="HumidityMultiplier" id="HumidityMultiplier">';
 
 			foreach(array("0.01","0.1","1","10","100") as $unit){
 				print "\t\t<option value=\"$unit\">$unit</option>\n";
@@ -917,8 +917,8 @@ if ( $template->TemplateID > 0 ) {
 		   </div>
 		</div>
 		<div>
-			<div><label for="munits">',__("Temperature Units"),'</label></div>
-			<div><select name="munits" id="munits">';
+			<div><label for="mUnits">',__("Temperature Units"),'</label></div>
+			<div><select name="mUnits" id="mUnits">';
 
 			$unitofmeasurev=array("english","metric");
 			foreach($unitofmeasurev as $unit){
