@@ -454,16 +454,16 @@ function TemplateButtons(){
 }
 
 function buildcdutable(){
-	$.ajax({url: '',type: "get",async: false,data: {cdutemplate: $('#templateid').val()},success: function(data){
+	$.ajax({url: '',type: "get",async: false,data: {cdutemplate: $('#TemplateID').val()},success: function(data){
 			$.each(data, function(i,val){
-				($('#'+i.toLowerCase()).is(':checkbox'))?(val==1)?$('#'+i.toLowerCase()).click():'':'';
-				$('#hiddencdudata #'+i.toLowerCase()).val(val);
+				($('#'+i).is(':checkbox'))?(val==1)?$('#'+i).click():'':'';
+				$('#hiddencdudata #'+i).val(val);
 			});
 		}
 	});
 }
 function buildsensortable(){
-	$.ajax({url: '',type: "get",async: false,data: {sensortemplate: $('#templateid').val()},success: function(data){
+	$.ajax({url: '',type: "get",async: false,data: {sensortemplate: $('#TemplateID').val()},success: function(data){
 			$.each(data, function(i,val){
 				($('#'+i.toLowerCase()).is(':checkbox'))?(val==1)?$('#'+i.toLowerCase()).click():'':'';
 				$('#hiddensensordata #'+i.toLowerCase()).val(val);
@@ -503,7 +503,7 @@ function buildportstable(){
 	}
 
 	function buildrows(){
-		for(var i=1;i<=$('#numports').val();i++){
+		for(var i=1;i<=$('#NumPorts').val();i++){
 			if(typeof ports[i]!='undefined'){
 				table.append(buildrow(ports[i]));
 			}else{
@@ -526,7 +526,7 @@ function buildportstable(){
 		}
 	});
 
-	$.ajax({url: '',type: "post",async: false,data: {templateid: $('#templateid').val(), getports: ''},
+	$.ajax({url: '',type: "post",async: false,data: {TemplateID: $('#TemplateID').val(), getports: ''},
 		success: function(data){
 			ports=data;
 		}
@@ -564,7 +564,7 @@ function buildpowerportstable(){
 	}
 
 	function buildrows(){
-		for(var i=1;i<=$('#pscount').val();i++){
+		for(var i=1;i<=$('#PSCount').val();i++){
 			if(typeof ports[i]!='undefined'){
 				table.append(buildrow(ports[i]));
 			}else{
@@ -573,7 +573,7 @@ function buildpowerportstable(){
 		}
 	}
 
-	$.ajax({url: '',type: "post",async: false,data: {templateid: $('#templateid').val(), getpowerports: ''},
+	$.ajax({url: '',type: "post",async: false,data: {TemplateID: $('#TemplateID').val(), getpowerports: ''},
 		success: function(data){
 			ports=data;
 		}

@@ -4,14 +4,14 @@
 
 	$subheader=__("Data Center Device Templates");
 
-	if((isset($_POST['getslots']) || isset($_POST['getports']) || isset($_POST['getpowerports'])) && isset($_POST['templateid'])){
+	if((isset($_POST['getslots']) || isset($_POST['getports']) || isset($_POST['getpowerports'])) && isset($_POST['TemplateID'])){
 		$returndata=array();
 		if(isset($_POST['getports']) || isset($_POST['getpowerports'])){
 			$tport=(isset($_POST['getports']))?new TemplatePorts():new TemplatePowerPorts();
-			$tport->TemplateID=$_POST['templateid'];
+			$tport->TemplateID=$_POST['TemplateID'];
 			$returndata=$tport->GetPorts();
 		}else{
-			$returndata=Slot::GetAll($_POST['templateid']);
+			$returndata=Slot::GetAll($_POST['TemplateID']);
 		}
 
 		header('Content-Type: application/json');
@@ -50,7 +50,7 @@
 	$manufacturer=new Manufacturer();
 
 	if(isset($_POST['deleteme'])){
-		$template->TemplateID=$_POST['templateid'];
+		$template->TemplateID=$_POST['TemplateID'];
 		if($template->GetTemplateByID()){
 			// First deal with the case that we are transferring
 			if($template->TemplateID!=$_POST['transferid'] && $_POST['transferid']==0){
@@ -74,23 +74,23 @@
 		$status=($result["status"]=="")?__("Template File Imported"):$result["status"].'<a id="import_err" style="margin-left: 1em;" title="'.__("View errors").'" href="#"><img src="images/info.png"></a>';
 	}
 	
-	if(isset($_REQUEST['templateid']) && $_REQUEST['templateid'] >0){
+	if(isset($_REQUEST['TemplateID']) && $_REQUEST['TemplateID'] >0){
 		//get template
-		$template->TemplateID=$_REQUEST['templateid'];
+		$template->TemplateID=$_REQUEST['TemplateID'];
 		$template->GetTemplateByID();
 		$deviceList = Device::GetDevicesByTemplate( $template->TemplateID );
 	}
 	
 	if(isset($_POST['action'])){
-		$template->ManufacturerID=$_POST['manufacturerid'];
-		$template->Model=transform($_POST['model']);
-		$template->Height=$_POST['height'];
-		$template->Weight=$_POST['weight'];
-		$template->Wattage=(isset($_POST['wattage']))?$_POST['wattage']:0;
-		$template->DeviceType=$_POST['devicetype'];
-		$template->PSCount=$_POST['pscount'];
-		$template->NumPorts=$_POST['numports'];
-		$template->Notes=trim($_POST['notes']);
+		$template->ManufacturerID=$_POST['ManufacturerID'];
+		$template->Model=transform($_POST['Model']);
+		$template->Height=$_POST['Height'];
+		$template->Weight=$_POST['Weight'];
+		$template->Wattage=(isset($_POST['Wattage']))?$_POST['Wattage']:0;
+		$template->DeviceType=$_POST['DeviceType'];
+		$template->PSCount=$_POST['PSCount'];
+		$template->NumPorts=$_POST['NumPorts'];
+		$template->Notes=trim($_POST['Notes']);
 		$template->Notes=($template->Notes=="<br>")?"":$template->Notes;
 		$template->FrontPictureFile=$_POST['FrontPictureFile'];
 		$template->RearPictureFile=$_POST['RearPictureFile'];
@@ -131,7 +131,7 @@
 				$tport->Label=isset($_POST["label".$i])?$_POST["label".$i]:"";
 				$tport->MediaID=(isset($_POST["mt".$i]) && $_POST["mt".$i]>0)?$_POST["mt".$i]:0;
 				$tport->ColorID=(isset($_POST["cc".$i]) && $_POST["cc".$i]>0)?$_POST["cc".$i]:0;
-				$tport->PortNotes=isset($_POST["portnotes".$i])?$_POST["portnotes".$i]:"";
+				$tport->PortNotes=isset($_POST["portNotes".$i])?$_POST["portNotes".$i]:"";
 				$status=($tport->CreatePort())?$status:__("Error updating template ports");
 			}
 			$template->DeletePowerPorts();
@@ -141,7 +141,7 @@
 				$tport->TemplateID=$template->TemplateID;
 				$tport->PortNumber=$i;
 				$tport->Label=isset($_POST["powerlabel".$i])?$_POST["powerlabel".$i]:"";
-				$tport->PortNotes=isset($_POST["powerportnotes".$i])?$_POST["powerportnotes".$i]:"";
+				$tport->PortNotes=isset($_POST["powerportNotes".$i])?$_POST["powerportNotes".$i]:"";
 				$status=($tport->CreatePort())?$status:__("Error updating template power connections");
 			}
 			return $status;
@@ -190,11 +190,11 @@
 			$sensortemplate->TemplateID=$template->TemplateID;
 			$sensortemplate->ManufacturerID=$template->ManufacturerID;
 			$sensortemplate->Name=$template->Model;
-			$sensortemplate->SNMPVersion=$_POST['snmpversion'];
+			$sensortemplate->SNMPVersion=$_POST['SNMPVersion'];
 			$sensortemplate->TemperatureOID=$_POST['temperatureoid'];
 			$sensortemplate->HumidityOID=$_POST['humidityoid'];
-			$sensortemplate->TempMultiplier=$_POST['tempmultiplier'];
-			$sensortemplate->HumidityMultiplier=$_POST['humiditymultiplier'];
+			$sensortemplate->TempMultiplier=$_POST['tempMultiplier'];
+			$sensortemplate->HumidityMultiplier=$_POST['humidityMultiplier'];
 			$sensortemplate->mUnits=$_POST['munits'];
 			$status=($sensortemplate->UpdateTemplate())?$status:__('Error updating cdu attributes');
 			return $status;
@@ -205,19 +205,19 @@
 			$cdutemplate->TemplateID=$template->TemplateID;
 			$cdutemplate->ManufacturerID=$template->ManufacturerID;
 			$cdutemplate->Model=$template->Model;
-			$cdutemplate->Managed=isset($_POST['managed'])?1:0;
+			$cdutemplate->Managed=isset($_POST['Managed'])?1:0;
 			$cdutemplate->ATS=isset($_POST['ats'])?1:0;
-			$cdutemplate->SNMPVersion=$_POST['snmpversion'];
-			$cdutemplate->VersionOID=$_POST['versionoid'];
-			$cdutemplate->Multiplier=$_POST['multiplier'];
-			$cdutemplate->OID1=$_POST['oid1'];
-			$cdutemplate->OID2=$_POST['oid2'];
-			$cdutemplate->OID3=$_POST['oid3'];
-			$cdutemplate->ATSStatusOID=$_POST['atsstatusoid'];
-			$cdutemplate->ATSDesiredResult=$_POST['atsdesiredresult'];
-			$cdutemplate->ProcessingProfile=$_POST['processingprofile'];
-			$cdutemplate->Voltage=$_POST["voltage"];
-			$cdutemplate->Amperage=$_POST["amperage"];
+			$cdutemplate->SNMPVersion=$_POST['SNMPVersion'];
+			$cdutemplate->VersionOID=$_POST['VersionOID'];
+			$cdutemplate->Multiplier=$_POST['Multiplier'];
+			$cdutemplate->OID1=$_POST['OID1'];
+			$cdutemplate->OID2=$_POST['OID2'];
+			$cdutemplate->OID3=$_POST['OID3'];
+			$cdutemplate->ATSStatusOID=$_POST['ATSStatusOID'];
+			$cdutemplate->ATSDesiredResult=$_POST['ATSDesiredResult'];
+			$cdutemplate->ProcessingProfile=$_POST['ProcessingProfile'];
+			$cdutemplate->Voltage=$_POST["Voltage"];
+			$cdutemplate->Amperage=$_POST["Amperage"];
 			$status=($cdutemplate->UpdateTemplate())?$status:__('Error updating cdu attributes');
 
 			return $status;
@@ -342,21 +342,21 @@
   <script type="text/javascript" src="scripts/common.js"></script>
   <script type="text/javascript">
 	$(document).ready(function(){
-		var oModel=$('#model').val();
+		var oModel=$('#Model').val();
 		var chgmsg="<?php echo __("This value must be different than"); ?>"+" "+oModel;
 		$('#deviceform').validationEngine();
-		$('#model').change(function(){
-			if($('#model').val()==oModel){
+		$('#Model').change(function(){
+			if($('#Model').val()==oModel){
 				setTimeout(function(){
-					$('#model').validationEngine('showPrompt',chgmsg,'','',true);
+					$('#Model').validationEngine('showPrompt',chgmsg,'','',true);
 				},500);
 			}
 		});
         
 		$('#clone').click(function(){
-			$('#templateid').val(0);
+			$('#TemplateID').val(0);
 			$('button[name="action"]').val('Create').text("<?php echo __("Create");?>");
-			$('#model').trigger('change');
+			$('#Model').trigger('change');
 			$('#device, #clone').remove();
 		});
 
@@ -364,7 +364,7 @@
 			var input=this;
 			$("#imageselection").dialog({
 				resizable: false,
-				height:500,
+				Height:500,
 				width: 670,
 				modal: true,
 				buttons: {
@@ -379,18 +379,18 @@
 			$("#imageselection span").each(function(){
 				var preview=$('#imageselection #preview');
 				$(this).click(function(){
-					preview.css({'border-width': '5px', 'width': '380px', 'height': '380px'});
+					preview.css({'border-width': '5px', 'width': '380px', 'Height': '380px'});
 					preview.html('<img src="pictures/'+$(this).text()+'" alt="preview">').attr('image',$(this).text());
 					preview.children('img').load(function(){
 						var topmargin=0;
 						var leftmargin=0;
-						if($(this).height()<$(this).width()){
+						if($(this).Height()<$(this).width()){
 							$(this).width(preview.innerHeight());
 							$(this).css({'max-width': preview.innerWidth()+'px'});
-							topmargin=Math.floor((preview.innerHeight()-$(this).height())/2);
+							topmargin=Math.floor((preview.innerHeight()-$(this).Height())/2);
 						}else{
-							$(this).height(preview.innerHeight());
-							$(this).css({'max-height': preview.innerWidth()+'px'});
+							$(this).Height(preview.innerHeight());
+							$(this).css({'max-Height': preview.innerWidth()+'px'});
 							leftmargin=Math.floor((preview.innerWidth()-$(this).width())/2);
 						}
 						$(this).css({'margin-top': topmargin+'px', 'margin-left': leftmargin+'px'});
@@ -406,30 +406,30 @@
 			});
 		});  
 
-		$('#devicetype').change(function(){
-			if($('#devicetype').val()=="Chassis"){
+		$('#DeviceType').change(function(){
+			if($('#DeviceType').val()=="Chassis"){
 				$('#DivChassisSlots').css({'display': 'table-row'});
 				$('#DivRearChassisSlots').css({'display': 'table-row'});
 			}else{
 				$('#DivChassisSlots').css({'display': 'none'});
 				$('#DivRearChassisSlots').css({'display': 'none'});
 			}
-			if($('#devicetype').val()=="CDU"){
-				$('#wattage').parent('div').parent('div').addClass('hide');
+			if($('#DeviceType').val()=="CDU"){
+				$('#Wattage').parent('div').parent('div').addClass('hide');
 				$('#hiddencdudata').removeClass('hide').show();
 				buildcdutable();
 			}else{
-				$('#wattage').parent('div').parent('div').removeClass('hide');
+				$('#Wattage').parent('div').parent('div').removeClass('hide');
 				$('#hiddencdudata').hide();
 			}
-			if($('#devicetype').val()=="Sensor"){
+			if($('#DeviceType').val()=="Sensor"){
 				$('#hiddensensordata').removeClass('hide').show();
 				buildsensortable();
 			}else{
 				$('#hiddensensordata').hide();
 			}
 			(function hidedisclaimer(){
-				if($('#devicetype').val()=="CDU" || $('#devicetype').val()=="Sensor"){
+				if($('#DeviceType').val()=="CDU" || $('#DeviceType').val()=="Sensor"){
 					$('.cdudisclaimer').removeClass('hide').show();
 				}else{
 					$('.cdudisclaimer').hide();
@@ -441,7 +441,7 @@
 			$("#dlg_importfile").dialog({
 				resizable: false,
 				width: 400,
-				height: 200,
+				Height: 200,
 				modal: true,					
 				buttons: {	
 					<?php echo __("Import");?>: function() {  			
@@ -459,7 +459,7 @@
 			$("#dlg_import_err").dialog({
 				resizable: false,
 				width: 500,
-				height: 400,
+				Height: 400,
 				modal: true,					
 				buttons: {	
 					<?php echo __("Close");?>: function() {  							     				       
@@ -486,7 +486,7 @@
 		});
 
 		buildportstable();
-		$('.templatemaker input#numports + button').each(function(){
+		$('.templatemaker input#NumPorts + button').each(function(){
 			$(this).on('click',function(){
 				// Fill in the ports table
 				buildportstable();
@@ -497,7 +497,7 @@
 		});
 
 		buildpowerportstable();
-		$('.templatemaker input#pscount + button').each(function(){
+		$('.templatemaker input#PSCount + button').each(function(){
 			$(this).on('click',function(){
 				// Fill in the ports table
 				buildpowerportstable();
@@ -507,7 +507,7 @@
 			});
 		});
 
-		$('#FrontPictureFile,#RearPictureFile,#ChassisSlots,#RearChassisSlots,#numports,#pscount').on('change keyup keydown', function(){ TemplateButtons(); });
+		$('#FrontPictureFile,#RearPictureFile,#ChassisSlots,#RearChassisSlots,#NumPorts,#PSCount').on('change keyup keydown', function(){ TemplateButtons(); });
 
 
 	$('#delete').on('click',function(){
@@ -522,19 +522,19 @@
 		dlg_content.append(dlg_select);
 		dlg_content.append(dlg_transfer);
 
-		var templateid2;
+		var TemplateID2;
 
 		// logic for dealing someone saying yes they want to swap to another template
 		dlg_select.on('change',function(){
 			// Clone the existing device template list
-			templateid2=$('#templateid').clone().prop('id','templateid2').removeAttr('onchange');
+			TemplateID2=$('#TemplateID').clone().prop('id','TemplateID2').removeAttr('onchange');
 			// Remove the 'New Template' option
-			templateid2.find('option:first-child').remove();
+			TemplateID2.find('option:first-child').remove();
 
 			if(eval(this.value)){
 				dlg_transfer.append('<br><br>');
-				dlg_transfer.append($('<label>').prop('for','templateid2').html("Transfer all devices using this template to:&nbsp;&nbsp;"));
-				dlg_transfer.append(templateid2);
+				dlg_transfer.append($('<label>').prop('for','TemplateID2').html("Transfer all devices using this template to:&nbsp;&nbsp;"));
+				dlg_transfer.append(TemplateID2);
 			}else{
 				dlg_transfer.html('');
 			}
@@ -554,7 +554,7 @@
 				},
 				buttons: {
 					Yes: function(){
-						$.post('',{templateid: $('#templateid').val(), transferid: ((typeof templateid2=='undefined')?0:templateid2.val()), deleteme: ''}).done(function(data){
+						$.post('',{TemplateID: $('#TemplateID').val(), transferid: ((typeof TemplateID2=='undefined')?0:TemplateID2.val()), deleteme: ''}).done(function(data){
 							if(data.trim()==1){
 								dialog.dialog("destroy");
 								window.location=window.location.href;
@@ -587,8 +587,8 @@ echo '<div class="main">
 <form id="deviceform" action="',$_SERVER["PHP_SELF"],'" method="POST"><div id="regulartemplateattributes">
 <div class="table">
 	<div>
-		<div><label for="templateid">',__("Template"),'</label></div>
-		<div><input type="hidden"><select name="templateid" id="templateid" onChange="form.submit()">
+		<div><label for="TemplateID">',__("Template"),'</label></div>
+		<div><input type="hidden"><select name="TemplateID" id="TemplateID" onChange="form.submit()">
 		<option value=0>',__("New Template"),'</option>';
 
 	foreach($templateList as $templateRow){
@@ -601,8 +601,8 @@ echo '<div class="main">
 echo '	</select></div>
 </div>
 <div>
-	<div><label for="manufacturerid">',__("Manufacturer"),'</label></div>
-	<div><select name="manufacturerid" id="manufacturerid">';
+	<div><label for="ManufacturerID">',__("Manufacturer"),'</label></div>
+	<div><select name="ManufacturerID" id="ManufacturerID">';
 
 	foreach($ManufacturerList as $ManufacturerRow){
 		if($template->ManufacturerID==$ManufacturerRow->ManufacturerID){$selected=" selected";}else{$selected="";}
@@ -613,24 +613,24 @@ echo '    </select>
    </div>
 </div>
 <div>
-   <div><label for="model">',__("Model"),'</label></div>
-   <div><input type="text" name="model" id="model" class="validate[required]" value="',$template->Model,'"></div>
+   <div><label for="Model">',__("Model"),'</label></div>
+   <div><input type="text" name="Model" id="Model" class="validate[required]" value="',$template->Model,'"></div>
 </div>
 <div>
-   <div><label for="height">',__("Height"),'</label></div>
-   <div><input type="text" name="height" id="height" value="',$template->Height,'">&nbsp;&nbsp;<span class="cdudisclaimer sensordisclaimer hide">',__("0 for a vertical mounting"),'</span></div>
+   <div><label for="Height">',__("Height"),'</label></div>
+   <div><input type="text" name="Height" id="Height" value="',$template->Height,'">&nbsp;&nbsp;<span class="cdudisclaimer sensordisclaimer hide">',__("0 for a vertical mounting"),'</span></div>
 </div>
 <div>
-   <div><label for="weight">',__("Weight"),'</label></div>
-   <div><input type="text" name="weight" id="weight" value="',$template->Weight,'"></div>
+   <div><label for="Weight">',__("Weight"),'</label></div>
+   <div><input type="text" name="Weight" id="Weight" value="',$template->Weight,'"></div>
 </div>
 <div>
-   <div><label for="wattage">',__("Wattage"),'</label></div>
-   <div><input type="text" name="wattage" id="wattage" value="',$template->Wattage,'"></div>
+   <div><label for="Wattage">',__("Wattage"),'</label></div>
+   <div><input type="text" name="Wattage" id="Wattage" value="',$template->Wattage,'"></div>
 </div>
 <div>
-   <div><label for="devicetype">',__("Device Type"),'</label></div>
-   <div><select name="devicetype" id="devicetype">';
+   <div><label for="DeviceType">',__("Device Type"),'</label></div>
+   <div><select name="DeviceType" id="DeviceType">';
 
 	foreach(array('Server','Appliance','Storage Array','Switch','Chassis','Patch Panel','Physical Infrastructure','CDU','Sensor') as $DevType){
 		if($DevType==$template->DeviceType){$selected=" selected";}else{$selected="";}
@@ -641,12 +641,12 @@ echo '	</select>
    </div>
 </div>
 <div>
-   <div><label for="pscount">',__("No. Power Connections"),'</label></div>
-   <div><input type="text" name="pscount" id="pscount" value="',$template->PSCount,'"><button type="button">',__("Edit Ports"),'</button></div>
+   <div><label for="PSCount">',__("No. Power Connections"),'</label></div>
+   <div><input type="text" name="PSCount" id="PSCount" value="',$template->PSCount,'"><button type="button">',__("Edit Ports"),'</button></div>
 </div>
 <div>
-   <div><label for="numports">',__("No. Ports"),'</label></div>
-   <div><input type="text" name="numports" id="numports" value="',$template->NumPorts,'"><button type="button">',__("Edit Ports"),'</button></div>
+   <div><label for="NumPorts">',__("No. Ports"),'</label></div>
+   <div><input type="text" name="NumPorts" id="NumPorts" value="',$template->NumPorts,'"><button type="button">',__("Edit Ports"),'</button></div>
 </div>
 <div>
    <div><label for="FrontPictureFile">',__("Front Picture File"),'</label></div>
@@ -743,8 +743,8 @@ if ( $template->TemplateID > 0 ) {
 }
 	echo '
 <div>
-   <div><label for="notes">',__("Notes"),'</label></div>
-   <div><textarea name="notes" id="notes" cols="40" rows="8">',$template->Notes,'</textarea></div>
+   <div><label for="Notes">',__("Notes"),'</label></div>
+   <div><textarea name="Notes" id="Notes" cols="40" rows="8">',$template->Notes,'</textarea></div>
 </div>
 <div class="caption">';
 
@@ -790,14 +790,14 @@ if ( $template->TemplateID > 0 ) {
 <div id="hiddencdudata" class="hide">
 	<div class="table">
 		<div>
-		   <div><label for="managed">',__("Managed"),'</label></div>
+		   <div><label for="Managed">',__("Managed"),'</label></div>
 		   <div>
-				<input type="checkbox" name="managed" id="managed">
+				<input type="checkbox" name="Managed" id="Managed">
 		   </div>
 		</div>
 		<div>
-			<div><label for="snmpversion">',__("SNMP Version"),'</label></div>
-			<div><select name="snmpversion" id="snmpversion">';
+			<div><label for="SNMPVersion">',__("SNMP Version"),'</label></div>
+			<div><select name="SNMPVersion" id="SNMPVersion">';
 
 			$snmpv=array("1","2c");
 			foreach($snmpv as $unit){
@@ -808,12 +808,12 @@ if ( $template->TemplateID > 0 ) {
 			</div>
 		</div>
 		<div>
-			<div><label for="versionoid">',__("Firmware Version OID"),'</label></div>
-			<div><input type="text" name="versionoid" id="versionoid" size=40></div>
+			<div><label for="VersionOID">',__("Firmware Version OID"),'</label></div>
+			<div><input type="text" name="VersionOID" id="VersionOID" size=40></div>
 		</div>
 		<div>
-		   <div><label for="multiplier">',__("Multiplier"),'</label></div>
-		   <div><select name="multiplier" id="multiplier">';
+		   <div><label for="Multiplier">',__("Multiplier"),'</label></div>
+		   <div><select name="Multiplier" id="Multiplier">';
 		   
 			$Multi=array("0.1", "1","10","100");
 			foreach($Multi as $unit){
@@ -824,20 +824,20 @@ if ( $template->TemplateID > 0 ) {
 		   </div>
 		</div>
 		<div>
-		   <div><label for="oid1">',__("OID for Phase1"),'</label></div>
-		   <div><input type="text" name="oid1" id="oid1" size=40></div>
+		   <div><label for="OID1">',__("OID for Phase1"),'</label></div>
+		   <div><input type="text" name="OID1" id="OID1" size=40></div>
 		</div>
 		<div>
-		   <div><label for="oid2">',__("OID for Phase2"),'</label></div>
-		   <div><input type="text" name="oid2" id="oid2" size=40></div>
+		   <div><label for="OID2">',__("OID for Phase2"),'</label></div>
+		   <div><input type="text" name="OID2" id="OID2" size=40></div>
 		</div>
 		<div>
-		   <div><label for="oid3">',__("OID for Phase3"),'</label></div>
-		   <div><input type="text" name="oid3" id="oid3" size=40></div>
+		   <div><label for="OID3">',__("OID for Phase3"),'</label></div>
+		   <div><input type="text" name="OID3" id="OID3" size=40></div>
 		</div>
 		<div>
-		   <div><label for="processingprofile">',__("Processing Scheme"),'</label></div>
-		   <div><select name="processingprofile" id="processingprofile">';
+		   <div><label for="ProcessingProfile">',__("Processing Scheme"),'</label></div>
+		   <div><select name="ProcessingProfile" id="ProcessingProfile">';
 
 			$ProfileList=array("SingleOIDWatts","SingleOIDAmperes","Combine3OIDWatts","Combine3OIDAmperes","Convert3PhAmperes");
 			foreach($ProfileList as $prof){
@@ -847,24 +847,24 @@ if ( $template->TemplateID > 0 ) {
 		echo '   </select></div>
 		</div>
 		<div>
-		   <div><label for="voltage">',__("Voltage"),'</label></div>
-		   <div><input type="text" name="voltage" id="voltage"></div>
+		   <div><label for="Voltage">',__("Voltage"),'</label></div>
+		   <div><input type="text" name="Voltage" id="Voltage"></div>
 		</div>
 		<div>
-		   <div><label for="amperage">',__("Amperage"),'</label></div>
-		   <div><input type="text" name="amperage" id="amperage"></div>
+		   <div><label for="Amperage">',__("Amperage"),'</label></div>
+		   <div><input type="text" name="Amperage" id="Amperage"></div>
 		</div>
 		<div class="caption" id="atsbox">
 			<fieldset class="noborder">
 				<legend>Automatic Transfer Switch <input type="checkbox" name="ats" id="ats"></legend>
 				<div class="table centermargin border">
 					<div>
-					   <div><label for="atsstatusoid">',__("ATS Status OID"),'</label></div>
-					   <div><input type="text" name="atsstatusoid" id="atsstatusoid" size=40></div>
+					   <div><label for="ATSStatusOID">',__("ATS Status OID"),'</label></div>
+					   <div><input type="text" name="ATSStatusOID" id="ATSStatusOID" size=40></div>
 					</div>
 					<div>
-					   <div><label for="atsdesiredresult">',__("ATS Desired Result"),'</label></div>
-					   <div><input type="text" name="atsdesiredresult" id="atsdesiredresult" size=40></div>
+					   <div><label for="ATSDesiredResult">',__("ATS Desired Result"),'</label></div>
+					   <div><input type="text" name="ATSDesiredResult" id="ATSDesiredResult" size=40></div>
 					</div>
 				</div>
 			</fieldset>
@@ -875,8 +875,8 @@ if ( $template->TemplateID > 0 ) {
 <div id="hiddensensordata" class="sensordisclaimer hide">
 	<div class="table">
 		<div>
-			<div><label for="snmpversion">',__("SNMP Version"),'</label></div>
-			<div><select name="snmpversion" id="snmpversion">';
+			<div><label for="SNMPVersion">',__("SNMP Version"),'</label></div>
+			<div><select name="SNMPVersion" id="SNMPVersion">';
 
 			$snmpv=array("1","2c");
 			foreach($snmpv as $unit){
@@ -895,8 +895,8 @@ if ( $template->TemplateID > 0 ) {
 		   <div><input type="text" name="humidityoid" id="humidityoid" size=40></div>
 		</div>
 		<div>
-		   <div><label for="tempmultiplier">',__("Temperature Multiplier"),'</label></div>
-		   <div><select name="tempmultiplier" id="tempmultiplier">';
+		   <div><label for="tempMultiplier">',__("Temperature Multiplier"),'</label></div>
+		   <div><select name="tempMultiplier" id="tempMultiplier">';
 
 			foreach(array("0.01","0.1","1","10","100") as $unit){
 				print "\t\t<option value=\"$unit\">$unit</option>\n";
@@ -906,8 +906,8 @@ if ( $template->TemplateID > 0 ) {
 		   </div>
 		</div>
 		<div>
-		   <div><label for="humiditymultiplier">',__("Humidity Multiplier"),'</label></div>
-		   <div><select name="humiditymultiplier" id="humiditymultiplier">';
+		   <div><label for="humidityMultiplier">',__("Humidity Multiplier"),'</label></div>
+		   <div><select name="humidityMultiplier" id="humidityMultiplier">';
 
 			foreach(array("0.01","0.1","1","10","100") as $unit){
 				print "\t\t<option value=\"$unit\">$unit</option>\n";

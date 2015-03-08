@@ -80,12 +80,6 @@ CREATE TABLE fac_DeviceCustomValue (
 ) ENGINE=InnoDB CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 --
--- Add new device type for CDUs and Sensors
---
-ALTER TABLE fac_Device CHANGE DeviceType DeviceType ENUM( 'Server', 'Appliance', 'Storage Array', 'Switch', 'Patch Panel', 'Physical Infrastructure', 'Chassis', 'CDU', 'Sensor' ) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL;
-ALTER TABLE fac_DeviceTemplate CHANGE DeviceType DeviceType ENUM( 'Server', 'Appliance', 'Storage Array', 'Switch', 'Patch Panel', 'Physical Infrastructure', 'Chassis', 'CDU', 'Sensor' ) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL;
-
---
 -- Create new table for power ports
 --
 
