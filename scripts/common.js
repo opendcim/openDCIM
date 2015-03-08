@@ -465,8 +465,8 @@ function buildcdutable(){
 function buildsensortable(){
 	$.ajax({url: '',type: "get",async: false,data: {sensortemplate: $('#TemplateID').val()},success: function(data){
 			$.each(data, function(i,val){
-				($('#'+i.toLowerCase()).is(':checkbox'))?(val==1)?$('#'+i.toLowerCase()).click():'':'';
-				$('#hiddensensordata #'+i.toLowerCase()).val(val);
+				($('#'+i).is(':checkbox'))?(val==1)?$('#'+i).click():'':'';
+				$('#hiddensensordata #'+i).val(val);
 			});
 		}
 	});
