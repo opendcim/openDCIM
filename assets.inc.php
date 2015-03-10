@@ -2652,7 +2652,6 @@ class Device {
 				$slot->H=($parentTempl->Model=='HTRAY')?$parentDetails->targetHeight:$parentDetails->targetHeight/$parentDev->ChassisSlots;
 				$slot->X=($parentTempl->Model=='HTRAY')?($rear)?($parentDev->ChassisSlots-$this->Position-$this->Height+1)*$slot->W:($slot->Position-1)*$slot->W:0;
 				$slot->Y=($parentTempl->Model=='HTRAY')?0:$parentDetails->targetHeight-$parentDetails->targetHeight/$parentDev->ChassisSlots*($this->Position+$this->Height-1);
-($this->DeviceID==4408 && $noimage)?error_log("sloth: $slot->H, slotw: $slot->W, slotx: $slot->X, sloty: $slot->Y, ratio: $imageratio"):'';
 
 				// Enlarge the slot if needed
 				$slot->H=($parentTempl->Model=='HTRAY')?$parentDetails->targetHeight:$parentDetails->targetHeight/$parentDev->ChassisSlots*$this->Height;
@@ -2684,7 +2683,6 @@ class Device {
 				$parentDetails->zoomX=1;
 				$parentDetails->zoomY=1;
 			}
-($this->DeviceID==4408)?error_log("SLOTDONE: sloth: $slot->H, slotw: $slot->W, slotx: $slot->X, sloty: $slot->Y, ratio: $imageratio"):'';
 
 			// Check for slot orientation before we possibly modify it via height
 			$hor_slot=($slot->W>$slot->H);
