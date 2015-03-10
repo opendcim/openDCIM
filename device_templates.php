@@ -2,6 +2,15 @@
 	require_once('db.inc.php');
 	require_once('facilities.inc.php');
 
+if($_SERVER['REQUEST_METHOD'] == 'PUT') {
+    echo "this is a put request\n";
+    parse_str(file_get_contents("php://input"),$post_vars);
+	print_r($post_vars);
+exit;
+}
+
+
+
 	$subheader=__("Data Center Device Templates");
 
 	if((isset($_POST['getslots']) || isset($_POST['getports']) || isset($_POST['getpowerports'])) && isset($_POST['TemplateID'])){
@@ -384,7 +393,7 @@
 			$("#imageselection span").each(function(){
 				var preview=$('#imageselection #preview');
 				$(this).click(function(){
-					preview.css({'border-width': '5px', 'width': '380px', 'Height': '380px'});
+					preview.css({'border-width': '5px', 'width': '380px', 'height': '380px'});
 					preview.html('<img src="pictures/'+$(this).text()+'" alt="preview">').attr('image',$(this).text());
 					preview.children('img').load(function(){
 						var topmargin=0;
@@ -589,7 +598,7 @@ echo '<div class="main">
 <div class="templatemaker">
 <h3>',$status,'</h3>
 <div class="center"><div>
-<form id="deviceform" action="',$_SERVER["PHP_SELF"],'" method="POST"><div id="regulartemplateattributes">
+<form id="deviceform" method="POST"><div id="regulartemplateattributes">
 <div class="table">
 	<div>
 		<div><label for="TemplateID">',__("Template"),'</label></div>
@@ -970,6 +979,34 @@ if (isset($result["log"])){
 }
 ?>
 </div>
-<!-- end dialog: importFile -->  
+<!-- end dialog: importFile -->
+<script type="text/javascript">
+function TestUpload(){
+	convertImgToBase64('http://dev.opendcim.org/pictures/DDN-2U-FRONT.PNG',function(base64Img){
+// append an image
+//		var blob = dataURItoBlob(base64Img);
+//		var fd = new FormData($('#deviceform')[0]);
+//		fd.append("TestImageFile", blob);
+
+		$.ajax({
+			type: 'put',
+			url: 'https://repository.opendcim.org/api/devicetemplate',
+			async: false,
+			headers:{
+				'APIKey':'e807f1fcf82d132f9bb018ca6738a19f',
+				'UserID':'wilbur@wilpig.org'
+			},
+			processData: true, // must be false if an image is added
+			data: $('#deviceform').serialize(),
+			success: function(data){
+
+			},
+			error: function(data){
+
+			}
+		});
+	});
+}
+</script>
 </body>
 </html>
