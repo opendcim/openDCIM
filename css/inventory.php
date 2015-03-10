@@ -506,6 +506,7 @@ div.cabinet {
 .picture div > a > div > div { top: 10%; height: 80%; padding-left: 0.3em;}
 .picture div > a > div > div {overflow: hidden;}
 .picture div .label {overflow: hidden;}
+.label.noimage { margin: -2px; border: 2px solid black; }
 .cabnavigator .picture div img:hover, .cabnavigator .picture a > div:hover { border: 2px solid red; margin: -2px;}
 .cabnavigator .picture div img.rlt:hover { margin: -2px 0 0 2px;}
 

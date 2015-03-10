@@ -2611,6 +2611,21 @@ class Device {
 			$picturefile="pictures/P_ERROR.png";
 		}
 		@list($width, $height)=getimagesize($picturefile);
+		// Make sure there is an image! DOH! If either is 0 then use a text box
+		$width=intval($width);
+		$height=intval($height);
+		$noimage=false;
+		if($width==0 || $height==0){
+			$noimage=true;
+			if($parentTempl->Model=='HTRAY'){
+				$height=$parentDetails->targetWidth;
+				$width=$parentDetails->targetHeight;
+			}elseif($parentTempl->Model=='VTRAY'){
+				$width=$parentDetails->targetWidth;
+				$height=$parentDetails->targetHeight;
+			}
+		}
+
 		// In the event of read error this will rotate a horizontal text label
 		$hor_blade=($width=="" || $height=="")?true:($width>$height);
 
@@ -2631,10 +2646,13 @@ class Device {
 			// If we're dealing with a shelf mimic what GetSlot() would have done for our fake slot
 			if($parentTempl->Model=='HTRAY' || $parentTempl->Model=='VTRAY'){
 				$imageratio=($hor_blade || (!$hor_blade && $parentTempl->Model=='HTRAY'))?($width/$height):($height/$width);
+				// If we don't have an image this will make the text box fit correctly, hopefully
+				if($noimage){$imageratio=($parentTempl->Model=='HTRAY')?($height/$width):($width/$height);}
 				$slot->W=($parentTempl->Model=='HTRAY')?$parentDetails->targetWidth/$parentDev->ChassisSlots:$parentDetails->targetWidth;
 				$slot->H=($parentTempl->Model=='HTRAY')?$parentDetails->targetHeight:$parentDetails->targetHeight/$parentDev->ChassisSlots;
 				$slot->X=($parentTempl->Model=='HTRAY')?($rear)?($parentDev->ChassisSlots-$this->Position-$this->Height+1)*$slot->W:($slot->Position-1)*$slot->W:0;
 				$slot->Y=($parentTempl->Model=='HTRAY')?0:$parentDetails->targetHeight-$parentDetails->targetHeight/$parentDev->ChassisSlots*($this->Position+$this->Height-1);
+($this->DeviceID==4408 && $noimage)?error_log("sloth: $slot->H, slotw: $slot->W, slotx: $slot->X, sloty: $slot->Y, ratio: $imageratio"):'';
 
 				// Enlarge the slot if needed
 				$slot->H=($parentTempl->Model=='HTRAY')?$parentDetails->targetHeight:$parentDetails->targetHeight/$parentDev->ChassisSlots*$this->Height;
@@ -2657,7 +2675,7 @@ class Device {
 					$originalX=$slot->X;
 					$slot->W=$slot->H*$imageratio;
 					$slot->X=($rear)?$originalX+($originalW-$slot->W):$slot->X;
-				}elseif($parentTempl->Model=='HTRAY' && $slot->H>$slot->W*$this->Height/$imageratio){
+				}elseif($parentTempl->Model=='HTRAY' && $slot->H>$slot->W*$this->Height/$imageratio && !$noimage){
 					$originalH=$slot->H;
 					$slot->H=($hor_blade)?$slot->W*$imageratio:$slot->W/$imageratio;
 					$slot->Y=$originalH-$slot->H;
@@ -2666,6 +2684,7 @@ class Device {
 				$parentDetails->zoomX=1;
 				$parentDetails->zoomY=1;
 			}
+($this->DeviceID==4408)?error_log("SLOTDONE: sloth: $slot->H, slotw: $slot->W, slotx: $slot->X, sloty: $slot->Y, ratio: $imageratio"):'';
 
 			// Check for slot orientation before we possibly modify it via height
 			$hor_slot=($slot->W>$slot->H);
@@ -2763,7 +2782,7 @@ class Device {
 				$label.="<div>$flags$this->Label".(($rear)?" (".__("Rear").")":"")."</div></div>\n";
 			}else{
 				//LABEL for child device without image - Always show
-				$resp.="\t\t\t\t<div class=\"label\" data-deviceid=$this->DeviceID style='height: ".$height."px; line-height:".$height."px; ".(($height*0.8<13)?" font-size: ".intval($height*0.8)."px;":"")."'>";
+				$resp.="\t\t\t\t<div class=\"label noimage\" data-deviceid=$this->DeviceID style='height: ".$height."px; line-height:".$height."px; ".(($height*0.8<13)?" font-size: ".intval($height*0.8)."px;":"")."'>";
 				$resp.="<div>$flags$this->Label".(($rear)?" (".__("Rear").")":"")."</div></div>\n";
 			}
 			$resp.=$clickableend.$label;
