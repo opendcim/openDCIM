@@ -1008,11 +1008,27 @@ $(document).ready( function() {
 
 function addPictures( RequestID ) {
 	var fd = new FormData();
-	var fpic = 'pictures/' + $('#FrontPictureFile').val();
-	var rpic = 'pictures/' + $('#RearPictureFile').val();
+
+	var canvas = document.createElement('CANVAS');
+	var ctx = canvas.getContext('2d');
+	var img = new Image;
+	img.crossOrigin = 'Anonymous';
+	img.onload = function(){
+		canvas.height = img.height;
+		canvas.width = img.width;
+		ctx.drawImage(img,0,0);
+		var dataURL = canvas.toDataURL(outputFormat || 'image/png');
+		if ( fd.has( 'front' ) ) {
+			fd.append( "rear", dataURL );
+		} else {
+			fd.append( "front", dataURL);
+		}
+		// Clean up
+		canvas = null; 
+	};
 	
-	fd.append( "front", fpic, fpic );
-	fd.append( "rear", fpic, fpic );
+	img.src = 'pictures/' + $('#FrontPictureFile').val();
+	img.src = 'pictures/' + $('#RearPictureFile').val();
 	
 	$.ajax({
 		type: 'post',
@@ -1031,7 +1047,6 @@ function addPictures( RequestID ) {
 			alert( "It appears to have bombed out." );
 		}
 	});
-
 }
 </script>
 </body>
