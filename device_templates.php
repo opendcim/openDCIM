@@ -349,6 +349,7 @@ exit;
   <script type="text/javascript" src="scripts/jHtmlArea-0.8.min.js"></script>
   <script type="text/javascript" src="scripts/jquery.textext.js"></script>
   <script type="text/javascript" src="scripts/jquery.imgareaselect.pack.js"></script>
+  <script type="text/javascript" src="scripts/jquery.form.min.js"></script>
   <script type="text/javascript" src="scripts/common.js"></script>
   <script type="text/javascript">
 	$(document).ready(function(){
@@ -762,6 +763,7 @@ if ( $template->TemplateID > 0 ) {
 
 	if($template->TemplateID >0){
 		echo '   <button type="submit" name="action" value="Update">',__("Update Template"),'</button><button type="button" id="clone">',__("Clone Template"),'</button><button id="delete" type="button">',__("Delete Template"),'</button><button type="submit" name="action" value="Device" id="device">',__("Update Devices"),'</button><button type="submit" name="action" value="Export">',__("Export"),'</button>';
+		echo '<button type="button" id="uploadbutton">',__("Upload to Repo"),'</button>';
 	}else{
 		echo '	 <button type="submit" name="action" value="Create">',__("Create"),'</button>';
 	}
@@ -981,31 +983,55 @@ if (isset($result["log"])){
 </div>
 <!-- end dialog: importFile -->
 <script type="text/javascript">
-function TestUpload(){
-	convertImgToBase64('http://dev.opendcim.org/pictures/DDN-2U-FRONT.PNG',function(base64Img){
-// append an image
-//		var blob = dataURItoBlob(base64Img);
-//		var fd = new FormData($('#deviceform')[0]);
-//		fd.append("TestImageFile", blob);
-
+$(document).ready( function() {
+	$('#uploadbutton').click( function() {
 		$.ajax({
 			type: 'put',
 			url: 'https://repository.opendcim.org/api/devicetemplate',
-			async: false,
 			headers:{
-				'APIKey':'e807f1fcf82d132f9bb018ca6738a19f',
-				'UserID':'wilbur@wilpig.org'
+				'APIKey':'e9afc69c3df5c8d70647150cf1ad9fc0',
+				'UserID':'scott@themillikens.com'
 			},
-			processData: true, // must be false if an image is added
+			processData: false,
 			data: $('#deviceform').serialize(),
+			dataType: 'json',
 			success: function(data){
-
+				var tmp = data.template;
+				addPictures( tmp.RequestID );
 			},
 			error: function(data){
-
+				alert( "It appears to have bombed out." );
 			}
 		});
 	});
+});
+
+function addPictures( RequestID ) {
+	var fd = new FormData();
+	var fpic = 'pictures/' + $('#FrontPictureFile').val();
+	var rpic = 'pictures/' + $('#RearPictureFile').val();
+	
+	fd.append( "front", fpic, fpic );
+	fd.append( "rear", fpic, fpic );
+	
+	$.ajax({
+		type: 'post',
+		url: 'https://repository.opendcim.org/api/devicetemplate/addpictures/' + RequestID,
+		headers:{
+			'APIKey':'e9afc69c3df5c8d70647150cf1ad9fc0',
+			'UserID':'scott@themillikens.com'
+		},
+		processData: false,
+		data: fd,
+		contentType: false,
+		success: function(data){
+			console.log( data );
+		},
+		error: function(data){
+			alert( "It appears to have bombed out." );
+		}
+	});
+
 }
 </script>
 </body>
