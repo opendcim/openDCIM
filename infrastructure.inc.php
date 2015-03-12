@@ -999,6 +999,17 @@ class DeviceTemplate {
 
 		return $templateList;
 	}
+	
+	function GetTemplateShareList() {
+		$sql = "select * from fac_DeviceTemplate where ShareToRepo=true";
+		
+		$templateList = array();
+		foreach( $this->query($sql) as $row ) {
+			$templateList[]=DeviceTemplate::RowToObject($row);
+		}
+		
+		return $templateList;
+	}
 
     /**
      * Return a list of the templates indexed by the TemplateID

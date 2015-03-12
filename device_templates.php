@@ -99,6 +99,8 @@ exit;
 		$template->DeviceType=$_POST['DeviceType'];
 		$template->PSCount=$_POST['PSCount'];
 		$template->NumPorts=$_POST['NumPorts'];
+		$template->ShareToRepo=$_POST['ShareToRepo'];
+		$template->KeepLocal=$_POST['KeepLocal'];
 		$template->Notes=trim($_POST['Notes']);
 		$template->Notes=($template->Notes=="<br>")?"":$template->Notes;
 		$template->FrontPictureFile=$_POST['FrontPictureFile'];
@@ -349,7 +351,6 @@ exit;
   <script type="text/javascript" src="scripts/jHtmlArea-0.8.min.js"></script>
   <script type="text/javascript" src="scripts/jquery.textext.js"></script>
   <script type="text/javascript" src="scripts/jquery.imgareaselect.pack.js"></script>
-  <script type="text/javascript" src="scripts/jquery.form.min.js"></script>
   <script type="text/javascript" src="scripts/common.js"></script>
   <script type="text/javascript">
 	$(document).ready(function(){
@@ -662,6 +663,14 @@ echo '	</select>
    <div><input type="text" name="NumPorts" id="NumPorts" value="',$template->NumPorts,'"><button type="button">',__("Edit Ports"),'</button></div>
 </div>
 <div>
+	<div><label>',__("Share to Repository"),'</label></div>
+	<div><input type="checkbox" id="sharetorepo" name="sharetorepo" ',$template->ShareToRepo ? 'checked' : '','></div>
+</div>
+<div>
+	<div><label>',__("Keep Local (Ignore Repository)"),'</label></div>
+	<div><input type="checkbox" id="keeplocal" name="keeplocal" ',$template->KeepLocal ? 'checked' : '','></div>
+</div>
+<div>
    <div><label for="FrontPictureFile">',__("Front Picture File"),'</label></div>
    <div><input type="text" name="FrontPictureFile" id="FrontPictureFile" value="',$template->FrontPictureFile,'"></div>
 </div>
@@ -763,7 +772,6 @@ if ( $template->TemplateID > 0 ) {
 
 	if($template->TemplateID >0){
 		echo '   <button type="submit" name="action" value="Update">',__("Update Template"),'</button><button type="button" id="clone">',__("Clone Template"),'</button><button id="delete" type="button">',__("Delete Template"),'</button><button type="submit" name="action" value="Device" id="device">',__("Update Devices"),'</button><button type="submit" name="action" value="Export">',__("Export"),'</button>';
-		echo '<button type="button" id="uploadbutton">',__("Upload to Repo"),'</button>';
 	}else{
 		echo '	 <button type="submit" name="action" value="Create">',__("Create"),'</button>';
 	}
@@ -1009,27 +1017,40 @@ $(document).ready( function() {
 function addPictures( RequestID ) {
 	var fd = new FormData();
 
-	var canvas = document.createElement('CANVAS');
-	var ctx = canvas.getContext('2d');
-	var img = new Image;
-	img.crossOrigin = 'Anonymous';
-	img.onload = function(){
-		canvas.height = img.height;
-		canvas.width = img.width;
-		ctx.drawImage(img,0,0);
-		var dataURL = canvas.toDataURL(outputFormat || 'image/png');
-		if ( fd.has( 'front' ) ) {
-			fd.append( "rear", dataURL );
-		} else {
-			fd.append( "front", dataURL);
-		}
-		// Clean up
-		canvas = null; 
-	};
+//	var canvas = document.createElement('CANVAS');
+//	var ctx = canvas.getContext('2d');
+//	var img = new Image;
+//	img.crossOrigin = 'Anonymous';
+//	
+//	img.onload = function(){
+//		canvas.height = img.height;
+//		canvas.width = img.width;
+//		ctx.drawImage(img,0,0);
+//		var dataURL = canvas.toDataURL('image/png');
+//		if ( side != 'front' ) {
+//			fd.append( "rear", dataURL );
+//		} else {
+//			fd.append( "front", dataURL);
+//		}
+//	};
+//	
+	fpic = 'pictures/' + $('#FrontPictureFile').val();
+	rpic = 'pictures/' + $('#RearPictureFile').val();
 	
-	img.src = 'pictures/' + $('#FrontPictureFile').val();
-	img.src = 'pictures/' + $('#RearPictureFile').val();
+	var xhr = new XMLHttpRequest();
+	xhr.open( "GET", fpic );
+	xhr.responseType = "blob";
+	xhr.onload = function() {
+		fd.append( "front", xhr.response );
+	}
+	xhr.send();
 	
+	xhr.open( "GET", rpic );
+	xhr.onload = function() {
+		fd.append( "rear", xhr.response );
+	}
+	xhr.send();
+		
 	$.ajax({
 		type: 'post',
 		url: 'https://repository.opendcim.org/api/devicetemplate/addpictures/' + RequestID,
