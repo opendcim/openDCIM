@@ -12,7 +12,6 @@
 	curl_setopt( $c, CURLOPT_CONNECTTIMEOUT, 30 );
 	curl_setopt( $c, CURLOPT_USERAGENT, "Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.1)");
 	curl_setopt( $c, CURLOPT_RETURNTRANSFER, true );
-	curl_setopt( $c, CURLOPT_HEADER, true );
 	curl_setopt( $c, CURLOPT_COOKIEFILE, "/tmp/repocookies.txt" );
 	curl_setopt( $c, CURLOPT_COOKIEJAR, "/tmp/repocookies.txt" );
 	curl_setopt( $c, CURLOPT_CUSTOMREQUEST, "PUT" );
@@ -42,7 +41,6 @@
 			curl_setopt( $p, CURLOPT_USERAGENT, "Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.1)");
 			curl_setopt( $p, CURLOPT_RETURNTRANSFER, true );
 			curl_setopt( $p, CURLOPT_POST, true );
-			curl_setopt( $p, CURLOPT_HEADER, true );
 			curl_setopt( $p, CURLOPT_COOKIEFILE, "/tmp/repocookies.txt" );
 			curl_setopt( $p, CURLOPT_COOKIEJAR, "/tmp/repocookies.txt" );
 			curl_setopt( $p, CURLOPT_FOLLOWLOCATION, 1 );
