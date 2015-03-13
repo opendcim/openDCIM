@@ -848,6 +848,16 @@ class DeviceTemplate {
 		return $dbh->exec($sql);
 	}
 	
+	function prepare( $sql ) {
+		global $dbh;
+		return $dbh->prepare( $sql );
+	}
+	
+	function clearShareFlag() {
+		$st = $this->prepare( "update fac_DeviceTemplate set ShareToRepo=0 where TemplateID=:TemplateID" );
+		$st->execute( array( ":TemplateID"=>$this->TemplateID ) );
+	}
+	
 	function CreateTemplate(){
 		global $dbh;
 		
