@@ -1011,7 +1011,7 @@ class DeviceTemplate {
 	}
 	
 	function GetTemplateShareList() {
-		$sql = "select * from fac_DeviceTemplate where ShareToRepo=true";
+		$sql = "select * from fac_DeviceTemplate where ManufacturerID in (select ManufacturerID from fac_Manufacturer where GlobalID>0) and ShareToRepo=true order by ManufacturerID ASC";
 		
 		$templateList = array();
 		foreach( $this->query($sql) as $row ) {
