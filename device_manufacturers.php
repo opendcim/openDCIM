@@ -19,6 +19,14 @@
 		exit;
 	}
 
+	if(isset($_GET['getTemplateCount']) && isset($_GET['ManufacturerID'])){
+		$temp=new DeviceTemplate();
+		$temp->ManufacturerID=$_GET['ManufacturerID'];
+		header('Content-Type: application/json');
+		echo json_encode($temp->GetTemplateListByManufacturer());
+		exit;
+	}
+
 	if(isset($_POST['setManufacturer'])){
 		$mfg->ManufacturerID=$_POST['ManufacturerID'];
 		$mfg->GetManufacturerByID();
@@ -32,19 +40,23 @@
 	}
 	// END - AJAX
 
-	if(isset($_REQUEST["manufacturerid"]) && $_REQUEST["manufacturerid"] >0){
-		$mfg->ManufacturerID=(isset($_POST['manufacturerid']) ? $_POST['manufacturerid'] : $_GET['manufacturerid']);
+	if(isset($_REQUEST["ManufacturerID"]) && $_REQUEST["ManufacturerID"] >0){
+		$mfg->ManufacturerID=(isset($_POST['ManufacturerID']) ? $_POST['ManufacturerID'] : $_GET['ManufacturerID']);
 		$mfg->GetManufacturerByID();
 	}
 
 	$status="";
 	if(isset($_POST["action"])&&(($_POST["action"]=="Create")||($_POST["action"]=="Update"))){
-		$mfg->ManufacturerID=$_POST["manufacturerid"];
+		$mfg->ManufacturerID=$_POST["ManufacturerID"];
 		$mfg->Name=trim($_POST["name"]);
 
 		if($mfg->Name != null && $mfg->Name != ""){
 			if($_POST["action"]=="Create"){
-					$mfg->AddManufacturer();
+				if($mfg->AddManufacturer()){
+					header('Location: '.redirect("device_manufacturers.php?ManufacturerID=$mfg->ManufacturerID"));
+				}else{
+					$status=__("Error adding new manufacturer");
+				}
 			}else{
 				$status="Updated";
 				$mfg->UpdateManufacturer();
@@ -74,10 +86,13 @@
   <script type="text/javascript" src="scripts/jquery.validationEngine.js"></script>
 
   <style type="text/css">
+	#using { margin-top: 1em; }
+
 	div.table.border { background-color: white; }
 	div.table.border > div:nth-child(2n) { background-color: lightgray; }
 	div.table > div > div { padding: 0.2em; }
 	.change .diff { color: red; border: 1px dotted grey; }
+	.change .good { color: green; border: 1px dotted grey; }
 
 	.ui-tooltip, .arrow:after {
 		background: white;
@@ -132,6 +147,10 @@
   </style>
 
   <script type="text/javascript">
+	// Store creds for quick access
+	window.APIKey="e807f1fcf82d132f9bb018ca6738a19f";
+	window.UserID="wilbur@wilpig.org";
+
 	$(function() {
 		$( document ).tooltip({
 			items: ".change .diff",
@@ -152,6 +171,13 @@
 
 	$(document).ready(function() {
 		$('#mform').validationEngine({});
+		$('#btn_syncrepo').click(BuildTable);
+		$('#ManufacturerID').change(function(e){
+			location.href='device_manufacturers.php?ManufacturerID='+this.value;
+		});
+		$.get('',{getTemplateCount: $('#ManufacturerID').val()},function(data){
+			$('#count').text(data.length);
+		});
 	});
 
 	$.widget( "opendcim.mrow", {
@@ -201,15 +227,17 @@
 				url: 'https://repository.opendcim.org/api/manufacturer',
 				async: false,
 				headers:{
-					'APIKey':'e807f1fcf82d132f9bb018ca6738a19f',
-					'UserID':'wilbur@wilpig.org'
+					'APIKey':window.APIKey,
+					'UserID':window.UserID
 				},
 				data: {Name:row.local.Name},
 				success: function(data){
-
+					row.button.context.className="change";
+					$(row.button[0].parentElement).addClass('good').text(data.message);
 				},
 				error: function(data){
-
+					row.button.context.className="change";
+					$(row.button[0].parentElement).addClass('diff').text(data.responseJSON.message);
 				}
 			});
 		},
@@ -254,6 +282,7 @@
 		}
 
 		$('#mform > .table').replaceWith(table);
+		$('#using').remove();
 
 		// Check against master list
 		MashLists();
@@ -261,6 +290,7 @@
 
 	function MashLists(){
 		var ml=GetMasterList();
+		var pl=GetPendingList();
 		$('#mform > .table > div:first-child ~ div').each(function(){
 			var row=$(this);
 			// No globalid set so let's try to compare our shit with the master to find a match
@@ -278,6 +308,19 @@
 						ml.splice(i, 1);
 						break;
 					}
+				}
+				// If they have access to the pending list then let's match shit up and remove the controls
+				if(typeof pl != "undefined" && !pl.error){
+					for(var i in pl.manufacturersqueue){
+						if(pl.manufacturersqueue[i].Name.toLowerCase().replace(' ','') == row.data('local').Name.toLowerCase().replace(' ','')){
+							row.addClass('change');
+							row.find('div:nth-child(3)').addClass('diff').text(pl.manufacturersqueue[i].RequestID).attr('title',row.data('local').GlobalID);
+							last.text("Pending: "+pl.manufacturersqueue[i].SubmissionDate).addClass("good");
+
+							pl.manufacturersqueue.splice(i, 1);
+							break;
+						}
+					}	
 				}
 			// ELSE we have a GlobalID already set so we need to pull that specific record and compare all the fields
 			}else{
@@ -350,6 +393,24 @@
 		return ll;
 	}
 
+	function GetPendingList(){
+		var pl;
+		$.ajax({
+			type: 'get',
+			url: 'https://repository.opendcim.org/api/manufacturer/pending/',
+			async: false,
+			headers:{
+				'APIKey':window.APIKey,
+				'UserID':window.UserID
+			},
+			success: function(data){
+				pl = data;
+			}
+		});
+
+		return pl;
+	}
+
   </script>
 </head>
 <body>
@@ -364,8 +425,8 @@ echo '<div class="main">
 <form id="mform" method="POST">
 <div class="table">
 <div>
-   <div><label for="manufacturerid">',__("Manufacturer"),'</label></div>
-   <div><input type="hidden" name="action" value="query"><select name="manufacturerid" id="manufacturerid" onChange="form.submit()">
+   <div><label for="ManufacturerID">',__("Manufacturer"),'</label></div>
+   <div><input type="hidden" name="action" value="query"><select name="ManufacturerID" id="ManufacturerID">
    <option value=0>',__("New Manufacturer"),'</option>';
 
 	foreach($mfgList as $mfgRow){
@@ -374,6 +435,10 @@ echo '<div class="main">
 	}
 
 echo '	</select></div>
+</div>
+<div>
+   <div><label for="gid">',__("Global ID"),'</label></div>
+   <div><input type="text" id="gid" value="',$mfg->GlobalID,'" disabled></div>
 </div>
 <div>
    <div><label for="name">',__("Name"),'</label></div>
@@ -386,9 +451,15 @@ echo '	</select></div>
 	}else{
 		echo '   <button type="submit" name="action" value="Create">',__("Create"),'</button>';
 	}
+	echo '	<button type="button" id="btn_syncrepo">',__("Sync with repository"),'</button>';
 ?>
 </div>
 </div><!-- END div.table -->
+<?php
+	if($mfg->ManufacturerID >0){
+		echo '	<div id="using">',__("Templates using this Manufacturer"),':<span id="count">0</span></div>';
+	}
+?>
 </form>
 </div></div>
 <?php echo '<a href="index.php">[ ',__("Return to Main Menu"),' ]</a>'; ?>

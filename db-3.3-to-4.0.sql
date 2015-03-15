@@ -174,3 +174,8 @@ ALTER TABLE fac_Device CHANGE DeviceType DeviceType VARCHAR( 23 ) NOT NULL DEFAU
 ALTER TABLE fac_RackRequest CHANGE DeviceType DeviceType VARCHAR( 23 ) NOT NULL DEFAULT "Server";
 ALTER TABLE fac_DeviceTemplate CHANGE DeviceType DeviceType VARCHAR( 23 ) NOT NULL DEFAULT "Server";
 ALTER TABLE fac_DeviceCustomAttribute CHANGE AttributeType AttributeType VARCHAR( 8 ) NOT NULL DEFAULT "string";
+
+--
+-- We added in GlobalIDs make sure they are all set to 0
+-- 
+UPDATE fac_Manufacturer SET GlobalID=0;

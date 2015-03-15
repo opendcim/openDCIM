@@ -1010,6 +1010,21 @@ class DeviceTemplate {
 		return $templateList;
 	}
 	
+	function GetTemplateListByManufacturer(){
+		$this->MakeSafe();
+
+		$sql="SELECT * FROM fac_DeviceTemplate a, fac_Manufacturer b WHERE 
+			a.ManufacturerID=b.ManufacturerID AND a.ManufacturerID=$this->ManufacturerID 
+			ORDER BY Name ASC, Model ASC;";
+
+		$templateList=array();
+		foreach($this->query($sql) as $row){
+			$templateList[]=DeviceTemplate::RowToObject($row);
+		}
+
+		return $templateList;
+	}
+
 	function GetTemplateShareList() {
 		$sql = "select * from fac_DeviceTemplate where ManufacturerID in (select ManufacturerID from fac_Manufacturer where GlobalID>0) and ShareToRepo=true order by ManufacturerID ASC";
 		
