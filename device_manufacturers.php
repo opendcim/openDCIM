@@ -32,12 +32,31 @@
 		$mfg->GetManufacturerByID();
 		$mfg->GlobalID=$_POST['GlobalID'];
 		$mfg->Name=$_POST['Name'];
-		$mfg->UpdateManufacturer();
+		if($mfg->ManufacturerID==""){
+			$mfg->CreateManufacturer();
+		}else{
+			$mfg->UpdateManufacturer();
+		}
 
 		header('Content-Type: application/json');
 		echo json_encode($mfg);
 		exit;
 	}
+
+
+	if(isset($_POST['action']) && $_POST["action"]=="Delete"){
+		header('Content-Type: application/json');
+		$response=false;
+		if(isset($_POST["TransferTo"])){
+			$mfg->ManufacturerID=$_POST['ManufacturerID'];
+			if($mfg->DeleteManufacturer($_POST["TransferTo"])){
+				$response=true;
+			}
+		}
+		echo json_encode($response);
+		exit;
+	}
+
 	// END - AJAX
 
 	if(isset($_REQUEST["ManufacturerID"]) && $_REQUEST["ManufacturerID"] >0){
@@ -52,13 +71,13 @@
 
 		if($mfg->Name != null && $mfg->Name != ""){
 			if($_POST["action"]=="Create"){
-				if($mfg->AddManufacturer()){
+				if($mfg->CreateManufacturer()){
 					header('Location: '.redirect("device_manufacturers.php?ManufacturerID=$mfg->ManufacturerID"));
 				}else{
 					$status=__("Error adding new manufacturer");
 				}
 			}else{
-				$status="Updated";
+				$status=__("Updated");
 				$mfg->UpdateManufacturer();
 			}
 		}
@@ -175,9 +194,13 @@
 		$('#ManufacturerID').change(function(e){
 			location.href='device_manufacturers.php?ManufacturerID='+this.value;
 		});
+		// Show number of templates using manufacturer
 		$.get('',{getTemplateCount: $('#ManufacturerID').val()},function(data){
 			$('#count').text(data.length);
 		});
+
+		$('button[name="action"][value="Delete"]').click(DeleteManufacturer);
+
 	});
 
 	$.widget( "opendcim.mrow", {
@@ -254,6 +277,7 @@
 						// Update local record with data from master
 						$.post('',{setManufacturer:'',ManufacturerID:row.local.ManufacturerID,GlobalID:data.manufacturers[0].ManufacturerID,Name:data.manufacturers[0].Name}, function(data){
 							// Update the screen with the new data 
+							row.local.ManufacturerID=data.ManufacturerID;
 							row.local.GlobalID=data.GlobalID;
 							row.local.Name=data.Name;
 							row.BuildRow();
@@ -411,6 +435,42 @@
 		return pl;
 	}
 
+	function DeleteManufacturer(){
+		$('#copy').replaceWith($('#ManufacturerID').clone().attr('id','copy'));
+		$('#copy option[value=0]').remove();
+		$('#copy option[value='+$('#ManufacturerID').val()+']').remove();
+		$('#deletemodal').dialog({
+			width: 600,
+			modal: true,
+			buttons: {
+				Transfer: function(e){
+					$('#doublecheck').dialog({
+						width: 600,
+						modal: true,
+						buttons: {
+							Yes: function(e){
+								$.post('',{ManufacturerID: $('#ManufacturerID').val(), TransferTo: $('#copy').val(), action: 'Delete'},function(data){
+									if(data){
+										location.href='';
+									}else{
+										alert("Something's gone horrible wrong");
+									}
+								});
+							},
+							No: function(e){
+								$('#doublecheck').dialog('destroy');
+								$('#deletemodal').dialog('destroy');
+							}
+						}
+					});
+				},
+				No: function(e){
+					$('#deletemodal').dialog('destroy');
+				}
+			}
+		});
+	}
+
   </script>
 </head>
 <body>
@@ -447,7 +507,8 @@ echo '	</select></div>
 <div class="caption">';
 
 	if($mfg->ManufacturerID >0){
-		echo '   <button type="submit" name="action" value="Update">',__("Update"),'</button>';
+		echo '   <button type="submit" name="action" value="Update">',__("Update"),'</button>
+	<button type="button" name="action" value="Delete">',__("Delete"),'</button>';
 	}else{
 		echo '   <button type="submit" name="action" value="Create">',__("Create"),'</button>';
 	}
@@ -462,7 +523,21 @@ echo '	</select></div>
 ?>
 </form>
 </div></div>
-<?php echo '<a href="index.php">[ ',__("Return to Main Menu"),' ]</a>'; ?>
+<?php echo '<a href="index.php">[ ',__("Return to Main Menu"),' ]</a>
+<!-- hiding modal dialogs here so they can be translated easily -->
+<div class="hide">
+	<div title="',__("Manufacturer delete confirmation"),'" id="deletemodal">
+		<div id="modaltext"><span style="float:left; margin:0 7px 20px 0;" class="ui-icon ui-icon-alert"></span>',__("Are you sure that you want to delete this Manufacturer?"),'
+		<br><br>
+		<div>Transfer all existing templates to <select id="copy"></select></div>
+		</div>
+	</div>
+	<div title="',__("Are you REALLY sure?"),'" id="doublecheck">
+		<div id="modaltext" class="warning"><span style="float:left; margin:0 7px 20px 0;" class="ui-icon ui-icon-alert"></span>',__("Are you sure REALLY sure?  There is no undo!!"),'
+		<br><br>
+		</div>
+	</div>
+</div>'; ?>
 </div><!-- END div.main -->
 </div><!-- END div.page -->
 </body>

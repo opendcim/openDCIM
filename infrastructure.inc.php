@@ -1259,7 +1259,7 @@ xsi:noNamespaceSchemaLocation="openDCIMdevicetemplate.xsd">
 		$manufacturer->Name=transform($xmltemplate->ManufacturerName);
 		if (!$manufacturer->GetManufacturerByName()){
 			//New Manufacturer
-			$manufacturer->AddManufacturer();
+			$manufacturer->CreateManufacturer();
 		}
 		$template=new DeviceTemplate();
 		$template->ManufacturerID=$manufacturer->ManufacturerID;
@@ -1501,7 +1501,7 @@ class Manufacturer {
 		return $ManufacturerList;
 	}
 
-	function AddManufacturer(){
+	function CreateManufacturer(){
 		global $dbh;
 		
 		$this->MakeSafe();
@@ -1518,6 +1518,30 @@ class Manufacturer {
 			$this->MakeDisplay();
 			return true;
 		}
+	}
+
+	function DeleteManufacturer($TransferTo=null){
+		$this->MakeSafe();
+
+		$tmpl=new DeviceTemplate();
+		$tmpl->ManufacturerID=$this->ManufacturerID;
+		$templates=$tmpl->GetTemplateListByManufacturer();
+
+		// If a TransferTo isn't supplied then just delete the templates that depend on this key
+		foreach($templates as $DeviceTemplate){
+			if(!is_null($TransferTo)){
+				$DeviceTemplate->ManufacturerID=$TransferTo;
+				$DeviceTemplate->UpdateTemplate();
+			}else{
+				// This option is not being provided but us at this time, maybe through the API
+				$DeviceTemplate->DeleteTemplate();
+			}
+		}
+
+		$sql="DELETE FROM fac_Manufacturer WHERE ManufacturerID=$this->ManufacturerID;";
+
+		(class_exists('LogActions'))?LogActions::LogThis($this):'';
+		return $this->query($sql);
 	}
 
 	function UpdateManufacturer(){
