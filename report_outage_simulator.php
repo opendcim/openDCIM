@@ -81,6 +81,8 @@ if (!isset($_REQUEST['action'])){
 			
 			printf( "</table></td></tr>\n" );
 		}
+		
+		printf( "<div><label>%s</label><input type='text' size='50' name='tags' id='tags'></div>\n", __("Tags (example: +Linux -Development)") );
 	}
 ?>
 </table>
@@ -186,6 +188,24 @@ echo '		<div class="main">
 		$pnlArray=$_POST['panelid'];
 	}
 	
+	if ( isset( $_POST['tags'] ) ) {
+		$tagList = preg_split( "/([\+\-])/", $_POST['tags'], -1, PREG_SPLIT_NO_EMPTY|PREG_SPLIT_DELIM_CAPTURE);
+		$includeTags = array();
+		$excludeTags = array();
+		
+		foreach ( $tagList as $t ) {
+			if ( $t == '+' ) {
+				$tInclude = true;
+			} elseif ( $t == '-' ) {
+				$tInclude = false;
+			} elseif ( $tInclude ) {
+				$includeTags[] = $t;
+			} else {
+				$excludeTags[] = $t;
+			}
+		}
+	}
+	
 	if ( count( $srcArray ) > 0 ) {
 		// Build an array of the Panels affected when the entire source goes down.
 		// This will allow us to use one section of code to calculate effects of panels going down and use it for both cases.
@@ -283,15 +303,47 @@ echo '		<div class="main">
 			if ( ! in_array( $testPDU->PanelID, $pnlArray ) )
 				$diversity = true;
 		}
-		
-		$devList = $dev->ViewDevicesByCabinet();
+			
+		//$devList = $dev->ViewDevicesByCabinet();
+		$sql = "SELECT fac_Device.* FROM fac_Device WHERE Cabinet=" . intval( $cabRow->CabinetID );
 
+		if ( sizeof( $includeTags ) > 0 ) {
+			$sql .= " AND DeviceID in (select DeviceID from fac_DeviceTags a, fac_Tags b where a.TagID=b.TagID and b.Name in (";
+			for ( $n = 0; $n < sizeof( $includeTags ); $n++ ) {
+				if ( $n > 0 ) {
+					$sql .= ", ";
+				}
+				$sql .= "\"" . sanitize($includeTags[$n]) . "\"";
+			}
+			$sql .= ")) ";
+		}
+		
+		if ( sizeof( $excludeTags ) > 0 ) {
+			$sql .= " AND DeviceID not in (select DeviceID from fac_DeviceTags a, fac_Tags b where a.TagID=b.TagID and b.Name in (";
+			for ( $n = 0; $n < sizeof( $excludeTags ); $n++ ) {
+				if ( $n > 0 ) {
+					$sql .= ", ";
+				}
+				$sql .= "\"" . sanitize( $excludeTags[$n] ) . "\"";
+			}
+			$sql .= ")) ";
+		}
+		
+		error_log( "Tag search SQL -> " . $sql );
+		$st = $dbh->prepare( $sql );
+		$st->execute();
+		$st->setFetchMode( PDO::FETCH_CLASS, "Device" );
+		$devList = array();
+		while ( $row = $st->fetch() ) {
+			$devList[] = $row;
+		}
+		
 		if ( sizeof( $devList ) > 0 ) {
 			foreach ( $devList as $devRow ) {
 				// If there is not a circuit to the cabinet that is unaffected, no need to even check
 				$outageStatus = __("Down");
 				
-				if ( ! $devRow->Reservation ) {	// No need to even process devices that aren't installed, yet
+				if ( ! $devRow->Reservation || $devRow->PSCount == 0 ) {	// No need to even process devices that aren't installed, yet or that have 0 power supplies
 					if ( $diversity ) {
 						// If a circuit was entered with no panel ID, or a device has no connections documented, mark it as unknown
 						// The only way to be sure a device will stay up is if we have a connection to an unaffected circuit,
