@@ -303,8 +303,7 @@ echo '		<div class="main">
 			if ( ! in_array( $testPDU->PanelID, $pnlArray ) )
 				$diversity = true;
 		}
-			
-		//$devList = $dev->ViewDevicesByCabinet();
+		
 		$sql = "SELECT fac_Device.* FROM fac_Device WHERE Cabinet=" . intval( $cabRow->CabinetID );
 
 		if ( sizeof( $includeTags ) > 0 ) {
@@ -342,7 +341,7 @@ echo '		<div class="main">
 				// If there is not a circuit to the cabinet that is unaffected, no need to even check
 				$outageStatus = __("Down");
 				
-				if ( ! $devRow->Reservation || $devRow->PSCount == 0 ) {	// No need to even process devices that aren't installed, yet or that have 0 power supplies
+				if ( ! $devRow->Reservation && $devRow->PowerSupplyCount == 0 ) {	// No need to even process devices that aren't installed, yet or that have 0 power supplies
 					if ( $diversity ) {
 						// If a circuit was entered with no panel ID, or a device has no connections documented, mark it as unknown
 						// The only way to be sure a device will stay up is if we have a connection to an unaffected circuit,
