@@ -138,7 +138,7 @@ $('#searchname').width($('#sidebar').innerWidth() - $('#searchname ~ button').ou
 addlookup($('#searchname'),'name');
 $('#searchadv ~ select[name="key"]').change(function(){
 	addlookup($('#searchadv'),$(this).val())
-}).height($('#searchadv').outerHeight());
+}).outerHeight($('#searchadv').outerHeight());
 
 // Really long cabinet / zone / dc combinations are making the screen jump around.
 // If they make this thing so big it's unusable, fuck em.
