@@ -329,7 +329,6 @@ echo '		<div class="main">
 			$sql .= ")) ";
 		}
 		
-		error_log( "Tag search SQL -> " . $sql );
 		$st = $dbh->prepare( $sql );
 		$st->execute();
 		$st->setFetchMode( PDO::FETCH_CLASS, "Device" );
