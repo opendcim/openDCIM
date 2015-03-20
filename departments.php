@@ -28,6 +28,9 @@
 		if($dept->Name!=''){
 			if($_POST['action']=='Create'){
 				$dept->CreateDepartment();
+				
+				header('Location: '.redirect("departments.php?deptid=$dept->DeptID"));
+				exit;
 			}else{
 				$dept->UpdateDepartment();
 			}
@@ -46,6 +49,7 @@
   <title>openDCIM Department Information</title>
   <link rel="stylesheet" href="css/inventory.php" type="text/css">
   <link rel="stylesheet" href="css/jquery-ui.css" type="text/css">
+  <link rel="stylesheet" href="css/validationEngine.jquery.css" type="text/css">
   <link rel="stylesheet" href="css/jquery.miniColors.css" type="text/css">
   <!--[if lt IE 9]>
   <link rel="stylesheet"  href="css/ie.css" type="text/css">
@@ -54,24 +58,49 @@
   <script type="text/javascript" src="scripts/jquery.min.js"></script>
   <script type="text/javascript" src="scripts/jquery-ui.min.js"></script>
   <script type="text/javascript" src="scripts/jquery.miniColors.js"></script>
+  <script type="text/javascript" src="scripts/jquery.validationEngine-en.js"></script>
+  <script type="text/javascript" src="scripts/jquery.validationEngine.js"></script>
 <script type="text/javascript">
-function showgroup(obj){
-	self.frames['groupadmin'].location.href='dept_groups.php?deptid='+obj;
-	document.getElementById('groupadmin').style.display = "block";
-	document.getElementById('deptname').readOnly = true
-	document.getElementById('deptsponsor').readOnly = true
-	document.getElementById('deptmgr').readOnly = true
-	document.getElementById('deptcolor').readOnly = true
-	document.getElementById('deptclass').disabled = true
-	document.getElementById('controls').id = "displaynone";
-	$('.color-picker').minicolors('destroy');
-}
-	$(document).ready( function() {
+	function showgroup(obj){
+		self.frames['groupadmin'].location.href='dept_groups.php?deptid='+obj;
+		document.getElementById('groupadmin').style.display = "block";
+		document.getElementById('controls').id = "displaynone";
+		$('.main .center form :input:not([name="deptid"])').attr({readonly:'readonly',disabled:'disabled'})
+		$('.color-picker').minicolors('destroy');
+		$('.main .center form').validationEngine('hide');
+	}
+	$(document).ready(function(){
+		$('#deptid').change(function(e){
+			location.href='departments.php?deptid='+this.value;
+		});
 		$(".color-picker").minicolors({
 			letterCase: 'uppercase',
 			change: function(hex, rgb) {
 				logData(hex, rgb);
 			}
+		});
+		$('.main .center form').validationEngine();
+		$('button[value="Delete"]').click(function(e){
+			$('#copy').replaceWith($('#deptid').clone().attr('id','copy'));
+			$('#copy option[value=0]').text('');
+			$('#copy option[value='+$('#deptid').val()+']').remove();
+			$('#deletemodal').dialog({
+				width: 900,
+				modal: true,
+				buttons: {
+					Transfer: function(e){
+						$('#doublecheck').dialog({
+							width: 600,
+							modal: true,
+							buttons: {
+							}
+						});
+					},
+					No: function(e){
+						$('#deletemodal').dialog('destroy');
+					}
+				}
+			});
 		});
 	});
 </script>
@@ -83,15 +112,15 @@ function showgroup(obj){
 	include( 'sidebar.inc.php' );
 	echo '<div class="main">
 <div class="center"><div>
-<form action="',$_SERVER["PHP_SELF"],'" method="POST">
+<form method="POST">
 <div class="table centermargin">
 <div>
    <div>',__("Department"),'</div>
-   <div><input type="hidden" name="action" value="query"><select name="deptid" onChange="form.submit()">
+   <div><input type="hidden" name="action" value="query"><select id="deptid" name="deptid">
    <option value=0>',__("New Department"),'</option>';
 
 	foreach($deptList as $deptRow){
-		if($dept->DeptID == $deptRow->DeptID){$selected=" selected";}else{$selected="";}
+		$selected=($dept->DeptID==$deptRow->DeptID)?" selected":"";
 		print "   <option value=\"$deptRow->DeptID\"$selected>$deptRow->Name</option>\n";
 	}
 
@@ -99,7 +128,7 @@ function showgroup(obj){
 </div>
 <div>
    <div><label for="deptname">',__("Department Name"),'</label></div>
-   <div><input type="text" size="50" name="name" id="deptname" maxlength="80" value="',$dept->Name,'"></div>
+   <div><input type="text" class="validate[required]" size="50" name="name" id="deptname" maxlength="80" value="',$dept->Name,'"></div>
 </div>
 <div>
    <div><label for="deptsponsor">',__("Executive Sponsor"),'</label></div>
@@ -118,7 +147,7 @@ function showgroup(obj){
    <div><select name="classification" id="deptclass">';
 
   foreach($config->ParameterArray['ClassList'] as $className){
-	  if($dept->Classification==$className){$selected=" selected";}else{$selected="";}
+	  $selected=($dept->Classification==$className)?" selected":"";
 	  print "   <option value=\"$className\"$selected>$className</option>\n";
   }
 ?>
@@ -128,7 +157,7 @@ function showgroup(obj){
 <div class="caption" id="controls">
 <?php
 	if($dept->DeptID > 0){
-		echo '<button type="submit" name="action" value="Update">',__("Update"),'</button><button type="button" onClick="showgroup(',$dept->DeptID,')">',__("Assign Contacts"),'</button>';
+		echo '<button type="submit" name="action" value="Update">',__("Update"),'</button><button type="button" name="action" value="Delete">',__("Delete"),'</button><button type="button" onClick="showgroup(',$dept->DeptID,')">',__("Assign Contacts"),'</button>';
 	}else{
     	echo '<button type="submit" name="action" value="Create">',__("Create"),'</button>';
 	}
@@ -139,7 +168,21 @@ function showgroup(obj){
 <iframe name="groupadmin" id="groupadmin" frameborder=0 scrolling="no"></iframe>
 <br>
 </div></div>
-<?php echo '<a href="index.php">[ ',__("Return to Main Menu"),' ]</a>'; ?>
+<?php echo '<a href="index.php">[ ',__("Return to Main Menu"),' ]</a>
+<!-- hiding modal dialogs here so they can be translated easily -->
+<div class="hide">
+	<div title="',__("Department delete confirmation"),'" id="deletemodal">
+		<div id="modaltext"><span style="float:left; margin:0 7px 20px 0;" class="ui-icon ui-icon-alert"></span>',__("Are you sure that you want to delete this Department?"),'
+		<br><br>
+		<div>Transfer all existing equipment and users to <select id="copy"></select></div>
+		</div>
+	</div>
+	<div title="',__("Are you REALLY sure?"),'" id="doublecheck">
+		<div id="modaltext" class="warning"><span style="float:left; margin:0 7px 20px 0;" class="ui-icon ui-icon-alert"></span>',__("Are you sure REALLY sure?  There is no undo!!"),'
+		<br><br>
+		</div>
+	</div>
+</div>'; ?>
 </div> <!-- END div.main -->
 </div> <!-- END div.page -->
 </body>
