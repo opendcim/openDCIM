@@ -10,6 +10,27 @@
 		exit;
 	}
 
+	// AJAX requests
+
+	if(isset($_GET['objectcount'])){
+		$cab=new Cabinet();
+		$dev=new Device();
+		$cab->AssignedTo=$dev->Owner=$_GET['deptid'];
+
+		$return=array();
+		$return['debug'][]=$cab;
+		$return['debug'][]=$cab->GetCabinetsByDept();
+		$return['debug'][]=$dev;
+		$return['cabinets']=count($cab->GetCabinetsByDept());
+		$return['devices']=count($dev->GetDevicesbyOwner());
+		$return['people']=count($person->GetPeopleByDepartment($dev->Owner));
+
+		header('Content-Type: application/json');
+		echo json_encode($return);
+		exit;
+	}
+	// END - AJAX requests
+
 	$dept=new Department();
 
 	if(isset($_REQUEST['deptid'])&&($_REQUEST['deptid']>0)){
@@ -84,6 +105,12 @@
 			$('#copy').replaceWith($('#deptid').clone().attr('id','copy'));
 			$('#copy option[value=0]').text('');
 			$('#copy option[value='+$('#deptid').val()+']').remove();
+			$.get('',{objectcount: '',deptid: $('#deptid').val()},function(data){
+				$('#cnt_cabinets').text(data.cabinets);
+				$('#cnt_devices').text(data.devices);
+				$('#cnt_users').text(data.people);
+			});
+
 			$('#deletemodal').dialog({
 				width: 900,
 				modal: true,
@@ -175,6 +202,7 @@
 		<div id="modaltext"><span style="float:left; margin:0 7px 20px 0;" class="ui-icon ui-icon-alert"></span>',__("Are you sure that you want to delete this Department?"),'
 		<br><br>
 		<div>Transfer all existing equipment and users to <select id="copy"></select></div>
+		<div>',__("Cabinets"),': <span id="cnt_cabinets"></span>&nbsp;&nbsp;&nbsp;',__("Devices"),': <span id="cnt_devices"></span>&nbsp;&nbsp;&nbsp;',__("Users"),': <span id="cnt_users"></span></div>
 		</div>
 	</div>
 	<div title="',__("Are you REALLY sure?"),'" id="doublecheck">

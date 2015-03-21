@@ -254,7 +254,7 @@ class Cabinet {
 		
 		$cabinetList=$this->ListCabinets();
 		foreach($cabinetList as $i => $cab){
-			if($cab->DeptID!=$this->DeptID){unset($cabinetList[$i]);}
+			if($cab->AssignedTo!=$this->AssignedTo){unset($cabinetList[$i]);}
 		}
 
 		return $cabinetList;
