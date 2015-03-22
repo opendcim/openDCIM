@@ -43,7 +43,12 @@
 		$title=__("Name search results for")." &quot;$searchTerm&quot;";
 	}elseif($searchKey=='owner'){
 		$dept->Name=$searchTerm;
-		$dept->GetDeptByName();
+		if(isset($_REQUEST['deptid'])){
+			$dept->DeptID=$_REQUEST['deptid'];
+			$dept->GetDeptByID();
+		}else{
+			$dept->GetDeptByName();
+		}
 		$dev->Owner=$dept->DeptID;
 		$devList=$dev->GetDevicesbyOwner();
 		$esx->Owner=$dept->DeptID;

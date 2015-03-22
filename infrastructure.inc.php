@@ -1529,7 +1529,8 @@ class Manufacturer {
 
 		// If a TransferTo isn't supplied then just delete the templates that depend on this key
 		foreach($templates as $DeviceTemplate){
-			if(!is_null($TransferTo)){
+			// A manufacturerid of 0 is impossible so if we get that via something fuck 'em delete
+			if(!is_null($TransferTo) && intval($TransferTo)>0){
 				$DeviceTemplate->ManufacturerID=$TransferTo;
 				$DeviceTemplate->UpdateTemplate();
 			}else{

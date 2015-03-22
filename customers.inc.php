@@ -172,11 +172,13 @@ class People {
 		
 		$this->MakeSafe();
 		
-		$sql = "insert into fac_People set UserID=\"" . $this->UserID . "\", LastName=\"" . $this->LastName . "\", FirstName=\"" . $this->FirstName . "\",
-			Phone1=\"" . $this->Phone1 . "\", Phone2=\"" . $this->Phone2 . "\", Phone3=\"" . $this->Phone3 . "\", Email=\"" . $this->Email . "\",
-			AdminOwnDevices=" . $this->AdminOwnDevices . ", ReadAccess=" . $this->ReadAccess . ", WriteAccess=" . $this->WriteAccess . ",
-			DeleteAccess=" . $this->DeleteAccess . ", ContactAdmin=" . $this->ContactAdmin . ", RackRequest=" . $this->RackRequest . ", RackAdmin=" . $this->RackAdmin . ",
-			SiteAdmin=" . $this->SiteAdmin . ", Disabled=" . $this->Disabled;
+		$sql="INSERT INTO fac_People SET UserID=\"$this->UserID\", LastName=\"$this->LastName\", 
+			FirstName=\"$this->FirstName\", Phone1=\"$this->Phone1\", Phone2=\"$this->Phone2\", 
+			Phone3=\"$this->Phone3\", Email=\"$this->Email\", 
+			AdminOwnDevices=$this->AdminOwnDevices, ReadAccess=$this->ReadAccess, 
+			WriteAccess=$this->WriteAccess, DeleteAccess=$this->DeleteAccess, 
+			ContactAdmin=$this->ContactAdmin, RackRequest=$this->RackRequest, 
+			RackAdmin=$this->RackAdmin, SiteAdmin=$this->SiteAdmin, Disabled=$this->Disabled;";
 		
 		if ( $this->query( $sql ) ) {
 			$this->PersonID = $dbh->lastInsertId();
@@ -348,11 +350,14 @@ class People {
 	function UpdatePerson() {
 		$this->MakeSafe();
 		
-		$sql = "update fac_People set UserID=\"" . $this->UserID . "\", LastName=\"" . $this->LastName . "\", FirstName=\"" . $this->FirstName . "\",
-			Phone1=\"" . $this->Phone1 . "\", Phone2=\"" . $this->Phone2 . "\", Phone3=\"" . $this->Phone3 . "\", Email=\"" . $this->Email . "\",
-			AdminOwnDevices=" . $this->AdminOwnDevices . ", ReadAccess=" . $this->ReadAccess . ", WriteAccess=" . $this->WriteAccess . ",
-			DeleteAccess=" . $this->DeleteAccess . ", ContactAdmin=" . $this->ContactAdmin . ", RackRequest=" . $this->RackRequest . ", RackAdmin=" . $this->RackAdmin . ",
-			SiteAdmin=" . $this->SiteAdmin . ", Disabled=" . $this->Disabled . " where PersonID=" . $this->PersonID;
+		$sql="UPDATE fac_People SET UserID=\"$this->UserID\", LastName=\"$this->LastName\", 
+			FirstName=\"$this->FirstName\", Phone1=\"$this->Phone1\", Phone2=\"$this->Phone2\", 
+			Phone3=\"$this->Phone3\", Email=\"$this->Email\", 
+			AdminOwnDevices=$this->AdminOwnDevices, ReadAccess=$this->ReadAccess, 
+			WriteAccess=$this->WriteAccess, DeleteAccess=$this->DeleteAccess, 
+			ContactAdmin=$this->ContactAdmin, RackRequest=$this->RackRequest, 
+			RackAdmin=$this->RackAdmin, SiteAdmin=$this->SiteAdmin, Disabled=$this->Disabled
+			WHERE PersonID=$this->PersonID;";
 			
 		if ( $this->query( $sql ) ) {
 			(class_exists('LogActions'))?LogActions::LogThis($this):'';
@@ -649,6 +654,71 @@ class Department {
 		$this->MakeDisplay();
 	}
 
+	function DeleteDepartment($TransferTo=null){
+		// Make sure we have a real department to delete so we don't pull some bonehead move and delete everything set to 0
+		if(!$this->GetDeptByID()){
+			return false;
+		}
+
+		// Get people and objects that still belong to this department
+		$dev=new Device();
+		$cab=new Cabinet();
+		$dev->Owner=$cab->AssignedTo=$this->DeptID;
+		$person=new People();
+		$devices=$dev->GetDevicesbyOwner();
+		$cabinets=$cab->GetCabinetsByDept();
+		$users=$person->GetPeopleByDepartment($this->DeptID);
+
+		foreach($devices as $d){
+			// We've designated a new owner for this equipment, zero is valid as they might be setting it to general
+			if(!is_null($TransferTo)){
+				$d->Owner=$TransferTo;
+				$d->UpdateDevice();
+			}else{
+				// This option is not being provided but us at this time, maybe through the API
+				$d->DeleteDevice();
+			}
+		}
+
+		foreach($cabinets as $c){
+			// We've designated a new owner for these cabinets, zero is valid as they might be setting it to general
+			if(!is_null($TransferTo)){
+				$c->AssignedTo=$TransferTo;
+				$c->UpdateCabinet();
+			}else{
+				// This option is not being provided but us at this time, maybe through the API
+				$c->DeleteCabinet();
+			}
+		}
+
+		foreach($users as $p){
+			// If we don't have a value over 0 then we're just removing this department and they won't be added to another group
+			if(!is_null($TransferTo) && intval($TransferTo)>0){
+				// Add this user into the new department
+				$sql="INSERT INTO fac_DeptContacts SET DeptID=".intval($TransferTo).", ContactID=$p->PersonID;";
+	 			$this->exec($sql);
+			}
+		}
+	
+		// Clear any users from this department
+		$sql="DELETE FROM fac_DeptContacts WHERE DeptID=$this->DeptID;";
+		$this->exec($sql);
+
+		// By this point all devices, objects, and users should have been shoved into a new department so finish cleaning up.
+		$sql="DELETE FROM fac_Department WHERE DeptID=$this->DeptID;";
+
+		if(!$this->exec($sql)){
+			global $dbh;
+			$info=$dbh->errorInfo();
+
+			error_log("PDO Error: {$info[2]} SQL=$sql");
+			return false;
+		}
+
+		(class_exists('LogActions'))?LogActions::LogThis($this):'';
+		return true;
+	}
+
 	function GetDeptByID() {
 		$this->MakeSafe();
 
@@ -658,13 +728,14 @@ class Department {
 			foreach(Department::RowToObject($row) as $prop => $value){
 				$this->$prop=$value;
 			}
+			return true;
 		}else{
 			// Return an empty object in the case of a failed lookup, preserve the id though
 			foreach($this as $prop => $value){
 				$this->$prop=($prop=='DeptID')?$value:'';
 			}
+			return false;
 		}
-		return true;
 	}
 
 	function GetDeptByName() {

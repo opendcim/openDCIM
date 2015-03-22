@@ -436,6 +436,7 @@ div.error {margin-top: 2em;margin-bottom: 2em;border: 1px dotted gray;}
 #deptgroup h3 + div {margin-left: 42.5px;}
 #deptgroup select {width: 440px;}
 #displaynone {display: none !important;}
+#cnt_cabinets, #cnt_devices, #cnt_users { cursor: pointer; text-decoration: underline; }
 
 /* Rack Content */
 .legenditem {padding: 0.2em;height: 1.1em;line-height: 1.2em;overflow: hidden;padding: 0.2em;white-space: nowrap;width: 210px;}

@@ -18,15 +18,26 @@
 		$cab->AssignedTo=$dev->Owner=$_GET['deptid'];
 
 		$return=array();
-		$return['debug'][]=$cab;
-		$return['debug'][]=$cab->GetCabinetsByDept();
-		$return['debug'][]=$dev;
 		$return['cabinets']=count($cab->GetCabinetsByDept());
 		$return['devices']=count($dev->GetDevicesbyOwner());
 		$return['people']=count($person->GetPeopleByDepartment($dev->Owner));
 
 		header('Content-Type: application/json');
 		echo json_encode($return);
+		exit;
+	}
+
+	if(isset($_POST['action']) && $_POST["action"]=="Delete"){
+		header('Content-Type: application/json');
+		$response=false;
+		if(isset($_POST["TransferTo"])){
+			$dept=new Department();
+			$dept->DeptID=$_POST['deptid'];
+			if($dept->DeleteDepartment($_POST["TransferTo"])){
+				$response=true;
+			}
+		}
+		echo json_encode($response);
 		exit;
 	}
 	// END - AJAX requests
@@ -105,10 +116,17 @@
 			$('#copy').replaceWith($('#deptid').clone().attr('id','copy'));
 			$('#copy option[value=0]').text('');
 			$('#copy option[value='+$('#deptid').val()+']').remove();
+
+			// Get a count of objects owned by this department.
 			$.get('',{objectcount: '',deptid: $('#deptid').val()},function(data){
-				$('#cnt_cabinets').text(data.cabinets);
-				$('#cnt_devices').text(data.devices);
-				$('#cnt_users').text(data.people);
+				function newtab(e){
+					var poopup=window.open('search.php?key=owner&deptid='+$('#deptid').val()+'&search='+encodeURIComponent($('#deptid option:selected').text()),'search');
+					poopup.focus();
+				}
+
+				$('#cnt_cabinets').text(data.cabinets).click(newtab);
+				$('#cnt_devices').text(data.devices).click(newtab);
+				$('#cnt_users').text(data.people).click(newtab);
 			});
 
 			$('#deletemodal').dialog({
@@ -120,6 +138,15 @@
 							width: 600,
 							modal: true,
 							buttons: {
+								Yes: function(e){
+									$.post('',{action:'Delete',deptid:$('#deptid').val(),TransferTo:$('#copy').val()},function(data){
+										if(data){
+											location.href='departments.php?deptid='+$('#copy').val();
+										}else{
+											alert('something stupid has happened');
+										}
+									});
+								}
 							}
 						});
 					},
@@ -201,8 +228,9 @@
 	<div title="',__("Department delete confirmation"),'" id="deletemodal">
 		<div id="modaltext"><span style="float:left; margin:0 7px 20px 0;" class="ui-icon ui-icon-alert"></span>',__("Are you sure that you want to delete this Department?"),'
 		<br><br>
-		<div>Transfer all existing equipment and users to <select id="copy"></select></div>
 		<div>',__("Cabinets"),': <span id="cnt_cabinets"></span>&nbsp;&nbsp;&nbsp;',__("Devices"),': <span id="cnt_devices"></span>&nbsp;&nbsp;&nbsp;',__("Users"),': <span id="cnt_users"></span></div>
+		<br>
+		<div>Transfer all existing equipment and users to <select id="copy"></select></div>
 		</div>
 	</div>
 	<div title="',__("Are you REALLY sure?"),'" id="doublecheck">
