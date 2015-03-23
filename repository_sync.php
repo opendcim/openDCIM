@@ -5,6 +5,7 @@
 	
 	$t = new DeviceTemplate();
 	$m = new Manufacturer();
+	$ct = new CDUTemplate();
 	
 	$tList = $t->GetTemplateShareList();
 	
@@ -37,13 +38,32 @@
 		foreach ( $tpList as $tport ) {
 			array_push( $postData["templateports"], json_decode(json_encode($tport), true) );
 		}
-
+		
+		if ( $temp->DeviceType == "Chassis" ) {
+			$sList = Slot::GetAll( $temp->TemplateID );
+			
+			$postData["slots"] = array();
+			foreach( $sList as $s ) {
+				array_push( $postData["slots"], json_decode(json_encode($s), true) );
+			}
+		}
+		
+		if ( $temp->DeviceType == "CDU" ) {
+			$ct->TemplateID = $temp->TemplateID;
+			$ct->GetTemplate();
+			$postData["cdutemplate"] = json_decode( json_encode( $ct ), true );
+		}
+		
+		if ( $temp->DeviceType == "Sensor" ) {
+		}
+		
 		curl_setopt( $c, CURLOPT_POSTFIELDS, json_encode( $postData ) );
 		
 		$result = curl_exec( $c );
 		$jr = json_decode( $result ) ;
 		
 		$postData = array();
+		
 		if ( $temp->FrontPictureFile != "" ) {
 			$postData["front"] = curl_file_create( "pictures/" . $temp->FrontPictureFile );
 		}
@@ -69,8 +89,9 @@
 		}
 		
 		if ( @$jr->errorcode == 200 && @$pr->errorcode == 200 ) {
-			if ( sizeof( $tpList ) == 0 )
-				$temp->clearShareFlag();
+			if ( sizeof( $tpList ) == 0 ) {
+				// $temp->clearShareFlag();
+			}
 		}
 	}
 	
