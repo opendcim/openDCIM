@@ -315,54 +315,56 @@
 	function MashLists(){
 		var ml=GetMasterList();
 		var pl=GetPendingList();
-		$('#mform > .table > div:first-child ~ div').each(function(){
-			var row=$(this);
-			// No globalid set so let's try to compare our shit with the master to find a match
-			if(row.data('local').GlobalID==0){
-				var last=row.find('div:last-child').removeClass('hide');
-				for(var i in ml){
-					if(ml[i].Name.toLowerCase().replace(' ','') == row.data('local').Name.toLowerCase().replace(' ','')){
-						row.addClass('change');
-						row.find('div:nth-child(3)').addClass('diff').text(ml[i].ManufacturerID).attr('title',row.data('local').GlobalID);
-						last.find('button').text('Pull from master').data('action','pull');
-						if(ml[i].Name != row.data('local').Name){
-							row.find('div:nth-child(2)').addClass('diff').text(ml[i].Name).attr('title',row.data('local').Name);
-						}
-
-						ml.splice(i, 1);
-						break;
-					}
-				}
-				// If they have access to the pending list then let's match shit up and remove the controls
-				if(typeof pl != "undefined" && !pl.error){
-					for(var i in pl.manufacturersqueue){
-						if(pl.manufacturersqueue[i].Name.toLowerCase().replace(' ','') == row.data('local').Name.toLowerCase().replace(' ','')){
+		if($('.main h3').text().length == 0){
+			$('#mform > .table > div:first-child ~ div').each(function(){
+				var row=$(this);
+				// No globalid set so let's try to compare our shit with the master to find a match
+				if(row.data('local').GlobalID==0){
+					var last=row.find('div:last-child').removeClass('hide');
+					for(var i in ml){
+						if(ml[i].Name.toLowerCase().replace(' ','') == row.data('local').Name.toLowerCase().replace(' ','')){
 							row.addClass('change');
-							row.find('div:nth-child(3)').addClass('diff').text(pl.manufacturersqueue[i].RequestID).attr('title',row.data('local').GlobalID);
-							last.text("Pending: "+pl.manufacturersqueue[i].SubmissionDate).addClass("good");
+							row.find('div:nth-child(3)').addClass('diff').text(ml[i].ManufacturerID).attr('title',row.data('local').GlobalID);
+							last.find('button').text('Pull from master').data('action','pull');
+							if(ml[i].Name != row.data('local').Name){
+								row.find('div:nth-child(2)').addClass('diff').text(ml[i].Name).attr('title',row.data('local').Name);
+							}
 
-							pl.manufacturersqueue.splice(i, 1);
+							ml.splice(i, 1);
 							break;
 						}
-					}	
-				}
-			// ELSE we have a GlobalID already set so we need to pull that specific record and compare all the fields
-			}else{
-				for(var i in ml){
-					if(ml[i].ManufacturerID == row.data('local').GlobalID){
-						if(ml[i].Name !== row.data('local').Name){
-							var last=row.find('div:last-child').removeClass('hide');
-							row.addClass('change');
-							row.find('div:nth-child(2)').addClass('diff').text(ml[i].Name).attr('title',row.data('local').Name);
-							last.find('button').text('Pull from master').data('action','pull');
-						}
+					}
+					// If they have access to the pending list then let's match shit up and remove the controls
+					if(typeof pl != "undefined" && !pl.error){
+						for(var i in pl.manufacturersqueue){
+							if(pl.manufacturersqueue[i].Name.toLowerCase().replace(' ','') == row.data('local').Name.toLowerCase().replace(' ','')){
+								row.addClass('change');
+								row.find('div:nth-child(3)').addClass('diff').text(pl.manufacturersqueue[i].RequestID).attr('title',row.data('local').GlobalID);
+								last.text("Pending: "+pl.manufacturersqueue[i].SubmissionDate).addClass("good");
 
-						ml.splice(i, 1);
-						break;
+								pl.manufacturersqueue.splice(i, 1);
+								break;
+							}
+						}	
+					}
+				// ELSE we have a GlobalID already set so we need to pull that specific record and compare all the fields
+				}else{
+					for(var i in ml){
+						if(ml[i].ManufacturerID == row.data('local').GlobalID){
+							if(ml[i].Name !== row.data('local').Name){
+								var last=row.find('div:last-child').removeClass('hide');
+								row.addClass('change');
+								row.find('div:nth-child(2)').addClass('diff').text(ml[i].Name).attr('title',row.data('local').Name);
+								last.find('button').text('Pull from master').data('action','pull');
+							}
+
+							ml.splice(i, 1);
+							break;
+						}
 					}
 				}
-			}
-		});
+			});
+		}
 		// Add global hits that didn't match to the end of the list
 		for(var i in ml){
 			var gm={ManufacturerID:0,Name:ml[i].Name,GlobalID:ml[i].ManufacturerID,ShareToRepo:0,KeepLocal:0};
@@ -394,6 +396,10 @@
 			async: false,
 			success: function(data){
 				ml = data;
+			},
+			error: function(data){
+				$('.main h3').append($('<p>').text('Pull from repo: '+data.status+' - '+data.statusText));
+				ml = [];
 			}
 		});
 
