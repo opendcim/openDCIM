@@ -2,7 +2,7 @@
 	require_once( 'db.inc.php' );
 	require_once( 'facilities.inc.php' );
 
-	if(!$person->ReadAccess){
+	if(!$people->ReadAccess){
 		// No soup for you.
 		header('Location: '.redirect());
 		exit;
@@ -341,7 +341,7 @@ echo '		<div class="main">
 				// If there is not a circuit to the cabinet that is unaffected, no need to even check
 				$outageStatus = __("Down");
 				
-				if ( ! $devRow->Reservation && $devRow->PowerSupplyCount == 0 ) {	// No need to even process devices that aren't installed, yet or that have 0 power supplies
+				if ( (! $devRow->Reservation) && $devRow->PowerSupplyCount > 0 ) {	// No need to even process devices that aren't installed, yet or that have 0 power supplies
 					if ( $diversity ) {
 						// If a circuit was entered with no panel ID, or a device has no connections documented, mark it as unknown
 						// The only way to be sure a device will stay up is if we have a connection to an unaffected circuit,
