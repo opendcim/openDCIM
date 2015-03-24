@@ -480,7 +480,7 @@ function FetchSlots(){
 		url: '',
 		type: "post",
 		async: false,
-		data: {getslots:'',templateid: $('#templateid').val()},
+		data: {getslots:'',TemplateID: $('#TemplateID').val()},
 		success: function(d){
 			slots=d;
 		}
