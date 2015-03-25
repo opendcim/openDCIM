@@ -371,9 +371,13 @@ exit;
         
 		$('#clone').click(function(){
 			$('#TemplateID').val(0);
-			$('button[name="action"]').val('Create').text("<?php echo __("Create");?>");
+			$('.caption button:not([value="Update"])').remove();
+			$('button[name="action"][value="Update"]').val('Create').text("<?php echo __("Create");?>");
 			$('#Model').trigger('change');
-			$('#device, #clone').remove();
+
+			// Flag all ports and slots as changed so they will retain their data
+			$('#hiddenpowerports .table > div ~ div, #hiddenports .table > div ~ div, #hiddencoords .table > div ~ div').data('change',true);
+
 		});
 
 		$('#FrontPictureFile,#RearPictureFile').click(function(){
