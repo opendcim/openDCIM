@@ -633,7 +633,8 @@
 							break; // the exit should handle it
 						case 'Copy':
 							$copy=true;
-							if(!$dev->CopyDevice()){
+							$parent=($dev->ParentDevice)?$dev->ParentDevice:null;
+							if(!$dev->CopyDevice($parent)){
 								$copyerr=__("Device did not copy.  Error.");
 							}
 							break;

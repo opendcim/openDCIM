@@ -1359,6 +1359,11 @@ class Device {
 		// Get the device being copied
 		$this->GetDevice();
 		
+		// If this is a chassis device then check for children to cloned BEFORE we change the deviceid
+		if($this->DeviceType=="Chassis"){
+			$childList=$this->GetDeviceChildren();
+		}	
+
 		if($this->ParentDevice >0){
 			/*
 			 * Child devices will need to be constrained to the chassis. Check for open slots
@@ -1421,11 +1426,6 @@ class Device {
 			$cab->GetCabinet();
 			$this->Position=$cab->CabinetHeight+1;
 
-			// If this is a chassis device then check for children to cloned BEFORE we change the deviceid
-			if($this->DeviceType=="Chassis"){
-				$childList=$this->GetDeviceChildren();
-			}	
-
 			$olddev=new Device();
 			$olddev->DeviceID=$this->DeviceID;
 			$olddev->GetDevice();
@@ -1433,15 +1433,15 @@ class Device {
 			// And finally create a new device based on the exact same info
 			$this->CreateDevice();
 			$olddev->CopyDeviceCustomValues($this);
-
-			// If this is a chassis device and children are present clone them
-			if(isset($childList)){
-				foreach($childList as $child){
-					$child->CopyDevice($this->DeviceID);
-				}
-			}
-
 		}
+
+		// If this is a chassis device and children are present clone them
+		if(isset($childList)){
+			foreach($childList as $child){
+				$child->CopyDevice($this->DeviceID);
+			}
+		}
+
 		return true;
 	}
 
