@@ -376,7 +376,7 @@ exit;
 			$('#Model').trigger('change');
 
 			// Flag all ports and slots as changed so they will retain their data
-			$('#hiddenpowerports .table > div ~ div, #hiddenports .table > div ~ div, #hiddencoords .table > div ~ div').data('change',true);
+			$('#regulartemplateattributes [id^="hidden"] .table > div ~ div').data('change',true);
 
 		});
 
