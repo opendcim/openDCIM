@@ -905,15 +905,13 @@
 
 		$device->DeleteCustomValues();
 
-// this is throwing an error on update when there aren't any custom values, commenting this out so I can finish my shit without errors
-		// TODO: what of server-side validation if this is a "required" attribute?
-/*
-		foreach($_POST["customvalue"] as $AttributeID=>$value) {
-			if(trim($value) != trim($defaultvalues[$AttributeID]["value"])) {
-				$device->InsertCustomValue($AttributeID, $value);	
+		if(isset($_POST["customvalue"])){
+			foreach($_POST["customvalue"] as $AttributeID=>$value) {
+				if(trim($value) != trim($defaultvalues[$AttributeID]["value"])) {
+					$device->InsertCustomValue($AttributeID, $value);	
+				}
 			}
 		}
-*/
 		
 	}
 // In the case of a child device we might define this above and in that case we
@@ -1573,7 +1571,7 @@ echo '<div class="main">
 echo($copy)?"<h3>$copyerr</h3>":'';
 echo '<div class="center"><div>
 <div id="positionselector"></div>
-<form name="deviceform" id="deviceform" action="'.$_SERVER['PHP_SELF'].((isset($dev->DeviceID) && $dev->DeviceID>0)?"?deviceid=$dev->DeviceID":"").'" method="POST">
+<form name="deviceform" id="deviceform" method="POST">
 <div class="left">
 <fieldset>
 	<legend>'.__("Asset Tracking").'</legend>
@@ -1637,7 +1635,7 @@ echo '<div class="center"><div>
 				<option value=0>'.__("Unassigned").'</option>';
 
 			foreach($deptList as $deptRow){
-				if($dev->Owner==$deptRow->DeptID){$selected=" selected";}else{$selected="";}
+				$selected=($dev->Owner==$deptRow->DeptID)?" selected":"";
 				print "\t\t\t\t<option value=\"$deptRow->DeptID\"$selected>$deptRow->Name</option>\n";
 			}
 
@@ -1656,7 +1654,7 @@ echo '			</select>
 					<option value="">',__("Select..."),'</option>';
 
 				foreach($escTimeList as $escTime){
-					if($escTime->EscalationTimeID==$dev->EscalationTimeID){$selected=" selected";}else{$selected="";}
+					$selected=($escTime->EscalationTimeID==$dev->EscalationTimeID)?" selected":"";
 					print "\t\t\t\t\t<option value=\"$escTime->EscalationTimeID\"$selected>$escTime->TimePeriod</option>\n";
 				}
 
@@ -1668,7 +1666,7 @@ echo '				</select></div>
 					<option value="">',__("Select..."),'</option>';
 
 				foreach($escList as $esc){
-					if($esc->EscalationID==$dev->EscalationID){$selected=" selected";}else{$selected="";}
+					$selected=($esc->EscalationID==$dev->EscalationID)?" selected":"";
 					print "\t\t\t\t\t<option value=\"$esc->EscalationID\"$selected>$esc->Details</option>\n";
 				}
 

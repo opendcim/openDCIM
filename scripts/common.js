@@ -1447,6 +1447,14 @@ function LameLogDisplay(){
 					}
 				}).tooltip({tooltipClass: "ui-state-highlight"});
 
+			// Store the original value on the input block
+			$(this.input[0]).data('original',this.input[0].value);
+
+			// Select the contents of the box when they click on it
+			this.input.click(function(e){
+				$(e.currentTarget).focus().select();
+			})
+
 			this._on(this.input,{
 				autocompleteselect: function(event, ui){
 					ui.item.option.selected=true;
@@ -1525,6 +1533,8 @@ function LameLogDisplay(){
 			this.element.val("");
 			this._delay(function(){
 				this.input.tooltip("close").attr("title","");
+				// Put the original value back in
+				this.input[0].value=this.input.data('original');
 			},2500);
 			this.input.data("ui-autocomplete").term="";
 		},
