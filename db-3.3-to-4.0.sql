@@ -179,3 +179,8 @@ ALTER TABLE fac_DeviceCustomAttribute CHANGE AttributeType AttributeType VARCHAR
 -- We added in GlobalIDs make sure they are all set to 0
 -- 
 UPDATE fac_Manufacturer SET GlobalID=0;
+
+---
+--- Increase size of PanelLabel field
+---
+ALTER TABLE fac_PowerPanel MODIFY PanelLabel varchar(80);

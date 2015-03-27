@@ -505,7 +505,7 @@ DROP TABLE IF EXISTS fac_PowerPanel;
 CREATE TABLE fac_PowerPanel (
   PanelID int(11) NOT NULL AUTO_INCREMENT,
   PowerSourceID int(11) NOT NULL,
-  PanelLabel varchar(20) NOT NULL,
+  PanelLabel varchar(80) NOT NULL,
   NumberOfPoles int(11) NOT NULL,
   MainBreakerSize int(11) NOT NULL,
   PanelVoltage int(11) NOT NULL,
