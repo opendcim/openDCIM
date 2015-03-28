@@ -2047,7 +2047,7 @@ echo '	<div class="table">
 
 		foreach(LogActions::GetLog($dev,false) as $logitem){
 			if($logitem->Property=="OMessage"){
-				print "\t\t\t<div><div>$logitem->Time</div><div>$logitem->NewVal</div></div>\n";
+				print "\t\t\t<div><div>$logitem->Time</div><div>$logitem->UserID</div><div>$logitem->NewVal</div></div>\n";
 			}
 		}
 
@@ -2365,6 +2365,7 @@ $connectioncontrols=($dev->DeviceID>0)?'
 					if(data){
 						var row=$('<div>')
 							.append($('<div>').text(getISODateTime(new Date())))
+							.append($('<div>').text("<?php echo $person->UserID; ?>"))
 							.append($('<div>').text($('#olog input').val()));
 						$('#olog .table').append(row);
 						$('#olog input').val('');
