@@ -573,6 +573,7 @@
 					$dev->ParentDevice=(isset($_POST['parentdevice']))?$_POST['parentdevice']:"";
 					$dev->PrimaryIP=(isset($_POST['primaryip']))?$_POST['primaryip']:"";
 					$dev->SNMPCommunity=(isset($_POST['snmpcommunity']))?$_POST['snmpcommunity']:"";
+					$dev->SNMPFailureCount=(isset($_POST['snmpfailurecount']))?$_POST['snmpfailurecount']:0;
 					$dev->ESX=(isset($_POST['esx']))?$_POST['esx']:0;
 					$dev->Reservation=(isset($_POST['reservation']))?($_POST['reservation']=="on")?1:0:0;
 					$dev->NominalWatts=$_POST['nominalwatts'];
@@ -1607,6 +1608,10 @@ echo '<div class="center"><div>
 		<div>
 		  <div><label for="snmpcommunity">'.__("SNMP Read Only Community").'</label></div>
 		  <div><input type="password" name="snmpcommunity" id="snmpcommunity" size="40" value="'.$dev->SNMPCommunity.'"><button type="button" class="hide" id="btn_snmptest">'.__("Test SNMP").'</button></div>
+		</div>
+		<div>
+		  <div><label for="snmpfailurecount">'.__("Consecutive SNMP Failures").'</label></div>
+		  <div><input type="number" name="snmpfailurecount" id="snmpfailurecount" value="'.$dev->SNMPFailureCount.'">'.__("Polling is disabled after three consecutive failures.").'</div>
 		</div>
 		<div>
 		   <div><label for="mfgdate">'.__("Manufacture Date").'</label></div>
