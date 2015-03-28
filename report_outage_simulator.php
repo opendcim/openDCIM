@@ -2,7 +2,7 @@
 	require_once( 'db.inc.php' );
 	require_once( 'facilities.inc.php' );
 
-	if(!$people->ReadAccess){
+	if(!$user->ReadAccess){
 		// No soup for you.
 		header('Location: '.redirect());
 		exit;
@@ -287,7 +287,7 @@ echo '		<div class="main">
 	}
 	
 	echo "<table id=\"report\" class=\"display\">\n<thead>\n";
-	foreach ( array( __("Cabinet"), __("Device Name"), __("Status"), __("Position"), __("Owner") ) as $header )
+	foreach ( array( __("Cabinet"), __("Device Name"), __("Status"), __("Position"), __("Affected Panels"), __("Owner") ) as $header )
 		printf( "<th>%s</th>\n", $header );
 	echo "</thead>\n<tbody>\n";
 		
@@ -297,15 +297,26 @@ echo '		<div class="main">
 		// Check to see if all circuits to the cabinet are from the outage list - if so, the whole cabinet goes down
 		$pdu->CabinetID = $cabRow->CabinetID;
 		$cabPDUList = $pdu->GetPDUbyCabinet();
+
+		// Double duty - check for diversity (At least one CDU is fed from an unaffected panel); build an array of the panels with the PDUID as the key
+		$st = $dbh->prepare( "select * from fac_PowerPanel where PanelID=:PanelID" );
+		$st->setFetchMode( PDO::FETCH_CLASS, "PowerPanel" );
 		
 		$diversity = false;
+		$cduPanelList = array();
 		foreach ( $cabPDUList as $testPDU ) {
 			if ( ! in_array( $testPDU->PanelID, $pnlArray ) )
 				$diversity = true;
+			$st->execute( array( ":PanelID"=>$testPDU->PanelID ) );
+			while ( $row = $st->fetch() ) {
+				$cduPanelList[$testPDU->PDUID] = $row;
+			}
 		}
 		
+		// Basic device selection based on the CabinetID
 		$sql = "SELECT fac_Device.* FROM fac_Device WHERE Cabinet=" . intval( $cabRow->CabinetID );
 
+		// If tags were added, only include devices with tags that are in the Include array
 		if ( sizeof( $includeTags ) > 0 ) {
 			$sql .= " AND DeviceID in (select DeviceID from fac_DeviceTags a, fac_Tags b where a.TagID=b.TagID and b.Name in (";
 			for ( $n = 0; $n < sizeof( $includeTags ); $n++ ) {
@@ -317,6 +328,7 @@ echo '		<div class="main">
 			$sql .= ")) ";
 		}
 		
+		// If tags were added, only include devices that don't have tags in the Exclude array
 		if ( sizeof( $excludeTags ) > 0 ) {
 			$sql .= " AND DeviceID not in (select DeviceID from fac_DeviceTags a, fac_Tags b where a.TagID=b.TagID and b.Name in (";
 			for ( $n = 0; $n < sizeof( $excludeTags ); $n++ ) {
@@ -338,10 +350,11 @@ echo '		<div class="main">
 		
 		if ( sizeof( $devList ) > 0 ) {
 			foreach ( $devList as $devRow ) {
-				// If there is not a circuit to the cabinet that is unaffected, no need to even check
+				$downPanels = "";
 				$outageStatus = __("Down");
 				
 				if ( (! $devRow->Reservation) && $devRow->PowerSupplyCount > 0 ) {	// No need to even process devices that aren't installed, yet or that have 0 power supplies
+					// If there is not a circuit to the cabinet that is unaffected, no need to even check
 					if ( $diversity ) {
 						// If a circuit was entered with no panel ID, or a device has no connections documented, mark it as unknown
 						// The only way to be sure a device will stay up is if we have a connection to an unaffected circuit,
@@ -381,14 +394,28 @@ echo '		<div class="main">
 								$outageStatus = __("Normal");
 						}
 						
+						foreach ( $devPDUList as $dp ) {
+							if ( strlen( $downPanels ) > 0 ) {
+								$downPanels .= ", ";
+							}
+							$downPanels .= $cduPanelList[$dp]->PanelLabel;
+						}
+					} else {
+						foreach ( $cduPanelList as $cp ) {
+							if ( strlen( $downPanels ) > 0 ) {
+								$downPanels .= ", ";
+							}
+							$downPanels .= $cp->PanelLabel;
+						}
 					}
-					
+
 					if ( ! $skipNormal || ( $skipNormal && ( $outageStatus == __("Down") || $outageStatus == __("Unknown") ) ) ) {
 						echo "<tr>\n";
 						printf( "<td>%s</td>\n", $cabRow->Location );
 						printf( "<td>%s</td>\n", $devRow->Label );
 						printf( "<td>%s</td>\n", $outageStatus );
 						printf( "<td>%s</td>\n", $devRow->Position );
+						printf( "<td>%s</td>\n", $downPanels );
 
 						$dept->DeptID = $devRow->Owner;
 						$dept->GetDeptByID();
