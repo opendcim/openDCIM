@@ -1318,7 +1318,7 @@ class PowerPanel {
 		$this->PanelVoltage=intval($this->PanelVoltage);
 		$this->NumberScheme=($this->NumberScheme=='Sequential')?$this->NumberScheme:'Odd/Even';
 		$this->ParentPanelID=intval($this->ParentPanelID);
-		$this->ParentBreakerID=sanitize($this->ParentBreakerID;
+		$this->ParentBreakerID=sanitize($this->ParentBreakerID);
 	}
 
 	function MakeDisplay(){
@@ -1432,7 +1432,7 @@ class PowerPanel {
 			":NumberOfPoles"=>$this->NumberOfPoles,
 			":MainBreakerSize"=>$this->MainBreakerSize,
 			":PanelVoltage"=>$this->PanelVoltage,
-			":NumberScheme"=>this->NumberScheme,
+			":NumberScheme"=>$this->NumberScheme,
 			":ParentPanelID"=>$this->ParentPanelID,
 			":ParentBreakerID"=>$this->ParentBreakerID ))){
 			$this->PanelID=$dbh->lastInsertId();

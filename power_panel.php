@@ -38,6 +38,8 @@
 		$panel->MainBreakerSize=$_POST["mainbreakersize"];
 		$panel->PanelVoltage=$_POST["panelvoltage"];
 		$panel->NumberScheme=$_POST["numberscheme"];
+		$panel->ParentPanelID=$_POST["parentpanelid"];
+		$panel->ParentBreakerID=$_POST["parentbreakerid"];
 		
 		if($_POST["action"]=="Create"){
 			$panel->CreatePanel();
@@ -156,6 +158,24 @@ echo '</select></div>
    </select>
    </div>
 </div>
+<div>
+	<div label for="parentpanelid"><?php print __("Parent Panel"); ?></label></div>
+	<div><select name="parentpanelid" id="parentpanelid">
+<?php
+	foreach ( $panelList as $pnl ) {
+		$selected = $pnl->PanelID == $panel->ParentPanelID ? "selected" : "";
+		// Avoid making medieval royalty - panels that are children of themselves
+		if ( $panel->PanelID != $pnl->PanelID ) {
+			print "<option value='$pnl->PanelID' $selected>$pnl->PanelLabel</option>\n";
+		}
+	}
+?>
+	</select></div>
+</div>
+<div>
+	<div label for="parentbreakerid"><?php print __("Parent Breaker ID"); ?></label></div>
+	<div><input type="text" name="parentbreakerid" id="parentbreakerid" size="40" value="<?php print $panel->ParentBreakerID; ?>"></div>
+</div>	
 <div class="caption">
 <?php
 	if($panel->PanelID >0){
