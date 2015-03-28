@@ -760,6 +760,7 @@ $u = new User;
 
 $plist = $p->GetUserList();
 if ( sizeof( $plist ) == 0 ) {
+	error_log( "Converting fac_User and fac_Contact table to fac_People." );
 	// We've got an empty fac_People table, so merge the user and contact tables to create it
 	$clist = $c->GetContactList();
 	foreach( $clist as $tmpc ) {
@@ -816,6 +817,11 @@ if ( sizeof( $plist ) == 0 ) {
 
 /* This is used on every page so we might as well just init it once */
 $person=People::Current();
+error_log( print_r( $person, true ));
+if (( $person->Disabled || $person->PersonID == 0 ) && $config->ParameterArray["RequireDefinedUser"] == "enabled" ) {
+	header( "Location: unauthorized.php" );
+	exit;
+}
 	
 /* 
  * This is an attempt to be sane about the rights management and the menu.

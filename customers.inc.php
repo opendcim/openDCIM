@@ -308,6 +308,9 @@ class People {
 				$this->$prop=false;
 			}
 		}
+		
+		// The default for no user in DB
+		$this->Disabled = true;
 
 		$sql="SELECT * FROM fac_People WHERE UserID=\"$this->UserID\";";
 

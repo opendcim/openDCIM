@@ -1293,9 +1293,10 @@ class PowerDistribution {
 
 class PowerPanel {
 	/* PowerPanel:	PowerPanel(s) are the parents of PowerDistribution (power strips) and the children
-					PowerSource(s).  Panels are arranged as either Odd/Even (odd numbers on the left,
+					each other.  Panels are arranged as either Odd/Even (odd numbers on the left,
 					even on the right) or Sequential (1 to N in a single column) numbering for the
-					purpose of building out a panel schedule.
+					purpose of building out a panel schedule.  If a PowerPanel has no ParentPanelID defined
+					then it is considered to be the PowerSource.  In other words, it's a reverse linked list.
 	*/
 	
 	var $PanelID;
@@ -1305,6 +1306,8 @@ class PowerPanel {
 	var $MainBreakerSize;
 	var $PanelVoltage;
 	var $NumberScheme;
+	var $ParentPanelID;
+	var $ParentBreakerID;	// For switchgear, this usually won't be numbered, so we're accepting text
 
 	function MakeSafe(){
 		$this->PanelID=intval($this->PanelID);
@@ -1314,10 +1317,13 @@ class PowerPanel {
 		$this->MainBreakerSize=intval($this->MainBreakerSize);
 		$this->PanelVoltage=intval($this->PanelVoltage);
 		$this->NumberScheme=($this->NumberScheme=='Sequential')?$this->NumberScheme:'Odd/Even';
+		$this->ParentPanelID=intval($this->ParentPanelID);
+		$this->ParentBreakerID=sanitize($this->ParentBreakerID;
 	}
 
 	function MakeDisplay(){
 		$this->PanelLabel=stripslashes($this->PanelLabel);
+		$this->ParentBreakerID=stripslashes($this->ParentBreakerID);
 	}
 
 	static function RowToObject($row){
@@ -1329,12 +1335,19 @@ class PowerPanel {
 		$panel->MainBreakerSize=$row["MainBreakerSize"];
 		$panel->PanelVoltage=$row["PanelVoltage"];
 		$panel->NumberScheme=$row["NumberScheme"];
+		$panel->ParentPanelID=$row["ParentPanelID"];
+		$panel->ParentBreakerID=$row["ParentBreakerID"];
 
 		$panel->MakeDisplay();
 
 		return $panel;
 	}
 
+	function prepare( $sql ) {
+		global $dbh;
+		return $dbh->prepare( $sql );
+	}
+	
 	function query($sql){
 		global $dbh;
 		return $dbh->query($sql);
@@ -1409,12 +1422,19 @@ class PowerPanel {
 		global $dbh;
 		$this->MakeSafe();
 
-		$sql="INSERT INTO fac_PowerPanel SET PowerSourceID=$this->PowerSourceID, 
-			PanelLabel=\"$this->PanelLabel\", NumberOfPoles=$this->NumberOfPoles, 
-			MainBreakerSize=$this->MainBreakerSize, PanelVoltage=$this->PanelVoltage, 
-			NumberScheme=\"$this->NumberScheme\";";
+		$st = $this->prepare( "insert into fac_PowerPanel set PowerSourceID=:PowerSourceID,
+			PanelLabel=:PanelLabel, NumberOfPoles=:NumberOfPoles, MainBreakerSize=:MainBreakerSize,
+			PanelVoltage=:PanelVoltage,NumberScheme=:NumberScheme,ParentPanelID=:ParentPanelID,
+			ParentBreakerID=:ParentBreakerID" );
 
-		if($dbh->exec($sql)){
+		if($st->exec( array( ":PowerSourceID"=>$this->PowerSourceID,
+			":PanelLabel"=>$this->PanelLabel,
+			":NumberOfPoles"=>$this->NumberOfPoles,
+			":MainBreakerSize"=>$this->MainBreakerSize,
+			":PanelVoltage"=>$this->PanelVoltage,
+			":NumberScheme"=>this->NumberScheme,
+			":ParentPanelID"=>$this->ParentPanelID,
+			":ParentBreakerID"=>$this->ParentBreakerID ))){
 			$this->PanelID=$dbh->lastInsertId();
 
 			(class_exists('LogActions'))?LogActions::LogThis($this):'';

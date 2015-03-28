@@ -1319,6 +1319,14 @@ echo '<div class="main">
 					<div><label for="UserLookupURL">',__("User Lookup URL"),'</label></div>
 					<div><input type="text" defaultvalue="',$config->defaults["UserLookupURL"],'" name="UserLookupURL" value="',$config->ParameterArray["UserLookupURL"],'"></div>
 				</div>
+				<div>
+					<div><label for="RequireDefinedUser">',__("Block Undefined Users"),'</label></div>
+					<div><select id="RequireDefinedUser" name="RequireDefinedUser" defaultvalue="',$config->defaults["RequireDefinedUser"],'" data="',$config->ParameterArray["RequireDefinedUser"],'">
+							<option value="disabled">',__("Disabled"),'</option>
+							<option value="enabled">',__("Enabled"),'</option>
+						</select>
+					</div>
+				</div>
 			</div> <!-- end table -->
 			<h3>',__("Rack Usage"),'</h3>
 			<div class="table" id="rackusage">
@@ -1428,6 +1436,14 @@ echo '<div class="main">
 						<option value="enabled">',__("Enabled"),'</option>
 						</select>
 					</div>
+				</div>
+				<div>
+					<div><label for="APIUserID">',__("API UserID"),'</label></div>
+					<div><input type="text" defaultvalue="',$config->defaults["APIUserID"],'" name="APIUserID" value="',$config->ParameterArray["APIUserID"],'"></div>
+				</div>
+				<div>
+					<div><label for="APIKey">',__("API Key"),'</label></div>
+					<div><input type="text" defaultvalue="',$config->defaults["APIKey"],'" name="APIKey" value="',$config->ParameterArray["APIKey"],'"></div>
 				</div>
 			</div>
 		</div>

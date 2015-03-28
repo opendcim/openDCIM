@@ -184,3 +184,21 @@ UPDATE fac_Manufacturer SET GlobalID=0;
 --- Increase size of PanelLabel field
 ---
 ALTER TABLE fac_PowerPanel MODIFY PanelLabel varchar(80);
+
+---
+--- Add new fields for the subpanel support
+---
+ALTER TABLE fac_PowerPanel ADD COLUMN ParentPanelID NOT NULL;
+ALTER TABLE fac_PowerPanel ADD COLUMN ParentBreakerID NOT NULL;
+
+---
+--- Repo API Key Configuration Fields
+---
+INSERT INTO fac_Config set Parameter="APIUserID", Value="", UnitOfMeasure="Email", ValType="string", DefaultVal="";
+INSERT INTO fac_Config set Parameter="APIKey", Value="", UnitOfMeasure="Key", ValType="string", DefaultVal="";
+
+---
+--- Configuration item for RequireDefinedUser to see anything at all (Default is Disabled so that behavior doesn't change from prior versions)
+---
+
+INSERT INTO fac_Config set Parameter="RequireDefinedUser", Value="Disabled", UnitOfMeasure="Enabled/Disabled", ValType="string", DefaultVal="Disabled";

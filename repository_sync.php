@@ -18,7 +18,7 @@
 	curl_setopt( $c, CURLOPT_COOKIEJAR, "/tmp/repocookies.txt" );
 	curl_setopt( $c, CURLOPT_CUSTOMREQUEST, "PUT" );
 	curl_setopt( $c, CURLOPT_FOLLOWLOCATION, 1 );
-	curl_setopt( $c, CURLOPT_HTTPHEADER, array( "UserID: scott@themillikens.com", "APIKey: e9afc69c3df5c8d70647150cf1ad9fc0", "Content-Type: application/json" ) );
+	curl_setopt( $c, CURLOPT_HTTPHEADER, array( "UserID: " . $config->ParameterArray["APIUserID"], "APIKey: " . $config->ParameterArray["APIKey"], "Content-Type: application/json" ) );
 	
 	foreach ( $tList as $temp ) {
 		if ( $temp->ManufacturerID != $m->ManufacturerID ) {
@@ -81,7 +81,7 @@
 			curl_setopt( $p, CURLOPT_COOKIEFILE, "/tmp/repocookies.txt" );
 			curl_setopt( $p, CURLOPT_COOKIEJAR, "/tmp/repocookies.txt" );
 			curl_setopt( $p, CURLOPT_FOLLOWLOCATION, 1 );
-			curl_setopt( $p, CURLOPT_HTTPHEADER, array( "UserID: scott@themillikens.com", "APIKey: e9afc69c3df5c8d70647150cf1ad9fc0" ) );
+			curl_setopt( $c, CURLOPT_HTTPHEADER, array( "UserID: " . $config->ParameterArray["APIUserID"], "APIKey: " . $config->ParameterArray["APIKey"] ) );
 			curl_setopt( $p, CURLOPT_POSTFIELDS, $postData );
 			
 			$result = curl_exec( $p );
