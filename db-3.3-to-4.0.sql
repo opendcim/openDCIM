@@ -202,3 +202,9 @@ INSERT INTO fac_Config set Parameter="APIKey", Value="", UnitOfMeasure="Key", Va
 ---
 
 INSERT INTO fac_Config set Parameter="RequireDefinedUser", Value="Disabled", UnitOfMeasure="Enabled/Disabled", ValType="string", DefaultVal="Disabled";
+
+---
+--- Convert CabinetAudit table over to GenericAudit log
+---
+
+INSERT INTO fac_GenericLog (SELECT UserID, "CabinetAudit", CabinetID, NULL, " ", "CertifyAudit", " ", " ", AuditStamp FROM fac_CabinetAudit);
