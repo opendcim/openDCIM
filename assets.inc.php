@@ -4087,7 +4087,7 @@ class RackRequest {
 
 class SwitchInfo {
 	/* All of these functions will REQUIRE the built-in SNMP functions - the external calls are simply too slow */
-	static function BasicTests($DeviceID){
+	static private function BasicTests($DeviceID){
 		global $config;
 
 		// First check if the SNMP library is present
@@ -4109,20 +4109,30 @@ class SwitchInfo {
 		return $dev;
 	}
 
+	// Making an attempt at reducing the lines that I was constantly repeating at a cost of making this a little more convoluted.
+	static private function OSS_SNMP_Lookup($dev,$snmplookup,$portid=null,$baseoid=null){
+		// This is find out the name of the function that called this to make the error logging more descriptive
+		$caller=debug_backtrace();
+		$caller=$caller[1];
+		$caller=$caller['function'];
+
+		$snmpHost=new OSS_SNMP\SNMP($dev->PrimaryIP,$dev->SNMPCommunity);
+		$snmpresult=false;
+		try {
+			$snmpresult=(is_null($portid))?$snmpHost->useIface()->$snmplookup(true):$snmpHost->get($baseOID.".$portid");
+		}catch (Exception $e){
+			error_log("SwitchInfo::$caller($dev->DeviceID) ".$e->getMessage());
+		}
+
+		return $snmpresult;
+	}
+
 	static function getNumPorts($DeviceID) {
 		if(!$dev=SwitchInfo::BasicTests($DeviceID)){
 			return false;
 		}
 
-		$snmpHost=new OSS_SNMP\SNMP($dev->PrimaryIP,$dev->SNMPCommunity);
-		$interfaces=false;
-		try {
-			$interfaces=$snmpHost->get('IF-MIB::ifNumber.0');
-		}catch (Exception $e){
-			error_log("SwitchInfo::getNumPorts($dev->DeviceID) ".$e->getMessage());
-		}
-	
-		return $interfaces;
+		return self::OSS_SNMP_Lookup($dev,"numberOfInterfaces");
 	}
 
 	static function findFirstPort( $DeviceID ) {
@@ -4130,16 +4140,8 @@ class SwitchInfo {
 			return false;
 		}
 		
-		$snmpHost=new OSS_SNMP\SNMP($dev->PrimaryIP,$dev->SNMPCommunity);
-		try {
-			$portList=$snmpHost->useIface()->descriptions(); 
-		}catch (Exception $e){
-			error_log("SwitchInfo::findFirstPort($dev->DeviceID) ".$e->getMessage());
-			return false;
-		}
-
 		$x=array();
-		foreach( $portList as $index => $portdesc ) {
+		foreach(self::OSS_SNMP_Lookup($dev,"descriptions") as $index => $portdesc ) {
 			if ( preg_match( "/(bond|\"[A-Z]|swp|eth|Ethernet|Port-Channel|\/)[01]$/", $portdesc )) {
 				$x[$index] = $portdesc;
 			} // Find lines that end with /1
@@ -4156,19 +4158,7 @@ class SwitchInfo {
 		$baseOID = ".1.3.6.1.2.1.31.1.1.1.1";
 		$baseOID = "IF-MIB::ifName"; 
 
-		$snmpHost=new OSS_SNMP\SNMP($dev->PrimaryIP,$dev->SNMPCommunity);
-		try {
-			// No port id set then return a walk
-			if(is_null($portid)){
-				$nameList=$snmpHost->useIface()->descriptions();
-			// If port id is set then return a single value
-			}else{
-				$nameList=$snmpHost->get($baseOID.".$portid");
-			}
-		}catch (Exception $e){
-			error_log("SwitchInfo::getPortNames($dev->DeviceID) ".$e->getMessage());
-			return false;
-		}
+		$nameList=self::OSS_SNMP_Lookup($dev,"descriptions",$portid,$baseOID);
 
 		if(is_array($nameList)){
 			$saving=false;
@@ -4190,20 +4180,8 @@ class SwitchInfo {
 		// $baseOID = ".1.3.6.1.2.1.2.2.1.8.";
 		$baseOID="IF-MIB::ifOperStatus"; // arguments for not using MIB?
 
-		$snmpHost=new OSS_SNMP\SNMP($dev->PrimaryIP,$dev->SNMPCommunity);
-		try {
-			// No port id set then return a walk
-			if(is_null($portid)){
-				$statusList=$snmpHost->useIface()->operationStates(true);
-			// If port id is set then return a single value
-			}else{
-				$statusList=$snmpHost->get($baseOID.".$portid");
-			}
-		}catch (Exception $e){
-			error_log("SwitchInfo::getPortStatus($dev->DeviceID) ".$e->getMessage());
-			return false;
-		}
-		
+		$statusList=self::OSS_SNMP_Lookup($dev,"operationStates",$portid,$baseOID);
+
 		if(is_array($statusList)){
 			$saving=false;
 			foreach($statusList as $i => $status){
@@ -4224,19 +4202,7 @@ class SwitchInfo {
 		$baseOID=".1.3.6.1.2.1.31.1.1.1.18.";
 		$baseOID="IF-MIB::ifAlias";
 
-		$snmpHost=new OSS_SNMP\SNMP($dev->PrimaryIP,$dev->SNMPCommunity);
-		try {
-			// No port id set then return a walk
-			if(is_null($portid)){
-				$aliasList=$snmpHost->useIface()->adminStates(true);
-			// If port id is set then return a single value
-			}else{
-				$aliasList=$snmpHost->get($baseOID.".$portid");
-			}
-		}catch (Exception $e){
-			error_log("SwitchInfo::getPortAlias($dev->DeviceID) ".$e->getMessage());
-			return false;
-		}
+		$aliasList=self::OSS_SNMP_Lookup($dev,"adminStates",$portid,$baseOID);
 		
 		if(is_array($aliasList)){
 			$saving=false;
