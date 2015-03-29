@@ -37,6 +37,11 @@ require_once( "power.inc.php" );
 require_once( "config.inc.php" );
 require_once( "misc.inc.php" );
 
+// SNMP Library, don't attempt to load without php-snmp extensions
+if(extension_loaded('snmp')){
+	require_once('OSS_SNMP/SNMP.php');
+}
+
 require_once( "logging.inc.php" );
 
 ?>

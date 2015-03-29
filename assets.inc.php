@@ -4087,121 +4087,98 @@ class RackRequest {
 
 class SwitchInfo {
 	/* All of these functions will REQUIRE the built-in SNMP functions - the external calls are simply too slow */
-	static function getNumPorts($DeviceID) {
-		global $dbh;
+	static function BasicTests($DeviceID){
 		global $config;
-		
-		if ( ! function_exists( "snmpget" ) ) {
-			return;
-		}
-		
-		$dev = new Device();
-		$dev->DeviceID = $DeviceID;
-		
-		if(!$dev->GetDevice()) {
+
+		// First check if the SNMP library is present
+		if(!class_exists('OSS_SNMP\SNMP')){
 			return false;
 		}
-		
-		if ( $dev->PrimaryIP == "" )
-			return;
-		
-		if ( $dev->SNMPCommunity == "" ) {
-			$Community = $config->ParameterArray["SNMPCommunity"];
-		} else {
-			$Community = $dev->SNMPCommunity;
+
+		$dev=New Device();
+		$dev->DeviceID=$DeviceID;
+
+		// Make sure this is a real device and has an IP set
+		if(!$dev->GetDevice()){return false;}
+		if($dev->PrimaryIP==""){return false;}
+
+		// If the device doesn't have an SNMP community set, check and see if we have a global one
+		$dev->SNMPCommunity=($dev->SNMPCommunity=="")?$config->ParameterArray["SNMPCommunity"]:$dev->SNMPCommunity;
+
+		// We've passed all the repeatable tests, return the device object for digging
+		return $dev;
+	}
+
+	static function getNumPorts($DeviceID) {
+		if(!$dev=SwitchInfo::BasicTests($DeviceID)){
+			return false;
 		}
-		
-		return @end( explode( ":", snmpget( $dev->PrimaryIP, $Community, 'IF-MIB::ifNumber.0' )));
+
+		$snmpHost=new OSS_SNMP\SNMP($dev->PrimaryIP,$dev->SNMPCommunity);
+		$interfaces=false;
+		try {
+			$interfaces=$snmpHost->get('IF-MIB::ifNumber.0');
+		}catch (Exception $e){
+			error_log("SwitchInfo::getNumPorts($dev->DeviceID) ".$e->getMessage());
+		}
+	
+		return $interfaces;
 	}
 
 	static function findFirstPort( $DeviceID ) {
-		global $dbh;
-		global $config;
-		
-		if ( ! function_exists( "snmpget" ) ) {
-			return;
+		if(!$dev=SwitchInfo::BasicTests($DeviceID)){
+			return false;
 		}
 		
-		$dev=new Device();
-		$dev->DeviceID = $DeviceID;
-		
-		if ( !$dev->GetDevice() ) {
+		$snmpHost=new OSS_SNMP\SNMP($dev->PrimaryIP,$dev->SNMPCommunity);
+		try {
+			$portList=$snmpHost->useIface()->descriptions(); 
+		}catch (Exception $e){
+			error_log("SwitchInfo::findFirstPort($dev->DeviceID) ".$e->getMessage());
 			return false;
 		}
 
-		if ( $dev->PrimaryIP == "" )
-			return;
-		
-		if ( $dev->SNMPCommunity == "" ) {
-			$Community = $config->ParameterArray["SNMPCommunity"];
-		} else {
-			$Community = $dev->SNMPCommunity;
-		}
-		
-		$x = array();
-		
-		$portList = snmprealwalk( $dev->PrimaryIP, $Community, "IF-MIB::ifDescr" );
-		foreach( $portList as $index => $port ) {
-			$head = @end( explode( ".", $index ) );
-			$portdesc = @end( explode( ":", $port));
+		$x=array();
+		foreach( $portList as $index => $portdesc ) {
 			if ( preg_match( "/(bond|\"[A-Z]|swp|eth|Ethernet|Port-Channel|\/)[01]$/", $portdesc )) {
-				$x[$head] = $portdesc;
+				$x[$index] = $portdesc;
 			} // Find lines that end with /1
 		}
 		return $x;
 	}
 
-	static function getPortNames( $DeviceID, $portid = null ) {
-		global $dbh;
-		global $config;
-		
-		if ( ! function_exists( "snmpget" ) ) {
-			return;
+	static function getPortNames($DeviceID,$portid=null){
+		if(!$dev=SwitchInfo::BasicTests($DeviceID)){
+			return false;
 		}
-		
-		$dev = new Device();
-		$dev->DeviceID = $DeviceID;
-		$nameList=array(); // should this fail return blank
-		
-		if(!$dev->GetDevice()){
-			return $nameList;
-		}
-		
-		if( $dev->PrimaryIP=="" ){
-			return $nameList;
-		}
-		
-		if ( $dev->SNMPCommunity == "" ) {
-			$Community = $config->ParameterArray["SNMPCommunity"];
-		} else {
-			$Community = $dev->SNMPCommunity;
-		}
-			
+
+		// We never did finish the discussion of if we should use the mib vs the oid
 		$baseOID = ".1.3.6.1.2.1.31.1.1.1.1";
 		$baseOID = "IF-MIB::ifName"; 
 
-		if(is_null($portid)){		
-			if($reply=@snmprealwalk($dev->PrimaryIP,$Community,$baseOID)){
-				// Skip the returned values until we get to the first port
-				$Saving = false;
-				foreach($reply as $oid => $label){
-					$indexValue = @end(explode( ".", $oid ));
-					if ( $indexValue == $dev->FirstPortNum )
-						$Saving = true;
-						
-					if ( $Saving == true )
-						$nameList[sizeof($nameList) + 1] = trim(@end(explode(":",$label)));
-					
-					// Once we have captured enough values that match the number of ports, stop
-					if ( sizeof( $nameList ) == $dev->Ports )
-						break;
-				}
+		$snmpHost=new OSS_SNMP\SNMP($dev->PrimaryIP,$dev->SNMPCommunity);
+		try {
+			// No port id set then return a walk
+			if(is_null($portid)){
+				$nameList=$snmpHost->useIface()->descriptions();
+			// If port id is set then return a single value
+			}else{
+				$nameList=$snmpHost->get($baseOID.".$portid");
 			}
-		} else {
-				$query = @end( explode( ":", snmp2_get( $dev->PrimaryIP, $Community, $baseOID.'.'.$portid )));
-				$nameList = $query;
+		}catch (Exception $e){
+			error_log("SwitchInfo::getPortNames($dev->DeviceID) ".$e->getMessage());
+			return false;
 		}
-		
+
+		if(is_array($nameList)){
+			$saving=false;
+			foreach($nameList as $i => $desc){
+				if($i==$dev->FirstPortNum){$saving=true;}
+				if($saving){$nameList[sizeof($nameList)+1]=$desc;}
+				if(sizeof($nameList)==$dev->Ports){break;}
+			}
+		}
+
 		return $nameList;
 	}
 	

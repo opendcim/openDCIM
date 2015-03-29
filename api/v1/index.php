@@ -369,24 +369,18 @@ $app->get( '/cabinet/bydept/:deptid', function($deptid) {
 //	Returns:  All devices for which the user's rights have access to view
 //
 
-$app->get( '/device', function() {
-	$dev = new Device();
-	$devList = $dev->GetDeviceList();
+$app->get( '/device', function() use ($app) {
+	$dev=new Device();
 	
-	$response['error'] = false;
-	$response['errorcode'] = 200;
-	$response['device'] = array();
-	
-	foreach ( $devList as $d ) {
-		$tmp = array();
-		foreach( $d as $prop=>$value ) {
-			$tmp[$prop] = $value;
-		}
-		
-		array_push( $response['device'], $tmp );
+	$response['error']=false;
+	$response['errorcode']=200;
+	// Expand on this later to get a filtered device list
+	foreach($app->request->get() as $prop => $val){
+		$dev->$prop=$val;
 	}
-	
-	echoRespnse( 200, $response );
+	$response['device']=$dev->GetDeviceList();
+
+	echoRespnse(200,$response);
 });
 
 //
@@ -397,27 +391,20 @@ $app->get( '/device', function() {
 //
 
 $app->get( '/device/:deviceid', function($deviceid) {
-	$dev = new Device();
-	$dev->DeviceID = intval($deviceid);
+	$dev=new Device();
+	$dev->DeviceID=intval($deviceid);
 	
-	if ( ! $dev->GetDevice() ) {
-		$response['error'] = true;
-		$response['errorcode'] = 404;
-		$response['message'] = 'No device found with DeviceID ' . $deviceid;
-		echoRespnse( 404, $response );
-	} else {
-		$response['error'] = false;
-		$response['errorcode'] = 200;
-		$response['device'] = array();
+	if(!$dev->GetDevice()){
+		$response['error']=true;
+		$response['errorcode']=404;
+		$response['message']=__("No device found with DeviceID").$deviceid;
+		echoRespnse(404,$response);
+	}else{
+		$response['error']=false;
+		$response['errorcode']=200;
+		$response['device']=$dev;
 		
-		$tmp = array();
-		foreach( $dev as $prop=>$value ) {
-			$tmp[$prop] = $value;
-		}
-		
-		array_push( $response['device'], $tmp );
-		
-		echoRespnse( 200, $response );
+		echoRespnse(200,$response);
 	}
 });
 
@@ -429,23 +416,13 @@ $app->get( '/device/:deviceid', function($deviceid) {
 //
 
 $app->get( '/device/bycabinet/:cabinetid', function( $cabinetid ) {
-	$dev = new Device();
-	$dev->Cabinet = intval($cabinetid);
-	$devList = $dev->ViewDevicesByCabinet(true);
+	$dev=new Device();
+	$dev->Cabinet=intval($cabinetid);
 	
-	$response['error'] = false;
-	$response['errorcode'] = 200;
-	$response['device'] = array();
+	$response['error']=false;
+	$response['errorcode']=200;
+	$response['device']=$dev->ViewDevicesByCabinet(true);
 
-	foreach ( $devList as $d ) {
-		$tmp = array();
-		foreach( $d as $prop=>$value ) {
-			$tmp[$prop] = $value;
-		}
-		
-		array_push( $response['device'], $tmp );
-	}
-		
 	echoRespnse( 200, $response );
 });
 
@@ -457,22 +434,12 @@ $app->get( '/device/bycabinet/:cabinetid', function( $cabinetid ) {
 //
 
 $app->get( '/device/bydatacenter/:datacenterid', function( $datacenterid ) {
-	$dev = new Device();
-	$devList = $dev->GetDeviceList( intval($datacenterid) );
+	$dev=new Device();
 	
-	$response['error'] = false;
-	$response['errorcode'] = 200;
-	$response['device'] = array();
+	$response['error']=false;
+	$response['errorcode']=200;
+	$response['device']=$dev->GetDeviceList(intval($datacenterid));
 
-	foreach ( $devList as $d ) {
-		$tmp = array();
-		foreach( $d as $prop=>$value ) {
-			$tmp[$prop] = $value;
-		}
-		
-		array_push( $response['device'], $tmp );
-	}
-		
 	echoRespnse( 200, $response );
 });
 
@@ -484,23 +451,13 @@ $app->get( '/device/bydatacenter/:datacenterid', function( $datacenterid ) {
 //
 
 $app->get( '/device/byowner/:departmentid', function( $departmentid ) {
-	$dev = new Device();
-	$dev->Owner = intval($departmentid);
-	$devList = $dev->GetDevicesByOwner();
+	$dev=new Device();
+	$dev->Owner=intval($departmentid);
 	
-	$response['error'] = false;
-	$response['errorcode'] = 200;
-	$response['device'] = array();
+	$response['error']=false;
+	$response['errorcode']=200;
+	$response['device']=$dev->GetDevicesByOwner();
 
-	foreach ( $devList as $d ) {
-		$tmp = array();
-		foreach( $d as $prop=>$value ) {
-			$tmp[$prop] = $value;
-		}
-		
-		array_push( $response['device'], $tmp );
-	}
-		
 	echoRespnse( 200, $response );
 });
 
@@ -534,50 +491,36 @@ $app->post('/people', function() use ($app) {
 	}
 	
 	// Only one field is required - all others are optional
-	verifyRequiredParams(array('userid'));
+	verifyRequiredParams(array('UserID'));
 	
 	$response = array();
 	$p = new People();
-	$p->UserID = $app->request->post('userid');
-	if ( $p->GetPersonByUserID() ) {
-		$response['error'] = true;
-		$response['errorcode'] = 403;
-		$response['message'] = 'UserID already in database.  Use the update API to modify record.';
+	$p->UserID = $app->request->post('UserID');
+	if($p->GetPersonByUserID()){
+		$response['error']=true;
+		$response['errorcode']=403;
+		$response['message']=__("UserID already in database.  Use the update API to modify record.");
 		echoRespnse(403, $response );
 	} else {	
 		// Slim Framework will simply return null for any variables that were not passed, so this is safe to call without blowing up the script
-		$p->LastName = $app->request->post('lastname');
-		$p->FirstName = $app->request->post('firstname');
-		$p->Phone1 = $app->request->post('phone1');
-		$p->Phone2 = $app->request->post('phone2');
-		$p->Phone3 = $app->request->post('phone3');
-		$p->Email = $app->request->post('email');
-		$p->AdminOwnDevices = $app->request->post('adminowndevices');
-		$p->ReadAccess = $app->request->post('readaccess');
-		$p->WriteAccess = $app->request->post('writeaccess');
-		$p->DeleteAccess = $app->request->post('deleteaccess');
-		$p->ContactAdmin = $app->request->post('contactadmin');
-		$p->RackRequest = $app->request->post('rackrequest');
-		$p->RackAdmin = $app->request->post('rackadmin');
-		$p->SiteAdmin = $app->request->post('siteadmin');
+		foreach($p as $prop){
+			$p->$prop=$app->request->post($prop);
+		}
 		$p->Disabled = false;
 		
 		$p->CreatePerson();
 		
-		if ( $p->PersonID == false ) {
-			$response['error'] = true;
-			$response['errorcode'] = 403;
-			$response['message'] = 'Unable to create People resource with the given parameters.';
+		if($p->PersonID==false){
+			$response['error']=true;
+			$response['errorcode']=403;
+			$response['message']=__("Unable to create People resource with the given parameters.");
 			echoRespnse(403,$response);
-		} else {
-			$response['error'] = false;
-			$responde['errorcode'] = 200;
-			$response['message'] = 'People resource created successfully.';
-			$response['people'] = array();
-			foreach( $p as $prop=>$value ) {
-				$tmp[$prop] = $value;
-			}
-			array_push( $response['people'], $tmp );
+		}else{
+			$response['error']=false;
+			$responde['errorcode']=200;
+			$response['message']=__("People resource created successfully.");
+			$response['people']=$p;
+
 			echoRespnse(200,$response);
 		}
 	}
@@ -608,7 +551,7 @@ $app->put('/people/:userid', function($userid) use ($app) {
 	if ( !$person->ContactAdmin ) {
 		$response['error'] = true;
 		$response['errorcode'] = 400;
-		$response['message'] = "Insufficient privilege level";
+		$response['message'] = __("Insufficient privilege level");
 		echoRespnse(400, $response);
 		$app->stop();
 	}
@@ -619,40 +562,26 @@ $app->put('/people/:userid', function($userid) use ($app) {
 	if ( ! $p->GetPersonByUserID() ) {
 		$response['error'] = true;
 		$response['errorcode'] = 404;
-		$response['message'] = 'UserID not found in database.';
+		$response['message'] = __("UserID not found in database.");
 		echoRespnse(404, $response );
 	} else {	
 		// Slim Framework will simply return null for any variables that were not passed, so this is safe to call without blowing up the script
-		$p->LastName = $app->request->put('lastname');
-		$p->FirstName = $app->request->put('firstname');
-		$p->Phone1 = $app->request->put('phone1');
-		$p->Phone2 = $app->request->put('phone2');
-		$p->Phone3 = $app->request->put('phone3');
-		$p->Email = $app->request->put('email');
-		$p->AdminOwnDevices = $app->request->put('adminowndevices');
-		$p->ReadAccess = $app->request->put('readaccess');
-		$p->WriteAccess = $app->request->put('writeaccess');
-		$p->DeleteAccess = $app->request->put('deleteaccess');
-		$p->ContactAdmin = $app->request->put('contactadmin');
-		$p->RackRequest = $app->request->put('rackrequest');
-		$p->RackAdmin = $app->request->put('rackadmin');
-		$p->SiteAdmin = $app->request->put('siteadmin');
+		foreach($p as $prop){
+			$p->$prop=$app->request->put($prop);
+		}
 		$p->Disabled = false;
 		
-		if ( ! $p->UpdatePerson() ) {
-			$response['error'] = true;
-			$response['errorcode'] = 403;
-			$response['message'] = 'Unable to update People resource with the given parameters.';
+		if(!$p->UpdatePerson()){
+			$response['error']=true;
+			$response['errorcode']=403;
+			$response['message']=__("Unable to update People resource with the given parameters.");
 			echoRespnse(403,$response);
-		} else {
-			$response['error'] = false;
-			$response['errorcode'] = 200;
-			$response['message'] = 'People resource for UserID=' . $p->UserID . ' updated successfully.';
-			$response['people'] = array();
-			foreach( $p as $prop=>$value ) {
-				$tmp[$prop] = $value;
-			}
-			array_push( $response['people'], $tmp );
+		}else{
+			$response['error']=false;
+			$response['errorcode']=200;
+			$response['message']=sprintf(__('People resource for UserID=%1$s updated successfully.'),$p->UserID);
+			$response['people']=$p;
+
 			echoRespnse(200,$response);
 		}
 	}
