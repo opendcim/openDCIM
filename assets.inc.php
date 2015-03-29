@@ -4182,111 +4182,69 @@ class SwitchInfo {
 		return $nameList;
 	}
 	
-	static function getPortStatus( $DeviceID, $portid = null ) {
-		global $dbh;
-		global $config;
-		
-		if ( ! function_exists( "snmpget" ) ) {
-			return;
-		}
-		
-		$dev=new Device();
-		$dev->DeviceID=$DeviceID;
-		$statusList=array();
-		
-		if(!$dev->GetDevice()){
-			return $statusList;
-		}
-		
-		if( $dev->PrimaryIP=="" ){
-			return $statusList;
-		}
-		
-		if ( $dev->SNMPCommunity == "" ) {
-			$Community = $config->ParameterArray["SNMPCommunity"];
-		} else {
-			$Community = $dev->SNMPCommunity;
-		}
-			
-		// $baseOID = ".1.3.6.1.2.1.2.2.1.8.";
-		$baseOID="IF-MIB::ifOperStatus"; // arguments for not using MIB?
-
-		if ( is_null($portid) ) {		
-			if($reply=@snmprealwalk($dev->PrimaryIP, $Community, $baseOID)){	
-				// Skip the returned values until we get to the first port
-				$Saving = false;
-				foreach($reply as $oid => $status){
-					$indexValue = @end(explode( ".", $oid ));
-					if ( $indexValue == $dev->FirstPortNum ) {
-						$Saving = true;
-					}
-					
-					if ( $Saving == true ) {
-						@preg_match( "/(INTEGER: )(.+)(\(.*)/", $status, $matches);
-						$statusList[sizeof( $statusList) + 1]=@$matches[2];
-					}
-					
-					// Once we have captured enough values that match the number of ports, stop
-					if ( sizeof( $statusList ) == $dev->Ports ) {
-						break;
-					}
-				}
-			}
-		}else{
-			@preg_match( "/(INTEGER: )(.+)(\(.*)/", snmpget( $dev->PrimaryIP, $dev->SNMPCommunity, $baseOID.$portid ), $matches);
-			// This will change the array that was getting kicked back to a single value for an individual port lookup
-			$statusList = @$matches[2];
-		}
-		
-		return $statusList;
-	}
-	
-	static function getPortAlias( $DeviceID, $portid = null ) {
-		global $config;
-
-		if(!function_exists("snmpget")){
+	static function getPortStatus($DeviceID,$portid=null){
+		if(!$dev=SwitchInfo::BasicTests($DeviceID)){
 			return false;
 		}
 
-		$dev=new Device();
-		$dev->DeviceID=$DeviceID;
+		// $baseOID = ".1.3.6.1.2.1.2.2.1.8.";
+		$baseOID="IF-MIB::ifOperStatus"; // arguments for not using MIB?
 
-		$aliasList=array();
-
-		if(!$dev->GetDevice()){
-			return $aliasList;
+		$snmpHost=new OSS_SNMP\SNMP($dev->PrimaryIP,$dev->SNMPCommunity);
+		try {
+			// No port id set then return a walk
+			if(is_null($portid)){
+				$statusList=$snmpHost->useIface()->operationStates(true);
+			// If port id is set then return a single value
+			}else{
+				$statusList=$snmpHost->get($baseOID.".$portid");
+			}
+		}catch (Exception $e){
+			error_log("SwitchInfo::getPortStatus($dev->DeviceID) ".$e->getMessage());
+			return false;
+		}
+		
+		if(is_array($statusList)){
+			$saving=false;
+			foreach($statusList as $i => $status){
+				if($i==$dev->FirstPortNum){$saving=true;}
+				if($saving){$statusList[sizeof($statusList)+1]=$status;}
+				if(sizeof($statusList)==$dev->Ports){break;}
+			}
 		}
 
-		if($dev->PrimaryIP==""){
-			return $aliasList;
-		}
-
-		// Get SNMP community from the device, fall back to default if one isn't set on the device
-		$Community=($dev->SNMPCommunity=="")?$config->ParameterArray["SNMPCommunity"]:$dev->SNMPCommunity;
-		if($Community==""){
-			return $aliasList;
+		return $statusList;
+	}
+	
+	static function getPortAlias($DeviceID,$portid=null){
+		if(!$dev=SwitchInfo::BasicTests($DeviceID)){
+			return false;
 		}
 
 		$baseOID=".1.3.6.1.2.1.31.1.1.1.18.";
 		$baseOID="IF-MIB::ifAlias";
 
-		if(is_null($portid)){
-			if($reply=snmprealwalk($dev->PrimaryIP,$Community,$baseOID)){
-				$n=1; // Start our index at 1
-				foreach($reply as $oid => $string){
-					if(@end(explode( ".", $oid ))>=$dev->FirstPortNum){
-						@preg_match( "/(STRING: )(.*)/", $string, $matches);
-						$aliasList[$n++]=$matches[2];
-					}
-					// Once we have captured enough values that match the number of ports, stop
-					if(sizeof($aliasList)==$dev->Ports){
-						break;
-					}
-				}
+		$snmpHost=new OSS_SNMP\SNMP($dev->PrimaryIP,$dev->SNMPCommunity);
+		try {
+			// No port id set then return a walk
+			if(is_null($portid)){
+				$aliasList=$snmpHost->useIface()->adminStates(true);
+			// If port id is set then return a single value
+			}else{
+				$aliasList=$snmpHost->get($baseOID.".$portid");
 			}
-		}else{
-			$query = @end( explode( ":", snmpget( $dev->PrimaryIP, $Community, $baseOID.'.'.$portid )));
-			$aliasList = $query;
+		}catch (Exception $e){
+			error_log("SwitchInfo::getPortAlias($dev->DeviceID) ".$e->getMessage());
+			return false;
+		}
+		
+		if(is_array($aliasList)){
+			$saving=false;
+			foreach($aliasList as $i => $alias){
+				if($i==$dev->FirstPortNum){$saving=true;}
+				if($saving){$aliasList[sizeof($aliasList)+1]=$alias;}
+				if(sizeof($aliasList)==$dev->Ports){break;}
+			}
 		}
 		
 		return $aliasList;	
