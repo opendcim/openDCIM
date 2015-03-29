@@ -4113,8 +4113,7 @@ class SwitchInfo {
 	static private function OSS_SNMP_Lookup($dev,$snmplookup,$portid=null,$baseoid=null){
 		// This is find out the name of the function that called this to make the error logging more descriptive
 		$caller=debug_backtrace();
-		$caller=$caller[1];
-		$caller=$caller['function'];
+		$caller=$caller[1]['function'];
 
 		$snmpHost=new OSS_SNMP\SNMP($dev->PrimaryIP,$dev->SNMPCommunity);
 		$snmpresult=false;

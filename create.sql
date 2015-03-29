@@ -7,6 +7,7 @@ CREATE TABLE fac_Cabinet (
   CabinetID int(11) NOT NULL AUTO_INCREMENT,
   DataCenterID int(11) NOT NULL,
   Location varchar(20) NOT NULL,
+  LocationSortable varchar(20) NOT NULL,
   AssignedTo int(11) NOT NULL,
   ZoneID int(11) NOT NULL,
   CabRowID int(11) NOT NULL,
@@ -21,7 +22,7 @@ CREATE TABLE fac_Cabinet (
   SensorTemplateID int(11) NOT NULL,
   MapX1 int(11) NOT NULL,
   MapX2 int(11) NOT NULL,
-  FrontEdge ENUM("Top","Right","Bottom","Left") NOT NULL DEFAULT "Top",
+  FrontEdge varchar(7) NOT NULL DEFAULT "Top",
   MapY1 int(11) NOT NULL,
   MapY2 int(11) NOT NULL,
   Notes text NULL,
@@ -36,8 +37,8 @@ DROP TABLE IF EXISTS fac_CabRow;
 CREATE TABLE fac_CabRow (
   CabRowID int(11) NOT NULL AUTO_INCREMENT,
   Name varchar(120) NOT NULL,
+  DataCenterID int(11) NOT NULL,
   ZoneID int(11) NOT NULL,
-  CabOrder ENUM( 'ASC', 'DESC' ) NOT NULL DEFAULT 'ASC',
   PRIMARY KEY (CabRowID)
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
@@ -89,13 +90,13 @@ CREATE TABLE fac_SensorTemplate (
 	TemplateID INT(11) NOT NULL AUTO_INCREMENT,
 	ManufacturerID INT(11) NOT NULL,
 	Name VARCHAR(80) NOT NULL,
-	SNMPVersion ENUM ('1','2c') NOT NULL DEFAULT '2c',
+	SNMPVersion VARCHAR(2) NOT NULL DEFAULT '2c',
 	TemperatureOID VARCHAR(256) NOT NULL,
 	HumidityOID VARCHAR(256) NOT NULL,
 	TempMultiplier FLOAT(8) NOT NULL DEFAULT 1,
 	HumidityMultiplier FLOAT(8) NOT NULL DEFAULT 1,
 	mUnits ENUM( 'english', 'metric' ) NOT NULL DEFAULT 'english',
-	GlobalID int(11) NOT NULL,
+	GlobalID int(11) NOT NULL DEFAULT 0,
 	ShareToRepo tinyint(1) NOT NULL DEFAULT 0,
 	KeepLocal tinyint(1) NOT NULL DEFAULT 0,
 	PRIMARY KEY(TemplateID)
@@ -120,15 +121,29 @@ CREATE TABLE fac_Slots (
 -- Table structure for fac_TemplatePorts
 --
 DROP TABLE IF EXISTS fac_TemplatePorts;
-CREATE TABLE IF NOT EXISTS `fac_TemplatePorts` (
-  `TemplateID` int(11) NOT NULL,
-  `PortNumber` int(11) NOT NULL,
-  `Label` varchar(40) NOT NULL,
-  `MediaID` int(11) NOT NULL DEFAULT '0',
-  `ColorID` int(11) NOT NULL DEFAULT '0',
-  `PortNotes` varchar(80) NOT NULL,
-  PRIMARY KEY (`TemplateID`,`PortNumber`),
-  UNIQUE KEY `LabeledPort` (`TemplateID`,`PortNumber`,`Label`)
+CREATE TABLE IF NOT EXISTS fac_TemplatePorts (
+  TemplateID int(11) NOT NULL,
+  PortNumber int(11) NOT NULL,
+  Label varchar(40) NOT NULL,
+  MediaID int(11) NOT NULL DEFAULT '0',
+  ColorID int(11) NOT NULL DEFAULT '0',
+  PortNotes varchar(80) NOT NULL,
+  PRIMARY KEY (TemplateID,PortNumber),
+  UNIQUE KEY LabeledPort (TemplateID,PortNumber,Label)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+--
+-- TemplatePowerPorts table content the power connections of a device template
+--
+
+DROP TABLE IF EXISTS fac_TemplatePowerPorts;
+CREATE TABLE fac_TemplatePowerPorts (
+  TemplateID int(11) NOT NULL,
+  PortNumber int(11) NOT NULL,
+  Label varchar(40) NOT NULL,
+  PortNotes varchar(80) NOT NULL,
+  PRIMARY KEY (TemplateID,PortNumber),
+  UNIQUE KEY LabeledPort (TemplateID,PortNumber,Label)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 --
@@ -142,19 +157,19 @@ CREATE TABLE fac_CDUTemplate (
   Model varchar(80) NOT NULL,
   Managed int(1) NOT NULL,
   ATS int(1) NOT NULL,
-  SNMPVersion enum('1','2c'),
+  SNMPVersion varchar(2) NOT NULL DEFAULT "2c",
   VersionOID varchar(80) NOT NULL,
-  Multiplier enum( '0.1', '1', '10', '100' ),
+  Multiplier varchar(6) NULL DEFAULT NULL,
   OID1 varchar(80) NOT NULL,
   OID2 varchar(80) NOT NULL,
   OID3 varchar(80) NOT NULL,
   ATSStatusOID varchar(80) NOT NULL,
   ATSDesiredResult varchar(80) NOT NULL,
-  ProcessingProfile enum('SingleOIDWatts','SingleOIDAmperes','Combine3OIDWatts','Combine3OIDAmperes','Convert3PhAmperes'),
+  ProcessingProfile varchar(20) NOT NULL DEFAULT "SingleOIDWatts", 
   Voltage int(11) NOT NULL,
   Amperage int(11) NOT NULL,
   NumOutlets int(11) NOT NULL,
-  GlobalID int(11) NOT NULL,
+  GlobalID int(11) NOT NULL DEFAULT 0,
   ShareToRepo tinyint(1) NOT NULL DEFAULT 0,
   KeepLocal tinyint(1) NOT NULL DEFAULT 0,
   PRIMARY KEY (TemplateID),
@@ -260,7 +275,7 @@ CREATE TABLE fac_Device (
   TemplateID int(11) NOT NULL,
   NominalWatts int(11) NOT NULL,
   PowerSupplyCount int(11) NOT NULL,
-  DeviceType enum('Server','Appliance','Storage Array','Switch','Chassis','Patch Panel','Physical Infrastructure') NOT NULL,
+  DeviceType varchar(23) NOT NULL DEFAULT "Server",
   ChassisSlots smallint(6) NOT NULL,
   RearChassisSlots smallint(6) NOT NULL,
   ParentDevice int(11) NOT NULL,
@@ -303,7 +318,7 @@ CREATE TABLE fac_DeviceTemplate (
   Height int(11) NOT NULL,
   Weight int(11) NOT NULL,
   Wattage int(11) NOT NULL,
-  DeviceType enum('Server','Appliance','Storage Array','Switch','Chassis','Patch Panel','Physical Infrastructure') NOT NULL default 'Server',
+  DeviceType varchar(23) NOT NULL DEFAULT "Server",
   PSCount int(11) NOT NULL,
   NumPorts int(11) NOT NULL,
   Notes text NOT NULL,
@@ -311,7 +326,7 @@ CREATE TABLE fac_DeviceTemplate (
   RearPictureFile VARCHAR(45) NOT NULL,
   ChassisSlots SMALLINT(6) NOT NULL,
   RearChassisSlots SMALLINT(6) NOT NULL,
-  GlobalID int(11) NOT NULL,
+  GlobalID int(11) NOT NULL DEFAULT 0,
   ShareToRepo tinyint(1) NOT NULL DEFAULT 0,
   KeepLocal tinyint(1) NOT NULL DEFAULT 0,
   PRIMARY KEY (TemplateID),
@@ -365,7 +380,7 @@ DROP TABLE IF EXISTS fac_Manufacturer;
 CREATE TABLE fac_Manufacturer (
   ManufacturerID int(11) NOT NULL AUTO_INCREMENT,
   Name varchar(80) NOT NULL,
-  GlobalID int(11) NOT NULL,
+  GlobalID int(11) NOT NULL DEFAULT 0,
   ShareToRepo tinyint(1) NOT NULL DEFAULT 0,
   KeepLocal tinyint(1) NOT NULL DEFAULT 0,
   PRIMARY KEY (ManufacturerID),
@@ -509,9 +524,28 @@ CREATE TABLE fac_PowerPanel (
   NumberOfPoles int(11) NOT NULL,
   MainBreakerSize int(11) NOT NULL,
   PanelVoltage int(11) NOT NULL,
-  NumberScheme enum('Odd/Even','Sequential') NOT NULL,
+  NumberScheme varchar(10) NOT NULL DEFAULT "Sequential",
+  ParentPanelID int(11) NOT NULL,
+  ParentBreakerID int(11) NOT NULL,
   PRIMARY KEY (PanelID)
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
+
+--
+-- Create new table for power ports
+--
+
+DROP TABLE IF EXISTS fac_PowerPorts;
+CREATE TABLE fac_PowerPorts (
+  DeviceID int(11) NOT NULL,
+  PortNumber int(11) NOT NULL,
+  Label varchar(40) NOT NULL,
+  ConnectedDeviceID int(11) DEFAULT NULL,
+  ConnectedPort int(11) DEFAULT NULL,
+  Notes varchar(80) NOT NULL,
+  PRIMARY KEY (DeviceID,PortNumber),
+  UNIQUE KEY LabeledPort (DeviceID,PortNumber,Label),
+  UNIQUE KEY ConnectedDevice (ConnectedDeviceID,ConnectedPort)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 --
 -- Table structure for table fac_PowerSource
@@ -525,6 +559,8 @@ CREATE TABLE fac_PowerSource (
   IPAddress varchar(254) NOT NULL,
   Community varchar(40) NOT NULL,
   LoadOID varchar(80) NOT NULL,
+  OID2 varchar(80) NOT NULL,
+  OID3 varchar(80) NOT NULL,
   Capacity int(11) NOT NULL,
   PRIMARY KEY (PowerSourceID),
   KEY DataCenterID (DataCenterID)
@@ -552,7 +588,7 @@ CREATE TABLE fac_RackRequest (
   SANCount int(11) NOT NULL,
   SANList varchar(80) NOT NULL,
   DeviceClass varchar(80) NOT NULL,
-  DeviceType enum('Server','Appliance','Storage Array','Switch','Chassis','Patch Panel','Physical Infrastructure') NOT NULL,
+  DeviceType varchar(23) NOT NULL DEFAULT "Server",
   LabelColor varchar(80) NOT NULL,
   CurrentLocation varchar(120) NOT NULL,
   SpecialInstructions text NOT NULL,
@@ -801,7 +837,11 @@ INSERT INTO fac_Config VALUES
 	('WorkOrderBuilder', 'disabled', 'Enabled/Disabled', 'string', 'Disabled'),
 	('RackRequests', 'enabled', 'Enabled/Disabled', 'string', 'Enabled'),
 	('dot', '/usr/bin/dot', 'path', 'string', '/usr/bin/dot'),
+	('AppendCabDC', 'disabled', 'Enabled/Disabled', 'string', 'Disabled'),
 	('ShareToRepo', 'disabled', 'Enabled/Disabled', 'string', 'Disabled'),
+	('APIUserID', '', 'Email', 'string', ''),
+	('APIKey', '', 'Key', 'string', ''),
+	('RequireDefinedUser', 'disabled', 'Enabled/Disabled', 'string', 'Disabled'),
 	('KeepLocal', 'enabled', 'Enabled/Disabled', 'string', 'Enabled')
 ;
 
@@ -832,7 +872,7 @@ DROP TABLE IF EXISTS fac_DeviceCustomAttribute;
 CREATE TABLE fac_DeviceCustomAttribute(
   AttributeID int(11) NOT NULL AUTO_INCREMENT,
   Label varchar(80) NOT NULL,
-  AttributeType enum('string', 'number', 'integer', 'date', 'phone', 'email', 'ipv4', 'url', 'checkbox') NOT NULL DEFAULT 'string',
+  AttributeType varchar(8) NOT NULL DEFAULT "string",
   Required tinyint(1) NOT NULL DEFAULT 0,
   AllDevices tinyint(1) NOT NULL DEFAULT 0,
   DefaultValue varchar(65000),
