@@ -241,6 +241,7 @@
                         }else{
                             // Create the filler for the rack either text or a picture
                             #$picture=(!$device->BackSide && !$rear || $device->BackSide && $rear)?$device->GetDevicePicture():$device->GetDevicePicture("rear");
+                            $picture="";
                             $devlabel=$device->Label.(((!$device->BackSide && $rear || $device->BackSide && !$rear) && !$device->HalfDepth)?"(".__("Rear").")":"");
                             $text="$highlight $devlabel";
                         }
