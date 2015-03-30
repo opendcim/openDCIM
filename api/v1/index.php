@@ -378,7 +378,7 @@ $app->get( '/device', function() use ($app) {
 	foreach($app->request->get() as $prop => $val){
 		$dev->$prop=$val;
 	}
-	$response['device']=$dev->GetDeviceList();
+	$response['device']=$dev->Search();
 
 	echoRespnse(200,$response);
 });

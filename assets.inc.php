@@ -2121,6 +2121,48 @@ class Device {
 		return $deviceList;
 	}
 
+	function Search($indexedbyid=false){
+		global $dbh;
+		// Store the value of devicetype before we muck with it
+		$ot=$this->DeviceType;
+
+		// Make everything safe for us to search with
+		$this->MakeSafe();
+
+		// This will store all our extended sql
+		$sqlextend="";
+		function findit($prop,$val,&$sql){
+			if($sql){
+				$sql.=" AND $prop=\"$val\"";
+			}else{
+				$sql.=" WHERE $prop=\"$val\"";
+			}
+		}
+		foreach($this as $prop => $val){
+			// We force DeviceType to a known value so this is to check if they wanted to search for the default
+			if($prop=="DeviceType" && $val=="Server" && $ot!="Server"){
+				continue;
+			}
+			if($val){
+				findit($prop,$val,$sqlextend);
+			}
+		}
+
+		$sql="SELECT * FROM fac_Device $sqlextend ORDER BY Label ASC;";
+
+		$deviceList=array();
+
+		foreach($dbh->query($sql) as $deviceRow){
+			if($indexedbyid){
+				$deviceList[$deviceRow["DeviceID"]]=Device::RowToObject($deviceRow);
+			}else{
+				$deviceList[]=Device::RowToObject($deviceRow);
+			}
+		}
+
+		return $deviceList;
+	}
+
 	function SearchDevicebySerialNo(){
 		global $dbh;
 
