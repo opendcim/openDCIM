@@ -486,6 +486,47 @@ class Cabinet {
 		return true;
 	}
 
+	function Search($indexedbyid=false){
+		global $dbh;
+		// Store the value of frontedge before we muck with it
+		$ot=$this->FrontEdge;
+
+		// Make everything safe for us to search with
+		$this->MakeSafe();
+
+		// This will store all our extended sql
+		$sqlextend="";
+		function findit($prop,$val,&$sql){
+			if($sql){
+				$sql.=" AND $prop=\"$val\"";
+			}else{
+				$sql.=" WHERE $prop=\"$val\"";
+			}
+		}
+		foreach($this as $prop => $val){
+			// We force DeviceType to a known value so this is to check if they wanted to search for the default
+			if($prop=="FrontEdge" && $val=="Top" && $ot!="Top"){
+				continue;
+			}
+			if($val && $val!="1969-12-31"){
+				findit($prop,$val,$sqlextend);
+			}
+		}
+
+		$sql="SELECT * FROM fac_Cabinet $sqlextend ORDER BY LocationSortable ASC;";
+
+		$cabList=array();
+
+		foreach($dbh->query($sql) as $cabRow){
+			if($indexedbyid){
+				$cabList[$cabRow["CabinetID"]]=Cabinet::RowToObject($cabRow);
+			}else{
+				$cabList[]=Cabinet::RowToObject($cabRow);
+			}
+		}
+
+		return $cabList;
+	}
 	function SearchByCabinetName( $db = null ) {
 		global $dbh;
 		

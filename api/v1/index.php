@@ -230,10 +230,13 @@ $app->get( '/datacenter/:id', function( $DataCenterID ) {
 //	Returns: All cabinet information
 //
 
-$app->get( '/cabinet', function() {
+$app->get( '/cabinet', function() use ($app) {
 	$cab = new Cabinet;
 	$dc = new DataCenter();
-	$cList = $cab->ListCabinets();
+	foreach($app->request->get() as $prop => $val){
+		$cab->$prop=$val;
+	}
+	$cList = $cab->Search();
 	
 	$response['error'] = false;
 	$response['errorcode'] = 200;
@@ -374,7 +377,6 @@ $app->get( '/device', function() use ($app) {
 	
 	$response['error']=false;
 	$response['errorcode']=200;
-	// Expand on this later to get a filtered device list
 	foreach($app->request->get() as $prop => $val){
 		$dev->$prop=$val;
 	}
