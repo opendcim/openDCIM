@@ -54,6 +54,8 @@ echo '<div class="main">
 	<a href="report_outage_simulator.php">',__("Simulated Power Outage Report"),'</a>
 	<a href="report_power_distribution.php">',__("Power Distribution by Data Center"),'</a>
 	<a href="report_power_utilization.php">',__("Server Tier Classification Report"),'</a>
+    <a href="report_panel_schedule.php">',__("Power Panel Schedule Report"),'</a>
+    <a href="report_cabinets.php">',__("Cabinet List"),'</a>
 </fieldset>
 <fieldset>
 	<legend>',__("Auditing Reports"),'</legend>
