@@ -1491,7 +1491,7 @@ function LameLogDisplay(){
 					input.autocomplete( "search", "" );
 				});
 		},
- 
+
 		_source: function(request,response){
 			var matcher=new RegExp( $.ui.autocomplete.escapeRegex(request.term), "i" );
 			var cachetest=this.element.children("option");
@@ -1983,8 +1983,14 @@ function LameLogDisplay(){
 				});
 				portlist.change(function(){
 					//Match Media type and color on incoming port
+					// To make the combobox update correctly when we update the underlying value.
+					// hack hack hack hack hack hack. tl;dr I'm too lazy to fix this correctly
+					row.porttype.children('select').combobox('destroy');
 					row.porttype.children('select').val($(this).data($(this).val()).MediaID);
+					row.porttype.children('select').combobox();
+					row.portcolor.children('select').combobox('destroy');
 					row.portcolor.children('select').val($(this).data($(this).val()).ColorID);
+					row.portcolor.children('select').combobox();
 				});
 				// set the value of the select list to the current connection
 				if(rear){
