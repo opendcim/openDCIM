@@ -653,6 +653,17 @@
 				// but the user could have rights from the cabinet and it is checked above
 				// when the device object is populated.
 				}elseif($write && $_POST['action']=='Create'){
+					// Since the cabinet isn't part of the form for a child device creation
+					// it's possible to create a new child that doesn't follow the new cabinet designation
+					// we're creatig a device at this point so look up the parent just in case and match
+					// the cabinet designations
+					if($dev->ParentDevice){
+						$pdev=new Device();
+						$pdev->DeviceID=$dev->ParentDevice;
+						$pdev->getDevice();
+						$dev->Cabinet=$pdev->Cabinet;
+					}
+
 					if($dev->TemplateID>0 && intval($dev->NominalWatts==0)){
 						$dev->UpdateWattageFromTemplate();
 					}
@@ -662,6 +673,10 @@
 					}
 					$dev->SetTags($tagarray);
 					updateCustomValues($dev);
+
+					// We've, hopefully, successfully created a new device. Force them to the new device page.
+					header('Location: '.redirect("devices.php?deviceid=$dev->DeviceID"));
+					exit;
 				}
 			}
 
@@ -1213,7 +1228,6 @@ $(document).ready(function() {
 
 	function customattrrefresh(templateid){
 		$.post('',{customattrrefresh: templateid, deviceid:  $('#deviceid').val() }).done(function(data){
-console.log($('#customattrs .table ~ .table'));
 			$('#customattrs .table ').replaceWith(data);
 		});
 
@@ -2403,7 +2417,8 @@ $connectioncontrols=($dev->DeviceID>0)?'
 
 		// Connection limitation selection
 		$('#connection-limiter').buttonset().parent('div').css('text-align','right');
-		$('#connection-limiter input').click(function(){
+		$('#connection-limiter input').click(function(e){
+			setCookie("DeviceSelectionLimit",e.currentTarget.value);
 			$('.table.switch > div ~ div').each(function(){
 				var row=$(this);
 				if(row.data('edit')){
@@ -2411,7 +2426,13 @@ $connectioncontrols=($dev->DeviceID>0)?'
 				}
 			});
 		});
-
+		// Set the default selection on the filter to the value of the cookie OR default to global
+		var dsl=getCookie('DeviceSelectionLimit');
+		if(dsl){
+			$('#connection-limiter input[value='+dsl+']').select().focus().click();
+		}else{
+			$('#connection-limiter input[value=global]').select().focus().click();
+		}
 	});
 </script>
 

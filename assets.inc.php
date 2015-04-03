@@ -3248,7 +3248,7 @@ class DevicePorts {
 		}
 	}
 
-	function updatePort() {
+	function updatePort($fasttrack=false) {
 		global $dbh;
 
 		$oldport=new DevicePorts(); // originating port prior to modification
@@ -3259,55 +3259,62 @@ class DevicePorts {
 		$tmpport->DeviceID=$this->ConnectedDeviceID;
 		$tmpport->PortNumber=$this->ConnectedPort;
 		$tmpport->getPort();
-		$oldtmpport=new DevicePorts(); // used for logging
-		$oldtmpport->DeviceID=$oldport->ConnectedDeviceID;
-		$oldtmpport->PortNumber=$oldport->ConnectedPort;
-		$oldtmpport->getPort();
-
-		//check rights before we go any further
 		$dev=new Device();
 		$dev->DeviceID=$this->DeviceID;
 		$dev->GetDevice();
-		$replacingdev=new Device();
-		$replacingdev->DeviceID=$oldport->ConnectedDeviceID;
-		$replacingdev->GetDevice();
-		$connecteddev=new Device();
-		$connecteddev->DeviceID=$this->ConnectedDeviceID;
-		$connecteddev->GetDevice();
+		// This is gonna be a hack for updating a port when we don't want a recursion loop
+		// I'll likely remove the makeConnection method after this
+		if(!$fasttrack){
+			$oldtmpport=new DevicePorts(); // used for logging
+			$oldtmpport->DeviceID=$oldport->ConnectedDeviceID;
+			$oldtmpport->PortNumber=$oldport->ConnectedPort;
+			$oldtmpport->getPort();
 
-		$rights=false;
-		$rights=($dev->Rights=="Write")?true:$rights;
-		$rights=($replacingdev->Rights=="Write")?true:$rights;
-		$rights=($connecteddev->Rights=="Write")?true:$rights;
+			//check rights before we go any further
+			$replacingdev=new Device();
+			$replacingdev->DeviceID=$oldport->ConnectedDeviceID;
+			$replacingdev->GetDevice();
+			$connecteddev=new Device();
+			$connecteddev->DeviceID=$this->ConnectedDeviceID;
+			$connecteddev->GetDevice();
 
-		if(!$rights){
-			return false;
+			$rights=false;
+			$rights=($dev->Rights=="Write")?true:$rights;
+			$rights=($replacingdev->Rights=="Write")?true:$rights;
+			$rights=($connecteddev->Rights=="Write")?true:$rights;
+
+			if(!$rights){
+				return false;
+			}
+		
+			$this->MakeSafe();
+
+			// Quick sanity check so we aren't depending on the user
+			$this->Label=($this->Label=="")?$this->PortNumber:$this->Label;
+
+			// clear previous connection
+			$oldport->removeConnection();
+			$tmpport->removeConnection();
+
+			if($this->ConnectedDeviceID==0 || $this->PortNumber==0 || $this->ConnectedPort==0){
+				// when any of the above equal 0 this is a delete request
+				// skip making any new connections but go ahead and update the device
+				// reload tmpport with data from the other device
+				$tmpport->DeviceID=$oldport->ConnectedDeviceID;
+				$tmpport->PortNumber=$oldport->ConnectedPort;
+				$tmpport->getPort();
+			}else{
+				// make new connection
+				$tmpport->ConnectedDeviceID=$this->DeviceID;
+				$tmpport->ConnectedPort=$this->PortNumber;
+				$tmpport->Notes=$this->Notes;
+				$tmpport->MediaID=$this->MediaID;
+				$tmpport->ColorID=$this->ColorID;
+				$tmpport->updatePort(true);
+	// The three lines above were added to sync media and color types with the connection
+	//			DevicePorts::makeConnection($tmpport,$this);
+			}
 		}
-	
-		$this->MakeSafe();
-
-		// Quick sanity check so we aren't depending on the user
-		$this->Label=($this->Label=="")?$this->PortNumber:$this->Label;
-
-		// clear previous connection
-		$oldport->removeConnection();
-		$tmpport->removeConnection();
-
-		if($this->ConnectedDeviceID==0 || $this->PortNumber==0 || $this->ConnectedPort==0){
-			// when any of the above equal 0 this is a delete request
-			// skip making any new connections but go ahead and update the device
-			// reload tmpport with data from the other device
-			$tmpport->DeviceID=$oldport->ConnectedDeviceID;
-			$tmpport->PortNumber=$oldport->ConnectedPort;
-			$tmpport->getPort();
-		}else{
-			// make new connection
-			$tmpport->ConnectedDeviceID=$this->DeviceID;
-			$tmpport->ConnectedPort=$this->PortNumber;
-			$tmpport->Notes=$this->Notes;
-			DevicePorts::makeConnection($tmpport,$this);
-		}
-
 		// update port
 		$sql="UPDATE fac_Ports SET MediaID=$this->MediaID, ColorID=$this->ColorID, 
 			PortNotes=\"$this->PortNotes\", ConnectedDeviceID=$this->ConnectedDeviceID, 
@@ -3336,7 +3343,9 @@ class DevicePorts {
 
 		// two logs, because we probably modified two devices
 		(class_exists('LogActions'))?LogActions::LogThis($this,$oldport):'';
-		(class_exists('LogActions'))?LogActions::LogThis($tmpport,$oldtmpport):'';
+		if(!$fasttrack){
+			(class_exists('LogActions'))?LogActions::LogThis($tmpport,$oldtmpport):'';
+		}
 		return true;
 	}
 

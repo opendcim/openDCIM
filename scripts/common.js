@@ -72,6 +72,18 @@ function setCookie(c_name, value) {
 	document.cookie=c_name + "=" + c_value;
 }
 
+// Function to get a cookie
+function getCookie(c_name) {
+	var name = c_name + "=";
+	var ca = document.cookie.split(';');
+	for(var i=0; i<ca.length; i++) {
+		var c = ca[i];
+		while (c.charAt(0)==' ') c = c.substring(1);
+		if (c.indexOf(name) == 0) return c.substring(name.length,c.length);
+	}
+	return "";
+} 
+
 // a way too specific function for scrolling a div
 function scrollolog(){
 	var olog=$('#olog .table').parent('div');
@@ -1982,15 +1994,20 @@ function LameLogDisplay(){
 					portlist.data(port.PortNumber, {MediaID: port.MediaID, ColorID: port.ColorID});
 				});
 				portlist.change(function(){
-					//Match Media type and color on incoming port
+					// If the local port has a media type or color set then honor it first before
+					// evaluating the media type and color from the incoming connection
 					// To make the combobox update correctly when we update the underlying value.
 					// hack hack hack hack hack hack. tl;dr I'm too lazy to fix this correctly
-					row.porttype.children('select').combobox('destroy');
-					row.porttype.children('select').val($(this).data($(this).val()).MediaID);
-					row.porttype.children('select').combobox();
-					row.portcolor.children('select').combobox('destroy');
-					row.portcolor.children('select').val($(this).data($(this).val()).ColorID);
-					row.portcolor.children('select').combobox();
+					if(!row.porttype.children('select').val()){
+						row.porttype.children('select').combobox('destroy');
+						row.porttype.children('select').val($(this).data($(this).val()).MediaID);
+						row.porttype.children('select').combobox();
+					}
+					if(!row.portcolor.children('select').val()){
+						row.portcolor.children('select').combobox('destroy');
+						row.portcolor.children('select').val($(this).data($(this).val()).ColorID);
+						row.portcolor.children('select').combobox();
+					}
 				});
 				// set the value of the select list to the current connection
 				if(rear){
