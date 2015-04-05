@@ -681,17 +681,16 @@ $app->put('/people', function() use ($app) {
 });
 
 //
-//	URL:	/api/v1/colorcode/:colorid
+//	URL:	/api/v1/colorcode/:name
 //	Method:	PUT
 //	Params: 
 //		Required: Name
-//		Optional: Note	
+//		Optional: DefaultNote
 //	Returns: record as created
 //
 
 $app->put( '/colorcode/:colorname', function($colorname) {
 	$cc=new ColorCoding();
-	$cc->Name=$colorname;
 	foreach($app->request->put() as $prop => $val){
 		$cc->$prop=$val;
 	}
