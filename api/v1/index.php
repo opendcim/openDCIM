@@ -467,6 +467,49 @@ $app->get( '/powerport/:deviceid', function($deviceid) use ($app) {
 
 	echoResponse($response['errorcode'],$response);
 });
+
+
+//
+//	URL:	/api/v1/colorcode
+//	Method:	GET
+//	Params:	none
+//	Returns:  All defined color codes 
+//
+
+$app->get( '/colorcode', function() {
+	$response['error']=false;
+	$response['errorcode']=200;
+	$response['colorcode']=ColorCoding::GetCodeList();;
+		
+	echoResponse($response['errorcode'],$response);
+});
+
+//
+//	URL:	/api/v1/colorcode/:colorid
+//	Method:	GET
+//	Params:	colorid (passed in URL)
+//	Returns:  All defined color codes matching :colorid 
+//
+
+$app->get( '/colorcode/:colorid', function($colorid) {
+	$cc=new ColorCoding();
+	$cc->ColorID=$colorid;
+	
+	if(!$cc->GetCode()){
+		$response['error']=true;
+		$response['errorcode']=404;
+		$response['message']=__("No color code found with ColorID")." $cc->ColorID";
+		echoResponse(404,$response);
+	}else{
+		$response['error']=false;
+		$response['errorcode']=200;
+		$response['colorcode'][$cc->ColorID]=$cc;
+		
+		echoResponse(200,$response);
+	}
+});
+
+
 /**
   *
   *		API POST Methods go here
@@ -550,6 +593,27 @@ $app->post( '/powerport/:deviceid', function($deviceid) use ($app, $person) {
 	echoResponse($response['errorcode'],$response);
 });
 
+//
+//	URL:	/api/v1/colorcode/:colorid
+//	Method:	POST
+//	Params:	
+//		required: ColorID, Name
+//		optional: DefaultNote 
+//	Returns:  true/false on update operation
+//
+
+$app->post( '/colorcode/:colorid', function($colorid) use ($app, $person) {
+	$cc=new ColorCoding();
+	foreach($app->request->post() as $prop => $val){
+		$cc->$prop=$val;
+	}
+
+	$response['error']=($cc->UpdateCode())?false:true;
+	$response['errorcode']=200;
+
+	echoResponse($response['errorcode'],$response);
+});
+
 /**
   *
   *		API PUT Methods go here
@@ -616,6 +680,36 @@ $app->put('/people', function() use ($app) {
 	}
 });
 
+//
+//	URL:	/api/v1/colorcode/:colorid
+//	Method:	PUT
+//	Params: 
+//		Required: Name
+//		Optional: Note	
+//	Returns: record as created
+//
+
+$app->put( '/colorcode/:colorname', function($colorname) {
+	$cc=new ColorCoding();
+	$cc->Name=$colorname;
+	foreach($app->request->put() as $prop => $val){
+		$cc->$prop=$val;
+	}
+
+	if(!$cc->CreateCode()){
+		$response['error']=true;
+		$response['errorcode']=403;
+		$response['message']=__("Error creating new color.");
+	}else{
+		$response['error']=false;
+		$response['errorcode']=200;
+		$response['message']=__("New color created successfully.");
+		$response['colorcode'][$cc->ColorID]=$cc;
+	}
+	echoResponse(200,$response);
+});
+
+
 /**
   *
   *		API DELETE Methods go here
@@ -636,7 +730,7 @@ $app->put('/people', function() use ($app) {
 $app->delete( '/powerport/:deviceid', function($deviceid) use ($app, $person) {
 	$pp=new PowerPorts();
 	$pp->DeviceID=$deviceid;
-	foreach($app->request->post() as $prop => $val){
+	foreach($app->request->delete() as $prop => $val){
 		$pp->$prop=$val;
 	}
 
@@ -678,6 +772,28 @@ $app->delete( '/powerport/:deviceid', function($deviceid) use ($app, $person) {
 	$response['errorcode']=200;
 
 	echoResponse($response['errorcode'],$response);
+});
+
+//
+//	URL:	/api/v1/colorcode/:colorid
+//	Method:	DELETE
+//	Params:	colorid (passed in URL)
+//	Returns:  true/false on update operation
+//
+
+$app->delete( '/colorcode/:colorid', function($colorid) {
+	$cc=new ColorCoding();
+	$cc->ColorID=$colorid;
+	
+	if(!$cc->DeleteCode()){
+		$response['error']=true;
+		$response['errorcode']=404;
+		$response['message']=__("Failed to delete color with ColorID")." $cc->ColorID";
+	}else{
+		$response['error']=false;
+		$response['errorcode']=200;
+	}
+	echoResponse(200,$response);
 });
 
 $app->run();
