@@ -689,7 +689,7 @@ $app->put('/people', function() use ($app) {
 //	Returns: record as created
 //
 
-$app->put( '/colorcode/:colorname', function($colorname) {
+$app->put( '/colorcode/:colorname', function($colorname) use ($app) {
 	$cc=new ColorCoding();
 	foreach($app->request->put() as $prop => $val){
 		$cc->$prop=$val;

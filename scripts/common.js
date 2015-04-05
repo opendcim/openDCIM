@@ -572,10 +572,11 @@ function buildportstable(){
 		}
 	}
 
-	$.ajax({url: '',type: "get",async: false,data: {cc: ''},success: function(data){
-			$.each(data, function(i,color){
+	$.ajax({url: 'api/v1/colorcode',type: "get",async: false,success: function(data){
+			for(var i in data.colorcode){
+				var color=data.colorcode[i];
 				colorcodes.append($('<option>').val(color.ColorID).text(color.Name));
-			});
+			}
 		}
 	});
 
@@ -1218,11 +1219,13 @@ function LameLogDisplay(){
 
 			// Populate color code choices
 			function massedit_cc(){
-				$.get('',{cc:''}).done(function(data){
-					$.each(data, function(key,cc){
-						var option=$("<option>",({'value':cc.ColorID})).append(cc.Name);
-						setcolorcode.append(option).data(cc.ColorID,cc.Name);
-					});
+				$.ajax({url: 'api/v1/colorcode',type: "get",async: false,success: function(data){
+						for(var i in data.colorcode){
+							var cc=data.colorcode[i];
+							var option=$("<option>",({'value':cc.ColorID})).append(cc.Name);
+							setcolorcode.append(option).data(cc.ColorID,cc.Name);
+						}
+					}
 				});
 				$('#cc').append(setcolorcode);
 			}
@@ -2079,20 +2082,22 @@ function LameLogDisplay(){
 
 		getcolortypes: function(){
 			var row=this;
-			$.get('',{cc:''}).done(function(data){
-				var clist=$("<select>").append('<option value=0>&nbsp;</option>');
-				$.each(data, function(key,cc){
-					var option=$("<option>",({'value':cc.ColorID})).append(cc.Name);
-					clist.append(option).data(cc.ColorID,cc.DefaultNote);
-				});
-				clist.change(function(){
-					// default note is associated with this color so set it
-					if($(this).data($(this).val())!=""){
-						row.cnotes.children('input').val($(this).data($(this).val()));
+			$.ajax({url: 'api/v1/colorcode',type: "get",async: false,success: function(data){
+					var clist=$("<select>").append('<option value=0>&nbsp;</option>');
+					for(var i in data.colorcode){
+						var cc=data.colorcode[i];
+						var option=$("<option>",({'value':cc.ColorID})).append(cc.Name);
+						clist.append(option).data(cc.ColorID,cc.DefaultNote);
 					}
-				});
-				row.portcolor.html(clist).find('select').val(row.portcolor.data('default'));
-				clist.combobox();
+					clist.change(function(){
+						// default note is associated with this color so set it
+						if($(this).data($(this).val())!=""){
+							row.cnotes.children('input').val($(this).data($(this).val()));
+						}
+					});
+					row.portcolor.html(clist).find('select').val(row.portcolor.data('default'));
+					clist.combobox();
+				}
 			});
 		},
 

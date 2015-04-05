@@ -867,47 +867,69 @@
 					ccdn.change();
 				}
 			});
+			function FlashGreen(){
+				cc.effect('highlight', {color: 'lightgreen'}, 2500);
+				ccdn.effect('highlight', {color: 'lightgreen'}, 2500);
+			}
+			function FlashRed(){
+				cc.effect('highlight', {color: 'salmon'}, 1500);
+				ccdn.effect('highlight', {color: 'salmon'}, 1500);
+			}
 			row.find('div > input').each(function(){
 				// If a value changes then check it for conflicts, if no conflict update
 				$(this).change(function(){
 					if(cc.val().trim()!=''){
-						$.post('',{cid: cc.attr('data'),cc: cc.val(), ccdn: ccdn.val()}).done(function(data){
-							if(data.trim()=='f'){ // fail
-								$.post('',{cid: cc.attr('data'),cc: cc.val(), ccdn: ccdn.val(),original:data.trim()}).done(function(jsondata){
-									cc.val(jsondata.Name);
-									ccdn.val(jsondata.DefaultNote);
-								});
-								cc.effect('highlight', {color: 'salmon'}, 1500);
-								ccdn.effect('highlight', {color: 'salmon'}, 1500);
-							}else if(data.trim()=='u'){ // updated
-								cc.effect('highlight', {color: 'lightgreen'}, 2500);
-								ccdn.effect('highlight', {color: 'lightgreen'}, 2500);
-								// update media type color pick lists
-								updatechoices();
-							}else{ // created
-								var newitem=blankrow.clone();
-								newitem.find('div:nth-child(2) input').val(cc.val()).attr('data',data.trim());
-								bindrow(newitem);
-								row.before(newitem);
-								newitem.find('div:nth-child(3) input').val(ccdn.val()).focus();
-								if(addrem.attr('id')=='newline'){
-									cc.val('');
-									ccdn.val('');
-								}else{
-									row.remove();
+						// if this is defined we're doing an update operation
+						if(cc.attr('data')){
+							$.post('api/v1/colorcode/'+cc.attr('data'),{ColorID: cc.attr('data'),Name: cc.val(),DefaultNote: ccdn.val()}).done(function(data){
+								if(data.error){
+									$.get('api/v1/colorcode/'+cc.attr('data')).done(function(data){
+										for(var i in data.colorcode){
+											var colorcode=data.colorcode[i];
+											cc.val(colorcode.Name);
+											ccdn.val(colorcode.DefaultNote);
+										}
+									});
+									FlashRed();
+								}else{ // updated
+									FlashGreen();
+									// update media type color pick lists
+									updatechoices();
 								}
-								// update media type color pick lists
-								updatechoices();
-							}
-						});
+							});
+						}else{ // Color code not defined we must be creating a new one
+							$.ajax('api/v1/colorcode/'+cc.val(),{type: 'put',data:{Name: cc.val(),DefaultNote: ccdn.val()}}).done(function(data){
+								if(data.error){
+									FlashRed();
+								}else{
+									var newitem=blankrow.clone();
+									for(var i in data.colorcode){
+										newitem.find('div:nth-child(2) input').val(cc.val()).attr('data',data.colorcode[i].ColorID);
+									}
+									bindrow(newitem);
+									row.before(newitem);
+									newitem.find('div:nth-child(3) input').val(ccdn.val()).focus();
+									if(addrem.attr('id')=='newline'){
+										cc.val('');
+										ccdn.val('');
+									}else{
+										row.remove();
+									}
+									// update media type color pick lists
+									updatechoices();
+								}
+							});
+						}
 					}else if(cc.val().trim()=='' && ccdn.val().trim()=='' && addrem.attr('id')!='newline'){
 						// If both blanks are emptied of values and they were an existing data pair
-						$.post('',{cid: cc.attr('data'),cc: cc.val(), ccdn: ccdn.val(),original:''}).done(function(jsondata){
-							cc.val(jsondata.Name);
-							ccdn.val(jsondata.DefaultNote);
+						$.get('api/v1/colorcode/'+cc.attr('data')).done(function(data){
+							for(var i in data.colorcode){
+								var colorcode=data.colorcode[i];
+								cc.val(colorcode.Name);
+								ccdn.val(colorcode.DefaultNote);
+							}
 						});
-						cc.effect('highlight', {color: 'salmon'}, 1500);
-						ccdn.effect('highlight', {color: 'salmon'}, 1500);
+						FlashRed();
 					}
 				});
 			});
