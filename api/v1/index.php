@@ -509,6 +509,20 @@ $app->get( '/colorcode/:colorid', function($colorid) {
 	}
 });
 
+//
+//	URL:	/api/v1/colorcode/:colorid/timesused
+//	Method:	GET
+//	Params:	colorid (passed in URL)
+//	Returns:  Number of objects using :colorid 
+//
+
+$app->get( '/colorcode/:colorid/timesused', function($colorid) {
+	$response['error']=false;
+	$response['errorcode']=200;
+	$response['colorcode']=ColorCoding::TimesUsed($colorid);
+	
+	echoResponse($response['errorcode'],$response);
+});
 
 /**
   *
@@ -609,6 +623,22 @@ $app->post( '/colorcode/:colorid', function($colorid) use ($app, $person) {
 	}
 
 	$response['error']=($cc->UpdateCode())?false:true;
+	$response['errorcode']=200;
+
+	echoResponse($response['errorcode'],$response);
+});
+
+//
+//	URL:	/api/v1/colorcode/:colorid/replacewith/:newcolorid
+//	Method:	POST
+//	Params:	
+//		required: ColorID, NewColorID
+//		optional: DefaultNote, Name
+//	Returns:  true/false on update operation
+//
+
+$app->post( '/colorcode/:colorid/replacewith/:newcolorid', function($colorid,$newcolorid) use ($app) {
+	$response['error']=(ColorCoding::ResetCode($colorid,$newcolorid))?false:true;
 	$response['errorcode']=200;
 
 	echoResponse($response['errorcode'],$response);

@@ -38,64 +38,6 @@
 		echo(is_file($_POST['fe']))?1:0;
 		exit;
 	}
-	if(isset($_POST['cc'])){  // Cable color codes
-		$col=new ColorCoding();
-		$col->Name=trim($_POST['cc']);
-		$col->DefaultNote=trim($_POST['ccdn']);
-		if(isset($_POST['cid'])){ // If set we're updating an existing entry
-			$col->ColorID=$_POST['cid'];
-			if(isset($_POST['original'])){
-				$col->GetCode();
-			    header('Content-Type: application/json');
-				echo json_encode($col);
-				exit;
-			}
-			if(isset($_POST['clear']) || isset($_POST['change'])){
-				$newcolorid=0;
-				if(isset($_POST['clear'])){
-					ColorCoding::ResetCode($col->ColorID);
-				}else{
-					$newcolorid=$_POST['change'];
-					ColorCoding::ResetCode($col->ColorID,$newcolorid);
-				}
-				$mediatypes=MediaTypes::GetMediaTypeList();
-				foreach($mediatypes as $mt){
-					if($mt->ColorID==$col->ColorID){
-						$mt->ColorID=$newcolorid;
-						$mt->UpdateType();
-					}
-				}
-				if($col->DeleteCode()){
-					echo 'u';
-				}else{
-					echo 'f';
-				}
-				exit;
-			}
-			if($col->UpdateCode()){
-				echo 'u';
-			}else{
-				echo 'f';
-			}
-		}else{
-			if($col->CreateCode()){
-				echo $col->ColorID;
-			}else{
-				echo 'f';
-			}
-		}
-		exit;
-	}
-	if(isset($_POST['ccused'])){
-		$count=ColorCoding::TimesUsed($_POST['ccused']);
-		if($count==0){
-			$col=new ColorCoding();
-			$col->ColorID=$_POST['ccused'];
-			$col->DeleteCode();
-		}
-		echo $count;
-		exit;
-	}
 	if(isset($_POST['mt'])){ // Media Types
 		$mt=new MediaTypes();
 		$mt->MediaType=trim($_POST['mt']);
@@ -152,15 +94,6 @@
 		$output='<option value=""></option>';
 		foreach($codeList as $mt){
 			$output.="<option value=\"$mt->MediaID\">$mt->MediaType</option>";
-		}
-		echo $output;
-		exit;		
-	}
-	if(isset($_POST['cclist'])){
-		$codeList=ColorCoding::GetCodeList();
-		$output='<option value=""></option>';
-		foreach($codeList as $cc){
-			$output.="<option value=\"$cc->ColorID\">$cc->Name</option>";
 		}
 		echo $output;
 		exit;		
@@ -334,7 +267,7 @@
 
 	// Build list of cable color codes
 	$cablecolors="";
-	$colorselector='<select name="mediacolorcode[]"><option value=""></option>';
+	$colorselector='<select name="mediacolorcode[]"><option value="0"></option>';
 
 	$codeList=ColorCoding::GetCodeList();
 	if(count($codeList)>0){
@@ -759,13 +692,18 @@
 
 		// Update color drop lists
 		function updatechoices(){
-			$.post('',{cclist: ''}).done(function(data){
-				$('#mediatypes > div ~ div').each(function(){
-					var list=$(this).find('select[name="mediacolorcode[]"]');
-					var dc=list.val();
-					list.html(data);
-					$(this).find('select[name="mediacolorcode[]"]').val(dc);
-				});
+			$.get('api/v1/colorcode').done(function(data){
+				if(!data.error){
+					$('#mediatypes > div ~ div').each(function(){
+						var list=$(this).find('select[name="mediacolorcode[]"]');
+						var dc=list.val();
+						list.html($('<option>').val('0'));
+						for(var i in data.colorcode){
+							list.append($('<option>').val(data.colorcode[i].ColorID).text(data.colorcode[i].Name));
+						}
+						list.val(dc);
+					});
+				}
 			});
 		}
 
@@ -775,17 +713,22 @@
 			if(!lookup){
 				rowobject.remove();
 			}else{
-				$.post('',{ccused: rowobject.find('div:nth-child(2) input').attr('data')}).done(function(data){
-					if(data.trim()==0){
-						updatechoices();
-						rowobject.effect('explode', {}, 500, function(){
-							$(this).remove();
+				$.get('api/v1/colorcode/'+rowobject.find('div:nth-child(2) input').attr('data')+'/timesused').done(function(data){
+					if(data.colorcode==0){
+						$.ajax('api/v1/colorcode/'+rowobject.find('div:nth-child(2) input').attr('data'),{type: 'delete'}).done(function(data){
+							if(!data.error){
+								updatechoices();
+								rowobject.effect('explode', {}, 500, function(){
+									$(this).remove();
+								});
+							}
 						});
 					}else{
 						var defaultbutton={
 							"<?php echo __("Clear all"); ?>": function(){
-								$.post('',{cid: rowobject.find('div:nth-child(2) input').attr('data'),cc: '', ccdn: '', clear: ''}).done(function(data){
-									if(data.trim()=='u'){ // success
+								$.post('api/v1/colorcode/'+rowobject.find('div:nth-child(2) input').attr('data')+'/replacewith/'+$('#modal select').val()).done(function(data){
+									if(!data.error){ // success
+										$.ajax('api/v1/colorcode/'+rowobject.find('div:nth-child(2) input').attr('data'),{type: 'delete'});
 										$('#modal').dialog("destroy");
 										updatechoices();
 										rowobject.effect('explode', {}, 500, function(){
@@ -801,8 +744,9 @@
 						var replacebutton={
 							"<?php echo __("Replace"); ?>": function(){
 								// send command to replace all connections with x
-								$.post('',{cid: rowobject.find('div:nth-child(2) input').attr('data'),cc: '', ccdn: '', change: $('#modal select').val()}).done(function(data){
-									if(data.trim()=='u'){ // success
+								$.post('api/v1/colorcode/'+rowobject.find('div:nth-child(2) input').attr('data')+'/replacewith/'+$('#modal select').val()).done(function(data){
+									if(!data.error){ // success
+										$.ajax('api/v1/colorcode/'+rowobject.find('div:nth-child(2) input').attr('data'),{type: 'delete'});
 										$('#modal').dialog("destroy");
 										updatechoices();
 										rowobject.effect('explode', {}, 500, function(){

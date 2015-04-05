@@ -1030,9 +1030,16 @@ class ColorCoding {
 		$colorid=intval($colorid);
 		$tocolorid=intval($tocolorid); // it will always be 0 unless otherwise set
 
-		$sql="UPDATE fac_DevicePorts SET ColorID='$tocolorid' WHERE ColorID='$colorid';";
+		$sqlp="UPDATE fac_Ports SET ColorID=$tocolorid WHERE ColorID=$colorid;";
+		$sqlt="UPDATE fac_TemplatePorts SET ColorID=$tocolorid WHERE ColorID=$colorid;";
+		$sqlm="UPDATE fac_MediaTypes SET ColorID=$tocolorid WHERE ColorID=$colorid;";
 
-		if(!$dbh->query($sql)){
+		$error=false;
+		$error=($dbh->query($sqlp))?false:true;
+		$error=($dbh->query($sqlt))?false:true;
+		$error=($dbh->query($sqlm))?false:true;
+
+		if($error){
 			$info=$dbh->errorInfo();
 			error_log("PDO Error: {$info[2]}");
 			return false;
@@ -1047,8 +1054,9 @@ class ColorCoding {
 
 		// get a count of the number of times this color is in use both on ports or assigned
 		// to a template.  
-		$sql="SELECT COUNT(*) + (SELECT COUNT(*) FROM fac_MediaTypes WHERE ColorID=$colorid) 
-			AS Result FROM fac_DevicePorts WHERE ColorID=$colorid";
+		$sql="SELECT COUNT(*) + (SELECT COUNT(*) FROM fac_MediaTypes WHERE ColorID=$colorid) +
+			(SELECT COUNT(*) FROM fac_TemplatePorts WHERE ColorID=$colorid)
+			AS Result FROM fac_Ports WHERE ColorID=$colorid";
 		$count=$dbh->prepare($sql);
 		$count->execute();
 		
