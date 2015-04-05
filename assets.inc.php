@@ -4988,14 +4988,9 @@ class DeviceCustomAttribute {
 	}
 
 	static function GetDeviceCustomAttributeTypeList() {
-		global $dbh;
-		$typeList = array();
-		$sql="SHOW COLUMNS FROM fac_DeviceCustomAttribute LIKE 'AttributeType'";
-		$row = $dbh->query($sql)->fetch();
-		preg_match('#^enum\((.*?)\)$#ism', $row['Type'], $matches);
-		//use of str_getcsv requires php5.3.0+
-		$typeList = str_getcsv($matches[1], ",", "'");
-		return $typeList;
+		$validtypes=array("string","number","integer","date","phone","email","ipv4","url","checkbox");
+
+		return $validtypes;
 	}	
 
 	static function TimesUsed($AttributeID) {

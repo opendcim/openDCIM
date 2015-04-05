@@ -1656,22 +1656,24 @@ function LameLogDisplay(){
 		getdevices: function(target){
 			var row=this;
 
-			var getoptions={deviceid: row.deviceid,pn: this.portnum};
-			$.get("scripts/power.php",getoptions).done(function(data){
+			$.get("api/v1/device?Cabinet="+$('input[name=cabinetid]').val()+"&DeviceType=CDU").done(function(data){
 				var devlist=$("<select>").append('<option value=0>&nbsp;</option>');
 				devlist.change(function(e){
 					row.getports(e);
 				});
 
-				$.each(data, function(i,device){
-					if($(document).data('showdc')==true || $(document).data('showdc')=='enabled'){
-						var rack=$('#datacenters a[href$="cabinetid='+device.CabinetID+'"]');
-						var dc=rack.parentsUntil('li[id^=dc]').last().prev('a').text();
-						devlist.append('<option value='+device.DeviceID+'>'+dc+' '+rack.text()+' '+device.Label+'</option>');
-					}else{
-						devlist.append('<option value='+device.DeviceID+'>'+device.Label+'</option>');
+				if(!data.error){
+					for(var i in data.device){
+						var device=data.device[i];
+						if($(document).data('showdc')==true || $(document).data('showdc')=='enabled'){
+							var rack=$('#datacenters a[href$="cabinetid='+device.CabinetID+'"]');
+							var dc=rack.parentsUntil('li[id^=dc]').last().prev('a').text();
+							devlist.append('<option value='+device.DeviceID+'>'+dc+' '+rack.text()+' '+device.Label+'</option>');
+						}else{
+							devlist.append('<option value='+device.DeviceID+'>'+device.Label+'</option>');
+						}
 					}
-				});
+				}
 				target.html(devlist).find('select').val(target.data('default'));
 				devlist.change();
 			});
@@ -1679,19 +1681,19 @@ function LameLogDisplay(){
 		getports: function(target){
 			var row=this;
 
-			var getoptions={deviceid: row.deviceid,pn: this.portnum};
-			getoptions=$.extend(getoptions, {thisdev: this.cdevice.find('select').val()});
-
-			$.get("scripts/power.php",getoptions).done(function(data){
+			$.get("api/v1/powerport/"+this.cdevice.find('select').val()).done(function(data){
 				var portlist=$("<select>").append('<option value=0>&nbsp;</option>');
 				portlist.change(function(e){
 				});
 
-				$.each(data, function(i,port){
-					if(port.ConnectedDeviceID==null || (port.ConnectedDeviceID==row.deviceid && port.ConnectedPort==row.portnum)){
-						portlist.append('<option value='+port.PortNumber+'>'+port.Label+'</option>');
+				if(!data.error){
+					for(var pn in data.powerport){
+						var port=data.powerport[pn];
+						if(port.ConnectedDeviceID==null || (port.ConnectedDeviceID==row.deviceid && port.ConnectedPort==row.portnum)){
+							portlist.append('<option value='+port.PortNumber+'>'+port.Label+'</option>');
+						}
 					}
-				});
+				}
 				row.cdeviceport.html(portlist).find('select').val(row.cdeviceport.data('default'));
 			});
 		},
@@ -1705,22 +1707,27 @@ function LameLogDisplay(){
 		deleteport: function(e){
 			var row=this;
 			var lastrow=$('.power > div:last-child');
-			$.post('scripts/power.php',{delport: '',deviceid: row.deviceid,pnum: row.portnum}).done(function(data){
-				if(data.toString().trim()==1){
-					if($(document).data('powersupplycount')>$('#powersupplycount').val()){
-						// if this is the last port just remove it
-						if(row.element[0]==lastrow[0]){
-							row.element.remove();
-						// else redraw this port and remove the last one
+			$.ajax({
+				url: "api/v1/powerport/"+row.deviceid,
+				data: {PortNumber: row.portnum},
+				type: 'DELETE',
+				success: function(data) {
+					if(!data.error){
+						if($(document).data('powersupplycount')>$('#powersupplycount').val()){
+							// if this is the last port just remove it
+							if(row.element[0]==lastrow[0]){
+								row.element.remove();
+							// else redraw this port and remove the last one
+							}else{
+								row.destroy();
+								lastrow.remove();
+							}
+							// decrease counter
+							$(document).data('powersupplycount',$(document).data('powersupplycount')-1);
+							if($(document).data('powersupplycount')==$('#powersupplycount').val()){$('#powersupplycount').change();}
 						}else{
-							row.destroy();
-							lastrow.remove();
+							$('#powersupplycount').change();
 						}
-						// decrease counter
-						$(document).data('powersupplycount',$(document).data('powersupplycount')-1);
-						if($(document).data('powersupplycount')==$('#powersupplycount').val()){$('#powersupplycount').change();}
-					}else{
-						$('#powersupplycount').change();
 					}
 				}
 			});
@@ -1728,16 +1735,14 @@ function LameLogDisplay(){
 		save: function(e) {
 			var row=this;
 			// save the port
-			$.post("scripts/power.php",{
-				saveport: '',
-				deviceid: row.deviceid,
-				pnum: row.portnum,
-				pname: (row.portname.children('input').length==0)?row.portname.data('default'):row.portname.children('input').val(),
-				cdevice: row.cdevice.children('select').val(),
-				cdeviceport: row.cdeviceport.children('select').val(),
-				cnotes: row.cnotes.children('input').val(),
+			$.post("api/v1/powerport/"+row.deviceid,{
+				PortNumber: row.portnum,
+				Label: (row.portname.children('input').length==0)?row.portname.data('default'):row.portname.children('input').val(),
+				ConnectedDeviceID: row.cdevice.children('select').val(),
+				ConnectedPort: row.cdeviceport.children('select').val(),
+				Notes: row.cnotes.children('input').val(),
 			}).done(function(data){
-				if(data.toString().trim()==1){
+				if(!data.error){
 					row.destroy(e);
 				}else{
 					// something broke
@@ -1746,17 +1751,20 @@ function LameLogDisplay(){
 		},
 		destroy: function(check) {
 			var row=this;
-			var getoptions={deviceid: row.deviceid,pn: this.portnum, getport: ""};
 
-			$.get("scripts/power.php",getoptions).done(function(data){
-				row.portname.html(data.Label).data('default',data.Label);
-				data.ConnectedDeviceLabel=(data.ConnectedDeviceLabel==null)?'':data.ConnectedDeviceLabel;
-				data.ConnectedPortLabel=(data.ConnectedPortLabel==null)?'':data.ConnectedPortLabel;
-				row.cdevice.html('<a href="devices.php?deviceid='+data.ConnectedDeviceID+'">'+data.ConnectedDeviceLabel+'</a>').data('default',data.ConnectedDeviceID);
-				row.cdeviceport.html(data.ConnectedPortLabel).data('default',data.ConnectedPort);
-				row.cnotes.html(data.Notes).data('default',data.Notes);
-				row.ct.css('padding','');
-				$(row.element[0]).children('div:nth-child(2) ~ div').removeAttr('style');
+			$.get("api/v1/powerport/"+row.deviceid+"?PortNumber="+this.portnum).done(function(data){
+				if(!data.error){
+					var port=data.powerport[row.portnum];
+
+					row.portname.html(port.Label).data('default',port.Label);
+					port.ConnectedDeviceLabel=(port.ConnectedDeviceLabel==null)?'':port.ConnectedDeviceLabel;
+					port.ConnectedPortLabel=(port.ConnectedPortLabel==null)?'':port.ConnectedPortLabel;
+					row.cdevice.html('<a href="devices.php?deviceid='+port.ConnectedDeviceID+'">'+port.ConnectedDeviceLabel+'</a>').data('default',port.ConnectedDeviceID);
+					row.cdeviceport.html(port.ConnectedPortLabel).data('default',port.ConnectedPort);
+					row.cnotes.html(port.Notes).data('default',port.Notes);
+					row.ct.css('padding','');
+					$(row.element[0]).children('div:nth-child(2) ~ div').removeAttr('style');
+				}
 			});
 
 			$(row.element[0]).data('edit',false);

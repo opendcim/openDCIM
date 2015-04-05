@@ -328,6 +328,7 @@ h2 {font-size: 1.5em;text-align: center;}
 h3 {font-size: 1.16em;text-align: center;}
 h3 + h3 {color: red;font-weight: bold;}
 h4 {font-size: 1.1em;text-align: center;}
+h3 + h5 {margin-bottom: 0.5em;}
 a:link, a:hover, a:visited:hover {color:<?php echo $config->ParameterArray['LinkColor']; ?>;}
 a:visited {color: <?php echo $config->ParameterArray['VisitedLinkColor']; ?>;}
 
