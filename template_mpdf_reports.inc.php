@@ -7,10 +7,11 @@
 
     $mpdf=new mPDF('','',0,'',20,15,48,25,10,10); 
     $mpdf->useOnlyCoreFonts = true;    // false is default
-    $mpdf->SetProtection(array('print'));
+    //$mpdf->SetProtection(array('print'));
     $mpdf->SetTitle($header . " " . $subheader);
     $mpdf->SetAuthor($config->ParameterArray["OrgName"]);
     $mpdf->SetDisplayMode('fullpage');
+    $mpdf->useActiveForms = true;
 
     /* Note: typically you would do zebra-striping in the report using an 
        nth-child(even) type of css selector on tr (if you know for sure
