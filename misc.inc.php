@@ -817,7 +817,6 @@ if ( sizeof( $plist ) == 0 ) {
 
 /* This is used on every page so we might as well just init it once */
 $person=People::Current();
-error_log( print_r( $person, true ));
 if (( $person->Disabled || $person->PersonID == 0 ) && $config->ParameterArray["RequireDefinedUser"] == "enabled" ) {
 	header( "Location: unauthorized.php" );
 	exit;

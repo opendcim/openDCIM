@@ -50,7 +50,7 @@ function verifyRequiredParams($required_fields) {
         $app = \Slim\Slim::getInstance();
         $response["error"] = true;
         $response["message"] = 'Required field(s) ' . substr($error_fields, 0, -2) . ' is missing or empty';
-        echoRespnse(400, $response);
+        echoResponse(400, $response);
         $app->stop();
     }
 }
@@ -63,7 +63,7 @@ function validateEmail($email) {
     if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
         $response["error"] = true;
         $response["message"] = 'Email address is not valid';
-        echoRespnse(400, $response);
+        echoResponse(400, $response);
         $app->stop();
     }
 }
@@ -73,7 +73,7 @@ function validateEmail($email) {
  * @param String $status_code Http response code
  * @param Int $response Json response
  */
-function echoRespnse($status_code, $response) {
+function echoResponse($status_code, $response) {
     $app = \Slim\Slim::getInstance();
     // Http response code
     $app->status($status_code);
@@ -105,7 +105,7 @@ function authenticate(\Slim\Route $route) {
             // api key is not present in users table
             $response["error"] = true;
             $response["message"] = "Access Denied. Invalid Api key";
-            echoRespnse(401, $response);
+            echoResponse(401, $response);
             $app->stop();
         } else {
             global $user_id;
@@ -122,7 +122,7 @@ function authenticate(\Slim\Route $route) {
         // api key is missing in header
         $response["error"] = true;
         $response["message"] = "Api key is misssing";
-        echoRespnse(400, $response);
+        echoResponse(400, $response);
         $app->stop();
     }
 }
@@ -150,7 +150,7 @@ $app->get('/people', function() {
 		$response['error'] = true;
 		$response['errorcode'] = 400;
 		$response['message'] = "Insufficient privilege level";
-		echoRespnse(400, $response);
+		echoResponse(400, $response);
 	} else {
 		$pList = $person->GetUserList();
 		$response['error'] = false;
@@ -164,7 +164,7 @@ $app->get('/people', function() {
 			array_push( $response['people'], $tmp );
 		}
 		
-		echoRespnse(200, $response);
+		echoResponse(200, $response);
 	}
 });
 
@@ -191,7 +191,7 @@ $app->get('/datacenter', function() {
 		array_push( $response['datacenter'], $tmp );
 	}
 	
-	echoRespnse( 200, $response );
+	echoResponse( 200, $response );
 });
 
 //
@@ -208,7 +208,7 @@ $app->get( '/datacenter/:id', function( $DataCenterID ) {
 		$response['error'] = true;
 		$response['errorcode'] = 404;
 		$response['message'] = 'The requested resource does not exist.';
-		echoRespnse(404, $response);
+		echoResponse(404, $response);
 	} else {
 		$response['error'] = false;
 		$response['errorcode'] = 200;
@@ -219,7 +219,7 @@ $app->get( '/datacenter/:id', function( $DataCenterID ) {
 		}
 		array_push( $response['datacenter'], $tmp );
 		
-		echoRespnse(200, $response);
+		echoResponse(200, $response);
 	}
 });
 
@@ -230,10 +230,13 @@ $app->get( '/datacenter/:id', function( $DataCenterID ) {
 //	Returns: All cabinet information
 //
 
-$app->get( '/cabinet', function() {
+$app->get( '/cabinet', function() use ($app) {
 	$cab = new Cabinet;
 	$dc = new DataCenter();
-	$cList = $cab->ListCabinets();
+	foreach($app->request->get() as $prop => $val){
+		$cab->$prop=$val;
+	}
+	$cList = $cab->Search();
 	
 	$response['error'] = false;
 	$response['errorcode'] = 200;
@@ -254,7 +257,7 @@ $app->get( '/cabinet', function() {
 		array_push( $response['cabinet'], $tmp );
 	}
 	
-	echoRespnse( 200, $response );
+	echoResponse( 200, $response );
 });
 
 //
@@ -271,7 +274,7 @@ $app->get( '/cabinet/:cabinetid', function($cabinetid) {
 		$response['error'] = true;
 		$response['errorcode'] = 404;
 		$response['message'] = 'No cabinet found with CabinetID of '. $cabinetid;
-		echoRespnse( 404, $response );
+		echoResponse( 404, $response );
 	} else {
 		$response['error'] = false;
 		$response['errorcode'] = 200;
@@ -288,7 +291,7 @@ $app->get( '/cabinet/:cabinetid', function($cabinetid) {
 		
 		array_push( $response['cabinet'], $tmp );
 		
-		echoRespnse( 200, $response );
+		echoResponse( 200, $response );
 	}
 });
 
@@ -324,7 +327,7 @@ $app->get( '/cabinet/bydc/:datacenterid', function($datacenterid) {
 		array_push( $response['cabinet'], $tmp );
 	}
 	
-	echoRespnse( 200, $response );
+	echoResponse( 200, $response );
 });
 
 //
@@ -359,7 +362,7 @@ $app->get( '/cabinet/bydept/:deptid', function($deptid) {
 		array_push( $response['cabinet'], $tmp );
 	}
 	
-	echoRespnse( 200, $response );
+	echoResponse( 200, $response );
 });
 
 //
@@ -369,24 +372,17 @@ $app->get( '/cabinet/bydept/:deptid', function($deptid) {
 //	Returns:  All devices for which the user's rights have access to view
 //
 
-$app->get( '/device', function() {
-	$dev = new Device();
-	$devList = $dev->GetDeviceList();
+$app->get( '/device', function() use ($app) {
+	$dev=new Device();
 	
-	$response['error'] = false;
-	$response['errorcode'] = 200;
-	$response['device'] = array();
-	
-	foreach ( $devList as $d ) {
-		$tmp = array();
-		foreach( $d as $prop=>$value ) {
-			$tmp[$prop] = $value;
-		}
-		
-		array_push( $response['device'], $tmp );
+	$response['error']=false;
+	$response['errorcode']=200;
+	foreach($app->request->get() as $prop => $val){
+		$dev->$prop=$val;
 	}
-	
-	echoRespnse( 200, $response );
+	$response['device']=$dev->Search();
+
+	echoResponse(200,$response);
 });
 
 //
@@ -397,56 +393,21 @@ $app->get( '/device', function() {
 //
 
 $app->get( '/device/:deviceid', function($deviceid) {
-	$dev = new Device();
-	$dev->DeviceID = intval($deviceid);
+	$dev=new Device();
+	$dev->DeviceID=intval($deviceid);
 	
-	if ( ! $dev->GetDevice() ) {
-		$response['error'] = true;
-		$response['errorcode'] = 404;
-		$response['message'] = 'No device found with DeviceID ' . $deviceid;
-		echoRespnse( 404, $response );
-	} else {
-		$response['error'] = false;
-		$response['errorcode'] = 200;
-		$response['device'] = array();
+	if(!$dev->GetDevice()){
+		$response['error']=true;
+		$response['errorcode']=404;
+		$response['message']=__("No device found with DeviceID").$deviceid;
+		echoResponse(404,$response);
+	}else{
+		$response['error']=false;
+		$response['errorcode']=200;
+		$response['device']=$dev;
 		
-		$tmp = array();
-		foreach( $dev as $prop=>$value ) {
-			$tmp[$prop] = $value;
-		}
-		
-		array_push( $response['device'], $tmp );
-		
-		echoRespnse( 200, $response );
+		echoResponse(200,$response);
 	}
-});
-
-//
-//	URL:	/api/v1/device/bycabinet/:cabinetid
-//	Method:	GET
-//	Params:	cabinetid (passed in URL)
-//	Returns:  All devices for which the user's rights have access to view
-//
-
-$app->get( '/device/bycabinet/:cabinetid', function( $cabinetid ) {
-	$dev = new Device();
-	$dev->Cabinet = intval($cabinetid);
-	$devList = $dev->ViewDevicesByCabinet(true);
-	
-	$response['error'] = false;
-	$response['errorcode'] = 200;
-	$response['device'] = array();
-
-	foreach ( $devList as $d ) {
-		$tmp = array();
-		foreach( $d as $prop=>$value ) {
-			$tmp[$prop] = $value;
-		}
-		
-		array_push( $response['device'], $tmp );
-	}
-		
-	echoRespnse( 200, $response );
 });
 
 //
@@ -457,58 +418,117 @@ $app->get( '/device/bycabinet/:cabinetid', function( $cabinetid ) {
 //
 
 $app->get( '/device/bydatacenter/:datacenterid', function( $datacenterid ) {
-	$dev = new Device();
-	$devList = $dev->GetDeviceList( intval($datacenterid) );
+	$dev=new Device();
 	
-	$response['error'] = false;
-	$response['errorcode'] = 200;
-	$response['device'] = array();
+	$response['error']=false;
+	$response['errorcode']=200;
+	$response['device']=$dev->GetDeviceList(intval($datacenterid));
 
-	foreach ( $devList as $d ) {
-		$tmp = array();
-		foreach( $d as $prop=>$value ) {
-			$tmp[$prop] = $value;
-		}
-		
-		array_push( $response['device'], $tmp );
-	}
-		
-	echoRespnse( 200, $response );
+	echoResponse( 200, $response );
 });
 
 //
-//	URL:	/api/v1/device/byowner/:departmentid
+//	URL:	/api/v1/powerport/:deviceid
 //	Method:	GET
-//	Params:	departmentid (passed in URL)
-//	Returns:  All devices owned by the specified department
+//	Params:	deviceid (required), portnumber (optional)
+//	Returns:  All power ports for a device or a specific port
 //
 
-$app->get( '/device/byowner/:departmentid', function( $departmentid ) {
-	$dev = new Device();
-	$dev->Owner = intval($departmentid);
-	$devList = $dev->GetDevicesByOwner();
+$app->get( '/powerport/:deviceid', function($deviceid) use ($app) {
+	$pp=new PowerPorts();
 	
-	$response['error'] = false;
-	$response['errorcode'] = 200;
-	$response['device'] = array();
-
-	foreach ( $devList as $d ) {
-		$tmp = array();
-		foreach( $d as $prop=>$value ) {
-			$tmp[$prop] = $value;
-		}
-		
-		array_push( $response['device'], $tmp );
+	$response['error']=false;
+	$response['errorcode']=200;
+	$pp->DeviceID=$deviceid;
+	foreach($app->request->get() as $prop => $val){
+		$pp->$prop=$val;
 	}
+
+	if($pp->PortNumber){
+		if(!$pp->getPort()){
+			$response['error']=true;
+		}
+		// This is to cut down on api calls to get the connected device and port names
+		if($pp->ConnectedDeviceID){
+			$dev=new Device();
+			$dpp=new PowerPorts();
+			$dev->DeviceID=$dpp->DeviceID=$pp->ConnectedDeviceID;
+			$dpp->PortNumber=$pp->ConnectedPort;
+			$dev->GetDevice();
+			$dpp->getPort();
+			$pp->ConnectedDeviceLabel=$dev->Label;
+			$pp->ConnectedPortLabel=$dpp->Label;
+		}
+
+		$response['powerport'][$pp->PortNumber]=$pp;
+	}else{
+		$response['powerport']=$pp->getPorts();
+	}
+
+	echoResponse($response['errorcode'],$response);
+});
+
+
+//
+//	URL:	/api/v1/colorcode
+//	Method:	GET
+//	Params:	none
+//	Returns:  All defined color codes 
+//
+
+$app->get( '/colorcode', function() {
+	$response['error']=false;
+	$response['errorcode']=200;
+	$response['colorcode']=ColorCoding::GetCodeList();;
 		
-	echoRespnse( 200, $response );
+	echoResponse($response['errorcode'],$response);
+});
+
+//
+//	URL:	/api/v1/colorcode/:colorid
+//	Method:	GET
+//	Params:	colorid (passed in URL)
+//	Returns:  All defined color codes matching :colorid 
+//
+
+$app->get( '/colorcode/:colorid', function($colorid) {
+	$cc=new ColorCoding();
+	$cc->ColorID=$colorid;
+	
+	if(!$cc->GetCode()){
+		$response['error']=true;
+		$response['errorcode']=404;
+		$response['message']=__("No color code found with ColorID")." $cc->ColorID";
+		echoResponse(404,$response);
+	}else{
+		$response['error']=false;
+		$response['errorcode']=200;
+		$response['colorcode'][$cc->ColorID]=$cc;
+		
+		echoResponse(200,$response);
+	}
+});
+
+//
+//	URL:	/api/v1/colorcode/:colorid/timesused
+//	Method:	GET
+//	Params:	colorid (passed in URL)
+//	Returns:  Number of objects using :colorid 
+//
+
+$app->get( '/colorcode/:colorid/timesused', function($colorid) {
+	$response['error']=false;
+	$response['errorcode']=200;
+	$response['colorcode']=ColorCoding::TimesUsed($colorid);
+	
+	echoResponse($response['errorcode'],$response);
 });
 
 /**
   *
   *		API POST Methods go here
   *
-  *		POST Methods are for creating new records
+  *		POST Methods are for updating existing records
   *
   **/
 
@@ -516,79 +536,119 @@ $app->get( '/device/byowner/:departmentid', function( $departmentid ) {
 //	URL:	/api/v1/people
 //	Method: POST
 //	Params: userid (required)
-//			lastname, firstname, phone1, phone2, phone3, email, adminowndevices, readaccess, writeaccess,
-//			deleteaccess, contactadmin, rackrequest, rackadmin, siteadmin
-//	Returns: record as created
+//			lastname, firstname, phone1, phone2, phone3, email, adminowndevices, 
+//			readaccess, writeaccess, deleteaccess, contactadmin, rackrequest, 
+//			rackadmin, siteadmin
+//	Returns: record as modified
 //
 
-$app->post('/people', function() use ($app) {
+$app->post('/people/:userid', function($userid) use ($app) {
 	global $person;
 	
 	$person->GetUserRights();
-	if ( !$person->ContactAdmin ) {
-		$response['error'] = true;
-		$response['errorcode'] = 400;
-		$response['message'] = "Insufficient privilege level";
-		echoRespnse(400, $response);
+	if(!$person->ContactAdmin){
+		$response['error']=true;
+		$response['errorcode']=400;
+		$response['message']=__("Insufficient privilege level");
+		echoResponse($response['errorcode'],$response);
 		$app->stop();
 	}
-	
-	// Only one field is required - all others are optional
-	verifyRequiredParams(array('userid'));
-	
-	$response = array();
-	$p = new People();
-	$p->UserID = $app->request->post('userid');
-	if ( $p->GetPersonByUserID() ) {
-		$response['error'] = true;
-		$response['errorcode'] = 403;
-		$response['message'] = 'UserID already in database.  Use the update API to modify record.';
-		echoRespnse(403, $response );
+
+	$response=array();
+	$p=new People();
+	$p->UserID=$userid;
+	if(!$p->GetPersonByUserID()){
+		$response['error']=true;
+		$response['errorcode']=404;
+		$response['message']=__("UserID not found in database.");
+		echoResponse($response['errorcode'],$response);
 	} else {	
 		// Slim Framework will simply return null for any variables that were not passed, so this is safe to call without blowing up the script
-		$p->LastName = $app->request->post('lastname');
-		$p->FirstName = $app->request->post('firstname');
-		$p->Phone1 = $app->request->post('phone1');
-		$p->Phone2 = $app->request->post('phone2');
-		$p->Phone3 = $app->request->post('phone3');
-		$p->Email = $app->request->post('email');
-		$p->AdminOwnDevices = $app->request->post('adminowndevices');
-		$p->ReadAccess = $app->request->post('readaccess');
-		$p->WriteAccess = $app->request->post('writeaccess');
-		$p->DeleteAccess = $app->request->post('deleteaccess');
-		$p->ContactAdmin = $app->request->post('contactadmin');
-		$p->RackRequest = $app->request->post('rackrequest');
-		$p->RackAdmin = $app->request->post('rackadmin');
-		$p->SiteAdmin = $app->request->post('siteadmin');
-		$p->Disabled = false;
+		foreach($p as $prop){
+			$p->$prop=$app->request->post($prop);
+		}
+		$p->Disabled=false;
 		
-		$p->CreatePerson();
-		
-		if ( $p->PersonID == false ) {
-			$response['error'] = true;
-			$response['errorcode'] = 403;
-			$response['message'] = 'Unable to create People resource with the given parameters.';
-			echoRespnse(403,$response);
-		} else {
-			$response['error'] = false;
-			$responde['errorcode'] = 200;
-			$response['message'] = 'People resource created successfully.';
-			$response['people'] = array();
-			foreach( $p as $prop=>$value ) {
-				$tmp[$prop] = $value;
-			}
-			array_push( $response['people'], $tmp );
-			echoRespnse(200,$response);
+		if(!$p->UpdatePerson()){
+			$response['error']=true;
+			$response['errorcode']=403;
+			$response['message']=__("Unable to update People resource with the given parameters.");
+			echoResponse($response['errorcode'],$response);
+		}else{
+			$response['error']=false;
+			$response['errorcode']=200;
+			$response['message']=sprintf(__('People resource for UserID=%1$s updated successfully.'),$p->UserID);
+			$response['people']=$p;
+
+			echoResponse($response['errorcode'],$response);
 		}
 	}
 });
 
+//
+//	URL:	/api/v1/powerport/:deviceid
+//	Method:	POST
+//	Params:	
+//		required: DeviceID, PortNumber
+//		optional: Label, ConnectedDeviceID, ConnectedPort, Notes
+//	Returns:  true/false on update operation
+//
+
+$app->post( '/powerport/:deviceid', function($deviceid) use ($app, $person) {
+	$pp=new PowerPorts();
+	$pp->DeviceID=$deviceid;
+	foreach($app->request->post() as $prop => $val){
+		$pp->$prop=$val;
+	}
+
+	$response['error']=($pp->updatePort())?false:true;
+	$response['errorcode']=200;
+
+	echoResponse($response['errorcode'],$response);
+});
+
+//
+//	URL:	/api/v1/colorcode/:colorid
+//	Method:	POST
+//	Params:	
+//		required: ColorID, Name
+//		optional: DefaultNote 
+//	Returns:  true/false on update operation
+//
+
+$app->post( '/colorcode/:colorid', function($colorid) use ($app, $person) {
+	$cc=new ColorCoding();
+	foreach($app->request->post() as $prop => $val){
+		$cc->$prop=$val;
+	}
+
+	$response['error']=($cc->UpdateCode())?false:true;
+	$response['errorcode']=200;
+
+	echoResponse($response['errorcode'],$response);
+});
+
+//
+//	URL:	/api/v1/colorcode/:colorid/replacewith/:newcolorid
+//	Method:	POST
+//	Params:	
+//		required: ColorID, NewColorID
+//		optional: DefaultNote, Name
+//	Returns:  true/false on update operation
+//
+
+$app->post( '/colorcode/:colorid/replacewith/:newcolorid', function($colorid,$newcolorid) use ($app) {
+	$response['error']=(ColorCoding::ResetCode($colorid,$newcolorid))?false:true;
+	$response['errorcode']=200;
+
+	echoResponse($response['errorcode'],$response);
+});
 
 /**
   *
   *		API PUT Methods go here
   *
-  *		PUT Methods are for updating existing records
+  *		PUT Methods are for creating new records 
   *
   **/
 
@@ -596,12 +656,13 @@ $app->post('/people', function() use ($app) {
 //	URL:	/api/v1/people/:userid
 //	Method: PUT
 //	Params: userid (required, passed as :userid in URL)
-//			lastname, firstname, phone1, phone2, phone3, email, adminowndevices, readaccess, writeaccess,
-//			deleteaccess, contactadmin, rackrequest, rackadmin, siteadmin
-//	Returns: record as modified
+//			lastname, firstname, phone1, phone2, phone3, email, adminowndevices, 
+//			readaccess, writeaccess, deleteaccess, contactadmin, rackrequest, 
+//			rackadmin, siteadmin
+//	Returns: record as created
 //
   
-$app->put('/people/:userid', function($userid) use ($app) {
+$app->put('/people', function() use ($app) {
 	global $person;
 	
 	$person->GetUserRights();
@@ -609,53 +670,159 @@ $app->put('/people/:userid', function($userid) use ($app) {
 		$response['error'] = true;
 		$response['errorcode'] = 400;
 		$response['message'] = "Insufficient privilege level";
-		echoRespnse(400, $response);
+		echoResponse(400, $response);
 		$app->stop();
 	}
-
+	
+	// Only one field is required - all others are optional
+	verifyRequiredParams(array('UserID'));
+	
 	$response = array();
 	$p = new People();
-	$p->UserID = $userid;
-	if ( ! $p->GetPersonByUserID() ) {
-		$response['error'] = true;
-		$response['errorcode'] = 404;
-		$response['message'] = 'UserID not found in database.';
-		echoRespnse(404, $response );
+	$p->UserID = $app->request->put('UserID');
+	if($p->GetPersonByUserID()){
+		$response['error']=true;
+		$response['errorcode']=403;
+		$response['message']=__("UserID already in database.  Use the update API to modify record.");
+		echoResponse(403, $response );
 	} else {	
 		// Slim Framework will simply return null for any variables that were not passed, so this is safe to call without blowing up the script
-		$p->LastName = $app->request->put('lastname');
-		$p->FirstName = $app->request->put('firstname');
-		$p->Phone1 = $app->request->put('phone1');
-		$p->Phone2 = $app->request->put('phone2');
-		$p->Phone3 = $app->request->put('phone3');
-		$p->Email = $app->request->put('email');
-		$p->AdminOwnDevices = $app->request->put('adminowndevices');
-		$p->ReadAccess = $app->request->put('readaccess');
-		$p->WriteAccess = $app->request->put('writeaccess');
-		$p->DeleteAccess = $app->request->put('deleteaccess');
-		$p->ContactAdmin = $app->request->put('contactadmin');
-		$p->RackRequest = $app->request->put('rackrequest');
-		$p->RackAdmin = $app->request->put('rackadmin');
-		$p->SiteAdmin = $app->request->put('siteadmin');
+		foreach($p as $prop){
+			$p->$prop=$app->request->put($prop);
+		}
 		$p->Disabled = false;
 		
-		if ( ! $p->UpdatePerson() ) {
-			$response['error'] = true;
-			$response['errorcode'] = 403;
-			$response['message'] = 'Unable to update People resource with the given parameters.';
-			echoRespnse(403,$response);
-		} else {
-			$response['error'] = false;
-			$response['errorcode'] = 200;
-			$response['message'] = 'People resource for UserID=' . $p->UserID . ' updated successfully.';
-			$response['people'] = array();
-			foreach( $p as $prop=>$value ) {
-				$tmp[$prop] = $value;
-			}
-			array_push( $response['people'], $tmp );
-			echoRespnse(200,$response);
+		$p->CreatePerson();
+		
+		if($p->PersonID==false){
+			$response['error']=true;
+			$response['errorcode']=403;
+			$response['message']=__("Unable to create People resource with the given parameters.");
+			echoResponse(403,$response);
+		}else{
+			$response['error']=false;
+			$responde['errorcode']=200;
+			$response['message']=__("People resource created successfully.");
+			$response['people']=$p;
+
+			echoResponse(200,$response);
 		}
 	}
+});
+
+//
+//	URL:	/api/v1/colorcode/:name
+//	Method:	PUT
+//	Params: 
+//		Required: Name
+//		Optional: DefaultNote
+//	Returns: record as created
+//
+
+$app->put( '/colorcode/:colorname', function($colorname) use ($app) {
+	$cc=new ColorCoding();
+	foreach($app->request->put() as $prop => $val){
+		$cc->$prop=$val;
+	}
+
+	if(!$cc->CreateCode()){
+		$response['error']=true;
+		$response['errorcode']=403;
+		$response['message']=__("Error creating new color.");
+	}else{
+		$response['error']=false;
+		$response['errorcode']=200;
+		$response['message']=__("New color created successfully.");
+		$response['colorcode'][$cc->ColorID]=$cc;
+	}
+	echoResponse(200,$response);
+});
+
+
+/**
+  *
+  *		API DELETE Methods go here
+  *
+  *		DELETE Methods are for removing records 
+  *
+  **/
+
+//
+//	URL:	/api/v1/powerport/:deviceid
+//	Method:	DELETE
+//	Params:	
+//		required: DeviceID, PortNumber
+//		optional: Label, ConnectedDeviceID, ConnectedPort, Notes
+//	Returns:  true/false on update operation
+//
+
+$app->delete( '/powerport/:deviceid', function($deviceid) use ($app, $person) {
+	$pp=new PowerPorts();
+	$pp->DeviceID=$deviceid;
+	foreach($app->request->delete() as $prop => $val){
+		$pp->$prop=$val;
+	}
+
+	function updatedevice($deviceid){
+		$dev=new Device();
+		$dev->DeviceID=$deviceid;
+		$dev->GetDevice();
+		$dev->PowerSupplyCount=$dev->PowerSupplyCount-1;
+		$dev->UpdateDevice();
+	}
+
+	// If this port isn't the last port then we're gonna shuffle ports to keep the ids in orderish
+	$lastport=end($pp->getPorts());
+	if($lastport->PortNumber!=$pp->PortNumber){
+		foreach($lastport as $prop=>$value){
+			if($prop!="PortNumber"){
+				$pp->$prop=$value;
+			}
+		}
+		if($pp->updatePort()){
+			if($lastport->removePort()){
+				updatedevice($pp->DeviceID);
+				$response['error']=false;
+			}else{
+				$response['error']=true;
+			}
+		}else{
+			$response['error']=true;
+		}
+	}else{ // Last available port, just delete it.
+		if($pp->removePort()){
+			updatedevice($pp->DeviceID);
+			$response['error']=false;
+		}else{
+			$response['error']=true;
+		}
+	}
+
+	$response['errorcode']=200;
+
+	echoResponse($response['errorcode'],$response);
+});
+
+//
+//	URL:	/api/v1/colorcode/:colorid
+//	Method:	DELETE
+//	Params:	colorid (passed in URL)
+//	Returns:  true/false on update operation
+//
+
+$app->delete( '/colorcode/:colorid', function($colorid) {
+	$cc=new ColorCoding();
+	$cc->ColorID=$colorid;
+	
+	if(!$cc->DeleteCode()){
+		$response['error']=true;
+		$response['errorcode']=404;
+		$response['message']=__("Failed to delete color with ColorID")." $cc->ColorID";
+	}else{
+		$response['error']=false;
+		$response['errorcode']=200;
+	}
+	echoResponse(200,$response);
 });
 
 $app->run();

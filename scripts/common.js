@@ -72,6 +72,18 @@ function setCookie(c_name, value) {
 	document.cookie=c_name + "=" + c_value;
 }
 
+// Function to get a cookie
+function getCookie(c_name) {
+	var name = c_name + "=";
+	var ca = document.cookie.split(';');
+	for(var i=0; i<ca.length; i++) {
+		var c = ca[i];
+		while (c.charAt(0)==' ') c = c.substring(1);
+		if (c.indexOf(name) == 0) return c.substring(name.length,c.length);
+	}
+	return "";
+} 
+
 // a way too specific function for scrolling a div
 function scrollolog(){
 	var olog=$('#olog .table').parent('div');
@@ -560,10 +572,11 @@ function buildportstable(){
 		}
 	}
 
-	$.ajax({url: '',type: "get",async: false,data: {cc: ''},success: function(data){
-			$.each(data, function(i,color){
+	$.ajax({url: 'api/v1/colorcode',type: "get",async: false,success: function(data){
+			for(var i in data.colorcode){
+				var color=data.colorcode[i];
 				colorcodes.append($('<option>').val(color.ColorID).text(color.Name));
-			});
+			}
 		}
 	});
 
@@ -1206,11 +1219,13 @@ function LameLogDisplay(){
 
 			// Populate color code choices
 			function massedit_cc(){
-				$.get('',{cc:''}).done(function(data){
-					$.each(data, function(key,cc){
-						var option=$("<option>",({'value':cc.ColorID})).append(cc.Name);
-						setcolorcode.append(option).data(cc.ColorID,cc.Name);
-					});
+				$.ajax({url: 'api/v1/colorcode',type: "get",async: false,success: function(data){
+						for(var i in data.colorcode){
+							var cc=data.colorcode[i];
+							var option=$("<option>",({'value':cc.ColorID})).append(cc.Name);
+							setcolorcode.append(option).data(cc.ColorID,cc.Name);
+						}
+					}
 				});
 				$('#cc').append(setcolorcode);
 			}
@@ -1491,7 +1506,7 @@ function LameLogDisplay(){
 					input.autocomplete( "search", "" );
 				});
 		},
- 
+
 		_source: function(request,response){
 			var matcher=new RegExp( $.ui.autocomplete.escapeRegex(request.term), "i" );
 			var cachetest=this.element.children("option");
@@ -1644,22 +1659,24 @@ function LameLogDisplay(){
 		getdevices: function(target){
 			var row=this;
 
-			var getoptions={deviceid: row.deviceid,pn: this.portnum};
-			$.get("scripts/power.php",getoptions).done(function(data){
+			$.get("api/v1/device?Cabinet="+$('input[name=cabinetid]').val()+"&DeviceType=CDU").done(function(data){
 				var devlist=$("<select>").append('<option value=0>&nbsp;</option>');
 				devlist.change(function(e){
 					row.getports(e);
 				});
 
-				$.each(data, function(i,device){
-					if($(document).data('showdc')==true || $(document).data('showdc')=='enabled'){
-						var rack=$('#datacenters a[href$="cabinetid='+device.CabinetID+'"]');
-						var dc=rack.parentsUntil('li[id^=dc]').last().prev('a').text();
-						devlist.append('<option value='+device.DeviceID+'>'+dc+' '+rack.text()+' '+device.Label+'</option>');
-					}else{
-						devlist.append('<option value='+device.DeviceID+'>'+device.Label+'</option>');
+				if(!data.error){
+					for(var i in data.device){
+						var device=data.device[i];
+						if($(document).data('showdc')==true || $(document).data('showdc')=='enabled'){
+							var rack=$('#datacenters a[href$="cabinetid='+device.CabinetID+'"]');
+							var dc=rack.parentsUntil('li[id^=dc]').last().prev('a').text();
+							devlist.append('<option value='+device.DeviceID+'>'+dc+' '+rack.text()+' '+device.Label+'</option>');
+						}else{
+							devlist.append('<option value='+device.DeviceID+'>'+device.Label+'</option>');
+						}
 					}
-				});
+				}
 				target.html(devlist).find('select').val(target.data('default'));
 				devlist.change();
 			});
@@ -1667,19 +1684,19 @@ function LameLogDisplay(){
 		getports: function(target){
 			var row=this;
 
-			var getoptions={deviceid: row.deviceid,pn: this.portnum};
-			getoptions=$.extend(getoptions, {thisdev: this.cdevice.find('select').val()});
-
-			$.get("scripts/power.php",getoptions).done(function(data){
+			$.get("api/v1/powerport/"+this.cdevice.find('select').val()).done(function(data){
 				var portlist=$("<select>").append('<option value=0>&nbsp;</option>');
 				portlist.change(function(e){
 				});
 
-				$.each(data, function(i,port){
-					if(port.ConnectedDeviceID==null || (port.ConnectedDeviceID==row.deviceid && port.ConnectedPort==row.portnum)){
-						portlist.append('<option value='+port.PortNumber+'>'+port.Label+'</option>');
+				if(!data.error){
+					for(var pn in data.powerport){
+						var port=data.powerport[pn];
+						if(port.ConnectedDeviceID==null || (port.ConnectedDeviceID==row.deviceid && port.ConnectedPort==row.portnum)){
+							portlist.append('<option value='+port.PortNumber+'>'+port.Label+'</option>');
+						}
 					}
-				});
+				}
 				row.cdeviceport.html(portlist).find('select').val(row.cdeviceport.data('default'));
 			});
 		},
@@ -1693,22 +1710,27 @@ function LameLogDisplay(){
 		deleteport: function(e){
 			var row=this;
 			var lastrow=$('.power > div:last-child');
-			$.post('scripts/power.php',{delport: '',deviceid: row.deviceid,pnum: row.portnum}).done(function(data){
-				if(data.toString().trim()==1){
-					if($(document).data('powersupplycount')>$('#powersupplycount').val()){
-						// if this is the last port just remove it
-						if(row.element[0]==lastrow[0]){
-							row.element.remove();
-						// else redraw this port and remove the last one
+			$.ajax({
+				url: "api/v1/powerport/"+row.deviceid,
+				data: {PortNumber: row.portnum},
+				type: 'DELETE',
+				success: function(data) {
+					if(!data.error){
+						if($(document).data('powersupplycount')>$('#powersupplycount').val()){
+							// if this is the last port just remove it
+							if(row.element[0]==lastrow[0]){
+								row.element.remove();
+							// else redraw this port and remove the last one
+							}else{
+								row.destroy();
+								lastrow.remove();
+							}
+							// decrease counter
+							$(document).data('powersupplycount',$(document).data('powersupplycount')-1);
+							if($(document).data('powersupplycount')==$('#powersupplycount').val()){$('#powersupplycount').change();}
 						}else{
-							row.destroy();
-							lastrow.remove();
+							$('#powersupplycount').change();
 						}
-						// decrease counter
-						$(document).data('powersupplycount',$(document).data('powersupplycount')-1);
-						if($(document).data('powersupplycount')==$('#powersupplycount').val()){$('#powersupplycount').change();}
-					}else{
-						$('#powersupplycount').change();
 					}
 				}
 			});
@@ -1716,16 +1738,14 @@ function LameLogDisplay(){
 		save: function(e) {
 			var row=this;
 			// save the port
-			$.post("scripts/power.php",{
-				saveport: '',
-				deviceid: row.deviceid,
-				pnum: row.portnum,
-				pname: (row.portname.children('input').length==0)?row.portname.data('default'):row.portname.children('input').val(),
-				cdevice: row.cdevice.children('select').val(),
-				cdeviceport: row.cdeviceport.children('select').val(),
-				cnotes: row.cnotes.children('input').val(),
+			$.post("api/v1/powerport/"+row.deviceid,{
+				PortNumber: row.portnum,
+				Label: (row.portname.children('input').length==0)?row.portname.data('default'):row.portname.children('input').val(),
+				ConnectedDeviceID: row.cdevice.children('select').val(),
+				ConnectedPort: row.cdeviceport.children('select').val(),
+				Notes: row.cnotes.children('input').val(),
 			}).done(function(data){
-				if(data.toString().trim()==1){
+				if(!data.error){
 					row.destroy(e);
 				}else{
 					// something broke
@@ -1734,17 +1754,20 @@ function LameLogDisplay(){
 		},
 		destroy: function(check) {
 			var row=this;
-			var getoptions={deviceid: row.deviceid,pn: this.portnum, getport: ""};
 
-			$.get("scripts/power.php",getoptions).done(function(data){
-				row.portname.html(data.Label).data('default',data.Label);
-				data.ConnectedDeviceLabel=(data.ConnectedDeviceLabel==null)?'':data.ConnectedDeviceLabel;
-				data.ConnectedPortLabel=(data.ConnectedPortLabel==null)?'':data.ConnectedPortLabel;
-				row.cdevice.html('<a href="devices.php?deviceid='+data.ConnectedDeviceID+'">'+data.ConnectedDeviceLabel+'</a>').data('default',data.ConnectedDeviceID);
-				row.cdeviceport.html(data.ConnectedPortLabel).data('default',data.ConnectedPort);
-				row.cnotes.html(data.Notes).data('default',data.Notes);
-				row.ct.css('padding','');
-				$(row.element[0]).children('div:nth-child(2) ~ div').removeAttr('style');
+			$.get("api/v1/powerport/"+row.deviceid+"?PortNumber="+this.portnum).done(function(data){
+				if(!data.error){
+					var port=data.powerport[row.portnum];
+
+					row.portname.html(port.Label).data('default',port.Label);
+					port.ConnectedDeviceLabel=(port.ConnectedDeviceLabel==null)?'':port.ConnectedDeviceLabel;
+					port.ConnectedPortLabel=(port.ConnectedPortLabel==null)?'':port.ConnectedPortLabel;
+					row.cdevice.html('<a href="devices.php?deviceid='+port.ConnectedDeviceID+'">'+port.ConnectedDeviceLabel+'</a>').data('default',port.ConnectedDeviceID);
+					row.cdeviceport.html(port.ConnectedPortLabel).data('default',port.ConnectedPort);
+					row.cnotes.html(port.Notes).data('default',port.Notes);
+					row.ct.css('padding','');
+					$(row.element[0]).children('div:nth-child(2) ~ div').removeAttr('style');
+				}
 			});
 
 			$(row.element[0]).data('edit',false);
@@ -1982,9 +2005,20 @@ function LameLogDisplay(){
 					portlist.data(port.PortNumber, {MediaID: port.MediaID, ColorID: port.ColorID});
 				});
 				portlist.change(function(){
-					//Match Media type and color on incoming port
-					row.porttype.children('select').val($(this).data($(this).val()).MediaID);
-					row.portcolor.children('select').val($(this).data($(this).val()).ColorID);
+					// If the local port has a media type or color set then honor it first before
+					// evaluating the media type and color from the incoming connection
+					// To make the combobox update correctly when we update the underlying value.
+					// hack hack hack hack hack hack. tl;dr I'm too lazy to fix this correctly
+					if(!row.porttype.children('select').val()){
+						row.porttype.children('select').combobox('destroy');
+						row.porttype.children('select').val($(this).data($(this).val()).MediaID);
+						row.porttype.children('select').combobox();
+					}
+					if(!row.portcolor.children('select').val()){
+						row.portcolor.children('select').combobox('destroy');
+						row.portcolor.children('select').val($(this).data($(this).val()).ColorID);
+						row.portcolor.children('select').combobox();
+					}
 				});
 				// set the value of the select list to the current connection
 				if(rear){
@@ -2048,20 +2082,22 @@ function LameLogDisplay(){
 
 		getcolortypes: function(){
 			var row=this;
-			$.get('',{cc:''}).done(function(data){
-				var clist=$("<select>").append('<option value=0>&nbsp;</option>');
-				$.each(data, function(key,cc){
-					var option=$("<option>",({'value':cc.ColorID})).append(cc.Name);
-					clist.append(option).data(cc.ColorID,cc.DefaultNote);
-				});
-				clist.change(function(){
-					// default note is associated with this color so set it
-					if($(this).data($(this).val())!=""){
-						row.cnotes.children('input').val($(this).data($(this).val()));
+			$.ajax({url: 'api/v1/colorcode',type: "get",async: false,success: function(data){
+					var clist=$("<select>").append('<option value=0>&nbsp;</option>');
+					for(var i in data.colorcode){
+						var cc=data.colorcode[i];
+						var option=$("<option>",({'value':cc.ColorID})).append(cc.Name);
+						clist.append(option).data(cc.ColorID,cc.DefaultNote);
 					}
-				});
-				row.portcolor.html(clist).find('select').val(row.portcolor.data('default'));
-				clist.combobox();
+					clist.change(function(){
+						// default note is associated with this color so set it
+						if($(this).data($(this).val())!=""){
+							row.cnotes.children('input').val($(this).data($(this).val()));
+						}
+					});
+					row.portcolor.html(clist).find('select').val(row.portcolor.data('default'));
+					clist.combobox();
+				}
 			});
 		},
 

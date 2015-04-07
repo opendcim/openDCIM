@@ -486,6 +486,47 @@ class Cabinet {
 		return true;
 	}
 
+	function Search($indexedbyid=false){
+		global $dbh;
+		// Store the value of frontedge before we muck with it
+		$ot=$this->FrontEdge;
+
+		// Make everything safe for us to search with
+		$this->MakeSafe();
+
+		// This will store all our extended sql
+		$sqlextend="";
+		function findit($prop,$val,&$sql){
+			if($sql){
+				$sql.=" AND $prop=\"$val\"";
+			}else{
+				$sql.=" WHERE $prop=\"$val\"";
+			}
+		}
+		foreach($this as $prop => $val){
+			// We force DeviceType to a known value so this is to check if they wanted to search for the default
+			if($prop=="FrontEdge" && $val=="Top" && $ot!="Top"){
+				continue;
+			}
+			if($val && $val!="1969-12-31"){
+				findit($prop,$val,$sqlextend);
+			}
+		}
+
+		$sql="SELECT * FROM fac_Cabinet $sqlextend ORDER BY LocationSortable ASC;";
+
+		$cabList=array();
+
+		foreach($dbh->query($sql) as $cabRow){
+			if($indexedbyid){
+				$cabList[$cabRow["CabinetID"]]=Cabinet::RowToObject($cabRow);
+			}else{
+				$cabList[]=Cabinet::RowToObject($cabRow);
+			}
+		}
+
+		return $cabList;
+	}
 	function SearchByCabinetName( $db = null ) {
 		global $dbh;
 		
@@ -989,9 +1030,16 @@ class ColorCoding {
 		$colorid=intval($colorid);
 		$tocolorid=intval($tocolorid); // it will always be 0 unless otherwise set
 
-		$sql="UPDATE fac_DevicePorts SET ColorID='$tocolorid' WHERE ColorID='$colorid';";
+		$sqlp="UPDATE fac_Ports SET ColorID=$tocolorid WHERE ColorID=$colorid;";
+		$sqlt="UPDATE fac_TemplatePorts SET ColorID=$tocolorid WHERE ColorID=$colorid;";
+		$sqlm="UPDATE fac_MediaTypes SET ColorID=$tocolorid WHERE ColorID=$colorid;";
 
-		if(!$dbh->query($sql)){
+		$error=false;
+		$error=($dbh->query($sqlp))?false:true;
+		$error=($dbh->query($sqlt))?false:true;
+		$error=($dbh->query($sqlm))?false:true;
+
+		if($error){
 			$info=$dbh->errorInfo();
 			error_log("PDO Error: {$info[2]}");
 			return false;
@@ -1006,8 +1054,9 @@ class ColorCoding {
 
 		// get a count of the number of times this color is in use both on ports or assigned
 		// to a template.  
-		$sql="SELECT COUNT(*) + (SELECT COUNT(*) FROM fac_MediaTypes WHERE ColorID=$colorid) 
-			AS Result FROM fac_DevicePorts WHERE ColorID=$colorid";
+		$sql="SELECT COUNT(*) + (SELECT COUNT(*) FROM fac_MediaTypes WHERE ColorID=$colorid) +
+			(SELECT COUNT(*) FROM fac_TemplatePorts WHERE ColorID=$colorid)
+			AS Result FROM fac_Ports WHERE ColorID=$colorid";
 		$count=$dbh->prepare($sql);
 		$count->execute();
 		
@@ -2121,6 +2170,48 @@ class Device {
 		return $deviceList;
 	}
 
+	function Search($indexedbyid=false){
+		global $dbh;
+		// Store the value of devicetype before we muck with it
+		$ot=$this->DeviceType;
+
+		// Make everything safe for us to search with
+		$this->MakeSafe();
+
+		// This will store all our extended sql
+		$sqlextend="";
+		function findit($prop,$val,&$sql){
+			if($sql){
+				$sql.=" AND $prop=\"$val\"";
+			}else{
+				$sql.=" WHERE $prop=\"$val\"";
+			}
+		}
+		foreach($this as $prop => $val){
+			// We force DeviceType to a known value so this is to check if they wanted to search for the default
+			if($prop=="DeviceType" && $val=="Server" && $ot!="Server"){
+				continue;
+			}
+			if($val){
+				findit($prop,$val,$sqlextend);
+			}
+		}
+
+		$sql="SELECT * FROM fac_Device $sqlextend ORDER BY Label ASC;";
+
+		$deviceList=array();
+
+		foreach($dbh->query($sql) as $deviceRow){
+			if($indexedbyid){
+				$deviceList[$deviceRow["DeviceID"]]=Device::RowToObject($deviceRow);
+			}else{
+				$deviceList[]=Device::RowToObject($deviceRow);
+			}
+		}
+
+		return $deviceList;
+	}
+
 	function SearchDevicebySerialNo(){
 		global $dbh;
 
@@ -3165,7 +3256,7 @@ class DevicePorts {
 		}
 	}
 
-	function updatePort() {
+	function updatePort($fasttrack=false) {
 		global $dbh;
 
 		$oldport=new DevicePorts(); // originating port prior to modification
@@ -3176,55 +3267,62 @@ class DevicePorts {
 		$tmpport->DeviceID=$this->ConnectedDeviceID;
 		$tmpport->PortNumber=$this->ConnectedPort;
 		$tmpport->getPort();
-		$oldtmpport=new DevicePorts(); // used for logging
-		$oldtmpport->DeviceID=$oldport->ConnectedDeviceID;
-		$oldtmpport->PortNumber=$oldport->ConnectedPort;
-		$oldtmpport->getPort();
-
-		//check rights before we go any further
 		$dev=new Device();
 		$dev->DeviceID=$this->DeviceID;
 		$dev->GetDevice();
-		$replacingdev=new Device();
-		$replacingdev->DeviceID=$oldport->ConnectedDeviceID;
-		$replacingdev->GetDevice();
-		$connecteddev=new Device();
-		$connecteddev->DeviceID=$this->ConnectedDeviceID;
-		$connecteddev->GetDevice();
+		// This is gonna be a hack for updating a port when we don't want a recursion loop
+		// I'll likely remove the makeConnection method after this
+		if(!$fasttrack){
+			$oldtmpport=new DevicePorts(); // used for logging
+			$oldtmpport->DeviceID=$oldport->ConnectedDeviceID;
+			$oldtmpport->PortNumber=$oldport->ConnectedPort;
+			$oldtmpport->getPort();
 
-		$rights=false;
-		$rights=($dev->Rights=="Write")?true:$rights;
-		$rights=($replacingdev->Rights=="Write")?true:$rights;
-		$rights=($connecteddev->Rights=="Write")?true:$rights;
+			//check rights before we go any further
+			$replacingdev=new Device();
+			$replacingdev->DeviceID=$oldport->ConnectedDeviceID;
+			$replacingdev->GetDevice();
+			$connecteddev=new Device();
+			$connecteddev->DeviceID=$this->ConnectedDeviceID;
+			$connecteddev->GetDevice();
 
-		if(!$rights){
-			return false;
+			$rights=false;
+			$rights=($dev->Rights=="Write")?true:$rights;
+			$rights=($replacingdev->Rights=="Write")?true:$rights;
+			$rights=($connecteddev->Rights=="Write")?true:$rights;
+
+			if(!$rights){
+				return false;
+			}
+		
+			$this->MakeSafe();
+
+			// Quick sanity check so we aren't depending on the user
+			$this->Label=($this->Label=="")?$this->PortNumber:$this->Label;
+
+			// clear previous connection
+			$oldport->removeConnection();
+			$tmpport->removeConnection();
+
+			if($this->ConnectedDeviceID==0 || $this->PortNumber==0 || $this->ConnectedPort==0){
+				// when any of the above equal 0 this is a delete request
+				// skip making any new connections but go ahead and update the device
+				// reload tmpport with data from the other device
+				$tmpport->DeviceID=$oldport->ConnectedDeviceID;
+				$tmpport->PortNumber=$oldport->ConnectedPort;
+				$tmpport->getPort();
+			}else{
+				// make new connection
+				$tmpport->ConnectedDeviceID=$this->DeviceID;
+				$tmpport->ConnectedPort=$this->PortNumber;
+				$tmpport->Notes=$this->Notes;
+				$tmpport->MediaID=$this->MediaID;
+				$tmpport->ColorID=$this->ColorID;
+				$tmpport->updatePort(true);
+	// The three lines above were added to sync media and color types with the connection
+	//			DevicePorts::makeConnection($tmpport,$this);
+			}
 		}
-	
-		$this->MakeSafe();
-
-		// Quick sanity check so we aren't depending on the user
-		$this->Label=($this->Label=="")?$this->PortNumber:$this->Label;
-
-		// clear previous connection
-		$oldport->removeConnection();
-		$tmpport->removeConnection();
-
-		if($this->ConnectedDeviceID==0 || $this->PortNumber==0 || $this->ConnectedPort==0){
-			// when any of the above equal 0 this is a delete request
-			// skip making any new connections but go ahead and update the device
-			// reload tmpport with data from the other device
-			$tmpport->DeviceID=$oldport->ConnectedDeviceID;
-			$tmpport->PortNumber=$oldport->ConnectedPort;
-			$tmpport->getPort();
-		}else{
-			// make new connection
-			$tmpport->ConnectedDeviceID=$this->DeviceID;
-			$tmpport->ConnectedPort=$this->PortNumber;
-			$tmpport->Notes=$this->Notes;
-			DevicePorts::makeConnection($tmpport,$this);
-		}
-
 		// update port
 		$sql="UPDATE fac_Ports SET MediaID=$this->MediaID, ColorID=$this->ColorID, 
 			PortNotes=\"$this->PortNotes\", ConnectedDeviceID=$this->ConnectedDeviceID, 
@@ -3253,7 +3351,9 @@ class DevicePorts {
 
 		// two logs, because we probably modified two devices
 		(class_exists('LogActions'))?LogActions::LogThis($this,$oldport):'';
-		(class_exists('LogActions'))?LogActions::LogThis($tmpport,$oldtmpport):'';
+		if(!$fasttrack){
+			(class_exists('LogActions'))?LogActions::LogThis($tmpport,$oldtmpport):'';
+		}
 		return true;
 	}
 
@@ -4087,229 +4187,129 @@ class RackRequest {
 
 class SwitchInfo {
 	/* All of these functions will REQUIRE the built-in SNMP functions - the external calls are simply too slow */
-	static function getNumPorts($DeviceID) {
-		global $dbh;
+	static private function BasicTests($DeviceID){
 		global $config;
-		
-		if ( ! function_exists( "snmpget" ) ) {
-			return;
-		}
-		
-		$dev = new Device();
-		$dev->DeviceID = $DeviceID;
-		
-		if(!$dev->GetDevice()) {
+
+		// First check if the SNMP library is present
+		if(!class_exists('OSS_SNMP\SNMP')){
 			return false;
 		}
-		
-		if ( $dev->PrimaryIP == "" )
-			return;
-		
-		if ( $dev->SNMPCommunity == "" ) {
-			$Community = $config->ParameterArray["SNMPCommunity"];
-		} else {
-			$Community = $dev->SNMPCommunity;
+
+		$dev=New Device();
+		$dev->DeviceID=$DeviceID;
+
+		// Make sure this is a real device and has an IP set
+		if(!$dev->GetDevice()){return false;}
+		if($dev->PrimaryIP==""){return false;}
+
+		// If the device doesn't have an SNMP community set, check and see if we have a global one
+		$dev->SNMPCommunity=($dev->SNMPCommunity=="")?$config->ParameterArray["SNMPCommunity"]:$dev->SNMPCommunity;
+
+		// We've passed all the repeatable tests, return the device object for digging
+		return $dev;
+	}
+
+	// Making an attempt at reducing the lines that I was constantly repeating at a cost of making this a little more convoluted.
+	static private function OSS_SNMP_Lookup($dev,$snmplookup,$portid=null,$baseoid=null){
+		// This is find out the name of the function that called this to make the error logging more descriptive
+		$caller=debug_backtrace();
+		$caller=$caller[1]['function'];
+
+		$snmpHost=new OSS_SNMP\SNMP($dev->PrimaryIP,$dev->SNMPCommunity);
+		$snmpresult=false;
+		try {
+			$snmpresult=(is_null($portid))?$snmpHost->useIface()->$snmplookup(true):$snmpHost->get($baseOID.".$portid");
+		}catch (Exception $e){
+			error_log("SwitchInfo::$caller($dev->DeviceID) ".$e->getMessage());
 		}
-		
-		return @end( explode( ":", snmpget( $dev->PrimaryIP, $Community, 'IF-MIB::ifNumber.0' )));
+
+		return $snmpresult;
+	}
+
+	static function getNumPorts($DeviceID) {
+		if(!$dev=SwitchInfo::BasicTests($DeviceID)){
+			return false;
+		}
+
+		return self::OSS_SNMP_Lookup($dev,"numberOfInterfaces");
 	}
 
 	static function findFirstPort( $DeviceID ) {
-		global $dbh;
-		global $config;
-		
-		if ( ! function_exists( "snmpget" ) ) {
-			return;
-		}
-		
-		$dev=new Device();
-		$dev->DeviceID = $DeviceID;
-		
-		if ( !$dev->GetDevice() ) {
+		if(!$dev=SwitchInfo::BasicTests($DeviceID)){
 			return false;
 		}
-
-		if ( $dev->PrimaryIP == "" )
-			return;
 		
-		if ( $dev->SNMPCommunity == "" ) {
-			$Community = $config->ParameterArray["SNMPCommunity"];
-		} else {
-			$Community = $dev->SNMPCommunity;
-		}
-		
-		$x = array();
-		
-		$portList = snmprealwalk( $dev->PrimaryIP, $Community, "IF-MIB::ifDescr" );
-		foreach( $portList as $index => $port ) {
-			$head = @end( explode( ".", $index ) );
-			$portdesc = @end( explode( ":", $port));
+		$x=array();
+		foreach(self::OSS_SNMP_Lookup($dev,"descriptions") as $index => $portdesc ) {
 			if ( preg_match( "/(bond|\"[A-Z]|swp|eth|Ethernet|Port-Channel|\/)[01]$/", $portdesc )) {
-				$x[$head] = $portdesc;
+				$x[$index] = $portdesc;
 			} // Find lines that end with /1
 		}
 		return $x;
 	}
 
-	static function getPortNames( $DeviceID, $portid = null ) {
-		global $dbh;
-		global $config;
-		
-		if ( ! function_exists( "snmpget" ) ) {
-			return;
-		}
-		
-		$dev = new Device();
-		$dev->DeviceID = $DeviceID;
-		$nameList=array(); // should this fail return blank
-		
-		if(!$dev->GetDevice()){
-			return $nameList;
-		}
-		
-		if( $dev->PrimaryIP=="" ){
-			return $nameList;
-		}
-		
-		if ( $dev->SNMPCommunity == "" ) {
-			$Community = $config->ParameterArray["SNMPCommunity"];
-		} else {
-			$Community = $dev->SNMPCommunity;
-		}
-			
-		$baseOID = ".1.3.6.1.2.1.31.1.1.1.1";
-		$baseOID = "IF-MIB::ifName"; 
-
-		if(is_null($portid)){		
-			if($reply=@snmprealwalk($dev->PrimaryIP,$Community,$baseOID)){
-				// Skip the returned values until we get to the first port
-				$Saving = false;
-				foreach($reply as $oid => $label){
-					$indexValue = @end(explode( ".", $oid ));
-					if ( $indexValue == $dev->FirstPortNum )
-						$Saving = true;
-						
-					if ( $Saving == true )
-						$nameList[sizeof($nameList) + 1] = trim(@end(explode(":",$label)));
-					
-					// Once we have captured enough values that match the number of ports, stop
-					if ( sizeof( $nameList ) == $dev->Ports )
-						break;
-				}
-			}
-		} else {
-				$query = @end( explode( ":", snmp2_get( $dev->PrimaryIP, $Community, $baseOID.'.'.$portid )));
-				$nameList = $query;
-		}
-		
-		return $nameList;
-	}
-	
-	static function getPortStatus( $DeviceID, $portid = null ) {
-		global $dbh;
-		global $config;
-		
-		if ( ! function_exists( "snmpget" ) ) {
-			return;
-		}
-		
-		$dev=new Device();
-		$dev->DeviceID=$DeviceID;
-		$statusList=array();
-		
-		if(!$dev->GetDevice()){
-			return $statusList;
-		}
-		
-		if( $dev->PrimaryIP=="" ){
-			return $statusList;
-		}
-		
-		if ( $dev->SNMPCommunity == "" ) {
-			$Community = $config->ParameterArray["SNMPCommunity"];
-		} else {
-			$Community = $dev->SNMPCommunity;
-		}
-			
-		// $baseOID = ".1.3.6.1.2.1.2.2.1.8.";
-		$baseOID="IF-MIB::ifOperStatus"; // arguments for not using MIB?
-
-		if ( is_null($portid) ) {		
-			if($reply=@snmprealwalk($dev->PrimaryIP, $Community, $baseOID)){	
-				// Skip the returned values until we get to the first port
-				$Saving = false;
-				foreach($reply as $oid => $status){
-					$indexValue = @end(explode( ".", $oid ));
-					if ( $indexValue == $dev->FirstPortNum ) {
-						$Saving = true;
-					}
-					
-					if ( $Saving == true ) {
-						@preg_match( "/(INTEGER: )(.+)(\(.*)/", $status, $matches);
-						$statusList[sizeof( $statusList) + 1]=@$matches[2];
-					}
-					
-					// Once we have captured enough values that match the number of ports, stop
-					if ( sizeof( $statusList ) == $dev->Ports ) {
-						break;
-					}
-				}
-			}
-		}else{
-			@preg_match( "/(INTEGER: )(.+)(\(.*)/", snmpget( $dev->PrimaryIP, $dev->SNMPCommunity, $baseOID.$portid ), $matches);
-			// This will change the array that was getting kicked back to a single value for an individual port lookup
-			$statusList = @$matches[2];
-		}
-		
-		return $statusList;
-	}
-	
-	static function getPortAlias( $DeviceID, $portid = null ) {
-		global $config;
-
-		if(!function_exists("snmpget")){
+	static function getPortNames($DeviceID,$portid=null){
+		if(!$dev=SwitchInfo::BasicTests($DeviceID)){
 			return false;
 		}
 
-		$dev=new Device();
-		$dev->DeviceID=$DeviceID;
+		// We never did finish the discussion of if we should use the mib vs the oid
+		$baseOID = ".1.3.6.1.2.1.31.1.1.1.1";
+		$baseOID = "IF-MIB::ifName"; 
 
-		$aliasList=array();
+		$nameList=self::OSS_SNMP_Lookup($dev,"descriptions",$portid,$baseOID);
 
-		if(!$dev->GetDevice()){
-			return $aliasList;
+		if(is_array($nameList)){
+			$saving=false;
+			foreach($nameList as $i => $desc){
+				if($i==$dev->FirstPortNum){$saving=true;}
+				if($saving){$nameList[sizeof($nameList)+1]=$desc;}
+				if(sizeof($nameList)==$dev->Ports){break;}
+			}
 		}
 
-		if($dev->PrimaryIP==""){
-			return $aliasList;
+		return $nameList;
+	}
+	
+	static function getPortStatus($DeviceID,$portid=null){
+		if(!$dev=SwitchInfo::BasicTests($DeviceID)){
+			return false;
 		}
 
-		// Get SNMP community from the device, fall back to default if one isn't set on the device
-		$Community=($dev->SNMPCommunity=="")?$config->ParameterArray["SNMPCommunity"]:$dev->SNMPCommunity;
-		if($Community==""){
-			return $aliasList;
+		// $baseOID = ".1.3.6.1.2.1.2.2.1.8.";
+		$baseOID="IF-MIB::ifOperStatus"; // arguments for not using MIB?
+
+		$statusList=self::OSS_SNMP_Lookup($dev,"operationStates",$portid,$baseOID);
+
+		if(is_array($statusList)){
+			$saving=false;
+			foreach($statusList as $i => $status){
+				if($i==$dev->FirstPortNum){$saving=true;}
+				if($saving){$statusList[sizeof($statusList)+1]=$status;}
+				if(sizeof($statusList)==$dev->Ports){break;}
+			}
+		}
+
+		return $statusList;
+	}
+	
+	static function getPortAlias($DeviceID,$portid=null){
+		if(!$dev=SwitchInfo::BasicTests($DeviceID)){
+			return false;
 		}
 
 		$baseOID=".1.3.6.1.2.1.31.1.1.1.18.";
 		$baseOID="IF-MIB::ifAlias";
 
-		if(is_null($portid)){
-			if($reply=snmprealwalk($dev->PrimaryIP,$Community,$baseOID)){
-				$n=1; // Start our index at 1
-				foreach($reply as $oid => $string){
-					if(@end(explode( ".", $oid ))>=$dev->FirstPortNum){
-						@preg_match( "/(STRING: )(.*)/", $string, $matches);
-						$aliasList[$n++]=$matches[2];
-					}
-					// Once we have captured enough values that match the number of ports, stop
-					if(sizeof($aliasList)==$dev->Ports){
-						break;
-					}
-				}
+		$aliasList=self::OSS_SNMP_Lookup($dev,"adminStates",$portid,$baseOID);
+		
+		if(is_array($aliasList)){
+			$saving=false;
+			foreach($aliasList as $i => $alias){
+				if($i==$dev->FirstPortNum){$saving=true;}
+				if($saving){$aliasList[sizeof($aliasList)+1]=$alias;}
+				if(sizeof($aliasList)==$dev->Ports){break;}
 			}
-		}else{
-			$query = @end( explode( ":", snmpget( $dev->PrimaryIP, $Community, $baseOID.'.'.$portid )));
-			$aliasList = $query;
 		}
 		
 		return $aliasList;	
@@ -4996,14 +4996,9 @@ class DeviceCustomAttribute {
 	}
 
 	static function GetDeviceCustomAttributeTypeList() {
-		global $dbh;
-		$typeList = array();
-		$sql="SHOW COLUMNS FROM fac_DeviceCustomAttribute LIKE 'AttributeType'";
-		$row = $dbh->query($sql)->fetch();
-		preg_match('#^enum\((.*?)\)$#ism', $row['Type'], $matches);
-		//use of str_getcsv requires php5.3.0+
-		$typeList = str_getcsv($matches[1], ",", "'");
-		return $typeList;
+		$validtypes=array("string","number","integer","date","phone","email","ipv4","url","checkbox");
+
+		return $validtypes;
 	}	
 
 	static function TimesUsed($AttributeID) {

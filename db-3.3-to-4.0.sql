@@ -2,14 +2,7 @@
 -- Move entries from fac_CabinetAudit to fac_GenericLog
 --
 
-INSERT INTO fac_GenericLog (UserID, Class, ObjectID, Action, Time) SELECT fac_CabinetAudit.UserID as UserID, "CabinetAudit" as Class, fac_CabinetAudit.CabinetID as ObjectID, "CertifyAudit" as Action, fac_CabinetAudit.AuditStamp as Time FROM fac_CabinetAudit;
-
---
--- Not sure if you want to do this yet
--- The answer is NO.  Wait until next point release after 4.0
---
-
--- DROP TABLE IF EXISTS fac_CabinetAudit;
+INSERT INTO fac_GenericLog (SELECT UserID, "CabinetAudit", CabinetID, NULL, " ", "CertifyAudit", " ", " ", AuditStamp FROM fac_CabinetAudit);
 
 --
 -- Time to merge Contacts and Users - create a new fac_People table and delete the two old ones in the next release
@@ -47,7 +40,7 @@ DROP TABLE IF EXISTS fac_DeviceCustomAttribute;
 CREATE TABLE fac_DeviceCustomAttribute(
   AttributeID int(11) NOT NULL AUTO_INCREMENT,
   Label varchar(80) NOT NULL,
-  AttributeType enum('string', 'number', 'integer', 'date', 'phone', 'email', 'ipv4', 'url', 'checkbox') NOT NULL DEFAULT 'string',
+  AttributeType varchar(8) NOT NULL DEFAULT 'string',
   Required tinyint(1) NOT NULL DEFAULT 0,
   AllDevices tinyint(1) NOT NULL DEFAULT 0,
   DefaultValue varchar(65000),
@@ -141,19 +134,19 @@ UPDATE fac_CabRow SET DataCenterID=(SELECT DataCenterID FROM fac_Zone WHERE fac_
 -- Add some fields needed to keep the local database in sync (if enabled) with the global repository
 --
 
-ALTER TABLE fac_CDUTemplate ADD GlobalID int(11) NOT NULL;
+ALTER TABLE fac_CDUTemplate ADD GlobalID int(11) NOT NULL DEFAULT 0;
 ALTER TABLE fac_CDUTemplate ADD ShareToRepo tinyint(1) NOT NULL DEFAULT 0;
 ALTER TABLE fac_CDUTemplate ADD KeepLocal tinyint(1) NOT NULL DEFAULT 0;
 
-ALTER TABLE fac_DeviceTemplate ADD GlobalID int(11) NOT NULL;
+ALTER TABLE fac_DeviceTemplate ADD GlobalID int(11) NOT NULL DEFAULT 0;
 ALTER TABLE fac_DeviceTemplate ADD ShareToRepo tinyint(1) NOT NULL DEFAULT 0;
 ALTER TABLE fac_DeviceTemplate ADD KeepLocal tinyint(1) NOT NULL DEFAULT 0;
 
-ALTER TABLE fac_Manufacturer ADD GlobalID int(11) NOT NULL;
+ALTER TABLE fac_Manufacturer ADD GlobalID int(11) NOT NULL DEFAULT 0;
 ALTER TABLE fac_Manufacturer ADD ShareToRepo tinyint(1) NOT NULL DEFAULT 0;
 ALTER TABLE fac_Manufacturer ADD KeepLocal tinyint(1) NOT NULL DEFAULT 0;
 
-ALTER TABLE fac_SensorTemplate ADD GlobalID int(11) NOT NULL;
+ALTER TABLE fac_SensorTemplate ADD GlobalID int(11) NOT NULL DEFAULT 0;
 ALTER TABLE fac_SensorTemplate ADD ShareToRepo tinyint(1) NOT NULL DEFAULT 0;
 ALTER TABLE fac_SensorTemplate ADD KeepLocal tinyint(1) NOT NULL DEFAULT 0;
 
@@ -188,8 +181,8 @@ ALTER TABLE fac_PowerPanel MODIFY PanelLabel varchar(80);
 ---
 --- Add new fields for the subpanel support
 ---
-ALTER TABLE fac_PowerPanel ADD COLUMN ParentPanelID NOT NULL;
-ALTER TABLE fac_PowerPanel ADD COLUMN ParentBreakerID NOT NULL;
+ALTER TABLE fac_PowerPanel ADD COLUMN ParentPanelID int(11) NOT NULL;
+ALTER TABLE fac_PowerPanel ADD COLUMN ParentBreakerID int(11) NOT NULL;
 
 ---
 --- Repo API Key Configuration Fields
@@ -202,3 +195,4 @@ INSERT INTO fac_Config set Parameter="APIKey", Value="", UnitOfMeasure="Key", Va
 ---
 
 INSERT INTO fac_Config set Parameter="RequireDefinedUser", Value="Disabled", UnitOfMeasure="Enabled/Disabled", ValType="string", DefaultVal="Disabled";
+

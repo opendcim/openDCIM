@@ -11,10 +11,11 @@
 	
 	$mpdf=new mPDF('win-1252','A4','','',20,15,48,25,10,10); 
 	$mpdf->useOnlyCoreFonts = true;    // false is default
-	$mpdf->SetProtection(array('print'));
+	//$mpdf->SetProtection(array('print'));
 	$mpdf->SetTitle($config->ParameterArray["OrgName"] . " " . __("Supply Status Report"));
 	$mpdf->SetAuthor($config->ParameterArray["OrgName"]);
 	$mpdf->SetDisplayMode('fullpage');
+    $mpdf->useActiveForms = true;
 
 	$sup = new Supplies();
 	$bin = new SupplyBin();
