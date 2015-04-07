@@ -46,11 +46,8 @@ class LogActions {
 	var $Time;
 
 	function __construct(){
-		if ( AUTHENTICATION == "Google" ) {
-			$this->UserID = $_SESSION['userid'];
-		} else {
-			$this->UserID=$_SERVER['REMOTE_USER'];
-		}
+		global $person;
+		$this->UserID = $person->UserID;
 	}
 
 	function query($sql){

@@ -195,6 +195,7 @@ class People {
 
 		if ( php_sapi_name() == "cli" ) {
 			// If the script is being called from the command line, just give God priveleges and be done with it
+			$cperson->UserID = "cli_admin";
 			$cperson->ReadAccess = true;
 			$cperson->WriteAccess = true;
 			$cperson->SiteAdmin = true;
@@ -268,7 +269,7 @@ class People {
 	function GetPersonByUserID() {
 		$this->MakeSafe();
 		
-		$sql = "select * from fac_People where UserID=\"" . $this->UserID . "\"";
+		$sql = "select * from fac_People where ucase(UserID)=ucase(\"" . $this->UserID . "\")";
 		
 		if ( $row = $this->query( $sql )->fetch() ) {
 			foreach( People::RowToObject( $row ) as $prop=>$value ) {

@@ -1555,8 +1555,8 @@ class Device {
 		$tmpDev->DeviceID=$this->DeviceID;
 		$tmpDev->GetDevice();
 
-		// Check the user's permissions to modify this device
-		if($tmpDev->Rights!='Write'){return false;}
+		// Check the user's permissions to modify this device, but only if it's not a CLI call
+		if( php_sapi_name() != "cli" && $tmpDev->Rights!='Write'){return false;}
 	
 		$this->MakeSafe();	
 
