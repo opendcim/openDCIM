@@ -18,31 +18,31 @@ class DeviceAge extends Device{
 	}
 
 	$selectSQL = "select count(*) as NumDevices,'<=2' as NumYears from fac_Device where (DATEDIFF(NOW(),(CASE WHEN MfgDate>'1969-12-31' THEN MfgDate ELSE InstallDate END))/365)<=2 and (DATEDIFF(NOW(), (CASE WHEN MfgDate>'1969-12-31' THEN MfgDate ELSE InstallDate END))/365)>1";
-	
+
 	foreach($dbh->query($selectSQL) as $row){
 		$deptList[$row['NumYears']] = $row['NumDevices'];
 	}
 
 	$selectSQL = "select count(*) as NumDevices,'<=3' as NumYears from fac_Device where (DATEDIFF(NOW(),(CASE WHEN MfgDate>'1969-12-31' THEN MfgDate ELSE InstallDate END))/365)<=3 and (DATEDIFF(NOW(), (CASE WHEN MfgDate>'1969-12-31' THEN MfgDate ELSE InstallDate END))/365)>2";
-	
+
 	foreach($dbh->query($selectSQL) as $row){
 		$deptList[$row['NumYears']] = $row['NumDevices'];
 	}
 
 	$selectSQL = "select count(*) as NumDevices,'<=4' as NumYears from fac_Device where (DATEDIFF(NOW(),(CASE WHEN MfgDate>'1969-12-31' THEN MfgDate ELSE InstallDate END))/365)<=4 and (DATEDIFF(NOW(), (CASE WHEN MfgDate>'1969-12-31' THEN MfgDate ELSE InstallDate END))/365)>3";
-	
+
 	foreach($dbh->query($selectSQL) as $row){
 		$deptList[$row['NumYears']] = $row['NumDevices'];
 	}
 
 	$selectSQL = "SELECT COUNT(*) AS NumDevices,'>4' AS NumYears FROM fac_Device WHERE (DATEDIFF(NOW(),MfgDate)/365)>4 AND MfgDate>'1970-01-01' AND InstallDate>'1970-01-01';";
-	
+
 	foreach($dbh->query($selectSQL) as $row){
 		$deptList[$row['NumYears']] = $row['NumDevices'];
 	}
 
 	$selectSQL = "select count(*) as NumDevices,'Unknown' as NumYears from fac_Device where (CASE WHEN MfgDate>'1969-12-31' THEN MfgDate ELSE InstallDate END)<='1970-01-01'";
-	
+
 	foreach($dbh->query($selectSQL) as $row){
 		$deptList[$row['NumYears']] = $row['NumDevices'];
 	}
@@ -55,12 +55,12 @@ function GetDeviceByAge($years){
 	$deviceList=array();
 	if($years<=3){
 		$yearsplus=$years+1;
-		$selectSQL = sprintf( "select * from fac_Device where (DATEDIFF(NOW(), (CASE WHEN MfgDate>'1969-12-31' THEN MfgDate ELSE InstallDate END))/365)<%d and (DATEDIFF(NOW(), (CASE WHEN MfgDate>'1969-12-31' THEN MfgDate ELSE InstallDate END))/365)>=%d", $yearsplus, $years );
+		$selectSQL = sprintf( "select * from fac_Device where (DATEDIFF(NOW(), (CASE WHEN MfgDate>'1969-12-31' THEN MfgDate ELSE InstallDate END))/365)<%d and (DATEDIFF(NOW(), (CASE WHEN MfgDate>'1969-12-31' THEN MfgDate ELSE InstallDate END))/365)>=%d order by Owner, MfgDate ASC, Label", $yearsplus, $years );
 		foreach($dbh->query($selectSQL) as $deviceRow){
 			$deviceList[$deviceRow['DeviceID']]=Device::RowToObject($deviceRow);
 		}
 	}else{
-		$selectSQL="select * from fac_Device where (DATEDIFF(NOW(), (CASE WHEN MfgDate>'1969-12-31' THEN MfgDate ELSE InstallDate END))/365)>4 and (CASE WHEN MfgDate>'1969-12-31' THEN MfgDate ELSE InstallDate END)>'1970-01-01'";
+		$selectSQL="select * from fac_Device where (DATEDIFF(NOW(), (CASE WHEN MfgDate>'1969-12-31' THEN MfgDate ELSE InstallDate END))/365)>4 and (CASE WHEN MfgDate>'1969-12-31' THEN MfgDate ELSE InstallDate END)>'1970-01-01' order by Owner, MfgDate ASC, Label";
 		foreach($dbh->query($selectSQL) as $deviceRow){
 			$deviceList[$deviceRow['DeviceID']]=Device::RowToObject($deviceRow);
 		}
@@ -78,11 +78,11 @@ class PDF extends FPDF {
   var $OutlineRoot;
   var $pdfconfig;
   var $pdfDB;
-  
+
 	function PDF(){
 		parent::FPDF();
 	}
-  
+
 	function Header() {
 		$this->pdfconfig = new Config();
     	$this->Image( 'images/' . $this->pdfconfig->ParameterArray['PDFLogoFile'],10,8,100);
@@ -101,7 +101,7 @@ class PDF extends FPDF {
     		$this->SetFont($this->pdfconfig->ParameterArray['PDFfont'],'I',8);
     		$this->Cell(0,10,__("Page").' '.$this->PageNo().'/{nb}',0,0,'C');
 	}
-	
+
 
   function Bookmark($txt,$level=0,$y=0) {
     if($y==-1)
@@ -425,8 +425,8 @@ class PDF_Diag extends PDF_Sector {
 	$year3oldlist=$dev->GetDeviceByAge(2);
 	$year4oldlist=$dev->GetDeviceByAge(3);
 	$oldestlist=$dev->GetDeviceByAge(4);
-  
-  
+
+
 
 
 //
@@ -449,7 +449,7 @@ class PDF_Diag extends PDF_Sector {
 	$colors[7]=array(0,0,255);
 	$colors[8]=array(100,175,255);
 	$colors[9]=array(255,175,100);
-  
+
 
 	$pdf->SetFont( $config->ParameterArray['PDFfont'],'B', 16 );
 
@@ -478,13 +478,13 @@ class PDF_Diag extends PDF_Sector {
 			$date1=new DateTime($devRow->MfgDate);
 		else
 			$date1 = new DateTime($devRow->InstallDate);
-			
+
 		$date2=new DateTime('now');
 		$interval=$date1->diff($date2);
 		$years=$interval->format('%m months %d days');
-		
+
 		$cellHeight = 6;
-		
+
 		$pdf->Cell( $cellWidths[0], $cellHeight, $devRow->Label, 1, 0, 'L', $fill );
 		$pdf->Cell( $cellWidths[1], $cellHeight, $years, 1, 0, 'L', $fill );
 		$pdf->Cell( $cellWidths[2], $cellHeight, $dept->Name, 1, 0, 'L', $fill );
@@ -514,7 +514,7 @@ class PDF_Diag extends PDF_Sector {
 			$date1=new DateTime($devRow->MfgDate);
 			$date2=new DateTime('now');
 			$interval=$date1->diff($date2);
-			$years=$interval->format('%y years %m months %d days');
+			$years=$interval->format('%y y %m m %d d');
 
 			$pdf->Cell( $cellWidths[0], 6, $devRow->Label, 'LBRT', 0, 'L', $fill );
 					$pdf->Cell( $cellWidths[1], 6, $years, 'LBRT', 0, 'L', $fill );
@@ -546,7 +546,7 @@ class PDF_Diag extends PDF_Sector {
 			$date1=new DateTime($devRow->MfgDate);
 			$date2=new DateTime('now');
 			$interval=$date1->diff($date2);
-			$years=$interval->format('%y years %m months %d days');
+			$years=$interval->format('%y y %m m %d d');
 
 			$pdf->Cell( $cellWidths[0], 6, $devRow->Label, 'LBRT', 0, 'L', $fill );
 					$pdf->Cell( $cellWidths[1], 6, $years, 'LBRT', 0, 'L', $fill );
@@ -578,7 +578,7 @@ class PDF_Diag extends PDF_Sector {
 			$date1=new DateTime($devRow->MfgDate);
 			$date2=new DateTime('now');
 			$interval=$date1->diff($date2);
-			$years=$interval->format('%y years %m months %d days');
+			$years=$interval->format('%y y %m m %d d');
 
 			$pdf->Cell( $cellWidths[0], 6, $devRow->Label, 'LBRT', 0, 'L', $fill );
 					$pdf->Cell( $cellWidths[1], 6, $years, 'LBRT', 0, 'L', $fill );
@@ -610,7 +610,7 @@ class PDF_Diag extends PDF_Sector {
 			$date1=new DateTime($devRow->MfgDate);
 			$date2=new DateTime('now');
 			$interval=$date1->diff($date2);
-			$years=$interval->format('%y years %m months %d days');
+			$years=$interval->format('%y y %m m %d d');
 
 			$pdf->Cell( $cellWidths[0], 6, $devRow->Label, 'LBRT', 0, 'L', $fill );
 					$pdf->Cell( $cellWidths[1], 6, $years, 'LBRT', 0, 'L', $fill );
