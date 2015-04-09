@@ -1078,7 +1078,8 @@ class DeviceTemplate {
 		$this->MakeSafe();
 
 		$sql="UPDATE fac_Device SET Height=$this->Height, NominalWatts=$this->Wattage, 
-			PowerSupplyCount=$this->PSCount WHERE TemplateID=$this->TemplateID;";
+			PowerSupplyCount=$this->PSCount, ChassisSlots=$this->ChassisSlots, 
+			RearChassisSlots=$this->RearChassisSlots WHERE TemplateID=$this->TemplateID;";
 
 		return $this->query($sql);
 	}
