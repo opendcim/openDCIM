@@ -2768,6 +2768,20 @@ class Slot {
 			return false;
 		}
 	}
+	
+	static function getSlots( $TemplateID ) {
+		global $dbh;
+		
+		$st = $dbh->prepare( "select * from fac_Slots where TemplateID=:TemplateID order by BackSide ASC, Position ASC" );
+		$st->execute( array( ":TemplateID"=>$TemplateID ) );
+		$st->setFetchMode( PDO::FETCH_CLASS, "Slot" );
+		$sList = array();
+		while ( $row = $st->fetch() ) {
+			$sList[] = $row;
+		}
+		
+		return $sList;
+	}
 
 	// Return all the slots for a single template in one object
 	static function GetAll($templateid){

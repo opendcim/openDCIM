@@ -49,8 +49,8 @@
 		}
 		
 		if ( $temp->DeviceType == "Chassis" ) {
-			$sList = Slot::GetAll( $temp->TemplateID );
-			
+			$sList = Slot::getSlots( $temp->TemplateID );
+
 			$postData["slots"] = array();
 			foreach( $sList as $s ) {
 				array_push( $postData["slots"], json_decode(json_encode($s), true) );
@@ -70,7 +70,7 @@
 		
 		$result = curl_exec( $c );
 		$jr = json_decode( $result ) ;
-		
+
 		$postData = array();
 		
 		if ( $temp->FrontPictureFile != "" ) {
