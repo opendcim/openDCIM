@@ -1422,6 +1422,7 @@ class Manufacturer {
 	var $GlobalID;
 	var $ShareToRepo;
 	var $KeepLocal;
+	var $SubscribeToUpdates;
 
 	function MakeSafe(){
 		$this->ManufacturerID=intval($this->ManufacturerID);
@@ -1429,6 +1430,7 @@ class Manufacturer {
 		$this->GlobalID = intval( $this->GlobalID );
 		$this->ShareToRepo = intval( $this->ShareToRepo );
 		$this->KeepLocal = intval( $this->KeepLocal );
+		$this->SubscribeToUpdates = intval( $this->SubscribeToUpdates );
 	}
 
 	function MakeDisplay(){
@@ -1442,6 +1444,7 @@ class Manufacturer {
 		$m->GlobalID = $row["GlobalID"];
 		$m->ShareToRepo = $row["ShareToRepo"];
 		$m->KeepLocal = $row["KeepLocal"];
+		$m->SubscribeToUpdates = $row["SubscribeToUpdates"];
 		$m->MakeDisplay();
 
 		return $m;
@@ -1508,7 +1511,7 @@ class Manufacturer {
 		$this->MakeSafe();
 
 		$sql="INSERT INTO fac_Manufacturer SET Name=\"$this->Name\", GlobalID=$this->GlobalID,
-		ShareToRepo=$this->ShareToRepo, KeepLocal=$this->KeepLocal;";
+		ShareToRepo=$this->ShareToRepo, KeepLocal=$this->KeepLocal, SubscribeToUpdates=$this->SubscribeToUpdates;";
 
 		if(!$dbh->exec($sql)){
 			error_log( "SQL Error: " . $sql );
@@ -1549,7 +1552,7 @@ class Manufacturer {
 	function UpdateManufacturer(){
 		$this->MakeSafe();
 
-		$sql="UPDATE fac_Manufacturer SET Name=\"$this->Name\", GlobalID=$this->GlobalID, ShareToRepo=$this->ShareToRepo, KeepLocal=$this->KeepLocal WHERE ManufacturerID=$this->ManufacturerID;";
+		$sql="UPDATE fac_Manufacturer SET Name=\"$this->Name\", GlobalID=$this->GlobalID, ShareToRepo=$this->ShareToRepo, KeepLocal=$this->KeepLocal, SubscribeToUpdates=$this->SubscribeToUpdates WHERE ManufacturerID=$this->ManufacturerID;";
 
 		$old=new Manufacturer();
 		$old->ManufacturerID=$this->ManufacturerID;
