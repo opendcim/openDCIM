@@ -99,8 +99,8 @@ exit;
 		$template->DeviceType=$_POST['DeviceType'];
 		$template->PSCount=$_POST['PSCount'];
 		$template->NumPorts=$_POST['NumPorts'];
-		$template->ShareToRepo=$_POST['ShareToRepo'];
-		$template->KeepLocal=$_POST['KeepLocal'];
+		$template->ShareToRepo=isset( $_POST['ShareToRepo'] ) ? 1 : 0;
+		$template->KeepLocal=isset( $_POST['KeepLocal'] ) ? 1 : 0;
 		$template->Notes=trim($_POST['Notes']);
 		$template->Notes=($template->Notes=="<br>")?"":$template->Notes;
 		$template->FrontPictureFile=$_POST['FrontPictureFile'];
@@ -164,32 +164,34 @@ exit;
 				seems like the proper functionality since we aren't saving data for anything that isn't enabled */
 			$dcaList=DeviceCustomAttribute::GetDeviceCustomAttributeList();
 			$template->DeleteCustomValues();
-			foreach($_POST["tdca"] as $dcaid=>$currentdca) {
-				if((isset($currentdca["enabled"]) && $currentdca["enabled"]==="on")) {
-					$insertval = '';
-					$requiredval = 0;
-					if(isset($currentdca["value"]) && trim($currentdca["value"] != '')) {
-						$insertval = trim($currentdca["value"]);
-					}
-					if(isset($currentdca["required"]) && $currentdca["required"] == "on") {
-						$requiredval = 1;
-					}
-					$status=($template->InsertCustomValue($dcaid, $insertval,$requiredval))?$status:__('Error updating device template custom values');
-				} elseif(array_key_exists($dcaid, $dcaList) && $dcaList[$dcaid]->AllDevices==1) {
-				/* since the enabled checkbox for attributes marked as "all devices" is disabled, it doesn't get passed in with the form,
-					so parse through and if the value or required status are different than the defaults, add a row for them as well. this
-					helps keep the table clean of a bunch of default values too */
-					$insertval = $dcaList[$dcaid]->DefaultValue;
-					$requiredval = $dcaList[$dcaid]->Required;
-					// don't check if the value is empty - this lets us overwrite a default value from the config page with empty here
-					if(isset($currentdca["value"])) {
-						$insertval = trim($currentdca["value"]);
-					}
-					if(isset($currentdca["required"]) && $currentdca["required"] == "on") {
-						$requiredval = 1;
-					}
-					if(($insertval != $dcaList[$dcaid]->DefaultValue) || ($requiredval != $dcaList[$dcaid]->Required)) {
-						$status=($template->InsertCustomValue($dcaid, $insertval, $requiredval))?$status:__('Error updating device template custom values');
+			if ( isset( $_POST['tdca'] ) && is_array( $_POST['tdca'] ) ) {
+				foreach($_POST["tdca"] as $dcaid=>$currentdca) {
+					if((isset($currentdca["enabled"]) && $currentdca["enabled"]==="on")) {
+						$insertval = '';
+						$requiredval = 0;
+						if(isset($currentdca["value"]) && trim($currentdca["value"] != '')) {
+							$insertval = trim($currentdca["value"]);
+						}
+						if(isset($currentdca["required"]) && $currentdca["required"] == "on") {
+							$requiredval = 1;
+						}
+						$status=($template->InsertCustomValue($dcaid, $insertval,$requiredval))?$status:__('Error updating device template custom values');
+					} elseif(array_key_exists($dcaid, $dcaList) && $dcaList[$dcaid]->AllDevices==1) {
+					/* since the enabled checkbox for attributes marked as "all devices" is disabled, it doesn't get passed in with the form,
+						so parse through and if the value or required status are different than the defaults, add a row for them as well. this
+						helps keep the table clean of a bunch of default values too */
+						$insertval = $dcaList[$dcaid]->DefaultValue;
+						$requiredval = $dcaList[$dcaid]->Required;
+						// don't check if the value is empty - this lets us overwrite a default value from the config page with empty here
+						if(isset($currentdca["value"])) {
+							$insertval = trim($currentdca["value"]);
+						}
+						if(isset($currentdca["required"]) && $currentdca["required"] == "on") {
+							$requiredval = 1;
+						}
+						if(($insertval != $dcaList[$dcaid]->DefaultValue) || ($requiredval != $dcaList[$dcaid]->Required)) {
+							$status=($template->InsertCustomValue($dcaid, $insertval, $requiredval))?$status:__('Error updating device template custom values');
+						}
 					}
 				}
 			}
@@ -668,11 +670,11 @@ echo '	</select>
 </div>
 <div>
 	<div><label>',__("Share to Repository"),'</label></div>
-	<div><input type="checkbox" id="sharetorepo" name="sharetorepo" ',$template->ShareToRepo ? 'checked' : '','></div>
+	<div><input type="checkbox" id="ShareToRepo" name="ShareToRepo" ',$template->ShareToRepo ? 'checked' : '','></div>
 </div>
 <div>
 	<div><label>',__("Keep Local (Ignore Repository)"),'</label></div>
-	<div><input type="checkbox" id="keeplocal" name="keeplocal" ',$template->KeepLocal ? 'checked' : '','></div>
+	<div><input type="checkbox" id="KeepLocal" name="KeepLocal" ',$template->KeepLocal ? 'checked' : '','></div>
 </div>
 <div>
    <div><label for="FrontPictureFile">',__("Front Picture File"),'</label></div>
