@@ -106,27 +106,32 @@ CREATE TABLE fac_TemplatePowerPorts (
 --
 -- Add Config item for appending the datacenter / cabinet to device lists 
 --
+
 INSERT INTO fac_Config set Parameter='AppendCabDC', Value='disabled', UnitOfMeasure='Enabled/Disabled', ValType='string', DefaultVal='disabled';
 
 --
 -- Extend fac_PowerSource table for more load options to match CDUs
 -- 
+
 ALTER TABLE fac_PowerSource ADD OID2 VARCHAR( 80 ) NOT NULL AFTER LoadOID, ADD OID3 VARCHAR( 80 ) NOT NULL AFTER OID2;
 
 --
 -- Extend fac_Cabinet table for better sorting
 --
+
 ALTER TABLE fac_Cabinet ADD LocationSortable VARCHAR( 20 ) NOT NULL AFTER Location;
 UPDATE fac_Cabinet SET LocationSortable = REPLACE(Location, ' ', '');
 
 --
 -- Add a failure counter to all devices to keep track of whether or not they've gone silent
 --
+
 ALTER TABLE fac_Device ADD SNMPFailureCount TINYINT(1) NOT NULL AFTER SNMPCommunity;
 
 --
 -- Extend fac_CabRow table to allow for rows directly in a datacenter not just a zone
 --
+
 ALTER TABLE fac_CabRow ADD DataCenterID INT( 11 ) NOT NULL AFTER Name;
 UPDATE fac_CabRow SET DataCenterID=(SELECT DataCenterID FROM fac_Zone WHERE fac_CabRow.ZoneID=fac_Zone.ZoneID);
 
@@ -157,6 +162,7 @@ INSERT INTO fac_Config set Parameter="KeepLocal", Value="enabled", UnitOfMeasure
 --
 -- Compatability updates below
 --
+
 ALTER TABLE fac_Cabinet CHANGE FrontEdge FrontEdge VARCHAR( 7 ) NOT NULL DEFAULT "Top";
 ALTER TABLE fac_CabRow DROP CabOrder;
 ALTER TABLE fac_SensorTemplate CHANGE SNMPVersion SNMPVersion VARCHAR( 2 ) NOT NULL DEFAULT "2c";
@@ -174,26 +180,29 @@ ALTER TABLE fac_DeviceCustomAttribute CHANGE AttributeType AttributeType VARCHAR
 -- 
 UPDATE fac_Manufacturer SET GlobalID=0;
 
----
---- Increase size of PanelLabel field
----
+--
+-- Increase size of PanelLabel field
+--
+
 ALTER TABLE fac_PowerPanel MODIFY PanelLabel varchar(80);
 
----
---- Add new fields for the subpanel support
----
+--
+-- Add new fields for the subpanel support
+--
+
 ALTER TABLE fac_PowerPanel ADD COLUMN ParentPanelID int(11) NOT NULL;
 ALTER TABLE fac_PowerPanel ADD COLUMN ParentBreakerID int(11) NOT NULL;
 
----
---- Repo API Key Configuration Fields
----
+--
+-- Repo API Key Configuration Fields
+--
+
 INSERT INTO fac_Config set Parameter="APIUserID", Value="", UnitOfMeasure="Email", ValType="string", DefaultVal="";
 INSERT INTO fac_Config set Parameter="APIKey", Value="", UnitOfMeasure="Key", ValType="string", DefaultVal="";
 
----
---- Configuration item for RequireDefinedUser to see anything at all (Default is Disabled so that behavior doesn't change from prior versions)
----
+--
+-- Configuration item for RequireDefinedUser to see anything at all (Default is Disabled so that behavior doesn't change from prior versions)
+--
 
 INSERT INTO fac_Config set Parameter="RequireDefinedUser", Value="Disabled", UnitOfMeasure="Enabled/Disabled", ValType="string", DefaultVal="Disabled";
 
