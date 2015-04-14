@@ -39,6 +39,15 @@
 			array_push( $postData["templateports"], json_decode(json_encode($tport), true) );
 		}
 		
+		$tpp = new TemplatePowerPorts();
+		$tpp->TemplateID = $temp->TemplateID;
+		$tppList = $tpp->getPorts();
+		
+		$postData["templatepowerports"] = array();
+		foreach( $tppList as $pport ) { 
+			array_push( $postData["templatepowerports"], json_decode( json_encode( $pport), true ) );
+		}
+		
 		if ( $temp->DeviceType == "Chassis" ) {
 			$sList = Slot::GetAll( $temp->TemplateID );
 			
@@ -81,7 +90,7 @@
 			curl_setopt( $p, CURLOPT_COOKIEFILE, "/tmp/repocookies.txt" );
 			curl_setopt( $p, CURLOPT_COOKIEJAR, "/tmp/repocookies.txt" );
 			curl_setopt( $p, CURLOPT_FOLLOWLOCATION, 1 );
-			curl_setopt( $c, CURLOPT_HTTPHEADER, array( "UserID: " . $config->ParameterArray["APIUserID"], "APIKey: " . $config->ParameterArray["APIKey"] ) );
+			curl_setopt( $p, CURLOPT_HTTPHEADER, array( "UserID: " . $config->ParameterArray["APIUserID"], "APIKey: " . $config->ParameterArray["APIKey"] ) );
 			curl_setopt( $p, CURLOPT_POSTFIELDS, $postData );
 			
 			$result = curl_exec( $p );
