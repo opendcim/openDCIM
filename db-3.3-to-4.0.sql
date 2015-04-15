@@ -210,3 +210,8 @@ INSERT INTO fac_Config set Parameter="RequireDefinedUser", Value="Disabled", Uni
 -- This damn thing keeps coming up.  Add it in again. Add in column to track an audit date on a device
 --
 ALTER TABLE fac_Device ADD AuditStamp DATETIME NOT NULL;
+
+--
+-- Bump up the database version
+--
+UPDATE fac_Config set Value='4.0' WHERE Parameter='Version';
