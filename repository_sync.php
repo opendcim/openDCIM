@@ -6,6 +6,7 @@
 	$t = new DeviceTemplate();
 	$m = new Manufacturer();
 	$ct = new CDUTemplate();
+	$sen = new SensorTemplate();
 	
 	$tList = $t->GetTemplateShareList();
 	
@@ -64,12 +65,19 @@
 		}
 		
 		if ( $temp->DeviceType == "Sensor" ) {
+			$sen->TemplateID = $temp->TemplateID;
+			$sen->GetTemplate();
+			$postData["sensortemplate"] = json_decode( json_encode( $sen ), true );
 		}
 		
+		// print json_encode( $postData ) . "\n";
+
 		curl_setopt( $c, CURLOPT_POSTFIELDS, json_encode( $postData ) );
 		
 		$result = curl_exec( $c );
 		$jr = json_decode( $result ) ;
+
+		print_r( $result );
 
 		$postData = array();
 		

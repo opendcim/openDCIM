@@ -774,9 +774,9 @@ class DeviceTemplate {
 	var $DeviceType;
 	var $PSCount;
 	var $NumPorts;
-    var $Notes;
-    var $FrontPictureFile;
-    var $RearPictureFile;
+	var $Notes;
+	var $FrontPictureFile;
+	var $RearPictureFile;
 	var $ChassisSlots;
 	var $RearChassisSlots;
 	var $CustomValues;
