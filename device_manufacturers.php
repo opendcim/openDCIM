@@ -32,6 +32,7 @@
 		$mfg->GetManufacturerByID();
 		$mfg->GlobalID=$_POST['GlobalID'];
 		$mfg->Name=$_POST['Name'];
+		$mfg->SubscribeToUpdates = isset( $_POST['SubscribeToUpdates'] ) ? 1:0;
 		if($mfg->ManufacturerID==""){
 			$mfg->CreateManufacturer();
 		}else{
@@ -68,6 +69,7 @@
 	if(isset($_POST["action"])&&(($_POST["action"]=="Create")||($_POST["action"]=="Update"))){
 		$mfg->ManufacturerID=$_POST["ManufacturerID"];
 		$mfg->Name=trim($_POST["name"]);
+		$mfg->SubscribeToUpdates = isset( $_POST['SubscribeToUpdates'] ) ? 1 : 0;
 
 		if($mfg->Name != null && $mfg->Name != ""){
 			if($_POST["action"]=="Create"){
@@ -509,6 +511,10 @@ echo '	</select></div>
 <div>
    <div><label for="name">',__("Name"),'</label></div>
    <div><input type="text" class="validate[required,minSize[1],maxSize[40]]" name="name" id="name" maxlength="40" value="',$mfg->Name,'"></div>
+</div>
+<div>
+   <div><label for="SubscribeToUpdates">',__('Subscribe to Repository'),'</label></div>
+   <div><input type="checkbox" name="SubscribeToUpdates" id="SubscribeToUpdates" ', $mfg->SubscribeToUpdates == 1 ? 'checked' : '','></div>
 </div>
 <div class="caption">';
 
