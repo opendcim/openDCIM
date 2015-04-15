@@ -724,20 +724,15 @@ if(isset($devMode)&&$devMode){
 */
 
 if(!isset($_SERVER["REMOTE_USER"]) && !isset($_SESSION['userid']) && AUTHENTICATION=="Oauth"){
-	header("Location: ".redirect('login.php'));
+	header("Location: ".redirect('oauth/login.php'));
 	exit;
 }
 
-// Using to offset errors from the header additions
-if(!isset($_SESSION['userid']) && isset($_SERVER["REMOTE_USER"])){
-	$_SESSION['userid']=$_SERVER["REMOTE_USER"];
-}
-	
-if ( ! People::Current() ) {
- 	if ( AUTHENTICATION == "Oauth" ) {
-		header( "Location: login.php" );
+if(!People::Current()){
+	if(AUTHENTICATION=="Oauth"){
+		header("Location: ".redirect('oauth/login.php'));
 		exit;
-	} elseif ( AUTHENTICATION == "Apache" ) {
+	}elseif(AUTHENTICATION=="Apache"){
 		print "<h1>You must have some form of Authentication enabled to use openDCIM.</h1>";
 		exit;
 	}
@@ -746,8 +741,8 @@ if ( ! People::Current() ) {
 
 /* This is used on every page so we might as well just init it once */
 $person=People::Current();
-if (( $person->Disabled || $person->PersonID == 0 ) && $config->ParameterArray["RequireDefinedUser"] == "enabled" ) {
-	header( "Location: unauthorized.php" );
+if(($person->Disabled || $person->PersonID==0) && $config->ParameterArray["RequireDefinedUser"]=="enabled"){
+	header("Location: ".redirect('unauthorized.php'));
 	exit;
 }
 	

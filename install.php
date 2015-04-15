@@ -838,8 +838,8 @@ function upgrade(){
 
 		// Update all the records with their new templateid
 		foreach($converted as $oldid => $newid){
-			$dbh->query( "UPDATE fac_CDUTemplate SET TemplateID = '$newid' WHERE TemplateID=$oldid;" );
-			$dbh->query( "UPDATE fac_PowerDistribution SET TemplateID=$newid WHERE TemplateID=$oldid" );
+			$dbh->query("UPDATE fac_CDUTemplate SET TemplateID=$newid WHERE TemplateID=$oldid;");
+			$dbh->query("UPDATE fac_PowerDistribution SET TemplateID=$newid WHERE TemplateID=$oldid");
 		}
 		// END - CDU template conversion
 
