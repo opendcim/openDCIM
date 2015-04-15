@@ -206,3 +206,7 @@ INSERT INTO fac_Config set Parameter="APIKey", Value="", UnitOfMeasure="Key", Va
 
 INSERT INTO fac_Config set Parameter="RequireDefinedUser", Value="Disabled", UnitOfMeasure="Enabled/Disabled", ValType="string", DefaultVal="Disabled";
 
+--
+-- This damn thing keeps coming up.  Add it in again. Add in column to track an audit date on a device
+--
+ALTER TABLE fac_Device ADD AuditStamp DATETIME NOT NULL;

@@ -723,6 +723,61 @@ function upgrade(){
 		// Bring up the rest of the classes
 		require_once("facilities.inc.php");
 
+
+		// People conversion 
+		$p=new People();
+		$c=new Contact();
+		$u=new User();
+
+		$plist=$p->GetUserList();
+		// Check if we have an empty fac_People table then merge if that's the case
+		if(sizeof($plist)==0){
+			$clist=$c->GetContactList();
+			foreach( $clist as $tmpc ) {
+				foreach($tmpc as $prop => $val){
+					$p->$prop=$val;
+				}
+				// we're keeping the Contact ID so assign it to the PersonID
+				$p->PersonID=$tmpc->ContactID;
+				
+				$u->UserID=$p->UserID;
+				$u->GetUserRights();
+				foreach($u as $prop => $val){
+					$p->$prop=$val;
+				}
+
+				// This shouldn't be necessary but... 
+				$p->MakeSafe();
+				
+				$sql="INSERT INTO fac_People SET PersonID=$p->PersonID, UserID=\"$p->UserID\", 
+					AdminOwnDevices=$p->AdminOwnDevices, ReadAccess=$p->ReadAccess, 
+					WriteAccess=$p->WriteAccess, DeleteAccess=$p->DeleteAccess, 
+					ContactAdmin=$p->ContactAdmin, RackRequest=$p->RackRequest, 
+					RackAdmin=$p->RackAdmin, SiteAdmin=$p->SiteAdmin, Disabled=$p->Disabled, 
+					LastName=\"$p->LastName\", FirstName=\"$p->FirstName\", 
+					Phone1=\"$p->Phone1\", Phone2=\"$p->Phone2\", Phone3=\"$p->Phone3\", 
+					Email=\"$p->Email\";";
+
+				$dbh->query($sql);
+			}
+			
+			$ulist=$u->GetUserList();
+			foreach($ulist as $tmpu){
+				/* This time around we have to see if the User is already in the fac_People table */
+				$p->UserID=$tmpu->UserID;
+				if(!$p->GetPersonByUserID()){
+					foreach($tmpu as $prop => $val){
+						$p->$prop=$val;
+					}
+					// Names have changed formats between the user table and the people table
+					$p->LastName=$tmpu->Name;
+					
+					$p->CreatePerson();
+				}
+			}
+		}
+		// END - People conversion 
+
 		// CDU template conversion, to be done prior to device conversion
 		class PowerTemplate extends DeviceTemplate {
 			function CreateTemplate(){
