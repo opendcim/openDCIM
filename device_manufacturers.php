@@ -514,7 +514,7 @@ echo '	</select></div>
 </div>
 <div>
    <div><label for="SubscribeToUpdates">',__('Subscribe to Repository'),'</label></div>
-   <div><input type="checkbox" name="SubscribeToUpdates" id="SubscribeToUpdates" ', $mfg->SubscribeToUpdates == 1 ? 'checked' : '','></div>
+   <div><input type="checkbox" name="SubscribeToUpdates" id="SubscribeToUpdates" ', $mfg->SubscribeToUpdates == 1 ? 'checked' : '', $mfg->GlobalID>0 ? '' : ' disabled','></div>
 </div>
 <div class="caption">';
 

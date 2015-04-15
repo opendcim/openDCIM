@@ -3,6 +3,10 @@
 	require_once( "db.inc.php" );
 	require_once( "facilities.inc.php" );
 	
+	global $dbh;
+
+	$picturedir = getcwd() . "/pictures/";
+
 	$t = new DeviceTemplate();
 	$m = new Manufacturer();
 	$ct = new CDUTemplate();
@@ -77,8 +81,6 @@
 		$result = curl_exec( $c );
 		$jr = json_decode( $result ) ;
 
-		print_r( $result );
-
 		$postData = array();
 		
 		if ( $temp->FrontPictureFile != "" ) {
@@ -103,14 +105,155 @@
 			
 			$result = curl_exec( $p );
 			$pr = json_decode( $result );
+
+			curl_close( $p );
 		}
 		
 		if ( @$jr->errorcode == 200 && @$pr->errorcode == 200 ) {
 			if ( sizeof( $tpList ) == 0 ) {
-				// $temp->clearShareFlag();
+				$temp->clearShareFlag();
+			}
+		}
+	}
+	
+
+	$mList = $m->getSubscriptionList();
+	foreach( $mList as $man ) {
+		curl_setopt( $c, CURLOPT_URL, 'https://repository.opendcim.org/api/template/bymanufacturer/' . $man->GlobalID );
+		curl_setopt( $c, CURLOPT_CUSTOMREQUEST, 'GET' );
+
+		$result = curl_exec( $c );
+		$jr = json_decode( $result );
+		if ( @$jr->errorcode == 200 ) {
+			if ( is_array( $jr->templates ) ) {
+				foreach ( $jr->templates as $tem ) {
+					$cs = new Slot();
+					$tp = new TemplatePorts();
+					$tpp = new TemplatePowerPorts();
+					foreach ( $t as $prop=>$val ) {
+						@$t->$prop = $tem->$prop;
+					}
+
+					// Snag the images
+					if ( $t->FrontPictureFile != "" ) {
+						$tmpname = explode( ".", basename($t->FrontPictureFile), 2 );
+						$frontname = $picturedir.$tmpname[1];
+						grab_image( $t->FrontPictureFile, $frontname );
+						$t->FrontPictureFile = $tmpname[1];
+					}
+
+					if ( $t->RearPictureFile != "" ) {
+						$tmpname = explode( ".", basename($t->RearPictureFile), 2 );
+						$rearname = $picturedir.$tmpname[1];
+						grab_image( $t->RearPictureFile, $rearname );
+						$t->RearPictureFile = $tmpname[1];
+					}
+					
+					// TemplateID from the repo is GlobalID for us
+					$t->GlobalID = $tem->TemplateID;
+
+					// Resolve the TemplateID first so that we can make the rest of the tables match
+					$st = $dbh->prepare( "select TemplateID, KeepLocal, count(*) as Total from fac_DeviceTemplate where GlobalID=:TemplateID or (ManufacturerID=:ManufacturerID and ucase(Model)=ucase(:Model))" );
+					$st->execute( array( ":TemplateID"=>$t->GlobalID, ":ManufacturerID"=>$man->ManufacturerID, ":Model"=>$t->Model ) );
+					$row = $st->fetch();
+					if ( $row["Total"] > 0 ) {
+						if ( $row["KeepLocal"] == 1 ) {
+							// Anything marked as KeepLocal we ignore the repo completely
+							continue;
+						}
+						$t->TemplateID = $row["TemplateID"];
+						$t->UpdateTemplate();
+						$updating = true;
+					} else {
+						error_log( "Adding new template for Mfg=" . $man->ManufacturerID . " and Model=" . $t->Model );
+						$t->TemplateID = 0;
+						$t->CreateTemplate();
+						$updating = false;
+					}
+
+
+					if ( $t->DeviceType == "CDU" && is_object( $tem->cdutemplate ) ) {
+						foreach( $tem->cdutemplate as $prop=>$val ) {
+							$ct->$prop = $val;
+						}
+						$ct->TemplateID = $t->TemplateID;
+						if ( ! $updating ) {
+							$ct->CreateTemplate( $t->TemplateID );
+						} else {
+							$ct->UpdateTemplate();
+						}
+					} 
+
+					if ( $t->DeviceType == "Chassis" && is_array( $tem->slots ) ) {
+						foreach( $tem->slots as $sl ) {
+							foreach( $sl as $prop=>$val ) {
+								$cs->$prop = $val;
+							}
+							$cs->TemplateID = $t->TemplateID;
+							if ( ! $updating ) {
+								$cs->CreateSlot();
+							} else {
+								$cs->UpdateSlot();
+							}
+						}
+					}
+
+					if ( $t->DeviceType == "Sensor" && is_object( $tem->sensortemplate ) ) {
+						foreach( $tem->sensortemplate as $prop=>$val ) {
+							$sen->$prop = $val;
+						}
+						$sen->TemplateID = $t->TemplateID;
+						if ( ! $updating ) {
+							$sen->CreateTemplate( $t->TemplateID );
+						} else {
+							$sen->UpdateTemplate();
+						}
+					}
+
+					if ( is_array( @$tem->ports ) ) {
+						if ( $updating ) {
+							$tp->flushPorts( $t->TemplateID );
+						}
+						foreach( $tem->ports as $tmpPort ) {
+							foreach( $tmpPort as $prop=>$val ) {
+								$tp->$prop = $val;
+							}
+							$tp->TemplateID = $t->TemplateID;
+							$tp->createPort();
+						}
+					}
+
+					if ( is_array( @$tem->powerports ) ) {
+						if ( $updating ) {
+							$tpp->flushPorts( $t->TemplateID );
+						}
+						foreach( $tem->powerports as $tmpPwr ) {
+							foreach( $tmpPwr as $prop=>$val ) {
+								$tpp->$prop = $val;
+							}
+							$tpp->TemplateID = $t->TemplateID;
+							$tpp->createPort();
+						}
+					}
+				}
 			}
 		}
 	}
 	
 	curl_close( $c );
+
+function grab_image($url,$saveto){
+    $ch = curl_init ($url);
+    curl_setopt($ch, CURLOPT_HEADER, 0);
+    curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+    curl_setopt($ch, CURLOPT_BINARYTRANSFER,1);
+    $raw=curl_exec($ch);
+    curl_close ($ch);
+    if(file_exists($saveto)){
+        unlink($saveto);
+    }
+    $fp = fopen($saveto,'x');
+    fwrite($fp, $raw);
+    fclose($fp);
+}
 ?>

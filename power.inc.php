@@ -132,10 +132,8 @@ class CDUTemplate {
 		return;
 	}
 	
-	function CreateTemplate($deviceid=null) {
+	function CreateTemplate($templateid) {
 		global $dbh;
-
-		$sqlinsert=(!is_null($deviceid))?", TemplateID=$deviceid":"";
 
 		$this->MakeSafe();
 		
@@ -145,13 +143,11 @@ class CDUTemplate {
 			Multiplier=\"$this->Multiplier\", OID1=\"$this->OID1\", OID2=\"$this->OID2\", 
 			OID3=\"$this->OID3\", ATSStatusOID=\"$this->ATSStatusOID\", ATSDesiredResult=\"$this->ATSDesiredResult\",
 			ProcessingProfile=\"$this->ProcessingProfile\", 
-			Voltage=$this->Voltage, Amperage=$this->Amperage, NumOutlets=$this->NumOutlets$sqlinsert;";
+			Voltage=$this->Voltage, Amperage=$this->Amperage, NumOutlets=$this->NumOutlets, TemplateID=$templateid";
 		
 		if(!$dbh->exec($sql)){
 			// A combination of this Mfg + Model already exists most likely
 			return false;
-		}else{
-			$this->TemplateID = $dbh->lastInsertID();
 		}
 		
 		(class_exists('LogActions'))?LogActions::LogThis($this):'';

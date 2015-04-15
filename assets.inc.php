@@ -821,10 +821,8 @@ class SensorTemplate {
 		return $tempList;
 	}
 	
-	function CreateTemplate($templateid=null){
+	function CreateTemplate($templateid){
 		global $dbh;
-
-		$sqladdon=(!is_null($templateid))?", TemplateID=".intval($templateid):"";
 
 		$sql="INSERT INTO fac_SensorTemplate SET ManufacturerID=$this->ManufacturerID, 
 			Name=\"$this->Name\", SNMPVersion=\"$this->SNMPVersion\", 
@@ -832,15 +830,13 @@ class SensorTemplate {
 			TempMultiplier=$this->TempMultiplier, 
 			HumidityMultiplier=$this->HumidityMultiplier, mUnits=\"$this->mUnits\",
 			GlobalID=$this->GlobalID, ShareToRepo=$this->ShareToRepo,
-			KeepLocal=$this->KeepLocal $sqladdon;";
+			KeepLocal=$this->KeepLocal, TemplateID=".intval($templateid);
 
 		if(!$dbh->exec($sql)){
 			$info=$dbh->errorInfo();
 
 			error_log("CreateTemplate::PDO Error: {$info[2]} SQL=$sql");
 			return false;
-		}else{
-			$this->TemplateID=$dbh->lastInsertID();
 		}
 
 		(class_exists('LogActions'))?LogActions::LogThis($this):'';

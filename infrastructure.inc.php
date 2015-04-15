@@ -1450,6 +1450,11 @@ class Manufacturer {
 		return $m;
 	}
 
+	function prepare( $sql ) {
+		global $dbh;
+		return $dbh->prepare( $sql );
+	}
+	
 	function query($sql){
 		global $dbh;
 		return $dbh->query($sql);
@@ -1503,6 +1508,19 @@ class Manufacturer {
 		}
 
 		return $ManufacturerList;
+	}
+	
+	function getSubscriptionList() {
+		$st = $this->prepare( "select * from fac_Manufacturer where GlobalID>0 and SubscribeToUpdates=true order by GlobalID ASC" );
+		$st->execute();
+		$st->setFetchMode( PDO::FETCH_CLASS, "Manufacturer" );
+		
+		$mList = array();
+		while ( $row = $st->fetch() ) {
+			$mList[] = $row;
+		}
+		
+		return $mList;
 	}
 
 	function CreateManufacturer(){
@@ -2848,6 +2866,16 @@ class TemplatePorts {
 		return $tp;
 	}
 
+	function prepare( $sql ) {
+		global $dbh;
+		return $dbh->prepare( $sql );
+	}
+	
+	function flushPorts( $templateid ) {
+		$st = $this->prepare( "delete from fac_TemplatePorts where TemplateID=:TemplateID" );
+		return $st->execute( array( ":TemplateID"=>$templateid ) );
+	}
+	
 	function getPort(){
 		global $dbh;
 		$this->MakeSafe();
@@ -2973,6 +3001,16 @@ class TemplatePowerPorts {
 		$tp->MakeDisplay();
 
 		return $tp;
+	}
+	
+	function prepare( $sql ) {
+		global $dbh;
+		return $dbh->prepare( $sql );
+	}
+	
+	function flushPorts( $templateid ) {
+		$st = $this->prepare( "delete from fac_TemplatePowerPorts where TemplateID=:TemplateID" );
+		return $st->execute( array( ":TemplateID"=>$templateid ) );
 	}
 
 	function getPort(){
