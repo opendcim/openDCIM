@@ -723,7 +723,7 @@ if(isset($devMode)&&$devMode){
 	we are.  It may be needed for the installation.
 */
 
-if ( !isset($_SERVER["REMOTE_USER"] ) && !isset( $_SESSION['userid'] ) && AUTHENTICATION=="Oauth" ) {
+if(!isset($_SERVER["REMOTE_USER"]) && !isset($_SESSION['userid']) && AUTHENTICATION=="Oauth"){
 	header("Location: ".redirect('login.php'));
 	exit;
 }

@@ -3,19 +3,7 @@ $codeversion="4.0";
 
 // Pre-Flight check
 	$tests=array();
-	$errors=0;
-/*	if ( isset($_SERVER['REMOTE_USER'])) {
-		$tests['Remote User']['state']="good";
-		$tests['Remote User']['message']='';
-	} elseif ( isset( $_SESSION['userid'] ) ) {
-		$tests['Remote User']['state']="good";
-		$tests['Remote User']['message']='Authenticated as UserID='.$_SESSION['userid'];
-	}else{
-		$tests['Remote User']['state']="fail";
-		$tests['Remote User']['message']='<a href="http://httpd.apache.org/docs/2.2/howto/auth.html">http://httpd.apache.org/docs/2.2/howto/auth.html</a>';
-		$errors++;
-	}
-*/
+	$errors=1;
 	if (extension_loaded('mbstring')) {
 		$tests['mbstring']['state']="good";
 		$tests['mbstring']['message']='';
@@ -77,6 +65,36 @@ $codeversion="4.0";
 		$tests['pdo']['message']='openDCIM requires the <a href="http://php.net/manual/pdo.installation.php">PDO extention</a> and you do not appear to have it loaded';
 		$tests['pdodrivers']['state']="fail";
 		$tests['pdodrivers']['message']='No PDO drivers have been detected';
+		$errors++;
+	}
+
+	// If AUTHENTICATION isn't defined then this asshole is upgrading to 4.0 and didn't add it into the db.inc.php
+	if(defined('AUTHENTICATION')){
+		$tests['authentication']['state']="good";
+		$tests['authentication']['message']="Authentication set to ".AUTHENTICATION;
+		if(AUTHENTICATION=="Apache"){
+			if(isset($_SERVER['REMOTE_USER'])){
+				$tests['Remote User']['state']="good";
+				$tests['Remote User']['message']='';
+			}else{
+				$tests['Remote User']['message']='<a href="http://httpd.apache.org/docs/2.2/howto/auth.html">http://httpd.apache.org/docs/2.2/howto/auth.html</a>';
+			}
+		}elseif(AUTHENTICATION=="Oauth"){
+			if(isset($_SESSION['userid'])){
+				$tests['Remote User']['state']="good";
+				$tests['Remote User']['message']='Authenticated as UserID='.$_SESSION['userid'];
+			}else{
+				$tests['Remote User']['message']='Click <a href="oauth/login.php">here</a> to authenticate via Oauth';
+			}
+		}
+		// Try to not duplicate everything
+		if(!isset($tests['Remote User']['state'])){
+			$tests['Remote User']['state']="fail";
+			$errors++;
+		}
+	}else{
+		$tests['authentication']['state']="fail";
+		$tests['authentication']['message']=($tests['db.inc']['state']=="good")?"You didn't read the upgrade notes. Jerk.":"How can you expect to work this if you can't even copy the db.inc.php into the right place?";
 		$errors++;
 	}
 
@@ -212,9 +230,9 @@ function sanitize($string,$stripall=true){
 	require_once("customers.inc.php");
 
 	$person=new People();
-	if ( AUTHENTICATION == "Apache" ) {
+	if(AUTHENTICATION=="Apache"){
 		$person->UserID=$_SERVER['REMOTE_USER'];
-	} elseif ( AUTHENTICATION == "Oauth" ) {
+	}elseif(AUTHENTICATION=="Oauth"){
 		$person->UserID=$_SESSION['userid'];
 	}
 
@@ -229,7 +247,7 @@ function sanitize($string,$stripall=true){
 	if($users==0){
 		$person->Name="Default Admin";
 		foreach($person as $prop => $value){
-			if(strstr( $prop, 'Admin' ) || strstr( $prop, 'Access' )){
+			if(strstr($prop,"Admin") || strstr($prop,"Access")){
 				$person->$prop=true;
 			}
 		}
