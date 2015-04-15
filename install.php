@@ -3,7 +3,7 @@ $codeversion="4.0";
 
 // Pre-Flight check
 	$tests=array();
-	$errors=1;
+	$errors=0;
 	if (extension_loaded('mbstring')) {
 		$tests['mbstring']['state']="good";
 		$tests['mbstring']['message']='';
