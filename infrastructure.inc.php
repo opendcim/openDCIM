@@ -1459,6 +1459,22 @@ class Manufacturer {
 		return $dbh->exec($sql);
 	}
 	
+	function getManufacturerByGlobalID() {
+		$st = $this->prepare( "select * from fac_Manufacturer where GlobalID=:GlobalID" );
+		$st->execute( array( ":GlobalID"=>$this->GlobalID ) );
+		$st->setFetchMode( PDO::FETCH_CLASS, "Manufacturer" );
+		
+		if ( $row = $st->fetch() ) {
+			foreach( $row as $prop=>$val ) {
+				$this->$prop = $val;
+			}
+			
+			return true;
+		} else {
+			return false;
+		}
+	}
+	
 	function GetManufacturerByID(){
 		$this->MakeSafe();
 

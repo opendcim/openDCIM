@@ -124,16 +124,23 @@
 	
 	if ( is_array( $jr->manufacturers ) ) {
 		foreach( $jr->manufacturers as $tmpman ) {
-			$m->Name = $tmpman->Name;
-			if ( $m->GetManufacturerByName() ) {
-				// Reset to the values from the repo (especially CaSe)
-				$m->GlobalID = $tmpman->ManufacturerID;
+			$m->GlobalID = $tmpman->ManufacturerID;
+			if ( $m->getManufacturerByGlobalID() ) { 
 				$m->Name = $tmpman->Name;
 				$m->UpdateManufacturer();
 			} else {
-				$m->ManufacturerID = $tmpman->ManufacturerID;
+				// We don't already have this one linked, so search for a candidate or add as a new one
 				$m->Name = $tmpman->Name;
-				$m->CreateManufacturer();
+				if ( $m->GetManufacturerByName() ) {
+					// Reset to the values from the repo (especially CaSe)
+					$m->GlobalID = $tmpman->ManufacturerID;
+					$m->Name = $tmpman->Name;
+					$m->UpdateManufacturer();
+				} else {
+					$m->ManufacturerID = $tmpman->ManufacturerID;
+					$m->Name = $tmpman->Name;
+					$m->CreateManufacturer();
+				}
 			}
 		}
 	}
@@ -172,6 +179,14 @@
 					
 					// TemplateID from the repo is GlobalID for us
 					$t->GlobalID = $tem->TemplateID;
+					
+					// Check the status of the Config globals for behavior
+					// Specifically, if KeepLocal is set, then once a template has been downloaded, set the flag
+					if ( $config->ParameterArray["KeepLocal"] == "enabled" ) {
+						$t->KeepLocal = true;
+					} else {
+						$t->KeepLocal = false;
+					}
 
 					// Resolve the TemplateID first so that we can make the rest of the tables match
 					$st = $dbh->prepare( "select TemplateID, KeepLocal, count(*) as Total from fac_DeviceTemplate where GlobalID=:TemplateID or (ManufacturerID=:ManufacturerID and ucase(Model)=ucase(:Model))" );
