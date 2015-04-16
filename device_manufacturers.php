@@ -197,13 +197,25 @@
 			location.href='device_manufacturers.php?ManufacturerID='+this.value;
 		});
 		// Show number of templates using manufacturer
-		$.get('',{getTemplateCount: $('#ManufacturerID').val()},function(data){
-			$('#count').text(data.length);
-		});
+		UpdateCount();
 
 		$('button[name="action"][value="Delete"]').click(DeleteManufacturer);
 
 	});
+
+	function UpdateCount(e){
+		var count;
+		$.ajax({
+			type:'get',
+			async: false, 
+			data:{getTemplateCount: $('#ManufacturerID').val()},
+			success: function(data){
+				$('#count').text(data.length);
+				count=data.length;
+			}
+		});
+		return count;
+	}
 
 	$.widget( "opendcim.mrow", {
 		_create: function(){
@@ -213,9 +225,7 @@
 			this.id=this.element.find('div:nth-child(1)');
 			this.name=this.element.find('div:nth-child(2)');
 			this.gid=this.element.find('div:nth-child(3)');
-			this.share=this.element.find('div:nth-child(4)');
-			this.keep=this.element.find('div:nth-child(5)');
-			this.button=this.element.find('div:nth-child(6) > button');
+			this.button=this.element.find('div:nth-child(4) > button');
 
 			this.button.click(function(e){
 				row.ButtonPress(e);
@@ -229,8 +239,6 @@
 			this.id.text(manf.ManufacturerID);
 			this.name.text(manf.Name);
 			this.gid.text(manf.GlobalID);
-			this.share.text(manf.ShareToRepo);
-			this.keep.text(manf.KeepLocal);
 		},
 		ButtonPress: function(e){
 			// We're not gonna bind a specific function to the button but check it at 
@@ -299,7 +307,7 @@
 
 	function BuildTable(){
 		var table=$('<div>').addClass('table border');
-		var header={ManufacturerID:'id',Name:'name',GlobalID:'gid',ShareToRepo:'share',KeepLocal:'local'};
+		var header={ManufacturerID:'id',Name:'name',GlobalID:'gid'};
 		table.append(BuildRow(header));
 
 		var ll=GetLocalList();
@@ -369,7 +377,7 @@
 		}
 		// Add global hits that didn't match to the end of the list
 		for(var i in ml){
-			var gm={ManufacturerID:0,Name:ml[i].Name,GlobalID:ml[i].ManufacturerID,ShareToRepo:0,KeepLocal:0};
+			var gm={ManufacturerID:0,Name:ml[i].Name,GlobalID:ml[i].ManufacturerID};
 			$('#mform > .table').append(BuildRow(gm)).find('div:last-child > div:last-child').removeClass('hide').find('button').text('Pull from master').data('action','pull');
 		}
 	}
@@ -379,8 +387,6 @@
 		row.id=$('<div>').text(manf.ManufacturerID);
 		row.name=$('<div>').text(manf.Name);
 		row.gid=$('<div>').text(manf.GlobalID);
-		row.share=$('<div>').text(manf.ShareToRepo);
-		row.local=$('<div>').text(manf.KeepLocal);
 		row.sync=$('<div>').addClass('hide').append($('<button>').attr('type','button').text('Send to master').data('action','push'));
 		row.append(row.id,row.name,row.gid,row.share,row.local,row.sync);
 
@@ -444,39 +450,50 @@
 	}
 
 	function DeleteManufacturer(){
-		$('#copy').replaceWith($('#ManufacturerID').clone().attr('id','copy'));
-		$('#copy option[value=0]').remove();
-		$('#copy option[value='+$('#ManufacturerID').val()+']').remove();
-		$('#deletemodal').dialog({
-			width: 600,
-			modal: true,
-			buttons: {
-				Transfer: function(e){
-					$('#doublecheck').dialog({
-						width: 600,
-						modal: true,
-						buttons: {
-							Yes: function(e){
-								$.post('',{ManufacturerID: $('#ManufacturerID').val(), TransferTo: $('#copy').val(), action: 'Delete'},function(data){
-									if(data){
-										location.href='';
-									}else{
-										alert("Something's gone horrible wrong");
-									}
-								});
-							},
-							No: function(e){
-								$('#doublecheck').dialog('destroy');
-								$('#deletemodal').dialog('destroy');
-							}
-						}
-					});
-				},
-				No: function(e){
-					$('#deletemodal').dialog('destroy');
+		function DeleteNow(manufacturerid){
+			// If manufacturerid unset then just delete 
+			transferto=(typeof(manufacturerid)=='undefined')?0:manufacturerid;
+			$.post('',{ManufacturerID: $('#ManufacturerID').val(), TransferTo: transferto, action: 'Delete'},function(data){
+				if(data){
+					location.href='';
+				}else{
+					alert("Something's gone horrible wrong");
 				}
-			}
-		});
+			});
+		}
+
+		// if there aren't any templates using this manufacturer just delete it.
+		if(parseInt(UpdateCount())){
+			$('#copy').replaceWith($('#ManufacturerID').clone().attr('id','copy'));
+			$('#copy option[value=0]').remove();
+			$('#copy option[value='+$('#ManufacturerID').val()+']').remove();
+			$('#deletemodal').dialog({
+				width: 600,
+				modal: true,
+				buttons: {
+					Transfer: function(e){
+						$('#doublecheck').dialog({
+							width: 600,
+							modal: true,
+							buttons: {
+								Yes: function(e){
+									DeleteNow($('#copy').val());
+								},
+								No: function(e){
+									$('#doublecheck').dialog('destroy');
+									$('#deletemodal').dialog('destroy');
+								}
+							}
+						});
+					},
+					No: function(e){
+						$('#deletemodal').dialog('destroy');
+					}
+				}
+			});
+		}else{
+			DeleteNow();
+		}
 	}
 
   </script>
