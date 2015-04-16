@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: openDCIM.po\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-04-15 22:49-0400\n"
+"POT-Creation-Date: 2015-04-15 23:09-0400\n"
 "PO-Revision-Date: 2014-03-24 08:48-0500\n"
 "Last-Translator: Wilbur Longwisch <wilbur@wilpig.org>\n"
 "Language-Team: openDCIM <discussion@list.opendcim.org>\n"
@@ -202,7 +202,7 @@ msgstr ""
 msgid "Assigned To"
 msgstr ""
 
-#: openDCIM/cabinets.php:233
+#: openDCIM/cabinets.php:233 openDCIM/scripts/ajax_tooltip.php:58
 msgid "General Use"
 msgstr ""
 
@@ -415,13 +415,13 @@ msgstr ""
 
 #: openDCIM/cabnavigator.php:393 openDCIM/dc_dashboard.php:78
 #: openDCIM/dc_stats.php:217 openDCIM/index.php:114
-#: openDCIM/zone_stats.php:225
+#: openDCIM/zone_stats.php:225 openDCIM/scripts/ajax_tooltip.php:128
 msgid "Space"
 msgstr ""
 
 #: openDCIM/cabnavigator.php:402 openDCIM/dc_dashboard.php:79
 #: openDCIM/dc_stats.php:218 openDCIM/device_templates.php:644
-#: openDCIM/zone_stats.php:226
+#: openDCIM/zone_stats.php:226 openDCIM/scripts/ajax_tooltip.php:129
 msgid "Weight"
 msgstr ""
 
@@ -530,6 +530,7 @@ msgstr ""
 #: openDCIM/datacenter.php:251 openDCIM/device_manufacturers.php:512
 #: openDCIM/power_source.php:95 openDCIM/report_surplus.php:226
 #: openDCIM/search_export.php:36 openDCIM/sensor_templates.php:106
+#: openDCIM/scripts/ajax_tooltip.php:181 openDCIM/scripts/ajax_tooltip.php:192
 msgid "Name"
 msgstr ""
 
@@ -1482,6 +1483,7 @@ msgid "%"
 msgstr ""
 
 #: openDCIM/dc_stats.php:219 openDCIM/zone_stats.php:227
+#: openDCIM/scripts/ajax_tooltip.php:130
 msgid "Calculated Power"
 msgstr ""
 
@@ -1490,10 +1492,12 @@ msgid "Measured Power"
 msgstr ""
 
 #: openDCIM/dc_stats.php:221 openDCIM/zone_stats.php:229
+#: openDCIM/scripts/ajax_tooltip.php:169
 msgid "Temperature"
 msgstr ""
 
 #: openDCIM/dc_stats.php:222 openDCIM/zone_stats.php:230
+#: openDCIM/scripts/ajax_tooltip.php:170
 msgid "Humidity"
 msgstr ""
 
@@ -1726,6 +1730,7 @@ msgstr ""
 #: openDCIM/report_outage_simulator.php:290
 #: openDCIM/report_power_utilization.php:160 openDCIM/report_tags.php:29
 #: openDCIM/search_export.php:42 openDCIM/sidebar.inc.php:20
+#: openDCIM/scripts/ajax_tooltip.php:127
 msgid "Owner"
 msgstr ""
 
@@ -2185,7 +2190,7 @@ msgid "Error updating devices"
 msgstr ""
 
 #: openDCIM/device_templates.php:289 openDCIM/device_templates.php:301
-#: openDCIM/paths.php:171
+#: openDCIM/paths.php:171 openDCIM/scripts/ajax_tooltip.php:22
 msgid "Error"
 msgstr ""
 
@@ -2488,7 +2493,8 @@ msgid "Measured on"
 msgstr ""
 
 #: openDCIM/infrastructure.inc.php:628 openDCIM/infrastructure.inc.php:629
-#: openDCIM/infrastructure.inc.php:630
+#: openDCIM/infrastructure.inc.php:630 openDCIM/scripts/ajax_tooltip.php:122
+#: openDCIM/scripts/ajax_tooltip.php:123 openDCIM/scripts/ajax_tooltip.php:124
 msgid "no data"
 msgstr ""
 
@@ -2772,7 +2778,7 @@ msgstr ""
 msgid "Final device unspecified"
 msgstr ""
 
-#: openDCIM/pathmaker.php:192
+#: openDCIM/pathmaker.php:192 openDCIM/scripts/uploadifive.php:89
 msgid "Unknown Error"
 msgstr ""
 
@@ -4432,4 +4438,133 @@ msgstr ""
 
 #: openDCIM/zone_stats.php:202
 msgid "approximate"
+msgstr ""
+
+#: openDCIM/api/v1/index.php:402
+msgid "No device found with DeviceID"
+msgstr ""
+
+#: openDCIM/api/v1/index.php:579
+msgid "No color code found with ColorID"
+msgstr ""
+
+#: openDCIM/api/v1/index.php:627
+msgid "Insufficient privilege level"
+msgstr ""
+
+#: openDCIM/api/v1/index.php:638
+msgid "User not found in database."
+msgstr ""
+
+#: openDCIM/api/v1/index.php:650
+msgid "Unable to update People resource with the given parameters."
+msgstr ""
+
+#: openDCIM/api/v1/index.php:655
+#, php-format
+msgid "People resource for UserID=%1$s updated successfully."
+msgstr ""
+
+#: openDCIM/api/v1/index.php:696
+msgid "Device update has failed"
+msgstr ""
+
+#: openDCIM/api/v1/index.php:800
+msgid "UserID already in database.  Use the update API to modify record."
+msgstr ""
+
+#: openDCIM/api/v1/index.php:814
+msgid "Unable to create People resource with the given parameters."
+msgstr ""
+
+#: openDCIM/api/v1/index.php:819
+msgid "People resource created successfully."
+msgstr ""
+
+#: openDCIM/api/v1/index.php:845
+msgid "Error creating new color."
+msgstr ""
+
+#: openDCIM/api/v1/index.php:849
+msgid "New color created successfully."
+msgstr ""
+
+#: openDCIM/api/v1/index.php:934
+msgid "Failed to delete color with ColorID"
+msgstr ""
+
+#: openDCIM/scripts/ajax_tooltip.php:131
+msgid "Measured Power Combined"
+msgstr ""
+
+#: openDCIM/scripts/ajax_tooltip.php:172
+msgid "Quit that! You don't have rights to view this."
+msgstr ""
+
+#: openDCIM/scripts/ajax_tooltip.php:188
+msgid "Details Restricted"
+msgstr ""
+
+#: openDCIM/scripts/ajax_tooltip.php:302
+msgid "Tooltips are enabled with no options selected."
+msgstr ""
+
+#: openDCIM/scripts/uploadifive.php:23
+msgid "Upload directory is not writable"
+msgstr ""
+
+#: openDCIM/scripts/uploadifive.php:43
+msgid "File was not deleted"
+msgstr ""
+
+#: openDCIM/scripts/uploadifive.php:62
+msgid "Couldn't complete file move"
+msgstr ""
+
+#: openDCIM/scripts/uploadifive.php:68
+msgid "The file is bigger than this PHP installation allows"
+msgstr ""
+
+#: openDCIM/scripts/uploadifive.php:71
+msgid "The file is bigger than this form allows"
+msgstr ""
+
+#: openDCIM/scripts/uploadifive.php:74
+msgid "Only part of the file was uploaded"
+msgstr ""
+
+#: openDCIM/scripts/uploadifive.php:77
+msgid "No file was uploaded"
+msgstr ""
+
+#: openDCIM/scripts/uploadifive.php:80
+msgid "Missing a temporary folder"
+msgstr ""
+
+#: openDCIM/scripts/uploadifive.php:83
+msgid "Failed to write file to disk"
+msgstr ""
+
+#: openDCIM/scripts/uploadifive.php:86
+msgid "File upload stopped by extension"
+msgstr ""
+
+#: openDCIM/scripts/uploadifive.php:96
+msgid "Invalid file type."
+msgstr ""
+
+#: openDCIM/scripts/uploadifive.php:103
+msgid "No files uploaded"
+msgstr ""
+
+#: openDCIM/scripts/uploadifive.php:104
+msgid "You must be a site admin to add images"
+msgstr ""
+
+#: openDCIM/scripts/uploadifive.php:105
+msgid "Token mismatch"
+msgstr ""
+
+#: openDCIM/scripts/uploadifive.php:106
+msgid "God help us something has gone horrible wrong"
 msgstr ""
