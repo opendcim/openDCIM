@@ -126,7 +126,9 @@
 		foreach( $jr->manufacturers as $tmpman ) {
 			$m->Name = $tmpman->Name;
 			if ( $m->GetManufacturerByName() ) {
+				// Reset to the values from the repo (especially CaSe)
 				$m->GlobalID = $tmpman->ManufacturerID;
+				$m->Name = $tmpman->Name;
 				$m->UpdateManufacturer();
 			} else {
 				$m->ManufacturerID = $tmpman->ManufacturerID;
