@@ -133,21 +133,22 @@ function redirect($target = null) {
 // if NeedleKey is given, return only for this key
 // mixed ArraySearchRecursive(mixed Needle,array Haystack[,NeedleKey[,bool Strict[,array Path]]])
 
-function ArraySearchRecursive($Needle,$Haystack,$NeedleKey="",$Strict=false,$Path=array()) {
-	if(!is_array($Haystack))
-		return false;
-	foreach($Haystack as $Key => $Val) {
-		if(is_array($Val)&&$SubPath=ArraySearchRecursive($Needle,$Val,$NeedleKey,$Strict,$Path)) {
-			$Path=array_merge($Path,Array($Key),$SubPath);
-			return $Path;
-		}elseif((!$Strict&&$Val==$Needle&&$Key==(strlen($NeedleKey)>0?$NeedleKey:$Key))||($Strict&&$Val===$Needle&&$Key==(strlen($NeedleKey)>0?$NeedleKey:$Key))) {
-			$Path[]=$Key;
-			return $Path;
+if(!function_exists("ArraySearchRecursive")){
+	function ArraySearchRecursive($Needle,$Haystack,$NeedleKey="",$Strict=false,$Path=array()) {
+		if(!is_array($Haystack))
+			return false;
+		foreach($Haystack as $Key => $Val) {
+			if(is_array($Val)&&$SubPath=ArraySearchRecursive($Needle,$Val,$NeedleKey,$Strict,$Path)) {
+				$Path=array_merge($Path,Array($Key),$SubPath);
+				return $Path;
+			}elseif((!$Strict&&$Val==$Needle&&$Key==(strlen($NeedleKey)>0?$NeedleKey:$Key))||($Strict&&$Val===$Needle&&$Key==(strlen($NeedleKey)>0?$NeedleKey:$Key))) {
+				$Path[]=$Key;
+				return $Path;
+			}
 		}
+		return false;
 	}
-	return false;
 }
-
 /*
  * Sort multidimentional array in natural order
  *

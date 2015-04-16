@@ -217,6 +217,20 @@ function sanitize($string,$stripall=true){
 	return $clean;
 }
 
+function ArraySearchRecursive($Needle,$Haystack,$NeedleKey="",$Strict=false,$Path=array()) {
+	if(!is_array($Haystack))
+		return false;
+	foreach($Haystack as $Key => $Val) {
+		if(is_array($Val)&&$SubPath=ArraySearchRecursive($Needle,$Val,$NeedleKey,$Strict,$Path)) {
+			$Path=array_merge($Path,Array($Key),$SubPath);
+			return $Path;
+		}elseif((!$Strict&&$Val==$Needle&&$Key==(strlen($NeedleKey)>0?$NeedleKey:$Key))||($Strict&&$Val===$Needle&&$Key==(strlen($NeedleKey)>0?$NeedleKey:$Key))) {
+			$Path[]=$Key;
+			return $Path;
+		}
+	}
+	return false;
+}
 
 // Check to see if we are doing an upgrade or an install
 	$result=$dbh->prepare("SHOW TABLES;");
@@ -226,22 +240,34 @@ function sanitize($string,$stripall=true){
 		$upgrade=false;
 	}
 
+	/*
+	   v4.0 migrated fac_Users to fac_People we need to adjust for older 
+	   installs that need upgrading.  The logic has remained nearly the 
+	   same but this will support upgrades as well as new installs
+	*/
+	$test=$result->fetchAll();
+	$usePeople=(!$upgrade && !ArraySearchRecursive('fac_People',$test))?false:true;
+
 	// New install so create a user
 	require_once("customers.inc.php");
 
-	$person=new People();
+	if($usePeople){
+		$person=new People();
+	}else{
+		$person=new User();
+	}
 	if(AUTHENTICATION=="Apache"){
 		$person->UserID=$_SERVER['REMOTE_USER'];
 	}elseif(AUTHENTICATION=="Oauth"){
 		$person->UserID=$_SESSION['userid'];
 	}
-
 	/* Check the table to see if there are any users
 	   defined, yet.  If not, this is a new install, so
 	   create an admin user (all rights) as the current
 	   user.  */
-	
-	$sql="SELECT COUNT(*) AS TotalUsers FROM fac_People;";
+
+	$table=($usePeople)?'fac_People':'fac_User';	
+	$sql="SELECT COUNT(*) AS TotalUsers FROM $table;";
 	$users=$dbh->query($sql)->fetchColumn();
 
 	if($users==0){
@@ -255,15 +281,13 @@ function sanitize($string,$stripall=true){
 
 		$person->CreatePerson();
 	}
-
 	// This will be reloading the rights for a new install but for upgrades
 	// it will be the actual rights load
 	$person->GetUserRights();
-
 	// Re-read the config
 	$config->Config();
 // Check to see if we have any users in the database.
-	$sth=$dbh->prepare("SELECT * FROM fac_People WHERE SiteAdmin=1;");
+	$sth=$dbh->prepare("SELECT * FROM $table WHERE SiteAdmin=1;");
 	$sth->execute();
 	if($sth->rowCount()<1){
 		// no users in the system or no users with site admin rights, either way we're missing the class of people we need
@@ -273,8 +297,6 @@ function sanitize($string,$stripall=true){
 		$rightserror=1;
 	}else{ // so we have users and at least one site admin
 		require_once("customers.inc.php");
-
-		$person=People::Current();
 
 		if(!$person->SiteAdmin){
 			// dolemite says you aren't an admin so you can't apply the update
