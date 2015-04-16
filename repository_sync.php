@@ -116,6 +116,25 @@
 		}
 	}
 	
+	curl_setopt( $c, CURLOPT_URL, 'https://repository.opendcim.org/api/manufacturer' );
+	curl_setopt( $c, CURLOPT_CUSTOMREQUEST, 'GET' );
+	
+	$result = curl_exec( $c );
+	$jr = json_decode( $result );
+	
+	if ( is_array( $jr->manufacturers ) ) {
+		foreach( $jr->manufacturers as $tmpman ) {
+			$m->Name = $tmpman->Name;
+			if ( $m->GetManufacturerByName() ) {
+				$m->GlobalID = $tmpman->ManufacturerID;
+				$m->UpdateManufacturer();
+			} else {
+				$m->ManufacturerID = $tmpman->ManufacturerID;
+				$m->Name = $tmpman->Name;
+				$m->CreateManufacturer();
+			}
+		}
+	}
 
 	$mList = $m->getSubscriptionList();
 	foreach( $mList as $man ) {

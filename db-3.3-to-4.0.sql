@@ -148,8 +148,6 @@ ALTER TABLE fac_DeviceTemplate ADD ShareToRepo tinyint(1) NOT NULL DEFAULT 0;
 ALTER TABLE fac_DeviceTemplate ADD KeepLocal tinyint(1) NOT NULL DEFAULT 0;
 
 ALTER TABLE fac_Manufacturer ADD GlobalID int(11) NOT NULL DEFAULT 0;
-ALTER TABLE fac_Manufacturer ADD ShareToRepo tinyint(1) NOT NULL DEFAULT 0;
-ALTER TABLE fac_Manufacturer ADD KeepLocal tinyint(1) NOT NULL DEFAULT 0;
 ALTER TABLE fac_Manufacturer ADD SubscribeToUpdates tinyint(1) NOT NULL DEFAULT 0;
 
 ALTER TABLE fac_SensorTemplate ADD GlobalID int(11) NOT NULL DEFAULT 0;
