@@ -193,26 +193,23 @@ class People {
 	static function Current(){
 		$cperson=new People();
 
-		if ( php_sapi_name() == "cli" ) {
+		if(php_sapi_name()=="cli"){
 			// If the script is being called from the command line, just give God priveleges and be done with it
-			$cperson->UserID = "cli_admin";
-			$cperson->ReadAccess = true;
-			$cperson->WriteAccess = true;
-			$cperson->SiteAdmin = true;
-		} elseif ( AUTHENTICATION == "Apache" ) {
-			if ( isset( $_SERVER["REMOTE_USER"] ) ) {
-				$cperson->UserID=@$_SERVER['REMOTE_USER'];
-				$cperson->GetUserRights();
-			} else {
+			$cperson->UserID="cli_admin";
+			$cperson->ReadAccess=true;
+			$cperson->WriteAccess=true;
+			$cperson->SiteAdmin=true;
+		}elseif(AUTHENTICATION=="Apache"){
+			if(!isset($_SERVER["REMOTE_USER"])){
 				return false;
 			}
-		} elseif ( AUTHENTICATION == "Oauth" ) {
-			if ( ! isset( $_SESSION['userid'] ) ) {
-				error_log( "No UserID passed by authentication mechanism." );
+			$cperson->UserID=$_SERVER['REMOTE_USER'];
+			$cperson->GetUserRights();
+		}elseif(AUTHENTICATION=="Oauth"){
+			if(!isset($_SESSION['userid'])){
 				return false;
 			}
-			
-			$cperson->UserID = $_SESSION['userid'];
+			$cperson->UserID=$_SESSION['userid'];
 			$cperson->GetUserRights();
 		}
 		
