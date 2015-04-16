@@ -615,7 +615,7 @@ class DataCenter {
 						$temperature[$cab->CabinetID]=$tcolor;
 						$humidity[$cab->CabinetID]=$hcolor;
 						$realpower[$cab->CabinetID]=$rpcolor;
-						$airflow[$cab->CabinetID]=$cab->FrontEdge;
+						$airflow[$cab->CabinetID]=$cabRow["FrontEdge"];
 					}
 				}
 			}
