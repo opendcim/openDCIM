@@ -87,7 +87,7 @@
 
 		// If they have an id assigned do a post page load lookup of how many devices they
 		// are the primary contact for
-		if($('#personid').val()){
+		if(parseInt($('#personid').val())){
 			UpdateDeviceCount();
 		}
 
