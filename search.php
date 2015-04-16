@@ -73,6 +73,13 @@
 		$devList=$dev->SearchByCustomAttribute($searchTerm);
 		$resultcount=count($devList);
 		$title=__("Custom attribute search results for")." &quot$searchTerm&quot;";
+	}elseif($searchKey="dev"){
+		// This is gonna be a generic catch all
+		foreach($dev as $prop => $val){
+			$dev->$prop=(isset($_GET[$prop]))?$_GET[$prop]:$val;
+		}
+		$devList=$dev->Search();
+		$resultcount=count($devList);
 	}else{
 		$devList=array();
 	}

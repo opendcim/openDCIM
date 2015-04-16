@@ -410,6 +410,84 @@ $app->get( '/device/:deviceid', function($deviceid) {
 	}
 });
 
+// this is messy as all hell and i'm still thinking about how to do it better
+
+//
+//	URL:	/api/v1/deviceport/:deviceid/patchcandidates
+//	Method:	GET
+//	Params:
+//		required: deviceid - deviceid you are connecting from
+//		optional: portnumber (int) - id of the port on the device you're connecting from. required when listports is true
+//				  connectto - deviceid you want to connect to
+//				  listports (true) - will kick back ports that can be connected to instead of devices
+//				  patchpanels (true) - limit the result to just patch panel devices
+//				  limiter (cabinet/row/zone/datacenter) - limit the results by these containers
+//	Returns:  All devices that this device can connect to
+//
+
+$app->get( '/deviceport/:deviceid/patchcandidates', function($deviceid) use ($app) {
+	$s=new stdClass();
+	$s->portnumber=$app->request->get('portnumber');
+	$s->connectto=$app->request->get('connectto');
+	$s->listports=$app->request->get('listports');
+	$s->patchpanels=$app->request->get('patchpanels');
+	$s->limiter=$app->request->get('limiter');
+
+	$response['error']=false;
+	$response['errorcode']=200;
+	
+	// I like nulls and wrote this function originally around them
+	foreach($s as $prop => $val){
+		$s->$prop=(!$val)?null:$val;
+	}
+
+	if(is_null($s->listports)){
+		$response['device']=DevicePorts::getPatchCandidates($deviceid,$s->portnumber,null,$s->patchpanels,$s->limiter);
+	}else{
+		$dp=new DevicePorts();
+		$dp->DeviceID=$s->connectto;
+		$list=$dp->getPorts();
+
+		foreach($list as $key => $port){
+			if(!is_null($port->ConnectedDeviceID)){
+				if($port->ConnectedDeviceID==$deviceid && $port->ConnectedPort==$s->portnumber){
+					// This is what is currently connected so leave it in the list
+				}else{
+					// Remove any other ports that already have connections
+					unset($list[$key]);
+				}
+			}
+		}
+
+		// S.U.T. #2342 I touch myself
+		if($dp->DeviceID == $deviceid && isset($list[$s->portnumber])){
+			unset($list[$s->portnumber]);
+		}
+
+		// Sort the ports so that all front ports will be first then the rear ports.
+		$front=array();
+		$rear=array();
+
+		foreach($list as $pn => $port){
+			if($pn>0){
+				$front[$pn]=$port;
+			}else{
+				$rear[$pn]=$port;
+			}
+		}
+
+		// Positive and negative numbers have different sorts to make sure that 1 is on top of the list
+		ksort($front);
+		krsort($rear);
+
+		$list=array_replace($front,$rear);
+
+		$response['deviceport']=$list;
+	}
+
+	echoResponse(200,$response);
+});
+
 //
 //	URL:	/api/v1/device/bydatacenter/:datacenterid
 //	Method:	GET
@@ -542,10 +620,7 @@ $app->get( '/colorcode/:colorid/timesused', function($colorid) {
 //	Returns: record as modified
 //
 
-$app->post('/people/:userid', function($userid) use ($app) {
-	global $person;
-	
-	$person->GetUserRights();
+$app->post('/people/:personid', function($personid) use ($app,$person) {
 	if(!$person->ContactAdmin){
 		$response['error']=true;
 		$response['errorcode']=400;
@@ -556,11 +631,11 @@ $app->post('/people/:userid', function($userid) use ($app) {
 
 	$response=array();
 	$p=new People();
-	$p->UserID=$userid;
-	if(!$p->GetPersonByUserID()){
+	$p->PersonID=$personid;
+	if(!$p->GetPerson()){
 		$response['error']=true;
 		$response['errorcode']=404;
-		$response['message']=__("UserID not found in database.");
+		$response['message']=__("User not found in database.");
 		echoResponse($response['errorcode'],$response);
 	} else {	
 		// Slim Framework will simply return null for any variables that were not passed, so this is safe to call without blowing up the script
@@ -583,6 +658,48 @@ $app->post('/people/:userid', function($userid) use ($app) {
 			echoResponse($response['errorcode'],$response);
 		}
 	}
+});
+
+//
+//	URL:	/api/v1/people
+//	Method: POST
+//	Params:
+//		Required: peopleid, newpeopleid
+//	Returns: true / false on the updates being successful 
+//
+
+$app->post('/people/:peopleid/transferdevicesto/:newpeopleid', function($peopleid,$newpeopleid) use ($app, $person) {
+	$response['error']=false;
+	$response['errorcode']=200;
+
+	// Verify the userids are real
+	foreach(array('peopleid','newpeopleid') as $var){
+		$p=new People();
+
+		$p->UserID=$$var;
+		if(!$p->GetPerson() && ($var!='newpeopleid' && $$var==0)){
+			$response['error']=true;
+			$response['message']="$var is not valid";
+			continue;
+		}
+	}
+
+	// If we error above don't attempt to make changes
+	if(!$response['error']){
+		$dev=new Device();
+		$dev->PrimaryContact=$peopleid;
+		foreach($dev->Search() as $d){
+			$d->PrimaryContact=$newpeopleid;
+			if(!$d->UpdateDevice()){
+				// If we encounter an error stop immediately
+				$response['error']=true;
+				$response['message']=__("Device update has failed");
+				continue;
+			}
+		}
+	}
+
+	echoResponse($response['errorcode'],$response);
 });
 
 //
@@ -662,10 +779,7 @@ $app->post( '/colorcode/:colorid/replacewith/:newcolorid', function($colorid,$ne
 //	Returns: record as created
 //
   
-$app->put('/people', function() use ($app) {
-	global $person;
-	
-	$person->GetUserRights();
+$app->put('/people/:userid', function($userid) use ($app,$person) {
 	if ( !$person->ContactAdmin ) {
 		$response['error'] = true;
 		$response['errorcode'] = 400;

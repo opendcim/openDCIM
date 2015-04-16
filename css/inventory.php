@@ -369,7 +369,7 @@ div.table > div > div {display: table-cell;vertical-align: middle; /* padding-bo
 /* User Rights */
 .rights > div:nth-last-child(2) div {text-align: center;padding-top: .75em;padding-bottom: .75em;}
 div.table > div + div + div + div > div + div label {float: none;}
-
+#primarycontact {cursor:pointer;}
 #deptgroup .ui-multiselect ul.available li { overflow-x: hidden; }
 
 /* Contact Editor */

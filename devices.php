@@ -487,7 +487,7 @@
 	$mfg=new Manufacturer();
 	$esc=new Escalations();
 	$escTime=new EscalationTimes();
-	$contactList=$contact->GetContactList();
+	$contactList=$person->GetUserList();
 	$Dept=new Department();
 	$pwrConnection=new PowerPorts();
 	$pdu=new PowerDistribution();
@@ -1701,8 +1701,8 @@ echo '				</select></div>
 				<option value=0>',__("Unassigned"),'</option>';
 
 			foreach($contactList as $contactRow){
-				if($contactRow->ContactID==$dev->PrimaryContact){$contactUserID=$contactRow->UserID;$selected=" selected";}else{$selected="";}
-				print "\t\t\t\t<option value=\"$contactRow->ContactID\"$selected>$contactRow->LastName, $contactRow->FirstName</option>\n";
+				if($contactRow->PersonID==$dev->PrimaryContact){$contactUserID=$contactRow->UserID;$selected=" selected";}else{$selected="";}
+				print "\t\t\t\t<option value=\"$contactRow->PersonID\"$selected>$contactRow->LastName, $contactRow->FirstName</option>\n";
 			}
 
 			print "\t\t\t</select>\n";
