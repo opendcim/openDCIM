@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: openDCIM.po\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-04-15 22:45-0400\n"
+"POT-Creation-Date: 2015-04-15 22:49-0400\n"
 "PO-Revision-Date: 2014-03-24 08:48-0500\n"
 "Last-Translator: Wilbur Longwisch <wilbur@wilpig.org>\n"
 "Language-Team: openDCIM <discussion@list.opendcim.org>\n"
@@ -4204,10 +4204,6 @@ msgstr ""
 
 #: openDCIM/template_mpdf_reports.inc.php:6
 msgid "No Data to Display"
-msgstr ""
-
-#: openDCIM/test3.php:7
-msgid "Masonry test"
 msgstr ""
 
 #: openDCIM/timeperiods.php:5
