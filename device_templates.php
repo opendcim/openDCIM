@@ -13,6 +13,9 @@ exit;
 
 	$subheader=__("Data Center Device Templates");
 
+	$timestamp=time();
+	$salt=md5('unique_salt' . $timestamp);
+
 	if((isset($_POST['getslots']) || isset($_POST['getports']) || isset($_POST['getpowerports'])) && isset($_POST['TemplateID'])){
 		$returndata=array();
 		if(isset($_POST['getports']) || isset($_POST['getpowerports'])){
@@ -342,12 +345,14 @@ exit;
   <link rel="stylesheet" href="css/imgareaselect-default.css" type="text/css">
   <link rel="stylesheet" href="css/validationEngine.jquery.css" type="text/css">
   <link rel="stylesheet" href="css/jHtmlArea.css" type="text/css">
+  <link rel="stylesheet" href="css/uploadifive.css" type="text/css">
   <!--[if lt IE 9]>
   <link rel="stylesheet"  href="css/ie.css" type="text/css">
   <![endif]-->
   
   <script type="text/javascript" src="scripts/jquery.min.js"></script>
   <script type="text/javascript" src="scripts/jquery-ui.min.js"></script>
+  <script type="text/javascript" src="scripts/jquery.uploadifive.js"></script>
   <script type="text/javascript" src="scripts/jquery.validationEngine-en.js"></script>
   <script type="text/javascript" src="scripts/jquery.validationEngine.js"></script>
   <script type="text/javascript" src="scripts/jHtmlArea-0.8.min.js"></script>
@@ -355,6 +360,8 @@ exit;
   <script type="text/javascript" src="scripts/jquery.imgareaselect.pack.js"></script>
   <script type="text/javascript" src="scripts/common.js"></script>
   <script type="text/javascript">
+	timestamp="<?php echo $timestamp; ?>";
+	token="<?php echo $salt; ?>";
 	$(document).ready(function(){
 		$('#TemplateID').change(function(e){
 			location.href='device_templates.php?TemplateID='+this.value;
@@ -383,6 +390,7 @@ exit;
 		});
 
 		$('#FrontPictureFile,#RearPictureFile').click(function(){
+			var upload=$('<input>').prop({type: 'file', name: 'dev_file_upload', id: 'dev_file_upload'}).data('dir','pictures');
 			var input=this;
 			$("#imageselection").dialog({
 				resizable: false,
@@ -397,35 +405,10 @@ exit;
 						$(this).dialog("close");
 					}
 				}
-			});
-			$("#imageselection span").each(function(){
-				var preview=$('#imageselection #preview');
-				$(this).click(function(){
-					preview.css({'border-width': '5px', 'width': '380px', 'height': '380px'});
-					preview.html('<img src="pictures/'+$(this).text()+'" alt="preview">').attr('image',$(this).text());
-					preview.children('img').load(function(){
-						var topmargin=0;
-						var leftmargin=0;
-						if($(this).height()<$(this).width()){
-							$(this).width(preview.innerHeight());
-							$(this).css({'max-width': preview.innerWidth()+'px'});
-							topmargin=Math.floor((preview.innerHeight()-$(this).height())/2);
-						}else{
-							$(this).height(preview.innerHeight());
-							$(this).css({'max-height': preview.innerWidth()+'px'});
-							leftmargin=Math.floor((preview.innerWidth()-$(this).width())/2);
-						}
-						$(this).css({'margin-top': topmargin+'px', 'margin-left': leftmargin+'px'});
-					});
-					$("#imageselection span").each(function(){
-						$(this).removeAttr('style');
-					});
-					$(this).css('border','1px dotted black')
-				});
-				if($(input).val()==$(this).text()){
-					$(this).click();
-				}
-			});
+			}).data('input',input);
+			reload();
+			$("#imageselection").next('div').prepend(upload);
+			uploadifive();
 		});  
 
 		$('#DeviceType').change(function(){
@@ -1074,6 +1057,79 @@ function addPictures( RequestID ) {
 			alert( "It appears to have bombed out." );
 		}
 	});
+}
+</script>
+<script type="text/javascript">
+function reload() {
+	$.get('api/v1/devicetemplate/image').done(function(data){
+		var filelist=$('#filelist');
+		filelist.html('');
+		for(var f in data.image){
+			filelist.append($('<span>').text(data.image[f]));
+		}
+		bindevents();
+	});
+}
+function bindevents() {
+	$("#imageselection span").each(function(){
+		var preview=$('#imageselection #preview');
+		$(this).click(function(){
+			preview.css({'border-width': '5px', 'width': '380px', 'height': '380px'});
+			preview.html('<img src="pictures/'+$(this).text()+'" alt="preview">').attr('image',$(this).text());
+			preview.children('img').load(function(){
+				var topmargin=0;
+				var leftmargin=0;
+				if($(this).height()<$(this).width()){
+					$(this).width(preview.innerHeight());
+					$(this).css({'max-width': preview.innerWidth()+'px'});
+					topmargin=Math.floor((preview.innerHeight()-$(this).height())/2);
+				}else{
+					$(this).height(preview.innerHeight());
+					$(this).css({'max-height': preview.innerWidth()+'px'});
+					leftmargin=Math.floor((preview.innerWidth()-$(this).width())/2);
+				}
+				$(this).css({'margin-top': topmargin+'px', 'margin-left': leftmargin+'px'});
+			});
+			$("#imageselection span").each(function(){
+				$(this).removeAttr('style');
+			});
+			$(this).css('border','1px dotted black')
+		});
+		if($($("#imageselection").data('input')).val()==$(this).text()){
+			$(this).click();
+		}
+	});
+}
+function uploadifive() {
+    $('#dev_file_upload').uploadifive({
+		'formData' : {
+				'timestamp' : '<?php echo $timestamp;?>',
+				'token'     : '<?php echo $salt;?>',
+				'dir'		: 'pictures'
+			},
+		'buttonText'		: 'Upload new image',
+		'width'				: '150',
+		'removeCompleted' 	: true,
+		'checkScript'		: 'scripts/check-exists.php',
+		'uploadScript'		: 'scripts/uploadifive.php',
+		'onUploadComplete'	: function(file, data) {
+			data=$.parseJSON(data);
+			if(data.status=='1'){
+				// something broke, deal with it
+				var toast=$('<div>').addClass('uploadifive-queue-item complete');
+				var close=$('<a>').addClass('close').text('X').click(function(){$(this).parent('div').remove();});
+				var span=$('<span>');
+				var error=$('<div>').addClass('border').css({'margin-top': '2px', 'padding': '3px'}).text(data.msg);
+				toast.append(close);
+				toast.append($('<div>').append(span.clone().addClass('filename').text(file.name)).append(span.clone().addClass('fileinfo').text(' - Error')));
+				toast.append(error);
+				$('#uploadifive-'+this[0].id+'-queue').append(toast);
+			}else{
+				// fuck yeah, reload the file list
+				reload($(this).data('dir'));
+			}
+		}
+    });
 }
 </script>
 </body>

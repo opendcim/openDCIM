@@ -602,6 +602,22 @@ $app->get( '/colorcode/:colorid/timesused', function($colorid) {
 	echoResponse($response['errorcode'],$response);
 });
 
+
+//
+//	URL:	/api/v1/devicetemplate/image
+//	Method:	GET
+//	Params: none	
+//	Returns: Array of filenames available 
+//
+
+$app->get( '/devicetemplate/image', function() {
+	$response['error']=false;
+	$response['errorcode']=200;
+	$response['image']=DeviceTemplate::getAvailableImages();
+
+	echoResponse($response['errorcode'],$response);
+});
+
 /**
   *
   *		API POST Methods go here
