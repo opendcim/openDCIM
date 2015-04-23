@@ -1418,19 +1418,13 @@ class PowerPanel {
 		global $dbh;
 		$this->MakeSafe();
 
-		$st = $this->prepare( "insert into fac_PowerPanel set PowerSourceID=:PowerSourceID,
-			PanelLabel=:PanelLabel, NumberOfPoles=:NumberOfPoles, MainBreakerSize=:MainBreakerSize,
-			PanelVoltage=:PanelVoltage,NumberScheme=:NumberScheme,ParentPanelID=:ParentPanelID,
-			ParentBreakerID=:ParentBreakerID" );
+		$sql="INSERT INTO fac_PowerPanel SET PowerSourceID=$this->PowerSourceID, 
+			PanelLabel=\"$this->PanelLabel\", NumberOfPoles=$this->NumberOfPoles, 
+			MainBreakerSize=$this->MainBreakerSize, PanelVoltage=$this->PanelVoltage, 
+			NumberScheme=\"$this->NumberScheme\", ParentPanelID=$this->ParentPanelID,
+			ParentBreakerID=\"$this->ParentBreakerID\";";
 
-		if($st->exec( array( ":PowerSourceID"=>$this->PowerSourceID,
-			":PanelLabel"=>$this->PanelLabel,
-			":NumberOfPoles"=>$this->NumberOfPoles,
-			":MainBreakerSize"=>$this->MainBreakerSize,
-			":PanelVoltage"=>$this->PanelVoltage,
-			":NumberScheme"=>$this->NumberScheme,
-			":ParentPanelID"=>$this->ParentPanelID,
-			":ParentBreakerID"=>$this->ParentBreakerID ))){
+		if($dbh->exec($sql)){
 			$this->PanelID=$dbh->lastInsertId();
 
 			(class_exists('LogActions'))?LogActions::LogThis($this):'';
@@ -1468,7 +1462,8 @@ class PowerPanel {
 		$sql="UPDATE fac_PowerPanel SET PowerSourceID=$this->PowerSourceID, 
 			PanelLabel=\"$this->PanelLabel\", NumberOfPoles=$this->NumberOfPoles, 
 			MainBreakerSize=$this->MainBreakerSize, PanelVoltage=$this->PanelVoltage, 
-			NumberScheme=\"$this->NumberScheme\" WHERE PanelID=$this->PanelID;";
+			NumberScheme=\"$this->NumberScheme\", ParentPanelID=$this->ParentPanelID,
+			ParentBreakerID=\"$this->ParentBreakerID\" WHERE PanelID=$this->PanelID;";
 
 		(class_exists('LogActions'))?LogActions::LogThis($this,$oldpanel):'';
 		return $dbh->query($sql);

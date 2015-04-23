@@ -13,6 +13,7 @@
 	$panel=new PowerPanel();
 	$pdu=new PowerDistribution();
 	$cab=new Cabinet();
+	$script="";
 
 	// AJAX
 
@@ -42,7 +43,9 @@
 		$panel->ParentBreakerID=$_POST["parentbreakerid"];
 		
 		if($_POST["action"]=="Create"){
-			$panel->CreatePanel();
+			if($panel->CreatePanel()){
+				header('Location: '.redirect("power_panel.php?panelid=$panel->PanelID"));
+			}
 		} else {
 			$panel->UpdatePanel();
 		}
@@ -126,6 +129,14 @@
   <script type="text/javascript" src="scripts/jquery.min.js"></script>
   <script type="text/javascript" src="scripts/jquery-ui.min.js"></script>
   <script type="text/javascript" src="scripts/gauge.min.js"></script>
+
+  <script type="text/javascript">
+	$(document).ready(function(){
+		$('#panelid').change(function(e){
+			location.href='power_panel.php?panelid='+this.value;
+		});
+	});
+  </script>
 </head>
 <body>
 <?php include( 'header.inc.php' ); ?>
@@ -139,7 +150,7 @@ echo '<div class="main">
 <div class="table">
 <div>
    <div><label for="panelid">',__("Power Panel ID"),'</label></div>
-   <div><select name="panelid" id="panelid" onChange="form.submit()">
+   <div><select name="panelid" id="panelid">
 	<option value="0">',__("New Panel"),'</option>';
 
 	foreach($panelList as $panelRow){
@@ -199,12 +210,13 @@ echo '</select></div>
 <div>
 	<div label for="parentpanelid"><?php print __("Parent Panel"); ?></label></div>
 	<div><select name="parentpanelid" id="parentpanelid">
+		<option value=0></option>
 <?php
-	foreach ( $panelList as $pnl ) {
-		$selected = $pnl->PanelID == $panel->ParentPanelID ? "selected" : "";
+	foreach($panelList as $pnl){
+		$selected=($pnl->PanelID==$panel->ParentPanelID)?" selected":"";
 		// Avoid making medieval royalty - panels that are children of themselves
-		if ( $panel->PanelID != $pnl->PanelID ) {
-			print "<option value='$pnl->PanelID' $selected>$pnl->PanelLabel</option>\n";
+		if($panel->PanelID!=$pnl->PanelID){
+			print "\t\t<option value=$pnl->PanelID$selected>$pnl->PanelLabel</option>\n";
 		}
 	}
 ?>
