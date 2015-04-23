@@ -66,6 +66,44 @@
 		$dataMaxValue = sprintf( "%d", $panelCap / 1000 );
 		
 		$dataHighlights = sprintf( "0 %d #eee, %d %d #fffacd, %d %d #eaa", $panelCap / 1000 * .6, $panelCap / 1000 * .6, $panelCap / 1000 * .8, $panelCap / 1000 * .8, $panelCap / 1000);
+
+		$mtarray=implode(",",explode(" ",$dataMajorTicks));
+		$hilights = sprintf( "{from: 0, to: %d, color: '#eee'}, {from: %d, to: %d, color: '#fffacd'}, {from: %d, to: %d, color: '#eaa'}", $panelCap / 1000 * .6, $panelCap / 1000 * .6, $panelCap / 1000 * .8, $panelCap / 1000 * .8, $panelCap / 1000);
+		// Generate JS for load display
+		$script="
+	var gauge=new Gauge({
+		renderTo: 'power-gauge',
+		type: 'canv-gauge',
+		title: 'Load',
+		minValue: '0',
+		maxValue: '$dataMaxValue',
+		majorTicks: [ $mtarray ],
+		minorTicks: '2',
+		strokeTicks: false,
+		units: 'kW',
+		valueFormat: { int : 3, dec : 2 },
+		glow: false,
+		animation: {
+			delay: 10,
+			duration: 200,
+			fn: 'bounce'
+			},
+		colors: {
+			needle: {start: '#f00', end: '#00f' },
+			title: '#00f',
+			},
+		highlights: [ $hilights ],
+		});
+	gauge.draw().setValue($panelLoad);
+";
+/*
+  Example for updating the gauge later.  This will start an endless loop that will update
+  the gauge once a second.
+
+    setInterval( function() {
+        gauge.setValue($.get('api/v1/power/whateverhere'));
+    }, 1000);
+*/
 	}
 
 	$panelList=$panel->GetPanelList();
@@ -97,7 +135,7 @@
 
 echo '<div class="main">
 <div class="center"><div>
-<form action="',$_SERVER["PHP_SELF"],'" method="POST">
+<form method="POST">
 <div class="table">
 <div>
    <div><label for="panelid">',__("Power Panel ID"),'</label></div>
@@ -192,26 +230,7 @@ echo '</select></div>
 	// Build a panel schedule if this is not a new panel being created
 	// Also show the power gauge
 	if($panel->PanelID >0){
-		echo '<div>
-		<canvas id="power-gauge" width="200" height="200"
-		data-type="canv-gauge"
-		data-title="Load"
-		data-min-value="0"
-		data-max-value="' . $dataMaxValue . '"
-		data-major-ticks="' . $dataMajorTicks . '"
-		data-minor-ticks="2"
-		data-stroke-ticks="true"
-		data-units="kW"
-		data-value-format="3.2"
-		data-glow="true"
-		data-animation-delay="10"
-		data-animation-duration="200"
-		data-animation-fn="bounce"
-		data-colors-needle="#f00 #00f"
-		data-colors-title="#00f"
-		data-highlights="' . $dataHighlights . '"
-		data-value="' . $panelLoad . '"
-		></canvas></div>';
+		echo '<div><canvas id="power-gauge" width="200" height="200"></canvas></div>';
 	
 		/* Loop through PDUs and find all that are attached to this panel and build a temp array to hold them.
 		   Array is indexed by circuit IDs.  Each ID is an array of objects that are connected there.  This 
@@ -433,6 +452,7 @@ if( $config->ParameterArray["ToolTips"]=='enabled' ){
 		});
 <?php
 }
+echo $script;
 ?>
 
 </script>
