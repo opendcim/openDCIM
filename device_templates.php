@@ -402,9 +402,12 @@ exit;
 						if($('#imageselection #preview').attr('image')!=""){
 							$(input).val($('#imageselection #preview').attr('image')).trigger('change');
 						}
-						$(this).dialog("close");
+						$(this).dialog("destroy");
 					}
-				}
+				},
+				close: function(){
+						$(this).dialog("destroy");
+					}
 			}).data('input',input);
 			reload();
 			$("#imageselection").next('div').prepend(upload);
