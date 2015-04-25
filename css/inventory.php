@@ -320,6 +320,9 @@ span.cdudisclaimer {color:red;font-weight:bold;}
 .hiddenports .table > div { background-color: white; }
 .hiddenports .table > div > div { padding: 3px; }
 
+#rightside { vertical-align: top; }
+#img_FrontPictureFile, #img_RearPictureFile { max-width: 125px; max-height: 200px; padding-right: 5px;}
+
 /* Basic Page Layout */
 .page {position: relative;width: 100%;}
 .clear {clear: both;}

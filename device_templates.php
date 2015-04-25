@@ -512,6 +512,29 @@ exit;
 			});
 		});
 
+		// Resize images
+		$('#deviceimages img').css('max-width',$('#rightside').innerWidth()/2);
+
+		$('#FrontPictureFile,#RearPictureFile').change(function(){
+			var fp_file=$('#FrontPictureFile');
+			var fp_img=$('#img_FrontPictureFile');
+			var rp_file=$('#RearPictureFile');
+			var rp_img=$('#img_RearPictureFile');
+
+			fp_img.prop('src','pictures/'+fp_file.val());
+			rp_img.prop('src','pictures/'+rp_file.val());
+			if(fp_file.val()){
+				fp_img.parent('div').show();
+			}else{
+				fp_img.parent('div').hide();
+			}
+			if(rp_file.val()){
+				rp_img.parent('div').show();
+			}else{
+				rp_img.parent('div').hide();
+			}
+		}).trigger('change');
+
 		$('#FrontPictureFile,#RearPictureFile,#ChassisSlots,#RearChassisSlots,#NumPorts,#PSCount').on('change keyup keydown', function(){ TemplateButtons(); });
 
 
@@ -589,7 +612,11 @@ echo '<div class="main">
 <div class="templatemaker">
 <h3>',$status,'</h3>
 <div class="center"><div>
-<form id="deviceform" method="POST"><div id="regulartemplateattributes">
+<form id="deviceform" method="POST">
+<div class="table">
+	<div>
+		<div><div id="regulartemplateattributes">
+<!-- Left side of device template -->
 <div class="table">
 	<div>
 		<div><label for="TemplateID">',__("Template"),'</label></div>
@@ -768,6 +795,26 @@ if ( $template->TemplateID > 0 ) {
 
 </div>
 </div><!-- END div.table -->
+</div><!-- end regular template attributes -->
+		</div><!-- END left side of device template -->
+		<div id="rightside"><!-- right side of device template -->
+
+<div id="deviceimages">
+	<div class="table">
+		<div>
+			<div class="center">
+				<!-- front image goes here -->
+				<img id="img_FrontPictureFile" src="pictures/',$template->FrontPictureFile,'">
+				<br><span>',__("Front"),'</span>
+			</div>
+			<div class="center">
+				<!-- rear image goes here -->
+				<img id="img_RearPictureFile" src="pictures/',$template->RearPictureFile,'">
+				<br><span>',__("Rear"),'</span>
+			</div>
+		</div>
+	</div>
+</div>
 
 <div id="hiddenports">
 </div>
@@ -797,7 +844,6 @@ if ( $template->TemplateID > 0 ) {
 		</div>
 	</div>
 </div>
-</div><!-- end regular template attributes -->
 <div id="hiddencdudata" class="hide">
 	<div class="table">
 		<div>
@@ -942,6 +988,10 @@ if ( $template->TemplateID > 0 ) {
 
 	</div>
 </div><!-- END div#hiddensensordata -->
+
+		</div><!-- END right side of device Template -->
+	</div>
+</div><!-- END outer table -->
 
 </form>
 
