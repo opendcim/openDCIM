@@ -1386,8 +1386,8 @@ echo '<div class="main">
 			<h5><u>',__("Default Behavior for Site (Can Override Per Template)"),'</u></h5>
 			<div class="table" id="repository">
 				<div>
-					<div><label for="share_to_repo">',__("Share your templates to the repository"),'</label></div>
-					<div><select name="share_to_repo" id="share_to_repo" defaultvalue="',$config->defaults["ShareToRepo"],'" data="',$config->ParameterArray["ShareToRepo"],'">
+					<div><label for="ShareToRepo">',__("Share your templates to the repository"),'</label></div>
+					<div><select name="ShareToRepo" id="ShareToRepo" defaultvalue="',$config->defaults["ShareToRepo"],'" data="',$config->ParameterArray["ShareToRepo"],'">
 						<option value="disabled">',__("Disabled"),'</option>
 						<option value="enabled">',__("Enabled"),'</option>
 						</select>
