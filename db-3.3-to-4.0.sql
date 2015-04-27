@@ -136,6 +136,12 @@ ALTER TABLE fac_CabRow ADD DataCenterID INT( 11 ) NOT NULL AFTER Name;
 UPDATE fac_CabRow SET DataCenterID=(SELECT DataCenterID FROM fac_Zone WHERE fac_CabRow.ZoneID=fac_Zone.ZoneID);
 
 --
+-- This will account for a data validation error in the cabrow create script
+--
+
+UPDATE fac_CabRow SET DataCenterID=(SELECT DataCenterID FROM `fac_DataCenter` ORDER BY DataCenterID LIMIT 1) WHERE ZoneID=0;
+
+--
 -- Add some fields needed to keep the local database in sync (if enabled) with the global repository
 --
 
