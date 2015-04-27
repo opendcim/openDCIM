@@ -675,9 +675,7 @@ class CabinetAudit {
 	var $AuditStamp;
 	var $Comments;
 
-	function CertifyAudit( $db = null ) {
-		global $dbh;
-		
+	function CertifyAudit() {
 		if($this->Comments){
 			$tmpAudit=new CabinetAudit();
 			$tmpAudit->CabinetID=$this->CabinetID;
@@ -686,13 +684,6 @@ class CabinetAudit {
 			(class_exists('LogActions'))?LogActions::LogThis($this):'';
 		}
 
-		if ( ! $dbh->exec( $sql ) ) {
-			$info = $dbh->errorInfo();
-
-			error_log( "PDO Error: " . $info[2] . " SQL=" . $sql );
-			return false;
-		}
-		
 		return;
 	}
 
