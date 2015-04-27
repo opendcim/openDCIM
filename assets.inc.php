@@ -4248,11 +4248,13 @@ class SwitchInfo {
 
 		if(is_array($nameList)){
 			$saving=false;
+			$newList=array();
 			foreach($nameList as $i => $desc){
 				if($i==$dev->FirstPortNum){$saving=true;}
-				if($saving){$nameList[sizeof($nameList)+1]=$desc;}
-				if(sizeof($nameList)==$dev->Ports){break;}
+				if($saving){$newList[sizeof($newList)+1]=$desc;}
+				if(sizeof($newList)==$dev->Ports){break;}
 			}
+			$nameList=$newList;
 		}
 
 		return $nameList;
@@ -4270,11 +4272,13 @@ class SwitchInfo {
 
 		if(is_array($statusList)){
 			$saving=false;
+			$newList=array();
 			foreach($statusList as $i => $status){
 				if($i==$dev->FirstPortNum){$saving=true;}
-				if($saving){$statusList[sizeof($statusList)+1]=$status;}
-				if(sizeof($statusList)==$dev->Ports){break;}
+				if($saving){$newList[sizeof($newList)+1]=$status;}
+				if(sizeof($newList)==$dev->Ports){break;}
 			}
+			$statusList=$newList;
 		}
 
 		return $statusList;
@@ -4292,11 +4296,13 @@ class SwitchInfo {
 		
 		if(is_array($aliasList)){
 			$saving=false;
+			$newList=array();
 			foreach($aliasList as $i => $alias){
 				if($i==$dev->FirstPortNum){$saving=true;}
-				if($saving){$aliasList[sizeof($aliasList)+1]=$alias;}
-				if(sizeof($aliasList)==$dev->Ports){break;}
+				if($saving){$newList[sizeof($newList)+1]=$alias;}
+				if(sizeof($newList)==$dev->Ports){break;}
 			}
+			$aliasList=$newList;
 		}
 		
 		return $aliasList;	
