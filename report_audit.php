@@ -230,7 +230,7 @@ $(function(){
 	// If no data center was selected, then show all data centers, otherwise, add in a SQL clause
 		
 	if ( @intval($_REQUEST["datacenterid"]) > 0 ) {
-		$dcLimit = sprintf( "CabinetID in (select CabinetID from fac_Cabinet where DataCenterID=%d) and", intval( $_REQUEST["datacenterid"] ));
+		$dcLimit = sprintf( "ObjectID in (select CabinetID from fac_Cabinet where DataCenterID=%d) and", intval( $_REQUEST["datacenterid"] ));
 		$dc->DataCenterID = $_REQUEST["datacenterid"];
 		$dc->GetDataCenter();
 		
