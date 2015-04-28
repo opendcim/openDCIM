@@ -213,6 +213,7 @@
 				$p->execute();
 			}
 		}
+		exit;
 	}
 
 	// make list of department types
@@ -1193,6 +1194,21 @@
 			});
 			$(this).trigger('keyup');
 		});
+
+		// Convert this bitch over to an ajax form submit
+		$('input[name="action"]').click(function(e){
+			// Clear the messages blank
+			$('#messages').text('');
+			// Don't let this button do a real form submit
+			e.preventDefault();
+			// Collect the config data
+			var formdata=$(".main form").serializeArray();
+			// Set the action of the form to Update
+			formdata.push({name:'action',value:"Update"});
+			// Post the config data then update the status message
+			$.post('',formdata).done(function(){$('#messages').text('Updated');}).error(function(){$('#messages').text('Something is broken');});
+		});
+
 	});
 
   </script>
@@ -1205,6 +1221,7 @@
 
 echo '<div class="main">
 <div class="center"><div>
+<h3></h3><h3 id="messages"></h3>
 <form enctype="multipart/form-data" action="',$_SERVER["PHP_SELF"],'" method="POST">
    <input type="hidden" name="Version" value="',$config->ParameterArray["Version"],'">
 
