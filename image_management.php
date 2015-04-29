@@ -148,7 +148,7 @@ $(function() {
 });
 </script>
 </div></div><!-- END div.center -->
-
+<?php echo '<a href="index.php">[ ',__("Return to Main Menu"),' ]</a>'; ?>
 <?php } ?>
 
 
