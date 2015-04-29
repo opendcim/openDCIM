@@ -1580,7 +1580,7 @@ echo '<div class="main">
 				</div>
 				<div>
 					<div><label for="PDFfont">',__("Font"),'</label></div>
-					<div><input type="text" defaultvalue="',$config->defaults["PDFfont"],'" name="PDFfont" value="',$config->ParameterArray["PDFfont"],'"></div>
+					<div><input type="text" defaultvalue="',$config->defaults["PDFfont"],'" name="PDFfont" value="',$config->ParameterArray["PDFfont"],'" title="examples: courier, DejaVuSans, helvetica, OpenSans-Bold, OpenSans-Cond, times"></div>
 				</div>
 				<div>
 					<div><label for="NewInstallsPeriod">',__("New Installs Period"),'</label></div>
