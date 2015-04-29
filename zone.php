@@ -193,6 +193,7 @@ if(strlen($dc_zone->DrawingFileName) >0){
 }
 
 echo '
+<a href="index.php">[ ',__("Return to Main Menu"),' ]</a>
 </div><!-- END div.main -->'; 
 
  ?>
