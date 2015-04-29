@@ -371,9 +371,9 @@ class PDF_Diag extends PDF_Sector {
 //
 
 	$pdf=new PDF_Diag();
+	include_once("loadfonts.php");
 	$pdf->AliasNbPages();
 	$pdf->AddPage();
-	include_once("loadfonts.php");
   $colors[0]=array(100,100,255);
   $colors[1]=array(255,100,100);
   $colors[2]=array(255,255,100);
