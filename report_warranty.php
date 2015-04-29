@@ -8,46 +8,29 @@
 	$dept = new Department();
 	$con = new Contact();
 
-class DeviceAge extends Device{
- function GetAge() {
+class DeviceWarranty extends Device{
+ function GetWarrantyExpiration() {
 	global $dbh;
-	$selectSQL = "select count(Label) as NumDevices,'<=1' as NumYears from fac_Device where (DATEDIFF(NOW(),(CASE WHEN MfgDate>'1969-12-31' THEN MfgDate ELSE InstallDate END))/365)<=1 and (DATEDIFF(NOW(), (CASE WHEN MfgDate>'1969-12-31' THEN MfgDate ELSE InstallDate END))/365)>0";
 
-	foreach($dbh->query($selectSQL) as $row){
-		$deptList[$row['NumYears']] = $row['NumDevices'];
-	}
+    // count systems with expiring warranty in the next 0-1, 1-2, and 2-3 years
+    for ($year = 0; $year <=2; $year++) {
+        $end_year=$year+1;
+    	$selectSQL = sprintf( "SELECT count(DeviceID) AS NumDevices,'<=%d' AS NumYears FROM fac_Device WHERE (DATEDIFF(WarrantyExpire, NOW())/365)>=%d AND (DATEDIFF(WarrantyExpire, NOW())/365)<%d ", $end_year, $year, $end_year );
 
-	$selectSQL = "select count(*) as NumDevices,'<=2' as NumYears from fac_Device where (DATEDIFF(NOW(),(CASE WHEN MfgDate>'1969-12-31' THEN MfgDate ELSE InstallDate END))/365)<=2 and (DATEDIFF(NOW(), (CASE WHEN MfgDate>'1969-12-31' THEN MfgDate ELSE InstallDate END))/365)>1";
+    	foreach($dbh->query($selectSQL) as $row){
+    		$deptList[$row['NumYears']] = $row['NumDevices'];
+    	}
+    }
 
-	foreach($dbh->query($selectSQL) as $row){
-		$deptList[$row['NumYears']] = $row['NumDevices'];
-	}
-
-	$selectSQL = "select count(*) as NumDevices,'<=3' as NumYears from fac_Device where (DATEDIFF(NOW(),(CASE WHEN MfgDate>'1969-12-31' THEN MfgDate ELSE InstallDate END))/365)<=3 and (DATEDIFF(NOW(), (CASE WHEN MfgDate>'1969-12-31' THEN MfgDate ELSE InstallDate END))/365)>2";
-
-	foreach($dbh->query($selectSQL) as $row){
-		$deptList[$row['NumYears']] = $row['NumDevices'];
-	}
-
-	$selectSQL = "select count(*) as NumDevices,'<=4' as NumYears from fac_Device where (DATEDIFF(NOW(),(CASE WHEN MfgDate>'1969-12-31' THEN MfgDate ELSE InstallDate END))/365)<=4 and (DATEDIFF(NOW(), (CASE WHEN MfgDate>'1969-12-31' THEN MfgDate ELSE InstallDate END))/365)>3";
-
-	foreach($dbh->query($selectSQL) as $row){
-		$deptList[$row['NumYears']] = $row['NumDevices'];
-	}
-
-    $selectSQL = "select count(*) as NumDevices,'<=5' as NumYears from fac_Device where (DATEDIFF(NOW(),(CASE WHEN MfgDate>'1969-12-31' THEN MfgDate ELSE InstallDate END))/365)<=5 and (DATEDIFF(NOW(), (CASE WHEN MfgDate>'1969-12-31' THEN MfgDate ELSE InstallDate END))/365)>4";
+    // count devices with unknown warranty expiration
+    $selectSQL = "SELECT count(DeviceID) AS NumDevices, 'Unknown' AS NumYears FROM fac_Device WHERE WarrantyExpire<='1970-01-01'";
 
     foreach($dbh->query($selectSQL) as $row){
         $deptList[$row['NumYears']] = $row['NumDevices'];
     }
 
-	$selectSQL = "SELECT COUNT(*) AS NumDevices,'>5' AS NumYears FROM fac_Device WHERE (DATEDIFF(NOW(),MfgDate)/365)>5 AND MfgDate>'1970-01-01' AND InstallDate>'1970-01-01';";
-
-	foreach($dbh->query($selectSQL) as $row){
-		$deptList[$row['NumYears']] = $row['NumDevices'];
-	}
-
-	$selectSQL = "select count(*) as NumDevices,'Unknown' as NumYears from fac_Device where (CASE WHEN MfgDate>'1969-12-31' THEN MfgDate ELSE InstallDate END)<='1970-01-01'";
+    // count devices with expired warranty
+	$selectSQL = "SELECT count(DeviceID) AS NumDevices,'Expired' AS NumYears FROM fac_Device WHERE (DATEDIFF(NOW(), WarrantyExpire))>0 AND WarrantyExpire>'1969-12-31';";
 
 	foreach($dbh->query($selectSQL) as $row){
 		$deptList[$row['NumYears']] = $row['NumDevices'];
@@ -56,26 +39,29 @@ class DeviceAge extends Device{
 	return $deptList;
 }
 
-function GetDeviceByAge($years){
-	global $dbh;
-	$deviceList=array();
-	if($years<=4){
-		$yearsplus=$years+1;
-		$selectSQL = sprintf( "select * from fac_Device where (DATEDIFF(NOW(), (CASE WHEN MfgDate>'1969-12-31' THEN MfgDate ELSE InstallDate END))/365)<%d and (DATEDIFF(NOW(), (CASE WHEN MfgDate>'1969-12-31' THEN MfgDate ELSE InstallDate END))/365)>=%d order by Owner, MfgDate ASC, Label", $yearsplus, $years );
-		foreach($dbh->query($selectSQL) as $deviceRow){
-			$deviceList[$deviceRow['DeviceID']]=Device::RowToObject($deviceRow);
-		}
-	}else{
-		$selectSQL="select * from fac_Device where (DATEDIFF(NOW(), (CASE WHEN MfgDate>'1969-12-31' THEN MfgDate ELSE InstallDate END))/365)>5 and (CASE WHEN MfgDate>'1969-12-31' THEN MfgDate ELSE InstallDate END)>'1970-01-01' order by Owner, MfgDate ASC, Label";
-		foreach($dbh->query($selectSQL) as $deviceRow){
-			$deviceList[$deviceRow['DeviceID']]=Device::RowToObject($deviceRow);
-		}
-	}
+
+function GetDeviceByWarranty($years){
+    global $dbh;
+    $deviceList=array();
+    if($years>=0){
+        $yearsminus=$years-1;
+        $selectSQL = sprintf( "select DeviceID, Label, Owner, WarrantyExpire, PrimaryContact from fac_Device where (DATEDIFF(WarrantyExpire, NOW())/365)>=%d and (DATEDIFF(WarrantyExpire, NOW())/365)<%d order by Owner, WarrantyExpire, Label;", $yearsminus, $years );
+        foreach($dbh->query($selectSQL) as $deviceRow){
+            $deviceList[$deviceRow['DeviceID']]=Device::RowToObject($deviceRow);
+        }
+    }else{
+        $selectSQL="select DeviceID, Label, Owner, WarrantyExpire, PrimaryContact from fac_Device where (DATEDIFF(NOW(), WarrantyExpire))>0 and WarrantyExpire>'1969-12-31' order by Owner, WarrantyExpire, Label;";
+        foreach($dbh->query($selectSQL) as $deviceRow){
+            $deviceList[$deviceRow['DeviceID']]=Device::RowToObject($deviceRow);
+        }
+    }
     return $deviceList;
 }
 
+
+
 }
-	$dev = new DeviceAge();
+	$dev = new DeviceWarranty();
 	$cab = new Cabinet();
 	$dc = new DataCenter();
 
@@ -97,7 +83,7 @@ class PDF extends FPDF {
     	$this->Cell(30,20,__("Information Technology Services"),0,0,'C');
     	$this->Ln(25);
 		$this->SetFont( $this->pdfconfig->ParameterArray['PDFfont'],'',10 );
-		$this->Cell( 50, 6, __("Data Center Asset Aging Report"), 0, 1, 'L' );
+		$this->Cell( 50, 6, __("Data Center Warranty Expiration Report"), 0, 1, 'L' );
 		$this->Cell( 50, 6, __("Date").': ' . date('d F Y'), 0, 1, 'L' );
 		$this->Ln(10);
 	}
@@ -425,226 +411,104 @@ class PDF_Diag extends PDF_Sector {
         }
     }
 }
-	$agingList=$dev->GetAge();
-	$yearoldlist=$dev->GetDeviceByAge(0);
-	$year2oldlist=$dev->GetDeviceByAge(1);
-	$year3oldlist=$dev->GetDeviceByAge(2);
-	$year4oldlist=$dev->GetDeviceByAge(3);
-    $year5oldlist=$dev->GetDeviceByAge(4);
-	$oldestlist=$dev->GetDeviceByAge(5);
 
+    // yes, this needs major cleanup
 
+	$warranty_expiration_list=$dev->GetWarrantyExpiration();
 
+    $expiredlist=$dev->GetDeviceByWarranty(-1);
 
-//
+    for ($year = 1; $year <=3; $year++) {
+        $expire_list[$year]=$dev->GetDeviceByWarranty($year);
+    }
+
 //
 //	Begin Report Generation
 //
-//
+
+
+    // first page - the pie chart
 
 	$pdf=new PDF_Diag();
 	$pdf->AliasNbPages();
 	$pdf->AddPage();
 	include_once("loadfonts.php");
-	$colors[0]=array(100,100,255);
-	$colors[1]=array(255,100,100);
-	$colors[2]=array(255,255,100);
-	$colors[3]=array(170,170,255);
-	$colors[4]=array(0,255,255);
-	$colors[5]=array(255,0,0);
-	$colors[6]=array(0,255,0);
-	$colors[7]=array(0,0,255);
-	$colors[8]=array(100,175,255);
-	$colors[9]=array(255,175,100);
+    $colors[0]=array(0,255,0);
+    $colors[1]=array(255,255,0);
+    $colors[2]=array(255,175,0);
+    $colors[3]=array(0,0,255);
+    $colors[4]=array(255,0,0);
 
 
 	$pdf->SetFont( $config->ParameterArray['PDFfont'],'B', 16 );
 
-	$pdf->Cell( 0, 18, __("Device Ages by Count"), '', 1, 'C', 0 );
+	$pdf->Cell( 0, 18, __("Devices with remaining warranty"), '', 1, 'C', 0 );
 	$pdf->SetXY( 10, 70 );
-	$pdf->PieChart(200, 80, $agingList, '%l years: %v machines (%p)', $colors);
-
-	$pdf->AddPage();
-	$pdf->SetFillColor(224,235,255);
-	$pdf->SetFont( $config->ParameterArray['PDFfont'],'B', 12 );
-	$pdf->Cell( 0, 18, __("Devices from 0-1 Years Old"), '', 1, 'C', 0 );
-	$pdf->SetFont( $config->ParameterArray['PDFfont'],'', 10 );
-	$headerTags = array( __("Label"),__("Age"),__("Owner"),__("Primary Contact") );
-	$cellWidths = array( 45, 30, 50, 45 );
-	$maxval = count( $headerTags );
-	for ( $col = 0; $col < $maxval ; $col++ )
-			$pdf->Cell( $cellWidths[$col], 7, $headerTags[$col], 1, 0, 'C', 0 );
-	$pdf->Ln();
-	$fill=1;
-	foreach( $yearoldlist as $devRow){
-		$dept->DeptID=$devRow->Owner;
-		$dept->GetDeptByID();
-		$con->ContactID=$devRow->PrimaryContact;
-		$con->GetContactByID();
-		if ( $devRow->MfgDate > "1970-01-01" )
-			$date1=new DateTime($devRow->MfgDate);
-		else
-			$date1 = new DateTime($devRow->InstallDate);
-
-		$date2=new DateTime('now');
-		$interval=$date1->diff($date2);
-		$years=$interval->format('%m months %d days');
-
-		$cellHeight = 6;
-
-		$pdf->Cell( $cellWidths[0], $cellHeight, $devRow->Label, 1, 0, 'L', $fill );
-		$pdf->Cell( $cellWidths[1], $cellHeight, $years, 1, 0, 'L', $fill );
-		$pdf->Cell( $cellWidths[2], $cellHeight, $dept->Name, 1, 0, 'L', $fill );
-		$pdf->Cell( $cellWidths[3], $cellHeight, $con->FirstName.' '.$con->LastName, 1, 1, 'L', $fill );
-
-		$fill=!$fill;
-	}
+	$pdf->PieChart(200, 80, $warranty_expiration_list, '%l years: %v machines (%p)', $colors);
 
 
-	$pdf->AddPage();
-	$pdf->SetFont( $config->ParameterArray['PDFfont'],'B', 16 );
-	$pdf->Cell( 0, 18, __("Devices from 1-2 Years Old"), '', 1, 'C', 0 );
-	$pdf->SetFont( $config->ParameterArray['PDFfont'],'', 10 );
-	$headerTags = array( __("Label"),__("Age"),__("Owner"),__("Primary Contact") );
-        $cellWidths = array( 45, 30, 50, 45 );
-		$maxval = count( $headerTags );
-        for ( $col = 0; $col < $maxval; $col++ )
-                $pdf->Cell( $cellWidths[$col], 7, $headerTags[$col], 1, 0, 'C', 0 );
-        $pdf->Ln();
-	$fill=1;
-	if(count($year2oldlist)>0){
-		foreach($year2oldlist as $devRow){
-			$dept->DeptID=$devRow->Owner;
-			$dept->GetDeptByID();
-			$con->ContactID=$devRow->PrimaryContact;
-			$con->GetContactByID();
-			$date1=new DateTime($devRow->MfgDate);
-			$date2=new DateTime('now');
-			$interval=$date1->diff($date2);
-			$years=$interval->format('%y y %m m %d d');
 
-			$pdf->Cell( $cellWidths[0], 6, $devRow->Label, 'LBRT', 0, 'L', $fill );
-					$pdf->Cell( $cellWidths[1], 6, $years, 'LBRT', 0, 'L', $fill );
-					$pdf->Cell( $cellWidths[2], 6, $dept->Name, 'LBRT', 0, 'L', $fill );
-					$pdf->Cell( $cellWidths[3], 6, $con->FirstName.' '.$con->LastName, 'LBRT', 1, 'L', $fill );
+    // second page
 
-			$fill=!$fill;
-		}
-	}
+    $pdf->SetFillColor(224,235,255);
 
+    //
+    // cycle through years 1-3 and produce table reports
+    //
+    for ($year = 1; $year <=3; $year++) {
+        $start_year=$year-1;
+        $pdf->AddPage();
+        $pdf->SetFont( $config->ParameterArray['PDFfont'],'B', 16 );
+        $pdf->Cell( 0, 18, __("Devices with $start_year-$year years of remaining warranty "), '', 1, 'C', 0 );
+        $pdf->SetFont( $config->ParameterArray['PDFfont'],'', 10 );
+        $headerTags = array( __("Label"),__("Remaining"),__("Owner"),__("Primary Contact") );
+            $cellWidths = array( 45, 30, 50, 45 );
+            $maxval = count( $headerTags );
+            for ( $col = 0; $col < $maxval; $col++ )
+                    $pdf->Cell( $cellWidths[$col], 7, $headerTags[$col], 1, 0, 'C', 0 );
+            $pdf->Ln();
+        $fill=1;
+        if(count($expire_list[$year])>0){
+            foreach($expire_list[$year] as $devRow){
+                $dept->DeptID=$devRow->Owner;
+                $dept->GetDeptByID();
+                $con->ContactID=$devRow->PrimaryContact;
+                $con->GetContactByID();
+                $date1=new DateTime($devRow->WarrantyExpire);
+                $date2=new DateTime('now');
+                $interval=$date1->diff($date2);
+                $years=$interval->format('%y y %m m %d d');
 
-	$pdf->AddPage();
-	$pdf->SetFont( $config->ParameterArray['PDFfont'],'B', 16 );
-	$pdf->Cell( 0, 18, __("Devices from 2-3 Years Old"), '', 1, 'C', 0 );
-	$pdf->SetFont( $config->ParameterArray['PDFfont'],'', 10 );
-	$headerTags = array( __("Label"),__("Age"),__("Owner"),__("Primary Contact") );
-        $cellWidths = array( 45, 30, 50, 45 );
-		$maxval = count( $headerTags );
-        for ( $col = 0; $col < $maxval; $col++ )
-                $pdf->Cell( $cellWidths[$col], 7, $headerTags[$col], 1, 0, 'C', 0 );
-        $pdf->Ln();
-	$fill=1;
-	if(count($year3oldlist)>0){
-		foreach($year3oldlist as $devRow){
-			$dept->DeptID=$devRow->Owner;
-			$dept->GetDeptByID();
-			$con->ContactID=$devRow->PrimaryContact;
-			$con->GetContactByID();
-			$date1=new DateTime($devRow->MfgDate);
-			$date2=new DateTime('now');
-			$interval=$date1->diff($date2);
-			$years=$interval->format('%y y %m m %d d');
+                $pdf->Cell( $cellWidths[0], 6, $devRow->Label, 'LBRT', 0, 'L', $fill );
+                        $pdf->Cell( $cellWidths[1], 6, $years, 'LBRT', 0, 'L', $fill );
+                        $pdf->Cell( $cellWidths[2], 6, $dept->Name, 'LBRT', 0, 'L', $fill );
+                        $pdf->Cell( $cellWidths[3], 6, $con->FirstName.' '.$con->LastName, 'LBRT', 1, 'L', $fill );
 
-			$pdf->Cell( $cellWidths[0], 6, $devRow->Label, 'LBRT', 0, 'L', $fill );
-					$pdf->Cell( $cellWidths[1], 6, $years, 'LBRT', 0, 'L', $fill );
-					$pdf->Cell( $cellWidths[2], 6, $dept->Name, 'LBRT', 0, 'L', $fill );
-					$pdf->Cell( $cellWidths[3], 6, $con->FirstName.' '.$con->LastName, 'LBRT', 1, 'L', $fill );
-
-			$fill=!$fill;
-		}
-	}
-
-
-	$pdf->AddPage();
-	$pdf->SetFont( $config->ParameterArray['PDFfont'],'B', 16 );
-	$pdf->Cell( 0, 18, __("Devices from 3-4 Years Old"), '', 1, 'C', 0 );
-	$pdf->SetFont( $config->ParameterArray['PDFfont'],'', 10 );
-	$headerTags = array( __("Label"),__("Age"),__("Owner"),__("Primary Contact") );
-        $cellWidths = array( 45, 30, 50, 45 );
-		$maxval = count( $headerTags );
-        for ( $col = 0; $col < $maxval; $col++ )
-                $pdf->Cell( $cellWidths[$col], 7, $headerTags[$col], 1, 0, 'C', 0 );
-        $pdf->Ln();
-	$fill=1;
-	if(count($year4oldlist)>0){
-		foreach($year4oldlist as $devRow){
-			$dept->DeptID=$devRow->Owner;
-			$dept->GetDeptByID();
-			$con->ContactID=$devRow->PrimaryContact;
-			$con->GetContactByID();
-			$date1=new DateTime($devRow->MfgDate);
-			$date2=new DateTime('now');
-			$interval=$date1->diff($date2);
-			$years=$interval->format('%y y %m m %d d');
-
-			$pdf->Cell( $cellWidths[0], 6, $devRow->Label, 'LBRT', 0, 'L', $fill );
-					$pdf->Cell( $cellWidths[1], 6, $years, 'LBRT', 0, 'L', $fill );
-					$pdf->Cell( $cellWidths[2], 6, $dept->Name, 'LBRT', 0, 'L', $fill );
-					$pdf->Cell( $cellWidths[3], 6, $con->FirstName.' '.$con->LastName, 'LBRT', 1, 'L', $fill );
-
-			$fill=!$fill;
-		}
-	}
-
-    $pdf->AddPage();
-    $pdf->SetFont( $config->ParameterArray['PDFfont'],'B', 16 );
-    $pdf->Cell( 0, 18, __("Devices from 4-5 Years Old"), '', 1, 'C', 0 );
-    $pdf->SetFont( $config->ParameterArray['PDFfont'],'', 10 );
-    $headerTags = array( __("Label"),__("Age"),__("Owner"),__("Primary Contact") );
-        $cellWidths = array( 45, 30, 50, 45 );
-        $maxval = count( $headerTags );
-        for ( $col = 0; $col < $maxval; $col++ )
-                $pdf->Cell( $cellWidths[$col], 7, $headerTags[$col], 1, 0, 'C', 0 );
-        $pdf->Ln();
-    $fill=1;
-    if(count($year5oldlist)>0){
-        foreach($year5oldlist as $devRow){
-            $dept->DeptID=$devRow->Owner;
-            $dept->GetDeptByID();
-            $con->ContactID=$devRow->PrimaryContact;
-            $con->GetContactByID();
-            $date1=new DateTime($devRow->MfgDate);
-            $date2=new DateTime('now');
-            $interval=$date1->diff($date2);
-            $years=$interval->format('%y y %m m %d d');
-
-            $pdf->Cell( $cellWidths[0], 6, $devRow->Label, 'LBRT', 0, 'L', $fill );
-                    $pdf->Cell( $cellWidths[1], 6, $years, 'LBRT', 0, 'L', $fill );
-                    $pdf->Cell( $cellWidths[2], 6, $dept->Name, 'LBRT', 0, 'L', $fill );
-                    $pdf->Cell( $cellWidths[3], 6, $con->FirstName.' '.$con->LastName, 'LBRT', 1, 'L', $fill );
-
-            $fill=!$fill;
+                $fill=!$fill;
+            }
         }
     }
 
+    // last page: expired warranty
+
 	$pdf->AddPage();
 	$pdf->SetFont( $config->ParameterArray['PDFfont'],'B', 16 );
-	$pdf->Cell( 0, 18, __("Devices Greater Than 5 Years Old"), '', 1, 'C', 0 );
+	$pdf->Cell( 0, 18, __("Devices with expired warranty"), '', 1, 'C', 0 );
 	$pdf->SetFont( $config->ParameterArray['PDFfont'],'', 10 );
-	$headerTags = array( __("Label"),__("Age"),__("Owner"),__("Primary Contact") );
+	$headerTags = array( __("Label"),__("Expired"),__("Owner"),__("Primary Contact") );
         $cellWidths = array( 45, 30, 50, 45 );
 		$maxval = count( $headerTags );
         for ( $col = 0; $col < $maxval; $col++ )
                 $pdf->Cell( $cellWidths[$col], 7, $headerTags[$col], 1, 0, 'C', 0 );
         $pdf->Ln();
 	$fill=1;
-	if(count($oldestlist)>0){
-		foreach($oldestlist as $devRow){
+	if(count($expiredlist)>0){
+		foreach($expiredlist as $devRow){
 			$dept->DeptID=$devRow->Owner;
 			$dept->GetDeptByID();
 			$con->ContactID=$devRow->PrimaryContact;
 			$con->GetContactByID();
-			$date1=new DateTime($devRow->MfgDate);
+			$date1=new DateTime($devRow->WarrantyExpire);
 			$date2=new DateTime('now');
 			$interval=$date1->diff($date2);
 			$years=$interval->format('%y y %m m %d d');
@@ -657,6 +521,8 @@ class PDF_Diag extends PDF_Sector {
 			$fill=!$fill;
 		}
 	}
+
+
 
 	$pdf->Output();
 ?>

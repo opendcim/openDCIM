@@ -9,7 +9,7 @@
 <head>
   <meta http-equiv="X-UA-Compatible" content="IE=Edge">
   <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-  
+
   <title>openDCIM Inventory Reporting</title>
   <link rel="stylesheet" href="css/inventory.php" type="text/css">
   <link rel="stylesheet" href="css/jquery-ui.css" type="text/css">
@@ -41,6 +41,7 @@ echo '<div class="main">
     <a href="report_asset_Excel.php">',__("Data Center Asset Report [Excel]"),'</a>
 	<a href="report_cost.php">',__("Data Center Asset Costing Report"),'</a>
 	<a href="report_aging.php">',__("Asset Aging Report"),'</a>
+    <a href="report_warranty.php">',__("Warranty Expiration Report"),'</a>
 	<a href="report_vm_by_department.php">',__("Virtual Machines by Department"),'</a>
 	<a href="report_network_map.php">',__("Network Map"),'</a>
 </fieldset>
