@@ -468,7 +468,7 @@ class PDF_Diag extends PDF_Sector {
 	$pdf->SetFillColor(224,235,255);
 	$pdf->SetFont( $config->ParameterArray['PDFfont'],'B', 12 );
 	$pdf->Cell( 0, 18, __("Devices from 0-1 Years Old"), '', 1, 'C', 0 );
-	$pdf->SetFont( $config->ParameterArray['PDFfont'],'', 7 );
+	$pdf->SetFont( $config->ParameterArray['PDFfont'],'', 10 );
 	$headerTags = array( __("Label"),__("Age"),__("Owner"),__("Primary Contact") );
 	$cellWidths = array( 45, 30, 50, 45 );
 	$maxval = count( $headerTags );
