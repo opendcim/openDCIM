@@ -130,6 +130,7 @@ class PDF extends FPDF {
 //
 
 	$pdf=new PDF();
+	include_once("loadfonts.php");
 	$pdf->AliasNbPages();
 	$pdf->AddPage();
 	$pdf->SetFont($config->ParameterArray['PDFfont'],'',8);
@@ -137,7 +138,6 @@ class PDF extends FPDF {
 	$pdf->SetTextColor( 255 );
 	$pdf->SetDrawColor( 128, 0, 0 );
 	$pdf->SetLineWidth( .3 );
-	include_once("loadfonts.php");
 	$pdf->SetfillColor( 224, 235, 255 );
 	$pdf->SetTextColor( 0 );
 
