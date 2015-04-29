@@ -371,9 +371,9 @@ class PDF_Diag extends PDF_Sector {
 //
 
 	$pdf=new PDF_Diag();
+	include_once("loadfonts.php");
 	$pdf->AliasNbPages();
 	$pdf->AddPage();
-	include_once("loadfonts.php");
 	$pdf->SetFont($config->ParameterArray["PDFfont"],'',8);
 
 	$pdf->SetFillColor( 0, 0, 0 );
