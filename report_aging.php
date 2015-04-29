@@ -35,7 +35,13 @@ class DeviceAge extends Device{
 		$deptList[$row['NumYears']] = $row['NumDevices'];
 	}
 
-	$selectSQL = "SELECT COUNT(*) AS NumDevices,'>4' AS NumYears FROM fac_Device WHERE (DATEDIFF(NOW(),MfgDate)/365)>4 AND MfgDate>'1970-01-01' AND InstallDate>'1970-01-01';";
+    $selectSQL = "select count(*) as NumDevices,'<=5' as NumYears from fac_Device where (DATEDIFF(NOW(),(CASE WHEN MfgDate>'1969-12-31' THEN MfgDate ELSE InstallDate END))/365)<=5 and (DATEDIFF(NOW(), (CASE WHEN MfgDate>'1969-12-31' THEN MfgDate ELSE InstallDate END))/365)>4";
+
+    foreach($dbh->query($selectSQL) as $row){
+        $deptList[$row['NumYears']] = $row['NumDevices'];
+    }
+
+	$selectSQL = "SELECT COUNT(*) AS NumDevices,'>5' AS NumYears FROM fac_Device WHERE (DATEDIFF(NOW(),MfgDate)/365)>5 AND MfgDate>'1970-01-01' AND InstallDate>'1970-01-01';";
 
 	foreach($dbh->query($selectSQL) as $row){
 		$deptList[$row['NumYears']] = $row['NumDevices'];
@@ -53,14 +59,14 @@ class DeviceAge extends Device{
 function GetDeviceByAge($years){
 	global $dbh;
 	$deviceList=array();
-	if($years<=3){
+	if($years<=4){
 		$yearsplus=$years+1;
 		$selectSQL = sprintf( "select * from fac_Device where (DATEDIFF(NOW(), (CASE WHEN MfgDate>'1969-12-31' THEN MfgDate ELSE InstallDate END))/365)<%d and (DATEDIFF(NOW(), (CASE WHEN MfgDate>'1969-12-31' THEN MfgDate ELSE InstallDate END))/365)>=%d order by Owner, MfgDate ASC, Label", $yearsplus, $years );
 		foreach($dbh->query($selectSQL) as $deviceRow){
 			$deviceList[$deviceRow['DeviceID']]=Device::RowToObject($deviceRow);
 		}
 	}else{
-		$selectSQL="select * from fac_Device where (DATEDIFF(NOW(), (CASE WHEN MfgDate>'1969-12-31' THEN MfgDate ELSE InstallDate END))/365)>4 and (CASE WHEN MfgDate>'1969-12-31' THEN MfgDate ELSE InstallDate END)>'1970-01-01' order by Owner, MfgDate ASC, Label";
+		$selectSQL="select * from fac_Device where (DATEDIFF(NOW(), (CASE WHEN MfgDate>'1969-12-31' THEN MfgDate ELSE InstallDate END))/365)>5 and (CASE WHEN MfgDate>'1969-12-31' THEN MfgDate ELSE InstallDate END)>'1970-01-01' order by Owner, MfgDate ASC, Label";
 		foreach($dbh->query($selectSQL) as $deviceRow){
 			$deviceList[$deviceRow['DeviceID']]=Device::RowToObject($deviceRow);
 		}
@@ -424,7 +430,8 @@ class PDF_Diag extends PDF_Sector {
 	$year2oldlist=$dev->GetDeviceByAge(1);
 	$year3oldlist=$dev->GetDeviceByAge(2);
 	$year4oldlist=$dev->GetDeviceByAge(3);
-	$oldestlist=$dev->GetDeviceByAge(4);
+    $year5oldlist=$dev->GetDeviceByAge(4);
+	$oldestlist=$dev->GetDeviceByAge(5);
 
 
 
@@ -589,10 +596,40 @@ class PDF_Diag extends PDF_Sector {
 		}
 	}
 
+    $pdf->AddPage();
+    $pdf->SetFont( $config->ParameterArray['PDFfont'],'B', 16 );
+    $pdf->Cell( 0, 18, __("Devices from 4-5 Years Old"), '', 1, 'C', 0 );
+    $pdf->SetFont( $config->ParameterArray['PDFfont'],'', 10 );
+    $headerTags = array( __("Label"),__("Age"),__("Owner"),__("Primary Contact") );
+        $cellWidths = array( 45, 30, 50, 45 );
+        $maxval = count( $headerTags );
+        for ( $col = 0; $col < $maxval; $col++ )
+                $pdf->Cell( $cellWidths[$col], 7, $headerTags[$col], 1, 0, 'C', 0 );
+        $pdf->Ln();
+    $fill=1;
+    if(count($year5oldlist)>0){
+        foreach($year5oldlist as $devRow){
+            $dept->DeptID=$devRow->Owner;
+            $dept->GetDeptByID();
+            $con->ContactID=$devRow->PrimaryContact;
+            $con->GetContactByID();
+            $date1=new DateTime($devRow->MfgDate);
+            $date2=new DateTime('now');
+            $interval=$date1->diff($date2);
+            $years=$interval->format('%y y %m m %d d');
+
+            $pdf->Cell( $cellWidths[0], 6, $devRow->Label, 'LBRT', 0, 'L', $fill );
+                    $pdf->Cell( $cellWidths[1], 6, $years, 'LBRT', 0, 'L', $fill );
+                    $pdf->Cell( $cellWidths[2], 6, $dept->Name, 'LBRT', 0, 'L', $fill );
+                    $pdf->Cell( $cellWidths[3], 6, $con->FirstName.' '.$con->LastName, 'LBRT', 1, 'L', $fill );
+
+            $fill=!$fill;
+        }
+    }
 
 	$pdf->AddPage();
 	$pdf->SetFont( $config->ParameterArray['PDFfont'],'B', 16 );
-	$pdf->Cell( 0, 18, __("Devices Greater Than 4 Years Old"), '', 1, 'C', 0 );
+	$pdf->Cell( 0, 18, __("Devices Greater Than 5 Years Old"), '', 1, 'C', 0 );
 	$pdf->SetFont( $config->ParameterArray['PDFfont'],'', 10 );
 	$headerTags = array( __("Label"),__("Age"),__("Owner"),__("Primary Contact") );
         $cellWidths = array( 45, 30, 50, 45 );
