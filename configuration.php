@@ -1196,7 +1196,7 @@
 		});
 
 		// Convert this bitch over to an ajax form submit
-		$('input[name="action"]').click(function(e){
+		$('button[name="action"]').click(function(e){
 			// Clear the messages blank
 			$('#messages').text('');
 			// Don't let this button do a real form submit
@@ -1207,6 +1207,10 @@
 			formdata.push({name:'action',value:"Update"});
 			// Post the config data then update the status message
 			$.post('',formdata).done(function(){$('#messages').text('Updated');}).error(function(){$('#messages').text('Something is broken');});
+		});
+
+		$('.main form').submit(function(e){
+			e.preventDefault();
 		});
 
 	});
