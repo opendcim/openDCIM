@@ -24,7 +24,7 @@ class DeviceAge extends Device
         for ($year = 1; $year <= 5; $year++) {
             $previous_year = $year - 1;
 
-            $selectSQL = sprintf("SELECT COUNT(DeviceID) AS NumDevices,'<=%d years' AS NumYears FROM fac_Device WHERE (DATEDIFF(NOW(),(CASE WHEN MfgDate>'1969-12-31' THEN MfgDate ELSE InstallDate END))/365)<=%d AND (DATEDIFF(NOW(), (CASE WHEN MfgDate>'1969-12-31' THEN MfgDate ELSE InstallDate END))/365)>%d", $year, $year, $previous_year);
+            $selectSQL = sprintf("SELECT COUNT(DeviceID) AS NumDevices,'%d<=%d years old' AS NumYears FROM fac_Device WHERE (DATEDIFF(NOW(),(CASE WHEN MfgDate>'1969-12-31' THEN MfgDate ELSE InstallDate END))/365)<=%d AND (DATEDIFF(NOW(), (CASE WHEN MfgDate>'1969-12-31' THEN MfgDate ELSE InstallDate END))/365)>%d", $previous_year, $year, $year, $previous_year);
 
             foreach ($dbh->query($selectSQL) as $row) {
                 $deptList[$row['NumYears']] = $row['NumDevices'];
@@ -32,7 +32,7 @@ class DeviceAge extends Device
         }
 
         // count devices older than 5 years
-        $selectSQL = "SELECT COUNT(DeviceID) AS NumDevices,'>5 years' AS NumYears FROM fac_Device WHERE (DATEDIFF(NOW(),MfgDate)/365)>5 AND MfgDate>'1970-01-01' AND InstallDate>'1970-01-01';";
+        $selectSQL = "SELECT COUNT(DeviceID) AS NumDevices,'>5 years old' AS NumYears FROM fac_Device WHERE (DATEDIFF(NOW(),MfgDate)/365)>5 AND MfgDate>'1970-01-01' AND InstallDate>'1970-01-01';";
 
         foreach ($dbh->query($selectSQL) as $row) {
             $deptList[$row['NumYears']] = $row['NumDevices'];
