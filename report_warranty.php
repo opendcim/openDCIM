@@ -93,7 +93,7 @@ class PDF extends FPDF
         $this->SetFont($this->pdfconfig->ParameterArray['PDFfont'], '', 10);
         $this->Cell(50, 6, __("Data Center Warranty Expiration Report"), 0, 1, 'L');
         $this->Cell(50, 6, __("Date") . ': ' . date('d F Y'), 0, 1, 'L');
-        $this->Ln(10);
+        $this->Ln(1);
     }
 
     function Footer() {
@@ -417,7 +417,7 @@ for ($year = 1; $year <= 3; $year++) {
     $start_year = $year - 1;
     $pdf->AddPage();
     $pdf->SetFont($config->ParameterArray['PDFfont'], 'B', 16);
-    $pdf->Cell(0, 18, __("Devices with $start_year-$year years of remaining warranty "), '', 1, 'C', 0);
+    $pdf->Cell(0, 15, __("Devices with $start_year-$year years of remaining warranty "), '', 1, 'C', 0);
     $pdf->SetFont($config->ParameterArray['PDFfont'], '', 10);
     $headerTags = array(__("Label"), __("Remaining"), __("Owner"), __("Primary Contact"));
     $cellWidths = array(45, 30, 50, 45);
@@ -450,7 +450,7 @@ for ($year = 1; $year <= 3; $year++) {
 
 $pdf->AddPage();
 $pdf->SetFont($config->ParameterArray['PDFfont'], 'B', 16);
-$pdf->Cell(0, 18, __("Devices with expired warranty"), '', 1, 'C', 0);
+$pdf->Cell(0, 15, __("Devices with expired warranty"), '', 1, 'C', 0);
 $pdf->SetFont($config->ParameterArray['PDFfont'], '', 10);
 $headerTags = array(__("Label"), __("Expired"), __("Owner"), __("Primary Contact"));
 $cellWidths = array(45, 30, 50, 45);
