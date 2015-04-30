@@ -30,7 +30,7 @@ class DeviceWarranty extends Device
         // count systems with expiring warranty in the next 0-1, 1-2, and 2-3 years
         for ($year = 1; $year <= 3; $year++) {
             $previous_year = $year - 1;
-            $selectSQL = sprintf("SELECT count(DeviceID) AS NumDevices,'<=%d remaining years' AS NumYears FROM fac_Device WHERE (DATEDIFF(WarrantyExpire, NOW())/365)>=%d AND (DATEDIFF(WarrantyExpire, NOW())/365)<%d ", $year, $previous_year, $year);
+            $selectSQL = sprintf("SELECT count(DeviceID) AS NumDevices,'%d<=%d remaining years' AS NumYears FROM fac_Device WHERE (DATEDIFF(WarrantyExpire, NOW())/365)>=%d AND (DATEDIFF(WarrantyExpire, NOW())/365)<%d ", $previous_year, $year, $previous_year, $year);
 
             foreach ($dbh->query($selectSQL) as $row) {
                 $deptList[$row['NumYears']] = $row['NumDevices'];
