@@ -580,16 +580,13 @@
 					$dev->HalfDepth=(isset($_POST['halfdepth']))?($_POST['halfdepth']=="on")?1:0:0;
 					$dev->BackSide=(isset($_POST['backside']))?($_POST['backside']=="on")?1:0:0;
 					// Used by CDU type devices only
-					$pdu->Label=$dev->Label;
-					$pdu->CabinetID=$dev->Cabinet;
-					$pdu->IPAddress=$dev->PrimaryIP;
-					(isset($_POST['panelid']))?$pdu->PanelID=$_POST['panelid']:'';
-					(isset($_POST['breakersize']))?$pdu->BreakerSize=$_POST['breakersize']:'';
-					(isset($_POST['panelpole']))?$pdu->PanelPole=$_POST['panelpole']:'';
-					(isset($_POST['inputamperage']))?$pdu->InputAmperage=$_POST['inputamperage']:'';
-					(isset($_POST['failsafe']))?$pdu->FailSafe=($_POST['failsafe']=="on")?1:0:'';
-					(isset($_POST['panelid2']))?$pdu->PanelID2=$_POST['panelid2']:'';
-					(isset($_POST['panelpole2']))?$pdu->PanelPole2=$_POST['panelpole2']:'';
+					(isset($_POST['panelid']))?$dev->PanelID=$_POST['panelid']:'';
+					(isset($_POST['breakersize']))?$dev->BreakerSize=$_POST['breakersize']:'';
+					(isset($_POST['panelpole']))?$dev->PanelPole=$_POST['panelpole']:'';
+					(isset($_POST['inputamperage']))?$dev->InputAmperage=$_POST['inputamperage']:'';
+					(isset($_POST['failsafe']))?$dev->FailSafe=($_POST['failsafe']=="on")?1:0:'';
+					(isset($_POST['panelid2']))?$dev->PanelID2=$_POST['panelid2']:'';
+					(isset($_POST['panelpole2']))?$dev->PanelPole2=$_POST['panelpole2']:'';
 					
 				}
 
@@ -616,9 +613,6 @@
 								$dev->MoveToStorage();
 							}else{
 								$dev->UpdateDevice();
-								if($dev->DeviceType=="CDU"){
-									$pdu->UpdatePDU();
-								}
 								updateCustomValues($dev);
 							}
 							break;
@@ -668,9 +662,6 @@
 						$dev->UpdateWattageFromTemplate();
 					}
 					$dev->CreateDevice();
-					if($dev->DeviceType=="CDU"){
-						$pdu->CreatePDU($dev->DeviceID);
-					}
 					$dev->SetTags($tagarray);
 					updateCustomValues($dev);
 
