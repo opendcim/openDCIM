@@ -809,6 +809,55 @@ class PowerDistribution {
 		return $dbh->exec($sql);
 	}
 
+	/* All of these functions will REQUIRE the built-in SNMP functions - the external calls are simply too slow */
+	static private function BasicTests($DeviceID){
+		global $config;
+
+		// First check if the SNMP library is present
+		if(!class_exists('OSS_SNMP\SNMP')){
+			return false;
+		}
+
+		$dev=New Device();
+		$dev->DeviceID=$DeviceID;
+
+		// Make sure this is a real device and has an IP set
+		if(!$dev->GetDevice()){return false;}
+		if($dev->PrimaryIP==""){return false;}
+
+		// If the device doesn't have an SNMP community set, check and see if we have a global one
+		$dev->SNMPCommunity=($dev->SNMPCommunity=="")?$config->ParameterArray["SNMPCommunity"]:$dev->SNMPCommunity;
+
+		// We've passed all the repeatable tests, return the device object for digging
+		return $dev;
+	}
+
+	// Making an attempt at reducing the lines that I was constantly repeating at a cost of making this a little more convoluted.
+	/*
+	 * Valid values for $snmplookup:
+	 * contact - alpha numeric return of the system contact
+	 * description - alpha numeric return of the system description can include line breaks
+	 * location - alpha numeric return of the location if set
+	 * name - alpha numeric return of the name of the system
+	 * services - int 
+	 * uptime - int - uptime of the device returned as ticks.  tick defined as 1/1000'th of a second
+	 */
+	static private function OSS_SNMP_Lookup($dev,$snmplookup,$oid=null){
+		// This is find out the name of the function that called this to make the error logging more descriptive
+		$caller=debug_backtrace();
+		$caller=$caller[1]['function'];
+
+		$snmpHost=new OSS_SNMP\SNMP($dev->PrimaryIP,$dev->SNMPCommunity);
+		$snmpresult=false;
+		try {
+			$snmpresult=(is_null($oid))?$snmpHost->useSystem()->$snmplookup(true):$snmpHost->get($oid);
+		}catch (Exception $e){
+			error_log("PowerDistribution::$caller($dev->DeviceID) ".$e->getMessage());
+		}
+
+		return $snmpresult;
+	}
+
 	function CreatePDU($pduid=null){
 		global $dbh;
 
@@ -1144,92 +1193,35 @@ class PowerDistribution {
 		
 		return $result;
 	}
-	
-	function GetSmartCDUUptime(){
-		global $config;
 
-		$this->GetPDU();
-		$tmpl=new CDUTemplate();
-		$tmpl->TemplateID=$this->TemplateID;
-		$tmpl->GetTemplate();
 
-		if ( ! $this->IPAddress ) {
-			return "Not Configured";
-		} else {
-			$serverIP = $this->IPAddress;
-			if ( $this->SNMPCommunity == "" ) {
-				$Community = $config->ParameterArray["SNMPCommunity"];
-			} else {
-				$Community = $this->SNMPCommunity;
-			}
-			
-			if(!function_exists("snmpget")){
-				$pollCommand ="{$config->ParameterArray["snmpget"]} -v 2c -t 0.5 -r 2 -c $Community $serverIP sysUpTimeInstance";
-
-				exec($pollCommand, $statsOutput);
-				// need error checking here
-
-				if(count($statsOutput) >0){
-					$statsOutput=explode(")",$statsOutput[0]);
-					$upTime=end($statsOutput);
-				}else{
-					$upTime = "Unknown";
-				}
-			}else{
-				if($tmpl->SNMPVersion=="2c"){
-					$result = explode( ")", @snmp2_get( $this->IPAddress, $Community, "sysUpTimeInstance" ));
-				}else{
-					$result = explode( ")", @snmpget( $this->IPAddress, $Community, "sysUpTimeInstance" ));
-				}				
-				$upTime = trim( @$result[1] );
-			}
-			
-			return $upTime;
+	function GetSmartCDUUptime() {
+		if(!$dev=PowerDistribution::BasicTests($this->PDUID)){
+			return false;
 		}
+
+		// If this gets a value returned it will be in ticks
+		$test=self::OSS_SNMP_Lookup($dev,"uptime");
+
+		return ($test)?ticksToTime($test):$test;
 	}
-  
+	
 	function GetSmartCDUVersion(){
-		global $config;
+		if(!$dev=PowerDistribution::BasicTests($this->PDUID)){
+			return false;
+		}
 		
-		$this->GetPDU();
+		if(!$this->GetPDU()){
+			return false;
+		}
 		
 		$template=new CDUTemplate();
 		$template->TemplateID=$this->TemplateID;
-		$template->GetTemplate();
-
-		if ( ! $this->IPAddress ) {
-			return "Not Configured";
-		} else {
-			$serverIP = $this->IPAddress;
-			
-			if ( $this->SNMPCommunity == "" ) {
-				$Community = $config->ParameterArray["SNMPCommunity"];
-			} else {
-				$Community = $this->SNMPCommunity;
-			}
-			
-			if(!function_exists("snmpget")){
-				$pollCommand="{$config->ParameterArray["snmpget"]} -v 2c -t 0.5 -r 2 -c $Community $this->IPAddress $template->VersionOID";
-
-				exec( $pollCommand, $statsOutput );
-				// need error checking here
-
-				if(count($statsOutput) >0){
-					$version = str_replace( "\"", "", end( explode( " ", $statsOutput[0] ) ) );
-				}else{
-					$version = "Unknown";
-				}
-			}else{
-				if($template->SNMPVersion=="2c"){
-					$result = explode( "\"", @snmp2_get( $this->IPAddress, $Community, $template->VersionOID ));
-				}else{
-					$result = explode( "\"", @snmpget( $this->IPAddress, $Community, $template->VersionOID ));
-				}
-				$version = @$result[1];
-			}
-			
-			return $version;
+		if(!$template->GetTemplate()){
+			return false;
 		}
+
+		return self::OSS_SNMP_Lookup($dev,null,"$template->VersionOID");
 	}
 
         function GetAllBreakerPoles() {
