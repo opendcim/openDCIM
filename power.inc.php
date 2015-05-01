@@ -1045,7 +1045,7 @@ class PowerDistribution {
 						$tmp2 = explode( " ", @snmpget( $row["IPAddress"], $Community, $row["OID2"] ));
 					}
 					if ( sizeof( $tmp2 ) > 0 ){
-						$pollValue2 = $tmp2[1];
+						$pollValue2 = @$tmp2[1];
 					}
 				}
 				
@@ -1056,7 +1056,7 @@ class PowerDistribution {
 						$tmp3 = explode( " ", @snmpget( $row["IPAddress"], $Community, $row["OID3"] ));
 					}
 					if ( sizeof( $tmp3 ) > 0 ){
-						$pollValue3 = $tmp3[1];
+						$pollValue3 = @$tmp3[1];
 					}
 				}
 			} else {

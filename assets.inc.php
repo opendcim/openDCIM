@@ -1520,11 +1520,11 @@ class Device {
 			return false;
 		}
 		
-		if ( $dev == null ) {
-			$dev = $this->DeviceID;
+		if ( !(isset($this) && get_class($this) == __CLASS__) ) {
+			$dev = ( $dev == null ) ? $this->DeviceID : $dev;
 		}
 		
-		$sql = "update fac_Device set SNMPFailureCount=SNMPFailureCount+1 where DeviceID=" . $dev;
+		$sql = "update fac_Device set SNMPFailureCount=SNMPFailureCount+1 where DeviceID=$dev";
 		
 		if ( ! $dbh->query( $sql ) ) {
 			error_log( "Device::IncrementFailures::PDO Error: {$info[2]} SQL=$sql");
@@ -1542,7 +1542,11 @@ class Device {
 			return false;
 		}
 		
-		$sql = "update fac_Device set SNMPFailureCount=0 where DeviceID=" . ($dev == null) ? $this->DeviceID : $dev;
+		if ( !(isset($this) && get_class($this) == __CLASS__) ) {
+			$dev = ( $dev == null ) ? $this->DeviceID : $dev;
+		}
+		
+		$sql = "update fac_Device set SNMPFailureCount=0 where DeviceID=$dev";
 		
 		if ( ! $dbh->query( $sql ) ) {
 			error_log( "Device::ResetFailures::PDO Error: {$info[2]} SQL=$sql");
