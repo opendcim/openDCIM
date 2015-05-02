@@ -130,10 +130,17 @@
 					}
 				}else{
 					$dp=(isset($_POST['power']))?new PowerPorts():new DevicePorts();
+					$pc=(isset($_POST['power']))?$dev->PowerSupplyCount:$dev->Ports;
 					$dp->DeviceID=$dev->DeviceID;
 					$ports=$dp->getPorts();
 					foreach($ports as $portid => $port){
-						$portnames[$portid]=$ports[(count($ports)-($portid-1))]->Label;
+						// patch panels make everything more complicated
+						if($portid >0){
+							$portnames[$portid]=$ports[($pc-(abs($portid)-1))]->Label;
+							if($dev->DeviceType=="PatchPanel"){
+								$portnames[($portid*-1)]=$ports[($pc-(abs($portid)-1))]->Label;
+							}
+						}
 					}
 				}
 			}else{
