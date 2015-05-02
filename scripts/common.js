@@ -173,12 +173,12 @@ function rendernotes(button){
 	}else{
 		h="auto";
 	}
-	$('#notes').htmlarea('dispose');
-	button.after('<div id="preview">'+$('#notes').val()+'</div>');
+	$('#Notes,#notes').htmlarea('dispose');
+	button.after('<div id="preview">'+$('#Notes,#notes').val()+'</div>');
 	button.next('div').css({'width': w+'px', 'height' : h}).find('a').each(function(){
 		$(this).attr('target', '_new');
 	});
-	$('#notes').html($('#notes').val()).hide(); // we still need this field to submit it with the form
+	$('#Notes,#notes').html($('#Notes,#notes').val()).hide(); // we still need this field to submit it with the form
 	h=0; // recalculate height in case they added an image that is gonna hork the layout
 	// need a slight delay here to allow the load of large images before the height calculations are done
 	setTimeout(function(){
@@ -240,7 +240,7 @@ $(document).ready(function(){
 		sneaky = new ScrollSneak(location.hostname);
 	})();
 
-	$('#notes').each(function(){
+	$('#Notes,#notes').each(function(){
 		$(this).before('<button type="button" id="editbtn"></button>');
 		if($(this).val()!=''){
 			rendernotes($('#editbtn'));
@@ -1085,7 +1085,7 @@ function LameLogDisplay(){
 		var table=$('<div>').addClass('table').attr('id','logtable');
 		var header='<div><div>Time</div><div>User</div><div>Action</div><div>Property</div><div>Old Value</div><div>New Value</div></div>';
 		table.append(header);
-		$.post('',{devid: $('#deviceid').val(), logging: true}).done(function(data){
+		$.post('',{devid: $('#DeviceID').val(), logging: true}).done(function(data){
 			$.each(data, function(i, logitem){
 				switch(logitem.Action){
 					case '1':
@@ -1157,8 +1157,8 @@ function LameLogDisplay(){
 					// set all the media types to the one selected from the drop down
 					$.post('',{
 						setall: override, 
-						devid: $('#deviceid').val(), 
-						mt:setmediatype.val(), 
+						devid: $('#DeviceID').val(), 
+						mt: setmediatype.val(), 
 						cc: setmediatype.data(setmediatype.val())
 					}).done(function(data){
 						// setall kicked back every port run through them all and update note, media type, and color code
@@ -1207,7 +1207,7 @@ function LameLogDisplay(){
 					// set all the color codes to the one selected from the drop down
 					$.post('',{
 						setall: override,
-						devid: $('#deviceid').val(),
+						devid: $('#DeviceID').val(),
 						cc: setcolorcode.val()
 					}).done(function(data){
 						// setall kicked back every port run through them all and update note, media type, and color code
@@ -1260,7 +1260,7 @@ function LameLogDisplay(){
 					var portpattern;
 					portpattern=(generateportnames.val()=='Custom')?dialog.find('input').val():generateportnames.val();
 					// gnerate port names based on the selected pattern for all the ports
-					$.post('',{setall: override, devid: $('#deviceid').val(), spn: portpattern}).done(function(data){
+					$.post('',{setall: override, devid: $('#DeviceID').val(), spn: portpattern}).done(function(data){
 						// setall kicked back every port run through them all and update note, media type, and color code
 						redrawports(data);
 					});
@@ -1309,7 +1309,7 @@ function LameLogDisplay(){
 					var portpattern;
 					portpattern=(generatepowerportnames.val()=='Custom')?dialog.find('input').val():generatepowerportnames.val();
 					// gnerate port names based on the selected pattern for all the ports
-					$.post('',{setall: override, power: '', devid: $('#deviceid').val(), spn: portpattern}).done(function(data){
+					$.post('',{setall: override, power: '', devid: $('#DeviceID').val(), spn: portpattern}).done(function(data){
 						// setall kicked back every port run through them all and update note, media type, and color code
 						$.each(data.ports, function(key,p){
 							$('.power.table > div[data-port='+p.PortNumber+']').power('destroy');
@@ -1362,14 +1362,14 @@ function LameLogDisplay(){
 						dialogClass: "no-close",
 						modal: true
 					});
-					$.post('',{swdev: $('#deviceid').val(), rear: '', cdevice: rearedit.val(), override: override}).done(function(data){
+					$.post('',{swdev: $('#DeviceID').val(), rear: '', cdevice: rearedit.val(), override: override}).done(function(data){
 						modal.dialog('destroy');
 						$.each($.parseJSON(data), function(key,pp){
 							rear=(key>0)?false:true;
 							fr=(rear)?'r':'f';
 							pp.ConnectedDeviceLabel=(pp.ConnectedDeviceLabel==null)?'':pp.ConnectedDeviceLabel;
 							pp.ConnectedPortLabel=(pp.ConnectedPortLabel==null || pp.ConnectedPortLabel=='')?(pp.ConnectedPort==null)?'':Math.abs(pp.ConnectedPort):pp.ConnectedPortLabel;
-							var dev=$('<a>').prop('href','devices.php?deviceid='+pp.ConnectedDeviceID).text(pp.ConnectedDeviceLabel);
+							var dev=$('<a>').prop('href','devices.php?DeviceID='+pp.ConnectedDeviceID).text(pp.ConnectedDeviceLabel);
 							var port=$('<a>').prop('href','paths.php?deviceid='+pp.ConnectedDeviceID+'&portnumber='+pp.ConnectedPort).text(pp.ConnectedPortLabel);
 							$('#'+fr+'d'+Math.abs(key)).html(dev).data('default',pp.ConnectedDeviceID);
 							$('#'+fr+'p'+Math.abs(key)).html(port).data('default',pp.ConnectedPort);
@@ -1383,7 +1383,7 @@ function LameLogDisplay(){
 			// Generate list of other patch panel devices that can be used for rear connections
 			function massedit_rear(){
 				if(portrights.admin){
-					$.post('', {swdev: $('#deviceid').val(), rear: ''}, function(data){
+					$.post('', {swdev: $('#DeviceID').val(), rear: ''}, function(data){
 						$.each(data, function(key,pp){
 							var option=$("<option>").val(pp.DeviceID).append(pp.Label);
 							rearedit.append(option);
@@ -1609,7 +1609,7 @@ function LameLogDisplay(){
 			this.cnotes      = this.element.find('div:nth-child(6)');
 			// As we only track power connections on the primary chassis but display them 
 			// on children we need a common place to check for the correct device id
-			this.deviceid    = (typeof $('select[name=parentdevice]').val()=='undefined')?$('#deviceid').val():$('select[name=parentdevice]').val();
+			this.deviceid    = (typeof $('select[name=ParentDevice]').val()=='undefined')?$('#DeviceID').val():$('select[name=ParentDevice]').val();
 
 			// Row Controls
 			var controls=$('<div>',({'id':'controls'+this.portnum}));
@@ -1762,7 +1762,7 @@ function LameLogDisplay(){
 					row.portname.html(port.Label).data('default',port.Label);
 					port.ConnectedDeviceLabel=(port.ConnectedDeviceLabel==null)?'':port.ConnectedDeviceLabel;
 					port.ConnectedPortLabel=(port.ConnectedPortLabel==null)?'':port.ConnectedPortLabel;
-					row.cdevice.html('<a href="devices.php?deviceid='+port.ConnectedDeviceID+'">'+port.ConnectedDeviceLabel+'</a>').data('default',port.ConnectedDeviceID);
+					row.cdevice.html('<a href="devices.php?DeviceID='+port.ConnectedDeviceID+'">'+port.ConnectedDeviceLabel+'</a>').data('default',port.ConnectedDeviceID);
 					row.cdeviceport.html(port.ConnectedPortLabel).data('default',port.ConnectedPort);
 					row.cnotes.html(port.Notes).data('default',port.Notes);
 					row.ct.css('padding','');
@@ -1912,11 +1912,11 @@ function LameLogDisplay(){
 				this.element.after(this.pathrow);
 
 				// Add this device as the start of the connection chain
-				row.pathrow.path.html(makespan($('#label').val(),row.portname.data('default')));
+				row.pathrow.path.html(makespan($('#Label').val(),row.portname.data('default')));
 
 				// Retreive the path
 				$.get('',{path: '', ConnectedDeviceID: row.cdevice.data('default'), ConnectedPort: row.cdeviceport.data('default')}).done(function(data){
-					if(data[(data.length - 1)].DeviceID ==$('#deviceid').val() && data.length==2){
+					if(data[(data.length - 1)].DeviceID ==$('#DeviceID').val() && data.length==2){
 						// remove the last item in the chain to prevent a display loop if a device is only connected to a patch panel and nothing else
 						data.pop();
 					}
@@ -1947,7 +1947,7 @@ function LameLogDisplay(){
 				target=this.cdevice;
 			}
 			var row=this;
-			var postoptions={swdev: $('#deviceid').val(),pn: this.portnum};
+			var postoptions={swdev: $('#DeviceID').val(),pn: this.portnum};
 
 			// extend out basic options to allow for a scope limiter
 			var limiter=$('#connection-limiter  input:checked').val();
@@ -1986,7 +1986,7 @@ function LameLogDisplay(){
 		getports: function(e){
 			var row=this;
 			var rear=(e.target.parentElement!=null)?(e.target.parentElement.id.indexOf('r')==0)?true:false:false;
-			var postoptions={swdev: $('#deviceid').val(),listports: ''};
+			var postoptions={swdev: $('#DeviceID').val(),listports: ''};
 			if(rear){
 				postoptions=$.extend(postoptions, {thisdev: this.rdevice.find('select').val(), pn: (this.portnum)*-1});
 			}else{
@@ -2047,9 +2047,9 @@ function LameLogDisplay(){
 		deleteport: function(e){
 			var row=this;
 			var lastrow=$('.switch > div:last-child, .patchpanel > div:last-child');
-			$.post('',{delport: '',swdev: $('#deviceid').val(),pnum: row.portnum}).done(function(data){
+			$.post('',{delport: '',swdev: $('#DeviceID').val(),pnum: row.portnum}).done(function(data){
 				if(data.trim()==1){
-					if($(document).data('ports')>$('#ports').val()){
+					if($(document).data('Ports')>$('#Ports').val()){
 						// if this is the last port just remove it
 						if(row.element[0]==lastrow[0]){
 							row.element.remove();
@@ -2059,10 +2059,10 @@ function LameLogDisplay(){
 							lastrow.remove();
 						}
 						// decrease counter
-						$(document).data('ports',$(document).data('ports')-1);
-						if($(document).data('ports')==$('#ports').val()){$('#ports').change();}
+						$(document).data('Ports',$(document).data('Ports')-1);
+						if($(document).data('Ports')==$('#Ports').val()){$('#Ports').change();}
 					}else{
-						$('#ports').change();
+						$('#Ports').change();
 					}
 				}
 			});
@@ -2149,7 +2149,7 @@ function LameLogDisplay(){
 			if(check || row.portname.children('input').val().trim().length){
 				$.post('',{
 					saveport: '',
-					swdev: $('#deviceid').val(),
+					swdev: $('#DeviceID').val(),
 					pnum: row.portnum*rear,
 					pname: (row.portname.children('input').length==0)?row.portname.data('default'):row.portname.children('input').val(),
 					cdevice: device.children('select').val(),
@@ -2217,10 +2217,10 @@ function LameLogDisplay(){
 			var row=this;
 
 			function front(){
-				$.post('',{getport: '',swdev: $('#deviceid').val(),pnum: row.portnum}).done(function(data){
+				$.post('',{getport: '',swdev: $('#DeviceID').val(),pnum: row.portnum}).done(function(data){
 					row.ct.css('padding','');
 					row.portname.html(data.Label).data('default',data.Label);
-					row.cdevice.html('<a href="devices.php?deviceid='+data.ConnectedDeviceID+'">'+data.ConnectedDeviceLabel+'</a>').data('default',data.ConnectedDeviceID);
+					row.cdevice.html('<a href="devices.php?DeviceID='+data.ConnectedDeviceID+'">'+data.ConnectedDeviceLabel+'</a>').data('default',data.ConnectedDeviceID);
 					data.ConnectedPortLabel=(data.ConnectedPortLabel==null)?'':data.ConnectedPortLabel;
 					row.cdeviceport.html('<a href="paths.php?deviceid='+data.ConnectedDeviceID+'&portnumber='+data.ConnectedPort+'">'+data.ConnectedPortLabel+'</a>').data('default',data.ConnectedPort);
 					row.cnotes.html(data.Notes).data('default',data.Notes);
@@ -2238,9 +2238,9 @@ function LameLogDisplay(){
 			}
 
 			function rear(){
-				$.post('',{getport: '',swdev: $('#deviceid').val(),pnum: row.portnum*-1}).done(function(data){
+				$.post('',{getport: '',swdev: $('#DeviceID').val(),pnum: row.portnum*-1}).done(function(data){
 					data.ConnectedPortLabel=(data.ConnectedPortLabel==null)?'':data.ConnectedPortLabel;
-					row.rdevice.html('<a href="devices.php?deviceid='+data.ConnectedDeviceID+'">'+data.ConnectedDeviceLabel+'</a>').data('default',data.ConnectedDeviceID);
+					row.rdevice.html('<a href="devices.php?DeviceID='+data.ConnectedDeviceID+'">'+data.ConnectedDeviceLabel+'</a>').data('default',data.ConnectedDeviceID);
 					row.rdeviceport.html('<a href="paths.php?deviceid='+data.ConnectedDeviceID+'&portnumber='+data.ConnectedPort+'">'+data.ConnectedPortLabel+'</a>').data('default',data.ConnectedPort);
 					row.rnotes.html(data.Notes).data('default',data.Notes);
 					row.porttype.html(data.MediaName).data('default',data.MediaID).data('color',data.ColorID);

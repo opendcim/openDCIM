@@ -777,6 +777,43 @@ $app->post( '/colorcode/:colorid/replacewith/:newcolorid', function($colorid,$ne
 	echoResponse($response['errorcode'],$response);
 });
 
+//
+//	URL:	/api/v1/device/:deviceid
+//	Method:	POST
+//	Params:	deviceid (passed in URL)
+//	Returns:  true/false on update operation
+//
+
+$app->post( '/device/:deviceid', function($deviceid) use ($app) {
+	$dev=new Device();
+	$dev->DeviceID=$deviceid;
+	
+	if(!$dev->GetDevice()){
+		$response['error']=true;
+		$response['errorcode']=404;
+		$response['message']=__("No device found with DeviceID").$deviceid;
+	}else{
+		if($dev->Rights!="Write"){
+			$response['error']=true;
+			$response['errorcode']=403;
+			$response['message']=__("Unauthorized");
+		}else{
+			foreach($app->request->post() as $prop => $val){
+				$dev->$prop=$val;
+			}
+			if(!$dev->UpdateDevice()){
+				$response['error']=true;
+				$response['errorcode']=404;
+				$response['message']=__("Update failed");
+			}else{
+				$response['error']=false;
+				$response['errorcode']=200;
+			}
+		}
+	}
+
+	echoResponse($response['errorcode'],$response);
+});
 /**
   *
   *		API PUT Methods go here

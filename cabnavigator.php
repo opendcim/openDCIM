@@ -224,7 +224,7 @@ function renderUnassignedTemplateOwnership($noTemplFlag, $noOwnerFlag, $device) 
                 renderUnassignedTemplateOwnership($noTemplFlag, $noOwnerFlag, $device);
 			if($device->Height<1 && !$rear && $device->DeviceType!="CDU"){
 				if($device->Rights!="None"){
-					$zeroheight.="\t\t\t<a href=\"devices.php?deviceid=$device->DeviceID\" data-deviceid=$device->DeviceID>$highlight $device->Label</a>\n";
+					$zeroheight.="\t\t\t<a href=\"devices.php?DeviceID=$device->DeviceID\" data-deviceid=$device->DeviceID>$highlight $device->Label</a>\n";
 				}else{
 					// empty html anchor for a line break
 					$zeroheight.="\t\t\t$highlight $device->Label\n<a></a>";
@@ -287,7 +287,7 @@ function renderUnassignedTemplateOwnership($noTemplFlag, $noOwnerFlag, $device) 
 						// Create the filler for the rack either text or a picture
 						$picture=(!$device->BackSide && !$rear || $device->BackSide && $rear)?$device->GetDevicePicture():$device->GetDevicePicture("rear");
 						$devlabel=$device->Label.(((!$device->BackSide && $rear || $device->BackSide && !$rear) && !$device->HalfDepth)?"(".__("Rear").")":"");
-						$text=($device->Rights!="None")?"<a href=\"devices.php?deviceid=$device->DeviceID\">$highlight $devlabel</a>":$devlabel;
+						$text=($device->Rights!="None")?"<a href=\"devices.php?DeviceID=$device->DeviceID\">$highlight $devlabel</a>":$devlabel;
 						
 						// Put the device in the rack
 						$body.="\t\t<tr><td class=\"cabpos$reserved dept$device->Owner$errclass\">$i</td><td class=\"dept$device->Owner$reserved\" rowspan=$device->Height data-deviceid=$device->DeviceID>";
@@ -474,7 +474,7 @@ $body.='<div id="infopanel">
 
 		$PDUColor=($PDUPercent>intval($config->ParameterArray["PowerRed"])?$CriticalColor:($PDUPercent>intval($config->ParameterArray["PowerYellow"])?$CautionColor:$GoodColor));
 
-		$body.=sprintf("\n\t\t\t<a href=\"devices.php?deviceid=%d\">CDU %s</a><br>(%.2f kW) / (%.2f kW Max)<br>\n", $PDUdev->PDUID, $PDUdev->Label, $pduDraw / 1000, $maxDraw / 1000 );
+		$body.=sprintf("\n\t\t\t<a href=\"devices.php?DeviceID=%d\">CDU %s</a><br>(%.2f kW) / (%.2f kW Max)<br>\n", $PDUdev->PDUID, $PDUdev->Label, $pduDraw / 1000, $maxDraw / 1000 );
 		$body.="\t\t\t\t<div class=\"meter-wrap\">\n\t\t\t\t\t<div class=\"meter-value\" style=\"background-color: $PDUColor; width: $PDUPercent%;\">\n\t\t\t\t\t\t<div class=\"meter-text\">$PDUPercent%</div>\n\t\t\t\t\t</div>\n\t\t\t\t</div>\n\t\t\t<br>\n";
 
 		if ( $PDUdev->FailSafe ) {
