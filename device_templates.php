@@ -1146,10 +1146,11 @@ function bindevents() {
 			$("#imageselection span").each(function(){
 				$(this).removeAttr('style');
 			});
-			$(this).css('border','1px dotted black')
+			$(this).css({'border':'1px dotted black','background-color':'#eeeeee'});
 		});
 		if($($("#imageselection").data('input')).val()==$(this).text()){
 			$(this).click();
+			this.parentNode.scrollTop=(this.offsetTop - (this.parentNode.clientHeight / 2) + (this.scrollHeight / 2) );
 		}
 	});
 }
