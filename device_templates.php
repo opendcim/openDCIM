@@ -392,6 +392,7 @@ exit;
 		$('#FrontPictureFile,#RearPictureFile').click(function(){
 			var upload=$('<input>').prop({type: 'file', name: 'dev_file_upload', id: 'dev_file_upload'}).data('dir','pictures');
 			var input=this;
+			var originalvalue=this.value;
 			$("#imageselection").dialog({
 				resizable: false,
 				height:500,
@@ -406,6 +407,8 @@ exit;
 					}
 				},
 				close: function(){
+						// they clicked the x, set the value back if something was uploaded
+						input.value=originalvalue;
 						$(this).dialog("destroy");
 					}
 			}).data('input',input);
