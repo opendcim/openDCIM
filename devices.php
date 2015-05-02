@@ -1154,15 +1154,15 @@ $(document).ready(function() {
 		$.post('', {snmptest: $('#DeviceID').val(),ip: $('#PrimaryIP').val(),community: community}, function(data){
 			$('#pdutest').html(data);
 		});
-		$('#pdutest').dialog({minWidth: 850, Position: { my: "center", at: "top", of: window },closeOnEscape: true });
+		$('#pdutest').dialog({minWidth: 850, position: { my: "center", at: "top", of: window },closeOnEscape: true });
 	});
 
 	// Add in refresh functions for virtual machines
 	var ESXtable=$('<div>').addClass('table border').append('<div><div>VM Name</div><div>Status</div><div>Owner</div><div>Last Updated</div></div>');
-	var ESXbutton=$('<button>',{'type':'button'}).css({'Position':'absolute','top':'10px','right':'2px'}).text('Refresh');
+	var ESXbutton=$('<button>',{'type':'button'}).css({'position':'absolute','top':'10px','right':'2px'}).text('Refresh');
 	ESXbutton.click(ESXrefresh);
 	if($('#ESX').val()==1){
-		$('#ESXframe').css('Position','relative').append(ESXbutton);
+		$('#ESXframe').css('position','relative').append(ESXbutton);
 	}
 	function ESXrefresh(){
 		$.post('',{ESXrefresh: $('#DeviceID').val()}).done(function(data){
@@ -1402,7 +1402,7 @@ print "		var dialog=$('<div>').prop('title',\"".__("Verify Delete Device")."\").
 		$('#Height').change(function(){
 			if($(this).val()==0){
 				$('#Position').attr('disabled', 'true');
-				$(this).parents('form').append('<input class="tmpPosition" type="hidden" name="Position" value="0">');
+				$(this).parents('form').append('<input class="tmpposition" type="hidden" name="Position" value="0">');
 			}else{
 				$('#Position').removeAttr('disabled');
 				$('.tmpPosition').remove();
@@ -1425,7 +1425,7 @@ print "		var dialog=$('<div>').prop('title',\"".__("Verify Delete Device")."\").
 					rackhtmlleft+='<div>'+ucount+'</div>';
 					rackhtmlright+='<div val='+ucount+' class="'+cssclass+'"></div>';
 				}
-				var rackhtml='<div class="table border Positionselector"><div><div>'+rackhtmlleft+'</div><div>'+rackhtmlright+'</div></div></div>';
+				var rackhtml='<div class="table border positionselector"><div><div>'+rackhtmlleft+'</div><div>'+rackhtmlright+'</div></div></div>';
 				$('#Positionselector').html(rackhtml);
 				setTimeout(function(){
 					var divwidth=$('.Positionselector').width();
