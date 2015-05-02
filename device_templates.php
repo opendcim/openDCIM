@@ -1179,6 +1179,7 @@ function uploadifive() {
 				toast.append(error);
 				$('#uploadifive-'+this[0].id+'-queue').append(toast);
 			}else{
+				$($("#imageselection").data('input')).val(file.name.replace(/\s/g,'_'));
 				// fuck yeah, reload the file list
 				reload($(this).data('dir'));
 			}
