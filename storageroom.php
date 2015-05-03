@@ -63,7 +63,7 @@
 	while(list($devID,$device)=each($devList)){
 		// filter the list of devices in storage rooms to only show the devices for this room
 		if($device->Position==$dc->DataCenterID){
-			echo "<div><div><a href=\"devices.php?deviceid=$device->DeviceID\">$device->Label</a></div><div>$device->AssetTag</div><div>$device->SerialNo</div><div><a href=\"surplus.php?deviceid=$device->DeviceID\">Surplus</a></div></div>\n";
+			echo "<div><div><a href=\"devices.php?DeviceID=$device->DeviceID\">$device->Label</a></div><div>$device->AssetTag</div><div>$device->SerialNo</div><div><a href=\"surplus.php?deviceid=$device->DeviceID\">Surplus</a></div></div>\n";
 		}
 	}
 ?>

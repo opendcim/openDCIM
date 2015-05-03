@@ -624,7 +624,11 @@
 							if($dev->ParentDevice >0){
 								header('Location: '.redirect("devices.php?DeviceID=$dev->ParentDevice"));
 							}else{
-								header('Location: '.redirect("cabnavigator.php?cabinetid=$dev->Cabinet"));
+								if($dev->Cabinet==-1){
+									header('Location: '.redirect("storageroom.php?dc=$dev->Position"));
+								}else{
+									header('Location: '.redirect("cabnavigator.php?cabinetid=$dev->Cabinet"));
+								}
 							}
 							exit;
 							break; // the exit should handle it
