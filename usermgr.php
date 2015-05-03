@@ -12,32 +12,36 @@
 	$userRights=new People();
 	$status="";
 
-	if(isset($_REQUEST['personid']) && strlen($_REQUEST['personid']) >0){
-		$userRights->PersonID=$_REQUEST['personid'];
+	if(isset($_REQUEST['PersonID']) && strlen($_REQUEST['PersonID']) >0){
+		$userRights->PersonID=$_REQUEST['PersonID'];
 		$userRights->GetPerson();
 	}
 	
-	if(isset($_POST['action'])&&isset($_POST['userid'])){
-		if((($_POST['action']=='Create')||($_POST['action']=='Update'))&&(isset($_POST['lastname'])&&$_POST['lastname']!=null&&$_POST['lastname']!='')){
-			$userRights->UserID=$_POST['userid'];
-			$userRights->LastName=$_POST['lastname'];
-			$userRights->FirstName=$_POST['firstname'];
-			$userRights->Phone1=$_POST['phone1'];
-			$userRights->Phone2=$_POST['phone2'];
-			$userRights->Phone3=$_POST['phone3'];
-			$userRights->Email=$_POST['email'];
-			$userRights->AdminOwnDevices=(isset($_POST['adminowndevices']))?1:0;
-			$userRights->ReadAccess=(isset($_POST['readaccess']))?1:0;
-			$userRights->WriteAccess=(isset($_POST['writeaccess']))?1:0;
-			$userRights->DeleteAccess=(isset($_POST['deleteaccess']))?1:0;
-			$userRights->ContactAdmin=(isset($_POST['contactadmin']))?1:0;
-			$userRights->RackRequest=(isset($_POST['rackrequest']))?1:0;
-			$userRights->RackAdmin=(isset($_POST['rackadmin']))?1:0;
-			$userRights->SiteAdmin=(isset($_POST['siteadmin']))?1:0;
-			$userRights->Disabled=(isset($_POST['disabled']))?1:0;
+	if(isset($_POST['action'])&&isset($_POST['UserID'])){
+		if((($_POST['action']=='Create')||($_POST['action']=='Update'))&&(isset($_POST['LastName'])&&$_POST['LastName']!=null&&$_POST['LastName']!='')){
+			$userRights->UserID=$_POST['UserID'];
+			$userRights->LastName=$_POST['LastName'];
+			$userRights->FirstName=$_POST['FirstName'];
+			$userRights->Phone1=$_POST['Phone1'];
+			$userRights->Phone2=$_POST['Phone2'];
+			$userRights->Phone3=$_POST['Phone3'];
+			$userRights->Email=$_POST['Email'];
+			$userRights->AdminOwnDevices=(isset($_POST['AdminOwnDevices']))?1:0;
+			$userRights->ReadAccess=(isset($_POST['ReadAccess']))?1:0;
+			$userRights->WriteAccess=(isset($_POST['WriteAccess']))?1:0;
+			$userRights->DeleteAccess=(isset($_POST['DeleteAccess']))?1:0;
+			$userRights->ContactAdmin=(isset($_POST['ContactAdmin']))?1:0;
+			$userRights->RackRequest=(isset($_POST['RackRequest']))?1:0;
+			$userRights->RackAdmin=(isset($_POST['RackAdmin']))?1:0;
+			$userRights->SiteAdmin=(isset($_POST['SiteAdmin']))?1:0;
+			$userRights->Disabled=(isset($_POST['Disabled']))?1:0;
 
 			if($_POST['action']=='Create'){
   				$userRights->CreatePerson();
+
+				// We've, hopefully, successfully created a new device. Force them to the new device page.
+				header('Location: '.redirect("usermgr.php?PersonID=$userRights->PersonID"));
+				exit;
 			}else{
 				$status=__("Updated");
 				$userRights->UpdatePerson();
@@ -56,9 +60,9 @@
 	$delete=($userRights->DeleteAccess)?"checked":"";
 	$contact=($userRights->ContactAdmin)?"checked":"";
 	$request=($userRights->RackRequest)?"checked":"";
-	$rackadmin=($userRights->RackAdmin)?"checked":"";
+	$RackAdmin=($userRights->RackAdmin)?"checked":"";
 	$admin=($userRights->SiteAdmin)?"checked":"";
-	$disabled=($userRights->Disabled)?"checked":"";
+	$Disabled=($userRights->Disabled)?"checked":"";
 
 ?>
 <!doctype html>
@@ -70,16 +74,21 @@
   <title>openDCIM User Manager</title>
   <link rel="stylesheet" href="css/inventory.php" type="text/css">
   <link rel="stylesheet" href="css/jquery-ui.css" type="text/css">
+  <link rel="stylesheet" href="css/validationEngine.jquery.css" type="text/css">
   <!--[if lt IE 9]>
   <link rel="stylesheet"  href="css/ie.css" type="text/css">
   <![endif]-->
   
   <script type="text/javascript" src="scripts/jquery.min.js"></script>
   <script type="text/javascript" src="scripts/jquery-ui.min.js"></script>
+  <script type="text/javascript" src="scripts/jquery.validationEngine-en.js"></script>
+  <script type="text/javascript" src="scripts/jquery.validationEngine.js"></script>
   <script type="text/javascript">
 	$(document).ready(function(){
-		$('#personid').change(function(e){
-			location.href='?personid='+this.value;
+		$('.main form').validationEngine();
+
+		$('#PersonID').change(function(e){
+			location.href='?PersonID='+this.value;
 		});
 
 		$('#showdept').click(showdept);
@@ -87,31 +96,31 @@
 
 		// If they have an id assigned do a post page load lookup of how many devices they
 		// are the primary contact for
-		if(parseInt($('#personid').val())){
+		if(parseInt($('#PersonID').val())){
 			UpdateDeviceCount();
 		}
 
-		$('#primarycontact').click(function(e){
-			var poopup=window.open('search.php?key=dev&PrimaryContact='+$('#personid').val()+'&search');
+		$('#PrimaryContact').click(function(e){
+			var poopup=window.open('search.php?key=dev&PrimaryContact='+$('#PersonID').val()+'&search');
 		});
 
 		$('#nofloat :input').click(DisabledFlipper);
 
 		function DisabledFlipper(e){
-			if(e.currentTarget.name=='disabled'){
-				$('#nofloat :input[name!="disabled"]').each(function(){this.checked=false;});
-				if(e.currentTarget.checked && parseInt($('#primarycontact').text())){
+			if(e.currentTarget.name=='Disabled'){
+				$('#nofloat :input[name!="Disabled"]').each(function(){this.checked=false;});
+				if(e.currentTarget.checked && parseInt($('#PrimaryContact').text())){
 					ShowModal();
 				}
 			}else{
-				$('#disabled').prop('checked',false);
+				$('#Disabled').prop('checked',false);
 			}
 		}
 	});
 	function UpdateDeviceCount(){
-		var PersonID=$('#personid').val();
+		var PersonID=$('#PersonID').val();
 		$.get('api/v1/device?PrimaryContact='+PersonID).done(function(data){
-			$('#primarycontact').text(data.device.length);
+			$('#PrimaryContact').text(data.device.length);
 			if(data.device.length){
 				$('#transferdevices').removeClass('hide').show();
 			}else{
@@ -121,9 +130,9 @@
 	}
 
 	function ShowModal(e){
-		$('#copy').replaceWith($('#personid').clone().attr('id','copy'));
+		$('#copy').replaceWith($('#PersonID').clone().attr('id','copy'));
 		$('#copy option[value=0]').text('');
-		$('#copy option[value='+$('#personid').val()+']').remove();
+		$('#copy option[value='+$('#PersonID').val()+']').remove();
 		$('#deletemodal').dialog({
 			dialogClass: "no-close",
 			width: 600,
@@ -136,7 +145,7 @@
 						modal: true,
 						buttons: {
 							Yes: function(e){
-								$.post('api/v1/people/'+$('#personid').val()+'/transferdevicesto/'+$('#copy').val()).done(function(data){
+								$.post('api/v1/people/'+$('#PersonID').val()+'/transferdevicesto/'+$('#copy').val()).done(function(data){
 									if(!data.error){
 										$('#doublecheck').dialog('destroy');
 										$('#deletemodal').dialog('destroy');
@@ -147,14 +156,14 @@
 							No: function(e){
 								$('#doublecheck').dialog('destroy');
 								$('#deletemodal').dialog('destroy');
-								$('#disabled').prop('checked',false);
+								$('#Disabled').prop('checked',false);
 							}
 						}
 					});
 				},
 				No: function(e){
 					$('#deletemodal').dialog('destroy');
-					$('#disabled').prop('checked',false);
+					$('#Disabled').prop('checked',false);
 				}
 			}
 		});
@@ -174,7 +183,7 @@
 		// Hide the form controls
 		$('#controls').hide().removeClass('caption');
 		// Load the group controls inside the iframe
-		$('#groupadmin').css('display','block').attr('src', 'people_depts.php?personid='+$('#personid').val());
+		$('#groupadmin').css('display','block').attr('src', 'people_depts.php?personid='+$('#PersonID').val());
 	}
   </script>
 </head>
@@ -191,8 +200,8 @@ echo '<div class="main">
 <form method="POST">
 <div class="table centermargin">
 <div>
-   <div><label for="personid">',__("User"),'</label></div>
-   <div><select name="personid" id="personid">
+   <div><label for="PersonID">',__("User"),'</label></div>
+   <div><select name="PersonID" id="PersonID">
    <option value=0>',__("New User"),'</option>';
 
 	foreach($userList as $userRow){
@@ -200,48 +209,48 @@ echo '<div class="main">
 		print "<option value=$userRow->PersonID $selected>" . $userRow->LastName . ", " . $userRow->FirstName. "</option>\n";
 	}
 
-echo '	</select>&nbsp;&nbsp;<span title="',__("This user is the primary contact for this many devices"),'" id="primarycontact"></span></div>
+echo '	</select>&nbsp;&nbsp;<span title="',__("This user is the primary contact for this many devices"),'" id="PrimaryContact"></span></div>
 </div>
 <div>
-   <div><label for="userid">',__("UserID"),'</label></div>
-   <div><input type="text" name="userid" id="userid" value="',$userRights->UserID,'"></div>
+   <div><label for="UserID">',__("UserID"),'</label></div>
+   <div><input type="text" class="validate[required,minSize[1],maxSize[50]]" name="UserID" id="UserID" value="',$userRights->UserID,'"></div>
 </div>
 <div>
-   <div><label for="lastname">',__("Last Name"),'</label></div>
-   <div><input type="text" name="lastname" id="lastname" value="',$userRights->LastName,'"></div>
+   <div><label for="LastName">',__("Last Name"),'</label></div>
+   <div><input type="text" class="validate[required,minSize[1],maxSize[50]]" name="LastName" id="LastName" value="',$userRights->LastName,'"></div>
 </div>
 <div>
-   <div><label for="firstname">',__("First Name"),'</label></div>
-   <div><input type="text" name="firstname" id="firstname" value="',$userRights->FirstName,'"></div>
+   <div><label for="FirstName">',__("First Name"),'</label></div>
+   <div><input type="text" class="validate[required,minSize[1],maxSize[50]]" name="FirstName" id="FirstName" value="',$userRights->FirstName,'"></div>
 </div>
 <div>
-   <div><label for="phone1">',__("Phone 1"),'</label></div>
-   <div><input type="text" name="phone1" id="phone1" value="',$userRights->Phone1,'"></div>
+   <div><label for="Phone1">',__("Phone 1"),'</label></div>
+   <div><input type="text" name="Phone1" id="Phone1" value="',$userRights->Phone1,'"></div>
 </div>
 <div>
-   <div><label for="phone2">',__("Phone 2"),'</label></div>
-   <div><input type="text" name="phone2" id="phone2" value="',$userRights->Phone2,'"></div>
+   <div><label for="Phone2">',__("Phone 2"),'</label></div>
+   <div><input type="text" name="Phone2" id="Phone2" value="',$userRights->Phone2,'"></div>
 </div>
 <div>
-   <div><label for="phone3">',__("Phone 3"),'</label></div>
-   <div><input type="text" name="phone3" id="phone3" value="',$userRights->Phone3,'"></div>
+   <div><label for="Phone3">',__("Phone 3"),'</label></div>
+   <div><input type="text" name="Phone3" id="Phone3" value="',$userRights->Phone3,'"></div>
 </div>
 <div>
-   <div><label for="email">',__("Email Address"),'</label></div>
-   <div><input type="text" name="email" id="email" value="',$userRights->Email,'"></div>
+   <div><label for="Email">',__("Email Address"),'</label></div>
+   <div><input type="text" class="validate[optional,custom[email]]" name="Email" id="Email" value="',$userRights->Email,'"></div>
 </div>
 <div>
    <div><label>',__("Rights"),'</label></div>
    <div id="nofloat">
-	<input name="adminowndevices" id="adminowndevices" type="checkbox" ',$adminown,'><label for="adminowndevices">',__("Admin Own Devices"),'</label><br>
-	<input name="readaccess" id="readaccess" type="checkbox" ',$read,'><label for="readaccess">',__("Read/Report Access (Global)"),'</label><br>
-	<input name="writeaccess" id="writeaccess" type="checkbox" ',$write,'><label for="writeaccess">',__("Modify/Enter Devices (Global)"),'</label><br>
-	<input name="deleteaccess" id="deleteaccess" type="checkbox" ',$delete,'><label for="deleteaccess">',__("Delete Devices (Global)"),'</label><br>
-	<input name="contactadmin" id="contactadmin" type="checkbox" ',$contact,'><label for="contactadmin">',__("Enter/Modify Contacts and Departments"),'</label><br>
-	<input name="rackrequest" id="rackrequest" type="checkbox" ',$request,'><label for="rackrequest">',__("Enter Rack Requests"),'</label><br>
-	<input name="rackadmin" id="rackadmin" type="checkbox" ',$rackadmin,'><label for="rackadmin">',__("Complete Rack Requests"),'</label><br>
-	<input name="siteadmin" id="siteadmin" type="checkbox" ',$admin,'><label for="siteadmin">',__("Manage Site and Users"),'</label><br>
-	<input name="disabled" id="disabled" type="checkbox" ',$disabled,'><label for="disabled">',__("Disabled"),'</label><br>	
+	<input name="AdminOwnDevices" id="AdminOwnDevices" type="checkbox" ',$adminown,'><label for="AdminOwnDevices">',__("Admin Own Devices"),'</label><br>
+	<input name="ReadAccess" id="ReadAccess" type="checkbox" ',$read,'><label for="ReadAccess">',__("Read/Report Access (Global)"),'</label><br>
+	<input name="WriteAccess" id="WriteAccess" type="checkbox" ',$write,'><label for="WriteAccess">',__("Modify/Enter Devices (Global)"),'</label><br>
+	<input name="DeleteAccess" id="DeleteAccess" type="checkbox" ',$delete,'><label for="DeleteAccess">',__("Delete Devices (Global)"),'</label><br>
+	<input name="ContactAdmin" id="ContactAdmin" type="checkbox" ',$contact,'><label for="ContactAdmin">',__("Enter/Modify Contacts and Departments"),'</label><br>
+	<input name="RackRequest" id="RackRequest" type="checkbox" ',$request,'><label for="RackRequest">',__("Enter Rack Requests"),'</label><br>
+	<input name="RackAdmin" id="RackAdmin" type="checkbox" ',$RackAdmin,'><label for="RackAdmin">',__("Complete Rack Requests"),'</label><br>
+	<input name="SiteAdmin" id="SiteAdmin" type="checkbox" ',$admin,'><label for="SiteAdmin">',__("Manage Site and Users"),'</label><br>
+	<input name="Disabled" id="Disabled" type="checkbox" ',$Disabled,'><label for="Disabled">',__("Disabled"),'</label><br>	
    </div>
 </div>
 <div class="caption" id="controls">';
