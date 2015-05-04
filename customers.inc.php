@@ -179,14 +179,15 @@ class People {
 			WriteAccess=$this->WriteAccess, DeleteAccess=$this->DeleteAccess, 
 			ContactAdmin=$this->ContactAdmin, RackRequest=$this->RackRequest, 
 			RackAdmin=$this->RackAdmin, SiteAdmin=$this->SiteAdmin, Disabled=$this->Disabled;";
-		
-		if ( $this->query( $sql ) ) {
+
+		if(!$this->query($sql)){
+			$info=$dbh->errorInfo();
+			error_log("CreatePerson::PDO Error: {$info[2]} SQL=$sql");
+			return false;
+		}else{
 			$this->PersonID = $dbh->lastInsertId();
 			(class_exists('LogActions'))?LogActions::LogThis($this):'';
 			return $this->PersonID;
-		} else {
-			error_log( "Unable to insert record into fac_People with SQL: " . $sql );
-			return false;
 		}
 	}
 	

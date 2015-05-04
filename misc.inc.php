@@ -230,6 +230,35 @@ function transform($string,$method=null){
 	return $string;
 }
 
+
+/*
+ * Convert ticks given back as uptime from devices into a human readable format
+ */
+function ticksToTime($ticks) {
+	$seconds=floor($ticks/100);
+	$dtF=new DateTime("@0");
+	$dtT=new DateTime("@$seconds");
+	$a=$dtF->diff($dtT)->format('%a');
+	$h=$dtF->diff($dtT)->format('%h');
+	$i=$dtF->diff($dtT)->format('%i');
+	$s=$dtF->diff($dtT)->format('%s');
+	if($a>0){
+		return $dtF->diff($dtT)->format('%a days, %h hours, %i minutes and %s seconds');
+	}else if($h>0){
+		return $dtF->diff($dtT)->format('%h hours, %i minutes and %s seconds');
+	}else if($i>0){
+		return $dtF->diff($dtT)->format(' %i minutes and %s seconds');
+	}else{
+		return $dtF->diff($dtT)->format('%s seconds');
+	}
+}
+
+
+
+
+
+
+
 /*
  * Language internationalization slated for v2.0
  *

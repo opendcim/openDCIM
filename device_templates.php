@@ -392,6 +392,7 @@ exit;
 		$('#FrontPictureFile,#RearPictureFile').click(function(){
 			var upload=$('<input>').prop({type: 'file', name: 'dev_file_upload', id: 'dev_file_upload'}).data('dir','pictures');
 			var input=this;
+			var originalvalue=this.value;
 			$("#imageselection").dialog({
 				resizable: false,
 				height:500,
@@ -406,6 +407,8 @@ exit;
 					}
 				},
 				close: function(){
+						// they clicked the x, set the value back if something was uploaded
+						input.value=originalvalue;
 						$(this).dialog("destroy");
 					}
 			}).data('input',input);
@@ -1146,10 +1149,11 @@ function bindevents() {
 			$("#imageselection span").each(function(){
 				$(this).removeAttr('style');
 			});
-			$(this).css('border','1px dotted black')
+			$(this).css({'border':'1px dotted black','background-color':'#eeeeee'});
 		});
 		if($($("#imageselection").data('input')).val()==$(this).text()){
 			$(this).click();
+			this.parentNode.scrollTop=(this.offsetTop - (this.parentNode.clientHeight / 2) + (this.scrollHeight / 2) );
 		}
 	});
 }
@@ -1178,6 +1182,7 @@ function uploadifive() {
 				toast.append(error);
 				$('#uploadifive-'+this[0].id+'-queue').append(toast);
 			}else{
+				$($("#imageselection").data('input')).val(file.name.replace(/\s/g,'_'));
 				// fuck yeah, reload the file list
 				reload($(this).data('dir'));
 			}

@@ -149,7 +149,7 @@
 				$dev->AssetTag=$req->AssetTag;
 				$dev->ESX=$req->ESX;
 				$dev->Owner=$req->Owner;
-				$dev->Cabinet=$_POST['cabinetid'];
+				$dev->Cabinet=$_POST['CabinetID'];
 				$dev->Position=$_POST['position'];
 				$dev->Height=$req->DeviceHeight;
 				$dev->Ports=$req->EthernetCount;
@@ -255,7 +255,7 @@ print "			$('#deviceform').validationEngine({'custom_error_messages' : {
 	if($person->RackAdmin && ($req->RequestID>0)){
 ?>
 		$('#position').focus(function()	{
-			var cab=$("select#cabinetid").val();
+			var cab=$("select#CabinetID").val();
 			$.get('scripts/ajax_cabinetuse.php?cabinet='+cab, function(data) {
 				var ucount=0;
 				$.each(data, function(i,inuse){
@@ -273,7 +273,7 @@ print "			$('#deviceform').validationEngine({'custom_error_messages' : {
 				setTimeout(function(){
 					var divwidth=$('.positionselector').width();
 					$('#positionselector').width(divwidth);
-					$('#cabinetid').focus(function(){$('#positionselector').css({'left': '-1000px'});});
+					$('#CabinetID').focus(function(){$('#positionselector').css({'left': '-1000px'});});
 					$('#specialinstructions').focus(function(){$('#positionselector').css({'left': '-1000px'});});
 					$('#positionselector').css({'left':(($('#position').position().left)+(divwidth+20))});
 					$('#positionselector').mouseleave(function(){
@@ -472,7 +472,7 @@ echo '			</select>
 	</div>';
 
 	if($person->RackAdmin && ($req->RequestID>0)){
-		echo '<div><div><label for="cabinetid">',__("Select Rack Location"),':</label></div><div>'.$cab->GetCabinetSelectList().'&nbsp;&nbsp;<label for="position">',__("Position"),':</label> <input type="text" name="position" id="position" size=5></div></div>';
+		echo '<div><div><label for="CabinetID">',__("Select Rack Location"),':</label></div><div>'.$cab->GetCabinetSelectList().'&nbsp;&nbsp;<label for="position">',__("Position"),':</label> <input type="text" name="position" id="position" size=5></div></div>';
 	}
 ?>
 	<div class="caption">
