@@ -170,20 +170,22 @@
 	}
 
 	function showdept(){
-		// Serialize the form data
-		var formdata=$(".main form").serializeArray();
-		// Set the action of the form to Update
-		formdata.push({name:'action',value:"Update"});
-		// Update the user just incase they altered it before clicking on department
-		$.post('',formdata);
-		// Hide the rights selections
-		$('#nofloat').parent('div').addClass('hide');
-		// Set the remaining fields to read only
-		$('.center input').attr('readonly','true');
-		// Hide the form controls
-		$('#controls').hide().removeClass('caption');
-		// Load the group controls inside the iframe
-		$('#groupadmin').css('display','block').attr('src', 'people_depts.php?personid='+$('#PersonID').val());
+		if($(".main form").validationEngine('validate')){
+			// Serialize the form data
+			var formdata=$(".main form").serializeArray();
+			// Set the action of the form to Update
+			formdata.push({name:'action',value:"Update"});
+			// Update the user just incase they altered it before clicking on department
+			$.post('',formdata);
+			// Hide the rights selections
+			$('#nofloat').parent('div').addClass('hide');
+			// Set the remaining fields to read only
+			$('.center input').attr('readonly','true');
+			// Hide the form controls
+			$('#controls').hide().removeClass('caption');
+			// Load the group controls inside the iframe
+			$('#groupadmin').css('display','block').attr('src', 'people_depts.php?personid='+$('#PersonID').val());
+		}
 	}
   </script>
 </head>
@@ -237,7 +239,7 @@ echo '	</select>&nbsp;&nbsp;<span title="',__("This user is the primary contact 
 </div>
 <div>
    <div><label for="Email">',__("Email Address"),'</label></div>
-   <div><input type="text" class="validate[optional,custom[email]]" name="Email" id="Email" value="',$userRights->Email,'"></div>
+   <div><input type="text" class="validate[optional,custom[email],condRequired[RackRequest]]" name="Email" id="Email" value="',$userRights->Email,'"></div>
 </div>
 <div>
    <div><label>',__("Rights"),'</label></div>
