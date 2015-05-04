@@ -237,7 +237,7 @@
 			//In case of VMHost missing from inventory, this shouldn't ever happen
 			if($row['label']=='' || is_null($row['label'])){$row['label']='VM Host Missing From Inventory';}
 			if($row['rights']=="Write"){
-				print "\t\t\t\t\t<li><a href=\"devices.php?deviceid={$row['devid']}\">{$row['label']}</a>\n";
+				print "\t\t\t\t\t<li><a href=\"devices.php?DeviceID={$row['devid']}\">{$row['label']}</a>\n";
 			}else{
 				print "\t\t\t\t\t<li>{$row['label']}\n";
 			}
@@ -249,7 +249,7 @@
 				if($chRow['parent']==$row['devid']){
 					//In case of VMHost missing from inventory, this shouldn't ever happen
 					if($chRow['label']=='' || is_null($chRow['label'])){$chRow['label']='VM Host Missing From Inventory';}
-					$vmhost=($chRow['rights']=="Write")?"<a href=\"devices.php?deviceid={$chRow['devid']}\">{$chRow['label']}</a>":$chRow['label'];
+					$vmhost=($chRow['rights']=="Write")?"<a href=\"devices.php?DeviceID={$chRow['devid']}\">{$chRow['label']}</a>":$chRow['label'];
 					print "\t\t\t\t\t\t\t<li><div><img src=\"images/blade.png\" alt=\"blade icon\"></div>$vmhost\n";
 					// Create a nested list showing all VMs residing on this host.
 					if($chRow['type']=='vm'){
@@ -385,7 +385,7 @@ $(document).ready(function() {
 					// if this ends up being a huge time sink, optimize this above then fix logic
 					foreach($pduList as $key => $row){
 						if($cabID == $row->CabinetID){
-							print "\t\t\t\t\t<li class=\"pdu\"><a href=\"devices.php?deviceid=$row->PDUID\">$row->Label</a>\n";
+							print "\t\t\t\t\t<li class=\"pdu\"><a href=\"devices.php?DeviceID=$row->PDUID\">$row->Label</a>\n";
 						}
 					}
 				}
