@@ -342,6 +342,10 @@ div.main {
 	padding: 5px;
 	background-color: <?php echo $config->ParameterArray['BodyColor']; ?>;
 	border: 1px dotted #333;
+	margin-bottom: 2em;
+}
+.main > div {
+	margin-bottom: 2em;
 }
 div.center > div {display: inline-block;text-align: left;}
 .center {text-align: center;min-height: 400px;}
