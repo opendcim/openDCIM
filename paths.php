@@ -237,7 +237,7 @@
 						$path.=str_repeat("\t",$t++)."<table>\n";
 						$path.=str_repeat("\t",$t++)."<tr>\n";
 						$path.=str_repeat("\t",$t--)."<th colspan=2>";
-						$path.="<a href=\"devices.php?deviceid={$devList[$i]->DeviceID}\">{$devList[$i]->Label}</a>";
+						$path.="<a href=\"devices.php?DeviceID={$devList[$i]->DeviceID}\">{$devList[$i]->Label}</a>";
 						$path.="</th>\n";
 						$path.=str_repeat("\t",$t)."</tr>\n";
 						$path.=str_repeat("\t",$t++)."<tr>\n";
@@ -250,7 +250,7 @@
 					$dp->getPort();
 					$label=($dp->Label!='')?$dp->Label:abs($cp->PortNumber);
 					$path.=str_repeat("\t",$t--)."<td>".
-							"<a href=\"devices.php?deviceid=$dev->DeviceID\">$dev->Label</a>
+							"<a href=\"devices.php?DeviceID=$dev->DeviceID\">$dev->Label</a>
 							<br>".__("Port").": $label</td>\n";
 					$path.=str_repeat("\t",$t--)."</tr>\n";
 					
@@ -311,7 +311,7 @@
 						$path.=str_repeat("\t",$t++)."<table>\n";
 						$path.=str_repeat("\t",$t++)."<tr>\n";
 						$path.=str_repeat("\t",$t--)."<th colspan=2>";
-						$path.="<a href=\"devices.php?deviceid={$devList[$i]->DeviceID}\">{$devList[$i]->Label}</a>";
+						$path.="<a href=\"devices.php?DeviceID={$devList[$i]->DeviceID}\">{$devList[$i]->Label}</a>";
 						$path.="</th>\n";
 						$path.=str_repeat("\t",$t)."</tr>\n";
 						$path.=str_repeat("\t",$t++)."<tr>\n";
@@ -324,7 +324,7 @@
 					$dp->getPort();
 					$label=($dp->Label!='')?$dp->Label:abs($cp->PortNumber);
 					$path.=str_repeat("\t",$t--)."<td>".
-							"<a href=\"devices.php?deviceid=$dev->DeviceID\">$dev->Label".
+							"<a href=\"devices.php?DeviceID=$dev->DeviceID\">$dev->Label".
 							"</a><br>".__("Port").": $label</td>\n";
 					$path.=str_repeat("\t",$t--)."</tr>\n";
 					$path.=str_repeat("\t",$t--)."</table>\n";
@@ -396,7 +396,7 @@
 							$path.=str_repeat("\t",$t++)."<table>\n";
 							$path.=str_repeat("\t",$t++)."<tr>\n";
 							$path.=str_repeat("\t",$t--)."<th colspan=2>";
-							$path.="<a href=\"devices.php?deviceid={$devList[$i]->DeviceID}\">".$devList[$i]->Label."</a>";
+							$path.="<a href=\"devices.php?DeviceID={$devList[$i]->DeviceID}\">".$devList[$i]->Label."</a>";
 							$path.="</th>\n";
 							$path.=str_repeat("\t",$t)."</tr>\n";
 							$path.=str_repeat("\t",$t++)."<tr>\n";
@@ -409,7 +409,7 @@
 						$dp->getPort();
 						$label=($dp->Label!='')?$dp->Label:abs($cp->PortNumber);
 						$path.=str_repeat("\t",$t--)."<td>".
-								"<a href=\"devices.php?deviceid=$dev->DeviceID\">$dev->Label".
+								"<a href=\"devices.php?DeviceID=$dev->DeviceID\">$dev->Label".
 								"</a><br>".__("Port").": $label</td>\n";
 						$path.=str_repeat("\t",$t--)."</tr>\n";
 						

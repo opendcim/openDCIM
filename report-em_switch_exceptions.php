@@ -87,7 +87,7 @@
 						if ( $currPort->ConnectedDeviceID > 0 ) {
 							$dev->DeviceID = $currPort->ConnectedDeviceID;
 							$dev->GetDevice();
-							$devAnchor = "<a href=\"" . $urlBase . "devices.php?deviceid=" . $dev->DeviceID . "\">" . $dev->Label . "</a>";
+							$devAnchor = "<a href=\"" . $urlBase . "devices.php?DeviceID=" . $dev->DeviceID . "\">" . $dev->Label . "</a>";
 							$port->DeviceID = $currPort->ConnectedDeviceID;
 							$port->PortNumber =$currPort->ConnectedPort;
 							$port->getPort();
@@ -97,13 +97,13 @@
 							$portName = "&nbsp;";
 						}
 						
-						$exceptionRows .= sprintf( "<tr><td><a href=\"%sdevices.php?deviceid=%d\">%s</a></td><td>%s</td><td>%s</td><td>%s</td><td>%s</td><td>%s</td></tr>\n", $urlBase, $devRow->DeviceID, $devRow->Label, $currPort->Label, $devAnchor, $portName, $currPort->Notes, $statusList[$n+1] );
+						$exceptionRows .= sprintf( "<tr><td><a href=\"%sdevices.php?DeviceID=%d\">%s</a></td><td>%s</td><td>%s</td><td>%s</td><td>%s</td><td>%s</td></tr>\n", $urlBase, $devRow->DeviceID, $devRow->Label, $currPort->Label, $devAnchor, $portName, $currPort->Notes, $statusList[$n+1] );
 					}
 				}
 			}
 
 			if ( $activeCount >= floor( $devRow->Ports * $threshold ) ) {
-				$mismatchRows .= sprintf( "<tr><td>%s</td><td>%s</td><td><a href=\"%sdevices.php?deviceid=%d\">%s</a></td><td>%d</td><td>%d</td></tr>\n", $dataCenter, $cabinet, $urlBase, $devRow->DeviceID, $devRow->Label, $devRow->Ports, $activeCount );
+				$mismatchRows .= sprintf( "<tr><td>%s</td><td>%s</td><td><a href=\"%sdevices.php?DeviceID=%d\">%s</a></td><td>%d</td><td>%d</td></tr>\n", $dataCenter, $cabinet, $urlBase, $devRow->DeviceID, $devRow->Label, $devRow->Ports, $activeCount );
 				$dataCenter = "&nbsp;";
 				$cabinet = "&nbsp;";
 			}

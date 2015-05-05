@@ -266,7 +266,7 @@ overlap = scale;
                         $color = $safeDeviceColors[array_rand($safeDeviceColors)];
                     }
                     $graphstr .= "\t".$tkeypair[0]." [shape=box,URL=\"".$baseURI
-                            .'devices.php?deviceid='.$tkeypair[0]."\",label=\""
+                            .'devices.php?DeviceID='.$tkeypair[0]."\",label=\""
                             .$devList[$dt][$tkeypair[0]]."\",color=".$color."];\n";
                     unset($devList[$dt][$tkeypair[0]]);
                     break;
@@ -281,7 +281,7 @@ overlap = scale;
                         $color = $safeDeviceColors[array_rand($safeDeviceColors)];
                     }
                     $graphstr .= "\t".$tkeypair[1]." [shape=box,URL=\"".$baseURI
-                            .'devices.php?deviceid='.$tkeypair[1]."\",label=\""
+                            .'devices.php?DeviceID='.$tkeypair[1]."\",label=\""
                             .$devList[$dt][$tkeypair[1]]."\",color=".$color."];\n";
                     unset($devList[$dt][$tkeypair[1]]);
                     break;

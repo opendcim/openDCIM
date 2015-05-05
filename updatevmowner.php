@@ -22,7 +22,7 @@
 		if(isset($_REQUEST['action']) && $_REQUEST['action']=='Update'){
 			$esx->Owner=$_REQUEST['owner'];
 			$esx->UpdateVMOwner();
-			header('Location: '.redirect("devices.php?deviceid=$esx->DeviceID"));
+			header('Location: '.redirect("devices.php?DeviceID=$esx->DeviceID"));
 		}
 	}else{
 		// How'd you get here without a valid vmindex?
@@ -87,7 +87,7 @@
 </form>
 
 </div></div>
-<a href="devices.php?deviceid=<?php echo $dev->DeviceID; ?>">Return to Parent Device</a>
+<a href="devices.php?DeviceID=<?php echo $dev->DeviceID; ?>">Return to Parent Device</a>
 </div><!-- END div.main -->
 </div><!-- END div.page -->
 </body>

@@ -234,7 +234,7 @@
 					$path.=str_repeat("\t",$t++)."<table>\n";
 					$path.=str_repeat("\t",$t++)."<tr>\n";
 					$path.=str_repeat("\t",$t--)."<th colspan=2>";
-					$path.="<a href=\"devices.php?deviceid={$devList[$i]->DeviceID}\">{$devList[$i]->Label}</a>";
+					$path.="<a href=\"devices.php?DeviceID={$devList[$i]->DeviceID}\">{$devList[$i]->Label}</a>";
 					$path.="</th>\n";
 					$path.=str_repeat("\t",$t)."</tr>\n";
 					$path.=str_repeat("\t",$t++)."<tr>\n";
@@ -243,7 +243,7 @@
 				
 				//Device
 				$path.=str_repeat("\t",$t--)."<td>".
-						"<a href=\"devices.php?deviceid=$dev->DeviceID\">$dev->Label".
+						"<a href=\"devices.php?DeviceID=$dev->DeviceID\">$dev->Label".
 						"</a><br>".__("Port").": ".abs($pp->PortNumber)."</td>\n";
 				$path.=str_repeat("\t",$t--)."</tr>\n";
 				$path.=str_repeat("\t",$t--)."</table>\n";
@@ -311,7 +311,7 @@
 						$path.=str_repeat("\t",$t++)."<table>\n";
 						$path.=str_repeat("\t",$t++)."<tr>\n";
 						$path.=str_repeat("\t",$t--)."<th colspan=2>";
-						$path.="<a href=\"devices.php?deviceid={$devList[$i]->DeviceID}\">{$devList[$i]->Label}</a>";
+						$path.="<a href=\"devices.php?DeviceID={$devList[$i]->DeviceID}\">{$devList[$i]->Label}</a>";
 						$path.="</th>\n";
 						$path.=str_repeat("\t",$t)."</tr>\n";
 						$path.=str_repeat("\t",$t++)."<tr>\n";
@@ -320,7 +320,7 @@
 					
 					//device
 					$path.=str_repeat("\t",$t--)."<td>".
-							"<a href=\"devices.php?deviceid=$dev->DeviceID\">$dev->Label".
+							"<a href=\"devices.php?DeviceID=$dev->DeviceID\">$dev->Label".
 							"</a><br>".__("Port").": ".abs($pp->PortNumber)."</td>\n";
 					$path.=str_repeat("\t",$t--)."</tr>\n";
 					

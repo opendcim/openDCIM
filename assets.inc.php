@@ -2880,7 +2880,7 @@ class Device {
 			$height=intval(round($height));$width=intval(round($width));
 
 			// If they have rights to the device then make the picture clickable
-			$clickable=($this->Rights!="None")?"\t\t\t<a href=\"devices.php?deviceid=$this->DeviceID\">\n":"";
+			$clickable=($this->Rights!="None")?"\t\t\t<a href=\"devices.php?DeviceID=$this->DeviceID\">\n":"";
 			$clickableend=($this->Rights!="None")?"\t\t\t</a>\n":"";
 			
 			// Add in flags for missing ownership
@@ -2968,7 +2968,7 @@ class Device {
 			$picturefile=str_replace(' ',"%20",$picturefile);
 
 			// If they have rights to the device then make the picture clickable
-			$clickable=($this->Rights!="None")?"\t\t<a href=\"devices.php?deviceid=$this->DeviceID\">\n\t":"";
+			$clickable=($this->Rights!="None")?"\t\t<a href=\"devices.php?DeviceID=$this->DeviceID\">\n\t":"";
 			$clickableend=($this->Rights!="None")?"\n\t\t</a>\n":"";
 
 			// Add in flags for missing ownership

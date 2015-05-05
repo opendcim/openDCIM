@@ -160,7 +160,7 @@
 		
 				$htmlMessage.="<p>".sprintf(__('Your request for racking up the device labeled %1$s has been completed.'),$req->Label)."</p>";
 				$htmlMessage.="<p>".sprintf(__('To view your device in its final location click %1$s'),
-				"<a href=\"".redirect("devices.php?deviceid=$dev->DeviceID")."\"> ".__("this link")."</a>.</p>
+				"<a href=\"".redirect("devices.php?DeviceID=$dev->DeviceID")."\"> ".__("this link")."</a>.</p>
 				</body></html>");
 
 				$message->setBody($htmlMessage,'text/html');
@@ -172,7 +172,7 @@
 					$error.="Server: <span class=\"errmsg\">".$e->getMessage()."</span><br>\n";
 				}
 			
-				header('Location: '.redirect("devices.php?deviceid=$dev->DeviceID"));
+				header('Location: '.redirect("devices.php?DeviceID=$dev->DeviceID"));
 				exit;
 			}
 	  }elseif($_POST['action']=='Delete Request'){
