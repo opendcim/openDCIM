@@ -7,8 +7,8 @@
 	$cab=new Cabinet();
 	$dev=new Device();
 	
-	if(isset($_GET["deviceid"])){
-		$dev->DeviceID=$_GET["deviceid"];
+	if(isset($_GET["DeviceID"])){
+		$dev->DeviceID=$_GET["DeviceID"];
 	}
 
 	$cab->CabinetID=$dev->Cabinet=intval($_GET['cabinet']);

@@ -790,8 +790,8 @@ div.cabinet {
 .positionselector > div > div + div > div{ border-top: 0px; border-right: 0px;}
 .positionselector > div { border-width: 1px;}
 .positionselector, .positionselector > div > div {border-width: 0px;}
-#positionselector .positionselector > div > div {min-width: 0;}
-#positionselector {padding: 10px; position: absolute; left: -1000px; background-color: white; border: 1px solid black; z-index: 99;}
+#Positionselector .positionselector > div > div {min-width: 0;}
+#Positionselector {padding: 10px; position: absolute; left: -1000px; background-color: white; border: 1px solid black; z-index: 99;}
 
 #editbtn { display: block; margin-bottom: 5px;}
 #preview { width: 340px; min-height: 130px; background-color: white; border: 1px solid grey; padding: 5px;}
