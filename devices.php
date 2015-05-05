@@ -511,6 +511,7 @@
 		if(isset($_REQUEST['action'])&&$_REQUEST['action']=='new'){
 			// sets install date to today when a new device is being created
 			$dev->InstallDate=date("m/d/Y");
+			$dev->DeviceType=(isset($_REQUEST['DeviceType']))?$_REQUEST['DeviceType']:$dev->DeviceType;
 			// Some fields are pre-populated when you click "Add device to this cabinet"
 			// If you are adding a device that is assigned to a specific customer, assume that device is also owned by that customer
 			if($cab->AssignedTo >0){
