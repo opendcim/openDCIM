@@ -21,7 +21,14 @@ class DeviceWarranty extends Device
         }
 
         // count devices with expired warranty
-        $selectSQL = "SELECT count(DeviceID) AS NumDevices,'Expired warranty' AS NumYears FROM fac_Device WHERE (DATEDIFF(NOW(), WarrantyExpire))>0 AND WarrantyExpire>'1969-12-31';";
+        $selectSQL = "SELECT count(DeviceID) AS NumDevices,'Expired over a year ago' AS NumYears FROM fac_Device WHERE (DATEDIFF(Now(), WarrantyExpire)/365)>=1 AND WarrantyExpire>'1969-12-31';";
+
+        foreach ($dbh->query($selectSQL) as $row) {
+            $deptList[$row['NumYears']] = $row['NumDevices'];
+        }
+
+        // count devices with warranty expired within last year
+        $selectSQL = "SELECT count(DeviceID) AS NumDevices,'Expired within last year' AS NumYears FROM fac_Device WHERE (DATEDIFF(WarrantyExpire, NOW())/365)<0 AND (DATEDIFF(WarrantyExpire, NOW())/365)>=-1 AND WarrantyExpire>'1969-12-31';";
 
         foreach ($dbh->query($selectSQL) as $row) {
             $deptList[$row['NumYears']] = $row['NumDevices'];
@@ -395,11 +402,12 @@ include_once ("loadfonts.php");
 // pick some colors: grey for unknown, deep red for expired, then step from red to green to indicate remaining warranty
 $colors[0] = array(175, 175, 175);
 $colors[1] = array(153, 51, 0);
-$colors[2] = array(255, 204, 102);
-$colors[3] = array(255, 255, 100);
-$colors[4] = array(204, 255, 102);
-$colors[5] = array(0, 255, 0);
-$colors[6] = array(255, 0, 0);
+$colors[2] = array(255, 0, 0);
+$colors[3] = array(255, 204, 102);
+$colors[4] = array(255, 255, 100);
+$colors[5] = array(204, 255, 102);
+$colors[6] = array(0, 255, 0);
+$colors[7] = array(255, 0, 0);
 
 $pdf->SetFont($config->ParameterArray['PDFfont'], 'B', 16);
 
