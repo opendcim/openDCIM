@@ -145,20 +145,12 @@ UPDATE fac_CabRow SET DataCenterID=(SELECT DataCenterID FROM `fac_DataCenter` OR
 -- Add some fields needed to keep the local database in sync (if enabled) with the global repository
 --
 
-ALTER TABLE fac_CDUTemplate ADD GlobalID int(11) NOT NULL DEFAULT 0;
-ALTER TABLE fac_CDUTemplate ADD ShareToRepo tinyint(1) NOT NULL DEFAULT 0;
-ALTER TABLE fac_CDUTemplate ADD KeepLocal tinyint(1) NOT NULL DEFAULT 0;
-
 ALTER TABLE fac_DeviceTemplate ADD GlobalID int(11) NOT NULL DEFAULT 0;
 ALTER TABLE fac_DeviceTemplate ADD ShareToRepo tinyint(1) NOT NULL DEFAULT 0;
 ALTER TABLE fac_DeviceTemplate ADD KeepLocal tinyint(1) NOT NULL DEFAULT 0;
 
 ALTER TABLE fac_Manufacturer ADD GlobalID int(11) NOT NULL DEFAULT 0;
 ALTER TABLE fac_Manufacturer ADD SubscribeToUpdates tinyint(1) NOT NULL DEFAULT 0;
-
-ALTER TABLE fac_SensorTemplate ADD GlobalID int(11) NOT NULL DEFAULT 0;
-ALTER TABLE fac_SensorTemplate ADD ShareToRepo tinyint(1) NOT NULL DEFAULT 0;
-ALTER TABLE fac_SensorTemplate ADD KeepLocal tinyint(1) NOT NULL DEFAULT 0;
 
 INSERT INTO fac_Config set Parameter="ShareToRepo", Value="disabled", UnitOfMeasure="Enabled/Disabled", ValType="string", DefaultVal="disabled";
 INSERT INTO fac_Config set Parameter="KeepLocal", Value="enabled", UnitOfMeasure="Enabled/Disabled", ValType="string", DefaultVal="enabled";

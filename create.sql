@@ -96,9 +96,6 @@ CREATE TABLE fac_SensorTemplate (
 	TempMultiplier FLOAT(8) NOT NULL DEFAULT 1,
 	HumidityMultiplier FLOAT(8) NOT NULL DEFAULT 1,
 	mUnits ENUM( 'english', 'metric' ) NOT NULL DEFAULT 'english',
-	GlobalID int(11) NOT NULL DEFAULT 0,
-	ShareToRepo tinyint(1) NOT NULL DEFAULT 0,
-	KeepLocal tinyint(1) NOT NULL DEFAULT 0,
 	PRIMARY KEY(TemplateID)
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
 
@@ -169,9 +166,6 @@ CREATE TABLE fac_CDUTemplate (
   Voltage int(11) NOT NULL,
   Amperage int(11) NOT NULL,
   NumOutlets int(11) NOT NULL,
-  GlobalID int(11) NOT NULL DEFAULT 0,
-  ShareToRepo tinyint(1) NOT NULL DEFAULT 0,
-  KeepLocal tinyint(1) NOT NULL DEFAULT 0,
   PRIMARY KEY (TemplateID),
   KEY ManufacturerID (ManufacturerID),
   UNIQUE KEY (ManufacturerID, Model)
@@ -804,7 +798,7 @@ INSERT INTO fac_Config VALUES
 	('NetworkThreshold', '75', 'Percentage', 'integer', '75' ),
 	('FacMgrMail','DataCenterMgr@your.domain','Email','string','DataCenterMgr@your.domain'),
 	('InstallURL','','URL','string','https://dcim.your.domain'),
-	('Version','3.3','','',''),
+	('Version','4.0','','',''),
 	('UserLookupURL','https://','URL','string','https://'),
 	('ReservedColor','#00FFFF','HexColor','string','#FFFFFF'),
 	('FreeSpaceColor','#FFFFFF','HexColor','string','#FFFFFF'),
@@ -844,26 +838,6 @@ INSERT INTO fac_Config VALUES
 	('RequireDefinedUser', 'disabled', 'Enabled/Disabled', 'string', 'Disabled'),
 	('KeepLocal', 'enabled', 'Enabled/Disabled', 'string', 'Enabled')
 ;
-
---
--- Pre-fill some of the templates
---
-
-INSERT INTO fac_Manufacturer set Name="Generic" ON DUPLICATE KEY UPDATE Name="Generic";
-INSERT INTO fac_Manufacturer set Name="APC" ON DUPLICATE KEY UPDATE Name="APC";
-INSERT INTO fac_Manufacturer set Name="Geist" ON DUPLICATE KEY UPDATE Name="Geist";
-INSERT INTO fac_Manufacturer set Name="ServerTech" ON DUPLICATE KEY UPDATE Name="ServerTech";
-
-INSERT INTO fac_CDUTemplate set ManufacturerID=(select ManufacturerID from fac_Manufacturer where Name='Generic'), Model="Unmanaged CDU", Managed=FALSE, VersionOID="", Multiplier=1, OID1="", OID2="", OID3="", ProcessingProfile="SingleOIDAmperes", Voltage="", Amperage="", NumOutlets="8";
-INSERT INTO fac_CDUTemplate set ManufacturerID=(select ManufacturerID from fac_Manufacturer where Name='APC'), Model="Generic Single-Phase CDU", Managed=TRUE, VersionOID=".1.3.6.1.4.1.318.1.1.4.1.2.0", Multiplier=10, OID1=".1.3.6.1.4.1.318.1.1.12.2.3.1.1.2.1", OID2="", OID3="", ProcessingProfile="SingleOIDAmperes", Voltage="", Amperage="", NumOutlets="24";
-INSERT INTO fac_CDUTemplate set ManufacturerID=(select ManufacturerID from fac_Manufacturer where Name='APC'), Model="AP7721 ATS", Managed=TRUE, VersionOID="1.3.6.1.4.1.318.1.1.8.1.2", Multiplier=1, OID1=".1.3.6.1.4.1.318.1.1.8.5.4.3.1.7.1.1.1", OID2="", OID3="", ProcessingProfile="SingleOIDAmperes", Voltage="208", Amperage="20", NumOutlets="8", ATSStatusOID=".1.3.6.1.4.1.318.1.1.8.5.1.3.0", ATSDesiredResult="2";
-INSERT INTO fac_CDUTemplate set ManufacturerID=(select ManufacturerID from fac_Manufacturer where Name='APC'), Model="AP7723 ATS", Managed=TRUE, VersionOID=".1.3.6.1.4.1.318.1.1.8.1.2", Multiplier=1, OID1=".1.3.6.1.4.1.318.1.1.8.5.4.3.1.7.1.1.1", OID2="", OID3="", ProcessingProfile="SingleOIDAmperes", Voltage="208", Amperage="12", NumOutlets="8", ATSStatusOID=".1.3.6.1.4.1.318.1.1.8.5.1.3.0", ATSDesiredResult="2";
-INSERT INTO fac_CDUTemplate set ManufacturerID=(select ManufacturerID from fac_Manufacturer where Name='Geist'), Model="RCXB308-103IN6TL30", Managed=TRUE, VersionOID=".1.3.6.1.4.1.21239.2.1.2.0", Multiplier=1, OID1=".1.3.6.1.4.1.21239.2.6.1.10.1", OID2="", OID3="", ProcessingProfile="SingleOIDWatts", Voltage="", Amperage="", NumOutlets="30";
-INSERT INTO fac_CDUTemplate set ManufacturerID=(select ManufacturerID from fac_Manufacturer where Name='Geist'), Model="RCXB308-103IN6TL21", Managed=TRUE, VersionOID=".1.3.6.1.4.1.21239.2.1.2.0", Multiplier=1, OID1=".1.3.6.1.4.1.21239.2.25.1.30.1", OID2="", OID3="", ProcessingProfile="SingleOIDWatts", Voltage="", Amperage="", NumOutlets="30";
-INSERT INTO fac_CDUTemplate set ManufacturerID=(select ManufacturerID from fac_Manufacturer where Name='Geist'), Model="RCMB248-105PH6CS15-OD", Managed=TRUE, VersionOID=".1.3.6.1.4.1.21239.2.1.2.0", Multiplier=1, OID1=".1.3.6.1.4.1.21239.2.6.1.10.1", OID2="", OID3="", ProcessingProfile="SingleOIDWatts", Voltage="", Amperage="", NumOutlets="30";
-INSERT INTO fac_CDUTemplate set ManufacturerID=(select ManufacturerID from fac_Manufacturer where Name='ServerTech'), Model="Generic Single-Phase CDU", Managed=TRUE, VersionOID=".1.3.6.1.4.1.1718.3.1.1.0", Multiplier=100, OID1=".1.3.6.1.4.1.1718.3.2.2.1.7.1.1", OID2="", OID3="", ProcessingProfile="SingleOIDAmperes", Voltage="", Amperage="", NumOutlets="24";
-INSERT INTO fac_CDUTemplate set ManufacturerID=(select ManufacturerID from fac_Manufacturer where Name='ServerTech'), Model="Generic 3-Phase CDU", Managed=TRUE, VersionOID=".1.3.6.1.4.1.1718.3.1.1.0", Multiplier=100, OID1=".1.3.6.1.4.1.1718.3.2.2.1.7.1.1", OID2=".1.3.6.1.4.1.1718.3.2.2.1.7.1.2", OID3=".1.3.6.1.4.1.1718.3.2.2.1.7.1.3", ProcessingProfile="Convert3PhAmperes", Voltage="", Amperage="", NumOutlets="24";
-
 
 ---
 --- Table structure for fac_DeviceCustomAttribute
