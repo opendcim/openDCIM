@@ -1659,7 +1659,7 @@ function LameLogDisplay(){
 		getdevices: function(target){
 			var row=this;
 
-			$.get("api/v1/device?Cabinet="+$('input[name=cabinetid]').val()+"&DeviceType=CDU").done(function(data){
+			$.get("api/v1/device?Cabinet="+$(':input[name=CabinetID]').val()+"&DeviceType=CDU").done(function(data){
 				var devlist=$("<select>").append('<option value=0>&nbsp;</option>');
 				devlist.change(function(e){
 					row.getports(e);
