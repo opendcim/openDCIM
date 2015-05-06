@@ -605,12 +605,12 @@ class SwitchConnection {
 			$tmpDev->DeviceID=$networkPatches->EndpointDeviceID;
 			$tmpDev->GetDevice();
 
-			print "<span>Server Name: <a href=\"devices.php?deviceid=$tmpDev->DeviceID\">$tmpDev->Label</a></span><span># Data Ports: $tmpDev->Ports</span><div class=\"table border\">\n				<div><div>".__("Switch")."</div><div>".__("Switch Port")."</div><div>".__("Device Port")."</div><div>".__("Notes")."</div></div>\n";
+			print "<span>Server Name: <a href=\"devices.php?DeviceID=$tmpDev->DeviceID\">$tmpDev->Label</a></span><span># Data Ports: $tmpDev->Ports</span><div class=\"table border\">\n				<div><div>".__("Switch")."</div><div>".__("Switch Port")."</div><div>".__("Device Port")."</div><div>".__("Notes")."</div></div>\n";
 
 				foreach($patchList as $patchConn){
 					$tmpDev->DeviceID=$patchConn->SwitchDeviceID;
 					$tmpDev->GetDevice();
-					print "\t\t\t\t<div><div data=\"$patchConn->SwitchDeviceID\"><a href=\"devices.php?deviceid=$patchConn->SwitchDeviceID\">$tmpDev->Label</a></div><div><a href=\"changepatch.php?switchid=$patchConn->SwitchDeviceID&portid=$patchConn->SwitchPortNumber\">$patchConn->SwitchPortNumber</a></div><div>$patchConn->EndpointPort</div><div>$patchConn->Notes</div></div>\n";
+					print "\t\t\t\t<div><div data=\"$patchConn->SwitchDeviceID\"><a href=\"devices.php?DeviceID=$patchConn->SwitchDeviceID\">$tmpDev->Label</a></div><div><a href=\"changepatch.php?switchid=$patchConn->SwitchDeviceID&portid=$patchConn->SwitchPortNumber\">$patchConn->SwitchPortNumber</a></div><div>$patchConn->EndpointPort</div><div>$patchConn->Notes</div></div>\n";
 				}
 			print "</div><!-- END div.table -->\n";
 		}

@@ -511,6 +511,7 @@
 		if(isset($_REQUEST['action'])&&$_REQUEST['action']=='new'){
 			// sets install date to today when a new device is being created
 			$dev->InstallDate=date("m/d/Y");
+			$dev->DeviceType=(isset($_REQUEST['DeviceType']))?$_REQUEST['DeviceType']:$dev->DeviceType;
 			// Some fields are pre-populated when you click "Add device to this cabinet"
 			// If you are adding a device that is assigned to a specific customer, assume that device is also owned by that customer
 			if($cab->AssignedTo >0){
@@ -1439,19 +1440,19 @@ print "		var dialog=$('<div>').prop('title',\"".__("Verify Delete Device")."\").
 				var rackhtml='<div class="table border positionselector"><div><div>'+rackhtmlleft+'</div><div>'+rackhtmlright+'</div></div></div>';
 				$('#Positionselector').html(rackhtml);
 				setTimeout(function(){
-					var divwidth=$('.Positionselector').width();
-					var divheight=$('.Positionselector').height();
+					var divwidth=$('.positionselector').width();
+					var divheight=$('.positionselector').height();
 					$('#Positionselector').width(divwidth);
 					$('#Height').focus(function(){$('#Positionselector').css({'left': '-1000px'});});
 					$('#Positionselector').css({
-						'left':(($('.right').Position().left)-(divwidth+40)),
-						'top':(($('.right').Position().top))
+						'left':(($('.right').position().left)-(divwidth+40)),
+						'top':(($('.right').position().top))
 					});
 					$('#Positionselector').mouseleave(function(){
 						$('#Positionselector').css({'left': '-1000px'});
 					});
-					$('.Positionselector > div > div + div > div').mouseover(function(){
-						$('.Positionselector > div > div + div > div').each(function(){
+					$('.positionselector > div > div + div > div').mouseover(function(){
+						$('.positionselector > div > div + div > div').each(function(){
 							$(this).removeAttr('style');
 						});
 						var unum=$("#Height").val();

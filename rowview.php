@@ -63,7 +63,7 @@ function BuildCabinet($rear=false,$side=null){
 			renderUnassignedTemplateOwnership($noTemplFlag, $noOwnerFlag, $device);
 		if($device->Height<1 && !$rear){
 			if($device->Rights!="None"){
-				$zeroheight.="\t\t\t<a href=\"devices.php?deviceid=$device->DeviceID\" data-deviceid=$device->DeviceID>$highlight $device->Label</a>\n";
+				$zeroheight.="\t\t\t<a href=\"devices.php?DeviceID=$device->DeviceID\" data-deviceid=$device->DeviceID>$highlight $device->Label</a>\n";
 			}else{
 				// empty html anchor for a line break
 				$zeroheight.="\t\t\t$highlight $device->Label\n<a></a>";
@@ -119,7 +119,7 @@ function BuildCabinet($rear=false,$side=null){
 						// Create the filler for the rack either text or a picture
 						$picture=(!$device->BackSide && !$rear || $device->BackSide && $rear)?$device->GetDevicePicture():$device->GetDevicePicture("rear");
 						$devlabel=$device->Label.(((!$device->BackSide && $rear || $device->BackSide && !$rear) && !$device->HalfDepth)?"(".__("Rear").")":"");
-						$text=($device->Rights!="None")?"<a href=\"devices.php?deviceid=$device->DeviceID\">$highlight $devlabel</a>":$devlabel;
+						$text=($device->Rights!="None")?"<a href=\"devices.php?DeviceID=$device->DeviceID\">$highlight $devlabel</a>":$devlabel;
 					}
 					
 					// Put the device in the rack
