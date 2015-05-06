@@ -1044,7 +1044,11 @@ function upgrade(){
 		}
 		// END - Power panel conversion
 
-
+		// Get rid of the original PowerSource table since it is no longer in use
+		$drop = $dbh->prepare( "drop table fac_PowerSource" );
+		$drop->execute();
+		$drop = $dbh->prepare( "alter table fac_PowerPanel drop column PowerSourceID" );
+		$drop->execute();
 
 		// Rebuild the config table just in case.
 		$config->rebuild();

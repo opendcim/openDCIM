@@ -453,7 +453,7 @@ $body.='<div id="infopanel">
 		$pduDraw=($lastreading)?$lastreading->Wattage:0;
 
 		$pan->PanelID=$PDUdev->PanelID;
-		$pan->GetPanel();
+		$pan->getPanel();
 
 		if($PDUdev->BreakerSize==1){
 			$maxDraw=$PDUdev->InputAmperage * $pan->PanelVoltage / 1.732;

@@ -513,14 +513,14 @@ CREATE TABLE fac_PowerDistribution (
 DROP TABLE IF EXISTS fac_PowerPanel;
 CREATE TABLE fac_PowerPanel (
   PanelID int(11) NOT NULL AUTO_INCREMENT,
-  PowerSourceID int(11) NOT NULL,
   PanelLabel varchar(80) NOT NULL,
   NumberOfPoles int(11) NOT NULL,
   MainBreakerSize int(11) NOT NULL,
   PanelVoltage int(11) NOT NULL,
   NumberScheme varchar(10) NOT NULL DEFAULT "Sequential",
   ParentPanelID int(11) NOT NULL,
-  ParentBreakerID int(11) NOT NULL,
+  ParentBreakerName varchar(80) NOT NULL,
+  TemplateID int(11) NOT NULL,
   PRIMARY KEY (PanelID)
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
 
@@ -540,25 +540,6 @@ CREATE TABLE fac_PowerPorts (
   UNIQUE KEY LabeledPort (DeviceID,PortNumber,Label),
   UNIQUE KEY ConnectedDevice (ConnectedDeviceID,ConnectedPort)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-
---
--- Table structure for table fac_PowerSource
---
-
-DROP TABLE IF EXISTS fac_PowerSource;
-CREATE TABLE fac_PowerSource (
-  PowerSourceID int(11) NOT NULL AUTO_INCREMENT,
-  SourceName varchar(80) NOT NULL,
-  DataCenterID int(11) NOT NULL,
-  IPAddress varchar(254) NOT NULL,
-  Community varchar(40) NOT NULL,
-  LoadOID varchar(80) NOT NULL,
-  OID2 varchar(80) NOT NULL,
-  OID3 varchar(80) NOT NULL,
-  Capacity int(11) NOT NULL,
-  PRIMARY KEY (PowerSourceID),
-  KEY DataCenterID (DataCenterID)
-) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
 
 --
 -- Table structure for table fac_RackRequest

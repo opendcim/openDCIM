@@ -17,7 +17,6 @@
     if (!isset($_REQUEST['action'])){
         $datacenter = new DataCenter();
         $dcList = $datacenter->GetDCList();
-        $pwrSource = new PowerSource();
         $pwrPanel = new PowerPanel();
         $cab = new Cabinet();
 ?>
@@ -71,28 +70,21 @@
         $datacenter->DataCenterID = $_REQUEST['datacenterid'];
         $datacenter->GetDataCenter();
 		
-        $pwrSource->DataCenterID = $datacenter->DataCenterID;
-        $sourceList = $pwrSource->GetSourcesByDataCenter();
+		$pList = $pwrPanel->getPanelsByDataCenter( $datacenter->DataCenterID );
         print "<input type=\"hidden\" name=\"datacenterid\" value=\"$datacenter->DataCenterID\">\n";
-		print "<h3>".__("Choose either power sources or panels to generate for data center").": $datacenter->Name</h3>";
+		print "<h3>".__("Choose panels to generate for data center").": $datacenter->Name</h3>";
 		print "<input type=\"submit\" name=\"action\" value=\"".__("Generate")."\"><br>\n";
 ?>
 <div class="table">
     <div style="border-bottom: 1px solid black;">
-        <div><?php print __("Power Source")?></div>
         <div><?php print __("Power Panel")?></div>
     </div>
 
 <?php
-        foreach($sourceList as $source) {
-            $pwrPanel->PowerSourceID = $source->PowerSourceID;
-            $panelList = $pwrPanel->GetPanelListBySource();
+        foreach($pList as $p) {
             print "<div style=\"border-bottom: 1px solid black;\">\n";
-            print "<div><input type=\"checkbox\" name=\"sourceid[]\" value=\"".$source->PowerSourceID."\">".$source->SourceName."</div>\n";
             print "<div><div class=\"table\">\n";
-            foreach($panelList as $panel) {
-                print "<div><input type=\"checkbox\" name=\"panelid[]\" value=\"".$panel->PanelID."\">".$panel->PanelLabel."</div>\n";
-            }
+            print "<div><input type=\"checkbox\" name=\"panelid[]\" value=\"".$p->PanelID."\">".$p->PanelLabel."</div>\n";
             print "</div></div></div>\n";
         }
     }
@@ -111,7 +103,6 @@
     //
     $pan = new PowerPanel();
     $pdu = new PowerDistribution();
-    $source = new PowerSource();
     $dev = new Device();
     $cab = new Cabinet();
     $dept = new Department();
@@ -135,37 +126,21 @@
         $skipNormal = $_REQUEST["skipnormal"];
     }
 
-    $srcArray=array();
     $pnlArray=array();
 
-    if(isset($_POST['sourceid'])){
-        $srcArray=$_POST['sourceid'];
-    }
     if(isset($_POST['panelid'])){
         $pnlArray=$_POST['panelid'];
     }
 
-    if ( count( $srcArray ) > 0 ) {
-        // Build an array of the Panels affected when the entire source goes down.
-        // This will allow us to use one section of code to calculate effects of panels going down and use it for both cases.
+	// Need to build an array of Panel Objects (what we got from input was just the IDs)
+	$pnlList = array();
 
-        $pnlList = array();
-
-        foreach ( $srcArray as $srcID ) {
-            $pan->PowerSourceID = $srcID;
-            $pnlList = array_merge( $pnlList, $pan->GetPanelListBySource() );
-        }
-    } else {
-        // Need to build an array of Panel Objects (what we got from input was just the IDs)
-        $pnlList = array();
-
-        foreach ( $pnlArray as $pnlID ) {
-            $pnlCount = count( $pnlList );
-            $pnlList[$pnlCount] = new PowerPanel();
-            $pnlList[$pnlCount]->PanelID = $pnlID;
-            $pnlList[$pnlCount]->GetPanel();
-        }
-    }
+	foreach ( $pnlArray as $pnlID ) {
+		$pnlCount = count( $pnlList );
+		$pnlList[$pnlCount] = new PowerPanel();
+		$pnlList[$pnlCount]->PanelID = $pnlID;
+		$pnlList[$pnlCount]->GetPanel();
+	}
     
     //
     // Now that we have a complete list of the panels, we need get the panel schedules for them
@@ -180,10 +155,8 @@
         $pdu->PanelID = $panel->PanelID;
         $pduList=$pdu->GetPDUbyPanel();
 
-        $currSource = new PowerSource();
-        $currSource->PowerSourceID = $panel->PowerSourceID;
-        $currSource->GetSource();
-
+		$ps = $panel->getPowerSource();
+		
         $pduarray=array();
         foreach($pduList as $pnlPDU){
             if($pnlPDU->PanelID == $panel->PanelID){
@@ -200,7 +173,7 @@
             $reportHTML.= '<thead>';
             $reportHTML.= '<tr><td colspan="2" width="100%"><h4>'.__("Panel Schedule for").':<br>';
             $reportHTML.= __("Data Center").': '.$dc->Name.'<br>';
-            $reportHTML.= __("Power Source").': '.$currSource->SourceName.'<br>';
+            $reportHTML.= __("Power Source").': '.$ps->PanelLabel.'<br>';
             $reportHTML.= __("Power Panel").': '.$panel->PanelLabel.'</h4></td></tr>'; 
             $reportHTML.= '<tr><td width="5%">'.__("Pole").'</td>';
             $reportHTML.= '<td width="95%">'.__("Circuit").'</td></tr></thead><tbody>';

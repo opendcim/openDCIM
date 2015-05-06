@@ -912,9 +912,9 @@ class PowerDistribution {
 		$panel=new PowerPanel();
 
 		$panel->PanelID=$this->PanelID;
-		$panel->GetPanel();
+		$r = $panel->getPanelSource();
 
-		return $panel->PowerSourceID;
+		return $r->PanelID;
 	}
 	
 	function GetPDU(){
@@ -1229,7 +1229,7 @@ class PowerDistribution {
 
                 $panel=new PowerPanel();
                 $panel->PanelID=$this->PanelID;
-                if($panel->GetPanel()) {
+                if($panel->getPanel()) {
                         $ret = "$this->PanelPole";
                         for($i=1;$i<$this->BreakerSize;$i++) {
                                 $adder = $i;
@@ -1288,49 +1288,16 @@ class PowerPanel {
 	*/
 	
 	var $PanelID;
-	var $PowerSourceID;
 	var $PanelLabel;
 	var $NumberOfPoles;
 	var $MainBreakerSize;
 	var $PanelVoltage;
 	var $NumberScheme;
 	var $ParentPanelID;
-	var $ParentBreakerID;	// For switchgear, this usually won't be numbered, so we're accepting text
-
-	function MakeSafe(){
-		$this->PanelID=intval($this->PanelID);
-		$this->PowerSourceID=intval($this->PowerSourceID);
-		$this->PanelLabel=sanitize($this->PanelLabel);
-		$this->NumberOfPoles=intval($this->NumberOfPoles);
-		$this->MainBreakerSize=intval($this->MainBreakerSize);
-		$this->PanelVoltage=intval($this->PanelVoltage);
-		$this->NumberScheme=($this->NumberScheme=='Sequential')?$this->NumberScheme:'Odd/Even';
-		$this->ParentPanelID=intval($this->ParentPanelID);
-		$this->ParentBreakerID=sanitize($this->ParentBreakerID);
-	}
-
-	function MakeDisplay(){
-		$this->PanelLabel=stripslashes($this->PanelLabel);
-		$this->ParentBreakerID=stripslashes($this->ParentBreakerID);
-	}
-
-	static function RowToObject($row){
-		$panel=new PowerPanel();
-		$panel->PanelID=$row["PanelID"];
-		$panel->PowerSourceID=$row["PowerSourceID"];
-		$panel->PanelLabel=$row["PanelLabel"];
-		$panel->NumberOfPoles=$row["NumberOfPoles"];
-		$panel->MainBreakerSize=$row["MainBreakerSize"];
-		$panel->PanelVoltage=$row["PanelVoltage"];
-		$panel->NumberScheme=$row["NumberScheme"];
-		$panel->ParentPanelID=$row["ParentPanelID"];
-		$panel->ParentBreakerID=$row["ParentBreakerID"];
-
-		$panel->MakeDisplay();
-
-		return $panel;
-	}
-
+	var $ParentBreakerName;	// For switchgear, this usually won't be numbered, so we're accepting text
+	var $PanelIPAddress;
+	var $TemplateID;
+	
 	function prepare( $sql ) {
 		global $dbh;
 		return $dbh->prepare( $sql );
@@ -1345,117 +1312,212 @@ class PowerPanel {
 		global $dbh;
 		return $dbh->exec($sql);
 	}
-
-	function Search($sql){
-		$PanelList=array();
-		foreach($this->query($sql) as $row){    
-			$PanelList[]=PowerPanel::RowToObject($row);
-		}
-
-		return $PanelList;
+	
+	function lastInsertId() {
+		global $dbh;
+		return $dbh->lastInsertId();
 	}
 	
-	static function GetPanelsByDataCenter($DataCenterID){
-		$sql="SELECT * FROM fac_PowerPanel a, fac_PowerSource b WHERE 
-			a.PowerSourceID=b.PowerSourceID AND b.DataCenterID=\"".intval($DataCenterID).
-			"\" ORDER BY PanelLabel;";
-	  
-		return $this->Search($sql);
+	function errorInfo() {
+		global $dbh;
+		return $this->errorInfo();
 	}
-
-	function GetPanelList(){
-		$sql="SELECT * FROM fac_PowerPanel ORDER BY PanelLabel;";
-
-		return $this->Search($sql);
-	}
-  
-	function GetPanelLoad() {
-		$sql = "select sum(Wattage) as TotalWatts from fac_PDUStats where PDUID in (select PDUID from fac_PowerDistribution where PanelID=" . $this->PanelID . ")";
-		if ( $row = $this->query( $sql )->fetch()) {
+	
+	function getPanelLoad() {
+		$sql = "select sum(Wattage) as TotalWatts from fac_PDUStats where PDUID in (select PDUID from fac_PowerDistribution where PanelID=:PanelID)";
+		$st = $this->prepare( $sql );
+		$st->execute( array( ":PanelID"=>$this->PanelID ) );
+		if ( $row = $st->fetch()) {
 			return $row["TotalWatts"];
 		} else {
 			return 0;
 		}
 	}
-	
-	function GetPanelListBySource(){
-		$this->MakeSafe();
 
-		$sql="SELECT * FROM fac_PowerPanel WHERE PowerSourceID=$this->PowerSourceID ORDER BY PanelLabel";
-
-		return $this->Search($sql);
+	function getPanelList() {
+		$sql = "select * from fac_PowerPanel order by PanelLabel ASC";
+		$st = $this->prepare( $sql );
+		$st->setFetchMode( PDO::FETCH_CLASS, "PowerPanel" );
+		$st->execute();
+		
+		$pList = array();
+		while ( $row = $st->fetch() ) {
+			$pList[] = $row;
+		}
+		
+		return $pList;
 	}
-  
-	function GetPanel() {
-		$this->MakeSafe();
-
-		$sql="SELECT * FROM fac_PowerPanel WHERE PanelID=$this->PanelID;";
-
-		if($row=$this->query($sql)->fetch()){
-			foreach(PowerPanel::RowToObject($row) as $prop => $value){
-				$this->$prop=$value;
-			}
-			return true;
-		}else{
-			foreach($this as $prop => $value){
-				if($prop!='PanelID'){
-					$this->$prop=null;
+	
+	function getPowerSource() {
+		$sql = "select * from fac_PowerPanel where PanelID=:PanelID";
+		
+		$st = $this->prepare( $sql );
+		$st->setFetchMode( PDO::FETCH_CLASS, "PowerPanel" );
+		
+		$currParent = $this->ParentPanelID;
+		while ( $currParent != 0 ) {
+			$st->execute( array( ":PanelID"=>$currParent ) );
+			$row = $st->fetch();
+			$currParent = $row->ParentPanelID;
+		}
+		
+		return $row;
+	}
+	
+	function getPanelListBySource( $onlyFirstGen = false ) {
+		/* If you supply $this->ParentPanelID then you will get a list of all sources */
+		$sql = "select * from fac_PowerPanel where ParentPanelID=:ParentPanelID order by PanelLabel ASC";
+		
+		$st = $this->prepare( $sql );
+		$st->setFetchMode( PDO::FETCH_CLASS, "PowerPanel" );
+		$st->execute( array( ":ParentPanelID"=>$this->ParentPanelID ) );
+		
+		$pList = array();
+		while ( $row = $st->fetch() ) {
+			$pList[] = $row;
+		}
+		
+		if ( ! $onlyFirstGen ) {
+			foreach ( $pList as $currPan ) {
+				$st->execute( array( ":ParentPanelID"=>$currPan->PanelID ) );
+				while ( $row = $st->fetch() ) {
+					$pList[] = $row;
 				}
 			}
+		}
+		
+		return $pList;
+	}
+	
+	function getSources() {
+		$sql = "select * from fac_PowerPanel where ParentPanelID=0 order by PanelLabel ASC";
+		
+		$st = $this->prepare( $sql );
+		$st->setFetchMode( PDO::FETCH_CLASS, "PowerPanel" );
+		$st->execute();
+		
+		$sList = array();
+		
+		while ( $row = $st->fetch() ) {
+			$sList[] = $row;
+		}
+		
+		return $sList;
+	}
+
+	function getPanelsByDataCenter( $DataCenterID ) {
+		$sql = "select * from fac_PowerPanel where PanelID in (select PanelID from fac_PowerDistribution where CabinetID in (select CabinetID from fac_Cabinet where DataCenterID=:DataCenterID)) order by PanelLabel ASC";
+		$st = $this->prepare( $sql );
+		$st->execute( array( ":DataCenterID"=>$DataCenterID ) );
+		$st->setFetchMode( PDO::FETCH_CLASS, "PowerPanel" );
+		
+		$pList = array();
+		while ( $row = $st->fetch() ) {
+			$sList[] = $row;
+		}
+		
+		return $sList;
+	}
+	
+	function getSourcesByDataCenter( $DataCenterID ) {
+		$pList = $this->getPanelsByDataCenter( $DataCenterID );
+		
+		$tmpList = array();
+		
+		foreach ( $pList as $p ) { 
+			$tmpList[] = $p->getPowerSource()->PanelID;
+		}
+
+		$tmpList = array_unique( $tmpList );
+		$psList = array();
+		foreach ( $tmpList as $pID ) {
+			$row = new PowerPanel();
+			$row->PanelID = $pID;
+			$row->getPanel();
+			
+			$psList[] = $row;
+		}
+		
+		return $psList;
+	}
+	
+	function getPanel() {
+		$sql = "select * from fac_PowerPanel where PanelID=:PanelID";
+		$st = $this->prepare( $sql );
+		$st->setFetchMode( PDO::FETCH_CLASS, "PowerPanel" );
+		$st->execute( array( ":PanelID"=>$this->PanelID ) );
+		
+		if ( $row = $st->fetch() ) {
+			foreach ( $row as $prop=>$val ) {
+				$this->$prop = $val;
+			}
+			
+			return true;
+		} else {
 			return false;
 		}
 	}
-  
-	function CreatePanel(){
-		global $dbh;
-		$this->MakeSafe();
 
-		$sql="INSERT INTO fac_PowerPanel SET PowerSourceID=$this->PowerSourceID, 
-			PanelLabel=\"$this->PanelLabel\", NumberOfPoles=$this->NumberOfPoles, 
-			MainBreakerSize=$this->MainBreakerSize, PanelVoltage=$this->PanelVoltage, 
-			NumberScheme=\"$this->NumberScheme\", ParentPanelID=$this->ParentPanelID,
-			ParentBreakerID=\"$this->ParentBreakerID\";";
-
-		if($dbh->exec($sql)){
-			$this->PanelID=$dbh->lastInsertId();
-
+	function createPanel() {
+		$sql = "insert into fac_PowerPanel set PanelLabel=:PanelLabel, NumberOfPoles=:NumberOfPoles, MainBreakerSize=:MainBreakerSize,
+			PanelVoltage=:PanelVoltage,NumberScheme=:NumberScheme,ParentPanelID=:ParentPanelID,ParentBreakerName=:ParentBreakerName,
+			PanelIPAddress=:PanelIPAddress, TemplateID=:TemplateID";
+			
+		$st = $this->prepare( $sql );
+		$st->execute( array( ":PanelLabel"=>$this->PanelLabel, 
+			":NumberOfPoles"=>$this->NumberOfPoles, 
+			":MainBreakerSize"=>$this->MainBreakerSize,
+			":PanelVoltage"=>$this->PanelVoltage,
+			":NumberScheme"=>$this->NumberScheme,
+			":ParentPanelID"=>$this->ParentPanelID,
+			":ParentBreakerName"=>$this->ParentBreakerName,
+			":PanelIPAddress"=>$this->PanelIPAddress,
+			":TemplateID"=>$this->TemplateID ) );
+		
+		if ( $this->lastInsertId() > 0 ) {
+			$this->PanelID = $this->lastInsertId();
 			(class_exists('LogActions'))?LogActions::LogThis($this):'';
 			return $this->PanelID;
-		}else{
-			$info=$dbh->errorInfo();
-
-			error_log("CreatePanel::PDO Error: {$info[2]} SQL=$sql");
-
+		} else {
+			$info = $this->errorInfo();
+			error_log( "createPanel::PDO Error: {$info[2]} SQL=$sql" );
 			return false;
 		}
 	}
-
-	function DeletePanel() {
-		global $dbh;
-		$this->MakeSafe();
-		
+	
+	function deletePanel() {
 		// First, set any CDUs attached to this panel to simply not have an assigned panel
-		$sql="UPDATE fac_PowerDistribution SET PanelID='' WHERE PanelID=$this->PanelID;";
-		$dbh->exec($sql);
+		$sql="UPDATE fac_PowerDistribution SET PanelID='' WHERE PanelID=:PanelID";
+		$st = $this->prepare( $sql );
+		$st->execute( array( ":PanelID"=>$this->PanelID ) );
 		
-		$sql="DELETE FROM fac_PowerPanel WHERE PanelID=$this->PanelID;";
-		$dbh->exec($sql);
+		$sql="DELETE FROM fac_PowerPanel WHERE PanelID=:PanelID";
+		$st = $this->prepare( $sql );
+		$st->execute( array( ":PanelID"=>$this->PanelID ) );
 		(class_exists('LogActions'))?LogActions::LogThis($this):'';
 	}
 		
-	function UpdatePanel(){
-		global $dbh;
-		$this->MakeSafe();
-
+	function updatePanel(){
 		$oldpanel=new PowerPanel();
 		$oldpanel->PanelID=$this->PanelID;
-		$oldpanel->GetPanel();
+		$oldpanel->getPanel();
 
-		$sql="UPDATE fac_PowerPanel SET PowerSourceID=$this->PowerSourceID, 
-			PanelLabel=\"$this->PanelLabel\", NumberOfPoles=$this->NumberOfPoles, 
-			MainBreakerSize=$this->MainBreakerSize, PanelVoltage=$this->PanelVoltage, 
-			NumberScheme=\"$this->NumberScheme\", ParentPanelID=$this->ParentPanelID,
-			ParentBreakerID=\"$this->ParentBreakerID\" WHERE PanelID=$this->PanelID;";
+		$sql="UPDATE fac_PowerPanel SET PanelLabel=:PanelLabel, NumberOfPoles=:NumberOfPoles, 
+			MainBreakerSize=:MainBreakerSize, PanelVoltage=:PanelVoltage, 
+			NumberScheme=:NumberScheme, ParentPanelID=:ParentPanelID, ParentBreakerName=:ParentBreakerName,
+			PanelIPAddress=:PanelIPAddress, TemplateID=:TemplateID WHERE PanelID=:PanelID";
+
+		$st = $this->prepare( $sql );
+		$st->execute( array( ":PanelLabel"=>$this->PanelLabel, 
+			":NumberOfPoles"=>$this->NumberOfPoles, 
+			":MainBreakerSize"=>$this->MainBreakerSize,
+			":PanelVoltage"=>$this->PanelVoltage,
+			":NumberScheme"=>$this->NumberScheme,
+			":ParentPanelID"=>$this->ParentPanelID,
+			":ParentBreakerName"=>$this->ParentBreakerName,
+			":PanelIPAddress"=>$this->PanelIPAddress,
+			":TemplateID"=>$this->TemplateID,
+			":PanelID"=>$this->PanelID ) );
 
 		(class_exists('LogActions'))?LogActions::LogThis($this,$oldpanel):'';
 		return $dbh->query($sql);
@@ -1504,7 +1566,7 @@ class PanelSchedule {
 		  
 		$pan=new PowerPanel();
 		$pan->PanelID=$this->PanelID;
-		$pan->GetPanel();
+		$pan->getPanel();
 		 
 		$sched=array_fill( 1, $pan->NumberOfPoles, "<td>&nbsp;</td>" );
 
@@ -1531,211 +1593,4 @@ class PanelSchedule {
 		return $html;
 	}
 }
-
-class PowerSource {
-	/* PowerSource:		This is the most upstream power source that is managed in DCIM.
-						You will need to have at least one power source per data center, 
-						even if they are physically the same (such as 1 UPS for the
-						entire site, or utility power for multiple sites).  Small data
-						centers will most likely have just one power source per data centers,
-						but large ones may even equate utility power down to which feeder
-						or transfer switch that is in use.
-						
-						At this time there are no parent/child relationships between
-						power sources, but it may be implemented in a future release.
-	*/
-	
-	var $PowerSourceID;
-	var $SourceName;
-	var $DataCenterID;
-	var $IPAddress;
-	var $Community;
-	var $LoadOID;
-	var $OID2;
-	var $OID3;
-	var $Capacity;
-
-	function MakeSafe(){
-		$this->PowerSourceID=intval($this->PowerSourceID);
-		$this->SourceName=sanitize($this->SourceName);
-		$this->DataCenterID=intval($this->DataCenterID);
-		$this->IPAddress=sanitize($this->IPAddress);
-		$this->Community=sanitize($this->Community);
-		$this->LoadOID=sanitize($this->LoadOID);
-		$this->OID2=sanitize($this->OID2);
-		$this->OID3=sanitize($this->OID3);
-		$this->Capacity=intval($this->Capacity);
-	}
-
-	function MakeDisplay(){
-		$this->SourceName=stripslashes($this->SourceName);
-		$this->IPAddress=stripslashes($this->IPAddress);
-		$this->Community=stripslashes($this->Community);
-		$this->LoadOID=stripslashes($this->LoadOID);
-		$this->OID2=stripslashes($this->OID2);
-		$this->OID3=stripslashes($this->OID3);
-	}
-
-	static function RowToObject($row){
-		$source=new PowerSource;
-		$source->PowerSourceID=$row["PowerSourceID"];
-		$source->SourceName=$row["SourceName"];
-		$source->DataCenterID=$row["DataCenterID"];
-		$source->IPAddress=$row["IPAddress"];
-		$source->Community=$row["Community"];
-		$source->LoadOID=$row["LoadOID"];
-		$source->OID2=$row["OID2"];
-		$source->OID3=$row["OID3"];
-		$source->Capacity=$row["Capacity"];
-
-		$source->MakeDisplay();
-
-		return $source;
-	}
-
-	function CreatePowerSource(){
-		global $dbh;
-
-		$this->MakeSafe();
-
-		$sql="INSERT INTO fac_PowerSource SET SourceName=\"$this->SourceName\", 
-			DataCenterID=$this->DataCenterID, IPAddress=\"$this->IPAddress\", 
-			Community=\"$this->Community\", LoadOID=\"$this->LoadOID\", 
-			OID2=\"$this->OID2\", OID3=\"$this->OID3\", Capacity=$this->Capacity;";
-
-		if(!$dbh->exec($sql)){
-			return false;
-		}else{
-			$this->PowerSourceID = $dbh->lastInsertId();
-		}
-		
-		(class_exists('LogActions'))?LogActions::LogThis($this):'';
-		return $this->PowerSourceID;
-	}
-	
-	function DeletePowerSource() {
-		global $dbh;
-		
-		$this->MakeSafe();
-		
-		$pp = new PowerPanel();
-		$pp->PowerSourceID = $this->PowerSourceID;
-		$ppList = $pp->GetPanelListBySource();
-		
-		foreach( $ppList as $p ) {
-			$p->DeletePanel();
-		}
-		
-		$sql="DELETE FROM fac_PowerSource WHERE PowerSourceID=$this->PowerSourceID;";
-		$dbh->exec($sql);
-
-		(class_exists('LogActions'))?LogActions::LogThis($this):'';
-	}
-
-	function UpdatePowerSource(){
-		global $dbh;
-
-		$this->MakeSafe();
-
-		$oldsource=new PowerSource();
-		$oldsource->PowerSourceID=$this->PowerSourceID;
-		$oldsource->GetSource();
-
-		$sql="UPDATE fac_PowerSource SET SourceName=\"$this->SourceName\", 
-			DataCenterID=$this->DataCenterID, IPAddress=\"$this->IPAddress\", 
-			Community=\"$this->Community\", LoadOID=\"$this->LoadOID\", 
-			OID2=\"$this->OID2\", OID3=\"$this->OID3\", Capacity=$this->Capacity 
-			WHERE PowerSourceID=$this->PowerSourceID;";
-
-		(class_exists('LogActions'))?LogActions::LogThis($this,$oldsource):'';
-		return $dbh->query($sql);
-	}
-
-	function GetSourcesByDataCenter(){ 
-		global $dbh;
-
-		$this->MakeSafe();
-
-		$sql="SELECT * FROM fac_PowerSource WHERE DataCenterID=$this->DataCenterID;";
-
-		$SourceList=array();
-		foreach($dbh->query($sql) as $row){
-			$SourceList[$row["PowerSourceID"]]=PowerSource::RowToObject($row);
-		}
-
-		return $SourceList;
-	}
-
-	function GetPSList(){
-		global $dbh;
-
-		$this->MakeSafe();
-
-		$sql="SELECT * FROM fac_PowerSource ORDER BY SourceName ASC;";
-
-		$SourceList=array();
-		foreach($dbh->query($sql) as $row){
-			$SourceList[]=PowerSource::RowToObject($row);
-		}
-
-		return $SourceList;
-	} 
-
-	function GetSource(){
-		global $dbh;
-
-		$this->MakeSafe();
-
-		$sql="SELECT * FROM fac_PowerSource WHERE PowerSourceID=$this->PowerSourceID;";
-
-		if($row=$dbh->query($sql)->fetch()){
-			foreach(PowerSource::RowToObject($row) as $prop => $value){
-				$this->$prop=$value;
-			}
-		}else{
-			foreach($this as $prop => $value){
-				if($prop!='PowerSourceID'){
-					$this->$prop=null;
-				}
-			}
-		}
-	
-		return true;
-	}
-
-	function GetCurrentLoad(){
-		global $config;
-		
-		if ( $this->Community == "" ) {
-			$Community = $config->ParameterArray["SNMPCommunity"];
-		} else {
-			$Community = $this->Community;
-		}
-		
-		$totalLoad = 0;
-		
-		// Liebert UPS Query
-		// Query OID .1.3.6.1.4.1.476.1.1.1.1.1.2.0 to get the model number
-		// If model type is blank (NFinity), OID = 1.3.6.1.4.1.476.1.42.3.5.2.2.1.8.3
-		// If model type is Series 300 / 600, OID = .1.3.6.1.4.1.476.1.1.1.1.4.2.0
-		$pollCommand=$config->ParameterArray["snmpget"]." -v 1 -c $Community $this->IPAddress .1.3.6.1.4.1.476.1.1.1.1.1.2.0 | ".$config->ParameterArray["cut"]." -d: -f4";
-		exec($pollCommand,$snmpOutput);
-
-		if(@$snmpOutput[0]!=""){
-			$pollCommand=$config->ParameterArray["snmpget"]." -v 1 -c $Community $this->IPAddress .1.3.6.1.4.1.476.1.1.1.1.4.2.0 | ".$config->ParameterArray["cut"]." -d: -f4";
-			exec($pollCommand,$loadOutput);
-			
-			$totalLoad=($loadOutput[0] * $this->Capacity) / 100;
-		}else{
-			$pollCommand=$config->ParameterArray["snmpget"]." -v 1 -c $Community $this->IPAddress .1.3.6.1.4.1.476.1.42.3.5.2.2.1.8.3 | ".$config->ParameterArray["cut"]." -d: -f4";
-			exec($pollCommand,$loadOutput);
-			
-			$totalLoad=$loadOutput[0];
-		}
-
-		return $totalLoad;
-	}
-
-}
-
 ?>
