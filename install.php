@@ -987,11 +987,12 @@ function upgrade(){
  *
 		print "Converted CDUs:\n<br>";
 			print_r($ConvertedCDUs);
+
 		print "Port list:\n<br>";
 			print_r($PowerPorts);
 
 		print "SQL entries:\n<br>";
-*/
+/* */
 		$n=1; $insertsql=''; $insertlimit=100;
 		foreach($PowerPorts as $DeviceID => $PowerPort){
 			foreach($PowerPort as $PortNum => $PortDetails){
@@ -999,14 +1000,15 @@ function upgrade(){
 				$cdevice=(isset($PortDetails['ConnectedDeviceID']))?$PortDetails['ConnectedDeviceID']:'NULL';
 				$cport=(isset($PortDetails['ConnectedPort']))?$PortDetails['ConnectedPort']:'NULL';
 
+// 				print "Adding port connection ($DeviceID,$PortNum,\"$label\",$cdevice,$cport,\"\")\n";
 				$insertsql.="($DeviceID,$PortNum,\"$label\",$cdevice,$cport,\"\")";
 				if($n%$insertlimit!=0){
 					$insertsql.=" ,";
 				}else{
 					$dbh->exec('INSERT INTO fac_PowerPorts VALUES'.$insertsql);
 // Debug for sql
-//					print "$insertsql\n\n<br><br>";
-//					print_r($dbh->errorInfo());
+//						print "$insertsql\n\n<br><br>";
+//						print_r($dbh->errorInfo());
 					$insertsql='';
 				}
 				$n++;
