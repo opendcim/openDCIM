@@ -392,13 +392,14 @@ $pdf->AliasNbPages();
 $pdf->AddPage();
 include_once ("loadfonts.php");
 
-// pick some colors: blue for unknown, grey for expired, then from red to green for remaining warranty
-$colors[0] = array(125, 225, 225);
-$colors[1] = array(175, 175, 175);
-$colors[2] = array(255, 0, 0);
-$colors[3] = array(255, 175, 0);
-$colors[4] = array(255, 255, 0);
+// pick some colors: grey for unknown, deep red for expired, then step from red to green to indicate remaining warranty
+$colors[0] = array(175, 175, 175);
+$colors[1] = array(153, 51, 0);
+$colors[2] = array(255, 204, 102);
+$colors[3] = array(255, 255, 100);
+$colors[4] = array(204, 255, 102);
 $colors[5] = array(0, 255, 0);
+$colors[6] = array(255, 0, 0);
 
 $pdf->SetFont($config->ParameterArray['PDFfont'], 'B', 16);
 
