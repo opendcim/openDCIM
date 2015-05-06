@@ -1866,7 +1866,7 @@ echo '
 					<option value=0>',__("Select Panel"),'</option>';
 
 		$Panel=new PowerPanel();
-		$PanelList=$Panel->GetPanelList();
+		$PanelList=$Panel->getPanelList();
 		foreach($PanelList as $key=>$value){
 			$selected=($value->PanelID == $pdu->PanelID)?' selected':"";
 			print "\n\t\t\t\t\t<option value=\"$value->PanelID\"$selected>$value->PanelLabel</option>\n"; 
@@ -1883,7 +1883,7 @@ echo '
 			if($pdu->PanelID >0){
 				$pnl=new PowerPanel();
 				$pnl->PanelID=$pdu->PanelID;
-				$pnl->GetPanel();
+				$pnl->getPanel();
 			
 				print $pnl->PanelVoltage." / ".intval($pnl->PanelVoltage/1.73);
 			}
@@ -2101,7 +2101,7 @@ echo '	<div class="table">
 				$tmppdu->DeviceID=$cord->ConnectedDeviceID;
 				$tmppdu->GetDevice();
 //				$panel->PanelID=$pdu->PanelID;
-//				$panel->GetPanel();
+//				$panel->getPanel();
 				$tmpcord=new PowerPorts();
 				if($cord->ConnectedDeviceID>0 && !is_null($cord->ConnectedDeviceID)){
 					$tmpcord->DeviceID=$cord->ConnectedDeviceID;

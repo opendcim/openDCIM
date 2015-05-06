@@ -513,7 +513,7 @@ class PDF_Diag extends PDF_Sector {
 	$pdf->Ln();
 	foreach ($PDUList as $PDUrow){
 			$panel->PanelID=$PDUrow->PanelID;
-			$panel->GetPanel();
+			$panel->getPanel();
 
 			$pdutemp=new CDUTemplate();
 			$pdutemp->TemplateID=$PDUrow->TemplateID;

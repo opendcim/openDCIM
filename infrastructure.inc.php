@@ -294,15 +294,6 @@ class DataCenter {
 			$z->DeleteZone();
 		}
 		
-		// Power Sources are next, and should also delete any power panels fed from them
-		$ps = new PowerSource();
-		$ps->DataCenterID = $this->DataCenterID;
-		$psList = $ps->GetSourcesByDataCenter();
-		
-		foreach ( $psList as $p ) {
-			$p->DeletePowerSource();
-		}
-
 		// Time to deal with the crap in storage
 
 		// Get a list of all the devices that are in this data center's storage room

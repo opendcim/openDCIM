@@ -176,8 +176,6 @@ class LogActions {
 			case "CDUTemplate":
 			case "PowerPanel":
 				// only has create and update. should changes here be logged or figure out what changed and log that?
-			case "PowerSource":
-				// same as PowerPanel
 			case "DeviceTemplate":
 				// The following function isn't logged
 				// UpdateDevice()

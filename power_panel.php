@@ -13,6 +13,8 @@
 	$panel=new PowerPanel();
 	$pdu=new PowerDistribution();
 	$cab=new Cabinet();
+	$tmpl = new CDUTemplate();
+	$tmpList = $tmpl->GetTemplateList();
 	$script="";
 
 	// AJAX
@@ -20,8 +22,8 @@
 	if(isset($_POST['deletepanel'])){
 		$panel->PanelID=$_POST["panelid"];
 		$return='no';
-		if($panel->GetPanel()){
-			$panel->DeletePanel();
+		if($panel->getPanel()){
+			$panel->deletePanel();
 			$return='ok';
 		}
 		echo $return;
@@ -33,27 +35,26 @@
   
 	if(isset($_POST["action"])&&(($_POST["action"]=="Create")||($_POST["action"]=="Update"))){
 		$panel->PanelID=$_POST["panelid"];
-		$panel->PowerSourceID=$_POST["powersourceid"];
 		$panel->PanelLabel=trim($_POST["panellabel"]);
 		$panel->NumberOfPoles=$_POST["numberofpoles"];
 		$panel->MainBreakerSize=$_POST["mainbreakersize"];
 		$panel->PanelVoltage=$_POST["panelvoltage"];
 		$panel->NumberScheme=$_POST["numberscheme"];
 		$panel->ParentPanelID=$_POST["parentpanelid"];
-		$panel->ParentBreakerID=$_POST["parentbreakerid"];
+		$panel->ParentBreakerName=$_POST["parentbreakername"];
 		
 		if($_POST["action"]=="Create"){
-			if($panel->CreatePanel()){
+			if($panel->createPanel()){
 				header('Location: '.redirect("power_panel.php?panelid=$panel->PanelID"));
 			}
 		} else {
-			$panel->UpdatePanel();
+			$panel->updatePanel();
 		}
 	}
 
 	if(isset($_REQUEST["panelid"])&&($_REQUEST["panelid"] >0)){
 		$panel->PanelID=(isset($_POST['panelid']) ? $_POST['panelid'] : $_GET['panelid']);
-		$panel->GetPanel();
+		$panel->getPanel();
 		$pdu->PanelID = $panel->PanelID;
 		$pduList=$pdu->GetPDUbyPanel();
 		
@@ -109,9 +110,7 @@
 */
 	}
 
-	$panelList=$panel->GetPanelList();
-	$ps=new PowerSource();
-  	$psList=$ps->GetPSList();
+	$panelList=$panel->getPanelList();
 ?>
 <!doctype html>
 <html>
@@ -162,20 +161,6 @@ echo '	</select>
    </div>
 </div>
 <div>
-   <div><label for="powersourceid">',__("Power Source"),'</label></div>
-   <div><select name="powersourceid" id="powersourceid">';
-
-	foreach($psList as $psRow){
-		print "<option value=\"$psRow->PowerSourceID\"";
-		if($psRow->PowerSourceID == $panel->PowerSourceID){
-			echo ' selected="selected"';
-		}
-		print ">$psRow->SourceName</option>\n";
-      }
-
-echo '</select></div>
-</div>
-<div>
    <div><label for="panellabel">',__("Panel Name"),'</label></div>
    <div><input type="text" size="40" name="panellabel" id="panellabel" value="',$panel->PanelLabel,'"></div>
 </div>
@@ -223,9 +208,22 @@ echo '</select></div>
 	</select></div>
 </div>
 <div>
-	<div label for="parentbreakerid"><?php print __("Parent Breaker ID"); ?></label></div>
-	<div><input type="text" name="parentbreakerid" id="parentbreakerid" size="40" value="<?php print $panel->ParentBreakerID; ?>"></div>
+	<div label for="parentbreakername"><?php print __("Parent Breaker Name"); ?></label></div>
+	<div><input type="text" name="parentbreakername" id="parentbreakername" size="40" value="<?php print $panel->ParentBreakerName; ?>"></div>
 </div>	
+<div>
+	<div label for="templateid"><?php print __("CDU/Meter Template"); ?></label></div>
+	<div><select name="templateid" id="templateid">
+	   <option value=0></option>
+<?php
+			foreach ( $tmpList as $tmp ) { 
+				$selected = ($panel->TemplateID==$tmp->TemplateID)?' selected':'';
+				printf( "<option value=%s %s>%s</option>\n", $tmp->TemplateID, $selected, $tmp->Model );
+			}
+?>
+	   </select>
+	</div>
+</div>
 <div class="caption">
 <?php
 	if($panel->PanelID >0){

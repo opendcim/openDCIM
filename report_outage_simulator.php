@@ -30,7 +30,6 @@ if (!isset($_REQUEST['action'])){
 	$datacenter = new DataCenter();
 	$dcList = $datacenter->GetDCList();
 	
-	$pwrSource = new PowerSource();
 	$pwrPanel = new PowerPanel();
 	$cab = new Cabinet();
 	
@@ -55,8 +54,7 @@ if (!isset($_REQUEST['action'])){
 		$datacenter->DataCenterID = $_REQUEST['datacenterid'];
 		$datacenter->GetDataCenter();
 		
-		$pwrSource->DataCenterID = $datacenter->DataCenterID;
-		$sourceList = $pwrSource->GetSourcesByDataCenter();
+		$sourceList = $pwrPanel->getSourcesByDataCenter( $datacenter->DataCenterID );
 		printf( "<input type=\"hidden\" name=\"datacenterid\" value=\"%d\">\n", $datacenter->DataCenterID );
 		
 		printf( "<h3>%s: %s</h3>", __("Choose either power sources or panels to simulate for Data Center"), $datacenter->Name );
@@ -69,10 +67,10 @@ if (!isset($_REQUEST['action'])){
 		printf( "<tr><th>%s</th><th>%s</th></tr>\n", __("Power Source"), __("Power Panel") );
 		
 		foreach ( $sourceList as $source ) {
-			$pwrPanel->PowerSourceID = $source->PowerSourceID;
-			$panelList = $pwrPanel->GetPanelListBySource();
+			$pwrPanel->ParentPanelID = $source->PanelID;
+			$panelList = $pwrPanel->getPanelListBySource();
 			
-			printf( "<tr><td><input type=\"checkbox\" name=\"sourceid[]\" value=\"%d\">%s</td>\n", $source->PowerSourceID, $source->SourceName );
+			printf( "<tr><td><input type=\"checkbox\" name=\"sourceid[]\" value=\"%d\">%s</td>\n", $source->PanelID, $source->PanelLabel );
 			
 			printf( "<td><table>\n" );
 			
@@ -156,7 +154,6 @@ echo '		<div class="main">
 
 	$pan = new PowerPanel();
 	$pdu = new PowerDistribution();
-	$source = new PowerSource();
 	$dev = new Device();
 	$cab = new Cabinet();
 	$dept = new Department();
@@ -213,9 +210,9 @@ echo '		<div class="main">
 		$pnlList = array();
 		
 		foreach ( $srcArray as $srcID ) {
-			$pan->PowerSourceID = $srcID;
+			$pan->ParentPanelID = $srcID;
 			
-			$pnlList = array_merge( $pnlList, $pan->GetPanelListBySource() );
+			$pnlList = array_merge( $pnlList, $pan->getPanelListBySource() );
 		}
 	} else {
 		// Need to build an array of Panel Objects (what we got from input was just the IDs)
@@ -279,6 +276,8 @@ echo '		<div class="main">
 	}
 		
 	usort( $cabList, 'compareCab' );
+	
+	// error_log( "Cabinet List:" . print_r( $cabList, true ));
 
 	printf( "<h2>%s</h2>", __("Power Outage Simulation Report") );
 	
@@ -398,7 +397,7 @@ echo '		<div class="main">
 							if ( strlen( $downPanels ) > 0 ) {
 								$downPanels .= ", ";
 							}
-							$downPanels .= $cduPanelList[$dp]->PanelLabel;
+							$downPanels .= @$cduPanelList[$dp]->PanelLabel;
 						}
 					} else {
 						foreach ( $cduPanelList as $cp ) {

@@ -187,7 +187,8 @@ ALTER TABLE fac_PowerPanel MODIFY PanelLabel varchar(80);
 --
 
 ALTER TABLE fac_PowerPanel ADD COLUMN ParentPanelID int(11) NOT NULL;
-ALTER TABLE fac_PowerPanel ADD COLUMN ParentBreakerID int(11) NOT NULL;
+ALTER TABLE fac_PowerPanel ADD COLUMN ParentBreakerName varchar(80) NOT NULL;
+ALTER TABLE fac_PowerPanel ADD COLUMN TemplateID int(11) NOT NULL;
 
 --
 -- Repo API Key Configuration Fields
