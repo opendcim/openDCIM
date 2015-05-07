@@ -951,7 +951,7 @@ function upgrade(){
 			}
 		}
 
-		function workdamnit($numeric=true,$PreNamedPorts,$PowerPorts,$ConvertedCDUs){
+		function workdamnit($numeric=true,&$PreNamedPorts,&$PowerPorts,&$ConvertedCDUs){
 			// a PDUID of 0 is considered an error, data fragment, etc.  Fuck em, not dealing with em.
 			global $dbh;
 			$sql="SELECT * FROM fac_PowerConnection;";
@@ -990,7 +990,6 @@ function upgrade(){
 				}
 			}
 		}
-
 		// We need to get a list of all existing power connections
 		workdamnit(true,$PreNamedPorts,$PowerPorts,$ConvertedCDUs); // First time through setting up all numeric ports
 		workdamnit(false,$PreNamedPorts,$PowerPorts,$ConvertedCDUs); // Run through again but this time only deal with named ports and append them to the end of the numeric
