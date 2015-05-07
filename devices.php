@@ -108,7 +108,7 @@
 		$tmpDev=new Device();
 		$tmpDev->DeviceID=$dev->DeviceID;
 		$tmpDev->GetDevice();
-		$return=(class_exists('LogActions'))?LogActions::LogThis($dev,$tmpDev):false;
+		$return=(class_exists('LogActions') && $tmpDev->Rights=="Write")?LogActions::LogThis($dev,$tmpDev):false;
 		header('Content-Type: application/json');
 		echo json_encode($return);
 		exit;
@@ -571,7 +571,7 @@
 					// All of the values below here are optional based on the type of device being dealt with
 					(isset($_POST['ChassisSlots']))?$dev->ChassisSlots=$_POST['ChassisSlots']:'';
 					(isset($_POST['RearChassisSlots']))?$dev->RearChassisSlots=$_POST['RearChassisSlots']:'';
-					(isset($_POST['ports']))?$dev->Ports=$_POST['ports']:'';
+					(isset($_POST['Ports']))?$dev->Ports=$_POST['Ports']:'';
 					(isset($_POST['PowerSupplyCount']))?$dev->PowerSupplyCount=$_POST['PowerSupplyCount']:'';
 					$dev->ParentDevice=(isset($_POST['ParentDevice']))?$_POST['ParentDevice']:"";
 					$dev->PrimaryIP=(isset($_POST['PrimaryIP']))?$_POST['PrimaryIP']:"";
