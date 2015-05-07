@@ -944,55 +944,61 @@ function upgrade(){
 			}
 		}
 
-		function workdamnit($numeric=true){
+		function workdamnit($numeric=true,$PreNamedPorts,$PowerPorts,$ConvertedCDUs){
 			// a PDUID of 0 is considered an error, data fragment, etc.  Fuck em, not dealing with em.
-			global $dbh,$PreNamedPorts,$PowerPorts,$ConvertedCDUs;
+			global $dbh;
 			$sql="SELECT * FROM fac_PowerConnection;";
 			foreach($dbh->query($sql) as $row){
+				// something is going stupid so assign everythign to variables
+				$pduid=intval($row['PDUID']);
+				$pdupos=$row['PDUPosition'];
+				$devid=intval($row['DeviceID']);
+				$devcon=$row['DeviceConnNumber'];
+				$newpduid=$ConvertedCDUs[$pduid];
+				
 				$port='';
-				if(is_numeric($row['PDUPosition']) && $numeric && $row['PDUID']>0){
-					$port=$row['PDUPosition'];
-				}elseif(!is_numeric($row['PDUPosition']) && !$numeric && $row['PDUID']>0){
-					$newPDUID=$ConvertedCDUs[$row['PDUID']];
-					if(!isset($PreNamedPorts[$newPDUID][$row['PDUPosition']])){
+				if(is_numeric($pdupos) && $numeric && $pduid>0){
+					$port=$pdupos;
+				}elseif(!is_numeric($pdupos) && !$numeric && $pduid>0){
+					$newPDUID=$newpduid;
+					if(!isset($PreNamedPorts[$newPDUID][$pdupos])){
 						// Move the array pointer to the end of the ports array
 						end($PowerPorts[$newPDUID]);
 						$max=key($PowerPorts[$newPDUID]);
 						++$max;
 						// Create a new port for the named port, this will likely extend past the valid amount of ports on the device.
-						$PowerPorts[$newPDUID][$max]['label']=$row['PDUPosition'];
+						$PowerPorts[$newPDUID][$max]['label']=$pdupos;
 						// Store a pointer between the name and new port index
-						$PreNamedPorts[$newPDUID][$row['PDUPosition']]=$max;
+						$PreNamedPorts[$newPDUID][$pdupos]=$max;
 					}
-					$port=$PreNamedPorts[$newPDUID][$row['PDUPosition']];
+					$port=$PreNamedPorts[$newPDUID][$pdupos];
 				}
-				if((is_numeric($row['PDUPosition']) && $numeric) || (!is_numeric($row['PDUPosition']) && !$numeric) && $row['PDUID']>0){
+				if((is_numeric($pdupos) && $numeric) || (!is_numeric($pdupos) && !$numeric) && $pduid>0){
 					// Create primary connections
-					$PowerPorts[$row['DeviceID']][$row['DeviceConnNumber']]['ConnectedDeviceID']=$ConvertedCDUs[$row['PDUID']];
-					$PowerPorts[$row['DeviceID']][$row['DeviceConnNumber']]['ConnectedPort']=$port;
-
+					$PowerPorts[$devid][$devcon]['ConnectedDeviceID']=$newpduid;
+					$PowerPorts[$devid][$devcon]['ConnectedPort']=$port;
 					// Create reverse of primary
-					$PowerPorts[$ConvertedCDUs[$row['PDUID']]][$port]['ConnectedDeviceID']=$row['DeviceID'];
-					$PowerPorts[$ConvertedCDUs[$row['PDUID']]][$port]['ConnectedPort']=$row['DeviceConnNumber'];
+					$PowerPorts[$newpduid][$port]['ConnectedDeviceID']=$devid;
+					$PowerPorts[$newpduid][$port]['ConnectedPort']=$devcon;
 				}
-			}	
+			}
 		}
 
 		// We need to get a list of all existing power connections
-		workdamnit(); // First time through setting up all numeric ports
-		workdamnit(false); // Run through again but this time only deal with named ports and append them to the end of the numeric
+		workdamnit(true,$PreNamedPorts,$PowerPorts,$ConvertedCDUs); // First time through setting up all numeric ports
+		workdamnit(false,$PreNamedPorts,$PowerPorts,$ConvertedCDUs); // Run through again but this time only deal with named ports and append them to the end of the numeric
 
 /* 
  * Debug Info
- *
+
 		print "Converted CDUs:\n<br>";
-			print_r($ConvertedCDUs);
+		print_r($ConvertedCDUs);
 
 		print "Port list:\n<br>";
-			print_r($PowerPorts);
+		print_r($PowerPorts);
 
 		print "SQL entries:\n<br>";
-/* */
+ */
 		$n=1; $insertsql=''; $insertlimit=100;
 		foreach($PowerPorts as $DeviceID => $PowerPort){
 			foreach($PowerPort as $PortNum => $PortDetails){
@@ -1000,15 +1006,14 @@ function upgrade(){
 				$cdevice=(isset($PortDetails['ConnectedDeviceID']))?$PortDetails['ConnectedDeviceID']:'NULL';
 				$cport=(isset($PortDetails['ConnectedPort']))?$PortDetails['ConnectedPort']:'NULL';
 
-// 				print "Adding port connection ($DeviceID,$PortNum,\"$label\",$cdevice,$cport,\"\")\n";
 				$insertsql.="($DeviceID,$PortNum,\"$label\",$cdevice,$cport,\"\")";
 				if($n%$insertlimit!=0){
 					$insertsql.=" ,";
 				}else{
 					$dbh->exec('INSERT INTO fac_PowerPorts VALUES'.$insertsql);
 // Debug for sql
-//						print "$insertsql\n\n<br><br>";
-//						print_r($dbh->errorInfo());
+//					print "$insertsql\n\n<br><br>";
+//					print_r($dbh->errorInfo());
 					$insertsql='';
 				}
 				$n++;
