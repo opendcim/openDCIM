@@ -388,6 +388,7 @@ for ($year = 1; $year <= 3; $year++) {
 // first page - the pie chart
 
 $pdf = new PDF_Diag();
+include_once("loadfonts.php");
 $pdf->AliasNbPages();
 $pdf->AddPage();
 include_once ("loadfonts.php");
