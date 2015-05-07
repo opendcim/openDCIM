@@ -758,6 +758,13 @@ function upgrade(){
 		// First apply the schema updates needed.
 		$results[]=applyupdate("db-3.3-to-4.0.sql");
 
+		// Rebuild the config table just in case.
+		$config->rebuild();
+
+		// We added in some new config items and one of them is referenced in misc.
+		// Reload the config;
+		$config->Config();
+
 		// We have several things to convert this time around.
 
 		// Bring up the rest of the classes
@@ -1057,8 +1064,6 @@ function upgrade(){
 		$drop = $dbh->prepare( "alter table fac_PowerPanel drop column PowerSourceID" );
 		$drop->execute();
 
-		// Rebuild the config table just in case.
-		$config->rebuild();
 	}
 }
 
