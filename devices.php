@@ -13,7 +13,18 @@
 	// Ajax functions
 	// SNMP Test
 	if(isset($_POST['snmptest'])){
-		$snmpresults=snmprealwalk($_POST['ip'],$_POST['community'],'1.3.6.1.2.1.1');
+		$ip=$_POST['ip'];
+		$community=$_POST['community'];
+
+		$snmpHost=new OSS_SNMP\SNMP($ip,$community);
+		try {
+			$snmpHost->useSystem()->name();
+		}catch (Exception $e){
+			// That shit the bed so drop down to 1
+			$snmpHost=new OSS_SNMP\SNMP($ip,$community,1);
+		}
+
+		$snmpresults=$snmpHost->useSystem()->getAll();
 		if($snmpresults){
 			foreach($snmpresults as $oid => $value){
 				print "$oid => $value <br>\n";

@@ -67,6 +67,12 @@ class SNMP
     protected $_host;
 
     /**
+     * The SNMP host to query. Defaults to v2
+     * @var string The SNMP host to query. Defaults to v2 by the constructor.
+     */
+    protected $_version;
+
+    /**
      * The SNMP query timeout value (microseconds). Default: 1000000
      * @var int The SNMP query timeout value (microseconds). Default: 1000000
      */
@@ -151,10 +157,11 @@ class SNMP
      * @param string $community The community to use for SNMP queries.
      * @return OSS_SNMP An instance of $this (for fluent interfaces)
      */
-    public function __construct( $host = '127.0.0.1', $community = 'public' )
+    public function __construct( $host = '127.0.0.1', $community = 'public' , $version = '2c')
     {
         return $this->setHost( $host )
                     ->setCommunity( $community )
+					->setVersion( $version)
                     ->setOidOutputFormat( self::OID_OUTPUT_NUMERIC );
     }
 
@@ -167,7 +174,9 @@ class SNMP
      */
     public function realWalk( $oid )
     {
-        return $this->_lastResult = snmp2_real_walk( $this->getHost(), $this->getCommunity(), $oid, $this->getTimeout(), $this->getRetry() );
+		$v1='snmprealwalk';
+		$v2c='snmp2_real_walk';
+        return $this->_lastResult = ${'v'.$this->getVersion()}( $this->getHost(), $this->getCommunity(), $oid, $this->getTimeout(), $this->getRetry() );
     }
 
 
@@ -183,7 +192,10 @@ class SNMP
         if( $this->cache() && ( $rtn = $this->getCache()->load( $oid ) ) !== null )
             return $rtn;
 
-        $this->_lastResult = @snmp2_get( $this->getHost(), $this->getCommunity(), $oid, $this->getTimeout(), $this->getRetry() );
+		$v1='snmpget';
+		$v2c='snmp2_get';
+
+        $this->_lastResult = @${'v'.$this->getVersion()}( $this->getHost(), $this->getCommunity(), $oid, $this->getTimeout(), $this->getRetry() );
 
         if( $this->_lastResult === false )
             throw new Exception( 'Could not perform walk for OID ' . $oid );
@@ -222,7 +234,9 @@ class SNMP
         if( $this->cache() && ( $rtn = $this->getCache()->load( $oid ) ) !== null )
             return $rtn;
 
-        $this->_lastResult = @snmp2_real_walk( $this->getHost(), $this->getCommunity(), $oid, $this->getTimeout(), $this->getRetry() );
+		$v1='snmprealwalk';
+		$v2c='snmp2_real_walk';
+        $this->_lastResult = @${'v'.$this->getVersion()}( $this->getHost(), $this->getCommunity(), $oid, $this->getTimeout(), $this->getRetry() );
 
         if( $this->_lastResult === false )
             throw new Exception( 'Could not perform walk for OID ' . $oid );
@@ -271,7 +285,9 @@ class SNMP
         if( $this->cache() && ( $rtn = $this->getCache()->load( $oid ) ) !== null )
             return $rtn;
 
-        $this->_lastResult = @snmp2_real_walk( $this->getHost(), $this->getCommunity(), $oid, $this->getTimeout(), $this->getRetry() );
+		$v1='snmprealwalk';
+		$v2c='snmp2_real_walk';
+        $this->_lastResult = @${'v'.$this->getVersion()}( $this->getHost(), $this->getCommunity(), $oid, $this->getTimeout(), $this->getRetry() );
 
         if( $this->_lastResult === false )
             throw new Exception( 'Could not perform walk for OID ' . $oid );
@@ -315,7 +331,9 @@ class SNMP
         if( $this->cache() && ( $rtn = $this->getCache()->load( $oid ) ) !== null )
             return $rtn;
 
-        $this->_lastResult = @snmp2_real_walk( $this->getHost(), $this->getCommunity(), $oid, $this->getTimeout(), $this->getRetry() );
+		$v1='snmprealwalk';
+		$v2c='snmp2_real_walk';
+        $this->_lastResult = @${'v'.$this->getVersion()}( $this->getHost(), $this->getCommunity(), $oid, $this->getTimeout(), $this->getRetry() );
 
         if( $this->_lastResult === false )
             throw new Exception( 'Could not perform walk for OID ' . $oid );
@@ -527,6 +545,27 @@ class SNMP
         return $this;
     }
 
+
+    /**
+     * Sets the version for SNMP queries.
+     *
+     * @param string $v The version for SNMP queries.
+     * @return \OSS_SNMP\SNMP An instance of $this (for fluent interfaces)
+     */
+    public function setVersion( $v )
+    {
+        $this->_version = $v;
+        return $this;
+    }
+    /**
+     * Gets the version for SNMP queries.
+     *
+     * @return \OSS_SNMP\SNMP An instance of $this (for fluent interfaces)
+     */
+    public function getVersion()
+    {
+        return $this->_version;
+    }
 
     /**
      * Sets the target host for SNMP queries.

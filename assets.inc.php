@@ -4252,7 +4252,16 @@ class SwitchInfo {
 		$caller=debug_backtrace();
 		$caller=$caller[1]['function'];
 
+		// Since we don't really let the user specify the version right now here's a stop gap
+		// Try the default version of 2c first
 		$snmpHost=new OSS_SNMP\SNMP($dev->PrimaryIP,$dev->SNMPCommunity);
+		try {
+			$snmpHost->useSystem()->name();
+		}catch (Exception $e){
+			// That shit the bed so drop down to 1
+			$snmpHost=new OSS_SNMP\SNMP($dev->PrimaryIP,$dev->SNMPCommunity,1);
+		}
+
 		$snmpresult=false;
 		try {
 			$snmpresult=(is_null($portid))?$snmpHost->useIface()->$snmplookup(true):$snmpHost->get($baseOID.".$portid");

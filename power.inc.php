@@ -828,6 +828,13 @@ class PowerDistribution {
 		// If the device doesn't have an SNMP community set, check and see if we have a global one
 		$dev->SNMPCommunity=($dev->SNMPCommunity=="")?$config->ParameterArray["SNMPCommunity"]:$dev->SNMPCommunity;
 
+		$t=new CDUTemplate();
+		if($dev->TemplateID>0){
+			$t->TemplateID=$dev->TemplateID;
+			$t->GetTemplate();
+		}
+		$dev->SNMPVersion=($t->SNMPVersion)?$t->SNMPVersion:'2c';
+
 		// We've passed all the repeatable tests, return the device object for digging
 		return $dev;
 	}
@@ -847,7 +854,7 @@ class PowerDistribution {
 		$caller=debug_backtrace();
 		$caller=$caller[1]['function'];
 
-		$snmpHost=new OSS_SNMP\SNMP($dev->PrimaryIP,$dev->SNMPCommunity);
+		$snmpHost=new OSS_SNMP\SNMP($dev->PrimaryIP,$dev->SNMPCommunity,$dev->SNMPVersion);
 		$snmpresult=false;
 		try {
 			$snmpresult=(is_null($oid))?$snmpHost->useSystem()->$snmplookup(true):$snmpHost->get($oid);
