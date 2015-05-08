@@ -919,7 +919,7 @@ class PowerDistribution {
 		$panel=new PowerPanel();
 
 		$panel->PanelID=$this->PanelID;
-		$r = $panel->getPanelSource();
+		$r = $panel->getPowerSource();
 
 		return $r->PanelID;
 	}

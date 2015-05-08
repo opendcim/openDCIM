@@ -126,7 +126,6 @@ class PDF extends FPDF {
 
   $pan = new PowerPanel();
   $pdu = new PowerDistribution();
-  $source = new PowerSource();
 	$dev = new Device();
 	$cab = new Cabinet();
 	$dept = new Department();
@@ -187,30 +186,16 @@ class PDF extends FPDF {
       } else {
         foreach ( $devList as $devRow ) {
           $sourceList=$devRow->GetDeviceDiversity();
-          @$source->PowerSourceID = $sourceList[0];
-          if ( $source->PowerSourceID > 0 ) {
-            $source->GetSource();
-          } else {
-            $source->SourceName = "Unknown";
+          @$pan->PanelID = $sourceList[0];
+          if ( $pan->PanelID == 0 ) {
+			$pan->getPanel();
+		  } else {
+            $pan->PanelLabel = "Unknown";
           }
-
-/*
-
-WTF was this supposed to be doing?
-
-          foreach ( $sourceList as $sourceID ) {
-            $source->PowerSourceID = $sourceID;
-            if ( $sourceID < 1 ) {
-              $sources .= "Unknown ";
-            } else {
-              $source->GetSource();
-              $sources .= $source->SourceName . " ";
-            }
-          }
-*/            
+          
           $pdf->Cell( $cellWidths[0], 6, $cabRow->Location, "LBRT", 0, "L", $fill );
           $pdf->Cell( $cellWidths[1], 6, $devRow->Label, "LBRT", 0, "L", $fill );
-          $pdf->Cell( $cellWidths[2], 6, $source->SourceName, "LBRT", 0, "L", $fill ); 
+          $pdf->Cell( $cellWidths[2], 6, $pan->PanelID, "LBRT", 0, "L", $fill ); 
       		$pdf->Cell( $cellWidths[3], 6, $devRow->Position, "LBRT", 0, "L", $fill );
       		
       		$dept->DeptID = $devRow->Owner;
