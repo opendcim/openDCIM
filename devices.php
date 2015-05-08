@@ -17,16 +17,22 @@
 		$community=$_POST['community'];
 
 		$snmpHost=new OSS_SNMP\SNMP($ip,$community);
+		$error=false;
 		try {
-			$snmpHost->useSystem()->name();
+			$snmpresults=$snmpHost->useSystem()->name();
 		}catch (Exception $e){
-			// That shit the bed so drop down to 1
+			// threw an exception on v2 drop to 1
 			$snmpHost=new OSS_SNMP\SNMP($ip,$community,1);
+			try {
+				$snmpresults=$snmpHost->useSystem()->name();
+			}catch (Exception $e){
+				// threw an exception on v1 throw an error
+				$error=true;
+			}
 		}
 
-		$snmpresults=$snmpHost->useSystem()->getAll();
-		if($snmpresults){
-			foreach($snmpresults as $oid => $value){
+		if(!$error){
+			foreach($snmpHost->realWalk('1.3.6.1.2.1.1') as $oid => $value){
 				print "$oid => $value <br>\n";
 			}
 		}else{
