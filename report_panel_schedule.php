@@ -48,46 +48,43 @@
 <form action="<?php echo $_SERVER['PHP_SELF']; ?>" method="post" id="panelform">
 
 <?php
-    if(@$_REQUEST['datacenterid']==0) {
-?>
-<div class="table">
-    <div>
-    <div><label for="datacenterid"><?php print __("Data Center")?>:</label></div>
-    <div>
-        <select id="datacenterid" name="datacenterid" onchange="this.form.submit();">
-            <option value="0"><?php print __("Select data center")?></option>
-<?php
-    foreach($dcList as $dc){
-        print "				<option value=\"$dc->DataCenterID\">$dc->Name</option>\n";
-    }
-?>
-        </select>
-    </div>
-
-
-<?php
-    } else {
-        $datacenter->DataCenterID = $_REQUEST['datacenterid'];
-        $datacenter->GetDataCenter();
+	if ( @$_REQUEST['datacenterid'] == 0 ) {
+		printf( "<tr><td>%s:</td><td>\n", __("Data Center") );
+		printf( "<select name=\"datacenterid\" onChange=\"form.submit()\">\n" );
+		printf( "<option value=\"\">%s</option>\n", __("Select data center") );
 		
-		$pList = $pwrPanel->getPanelsByDataCenter( $datacenter->DataCenterID );
-        print "<input type=\"hidden\" name=\"datacenterid\" value=\"$datacenter->DataCenterID\">\n";
-		print "<h3>".__("Choose panels to generate for data center").": $datacenter->Name</h3>";
-		print "<input type=\"submit\" name=\"action\" value=\"".__("Generate")."\"><br>\n";
-?>
-<div class="table">
-    <div style="border-bottom: 1px solid black;">
-        <div><?php print __("Power Panel")?></div>
-    </div>
-
-<?php
-        foreach($pList as $p) {
-            print "<div style=\"border-bottom: 1px solid black;\">\n";
-            print "<div><div class=\"table\">\n";
-            print "<div><input type=\"checkbox\" name=\"panelid[]\" value=\"".$p->PanelID."\">".$p->PanelLabel."</div>\n";
-            print "</div></div></div>\n";
-        }
-    }
+		foreach ( $dcList as $dc )
+			printf( "<option value=\"%d\">%s</option>\n", $dc->DataCenterID, $dc->Name );
+		
+		printf( "</td></tr>" );
+	} else {
+		$datacenter->DataCenterID = $_REQUEST['datacenterid'];
+		$datacenter->GetDataCenter();
+		
+		$sourceList = $pwrPanel->getSourcesByDataCenter( $datacenter->DataCenterID );
+		printf( "<input type=\"hidden\" name=\"datacenterid\" value=\"%d\">\n", $datacenter->DataCenterID );
+		
+		printf( "<h3>%s: %s</h3>", __("Choose either power sources or panels to simulate for Data Center"), $datacenter->Name );
+		
+		printf( "<input type=submit name=\"action\" value=\"%s\"><br>\n", __("Generate") );
+		
+		printf( "<table border=1 align=center>\n" );
+		printf( "<tr><th>%s</th><th>%s</th></tr>\n", __("Power Source"), __("Power Panel") );
+		
+		foreach ( $sourceList as $source ) {
+			$pwrPanel->ParentPanelID = $source->PanelID;
+			$panelList = $pwrPanel->getPanelListBySource();
+			
+			printf( "<tr><td><input type=\"checkbox\" name=\"sourceid[]\" value=\"%d\">%s</td>\n", $source->PanelID, $source->PanelLabel );
+			
+			printf( "<td><table>\n" );
+			
+			foreach ( $panelList as $panel )
+				printf( "<tr><td><input type=\"checkbox\" name=\"panelid[]\" value=\"%d\">%s</td></tr>\n", $panel->PanelID, $panel->PanelLabel );
+			
+			printf( "</table></td></tr>\n" );
+		}
+	}
 ?>
 </div>
 </form>
@@ -128,6 +125,9 @@
 
     $pnlArray=array();
 
+	if(isset($_POST['sourceid'])){
+		$srcArray=$_POST['sourceid'];
+	}
     if(isset($_POST['panelid'])){
         $pnlArray=$_POST['panelid'];
     }
@@ -135,11 +135,27 @@
 	// Need to build an array of Panel Objects (what we got from input was just the IDs)
 	$pnlList = array();
 
-	foreach ( $pnlArray as $pnlID ) {
-		$pnlCount = count( $pnlList );
-		$pnlList[$pnlCount] = new PowerPanel();
-		$pnlList[$pnlCount]->PanelID = $pnlID;
-		$pnlList[$pnlCount]->GetPanel();
+	if ( count( $srcArray ) > 0 ) {
+		// Build an array of the Panels affected when the entire source goes down.
+		// This will allow us to use one section of code to calculate effects of panels going down and use it for both cases.
+		
+		$pnlList = array();
+		
+		foreach ( $srcArray as $srcID ) {
+			$pan->ParentPanelID = $srcID;
+			
+			$pnlList = array_merge( $pnlList, $pan->getPanelListBySource() );
+		}
+	} else {
+		// Need to build an array of Panel Objects (what we got from input was just the IDs)
+		$pnlList = array();
+		
+		foreach ( $pnlArray as $pnlID ) {
+			$pnlCount = count( $pnlList );
+			$pnlList[$pnlCount] = new PowerPanel();
+			$pnlList[$pnlCount]->PanelID = $pnlID;
+			$pnlList[$pnlCount]->GetPanel();
+		}
 	}
     
     //

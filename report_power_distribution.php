@@ -126,7 +126,6 @@ class PDF extends FPDF {
 
 	$pan = new PowerPanel();
 	$pdu = new PowerDistribution();
-	$source = new PowerSource();
 	$dev = new Device();
 	$cab = new Cabinet();
 	$dept = new Department();
@@ -157,20 +156,19 @@ class PDF extends FPDF {
 		$pdf->SetFont( $config->ParameterArray['PDFfont'], '', 8 );
 		
   	
-		$source->DataCenterID = $dcRow->DataCenterID;
-		$sourceList = $source->GetSourcesByDataCenter();
+		$sourceList = $pan->getSourcesByDataCenter( $dcRow->DataCenterID );
     
 		foreach ( $sourceList as $sourceRow ) {
 			
-			$pdf->BookMark( $sourceRow->SourceName, 2 );
+			$pdf->BookMark( $sourceRow->PanelLabel, 2 );
 			$pdf->Ln();
 			$pdf->SetFont( $config->ParameterArray['PDFfont'], 'U', 12 );
-		    $pdf->Cell( 80, 5, __("Power Source").': ' . $sourceRow->SourceName );
+		    $pdf->Cell( 80, 5, __("Power Source").': ' . $sourceRow->PanelLabel );
 			$pdf->SetFont( $config->ParameterArray['PDFfont'], '', 8 );
 			$pdf->Ln();
 
-			$pan->PowerSourceID = $sourceRow->PowerSourceID;
-			$panList = $pan->GetPanelListBYSource();
+			$pan->ParentPanelID = $sourceRow->PanelID;
+			$panList = $pan->getPanelListBySource();
       			
 			foreach ( $panList as $panRow ) {
 				$pdf->BookMark( $panRow->PanelLabel, 3 );
@@ -205,7 +203,7 @@ class PDF extends FPDF {
 					$fill = 0;
 									
 					foreach( $devList as $devRow){
-          				$pdf->Cell( $cellWidths[0], 6, $sourceRow->SourceName, 'LBRT', 0, 'L', $fill );
+          				$pdf->Cell( $cellWidths[0], 6, $sourceRow->PanelLabel, 'LBRT', 0, 'L', $fill );
 						$pdf->Cell( $cellWidths[1], 6, $panRow->PanelLabel, 'LBRT', 0, 'L', $fill );
 						$pdf->Cell( $cellWidths[2], 6, $pduRow->Label, 'LBRT', 0, 'L', $fill ); 
 						$pdf->Cell( $cellWidths[3], 6, $devRow->Label, 'LBRT', 1, 'L', $fill );

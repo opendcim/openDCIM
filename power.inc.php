@@ -1426,7 +1426,7 @@ class PowerPanel {
 		$st->execute( array( ":DataCenterID"=>$DataCenterID ) );
 		$st->setFetchMode( PDO::FETCH_CLASS, "PowerPanel" );
 		
-		$pList = array();
+		$sList = array();
 		while ( $row = $st->fetch() ) {
 			$sList[] = $row;
 		}
