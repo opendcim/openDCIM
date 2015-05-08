@@ -1368,6 +1368,14 @@ class PowerPanel {
 			$currParent = $row->ParentPanelID;
 		}
 		
+		if ( ! @is_object( $row ) ) {
+			// Someone called this on a PowerSource
+			$row = new PowerPanel();
+			foreach ( $this as $prop=>$val ) {
+				$row->$prop = $val;
+			}
+		}
+		
 		return $row;
 	}
 	

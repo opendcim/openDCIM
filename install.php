@@ -1045,16 +1045,17 @@ function upgrade(){
 		// END - Sensor template conversion
 
 		// Power panel conversion
+		$dbh->beginTransaction();
 		$ss=$dbh->prepare("select * from fac_PowerSource");
-		$ss->setFetchMode( PDO::FETCH_CLASS,"PowerSource");
 		$ss->execute();
 
 		$ps=$dbh->prepare("insert into fac_PowerPanel set PanelLabel=:PanelLabel");
 		$us=$dbh->prepare("update fac_PowerPanel set ParentPanelID=:PanelID where PowerSourceID=:SourceID");
 		while($row=$ss->fetch()){
-			$ps->execute(array(":PanelLabel"=>$row->SourceName));
-			$us->execute(array(":PanelID"=>$dbh->LastInsertId(),":SourceID"=>$row->PowerSourceID));
+			$ps->execute(array(":PanelLabel"=>$row["SourceName"]));
+			$us->execute(array(":PanelID"=>$dbh->LastInsertId(),":SourceID"=>$row["PowerSourceID"]));
 		}
+		$dbh->commit();
 		// END - Power panel conversion
 
 		// Get rid of the original PowerSource table since it is no longer in use
