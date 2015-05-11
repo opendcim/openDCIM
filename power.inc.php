@@ -29,7 +29,6 @@ class CDUTemplate {
 	var $Model;
 	var $Managed;
 	var $ATS;
-	var $SNMPVersion;
 	var $VersionOID;
 	var $Multiplier;
 	var $OID1;
@@ -53,7 +52,6 @@ class CDUTemplate {
 		$this->Model=sanitize($this->Model);
 		$this->Managed=intval($this->Managed);
 		$this->ATS=intval($this->ATS);
-		$this->SNMPVersion=(in_array($this->SNMPVersion, $validSNMPVersions))?$this->SNMPVersion:'2c';
 		$this->VersionOID=sanitize($this->VersionOID);
 		$this->Multiplier=(in_array($this->Multiplier, $validMultipliers))?$this->Multiplier:1;
 		$this->OID1=sanitize($this->OID1);
@@ -84,7 +82,6 @@ class CDUTemplate {
 		$template->Model=$row["Model"];
 		$template->Managed=$row["Managed"];
 		$template->ATS=$row["ATS"];
-		$template->SNMPVersion=$row["SNMPVersion"];
 		$template->VersionOID=$row["VersionOID"];
 		$template->Multiplier=$row["Multiplier"];
 		$template->OID1=$row["OID1"];
@@ -139,7 +136,7 @@ class CDUTemplate {
 		
 		$sql="INSERT INTO fac_CDUTemplate SET ManufacturerID=$this->ManufacturerID, 
 			Model=\"$this->Model\", Managed=$this->Managed, ATS=$this->ATS,
-			SNMPVersion=\"$this->SNMPVersion\", VersionOID=\"$this->VersionOID\", 
+			VersionOID=\"$this->VersionOID\", 
 			Multiplier=\"$this->Multiplier\", OID1=\"$this->OID1\", OID2=\"$this->OID2\", 
 			OID3=\"$this->OID3\", ATSStatusOID=\"$this->ATSStatusOID\", ATSDesiredResult=\"$this->ATSDesiredResult\",
 			ProcessingProfile=\"$this->ProcessingProfile\", 
@@ -165,7 +162,7 @@ class CDUTemplate {
 		
 		$sql="UPDATE fac_CDUTemplate SET ManufacturerID=$this->ManufacturerID, 
 			Model=\"$this->Model\", Managed=$this->Managed, ATS=$this->ATS,
-			SNMPVersion=\"$this->SNMPVersion\", VersionOID=\"$this->VersionOID\", 
+			VersionOID=\"$this->VersionOID\", 
 			Multiplier=\"$this->Multiplier\", OID1=\"$this->OID1\", OID2=\"$this->OID2\", 
 			OID3=\"$this->OID3\", ATSStatusOID=\"$this->ATSStatusOID\", ATSDesiredResult=\"$this->ATSDesiredResult\",
 			ProcessingProfile=\"$this->ProcessingProfile\", 

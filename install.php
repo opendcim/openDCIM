@@ -834,7 +834,7 @@ function upgrade(){
 
 				$sql="INSERT INTO fac_DeviceTemplate SET ManufacturerID=$this->ManufacturerID, 
 					Model=\"$this->Model\", Height=$this->Height, Weight=$this->Weight, 
-					Wattage=$this->Wattage, DeviceType=\"$this->DeviceType\", 
+					Wattage=$this->Wattage, DeviceType=\"$this->DeviceType\", SNMPVersion=\"$this->SNMPVersion\",
 					PSCount=$this->PSCount, NumPorts=$this->NumPorts, Notes=\"$this->Notes\", 
 					FrontPictureFile=\"$this->FrontPictureFile\", RearPictureFile=\"$this->RearPictureFile\",
 					ChassisSlots=$this->ChassisSlots, RearChassisSlots=$this->RearChassisSlots;";
@@ -852,17 +852,20 @@ function upgrade(){
 			}
 		}
 		$ct=new CDUTemplate(); //cdu templates
-		$et=$ct->GetTemplateList(); //existing templates
-
+		$et = array(); //existing templates
+		$st = $dbh->prepare( "select * from fac_CDUTemplate" );
+		$st->execute();
+		
 		$converted=array(); //index old id, value new id
-		foreach($et as $i => $cdutemplate){
+		while ($cdutemplate = $st->fetch() ){
 			$dt=new PowerTemplate();
-			$dt->ManufacturerID=$cdutemplate->ManufacturerID;
-			$dt->Model="CDU ".$cdutemplate->Model;
-			$dt->PSCount=$cdutemplate->NumOutlets;
+			$dt->ManufacturerID=$cdutemplate["ManufacturerID"];
+			$dt->Model="CDU ".$cdutemplate["Model"];
+			$dt->PSCount=$cdutemplate["NumOutlets"];
 			$dt->DeviceType="CDU";
+			$dt->SNMPVersion = $cdutemplate["SNMPVersion"];
 			$dt->CreateTemplate();
-			$converted[$cdutemplate->TemplateID]=$dt->TemplateID;
+			$converted[$cdutemplate["TemplateID"]]=$dt->TemplateID;
 		}
 
 		// Update all the records with their new templateid
@@ -1036,6 +1039,16 @@ function upgrade(){
 		foreach($ConvertedCDUs as $oldid => $newid){
 			$dbh->query("UPDATE fac_PowerDistribution SET PDUID = '$newid' WHERE PDUID=$oldid;");
 		}
+		
+		// Since we moved SNMPVersion out of the subtemplates and into the main one, we need one last cleanup
+		$st = $dbh->prepare( "select * from fac_DeviceTemplate where DeviceType='CDU'" );
+		$st->execute();
+		$up = $dbh->prepare( "update fac_Device set SNMPVersion=:SNMPVersion where TemplateID=:TemplateID" );
+		
+		while ( $row = $st->fetch() ) {
+			$up->execute( array( ":SNMPVersion"=>$row["SNMPVersion"], ":TemplateID"=>$row["TemplateID"] ) );
+		}
+		
 		// END - CDU template conversion, to be done prior to device conversion
 
 		// Sensor template conversion
@@ -1088,6 +1101,8 @@ function upgrade(){
 					$st->DeleteTemplate();
 				}
         }
+		
+		$ds = $dbh->prepare( "alter table fac_SensorTemplate drop column SNMPVersion" );
 
         // Step two - pull sensors from the Cabinets and create as new devices
         $s = $dbh->prepare( "select * from fac_Cabinet where SensorIPAddress!=''" );
