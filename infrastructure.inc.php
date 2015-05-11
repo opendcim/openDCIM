@@ -880,7 +880,13 @@ class DeviceTemplate {
 				// If this is a sense make the corresponding other hidden template
 				$st=new SensorTemplate();
 				$st->Model=$this->Model;
-				$st->ManufacturerID=$this->ManufacurerID;
+				$st->ManufacturerID=$this->ManufacturerID;
+				$st->SNMPVersion = "";
+				$st->TemperatureOID = "";
+				$st->HumidityOID = "";
+				$st->TempMultiplier = "";
+				$st->HumidityMultiplier = "";
+				$st->mUnits = "";
 				$st->CreateTemplate($this->TemplateID);
 			}
 

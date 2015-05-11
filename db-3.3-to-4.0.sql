@@ -203,6 +203,38 @@ INSERT INTO fac_Config set Parameter="RequireDefinedUser", Value="Disabled", Uni
 ALTER TABLE fac_Device ADD AuditStamp DATETIME NOT NULL;
 
 --
+-- Normalize the names to be consistent
+--
+
+ALTER TABLE fac_SensorTemplate CHANGE Name Model varchar(80);
+
+--
+-- Add SNMP information to the main device template
+--
+
+ALTER TABLE fac_DeviceTemplate ADD COLUMN SNMPVersion varchar(2) NOT NULL DEFAULT '2c' AFTER RearChassisSlots;
+
+--
+-- Add in fields for SNMPv3 support
+--
+
+ALTER TABLE fac_Device ADD COLUMN SNMPVersion varchar(2) NOT NULL DEFAULT '' AFTER PrimaryIP;
+ALTER TABLE fac_Device ADD COLUMN v3SecurityName varchar(80) NOT NULL DEFAULT '' AFTER SNMPVersion;
+ALTER TABLE fac_Device ADD COLUMN v3SecurityLevel varchar(12) NOT NULL DEFAULT '' AFTER v3SecurityName;
+ALTER TABLE fac_Device ADD COLUMN v3AuthProtocol varchar(3) NOT NULL DEFAULT '' AFTER v3SecurityLevel;
+ALTER TABLE fac_Device ADD COLUMN v3AuthPassphrase varchar(80) NOT NULL DEFAULT '' AFTER v3AuthProtocol;
+ALTER TABLE fac_Device ADD COLUMN v3PrivProtocol varchar(3) NOT NULL DEFAULT '' AFTER v3AuthPassphrase;
+ALTER TABLE fac_Device ADD COLUMN v3PrivPassphrase varchar(80) NOT NULL DEFAULT '' AFTER v3PrivProtocol;
+
+INSERT INTO fac_Config set Parameter='v3SecurityName', Value='', UnitOfMeasure='User', ValType='string', DefaultVal='';
+INSERT INTO fac_Config set Parameter='v3SecurityLevel', Value='', UnitOfMeasure='string', ValType='string', DefaultVal='';
+INSERT INTO fac_Config set Parameter='v3AuthProtocol', Value='', UnitOfMeasure='Hash', ValType='string', DefaultVal='';
+INSERT INTO fac_Config set Parameter='v3AuthPassphrase', Value='', UnitOfMeasure='Password', ValType='string', DefaultVal='';
+INSERT INTO fac_Config set Parameter='v3PrivProtocol', Value='', UnitOfMeasure='Hash', ValType='string', DefaultVal='';
+INSERT INTO fac_Config set Parameter='v3PrivPassphrase', Value='', UnitOfMeasure='Password', ValType='string', DefaultVal='';
+
+
+--
 -- Bump up the database version
 --
 UPDATE fac_Config set Value='4.0' WHERE Parameter='Version';

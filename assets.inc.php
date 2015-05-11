@@ -729,17 +729,24 @@ class SensorTemplate {
 	
 	var $TemplateID;
 	var $ManufacturerID;
-	var $Name;
+	var $Model;
 	var $SNMPVersion;
 	var $TemperatureOID;
 	var $HumidityOID;
 	var $TempMultiplier;
 	var $HumidityMultiplier;
 	var $mUnits;
-	var $GlobalID;
-	var $ShareToRepo;
-	var $KeepLocal;
 
+	function prepare( $sql ) {
+		global $dbh;
+		return $dbh->prepare( $sql );
+	}
+	
+	function lastInsertId() {
+		global $dbh;
+		return $dbh->lastInsertId();
+	}
+	
 	function MakeSafe(){
 		$validSNMPVersions=array(1,'2c');
 		$validMultipliers=array(0.01,0.1,1,10,100);
@@ -747,16 +754,13 @@ class SensorTemplate {
 
 		$this->TemplateID=intval($this->TemplateID);
 		$this->ManufacturerID=intval($this->ManufacturerID);
-		$this->Name=sanitize($this->Name);
+		$this->Model=sanitize($this->Model);
 		$this->SNMPVersion=(in_array($this->SNMPVersion, $validSNMPVersions))?$this->SNMPVersion:'2c';
 		$this->TemperatureOID=sanitize($this->TemperatureOID);
 		$this->HumidityOID=sanitize($this->HumidityOID);
 		$this->TempMultiplier=(in_array($this->TempMultiplier, $validMultipliers))?$this->TempMultiplier:1;
 		$this->HumidityMultiplier=(in_array($this->HumidityMultiplier, $validMultipliers))?$this->HumidityMultiplier:1;
 		$this->mUnits=(in_array($this->mUnits, $validmUnits))?$this->mUnits:'english';
-		$this->GlobalID = intval( $this->GlobalID );
-		$this->ShareToRepo = intval( $this->ShareToRepo );
-		$this->KeepLocal = intval( $this->KeepLocal );
 	}
 
 	function MakeDisplay() {
@@ -768,16 +772,13 @@ class SensorTemplate {
 		$st=new SensorTemplate();
 		$st->TemplateID=$dbRow["TemplateID"];
 		$st->ManufacturerID=$dbRow["ManufacturerID"];
-		$st->Name=$dbRow["Name"];
+		$st->Model=$dbRow["Model"];
 		$st->SNMPVersion=$dbRow["SNMPVersion"];
 		$st->TemperatureOID=$dbRow["TemperatureOID"];
 		$st->HumidityOID=$dbRow["HumidityOID"];
 		$st->TempMultiplier=$dbRow["TempMultiplier"];
 		$st->HumidityMultiplier=$dbRow["HumidityMultiplier"];
 		$st->mUnits=$dbRow["mUnits"];
-		$st->GlobalID = $dbRow["GlobalID"];
-		$st->ShareToRepo = $dbRow["ShareToRepo"];
-		$st->KeepLocal = $dbRow["KeepLocal"];
 
 		return $st;
 	}
@@ -813,20 +814,25 @@ class SensorTemplate {
 	}
 	
 	function CreateTemplate($templateid){
-		global $dbh;
+		$st = $this->prepare( "INSERT INTO fac_SensorTemplate SET ManufacturerID=:ManufacturerID, 
+			Model=:Model, SNMPVersion=:SNMPVersion,	TemperatureOID=:TemperatureOID, HumidityOID=:HumidityOID, 
+			TempMultiplier=:TempMultiplier, HumidityMultiplier=:HumidityMultiplier, mUnits=:mUnits,
+			TemplateID=:TemplateID" );
 
-		$sql="INSERT INTO fac_SensorTemplate SET ManufacturerID=$this->ManufacturerID, 
-			Name=\"$this->Name\", SNMPVersion=\"$this->SNMPVersion\", 
-			TemperatureOID=\"$this->TemperatureOID\", HumidityOID=\"$this->HumidityOID\", 
-			TempMultiplier=$this->TempMultiplier, 
-			HumidityMultiplier=$this->HumidityMultiplier, mUnits=\"$this->mUnits\",
-			GlobalID=$this->GlobalID, ShareToRepo=$this->ShareToRepo,
-			KeepLocal=$this->KeepLocal, TemplateID=".intval($templateid);
+		$params = array( ":ManufacturerID"=>$this->ManufacturerID,
+			":Model"=>$this->Model,
+			":SNMPVersion"=>$this->SNMPVersion,
+			":TemperatureOID"=>$this->TemperatureOID,
+			":HumidityOID"=>$this->HumidityOID,
+			":TempMultiplier"=>$this->TempMultiplier,
+			":HumidityMultiplier"=>$this->HumidityMultiplier,
+			":mUnits"=>$this->mUnits,
+			":TemplateID"=>$templateid );
+			
+		if(!$st->execute( $params )){
+			$info=$st->errorInfo();
 
-		if(!$dbh->exec($sql)){
-			$info=$dbh->errorInfo();
-
-			error_log("CreateTemplate::PDO Error: {$info[2]} SQL=$sql");
+			error_log("CreateTemplate::PDO Error: {$info[2]} " . print_r( $params, true ));
 			return false;
 		}
 
@@ -835,24 +841,26 @@ class SensorTemplate {
 	}
 	
 	function UpdateTemplate() {
-		global $dbh;
-		
-		$this->MakeSafe();	
-
 		$old=new SensorTemplate();
 		$old->TemplateID=$this->TemplateID;
 		$old->GetTemplate();
 
-		$sql="UPDATE fac_SensorTemplate SET ManufacturerID=$this->ManufacturerID, 
-			Name=\"$this->Name\", SNMPVersion=\"$this->SNMPVersion\", 
-			TemperatureOID=\"$this->TemperatureOID\", HumidityOID=\"$this->HumidityOID\", 
-			TempMultiplier=$this->TempMultiplier, 
-			HumidityMultiplier=$this->HumidityMultiplier, mUnits=\"$this->mUnits\",
-			GlobalID=$this->GlobalID, ShareToRepo=$this->ShareToRepo, KeepLocal=$this->KeepLocal
-			WHERE TemplateID=$this->TemplateID;";
+		$st = $this->prepare( "UPDATE fac_SensorTemplate SET ManufacturerID=:ManufacturerID, 
+			Model=:Model, SNMPVersion=:SNMPVersion, TemperatureOID=:TemperatureOID, 
+			HumidityOID=:HumidityOID, TempMultiplier=:TempMultiplier, 
+			HumidityMultiplier=:HumidityMultiplier, mUnits=:mUnits
+			WHERE TemplateID=:TemplateID" );
 		
-		if(!$dbh->query($sql)){
-			$info=$dbh->errorInfo();
+		if(!$st->execute( array( ":ManufacturerID"=>$this->ManufacturerID,
+			":Model"=>$this->Model,
+			":SNMPVersion"=>$this->SNMPVersion,
+			":TemperatureOID"=>$this->TemperatureOID,
+			":HumidityOID"=>$this->HumidityOID,
+			":TempMultiplier"=>$this->TempMultiplier,
+			":HumidityMultiplier"=>$this->HumidityMultiplier,
+			":mUnits"=>$this->mUnits,
+			":TemplateID"=>$this->TemplateID ))){
+			$info=$this->errorInfo();
 			error_log("UpdateTemplate::PDO Error: {$info[2]} SQL=$sql");
 			return false;
 		}
@@ -1162,6 +1170,13 @@ class Device {
 	var $SerialNo;
 	var $AssetTag;
 	var $PrimaryIP;
+	var $SNMPVersion;
+	var $v3SecurityName;
+	var $v3SecurityLevel;
+	var $v3AuthProtocol;
+	var $v3AuthPassphrase;
+	var $v3PrivProtocol;
+	var $v3PrivPassphrase;
 	var $SNMPCommunity;
 	var $SNMPFailureCount;
 	var $ESX;
@@ -1207,6 +1222,13 @@ class Device {
 		$this->SerialNo=sanitize($this->SerialNo);
 		$this->AssetTag=sanitize($this->AssetTag);
 		$this->PrimaryIP=sanitize($this->PrimaryIP);
+		$this->SNMPVersion=sanitize($this->SNMPVersion);
+		$this->v3SecurityName=sanitize($this->v3SecurityName);
+		$this->v3SecurityLevel=sanitize($this->v3SecurityLevel);
+		$this->v3AuthProtocol=sanitize($this->v3AuthProtocol);
+		$this->v3AuthPassphrase=sanitize($this->v3AuthPassphrase);
+		$this->v3PrivProtocol=sanitize($this->v3PrivProtocol);
+		$this->v3PrivPassphrase=sanitize($this->v3PrivPassphrase);
 		$this->SNMPCommunity=sanitize($this->SNMPCommunity);
 		$this->SNMPFailureCount=intval($this->SNMPFailureCount);
 		$this->ESX=intval($this->ESX);
@@ -1264,6 +1286,12 @@ class Device {
 		$dev->SerialNo=$dbRow["SerialNo"];
 		$dev->AssetTag=$dbRow["AssetTag"];
 		$dev->PrimaryIP=$dbRow["PrimaryIP"];
+		$dev->v3SecurityName=$dbRow["v3SecurityName"];
+		$dev->v3SecurityLevel=$dbRow["v3SecurityLevel"];
+		$dev->v3AuthProtocol=$dbRow["v3AuthProtocol"];
+		$dev->v3AuthPassphrase=$dbRow["v3AuthPassphrase"];
+		$dev->v3PrivProtocol=$dbRow["v3PrivProtocol"];
+		$dev->v3PrivPassphrase=$dbRow["v3PrivPassphrase"];
 		$dev->SNMPCommunity=$dbRow["SNMPCommunity"];
 		$dev->SNMPFailureCount=$dbRow["SNMPFailureCount"];
 		$dev->ESX=$dbRow["ESX"];
@@ -1354,9 +1382,11 @@ class Device {
 		
 		// SNMPFailureCount isn't in this list, because it should always start at zero (default) on new devices
 		$sql="INSERT INTO fac_Device SET Label=\"$this->Label\", SerialNo=\"$this->SerialNo\", AssetTag=\"$this->AssetTag\", 
-			PrimaryIP=\"$this->PrimaryIP\", SNMPCommunity=\"$this->SNMPCommunity\", ESX=$this->ESX, Owner=$this->Owner, 
-			EscalationTimeID=$this->EscalationTimeID, EscalationID=$this->EscalationID, PrimaryContact=$this->PrimaryContact, 
-			Cabinet=$this->Cabinet, Position=$this->Position, Height=$this->Height, Ports=$this->Ports, 
+			PrimaryIP=\"$this->PrimaryIP\", SNMPVersion=\"$this->SNMPVersion\", v3SecurityName=\"$this->v3SecurityName\", 
+			v3SecurityLevel=\"$this->v3SecurityLevel\",	v3AuthProtocol=\"$this->v3AuthProtocol\", v3AuthPassphrase=\"$this->v3AuthPassphrase\", 
+			v3PrivProtocol=\"$this->v3PrivProtocol\", v3PrivPassphrase=\"$this->v3PrivPassphrase\", SNMPCommunity=\"$this->SNMPCommunity\", 
+			ESX=$this->ESX, Owner=$this->Owner, EscalationTimeID=$this->EscalationTimeID, EscalationID=$this->EscalationID, 
+			PrimaryContact=$this->PrimaryContact, Cabinet=$this->Cabinet, Position=$this->Position, Height=$this->Height, Ports=$this->Ports, 
 			FirstPortNum=$this->FirstPortNum, TemplateID=$this->TemplateID, NominalWatts=$this->NominalWatts, 
 			PowerSupplyCount=$this->PowerSupplyCount, DeviceType=\"$this->DeviceType\", ChassisSlots=$this->ChassisSlots, 
 			RearChassisSlots=$this->RearChassisSlots,ParentDevice=$this->ParentDevice, 
@@ -1631,8 +1661,11 @@ class Device {
 		$this->AssetTag=transform($this->AssetTag);
 
 		$sql="UPDATE fac_Device SET Label=\"$this->Label\", SerialNo=\"$this->SerialNo\", AssetTag=\"$this->AssetTag\", 
-			PrimaryIP=\"$this->PrimaryIP\", SNMPCommunity=\"$this->SNMPCommunity\", SNMPFailureCount=$this->SNMPFailureCount, ESX=$this->ESX,
-			Owner=$this->Owner, EscalationTimeID=$this->EscalationTimeID, EscalationID=$this->EscalationID, PrimaryContact=$this->PrimaryContact, 
+			PrimaryIP=\"$this->PrimaryIP\", SNMPCommunity=\"$this->SNMPCommunity\", SNMPVersion=\"$this->SNMPVersion\",
+			v3SecurityName=\"$this->v3SecurityName\", v3SecurityLevel=\"$this->v3SecurityLevel\", v3AuthProtocol=\"$this->v3AuthProtocol\",
+			v3AuthPassphrase=\"$this->v3AuthPassphrase\", v3PrivProtocol=\"$this->v3PrivProtocol\", v3PrivPassphrase=\"$this->v3PrivPassphrase\",
+			SNMPFailureCount=$this->SNMPFailureCount, ESX=$this->ESX, Owner=$this->Owner, EscalationTimeID=$this->EscalationTimeID, 
+			EscalationID=$this->EscalationID, PrimaryContact=$this->PrimaryContact, 
 			Cabinet=$this->Cabinet, Position=$this->Position, Height=$this->Height, Ports=$this->Ports, 
 			FirstPortNum=$this->FirstPortNum, TemplateID=$this->TemplateID, NominalWatts=$this->NominalWatts, 
 			PowerSupplyCount=$this->PowerSupplyCount, DeviceType=\"$this->DeviceType\", ChassisSlots=$this->ChassisSlots, 

@@ -1040,7 +1040,71 @@ function upgrade(){
 
 		// Sensor template conversion
 
-//todo - never wrote this but shoudl be similar to the cdu template conversion
+        // Step one - convert individual SensorTemplates into just Templates
+        $s = $dbh->prepare( "select * from fac_SensorTemplate" );
+        $s->execute();
+
+        while ( $row = $s->fetch() ) {
+                // Create fresh instances
+                $st = new SensorTemplate();
+                $dt = new DeviceTemplate();
+
+                $dt->ManufacturerID = $row["ManufacturerID"];
+                $dt->Model = $row["Model"];
+                $dt->Height = 0;
+                $dt->Weight = 0;
+                $dt->Wattage = 0;
+                $dt->DeviceType = "Sensor";
+                $dt->PSCount = 0;
+                $dt->NumPorts = 0;
+                $dt->Notes = "Converted from version 3.3 format.";
+                $dt->FrontPictureFile = '';
+                $dt->RearPictureFile = '';
+                $dt->ChassisSlots = 0;
+                $dt->RearChassisSlots = 0;
+                $dt->CreateTemplate();
+
+                // The DeviceTemplate::CreateTemplate() method created a new SensorTemplate already
+				if ( $dt->TemplateID < 1 ) {
+					error_log( "DeviceTemplate creation failed." );
+				} else {
+					$st->TemplateID = $dt->TemplateID;
+					$st->GetTemplate();
+					$st->SNMPVersion = $row["SNMPVersion"];
+					$st->TemperatureOID = $row["TemperatureOID"];
+					$st->HumidityOID = $row["HumidityOID"];
+					$st->TempMultiplier = $row["TempMultiplier"];
+					$st->HumidityMultiplier = $row["HumidityMultiplier"];
+					$st->mUnits = $row["mUnits"];
+					$st->UpdateTemplate();
+
+					// Even though this is just temporary, update all existing references to the new TemplateID
+					$sql = "update fac_Cabinet set SensorTemplateID=:NewID where SensorTemplateID=:OldID";
+					$q = $dbh->prepare( $sql );
+					$q->execute( array( ":NewID"=>$dt->TemplateID, ":OldID"=>$row["TemplateID"] ) );
+
+					// Delete the original template entry in the fac_SensorTemplate table
+					$st->TemplateID = $row["TemplateID"];
+					$st->DeleteTemplate();
+				}
+        }
+
+        // Step two - pull sensors from the Cabinets and create as new devices
+        $s = $dbh->prepare( "select * from fac_Cabinet where SensorIPAddress!=''" );
+        $s->execute();
+
+        while ( $row = $s->fetch() ) {
+                $dev = new Device();
+
+                $dev->Label = $row["Location"] . " - Sensor";
+                $dev->SNMPCommunity = $row["SensorCommunity"];
+                $dev->PrimaryIP = $row["SensorIPAddress"];
+                $dev->TemplateID = $row["SensorTemplateID"];
+                $dev->DeviceType = "Sensor";
+                $dev->Cabinet = $row["CabinetID"];
+
+                $dev->CreateDevice();
+        }
 
 		// END - Sensor template conversion
 
