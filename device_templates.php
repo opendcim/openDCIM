@@ -778,7 +778,7 @@ foreach($dcaList as $dca) {
 	</div>';
 }
 
-if ( $template->TemplateID > 0 ) {
+if ( $template->TemplateID > 0 && isset( $deviceList ) ) {
 	echo '
 <div>
 	<div>&nbsp;</div>

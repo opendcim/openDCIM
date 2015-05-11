@@ -179,12 +179,15 @@ class LogActions {
 			case "DeviceTemplate":
 				// The following function isn't logged
 				// UpdateDevice()
+			case "SensorTemplate":
+				$log->ObjectID=$object->TemplateID;
+				break;
 			case "Department":
 				// Not sure how to go about tracking the changes in membership
 			default:
 				// Attempt to autofind the id of the object we've been handed
 				foreach($object as $prop => $value){
-					if(preg_match("/id/i", $prop)){
+					if(preg_match("/ID/", $prop)){
 						$log->ObjectID=$value;
 						break;
 					}
