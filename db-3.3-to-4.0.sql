@@ -219,14 +219,12 @@ ALTER TABLE fac_DeviceTemplate ADD COLUMN SNMPVersion varchar(2) NOT NULL DEFAUL
 --
 
 ALTER TABLE fac_Device ADD COLUMN SNMPVersion varchar(2) NOT NULL DEFAULT '' AFTER PrimaryIP;
-ALTER TABLE fac_Device ADD COLUMN v3SecurityName varchar(80) NOT NULL DEFAULT '' AFTER SNMPVersion;
 ALTER TABLE fac_Device ADD COLUMN v3SecurityLevel varchar(12) NOT NULL DEFAULT '' AFTER v3SecurityName;
 ALTER TABLE fac_Device ADD COLUMN v3AuthProtocol varchar(3) NOT NULL DEFAULT '' AFTER v3SecurityLevel;
 ALTER TABLE fac_Device ADD COLUMN v3AuthPassphrase varchar(80) NOT NULL DEFAULT '' AFTER v3AuthProtocol;
 ALTER TABLE fac_Device ADD COLUMN v3PrivProtocol varchar(3) NOT NULL DEFAULT '' AFTER v3AuthPassphrase;
 ALTER TABLE fac_Device ADD COLUMN v3PrivPassphrase varchar(80) NOT NULL DEFAULT '' AFTER v3PrivProtocol;
 
-INSERT INTO fac_Config set Parameter='v3SecurityName', Value='', UnitOfMeasure='User', ValType='string', DefaultVal='';
 INSERT INTO fac_Config set Parameter='v3SecurityLevel', Value='', UnitOfMeasure='string', ValType='string', DefaultVal='';
 INSERT INTO fac_Config set Parameter='v3AuthProtocol', Value='', UnitOfMeasure='Hash', ValType='string', DefaultVal='';
 INSERT INTO fac_Config set Parameter='v3AuthPassphrase', Value='', UnitOfMeasure='Password', ValType='string', DefaultVal='';

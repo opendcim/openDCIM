@@ -770,6 +770,7 @@ class DeviceTemplate {
 	var $RearPictureFile;
 	var $ChassisSlots;
 	var $RearChassisSlots;
+	var $SNMPVersion;
 	var $CustomValues;
 	var $GlobalID;
 	var $ShareToRepo;
@@ -792,6 +793,7 @@ class DeviceTemplate {
 	    $this->RearPictureFile=sanitize($this->RearPictureFile);
 		$this->ChassisSlots=intval($this->ChassisSlots);
 		$this->RearChassisSlots=intval($this->RearChassisSlots);
+		$this->SNMPVersion=(in_array( $this->SNMPVersion, array("1", "2c", "3") ))?$this->SNMPVersion:"2c";
 		$this->GlobalID = intval( $this->GlobalID );
 		$this->ShareToRepo = intval( $this->ShareToRepo );
 		$this->KeepLocal = intval( $this->KeepLocal );
@@ -820,6 +822,7 @@ class DeviceTemplate {
         $Template->RearPictureFile=$row["RearPictureFile"];
 		$Template->ChassisSlots=$row["ChassisSlots"];
 		$Template->RearChassisSlots=$row["RearChassisSlots"];
+		$Template->SNMPVersion=$row["SNMPVersion"];
 		$Template->GlobalID = $row["GlobalID"];
 		$Template->ShareToRepo = $row["ShareToRepo"];
 		$Template->KeepLocal = $row["KeepLocal"];
@@ -859,7 +862,7 @@ class DeviceTemplate {
 			Wattage=$this->Wattage, DeviceType=\"$this->DeviceType\", 
 			PSCount=$this->PSCount, NumPorts=$this->NumPorts, Notes=\"$this->Notes\", 
 			FrontPictureFile=\"$this->FrontPictureFile\", RearPictureFile=\"$this->RearPictureFile\",
-			ChassisSlots=$this->ChassisSlots, RearChassisSlots=$this->RearChassisSlots,
+			ChassisSlots=$this->ChassisSlots, RearChassisSlots=$this->RearChassisSlots, SNMPVersion=\"$this->SNMPVersion\",
 			GlobalID=$this->GlobalID, ShareToRepo=$this->ShareToRepo, KeepLocal=$this->KeepLocal;";
 
 		if(!$dbh->exec($sql)){
@@ -881,12 +884,6 @@ class DeviceTemplate {
 				$st=new SensorTemplate();
 				$st->Model=$this->Model;
 				$st->ManufacturerID=$this->ManufacturerID;
-				$st->SNMPVersion = "";
-				$st->TemperatureOID = "";
-				$st->HumidityOID = "";
-				$st->TempMultiplier = "";
-				$st->HumidityMultiplier = "";
-				$st->mUnits = "";
 				$st->CreateTemplate($this->TemplateID);
 			}
 
@@ -903,7 +900,7 @@ class DeviceTemplate {
 			Wattage=$this->Wattage, DeviceType=\"$this->DeviceType\", 
 			PSCount=$this->PSCount, NumPorts=$this->NumPorts, Notes=\"$this->Notes\", 
 			FrontPictureFile=\"$this->FrontPictureFile\", RearPictureFile=\"$this->RearPictureFile\",
-			ChassisSlots=$this->ChassisSlots, RearChassisSlots=$this->RearChassisSlots,
+			ChassisSlots=$this->ChassisSlots, RearChassisSlots=$this->RearChassisSlots, SNMPVersion=\"$this->SNMPVersion\",
 			GlobalID=$this->GlobalID, ShareToRepo=$this->ShareToRepo, KeepLocal=$this->KeepLocal
 			WHERE TemplateID=$this->TemplateID;";
 
@@ -977,6 +974,7 @@ class DeviceTemplate {
 	    $this->RearPictureFile="";
 		$this->ChassisSlots=0;
 		$this->RearChassisSlots=0;
+		$this->SNMPVersion="";
 		$this->GlobalID=0;
 		$this->ShareToRepo=false;
 		$this->KeepLocal=false;
@@ -1076,7 +1074,7 @@ class DeviceTemplate {
 
 		$sql="UPDATE fac_Device SET Height=$this->Height, NominalWatts=$this->Wattage, 
 			PowerSupplyCount=$this->PSCount, ChassisSlots=$this->ChassisSlots, 
-			RearChassisSlots=$this->RearChassisSlots WHERE TemplateID=$this->TemplateID;";
+			RearChassisSlots=$this->RearChassisSlots, SNMPVersion=\"$this->SNMPVersion\" WHERE TemplateID=$this->TemplateID;";
 
 		return $this->query($sql);
 	}
@@ -1140,6 +1138,7 @@ xsi:noNamespaceSchemaLocation="openDCIMdevicetemplate.xsd">
 	  <Notes>'.$this->Notes.'</Notes> 
 	  <FrontPictureFile>'.$this->FrontPictureFile.'</FrontPictureFile> 
 	  <RearPictureFile>'.$this->RearPictureFile.'</RearPictureFile> 
+	  <SNMPVersion>'.$this->SNMPVersion.'</SNMPVersion>
 	  <ChassisSlots>'.$this->ChassisSlots.'</ChassisSlots> 
 	  <RearChassisSlots>'.$this->RearChassisSlots.'</RearChassisSlots> 
 	</TemplateReg>';
@@ -1220,7 +1219,7 @@ xsi:noNamespaceSchemaLocation="openDCIMdevicetemplate.xsd">
 		$fileContent.='
 </Template>';
 		
-		//dounload file
+		//download file
 		download_file_from_string($fileContent, str_replace(' ', '', $manufacturer->Name."-".$this->Model).".xml");
 		
 		return true;
@@ -1272,6 +1271,7 @@ xsi:noNamespaceSchemaLocation="openDCIMdevicetemplate.xsd">
 		$template->Notes=($template->Notes=="<br>")?"":$template->Notes;
 		$template->FrontPictureFile=$xmltemplate->TemplateReg->FrontPictureFile;
 		$template->RearPictureFile=$xmltemplate->TemplateReg->RearPictureFile;
+		$template->SNMPVersion=$xmltemplate->TemplateReg->SNMPVersion;
 		$template->ChassisSlots=($template->DeviceType=="Chassis")?$xmltemplate->TemplateReg->ChassisSlots:0;
 		$template->RearChassisSlots=($template->DeviceType=="Chassis")?$xmltemplate->TemplateReg->RearChassisSlots:0;
 		

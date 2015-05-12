@@ -813,7 +813,6 @@ if ( $person->WriteAccess ) {
 }
 if ( $person->SiteAdmin ) {
 	$samenu[__("Template Management")][]='<a href="device_manufacturers.php"><span>'.__("Edit Manufacturers").'</span></a>';
-	$samenu[__("Template Management")][]='<a href="sensor_templates.php"><span>'.__("Edit Sensor Templates").'</span></a>';
 	$samenu[__("Supplies Management")][]='<a href="supplybin.php"><span>'.__("Manage Supply Bins").'</span></a>';
 	$samenu[__("Supplies Management")][]='<a href="supplies.php"><span>'.__("Manage Supplies").'</span></a>';
 	$samenu[__("Infrastructure Management")][]='<a href="datacenter.php"><span>'.__("Edit Data Centers").'</span></a>';

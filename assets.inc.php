@@ -730,12 +730,20 @@ class SensorTemplate {
 	var $TemplateID;
 	var $ManufacturerID;
 	var $Model;
-	var $SNMPVersion;
 	var $TemperatureOID;
 	var $HumidityOID;
 	var $TempMultiplier;
 	var $HumidityMultiplier;
 	var $mUnits;
+	
+	function __construct() {
+		$this->Model = "";
+		$this->TemperatureOID = "";
+		$this->HumidityOID = "";
+		$this->TempMultiplier = "";
+		$this->HumidityMultiplier = "";
+		$this->mUnits = "";
+	}
 
 	function prepare( $sql ) {
 		global $dbh;
@@ -748,14 +756,12 @@ class SensorTemplate {
 	}
 	
 	function MakeSafe(){
-		$validSNMPVersions=array(1,'2c');
 		$validMultipliers=array(0.01,0.1,1,10,100);
 		$validmUnits=array('english','metric');
 
 		$this->TemplateID=intval($this->TemplateID);
 		$this->ManufacturerID=intval($this->ManufacturerID);
 		$this->Model=sanitize($this->Model);
-		$this->SNMPVersion=(in_array($this->SNMPVersion, $validSNMPVersions))?$this->SNMPVersion:'2c';
 		$this->TemperatureOID=sanitize($this->TemperatureOID);
 		$this->HumidityOID=sanitize($this->HumidityOID);
 		$this->TempMultiplier=(in_array($this->TempMultiplier, $validMultipliers))?$this->TempMultiplier:1;
@@ -773,7 +779,6 @@ class SensorTemplate {
 		$st->TemplateID=$dbRow["TemplateID"];
 		$st->ManufacturerID=$dbRow["ManufacturerID"];
 		$st->Model=$dbRow["Model"];
-		$st->SNMPVersion=$dbRow["SNMPVersion"];
 		$st->TemperatureOID=$dbRow["TemperatureOID"];
 		$st->HumidityOID=$dbRow["HumidityOID"];
 		$st->TempMultiplier=$dbRow["TempMultiplier"];
@@ -815,13 +820,12 @@ class SensorTemplate {
 	
 	function CreateTemplate($templateid){
 		$st = $this->prepare( "INSERT INTO fac_SensorTemplate SET ManufacturerID=:ManufacturerID, 
-			Model=:Model, SNMPVersion=:SNMPVersion,	TemperatureOID=:TemperatureOID, HumidityOID=:HumidityOID, 
+			Model=:Model, TemperatureOID=:TemperatureOID, HumidityOID=:HumidityOID, 
 			TempMultiplier=:TempMultiplier, HumidityMultiplier=:HumidityMultiplier, mUnits=:mUnits,
 			TemplateID=:TemplateID" );
 
 		$params = array( ":ManufacturerID"=>$this->ManufacturerID,
 			":Model"=>$this->Model,
-			":SNMPVersion"=>$this->SNMPVersion,
 			":TemperatureOID"=>$this->TemperatureOID,
 			":HumidityOID"=>$this->HumidityOID,
 			":TempMultiplier"=>$this->TempMultiplier,
@@ -846,14 +850,13 @@ class SensorTemplate {
 		$old->GetTemplate();
 
 		$st = $this->prepare( "UPDATE fac_SensorTemplate SET ManufacturerID=:ManufacturerID, 
-			Model=:Model, SNMPVersion=:SNMPVersion, TemperatureOID=:TemperatureOID, 
+			Model=:Model, TemperatureOID=:TemperatureOID, 
 			HumidityOID=:HumidityOID, TempMultiplier=:TempMultiplier, 
 			HumidityMultiplier=:HumidityMultiplier, mUnits=:mUnits
 			WHERE TemplateID=:TemplateID" );
 		
 		if(!$st->execute( array( ":ManufacturerID"=>$this->ManufacturerID,
 			":Model"=>$this->Model,
-			":SNMPVersion"=>$this->SNMPVersion,
 			":TemperatureOID"=>$this->TemperatureOID,
 			":HumidityOID"=>$this->HumidityOID,
 			":TempMultiplier"=>$this->TempMultiplier,

@@ -837,7 +837,7 @@ function upgrade(){
 					Wattage=$this->Wattage, DeviceType=\"$this->DeviceType\", SNMPVersion=\"$this->SNMPVersion\",
 					PSCount=$this->PSCount, NumPorts=$this->NumPorts, Notes=\"$this->Notes\", 
 					FrontPictureFile=\"$this->FrontPictureFile\", RearPictureFile=\"$this->RearPictureFile\",
-					ChassisSlots=$this->ChassisSlots, RearChassisSlots=$this->RearChassisSlots;";
+					ChassisSlots=$this->ChassisSlots, RearChassisSlots=$this->RearChassisSlots, SNMPVersion=\"$this->SNMPVersion\";";
 
 				if(!$dbh->exec($sql)){
 					error_log( "SQL Error: " . $sql );

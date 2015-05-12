@@ -253,7 +253,6 @@ CREATE TABLE fac_Device (
   AssetTag varchar(20) NOT NULL,
   PrimaryIP varchar(254) NOT NULL,
   SNMPVersion varchar(2) NOT NULL,
-  v3SecurityName varchar(80) NOT NULL,
   v3SecurityLevel varchar(12) NOT NULL,
   v3AuthProtocol varchar(3) NOT NULL,
   v3AuthPassphrase varchar(80) NOT NULL,
@@ -823,7 +822,12 @@ INSERT INTO fac_Config VALUES
 	('APIUserID', '', 'Email', 'string', ''),
 	('APIKey', '', 'Key', 'string', ''),
 	('RequireDefinedUser', 'disabled', 'Enabled/Disabled', 'string', 'Disabled'),
-	('KeepLocal', 'enabled', 'Enabled/Disabled', 'string', 'Enabled')
+	('KeepLocal', 'enabled', 'Enabled/Disabled', 'string', 'Enabled'),
+	('v3SecurityLevel', '', 'noAuthNoPriv/authNoPriv/authPriv', 'string', 'noAuthNoPriv'),
+	('v3AuthProtocol', '', 'SHA/MD5', 'string', 'SHA'),
+	('v3AuthPassphrase', '', 'Password', 'string', ''),
+	('v3PrivProtocol', '', 'SHA/MD5', 'string', 'SHA'),
+	('v3PrivPassphrase', '', 'Password', 'string', '')
 ;
 
 ---

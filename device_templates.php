@@ -110,6 +110,7 @@ exit;
 		$template->RearPictureFile=$_POST['RearPictureFile'];
 		$template->ChassisSlots=($template->DeviceType=="Chassis")?$_POST['ChassisSlots']:0;
 		$template->RearChassisSlots=($template->DeviceType=="Chassis")?$_POST['RearChassisSlots']:0;
+		$template->SNMPVersion=$_POST['SNMPVersion'];
 
 		function UpdateSlotsPorts($template,$status){
 			//Update slots
@@ -205,8 +206,7 @@ exit;
 			$sensortemplate=new SensorTemplate();
 			$sensortemplate->TemplateID=$template->TemplateID;
 			$sensortemplate->ManufacturerID=$template->ManufacturerID;
-			$sensortemplate->Name=$template->Model;
-			$sensortemplate->SNMPVersion=$_POST['SNMPVersion'];
+			$sensortemplate->Model=$template->Model;
 			$sensortemplate->TemperatureOID=$_POST['TemperatureOID'];
 			$sensortemplate->HumidityOID=$_POST['HumidityOID'];
 			$sensortemplate->TempMultiplier=$_POST['TempMultiplier'];
@@ -223,7 +223,6 @@ exit;
 			$cdutemplate->Model=$template->Model;
 			$cdutemplate->Managed=isset($_POST['Managed'])?1:0;
 			$cdutemplate->ATS=isset($_POST['ats'])?1:0;
-			$cdutemplate->SNMPVersion=$_POST['SNMPVersion'];
 			$cdutemplate->VersionOID=$_POST['VersionOID'];
 			$cdutemplate->Multiplier=$_POST['Multiplier'];
 			$cdutemplate->OID1=$_POST['OID1'];
@@ -685,6 +684,24 @@ echo '	</select>
    <div><input type="text" name="NumPorts" id="NumPorts" value="',$template->NumPorts,'"><button type="button">',__("Edit Ports"),'</button></div>
 </div>
 <div>
+	<div><label for="SNMPVersion">',__("SNMP Version"),'</label></div>
+	<div><select name="SNMPVersion" id="SNMPVersion">';
+
+	$snmpv=array("1","2c", "3");
+	foreach($snmpv as $unit){
+		if ( $template->SNMPVersion == $unit ) {
+			$selected = "selected";
+		} else {
+			$selected = "";
+		}
+		print "\t\t<option value=\"$unit\" $selected>$unit</option>\n";
+	}
+	
+echo '</select>	
+	</div>
+</div>
+
+<div>
 	<div><label>',__("Share to Repository"),'</label></div>
 	<div><input type="checkbox" id="ShareToRepo" name="ShareToRepo" ',$template->ShareToRepo ? 'checked' : '','></div>
 </div>
@@ -859,18 +876,6 @@ if ( $template->TemplateID > 0 && isset( $deviceList ) ) {
 		   </div>
 		</div>
 		<div>
-			<div><label for="SNMPVersion">',__("SNMP Version"),'</label></div>
-			<div><select name="SNMPVersion" id="SNMPVersion">';
-
-			$snmpv=array("1","2c");
-			foreach($snmpv as $unit){
-				print "\t\t<option value=\"$unit\">$unit</option>\n";
-			}
-			
-		echo '</select>	
-			</div>
-		</div>
-		<div>
 			<div><label for="VersionOID">',__("Firmware Version OID"),'</label></div>
 			<div><input type="text" name="VersionOID" id="VersionOID" size=40></div>
 		</div>
@@ -937,18 +942,6 @@ if ( $template->TemplateID > 0 && isset( $deviceList ) ) {
 </div><!-- END div#hiddencdudata -->
 <div id="hiddensensordata" class="sensordisclaimer hide">
 	<div class="table">
-		<div>
-			<div><label for="SNMPVersion">',__("SNMP Version"),'</label></div>
-			<div><select name="SNMPVersion" id="SNMPVersion">';
-
-			$snmpv=array("1","2c");
-			foreach($snmpv as $unit){
-				print "\t\t<option value=\"$unit\">$unit</option>\n";
-			}
-			
-		echo '</select>	
-			</div>
-		</div>
 		<div>
 		   <div><label for="TemperatureOID">',__("Temperature OID"),'</label></div>
 		   <div><input type="text" name="TemperatureOID" id="TemperatureOID" size=40></div>
