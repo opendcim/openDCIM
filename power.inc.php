@@ -830,7 +830,6 @@ class PowerDistribution {
 			$t->TemplateID=$dev->TemplateID;
 			$t->GetTemplate();
 		}
-		$dev->SNMPVersion=($t->SNMPVersion)?$t->SNMPVersion:'2c';
 
 		// We've passed all the repeatable tests, return the device object for digging
 		return $dev;

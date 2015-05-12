@@ -612,58 +612,6 @@ class Cabinet {
 		}
 		return 0;
 	}
-	
-	static function UpdateSensors( $CabinetID = null ) {
-		global $dbh;
-		global $config;
-		
-		if ( ! function_exists( "snmpget" ) ) {
-			return;
-		}
-		
-		if ( $CabinetID != null ) {
-			$sql = sprintf( "select a.CabinetID, a.SensorIPAddress, a.SensorCommunity, b.* from fac_Cabinet a, fac_SensorTemplate b where a.SensorTemplateID=b.TemplateID and a.CabinetID=%d and a.SensorIPAddress>'' and a.SensorTemplateID>0", $CabinetID );
-		} else {
-			$sql = "select a.CabinetID, a.SensorIPAddress, a.SensorCommunity, b.* from fac_Cabinet a, fac_SensorTemplate b where a.SensorTemplateID=b.TemplateID and a.SensorIPAddress>'' and a.SensorTemplateID>0";
-		}
-		
-		$sensors = $dbh->prepare( "insert into fac_CabinetTemps values (:cabinetid, now(), :temp, :humidity ) on duplicate key update LastRead=now(), Temp=:temp, Humidity=:humidity" );
-		
-		foreach ( $dbh->query( $sql ) as $row ) {
-			if ( $row["SensorCommunity"] == "" ) {
-				$Community = $config->ParameterArray["SNMPCommunity"];
-			} else {
-				$Community = $row["SensorCommunity"];
-			}
-			
-			if ( $row["SNMPVersion"] == "2c" ) {
-				@list( $trash, $temp ) = explode( ":", @snmp2_get( $row["SensorIPAddress"], $Community, $row["TemperatureOID"] ) );
-				@list( $trash, $humid ) = explode( ":", @snmp2_get( $row["SensorIPAddress"], $Community, $row["HumidityOID"] ) );
-			} else {
-				@list( $trash, $temp ) = explode( ":", @snmpget( $row["SensorIPAddress"], $Community, $row["TemperatureOID"] ) );
-				@list( $trash, $humid ) = explode( ":", @snmpget( $row["SensorIPAddress"], $Community, $row["HumidityOID"] ) );
-			}
-			
-			$temp = preg_replace( "/[^0-9.,+]/", "", $temp );
-			$humid = preg_replace( "/[^0-9.'+]/", "", $humid );
-			
-			if (($row["mUnits"] == "english") && ($config->ParameterArray["mUnits"] == "metric")) {
-				$temp = (($temp-32)*5/9);
-			} elseif (($row["mUnits"] == "metric") && ($config->ParameterArray["mUnits"] == "english")) {
-				$temp = (($temp*9/5)+32);
-			}
-
-			if ( $row["TempMultiplier"] != 0 ) {
-				$temp *= $row["TempMultiplier"];
-			}
-			
-			if ( $row["HumidityMultiplier"] != 0 ) {
-				$humid *= $row["HumidityMultiplier"];
-			}
-			
-			$sensors->execute( array( "cabinetid"=>$row["CabinetID"], "temp"=>$temp, "humidity"=>$humid ) );
-		}
-	}
 }
 
 class CabinetAudit {
@@ -3121,6 +3069,59 @@ class Device {
 			if ($dev->ChassisSlots>0 || $dev->RearChassisSlots>0){
 				$dev->SetChildDevicesCabinet();
 			}
+		}
+	}
+	
+
+	// This is a train wreck to have it in here, but everything is lumped into Devices, now...
+	static function UpdateSensors( $CabinetID = null ) {
+		global $config;
+		
+		if ( ! function_exists( "snmpget" ) ) {
+			return;
+		}
+		
+		if ( $CabinetID != null ) {
+			$sql = sprintf( "select a.CabinetID, a.SensorIPAddress, a.SensorCommunity, b.* from fac_Cabinet a, fac_SensorTemplate b where a.SensorTemplateID=b.TemplateID and a.CabinetID=%d and a.SensorIPAddress>'' and a.SensorTemplateID>0", $CabinetID );
+		} else {
+			$sql = "select a.CabinetID, a.SensorIPAddress, a.SensorCommunity, b.* from fac_Cabinet a, fac_SensorTemplate b where a.SensorTemplateID=b.TemplateID and a.SensorIPAddress>'' and a.SensorTemplateID>0";
+		}
+		
+		$sensors = $dbh->prepare( "insert into fac_CabinetTemps values (:cabinetid, now(), :temp, :humidity ) on duplicate key update LastRead=now(), Temp=:temp, Humidity=:humidity" );
+		
+		foreach ( $dbh->query( $sql ) as $row ) {
+			if ( $row["SensorCommunity"] == "" ) {
+				$Community = $config->ParameterArray["SNMPCommunity"];
+			} else {
+				$Community = $row["SensorCommunity"];
+			}
+			
+			if ( $row["SNMPVersion"] == "2c" ) {
+				@list( $trash, $temp ) = explode( ":", @snmp2_get( $row["SensorIPAddress"], $Community, $row["TemperatureOID"] ) );
+				@list( $trash, $humid ) = explode( ":", @snmp2_get( $row["SensorIPAddress"], $Community, $row["HumidityOID"] ) );
+			} else {
+				@list( $trash, $temp ) = explode( ":", @snmpget( $row["SensorIPAddress"], $Community, $row["TemperatureOID"] ) );
+				@list( $trash, $humid ) = explode( ":", @snmpget( $row["SensorIPAddress"], $Community, $row["HumidityOID"] ) );
+			}
+			
+			$temp = preg_replace( "/[^0-9.,+]/", "", $temp );
+			$humid = preg_replace( "/[^0-9.'+]/", "", $humid );
+			
+			if (($row["mUnits"] == "english") && ($config->ParameterArray["mUnits"] == "metric")) {
+				$temp = (($temp-32)*5/9);
+			} elseif (($row["mUnits"] == "metric") && ($config->ParameterArray["mUnits"] == "english")) {
+				$temp = (($temp*9/5)+32);
+			}
+
+			if ( $row["TempMultiplier"] != 0 ) {
+				$temp *= $row["TempMultiplier"];
+			}
+			
+			if ( $row["HumidityMultiplier"] != 0 ) {
+				$humid *= $row["HumidityMultiplier"];
+			}
+			
+			$sensors->execute( array( "cabinetid"=>$row["CabinetID"], "temp"=>$temp, "humidity"=>$humid ) );
 		}
 	}
 }

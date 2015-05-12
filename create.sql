@@ -69,17 +69,18 @@ CREATE TABLE fac_CabinetTags (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 --
--- Table structure for table `fac_CabinetTemps`
+-- Table structure for table `fac_SensorReadings`
 --
 
-DROP TABLE IF EXISTS fac_CabinetTemps;
-CREATE TABLE fac_CabinetTemps (
-  CabinetID int(11) NOT NULL,
-  LastRead datetime NOT NULL,
-  Temp float(8) NOT NULL,
-  Humidity float(8) NOT NULL,
-  PRIMARY KEY (CabinetID)
-) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
+DROP TABLE IF EXISTS fac_SensorReadings;
+CREATE TABLE fac_SensorReadings (
+  DeviceID int(11) NOT NULL,
+  Temperature float NOT NULL,
+  Humidity float NOT NULL,
+  Timestamp datetime NOT NULL,
+  PRIMARY KEY (DeviceID)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
 
 --
 -- Add a new table for sensor probe templates

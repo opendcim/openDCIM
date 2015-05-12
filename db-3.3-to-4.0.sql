@@ -231,6 +231,19 @@ INSERT INTO fac_Config set Parameter='v3AuthPassphrase', Value='', UnitOfMeasure
 INSERT INTO fac_Config set Parameter='v3PrivProtocol', Value='', UnitOfMeasure='Hash', ValType='string', DefaultVal='';
 INSERT INTO fac_Config set Parameter='v3PrivPassphrase', Value='', UnitOfMeasure='Password', ValType='string', DefaultVal='';
 
+--
+-- Drop the old sensor readings table and make the new one
+--
+
+DROP TABLE IF EXISTS fac_CabinetTemps;
+DROP TABLE IF EXISTS fac_SensorReadings;
+CREATE TABLE fac_SensorReadings (
+  DeviceID int(11) NOT NULL,
+  Temperature float NOT NULL,
+  Humidity float NOT NULL,
+  Timestamp datetime NOT NULL,
+  PRIMARY KEY (DeviceID)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 --
 -- Bump up the database version
