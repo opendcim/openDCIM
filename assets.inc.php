@@ -1216,13 +1216,14 @@ class Device {
 		
 		//Keep weird values out of DeviceType
 		$validdevicetypes=array('Server','Appliance','Storage Array','Switch','Chassis','Patch Panel','Physical Infrastructure','CDU','Sensor');
+		$validSNMPVersions=array(1,'2c',3);
 
 		$this->DeviceID=intval($this->DeviceID);
 		$this->Label=sanitize($this->Label);
 		$this->SerialNo=sanitize($this->SerialNo);
 		$this->AssetTag=sanitize($this->AssetTag);
 		$this->PrimaryIP=sanitize($this->PrimaryIP);
-		$this->SNMPVersion=sanitize($this->SNMPVersion);
+		$this->SNMPVersion=(in_array($this->SNMPVersion, $validSNMPVersions))?$this->SNMPVersion:'2c';
 		$this->v3SecurityName=sanitize($this->v3SecurityName);
 		$this->v3SecurityLevel=sanitize($this->v3SecurityLevel);
 		$this->v3AuthProtocol=sanitize($this->v3AuthProtocol);
@@ -4287,7 +4288,7 @@ class SwitchInfo {
 
 		// Since we don't really let the user specify the version right now here's a stop gap
 		// Try the default version of 2c first
-		$snmpHost=new OSS_SNMP\SNMP($dev->PrimaryIP,$dev->SNMPCommunity);
+		$snmpHost=new OSS_SNMP\SNMP($dev->PrimaryIP,$dev->SNMPCommunity,$dev->SNMPVersion,$dev->v3SecurityLevel,$dev->v3AuthProtocol,$dev->v3AuthPassphrase,$dev->v3PrivProtocol,$dev->v3PrivPassphrase);
 		try {
 			$snmpHost->useSystem()->name();
 		}catch (Exception $e){
