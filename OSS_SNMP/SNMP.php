@@ -219,7 +219,8 @@ class SNMP
         $v2c='snmp2_real_walk';
         $v3='snmp3_real_walk';
         $community=($this->getVersion()==3)?'$this->getSecName(), $this->getSecLevel(), $this->getAuthProtocol(), $this->getAuthPassphrase(), $this->getPrivProtocol(), $this->getPrivPassphrase()':'$this->getCommunity()';
-        eval('return $this->_lastResult = @${"v".$this->getVersion()}( $this->getHost(), '.$community.', $oid, $this->getTimeout(), $this->getRetry() );');
+        eval(' $this->_lastResult = @${"v".$this->getVersion()}( $this->getHost(), $this->getCommunity(), $oid, $this->getTimeout(), $this->getRetry() );');
+		return $this->_lastResult;
     }
 
 
