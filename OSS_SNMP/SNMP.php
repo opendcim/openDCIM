@@ -215,10 +215,10 @@ class SNMP
      */
     public function realWalk( $oid )
     {
-		$v1='snmprealwalk';
-		$v2c='snmp2_real_walk';
-		$v3='snmp3_real_walk';
-		$community=($this->getVersion()==3)?'$this->getSecName(), $this->getSecLevel(), $this->getAuthProtocol(), $this->getAuthPassphrase(), $this->getPrivProtocol(), $this->getPrivPassphrase()':'$this->getCommunity()';
+        $v1='snmprealwalk';
+        $v2c='snmp2_real_walk';
+        $v3='snmp3_real_walk';
+        $community=($this->getVersion()==3)?'$this->getSecName(), $this->getSecLevel(), $this->getAuthProtocol(), $this->getAuthPassphrase(), $this->getPrivProtocol(), $this->getPrivPassphrase()':'$this->getCommunity()';
         eval('return $this->_lastResult = @${"v".$this->getVersion()}( $this->getHost(), '.$community.', $oid, $this->getTimeout(), $this->getRetry() );');
     }
 
@@ -235,10 +235,10 @@ class SNMP
         if( $this->cache() && ( $rtn = $this->getCache()->load( $oid ) ) !== null )
             return $rtn;
 
-		$v1='snmpget';
-		$v2c='snmp2_get';
-		$v3='snmp3_get';
-		$community=($this->getVersion()==3)?'$this->getSecName(), $this->getSecLevel(), $this->getAuthProtocol(), $this->getAuthPassphrase(), $this->getPrivProtocol(), $this->getPrivPassphrase()':'$this->getCommunity()';
+        $v1='snmpget';
+        $v2c='snmp2_get';
+        $v3='snmp3_get';
+        $community=($this->getVersion()==3)?'$this->getSecName(), $this->getSecLevel(), $this->getAuthProtocol(), $this->getAuthPassphrase(), $this->getPrivProtocol(), $this->getPrivPassphrase()':'$this->getCommunity()';
         eval('$this->_lastResult = @${"v".$this->getVersion()}( $this->getHost(), '.$community.', $oid, $this->getTimeout(), $this->getRetry() );');
 
         if( $this->_lastResult === false )
@@ -278,10 +278,10 @@ class SNMP
         if( $this->cache() && ( $rtn = $this->getCache()->load( $oid ) ) !== null )
             return $rtn;
 
-		$v1='snmprealwalk';
-		$v2c='snmp2_real_walk';
-		$v3='snmp3_real_walk';
-		$community=($this->getVersion()==3)?'$this->getSecName(), $this->getSecLevel(), $this->getAuthProtocol(), $this->getAuthPassphrase(), $this->getPrivProtocol(), $this->getPrivPassphrase()':'$this->getCommunity()';
+        $v1='snmprealwalk';
+        $v2c='snmp2_real_walk';
+        $v3='snmp3_real_walk';
+        $community=($this->getVersion()==3)?'$this->getSecName(), $this->getSecLevel(), $this->getAuthProtocol(), $this->getAuthPassphrase(), $this->getPrivProtocol(), $this->getPrivPassphrase()':'$this->getCommunity()';
         eval('$this->_lastResult = @${"v".$this->getVersion()}( $this->getHost(), '.$community.', $oid, $this->getTimeout(), $this->getRetry() );');
 
         if( $this->_lastResult === false )
@@ -331,10 +331,10 @@ class SNMP
         if( $this->cache() && ( $rtn = $this->getCache()->load( $oid ) ) !== null )
             return $rtn;
 
-		$v1='snmprealwalk';
-		$v2c='snmp2_real_walk';
-		$v3='snmp3_real_walk';
-		$community=($this->getVersion()==3)?'$this->getSecName(), $this->getSecLevel(), $this->getAuthProtocol(), $this->getAuthPassphrase(), $this->getPrivProtocol(), $this->getPrivPassphrase()':'$this->getCommunity()';
+        $v1='snmprealwalk';
+        $v2c='snmp2_real_walk';
+        $v3='snmp3_real_walk';
+        $community=($this->getVersion()==3)?'$this->getSecName(), $this->getSecLevel(), $this->getAuthProtocol(), $this->getAuthPassphrase(), $this->getPrivProtocol(), $this->getPrivPassphrase()':'$this->getCommunity()';
         eval('$this->_lastResult = @${"v".$this->getVersion()}( $this->getHost(), '.$community.', $oid, $this->getTimeout(), $this->getRetry() );');
 
         if( $this->_lastResult === false )
@@ -379,10 +379,10 @@ class SNMP
         if( $this->cache() && ( $rtn = $this->getCache()->load( $oid ) ) !== null )
             return $rtn;
 
-		$v1='snmprealwalk';
-		$v2c='snmp2_real_walk';
-		$v3='snmp3_real_walk';
-		$community=($this->getVersion()==3)?'$this->getSecName(), $this->getSecLevel(), $this->getAuthProtocol(), $this->getAuthPassphrase(), $this->getPrivProtocol(), $this->getPrivPassphrase()':'$this->getCommunity()';
+        $v1='snmprealwalk';
+        $v2c='snmp2_real_walk';
+        $v3='snmp3_real_walk';
+        $community=($this->getVersion()==3)?'$this->getSecName(), $this->getSecLevel(), $this->getAuthProtocol(), $this->getAuthPassphrase(), $this->getPrivProtocol(), $this->getPrivPassphrase()':'$this->getCommunity()';
         eval('$this->_lastResult = @${"v".$this->getVersion()}( $this->getHost(), '.$community.', $oid, $this->getTimeout(), $this->getRetry() );');
 
         if( $this->_lastResult === false )
