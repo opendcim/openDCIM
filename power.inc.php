@@ -825,12 +825,6 @@ class PowerDistribution {
 		// If the device doesn't have an SNMP community set, check and see if we have a global one
 		$dev->SNMPCommunity=($dev->SNMPCommunity=="")?$config->ParameterArray["SNMPCommunity"]:$dev->SNMPCommunity;
 
-		$t=new CDUTemplate();
-		if($dev->TemplateID>0){
-			$t->TemplateID=$dev->TemplateID;
-			$t->GetTemplate();
-		}
-
 		// We've passed all the repeatable tests, return the device object for digging
 		return $dev;
 	}
@@ -1050,23 +1044,24 @@ class PowerDistribution {
 	
 	function UpdateStats(){
 		global $config;
+		global $dbh;
 		
-		if(function_exists("snmpget")){
-			$usePHPSNMP=true;
-		}else{
-			$usePHPSNMP=false;
-		}
-		
-		$config=new Config();
-		
-		$sql="SELECT a.PDUID, a.IPAddress, a.SNMPCommunity, b.SNMPVersion, b.Multiplier, b.OID1, 
+		$sql="SELECT a.PDUID, b.SNMPVersion, b.Multiplier, b.OID1, 
 			b.OID2, b.OID3, b.ProcessingProfile, b.Voltage, c.SNMPFailureCount FROM fac_PowerDistribution a, 
 			fac_CDUTemplate b, fac_Device c WHERE a.PDUID=c.DeviceID and a.TemplateID=b.TemplateID AND b.Managed=true 
 			AND IPAddress>'' and c.SNMPFailureCount<3";
 		
 		// The result set should have no PDU's with blank IP Addresses or SNMP Community, so we can forge ahead with processing them all
-		
 		foreach($this->query($sql) as $row){
+			if(!$dev=PowerDistribution::BasicTests($row['PDUID'])){
+				// if we fail the basic test on a single device we don't want to skip all the rest so continue instead of return false;
+				continue;
+			}
+
+			$pollValue1=floatval(self::OSS_SNMP_Lookup($dev,null,$row["OID1"]));
+			$pollValue2=floatval(self::OSS_SNMP_Lookup($dev,null,$row["OID2"]));
+			$pollValue3=floatval(self::OSS_SNMP_Lookup($dev,null,$row["OID3"]));
+
 			// If only one OID is used, the OID2 and OID3 should be blank, so no harm in just making one string
 			$OIDString = $row["OID1"] . " " . $row["OID2"] . " " . $row["OID3"];
 			
@@ -1075,79 +1070,30 @@ class PowerDistribution {
 			$amps=0;
 			$watts=0;
 			
-			if ( $row["SNMPCommunity"] == "" ) {
-				$Community = $config->ParameterArray["SNMPCommunity"];
-			} else {
-				$Community = $row["SNMPCommunity"];
-			}
-			
-			if ( $usePHPSNMP ) {
-				if ( $row["SNMPVersion"] == "2c" ){
-					$tmp = explode( " ", @snmp2_get( $row["IPAddress"], $Community, $row["OID1"] ));
-				}else{
-					$tmp = explode( " ", @snmpget( $row["IPAddress"], $Community, $row["OID1"] ));
-				}
-				
-				$pollValue1 = @$tmp[1];
-				
-				if ( $row["OID2"] != "" ) {
-					if ( $row["SNMPVersion"] == "2c" ){
-						$tmp2 = explode( " ", @snmp2_get( $row["IPAddress"], $Community, $row["OID2"] ));
-					}else{
-						$tmp2 = explode( " ", @snmpget( $row["IPAddress"], $Community, $row["OID2"] ));
-					}
-					if ( sizeof( $tmp2 ) > 0 ){
-						$pollValue2 = @$tmp2[1];
-					}
-				}
-				
-				if ( $row["OID3"] != "" ) {
-					if ( $row["SNMPVersion"] == "2c" ){
-						$tmp3 = explode( " ", @snmp2_get( $row["IPAddress"], $Community, $row["OID3"] ));
-					}else{
-						$tmp3 = explode( " ", @snmpget( $row["IPAddress"], $Community, $row["OID3"] ));
-					}
-					if ( sizeof( $tmp3 ) > 0 ){
-						$pollValue3 = @$tmp3[1];
-					}
-				}
-			} else {
-				$pollCommand="{$config->ParameterArray["snmpget"]} -v {$row["SNMPVersion"]} -t 0.5 -r 2 -c $Community {$row["IPAddress"]} $OIDString | {$config->ParameterArray["cut"]} -d: -f4";
-				
-				exec( $pollCommand, $statsOutput );
-				
-				$pollValue1 = @$statsOutput[0];
-				$pollValue2 = @$statsOutput[1];
-				$pollValue3 = @$statsOutput[2];
-			}
-			
 			if($pollValue1!=""){
 				// The multiplier should be an int but no telling what voodoo the db might cause
-				$pollValue1=intval($pollValue1);
-				$pollValue2=@intval($pollValue2);
-				$pollValue3=@intval($pollValue3);
-				$row["Multiplier"]=floatval($row["Multiplier"]);
-				$row["Voltage"]=intval($row["Voltage"]);
+				$multiplier=floatval($row["Multiplier"]);
+				$voltage=intval($row["Voltage"]);
 
 				switch ( $row["ProcessingProfile"] ) {
 					case "SingleOIDAmperes":
-						$amps=$pollValue1/$row["Multiplier"];
-						$watts=$amps * $row["Voltage"];
+						$amps=$pollValue1/$multiplier;
+						$watts=$amps * $voltage;
 						break;
 					case "Combine3OIDAmperes":
-						$amps=($pollValue1 + $pollValue2 + $pollValue3) / $row["Multiplier"];
-						$watts=$amps * $row["Voltage"];
+						$amps=($pollValue1 + $pollValue2 + $pollValue3) / $multiplier;
+						$watts=$amps * $voltage;
 						break;
 					case "Convert3PhAmperes":
 						// OO does this next formula need another set of () to be clear?
-						$amps=($pollValue1 + $pollValue2 + $pollValue3) / $row["Multiplier"] / 3;
-						$watts=$amps * 1.732 * $row["Voltage"];
+						$amps=($pollValue1 + $pollValue2 + $pollValue3) / $multiplier / 3;
+						$watts=$amps * 1.732 * $voltage;
 						break;
 					case "Combine3OIDWatts":
-						$watts=($pollValue1 + $pollValue2 + $pollValue3) / $row["Multiplier"];
+						$watts=($pollValue1 + $pollValue2 + $pollValue3) / $multiplier;
 						break;
 					default:
-						$watts=$pollValue1 / $row["Multiplier"];
+						$watts=$pollValue1 / $multiplier;
 						break;
 				}
 				
@@ -1156,45 +1102,40 @@ class PowerDistribution {
 				Device::IncrementFailures( $row["PDUID"] );
 			}
 			
-			$sql="INSERT INTO fac_PDUStats SET PDUID={$row["PDUID"]}, Wattage=$watts, LastRead=now() ON 
-				DUPLICATE KEY UPDATE Wattage=$watts, LastRead=now();";
-			$this->exec($sql);
+			$sql="INSERT INTO fac_PDUStats SET PDUID={$row["PDUID"]}, Wattage=$watts, 
+				LastRead=now() ON DUPLICATE KEY UPDATE Wattage=$watts, LastRead=now();";
+			if(!$dbh->exec($sql)){
+				$info=$dbh->errorInfo();
+				error_log("PowerDistribution::UpdateStats::PDO Error: {$info[2]} SQL=$sql");
+			}
 			
 			$this->PDUID=$row["PDUID"];      
 			$sql="UPDATE fac_PowerDistribution SET FirmwareVersion=\"".
 				$this->GetSmartCDUVersion()."\" WHERE PDUID=$this->PDUID;";
-			$this->exec($sql);
+			if(!$dbh->exec($sql)){
+				$info=$dbh->errorInfo();
+				error_log("PowerDistribution::UpdateStats::PDO Error: {$info[2]} SQL=$sql");
+			}
 		}
 	}
 	
 	function getATSStatus() {
-		global $config;
-		
-		if ( ! function_exists( "snmpget" ) ) {
-			return;
+		if(!$dev=PowerDistribution::BasicTests($this->PDUID)){
+			return false;
 		}
-		
-		$tmpl = new CDUTemplate();
-		$tmpl->TemplateID = $this->TemplateID;
-		$tmpl->GetTemplate();
-		
-		if ( ! $this->IPAddress || ! $tmpl->ATSStatusOID ) {
-			return;
+
+		// Make sure we have a real power device and not just a device
+		if(!$this->GetPDU()){
+			return false;
 		}
-		
-		if ( $this->SNMPCommunity == "" ) {
-			$Community = $config->ParameterArray["SNMPCommunity"];
-		} else {
-			$Community = $this->SNMPCommunity;
+
+		$tmpl=new CDUTemplate();
+		$tmpl->TemplateID=$dev->TemplateID;
+		if(!$tmpl->GetTemplate()){
+			return false;
 		}
-		
-		if ( $tmpl->SNMPVersion == "1" ) {
-			list( $trash, $result ) = explode( ":", snmpget( $this->IPAddress, $Community, $tmpl->ATSStatusOID ));
-		} else {
-			list( $trash, $result ) = explode( ":", snmp2_get( $this->IPAddress, $Community, $tmpl->ATSStatusOID ));
-		}
-		
-		return $result;
+
+		return self::OSS_SNMP_Lookup($dev,null,$tmpl->ATSStatusOID);
 	}
 
 
@@ -1227,27 +1168,26 @@ class PowerDistribution {
 		return self::OSS_SNMP_Lookup($dev,null,"$template->VersionOID");
 	}
 
-        function GetAllBreakerPoles() {
-                $this->GetPDU();
+	function GetAllBreakerPoles() {
+		$this->GetPDU();
 
-                $panel=new PowerPanel();
-                $panel->PanelID=$this->PanelID;
-                if($panel->getPanel()) {
-                        $ret = "$this->PanelPole";
-                        for($i=1;$i<$this->BreakerSize;$i++) {
-                                $adder = $i;
-                                if($panel->NumberScheme=="Odd/Even") {
-                                        $adder = $i*2;
-                                }
-                                $next = $this->PanelPole+$adder;
-                                $ret = $ret . "-$next";
-                        }
-                        return $ret;
-
-                } else {
-                        return "Error, source power panel not valid";
-                }
-        }
+		$panel=new PowerPanel();
+		$panel->PanelID=$this->PanelID;
+		if($panel->getPanel()) {
+			$ret = "$this->PanelPole";
+			for($i=1;$i<$this->BreakerSize;$i++) {
+				$adder = $i;
+				if($panel->NumberScheme=="Odd/Even") {
+						$adder = $i*2;
+				}
+				$next = $this->PanelPole+$adder;
+				$ret = $ret . "-$next";
+			}
+			return $ret;
+		}else{
+			return "Error, source power panel not valid";
+		}
+	}
 
 	function DeletePDU(){
 		global $person;

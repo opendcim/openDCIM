@@ -778,6 +778,7 @@ class DeviceTemplate {
     
 	function MakeSafe(){
 		$validDeviceTypes=array('Server','Appliance','Storage Array','Switch','Chassis','Patch Panel','Physical Infrastructure','CDU','Sensor');
+		$validSNMPVersions=array(1,'2c',3);
 
 		$this->TemplateID=intval($this->TemplateID);
 		$this->ManufacturerID=intval($this->ManufacturerID);
@@ -793,10 +794,10 @@ class DeviceTemplate {
 	    $this->RearPictureFile=sanitize($this->RearPictureFile);
 		$this->ChassisSlots=intval($this->ChassisSlots);
 		$this->RearChassisSlots=intval($this->RearChassisSlots);
-		$this->SNMPVersion=(in_array( $this->SNMPVersion, array("1", "2c", "3") ))?$this->SNMPVersion:"2c";
-		$this->GlobalID = intval( $this->GlobalID );
-		$this->ShareToRepo = intval( $this->ShareToRepo );
-		$this->KeepLocal = intval( $this->KeepLocal );
+		$this->SNMPVersion=(in_array($this->SNMPVersion, $validSNMPVersions))?$this->SNMPVersion:"2c";
+		$this->GlobalID=intval($this->GlobalID);
+		$this->ShareToRepo=intval($this->ShareToRepo);
+		$this->KeepLocal=intval($this->KeepLocal);
 	}
 
 	function MakeDisplay(){
@@ -880,7 +881,7 @@ class DeviceTemplate {
 			}
 
 			if($this->DeviceType=="Sensor"){
-				// If this is a sense make the corresponding other hidden template
+				// If this is a sensor make the corresponding other hidden template
 				$st=new SensorTemplate();
 				$st->Model=$this->Model;
 				$st->ManufacturerID=$this->ManufacturerID;
@@ -922,12 +923,12 @@ class DeviceTemplate {
 		}
 
 		if($old->DeviceType=="Sensor" && $this->DeviceType!=$old->DeviceType){
-			// Template changed from CDU to something else, clean up the mess
+			// Template changed from Sensor to something else, clean up the mess
 			$st=new SensorTemplate();
 			$st->TemplateID=$this->TemplateID;
 			$st->DeleteTemplate();
 		}elseif($this->DeviceType=="Sensor" && $this->DeviceType!=$old->DeviceType){
-			// Template changed to CDU from something else, make the extra stuff
+			// Template changed to Sensor from something else, make the extra stuff
 			$st=new SensorTemplate();
 			$st->Model=$this->Model;
 			$st->ManufacturerID=$this->ManufacturerID;

@@ -693,16 +693,6 @@ class SensorTemplate {
 		$this->mUnits = "";
 	}
 
-	function prepare( $sql ) {
-		global $dbh;
-		return $dbh->prepare( $sql );
-	}
-	
-	function lastInsertId() {
-		global $dbh;
-		return $dbh->lastInsertId();
-	}
-	
 	function MakeSafe(){
 		$validMultipliers=array(0.01,0.1,1,10,100);
 		$validmUnits=array('english','metric');
@@ -767,24 +757,18 @@ class SensorTemplate {
 	}
 	
 	function CreateTemplate($templateid){
-		$st = $this->prepare( "INSERT INTO fac_SensorTemplate SET ManufacturerID=:ManufacturerID, 
-			Model=:Model, TemperatureOID=:TemperatureOID, HumidityOID=:HumidityOID, 
-			TempMultiplier=:TempMultiplier, HumidityMultiplier=:HumidityMultiplier, mUnits=:mUnits,
-			TemplateID=:TemplateID" );
+		global $dbh;
 
-		$params = array( ":ManufacturerID"=>$this->ManufacturerID,
-			":Model"=>$this->Model,
-			":TemperatureOID"=>$this->TemperatureOID,
-			":HumidityOID"=>$this->HumidityOID,
-			":TempMultiplier"=>$this->TempMultiplier,
-			":HumidityMultiplier"=>$this->HumidityMultiplier,
-			":mUnits"=>$this->mUnits,
-			":TemplateID"=>$templateid );
-			
-		if(!$st->execute( $params )){
-			$info=$st->errorInfo();
+		$sql="INSERT INTO fac_SensorTemplate SET ManufacturerID=$this->ManufacturerID, 
+			Model=\"$this->Model\", TemperatureOID=\"$this->TemperatureOID\", 
+			HumidityOID=\"$this->HumidityOID\", TempMultiplier=$this->TempMultiplier, 
+			HumidityMultiplier=$this->HumidityMultiplier, mUnits=\"$this->mUnits\",
+			TemplateID=".intval($templateid);
 
-			error_log("CreateTemplate::PDO Error: {$info[2]} " . print_r( $params, true ));
+		if(!$dbh->exec($sql)){
+			$info=$dbh->errorInfo();
+
+			error_log("CreateTemplate::PDO Error: {$info[2]} $sql");
 			return false;
 		}
 
@@ -793,25 +777,22 @@ class SensorTemplate {
 	}
 	
 	function UpdateTemplate() {
+		global $dbh;
+		
+		$this->MakeSafe();	
+
 		$old=new SensorTemplate();
 		$old->TemplateID=$this->TemplateID;
 		$old->GetTemplate();
 
-		$st = $this->prepare( "UPDATE fac_SensorTemplate SET ManufacturerID=:ManufacturerID, 
-			Model=:Model, TemperatureOID=:TemperatureOID, 
-			HumidityOID=:HumidityOID, TempMultiplier=:TempMultiplier, 
-			HumidityMultiplier=:HumidityMultiplier, mUnits=:mUnits
-			WHERE TemplateID=:TemplateID" );
-		
-		if(!$st->execute( array( ":ManufacturerID"=>$this->ManufacturerID,
-			":Model"=>$this->Model,
-			":TemperatureOID"=>$this->TemperatureOID,
-			":HumidityOID"=>$this->HumidityOID,
-			":TempMultiplier"=>$this->TempMultiplier,
-			":HumidityMultiplier"=>$this->HumidityMultiplier,
-			":mUnits"=>$this->mUnits,
-			":TemplateID"=>$this->TemplateID ))){
-			$info=$this->errorInfo();
+		$sql="UPDATE fac_SensorTemplate SET ManufacturerID=$this->ManufacturerID, 
+			Model=\"$this->Model\", TemperatureOID=\"$this->TemperatureOID\", 
+			HumidityOID=\"$this->HumidityOID\", TempMultiplier=$this->TempMultiplier, 
+			HumidityMultiplier=$this->HumidityMultiplier, mUnits=\"$this->mUnits\"
+			WHERE TemplateID=$this->TemplateID;";
+
+		if(!$dbh->query($sql)){
+			$info=$dbh->errorInfo();
 			error_log("UpdateTemplate::PDO Error: {$info[2]} SQL=$sql");
 			return false;
 		}
@@ -1122,7 +1103,6 @@ class Device {
 	var $AssetTag;
 	var $PrimaryIP;
 	var $SNMPVersion;
-	var $v3SecurityName;
 	var $v3SecurityLevel;
 	var $v3AuthProtocol;
 	var $v3AuthPassphrase;
@@ -1168,6 +1148,9 @@ class Device {
 		//Keep weird values out of DeviceType
 		$validdevicetypes=array('Server','Appliance','Storage Array','Switch','Chassis','Patch Panel','Physical Infrastructure','CDU','Sensor');
 		$validSNMPVersions=array(1,'2c',3);
+		$validv3SecurityLevels=array('noAuthNoPriv','authNoPriv','authPriv');
+		$validv3AuthProtocols=array('MD5','SHA');
+		$validv3PrivProtocols=array('DES','AES');
 
 		$this->DeviceID=intval($this->DeviceID);
 		$this->Label=sanitize($this->Label);
@@ -1175,13 +1158,12 @@ class Device {
 		$this->AssetTag=sanitize($this->AssetTag);
 		$this->PrimaryIP=sanitize($this->PrimaryIP);
 		$this->SNMPVersion=(in_array($this->SNMPVersion, $validSNMPVersions))?$this->SNMPVersion:'2c';
-		$this->v3SecurityName=sanitize($this->v3SecurityName);
-		$this->v3SecurityLevel=sanitize($this->v3SecurityLevel);
-		$this->v3AuthProtocol=sanitize($this->v3AuthProtocol);
-		$this->v3AuthPassphrase=sanitize($this->v3AuthPassphrase);
-		$this->v3PrivProtocol=sanitize($this->v3PrivProtocol);
-		$this->v3PrivPassphrase=sanitize($this->v3PrivPassphrase);
 		$this->SNMPCommunity=sanitize($this->SNMPCommunity);
+		$this->v3SecurityLevel=(in_array($this->v3SecurityLevel, $validv3SecurityLevels))?$this->v3SecurityLevel:'noAuthNoPriv';
+		$this->v3AuthProtocol=(in_array($this->v3AuthProtocol, $validv3AuthProtocols))?$this->v3AuthProtocol:'MD5';
+		$this->v3AuthPassphrase=sanitize($this->v3AuthPassphrase);
+		$this->v3PrivProtocol=(in_array($this->v3PrivProtocol,$validv3PrivProtocols))?$this->v3PrivProtocol:'DES';
+		$this->v3PrivPassphrase=sanitize($this->v3PrivPassphrase);
 		$this->SNMPFailureCount=intval($this->SNMPFailureCount);
 		$this->ESX=intval($this->ESX);
 		$this->Owner=intval($this->Owner);
@@ -1238,7 +1220,6 @@ class Device {
 		$dev->SerialNo=$dbRow["SerialNo"];
 		$dev->AssetTag=$dbRow["AssetTag"];
 		$dev->PrimaryIP=$dbRow["PrimaryIP"];
-		$dev->v3SecurityName=$dbRow["v3SecurityName"];
 		$dev->v3SecurityLevel=$dbRow["v3SecurityLevel"];
 		$dev->v3AuthProtocol=$dbRow["v3AuthProtocol"];
 		$dev->v3AuthPassphrase=$dbRow["v3AuthPassphrase"];
@@ -1323,6 +1304,55 @@ class Device {
 		return $dbh->exec($sql);
 	}
 
+	/* All of these functions will REQUIRE the built-in SNMP functions - the external calls are simply too slow */
+	static private function BasicTests($DeviceID){
+		global $config;
+
+		// First check if the SNMP library is present
+		if(!class_exists('OSS_SNMP\SNMP')){
+			return false;
+		}
+
+		$dev=New Device();
+		$dev->DeviceID=$DeviceID;
+
+		// Make sure this is a real device and has an IP set
+		if(!$dev->GetDevice()){return false;}
+		if($dev->PrimaryIP==""){return false;}
+
+		// If the device doesn't have an SNMP community set, check and see if we have a global one
+		$dev->SNMPCommunity=($dev->SNMPCommunity=="")?$config->ParameterArray["SNMPCommunity"]:$dev->SNMPCommunity;
+
+		// We've passed all the repeatable tests, return the device object for digging
+		return $dev;
+	}
+
+	// Making an attempt at reducing the lines that I was constantly repeating at a cost of making this a little more convoluted.
+	/*
+	 * Valid values for $snmplookup:
+	 * contact - alpha numeric return of the system contact
+	 * description - alpha numeric return of the system description can include line breaks
+	 * location - alpha numeric return of the location if set
+	 * name - alpha numeric return of the name of the system
+	 * services - int 
+	 * uptime - int - uptime of the device returned as ticks.  tick defined as 1/1000'th of a second
+	 */
+	static private function OSS_SNMP_Lookup($dev,$snmplookup,$oid=null){
+		// This is find out the name of the function that called this to make the error logging more descriptive
+		$caller=debug_backtrace();
+		$caller=$caller[1]['function'];
+
+		$snmpHost=new OSS_SNMP\SNMP($dev->PrimaryIP,$dev->SNMPCommunity,$dev->SNMPVersion,$dev->v3SecurityLevel,$dev->v3AuthProtocol,$dev->v3AuthPassphrase,$dev->v3PrivProtocol,$dev->v3PrivPassphrase);
+		$snmpresult=false;
+		try {
+			$snmpresult=(is_null($oid))?$snmpHost->useSystem()->$snmplookup(true):$snmpHost->get($oid);
+		}catch (Exception $e){
+			error_log("Device::$caller($dev->DeviceID) ".$e->getMessage());
+		}
+
+		return $snmpresult;
+	}
+
 	function CreateDevice(){
 		global $dbh;
 		
@@ -1334,7 +1364,7 @@ class Device {
 		
 		// SNMPFailureCount isn't in this list, because it should always start at zero (default) on new devices
 		$sql="INSERT INTO fac_Device SET Label=\"$this->Label\", SerialNo=\"$this->SerialNo\", AssetTag=\"$this->AssetTag\", 
-			PrimaryIP=\"$this->PrimaryIP\", SNMPVersion=\"$this->SNMPVersion\", v3SecurityName=\"$this->v3SecurityName\", 
+			PrimaryIP=\"$this->PrimaryIP\", SNMPVersion=\"$this->SNMPVersion\",  
 			v3SecurityLevel=\"$this->v3SecurityLevel\",	v3AuthProtocol=\"$this->v3AuthProtocol\", v3AuthPassphrase=\"$this->v3AuthPassphrase\", 
 			v3PrivProtocol=\"$this->v3PrivProtocol\", v3PrivPassphrase=\"$this->v3PrivPassphrase\", SNMPCommunity=\"$this->SNMPCommunity\", 
 			ESX=$this->ESX, Owner=$this->Owner, EscalationTimeID=$this->EscalationTimeID, EscalationID=$this->EscalationID, 
@@ -1614,7 +1644,7 @@ class Device {
 
 		$sql="UPDATE fac_Device SET Label=\"$this->Label\", SerialNo=\"$this->SerialNo\", AssetTag=\"$this->AssetTag\", 
 			PrimaryIP=\"$this->PrimaryIP\", SNMPCommunity=\"$this->SNMPCommunity\", SNMPVersion=\"$this->SNMPVersion\",
-			v3SecurityName=\"$this->v3SecurityName\", v3SecurityLevel=\"$this->v3SecurityLevel\", v3AuthProtocol=\"$this->v3AuthProtocol\",
+			v3SecurityLevel=\"$this->v3SecurityLevel\", v3AuthProtocol=\"$this->v3AuthProtocol\",
 			v3AuthPassphrase=\"$this->v3AuthPassphrase\", v3PrivProtocol=\"$this->v3PrivProtocol\", v3PrivPassphrase=\"$this->v3PrivPassphrase\",
 			SNMPFailureCount=$this->SNMPFailureCount, ESX=$this->ESX, Owner=$this->Owner, EscalationTimeID=$this->EscalationTimeID, 
 			EscalationID=$this->EscalationID, PrimaryContact=$this->PrimaryContact, 
@@ -3071,58 +3101,75 @@ class Device {
 			}
 		}
 	}
-	
+
+	// Making a function we can call from a device that will update itself and any other sensor in its immediate vicinity
+	function UpdateSensor(){
+		if(!$this->getDevice()){
+			return false;
+		}
+
+		return Device::UpdateSensors($this->Cabinet);
+	}	
 
 	// This is a train wreck to have it in here, but everything is lumped into Devices, now...
+	// this should now be functional however I question the positioning.  if we move this, update the function above
 	static function UpdateSensors( $CabinetID = null ) {
 		global $config;
-		
-		if ( ! function_exists( "snmpget" ) ) {
-			return;
+
+		$cab=new Cabinet();
+		$cab->CabinetID=$CabinetID;
+		if(!$cab->GetCabinet()){
+			return false;
 		}
-		
-		if ( $CabinetID != null ) {
-			$sql = sprintf( "select a.CabinetID, a.SensorIPAddress, a.SensorCommunity, b.* from fac_Cabinet a, fac_SensorTemplate b where a.SensorTemplateID=b.TemplateID and a.CabinetID=%d and a.SensorIPAddress>'' and a.SensorTemplateID>0", $CabinetID );
-		} else {
-			$sql = "select a.CabinetID, a.SensorIPAddress, a.SensorCommunity, b.* from fac_Cabinet a, fac_SensorTemplate b where a.SensorTemplateID=b.TemplateID and a.SensorIPAddress>'' and a.SensorTemplateID>0";
-		}
-		
-		$sensors = $dbh->prepare( "insert into fac_CabinetTemps values (:cabinetid, now(), :temp, :humidity ) on duplicate key update LastRead=now(), Temp=:temp, Humidity=:humidity" );
-		
-		foreach ( $dbh->query( $sql ) as $row ) {
-			if ( $row["SensorCommunity"] == "" ) {
-				$Community = $config->ParameterArray["SNMPCommunity"];
-			} else {
-				$Community = $row["SensorCommunity"];
-			}
-			
-			if ( $row["SNMPVersion"] == "2c" ) {
-				@list( $trash, $temp ) = explode( ":", @snmp2_get( $row["SensorIPAddress"], $Community, $row["TemperatureOID"] ) );
-				@list( $trash, $humid ) = explode( ":", @snmp2_get( $row["SensorIPAddress"], $Community, $row["HumidityOID"] ) );
-			} else {
-				@list( $trash, $temp ) = explode( ":", @snmpget( $row["SensorIPAddress"], $Community, $row["TemperatureOID"] ) );
-				@list( $trash, $humid ) = explode( ":", @snmpget( $row["SensorIPAddress"], $Community, $row["HumidityOID"] ) );
-			}
-			
-			$temp = preg_replace( "/[^0-9.,+]/", "", $temp );
-			$humid = preg_replace( "/[^0-9.'+]/", "", $humid );
-			
-			if (($row["mUnits"] == "english") && ($config->ParameterArray["mUnits"] == "metric")) {
-				$temp = (($temp-32)*5/9);
-			} elseif (($row["mUnits"] == "metric") && ($config->ParameterArray["mUnits"] == "english")) {
-				$temp = (($temp*9/5)+32);
+
+		// get a list of all the device id's in this cabinet
+		$sql="SELECT DeviceID FROM fac_Device WHERE DeviceType=\"Sensor\" AND PrimaryIP!=\"\" AND TemplateID>0 AND Cabinet=$cab->CabinetID;";
+		foreach($dbh->query($sql) as $row){
+			if(!$dev=Device::BasicTests($row['DeviceID'])){
+				// This device failed the basic test but maybe the next won't
+				continue;
 			}
 
-			if ( $row["TempMultiplier"] != 0 ) {
-				$temp *= $row["TempMultiplier"];
+			// need to combine this shit with the DeviceTemplate like I did the extended devices
+			$t=new TemplateSensor();
+			$t->TemplateID=$dev->TemplateID;
+			if(!$t->GetTemplate()){
+				// Invalid template, how'd that happen?  Move on..
+				continue;
 			}
-			
-			if ( $row["HumidityMultiplier"] != 0 ) {
-				$humid *= $row["HumidityMultiplier"];
+
+			$temp=($t->TemperatureOID)?floatval(self::OSS_SNMP_Lookup($dev,null,"$t->TemperatureOID")):0;
+			$humidity=($t->HumidityOID)?floatval(self::OSS_SNMP_Lookup($dev,null,"$t->HumidityOID")):0;
+
+			// Strip out everything but numbers
+			// not sure these are needed anymore thanks to the OSS_SNMP library
+			$temp=preg_replace("/[^0-9.,+]/","",$temp);
+			$humidity=preg_replace("/[^0-9.'+]/","",$humidity);
+
+			// Apply multipliers
+			$temp*=$t->TempMultiplier;
+			$humidity*=$t->HumidityMultiplier;
+
+			// Convert the units if necessary
+			// device template is set to english but user wants metric so convert it
+			if(($t->mUnits=="english") && ($config->ParameterArray["mUnits"]=="metric")){
+				$temp=(($temp-32)*5/9);
+			// device template is set to metric but the user wants english so convert it
+			}elseif(($t->mUnits=="metric") && ($config->ParameterArray["mUnits"]=="english")){
+				$temp=(($temp*9/5)+32);
 			}
-			
-			$sensors->execute( array( "cabinetid"=>$row["CabinetID"], "temp"=>$temp, "humidity"=>$humid ) );
+
+			// No need for any further sanitization it was all handled above
+			$insertsql="INSERT INTO fac_SensorReadings SET DeviceID=$dev->DeviceID, Temperature=$temp, Humidity=$humidity, Timestamp=NOW();";
+			if(!$dbh->exec($sql)){
+				$info = $dbh->errorInfo();
+
+				error_log( "UpdateSensors::PDO Error: {$info[2]} SQL=$sql" );
+				return false;
+			}
 		}
+
+		return true;			
 	}
 }
 

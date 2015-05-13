@@ -219,7 +219,7 @@ ALTER TABLE fac_DeviceTemplate ADD COLUMN SNMPVersion varchar(2) NOT NULL DEFAUL
 --
 
 ALTER TABLE fac_Device ADD COLUMN SNMPVersion varchar(2) NOT NULL DEFAULT '' AFTER PrimaryIP;
-ALTER TABLE fac_Device ADD COLUMN v3SecurityLevel varchar(12) NOT NULL DEFAULT '' AFTER v3SecurityName;
+ALTER TABLE fac_Device ADD COLUMN v3SecurityLevel varchar(12) NOT NULL DEFAULT '' AFTER SNMPVersion;
 ALTER TABLE fac_Device ADD COLUMN v3AuthProtocol varchar(3) NOT NULL DEFAULT '' AFTER v3SecurityLevel;
 ALTER TABLE fac_Device ADD COLUMN v3AuthPassphrase varchar(80) NOT NULL DEFAULT '' AFTER v3AuthProtocol;
 ALTER TABLE fac_Device ADD COLUMN v3PrivProtocol varchar(3) NOT NULL DEFAULT '' AFTER v3AuthPassphrase;

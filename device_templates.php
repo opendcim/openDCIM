@@ -2,15 +2,6 @@
 	require_once('db.inc.php');
 	require_once('facilities.inc.php');
 
-if($_SERVER['REQUEST_METHOD'] == 'PUT') {
-    echo "this is a put request\n";
-    parse_str(file_get_contents("php://input"),$post_vars);
-	print_r($post_vars);
-exit;
-}
-
-
-
 	$subheader=__("Data Center Device Templates");
 
 	$timestamp=time();
