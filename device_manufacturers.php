@@ -169,8 +169,8 @@
 
   <script type="text/javascript">
 	// Store creds for quick access
-	window.APIKey="e807f1fcf82d132f9bb018ca6738a19f";
-	window.UserID="wilbur@wilpig.org";
+	window.APIKey="<?php print $config->ParameterArray["APIKey"]; ?>";
+	window.UserID="<?php print $config->ParameterArray["APIUserID"]; ?>";
 
 	$(function() {
 		$( document ).tooltip({
