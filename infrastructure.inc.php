@@ -654,7 +654,7 @@ class DataCenter {
 			a.Reservation=false AND a.DeviceType IN ('Server', 'Storage Array');";
 		$dcStats["Occupied"]=($test=$this->query($sql)->fetchColumn())?$test:0;
 
-        $sql="SELECT SUM(a.Height) FROM fac_Device a,fac_Cabinet b WHERE
+		$sql="SELECT SUM(a.Height) FROM fac_Device a,fac_Cabinet b WHERE
 			a.Cabinet=b.CabinetID AND a.Reservation=true AND b.DataCenterID=$this->DataCenterID;";
 		$dcStats["Allocated"]=($test=$this->query($sql)->fetchColumn())?$test:0;
 		
@@ -672,12 +672,12 @@ class DataCenter {
 			b.DataCenterID=$this->DataCenterID;";
 		$dcStats["ComputedWatts"]+=($test=$this->query($sql)->fetchColumn())?$test:0;
 
-		$sql="SELECT AVG(a.Temp) as AvgTemp FROM fac_CabinetTemps a, fac_Cabinet b
+		$sql="SELECT AVG(NULLIF(a.Temp, 0)) as AvgTemp FROM fac_CabinetTemps a, fac_Cabinet b
 			WHERE a.CabinetID=b.CabinetID AND
 			b.DataCenterID=$this->DataCenterID;";
 		$dcStats["AvgTemp"]=($test=round($this->query($sql)->fetchColumn()))?$test:0;
 
-		$sql="SELECT AVG(a.Humidity) as AvgHumidity FROM fac_CabinetTemps a, fac_Cabinet b
+		$sql="SELECT AVG(NULLIF(a.Humidity, 0)) as AvgHumidity FROM fac_CabinetTemps a, fac_Cabinet b
 			WHERE a.CabinetID=b.CabinetID AND
 			b.DataCenterID=$this->DataCenterID;";
 		$dcStats["AvgHumidity"]=($test=round($this->query($sql)->fetchColumn()))?$test:0;
@@ -2061,11 +2061,11 @@ class Zone {
 			(SELECT CabinetID FROM fac_Cabinet WHERE ZoneID=$this->ZoneID))";
 		$zoneStats["MeasuredWatts"]=($test=$this->query($sql)->fetchColumn())?$test:0;
 		
-		$sql="SELECT AVG(a.Temp) AS AvgTemp FROM fac_CabinetTemps a, fac_Cabinet b WHERE
+		$sql="SELECT AVG(NULLIF(a.Temp, 0)) AS AvgTemp FROM fac_CabinetTemps a, fac_Cabinet b WHERE
 			a.CabinetID=b.CabinetID AND b.ZoneID=$this->ZoneID;";
 		$zoneStats["AvgTemp"]=($test=round($this->query($sql)->fetchColumn()))?$test:0;
 
-		$sql="SELECT AVG(a.Humidity) AS AvgHumitdity FROM fac_CabinetTemps a, fac_Cabinet b WHERE
+		$sql="SELECT AVG(NULLIF(a.Humidity, 0)) AS AvgHumitdity FROM fac_CabinetTemps a, fac_Cabinet b WHERE
 			a.CabinetID=b.CabinetID AND b.ZoneID=$this->ZoneID;";
 		$zoneStats["AvgHumidity"]=($test=round($this->query($sql)->fetchColumn()))?$test:0;
 
