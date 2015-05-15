@@ -52,6 +52,65 @@
 		exit;
 	}
 
+	// clone cabinet function BEGIN
+if (isset($_POST['submitBtnDuplicate'])) {
+function DuplicateMySQLRecord ($table, $id_field, $id, $spacing_x, $number_x, $spacing_y, $number_y, $d_width, $d_height) {
+    // load the original record into an array
+	$query_init= "SELECT * FROM `$table` WHERE `$id_field`=$id";
+	mysql_connect('localhost', 'dcim', 'dcim');
+	mysql_select_db('dcim');
+
+    $result = mysql_query($query_init);
+	if (!$result) {
+    die('Invalid query: ' . mysql_error());
+}
+	
+    $original_record = mysql_fetch_assoc($result);
+
+	$first=true;
+for ($iy=0; $iy<=$number_y; $iy++) {
+for ($ix=0; $ix<=$number_x; $ix++) {
+    // insert the new record and get the new auto_increment id
+	if (!$first){
+    mysql_query("INSERT INTO {$table} (`{$id_field}`) VALUES (NULL)");
+    $newid = mysql_insert_id();
+    $nevlesz='-'.$iy.'-'.$ix;
+    // generate the query to update the new record with the previous values
+    $query = "UPDATE {$table} SET ";
+    foreach ($original_record as $key => $value) {
+
+Switch ($key)
+{
+case 'MapX1'; $query .= '`'.$key.'` = "'.str_replace('"','\"',($value+$ix*($d_width +$spacing_x))).'", '; break;
+case 'MapX2'; $query .= '`'.$key.'` = "'.str_replace('"','\"',($value+$ix*($d_width +$spacing_x))).'", '; break;
+case 'MapY1'; $query .= '`'.$key.'` = "'.str_replace('"','\"',($value+$iy*($d_height+$spacing_y))).'", '; break;
+case 'MapY2'; $query .= '`'.$key.'` = "'.str_replace('"','\"',($value+$iy*($d_height+$spacing_y))).'", '; break;
+case 'Location'; $query .= '`'.$key.'` = "'.str_replace('"','\"',$value.$nevlesz).'", '; break;
+case 'CabinetID'; break;
+default: $query .= '`'.$key.'` = "'.str_replace('"','\"',$value).'", '; break;
+}
+    } 
+    $query = substr($query,0,strlen($query)-2); // lop off the extra trailing comma
+//    $query .= " WHERE {$id_field}={$newid}";
+    $query .= " WHERE {$id_field}={$newid}";
+    mysql_query($query);
+}	
+$first=false;
+} 
+}
+
+}	
+$cabid=$_POST['submitBtnDuplicate'];
+$spacing_x  = (isset($_POST['SpacingX'])) ? $_POST['SpacingX'] : '0' ;
+$number_x  = (isset($_POST['QuantityX'])) ? $_POST['QuantityX'] : '1' ;
+$spacing_y  = (isset($_POST['SpacingY'])) ? $_POST['SpacingY'] : '0' ;
+$number_y  = (isset($_POST['QuantityY'])) ? $_POST['QuantityY'] : '1' ;
+$d_width=($cab->MapX2)-($cab->MapX1);
+$d_height=($cab->MapY2)-($cab->MapY1);
+DuplicateMySQLRecord('fac_Cabinet', 'CabinetID', $cabid, $spacing_x, $number_x, $spacing_y, $number_y, $d_width, $d_height);	
+}
+	// clone cabinet function END
+
 	$tagarray=array();
 	if(isset($_POST['tags'])){
 		$tagarray=json_decode($_POST['tags']);
@@ -293,11 +352,31 @@ echo '  </select>
 		printf( "<option value=%d %s>%s</option>\n", $template->TemplateID, $selected, $template->Name );
 	}
 	
+	$cabidlesz=$cab->CabinetID;
+	$widthlesz=($cab->MapX2)-($cab->MapX1);
+	$heightlesz=($cab->MapY2)-($cab->MapY1);
 	echo '</select></div>
 </div>
 <div>
 	<div><label for="tags">',__("Tags"),'</label></div>
 	<div><textarea type="text" name="tags" id="tags" rows="1"></textarea></div>
+</div>
+<div>
+	<div>',__("spacing X"),'</div>
+	<div><input type="text" name="SpacingX" size=5> (width:'.$widthlesz.')</div>
+</div>
+<div>
+	<div>',__("quantity X"),'</div>
+	<div><input type="text" name="QuantityX" size=5></div>
+</div>
+<div>
+	<div>',__("spacing Y"),'</div>
+	<div><input type="text" name="SpacingY" size=5> (height: '.$heightlesz.')</div>
+</div>
+<div>
+	<div>',__("quantity Y"),'</div>
+	<div><input type="text" name="QuantityY" size=5></div>
+	<div><button type="submit" name="submitBtnDuplicate" value="'.$cabidlesz.'">clone cab</button></div>
 </div>
 </div> <!-- END div.table -->
 <div class="table">
