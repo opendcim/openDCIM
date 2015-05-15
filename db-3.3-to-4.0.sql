@@ -241,7 +241,7 @@ CREATE TABLE fac_SensorReadings (
   DeviceID int(11) NOT NULL,
   Temperature float NOT NULL,
   Humidity float NOT NULL,
-  Timestamp datetime NOT NULL,
+  LastRead datetime NOT NULL,
   PRIMARY KEY (DeviceID)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 

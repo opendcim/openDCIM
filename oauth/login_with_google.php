@@ -17,14 +17,14 @@
 
 	// set the offline access only if you need to call an API
 	// when the user is not present and the token may expire
-	$client->offline = true;
+	$client->offline = false;
 
 	$client->debug = false;
 	$client->debug_http = true;
-	$client->redirect_uri = '{https://yourdomain/login.php}';
+	$client->redirect_uri = 'http://dcim.home.themillikens.com/login.php';
 
-	$client->client_id = '{Your Client ID Here}';  $application_line = __LINE__;
-	$client->client_secret = '{Your Client Secret Here}';
+	$client->client_id = '861442472439-n1l3t62kiq2bdb0m5vbro3sqqqlfa67m.apps.googleusercontent.com';  $application_line = __LINE__;
+	$client->client_secret = 'mWqqzeL2qvqLekoTyCPeuXEz';
 
 	if(strlen($client->client_id) == 0
 	|| strlen($client->client_secret) == 0)
@@ -62,7 +62,6 @@
 	if($success)
 	{
 		$_SESSION['userid']=$user->email;
-		print "<meta http-equiv='refresh' content='0; url=index.php'>";
 	}
 	else
 	{
