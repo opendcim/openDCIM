@@ -11,45 +11,6 @@
 	$taginsert="";
 
 	// Ajax functions
-	// SNMP Test
-	if(isset($_POST['snmptest'])){
-		$ip=$_POST['ip'];
-		$community=$_POST['community'];
-
-		$snmpHost=new OSS_SNMP\SNMP($ip,$community);
-		$error=false;
-		try {
-			$snmpresults=$snmpHost->useSystem()->name();
-		}catch (Exception $e){
-			// threw an exception on v2 drop to 1
-			$snmpHost=new OSS_SNMP\SNMP($ip,$community,1);
-			try {
-				$snmpresults=$snmpHost->useSystem()->name();
-			}catch (Exception $e){
-				// threw an exception on v1 throw an error
-				$error=true;
-			}
-		}
-
-		if(!$error){
-			foreach($snmpHost->realWalk('1.3.6.1.2.1.1') as $oid => $value){
-				print "$oid => $value <br>\n";
-			}
-		}else{
-			print __("Something isn't working correctly");
-		}
-		exit;
-	}
-
-	// Get CDU uptime
-	if(isset($_POST['cduuptime'])){
-		$pdu=new PowerDistribution();
-		$pdu->PDUID=$_POST['DeviceID'];
-		
-		echo $pdu->GetSmartCDUUptime();
-		exit;
-	}
-
 	// Get log entries
 	if(isset($_POST['logging'])){
 		$dev->DeviceID=$_POST['devid'];
@@ -68,6 +29,12 @@
 		echo $cab->CabinetHeight;
 		exit;
 	}
+	// Get list of color codes
+	if(isset($_GET['cc'])){
+		header('Content-Type: application/json');
+		echo json_encode(ColorCoding::GetCodeList());
+		exit;
+	}
 	// Get list of media types
 	if(isset($_GET['mt'])){
 		header('Content-Type: application/json');
@@ -78,14 +45,8 @@
 	if(isset($_GET['spn'])){
 		header('Content-Type: application/json');
 		$PortNamePatterns=array();
-		if(isset($_GET['power'])){
-			foreach(array('PS(1)','R(1)','Custom',__("From Template"),__("Invert Port Labels")) as $pattern){
-				$PortNamePatterns[]['Pattern']=$pattern;
-			}
-		}else{
-			foreach(array('NIC(1)','Port(1)','Fa/(1)','Gi/(1)','Ti/(1)','Custom',__("From Template"),__("Invert Port Labels")) as $pattern){
-				$PortNamePatterns[]['Pattern']=$pattern;
-			}
+		foreach(array('NIC(1)','Port(1)','Fa/(1)','Gi/(1)','Ti/(1)','Custom',__("From Template")) as $pattern){
+			$PortNamePatterns[]['Pattern']=$pattern;
 		}
 		echo json_encode($PortNamePatterns);
 		exit;
@@ -105,19 +66,6 @@
 		exit;
 	}
 
-	// This will allow any jackass to certify an audit but the function is hidden and 
-	// this is the type of function that will be fixed with the API so i'm not fixing it
-	// as long as logging is enabled we'll know who triggered it.
-	if(isset($_POST['audit'])){
-		$dev->DeviceID=$_POST['audit'];
-		$dev->Audit();
-
-		$dev->AuditStamp=date('r',strtotime($dev->AuditStamp));
-		header('Content-Type: application/json');
-		echo json_encode($dev);
-		exit;
-	};
-
 	if(isset($_POST['olog'])){
 		$dev->DeviceID=$_POST['devid'];
 		$dev->GetDevice();
@@ -125,40 +73,24 @@
 		$tmpDev=new Device();
 		$tmpDev->DeviceID=$dev->DeviceID;
 		$tmpDev->GetDevice();
-		$return=(class_exists('LogActions') && $tmpDev->Rights=="Write")?LogActions::LogThis($dev,$tmpDev):false;
+		$return=(class_exists('LogActions'))?LogActions::LogThis($dev,$tmpDev):false;
 		header('Content-Type: application/json');
 		echo json_encode($return);
 		exit;
 	};
 
-	// Set all ports to the same Label pattern, media type or color code
+	// Set all ports to the same label pattern, media type or color code
 	if(isset($_POST['setall'])){
 		$portnames=array();
 		if(isset($_POST['spn']) && strlen($_POST['spn'])>0){
 			// Special Condition to load ports from the device template and use those names
-			if($_POST['spn']==__("From Template") || $_POST['spn']==__("Invert Port Labels")){
+			if($_POST['spn']==__("From Template")){
 				$dev->DeviceID=$_POST['devid'];
 				$dev->GetDevice();
-				if($_POST['spn']==__("From Template")){
-					$ports=(isset($_POST['power']))?new TemplatePowerPorts():new TemplatePorts();
-					$ports->TemplateID=$dev->TemplateID;
-					foreach($ports->getPorts() as $pn => $portobject){
-						$portnames[$pn]=$portobject->Label;
-					}
-				}else{
-					$dp=(isset($_POST['power']))?new PowerPorts():new DevicePorts();
-					$pc=(isset($_POST['power']))?$dev->PowerSupplyCount:$dev->Ports;
-					$dp->DeviceID=$dev->DeviceID;
-					$ports=$dp->getPorts();
-					foreach($ports as $portid => $port){
-						// patch panels make everything more complicated
-						if($portid >0){
-							$portnames[$portid]=$ports[($pc-(abs($portid)-1))]->Label;
-							if($dev->DeviceType=="PatchPanel"){
-								$portnames[($portid*-1)]=$ports[($pc-(abs($portid)-1))]->Label;
-							}
-						}
-					}
+				$ports=new TemplatePorts();
+				$ports->TemplateID=$dev->TemplateID;
+				foreach($ports->getPorts() as $pn => $portobject){
+					$portnames[$pn]=$portobject->Label;
 				}
 			}else{
 				//using premade patterns if the input differs and causes an error then fuck em
@@ -166,20 +98,17 @@
 				if($result){
 					$dev->DeviceID=$_POST['devid'];
 					$dev->GetDevice();
-					$portnames=generatePatterns($result, (isset($_POST['power']))?$dev->PowerSupplyCount:$dev->Ports);
+					$portnames=generatePatterns($result, $dev->Ports);
 					// generatePatterns starts the index at 0, it's more useful to us starting at 1
 					array_unshift($portnames, null);
 				}
 			}
 		}
 		// Make a new method to set all the ports to a media type?
-		$blurg=(isset($_POST['power']))?PowerPorts::getPortList($_POST['devid']):DevicePorts::getPortList($_POST['devid']);
-		foreach($blurg as $portnum => $port){
+		foreach(DevicePorts::getPortList($_POST['devid']) as $portnum => $port){
 			$port->Label=(isset($_POST['spn']) && (($_POST['setall']=='true' && count($portnames)>0) || (count($portnames)>0 && strlen($port->Label)==0)))?$portnames[abs($port->PortNumber)]:$port->Label;
-			if(!isset($_POST['power'])){
-				$port->MediaID=(($_POST['setall']=='true' || $port->MediaID==0) && isset($_POST['mt']) && ($_POST['setall']=='true' || intval($_POST['mt'])>0))?$_POST['mt']:$port->MediaID;
-				$port->ColorID=(($_POST['setall']=='true' || $port->ColorID==0) && isset($_POST['cc']) && ($_POST['setall']=='true' || intval($_POST['cc'])>0))?$_POST['cc']:$port->ColorID;
-			}
+			$port->MediaID=(($_POST['setall']=='true' || $port->MediaID==0) && isset($_POST['mt']) && ($_POST['setall']=='true' || intval($_POST['mt'])>0))?$_POST['mt']:$port->MediaID;
+			$port->ColorID=(($_POST['setall']=='true' || $port->ColorID==0) && isset($_POST['cc']) && ($_POST['setall']=='true' || intval($_POST['cc'])>0))?$_POST['cc']:$port->ColorID;
 			$port->updatePort();
 			// Update the other side to keep media types in sync if it is connected same
 			// rule applies that it will only be set if it is currently unset
@@ -187,15 +116,13 @@
 				$port->DeviceID=$port->ConnectedDeviceID;
 				$port->PortNumber=$port->ConnectedPort;
 				$port->getPort();
-				if(!isset($_POST['power'])){
-					$port->MediaID=(($_POST['setall']=='true' || $port->MediaID==0) && isset($_POST['mt']) && ($_POST['setall']=='true' || intval($_POST['mt'])>0))?$_POST['mt']:$port->MediaID;
-					$port->ColorID=(($_POST['setall']=='true' || $port->ColorID==0) && isset($_POST['cc']) && ($_POST['setall']=='true' || intval($_POST['cc'])>0))?$_POST['cc']:$port->ColorID;
-				}
+				$port->MediaID=(($_POST['setall']=='true' || $port->MediaID==0) && isset($_POST['mt']) && ($_POST['setall']=='true' || intval($_POST['mt'])>0))?$_POST['mt']:$port->MediaID;
+				$port->ColorID=(($_POST['setall']=='true' || $port->ColorID==0) && isset($_POST['cc']) && ($_POST['setall']=='true' || intval($_POST['cc'])>0))?$_POST['cc']:$port->ColorID;
 				$port->updatePort();
 			}
 		}
 		// Return all the ports for the device then eval just the MT and CC
-		$dp=(isset($_POST['power']))?new PowerPorts():new DevicePorts();
+		$dp=new DevicePorts();
 		$dp->DeviceID=$_POST['devid'];
 		header('Content-Type: application/json');
 		$ports=array(
@@ -215,7 +142,7 @@
 				if(count($portCandidates)>0){
 					foreach($portCandidates as $id => $portdesc){
 						$checked=($id==$dev->FirstPortNum)?' checked':'';
-						print '<input type="radio" name="FirstPortNum" id="fp'.$id.'" value="'.$id.'"'.$checked.'><label for="fp'.$id.'">'.$portdesc.'</label><br>';
+						print '<input type="radio" name="firstportnum" id="fp'.$id.'" value="'.$id.'"'.$checked.'><label for="fp'.$id.'">'.$portdesc.'</label><br>';
 					}
 				}else{
 					print __("ERROR: No ports found");
@@ -419,29 +346,19 @@
 		}else{
 			$patchpanels=(isset($_POST['rear']))?"true":null;
 			$portnumber=(isset($_POST['pn']))?$_POST['pn']:null;
-			$limiter=(isset($_POST['limiter']))?$_POST['limiter']:null;
-			$list=DevicePorts::getPatchCandidates($_POST['swdev'],$portnumber,null,$patchpanels,$limiter);
+			$list=DevicePorts::getPatchCandidates($_POST['swdev'],$portnumber,null,$patchpanels);
 		}
 		header('Content-Type: application/json');
 		echo json_encode($list);
 		exit;
 	}
-	if(isset($_POST['ESXrefresh'])){
-		$dev->DeviceID=$_POST['ESXrefresh'];
+	if(isset($_POST['esxrefresh'])){
+		$dev->DeviceID=$_POST['esxrefresh'];
 		$dev->GetDevice();
 		if($dev->Rights=="Write"){
-			ESX::RefreshInventory($_POST['ESXrefresh']);
-			buildESXtable($_POST['ESXrefresh']);
+			ESX::RefreshInventory($_POST['esxrefresh']);
+			buildesxtable($_POST['esxrefresh']);
 		}
-		exit;
-	}
-	if(isset($_POST['customattrrefresh'])){
-		$template=new DeviceTemplate();
-		$template->TemplateID=$_POST['customattrrefresh'];
-		$template->GetTemplateByID();
-		$dev->DeviceID=$_POST['DeviceID'];
-		$dev->GetDevice();	
-		buildCustomAttributes($template, $dev);
 		exit;
 	}
 	if(isset($_POST['refreshswitch'])){
@@ -460,7 +377,7 @@
 				}
 			}
 			echo json_encode(SwitchInfo::getPortNames($_POST['refreshswitch']));
-		}elseif(isset($_POST['Notes'])){
+		}elseif(isset($_POST['notes'])){
 			$dev->DeviceID=$_POST['refreshswitch'];
 			$dev->GetDevice();
 			// This function should be hidden if they don't have rights, but just in case
@@ -480,24 +397,6 @@
 		}
 		exit;
 	}
-
-	if(isset($_POST["currwatts"]) && isset($_POST['pduid']) && $_POST['pduid'] >0){
-		$pdu=new PowerDistribution();
-		$pdu->PDUID=$_POST['pduid'];
-		$wattage->Wattage='Err';
-		$wattage->LastRead='Err';
-		if($pdu->GetPDU()){
-			$cab->CabinetID=$pdu->CabinetID;
-			$cab->GetCabinet();
-			if($person->canWrite($cab->AssignedTo)){
-				$wattage=$pdu->LogManualWattage($_POST["currwatts"]);
-				$wattage->LastRead=strftime("%c",strtotime($wattage->LastRead));
-			}
-		}
-		header('Content-Type: application/json');
-		echo json_encode($wattage);
-		exit;
-	}
 	// END AJAX
 
 
@@ -506,11 +405,8 @@
 	$mfg=new Manufacturer();
 	$esc=new Escalations();
 	$escTime=new EscalationTimes();
-	$contactList=$person->GetUserList();
+	$contactList=$contact->GetContactList();
 	$Dept=new Department();
-	$pwrConnection=new PowerPorts();
-	$pdu=new PowerDistribution();
-	$panel=new PowerPanel();
 	$pwrCords=null;
 	$chassis="";
 	$copy = false;
@@ -519,16 +415,15 @@
 
 	// This page was called from somewhere so let's do stuff.
 	// If this page wasn't called then present a blank record for device creation.
-	if(isset($_REQUEST['action'])||isset($_REQUEST['DeviceID'])){
-		if(isset($_REQUEST['CabinetID'])){
-			$dev->Cabinet=$_REQUEST['CabinetID'];
+	if(isset($_REQUEST['action'])||isset($_REQUEST['deviceid'])){
+		if(isset($_REQUEST['cabinet'])){
+			$dev->Cabinet=$_REQUEST['cabinet'];
 			$cab->CabinetID=$dev->Cabinet;
 			$cab->GetCabinet();
 		}
 		if(isset($_REQUEST['action'])&&$_REQUEST['action']=='new'){
 			// sets install date to today when a new device is being created
 			$dev->InstallDate=date("m/d/Y");
-			$dev->DeviceType=(isset($_REQUEST['DeviceType']))?$_REQUEST['DeviceType']:$dev->DeviceType;
 			// Some fields are pre-populated when you click "Add device to this cabinet"
 			// If you are adding a device that is assigned to a specific customer, assume that device is also owned by that customer
 			if($cab->AssignedTo >0){
@@ -537,8 +432,8 @@
 		}
 
 		// if no device id requested then we must be making a new device so skip all data lookups.
-		if(isset($_REQUEST['DeviceID'])){
-			$dev->DeviceID=intval($_REQUEST['DeviceID']);
+		if(isset($_REQUEST['deviceid'])){
+			$dev->DeviceID=intval($_REQUEST['deviceid']);
 			// If no action is requested then we must be just querying a device info.
 			// Skip all modification checks
 			$tagarray=array();
@@ -551,8 +446,8 @@
 				// Pull all properties from a template and apply to the device before we add the values set 
 				// on the screen.  This will make sure things like slots are pulled from the template that aren't
 				// available to the end user initially
-				if($_POST['action']=='Create' && $_POST['TemplateID']>0){
-					$templ->TemplateID=$_POST['TemplateID'];
+				if($_POST['action']=='Create' && $_POST['templateid']>0){
+					$templ->TemplateID=$_POST['templateid'];
 					if($templ->GetTemplateByID()){
 						foreach($templ as $prop => $value){
 							$dev->$prop=$value;
@@ -560,60 +455,43 @@
 					}
 				}
 
-				if($dev->DeviceType=="CDU" || (isset($_POST['DeviceType']) && $_POST['DeviceType']=="CDU")){
-					$pdu->PDUID=$dev->DeviceID;
-					$pdu->GetPDU();
-				}
-
-				if($_POST['action']!='Child'){
-					$dev->Label=$_POST['Label'];
-					$dev->SerialNo=$_POST['SerialNo'];
-					$dev->AssetTag=$_POST['AssetTag'];
-					$dev->Owner=$_POST['Owner'];
-					$dev->EscalationTimeID=$_POST['EscalationTimeID'];
-					$dev->EscalationID=$_POST['EscalationID'];
-					$dev->PrimaryContact=$_POST['PrimaryContact'];
-					$dev->Cabinet=$_POST['CabinetID'];
-					$dev->Position=$_POST['Position'];
-					$dev->Height=$_POST['Height'];
-					$dev->TemplateID=$_POST['TemplateID'];
-					$dev->DeviceType=$_POST['DeviceType'];
-					$dev->MfgDate=date('Y-m-d',strtotime($_POST['MfgDate']));
-					$dev->InstallDate=date('Y-m-d',strtotime($_POST['InstallDate']));
-					$dev->WarrantyCo=$_POST['WarrantyCo'];
-					$dev->WarrantyExpire=date('Y-m-d',strtotime($_POST['WarrantyExpire']));
-					$dev->Notes=trim($_POST['Notes']);
-					$dev->Notes=($dev->Notes=="<br>")?"":$dev->Notes;
-					$dev->FirstPortNum=$_POST['FirstPortNum'];
-					// All of the values below here are optional based on the type of device being dealt with
-					(isset($_POST['ChassisSlots']))?$dev->ChassisSlots=$_POST['ChassisSlots']:'';
-					(isset($_POST['RearChassisSlots']))?$dev->RearChassisSlots=$_POST['RearChassisSlots']:'';
-					(isset($_POST['Ports']))?$dev->Ports=$_POST['Ports']:'';
-					(isset($_POST['PowerSupplyCount']))?$dev->PowerSupplyCount=$_POST['PowerSupplyCount']:'';
-					$dev->ParentDevice=(isset($_POST['ParentDevice']))?$_POST['ParentDevice']:"";
-					$dev->PrimaryIP=(isset($_POST['PrimaryIP']))?$_POST['PrimaryIP']:"";
-					$dev->SNMPCommunity=(isset($_POST['SNMPCommunity']))?$_POST['SNMPCommunity']:"";
-					$dev->SNMPFailureCount=(isset($_POST['SNMPFailureCount']))?$_POST['SNMPFailureCount']:0;
-					$dev->ESX=(isset($_POST['ESX']))?$_POST['ESX']:0;
-					$dev->Reservation=(isset($_POST['Reservation']))?($_POST['Reservation']=="on")?1:0:0;
-					$dev->NominalWatts=$_POST['NominalWatts'];
-					$dev->HalfDepth=(isset($_POST['HalfDepth']))?($_POST['HalfDepth']=="on")?1:0:0;
-					$dev->BackSide=(isset($_POST['BackSide']))?($_POST['BackSide']=="on")?1:0:0;
-					// Used by CDU type devices only
-					(isset($_POST['PanelID']))?$dev->PanelID=$_POST['PanelID']:'';
-					(isset($_POST['BreakerSize']))?$dev->BreakerSize=$_POST['BreakerSize']:'';
-					(isset($_POST['PanelPole']))?$dev->PanelPole=$_POST['PanelPole']:'';
-					(isset($_POST['InputAmperage']))?$dev->InputAmperage=$_POST['InputAmperage']:'';
-					(isset($_POST['failsafe']))?$dev->FailSafe=($_POST['failsafe']=="on")?1:0:'';
-					(isset($_POST['PanelID2']))?$dev->PanelID2=$_POST['PanelID2']:'';
-					(isset($_POST['PanelPole2']))?$dev->PanelPole2=$_POST['PanelPole2']:'';
-					
-				}
+				$dev->Label=$_POST['label'];
+				$dev->SerialNo=$_POST['serialno'];
+				$dev->AssetTag=$_POST['assettag'];
+				$dev->Owner=$_POST['owner'];
+				$dev->EscalationTimeID=$_POST['escalationtimeid'];
+				$dev->EscalationID=$_POST['escalationid'];
+				$dev->PrimaryContact=$_POST['primarycontact'];
+				$dev->Cabinet=$_POST['cabinetid'];
+				$dev->Position=$_POST['position'];
+				$dev->Height=$_POST['height'];
+				$dev->TemplateID=$_POST['templateid'];
+				$dev->DeviceType=$_POST['devicetype'];
+				$dev->MfgDate=date('Y-m-d',strtotime($_POST['mfgdate']));
+				$dev->InstallDate=date('Y-m-d',strtotime($_POST['installdate']));
+				$dev->WarrantyCo=$_POST['warrantyco'];
+				$dev->WarrantyExpire=date('Y-m-d',strtotime($_POST['warrantyexpire']));
+				$dev->Notes=trim($_POST['notes']);
+				$dev->Notes=($dev->Notes=="<br>")?"":$dev->Notes;
+				$dev->FirstPortNum=$_POST['firstportnum'];
+				// All of the values below here are optional based on the type of device being dealt with
+				(isset($_POST['chassisslots']))?$dev->ChassisSlots=$_POST['chassisslots']:'';
+				(isset($_POST['rearchassisslots']))?$dev->RearChassisSlots=$_POST['rearchassisslots']:'';
+				(isset($_POST['ports']))?$dev->Ports=$_POST['ports']:'';
+				(isset($_POST['powersupplycount']))?$dev->PowerSupplyCount=$_POST['powersupplycount']:'';
+				$dev->ParentDevice=(isset($_POST['parentdevice']))?$_POST['parentdevice']:"";
+				$dev->PrimaryIP=(isset($_POST['primaryip']))?$_POST['primaryip']:"";
+				$dev->SNMPCommunity=(isset($_POST['snmpcommunity']))?$_POST['snmpcommunity']:"";
+				$dev->ESX=(isset($_POST['esx']))?$_POST['esx']:0;
+				$dev->Reservation=(isset($_POST['reservation']))?($_POST['reservation']=="on")?1:0:0;
+				$dev->NominalWatts=$_POST['nominalwatts'];
+				$dev->HalfDepth=(isset($_POST['halfdepth']))?($_POST['halfdepth']=="on")?1:0:0;
+				$dev->BackSide=(isset($_POST['backside']))?($_POST['backside']=="on")?1:0:0;
 
 				if(($dev->TemplateID >0)&&(intval($dev->NominalWatts==0))){$dev->UpdateWattageFromTemplate();}
 
 				$write=false;
-				$write=($person->canWrite($cab->AssignedTo))?true:$write;
+				$write=($user->canWrite($cab->AssignedTo))?true:$write;
 				$write=($dev->Rights=="Write")?true:$write;
 
 				if($dev->Rights=="Write" && $dev->DeviceID >0){
@@ -633,27 +511,21 @@
 								$dev->MoveToStorage();
 							}else{
 								$dev->UpdateDevice();
-								updateCustomValues($dev);
 							}
 							break;
 						case 'Delete':
 							$dev->DeleteDevice();
 							//the $dev object should still exist even though we've deleted the db entry now
 							if($dev->ParentDevice >0){
-								header('Location: '.redirect("devices.php?DeviceID=$dev->ParentDevice"));
+								header('Location: '.redirect("devices.php?deviceid=$dev->ParentDevice"));
 							}else{
-								if($dev->Cabinet==-1){
-									header('Location: '.redirect("storageroom.php?dc=$dev->Position"));
-								}else{
-									header('Location: '.redirect("cabnavigator.php?cabinetid=$dev->Cabinet"));
-								}
+								header('Location: '.redirect("cabnavigator.php?cabinetid=$dev->Cabinet"));
 							}
 							exit;
 							break; // the exit should handle it
 						case 'Copy':
 							$copy=true;
-							$parent=($dev->ParentDevice)?$dev->ParentDevice:null;
-							if(!$dev->CopyDevice($parent)){
+							if(!$dev->CopyDevice()){
 								$copyerr=__("Device did not copy.  Error.");
 							}
 							break;
@@ -661,7 +533,7 @@
 							foreach($dev as $prop => $value){
 								$dev->$prop=null;
 							}
-							$dev->ParentDevice=$_REQUEST["ParentDevice"];
+							$dev->ParentDevice=$_REQUEST["parentdevice"];
 
 							// sets install date to today when a new device is being created
 							$dev->InstallDate=date("m/d/Y");
@@ -671,27 +543,11 @@
 				// but the user could have rights from the cabinet and it is checked above
 				// when the device object is populated.
 				}elseif($write && $_POST['action']=='Create'){
-					// Since the cabinet isn't part of the form for a child device creation
-					// it's possible to create a new child that doesn't follow the new cabinet designation
-					// we're creatig a device at this point so look up the parent just in case and match
-					// the cabinet designations
-					if($dev->ParentDevice){
-						$pdev=new Device();
-						$pdev->DeviceID=$dev->ParentDevice;
-						$pdev->getDevice();
-						$dev->Cabinet=$pdev->Cabinet;
-					}
-
 					if($dev->TemplateID>0 && intval($dev->NominalWatts==0)){
 						$dev->UpdateWattageFromTemplate();
 					}
 					$dev->CreateDevice();
 					$dev->SetTags($tagarray);
-					updateCustomValues($dev);
-
-					// We've, hopefully, successfully created a new device. Force them to the new device page.
-					header('Location: '.redirect("devices.php?DeviceID=$dev->DeviceID"));
-					exit;
 				}
 			}
 
@@ -712,21 +568,15 @@
 
 			// Since a device exists we're gonna need some additional info, but only if it's not a copy
 			if(!$copy){
-				// clearing errors for now
-				$LastWattage=$LastRead=$upTime=0;
+				$pwrConnection=new PowerConnection();
+				$pdu=new PowerDistribution();
+				$panel=new PowerPanel();
 
 				$pwrConnection->DeviceID=($dev->ParentDevice>0)?$dev->GetRootDeviceID():$dev->DeviceID;
-				$pwrCords=$pwrConnection->getPorts();
+				$pwrCords=$pwrConnection->GetConnectionsByDevice();
 
 				if($dev->DeviceType=='Switch'){
 					$linkList=SwitchInfo::getPortStatus($dev->DeviceID);
-				}elseif($dev->DeviceType=='CDU'){
-					$pdu->PDUID=$dev->DeviceID;
-					$pdu->GetPDU();
-
-					$lastreading=$pdu->GetLastReading();
-					$LastWattage=($lastreading)?$lastreading->Wattage:0;
-					$LastRead=($lastreading)?strftime("%c",strtotime($lastreading->LastRead)):"Never";
 				}
 			}
 
@@ -748,7 +598,7 @@
 				$chassis="Chassis";
 
 				// This is a child device and if the action of new is set let's assume the
-				// departmental Owner, primary contact, etc are the same as the parent
+				// departmental owner, primary contact, etc are the same as the parent
 				if(isset($_POST['action']) && $_POST['action']=='Child'){
 					$dev->Owner=$pDev->Owner;
 					$dev->EscalationTimeID=$pDev->EscalationTimeID;
@@ -761,7 +611,7 @@
 		$cab->GetCabinet();
 	}else{
 		/*
-		 * Everything below here will get processed when no DeviceID is present
+		 * Everything below here will get processed when no deviceid is present
 		 * aka adding a new device
 		 */
 
@@ -777,8 +627,7 @@
 						'Switch' => __("Switch"),
 						'Chassis' => __("Chassis"),
 						'Patch Panel' => __("Patch Panel"),
-						'Sensor' => __("Sensor"),
-						);
+);
 	}else{
 		$devarray=array('Server' => __("Server"),
 						'Appliance' => __("Appliance"),
@@ -786,10 +635,7 @@
 						'Switch' => __("Switch"),
 						'Chassis' => __("Chassis"),
 						'Patch Panel' => __("Patch Panel"),
-						'Physical Infrastructure' => __("Physical Infrastructure"),
-						'CDU' => __("CDU"),
-						'Sensor' => __("Sensor"),
-						);
+						'Physical Infrastructure' => __("Physical Infrastructure"));
 	}
 
 	if($config->ParameterArray["mDate"]=="now"){
@@ -815,14 +661,12 @@
 	$templ->TemplateID=$dev->TemplateID;
 	$templ->GetTemplateByID();
 
-
-	
 	$title=($dev->Label!='')?"$dev->Label :: $dev->DeviceID":__("openDCIM Device Maintenance");
 
-	function buildESXtable($DeviceID){
-		$ESX=new ESX();
-		$ESX->DeviceID=$DeviceID;
-		$vmList=$ESX->GetDeviceInventory();
+	function buildesxtable($deviceid){
+		$esx=new ESX();
+		$esx->DeviceID=$deviceid;
+		$vmList=$esx->GetDeviceInventory();
 
 		print "\n<div class=\"table border\"><div><div>".__("VM Name")."</div><div>".__("Status")."</div><div>".__("Owner")."</div><div>".__("Last Updated")."</div></div>\n";
 		foreach($vmList as $vmRow){
@@ -838,118 +682,15 @@
 			}else{
 				$Dept->Name=__("Unknown");
 			}
-			print "<div><div>$vmRow->vmName</div><div><font color=$statColor>$vmRow->vmState</font></div><div><a href=\"updatevmOwner.php?vmindex=$vmRow->VMIndex\">$Dept->Name</a></div><div>$vmRow->LastUpdated</div></div>\n";
+			print "<div><div>$vmRow->vmName</div><div><font color=$statColor>$vmRow->vmState</font></div><div><a href=\"updatevmowner.php?vmindex=$vmRow->VMIndex\">$Dept->Name</a></div><div>$vmRow->LastUpdated</div></div>\n";
 		}
 		echo '</div> <!-- END div.table -->';
 	}
-	
-	function buildCustomAttributes($template, $device) {
-		$dcaList=DeviceCustomAttribute::GetDeviceCustomAttributeList();
-		$tdcaList=$template->CustomValues;
-		$dcvList=$device->CustomValues;
 
-		$customvalues = array();
-
-		// pull the "all devices" custom attributes
-		if(isset($dcaList)) {
-			foreach($dcaList as $dca) {
-				if($dca->AllDevices==1) {
-					$customvalues[$dca->AttributeID]["value"]=$dca->DefaultValue;	
-					$customvalues[$dca->AttributeID]["type"]=$dca->AttributeType;
-					$customvalues[$dca->AttributeID]["required"]=$dca->Required;
-				}
-			}
-		}
-		if(isset($tdcaList)) {
-			// pull the device template level custom attributes (done second so we overwrite all devices)
-			foreach($tdcaList as $AttributeID=>$tdca) {
-				$customvalues[$AttributeID]["value"]=$tdca["value"];
-				$customvalues[$AttributeID]["type"]=$dcaList[$AttributeID]->AttributeType;
-				$customvalues[$AttributeID]["required"]=$tdca["required"];
-
-			}
-		}
-		if(isset($dcvList)) {
-			// pull the values set at this device level if any exist, the assumption being that one of the 2 loops above has already populated the type and required fields
-			foreach($dcvList as $AttributeID=>$dcv) {
-				if(array_key_exists($AttributeID, $customvalues)) {
-					$customvalues[$AttributeID]["value"]=$dcv;
-				} else {
-					// this is probably an  error, what do?
-				}
-			}
-		}
-		echo '<div class="table">';	
-		foreach($customvalues as $customkey=>$customdata) {
-			$inputname = "customvalue[$customkey]";
-			$validation="";
-			$cvtype = $customvalues[$customkey]["type"];
-			if($customvalues[$customkey]["required"]==1 || $cvtype!="string"){
-				$validation=' class="validate[';
-				$validationrules=array();
-				if($customvalues[$customkey]["required"]==1) {
-					$validationrules[]="required";
-				}
-				if($cvtype!="string" && $cvtype != "checkbox"){
-					$validationrules[]='custom['.$cvtype.']';
-				}
-				$validation.=implode(",",$validationrules);
-				$validation.=']" ';
-			}
-			echo '<div>
-				<div><label for="',$inputname,'">',$dcaList[$customkey]->Label,'</label></div>';
-			if($cvtype=="checkbox"){
-				$checked = "";
-				if($customdata["value"] == "1" || $customdata["value"]=="on"){
-					$checked = " checked";
-				}
-				echo '<div><input type="checkbox" name="',$inputname,'" id="',$inputname,'"',$checked,'></div>';
-			} else {
-				echo '<div><input type="text"',$validation,' name="',$inputname,'" id="',$inputname,'" value="',$customdata["value"],'"></div>';
-
-			}
-		     	echo '</div>';
-		}
-		echo '</div>';
-	}
-	function updateCustomValues($device) {
-		$template=new DeviceTemplate();
-		$template->TemplateID=$device->TemplateID;
-		$template->GetTemplateByID();
-		
-		$dcaList=DeviceCustomAttribute::GetDeviceCustomAttributeList();
-		$tdcaList=$template->CustomValues;
-		$defaultvalues = array();
-		if(isset($dcaList)) {
-			foreach($dcaList as $dca) {
-				if($dca->AllDevices==1) {
-					$defaultvalues[$dca->AttributeID]["value"]=$dca->DefaultValue;
-					$defaultvalues[$dca->AttributeID]["required"]=$dca->Required;
-				}
-			}
-		}
-		if(isset($tdcaList)) {
-			foreach($tdcaList as $AttributeID=>$tdca) {
-				$defaultvalues[$AttributeID]["value"]=$tdca["value"];
-				$defaultvalues[$AttributeID]["required"]=$tdca["required"];
-			}
-		}
-
-		$device->DeleteCustomValues();
-
-		if(isset($_POST["customvalue"])){
-			foreach($_POST["customvalue"] as $AttributeID=>$value) {
-				if(trim($value) != trim($defaultvalues[$AttributeID]["value"])) {
-					$device->InsertCustomValue($AttributeID, $value);	
-				}
-			}
-		}
-		
-	}
 // In the case of a child device we might define this above and in that case we
 // need to preserve the flag
 $write=(isset($write))?$write:false;
-$write=($person->canWrite($cab->AssignedTo))?true:$write;
+$write=($user->canWrite($cab->AssignedTo))?true:$write;
 $write=($dev->Rights=="Write")?true:$write;
 
 
@@ -996,11 +737,11 @@ function getHash(){
 		changingHash=true;
 		var hash=window.location.hash.substr(1);
 		switch (nextField) {
-			case "SerialNo":
-				$('#SerialNo').val(unescape(hash));
+			case "serialno":
+				$('#serialno').val(unescape(hash));
 				break;
-			case "AssetTag":
-				$('#AssetTag').val(unescape(hash));
+			case "assettag":
+				$('#assettag').val(unescape(hash));
 				break;
 			default:
 				break;
@@ -1095,7 +836,7 @@ $(document).ready(function() {
 			$(this).prev().wrap($('<div />'));
 			$(this).appendTo($(this).prev());
 		});
-		$('input[name="ChassisSlots"]').filter($('[type="hidden"]')).insertAfter($('.left'));
+		$('input[name="chassisslots"]').filter($('[type="hidden"]')).insertAfter($('.left'));
 		$('.device .table').css('width', 'auto');
 		$('.left').after($('<div class="table" id="target" style="width: 100%"></div>'));
 		$('.caption').appendTo($('#target'));
@@ -1106,108 +847,46 @@ $(document).ready(function() {
 	}
 
 	// add the current ports value to the document data store
-	$(document).data('Ports',$('#Ports').val());
-	$(document).data('PowerSupplyCount',$('#PowerSupplyCount').val());
-	$(document).data('DeviceType', $('select[name="DeviceType"]').val());
-	$(document).data('defaultsnmp','<?php echo $config->ParameterArray["SNMPCommunity"]; ?>');
-	$(document).data('showdc','<?php echo $config->ParameterArray["AppendCabDC"]; ?>');
+	$(document).data('ports',$('#ports').val());
+	$(document).data('devicetype', $('select[name="devicetype"]').val());
 
 	$('#deviceform').validationEngine();
-	$('#MfgDate').datepicker();
-	$('#InstallDate').datepicker();
-	$('#WarrantyExpire').datepicker();
-	$('#Owner').next('button').click(function(){
-		window.open('contactpopup.php?deptid='+$('#Owner').val(), 'Contacts Lookup', 'width=800, height=700, resizable=no, toolbar=no');
+	$('#mfgdate').datepicker();
+	$('#installdate').datepicker();
+	$('#warrantyexpire').datepicker();
+	$('#owner').next('button').click(function(){
+		window.open('contactpopup.php?deptid='+$('#owner').val(), 'Contacts Lookup', 'width=800, height=700, resizable=no, toolbar=no');
 		return false;
 	});
 
-	// CDU functions
-	$('#PanelID').change( function(){
-		$.get('scripts/ajax_panel.php?q='+$(this).val(), function(data) {
-			$('#voltage').html(data['PanelVoltage'] +'/'+ Math.floor(data['PanelVoltage']/1.73));
-		});
-	});
-	$('#btn_override').on('click',function(e){
-		var btn=$(e.currentTarget);
-		var target=$(e.currentTarget.previousSibling);
-		if(btn.val()=='edit'){
-			var specialinput=$('<input>').attr('size',5).val(target.text());
-			specialinput.keypress(function(event){
-				if(event.keyCode==10 || event.keyCode==13){
-					event.preventDefault();
-					btn.click();
-				}
-			});
-			btn.val('submit').text(btn.data('submit')).css('height','2em');
-			target.replaceWith(specialinput);
-			specialinput.focus().select();
-		}else{
-			btn.val('edit').text(btn.data('edit')).css('height','');
-			$.post('',{currwatts: target.val(), pduid:$('#DeviceID').val()}).done(function(data){
-				target.replaceWith($('<span>').text(data.Wattage));
-				$('#lastread').text(data.LastRead);
-			});
-		}
-	});
-
-	// Do a call after the page loads to get the CDU uptime to speed up the initial page load
-	if($('select[name=DeviceType]').val()=='CDU'){
-		$.post('',{cduuptime: '',DeviceID: $('#DeviceID').val()}, function(data) {
-			$('#cduuptime').text(data);
-		});
-	}
-
 
 	// Make SNMP community visible
-	$('#SNMPCommunity').focus(function(){$(this).attr('type','text');});
-	$('#SNMPCommunity').blur(function(){$(this).attr('type','password');});
+	$('#snmpcommunity').focus(function(){$(this).attr('type','text');});
+	$('#snmpcommunity').blur(function(){$(this).attr('type','password');});
 
-	// What what?! an SNMP test function!?
-	$('#PrimaryIP,#SNMPCommunity').on('change keyup keydown', function(){ SNMPTest(); }).change();
-
-	function SNMPTest(){
-		var ip=$('#PrimaryIP');
-		var snmp=$('#SNMPCommunity');
-		var dc=$(document).data('defaultsnmp');
-		var community=(snmp.val()!='')?snmp.val():(dc!='')?dc:'';
-
-		if(ip.val()!='' && community!=''){snmp.next('button').show().removeClass('hide');}else{snmp.next('button').hide();}
-	}
-
-	$('#btn_snmptest').click(function(e){
-		e.preventDefault();
-		var snmp=$('#SNMPCommunity');
-		var dc=$(document).data('defaultsnmp');
-		var community=(snmp.val()!='')?snmp.val():(dc!='')?dc:'';
-		$('#pdutest').html('<img src="images/mimesearch.gif" height="150px">Checking...');
-		$.post('', {snmptest: $('#DeviceID').val(),ip: $('#PrimaryIP').val(),community: community}, function(data){
-			$('#pdutest').html(data);
-		});
-		$('#pdutest').dialog({minWidth: 850, position: { my: "center", at: "top", of: window },closeOnEscape: true });
-	});
 
 	// Add in refresh functions for virtual machines
-	var ESXtable=$('<div>').addClass('table border').append('<div><div>VM Name</div><div>Status</div><div>Owner</div><div>Last Updated</div></div>');
-	var ESXbutton=$('<button>',{'type':'button'}).css({'position':'absolute','top':'10px','right':'2px'}).text('Refresh');
-	ESXbutton.click(ESXrefresh);
-	if($('#ESX').val()==1){
-		$('#ESXframe').css('position','relative').append(ESXbutton);
+	var esxtable=$('<div>').addClass('table border').append('<div><div>VM Name</div><div>Status</div><div>Owner</div><div>Last Updated</div></div>');
+	var esxbutton=$('<button>',{'type':'button'}).css({'position':'absolute','top':'10px','right':'2px'}).text('Refresh');
+	esxbutton.click(esxrefresh);
+	if($('#esx').val()==1){
+		$('#esxframe').css('position','relative').append(esxbutton);
 	}
-	function ESXrefresh(){
-		$.post('',{ESXrefresh: $('#DeviceID').val()}).done(function(data){
-			$('#ESXframe .table ~ .table').replaceWith(data);
+	function esxrefresh(){
+		$.post('',{esxrefresh: $('#deviceid').val()}).done(function(data){
+			$('#esxframe .table ~ .table').replaceWith(data);
 		});
 	}
 
 	// This is for adding blades to chassis devices
 	$('#adddevice').click(function() {
 		$(":input").attr("disabled","disabled");
-		$('#ParentDevice').removeAttr("disabled");
+		$('#parentdevice').removeAttr("disabled");
 		$('#adddevice').removeAttr("disabled");
 		$(this).submit();
 		setTimeout(function(){
 			$(":input").removeAttr("disabled"); // if they hit back it makes sure the fields aren't disabled
-			$('#ParentDevice').attr("disabled","disabled"); // if they hit back disable this so a chassis doesn't become its own parent
+			$('#parentdevice').attr("disabled","disabled"); // if they hit back disable this so a chassis doesn't become its own parent
 		},100);
 	});
 
@@ -1241,48 +920,37 @@ $(document).ready(function() {
 		if(n==0){$('#deviceimages').hide();}
 	}
 
-	function customattrrefresh(TemplateID){
-		$.post('',{customattrrefresh: TemplateID, DeviceID:  $('#DeviceID').val() }).done(function(data){
-			$('#customattrs .table ').replaceWith(data);
-		});
-
-
-	}
-
 	// Need to make some changes to the UI for the storage room
-	$('#CabinetID').change(function(){
-		var Positionrow=$('#Position').parent('div').parent('div');
+	$('#cabinetid').change(function(){
+		var positionrow=$('#position').parent('div').parent('div');
 		if($(this).val()==-1){
-			Positionrow.hide();
+			positionrow.hide();
 		}else{
-			Positionrow.show();
+			positionrow.show();
 		}
 	}).trigger('change');
 
 	// Auto-Populate fields based on device templates
-	$('#TemplateID').change( function(){
+	$('#templateid').change( function(){
 		$.get('scripts/ajax_template.php?q='+$(this).val(), function(data) {
-			$('#Height').val(data['Height']);
-			$('#Ports').val(data['NumPorts']);
-			$('#NominalWatts').val(data['Wattage']);
-			$('#PowerSupplyCount').val(data['PSCount']);
-			$('select[name=DeviceType]').val(data['DeviceType']).trigger('change');
-			$('#Height').trigger('change');
+			$('#height').val(data['Height']);
+			$('#ports').val(data['NumPorts']);
+			$('#nominalwatts').val(data['Wattage']);
+			$('#powersupplycount').val(data['PSCount']);
+			$('select[name=devicetype]').val(data['DeviceType']).trigger('change');
+			$('#height').trigger('change');
 			(data['FrontPictureFile']!='')?$('#devicefront').attr('src','pictures/'+data['FrontPictureFile']):$('#devicefront').removeAttr('src').hide();
 			(data['RearPictureFile']!='')?$('#devicerear').attr('src','pictures/'+data['RearPictureFile']):$('#devicerear').removeAttr('src').hide();
 			toggledeviceimages();
-			customattrrefresh($('#TemplateID').val());
 		});
 	});
 
-	$('select[name=DeviceType]').change(function(){
-// redo this to support a list of special frames hide all special frames except the category
-// we're currently dealing with
+	$('select[name=devicetype]').change(function(){
 		if($(this).val()=='Switch'){
-			if($(document).data('DeviceType')!='Switch'){
+			if($(document).data('devicetype')!='Switch'){
 				$('#firstport button:not([name="firstport"])').hide();
 			}
-			if($('#DeviceID').val()>0){
+			if($('#deviceid').val()>0){
 				$('#firstport').show().removeClass('hide');
 				$('.switch div[id^="st"]').show();
 			}
@@ -1291,53 +959,38 @@ $(document).ready(function() {
 			$('.switch div[id^="st"]').hide();
 		}
 		if($(this).val()=='Server'){
-			$('#ESXframe').show();
+			$('#esxframe').show();
 		}else{
-			$('#ESXframe').hide();
-		}
-		if($(this).val()=='CDU'){
-			$('#cdu').show().removeClass('hide');
-			$('#NominalWatts').parent('div').parent('div').addClass('hide');
-		}else{
-			$('#cdu').hide();
-			$('#NominalWatts').parent('div').parent('div').removeClass('hide');
+			$('#esxframe').hide();
 		}
 		resize();
 	}).change();
 	$('#firstport button[name=firstport]').click(function(){
-		// S.U.T. Update the IP and snmp community then click on the switch controls.
-		// we'll combat that with a limited device update.
-		$.post('api/v1/device/'+$('#DeviceID').val(),{PrimaryIP: $('#PrimaryIP').val(), SNMPCommunity: $('#SNMPCommunity').val()}).done(function(){
-
-			var modal=$('<div />', {id: 'modal', title: 'Select switch first port'}).html('<div id="modaltext"></div><br><div id="modalstatus" class="warning"></div>').dialog({
-				appendTo: 'body',
-				modal: true,
-				close: function(){$(this).dialog('destroy');}
-			});
-			$.post('',{fp: '', devid: $('#DeviceID').val()}).done(function(data){
-				$('#modaltext').html(data);
-				$('#modaltext input').change(function(){
-					var fpnum=$(this).val();
-					$.post('',{fp: fpnum, devid: $('#DeviceID').val()}).done(function(data){
-						$('input[name=FirstPortNum]').val(fpnum);
-						$('#modalstatus').html(data);
-						$('#modal').dialog('destroy');
-					}).then(refreshswitch($('#DeviceID').val(),true));
-				});
-			});
-		}).error(function(data){
-			$('#messages').text('data.message');
+		var modal=$('<div />', {id: 'modal', title: 'Select switch first port'}).html('<div id="modaltext"></div><br><div id="modalstatus" class="warning"></div>').dialog({
+			appendTo: 'body',
+			modal: true,
+			close: function(){$(this).dialog('destroy');}
 		});
-
+		$.post('',{fp: '', devid: $('#deviceid').val()}).done(function(data){
+			$('#modaltext').html(data);
+			$('#modaltext input').change(function(){
+				var fpnum=$(this).val();
+				$.post('',{fp: fpnum, devid: $('#deviceid').val()}).done(function(data){
+					$('input[name=firstportnum]').val(fpnum);
+					$('#modalstatus').html(data);
+					$('#modal').dialog('destroy');
+				}).then(refreshswitch($('#deviceid').val(),true));
+			});
+		});
 	});
 	$('#firstport button[name=refresh]').click(function(){
-		refreshswitch($('#DeviceID').val());
+		refreshswitch($('#deviceid').val());
 	});
 	$('#firstport button[name=name]').click(function(){
-		refreshswitch($('#DeviceID').val(),'names');
+		refreshswitch($('#deviceid').val(),'names');
 	});
-	$('#firstport button[name=Notes]').click(function(){
-		refreshswitch($('#DeviceID').val(),'Notes');
+	$('#firstport button[name=notes]').click(function(){
+		refreshswitch($('#deviceid').val(),'notes');
 	});
 	function refreshswitch(devid,names){
 		var modal=$('<div />', {id: 'modal', title: 'Please wait...'}).html('<div id="modaltext"><img src="images/animatedswitch.gif" style="width: 100%;"><br>Polling device...</div><br><div id="modalstatus" class="warning"></div>').dialog({
@@ -1350,9 +1003,9 @@ $(document).ready(function() {
 		if(names){
 			if(names=='names'){
 				$.post('',{refreshswitch: devid, names: names}).done(function(data){
-					$.each(data, function(i,Label){
-						if(Label){
-							$('#spn'+i).text(Label);
+					$.each(data, function(i,label){
+						if(label){
+							$('#spn'+i).text(label);
 						}else{
 							$('#spn'+i).text('');
 						}
@@ -1360,10 +1013,10 @@ $(document).ready(function() {
 					modal.dialog('destroy');
 				});
 			}else{
-				$.post('',{refreshswitch: devid, Notes: names}).done(function(data){
-					$.each(data, function(i,Notes){
-						if(Notes){
-							$('#n'+i).text(Notes);
+				$.post('',{refreshswitch: devid, notes: names}).done(function(data){
+					$.each(data, function(i,notes){
+						if(notes){
+							$('#n'+i).text(notes);
 						}else{
 							$('#n'+i).text('');
 						}
@@ -1389,7 +1042,7 @@ print "		var dialog=$('<div>').prop('title',\"".__("Verify Delete Device")."\").
 		// Add an extra alert warning about child devices in chassis
 		if($dev->DeviceType=='Chassis'){
 ?>
-		$('select[name=DeviceType]').change(function(){
+		$('select[name=devicetype]').change(function(){
 			var form=$(this).parents('form');
 			var btn=$(this);
 			if($(this).val()!='Chassis'){
@@ -1405,7 +1058,7 @@ print "		var dialog=$('<div>').prop('title',\"".__("Verify Delete Device")."\").
 						},
 <?php echo '				',__("No"),': function(){'; ?>
 							$('.killthechildren').remove();
-							$('select[name=DeviceType]').val('Chassis').change();
+							$('select[name=devicetype]').val('Chassis').change();
 							$(this).dialog("destroy");
 						}
 					}
@@ -1420,29 +1073,29 @@ print "		var dialog=$('<div>').prop('title',\"".__("Verify Delete Device")."\").
 		// hide cabinet slot picker from child devices
 		if($dev->ParentDevice==0){
 ?>
-		$('#CabinetID').change(function(){
-			$.post('', {cab: $("select#CabinetID").val()}, function(data){
-				var posclass=$('#Position').attr('class');
+		$('#cabinetid').change(function(){
+			$.post('', {cab: $("select#cabinetid").val()}, function(data){
+				var posclass=$('#position').attr('class');
 				if(parseInt(data.trim())>0){
-					$('#Position').attr('class',posclass.replace(/max\[([0-9]).*?\]/gi,"max["+data.trim()+"]")).trigger('focusout');
+					$('#position').attr('class',posclass.replace(/max\[([0-9]).*?\]/gi,"max["+data.trim()+"]")).trigger('focusout');
 				}
 			});
 		});
-		$('#Height').change(function(){
+		$('#height').change(function(){
 			if($(this).val()==0){
-				$('#Position').attr('disabled', 'true');
-				$(this).parents('form').append('<input class="tmpposition" type="hidden" name="Position" value="0">');
+				$('#position').attr('disabled', 'true');
+				$(this).parents('form').append('<input class="tmpposition" type="hidden" name="position" value="0">');
 			}else{
-				$('#Position').removeAttr('disabled');
-				$('.tmpPosition').remove();
+				$('#position').removeAttr('disabled');
+				$('.tmpposition').remove();
 			}
 		});
-		$('#Height').trigger('change');
-		$('#Position').focus(function()	{
-			var cab=$("select#CabinetID").val();
-			var hd=$('#HalfDepth').is(':checked');
-			var bs=$('#BackSide').is(':checked');
-			$.getJSON('scripts/ajax_cabinetuse.php?cabinet='+cab+'&DeviceID='+$("#DeviceID").val()+'&HalfDepth='+hd+'&BackSide='+bs, function(data) {
+		$('#height').trigger('change');
+		$('#position').focus(function()	{
+			var cab=$("select#cabinetid").val();
+			var hd=$('#halfdepth').is(':checked');
+			var bs=$('#backside').is(':checked');
+			$.getJSON('scripts/ajax_cabinetuse.php?cabinet='+cab+'&deviceid='+$("#deviceid").val()+'&halfdepth='+hd+'&backside='+bs, function(data) {
 				var ucount=0;
 				$.each(data, function(i,inuse){
 					ucount++;
@@ -1455,24 +1108,24 @@ print "		var dialog=$('<div>').prop('title',\"".__("Verify Delete Device")."\").
 					rackhtmlright+='<div val='+ucount+' class="'+cssclass+'"></div>';
 				}
 				var rackhtml='<div class="table border positionselector"><div><div>'+rackhtmlleft+'</div><div>'+rackhtmlright+'</div></div></div>';
-				$('#Positionselector').html(rackhtml);
+				$('#positionselector').html(rackhtml);
 				setTimeout(function(){
 					var divwidth=$('.positionselector').width();
 					var divheight=$('.positionselector').height();
-					$('#Positionselector').width(divwidth);
-					$('#Height').focus(function(){$('#Positionselector').css({'left': '-1000px'});});
-					$('#Positionselector').css({
+					$('#positionselector').width(divwidth);
+					$('#height').focus(function(){$('#positionselector').css({'left': '-1000px'});});
+					$('#positionselector').css({
 						'left':(($('.right').position().left)-(divwidth+40)),
 						'top':(($('.right').position().top))
 					});
-					$('#Positionselector').mouseleave(function(){
-						$('#Positionselector').css({'left': '-1000px'});
+					$('#positionselector').mouseleave(function(){
+						$('#positionselector').css({'left': '-1000px'});
 					});
 					$('.positionselector > div > div + div > div').mouseover(function(){
 						$('.positionselector > div > div + div > div').each(function(){
 							$(this).removeAttr('style');
 						});
-						var unum=$("#Height").val();
+						var unum=$("#height").val();
 						if(unum>=1 && $(this).attr('class')!='notavail'){
 							var test='';
 							var background='green';
@@ -1495,8 +1148,8 @@ print "		var dialog=$('<div>').prop('title',\"".__("Verify Delete Device")."\").
 									$(this).css({'background-color': background, 'cursor': pointer});
 									if(background=='green'){
 										$(this).click(function(){
-											$('#Position').val($(this).attr('val')).trigger('focusout');
-											$('#Positionselector').css({'left': '-1000px'});
+											$('#position').val($(this).attr('val')).trigger('focusout');
+											$('#positionselector').css({'left': '-1000px'});
 										});
 									}
 								}
@@ -1505,17 +1158,15 @@ print "		var dialog=$('<div>').prop('title',\"".__("Verify Delete Device")."\").
 					});
 				},100);
 			}, 'json');
-		}).click(function(){
-			$(this).trigger('focus');
 		});
 <?php
 		}
 ?>
 
-		$('#Reservation').change(function(){
+		$('#reservation').change(function(){
 			if(!$(this).prop("checked")){
 				var d=new Date();
-				$('#InstallDate').datepicker("setDate",d);
+				$('#installdate').datepicker("setDate",d);
 			}
 		});
 		// Delete device confirmation dialog
@@ -1539,30 +1190,17 @@ print "		var dialog=$('<div>').prop('title',\"".__("Verify Delete Device")."\").
 			});
 		});
 
-		$('#Ports').change(function(){
+		$('#ports').change(function(){
 			// not sure why .data() is turning an int into a string parseInt is fixing that
-			if($(this).val() > parseInt($(document).data('Ports'))){
+			if($(this).val() > parseInt($(document).data('ports'))){
 				//make more ports and add the rows below
 				$('button[value="Update"]').click();
-			}else if($(this).val()==$(document).data('Ports')){
+			}else if($(this).val()==$(document).data('ports')){
 				// this is the I changed my mind condition.
-				$('.device .switch .delete').hide();
+				$('.device .delete').hide();
 			}else{
 				//S.U.T. present options to remove ports
-				$('.device .switch .delete').show();
-			}
-		});
-		$('#PowerSupplyCount').change(function(){
-			// not sure why .data() is turning an int into a string parseInt is fixing that
-			if($(this).val() > parseInt($(document).data('PowerSupplyCount'))){
-				//make more ports and add the rows below
-				$('button[value="Update"]').click();
-			}else if($(this).val()==$(document).data('PowerSupplyCount')){
-				// this is the I changed my mind condition.
-				$('.device .power .delete').hide();
-			}else{
-				//S.U.T. present options to remove ports
-				$('.device .power .delete').show();
+				$('.device .delete').show();
 			}
 		});
 
@@ -1575,11 +1213,6 @@ print "		var dialog=$('<div>').prop('title',\"".__("Verify Delete Device")."\").
 		if(portrights[row.data('port')]){ // only bind edit functions if they have rights
 			row.row();
 		}
-	});
-
-	$('.power > div ~ div').each(function(){
-		var row=$(this);
-		row.power();
 	});
 
 	function setPreferredLayout() {<?php if(isset($_COOKIE["layout"]) && strtolower($_COOKIE["layout"])==="portrait"){echo 'swaplayout();setCookie("layout","Portrait");';}else{echo 'setCookie("layout","Landscape");';} ?>}
@@ -1609,77 +1242,68 @@ echo '<div class="main">
 <button id="layout" onClick="swaplayout()">'.__("Portrait").'</button>';
 echo($copy)?"<h3>$copyerr</h3>":'';
 echo '<div class="center"><div>
-<h3></h3><h3 id="messages"></h3>
-<div id="Positionselector"></div>
-<form name="deviceform" id="deviceform" method="POST">
+<div id="positionselector"></div>
+<form name="deviceform" id="deviceform" action="'.$_SERVER['PHP_SELF'].((isset($dev->DeviceID) && $dev->DeviceID>0)?"?deviceid=$dev->DeviceID":"").'" method="POST">
 <div class="left">
 <fieldset>
 	<legend>'.__("Asset Tracking").'</legend>
 	<div class="table">
 		<div>
 		   <div>'.__("Device ID").'</div>
-		   <div><input type="text" name="DeviceID" id="DeviceID" value="'.$dev->DeviceID.'" size="6" readonly></div>
+		   <div><input type="text" name="deviceid" id="deviceid" value="'.$dev->DeviceID.'" size="6" readonly></div>
 		</div>
 		<div>
-			<div><label for="Reservation">'.__("Reservation?").'</label></div>
-			<div><input type="checkbox" name="Reservation" id="Reservation"'.((($dev->Reservation) || $copy )?" checked":"").'></div>
+			<div><label for="reservation">'.__("Reservation?").'</label></div>
+			<div><input type="checkbox" name="reservation" id="reservation"'.((($dev->Reservation) || $copy )?" checked":"").'></div>
 		</div>
 		<div>
-		   <div><label for="Label">'.__("Label").'</label></div>
-		   <div><input type="text" class="validate[required,minSize[3],maxSize[50]]" name="Label" id="Label" size="40" value="'.$dev->Label.'"></div>
+		   <div><label for="label">'.__("Label").'</label></div>
+		   <div><input type="text" class="validate[required,minSize[3],maxSize[50]]" name="label" id="label" size="40" value="'.$dev->Label.'"></div>
 		</div>
 		<div>
-		   <div><label for="SerialNo">'.__("Serial Number").'</label></div>
-		   <div><input type="text" name="SerialNo" id="SerialNo" size="40" value="'.$dev->SerialNo.'">
-		   <button class="hide" type="button" onclick="getScan(\'SerialNo\')">',__("Scan Barcode"),'</button></div>
+		   <div><label for="serialno">'.__("Serial Number").'</label></div>
+		   <div><input type="text" name="serialno" id="serialno" size="40" value="'.$dev->SerialNo.'">
+		   <button class="hide" type="button" onclick="getScan(\'serialno\')">',__("Scan Barcode"),'</button></div>
 		</div>
 		<div>
-		   <div><label for="AssetTag">'.__("Asset Tag").'</label></div>
-		   <div><input type="text" name="AssetTag" id="AssetTag" size="20" value="'.$dev->AssetTag.'">
-		   <button class="hide" type="button" onclick="getScan(\'AssetTag\')">',__("Scan Barcode"),'</button></div>
+		   <div><label for="assettag">'.__("Asset Tag").'</label></div>
+		   <div><input type="text" name="assettag" id="assettag" size="20" value="'.$dev->AssetTag.'">
+		   <button class="hide" type="button" onclick="getScan(\'assettag\')">',__("Scan Barcode"),'</button></div>
 		</div>
 		<div>
-		  <div><label for="PrimaryIP">'.__("Primary IP / Host Name").'</label></div>
-		  <div><input type="text" name="PrimaryIP" id="PrimaryIP" size="20" value="'.$dev->PrimaryIP.'">
-				<input type="hidden" name="FirstPortNum" value="'.$dev->FirstPortNum.'"></div>
+		  <div><label for="primaryip">'.__("Primary IP / Host Name").'</label></div>
+		  <div><input type="text" name="primaryip" id="primaryip" size="20" value="'.$dev->PrimaryIP.'">
+				<input type="hidden" name="firstportnum" value="'.$dev->FirstPortNum.'"></div>
 		</div>
 		<div>
-		  <div><label for="SNMPCommunity">'.__("SNMP Read Only Community").'</label></div>
-		  <div><input type="password" name="SNMPCommunity" id="SNMPCommunity" size="40" value="'.$dev->SNMPCommunity.'"><button type="button" class="hide" id="btn_snmptest">'.__("Test SNMP").'</button></div>
+		  <div><label for="snmpcommunity">'.__("SNMP Read Only Community").'</label></div>
+		  <div><input type="password" name="snmpcommunity" id="snmpcommunity" size="40" value="'.$dev->SNMPCommunity.'"></div>
 		</div>
 		<div>
-		  <div><label for="SNMPFailureCount">'.__("Consecutive SNMP Failures").'</label></div>
-		  <div><input type="number" name="SNMPFailureCount" id="SNMPFailureCount" value="'.$dev->SNMPFailureCount.'">'.__("Polling is disabled after three consecutive failures.").'</div>
-		</div>
-		<div>
-		   <div><label for="MfgDate">'.__("Manufacture Date").'</label></div>
-		   <div><input type="text" class="validate[optional,custom[date]] datepicker" name="MfgDate" id="MfgDate" value="'.(($dev->MfgDate>'0000-00-00 00:00:00')?date('m/d/Y',strtotime($dev->MfgDate)):"").'">
+		   <div><label for="mfgdate">'.__("Manufacture Date").'</label></div>
+		   <div><input type="text" class="validate[optional,custom[date]] datepicker" name="mfgdate" id="mfgdate" value="'.(($dev->MfgDate>'0000-00-00 00:00:00')?date('m/d/Y',strtotime($dev->MfgDate)):"").'">
 		   </div>
 		</div>
 		<div>
-		   <div><label for="InstallDate">'.__("Install Date").'</label></div>
-		   <div><input type="text" class="validate[required,custom[date]] datepicker" name="InstallDate" id="InstallDate" value="'.(($dev->InstallDate>'0000-00-00 00:00:00')?date('m/d/Y',strtotime($dev->InstallDate)):"").'"></div>
+		   <div><label for="installdate">'.__("Install Date").'</label></div>
+		   <div><input type="text" class="validate[required,custom[date]] datepicker" name="installdate" id="installdate" value="'.(($dev->InstallDate>'0000-00-00 00:00:00')?date('m/d/Y',strtotime($dev->InstallDate)):"").'"></div>
 		</div>
 		<div>
-		   <div><label for="WarrantyCo">'.__("Warranty Company").'</label></div>
-		   <div><input type="text" name="WarrantyCo" id="WarrantyCo" value="'.$dev->WarrantyCo.'"></div>
+		   <div><label for="warrantyco">'.__("Warranty Company").'</label></div>
+		   <div><input type="text" name="warrantyco" id="warrantyco" value="'.$dev->WarrantyCo.'"></div>
 		</div>
 		<div>
-		   <div><label for="WarrantyExpire">'.__("Warranty Expiration").'</label></div>
-		   <div><input type="text" class="validate[custom[date]] datepicker" name="WarrantyExpire" id="WarrantyExpire" value="'.date('m/d/Y',strtotime($dev->WarrantyExpire)).'"></div>
+		   <div><label for="installdate">'.__("Warranty Expiration").'</label></div>
+		   <div><input type="text" class="validate[custom[date]] datepicker" name="warrantyexpire" id="warrantyexpire" value="'.date('m/d/Y',strtotime($dev->WarrantyExpire)).'"></div>
 		</div>
 		<div>
-		   <div>'.__("Last Audit Completed").'</div>
-		   <div><span id="auditdate">'.((strtotime($dev->AuditStamp)>0)?date('r',strtotime($dev->AuditStamp)):__("Audit not yet completed")).'</span></div>
-		</div>
-		<div>
-		   <div><label for="Owner">'.__("Departmental Owner").'</label></div>
+		   <div><label for="owner">'.__("Departmental Owner").'</label></div>
 		   <div>
-			<select name="Owner" id="Owner">
+			<select name="owner" id="owner">
 				<option value=0>'.__("Unassigned").'</option>';
 
 			foreach($deptList as $deptRow){
-				$selected=($dev->Owner==$deptRow->DeptID)?" selected":"";
+				if($dev->Owner==$deptRow->DeptID){$selected=" selected";}else{$selected="";}
 				print "\t\t\t\t<option value=\"$deptRow->DeptID\"$selected>$deptRow->Name</option>\n";
 			}
 
@@ -1693,24 +1317,24 @@ echo '			</select>
 		   <legend>',__("Escalation Information"),'</legend>
 		   <div class="table">
 			<div>
-				<div><label for="EscalationTimeID">',__("Time Period"),'</label></div>
-				<div><select name="EscalationTimeID" id="EscalationTimeID">
+				<div><label for="escaltationtimeid">',__("Time Period"),'</label></div>
+				<div><select name="escalationtimeid" id="escalationtimeid">
 					<option value="">',__("Select..."),'</option>';
 
 				foreach($escTimeList as $escTime){
-					$selected=($escTime->EscalationTimeID==$dev->EscalationTimeID)?" selected":"";
+					if($escTime->EscalationTimeID==$dev->EscalationTimeID){$selected=" selected";}else{$selected="";}
 					print "\t\t\t\t\t<option value=\"$escTime->EscalationTimeID\"$selected>$escTime->TimePeriod</option>\n";
 				}
 
 echo '				</select></div>
 			</div>
 			<div>
-				<div><label for="EscalationID">',__("Details"),'</label></div>
-				<div><select name="EscalationID" id="EscalationID">
+				<div><label for="escalationid">',__("Details"),'</label></div>
+				<div><select name="escalationid" id="escalationid">
 					<option value="">',__("Select..."),'</option>';
 
 				foreach($escList as $esc){
-					$selected=($esc->EscalationID==$dev->EscalationID)?" selected":"";
+					if($esc->EscalationID==$dev->EscalationID){$selected=" selected";}else{$selected="";}
 					print "\t\t\t\t\t<option value=\"$esc->EscalationID\"$selected>$esc->Details</option>\n";
 				}
 
@@ -1720,13 +1344,13 @@ echo '				</select></div>
 		   </fieldset></div>
 		</div>
 		<div>
-		   <div><label for="PrimaryContact">',__("Primary Contact"),'</label></div>
-		   <div><select name="PrimaryContact" id="PrimaryContact">
+		   <div><label for="primarycontact">',__("Primary Contact"),'</label></div>
+		   <div><select name="primarycontact" id="primarycontact">
 				<option value=0>',__("Unassigned"),'</option>';
 
 			foreach($contactList as $contactRow){
-				if($contactRow->PersonID==$dev->PrimaryContact){$contactUserID=$contactRow->UserID;$selected=" selected";}else{$selected="";}
-				print "\t\t\t\t<option value=\"$contactRow->PersonID\"$selected>$contactRow->LastName, $contactRow->FirstName</option>\n";
+				if($contactRow->ContactID==$dev->PrimaryContact){$contactUserID=$contactRow->UserID;$selected=" selected";}else{$selected="";}
+				print "\t\t\t\t<option value=\"$contactRow->ContactID\"$selected>$contactRow->LastName, $contactRow->FirstName</option>\n";
 			}
 
 			print "\t\t\t</select>\n";
@@ -1743,15 +1367,10 @@ echo '		   </div>
 		</div>
 	</div> <!-- END div.table -->
 </fieldset>
-<fieldset id="customattrs">
-<legend>',__("Custom Attributes"),'</legend>';
-buildCustomAttributes($templ,$dev);
-echo '
-</fieldset>
 	<div class="table">
 		<div>
-		  <div><label for="Notes">',__("Notes"),'</label></div>
-		  <div><textarea name="Notes" id="Notes" cols="40" rows="8">',$dev->Notes,'</textarea></div>
+		  <div><label for="notes">',__("Notes"),'</label></div>
+		  <div><textarea name="notes" id="notes" cols="40" rows="8">',$dev->Notes,'</textarea></div>
 		</div>
 	</div> <!-- END div.table -->
 </div><!-- END div.left -->
@@ -1760,16 +1379,16 @@ echo '
 	<legend>',__("Physical Infrastructure"),'</legend>
 	<div class="table">
 		<div>
-			<div><label for="CabinetID">',__("Cabinet"),'</label></div>';
+			<div><label for="cabinet">',__("Cabinet"),'</label></div>';
 
 		if($dev->ParentDevice==0){
 			print "\t\t\t<div>".$cab->GetCabinetSelectList()."</div>\n";
 		}else{
-			print "\t\t\t<div>$cab->Location<input type=\"hidden\" name=\"CabinetID\" value=$cab->CabinetID></div>
+			print "\t\t\t<div>$cab->Location<input type=\"hidden\" name=\"cabinetid\" value=\"0\"></div>
 		</div>
 		<div>
-			<div><label for=\"ParentDevice\">".__("Parent Device")."</label></div>
-			<div><select name=\"ParentDevice\">\n";
+			<div><label for=\"parentdevice\">".__("Parent Device")."</label></div>
+			<div><select name=\"parentdevice\">\n";
 
 			foreach($parentList as $parDev){
 				if($pDev->DeviceID==$parDev->DeviceID){$selected=" selected";}else{$selected="";}
@@ -1780,8 +1399,8 @@ echo '
 
 echo '		</div>
 		<div>
-			<div><label for="TemplateID">',__("Device Class"),'</label></div>
-			<div><select name="TemplateID" id="TemplateID">
+			<div><label for="templateid">',__("Device Class"),'</label></div>
+			<div><select name="templateid" id="templateid">
 				<option value=0>',__("Select a template..."),'</option>';
 
 			foreach($templateList as $tempRow){
@@ -1798,42 +1417,42 @@ echo '			</select>
 			</div>
 		</div>
 		<div>
-		   <div><label for="Height">',($dev->ParentDevice==0)?__("Height"):__("Number of slots"),'</label></div>
-		   <div><input type="number" class="required,validate[custom[onlyNumberSp]]" name="Height" id="Height" value="',$dev->Height,'"></div>
+		   <div><label for="height">',($dev->ParentDevice==0)?__("Height"):__("Number of slots"),'</label></div>
+		   <div><input type="number" class="required,validate[custom[onlyNumberSp]]" name="height" id="height" size="4" value="',$dev->Height,'"></div>
 		</div>
 		<div>
-		   <div><label for="Position">',__("Position"),'</label></div>
-		   <div><input type="number" class="required,validate[custom[onlyNumberSp],min[1],max[',$cab->CabinetHeight,']]" name="Position" id="Position" value="',$dev->Position,'"></div>
+		   <div><label for="position">',__("Position"),'</label></div>
+		   <div><input type="number" class="required,validate[custom[onlyNumberSp],min[1],max[',$cab->CabinetHeight,']]" name="position" id="position" size="4" value="',$dev->Position,'"></div>
 		</div>
 		';
 
 		//JMGA: child devices not use HalfDepth
 		if($dev->ParentDevice==0){
 echo '		<div>
-			<div><label for="HalfDepth">'.__("Half Depth").'</label></div>
-			<div><input type="checkbox" name="HalfDepth" id="HalfDepth"'.(($dev->HalfDepth)?" checked":"").'></div>
+			<div><label for="halfdepth">'.__("Half Depth").'</label></div>
+			<div><input type="checkbox" name="halfdepth" id="halfdepth"'.(($dev->HalfDepth)?" checked":"").'></div>
 		</div>';
 		}
 echo '		<div>
-			<div><label for="BackSide">'.__("Back Side").'</label></div>
-			<div><input type="checkbox" name="BackSide" id="BackSide"'.(($dev->BackSide)?" checked":"").'></div>
+			<div><label for="backside">'.__("Back Side").'</label></div>
+			<div><input type="checkbox" name="backside" id="backside"'.(($dev->BackSide)?" checked":"").'></div>
 		</div>';
 
 		echo '		<div id="dphtml">
-		   <div><label for="Ports">',__("Number of Data Ports"),'</label></div>
-		   <div><input type="number" class="optional,validate[custom[onlyNumberSp]]" name="Ports" id="Ports" value="',$dev->Ports,'"></div>
+		   <div><label for="ports">',__("Number of Data Ports"),'</label></div>
+		   <div><input type="number" class="optional,validate[custom[onlyNumberSp]]" name="ports" id="ports" size="4" value="',$dev->Ports,'"></div>
 		</div>';
 
 echo '		<div>
-		   <div><label for="NominalWatts">',__("Nominal Draw (Watts)"),'</label></div>
-		   <div><input type="text" class="optional,validate[custom[onlyNumberSp]]" name="NominalWatts" id="NominalWatts" value="',$dev->NominalWatts,'"></div>
+		   <div><label for="nominalwatts">',__("Nominal Draw (Watts)"),'</label></div>
+		   <div><input type="text" class="optional,validate[custom[onlyNumberSp]]" name="nominalwatts" id="nominalwatts" size=6 value="',$dev->NominalWatts,'"></div>
 		</div>';
 
 		// Blade devices don't have power supplies
 		if($dev->ParentDevice==0){
 			echo '		<div>
-		   <div><label for="PowerSupplyCount">',__("Power Connections"),'</label></div>
-		   <div><input type="number" class="optional,validate[custom[onlyNumberSp]]" name="PowerSupplyCount" id="PowerSupplyCount" value="',$dev->PowerSupplyCount,'"></div>
+		   <div><label for="powersupplycount">',__("Number of Power Supplies"),'</label></div>
+		   <div><input type="number" class="optional,validate[custom[onlyNumberSp]]" name="powersupplycount" id="powersupplycount" size=4 value="',$dev->PowerSupplyCount,'"></div>
 		</div>';
 		}
 
@@ -1851,7 +1470,7 @@ echo '		<div>
 
 echo '		<div>
 		   <div>',__("Device Type"),'</div>
-		   <div><select name="DeviceType">
+		   <div><select name="devicetype">
 			<option value=0>',__("Select..."),'</option>';
 
 		foreach($devarray as $devType => $translation){
@@ -1873,128 +1492,9 @@ echo '
 		<img id="devicerear" src="pictures/'.$templ->RearPictureFile.'" alt="rear of device">
 	</div>
 </fieldset>
-<fieldset id="cdu" class="hide">
-	<legend>'.__("Power Specifications").'</legend>
-	<div class="table">
-		<div>
-			<div><label for="PanelID">',__("Source Panel"),'</label></div>
-			<div>
-				<select name="PanelID" id="PanelID" >
-					<option value=0>',__("Select Panel"),'</option>';
-
-		$Panel=new PowerPanel();
-		$PanelList=$Panel->getPanelList();
-		foreach($PanelList as $key=>$value){
-			$selected=($value->PanelID == $pdu->PanelID)?' selected':"";
-			print "\n\t\t\t\t\t<option value=\"$value->PanelID\"$selected>$value->PanelLabel</option>\n"; 
-		}
-
-		echo '
-				</select>
-			</div>
-		</div>
-		<div>
-			<div><label for="voltage">',__("Voltages:"),'</label></div>
-			<div id="voltage">';
-
-			if($pdu->PanelID >0){
-				$pnl=new PowerPanel();
-				$pnl->PanelID=$pdu->PanelID;
-				$pnl->getPanel();
-			
-				print $pnl->PanelVoltage." / ".intval($pnl->PanelVoltage/1.73);
-			}
-
-		echo '</div>
-		</div>
-		<div>
-			<div><label for="BreakerSize">',__("Breaker Size (# of Poles)"),'</label></div>
-			<div>
-				<select name="BreakerSize" id="BreakerSize">';
-
-			for($i=1;$i<4;$i++){
-				if($i==$pdu->BreakerSize){$selected=" selected";}else{$selected="";}
-				print "\n\t\t\t\t\t<option value=\"$i\"$selected>$i</option>";
-			}
-
-		echo '
-				</select>
-			</div>
-		</div>
-		<div>
-			<div><label for="PanelPole">',__("Panel Pole Number"),'</label></div>
-			<div><input type="text" name="PanelPole" id="PanelPole" size=5 value="',$pdu->PanelPole,'"></div>
-		</div>';
-
-		if($pdu->BreakerSize>1) {
-			echo '
-		<div>
-			<div><label for="allbreakerpoles">',__("All Breaker Poles"),'</label></div>
-			<div>',$pdu->GetAllBreakerPoles(),'</div>
-		</div>';
-		}
-		echo '
-		<div>
-			<div><label for="InputAmperage">',__("Input Amperage"),'</label></div>
-			<div><input type="text" name="InputAmperage" id="InputAmperage" size=5 value="',$pdu->InputAmperage,'"></div>
-		</div>';
-
-		// Only show the version, etc if we aren't creating a CDU
-		if($dev->DeviceID>0){
-		echo '
-		<div>
-			<div>',__("Uptime"),'</div>
-			<div id="cduuptime">',$upTime,'</div>
-		</div>
-		<div>
-			<div>',__("Firmware Version"),'</div>
-			<div>',$pdu->FirmwareVersion,'</div>
-		</div>
-		<div>
-			<div><label for="currwatts">',__("Wattage"),'</label></div>
-			<div><span>',$LastWattage,'</span><button type="button" id="btn_override" value="edit" data-edit="',__("Manual Entry"),'" data-submit="',__("Submit"),'">',__("Manual Entry"),'</button></div>
-		</div>
-		<div>
-			<div>',__("Last Update"),':</div>
-			<div id="lastread">',$LastRead,'</div>
-		</div>';
-		}
-		echo '
-		<div class="caption">
-			<fieldset class="noborder">
-				<legend>',__("Automatic Transfer Switch"),'</legend>
-				<div class="table centermargin border">
-					<div>
-						<div><label for="failsafe">',__("Fail Safe Switch?"),'</label></div>
-						<div><input type="checkbox" name="failsafe" id="failsafe"',(($pdu->FailSafe)?" checked":""),'></div>
-					</div>
-					<div>
-						<div><label for="PanelID2">',__("Source Panel (Secondary Source)"),'</label></div>
-						<div>
-							<select name="PanelID2" id="PanelID2">
-								<option value=0>',__("Select Panel"),'</option>';
-
-				foreach($PanelList as $key=>$value){
-					if($value->PanelID==$pdu->PanelID2){$selected=" selected";}else{$selected="";}
-					print "\n\t\t\t\t\t\t<option value=$value->PanelID$selected>$value->PanelLabel</option>";
-				}
-
-			echo '
-							</select>
-						</div>
-					</div>
-					<div>
-						<div><label for="PanelPole2">',__("Panel Pole Number (Secondary Source)"),'</label></div>
-						<div><input type="text" name="PanelPole2" id="PanelPole2" size=4 value="',$pdu->PanelPole2,'"></div>
-					</div>
-				</div>
-			</fieldset>
-		</div>
-	</div>
-</fieldset>
 <fieldset id="firstport" class="hide">
 	<legend>'.__("Switch SNMP").'</legend>
-	<div><p>'.__("Use these buttons to set the first port for the switch, check the status of the ports again, or attempt to load the Port Name Labels from the switch device.").'</p><button type="button" name="firstport">'.__("Set First Port").'</button><button type="button" name="refresh">'.__("Refresh Status").'</button><button type="button" name="name">'.__("Refresh Port Names").'</button><button type="button" name="Notes">'.__("Refresh Port Notes").'</button></div>
+	<div><p>'.__("Use these buttons to set the first port for the switch, check the status of the ports again, or attempt to load the Port Name labels from the switch device.").'</p><button type="button" name="firstport">'.__("Set First Port").'</button><button type="button" name="refresh">'.__("Refresh Status").'</button><button type="button" name="name">'.__("Refresh Port Names").'</button><button type="button" name="notes">'.__("Refresh Port Notes").'</button></div>
 </fieldset>';
 
 	//
@@ -2011,9 +1511,9 @@ echo '<fieldset class="chassis">
 			<div class="greybg">',__("Rear"),'</div>
 		</div>
 		<div>
-			<div><label for="ChassisSlots">',__("Number of Slots in Chassis:"),'</label></div>
-			<div><input type="text" id="ChassisSlots" class="optional,validate[custom[onlyNumberSp]]" name="ChassisSlots" size="4" value="',$dev->ChassisSlots,'"></div>
-			<div class="greybg"><input type="text" id="RearChassisSlots" class="optional,validate[custom[onlyNumberSp]]" name="RearChassisSlots" size="4" value="',$dev->RearChassisSlots,'"></div>
+			<div><label for="chassisslots">',__("Number of Slots in Chassis:"),'</label></div>
+			<div><input type="text" id="chassisslots" class="optional,validate[custom[onlyNumberSp]]" name="chassisslots" size="4" value="',$dev->ChassisSlots,'"></div>
+			<div class="greybg"><input type="text" id="rearchassisslots" class="optional,validate[custom[onlyNumberSp]]" name="rearchassisslots" size="4" value="',$dev->RearChassisSlots,'"></div>
 		</div>';
 
 	if($dev->ChassisSlots >0 || $dev->RearChassisSlots>0){
@@ -2031,13 +1531,13 @@ echo '	</div>
 		print "\t\t<div".(($chDev->BackSide)?' class="greybg"':'').">
 			<div>$chDev->Position</div>
 			<div>$chDev->Height</div>
-			<div><a href=\"devices.php?DeviceID=$chDev->DeviceID\">$chDev->Label</a></div>
+			<div><a href=\"devices.php?deviceid=$chDev->DeviceID\">$chDev->Label</a></div>
 			<div>$chDev->DeviceType</div>
 		</div>\n";
 	}
 echo '		<div class="caption">
 			<button type="submit" id="adddevice" value="Child" name="action">',__("Add Device"),'</button>
-			<input type="hidden" id="ParentDevice" name="ParentDevice" disabled value="',$dev->DeviceID,'">
+			<input type="hidden" id="parentdevice" name="parentdevice" disabled value="',$dev->DeviceID,'">
 		</div>';
 	}else{
 echo '		<div class="caption">
@@ -2052,20 +1552,20 @@ echo '		<div class="caption">
 
 	// Do not display ESX block if device isn't a virtual server and the user doesn't have write access
 	if(($write || $dev->ESX) && ($dev->DeviceType=="Server" || $dev->DeviceType=="")){
-		echo '<fieldset id="ESXframe">	<legend>',__("VMWare ESX Server Information"),'</legend>';
+		echo '<fieldset id="esxframe">	<legend>',__("VMWare ESX Server Information"),'</legend>';
 	// If the user doesn't have write access display the list of VMs but not the configuration information.
 		if($write){
 
 echo '	<div class="table">
 		<div>
-		   <div><label for="ESX">'.__("ESX Server?").'</label></div>
-		   <div><select name="ESX" id="ESX"><option value="1"'.(($dev->ESX==1)?" selected":"").'>'.__("True").'</option><option value="0"'.(($dev->ESX==0)?" selected":"").'>'.__("False").'</option></select></div>
+		   <div><label for="esx">'.__("ESX Server?").'</label></div>
+		   <div><select name="esx" id="esx"><option value="1"'.(($dev->ESX==1)?" selected":"").'>'.__("True").'</option><option value="0"'.(($dev->ESX==0)?" selected":"").'>'.__("False").'</option></select></div>
 		</div>
 	</div><!-- END div.table -->';
 
 		}
 		if($dev->ESX){
-			buildESXtable($dev->DeviceID);
+			buildesxtable($dev->DeviceID);
 		}
 		print "</fieldset>\n";
 	}
@@ -2078,14 +1578,14 @@ echo '	<div class="table">
 	// Operational log
 	// This is an optional block if logging is enabled
 	if(class_exists('LogActions') && $dev->DeviceID >0){
-		print "\t<div>\n\t\t  <div><a>".__("Operational Log")."</a></div>\n\t\t  <div><div id=\"olog\" class=\"table border\">\n\t\t\t<div><div>".__("Date")."</div></div>\n";
+		print "\t<div>\n\t\t  <div><a name=\"olog\">".__("Operational Log")."</a></div>\n\t\t  <div><div id=\"olog\" class=\"table border\">\n\t\t\t<div><div>".__("Date")."</div></div>\n";
 
 		// Wrapping the actual log events with a table of their own and a div that we can style
 		print "\t<div><div><div><div class=\"table\">\n";
 
 		foreach(LogActions::GetLog($dev,false) as $logitem){
 			if($logitem->Property=="OMessage"){
-				print "\t\t\t<div><div>$logitem->Time</div><div>$logitem->UserID</div><div>$logitem->NewVal</div></div>\n";
+				print "\t\t\t<div><div>$logitem->Time</div><div>$logitem->NewVal</div></div>\n";
 			}
 		}
 
@@ -2096,70 +1596,32 @@ echo '	<div class="table">
 		print "\t\t\t<div><div><button type=\"button\">Add note</button><div><input /></div></div></div>\n";
 
 		print "\t\t  </div></div>\n\t\t</div>\n";
-		print "\t\t<!-- Spacer --><div><div>&nbsp;</div><div></div></div><!-- END Spacer -->\n"; // spacer row
+		print "\t\t<div>\n\t\t\t<div>&nbsp;</div><div></div>\n\t\t</div>\n"; // spacer row
 	}
 
 	//HTML content condensed for PHP logic clarity.
 	// If $pwrCords is null then we're creating a device record. Skip power checking.
 	if(!is_null($pwrCords)&&((isset($_POST['action'])&&$_POST['action']!='Child')||!isset($_POST['action']))&&(!in_array($dev->DeviceType,array('Physical Infrastructure','Patch Panel')))){
-		print "		<div>\n\t\t\t<div><a id=\"power\">$chassis ".__("Power Connections")."</a></div>
-			<div><div class=\"table border power\">
-				<div>
-					<div class=\"delete\" style=\"display: none;\"></div>
-					<div>#</div>
-					<div id=\"ppcn\">".__("Port Name")."</div>
-					<div>".__("Device")."</div>
-					<div>".__("Device Port")."</div>
-					<div>".__("Notes")."</div>
-<!--				<div>".__("Panel")."</div> -->
-				</div>\n";
-			foreach($pwrCords as $i => $cord){
-				$tmppdu=new Device();
-				$tmppdu->DeviceID=$cord->ConnectedDeviceID;
-				$tmppdu->GetDevice();
-//				$panel->PanelID=$pdu->PanelID;
-//				$panel->getPanel();
-				$tmpcord=new PowerPorts();
-				if($cord->ConnectedDeviceID>0 && !is_null($cord->ConnectedDeviceID)){
-					$tmpcord->DeviceID=$cord->ConnectedDeviceID;
-					$tmpcord->PortNumber=$cord->ConnectedPort;
-					$tmpcord->getPort();
-				}else{
-					$cord->ConnectedDeviceID=0;
-					$cord->ConnectedPort=0;
-				}
-				print "\t\t\t\t<div data-port=$i>
-					<div>$i</div>
-					<div data-default=\"$cord->Label\">$cord->Label</div>
-					<div data-default=$cord->ConnectedDeviceID><a href=\"devices.php?DeviceID=$cord->ConnectedDeviceID\">$tmppdu->Label</a></div>
-					<div data-default=$cord->ConnectedPort>$tmpcord->Label</div>
-					<div data-default=\"$cord->Notes\">$cord->Notes</div>
-				</div>\n";
+		if(count($pwrCords)==0){
+			// We have no power information. Display links to PDU's in cabinet?
+			echo '	<div>		<div><a name="power"></a></div>		<div>',__("No power connections defined.  You can add connections from the power strip screen."),'</div></div><div><div>&nbsp;</div><div></div></div>';
+		}else{
+			print "		<div>\n		  <div><a name=\"power\">$chassis ".__("Power Connections")."</a></div>\n		  <div><div class=\"table border\">\n			<div><div>".__("Panel")."</div><div>".__("Power Strip")."</div><div>".__("Plug #")."</div><div>".__("Power Supply")."</div></div>";
+			foreach($pwrCords as $cord){
+				$pdu->PDUID=$cord->PDUID;
+				$pdu->GetPDU();
+				$panel->PanelID=$pdu->PanelID;
+				$panel->GetPanel();
+				print "			<div><div><a href=\"power_panel.php?panelid=$pdu->PanelID\">$panel->PanelLabel</a></div><div><a href=\"power_pdu.php?pduid=$pdu->PDUID\">$pdu->Label</a></div><div>$cord->PDUPosition</div><div>$cord->DeviceConnNumber</div></div>\n";
 			}
-$connectioncontrols=($dev->DeviceID>0)?'
-<span style="display: inline-block; vertical-align: super;">'.__("Limit device selection to").':</span>
-<div id="connection-limiter" data-role="controlgroup" data-type="horizontal">
-	<input type="radio" name="connection-limiter" id="radio-choice-1" value="row" />
-	<label for="radio-choice-1">Row</label>
-	<input type="radio" name="connection-limiter" id="radio-choice-2" value="zone" />
-	<label for="radio-choice-2">Zone</label>
-	<input type="radio" name="connection-limiter" id="radio-choice-3" value="datacenter" />
-	<label for="radio-choice-3">Datacenter</label>
-	<input type="radio" name="connection-limiter" id="radio-choice-4" value="global" />
-	<label for="radio-choice-4">Global</label>
-</div>':'';
-
-			print "			</div><!-- END div.table --></div>\n		</div><!-- END power connections -->\n		<!-- Spacer --><div><div>&nbsp;</div><div>$connectioncontrols</div></div><!-- END Spacer -->\n";
-
-
-
-
+			print "			</div><!-- END div.table --></div>\n		</div>\n		<div>\n			<div>&nbsp;</div><div></div>\n		</div>\n";
+		}
 	}
 
 	$jsondata=array();// array to store user ability to modify a port. index=portnumber, value=true/false
 	// New simplified model will apply to all devices except for patch panels and physical infrastructure
 	if(!in_array($dev->DeviceType,array('Physical Infrastructure','Patch Panel')) && !empty($portList) ){
-		print "		<div>\n		  <div><a id=\"net\">".__("Connections")."</a></div>\n		  <div>\n			<div class=\"table border switch\">\n				<div>
+		print "		<div>\n		  <div><a name=\"net\">".__("Connections")."</a></div>\n		  <div>\n			<div class=\"table border switch\">\n				<div>
 				<div>#</div>
 				<div id=\"spn\">".__("Port Name")."</div>
 				<div>".__("Device")."</div>
@@ -2180,15 +1642,9 @@ $connectioncontrols=($dev->DeviceID>0)?'
 			$jsondata[$i]=($dev->Rights=="Write")?true:($tmpDev->Rights=="Write")?true:false;
 
 			$cp=new DevicePorts();
-			if($port->ConnectedDeviceID>0 && !is_null($port->ConnectedDeviceID)){
-				$cp->DeviceID=$port->ConnectedDeviceID;
-				$cp->PortNumber=$port->ConnectedPort;
-				$cp->getPort();
-			}else{
-				$port->ConnectedDeviceID=0;
-				$port->ConnectedPort=0;
-				$cp->Label="";
-			}
+			$cp->DeviceID=$port->ConnectedDeviceID;
+			$cp->PortNumber=$port->ConnectedPort;
+			$cp->getPort();
 
 			if($cp->DeviceID >0 && $cp->Label==''){$cp->Label=$cp->PortNumber;};
 
@@ -2201,8 +1657,8 @@ $connectioncontrols=($dev->DeviceID>0)?'
 			print "\t\t\t\t<div data-port=$i>
 					<div id=\"sp$i\">$i</div>
 					<div id=\"spn$i\">$port->Label</div>
-					<div id=\"d$i\" data-default=$port->ConnectedDeviceID><a href=\"devices.php?DeviceID=$port->ConnectedDeviceID\">$tmpDev->Label</a></div>
-					<div id=\"dp$i\" data-default=$port->ConnectedPort><a href=\"paths.php?DeviceID=$port->ConnectedDeviceID&portnumber=$port->ConnectedPort\">$cp->Label</a></div>
+					<div id=\"d$i\" data-default=$port->ConnectedDeviceID><a href=\"devices.php?deviceid=$port->ConnectedDeviceID\">$tmpDev->Label</a></div>
+					<div id=\"dp$i\" data-default=$port->ConnectedPort><a href=\"paths.php?deviceid=$port->ConnectedDeviceID&portnumber=$port->ConnectedPort\">$cp->Label</a></div>
 					<div id=\"n$i\" data-default=\"$port->Notes\">$port->Notes</div>";
 			if($dev->DeviceType=='Switch'){print "\t\t\t\t<div id=\"st$i\"><span class=\"ui-icon status {$linkList[$i]}\"></span></div>";}
 			print "\t\t\t\t<div id=\"mt$i\" data-default=$port->MediaID>$mt</div>
@@ -2228,7 +1684,7 @@ $connectioncontrols=($dev->DeviceID>0)?'
 			// the attached device, but only the front port.  The rear is still reserved for administrators only.
 			$jsondata[$i]=($dev->Rights=="Write")?true:($frontDev->Rights=="Write")?true:false;
 
-			$fp=""; //front port Label
+			$fp=""; //front port label
 			$cPort=new DevicePorts();
 			if($frontDev->DeviceID >0){
 				$cPort->DeviceID=$frontDev->DeviceID;
@@ -2239,7 +1695,7 @@ $connectioncontrols=($dev->DeviceID>0)?'
 
 			$mt=(isset($mediaTypes[$portList[$i]->MediaID]))?$mediaTypes[$portList[$i]->MediaID]->MediaType:'';
 
-			// rear port Label
+			// rear port label
 			if($portList[-$i]->ConnectedPort!=''){
 				$p=new DevicePorts();
 				$p->DeviceID=$portList[-$i]->ConnectedDeviceID;
@@ -2253,13 +1709,13 @@ $connectioncontrols=($dev->DeviceID>0)?'
 
 			$portList[$i]->Label=($portList[$i]->Label=='')?$i:$portList[$i]->Label;
 			print "\n\t\t\t\t<div data-port=$i>
-					<div id=\"fd$i\" data-default=$frontDev->DeviceID><a href=\"devices.php?DeviceID=$frontDev->DeviceID\">$frontDev->Label</a></div>
-					<div id=\"fp$i\" data-default={$portList[$i]->ConnectedPort}><a href=\"paths.php?DeviceID=$frontDev->DeviceID&portnumber={$portList[$i]->ConnectedPort}\">$fp</a></div>
+					<div id=\"fd$i\" data-default=$frontDev->DeviceID><a href=\"devices.php?deviceid=$frontDev->DeviceID\">$frontDev->Label</a></div>
+					<div id=\"fp$i\" data-default={$portList[$i]->ConnectedPort}><a href=\"paths.php?deviceid=$frontDev->DeviceID&portnumber={$portList[$i]->ConnectedPort}\">$fp</a></div>
 					<div id=\"fn$i\" data-default=\"{$portList[$i]->Notes}\">{$portList[$i]->Notes}</div>
 					<div id=\"pp$i\">{$portList[$i]->Label}</div>
 					<div id=\"mt$i\" data-default={$portList[$i]->MediaID} data-color={$portList[$i]->ColorID}>$mt</div>
-					<div id=\"rd$i\" data-default=$rearDev->DeviceID><a href=\"devices.php?DeviceID=$rearDev->DeviceID\">$rearDev->Label</a></div>
-					<div id=\"rp$i\" data-default={$portList[-$i]->ConnectedPort}><a href=\"paths.php?DeviceID=$rearDev->DeviceID&portnumber={$portList[-$i]->ConnectedPort}\">$rp</a></div>
+					<div id=\"rd$i\" data-default=$rearDev->DeviceID><a href=\"devices.php?deviceid=$rearDev->DeviceID\">$rearDev->Label</a></div>
+					<div id=\"rp$i\" data-default={$portList[-$i]->ConnectedPort}><a href=\"paths.php?deviceid=$rearDev->DeviceID&portnumber={$portList[-$i]->ConnectedPort}\">$rp</a></div>
 					<div id=\"rn$i\" data-default=\"{$portList[-$i]->Notes}\">{$portList[-$i]->Notes}</div>
 				</div>";
 		}
@@ -2271,18 +1727,17 @@ $connectioncontrols=($dev->DeviceID>0)?'
 	if($write){
 		if($dev->DeviceID >0){
 			echo '			<button type="submit" name="action" value="Update">',__("Update"),'</button>
-			<button type="submit" name="action" value="Copy">', __("Copy"), '</button>
-			<button type="button" name="audit">',__("Certify Audit"),'</button>';
+			<button type="submit" name="action" value="Copy">', __("Copy"), '</button>';
 		} else {
 			echo '			<button type="submit" name="action" value="Create">',__("Create"),'</button>';
 		}
 	}
 	// Delete rights are seperate from write rights
-	if(($write || $person->DeleteAccess) && $dev->DeviceID >0){
+	if(($write || $user->DeleteAccess) && $dev->DeviceID >0){
 		echo '		<button type="button" name="action" value="Delete">',__("Delete"),'</button>';
 	}
 	if($dev->DeviceID >0){
-		echo '		<a href="export_port_connections.php?DeviceID=',$dev->DeviceID,'"><button type="button">',__("Export Connections"),'</button></a>';
+		echo '		<a href="export_port_connections.php?deviceid=',$dev->DeviceID,'"><button type="button">',__("Export Connections"),'</button></a>';
 	}
 ?>
 
@@ -2294,7 +1749,7 @@ $connectioncontrols=($dev->DeviceID>0)?'
 </div></div>
 <?php
 	if($dev->ParentDevice >0){
-		print "   <a href=\"devices.php?DeviceID=$pDev->DeviceID\">[ ".__("Return to Parent Device")." ]</a><br>\n";
+		print "   <a href=\"devices.php?deviceid=$pDev->DeviceID\">[ ".__("Return to Parent Device")." ]</a><br>\n";
 		print "   <a href=\"cabnavigator.php?cabinetid=".$dev->GetDeviceCabinetID()."\">[ ".__("Return to Navigator")." ]</a>";
 	}elseif($dev->Cabinet >0){
 		print "   <a href=\"cabnavigator.php?cabinetid=$cab->CabinetID\">[ ".__("Return to Navigator")." ]</a>";
@@ -2306,17 +1761,12 @@ $connectioncontrols=($dev->DeviceID>0)?'
 	}
 ?>
 
-<div id="auditconfirm" class="hide">
-	<p><?php print __("Do you certify that you have completed an audit of this device?"); ?></p>
-</div>
-
-<div id="pdutest" title="Testing SNMP Communications"></div>
 
 </div><!-- END div.main -->
 </div><!-- END div.page -->
 <script type="text/javascript">
 	var portrights=$.parseJSON('<?php echo json_encode($jsondata); ?>');
-	portrights['admin']=<?php echo ($person->SiteAdmin)?'true':'false'; ?>;
+	portrights['admin']=<?php echo ($user->SiteAdmin)?'true':'false'; ?>;
 <?php
 	if(!$write){
 		print "\t\t//Disable all input if they don't have rights.
@@ -2356,20 +1806,12 @@ $connectioncontrols=($dev->DeviceID>0)?'
 		// Add a spacer for use when/if port removal options are triggered
 		$('.switch > div:first-child, .patchpanel > div:first-child').prepend($('<div>').addClass('delete').hide());
 		// Endable Mass Change Options
-		$('.switch.table, .patchpanel.table, .power.table').massedit();
+		$('.switch.table, .patchpanel.table').massedit();
 
 		<?php echo (class_exists('LogActions') && $dev->DeviceID>0)?'LameLogDisplay();':''; ?>
 
 		// Scroll the operations log to the bottom
 		scrollolog();
-
-		// Linkify URLs in the olog.
-		function linkifyolog(){
-			$('#olog .table > div').find('div + div').each(function(){
-				$(this).html(urlify($(this).text()));
-			});
-		}
-		linkifyolog();
 
 		var zoom=$('<span>').addClass('ui-icon ui-icon-circle-zoomin').css('float','right');
 		$('#olog > div:first-child > div').prepend(zoom);
@@ -2398,65 +1840,25 @@ $connectioncontrols=($dev->DeviceID>0)?'
 			}
 		});
 		$('#olog button').click(function(){
-			if($('#olog input').val().trim()!=''){
-				$.post('',{devid: $('#DeviceID').val(), olog: $('#olog input').val()}).done(function(data){
-					if(data){
-						var row=$('<div>')
-							.append($('<div>').text(getISODateTime(new Date())))
-							.append($('<div>').text("<?php echo $person->UserID; ?>"))
-							.append($('<div>').text($('#olog input').val()));
-						$('#olog .table').append(row);
-						$('#olog input').val('');
-						scrollolog();
-						linkifyolog();
-					}else{
-						$('#olog input').effect('highlight', {color: 'salmon'}, 1500);
-					}
-				});
-			}
-		});
-
-		$('.caption > button[name="audit"]').click(function(){
-			$('#auditconfirm').removeClass('hide').dialog({
-				modal: true,
-				width: 'auto',
-				buttons: {
-					Yes: function(){
-						$.post('',{audit: $('#DeviceID').val()}).done(function(data){
-							$('#auditdate').text(data.AuditStamp);
-						});
-						$(this).dialog("close");
-					},
-					No: function(){
-						$(this).dialog("close");
-					}
+			$.post('',{devid: $('#deviceid').val(), olog: $('#olog input').val()}).done(function(data){
+				if(data){
+					var row=$('<div>')
+						.append($('<div>').text(getISODateTime(new Date())))
+						.append($('<div>').text($('#olog input').val()));
+					$('#olog .table').append(row);
+					$('#olog input').val('');
+					scrollolog();
+				}else{
+					$('#olog input').effect('highlight', {color: 'salmon'}, 1500);
 				}
 			});
 		});
 
 		// Make the cabinet and template selections smart comboboxes
-		$('#CabinetID').combobox();
-		$('#TemplateID').combobox();
-		$('select[name=ParentDevice]').combobox();
+		$('#cabinetid').combobox();
+		$('#templateid').combobox();
+		$('select[name=parentdevice]').combobox();
 
-		// Connection limitation selection
-		$('#connection-limiter').buttonset().parent('div').css('text-align','right');
-		$('#connection-limiter input').click(function(e){
-			setCookie("DeviceSelectionLimit",e.currentTarget.value);
-			$('.table.switch > div ~ div').each(function(){
-				var row=$(this);
-				if(row.data('edit')){
-					row.row('getdevices');
-				}
-			});
-		});
-		// Set the default selection on the filter to the value of the cookie OR default to global
-		var dsl=getCookie('DeviceSelectionLimit');
-		if(dsl){
-			$('#connection-limiter input[value='+dsl+']').select().focus().click();
-		}else{
-			$('#connection-limiter input[value=global]').select().focus().click();
-		}
 	});
 </script>
 
