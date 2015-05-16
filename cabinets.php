@@ -1,7 +1,6 @@
 <?php
 	require_once( 'db.inc.php' );
 	require_once( 'facilities.inc.php' );
-
 	$cab=new Cabinet();
 	$dept=new Department();
 
@@ -25,17 +24,17 @@
 
 	// END - AJAX Requests
 
-	$write=($person->WriteAccess)?true:false;
+	$write=($user->WriteAccess)?true:false;
 
 	if(isset($_REQUEST['cabinetid'])){
 		$cab->CabinetID=(isset($_POST['cabinetid'])?$_POST['cabinetid']:$_GET['cabinetid']);
 		$cab->GetCabinet();
-		$write=($person->canWrite($cab->AssignedTo))?true:$write;
+		$write=($user->canWrite($cab->AssignedTo))?true:$write;
 	}
 
 	// If you're deleting the cabinet, no need to pull in the rest of the information, so get it out of the way
 	// Only a site administrator can create or delete a cabinet
-	if(isset($_POST["delete"]) && $_POST["delete"]=="yes" && $person->SiteAdmin ) {
+	if(isset($_POST["delete"]) && $_POST["delete"]=="yes" && $user->SiteAdmin ) {
 		$cab->DeleteCabinet();
 		$status['code']=200;
 		$status['msg']=redirect("dc_stats.php?dc=$cab->DataCenterID");
@@ -52,14 +51,15 @@
 		exit;
 	}
 
-	// clone cabinet function BEGIN
+	
 if (isset($_POST['submitBtnDuplicate'])) {
 function DuplicateMySQLRecord ($table, $id_field, $id, $spacing_x, $number_x, $spacing_y, $number_y, $d_width, $d_height) {
     // load the original record into an array
 	$query_init= "SELECT * FROM `$table` WHERE `$id_field`=$id";
 	mysql_connect('localhost', 'dcim', 'dcim');
 	mysql_select_db('dcim');
-
+	
+	
     $result = mysql_query($query_init);
 	if (!$result) {
     die('Invalid query: ' . mysql_error());
@@ -98,6 +98,9 @@ default: $query .= '`'.$key.'` = "'.str_replace('"','\"',$value).'", '; break;
 $first=false;
 } 
 }
+    // return the new id
+    //return $newid;
+
 
 }	
 $cabid=$_POST['submitBtnDuplicate'];
@@ -109,8 +112,9 @@ $d_width=($cab->MapX2)-($cab->MapX1);
 $d_height=($cab->MapY2)-($cab->MapY1);
 DuplicateMySQLRecord('fac_Cabinet', 'CabinetID', $cabid, $spacing_x, $number_x, $spacing_y, $number_y, $d_width, $d_height);	
 }
-	// clone cabinet function END
-
+	
+	
+	
 	$tagarray=array();
 	if(isset($_POST['tags'])){
 		$tagarray=json_decode($_POST['tags']);
@@ -153,10 +157,10 @@ DuplicateMySQLRecord('fac_Cabinet', 'CabinetID', $cabid, $spacing_x, $number_x, 
 		$dc=new DataCenter();
 		$dcList=$dc->GetDCList();
 		$keys=array_keys($dcList);
-		$cab->DataCenterID=(isset($_GET['dcid']))?intval($_GET['dcid']):$keys[0];
+		$cab->DataCenterID=$keys[0];
 		$cab->Location=null;
-		$cab->ZoneID=(isset($_GET['zoneid']))?intval($_GET['zoneid']):null;
-		$cab->CabRowID=(isset($_GET['cabrowid']))?intval($_GET['cabrowid']):null;
+		$cab->ZoneID=null;
+		$cab->CabRowID=null;
 		$cab->CabinetHeight=null;
 		$cab->Model=null;
 		$cab->Keylock=null;
@@ -165,9 +169,10 @@ DuplicateMySQLRecord('fac_Cabinet', 'CabinetID', $cabid, $spacing_x, $number_x, 
 		$cab->InstallationDate=date('m/d/Y');
 	}
 
+
 	$deptList=$dept->GetDepartmentList();
 	$cabList=$cab->ListCabinets();
-	$sensorList = SensorTemplate::getTemplates();
+	$sensorList = SensorTemplate::getTemplate();
 
 	if($cab->CabinetID > 0) {
 		// Get any tags associated with this device
@@ -254,7 +259,7 @@ echo '<div class="main">
 <h3>',__("Data Center Cabinet Inventory"),'</h3>
 <h3>',$status,'</h3>
 <div class="center"><div>
-<form id="rackform" method="POST">
+<form id="rackform" action="',$_SERVER["PHP_SELF"],'" method="POST">
 <div class="table">
 <div>
    <div>',__("Cabinet"),'</div>
@@ -262,7 +267,7 @@ echo '<div class="main">
    <option value=0>',__("New Cabinet"),'</option>';
 
 	foreach($cabList as $cabRow){
-		$selected=($cabRow->CabinetID==$cab->CabinetID)?' selected':'';
+		if($cabRow->CabinetID == $cab->CabinetID){$selected=' selected';}else{$selected="";}
 		print "<option value=\"$cabRow->CabinetID\"$selected>$cabRow->Location</option>\n";
 	}
 
@@ -270,17 +275,7 @@ echo '   </select></div>
 </div>
 <div>
    <div>',__("Data Center"),'</div>
-   <div>
-		<select name="datacenterid" id="datacenterid">
-';
-
-	foreach(DataCenter::GetDCList() as $dc){
-		$selected=($dc->DataCenterID==$cab->DataCenterID)?' selected':'';
-		print "\t\t\t<option value=\"$dc->DataCenterID\"$selected>$dc->Name</option>\n";
-	}
-
-echo '		</select>
-	</div>
+   <div>',$cab->GetDCSelectList(),'</div>
 </div>
 <div>
    <div>',__("Location"),'</div>
@@ -351,7 +346,6 @@ echo '  </select>
 		}
 		printf( "<option value=%d %s>%s</option>\n", $template->TemplateID, $selected, $template->Name );
 	}
-	
 	$cabidlesz=$cab->CabinetID;
 	$widthlesz=($cab->MapX2)-($cab->MapX1);
 	$heightlesz=($cab->MapY2)-($cab->MapY1);
@@ -386,10 +380,10 @@ echo '  </select>
 	</div>
 <div class="caption">';
 
+
 	if($cab->CabinetID >0){
 		echo '   <button type="submit" name="action" value="Update">',__("Update"),'</button>
 	<button type="button" name="action" value="Delete">',__("Delete"),'</button>
-	<button type="button" value="AuditReport">',__("Audit Report"),'</button>
 	<button type="button" value="MapCoordinates">',__("Map Coordinates"),'</button>';
 	}else{
 		echo '   <button type="submit" name="action" value="Create">',__("Create"),'</button>';
@@ -416,9 +410,6 @@ echo '
 </div><!-- END div.main -->
 </div><!-- END div.page -->
 <script type="text/javascript">
-$('button[value=AuditReport]').click(function(){
-	window.location.assign('cabaudit.php?cabinetid='+$('select[name=cabinetid]').val());
-});
 $('button[value=MapCoordinates]').click(function(){
 	window.location.assign('mapmaker.php?cabinetid='+$('select[name=cabinetid]').val());
 });
