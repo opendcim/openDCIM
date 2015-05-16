@@ -9,3 +9,6 @@ elogs/
 
 #poedit temp files used in merge operations
 locale/*/LC_MESSAGES/openDCIM.po*
+
+#ignore pictures
+pictures/
