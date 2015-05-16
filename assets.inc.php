@@ -33,7 +33,6 @@ class Cabinet {
 	var $CabinetID;
 	var $DataCenterID;
 	var $Location;
-	var $LocationSortable;
 	var $AssignedTo;
 	var $ZoneID;
 	var $CabRowID;      //JMGA: Row of this cabinet
@@ -57,7 +56,6 @@ class Cabinet {
 		$this->CabinetID=intval($this->CabinetID);
 		$this->DataCenterID=intval($this->DataCenterID);
 		$this->Location=sanitize($this->Location);
-		$this->LocationSortable=str_replace(' ','',$this->Location);
 		$this->AssignedTo=intval($this->AssignedTo);
 		$this->ZoneID=intval($this->ZoneID);
 		$this->CabRowID=intval($this->CabRowID);
@@ -78,7 +76,7 @@ class Cabinet {
 		$this->Notes=sanitize($this->Notes,false);
 	}
 	
-	static function RowToObject($dbRow,$filterrights=true){
+	static function RowToObject($dbRow){
 		/*
 		 * Generic function that will take any row returned from the fac_Cabinet
 		 * table and convert it to an object for use in array or other
@@ -87,7 +85,6 @@ class Cabinet {
 		$cab->CabinetID=$dbRow["CabinetID"];
 		$cab->DataCenterID=$dbRow["DataCenterID"];
 		$cab->Location=$dbRow["Location"];
-		$cab->LocationSortable=$dbRow["LocationSortable"];
 		$cab->AssignedTo=$dbRow["AssignedTo"];
 		$cab->ZoneID=$dbRow["ZoneID"];
 		$cab->CabRowID=$dbRow["CabRowID"];
@@ -107,47 +104,25 @@ class Cabinet {
 		$cab->FrontEdge=$dbRow["FrontEdge"];
 		$cab->Notes=$dbRow["Notes"];
 
-		if($filterrights){
-			$cab->FilterRights();
-		}
-
 		return $cab;
 	}
-
-	private function FilterRights(){
-		global $person;
-		$this->Rights='None';
-		if($person->canRead($this->AssignedTo)){$this->Rights="Read";}
-		if($person->canWrite($this->AssignedTo)){$this->Rights="Write";}
-
-		// Remove information that they shouldn't have access to
-		if($this->Rights=='None'){
-			// ZoneID and CabRowID are probably both not important but meh
-			$publicfields=array('CabinetID','DataCenterID','Location','LocationSortable','ZoneID','CabRowID','Rights');
-			foreach($this as $prop => $value){
-				if(!in_array($prop,$publicfields)){
-					$this->$prop=null;
-				}
-			}
-		}
-	}
-
+	
 	function CreateCabinet(){
 		global $dbh;
 		
 		$this->MakeSafe();
 
 		$sql="INSERT INTO fac_Cabinet SET DataCenterID=$this->DataCenterID, 
-			Location=\"$this->Location\", LocationSortable=\"$this->LocationSortable\", 
-			AssignedTo=$this->AssignedTo, ZoneID=$this->ZoneID, CabRowID=$this->CabRowID,
+			Location=\"$this->Location\", AssignedTo=$this->AssignedTo, 
+			ZoneID=$this->ZoneID, CabRowID=$this->CabRowID, 
 			CabinetHeight=$this->CabinetHeight, Model=\"$this->Model\", 
 			Keylock=\"$this->Keylock\", MaxKW=\"$this->MaxKW\", MaxWeight=$this->MaxWeight, 
 			InstallationDate=\"$this->InstallationDate\", 
 			SensorIPAddress=\"$this->SensorIPAddress\", 
 			SensorCommunity=\"$this->SensorCommunity\", 
 			SensorTemplateID=$this->SensorTemplateID, MapX1=$this->MapX1, 
-			MapY1=$this->MapY1, MapX2=$this->MapX2, MapY2=$this->MapY2, 
-			FrontEdge=\"$this->FrontEdge\", Notes=\"$this->Notes\";";
+			MapY1=$this->MapY1, MapX2=$this->MapX2, MapY2=$this->MapY2, FrontEdge=\"$this->FrontEdge\",
+			Notes=\"$this->Notes\";";
 
 		if(!$dbh->exec($sql)){
 			$info=$dbh->errorInfo();
@@ -172,17 +147,16 @@ class Cabinet {
 		$old->GetCabinet();
 
 		$sql="UPDATE fac_Cabinet SET DataCenterID=$this->DataCenterID, 
-			Location=\"$this->Location\", LocationSortable=\"$this->LocationSortable\",
-			AssignedTo=$this->AssignedTo, ZoneID=$this->ZoneID, CabRowID=$this->CabRowID, 
+			Location=\"$this->Location\", AssignedTo=$this->AssignedTo, 
+			ZoneID=$this->ZoneID, CabRowID=$this->CabRowID, 
 			CabinetHeight=$this->CabinetHeight, Model=\"$this->Model\", 
 			Keylock=\"$this->Keylock\", MaxKW=$this->MaxKW, MaxWeight=$this->MaxWeight, 
 			InstallationDate=\"".date("Y-m-d", strtotime($this->InstallationDate))."\", 
 			SensorIPAddress=\"$this->SensorIPAddress\", 
 			SensorCommunity=\"$this->SensorCommunity\", 
 			SensorTemplateID=$this->SensorTemplateID, 
-			MapX1=$this->MapX1, MapY1=$this->MapY1, MapX2=$this->MapX2, MapY2=$this->MapY2, 
-			FrontEdge=\"$this->FrontEdge\", Notes=\"$this->Notes\" WHERE 
-			CabinetID=$this->CabinetID;";
+			MapX1=$this->MapX1, MapY1=$this->MapY1, MapX2=$this->MapX2, MapY2=$this->MapY2, FrontEdge=\"$this->FrontEdge\",
+			Notes=\"$this->Notes\" WHERE CabinetID=$this->CabinetID;";
 
 		if(!$dbh->query($sql)){
 			$info=$dbh->errorInfo();
@@ -212,15 +186,13 @@ class Cabinet {
 		}
 	}
 
-	static function ListCabinets($orderbydc=null){
+	static function ListCabinets($deptid=null) {
 		global $dbh;
-		global $config;
-
+		
 		$cabinetList=array();
 
-		// if AppendCabDC is set then we will be appending the DC to lists so sort them accordingly
-		$orderbydc=(!is_null($orderbydc) || $config->ParameterArray['AppendCabDC']=='enabled')?'DataCenterID, ':'';
-		$sql="SELECT * FROM fac_Cabinet ORDER BY $orderbydc LocationSortable ASC;";
+		$dept=(!is_null($deptid))?" WHERE AssignedTo=".intval($deptid):'';
+		$sql="SELECT * FROM fac_Cabinet$dept ORDER BY DataCenterID, Location;";
 
 		foreach($dbh->query($sql) as $cabinetRow){
 			$cabinetList[]=Cabinet::RowToObject($cabinetRow);
@@ -234,45 +206,19 @@ class Cabinet {
 		
 		$this->MakeSafe();
 		
-		$cabinetList=$this->ListCabinets(true);
-		foreach($cabinetList as $i => $cab){
-			if(
-				($cab->DataCenterID!=$this->DataCenterID) ||
-				($limitzone && $this->ZoneID>0 && $cab->ZoneID!=$this->ZoneID) ||
-				($limit && ($cab->MapX1==$cab->MapX2 || $cab->MapY1==$cab->MapY2))
-			)
-			{unset($cabinetList[$i]);}
+		$hascoords=($limit)?'AND MapX1!=MapX2 AND MapY1!=MapY2':'';
+		$limitzone=($limitzone && $this->ZoneID>0)?" AND ZoneID=$this->ZoneID":'';
+
+		$sql="SELECT * FROM fac_Cabinet WHERE DataCenterID=$this->DataCenterID $hascoords$limitzone ORDER BY Location;";
+
+		$cabinetList=array();
+		foreach($dbh->query($sql) as $cabinetRow){
+			$cabinetList[]=Cabinet::RowToObject($cabinetRow);
 		}
 
 		return $cabinetList;
 	}
 
-	function GetCabinetsByDept(){
-		global $dbh;
-
-		$this->MakeSafe();
-		
-		$cabinetList=$this->ListCabinets();
-		foreach($cabinetList as $i => $cab){
-			if($cab->AssignedTo!=$this->AssignedTo){unset($cabinetList[$i]);}
-		}
-
-		return $cabinetList;
-	}
-
-	function GetCabinetsByZone(){
-		global $dbh;
-
-		$this->MakeSafe();
-		
-		$cabinetList=$this->ListCabinets();
-		foreach($cabinetList as $i => $cab){
-			if($cab->ZoneID!=$this->ZoneID || $cab->ZoneID==0){unset($cabinetList[$i]);}
-		}
-
-		return $cabinetList;
-	}
-	
 	function CabinetOccupancy($CabinetID){
 		global $dbh;
 
@@ -280,7 +226,7 @@ class Cabinet {
 		
 		//$sql="SELECT SUM(Height) AS Occupancy FROM fac_Device WHERE Cabinet=$CabinetID;";
 		//JMGA halfdepth height calculation
-		$sql = "select sum(if(HalfDepth,Height/2,Height)) as Occupancy from fac_Device where ParentDevice=0 AND Cabinet=$CabinetID";
+		$sql = "select sum(if(HalfDepth,Height/2,Height)) as Occupancy from fac_Device where Cabinet=$CabinetID";
 
 		if(!$row=$dbh->query($sql)->fetch()){
 			$info=$dbh->errorInfo();
@@ -305,6 +251,40 @@ class Cabinet {
 		return $occupants;
 	}
 
+	function GetDCSelectList(){
+		global $dbh;
+		
+		$sql="SELECT * FROM fac_DataCenter ORDER BY Name";
+
+		$selectList='<select name="datacenterid" id="datacenterid">';
+
+		foreach($dbh->query($sql) as $selectRow){
+			$selected=($selectRow["DataCenterID"]==$this->DataCenterID)?' selected':'';
+			$selectList.="<option value=\"{$selectRow["DataCenterID"]}\"$selected>{$selectRow["Name"]}</option>";
+		}
+
+		$selectList.='</select>';
+
+		return $selectList;
+	}
+	
+	function GetDCSelectListSubmit(){
+		global $dbh;
+
+		$sql="SELECT * FROM fac_DataCenter ORDER BY Name;";
+
+		$selectList='<select name="datacenterid" id="datacenterid" onChange="form.submit()">';
+
+		foreach($dbh->query($sql) as $selectRow){
+			$selected=($selectRow[ "DataCenterID"]==$this->DataCenterID)?' selected':'';
+			$selectList.="<option value={$selectRow["DataCenterID"]}$selected>{$selectRow["Name"]}</option>";
+		}
+
+		$selectList.='</select>';
+
+		return $selectList;
+	}
+	
 	function GetZoneSelectList(){
 		global $dbh;
 		
@@ -359,7 +339,7 @@ class Cabinet {
 
 		// Order first by row layout then by natural sort
 		$sql="SELECT * FROM fac_Cabinet WHERE CabRowID=$cabrow->CabRowID ORDER BY $order 
-			LocationSortable ASC;";
+			length(Location), Location ASC;";
 
 		$cabinetList=array();
 		foreach($dbh->query($sql) as $cabinetRow){
@@ -373,6 +353,20 @@ class Cabinet {
 		return $cabinetList;
 	}
 
+	function GetCabinetsByZone(){
+		global $dbh;
+
+		$this->MakeSafe();
+		
+		$sql="SELECT * FROM fac_Cabinet WHERE ZoneID=$this->ZoneID;";
+		
+		$cabinetList=array();
+		foreach($dbh->query($sql) as $cabinetRow){
+			$cabinetList[]=Cabinet::RowToObject($cabinetRow);
+		}
+		return $cabinetList;
+	}
+	
 	function GetCabRowSelectList(){
 		global $dbh;
 
@@ -395,16 +389,15 @@ class Cabinet {
 	
 	function GetCabinetSelectList(){
 		global $dbh;
-		global $person;
 		
 		$sql="SELECT Name, CabinetID, Location, AssignedTo FROM fac_DataCenter, fac_Cabinet WHERE 
 			fac_DataCenter.DataCenterID=fac_Cabinet.DataCenterID ORDER BY Name ASC, 
-			Location ASC, LENGTH(Location);";
+			Location ASC;";
 
-		$selectList="<select name=\"CabinetID\" id=\"CabinetID\"><option value=\"-1\">Storage Room</option>";
+		$selectList="<select name=\"cabinetid\" id=\"cabinetid\"><option value=\"-1\">Storage Room</option>";
 
 		foreach($dbh->query($sql) as $selectRow){
-			if($selectRow["CabinetID"]==$this->CabinetID || $person->canWrite($selectRow["AssignedTo"])){
+			if($selectRow["CabinetID"]==$this->CabinetID || User::Current()->canWrite($selectRow["AssignedTo"])){
 				$selected=($selectRow["CabinetID"]==$this->CabinetID)?' selected':'';
 				$selectList.="<option value=\"{$selectRow["CabinetID"]}\"$selected>{$selectRow["Name"]} / {$selectRow["Location"]}</option>";
 			}
@@ -419,9 +412,9 @@ class Cabinet {
 		global $dbh;
 		
 		$dc=new DataCenter();
-		$deptList=Department::GetDepartmentListIndexedbyID();
+		$dept=new Department();
+
 		$dcList=$dc->GetDCList();
-		$cabList=Cabinet::ListCabinets(true);
 
 		if(count($dcList) >0){
 			$tree="<ul class=\"mktree\" id=\"datacenters\">\n";
@@ -436,10 +429,18 @@ class Cabinet {
 
 				$tree.="\t<li class=\"$classType\" id=\"dc$dcID\"><a href=\"dc_stats.php?dc=$datacenter->DataCenterID\">$datacenter->Name</a>/\n\t\t<ul>\n";
 
-				foreach($cabList as $cab){
-					$deptName=($cab->AssignedTo==0)?"General Use":$deptList[$cab->AssignedTo]->Name;
+				$sql="SELECT * FROM fac_Cabinet WHERE DataCenterID=\"$dcID\" ORDER BY Location ASC;";
+
+				foreach($dbh->query($sql) as $cabRow){
+					$dept->DeptID = $cabRow["AssignedTo"];
+				  
+					if($dept->DeptID==0){
+						$dept->Name = "General Use";
+					}else{
+						$dept->GetDeptByID();
+					}
 				    
-					$tree.="\t\t\t<li id=\"cab$cab->CabinetID\"><a href=\"cabnavigator.php?cabinetid=$cab->CabinetID\">$cab->Location [$deptName]</a></li>\n";
+					$tree.="\t\t\t<li id=\"cab{$cabRow['CabinetID']}\"><a href=\"cabnavigator.php?cabinetid={$cabRow['CabinetID']}\">{$cabRow['Location']} [$dept->Name]</a></li>\n";
 				}
 
 				$tree.="\t\t</ul>\n	</li>\n";
@@ -486,51 +487,10 @@ class Cabinet {
 		return true;
 	}
 
-	function Search($indexedbyid=false){
-		global $dbh;
-		// Store the value of frontedge before we muck with it
-		$ot=$this->FrontEdge;
-
-		// Make everything safe for us to search with
-		$this->MakeSafe();
-
-		// This will store all our extended sql
-		$sqlextend="";
-		function findit($prop,$val,&$sql){
-			if($sql){
-				$sql.=" AND $prop=\"$val\"";
-			}else{
-				$sql.=" WHERE $prop=\"$val\"";
-			}
-		}
-		foreach($this as $prop => $val){
-			// We force DeviceType to a known value so this is to check if they wanted to search for the default
-			if($prop=="FrontEdge" && $val=="Top" && $ot!="Top"){
-				continue;
-			}
-			if($val && $val!="1969-12-31"){
-				findit($prop,$val,$sqlextend);
-			}
-		}
-
-		$sql="SELECT * FROM fac_Cabinet $sqlextend ORDER BY LocationSortable ASC;";
-
-		$cabList=array();
-
-		foreach($dbh->query($sql) as $cabRow){
-			if($indexedbyid){
-				$cabList[$cabRow["CabinetID"]]=Cabinet::RowToObject($cabRow);
-			}else{
-				$cabList[]=Cabinet::RowToObject($cabRow);
-			}
-		}
-
-		return $cabList;
-	}
 	function SearchByCabinetName( $db = null ) {
 		global $dbh;
 		
-		$sql="select * from fac_Cabinet where ucase(Location) like \"%" . transform($this->Location) . "%\" order by Location ASC, LENGTH(Location);";
+		$sql="select * from fac_Cabinet where ucase(Location) like \"%" . transform($this->Location) . "%\" order by Location;";
 
 		$cabinetList=array();
 
@@ -545,7 +505,7 @@ class Cabinet {
 	function SearchByOwner( $db = null ) {
 		global $dbh;
 		
-		$sql="select * from fac_Cabinet WHERE AssignedTo=".intval($this->AssignedTo)." ORDER BY Location ASC, LENGTH(Location);";
+		$sql="select * from fac_Cabinet WHERE AssignedTo=".intval($this->AssignedTo)." ORDER BY Location;";
 
 		$cabinetList=array();
 
@@ -560,9 +520,7 @@ class Cabinet {
 	function SearchByCustomTag( $tag=null ) {
 		global $dbh;
 		
-		$sql="SELECT a.* from fac_Cabinet a, fac_CabinetTags b, fac_Tags c WHERE 
-			a.CabinetID=b.CabinetID AND b.TagID=c.TagID AND UCASE(c.Name) LIKE 
-			UCASE('%".sanitize($tag)."%') ORDER BY LocationSortable;";
+		$sql="SELECT a.* from fac_Cabinet a, fac_CabinetTags b, fac_Tags c WHERE a.CabinetID=b.CabinetID AND b.TagID=c.TagID AND UCASE(c.Name) LIKE UCASE('%".sanitize($tag)."%');";
 
 		$cabinetList=array();
 
@@ -612,63 +570,57 @@ class Cabinet {
 		}
 		return 0;
 	}
-}
-
-class CabinetAudit {
-	/*	CabinetAudit:	A perpetual audit trail for how often a cabinet has been audited, and by what user.
-	*/
 	
-	var $CabinetID;
-	var $UserID;
-	var $AuditStamp;
-	var $Comments;
-
-	function CertifyAudit() {
-		if($this->Comments){
-			$tmpAudit=new CabinetAudit();
-			$tmpAudit->CabinetID=$this->CabinetID;
-			(class_exists('LogActions'))?LogActions::LogThis($this,$tmpAudit):'';
-		}else{
-			(class_exists('LogActions'))?LogActions::LogThis($this):'';
-		}
-
-		return;
-	}
-
-	function GetLastAudit( $db = null ) {
+	static function UpdateSensors( $CabinetID = null ) {
 		global $dbh;
+		global $config;
 		
-		$sql = "select * from fac_GenericLog where ObjectID=\"" . intval( $this->CabinetID ) . "\" and Class=\"CabinetAudit\" order by Time DESC Limit 1";
-
-		if($row=$dbh->query($sql)->fetch()){
-			$this->CabinetID=$row["ObjectID"];
-			$this->UserID=$row["UserID"];
-			$this->AuditStamp=date("M d, Y H:i", strtotime($row["Time"]));
-
-			return true;
-		} else {
-			// No sense in logging an error for something that's never been done
-			return false;
-		}
-	}
-	
-	function GetLastAuditByUser( $db = null ) {
-		global $dbh;
-		
-		$sql = "select * from fac_GenericLog where UserID=\"" . addslashes( $this->UserID ) . "\" and Class=\"CabinetAudit\" order by Time DESC Limit 1";
-
-		if ( $row = $dbh->query( $sql )->fetch() ) {
-			$this->CabinetID = $row["ObjectID"];
-			$this->UserID = $row["UserID"];
-			$this->AuditStamp = date( "M d, Y H:i", strtotime( $row["Time"] ) );
-		} else {
-			$info = $dbh->errorInfo();
-
-			error_log( "PDO Error: " . $info[2] . " SQL=" . $sql );
-			return false;
+		if ( ! function_exists( "snmpget" ) ) {
+			return;
 		}
 		
-		return;
+		if ( $CabinetID != null ) {
+			$sql = sprintf( "select a.CabinetID, a.SensorIPAddress, a.SensorCommunity, b.* from fac_Cabinet a, fac_SensorTemplate b where a.SensorTemplateID=b.TemplateID and a.CabinetID=%d and a.SensorIPAddress>'' and a.SensorTemplateID>0", $CabinetID );
+		} else {
+			$sql = "select a.CabinetID, a.SensorIPAddress, a.SensorCommunity, b.* from fac_Cabinet a, fac_SensorTemplate b where a.SensorTemplateID=b.TemplateID and a.SensorIPAddress>'' and a.SensorTemplateID>0";
+		}
+		
+		$sensors = $dbh->prepare( "insert into fac_CabinetTemps values (:cabinetid, now(), :temp, :humidity ) on duplicate key update LastRead=now(), Temp=:temp, Humidity=:humidity" );
+		
+		foreach ( $dbh->query( $sql ) as $row ) {
+			if ( $row["SensorCommunity"] == "" ) {
+				$Community = $config->ParameterArray["SNMPCommunity"];
+			} else {
+				$Community = $row["SensorCommunity"];
+			}
+			
+			if ( $row["SNMPVersion"] == "2c" ) {
+				@list( $trash, $temp ) = explode( ":", @snmp2_get( $row["SensorIPAddress"], $Community, $row["TemperatureOID"] ) );
+				@list( $trash, $humid ) = explode( ":", @snmp2_get( $row["SensorIPAddress"], $Community, $row["HumidityOID"] ) );
+			} else {
+				@list( $trash, $temp ) = explode( ":", @snmpget( $row["SensorIPAddress"], $Community, $row["TemperatureOID"] ) );
+				@list( $trash, $humid ) = explode( ":", @snmpget( $row["SensorIPAddress"], $Community, $row["HumidityOID"] ) );
+			}
+			
+			$temp = preg_replace( "/[^0-9.,+]/", "", $temp );
+			$humid = preg_replace( "/[^0-9.'+]/", "", $humid );
+			
+			if (($row["mUnits"] == "english") && ($config->ParameterArray["mUnits"] == "metric")) {
+				$temp = (($temp-32)*5/9);
+			} elseif (($row["mUnits"] == "metric") && ($config->ParameterArray["mUnits"] == "english")) {
+				$temp = (($temp*9/5)+32);
+			}
+
+			if ( $row["TempMultiplier"] != 0 ) {
+				$temp *= $row["TempMultiplier"];
+			}
+			
+			if ( $row["HumidityMultiplier"] != 0 ) {
+				$humid *= $row["HumidityMultiplier"];
+			}
+			
+			$sensors->execute( array( "cabinetid"=>$row["CabinetID"], "temp"=>$temp, "humidity"=>$humid ) );
+		}
 	}
 }
 
@@ -677,127 +629,84 @@ class SensorTemplate {
 	
 	var $TemplateID;
 	var $ManufacturerID;
-	var $Model;
+	var $Name;
+	var $SNMPVersion;
 	var $TemperatureOID;
 	var $HumidityOID;
 	var $TempMultiplier;
 	var $HumidityMultiplier;
-	var $mUnits;
-	
-	function __construct() {
-		$this->Model = "";
-		$this->TemperatureOID = "";
-		$this->HumidityOID = "";
-		$this->TempMultiplier = "";
-		$this->HumidityMultiplier = "";
-		$this->mUnits = "";
-	}
-
-	function MakeSafe(){
-		$validMultipliers=array(0.01,0.1,1,10,100);
-		$validmUnits=array('english','metric');
-
-		$this->TemplateID=intval($this->TemplateID);
-		$this->ManufacturerID=intval($this->ManufacturerID);
-		$this->Model=sanitize($this->Model);
-		$this->TemperatureOID=sanitize($this->TemperatureOID);
-		$this->HumidityOID=sanitize($this->HumidityOID);
-		$this->TempMultiplier=(in_array($this->TempMultiplier, $validMultipliers))?$this->TempMultiplier:1;
-		$this->HumidityMultiplier=(in_array($this->HumidityMultiplier, $validMultipliers))?$this->HumidityMultiplier:1;
-		$this->mUnits=(in_array($this->mUnits, $validmUnits))?$this->mUnits:'english';
-	}
-
-	function MakeDisplay() {
-		$this->TemperatureOID=stripslashes($this->TemperatureOID);
-		$this->HumidityOID=stripslashes($this->HumidityOID);
-	}
-
-	static function RowToObject($dbRow){
-		$st=new SensorTemplate();
-		$st->TemplateID=$dbRow["TemplateID"];
-		$st->ManufacturerID=$dbRow["ManufacturerID"];
-		$st->Model=$dbRow["Model"];
-		$st->TemperatureOID=$dbRow["TemperatureOID"];
-		$st->HumidityOID=$dbRow["HumidityOID"];
-		$st->TempMultiplier=$dbRow["TempMultiplier"];
-		$st->HumidityMultiplier=$dbRow["HumidityMultiplier"];
-		$st->mUnits=$dbRow["mUnits"];
-
-		return $st;
-	}
-
-	function GetTemplate(){
-		global $dbh;
-
-		$this->MakeSafe();
-
-		$sql="SELECT * FROM fac_SensorTemplate WHERE TemplateID=$this->TemplateID;";
-
-		if($sensorRow=$dbh->query($sql)->fetch()){
-			foreach(SensorTemplate::RowToObject($sensorRow) as $prop => $value){
-				$this->$prop=$value;
-			}
-			return true;
-		}else{
-			return false;
-		}
-	}
-
-	static function getTemplates(){
+		
+	static function getTemplate( $templateID = null ) {
 		global $dbh;
 		
-		$sql="SELECT * FROM fac_SensorTemplate ORDER BY Name ASC;";
+		if ( $templateID != null ) {
+			$sql = sprintf( "select * from fac_SensorTemplate where TemplateID=%d", $templateID );
+		} else {
+			$sql = "select * from fac_SensorTemplate order by Name ASC";
+		}
 		
 		$tempList = array();
-		foreach($dbh->query($sql) as $row){
-			$tempList[]=SensorTemplate::RowToObject($row);
+		
+		foreach ( $dbh->query( $sql ) as $row ) {
+			$n = sizeof ( $tempList );
+			$tempList[$n] = new SensorTemplate();
+			$tempList[$n]->TemplateID = $row["TemplateID"];
+			$tempList[$n]->ManufacturerID = $row["ManufacturerID"];
+			$tempList[$n]->Name = $row["Name"];
+			$tempList[$n]->SNMPVersion = $row["SNMPVersion"];
+			$tempList[$n]->TemperatureOID = $row["TemperatureOID"];
+			$tempList[$n]->HumidityOID = $row["HumidityOID"];
+			$tempList[$n]->TempMultiplier = $row["TempMultiplier"];
+			$tempList[$n]->HumidityMultiplier = $row["HumidityMultiplier"];
+			$tempList[$n]->mUnits = $row["mUnits"];
 		}
 		
-		return $tempList;
+		if ( $templateID != null ) {
+			return array_pop($tempList);
+		} else {
+			return $tempList;
+		}
 	}
 	
-	function CreateTemplate($templateid){
+	function CreateTemplate() {
 		global $dbh;
-
-		$sql="INSERT INTO fac_SensorTemplate SET ManufacturerID=$this->ManufacturerID, 
-			Model=\"$this->Model\", TemperatureOID=\"$this->TemperatureOID\", 
-			HumidityOID=\"$this->HumidityOID\", TempMultiplier=$this->TempMultiplier, 
-			HumidityMultiplier=$this->HumidityMultiplier, mUnits=\"$this->mUnits\",
-			TemplateID=".intval($templateid);
-
-		if(!$dbh->exec($sql)){
-			$info=$dbh->errorInfo();
-
-			error_log("CreateTemplate::PDO Error: {$info[2]} $sql");
-			return false;
-		}
-
+		
+		$sql = $dbh->prepare( "insert into fac_SensorTemplate values ( 0, :ManufacturerID, :Name, :SNMPVersion, :TemperatureOID, :HumidityOID, :TempMultiplier, :HumidityMultiplier, :mUnits )" );
+		
+		$args = array( 	"ManufacturerID" => $this->ManufacturerID,
+						"Name" => $this->Name,
+						"SNMPVersion" => $this->SNMPVersion,
+						"TemperatureOID" => $this->TemperatureOID,
+						"HumidityOID" => $this->HumidityOID,
+						"TempMultiplier" => $this->TempMultiplier,
+						"HumidityMultiplier" => $this->HumidityMultiplier,
+						"mUnits" => $this->mUnits );
+		
+		$sql->execute( $args );
+		
+		$this->TemplateID = $dbh->lastInsertId();
 		(class_exists('LogActions'))?LogActions::LogThis($this):'';
-		return $this->TemplateID;
 	}
 	
 	function UpdateTemplate() {
 		global $dbh;
 		
-		$this->MakeSafe();	
+		$old=SensorTemplate::getTemplate($this->TemplateID);
 
-		$old=new SensorTemplate();
-		$old->TemplateID=$this->TemplateID;
-		$old->GetTemplate();
-
-		$sql="UPDATE fac_SensorTemplate SET ManufacturerID=$this->ManufacturerID, 
-			Model=\"$this->Model\", TemperatureOID=\"$this->TemperatureOID\", 
-			HumidityOID=\"$this->HumidityOID\", TempMultiplier=$this->TempMultiplier, 
-			HumidityMultiplier=$this->HumidityMultiplier, mUnits=\"$this->mUnits\"
-			WHERE TemplateID=$this->TemplateID;";
-
-		if(!$dbh->query($sql)){
-			$info=$dbh->errorInfo();
-			error_log("UpdateTemplate::PDO Error: {$info[2]} SQL=$sql");
-			return false;
-		}
+		$sql = $dbh->prepare( "update fac_SensorTemplate set ManufacturerID=:ManufacturerID, Name=:Name, SNMPVersion=:SNMPVersion, TemperatureOID=:TemperatureOID, HumidityOID=:HumidityOID, TempMultiplier=:TempMultiplier, HumidityMultiplier=:HumidityMultiplier, mUnits=:mUnits where TemplateID=:TemplateID" );
+		
+		$args = array( 	"ManufacturerID" => $this->ManufacturerID,
+						"Name" => $this->Name,
+						"SNMPVersion" => $this->SNMPVersion,
+						"TemperatureOID" => $this->TemperatureOID,
+						"HumidityOID" => $this->HumidityOID,
+						"TempMultiplier" => $this->TempMultiplier,
+						"HumidityMultiplier" => $this->HumidityMultiplier,
+						"mUnits" => $this->mUnits,
+						"TemplateID" => $this->TemplateID );
+		
+		$sql->execute( $args );
 		(class_exists('LogActions'))?LogActions::LogThis($this,$old):'';
-		return true;
 	}
 	
 	function DeleteTemplate() {
@@ -957,16 +866,9 @@ class ColorCoding {
 		$colorid=intval($colorid);
 		$tocolorid=intval($tocolorid); // it will always be 0 unless otherwise set
 
-		$sqlp="UPDATE fac_Ports SET ColorID=$tocolorid WHERE ColorID=$colorid;";
-		$sqlt="UPDATE fac_TemplatePorts SET ColorID=$tocolorid WHERE ColorID=$colorid;";
-		$sqlm="UPDATE fac_MediaTypes SET ColorID=$tocolorid WHERE ColorID=$colorid;";
+		$sql="UPDATE fac_DevicePorts SET ColorID='$tocolorid' WHERE ColorID='$colorid';";
 
-		$error=false;
-		$error=($dbh->query($sqlp))?false:true;
-		$error=($dbh->query($sqlt))?false:true;
-		$error=($dbh->query($sqlm))?false:true;
-
-		if($error){
+		if(!$dbh->query($sql)){
 			$info=$dbh->errorInfo();
 			error_log("PDO Error: {$info[2]}");
 			return false;
@@ -981,9 +883,8 @@ class ColorCoding {
 
 		// get a count of the number of times this color is in use both on ports or assigned
 		// to a template.  
-		$sql="SELECT COUNT(*) + (SELECT COUNT(*) FROM fac_MediaTypes WHERE ColorID=$colorid) +
-			(SELECT COUNT(*) FROM fac_TemplatePorts WHERE ColorID=$colorid)
-			AS Result FROM fac_Ports WHERE ColorID=$colorid";
+		$sql="SELECT COUNT(*) + (SELECT COUNT(*) FROM fac_MediaTypes WHERE ColorID=$colorid) 
+			AS Result FROM fac_DevicePorts WHERE ColorID=$colorid";
 		$count=$dbh->prepare($sql);
 		$count->execute();
 		
@@ -1102,14 +1003,7 @@ class Device {
 	var $SerialNo;
 	var $AssetTag;
 	var $PrimaryIP;
-	var $SNMPVersion;
-	var $v3SecurityLevel;
-	var $v3AuthProtocol;
-	var $v3AuthPassphrase;
-	var $v3PrivProtocol;
-	var $v3PrivPassphrase;
 	var $SNMPCommunity;
-	var $SNMPFailureCount;
 	var $ESX;
 	var $Owner;
 	var $EscalationTimeID;
@@ -1136,8 +1030,7 @@ class Device {
 	var $Rights;
 	var $HalfDepth;
 	var $BackSide;
-	var $AuditStamp;
-	var $CustomValues;
+
 
 	function MakeSafe() {
 		if ( ! is_object( $this ) ) {
@@ -1146,25 +1039,14 @@ class Device {
 		}
 		
 		//Keep weird values out of DeviceType
-		$validdevicetypes=array('Server','Appliance','Storage Array','Switch','Chassis','Patch Panel','Physical Infrastructure','CDU','Sensor');
-		$validSNMPVersions=array(1,'2c',3);
-		$validv3SecurityLevels=array('noAuthNoPriv','authNoPriv','authPriv');
-		$validv3AuthProtocols=array('MD5','SHA');
-		$validv3PrivProtocols=array('DES','AES');
+		$validdevicetypes=array('Server','Appliance','Storage Array','Switch','Chassis','Patch Panel','Physical Infrastructure');
 
 		$this->DeviceID=intval($this->DeviceID);
 		$this->Label=sanitize($this->Label);
 		$this->SerialNo=sanitize($this->SerialNo);
 		$this->AssetTag=sanitize($this->AssetTag);
 		$this->PrimaryIP=sanitize($this->PrimaryIP);
-		$this->SNMPVersion=(in_array($this->SNMPVersion, $validSNMPVersions))?$this->SNMPVersion:'2c';
 		$this->SNMPCommunity=sanitize($this->SNMPCommunity);
-		$this->v3SecurityLevel=(in_array($this->v3SecurityLevel, $validv3SecurityLevels))?$this->v3SecurityLevel:'noAuthNoPriv';
-		$this->v3AuthProtocol=(in_array($this->v3AuthProtocol, $validv3AuthProtocols))?$this->v3AuthProtocol:'MD5';
-		$this->v3AuthPassphrase=sanitize($this->v3AuthPassphrase);
-		$this->v3PrivProtocol=(in_array($this->v3PrivProtocol,$validv3PrivProtocols))?$this->v3PrivProtocol:'DES';
-		$this->v3PrivPassphrase=sanitize($this->v3PrivPassphrase);
-		$this->SNMPFailureCount=intval($this->SNMPFailureCount);
 		$this->ESX=intval($this->ESX);
 		$this->Owner=intval($this->Owner);
 		$this->EscalationTimeID=intval($this->EscalationTimeID);
@@ -1220,13 +1102,7 @@ class Device {
 		$dev->SerialNo=$dbRow["SerialNo"];
 		$dev->AssetTag=$dbRow["AssetTag"];
 		$dev->PrimaryIP=$dbRow["PrimaryIP"];
-		$dev->v3SecurityLevel=$dbRow["v3SecurityLevel"];
-		$dev->v3AuthProtocol=$dbRow["v3AuthProtocol"];
-		$dev->v3AuthPassphrase=$dbRow["v3AuthPassphrase"];
-		$dev->v3PrivProtocol=$dbRow["v3PrivProtocol"];
-		$dev->v3PrivPassphrase=$dbRow["v3PrivPassphrase"];
 		$dev->SNMPCommunity=$dbRow["SNMPCommunity"];
-		$dev->SNMPFailureCount=$dbRow["SNMPFailureCount"];
 		$dev->ESX=$dbRow["ESX"];
 		$dev->Owner=$dbRow["Owner"];
 		// Suppressing errors on the following two because they can be null and that generates an apache error
@@ -1253,8 +1129,7 @@ class Device {
 		$dev->Reservation=$dbRow["Reservation"];
 		$dev->HalfDepth=$dbRow["HalfDepth"];
 		$dev->BackSide=$dbRow["BackSide"];
-		$dev->AuditStamp=$dbRow["AuditStamp"];
-		$dev->GetCustomValues();
+
 		
 		$dev->MakeDisplay();
 		if($filterrights){
@@ -1265,23 +1140,22 @@ class Device {
 	}
 
 	private function FilterRights(){
-		global $person;
-		
 		$cab=new Cabinet();
 		$cab->CabinetID=$this->Cabinet;
 
 		$this->Rights='None';
-		if($person->canRead($this->Owner)){$this->Rights="Read";}
-		if($person->canWrite($this->Owner)){$this->Rights="Write";} // write by device
-		if($this->ParentDevice>0){ // this is a child device of a chassis
+		$user=User::Current();
+		if($user->canRead($this->Owner)){$this->Rights="Read";}
+		if($user->canWrite($this->Owner)){$this->Rights="Write";} // write by device
+		if($this->Cabinet==0){ // cabinet=0 this is a child device of a chassis
 			$par=new Device();
 			$par->DeviceID=$this->ParentDevice;
 			$par->GetDevice();
 			$this->Rights=($par->Rights=="Write")?"Write":$this->Rights;
 		}elseif($cab->GetCabinet()){
-			$this->Rights=($cab->Rights=="Write")?"Write":$this->Rights; // write because the cabinet is assigned
+			if($cab->AssignedTo!=0 && $user->canWrite($cab->AssignedTo)){$this->Rights="Write";} // write because the cabinet is assigned
 		}
-		if($person->SiteAdmin && $this->DeviceType=='Patch Panel'){$this->Rights="Write";} // admin override of rights for patch panels
+		if($user->SiteAdmin && $this->DeviceType=='Patch Panel'){$this->Rights="Write";} // admin override of rights for patch panels
 
 		// Remove information that this user isn't allowed to see
 		if($this->Rights=='None'){
@@ -1304,55 +1178,6 @@ class Device {
 		return $dbh->exec($sql);
 	}
 
-	/* All of these functions will REQUIRE the built-in SNMP functions - the external calls are simply too slow */
-	static private function BasicTests($DeviceID){
-		global $config;
-
-		// First check if the SNMP library is present
-		if(!class_exists('OSS_SNMP\SNMP')){
-			return false;
-		}
-
-		$dev=New Device();
-		$dev->DeviceID=$DeviceID;
-
-		// Make sure this is a real device and has an IP set
-		if(!$dev->GetDevice()){return false;}
-		if($dev->PrimaryIP==""){return false;}
-
-		// If the device doesn't have an SNMP community set, check and see if we have a global one
-		$dev->SNMPCommunity=($dev->SNMPCommunity=="")?$config->ParameterArray["SNMPCommunity"]:$dev->SNMPCommunity;
-
-		// We've passed all the repeatable tests, return the device object for digging
-		return $dev;
-	}
-
-	// Making an attempt at reducing the lines that I was constantly repeating at a cost of making this a little more convoluted.
-	/*
-	 * Valid values for $snmplookup:
-	 * contact - alpha numeric return of the system contact
-	 * description - alpha numeric return of the system description can include line breaks
-	 * location - alpha numeric return of the location if set
-	 * name - alpha numeric return of the name of the system
-	 * services - int 
-	 * uptime - int - uptime of the device returned as ticks.  tick defined as 1/1000'th of a second
-	 */
-	static private function OSS_SNMP_Lookup($dev,$snmplookup,$oid=null){
-		// This is find out the name of the function that called this to make the error logging more descriptive
-		$caller=debug_backtrace();
-		$caller=$caller[1]['function'];
-
-		$snmpHost=new OSS_SNMP\SNMP($dev->PrimaryIP,$dev->SNMPCommunity,$dev->SNMPVersion,$dev->v3SecurityLevel,$dev->v3AuthProtocol,$dev->v3AuthPassphrase,$dev->v3PrivProtocol,$dev->v3PrivPassphrase);
-		$snmpresult=false;
-		try {
-			$snmpresult=(is_null($oid))?$snmpHost->useSystem()->$snmplookup(true):$snmpHost->get($oid);
-		}catch (Exception $e){
-			error_log("Device::$caller($dev->DeviceID) ".$e->getMessage());
-		}
-
-		return $snmpresult;
-	}
-
 	function CreateDevice(){
 		global $dbh;
 		
@@ -1362,13 +1187,10 @@ class Device {
 		$this->SerialNo=transform($this->SerialNo);
 		$this->AssetTag=transform($this->AssetTag);
 		
-		// SNMPFailureCount isn't in this list, because it should always start at zero (default) on new devices
 		$sql="INSERT INTO fac_Device SET Label=\"$this->Label\", SerialNo=\"$this->SerialNo\", AssetTag=\"$this->AssetTag\", 
-			PrimaryIP=\"$this->PrimaryIP\", SNMPVersion=\"$this->SNMPVersion\",  
-			v3SecurityLevel=\"$this->v3SecurityLevel\",	v3AuthProtocol=\"$this->v3AuthProtocol\", v3AuthPassphrase=\"$this->v3AuthPassphrase\", 
-			v3PrivProtocol=\"$this->v3PrivProtocol\", v3PrivPassphrase=\"$this->v3PrivPassphrase\", SNMPCommunity=\"$this->SNMPCommunity\", 
-			ESX=$this->ESX, Owner=$this->Owner, EscalationTimeID=$this->EscalationTimeID, EscalationID=$this->EscalationID, 
-			PrimaryContact=$this->PrimaryContact, Cabinet=$this->Cabinet, Position=$this->Position, Height=$this->Height, Ports=$this->Ports, 
+			PrimaryIP=\"$this->PrimaryIP\", SNMPCommunity=\"$this->SNMPCommunity\", ESX=$this->ESX, Owner=$this->Owner, 
+			EscalationTimeID=$this->EscalationTimeID, EscalationID=$this->EscalationID, PrimaryContact=$this->PrimaryContact, 
+			Cabinet=$this->Cabinet, Position=$this->Position, Height=$this->Height, Ports=$this->Ports, 
 			FirstPortNum=$this->FirstPortNum, TemplateID=$this->TemplateID, NominalWatts=$this->NominalWatts, 
 			PowerSupplyCount=$this->PowerSupplyCount, DeviceType=\"$this->DeviceType\", ChassisSlots=$this->ChassisSlots, 
 			RearChassisSlots=$this->RearChassisSlots,ParentDevice=$this->ParentDevice, 
@@ -1377,32 +1199,16 @@ class Device {
 			WarrantyExpire=\"".date("Y-m-d", strtotime($this->WarrantyExpire))."\", Notes=\"$this->Notes\", 
 			Reservation=$this->Reservation, HalfDepth=$this->HalfDepth, BackSide=$this->BackSide;";
 
-		if(!$dbh->exec($sql)){
+		if ( ! $dbh->exec( $sql ) ) {
 			$info = $dbh->errorInfo();
 
 			error_log( "PDO Error: {$info[2]} SQL=$sql" );
 			return false;
 		}
 
-		$this->DeviceID=$dbh->lastInsertId();
+		$this->DeviceID = $dbh->lastInsertId();
 
 		DevicePorts::createPorts($this->DeviceID);
-		PowerPorts::createPorts($this->DeviceID);
-
-		if($this->DeviceType=="CDU"){
-			$pdu=new PowerDistribution();
-			foreach($pdu as $prop => $val){
-				if(isset($this->$prop)){
-					$pdu->$prop=$this->$prop;
-				}
-			}
-			// Damn non-standard id field
-			$pdu->CabinetID=$this->Cabinet;
-			$pdu->CreatePDU($this->DeviceID);
-		}
-
-		if($this->DeviceType=="Sensor"){
-		}
 
 		(class_exists('LogActions'))?LogActions::LogThis($this):'';
 
@@ -1422,11 +1228,6 @@ class Device {
 		// Get the device being copied
 		$this->GetDevice();
 		
-		// If this is a chassis device then check for children to cloned BEFORE we change the deviceid
-		if($this->DeviceType=="Chassis"){
-			$childList=$this->GetDeviceChildren();
-		}	
-
 		if($this->ParentDevice >0){
 			/*
 			 * Child devices will need to be constrained to the chassis. Check for open slots
@@ -1472,11 +1273,7 @@ class Device {
 				// Make sure the position updated before creating a new device
 				if((isset($pos) && $pos!=$this->Position) || !is_null($clonedparent)){
 					(!is_null($clonedparent))?$this->ParentDevice=$clonedparent:'';
-					$olddev=new Device();
-					$olddev->DeviceID=$this->DeviceID;
-					$olddev->GetDevice();
 					$this->CreateDevice();
-					$olddev->CopyDeviceCustomValues($this);
 				}else{
 					return false;
 				}
@@ -1489,85 +1286,24 @@ class Device {
 			$cab->GetCabinet();
 			$this->Position=$cab->CabinetHeight+1;
 
-			$olddev=new Device();
-			$olddev->DeviceID=$this->DeviceID;
-			$olddev->GetDevice();
+			// If this is a chassis device then check for children to cloned BEFORE we change the deviceid
+			if($this->DeviceType=="Chassis"){
+				$childList=$this->GetDeviceChildren();
+			}	
 
 			// And finally create a new device based on the exact same info
 			$this->CreateDevice();
-			$olddev->CopyDeviceCustomValues($this);
-		}
 
-		// If this is a chassis device and children are present clone them
-		if(isset($childList)){
-			foreach($childList as $child){
-				$child->CopyDevice($this->DeviceID);
+			// If this is a chassis device and children are present clone them
+			if(isset($childList)){
+				foreach($childList as $child){
+					$child->CopyDevice($this->DeviceID);
+				}
 			}
-		}
 
+		}
 		return true;
 	}
-
-	function CopyDeviceCustomValues($new) {
-		// in this context, "$this" is the old device we are copying from, "$new" is where we are copying to
-		global $dbh;
-		if($this->GetDevice() && $new->GetDevice()) {
-			$sql="INSERT INTO fac_DeviceCustomValue(DeviceID, AttributeID, Value) 
-				SELECT $new->DeviceID, dcv.AttributeID, dcv.Value FROM fac_DeviceCustomValue dcv WHERE dcv.DeviceID=$this->DeviceID;";
-
-			if(!$dbh->query($sql)){
-				$info=$dbh->errorInfo();
-				error_log("CopyDeviceCustomValues::PDO Error: {$info[2]} SQL=$sql");
-				return false;
-			}
-			return true;
-		} else { return false; }
-	}
-	
-	static function IncrementFailures($dev=null) {
-		global $dbh;
-		
-		if ( $dev == null && $this->DeviceID == null ) {
-			error_log("Device::IncrementFailures - no device ID supplied");
-			return false;
-		}
-		
-		if ( !(isset($this) && get_class($this) == __CLASS__) ) {
-			$dev = ( $dev == null ) ? $this->DeviceID : $dev;
-		}
-		
-		$sql = "update fac_Device set SNMPFailureCount=SNMPFailureCount+1 where DeviceID=$dev";
-		
-		if ( ! $dbh->query( $sql ) ) {
-			error_log( "Device::IncrementFailures::PDO Error: {$info[2]} SQL=$sql");
-			return false;
-		} else {
-			return true;
-		}
-	}
-	
-	static function ResetFailures($dev=null) {
-		global $dbh;
-		
-		if ( $dev == null && $this->DeviceID == null ) {
-			error_log("Device::ResetFailures - no device ID supplied");
-			return false;
-		}
-		
-		if ( !(isset($this) && get_class($this) == __CLASS__) ) {
-			$dev = ( $dev == null ) ? $this->DeviceID : $dev;
-		}
-		
-		$sql = "update fac_Device set SNMPFailureCount=0 where DeviceID=$dev";
-		
-		if ( ! $dbh->query( $sql ) ) {
-			error_log( "Device::ResetFailures::PDO Error: {$info[2]} SQL=$sql");
-			return false;
-		} else {
-			return true;
-		}
-	}
-
 	
 	function Surplus() {
 		global $dbh;
@@ -1598,20 +1334,15 @@ class Device {
 		$this->UpdateDevice();
 		
 		// While the child devices will automatically get moved to storage as part of the UpdateDevice() call above, it won't sever their network connections
-		// Multilevel chassis
-		if ($this->ChassisSlots>0 || $this->RearChassisSlots>0){
-			$descList=$this->GetDeviceDescendants();
-			foreach($descList as $child){
+		if($this->DeviceType=="Chassis"){
+			$childList=$this->GetDeviceChildren();
+			foreach($childList as $child){
 				DevicePorts::removeConnections($child->DeviceID);
 			}
 		}
 
 		// Delete all network connections first
 		DevicePorts::removeConnections($this->DeviceID);
-		// Delete all power connections too
-		$pc=new PowerConnection();
-		$pc->DeviceID=$this->DeviceID;
-		$pc->DeleteConnections();
 	}
   
 	function UpdateDevice() {
@@ -1626,8 +1357,8 @@ class Device {
 		$tmpDev->DeviceID=$this->DeviceID;
 		$tmpDev->GetDevice();
 
-		// Check the user's permissions to modify this device, but only if it's not a CLI call
-		if( php_sapi_name() != "cli" && $tmpDev->Rights!='Write'){return false;}
+		// Check the user's permissions to modify this device
+		if($tmpDev->Rights!='Write'){return false;}
 	
 		$this->MakeSafe();	
 
@@ -1637,42 +1368,15 @@ class Device {
 			return false;
 		}		
 
-		// Force all uppercase for labels
-		$this->Label=transform($this->Label);
-		$this->SerialNo=transform($this->SerialNo);
-		$this->AssetTag=transform($this->AssetTag);
-
-		$sql="UPDATE fac_Device SET Label=\"$this->Label\", SerialNo=\"$this->SerialNo\", AssetTag=\"$this->AssetTag\", 
-			PrimaryIP=\"$this->PrimaryIP\", SNMPCommunity=\"$this->SNMPCommunity\", SNMPVersion=\"$this->SNMPVersion\",
-			v3SecurityLevel=\"$this->v3SecurityLevel\", v3AuthProtocol=\"$this->v3AuthProtocol\",
-			v3AuthPassphrase=\"$this->v3AuthPassphrase\", v3PrivProtocol=\"$this->v3PrivProtocol\", v3PrivPassphrase=\"$this->v3PrivPassphrase\",
-			SNMPFailureCount=$this->SNMPFailureCount, ESX=$this->ESX, Owner=$this->Owner, EscalationTimeID=$this->EscalationTimeID, 
-			EscalationID=$this->EscalationID, PrimaryContact=$this->PrimaryContact, 
-			Cabinet=$this->Cabinet, Position=$this->Position, Height=$this->Height, Ports=$this->Ports, 
-			FirstPortNum=$this->FirstPortNum, TemplateID=$this->TemplateID, NominalWatts=$this->NominalWatts, 
-			PowerSupplyCount=$this->PowerSupplyCount, DeviceType=\"$this->DeviceType\", ChassisSlots=$this->ChassisSlots, 
-			RearChassisSlots=$this->RearChassisSlots,ParentDevice=$this->ParentDevice, 
-			MfgDate=\"".date("Y-m-d", strtotime($this->MfgDate))."\", 
-			InstallDate=\"".date("Y-m-d", strtotime($this->InstallDate))."\", WarrantyCo=\"$this->WarrantyCo\", 
-			WarrantyExpire=\"".date("Y-m-d", strtotime($this->WarrantyExpire))."\", Notes=\"$this->Notes\", 
-			Reservation=$this->Reservation, HalfDepth=$this->HalfDepth, BackSide=$this->BackSide WHERE DeviceID=$this->DeviceID;";
-
-		// If the device won't update for some reason there is no cause to touch anything else about it
-		if(!$dbh->query($sql)){
-			$info=$dbh->errorInfo();
-			error_log("UpdateDevice::PDO Error: {$info[2]} SQL=$sql");
-			return false;
-		}
-		
 		// If you changed cabinets then the power connections need to be removed
 		if($row["Cabinet"]!=$this->Cabinet){
 			$cab=new Cabinet();
 			$cab->CabinetID=$this->Cabinet;
 			$cab->GetCabinet();
 			// Make sure the user has rights to save a device into the new cabinet
-			if($cab->Rights!="Write"){return false;}
-
-			// They have rights to do this so clear the power connections now
+			if(!User::Current()->canWrite($cab->AssignedTo)){
+				return false;
+			}
 			$powercon=new PowerConnection();
 			$powercon->DeviceID=$this->DeviceID;
 			$powercon->DeleteConnections();
@@ -1686,17 +1390,6 @@ class Device {
 				$this->GetDevice();
 				return;
 			}
-		}
-
-		// Device has been changed to be a CDU from something else so we need to create the extra records
-		if($this->DeviceType=="CDU" && $tmpDev->DeviceType!=$this->DeviceType){
-			$pdu=new PowerDistribution();
-			$pdu->CreatePDU($dev->DeviceID);
-		// Device was changed from CDU to something else, clean up the extra shit
-		}elseif($tmpDev->DeviceType=="CDU" && $tmpDev->DeviceType!=$this->DeviceType){
-			$pdu=new PowerDistribution();
-			$pdu->PDUID=$this->DeviceID;
-			$pdu->DeletePDU();
 		}
 
 		// If we made it to a device update and the number of ports available don't match the device, just fix it.
@@ -1713,21 +1406,18 @@ class Device {
 					}
 				}
 			}else{ // new device has more ports
-				DevicePorts::createPorts($this->DeviceID,true);
-			}
-		}
-
-		// If we made it to a device update and the number of power ports available don't match the device, just fix it.
-		if($tmpDev->PowerSupplyCount!=$this->PowerSupplyCount){
-			if($tmpDev->PowerSupplyCount>$this->PowerSupplyCount){ // old device has more ports
-				for($n=$this->PowerSupplyCount; $n<$tmpDev->PowerSupplyCount; $n++){
-					$p=new PowerPorts();
+				for($n=$tmpDev->Ports; $n<$this->Ports; ++$n){
+					$p=new DevicePorts;
 					$p->DeviceID=$this->DeviceID;
+					$p->Label=__("Port").($n+1);
 					$p->PortNumber=$n+1;
-					$p->removePort();
+					$p->createPort();
+					if($this->DeviceType=='Patch Panel'){
+						$p->PortNumber=$p->PortNumber*-1;
+						$p->createPort();
+					}
 				}
-			}else{ // new device has more ports
-				PowerPorts::createPorts($this->DeviceID,true);
+
 			}
 		}
 		
@@ -1748,7 +1438,6 @@ class Device {
 				}
 			}
 		}
-
 		if($this->DeviceType == "Patch Panel" && $tmpDev->DeviceType != $this->DeviceType){
 			// This asshole just changed a switch or something into a patch panel. Make the rear ports.
 			$p=new DevicePorts();
@@ -1769,55 +1458,30 @@ class Device {
 				}
 			}
 		}
-
-		// Check and see if we extended the model to include any of the attributes for a CDU
-		if($this->DeviceType=="CDU"){
-			$pdu=new PowerDistribution();
-			$pdu->PDUID=$this->DeviceID;
-			$pdu->GetPDU();
-			foreach($pdu as $prop => $val){
-				// See if the device modal was extended
-				if(isset($this->$prop)){
-					$pdu->$prop=$this->$prop;
-				}
-			}
-			// Either we just updated this with new info or it's the same from the get
-			$pdu->CabinetID=$this->Cabinet;
-			$pdu->UpdatePDU();
-		}
-
-		//Update children, if necesary
-		if ($this->ChassisSlots>0 || $this->RearChassisSlots>0){
-				$this->SetChildDevicesCabinet();
-		}
 		
-		(class_exists('LogActions'))?LogActions::LogThis($this,$tmpDev):'';
-		return true;
-	}
+		// Force all uppercase for labels
+		$this->Label=transform($this->Label);
+		$this->SerialNo=transform($this->SerialNo);
+		$this->AssetTag=transform($this->AssetTag);
 
-	function Audit() {
-		global $dbh;
+		$sql="UPDATE fac_Device SET Label=\"$this->Label\", SerialNo=\"$this->SerialNo\", AssetTag=\"$this->AssetTag\", 
+			PrimaryIP=\"$this->PrimaryIP\", SNMPCommunity=\"$this->SNMPCommunity\", ESX=$this->ESX, Owner=$this->Owner, 
+			EscalationTimeID=$this->EscalationTimeID, EscalationID=$this->EscalationID, PrimaryContact=$this->PrimaryContact, 
+			Cabinet=$this->Cabinet, Position=$this->Position, Height=$this->Height, Ports=$this->Ports, 
+			FirstPortNum=$this->FirstPortNum, TemplateID=$this->TemplateID, NominalWatts=$this->NominalWatts, 
+			PowerSupplyCount=$this->PowerSupplyCount, DeviceType=\"$this->DeviceType\", ChassisSlots=$this->ChassisSlots, 
+			RearChassisSlots=$this->RearChassisSlots,ParentDevice=$this->ParentDevice, 
+			MfgDate=\"".date("Y-m-d", strtotime($this->MfgDate))."\", 
+			InstallDate=\"".date("Y-m-d", strtotime($this->InstallDate))."\", WarrantyCo=\"$this->WarrantyCo\", 
+			WarrantyExpire=\"".date("Y-m-d", strtotime($this->WarrantyExpire))."\", Notes=\"$this->Notes\", 
+			Reservation=$this->Reservation, HalfDepth=$this->HalfDepth, BackSide=$this->BackSide WHERE DeviceID=$this->DeviceID;";
 
-		// Make sure we're not trying to decommission a device that doesn't exist
-		if(!$this->GetDevice()){
-			return false;
-		}
-
-		$tmpDev=new Device();
-		$tmpDev->DeviceID=$this->DeviceID;
-		$tmpDev->GetDevice();
-
-		$sql="UPDATE fac_Device SET AuditStamp=NOW() WHERE DeviceID=$this->DeviceID;";
-
-		if(!$dbh->exec($sql)){
+		if(!$dbh->query($sql)){
 			$info=$dbh->errorInfo();
-
-			error_log("Device:Audit::PDO Error: {$info[2]} SQL=$sql");
+			error_log("UpdateDevice::PDO Error: {$info[2]} SQL=$sql");
 			return false;
 		}
 		
-		$this->GetDevice();
-
 		(class_exists('LogActions'))?LogActions::LogThis($this,$tmpDev):'';
 		return true;
 	}
@@ -1838,50 +1502,10 @@ class Device {
 				$this->$prop=$value;
 			}
 
-			// Extend our device model
-			if($this->DeviceType=="CDU"){
-				$pdu=new PowerDistribution();
-				$pdu->PDUID=$this->DeviceID;
-				$pdu->GetPDU();
-				foreach($pdu as $prop => $val){
-					$this->$prop=$val;
-				}
-			}
-
 			return true;
 		}else{
 			return false;
 		}
-	}
-	
-	function GetDeviceList( $datacenterid=null ) {
-		if ( $datacenterid == null ) {
-			$dcLimit = "";
-		} else {
-			$dcLimit = "and b.DataCenterID=" . $datacenterid;
-		}
-		
-		$sql = "select a.* from fac_Device a, fac_Cabinet b where a.Cabinet=b.CabinetID $dcLimit order by b.DataCenterID ASC, Label ASC";
-		
-		$deviceList = array();
-		foreach ( $this->query( $sql ) as $deviceRow ) {
-			$deviceList[]=Device::RowToObject( $deviceRow );
-		}
-		
-		return $deviceList;
-	}	
-
-	static function GetSensorDevices(){
-		global $dbh;
-
-		$sql="SELECT * FROM fac_Device WHERE TemplateID IN (SELECT TemplateID FROM fac_DeviceTemplate WHERE DeviceType='Sensor');";
-
-		$deviceList=array();
-		foreach($dbh->query($sql) as $deviceRow){
-			$deviceList[]=Device::RowToObject($deviceRow);
-		}
-
-		return $deviceList;
 	}
 
 	static function GetDeviceByID($DeviceID){
@@ -1891,7 +1515,7 @@ class Device {
 		return $dev;
 	}
 
-	static function GetDevicesByTemplate($templateID) {
+	static function GetDevicesByTemplate( $templateID ) {
 		global $dbh;
 		
 		$sql = "select * from fac_Device where TemplateID='" . intval( $templateID ) . "' order by Label ASC";
@@ -1962,34 +1586,11 @@ class Device {
 		return $childList;
 	}
 	
-  function GetDeviceDescendants() {
-		global $dbh;
-		
-		$dev=New Device();
-	
-		$this->MakeSafe();
-	
-
-		$sql="SELECT * FROM fac_Device WHERE ParentDevice=$this->DeviceID ORDER BY BackSide, Position ASC;";
-
-		$descList = array();
-		$descList2 = array();
-
-		foreach($dbh->query($sql) as $row){
-			$dev=Device::RowToObject($row);
-			$descList[]=$dev;
-			if ($dev->ChassisSlots>0 || $dev->RearChassisSlots>0){
-				$descList2=$dev->GetDeviceDescendants();
-				$descList=array_merge($descList,$descList2);
-			}
-		}
-		
-		return $descList;
-	}
-	
 	function GetParentDevices(){
 		global $dbh;
 		
+		// $sql="SELECT * FROM fac_Device WHERE ChassisSlots>0 AND ParentDevice=0 ORDER BY Label ASC;";
+		// JMGA multichassis
 		$sql="SELECT * FROM fac_Device WHERE ChassisSlots>0 OR RearChassisSlots>0 ORDER BY Label ASC;";
 
 		$parentList=array();
@@ -2074,8 +1675,9 @@ class Device {
 		$this->MakeSafe();
 
 		if($includechildren){
-			$sql="SELECT * FROM fac_Device WHERE Cabinet=$this->Cabinet 
-				ORDER BY Position DESC;";
+			$sql="SELECT * FROM fac_Device WHERE ParentDevice IN (SELECT DeviceID FROM 
+				fac_Device WHERE Cabinet=$this->Cabinet) UNION SELECT * FROM fac_Device 
+				WHERE Cabinet=$this->Cabinet ORDER BY ParentDevice ASC, Position DESC;";
 		}elseif ($this->Cabinet<0){
 			//StorageRoom
 			if ($this->Position>0)
@@ -2085,7 +1687,7 @@ class Device {
 				$sql="SELECT * FROM fac_Device WHERE Cabinet=$this->Cabinet 
 					ORDER BY Position DESC;";
 		}else{
-			$sql="SELECT * FROM fac_Device WHERE Cabinet=$this->Cabinet AND ParentDevice=0 
+			$sql="SELECT * FROM fac_Device WHERE Cabinet=$this->Cabinet AND Cabinet!=0 
 				ORDER BY Position DESC;";
 		}
 		
@@ -2114,11 +1716,8 @@ class Device {
 
 	function DeleteDevice(){
 		global $dbh;
-
-		// Can't delete something that doesn't exist
-		if(!$this->GetDevice()){
-			return false;
-		}
+	
+		$this->MakeSafe();
 	
 		// First, see if this is a chassis that has children, if so, delete all of the children first
 		if($this->ChassisSlots >0){
@@ -2128,22 +1727,14 @@ class Device {
 				$tmpDev->DeleteDevice();
 			}
 		}
-
-		// If this is a CDU then remove it from the other table
-		if($this->DeviceType=="CDU"){
-			$pdu=new PowerDistribution();
-			$pdu->PDUID=$this->DeviceID;
-			$pdu->DeletePDU();
-		}
-	
+		
 		// Delete all network connections first
 		DevicePorts::removePorts($this->DeviceID);
 		
 		// Delete power connections next
-		PowerPorts::removePorts($this->DeviceID);
-
-		// Remove custom values
-		$this->DeleteCustomValues();
+		$powercon=new PowerConnection();
+		$powercon->DeviceID=$this->DeviceID;
+		$powercon->DeleteConnections();
 
 		// Now delete the device itself
 		$sql="DELETE FROM fac_Device WHERE DeviceID=$this->DeviceID;";
@@ -2217,48 +1808,6 @@ class Device {
 
 		foreach($dbh->query($sql) as $deviceRow){ 
 			$deviceList[$deviceRow["DeviceID"]]=Device::RowToObject($deviceRow);
-		}
-
-		return $deviceList;
-	}
-
-	function Search($indexedbyid=false){
-		global $dbh;
-		// Store the value of devicetype before we muck with it
-		$ot=$this->DeviceType;
-
-		// Make everything safe for us to search with
-		$this->MakeSafe();
-
-		// This will store all our extended sql
-		$sqlextend="";
-		function findit($prop,$val,&$sql){
-			if($sql){
-				$sql.=" AND $prop=\"$val\"";
-			}else{
-				$sql.=" WHERE $prop=\"$val\"";
-			}
-		}
-		foreach($this as $prop => $val){
-			// We force DeviceType to a known value so this is to check if they wanted to search for the default
-			if($prop=="DeviceType" && $val=="Server" && $ot!="Server"){
-				continue;
-			}
-			if($val){
-				findit($prop,$val,$sqlextend);
-			}
-		}
-
-		$sql="SELECT * FROM fac_Device $sqlextend ORDER BY Label ASC;";
-
-		$deviceList=array();
-
-		foreach($dbh->query($sql) as $deviceRow){
-			if($indexedbyid){
-				$deviceList[$deviceRow["DeviceID"]]=Device::RowToObject($deviceRow);
-			}else{
-				$deviceList[]=Device::RowToObject($deviceRow);
-			}
 		}
 
 		return $deviceList;
@@ -2372,84 +1921,6 @@ class Device {
 		$sql .= "GROUP BY a.DeviceID HAVING COUNT(c.TagID) >= $num_want_tags";
 
 		//error_log(">> $sql\n");
-
-		$deviceList = array();
-
-		foreach($dbh->query($sql) as $deviceRow){
-			$deviceList[$deviceRow["DeviceID"]]=Device::RowToObject($deviceRow);
-		}
-		
-		return $deviceList;
-	}
-
-	function SearchByCustomAttribute($searchTerm=null){
-		global $dbh;
-		
-		//
-		//Build a somewhat ugly SQL expression in order to do 
-		//semi-complicated attribute searches.  All attributes are
-		//logically AND'ed togther.  Thus, if you search for attributes 
-		//'foo' and 'bar' and '!quux', the results should be only 
-		//those systems with both 'foo' and 'bar' attributes while 
-		//excluding those with 'quux'.
-		//
-
-		// Basic start of the query.
-		$sql = "SELECT DISTINCT a.* FROM fac_Device a, fac_DeviceCustomValue b WHERE a.DeviceID=b.DeviceID ";
-
-		//split the searchTerm if needed, and strip whitespace
-		//note that search terms can contain spaces, so we have to use
-		//something else in the search string (commas seem logical)
-		$terms = explode(",", $searchTerm);
-		$terms = array_map("trim", $terms);
-
-		//Two arrays, one of terms we want, and one of those we don't want.
-		$want_terms = array();
-		$not_want_terms = array();
-
-		foreach ( $terms as $t ) {
-			//If the term starts with a "!" character, we want to 
-			//specifically exclude it from the search.
-			if (strpos($t, '!') !== false ) {
-				$t=preg_replace('/^!/', '', $t,1);	//remove the leading "!" from the term
-			$not_want_terms[].= $t;
-			} else {
-				$want_terms[] .= $t;
-			}
-		}
-		/*
-		error_log(join(',',$want_terms));
-		error_log(join(',',$not_want_terms));
-		*/
-		$num_want_terms = count($want_terms);
-		if (count($want_terms)) {
-			// This builds the part of the query that looks for all terms we want.
-
-			$sql .= " AND a.DeviceID IN ( SELECT DeviceID from fac_DeviceCustomValue WHERE ";
-			// Loop over the terms  we want.
-			$want_sql = sprintf("UCASE(Value) LIKE UCASE('%%%s%%')", array_shift($want_terms));
-			foreach ($want_terms as $t) {
-				$want_sql .= sprintf(" OR UCASE(Value) LIKE UCASE('%%%s%%')", $t);
-			}
-
-			$sql .= " $want_sql ) "; //extra parens for closing sub-select
-
-		}
-
-		//only include this section if we have negative terms
-		if (count($not_want_terms)) {
-
-			$sql .= " AND a.DeviceID NOT IN (SELECT DeviceID from fac_DeviceCustomValue WHERE ";
-
-			$not_want_sql = sprintf("UCASE(Value) LIKE UCASE('%%%s%%')", array_shift($not_want_terms));
-			foreach ($not_want_terms as $t) {
-				$not_want_sql .= sprintf(" OR UCASE(Value) LIKE UCASE('%%%s%%')", $t);
-			}
-			$sql .= "  $not_want_sql ) "; //extra parens to close sub-select
-		}
-
-		// This bit of magic filters out the results that don't match enough terms.
-		$sql .= "GROUP BY a.DeviceID HAVING COUNT(b.AttributeID) >= $num_want_terms";
 
 		$deviceList = array();
 
@@ -2754,21 +2225,6 @@ class Device {
 			$picturefile="pictures/P_ERROR.png";
 		}
 		@list($width, $height)=getimagesize($picturefile);
-		// Make sure there is an image! DOH! If either is 0 then use a text box
-		$width=intval($width);
-		$height=intval($height);
-		$noimage=false;
-		if($width==0 || $height==0){
-			$noimage=true;
-			if($parentTempl->Model=='HTRAY'){
-				$height=$parentDetails->targetWidth;
-				$width=$parentDetails->targetHeight;
-			}elseif($parentTempl->Model=='VTRAY'){
-				$width=$parentDetails->targetWidth;
-				$height=$parentDetails->targetHeight;
-			}
-		}
-
 		// In the event of read error this will rotate a horizontal text label
 		$hor_blade=($width=="" || $height=="")?true:($width>$height);
 
@@ -2789,8 +2245,6 @@ class Device {
 			// If we're dealing with a shelf mimic what GetSlot() would have done for our fake slot
 			if($parentTempl->Model=='HTRAY' || $parentTempl->Model=='VTRAY'){
 				$imageratio=($hor_blade || (!$hor_blade && $parentTempl->Model=='HTRAY'))?($width/$height):($height/$width);
-				// If we don't have an image this will make the text box fit correctly, hopefully
-				if($noimage){$imageratio=($parentTempl->Model=='HTRAY')?($height/$width):($width/$height);}
 				$slot->W=($parentTempl->Model=='HTRAY')?$parentDetails->targetWidth/$parentDev->ChassisSlots:$parentDetails->targetWidth;
 				$slot->H=($parentTempl->Model=='HTRAY')?$parentDetails->targetHeight:$parentDetails->targetHeight/$parentDev->ChassisSlots;
 				$slot->X=($parentTempl->Model=='HTRAY')?($rear)?($parentDev->ChassisSlots-$this->Position-$this->Height+1)*$slot->W:($slot->Position-1)*$slot->W:0;
@@ -2817,7 +2271,7 @@ class Device {
 					$originalX=$slot->X;
 					$slot->W=$slot->H*$imageratio;
 					$slot->X=($rear)?$originalX+($originalW-$slot->W):$slot->X;
-				}elseif($parentTempl->Model=='HTRAY' && $slot->H>$slot->W*$this->Height/$imageratio && !$noimage){
+				}elseif($parentTempl->Model=='HTRAY' && $slot->H>$slot->W*$this->Height/$imageratio){
 					$originalH=$slot->H;
 					$slot->H=($hor_blade)?$slot->W*$imageratio:$slot->W/$imageratio;
 					$slot->Y=$originalH-$slot->H;
@@ -2895,7 +2349,7 @@ class Device {
 			$height=intval(round($height));$width=intval(round($width));
 
 			// If they have rights to the device then make the picture clickable
-			$clickable=($this->Rights!="None")?"\t\t\t<a href=\"devices.php?DeviceID=$this->DeviceID\">\n":"";
+			$clickable=($this->Rights!="None")?"\t\t\t<a href=\"devices.php?deviceid=$this->DeviceID\">\n":"";
 			$clickableend=($this->Rights!="None")?"\t\t\t</a>\n":"";
 			
 			// Add in flags for missing ownership
@@ -2923,7 +2377,7 @@ class Device {
 				$label.="<div>$flags$this->Label".(($rear)?" (".__("Rear").")":"")."</div></div>\n";
 			}else{
 				//LABEL for child device without image - Always show
-				$resp.="\t\t\t\t<div class=\"label noimage\" data-deviceid=$this->DeviceID style='height: ".$height."px; line-height:".$height."px; ".(($height*0.8<13)?" font-size: ".intval($height*0.8)."px;":"")."'>";
+				$resp.="\t\t\t\t<div class=\"label\" data-deviceid=$this->DeviceID style='height: ".$height."px; line-height:".$height."px; ".(($height*0.8<13)?" font-size: ".intval($height*0.8)."px;":"")."'>";
 				$resp.="<div>$flags$this->Label".(($rear)?" (".__("Rear").")":"")."</div></div>\n";
 			}
 			$resp.=$clickableend.$label;
@@ -2983,7 +2437,7 @@ class Device {
 			$picturefile=str_replace(' ',"%20",$picturefile);
 
 			// If they have rights to the device then make the picture clickable
-			$clickable=($this->Rights!="None")?"\t\t<a href=\"devices.php?DeviceID=$this->DeviceID\">\n\t":"";
+			$clickable=($this->Rights!="None")?"\t\t<a href=\"devices.php?deviceid=$this->DeviceID\">\n\t":"";
 			$clickableend=($this->Rights!="None")?"\n\t\t</a>\n":"";
 
 			// Add in flags for missing ownership
@@ -3023,9 +2477,6 @@ class Device {
 
 			//Children
 			$childList=$this->GetDeviceChildren();
-
-			// Edge case where someone put more devices in a tray than they specified it slots
-			$this->ChassisSlots=(($templ->Model=='HTRAY' || $templ->Model=='VTRAY') && $this->ChassisSlots>=count($childList))?$this->ChassisSlots:count($childList);
 			if (count($childList)>0){
 				if(($this->ChassisSlots >0 && !$rear) || ($this->RearChassisSlots >0 && $rear) || ($templ->Model=='HTRAY' || $templ->Model=='VTRAY')){
 					//children in front face
@@ -3039,137 +2490,6 @@ class Device {
 			$resp.="\t</div>\n";
 		}
 		return $resp;
-	}
-
-	function GetCustomValues() {
-		global $dbh;
-
-		$this->MakeSafe();
-		$dcv = array();
-		$sql = "SELECT DeviceID, AttributeID, Value
-			FROM fac_DeviceCustomValue
-			WHERE DeviceID = $this->DeviceID;";
-		foreach($dbh->query($sql) as $dcvrow){
-			$dcv[$dcvrow["AttributeID"]]=$dcvrow["Value"];
-		}
-		$this->CustomValues=$dcv;
-	}	
-
-	function DeleteCustomValues() {
-		global $dbh;
-
-		$this->MakeSafe();
-		$sql="DELETE FROM fac_DeviceCustomValue WHERE DeviceID = $this->DeviceID;";
-		if($dbh->query($sql)) {
-			$this->GetCustomValues();
-			(class_exists('LogActions'))?LogActions::LogThis($this):'';
-			return true;
-		}
-		return false;
-	}
-
-	function InsertCustomValue($AttributeID, $Value) {
-		global $dbh;
-	
-		$this->MakeSafe();
-		// make the custom attribute stuff safe
-		$AttributeID = intval($AttributeID);
-		$Value=sanitize(trim($Value));
-
-		$sql = "INSERT INTO fac_DeviceCustomValue 
-			SET DeviceID = $this->DeviceID,
-			AttributeID = $AttributeID,
-			Value = \"$Value\";";
-		if($dbh->query($sql)) {
-			$this->GetCustomValues();
-			(class_exists('LogActions'))?LogActions::LogThis($this):'';
-			return true;
-		}
-		return false;
-	}
-	function SetChildDevicesCabinet(){
-		global $dbh;
-		
-		$sql="SELECT * FROM fac_Device WHERE ParentDevice=$this->DeviceID;";
-
-		foreach($dbh->query($sql) as $row){
-			$dev=Device::RowToObject($row);
-			$dev->Cabinet=$this->Cabinet;
-			$dev->UpdateDevice();
-			if ($dev->ChassisSlots>0 || $dev->RearChassisSlots>0){
-				$dev->SetChildDevicesCabinet();
-			}
-		}
-	}
-
-	// Making a function we can call from a device that will update itself and any other sensor in its immediate vicinity
-	function UpdateSensor(){
-		if(!$this->getDevice()){
-			return false;
-		}
-
-		return Device::UpdateSensors($this->Cabinet);
-	}	
-
-	// This is a train wreck to have it in here, but everything is lumped into Devices, now...
-	// this should now be functional however I question the positioning.  if we move this, update the function above
-	static function UpdateSensors( $CabinetID = null ) {
-		global $config;
-
-		$cab=new Cabinet();
-		$cab->CabinetID=$CabinetID;
-		if(!$cab->GetCabinet()){
-			return false;
-		}
-
-		// get a list of all the device id's in this cabinet
-		$sql="SELECT DeviceID FROM fac_Device WHERE DeviceType=\"Sensor\" AND PrimaryIP!=\"\" AND TemplateID>0 AND Cabinet=$cab->CabinetID;";
-		foreach($dbh->query($sql) as $row){
-			if(!$dev=Device::BasicTests($row['DeviceID'])){
-				// This device failed the basic test but maybe the next won't
-				continue;
-			}
-
-			// need to combine this shit with the DeviceTemplate like I did the extended devices
-			$t=new TemplateSensor();
-			$t->TemplateID=$dev->TemplateID;
-			if(!$t->GetTemplate()){
-				// Invalid template, how'd that happen?  Move on..
-				continue;
-			}
-
-			$temp=($t->TemperatureOID)?floatval(self::OSS_SNMP_Lookup($dev,null,"$t->TemperatureOID")):0;
-			$humidity=($t->HumidityOID)?floatval(self::OSS_SNMP_Lookup($dev,null,"$t->HumidityOID")):0;
-
-			// Strip out everything but numbers
-			// not sure these are needed anymore thanks to the OSS_SNMP library
-			$temp=preg_replace("/[^0-9.,+]/","",$temp);
-			$humidity=preg_replace("/[^0-9.'+]/","",$humidity);
-
-			// Apply multipliers
-			$temp*=$t->TempMultiplier;
-			$humidity*=$t->HumidityMultiplier;
-
-			// Convert the units if necessary
-			// device template is set to english but user wants metric so convert it
-			if(($t->mUnits=="english") && ($config->ParameterArray["mUnits"]=="metric")){
-				$temp=(($temp-32)*5/9);
-			// device template is set to metric but the user wants english so convert it
-			}elseif(($t->mUnits=="metric") && ($config->ParameterArray["mUnits"]=="english")){
-				$temp=(($temp*9/5)+32);
-			}
-
-			// No need for any further sanitization it was all handled above
-			$insertsql="INSERT INTO fac_SensorReadings SET DeviceID=$dev->DeviceID, Temperature=$temp, Humidity=$humidity, Timestamp=NOW();";
-			if(!$dbh->exec($sql)){
-				$info = $dbh->errorInfo();
-
-				error_log( "UpdateSensors::PDO Error: {$info[2]} SQL=$sql" );
-				return false;
-			}
-		}
-
-		return true;			
 	}
 }
 
@@ -3264,7 +2584,7 @@ class DevicePorts {
 		return $row["ActivePorts"];
 	}
 		
-	function createPort($ignore_errors=false) {
+	function createPort() {
 		global $dbh;
 		
 		$this->MakeSafe();
@@ -3274,7 +2594,7 @@ class DevicePorts {
 			PortNotes=\"$this->PortNotes\", ConnectedDeviceID=$this->ConnectedDeviceID, 
 			ConnectedPort=$this->ConnectedPort, Notes=\"$this->Notes\";";
 			
-		if(!$dbh->query($sql) && !$ignore_errors){
+		if(!$dbh->query($sql)){
 			$info=$dbh->errorInfo();
 
 			error_log("createPort::PDO Error: {$info[2]} SQL=$sql");
@@ -3285,10 +2605,7 @@ class DevicePorts {
 		return true;
 	}
 
-	static function createPorts($DeviceID,$update_existing=false){
-		// If $update_existing is true then we'll try to create all the ports and as a by product
-		// create any new ports.  The setting here will ensure we don't log any errors from the
-		// ports that already exist.
+	static function createPorts($DeviceID){
 		$dev=New Device;
 		$dev->DeviceID=$DeviceID;
 		if(!$dev->GetDevice()){return false;}
@@ -3303,6 +2620,7 @@ class DevicePorts {
 		}
 
 		// Build the DevicePorts from the existing info in the following priority:
+		//  (- Existing switchconnection table)  --> this comment is obsolete
 		//  - Template ports table
 		//  - SNMP data (if it exists)
 		//  - Placeholders
@@ -3332,7 +2650,7 @@ class DevicePorts {
 				// pull port name first from snmp then from template then just call it port x
 				$portList[$i]->Label=(isset($nameList[$n]))?$nameList[$n]:(isset($tports[$i]) && $tports[$i]->Label)?$tports[$i]->Label:__("Port").$i;
 				$portList[$i]->Notes=(isset($aliasList[$n]))?$aliasList[$n]:'';
-				$portList[$i]->createPort($update_existing);
+				$portList[$i]->createPort();
 			}
 		}else{
 			for($n=0; $n<$dev->Ports; $n++){
@@ -3349,13 +2667,13 @@ class DevicePorts {
 					}
 				}
 				$portList[$i]->Label=($portList[$i]->Label=="")?__("Port").$i:$portList[$i]->Label;
-				$portList[$i]->createPort($update_existing);
+				$portList[$i]->createPort();
 				if($dev->DeviceType=="Patch Panel"){
 					$i=$i*-1;
 					$portList[$i]=new DevicePorts();
 					$portList[$i]->DeviceID=$dev->DeviceID;
 					$portList[$i]->PortNumber=$i;
-					$portList[$i]->createPort($update_existing);
+					$portList[$i]->createPort();
 				}
 			}
 		}
@@ -3378,7 +2696,7 @@ class DevicePorts {
 		}
 	}
 
-	function updatePort($fasttrack=false) {
+	function updatePort() {
 		global $dbh;
 
 		$oldport=new DevicePorts(); // originating port prior to modification
@@ -3389,62 +2707,52 @@ class DevicePorts {
 		$tmpport->DeviceID=$this->ConnectedDeviceID;
 		$tmpport->PortNumber=$this->ConnectedPort;
 		$tmpport->getPort();
+		$oldtmpport=new DevicePorts(); // used for logging
+		$oldtmpport->DeviceID=$oldport->ConnectedDeviceID;
+		$oldtmpport->PortNumber=$oldport->ConnectedPort;
+		$oldtmpport->getPort();
+
+		//check rights before we go any further
 		$dev=new Device();
 		$dev->DeviceID=$this->DeviceID;
 		$dev->GetDevice();
-		// This is gonna be a hack for updating a port when we don't want a recursion loop
-		// I'll likely remove the makeConnection method after this
-		if(!$fasttrack){
-			$oldtmpport=new DevicePorts(); // used for logging
-			$oldtmpport->DeviceID=$oldport->ConnectedDeviceID;
-			$oldtmpport->PortNumber=$oldport->ConnectedPort;
-			$oldtmpport->getPort();
+		$replacingdev=new Device();
+		$replacingdev->DeviceID=$oldport->ConnectedDeviceID;
+		$replacingdev->GetDevice();
+		$connecteddev=new Device();
+		$connecteddev->DeviceID=$this->ConnectedDeviceID;
+		$connecteddev->GetDevice();
 
-			//check rights before we go any further
-			$replacingdev=new Device();
-			$replacingdev->DeviceID=$oldport->ConnectedDeviceID;
-			$replacingdev->GetDevice();
-			$connecteddev=new Device();
-			$connecteddev->DeviceID=$this->ConnectedDeviceID;
-			$connecteddev->GetDevice();
+		$rights=false;
+		$rights=($dev->Rights=="Write")?true:$rights;
+		$rights=($replacingdev->Rights=="Write")?true:$rights;
+		$rights=($connecteddev->Rights=="Write")?true:$rights;
 
-			$rights=false;
-			$rights=($dev->Rights=="Write")?true:$rights;
-			$rights=($replacingdev->Rights=="Write")?true:$rights;
-			$rights=($connecteddev->Rights=="Write")?true:$rights;
-
-			if(!$rights){
-				return false;
-			}
-		
-			$this->MakeSafe();
-
-			// Quick sanity check so we aren't depending on the user
-			$this->Label=($this->Label=="")?$this->PortNumber:$this->Label;
-
-			// clear previous connection
-			$oldport->removeConnection();
-			$tmpport->removeConnection();
-
-			if($this->ConnectedDeviceID==0 || $this->PortNumber==0 || $this->ConnectedPort==0){
-				// when any of the above equal 0 this is a delete request
-				// skip making any new connections but go ahead and update the device
-				// reload tmpport with data from the other device
-				$tmpport->DeviceID=$oldport->ConnectedDeviceID;
-				$tmpport->PortNumber=$oldport->ConnectedPort;
-				$tmpport->getPort();
-			}else{
-				// make new connection
-				$tmpport->ConnectedDeviceID=$this->DeviceID;
-				$tmpport->ConnectedPort=$this->PortNumber;
-				$tmpport->Notes=$this->Notes;
-				$tmpport->MediaID=$this->MediaID;
-				$tmpport->ColorID=$this->ColorID;
-				$tmpport->updatePort(true);
-	// The three lines above were added to sync media and color types with the connection
-	//			DevicePorts::makeConnection($tmpport,$this);
-			}
+		if(!$rights){
+			return false;
 		}
+	
+		$this->MakeSafe();
+
+		// clear previous connection
+		$oldport->removeConnection();
+		$tmpport->removeConnection();
+
+		if($this->ConnectedDeviceID==0 || $this->PortNumber==0 || $this->ConnectedPort==0){
+			// when any of the above equal 0 this is a delete request
+			// skip making any new connections but go ahead and update the device
+			// reload tmpport with data from the other device
+			$tmpport->DeviceID=$oldport->ConnectedDeviceID;
+			$tmpport->PortNumber=$oldport->ConnectedPort;
+			$tmpport->getPort();
+		}else{
+			// make new connection
+			$tmpport->ConnectedDeviceID=$this->DeviceID;
+			$tmpport->ConnectedPort=$this->PortNumber;
+			$tmpport->Notes=$this->Notes;
+			DevicePorts::makeConnection($tmpport,$this);
+		}
+
 		// update port
 		$sql="UPDATE fac_Ports SET MediaID=$this->MediaID, ColorID=$this->ColorID, 
 			PortNotes=\"$this->PortNotes\", ConnectedDeviceID=$this->ConnectedDeviceID, 
@@ -3473,9 +2781,7 @@ class DevicePorts {
 
 		// two logs, because we probably modified two devices
 		(class_exists('LogActions'))?LogActions::LogThis($this,$oldport):'';
-		if(!$fasttrack){
-			(class_exists('LogActions'))?LogActions::LogThis($tmpport,$oldtmpport):'';
-		}
+		(class_exists('LogActions'))?LogActions::LogThis($tmpport,$oldtmpport):'';
 		return true;
 	}
 
@@ -3620,7 +2926,7 @@ class DevicePorts {
 	}
 
 
-	static function getPatchCandidates($DeviceID,$PortNum=null,$listports=null,$patchpanels=null,$scopelimit=null){
+	static function getPatchCandidates($DeviceID,$PortNum=null,$listports=null,$patchpanels=null){
 		/*
 		 * $DeviceID = ID of the device that you are wanting to make a connection from
 		 * $PortNum(optional) = Port Number on the device you are wanting to connect,
@@ -3631,7 +2937,6 @@ class DevicePorts {
 		 */
 		global $dbh;
 		global $config;
-		global $person;
 
 		$dev=new Device(); // make sure we have a real device first
 		$dev->DeviceID=$DeviceID;
@@ -3653,29 +2958,6 @@ class DevicePorts {
 			return false;
 		}
 
-		$limiter='';
-		if(!is_null($scopelimit)){
-			$cab=new Cabinet();
-			$cab->CabinetID=$dev->Cabinet;
-			$cab->GetCabinet();
-			switch ($scopelimit){
-				case 'cabinet':
-					$limiter=" AND Cabinet=$dev->Cabinet";
-					break;
-				case 'row':
-					$limiter=" AND Cabinet IN (SELECT CabinetID FROM fac_Cabinet WHERE CabRowID=$cab->CabRowID)";
-					break;
-				case 'zone':
-					$limiter=" AND Cabinet IN (SELECT CabinetID FROM fac_Cabinet WHERE ZoneID=$cab->ZoneID)";
-					break;
-				case 'datacenter':
-					$limiter=" AND Cabinet IN (SELECT CabinetID FROM fac_Cabinet WHERE DataCenterID=$cab->DataCenterID)";
-					break;
-				default:
-					break;
-			}
-		}
-
 		$pp="";
 		if(!is_null($patchpanels)){
 			$pp=' AND DeviceType="Patch Panel"';
@@ -3683,15 +2965,15 @@ class DevicePorts {
 		$candidates=array();
 
 		if(is_null($listports)){
-			$currentperson=$person;
-			if(!$currentperson->WriteAccess){
-				$groups=$currentperson->isMemberOf();  // list of groups the current user is member of
+			$currentuser=User::Current();
+			if(!$currentuser->WriteAccess){
+				$groups=$currentuser->isMemberOf();  // list of groups the current user is member of
 				$rights=null;
 				foreach($groups as $index => $DeptID){
 					if(is_null($rights)){
-						$rights="Owner=$DeptID";
+						$rights="AssignedTo=$DeptID OR Owner=$DeptID";
 					}else{
-						$rights.=" OR Owner=$DeptID";
+						$rights.="OR AssignedTo=$DeptID OR Owner=$DeptID";
 					}
 				}
 				$rights=(is_null($rights))?null:" AND ($rights)";
@@ -3699,19 +2981,33 @@ class DevicePorts {
 				$rights=null;
 			}
 
-			$cabinetID=$dev->GetDeviceCabinetID();
-			
+			// Gets a little complicated if you are on a blade device and looking for other patch candidates
+			// But putting this logic into the SQL is extremely processor intensive, so do the conditional on the outside
+			// and only take the processing hit when there's a child device as the source
+			$cabinetID=($dev->ParentDevice==0)?$dev->Cabinet:$dev->WhosYourDaddy()->Cabinet;
 			$sqlSameCabDevice="SELECT * FROM fac_Device WHERE Ports>0 AND 
-				Cabinet=$cabinetID $rights$pp$limiter GROUP BY DeviceID ORDER BY Position 
+				Cabinet=$cabinetID $rights$pp GROUP BY DeviceID ORDER BY Position 
 				DESC, Label ASC;";
+			$sqlSameCabChildDevice="SELECT * FROM fac_Device WHERE Ports>0 AND 
+				Cabinet=0 AND ParentDevice IN (SELECT DeviceID FROM fac_Device WHERE 
+				Cabinet=$cabinetID AND (ChassisSlots>0 OR RearChassisSlots>0)) $rights$pp 
+				GROUP BY DeviceID ORDER BY Position DESC, Label ASC;";
 			$sqlDiffCabDevice="SELECT * FROM fac_Device WHERE Ports>0 AND 
-				Cabinet!=$cabinetID $rights$pp$limiter GROUP BY DeviceID ORDER BY Label ASC;";
-			
-			foreach(array($sqlSameCabDevice, $sqlDiffCabDevice) as $sql){
+				Cabinet!=$cabinetID $rights$pp GROUP BY DeviceID ORDER BY Position DESC, 
+				Label ASC;";
+			$sqlDiffCabChildDevice="SELECT * FROM fac_Device WHERE Ports>0 AND Cabinet=0 
+				AND ParentDevice IN (SELECT DeviceID FROM fac_Device WHERE 
+				Cabinet!=$cabinetID AND (ChassisSlots>0 OR RearChassisSlots>0)) $rights$pp 
+				GROUP BY DeviceID ORDER BY Position DESC, Label ASC;";
+
+			// Running these four simple queries is supposed to be faster than the previous complicated ones
+			foreach(array($sqlSameCabDevice, $sqlSameCabChildDevice, $sqlDiffCabDevice, $sqlDiffCabChildDevice) as $sql){
 				foreach($dbh->query($sql) as $row){
 					// false to skip rights check we filtered using sql above
 					$tmpDev=Device::RowToObject($row,false);
-					$candidates[]=array("DeviceID"=>$tmpDev->DeviceID,"Label"=>$tmpDev->Label,"CabinetID"=>$tmpDev->Cabinet);
+					// Child devices the cabinet will be 0 this will fix that
+					$tmpDev->Cabinet=($tmpDev->ParentDevice!=0)?$tmpDev->WhosYourDaddy()->Cabinet:$tmpDev->Cabinet;
+					$candidates[]=array("DeviceID" => $tmpDev->DeviceID, "Label" => $tmpDev->Label, "CabinetID" => $tmpDev->Cabinet);
 				}
 			}
 		}else{
@@ -3833,9 +3129,6 @@ class ESX {
 				$vmList[$vmID]->vmName = trim( str_replace( '"', '', @end( explode( ":", $name ) ) ) );
 				$vmList[$vmID]->vmState = trim( str_replace( '"', '', @end( explode( ":", $state ) ) ) );
 			}
-			$dev->ResetFailures();
-		} else {
-			$dev->IncrementFailures();
 		}
 
 		return $vmList;
@@ -3851,9 +3144,7 @@ class ESX {
 				print "Querying host $esxDev->Label @ $esxDev->PrimaryIP...\n";
 			}
 
-			if ( $esxDev->SNMPFailureCount < 3 ) {
-				$vmList = ESX::RefreshInventory( $esxDev, $debug );
-			}
+			$vmList = ESX::RefreshInventory( $esxDev, $debug );
 
 			if($debug){
 				print_r($vmList);
@@ -4124,7 +3415,7 @@ class RackRequest {
 	// Create MakeSafe / MakeDisplay functions
 	function MakeSafe(){
 		//Keep weird values out of DeviceType
-		$validdevicetypes=array('Server','Appliance','Storage Array','Switch','Chassis','Patch Panel','Physical Infrastructure','CDU');
+		$validdevicetypes=array('Server','Appliance','Storage Array','Switch','Chassis','Patch Panel','Physical Infrastructure');
 
 		$this->RequestID=intval($this->RequestID);
 		$this->RequestorID=intval($this->RequestorID);
@@ -4309,144 +3600,229 @@ class RackRequest {
 
 class SwitchInfo {
 	/* All of these functions will REQUIRE the built-in SNMP functions - the external calls are simply too slow */
-	static private function BasicTests($DeviceID){
-		global $config;
-
-		// First check if the SNMP library is present
-		if(!class_exists('OSS_SNMP\SNMP')){
-			return false;
-		}
-
-		$dev=New Device();
-		$dev->DeviceID=$DeviceID;
-
-		// Make sure this is a real device and has an IP set
-		if(!$dev->GetDevice()){return false;}
-		if($dev->PrimaryIP==""){return false;}
-
-		// If the device doesn't have an SNMP community set, check and see if we have a global one
-		$dev->SNMPCommunity=($dev->SNMPCommunity=="")?$config->ParameterArray["SNMPCommunity"]:$dev->SNMPCommunity;
-
-		// We've passed all the repeatable tests, return the device object for digging
-		return $dev;
-	}
-
-	// Making an attempt at reducing the lines that I was constantly repeating at a cost of making this a little more convoluted.
-	static private function OSS_SNMP_Lookup($dev,$snmplookup,$portid=null,$baseoid=null){
-		// This is find out the name of the function that called this to make the error logging more descriptive
-		$caller=debug_backtrace();
-		$caller=$caller[1]['function'];
-
-		// Since we don't really let the user specify the version right now here's a stop gap
-		// Try the default version of 2c first
-		$snmpHost=new OSS_SNMP\SNMP($dev->PrimaryIP,$dev->SNMPCommunity,$dev->SNMPVersion,$dev->v3SecurityLevel,$dev->v3AuthProtocol,$dev->v3AuthPassphrase,$dev->v3PrivProtocol,$dev->v3PrivPassphrase);
-		try {
-			$snmpHost->useSystem()->name();
-		}catch (Exception $e){
-			// That shit the bed so drop down to 1
-			$snmpHost=new OSS_SNMP\SNMP($dev->PrimaryIP,$dev->SNMPCommunity,1);
-		}
-
-		$snmpresult=false;
-		try {
-			$snmpresult=(is_null($portid))?$snmpHost->useIface()->$snmplookup(true):$snmpHost->get($baseOID.".$portid");
-		}catch (Exception $e){
-			error_log("SwitchInfo::$caller($dev->DeviceID) ".$e->getMessage());
-		}
-
-		return $snmpresult;
-	}
-
 	static function getNumPorts($DeviceID) {
-		if(!$dev=SwitchInfo::BasicTests($DeviceID)){
-			return false;
+		global $dbh;
+		global $config;
+		
+		if ( ! function_exists( "snmpget" ) ) {
+			return;
 		}
-
-		return self::OSS_SNMP_Lookup($dev,"numberOfInterfaces");
-	}
-
-	static function findFirstPort( $DeviceID ) {
-		if(!$dev=SwitchInfo::BasicTests($DeviceID)){
+		
+		$dev = new Device();
+		$dev->DeviceID = $DeviceID;
+		
+		if(!$dev->GetDevice()) {
 			return false;
 		}
 		
-		$x=array();
-		foreach(self::OSS_SNMP_Lookup($dev,"descriptions") as $index => $portdesc ) {
-			if ( preg_match( "/(bond|\"[A-Z]|swp|eth|Ethernet|Port-Channel|\/)[01]$/", $portdesc )) {
-				$x[$index] = $portdesc;
+		if ( $dev->PrimaryIP == "" )
+			return;
+		
+		if ( $dev->SNMPCommunity == "" ) {
+			$Community = $config->ParameterArray["SNMPCommunity"];
+		} else {
+			$Community = $dev->SNMPCommunity;
+		}
+		
+		return @end( explode( ":", snmpget( $dev->PrimaryIP, $Community, 'IF-MIB::ifNumber.0' )));
+	}
+
+	static function findFirstPort( $DeviceID ) {
+		global $dbh;
+		global $config;
+		
+		if ( ! function_exists( "snmpget" ) ) {
+			return;
+		}
+		
+		$dev=new Device();
+		$dev->DeviceID = $DeviceID;
+		
+		if ( !$dev->GetDevice() ) {
+			return false;
+		}
+
+		if ( $dev->PrimaryIP == "" )
+			return;
+		
+		if ( $dev->SNMPCommunity == "" ) {
+			$Community = $config->ParameterArray["SNMPCommunity"];
+		} else {
+			$Community = $dev->SNMPCommunity;
+		}
+		
+		$x = array();
+		
+		$portList = snmprealwalk( $dev->PrimaryIP, $Community, "IF-MIB::ifDescr" );
+		foreach( $portList as $index => $port ) {
+			$head = @end( explode( ".", $index ) );
+			$portdesc = @end( explode( ":", $port));
+			if ( preg_match( "/(bond|swp|eth|Ethernet|Port-Channel|\/)[01]$/", $portdesc )) {
+				$x[$head] = $portdesc;
 			} // Find lines that end with /1
 		}
 		return $x;
 	}
 
-	static function getPortNames($DeviceID,$portid=null){
-		if(!$dev=SwitchInfo::BasicTests($DeviceID)){
-			return false;
+	static function getPortNames( $DeviceID, $portid = null ) {
+		global $dbh;
+		global $config;
+		
+		if ( ! function_exists( "snmpget" ) ) {
+			return;
 		}
-
-		// We never did finish the discussion of if we should use the mib vs the oid
+		
+		$dev = new Device();
+		$dev->DeviceID = $DeviceID;
+		$nameList=array(); // should this fail return blank
+		
+		if(!$dev->GetDevice()){
+			return $nameList;
+		}
+		
+		if( $dev->PrimaryIP=="" ){
+			return $nameList;
+		}
+		
+		if ( $dev->SNMPCommunity == "" ) {
+			$Community = $config->ParameterArray["SNMPCommunity"];
+		} else {
+			$Community = $dev->SNMPCommunity;
+		}
+			
 		$baseOID = ".1.3.6.1.2.1.31.1.1.1.1";
 		$baseOID = "IF-MIB::ifName"; 
 
-		$nameList=self::OSS_SNMP_Lookup($dev,"descriptions",$portid,$baseOID);
-
-		if(is_array($nameList)){
-			$saving=false;
-			$newList=array();
-			foreach($nameList as $i => $desc){
-				if($i==$dev->FirstPortNum){$saving=true;}
-				if($saving){$newList[sizeof($newList)+1]=$desc;}
-				if(sizeof($newList)==$dev->Ports){break;}
+		if(is_null($portid)){		
+			if($reply=@snmprealwalk($dev->PrimaryIP,$Community,$baseOID)){
+				// Skip the returned values until we get to the first port
+				$Saving = false;
+				foreach($reply as $oid => $label){
+					$indexValue = @end(explode( ".", $oid ));
+					if ( $indexValue == $dev->FirstPortNum )
+						$Saving = true;
+						
+					if ( $Saving == true )
+						$nameList[sizeof($nameList) + 1] = trim(@end(explode(":",$label)));
+					
+					// Once we have captured enough values that match the number of ports, stop
+					if ( sizeof( $nameList ) == $dev->Ports )
+						break;
+				}
 			}
-			$nameList=$newList;
+		} else {
+				$query = @end( explode( ":", snmp2_get( $dev->PrimaryIP, $Community, $baseOID.'.'.$portid )));
+				$nameList = $query;
 		}
-
+		
 		return $nameList;
 	}
 	
-	static function getPortStatus($DeviceID,$portid=null){
-		if(!$dev=SwitchInfo::BasicTests($DeviceID)){
-			return false;
+	static function getPortStatus( $DeviceID, $portid = null ) {
+		global $dbh;
+		global $config;
+		
+		if ( ! function_exists( "snmpget" ) ) {
+			return;
 		}
-
+		
+		$dev=new Device();
+		$dev->DeviceID=$DeviceID;
+		$statusList=array();
+		
+		if(!$dev->GetDevice()){
+			return $statusList;
+		}
+		
+		if( $dev->PrimaryIP=="" ){
+			return $statusList;
+		}
+		
+		if ( $dev->SNMPCommunity == "" ) {
+			$Community = $config->ParameterArray["SNMPCommunity"];
+		} else {
+			$Community = $dev->SNMPCommunity;
+		}
+			
 		// $baseOID = ".1.3.6.1.2.1.2.2.1.8.";
 		$baseOID="IF-MIB::ifOperStatus"; // arguments for not using MIB?
 
-		$statusList=self::OSS_SNMP_Lookup($dev,"operationStates",$portid,$baseOID);
-
-		if(is_array($statusList)){
-			$saving=false;
-			$newList=array();
-			foreach($statusList as $i => $status){
-				if($i==$dev->FirstPortNum){$saving=true;}
-				if($saving){$newList[sizeof($newList)+1]=$status;}
-				if(sizeof($newList)==$dev->Ports){break;}
+		if ( is_null($portid) ) {		
+			if($reply=@snmprealwalk($dev->PrimaryIP, $Community, $baseOID)){	
+				// Skip the returned values until we get to the first port
+				$Saving = false;
+				foreach($reply as $oid => $status){
+					$indexValue = @end(explode( ".", $oid ));
+					if ( $indexValue == $dev->FirstPortNum ) {
+						$Saving = true;
+					}
+					
+					if ( $Saving == true ) {
+						@preg_match( "/(INTEGER: )(.+)(\(.*)/", $status, $matches);
+						$statusList[sizeof( $statusList) + 1]=@$matches[2];
+					}
+					
+					// Once we have captured enough values that match the number of ports, stop
+					if ( sizeof( $statusList ) == $dev->Ports ) {
+						break;
+					}
+				}
 			}
-			$statusList=$newList;
+		}else{
+			@preg_match( "/(INTEGER: )(.+)(\(.*)/", snmpget( $dev->PrimaryIP, $dev->SNMPCommunity, $baseOID.$portid ), $matches);
+			// This will change the array that was getting kicked back to a single value for an individual port lookup
+			$statusList = @$matches[2];
 		}
-
+		
 		return $statusList;
 	}
 	
-	static function getPortAlias($DeviceID,$portid=null){
-		if(!$dev=SwitchInfo::BasicTests($DeviceID)){
+	static function getPortAlias( $DeviceID, $portid = null ) {
+		global $config;
+
+		if(!function_exists("snmpget")){
 			return false;
+		}
+
+		$dev=new Device();
+		$dev->DeviceID=$DeviceID;
+
+		$aliasList=array();
+
+		if(!$dev->GetDevice()){
+			return $aliasList;
+		}
+
+		if($dev->PrimaryIP==""){
+			return $aliasList;
+		}
+
+		// Get SNMP community from the device, fall back to default if one isn't set on the device
+		$Community=($dev->SNMPCommunity=="")?$config->ParameterArray["SNMPCommunity"]:$dev->SNMPCommunity;
+		if($Community==""){
+			return $aliasList;
 		}
 
 		$baseOID=".1.3.6.1.2.1.31.1.1.1.18.";
 		$baseOID="IF-MIB::ifAlias";
 
-		$aliasList=self::OSS_SNMP_Lookup($dev,"adminStates",$portid,$baseOID);
-		
-		if(is_array($aliasList)){
-			$saving=false;
-			$newList=array();
-			foreach($aliasList as $i => $alias){
-				if($i==$dev->FirstPortNum){$saving=true;}
-				if($saving){$newList[sizeof($newList)+1]=$alias;}
-				if(sizeof($newList)==$dev->Ports){break;}
+		if(is_null($portid)){
+			if($reply=snmprealwalk($dev->PrimaryIP,$Community,$baseOID)){
+				$n=1; // Start our index at 1
+				foreach($reply as $oid => $string){
+					if(@end(explode( ".", $oid ))>=$dev->FirstPortNum){
+						@preg_match( "/(STRING: )(.*)/", $string, $matches);
+						$aliasList[$n++]=$matches[2];
+					}
+					// Once we have captured enough values that match the number of ports, stop
+					if(sizeof($aliasList)==$dev->Ports){
+						break;
+					}
+				}
 			}
-			$aliasList=$newList;
+		}else{
+			$query = @end( explode( ":", snmpget( $dev->PrimaryIP, $Community, $baseOID.'.'.$portid )));
+			$aliasList = $query;
 		}
 		
 		return $aliasList;	
@@ -4512,7 +3888,7 @@ class Tags {
 	static function FindAll(){
 		global $dbh;
 
-		$sql="SELECT * FROM fac_Tags order by Name ASC";
+		$sql="SELECT * FROM fac_Tags;";
 
 		$tagarray=array();
 		foreach($dbh->query($sql) as $row){
@@ -4928,229 +4304,5 @@ class PlannedPath {
 	
 } //END OF PLANNEDPATH
 
-class DeviceCustomAttribute {
-	var $AttributeID;
-	var $Label;
-	var $AttributeType='string';
-	var $Required=0;
-	var $AllDevices=0;
-	var $DefaultValue;
 
-	function MakeSafe() {
-		$validtypes=array("string","number","integer","date","phone","email","ipv4","url","checkbox");
-
-		$this->AttributeID=intval($this->AttributeID);
-		$this->Label=sanitize($this->Label);
-		$this->AttributeType=(in_array($this->AttributeType,$validtypes))?$this->AttributeType:'string';
-		$this->Required=(intval($this->Required)>=1)?1:0;
-		$this->AllDevices=(intval($this->AllDevices)>=1)?1:0;
-		$this->DefaultValue=sanitize($this->DefaultValue);
-	}
-	
-	function CheckInput() {
-		$this->MakeSafe();
-		
-		if(!in_array($this->AttributeType, DeviceCustomAttribute::GetDeviceCustomAttributeTypeList())){
-			return false;
-		}
-		if(trim($this->DefaultValue) != "") {
-			switch($this->AttributeType){
-				case "number":
-					if(!filter_var($this->DefaultValue, FILTER_VALIDATE_FLOAT)) { return false; }
-					break;
-				case "integer":
-					if(!filter_var($this->DefaultValue, FILTER_VALIDATE_INT)) { return false; }
-					break;
-				case "date":
-					$dateparts = preg_split("/\/|-/", $this->DefaultValue);
-					if(count($dateparts)!=3 || !checkdate($dateparts[0], $dateparts[1], $dateparts[2])) { return false; }
-					break;
-				case "phone":
-					// stole this regex out of the jquery.validationEngine-en.js source
-					if(!preg_match("/^([\+][0-9]{1,3}[\ \.\-])?([\(]{1}[0-9]{2,6}[\)])?([0-9\ \.\-\/]{3,20})((x|ext|extension)[\ ]?[0-9]{1,4})?$/", $this->DefaultValue)) { return false; }
-					break;
-				case "email":
-					if(!filter_var($this->DefaultValue, FILTER_VALIDATE_EMAIL)) { return false; }
-					break;
-				case "ipv4":
-					if(!filter_var($this->DefaultValue, FILTER_VALIDATE_IP)) { return false; }
-					break;
-				case "url":
-					if(!filter_var($this->DefaultValue, FILTER_VALIDATE_URL)) { return false; }
-					break;
-				case "checkbox":
-					$acceptable = array("0", "1", "true", "false", "on", "off");
-					if(!in_array($this->DefaultValue, $acceptable)) { return false; }		
-					break;
-			}
-		}
-		return true;
-	}
-
-	static function RowToObject($dbRow) {
-		$dca = new DeviceCustomAttribute();
-		$dca->AttributeID=$dbRow["AttributeID"];
-		$dca->Label=$dbRow["Label"];
-		$dca->AttributeType=$dbRow["AttributeType"];
-		$dca->Required=$dbRow["Required"];
-		$dca->AllDevices=$dbRow["AllDevices"];
-		$dca->DefaultValue=$dbRow["DefaultValue"];
-		return $dca;
-	}
-
-	function CreateDeviceCustomAttribute() {
-		global $dbh;
-		$this->MakeSafe();
-		if(!$this->CheckInput()) { return false; }
-		$sql="INSERT INTO fac_DeviceCustomAttribute SET Label=\"$this->Label\",
-			AttributeType=\"$this->AttributeType\", Required=$this->Required,
-			AllDevices=$this->AllDevices,DefaultValue=\"$this->DefaultValue\";";
-
-		if(!$dbh->exec($sql)) {
-			$info=$dbh->errorInfo();
-			error_log("CreateDeviceCustomAttribute::PDO Error: {$info[2]} SQL=$sql");
-			return false;
-		} else {
-			$this->AttributeID=$dbh->LastInsertId();
-		}
-
-		// If something is marked "AllDevices", we don't actually add it to all devices
-		// in the database, we just check when displaying devices/templates and 
-		// display any that are AllDevices to help reduce db size/complexity
-
-		(class_exists('LogActions'))?LogActions::LogThis($this):'';
-
-		return $this->AttributeID;
-
-	}
-
-	function UpdateDeviceCustomAttribute() {
-		global $dbh;
-		$this->MakeSafe();
-		if(!$this->CheckInput()) { return false; }
-
-		$old = new DeviceCustomAttribute();
-		$old->AttributeID = $this->AttributeID;
-		$old->GetDeviceCustomAttribute();
-
-		$sql="UPDATE fac_DeviceCustomAttribute SET Label=\"$this->Label\",
-			AttributeType=\"$this->AttributeType\", Required=$this->Required,
-			AllDevices=$this->AllDevices,DefaultValue=\"$this->DefaultValue\"
-			WHERE AttributeID=$this->AttributeID;";
-
-		if(!$dbh->query($sql)) {
-			$info=$dbh->errorInfo();
-			error_log("UpdateDeviceCustomAttribute::PDO Error: {$info[2]} SQL=$sql");
-			return false;
-		}
-
-		(class_exists('LogActions'))?LogActions::LogThis($this,$old):'';
-
-		return true;
-	}
-
-	function GetDeviceCustomAttribute() {
-		global $dbh;
-		$this->MakeSafe();
-		$sql="SELECT AttributeID, Label, AttributeType, Required, AllDevices, DefaultValue 
-			FROM fac_DeviceCustomAttribute
-			WHERE AttributeID=$this->AttributeID;";
-
-		if($dcaRow=$dbh->query($sql)->fetch()) {
-			foreach(DeviceCustomAttribute::RowToObject($dcaRow) as $prop => $value) {
-				$this->$prop=$value;
-			}
-			return true;
-		} else {
-			return false;
-		}
-	}
-	
-	function RemoveDeviceCustomAttribute() {
-		global $dbh;
-		$this->AttributeID=intval($this->AttributeID);
-	
-		$sql="DELETE FROM fac_DeviceTemplateCustomValue WHERE AttributeID=$this->AttributeID;";
-                if(!$dbh->query($sql)){
-                        $info=$dbh->errorInfo();
-                        error_log("RemoveDeviceCustomAttribute::PDO Error: {$info[2]} SQL=$sql" );
-                        return false;
-                }
-		$sql="DELETE FROM fac_DeviceCustomValue WHERE AttributeID=$this->AttributeID;";
-                if(!$dbh->query($sql)){
-                        $info=$dbh->errorInfo();
-                        error_log("RemoveDeviceCustomAttribute::PDO Error: {$info[2]} SQL=$sql" );
-                        return false;
-                }
-
-		$sql="DELETE FROM fac_DeviceCustomAttribute WHERE AttributeID=$this->AttributeID;";
-                if(!$dbh->query($sql)){
-                        $info=$dbh->errorInfo();
-                        error_log("RemoveDeviceCustomAttribute::PDO Error: {$info[2]} SQL=$sql" );
-                        return false;
-                }
-
-                (class_exists('LogActions'))?LogActions::LogThis($this):'';
-		return true;
-
-	}
-
-	function RemoveFromTemplatesAndDevices() {
-		global $dbh;
-		$this->AttributeID=intval($this->AttributeID);
-	
-		$sql="DELETE FROM fac_DeviceTemplateCustomValue WHERE AttributeID=$this->AttributeID;";
-                if(!$dbh->query($sql)){
-                        $info=$dbh->errorInfo();
-                        error_log("RemoveDeviceCustomAttribute::PDO Error: {$info[2]} SQL=$sql" );
-                        return false;
-                }
-		$sql="DELETE FROM fac_DeviceCustomValue WHERE AttributeID=$this->AttributeID;";
-                if(!$dbh->query($sql)){
-                        $info=$dbh->errorInfo();
-                        error_log("RemoveDeviceCustomAttribute::PDO Error: {$info[2]} SQL=$sql" );
-                        return false;
-                }
-
-                (class_exists('LogActions'))?LogActions::LogThis($this):'';
-		return true;
-
-	}
-
-	static function GetDeviceCustomAttributeList() {
-		global $dbh;
-		$dcaList=array();
-		
-		$sql="SELECT AttributeID, Label, AttributeType, Required, AllDevices, DefaultValue
-			FROM fac_DeviceCustomAttribute
-			ORDER BY Label, AttributeID;";
-
-		foreach($dbh->query($sql) as $dcaRow) {
-			$dcaList[$dcaRow["AttributeID"]]=DeviceCustomAttribute::RowToObject($dcaRow);
-		}
-
-		return $dcaList;
-	}
-
-	static function GetDeviceCustomAttributeTypeList() {
-		$validtypes=array("string","number","integer","date","phone","email","ipv4","url","checkbox");
-
-		return $validtypes;
-	}	
-
-	static function TimesUsed($AttributeID) {
-		global $dbh;
-		$AttributeID=intval($AttributeID);
-
-                // get a count of the number of times this attribute is in templates or devices
-                $sql="SELECT COUNT(*) + (SELECT COUNT(*) FROM fac_DeviceCustomValue WHERE AttributeID=$AttributeID)
-                        AS Result FROM fac_DeviceTemplateCustomValue WHERE AttributeID=$AttributeID";
-                $count=$dbh->prepare($sql);
-                $count->execute();
-
-
-                return $count->fetchColumn();
-
-	}
-}
 ?>
