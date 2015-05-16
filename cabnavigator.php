@@ -63,17 +63,13 @@ function renderTagsToString($obj)
  * content of the cabinet and only if the user does the information is provided.
  *
  * @param Cabinet $cab
- * @param CabinetAudit $audit
- * @param string $AuditorName
  */
-function renderCabinetProps($cab, $audit, $AuditorName){
+function renderCabinetProps($cab){
 	$tmpDC=new DataCenter();
 	$tmpDC->DataCenterID=$cab->DataCenterID;
 	$tmpDC->GetDataCenter();
-	$AuditorName=($AuditorName!='')?"<br>$AuditorName":"";
 
 	$renderedHTML="\t\t<table id=\"cabprop\">
-	\t\t<tr><td>".__("Last Audit").":</td><td>$audit->AuditStamp$AuditorName</td></tr>
 	\t\t<tr><td>".__("Model").":</td><td>$cab->Model</td></tr>
 	\t\t<tr><td>".__("Data Center").":</td><td>$tmpDC->Name</td></tr>
 	\t\t<tr><td>".__("Install Date").":</td><td>$cab->InstallationDate</td></tr>\n";
@@ -129,7 +125,7 @@ function renderUnassignedTemplateOwnership($noTemplFlag, $noOwnerFlag, $device) 
 	$cab->GetCabinet();
 
 	// Check to see if this user is allowed to see anything in ihere
-	if(! $person->SiteAdmin && ! $person->ReadAccess && $cab->AssignedTo >0 && !array_intersect($person->isMemberOf(),Cabinet::GetOccupants($cab->CabinetID))){
+	if(! $user->SiteAdmin && ! $user->ReadAccess && $cab->AssignedTo >0 && !array_intersect($user->isMemberOf(),Cabinet::GetOccupants($cab->CabinetID))){
 		// This cabinet belongs to a department you don't have affiliation with, so no viewing at all
 		header('Location: '.redirect());
 		exit;
@@ -137,15 +133,15 @@ function renderUnassignedTemplateOwnership($noTemplFlag, $noOwnerFlag, $device) 
 
 	// If you're deleting the cabinet, no need to pull in the rest of the information, so get it out of the way
 	// Only a site administrator can create or delete a cabinet
-	if(isset($_POST["delete"]) && $_POST["delete"]=="yes" && $person->SiteAdmin ) {
+	if(isset($_POST["delete"]) && $_POST["delete"]=="yes" && $user->SiteAdmin ) {
 		$cab->DeleteCabinet();
 		$url=redirect("dc_stats.php?dc=$dcID");
 		header("Location: $url");
 		exit;
 	}
 
-	$head=$legend=$zeroheight=$body=$deptcolor=$AuditorName="";
-	$audit=new CabinetAudit();
+	$head=$legend=$zeroheight=$body=$deptcolor="";
+
 	$dev=new Device();
 	$pdu=new PowerDistribution();
 	$pan=new PowerPanel();
@@ -158,22 +154,6 @@ function renderUnassignedTemplateOwnership($noTemplFlag, $noOwnerFlag, $device) 
 	$dc->DataCenterID=$dcID;
 	$dc->GetDataCenterbyID();
 
-	$audit->CabinetID=$cab->CabinetID;
-
-	// You just have WriteAccess in order to perform/certify a rack audit
-	if(isset($_REQUEST["audit"]) && $_REQUEST["audit"]=="yes" && $person->CanWrite($cab->AssignedTo)){
-		$audit->Comments=sanitize($_REQUEST["comment"]);
-		$audit->CertifyAudit();
-	}
-
-	$audit->AuditStamp=__("Never");
-	$audit->GetLastAudit();
-	if($audit->UserID!=""){
-		$tmpUser=new People();
-		$tmpUser->UserID=$audit->UserID;
-		$tmpUser->GetUserRights();
-		$AuditorName=$tmpUser->FirstName." ".$tmpUser->LastName;
-	}
 
 	$pdu->CabinetID=$cab->CabinetID;
 	$PDUList=$pdu->GetPDUbyCabinet();
@@ -222,9 +202,9 @@ function renderUnassignedTemplateOwnership($noTemplFlag, $noOwnerFlag, $device) 
 		while(list($dev_index,$device)=each($devList)){
             list($noTemplFlag, $noOwnerFlag, $highlight) =
                 renderUnassignedTemplateOwnership($noTemplFlag, $noOwnerFlag, $device);
-			if($device->Height<1 && !$rear && $device->DeviceType!="CDU"){
+			if($device->Height<1 && !$rear){
 				if($device->Rights!="None"){
-					$zeroheight.="\t\t\t<a href=\"devices.php?DeviceID=$device->DeviceID\" data-deviceid=$device->DeviceID>$highlight $device->Label</a>\n";
+					$zeroheight.="\t\t\t<a href=\"devices.php?deviceid=$device->DeviceID\" data-deviceid=$device->DeviceID>$highlight $device->Label</a>\n";
 				}else{
 					// empty html anchor for a line break
 					$zeroheight.="\t\t\t$highlight $device->Label\n<a></a>";
@@ -287,7 +267,7 @@ function renderUnassignedTemplateOwnership($noTemplFlag, $noOwnerFlag, $device) 
 						// Create the filler for the rack either text or a picture
 						$picture=(!$device->BackSide && !$rear || $device->BackSide && $rear)?$device->GetDevicePicture():$device->GetDevicePicture("rear");
 						$devlabel=$device->Label.(((!$device->BackSide && $rear || $device->BackSide && !$rear) && !$device->HalfDepth)?"(".__("Rear").")":"");
-						$text=($device->Rights!="None")?"<a href=\"devices.php?DeviceID=$device->DeviceID\">$highlight $devlabel</a>":$devlabel;
+						$text=($device->Rights!="None")?"<a href=\"devices.php?deviceid=$device->DeviceID\">$highlight $devlabel</a>":$devlabel;
 						
 						// Put the device in the rack
 						$body.="\t\t<tr><td class=\"cabpos$reserved dept$device->Owner$errclass\">$i</td><td class=\"dept$device->Owner$reserved\" rowspan=$device->Height data-deviceid=$device->DeviceID>";
@@ -397,17 +377,17 @@ $body.='<div id="infopanel">
 					</div>
 				</div>
 			</td>
-		</tr>
-		<tr>
-			<td>'.__("Weight").' ['.$cab->MaxWeight.']
-				<div class="meter-wrap">
-					<div class="meter-value" style="background-color: '.$WeightColor.'; width: '.$WeightPercent.'%;">
-						<div class="meter-text">'.$WeightPercent.'%</div>
-					</div>
-				</div>
-			</td>
-		</tr>
-		<tr>
+		</tr>'.
+//		<tr>
+//			<td>'.__("Weight").' ['.$cab->MaxWeight.']
+//				<div class="meter-wrap">
+//					<div class="meter-value" style="background-color: '.$WeightColor.'; width: '.$WeightPercent.'%;">
+//						<div class="meter-text">'.$WeightPercent.'%</div>
+//					</div>
+//				</div>
+//			</td>
+//		</tr>
+		'<tr>
 			<td>'.__("Computed Watts").'
 				<div class="meter-wrap">
 					<div class="meter-value" style="background-color: '.$PowerColor.'; width: '.$PowerPercent.'%;">
@@ -425,9 +405,9 @@ $body.='<div id="infopanel">
 				</div>
 			</td>
 		</tr>
-		</table>
-		<p>'.__("Approximate Center of Gravity").': '.$CenterofGravity.' U</p>
-	</fieldset>
+		</table>'.
+		//<p>'.__("Approximate Center of Gravity").': '.$CenterofGravity.' U</p>
+	'</fieldset>
 	<fieldset id="keylock">
 		<legend>'.__("Key/Lock Information").'</legend>
 		<div>
@@ -453,7 +433,7 @@ $body.='<div id="infopanel">
 		$pduDraw=($lastreading)?$lastreading->Wattage:0;
 
 		$pan->PanelID=$PDUdev->PanelID;
-		$pan->getPanel();
+		$pan->GetPanel();
 
 		if($PDUdev->BreakerSize==1){
 			$maxDraw=$PDUdev->InputAmperage * $pan->PanelVoltage / 1.732;
@@ -474,7 +454,7 @@ $body.='<div id="infopanel">
 
 		$PDUColor=($PDUPercent>intval($config->ParameterArray["PowerRed"])?$CriticalColor:($PDUPercent>intval($config->ParameterArray["PowerYellow"])?$CautionColor:$GoodColor));
 
-		$body.=sprintf("\n\t\t\t<a href=\"devices.php?DeviceID=%d\">CDU %s</a><br>(%.2f kW) / (%.2f kW Max)<br>\n", $PDUdev->PDUID, $PDUdev->Label, $pduDraw / 1000, $maxDraw / 1000 );
+		$body.=sprintf("\n\t\t\t<a href=\"power_pdu.php?pduid=%d\">CDU %s</a><br>(%.2f kW) / (%.2f kW Max)<br>\n", $PDUdev->PDUID, $PDUdev->Label, $pduDraw / 1000, $maxDraw / 1000 );
 		$body.="\t\t\t\t<div class=\"meter-wrap\">\n\t\t\t\t\t<div class=\"meter-value\" style=\"background-color: $PDUColor; width: $PDUPercent%;\">\n\t\t\t\t\t\t<div class=\"meter-text\">$PDUPercent%</div>\n\t\t\t\t\t</div>\n\t\t\t\t</div>\n\t\t\t<br>\n";
 
 		if ( $PDUdev->FailSafe ) {
@@ -499,26 +479,24 @@ $body.='<div id="infopanel">
 		}
 	}
 
-	if($person->CanWrite($cab->AssignedTo)){
-		$body.="\n\t\t<ul class=\"nav\"><a href=\"devices.php?action=new&CabinetID=$cab->CabinetID&DeviceType=CDU\"><li>".__("Add CDU")."</li></a></ul>\n";
+	if($user->CanWrite($cab->AssignedTo)){
+		$body.="\n\t\t<ul class=\"nav\"><a href=\"power_pdu.php?pduid=0&cabinetid=$cab->CabinetID\"><li>".__("Add CDU")."</li></a></ul>\n";
 	}
 
 	$body.="\t</fieldset>\n";
-	if ($person->CanWrite($cab->AssignedTo) || $person->SiteAdmin) {
+	if ($user->CanWrite($cab->AssignedTo) || $user->SiteAdmin) {
 	    $body.="\t<fieldset>\n";
-        if ($person->CanWrite($cab->AssignedTo) ) {
-            $body .= renderCabinetProps($cab, $audit, $AuditorName);
+        if ($user->CanWrite($cab->AssignedTo) ) {
+            $body .= renderCabinetProps($cab);
         }
 	    $body.="\t\t<ul class=\"nav\">";
-        if($person->CanWrite($cab->AssignedTo)){
+        if($user->CanWrite($cab->AssignedTo)){
             $body.="
-			<a href=\"#\" onclick=\"javascript:verifyAudit(this.form)\"><li>".__("Certify Audit")."</li></a>
-			<a href=\"devices.php?action=new&CabinetID=$cab->CabinetID\"><li>".__("Add Device")."</li></a>
-			<a href=\"cabaudit.php?cabinetid=$cab->CabinetID\"><li>".__("Audit Report")."</li></a>
+			<a href=\"devices.php?action=new&cabinet=$cab->CabinetID\"><li>".__("Add Device")."</li></a>
 			<a href=\"mapmaker.php?cabinetid=$cab->CabinetID\"><li>".__("Map Coordinates")."</li></a>
 			<a href=\"cabinets.php?cabinetid=$cab->CabinetID\"><li>".__("Edit Cabinet")."</li></a>\n";
         }
-		if($person->SiteAdmin){
+		if($user->SiteAdmin){
 		    $body.="\t\t\t<a href=\"#\" onclick=\"javascript:verifyDelete(this.form)\"><li>".__("Delete Cabinet")."</li></a>";
 		}
 	    $body.="\n\t\t</ul>\n    </fieldset>";
@@ -532,7 +510,12 @@ $body.='<div id="infopanel">
 	}
 
 	$title=($cab->Location!='')?"$cab->Location :: $dc->Name":__("Facilities Cabinet Maintenance");
+
 ?>
+
+
+
+
 <!doctype html>
 <html>
 <head>
@@ -554,19 +537,10 @@ echo $head,'  <script type="text/javascript" src="scripts/jquery.min.js"></scrip
   <script type="text/javascript" src="scripts/jquery.cookie.js"></script>
   <script type="text/javascript" src="scripts/jquery-json.min.js"></script>
   <script type="text/javascript" src="scripts/common.js"></script>
-  <script type="text/javascript" src="scripts/masonry.pkgd.min.js"></script>
   <script type="text/javascript">
 	var form=$("<form>").attr({ method: "post", action: "cabnavigator.php" });
 	$("<input>").attr({ type: "hidden", name: "cabinetid", value: "',$cab->CabinetID,'"}).appendTo(form);
-	function verifyAudit(formname){
-		if(confirm("',__("Do you certify that you have completed an audit of the selected cabinet?"),'")){
-			var comment = prompt("',_("Enter any comments here."),'");
-			$("<input>").attr({ type: "hidden", name: "audit", value: "yes"}).appendTo(form);
-			$("<input>").attr({ type: "hidden", name: "comment", value: comment}).appendTo(form);
-			form.appendTo("body");
-			form.submit();
-		}
-	}
+
 
 	function verifyDelete(formname){
 		if(confirm("',__("Are you sure that you want to delete this cabinet, including all devices, power strips, and connections?"),'\n',__("THIS ACTION CAN NOT BE UNDONE!"),'")){
@@ -662,9 +636,9 @@ if ( $config->ParameterArray["WorkOrderBuilder"]=='enabled' ) {
 
 		$('.cabinet td:has(a):not(:has(img)), #zerou div > a, .cabinet .picture a img, .cabinet	.picture a > div').each( function(){
 			var devid=$(this).data('deviceid');
-			var target=(this.nodeName=="IMG"||this.parentNode.parentNode.parentNode.nodeName=="DIV")?this.parentElement.parentElement:this;
+			var target=(this.nodeName=="IMG")?this.parentElement.parentElement:this;
 			var clickpos=(this.parentNode.parentNode.className=="rotar_d")?' left: 0;':' right: 0;';
-			var style=(this.nodeName=="IMG")?'position: absolute; top: 0; background-color: white;'+clickpos:'float: right; background-color: white;';
+			var style=(this.nodeName=="IMG")?'position: absolute; top: 0; background-color: white;'+clickpos:'float: right;';
 
 			// Make a point for us to click to add to this nonsense
 			var span=$('<span>').attr('style',style).addClass('ui-icon');
