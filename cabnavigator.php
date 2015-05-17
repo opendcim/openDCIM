@@ -73,7 +73,7 @@ function renderCabinetProps($cab, $audit, $AuditorName){
 	$AuditorName=($AuditorName!='')?"<br>$AuditorName":"";
 
 	$renderedHTML="\t\t<table id=\"cabprop\">
-	\t\t<tr><td>".__("Last Audit").":</td><td>$audit->AuditStamp$AuditorName</td></tr>
+	\t\t<tr><td>".__("Last Audit").":</td><td id=\"lastaudit\">$audit->AuditStamp$AuditorName</td></tr>
 	\t\t<tr><td>".__("Model").":</td><td>$cab->Model</td></tr>
 	\t\t<tr><td>".__("Data Center").":</td><td>$tmpDC->Name</td></tr>
 	\t\t<tr><td>".__("Install Date").":</td><td>$cab->InstallationDate</td></tr>\n";
@@ -139,8 +139,8 @@ function renderUnassignedTemplateOwnership($noTemplFlag, $noOwnerFlag, $device) 
 	// Only a site administrator can create or delete a cabinet
 	if(isset($_POST["delete"]) && $_POST["delete"]=="yes" && $person->SiteAdmin ) {
 		$cab->DeleteCabinet();
-		$url=redirect("dc_stats.php?dc=$dcID");
-		header("Location: $url");
+		header('Content-Type: application/json');
+		echo json_encode(array('url' => redirect("dc_stats.php?dc=$cab->DataCenterID")));
 		exit;
 	}
 
@@ -161,9 +161,22 @@ function renderUnassignedTemplateOwnership($noTemplFlag, $noOwnerFlag, $device) 
 	$audit->CabinetID=$cab->CabinetID;
 
 	// You just have WriteAccess in order to perform/certify a rack audit
-	if(isset($_REQUEST["audit"]) && $_REQUEST["audit"]=="yes" && $person->CanWrite($cab->AssignedTo)){
-		$audit->Comments=sanitize($_REQUEST["comment"]);
+	if(isset($_POST["audit"]) && $_POST["audit"]=="yes" && $person->CanWrite($cab->AssignedTo)){
+		$audit->Comments=sanitize($_POST["comment"]);
+		// Log the response
 		$audit->CertifyAudit();
+
+		// I'm lazy as fuck so retrieve what we just wrong
+		$audit->GetLastAudit();
+
+		$tmpUser=new People();
+		$tmpUser->UserID=$audit->UserID;
+		$tmpUser->GetUserRights();
+		$audit->UserID=($tmpUser->FirstName=="" && $tmpUser->LastName=="")?$audit->UserID:$tmpUser->FirstName." ".$tmpUser->LastName;
+		// Give it back to the user to update the page
+		header('Content-Type: application/json');
+		echo json_encode($audit);
+		exit;
 	}
 
 	$audit->AuditStamp=__("Never");
@@ -512,14 +525,14 @@ $body.='<div id="infopanel">
 	    $body.="\t\t<ul class=\"nav\">";
         if($person->CanWrite($cab->AssignedTo)){
             $body.="
-			<a href=\"#\" onclick=\"javascript:verifyAudit(this.form)\"><li>".__("Certify Audit")."</li></a>
+			<a href=\"#\" id=\"verifyaudit\"><li>".__("Certify Audit")."</li></a>
 			<a href=\"devices.php?action=new&CabinetID=$cab->CabinetID\"><li>".__("Add Device")."</li></a>
 			<a href=\"cabaudit.php?cabinetid=$cab->CabinetID\"><li>".__("Audit Report")."</li></a>
 			<a href=\"mapmaker.php?cabinetid=$cab->CabinetID\"><li>".__("Map Coordinates")."</li></a>
 			<a href=\"cabinets.php?cabinetid=$cab->CabinetID\"><li>".__("Edit Cabinet")."</li></a>\n";
         }
 		if($person->SiteAdmin){
-		    $body.="\t\t\t<a href=\"#\" onclick=\"javascript:verifyDelete(this.form)\"><li>".__("Delete Cabinet")."</li></a>";
+		    $body.="\t\t\t<a href=\"#\" id=\"verifydelete\"><li>".__("Delete Cabinet")."</li></a>";
 		}
 	    $body.="\n\t\t</ul>\n    </fieldset>";
 	}
@@ -558,24 +571,7 @@ echo $head,'  <script type="text/javascript" src="scripts/jquery.min.js"></scrip
   <script type="text/javascript">
 	var form=$("<form>").attr({ method: "post", action: "cabnavigator.php" });
 	$("<input>").attr({ type: "hidden", name: "cabinetid", value: "',$cab->CabinetID,'"}).appendTo(form);
-	function verifyAudit(formname){
-		if(confirm("',__("Do you certify that you have completed an audit of the selected cabinet?"),'")){
-			var comment = prompt("',_("Enter any comments here."),'");
-			$("<input>").attr({ type: "hidden", name: "audit", value: "yes"}).appendTo(form);
-			$("<input>").attr({ type: "hidden", name: "comment", value: comment}).appendTo(form);
-			form.appendTo("body");
-			form.submit();
-		}
-	}
 
-	function verifyDelete(formname){
-		if(confirm("',__("Are you sure that you want to delete this cabinet, including all devices, power strips, and connections?"),'\n',__("THIS ACTION CAN NOT BE UNDONE!"),'")){
-			$("<input>").attr({ type: "hidden", name: "delete", value: "yes"}).appendTo(form);
-			form.appendTo("body");
-			form.submit();
-		}
-	}
-	
 	(function ($) {
 		$.fn.extend({
 			cookieList: function (cookieName, expireTime) {
@@ -622,6 +618,68 @@ echo $head,'  <script type="text/javascript" src="scripts/jquery.min.js"></scrip
 		$(".cabinet .error").append("*");
 		if($("#legend *").length==1){$("#legend").hide();}
 		if($("#keylock div").text().trim()==""){$("#keylock").hide();}
+
+		$("#verifyaudit").click(function(e){
+			e.preventDefault();
+			$("#auditmodal").dialog({
+				width: 600,
+				modal: true,
+				buttons: {
+					Yes: function(e){
+						$.post("",{audit: "yes", cabinetid: ',$cab->CabinetID,', comments: $("#comments").val()}).done(function(data){
+							$("#lastaudit").html(data.AuditStamp+"<br>"+data.UserID).effect("highlight", {color: "lightgreen"}, 2500);
+							$("#auditmodal").dialog("destroy");
+						});
+					},
+					No: function(e){
+						$("#auditmodal").dialog("destroy");
+					}
+				},
+				close: function(){
+					$(this).dialog("destroy");
+				}
+			});
+		});
+
+		$("#verifydelete").click(function(e){
+			e.preventDefault();
+			$("#deletemodal").dialog({
+				width: 600,
+				modal: true,
+				draggable: false,
+				buttons: {
+					Yes: function(e){
+						$("#doublecheck").dialog({
+							width: 600,
+							modal: true,
+							draggable: false,
+							buttons: {
+								Yes: function(e){
+									// they are really sure they want to delete so do it
+									$.post("",{delete: "yes", cabinetid: ',$cab->CabinetID,'}).done(function(data){
+										location.href=data.url;
+									});
+								},
+								No: function(e){
+									$("#doublecheck").dialog("destroy");
+									$("#deletemodal").dialog("destroy");
+								}
+							},
+							close: function(){
+								$(this).dialog("destroy");
+								$("#deletemodal").dialog("destroy");
+							}
+						});
+					},
+					No: function(e){
+						$(this).dialog("destroy");
+					}
+				},
+				close: function(){
+					$(this).dialog("destroy");
+				}
+			});
+		});
 ';
 if( $config->ParameterArray["ToolTips"]=='enabled' ){
 ?>
@@ -736,11 +794,28 @@ if($config->ParameterArray["CDUToolTips"]=='enabled'){
 ?>
 </div> <!-- END div#centeriehack -->
 </div></div>
-<?php
-	if($dcID>0){
-		print "	<a href=\"dc_stats.php?dc=$dcID\">[ ".__("Return to")." $dc->Name ]</a>";
-	}
-?>
+<?php echo '<a href="dc_stats.php?dc=',$dcID,'">[ ',sprintf(__("Return to %s"),$dc->Name),' ]</a>
+<!-- hiding modal dialogs here so they can be translated easily -->
+<div class="hide">
+	<div title="',__("Audit Confirmation"),'" id="auditmodal">
+		<div id="modaltext"><span style="float:left; margin:0 7px 20px 0;" class="ui-icon ui-icon-alert"></span>',__("Do you certify that you have completed an audit of this cabinet?"),'
+		<br><br><br>
+		<label for="comments">Comments:</label>
+		<br><br>
+		<textarea name="comments" id="comments" rows=8 cols=80></textarea>
+		</div>
+	</div>
+	<div title="',__("Cabinet delete confirmation"),'" id="deletemodal">
+		<div id="modaltext"><span style="float:left; margin:0 7px 20px 0;" class="ui-icon ui-icon-alert"></span>',__("Are you sure that you want to delete this cabinet and all the devices in it?"),'
+		<br><br>
+		</div>
+	</div>
+	<div title="',__("Are you REALLY sure?"),'" id="doublecheck">
+		<div id="modaltext" class="warning"><span style="float:left; margin:0 7px 20px 0;" class="ui-icon ui-icon-alert"></span>',__("Are you sure REALLY sure?  There is no undo!!"),'
+		<br><br>
+		</div>
+	</div>
+</div>'; ?>
 </div>  <!-- END div.main -->
 
 <div class="clear"></div>
