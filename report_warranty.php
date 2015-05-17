@@ -21,7 +21,14 @@ class DeviceWarranty extends Device
         }
 
         // count devices with expired warranty
-        $selectSQL = "SELECT count(DeviceID) AS NumDevices,'Expired warranty' AS NumYears FROM fac_Device WHERE (DATEDIFF(NOW(), WarrantyExpire))>0 AND WarrantyExpire>'1969-12-31';";
+        $selectSQL = "SELECT count(DeviceID) AS NumDevices,'Expired over a year ago' AS NumYears FROM fac_Device WHERE (DATEDIFF(Now(), WarrantyExpire)/365)>=1 AND WarrantyExpire>'1969-12-31';";
+
+        foreach ($dbh->query($selectSQL) as $row) {
+            $deptList[$row['NumYears']] = $row['NumDevices'];
+        }
+
+        // count devices with warranty expired within last year
+        $selectSQL = "SELECT count(DeviceID) AS NumDevices,'Expired within last year' AS NumYears FROM fac_Device WHERE (DATEDIFF(WarrantyExpire, NOW())/365)<0 AND (DATEDIFF(WarrantyExpire, NOW())/365)>=-1 AND WarrantyExpire>'1969-12-31';";
 
         foreach ($dbh->query($selectSQL) as $row) {
             $deptList[$row['NumYears']] = $row['NumDevices'];
@@ -30,7 +37,7 @@ class DeviceWarranty extends Device
         // count systems with expiring warranty in the next 0-1, 1-2, and 2-3 years
         for ($year = 1; $year <= 3; $year++) {
             $previous_year = $year - 1;
-            $selectSQL = sprintf("SELECT count(DeviceID) AS NumDevices,'<=%d remaining years' AS NumYears FROM fac_Device WHERE (DATEDIFF(WarrantyExpire, NOW())/365)>=%d AND (DATEDIFF(WarrantyExpire, NOW())/365)<%d ", $year, $previous_year, $year);
+            $selectSQL = sprintf("SELECT count(DeviceID) AS NumDevices,'%d<=%d remaining years' AS NumYears FROM fac_Device WHERE (DATEDIFF(WarrantyExpire, NOW())/365)>=%d AND (DATEDIFF(WarrantyExpire, NOW())/365)<%d ", $previous_year, $year, $previous_year, $year);
 
             foreach ($dbh->query($selectSQL) as $row) {
                 $deptList[$row['NumYears']] = $row['NumDevices'];
@@ -53,13 +60,13 @@ class DeviceWarranty extends Device
 
         if ($year >= 0) {
             $previous_year = $year - 1;
-            $selectSQL = sprintf("select DeviceID, Label, Owner, WarrantyExpire, PrimaryContact from fac_Device where (DATEDIFF(WarrantyExpire, NOW())/365)>=%d and (DATEDIFF(WarrantyExpire, NOW())/365)<%d order by Owner, WarrantyExpire, Label;", $previous_year, $year);
+            $selectSQL = sprintf("SELECT DeviceID, Label, Owner, WarrantyExpire, PrimaryContact FROM fac_Device WHERE (DATEDIFF(WarrantyExpire, NOW())/365)>=%d AND (DATEDIFF(WarrantyExpire, NOW())/365)<%d ORDER BY Owner, WarrantyExpire, Label;", $previous_year, $year);
             foreach ($dbh->query($selectSQL) as $deviceRow) {
                 $deviceList[$deviceRow['DeviceID']] = Device::RowToObject($deviceRow);
             }
         }
         else {
-            $selectSQL = "select DeviceID, Label, Owner, WarrantyExpire, PrimaryContact from fac_Device where (DATEDIFF(NOW(), WarrantyExpire))>0 and WarrantyExpire>'1969-12-31' order by Owner, WarrantyExpire, Label;";
+            $selectSQL = "SELECT DeviceID, Label, Owner, WarrantyExpire, PrimaryContact FROM fac_Device WHERE (DATEDIFF(NOW(), WarrantyExpire))>0 AND WarrantyExpire>'1969-12-31' ORDER BY Owner, WarrantyExpire, Label;";
             foreach ($dbh->query($selectSQL) as $deviceRow) {
                 $deviceList[$deviceRow['DeviceID']] = Device::RowToObject($deviceRow);
             }
@@ -93,7 +100,7 @@ class PDF extends FPDF
         $this->SetFont($this->pdfconfig->ParameterArray['PDFfont'], '', 10);
         $this->Cell(50, 6, __("Data Center Warranty Expiration Report"), 0, 1, 'L');
         $this->Cell(50, 6, __("Date") . ': ' . date('d F Y'), 0, 1, 'L');
-        $this->Ln(10);
+        $this->Ln(1);
     }
 
     function Footer() {
@@ -392,13 +399,15 @@ $pdf->AliasNbPages();
 $pdf->AddPage();
 include_once ("loadfonts.php");
 
-// pick some colors: blue for unknown, grey for expired, then from red to green for remaining warranty
-$colors[0] = array(125, 225, 225);
-$colors[1] = array(175, 175, 175);
+// pick some colors: grey for unknown, deep red for expired, then step from red to green to indicate remaining warranty
+$colors[0] = array(175, 175, 175);
+$colors[1] = array(153, 51, 0);
 $colors[2] = array(255, 0, 0);
-$colors[3] = array(255, 175, 0);
-$colors[4] = array(255, 255, 0);
-$colors[5] = array(0, 255, 0);
+$colors[3] = array(255, 204, 102);
+$colors[4] = array(255, 255, 100);
+$colors[5] = array(204, 255, 102);
+$colors[6] = array(0, 255, 0);
+$colors[7] = array(255, 0, 0);
 
 $pdf->SetFont($config->ParameterArray['PDFfont'], 'B', 16);
 
@@ -417,7 +426,7 @@ for ($year = 1; $year <= 3; $year++) {
     $start_year = $year - 1;
     $pdf->AddPage();
     $pdf->SetFont($config->ParameterArray['PDFfont'], 'B', 16);
-    $pdf->Cell(0, 18, __("Devices with $start_year-$year years of remaining warranty "), '', 1, 'C', 0);
+    $pdf->Cell(0, 15, __("Devices with $start_year-$year years of remaining warranty "), '', 1, 'C', 0);
     $pdf->SetFont($config->ParameterArray['PDFfont'], '', 10);
     $headerTags = array(__("Label"), __("Remaining"), __("Owner"), __("Primary Contact"));
     $cellWidths = array(45, 30, 50, 45);
@@ -450,7 +459,7 @@ for ($year = 1; $year <= 3; $year++) {
 
 $pdf->AddPage();
 $pdf->SetFont($config->ParameterArray['PDFfont'], 'B', 16);
-$pdf->Cell(0, 18, __("Devices with expired warranty"), '', 1, 'C', 0);
+$pdf->Cell(0, 15, __("Devices with expired warranty"), '', 1, 'C', 0);
 $pdf->SetFont($config->ParameterArray['PDFfont'], '', 10);
 $headerTags = array(__("Label"), __("Expired"), __("Owner"), __("Primary Contact"));
 $cellWidths = array(45, 30, 50, 45);
