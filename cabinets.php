@@ -68,9 +68,6 @@
 		$cab->MaxKW=$_POST['maxkw'];
 		$cab->MaxWeight=$_POST['maxweight'];
 		$cab->InstallationDate=$_POST['installationdate'];
-		$cab->SensorIPAddress=$_POST['sensoripaddress'];
-		$cab->SensorCommunity=$_POST['sensorcommunity'];
-		$cab->SensorTemplateID=$_POST['sensortemplateid'];
 		$cab->Notes=trim($_POST['notes']);
 		$cab->Notes=($cab->Notes=="<br>")?"":$cab->Notes;
 
@@ -271,29 +268,6 @@ echo '  </select>
 <div>
    <div>',__("Date of Installation"),'</div>
    <div><input type="text" name="installationdate" size=15 value="',date('m/d/Y', strtotime($cab->InstallationDate)),'"></div>
-</div>
-<div>
-	<div>',__("Sensor IP Address / Host Name"),'</div>
-	<div><input type="text" name="sensoripaddress" size=15 value="',$cab->SensorIPAddress,'"></div>
-</div>
-<div>
-	<div>',__("Sensor SNMP Community"),'</div>
-	<div><input type="text" name="sensorcommunity" size=30 value="',$cab->SensorCommunity,'"></div>
-</div>
-<div>
-	<div>',__("Sensor Template"),':</div>
-	<div><select name=sensortemplateid>
-		<option value=0>Select a template</option>';
-	foreach ( $sensorList as $template ) {
-		if ( $template->TemplateID == $cab->SensorTemplateID ) {
-			$selected = "selected";
-		} else {
-			$selected = "";
-		}
-		printf( "<option value=%d %s>%s</option>\n", $template->TemplateID, $selected, $template->Name );
-	}
-	
-	echo '</select></div>
 </div>
 <div>
 	<div><label for="tags">',__("Tags"),'</label></div>

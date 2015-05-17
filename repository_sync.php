@@ -74,8 +74,6 @@
 			$postData["sensortemplate"] = json_decode( json_encode( $sen ), true );
 		}
 		
-		// print json_encode( $postData ) . "\n";
-
 		curl_setopt( $c, CURLOPT_POSTFIELDS, json_encode( $postData ) );
 		
 		$result = curl_exec( $c );
@@ -201,7 +199,6 @@
 						$t->UpdateTemplate();
 						$updating = true;
 					} else {
-						error_log( "Adding new template for Mfg=" . $man->ManufacturerID . " and Model=" . $t->Model );
 						$t->TemplateID = 0;
 						$t->CreateTemplate();
 						$updating = false;
