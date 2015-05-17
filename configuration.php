@@ -1213,7 +1213,17 @@
 			e.preventDefault();
 		});
 
+		// Make all the selects 100% width
+		sheet.insertRule(".config .main select { width: 100%; }", 0);
 	});
+
+	// Making it to where I can add a rule to make the config page look nicer
+	var sheet=(function() {
+		var style = document.createElement("style");
+		style.appendChild(document.createTextNode(""));
+		document.head.appendChild(style);
+		return style.sheet;
+	})();
 
   </script>
 </head>
