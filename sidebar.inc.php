@@ -169,13 +169,17 @@ function resize(){
 			$(this).width(widesttab);
 		});
 
-		// edge case where a ridiculously long device type can expand the field selector out too far
-		var rdivwidth=$('div.right').outerWidth();
-		$('div.right fieldset').each(function(){
-			rdivwidth=($(this).outerWidth()>rdivwidth)?$(this).outerWidth():rdivwidth;
-		});
-		// offset for being centered
-		rdivwidth=(rdivwidth>495)?(rdivwidth-495)+rdivwidth:rdivwidth;
+		if(getCookie("layout")=="Landscape"){
+			// edge case where a ridiculously long device type can expand the field selector out too far
+			var rdivwidth=$('div.right').outerWidth();
+			$('div.right fieldset').each(function(){
+				rdivwidth=($(this).outerWidth()>rdivwidth)?$(this).outerWidth():rdivwidth;
+			});
+			// offset for being centered
+			rdivwidth=(rdivwidth>495)?(rdivwidth-495)+rdivwidth:rdivwidth;
+		}else{
+			rdivwidth=0;
+		}
 
 		var pnw=$('#pandn').outerWidth(),hw=$('#header').outerWidth(),maindiv=$('div.main').outerWidth(),
 			sbw=$('#sidebar').outerWidth(),width,mw=$('div.left').outerWidth()+rdivwidth+20,
@@ -193,6 +197,8 @@ function resize(){
 			$('#header').width(width+4);
 			$('div.main').width(width-sbw-12); 
 		}else{ // page is smaller than content expand the page to fit
+
+// stop the crazy page growth on the device page.  look at this tomorrow
 			$('div.main').width(width-sbw-12); 
 			$('#header').width(width+4);
 			$('div.page').width(width+6);

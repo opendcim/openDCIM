@@ -1306,6 +1306,8 @@ $(document).ready(function() {
 			$('#cdu').hide();
 			$('#NominalWatts').parent('div').parent('div').removeClass('hide');
 		}
+		// This makes the screen not dance when the resize() kicks
+		$('div.main').width($('div.main').width()-4);
 		resize();
 	}).change();
 	$('#firstport button[name=firstport]').click(function(){
