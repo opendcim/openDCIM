@@ -213,7 +213,7 @@
 			$cdutemplate->ManufacturerID=$template->ManufacturerID;
 			$cdutemplate->Model=$template->Model;
 			$cdutemplate->Managed=isset($_POST['Managed'])?1:0;
-			$cdutemplate->ATS=isset($_POST['ats'])?1:0;
+			$cdutemplate->ATS=isset($_POST['ATS'])?1:0;
 			$cdutemplate->VersionOID=$_POST['VersionOID'];
 			$cdutemplate->Multiplier=$_POST['Multiplier'];
 			$cdutemplate->OID1=$_POST['OID1'];
@@ -915,7 +915,7 @@ if ( $template->TemplateID > 0 && isset( $deviceList ) ) {
 		</div>
 		<div class="caption" id="atsbox">
 			<fieldset class="noborder">
-				<legend>Automatic Transfer Switch <input type="checkbox" name="ats" id="ats"></legend>
+				<legend>Automatic Transfer Switch <input type="checkbox" name="ATS" id="ATS"></legend>
 				<div class="table centermargin border">
 					<div>
 					   <div><label for="ATSStatusOID">',__("ATS Status OID"),'</label></div>

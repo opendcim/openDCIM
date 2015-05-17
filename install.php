@@ -240,6 +240,9 @@ function ArraySearchRecursive($Needle,$Haystack,$NeedleKey="",$Strict=false,$Pat
 		$upgrade=false;
 	}
 
+	// Re-execute the check after running create.sql since initially there would have been no tables
+	$result->execute();
+	
 	/*
 	   v4.0 migrated fac_Users to fac_People we need to adjust for older 
 	   installs that need upgrading.  The logic has remained nearly the 

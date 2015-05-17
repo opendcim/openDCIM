@@ -312,9 +312,9 @@ class People {
 		$this->Disabled = true;
 
 		$sql="SELECT * FROM fac_People WHERE UserID=\"$this->UserID\";";
-
-
-		if($row=$this->query($sql)->fetch()){
+		$res = $this->query($sql);
+		
+		if($row=$res->fetch()){
 			foreach(People::RowToObject($row) as $prop => $value){
 				$this->$prop=$value;
 			}

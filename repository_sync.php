@@ -153,12 +153,17 @@
 		if ( @$jr->errorcode == 200 ) {
 			if ( is_array( $jr->templates ) ) {
 				foreach ( $jr->templates as $tem ) {
+					$tm = new Manufacturer();
 					$cs = new Slot();
 					$tp = new TemplatePorts();
 					$tpp = new TemplatePowerPorts();
 					foreach ( $t as $prop=>$val ) {
 						@$t->$prop = $tem->$prop;
 					}
+					
+					$m->GlobalID = $t->ManufacturerID;
+					$m->getManufacturerByGlobalID();
+					$t->ManufacturerID = $m->ManufacturerID;
 
 					// Snag the images
 					if ( $t->FrontPictureFile != "" ) {
@@ -186,7 +191,7 @@
 						$t->KeepLocal = false;
 					}
 
-					// Resolve the TemplateID first so that we can make the rest of the tables match
+					// Resolve the TemplateID so that we can make the rest of the tables match
 					$st = $dbh->prepare( "select TemplateID, KeepLocal, count(*) as Total from fac_DeviceTemplate where GlobalID=:TemplateID or (ManufacturerID=:ManufacturerID and ucase(Model)=ucase(:Model))" );
 					$st->execute( array( ":TemplateID"=>$t->GlobalID, ":ManufacturerID"=>$man->ManufacturerID, ":Model"=>$t->Model ) );
 					$row = $st->fetch();
@@ -206,6 +211,8 @@
 
 
 					if ( $t->DeviceType == "CDU" && is_object( $tem->cdutemplate ) ) {
+						$ct->ManufacturerID = $t->ManufacturerID;
+						$ct->Model = $t->Model;
 						foreach( $tem->cdutemplate as $prop=>$val ) {
 							$ct->$prop = $val;
 						}
@@ -232,6 +239,8 @@
 					}
 
 					if ( $t->DeviceType == "Sensor" && is_object( $tem->sensortemplate ) ) {
+						$sen->ManufacturerID = $t->ManufacturerID;
+						$sen->Model = $t->Model;
 						foreach( $tem->sensortemplate as $prop=>$val ) {
 							$sen->$prop = $val;
 						}

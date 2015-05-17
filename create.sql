@@ -381,8 +381,7 @@ CREATE TABLE fac_Manufacturer (
   ManufacturerID int(11) NOT NULL AUTO_INCREMENT,
   Name varchar(80) NOT NULL,
   GlobalID int(11) NOT NULL DEFAULT 0,
-  ShareToRepo tinyint(1) NOT NULL DEFAULT 0,
-  KeepLocal tinyint(1) NOT NULL DEFAULT 0,
+  SubscribeToUpdates int(1) NOT NULL DEFAULT 0,
   PRIMARY KEY (ManufacturerID),
   UNIQUE KEY Name (Name)
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
