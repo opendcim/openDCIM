@@ -13,24 +13,36 @@
 	// Ajax functions
 	// SNMP Test
 	if(isset($_POST['snmptest'])){
-		$ip=$_POST['ip'];
-		$community=$_POST['community'];
+		// Parse through the post data and pull in site defaults if necessary
+		$community=($_POST['SNMPCommunity']=="")?$config->ParameterArray["SNMPCommunity"]:$_POST['SNMPCommunity'];
+		$version=($_POST['SNMPVersion']=="")?$config->ParameterArray["SNMPVersion"]:$_POST['SNMPVersion'];
+		$v3SecurityLevel=($_POST['v3SecurityLevel']=="")?$config->ParameterArray["v3SecurityLevel"]:$_POST['v3SecurityLevel'];
+		$v3AuthProtocol=($_POST['v3AuthProtocol']=="")?$config->ParameterArray["v3AuthProtocol"]:$_POST['v3AuthProtocol'];
+		$v3AuthPassphrase=($_POST['v3AuthPassphrase']=="")?$config->ParameterArray["v3AuthPassphrase"]:$_POST['v3AuthPassphrase'];
+		$v3PrivProtocol=($_POST['v3PrivProtocol']=="")?$config->ParameterArray["v3PrivProtocol"]:$_POST['v3PrivProtocol'];
+		$v3PrivPassphrase=($_POST['v3PrivPassphrase']=="")?$config->ParameterArray["v3PrivPassphrase"]:$_POST['v3PrivPassphrase'];
 
-		$snmpHost=new OSS_SNMP\SNMP($ip,$community);
+		// Init the snmp handler
+		$snmpHost=new OSS_SNMP\SNMP(
+			$_POST['PrimaryIP'],
+			$community,
+			$version,
+			$v3SecurityLevel,
+			$v3AuthProtocol,
+			$v3AuthPassphrase,
+			$v3PrivProtocol,
+			$v3PrivPassphrase
+		);
+
+		// Try to connect to keep us from killing the system on a failure
 		$error=false;
 		try {
 			$snmpresults=$snmpHost->useSystem()->name();
 		}catch (Exception $e){
-			// threw an exception on v2 drop to 1
-			$snmpHost=new OSS_SNMP\SNMP($ip,$community,1);
-			try {
-				$snmpresults=$snmpHost->useSystem()->name();
-			}catch (Exception $e){
-				// threw an exception on v1 throw an error
-				$error=true;
-			}
+			$error=true;
 		}
 
+		// Show the end user something to make them feel good about it being correct
 		if(!$error){
 			foreach($snmpHost->realWalk('1.3.6.1.2.1.1') as $oid => $value){
 				print "$oid => $value <br>\n";
@@ -566,48 +578,28 @@
 				}
 
 				if($_POST['action']!='Child'){
-					$dev->Label=$_POST['Label'];
-					$dev->SerialNo=$_POST['SerialNo'];
-					$dev->AssetTag=$_POST['AssetTag'];
-					$dev->Owner=$_POST['Owner'];
-					$dev->EscalationTimeID=$_POST['EscalationTimeID'];
-					$dev->EscalationID=$_POST['EscalationID'];
-					$dev->PrimaryContact=$_POST['PrimaryContact'];
+					// Preserve this as a special variable to keep an injection from being possible
+					$devrights=$dev->Rights;
+					foreach($dev as $prop => $val){
+						$dev->$prop=(isset($_POST[$prop]))?$_POST[$prop]:$val;
+					}
+					// Put the device rights back just in case we had someone try to inject them
+					$dev->Rights=$devrights;
+					// Stupid Cabinet vs CabinetID
 					$dev->Cabinet=$_POST['CabinetID'];
-					$dev->Position=$_POST['Position'];
-					$dev->Height=$_POST['Height'];
-					$dev->TemplateID=$_POST['TemplateID'];
-					$dev->DeviceType=$_POST['DeviceType'];
-					$dev->MfgDate=date('Y-m-d',strtotime($_POST['MfgDate']));
-					$dev->InstallDate=date('Y-m-d',strtotime($_POST['InstallDate']));
-					$dev->WarrantyCo=$_POST['WarrantyCo'];
-					$dev->WarrantyExpire=date('Y-m-d',strtotime($_POST['WarrantyExpire']));
-					$dev->Notes=trim($_POST['Notes']);
-					$dev->Notes=($dev->Notes=="<br>")?"":$dev->Notes;
-					$dev->FirstPortNum=$_POST['FirstPortNum'];
-					// All of the values below here are optional based on the type of device being dealt with
-					(isset($_POST['ChassisSlots']))?$dev->ChassisSlots=$_POST['ChassisSlots']:'';
-					(isset($_POST['RearChassisSlots']))?$dev->RearChassisSlots=$_POST['RearChassisSlots']:'';
-					(isset($_POST['Ports']))?$dev->Ports=$_POST['Ports']:'';
-					(isset($_POST['PowerSupplyCount']))?$dev->PowerSupplyCount=$_POST['PowerSupplyCount']:'';
-					$dev->ParentDevice=(isset($_POST['ParentDevice']))?$_POST['ParentDevice']:"";
-					$dev->PrimaryIP=(isset($_POST['PrimaryIP']))?$_POST['PrimaryIP']:"";
-					$dev->SNMPCommunity=(isset($_POST['SNMPCommunity']))?$_POST['SNMPCommunity']:"";
-					$dev->SNMPFailureCount=(isset($_POST['SNMPFailureCount']))?$_POST['SNMPFailureCount']:0;
+					// Checkboxes don't work quite like normal inputs
 					$dev->ESX=(isset($_POST['ESX']))?$_POST['ESX']:0;
-					$dev->Reservation=(isset($_POST['Reservation']))?($_POST['Reservation']=="on")?1:0:0;
-					$dev->NominalWatts=$_POST['NominalWatts'];
-					$dev->HalfDepth=(isset($_POST['HalfDepth']))?($_POST['HalfDepth']=="on")?1:0:0;
 					$dev->BackSide=(isset($_POST['BackSide']))?($_POST['BackSide']=="on")?1:0:0;
+					$dev->HalfDepth=(isset($_POST['HalfDepth']))?($_POST['HalfDepth']=="on")?1:0:0;
+					$dev->Reservation=(isset($_POST['Reservation']))?($_POST['Reservation']=="on")?1:0:0;
+					$dev->SNMPFailureCount=(isset($_POST['SNMPFailureCount']))?$_POST['SNMPFailureCount']:0;
 					// Used by CDU type devices only
-					(isset($_POST['PanelID']))?$dev->PanelID=$_POST['PanelID']:'';
-					(isset($_POST['BreakerSize']))?$dev->BreakerSize=$_POST['BreakerSize']:'';
-					(isset($_POST['PanelPole']))?$dev->PanelPole=$_POST['PanelPole']:'';
-					(isset($_POST['InputAmperage']))?$dev->InputAmperage=$_POST['InputAmperage']:'';
-					(isset($_POST['failsafe']))?$dev->FailSafe=($_POST['failsafe']=="on")?1:0:'';
-					(isset($_POST['PanelID2']))?$dev->PanelID2=$_POST['PanelID2']:'';
-					(isset($_POST['PanelPole2']))?$dev->PanelPole2=$_POST['PanelPole2']:'';
-					
+					if($dev->DeviceType=='CDU'){
+						foreach($pdu as $prop => $val){
+							$dev->$prop=(isset($_POST[$prop]))?$_POST[$prop]:$val;
+						}
+						(isset($_POST['failsafe']))?$dev->FailSafe=($_POST['failsafe']=="on")?1:0:'';
+					}
 				}
 
 				if(($dev->TemplateID >0)&&(intval($dev->NominalWatts==0))){$dev->UpdateWattageFromTemplate();}
@@ -1157,10 +1149,19 @@ $(document).ready(function() {
 		});
 	}
 
+	// Hide / Show extra snmp attributes
+	$('#SNMPVersion').change(function(){
+		if(this.value==3){
+			$(':input[id^="v3"]').parent('div').parent('div').show();
+		}else{
+			$(':input[id^="v3"]').parent('div').parent('div').hide();
+		}
+	}).trigger('change');
 
 	// Make SNMP community visible
-	$('#SNMPCommunity').focus(function(){$(this).attr('type','text');});
-	$('#SNMPCommunity').blur(function(){$(this).attr('type','password');});
+	$('#SNMPCommunity,#v3AuthPassphrase,#v3PrivPassphrase')
+		.focus(function(){$(this).attr('type','text');})
+		.blur(function(){$(this).attr('type','password');});
 
 	// What what?! an SNMP test function!?
 	$('#PrimaryIP,#SNMPCommunity').on('change keyup keydown', function(){ SNMPTest(); }).change();
@@ -1176,11 +1177,14 @@ $(document).ready(function() {
 
 	$('#btn_snmptest').click(function(e){
 		e.preventDefault();
-		var snmp=$('#SNMPCommunity');
-		var dc=$(document).data('defaultsnmp');
-		var community=(snmp.val()!='')?snmp.val():(dc!='')?dc:'';
+		// Serialize the form data
+		var formdata=$('#snmpblock').serializeArray();
+		// Add in the IP since it isn't part of the snmp section
+		formdata.push({name:'PrimaryIP',value: $('#PrimaryIP').val()});
+		// Set the action to snmptest
+		formdata.push({name:'snmptest',value: $('#DeviceID').val()});
 		$('#pdutest').html('<img src="images/mimesearch.gif" height="150px">Checking...');
-		$.post('', {snmptest: $('#DeviceID').val(),ip: $('#PrimaryIP').val(),community: community}, function(data){
+		$.post('', formdata, function(data){
 			$('#pdutest').html(data);
 		});
 		$('#pdutest').dialog({minWidth: 850, position: { my: "center", at: "top", of: window },closeOnEscape: true });
@@ -1644,14 +1648,6 @@ echo '<div class="center"><div>
 				<input type="hidden" name="FirstPortNum" value="'.$dev->FirstPortNum.'"></div>
 		</div>
 		<div>
-		  <div><label for="SNMPCommunity">'.__("SNMP Read Only Community").'</label></div>
-		  <div><input type="password" name="SNMPCommunity" id="SNMPCommunity" size="40" value="'.$dev->SNMPCommunity.'"><button type="button" class="hide" id="btn_snmptest">'.__("Test SNMP").'</button></div>
-		</div>
-		<div>
-		  <div><label for="SNMPFailureCount">'.__("Consecutive SNMP Failures").'</label></div>
-		  <div><input type="number" name="SNMPFailureCount" id="SNMPFailureCount" value="'.$dev->SNMPFailureCount.'">'.__("Polling is disabled after three consecutive failures.").'</div>
-		</div>
-		<div>
 		   <div><label for="MfgDate">'.__("Manufacture Date").'</label></div>
 		   <div><input type="text" class="validate[optional,custom[date]] datepicker" name="MfgDate" id="MfgDate" value="'.(($dev->MfgDate>'0000-00-00 00:00:00')?date('m/d/Y',strtotime($dev->MfgDate)):"").'">
 		   </div>
@@ -1864,7 +1860,7 @@ echo '
 	</div> <!-- END div.table -->
 </fieldset>
 <fieldset id="deviceimages">
-	<legend>Device Images</legend>
+	<legend>'.__("Device Images").'</legend>
 	<div>';
 		$frontpic=($templ->FrontPictureFile!='')?' src="pictures/'.$templ->FrontPictureFile.'"':'';
 		$rearpic=($templ->RearPictureFile!='')?' src="pictures/'.$templ->RearPictureFile.'"':'';
@@ -1872,6 +1868,80 @@ echo '
 		<img id="devicefront" src="pictures/'.$templ->FrontPictureFile.'" alt="front of device">
 		<img id="devicerear" src="pictures/'.$templ->RearPictureFile.'" alt="rear of device">
 	</div>
+</fieldset>
+<fieldset id="snmpblock">
+	<legend>'.__("SNMP Configuration").'</legend>
+	<div class="table">
+		<div>
+		  <div><label for="SNMPVersion">'.__("SNMP Version").'</label></div>
+		  <div>
+			<select name="SNMPVersion" id="SNMPVersion">
+				<option value="">'.__("Configuration Default").'</option>';
+			foreach(array(1,'2c',3) as $ver){
+				$selected=($dev->SNMPVersion==$ver)?' selected':'';
+				print "\n\t\t\t\t<option value=\"$ver\"$selected>$ver</options>";
+			}
+echo '
+			</select>
+		  </div>
+		</div>
+		<div>
+		  <div><label for="SNMPCommunity">'.__("SNMP Read Only Community").'</label></div>
+		  <div><input type="password" name="SNMPCommunity" id="SNMPCommunity" size="40" value="'.$dev->SNMPCommunity.'"><button type="button" class="hide" id="btn_snmptest">'.__("Test SNMP").'</button></div>
+		</div>
+		<div>
+		  <div><label for="v3SecurityLevel">'.__("SNMPv3 Security Level").'</label></div>
+		  <div>
+			<select name="v3SecurityLevel" id="v3SecurityLevel">
+				<option value="">'.__("Configuration Default").'</option>';
+			foreach(array('noAuthNoPriv','authNoPriv','authPriv') as $ver){
+				$selected=($dev->v3SecurityLevel==$ver)?' selected':'';
+				print "\n\t\t\t\t<option value=\"$ver\"$selected>$ver</options>";
+			}
+echo '
+			</select>
+		  </div>
+		</div>
+		<div>
+		  <div><label for="v3AuthProtocol">'.__("SNMPv3 AuthProtocol").'</label></div>
+		  <div>
+			<select name="v3AuthProtocol" id="v3AuthProtocol">
+				<option value="">'.__("Configuration Default").'</option>';
+			foreach(array('MD5','SHA') as $ver){
+				$selected=($dev->v3AuthProtocol==$ver)?' selected':'';
+				print "\n\t\t\t\t<option value=\"$ver\"$selected>$ver</options>";
+			}
+echo '
+			</select>
+		  </div>
+		</div>
+		<div>
+		  <div><label for="v3AuthPassphrase">'.__("SNMPv3 Passphrase").'</label></div>
+		  <div><input type="password" name="v3AuthPassphrase" id="v3AuthPassphrase" value="'.$dev->v3AuthPassphrase.'"></div>
+		</div>
+		<div>
+		  <div><label for="v3PrivProtocol">'.__("SNMPv3 PrivProtocol").'</label></div>
+		  <div>
+			<select name="v3PrivProtocol" id="v3PrivProtocol">
+				<option value="">'.__("Configuration Default").'</option>';
+			foreach(array('DES','AES') as $ver){
+				$selected=($dev->v3PrivProtocol==$ver)?' selected':'';
+				print "\n\t\t\t\t<option value=\"$ver\"$selected>$ver</options>";
+			}
+echo '
+			</select>
+		  </div>
+		</div>
+		<div>
+		  <div><label for="v3PrivPassphrase">'.__("SNMPv3 PrivPassphrase").'</label></div>
+		  <div><input type="password" name="v3PrivPassphrase" id="v3PrivPassphrase" value="'.$dev->v3PrivPassphrase.'"></div>
+		</div>
+		<div>
+		  <div><label for="SNMPFailureCount">'.__("Consecutive SNMP Failures").'*</label></div>
+		  <div><input type="number" name="SNMPFailureCount" id="SNMPFailureCount" value="'.$dev->SNMPFailureCount.'"></div>
+		</div>
+	</div>
+	<br><span>*'.__("Polling is disabled after three consecutive failures.").'</span>
 </fieldset>
 <fieldset id="cdu" class="hide">
 	<legend>'.__("Power Specifications").'</legend>

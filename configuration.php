@@ -1590,9 +1590,58 @@ echo '<div class="main">
 					<div><label for="InstallURL">',__("Base URL for install"),'</label></div>
 					<div><input type="text" defaultvalue="',$href,'" name="InstallURL" value="',$config->ParameterArray["InstallURL"],'"></div>
 				</div>
+			</div> <!-- end table -->
+			<h3>',__("SNMP Options"),'</h3>
+			<div class="table">
 				<div>
 					<div><label for="SNMPCommunity">',__("Default SNMP Community"),'</label></div>
 					<div><input type="text" defaultvalue="',$config->defaults["SNMPCommunity"],'" name="SNMPCommunity" value="',$config->ParameterArray["SNMPCommunity"],'"></div>
+				</div>
+				<div>
+				  <div><label for="SNMPVersion">'.__("SNMP Version").'</label></div>
+				  <div>
+						<select id="SNMPVersion" defaultvalue="',$config->defaults["SNMPVersion"],'" name="SNMPVersion" data="',$config->ParameterArray["SNMPVersion"],'">
+							<option value="1">1</option>
+							<option value="2c">2c</option>
+							<option value="3">3</option>
+						</select>
+					</div>
+				</div>
+				<div>
+				  <div><label for="v3SecurityLevel">'.__("SNMPv3 Security Level").'</label></div>
+				  <div>
+					<select id="v3SecurityLevel" defaultvalue="',$config->defaults["v3SecurityLevel"],'" name="v3SecurityLevel" data="',$config->ParameterArray["v3SecurityLevel"],'">
+						<option value="noAuthNoPriv">noAuthNoPriv</option>
+						<option value="authNoPriv">authNoPriv</option>
+						<option value="authPriv">authPriv</option>
+					</select>
+				  </div>
+				</div>
+				<div>
+				  <div><label for="v3AuthProtocol">'.__("SNMPv3 AuthProtocol").'</label></div>
+					<div>
+						<select id="v3AuthProtocol" defaultvalue="',$config->defaults["v3AuthProtocol"],'" name="v3AuthProtocol" data="',$config->ParameterArray["v3AuthProtocol"],'">
+							<option value="MD5">MD5</option>
+							<option value="SHA">SHA</option>
+						</select>
+					</div>
+				</div>
+				<div>
+				  <div><label for="v3AuthPassphrase">'.__("SNMPv3 Passphrase").'</label></div>
+				  <div><input type="text" defaultvalue="',$config->defaults["v3AuthPassphrase"],'" name="v3AuthPassphrase" id="v3AuthPassphrase" value="',$config->ParameterArray["v3AuthPassphrase"],'"></div>
+				</div>
+				<div>
+				  <div><label for="v3PrivProtocol">'.__("SNMPv3 PrivProtocol").'</label></div>
+				  <div>
+					<select id="v3PrivProtocol" defaultvalue="',$config->defaults["v3PrivProtocol"],'" name="v3PrivProtocol" data="',$config->ParameterArray["v3PrivProtocol"],'">
+						<option value="DES">DES</option>
+						<option value="AES">AES</option>
+					</select>
+				  </div>
+				</div>
+				<div>
+				  <div><label for="v3PrivPassphrase">'.__("SNMPv3 PrivPassphrase").'</label></div>
+				  <div><input type="text" defaultvalue="',$config->defaults["v3PrivPassphrase"],'" name="v3PrivPassphrase" id="v3PrivPassphrase" value="',$config->ParameterArray["v3PrivPassphrase"],'"></div>
 				</div>
 			</div> <!-- end table -->
 			<h3>',__("Capacity Reporting"),'</h3>

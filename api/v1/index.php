@@ -905,6 +905,51 @@ $app->put( '/colorcode/:colorname', function($colorname) use ($app) {
 	echoResponse(200,$response);
 });
 
+//
+//	URL:	/api/v1/device/:devicelabel
+//	Method:	PUT
+//	Params:	deviceid (passed in URL)
+//		Required: Label, cabinetid
+//		Optional: everything else
+//	Returns: record as created 
+//
+
+$app->put( '/device/:devicelabel', function($devicelabel) use ($app) {
+	$dev=new Device();
+	// This isn't super great and could lead to some weirdness in the logging but 
+	// we'll make it more specific later if it becomes and issue.
+	foreach($app->request->put() as $prop => $val){
+		$dev->$prop=$val;
+	}
+	// This should be in the commit data but if we get a smartass saying it's in the URL
+	$dev->Label=$devicelabel;
+
+	$cab=new Cabinet();
+	$cab->CabinetID=$dev->Cabinet;
+	if(!$cab->GetCabinet()){
+		$response['error']=true;
+		$response['errorcode']=404;
+		$response['message']=__("Cabinet not found");
+	}else{
+		if($cab->Rights!="Write"){
+			$response['error']=true;
+			$response['errorcode']=403;
+			$response['message']=__("Unauthorized");
+		}else{
+			if(!$dev->CreateDevice()){
+				$response['error']=true;
+				$response['errorcode']=404;
+				$response['message']=__("Device creation failed");
+			}else{
+				$response['error']=false;
+				$response['errorcode']=200;
+				$response['device']=$dev;
+			}
+		}
+	}
+
+	echoResponse($response['errorcode'],$response);
+});
 
 /**
   *
@@ -988,6 +1033,40 @@ $app->delete( '/colorcode/:colorid', function($colorid) {
 	}else{
 		$response['error']=false;
 		$response['errorcode']=200;
+	}
+	echoResponse(200,$response);
+});
+
+//
+//	URL:	/api/v1/device/:deviceid
+//	Method:	DELETE
+//	Params:	deviceid (passed in URL)
+//	Returns:  true/false on update operation
+//
+
+$app->delete( '/device/:deviceid', function($deviceid) {
+	$dev=new Device();
+	$dev->DeviceID=$deviceid;
+	
+	if(!$dev->GetDevice()){
+		$response['error']=true;
+		$response['errorcode']=404;
+		$response['message']=__("Device doesn't exist");
+	}else{
+		if(!$dev->Rights!="Write"){
+			$response['error']=true;
+			$response['errorcode']=403;
+			$response['message']=__("Unauthorized");
+		}else{
+			if(!$dev->DeleteDevice()){
+				$response['error']=true;
+				$response['errorcode']=404;
+				$response['message']=__("An unknown error has occured");
+			}else{
+				$response['error']=false;
+				$response['errorcode']=200;
+			}
+		}
 	}
 	echoResponse(200,$response);
 });
