@@ -193,7 +193,7 @@ echo '	</select>
    </div>
 </div>
 <div>
-	<div label for="parentpanelid"><?php print __("Parent Panel"); ?></label></div>
+	<div><label for="parentpanelid"><?php print __("Parent Panel"); ?></label></div>
 	<div><select name="parentpanelid" id="parentpanelid">
 		<option value=0></option>
 <?php
@@ -204,34 +204,36 @@ echo '	</select>
 			print "\t\t<option value=$pnl->PanelID$selected>$pnl->PanelLabel</option>\n";
 		}
 	}
-?>
-	</select></div>
+
+echo '	</select></div>
 </div>
 <div>
-	<div label for="parentbreakername"><?php print __("Parent Breaker Name"); ?></label></div>
-	<div><input type="text" name="parentbreakername" id="parentbreakername" size="40" value="<?php print $panel->ParentBreakerName; ?>"></div>
+	<div><label for="parentbreakername">',__("Parent Breaker Name"),'</label></div>
+	<div><input type="text" name="parentbreakername" id="parentbreakername" size="40" value="',$panel->ParentBreakerName,'"></div>
 </div>	
 <div>
-	<div label for="templateid"><?php print __("CDU/Meter Template"); ?></label></div>
-	<div><select name="templateid" id="templateid">
-	   <option value=0></option>
-<?php
-			foreach ( $tmpList as $tmp ) { 
-				$selected = ($panel->TemplateID==$tmp->TemplateID)?' selected':'';
-				printf( "<option value=%s %s>%s</option>\n", $tmp->TemplateID, $selected, $tmp->Model );
+	<div><label for="templateid">',__("CDU/Meter Template"),'</label></div>
+	<div>
+		<select name="templateid" id="templateid">
+			<option value=0></option>';
+
+			foreach($tmpList as $tmp){ 
+				$selected=($panel->TemplateID==$tmp->TemplateID)?' selected':'';
+				print "\n\t\t\t<option value=$tmp->TemplateID$selected>$tmp->Model</option>";
 			}
 ?>
-	   </select>
+
+		</select>
 	</div>
 </div>
 <div class="caption">
 <?php
 	if($panel->PanelID >0){
-		echo '   <button type="submit" name="action" value="Update">',__("Update"),'</button>
+		echo '	<button type="submit" name="action" value="Update">',__("Update"),'</button>
 	<button type="button" name="action" value="Delete">',__("Delete"),'</button>';
-	} else {
-		echo '   <button type="submit" name="action" value="Create">',__("Create"),'</button>';
-  }
+	}else{
+		echo '	<button type="submit" name="action" value="Create">',__("Create"),'</button>';
+	}
 ?>
 </div>
 </div><!-- END div.table -->
