@@ -169,7 +169,7 @@ function resize(){
 			$(this).width(widesttab);
 		});
 
-		if(getCookie("layout")=="Landscape"){
+		if(typeof getCookie=='function' && getCookie("layout")=="Landscape"){
 			// edge case where a ridiculously long device type can expand the field selector out too far
 			var rdivwidth=$('div.right').outerWidth();
 			$('div.right fieldset').each(function(){
