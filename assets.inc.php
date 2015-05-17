@@ -1386,9 +1386,6 @@ class Device {
 
 		$this->DeviceID=$dbh->lastInsertId();
 
-		DevicePorts::createPorts($this->DeviceID);
-		PowerPorts::createPorts($this->DeviceID);
-
 		if($this->DeviceType=="CDU"){
 			$pdu=new PowerDistribution();
 			foreach($pdu as $prop => $val){
@@ -1403,6 +1400,10 @@ class Device {
 
 		if($this->DeviceType=="Sensor"){
 		}
+
+		// Make ports last because they depend on extended devices being created in some cases
+		DevicePorts::createPorts($this->DeviceID);
+		PowerPorts::createPorts($this->DeviceID);
 
 		(class_exists('LogActions'))?LogActions::LogThis($this):'';
 

@@ -297,8 +297,6 @@ class PowerPorts {
 		if($dev->Rights!='Write'){return false;}
 		$portList=array();
 
-		// This will need to be expanded after the template system is expanded to allow for naming ports
-
 		//Search template ports
 		$tports=array();
 		if($dev->TemplateID>0){
@@ -307,8 +305,7 @@ class PowerPorts {
 			$tports=$tport->getPorts();
 		}
 
-		for($n=0; $n<$dev->PowerSupplyCount; $n++){
-			$i=$n+1;
+		for($i=1; $i<=$dev->PowerSupplyCount; $i++){
 			$portList[$i]=new PowerPorts();
 			$portList[$i]->DeviceID=$dev->DeviceID;
 			$portList[$i]->PortNumber=$i;
