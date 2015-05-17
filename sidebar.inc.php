@@ -190,6 +190,7 @@ function resize(){
 
 		// The math just isn't adding up across browsers and FUCK IE
 		if((main+sbw)<width){ // page is larger than content expand main to fit
+			$('#header').width(width+4);
 			$('div.main').width(width-sbw-12); 
 		}else{ // page is smaller than content expand the page to fit
 			$('div.main').width(width-sbw-12); 
@@ -213,8 +214,8 @@ $(document).ready(function(){
 		}, 500);
 	});
 	$('#header').append($('.langselect'));
-	var top = (($("#header").height() / 2)-($(".langselect").height() / 2));
-	$(".langselect").css({"top": top+"px", "right": "40px", "z-index": "99", "position": "absolute"}).removeClass('hide').appendTo("#header");
+	$(".langselect").css({"right": "3px", "z-index": "99", "position": "absolute"}).removeClass('hide').appendTo("#header");
+	$(".langselect").css({"bottom": $(".langselect").height()+"px"});
 	$("#language").change(function(){
 		$.ajax({
 			type: 'POST',
