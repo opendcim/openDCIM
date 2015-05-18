@@ -1260,7 +1260,20 @@ class PowerPanel {
 	
 	function errorInfo() {
 		global $dbh;
-		return $this->errorInfo();
+		return $dbh->errorInfo();
+	}
+	
+	function MakeSafe() {
+		$this->PanelID = intval($this->PanelID);
+		$this->PanelLabel = sanitize($this->PanelLabel);
+		$this->NumberOfPoles = intval($this->NumberOfPoles);
+		$this->MainBreakerSize = intval($this->MainBreakerSize);
+		$this->PanelVoltage = intval($this->PanelVoltage);
+		$this->NumberScheme = ( $this->NumberScheme == 'Odd/Even' )?'Odd/Even':'Sequential';
+		$this->ParentPanelID = intval($this->ParentPanelID);
+		$this->ParentBreakerName = sanitize($this->ParentBreakerName);
+		$this->PanelIPAddress = sanitize($this->PanelIPAddress);
+		$this->TemplateID = intval($this->TemplateID);
 	}
 	
 	function getPanelLoad() {
@@ -1407,12 +1420,14 @@ class PowerPanel {
 	}
 
 	function createPanel() {
+		$this->MakeSafe();
+		
 		$sql = "insert into fac_PowerPanel set PanelLabel=:PanelLabel, NumberOfPoles=:NumberOfPoles, MainBreakerSize=:MainBreakerSize,
 			PanelVoltage=:PanelVoltage,NumberScheme=:NumberScheme,ParentPanelID=:ParentPanelID,ParentBreakerName=:ParentBreakerName,
 			PanelIPAddress=:PanelIPAddress, TemplateID=:TemplateID";
 			
 		$st = $this->prepare( $sql );
-		$st->execute( array( ":PanelLabel"=>$this->PanelLabel, 
+		$params = array( ":PanelLabel"=>$this->PanelLabel, 
 			":NumberOfPoles"=>$this->NumberOfPoles, 
 			":MainBreakerSize"=>$this->MainBreakerSize,
 			":PanelVoltage"=>$this->PanelVoltage,
@@ -1420,7 +1435,8 @@ class PowerPanel {
 			":ParentPanelID"=>$this->ParentPanelID,
 			":ParentBreakerName"=>$this->ParentBreakerName,
 			":PanelIPAddress"=>$this->PanelIPAddress,
-			":TemplateID"=>$this->TemplateID ) );
+			":TemplateID"=>$this->TemplateID );
+		$st->execute( $params );
 		
 		if ( $this->lastInsertId() > 0 ) {
 			$this->PanelID = $this->lastInsertId();
@@ -1428,7 +1444,7 @@ class PowerPanel {
 			return $this->PanelID;
 		} else {
 			$info = $this->errorInfo();
-			error_log( "createPanel::PDO Error: {$info[2]} SQL=$sql" );
+			error_log( "createPanel::PDO Error: {$info[2]} Params=" . print_r( $params, true ) );
 			return false;
 		}
 	}
@@ -1446,6 +1462,8 @@ class PowerPanel {
 	}
 		
 	function updatePanel(){
+		$this->MakeSafe();
+		
 		$oldpanel=new PowerPanel();
 		$oldpanel->PanelID=$this->PanelID;
 		$oldpanel->getPanel();

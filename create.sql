@@ -525,6 +525,7 @@ CREATE TABLE fac_PowerPanel (
   NumberScheme varchar(10) NOT NULL DEFAULT "Sequential",
   ParentPanelID int(11) NOT NULL,
   ParentBreakerName varchar(80) NOT NULL,
+  PanelIPAddress varchar(30) NOT NULL,
   TemplateID int(11) NOT NULL,
   PRIMARY KEY (PanelID)
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;

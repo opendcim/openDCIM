@@ -5,6 +5,11 @@
 
 if(!function_exists("sanitize")){
 	function sanitize($string,$stripall=true){
+		// Convert null to empty string
+		if ( is_null($string) ) {
+			$string = "";
+		}
+		
 		// Trim any leading or trailing whitespace
 		$clean=trim($string);
 

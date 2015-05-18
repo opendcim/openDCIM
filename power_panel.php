@@ -41,6 +41,7 @@
 		$panel->PanelVoltage=$_POST["panelvoltage"];
 		$panel->NumberScheme=$_POST["numberscheme"];
 		$panel->ParentPanelID=$_POST["parentpanelid"];
+		$panel->PanelIPAddress=$_POST["panelipaddress"];
 		$panel->ParentBreakerName=$_POST["parentbreakername"];
 		
 		if($_POST["action"]=="Create"){
@@ -210,7 +211,11 @@ echo '	</select></div>
 <div>
 	<div><label for="parentbreakername">',__("Parent Breaker Name"),'</label></div>
 	<div><input type="text" name="parentbreakername" id="parentbreakername" size="40" value="',$panel->ParentBreakerName,'"></div>
-</div>	
+</div>
+<div>
+	<div><label for="panelipaddress">',__("Panel Meter IP Address"),'</label></div>
+	<div><input type="text" name="panelipaddress" id="panelipaddress" size="30" value="',$panel->PanelIPAddress,'"></div>
+</div>
 <div>
 	<div><label for="templateid">',__("CDU/Meter Template"),'</label></div>
 	<div>
