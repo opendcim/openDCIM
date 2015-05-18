@@ -3116,31 +3116,51 @@ class Device {
 	// this should now be functional however I question the positioning.  if we move this, update the function above
 	static function UpdateSensors( $CabinetID = null ) {
 		global $config;
+		global $dbh;
 
-		$cab=new Cabinet();
-		$cab->CabinetID=$CabinetID;
-		if(!$cab->GetCabinet()){
-			return false;
+		if ( $CabinetID != null ) {
+			$sql = "select * from fac_Device where DeviceType='Sensor' and PrimaryIP!='' and TemplateID>0 and SNMPFailureCount<3 and Cabinet=:CabinetID";
+			$st = $dbh->prepare( $sql );
+			$st->execute( array( ":CabinetID"=>$CabinetID ) );
+		} else {
+			$sql = "select * from fac_Device where DeviceType='Sensor' and PrimaryIP!='' and TemplateID>0 and SNMPFailureCount<3";
+			$st = $dbh->prepare( $sql );
+			$st->execute();
 		}
-
-		// get a list of all the device id's in this cabinet
-		$sql="SELECT DeviceID FROM fac_Device WHERE DeviceType=\"Sensor\" AND PrimaryIP!=\"\" AND TemplateID>0 AND Cabinet=$cab->CabinetID;";
-		foreach($dbh->query($sql) as $row){
-			if(!$dev=Device::BasicTests($row['DeviceID'])){
-				// This device failed the basic test but maybe the next won't
-				continue;
+		
+		$st->setFetchMode( PDO::FETCH_CLASS, "Device" );
+		
+		while ( $d = $st->fetch() ) {
+			$sen = new SensorTemplate();			
+			$sen->TemplateID = $d->TemplateID;
+			if ( ! $sen->GetTemplate() ) {
+				error_log( "Unable to fetch Sensor TemplateID=$d->TemplateID" );
+				return false;
 			}
-
-			// need to combine this shit with the DeviceTemplate like I did the extended devices
-			$t=new TemplateSensor();
-			$t->TemplateID=$dev->TemplateID;
-			if(!$t->GetTemplate()){
-				// Invalid template, how'd that happen?  Move on..
-				continue;
+			
+			if ( $sen->TemperatureOID ) {
+				if ( $ret = self::OSS_SNMP_Lookup($d, null, "$sen->TemperatureOID") ) {
+					$temp = floatval( $ret );
+					$d->ResetFailures();
+				} else {
+					$temp = 0;
+					$d->IncrementFailures();
+				}
+			} else {
+				$temp = 0;
 			}
-
-			$temp=($t->TemperatureOID)?floatval(self::OSS_SNMP_Lookup($dev,null,"$t->TemperatureOID")):0;
-			$humidity=($t->HumidityOID)?floatval(self::OSS_SNMP_Lookup($dev,null,"$t->HumidityOID")):0;
+			
+			if ( $sen->HumidityOID ) {
+				if ( $ret = self::OSS_SNMP_Lookup($d, null, "$sen->HumidityOID") ) {
+					$humidity = floatval( $ret );
+					$d->ResetFailures();
+				} else {
+					$humidity = 0;
+					$d->IncrementFailures();
+				}
+			} else {
+				$humidity = 0;
+			}
 
 			// Strip out everything but numbers
 			// not sure these are needed anymore thanks to the OSS_SNMP library
@@ -3148,24 +3168,24 @@ class Device {
 			$humidity=preg_replace("/[^0-9.'+]/","",$humidity);
 
 			// Apply multipliers
-			$temp*=$t->TempMultiplier;
-			$humidity*=$t->HumidityMultiplier;
+			$temp*=$sen->TempMultiplier;
+			$humidity*=$sen->HumidityMultiplier;
 
 			// Convert the units if necessary
 			// device template is set to english but user wants metric so convert it
-			if(($t->mUnits=="english") && ($config->ParameterArray["mUnits"]=="metric")){
+			if(($sen->mUnits=="english") && ($config->ParameterArray["mUnits"]=="metric")){
 				$temp=(($temp-32)*5/9);
 			// device template is set to metric but the user wants english so convert it
-			}elseif(($t->mUnits=="metric") && ($config->ParameterArray["mUnits"]=="english")){
+			}elseif(($sen->mUnits=="metric") && ($config->ParameterArray["mUnits"]=="english")){
 				$temp=(($temp*9/5)+32);
 			}
 
 			// No need for any further sanitization it was all handled above
-			$insertsql="INSERT INTO fac_SensorReadings SET DeviceID=$dev->DeviceID, Temperature=$temp, Humidity=$humidity, Timestamp=NOW();";
-			if(!$dbh->exec($sql)){
+			$insertsql="INSERT INTO fac_SensorReadings SET DeviceID=$d->DeviceID, Temperature=$temp, Humidity=$humidity, Timestamp=NOW() on duplicate key update Temperature=$temp, Humidity=$humidity, Timestamp=now()";
+			if(!$dbh->exec($insertsql)){
 				$info = $dbh->errorInfo();
 
-				error_log( "UpdateSensors::PDO Error: {$info[2]} SQL=$sql" );
+				error_log( "UpdateSensors::PDO Error: {$info[2]} SQL=$insertsql" );
 				return false;
 			}
 		}

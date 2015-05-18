@@ -1043,10 +1043,10 @@ class PowerDistribution {
 		global $config;
 		global $dbh;
 		
-		$sql="SELECT a.PDUID, b.SNMPVersion, b.Multiplier, b.OID1, 
+		$sql="SELECT a.PDUID, d.SNMPVersion, b.Multiplier, b.OID1, 
 			b.OID2, b.OID3, b.ProcessingProfile, b.Voltage, c.SNMPFailureCount FROM fac_PowerDistribution a, 
-			fac_CDUTemplate b, fac_Device c WHERE a.PDUID=c.DeviceID and a.TemplateID=b.TemplateID AND b.Managed=true 
-			AND IPAddress>'' and c.SNMPFailureCount<3";
+			fac_CDUTemplate b, fac_Device c, fac_DeviceTemplate d WHERE a.PDUID=c.DeviceID and a.TemplateID=b.TemplateID 
+			AND a.TemplateID=d.TemplateID AND b.Managed=true AND IPAddress>'' and c.SNMPFailureCount<3";
 		
 		// The result set should have no PDU's with blank IP Addresses or SNMP Community, so we can forge ahead with processing them all
 		foreach($this->query($sql) as $row){
@@ -1486,7 +1486,6 @@ class PowerPanel {
 			":PanelID"=>$this->PanelID ) );
 
 		(class_exists('LogActions'))?LogActions::LogThis($this,$oldpanel):'';
-		return $dbh->query($sql);
 	}
 }
 
