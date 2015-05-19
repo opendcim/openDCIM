@@ -14,6 +14,7 @@
 
 // Use the global configuration
 global $config;
+global $dbh;
 
 // We're gonna use this as an intval wherever anyhow so just get it done.
 $object=(isset($_POST['tooltip']))?intval($_POST['tooltip']):0;
@@ -46,8 +47,12 @@ if($object>0){
 			$sql="SELECT MAX(Temperature) AS Temperature, MAX(Humidity) AS Humidity, 
 				MAX(LastRead) AS LastRead FROM fac_SensorReadings WHERE DeviceID IN (SELECT 
 				DeviceID FROM fac_Device WHERE Cabinet=$cab->CabinetID AND 
-				DeviceType=\"Sensor\");";
-			$temps=$dbh->query($sql)->fetch();
+				BackSide=0 AND DeviceType=\"Sensor\");";
+			if ( $res=$dbh->query($sql) ) {
+				$temps = $res->fetch();
+			} else {
+				error_log( "Tooltips::PDO Error sql=$sql ErrorInfo=" . print_r($dbh->errorInfo(), true) );
+			}
 
 			// Pull wattage
 			$sql="SELECT SUM(Wattage) AS RealPower, MAX(LastRead) AS RPLastRead FROM 

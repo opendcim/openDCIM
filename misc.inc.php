@@ -276,7 +276,11 @@ if(isset($_COOKIE["lang"])){
 
 if(extension_loaded('gettext')){
 	if(isset($locale)){
-		setlocale(LC_ALL,$locale);
+		if ( ! setlocale(LC_ALL,$locale) ) {
+			if ( ! setlocale( LC_ALL, $locale . ".UTF8" ) ) {
+				error_log( "Gettext error loading locale $locale." );
+			}
+		}
 		putenv("LC_ALL=$locale");
 		bindtextdomain("openDCIM","./locale");
 
