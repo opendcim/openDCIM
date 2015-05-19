@@ -524,90 +524,73 @@ class DataCenter {
 					$pp=intval($rp / $maxDraw * 100);
 					$cdus[$cabid]=(isset($cdus[$cabid]) && $cdus[$cabid]>$pp)?$cdus[$cabid]:$pp;
 				}
-
-				$sql="SELECT C.*, T.Temp, T.Humidity, P.RealPower, T.LastRead, PLR.RPLastRead 
-					FROM ((fac_Cabinet C LEFT JOIN fac_CabinetTemps T ON C.CabinetId = T.CabinetID) LEFT JOIN
-						(SELECT CabinetID, SUM(Wattage) RealPower
-						FROM fac_PowerDistribution PD LEFT JOIN fac_PDUStats PS ON PD.PDUID=PS.PDUID
-						GROUP BY CabinetID) P ON C.CabinetId = P.CabinetID) LEFT JOIN
-						(SELECT CabinetID, MAX(LastRead) RPLastRead
-						FROM fac_PowerDistribution PD LEFT JOIN fac_PDUStats PS ON PD.PDUID=PS.PDUID
-						GROUP BY CabinetID) PLR ON C.CabinetId = PLR.CabinetID
-				    WHERE C.DataCenterID=".intval($this->DataCenterID).";";
+				$cab->DataCenterID = $this->DataCenterID;
+				$cabList = $cab->ListCabinetsByDC();
 				
 				$titletemp=0;
 				$titlerp=0;
-				if($racks=$this->query($sql)){ 
-					// read all cabinets and calculate the color to display on the cabinet
-					foreach($racks as $cabRow){
-						$cab->CabinetID=$cabRow["CabinetID"];
-
-						if ($cabRow["MapX1"]==$cabRow["MapX2"] || $cabRow["MapY1"]==$cabRow["MapY2"]){
-							continue;
-						}
-						$dev->Cabinet=$cab->CabinetID;
-	    	    		$devList=$dev->ViewDevicesByCabinet();
-						$currentHeight=$cabRow["CabinetHeight"];
-	        			$totalWatts=$totalWeight=0;
-						$currentTemperature=$cabRow["Temp"];
-						$currentHumidity=$cabRow["Humidity"];
-						$currentRealPower=$cabRow["RealPower"];
-						
-						while(list($devID,$device)=each($devList)){
-							$totalWatts+=$device->GetDeviceTotalPower();
-							$totalWeight+=$device->GetDeviceTotalWeight();
-						}
-							
-	        			$used=$cab->CabinetOccupancy($cab->CabinetID);
-						// check to make sure the cabinet height is set to keep errors out of the logs
-						if(!isset($cabRow["CabinetHeight"])||$cabRow["CabinetHeight"]==0){$SpacePercent=100;}else{$SpacePercent=number_format($used /$cabRow["CabinetHeight"] *100,0);}
-						// check to make sure there is a weight limit set to keep errors out of logs
-						if(!isset($cabRow["MaxWeight"])||$cabRow["MaxWeight"]==0){$WeightPercent=0;}else{$WeightPercent=number_format($totalWeight /$cabRow["MaxWeight"] *100,0);}
-						// check to make sure there is a kilowatt limit set to keep errors out of logs
-	    	    		if(!isset($cabRow["MaxKW"])||$cabRow["MaxKW"]==0){$PowerPercent=0;}else{$PowerPercent=number_format(($totalWatts /1000 ) /$cabRow["MaxKW"] *100,0);}
-						if(!isset($cabRow["MaxKW"])||$cabRow["MaxKW"]==0){$RealPowerPercent=0;}else{$RealPowerPercent=number_format(($currentRealPower /1000 ) /$cabRow["MaxKW"] *100,0, ",", ".");}
-
-						// check for individual cdu's being weird
-						if(isset($cdus[$cab->CabinetID])){$RealPowerPercent=($RealPowerPercent>$cdus[$cab->CabinetID])?$RealPowerPercent:$cdus[$cab->CabinetID];}
-					
-						//Decide which color to paint on the canvas depending on the thresholds
-						if($SpacePercent>$SpaceRed){$scolor=$CriticalColor;}elseif($SpacePercent>$SpaceYellow){$scolor=$CautionColor;}else{$scolor=$GoodColor;}
-						if($WeightPercent>$WeightRed){$wcolor=$CriticalColor;}elseif($WeightPercent>$WeightYellow){$wcolor=$CautionColor;}else{$wcolor=$GoodColor;}
-						if($PowerPercent>$PowerRed){$pcolor=$CriticalColor;}elseif($PowerPercent>$PowerYellow){$pcolor=$CautionColor;}else{$pcolor=$GoodColor;}
-						if($RealPowerPercent>$RealPowerRed){$rpcolor=$CriticalColor;}elseif($RealPowerPercent>$RealPowerYellow){$rpcolor=$CautionColor;}else{$rpcolor=$GoodColor;}
-						
-						if($currentTemperature==0){$tcolor=$unknownColor;}
-							elseif($currentTemperature>$TemperatureRed){$tcolor=$CriticalColor;}
-							elseif($currentTemperature>$TemperatureYellow){$tcolor=$CautionColor;}
-							else{$tcolor=$GoodColor;}
-						
-						if($currentHumidity==0){$hcolor=$unknownColor;}
-							elseif($currentHumidity>$HumidityMax || $currentHumidity<$HumidityMin){$hcolor=$CriticalColor;}
-							elseif($currentHumidity>$HumidityMedMax || $currentHumidity<$HumidityMedMin) {$hcolor=$CautionColor;}
-							else{$hcolor=$GoodColor;}
-											
-						foreach(array($scolor,$wcolor,$pcolor,$tcolor,$hcolor,$rpcolor) as $cc){
-							if($cc=='bad'){
-								$color='bad';break;
-							}elseif($cc=='med'){
-								$color='med';break;
-							}else{
-								$color='low';
-							}
-						}
-	
-						$titletemp=(!is_null($cabRow["LastRead"])&&($cabRow["LastRead"]>$titletemp))?date('%c',strtotime(($cabRow["LastRead"]))):$titletemp;
-						$titlerp=(!is_null($cabRow["RPLastRead"])&&($cabRow["RPLastRead"]>$titlerp))?date('%c',strtotime(($cabRow["RPLastRead"]))):$titlerp;
-
-						$overview[$cab->CabinetID]=$color;
-						$space[$cab->CabinetID]=$scolor;
-						$weight[$cab->CabinetID]=$wcolor;
-						$power[$cab->CabinetID]=$pcolor;
-						$temperature[$cab->CabinetID]=$tcolor;
-						$humidity[$cab->CabinetID]=$hcolor;
-						$realpower[$cab->CabinetID]=$rpcolor;
-						$airflow[$cab->CabinetID]=$cabRow["FrontEdge"];
+				// read all cabinets and calculate the color to display on the cabinet
+				foreach($cabList as $cabRow){
+					if ($cabRow->MapX1==$cabRow->MapX2 || $cabRow->MapY1==$cabRow->MapY2){
+						continue;
 					}
+					$currentHeight=$cabRow->CabinetHeight;
+					
+					$metrics = CabinetMetrics::getMetrics( $cabRow->CabinetID );
+					
+					$currentTemperature=$metrics->IntakeTemperature;
+					$currentHumidity=$metrics->IntakeHumidity;
+					$currentRealPower=$metrics->MeasuredPower;
+
+					$used=$metrics->SpaceUsed;
+					// check to make sure the cabinet height is set to keep errors out of the logs
+					if(!isset($cabRow->CabinetHeight)||$cabRow->CabinetHeight==0){$SpacePercent=100;}else{$SpacePercent=number_format($metrics->SpaceUsed /$cabRow->CabinetHeight *100,0);}
+					// check to make sure there is a weight limit set to keep errors out of logs
+					if(!isset($cabRow->MaxWeight)||$cabRow->MaxWeight==0){$WeightPercent=0;}else{$WeightPercent=number_format($metrics->CalculatedWeight /$cabRow->MaxWeight *100,0);}
+					// check to make sure there is a kilowatt limit set to keep errors out of logs
+					if(!isset($cabRow->MaxKW)||$cabRow->MaxKW==0){$PowerPercent=0;}else{$PowerPercent=number_format(($metrics->CalculatedPower /1000 ) /$cabRow->MaxKW *100,0);}
+					if(!isset($cabRow->MaxKW)||$cabRow->MaxKW==0){$RealPowerPercent=0;}else{$RealPowerPercent=number_format(($metrics->MeasuredPower /1000 ) /$cabRow->MaxKW *100,0, ",", ".");}
+
+					// check for individual cdu's being weird
+					if(isset($cdus[$cab->CabinetID])){$RealPowerPercent=($RealPowerPercent>$cdus[$cab->CabinetID])?$RealPowerPercent:$cdus[$cab->CabinetID];}
+				
+					//Decide which color to paint on the canvas depending on the thresholds
+					if($SpacePercent>$SpaceRed){$scolor=$CriticalColor;}elseif($SpacePercent>$SpaceYellow){$scolor=$CautionColor;}else{$scolor=$GoodColor;}
+					if($WeightPercent>$WeightRed){$wcolor=$CriticalColor;}elseif($WeightPercent>$WeightYellow){$wcolor=$CautionColor;}else{$wcolor=$GoodColor;}
+					if($PowerPercent>$PowerRed){$pcolor=$CriticalColor;}elseif($PowerPercent>$PowerYellow){$pcolor=$CautionColor;}else{$pcolor=$GoodColor;}
+					if($RealPowerPercent>$RealPowerRed){$rpcolor=$CriticalColor;}elseif($RealPowerPercent>$RealPowerYellow){$rpcolor=$CautionColor;}else{$rpcolor=$GoodColor;}
+					
+					if($currentTemperature==0){$tcolor=$unknownColor;}
+						elseif($currentTemperature>$TemperatureRed){$tcolor=$CriticalColor;}
+						elseif($currentTemperature>$TemperatureYellow){$tcolor=$CautionColor;}
+						else{$tcolor=$GoodColor;}
+					
+					if($currentHumidity==0){$hcolor=$unknownColor;}
+						elseif($currentHumidity>$HumidityMax || $currentHumidity<$HumidityMin){$hcolor=$CriticalColor;}
+						elseif($currentHumidity>$HumidityMedMax || $currentHumidity<$HumidityMedMin) {$hcolor=$CautionColor;}
+						else{$hcolor=$GoodColor;}
+										
+					foreach(array($scolor,$wcolor,$pcolor,$tcolor,$hcolor,$rpcolor) as $cc){
+						if($cc=='bad'){
+							$color='bad';break;
+						}elseif($cc=='med'){
+							$color='med';break;
+						}else{
+							$color='low';
+						}
+					}
+					
+					$titletemp=(!is_null($metrics->LastRead)&&($metrics->LastRead>$titletemp))?date('%c',strtotime(($metrics->LastRead))):$titletemp;
+					// $titlerp=(!is_null($cabRow["RPLastRead"])&&($cabRow["RPLastRead"]>$titlerp))?date('%c',strtotime(($cabRow["RPLastRead"]))):$titlerp;
+
+					$overview[$cabRow->CabinetID]=$color;
+					$space[$cabRow->CabinetID]=$scolor;
+					$weight[$cabRow->CabinetID]=$wcolor;
+					$power[$cabRow->CabinetID]=$pcolor;
+					$temperature[$cabRow->CabinetID]=$tcolor;
+					$humidity[$cabRow->CabinetID]=$hcolor;
+					$realpower[$cabRow->CabinetID]=$rpcolor;
+					$airflow[$cabRow->CabinetID]=$cabRow->FrontEdge;
 				}
 			}
 			

@@ -194,7 +194,7 @@ class Cabinet {
 		(class_exists('LogActions'))?LogActions::LogThis($this,$old):'';
 		return true;
 	}
-
+	
 	function GetCabinet(){
 		global $dbh;
 
@@ -669,6 +669,66 @@ class CabinetAudit {
 		}
 		
 		return;
+	}
+}
+
+class CabinetMetrics {
+	var $IntakeTemperature;
+	var $IntakeHumidity;
+	var $ExhaustTemperature;
+	var $ExhaustHumidity;
+	var $CalculatedPower;
+	var $CalculatedWeight;
+	var $MeasuredPower;
+	var $LastRead;
+	var $SpaceUsed;
+
+	static function getMetrics( $CabinetID ) {
+		global $dbh;
+		
+		$m = new CabinetMetrics();
+		$params = array( ":CabinetID"=>$CabinetID );
+		// Get the intake side
+		$sql = "select max(Temperature) as Temp, max(Humidity) as Humid, LastRead from fac_SensorReadings where DeviceID in (select DeviceID from fac_Device where DeviceType='Sensor' and BackSide=0 and Cabinet=:CabinetID)";
+		$st = $dbh->prepare( $sql );
+		$st->execute( $params );
+		if ( $row = $st->fetch() ) {
+			$m->IntakeTemperature = $row["Temp"];
+			$m->IntakeHumidity = $row["Humid"];
+			$m->LastRead = $row["LastRead"];
+		} else {
+			error_log( "SQL Error CabinetMetrics::getMetrics" );
+		}
+		
+		// Now the exhaust side
+		$sql = "select max(Temperature) as Temp, max(Humidity) as Humid, LastRead from fac_SensorReadings where DeviceID in (select DeviceID from fac_Device where DeviceType='Sensor' and BackSide=1 and Cabinet=:CabinetID)";
+		$st = $dbh->prepare( $sql );
+		$st->execute( $params );
+		if ( $row = $st->fetch() ) {
+			$m->ExhaustTemperature = $row["Temp"];
+			$m->ExhaustHumidity = $row["Humid"];
+		}
+
+		// Now the devices in the cabinet
+		$sql = "select sum(a.NominalWatts) as Power, sum(a.Height) as SpaceUsed, sum(b.Weight) as Weight from fac_Device a, fac_DeviceTemplate b where a.TemplateID=b.TemplateID and Cabinet=:CabinetID and HalfDepth=0";
+		$st = $dbh->prepare( $sql );
+		$st->execute( $params );
+		if ( $row = $st->fetch() ) {
+			$m->CalculatedPower = $row["Power"];
+			$m->CalculatedWeight = $row["Weight"];
+			$m->SpaceUsed = $row["SpaceUsed"];
+		}
+		
+		// And finally the power readings
+		$sql = "select sum(Wattage) as Power from fac_PDUStats where PDUID in (select DeviceID from fac_Device where DeviceType='CDU' and Cabinet=:CabinetID)";
+		$st = $dbh->prepare( $sql );
+		$st->execute( $params );
+		if ( $row = $st->fetch() ) {
+			$m->MeasuredPower = $row["Power"];
+		}
+		
+		error_log( print_r( $m, true ));
+		return $m;
 	}
 }
 
