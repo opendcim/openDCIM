@@ -1046,7 +1046,7 @@ class PowerDistribution {
 		$sql="SELECT a.PDUID, d.SNMPVersion, b.Multiplier, b.OID1, 
 			b.OID2, b.OID3, b.ProcessingProfile, b.Voltage, c.SNMPFailureCount FROM fac_PowerDistribution a, 
 			fac_CDUTemplate b, fac_Device c, fac_DeviceTemplate d WHERE a.PDUID=c.DeviceID and a.TemplateID=b.TemplateID 
-			AND a.TemplateID=d.TemplateID AND b.Managed=true AND IPAddress>'' and c.SNMPFailureCount<3";
+			AND a.TemplateID=d.TemplateID AND b.Managed=true AND c.PrimaryIP>'' and c.SNMPFailureCount<3";
 		
 		// The result set should have no PDU's with blank IP Addresses or SNMP Community, so we can forge ahead with processing them all
 		foreach($this->query($sql) as $row){
@@ -1056,8 +1056,17 @@ class PowerDistribution {
 			}
 
 			$pollValue1=floatval(self::OSS_SNMP_Lookup($dev,null,$row["OID1"]));
-			$pollValue2=floatval(self::OSS_SNMP_Lookup($dev,null,$row["OID2"]));
-			$pollValue3=floatval(self::OSS_SNMP_Lookup($dev,null,$row["OID3"]));
+			if ( $row["OID2"] != "" ) {
+				$pollValue2=floatval(self::OSS_SNMP_Lookup($dev,null,$row["OID2"]));
+			} else {
+				$pollValue2="";
+			}
+			
+			if ($row["OID3"] != "" ) {
+				$pollValue3=floatval(self::OSS_SNMP_Lookup($dev,null,$row["OID3"]));
+			} else {
+				$pollValue3="";
+			}
 
 			// If only one OID is used, the OID2 and OID3 should be blank, so no harm in just making one string
 			$OIDString = $row["OID1"] . " " . $row["OID2"] . " " . $row["OID3"];
