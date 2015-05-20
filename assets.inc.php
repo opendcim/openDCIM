@@ -1584,7 +1584,7 @@ class Device {
 		} else { return false; }
 	}
 	
-	static function IncrementFailures($dev) {
+	function IncrementFailures($dev) {
 		global $dbh;
 
 		if ( $dev == null || $dev == 0 ) {

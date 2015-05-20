@@ -1094,9 +1094,9 @@ class PowerDistribution {
 						break;
 				}
 				
-				Device::ResetFailures( $row["PDUID"] );
+				$dev->ResetFailures( $row["PDUID"] );
 			} else {
-				Device::IncrementFailures( $row["PDUID"] );
+				$dev->IncrementFailures( $row["PDUID"] );
 			}
 			
 			$sql="INSERT INTO fac_PDUStats SET PDUID={$row["PDUID"]}, Wattage=$watts, 
