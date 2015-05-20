@@ -1284,6 +1284,7 @@ class Device {
 		$dev->v3AuthPassphrase=$dbRow["v3AuthPassphrase"];
 		$dev->v3PrivProtocol=$dbRow["v3PrivProtocol"];
 		$dev->v3PrivPassphrase=$dbRow["v3PrivPassphrase"];
+		$dev->SNMPVersion=$dbRow["SNMPVersion"];
 		$dev->SNMPCommunity=$dbRow["SNMPCommunity"];
 		$dev->SNMPFailureCount=$dbRow["SNMPFailureCount"];
 		$dev->ESX=$dbRow["ESX"];
