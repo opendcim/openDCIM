@@ -1836,6 +1836,7 @@ class Device {
 			}
 			// Either we just updated this with new info or it's the same from the get
 			$pdu->CabinetID=$this->Cabinet;
+			$pdu->IPAddress=$this->PrimaryIP;
 			$pdu->UpdatePDU();
 		}
 
