@@ -727,7 +727,6 @@ class CabinetMetrics {
 			$m->MeasuredPower = $row["Power"];
 		}
 		
-		error_log( print_r( $m, true ));
 		return $m;
 	}
 }
@@ -1585,16 +1584,12 @@ class Device {
 		} else { return false; }
 	}
 	
-	static function IncrementFailures($dev=null) {
+	static function IncrementFailures($dev) {
 		global $dbh;
-		
-		if ( $dev == null && $this->DeviceID == null ) {
+
+		if ( $dev == null || $dev == 0 ) {
 			error_log("Device::IncrementFailures - no device ID supplied");
 			return false;
-		}
-		
-		if ( !(isset($this) && get_class($this) == __CLASS__) ) {
-			$dev = ( $dev == null ) ? $this->DeviceID : $dev;
 		}
 		
 		$sql = "update fac_Device set SNMPFailureCount=SNMPFailureCount+1 where DeviceID=$dev";
@@ -1607,16 +1602,12 @@ class Device {
 		}
 	}
 	
-	static function ResetFailures($dev=null) {
+	static function ResetFailures($dev) {
 		global $dbh;
 		
-		if ( $dev == null && $this->DeviceID == null ) {
+		if ( $dev == null || $dev == 0 ) {
 			error_log("Device::ResetFailures - no device ID supplied");
 			return false;
-		}
-		
-		if ( !(isset($this) && get_class($this) == __CLASS__) ) {
-			$dev = ( $dev == null ) ? $this->DeviceID : $dev;
 		}
 		
 		$sql = "update fac_Device set SNMPFailureCount=0 where DeviceID=$dev";
@@ -3201,10 +3192,10 @@ class Device {
 			if ( $sen->TemperatureOID ) {
 				if ( $ret = self::OSS_SNMP_Lookup($d, null, "$sen->TemperatureOID") ) {
 					$temp = floatval( $ret );
-					$d->ResetFailures();
+					$d->ResetFailures( $d->DeviceID );
 				} else {
 					$temp = 0;
-					$d->IncrementFailures();
+					$d->IncrementFailures( $d->DeviceID );
 				}
 			} else {
 				$temp = 0;
@@ -3213,10 +3204,10 @@ class Device {
 			if ( $sen->HumidityOID ) {
 				if ( $ret = self::OSS_SNMP_Lookup($d, null, "$sen->HumidityOID") ) {
 					$humidity = floatval( $ret );
-					$d->ResetFailures();
+					$d->ResetFailures( $d->DeviceID );
 				} else {
 					$humidity = 0;
-					$d->IncrementFailures();
+					$d->IncrementFailures( $d->DeviceID );
 				}
 			} else {
 				$humidity = 0;
@@ -3241,7 +3232,7 @@ class Device {
 			}
 
 			// No need for any further sanitization it was all handled above
-			$insertsql="INSERT INTO fac_SensorReadings SET DeviceID=$d->DeviceID, Temperature=$temp, Humidity=$humidity, Timestamp=NOW() on duplicate key update Temperature=$temp, Humidity=$humidity, Timestamp=now()";
+			$insertsql="INSERT INTO fac_SensorReadings SET DeviceID=$d->DeviceID, Temperature=$temp, Humidity=$humidity, LastRead=NOW() on duplicate key update Temperature=$temp, Humidity=$humidity, LastRead=now()";
 			if(!$dbh->exec($insertsql)){
 				$info = $dbh->errorInfo();
 
@@ -3914,9 +3905,9 @@ class ESX {
 				$vmList[$vmID]->vmName = trim( str_replace( '"', '', @end( explode( ":", $name ) ) ) );
 				$vmList[$vmID]->vmState = trim( str_replace( '"', '', @end( explode( ":", $state ) ) ) );
 			}
-			$dev->ResetFailures();
+			$dev->ResetFailures( $dev->DeviceID );
 		} else {
-			$dev->IncrementFailures();
+			$dev->IncrementFailures( $dev->DeviceID );
 		}
 
 		return $vmList;

@@ -1106,12 +1106,14 @@ class PowerDistribution {
 				error_log("PowerDistribution::UpdateStats::PDO Error: {$info[2]} SQL=$sql");
 			}
 			
-			$this->PDUID=$row["PDUID"];      
-			$sql="UPDATE fac_PowerDistribution SET FirmwareVersion=\"".
-				$this->GetSmartCDUVersion()."\" WHERE PDUID=$this->PDUID;";
-			if(!$dbh->exec($sql)){
-				$info=$dbh->errorInfo();
-				error_log("PowerDistribution::UpdateStats::PDO Error: {$info[2]} SQL=$sql");
+			$this->PDUID=$row["PDUID"];
+			$ver = $this->GetSmartCDUVersion();
+			if ( $ver != false && $ver != "" ) {
+				$sql="UPDATE fac_PowerDistribution SET FirmwareVersion=\"$ver\" WHERE PDUID=$this->PDUID;";
+				if(!$dbh->exec($sql)){
+					$info=$dbh->errorInfo();
+					error_log("PowerDistribution::UpdateStats::PDO Error: {$info[2]} SQL=$sql");
+				}
 			}
 		}
 	}
