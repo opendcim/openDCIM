@@ -120,13 +120,15 @@ class CDUTemplate {
 		
 		$sql="SELECT * FROM fac_CDUTemplate WHERE TemplateID=$this->TemplateID";
 
-		foreach($dbh->query($sql) as $row){
+		if($row=$dbh->query($sql)->fetch()){
 			foreach(CDUTemplate::RowToObject($row) as $prop => $value){
 				$this->$prop=$value;
 			}
+
+			return true;
+		}else{
+			return false;
 		}
-		
-		return;
 	}
 	
 	function CreateTemplate($templateid) {
