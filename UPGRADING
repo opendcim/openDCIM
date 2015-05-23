@@ -49,3 +49,6 @@ the new version.
 
 You will have to delete install.php after the upgrade is complete before you
 will be able to continue.
+
+Be sure to check the db.inc.php-dist for anything new, lest you want to be called
+a jerk that doesn't follow instructions.
