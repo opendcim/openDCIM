@@ -246,6 +246,12 @@ CREATE TABLE fac_SensorReadings (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 --
+-- Fix instances where we have ports that have missing labels somehow
+--
+
+UPDATE fac_Ports SET Label=CONCAT("Port",ABS(PortNumber)) WHERE Label="";
+
+--
 -- Bump up the database version
 --
 UPDATE fac_Config set Value='4.0' WHERE Parameter='Version';
