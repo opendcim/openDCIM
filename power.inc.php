@@ -848,9 +848,11 @@ class PowerDistribution {
 		try {
 			$snmpresult=(is_null($oid))?$snmpHost->useSystem()->$snmplookup(true):$snmpHost->get($oid);
 		}catch (Exception $e){
+			$dev->IncrementFailures();
 			error_log("PowerDistribution::$caller($dev->DeviceID) ".$e->getMessage());
 		}
 
+		$dev->ResetFailures();
 		return $snmpresult;
 	}
 
@@ -1057,28 +1059,22 @@ class PowerDistribution {
 				continue;
 			}
 
-			$pollValue1=floatval(self::OSS_SNMP_Lookup($dev,null,$row["OID1"]));
-			if ( $row["OID2"] != "" ) {
-				$pollValue2=floatval(self::OSS_SNMP_Lookup($dev,null,$row["OID2"]));
-			} else {
-				$pollValue2="";
-			}
-			
-			if ($row["OID3"] != "" ) {
-				$pollValue3=floatval(self::OSS_SNMP_Lookup($dev,null,$row["OID3"]));
-			} else {
-				$pollValue3="";
-			}
+			// Just send back zero if we don't get a result.
+			$pollValue1=$pollValue2=$pollValue3=0;
 
-			// If only one OID is used, the OID2 and OID3 should be blank, so no harm in just making one string
-			$OIDString = $row["OID1"] . " " . $row["OID2"] . " " . $row["OID3"];
+			$pollValue1=floatval(self::OSS_SNMP_Lookup($dev,null,$row["OID1"]));
+			// We won't use OID2 or 3 without the other so make sure both are set or just ignore them
+			if($row["OID2"]!="" && $row["OID3"]!=""){
+				$pollValue2=floatval(self::OSS_SNMP_Lookup($dev,null,$row["OID2"]));
+				$pollValue3=floatval(self::OSS_SNMP_Lookup($dev,null,$row["OID3"]));
+			}
 			
 			// Have to reset this every time, otherwise the exec() will append
 			unset($statsOutput);
 			$amps=0;
 			$watts=0;
 			
-			if($pollValue1!=""){
+			if($pollValue1){
 				// The multiplier should be an int but no telling what voodoo the db might cause
 				$multiplier=floatval($row["Multiplier"]);
 				$voltage=intval($row["Voltage"]);
@@ -1104,22 +1100,17 @@ class PowerDistribution {
 						$watts=$pollValue1 / $multiplier;
 						break;
 				}
-				
-				$dev->ResetFailures( $row["PDUID"] );
-			} else {
-				$dev->IncrementFailures( $row["PDUID"] );
 			}
 			
 			$sql="INSERT INTO fac_PDUStats SET PDUID={$row["PDUID"]}, Wattage=$watts, 
 				LastRead=now() ON DUPLICATE KEY UPDATE Wattage=$watts, LastRead=now();";
-			if(!$dbh->exec($sql)){
+			if(!$dbh->query($sql)){
 				$info=$dbh->errorInfo();
 				error_log("PowerDistribution::UpdateStats::PDO Error: {$info[2]} SQL=$sql");
 			}
 			
 			$this->PDUID=$row["PDUID"];
-			$ver = $this->GetSmartCDUVersion();
-			if ( $ver != false && $ver != "" ) {
+			if($ver=$this->GetSmartCDUVersion()){
 				$sql="UPDATE fac_PowerDistribution SET FirmwareVersion=\"$ver\" WHERE PDUID=$this->PDUID;";
 				if(!$dbh->exec($sql)){
 					$info=$dbh->errorInfo();

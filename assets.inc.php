@@ -1377,7 +1377,8 @@ class Device {
 		$dev->DeviceID=$DeviceID;
 
 		// Make sure this is a real device and has an IP set
-		if(!$dev->GetDevice()){return false;}
+		// false on the rights check since we shoudln't ever need them for the snmp operations
+		if(!$dev->GetDevice(false)){return false;}
 		if($dev->PrimaryIP==""){return false;}
 
 		// If the device doesn't have an SNMP community set, check and see if we have a global one
@@ -1407,9 +1408,11 @@ class Device {
 		try {
 			$snmpresult=(is_null($oid))?$snmpHost->useSystem()->$snmplookup(true):$snmpHost->get($oid);
 		}catch (Exception $e){
+			$dev->IncrementFailures();
 			error_log("Device::$caller($dev->DeviceID) ".$e->getMessage());
 		}
 
+		$dev->ResetFailures();
 		return $snmpresult;
 	}
 
@@ -1585,38 +1588,30 @@ class Device {
 		} else { return false; }
 	}
 	
-	function IncrementFailures($dev) {
-		global $dbh;
-
-		if ( $dev == null || $dev == 0 ) {
-			error_log("Device::IncrementFailures - no device ID supplied");
-			return false;
-		}
+	function IncrementFailures(){
+		$this->MakeSafe();
+		if($this->DeviceID==0){return false;}
 		
-		$sql = "update fac_Device set SNMPFailureCount=SNMPFailureCount+1 where DeviceID=$dev";
+		$sql="UPDATE fac_Device SET SNMPFailureCount=SNMPFailureCount+1 WHERE DeviceID=$this->DeviceID";
 		
-		if ( ! $dbh->query( $sql ) ) {
+		if(!$this->query($sql)){
 			error_log( "Device::IncrementFailures::PDO Error: {$info[2]} SQL=$sql");
 			return false;
-		} else {
+		}else{
 			return true;
 		}
 	}
 	
-	static function ResetFailures($dev) {
-		global $dbh;
+	function ResetFailures(){
+		$this->MakeSafe();
+		if($this->DeviceID==0){return false;}
+
+		$sql="UPDATE fac_Device SET SNMPFailureCount=0 WHERE DeviceID=$this->DeviceID";
 		
-		if ( $dev == null || $dev == 0 ) {
-			error_log("Device::ResetFailures - no device ID supplied");
-			return false;
-		}
-		
-		$sql = "update fac_Device set SNMPFailureCount=0 where DeviceID=$dev";
-		
-		if ( ! $dbh->query( $sql ) ) {
+		if(!$this->query($sql)){
 			error_log( "Device::ResetFailures::PDO Error: {$info[2]} SQL=$sql");
 			return false;
-		} else {
+		}else{
 			return true;
 		}
 	}
@@ -1876,7 +1871,7 @@ class Device {
 		return true;
 	}
 
-	function GetDevice(){
+	function GetDevice($filterrights=true){
 		global $dbh;
 	
 		$this->MakeSafe();
@@ -1888,7 +1883,7 @@ class Device {
 		$sql="SELECT * FROM fac_Device WHERE DeviceID=$this->DeviceID;";
 
 		if($devRow=$dbh->query($sql)->fetch()){
-			foreach(Device::RowToObject($devRow) as $prop => $value){
+			foreach(Device::RowToObject($devRow,$filterrights) as $prop => $value){
 				$this->$prop=$value;
 			}
 
@@ -3167,53 +3162,30 @@ class Device {
 
 	// This is a train wreck to have it in here, but everything is lumped into Devices, now...
 	// this should now be functional however I question the positioning.  if we move this, update the function above
-	static function UpdateSensors( $CabinetID = null ) {
+	static function UpdateSensors($CabinetID=null){
 		global $config;
 		global $dbh;
 
-		if ( $CabinetID != null ) {
-			$sql = "select * from fac_Device where DeviceType='Sensor' and PrimaryIP!='' and TemplateID>0 and SNMPFailureCount<3 and Cabinet=:CabinetID";
-			$st = $dbh->prepare( $sql );
-			$st->execute( array( ":CabinetID"=>$CabinetID ) );
-		} else {
-			$sql = "select * from fac_Device where DeviceType='Sensor' and PrimaryIP!='' and TemplateID>0 and SNMPFailureCount<3";
-			$st = $dbh->prepare( $sql );
-			$st->execute();
-		}
-		
-		$st->setFetchMode( PDO::FETCH_CLASS, "Device" );
-		
-		while ( $d = $st->fetch() ) {
-			$sen = new SensorTemplate();			
-			$sen->TemplateID = $d->TemplateID;
-			if ( ! $sen->GetTemplate() ) {
-				error_log( "Unable to fetch Sensor TemplateID=$d->TemplateID" );
-				return false;
+		// If CabinetID isn't specified try to update all sensors for the system
+		$cablimit=(is_null($CabinetID))?"":" AND Cabinet=$cab->CabinetID";
+		$sql="SELECT DeviceID FROM fac_Device WHERE DeviceType=\"Sensor\" AND 
+			PrimaryIP!=\"\" AND TemplateID>0 AND SNMPFailureCount<3$cablimit;";
+
+		foreach($dbh->query($sql) as $row){
+			if(!$dev=Device::BasicTests($row['DeviceID'])){
+				// This device failed the basic test but maybe the next won't
+				continue;
 			}
-			
-			if ( $sen->TemperatureOID ) {
-				if ( $ret = self::OSS_SNMP_Lookup($d, null, "$sen->TemperatureOID") ) {
-					$temp = floatval( $ret );
-					$d->ResetFailures( $d->DeviceID );
-				} else {
-					$temp = 0;
-					$d->IncrementFailures( $d->DeviceID );
-				}
-			} else {
-				$temp = 0;
+
+			$t=new SensorTemplate();
+			$t->TemplateID=$dev->TemplateID;
+			if(!$t->GetTemplate()){
+				// Invalid template, how'd that happen?  Move on..
+				continue;
 			}
-			
-			if ( $sen->HumidityOID ) {
-				if ( $ret = self::OSS_SNMP_Lookup($d, null, "$sen->HumidityOID") ) {
-					$humidity = floatval( $ret );
-					$d->ResetFailures( $d->DeviceID );
-				} else {
-					$humidity = 0;
-					$d->IncrementFailures( $d->DeviceID );
-				}
-			} else {
-				$humidity = 0;
-			}
+
+			$temp=($t->TemperatureOID)?floatval(self::OSS_SNMP_Lookup($dev,null,"$t->TemperatureOID")):0;
+			$humidity=($t->HumidityOID)?floatval(self::OSS_SNMP_Lookup($dev,null,"$t->HumidityOID")):0;
 
 			// Strip out everything but numbers
 			// not sure these are needed anymore thanks to the OSS_SNMP library
@@ -3221,22 +3193,25 @@ class Device {
 			$humidity=preg_replace("/[^0-9.'+]/","",$humidity);
 
 			// Apply multipliers
-			$temp*=$sen->TempMultiplier;
-			$humidity*=$sen->HumidityMultiplier;
+			$temp*=$t->TempMultiplier;
+			$humidity*=$t->HumidityMultiplier;
 
 			// Convert the units if necessary
 			// device template is set to english but user wants metric so convert it
-			if(($sen->mUnits=="english") && ($config->ParameterArray["mUnits"]=="metric")){
+			if(($t->mUnits=="english") && ($config->ParameterArray["mUnits"]=="metric") && $temp){
 				$temp=(($temp-32)*5/9);
 			// device template is set to metric but the user wants english so convert it
-			}elseif(($sen->mUnits=="metric") && ($config->ParameterArray["mUnits"]=="english")){
+			}elseif(($t->mUnits=="metric") && ($config->ParameterArray["mUnits"]=="english")){
 				$temp=(($temp*9/5)+32);
 			}
 
 			// No need for any further sanitization it was all handled above
-			$insertsql="INSERT INTO fac_SensorReadings SET DeviceID=$d->DeviceID, Temperature=$temp, Humidity=$humidity, LastRead=NOW() on duplicate key update Temperature=$temp, Humidity=$humidity, LastRead=now()";
-			if(!$dbh->exec($insertsql)){
-				$info = $dbh->errorInfo();
+			$insertsql="INSERT INTO fac_SensorReadings SET DeviceID=$dev->DeviceID, 
+				Temperature=$temp, Humidity=$humidity, LastRead=NOW() ON DUPLICATE KEY 
+				UPDATE Temperature=$temp, Humidity=$humidity, LastRead=NOW();";
+
+			if(!$dbh->query($insertsql)){
+				$info=$dbh->errorInfo();
 
 				error_log( "UpdateSensors::PDO Error: {$info[2]} SQL=$insertsql" );
 				return false;
@@ -3881,37 +3856,37 @@ class ESX {
 		return $vmList;
 	}
 
-	static function EnumerateVMs($dev,$debug=false){
-		$community=$dev->SNMPCommunity;
-		$serverIP=$dev->PrimaryIP;
+	static function EnumerateVMs($d,$debug=false){
+		if(!$dev=Device::BasicTests($d->DeviceID)){
+			// This device failed the basic tests
+			return false;
+		}
+
+		$namesList=Device::OSS_SNMP_Lookup($dev,null,".1.3.6.1.4.1.6876.2.1.1.2");
+		$statesList=Device::OSS_SNMP_Lookup($dev,null,".1.3.6.1.4.1.6876.2.1.1.6");
 
 		$vmList=array();
 
-		$namesList = @snmp2_real_walk( $serverIP, $community, ".1.3.6.1.4.1.6876.2.1.1.2" );
-		$statesList = @snmp2_real_walk( $serverIP, $community, ".1.3.6.1.4.1.6876.2.1.1.6" );
-
-		if ( is_array( $namesList ) && count($namesList) > 0  && count($namesList) == count($statesList)){
+		if(is_array($namesList) && count($namesList)>0 && count($namesList)==count($statesList)){
 			$tempList=array_combine($namesList,$statesList);
-		} else {
+		}else{
 			$tempList=array();
 		}
 
-		if ( @count( $tempList ) > 0 ) {
-			if ( $debug )
-				printf( "\t%d VMs found\n", count( $tempList ) );
-
-			foreach( $tempList as $name => $state ) {
-				$vmID = sizeof( $vmList );
-				$vmList[$vmID] = new ESX();
-				$vmList[$vmID]->DeviceID = $dev->DeviceID;
-				$vmList[$vmID]->LastUpdated = date( 'Y-m-d H:i:s' );
-				$vmList[$vmID]->vmID = $vmID;
-				$vmList[$vmID]->vmName = trim( str_replace( '"', '', @end( explode( ":", $name ) ) ) );
-				$vmList[$vmID]->vmState = trim( str_replace( '"', '', @end( explode( ":", $state ) ) ) );
+		if(count($tempList)){
+			if($debug){
+				printf("\t%d VMs found\n", count($tempList));
 			}
-			$dev->ResetFailures( $dev->DeviceID );
-		} else {
-			$dev->IncrementFailures( $dev->DeviceID );
+
+			foreach($tempList as $name => $state){
+				$vm=new ESX();
+				$vm->DeviceID=$dev->DeviceID;
+				$vm->LastUpdated=date( 'Y-m-d H:i:s' );
+				$vm->vmID=$vmID;
+				$vm->vmName=trim(str_replace('"','',@end(explode(":",$name))));
+				$vm->vmState=trim(str_replace('"','',@end(explode(":",$state))));
+				$vmList[]=$vm;
+			}
 		}
 
 		return $vmList;
