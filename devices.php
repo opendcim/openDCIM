@@ -1434,16 +1434,16 @@ print "		var dialog=$('<div>').prop('title',\"".__("Verify Delete Device")."\").
 				}
 			});
 		});
+		var tmpheight=$('<input>').attr({'type':'hidden','name':'Position'}).val(0);
 		$('#Height').change(function(){
 			if($(this).val()==0){
 				$('#Position').attr('disabled', 'true');
-				$(this).parents('form').append('<input class="tmpposition" type="hidden" name="Position" value="0">');
+				$(this).parents('form').append(tmpheight);
 			}else{
 				$('#Position').removeAttr('disabled');
-				$('.tmpPosition').remove();
+				tmpheight.remove();
 			}
-		});
-		$('#Height').trigger('change');
+		}).trigger('change');
 		$('#Position').focus(function()	{
 			var cab=$("select#CabinetID").val();
 			var hd=$('#HalfDepth').is(':checked');
