@@ -588,7 +588,6 @@ div.cabinet {
 	border: 0px none;
 	border-bottom: 1px solid gray;
 	margin: 2px 2px 2px 0px;
-	white-space: nowrap;
 }
 #infopanel #cabprop td:nth-child(2){
 	text-align: left;

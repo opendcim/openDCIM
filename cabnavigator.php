@@ -863,6 +863,11 @@ if($config->ParameterArray["CDUToolTips"]=='enabled'){
 		}
 		// Add controls to the rack
 		cabinetimagecontrols();
+
+		// Damn translators not using abreviations
+		// This will lock the cabinet into the correct size
+		$('.cabinet #cabid').parent('tr').next('tr').find('.cabpos').css('padding','0px').wrapInner($('<div>').css({'overflow':'hidden','width':'30px'}));
+
 	});
 </script>
 </body>
