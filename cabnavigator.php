@@ -773,6 +773,13 @@ if($config->ParameterArray["CDUToolTips"]=='enabled'){
 <?php
 }
 ?>
+
+		// This is gonna confuse the fuck out of me when I see this again
+		$('fieldset').wrap($('<div>').addClass('item').css('width','45%'));
+		$('#infopanel').css({'max-width':'480px','width':'480px'}).masonry();
+		$('#infopanel').masonry('option', { columnWidth: 120, itemSelector: '.item'});
+		$('#infopanel').masonry('layout');
+
 	});
   </script>
   <style type="text/css">
