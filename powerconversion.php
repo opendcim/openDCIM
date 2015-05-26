@@ -46,7 +46,7 @@ class PowerTemplate extends DeviceTemplate {
 		$ct->TemplateID=$row["TemplateID"];
 		$ct->ManufacturerID=$row["ManufacturerID"];
 		$ct->Model=$row["Model"];
-		$ct->PSCount=$row["PSCount"];
+		$ct->PSCount=$row["NumOutlets"];
 		$ct->SNMPVersion=$row["SNMPVersion"];
 		return $ct;
 	}
