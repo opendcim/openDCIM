@@ -834,10 +834,12 @@ function upgrade(){
 
 				$sql="INSERT INTO fac_DeviceTemplate SET ManufacturerID=$this->ManufacturerID, 
 					Model=\"$this->Model\", Height=$this->Height, Weight=$this->Weight, 
-					Wattage=$this->Wattage, DeviceType=\"$this->DeviceType\", SNMPVersion=\"$this->SNMPVersion\",
-					PSCount=$this->PSCount, NumPorts=$this->NumPorts, Notes=\"$this->Notes\", 
-					FrontPictureFile=\"$this->FrontPictureFile\", RearPictureFile=\"$this->RearPictureFile\",
-					ChassisSlots=$this->ChassisSlots, RearChassisSlots=$this->RearChassisSlots, SNMPVersion=\"$this->SNMPVersion\";";
+					Wattage=$this->Wattage, DeviceType=\"$this->DeviceType\", 
+					SNMPVersion=\"$this->SNMPVersion\", PSCount=$this->PSCount, 
+					NumPorts=$this->NumPorts, Notes=\"$this->Notes\", 
+					FrontPictureFile=\"$this->FrontPictureFile\", 
+					RearPictureFile=\"$this->RearPictureFile\",
+					ChassisSlots=$this->ChassisSlots, RearChassisSlots=$this->RearChassisSlots;";
 
 				if(!$dbh->exec($sql)){
 					error_log( "SQL Error: " . $sql );
@@ -852,18 +854,17 @@ function upgrade(){
 			}
 		}
 		$ct=new CDUTemplate(); //cdu templates
-		$et = array(); //existing templates
-		$st = $dbh->prepare( "select * from fac_CDUTemplate" );
-		$st->execute();
+		$sql="SELECT * FROM fac_CDUTemplate;";
 		
 		$converted=array(); //index old id, value new id
-		while ($cdutemplate = $st->fetch() ){
+		foreach($dbh->query($sql) as $cdutemplate){
 			$dt=new PowerTemplate();
+			$dt->TemplateID=$cdutemplate["TemplateID"];
 			$dt->ManufacturerID=$cdutemplate["ManufacturerID"];
-			$dt->Model="CDU ".$cdutemplate["Model"];
+			$dt->Model="CDU {$cdutemplate["Model"]}";
 			$dt->PSCount=$cdutemplate["NumOutlets"];
 			$dt->DeviceType="CDU";
-			$dt->SNMPVersion = $cdutemplate["SNMPVersion"];
+			$dt->SNMPVersion=$cdutemplate["SNMPVersion"];
 			$dt->CreateTemplate();
 			$converted[$cdutemplate["TemplateID"]]=$dt->TemplateID;
 		}

@@ -155,7 +155,6 @@ INSERT INTO fac_Config set Parameter="KeepLocal", Value="enabled", UnitOfMeasure
 
 ALTER TABLE fac_Cabinet CHANGE FrontEdge FrontEdge VARCHAR( 7 ) NOT NULL DEFAULT "Top";
 ALTER TABLE fac_CabRow DROP CabOrder;
-ALTER TABLE fac_DeviceTemplate ADD SNMPVersion varchar(2) DEFAULT '2c';
 ALTER TABLE fac_CDUTemplate CHANGE Multiplier Multiplier VARCHAR( 6 ) NULL DEFAULT NULL;
 ALTER TABLE fac_CDUTemplate CHANGE ProcessingProfile ProcessingProfile VARCHAR( 20 ) NOT NULL DEFAULT "SingleOIDWatts";
 ALTER TABLE fac_PowerPanel CHANGE NumberScheme NumberScheme VARCHAR( 10 ) NOT NULL DEFAULT "Sequential";

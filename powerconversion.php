@@ -23,8 +23,10 @@ class PowerTemplate extends DeviceTemplate {
 		$sql="INSERT INTO fac_DeviceTemplate SET ManufacturerID=$this->ManufacturerID, 
 			Model=\"$this->Model\", Height=$this->Height, Weight=$this->Weight, 
 			Wattage=$this->Wattage, DeviceType=\"$this->DeviceType\", 
-			PSCount=$this->PSCount, NumPorts=$this->NumPorts, Notes=\"$this->Notes\", 
-			FrontPictureFile=\"$this->FrontPictureFile\", RearPictureFile=\"$this->RearPictureFile\",
+			SNMPVersion=\"$this->SNMPVersion\", PSCount=$this->PSCount, 
+			NumPorts=$this->NumPorts, Notes=\"$this->Notes\", 
+			FrontPictureFile=\"$this->FrontPictureFile\", 
+			RearPictureFile=\"$this->RearPictureFile\",
 			ChassisSlots=$this->ChassisSlots, RearChassisSlots=$this->RearChassisSlots;";
 
 		if(!$dbh->exec($sql)){
@@ -40,23 +42,25 @@ class PowerTemplate extends DeviceTemplate {
 	}
 }
 	$ct=new CDUTemplate(); //cdu templates
-	$et=$ct->GetTemplateList(); //existing templates
-
+	$sql="SELECT * FROM fac_CDUTemplate;";
+	
 	$converted=array(); //index old id, value new id
-	foreach($et as $i => $cdutemplate){
+	foreach($dbh->query($sql) as $cdutemplate){
 		$dt=new PowerTemplate();
-		$dt->ManufacturerID=$cdutemplate->ManufacturerID;
-		$dt->Model="CDU ".$cdutemplate->Model;
-		$dt->PSCount=$cdutemplate->NumOutlets;
+		$dt->TempalteID=$cdutemplate["TemplateID"];
+		$dt->ManufacturerID=$cdutemplate["ManufacturerID"];
+		$dt->Model="CDU ".$cdutemplate["Model"];
+		$dt->PSCount=$cdutemplate["NumOutlets"];
 		$dt->DeviceType="CDU";
+		$dt->SNMPVersion = $cdutemplate["SNMPVersion"];
 		$dt->CreateTemplate();
-		$converted[$cdutemplate->TemplateID]=$dt->TemplateID;
+		$converted[$cdutemplate["TemplateID"]]=$dt->TemplateID;
 	}
 
 	// Update all the records with their new templateid
 	foreach($converted as $oldid => $newid){
-		$dbh->query( "UPDATE fac_CDUTemplate SET TemplateID = '$newid' WHERE TemplateID=$oldid;" );
-		$dbh->query( "UPDATE fac_PowerDistribution SET TemplateID=$newid WHERE TemplateID=$oldid" );
+		$dbh->query("UPDATE fac_CDUTemplate SET TemplateID=$newid WHERE TemplateID=$oldid;");
+		$dbh->query("UPDATE fac_PowerDistribution SET TemplateID=$newid WHERE TemplateID=$oldid");
 	}
 
 	// END - CDU template conversion
