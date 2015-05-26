@@ -57,12 +57,12 @@ class PowerTemplate extends DeviceTemplate {
 	foreach($dbh->query($sql) as $cdutemplate){
 		$ct=PowerTemplate::Convert($cdutemplate);
 		$dt=new PowerTemplate();
-		$dt->TemplateID=$ct->TemplateID
-		$dt->ManufacturerID=$ct->ManufacturerID
-		$dt->Model="CDU $ct->Model"
-		$dt->PSCount=$ct->PSCount
+		$dt->TemplateID=$ct->TemplateID;
+		$dt->ManufacturerID=$ct->ManufacturerID;
+		$dt->Model="CDU $ct->Model";
+		$dt->PSCount=$ct->PSCount;
 		$dt->DeviceType="CDU";
-		$dt->SNMPVersion=$ct->SNMPVersion
+		$dt->SNMPVersion=$ct->SNMPVersion;
 		$dt->CreateTemplate();
 		$converted[$ct->TemplateID]=$dt->TemplateID;
 	}
