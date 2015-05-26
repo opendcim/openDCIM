@@ -826,11 +826,23 @@ function upgrade(){
 		// END - People conversion 
 
 		// CDU template conversion, to be done prior to device conversion
+		/*
+		   I made a poor asumption on the initial build of this that we'd always have fewer
+		   CDU templates than device templates.  We're seeing an overlap conversion that is 
+		   screwing the pooch.  This will find the highest template id from the two sets then
+		   we'll jump the line on the device_template id's and get them lined up.
+		 */
+		$sql="SELECT TemplateID FROM fac_CDUTemplate UNION SELECT TemplateID FROM 
+			fac_DeviceTemplate ORDER BY TemplateID DESC LIMIT 1;";
+		$baseid=$dbh->query($sql)->fetchColumn();
+
 		class PowerTemplate extends DeviceTemplate {
-			function CreateTemplate(){
+			function CreateTemplate($templateid=null){
 				global $dbh;
 				
 				$this->MakeSafe();
+
+				$sqlinsert=(is_null($templateid))?'':" TemplateID=$templateid,";
 
 				$sql="INSERT INTO fac_DeviceTemplate SET ManufacturerID=$this->ManufacturerID, 
 					Model=\"$this->Model\", Height=$this->Height, Weight=$this->Weight, 
@@ -838,7 +850,7 @@ function upgrade(){
 					SNMPVersion=\"$this->SNMPVersion\", PSCount=$this->PSCount, 
 					NumPorts=$this->NumPorts, Notes=\"$this->Notes\", 
 					FrontPictureFile=\"$this->FrontPictureFile\", 
-					RearPictureFile=\"$this->RearPictureFile\",
+					RearPictureFile=\"$this->RearPictureFile\",$sqlinsert
 					ChassisSlots=$this->ChassisSlots, RearChassisSlots=$this->RearChassisSlots;";
 
 				if(!$dbh->exec($sql)){
@@ -863,20 +875,19 @@ function upgrade(){
 				return $ct;
 			}
 		}
-		$ct=new CDUTemplate(); //cdu templates
-		$sql="SELECT * FROM fac_CDUTemplate;";
-		
+
 		$converted=array(); //index old id, value new id
+		$sql="SELECT * FROM fac_CDUTemplate;";
 		foreach($dbh->query($sql) as $cdutemplate){
 			$ct=PowerTemplate::Convert($cdutemplate);
 			$dt=new PowerTemplate();
-			$dt->TemplateID=$ct->TemplateID;
+			$dt->TemplateID=++$baseid;
 			$dt->ManufacturerID=$ct->ManufacturerID;
 			$dt->Model="CDU $ct->Model";
 			$dt->PSCount=$ct->PSCount;
 			$dt->DeviceType="CDU";
 			$dt->SNMPVersion=$ct->SNMPVersion;
-			$dt->CreateTemplate();
+			$dt->CreateTemplate($dt->TemplateID);
 			$converted[$ct->TemplateID]=$dt->TemplateID;
 		}
 
