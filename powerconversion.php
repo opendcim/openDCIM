@@ -40,21 +40,31 @@ class PowerTemplate extends DeviceTemplate {
 			return true;
 		}
 	}
+
+	static function Convert($row){
+		$ct=new stdClass();
+		$ct->TemplateID=$row["TemplateID"];
+		$ct->ManufacturerID=$row["ManufacturerID"];
+		$ct->Model=$row["Model"];
+		$ct->PSCount=$row["PSCount"];
+		$ct->SNMPVersion=$row["SNMPVersion"];
+		return $ct;
+	}
 }
-	$ct=new CDUTemplate(); //cdu templates
 	$sql="SELECT * FROM fac_CDUTemplate;";
 	
 	$converted=array(); //index old id, value new id
 	foreach($dbh->query($sql) as $cdutemplate){
+		$ct=PowerTemplate::Convert($cdutemplate);
 		$dt=new PowerTemplate();
-		$dt->TempalteID=$cdutemplate["TemplateID"];
-		$dt->ManufacturerID=$cdutemplate["ManufacturerID"];
-		$dt->Model="CDU ".$cdutemplate["Model"];
-		$dt->PSCount=$cdutemplate["NumOutlets"];
+		$dt->TemplateID=$ct->TemplateID
+		$dt->ManufacturerID=$ct->ManufacturerID
+		$dt->Model="CDU $ct->Model"
+		$dt->PSCount=$ct->PSCount
 		$dt->DeviceType="CDU";
-		$dt->SNMPVersion = $cdutemplate["SNMPVersion"];
+		$dt->SNMPVersion=$ct->SNMPVersion
 		$dt->CreateTemplate();
-		$converted[$cdutemplate["TemplateID"]]=$dt->TemplateID;
+		$converted[$ct->TemplateID]=$dt->TemplateID;
 	}
 
 	// Update all the records with their new templateid
