@@ -1506,7 +1506,7 @@ class PowerPanel {
 			}
 		}
 		foreach($this as $prop => $val){
-			// We force DeviceType to a known value so this is to check if they wanted to search for the default
+			// We force NumberScheme to a known value so this is to check if they wanted to search for the default
 			if($prop=="NumberScheme" && $val=="Sequential" && $ot!="Sequential"){
 				continue;
 			}
@@ -1517,7 +1517,7 @@ class PowerPanel {
 
 		$sql="SELECT * FROM fac_PowerPanel $sqlextend ORDER BY PanelLabel ASC;";
 
-		$deviceList=array();
+		$panelList=array();
 
 		foreach($this->query($sql) as $row){
 			if($indexedbyid){
