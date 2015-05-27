@@ -2272,7 +2272,7 @@ $connectioncontrols=($dev->DeviceID>0)?'
 					<div id=\"sp$i\">$i</div>
 					<div id=\"spn$i\">$port->Label</div>
 					<div id=\"d$i\" data-default=$port->ConnectedDeviceID><a href=\"devices.php?DeviceID=$port->ConnectedDeviceID\">$tmpDev->Label</a></div>
-					<div id=\"dp$i\" data-default=$port->ConnectedPort><a href=\"paths.php?DeviceID=$port->ConnectedDeviceID&portnumber=$port->ConnectedPort\">$cp->Label</a></div>
+					<div id=\"dp$i\" data-default=$port->ConnectedPort><a href=\"paths.php?deviceid=$port->ConnectedDeviceID&portnumber=$port->ConnectedPort\">$cp->Label</a></div>
 					<div id=\"n$i\" data-default=\"$port->Notes\">$port->Notes</div>";
 			if($dev->DeviceType=='Switch'){print "\t\t\t\t<div id=\"st$i\"><span class=\"ui-icon status {$linkList[$i]}\"></span></div>";}
 			print "\t\t\t\t<div id=\"mt$i\" data-default=$port->MediaID>$mt</div>
@@ -2324,12 +2324,12 @@ $connectioncontrols=($dev->DeviceID>0)?'
 			$portList[$i]->Label=($portList[$i]->Label=='')?$i:$portList[$i]->Label;
 			print "\n\t\t\t\t<div data-port=$i>
 					<div id=\"fd$i\" data-default=$frontDev->DeviceID><a href=\"devices.php?DeviceID=$frontDev->DeviceID\">$frontDev->Label</a></div>
-					<div id=\"fp$i\" data-default={$portList[$i]->ConnectedPort}><a href=\"paths.php?DeviceID=$frontDev->DeviceID&portnumber={$portList[$i]->ConnectedPort}\">$fp</a></div>
+					<div id=\"fp$i\" data-default={$portList[$i]->ConnectedPort}><a href=\"paths.php?deviceid=$frontDev->DeviceID&portnumber={$portList[$i]->ConnectedPort}\">$fp</a></div>
 					<div id=\"fn$i\" data-default=\"{$portList[$i]->Notes}\">{$portList[$i]->Notes}</div>
 					<div id=\"pp$i\">{$portList[$i]->Label}</div>
 					<div id=\"mt$i\" data-default={$portList[$i]->MediaID} data-color={$portList[$i]->ColorID}>$mt</div>
 					<div id=\"rd$i\" data-default=$rearDev->DeviceID><a href=\"devices.php?DeviceID=$rearDev->DeviceID\">$rearDev->Label</a></div>
-					<div id=\"rp$i\" data-default={$portList[-$i]->ConnectedPort}><a href=\"paths.php?DeviceID=$rearDev->DeviceID&portnumber={$portList[-$i]->ConnectedPort}\">$rp</a></div>
+					<div id=\"rp$i\" data-default={$portList[-$i]->ConnectedPort}><a href=\"paths.php?deviceid=$rearDev->DeviceID&portnumber={$portList[-$i]->ConnectedPort}\">$rp</a></div>
 					<div id=\"rn$i\" data-default=\"{$portList[-$i]->Notes}\">{$portList[-$i]->Notes}</div>
 				</div>";
 		}

@@ -1211,7 +1211,12 @@ class PowerDistribution {
 		foreach($connList as $delConn){
 			$delConn->RemoveConnection();
 		}
-		
+
+		// Clear out any records from PDUStats, possible S.U.T. involving changing
+		// a devicetype but leaving behind a phantom reading for a non-power device
+		$sql="DELETE FROM fac_PDUStats WHERE PDUID=$this->PDUID;";
+		$this->exec($sql);
+
 		$sql="DELETE FROM fac_PowerDistribution WHERE PDUID=$this->PDUID;";
 		if(!$this->exec($sql)){
 			// Something went south and this didn't delete.
@@ -1507,7 +1512,7 @@ class PowerPanel {
 		}
 		foreach($this as $prop => $val){
 			// We force NumberScheme to a known value so this is to check if they wanted to search for the default
-			if($prop=="NumberScheme" && $val=="Sequential" && $ot!="Sequential"){
+			if($prop=="NumberScheme" && $val=="Sequential" && $os!="Sequential"){
 				continue;
 			}
 			if($val){
