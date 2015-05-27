@@ -20,7 +20,7 @@
 	// AJAX
 
 	if(isset($_POST['deletepanel'])){
-		$panel->PanelID=$_POST["panelid"];
+		$panel->PanelID=$_POST["PanelID"];
 		$return='no';
 		if($panel->getPanel()){
 			$panel->deletePanel();
@@ -34,27 +34,21 @@
 	$panel->PanelVoltage=$config->ParameterArray["DefaultPanelVoltage"];
   
 	if(isset($_POST["action"])&&(($_POST["action"]=="Create")||($_POST["action"]=="Update"))){
-		$panel->PanelID=$_POST["panelid"];
-		$panel->PanelLabel=trim($_POST["panellabel"]);
-		$panel->NumberOfPoles=$_POST["numberofpoles"];
-		$panel->MainBreakerSize=$_POST["mainbreakersize"];
-		$panel->PanelVoltage=$_POST["panelvoltage"];
-		$panel->NumberScheme=$_POST["numberscheme"];
-		$panel->ParentPanelID=$_POST["parentpanelid"];
-		$panel->PanelIPAddress=$_POST["panelipaddress"];
-		$panel->ParentBreakerName=$_POST["parentbreakername"];
+		foreach($panel as $prop => $val){
+			$panel->$prop=trim($_POST[$prop]);
+		}
 		
 		if($_POST["action"]=="Create"){
 			if($panel->createPanel()){
-				header('Location: '.redirect("power_panel.php?panelid=$panel->PanelID"));
+				header('Location: '.redirect("power_panel.php?PanelID=$panel->PanelID"));
 			}
 		} else {
 			$panel->updatePanel();
 		}
 	}
 
-	if(isset($_REQUEST["panelid"])&&($_REQUEST["panelid"] >0)){
-		$panel->PanelID=(isset($_POST['panelid']) ? $_POST['panelid'] : $_GET['panelid']);
+	if(isset($_REQUEST["PanelID"])&&($_REQUEST["PanelID"] >0)){
+		$panel->PanelID=(isset($_POST['PanelID']) ? $_POST['PanelID'] : $_GET['PanelID']);
 		$panel->getPanel();
 		$pdu->PanelID = $panel->PanelID;
 		$pduList=$pdu->GetPDUbyPanel();
@@ -132,8 +126,8 @@
 
   <script type="text/javascript">
 	$(document).ready(function(){
-		$('#panelid').change(function(e){
-			location.href='power_panel.php?panelid='+this.value;
+		$('#PanelID').change(function(e){
+			location.href='power_panel.php?PanelID='+this.value;
 		});
 	});
   </script>
@@ -149,8 +143,8 @@ echo '<div class="main">
 <form method="POST">
 <div class="table">
 <div>
-   <div><label for="panelid">',__("Power Panel ID"),'</label></div>
-   <div><select name="panelid" id="panelid">
+   <div><label for="PanelID">',__("Power Panel ID"),'</label></div>
+   <div><select name="PanelID" id="PanelID">
 	<option value="0">',__("New Panel"),'</option>';
 
 	foreach($panelList as $panelRow){
@@ -162,24 +156,24 @@ echo '	</select>
    </div>
 </div>
 <div>
-   <div><label for="panellabel">',__("Panel Name"),'</label></div>
-   <div><input type="text" size="40" name="panellabel" id="panellabel" value="',$panel->PanelLabel,'"></div>
+   <div><label for="PanelLabel">',__("Panel Name"),'</label></div>
+   <div><input type="text" size="40" name="PanelLabel" id="PanelLabel" value="',$panel->PanelLabel,'"></div>
 </div>
 <div>
-   <div><label for="numberofpoles">',__("Number of Poles"),'</label></div>
-   <div><input type="number" name="numberofpoles" id="numberofpoles" size="3" value="',$panel->NumberOfPoles,'"></div>
+   <div><label for="NumberOfPoles">',__("Number of Poles"),'</label></div>
+   <div><input type="number" name="NumberOfPoles" id="NumberOfPoles" size="3" value="',$panel->NumberOfPoles,'"></div>
 </div>
 <div>
-   <div><label for="mainbreakersize">',__("Main Breaker Amperage"),'</label></div>
-   <div><input type="number" name="mainbreakersize" id="mainbreakersize" size="4" value="',$panel->MainBreakerSize,'"></div>
+   <div><label for="MainBreakerSize">',__("Main Breaker Amperage"),'</label></div>
+   <div><input type="number" name="MainBreakerSize" id="MainBreakerSize" size="4" value="',$panel->MainBreakerSize,'"></div>
 </div>
 <div>
-   <div><label for="panelvoltage">',__("Panel Voltage"),'</label></div>
-   <div><input type="number" name="panelvoltage" id="panelvoltage" size="4" value="',$panel->PanelVoltage,'"></div>
+   <div><label for="PanelVoltage">',__("Panel Voltage"),'</label></div>
+   <div><input type="number" name="PanelVoltage" id="PanelVoltage" size="4" value="',$panel->PanelVoltage,'"></div>
 </div>
 <div>
-   <div><label for="numberscheme">',__("Numbering Scheme"),'</label></div>
-   <div><select name="numberscheme" id="numberscheme">';
+   <div><label for="NumberScheme">',__("Numbering Scheme"),'</label></div>
+   <div><select name="NumberScheme" id="NumberScheme">';
 
 // This is messy but since we are actually storing this value in the db and we use it elsewhere this
 // worked out best
@@ -194,8 +188,8 @@ echo '	</select>
    </div>
 </div>
 <div>
-	<div><label for="parentpanelid"><?php print __("Parent Panel"); ?></label></div>
-	<div><select name="parentpanelid" id="parentpanelid">
+	<div><label for="ParentPanelID"><?php print __("Parent Panel"); ?></label></div>
+	<div><select name="ParentPanelID" id="ParentPanelID">
 		<option value=0></option>
 <?php
 	foreach($panelList as $pnl){
@@ -209,17 +203,17 @@ echo '	</select>
 echo '	</select></div>
 </div>
 <div>
-	<div><label for="parentbreakername">',__("Parent Breaker Name"),'</label></div>
-	<div><input type="text" name="parentbreakername" id="parentbreakername" size="40" value="',$panel->ParentBreakerName,'"></div>
+	<div><label for="ParentBreakerName">',__("Parent Breaker Name"),'</label></div>
+	<div><input type="text" name="ParentBreakerName" id="ParentBreakerName" size="40" value="',$panel->ParentBreakerName,'"></div>
 </div>
 <div>
-	<div><label for="panelipaddress">',__("Panel Meter IP Address"),'</label></div>
-	<div><input type="text" name="panelipaddress" id="panelipaddress" size="30" value="',$panel->PanelIPAddress,'"></div>
+	<div><label for="PanelIPAddress">',__("Panel Meter IP Address"),'</label></div>
+	<div><input type="text" name="PanelIPAddress" id="PanelIPAddress" size="30" value="',$panel->PanelIPAddress,'"></div>
 </div>
 <div>
-	<div><label for="templateid">',__("CDU/Meter Template"),'</label></div>
+	<div><label for="TemplateID">',__("CDU/Meter Template"),'</label></div>
 	<div>
-		<select name="templateid" id="templateid">
+		<select name="TemplateID" id="TemplateID">
 			<option value=0></option>';
 
 			foreach($tmpList as $tmp){ 
@@ -428,7 +422,7 @@ echo '	</select></div>
 $('button[value=Delete]').click(function(){
 	var defaultbutton={
 		"<?php echo __("Yes"); ?>": function(){
-			$.post('', {panelid: $('#panelid').val(),deletepanel: '' }, function(data){
+			$.post('', {PanelID: $('#PanelID').val(),deletepanel: '' }, function(data){
 				if(data.trim()=='ok'){
 					self.location=$('.main > a').last().attr('href');
 					$(this).dialog("destroy");

@@ -1268,41 +1268,59 @@ class PowerPanel {
 	}
 	
 	function MakeSafe() {
-		$this->PanelID = intval($this->PanelID);
-		$this->PanelLabel = sanitize($this->PanelLabel);
-		$this->NumberOfPoles = intval($this->NumberOfPoles);
-		$this->MainBreakerSize = intval($this->MainBreakerSize);
-		$this->PanelVoltage = intval($this->PanelVoltage);
-		$this->NumberScheme = ( $this->NumberScheme == 'Odd/Even' )?'Odd/Even':'Sequential';
-		$this->ParentPanelID = intval($this->ParentPanelID);
-		$this->ParentBreakerName = sanitize($this->ParentBreakerName);
-		$this->PanelIPAddress = sanitize($this->PanelIPAddress);
-		$this->TemplateID = intval($this->TemplateID);
+		$this->PanelID=intval($this->PanelID);
+		$this->PanelLabel=sanitize($this->PanelLabel);
+		$this->NumberOfPoles=intval($this->NumberOfPoles);
+		$this->MainBreakerSize=intval($this->MainBreakerSize);
+		$this->PanelVoltage=intval($this->PanelVoltage);
+		$this->NumberScheme=($this->NumberScheme=='Odd/Even')?'Odd/Even':'Sequential';
+		$this->ParentPanelID=intval($this->ParentPanelID);
+		$this->ParentBreakerName=sanitize($this->ParentBreakerName);
+		$this->PanelIPAddress=sanitize($this->PanelIPAddress);
+		$this->TemplateID=intval($this->TemplateID);
 	}
-	
-	function getPanelLoad() {
-		$sql = "select sum(Wattage) as TotalWatts from fac_PDUStats where PDUID in (select PDUID from fac_PowerDistribution where PanelID=:PanelID)";
-		$st = $this->prepare( $sql );
-		$st->execute( array( ":PanelID"=>$this->PanelID ) );
-		if ( $row = $st->fetch()) {
-			return $row["TotalWatts"];
-		} else {
+
+	function MakeDisplay(){
+		$this->PanelLabel=stripslashes($this->PanelLabel);
+		$this->ParentBreakerName=stripslashes($this->ParentBreakerName);
+		$this->PanelIPAddress=stripslashes($this->PanelIPAddress);
+	}
+
+	static function RowToObject($row){
+		$panel=new PowerPanel();
+		$panel->PanelID=$row["PanelID"];
+		$panel->PanelLabel=$row["PanelLabel"];
+		$panel->NumberOfPoles=$row["NumberOfPoles"];
+		$panel->MainBreakerSize=$row["MainBreakerSize"];
+		$panel->PanelVoltage=$row["PanelVoltage"];
+		$panel->NumberScheme=$row["NumberScheme"];
+		$panel->ParentPanelID=$row["ParentPanelID"];
+		$panel->ParentBreakerName=$row["ParentBreakerName"];
+		$panel->TemplateID=$row["TemplateID"];
+		$panel->PanelIPAddress=$row["PanelIPAddress"];
+
+		$panel->MakeDisplay();
+
+		return $panel;
+	}
+
+
+	function getPanelLoad(){
+		$this->MakeSafe();
+
+		$sql="SELECT SUM(Wattage) FROM fac_PDUStats WHERE PDUID IN (SELECT PDUID FROM 
+			fac_PowerDistribution WHERE PanelID=$this->PanelID);";
+		if($watts=$this->query($sql)->fetchColumn()){
+			return $watts;
+		}else{
 			return 0;
 		}
 	}
 
 	function getPanelList() {
-		$sql = "select * from fac_PowerPanel order by PanelLabel ASC";
-		$st = $this->prepare( $sql );
-		$st->setFetchMode( PDO::FETCH_CLASS, "PowerPanel" );
-		$st->execute();
-		
-		$pList = array();
-		while ( $row = $st->fetch() ) {
-			$pList[] = $row;
-		}
-		
-		return $pList;
+		// Make this a clean list because it will be confusing if it's filtered
+		$clean=new PowerPanel();
+		return $clean->Search();
 	}
 	
 	function getPowerSource() {
@@ -1355,19 +1373,10 @@ class PowerPanel {
 	}
 	
 	function getSources() {
-		$sql = "select * from fac_PowerPanel where ParentPanelID=0 order by PanelLabel ASC";
-		
-		$st = $this->prepare( $sql );
-		$st->setFetchMode( PDO::FETCH_CLASS, "PowerPanel" );
-		$st->execute();
-		
-		$sList = array();
-		
-		while ( $row = $st->fetch() ) {
-			$sList[] = $row;
-		}
-		
-		return $sList;
+		$clean=new PowerPanel();
+		$clean->ParentPanelID=0;
+
+		return $clean->Search();
 	}
 
 	function getPanelsByDataCenter( $DataCenterID ) {
@@ -1407,62 +1416,53 @@ class PowerPanel {
 	}
 	
 	function getPanel() {
-		$sql = "select * from fac_PowerPanel where PanelID=:PanelID";
-		$st = $this->prepare( $sql );
-		$st->setFetchMode( PDO::FETCH_CLASS, "PowerPanel" );
-		$st->execute( array( ":PanelID"=>$this->PanelID ) );
-		
-		if ( $row = $st->fetch() ) {
-			foreach ( $row as $prop=>$val ) {
-				$this->$prop = $val;
+		$this->MakeSafe();
+
+		$sql="SELECT * FROM fac_PowerPanel WHERE PanelID=$this->PanelID;";
+		if($row=$this->query($sql)->fetch()){
+			foreach(PowerPanel::RowToObject($row) as $prop => $value){
+				$this->$prop=$value;
 			}
-			
 			return true;
-		} else {
+		}else{
 			return false;
 		}
 	}
 
 	function createPanel() {
 		$this->MakeSafe();
-		
-		$sql = "insert into fac_PowerPanel set PanelLabel=:PanelLabel, NumberOfPoles=:NumberOfPoles, MainBreakerSize=:MainBreakerSize,
-			PanelVoltage=:PanelVoltage,NumberScheme=:NumberScheme,ParentPanelID=:ParentPanelID,ParentBreakerName=:ParentBreakerName,
-			PanelIPAddress=:PanelIPAddress, TemplateID=:TemplateID";
-			
-		$st = $this->prepare( $sql );
-		$params = array( ":PanelLabel"=>$this->PanelLabel, 
-			":NumberOfPoles"=>$this->NumberOfPoles, 
-			":MainBreakerSize"=>$this->MainBreakerSize,
-			":PanelVoltage"=>$this->PanelVoltage,
-			":NumberScheme"=>$this->NumberScheme,
-			":ParentPanelID"=>$this->ParentPanelID,
-			":ParentBreakerName"=>$this->ParentBreakerName,
-			":PanelIPAddress"=>$this->PanelIPAddress,
-			":TemplateID"=>$this->TemplateID );
-		$st->execute( $params );
-		
-		if ( $this->lastInsertId() > 0 ) {
-			$this->PanelID = $this->lastInsertId();
+
+		$sql="INSERT INTO fac_PowerPanel SET PanelIPAddress=\"$this->PanelIPAddress\", 
+			PanelLabel=\"$this->PanelLabel\", NumberOfPoles=$this->NumberOfPoles, 
+			MainBreakerSize=$this->MainBreakerSize, PanelVoltage=$this->PanelVoltage, 
+			NumberScheme=\"$this->NumberScheme\", ParentPanelID=$this->ParentPanelID,
+			ParentBreakerName=\"$this->ParentBreakerName\", TemplateID=$this->TemplateID;";
+
+		if(!$this->exec($sql)){
+			$info=$this->errorInfo();
+			error_log("createPanel::PDO Error: {$info[2]} $sql");
+			return false;
+		}else{
+			$this->PanelID=$this->lastInsertId();
 			(class_exists('LogActions'))?LogActions::LogThis($this):'';
 			return $this->PanelID;
-		} else {
-			$info = $this->errorInfo();
-			error_log( "createPanel::PDO Error: {$info[2]} Params=" . print_r( $params, true ) );
-			return false;
 		}
 	}
 	
 	function deletePanel() {
 		// First, set any CDUs attached to this panel to simply not have an assigned panel
-		$sql="UPDATE fac_PowerDistribution SET PanelID='' WHERE PanelID=:PanelID";
-		$st = $this->prepare( $sql );
-		$st->execute( array( ":PanelID"=>$this->PanelID ) );
-		
-		$sql="DELETE FROM fac_PowerPanel WHERE PanelID=:PanelID";
-		$st = $this->prepare( $sql );
-		$st->execute( array( ":PanelID"=>$this->PanelID ) );
+		$sql="UPDATE fac_PowerDistribution SET PanelID=0 WHERE PanelID=$this->PanelID;";
+		$this->query($sql);
+
+		$sql="DELETE FROM fac_PowerPanel WHERE PanelID=$this->PanelID;";
+		if(!$this->exec($sql)){
+			$info=$this->errorInfo();
+
+			error_log("PDO Error: {$info[2]} SQL=$sql");
+			return false;
+		}
 		(class_exists('LogActions'))?LogActions::LogThis($this):'';
+		return true;
 	}
 		
 	function updatePanel(){
@@ -1472,24 +1472,62 @@ class PowerPanel {
 		$oldpanel->PanelID=$this->PanelID;
 		$oldpanel->getPanel();
 
-		$sql="UPDATE fac_PowerPanel SET PanelLabel=:PanelLabel, NumberOfPoles=:NumberOfPoles, 
-			MainBreakerSize=:MainBreakerSize, PanelVoltage=:PanelVoltage, 
-			NumberScheme=:NumberScheme, ParentPanelID=:ParentPanelID, ParentBreakerName=:ParentBreakerName,
-			PanelIPAddress=:PanelIPAddress, TemplateID=:TemplateID WHERE PanelID=:PanelID";
+		$sql="UPDATE fac_PowerPanel SET PanelIPAddress=\"$this->PanelIPAddress\",
+			PanelLabel=\"$this->PanelLabel\", NumberOfPoles=$this->NumberOfPoles, 
+			MainBreakerSize=$this->MainBreakerSize, PanelVoltage=$this->PanelVoltage, 
+			NumberScheme=\"$this->NumberScheme\", ParentPanelID=$this->ParentPanelID,
+			ParentBreakerName=\"$this->ParentBreakerName\", TemplateID=$this->TemplateID
+			WHERE PanelID=$this->PanelID;";
 
-		$st = $this->prepare( $sql );
-		$st->execute( array( ":PanelLabel"=>$this->PanelLabel, 
-			":NumberOfPoles"=>$this->NumberOfPoles, 
-			":MainBreakerSize"=>$this->MainBreakerSize,
-			":PanelVoltage"=>$this->PanelVoltage,
-			":NumberScheme"=>$this->NumberScheme,
-			":ParentPanelID"=>$this->ParentPanelID,
-			":ParentBreakerName"=>$this->ParentBreakerName,
-			":PanelIPAddress"=>$this->PanelIPAddress,
-			":TemplateID"=>$this->TemplateID,
-			":PanelID"=>$this->PanelID ) );
+		if(!$this->query($sql)){
+			$info=$this->errorInfo();
+			error_log("updatePanel::PDO Error: {$info[2]} SQL=$sql");
+			return false;
+		}
 
 		(class_exists('LogActions'))?LogActions::LogThis($this,$oldpanel):'';
+		return true;
+	}
+
+	function Search($indexedbyid=false){
+		// Store the value of devicetype before we muck with it
+		$os=$this->NumberScheme;
+
+		// Make everything safe for us to search with
+		$this->MakeSafe();
+
+		// This will store all our extended sql
+		$sqlextend="";
+		function findit($prop,$val,&$sql){
+			if($sql){
+				$sql.=" AND $prop=\"$val\"";
+			}else{
+				$sql.=" WHERE $prop=\"$val\"";
+			}
+		}
+		foreach($this as $prop => $val){
+			// We force DeviceType to a known value so this is to check if they wanted to search for the default
+			if($prop=="NumberScheme" && $val=="Sequential" && $ot!="Sequential"){
+				continue;
+			}
+			if($val){
+				findit($prop,$val,$sqlextend);
+			}
+		}
+
+		$sql="SELECT * FROM fac_PowerPanel $sqlextend ORDER BY PanelLabel ASC;";
+
+		$deviceList=array();
+
+		foreach($this->query($sql) as $row){
+			if($indexedbyid){
+				$panelList[$deviceRow["DeviceID"]]=PowerPanel::RowToObject($row);
+			}else{
+				$panelList[]=PowerPanel::RowToObject($row);
+			}
+		}
+
+		return $panelList;
 	}
 }
 

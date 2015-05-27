@@ -414,6 +414,10 @@ div.center div table, div.center div tr, div.center div td {border: 1px solid gr
 	padding: 0.25em 0.5em 0.25em 1em;
 	vertical-align: middle;
 }
+.panelmgr .main form input, .panelmgr .main form select {
+	padding-right: 0px;
+	width: 100%;
+}
 .polelabel a {display: block;margin-bottom: 0.35em;}
 .polelabel a span {display: block;margin-left: 1.5em;}
 td#oddeven {padding: 0px;text-align: left;width: 150px;}
