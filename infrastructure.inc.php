@@ -940,7 +940,50 @@ class DeviceTemplate {
 		(class_exists('LogActions'))?LogActions::LogThis($this):'';
 		return $this->exec($sql);
 	}
-  
+
+	function Search($indexedbyid=false){
+		// Store the value of devicetype before we muck with it and SNMPVersion
+		$ot=$this->DeviceType;
+		$ov=$this->SNMPVersion;
+
+		// Make everything safe for us to search with
+		$this->MakeSafe();
+
+		// This will store all our extended sql
+		$sqlextend="";
+		function findit($prop,$val,&$sql){
+			$sql.=" AND a.$prop=\"$val\"";
+		}
+		foreach($this as $prop => $val){
+			// We force DeviceType to a known value so this is to check if they wanted to search for the default
+			if($prop=="DeviceType" && $val=="Server" && $ot!="Server"){
+				continue;
+			}
+			// We force the SNMPVersion to 2c above so this is to check if they wanted to search for the default
+			if($prop=="SNMPVersion" && $val=="2c" && $ov!="2c"){
+				continue;
+			}
+			if($val){
+				findit($prop,$val,$sqlextend);
+			}
+		}
+
+		$sql="SELECT * FROM fac_DeviceTemplate a, fac_Manufacturer b WHERE
+            a.ManufacturerID=b.ManufacturerID$sqlextend ORDER BY Name ASC, Model ASC;";
+
+		$templateList=array();
+
+		foreach($this->query($sql) as $row){
+			if($indexedbyid){
+				$templateList[$row["TemplateID"]]=DeviceTemplate::RowToObject($row);
+			}else{
+				$templateList[]=DeviceTemplate::RowToObject($row);
+			}
+		}
+
+		return $templateList;
+	}
+
 	function GetTemplateByID(){
 		$this->MakeSafe();
 
