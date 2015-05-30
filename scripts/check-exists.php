@@ -5,7 +5,7 @@ Copyright (c) 2012 Reactive Apps, Ronnie Garcia
 */
 
 // Define a destination
-$validDir=array('pictures','drawings');
+$validDir=array('pictures','drawings','images');
 $targetFolder=(isset($_POST['dir']) && in_array($_POST['dir'], $validDir))?$_POST['dir']:'';
 $targetFile=str_replace(' ','_',$_POST['filename']);
 

@@ -380,7 +380,7 @@
 		});
 
 		$('#FrontPictureFile,#RearPictureFile').click(function(){
-			var upload=$('<input>').prop({type: 'file', name: 'dev_file_upload', id: 'dev_file_upload'}).data('dir','pictures');
+			var upload=$('<input>').prop({type: 'file', name: 'dev_file_upload', id: 'dev_file_upload'}).data('dir','images');
 			var input=this;
 			var originalvalue=this.value;
 			$("#imageselection").dialog({

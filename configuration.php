@@ -5,6 +5,8 @@
 	require_once( "facilities.inc.php" );
 
 	$subheader=__("Data Center Configuration");
+	$timestamp=time();
+	$salt=md5('unique_salt' . $timestamp);
 
 	if(!$person->SiteAdmin){
 		// No soup for you.
@@ -12,9 +14,10 @@
 		exit;
 	}
 
-	function BuildFileList(){
+	function BuildFileList($returnjson=false){
 		$imageselect='<div id="preview"></div><div id="filelist">';
 
+		$filesonly=array();
 		$path='./images';
 		$dir=scandir($path);
 		foreach($dir as $i => $f){
@@ -22,16 +25,22 @@
 				$imageinfo=getimagesize($path.DIRECTORY_SEPARATOR.$f);
 				if(preg_match('/^image/i', $imageinfo['mime'])){
 					$imageselect.="<span>$f</span>\n";
+					$filesonly[]=$f;
 				}
 			}
 		}
 		$imageselect.="</div>";
-		return $imageselect;
+		if($returnjson){
+			header('Content-Type: application/json');
+			echo json_encode($filesonly);
+		}else{
+			return $imageselect;
+		}
 	}
 
 	// AJAX Requests
 	if(isset($_GET['fl'])){
-		echo BuildFileList();
+		echo BuildFileList(isset($_GET['json']));
 		exit;
 	}
 	if(isset($_POST['fe'])){ // checking that a file exists
@@ -381,12 +390,14 @@
   <link rel="stylesheet" href="css/jquery.miniColors.css" type="text/css">
   <link rel="stylesheet" href="css/jquery-ui.css" type="text/css">
   <link rel="stylesheet" href="css/jquery.ui.multiselect.css" type="text/css">
+  <link rel="stylesheet" href="css/uploadifive.css" type="text/css">
   <!--[if lt IE 9]>
   <link rel="stylesheet"  href="css/ie.css" type="text/css">
   <![endif]-->
   
   <script type="text/javascript" src="scripts/jquery.min.js"></script>
   <script type="text/javascript" src="scripts/jquery-ui.min.js"></script>
+  <script type="text/javascript" src="scripts/jquery.uploadifive.js"></script>
   <script type="text/javascript" src="scripts/jquery.miniColors.js"></script>
   <script type="text/javascript" src="scripts/jquery.ui.multiselect.js"></script>
   <script type="text/javascript">
@@ -448,14 +459,15 @@
 		// Reporting
 
 		$('#PDFLogoFile').click(function(){
+			var input=this;
+			var originalvalue=this.value;
 			$.get('',{fl: '1'}).done(function(data){
 				$("#imageselection").html(data);
-
-
+				var upload=$('<input>').prop({type: 'file', name: 'dev_file_upload', id: 'dev_file_upload'}).data('dir','images');
 				$("#imageselection").dialog({
 					resizable: false,
-					height:300,
-					width: 400,
+					height:500,
+					width: 670,
 					modal: true,
 					buttons: {
 	<?php echo '					',__("Select"),': function() {'; ?>
@@ -464,8 +476,16 @@
 							}
 							$(this).dialog("close");
 						}
-					}
-				});
+					},
+					close: function(){
+							// they clicked the x, set the value back if something was uploaded
+							input.value=originalvalue;
+							$('#header').css('background-image', 'url("images/'+input.value+'")');
+							$(this).dialog("destroy");
+						}
+				}).data('input',input);;
+				$("#imageselection").next('div').prepend(upload);
+				uploadifive();
 				$("#imageselection span").each(function(){
 					var preview=$('#imageselection #preview');
 					$(this).click(function(){
@@ -1225,6 +1245,81 @@
 		return style.sheet;
 	})();
 
+	// File upload
+	function reload() {
+		$.get('configuration.php?fl&json').done(function(data){
+			var filelist=$('#filelist');
+			filelist.html('');
+			for(var f in data){
+				filelist.append($('<span>').text(data[f]));
+			}
+			bindevents();
+		});
+	}
+	function bindevents() {
+		$("#imageselection span").each(function(){
+			var preview=$('#imageselection #preview');
+			$(this).click(function(){
+				preview.css({'border-width': '5px', 'width': '380px', 'height': '380px'});
+				preview.html('<img src="images/'+$(this).text()+'" alt="preview">').attr('image',$(this).text());
+				preview.children('img').load(function(){
+					var topmargin=0;
+					var leftmargin=0;
+					if($(this).height()<$(this).width()){
+						$(this).width(preview.innerHeight());
+						$(this).css({'max-width': preview.innerWidth()+'px'});
+						topmargin=Math.floor((preview.innerHeight()-$(this).height())/2);
+					}else{
+						$(this).height(preview.innerHeight());
+						$(this).css({'max-height': preview.innerWidth()+'px'});
+						leftmargin=Math.floor((preview.innerWidth()-$(this).width())/2);
+					}
+					$(this).css({'margin-top': topmargin+'px', 'margin-left': leftmargin+'px'});
+				});
+				$("#imageselection span").each(function(){
+					$(this).removeAttr('style');
+				});
+				$(this).css({'border':'1px dotted black','background-color':'#eeeeee'});
+				$('#header').css('background-image', 'url("images/'+$(this).text()+'")');
+			});
+			if($($("#imageselection").data('input')).val()==$(this).text()){
+				$(this).click();
+				this.parentNode.scrollTop=(this.offsetTop - (this.parentNode.clientHeight / 2) + (this.scrollHeight / 2) );
+			}
+		});
+	}
+	function uploadifive() {
+		$('#dev_file_upload').uploadifive({
+			'formData' : {
+					'timestamp' : '<?php echo $timestamp;?>',
+					'token'     : '<?php echo $salt;?>',
+					'dir'		: 'images'
+				},
+			'buttonText'		: 'Upload new image',
+			'width'				: '150',
+			'removeCompleted' 	: true,
+			'checkScript'		: 'scripts/check-exists.php',
+			'uploadScript'		: 'scripts/uploadifive.php',
+			'onUploadComplete'	: function(file, data) {
+				data=$.parseJSON(data);
+				if(data.status=='1'){
+					// something broke, deal with it
+					var toast=$('<div>').addClass('uploadifive-queue-item complete');
+					var close=$('<a>').addClass('close').text('X').click(function(){$(this).parent('div').remove();});
+					var span=$('<span>');
+					var error=$('<div>').addClass('border').css({'margin-top': '2px', 'padding': '3px'}).text(data.msg);
+					toast.append(close);
+					toast.append($('<div>').append(span.clone().addClass('filename').text(file.name)).append(span.clone().addClass('fileinfo').text(' - Error')));
+					toast.append(error);
+					$('#uploadifive-'+this[0].id+'-queue').append(toast);
+				}else{
+					$($("#imageselection").data('input')).val(file.name.replace(/\s/g,'_'));
+					// fuck yeah, reload the file list
+					reload($(this).data('dir'));
+				}
+			}
+		});
+	}
   </script>
 </head>
 <body>

@@ -11,7 +11,7 @@ header('Content-Type: application/json');
 
 
 // Set the uplaod directory
-$validDir=array('pictures','drawings');
+$validDir=array('pictures','drawings','images');
 $uploadDir=(isset($_POST['dir']) && in_array($_POST['dir'], $validDir))?$_POST['dir']:'';
 
 $status['status']=0;
@@ -20,7 +20,7 @@ $status['msg']='';
 // Check for write permissions
 if($uploadDir=='' || !is_writable('..'.DIRECTORY_SEPARATOR.$uploadDir)){
 	$status['status']=1;
-	$status['msg']=__("Upload directory is not writable");
+	$status['msg']=sprintf(__("Upload directory '%s' is not writable"),$uploadDir);
 	echo json_encode($status);
 	exit;
 }
