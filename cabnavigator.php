@@ -537,6 +537,13 @@ $body.='<div id="infopanel">
 	    $body.="\n\t\t</ul>\n    </fieldset>";
 	}
 	$body.='
+	<fieldset id="cabnotes">
+		<legend>'.__("Cabinet Notes").'</legend>
+		<div>
+			'.$cab->Notes.'
+		</div>
+	</fieldset>
+
 </div> <!-- END div#infopanel -->';
 
 	// If $head isn't empty then we must have added some style information so close the tag up.
@@ -618,6 +625,7 @@ echo $head,'  <script type="text/javascript" src="scripts/jquery.min.js"></scrip
 		$(".cabinet .error").append("*");
 		if($("#legend *").length==1){$("#legend").hide();}
 		if($("#keylock div").text().trim()==""){$("#keylock").hide();}
+		if($("#cabnotes div").text().trim()==""){$("#cabnotes").hide();}
 
 		$("#verifyaudit").click(function(e){
 			e.preventDefault();
@@ -776,9 +784,11 @@ if($config->ParameterArray["CDUToolTips"]=='enabled'){
 
 		// This is gonna confuse the fuck out of me when I see this again
 		$('fieldset').wrap($('<div>').addClass('item').css('width','235px'));
+		$('#cabnotes').parent('div').css('width','470px');
 		$('#infopanel').css({'max-width':'480px','width':'480px'}).masonry();
 		$('#infopanel').masonry('option', { columnWidth: 240, itemSelector: '.item'});
 		$('#infopanel').masonry('layout');
+		$('#cabnotes > div').html($('#cabnotes > div').text());
 
 	});
   </script>
