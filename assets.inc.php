@@ -1920,26 +1920,6 @@ class Device {
 		return $deviceList;
 	}	
 
-	static function GetSensorDevices(){
-		global $dbh;
-
-		$sql="SELECT * FROM fac_Device WHERE TemplateID IN (SELECT TemplateID FROM fac_DeviceTemplate WHERE DeviceType='Sensor');";
-
-		$deviceList=array();
-		foreach($dbh->query($sql) as $deviceRow){
-			$deviceList[]=Device::RowToObject($deviceRow);
-		}
-
-		return $deviceList;
-	}
-
-	static function GetDeviceByID($DeviceID){
-		$dev=New Device();
-		$dev->DeviceID=$DeviceID;
-		$dev->GetDevice();
-		return $dev;
-	}
-
 	static function GetDevicesByTemplate($templateID) {
 		global $dbh;
 		
@@ -2102,16 +2082,13 @@ class Device {
 		return $devList;
 	}
 	
-	
-	function WhosYourDaddy() {
-		global $dbh;
-	
-		$dev = new Device();
+	function WhosYourDaddy(){
+		$dev=new Device();
 		
-		if ( $this->ParentDevice == 0 ) {
+		if($this->ParentDevice==0){
 			return $dev;
-		} else {
-			$dev->DeviceID = $this->ParentDevice;
+		}else{
+			$dev->DeviceID=$this->ParentDevice;
 			$dev->GetDevice();
 			return $dev;
 		}
@@ -2147,20 +2124,6 @@ class Device {
 		return $deviceList;
 	}
 	
-	static function GetPatchPanels(){
-		global $dbh;
-		
-		$sql="SELECT * FROM fac_Device WHERE DeviceType='Patch Panel' ORDER BY Label ASC;";
-		
-		$panelList=array();
-
-		foreach($dbh->query($sql) as $row){
-			$panelList[$row["DeviceID"]]=Device::RowToObject($row);
-		}
-		
-		return $panelList;
-	}
-
 	function DeleteDevice(){
 		global $dbh;
 
@@ -2207,7 +2170,6 @@ class Device {
 		(class_exists('LogActions'))?LogActions::LogThis($this):'';
 		return;
 	}
-
 
 	function SearchDevicebyLabel(){
 		global $dbh;
@@ -3220,6 +3182,36 @@ class Device {
 
 		return true;			
 	}
+
+	function GetSensorReading(){
+		global $dbh;
+		if(!$this->getDevice()){
+			return false;
+		}
+		// If this isn't a sensor device or doesn't have a template we can't have readings from it
+		if($this->DeviceType!='Sensor' || $this->TemplateID==0){
+			return false;
+		}
+
+		$readings=new stdClass();
+
+		$sql="SELECT * FROM fac_SensorReadings WHERE DeviceID=$this->DeviceID LIMIT 1;";
+		if(!$row=$dbh->query($sql)->fetch()){
+			// Failed to get anything from the db so kick back bad data
+			$readings->DeviceID=$this->DeviceID;
+			$readings->Temperature=0;
+			$readings->Humidity=0;
+			$readings->LastRead=__("Error");
+		}else{
+			foreach($row as $prop => $val){
+				if(!is_numeric($prop)){
+					$readings->$prop=$val;
+				}
+			}
+		}
+
+		return $readings;
+	}	
 }
 
 class DevicePorts {

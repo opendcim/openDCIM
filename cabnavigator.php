@@ -194,6 +194,9 @@ function renderUnassignedTemplateOwnership($noTemplFlag, $noOwnerFlag, $device) 
 	$dev->Cabinet=$cab->CabinetID;
 	$devList=$dev->ViewDevicesByCabinet();
 
+	$dev->DeviceType="Sensor";
+	$SensorList=$dev->Search();
+
 	$totalWatts=0;
 	$totalWeight=0;
 	$totalMoment=0;
@@ -235,7 +238,7 @@ function renderUnassignedTemplateOwnership($noTemplFlag, $noOwnerFlag, $device) 
 		while(list($dev_index,$device)=each($devList)){
             list($noTemplFlag, $noOwnerFlag, $highlight) =
                 renderUnassignedTemplateOwnership($noTemplFlag, $noOwnerFlag, $device);
-			if($device->Height<1 && !$rear && $device->DeviceType!="CDU"){
+			if($device->Height<1 && !$rear && $device->DeviceType!="CDU" && $device->DeviceType!="Sensor"){
 				if($device->Rights!="None"){
 					$zeroheight.="\t\t\t<a href=\"devices.php?DeviceID=$device->DeviceID\" data-deviceid=$device->DeviceID>$highlight $device->Label</a>\n";
 				}else{
@@ -517,6 +520,21 @@ $body.='<div id="infopanel">
 	}
 
 	$body.="\t</fieldset>\n";
+
+	$body.='	<fieldset name="sensors">
+		<legend>'.__("Environmental Sensors").'</legend>';
+
+	foreach($SensorList as $Sensor){
+		$body.="\t\t<a href=\"devices.php?DeviceID=$Sensor->DeviceID\">$Sensor->Label</a><br>\n";
+	}
+
+	if($person->CanWrite($cab->AssignedTo)){
+		$body.="\n\t\t<br>\n\t\t<ul class=\"nav\"><a href=\"devices.php?action=new&CabinetID=$cab->CabinetID&DeviceType=Sensor\"><li>".__("Add Sensor")."</li></a></ul>\n";
+	}
+
+	$body.="\t</fieldset>\n";
+
+
 	if ($person->CanWrite($cab->AssignedTo) || $person->SiteAdmin) {
 	    $body.="\t<fieldset>\n";
         if ($person->CanWrite($cab->AssignedTo) ) {
@@ -781,7 +799,6 @@ if($config->ParameterArray["CDUToolTips"]=='enabled'){
 <?php
 }
 ?>
-
 		// This is gonna confuse the fuck out of me when I see this again
 		$('fieldset').wrap($('<div>').addClass('item').css('width','235px'));
 		$('#cabnotes').parent('div').css('width','470px');
@@ -790,6 +807,17 @@ if($config->ParameterArray["CDUToolTips"]=='enabled'){
 		$('#infopanel').masonry('layout');
 		$('#cabnotes > div').html($('#cabnotes > div').text());
 
+		// Add sensor data to the page
+		$('fieldset[name=sensors] a:not([href$=Sensor])').each(function(){
+			var link=this;
+			$.get('api/v1/device/'+link.href.split('=').pop()+'/getsensorreadings',function(data){
+				if(!data.error){
+					$(link).after('<br>Temp:&nbsp;'+data.sensor.Temperature+'&deg;&nbsp;&nbsp;Humidity:&nbsp;'+data.sensor.Humidity);
+					// When we add data to the box it grows so we need to adjust the bricks
+					$('#infopanel').masonry('layout');
+				}
+			});
+		});
 	});
   </script>
   <style type="text/css">

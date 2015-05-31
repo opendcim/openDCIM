@@ -410,6 +410,30 @@ $app->get( '/device/:deviceid', function($deviceid) {
 	}
 });
 
+$app->get( '/device/:deviceid/getsensorreadings', function($deviceid) {
+	$dev=new Device();
+	$dev->DeviceID=intval($deviceid);
+	
+	if(!$dev->GetDevice(false)){
+		$response['error']=true;
+		$response['errorcode']=404;
+		$response['message']=__("Device not found");
+	}else{
+		$reading=$dev->GetSensorReading();
+		if(!$reading){
+			$response['error']=true;
+			$response['errorcode']=404;
+			$response['message']=__("Device is not a sensor or is missing a template");
+		}else{
+			$response['error']=false;
+			$response['errorcode']=200;
+			$response['sensor']=$reading;
+		}
+	}
+
+	echoResponse($response['errorcode'],$response);
+});
+
 // this is messy as all hell and i'm still thinking about how to do it better
 
 //
