@@ -419,7 +419,7 @@ $app->get( '/device/:deviceid/getsensorreadings', function($deviceid) {
 		$response['errorcode']=404;
 		$response['message']=__("Device not found");
 	}else{
-		$reading=$dev->GetSensorReading();
+		$reading=$dev->GetSensorReading(false);
 		if(!$reading){
 			$response['error']=true;
 			$response['errorcode']=404;
@@ -431,7 +431,7 @@ $app->get( '/device/:deviceid/getsensorreadings', function($deviceid) {
 		}
 	}
 
-	echoResponse($response['errorcode'],$response);
+	echoResponse(200,$response);
 });
 
 // this is messy as all hell and i'm still thinking about how to do it better

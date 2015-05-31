@@ -3183,9 +3183,9 @@ class Device {
 		return true;			
 	}
 
-	function GetSensorReading(){
+	function GetSensorReading($filterrights=true){
 		global $dbh;
-		if(!$this->getDevice()){
+		if(!$this->getDevice($filterrights)){
 			return false;
 		}
 		// If this isn't a sensor device or doesn't have a template we can't have readings from it

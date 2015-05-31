@@ -521,18 +521,19 @@ $body.='<div id="infopanel">
 
 	$body.="\t</fieldset>\n";
 
-	$body.='	<fieldset name="sensors">
-		<legend>'.__("Environmental Sensors").'</legend>';
+	$body.='	<fieldset id="sensors">
+		<legend>'.__("Environmental Sensors").'</legend>
+		<div>';
 
 	foreach($SensorList as $Sensor){
 		$body.="\t\t<a href=\"devices.php?DeviceID=$Sensor->DeviceID\">$Sensor->Label</a><br>\n";
 	}
 
 	if($person->CanWrite($cab->AssignedTo)){
-		$body.="\n\t\t<br>\n\t\t<ul class=\"nav\"><a href=\"devices.php?action=new&CabinetID=$cab->CabinetID&DeviceType=Sensor\"><li>".__("Add Sensor")."</li></a></ul>\n";
+		$body.="\n\t\t<ul class=\"nav\"><a href=\"devices.php?action=new&CabinetID=$cab->CabinetID&DeviceType=Sensor\"><li>".__("Add Sensor")."</li></a></ul>\n";
 	}
 
-	$body.="\t</fieldset>\n";
+	$body.="\t\t</div>\n\t</fieldset>\n";
 
 
 	if ($person->CanWrite($cab->AssignedTo) || $person->SiteAdmin) {
@@ -644,6 +645,7 @@ echo $head,'  <script type="text/javascript" src="scripts/jquery.min.js"></scrip
 		if($("#legend *").length==1){$("#legend").hide();}
 		if($("#keylock div").text().trim()==""){$("#keylock").hide();}
 		if($("#cabnotes div").text().trim()==""){$("#cabnotes").hide();}
+		if($("#sensors div").text().trim()==""){$("#sensors").hide();}
 
 		$("#verifyaudit").click(function(e){
 			e.preventDefault();
@@ -808,14 +810,16 @@ if($config->ParameterArray["CDUToolTips"]=='enabled'){
 		$('#cabnotes > div').html($('#cabnotes > div').text());
 
 		// Add sensor data to the page
-		$('fieldset[name=sensors] a:not([href$=Sensor])').each(function(){
+		$('#sensors a:not([href$=Sensor])').each(function(){
 			var link=this;
 			$.get('api/v1/device/'+link.href.split('=').pop()+'/getsensorreadings',function(data){
 				if(!data.error){
-					$(link).after('<br>Temp:&nbsp;'+data.sensor.Temperature+'&deg;&nbsp;&nbsp;Humidity:&nbsp;'+data.sensor.Humidity);
-					// When we add data to the box it grows so we need to adjust the bricks
-					$('#infopanel').masonry('layout');
+					$(link).after('<br>Temp:&nbsp;'+data.sensor.Temperature+'&deg;&nbsp;&nbsp;Humidity:&nbsp;'+data.sensor.Humidity+'<br>');
+				}else{
+					$(link).after('<br>'+data.message+'<br>');
 				}
+				// When we add data to the box it grows so we need to adjust the bricks
+				$('#infopanel').masonry('layout');
 			});
 		});
 	});
