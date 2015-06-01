@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: openDCIM.po\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-05-29 23:05-0400\n"
+"POT-Creation-Date: 2015-06-01 08:24-0400\n"
 "PO-Revision-Date: 2014-08-04 13:57-0500\n"
 "Last-Translator: Scott Milliken <scott@themillikens.com>\n"
 "Language-Team: openDCIM <discussion@list.opendcim.org>\n"
@@ -45,8 +45,7 @@ msgid "Date"
 msgstr ""
 
 #: openDCIM/cabaudit.php:55 openDCIM/cabnavigator.php:76
-#: openDCIM/cabnavigator.pig.php:76 openDCIM/report_audit_frequency.php:234
-#: openDCIM/report_audit.php:278
+#: openDCIM/report_audit_frequency.php:234 openDCIM/report_audit.php:278
 msgid "Last Audit"
 msgstr ""
 
@@ -132,9 +131,8 @@ msgid "NumOutputs"
 msgstr ""
 
 #: openDCIM/cabaudit.php:508 openDCIM/cabinets.php:253
-#: openDCIM/cabnavigator.php:77 openDCIM/cabnavigator.pig.php:77
-#: openDCIM/cdu_templates.php:108 openDCIM/device_templates.php:642
-#: openDCIM/export_port_connections.php:77
+#: openDCIM/cabnavigator.php:77 openDCIM/cdu_templates.php:108
+#: openDCIM/device_templates.php:642 openDCIM/export_port_connections.php:77
 msgid "Model"
 msgstr ""
 
@@ -163,18 +161,18 @@ msgid "Updated"
 msgstr ""
 
 #: openDCIM/cabinets.php:192 openDCIM/cabnavigator.php:5
-#: openDCIM/cabnavigator.pig.php:5 openDCIM/rowview.php:5
+#: openDCIM/rowview.php:5
 msgid "Data Center Cabinet Inventory"
 msgstr ""
 
-#: openDCIM/cabinets.php:198 openDCIM/cabnavigator.php:231
-#: openDCIM/cabnavigator.pig.php:231 openDCIM/dc_stats.php:237
-#: openDCIM/devices.php:1759 openDCIM/pathmaker.php:227
-#: openDCIM/pathmaker.php:304 openDCIM/pathmaker.php:469
-#: openDCIM/paths.php:229 openDCIM/paths.php:304 openDCIM/paths.php:389
-#: openDCIM/report_cabinets.php:181 openDCIM/report_contact.php:477
-#: openDCIM/report_cost.php:461 openDCIM/report_exception.php:157
-#: openDCIM/report_exception.php:227 openDCIM/report_network_map.php:593
+#: openDCIM/cabinets.php:198 openDCIM/cabnavigator.php:234
+#: openDCIM/dc_stats.php:237 openDCIM/devices.php:1759
+#: openDCIM/pathmaker.php:227 openDCIM/pathmaker.php:304
+#: openDCIM/pathmaker.php:469 openDCIM/paths.php:229 openDCIM/paths.php:304
+#: openDCIM/paths.php:389 openDCIM/report_cabinets.php:181
+#: openDCIM/report_contact.php:477 openDCIM/report_cost.php:461
+#: openDCIM/report_exception.php:157 openDCIM/report_exception.php:227
+#: openDCIM/report_network_map.php:593
 #: openDCIM/report_outage_simulator.php:289 openDCIM/rowview.php:57
 #: openDCIM/workorder.php:59 openDCIM/zone_stats.php:244
 msgid "Cabinet"
@@ -185,9 +183,9 @@ msgid "New Cabinet"
 msgstr ""
 
 #: openDCIM/cabinets.php:210 openDCIM/cabnavigator.php:78
-#: openDCIM/cabnavigator.pig.php:78 openDCIM/cabrow.php:155
-#: openDCIM/pathmaker.php:495 openDCIM/pathmaker.php:507
-#: openDCIM/paths.php:602 openDCIM/report_cabinets.php:70
+#: openDCIM/cabrow.php:155 openDCIM/pathmaker.php:495
+#: openDCIM/pathmaker.php:507 openDCIM/paths.php:602
+#: openDCIM/report_cabinets.php:70
 #: openDCIM/report_diverse_power_exceptions.php:155
 #: openDCIM/report_network_map.php:590 openDCIM/report_outage_simulator.php:45
 #: openDCIM/report_panel_schedule.php:52
@@ -213,8 +211,7 @@ msgid "General Use"
 msgstr ""
 
 #: openDCIM/cabinets.php:241 openDCIM/cabnavigator.php:85
-#: openDCIM/cabnavigator.pig.php:85 openDCIM/report_network_map.php:591
-#: openDCIM/zone.php:107
+#: openDCIM/report_network_map.php:591 openDCIM/zone.php:107
 msgid "Zone"
 msgstr ""
 
@@ -226,8 +223,7 @@ msgstr ""
 msgid "Cabinet Height"
 msgstr ""
 
-#: openDCIM/cabinets.php:257 openDCIM/cabnavigator.php:445
-#: openDCIM/cabnavigator.pig.php:445
+#: openDCIM/cabinets.php:257 openDCIM/cabnavigator.php:448
 msgid "Key/Lock Information"
 msgstr ""
 
@@ -244,8 +240,7 @@ msgid "Date of Installation"
 msgstr "Date o' Installation"
 
 #: openDCIM/cabinets.php:273 openDCIM/cabnavigator.php:93
-#: openDCIM/cabnavigator.pig.php:93 openDCIM/devices.php:1737
-#: openDCIM/search_export.php:41
+#: openDCIM/devices.php:1737 openDCIM/search_export.php:41
 msgid "Tags"
 msgstr ""
 
@@ -278,13 +273,11 @@ msgstr ""
 msgid "Delete"
 msgstr ""
 
-#: openDCIM/cabinets.php:287 openDCIM/cabnavigator.php:530
-#: openDCIM/cabnavigator.pig.php:530
+#: openDCIM/cabinets.php:287 openDCIM/cabnavigator.php:549
 msgid "Audit Report"
 msgstr ""
 
-#: openDCIM/cabinets.php:288 openDCIM/cabnavigator.php:531
-#: openDCIM/cabnavigator.pig.php:531
+#: openDCIM/cabinets.php:288 openDCIM/cabnavigator.php:550
 msgid "Map Coordinates"
 msgstr ""
 
@@ -318,8 +311,7 @@ msgstr "Return t' Navigator"
 msgid "Return to Main Menu"
 msgstr "Return t' Main Menu"
 
-#: openDCIM/cabinets.php:306 openDCIM/cabnavigator.php:815
-#: openDCIM/cabnavigator.pig.php:808
+#: openDCIM/cabinets.php:306 openDCIM/cabnavigator.php:857
 #, fuzzy
 msgid "Cabinet delete confirmation"
 msgstr "Data Center Configuration"
@@ -349,27 +341,25 @@ msgstr ""
 msgid "No"
 msgstr ""
 
-#: openDCIM/cabnavigator.php:79 openDCIM/cabnavigator.pig.php:79
-#: openDCIM/devices.php:1656
+#: openDCIM/cabnavigator.php:79 openDCIM/devices.php:1656
 msgid "Install Date"
 msgstr ""
 
-#: openDCIM/cabnavigator.php:91 openDCIM/cabnavigator.pig.php:91
-#: openDCIM/cabrow.php:137 openDCIM/dc_stats.php:245 openDCIM/rowview.php:245
+#: openDCIM/cabnavigator.php:91 openDCIM/cabrow.php:137
+#: openDCIM/dc_stats.php:245 openDCIM/rowview.php:245
 #: openDCIM/zone_stats.php:252
 msgid "Row"
 msgstr ""
 
-#: openDCIM/cabnavigator.php:182 openDCIM/cabnavigator.pig.php:182
+#: openDCIM/cabnavigator.php:182
 msgid "Never"
 msgstr ""
 
-#: openDCIM/cabnavigator.php:210 openDCIM/cabnavigator.pig.php:210
+#: openDCIM/cabnavigator.php:213
 msgid "Free Space"
 msgstr ""
 
-#: openDCIM/cabnavigator.php:231 openDCIM/cabnavigator.php:302
-#: openDCIM/cabnavigator.pig.php:231 openDCIM/cabnavigator.pig.php:302
+#: openDCIM/cabnavigator.php:234 openDCIM/cabnavigator.php:305
 #: openDCIM/devices.php:378 openDCIM/devices.php:2081
 #: openDCIM/devices.php:2319 openDCIM/device_templates.php:827
 #: openDCIM/infrastructure.inc.php:1343 openDCIM/infrastructure.inc.php:1347
@@ -378,132 +368,140 @@ msgstr ""
 msgid "Rear"
 msgstr ""
 
-#: openDCIM/cabnavigator.php:232 openDCIM/cabnavigator.pig.php:232
-#: openDCIM/report_cabinets.php:182 openDCIM/rowview.php:58
+#: openDCIM/cabnavigator.php:235 openDCIM/report_cabinets.php:182
+#: openDCIM/rowview.php:58
 msgid "Pos"
 msgstr ""
 
-#: openDCIM/cabnavigator.php:232 openDCIM/cabnavigator.pig.php:232
-#: openDCIM/devices.php:2181 openDCIM/devices.php:2235
-#: openDCIM/pathmaker.php:464 openDCIM/report_cabinets.php:182
-#: openDCIM/rowview.php:58 openDCIM/storageroom.php:58
+#: openDCIM/cabnavigator.php:235 openDCIM/devices.php:2181
+#: openDCIM/devices.php:2235 openDCIM/pathmaker.php:464
+#: openDCIM/report_cabinets.php:182 openDCIM/rowview.php:58
+#: openDCIM/storageroom.php:58
 msgid "Device"
 msgstr ""
 
-#: openDCIM/cabnavigator.php:341 openDCIM/cabnavigator.pig.php:341
+#: openDCIM/cabnavigator.php:344
 msgid "Above defined rack height"
 msgstr ""
 
-#: openDCIM/cabnavigator.php:389 openDCIM/cabnavigator.pig.php:389
+#: openDCIM/cabnavigator.php:392
 msgid "Owner Unassigned"
 msgstr ""
 
-#: openDCIM/cabnavigator.php:390 openDCIM/cabnavigator.pig.php:390
+#: openDCIM/cabnavigator.php:393
 msgid "Template Unassigned"
 msgstr ""
 
-#: openDCIM/cabnavigator.php:394 openDCIM/cabnavigator.pig.php:394
+#: openDCIM/cabnavigator.php:397
 #, fuzzy
 msgid "Reservation"
 msgstr "R'ports"
 
-#: openDCIM/cabnavigator.php:399 openDCIM/cabnavigator.pig.php:399
+#: openDCIM/cabnavigator.php:402
 msgid "Markup Key"
 msgstr ""
 
-#: openDCIM/cabnavigator.php:403 openDCIM/cabnavigator.pig.php:403
+#: openDCIM/cabnavigator.php:406
 msgid "Cabinet Metrics"
 msgstr ""
 
-#: openDCIM/cabnavigator.php:406 openDCIM/cabnavigator.pig.php:406
-#: openDCIM/dc_dashboard.php:78 openDCIM/dc_stats.php:217
-#: openDCIM/index.php:114 openDCIM/zone_stats.php:225
-#: openDCIM/scripts/ajax_tooltip.php:137
+#: openDCIM/cabnavigator.php:409 openDCIM/dc_dashboard.php:78
+#: openDCIM/dc_stats.php:217 openDCIM/index.php:114
+#: openDCIM/zone_stats.php:225 openDCIM/scripts/ajax_tooltip.php:137
 msgid "Space"
 msgstr ""
 
-#: openDCIM/cabnavigator.php:415 openDCIM/cabnavigator.pig.php:415
-#: openDCIM/dc_dashboard.php:79 openDCIM/dc_stats.php:218
-#: openDCIM/device_templates.php:650 openDCIM/zone_stats.php:226
-#: openDCIM/scripts/ajax_tooltip.php:138
+#: openDCIM/cabnavigator.php:418 openDCIM/dc_dashboard.php:79
+#: openDCIM/dc_stats.php:218 openDCIM/device_templates.php:650
+#: openDCIM/zone_stats.php:226 openDCIM/scripts/ajax_tooltip.php:138
 msgid "Weight"
 msgstr ""
 
-#: openDCIM/cabnavigator.php:424 openDCIM/cabnavigator.pig.php:424
+#: openDCIM/cabnavigator.php:427
 msgid "Computed Watts"
 msgstr ""
 
-#: openDCIM/cabnavigator.php:433 openDCIM/cabnavigator.pig.php:433
+#: openDCIM/cabnavigator.php:436
 msgid "Measured Watts"
 msgstr ""
 
-#: openDCIM/cabnavigator.php:442 openDCIM/cabnavigator.pig.php:442
+#: openDCIM/cabnavigator.php:445
 msgid "Approximate Center of Gravity"
 msgstr ""
 
-#: openDCIM/cabnavigator.php:454 openDCIM/cabnavigator.pig.php:454
+#: openDCIM/cabnavigator.php:457
 msgid "Zero-U Devices"
 msgstr ""
 
-#: openDCIM/cabnavigator.php:462 openDCIM/cabnavigator.pig.php:462
+#: openDCIM/cabnavigator.php:465
 msgid "Power Distribution"
 msgstr "Pow'r Distribution"
 
-#: openDCIM/cabnavigator.php:502 openDCIM/cabnavigator.pig.php:502
+#: openDCIM/cabnavigator.php:505
 msgid "Unknown Status"
 msgstr ""
 
-#: openDCIM/cabnavigator.php:505 openDCIM/cabnavigator.pig.php:505
+#: openDCIM/cabnavigator.php:508
 msgid "ATS Feeds OK"
 msgstr ""
 
-#: openDCIM/cabnavigator.php:508 openDCIM/cabnavigator.pig.php:508
+#: openDCIM/cabnavigator.php:511
 msgid "ATS Feeds Abnormal"
 msgstr ""
 
-#: openDCIM/cabnavigator.php:516 openDCIM/cabnavigator.pig.php:516
+#: openDCIM/cabnavigator.php:519
 msgid "Add CDU"
 msgstr ""
 
-#: openDCIM/cabnavigator.php:528 openDCIM/cabnavigator.pig.php:528
-#: openDCIM/devices.php:2345
+#: openDCIM/cabnavigator.php:525
+msgid "Environmental Sensors"
+msgstr ""
+
+#: openDCIM/cabnavigator.php:533
+msgid "Add Sensor"
+msgstr ""
+
+#: openDCIM/cabnavigator.php:547 openDCIM/devices.php:2345
 msgid "Certify Audit"
 msgstr ""
 
-#: openDCIM/cabnavigator.php:529 openDCIM/cabnavigator.pig.php:529
-#: openDCIM/devices.php:2109
+#: openDCIM/cabnavigator.php:548 openDCIM/devices.php:2109
 msgid "Add Device"
 msgstr ""
 
-#: openDCIM/cabnavigator.php:532 openDCIM/cabnavigator.pig.php:532
+#: openDCIM/cabnavigator.php:551
 msgid "Edit Cabinet"
 msgstr ""
 
-#: openDCIM/cabnavigator.php:535 openDCIM/cabnavigator.pig.php:535
+#: openDCIM/cabnavigator.php:554
 msgid "Delete Cabinet"
 msgstr ""
 
-#: openDCIM/cabnavigator.php:547 openDCIM/cabnavigator.pig.php:547
-#: openDCIM/rowview.php:245
+#: openDCIM/cabnavigator.php:560
+#, fuzzy
+msgid "Cabinet Notes"
+msgstr "R'ports"
+
+#: openDCIM/cabnavigator.php:573 openDCIM/rowview.php:245
 msgid "Facilities Cabinet Maintenance"
 msgstr ""
 
-#: openDCIM/cabnavigator.php:804 openDCIM/cabnavigator.pig.php:797
+#: openDCIM/cabnavigator.php:846
 #, fuzzy, php-format
 msgid "Return to %s"
 msgstr "Return t' Navigator"
 
-#: openDCIM/cabnavigator.php:807 openDCIM/cabnavigator.pig.php:800
+#: openDCIM/cabnavigator.php:849
 #, fuzzy
 msgid "Audit Confirmation"
 msgstr "Data Center Configuration"
 
-#: openDCIM/cabnavigator.php:808 openDCIM/cabnavigator.pig.php:801
+#: openDCIM/cabnavigator.php:850
 #, fuzzy
 msgid "Do you certify that you have completed an audit of this cabinet?"
 msgstr "Do ye certify that ye have completed an audit o' th' selected cabinet?"
 
-#: openDCIM/cabnavigator.php:816 openDCIM/cabnavigator.pig.php:809
+#: openDCIM/cabnavigator.php:858
 #, fuzzy
 msgid ""
 "Are you sure that you want to delete this cabinet and all the devices in it?"
@@ -511,15 +509,13 @@ msgstr ""
 "Be ye sure that ye want t' delete this cabinet, includ'n all devices,power "
 "strips, an' connections?"
 
-#: openDCIM/cabnavigator.php:820 openDCIM/cabnavigator.pig.php:813
-#: openDCIM/departments.php:236 openDCIM/device_manufacturers.php:564
-#: openDCIM/usermgr.php:287
+#: openDCIM/cabnavigator.php:862 openDCIM/departments.php:236
+#: openDCIM/device_manufacturers.php:564 openDCIM/usermgr.php:287
 msgid "Are you REALLY sure?"
 msgstr ""
 
-#: openDCIM/cabnavigator.php:821 openDCIM/cabnavigator.pig.php:814
-#: openDCIM/departments.php:237 openDCIM/device_manufacturers.php:565
-#: openDCIM/usermgr.php:288
+#: openDCIM/cabnavigator.php:863 openDCIM/departments.php:237
+#: openDCIM/device_manufacturers.php:565 openDCIM/usermgr.php:288
 msgid "Are you sure REALLY sure?  There is no undo!!"
 msgstr ""
 
@@ -2922,7 +2918,7 @@ msgstr ""
 msgid "There is a loop in this port"
 msgstr ""
 
-#: openDCIM/paths.php:116
+#: openDCIM/paths.php:116 openDCIM/api/v1/index.php:420
 msgid "Device not found"
 msgstr ""
 
@@ -4457,83 +4453,87 @@ msgstr ""
 msgid "approximate"
 msgstr ""
 
-#: openDCIM/api/v1/index.php:402 openDCIM/api/v1/index.php:794
+#: openDCIM/api/v1/index.php:402 openDCIM/api/v1/index.php:818
 msgid "No device found with DeviceID"
 msgstr ""
 
-#: openDCIM/api/v1/index.php:579
+#: openDCIM/api/v1/index.php:426
+msgid "Device is not a sensor or is missing a template"
+msgstr ""
+
+#: openDCIM/api/v1/index.php:603
 msgid "No color code found with ColorID"
 msgstr ""
 
-#: openDCIM/api/v1/index.php:643
+#: openDCIM/api/v1/index.php:667
 msgid "Insufficient privilege level"
 msgstr ""
 
-#: openDCIM/api/v1/index.php:654
+#: openDCIM/api/v1/index.php:678
 msgid "User not found in database."
 msgstr ""
 
-#: openDCIM/api/v1/index.php:666
+#: openDCIM/api/v1/index.php:690
 msgid "Unable to update People resource with the given parameters."
 msgstr ""
 
-#: openDCIM/api/v1/index.php:671
+#: openDCIM/api/v1/index.php:695
 #, php-format
 msgid "People resource for UserID=%1$s updated successfully."
 msgstr ""
 
-#: openDCIM/api/v1/index.php:712
+#: openDCIM/api/v1/index.php:736
 msgid "Device update has failed"
 msgstr ""
 
-#: openDCIM/api/v1/index.php:799 openDCIM/api/v1/index.php:937
-#: openDCIM/api/v1/index.php:1059
+#: openDCIM/api/v1/index.php:823 openDCIM/api/v1/index.php:961
+#: openDCIM/api/v1/index.php:1083
 msgid "Unauthorized"
 msgstr ""
 
-#: openDCIM/api/v1/index.php:807
+#: openDCIM/api/v1/index.php:831
 msgid "Update failed"
 msgstr ""
 
-#: openDCIM/api/v1/index.php:853
+#: openDCIM/api/v1/index.php:877
 msgid "UserID already in database.  Use the update API to modify record."
 msgstr ""
 
-#: openDCIM/api/v1/index.php:867
+#: openDCIM/api/v1/index.php:891
 msgid "Unable to create People resource with the given parameters."
 msgstr ""
 
-#: openDCIM/api/v1/index.php:872
+#: openDCIM/api/v1/index.php:896
 msgid "People resource created successfully."
 msgstr ""
 
-#: openDCIM/api/v1/index.php:898
+#: openDCIM/api/v1/index.php:922
 msgid "Error creating new color."
 msgstr ""
 
-#: openDCIM/api/v1/index.php:902
+#: openDCIM/api/v1/index.php:926
 msgid "New color created successfully."
 msgstr ""
 
-#: openDCIM/api/v1/index.php:932
+#: openDCIM/api/v1/index.php:956
 #, fuzzy
 msgid "Cabinet not found"
 msgstr "R'ports"
 
-#: openDCIM/api/v1/index.php:942
+#: openDCIM/api/v1/index.php:966
 msgid "Device creation failed"
 msgstr ""
 
-#: openDCIM/api/v1/index.php:1032
+#: openDCIM/api/v1/index.php:1056
 msgid "Failed to delete color with ColorID"
 msgstr ""
 
-#: openDCIM/api/v1/index.php:1054
+#: openDCIM/api/v1/index.php:1078
 #, fuzzy
 msgid "Device doesn't exist"
 msgstr "Edit Pow'r Panels"
 
-#: openDCIM/api/v1/index.php:1064
+#: openDCIM/api/v1/index.php:1088
 msgid "An unknown error has occured"
 msgstr ""
 

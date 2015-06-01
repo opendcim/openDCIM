@@ -2,9 +2,9 @@ msgid ""
 msgstr ""
 "Project-Id-Version: openDCIM.po\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-05-29 23:05-0400\n"
-"PO-Revision-Date: 2014-08-04 14:05-0500\n"
-"Last-Translator: Scott Milliken <scott@themillikens.com>\n"
+"POT-Creation-Date: 2015-06-01 08:24-0400\n"
+"PO-Revision-Date: 2014-03-24 08:48-0500\n"
+"Last-Translator: Wilbur Longwisch <wilbur@wilpig.org>\n"
 "Language-Team: openDCIM <discussion@list.opendcim.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -40,8 +40,7 @@ msgid "Date"
 msgstr ""
 
 #: openDCIM/cabaudit.php:55 openDCIM/cabnavigator.php:76
-#: openDCIM/cabnavigator.pig.php:76 openDCIM/report_audit_frequency.php:234
-#: openDCIM/report_audit.php:278
+#: openDCIM/report_audit_frequency.php:234 openDCIM/report_audit.php:278
 msgid "Last Audit"
 msgstr "Zadnja revizija"
 
@@ -127,9 +126,8 @@ msgid "NumOutputs"
 msgstr "NumOutputs"
 
 #: openDCIM/cabaudit.php:508 openDCIM/cabinets.php:253
-#: openDCIM/cabnavigator.php:77 openDCIM/cabnavigator.pig.php:77
-#: openDCIM/cdu_templates.php:108 openDCIM/device_templates.php:642
-#: openDCIM/export_port_connections.php:77
+#: openDCIM/cabnavigator.php:77 openDCIM/cdu_templates.php:108
+#: openDCIM/device_templates.php:642 openDCIM/export_port_connections.php:77
 msgid "Model"
 msgstr "Model"
 
@@ -158,18 +156,18 @@ msgid "Updated"
 msgstr "Popravljeno"
 
 #: openDCIM/cabinets.php:192 openDCIM/cabnavigator.php:5
-#: openDCIM/cabnavigator.pig.php:5 openDCIM/rowview.php:5
+#: openDCIM/rowview.php:5
 msgid "Data Center Cabinet Inventory"
 msgstr "Data Center kabinet Popis"
 
-#: openDCIM/cabinets.php:198 openDCIM/cabnavigator.php:231
-#: openDCIM/cabnavigator.pig.php:231 openDCIM/dc_stats.php:237
-#: openDCIM/devices.php:1759 openDCIM/pathmaker.php:227
-#: openDCIM/pathmaker.php:304 openDCIM/pathmaker.php:469
-#: openDCIM/paths.php:229 openDCIM/paths.php:304 openDCIM/paths.php:389
-#: openDCIM/report_cabinets.php:181 openDCIM/report_contact.php:477
-#: openDCIM/report_cost.php:461 openDCIM/report_exception.php:157
-#: openDCIM/report_exception.php:227 openDCIM/report_network_map.php:593
+#: openDCIM/cabinets.php:198 openDCIM/cabnavigator.php:234
+#: openDCIM/dc_stats.php:237 openDCIM/devices.php:1759
+#: openDCIM/pathmaker.php:227 openDCIM/pathmaker.php:304
+#: openDCIM/pathmaker.php:469 openDCIM/paths.php:229 openDCIM/paths.php:304
+#: openDCIM/paths.php:389 openDCIM/report_cabinets.php:181
+#: openDCIM/report_contact.php:477 openDCIM/report_cost.php:461
+#: openDCIM/report_exception.php:157 openDCIM/report_exception.php:227
+#: openDCIM/report_network_map.php:593
 #: openDCIM/report_outage_simulator.php:289 openDCIM/rowview.php:57
 #: openDCIM/workorder.php:59 openDCIM/zone_stats.php:244
 msgid "Cabinet"
@@ -180,9 +178,9 @@ msgid "New Cabinet"
 msgstr "Novi kabinet"
 
 #: openDCIM/cabinets.php:210 openDCIM/cabnavigator.php:78
-#: openDCIM/cabnavigator.pig.php:78 openDCIM/cabrow.php:155
-#: openDCIM/pathmaker.php:495 openDCIM/pathmaker.php:507
-#: openDCIM/paths.php:602 openDCIM/report_cabinets.php:70
+#: openDCIM/cabrow.php:155 openDCIM/pathmaker.php:495
+#: openDCIM/pathmaker.php:507 openDCIM/paths.php:602
+#: openDCIM/report_cabinets.php:70
 #: openDCIM/report_diverse_power_exceptions.php:155
 #: openDCIM/report_network_map.php:590 openDCIM/report_outage_simulator.php:45
 #: openDCIM/report_panel_schedule.php:52
@@ -208,8 +206,7 @@ msgid "General Use"
 msgstr "Splošna uporaba"
 
 #: openDCIM/cabinets.php:241 openDCIM/cabnavigator.php:85
-#: openDCIM/cabnavigator.pig.php:85 openDCIM/report_network_map.php:591
-#: openDCIM/zone.php:107
+#: openDCIM/report_network_map.php:591 openDCIM/zone.php:107
 msgid "Zone"
 msgstr "časovno obdobje"
 
@@ -221,8 +218,7 @@ msgstr "Kabinet"
 msgid "Cabinet Height"
 msgstr "Višina omare"
 
-#: openDCIM/cabinets.php:257 openDCIM/cabnavigator.php:445
-#: openDCIM/cabnavigator.pig.php:445
+#: openDCIM/cabinets.php:257 openDCIM/cabnavigator.php:448
 msgid "Key/Lock Information"
 msgstr "Ključni / zaklepanje informacije"
 
@@ -239,8 +235,7 @@ msgid "Date of Installation"
 msgstr "Datum namestitve"
 
 #: openDCIM/cabinets.php:273 openDCIM/cabnavigator.php:93
-#: openDCIM/cabnavigator.pig.php:93 openDCIM/devices.php:1737
-#: openDCIM/search_export.php:41
+#: openDCIM/devices.php:1737 openDCIM/search_export.php:41
 msgid "Tags"
 msgstr ""
 
@@ -273,13 +268,11 @@ msgstr "Posodobiti"
 msgid "Delete"
 msgstr "Izbriši"
 
-#: openDCIM/cabinets.php:287 openDCIM/cabnavigator.php:530
-#: openDCIM/cabnavigator.pig.php:530
+#: openDCIM/cabinets.php:287 openDCIM/cabnavigator.php:549
 msgid "Audit Report"
 msgstr "revizijsko poročilo"
 
-#: openDCIM/cabinets.php:288 openDCIM/cabnavigator.php:531
-#: openDCIM/cabnavigator.pig.php:531
+#: openDCIM/cabinets.php:288 openDCIM/cabnavigator.php:550
 msgid "Map Coordinates"
 msgstr "zemljevid Koordinate"
 
@@ -313,8 +306,7 @@ msgstr "Nazaj na Navigator"
 msgid "Return to Main Menu"
 msgstr "Nazaj na Glavni Meni"
 
-#: openDCIM/cabinets.php:306 openDCIM/cabnavigator.php:815
-#: openDCIM/cabnavigator.pig.php:808
+#: openDCIM/cabinets.php:306 openDCIM/cabnavigator.php:857
 msgid "Cabinet delete confirmation"
 msgstr ""
 
@@ -340,27 +332,25 @@ msgstr ""
 msgid "No"
 msgstr ""
 
-#: openDCIM/cabnavigator.php:79 openDCIM/cabnavigator.pig.php:79
-#: openDCIM/devices.php:1656
+#: openDCIM/cabnavigator.php:79 openDCIM/devices.php:1656
 msgid "Install Date"
 msgstr "Namestite Datum"
 
-#: openDCIM/cabnavigator.php:91 openDCIM/cabnavigator.pig.php:91
-#: openDCIM/cabrow.php:137 openDCIM/dc_stats.php:245 openDCIM/rowview.php:245
+#: openDCIM/cabnavigator.php:91 openDCIM/cabrow.php:137
+#: openDCIM/dc_stats.php:245 openDCIM/rowview.php:245
 #: openDCIM/zone_stats.php:252
 msgid "Row"
 msgstr ""
 
-#: openDCIM/cabnavigator.php:182 openDCIM/cabnavigator.pig.php:182
+#: openDCIM/cabnavigator.php:182
 msgid "Never"
 msgstr ""
 
-#: openDCIM/cabnavigator.php:210 openDCIM/cabnavigator.pig.php:210
+#: openDCIM/cabnavigator.php:213
 msgid "Free Space"
 msgstr "Vesolje"
 
-#: openDCIM/cabnavigator.php:231 openDCIM/cabnavigator.php:302
-#: openDCIM/cabnavigator.pig.php:231 openDCIM/cabnavigator.pig.php:302
+#: openDCIM/cabnavigator.php:234 openDCIM/cabnavigator.php:305
 #: openDCIM/devices.php:378 openDCIM/devices.php:2081
 #: openDCIM/devices.php:2319 openDCIM/device_templates.php:827
 #: openDCIM/infrastructure.inc.php:1343 openDCIM/infrastructure.inc.php:1347
@@ -369,147 +359,148 @@ msgstr "Vesolje"
 msgid "Rear"
 msgstr "Zadaj"
 
-#: openDCIM/cabnavigator.php:232 openDCIM/cabnavigator.pig.php:232
-#: openDCIM/report_cabinets.php:182 openDCIM/rowview.php:58
+#: openDCIM/cabnavigator.php:235 openDCIM/report_cabinets.php:182
+#: openDCIM/rowview.php:58
 msgid "Pos"
 msgstr "Pos"
 
-#: openDCIM/cabnavigator.php:232 openDCIM/cabnavigator.pig.php:232
-#: openDCIM/devices.php:2181 openDCIM/devices.php:2235
-#: openDCIM/pathmaker.php:464 openDCIM/report_cabinets.php:182
-#: openDCIM/rowview.php:58 openDCIM/storageroom.php:58
+#: openDCIM/cabnavigator.php:235 openDCIM/devices.php:2181
+#: openDCIM/devices.php:2235 openDCIM/pathmaker.php:464
+#: openDCIM/report_cabinets.php:182 openDCIM/rowview.php:58
+#: openDCIM/storageroom.php:58
 msgid "Device"
 msgstr "Naprava"
 
-#: openDCIM/cabnavigator.php:341 openDCIM/cabnavigator.pig.php:341
+#: openDCIM/cabnavigator.php:344
 msgid "Above defined rack height"
 msgstr ""
 
-#: openDCIM/cabnavigator.php:389 openDCIM/cabnavigator.pig.php:389
+#: openDCIM/cabnavigator.php:392
 msgid "Owner Unassigned"
 msgstr "Lastnik Nedodeljen"
 
-#: openDCIM/cabnavigator.php:390 openDCIM/cabnavigator.pig.php:390
+#: openDCIM/cabnavigator.php:393
 msgid "Template Unassigned"
 msgstr "Predloga Nedodeljen"
 
-#: openDCIM/cabnavigator.php:394 openDCIM/cabnavigator.pig.php:394
+#: openDCIM/cabnavigator.php:397
 msgid "Reservation"
 msgstr "Rezervacija?"
 
-#: openDCIM/cabnavigator.php:399 openDCIM/cabnavigator.pig.php:399
+#: openDCIM/cabnavigator.php:402
 msgid "Markup Key"
 msgstr "Oznaka ključne"
 
-#: openDCIM/cabnavigator.php:403 openDCIM/cabnavigator.pig.php:403
+#: openDCIM/cabnavigator.php:406
 msgid "Cabinet Metrics"
 msgstr "Kabinet Metrics"
 
-#: openDCIM/cabnavigator.php:406 openDCIM/cabnavigator.pig.php:406
-#: openDCIM/dc_dashboard.php:78 openDCIM/dc_stats.php:217
-#: openDCIM/index.php:114 openDCIM/zone_stats.php:225
-#: openDCIM/scripts/ajax_tooltip.php:137
+#: openDCIM/cabnavigator.php:409 openDCIM/dc_dashboard.php:78
+#: openDCIM/dc_stats.php:217 openDCIM/index.php:114
+#: openDCIM/zone_stats.php:225 openDCIM/scripts/ajax_tooltip.php:137
 msgid "Space"
 msgstr "Vesolje"
 
-#: openDCIM/cabnavigator.php:415 openDCIM/cabnavigator.pig.php:415
-#: openDCIM/dc_dashboard.php:79 openDCIM/dc_stats.php:218
-#: openDCIM/device_templates.php:650 openDCIM/zone_stats.php:226
-#: openDCIM/scripts/ajax_tooltip.php:138
+#: openDCIM/cabnavigator.php:418 openDCIM/dc_dashboard.php:79
+#: openDCIM/dc_stats.php:218 openDCIM/device_templates.php:650
+#: openDCIM/zone_stats.php:226 openDCIM/scripts/ajax_tooltip.php:138
 msgid "Weight"
 msgstr "Teža"
 
-#: openDCIM/cabnavigator.php:424 openDCIM/cabnavigator.pig.php:424
+#: openDCIM/cabnavigator.php:427
 msgid "Computed Watts"
 msgstr "Izračun BTU od Watts"
 
-#: openDCIM/cabnavigator.php:433 openDCIM/cabnavigator.pig.php:433
+#: openDCIM/cabnavigator.php:436
 msgid "Measured Watts"
 msgstr ""
 
-#: openDCIM/cabnavigator.php:442 openDCIM/cabnavigator.pig.php:442
+#: openDCIM/cabnavigator.php:445
 msgid "Approximate Center of Gravity"
 msgstr "Približna težišča"
 
-#: openDCIM/cabnavigator.php:454 openDCIM/cabnavigator.pig.php:454
+#: openDCIM/cabnavigator.php:457
 msgid "Zero-U Devices"
 msgstr "Zero-U Naprave"
 
-#: openDCIM/cabnavigator.php:462 openDCIM/cabnavigator.pig.php:462
+#: openDCIM/cabnavigator.php:465
 msgid "Power Distribution"
 msgstr "Power Distribution"
 
-#: openDCIM/cabnavigator.php:502 openDCIM/cabnavigator.pig.php:502
+#: openDCIM/cabnavigator.php:505
 msgid "Unknown Status"
 msgstr "neznano"
 
-#: openDCIM/cabnavigator.php:505 openDCIM/cabnavigator.pig.php:505
+#: openDCIM/cabnavigator.php:508
 msgid "ATS Feeds OK"
 msgstr ""
 
-#: openDCIM/cabnavigator.php:508 openDCIM/cabnavigator.pig.php:508
+#: openDCIM/cabnavigator.php:511
 msgid "ATS Feeds Abnormal"
 msgstr ""
 
-#: openDCIM/cabnavigator.php:516 openDCIM/cabnavigator.pig.php:516
+#: openDCIM/cabnavigator.php:519
 msgid "Add CDU"
 msgstr "Dodaj CDU"
 
-#: openDCIM/cabnavigator.php:528 openDCIM/cabnavigator.pig.php:528
-#: openDCIM/devices.php:2345
+#: openDCIM/cabnavigator.php:525
+msgid "Environmental Sensors"
+msgstr ""
+
+#: openDCIM/cabnavigator.php:533
+msgid "Add Sensor"
+msgstr ""
+
+#: openDCIM/cabnavigator.php:547 openDCIM/devices.php:2345
 msgid "Certify Audit"
 msgstr "Potrdite revizije"
 
-#: openDCIM/cabnavigator.php:529 openDCIM/cabnavigator.pig.php:529
-#: openDCIM/devices.php:2109
+#: openDCIM/cabnavigator.php:548 openDCIM/devices.php:2109
 msgid "Add Device"
 msgstr "Dodaj napravo"
 
-#: openDCIM/cabnavigator.php:532 openDCIM/cabnavigator.pig.php:532
+#: openDCIM/cabnavigator.php:551
 msgid "Edit Cabinet"
 msgstr "Uredi kabinet"
 
-#: openDCIM/cabnavigator.php:535 openDCIM/cabnavigator.pig.php:535
+#: openDCIM/cabnavigator.php:554
 msgid "Delete Cabinet"
 msgstr "Brisanje kabinet"
 
-#: openDCIM/cabnavigator.php:547 openDCIM/cabnavigator.pig.php:547
-#: openDCIM/rowview.php:245
+#: openDCIM/cabnavigator.php:560
+#, fuzzy
+msgid "Cabinet Notes"
+msgstr "Kabinet"
+
+#: openDCIM/cabnavigator.php:573 openDCIM/rowview.php:245
 msgid "Facilities Cabinet Maintenance"
 msgstr ""
 
-#: openDCIM/cabnavigator.php:804 openDCIM/cabnavigator.pig.php:797
-#, fuzzy, php-format
+#: openDCIM/cabnavigator.php:846
+#, php-format
 msgid "Return to %s"
-msgstr "Nazaj na Navigator"
+msgstr ""
 
-#: openDCIM/cabnavigator.php:807 openDCIM/cabnavigator.pig.php:800
-#, fuzzy
+#: openDCIM/cabnavigator.php:849
 msgid "Audit Confirmation"
-msgstr "Urejanje konfiguracije"
+msgstr ""
 
-#: openDCIM/cabnavigator.php:808 openDCIM/cabnavigator.pig.php:801
-#, fuzzy
+#: openDCIM/cabnavigator.php:850
 msgid "Do you certify that you have completed an audit of this cabinet?"
-msgstr "Ali potrjujete, da ste zaključili revizijo izbrane omari?"
+msgstr ""
 
-#: openDCIM/cabnavigator.php:816 openDCIM/cabnavigator.pig.php:809
-#, fuzzy
+#: openDCIM/cabnavigator.php:858
 msgid ""
 "Are you sure that you want to delete this cabinet and all the devices in it?"
 msgstr ""
-"Ali ste prepričani, da želite izbrisati to kabinet, vključno z vsemi "
-"napravami, moč trakovi in povezav?"
 
-#: openDCIM/cabnavigator.php:820 openDCIM/cabnavigator.pig.php:813
-#: openDCIM/departments.php:236 openDCIM/device_manufacturers.php:564
-#: openDCIM/usermgr.php:287
+#: openDCIM/cabnavigator.php:862 openDCIM/departments.php:236
+#: openDCIM/device_manufacturers.php:564 openDCIM/usermgr.php:287
 msgid "Are you REALLY sure?"
 msgstr ""
 
-#: openDCIM/cabnavigator.php:821 openDCIM/cabnavigator.pig.php:814
-#: openDCIM/departments.php:237 openDCIM/device_manufacturers.php:565
-#: openDCIM/usermgr.php:288
+#: openDCIM/cabnavigator.php:863 openDCIM/departments.php:237
+#: openDCIM/device_manufacturers.php:565 openDCIM/usermgr.php:288
 msgid "Are you sure REALLY sure?  There is no undo!!"
 msgstr ""
 
@@ -701,9 +692,8 @@ msgid "Custom Device Attribute Delete Error"
 msgstr ""
 
 #: openDCIM/configuration.php:1167
-#, fuzzy
 msgid "Delete from All Devices/Templates"
-msgstr "Data Center Device Predloge"
+msgstr ""
 
 #: openDCIM/configuration.php:1186
 msgid "Custom Device Attribute Delete Override"
@@ -946,9 +936,8 @@ msgid "Keep local values when synchronizing"
 msgstr ""
 
 #: openDCIM/configuration.php:1531
-#, fuzzy
 msgid "API UserID"
-msgstr "UserID"
+msgstr ""
 
 #: openDCIM/configuration.php:1535
 msgid "API Key"
@@ -1003,19 +992,16 @@ msgid "Don't touch my labels"
 msgstr ""
 
 #: openDCIM/configuration.php:1593
-#, fuzzy
 msgid "Device Lists"
-msgstr "razred naprave"
+msgstr ""
 
 #: openDCIM/configuration.php:1595
-#, fuzzy
 msgid "Just Devices"
-msgstr "Naprava"
+msgstr ""
 
 #: openDCIM/configuration.php:1596
-#, fuzzy
 msgid "Show Datacenter and Cabinet"
-msgstr "Data Center kabinet Popis"
+msgstr ""
 
 #: openDCIM/configuration.php:1601
 msgid "Site"
@@ -1100,9 +1086,8 @@ msgid "Base URL for install"
 msgstr ""
 
 #: openDCIM/configuration.php:1699
-#, fuzzy
 msgid "SNMP Options"
-msgstr "SNMP Uptime"
+msgstr ""
 
 #: openDCIM/configuration.php:1702
 msgid "Default SNMP Community"
@@ -1117,9 +1102,8 @@ msgid "SNMPv3 AuthProtocol"
 msgstr ""
 
 #: openDCIM/configuration.php:1735 openDCIM/devices.php:1919
-#, fuzzy
 msgid "SNMPv3 Passphrase"
-msgstr "SMTP Password"
+msgstr ""
 
 #: openDCIM/configuration.php:1739 openDCIM/devices.php:1923
 msgid "SNMPv3 PrivProtocol"
@@ -1244,9 +1228,8 @@ msgid "Apply to<br>All Devices"
 msgstr ""
 
 #: openDCIM/configuration.php:1881
-#, fuzzy
 msgid "Default Value"
-msgstr "Privzeto plošča Napetost"
+msgstr ""
 
 #: openDCIM/conflicts.php:575
 msgid "Power Strip"
@@ -1610,25 +1593,20 @@ msgid "Assign Contacts"
 msgstr "Določi Imenik"
 
 #: openDCIM/departments.php:228
-#, fuzzy
 msgid "Department delete confirmation"
-msgstr "Data Center Configuration"
+msgstr ""
 
 #: openDCIM/departments.php:229
-#, fuzzy
 msgid "Are you sure that you want to delete this Department?"
 msgstr ""
-"Ali ste prepričani, da želite izbrisati to kabinet, vključno z vsemi "
-"napravami, moč trakovi in povezav?"
 
 #: openDCIM/departments.php:231 openDCIM/rowview.php:245
 msgid "Cabinets"
 msgstr "Kabinet"
 
 #: openDCIM/dept_groups.php:46
-#, fuzzy
 msgid "openDCIM Department Contact Maintenance"
-msgstr "Data Center Velikost"
+msgstr ""
 
 #: openDCIM/dept_groups.php:66
 msgid "Group to Administer"
@@ -1644,9 +1622,8 @@ msgid "Data Center Manufacturer Listing"
 msgstr "Data Center Proizvajalec objavo"
 
 #: openDCIM/device_manufacturers.php:79
-#, fuzzy
 msgid "Error adding new manufacturer"
-msgstr "Proizvajalci Uredi"
+msgstr ""
 
 #: openDCIM/device_manufacturers.php:515
 msgid "New Manufacturer"
@@ -1669,16 +1646,12 @@ msgid "Templates using this Manufacturer"
 msgstr ""
 
 #: openDCIM/device_manufacturers.php:558
-#, fuzzy
 msgid "Manufacturer delete confirmation"
-msgstr "Data Center Configuration"
+msgstr ""
 
 #: openDCIM/device_manufacturers.php:559
-#, fuzzy
 msgid "Are you sure that you want to delete this Manufacturer?"
 msgstr ""
-"Ali ste prepričani, da želite izbrisati to kabinet, vključno z vsemi "
-"napravami, moč trakovi in povezav?"
 
 #: openDCIM/devices.php:5
 msgid "Data Center Device Detail"
@@ -1695,9 +1668,8 @@ msgid "From Template"
 msgstr ""
 
 #: openDCIM/devices.php:94 openDCIM/devices.php:98 openDCIM/devices.php:151
-#, fuzzy
 msgid "Invert Port Labels"
-msgstr "Ime strežnika"
+msgstr ""
 
 #: openDCIM/devices.php:233
 msgid "ERROR: No ports found"
@@ -1750,9 +1722,8 @@ msgid "Physical Infrastructure"
 msgstr "Fizična infrastruktura"
 
 #: openDCIM/devices.php:782
-#, fuzzy
 msgid "CDU"
-msgstr "Dodaj CDU"
+msgstr ""
 
 #: openDCIM/devices.php:812
 msgid "openDCIM Device Maintenance"
@@ -1972,29 +1943,25 @@ msgid "Device Type"
 msgstr "Device Type"
 
 #: openDCIM/devices.php:1863
-#, fuzzy
 msgid "Device Images"
-msgstr "Ime naprave"
+msgstr ""
 
 #: openDCIM/devices.php:1873
-#, fuzzy
 msgid "SNMP Configuration"
-msgstr "Urejanje konfiguracije"
+msgstr ""
 
 #: openDCIM/devices.php:1879 openDCIM/devices.php:1896
 #: openDCIM/devices.php:1909 openDCIM/devices.php:1926
-#, fuzzy
 msgid "Configuration Default"
-msgstr "Urejanje konfiguracije"
+msgstr ""
 
 #: openDCIM/devices.php:1889
 msgid "SNMP Read Only Community"
 msgstr "SNMP bralni skupnosti"
 
 #: openDCIM/devices.php:1890
-#, fuzzy
 msgid "Test SNMP"
-msgstr "Switch Port"
+msgstr ""
 
 #: openDCIM/devices.php:1940
 msgid "Consecutive SNMP Failures"
@@ -2005,9 +1972,8 @@ msgid "Polling is disabled after three consecutive failures."
 msgstr ""
 
 #: openDCIM/devices.php:1947
-#, fuzzy
 msgid "Power Specifications"
-msgstr "Motorni Povezave"
+msgstr ""
 
 #: openDCIM/devices.php:1950
 msgid "Source Panel"
@@ -2229,19 +2195,16 @@ msgid "Error updating template ports"
 msgstr ""
 
 #: openDCIM/device_templates.php:151
-#, fuzzy
 msgid "Error updating template power connections"
-msgstr "Nove predloge"
+msgstr ""
 
 #: openDCIM/device_templates.php:173 openDCIM/device_templates.php:188
-#, fuzzy
 msgid "Error updating device template custom values"
-msgstr "Nove predloge"
+msgstr ""
 
 #: openDCIM/device_templates.php:206 openDCIM/device_templates.php:227
-#, fuzzy
 msgid "Error updating cdu attributes"
-msgstr "zahtevek za posodobitev"
+msgstr ""
 
 #: openDCIM/device_templates.php:245
 msgid "An error has occured, template not created"
@@ -2281,9 +2244,8 @@ msgid "0 for a vertical mounting"
 msgstr ""
 
 #: openDCIM/device_templates.php:670
-#, fuzzy
 msgid "No. Power Connections"
-msgstr "Motorni Povezave"
+msgstr ""
 
 #: openDCIM/device_templates.php:671 openDCIM/device_templates.php:675
 msgid "Edit Ports"
@@ -2322,23 +2284,20 @@ msgid "Rear Chassis Slots"
 msgstr "šasija Vsebina"
 
 #: openDCIM/device_templates.php:749
-#, fuzzy
 msgid "Default:"
-msgstr "Privzeto plošča Napetost"
+msgstr ""
 
 #: openDCIM/device_templates.php:756
 msgid "Revert to default value from configuration page"
 msgstr ""
 
 #: openDCIM/device_templates.php:756
-#, fuzzy
 msgid "Revert"
-msgstr "strežnik"
+msgstr ""
 
 #: openDCIM/device_templates.php:766
-#, fuzzy
 msgid "Enabled?"
-msgstr "onemogočeno"
+msgstr ""
 
 #: openDCIM/device_templates.php:767
 msgid "Required?"
@@ -2357,9 +2316,8 @@ msgid "Clone Template"
 msgstr "Nove predloge"
 
 #: openDCIM/device_templates.php:804
-#, fuzzy
 msgid "Delete Template"
-msgstr "Nove predloge"
+msgstr ""
 
 #: openDCIM/device_templates.php:804
 msgid "Update Devices"
@@ -2458,9 +2416,8 @@ msgid "Target Cabinet"
 msgstr ""
 
 #: openDCIM/export_port_connections.php:145 openDCIM/power.inc.php:322
-#, fuzzy
 msgid "Power Connection"
-msgstr "Motorni Povezave"
+msgstr ""
 
 #: openDCIM/image_management.php:5
 msgid "OpenDCIM Image File Management"
@@ -2624,7 +2581,7 @@ msgstr ""
 #: openDCIM/infrastructure.inc.php:1383
 #, php-format
 msgid "Ignored port %s"
-msgstr "Ignored port %s"
+msgstr "Poročila o oglasnem"
 
 #: openDCIM/infrastructure.inc.php:2459 openDCIM/misc.inc.php:736
 #: openDCIM/storageroom.php:27
@@ -2881,9 +2838,8 @@ msgid "End to end connection path"
 msgstr ""
 
 #: openDCIM/paths.php:59
-#, fuzzy
 msgid "Front connections deleted"
-msgstr "Povezave"
+msgstr ""
 
 #: openDCIM/paths.php:61
 msgid "Come back when you have device rights"
@@ -2894,7 +2850,7 @@ msgstr ""
 msgid "There is a loop in this port"
 msgstr ""
 
-#: openDCIM/paths.php:116
+#: openDCIM/paths.php:116 openDCIM/api/v1/index.php:420
 msgid "Device not found"
 msgstr "naprava Port"
 
@@ -2939,9 +2895,8 @@ msgid "openDCIM Department Membership Maintenance"
 msgstr ""
 
 #: openDCIM/people_depts.php:66 openDCIM/usermgr.php:261
-#, fuzzy
 msgid "Department Membership"
-msgstr "Oddelek Ime"
+msgstr ""
 
 #: openDCIM/power_panel.php:146
 msgid "Power Panel ID"
@@ -2980,24 +2935,20 @@ msgid "Sequential"
 msgstr "zaporedno"
 
 #: openDCIM/power_panel.php:191
-#, fuzzy
 msgid "Parent Panel"
-msgstr "Patch Panel"
+msgstr ""
 
 #: openDCIM/power_panel.php:206
-#, fuzzy
 msgid "Parent Breaker Name"
-msgstr "Matično naprave"
+msgstr ""
 
 #: openDCIM/power_panel.php:210
-#, fuzzy
 msgid "Panel Meter IP Address"
-msgstr "Naslov za dostavo"
+msgstr ""
 
 #: openDCIM/power_panel.php:214
-#, fuzzy
 msgid "CDU/Meter Template"
-msgstr "CDU Predloga"
+msgstr ""
 
 #: openDCIM/power_panel.php:262
 msgid "Panel Schedule"
@@ -3056,17 +3007,17 @@ msgid ""
 "this request has been completed.\n"
 "\t\t\tPlease allow up to 2 business days for requests to be completed."
 msgstr ""
-"Your request for racking up the device labeled %1$s has been received.\n"
-"\t\t\tThe Network Operations Center will examine the request and contact you "
-"if more information is needed\n"
-"\t\t\tbefore the request can be processed.  You will receive a notice when "
-"this request has been completed.\n"
-"\t\t\tPlease allow up to 2 business days for requests to be completed."
+"je prejel. \n"
+"\t\t\tbo mreža Operations Center zahtevo preuči in vas obvestil, če je "
+"potrebnih več informacij \n"
+"\t\t\tpreden se lahko obdelajo zahtevek. Prejeli boste obvestilo, ko je "
+"izpolnjen ta zahteva. \n"
+"\t\t\tProsimo, počakajte do 2 delovnih dni za zahteve je treba izpolniti."
 
 #: openDCIM/rackrequest.php:107
 #, php-format
 msgid "Your Request ID is %1$d and you may view the request online at"
-msgstr "Your Request ID is %1$d and you may view the request online at"
+msgstr "in lahko si ogledate na spletu na zahtevo"
 
 #: openDCIM/rackrequest.php:109 openDCIM/rackrequest.php:163
 msgid "this link"
@@ -3075,13 +3026,12 @@ msgstr "ta povezava"
 #: openDCIM/rackrequest.php:161
 #, php-format
 msgid "Your request for racking up the device labeled %1$s has been completed."
-msgstr ""
-"Your request for racking up the device labeled %1$s has been completed."
+msgstr "Vaša zahteva za polic do naprave z oznako"
 
 #: openDCIM/rackrequest.php:162
 #, php-format
 msgid "To view your device in its final location click %1$s"
-msgstr "To view your device in its final location click %1$s"
+msgstr "Če želite videti mobilno napravo v svoji končni klik lokaciji"
 
 #: openDCIM/rackrequest.php:185
 msgid "You do not have permission to delete this request"
@@ -3385,14 +3335,12 @@ msgid "Cabinet Audit Frequency Report"
 msgstr ""
 
 #: openDCIM/report_audit_frequency.php:231 openDCIM/report_audit.php:405
-#, fuzzy
 msgid "Activity by Location"
-msgstr "bin Lokacija"
+msgstr ""
 
 #: openDCIM/report_audit_frequency.php:234
-#, fuzzy
 msgid "Times Audited"
-msgstr "Zadnja revizija"
+msgstr ""
 
 #: openDCIM/report_audit_frequency.php:234 openDCIM/search_export.php:43
 msgid "Installation Date"
@@ -3400,32 +3348,28 @@ msgstr "Namestite Datum"
 
 #: openDCIM/report_audit_frequency.php:234
 #: openDCIM/report_audit_frequency.php:310
-#, fuzzy
 msgid "Days Since Last Audit"
-msgstr "Zadnja revizija"
+msgstr ""
 
 #: openDCIM/report_audit_frequency.php:307
 msgid "Summary by Period"
 msgstr ""
 
 #: openDCIM/report_audit_frequency.php:310
-#, fuzzy
 msgid "Number of Cabinets"
-msgstr "Število polov"
+msgstr ""
 
 #: openDCIM/report_audit.php:5
 msgid "Cabinet Audit Reporting"
 msgstr ""
 
 #: openDCIM/report_audit.php:39
-#, fuzzy
 msgid "Cabinet Audits Report"
-msgstr "Kabinet Revizijsko poročilo"
+msgstr ""
 
 #: openDCIM/report_audit.php:40 openDCIM/report_surplus.php:40
-#, fuzzy
 msgid "Dates"
-msgstr "Opombe"
+msgstr ""
 
 #: openDCIM/report_audit.php:275
 msgid "Auditor Summary"
@@ -3442,9 +3386,8 @@ msgstr "UserID"
 #: openDCIM/report_audit.php:408 openDCIM/report_contact.php:442
 #: openDCIM/report_cost.php:427 openDCIM/report_department.php:171
 #: openDCIM/report_surplus.php:226 openDCIM/report_vm_by_department.php:214
-#, fuzzy
 msgid "UserName"
-msgstr "Ime"
+msgstr ""
 
 #: openDCIM/report_audit.php:278 openDCIM/supplies.php:52
 #: openDCIM/supplybin.php:177
@@ -3456,23 +3399,20 @@ msgid "Activity by Date"
 msgstr ""
 
 #: openDCIM/report_audit.php:312 openDCIM/report_audit.php:408
-#, fuzzy
 msgid "Comments"
-msgstr "Štetje"
+msgstr ""
 
 #: openDCIM/report_audit.php:326 openDCIM/report_audit.php:328
 msgid "Mon"
 msgstr ""
 
 #: openDCIM/report_audit.php:326 openDCIM/report_audit.php:328
-#, fuzzy
 msgid "Tue"
-msgstr "True"
+msgstr ""
 
 #: openDCIM/report_audit.php:326 openDCIM/report_audit.php:328
-#, fuzzy
 msgid "Wed"
-msgstr "Rdeča"
+msgstr ""
 
 #: openDCIM/report_audit.php:326 openDCIM/report_audit.php:328
 msgid "Thu"
@@ -3483,9 +3423,8 @@ msgid "Fri"
 msgstr ""
 
 #: openDCIM/report_audit.php:326 openDCIM/report_audit.php:328
-#, fuzzy
 msgid "Sat"
-msgstr "Status"
+msgstr ""
 
 #: openDCIM/report_audit.php:326 openDCIM/report_audit.php:328
 msgid "Sun"
@@ -3500,14 +3439,12 @@ msgid "Day of Week"
 msgstr ""
 
 #: openDCIM/report_audit.php:379
-#, fuzzy
 msgid "Audits"
-msgstr "Zadnja revizija"
+msgstr ""
 
 #: openDCIM/report_cabinets.php:15
-#, fuzzy
 msgid "Cabinet Report"
-msgstr "Kabinet Revizijsko poročilo"
+msgstr ""
 
 #: openDCIM/report_cabinets.php:73 openDCIM/report_outage_simulator.php:47
 #: openDCIM/report_panel_schedule.php:54 openDCIM/search_export.php:186
@@ -3515,9 +3452,8 @@ msgid "Select data center"
 msgstr "Izberite predlogo"
 
 #: openDCIM/report_cabinets.php:99
-#, fuzzy
 msgid "Choose cabinets to print in Data Center"
-msgstr "Power Distribution jih Data Center"
+msgstr ""
 
 #: openDCIM/report_cabinets.php:100 openDCIM/report_outage_simulator.php:62
 #: openDCIM/report_panel_schedule.php:69 openDCIM/report_xml_CFD.php:63
@@ -3525,28 +3461,24 @@ msgid "Generate"
 msgstr "Splošno"
 
 #: openDCIM/report_cabinets.php:105
-#, fuzzy
 msgid "Cabinet ID"
-msgstr "Kabinet"
+msgstr ""
 
 #: openDCIM/report_cabinets.php:177 openDCIM/rowview.php:53
 msgid "Side"
 msgstr ""
 
 #: openDCIM/report_contact.php:32
-#, fuzzy
 msgid "Data Center Asset and Contact Report"
-msgstr "Data Center sredstev Costing poročilo"
+msgstr ""
 
 #: openDCIM/report_contact.php:391
-#, fuzzy
 msgid "Top 10 Data Center Occupancy Rates"
-msgstr "Data Center Rack zahteva"
+msgstr ""
 
 #: openDCIM/report_contact.php:399
-#, fuzzy
 msgid "Top 10 Data Center Power Users"
-msgstr "Data Center Velikost"
+msgstr ""
 
 #: openDCIM/report_contact.php:434 openDCIM/report_cost.php:419
 #: openDCIM/report_department.php:163 openDCIM/report_exception.php:215
@@ -3570,29 +3502,25 @@ msgid "Phone3"
 msgstr "Telefon 3"
 
 #: openDCIM/report_contact.php:496 openDCIM/report_cost.php:481
-#, fuzzy
 msgid "Total Rack Units for "
-msgstr "Rack Units"
+msgstr ""
 
 #: openDCIM/report_contact.php:497 openDCIM/report_cost.php:482
 msgid "Total BTU Output for "
 msgstr ""
 
 #: openDCIM/report_contact.php:529 openDCIM/report_cost.php:520
-#, fuzzy
 msgid "Total Rack Units for All Data Centers"
-msgstr "Data Center"
+msgstr ""
 
 #: openDCIM/report_contact.php:530 openDCIM/report_cost.php:521
-#, fuzzy
 msgid "Total BTU Output for All Data Centers"
-msgstr "Data Center"
+msgstr ""
 
 #: openDCIM/report_contact.php:537 openDCIM/report_vm_by_department.php:162
 #: openDCIM/report_vm_by_department.php:240
-#, fuzzy
 msgid "Virtual Machine Image Name"
-msgstr "Virtualni stroji"
+msgstr ""
 
 #: openDCIM/report_contact.php:537 openDCIM/report_vm_by_department.php:162
 #: openDCIM/report_vm_by_department.php:240
@@ -3600,33 +3528,28 @@ msgid "Current Host Server"
 msgstr ""
 
 #: openDCIM/report_contact.php:537
-#, fuzzy
 msgid "State"
-msgstr "Status"
+msgstr ""
 
 #: openDCIM/report_contact.php:537
-#, fuzzy
 msgid "Last Polled"
-msgstr "v"
+msgstr ""
 
 #: openDCIM/report_cost.php:37 openDCIM/reports.php:42
 msgid "Data Center Asset Costing Report"
 msgstr "Data Center sredstev Costing poročilo"
 
 #: openDCIM/report_cost.php:461
-#, fuzzy
 msgid "Rack Cost"
-msgstr "rack Prošnje"
+msgstr ""
 
 #: openDCIM/report_cost.php:523 openDCIM/report_cost.php:526
-#, fuzzy
 msgid "Annual Electrical Cost for Department"
-msgstr "Namestite Datum"
+msgstr ""
 
 #: openDCIM/report_cost.php:524 openDCIM/report_cost.php:527
-#, fuzzy
 msgid "Annual Infrastructure Cost for Department"
-msgstr "Namestite Datum"
+msgstr ""
 
 #: openDCIM/report_department.php:27
 msgid "Departmental Contacts Report"
@@ -3685,9 +3608,8 @@ msgid "Data Exceptions Report"
 msgstr "Podatki Izjeme Poročilo"
 
 #: openDCIM/report_exception.php:157 openDCIM/report_exception.php:227
-#, fuzzy
 msgid "Power Cords"
-msgstr "Napajanje"
+msgstr ""
 
 #: openDCIM/report_logging.php:5
 msgid "Logging View/Export"
@@ -3779,9 +3701,8 @@ msgid "Only listing systems which are down or unknown."
 msgstr ""
 
 #: openDCIM/report_outage_simulator.php:289
-#, fuzzy
 msgid "Affected Panels"
-msgstr "Izberite ploščo"
+msgstr ""
 
 #: openDCIM/report_outage_simulator.php:353
 #: openDCIM/report_outage_simulator.php:361
@@ -3802,22 +3723,19 @@ msgid "Normal"
 msgstr ""
 
 #: openDCIM/report_panel_schedule.php:15 openDCIM/reports.php:58
-#, fuzzy
 msgid "Power Panel Schedule Report"
-msgstr "Panel Urnik"
+msgstr ""
 
 #: openDCIM/report_panel_schedule.php:190
 #: openDCIM/report_panel_schedule.php:257
-#, fuzzy
 msgid "Panel Schedule for"
-msgstr "Panel Urnik"
+msgstr ""
 
 #: openDCIM/report_panel_schedule.php:194
 #: openDCIM/report_panel_schedule.php:261
 #: openDCIM/report_panel_schedule.php:263
-#, fuzzy
 msgid "Pole"
-msgstr "Moč"
+msgstr ""
 
 #: openDCIM/report_panel_schedule.php:195
 #: openDCIM/report_panel_schedule.php:262
@@ -3831,9 +3749,8 @@ msgstr "Power Distribution jih Data Center"
 
 #: openDCIM/report_power_distribution.php:187
 #: openDCIM/report_power_distribution.php:193
-#, fuzzy
 msgid "PDU"
-msgstr "PDU ID"
+msgstr ""
 
 #: openDCIM/reports.php:5
 msgid "Inventory Reports"
@@ -3872,9 +3789,8 @@ msgid "Asset Aging Report"
 msgstr "Asset Aging Poročilo"
 
 #: openDCIM/reports.php:44
-#, fuzzy
 msgid "Warranty Expiration Report"
-msgstr "Garancija poteka"
+msgstr ""
 
 #: openDCIM/reports.php:45 openDCIM/report_vm_by_department.php:32
 msgid "Virtual Machines by Department"
@@ -3901,9 +3817,8 @@ msgid "Server Tier Classification Report"
 msgstr "Strežnik Stopnja Razvrstitev Poročilo"
 
 #: openDCIM/reports.php:59
-#, fuzzy
 msgid "Cabinet List"
-msgstr "Kabinet"
+msgstr ""
 
 #: openDCIM/reports.php:62
 msgid "Auditing Reports"
@@ -3959,9 +3874,8 @@ msgid "Surplus/Salvage Device Reporting"
 msgstr ""
 
 #: openDCIM/report_surplus.php:223
-#, fuzzy
 msgid "Surplus/Salvage by Date"
-msgstr "Presežek / Salvage Revizijsko poročilo"
+msgstr ""
 
 #: openDCIM/report_surplus.php:226
 msgid "Surplus Date"
@@ -3992,14 +3906,12 @@ msgid "All Tags"
 msgstr ""
 
 #: openDCIM/report_vm_by_department.php:152
-#, fuzzy
 msgid "Total Number of VMs"
-msgstr "Število polov"
+msgstr ""
 
 #: openDCIM/report_vm_by_department.php:159
-#, fuzzy
 msgid "Virtual Machines Unassigned to a Department"
-msgstr "Virtualni stroji z ministrstva"
+msgstr ""
 
 #: openDCIM/report_vm_by_department.php:162
 #: openDCIM/report_vm_by_department.php:240
@@ -4007,14 +3919,12 @@ msgid "Index"
 msgstr ""
 
 #: openDCIM/report_warranty.php:101
-#, fuzzy
 msgid "Data Center Warranty Expiration Report"
-msgstr "Podatki Izjeme Poročilo"
+msgstr ""
 
 #: openDCIM/report_warranty.php:414
-#, fuzzy
 msgid "Warranty Status"
-msgstr "Garancija Podjetje"
+msgstr ""
 
 #: openDCIM/report_warranty.php:431
 msgid "Remaining"
@@ -4025,9 +3935,8 @@ msgid "Devices with expired warranty"
 msgstr ""
 
 #: openDCIM/report_warranty.php:464
-#, fuzzy
 msgid "Expired"
-msgstr "Poročila"
+msgstr ""
 
 #: openDCIM/report_xml_CFD.php:5
 msgid "XML Output for CFD Simulation"
@@ -4038,9 +3947,8 @@ msgid "Select Data Center"
 msgstr "Izberite predlogo"
 
 #: openDCIM/rowview.php:270
-#, fuzzy
 msgid "Add new cabinet"
-msgstr "Novi kabinet"
+msgstr ""
 
 #: openDCIM/rowview.php:273
 msgid "Front View"
@@ -4095,9 +4003,8 @@ msgid "Custom tag search results for"
 msgstr ""
 
 #: openDCIM/search.php:75
-#, fuzzy
 msgid "Custom attribute search results for"
-msgstr "rezultati"
+msgstr ""
 
 #: openDCIM/search.php:220
 #, php-format
@@ -4156,7 +4063,7 @@ msgstr "Storage Array"
 #: openDCIM/storageroom.php:24
 #, php-format
 msgid "%s Storage Room"
-msgstr "%s Storage Room"
+msgstr "Storage Array"
 
 #: openDCIM/storageroom.php:60
 msgid "Serial No."
@@ -4251,9 +4158,8 @@ msgid "Phone 3"
 msgstr "Telefon 3"
 
 #: openDCIM/usermgr.php:241
-#, fuzzy
 msgid "Email Address"
-msgstr "Naslov za dostavo"
+msgstr ""
 
 #: openDCIM/usermgr.php:245
 msgid "Rights"
@@ -4292,9 +4198,8 @@ msgid "Manage Site and Users"
 msgstr "Upravljanje spletnih mest in uporabniki"
 
 #: openDCIM/usermgr.php:261
-#, fuzzy
 msgid "Transfer Devices"
-msgstr "Rezervirano naprave"
+msgstr ""
 
 #: openDCIM/usermgr.php:284
 msgid "Transfer all devices to another primary contact"
@@ -4441,92 +4346,91 @@ msgstr ""
 msgid "approximate"
 msgstr ""
 
-#: openDCIM/api/v1/index.php:402 openDCIM/api/v1/index.php:794
+#: openDCIM/api/v1/index.php:402 openDCIM/api/v1/index.php:818
 msgid "No device found with DeviceID"
 msgstr ""
 
-#: openDCIM/api/v1/index.php:579
+#: openDCIM/api/v1/index.php:426
+msgid "Device is not a sensor or is missing a template"
+msgstr ""
+
+#: openDCIM/api/v1/index.php:603
 msgid "No color code found with ColorID"
 msgstr ""
 
-#: openDCIM/api/v1/index.php:643
+#: openDCIM/api/v1/index.php:667
 msgid "Insufficient privilege level"
 msgstr ""
 
-#: openDCIM/api/v1/index.php:654
+#: openDCIM/api/v1/index.php:678
 msgid "User not found in database."
 msgstr ""
 
-#: openDCIM/api/v1/index.php:666
+#: openDCIM/api/v1/index.php:690
 msgid "Unable to update People resource with the given parameters."
 msgstr ""
 
-#: openDCIM/api/v1/index.php:671
+#: openDCIM/api/v1/index.php:695
 #, php-format
 msgid "People resource for UserID=%1$s updated successfully."
 msgstr ""
 
-#: openDCIM/api/v1/index.php:712
+#: openDCIM/api/v1/index.php:736
 msgid "Device update has failed"
 msgstr ""
 
-#: openDCIM/api/v1/index.php:799 openDCIM/api/v1/index.php:937
-#: openDCIM/api/v1/index.php:1059
+#: openDCIM/api/v1/index.php:823 openDCIM/api/v1/index.php:961
+#: openDCIM/api/v1/index.php:1083
 msgid "Unauthorized"
 msgstr ""
 
-#: openDCIM/api/v1/index.php:807
-#, fuzzy
+#: openDCIM/api/v1/index.php:831
 msgid "Update failed"
-msgstr "Popravljeno"
+msgstr ""
 
-#: openDCIM/api/v1/index.php:853
+#: openDCIM/api/v1/index.php:877
 msgid "UserID already in database.  Use the update API to modify record."
 msgstr ""
 
-#: openDCIM/api/v1/index.php:867
+#: openDCIM/api/v1/index.php:891
 msgid "Unable to create People resource with the given parameters."
 msgstr ""
 
-#: openDCIM/api/v1/index.php:872
+#: openDCIM/api/v1/index.php:896
 msgid "People resource created successfully."
 msgstr ""
 
-#: openDCIM/api/v1/index.php:898
-#, fuzzy
+#: openDCIM/api/v1/index.php:922
 msgid "Error creating new color."
-msgstr "Proizvajalci Uredi"
+msgstr ""
 
-#: openDCIM/api/v1/index.php:902
+#: openDCIM/api/v1/index.php:926
 msgid "New color created successfully."
 msgstr ""
 
-#: openDCIM/api/v1/index.php:932
-#, fuzzy
+#: openDCIM/api/v1/index.php:956
 msgid "Cabinet not found"
-msgstr "Kabinet Lokacija"
+msgstr ""
 
-#: openDCIM/api/v1/index.php:942
+#: openDCIM/api/v1/index.php:966
 msgid "Device creation failed"
 msgstr ""
 
-#: openDCIM/api/v1/index.php:1032
+#: openDCIM/api/v1/index.php:1056
 msgid "Failed to delete color with ColorID"
 msgstr ""
 
-#: openDCIM/api/v1/index.php:1054
-#, fuzzy
+#: openDCIM/api/v1/index.php:1078
 msgid "Device doesn't exist"
-msgstr "razred naprave"
+msgstr ""
 
-#: openDCIM/api/v1/index.php:1064
+#: openDCIM/api/v1/index.php:1088
 msgid "An unknown error has occured"
 msgstr ""
 
 #: openDCIM/scripts/ajax_tooltip.php:140
-#, fuzzy
 msgid "Measured Power Combined"
-msgstr "Surovi Moč"
+msgstr ""
 
 #: openDCIM/scripts/ajax_tooltip.php:180
 msgid "Quit that! You don't have rights to view this."
@@ -4600,159 +4504,3 @@ msgstr ""
 #: openDCIM/scripts/uploadifive.php:106
 msgid "God help us something has gone horrible wrong"
 msgstr ""
-
-#~ msgid "Sensor IP Address / Host Name"
-#~ msgstr "Senzor IP naslov"
-
-#~ msgid "Sensor SNMP Community"
-#~ msgstr "Senzor SNMP Skupnosti"
-
-#~ msgid "Sensor Template"
-#~ msgstr "Nove predloge"
-
-#~ msgid ""
-#~ "Do you certify that you have completed an audit of the selected cabinet?"
-#~ msgstr "Ali potrjujete, da ste zaključili revizijo izbrane omari?"
-
-#~ msgid ""
-#~ "Are you sure that you want to delete this cabinet, including all devices, "
-#~ "power strips, and connections?"
-#~ msgstr ""
-#~ "Ali ste prepričani, da želite izbrisati to kabinet, vključno z vsemi "
-#~ "napravami, moč trakovi in povezav?"
-
-#~ msgid "THIS ACTION CAN NOT BE UNDONE!"
-#~ msgstr "Ta ukrep se ni mogoče razveljaviti!"
-
-#~ msgid "Edit Sensor Templates"
-#~ msgstr "Urejanje CDU Predloge"
-
-#~ msgid "Edit Power Sources"
-#~ msgstr "Urejanje Viri napajanja"
-
-#~ msgid "Data Center PDU Detail"
-#~ msgstr "Data Center PDU Podrobnosti"
-
-#~ msgid "Testing SNMP communication to CDU"
-#~ msgstr "Testiranje SNMP komunikacijo s CDU"
-
-#~ msgid "Connecting to IP address"
-#~ msgstr "Priključitev IP naslov"
-
-#~ msgid "Using SNMP Community string"
-#~ msgstr "Uporaba SNMP Skupnosti niz"
-
-#~ msgid "Using default SNMP Community string"
-#~ msgstr "Uporaba SNMP Skupnosti niz"
-
-#~ msgid "Results"
-#~ msgstr "rezultati"
-
-#~ msgid "SNMP Uptime did not return a valid value."
-#~ msgstr "SNMP Uptime ni vrnil veljavno vrednost."
-
-#~ msgid "VersionOID returned a value of"
-#~ msgstr "VersionOID vrne vrednost"
-
-#~ msgid "Please check to see if it makes sense."
-#~ msgstr "Prosimo, da preverite, če je smiselno."
-
-#~ msgid ""
-#~ "The OID for Firmware Version did not return a value.  Please check your "
-#~ "MIB table."
-#~ msgstr ""
-#~ "OID za različico vdelane programske opreme ni vrnila vrednost. Preverite "
-#~ "svoj MIB mizo."
-
-#~ msgid "OID1 returned a value of"
-#~ msgstr "OID1 vrne vrednost"
-
-#~ msgid "OID1 did not return any data.  Please check your MIB table."
-#~ msgstr "OID1 ni vrnil nobenih podatkov. Preverite svoj MIB mizo."
-
-#~ msgid "OID2 returned a value of"
-#~ msgstr "OID2 vrne vrednost"
-
-#~ msgid "OID2 did not return any data.  Please check your MIB table."
-#~ msgstr "OID2 ni vrnil nobenih podatkov. Preverite svoj MIB mizo."
-
-#~ msgid "OID3 returned a value of"
-#~ msgstr "OID3 vrne vrednost"
-
-#~ msgid "OID3 did not return any data.  Please check your MIB table."
-#~ msgstr "OID3 ni vrnil nobenih podatkov. Preverite svoj MIB mizo."
-
-#~ msgid "Resulting kW from this test is"
-#~ msgstr "Posledični kW od tega preskusa je"
-
-#~ msgid "PDU Deletion Confirmation"
-#~ msgstr "Data Center Configuration"
-
-#~ msgid "PDU ID"
-#~ msgstr "PDU ID"
-
-#~ msgid "IP Address / Host Name"
-#~ msgstr "IP naslov"
-
-#~ msgid "SNMP Community"
-#~ msgstr "SNMP Skupnosti"
-
-#~ msgid "Test Communications"
-#~ msgstr "Testna komunikacije"
-
-#~ msgid "Output No."
-#~ msgstr "Izhod #"
-
-#~ msgid "Dev Input No"
-#~ msgstr "Naprava vhod #"
-
-#~ msgid "Power Source ID"
-#~ msgstr "Napajanje ID"
-
-#~ msgid "New Power Source"
-#~ msgstr "Nov vir napajanja"
-
-#~ msgid "Load OID"
-#~ msgstr "Nalaganje OID"
-
-#, fuzzy
-#~ msgid "Load OID2"
-#~ msgstr "Nalaganje OID"
-
-#, fuzzy
-#~ msgid "Load OID3"
-#~ msgstr "Nalaganje OID"
-
-#~ msgid "Capacity"
-#~ msgstr "zmogljivost"
-
-#~ msgid "Contact"
-#~ msgstr "Kontakt"
-
-#~ msgid "New Contact"
-#~ msgstr "nova oseba"
-
-#~ msgid "Number of Power Supplies"
-#~ msgstr "Število napajalniki"
-
-#~ msgid ""
-#~ "No power connections defined.  You can add connections from the power "
-#~ "strip screen."
-#~ msgstr ""
-#~ "Brez električne povezave opredeliti. Dodate lahko povezave z zaslona "
-#~ "električnega podaljška."
-
-#~ msgid "No. Power Supplies"
-#~ msgstr "Ne Napajalniki"
-
-#~ msgid "Contact Administration"
-#~ msgstr "Stik z upravo"
-
-#~ msgid "Manage Users"
-#~ msgstr "upravljanje uporabnikov"
-
-#~ msgid "Edit CDU Templates"
-#~ msgstr "Urejanje CDU Predloge"
-
-#~ msgid "Minimum"
-#~ msgstr "Največja"
