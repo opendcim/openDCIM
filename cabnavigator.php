@@ -129,7 +129,7 @@ function renderUnassignedTemplateOwnership($noTemplFlag, $noOwnerFlag, $device) 
 	$cab->GetCabinet();
 
 	// Check to see if this user is allowed to see anything in ihere
-	if(! $person->SiteAdmin && ! $person->ReadAccess && $cab->AssignedTo >0 && !array_intersect($person->isMemberOf(),Cabinet::GetOccupants($cab->CabinetID))){
+	if(!$person->SiteAdmin && !$person->ReadAccess && $cab->Rights=='None' && !array_intersect($person->isMemberOf(),Cabinet::GetOccupants($cab->CabinetID))){
 		// This cabinet belongs to a department you don't have affiliation with, so no viewing at all
 		header('Location: '.redirect());
 		exit;
@@ -462,7 +462,8 @@ $body.='<div id="infopanel">
 ';
 	}
 	$body.='	<fieldset name="pdu">
-		<legend>'.__("Power Distribution").'</legend>';
+		<legend>'.__("Power Distribution").'</legend>
+		<div>';
 
 	foreach($PDUList as $PDUdev){
 		$lastreading=$PDUdev->GetLastReading();
@@ -519,7 +520,7 @@ $body.='<div id="infopanel">
 		$body.="\n\t\t<ul class=\"nav\"><a href=\"devices.php?action=new&CabinetID=$cab->CabinetID&DeviceType=CDU\"><li>".__("Add CDU")."</li></a></ul>\n";
 	}
 
-	$body.="\t</fieldset>\n";
+	$body.="\t\t</div>\n\t</fieldset>\n";
 
 	$body.='	<fieldset id="sensors">
 		<legend>'.__("Environmental Sensors").'</legend>
@@ -571,6 +572,7 @@ $body.='<div id="infopanel">
 	}
 
 	$title=($cab->Location!='')?"$cab->Location :: $dc->Name":__("Facilities Cabinet Maintenance");
+
 ?>
 <!doctype html>
 <html>
@@ -646,6 +648,7 @@ echo $head,'  <script type="text/javascript" src="scripts/jquery.min.js"></scrip
 		if($("#keylock div").text().trim()==""){$("#keylock").hide();}
 		if($("#cabnotes div").text().trim()==""){$("#cabnotes").hide();}
 		if($("#sensors div").text().trim()==""){$("#sensors").hide();}
+		if($("fieldset[name=pdu] div").text().trim()==""){$("fieldset[name=pdu]").hide();}
 
 		$("#verifyaudit").click(function(e){
 			e.preventDefault();

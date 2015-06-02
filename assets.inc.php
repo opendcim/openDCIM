@@ -123,7 +123,7 @@ class Cabinet {
 		// Remove information that they shouldn't have access to
 		if($this->Rights=='None'){
 			// ZoneID and CabRowID are probably both not important but meh
-			$publicfields=array('CabinetID','DataCenterID','Location','LocationSortable','ZoneID','CabRowID','Rights');
+			$publicfields=array('CabinetID','DataCenterID','Location','LocationSortable','ZoneID','CabRowID','Rights','AssignedTo');
 			foreach($this as $prop => $value){
 				if(!in_array($prop,$publicfields)){
 					$this->$prop=null;
