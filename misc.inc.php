@@ -780,7 +780,7 @@ if(!People::Current()){
 
 /* This is used on every page so we might as well just init it once */
 $person=People::Current();
-if(($person->Disabled || $person->PersonID==0) && $config->ParameterArray["RequireDefinedUser"]=="enabled"){
+if(($person->Disabled || ($person->PersonID==0 && $person->UserID!="cli_admin")) && $config->ParameterArray["RequireDefinedUser"]=="enabled"){
 	header("Location: ".redirect('unauthorized.php'));
 	exit;
 }

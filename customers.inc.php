@@ -200,6 +200,7 @@ class People {
 			$cperson->ReadAccess=true;
 			$cperson->WriteAccess=true;
 			$cperson->SiteAdmin=true;
+			$cperson->Disabled=false;
 		}elseif(AUTHENTICATION=="Apache"){
 			if(!isset($_SERVER["REMOTE_USER"])){
 				return false;
