@@ -1112,7 +1112,7 @@ class PowerDistribution {
 			$this->PDUID=$row["PDUID"];
 			if($ver=$this->GetSmartCDUVersion()){
 				$sql="UPDATE fac_PowerDistribution SET FirmwareVersion=\"$ver\" WHERE PDUID=$this->PDUID;";
-				if(!$dbh->exec($sql)){
+				if(!$dbh->query($sql)){
 					$info=$dbh->errorInfo();
 					error_log("PowerDistribution::UpdateStats::PDO Error: {$info[2]} SQL=$sql");
 				}
