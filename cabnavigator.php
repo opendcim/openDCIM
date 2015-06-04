@@ -785,7 +785,7 @@ if ( $config->ParameterArray["WorkOrderBuilder"]=='enabled' ) {
 
 if($config->ParameterArray["CDUToolTips"]=='enabled'){
 ?>
-		$('fieldset[name="pdu"] legend ~ a').mouseenter(function(){
+		$('fieldset[name="pdu"] div > a').mouseenter(function(){
 			var pos=$(this).offset();
 			var tooltip=$('<div />').css({
 				'left':pos.left+$(this).outerWidth()+15+'px',
