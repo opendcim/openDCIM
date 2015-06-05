@@ -3148,11 +3148,6 @@ class Device {
 
 			$temp=($t->TemperatureOID)?floatval(self::OSS_SNMP_Lookup($dev,null,"$t->TemperatureOID")):0;
 			$humidity=($t->HumidityOID)?floatval(self::OSS_SNMP_Lookup($dev,null,"$t->HumidityOID")):0;
-
-			// Assholes using commas for periods fucking up sql entries.
-			$temp=number_format($temp, 2, '.', '');
-			$humidity=number_format($humidity, 2, '.', '');
-
 			// Strip out everything but numbers
 			// not sure these are needed anymore thanks to the OSS_SNMP library
 			$temp=preg_replace("/[^0-9.,+]/","",$temp);
@@ -3170,6 +3165,10 @@ class Device {
 			}elseif(($t->mUnits=="metric") && ($config->ParameterArray["mUnits"]=="english")){
 				$temp=(($temp*9/5)+32);
 			}
+
+			// Assholes using commas for periods fucking up sql entries.
+			$temp=number_format($temp, 2, '.', '');
+			$humidity=number_format($humidity, 2, '.', '');
 
 			// No need for any further sanitization it was all handled above
 			$insertsql="INSERT INTO fac_SensorReadings SET DeviceID=$dev->DeviceID, 
