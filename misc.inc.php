@@ -140,10 +140,13 @@ function redirect($target = null) {
 
 if(!function_exists("ArraySearchRecursive")){
 	function ArraySearchRecursive($Needle,$Haystack,$NeedleKey="",$Strict=false,$Path=array()) {
-		if(!is_array($Haystack))
+		if(is_object($Haystack)){
+			$Haystack=(array) $Haystack;
+		}elseif(!is_array($Haystack)){
 			return false;
+		}
 		foreach($Haystack as $Key => $Val) {
-			if(is_array($Val)&&$SubPath=ArraySearchRecursive($Needle,$Val,$NeedleKey,$Strict,$Path)) {
+			if((is_array($Val)||is_object($Val))&&$SubPath=ArraySearchRecursive($Needle,$Val,$NeedleKey,$Strict,$Path)) {
 				$Path=array_merge($Path,Array($Key),$SubPath);
 				return $Path;
 			}elseif((!$Strict&&$Val==$Needle&&$Key==(strlen($NeedleKey)>0?$NeedleKey:$Key))||($Strict&&$Val===$Needle&&$Key==(strlen($NeedleKey)>0?$NeedleKey:$Key))) {

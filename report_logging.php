@@ -2,6 +2,30 @@
 	require_once('db.inc.php');
 	require_once('facilities.inc.php');
 
+
+if(isset($_POST['refresh'])){
+	$log=new LogActions();
+	$data_array=array();
+	if(isset($_POST['ListUnique'])){
+		$data_array=$log->ListUnique($_POST['ListUnique']);
+	}
+
+	if(isset($_POST['BuildTable'])){
+		foreach($log as $prop => $val){
+			if(isset($_POST[$prop])){
+				$log->$prop=$_POST[$prop];
+			}
+		}
+		echo BuildDataTable($log);
+		exit;
+	}
+
+	header('Content-Type: application/json');
+	echo json_encode($data_array);
+	exit;
+}
+
+
 	$subversion=__("Logging View/Export");
 
 	$datacenter=new DataCenter();
@@ -10,50 +34,63 @@
 	$templ=new DeviceTemplate();
 	$dept=new Department();
 	$dev=new Device();
+	$log=new LogActions();
 	
-	$body="";
+	function BuildDataTable($log){
+		$limit=(isset($_REQUEST['Limit']))?$_REQUEST['Limit']:1000;
+		$result=$log->Search($limit);
 
-	$result=LogActions::GetLog();
+		// Left these expanded in case we need to add or remove columns.  Otherwise I would have just collapsed entirely.
+		$body="<table id=\"export\" class=\"display\">\n\t<thead>\n\t\t<tr>\n
+			\t<th>".__("Time")."</th>
+			\t<th>".__("UserID")."</th>
+			\t<th>".__("Class")."</th>
+			\t<th>".__("ObjectID")."</th>
+			\t<th>".__("ChildID")."</th>
+			\t<th>".__("Action")."</th>
+			\t<th>".__("Property")."</th>
+			\t<th>".__("Old Value")."</th>
+			\t<th>".__("New Value")."</th>
+			</tr>\n\t</thead>\n\t<tbody>\n";
 
-	// Left these expanded in case we need to add or remove columns.  Otherwise I would have just collapsed entirely.
-	$body="<table id=\"export\" class=\"display\">\n\t<thead>\n\t\t<tr>\n
-		\t<th>".__("Time")."</th>
-		\t<th>".__("UserID")."</th>
-		\t<th>".__("Class")."</th>
-		\t<th>".__("ObjectID")."</th>
-		\t<th>".__("ChildID")."</th>
-		\t<th>".__("Action")."</th>
-		\t<th>".__("Property")."</th>
-		\t<th>".__("Old Value")."</th>
-		\t<th>".__("New Value")."</th>
-		</tr>\n\t</thead>\n\t<tbody>\n";
-
-	// suppressing errors for when there is a fake data set in place
-	foreach($result as $logitem){
-		switch($logitem->Action){
-			case 1:
-				$logitem->Action=__("Create");
-				break;
-			case 2:
-				$logitem->Action=__("Delete");
-				break;
-			case 3:
-				$logitem->Action=__("Update");
-				break;
-			default:
+		// suppressing errors for when there is a fake data set in place
+		foreach($result as $logitem){
+			switch($logitem->Action){
+				case 1:
+					$logitem->Action=__("Create");
+					break;
+				case 2:
+					$logitem->Action=__("Delete");
+					break;
+				case 3:
+					$logitem->Action=__("Update");
+					break;
+				default:
+			}
+			$body.="\t\t<tr>
+			\t<td>$logitem->Time</td>
+			\t<td>$logitem->UserID</td>
+			\t<td>$logitem->Class</td>
+			\t<td>$logitem->ObjectID</td>
+			\t<td>$logitem->ChildID</td>
+			\t<td>$logitem->Action</td>
+			\t<td>$logitem->Property</td>
+			\t<td>$logitem->OldVal</td>
+			\t<td>$logitem->NewVal</td>\n\t\t</tr>\n";
 		}
-		$body.="\t\t<tr>
-		\t<td>$logitem->Time</td>
-		\t<td>$logitem->UserID</td>
-		\t<td>$logitem->Class</td>
-		\t<td>$logitem->ObjectID</td>
-		\t<td>$logitem->ChildID</td>
-		\t<td>$logitem->Action</td>
-		\t<td>$logitem->Property</td>
-		\t<td>$logitem->OldVal</td>
-		\t<td>$logitem->NewVal</td>\n\t\t</tr>\n";
+		$body.="\t\t</tbody>\n\t</table>\n";
+
+		return $body;
 	}
-	$body.="\t\t</tbody>\n\t</table>\n";
+
+	$body=BuildDataTable($log);
+
+	function buildselect($prop){
+		$return_html="<select name=\"$prop\"></select>";
+
+		return $return_html;
+	}
+
 ?>
 <!doctype html>
 <html>
@@ -78,19 +115,68 @@
   
   <script type="text/javascript">
 	$(document).ready(function(){
-		function dt(){
-			$('#export').dataTable({
-				"iDisplayLength": 25,
-				"sDom": 'CT<"clear">lfrtip',
-				"oTableTools": {
-					"sSwfPath": "scripts/copy_csv_xls.swf",
-					"aButtons": ["copy","csv","xls","print"]
-				}
-			});
-			resize();
-		}
+		// Start DataTables functions
 		dt();
+
+		
+		$('.table :input').change(function(){
+			GetTableData();
+		}).each(function(){
+			refreshValues(this);
+		});
 	});
+
+	function GetTableData(){
+		// Get current data table instance
+		var tab=$('#export').DataTable();
+		// Get the search options
+		var formdata=$('.table :input').serializeArray();
+		formdata.push({name:'refresh',value:''});
+		formdata.push({name:'BuildTable',value:''});
+		// Post and build the new table
+		$.post('',formdata).done(function(data){
+			// Supposedly the get table was successful so kill the previous instance
+			tab.destroy(true);
+			// Insert the new table
+			$('#tablecontainer').html(data);
+			// Init the new table
+			dt();
+		});
+	}
+
+	function dt(){
+		$('#export').dataTable({
+			"iDisplayLength": 25,
+			"sDom": 'CT<"clear">lfrtip',
+			"order": [[ 0, 'desc' ]],
+			"columnDefs": [{"width": "110px", "targets": 0}],
+			"oTableTools": {
+				"sSwfPath": "scripts/copy_csv_xls.swf",
+				"aButtons": ["copy","csv","xls","print"]
+			}
+		});
+		resize();
+	}
+
+	function refreshValues(inputobject){
+		var ov=inputobject.value;
+		$.post('',{refresh:'',ListUnique:inputobject.name}).done(function(data){
+			if(data){
+				$(inputobject).html('').append($("<option>"));
+				for(var i in data){
+					var label=data[i];
+					if(inputobject.name=="Action"){
+						labels=['','Create','Delete','Update'];
+						if(typeof labels[label]!='undefined'){
+							label=labels[label];
+						}
+					}
+					$(inputobject).append($("<option>").val(data[i]).html(label));
+				}
+				inputobject.value=ov;
+			}
+		});
+	}
   </script>
 </head>
 <body>
@@ -99,6 +185,30 @@
 <?php
 	include('sidebar.inc.php');
 echo '		<div class="main">
+			<div class="table">
+				<div>
+					<div>UserID</div>
+					<div>Class</div>
+					<div>ObjectID</div>
+					<div>ChildID</div>
+					<div>Action</div>
+					<div>Property</div>
+					<div>OldVal</div>
+					<div>NewVal</div>
+					<div>Limit</div>
+				</div>
+				<div>
+					<div>',buildselect("UserID"),'</div>
+					<div>',buildselect("Class"),'</div>
+					<div>',buildselect("ObjectID"),'</div>
+					<div>',buildselect("ChildID"),'</div>
+					<div>',buildselect("Action"),'</div>
+					<div>',buildselect("Property"),'</div>
+					<div>',buildselect("OldVal"),'</div>
+					<div>',buildselect("NewVal"),'</div>
+					<div><select name="Limit"><option value=0>No Limit</option><option value=100>100</option><option value=1000 selected>1000</option><option value=5000>5000</option><option value=10000>10000</option></select></div>
+				</div>
+			</div>
 			<br><br>
 			<div class="center">
 				<div id="tablecontainer">',$body,'

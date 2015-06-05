@@ -45,11 +45,6 @@ class LogActions {
 	var $NewVal;
 	var $Time;
 
-	function __construct(){
-		global $person;
-		$this->UserID = $person->UserID;
-	}
-
 	function query($sql){
 		global $dbh;
 		return $dbh->query($sql);
@@ -80,7 +75,9 @@ class LogActions {
 	}
 	// Generic catch all logging function
 	static function LogThis($object,$originalobject=null){
+		global $person;
 		$log=new LogActions();
+		$log->UserID=$person->UserID;
 
 		$trace=debug_backtrace();
 		// we're only concerned with the 2nd record $trace can be read for a full debug if something calls for it
@@ -163,6 +160,9 @@ class LogActions {
 				$log->ObjectID=$object->TemplateID;
 				$log->ChildID=$object->Position;
 				break;
+			case "SensorTemplate":
+				$log->ObjectID=$object->TemplateID;
+				break;
 			case "PowerConnection":
 				$log->ObjectID=$object->DeviceID;
 				$log->ChildID=$object->DeviceConnNumber;
@@ -179,9 +179,6 @@ class LogActions {
 			case "DeviceTemplate":
 				// The following function isn't logged
 				// UpdateDevice()
-			case "SensorTemplate":
-				$log->ObjectID=$object->TemplateID;
-				break;
 			case "Department":
 				// Not sure how to go about tracking the changes in membership
 			default:
@@ -294,6 +291,75 @@ class LogActions {
 	}
 
 	// Add in functions here for actions lookup by device, user, date, etc
+
+
+	// This is only gonna be used for sanitizing data used for searching
+	function MakeSafe(){
+		$p=new People();
+		$this->UserID=(ArraySearchRecursive($this->UserID,$p->GetUserList(),'UserID'))?$this->UserID:'';
+		$this->Class=in_array($this->Class,get_declared_classes())?$this->Class:'';
+		$this->ObjectID=sanitize($this->ObjectID);
+		$this->ChildID=sanitize($this->ChildID);
+		$this->Action=sanitize($this->Action);
+		$this->Property=sanitize($this->Property);
+		$this->OldVal=sanitize($this->OldVal);
+		$this->NewVal=sanitize($this->NewVal);
+		$this->Time=date("Y-m-d", strtotime($this->Time));
+	}
+
+	function ListUnique($prop){
+		if(!in_array($prop,array_keys((array)$this))){
+			return false;
+		}
+
+		$sql="SELECT DISTINCT CAST($prop AS CHAR(20)) AS Search FROM fac_GenericLog ORDER BY $prop ASC;";
+
+		$values=array();
+		foreach($this->query($sql) as $row){
+			$values[]=$row['Search'];
+		}
+
+		return array_unique($values);
+	}
+
+	function Search($num_rec_per_page=0,$page=1){
+		$this->MakeSafe();
+
+		// This will store all our extended sql
+		$sqlextend="";
+		function findit($prop,$val,&$sql){
+			if($sql){
+				$sql.=" AND $prop LIKE \"%$val%\"";
+			}else{
+				$sql.=" WHERE $prop LIKE \"%$val%\"";
+			}
+		}
+		foreach($this as $prop => $val){
+			if($val && $val!="1969-12-31"){
+				findit($prop,$val,$sqlextend);
+			}
+		}
+
+		$sqlextend.=" ORDER BY Time DESC";
+
+		// Make sure someone didn't do something crazy with the input
+		$page=intval($page);
+		$num_rec_per_page=intval($num_rec_per_page);
+
+		if($page && $num_rec_per_page){
+			$start_from=($page-1) * $num_rec_per_page;
+			$sqlextend.=" LIMIT $start_from, $num_rec_per_page";
+		}
+
+		$sql="SELECT * FROM fac_GenericLog$sqlextend;";
+
+		$events=array();		
+		foreach($this->query($sql) as $dbRow){
+			$events[]=LogActions::RowToObject($dbRow);
+		}
+
+		return $events;
+	}
 }
 
 ?>
