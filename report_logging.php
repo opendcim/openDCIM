@@ -5,17 +5,18 @@
 
 if(isset($_POST['refresh'])){
 	$log=new LogActions();
+	foreach($log as $prop => $val){
+		if(isset($_POST[$prop])){
+			$log->$prop=$_POST[$prop];
+		}
+	}
+
 	$data_array=array();
 	if(isset($_POST['ListUnique'])){
 		$data_array=$log->ListUnique($_POST['ListUnique']);
 	}
 
 	if(isset($_POST['BuildTable'])){
-		foreach($log as $prop => $val){
-			if(isset($_POST[$prop])){
-				$log->$prop=$_POST[$prop];
-			}
-		}
 		echo BuildDataTable($log);
 		exit;
 	}
@@ -36,9 +37,9 @@ if(isset($_POST['refresh'])){
 	$dev=new Device();
 	$log=new LogActions();
 	
-	function BuildDataTable($log){
+	function BuildDataTable($log_object){
 		$limit=(isset($_REQUEST['Limit']))?$_REQUEST['Limit']:1000;
-		$result=$log->Search($limit);
+		$result=$log_object->Search($limit);
 
 		// Left these expanded in case we need to add or remove columns.  Otherwise I would have just collapsed entirely.
 		$body="<table id=\"export\" class=\"display\">\n\t<thead>\n\t\t<tr>\n
@@ -117,10 +118,12 @@ if(isset($_POST['refresh'])){
 	$(document).ready(function(){
 		// Start DataTables functions
 		dt();
-
 		
 		$('.table :input').change(function(){
 			GetTableData();
+			$('.table :input').each(function(){
+				refreshValues(this);
+			});
 		}).each(function(){
 			refreshValues(this);
 		});
@@ -149,7 +152,7 @@ if(isset($_POST['refresh'])){
 			"iDisplayLength": 25,
 			"sDom": 'CT<"clear">lfrtip',
 			"order": [[ 0, 'desc' ]],
-			"columnDefs": [{"width": "110px", "targets": 0}],
+			"columnDefs": [{"width": "115px", "targets": 0}],
 			"oTableTools": {
 				"sSwfPath": "scripts/copy_csv_xls.swf",
 				"aButtons": ["copy","csv","xls","print"]
@@ -160,7 +163,11 @@ if(isset($_POST['refresh'])){
 
 	function refreshValues(inputobject){
 		var ov=inputobject.value;
-		$.post('',{refresh:'',ListUnique:inputobject.name}).done(function(data){
+		// Get the search options
+		var formdata=$('.table :input').serializeArray();
+		formdata.push({name:'refresh',value:''});
+		formdata.push({name:'ListUnique',value:inputobject.name});
+		$.post('',formdata).done(function(data){
 			if(data){
 				$(inputobject).html('').append($("<option>"));
 				for(var i in data){

@@ -296,7 +296,9 @@ class LogActions {
 	// This is only gonna be used for sanitizing data used for searching
 	function MakeSafe(){
 		$p=new People();
-		$this->UserID=(ArraySearchRecursive($this->UserID,$p->GetUserList(),'UserID'))?$this->UserID:'';
+		// If we want to really sanitize this list uncomment the function below
+//		$this->UserID=(ArraySearchRecursive($this->UserID,$p->GetUserList(),'UserID'))?$this->UserID:'';
+		$this->UserID=sanitize($this->UserID);
 		$this->Class=in_array($this->Class,get_declared_classes())?$this->Class:'';
 		$this->ObjectID=sanitize($this->ObjectID);
 		$this->ChildID=sanitize($this->ChildID);
@@ -307,12 +309,25 @@ class LogActions {
 		$this->Time=date("Y-m-d", strtotime($this->Time));
 	}
 
-	function ListUnique($prop){
-		if(!in_array($prop,array_keys((array)$this))){
+	function ListUnique($sqlcolumn){
+		if(!in_array($sqlcolumn,array_keys((array)$this))){
 			return false;
 		}
 
-		$sql="SELECT DISTINCT CAST($prop AS CHAR(20)) AS Search FROM fac_GenericLog ORDER BY $prop ASC;";
+		$this->MakeSafe();
+
+		// This will store all our extended sql
+		$sqlextend="";
+		function findit($prop,$val,&$sql){
+			$sql.=" AND $prop LIKE \"%$val%\"";
+		}
+		foreach($this as $prop => $val){
+			if($val && $val!="1969-12-31"){
+				findit($prop,$val,$sqlextend);
+			}
+		}
+
+		$sql="SELECT DISTINCT CAST($sqlcolumn AS CHAR(20)) AS Search FROM fac_GenericLog WHERE $sqlcolumn!=\"\"$sqlextend ORDER BY $sqlcolumn ASC;";
 
 		$values=array();
 		foreach($this->query($sql) as $row){
@@ -329,7 +344,7 @@ class LogActions {
 		$sqlextend="";
 		function findit($prop,$val,&$sql){
 			if($sql){
-				$sql.=" AND $prop LIKE \"%$val%\"";
+				$sql.=" AND $prop=\"$val\"";
 			}else{
 				$sql.=" WHERE $prop LIKE \"%$val%\"";
 			}
