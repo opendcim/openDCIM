@@ -1365,7 +1365,7 @@ class Device {
 	}
 
 	/* All of these functions will REQUIRE the built-in SNMP functions - the external calls are simply too slow */
-	static private function BasicTests($DeviceID){
+	static function BasicTests($DeviceID){
 		global $config;
 
 		// First check if the SNMP library is present
@@ -1398,7 +1398,7 @@ class Device {
 	 * services - int 
 	 * uptime - int - uptime of the device returned as ticks.  tick defined as 1/1000'th of a second
 	 */
-	static private function OSS_SNMP_Lookup($dev,$snmplookup,$oid=null){
+	static function OSS_SNMP_Lookup($dev,$snmplookup,$oid=null){
 		// This is find out the name of the function that called this to make the error logging more descriptive
 		$caller=debug_backtrace();
 		$caller=$caller[1]['function'];
