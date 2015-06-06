@@ -138,18 +138,20 @@ if(isset($_POST['refresh'])){
 		formdata.push({name:'BuildTable',value:''});
 		// Post and build the new table
 		$.post('',formdata).done(function(data){
+			var num_rows=$('select[name=export_length]').val();
 			// Supposedly the get table was successful so kill the previous instance
 			tab.destroy(true);
 			// Insert the new table
 			$('#tablecontainer').html(data);
 			// Init the new table
-			dt();
+			dt(num_rows);
 		});
 	}
 
-	function dt(){
+	function dt(rows){
+		var num_rows=(typeof rows=="undefined")?25:rows;
 		$('#export').dataTable({
-			"iDisplayLength": 25,
+			"iDisplayLength": num_rows,
 			"sDom": 'CT<"clear">lfrtip',
 			"order": [[ 0, 'desc' ]],
 			"columnDefs": [{"width": "115px", "targets": 0}],
