@@ -195,7 +195,8 @@ function resize(){
 		// The math just isn't adding up across browsers and FUCK IE
 		if((main+sbw)<width){ // page is larger than content expand main to fit
 			$('#header').outerWidth(width);
-			$('div.main').outerWidth(width-sbw); 
+			$('div.main').outerWidth(width-sbw-4); 
+			$('div.page').outerWidth(width);
 		}else{ // page is smaller than content expand the page to fit
 			$('div.main').width(width-sbw-12); 
 			$('#header').width(width+4);

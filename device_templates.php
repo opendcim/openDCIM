@@ -508,14 +508,22 @@
 			});
 		});
 
-		// Resize images
-		$('#deviceimages img').css('max-width',$('#rightside').innerWidth()/2);
 
 		$('#FrontPictureFile,#RearPictureFile').change(function(){
 			var fp_file=$('#FrontPictureFile');
 			var fp_img=$('#img_FrontPictureFile');
 			var rp_file=$('#RearPictureFile');
 			var rp_img=$('#img_RearPictureFile');
+
+			if(fp_file.val() && rp_file.val()){
+				$('#rightside').css('min-width','260px');
+				// Resize images
+				$('#deviceimages img').css('max-width',$('#rightside').innerWidth()/2);
+			}else if(fp_file.val() || rp_file.val()){
+				$('#rightside').css('min-width','130px');
+				// Resize images
+				$('#deviceimages img').css('max-width',$('#rightside').innerWidth());
+			}
 
 			fp_img.prop('src','pictures/'+fp_file.val());
 			rp_img.prop('src','pictures/'+rp_file.val());
@@ -529,6 +537,7 @@
 			}else{
 				rp_img.parent('div').hide();
 			}
+			resize();
 		}).trigger('change');
 
 		$('#FrontPictureFile,#RearPictureFile,#ChassisSlots,#RearChassisSlots,#NumPorts,#PSCount').on('change keyup keydown', function(){ TemplateButtons(); });
@@ -611,7 +620,7 @@ echo '<div class="main">
 <form id="deviceform" method="POST">
 <div class="table">
 	<div>
-		<div><div id="regulartemplateattributes">
+		<div class="left"><div id="regulartemplateattributes">
 <!-- Left side of device template -->
 <div class="table">
 	<div>
@@ -811,7 +820,7 @@ if ( $template->TemplateID > 0 && isset( $deviceList ) ) {
 </div><!-- END div.table -->
 </div><!-- end regular template attributes -->
 		</div><!-- END left side of device template -->
-		<div id="rightside"><!-- right side of device template -->
+		<div id="rightside" class="right"><!-- right side of device template -->
 
 <div id="deviceimages">
 	<div class="table">
