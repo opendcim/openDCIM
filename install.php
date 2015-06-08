@@ -98,6 +98,14 @@ $codeversion="4.0";
 		$errors++;
 	}
 
+	if(in_array('mod_rewrite', apache_get_modules())){
+		$tests['mod_rewrite']['state']="good";
+		$tests['mod_rewrite']['message']='mod_rewrite detected';
+	}else{
+		$tests['mod_rewrite']['state']="fail";
+		$tests['mod_rewrite']['message']='Apache is missing the <a href="http://httpd.apache.org/docs/current/mod/mod_rewrite.html">mod_rewrite</a> module and it is required for the API to function correctly.  Please install it.';
+	}
+
 	if (function_exists('json_encode')) {
 		$tests['json']['state']="good";
 		$tests['json']['message']='PHP json module detected';
