@@ -2267,7 +2267,6 @@ class Device {
 		}
 		$sql="SELECT * FROM fac_Device $sqlextend ORDER BY Label ASC;";
 
-echo $sql;
 		$deviceList=array();
 
 		foreach($dbh->query($sql) as $deviceRow){
