@@ -357,6 +357,12 @@
 			location.href='device_templates.php?TemplateID='+this.value;
 		});
 
+		function newtab(e){
+			var poopup=window.open('search.php?key=dev&TemplateID='+$('#TemplateID').val()+'&search','search');
+			poopup.focus();
+		}
+		$('#templatecount').css({'cursor':'pointer','text-decoration':'underline'}).click(newtab);
+
 		var oModel=$('#Model').val();
 		var chgmsg="<?php echo __("This value must be different than"); ?>"+" "+oModel;
 		$('#deviceform').validationEngine();
@@ -799,7 +805,7 @@ if ( $template->TemplateID > 0 && isset( $deviceList ) ) {
 	echo '
 <div>
 	<div>&nbsp;</div>
-	<div>' . __("Number of Devices Using This Template:") . ' ' . sizeof( $deviceList ) . '</div>
+	<div id="templatecount">' . __("Number of Devices Using This Template:") . ' ' . sizeof( $deviceList ) . '</div>
 </div>';
 }
 	echo '

@@ -2237,6 +2237,10 @@ class Device {
 		global $dbh;
 		// Store the value of devicetype before we muck with it
 		$ot=$this->DeviceType;
+		$ov=$this->SNMPVersion;
+		$osl=$this->v3SecurityLevel;
+		$oap=$this->v3AuthProtocol;
+		$opp=$this->v3PrivProtocol;
 
 		// Make everything safe for us to search with
 		$this->MakeSafe();
@@ -2252,16 +2256,18 @@ class Device {
 		}
 		foreach($this as $prop => $val){
 			// We force DeviceType to a known value so this is to check if they wanted to search for the default
-			if($prop=="DeviceType" && $val=="Server" && $ot!="Server"){
-				continue;
-			}
+			if($prop=="DeviceType" && $val=="Server" && $ot!="Server"){continue;}
+			if($prop=="SNMPVersion" && $val=="2c" && $ot!="2c"){continue;}
+			if($prop=="v3SecurityLevel" && $val=="noAuthNoPriv" && $ot!="noAuthNoPriv"){continue;}
+			if($prop=="v3AuthProtocol" && $val=="MD5" && $ot!="MD5"){continue;}
+			if($prop=="v3PrivProtocol" && $val=="DES" && $ot!="DES"){continue;}
 			if($val){
 				findit($prop,$val,$sqlextend);
 			}
 		}
-
 		$sql="SELECT * FROM fac_Device $sqlextend ORDER BY Label ASC;";
 
+echo $sql;
 		$deviceList=array();
 
 		foreach($dbh->query($sql) as $deviceRow){
