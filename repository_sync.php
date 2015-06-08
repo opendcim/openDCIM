@@ -210,10 +210,10 @@
 					}
 
 
-					if ( $t->DeviceType == "CDU" && is_object( $tem->cdutemplate ) ) {
+					if ( $t->DeviceType == "CDU" && is_object( $t->cdutemplate ) ) {
 						$ct->ManufacturerID = $t->ManufacturerID;
 						$ct->Model = $t->Model;
-						foreach( $tem->cdutemplate as $prop=>$val ) {
+						foreach( $t->cdutemplate as $prop=>$val ) {
 							$ct->$prop = $val;
 						}
 						$ct->TemplateID = $t->TemplateID;
@@ -224,8 +224,8 @@
 						}
 					} 
 
-					if ( $t->DeviceType == "Chassis" && is_array( $tem->slots ) ) {
-						foreach( $tem->slots as $sl ) {
+					if ( $t->DeviceType == "Chassis" && is_array( $t->slots ) ) {
+						foreach( $t->slots as $sl ) {
 							foreach( $sl as $prop=>$val ) {
 								$cs->$prop = $val;
 							}
@@ -238,10 +238,10 @@
 						}
 					}
 
-					if ( $t->DeviceType == "Sensor" && is_object( $tem->sensortemplate ) ) {
+					if ( $t->DeviceType == "Sensor" && is_object( $t->sensortemplate ) ) {
 						$sen->ManufacturerID = $t->ManufacturerID;
 						$sen->Model = $t->Model;
-						foreach( $tem->sensortemplate as $prop=>$val ) {
+						foreach( $t->sensortemplate as $prop=>$val ) {
 							$sen->$prop = $val;
 						}
 						$sen->TemplateID = $t->TemplateID;
@@ -252,11 +252,11 @@
 						}
 					}
 
-					if ( is_array( @$tem->ports ) ) {
+					if ( is_array( @$t->ports ) ) {
 						if ( $updating ) {
 							$tp->flushPorts( $t->TemplateID );
 						}
-						foreach( $tem->ports as $tmpPort ) {
+						foreach( $t->ports as $tmpPort ) {
 							foreach( $tmpPort as $prop=>$val ) {
 								$tp->$prop = $val;
 							}
@@ -265,11 +265,11 @@
 						}
 					}
 
-					if ( is_array( @$tem->powerports ) ) {
+					if ( is_array( @$t->powerports ) ) {
 						if ( $updating ) {
 							$tpp->flushPorts( $t->TemplateID );
 						}
-						foreach( $tem->powerports as $tmpPwr ) {
+						foreach( $t->powerports as $tmpPwr ) {
 							foreach( $tmpPwr as $prop=>$val ) {
 								$tpp->$prop = $val;
 							}
