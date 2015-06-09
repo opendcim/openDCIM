@@ -101,6 +101,8 @@ $codeversion="4.0";
 	if(in_array('mod_rewrite', apache_get_modules())){
 		$tests['mod_rewrite']['state']="good";
 		$tests['mod_rewrite']['message']='mod_rewrite detected';
+		$tests['api_test']['state']="fail";
+		$tests['api_test']['message']="Apache does not appear to be rewriting URLs correctly. Check your AllowOverride directive and change to 'AllowOverride All'";
 	}else{
 		$tests['mod_rewrite']['state']="fail";
 		$tests['mod_rewrite']['message']='Apache is missing the <a href="http://httpd.apache.org/docs/current/mod/mod_rewrite.html">mod_rewrite</a> module and it is required for the API to function correctly.  Please install it.';
@@ -114,15 +116,15 @@ $codeversion="4.0";
 		$tests['json']['message']='PHP is missing the <a href="http://php.net/manual/book.json.php">JavaScript Object Notation (JSON) extension</a>.  Please install it.';
 		$errors++;
 	}
-
-	if ($errors > 0) {
-        echo '<!doctype html><html><head><title>openDCIM :: pre-flight environment sanity check</title><script type="text/javascript" src="scripts/jquery.min.js"></script><script type="text/javascript">$(document).ready(function(){$("tr").each(function(){if($(this).find("td:last-child").text()=="fail"){$(this).addClass("fail");}});});</script><style type="text/css">table{width:80%;border-collapse:collapse;border:3px solid black;}th{text-align:left;text-transform:uppercase;border-right: 1px solid black;}th,td{padding:5px;}tr:nth-child(even){background-color:#d1e1f1;}td:last-child{text-align:center;text-transform:uppercase;border:2px solid;background-color:green;}.fail td:last-child{font-weight: bold;background-color: red;}</style></head><body><h2>Pre-flight environment checks</h2><table>';
+	if ($errors >0 || !isset($_GET['preflight-ok'])) {
+        echo '<!doctype html><html><head><title>openDCIM :: pre-flight environment sanity check</title><script type="text/javascript" src="scripts/jquery.min.js"></script><script type="text/javascript">$(document).ready(function(){$("tr").each(function(){if($(this).find("td:last-child").text()=="fail"){$(this).addClass("fail");}});$.get("api/v1/devicetemplate/image").done(function(data){if(!data.error){$("#api_test").removeClass("fail").find("td:nth-child(2)").text("").next("td").text("GOOD");document.getElementById("continue").className=document.getElementById("continue").className.replace(/\bhide\b/,"");location.href="?preflight-ok";}});});</script><style type="text/css">table{width:80%;border-collapse:collapse;border:3px solid black;}th{text-align:left;text-transform:uppercase;border-right: 1px solid black;}th,td{padding:5px;}tr:nth-child(even){background-color:#d1e1f1;}td:last-child{text-align:center;text-transform:uppercase;border:2px solid;background-color:green;}.fail td:last-child{font-weight: bold;background-color: red;}.hide{display: none;}</style></head><body><h2>Pre-flight environment checks</h2><table>';
 		foreach($tests as $test => $text){
-			print "<tr><th>$test</th><td>{$text['message']}</td><td>{$text['state']}</td></tr>";
+			$hide=($test=='api_test')?' class="hide"':'';
+			print "<tr id=\"$test\"$hide><th>$test</th><td>{$text['message']}</td><td>{$text['state']}</td></tr>";
 		}
-		echo '<tr><th>javascript</th><td>Javascript is used heavily for data validation and a more polished user experience.</td><td><script>document.write("good")</script><noscript>fail</noscript></td></tr>
+		echo '<tr><th>javascript</th><td>Javascript is used heavily for data validation and a more polished user experience.</td><td><script>document.write("good");document.getElementById("api_test").className=document.getElementById("api_test").className.replace(/\bhide\b/,"");</script><noscript>fail</noscript></td></tr>
 			</table>
-		<p>If you are seeing this page then you must correct any issues shown above before the installer will continue.</p>
+		<p>If you see any errors on this page then you must correct them before the installer can continue.&nbsp;&nbsp;&nbsp;<span id="continue" class="hide"><a href="?preflight-ok">Click here to continue</a></span></p>
 
 		</body></html>';
 		exit;
@@ -2081,9 +2083,9 @@ function showgroup(obj){
 <div id="sidebar">
 <ul>
 <a><li class="active">Departments</li></a>
-<a href="?dc"><li>Data Centers</li></a>
-<a href="?cab"><li>Cabinets</li></a>
-<?php if(isset($complete)){ echo '<a href="?complete"><li>Complete</li></a>'; }?>
+<a href="?dc&preflight-ok"><li>Data Centers</li></a>
+<a href="?cab&preflight-ok"><li>Cabinets</li></a>
+<?php if(isset($complete)){ echo '<a href="?complete&preflight-ok"><li>Complete</li></a>'; }?>
 </ul>
 </div>
 
@@ -2092,7 +2094,7 @@ function showgroup(obj){
 <h3>Data Center Department Detail</h3>
 <?php echo $nodept; ?>
 <div class="center"><div>
-<form action="<?php echo $_SERVER['PHP_SELF']; ?>?dept" method="POST">
+<form action="<?php echo $_SERVER['PHP_SELF']; ?>?dept&preflight-ok" method="POST">
 <div class="table centermargin">
 <div>
    <div>Department</div>
@@ -2161,10 +2163,10 @@ function showgroup(obj){
 
 <div id="sidebar">
 <ul>
-<a href="?dept"><li>Departments</li></a>
+<a href="?dept&preflight-ok"><li>Departments</li></a>
 <a><li class="active">Data Centers</li></a>
-<a href="?cab"><li>Cabinets</li></a>
-<?php if(isset($complete)){ echo '<a href="?complete"><li>Complete</li></a>'; }?>
+<a href="?cab&preflight-ok"><li>Cabinets</li></a>
+<?php if(isset($complete)){ echo '<a href="?complete&preflight-ok"><li>Complete</li></a>'; }?>
 </ul>
 </div>
 
@@ -2173,7 +2175,7 @@ function showgroup(obj){
 <h3>Data Center Detail</h3>
 <?php echo $nodc; ?>
 <div class="center"><div>
-<form action="<?php echo $_SERVER['PHP_SELF']; ?>?dc" method="POST">
+<form action="<?php echo $_SERVER['PHP_SELF']; ?>?dc&preflight-ok" method="POST">
 <div class="table">
 <div>
    <div><label for="datacenterid">Data Center ID</label></div>
@@ -2252,10 +2254,10 @@ function showgroup(obj){
 <div class='page installer'>
 <div id="sidebar">
 <ul>
-<a href="?dept"><li>Departments</li></a>
-<a href="?dc"><li>Data Centers</li></a>
+<a href="?dept&preflight-ok"><li>Departments</li></a>
+<a href="?dc&preflight-ok"><li>Data Centers</li></a>
 <a><li class="active">Cabinets</li></a>
-<?php if(isset($complete)){ echo '<a href="?complete"><li>Complete</li></a>'; }?>
+<?php if(isset($complete)){ echo '<a href="?complete&preflight-ok"><li>Complete</li></a>'; }?>
 </ul>
 </div>
 <div class='main'>
@@ -2263,7 +2265,7 @@ function showgroup(obj){
 <h3>Data Center Cabinet Inventory</h3>
 <?php echo $nodccab; ?>
 <div class='center'><div>
-<form action='<?php echo $_SERVER['PHP_SELF']; ?>?cab' method='POST'>
+<form action='<?php echo $_SERVER['PHP_SELF']; ?>?cab&preflight-ok' method='POST'>
 <div class='table'>
 <div>
    <div>Cabinet</div>
@@ -2353,9 +2355,9 @@ function showgroup(obj){
 <div class='page installer'>
 <div id="sidebar">
 <ul>
-<a href="?dept"><li>Departments</li></a>
-<a href="?dc"><li>Data Centers</li></a>
-<a href="?cab"><li>Cabinets</li></a>
+<a href="?dept&preflight-ok"><li>Departments</li></a>
+<a href="?dc&preflight-ok"><li>Data Centers</li></a>
+<a href="?cab&preflight-ok"><li>Cabinets</li></a>
 <?php if(isset($complete)){ echo '<a><li class="active">Complete</li></a>'; }?>
 </ul>
 </div>
@@ -2376,7 +2378,7 @@ https://repository.opendcim.org.  Once you have synchronized the Manufacturer Na
 updated as you run [install_dir]/repository_sync.php manually or via a cron job.  It is requested that you do not attempt to synchronize more than once per day in order to
 reduce bandwidth requirements at the repository.</p>
 <p>To initiate the initial pull of manufacturer data, click the button below.</p>
-<form action="<?php echo $_SERVER['PHP_SELF']; ?>?repo" method="POST">
+<form action="<?php echo $_SERVER['PHP_SELF']; ?>?repo&preflight-ok" method="POST">
 <input type="submit" name="repoaction" value="Sync">
 </form>
 
