@@ -81,7 +81,7 @@
 				$dept->Name=__("Unknown");
 			}
           
-			$htmlMessage.="<tr><td>$dev->Label</td><td><a href=\"".redirect("updatevmowner.php?vmindex=$esxRow->VMIndex")."\">$esxRow->vmName</a></td><td>$esxRow->vmState</td><td>$esxRow->LastUpdated</td></tr>\n";
+			$htmlMessage.="<tr><td>$dev->Label</td><td><a href=\"".$config->ParameterArray['InstallURL']."updatevmowner.php?vmindex=$esxRow->VMIndex"."\">$esxRow->vmName</a></td><td>$esxRow->vmState</td><td>$esxRow->LastUpdated</td></tr>\n";
 		}
       
 		$htmlMessage.="</table></body></html>";
