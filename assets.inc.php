@@ -3714,10 +3714,10 @@ class DevicePorts {
 					$limiter=" AND Cabinet=$dev->Cabinet";
 					break;
 				case 'row':
-					$limiter=" AND Cabinet IN (SELECT CabinetID FROM fac_Cabinet WHERE CabRowID=$cab->CabRowID)";
+					$limiter=" AND Cabinet IN (SELECT CabinetID FROM fac_Cabinet WHERE CabRowID=$cab->CabRowID AND CabRowID>0)";
 					break;
 				case 'zone':
-					$limiter=" AND Cabinet IN (SELECT CabinetID FROM fac_Cabinet WHERE ZoneID=$cab->ZoneID)";
+					$limiter=" AND Cabinet IN (SELECT CabinetID FROM fac_Cabinet WHERE ZoneID=$cab->ZoneID AND ZoneID>0)";
 					break;
 				case 'datacenter':
 					$limiter=" AND Cabinet IN (SELECT CabinetID FROM fac_Cabinet WHERE DataCenterID=$cab->DataCenterID)";
