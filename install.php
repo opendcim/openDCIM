@@ -1176,6 +1176,17 @@ function upgrade(){
 		$drop = $dbh->prepare( "alter table fac_PowerPanel drop column PowerSourceID" );
 		$drop->execute();
 
+
+		// Make sure all child devices have updated cabinet information
+		$sql="SELECT DISTINCT ParentDevice AS DeviceID FROM fac_Device WHERE 
+			ParentDevice>0 ORDER BY ParentDevice ASC;";
+		foreach($dbh->query($sql) as $row){
+			$d=new Device();
+			$d->DeviceID=$row['DeviceID'];
+			$d->GetDevice();
+			$d->UpdateDevice();
+		}
+
 	}
 }
 
