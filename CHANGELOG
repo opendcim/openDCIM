@@ -6,6 +6,26 @@ GitHub, at http://github.com/samilliken/openDCIM/issues, where you can also down
 the latest development version.  However, it is not advised to pull from GitHub unless you
 are simply testing, as some functionality can break between releases.
 
+Changes in 4.0
+--------------
+* New online repository for templates and images (requires internet connection, requires an API key if you wish to contribute)
+* New reports
+* CDUs and Sensors are now simply devices.  That means you can have ports and power connections just like anything else.
+* Improvement to image uploads
+* Ability to nest chassis devices
+* Ability to limit scope when making port connections (major performance boost for large installations)
+* Upgraded PDF library to mPDF for better feature support
+* Update to operational log.  No longer runs out of memory.
+* Support for nested power panels (Power Sources are now simply Power Panels with no defined parent)
+* There are no more contacts.  Users and contacts have been merged.  Many improvements in the management of such.
+* RESTful API - there is a basic set of API calls available today and it will be expanded based upon user requests
+* SNMP Calls have been converted to use the OSS_SNMP class.  Command line SNMP tools are no longer supported.
+* Support for SNMPv3
+* Ability to poll power sources (using same templates as CDUs) for real time data
+* OAuth2 Support for login
+* More language translations from English source (Currently Azerbaijani, Chinese, French, Galician, German, Italian, Portuguese/Brazil, Russian, Slovenian, Spanish, Ukrainian)
+* Bug fixes
+
 Changes in 3.3
 --------------
 * Primarily bug fixes
