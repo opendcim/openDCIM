@@ -1,25 +1,11 @@
 <?php
+	require_once( "../../db.inc.php" );
+	require_once( "../../facilities.inc.php" );
 	require_once( "../../Slim/Slim.php" );
 	
 	\Slim\Slim::registerAutoloader();
 	
 	$app = new \Slim\Slim();
-
-//
-//	URL:  /api/v1/test
-//	Method: GET
-//	Params:  none
-//	Returns:  a response. this is a test to make sure mod_rewrite is working
-//
-$app->get('/test', function() {
-	$response['error'] = false;
-	$response['errorcode'] = 200;
-	echoResponse(200, $response);
-});
-
-	// load up the rest of our dependencies for the app
-	require_once( "../../db.inc.php" );
-	require_once( "../../facilities.inc.php" );
 
 /*
  *
