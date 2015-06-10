@@ -223,9 +223,9 @@
 							$ct->UpdateTemplate();
 						}
 					} 
-
-					if ( $t->DeviceType == "Chassis" && is_array( $t->slots ) ) {
-						foreach( $t->slots as $sl ) {
+					
+					if ( $t->DeviceType == "Chassis" && is_array( $tem->slots ) ) {
+						foreach( $tem->slots as $sl ) {
 							foreach( $sl as $prop=>$val ) {
 								$cs->$prop = $val;
 							}
@@ -252,11 +252,11 @@
 						}
 					}
 
-					if ( is_array( @$t->ports ) ) {
+					if ( is_array( @$tem->ports ) ) {
 						if ( $updating ) {
 							$tp->flushPorts( $t->TemplateID );
 						}
-						foreach( $t->ports as $tmpPort ) {
+						foreach( $tem->ports as $tmpPort ) {
 							foreach( $tmpPort as $prop=>$val ) {
 								$tp->$prop = $val;
 							}
@@ -265,11 +265,11 @@
 						}
 					}
 
-					if ( is_array( @$t->powerports ) ) {
+					if ( is_array( @$tem->powerports ) ) {
 						if ( $updating ) {
 							$tpp->flushPorts( $t->TemplateID );
 						}
-						foreach( $t->powerports as $tmpPwr ) {
+						foreach( $tem->powerports as $tmpPwr ) {
 							foreach( $tmpPwr as $prop=>$val ) {
 								$tpp->$prop = $val;
 							}
