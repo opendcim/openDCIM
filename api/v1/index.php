@@ -436,6 +436,25 @@ $app->get( '/device/:deviceid/getsensorreadings', function($deviceid) {
 // this is messy as all hell and i'm still thinking about how to do it better
 
 //
+//	URL:	/api/vi/deviceport/:deviceid
+//
+//	Method:	GET
+//	Params:
+//		Required:  :deviceid - DeviceID for which you wish to retrieve ports
+//	Returns:	All ports for the given device
+
+$app->get('/deviceport/:deviceid', function($deviceid) use($app) {
+	$dp = new DevicePorts();
+	
+	$response['error'] = false;
+	$response['errorcode'] = 200;
+	$dp->DeviceID = $deviceid;
+	$response['deviceport']=$dp->getPorts();
+
+	echoResponse($response['errorcode'],$response);
+});
+
+//
 //	URL:	/api/v1/deviceport/:deviceid/patchcandidates
 //	Method:	GET
 //	Params:
