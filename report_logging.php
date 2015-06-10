@@ -169,22 +169,24 @@ if(isset($_POST['refresh'])){
 		var formdata=$('.table :input').serializeArray();
 		formdata.push({name:'refresh',value:''});
 		formdata.push({name:'ListUnique',value:inputobject.name});
-		$.post('',formdata).done(function(data){
-			if(data){
-				$(inputobject).html('').append($("<option>"));
-				for(var i in data){
-					var label=data[i];
-					if(inputobject.name=="Action"){
-						labels=['','Create','Delete','Update'];
-						if(typeof labels[label]!='undefined'){
-							label=labels[label];
+		if(inputobject.name!="OldVal" && inputobject.name!="NewVal" || ($('select[name=Class]').val() && $('select[name=UserID]').val())){
+			$.post('',formdata).done(function(data){
+				if(data){
+					$(inputobject).html('').append($("<option>"));
+					for(var i in data){
+						var label=data[i];
+						if(inputobject.name=="Action"){
+							labels=['','Create','Delete','Update'];
+							if(typeof labels[label]!='undefined'){
+								label=labels[label];
+							}
 						}
+						$(inputobject).append($("<option>").val(data[i]).html(label));
 					}
-					$(inputobject).append($("<option>").val(data[i]).html(label));
+					inputobject.value=ov;
 				}
-				inputobject.value=ov;
-			}
-		});
+			});
+		}
 	}
   </script>
 </head>

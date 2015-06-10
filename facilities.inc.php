@@ -36,6 +36,7 @@ require_once( "infrastructure.inc.php" );
 require_once( "power.inc.php" );
 require_once( "config.inc.php" );
 require_once( "misc.inc.php" );
+require_once( "elogs/vanderbilt.inc.php" );
 
 // SNMP Library, don't attempt to load without php-snmp extensions
 if(extension_loaded('snmp')){
