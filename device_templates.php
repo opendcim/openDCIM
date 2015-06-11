@@ -889,7 +889,7 @@ if ( $template->TemplateID > 0 && isset( $deviceList ) ) {
 		   <div><label for="Multiplier">',__("Multiplier"),'</label></div>
 		   <div><select name="Multiplier" id="Multiplier">';
 		   
-			$Multi=array("0.1", "1","10","100");
+			$Multi=array("0.01","0.1","1","10","100");
 			foreach($Multi as $unit){
 					print "\t\t<option value=\"$unit\">$unit</option>\n";
 				}
