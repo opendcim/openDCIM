@@ -18,6 +18,8 @@
 			$field="CustomTag";
 		}elseif(isset($_REQUEST["owner"])){
 			$field="Owner";
+		}elseif(isset($_REQUEST["notes"])){
+			$field="Notes";
 		}elseif(isset($_REQUEST["ip"])){
 			$field="PrimaryIP";
 		}
@@ -37,6 +39,12 @@
 			$sql="SELECT DISTINCT Name FROM fac_Tags WHERE Name LIKE '%$searchTerm%'";
 		}elseif($field=="Owner"){
 			$sql="SELECT DISTINCT Name FROM fac_Department WHERE Name LIKE '%$searchTerm%'";
+		}elseif($field=="Notes"){
+			$sql="SELECT DISTINCT Notes FROM fac_Device WHERE Notes LIKE '%$searchTerm%' 
+				UNION SELECT DISTINCT Notes FROM fac_Cabinet WHERE Notes LIKE '%$searchTerm%' 
+				UNION SELECT DISTINCT Notes FROM fac_Ports WHERE Notes LIKE '%$searchTerm%' 
+				UNION SELECT DISTINCT PortNotes AS Notes FROM fac_Ports	WHERE PortNotes LIKE '%$searchTerm%' 
+				UNION SELECT DISTINCT Notes FROM fac_PowerPorts	WHERE Notes LIKE '%$searchTerm%';";
 		}else{
 			$sql="SELECT DISTINCT $field FROM fac_Device WHERE $field LIKE '%$searchTerm%';";
 		}

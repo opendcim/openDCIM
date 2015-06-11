@@ -20,6 +20,7 @@
 	<option value="owner">',__("Owner"),'</option>
 	<option value="ip">',__("PrimaryIP"),'</option>
 	<option value="cattr">',__("Custom Attribute"),'</option>
+	<option value="notes">',__("Notes"),'</option>
 </select>';
 ?>
 <div class="ui-icon ui-icon-close"></div>

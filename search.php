@@ -73,6 +73,16 @@
 		$devList=$dev->SearchByCustomAttribute($searchTerm);
 		$resultcount=count($devList);
 		$title=__("Custom attribute search results for")." &quot$searchTerm&quot;";
+	}elseif($searchKey=="notes"){
+		$dev->Notes=$searchTerm;
+		$devList=$dev->SearchDevicebyNotes();
+		//Virtual machines will never be search via asset tags or serial numbers
+		$cab->Notes=$searchTerm;
+		$cabList=$cab->SearchByCabinetNotes();
+		//$pdu->Label=$searchTerm;
+		//$pduList=$pdu->SearchByPDUName();
+		$resultcount=count($devList)+count($cabList); //+count($pduList);
+		$title=__("Notes search results for")." &quot;$searchTerm&quot;";
 	}elseif($searchKey="dev"){
 		// This is gonna be a generic catch all
 		foreach($dev as $prop => $val){

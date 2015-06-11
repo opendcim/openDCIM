@@ -574,6 +574,21 @@ class Cabinet {
 		}
 		return $cabinetList;
 	}
+	
+	function SearchByCabinetNotes( $db = null ) {
+		global $dbh;
+	
+		$sql="select * from fac_Cabinet where Notes like \"%" . $this->Notes . "%\" order by Location ASC, LENGTH(Location);";
+	
+		$cabinetList=array();
+	
+		foreach ( $dbh->query( $sql ) as $cabinetRow ){
+			$cabID=$cabinetRow["CabinetID"];
+			$cabinetList[$cabID]=Cabinet::RowToObject($cabinetRow);
+		}
+	
+		return $cabinetList;
+	}
 
 	function GetTags() {
 		global $dbh;
@@ -2510,6 +2525,30 @@ class Device {
 			$deviceList[$deviceRow["DeviceID"]]=Device::RowToObject($deviceRow);
 		}
 		
+		return $deviceList;
+	}
+	
+	function SearchDevicebyNotes(){
+		global $dbh;
+	
+		$this->MakeSafe();
+	
+		$sql="SELECT DISTINCT * FROM 
+				(SELECT * FROM fac_Device WHERE Notes LIKE \"%$this->Notes%\"
+				UNION
+				 SELECT d.* FROM fac_Device d INNER JOIN fac_Ports p ON d.DeviceID=p.DeviceID 
+				 	WHERE p.Notes LIKE \"%$this->Notes%\" OR p.PortNotes LIKE \"%$this->Notes%\"
+				UNION
+				 SELECT d.* FROM fac_Device d INNER JOIN fac_PowerPorts pp ON d.DeviceID=pp.DeviceID 
+				 	WHERE pp.Notes LIKE \"%$this->Notes%\") dd
+			ORDER BY Label;";
+	
+		$deviceList = array();
+	
+		foreach($dbh->query($sql) as $deviceRow){
+			$deviceList[$deviceRow["DeviceID"]]=Device::RowToObject($deviceRow);
+		}
+	
 		return $deviceList;
 	}
 
