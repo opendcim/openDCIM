@@ -1494,7 +1494,7 @@ class PowerPanel {
 		return true;
 	}
 
-	function Search($indexedbyid=false){
+	function Search($indexedbyid=false,$loose=false){
 		// Store the value of devicetype before we muck with it
 		$os=$this->NumberScheme;
 
@@ -1503,11 +1503,12 @@ class PowerPanel {
 
 		// This will store all our extended sql
 		$sqlextend="";
-		function findit($prop,$val,&$sql){
+		function findit($prop,$val,&$sql,$loose){
+			$method=($loose)?" LIKE \"%$val%\"":"=\"$val\"";
 			if($sql){
-				$sql.=" AND $prop=\"$val\"";
+				$sql.=" AND $prop$method";
 			}else{
-				$sql.=" WHERE $prop=\"$val\"";
+				$sql.=" WHERE $prop$method";
 			}
 		}
 		foreach($this as $prop => $val){
@@ -1516,7 +1517,7 @@ class PowerPanel {
 				continue;
 			}
 			if($val){
-				findit($prop,$val,$sqlextend);
+				findit($prop,$val,$sqlextend,$loose);
 			}
 		}
 
@@ -1533,6 +1534,11 @@ class PowerPanel {
 		}
 
 		return $panelList;
+	}
+
+	// Make a simple reference to a loose search
+	function LooseSearch($indexedbyid=false){
+		return $this->Search($indexedbyid,true);
 	}
 }
 

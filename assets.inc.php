@@ -488,7 +488,7 @@ class Cabinet {
 		return true;
 	}
 
-	function Search($indexedbyid=false){
+	function Search($indexedbyid=false,$loose=false){
 		global $dbh;
 		// Store the value of frontedge before we muck with it
 		$ot=$this->FrontEdge;
@@ -498,11 +498,12 @@ class Cabinet {
 
 		// This will store all our extended sql
 		$sqlextend="";
-		function findit($prop,$val,&$sql){
+		function findit($prop,$val,&$sql,$loose){
+			$method=($loose)?" LIKE \"%$val%\"":"=\"$val\"";
 			if($sql){
-				$sql.=" AND $prop=\"$val\"";
+				$sql.=" AND $prop$method";
 			}else{
-				$sql.=" WHERE $prop=\"$val\"";
+				$sql.=" WHERE $prop$method";
 			}
 		}
 		foreach($this as $prop => $val){
@@ -511,7 +512,7 @@ class Cabinet {
 				continue;
 			}
 			if($val && $val!="1969-12-31"){
-				findit($prop,$val,$sqlextend);
+				findit($prop,$val,$sqlextend,$loose);
 			}
 		}
 
@@ -529,6 +530,12 @@ class Cabinet {
 
 		return $cabList;
 	}
+
+	// Make a simple reference to a loose search
+	function LooseSearch($indexedbyid=false){
+		return $this->Search($indexedbyid,true);
+	}
+
 	function SearchByCabinetName( $db = null ) {
 		global $dbh;
 		
@@ -575,21 +582,6 @@ class Cabinet {
 		return $cabinetList;
 	}
 	
-	function SearchByCabinetNotes( $db = null ) {
-		global $dbh;
-	
-		$sql="select * from fac_Cabinet where Notes like \"%" . $this->Notes . "%\" order by Location ASC, LENGTH(Location);";
-	
-		$cabinetList=array();
-	
-		foreach ( $dbh->query( $sql ) as $cabinetRow ){
-			$cabID=$cabinetRow["CabinetID"];
-			$cabinetList[$cabID]=Cabinet::RowToObject($cabinetRow);
-		}
-	
-		return $cabinetList;
-	}
-
 	function GetTags() {
 		global $dbh;
 		
@@ -2285,7 +2277,7 @@ class Device {
 		return $deviceList;
 	}
 
-	function Search($indexedbyid=false){
+	function Search($indexedbyid=false,$loose=false){
 		global $dbh;
 		// Store the value of devicetype before we muck with it
 		$ot=$this->DeviceType;
@@ -2299,11 +2291,12 @@ class Device {
 
 		// This will store all our extended sql
 		$sqlextend="";
-		function findit($prop,$val,&$sql){
+		function find($prop,$val,&$sql,$loose){
+			$method=($loose)?" LIKE \"%$val%\"":"=\"$val\"";
 			if($sql){
-				$sql.=" AND $prop=\"$val\"";
+				$sql.=" AND $prop$method";
 			}else{
-				$sql.=" WHERE $prop=\"$val\"";
+				$sql.=" WHERE $prop$method";
 			}
 		}
 		foreach($this as $prop => $val){
@@ -2314,7 +2307,7 @@ class Device {
 			if($prop=="v3AuthProtocol" && $val=="MD5" && $ot!="MD5"){continue;}
 			if($prop=="v3PrivProtocol" && $val=="DES" && $ot!="DES"){continue;}
 			if($val){
-				findit($prop,$val,$sqlextend);
+				find($prop,$val,$sqlextend,$loose);
 			}
 		}
 		$sql="SELECT * FROM fac_Device $sqlextend ORDER BY Label ASC;";
@@ -2330,6 +2323,11 @@ class Device {
 		}
 
 		return $deviceList;
+	}
+
+	// Make a simple reference to a loose search
+	function LooseSearch($indexedbyid=false){
+		return $this->Search($indexedbyid,true);
 	}
 
 	function SearchDevicebySerialNo(){
@@ -2528,30 +2526,6 @@ class Device {
 		return $deviceList;
 	}
 	
-	function SearchDevicebyNotes(){
-		global $dbh;
-	
-		$this->MakeSafe();
-	
-		$sql="SELECT DISTINCT * FROM 
-				(SELECT * FROM fac_Device WHERE Notes LIKE \"%$this->Notes%\"
-				UNION
-				 SELECT d.* FROM fac_Device d INNER JOIN fac_Ports p ON d.DeviceID=p.DeviceID 
-				 	WHERE p.Notes LIKE \"%$this->Notes%\" OR p.PortNotes LIKE \"%$this->Notes%\"
-				UNION
-				 SELECT d.* FROM fac_Device d INNER JOIN fac_PowerPorts pp ON d.DeviceID=pp.DeviceID 
-				 	WHERE pp.Notes LIKE \"%$this->Notes%\") dd
-			ORDER BY Label;";
-	
-		$deviceList = array();
-	
-		foreach($dbh->query($sql) as $deviceRow){
-			$deviceList[$deviceRow["DeviceID"]]=Device::RowToObject($deviceRow);
-		}
-	
-		return $deviceList;
-	}
-
 	function UpdateWattageFromTemplate() {
 		$tmpl=new DeviceTemplate();
 		$tmpl->TemplateID=$this->TemplateID;

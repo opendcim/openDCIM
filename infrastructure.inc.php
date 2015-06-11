@@ -944,7 +944,7 @@ class DeviceTemplate {
 		return $this->exec($sql);
 	}
 
-	function Search($indexedbyid=false){
+	function Search($indexedbyid=false,$loose=false){
 		// Store the value of devicetype before we muck with it and SNMPVersion
 		$ot=$this->DeviceType;
 		$ov=$this->SNMPVersion;
@@ -954,8 +954,9 @@ class DeviceTemplate {
 
 		// This will store all our extended sql
 		$sqlextend="";
-		function findit($prop,$val,&$sql){
-			$sql.=" AND a.$prop=\"$val\"";
+		function findit($prop,$val,&$sql,$loose){
+			$method=($loose)?" LIKE \"%$val%\"":"=\"$val\"";
+			$sql.=" AND a.$prop$method";
 		}
 		foreach($this as $prop => $val){
 			// We force DeviceType to a known value so this is to check if they wanted to search for the default
@@ -967,7 +968,7 @@ class DeviceTemplate {
 				continue;
 			}
 			if($val){
-				findit($prop,$val,$sqlextend);
+				findit($prop,$val,$sqlextend,$loose);
 			}
 		}
 
@@ -985,6 +986,11 @@ class DeviceTemplate {
 		}
 
 		return $templateList;
+	}
+
+	// Make a simple reference to a loose search
+	function LooseSearch($indexedbyid=false){
+		return $this->Search($indexedbyid,true);
 	}
 
 	function GetTemplateByID(){
