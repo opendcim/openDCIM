@@ -141,7 +141,7 @@ echo '</select>
    <div><label for="multiplier">',__("Multiplier"),'</label></div>
    <div><select name="multiplier" id="multiplier">';
    
-	$Multi=array("0.1", "1","10","100");
+	$Multi=array("0.01","0.1","1","10","100");
         $mult = 1;
 
         // Loop to find the template default multiplier, if any
