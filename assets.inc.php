@@ -52,6 +52,7 @@ class Cabinet {
 	var $MapY2;
 	var $FrontEdge;
 	var $Notes;
+	var $U1Position;
 
 	function MakeSafe() {
 		$this->CabinetID=intval($this->CabinetID);
@@ -76,6 +77,7 @@ class Cabinet {
 		$this->MapY2=abs($this->MapY2);
 		$this->FrontEdge=in_array($this->FrontEdge, array("Top","Right","Left","Bottom"))?$this->FrontEdge:"Top";
 		$this->Notes=sanitize($this->Notes,false);
+		$this->U1Position=in_array($this->U1Position, array("Top","Bottom", "Default"))?$this->U1Position:"Bottom";
 	}
 	
 	static function RowToObject($dbRow,$filterrights=true){
@@ -110,6 +112,7 @@ class Cabinet {
 		if($filterrights){
 			$cab->FilterRights();
 		}
+		$cab->U1Position=$dbRow["U1Position"];
 
 		return $cab;
 	}
@@ -146,8 +149,8 @@ class Cabinet {
 			SensorIPAddress=\"$this->SensorIPAddress\", 
 			SensorCommunity=\"$this->SensorCommunity\", 
 			SensorTemplateID=$this->SensorTemplateID, MapX1=$this->MapX1, 
-			MapY1=$this->MapY1, MapX2=$this->MapX2, MapY2=$this->MapY2, 
-			FrontEdge=\"$this->FrontEdge\", Notes=\"$this->Notes\";";
+			MapY1=$this->MapY1, MapX2=$this->MapX2, MapY2=$this->MapY2, FrontEdge=\"$this->FrontEdge\",
+			Notes=\"$this->Notes\", U1Position=\"$this->U1Position\";";
 
 		if(!$dbh->exec($sql)){
 			$info=$dbh->errorInfo();
@@ -180,9 +183,8 @@ class Cabinet {
 			SensorIPAddress=\"$this->SensorIPAddress\", 
 			SensorCommunity=\"$this->SensorCommunity\", 
 			SensorTemplateID=$this->SensorTemplateID, 
-			MapX1=$this->MapX1, MapY1=$this->MapY1, MapX2=$this->MapX2, MapY2=$this->MapY2, 
-			FrontEdge=\"$this->FrontEdge\", Notes=\"$this->Notes\" WHERE 
-			CabinetID=$this->CabinetID;";
+			MapX1=$this->MapX1, MapY1=$this->MapY1, MapX2=$this->MapX2, MapY2=$this->MapY2, FrontEdge=\"$this->FrontEdge\",
+			Notes=\"$this->Notes\", U1Position=\"$this->U1Position\" WHERE CabinetID=$this->CabinetID;";
 
 		if(!$dbh->query($sql)){
 			$info=$dbh->errorInfo();
@@ -194,7 +196,7 @@ class Cabinet {
 		(class_exists('LogActions'))?LogActions::LogThis($this,$old):'';
 		return true;
 	}
-	
+
 	function GetCabinet(){
 		global $dbh;
 
@@ -612,6 +614,34 @@ class Cabinet {
 		}
 		return 0;
 	}
+	function TopToBottonOrder(){
+		global $dbh;
+		global $config;
+	
+		$this->MakeSafe();
+	
+		//check cabinet
+		if ($this->U1Position=="Top")
+			return true;
+		if ($this->U1Position=="Bottom")
+			return false;
+	
+		//check DC
+		$dc=new DataCenter();
+		$dc->DataCenterID=$this->DataCenterID;
+		$dc->GetDataCenter();
+		if ($dc->U1Position=="Top")
+			return true;
+		if ($dc->U1Position=="Bottom")
+			return false;
+	
+		//check config (global)
+		if ($config->ParameterArray["U1Position"]=="Top")
+			return true;
+	
+		return false;
+	}
+	
 }
 
 class CabinetAudit {
@@ -2095,24 +2125,31 @@ class Device {
 	}
 
 	function ViewDevicesByCabinet($includechildren=false){
+	//this function should be a method of class "cabinet", not "device"	
 		global $dbh;
 
 		$this->MakeSafe();
+		
+		$cab=new Cabinet();
+		$cab->CabinetID=$this->Cabinet;
+		$cab->GetCabinet();
+		
+		if($cab->TopToBottonOrder()){
+			$order=" ORDER BY Position ASC";
+		}else{
+			$order=" ORDER BY Position DESC";
+		}
 
 		if($includechildren){
-			$sql="SELECT * FROM fac_Device WHERE Cabinet=$this->Cabinet 
-				ORDER BY Position DESC;";
+			$sql="SELECT * FROM fac_Device WHERE Cabinet=$this->Cabinet".$order;
 		}elseif ($this->Cabinet<0){
 			//StorageRoom
 			if ($this->Position>0)
-				$sql="SELECT * FROM fac_Device WHERE Cabinet=$this->Cabinet AND Position=$this->Position 
-					ORDER BY Position DESC;";
+				$sql="SELECT * FROM fac_Device WHERE Cabinet=$this->Cabinet AND Position=$this->Position".$order;
 			else
-				$sql="SELECT * FROM fac_Device WHERE Cabinet=$this->Cabinet 
-					ORDER BY Position DESC;";
+				$sql="SELECT * FROM fac_Device WHERE Cabinet=$this->Cabinet".$order;
 		}else{
-			$sql="SELECT * FROM fac_Device WHERE Cabinet=$this->Cabinet AND ParentDevice=0 
-				ORDER BY Position DESC;";
+			$sql="SELECT * FROM fac_Device WHERE Cabinet=$this->Cabinet AND ParentDevice=0".$order;
 		}
 		
 		$deviceList = array();

@@ -42,8 +42,11 @@ function BuildCabinet($rear=false,$side=null){
 			$totalWeight, $totalWatts, $totalMoment, $zeroheight,
 			$noTemplFlag, $noOwnerFlag;
 
-	$currentHeight=$cabinet->CabinetHeight;
-
+	$fila=1;  //row of U part of table
+	$maxfila=$cabinet->CabinetHeight;
+	
+	$TopBottom=$cabinet->TopToBottonOrder();
+	
 	// Determine which label to put on the rack, if any
 	$rs="";
 	if($rear){
@@ -59,6 +62,7 @@ function BuildCabinet($rear=false,$side=null){
 
 	$heighterr="";
 	while(list($dev_index,$device)=each($devList)){
+		$currentU=($TopBottom?$fila:$maxfila-$fila+1);
 		list($noTemplFlag, $noOwnerFlag, $highlight) =
 			renderUnassignedTemplateOwnership($noTemplFlag, $noOwnerFlag, $device);
 		if($device->Height<1 && !$rear){
@@ -72,7 +76,8 @@ function BuildCabinet($rear=false,$side=null){
 
 		if ((!$device->HalfDepth || !$device->BackSide)&&!$rear || (!$device->HalfDepth || $device->BackSide)&&$rear){
 			$backside=($device->HalfDepth)?true:$backside;
-			$devTop=$device->Position + $device->Height - 1;
+			$devTop=($TopBottom)?$device->Position:$maxfila-$device->Position - $device->Height + 2;
+			$devBottom=($TopBottom)?$device->Position + $device->Height - 1:$maxfila-$device->Position+1;
 
 			$templ->TemplateID=$device->TemplateID;
 			$templ->GetTemplateByID();
@@ -91,22 +96,22 @@ function BuildCabinet($rear=false,$side=null){
 			if($device->Reservation==true){
 				$reserved=" reserved";
 			}
-			if($devTop<$currentHeight && $currentHeight>0){
-				for($i=$currentHeight;($i>$devTop);$i--){
-					$errclass=($i>$cabinet->CabinetHeight)?' error':'';
+			if($devTop>$fila && $fila<=$maxfila){
+				for($i=$fila;($i<$devTop);$i++){
+					$errclass=($i>$maxfila)?' error':'';
 					if($errclass!=''){$heighterr="yup";}
-					if($i==$currentHeight && $i>1){
-						$blankHeight=$currentHeight-$devTop;
+					if($i==$fila && $i<$maxfila){
+						$blankHeight=$devTop-$fila;
 						if($devTop==-1){--$blankHeight;}
-						$body.="\t\t<tr><td class=\"cabpos freespace$errclass\">$i</td><td class=\"freespace\" rowspan=$blankHeight>&nbsp;</td></tr>\n";
+						$body.="\t\t<tr><td class=\"cabpos freespace$errclass\">".($TopBottom?$i:$maxfila-$i+1)."</td><td class=\"freespace\" rowspan=$blankHeight>&nbsp;</td></tr>\n";
 					} else {
-						$body.="\t\t<tr><td class=\"cabpos freespace$errclass\">$i</td></tr>\n";
-						if($i==1){break;}
+						$body.="\t\t<tr><td class=\"cabpos freespace$errclass\">".($TopBottom?$i:$maxfila-$i+1)."</td></tr>\n";
+						if($i==$maxfila){break;}
 					}
 				}
 			}
-			for($i=$devTop;$i>=$device->Position;$i--){
-				$errclass=($i>$cabinet->CabinetHeight)?' error':'';
+			for($i=$devTop;$i<=$devBottom;$i++){
+				$errclass=($i>$maxfila)?' error':'';
 				if($errclass!=''){$heighterr="yup";}
 				if($i==$devTop){
 					// If we're looking at the side of the rack don't give any details but show the
@@ -123,27 +128,27 @@ function BuildCabinet($rear=false,$side=null){
 					}
 					
 					// Put the device in the rack
-					$body.="\t\t<tr><td class=\"cabpos$reserved dept$device->Owner$errclass\">$i</td><td class=\"dept$device->Owner$reserved$sideview\" rowspan=$device->Height data-deviceid=$device->DeviceID>";
+					$body.="\t\t<tr><td class=\"cabpos$reserved dept$device->Owner$errclass\">".($TopBottom?$i:$maxfila-$i+1)."</td><td class=\"dept$device->Owner$reserved$sideview\" rowspan=$device->Height data-deviceid=$device->DeviceID>";
 					$body.=($picture)?$picture:$text;
 					$body.="</td></tr>\n";
 				}else{
-					$body.="\t\t<tr><td class=\"cabpos$reserved dept$device->Owner$errclass\">$i</td></tr>\n";
+					$body.="\t\t<tr><td class=\"cabpos$reserved dept$device->Owner$errclass\">".($TopBottom?$i:$maxfila-$i+1)."</td></tr>\n";
 				}
 			}
-			$currentHeight=$device->Position - 1;
+			if($devBottom>0) $fila=$devBottom + 1;
 		}elseif(!$rear){
 			$backside=true;
 		}
 	}
 
 	// Fill in to the bottom
-	for($i=$currentHeight;$i>0;$i--){
-		if($i==$currentHeight){
-			$blankHeight=$currentHeight;
+	for($i=$fila;$i<=$maxfila;$i++){
+		if($i==$fila){
+			$blankHeight=$fila;
 
-			$body.="\t\t<tr><td class=\"cabpos freespace\">$i</td><td class=\"freespace\" rowspan=$blankHeight>&nbsp;</td></tr>\n";
+			$body.="\t\t<tr><td class=\"cabpos freespace\">".($TopBottom?$i:$maxfila-$i+1)."</td><td class=\"freespace\" rowspan=$blankHeight>&nbsp;</td></tr>\n";
 		}else{
-			$body.="\t\t<tr><td class=\"cabpos freespace\">$i</td></tr>\n";
+			$body.="\t\t<tr><td class=\"cabpos freespace\">".($TopBottom?$i:$maxfila-$i+1)."</td></tr>\n";
 		}
 	}
 	$body.="\t</table>\n</div>\n";

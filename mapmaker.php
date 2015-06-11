@@ -106,8 +106,12 @@
 			<div><b><?php print __("Front Edge"); ?></b></div>
 			<div><select name="frontedge">
 <?php
-				foreach ( array( "Top","Right","Bottom","Left") as $edge ) {
-					printf( "<option value=\"%s\" %s>%s</option>\n", $edge, $edge == $cab->FrontEdge ? "SELECTED" : "", $edge );
+				$edgearray=array('Top' => __("Top"),
+						'Right' => __("Right"),
+						'Bottom' => __("Bottom"),
+						'Left' => __("Left"));
+				foreach($edgearray as $edge => $translation){
+					printf( "<option value=\"%s\" %s>%s</option>\n", $edge, $edge == $cab->FrontEdge ? "SELECTED" : "", $translation );
 				}
 ?>
 			</select></div>

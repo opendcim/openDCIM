@@ -1451,12 +1451,26 @@ print "		var dialog=$('<div>').prop('title',\"".__("Verify Delete Device")."\").
 				$.each(data, function(i,inuse){
 					ucount++;
 				});
+				var maxu=ucount;
 				var rackhtmlleft='';
 				var rackhtmlright='';
 				for(ucount=ucount; ucount>0; ucount--){
+				
+<?php
+if($cab->U1Position=="Top"){
+?>
+					if(data[(maxu-ucount+1)]){var cssclass='notavail'}else{var cssclass=''};
+					rackhtmlleft+='<div>'+(maxu-ucount+1)+'</div>';
+					rackhtmlright+='<div val='+(maxu-ucount+1)+' class="'+cssclass+'"></div>';
+<?php
+}else{ 
+?>
 					if(data[ucount]){var cssclass='notavail'}else{var cssclass=''};
 					rackhtmlleft+='<div>'+ucount+'</div>';
 					rackhtmlright+='<div val='+ucount+' class="'+cssclass+'"></div>';
+<?php
+} 
+?>
 				}
 				var rackhtml='<div class="table border positionselector"><div><div>'+rackhtmlleft+'</div><div>'+rackhtmlright+'</div></div></div>';
 				$('#Positionselector').html(rackhtml);
@@ -1483,7 +1497,14 @@ print "		var dialog=$('<div>').prop('title',\"".__("Verify Delete Device")."\").
 							// check each element start with pointer
 							for (var x=0; x<unum; x++){
 								if(x!=0){
-									test+='.prev()';
+<?php
+if($cab->U1Position=="Top"){
+echo "									test+='.next()';";
+}else{ 
+echo "									test+='.prev()';";
+} 
+?>
+									
 									eval("if($(this)"+test+".attr('class')=='notavail' || $(this)"+test+".length ==0){background='red';}");
 								}else{
 									if($(this).attr('class')=='notavail'){background='red';}
@@ -1493,7 +1514,13 @@ print "		var dialog=$('<div>').prop('title',\"".__("Verify Delete Device")."\").
 							if(background=='red'){var pointer='default'}else{var pointer='pointer'}
 							for (x=0; x<unum; x++){
 								if(x!=0){
-									test+='.prev()';
+<?php
+if($cab->U1Position=="Top"){
+echo "								test+='.next()';";
+}else{ 
+echo "								test+='.prev()';";
+} 
+?>
 									eval("$(this)"+test+".css({'background-color': '"+background+"'})");
 								}else{
 									$(this).css({'background-color': background, 'cursor': pointer});

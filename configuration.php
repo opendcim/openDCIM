@@ -1576,6 +1576,18 @@ echo '<div class="main">
 					<div><button type="button">&lt;--</button></div>
 					<div><span>',strtoupper($config->defaults["FreeSpaceColor"]),'</span></div>
 				</div>
+				<div>
+				   <div>',__("U1 Position"),'</div>
+				   <div><select id="U1Position" name="U1Position" defaultvalue="',$config->defaults["U1Position"],'">';
+
+$posarray=array('Top' => __("Top"),
+		'Bottom' => __("Bottom"));
+foreach($posarray as $pos => $translation){
+	printf( "				   	<option value=\"%s\" %s>%s</option>\n", $pos, $pos == $config->ParameterArray["U1Position"] ? "SELECTED" : "", $translation );
+}
+   
+echo '				   </select></div>
+				</div>
 			</div> <!-- end table -->
 			<h3>',__("Devices"),'</h3>
 			<div class="table">

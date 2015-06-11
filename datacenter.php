@@ -35,6 +35,7 @@
 		$dc->Administrator=$_POST['administrator'];
 		$dc->DrawingFileName=$_POST['drawingfilename'];
 		$dc->MaxkW=$_POST['maxkw'];
+		$dc->U1Position=$_POST['u1position'];
 		$dc->ContainerID=$_POST['container'];
 		$dc->MapX=$_POST['x'];
 		$dc->MapY=$_POST['y'];
@@ -57,6 +58,7 @@
 		$dc->Administrator=$_POST['administrator'];
 		$dc->DrawingFileName=$_POST['drawingfilename'];
 		$dc->MaxkW=$_POST['maxkw'];
+		$dc->U1Position=$_POST['u1position'];
 		$dc->ContainerID=$_POST['container'];
 		if ($dc->ContainerID==0){
 			$dc->MapX=0;
@@ -270,6 +272,19 @@ echo '	</select></div>
 <div>
 	<div><label for="maxkw">',__("Design Maximum (kW)"),'</label></div>
 	<div><input class="validate[optional,custom[onlyNumberSp]]" type="text" name="maxkw" id="maxkw" size="8" maxlength="8" value="',$dc->MaxkW,'"></div>
+</div>
+<div>
+   <div>',__("U1 Position of cabinets"),'</div>
+   <div><select name="u1position">';
+
+$posarray=array('Top' => __("Top"),
+		'Bottom' => __("Bottom"),
+		'Default' => __("Default"));
+foreach($posarray as $pos => $translation){
+	printf("		<option value=\"%s\" %s>%s</option>\n", $pos, $pos == $dc->U1Position ? "SELECTED" : "", $translation );
+}
+   
+echo '	</select></div>
 </div>
 <div><input type="hidden" name="cambio_cont" id="cambio_cont" value=""></div>
 <div>
