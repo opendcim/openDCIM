@@ -395,9 +395,9 @@ for ($year = 1; $year <= 3; $year++) {
 // first page - the pie chart
 
 $pdf = new PDF_Diag();
+include_once ("loadfonts.php");
 $pdf->AliasNbPages();
 $pdf->AddPage();
-include_once ("loadfonts.php");
 
 // pick some colors: grey for unknown, deep red for expired, then step from red to green to indicate remaining warranty
 $colors[0] = array(175, 175, 175);
@@ -426,7 +426,7 @@ for ($year = 1; $year <= 3; $year++) {
     $start_year = $year - 1;
     $pdf->AddPage();
     $pdf->SetFont($config->ParameterArray['PDFfont'], 'B', 16);
-    $pdf->Cell(0, 15, __("Devices with $start_year-$year years of remaining warranty "), '', 1, 'C', 0);
+    $pdf->Cell(0, 15, __("Devices with $start_year-$year years of remaining warranty"), '', 1, 'C', 0);
     $pdf->SetFont($config->ParameterArray['PDFfont'], '', 10);
     $headerTags = array(__("Label"), __("Remaining"), __("Owner"), __("Primary Contact"));
     $cellWidths = array(45, 30, 50, 45);
