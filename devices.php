@@ -2379,7 +2379,7 @@ $connectioncontrols=($dev->DeviceID>0)?'
 		echo '		<button type="button" name="action" value="Delete">',__("Delete"),'</button>';
 	}
 	if($dev->DeviceID >0){
-		echo '		<a href="export_port_connections.php?DeviceID=',$dev->DeviceID,'"><button type="button">',__("Export Connections"),'</button></a>';
+		echo '		<a href="export_port_connections.php?deviceid=',$dev->DeviceID,'"><button type="button">',__("Export Connections"),'</button></a>';
 	}
 ?>
 
