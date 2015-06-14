@@ -66,7 +66,7 @@
         );
         $deviceTypes = array(
                 'Server','Appliance','Storage Array','Switch','Chassis',
-                'Patch Panel','Physical Infrastructure'
+                'Patch Panel','Physical Infrastructure','CDU','Sensor'
         );
         # handle the request variables and build the device lists.
         if(isset($_REQUEST['containerid'])){
@@ -86,7 +86,7 @@
                         if(!isset($devList[$dev->DeviceType])) {
                           $devList[$dev->DeviceType] = array();
                         }
-                        $devList[$dev->DeviceType][$dev->DeviceID]=$dev->Label;
+                        $devList[$dev->DeviceType][$dev->DeviceID]=array();
                     }
                 }
             }
@@ -105,7 +105,7 @@
                     if(!isset($devList[$dev->DeviceType])) {
                         $devList[$dev->DeviceType] = array();
                     }
-                    $devList[$dev->DeviceType][$dev->DeviceID]=$dev->Label;
+                    $devList[$dev->DeviceType][$dev->DeviceID]=array();
                 }
             }
         } elseif(isset($_REQUEST['zoneid'])){
@@ -128,7 +128,7 @@
                     if(!isset($devList[$dev->DeviceType])) {
                       $devList[$dev->DeviceType] = array();
                     }
-                    $devList[$dev->DeviceType][$dev->DeviceID]=$dev->Label;
+                    $devList[$dev->DeviceType][$dev->DeviceID]=array();
                 }
             }
         } elseif(isset($_REQUEST['cabrowid'])){
@@ -152,7 +152,7 @@
                         if(!isset($devList[$dev->DeviceType])) {
                           $devList[$dev->DeviceType] = array();
                         }
-                        $devList[$dev->DeviceType][$dev->DeviceID]=$dev->Label;
+                        $devList[$dev->DeviceType][$dev->DeviceID]=array();
                     }
                 }
             }
@@ -172,18 +172,18 @@
                 if(!isset($devList[$dev->DeviceType])) {
                   $devList[$dev->DeviceType] = array();
                 }
-                $devList[$dev->DeviceType][$dev->DeviceID]=$dev->Label;
+                $devList[$dev->DeviceType][$dev->DeviceID]=array();
             }
         } elseif(isset($_REQUEST['tagname'])){
-			$graphname .= "Custom Tag " . $_REQUEST['tagname'];
-			$device = new Device();
-			foreach ( $device->SearchByCustomTag( $_REQUEST['tagname'] ) as $dev ) {
+            $graphname .= "Custom Tag " . $_REQUEST['tagname'];
+            $device = new Device();
+            foreach ( $device->SearchByCustomTag( $_REQUEST['tagname'] ) as $dev ) {
                 if(!isset($devList[$dev->DeviceType])) {
                   $devList[$dev->DeviceType] = array();
                 }
-                $devList[$dev->DeviceType][$dev->DeviceID]=$dev->Label;
+                $devList[$dev->DeviceType][$dev->DeviceID]=array();
             }
-		}
+        }
         # start building the graphfile.
         $graphstr .= "graph openDCIM {
 
@@ -198,51 +198,67 @@ overlap = scale;
 
 ";
 
-        # Generate a list of ports from the device lists.
-        $portList=array();
         foreach($devList as $deviceType => $dev) {
-            foreach($dev as $devid => $label) {
+            foreach($dev as $devid => $interesting_ports) {
                 $ports=DevicePorts::getPortList($devid);
                 foreach($ports as $port) {
                     if(($mediaID == -1) || ($port->MediaID == $mediaID)) {
                         if(isset($port->ConnectedDeviceID) && ($port->ConnectedDeviceID>0)) {
                             # if the connected device isn't in our list of devices, add it so we 
                             # at least get nice names for the devices outside the selected scope
-                            if(!isset($devList[$port->ConnectedDeviceID])) {
-                                $tdev = new Device();
-                                $tdev->DeviceID = $port->ConnectedDeviceID;
-                                $tdev->GetDevice();
-                                $devList[$tdev->DeviceType][$tdev->DeviceID] = $tdev->Label;
-								
-								$tPort = new DevicePorts();
-								$tPort->DeviceID = $port->ConnectedDeviceID;
-								$tPort->PortNumber = $port->ConnectedPort;
-								$tPort->getPort();
-								$portList[]=array(
-                                    'ConnectedDeviceID'=>$port->DeviceID,
-                                    'DeviceID'=>$port->ConnectedDeviceID,
-                                    'ConnectedPort'=>$port->PortNumber,
-                                    'PortNumber'=>$port->ConnectedPort,
-                                    'ColorID'=>$port->ColorID,
-                                    'MediaID'=>$port->MediaID,
-                                    'Label'=>$tPort->Label
-                                );
-								unset($tPort);
-	                            unset($tdev);
+                            $tdev = new Device();
+                            $tdev->DeviceID = $port->ConnectedDeviceID;
+                            $tdev->GetDevice();
+                            if(!isset($devList[$tdev->DeviceType][$port->ConnectedDeviceID])) {
+                                $tPort = new DevicePorts();
+                                $tPort->DeviceID = $port->ConnectedDeviceID;
+                                $tPort->PortNumber = $port->ConnectedPort;
+                                $tPort->getPort();
+                                $devList[$tdev->DeviceType][$tdev->DeviceID] = array();
+                                $devList[$tdev->DeviceType][$tdev->DeviceID][] = $tPort;
                             }
-
-                            $portList[]=array(
-                                    'ConnectedDeviceID'=>$port->ConnectedDeviceID,
-                                    'DeviceID'=>$port->DeviceID,
-                                    'ConnectedPort'=>$port->ConnectedPort,
-                                    'PortNumber'=>$port->PortNumber,
-                                    'ColorID'=>$port->ColorID,
-                                    'MediaID'=>$port->MediaID,
-                                    'Label'=>$port->Label
-                                );
+                            unset($tdev);
+                            $devList[$deviceType][$devid][] = $port;
                         }
                     }
                 }
+            }
+        }
+        # Generate a list of ports from the device lists.
+        $portList=array();
+        //header("Content-Type: text/plain");
+        //print_r($devList);
+        foreach($devList as $deviceType => $dev) {
+            foreach($dev as $devid => $ports) {
+                $c_port_list=array();
+                foreach($ports as $port) {
+                    $portList[]=array(
+                        'ConnectedDeviceID'=>$port->ConnectedDeviceID,
+                         'DeviceID'=>$port->DeviceID,
+                         'ConnectedPort'=>$port->ConnectedPort,
+                         'PortNumber'=>$port->PortNumber,
+                         'ColorID'=>$port->ColorID,
+                         'MediaID'=>$port->MediaID,
+                         'Label'=>$port->Label
+                    );
+                    $c_port_list[]="<".$port->Label."> ".$port->Label;
+                }
+                $p_count = count($c_port_list);
+                $n_dev_label = "{{";
+                $tdev = new Device();
+                $tdev->DeviceID = $devid;
+                $tdev->GetDevice();
+                for($i=0;$i<$p_count;$i++) {
+                    if(floor($p_count/2) == $i){
+                        $n_dev_label .= "}|{".$tdev->Label."}|{";
+                    }
+                    $n_dev_label .= $c_port_list[$i];
+                    if(($i < $p_count - 1) && ($i+1 != floor($p_count/2))) {
+                        $n_dev_label .= "|";
+                    }
+                }
+                $n_dev_label .= "}}";
+                $devList[$deviceType][$devid] = $n_dev_label;
             }
         }
         # create a lookup table for colors on the fly. This helps make sure that
@@ -265,7 +281,8 @@ overlap = scale;
                     }else{
                         $color = $safeDeviceColors[array_rand($safeDeviceColors)];
                     }
-                    $graphstr .= "\t".$tkeypair[0]." [shape=box,URL=\"".$baseURI
+
+                    $graphstr .= "\t".$tkeypair[0]." [shape=Mrecord,URL=\"".$baseURI
                             .'devices.php?DeviceID='.$tkeypair[0]."\",label=\""
                             .$devList[$dt][$tkeypair[0]]."\",color=".$color."];\n";
                     unset($devList[$dt][$tkeypair[0]]);
@@ -280,7 +297,7 @@ overlap = scale;
                     }else{
                         $color = $safeDeviceColors[array_rand($safeDeviceColors)];
                     }
-                    $graphstr .= "\t".$tkeypair[1]." [shape=box,URL=\"".$baseURI
+                    $graphstr .= "\t".$tkeypair[1]." [shape=Mrecord,URL=\"".$baseURI
                             .'devices.php?DeviceID='.$tkeypair[1]."\",label=\""
                             .$devList[$dt][$tkeypair[1]]."\",color=".$color."];\n";
                     unset($devList[$dt][$tkeypair[1]]);
@@ -359,8 +376,9 @@ overlap = scale;
                     $style = ",style=dotted";
                 }
                 # add the connection to the dotfile.
-                $graphstr .= "\t".$tkeypair[0]." -- ".$tkeypair[1]
-                        ." [color=".$devid['color'].$style;
+                $graphstr .= "\t".$tkeypair[0].":\"".$devid[$tkeypair[0]]."\" -- "
+                        .$tkeypair[1].":\"".$devid[$tkeypair[1]]
+                        ."\" [color=".$devid['color'].$style;
                 # label the connections if so desired.
                 if (isset($_REQUEST["edgelabels"])) {
                     $graphstr .= ",label=\"".$devid[$tkeypair[0]]."--"
@@ -376,7 +394,7 @@ overlap = scale;
         # put all the device types into the legend.
         foreach($deviceTypes as $dt){
             $color = $safeDeviceColors[array_search($dt, $deviceTypes)];
-            $graphstr .= "\t\t\"".md5($dt)."\" [shape=box,color=".$color.",label=\"".$dt."\"];\n";
+            $graphstr .= "\t\t\"".md5($dt)."\" [shape=Mrecord,color=".$color.",label=\"".$dt."\"];\n";
         }
         # add a couple invisible nodes for cabling
         $graphstr .="\t\tinvis1 [shape=box,style=invis];\n";
@@ -507,13 +525,13 @@ overlap = scale;
                         $dc->GetDataCenter();
                         $options[$cabinet->CabinetID] = $dc->Name."::".$cabinet->Location;
                     }
-				} elseif($containmentType == 5) {
-					# filter by custom tag
-					$tList = Tags::FindAll();
-					$body .= "<select name=tagname id=tagname>";
-					foreach( $tList as $TagID=>$Name ){
-						$options[$Name] = $Name;
-					}
+                } elseif($containmentType == 5) {
+                    # filter by custom tag
+                    $tList = Tags::FindAll();
+                    $body .= "<select name=tagname id=tagname>";
+                    foreach( $tList as $TagID=>$Name ){
+                        $options[$Name] = $Name;
+                    }
                 }
                 # sort and output the options based on the name of the option
                 asort($options);
@@ -540,7 +558,7 @@ overlap = scale;
                         ."<option value=0>SVG</option>"
                         ."<option value=1>PNG</option>"
                         ."<option value=2>JPG</option>"
-                        ."<option value=4>DOT</option>"
+                        ."<option value=3>DOT</option>"
                         ."</select>"
                         ."</form>";
             }
@@ -591,7 +609,7 @@ echo '          <div class="main">
                                 <option value="2">',__("Zone"),'</option>
                                 <option value="3">',__("Cabinet Row"),'</option>
                                 <option value="4">',__("Cabinet"),'</option>
-								<option value="5">',__("Custom Tag"),'</option>
+                                <option value="5">',__("Custom Tag"),'</option>
                         </select>';?>
                         <br><br>
                         <div id="datacontainer">
