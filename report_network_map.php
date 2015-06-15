@@ -226,8 +226,6 @@ overlap = scale;
         }
         # Generate a list of ports from the device lists.
         $portList=array();
-        //header("Content-Type: text/plain");
-        //print_r($devList);
         foreach($devList as $deviceType => $dev) {
             foreach($dev as $devid => $ports) {
                 $c_port_list=array();
@@ -244,13 +242,22 @@ overlap = scale;
                     $c_port_list[]="<".$port->Label."> ".$port->Label;
                 }
                 $p_count = count($c_port_list);
-                $n_dev_label = "{{";
+                $n_dev_label = "{";
                 $tdev = new Device();
                 $tdev->DeviceID = $devid;
                 $tdev->GetDevice();
+                # Generate the "Label" for the device. The label specifies
+                # the name and the port list.
                 for($i=0;$i<$p_count;$i++) {
+                    if(($p_count > 1)&&($i==0)) {
+                        $n_dev_label .= "{";
+                    }
                     if(floor($p_count/2) == $i){
-                        $n_dev_label .= "}|{".$tdev->Label."}|{";
+                        if ($p_count > 1) {
+                          $n_dev_label .= "}|{".$tdev->Label."}|{";
+                        } else {
+                          $n_dev_label .= "{".$tdev->Label."}|{";
+                        }
                     }
                     $n_dev_label .= $c_port_list[$i];
                     if(($i < $p_count - 1) && ($i+1 != floor($p_count/2))) {
