@@ -1658,8 +1658,8 @@ function LameLogDisplay(){
 		},
 		getdevices: function(target){
 			var row=this;
-
-			$.get("api/v1/device?Cabinet="+$(':input[name=CabinetID]').val()+"&DeviceType=CDU").done(function(data){
+			var cdulimit=($('select[name=DeviceType]').val()=='CDU')?'':'&DeviceType=CDU';
+			$.get("api/v1/device?Cabinet="+$(':input[name=CabinetID]').val()+cdulimit).done(function(data){
 				var devlist=$("<select>").append('<option value=0>&nbsp;</option>');
 				devlist.change(function(e){
 					row.getports(e);
@@ -1668,6 +1668,10 @@ function LameLogDisplay(){
 				if(!data.error){
 					for(var i in data.device){
 						var device=data.device[i];
+						if(!cdulimit && device.DeviceType=='CDU'){
+							// on cdu devices we don't want to display other CDU devices
+							continue;
+						}
 						if($(document).data('showdc')==true || $(document).data('showdc')=='enabled'){
 							var rack=$('#datacenters a[href$="cabinetid='+device.CabinetID+'"]');
 							var dc=rack.parentsUntil('li[id^=dc]').last().prev('a').text();
