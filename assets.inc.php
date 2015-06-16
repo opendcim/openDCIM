@@ -3937,7 +3937,7 @@ class ESX {
 				$vm=new ESX();
 				$vm->DeviceID=$dev->DeviceID;
 				$vm->LastUpdated=date( 'Y-m-d H:i:s' );
-				$vm->vmID=$vmID;
+				$vm->vmID=count($vmList);
 				$vm->vmName=trim(str_replace('"','',@end(explode(":",$name))));
 				$vm->vmState=trim(str_replace('"','',@end(explode(":",$state))));
 				$vmList[]=$vm;
