@@ -1435,7 +1435,7 @@ class Device {
 	 * services - int 
 	 * uptime - int - uptime of the device returned as ticks.  tick defined as 1/1000'th of a second
 	 */
-	static function OSS_SNMP_Lookup($dev,$snmplookup,$oid=null){
+	static function OSS_SNMP_Lookup($dev,$snmplookup,$oid=null,$walk=false){
 		// This is find out the name of the function that called this to make the error logging more descriptive
 		$caller=debug_backtrace();
 		$caller=$caller[1]['function'];
@@ -1443,7 +1443,7 @@ class Device {
 		$snmpHost=new OSS_SNMP\SNMP($dev->PrimaryIP,$dev->SNMPCommunity,$dev->SNMPVersion,$dev->v3SecurityLevel,$dev->v3AuthProtocol,$dev->v3AuthPassphrase,$dev->v3PrivProtocol,$dev->v3PrivPassphrase);
 		$snmpresult=false;
 		try {
-			$snmpresult=(is_null($oid))?$snmpHost->useSystem()->$snmplookup(true):$snmpHost->get($oid);
+			$snmpresult=(is_null($oid))?$snmpHost->useSystem()->$snmplookup(true):($walk)?$snmpHost->walk($oid):$snmpHost->get($oid);
 		}catch (Exception $e){
 			$dev->IncrementFailures();
 			error_log("Device::$caller($dev->DeviceID) ".$e->getMessage());
@@ -1451,6 +1451,11 @@ class Device {
 
 		$dev->ResetFailures();
 		return $snmpresult;
+	}
+
+	// Same as above but does a walk instead of a get
+	static function OSS_SNMP_Walk($dev,$snmplookup,$oid=null){
+		return self::OSS_SNMP_Lookup($dev,$snmplookup,$oid,true);
 	}
 
 	function CreateDevice(){
@@ -3912,8 +3917,8 @@ class ESX {
 			return false;
 		}
 
-		$namesList=Device::OSS_SNMP_Lookup($dev,null,".1.3.6.1.4.1.6876.2.1.1.2");
-		$statesList=Device::OSS_SNMP_Lookup($dev,null,".1.3.6.1.4.1.6876.2.1.1.6");
+		$namesList=Device::OSS_SNMP_Walk($dev,null,".1.3.6.1.4.1.6876.2.1.1.2");
+		$statesList=Device::OSS_SNMP_Walk($dev,null,".1.3.6.1.4.1.6876.2.1.1.6");
 
 		$vmList=array();
 
