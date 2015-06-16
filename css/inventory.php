@@ -679,6 +679,9 @@ div.cabinet {
 	text-align: left;
 }
 
+.on { color: green; }
+.off { color: red; }
+
 .device #deviceimages > div { width: 355px; margin-left: auto; margin-right: auto; }
 .device #deviceimages > div > img { width: 175px; }
 
