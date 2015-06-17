@@ -2216,7 +2216,7 @@ echo '	<div class="table">
 					<div data-default=\"$cord->Notes\">$cord->Notes</div>
 				</div>\n";
 			}
-$connectioncontrols=($dev->DeviceID>0)?'
+$connectioncontrols=($dev->DeviceID>0 && !empty($portList))?'
 <span style="display: inline-block; vertical-align: super;">'.__("Limit device selection to").':</span>
 <div id="connection-limiter" data-role="controlgroup" data-type="horizontal">
 	<input type="radio" name="connection-limiter" id="radio-choice-1" value="row" />
