@@ -403,7 +403,6 @@
   <script type="text/javascript">
 	$(document).ready(function(){
 		// ToolTips
-
 		$('#tooltip, #cdutooltip').multiselect();
 		$("select:not('#tooltip, #cdutooltip')").each(function(){
 			if($(this).attr('data')){
@@ -516,6 +515,11 @@
 				});
 			});
 		});
+
+		// Make SNMP community visible
+		$('#SNMPCommunity,#v3AuthPassphrase,#v3PrivPassphrase')
+			.focus(function(){$(this).attr('type','text');})
+			.blur(function(){$(this).attr('type','password');});
 
 		// General - Time and Measurements
 
@@ -1577,16 +1581,11 @@ echo '<div class="main">
 					<div><span>',strtoupper($config->defaults["FreeSpaceColor"]),'</span></div>
 				</div>
 				<div>
-				   <div>',__("U1 Position"),'</div>
-				   <div><select id="U1Position" name="U1Position" defaultvalue="',$config->defaults["U1Position"],'">';
-
-$posarray=array('Top' => __("Top"),
-		'Bottom' => __("Bottom"));
-foreach($posarray as $pos => $translation){
-	printf( "				   	<option value=\"%s\" %s>%s</option>\n", $pos, $pos == $config->ParameterArray["U1Position"] ? "SELECTED" : "", $translation );
-}
-   
-echo '				   </select></div>
+				   <div>',__("Default U1 Position"),'</div>
+				   <div><select id="U1Position" name="U1Position" defaultvalue="',$config->defaults["U1Position"],'" data="',$config->ParameterArray["U1Position"],'">
+							<option value="Bottom">',__("Bottom"),'</option>
+							<option value="Top">',__("Top"),'</option>
+				   </select></div>
 				</div>
 			</div> <!-- end table -->
 			<h3>',__("Devices"),'</h3>
@@ -1712,7 +1711,7 @@ echo '				   </select></div>
 			<div class="table">
 				<div>
 					<div><label for="SNMPCommunity">',__("Default SNMP Community"),'</label></div>
-					<div><input type="text" defaultvalue="',$config->defaults["SNMPCommunity"],'" name="SNMPCommunity" value="',$config->ParameterArray["SNMPCommunity"],'"></div>
+					<div><input type="password" defaultvalue="',$config->defaults["SNMPCommunity"],'" name="SNMPCommunity" value="',$config->ParameterArray["SNMPCommunity"],'"></div>
 				</div>
 				<div>
 				  <div><label for="SNMPVersion">'.__("SNMP Version").'</label></div>
@@ -1745,7 +1744,7 @@ echo '				   </select></div>
 				</div>
 				<div>
 				  <div><label for="v3AuthPassphrase">'.__("SNMPv3 Passphrase").'</label></div>
-				  <div><input type="text" defaultvalue="',$config->defaults["v3AuthPassphrase"],'" name="v3AuthPassphrase" id="v3AuthPassphrase" value="',$config->ParameterArray["v3AuthPassphrase"],'"></div>
+				  <div><input type="password" defaultvalue="',$config->defaults["v3AuthPassphrase"],'" name="v3AuthPassphrase" id="v3AuthPassphrase" value="',$config->ParameterArray["v3AuthPassphrase"],'"></div>
 				</div>
 				<div>
 				  <div><label for="v3PrivProtocol">'.__("SNMPv3 PrivProtocol").'</label></div>
@@ -1758,7 +1757,7 @@ echo '				   </select></div>
 				</div>
 				<div>
 				  <div><label for="v3PrivPassphrase">'.__("SNMPv3 PrivPassphrase").'</label></div>
-				  <div><input type="text" defaultvalue="',$config->defaults["v3PrivPassphrase"],'" name="v3PrivPassphrase" id="v3PrivPassphrase" value="',$config->ParameterArray["v3PrivPassphrase"],'"></div>
+				  <div><input type="password" defaultvalue="',$config->defaults["v3PrivPassphrase"],'" name="v3PrivPassphrase" id="v3PrivPassphrase" value="',$config->ParameterArray["v3PrivPassphrase"],'"></div>
 				</div>
 			</div> <!-- end table -->
 			<h3>',__("Capacity Reporting"),'</h3>
