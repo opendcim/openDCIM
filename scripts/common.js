@@ -1668,7 +1668,7 @@ function LameLogDisplay(){
 				if(!data.error){
 					for(var i in data.device){
 						var device=data.device[i];
-						if(!cdulimit && device.DeviceType=='CDU'){
+						if((!cdulimit && (device.DeviceType=='CDU' || device.PowerSupplyCount==0)) || (cdulimit && device.PowerSupplyCount==0)){
 							// on cdu devices we don't want to display other CDU devices
 							continue;
 						}
