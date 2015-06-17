@@ -36,7 +36,7 @@
 		$esx->vmName=$dev->Label;
 		$vmList=$esx->SearchByVMName();
 		$cab->Location=$searchTerm;
-		$cabList=$cab->SearchByCabinetName();
+		$cabList=$cab->LooseSearch();
 		$pdu->Label=$searchTerm;
 		$pduList=$pdu->SearchByPDUName();
 		$resultcount=count($devList)+count($cabList)+count($pduList)+count($vmList);
@@ -54,7 +54,7 @@
 		$esx->Owner=$dept->DeptID;
 		$vmList=$esx->GetVMListbyOwner();
 		$cab->AssignedTo=$dept->DeptID;
-		$cabList=$cab->SearchByOwner();
+		$cabList=$cab->Search();
 		//PDUs have no ownership information so don't search them
 		$resultcount=count($devList)+count($cabList)+count($vmList);
 		$title=__("Owner search results for")." &quot;$searchTerm&quot;";

@@ -77,7 +77,7 @@ class Cabinet {
 		$this->MapY2=abs($this->MapY2);
 		$this->FrontEdge=in_array($this->FrontEdge, array("Top","Right","Left","Bottom"))?$this->FrontEdge:"Top";
 		$this->Notes=sanitize($this->Notes,false);
-		$this->U1Position=in_array($this->U1Position, array("Top","Bottom", "Default"))?$this->U1Position:"Bottom";
+		$this->U1Position=in_array($this->U1Position, array("Top","Bottom","Default"))?$this->U1Position:"Bottom";
 	}
 	
 	static function RowToObject($dbRow,$filterrights=true){
@@ -108,11 +108,23 @@ class Cabinet {
 		$cab->MapY2=$dbRow["MapY2"];
 		$cab->FrontEdge=$dbRow["FrontEdge"];
 		$cab->Notes=$dbRow["Notes"];
+		$cab->U1Position=$dbRow["U1Position"];
 
 		if($filterrights){
 			$cab->FilterRights();
 		}
-		$cab->U1Position=$dbRow["U1Position"];
+
+		if($cab->U1Position=="Default"){
+			$dc=new DataCenter();
+			$dc->DataCenterID=$cab->DataCenterID;
+			$dc->GetDataCenter();
+			if($dc->U1Position=="Default"){
+				global $config;
+				$cab->U1Position=$config->ParameterArray["U1Position"];
+			}else{
+				$cab->U1Position=$dc->U1Position;
+			}
+		}
 
 		return $cab;
 	}
@@ -126,7 +138,7 @@ class Cabinet {
 		// Remove information that they shouldn't have access to
 		if($this->Rights=='None'){
 			// ZoneID and CabRowID are probably both not important but meh
-			$publicfields=array('CabinetID','DataCenterID','Location','LocationSortable','ZoneID','CabRowID','Rights','AssignedTo');
+			$publicfields=array('CabinetID','DataCenterID','Location','LocationSortable','ZoneID','CabRowID','Rights','AssignedTo','U1Position');
 			foreach($this as $prop => $value){
 				if(!in_array($prop,$publicfields)){
 					$this->$prop=null;
@@ -141,16 +153,16 @@ class Cabinet {
 		$this->MakeSafe();
 
 		$sql="INSERT INTO fac_Cabinet SET DataCenterID=$this->DataCenterID, 
-			Location=\"$this->Location\", LocationSortable=\"$this->LocationSortable\", 
-			AssignedTo=$this->AssignedTo, ZoneID=$this->ZoneID, CabRowID=$this->CabRowID,
+			Location=\"$this->Location\", LocationSortable=\"$this->LocationSortable\",
+			AssignedTo=$this->AssignedTo, ZoneID=$this->ZoneID, CabRowID=$this->CabRowID, 
 			CabinetHeight=$this->CabinetHeight, Model=\"$this->Model\", 
-			Keylock=\"$this->Keylock\", MaxKW=\"$this->MaxKW\", MaxWeight=$this->MaxWeight, 
-			InstallationDate=\"$this->InstallationDate\", 
-			SensorIPAddress=\"$this->SensorIPAddress\", 
-			SensorCommunity=\"$this->SensorCommunity\", 
-			SensorTemplateID=$this->SensorTemplateID, MapX1=$this->MapX1, 
-			MapY1=$this->MapY1, MapX2=$this->MapX2, MapY2=$this->MapY2, FrontEdge=\"$this->FrontEdge\",
-			Notes=\"$this->Notes\", U1Position=\"$this->U1Position\";";
+			Keylock=\"$this->Keylock\", MaxKW=$this->MaxKW, MaxWeight=$this->MaxWeight, 
+			InstallationDate=\"".date("Y-m-d", strtotime($this->InstallationDate))."\", 
+			SensorIPAddress=\"$this->SensorIPAddress\", MapX1=$this->MapX1, 
+			SensorCommunity=\"$this->SensorCommunity\", MapY1=$this->MapY1, 
+			SensorTemplateID=$this->SensorTemplateID, MapX2=$this->MapX2, MapY2=$this->MapY2,
+			FrontEdge=\"$this->FrontEdge\", Notes=\"$this->Notes\", 
+			U1Position=\"$this->U1Position\";";
 
 		if(!$dbh->exec($sql)){
 			$info=$dbh->errorInfo();
@@ -180,11 +192,11 @@ class Cabinet {
 			CabinetHeight=$this->CabinetHeight, Model=\"$this->Model\", 
 			Keylock=\"$this->Keylock\", MaxKW=$this->MaxKW, MaxWeight=$this->MaxWeight, 
 			InstallationDate=\"".date("Y-m-d", strtotime($this->InstallationDate))."\", 
-			SensorIPAddress=\"$this->SensorIPAddress\", 
-			SensorCommunity=\"$this->SensorCommunity\", 
-			SensorTemplateID=$this->SensorTemplateID, 
-			MapX1=$this->MapX1, MapY1=$this->MapY1, MapX2=$this->MapX2, MapY2=$this->MapY2, FrontEdge=\"$this->FrontEdge\",
-			Notes=\"$this->Notes\", U1Position=\"$this->U1Position\" WHERE CabinetID=$this->CabinetID;";
+			SensorIPAddress=\"$this->SensorIPAddress\", MapX1=$this->MapX1, 
+			SensorCommunity=\"$this->SensorCommunity\", MapY1=$this->MapY1, 
+			SensorTemplateID=$this->SensorTemplateID, MapX2=$this->MapX2, MapY2=$this->MapY2,
+			FrontEdge=\"$this->FrontEdge\", Notes=\"$this->Notes\", 
+			U1Position=\"$this->U1Position\" WHERE CabinetID=$this->CabinetID;";
 
 		if(!$dbh->query($sql)){
 			$info=$dbh->errorInfo();
@@ -417,43 +429,6 @@ class Cabinet {
 		return $selectList;
 	}
 
-	function BuildCabinetTree(){
-		global $dbh;
-		
-		$dc=new DataCenter();
-		$deptList=Department::GetDepartmentListIndexedbyID();
-		$dcList=$dc->GetDCList();
-		$cabList=Cabinet::ListCabinets(true);
-
-		if(count($dcList) >0){
-			$tree="<ul class=\"mktree\" id=\"datacenters\">\n";
-			
-			$zoneInfo=new Zone();
-			while(list($dcID,$datacenter)=each($dcList)){
-				if($dcID==$this->DataCenterID){
-					$classType = "liOpen";
-				}else{
-					$classType = "liClosed";
-				}
-
-				$tree.="\t<li class=\"$classType\" id=\"dc$dcID\"><a href=\"dc_stats.php?dc=$datacenter->DataCenterID\">$datacenter->Name</a>/\n\t\t<ul>\n";
-
-				foreach($cabList as $cab){
-					$deptName=($cab->AssignedTo==0)?"General Use":$deptList[$cab->AssignedTo]->Name;
-				    
-					$tree.="\t\t\t<li id=\"cab$cab->CabinetID\"><a href=\"cabnavigator.php?cabinetid=$cab->CabinetID\">$cab->Location [$deptName]</a></li>\n";
-				}
-
-				$tree.="\t\t</ul>\n	</li>\n";
-			}
-			
-			$tree.="<li class=\"liOpen\" id=\"dc-1\"><a href=\"storageroom.php\">Storage Room</a></li>";
-			$tree.="</ul>";
-		}
-
-		return $tree;
-	}
-
 	function DeleteCabinet(){
 		global $dbh;
 		
@@ -492,6 +467,7 @@ class Cabinet {
 		global $dbh;
 		// Store the value of frontedge before we muck with it
 		$ot=$this->FrontEdge;
+		$op=$this->U1Position;
 
 		// Make everything safe for us to search with
 		$this->MakeSafe();
@@ -507,8 +483,11 @@ class Cabinet {
 			}
 		}
 		foreach($this as $prop => $val){
-			// We force DeviceType to a known value so this is to check if they wanted to search for the default
+			// We force the following values to knowns in makesafe 
 			if($prop=="FrontEdge" && $val=="Top" && $ot!="Top"){
+				continue;
+			}
+			if($prop=="U1Position" && $val=="Bottom" && $op!="Bottom"){
 				continue;
 			}
 			if($val && $val!="1969-12-31"){
@@ -519,7 +498,6 @@ class Cabinet {
 		$sql="SELECT * FROM fac_Cabinet $sqlextend ORDER BY LocationSortable ASC;";
 
 		$cabList=array();
-
 		foreach($dbh->query($sql) as $cabRow){
 			if($indexedbyid){
 				$cabList[$cabRow["CabinetID"]]=Cabinet::RowToObject($cabRow);
@@ -534,36 +512,6 @@ class Cabinet {
 	// Make a simple reference to a loose search
 	function LooseSearch($indexedbyid=false){
 		return $this->Search($indexedbyid,true);
-	}
-
-	function SearchByCabinetName( $db = null ) {
-		global $dbh;
-		
-		$sql="select * from fac_Cabinet where ucase(Location) like \"%" . transform($this->Location) . "%\" order by Location ASC, LENGTH(Location);";
-
-		$cabinetList=array();
-
-		foreach ( $dbh->query( $sql ) as $cabinetRow ){
-			$cabID=$cabinetRow["CabinetID"];
-			$cabinetList[$cabID]=Cabinet::RowToObject($cabinetRow);
-		}
-
-		return $cabinetList;
-	}
-
-	function SearchByOwner( $db = null ) {
-		global $dbh;
-		
-		$sql="select * from fac_Cabinet WHERE AssignedTo=".intval($this->AssignedTo)." ORDER BY Location ASC, LENGTH(Location);";
-
-		$cabinetList=array();
-
-		foreach ( $dbh->query( $sql ) as $cabinetRow ) {
-			$cabID=$cabinetRow["CabinetID"];
-			$cabinetList[$cabID]=Cabinet::RowToObject($cabinetRow);
-		}
-
-		return $cabinetList;
 	}
 
 	function SearchByCustomTag( $tag=null ) {
@@ -595,7 +543,8 @@ class Cabinet {
 
 		return $tags;
 	}
-	function SetTags( $tags=array() ) {
+
+	function SetTags($tags=array()){
 		global $dbh;
 		
 		if(count($tags)>0){
@@ -621,34 +570,6 @@ class Cabinet {
 		}
 		return 0;
 	}
-	function TopToBottonOrder(){
-		global $dbh;
-		global $config;
-	
-		$this->MakeSafe();
-	
-		//check cabinet
-		if ($this->U1Position=="Top")
-			return true;
-		if ($this->U1Position=="Bottom")
-			return false;
-	
-		//check DC
-		$dc=new DataCenter();
-		$dc->DataCenterID=$this->DataCenterID;
-		$dc->GetDataCenter();
-		if ($dc->U1Position=="Top")
-			return true;
-		if ($dc->U1Position=="Bottom")
-			return false;
-	
-		//check config (global)
-		if ($config->ParameterArray["U1Position"]=="Top")
-			return true;
-	
-		return false;
-	}
-	
 }
 
 class CabinetAudit {
@@ -2146,7 +2067,7 @@ class Device {
 		$cab->CabinetID=$this->Cabinet;
 		$cab->GetCabinet();
 		
-		if($cab->TopToBottonOrder()){
+		if($cab->U1Position=="Top"){
 			$order=" ORDER BY Position ASC";
 		}else{
 			$order=" ORDER BY Position DESC";

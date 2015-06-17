@@ -231,7 +231,7 @@ function renderUnassignedTemplateOwnership($noTemplFlag, $noOwnerFlag, $device) 
 		$fila=1;  //row of U part of table
 		$maxfila=$cab->CabinetHeight;
 		
-		$TopBottom=$cab->TopToBottonOrder();
+		$TopBottom=$cab->U1Position=="Top";
 		
 		$body.="<div class=\"cabinet\">\n\t<table>
 		<tr><th id=\"cabid\" data-cabinetid=$cab->CabinetID colspan=2 $cab_color>".__("Cabinet")." $cab->Location".($rear?" (".__("Rear").")":"")."</th></tr>
