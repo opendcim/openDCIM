@@ -776,6 +776,8 @@ class SensorTemplate {
 	function CreateTemplate($templateid){
 		global $dbh;
 
+		$this->MakeSafe();
+
 		$sql="INSERT INTO fac_SensorTemplate SET ManufacturerID=$this->ManufacturerID, 
 			Model=\"$this->Model\", TemperatureOID=\"$this->TemperatureOID\", 
 			HumidityOID=\"$this->HumidityOID\", TempMultiplier=$this->TempMultiplier, 
