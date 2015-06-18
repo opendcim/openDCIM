@@ -8,10 +8,14 @@
 	$locale = "en_US";
 	$codeset = "UTF-8";
 
-	try {
-			$pdoconnect = sprintf( "mysql:host=%s;dbname=%s", $dbhost, $dbname );
-			$dbh = new PDO( $pdoconnect, $dbuser, $dbpass );
-	} catch ( PDOException $e ) {
+	$pdo_options=array(
+		PDO::MYSQL_ATTR_INIT_COMMAND => 'SET NAMES utf8'
+	);
+
+	try{
+			$pdoconnect="mysql:host=$dchost;dbname=$dbname";
+			$dbh=new PDO($pdoconnect,$dbuser,$dbpass,$pdo_options);
+	}catch(PDOException $e){
 			printf( "Error!  %s\n", $e->getMessage() );
 			die();
 	}
