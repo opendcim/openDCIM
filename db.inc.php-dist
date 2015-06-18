@@ -13,7 +13,7 @@
 	);
 
 	try{
-			$pdoconnect="mysql:host=$dchost;dbname=$dbname";
+			$pdoconnect="mysql:host=$dbhost;dbname=$dbname";
 			$dbh=new PDO($pdoconnect,$dbuser,$dbpass,$pdo_options);
 	}catch(PDOException $e){
 			printf( "Error!  %s\n", $e->getMessage() );
