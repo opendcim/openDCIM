@@ -92,6 +92,9 @@
 
   <script type="text/javascript">
 	$(document).ready(function() {
+		$('#containerid').change(function(e){
+			location.href='container.php?containerid='+this.value;
+		});
 		$('#datacenterform').validationEngine({});
 		$('#drawingfilename').click(function(){
 			$("#imageselection").dialog({
@@ -213,11 +216,11 @@ print "		dialog.find('span + span').html('".__("This container will be deleted a
 echo '<div class="main">
 <h3>',$status,'</h3>
 <div class="center"><div>
-<form id="containerform" action="',$_SERVER["PHP_SELF"],'" method="POST">
+<form id="containerform" method="POST">
 <div class="table">
 <div>
    <div><label for="containerid">',__("Container"),'</label></div>
-   <div><select name="containerid" id="containerid" onChange="form.submit()">
+   <div><select name="containerid" id="containerid">
       <option value="0">',__("New Container"),'</option>';
 
 	foreach($cList as $cRow){
@@ -260,12 +263,13 @@ echo '	</select></div>
 </div>'; 
 
 if ($c->ParentID>0){
-	print "<div>\n  <div><b>".__("Click on the image to select container coordinates")."</b></div>"; 
+	$container=new Container();
 	$container->ContainerID=$c->ParentID;
 	$container->GetContainer();
-	print "<div>";
-	print $container->MakeContainerMiniImage("container",$c->ContainerID);
-	print "</div></div>"; 
+	print '<div>
+	<div><b>'.__("Click on the image to select container coordinates").'</b></div>
+	<div>'.$container->MakeContainerMiniImage("container",$c->ContainerID).'</div>
+</div>'; 
 }
 
 echo '<div class="caption">';
