@@ -504,8 +504,8 @@ function TemplateButtons(){
 	var rf=$('#RearPictureFile');
 	var cs=$('#ChassisSlots');
 	var rs=$('#RearChassisSlots');
-	var np=$('#numports');
-	var pp=$('#pscount');
+	var np=$('#NumPorts');
+	var pp=$('#PSCount');
 
 	if(np.val()>0){np.next('button').show();}else{np.next('button').hide();}
 	if(pp.val()>0){pp.next('button').show();}else{pp.next('button').hide();}
