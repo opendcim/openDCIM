@@ -154,6 +154,7 @@ CREATE TABLE fac_CDUTemplate (
   Model varchar(80) NOT NULL,
   Managed int(1) NOT NULL,
   ATS int(1) NOT NULL,
+  SNMPVersion varchar(2) NOT NULL DEFAULT '2c',
   VersionOID varchar(80) NOT NULL,
   Multiplier varchar(6) NULL DEFAULT NULL,
   OID1 varchar(80) NOT NULL,

@@ -12,6 +12,12 @@ INSERT INTO fac_Config SET Parameter="U1Position", Value="Bottom", UnitOfMeasure
 
 ALTER TABLE fac_SensorTemplate CHANGE mUnits mUnits VARCHAR( 7 ) NOT NULL DEFAULT "english";
 ALTER TABLE fac_SensorTemplate DROP COLUMN SNMPVersion;
+
+--
+-- Not sure how we missed this
+--
+ALTER TABLE fac_CDUTemplate ADD COLUMN SNMPVersion varchar(2) NOT NULL DEFAULT "2c" AFTER ATS;
+
 --
 -- Bump up the database version
 --
