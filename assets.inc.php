@@ -2899,12 +2899,12 @@ class Device {
 			$flags=($flags!='')?'<span class="hlight">'.$flags.'</span>':'';
 
 			$label="";
-			$resp.="\t\t<div class=\"dept$this->Owner $rotar\" style=\"left: ".round($left/$parentDetails->targetWidth*100,2)."%; top: ".round($top/$parentDetails->targetHeight*100,2)."%; width: ".round($width/$parentDetails->targetWidth*100,2)."%; height:".round($height/$parentDetails->targetHeight*100,2)."%;\">\n$clickable";
+			$resp.="\t\t<div class=\"dept$this->Owner $rotar\" style=\"left: ".number_format(round($left/$parentDetails->targetWidth*100,2),2,'.','')."%; top: ".number_format(round($top/$parentDetails->targetHeight*100,2),2,'.','')."%; width: ".number_format(round($width/$parentDetails->targetWidth*100,2),2,'.','')."%; height:".number_format(round($height/$parentDetails->targetHeight*100,2),2,'.','')."%;\">\n$clickable";
 //			if(($templ->FrontPictureFile!="" && !$rear) || ($templ->RearPictureFile!="" && $rear)){
 			if($picturefile!='pictures/'){
 				// IMAGE
 				// this rotate should only happen for a horizontal slot with a vertical image
-				$rotateimage=($hor_slot && !$hor_blade)?" class=\"rotar_d rlt\"  style=\"height: ".round($width/$height*100,2)."%; left: 100%; width: ".round($height/$width*100,2)."%; top: 0; position: absolute;\"":"";
+				$rotateimage=($hor_slot && !$hor_blade)?" class=\"rotar_d rlt\"  style=\"height: ".number_format(round($width/$height*100,2),2,'.','')."%; left: 100%; width: ".number_format(round($height/$width*100,2),2,'.','')."%; top: 0; position: absolute;\"":"";
 				$resp.="\t\t\t\t<img data-deviceid=$this->DeviceID src=\"$picturefile\"$rotateimage alt=\"$this->Label\">\n";
 				
 				// LABEL FOR IMAGE
