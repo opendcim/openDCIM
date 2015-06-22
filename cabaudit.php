@@ -6,15 +6,14 @@
 	require('fpdf.php');
 
 	$dept = new Department();
-	$con = new Contact();
 	$device = new Device();
 	$cab = new Cabinet();
 	$dc = new DataCenter();
 	$pdu=new PowerDistribution();
 	$panel= new PowerPanel();
-	$connection=new PowerConnection();
 	$mfg=new Manufacturer();
 	$templ=new DeviceTemplate();
+	$pport = new PowerPorts();
 
 	$audit=new CabinetAudit();
 	$audit->CabinetID=$_REQUEST['cabinetid'];
@@ -24,7 +23,7 @@
 		$tmpPerson=new People();
 		$tmpPerson->UserID=$audit->UserID;
 		$tmpPerson->GetUserRights();
-		$AuditorName=$tmpPerson->Name;
+		$AuditorName=$tmpPerson->LastName . ", " . $tmpPerson->FirstName;
 	}else{
 		//If no audit has been completed $AuditorName will return an error
 		$AuditorName="";
@@ -409,10 +408,11 @@ class PDF_Diag extends PDF_Sector {
 		$pdf->Cell( $cellWidths[$col], 7, $headerTags[$col], 1, 0, 'C', 1 );
 	$pdf->Ln();
 
-	function printRow($devRow,$connection,$pdf,$templ,$fill,$cellWidths,$pdu,$mfg){
+	function printRow($devRow,$pport,$pdf,$templ,$fill,$cellWidths,$pdu,$mfg){
 		global $fill;
-		$connection->DeviceID=$devRow->DeviceID;
-		$connList=$connection->GetConnectionsByDevice();
+
+		$pport->DeviceID=$devRow->DeviceID;
+		$connList=$pport->getPorts();
 
 		$pdf->Cell( $cellWidths[0], 6, $devRow->Label, 'LBRT', 0, 'L', $fill );
 		$pdf->Cell( $cellWidths[1], 6, $devRow->SerialNo, 'LBRT', 0, 'L', $fill );
@@ -421,12 +421,12 @@ class PDF_Diag extends PDF_Sector {
 		$pdf->Cell( $cellWidths[4], 6, $devRow->Height, 'LBRT', 0, 'L', $fill );
 		$pdf->Cell( $cellWidths[5], 6, $devRow->Ports, 'LBRT', 0, 'L', $fill );
 		$pdf->Cell( $cellWidths[6], 6, $devRow->PowerSupplyCount, 'LBRT', 0, 'L', $fill );
-		@$pdu->PDUID=$connList[0]->PDUID;
+		@$pdu->PDUID=$connList[1]->ConnectedDeviceID;
 		$pdu->GetPDU();
-		$pdf->Cell( $cellWidths[7], 6, (isset($connList[0]))?$pdu->Label.' ['.$connList[0]->PDUPosition.']':"", 'LBRT', 0, 'L', $fill );
-		@$pdu->PDUID=$connList[1]->PDUID;
+		$pdf->Cell( $cellWidths[7], 6, (isset($connList[1]))?$pdu->Label.' ['.$connList[1]->ConnectedPort.']':"", 'LBRT', 0, 'L', $fill );
+		@$pdu->PDUID=$connList[2]->ConnectedDeviceID;
 		$pdu->GetPDU();
-		$pdf->Cell( $cellWidths[8], 6, (isset($connList[1]))?$pdu->Label.' ['.$connList[1]->PDUPosition.']':"", 'LBRT', 0, 'L', $fill );
+		$pdf->Cell( $cellWidths[8], 6, (isset($connList[2]))?$pdu->Label.' ['.$connList[2]->ConnectedPort.']':"", 'LBRT', 0, 'L', $fill );
 		$templ->TemplateID=$devRow->TemplateID;
 		$templ->GetTemplateByID();
 		$mfg->ManufacturerID=$templ->ManufacturerID;
@@ -434,7 +434,7 @@ class PDF_Diag extends PDF_Sector {
 		$pdf->Cell( $cellWidths[9], 6, $mfg->Name." ".$templ->Model, 'LBRT', 1, 'L', $fill );
 
 		if(count($connList) >2){
-			for($connCount=2; $connCount < count($connList); $connCount += 2 ) {
+			for($connCount=3; $connCount < count($connList); $connCount += 2 ) {
 				$pdf->Cell( $cellWidths[0], 6, '', 'LBRT', 0, 'L', $fill );
 				$pdf->Cell( $cellWidths[1], 6, '', 'LBRT', 0, 'L', $fill );
 				$pdf->Cell( $cellWidths[2], 6, '', 'LBRT', 0, 'L', $fill );
@@ -442,12 +442,12 @@ class PDF_Diag extends PDF_Sector {
 				$pdf->Cell( $cellWidths[4], 6, '', 'LBRT', 0, 'L', $fill );
 				$pdf->Cell( $cellWidths[5], 6, '', 'LBRT', 0, 'L', $fill );
 				$pdf->Cell( $cellWidths[6], 6, '', 'LBRT', 0, 'L', $fill );
-				@$pdu->PDUID=$connList[$connCount]->PDUID;
+				@$pdu->PDUID=$connList[$connCount]->ConnectedDeviceID;
 				$pdu->GetPDU();
-				$pdf->Cell( $cellWidths[7], 6, (isset($connList[$connCount]))?$pdu->Label.' ['.$connList[$connCount]->PDUPosition.']':"", 'LBRT', 0, 'L', $fill );
-				@$pdu->PDUID=$connList[$connCount+1]->PDUID;
+				$pdf->Cell( $cellWidths[7], 6, (isset($connList[$connCount]))?$pdu->Label.' ['.$connList[$connCount]->ConnectedPort.']':"", 'LBRT', 0, 'L', $fill );
+				@$pdu->PDUID=$connList[$connCount+1]->ConnectedDeviceID;
 				$pdu->GetPDU();
-				$pdf->Cell( $cellWidths[8], 6, (isset($connList[$connCount+1]))?$pdu->Label.' ['.$connList[$connCount+1]->PDUPosition.']':"", 'LBRT', 0, 'L', $fill );
+				$pdf->Cell( $cellWidths[8], 6, (isset($connList[$connCount+1]))?$pdu->Label.' ['.$connList[$connCount+1]->ConnectedPort.']':"", 'LBRT', 0, 'L', $fill );
 				$pdf->Cell( $cellWidths[9], 6, '', 'LBRT', 1, 'L', $fill );
 			}
 		}
@@ -468,7 +468,7 @@ class PDF_Diag extends PDF_Sector {
 		if($devRow->DeviceType="Chassis1"){
 			$childList=$devRow->GetDeviceChildren();
 			foreach($childList as $childDev){
-				printRow($childDev,$connection,$pdf,$templ,$fill,$cellWidths,$pdu,$mfg);
+				printRow($childDev,$pport,$pdf,$templ,$fill,$cellWidths,$pdu,$mfg);
 			}
 		}
 	}
@@ -491,7 +491,9 @@ class PDF_Diag extends PDF_Sector {
 			$DCBTU=0;
 		}
 
-		printRow($devRow,$connection,$pdf,$templ,$fill,$cellWidths,$pdu,$mfg);
+		if ( $devRow->DeviceType != "CDU" ) {
+			printRow($devRow,$pport,$pdf,$templ,$fill,$cellWidths,$pdu,$mfg);
+		}
 
 	}
 
