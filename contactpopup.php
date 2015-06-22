@@ -5,7 +5,6 @@
 	$header=__("Department Contact Listing");
 
 	$dept=new Department();
-	$contact=new Contact();
 	
 	if(!isset($_REQUEST['deptid'])){
 		// No soup for you.
@@ -14,7 +13,7 @@
 	}
 
 	$deptID=intval($_REQUEST['deptid']);
-	$contactList=$contact->GetContactsForDepartment($deptID);
+	$contactList=$person->GetPeopleByDepartment($deptID);
 	$dept->DeptID=$deptID;
 	$dept->GetDeptByID();
 
@@ -37,6 +36,9 @@
   <!--[if lt IE 9]>
   <link rel="stylesheet"  href="css/ie.css" type="text/css" />
   <![endif]-->
+  <style type="text/css">
+	div.main { padding: 5px 0; border: 0px; width: 100%; }
+  </style>
 </head>
 <body>
 <?php include( 'header.inc.php' ); ?>

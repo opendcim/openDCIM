@@ -19,6 +19,11 @@ ALTER TABLE fac_SensorTemplate DROP COLUMN SNMPVersion;
 ALTER TABLE fac_CDUTemplate ADD COLUMN SNMPVersion varchar(2) NOT NULL DEFAULT "2c" AFTER ATS;
 
 --
+-- Moving entries from the rack audit to the generic log was off by a column
+--
+UPDATE fac_GenericLog SET Action="CertifyAudit", Property="" WHERE Property="CertifyAudit";
+
+--
 -- Bump up the database version
 --
 -- UPDATE fac_Config set Value='4.1' WHERE Parameter='Version';
