@@ -1067,6 +1067,9 @@ class PowerDistribution {
 			if($row["OID2"]!="" && $row["OID3"]!=""){
 				$pollValue2=floatval(self::OSS_SNMP_Lookup($dev,null,$row["OID2"]));
 				$pollValue3=floatval(self::OSS_SNMP_Lookup($dev,null,$row["OID3"]));
+				// Negativity test, it is required for APC 3ph modular PDU with IEC309-5W wires
+				if ($pollValue2<0) $pollValue2=0;
+				if ($pollValue3<0) $pollValue3=0;
 			}
 			
 			// Have to reset this every time, otherwise the exec() will append
