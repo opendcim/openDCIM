@@ -4465,7 +4465,7 @@ class SwitchInfo {
 		$baseOID=".1.3.6.1.2.1.31.1.1.1.18.";
 		$baseOID="IF-MIB::ifAlias";
 
-		$aliasList=self::OSS_SNMP_Lookup($dev,"adminStates",$portid,$baseOID);
+		$aliasList=self::OSS_SNMP_Lookup($dev,"aliases",$portid,$baseOID);
 		
 		if(is_array($aliasList)){
 			$saving=false;
