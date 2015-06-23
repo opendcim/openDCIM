@@ -45,7 +45,7 @@ function BuildCabinet($rear=false,$side=null){
 	$fila=1;  //row of U part of table
 	$maxfila=$cabinet->CabinetHeight;
 	
-	$TopBottom=$cab->U1Position=="Top";
+	$TopBottom=$cabinet->U1Position=="Top";
 	
 	// Determine which label to put on the rack, if any
 	$rs="";

@@ -496,14 +496,12 @@ class DataCenter {
 				list($width, $height, $type, $attr)=getimagesize($mapfile);
 
 				$cdus=array();
-				$sql="SELECT C.CabinetID, P.RealPower, P.BreakerSize, P.InputAmperage * PP.PanelVoltage AS VoltAmp 
-					FROM ((fac_Cabinet C LEFT JOIN fac_CabinetTemps T ON C.CabinetId = T.CabinetID) LEFT JOIN
-						(SELECT CabinetID, Wattage AS RealPower, BreakerSize, InputAmperage, PanelID FROM 
-						fac_PowerDistribution PD LEFT JOIN fac_PDUStats PS ON PD.PDUID=PS.PDUID ) P 
-						ON C.CabinetId = P.CabinetID)
-					LEFT JOIN (SELECT PanelVoltage, PanelID FROM fac_PowerPanel) PP ON PP.PanelID=P.PanelID
-					WHERE PanelVoltage IS NOT NULL AND RealPower IS NOT NULL AND 
-					C.DataCenterID=".intval($this->DataCenterID).";";
+					
+				$sql = "select c.CabinetID, P.RealPower, P.BreakerSize, P.InputAmperage*PP.PanelVoltage as VoltAmp from 
+					(fac_Cabinet c left join (select CabinetID, Wattage as RealPower, BreakerSize, InputAmperage, PanelID from fac_PowerDistribution PD 
+					left join fac_PDUStats PS on PD.PDUID=PS.PDUID) P on c.CabinetID=P.CabinetID) 
+					left join (select PanelVoltage, PanelID from fac_PowerPanel) PP on PP.PanelID=P.PanelID 
+					where PanelVoltage is not null and RealPower is not null and c.DataCenterID=".intval($this->DataCenterID);
 
 				$rpvalues=$this->query($sql);
 				foreach($rpvalues as $cduRow){
