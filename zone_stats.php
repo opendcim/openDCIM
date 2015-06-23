@@ -268,7 +268,6 @@ echo '
 		$('#mapCanvas').css('width', $('.canvas > img[alt="clearmap over canvas"]').width()+'px');
 		$('#mapCanvas').parent('.canvas').css('width', $('.canvas > img[alt="clearmap over canvas"]').width()+'px');
 
-		var firstcabinet=$('#dc<?php echo $dc->DataCenterID;?> > ul > li:first-child').attr('id');
 		// Don't attempt to open the datacenter tree until it is loaded
 		function opentree(){
 			if($('#datacenters .bullet').length==0){
@@ -276,6 +275,7 @@ echo '
 					opentree();
 				},500);
 			}else{
+				var firstcabinet=$('#dc<?php echo $dc->DataCenterID;?> > ul > li:first-child').attr('id');
 				expandToItem('datacenters',firstcabinet);
 			}
 		}

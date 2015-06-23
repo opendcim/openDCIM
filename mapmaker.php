@@ -176,7 +176,6 @@
 			handles: true,
 			onSelectChange: preview
 		});
-		var firstcabinet=$('#dc<?php echo $dc->DataCenterID;?> > ul > li:first-child').attr('id');
 		// Don't attempt to open the datacenter tree until it is loaded
 		function opentree(){
 			if($('#datacenters .bullet').length==0){
@@ -184,6 +183,7 @@
 					opentree();
 				},500);
 			}else{
+				var firstcabinet=$('#dc<?php echo $dc->DataCenterID;?> > ul > li:first-child').attr('id');
 				expandToItem('datacenters',firstcabinet);
 			}
 		}

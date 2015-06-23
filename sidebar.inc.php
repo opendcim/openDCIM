@@ -232,7 +232,9 @@ $(document).ready(function(){
 	});
 	$.get('scripts/ajax_navmenu.php').done(function(data){
 		$('#nav_placeholder').replaceWith(data);
-		window.convertTrees();
+		if(document.readyState==="complete" && $('#datacenters .bullet').length==0){
+			window.convertTrees();
+		}
 	});
 });
 
