@@ -36,7 +36,7 @@
 		$esx->vmName=$dev->Label;
 		$vmList=$esx->SearchByVMName();
 		$cab->Location=$searchTerm;
-		$cabList=$cab->LooseSearch();
+		$cabList=$cab->LooseSearch(true);
 		$pdu->Label=$searchTerm;
 		$pduList=$pdu->SearchByPDUName();
 		$resultcount=count($devList)+count($cabList)+count($pduList)+count($vmList);
@@ -54,7 +54,7 @@
 		$esx->Owner=$dept->DeptID;
 		$vmList=$esx->GetVMListbyOwner();
 		$cab->AssignedTo=$dept->DeptID;
-		$cabList=$cab->Search();
+		$cabList=$cab->Search(true);
 		//PDUs have no ownership information so don't search them
 		$resultcount=count($devList)+count($cabList)+count($vmList);
 		$title=__("Owner search results for")." &quot;$searchTerm&quot;";
@@ -179,9 +179,6 @@
 			}
 		}
 	}
-
-	// Since children have empty cabinet identifiers we'll have an empty row get rid of it
-	if(isset($cabtemp[0])){unset($cabtemp[0]);}
 
 	// Add Rack Names To Temp Cabinet Array
 	foreach($cabtemp as $key => $row){
