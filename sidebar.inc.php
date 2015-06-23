@@ -107,13 +107,10 @@
 			print "\t\t\t<option value=\"$cc\"$selected>$translatedname</option>";
 		}
 	echo '		</select>
-	</div>';
+	</div>
 
-// Work in progress
-	buildNavTreeHTML();
-//	$container = new Container();
-//	echo $container->BuildMenuTree();
-	
+	<div id="nav_placeholder"></div>';
+	// Moved the navigation menu to an ajax load item	
 ?>
 	</div>
 <script type="text/javascript">
@@ -232,7 +229,10 @@ $(document).ready(function(){
 				location.reload();
 			}
 		});
-
+	});
+	$.get('scripts/ajax_navmenu.php').done(function(data){
+		$('#nav_placeholder').replaceWith(data);
+		window.convertTrees();
 	});
 });
 
