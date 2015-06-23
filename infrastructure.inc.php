@@ -522,7 +522,11 @@ class DataCenter {
 					$maxDraw*=0.8;
 
 					// Only keep the highest percentage of any single CDU in a cabinet
-					$pp=intval($rp / $maxDraw * 100);
+					if ( $rp > 0 ) {
+						$pp=intval($rp / $maxDraw * 100);
+					} else {
+						$pp = 0;
+					}
 					$cdus[$cabid]=(isset($cdus[$cabid]) && $cdus[$cabid]>$pp)?$cdus[$cabid]:$pp;
 				}
 				$cab->DataCenterID = $this->DataCenterID;
