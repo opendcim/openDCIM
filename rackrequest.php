@@ -15,12 +15,10 @@
 	$cab=new Cabinet();
 	$dev=new Device();
 	$req=new RackRequest();
-	$contact=new Contact();
-	$tmpContact=new Contact();
+	$contact=new People();
+	$tmpContact=new People();
 	$formfix=$error='';	
-	$contactList=$contact->GetContactList();
-	$contact->UserID=$person->UserID;
-	$contact->GetContactByUserID();
+	$contactList=$person->GetUserList();
 
 	//We only need to worry about sending email in the event this is a new submission and no other time.
 	if(isset($_POST["action"])){
@@ -28,12 +26,12 @@
 			$req->RequestID=$_REQUEST['requestid'];
 			$req->GetRequest();
 
-			$contact->ContactID=$req->RequestorID;
-			$contact->GetContactByID();
+			$contact->PersonID=$req->RequestorID;
+			$contact->GetPerson();
 		}
 
-		$tmpContact->ContactID=$_POST["requestorid"];
-		$tmpContact->GetContactByID();
+		$tmpContact->PersonID=$_POST["requestorid"];
+		$tmpContact->GetPerson();
 
 		// If any port other than 25 is specified, assume encryption and authentication
 		if($config->ParameterArray['SMTPPort']!= 25){
@@ -63,7 +61,7 @@
 		try{		
 			$message->addTo($tmpContact->Email);
 		}catch(Swift_RfcComplianceException $e){
-			$error.=__("Check contact details for")." <a href=\"contacts.php?contactid=$tmpContact->ContactID\">$tmpContact->LastName, $tmpContact->FirstName</a>: <span class=\"errmsg\">".$e->getMessage()."</span><br>\n";
+			$error.=__("Check contact details for")." <a href=\"usermgr.php?PersonID=$tmpContact->PersonID\">$tmpContact->LastName, $tmpContact->FirstName</a>: <span class=\"errmsg\">".$e->getMessage()."</span><br>\n";
 		}
 
 		// Add data center team to the list of recipients
@@ -192,8 +190,8 @@
 		$req->GetRequest();
 		$formfix="?requestid=$req->RequestID";
 
-		$contact->ContactID=$req->RequestorID;
-		$contact->GetContactByID();
+		$contact->PersonID=$req->RequestorID;
+		$contact->GetPerson();
 	}
 ?>
 <!doctype html>
@@ -348,7 +346,7 @@ echo '<div class="table">
 
 	foreach($contactList as $tmpContact){
 		if($tmpContact->UserID==$contact->UserID){$selected=" selected";}else{$selected="";}
-		print "				<option value=\"$tmpContact->ContactID\"$selected>$tmpContact->LastName, $tmpContact->FirstName</option>";
+		print "				<option value=\"$tmpContact->PersonID\"$selected>$tmpContact->LastName, $tmpContact->FirstName</option>";
 	}
 
 echo '			</select>
