@@ -95,7 +95,7 @@ CREATE TABLE fac_SensorTemplate (
 	HumidityOID VARCHAR(256) NOT NULL,
 	TempMultiplier FLOAT(8) NOT NULL DEFAULT 1,
 	HumidityMultiplier FLOAT(8) NOT NULL DEFAULT 1,
-	mUnits ENUM( 'english', 'metric' ) NOT NULL DEFAULT 'english',
+	mUnits VARCHAR(7) NOT NULL DEFAULT "english",
 	PRIMARY KEY(TemplateID)
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
 
@@ -825,6 +825,7 @@ INSERT INTO fac_Config VALUES
 	('APIKey', '', 'Key', 'string', ''),
 	('RequireDefinedUser', 'disabled', 'Enabled/Disabled', 'string', 'Disabled'),
 	('KeepLocal', 'enabled', 'Enabled/Disabled', 'string', 'Enabled'),
+	('SNMPVersion', '2c', 'Version', 'string', '2c'),
 	('v3SecurityLevel', '', 'noAuthNoPriv/authNoPriv/authPriv', 'string', 'noAuthNoPriv'),
 	('v3AuthProtocol', '', 'SHA/MD5', 'string', 'SHA'),
 	('v3AuthPassphrase', '', 'Password', 'string', ''),

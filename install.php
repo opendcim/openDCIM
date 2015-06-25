@@ -1,5 +1,5 @@
 <?php
-$codeversion="4.0";
+$codeversion="4.0.1";
 
 // Pre-Flight check
 	$tests=array();
@@ -124,7 +124,7 @@ $codeversion="4.0";
 		}
 		echo '<tr><th>javascript</th><td>Javascript is used heavily for data validation and a more polished user experience.</td><td><script>document.write("good");document.getElementById("api_test").className=document.getElementById("api_test").className.replace(/\bhide\b/,"");</script><noscript>fail</noscript></td></tr>
 			</table>
-		<p>If you see any errors on this page then you must correct them before the installer can continue.&nbsp;&nbsp;&nbsp;<span id="continue" class="hide"><a href="?preflight-ok">Click here to continue</a></span></p>
+		<p>If you see any errors on this page then you must correct them before the installer can continue.&nbsp;&nbsp;&nbsp;<span id="continue" class="hide">If the installer does not auto-continue,<a href="?preflight-ok"> click here</a><br><br>Please wait a few minutes before attempting to continue if a conversion is going on you might get unpredictable results by clicking</span></p>
 
 		</body></html>';
 		exit;
@@ -1186,6 +1186,15 @@ function upgrade(){
 			$d->GetDevice();
 			$d->UpdateDevice();
 		}
+
+		$version="4.0";
+	}
+	if($version=="4.0"){
+		// First apply the schema updates needed.
+		$results[]=applyupdate("db-4.0-to-4.0.1.sql");
+
+		// Rebuild the config table just in case.
+		$config->rebuild();
 
 	}
 }
