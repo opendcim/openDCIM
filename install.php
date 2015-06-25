@@ -125,7 +125,8 @@ $codeversion="4.0.1";
 		$errors++;
 	}
 	if ($errors >0 || !isset($_GET['preflight-ok'])) {
-        echo '<!doctype html><html><head><title>openDCIM :: pre-flight environment sanity check</title><script type="text/javascript" src="scripts/jquery.min.js"></script><script type="text/javascript">$(document).ready(function(){$("tr").each(function(){if($(this).find("td:last-child").text()=="fail"){$(this).addClass("fail");}});$.get("api/test/test").done(function(data){if(!data.error){$("#api_test").removeClass("fail").find("td:nth-child(2)").text("").next("td").text("GOOD");document.getElementById("continue").className=document.getElementById("continue").className.replace(/\bhide\b/,"");location.href="?preflight-ok";}});});</script><style type="text/css">table{width:80%;border-collapse:collapse;border:3px solid black;}th{text-align:left;text-transform:uppercase;border-right: 1px solid black;}th,td{padding:5px;}tr:nth-child(even){background-color:#d1e1f1;}td:last-child{text-align:center;text-transform:uppercase;border:2px solid;background-color:green;}.fail td:last-child{font-weight: bold;background-color: red;}.hide{display: none;}</style></head><body><h2>Pre-flight environment checks</h2><table>';
+        echo '<!doctype html><html><head><title>openDCIM :: pre-flight environment sanity check</title><script type="text/javascript" src="scripts/jquery.min.js"></script><script type="text/javascript">$(document).ready(function(){$("tr").each(function(){if($(this).find("td:last-child").text()=="fail"){$(this).addClass("fail");}});$.get("api/test/test").done(function(data){
+if(!data.error){$("#api_test").removeClass("fail").find("td:nth-child(2)").text("").next("td").text("GOOD");if(parseInt(document.getElementById("errors").textContent)==0){document.getElementById("continue").className=document.getElementById("continue").className.replace(/\bhide\b/,"");location.href="?preflight-ok";}}});});</script><style type="text/css">table{width:80%;border-collapse:collapse;border:3px solid black;}th{text-align:left;text-transform:uppercase;border-right: 1px solid black;}th,td{padding:5px;}tr:nth-child(even){background-color:#d1e1f1;}td:last-child{text-align:center;text-transform:uppercase;border:2px solid;background-color:green;}.fail td:last-child{font-weight: bold;background-color: red;}.hide{display: none;}</style></head><body><h2>Pre-flight environment checks</h2><table>';
 		foreach($tests as $test => $text){
 			$hide=($test=='api_test')?' class="hide"':'';
 			print "<tr id=\"$test\"$hide><th>$test</th><td>{$text['message']}</td><td>{$text['state']}</td></tr>";
@@ -133,7 +134,7 @@ $codeversion="4.0.1";
 		echo '<tr><th>javascript</th><td>Javascript is used heavily for data validation and a more polished user experience.</td><td><script>document.write("good");document.getElementById("api_test").className=document.getElementById("api_test").className.replace(/\bhide\b/,"");</script><noscript>fail</noscript></td></tr>
 			</table>
 		<p>If you see any errors on this page then you must correct them before the installer can continue.&nbsp;&nbsp;&nbsp;<span id="continue" class="hide">If the installer does not auto-continue,<a href="?preflight-ok"> click here</a><br><br>Please wait a few minutes before attempting to continue if a conversion is going on you might get unpredictable results by clicking</span></p>
-
+		<span id="errors" class="hide">'.$errors.'</span>
 		</body></html>';
 		exit;
 	}
