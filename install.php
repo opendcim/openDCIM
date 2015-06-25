@@ -49,6 +49,14 @@ $codeversion="4.0.1";
 					$tests['strictdb']['message']='openDCIM does not support STRICT_TRANS_TABLES. The following SQL statement might clear the error for this session.  More information can be found <a href="https://github.com/samilliken/openDCIM/issues/457">here</a>.<br><br><i>SET GLOBAL sql_mode = "";</i>';
 					$errors++;
 				}
+				if(isset($pdo_options)){
+					$tests['utf8-db']['state']="good";
+					$tests['utf8-db']['message']='';
+				}else{
+					$tests['utf8-db']['state']="fail";
+					$tests['utf8-db']['message']='Please copy over db.inc.php-dist to db.inc.php.  We found a problem with UTF8 support and MySQL that requires an additional parameter to work correctly.';
+					$errors++;
+				}
 			}else{
 				$tests['db.inc']['state']="fail";
 				$tests['db.inc']['message']="Please copy db.inc.php-dist to db.inc.php and edit appropriately";
