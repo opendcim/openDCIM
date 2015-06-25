@@ -23,4 +23,4 @@ INSERT INTO fac_Config set Parameter='SNMPVersion', Value='2c', UnitOfMeasure='V
 --
 -- Bump up the database version
 --
--- UPDATE fac_Config set Value='4.0.1' WHERE Parameter='Version';
+UPDATE fac_Config set Value='4.0.1' WHERE Parameter='Version';
