@@ -6,7 +6,7 @@ define('FPDF_FONTPATH', 'font/');
 require ('fpdf.php');
 
 $dept = new Department();
-$con = new Contact();
+$con = new People();
 
 class DeviceAge extends Device
 {
@@ -423,8 +423,8 @@ for ($year = 1; $year <= 5; $year++) {
     foreach ($age_list[$year] as $devRow) {
         $dept->DeptID = $devRow->Owner;
         $dept->GetDeptByID();
-        $con->ContactID = $devRow->PrimaryContact;
-        $con->GetContactByID();
+        $con->PersonID = $devRow->PrimaryContact;
+        $con->GetPerson();
         if ($devRow->MfgDate > "1970-01-01") $date1 = new DateTime($devRow->MfgDate);
         else $date1 = new DateTime($devRow->InstallDate);
 
@@ -459,8 +459,8 @@ if (count($oldestlist) > 0) {
     foreach ($oldestlist as $devRow) {
         $dept->DeptID = $devRow->Owner;
         $dept->GetDeptByID();
-        $con->ContactID = $devRow->PrimaryContact;
-        $con->GetContactByID();
+        $con->PersonID = $devRow->PrimaryContact;
+        $con->GetPerson();
         $date1 = new DateTime($devRow->MfgDate);
         $date2 = new DateTime('now');
         $interval = $date1->diff($date2);

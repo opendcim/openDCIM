@@ -6,7 +6,6 @@
 
 	$dev=new Device();
 	$cab=new Cabinet();
-	$contact=new Contact();
 
 	$taginsert="";
 

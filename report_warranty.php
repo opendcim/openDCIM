@@ -6,7 +6,7 @@ define('FPDF_FONTPATH', 'font/');
 require ('fpdf.php');
 
 $dept = new Department();
-$con = new Contact();
+$con = new People();
 
 class DeviceWarranty extends Device
 {
@@ -438,8 +438,8 @@ for ($year = 1; $year <= 3; $year++) {
         foreach ($expire_list[$year] as $devRow) {
             $dept->DeptID = $devRow->Owner;
             $dept->GetDeptByID();
-            $con->ContactID = $devRow->PrimaryContact;
-            $con->GetContactByID();
+            $con->PersonID = $devRow->PrimaryContact;
+            $con->GetPerson();
             $date1 = new DateTime($devRow->WarrantyExpire);
             $date2 = new DateTime('now');
             $interval = $date1->diff($date2);
@@ -471,8 +471,8 @@ if (count($expiredlist) > 0) {
     foreach ($expiredlist as $devRow) {
         $dept->DeptID = $devRow->Owner;
         $dept->GetDeptByID();
-        $con->ContactID = $devRow->PrimaryContact;
-        $con->GetContactByID();
+        $con->PersonID = $devRow->PrimaryContact;
+        $con->GetPerson();
         $date1 = new DateTime($devRow->WarrantyExpire);
         $date2 = new DateTime('now');
         $interval = $date1->diff($date2);

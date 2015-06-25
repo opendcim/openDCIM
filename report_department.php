@@ -124,7 +124,7 @@ class PDF extends FPDF {
 	//
 	
 	$dept = new Department();
-	$con = new Contact();
+	$con = new People();
 	
 	$pdf=new PDF();
 	$pdf->AliasNbPages();
@@ -176,7 +176,7 @@ class PDF extends FPDF {
 
 		$pdf->Ln();
 
-		$contactList=$con->GetContactsForDepartment($deptRow->DeptID);
+		$contactList=$con->GetPeopleByDepartment($deptRow->DeptID);
 
 		$fill = 0;
 

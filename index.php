@@ -39,14 +39,14 @@
 		$rackrequest="<h3>".__("Pending Rack Requests")."</h3>\n<div class=\"table whiteborder rackrequest\">\n<div>\n  <div>".__("Submit Time")."</div>\n  <div>".__("Requestor")."</div>\n  <div>".__("System Name")."</div>\n  <div>".__("Department")."</div>\n  <div>".__("Due By")."</div>\n</div>\n";
 
 		$rack=new RackRequest();
-		$tmpContact=new Contact();
+		$tmpContact=new People();
 		$dept=new Department();
   
 		$rackList=$rack->GetOpenRequests();
   
 		foreach($rackList as $request){
-			$tmpContact->ContactID=$request->RequestorID;
-			$tmpContact->GetContactByID();
+			$tmpContact->PersonID=$request->RequestorID;
+			$tmpContact->GetPerson();
     
 			$dept->DeptID=$request->Owner;
 			$dept->GetDeptByID();

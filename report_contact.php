@@ -6,7 +6,7 @@
 	require('fpdf.php');
 
 	$dept = new Department();
-	$con = new Contact();
+	$con = new People();
 	$dev = new Device();
 	$cab = new Cabinet();
 	$dc = new DataCenter();
@@ -447,7 +447,7 @@ class PDF_Diag extends PDF_Sector {
 
 		$pdf->Ln();
 
-		$contactList=$con->GetContactsForDepartment($deptRow->DeptID);
+		$contactList=$con->GetPeopleByDepartment($deptRow->DeptID);
 
 		$fill = 0;
 
