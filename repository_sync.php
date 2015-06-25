@@ -108,9 +108,7 @@
 		}
 		
 		if ( @$jr->errorcode == 200 && @$pr->errorcode == 200 ) {
-			if ( sizeof( $tpList ) == 0 ) {
-				$temp->clearShareFlag();
-			}
+			$temp->clearShareFlag();
 		}
 	}
 	
