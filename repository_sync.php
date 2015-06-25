@@ -207,8 +207,7 @@
 						$updating = false;
 					}
 
-
-					if ( $t->DeviceType == "CDU" && is_object( $t->cdutemplate ) ) {
+					if ( $t->DeviceType == "CDU" && is_object( @$t->cdutemplate ) ) {
 						$ct->ManufacturerID = $t->ManufacturerID;
 						$ct->Model = $t->Model;
 						foreach( $t->cdutemplate as $prop=>$val ) {
@@ -222,7 +221,7 @@
 						}
 					} 
 					
-					if ( $t->DeviceType == "Chassis" && is_array( $tem->slots ) ) {
+					if ( $t->DeviceType == "Chassis" && is_array( @$tem->slots ) ) {
 						foreach( $tem->slots as $sl ) {
 							foreach( $sl as $prop=>$val ) {
 								$cs->$prop = $val;
@@ -236,7 +235,7 @@
 						}
 					}
 
-					if ( $t->DeviceType == "Sensor" && is_object( $t->sensortemplate ) ) {
+					if ( $t->DeviceType == "Sensor" && is_object( @$t->sensortemplate ) ) {
 						$sen->ManufacturerID = $t->ManufacturerID;
 						$sen->Model = $t->Model;
 						foreach( $t->sensortemplate as $prop=>$val ) {
