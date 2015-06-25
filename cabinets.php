@@ -70,7 +70,6 @@
 		$cab->InstallationDate=$_POST['installationdate'];
 		$cab->Notes=trim($_POST['notes']);
 		$cab->Notes=($cab->Notes=="<br>")?"":$cab->Notes;
-		$cab->U1Position=$_POST['u1position'];
 
 		if($cab->Location!=""){
 			if(($cab->CabinetID >0)&&($_POST['action']=='Update')){
@@ -102,7 +101,6 @@
 		$cab->MaxKW=null;
 		$cab->MaxWeight=null;
 		$cab->InstallationDate=date('m/d/Y');
-		$cab->U1Position="Default";
 	}
 
 	$deptList=$dept->GetDepartmentList();
@@ -252,19 +250,6 @@ echo '  </select>
    <div><input type="text" class="validate[optional,custom[onlyNumberSp]]" name="cabinetheight" size=4 maxlength=4 value="',$cab->CabinetHeight,'"></div>
 </div>
 <div>
-   <div>',__("U1 Position"),'</div>
-   <div><select name="u1position">';
-
-$posarray=array('Top' => __("Top"),
-		'Bottom' => __("Bottom"),
-		'Default' => __("Default"));
-foreach($posarray as $pos => $translation){
-	printf( "<option value=\"%s\" %s>%s</option>\n", $pos, $pos == $cab->U1Position ? "SELECTED" : "", $translation );
-}
-   
-echo '</select></div>
-</div>
-				<div>
    <div>',__("Model"),'</div>
    <div><input type="text" name="model" size=30 maxlength=80 value="',$cab->Model,'"></div>
 </div>

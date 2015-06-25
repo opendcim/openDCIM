@@ -65,7 +65,6 @@
 	}
 	// Reverse sort by rack position
 	krsort($cabinetuse);
-	$cabinetuse['U1Position']=$cab->U1Position;
 	header('Content-Type: application/json');
 	echo json_encode($cabinetuse);
 ?>

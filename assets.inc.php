@@ -52,7 +52,6 @@ class Cabinet {
 	var $MapY2;
 	var $FrontEdge;
 	var $Notes;
-	var $U1Position;
 
 	function MakeSafe() {
 		$this->CabinetID=intval($this->CabinetID);
@@ -77,7 +76,6 @@ class Cabinet {
 		$this->MapY2=abs($this->MapY2);
 		$this->FrontEdge=in_array($this->FrontEdge, array("Top","Right","Left","Bottom"))?$this->FrontEdge:"Top";
 		$this->Notes=sanitize($this->Notes,false);
-		$this->U1Position=in_array($this->U1Position, array("Top","Bottom","Default"))?$this->U1Position:"Bottom";
 	}
 	
 	static function RowToObject($dbRow,$filterrights=true){
@@ -108,11 +106,13 @@ class Cabinet {
 		$cab->MapY2=$dbRow["MapY2"];
 		$cab->FrontEdge=$dbRow["FrontEdge"];
 		$cab->Notes=$dbRow["Notes"];
-		$cab->U1Position=$dbRow["U1Position"];
 
 		if($filterrights){
 			$cab->FilterRights();
 		}
+/*
+ * We'll be revisiting this shortly.
+ *
 
 		if($cab->U1Position=="Default"){
 			$dc=new DataCenter();
@@ -125,7 +125,7 @@ class Cabinet {
 				$cab->U1Position=$dc->U1Position;
 			}
 		}
-
+*/
 		return $cab;
 	}
 
@@ -161,8 +161,7 @@ class Cabinet {
 			SensorIPAddress=\"$this->SensorIPAddress\", MapX1=$this->MapX1, 
 			SensorCommunity=\"$this->SensorCommunity\", MapY1=$this->MapY1, 
 			SensorTemplateID=$this->SensorTemplateID, MapX2=$this->MapX2, MapY2=$this->MapY2,
-			FrontEdge=\"$this->FrontEdge\", Notes=\"$this->Notes\", 
-			U1Position=\"$this->U1Position\";";
+			FrontEdge=\"$this->FrontEdge\", Notes=\"$this->Notes\";";
 
 		if(!$dbh->exec($sql)){
 			$info=$dbh->errorInfo();
@@ -195,8 +194,8 @@ class Cabinet {
 			SensorIPAddress=\"$this->SensorIPAddress\", MapX1=$this->MapX1, 
 			SensorCommunity=\"$this->SensorCommunity\", MapY1=$this->MapY1, 
 			SensorTemplateID=$this->SensorTemplateID, MapX2=$this->MapX2, MapY2=$this->MapY2,
-			FrontEdge=\"$this->FrontEdge\", Notes=\"$this->Notes\", 
-			U1Position=\"$this->U1Position\" WHERE CabinetID=$this->CabinetID;";
+			FrontEdge=\"$this->FrontEdge\", Notes=\"$this->Notes\" 
+			WHERE CabinetID=$this->CabinetID;";
 
 		if(!$dbh->query($sql)){
 			$info=$dbh->errorInfo();
@@ -467,7 +466,6 @@ class Cabinet {
 		global $dbh;
 		// Store the value of frontedge before we muck with it
 		$ot=$this->FrontEdge;
-		$op=$this->U1Position;
 
 		// Make everything safe for us to search with
 		$this->MakeSafe();
@@ -485,9 +483,6 @@ class Cabinet {
 		foreach($this as $prop => $val){
 			// We force the following values to knowns in makesafe 
 			if($prop=="FrontEdge" && $val=="Top" && $ot!="Top"){
-				continue;
-			}
-			if($prop=="U1Position" && $val=="Bottom" && $op!="Bottom"){
 				continue;
 			}
 			if($val && $val!="1969-12-31"){
@@ -763,7 +758,7 @@ class SensorTemplate {
 	static function getTemplates(){
 		global $dbh;
 		
-		$sql="SELECT * FROM fac_SensorTemplate ORDER BY Name ASC;";
+		$sql="SELECT * FROM fac_SensorTemplate ORDER BY ManufacturerID, Model ASC;";
 		
 		$tempList = array();
 		foreach($dbh->query($sql) as $row){
@@ -2068,23 +2063,23 @@ class Device {
 		$cab=new Cabinet();
 		$cab->CabinetID=$this->Cabinet;
 		$cab->GetCabinet();
-		
-		if($cab->U1Position=="Top"){
-			$order=" ORDER BY Position ASC";
-		}else{
-			$order=" ORDER BY Position DESC";
-		}
+
+		// leaving the u1 check here for later		
+		$order=" ORDER BY Position".((isset($cab->U1Position) && $cab->U1Position=="Top")?" ASC":" DESC");
 
 		if($includechildren){
-			$sql="SELECT * FROM fac_Device WHERE Cabinet=$this->Cabinet".$order;
+			$sql="SELECT * FROM fac_Device WHERE Cabinet=$this->Cabinet$order;";
 		}elseif ($this->Cabinet<0){
 			//StorageRoom
-			if ($this->Position>0)
-				$sql="SELECT * FROM fac_Device WHERE Cabinet=$this->Cabinet AND Position=$this->Position".$order;
-			else
-				$sql="SELECT * FROM fac_Device WHERE Cabinet=$this->Cabinet".$order;
+			if($this->Position>0){
+				$sql="SELECT * FROM fac_Device WHERE Cabinet=$this->Cabinet AND 
+					Position=$this->Position$order;";
+			}else{
+				$sql="SELECT * FROM fac_Device WHERE Cabinet=$this->Cabinet$order;";
+			}
 		}else{
-			$sql="SELECT * FROM fac_Device WHERE Cabinet=$this->Cabinet AND ParentDevice=0".$order;
+			$sql="SELECT * FROM fac_Device WHERE Cabinet=$this->Cabinet AND 
+				ParentDevice=0$order;";
 		}
 		
 		$deviceList = array();

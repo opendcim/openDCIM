@@ -111,7 +111,8 @@
 						'Bottom' => __("Bottom"),
 						'Left' => __("Left"));
 				foreach($edgearray as $edge => $translation){
-					printf( "<option value=\"%s\" %s>%s</option>\n", $edge, $edge == $cab->FrontEdge ? "SELECTED" : "", $translation );
+					$selected=($edge==$cab->FrontEdge)?' SELECTED':'';
+					print "\t\t\t\t<option value=\"$edge\"$selected>$translation</option>\n";
 				}
 ?>
 			</select></div>

@@ -1443,20 +1443,13 @@ print "		var dialog=$('<div>').prop('title',\"".__("Verify Delete Device")."\").
 			var hd=$('#HalfDepth').is(':checked');
 			var bs=$('#BackSide').is(':checked');
 			$.getJSON('scripts/ajax_cabinetuse.php?cabinet='+cab+'&DeviceID='+$("#DeviceID").val()+'&HalfDepth='+hd+'&BackSide='+bs, function(data) {
-				var ucount=0;
-				var maxu=ucount=Object.keys(data).length-1;
+				var ucount=Object.keys(data).length;
 				var rackhtmlleft='';
 				var rackhtmlright='';
 				for(ucount=ucount; ucount>0; ucount--){
-					if(data.U1Position=='Top'){
-						if(data[(maxu-ucount+1)]){var cssclass='notavail'}else{var cssclass=''};
-						rackhtmlleft+='<div>'+(maxu-ucount+1)+'</div>';
-						rackhtmlright+='<div val='+(maxu-ucount+1)+' class="'+cssclass+'"></div>';
-					}else{
-						if(data[ucount]){var cssclass='notavail'}else{var cssclass=''};
-						rackhtmlleft+='<div>'+ucount+'</div>';
-						rackhtmlright+='<div val='+ucount+' class="'+cssclass+'"></div>';
-					}
+					if(data[ucount]){var cssclass='notavail'}else{var cssclass=''};
+					rackhtmlleft+='<div>'+ucount+'</div>';
+					rackhtmlright+='<div val='+ucount+' class="'+cssclass+'"></div>';
 				}
 				var rackhtml='<div class="table border positionselector"><div><div>'+rackhtmlleft+'</div><div>'+rackhtmlright+'</div></div></div>';
 				$('#Positionselector').html(rackhtml);
@@ -1483,12 +1476,7 @@ print "		var dialog=$('<div>').prop('title',\"".__("Verify Delete Device")."\").
 							// check each element start with pointer
 							for (var x=0; x<unum; x++){
 								if(x!=0){
-									if(data.U1Position=='Top'){
-										test+='.next()';
-									}else{
-										test+='.prev()';
-									}
-									
+									test+='.prev()';
 									eval("if($(this)"+test+".attr('class')=='notavail' || $(this)"+test+".length ==0){background='red';}");
 								}else{
 									if($(this).attr('class')=='notavail'){background='red';}
@@ -1498,12 +1486,7 @@ print "		var dialog=$('<div>').prop('title',\"".__("Verify Delete Device")."\").
 							if(background=='red'){var pointer='default'}else{var pointer='pointer'}
 							for (x=0; x<unum; x++){
 								if(x!=0){
-									if(data.U1Position=='Top'){
-										test+='.next()';
-									}else{
-										test+='.prev()';
-									}
-
+									test+='.prev()';
 									eval("$(this)"+test+".css({'background-color': '"+background+"'})");
 								}else{
 									$(this).css({'background-color': background, 'cursor': pointer});

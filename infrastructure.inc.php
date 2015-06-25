@@ -189,7 +189,6 @@ class DataCenter {
 	var $ContainerID;
 	var $MapX;
 	var $MapY;
-	var $U1Position;
 	
 	function MakeSafe(){
 		$this->DataCenterID=intval($this->DataCenterID);
@@ -203,7 +202,6 @@ class DataCenter {
 		$this->ContainerID=intval($this->ContainerID);
 		$this->MapX=abs($this->MapX);
 		$this->MapY=abs($this->MapY);
-		$this->U1Position=in_array($this->U1Position, array("Top","Bottom","Default"))?$this->U1Position:"Bottom";
 	}
 
 	function MakeDisplay(){
@@ -226,7 +224,6 @@ class DataCenter {
 		$dc->ContainerID=$row["ContainerID"];
 		$dc->MapX=$row["MapX"];
 		$dc->MapY=$row["MapY"];
-		$dc->U1Position=$row["U1Position"];
 		$dc->MakeDisplay();
 
 		return $dc;
@@ -250,7 +247,7 @@ class DataCenter {
 			SquareFootage=$this->SquareFootage, DeliveryAddress=\"$this->DeliveryAddress\", 
 			Administrator=\"$this->Administrator\", MaxkW=$this->MaxkW, 
 			DrawingFileName=\"$this->DrawingFileName\", EntryLogging=0,	
-			ContainerID=$this->ContainerID,	MapX=$this->MapX, MapY=$this->MapY, U1Position=\"$this->U1Position\";";
+			ContainerID=$this->ContainerID,	MapX=$this->MapX, MapY=$this->MapY;";
 
 		if(!$dbh->exec($sql)){
 			$info=$dbh->errorInfo();
@@ -334,7 +331,7 @@ class DataCenter {
 			SquareFootage=$this->SquareFootage, DeliveryAddress=\"$this->DeliveryAddress\", 
 			Administrator=\"$this->Administrator\", MaxkW=$this->MaxkW, 
 			DrawingFileName=\"$this->DrawingFileName\", EntryLogging=0,	
-			ContainerID=$this->ContainerID,	MapX=$this->MapX, MapY=$this->MapY, U1position=\"$this->U1Position\" 
+			ContainerID=$this->ContainerID,	MapX=$this->MapX, MapY=$this->MapY 
 			WHERE DataCenterID=$this->DataCenterID;";
 
 		$this->MakeDisplay();
