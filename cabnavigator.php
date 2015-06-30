@@ -291,7 +291,8 @@ function renderUnassignedTemplateOwnership($noTemplFlag, $noOwnerFlag, $device) 
 							if($devTop==-1){--$blankHeight;}
 							$body.="\t\t<tr><td class=\"cabpos freespace$errclass\">$i</td><td class=\"freespace\" rowspan=$blankHeight>&nbsp;</td></tr>\n";
 						} else {
-							$body.="\t\t<tr><td class=\"cabpos freespace$errclass\">$i</td></tr>\n";
+							$fix=($i==1)?'<td></td>':'';
+							$body.="\t\t<tr><td class=\"cabpos freespace$errclass\">$i</td>$fix</tr>\n";
 							if($i==1){break;}
 						}
 					}
