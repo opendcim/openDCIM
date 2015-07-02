@@ -269,7 +269,7 @@
 						print "\t\t\t\t\t\t\t\t</ul>\n";
 					}
 					if($chRow['type']=='chassis'){
-						printDevice($chRow,true);
+						printDevice($chRow,$row['devid']==$chRow['parent']);
 					}
 					// Remove devices that we have already processed.
 					unset($devList[$chKey]);
@@ -290,7 +290,9 @@
 			}
 			echo "\t\t\t\t\t\t</ul>\n";
 		}
-		echo "\t\t\t\t\t</li>\n";
+		if(!$skip){
+			echo "\t\t\t\t\t</li>\n";
+		}
 	}
 
 	$subheader=(isset($title))?$title:"";				
@@ -396,7 +398,7 @@ $(document).ready(function() {
 				}
 				if(!empty($devList)){
 					foreach($devList as $key => $row){
-						if($cabID==$row['cabinet']){
+						if($cabID==$row['cabinet'] && $row['parent']==0){
 							printDevice($row);
 						} 
 					}
