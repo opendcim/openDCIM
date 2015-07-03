@@ -1632,18 +1632,23 @@ class Device {
 		
 		$tmpDev=new Device();
 		$tmpDev->DeviceID=$this->DeviceID;
-		$tmpDev->GetDevice();
+		// You can't update what doesn't exist, so check for existing record first and retrieve the current location
+		if(!$tmpDev->GetDevice()){
+			return false;
+		}
 
 		// Check the user's permissions to modify this device, but only if it's not a CLI call
 		if( php_sapi_name() != "cli" && $tmpDev->Rights!='Write'){return false;}
 	
 		$this->MakeSafe();	
 
-		// You can't update what doesn't exist, so check for existing record first and retrieve the current location
-		$sql = "SELECT * FROM fac_Device WHERE DeviceID=$this->DeviceID;";
-		if(!$row=$dbh->query($sql)->fetch()){
-			return false;
-		}		
+		// A child device's cabinet must always match the parent so force it here
+		if($this->ParentDevice){
+			$parent=new Device();
+			$parent->DeviceID=$this->ParentDevice;
+			$parent->GetDevice();
+			$this->Cabinet=$parent->Cabinet;
+		}
 
 		// Force all uppercase for labels
 		$this->Label=transform($this->Label);
