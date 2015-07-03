@@ -143,6 +143,8 @@ $('#searchadv ~ select[name="key"]').change(function(){
 $('#sidebar > hr ~ div').css({'width':$('#sidebar > hr ~ ul').width()+'px','overflow':'hidden'});
 
 function resize(){
+	// Reset widths to make shrinking screens work better
+	$('#header,div.main,div.page').css('width','auto');
 	// This function will run each 500ms for 2.5s to account for slow loading content
 	var count=0;
 	subresize();
