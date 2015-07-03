@@ -1788,6 +1788,19 @@ echo '<div class="main">
 					<div><input type="text" defaultvalue="',$config->defaults["dot"],'" name="dot" value="',$config->ParameterArray["dot"],'"></div>
 				</div>
 			</div> <!-- end table -->
+			<h3>',__("Graph Dates"),'</h3>
+                        <div class="table">
+                                <div>
+                                        <div><label for="TimeInterval">',__("Time Interval"),'</label></div>
+                                        <div><select type="text" defaultvalue="',$config->defaults["TimeInterval"],'" name="TimeInterval" data="',$config->ParameterArray["TimeInterval"],'">
+                                                        <option value="Last 7 Days">',__("Last 7 Days"),'</option>
+                                                        <option value="Last Month">',__("Last Month"),'</option>
+                                                        <option value="Last Year">',__("Last Year"),'</option>
+                                                </select>
+                                        </div>
+                                </div>
+                        </div>
+
 		</div>
 		<div id="tt">
 			<div class="table">

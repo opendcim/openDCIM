@@ -802,6 +802,9 @@ if(($person->Disabled || ($person->PersonID==0 && $person->UserID!="cli_admin"))
 $menu=$rmenu=$rrmenu=$camenu=$wamenu=$samenu=array();
 
 $rmenu[]='<a href="reports.php"><span>'.__("Reports").'</span></a>';
+$rmenu[]='<a href="graphGenerator.php"><span>'.__("Graph Generator").'</span></a>';
+$rmenu[__("Energy Efficiency")][]='<a href="DCEM.php"><span>'.__("DCEM Calculation").'</span></a>';
+$rmenu[__("Energy Efficiency")][]='<a href="PUE.php"><span>'.__("PUE Calculation").'</span></a>';
 
 if($config->ParameterArray["WorkOrderBuilder"]){
 	if(isset($_COOKIE['workOrder']) && $_COOKIE['workOrder']!='[0]'){
@@ -831,8 +834,16 @@ if ( $person->SiteAdmin ) {
 	$samenu[__("Infrastructure Management")][]='<a href="container.php"><span>'.__("Edit Containers").'</span></a>';
 	$samenu[__("Infrastructure Management")][]='<a href="zone.php"><span>'.__("Edit Zones").'</span></a>';
 	$samenu[__("Infrastructure Management")][]='<a href="cabrow.php"><span>'.__("Edit Rows of Cabinets").'</span></a>';
+        $samenu[__("Infrastructure Management")][]='<a href="mechanical_device.php"><span>'.__("Edit Mechanical Devices").'</span></a>';
 	$samenu[__("Infrastructure Management")][]='<a href="image_management.php#drawings"><span>'.__("Facilities Image Management").'</span></a>';
+        $samenu[__("Infrastructure Management")][]='<a href="import_devices.php"><span>'.__("Import Devices").'</span></a>';
+        $samenu[__("Measure Management")][]='<a href="air_measure_point.php"><span>'.__("Edit Air Measure Points").'</span></a>';
+        $samenu[__("Measure Management")][]='<a href="cooling_measure_point.php"><span>'.__("Edit Cooling Measure Points").'</span></a>';
+        $samenu[__("Measure Management")][]='<a href="elec_measure_point.php"><span>'.__("Edit Electrical Measure Points").'</span></a>';
+        $samenu[__("Measure Management")][]='<a href="measure_point_group.php"><span>'.__("Edit Measure Point Groups").'</span></a>';
+        $samenu[__("Measure Management")][]='<a href="script_management.php"><span>'.__("Polling Scripts Management").'</span></a>';
 	$samenu[__("Power Management")][]='<a href="power_panel.php"><span>'.__("Edit Power Panels").'</span></a>';
+        $samenu[__("Power Management")][]='<a href="energy_type.php"><span>'.__("Edit Energy Types").'</span></a>';
 	$samenu[__("Path Connections")][]='<a href="paths.php"><span>'.__("View Path Connection").'</span></a>';
 	$samenu[__("Path Connections")][]='<a href="pathmaker.php"><span>'.__("Make Path Connection").'</span></a>';
 	$samenu[]='<a href="configuration.php"><span>'.__("Edit Configuration").'</span></a>';
@@ -868,4 +879,47 @@ function download_file_from_string($string, $downloadfilename) {
 	echo $string;
 }
 
+function getStartDate($interval, $showTime = true) {
+        if(isset($_COOKIE['startdate']))
+                return $_COOKIE['startdate'];
+
+        $date = new DateTime();
+        $time = ($showTime)?" 00:00:00":"";
+        switch($interval) {
+                case "Last 7 Days":
+                        $sub = new DateInterval('P1W');
+                        $ret = $date->sub($sub);
+                        return date("Y-m-d", $ret->GetTimestamp()).$time;
+                case "Last Month":
+                        $sub = new DateInterval('P1M');
+                        $ret = $date->sub($sub);
+                        return date("Y-m", $ret->GetTimestamp())."-01".$time;
+                case "Last Year":
+                        $sub = new DateInterval('P1Y');
+                        $ret = $date->sub($sub);
+                        return date("Y", $ret->GetTimestamp())."-01-01".$time;
+                default:
+                        $sub = new DateInterval('P1W');
+                        $ret = $date->sub($sub);
+                        return date("Y-m-d", $ret->GetTimestamp()).$time;
+        }
+}
+
+function getEndDate($interval, $showTime = true) {
+        if(isset($_COOKIE['enddate']))
+                return $_COOKIE['enddate'];
+
+        $date = new DateTime();
+        $time = ($showTime)?" 00:00:00":"";
+        switch($interval) {
+                case "Last 7 Days":
+                        return date("Y-m-d", $date->GetTimestamp()).$time;
+                case "Last Month":
+                        return date("Y-m", $date->GetTimestamp())."-01".$time;
+                case "Last Year":
+                        return date("Y", $date->GetTimestamp())."-01-01".$time;
+                default:
+                        return date("Y-m-d", $date->GetTimestamp()).$time;
+        }
+}
 ?>

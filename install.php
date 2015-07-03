@@ -1,5 +1,5 @@
 <?php
-$codeversion="4.0.1";
+$codeversion="PUE_DCEM";
 
 // Pre-Flight check
 	$tests=array();
@@ -27,6 +27,22 @@ $codeversion="4.0.1";
 	}else{
 		$tests['snmp']['state']="fail";
 		$tests['snmp']['message']='PHP is missing the <a href="http://php.net/manual/book.snmp.php">snmp extension</a>. Please install it.';
+	}
+
+        if(extension_loaded('gd')) {
+                $tests['gd']['state']="good";
+                $tests['gd']['message']='';
+        }else{
+                $tests['gd']['state']="fail";
+                $tests['gd']['message']='PHP is missing the <a href="http://php.net/manual/book.image.php">GD extension</a>. Please install it.';
+        }
+
+	if( posix_getpwuid(fileowner(__DIR__."/poll_scripts"))["name"] == "apache") {
+		$tests['poll_scripts']['state']="good";
+                $tests['poll_scripts']['message']='';
+	}else{
+		$tests['poll_scripts']['state']="fail";
+                $tests['poll_scripts']['message']='Apache needs to own poll_scripts directory. Use "chown apache:apache poll_scripts" in the installation directory.';
 	}
 
 	$tests['pdo']['message']='';
@@ -1236,6 +1252,16 @@ function upgrade(){
 		$config->rebuild();
 
 	}
+	if($version=="4.1"){
+                // First apply the schema updates needed.
+                $results[]=applyupdate("db-4.1-to-PUE_DCEM.sql");
+
+                // Rebuild the config table just in case.
+                $config->rebuild();
+
+                $version="PUE_DCEM";
+        }
+
 }
 
 	if($upgrade==true){ //If we're doing an upgrade don't call the rest of the installer.
