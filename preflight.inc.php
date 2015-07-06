@@ -1,0 +1,170 @@
+<?php
+
+// Pre-Flight check
+	$tests=array();
+	$errors=0;
+
+	if (extension_loaded('mbstring')) {
+		$tests['mbstring']['state']="good";
+		$tests['mbstring']['message']='';
+	}else{
+		$tests['mbstring']['state']="fail";
+		$tests['mbstring']['message']='PHP is missing the <a href="http://php.net/mbstring">mbstring extension</a>';
+		$errors++;
+	}
+
+	if(extension_loaded('gettext')) {
+		$tests['gettext']['state']="good";
+		$tests['gettext']['message']='';
+	}else{
+		$tests['gettext']['state']="fail";
+		$tests['gettext']['message']='PHP is missing the <a href="http://php.net/manual/book.gettext.php">Gettext extension</a>. Please install it.';
+	}
+
+	if(extension_loaded('snmp')) {
+		$tests['snmp']['state']="good";
+		$tests['snmp']['message']='';
+	}else{
+		$tests['snmp']['state']="fail";
+		$tests['snmp']['message']='PHP is missing the <a href="http://php.net/manual/book.snmp.php">snmp extension</a>. Please install it.';
+	}
+
+	$tests['pdo']['message']='';
+	if (extension_loaded('PDO')) {
+		$tests['pdo']['state']="good";
+		if (count(PDO::getAvailableDrivers())>0) {
+			$tests['pdodrivers']['message']='Available drivers: '.implode(", ",PDO::getAvailableDrivers());
+			$tests['pdodrivers']['state']="good";
+			// pdo is loaded check for the db.inc
+			if(file_exists("db.inc.php")){
+				$tests['db.inc']['state']="good";
+				$tests['db.inc']['message']="db.inc.php has been detected and in the proper place";
+				require_once("db.inc.php");
+				// check for strict_trans_tables
+				if(strpos(@end($dbh->query("select @@global.sql_mode;")->fetch()),'STRICT_TRANS_TABLES') === false){
+					$tests['strictdb']['state']="good";
+					$tests['strictdb']['message']='';
+				}else{
+					$tests['strictdb']['state']="fail";
+					$tests['strictdb']['message']='openDCIM does not support STRICT_TRANS_TABLES. The following SQL statement might clear the error for this session.  More information can be found <a href="https://github.com/samilliken/openDCIM/issues/457">here</a>.<br><br><i>SET GLOBAL sql_mode = "";</i>';
+					$errors++;
+				}
+				if(isset($pdo_options)){
+					$tests['utf8-db']['state']="good";
+					$tests['utf8-db']['message']='';
+				}else{
+					$tests['utf8-db']['state']="fail";
+					$tests['utf8-db']['message']='Please copy over db.inc.php-dist to db.inc.php.  We found a problem with UTF8 support and MySQL that requires an additional parameter to work correctly.';
+					$errors++;
+				}
+			}else{
+				$tests['db.inc']['state']="fail";
+				$tests['db.inc']['message']="Please copy db.inc.php-dist to db.inc.php and edit appropriately";
+				$errors++;
+			}
+
+		}else{
+			$tests['pdodrivers']['message']='Available drivers: none';
+			$tests['pdodrivers']['state']="fail";
+			$errors++;
+		}
+	}else{
+		$tests['pdo']['state']="fail";
+		$tests['pdo']['message']='openDCIM requires the <a href="http://php.net/manual/pdo.installation.php">PDO extention</a> and you do not appear to have it loaded';
+		$tests['pdodrivers']['state']="fail";
+		$tests['pdodrivers']['message']='No PDO drivers have been detected';
+		$errors++;
+	}
+
+	// If AUTHENTICATION isn't defined then this asshole is upgrading to 4.0 and didn't add it into the db.inc.php
+	if(defined('AUTHENTICATION')){
+		$tests['authentication']['state']="good";
+		$tests['authentication']['message']="Authentication set to ".AUTHENTICATION;
+		if(AUTHENTICATION=="Apache"){
+			if(isset($_SERVER['REMOTE_USER'])){
+				$tests['Remote User']['state']="good";
+				$tests['Remote User']['message']='';
+			}else{
+				$tests['Remote User']['message']='<a href="http://httpd.apache.org/docs/2.2/howto/auth.html">http://httpd.apache.org/docs/2.2/howto/auth.html</a>';
+			}
+		}elseif(AUTHENTICATION=="Oauth"){
+			if(isset($_SESSION['userid'])){
+				$tests['Remote User']['state']="good";
+				$tests['Remote User']['message']='Authenticated as UserID='.$_SESSION['userid'];
+			}else{
+				$tests['Remote User']['message']='Click <a href="oauth/login.php">here</a> to authenticate via Oauth';
+			}
+		}
+		// Try to not duplicate everything
+		if(!isset($tests['Remote User']['state'])){
+			$tests['Remote User']['state']="fail";
+			$errors++;
+		}
+	}else{
+		$tests['authentication']['state']="fail";
+		$tests['authentication']['message']=($tests['db.inc']['state']=="good")?"You didn't read the upgrade notes. Jerk. There is no AUTHENTICATION defined in db.inc.php":"How can you expect to work this if you can't even copy the db.inc.php into the right place?";
+		$errors++;
+	}
+
+	if(in_array('mod_rewrite', apache_get_modules())){
+		$tests['mod_rewrite']['state']="good";
+		$tests['mod_rewrite']['message']='mod_rewrite detected';
+		$tests['api_test']['state']="fail";
+		$tests['api_test']['message']="Apache does not appear to be rewriting URLs correctly. Check your AllowOverride directive and change to 'AllowOverride All'";
+	}else{
+		$tests['mod_rewrite']['state']="fail";
+		$tests['mod_rewrite']['message']='Apache is missing the <a href="http://httpd.apache.org/docs/current/mod/mod_rewrite.html">mod_rewrite</a> module and it is required for the API to function correctly.  Please install it.';
+	}
+
+	if (function_exists('json_encode')) {
+		$tests['json']['state']="good";
+		$tests['json']['message']='PHP json module detected';
+	}else{
+		$tests['json']['state']="fail";
+		$tests['json']['message']='PHP is missing the <a href="http://php.net/manual/book.json.php">JavaScript Object Notation (JSON) extension</a>.  Please install it.';
+		$errors++;
+	}
+	if ($errors >0 || !isset($_GET['preflight-ok'])) {
+        echo '<!doctype html><html><head><title>openDCIM :: pre-flight environment sanity check</title><script type="text/javascript" src="scripts/jquery.min.js"></script><style type="text/css">table{width:80%;border-collapse:collapse;border:3px solid black;}th{text-align:left;text-transform:uppercase;border-right: 1px solid black;}th,td{padding:5px;}tr:nth-child(even){background-color:#d1e1f1;}td:last-child{text-align:center;text-transform:uppercase;border:2px solid;background-color:green;}.fail td:last-child{font-weight: bold;background-color: red;}.hide{display: none;}</style></head><body><h2>Pre-flight environment checks</h2><table>';
+		foreach($tests as $test => $text){
+			$hide=($test=='api_test')?' class="hide"':'';
+			print "<tr id=\"$test\"$hide><th>$test</th><td>{$text['message']}</td><td>{$text['state']}</td></tr>";
+		}
+		echo '<tr><th>javascript</th><td>Javascript is used heavily for data validation and a more polished user experience.</td><td><script>document.write("good");document.getElementById("api_test").className=document.getElementById("api_test").className.replace(/\bhide\b/,"");</script><noscript>fail</noscript></td></tr>
+			</table>
+		<p>If you see any errors on this page then you must correct them before the installer can continue.&nbsp;&nbsp;&nbsp;<span id="continue" class="hide">If the installer does not auto-continue,<a href="?preflight-ok"> click here</a><br><br>Please wait a few minutes before attempting to continue if a conversion is going on you might get unpredictable results by clicking</span></p>
+		<span id="errors" class="hide">'.$errors.'</span>
+<script type="text/javascript">
+(function() {
+	var rows=document.getElementsByTagName("tr");
+	for(var row in rows){
+	  var cells=rows[row].childNodes;
+		if(typeof cells!="undefined"){
+			if(cells[cells.length-1].textContent=="fail"){
+				rows[row].className=rows[row].className + " fail";
+			}
+		}
+	}
+
+	var xmlhttp=new XMLHttpRequest();
+	xmlhttp.open("GET","api/test/test",false);
+	xmlhttp.send();
+	if(xmlhttp.status==200){
+		var response=JSON.parse(xmlhttp.responseText);
+		if(!response.error){
+			var row=document.getElementById("api_test");
+			row.className="";
+			row.childNodes[1].textContent="";
+			row.childNodes[2].textContent="GOOD";
+			// only attempt to auto forward if we are in the installer and there are no errors
+			if(parseInt(document.getElementById("errors").textContent)==0 && location.href.search("install")!=-1){
+				document.getElementById("continue").className=document.getElementById("continue").className.replace(/\bhide\b/,"");
+				location.href="?preflight-ok";
+			}
+		}
+	}
+})();
+</script>
+		</body></html>';
+		exit;
+	}
