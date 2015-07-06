@@ -1449,7 +1449,7 @@ xsi:noNamespaceSchemaLocation="openDCIMdevicetemplate.xsd">
 	static function getAvailableImages(){
 		$array=array();
 		$path='pictures';
-		if(preg_match("/api\//",getcwd())){
+		if(preg_match('/api\//',str_replace(DIRECTORY_SEPARATOR, '/',getcwd()))){
 			$path="../../$path";
 		}
 		if(is_dir($path)){
