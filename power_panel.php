@@ -12,6 +12,7 @@
 
 	$panel=new PowerPanel();
 	$pdu=new PowerDistribution();
+	$mech=new MechanicalDevice();
 	$cab=new Cabinet();
 	$tmpl = new CDUTemplate();
 	$tmpList = $tmpl->GetTemplateList();
@@ -52,6 +53,8 @@
 		$panel->getPanel();
 		$pdu->PanelID = $panel->PanelID;
 		$pduList=$pdu->GetPDUbyPanel();
+		$mech->PanelID = $panel->PanelID;
+		$mechList=$mech->GetMechByPanel();
 		
 		$panelLoad = sprintf( "%01.2f", $panel->GetPanelLoad() / 1000 );
 		$panelCap = $panel->PanelVoltage * $panel->MainBreakerSize * sqrt(3);
@@ -251,14 +254,21 @@ echo '	</select></div>
 				$pduarray[$panel->PanelPole]->ArrayofPDUs[]->PowerDistribution Object
 
 		   */
-		$pduarray=array();
+		$eqarray=array();
 		foreach($pduList as $pnlPDU){
 			if($pnlPDU->PanelID == $panel->PanelID){
-				$pduarray[$pnlPDU->PanelPole][]=$pnlPDU;
+				$eqarray[$pnlPDU->PanelPole][]=$pnlPDU;
 			}elseif($pnlPDU->PanelID2 == $panel->PanelID){
-				$pduarray[$pnlPDU->PanelPole2][]=$pnlPDU;
+				$eqarray[$pnlPDU->PanelPole2][]=$pnlPDU;
 			}
 		}
+                foreach($mechList as $pnlMech){
+                        if($pnlMech->PanelID == $panel->PanelID){
+                                $eqarray[$pnlMech->PanelPole][]=$pnlMech;
+                        }elseif($pnlMech->PanelID2 == $panel->PanelID){
+                                $eqarray[$pnlMech->PanelPole2][]=$pnlMech;
+                        }
+                }
 		print "<center><h2>".__("Panel Schedule")."</h2></center>\n<table>";
 
 		$nextPole=1;
@@ -269,26 +279,33 @@ echo '	</select></div>
 				print "<tr><td class=\"polenumber\">$nextPole</td>";
 				// Someone input a pole number wrong and this one would have been skipped
 				// store the value and deal with it later.
-				if(isset($pduarray[$nextPole])&&$odd!=0){
-					foreach($pduarray[$nextPole] as $pduvar){
-					$errors[]="<a href=\"devices.php?DeviceID=$pduvar->PDUID\">$pduvar->Label</a>";
+				if(isset($eqarray[$nextPole])&&$odd!=0){
+					foreach($eqarray[$nextPole] as $var){
+						if($var instanceof MechanicalDevice)
+							$errors[]="<a href=\"mechanical_device.php?mechid=$var->MechID\">$var->Label</a>";
+						else
+							$errors[]="<a href=\"devices.php?DeviceID=$var->PDUID\">$pduvar->Label</a>";
 					}
 				}
 				// Get info for pdu on this pole if it is populated.
 				$lastCabinet=0;
 				if($odd==0){
-					if(isset($pduarray[$nextPole])){
+					if(isset($eqarray[$nextPole])){
 						$pn="";
-						foreach($pduarray[$nextPole] as $pduvar) {
-							$cab->CabinetID=$pduvar->CabinetID;
-							$cab->GetCabinet(  );
+						foreach($eqarray[$nextPole] as $var) {
+							if($var instanceof PowerDistribution) {
+								$cab->CabinetID=$var->CabinetID;
+								$cab->GetCabinet(  );
+								
+								if ($lastCabinet<>$var->CabinetID)
+									$pn.="<a href=\"cabnavigator.php?cabinetid=$var->CabinetID\">$cab->Location</a>";
+								$pn.="<a href=\"devices.php?DeviceID=$var->PDUID\"><span>$var->Label</span></a>";
+								$lastCabinet=$var->CabinetID;
+							} else {
+                                                               $pn.="<a href=\"mechanical_device.php?mechid=$var->MechID\"><notooltip><span>$var->Label</span></notooltip></a>";
+							}
 							
-							if ($lastCabinet<>$pduvar->CabinetID)
-								$pn.="<a href=\"cabnavigator.php?cabinetid=$pduvar->CabinetID\">$cab->Location</a>";
-                            $pn.="<a href=\"devices.php?DeviceID=$pduvar->PDUID\"><span>$pduvar->Label</span></a>";
-                            $lastCabinet=$pduvar->CabinetID;
-							
-							switch($pduvar->BreakerSize){
+							switch($var->BreakerSize){
 								case '3': $odd=3; break;
 								case '2': $odd=2; break;
 								default: $odd=0;
@@ -315,26 +332,33 @@ echo '	</select></div>
 				print "<tr><td class=\"polenumber\">$nextPole</td>";
 				// Someone input a pole number wrong and this one would have been skipped
 				// store the value and deal with it later.
-				if(isset($pduarray[$nextPole])&&$odd!=0){
-					foreach($pduarray[$nextPole] as $pduvar){
-					$errors[]="<a href=\"devices.php?DeviceID=$pduvar->PDUID\">$pduvar->Label</a>";
+				if(isset($eqarray[$nextPole])&&$odd!=0){
+					foreach($eqarray[$nextPole] as $var){
+						if($var instanceof MechanicalDevice)
+							$errors[]="<a href=\"mechanical_device.php?mechid=$var->MechID\">$var->Label</a>";
+						else
+							$errors[]="<a href=\"devices.php?DeviceID=$var->PDUID\">$var->Label</a>";
 					}
 				}
 				// Get info for pdu on this pole if it is populated.
 				$lastCabinet=0;
 				if($odd==0){
-					if(isset($pduarray[$nextPole])){
+					if(isset($eqarray[$nextPole])){
 						$pn="";
-						foreach($pduarray[$nextPole] as $pduvar) {
-							$cab->CabinetID=$pduvar->CabinetID;
-							$cab->GetCabinet(  );
-							
-							if ($lastCabinet<>$pduvar->CabinetID)
-								$pn.="<a href=\"cabnavigator.php?cabinetid=$pduvar->CabinetID\">$cab->Location</a>";
-                            $pn.="<a href=\"devices.php?DeviceID=$pduvar->PDUID\"><span>$pduvar->Label</span></a>";
-                            $lastCabinet=$pduvar->CabinetID;
-							
-							switch($pduvar->BreakerSize){
+						foreach($eqarray[$nextPole] as $var) {
+							if($var instanceof PowerDistribution) {
+								$cab->CabinetID=$var->CabinetID;
+								$cab->GetCabinet(  );
+								
+								if ($lastCabinet<>$var->CabinetID)
+									$pn.="<a href=\"cabnavigator.php?cabinetid=$var->CabinetID\">$cab->Location</a>";
+								$pn.="<a href=\"devices.php?DeviceID=$var->PDUID\"><span>$var->Label</span></a>";
+								$lastCabinet=$var->CabinetID;
+							} else {
+                                                                $pn.="<a href=\"mechanical_device.php?mechid=$var->MechID\"><notooltip><span>$var->Label</span></notooltip></a>";
+							}
+
+							switch($var->BreakerSize){
 								case '3': $odd=3; break;
 								case '2': $odd=2; break;
 								default: $odd=0;
@@ -357,24 +381,31 @@ echo '	</select></div>
 				print "<td class=\"polenumber\">$nextPole</td>";
 				// Someone input a pole number wrong and this one would have been skipped
 				// store the value and deal with it later.
-				if(isset($pduarray[$nextPole])&&$even!=0){ 
-					foreach($pduarray[$nextPole] as $pduvar){
-					$errors[]="<a href=\"devices.php?DeviceID=".$pduvar->PDUID."\">".$pduvar->Label."</a>";
+				if(isset($eqarray[$nextPole])&&$even!=0){ 
+					foreach($eqarray[$nextPole] as $var){
+						if($var instanceof MechanicalDevice)
+							$errors[]="<a href=\"mechanical_device.php?mechid=".$var->MechID."\">".$var->Label."</a>";
+						else
+							$errors[]="<a href=\"devices.php?DeviceID=".$var->PDUID."\">".$var->Label."</a>";
 					}
 				}
 				if($even==0){
-					if(isset($pduarray[$nextPole])){
+					if(isset($eqarray[$nextPole])){
 						$pn="";
-						foreach($pduarray[$nextPole] as $pduvar) {
-							$cab->CabinetID=$pduvar->CabinetID;
-							$cab->GetCabinet(  );
-							
-							if ($lastCabinet<>$pduvar->CabinetID)
-								$pn.="<a href=\"cabnavigator.php?cabinetid=$pduvar->CabinetID\">$cab->Location</a>";
-                            $pn.="<a href=\"devices.php?DeviceID=$pduvar->PDUID\"><span>$pduvar->Label</span></a>";
-                            $lastCabinet=$pduvar->CabinetID;
-							
-                            switch($pduvar->BreakerSize){
+						foreach($eqarray[$nextPole] as $var) {
+							if($var instanceof PowerDistribution) {
+								$cab->CabinetID=$var->CabinetID;
+								$cab->GetCabinet(  );
+								
+								if ($lastCabinet<>$var->CabinetID)
+									$pn.="<a href=\"cabnavigator.php?cabinetid=$var->CabinetID\">$cab->Location</a>";
+								$pn.="<a href=\"devices.php?DeviceID=$var->PDUID\"><span>$var->Label</span></a>";
+								$lastCabinet=$var->CabinetID;
+							} else {
+                                                                $pn.="<a href=\"mechanical_device.php?mechid=$var->MechID\"><notooltip><span>$var->Label</span></notooltip></a>";
+							}
+
+                            				switch($pduvar->BreakerSize){
 								case '3': $even=3; break;
 								case '2': $even=2; break;
 								default: $even=0;
