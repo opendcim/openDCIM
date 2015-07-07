@@ -24,6 +24,9 @@ $weightRenewable = isset($_POST["WREN"])?$_POST["WREN"]:0.8;
 $dcList = new DataCenter();
 $dcList = $dcList->GetDCList();
 
+$warningMsg = __("The difference between the start of measurement and the first measure or between the end of measurement and the last measure is too big!");
+$intervalMax = (strtotime($endDate) - strtotime($startDate)) / 50 ; //time max between measurement start and first measure or measurement end and last measure
+
 $minDate = INF;
 $dataList = array();
 foreach($dcList as $dc) {
@@ -73,12 +76,17 @@ foreach($dcList as $dc) {
 			$energy = $measureList[count($measureList)-1]->Energy - $measureList[0]->Energy;
 			$penalty = isset($_POST[$penaltyName])?$_POST[$penaltyName]:0;
 
+			$startGap = strtotime($measureList[0]->Date) - strtotime($startDate);
+			$endGap = strtotime($endDate) - strtotime($measureList[count($measureList)-1]->Date);
+
 			$dataList[$category][$dc->DataCenterID][$mp->MPID] = '<div><label for="'.$energyName.'">'.$mp->Label.'</label></div>
 					<div><nobr><input type="number" id="'.$energyName.'" name="'.$energyName.'" value="'.$energy.'" step="0.001" min="0" onChange="'.$updateFuncName.'('.$dc->DataCenterID.')">kW.h</nobr></div>';
 
 			if($addPenalty)
 				$dataList[$category][$dc->DataCenterID][$mp->MPID] .= '<div><input type="number" id="'.$penaltyName.'" name="'.$penaltyName.'" value="'.$penalty.'" step="0.001" min="0" onChange="'.$updateFuncName.'('.$dc->DataCenterID.')"></div>';
-			
+			if(($startGap > $intervalMax || $endGap > $intervalMax) && count($measureList) >= 2)
+				$dataList[$category][$dc->DataCenterID][$mp->MPID] .= '<div><span TITLE="'.$warningMsg.'"><img src="images/warning.png" alt="_!_"/></span></div>';
+
 			$dataList[$category][$dc->DataCenterID][$mp->MPID] .= '	<input type="hidden" name="'.$labelName.'" value="'.$mp->Label.'">';
 		}
 
@@ -91,10 +99,15 @@ foreach($dcList as $dc) {
                         $energy = $measureList[count($measureList)-1]->Energy - $measureList[0]->Energy;
                         $penalty = isset($_POST[$penaltyName])?$_POST[$penaltyName]:0;
 
+			$startGap = strtotime($measureList[0]->Date) - strtotime($startDate);
+			$endGap = strtotime($endDate) - strtotime($measureList[count($measureList)-1]->Date);
+
                         $dataList["noUPS"][$dc->DataCenterID][$mp->MPID] = '<div><label for="'.$energyName.'">'.$mp->Label.'</label></div>
                                                	<div><nobr><input type="number" id="'.$energyName.'" name="'.$energyName.'" value="'.$energy.'" step="0.001" min="0" onChange="'.$updateFuncName.'('.$dc->DataCenterID.')">kW.h</nobr></div>
                         			<div><input type="number" id="'.$penaltyName.'" name="'.$penaltyName.'" value="'.$penalty.'" step="0.001" min="0" onChange="'.$updateFuncName.'('.$dc->DataCenterID.')"></div>
                                                 <input type="hidden" name="'.$labelName.'" value="'.$mp->Label.'">';
+			if(($startGap > $intervalMax || $endGap > $intervalMax) && count($measureList) >= 2)
+				$dataList["noUPS"][$dc->DataCenterID][$mp->MPID] .= '<div><span TITLE="'.$warningMsg.'"><img src="images/warning.png" alt="_!_"/></span></div>';
 		}
 	}
 }
@@ -439,6 +452,8 @@ input[type=number]
 							echo ",".$dc->DataCenterID;
 						$n++;
 					} ?>];
+		var energyID = 1;
+		var penaltyID = 2;
 
 		function updateUPS(dc) {
 			var n=1;
@@ -447,13 +462,13 @@ input[type=number]
 			var energy=0;
 
 			while(upsTab.children[n] != undefined) {
-				energy += parseFloat(upsTab.children[n].children[1].children[0].children[0].value) * (1 + parseFloat(upsTab.children[n].children[2].children[0].value));
+				energy += parseFloat(upsTab.children[n].children[energyID].children[0].children[0].value) * (1 + parseFloat(upsTab.children[n].children[penaltyID].children[0].value));
 				n++;
 			}
 
 			n=1;
 			while(noUPSTab.children[n] != undefined) {
-                                energy += parseFloat(noUPSTab.children[n].children[1].children[0].children[0].value) * (1 + parseFloat(noUPSTab.children[n].children[2].children[0].value));
+                                energy += parseFloat(noUPSTab.children[n].children[energyID].children[0].children[0].value) * (1 + parseFloat(noUPSTab.children[n].children[penaltyID].children[0].value));
                                 n++;
                         }
 			
@@ -470,7 +485,7 @@ input[type=number]
 			var energy=0;
 
 			while(itTab.children[n] != undefined) {
-                                energy += parseFloat(itTab.children[n].children[1].children[0].children[0].value) * (1 + parseFloat(itTab.children[n].children[2].children[0].value));
+                                energy += parseFloat(itTab.children[n].children[energyID].children[0].children[0].value) * (1 + parseFloat(itTab.children[n].children[penaltyID].children[0].value));
                                 n++;
                         }
 
@@ -485,7 +500,7 @@ input[type=number]
 			var energy=0;
 
 			while(reuseTab.children[n] != undefined) {
-                                energy += parseFloat(reuseTab.children[n].children[1].children[0].children[0].value);
+                                energy += parseFloat(reuseTab.children[n].children[energyID].children[0].children[0].value);
                                 n++;
                         }
 
@@ -499,7 +514,7 @@ input[type=number]
 			var energy=0;
 
 			while(renewableTab.children[n] != undefined) {
-                                energy += parseFloat(renewableTab.children[n].children[1].children[0].children[0].value);
+                                energy += parseFloat(renewableTab.children[n].children[energyID].children[0].children[0].value);
                                 n++;
                         }
 
@@ -618,6 +633,11 @@ input[type=number]
 				updateRenewable(dc);
 			}
 		}
+
+		$(function(){
+			$('#startdate').datepicker({dateFormat: "yy-mm-dd"});
+			$('#enddate').datepicker({dateFormat: "yy-mm-dd"});
+		});
 
 		window.onload = Load;
 
