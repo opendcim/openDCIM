@@ -16,6 +16,34 @@
 	if(extension_loaded('gettext')) {
 		$tests['gettext']['state']="good";
 		$tests['gettext']['message']='';
+
+		$path='./locale';
+		$dir=scandir($path);
+		$lang=array();
+		foreach($dir as $i => $d){
+			// get list of directories in locale that aren't . or ..
+			if(is_dir($path.DIRECTORY_SEPARATOR.$d) && $d!=".." && $d!="."){
+				// check the list of valid directories above to see if there is an openDCIM translation file present
+				if(file_exists($path.DIRECTORY_SEPARATOR.$d.DIRECTORY_SEPARATOR."LC_MESSAGES".DIRECTORY_SEPARATOR."openDCIM.mo")){
+					// build array of valid language choices
+					$lang[$d]=$d;
+				}
+			}
+		}
+
+		$locales=array();
+		foreach(explode("\n",shell_exec('locale -a | grep -i utf')) as $line){
+			$locales[]=array_shift(explode(".",$line));
+		}
+		if(count($locales)>1){
+			$tests['gettext']['message'].="Locales detected: ";
+			foreach(array_intersect($locales,$lang) as $locale){
+				$tests['gettext']['message'].="$locale, ";
+			}
+		}else{
+			$tests['gettext']['state']="fail";
+			$tests['gettext']['message']='Gettext is detected but we cannot verify that you have the appropriate locales loaded and available. <a href="http://wiki.opendcim.org/wiki/index.php/Translation">http://wiki.opendcim.org/wiki/index.php/Translation</a>';
+		}
 	}else{
 		$tests['gettext']['state']="fail";
 		$tests['gettext']['message']='PHP is missing the <a href="http://php.net/manual/book.gettext.php">Gettext extension</a>. Please install it.';
