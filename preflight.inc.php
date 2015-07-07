@@ -4,6 +4,14 @@
 	$tests=array();
 	$errors=0;
 
+	if(strtolower(PHP_OS)=='linux'){
+		$tests['os']['state']="good";
+		$tests['os']['message']='';
+	}else{
+		$tests['os']['state']="fail";
+		$tests['os']['message']='OS Detected: '.PHP_OS.' We strongly recommend against running this on anything other than Linux.';
+	}
+
 	if (extension_loaded('mbstring')) {
 		$tests['mbstring']['state']="good";
 		$tests['mbstring']['message']='';
