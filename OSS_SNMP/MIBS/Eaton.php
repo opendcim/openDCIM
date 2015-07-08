@@ -23,10 +23,10 @@ namespace OSS_SNMP\MIBS;
 class Eaton extends \OSS_SNMP\MIB
 {
     const OID_EATON_VERSION_STRING = '.1.3.6.1.4.1.534.6.6.7.1.2.1.5.0';
-	const OID_EATON_INPUT_WATTS    = '.1.3.6.1.4.1.534.6.6.7.3.5.1.4.0.1';
-	const OID_EATON_INPUT_VA       = '.1.3.6.1.4.1.534.6.6.7.3.5.1.3.0.1';
+    const OID_EATON_INPUT_WATTS    = '.1.3.6.1.4.1.534.6.6.7.3.5.1.4.0.1';
+    const OID_EATON_INPUT_VA       = '.1.3.6.1.4.1.534.6.6.7.3.5.1.3.0.1';
 
-	const OID_EATON_OUTLET_COUNT   = '.1.3.6.1.4.1.534.6.6.7.1.2.1.22.0';
+    const OID_EATON_OUTLET_COUNT   = '.1.3.6.1.4.1.534.6.6.7.1.2.1.22.0';
     const OID_EATON_OUTLET_ID      = '.1.3.6.1.4.1.534.6.6.7.6.1.1.2.0';
     const OID_EATON_OUTLET_NAME    = '.1.3.6.1.4.1.534.6.6.7.6.1.1.3.0';
     const OID_EATON_OUTLET_TYPE    = '.1.3.6.1.4.1.534.6.6.7.6.1.1.5.0';
