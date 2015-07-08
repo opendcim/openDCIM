@@ -59,125 +59,146 @@ class Eaton extends \OSS_SNMP\MIB
     const OID_EATON_HUMIDITY_NAME      = '.1.3.6.1.4.1.534.6.6.7.7.2.1.2.0';
     const OID_EATON_HUMIDITY_STATUS    = '.1.3.6.1.4.1.534.6.6.7.7.2.1.3.0';
     const OID_EATON_HUMIDITY_VALUE     = '.1.3.6.1.4.1.534.6.6.7.7.2.1.4.0';
-}
 
-public static $OUTLET_TYPES = array(
-   0   => 'unknown',
-   1   => 'iecC13',
-   2   => 'iecC19',
-   10  => 'uk',
-   11  => 'french',
-   12  => 'schuko',
-   20  => 'nema515',
-   21  => 'nema51520',
-   22  => 'nema520',
-   23  => 'nemaL520',
-   24  => 'nemaL530',
-   25  => 'nema615',
-   26  => 'nema620',
-   27  => 'nemaL620',
-   28  => 'nemaL630',
-   29  => 'nemaL715',
-   30  => 'rf203p277',
-   100 => 'other1Phase',
-   200 => 'other2Phase',
-   300 => 'other3Phase',
-   101 => 'iecC14Inlet',
-   102 => 'iecC20Inlet',
-   103 => 'iec316P6',
-   104 => 'iec332P6',
-   105 => 'iec360P6',
-   106 => 'iecC14Plug',
-   107 => 'iecC20Plug',
-   120 => 'nema515',
-   121 => 'nemaL515',
-   122 => 'nema520',
-   123 => 'nemaL520',
-   124 => 'nema615',
-   125 => 'nemaL615',
-   126 => 'nemaL530',
-   127 => 'nema620',
-   128 => 'nemaL620',
-   129 => 'nemaL630',
-   130 => 'cs8265',
-   150 => 'french',
-   151 => 'schuko',
-   152 => 'uk',
-   201 => 'nemaL1420',
-   202 => 'nemaL1430',
-   301 => 'iec516P6',
-   302 => 'iec460P9',
-   303 => 'iec560P9',
-   304 => 'iec532P6',
-   306 => 'iec563P6',
-   320 => 'nemaL1520',
-   321 => 'nemaL2120',
-   322 => 'nemaL1530',
-   323 => 'nemaL2130',
-   324 => 'cs8365',
-   325 => 'nemaL2220',
-   326 => 'nemaL2230',
-   350 => 'bladeUps208V',
-   351 => 'bladeUps400V'
-);
+	public static $OUTLET_TYPES = array(
+	   0   => 'unknown',
+	   1   => 'iecC13',
+	   2   => 'iecC19',
+	   10  => 'uk',
+	   11  => 'french',
+	   12  => 'schuko',
+	   20  => 'nema515',
+	   21  => 'nema51520',
+	   22  => 'nema520',
+	   23  => 'nemaL520',
+	   24  => 'nemaL530',
+	   25  => 'nema615',
+	   26  => 'nema620',
+	   27  => 'nemaL620',
+	   28  => 'nemaL630',
+	   29  => 'nemaL715',
+	   30  => 'rf203p277',
+	   100 => 'other1Phase',
+	   200 => 'other2Phase',
+	   300 => 'other3Phase',
+	   101 => 'iecC14Inlet',
+	   102 => 'iecC20Inlet',
+	   103 => 'iec316P6',
+	   104 => 'iec332P6',
+	   105 => 'iec360P6',
+	   106 => 'iecC14Plug',
+	   107 => 'iecC20Plug',
+	   120 => 'nema515',
+	   121 => 'nemaL515',
+	   122 => 'nema520',
+	   123 => 'nemaL520',
+	   124 => 'nema615',
+	   125 => 'nemaL615',
+	   126 => 'nemaL530',
+	   127 => 'nema620',
+	   128 => 'nemaL620',
+	   129 => 'nemaL630',
+	   130 => 'cs8265',
+	   150 => 'french',
+	   151 => 'schuko',
+	   152 => 'uk',
+	   201 => 'nemaL1420',
+	   202 => 'nemaL1430',
+	   301 => 'iec516P6',
+	   302 => 'iec460P9',
+	   303 => 'iec560P9',
+	   304 => 'iec532P6',
+	   306 => 'iec563P6',
+	   320 => 'nemaL1520',
+	   321 => 'nemaL2120',
+	   322 => 'nemaL1530',
+	   323 => 'nemaL2130',
+	   324 => 'cs8365',
+	   325 => 'nemaL2220',
+	   326 => 'nemaL2230',
+	   350 => 'bladeUps208V',
+	   351 => 'bladeUps400V'
+	);
 
-public static $OUTLET_STATUS = array(
-    0  => 'off',
-    1  => 'on',
-    2  => 'pendingOff',
-    3  => 'pendingOn'
-);
+	public static $OUTLET_STATUS = array(
+		0  => 'off',
+		1  => 'on',
+		2  => 'pendingOff',
+		3  => 'pendingOn'
+	);
 
-public static $INPUT_TYPES = array(
-    1  => 'singlePhase',
-    2  => 'splitPhase',
-    3  => 'threePhaseDelta',
-    4  => 'threePhaseWye'
-);
+	public static $INPUT_TYPES = array(
+		1  => 'singlePhase',
+		2  => 'splitPhase',
+		3  => 'threePhaseDelta',
+		4  => 'threePhaseWye'
+	);
 
-public static $SWITCHABLE_STATUS = array(
-    1  => 'switchable',
-    2  => 'notSwitchable'
-);
+	public static $SWITCHABLE_STATUS = array(
+		1  => 'switchable',
+		2  => 'notSwitchable'
+	);
 
-public static $PROBE_STATUS = array(
-    -1 => 'bad',
-    0  => 'disconnected',
-    1  => 'connected'
-);
+	public static $PROBE_STATUS = array(
+		-1 => 'bad',
+		0  => 'disconnected',
+		1  => 'connected'
+	);
 
-public static $GROUP_STATUS = array(
-    0  => 'notApplicable',
-    1  => 'breakerOn',
-    2  => 'breakerOff'
-);
+	public static $GROUP_STATUS = array(
+		0  => 'notApplicable',
+		1  => 'breakerOn',
+		2  => 'breakerOff'
+	);
 
-public function version()
-{
-    return $this->getSNMP()->get( self::OID_EATON_VERSION_STRING );
-}
+	public function name()
+	{
+		return $this->getSNMP()->get( self::OID_EATON_NAME_STRING );
+	}
 
-public function numberOfOutlets()
-{
-    return $this->getSNMP()->get( self::OID_EATON_OUTLET_COUNT );
-}
+	public function description()
+	{
+		return $this->getSNMP()->walk1d( self::OID_EATON_OUTLET_NAME );
+	}
 
-public function types( $translate = false )
-{
-    $types = $this->getSNMP()->walk1d( self::OID_EATON_OUTLET_TYPE );
+	public function version()
+	{
+		return $this->getSNMP()->get( self::OID_EATON_VERSION_STRING );
+	}
 
-    if( !$translate )
-        return $types;
+	public function numberOfOutlets()
+	{
+		return $this->getSNMP()->get( self::OID_EATON_OUTLET_COUNT );
+	}
 
-    return $this->getSNMP->translate( $types, self::$OUTLET_TYPES );
-}
+	public function types( $translate = false )
+	{
+		$types = $this->getSNMP()->walk1d( self::OID_EATON_OUTLET_TYPE );
 
-public function totalWatts()
-{
-    return $this->getSNMP()->get( self::OID_EATON_INPUT_WATTS );
-}
+		if( !$translate )
+			return $types;
 
-public function totalVA()
-{
-    return $this->getSNMP()->get( self::OID_EATON_INPUT_VA );
+		return $this->getSNMP()->translate( $types, self::$OUTLET_TYPES );
+	}
+
+	public function status( $translate = false )
+	{
+		$types = $this->getSNMP()->walk1d( self::OID_EATON_OUTLET_STATUS );
+
+		if( !$translate )
+			return $types;
+
+		return $this->getSNMP()->translate( $types, self::$OUTLET_STATUS );
+	}
+
+	public function totalWatts()
+	{
+		return $this->getSNMP()->get( self::OID_EATON_INPUT_WATTS );
+	}
+
+	public function totalVA()
+	{
+		return $this->getSNMP()->get( self::OID_EATON_INPUT_VA );
+	}
+
 }
