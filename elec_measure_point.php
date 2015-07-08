@@ -231,7 +231,7 @@ echo '							</select></div>
 						<div id="snmp_version">
 							<div><label for="snmpversion">',__("SNMP Version"),'</label></div>
 							<div><select name="snmpversion" id="snmpversion">';
-	$versionList = array('1','2c');
+	$versionList = array('1','2c','3');
 	foreach($versionList as $v) {
 		if($v == $mp->SNMPVersion)
 			$selected = ' selected';

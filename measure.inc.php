@@ -613,7 +613,7 @@ class SNMPElectricalMeasurePoint extends ElectricalMeasurePoint {
 
 	function MakeSafe() {
 		parent::Makesafe();
-		$validVersions = array('1','2c');
+		$validVersions = array('1','2c','3');
                 $validv3SecurityLevels=array('noAuthNoPriv','authNoPriv','authPriv');
                 $validv3AuthProtocols=array('MD5','SHA');
                 $validv3PrivProtocols=array('DES','AES');

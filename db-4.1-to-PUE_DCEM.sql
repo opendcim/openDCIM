@@ -33,7 +33,12 @@ CREATE TABLE IF NOT EXISTS fac_ElectricalMeasurePoint (
 CREATE TABLE IF NOT EXISTS fac_SNMPElectricalMeasurePoint (
 	MPID int(11) NOT NULL,
 	SNMPCommunity varchar(40) NOT NULL,
-	SNMPVersion ENUM('1','2c') NOT NULL,
+	SNMPVersion ENUM('1','2c','3') NOT NULL,
+	v3SecurityLevel varchar(12) NOT NULL,
+	v3AuthProtocol varchar(3) NOT NULL,
+	v3AuthPassphrase varchar(80) NOT NULL,
+	v3PrivProtocol varchar(3) NOT NULL,
+	v3PrivPassphrase varchar(80) NOT NULL,
 	OID1 varchar(80) NOT NULL,
 	OID2 varchar(80) NOT NULL,
 	OID3 varchar(80) NOT NULL,
@@ -85,7 +90,12 @@ CREATE TABLE IF NOT EXISTS fac_AssoMeasurePointGroup (
 CREATE TABLE IF NOT EXISTS fac_SNMPCoolingMeasurePoint (
         MPID int(11) NOT NULL,
         SNMPCommunity varchar(40) NOT NULL,
-        SNMPVersion ENUM('1','2c') NOT NULL,
+        SNMPVersion ENUM('1','2c','3') NOT NULL,
+	v3SecurityLevel varchar(12) NOT NULL ,
+	v3AuthProtocol varchar(3) NOT NULL ,
+	v3AuthPassphrase varchar(80) NOT NULL ,
+	v3PrivProtocol varchar(3) NOT NULL ,
+	v3PrivPassphrase varchar(80) NOT NULL ,
         FanSpeedOID varchar(80) NOT NULL,
         CoolingOID varchar(80) NOT NULL,
         UNIQUE KEY MPID (MPID)
@@ -124,7 +134,12 @@ CREATE TABLE IF NOT EXISTS fac_CoolingMeasure (
 CREATE TABLE IF NOT EXISTS fac_SNMPAirMeasurePoint (
         MPID int(11) NOT NULL,
         SNMPCommunity varchar(40) NOT NULL,
-        SNMPVersion ENUM('1','2c') NOT NULL,
+        SNMPVersion ENUM('1','2c','3') NOT NULL,
+	v3SecurityLevel varchar(12) NOT NULL ,
+	v3AuthProtocol varchar(3) NOT NULL ,
+	v3AuthPassphrase varchar(80) NOT NULL ,
+	v3PrivProtocol varchar(3) NOT NULL ,
+	v3PrivPassphrase varchar(80) NOT NULL ,
         TemperatureOID varchar(80) NOT NULL,
         HumidityOID varchar(80) NOT NULL,
         UNIQUE KEY MPID (MPID)

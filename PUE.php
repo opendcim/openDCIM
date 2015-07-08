@@ -271,7 +271,7 @@ echo '				<tr><td>
 						</tr>
 						<tr>
 							<td>CUE</td>
-							<td>'.$cue.' kgCO<sub>2</sub>e/kW.h</td>
+							<td>'.$cue.' kgCO<sub>2</sub>e</td>
 						</tr>
 						<tr>
 							<td>ERF</td>
