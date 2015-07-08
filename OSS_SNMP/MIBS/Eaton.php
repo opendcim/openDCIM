@@ -52,6 +52,16 @@ public static $OUTLET_TYPES = array(
     30 => 'rf203p277',
 );
 
+public function version()
+{
+    return $this->getSNMP()->get( self::OID_EATON_VERSION_STRING );
+}
+
+public function numberOfOutlets()
+{
+    return $this->getSNMP()->get( self::OID_EATON_OUTLET_COUNT );
+}
+
 public function types( $translate = false )
 {
     $types = $this->getSNMP()->walk1d( self::OID_EATON_OUTLET_TYPE );
@@ -60,4 +70,14 @@ public function types( $translate = false )
         return $types;
 
     return $this->getSNMP->translate( $types, self::$OUTLET_TYPES );
+}
+
+public function totalWatts()
+{
+    return $this->getSNMP()->get( self::OID_EATON_INPUT_WATTS );
+}
+
+public function totalVA()
+{
+    return $this->getSNMP()->get( self::OID_EATON_INPUT_VA );
 }
