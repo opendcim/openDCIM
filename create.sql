@@ -893,6 +893,7 @@ CREATE TABLE IF NOT EXISTS fac_MeasurePoint (
 CREATE TABLE IF NOT EXISTS fac_ElectricalMeasurePoint (
         MPID int(11) NOT NULL,
         DataCenterID int(11) NOT NULL,
+	EnergyTypeID int(11) NOT NULL,
         Category ENUM('none', 'IT', 'Cooling', 'Other Mechanical', 'UPS Input', 'UPS Output', 'Energy Reuse') NOT NULL,
         UPSPowered TINYINT(1) NOT NULL,
         PowerMultiplier ENUM('0.1','1','10','100') NOT NULL,
@@ -934,6 +935,21 @@ CREATE TABLE IF NOT EXISTS fac_ModbusElectricalMeasurePoint (
         Register3 int(11) NOT NULL,
         RegisterEnergy int(11) NOT NULL,
         UNIQUE KEY MPID (MPID)
+        )ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+
+--
+-- Table structure for fac_ElectricalMeasure
+--
+
+CREATE TABLE IF NOT EXISTS fac_ElectricalMeasure (
+        MPID integer(11) NOT NULL,
+        Wattage1 integer(11) NOT NULL,
+        Wattage2 integer(11) NOT NULL,
+        Wattage3 integer(11) NOT NULL,
+        Energy integer(11) NOT NULL,
+        Date DATETIME NOT NULL,
+        KEY MPID (MPID),
+        UNIQUE KEY (MPID, Date)
         )ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 --

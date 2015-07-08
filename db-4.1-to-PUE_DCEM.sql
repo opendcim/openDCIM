@@ -63,6 +63,21 @@ CREATE TABLE IF NOT EXISTS fac_ModbusElectricalMeasurePoint (
 	)ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 --
+-- Table structure for fac_ElectricalMeasure
+--
+
+CREATE TABLE IF NOT EXISTS fac_ElectricalMeasure (
+	MPID integer(11) NOT NULL,
+	Wattage1 integer(11) NOT NULL,
+	Wattage2 integer(11) NOT NULL,
+	Wattage3 integer(11) NOT NULL,
+	Energy integer(11) NOT NULL,
+	Date DATETIME NOT NULL,
+	KEY MPID (MPID),
+	UNIQUE KEY (MPID, Date)
+	)ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+
+--
 -- Table structure for fac_MeasurePointGroup
 --
 
