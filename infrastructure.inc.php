@@ -181,25 +181,33 @@ class DataCenter {
 	var $Name;
 	var $SquareFootage;
 	var $DeliveryAddress;
+        var $CreationDate;
 	var $Administrator;
 	var $MaxkW;
 	var $DrawingFileName;
 	var $EntryLogging;
 	var $dcconfig;
 	var $ContainerID;
+	var $PUELevel;
+	var $PUEFrequency;
 	var $MapX;
 	var $MapY;
 	
 	function MakeSafe(){
+		$validPUELevel = array('L1', 'L2', 'L3');
+		$validPUEFrequency = array('-','C','D','W','M');
 		$this->DataCenterID=intval($this->DataCenterID);
 		$this->Name=sanitize($this->Name);
 		$this->SquareFootage=intval($this->SquareFootage);
 		$this->DeliveryAddress=sanitize($this->DeliveryAddress);
+                $this->CreationDate=date("Y-m-d H:i:s", strtotime($this->CreationDate));
 		$this->Administrator=sanitize($this->Administrator);
 		$this->MaxkW=intval($this->MaxkW);
 		$this->DrawingFileName=sanitize($this->DrawingFileName);
 		$this->EntryLogging=intval($this->EntryLogging);
 		$this->ContainerID=intval($this->ContainerID);
+                $this->PUELevel=(in_array($this->PUELevel, $validPUELevel))?$this->PUELevel:'L1';
+                $this->PUEFrequency=(in_array($this->PUEFrequency, $validPUEFrequency))?$this->PUEFrequency:'M';
 		$this->MapX=abs($this->MapX);
 		$this->MapY=abs($this->MapY);
 	}
@@ -217,11 +225,14 @@ class DataCenter {
 		$dc->Name=$row["Name"];
 		$dc->SquareFootage=$row["SquareFootage"];
 		$dc->DeliveryAddress=$row["DeliveryAddress"];
+		$dc->CreationDate=$row["CreationDate"];
 		$dc->Administrator=$row["Administrator"];
 		$dc->MaxkW=$row["MaxkW"];
 		$dc->DrawingFileName=$row["DrawingFileName"];
 		$dc->EntryLogging=$row["EntryLogging"];
 		$dc->ContainerID=$row["ContainerID"];
+		$dc->PUELevel=$row["PUELevel"];
+		$dc->PUEFrequency=$row["PUEFrequency"];
 		$dc->MapX=$row["MapX"];
 		$dc->MapY=$row["MapY"];
 		$dc->MakeDisplay();
@@ -245,9 +256,10 @@ class DataCenter {
 		
 		$sql="INSERT INTO fac_DataCenter SET Name=\"$this->Name\", 
 			SquareFootage=$this->SquareFootage, DeliveryAddress=\"$this->DeliveryAddress\", 
-			Administrator=\"$this->Administrator\", MaxkW=$this->MaxkW, 
-			DrawingFileName=\"$this->DrawingFileName\", EntryLogging=0,	
-			ContainerID=$this->ContainerID,	MapX=$this->MapX, MapY=$this->MapY;";
+			CreationDate=\"$this->CreationDate\", Administrator=\"$this->Administrator\", 
+			MaxkW=$this->MaxkW, DrawingFileName=\"$this->DrawingFileName\", EntryLogging=0,	
+			ContainerID=$this->ContainerID, PUELevel=\"$this->PUELevel\", 
+			PUEFrequency=\"$this->PUEFrequency\", MapX=$this->MapX, MapY=$this->MapY;";
 
 		if(!$dbh->exec($sql)){
 			$info=$dbh->errorInfo();
@@ -315,6 +327,11 @@ class DataCenter {
 				$dev->UpdateDevice();
 			}
 		}
+
+		//update measure points attached to the data center
+
+		$sql="UDPDATE fac_ElectricalMeasurePoint SET DataCenterID=0 WHERE DataCenterID=$this->DataCenterID;";
+		$this->query($sql);
 	
 		// Finally, delete the data center itself
 		$sql="DELETE FROM fac_DataCenter WHERE DataCenterID=$this->DataCenterID;";
@@ -328,10 +345,11 @@ class DataCenter {
 		$this->MakeSafe();
 
 		$sql="UPDATE fac_DataCenter SET Name=\"$this->Name\", 
-			SquareFootage=$this->SquareFootage, DeliveryAddress=\"$this->DeliveryAddress\", 
-			Administrator=\"$this->Administrator\", MaxkW=$this->MaxkW, 
-			DrawingFileName=\"$this->DrawingFileName\", EntryLogging=0,	
-			ContainerID=$this->ContainerID,	MapX=$this->MapX, MapY=$this->MapY 
+			SquareFootage=$this->SquareFootage, DeliveryAddress=\"$this->DeliveryAddress\",
+			CreationDate=\"$this->CreationDate\", Administrator=\"$this->Administrator\", 
+			MaxkW=$this->MaxkW, DrawingFileName=\"$this->DrawingFileName\", EntryLogging=0,	
+			ContainerID=$this->ContainerID,	PUELevel=\"$this->PUELevel\", 
+			PUEFrequency=\"$this->PUEFrequency\", MapX=$this->MapX, MapY=$this->MapY 
 			WHERE DataCenterID=$this->DataCenterID;";
 
 		$this->MakeDisplay();
@@ -1082,6 +1100,22 @@ class DeviceTemplate {
         }
         return $templateList;
     }
+
+	function GetTemplateByModelAndManufacturer() {
+		$this->MakeSafe();
+
+                $sql="SELECT * FROM fac_DeviceTemplate WHERE ManufacturerID=$this->ManufacturerID AND Model=\"$this->Model\";";
+
+                if(!$row=$this->query($sql)->fetch()){
+                        return false;
+                }else{
+                        foreach(DeviceTemplate::RowToObject($row) as $prop => $value){
+				if($prop != "ManufacturerID" && $prop != "Model")
+                                	$this->$prop=$value;
+                        }
+                        return true;
+                }
+	}
 
 	function GetMissingMfgDates(){
 		$this->MakeSafe();
@@ -3172,5 +3206,199 @@ class TemplatePowerPorts {
 			return true;
 		}		
 	}
+}
+
+class MechanicalDevice {
+        var $MechID;
+        var $Label;
+        var $DataCenterID;
+        var $ZoneID;
+        var $PanelID;
+        var $BreakerSize;
+        var $PanelPole;
+        var $PanelID2;
+        var $PanelPole2;
+        var $IPAddress;
+        var $SNMPVersion;
+        var $SNMPCommunity;
+        var $LoadOID;
+
+        function MakeSafe(){
+                $validSNMPVersions = array('1', '2c');
+                $this->MechID = intval($this->MechID);
+                $this->Label = sanitize($this->Label);
+                $this->DataCenterID = intval($this->DataCenterID);
+                $this->ZoneID = intval($this->ZoneID);
+                $this->PanelID = intval($this->PanelID);
+                $this->BreakerSize = intval($this->BreakerSize);
+                $this->PanelPole = intval($this->PanelPole);
+                $this->PanelID2 = intval($this->PanelID2);
+                $this->PanelPole2 = intval($this->PanelPole2);
+                $this->IPAddress = sanitize($this->IPAddress);
+                $this->SNMPVersion = (in_array($this->SNMPVersion, $validSNMPVersions))?$this->SNMPVersion:"1";
+                $this->SNMPCommunity = sanitize($this->SNMPCommunity);
+                $this->LoadOID = sanitize($this->LoadOID);
+        }
+
+        function MakeDisplay(){
+                $this->Label=stripslashes($this->Label);
+                $this->IPAddress = stripslashes($this->IPAddress);
+                $this->SNMPVersion = stripslashes($this->SNMPVersion);
+                $this->SNMPCommunity = stripslashes($this->SNMPCommunity);
+                $this->LoadOID = stripslashes($this->LoadOID);
+        }
+
+        static function RowToObject($row){
+                $mech = new MechanicalDevice();
+                $mech->MechID = $row["MechID"];
+                $mech->Label = $row["Label"];
+                $mech->DataCenterID = $row["DataCenterID"];
+                $mech->ZoneID = $row["ZoneID"];
+                $mech->PanelID = $row["PanelID"];
+                $mech->BreakerSize = $row["BreakerSize"];
+                $mech->PanelPole = $row["PanelPole"];
+                $mech->PanelID2 = $row["PanelID2"];
+                $mech->PanelPole2 = $row["PanelPole2"];
+                $mech->IPAddress = $row["IPAddress"];
+                $mech->SNMPVersion = $row["SNMPVersion"];
+                $mech->SNMPCommunity = $row["SNMPCommunity"];
+                $mech->LoadOID = $row["LoadOID"];
+
+                $mech->MakeDisplay();
+
+                return $mech;
+        }
+
+       function CreateMechDevice() {
+                global $dbh;
+
+                $this->MakeSafe();
+
+                $sql="INSERT INTO fac_MechanicalDevice SET Label=\"$this->Label\", DataCenterID=$this->DataCenterID,
+                ZoneID=$this->ZoneID, PanelID=$this->PanelID, BreakerSize=$this->BreakerSize, PanelPole=$this->PanelPole,
+                PanelID2=$this->PanelID2, PanelPole2=$this->PanelPole2, IPAddress=\"$this->IPAddress\", 
+                SNMPVersion=\"$this->SNMPVersion\", SNMPCommunity=\"$this->SNMPCommunity\", LoadOID=\"$this->LoadOID\";";
+
+                if(!$dbh->exec($sql)){
+                        return false;
+                }else{
+                        $this->MechID = $dbh->lastInsertID();
+                }
+
+                (class_exists('LogActions'))?LogActions::LogThis($this):'';
+                return $this->MechID;
+        }
+
+        function DeleteMechDevice() {
+                global $dbh;
+
+                $this->MakeSafe();
+
+                $sql="DELETE FROM fac_MechanicalDevice WHERE MechID=$this->MechID;";
+                $dbh->exec($sql);
+
+                (class_exists('LogActions'))?LogActions::LogThis($this):'';
+        }
+
+        function UpdateMechDevice(){
+                global $dbh;
+
+                $this->MakeSafe();
+
+                $oldmech=new MechanicalDevice();
+                $oldmech->MechID=$this->MechID;
+                $oldmech->GetMech();
+
+                $sql="UPDATE fac_MechanicalDevice SET Label=\"$this->Label\", DataCenterID=$this->DataCenterID,
+                ZoneID=$this->ZoneID, PanelID=$this->PanelID, BreakerSize=$this->BreakerSize, PanelPole=$this->PanelPole,
+                PanelID2=$this->PanelID2, PanelPole2=$this->PanelPole2, IPAddress=\"$this->IPAddress\", 
+                SNMPVersion=\"$this->SNMPVersion\", SNMPCommunity=\"$this->SNMPCommunity\", LoadOID=\"$this->LoadOID\" 
+                WHERE MechID=$this->MechID;";
+
+                (class_exists('LogActions'))?LogActions::LogThis($this,$oldmech):'';
+                return $dbh->query($sql);
+        }
+
+        function GetMech() {
+                global $dbh;
+
+                $this->MakeSafe();
+
+                $sql="SELECT * FROM fac_MechanicalDevice WHERE MechID=$this->MechID;";
+
+                if($row=$dbh->query($sql)->fetch()){
+                        foreach(MechanicalDevice::RowToObject($row) as $prop => $value){
+                                $this->$prop=$value;
+                        }
+                }else{
+                        foreach($this as $prop => $value){
+                                if($prop!='MechID'){
+                                        $this->$prop=null;
+                                }
+                        }
+                }
+
+                return true;
+        }
+
+        function GetMechList(){
+                global $dbh;
+
+                $this->MakeSafe();
+
+                $sql="SELECT * FROM fac_MechanicalDevice ORDER BY Label ASC;";
+
+                $MechList=array();
+                foreach($dbh->query($sql) as $row){
+                        $MechList[]=MechanicalDevice::RowToObject($row);
+                }
+
+                return $MechList;
+        }
+
+        function GetMechByDataCenter() {
+                global $dbh;
+
+                $this->MakeSafe();
+
+                $sql="SELECT * FROM fac_MechanicalDevice WHERE DataCenterID=$this->DataCenterID ORDER BY Label ASC;";
+
+                $mechList=array();
+                foreach($dbh->query($sql) as $row){
+                        $mechList[]=MechanicalDevice::RowToObject($row);
+                }
+
+                return $mechList;
+        }
+
+        function GetMechByZone() {
+                global $dbh;
+
+                $this->MakeSafe();
+
+                $sql="SELECT * FROM fac_MechanicalDevice WHERE ZoneID=$this->ZoneID ORDER BY Label ASC;";
+
+                $mechList=array();
+                foreach($dbh->query($sql) as $row){
+                        $mechList[]=MechanicalDevice::RowToObject($row);
+                }
+
+                return $mechList;
+        }
+
+        function GetMechByPanel() {
+                global $dbh;
+
+                $this->MakeSafe();
+
+                $sql="SELECT * FROM fac_MechanicalDevice WHERE PanelID=$this->PanelID OR PanelID2=$this->PanelID ORDER BY PanelPole ASC, Label;";
+
+                $mechList=array();
+                foreach($dbh->query($sql) as $row){
+                        $mechList[]=MechanicalDevice::RowToObject($row);
+                }
+
+                return $mechList;
+        }
 }
 ?>
