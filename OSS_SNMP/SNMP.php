@@ -253,10 +253,10 @@ class SNMP
         switch( $this->getVersion() ) {
             case 1:
             case '2c':
-                return $this->_lastResult = @${"v".$this->getVersion()}( $this->getHost(), $this->getCommunity(), $oid, $this->getTimeout(), $this->getRetry() );
+                $this->_lastResult = @${"v".$this->getVersion()}( $this->getHost(), $this->getCommunity(), $oid, $this->getTimeout(), $this->getRetry() );
                 break;
             case '3':
-                return $this->_lastResult = @snmp3_get( $this->getHost(), $this->getSecName(), $this->getSecLevel(),
+                $this->_lastResult = @snmp3_get( $this->getHost(), $this->getSecName(), $this->getSecLevel(),
                         $this->getAuthProtocol(), $this->getAuthPassphrase(), $this->getPrivProtocol(), $this->getPrivPassphrase(),
                         $oid, $this->getTimeout(), $this->getRetry()
                     );
