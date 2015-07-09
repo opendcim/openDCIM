@@ -896,8 +896,8 @@ CREATE TABLE IF NOT EXISTS fac_ElectricalMeasurePoint (
 	EnergyTypeID int(11) NOT NULL,
         Category ENUM('none', 'IT', 'Cooling', 'Other Mechanical', 'UPS Input', 'UPS Output', 'Energy Reuse') NOT NULL,
         UPSPowered TINYINT(1) NOT NULL,
-        PowerMultiplier ENUM('0.1','1','10','100') NOT NULL,
-        EnergyMultiplier ENUM('0.1','1','10','100') NOT NULL,
+        PowerMultiplier ENUM('0.01','0.1','1','10','100') NOT NULL,
+        EnergyMultiplier ENUM('0.01','0.1','1','10','100') NOT NULL,
         UNIQUE KEY MPID(MPID),
         KEY DataCenterID (DataCenterID)
         )ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
