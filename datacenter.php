@@ -32,10 +32,13 @@
 		$dc->Name=trim($_POST['name']);
 		$dc->SquareFootage=$_POST['squarefootage'];
 		$dc->DeliveryAddress=$_POST['deliveryaddress'];
+		$dc->CreationDate=$_POST['creationdate'];
 		$dc->Administrator=$_POST['administrator'];
 		$dc->DrawingFileName=$_POST['drawingfilename'];
 		$dc->MaxkW=$_POST['maxkw'];
 		$dc->ContainerID=$_POST['container'];
+		$dc->PUELevel=$_POST['puelevel'];
+		$dc->PUEFrequency=$_POST['puefrequency'];
 		$dc->MapX=$_POST['x'];
 		$dc->MapY=$_POST['y'];
 		
@@ -54,10 +57,13 @@
 		$dc->Name=trim($_POST['name']);
 		$dc->SquareFootage=$_POST['squarefootage'];
 		$dc->DeliveryAddress=$_POST['deliveryaddress'];
+		$dc->CreationDate=$_POST['creationdate'];
 		$dc->Administrator=$_POST['administrator'];
 		$dc->DrawingFileName=$_POST['drawingfilename'];
 		$dc->MaxkW=$_POST['maxkw'];
 		$dc->ContainerID=$_POST['container'];
+		$dc->PUELevel=$_POST['puelevel'];
+                $dc->PUEFrequency=$_POST['puefrequency'];
 		if ($dc->ContainerID==0){
 			$dc->MapX=0;
 			$dc->MapY=0;
@@ -260,6 +266,10 @@ echo '	</select></div>
    <div><input class="validate[optional,minSize[1],maxSize[200]]" type="text" name="deliveryaddress" id="deliveryaddress" size="60" maxlength="200" value="',$dc->DeliveryAddress,'"></div>
 </div>
 <div>
+   <div><label for="creationdate">',__("Creation Date"),'</label></div>
+   <div><input class="validate[optional,minSize[1],maxSize[30]]" type="text" name="creationdate" id="creationdate" size="60" maxlength="200" value="',$dc->CreationDate,'"></div>
+</div>
+<div>
    <div><label for="administrator">',__("Administrator"),'</label></div>
    <div><input class="validate[optional,minSize[1],maxSize[80]]" type="text" type="text" name="administrator" id="administrator" size=60 maxlength="80" value="',$dc->Administrator,'"></div>
 </div>
@@ -285,6 +295,36 @@ echo '	</select></div>
 	}
 
 echo '	</select></div>
+</div>
+<div>
+        <div><label for="puelevel">',__("PUE Level"),'</label></div>
+        <div><select name="puelevel" id="puelevel">';
+
+        $levelList = array(	"L1" => __("Basic"),
+			 	"L2" => __("Intermediate"),
+				"L3" => __("Advanced"));
+        foreach($levelList as $level => $label){
+                if($level == $dc->PUELevel){$selected=" selected";}else{$selected="";}
+                print "<option value=\"$level\"$selected>$level : $label</option>\n";
+        }
+
+echo '  </select></div>
+</div>
+<div>
+        <div><label for="puefrequency">',__("PUE Frequency"),'</label></div>
+        <div><select name="puefrequency" id="puefrequency">';
+
+        $freqList = array(	'-' => __("Single Measurement"),
+				'C' => __("Continuous (less than 15 minutes)"),
+				'D' => __("Daily"),
+				'W' => __("Weekly"),
+				'M' => __("Monthly"));
+        foreach($freqList as $freq => $label){
+                if($freq == $dc->PUEFrequency){$selected=" selected";}else{$selected="";}
+                print "<option value=\"$freq\"$selected>$freq : $label</option>\n";
+        }
+
+echo '  </select></div>
 </div>
 <div> 
 	<div><b>X</b></div> 

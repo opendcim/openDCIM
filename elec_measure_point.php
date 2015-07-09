@@ -202,7 +202,7 @@ echo '
 						<div>
 							<div><label for="powermultiplier">',__("Power Multiplier"),'</label></div>
 							<div><select name="powermultiplier" id="powermultiplier">';
-	$multiplierList = array('0.1', '1', '10', '100');
+	$multiplierList = array('0.01', '0.1', '1', '10', '100');
 	foreach($multiplierList as $m) {
 		if($m == $mp->PowerMultiplier)
 			$selected=' selected';
