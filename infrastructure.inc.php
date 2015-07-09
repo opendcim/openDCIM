@@ -194,6 +194,8 @@ class DataCenter {
 	var $MapY;
 	
 	function MakeSafe(){
+		$validPUELevel = array('L1', 'L2', 'L3');
+		$validPUEFrequency = array('-','C','D','W','M');
 		$this->DataCenterID=intval($this->DataCenterID);
 		$this->Name=sanitize($this->Name);
 		$this->SquareFootage=intval($this->SquareFootage);
