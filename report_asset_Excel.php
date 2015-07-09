@@ -1058,7 +1058,7 @@ function computeSheetBodyDCInventory($DProps)
     $cabinetColumns = $DProps['Rack Inventory']['Columns'];
     $devTemplates = DeviceTemplate::getTemplateListIndexedbyID();
     $deptList = Department::GetDepartmentListIndexedbyID();
-    $contactList = Contact::GetContactListIndexedbyID();
+    $contactList = $person->GetUserList('indexed');
 
     $limitedUser = false;
     $dcList = $dc->GetDCList();
