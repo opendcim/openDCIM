@@ -1462,6 +1462,16 @@ class PowerPanel {
 		$sql="UPDATE fac_PowerDistribution SET PanelID=0 WHERE PanelID=$this->PanelID;";
 		$this->query($sql);
 
+                $sql="UPDATE fac_PowerDistribution SET PanelID2=0 WHERE PanelID2=$this->PanelID;";
+                $this->query($sql);
+
+                //Then the mechanical devices
+                $sql="UPDATE fac_MechanicalDevice SET PanelID=0 WHERE PanelID=$this->PanelID;";
+                $this->query($sql);
+
+                $sql="UPDATE fac_MechanicalDevice SET PanelID2=0 WHERE PanelID2=$this->PanelID;";
+                $this->query($sql);
+
 		$sql="DELETE FROM fac_PowerPanel WHERE PanelID=$this->PanelID;";
 		if(!$this->exec($sql)){
 			$info=$this->errorInfo();

@@ -1632,23 +1632,18 @@ class Device {
 		
 		$tmpDev=new Device();
 		$tmpDev->DeviceID=$this->DeviceID;
-		// You can't update what doesn't exist, so check for existing record first and retrieve the current location
-		if(!$tmpDev->GetDevice()){
-			return false;
-		}
+		$tmpDev->GetDevice();
 
 		// Check the user's permissions to modify this device, but only if it's not a CLI call
 		if( php_sapi_name() != "cli" && $tmpDev->Rights!='Write'){return false;}
 	
 		$this->MakeSafe();	
 
-		// A child device's cabinet must always match the parent so force it here
-		if($this->ParentDevice){
-			$parent=new Device();
-			$parent->DeviceID=$this->ParentDevice;
-			$parent->GetDevice();
-			$this->Cabinet=$parent->Cabinet;
-		}
+		// You can't update what doesn't exist, so check for existing record first and retrieve the current location
+		$sql = "SELECT * FROM fac_Device WHERE DeviceID=$this->DeviceID;";
+		if(!$row=$dbh->query($sql)->fetch()){
+			return false;
+		}		
 
 		// Force all uppercase for labels
 		$this->Label=transform($this->Label);
@@ -3197,7 +3192,213 @@ class Device {
 		}
 
 		return $readings;
-	}	
+	}
+
+	static function CreateDevices_CSV($filePath, $dcid) {
+		$delimiter = ",";
+		$result["status"] = false;
+		$result["log"] = array();
+		$fields = array("Label", "SerialNo", "AssetTag", "PrimaryIP", "ESX", "Height", "Model", "ManufacturerName", "nominalWatts", "PowerSupplyCount", "DeviceType", "ChassisSlots", "RearChassisSlots", "MfgDate", "InstallDate", "WarrantyCo", "WarrantyExpire", "Notes");
+
+		$labelExists = false;
+		$modelColumn = -1;
+		$manufacturerNameColumn = -1;
+
+		if($file = fopen($filePath, "r")) {
+			if($columnsTitle = fgetcsv($file, 0, $delimiter)) {
+                        	foreach($columnsTitle as $key => $title) {
+                                	if(!in_array($title, $fields)) {
+						$result["log"][] = __("Warning: Unknown column : ").$title;
+						unset($columnsTitle[$key]);
+                                	}
+					if($title == "Label")
+						$labelExists = true;
+					if($title == "Model")
+						$modelColumn = $key;
+					if($title == "ManufacturerName")
+						$manufacturerNameColumn = $key;
+				}
+				if(!$labelExists) {
+					$result["log"][] = __("Error: There is no Label column.");
+					return $result;
+				}
+				if($modelColumn != -1 && $manufacturerNameColumn == -1) {
+					$result["log"][] = __("Warning: You must define both columns Model and ManufacturerName or neither.");
+					unset($columnsTitle[$modelColumn]);
+				}
+				if($modelColumn == -1 && $manufacturerNameColumn != -1) {
+					$result["log"][] = __("Warning: You must define both columns Model and ManufacturerName or neither.");
+					unset($columnsTitle[$manufacturerNameColumn]);
+				}
+				
+				$n = 0;
+				while($line = fgetcsv($file, 0, $delimiter)) {
+					$device = new Device();
+					foreach($columnsTitle as $key => $field) {
+						$device->$field = $line[$key];
+					}
+
+					if($device->Label != "") {
+						if($device->ManufacturerName != "" && $device->Model != "") {
+							$manufacturer = new Manufacturer();
+							$manufacturer->Name = $device->ManufacturerName;
+							if(!$manufacturer->GetManufacturerByName())
+								$manufacturer->CreateManufacturer();
+		
+							$template = new DeviceTemplate();
+							$template->ManufacturerID = $manufacturer->ManufacturerID;
+							$template->Model = $device->Model;
+							if(!$template->GetTemplateByModelAndManufacturer())
+								$template->CreateTemplate();
+
+							$device->TemplateID = $template->TemplateID;
+						}
+						$device->Cabinet = -1;
+						$device->Position = $dcid;
+						
+						$device->CreateDevice();
+					} else {
+						$result["log"][] = __("Warning: Couldn't import device:  Missing Label on line ").($n+2);
+					}
+					$n++;
+				}
+
+				$result["log"][] = __("Import is a success.");
+				$result["status"] = true;
+				fclose($file);
+				return $result;
+			} else {
+				$result["log"][] = __("Error: Couldn't read column names.");
+				return $result;
+			}
+		} else {
+			$result["log"][] = __("Error: Couldn't open the file.");
+			return $result;
+		}
+	}
+
+        static function UpdateDevices_CSV($filePath) {
+                $delimiter = ",";
+                $result["status"] = false;
+                $result["log"] = array();
+                $fields = array("ID", "Label", "SerialNo", "AssetTag", "PrimaryIP", "ESX", "Height", "Model", "ManufacturerName", "nominalWatts", "PowerSupplyCount", "DeviceType", "ChassisSlots", "RearChassisSlots", "MfgDate", "InstallDate", "WarrantyCo", "WarrantyExpire", "Notes");
+
+                $IDColumn = -1;
+                $modelColumn = -1;
+                $manufacturerNameColumn = -1;
+
+                if($file = fopen($filePath, "r")) {
+                        if($columnsTitle = fgetcsv($file, 0, $delimiter)) {
+                                foreach($columnsTitle as $key => $title) {
+                                        if(!in_array($title, $fields)) {
+                                                $result["log"][] = __("Warning: Unknown column : ").$title;
+                                                unset($columnsTitle[$key]);
+                                        }
+                                        if($title == "ID")
+                                                $IDColumn = $key;
+                                        if($title == "Model")
+                                                $modelColumn = $key;
+                                        if($title == "ManufacturerName")
+                                                $manufacturerNameColumn = $key;
+                                }
+                                if($IDColumn == -1) {
+                                        $result["log"][] = __("Error: There is no ID column.");
+                                        return $result;
+                                }
+                                if($modelColumn != -1 && $manufacturerNameColumn == -1) {
+                                        $result["log"][] = __("Warning: You must define both columns Model and ManufacturerName or neither.");
+                                        unset($columnsTitle[$modelColumn]);
+                                }
+                                if($modelColumn == -1 && $manufacturerNameColumn != -1) {
+                                        $result["log"][] = __("Warning: You must define both columns Model and ManufacturerName or neither.");
+                                        unset($columnsTitle[$manufacturerNameColumn]);
+                                }
+
+				$n = 0;
+				while($line = fgetcsv($file, 0, $delimiter)) {
+					$device = new Device();
+					$device->DeviceID = $line[$IDColumn];
+					if($device->GetDevice()) {	
+						foreach($columnsTitle as $key => $field) {
+							if($line[$key] != "")
+								$device->$field = $line[$key];
+						}
+						if($device->ManufacturerName != "" && $device->Model != "") {
+                                                        $manufacturer = new Manufacturer();
+                                                        $manufacturer->Name = $device->ManufacturerName;
+                                                        if(!$manufacturer->GetManufacturerByName())
+                                                                $manufacturer->CreateManufacturer();
+
+                                                        $template = new DeviceTemplate();
+                                                        $template->ManufacturerID = $manufacturer->ManufacturerID;
+                                                        $template->Model = $device->Model;
+                                                        if(!$template->GetTemplateByModelAndManufacturer())
+                                                                $template->CreateTemplate();
+
+                                                        $device->TemplateID = $template->TemplateID;
+                                                }
+
+						if(!$device->UpdateDevice()) {
+							$result["log"][] = __("Warning: Couldn't update device with ID ").$line[$IDColumn];
+						}
+					} else {
+						$result["log"][] = __("Warning: Couldn't find device with ID ").$line[$IDColumn];
+					}
+				}
+				$result["log"][] = __("Update is a success.");
+				$result["status"] = true;
+				return $result;
+			} else {
+				$result["log"][] = __("Error: Couldn't read column names.");
+                                return $result;
+			}
+		} else {
+			$result["log"][] = __("Error: Couldn't open the file.");
+                        return $result;
+		}
+	}
+
+	static function DeleteDevices_CSV($filePath) {
+		$delimiter = ",";
+                $result["status"] = false;
+		$result["confirmation"] = array();
+                $result["log"] = array();
+		$result["ids"] = array();
+		$IDColumn = -1;		
+
+		if($file = fopen($filePath, "r")) {
+			$n=0;
+			if($columnsTitle = fgetcsv($file, 0, $delimiter)) {
+				foreach($columnsTitle as $key => $title) {
+					if($title == "ID")
+						$IDColumn = $key;
+				}
+				if($IDColumn == -1) {
+					$result["log"][] = __("Error: There is no ID column.");
+                                        return $result;
+				}
+
+				$n=0;
+				while($line = fgetcsv($file, 0, $delimiter)) {
+					$device = new Device();
+					$device->DeviceID = $line[$IDColumn];
+					if($device->GetDevice()) {
+						$result["confirmation"][] = "-".$device->DeviceID.": ".$device->Label;
+						$result["ids"][] = $device->DeviceID;
+					} else {
+						$result["log"][] = __("Warning: Couldn't find device with ID ").$line[$IDColumn];
+					}
+				}
+				return $result;
+			} else {
+				$result["log"][] = __("Error: Couldn't read column names.");
+                                return $result;
+			}
+		} else {
+			$result["log"][] = __("Error: Couldn't open the file.");
+                        return $result;
+		}
+	}
 }
 
 class DevicePorts {
