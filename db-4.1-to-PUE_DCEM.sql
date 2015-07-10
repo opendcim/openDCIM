@@ -2,7 +2,7 @@
 -- Table structure for fac_MeasurePoint
 --
 
-CREATE TABLE IF NOT EXISTS fac_MeasurePoINT (
+CREATE TABLE IF NOT EXISTS fac_MeasurePoint (
   MPID INT(11) NOT NULL AUTO_INCREMENT,
   Label VARCHAR(80) NOT NULL,
   IPAddress VARCHAR(45) NOT NULL,
@@ -12,10 +12,10 @@ CREATE TABLE IF NOT EXISTS fac_MeasurePoINT (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 --
--- Table structure for fac_ElectricalMeasurePoINT
+-- Table structure for fac_ElectricalMeasurePoint
 --
 
-CREATE TABLE IF NOT EXISTS fac_ElectricalMeasurePoINT (
+CREATE TABLE IF NOT EXISTS fac_ElectricalMeasurePoint (
   MPID INT(11) NOT NULL,
   DataCenterID INT(11) NOT NULL,
   EnergyTypeID INT(11) NOT NULL,
@@ -28,10 +28,10 @@ CREATE TABLE IF NOT EXISTS fac_ElectricalMeasurePoINT (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 --
--- Table structure for fac_SNMPElectricalMeasurePoINT
+-- Table structure for fac_SNMPElectricalMeasurePoint
 --
 
-CREATE TABLE IF NOT EXISTS fac_SNMPElectricalMeasurePoINT (
+CREATE TABLE IF NOT EXISTS fac_SNMPElectricalMeasurePoint (
   MPID INT(11) NOT NULL,
   SNMPCommunity VARCHAR(80) NOT NULL,
   SNMPVersion VARCHAR(2) NOT NULL DEFAULT "2c",
@@ -48,10 +48,10 @@ CREATE TABLE IF NOT EXISTS fac_SNMPElectricalMeasurePoINT (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 --
--- Table structure for fac_ModbusElectricalMeasurePoINT
+-- Table structure for fac_ModbusElectricalMeasurePoint
 --
 
-CREATE TABLE IF NOT EXISTS fac_ModbusElectricalMeasurePoINT (
+CREATE TABLE IF NOT EXISTS fac_ModbusElectricalMeasurePoint (
   MPID INT(11) NOT NULL,
   UnitID INT(11) NOT NULL,
   NbWords INT(11) NOT NULL,
@@ -78,20 +78,20 @@ CREATE TABLE IF NOT EXISTS fac_ElectricalMeasure (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 --
--- Table structure for fac_MeasurePoINTGroup
+-- Table structure for fac_MeasurePointGroup
 --
 
-CREATE TABLE IF NOT EXISTS fac_MeasurePoINTGroup (
+CREATE TABLE IF NOT EXISTS fac_MeasurePointGroup (
   MPGID INT(11) NOT NULL AUTO_INCREMENT, 
   Name VARCHAR(40) NOT NULL, 
   PRIMARY KEY(MPGID)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 --
--- Table structure for fac_AssoMeasurePoINTGroup
+-- Table structure for fac_AssoMeasurePointGroup
 --
 
-CREATE TABLE IF NOT EXISTS fac_AssoMeasurePoINTGroup (
+CREATE TABLE IF NOT EXISTS fac_AssoMeasurePointGroup (
   MPGID INT(11) NOT NULL, 
   MPID INT(11) NOT NULL, 
   KEY MPGID (MPGID), 
@@ -100,10 +100,10 @@ CREATE TABLE IF NOT EXISTS fac_AssoMeasurePoINTGroup (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 --
--- Table structure for fac_SNMPCoolingMeasurePoINT
+-- Table structure for fac_SNMPCoolingMeasurePoint
 --
 
-CREATE TABLE IF NOT EXISTS fac_SNMPCoolingMeasurePoINT (
+CREATE TABLE IF NOT EXISTS fac_SNMPCoolingMeasurePoint (
   MPID INT(11) NOT NULL,
   SNMPCommunity VARCHAR(80) NOT NULL,
   SNMPVersion VARCHAR(2) NOT NULL DEFAULT "2c",
@@ -121,7 +121,7 @@ CREATE TABLE IF NOT EXISTS fac_SNMPCoolingMeasurePoINT (
 -- Table structure for fac_ModbusCoolingMeasurepoINT
 --
 
-CREATE TABLE IF NOT EXISTS fac_ModbusCoolingMeasurePoINT (
+CREATE TABLE IF NOT EXISTS fac_ModbusCoolingMeasurePoint (
   MPID INT(11) NOT NULL,
   UnitID INT(11) NOT NULL,
   NbWords INT(11) NOT NULL,
@@ -144,10 +144,10 @@ CREATE TABLE IF NOT EXISTS fac_CoolingMeasure (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 --
--- Table structure for fac_SNMPAirMeasurePoINT
+-- Table structure for fac_SNMPAirMeasurePoint
 --
 
-CREATE TABLE IF NOT EXISTS fac_SNMPAirMeasurePoINT (
+CREATE TABLE IF NOT EXISTS fac_SNMPAirMeasurePoint (
   MPID INT(11) NOT NULL,
   SNMPCommunity VARCHAR(80) NOT NULL,
   SNMPVersion VARCHAR(2) NOT NULL DEFAULT "2c",
@@ -162,10 +162,10 @@ CREATE TABLE IF NOT EXISTS fac_SNMPAirMeasurePoINT (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 --
--- Table structure for fac_ModbusAirMeasurePoINT
+-- Table structure for fac_ModbusAirMeasurePoint
 --
 
-CREATE TABLE IF NOT EXISTS fac_ModbusAirMeasurePoINT (
+CREATE TABLE IF NOT EXISTS fac_ModbusAirMeasurePoint (
   MPID INT(11) NOT NULL,
   UnitID INT(11) NOT NULL,
   NbWords INT(11) NOT NULL,
