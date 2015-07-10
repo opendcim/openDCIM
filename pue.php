@@ -256,7 +256,7 @@ echo '				<tr><td>
 					',$warning,'
 				</td></tr>
 				<tr><td>
-					<img src="PUEGraph.php?startdate=',$startdate,'&enddate=',$enddate,'&frequency=daily&height=600&width=900',$mpDistributionGet,'" alt="">
+					<img src="puegraph.php?startdate=',$startdate,'&enddate=',$enddate,'&frequency=daily&height=600&width=900',$mpDistributionGet,'" alt="">
 				</td>
 				<td style="vertical-align: top;">
 					<img src="pieGraph.php?startdate=',$startdate,'&enddate=',$enddate,'&puelevel=',$dc->PUELevel,'&pueperiod=',$pueperiod,'&puefrequency=',$dc->PUEFrequency,'&height=500',$pieDataGet,'" alt="">

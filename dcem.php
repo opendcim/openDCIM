@@ -191,7 +191,7 @@ input[type=number]
 								</div>
 								<div class="caption">
 									<button type="submit"><?php echo __("Load measures"); ?></button>
-									<button type="submit" formaction="DCEM_PDF.php"><?php echo __("Generate PDF"); ?></button>
+									<button type="submit" formaction="dcem_pdf.php"><?php echo __("Generate PDF"); ?></button>
 								</div>
 							</div>
 							<hr/>
