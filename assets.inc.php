@@ -1219,7 +1219,7 @@ class Device {
 		$this->Notes=stripslashes($this->Notes);
 	}
 
-	static function RowToObject($dbRow,$filterrights=true){
+	static function RowToObject($dbRow,$filterrights=true,$extendmodel=true){
 		/*
 		 * Generic function that will take any row returned from the fac_Devices
 		 * table and convert it to an object for use in array or other
@@ -1272,6 +1272,18 @@ class Device {
 		$dev->GetCustomValues();
 		
 		$dev->MakeDisplay();
+
+		if($extendmodel){
+			// Extend our device model
+			if($dev->DeviceType=="CDU"){
+				$pdu=new PowerDistribution();
+				$pdu->PDUID=$dev->DeviceID;
+				$pdu->GetPDU();
+				foreach($pdu as $prop => $val){
+					$dev->$prop=$val;
+				}
+			}
+		}
 		if($filterrights){
 			$dev->FilterRights();
 		}
@@ -1850,16 +1862,6 @@ class Device {
 		if($devRow=$dbh->query($sql)->fetch()){
 			foreach(Device::RowToObject($devRow,$filterrights) as $prop => $value){
 				$this->$prop=$value;
-			}
-
-			// Extend our device model
-			if($this->DeviceType=="CDU"){
-				$pdu=new PowerDistribution();
-				$pdu->PDUID=$this->DeviceID;
-				$pdu->GetPDU();
-				foreach($pdu as $prop => $val){
-					$this->$prop=$val;
-				}
 			}
 
 			return true;
