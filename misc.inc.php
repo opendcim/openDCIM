@@ -913,13 +913,13 @@ function getEndDate($interval, $showTime = true) {
         $time = ($showTime)?" 00:00:00":"";
         switch($interval) {
                 case "Last 7 Days":
-                        return date("Y-m-d", $date->GetTimestamp()).$time;
+                        return date("Y-m-d", $date->GetTimestamp()-86400).$time;
                 case "Last Month":
                         return date("Y-m", $date->GetTimestamp())."-01".$time;
                 case "Last Year":
                         return date("Y", $date->GetTimestamp())."-01-01".$time;
                 default:
-                        return date("Y-m-d", $date->GetTimestamp()).$time;
+                        return date("Y-m-d", $date->GetTimestamp()-86400).$time;
         }
 }
 ?>
