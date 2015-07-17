@@ -200,8 +200,8 @@ CREATE TABLE fac_DataCenter (
   DrawingFileName varchar(255) NOT NULL,
   EntryLogging tinyint(1) NOT NULL,
   ContainerID INT(11) NOT NULL,
-  PUELevel enum('L1', 'L2', 'L3') NOT NULL,
-  PUEFrequency enum('-','C','D','W','M','Y') NOT NULL,
+  PUELevel VARCHAR(2) NOT NULL DEFAULT "L1",
+  PUEFrequency VARCHAR(1) NOT NULL DEFAULT "D",
   MapX int(11) NOT NULL,
   MapY int(11) NOT NULL,
   PRIMARY KEY (DataCenterID)
@@ -828,6 +828,7 @@ INSERT INTO fac_Config VALUES
 	('APIKey', '', 'Key', 'string', ''),
 	('RequireDefinedUser', 'disabled', 'Enabled/Disabled', 'string', 'Disabled'),
 	('KeepLocal', 'enabled', 'Enabled/Disabled', 'string', 'Enabled'),
+	('TimeInterval', 'Last 7 Days', 'time', 'string', 'Last 7 Days'),
 	('SNMPVersion', '2c', 'Version', 'string', '2c'),
 	('v3SecurityLevel', '', 'noAuthNoPriv/authNoPriv/authPriv', 'string', 'noAuthNoPriv'),
 	('v3AuthProtocol', '', 'SHA/MD5', 'string', 'SHA'),
@@ -878,225 +879,225 @@ CREATE TABLE fac_DeviceCustomValue (
 --
 
 CREATE TABLE IF NOT EXISTS fac_MeasurePoint (
-        MPID int(11) NOT NULL AUTO_INCREMENT,
-        Label varchar(40) NOT NULL,
-        IPAddress varchar(254) NOT NULL,
-        Type ENUM('elec', 'cooling', 'air') NOT NULL,
-        ConnectionType ENUM('SNMP','Modbus') NOT NULL,
-        PRIMARY KEY(MPID)
-        )ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+  MPID INT(11) NOT NULL AUTO_INCREMENT,
+  Label VARCHAR(80) NOT NULL,
+  IPAddress VARCHAR(45) NOT NULL,
+  Type VARCHAR(7) NOT NULL DEFAULT "elec",
+  ConnectionType VARCHAR(6) NOT NULL DEFAULT "SNMP",
+  PRIMARY KEY(MPID)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 --
 -- Table structure for fac_ElectricalMeasurePoint
 --
 
 CREATE TABLE IF NOT EXISTS fac_ElectricalMeasurePoint (
-        MPID int(11) NOT NULL,
-        DataCenterID int(11) NOT NULL,
-	EnergyTypeID int(11) NOT NULL,
-        Category ENUM('none', 'IT', 'Cooling', 'Other Mechanical', 'UPS Input', 'UPS Output', 'Energy Reuse') NOT NULL,
-        UPSPowered TINYINT(1) NOT NULL,
-        PowerMultiplier ENUM('0.1','1','10','100') NOT NULL,
-        EnergyMultiplier ENUM('0.1','1','10','100') NOT NULL,
-        UNIQUE KEY MPID(MPID),
-        KEY DataCenterID (DataCenterID)
-        )ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+  MPID INT(11) NOT NULL,
+  DataCenterID INT(11) NOT NULL,
+  EnergyTypeID INT(11) NOT NULL,
+  Category VARCHAR(16) NOT NULL DEFAULT "none",
+  UPSPowered TINYINT(1) NOT NULL,
+  PowerMultiplier VARCHAR(6) NULL DEFAULT NULL,
+  EnergyMultiplier VARCHAR(6) NULL DEFAULT NULL,
+  UNIQUE KEY MPID(MPID),
+  KEY DataCenterID (DataCenterID)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 --
 -- Table structure for fac_SNMPElectricalMeasurePoint
 --
 
 CREATE TABLE IF NOT EXISTS fac_SNMPElectricalMeasurePoint (
-        MPID int(11) NOT NULL,
-        SNMPCommunity varchar(40) NOT NULL,
-        SNMPVersion ENUM('1','2c','3') NOT NULL,
-	v3SecurityLevel varchar(12) NOT NULL,
-	v3AuthProtocol varchar(3) NOT NULL,
-	v3AuthPassphrase varchar(80) NOT NULL,
-	v3PrivProtocol varchar(3) NOT NULL,
-	v3PrivPassphrase varchar(80) NOT NULL,
-        OID1 varchar(80) NOT NULL,
-        OID2 varchar(80) NOT NULL,
-        OID3 varchar(80) NOT NULL,
-        OIDEnergy varchar(80) NOT NULL,
-        UNIQUE KEY MPID (MPID)
-        )ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+  MPID INT(11) NOT NULL,
+  SNMPCommunity VARCHAR(80) NOT NULL,
+  SNMPVersion VARCHAR(2) NOT NULL DEFAULT "2c",
+  v3SecurityLevel VARCHAR(12) NOT NULL,
+  v3AuthProtocol VARCHAR(3) NOT NULL,
+  v3AuthPassphrase VARCHAR(80) NOT NULL,
+  v3PrivProtocol VARCHAR(3) NOT NULL,
+  v3PrivPassphrase VARCHAR(80) NOT NULL,
+  OID1 VARCHAR(80) NOT NULL,
+  OID2 VARCHAR(80) NOT NULL,
+  OID3 VARCHAR(80) NOT NULL,
+  OIDEnergy VARCHAR(80) NOT NULL,
+  UNIQUE KEY MPID (MPID)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 --
 -- Table structure for fac_ModbusElectricalMeasurePoint
 --
 
 CREATE TABLE IF NOT EXISTS fac_ModbusElectricalMeasurePoint (
-        MPID int(11) NOT NULL,
-        UnitID int(11) NOT NULL,
-        NbWords int(11) NOT NULL,
-        Register1 int(11) NOT NULL,
-        Register2 int(11) NOT NULL,
-        Register3 int(11) NOT NULL,
-        RegisterEnergy int(11) NOT NULL,
-        UNIQUE KEY MPID (MPID)
-        )ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+  MPID INT(11) NOT NULL,
+  UnitID INT(11) NOT NULL,
+  NbWords INT(11) NOT NULL,
+  Register1 INT(11) NOT NULL,
+  Register2 INT(11) NOT NULL,
+  Register3 INT(11) NOT NULL,
+  RegisterEnergy INT(11) NOT NULL,
+  UNIQUE KEY MPID (MPID)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 --
 -- Table structure for fac_ElectricalMeasure
 --
 
 CREATE TABLE IF NOT EXISTS fac_ElectricalMeasure (
-        MPID integer(11) NOT NULL,
-        Wattage1 integer(11) NOT NULL,
-        Wattage2 integer(11) NOT NULL,
-        Wattage3 integer(11) NOT NULL,
-        Energy integer(11) NOT NULL,
-        Date DATETIME NOT NULL,
-        KEY MPID (MPID),
-        UNIQUE KEY (MPID, Date)
-        )ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+  MPID INT(11) NOT NULL,
+  Wattage1 INT(11) NOT NULL,
+  Wattage2 INT(11) NOT NULL,
+  Wattage3 INT(11) NOT NULL,
+  Energy INT(11) NOT NULL,
+  Date DATETIME NOT NULL,
+  KEY MPID (MPID),
+  UNIQUE KEY (MPID, Date)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 --
 -- Table structure for fac_MeasurePointGroup
 --
 
 CREATE TABLE IF NOT EXISTS fac_MeasurePointGroup (
-        MPGID int(11) NOT NULL AUTO_INCREMENT,
-        Name varchar(40) NOT NULL,
-        PRIMARY KEY(MPGID)
-        )ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+  MPGID INT(11) NOT NULL AUTO_INCREMENT, 
+  Name VARCHAR(40) NOT NULL, 
+  PRIMARY KEY(MPGID)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 --
 -- Table structure for fac_AssoMeasurePointGroup
 --
 
 CREATE TABLE IF NOT EXISTS fac_AssoMeasurePointGroup (
-        MPGID int(11) NOT NULL,
-        MPID int(11) NOT NULL,
-        KEY MPGID (MPGID),
-        KEY MPID (MPID),
-        UNIQUE KEY (MPGID, MPID)
-        )ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+  MPGID INT(11) NOT NULL, 
+  MPID INT(11) NOT NULL, 
+  KEY MPGID (MPGID), 
+  KEY MPID (MPID), 
+  UNIQUE KEY (MPGID, MPID)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 --
 -- Table structure for fac_SNMPCoolingMeasurePoint
 --
 
 CREATE TABLE IF NOT EXISTS fac_SNMPCoolingMeasurePoint (
-        MPID int(11) NOT NULL,
-        SNMPCommunity varchar(40) NOT NULL,
-        SNMPVersion ENUM('1','2c','3') NOT NULL,
-	v3SecurityLevel varchar(12) NOT NULL,
-	v3AuthProtocol varchar(3) NOT NULL,
-	v3AuthPassphrase varchar(80) NOT NULL,
-	v3PrivProtocol varchar(3) NOT NULL,
-	v3PrivPassphrase varchar(80) NOT NULL,
-        FanSpeedOID varchar(80) NOT NULL,
-        CoolingOID varchar(80) NOT NULL,
-        UNIQUE KEY MPID (MPID)
-        )ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+  MPID INT(11) NOT NULL,
+  SNMPCommunity VARCHAR(80) NOT NULL,
+  SNMPVersion VARCHAR(2) NOT NULL DEFAULT "2c",
+  v3SecurityLevel VARCHAR(12) NOT NULL,
+  v3AuthProtocol VARCHAR(3) NOT NULL,
+  v3AuthPassphrase VARCHAR(80) NOT NULL,
+  v3PrivProtocol VARCHAR(3) NOT NULL,
+  v3PrivPassphrase VARCHAR(80) NOT NULL,
+  FanSpeedOID VARCHAR(80) NOT NULL,
+  CoolingOID VARCHAR(80) NOT NULL,
+  UNIQUE KEY MPID (MPID)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 --
--- Table structure for fac_ModbusCoolingMeasurepoint
+-- Table structure for fac_ModbusCoolingMeasurepoINT
 --
 
 CREATE TABLE IF NOT EXISTS fac_ModbusCoolingMeasurePoint (
-        MPID int(11) NOT NULL,
-        UnitID int(11) NOT NULL,
-        NbWords int(11) NOT NULL,
-        FanSpeedRegister int(11) NOT NULL,
-        CoolingRegister int(11) NOT NULL,
-        UNIQUE KEY MPID (MPID)
-        )ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+  MPID INT(11) NOT NULL,
+  UnitID INT(11) NOT NULL,
+  NbWords INT(11) NOT NULL,
+  FanSpeedRegister INT(11) NOT NULL,
+  CoolingRegister INT(11) NOT NULL,
+  UNIQUE KEY MPID (MPID)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 --
 -- Table structure for fac_CoolingMeasure
 --
 
 CREATE TABLE IF NOT EXISTS fac_CoolingMeasure (
-        MPID int(11) NOT NULL,
-        FanSpeed int(11) NOT NULL,
-        Cooling int(11) NOT NULL,
-        Date DATETIME NOT NULL,
-        KEY MPID (MPID),
-        UNIQUE KEY (MPID, Date)
-        )ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+  MPID INT(11) NOT NULL,
+  FanSpeed INT(11) NOT NULL,
+  Cooling INT(11) NOT NULL,
+  Date DATETIME NOT NULL,
+  KEY MPID (MPID),
+  UNIQUE KEY (MPID, Date)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 --
 -- Table structure for fac_SNMPAirMeasurePoint
 --
 
 CREATE TABLE IF NOT EXISTS fac_SNMPAirMeasurePoint (
-        MPID int(11) NOT NULL,
-        SNMPCommunity varchar(40) NOT NULL,
-        SNMPVersion ENUM('1','2c','3') NOT NULL,
-	v3SecurityLevel varchar(12) NOT NULL,
-	v3AuthProtocol varchar(3) NOT NULL,
-	v3AuthPassphrase varchar(80) NOT NULL,
-	v3PrivProtocol varchar(3) NOT NULL,
-	v3PrivPassphrase varchar(80) NOT NULL,
-        TemperatureOID varchar(80) NOT NULL,
-        HumidityOID varchar(80) NOT NULL,
-        UNIQUE KEY MPID (MPID)
-        )ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+  MPID INT(11) NOT NULL,
+  SNMPCommunity VARCHAR(80) NOT NULL,
+  SNMPVersion VARCHAR(2) NOT NULL DEFAULT "2c",
+  v3SecurityLevel VARCHAR(12) NOT NULL,
+  v3AuthProtocol VARCHAR(3) NOT NULL,
+  v3AuthPassphrase VARCHAR(80) NOT NULL,
+  v3PrivProtocol VARCHAR(3) NOT NULL,
+  v3PrivPassphrase VARCHAR(80) NOT NULL,
+  TemperatureOID VARCHAR(80) NOT NULL,
+  HumidityOID VARCHAR(80) NOT NULL,
+  UNIQUE KEY MPID (MPID)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 --
 -- Table structure for fac_ModbusAirMeasurePoint
 --
 
 CREATE TABLE IF NOT EXISTS fac_ModbusAirMeasurePoint (
-        MPID int(11) NOT NULL,
-        UnitID int(11) NOT NULL,
-        NbWords int(11) NOT NULL,
-        TemperatureRegister int(11) NOT NULL,
-        HumidityRegister int(11) NOT NULL,
-        UNIQUE KEY MPID (MPID)
-        )ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+  MPID INT(11) NOT NULL,
+  UnitID INT(11) NOT NULL,
+  NbWords INT(11) NOT NULL,
+  TemperatureRegister INT(11) NOT NULL,
+  HumidityRegister INT(11) NOT NULL,
+  UNIQUE KEY MPID (MPID)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 --
 -- Table structure for fac_AirMeasure
 --
 
 CREATE TABLE IF NOT EXISTS fac_AirMeasure (
-        MPID int(11) NOT NULL,
-        Temperature DECIMAL(5,2) NOT NULL,
-        Humidity DECIMAL(5,2) NOT NULL,
-        Date DATETIME NOT NULL,
-        KEY MPID (MPID),
-        UNIQUE KEY (MPID, Date)
-        )ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+  MPID INT(11) NOT NULL,
+  Temperature DECIMAL(5,2) NOT NULL,
+  Humidity DECIMAL(5,2) NOT NULL,
+  Date DATETIME NOT NULL,
+  KEY MPID (MPID),
+  UNIQUE KEY (MPID, Date)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 --
 -- Table structure for fac_EnergyType
 --
 
 CREATE TABLE IF NOT EXISTS fac_EnergyType (
-        EnergyTypeID int(11) NOT NULL AUTO_INCREMENT,
-        Name varchar(40) NOT NULL,
-        GasEmissionFactor DECIMAL(5,3) NOT NULL,
-        PRIMARY KEY(EnergyTypeID)
-        )ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+  EnergyTypeID INT(11) NOT NULL AUTO_INCREMENT,
+  Name VARCHAR(40) NOT NULL,
+  GasEmissionFactor DECIMAL(5,3) NOT NULL,
+  PRIMARY KEY(EnergyTypeID)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 --
 -- Table structure for fac_MechanicalDevice
 --
 
 CREATE TABLE IF NOT EXISTS fac_MechanicalDevice (
-        MechID int(11) NOT NULL AUTO_INCREMENT,
-        Label varchar(40) NOT NULL,
-        DataCenterID int(11) NOT NULL,
-        ZoneID int(11) NOT NULL,
-        PanelID int(11) NOT nULL,
-        BreakerSize int(11) NOT NULL,
-        PanelPole int(11) NOT NULL,
-        IPAddress varchar(254) NOT NULL,
-        SNMPVersion ENUM('1','2c') NOT NULL,
-        SNMPCommunity varchar(50) NOT NULL,
-        LoadOID varchar(80) NOT NULL,
-        PRIMARY KEY(MechID),
-        KEY DataCenterID (DataCenterID),
-        KEY ZoneID (ZoneID),
-        KEY PanelID (PanelID)
-        ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+  MechID INT(11) NOT NULL AUTO_INCREMENT,
+  Label VARCHAR(80) NOT NULL,
+  DataCenterID INT(11) NOT NULL,
+  ZoneID INT(11) NOT NULL,
+  PanelID INT(11) NOT NULL,
+  BreakerSize INT(11) NOT NULL,
+  PanelPole INT(11) NOT NULL,
+  IPAddress VARCHAR(45) NOT NULL,
+  SNMPVersion VARCHAR(2) NOT NULL DEFAULT "2c",
+  SNMPCommunity VARCHAR(80) NOT NULL,
+  LoadOID VARCHAR(80) NOT NULL,
+  PRIMARY KEY(MechID),
+  KEY DataCenterID (DataCenterID),
+  KEY ZoneID (ZoneID),
+  KEY PanelID (PanelID)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 --
--- Let's add a first row in fac_EnergyType
+-- Let"s add a first row in fac_EnergyType
 --
 
 INSERT INTO fac_EnergyType SET Name = "Electricity", GasEmissionFactor = 0.066;

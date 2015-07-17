@@ -412,7 +412,15 @@
 
 		// Applies to everything
 
-		$("#configtabs").tabs();
+		$("#configtabs").tabs({
+			activate: function( event, ui ) {
+				if(ui.newPanel.selector=="#preflight"){
+					var preflight=document.getElementsByTagName("iframe");
+					preflight[0].style.width='100%';
+					preflight[0].style.height=preflight[0].contentWindow.document.body.offsetHeight + 50 + "px";
+				}
+			}
+		});
 		$('#configtabs input[defaultvalue],#configtabs select[defaultvalue]').each(function(){
 			$(this).parent().after('<div><button type="button">&lt;--</button></div><div><span>'+$(this).attr('defaultvalue')+'</span></div>');
 		});
@@ -1348,6 +1356,7 @@ echo '<div class="main">
 			<li><a href="#tt">',__("ToolTips"),'</a></li>
 			<li><a href="#cc">',__("Cabling"),'</a></li>
 			<li><a href="#dca">',__("Custom Device Attributes"),'</a></li>
+			<li><a href="#preflight">',__("Pre-Flight Check"),'</a></li>
 		</ul>
 		<div id="general">
 			<div class="table">
@@ -1909,6 +1918,9 @@ echo '<div class="main">
 			</div>
 
 		</div>
+		<div id="preflight">
+			<iframe src="preflight.inc.php"></iframe>
+		</div><!-- end preflight tab -->
 	</div>';
 
 ?>

@@ -23,7 +23,7 @@
 	For further details on the license, see http://www.gnu.org/licenses
 */
 
-require_once('Class_ModbusTcp.inc');
+require_once('class_modbustcp.inc.php');
 
 
 class EnergyType {
@@ -405,7 +405,7 @@ class ElectricalMeasurePoint extends MeasurePoint{
 	var $EnergyMultiplier;	//multiplier to apply to energy measure
 
 	protected function MakeSafe() {
-		$validMultipliers = array('0.1','1','10','100');
+		$validMultipliers = array('0.01','0.1','1','10','100');
 		$validCategories = array('none', 'IT', 'Cooling', 'Other Mechanical', 'UPS Input', 'UPS Output', 'Energy Reuse', 'Renewable Energy');
 
 		parent::MakeSafe();

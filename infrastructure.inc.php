@@ -181,7 +181,7 @@ class DataCenter {
 	var $Name;
 	var $SquareFootage;
 	var $DeliveryAddress;
-        var $CreationDate;
+	var $CreationDate;
 	var $Administrator;
 	var $MaxkW;
 	var $DrawingFileName;
@@ -194,18 +194,20 @@ class DataCenter {
 	var $MapY;
 	
 	function MakeSafe(){
+		$validPUELevel=array('L1','L2','L3');
+		$validPUEFrequency=array('-','C','D','W','M');
 		$this->DataCenterID=intval($this->DataCenterID);
 		$this->Name=sanitize($this->Name);
 		$this->SquareFootage=intval($this->SquareFootage);
 		$this->DeliveryAddress=sanitize($this->DeliveryAddress);
-                $this->CreationDate=date("Y-m-d H:i:s", strtotime($this->CreationDate));
+		$this->CreationDate=date("Y-m-d H:i:s", strtotime($this->CreationDate));
 		$this->Administrator=sanitize($this->Administrator);
 		$this->MaxkW=intval($this->MaxkW);
 		$this->DrawingFileName=sanitize($this->DrawingFileName);
 		$this->EntryLogging=intval($this->EntryLogging);
 		$this->ContainerID=intval($this->ContainerID);
-                $this->PUELevel=(in_array($this->PUELevel, $validPUELevel))?$this->PUELevel:'L1';
-                $this->PUEFrequency=(in_array($this->PUEFrequency, $validPUEFrequency))?$this->PUEFrequency:'M';
+		$this->PUELevel=(in_array($this->PUELevel, $validPUELevel))?$this->PUELevel:'L1';
+		$this->PUEFrequency=(in_array($this->PUEFrequency, $validPUEFrequency))?$this->PUEFrequency:'M';
 		$this->MapX=abs($this->MapX);
 		$this->MapY=abs($this->MapY);
 	}
@@ -1481,7 +1483,7 @@ xsi:noNamespaceSchemaLocation="openDCIMdevicetemplate.xsd">
 	static function getAvailableImages(){
 		$array=array();
 		$path='pictures';
-		if(preg_match("/api\//",getcwd())){
+		if(preg_match('/api\//',str_replace(DIRECTORY_SEPARATOR, '/',getcwd()))){
 			$path="../../$path";
 		}
 		if(is_dir($path)){
