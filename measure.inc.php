@@ -23,7 +23,7 @@
 	For further details on the license, see http://www.gnu.org/licenses
 */
 
-require_once('Class_ModbusTcp.inc');
+require_once('class_modbustcp.inc.php');
 
 
 class EnergyType {

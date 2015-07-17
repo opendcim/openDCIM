@@ -288,12 +288,16 @@ class People {
 		}
 	}
 	
-	function GetUserList(){
+	function GetUserList($indexed=false){
 		$sql="SELECT * FROM fac_People ORDER BY LastName ASC, FirstName ASC";
 		
 		$userList=array();
 		foreach($this->query($sql) as $row){
-			$userList[]=People::RowToObject($row);
+			if($indexed){
+				$userList[$row['PersonID']]=People::RowToObject($row);
+			}else{
+				$userList[]=People::RowToObject($row);
+			}
 		}
 
 		return $userList;
