@@ -250,7 +250,7 @@ echo '				<tr><td>
 					</table>
 				</td></tr>
 			</table>
-			<div style="display: -moz-groupbox;">
+			<div style="/*display: -moz-groupbox;*/">
 				<ul class="scrollable equipmentList">
 					<div id="MPG_list" style="background: beige;">
                                         	<li><div class="equipmentBox"><center>'.__("Measure Point Groups").'</center></div></li>
@@ -394,7 +394,7 @@ MPData.prototype.loadData = function() {
 	}
 
 	$.ajax({url: 'scripts/ajax_graphs.php', 
-		data: {type: "energy", id: this.mpid, startdate: start.value, enddate: end.value, graphtype: "linesum", frequency: "daily"},
+		data: {type: "energy", id: this.mpid, startdate: start.value, enddate: end.value, graphtype: "line", frequency: "daily"},
 		type: "POST",
 		success: function(data) {
 			mp.lineData = JSON.parse(data);
