@@ -9,6 +9,7 @@ require_once( "preflight.inc.php" );
 		exit;
 	}else{
 		require_once("db.inc.php");
+        require_once('facilities.inc.php');
 	}
 
 // Functions for upgrade / installing db objects
@@ -1076,7 +1077,7 @@ function upgrade(){
 	if($upgrade==true){ //If we're doing an upgrade don't call the rest of the installer.
 ?>
 <!doctype html>
-<html>
+<html xmlns="http://www.w3.org/1999/html">
 <head>
 <title>Upgrade</title>
 <style type="text/css">
@@ -1957,7 +1958,7 @@ if(isset($results)){
 <div id="header"></div>
 <?php
 
-	if((!isset($_GET["cab"])&&!isset($_GET["dc"])&&!isset($_GET["complete"]))||isset($_GET["dept"])){
+	if((!isset($_GET["cab"])&&!isset($_GET["dc"])&&!isset($_GET["template"])&&!isset($_GET["complete"]))||isset($_GET["dept"])){
 		$deptList = $dept->GetDepartmentList();
 ?>
 <script type="text/javascript">
@@ -1978,6 +1979,7 @@ function showgroup(obj){
 <ul>
 <a><li class="active">Departments</li></a>
 <a href="?dc&preflight-ok"><li>Data Centers</li></a>
+    <a href="?template&preflight-ok"><li>Import Templates</li></a>
 <a href="?cab&preflight-ok"><li>Cabinets</li></a>
 <?php if(isset($complete)){ echo '<a href="?complete&preflight-ok"><li>Complete</li></a>'; }?>
 </ul>
@@ -2059,6 +2061,7 @@ function showgroup(obj){
 <ul>
 <a href="?dept&preflight-ok"><li>Departments</li></a>
 <a><li class="active">Data Centers</li></a>
+    <a href="?template&preflight-ok"><li>Import Templates</li></a>
 <a href="?cab&preflight-ok"><li>Cabinets</li></a>
 <?php if(isset($complete)){ echo '<a href="?complete&preflight-ok"><li>Complete</li></a>'; }?>
 </ul>
@@ -2125,6 +2128,94 @@ function showgroup(obj){
 </div></div>
 </div><!-- END div.main -->
 </div><!-- END div.page -->
+<?php
+}elseif(isset($_GET["template"])){
+?>
+
+
+		<div class="page installer">
+
+			<div id="sidebar">
+				<ul>
+					<a href="?dept&preflight-ok"><li>Departments</li></a>
+					<a href="?dc&preflight-ok"><li>Data Centers</li></a>
+					<a><li class="active">Import Templates</li></a>
+					<a href="?cab&preflight-ok"><li>Cabinets</li></a>
+					<?php if(isset($complete)){ echo '<a href="?complete&preflight-ok"><li>Complete</li></a>'; }?>
+				</ul>
+			</div>
+
+			<div class="main">
+				<h2><?php echo $config->ParameterArray['OrgName']; ?></h2>
+				<h3>Import device template</h3>
+               <h5 style="text-align:center;">Remember to adjust maximum files upload in "php.ini"</h5><br>
+				<?php echo $nodc; ?>
+				<div class="center"><div>
+                        <?php
+                        if (!isset($_FILES['my_file'])){
+                            ?>
+
+                        <form action="?template&preflight-ok" method="post" enctype="multipart/form-data">
+                            <input type="file" name="my_file[]" multiple>
+                            <input type="submit" value="Upload">
+                        </form>
+
+                        <?php
+                        }else {
+                            #echo count($_FILES['my_file']['name']);
+                            #var_dump($_FILES['my_file']);
+
+                            if (empty($_FILES['my_file'])) header("location: install.php?template&preflight-ok");
+
+                            $template = new DeviceTemplate();
+
+                            if (isset($_FILES['my_file'])) {
+                                $myFile = $_FILES['my_file'];
+                                $fileCount = count($myFile["name"]);
+
+                                for ($i = 0; $i < $fileCount; $i++) {
+                                    ?>
+                                    <p>File #<?= $i+1 ?>:</p>
+                                    <p>
+                                        Name: <?= $myFile["name"][$i] ?><br>
+                                        Temporary file: <?= $myFile["tmp_name"][$i] ?><br>
+                                        Type: <?= $myFile["type"][$i] ?><br>
+                                        Size: <?= $myFile["size"][$i] ?><br>
+                                        Error: <?= $myFile["error"][$i] ?><br>
+                                    </p>
+                                    <?php
+
+
+                                        $dir = './pictures';
+                                        if (is_writable($dir)) {
+                                            $file = $myFile["tmp_name"][$i];
+                                            echo $file;
+                                            $status = '';
+                                            $result = $template->ImportTemplate($file);
+                                            $status = ($result["status"] == "") ? __("Template File Imported") : $result["status"];
+                                            if (isset($result["log"])) {
+                                                print '<ul style="list-style-type:disc; padding: 5px;">';
+                                                echo "<li style=\"margin-left: 50px;\">" . $status . "</li>";
+                                                foreach ($result["log"] as $logline) {
+                                                    print "<li style=\"margin-left: 50px;\">$logline</li>";
+                                                }
+                                                print "</ul>";
+                                            }
+                                            print '<br/>';
+                                        } else {
+                                            echo 'Error!<br/>The folder "pictures" is not writable!<br/>';
+                                            echo 'Please change the permission and try again.';
+                                        }
+                                }
+                            }
+                        }
+                        ?>
+					</div></div>
+			</div><!-- END div.main -->
+		</div><!-- END div.page -->
+
+
+
 
 <?php
 	}elseif(isset($_GET["cab"])){
@@ -2150,6 +2241,7 @@ function showgroup(obj){
 <ul>
 <a href="?dept&preflight-ok"><li>Departments</li></a>
 <a href="?dc&preflight-ok"><li>Data Centers</li></a>
+    <a href="?template&preflight-ok"><li>Import Templates</li></a>
 <a><li class="active">Cabinets</li></a>
 <?php if(isset($complete)){ echo '<a href="?complete&preflight-ok"><li>Complete</li></a>'; }?>
 </ul>
@@ -2251,6 +2343,7 @@ function showgroup(obj){
 <ul>
 <a href="?dept&preflight-ok"><li>Departments</li></a>
 <a href="?dc&preflight-ok"><li>Data Centers</li></a>
+    <a href="?template&preflight-ok"><li>Import Templates</li></a>
 <a href="?cab&preflight-ok"><li>Cabinets</li></a>
 <?php if(isset($complete)){ echo '<a><li class="active">Complete</li></a>'; }?>
 </ul>
