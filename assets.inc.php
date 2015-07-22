@@ -77,7 +77,14 @@ class Cabinet {
 		$this->FrontEdge=in_array($this->FrontEdge, array("Top","Right","Left","Bottom"))?$this->FrontEdge:"Top";
 		$this->Notes=sanitize($this->Notes,false);
 	}
-	
+
+	public function __construct($cabinetid=false){
+		if($cabinetid){
+			$this->CabinetID=$cabinetid;
+		}
+		return $this;
+	}
+
 	static function RowToObject($dbRow,$filterrights=true){
 		/*
 		 * Generic function that will take any row returned from the fac_Cabinet
@@ -1153,6 +1160,13 @@ class Device {
 	var $AuditStamp;
 	var $CustomValues;
 
+	public function __construct($deviceid=false){
+		if($deviceid){
+			$this->DeviceID=$deviceid;
+		}
+		return $this;
+	}
+
 	function MakeSafe() {
 		if ( ! is_object( $this ) ) {
 			// If called from a static procedure, $this is not a valid object and the routine will throw an error
@@ -2204,12 +2218,12 @@ class Device {
 
 	function Search($indexedbyid=false,$loose=false){
 		global $dbh;
-		// Store the value of devicetype before we muck with it
-		$ot=$this->DeviceType;
-		$ov=$this->SNMPVersion;
-		$osl=$this->v3SecurityLevel;
-		$oap=$this->v3AuthProtocol;
-		$opp=$this->v3PrivProtocol;
+		// Store any values that have been added before we make them safe 
+		foreach($this as $prop => $val){
+			if(isset($val)){
+				$o[$prop]=$val;
+			}
+		}
 
 		// Make everything safe for us to search with
 		$this->MakeSafe();
@@ -2224,16 +2238,8 @@ class Device {
 				$sql.=" WHERE $prop$method";
 			}
 		}
-		foreach($this as $prop => $val){
-			// We force DeviceType to a known value so this is to check if they wanted to search for the default
-			if($prop=="DeviceType" && $val=="Server" && $ot!="Server"){continue;}
-			if($prop=="SNMPVersion" && $val=="2c" && $ot!="2c"){continue;}
-			if($prop=="v3SecurityLevel" && $val=="noAuthNoPriv" && $ot!="noAuthNoPriv"){continue;}
-			if($prop=="v3AuthProtocol" && $val=="MD5" && $ot!="MD5"){continue;}
-			if($prop=="v3PrivProtocol" && $val=="DES" && $ot!="DES"){continue;}
-			if($val){
-				find($prop,$val,$sqlextend,$loose);
-			}
+		foreach($o as $prop => $val){
+			find($prop,$this->$prop,$sqlextend,$loose);
 		}
 		$sql="SELECT * FROM fac_Device $sqlextend ORDER BY Label ASC;";
 

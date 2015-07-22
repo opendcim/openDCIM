@@ -194,8 +194,10 @@ function renderUnassignedTemplateOwnership($noTemplFlag, $noOwnerFlag, $device) 
 	$dev->Cabinet=$cab->CabinetID;
 	$devList=$dev->ViewDevicesByCabinet();
 
-	$dev->DeviceType="Sensor";
-	$SensorList=$dev->Search();
+	$search=new Device();
+	$search->Cabinet=$cab->CabinetID;
+	$search->DeviceType="Sensor";
+	$SensorList=$search->Search();
 
 	$totalWatts=0;
 	$totalWeight=0;
