@@ -318,6 +318,8 @@ class PowerPorts {
 						$portList[$i]->$key=$value;
 					}
 				}
+				// Temp fix for issue #632 until the models can be brought into alignment
+				$portList[$i]->Notes=$tports[$i]->PortNotes;
 			}
 			$portList[$i]->Label=($portList[$i]->Label=="")?__("Power Connection")." $i":$portList[$i]->Label;
 			$portList[$i]->createPort($update_existing);
