@@ -2130,6 +2130,20 @@ class Device {
 			$pdu->PDUID=$this->DeviceID;
 			$pdu->DeletePDU();
 		}
+
+		//remove links between this Sensor and measure points
+		if($this->DeviceType=="Sensor"){
+			$mp = new MeasurePoint();
+			$mp->EquipmentType = "Sensor";
+			$mp->EquipmentID = $this->DeviceID;
+			$mpList = $mp->GetMPByEquipment();
+
+			foreach($mpList as $mpLinked) {
+				$mpLinked->EquipmentType = "None";
+				$mpLinked->EquipmentID = 0;
+				$mpLinked->UpdateMP();
+			}
+		}
 	
 		// Delete all network connections first
 		DevicePorts::removePorts($this->DeviceID);

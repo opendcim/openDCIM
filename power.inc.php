@@ -1217,6 +1217,18 @@ class PowerDistribution {
 			$delConn->RemoveConnection();
 		}
 
+		//remove links between this PDU and measure points
+		$mp = new MeasurePoint();
+		$mp->EquipmentType = "PowerDistribution";
+		$mp->EquipmentID = $this->PDUID;
+		$mpList = $mp->GetMPByEquipment();
+
+		foreach($mpList as $mpLinked) {
+			$mpLinked->EquipmentType = "None";
+			$mpLinked->EquipmentID = 0;
+			$mpLinked->UpdateMP();
+		}
+
 		// Clear out any records from PDUStats, possible S.U.T. involving changing
 		// a devicetype but leaving behind a phantom reading for a non-power device
 		$sql="DELETE FROM fac_PDUStats WHERE PDUID=$this->PDUID;";
@@ -1473,6 +1485,18 @@ class PowerPanel {
 
                 $sql="UPDATE fac_MechanicalDevice SET PanelID2=0 WHERE PanelID2=$this->PanelID;";
                 $this->query($sql);
+
+		//remove links between this PowerPanel and measure points
+		$mp = new MeasurePoint();
+		$mp->EquipmentType = "PowerPanel";
+		$mp->EquipmentID = $this->PanelID;
+		$mpList = $mp->GetMPByEquipment();
+
+		foreach($mpList as $mpLinked) {
+			$mpLinked->EquipmentType = "None";
+			$mpLinked->EquipmentID = 0;
+			$mpLinked->UpdateMP();
+		}
 
 		$sql="DELETE FROM fac_PowerPanel WHERE PanelID=$this->PanelID;";
 		if(!$this->exec($sql)){
