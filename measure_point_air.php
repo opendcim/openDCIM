@@ -41,6 +41,8 @@
 		}	
 		$mp->MPID=$_REQUEST['mpid'];
 		$mp->Label=$_REQUEST['label'];
+		$mp->EquipmentType=$_REQUEST['equipmenttype'];
+		$mp->EquipmentID=$_REQUEST['equipmentid'];
 		$mp->IPAddress=$_REQUEST['ipaddress'];
 		$mp->Type='air';
 		$mp->ConnectionType=$_REQUEST['connectiontype'];
@@ -63,6 +65,15 @@
 	
 	$mpList = new AirMeasurePoint();
 	$mpList=$mpList->GetMPList();
+
+	$devList = new Device();
+	$devList = $devList->GetDeviceList();
+
+	$powerPanelList = new PowerPanel();
+	$powerPanelList = $powerPanelList->GetPanelList();
+	
+	$mechList = new MechanicalDevice();
+	$mechList = $mechList->GetMechList();
 ?>
 <!doctype html>
 <html>
@@ -125,6 +136,28 @@ echo '							</select></div>
 						<div>
 							<div><label for="label">',__("Label"),'</label></div>
 							<div><input type="text" name="label" id="label" value="',$mp->Label,'"></div>
+						</div>
+                                                <div>
+                                                        <div><label for="equipmenttype">',__("Equipment Type"),'</label></div>
+                                                        <div><select name="equipmenttype" id="equipmenttype" onChange="OnEquipmentTypeChange()">';
+        $eqTypes = array("None" => __("None"),
+			"PowerDistribution" => __("PDU"),
+			"PowerPanel" => __("Power Panel"),
+			"MechanicalDevice" => __("Mechanical Device"),
+			"Sensor" => __("Sensor"));
+        foreach($eqTypes as $t => $label) {
+                if($t == $mp->EquipmentType)
+                        $selected=' selected';
+                else
+                        $selected='';
+                print "\t\t\t\t\t\t\t\t<option value=\"$t\"$selected>$label</option>\n";
+        }
+echo '                                                  </select></div>
+                                                </div>
+						<div id="equipmentid_div">
+							<div><label for="equipmentid">',__("Equipment ID"),'</label></div>
+							<div><select name="equipmentid" id="equipmentid">
+							</select></div>
 						</div>
 						<div>
 							<div><label for="ipaddress">',__("IP Address / Host Name"),'</label></div>
@@ -254,6 +287,53 @@ $('button[value=Delete]').click(function(){
 	});
 });
 
+var powerDistribution = {<?php	$n=0;
+				foreach($devList as $dev) {
+					if($dev->DeviceType == "CDU") {
+						if($n == 0)
+							echo $dev->DeviceID.': "'.$dev->Label.'"';
+						else
+							echo ', '.$dev->DeviceID.': "'.$dev->Label.'"';
+						$n++;
+					}
+				}
+			?>};
+
+var powerPanel = {<?php	$n=0;
+			foreach($powerPanelList as $powerPanel) {
+				if($n == 0)
+					echo $powerPanel->PanelID.': "'.$powerPanel->PanelLabel.'"';
+				else
+					echo ', '.$powerPanel->PanelID.': "'.$powerPanel->PanelLabel.'"';
+				$n++;
+			}
+		?>};
+
+var mechanicalDevice = {<?php	$n=0;
+				foreach($mechList as $mech) {
+					if($n == 0)
+						echo $mech->MechID.': "'.$mech->Label.'"';
+					else
+						echo ', '.$mech->MechID.': "'.$mech->Label.'"';
+					$n++;
+				}
+			?>};
+
+var sensor = {<?php	$n=0;
+			foreach($devList as $dev) {
+				if($dev->DeviceType == "Sensor") {
+					if($n == 0)
+						echo $dev->DeviceID.': "'.$dev->Label.'"';
+					else
+						echo ', '.$dev->DeviceID.': "'.$dev->Label.'"';
+					$n++;
+				}
+			}
+		?>};
+
+var loadedEquipmentType = "<?php echo $mp->EquipmentType; ?>";
+var loadedEquipmentID = "<?php echo $mp->EquipmentID; ?>";
+
 function OnConnectionTypeChange() {
 	var snmp = ['com', 'version', 'temperatureoid', 'humidityoid'];
 	var modbus = ['unit', 'nbwords', 'temperatureregister', 'humidityregister'];
@@ -273,8 +353,66 @@ function OnConnectionTypeChange() {
 	}
 }
 
+function OnEquipmentTypeChange() {
+	var typeSelect = document.getElementById("equipmenttype");
+	var idSelect = document.getElementById("equipmentid");
+	var idDiv = document.getElementById("equipmentid_div");
+	var equipmentType = typeSelect.options[typeSelect.selectedIndex].value;
+	var newOpt;
+
+	switch(equipmentType) {
+		case "None":
+			idDiv.style.display = "none";
+			for(var n=0; n<idSelect.options.length; n++)
+				idSelect.remove(n);
+
+			newOpt = document.createElement("option");
+			newOpt.text = "None";
+			newOpt.value = "None";
+			idSelect.add(newOpt);
+			break;
+		case "PowerDistribution":
+			idDiv.style.display = "";
+			changeOptions(idSelect, powerDistribution);
+			break;
+		case "PowerPanel":
+			idDiv.style.display = "";
+                        changeOptions(idSelect, powerPanel);
+                        break;
+		case "MechanicalDevice":
+                        idDiv.style.display = "";
+                        changeOptions(idSelect, mechanicalDevice);
+                        break;
+		case "Sensor":
+			idDiv.style.display = "";
+                        changeOptions(idSelect, sensor); 
+			break;
+		default:
+			alert("Something's wrong with your equipment type.");
+	}
+	if(equipmentType == loadedEquipmentType)
+		for(var n in idSelect.options)
+			if(idSelect.options[n].value == loadedEquipmentID)
+				idSelect.selectedIndex = n;
+}
+
+function changeOptions(selectBox, newOptions) {
+	var newOpt;
+
+	for(var n=selectBox.options.length-1; n>=0; n--)
+		selectBox.remove(n);
+
+	for(var n in newOptions) {
+		newOpt = document.createElement("option");
+		newOpt.text = newOptions[n];
+		newOpt.value = n;
+		selectBox.add(newOpt);
+	}
+}
+
 function Load() {
 	OnConnectionTypeChange();
+	OnEquipmentTypeChange();
 	 <?php
                 if(isset($importError))
                         echo "alert('".$importError."');";

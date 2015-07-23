@@ -127,9 +127,9 @@
 		$displayFrequency = "display: none;";
 
 	if($leftType == "power" || $rightType == "power")
-		$displayCombinePhases = "";
+		$displaySplitPhases = "";
         else
-                $displayCombinePhases = "display: none;";
+                $displaySplitPhases = "display: none;";
 
 	if(isset($_POST['startdate']))
 		$startdate = $_POST['startdate'];
@@ -207,9 +207,9 @@
                                 	'.$optionFrequency.'
                        		</select>
 			</div>
-			<div style="'.$displayCombinePhases.'">
-				<label for="combinephases">'.__("Combine Power Phases").' : </label>
-                        	<input type="checkbox" name="combinephases" id ="combinephases" '.(($_POST['combinephases'])?"checked":"").' onChange="submit();">
+			<div style="'.$displaySplitPhases.'">
+				<label for="splitphases">'.__("Split Power Phases").' : </label>
+                        	<input type="checkbox" name="splitphases" id ="splitphases" '.(($_POST['splitphases'])?"checked":"").' onChange="submit();">
 			</div>
 			<div class="table">
 				<div>
@@ -315,7 +315,7 @@ var linechart;
 var start;
 var end;
 var frequency;
-var combinePhases;
+var splitPhases;
 
 var leftType;
 var rightType;
@@ -368,7 +368,7 @@ MPData.prototype.loadData = function() {
 	this.data = new Array();
 	$.ajax({url: 'scripts/ajax_graphs.php', 
 		data: {type: type, id: this.mpid, startdate: start.value, enddate: end.value, graphtype: "line",
-			frequency: frequency.options[frequency.selectedIndex].value, combinephases: combinePhases.checked, datestring: ""},
+			frequency: frequency.options[frequency.selectedIndex].value, splitphases: splitPhases.checked, datestring: ""},
 		type: "POST",
 		success: function(data) {
 			mp.data = JSON.parse(data);
@@ -388,7 +388,7 @@ $(document).ready(function() {
 	start = document.getElementById("startdate");
 	end = document.getElementById("enddate");
 	frequency = document.getElementById("frequency");
-	combinePhases = document.getElementById("combinephases");
+	splitPhases = document.getElementById("splitphases");
 
 	leftType = document.getElementById("lefttype");
 	leftType = leftType.options[leftType.selectedIndex].value;
@@ -439,7 +439,7 @@ function renderGraph() {
 
 	for(var n in left_mpTab) {
 		if(left_mpTab[n].checkbox.checked) {
-			if(leftType == "power" && !combinePhases.checked) {
+			if(leftType == "power" && splitPhases.checked) {
 				data.push(left_mpTab[n].data[0]);
 				data.push(left_mpTab[n].data[1]);
 				data.push(left_mpTab[n].data[2]);
@@ -455,7 +455,7 @@ function renderGraph() {
 
 	for(var n in right_mpTab) {
 		if(right_mpTab[n].checkbox.checked)
-			if(rightType == "power" && !combinePhases.checked) {
+			if(rightType == "power" && splitPhases.checked) {
                                 data.push(right_mpTab[n].data[0]);
                                 data.push(right_mpTab[n].data[1]);
                                 data.push(right_mpTab[n].data[2]);

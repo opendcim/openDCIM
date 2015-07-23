@@ -34,15 +34,7 @@ function getPowerLine() {
 		return array();
 
 	$n=0;
-	if(isset($_POST["combinephases"]) && $_POST["combinephases"] == "true") {
-		foreach($measure as $row) {
-			$data[$n][0] = $row->Date;
-			$data[$n][1] = $row->Wattage1;
-			$data[$n][1] += $row->Wattage2;
-			$data[$n][1] += $row->Wattage3;
-			$n++;
-		}
-	} else {
+	if(isset($_POST["splitphases"]) && $_POST["splitphases"] == "true") {
 		foreach($measure as $row) {
 			$data[0][$n][0] = $row->Date;
                         $data[0][$n][1] = intval($row->Wattage1);
@@ -50,6 +42,14 @@ function getPowerLine() {
                         $data[1][$n][1] = intval($row->Wattage2);
 			$data[2][$n][0] = $row->Date;
                         $data[2][$n][1] = intval($row->Wattage3);
+			$n++;
+		}
+	} else {
+		foreach($measure as $row) {
+			$data[$n][0] = $row->Date;
+			$data[$n][1] = $row->Wattage1;
+			$data[$n][1] += $row->Wattage2;
+			$data[$n][1] += $row->Wattage3;
 			$n++;
 		}
 	}

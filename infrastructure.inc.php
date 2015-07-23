@@ -3294,6 +3294,18 @@ class MechanicalDevice {
 
                 $this->MakeSafe();
 
+		//remove links between this MechanicalDevice and measure points
+                $mp = new MeasurePoint();
+                $mp->EquipmentType = "MechanicalDevice";
+                $mp->EquipmentID = $this->MechID;
+                $mpList = $mp->GetMPByEquipment();
+
+                foreach($mpList as $mpLinked) {
+                        $mpLinked->EquipmentType = "None";
+                        $mpLinked->EquipmentID = 0;
+                        $mpLinked->UpdateMP();
+                }
+
                 $sql="DELETE FROM fac_MechanicalDevice WHERE MechID=$this->MechID;";
                 $dbh->exec($sql);
 

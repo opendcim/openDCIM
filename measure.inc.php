@@ -154,6 +154,8 @@ class MeasurePoint {
 
 	var $MPID;		//ID of the measure point
 	var $Label;		//name of the measure point
+	var $EquipmentType;	//Type of equipment this MP is attached to
+	var $EquipmentID;	//ID of the equipment this MP is attached to
 	var $IPAddress;		//IP address to connect to the mp
 	var $Type;		//type of the mp. (elec, cooling or air) elec-> to measure power and energy, cooling-> to measure cooling device usage, air-> to measure temperature and humidity
 	var $ConnectionType;	//type of connection (SNMP or Modbus)
@@ -172,10 +174,13 @@ class MeasurePoint {
 	}
 
 	protected function MakeSafe() {
+		$validEquipmentType = array('None', 'PowerDistribution', 'PowerPanel', 'MechanicalDevice', 'Sensor');
 		$validConnectionTypes = array('SNMP', 'Modbus');
 		$validTypes = array('elec', 'cooling', 'air');
 		$this->MPID=intval($this->MPID);
 		$this->Label=sanitize($this->Label);
+		$this->EquipmentType=(in_array($this->EquipmentType, $validEquipmentType))?$this->EquipmentType:'None';
+		$this->EquipmentID=intval($this->EquipmentID);
 		$this->IPAddress=sanitize($this->IPAddress);
 		$this->ConnectionType=(in_array($this->ConnectionType, $validConnectionTypes))?$this->ConnectionType:'SNMP';
 		$this->Type=(in_array($this->Type, $validTypes))?$this->Type:'elec';
@@ -190,6 +195,8 @@ class MeasurePoint {
 		$mp=new MeasurePoint();
 		$mp->MPID=$dbRow["MPID"];
 		$mp->Label=$dbRow["Label"];
+		$mp->EquipmentType=$dbRow["EquipmentType"];
+		$mp->EquipmentID=$dbRow["EquipmentID"];
 		$mp->IPAddress=$dbRow["IPAddress"];
 		$mp->Type=$dbRow["Type"];
 		$mp->ConnectionType=$dbRow["ConnectionType"];
@@ -275,6 +282,8 @@ class MeasurePoint {
 
 		$sql = "INSERT INTO fac_MeasurePoint SET 
 				Label=\"$this->Label\",
+				EquipmentType=\"$this->EquipmentType\",
+				EquipmentID=$this->EquipmentID,
 				IPAddress=\"$this->IPAddress\",
 				Type=\"$this->Type\",
 				ConnectionType=\"$this->ConnectionType\";";
@@ -309,6 +318,8 @@ class MeasurePoint {
 
 		$sql="UPDATE fac_MeasurePoint SET 
 			Label=\"$this->Label\", 
+			EquipmentType=\"$this->EquipmentType\",
+			EquipmentID=$this->EquipmentID,
 			IPAddress=\"$this->IPAddress\", 
 			Type=\"$this->Type\",
 			ConnectionType=\"$this->ConnectionType\" 
@@ -343,6 +354,23 @@ class MeasurePoint {
 			if(is_object($mp))
 				$ret = array_merge($ret, $mp->GetMPList());
 		}	
+		return $ret;
+	}
+
+	function GetMPByEquipment() {
+		global $dbh;
+
+		$ret = array();
+
+		$sql = "SELECT MPID FROM fac_MeasurePoint WHERE EquipmentType=\"$this->EquipmentType\" AND EquipmentID=$this->EquipmentID;";
+
+		foreach($dbh->query($sql) as $row) {
+			$mp = new MeasurePoint();
+			$mp->MPID = $row["MPID"];
+			$mp = $mp->GetMP();
+			if($mp)
+				$ret[] = $mp;
+		}
 		return $ret;
 	}
 
