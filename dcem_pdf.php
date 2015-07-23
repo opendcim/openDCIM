@@ -121,6 +121,7 @@ class DCEM_PDF extends FPDF {
 	$pageHeight = 297;
 
 	$pdf=new DCEM_PDF();
+	include_once("loadfonts.php");
 	$pdf->AliasNbPages();
 
 	$pdf->SetTextColor( 255 );
