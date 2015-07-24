@@ -104,26 +104,6 @@
 	<![endif]-->
 	<script type="text/javascript" src="scripts/jquery.min.js"></script>
 	<script type="text/javascript" src="scripts/jquery-ui.min.js"></script>
-	<script type="text/javascript">
-	$(document).ready(function(){
-		$( "#importButton" ).click(function() {
-                        $("#dlg_importfile").dialog({
-                                resizable: false,
-                                width: 400,
-                                height: 200,
-                                modal: true,                                    
-                                buttons: {      
-                                        <?php echo __("Import");?>: function() {                        
-                                                $('#frmImport').submit();
-                                        },
-                                        <?php echo __("Cancel");?>: function() {                                                                                               
-                                            $("#dlg_importfile").dialog("close");
-                                        }
-                                }
-                        });
-                });
-	});
-	</script>
 </head>
 <body>
 <?php include( 'header.inc.php' ); ?>
@@ -137,7 +117,7 @@ echo '		<div class="main">
 					<div class="table">
 						<div>
 							<div><label for="mpid">',__("Measure Point ID"),'</label></div>
-							<div><select name="mpid" id="mpid" onChange="form.submit()">
+							<div><select name="mpid" id="mpid">
 								<option value="0">',__("New Measure Point"),'</option>';
 
 	foreach($mpList as $mpRow){
@@ -237,7 +217,7 @@ echo '
 							<div><select name="powermultiplier" id="powermultiplier">';
 	$multiplierList = array('0.01', '0.1', '1', '10', '100');
 	foreach($multiplierList as $m) {
-		if($m == $mp->PowerMultiplier)
+		if($m == $mp->PowerMultiplier || (is_null($mp->PowerMultiplier) && $m == '1'))
 			$selected=' selected';
 		else
 			$selected='';	
@@ -249,7 +229,7 @@ echo '							</select></div>
 							<div><label for="energymultiplier">',__("Energy Multiplier"),'</label></div>
 							<div><select name="energymultiplier" id="energymultiplier">';
 	foreach($multiplierList as $m) {
-		if($m == $mp->EnergyMultiplier)
+		if($m == $mp->EnergyMultiplier || (is_null($mp->EnergyMultiplier)&& $m == '1'))
 			$selected=' selected';
 		else
 			$selected='';	
@@ -343,7 +323,7 @@ echo '						</div>
 <div id="dlg_importfile" style="display:none;" title="<?php echo __("Import Measure Point From File");?>">  
         <br>
         <form enctype="multipart/form-data" name="frmImport" id="frmImport" method="POST">
-		<input type="hidden" id="mpid" name="mpid" value="<?php echo $mp->MPID;  ?>" />
+		<input type="hidden" name="mpid" value="<?php echo $mp->MPID;  ?>" />
                 <input type="file" size="60" id="importfile" name="importfile" />
         </form>  
 </div>
@@ -516,7 +496,7 @@ function changeOptions(selectBox, newOptions) {
         }
 }
 
-function Load() {
+$(document).ready(function() {
 	OnConnectionTypeChange();
 	OnCategoryChange();
 	OnEquipmentTypeChange();
@@ -524,9 +504,27 @@ function Load() {
 		if(isset($importError))
 			echo "alert('".$importError."');";
 	?>
-}
+	$('#mpid').change(function(e) {
+		location.href='measure_point_elec.php?mpid='+this.value;
+	});
+	$( "#importButton" ).click(function() {
+		$("#dlg_importfile").dialog({
+			resizable: false,
+			width: 400,
+			height: 200,
+			modal: true,                                    
+			buttons: {      
+				<?php echo __("Import");?>: function() {                        
+					$('#frmImport').submit();
+				},
+				<?php echo __("Cancel");?>: function() {                                                                                               
+				    $("#dlg_importfile").dialog("close");
+				}
+			}
+		});
+	});
+});
 
-window.onload=Load;
 
 </script>
 </body>

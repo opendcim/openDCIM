@@ -88,26 +88,6 @@
 	<![endif]-->
 	<script type="text/javascript" src="scripts/jquery.min.js"></script>
 	<script type="text/javascript" src="scripts/jquery-ui.min.js"></script>
-	<script type="text/javascript">
-        $(document).ready(function(){
-                $( "#importButton" ).click(function() {
-                        $("#dlg_importfile").dialog({
-                                resizable: false,
-                                width: 400,
-                                height: 200,
-                                modal: true,                                    
-                                buttons: {      
-                                        <?php echo __("Import");?>: function() {                        
-                                                $('#frmImport').submit();
-                                        },
-                                        <?php echo __("Cancel");?>: function() {                                                                                               
-                                            $("#dlg_importfile").dialog("close");
-                                        }
-                                }
-                        });
-                });
-        });
-        </script>
 </head>
 <body>
 <?php include( 'header.inc.php' ); ?>
@@ -244,7 +224,7 @@ echo '						</div>
 <div id="dlg_importfile" style="display:none;" title="<?php echo __("Import Measure Point From File");?>">
         <br>
         <form enctype="multipart/form-data" name="frmImport" id="frmImport" method="POST">
-                <input type="hidden" id="mpid" name="mpid" value="<?php echo $mp->MPID;  ?>" />
+                <input type="hidden" name="mpid" value="<?php echo $mp->MPID;  ?>" />
                 <input type="file" size="60" id="importfile" name="importfile" />
         </form>
 </div>
@@ -409,17 +389,35 @@ function changeOptions(selectBox, newOptions) {
         }
 }
 
-function Load() {
+$(document).ready(function(){
 	OnConnectionTypeChange();
 	OnEquipmentTypeChange();
 	<?php
                 if(isset($importError))
                         echo "alert('".$importError."');";
         ?>
+        $('#mpid').change(function(e) {
+                location.href='measure_point_cooling.php?mpid='+this.value;
+        });
+	$( "#importButton" ).click(function() {
+		$("#dlg_importfile").dialog({
+			resizable: false,
+			width: 400,
+			height: 200,
+			modal: true,                                    
+			buttons: {      
+				<?php echo __("Import");?>: function() {                        
+					$('#frmImport').submit();
+				},
+				<?php echo __("Cancel");?>: function() {                                                                                               
+				    $("#dlg_importfile").dialog("close");
+				}
+			}
+		});
+	});
 
-}
+});
 
-window.onload=Load;
 
 </script>
 </body>
