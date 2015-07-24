@@ -1217,18 +1217,6 @@ class PowerDistribution {
 			$delConn->RemoveConnection();
 		}
 
-		//remove links between this PDU and measure points
-		$mp = new MeasurePoint();
-		$mp->EquipmentType = "PowerDistribution";
-		$mp->EquipmentID = $this->PDUID;
-		$mpList = $mp->GetMPByEquipment();
-
-		foreach($mpList as $mpLinked) {
-			$mpLinked->EquipmentType = "None";
-			$mpLinked->EquipmentID = 0;
-			$mpLinked->UpdateMP();
-		}
-
 		// Clear out any records from PDUStats, possible S.U.T. involving changing
 		// a devicetype but leaving behind a phantom reading for a non-power device
 		$sql="DELETE FROM fac_PDUStats WHERE PDUID=$this->PDUID;";

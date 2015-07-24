@@ -158,10 +158,9 @@ echo '							</select></div>
                                                         <div><label for="equipmenttype">',__("Equipment Type"),'</label></div>
                                                         <div><select name="equipmenttype" id="equipmenttype" onChange="OnEquipmentTypeChange()">';
         $eqTypes = array("None" => __("None"),
-                        "PowerDistribution" => __("PDU"),
+                        "Device" => __("Device"),
                         "PowerPanel" => __("Power Panel"),
-                        "MechanicalDevice" => __("Mechanical Device"),
-                        "Sensor" => __("Sensor"));
+                        "MechanicalDevice" => __("Mechanical Device"));
         foreach($eqTypes as $t => $label) {
                 if($t == $mp->EquipmentType)
                         $selected=' selected';
@@ -174,7 +173,27 @@ echo '                                                  </select></div>
                                                 <div id="equipmentid_div">
                                                         <div><label for="equipmentid">',__("Equipment ID"),'</label></div>
                                                         <div><select name="equipmentid" id="equipmentid">
-                                                        </select></div>
+                                                        </select>';
+if($mp->EquipmentID != 0) {
+	switch($mp->EquipmentType) {
+		case "Device":
+			$eqPage = "devices.php?DeviceID=".$mp->EquipmentID;
+                        break;
+		case "PowerPanel":
+			$eqPage = "power_panel.php?PanelID=".$mp->EquipmentID;
+			break; 
+		case "MechanicalDevice":
+			$eqPage = "mechanical_device.php?mechid=".$mp->EquipmentID;
+                        break;
+		default:
+			$eqPage = false;
+			break;
+	}
+	if($eqPage) {
+		echo'					<a href="'.$eqPage.'">['.__("Edit Equipment").']</a>';
+	}
+}
+echo '							</div>
                                                 </div>
 						<div>
 							<div><label for="ipaddress">',__("IP Address / Host Name"),'</label></div>
@@ -365,17 +384,15 @@ $('button[value=Delete]').click(function(){
 	});
 });
 
-var powerDistribution = {<?php  $n=0;
-                                foreach($devList as $dev) {
-                                        if($dev->DeviceType == "CDU") {
-                                                if($n == 0)
-                                                        echo $dev->DeviceID.': "'.$dev->Label.'"';
-                                                else
-                                                        echo ', '.$dev->DeviceID.': "'.$dev->Label.'"';
-                                                $n++;
-                                        }
-                                }
-                        ?>};
+var device = {<?php  $n=0;
+		foreach($devList as $dev) {
+			if($n == 0)
+				echo $dev->DeviceID.': "'.$dev->Label.'"';
+			else
+				echo ', '.$dev->DeviceID.': "'.$dev->Label.'"';
+			$n++;
+		}
+	?>};
 
 var powerPanel = {<?php $n=0;
                         foreach($powerPanelList as $powerPanel) {
@@ -396,18 +413,6 @@ var mechanicalDevice = {<?php   $n=0;
                                         $n++;
                                 }
                         ?>};
-
-var sensor = {<?php     $n=0;
-                        foreach($devList as $dev) {
-                                if($dev->DeviceType == "Sensor") {
-                                        if($n == 0)
-                                                echo $dev->DeviceID.': "'.$dev->Label.'"';
-                                        else
-                                                echo ', '.$dev->DeviceID.': "'.$dev->Label.'"';
-                                        $n++;
-                                }
-                        }
-                ?>};
 
 var loadedEquipmentType = "<?php echo $mp->EquipmentType; ?>";
 var loadedEquipmentID = "<?php echo $mp->EquipmentID; ?>";
@@ -457,9 +462,9 @@ function OnEquipmentTypeChange() {
                         newOpt.value = "None";
                         idSelect.add(newOpt);
                         break;
-                case "PowerDistribution":
+                case "Device":
                         idDiv.style.display = "";
-                        changeOptions(idSelect, powerDistribution);
+                        changeOptions(idSelect, device);
                         break;
                 case "PowerPanel":
                         idDiv.style.display = "";
@@ -468,10 +473,6 @@ function OnEquipmentTypeChange() {
                 case "MechanicalDevice":
                         idDiv.style.display = "";
                         changeOptions(idSelect, mechanicalDevice);
-                        break;
-                case "Sensor":
-                        idDiv.style.display = "";
-                        changeOptions(idSelect, sensor); 
                         break;
                 default:
                         alert("Something's wrong with your equipment type.");

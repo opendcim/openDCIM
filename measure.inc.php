@@ -174,7 +174,7 @@ class MeasurePoint {
 	}
 
 	protected function MakeSafe() {
-		$validEquipmentType = array('None', 'PowerDistribution', 'PowerPanel', 'MechanicalDevice', 'Sensor');
+		$validEquipmentType = array('None', 'Device', 'PowerPanel', 'MechanicalDevice');
 		$validConnectionTypes = array('SNMP', 'Modbus');
 		$validTypes = array('elec', 'cooling', 'air');
 		$this->MPID=intval($this->MPID);

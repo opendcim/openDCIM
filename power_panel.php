@@ -108,7 +108,22 @@
 */
 	}
 
+if(isset($_POST["action"]) && $_POST["action"]=="Create_mp") {
+	$class = SNMP.MeasurePoint::$TypeTab[$_POST["mp_type"]]."MeasurePoint";
+	$newMP = new $class;
+	$newMP->Label = $_POST["mp_label"];
+	$newMP->Type = $_POST["mp_type"];
+	$newMP->EquipmentType = "PowerPanel";
+	$newMP->EquipmentID = $panel->PanelID;
+	$newMP->CreateMP();
+}
+
 	$panelList=$panel->getPanelList();
+
+	$mpList = new MeasurePoint();
+	$mpList->EquipmentType = "PowerPanel";
+	$mpList->EquipmentID = $panel->PanelID;
+	$mpList = $mpList->GetMPByEquipment();
 ?>
 <!doctype html>
 <html>
@@ -245,6 +260,56 @@ echo '	</select></div>
 	// Also show the power gauge
 	if($panel->PanelID >0){
 		echo '<div><canvas id="power-gauge" width="200" height="200"></canvas></div>';
+
+		$mpOptions="";
+		foreach($mpList as $mp) {
+			if($_POST["mp_mpid"] == $mp->MPID) {
+				$selected = " selected";
+				$selectedMP = $mp;
+			} else {
+				$selected = "";
+			}
+			$mpOptions .= "<option value=\"$mp->MPID\"$selected>$mp->Label</option>";
+		}
+
+		$typeOptions="";
+		foreach(MeasurePoint::$TypeTab as $key => $type) {
+			$typeOptions .= "<option value=\"$key\">$type</option>";
+		}
+
+		echo '<br>
+	<center>
+		<form method="POST">
+			<h2>'.__("Measure Points").'</h2>
+			<div class="table">
+				<div>
+					<div><label for="mp_mpid">'.__("Measure Point ID").'</label></div>
+					<div><select name="mp_mpid" id="mp_mpid" onChange="form.submit();">
+						<option value="0">'.__("New Measure Point").'</option>
+						'.$mpOptions.'
+					</select></div>
+				</div>';
+		if($_POST["mp_mpid"] == 0) {
+			echo '	<div>
+					<div><label for="mp_label">'.__("Label").'</label></div>
+					<div><input type="text" name="mp_label" id="mp_label"></div>
+				</div>
+				<div>
+					<div><label for="mp_type">'.__("Type").'</label></div>
+					<div><select name="mp_type">
+					'.$typeOptions.'
+					</select></div>
+				</div>
+				<div class="caption">
+					<button type="submit" name="action" value="Create_mp">',__("Create Measure Point"),'</button>';
+		} else {
+			echo '	<div class="caption">
+					<a href="measure_point_'.$selectedMP->Type.'.php?mpid='.$selectedMP->MPID.'">[ '.__("Edit Measure Point").' ]</a>';
+		}
+		echo '		</div>
+			</div>
+		</form>
+	</center>';
 	
 		/* Loop through PDUs and find all that are attached to this panel and build a temp array to hold them.
 		   Array is indexed by circuit IDs.  Each ID is an array of objects that are connected there.  This 
