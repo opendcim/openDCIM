@@ -230,7 +230,7 @@ if($mech->MechID >0) {
 		} else {
 			$selected = "";
 		}
-		$mpOptions .= "<option value=\"$mp->MPID\"$selected>$mp->Label</option>";
+		$mpOptions .= "<option value=\"$mp->MPID\"$selected>[".MeasurePoint::$TypeTab[$mp->Type]."] $mp->Label</option>";
 	}
 
 	$typeOptions="";
