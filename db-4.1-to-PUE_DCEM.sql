@@ -102,6 +102,17 @@ CREATE TABLE IF NOT EXISTS fac_AssoMeasurePointGroup (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 --
+-- Table structure for fac_CoolingMeasurePoint
+--
+
+CREATE TABLE IF NOT EXISTS fac_CoolingMeasurePoint (
+  MPID INT(11) NOT NULL,
+  FanSpeedMultiplier VARCHAR(6) NULL DEFAULT NULL,
+  CoolingMultiplier VARCHAR(6) NULL DEFAULT NULL,
+  UNIQUE KEY MPID(MPID)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+--
 -- Table structure for fac_SNMPCoolingMeasurePoint
 --
 
@@ -143,6 +154,17 @@ CREATE TABLE IF NOT EXISTS fac_CoolingMeasure (
   Date DATETIME NOT NULL,
   KEY MPID (MPID),
   UNIQUE KEY (MPID, Date)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+--
+-- Table structure for fac_AirMeasurePoint
+--
+
+CREATE TABLE IF NOT EXISTS fac_AirMeasurePoint (
+  MPID INT(11) NOT NULL,
+  TemperatureMultiplier VARCHAR(6) NULL DEFAULT NULL,
+  HumidityMultiplier VARCHAR(6) NULL DEFAULT NULL,
+  UNIQUE KEY MPID(MPID)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 --

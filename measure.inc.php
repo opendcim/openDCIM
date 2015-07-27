@@ -1288,8 +1288,16 @@ class CoolingMeasurePoint extends MeasurePoint{
 	* As there is no attributes to this class now, there is no equivalent in the database.
 	*/	
 
+	var $FanSpeedMultiplier;	//multiplier to apply to fan speed measure
+	var $CoolingMultiplier;		//multiplier to apply to compressor usage measure
+
 	protected function MakeSafe() {
+		$validMultipliers = array('0.01','0.1','1','10','100');
+
 		parent::MakeSafe();
+
+		$this->FanSpeedMultiplier=(in_array($this->FanSpeedMultiplier, $validMultipliers))?$this->FanSpeedMultiplier:'1';
+		$this->CoolingMultiplier=(in_array($this->CoolingMultiplier, $validMultipliers))?$this->CoolingMultiplier:'1';
 	}
 
 	protected function MakeDisplay() {
@@ -1298,7 +1306,9 @@ class CoolingMeasurePoint extends MeasurePoint{
 
 	static function RowToObject($dbRow) {
 		$mp=new CoolingMeasurePoint(parent::RowToObject($dbRow));
-	
+		$mp->FanSpeedMultiplier=$dbRow["FanSpeedMultiplier"];
+		$mp->CoolingMultiplier=$dbRow["CoolingMultiplier"];
+
 		$mp->MakeDisplay();
 
 		return $mp;
@@ -1309,7 +1319,15 @@ class CoolingMeasurePoint extends MeasurePoint{
 
 		$this->MakeSafe();
 
-		if(parent::CreateMP()) {	
+		if(parent::CreateMP()) {
+			$sql = "INSERT INTO fac_CoolingMeasurePoint SET
+					MPID=$this->MPID,
+					FanSpeedMultiplier=\"$this->FanSpeedMultiplier\",
+					CoolingMultiplier=\"$this->CoolingMultiplier\";";
+
+			if(!$dbh->exec($sql))
+                                return false;
+
 			return $this->MPID;
 		}
 		return false;
@@ -1323,6 +1341,10 @@ class CoolingMeasurePoint extends MeasurePoint{
 		if(parent::DeleteMP()) {
 			$sql="DELETE FROM fac_CoolingMeasure WHERE MPID=$this->MPID;";
 			$dbh->exec($sql);
+
+			$sql="DELETE FROM fac_CoolingMeasurePoint WHERE MPID=$this->MPID;";
+                        if(!$dbh->exec($sql))
+                                return false;
 			
 			return true; 
 		}
@@ -1339,13 +1361,28 @@ class CoolingMeasurePoint extends MeasurePoint{
 		$oldmp = $oldmp->GetMP();
 		
 		if(parent::UpdateMP()) {
+			if($this->Type != $oldmp->Type) {
 			$oldClass = MeasurePoint::$TypeTab[$oldmp->Type]."MeasurePoint";
 				
-			//if old class is not empty
-			if(count(get_object_vars(new $oldClass)) > count(get_object_vars(new MeasurePoint()))) {
-				$sql="DELETE FROM fac_$oldClass WHERE MPID = $this->MPID;";
-				if(!$dbh->exec($sql))
-					return false;
+				//if old class is not empty
+				if(count(get_object_vars(new $oldClass)) > count(get_object_vars(new MeasurePoint()))) {
+					$sql="DELETE FROM fac_$oldClass WHERE MPID = $this->MPID;";
+					if(!$dbh->exec($sql))
+						return false;
+				}
+				$sql="INSERT INTO fac_CoolingMeasurePoint SET
+                                        MPID=$this->MPID,
+                                        FanSpeedMultiplier=\"$this->FanSpeedMultiplier\",
+                                        CoolingMultiplier=\"$this->CoolingMultiplier\";";
+                                if(!$dbh->exec($sql))
+                                        return false;
+			} else {
+				$sql="UPDATE fac_CoolingMeasurePoint SET 
+                                        FanSpeedMultiplier=\"$this->FanSpeedMultiplier\", 
+                                        CoolingMultiplier=\"$this->CoolingMultiplier\" 
+                                        WHERE MPID=$this->MPID;";
+                                if(!$dbh->query($sql))
+                                        return false;
 			}
 			return true;
 		}
@@ -1388,8 +1425,8 @@ class CoolingMeasurePoint extends MeasurePoint{
 				break;
 		}
 		if($values[0]!=false || $values[1]!=false) {
-			$m->FanSpeed=@intval($values[0]);
-			$m->Cooling=@intval($values[1]);
+			$m->FanSpeed=@intval($values[0]) * floatval($this->FanSpeedMultiplier);
+			$m->Cooling=@intval($values[1]) * floatval($this->CoolingMultiplier);
 
 			$m->Date=date("Y-m-d H:i:s");
 			$m->CreateMeasure();
@@ -1551,7 +1588,7 @@ class SNMPCoolingMeasurePoint extends CoolingMeasurePoint {
 
 		$this->MakeSafe();
 
-		$sql="select * from fac_MeasurePoint NATURAL JOIN fac_SNMPCoolingMeasurePoint where MPID=$this->MPID;";
+		$sql="select * from fac_MeasurePoint NATURAL JOIN fac_CoolingMeasurePoint NATURAL JOIN fac_SNMPCoolingMeasurePoint where MPID=$this->MPID;";
 
 		if($row=$dbh->query($sql)->fetch()){
 			foreach(SNMPCoolingMeasurePoint::RowToObject($row) as $prop => $value){
@@ -1572,7 +1609,7 @@ class SNMPCoolingMeasurePoint extends CoolingMeasurePoint {
 
 		$this->MakeSafe();
 
-		$sql="SELECT * FROM fac_MeasurePoint NATURAL JOIN fac_SNMPCoolingMeasurePoint ORDER BY Label ASC;";
+		$sql="SELECT * FROM fac_MeasurePoint NATURAL JOIN fac_CoolingMeasurePoint NATURAL JOIN fac_SNMPCoolingMeasurePoint ORDER BY Label ASC;";
 
 		$MPList=array();
 		foreach($dbh->query($sql) as $row){
@@ -1699,7 +1736,7 @@ class ModbusCoolingMeasurePoint extends CoolingMeasurePoint {
 
 		$this->MakeSafe();
 
-		$sql="select * from fac_MeasurePoint NATURAL JOIN fac_ModbusCoolingMeasurePoint where MPID=$this->MPID;";
+		$sql="select * from fac_MeasurePoint NATURAL JOIN fac_CoolingMeasurePoint NATURAL JOIN fac_ModbusCoolingMeasurePoint where MPID=$this->MPID;";
 
 		if($row=$dbh->query($sql)->fetch()){
 			foreach(ModbusCoolingMeasurePoint::RowToObject($row) as $prop => $value){
@@ -1720,7 +1757,7 @@ class ModbusCoolingMeasurePoint extends CoolingMeasurePoint {
 
 		$this->MakeSafe();
 
-		$sql="SELECT * FROM fac_MeasurePoint NATURAL JOIN fac_ModbusCoolingMeasurePoint ORDER BY Label ASC;";
+		$sql="SELECT * FROM fac_MeasurePoint NATURAL JOIN fac_CoolingMeasurePoint NATURAL JOIN fac_ModbusCoolingMeasurePoint ORDER BY Label ASC;";
 
 		$MPList=array();
 		foreach($dbh->query($sql) as $row){
@@ -1815,9 +1852,17 @@ class AirMeasurePoint extends MeasurePoint{
 	* An air measure point measures air temperature and humidity. Application will poll it and add the measures to the data base.
 	*As there is no attributes to this class now, there is no equivalent in the database.
 	*/
+
+	var $TemperatureMultiplier;
+	var $HumidityMultiplier;
 	
 	protected function MakeSafe() {
+		$validMultipliers = array('0.01','0.1','1','10','100');
+
 		parent::MakeSafe();
+
+		$this->TemperatureMultiplier=(in_array($this->TemperatureMultiplier, $validMultipliers))?$this->TemperatureMultiplier:'1';
+                $this->HumidityMultiplier=(in_array($this->HumidityMultiplier, $validMultipliers))?$this->HumidityMultiplier:'1';
 	}
 
 	protected function MakeDisplay() {
@@ -1826,6 +1871,9 @@ class AirMeasurePoint extends MeasurePoint{
 
 	static function RowToObject($dbRow) {
 		$mp=new AirMeasurePoint(parent::RowToObject($dbRow));
+
+		$mp->TemperatureMultiplier=$dbRow["TemperatureMultiplier"];
+		$mp->HumidityMultiplier=$dbRow["HumidityMultiplier"];
 
 		$mp->MakeDisplay();
 
@@ -1838,6 +1886,14 @@ class AirMeasurePoint extends MeasurePoint{
 		$this->MakeSafe();
 
 		if(parent::CreateMP()) {
+			$sql = "INSERT INTO fac_AirMeasurePoint SET
+                                        MPID=$this->MPID, 
+                                        TemperatureMultiplier=\"$this->TemperatureMultiplier\",
+                                        HumidityMultiplier=\"$this->HumidityMultiplier\";";
+
+                        if(!$dbh->exec($sql))
+                                return false;
+
 			return $this->MPID;
 		}
 		return false;
@@ -1851,6 +1907,10 @@ class AirMeasurePoint extends MeasurePoint{
 		if(parent::DeleteMP()) {
 			$sql="DELETE FROM fac_AirMeasure WHERE MPID=$this->MPID;";
 			$dbh->exec($sql);
+
+			$sql="DELETE FROM fac_AirMeasurePoint WHERE MPID=$this->MPID;";
+                        if(!$dbh->exec($sql))
+                                return false;
 
 			return true;
 		}
@@ -1867,15 +1927,30 @@ class AirMeasurePoint extends MeasurePoint{
 		$oldmp = $oldmp->GetMP();
 
 		if(parent::UpdateMP()) {
-			$oldClass = MeasurePoint::$TypeTab[$oldmp->Type]."MeasurePoint";
-				
-			//if old class is not empty
-			if(count(get_object_vars(new $oldClass)) > count(get_object_vars(new MeasurePoint()))) {
-				$sql="DELETE FROM fac_$oldClass WHERE MPID = $this->MPID;";
-				if(!$dbh->exec($sql))
-					return false;
-			}
-			return true;
+			if($this->Type != $oldmp->Type) {
+				$oldClass = MeasurePoint::$TypeTab[$oldmp->Type]."MeasurePoint";
+					
+				//if old class is not empty
+				if(count(get_object_vars(new $oldClass)) > count(get_object_vars(new MeasurePoint()))) {
+					$sql="DELETE FROM fac_$oldClass WHERE MPID = $this->MPID;";
+					if(!$dbh->exec($sql))
+						return false;
+				}
+				$sql="INSERT INTO fac_AirMeasurePoint SET
+                                        MPID=$this->MPID,
+                                        TemperatureMultiplier=\"$this->TemperatureMultiplier\",
+                                        HumidityMultiplier=\"$this->HumidityMultiplier\";";
+                                if(!$dbh->exec($sql))
+                                        return false;
+                        } else {
+                                $sql="UPDATE fac_AirMeasurePoint SET 
+                                        TemperatureMultiplier=\"$this->TemperatureMultiplier\", 
+                                        HumidityMultiplier=\"$this->HumidityMultiplier\" 
+                                        WHERE MPID=$this->MPID;";
+                                if(!$dbh->query($sql))
+                                        return false;
+                        }
+                        return true;
 		}
 		return false;
 	}
@@ -1915,8 +1990,8 @@ class AirMeasurePoint extends MeasurePoint{
 				break;
 		}
 		if($values[0]!=false || $values[1]!=false) {
-			$m->Temperature=@floatval($values[0]);
-			$m->Humidity=@floatval($values[1]);
+			$m->Temperature=@floatval($values[0]) * floatval($this->TemperatureMultiplier);
+			$m->Humidity=@floatval($values[1]) * floatval($this->HumidityMultiplier);
 
 			$m->Date=date("Y-m-d H:i:s");
 			$m->CreateMeasure();
@@ -2077,7 +2152,7 @@ class SNMPAirMeasurePoint extends AirMeasurePoint {
 
 		$this->MakeSafe();
 
-		$sql="select * from fac_MeasurePoint NATURAL JOIN fac_SNMPAirMeasurePoint where MPID=$this->MPID;";
+		$sql="select * from fac_MeasurePoint NATURAL JOIN fac_AirMeasurePoint NATURAL JOIN fac_SNMPAirMeasurePoint where MPID=$this->MPID;";
 
 		if($row=$dbh->query($sql)->fetch()){
 			foreach(SNMPAirMeasurePoint::RowToObject($row) as $prop => $value){
@@ -2098,7 +2173,7 @@ class SNMPAirMeasurePoint extends AirMeasurePoint {
 
 		$this->MakeSafe();
 
-		$sql="SELECT * FROM fac_MeasurePoint NATURAL JOIN fac_SNMPAirMeasurePoint ORDER BY Label ASC;";
+		$sql="SELECT * FROM fac_MeasurePoint NATURAL JOIN fac_AirMeasurePoint NATURAL JOIN fac_SNMPAirMeasurePoint ORDER BY Label ASC;";
 
 		$MPList=array();
 		foreach($dbh->query($sql) as $row){
@@ -2224,7 +2299,7 @@ class ModbusAirMeasurePoint extends AirMeasurePoint {
 
 		$this->MakeSafe();
 
-		$sql="select * from fac_MeasurePoint NATURAL JOIN fac_ModbusAirMeasurePoint where MPID=$this->MPID;";
+		$sql="select * from fac_MeasurePoint NATURAL JOIN fac_AirMeasurePoint NATURAL JOIN fac_ModbusAirMeasurePoint where MPID=$this->MPID;";
 
 		if($row=$dbh->query($sql)->fetch()){
 			foreach(ModbusAirMeasurePoint::RowToObject($row) as $prop => $value){
@@ -2246,7 +2321,7 @@ class ModbusAirMeasurePoint extends AirMeasurePoint {
 
 		$this->MakeSafe();
 
-		$sql="SELECT * FROM fac_MeasurePoint NATURAL JOIN fac_ModbusAirMeasurePoint ORDER BY Label ASC;";
+		$sql="SELECT * FROM fac_MeasurePoint NATURAL JOIN fac_AirMeasurePoint NATURAL JOIN fac_ModbusAirMeasurePoint ORDER BY Label ASC;";
 
 		$MPList=array();
 		foreach($dbh->query($sql) as $row){

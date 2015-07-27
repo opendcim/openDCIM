@@ -46,6 +46,8 @@
 		$mp->IPAddress=$_REQUEST['ipaddress'];
 		$mp->Type='cooling';
 		$mp->ConnectionType=$_REQUEST['connectiontype'];
+		$mp->FanSpeedMultiplier=$_REQUEST['fanspeedmultiplier'];
+		$mp->CoolingMultiplier=$_REQUEST['coolingmultiplier'];
 		if($_REQUEST['action']=='Create'){
 			$mp->CreateMP();
 		}else{
@@ -173,6 +175,31 @@ echo '							</div>
 	}
 echo '							</select></div>
 						</div>
+						<div>
+							<div><label for="fanspeedmultiplier">'.__("Fan Speed Multiplier").'</label></div>
+							<div><select name="fanspeedmultiplier">';
+	$multiplierList = array('0.01', '0.1', '1', '10', '100');
+        foreach($multiplierList as $m) {
+                if($m == $mp->FanSpeedMultiplier || (is_null($mp->FanSpeedMultiplier) && $m == '1'))
+                        $selected=' selected';
+                else
+                        $selected='';
+                print "\t\t\t\t\t\t\t\t<option value=\"$m\"$selected>$m</option>\n";
+        }
+echo '							</select></div>
+						</div>
+						<div>
+                                                        <div><label for="coolingmultiplier">',__("Compressor Usage Multiplier"),'</label></div>
+                                                        <div><select name="coolingmultiplier" id="coolingmultiplier">';
+        foreach($multiplierList as $m) {
+                if($m == $mp->CoolingMultiplier || (is_null($mp->CoolingMultiplier)&& $m == '1'))
+                        $selected=' selected';
+                else
+                        $selected='';
+                print "\t\t\t\t\t\t\t\t<option value=\"$m\"$selected>$m</option>\n";
+        }
+echo '                                                  </select></div>
+                                                </div>
 						<div id="snmp_com">
 							<div><label for="snmpcommunity">',__("SNMP Community"),'</label></div>
 							<div><input type="text" name="snmpcommunity" id="snmpcommunity" value=',($mp->ConnectionType=="SNMP")?$mp->SNMPCommunity:"",'></div>

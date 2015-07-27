@@ -46,6 +46,8 @@
 		$mp->IPAddress=$_REQUEST['ipaddress'];
 		$mp->Type='air';
 		$mp->ConnectionType=$_REQUEST['connectiontype'];
+		$mp->TemperatureMultiplier=$_REQUEST["temperaturemultiplier"];
+		$mp->HumidityMultiplier=$_REQUEST["humiditymultiplier"];
 		if($_REQUEST['action']=='Create'){
 			$mp->CreateMP();
 		}else{
@@ -175,6 +177,31 @@ echo '							</div>
 	}
 echo '							</select></div>
 						</div>
+						<div>
+                                                        <div><label for="temperaturemultiplier">'.__("Temperature Multiplier").'</label></div>
+                                                        <div><select name="temperaturemultiplier">';
+        $multiplierList = array('0.01', '0.1', '1', '10', '100');
+        foreach($multiplierList as $m) {
+                if($m == $mp->TemperatureMultiplier || (is_null($mp->TemperatureMultiplier) && $m == '1'))
+                        $selected=' selected';
+                else
+                        $selected='';
+                print "\t\t\t\t\t\t\t\t<option value=\"$m\"$selected>$m</option>\n";
+        }
+echo '                                                  </select></div>
+                                                </div>
+                                                <div>
+                                                        <div><label for="humiditymultiplier">',__("Humidity Multiplier"),'</label></div>
+                                                        <div><select name="humiditymultiplier" id="humiditymultiplier">';
+        foreach($multiplierList as $m) {
+                if($m == $mp->HumidityMultiplier || (is_null($mp->HumidityMultiplier)&& $m == '1'))
+                        $selected=' selected';
+                else
+                        $selected='';
+                print "\t\t\t\t\t\t\t\t<option value=\"$m\"$selected>$m</option>\n";
+        }
+echo '                                                  </select></div>
+                                                </div>
 						<div id="snmp_com">
 							<div><label for="snmpcommunity">',__("SNMP Community"),'</label></div>
 							<div><input type="text" name="snmpcommunity" id="snmpcommunity" value=',($mp->ConnectionType=="SNMP")?$mp->SNMPCommunity:"",'></div>
