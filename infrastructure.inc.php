@@ -582,9 +582,6 @@ class DataCenter {
 						}
 					}
 					
-					$titletemp=(!is_null($metrics->LastRead)&&($metrics->LastRead>$titletemp))?date('%c',strtotime(($metrics->LastRead))):$titletemp;
-					// $titlerp=(!is_null($cabRow["RPLastRead"])&&($cabRow["RPLastRead"]>$titlerp))?date('%c',strtotime(($cabRow["RPLastRead"]))):$titlerp;
-
 					$overview[$cabRow->CabinetID]=$color;
 					$space[$cabRow->CabinetID]=$scolor;
 					$weight[$cabRow->CabinetID]=$wcolor;
@@ -596,14 +593,22 @@ class DataCenter {
 				}
 			}
 			
+			$tempSQL = "select max(LastRead) as ReadingTime from fac_SensorReadings where DeviceID in (select DeviceID from fac_Device where DeviceType='Sensor' and Cabinet in (select CabinetID from fac_Cabinet where DataCenterID=" . $this->DataCenterID . "))";
+			$tempRes = $this->query( $tempSQL );
+			$tempRow = $tempRes->fetch();
+			
+			$pwrSQL = "select max(LastRead) as ReadingTime from fac_PDUStats where PDUID in (select DeviceID from fac_Device where DeviceType='CDU' and Cabinet in (select CabinetID from fac_Cabinet where DataCenterID=" . $this->DataCenterID . "))";
+			$pwrRes = $this->query( $pwrSQL );
+			$pwrRow = $pwrRes->fetch();
+			
 			//Key
 			$overview['title']=__("Composite View of Cabinets");
 			$space['title']=__("Occupied Space");
 			$weight['title']=__("Calculated Weight");
 			$power['title']=__("Calculated Power Usage");
-			$temperature['title']=($titletemp>0)?__("Measured on")." ".$titletemp:__("no data");
-			$humidity['title']=($titletemp>0)?__("Measured on")." ".$titletemp:__("no data");
-			$realpower['title']=($titlerp>0)?__("Measured on")." ".$titlerp:__("no data");
+			$temperature['title']=($tempRow["ReadingTime"]>0)?__("Measured on")." ".date( 'c', strtotime( $tempRow["ReadingTime"])):__("no data");
+			$humidity['title']=($tempRow["ReadingTime"]>0)?__("Measured on")." ".date( 'c', strtotime( $tempRow["ReadingTime"])):__("no data");
+			$realpower['title']=($pwrRow["ReadingTime"]>0)?__("Measured on")." ".date( 'c', strtotime( $pwrRow["ReadingTime"])):__("no data");
 			$airflow['title']=__("Air Flow");
 
 			$statusarray=array('overview' => $overview,

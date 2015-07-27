@@ -612,9 +612,9 @@ class CabinetAudit {
 		}
 	}
 	
-	function GetLastAuditByUser( $db = null ) {
+	function GetLastAuditByUser() {
 		global $dbh;
-		
+				
 		$sql = "select * from fac_GenericLog where UserID=\"" . addslashes( $this->UserID ) . "\" and Class=\"CabinetAudit\" order by Time DESC Limit 1";
 
 		if ( $row = $dbh->query( $sql )->fetch() ) {
