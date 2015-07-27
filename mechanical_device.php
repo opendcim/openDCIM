@@ -53,6 +53,16 @@
 	}
 	$mechList=$mech->GetMechList();
 
+	if(isset($_POST["action"]) && $_POST["action"]=="Create_mp") {
+		$class = SNMP.MeasurePoint::$TypeTab[$_POST["mp_type"]]."MeasurePoint";
+		$newMP = new $class;
+		$newMP->Label = $_POST["mp_label"];
+		$newMP->Type = $_POST["mp_type"];
+		$newMP->EquipmentType = "MechanicalDevice";
+		$newMP->EquipmentID = $mech->MechID;
+		$newMP->CreateMP();
+	}
+
 	$dc=new DataCenter();
 	$dcList=$dc->GetDCList();
 
@@ -62,7 +72,10 @@
 	$panel=new PowerPanel();
 	$panelList=$panel->GetPanelList();
 	
-
+	$mpList = new MeasurePoint();
+        $mpList->EquipmentType = "MechanicalDevice";
+        $mpList->EquipmentID = $mech->MechID;
+        $mpList = $mpList->GetMPByEquipment();
 ?>
 <!doctype html>
 <html>
@@ -206,11 +219,61 @@ echo '							</select></div>
 	}
 echo '						</div>
 					</div>
-				</form>
-			</div></div>';
+				</form>';
+
+if($mech->MechID >0) {
+	$mpOptions="";
+	foreach($mpList as $mp) {
+		if($_POST["mp_mpid"] == $mp->MPID) {
+			$selected = " selected";
+			$selectedMP = $mp;
+		} else {
+			$selected = "";
+		}
+		$mpOptions .= "<option value=\"$mp->MPID\"$selected>[".MeasurePoint::$TypeTab[$mp->Type]."] $mp->Label</option>";
+	}
+
+	$typeOptions="";
+	foreach(MeasurePoint::$TypeTab as $key => $type) {
+		$typeOptions .= "<option value=\"$key\">$type</option>";
+	}
+	echo '<br>
+        <center>
+                <form method="POST">
+                        <h2>'.__("Measure Points").'</h2>
+                        <div class="table">
+                                <div>
+                                        <div><label for="mp_mpid">'.__("Measure Point ID").'</label></div>
+                                        <div><select name="mp_mpid" id="mp_mpid" onChange="form.submit();">
+                                                <option value="0">'.__("New Measure Point").'</option>
+                                                '.$mpOptions.'
+                                        </select></div>
+                                </div>';
+	if($_POST["mp_mpid"] == 0) {
+		echo '  	<div>
+                                        <div><label for="mp_label">'.__("Label").'</label></div>
+                                        <div><input type="text" name="mp_label" id="mp_label"></div>
+                                </div>
+                                <div>
+                                        <div><label for="mp_type">'.__("Type").'</label></div>
+                                        <div><select name="mp_type">
+                                        '.$typeOptions.'
+                                        </select></div>
+                                </div>
+                                <div class="caption">
+                                        <button type="submit" name="action" value="Create_mp">',__("Create Measure Point"),'</button>';
+        } else {
+                 echo '		<div class="caption">
+                                        <a href="measure_point_'.$selectedMP->Type.'.php?mpid='.$selectedMP->MPID.'">[ '.__("Edit Measure Point").' ]</a>';
+        }
+        echo '          	</div>
+                        </div>
+                </form>
+        </center>';
+}
 
 ?>
-
+</div></div>
 <?php echo '			<a href="index.php">[ ',__("Return to Main Menu"),' ]</a>'; ?>
 <?php echo '<a href="index.php">[ ',__("Return to Main Menu"),' ]</a>
 <!-- hiding modal dialogs here so they can be translated easily -->

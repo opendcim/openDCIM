@@ -46,6 +46,8 @@
 		$mp->IPAddress=$_REQUEST['ipaddress'];
 		$mp->Type='air';
 		$mp->ConnectionType=$_REQUEST['connectiontype'];
+		$mp->TemperatureMultiplier=$_REQUEST["temperaturemultiplier"];
+		$mp->HumidityMultiplier=$_REQUEST["humiditymultiplier"];
 		if($_REQUEST['action']=='Create'){
 			$mp->CreateMP();
 		}else{
@@ -89,26 +91,6 @@
 	<![endif]-->
 	<script type="text/javascript" src="scripts/jquery.min.js"></script>
 	<script type="text/javascript" src="scripts/jquery-ui.min.js"></script>
-	<script type="text/javascript">
-        $(document).ready(function(){
-                $( "#importButton" ).click(function() {
-                        $("#dlg_importfile").dialog({
-                                resizable: false,
-                                width: 400,
-                                height: 200,
-                                modal: true,                                    
-                                buttons: {      
-                                        <?php echo __("Import");?>: function() {                        
-                                                $('#frmImport').submit();
-                                        },
-                                        <?php echo __("Cancel");?>: function() {                                                                                               
-                                            $("#dlg_importfile").dialog("close");
-                                        }
-                                }
-                        });
-                });
-        });
-        </script>
 
 </head>
 <body>
@@ -141,10 +123,9 @@ echo '							</select></div>
                                                         <div><label for="equipmenttype">',__("Equipment Type"),'</label></div>
                                                         <div><select name="equipmenttype" id="equipmenttype" onChange="OnEquipmentTypeChange()">';
         $eqTypes = array("None" => __("None"),
-			"PowerDistribution" => __("PDU"),
+			"Device" => __("Device"),
 			"PowerPanel" => __("Power Panel"),
-			"MechanicalDevice" => __("Mechanical Device"),
-			"Sensor" => __("Sensor"));
+			"MechanicalDevice" => __("Mechanical Device"));
         foreach($eqTypes as $t => $label) {
                 if($t == $mp->EquipmentType)
                         $selected=' selected';
@@ -157,7 +138,27 @@ echo '                                                  </select></div>
 						<div id="equipmentid_div">
 							<div><label for="equipmentid">',__("Equipment ID"),'</label></div>
 							<div><select name="equipmentid" id="equipmentid">
-							</select></div>
+							</select>';
+if($mp->EquipmentID != 0) {
+        switch($mp->EquipmentType) {
+		case "Device":
+			$eqPage = "devices.php?DeviceID=".$mp->EquipmentID;
+                        break;
+                case "PowerPanel":
+                        $eqPage = "power_panel.php?PanelID=".$mp->EquipmentID;
+                        break;
+                case "MechanicalDevice":
+                        $eqPage = "mechanical_device.php?mechid=".$mp->EquipmentID;
+                        break;
+                default:
+                        $eqPage = false;
+                        break;
+        }
+        if($eqPage) {
+                echo'                                   <a href="'.$eqPage.'">['.__("Edit Equipment").']</a>';
+        }
+}
+echo '							</div>
 						</div>
 						<div>
 							<div><label for="ipaddress">',__("IP Address / Host Name"),'</label></div>
@@ -176,6 +177,31 @@ echo '                                                  </select></div>
 	}
 echo '							</select></div>
 						</div>
+						<div>
+                                                        <div><label for="temperaturemultiplier">'.__("Temperature Multiplier").'</label></div>
+                                                        <div><select name="temperaturemultiplier">';
+        $multiplierList = array('0.01', '0.1', '1', '10', '100');
+        foreach($multiplierList as $m) {
+                if($m == $mp->TemperatureMultiplier || (is_null($mp->TemperatureMultiplier) && $m == '1'))
+                        $selected=' selected';
+                else
+                        $selected='';
+                print "\t\t\t\t\t\t\t\t<option value=\"$m\"$selected>$m</option>\n";
+        }
+echo '                                                  </select></div>
+                                                </div>
+                                                <div>
+                                                        <div><label for="humiditymultiplier">',__("Humidity Multiplier"),'</label></div>
+                                                        <div><select name="humiditymultiplier" id="humiditymultiplier">';
+        foreach($multiplierList as $m) {
+                if($m == $mp->HumidityMultiplier || (is_null($mp->HumidityMultiplier)&& $m == '1'))
+                        $selected=' selected';
+                else
+                        $selected='';
+                print "\t\t\t\t\t\t\t\t<option value=\"$m\"$selected>$m</option>\n";
+        }
+echo '                                                  </select></div>
+                                                </div>
 						<div id="snmp_com">
 							<div><label for="snmpcommunity">',__("SNMP Community"),'</label></div>
 							<div><input type="text" name="snmpcommunity" id="snmpcommunity" value=',($mp->ConnectionType=="SNMP")?$mp->SNMPCommunity:"",'></div>
@@ -246,7 +272,7 @@ echo '						</div>
 <div id="dlg_importfile" style="display:none;" title="<?php echo __("Import Measure Point From File");?>">
         <br>
         <form enctype="multipart/form-data" name="frmImport" id="frmImport" method="POST">
-                <input type="hidden" id="mpid" name="mpid" value="<?php echo $mp->MPID;  ?>" />
+                <input type="hidden" name="mpid" value="<?php echo $mp->MPID;  ?>" />
                 <input type="file" size="60" id="importfile" name="importfile" />
         </form>
 </div>
@@ -287,17 +313,15 @@ $('button[value=Delete]').click(function(){
 	});
 });
 
-var powerDistribution = {<?php	$n=0;
-				foreach($devList as $dev) {
-					if($dev->DeviceType == "CDU") {
-						if($n == 0)
-							echo $dev->DeviceID.': "'.$dev->Label.'"';
-						else
-							echo ', '.$dev->DeviceID.': "'.$dev->Label.'"';
-						$n++;
-					}
-				}
-			?>};
+var device = {<?php	$n=0;
+		foreach($devList as $dev) {
+			if($n == 0)
+				echo $dev->DeviceID.': "'.$dev->Label.'"';
+			else
+				echo ', '.$dev->DeviceID.': "'.$dev->Label.'"';
+			$n++;
+		}
+	?>};
 
 var powerPanel = {<?php	$n=0;
 			foreach($powerPanelList as $powerPanel) {
@@ -318,18 +342,6 @@ var mechanicalDevice = {<?php	$n=0;
 					$n++;
 				}
 			?>};
-
-var sensor = {<?php	$n=0;
-			foreach($devList as $dev) {
-				if($dev->DeviceType == "Sensor") {
-					if($n == 0)
-						echo $dev->DeviceID.': "'.$dev->Label.'"';
-					else
-						echo ', '.$dev->DeviceID.': "'.$dev->Label.'"';
-					$n++;
-				}
-			}
-		?>};
 
 var loadedEquipmentType = "<?php echo $mp->EquipmentType; ?>";
 var loadedEquipmentID = "<?php echo $mp->EquipmentID; ?>";
@@ -371,9 +383,9 @@ function OnEquipmentTypeChange() {
 			newOpt.value = "None";
 			idSelect.add(newOpt);
 			break;
-		case "PowerDistribution":
+		case "Device":
 			idDiv.style.display = "";
-			changeOptions(idSelect, powerDistribution);
+			changeOptions(idSelect, device);
 			break;
 		case "PowerPanel":
 			idDiv.style.display = "";
@@ -383,12 +395,9 @@ function OnEquipmentTypeChange() {
                         idDiv.style.display = "";
                         changeOptions(idSelect, mechanicalDevice);
                         break;
-		case "Sensor":
-			idDiv.style.display = "";
-                        changeOptions(idSelect, sensor); 
-			break;
 		default:
 			alert("Something's wrong with your equipment type.");
+			break;
 	}
 	if(equipmentType == loadedEquipmentType)
 		for(var n in idSelect.options)
@@ -410,17 +419,33 @@ function changeOptions(selectBox, newOptions) {
 	}
 }
 
-function Load() {
+$(document).ready(function() {
 	OnConnectionTypeChange();
 	OnEquipmentTypeChange();
 	 <?php
                 if(isset($importError))
                         echo "alert('".$importError."');";
         ?>
-
-}
-
-window.onload=Load;
+        $('#mpid').change(function(e) {
+                location.href='measure_point_air.php?mpid='+this.value;
+        });
+	$( "#importButton" ).click(function() {
+		$("#dlg_importfile").dialog({
+			resizable: false,
+			width: 400,
+			height: 200,
+			modal: true,                                    
+			buttons: {      
+				<?php echo __("Import");?>: function() {                        
+					$('#frmImport').submit();
+				},
+				<?php echo __("Cancel");?>: function() {                                                                                               
+				    $("#dlg_importfile").dialog("close");
+				}
+			}
+		});
+	});
+});
 
 </script>
 </body>

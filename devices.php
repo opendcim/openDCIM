@@ -939,6 +939,20 @@ $write=(isset($write))?$write:false;
 $write=($person->canWrite($cab->AssignedTo))?true:$write;
 $write=($dev->Rights=="Write")?true:$write;
 
+if(isset($_POST["action"]) && $_POST["action"]=="Create_mp") {
+        $class = SNMP.MeasurePoint::$TypeTab[$_POST["mp_type"]]."MeasurePoint";
+        $newMP = new $class;
+        $newMP->Label = $_POST["mp_label"];
+        $newMP->Type = $_POST["mp_type"];
+        $newMP->EquipmentType = "Device";
+        $newMP->EquipmentID = $dev->DeviceID;
+        $newMP->CreateMP();
+}
+
+$mpList = new MeasurePoint();
+$mpList->EquipmentType = "Device";
+$mpList->EquipmentID = $dev->DeviceID;
+$mpList = $mpList->GetMPByEquipment();
 
 ?>
 <!doctype html>
@@ -2111,6 +2125,55 @@ echo '		<div class="caption">
 </fieldset>
 <?php
 	}
+	// measure point management
+
+	$mpOptions="";
+	foreach($mpList as $mp) {
+		if($_POST["mp_mpid"] == $mp->MPID) {
+			$selected = " selected";
+			$selectedMP = $mp;
+		} else {
+			$selected = "";
+		}
+		$mpOptions .= "<option value=\"$mp->MPID\"$selected>[".MeasurePoint::$TypeTab[$mp->Type]."] $mp->Label</option>";
+	}
+
+	$typeOptions="";
+	foreach(MeasurePoint::$TypeTab as $key => $type) {
+		$typeOptions .= "<option value=\"$key\">$type</option>";
+	}
+
+	echo '<fieldset class="measurepoints">
+	<legend>'.__("Measure Points").'</legend>
+	<div class="table">'.$_POST["mp_mpid"].'
+		<div>
+			<div><label for="mp_mpid">'.__("Measure Point ID").'</label></div>
+			<div><select name="mp_mpid" onChange="submit();">
+				<option value="0">'.__("New Measure Point").'</option>
+				'.$mpOptions.'
+			</select></div>
+		</div>';
+
+	if($_POST["mp_mpid"] == 0) {
+		echo '<div>
+                	<div><label for="mp_label">'.__("Label").'</label></div>
+                        <div><input type="text" name="mp_label" id="mp_label"></div>
+		</div>
+                <div>
+                	<div><label for="mp_type">'.__("Type").'</label></div>
+                        <div><select name="mp_type">
+                        	'.$typeOptions.'
+                        </select></div>
+                </div>
+		<div class="caption">
+                	<button type="submit" name="action" value="Create_mp">',__("Create Measure Point"),'</button>';
+                } else {
+                        echo '  <div class="caption">
+			<a href="measure_point_'.$selectedMP->Type.'.php?mpid='.$selectedMP->MPID.'">[ '.__("Edit Measure Point").' ]</a>';
+                }
+	echo '</div>
+	</div>
+</fieldset>';
 
 	// Do not display ESX block if device isn't a virtual server and the user doesn't have write access
 	if(($write || $dev->ESX) && ($dev->DeviceType=="Server" || $dev->DeviceType=="")){

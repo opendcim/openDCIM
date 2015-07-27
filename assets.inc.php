@@ -2132,17 +2132,15 @@ class Device {
 		}
 
 		//remove links between this Sensor and measure points
-		if($this->DeviceType=="Sensor"){
-			$mp = new MeasurePoint();
-			$mp->EquipmentType = "Sensor";
-			$mp->EquipmentID = $this->DeviceID;
-			$mpList = $mp->GetMPByEquipment();
+		$mp = new MeasurePoint();
+		$mp->EquipmentType = "Device";
+		$mp->EquipmentID = $this->DeviceID;
+		$mpList = $mp->GetMPByEquipment();
 
-			foreach($mpList as $mpLinked) {
-				$mpLinked->EquipmentType = "None";
-				$mpLinked->EquipmentID = 0;
-				$mpLinked->UpdateMP();
-			}
+		foreach($mpList as $mpLinked) {
+			$mpLinked->EquipmentType = "None";
+			$mpLinked->EquipmentID = 0;
+			$mpLinked->UpdateMP();
 		}
 	
 		// Delete all network connections first
