@@ -22,7 +22,7 @@ CREATE TABLE fac_Cabinet (
   SensorTemplateID int(11) NOT NULL,
   MapX1 int(11) NOT NULL,
   MapX2 int(11) NOT NULL,
-  FrontEdge varchar(7) NOT NULL DEFAULT "Top",
+  FrontEdge varchar(20) NOT NULL DEFAULT "Top",
   MapY1 int(11) NOT NULL,
   MapY2 int(11) NOT NULL,
   Notes text NULL,
@@ -830,7 +830,9 @@ INSERT INTO fac_Config VALUES
 	('v3AuthProtocol', '', 'SHA/MD5', 'string', 'SHA'),
 	('v3AuthPassphrase', '', 'Password', 'string', ''),
 	('v3PrivProtocol', '', 'SHA/MD5', 'string', 'SHA'),
-	('v3PrivPassphrase', '', 'Password', 'string', '')
+	('v3PrivPassphrase', '', 'Password', 'string', ''),
+	('PanelPortsRed', '80', 'percentage', 'float', '80'),
+	('PanelPortsYellow', '60', 'percentage', 'float', '60')
 ;
 
 ---
