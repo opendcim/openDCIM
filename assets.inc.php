@@ -75,7 +75,7 @@ class Cabinet {
 		$this->MapY1=abs($this->MapY1);
 		$this->MapX2=abs($this->MapX2);
 		$this->MapY2=abs($this->MapY2);
-		$this->FrontEdge=in_array($this->FrontEdge, array("Top","Right","Left","Bottom"))?$this->FrontEdge:"Top";
+		$this->FrontEdge=in_array($this->FrontEdge, array("Top","Right","Left","Bottom","Conditioner top","Conditioner right","Conditioner left","Conditioner bottom"))?$this->FrontEdge:"Top";
 		$this->Notes=sanitize($this->Notes,false);
 		$this->U1Position=in_array($this->U1Position, array("Top","Bottom","Default"))?$this->U1Position:"Default";
 	}
@@ -3786,6 +3786,20 @@ class DevicePorts {
 		}
 		
 		return $portList;
+	}
+	
+	// New function for count only already connected (used) __front__ ports of devices, for example, patch panels, switches etc.
+	static function getConnectedPortCount($DeviceID) {
+		global $dbh;
+		$dev=new Device();
+		$dev->DeviceID=$DeviceID;
+		if(!$dev->GetDevice()){
+			return false;	// This device doesn't exist
+		}
+		// Select only already connected front ports, not rear, of devices...
+		$sql = "select count(*) as ConnectedPorts from fac_Ports where DeviceID=$dev->DeviceID and ConnectedDeviceID>0 and ConnectedPort>0";
+		$row = $dbh->query($sql)->fetch();
+		return $row["ConnectedPorts"];
 	}
 }
 
