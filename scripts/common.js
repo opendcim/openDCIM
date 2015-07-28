@@ -275,6 +275,7 @@ function drawArrow(canvas,startx,starty,width,height,direction){
  
 	switch(direction){
 		case 'Top':
+		case 'Conditioner bottom':
 			var p1={x: startx+arrowW, y: starty};
 			var p2={x: startx+arrowW, y: starty+height-arrowH};
 			var p3={x: startx+(arrowW/2), y: starty+height-arrowH};
@@ -285,6 +286,7 @@ function drawArrow(canvas,startx,starty,width,height,direction){
 			var my_gradient=canvas.createLinearGradient(0,starty,0,starty+height);
 			break;
 		case 'Bottom':
+		case 'Conditioner top':
 			var p1={x: startx+arrowW, y: starty+height};
 			var p2={x: startx+arrowW, y: starty+arrowH};
 			var p3={x: startx+(arrowW/2), y: starty+arrowH};
@@ -295,6 +297,7 @@ function drawArrow(canvas,startx,starty,width,height,direction){
 			var my_gradient=canvas.createLinearGradient(0,starty+height,0,starty);
 			break;
 		case 'Right':
+		case 'Conditioner left':
 			var p1={x: startx+width,  y: starty+(height-arrowH)};
 			var p2={x: startx+arrowW, y: starty+(height-arrowH)};
 			var p3={x: startx+arrowW, y: starty+height};
@@ -315,8 +318,13 @@ function drawArrow(canvas,startx,starty,width,height,direction){
 			var my_gradient=canvas.createLinearGradient(startx,0,startx+width,0);
 			break;
     }
-	my_gradient.addColorStop(0.2,"rgba(0, 0, 255, .35)");
-	my_gradient.addColorStop(0.8,"rgba(255, 0, 0, .35)");
+	if(direction=='Top' || direction=='Bottom' || direction=='Left' || direction=='Right'){
+		my_gradient.addColorStop(0.2,"rgba(0, 0, 255, .35)");
+		my_gradient.addColorStop(0.8,"rgba(255, 0, 0, .35)");
+	}else{
+		my_gradient.addColorStop(0.8,"rgba(0, 0, 255, .35)");
+		my_gradient.addColorStop(0.2,"rgba(255, 0, 0, .35)");
+	}
 	canvas.save();
 	canvas.globalCompositeOperation="source-over";
 	canvas.fillStyle=my_gradient;
