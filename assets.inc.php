@@ -52,6 +52,7 @@ class Cabinet {
 	var $MapY2;
 	var $FrontEdge;
 	var $Notes;
+	var $U1Position;
 
 	function MakeSafe() {
 		$this->CabinetID=intval($this->CabinetID);
@@ -76,6 +77,7 @@ class Cabinet {
 		$this->MapY2=abs($this->MapY2);
 		$this->FrontEdge=in_array($this->FrontEdge, array("Top","Right","Left","Bottom"))?$this->FrontEdge:"Top";
 		$this->Notes=sanitize($this->Notes,false);
+		$this->U1Position=in_array($this->U1Position, array("Top","Bottom","Default"))?$this->U1Position:"Default";
 	}
 
 	public function __construct($cabinetid=false){
@@ -113,13 +115,11 @@ class Cabinet {
 		$cab->MapY2=$dbRow["MapY2"];
 		$cab->FrontEdge=$dbRow["FrontEdge"];
 		$cab->Notes=$dbRow["Notes"];
+		$cab->U1Position=$dbRow["U1Position"];
 
 		if($filterrights){
 			$cab->FilterRights();
 		}
-/*
- * We'll be revisiting this shortly.
- *
 
 		if($cab->U1Position=="Default"){
 			$dc=new DataCenter();
@@ -132,7 +132,7 @@ class Cabinet {
 				$cab->U1Position=$dc->U1Position;
 			}
 		}
-*/
+
 		return $cab;
 	}
 
@@ -168,7 +168,8 @@ class Cabinet {
 			SensorIPAddress=\"$this->SensorIPAddress\", MapX1=$this->MapX1, 
 			SensorCommunity=\"$this->SensorCommunity\", MapY1=$this->MapY1, 
 			SensorTemplateID=$this->SensorTemplateID, MapX2=$this->MapX2, MapY2=$this->MapY2,
-			FrontEdge=\"$this->FrontEdge\", Notes=\"$this->Notes\";";
+			FrontEdge=\"$this->FrontEdge\", Notes=\"$this->Notes\", 
+			U1Position=\"$this->U1Position\";";
 
 		if(!$dbh->exec($sql)){
 			$info=$dbh->errorInfo();
@@ -201,8 +202,8 @@ class Cabinet {
 			SensorIPAddress=\"$this->SensorIPAddress\", MapX1=$this->MapX1, 
 			SensorCommunity=\"$this->SensorCommunity\", MapY1=$this->MapY1, 
 			SensorTemplateID=$this->SensorTemplateID, MapX2=$this->MapX2, MapY2=$this->MapY2,
-			FrontEdge=\"$this->FrontEdge\", Notes=\"$this->Notes\" 
-			WHERE CabinetID=$this->CabinetID;";
+			FrontEdge=\"$this->FrontEdge\", Notes=\"$this->Notes\", 
+			U1Position=\"$this->U1Position\" WHERE CabinetID=$this->CabinetID;";
 
 		if(!$dbh->query($sql)){
 			$info=$dbh->errorInfo();
@@ -479,21 +480,13 @@ class Cabinet {
 
 		// This will store all our extended sql
 		$sqlextend="";
-		function findit($prop,$val,&$sql,$loose){
-			$method=($loose)?" LIKE \"%$val%\"":"=\"$val\"";
-			if($sql){
-				$sql.=" AND $prop$method";
-			}else{
-				$sql.=" WHERE $prop$method";
-			}
-		}
 		foreach($this as $prop => $val){
 			// We force the following values to knowns in makesafe 
 			if($prop=="FrontEdge" && $val=="Top" && $ot!="Top"){
 				continue;
 			}
 			if($val && $val!="1969-12-31"){
-				findit($prop,$val,$sqlextend,$loose);
+				extendsql($prop,$val,$sqlextend,$loose);
 			}
 		}
 
@@ -1704,7 +1697,7 @@ class Device {
 		}
 		
 		// If you changed cabinets then the power connections need to be removed
-		if($row["Cabinet"]!=$this->Cabinet){
+		if($tmpDev->Cabinet!=$this->Cabinet){
 			$cab=new Cabinet();
 			$cab->CabinetID=$this->Cabinet;
 			$cab->GetCabinet();
@@ -2235,16 +2228,8 @@ class Device {
 
 		// This will store all our extended sql
 		$sqlextend="";
-		function find($prop,$val,&$sql,$loose){
-			$method=($loose)?" LIKE \"%$val%\"":"=\"$val\"";
-			if($sql){
-				$sql.=" AND $prop$method";
-			}else{
-				$sql.=" WHERE $prop$method";
-			}
-		}
 		foreach($o as $prop => $val){
-			find($prop,$this->$prop,$sqlextend,$loose);
+			extendsql($prop,$this->$prop,$sqlextend,$loose);
 		}
 		$sql="SELECT * FROM fac_Device $sqlextend ORDER BY Label ASC;";
 
@@ -3038,6 +3023,22 @@ class Device {
 					}
 				}
 			}
+			$resp.="\t</div>\n";
+		}else{
+			// We don't have an image on file for this device so return a generic lump of crap
+			$resp="\t<div class=\"genericdevice\" data-deviceid=$this->DeviceID style=\"width: ".($targetWidth-4)."px;\">\n";
+			
+			// Add in flags for missing ownership
+			$flags=($this->Owner==0)?'(O)':'';
+			$flags=($this->TemplateID==0)?'(T)':'';
+			$flags=($flags!='')?'<span class="hlight">'.$flags.'</span>':'';
+
+			// If they have rights to the device then make the picture clickable
+			$clickable=($this->Rights!="None")?"\t\t<a href=\"devices.php?DeviceID=$this->DeviceID\">\n\t":"";
+			$clickableend=($this->Rights!="None")?"\n\t\t</a>\n":"";
+
+			$resp.="\t\t$clickable$flags$this->Label$clickableend\n";
+
 			$resp.="\t</div>\n";
 		}
 		return $resp;

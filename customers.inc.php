@@ -380,17 +380,9 @@ class People {
 
 		// This will store all our extended sql
 		$sqlextend="";
-		function find($prop,$val,&$sql,$loose){
-			$method=($loose)?" LIKE \"%$val%\"":"=\"$val\"";
-			if($sql){
-				$sql.=" AND $prop$method";
-			}else{
-				$sql.=" WHERE $prop$method";
-			}
-		}
 		foreach($this as $prop => $val){
 			if($val){
-				find($prop,$val,$sqlextend,$loose);
+				extendsql($prop,$val,$sqlextend,$loose);
 			}
 		}
 		$sql="SELECT * FROM fac_People $sqlextend ORDER BY LastName ASC, FirstName ASC;";

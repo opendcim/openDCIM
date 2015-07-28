@@ -168,6 +168,36 @@ $app->get('/people', function() {
 });
 
 //
+//	URL:  /api/v1/department
+//	Method: GET
+//	Params:  none
+//	Returns:  List of all departments in the database
+//
+$app->get('/department', function() {
+	global $person;
+	$dept=new Department();
+	$depts=$dept->GetDepartmentList();
+
+	if(!$person->ContactAdmin){
+		$response['error']=true;
+		$response['message'] = "Insufficient privilege level";
+		foreach($depts as $d){
+			foreach($d as $prop => $val){
+				if($prop!='DeptID' && $prop!='DeptColor'){
+					$d->$prop='';
+				}
+			}
+		}
+	} else {
+		$response['error'] = false;
+		$response['errorcode'] = 200;
+	}
+
+	$response['department']=$depts;
+	echoResponse(200, $response);
+});
+
+//
 //	URL:	/api/v1/datacenter
 //	Method: GET
 //	Params:  none
