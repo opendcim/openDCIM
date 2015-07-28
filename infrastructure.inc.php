@@ -442,6 +442,7 @@ class DataCenter {
 			$overview=array();
 			$space=array();
 			$weight=array();
+			$panelports=array();
 			$power=array();
 			$temperature=array();
 			$humidity=array();
@@ -492,6 +493,10 @@ class DataCenter {
 				//Real Power
 				$RealPowerRed=intval($this->dcconfig->ParameterArray["PowerRed"]);
 				$RealPowerYellow=intval($this->dcconfig->ParameterArray["PowerYellow"]);
+				
+				// Patch panels Ports Usage
+				$PanelPortsRed=intval($this->dcconfig->ParameterArray["PanelPortsRed"]);
+				$PanelPortsYellow=intval($this->dcconfig->ParameterArray["PanelPortsYellow"]);
 				
 				// get image file attributes and type
 				list($width, $height, $type, $attr)=getimagesize($mapfile);
@@ -547,12 +552,28 @@ class DataCenter {
 					$currentTemperature=$metrics->IntakeTemperature;
 					$currentHumidity=$metrics->IntakeHumidity;
 					$currentRealPower=$metrics->MeasuredPower;
+					
+					// Count totalPanelPorts and usedPanelPorts in all patch panels in cabinet (except reserved devices and only front ports)
+					$totalPanelPorts=0;
+					$usedPanelPorts=0;
+					
+					$dev->Cabinet=$cabRow->CabinetID;
+					$devList=$dev->ViewDevicesByCabinet();
+					
+					foreach($devList as $device){
+						if($device->DeviceType=='Patch Panel' && !$device->Reservation){
+							$totalPanelPorts+=$device->Ports;
+							$usedPanelPorts+=DevicePorts::getConnectedPortCount($device->DeviceID);
+						}
+					}
 
 					$used=$metrics->SpaceUsed;
 					// check to make sure the cabinet height is set to keep errors out of the logs
 					if(!isset($cabRow->CabinetHeight)||$cabRow->CabinetHeight==0){$SpacePercent=100;}else{$SpacePercent=number_format($metrics->SpaceUsed /$cabRow->CabinetHeight *100,0);}
 					// check to make sure there is a weight limit set to keep errors out of logs
 					if(!isset($cabRow->MaxWeight)||$cabRow->MaxWeight==0){$WeightPercent=0;}else{$WeightPercent=number_format($metrics->CalculatedWeight /$cabRow->MaxWeight *100,0);}
+					// check to make sure there is at lesat one patch panels to keep errors out of logs
+					if(!isset($totalPanelPorts)||$totalPanelPorts==0){$PanelPortsPercent=0;}else{$PanelPortsPercent=number_format($usedPanelPorts /$totalPanelPorts *100,0);}
 					// check to make sure there is a kilowatt limit set to keep errors out of logs
 					if(!isset($cabRow->MaxKW)||$cabRow->MaxKW==0){$PowerPercent=0;}else{$PowerPercent=number_format(($metrics->CalculatedPower /1000 ) /$cabRow->MaxKW *100,0);}
 					if(!isset($cabRow->MaxKW)||$cabRow->MaxKW==0){$RealPowerPercent=0;}else{$RealPowerPercent=number_format(($metrics->MeasuredPower /1000 ) /$cabRow->MaxKW *100,0, ",", ".");}
@@ -563,6 +584,7 @@ class DataCenter {
 					//Decide which color to paint on the canvas depending on the thresholds
 					if($SpacePercent>$SpaceRed){$scolor=$CriticalColor;}elseif($SpacePercent>$SpaceYellow){$scolor=$CautionColor;}else{$scolor=$GoodColor;}
 					if($WeightPercent>$WeightRed){$wcolor=$CriticalColor;}elseif($WeightPercent>$WeightYellow){$wcolor=$CautionColor;}else{$wcolor=$GoodColor;}
+					if($totalPanelPorts==0){$ppcolor=$unknownColor;}elseif($PanelPortsPercent>$PanelPortsRed){$ppcolor=$CriticalColor;}elseif($PanelPortsPercent>$PanelPortsYellow){$ppcolor=$PanelPortsYellow;}else{$ppcolor=$GoodColor;}
 					if($PowerPercent>$PowerRed){$pcolor=$CriticalColor;}elseif($PowerPercent>$PowerYellow){$pcolor=$CautionColor;}else{$pcolor=$GoodColor;}
 					if($RealPowerPercent>$RealPowerRed){$rpcolor=$CriticalColor;}elseif($RealPowerPercent>$RealPowerYellow){$rpcolor=$CautionColor;}else{$rpcolor=$GoodColor;}
 					
@@ -576,7 +598,7 @@ class DataCenter {
 						elseif($currentHumidity>$HumidityMedMax || $currentHumidity<$HumidityMedMin) {$hcolor=$CautionColor;}
 						else{$hcolor=$GoodColor;}
 										
-					foreach(array($scolor,$wcolor,$pcolor,$tcolor,$hcolor,$rpcolor) as $cc){
+					foreach(array($scolor,$wcolor,$pcolor,$tcolor,$hcolor,$rpcolor,$ppcolor) as $cc){
 						if($cc=='bad'){
 							$color='bad';break;
 						}elseif($cc=='med'){
@@ -589,6 +611,7 @@ class DataCenter {
 					$overview[$cabRow->CabinetID]=$color;
 					$space[$cabRow->CabinetID]=$scolor;
 					$weight[$cabRow->CabinetID]=$wcolor;
+					$panelports[$cabRow->CabinetID]=$ppcolor;
 					$power[$cabRow->CabinetID]=$pcolor;
 					$temperature[$cabRow->CabinetID]=$tcolor;
 					$humidity[$cabRow->CabinetID]=$hcolor;
@@ -609,6 +632,7 @@ class DataCenter {
 			$overview['title']=__("Composite View of Cabinets");
 			$space['title']=__("Occupied Space");
 			$weight['title']=__("Calculated Weight");
+			$panelports['title']=__("Patch panels Ports Usage");
 			$power['title']=__("Calculated Power Usage");
 			$temperature['title']=($tempRow["ReadingTime"]>0)?__("Measured on")." ".date( 'c', strtotime( $tempRow["ReadingTime"])):__("no data");
 			$humidity['title']=($tempRow["ReadingTime"]>0)?__("Measured on")." ".date( 'c', strtotime( $tempRow["ReadingTime"])):__("no data");
@@ -618,6 +642,7 @@ class DataCenter {
 			$statusarray=array('overview' => $overview,
 								'space' => $space,
 								'weight' => $weight,
+								'panelports' => $panelports,
 								'power' => $power,
 								'humidity' => $humidity,
 								'temperature' => $temperature,
@@ -2281,10 +2306,10 @@ class CabRow {
 		if($layout){
 			if($layout=="Horizontal"){
 				// top / bottom
-				$layout=" AND (FrontEdge='Bottom' OR FrontEdge='Top')";
+				$layout=" AND (FrontEdge='Bottom' OR FrontEdge='Top' OR FrontEdge='Conditioner bottom' OR FrontEdge='Conditioner top')";
 			}else{
 				// right / left
-				$layout=" AND (FrontEdge='Right' OR FrontEdge='Left')";
+				$layout=" AND (FrontEdge='Right' OR FrontEdge='Left' OR FrontEdge='Conditioner right' OR FrontEdge='Conditioner left')";
 			}
 		}
 
