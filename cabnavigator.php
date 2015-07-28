@@ -9,7 +9,14 @@
 		header('Location: '.redirect());
 		exit;
 	}
-
+	
+	if($config->ParameterArray["mUnits"]=="english"){
+		$weightunit="lbs";
+		$tempunit="F";
+	}else{
+		$weightunit="kg";
+		$tempunit="C";
+	}
 
 /**
  * Determines ownership of the cabinet and returns the CSS class in case a
@@ -197,11 +204,20 @@ function renderUnassignedTemplateOwnership($noTemplFlag, $noOwnerFlag, $device) 
 	$search=new Device();
 	$search->Cabinet=$cab->CabinetID;
 	$search->DeviceType="Sensor";
-	$SensorList=$search->Search();
+	$search->BackSide=0;
+	$IntakeSensorList=$search->Search();
+
+	$search=new Device();
+	$search->Cabinet=$cab->CabinetID;
+	$search->DeviceType="Sensor";
+	$search->BackSide=1;
+	$ExhaustSensorList=$search->Search();
 
 	$totalWatts=0;
 	$totalWeight=0;
 	$totalMoment=0;
+	$totalPanelPorts=0; // Summ. quantity of available __front__ ports for connections in all patch panels in current cabinet
+	$usedPanelPorts=0; // Already connected (used) quantity of __front__ ports in all patch panels in current cabinet
 
 	$deptswithcolor=array();
 	list($cab_color, $deptswithcolor) = getColorofCabinetOwner($cab, $deptswithcolor);
@@ -227,7 +243,7 @@ function renderUnassignedTemplateOwnership($noTemplFlag, $noOwnerFlag, $device) 
 		// This is fucking horrible, there has to be a better way to accomplish this.
 		global $cab_color, $cab, $device, $body, $currentHeight, $heighterr,
 				$devList, $templ, $tempDept, $backside, $deptswithcolor, $tempDept,
-				$totalWeight, $totalWatts, $totalMoment, $zeroheight,
+				$totalWeight, $totalWatts, $totalMoment, $totalPanelPorts, $usedPanelPorts, $zeroheight,
 				$noTemplFlag, $noOwnerFlag, $noReservationFlag;
 
 		$currentHeight=$cab->CabinetHeight;
@@ -252,6 +268,12 @@ function renderUnassignedTemplateOwnership($noTemplFlag, $noOwnerFlag, $device) 
 			// This entire function needs to be reworked.
 			if($device->DeviceType=='Chassis' && $device->RearChassisSlots>0){
 				$backside=true;
+			}
+			
+			// Count totalPanelPorts and usedPanelPorts in all patch panels in cabinet (except reserved devices and only front ports)
+			if($device->DeviceType=='Patch Panel' && !$device->Reservation && !$rear){
+				$totalPanelPorts+=$device->Ports;
+				$usedPanelPorts+=DevicePorts::getConnectedPortCount($device->DeviceID);
 			}
 
 			if ((!$device->HalfDepth || !$device->BackSide)&&!$rear || (!$device->HalfDepth || $device->BackSide)&&$rear){
@@ -355,6 +377,7 @@ function renderUnassignedTemplateOwnership($noTemplFlag, $noOwnerFlag, $device) 
 	@$PowerPercent=number_format(($totalWatts/1000)/$cab->MaxKW*100,0);
 	$measuredWatts = $pdu->GetWattageByCabinet( $cab->CabinetID );
 	@$MeasuredPercent=number_format(($measuredWatts/1000)/$cab->MaxKW*100,0);
+	@$PanelPortsPercent=number_format($usedPanelPorts/$totalPanelPorts*100,0);
 	$CriticalColor=$config->ParameterArray["CriticalColor"];
 	$CautionColor=$config->ParameterArray["CautionColor"];
 	$GoodColor=$config->ParameterArray["GoodColor"];
@@ -363,11 +386,13 @@ function renderUnassignedTemplateOwnership($noTemplFlag, $noOwnerFlag, $device) 
 	if($WeightPercent>100){$WeightPercent=100;}
 	if($PowerPercent>100){$PowerPercent=100;}
 	if($MeasuredPercent>100){$MeasuredPercent=100;}
+	if($PanelPortsPercent>100){$PanelPortsPercent=100;}
 
 	$SpaceColor=($SpacePercent>intval($config->ParameterArray["SpaceRed"])?$CriticalColor:($SpacePercent >intval($config->ParameterArray["SpaceYellow"])?$CautionColor:$GoodColor));
 	$WeightColor=($WeightPercent>intval($config->ParameterArray["WeightRed"])?$CriticalColor:($WeightPercent>intval($config->ParameterArray["WeightYellow"])?$CautionColor:$GoodColor));
 	$PowerColor=($PowerPercent>intval($config->ParameterArray["PowerRed"])?$CriticalColor:($PowerPercent>intval($config->ParameterArray["PowerYellow"])?$CautionColor:$GoodColor));
 	$MeasuredColor=($MeasuredPercent>intval($config->ParameterArray["PowerRed"])?$CriticalColor:($MeasuredPercent>intval($config->ParameterArray["PowerYellow"])?$CautionColor:$GoodColor));
+	$PanelPortsColor=($PanelPortsPercent>intval($config->ParameterArray["PanelPortsRed"])?$CriticalColor:($PanelPortsPercent >intval($config->ParameterArray["PanelPortsYellow"])?$CautionColor:$GoodColor));
 
 	// I don't feel like fixing the check properly to not add in a dept with id of 0 so just remove it at the last second
 	// 0 is when a dept owner hasn't been assigned, just for the record
@@ -412,16 +437,25 @@ $body.='<div id="infopanel">
 			<td>'.__("Space").'
 				<div class="meter-wrap">
 					<div class="meter-value" style="background-color: '.$SpaceColor.'; width: '.$SpacePercent.'%;">
-						<div class="meter-text">'.$SpacePercent.'%</div>
+						<div class="meter-text">'; $body.=sprintf("%d / %d U",$used,$cab->CabinetHeight);$body.='</div>
 					</div>
 				</div>
 			</td>
 		</tr>
 		<tr>
-			<td>'.__("Weight").' ['.$cab->MaxWeight.']
+			<td>'.__("Weight").'
 				<div class="meter-wrap">
 					<div class="meter-value" style="background-color: '.$WeightColor.'; width: '.$WeightPercent.'%;">
-						<div class="meter-text">'.$WeightPercent.'%</div>
+						<div class="meter-text">'; $body.=sprintf("%d / %d %s",$totalWeight,$cab->MaxWeight,$weightunit);$body.='</div>
+					</div>
+				</div>
+			</td>
+		</tr>
+		<tr>
+			<td>'.__("Patch panels Ports").'
+				<div class="meter-wrap">
+					<div class="meter-value" style="background-color: '.$PanelPortsColor.'; width: '.$PanelPortsPercent.'%;">
+						<div class="meter-text">'; $body.=sprintf("%d / %d",$usedPanelPorts,$totalPanelPorts);$body.='</div>
 					</div>
 				</div>
 			</td>
@@ -430,7 +464,7 @@ $body.='<div id="infopanel">
 			<td>'.__("Computed Watts").'
 				<div class="meter-wrap">
 					<div class="meter-value" style="background-color: '.$PowerColor.'; width: '.$PowerPercent.'%;">
-						<div class="meter-text">'; $body.=sprintf("%d kW / %d kW",round($totalWatts/1000),$cab->MaxKW);$body.='</div>
+						<div class="meter-text">'; $body.=sprintf("%d / %d kW",round($totalWatts/1000),$cab->MaxKW);$body.='</div>
 					</div>
 				</div>
 			</td>
@@ -439,13 +473,13 @@ $body.='<div id="infopanel">
 			<td>'.__("Measured Watts").'
 				<div class="meter-wrap">
 					<div class="meter-value" style="background-color: '.$MeasuredColor.'; width: '.$MeasuredPercent.'%;">
-						<div class="meter-text">'; $body.=sprintf("%d kW / %d kW",round($measuredWatts/1000),$cab->MaxKW);$body.='</div>
+						<div class="meter-text">'; $body.=sprintf("%d / %d kW",round($measuredWatts/1000),$cab->MaxKW);$body.='</div>
 					</div>
 				</div>
 			</td>
 		</tr>
 		</table>
-		<p>'.__("Approximate Center of Gravity").': '.$CenterofGravity.' U</p>
+		<p>'.__("Approximate Center of Gravity").': '.$CenterofGravity.'U</p>
 	</fieldset>
 	<fieldset id="keylock">
 		<legend>'.__("Key/Lock Information").'</legend>
@@ -505,7 +539,7 @@ $body.='<div id="infopanel">
 			$ATSStatus = $PDUdev->getATSStatus();
 
 			if ( $ATSStatus == "" ) {
-				$ATSColor = "rs.png";
+				$ATSColor = "us.png";	//If status unknown (link fail or CDU network port not connected), it is better to use gray color, but not red...
 				$ATSStatus = __("Unknown Status");
 			} elseif ( $ATSStatus == $tmpl->ATSDesiredResult ) {
 				$ATSColor = "gs.png";
@@ -529,8 +563,17 @@ $body.='<div id="infopanel">
 		<legend>'.__("Environmental Sensors").'</legend>
 		<div>';
 
-	foreach($SensorList as $Sensor){
-		$body.="\t\t<a href=\"devices.php?DeviceID=$Sensor->DeviceID\">$Sensor->Label</a><br>\n";
+	if($IntakeSensorList){
+		$body.="\t\t<li>".__("Intake Sensors:")."</li>";
+		foreach($IntakeSensorList as $Sensor){
+			$body.="\t\t<a href=\"devices.php?DeviceID=$Sensor->DeviceID\">$Sensor->Label</a><br>\n";
+		}
+	}
+	if($ExhaustSensorList){
+		$body.="\t\t<li>".__("Exhaust Sensors:")."</li>";
+		foreach($ExhaustSensorList as $Sensor){
+			$body.="\t\t<a href=\"devices.php?DeviceID=$Sensor->DeviceID\">$Sensor->Label</a><br>\n";
+		}
 	}
 
 	if($person->CanWrite($cab->AssignedTo)){
@@ -820,7 +863,7 @@ if($config->ParameterArray["CDUToolTips"]=='enabled'){
 			var link=this;
 			$.get('api/v1/device/'+link.href.split('=').pop()+'/getsensorreadings',function(data){
 				if(!data.error){
-					$(link).after('<br>Temp:&nbsp;'+data.sensor.Temperature+'&deg;&nbsp;&nbsp;Humidity:&nbsp;'+data.sensor.Humidity+'<br>');
+					$(link).after('<br>Temperature:&nbsp;'+data.sensor.Temperature+'&deg;&nbsp;&nbsp;Humidity:&nbsp;'+data.sensor.Humidity+'%<br>');
 				}else{
 					$(link).after('<br>'+data.message+'<br>');
 				}
