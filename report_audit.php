@@ -288,13 +288,14 @@ $(function(){
 	$pdf->Ln();
 
 	foreach($summaryResult as $row){
-		$cabAudit->UserID = $row["UserID"];
-		$cabAudit->GetLastAuditByUser();
+		$sql = "select date(Time) as LastAudit from fac_GenericLog where Action='CertifyAudit' and UserID='" . $row["UserID"] . "' and $dcLimit date(Time)>='$startDate' and date(Time)<='$endDate' order by Time desc limit 1";
+		$res = $dbh->query( $sql );
+		$lastRow = $res->fetch();
 		
 		$pdf->Cell( $cellWidths[0], 6, $row["UserID"], 'LR', 0, 'L', $fill );
 		$pdf->Cell( $cellWidths[1], 6, $row["Name"], 'LR', 0, 'L', $fill );
 		$pdf->Cell( $cellWidths[2], 6, $row["TotalCabinets"], 'LR', 0, 'L', $fill );
-		$pdf->Cell( $cellWidths[3], 6, $cabAudit->AuditStamp, 'LR', 0, 'L', $fill );
+		$pdf->Cell( $cellWidths[3], 6, $lastRow["LastAudit"], 'LR', 0, 'L', $fill );
 		
 		$pdf->Ln();
 		
