@@ -216,10 +216,11 @@ $select="\n\t<select>\n";
 		'overview' => __("Overview"),
 		'space' => __("Space"),
 		'weight' => __("Weight"),
+		'panelports' => __("Patch panels Ports"),
 		'power' => __("Calculated Power"),
 		'realpower' => __("Measured Power"),
-		'temperature' => __("Temperature"),
-		'humidity' => __("Humidity"),
+		'temperature' => __("Intake Temperature"),
+		'humidity' => __("Intake Humidity"),
 		'airflow' => __("Air Flow")
 		) as $value => $option){
 		$select.="\t\t<option value=\"$value\">$option</option>\n";
@@ -240,14 +241,22 @@ echo '
 			<li><a href="#Right">',__("Right"),'</a></li>
 			<li><a href="#Bottom">',__("Bottom"),'</a></li>
 			<li><a href="#Left">',__("Left"),'</a></li>
+			<li><a href="#Conditioner top">',__("Conditioner top"),'</a></li>
+			<li><a href="#Conditioner right">',__("Conditioner right"),'</a></li>
+			<li><a href="#Conditioner bottom">',__("Conditioner bottom"),'</a></li>
+			<li><a href="#Conditioner left">',__("Conditioner left"),'</a></li>
 		</ul>
 	</li>
 	<li><a href="#row">',__("Row"),'</a>
 		<ul data-context="row">
-			<li><a href="#Test">',__("Top"),'</a></li>
+			<li><a href="#Top">',__("Top"),'</a></li>
 			<li><a href="#Right">',__("Right"),'</a></li>
 			<li><a href="#Bottom">',__("Bottom"),'</a></li>
 			<li><a href="#Left">',__("Left"),'</a></li>
+			<li><a href="#Conditioner top">',__("Conditioner top"),'</a></li>
+			<li><a href="#Conditioner right">',__("Conditioner right"),'</a></li>
+			<li><a href="#Conditioner bottom">',__("Conditioner bottom"),'</a></li>
+			<li><a href="#Conditioner left">',__("Conditioner left"),'</a></li>
 		</ul>
 	</li>
 </ul>';
