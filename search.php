@@ -37,9 +37,7 @@
 		$vmList=$esx->SearchByVMName();
 		$cab->Location=$searchTerm;
 		$cabList=$cab->LooseSearch(true);
-		$pdu->Label=$searchTerm;
-		$pduList=$pdu->SearchByPDUName();
-		$resultcount=count($devList)+count($cabList)+count($pduList)+count($vmList);
+		$resultcount=count($devList)+count($cabList)+count($vmList);
 		$title=__("Name search results for")." &quot;$searchTerm&quot;";
 	}elseif($searchKey=='owner'){
 		$dept->Name=$searchTerm;
@@ -97,19 +95,24 @@
 	$cabtemp=array(); // List of all cabinet ids for outerloop
 	$childList=array(); // List of all blade devices
 	$dctemp=array(); // List of datacenters involved with result set
+	$pduList=array(); // List of CDUs
 	while(list($devID,$device)=each($devList)){
-		$temp[$x]['devid']=$devID;
-		$temp[$x]['label']=$device->Label;
-		$temp[$x]['type']='srv'; // empty chassis devices need no special treatment leave them as a server
-		$temp[$x]['cabinet']=$device->Cabinet;
-		$temp[$x]['parent']=$device->ParentDevice;
-		$temp[$x]['rights']=$device->Rights;
-		$cabtemp[$device->Cabinet]="";
-		++$x;
-		if($device->ParentDevice!=0){
-			foreach($uncleDaddy=$device->GetDeviceLineage() as $branches){
-				if($branches->ParentDevice>0){
-					$childList[$branches->ParentDevice]=""; // Create a list of chassis devices based on children present
+		if($device->DeviceType="CDU"){
+			$pduList[$devID]=$device;
+		}else{
+			$temp[$x]['devid']=$devID;
+			$temp[$x]['label']=$device->Label;
+			$temp[$x]['type']='srv'; // empty chassis devices need no special treatment leave them as a server
+			$temp[$x]['cabinet']=$device->Cabinet;
+			$temp[$x]['parent']=$device->ParentDevice;
+			$temp[$x]['rights']=$device->Rights;
+			$cabtemp[$device->Cabinet]="";
+			++$x;
+			if($device->ParentDevice!=0){
+				foreach($uncleDaddy=$device->GetDeviceLineage() as $branches){
+					if($branches->ParentDevice>0){
+						$childList[$branches->ParentDevice]=""; // Create a list of chassis devices based on children present
+					}
 				}
 			}
 		}
@@ -174,8 +177,8 @@
 	// Add racks that are parents of the PDU devices to the rack list
 	if(isset($pduList)&&is_array($pduList)){
 		foreach($pduList as $key => $row){
-			if(!isset($cabtemp[$row->CabinetID]['name'])){
-				$cabtemp[$row->CabinetID]['name']="";
+			if(!isset($cabtemp[$row->Cabinet]['name'])){
+				$cabtemp[$row->Cabinet]['name']="";
 			}
 		}
 	}
@@ -219,8 +222,11 @@
 	// Sort array based on device label
 	if(!empty($temp)){
 		$devList=sort2d($temp,'label');
+	}else{ 
+		// it's possible to have cdu's and cabinets in the search results and no devices
+		// this will clear the devList in case it contained special devices
+		$devList=array();
 	}
-
 	if($resultcount>0){
 		$searchresults=sprintf(__("Search complete. (%s) results."),"<span id=\"resultcount\">$resultcount</span>");
 	}else{
@@ -391,8 +397,9 @@ $(document).ready(function() {
 					// In theory this should be a short list so just parse the entire thing each time we read a cabinet.
 					// if this ends up being a huge time sink, optimize this above then fix logic
 					foreach($pduList as $key => $row){
-						if($cabID == $row->CabinetID){
-							print "\t\t\t\t\t<li class=\"pdu\"><a href=\"devices.php?DeviceID=$row->PDUID\">$row->Label</a>\n";
+						if($cabID == $row->Cabinet){
+							$row->Label=($row->Label=="")?"&lt;".__("No label")."&gt;":$row->Label;
+							print "\t\t\t\t\t<li class=\"pdu\"><a href=\"devices.php?DeviceID=$row->DeviceID\">$row->Label</a>\n";
 						}
 					}
 				}
