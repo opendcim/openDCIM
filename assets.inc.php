@@ -2622,14 +2622,12 @@ class Device {
 	function GetDeviceLineage() {
 		$devList=array();
 		$num=1;
-		$devList[$num]=new Device();
-		$devList[$num]->DeviceID=$this->DeviceID;
+		$devList[$num]=new Device($this->DeviceID);
 		$devList[$num]->GetDevice();
 		
-		while ( $devList[$num]->ParentDevice <> 0) {
+		while($devList[$num]->ParentDevice>0){
 			$num++;
-			$devList[$num]=new Device();
-			$devList[$num]->DeviceID = $devList[$num-1]->ParentDevice;
+			$devList[$num]=new Device($devList[$num-1]->ParentDevice);
 			$devList[$num]->GetDevice();
 		}
 		return $devList;	

@@ -96,8 +96,8 @@
 	$childList=array(); // List of all blade devices
 	$dctemp=array(); // List of datacenters involved with result set
 	$pduList=array(); // List of CDUs
-	while(list($devID,$device)=each($devList)){
-		if($device->DeviceType="CDU"){
+	foreach($devList as $devID => $device){
+		if($device->DeviceType=="CDU"){
 			$pduList[$devID]=$device;
 		}else{
 			$temp[$x]['devid']=$devID;
@@ -108,7 +108,7 @@
 			$temp[$x]['rights']=$device->Rights;
 			$cabtemp[$device->Cabinet]="";
 			++$x;
-			if($device->ParentDevice!=0){
+			if($device->ParentDevice>0){
 				foreach($uncleDaddy=$device->GetDeviceLineage() as $branches){
 					if($branches->ParentDevice>0){
 						$childList[$branches->ParentDevice]=""; // Create a list of chassis devices based on children present
