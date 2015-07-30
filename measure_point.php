@@ -597,10 +597,12 @@ echo '                                                  </div>
                                                         <div><label for="ipaddress">',__("IP Address / Host Name"),'</label></div>
                                                         <div><input type="text" name="ipaddress" id="ipaddress" size="20" value="',$mp->IPAddress,'"></div>
                                                 </div>';
-if($mp->MPID == 0) 
+if($mp->MPID == 0) {
 	$disabled = '';
-else
+} else {
 	$disabled = 'disabled';
+	echo '<input type="text" name="type" hidden value="'.$mp->Type.'">';
+}
 echo '						<div>
 							<div><label for="type">',__("Type"),'</label></div>
 							<div><select name="type" id="type" '.$disabled.' onChange="OnTypeChange();">';
