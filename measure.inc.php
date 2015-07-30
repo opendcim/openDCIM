@@ -301,6 +301,8 @@ class MeasurePoint {
 		
 		$this->MakeSafe();
 
+		$this->DeleteMeasures();
+
 		$sql="DELETE FROM fac_AssoMeasurePointGroup WHERE MPID=$this->MPID;";	
 		$dbh->exec($sql);
 
@@ -416,6 +418,46 @@ class MeasurePoint {
 		fclose($file);
 		return __("Error: Couldn't read columns title.");
 	}
+
+	function DeleteMeasures() {
+		global $dbh;
+
+		$measureClass = MeasurePoint::$TypeTab[$this->Type]."Measure";
+		$sql = "DELETE FROM fac_$measureClass WHERE MPID=$this->MPID;";
+
+		if(!$dbh->exec($sql))
+                	return false;
+                return true;
+	}
+
+	function GetNbMeasures() {
+		global $dbh;
+
+		$this->MakeSafe();
+
+		$measureClass = MeasurePoint::$TypeTab[$this->Type]."Measure";
+                $sql = "SELECT COUNT(Date) AS Qtt FROM fac_$measureClass WHERE MPID=$this->MPID;";
+
+                if($row = $dbh->query($sql)->fetch())
+                        return $row["Qtt"];
+                return 0;
+	}
+
+	function GetNbMeasuresOnInterval($startDate, $endDate) {
+		global $dbh;
+
+		if($endDate <= $startDate)
+			return -1;
+
+		$this->MakeSafe();
+
+		$measureClass = MeasurePoint::$TypeTab[$this->Type]."Measure";
+		$sql = "SELECT COUNT(Date) AS Qtt FROM fac_$measureClass WHERE MPID=$this->MPID AND Date >= \"$startDate\" AND Date <= \"$endDate\";";
+
+                if($row = $dbh->query($sql)->fetch())
+                        return $row["Qtt"];
+                return 0;
+	}
 }
 
 
@@ -492,9 +534,6 @@ class ElectricalMeasurePoint extends MeasurePoint{
 
 		if(parent::DeleteMP()) {
 			
-			$sql="DELETE FROM fac_ElectricalMeasure WHERE MPID=$this->MPID;";
-			$dbh->exec($sql);
-
 			$sql="DELETE FROM fac_ElectricalMeasurePoint WHERE MPID=$this->MPID;";
 			if(!$dbh->exec($sql))
 				return false;
@@ -621,6 +660,7 @@ class ElectricalMeasurePoint extends MeasurePoint{
 		$m->Date=date("Y-m-d H:i:s");
 		$m->CreateMeasure();
 	}
+
 }
 
 class SNMPElectricalMeasurePoint extends ElectricalMeasurePoint {
@@ -1339,9 +1379,6 @@ class CoolingMeasurePoint extends MeasurePoint{
 		$this->MakeSafe();
 
 		if(parent::DeleteMP()) {
-			$sql="DELETE FROM fac_CoolingMeasure WHERE MPID=$this->MPID;";
-			$dbh->exec($sql);
-
 			$sql="DELETE FROM fac_CoolingMeasurePoint WHERE MPID=$this->MPID;";
                         if(!$dbh->exec($sql))
                                 return false;
@@ -1626,7 +1663,7 @@ class ModbusCoolingMeasurePoint extends CoolingMeasurePoint {
 
 	var $UnitID;			//ID of the cooling measure point in the bus
 	var $NbWords;			//quantity of words to read
-	var $FanSPeedRegister;		// register to measure fan speed
+	var $FanSpeedRegister;		// register to measure fan speed
 	var $CoolingRegister;		// register to measure compressor usage
 	
 	function MakeSafe() {
@@ -1905,9 +1942,6 @@ class AirMeasurePoint extends MeasurePoint{
 		$this->MakeSafe();
 
 		if(parent::DeleteMP()) {
-			$sql="DELETE FROM fac_AirMeasure WHERE MPID=$this->MPID;";
-			$dbh->exec($sql);
-
 			$sql="DELETE FROM fac_AirMeasurePoint WHERE MPID=$this->MPID;";
                         if(!$dbh->exec($sql))
                                 return false;

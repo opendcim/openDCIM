@@ -304,7 +304,7 @@ echo '	</select></div>
 					<button type="submit" name="action" value="Create_mp">',__("Create Measure Point"),'</button>';
 		} else {
 			echo '	<div class="caption">
-					<a href="measure_point_'.$selectedMP->Type.'.php?mpid='.$selectedMP->MPID.'">[ '.__("Edit Measure Point").' ]</a>';
+					<a href="measure_point.php?mpid='.$selectedMP->MPID.'">[ '.__("Edit Measure Point").' ]</a>';
 		}
 		echo '		</div>
 			</div>

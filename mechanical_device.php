@@ -41,7 +41,8 @@
 		$mech->LoadOID=$_REQUEST['loadoid'];
 		
 		if($_REQUEST['action']=='Create'){
-			$mech->CreateMechDevice();
+			if($mech->CreateMechDevice())
+				header('Location: '.redirect("mechanical_device.php?mechid=$mech->MechID"));
 		}else{
 			$mech->UpdateMechDevice();
 		}
@@ -218,10 +219,11 @@ echo '							</select></div>
 		echo '							<button type="submit" name="action" value="Create">',__("Create"),'</button>';
 	}
 echo '						</div>
-					</div>
-				</form>';
+					</div>';
 
 if($mech->MechID >0) {
+	//display linked MeasurePoints
+
 	$mpOptions="";
 	foreach($mpList as $mp) {
 		if($_POST["mp_mpid"] == $mp->MPID) {
@@ -238,8 +240,7 @@ if($mech->MechID >0) {
 		$typeOptions .= "<option value=\"$key\">$type</option>";
 	}
 	echo '<br>
-        <center>
-                <form method="POST">
+        	<center>
                         <h2>'.__("Measure Points").'</h2>
                         <div class="table">
                                 <div>
@@ -263,18 +264,17 @@ if($mech->MechID >0) {
                                 <div class="caption">
                                         <button type="submit" name="action" value="Create_mp">',__("Create Measure Point"),'</button>';
         } else {
-                 echo '		<div class="caption">
-                                        <a href="measure_point_'.$selectedMP->Type.'.php?mpid='.$selectedMP->MPID.'">[ '.__("Edit Measure Point").' ]</a>';
+		echo '		<div class="caption">
+                                        <a href="measure_point.php?mpid='.$selectedMP->MPID.'">[ '.__("Edit Measure Point").' ]</a>';
         }
         echo '          	</div>
                         </div>
-                </form>
-        </center>';
+         	</center>       
+	</form>';
 }
 
 ?>
 </div></div>
-<?php echo '			<a href="index.php">[ ',__("Return to Main Menu"),' ]</a>'; ?>
 <?php echo '<a href="index.php">[ ',__("Return to Main Menu"),' ]</a>
 <!-- hiding modal dialogs here so they can be translated easily -->
 <div class="hide">

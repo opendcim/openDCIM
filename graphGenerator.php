@@ -11,7 +11,8 @@
 					"cooling" => "cooling",
 					"fanspeed" => "cooling");
 
-	function createEquipmentList($type, $side) {
+	function createEquipmentList($type, $side, $startDate, $endDate) {
+		$endDate = date("Y-m-d H:i:s", strtotime($endDate) + 86400);
 		$mpgList = new MeasurePointGroup();
 		$mpgList = $mpgList->GetMeasurePointGroupsByType($type);
 
@@ -47,14 +48,16 @@
 					<li><div class="equipmentBox"><center>'.__("Measure Points").'</center></div></li>';
 
 		foreach($mpList as $mp) {
-			$name = $side."MP_".$mp->MPID;
-			$checked = ($_POST[$name])?"checked":"";
-			$equipmentList .= '<li><div class="equipmentBox">
-						<input type="number" value="'.$mp->MPID.'" hidden>
-						<input type="text" id="'.$name.'_label" value="'.$mp->Label.'" hidden>
-						<label class="equipmentLabel" for="'.$name.'">'.$mp->Label.'</label>
-						<input type="checkbox" name="'.$name.'" id="'.$name.'" '.$checked.' onChange="OnCheckMP(this, \''.$side.'\');">
-					</div></li>';
+			if($mp->GetNbMeasuresOnInterval($startDate, $endDate) >= 2) {
+				$name = $side."MP_".$mp->MPID;
+				$checked = ($_POST[$name])?"checked":"";
+				$equipmentList .= '<li><div class="equipmentBox">
+							<input type="number" value="'.$mp->MPID.'" hidden>
+							<input type="text" id="'.$name.'_label" value="'.$mp->Label.'" hidden>
+							<label class="equipmentLabel" for="'.$name.'">'.$mp->Label.'</label>
+							<input type="checkbox" name="'.$name.'" id="'.$name.'" '.$checked.' onChange="OnCheckMP(this, \''.$side.'\');">
+						</div></li>';
+			}
 		}
 
 		$equipmentList .= '</div>';
@@ -142,9 +145,9 @@
 		$enddate = getEndDate($config->ParameterArray["TimeInterval"], false);
 
 
-	$leftList=createEquipmentList($measureTypeArray[$leftType], 'l');
+	$leftList=createEquipmentList($measureTypeArray[$leftType], 'l', $startdate, $enddate);
 	if($rightType != "none")
-		$rightList=createEquipmentList($measureTypeArray[$rightType], 'r');
+		$rightList=createEquipmentList($measureTypeArray[$rightType], 'r', $startdate, $enddate);
 ?>
 <!doctype html>
 <html>
@@ -494,7 +497,8 @@ function renderGraph() {
 
 	linechart = $.jqplot('graph', data, {
 		seriesDefaults:{
-                        showMarker: false
+                        showMarker: false,
+			lineWidth: 1.5
                 },
 		axes:{
                         yaxis:{
