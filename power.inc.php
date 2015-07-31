@@ -1233,8 +1233,6 @@ class PowerDistribution {
 	}
 
 	function GetWattage() {
-                global $dbh;
-
                 $ret->Wattage = 0;
                 $ret->LastRead = date("Y-m-d H:i:s");
 
@@ -1247,7 +1245,7 @@ class PowerDistribution {
 
                 foreach($mpList as $mp) {
                         if($mp->Type == "elec") {
-                                if($mp->Category="IT") {
+                                if($mp->Category=="IT") {
                                         $lastMeasure = new ElectricalMeasure();
                                         $lastMeasure->MPID = $mp->MPID;
                                         $lastMeasure = $lastMeasure->GetLastMeasure();
@@ -1600,6 +1598,36 @@ class PowerPanel {
 	function LooseSearch($indexedbyid=false){
 		return $this->Search($indexedbyid,true);
 	}
+
+	function GetWattage() {
+                $ret->Wattage = 0;
+                $ret->LastRead = date("Y-m-d H:i:s");
+
+                $measureFound = false;
+
+                $mpList = new MeasurePoint();
+                $mpList->EquipmentType = "PowerPanel";
+                $mpList->EquipmentID = $this->PanelID;
+                $mpList = $mpList->GetMPByEquipment();
+
+                foreach($mpList as $mp) {
+                        if($mp->Type == "elec") {
+                                if($mp->Category=="IT" || $mp->Category=="UPS Input") {
+                                        $lastMeasure = new ElectricalMeasure();
+                                        $lastMeasure->MPID = $mp->MPID;
+                                        $lastMeasure = $lastMeasure->GetLastMeasure();
+
+                                        if(!is_null($lastMeasure->Date)) {
+                                                $measureFound = true;
+                                                $ret->Wattage += $lastMeasure->Wattage1 + $lastMeasure->Wattage2 + $lastMeasure->Wattage3;
+                                                if(strtotime($lastMeasure->Date) < strtotime($ret->LastRead))
+                                                        $ret->LastRead = $lastMeasure->Date;
+                                        }
+                                }
+                        }
+                }
+                return ($measureFound)?$ret:false;
+        }
 }
 
 class PanelSchedule {

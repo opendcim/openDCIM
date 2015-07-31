@@ -572,6 +572,36 @@ class Cabinet {
 		}
 		return 0;
 	}
+
+	function GetWattage() {
+		global $dbh;
+
+                $ret->Wattage = 0;
+                $ret->LastRead = date("Y-m-d H:i:s");
+
+                $measureFound = false;
+       
+		$sql="SELECT * FROM fac_MeasurePoint NATURAL JOIN fac_ElectricalMeasurePoint WHERE (Category=\"IT\" OR Category=\"UPS Input\") AND EquipmentType=\"Device\" AND EquipmentID IN
+			(SELECT DeviceID FROM fac_Device WHERE Cabinet=$this->CabinetID);";
+
+		foreach($dbh->query($sql) as $row) {
+                        $mpList[]=ElectricalMeasurePoint::RowToObject($row);
+                } 
+
+                foreach($mpList as $mp) {
+			$lastMeasure = new ElectricalMeasure();
+			$lastMeasure->MPID = $mp->MPID;
+			$lastMeasure = $lastMeasure->GetLastMeasure();
+
+			if(!is_null($lastMeasure->Date)) {
+				$measureFound = true;
+				$ret->Wattage += $lastMeasure->Wattage1 + $lastMeasure->Wattage2 + $lastMeasure->Wattage3;
+				if(strtotime($lastMeasure->Date) < strtotime($ret->LastRead))
+					$ret->LastRead = $lastMeasure->Date;
+			}
+                }
+                return ($measureFound)?$ret:false;
+        }
 }
 
 class CabinetAudit {
@@ -3435,7 +3465,7 @@ class Device {
 
 		foreach($mpList as $mp) {
 			if($mp->Type == "elec") {
-				if($mp->Category="IT") {
+				if($mp->Category=="IT") {
 					$lastMeasure = new ElectricalMeasure();
 					$lastMeasure->MPID = $mp->MPID;
 					$lastMeasure = $lastMeasure->GetLastMeasure();

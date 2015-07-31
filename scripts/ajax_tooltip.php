@@ -55,10 +55,11 @@ if($object>0){
 			}
 
 			// Pull wattage
-			$sql="SELECT SUM(Wattage) AS RealPower, MAX(LastRead) AS RPLastRead FROM 
+			/*$sql="SELECT SUM(Wattage) AS RealPower, MAX(LastRead) AS RPLastRead FROM 
 				fac_PDUStats WHERE PDUID IN (SELECT DeviceID FROM fac_Device WHERE 
 				Cabinet=$cab->CabinetID);";
-			$wattage=$dbh->query($sql)->fetch();
+			$wattage=$dbh->query($sql)->fetch();*/
+			$wattage=$cab->GetWattage();
 
 			$dep->DeptID = $cab->AssignedTo;
 			if ( $dep->DeptID > 0 ) {
@@ -72,9 +73,9 @@ if($object>0){
 			$totalWatts = $totalWeight = $totalMoment =0;
 			$curTemp=$temps["Temperature"];
 			$curHum=$temps["Humidity"];
-			$curRealPower=$wattage["RealPower"];
+			$curRealPower=$wattage->Wattage;
 			$lastRead=(!is_null($temps["LastRead"]))?strftime('%c',strtotime(($temps["LastRead"]))):0;
-			$RPlastRead=(!is_null($wattage["RPLastRead"]))?strftime('%c',strtotime(($wattage["RPLastRead"]))):0;
+			$RPlastRead=($wattage)?strftime('%c',strtotime(($wattage->LastRead))):0;
 			$rs='red';
 			$ys='yellow';
 			$gs='green';
@@ -140,23 +141,20 @@ if($object>0){
 			$tooltip.="<li class=\"$rpcolor\">".__("Measured Power Combined").": $labelrp</li>\n";
 
 			// Individual CDUs
-			$sql="SELECT C.CabinetID, P.Label, P.RealPower, P.BreakerSize, P.InputAmperage * PP.PanelVoltage AS VoltAmp 
-				FROM ((fac_Cabinet C) LEFT JOIN
-					(SELECT CabinetID, Label, Wattage AS RealPower, BreakerSize, InputAmperage, PanelID FROM 
-					fac_PowerDistribution PD LEFT JOIN fac_PDUStats PS ON PD.PDUID=PS.PDUID ) P 
-					ON C.CabinetId = P.CabinetID)
-				LEFT JOIN (SELECT PanelVoltage, PanelID FROM fac_PowerPanel) PP ON PP.PanelID=P.PanelID
-				WHERE PanelVoltage IS NOT NULL AND RealPower IS NOT NULL AND 
-				C.CabinetID=$object;";
+	
+			$pduList = new PowerDistribution();
+			$pduList->CabinetID = $cab->CabinetID;
+			$pduList = $pduList->GetPDUbyCabinet();
 
-			$rpvalues=$dbh->query($sql);
-			foreach($rpvalues as $cduRow){
-				$voltamp=$cduRow['VoltAmp'];
-				$rp=$cduRow['RealPower'];
-				$bs=$cduRow['BreakerSize'];
-				$label=$cduRow['Label'];
+			foreach($pduList as $pdu){
+				$panel = new PowerPanel();
+				$panel->PanelID = $pdu->PanelID;
+				$panel->GetPanel();
 
-				if($bs==1){
+				$lastMeasure = $pdu->GetWattage();
+				$voltamp=$pdu->InputAmperage * $panel->PanelVoltage;
+
+				if($pdu->BreakerSize==1){
 					$maxDraw=$voltamp / 1.732;
 				}elseif($bs==2){
 					$maxDraw=$voltamp;
@@ -168,9 +166,9 @@ if($object>0){
 				$maxDraw*=0.8;
 
 				// Only keep the highest percentage of any single CDU in a cabinet
-				$pp=intval($rp / $maxDraw * 100);
+				$pp=intval($lastMeasure->Wattage / $maxDraw * 100);
 				if($pp>$RealPowerRed){$rpcolor=$rs;}elseif($pp>$RealPowerYellow){$rpcolor=$ys;}else{$rpcolor=$gs;}
-				$tooltip.="<li class=\"$rpcolor\">$label: $pp%</li>\n";
+				$tooltip.="<li class=\"$rpcolor\">$pdu->Label: $pp%</li>\n";
 			}
 
 

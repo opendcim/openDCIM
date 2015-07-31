@@ -97,6 +97,21 @@
                 	$('#mechid').change(function(e){
                         	location.href='mechanical_device.php?mechid='+this.value;
                 	});
+
+			$('#mp_mpid').change(function(){
+				if(this.value > 0) {
+					document.getElementById("div_mp_label").style.display = "none";
+					document.getElementById("div_mp_type").style.display = "none";
+					document.getElementById("mp_create").style.display = "none";
+					document.getElementById("mp_link").style.display = "";
+					document.getElementById("mp_link").href="measure_point.php?mpid="+this.value;
+				} else {
+					document.getElementById("div_mp_label").style.display = "";
+					document.getElementById("div_mp_type").style.display = "";
+					document.getElementById("mp_create").style.display = "";
+					document.getElementById("mp_link").style.display = "none";
+				}
+			});
         	});
 	</script>
 </head>
@@ -226,13 +241,7 @@ if($mech->MechID >0) {
 
 	$mpOptions="";
 	foreach($mpList as $mp) {
-		if($_POST["mp_mpid"] == $mp->MPID) {
-			$selected = " selected";
-			$selectedMP = $mp;
-		} else {
-			$selected = "";
-		}
-		$mpOptions .= "<option value=\"$mp->MPID\"$selected>[".MeasurePoint::$TypeTab[$mp->Type]."] $mp->Label</option>";
+		$mpOptions .= "<option value=\"$mp->MPID\"$selected>[".__(MeasurePoint::$TypeTab[$mp->Type])."] $mp->Label</option>";
 	}
 
 	$typeOptions="";
@@ -245,29 +254,25 @@ if($mech->MechID >0) {
                         <div class="table">
                                 <div>
                                         <div><label for="mp_mpid">'.__("Measure Point ID").'</label></div>
-                                        <div><select name="mp_mpid" id="mp_mpid" onChange="form.submit();">
+                                        <div><select name="mp_mpid" id="mp_mpid">
                                                 <option value="0">'.__("New Measure Point").'</option>
                                                 '.$mpOptions.'
                                         </select></div>
-                                </div>';
-	if($_POST["mp_mpid"] == 0) {
-		echo '  	<div>
+                                </div>
+			  	<div id="div_mp_label">
                                         <div><label for="mp_label">'.__("Label").'</label></div>
                                         <div><input type="text" name="mp_label" id="mp_label"></div>
                                 </div>
-                                <div>
+                                <div id="div_mp_type">
                                         <div><label for="mp_type">'.__("Type").'</label></div>
                                         <div><select name="mp_type">
                                         '.$typeOptions.'
                                         </select></div>
                                 </div>
                                 <div class="caption">
-                                        <button type="submit" name="action" value="Create_mp">',__("Create Measure Point"),'</button>';
-        } else {
-		echo '		<div class="caption">
-                                        <a href="measure_point.php?mpid='.$selectedMP->MPID.'">[ '.__("Edit Measure Point").' ]</a>';
-        }
-        echo '          	</div>
+                                        <button type="submit" name="action" id="mp_create" value="Create_mp">',__("Create Measure Point"),'</button>
+                                        <a href="" id="mp_link" style="display: none;">[ '.__("Edit Measure Point").' ]</a>
+        	          	</div>
                         </div>
          	</center>       
 	</form>';

@@ -3412,5 +3412,35 @@ class MechanicalDevice {
 
                 return $mechList;
         }
+
+	function GetWattage() {
+                $ret->Wattage = 0;
+                $ret->LastRead = date("Y-m-d H:i:s");
+
+                $measureFound = false;
+
+                $mpList = new MeasurePoint();
+                $mpList->EquipmentType = "MechanicalDevice";
+                $mpList->EquipmentID = $this->MechID;
+                $mpList = $mpList->GetMPByEquipment();
+
+                foreach($mpList as $mp) {
+                        if($mp->Type == "elec") {
+                                if($mp->Category=="Cooling" || $mp->Category=="Other Mechanical") {
+                                        $lastMeasure = new ElectricalMeasure();
+                                        $lastMeasure->MPID = $mp->MPID;
+                                        $lastMeasure = $lastMeasure->GetLastMeasure();
+
+                                        if(!is_null($lastMeasure->Date)) {
+                                                $measureFound = true;
+                                                $ret->Wattage += $lastMeasure->Wattage1 + $lastMeasure->Wattage2 + $lastMeasure->Wattage3;
+                                                if(strtotime($lastMeasure->Date) < strtotime($ret->LastRead))
+                                                        $ret->LastRead = $lastMeasure->Date;
+                                        }
+                                }
+                        }
+                }
+                return ($measureFound)?$ret:false;
+        }
 }
 ?>
