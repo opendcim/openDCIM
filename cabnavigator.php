@@ -469,7 +469,8 @@ $body.='<div id="infopanel">
 		<div>';
 
 	foreach($PDUList as $PDUdev){
-		$lastreading=$PDUdev->GetLastReading();
+		//$lastreading=$PDUdev->GetLastReading();
+		$lastreading=$PDUdev->GetWattage();
 		$pduDraw=($lastreading)?$lastreading->Wattage:0;
 
 		$pan->PanelID=$PDUdev->PanelID;

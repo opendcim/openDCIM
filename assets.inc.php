@@ -3419,6 +3419,38 @@ class Device {
                         return $result;
 		}
 	}
+
+	function GetWattage() {
+		global $dbh;
+		
+		$ret->Wattage = 0;
+		$ret->LastRead = date("Y-m-d H:i:s");
+
+		$measureFound = false;
+
+		$mpList = new MeasurePoint();
+		$mpList->EquipmentType = "Device";
+		$mpList->EquipmentID = $this->DeviceID;
+		$mpList = $mpList->GetMPByEquipment();
+
+		foreach($mpList as $mp) {
+			if($mp->Type == "elec") {
+				if($mp->Category="IT") {
+					$lastMeasure = new ElectricalMeasure();
+					$lastMeasure->MPID = $mp->MPID;
+					$lastMeasure = $lastMeasure->GetLastMeasure();
+
+					if(!is_null($lastMeasure->Date)) {
+						$measureFound = true;
+						$ret->Wattage += $lastMeasure->Wattage1 + $lastMeasure->Wattage2 + $lastMeasure->Wattage3;
+						if(strtotime($lastMeasure->Date) < strtotime($ret->LastRead))
+							$ret->LastRead = $lastMeasure->Date;
+					}
+				}
+			}
+		}
+		return ($measureFound)?$ret:false;
+	}
 }
 
 class DevicePorts {
