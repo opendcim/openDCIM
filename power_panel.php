@@ -56,7 +56,7 @@
 		$mech->PanelID = $panel->PanelID;
 		$mechList=$mech->GetMechByPanel();
 		
-		$panelLoad = sprintf( "%01.2f", $panel->GetPanelLoad() / 1000 );
+		$panelLoad = sprintf( "%01.2f", $panel->GetWattage()->Wattage / 1000 );
 		$panelCap = $panel->PanelVoltage * $panel->MainBreakerSize * sqrt(3);
 		
 		$dataMajorTicks = "";

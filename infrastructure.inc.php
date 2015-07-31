@@ -685,8 +685,7 @@ class DataCenter {
 			b.DataCenterID=$this->DataCenterID;";
 		$dcStats["AvgHumidity"]=($test=round($this->query($sql)->fetchColumn()))?$test:0;
 		
-		$pdu=new PowerDistribution();
-		$dcStats["MeasuredWatts"]=$pdu->GetWattageByDC($this->DataCenterID);
+		$dcStats["MeasuredWatts"]=$this->GetWattage()->Wattage;
 		
 		return $dcStats;
 	}
@@ -755,7 +754,33 @@ class DataCenter {
 		
 		return $tree;
 	}
-	
+
+	function GetWattage() {
+		$mpList = new ElectricalMeasurePoint();
+		$mpList->DataCenterID = $this->DataCenterID;
+		$mpList = $mpList->GetMeasurePointsByDC();
+
+		$measureFound = false;
+
+		$ret->Wattage = 0;
+		$ret->LastRead = date("Y-m-d H:i:s");
+		
+		foreach($mpList as $mp) {
+			if($mp->Category == "UPS Input" || $mp->UPSPowered==0 && ($mp->Category == "IT" || $mp->Category == "Cooling" || $mp->Category == "Other Mechanical")) {
+				$lastMeasure = new ElectricalMeasure();
+				$lastMeasure->MPID = $mp->MPID;
+				$lastMeasure = $lastMeasure->GetLastMeasure();
+
+				if(!is_null($lastMeasure->Date)) {
+					$measureFound = true;
+					$ret->Wattage += $lastMeasure->Wattage1 + $lastMeasure->Wattage2 + $lastMeasure->Wattage3;
+					if(strtotime($lastMeasure->Date) < strtotime($ret->LastRead))
+						$ret->LastRead = $lastMeasure->Date;
+				}
+			}
+		}
+		return ($measureFound)?$ret:false;
+	}
 }
 
 class DeviceTemplate {
