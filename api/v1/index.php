@@ -428,7 +428,7 @@ $app->get( '/device/:deviceid/getsensorreadings', function($deviceid) {
 		$response['errorcode']=404;
 		$response['message']=__("Device not found");
 	}else{
-		$reading=$dev->GetSensorReading(false);
+		$reading=$dev->GetAir();
 		if(!$reading){
 			$response['error']=true;
 			$response['errorcode']=404;
