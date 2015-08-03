@@ -509,7 +509,7 @@
 	$copy = false;
 	$copyerr=__("This device is a copy of an existing device.  Remember to set the new location before saving.");
 	$childList=array();
-
+echo "hhe";
 	// This page was called from somewhere so let's do stuff.
 	// If this page wasn't called then present a blank record for device creation.
 	if(isset($_REQUEST['action'])||isset($_REQUEST['DeviceID'])){
@@ -693,10 +693,13 @@
 
 				if($dev->DeviceType=='Switch'){
 					$linkList=SwitchInfo::getPortStatus($dev->DeviceID);
+				} else if($dev->DeviceType=='CDU'){
+-					$pdu->PDUID=$dev->DeviceID;
+-					$pdu->GetPDU();
+					$lastreading=$dev->GetWattage();
+					$LastWattage=($lastreading)?$lastreading->Wattage:0;
+					$LastRead=($lastreading)?strftime("%c",strtotime($lastreading->LastRead)):"Never";
 				}
-				$lastreading=$dev->GetWattage();
-				$LastWattage=($lastreading)?$lastreading->Wattage:0;
-				$LastRead=($lastreading)?strftime("%c",strtotime($lastreading->LastRead)):"Never";
 			}
 
 			if($dev->ChassisSlots>0 || $dev->RearChassisSlots>0){
@@ -922,8 +925,15 @@ if(isset($_POST["action"]) && $_POST["action"]=="Create_mp") {
         $newMP = new $class;
         $newMP->Label = $_POST["mp_label"];
         $newMP->Type = $_POST["mp_type"];
+	$newMP->IPAddress = $dev->PrimaryIP;
         $newMP->EquipmentType = "Device";
         $newMP->EquipmentID = $dev->DeviceID;
+	if($newMP->Type == "elec") {
+		$cab = new Cabinet();
+		$cab->CabinetID = $dev->Cabinet;
+		$cab->GetCabinet();
+		$newMP->DataCenterID = $cab->DataCenterID;
+	}
         $newMP->CreateMP();
 }
 
