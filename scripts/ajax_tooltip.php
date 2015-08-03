@@ -44,7 +44,7 @@ if($object>0){
 		if($cab->Rights!="None"){
 
 			// Pull temps
-			$sql="SELECT MAX(Temperature) AS Temperature, MAX(Humidity) AS Humidity, 
+			/*$sql="SELECT MAX(Temperature) AS Temperature, MAX(Humidity) AS Humidity, 
 				MAX(LastRead) AS LastRead FROM fac_SensorReadings WHERE DeviceID IN (SELECT 
 				DeviceID FROM fac_Device WHERE Cabinet=$cab->CabinetID AND 
 				BackSide=0 AND DeviceType=\"Sensor\");";
@@ -52,7 +52,9 @@ if($object>0){
 				$temps = $res->fetch();
 			} else {
 				error_log( "Tooltips::PDO Error sql=$sql ErrorInfo=" . print_r($dbh->errorInfo(), true) );
-			}
+			}*/
+
+			$temps = $cab->GetAir();
 
 			// Pull wattage
 			/*$sql="SELECT SUM(Wattage) AS RealPower, MAX(LastRead) AS RPLastRead FROM 
@@ -71,10 +73,10 @@ if($object>0){
 			$devList=$dev->ViewDevicesByCabinet();
 			$curHeight = $cab->CabinetHeight;
 			$totalWatts = $totalWeight = $totalMoment =0;
-			$curTemp=$temps["Temperature"];
-			$curHum=$temps["Humidity"];
+			$curTemp=$temps->Temperature;
+			$curHum=$temps->Humidity;
 			$curRealPower=$wattage->Wattage;
-			$lastRead=(!is_null($temps["LastRead"]))?strftime('%c',strtotime(($temps["LastRead"]))):0;
+			$lastRead=(!is_null($temps->LastRead))?strftime('%c',strtotime(($temps->LastRead))):0;
 			$RPlastRead=($wattage)?strftime('%c',strtotime(($wattage->LastRead))):0;
 			$rs='red';
 			$ys='yellow';

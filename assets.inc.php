@@ -602,6 +602,30 @@ class Cabinet {
                 }
                 return ($measureFound)?$ret:false;
         }
+
+	function GetAir() {
+		global $dbh;
+
+		$sql = "SELECT DeviceID FROM fac_Device WHERE Cabinet = $this->CabinetID AND DeviceType = \"Sensor\";";
+
+		$ret = new stdClass();
+		$ret->Temperature = 0;
+		$ret->Humidity = 0;
+		$ret->LastRead = date("Y-m-d H:i:s");
+
+		foreach($dbh->query($sql) as $row) {
+			$dev = new Device();
+			$dev->DeviceID = $row["DeviceID"];
+			$lastMeasure = $dev->GetAir();
+			if($ret->Temperature < $lastMeasure->Temperature)
+				$ret->Temperature = $lastMeasure->Temperature;
+			if($ret->Humidity < $lastMeasure->Humidity)
+				$ret->Humidity = $lastMeasure->Humidity;
+			if(strtotime($ret->LastRead) > strtotime($lastMeasure->LastRead))
+				$ret->LastRead = $lastMeasure->LastRead;
+		}
+		return $ret;
+	}
 }
 
 class CabinetAudit {
@@ -3480,6 +3504,44 @@ class Device {
 			}
 		}
 		return ($measureFound)?$ret:false;
+	}
+
+	function GetAir() {
+		$mpList = new MeasurePoint();
+                $mpList->EquipmentType = "Device";
+                $mpList->EquipmentID = $this->DeviceID;
+                $mpList = $mpList->GetMPByEquipment();
+
+		$reading = new stdClass();
+		$reading->DeviceID = $this->DeviceID;
+                $reading->Temperature = 0;
+                $reading->Humidity = 0;
+                $reading->LastRead = date("Y-m-d H:i:s");
+                $cnt = 0;
+
+                foreach($mpList as $mp) {
+                        if($mp->Type == "air") {
+                                $lastMeasure = new AirMeasure();
+                                $lastMeasure->MPID = $mp->MPID;
+                                $lastMeasure = $lastMeasure->GetLastMeasure();
+                                
+                                if(!is_null($lastMeasure->Date)) {
+                                        $reading->Temperature += $lastMeasure->Temperature;
+                                        $reading->Humidity += $lastMeasure->Humidity;
+                                        if(strtotime($reading->LastRead) > strtotime($lastMeasure->Date))
+                                                $reading->LastRead = $lastMeasure->Date;
+                                        $cnt++;
+                                }
+                        }
+                }
+		if($cnt > 0) {
+			$reading->Temperature = $reading->Temperature / $cnt;
+			$reading->Humidity = $reading->Humidity / $cnt;
+		} else {
+			$reading->LastRead=__("Error");
+		}
+
+		return $reading;
 	}
 }
 
