@@ -685,7 +685,8 @@ class DataCenter {
 			b.DataCenterID=$this->DataCenterID;";
 		$dcStats["AvgHumidity"]=($test=round($this->query($sql)->fetchColumn()))?$test:0;
 		
-		$dcStats["MeasuredWatts"]=$this->GetWattage()->Wattage;
+		$wattage = $this->GetWattage();
+		$dcStats["MeasuredWatts"]=$wattage->Wattage1 + $wattage->Wattage2 + $wattage->Wattage3;
 		
 		return $dcStats;
 	}
@@ -762,7 +763,9 @@ class DataCenter {
 
 		$measureFound = false;
 
-		$ret->Wattage = 0;
+		$ret->Wattage1 = 0;
+		$ret->Wattage2 = 0;
+		$ret->Wattage3 = 0;
 		$ret->LastRead = date("Y-m-d H:i:s");
 		
 		foreach($mpList as $mp) {
@@ -773,7 +776,9 @@ class DataCenter {
 
 				if(!is_null($lastMeasure->Date)) {
 					$measureFound = true;
-					$ret->Wattage += $lastMeasure->Wattage1 + $lastMeasure->Wattage2 + $lastMeasure->Wattage3;
+					$ret->Wattage1 += $lastMeasure->Wattage1;
+					$ret->Wattage2 += $lastMeasure->Wattage2;
+					$ret->Wattage3 += $lastMeasure->Wattage3;
 					if(strtotime($lastMeasure->Date) < strtotime($ret->LastRead))
 						$ret->LastRead = $lastMeasure->Date;
 				}
@@ -3439,7 +3444,9 @@ class MechanicalDevice {
         }
 
 	function GetWattage() {
-                $ret->Wattage = 0;
+                $ret->Wattage1 = 0;
+                $ret->Wattage2 = 0;
+                $ret->Wattage3 = 0;
                 $ret->LastRead = date("Y-m-d H:i:s");
 
                 $measureFound = false;
@@ -3458,7 +3465,9 @@ class MechanicalDevice {
 
                                         if(!is_null($lastMeasure->Date)) {
                                                 $measureFound = true;
-                                                $ret->Wattage += $lastMeasure->Wattage1 + $lastMeasure->Wattage2 + $lastMeasure->Wattage3;
+                                                $ret->Wattage1 += $lastMeasure->Wattage1;
+						$ret->Wattage2 += $lastMeasure->Wattage2;
+						$ret->Wattage3 += $lastMeasure->Wattage3;
                                                 if(strtotime($lastMeasure->Date) < strtotime($ret->LastRead))
                                                         $ret->LastRead = $lastMeasure->Date;
                                         }

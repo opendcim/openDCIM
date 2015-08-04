@@ -576,13 +576,15 @@ class Cabinet {
 	function GetWattage() {
 		global $dbh;
 
-                $ret->Wattage = 0;
+                $ret->Wattage1 = 0;
+		$ret->Wattage2 = 0;
+		$ret->Wattage3 = 0;
                 $ret->LastRead = date("Y-m-d H:i:s");
 
                 $measureFound = false;
        
-		$sql="SELECT * FROM fac_MeasurePoint NATURAL JOIN fac_ElectricalMeasurePoint WHERE (Category=\"IT\" OR Category=\"UPS Input\") AND EquipmentType=\"Device\" AND EquipmentID IN
-			(SELECT DeviceID FROM fac_Device WHERE Cabinet=$this->CabinetID);";
+		$sql="SELECT * FROM fac_MeasurePoint NATURAL JOIN fac_ElectricalMeasurePoint WHERE EquipmentType=\"Device\" AND EquipmentID IN
+			(SELECT PDUID FROM fac_PowerDistribution WHERE CabinetID=$this->CabinetID);";
 
 		foreach($dbh->query($sql) as $row) {
                         $mpList[]=ElectricalMeasurePoint::RowToObject($row);
@@ -595,7 +597,9 @@ class Cabinet {
 
 			if(!is_null($lastMeasure->Date)) {
 				$measureFound = true;
-				$ret->Wattage += $lastMeasure->Wattage1 + $lastMeasure->Wattage2 + $lastMeasure->Wattage3;
+				$ret->Wattage1 += $lastMeasure->Wattage1;
+				$ret->Wattage2 += $lastMeasure->Wattage2;
+				$ret->Wattage3 += $lastMeasure->Wattage3;
 				if(strtotime($lastMeasure->Date) < strtotime($ret->LastRead))
 					$ret->LastRead = $lastMeasure->Date;
 			}
@@ -3477,7 +3481,9 @@ class Device {
 	function GetWattage() {
 		global $dbh;
 		
-		$ret->Wattage = 0;
+		$ret->Wattage1 = 0;
+		$ret->Wattage2 = 0;
+		$ret->Wattage3 = 0;
 		$ret->LastRead = date("Y-m-d H:i:s");
 
 		$measureFound = false;
@@ -3496,7 +3502,9 @@ class Device {
 
 					if(!is_null($lastMeasure->Date)) {
 						$measureFound = true;
-						$ret->Wattage += $lastMeasure->Wattage1 + $lastMeasure->Wattage2 + $lastMeasure->Wattage3;
+						$ret->Wattage1 += $lastMeasure->Wattage1;
+						$ret->Wattage2 += $lastMeasure->Wattage2;
+						$ret->Wattage3 += $lastMeasure->Wattage3;
 						if(strtotime($lastMeasure->Date) < strtotime($ret->LastRead))
 							$ret->LastRead = $lastMeasure->Date;
 					}

@@ -75,7 +75,7 @@ if($object>0){
 			$totalWatts = $totalWeight = $totalMoment =0;
 			$curTemp=$temps->Temperature;
 			$curHum=$temps->Humidity;
-			$curRealPower=$wattage->Wattage;
+			$curRealPower=$wattage->Wattage1 + $wattage->Wattage2 + $wattage->Wattage3;
 			$lastRead=(!is_null($temps->LastRead))?strftime('%c',strtotime(($temps->LastRead))):0;
 			$RPlastRead=($wattage)?strftime('%c',strtotime(($wattage->LastRead))):0;
 			$rs='red';
@@ -168,7 +168,7 @@ if($object>0){
 				$maxDraw*=0.8;
 
 				// Only keep the highest percentage of any single CDU in a cabinet
-				$pp=intval($lastMeasure->Wattage / $maxDraw * 100);
+				$pp=intval(($lastMeasure->Wattage1 + $lastMeasure->Wattage2 + $lastMeasure->Wattage3) / $maxDraw * 100);
 				if($pp>$RealPowerRed){$rpcolor=$rs;}elseif($pp>$RealPowerYellow){$rpcolor=$ys;}else{$rpcolor=$gs;}
 				$tooltip.="<li class=\"$rpcolor\">$pdu->Label: $pp%</li>\n";
 			}

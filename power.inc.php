@@ -1233,7 +1233,9 @@ class PowerDistribution {
 	}
 
 	function GetWattage() {
-                $ret->Wattage = 0;
+                $ret->Wattage1 = 0;
+                $ret->Wattage2 = 0;
+                $ret->Wattage3 = 0;
                 $ret->LastRead = date("Y-m-d H:i:s");
 
                 $measureFound = false;
@@ -1252,7 +1254,9 @@ class PowerDistribution {
 
                                         if(!is_null($lastMeasure->Date)) {
                                                 $measureFound = true;
-                                                $ret->Wattage += $lastMeasure->Wattage1 + $lastMeasure->Wattage2 + $lastMeasure->Wattage3;
+                                                $ret->Wattage1 += $lastMeasure->Wattage1;
+						$ret->Wattage2 += $lastMeasure->Wattage2;
+						$ret->Wattage3 += $lastMeasure->Wattage3;
                                                 if(strtotime($lastMeasure->Date) < strtotime($ret->LastRead))
                                                         $ret->LastRead = $lastMeasure->Date;
                                         }
@@ -1600,7 +1604,9 @@ class PowerPanel {
 	}
 
 	function GetWattage() {
-                $ret->Wattage = 0;
+                $ret->Wattage1 = 0;
+                $ret->Wattage2 = 0;
+                $ret->Wattage3 = 0;
                 $ret->LastRead = date("Y-m-d H:i:s");
 
                 $measureFound = false;
@@ -1619,7 +1625,9 @@ class PowerPanel {
 
                                         if(!is_null($lastMeasure->Date)) {
                                                 $measureFound = true;
-                                                $ret->Wattage += $lastMeasure->Wattage1 + $lastMeasure->Wattage2 + $lastMeasure->Wattage3;
+                                                $ret->Wattage1 += $lastMeasure->Wattage1;
+						$ret->Wattage2 += $lastMeasure->Wattage2;
+						$ret->Wattage3 += $lastMeasure->Wattage3;
                                                 if(strtotime($lastMeasure->Date) < strtotime($ret->LastRead))
                                                         $ret->LastRead = $lastMeasure->Date;
                                         }

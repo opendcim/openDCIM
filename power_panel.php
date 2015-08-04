@@ -56,7 +56,8 @@
 		$mech->PanelID = $panel->PanelID;
 		$mechList=$mech->GetMechByPanel();
 		
-		$panelLoad = sprintf( "%01.2f", $panel->GetWattage()->Wattage / 1000 );
+		$wattage = $panel->GetWattage();
+		$panelLoad = sprintf( "%01.2f", ($wattage->Wattage1 + $wattage->Wattage2 + $wattage->Wattage3) / 1000 );
 		$panelCap = $panel->PanelVoltage * $panel->MainBreakerSize * sqrt(3);
 		
 		$dataMajorTicks = "";
@@ -113,6 +114,7 @@ if(isset($_POST["action"]) && $_POST["action"]=="Create_mp") {
 	$newMP = new $class;
 	$newMP->Label = $_POST["mp_label"];
 	$newMP->Type = $_POST["mp_type"];
+	$newMP->IPAddress = $panel->PanelIPAddress;
 	$newMP->EquipmentType = "PowerPanel";
 	$newMP->EquipmentID = $panel->PanelID;
 	$newMP->CreateMP();

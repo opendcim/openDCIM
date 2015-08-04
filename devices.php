@@ -697,7 +697,7 @@ echo "hhe";
 -					$pdu->PDUID=$dev->DeviceID;
 -					$pdu->GetPDU();
 					$lastreading=$dev->GetWattage();
-					$LastWattage=($lastreading)?$lastreading->Wattage:0;
+					$LastWattage=($lastreading)?($lastreading->Wattage1 + $lastreading->Wattage2 + $lastreading->Wattage3):0;
 					$LastRead=($lastreading)?strftime("%c",strtotime($lastreading->LastRead)):"Never";
 				}
 			}
