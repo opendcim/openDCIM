@@ -114,16 +114,16 @@
 				$mp->EnergyMultiplier=$_REQUEST['energymultiplier'];
 				switch($mp->ConnectionType) {
 					case "SNMP":
-						$mp->SNMPCommunity=$_REQUEST['snmpcommunity'];
-						$mp->SNMPVersion=$_REQUEST['snmpversion'];
+						$mp->SNMPCommunity=$_REQUEST['elec_snmpcommunity'];
+						$mp->SNMPVersion=$_REQUEST['elec_snmpversion'];
 						$mp->OID1=$_REQUEST['oid1'];
 						$mp->OID2=$_REQUEST['oid2'];
 						$mp->OID3=$_REQUEST['oid3'];
 						$mp->OIDEnergy=$_REQUEST['oidenergy'];
 						break;
 					case "Modbus":
-						$mp->UnitID=$_REQUEST['unitid'];
-						$mp->NbWords=$_REQUEST['nbwords'];
+						$mp->UnitID=$_REQUEST['elec_unitid'];
+						$mp->NbWords=$_REQUEST['elec_nbwords'];
 						$mp->Register1=$_REQUEST['register1'];
 						$mp->Register2=$_REQUEST['register2'];
 						$mp->Register3=$_REQUEST['register3'];
@@ -136,14 +136,14 @@
 		                $mp->CoolingMultiplier=$_REQUEST['coolingmultiplier'];
 				switch($mp->ConnectionType) {
 					case "SNMP":
-						$mp->SNMPCommunity=$_REQUEST['snmpcommunity'];
-						$mp->SNMPVersion=$_REQUEST['snmpversion'];
+						$mp->SNMPCommunity=$_REQUEST['cooling_snmpcommunity'];
+						$mp->SNMPVersion=$_REQUEST['cooling_snmpversion'];
 						$mp->FanSpeedOID=$_REQUEST['fanspeedoid'];
 						$mp->CoolingOID=$_REQUEST['coolingoid'];
 						break;
 					case "Modbus":
-						$mp->UnitID=$_REQUEST['unitid'];
-						$mp->NbWords=$_REQUEST['nbwords'];
+						$mp->UnitID=$_REQUEST['cooling_unitid'];
+						$mp->NbWords=$_REQUEST['cooling_nbwords'];
 						$mp->FanSpeedRegister=$_REQUEST['fanspeedregister'];
 						$mp->CoolingRegister=$_REQUEST['coolingregister'];
 						break;
@@ -153,14 +153,14 @@
 		                $mp->HumidityMultiplier=$_REQUEST["humiditymultiplier"];
 				switch($mp->ConnectionType) {
 					case "SNMP":
-						$mp->SNMPCommunity=$_REQUEST['snmpcommunity'];
-						$mp->SNMPVersion=$_REQUEST['snmpversion'];
+						$mp->SNMPCommunity=$_REQUEST['air_snmpcommunity'];
+						$mp->SNMPVersion=$_REQUEST['air_snmpversion'];
 						$mp->TemperatureOID=$_REQUEST['temperatureoid'];
 						$mp->HumidityOID=$_REQUEST['humidityoid'];
 						break;
 					case "Modbus":
-						$mp->UnitID=$_REQUEST['unitid'];
-						$mp->NbWords=$_REQUEST['nbwords'];
+						$mp->UnitID=$_REQUEST['air_unitid'];
+						$mp->NbWords=$_REQUEST['air_nbwords'];
 						$mp->TemperatureRegister=$_REQUEST['temperatureregister'];
 						$mp->HumidityRegister=$_REQUEST['humidityregister'];
 						break;
@@ -485,7 +485,6 @@
 			for(var n=0; n<typeList.length; n++) {
 				typeList[n].style.display = "none";
 			}
-
 			switch(type.options[type.selectedIndex].value) {
 				case "elec":
 					var elecList = document.getElementsByClassName("mp_ElectricalMeasurePoint");
@@ -694,12 +693,12 @@ echo '                                                  </select></div>
 echo '                                  		</select></div>
 						</div>
 						<div class="mp_cotype mp_SNMPElectricalMeasurePoint">
-                                                        <div><label for="snmpcommunity">',__("SNMP Community"),'</label></div>
-                                                        <div><input type="text" name="snmpcommunity" id="snmpcommunity" value=',($mp->ConnectionType=="SNMP")?$mp->SNMPCommunity:"",'></div>
+                                                        <div><label for="elec_snmpcommunity">',__("SNMP Community"),'</label></div>
+                                                        <div><input type="text" name="elec_snmpcommunity" value=',($mp->ConnectionType=="SNMP")?$mp->SNMPCommunity:"",'></div>
                                                 </div>
                                                 <div class="mp_cotype mp_SNMPElectricalMeasurePoint">
-                                                        <div><label for="snmpversion">',__("SNMP Version"),'</label></div>
-                                                        <div><select name="snmpversion" id="snmpversion">';
+                                                        <div><label for="elec_snmpversion">',__("SNMP Version"),'</label></div>
+                                                        <div><select name="elec_snmpversion">';
         foreach($versionList as $v) {
                 if($v == $mp->SNMPVersion)
                         $selected = ' selected';
@@ -711,27 +710,27 @@ echo '                                                  </select></div>
                                                 </div>
                                                 <div class="mp_cotype mp_SNMPElectricalMeasurePoint">
                                                         <div><label for="oid1">',__("OID 1"),'</label></div>
-                                                        <div><input type="text" name="oid1" id="oid1" value=',($mp->ConnectionType=="SNMP")?$mp->OID1:"",'></div>
+                                                        <div><input type="text" name="oid1" value=',($mp->ConnectionType=="SNMP")?$mp->OID1:"",'></div>
                                                 </div>
                                                 <div class="mp_cotype mp_SNMPElectricalMeasurePoint">
                                                         <div><label for="oid2">',__("OID 2"),'</label></div>
-                                                        <div><input type="text" name="oid2" id="oid2" value=',($mp->ConnectionType=="SNMP")?$mp->OID2:"",'></div>
+                                                        <div><input type="text" name="oid2" value=',($mp->ConnectionType=="SNMP")?$mp->OID2:"",'></div>
                                                 </div>
                                                 <div class="mp_cotype mp_SNMPElectricalMeasurePoint">
                                                         <div><label for="oid3">',__("OID 3"),'</label></div>
-                                                        <div><input type="text" name="oid3" id="oid3" value=',($mp->ConnectionType=="SNMP")?$mp->OID3:"",'></div>
+                                                        <div><input type="text" name="oid3" value=',($mp->ConnectionType=="SNMP")?$mp->OID3:"",'></div>
                                                 </div>
                                                 <div class="mp_cotype mp_SNMPElectricalMeasurePoint">
                                                         <div><label for="oidenergy">',__("OID Energy"),'</label></div>
-                                                        <div><input type="text" name="oidenergy" id="oidenergy" value=',($mp->ConnectionType=="SNMP")?$mp->OIDEnergy:"",'></div>
+                                                        <div><input type="text" name="oidenergy" value=',($mp->ConnectionType=="SNMP")?$mp->OIDEnergy:"",'></div>
                                                 </div>
                                                 <div class="mp_cotype mp_ModbusElectricalMeasurePoint">
-                                                        <div><label for="unitid">',__("Unit ID"),'</label></div>
-                                                        <div><input type="text" name="unitid" id="unitid" value=',($mp->ConnectionType=="Modbus")?$mp->UnitID:"",'></div>
+                                                        <div><label for="elec_unitid">',__("Unit ID"),'</label></div>
+                                                        <div><input type="text" name="elec_unitid" value=',($mp->ConnectionType=="Modbus")?$mp->UnitID:"",'></div>
                                                 </div>
                                                 <div class="mp_cotype mp_ModbusElectricalMeasurePoint">
-                                                        <div><label for="nbwords">',__("Number of words"),'</label></div>
-                                                        <div><input type="text" name="nbwords" id="nbwords" value=',($mp->ConnectionType=="Modbus")?$mp->NbWords:"",'></div>
+                                                        <div><label for="elec_nbwords">',__("Number of words"),'</label></div>
+                                                        <div><input type="text" name="elec_nbwords" value=',($mp->ConnectionType=="Modbus")?$mp->NbWords:"",'></div>
                                                 </div>
                                                 <div class="mp_cotype mp_ModbusElectricalMeasurePoint">
                                                         <div><label for="register1">',__("Register 1"),'</label></div>
@@ -774,12 +773,12 @@ echo '                                                  </select></div>
 echo '                                                  </select></div>
                                                 </div>
 						<div class="mp_cotype mp_SNMPCoolingMeasurePoint">
-                                                        <div><label for="snmpcommunity">',__("SNMP Community"),'</label></div>
-                                                        <div><input type="text" name="snmpcommunity" id="snmpcommunity" value=',($mp->ConnectionType=="SNMP")?$mp->SNMPCommunity:"",'></div>
+                                                        <div><label for="cooling_snmpcommunity">',__("SNMP Community"),'</label></div>
+                                                        <div><input type="text" name="cooling_snmpcommunity" value=',($mp->ConnectionType=="SNMP")?$mp->SNMPCommunity:"",'></div>
                                                 </div>
                                                 <div class="mp_cotype mp_SNMPCoolingMeasurePoint">
-                                                        <div><label for="snmpversion">',__("SNMP Version"),'</label></div>
-                                                        <div><select name="snmpversion" id="snmpversion">';
+                                                        <div><label for="cooling_snmpversion">',__("SNMP Version"),'</label></div>
+                                                        <div><select name="cooling_snmpversion">';
         foreach($versionList as $v) {
                 if($v == $mp->SNMPVersion)
                         $selected = ' selected';
@@ -798,12 +797,12 @@ echo '                                                  </select></div>
                                                         <div><input type="text" name="coolingoid" id="coolingoid" value=',($mp->ConnectionType=="SNMP")?$mp->CoolingOID:"",'></div>
                                                 </div>
 						<div class="mp_cotype mp_ModbusCoolingMeasurePoint">
-                                                        <div><label for="unitid">',__("Unit ID"),'</label></div>
-                                                        <div><input type="text" name="unitid" id="unitid" value=',($mp->ConnectionType=="Modbus")?$mp->UnitID:"",'></div>
+                                                        <div><label for="cooling_unitid">',__("Unit ID"),'</label></div>
+                                                        <div><input type="text" name="cooling_unitid" value=',($mp->ConnectionType=="Modbus")?$mp->UnitID:"",'></div>
                                                 </div>
                                                 <div class="mp_cotype mp_ModbusCoolingMeasurePoint">
-                                                        <div><label for="nbwords">',__("Number of words"),'</label></div>
-                                                        <div><input type="text" name="nbwords" id="nbwords" value=',($mp->ConnectionType=="Modbus")?$mp->NbWords:"",'></div>
+                                                        <div><label for="cooling_nbwords">',__("Number of words"),'</label></div>
+                                                        <div><input type="text" name="cooling_nbwords" value=',($mp->ConnectionType=="Modbus")?$mp->NbWords:"",'></div>
                                                 </div>
                                                 <div class="mp_cotype mp_ModbusCoolingMeasurePoint">
                                                         <div><label for="fanspeedregister">',__("Fan Speed Register"),'</label></div>
@@ -838,12 +837,12 @@ echo '                                                  </select></div>
 echo '                                                  </select></div>
                                                 </div>
 						<div class="mp_cotype mp_SNMPAirMeasurePoint">
-                                                        <div><label for="snmpcommunity">',__("SNMP Community"),'</label></div>
-                                                        <div><input type="text" name="snmpcommunity" id="snmpcommunity" value=',($mp->ConnectionType=="SNMP")?$mp->SNMPCommunity:"",'></div>
+                                                        <div><label for="air_snmpcommunity">',__("SNMP Community"),'</label></div>
+                                                        <div><input type="text" name="air_snmpcommunity" value=',($mp->ConnectionType=="SNMP")?$mp->SNMPCommunity:"",'></div>
                                                 </div>
                                                 <div class="mp_cotype mp_SNMPAirMeasurePoint">
-                                                        <div><label for="snmpversion">',__("SNMP Version"),'</label></div>
-                                                        <div><select name="snmpversion" id="snmpversion">';
+                                                        <div><label for="air_snmpversion">',__("SNMP Version"),'</label></div>
+                                                        <div><select name="air_snmpversion">';
         foreach($versionList as $v) {
                 if($v == $mp->SNMPVersion)
                         $selected = ' selected';
@@ -862,12 +861,12 @@ echo '                                                  </select></div>
                                                         <div><input type="text" name="humidityoid" id="humidityoid" value=',($mp->ConnectionType=="SNMP")?$mp->HumidityOID:"",'></div>
                                                 </div>
 						<div class="mp_cotype mp_ModbusAirMeasurePoint">
-                                                        <div><label for="unitid">',__("Unit ID"),'</label></div>
-                                                        <div><input type="text" name="unitid" id="unitid" value=',($mp->ConnectionType=="Modbus")?$mp->UnitID:"",'></div>
+                                                        <div><label for="air_unitid">',__("Unit ID"),'</label></div>
+                                                        <div><input type="text" name="air_unitid" value=',($mp->ConnectionType=="Modbus")?$mp->UnitID:"",'></div>
                                                 </div>
                                                 <div class="mp_cotype mp_ModbusAirMeasurePoint">
-                                                        <div><label for="nbwords">',__("Number of words"),'</label></div>
-                                                        <div><input type="text" name="nbwords" id="nbwords" value=',($mp->ConnectionType=="Modbus")?$mp->NbWords:"",'></div>
+                                                        <div><label for="air_nbwords">',__("Number of words"),'</label></div>
+                                                        <div><input type="text" name="air_nbwords" value=',($mp->ConnectionType=="Modbus")?$mp->NbWords:"",'></div>
                                                 </div>
                                                 <div class="mp_cotype mp_ModbusAirMeasurePoint">
                                                         <div><label for="temperatureregister">',__("Temperature Register"),'</label></div>
