@@ -485,7 +485,7 @@ class Cabinet {
 			if($prop=="FrontEdge" && $val=="Top" && $ot!="Top"){
 				continue;
 			}
-			if($val && $val!="1969-12-31"){
+			if($val && $val!=date("Y-m-d", strtotime(0))){
 				extendsql($prop,$val,$sqlextend,$loose);
 			}
 		}

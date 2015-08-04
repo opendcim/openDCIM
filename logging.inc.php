@@ -322,13 +322,12 @@ class LogActions {
 			$sql.=" AND $prop LIKE \"%$val%\"";
 		}
 		foreach($this as $prop => $val){
-			if($val && $val!="1969-12-31"){
+			if($val && $val!=date("Y-m-d", strtotime(0))){
 				findit($prop,$val,$sqlextend);
 			}
 		}
 
 		$sql="SELECT DISTINCT CAST($sqlcolumn AS CHAR(20)) AS Search FROM fac_GenericLog WHERE $sqlcolumn!=\"\"$sqlextend ORDER BY $sqlcolumn ASC;";
-
 		$values=array();
 		foreach($this->query($sql) as $row){
 			$values[]=$row['Search'];
@@ -342,16 +341,9 @@ class LogActions {
 
 		// This will store all our extended sql
 		$sqlextend="";
-		function findit($prop,$val,&$sql){
-			if($sql){
-				$sql.=" AND $prop=\"$val\"";
-			}else{
-				$sql.=" WHERE $prop LIKE \"%$val%\"";
-			}
-		}
 		foreach($this as $prop => $val){
-			if($val && $val!="1969-12-31"){
-				findit($prop,$val,$sqlextend);
+			if($val && $val!=date("Y-m-d", strtotime(0))){
+				extendsql($prop,$val,$sqlextend,true);
 			}
 		}
 
