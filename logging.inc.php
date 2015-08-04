@@ -167,6 +167,33 @@ class LogActions {
 				$log->ObjectID=$object->DeviceID;
 				$log->ChildID=$object->DeviceConnNumber;
 				break;
+			case "SNMPElectricalMeasurePoint":
+				$log->ObjectID=$object->MPID;
+				break;
+			case "ModbusElectricalMeasurePoint":
+				$log->ObjectID=$object->MPID;
+				break;
+			case "SNMPCoolingMeasurePoint":
+				$log->ObjectID=$object->MPID;
+				break;
+			case "ModbusCoolingMeasurePoint":
+				$log->ObjectID=$object->MPID;
+				break;
+			case "SNMPAirMeasurePoint":
+				$log->ObjectID=$object->MPID;
+				break;
+			case "ModbusAirMeasurePoint":
+				$log->ObjectID=$object->MPID;
+				break;
+			case "MechanicalDevice":
+				$log->ObjectID=$object->MechID;
+				break;
+			case "MeasurePointGroup":
+				$log->ObjectID=$object->MPGID;
+				break;
+			case "EnergyType":
+				$log->ObjectID=$object->EnergyTypeID;
+				break;
 				// similar questions as to the switch connections. are we going to track this?
 			case "SupplyBin":
 			case "Supplies":
@@ -306,7 +333,7 @@ class LogActions {
 		$this->Property=sanitize($this->Property);
 		$this->OldVal=sanitize($this->OldVal);
 		$this->NewVal=sanitize($this->NewVal);
-		$this->Time=date("Y-m-d", strtotime($this->Time));
+		$this->Time=date("Y-m-d H:i:s", strtotime($this->Time));
 	}
 
 	function ListUnique($sqlcolumn){
@@ -322,7 +349,7 @@ class LogActions {
 			$sql.=" AND $prop LIKE \"%$val%\"";
 		}
 		foreach($this as $prop => $val){
-			if($val && $val!="1969-12-31"){
+			if($val && strtotime($val)!=0){
 				findit($prop,$val,$sqlextend);
 			}
 		}
@@ -350,7 +377,7 @@ class LogActions {
 			}
 		}
 		foreach($this as $prop => $val){
-			if($val && $val!="1969-12-31"){
+			if($val && strtotime($val)!=0){
 				findit($prop,$val,$sqlextend);
 			}
 		}
