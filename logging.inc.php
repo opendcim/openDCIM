@@ -306,7 +306,7 @@ class LogActions {
 		$this->Property=sanitize($this->Property);
 		$this->OldVal=sanitize($this->OldVal);
 		$this->NewVal=sanitize($this->NewVal);
-		$this->Time=date("Y-m-d", strtotime($this->Time));
+		$this->Time=date("Y-m-d H:i:s", strtotime($this->Time));
 	}
 
 	function ListUnique($sqlcolumn){
@@ -322,7 +322,7 @@ class LogActions {
 			$sql.=" AND $prop LIKE \"%$val%\"";
 		}
 		foreach($this as $prop => $val){
-			if($val && $val!="1969-12-31"){
+			if($val && strtotime($val)!=0){
 				findit($prop,$val,$sqlextend);
 			}
 		}
@@ -350,7 +350,7 @@ class LogActions {
 			}
 		}
 		foreach($this as $prop => $val){
-			if($val && $val!="1969-12-31"){
+			if($val && strtotime($val)!=0){
 				findit($prop,$val,$sqlextend);
 			}
 		}
