@@ -502,9 +502,11 @@ $body.='<div id="infopanel">
 		$body.=sprintf("\n\t\t\t<a href=\"devices.php?DeviceID=%d\">CDU %s</a><br>(%.2f kW) / (%.2f kW Max)<br>\n", $PDUdev->PDUID, $PDUdev->Label, $pduDraw / 1000, $maxDraw / 1000 );
 		$body.="\t\t\t\t<div class=\"meter-wrap\">\n\t\t\t\t\t<div class=\"meter-value\" style=\"background-color: $PDUColor; width: $PDUPercent%;\">\n\t\t\t\t\t\t<div class=\"meter-text\">".round($PDUPercent)."%</div>\n\t\t\t\t\t</div>\n\t\t\t\t</div>\n";
 		if($PDUdev->BreakerSize > 1) {
-			$body.="<div class=\"meter-wrap\" style=\"height: 0.7em;\">
-					<div class=\"meter-value\" style=\"background-color: dodgerblue; width: $PDUPhase1%; display: inline-block;\"></div><div class=\"meter-value\" style=\"background-color: darkorange; width: $PDUPhase2%; display: inline-block;\"></div><div class=\"meter-value\" style=\"background-color: darkviolet; width: $PDUPhase3%; display: inline-block;\"></div>
-				</div><br>";
+			$body.="<div class=\"meter-wrap\" style=\"height: 0.7em;\">";
+			$body.="<span title=\"".__("Phase")." 1: ".round($PDUPhase1)."%\"><div class=\"meter-value\" style=\"background-color: dodgerblue; width: $PDUPhase1%; display: inline-block;\"></div></span>";
+			$body.="<span title=\"".__("Phase")." 2: ".round($PDUPhase2)."%\"><div class=\"meter-value\" style=\"background-color: darkorange; width: $PDUPhase2%; display: inline-block;\"></div></span>";
+			$body.="<span title=\"".__("Phase")." 3: ".round($PDUPhase3)."%\"><div class=\"meter-value\" style=\"background-color: darkviolet; width: $PDUPhase3%; display: inline-block;\"></div></span>";
+			$body.="</div><br>";
 		}
 
 		if ( $PDUdev->FailSafe ) {
