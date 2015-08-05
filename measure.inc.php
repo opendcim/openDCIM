@@ -228,11 +228,11 @@ class MeasurePoint {
 					$snmpresult[$key]=(is_null($oid))?$snmpHost->useSystem()->$snmplookup(true):$snmpHost->get($oid);
 				}catch (Exception $e){
 					//$mp->IncrementFailures();
-					$snmpresult[$key] = false;
+					$snmpresult[$key] = null;
 					error_log("MeasurePoint::$caller($mp->MPID) ".$e->getMessage());
 				}
 			} else {
-				$snmpresult[$key] = false;
+				$snmpresult[$key] = null;
 			}
 		}
 
@@ -265,10 +265,10 @@ class MeasurePoint {
 						$val = $val * 65536 + $r;
 					$valTab[$key] = $val;
 				} else {
-					$valTab[$key] = false;
+					$valTab[$key] = null;
 				}
 			} else {
-				$valTab[$key] = false;
+				$valTab[$key] = null;
 			}
 		}
 		$modbus->ModClose();
