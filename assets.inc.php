@@ -576,9 +576,7 @@ class Cabinet {
 	function GetWattage() {
 		global $dbh;
 
-                $ret->Wattage1 = 0;
-		$ret->Wattage2 = 0;
-		$ret->Wattage3 = 0;
+                $ret->Wattage = 0;
                 $ret->LastRead = date("Y-m-d H:i:s");
 
                 $measureFound = false;
@@ -597,9 +595,7 @@ class Cabinet {
 
 			if(!is_null($lastMeasure->Date)) {
 				$measureFound = true;
-				$ret->Wattage1 += $lastMeasure->Wattage1;
-				$ret->Wattage2 += $lastMeasure->Wattage2;
-				$ret->Wattage3 += $lastMeasure->Wattage3;
+				$ret->Wattage += $lastMeasure->Wattage1 + $lastMeasure->Wattage2 + $lastMeasure->Wattage3;
 				if(strtotime($lastMeasure->Date) < strtotime($ret->LastRead))
 					$ret->LastRead = $lastMeasure->Date;
 			}

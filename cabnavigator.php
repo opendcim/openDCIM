@@ -354,7 +354,7 @@ function renderUnassignedTemplateOwnership($noTemplFlag, $noOwnerFlag, $device) 
 	@$WeightPercent=number_format($totalWeight/$cab->MaxWeight*100,0);
 	@$PowerPercent=number_format(($totalWatts/1000)/$cab->MaxKW*100,0);
 	$wattage = $cab->GetWattage();
-	$measuredWatts = $wattage->Wattage1 + $wattage->Wattage2 + $wattage->Wattage3;
+	$measuredWatts = $wattage->Wattage;
 	@$MeasuredPercent=number_format(($measuredWatts/1000)/$cab->MaxKW*100,0);
 	$CriticalColor=$config->ParameterArray["CriticalColor"];
 	$CautionColor=$config->ParameterArray["CautionColor"];

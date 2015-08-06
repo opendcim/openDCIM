@@ -686,7 +686,7 @@ class DataCenter {
 		$dcStats["AvgHumidity"]=($test=round($this->query($sql)->fetchColumn()))?$test:0;
 		
 		$wattage = $this->GetWattage();
-		$dcStats["MeasuredWatts"]=$wattage->Wattage1 + $wattage->Wattage2 + $wattage->Wattage3;
+		$dcStats["MeasuredWatts"]=$wattage->Wattage;
 		
 		return $dcStats;
 	}
@@ -763,9 +763,7 @@ class DataCenter {
 
 		$measureFound = false;
 
-		$ret->Wattage1 = 0;
-		$ret->Wattage2 = 0;
-		$ret->Wattage3 = 0;
+		$ret->Wattage = 0;
 		$ret->LastRead = date("Y-m-d H:i:s");
 		
 		foreach($mpList as $mp) {
@@ -776,9 +774,7 @@ class DataCenter {
 
 				if(!is_null($lastMeasure->Date)) {
 					$measureFound = true;
-					$ret->Wattage1 += $lastMeasure->Wattage1;
-					$ret->Wattage2 += $lastMeasure->Wattage2;
-					$ret->Wattage3 += $lastMeasure->Wattage3;
+					$ret->Wattage += $lastMeasure->Wattage1 + $lastMeasure->Wattage2 + $lastMeasure->Wattage3;
 					if(strtotime($lastMeasure->Date) < strtotime($ret->LastRead))
 						$ret->LastRead = $lastMeasure->Date;
 				}
@@ -2154,10 +2150,7 @@ class Zone {
 			b.ZoneID=$this->ZoneID;";
 		$zoneStats["ComputedWatts"]+=($test=$this->query($sql)->fetchColumn())?$test:0;
 		
-		$sql="SELECT SUM(Wattage) AS Wattage FROM fac_PDUStats WHERE PDUID IN 
-			(SELECT PDUID FROM fac_PowerDistribution WHERE CabinetID IN 
-			(SELECT CabinetID FROM fac_Cabinet WHERE ZoneID=$this->ZoneID))";
-		$zoneStats["MeasuredWatts"]=($test=$this->query($sql)->fetchColumn())?$test:0;
+		$zoneStats["MeasuredWatts"]=$this->GetWattage();
 		
 		$sql="SELECT AVG(NULLIF(Temperature, 0)) AS AvgTemp FROM fac_SensorReadings a, 
 			fac_Device b, fac_Cabinet c WHERE a.DeviceID=b.DeviceID AND b.BackSide=0 and
@@ -2172,6 +2165,29 @@ class Zone {
 		$zoneStats["AvgHumidity"]=($test=round($this->query($sql)->fetchColumn()))?$test:0;
 
 		return $zoneStats;
+	}
+
+	function GetWattage() {
+		$cabList = new Cabinet();
+		$cabList->ZoneID = $this->ZoneID;
+		$cabList = $cabList->GetCabinetsByZone();
+
+		$measureFound = false;
+
+		$ret = new stdClass();
+		$ret->Wattage = 0;
+		$ret->LastRead = date("Y-m-d H:i:s");
+
+		foreach($cabList as $cab) {
+			$lastMeasure = $cab->GetWattage();
+			if($lastMeasure) {
+				$ret->Wattage += $lastMeasure->Wattage;
+				if($ret->LastRead > $lastMeasure->LastRead)
+					$ret->LastRead = $lastMeasure->LastRead;
+				$measureFound = true;
+			}
+		}
+		return ($measureFound)?$ret:false;
 	}
 }
 

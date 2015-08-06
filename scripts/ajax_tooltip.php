@@ -75,7 +75,7 @@ if($object>0){
 			$totalWatts = $totalWeight = $totalMoment =0;
 			$curTemp=$temps->Temperature;
 			$curHum=$temps->Humidity;
-			$curRealPower=$wattage->Wattage1 + $wattage->Wattage2 + $wattage->Wattage3;
+			$curRealPower=$wattage->Wattage;
 			$lastRead=(!is_null($temps->LastRead))?strftime('%c',strtotime(($temps->LastRead))):0;
 			$RPlastRead=($wattage)?strftime('%c',strtotime(($wattage->LastRead))):0;
 			$rs='red';
