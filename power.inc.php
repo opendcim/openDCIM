@@ -1247,20 +1247,18 @@ class PowerDistribution {
 
                 foreach($mpList as $mp) {
                         if($mp->Type == "elec") {
-                                if($mp->Category=="IT") {
-                                        $lastMeasure = new ElectricalMeasure();
-                                        $lastMeasure->MPID = $mp->MPID;
-                                        $lastMeasure = $lastMeasure->GetLastMeasure();
+				$lastMeasure = new ElectricalMeasure();
+				$lastMeasure->MPID = $mp->MPID;
+				$lastMeasure = $lastMeasure->GetLastMeasure();
 
-                                        if(!is_null($lastMeasure->Date)) {
-                                                $measureFound = true;
-                                                $ret->Wattage1 += $lastMeasure->Wattage1;
-						$ret->Wattage2 += $lastMeasure->Wattage2;
-						$ret->Wattage3 += $lastMeasure->Wattage3;
-                                                if(strtotime($lastMeasure->Date) < strtotime($ret->LastRead))
-                                                        $ret->LastRead = $lastMeasure->Date;
-                                        }
-                                }
+				if(!is_null($lastMeasure->Date)) {
+					$measureFound = true;
+					$ret->Wattage1 += $lastMeasure->Wattage1;
+					$ret->Wattage2 += $lastMeasure->Wattage2;
+					$ret->Wattage3 += $lastMeasure->Wattage3;
+					if(strtotime($lastMeasure->Date) < strtotime($ret->LastRead))
+						$ret->LastRead = $lastMeasure->Date;
+				}
                         }
                 }
                 return ($measureFound)?$ret:false;
