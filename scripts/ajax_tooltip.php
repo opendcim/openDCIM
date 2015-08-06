@@ -168,9 +168,12 @@ if($object>0){
 				$maxDraw*=0.8;
 
 				// Only keep the highest percentage of any single CDU in a cabinet
-				$pp=intval(($lastMeasure->Wattage1 + $lastMeasure->Wattage2 + $lastMeasure->Wattage3) / $maxDraw * 100);
+				$pp=round(($lastMeasure->Wattage1 + $lastMeasure->Wattage2 + $lastMeasure->Wattage3) / $maxDraw * 100);
 				if($pp>$RealPowerRed){$rpcolor=$rs;}elseif($pp>$RealPowerYellow){$rpcolor=$ys;}else{$rpcolor=$gs;}
-				$tooltip.="<li class=\"$rpcolor\">$pdu->Label: $pp%</li>\n";
+				$tooltip.="<li class=\"$rpcolor\">$pdu->Label: $pp% ";
+				if($pdu->BreakerSize > 1)
+					$tooltip.="(".__("Phase")." 1: $lastMeasure->Wattage1 W, ".__("Phase")." 2: $lastMeasure->Wattage2 W, ".__("Phase")." 3: $lastMeasure->Wattage3 W)";
+				$tooltip.="</li>\n";
 			}
 
 

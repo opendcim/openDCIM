@@ -506,8 +506,12 @@ $body.='<div id="infopanel">
 			$body.="<span title=\"".__("Phase")." 1: ".round($PDUPhase1)."%\"><div class=\"meter-value\" style=\"background-color: dodgerblue; width: ".number_format($PDUPhase1,2)."%; display: inline-block;\"></div></span>";
 			$body.="<span title=\"".__("Phase")." 2: ".round($PDUPhase2)."%\"><div class=\"meter-value\" style=\"background-color: darkorange; width: ".number_format($PDUPhase2,2)."%; display: inline-block;\"></div></span>";
 			$body.="<span title=\"".__("Phase")." 3: ".round($PDUPhase3)."%\"><div class=\"meter-value\" style=\"background-color: darkviolet; width: ".number_format($PDUPhase3,2)."%; display: inline-block;\"></div></span>";
-			$body.="</div><br>";
+			$body.="</div><br>
+				<div class=\"colorbox border\" style=\"background-color: dodgerblue;\"></div><label>".__("Phase")." 1: $lastreading->Wattage1 W</label><br>
+				<div class=\"colorbox border\" style=\"background-color: darkorange;\"></div><label>".__("Phase")." 2: $lastreading->Wattage2 W</label><br>
+				<div class=\"colorbox border\" style=\"background-color: darkviolet;\"></div><label>".__("Phase")." 3: $lastreading->Wattage3 W</label><br>";
 		}
+		$body.="<br>";
 
 		if ( $PDUdev->FailSafe ) {
 			$tmpl = new CDUTemplate();
