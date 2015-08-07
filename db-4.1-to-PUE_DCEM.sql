@@ -259,10 +259,13 @@ ALTER TABLE fac_DataCenter ADD PUEFrequency VARCHAR(1) NOT NULL DEFAULT "D" AFTE
 ALTER TABLE fac_DataCenter ADD PUELevel VARCHAR(2) NOT NULL DEFAULT "L1" AFTER ContainerID;
 
 --
--- Add Config item for TimeInterval
+-- Add Config item for TimeInterval and phases colors
 --
 
 INSERT INTO fac_Config set Parameter="TimeInterval", Value="Last 7 Days", UnitOfMeasure="time", ValType="string", DefaultVal="Last 7 Days";
+INSERT INTO fac_Config set Parameter="Phase1Color", Value="#000000", UnitOfMeasure="HexColor", ValType="string", DefaultVal="#000000";
+INSERT INTO fac_Config set Parameter="Phase2Color", Value="#FF0000", UnitOfMeasure="HexColor", ValType="string", DefaultVal="#FF0000";
+INSERT INTO fac_Config set Parameter="Phase3Color", Value="#0000FF", UnitOfMeasure="HexColor", ValType="string", DefaultVal="#0000FF";
 
 --
 -- Bump up the database version
