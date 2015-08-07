@@ -251,17 +251,6 @@
         <script type="text/javascript" src="scripts/jquery.min.js"></script>
         <script type="text/javascript" src="scripts/jquery-ui.min.js"></script>
 	<script type="text/javascript">
-		var typeTab = {	<?php
-					$n=0;
-					foreach(MeasurePoint::$TypeTab as $key => $val) {
-						if($n==0)
-							echo '"'.$key.'": "'.$val.'"';
-						else
-							echo ',"'.$key.'": "'.$val.'"';
-						$n++;
-					}
-				?> };
-
 		var device = {<?php  $n=0;
 				foreach($devList as $dev) {
 					if($n == 0)
@@ -664,6 +653,9 @@ echo '							</select></div>
         }
 echo '                                                  </select></div>
                                                 </div>
+						<div>
+							<div>&nbsp;</div>
+						</div>
 						<div class="mp_type mp_elec">
                                                         <div><label for="datacenterid">',__("Data Center ID"),'</label></div>
                                                         <div><select name="datacenterid">
@@ -778,6 +770,9 @@ echo '                                                  </select></div>
         }
 echo '                                                  </select></div>
                                                 </div>
+						<div>
+							<div>&nbsp;</div>
+						</div>
 						<div class="mp_cotype mp_SNMP">
                                                         <div><label for="air_snmpcommunity">',__("SNMP Community"),'</label></div>
                                                         <div><input type="text" name="snmpcommunity" id="snmpcommunity" value=',($mp->ConnectionType=="SNMP")?$mp->SNMPCommunity:"",'></div>
@@ -838,6 +833,17 @@ echo '                                                  </select></div>
                                                         <div><label for="v3privpassphrase">',__("SNMPv3 PrivPassphrase"),'</label></div>
                                                         <div><input type="password" name="v3privpassphrase" id="v3privpassphrase" value=',($mp->SNMPVersion=="3")?$mp->v3PrivPassphrase:"",'></div>
                                                 </div>
+						<div class="mp_cotype mp_Modbus">
+                                                        <div><label for="unitid">',__("Unit ID"),'</label></div>
+                                                        <div><input type="text" name="unitid" value=',($mp->ConnectionType=="Modbus")?$mp->UnitID:"",'></div>
+                                                </div>
+                                                <div class="mp_cotype mp_Modbus">
+                                                        <div><label for="nbwords">',__("Number of words"),'</label></div>
+                                                        <div><input type="text" name="nbwords" value=',($mp->ConnectionType=="Modbus")?$mp->NbWords:"",'></div>
+                                                </div>
+						<div>
+							<div>&nbsp;</div>
+						</div>
                                                 <div class="mp_cotype mp_SNMPelec">
                                                         <div><label for="oid1">',__("OID 1"),'</label></div>
                                                         <div><input type="text" name="oid1" value=',($mp->ConnectionType=="SNMP")?$mp->OID1:"",'></div>
@@ -869,14 +875,6 @@ echo '                                                  </select></div>
                                                 <div class="mp_cotype mp_SNMPair">
                                                         <div><label for="humidityoid">',__("Humidity OID"),'</label></div>
                                                         <div><input type="text" name="humidityoid" id="humidityoid" value=',($mp->ConnectionType=="SNMP")?$mp->HumidityOID:"",'></div>
-                                                </div>
-						<div class="mp_cotype mp_Modbus">
-                                                        <div><label for="unitid">',__("Unit ID"),'</label></div>
-                                                        <div><input type="text" name="unitid" value=',($mp->ConnectionType=="Modbus")?$mp->UnitID:"",'></div>
-                                                </div>
-                                                <div class="mp_cotype mp_Modbus">
-                                                        <div><label for="nbwords">',__("Number of words"),'</label></div>
-                                                        <div><input type="text" name="nbwords" value=',($mp->ConnectionType=="Modbus")?$mp->NbWords:"",'></div>
                                                 </div>
                                                 <div class="mp_cotype mp_Modbuselec">
                                                         <div><label for="register1">',__("Register 1"),'</label></div>

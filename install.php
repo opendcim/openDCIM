@@ -1078,6 +1078,67 @@ function upgrade(){
                 // Rebuild the config table just in case.
                 $config->rebuild();
 
+		$config->Config();
+
+		require_once("facilities.inc.php");
+
+		//create measure points for polled PDU and copy fac_PDUStats in fac_ElectricalMeasure
+		$sql="SELECT DISTINCT(PDUID) FROM fac_PDUStats;";
+
+		foreach($dbh->query($sql) as $row) {
+			$dev = new Device();
+			$dev->DeviceID = $row["PDUID"];
+			if($dev->GetDevice()) {
+				$mp = new SNMPElectricalMeasurePoint();
+				$mp->Label = $dev->Label;
+				$mp->EquipmentType = "Device";
+				$mp->EquipmentID = $dev->DeviceID;
+				$mp->IPAddress = $dev->PrimaryIP;
+				$mp->Type = "elec";
+				$mp->ConnectionType = "SNMP";
+				$mp->CreateMP();
+
+				$sql="SELECT * FROM fac_PDUStats WHERE PDUID=$dev->DeviceID;";
+
+				foreach($dbh->query($sql) as $row) {
+					$measure = new ElectricalMeasure();
+					$measure->MPID = $mp->MPID;
+					$measure->Wattage1 = $row["Wattage"];
+					$measure->Date = $row["LastRead"];
+					$measure->CreateMeasure();
+				}
+			}
+		}
+
+		//create measure points for polled sensors and copy fac_SensorReadings in fac_AirMeasure
+		$sql="SELECT DISTINCT(DeviceID) FROM fac_SensorReadings;";
+
+		foreach($dbh->query($sql) as $row) {
+			$dev = new Device();
+			$dev->DeviceID = $row["DeviceID"];
+			if($dev->GetDevice()) {
+				$mp = new SNMPAirMeasurePoint();
+				$mp->Label = $dev->Label;
+				$mp->EquipmentType = "Device";
+				$mp->EquipmentID = $dev->DeviceID;
+				$mp->IPAddress = $dev->PrimaryIP;
+				$mp->Type="air";
+				$mp->ConnectionType = "SNMP";
+				$mp->CreateMP();
+
+				$sql="SELECT * FROM fac_SensorReadings WHERE DeviceID=$dev->DeviceID;";
+
+				foreach($dbh->query($sql) as $row) {
+					$measure = new AirMeasure();
+                                        $measure->MPID = $mp->MPID;
+                                        $measure->Temperature = $row["Temperature"];
+					$measure->Humidity = $row["Humidity"];
+                                        $measure->Date = $row["LastRead"];
+                                        $measure->CreateMeasure();
+				}
+			}
+		}
+
                 $version="PUE_DCEM";
         }
 
