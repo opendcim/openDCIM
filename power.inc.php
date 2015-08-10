@@ -1632,6 +1632,36 @@ class PowerPanel {
                                 }
                         }
                 }
+
+		if(!$measureFound) {
+			$pduList = new PowerDistribution();
+			$pduList->PanelID = $this->PanelID;
+			$pduList = $pduList->GetPDUbyPanel();
+			$mechList = new MechanicalDevice();
+			$mechList->PanelID = $this->PanelID;
+			$mechList = $mechList->GetMechByPanel();
+
+			foreach($pduList as $pdu) {
+				if($wattage = $pdu->GetWattage()) {
+					$measureFound = true;
+					$ret->Wattage1 += $wattage->Wattage1;
+					$ret->Wattage2 += $wattage->Wattage2;
+					$ret->Wattage3 += $wattage->Wattage3;
+					if(strtotime($wattage->Date) < strtotime($ret->LastRead))
+                                        	$ret->LastRead = $wattage->Date;
+				}
+			}
+			foreach($mechList as $mech) {
+				if($wattage = $mech->GetWattage()) {
+					$measureFound = true;
+					$ret->Wattage1 += $wattage->Wattage1;
+					$ret->Wattage2 += $wattage->Wattage2;
+					$ret->Wattage3 += $wattage->Wattage3;
+					if(strtotime($wattage->Date) < strtotime($ret->LastRead))
+                                        	$ret->LastRead = $wattage->Date;
+				}
+			}
+		}
                 return ($measureFound)?$ret:false;
         }
 }
