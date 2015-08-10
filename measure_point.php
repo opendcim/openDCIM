@@ -169,8 +169,8 @@
 				}
 				break;
 			case "Modbus":
-				$mp->UnitID=$_REQUEST['elec_unitid'];
-				$mp->NbWords=$_REQUEST['elec_nbwords'];
+				$mp->UnitID=$_REQUEST['unitid'];
+				$mp->NbWords=$_REQUEST['nbwords'];
 				break;
 		}
                 if($_REQUEST['action']=='Create'){
