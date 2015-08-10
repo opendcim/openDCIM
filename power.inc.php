@@ -1616,7 +1616,7 @@ class PowerPanel {
 
                 foreach($mpList as $mp) {
                         if($mp->Type == "elec") {
-                                if($mp->Category=="IT" || $mp->Category=="UPS Input") {
+                                if($mp->Category!="UPS Output") {
                                         $lastMeasure = new ElectricalMeasure();
                                         $lastMeasure->MPID = $mp->MPID;
                                         $lastMeasure = $lastMeasure->GetLastMeasure();
@@ -1640,6 +1640,9 @@ class PowerPanel {
 			$mechList = new MechanicalDevice();
 			$mechList->PanelID = $this->PanelID;
 			$mechList = $mechList->GetMechByPanel();
+			$panelList = new PowerPanel();
+			$panelList->ParentPanelID = $this->PanelID;
+			$panelList = $panelList->getPanelListBySource(true);
 
 			foreach($pduList as $pdu) {
 				if($wattage = $pdu->GetWattage()) {
@@ -1653,6 +1656,16 @@ class PowerPanel {
 			}
 			foreach($mechList as $mech) {
 				if($wattage = $mech->GetWattage()) {
+					$measureFound = true;
+					$ret->Wattage1 += $wattage->Wattage1;
+					$ret->Wattage2 += $wattage->Wattage2;
+					$ret->Wattage3 += $wattage->Wattage3;
+					if(strtotime($wattage->Date) < strtotime($ret->LastRead))
+                                        	$ret->LastRead = $wattage->Date;
+				}
+			}
+			foreach($panelList as $panel) {
+				if($wattage = $panel->GetWattage()) {
 					$measureFound = true;
 					$ret->Wattage1 += $wattage->Wattage1;
 					$ret->Wattage2 += $wattage->Wattage2;
