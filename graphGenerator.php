@@ -250,7 +250,7 @@
 							',$rightList,'
 						</ul>
 					</div>
-					<div id="graph" style="width: 100%; margin: 50px;"></div>
+					<div id="graph" style="width: 100%; min-width: 800px; margin: 50px;"></div>
 				</div>
 			</div>
 		</form>';
