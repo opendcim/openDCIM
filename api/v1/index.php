@@ -670,6 +670,94 @@ $app->get( '/devicetemplate/image', function() {
 	echoResponse($response['errorcode'],$response);
 });
 
+
+//
+//	URL:	/api/v1/manufacturer/:manufacturerid
+//	Method:	GET
+//	Params: manufacturerid (passed in URL)	
+//	Returns: Defined manufacturer matching :manufacturerid
+//
+
+$app->get( '/manufacturer/:manufacturerid', function($manufacturerid) {
+	$manu=new Manufacturer();
+	$manu->ManufacturerID=$manufacturerid;
+
+	if(!$manu->GetManufacturerByID()){
+		$response['error']=true;
+		$response['errorcode']=404;
+		$response['message']=__("No manufacturer found with ManufacturerID")." $manu->ManufacturerID";
+		echoResponse(404,$response);
+	}else{
+		$response['error']=false;
+		$response['errorcode']=200;
+		$response['manufacturer']=$manu;
+		
+		echoResponse(200,$response);
+	}
+});
+
+//
+//	URL:	/api/v1/manufacturer/byname/:name
+//	Method:	GET
+//	Params:	name (passed in URL)
+//	Returns:  Defined manufacturers matching : name
+//
+
+$app->get( '/manufacturer/byname/:name', function( $name ) {
+	$manu=new Manufacturer();
+	$manu->Name=$name;
+
+	if(!$manu->GetManufacturerByName()){
+		$response['error']=true;
+		$response['errorcode']=404;
+		$response['message']=__("No manufacturer found with Name")." $manu->Name";
+		echoResponse(404,$response);
+	}else{
+		$response['error']=false;
+		$response['errorcode']=200;
+		$response['manufacturer']=$manu;
+		
+		echoResponse(200,$response);
+	}
+});
+
+//
+//	URL:	/api/v1/template/bymodelandmanufacturer
+//	Method:	GET
+//	Params:	model, manufacturerid (passed in query)
+//	Returns:  Defined manufacturers matching : model and manufacturer
+//
+
+$app->get( '/devicetemplate/bymodelandmanufacturer', function() {
+	if(!isset($_GET["model"])) {
+		$response['error']=true;
+		$response['errorcode']=400;
+		$response['message']=__("Model needed");
+		echoResponse(400,$response);
+	}
+	if(!isset($_GET["manufacturerid"])) {
+		$response['error']=true;
+		$response['errorcode']=400;
+		$response['message']=__("ManufacturerID needed");
+		echoResponse(400,$response);
+	}
+	$template=new DeviceTemplate();
+	$template->ManufacturerID=$_GET["manufacturerid"];
+	$template->Model = $_GET["model"];
+	if(!$template->GetTemplateByModelAndManufacturer()){
+		$response['error']=true;
+		$response['errorcode']=404;
+		$response['message']=__("No template found with Model")." $template->Model ".__("and ManufacturerID")." $template->ManufacturerID";
+		echoResponse(404,$response);
+	}else{
+		$response['error']=false;
+		$response['errorcode']=200;
+		$response['devicetemplate']=$template;
+		
+		echoResponse(200,$response);
+	}
+});
+
 /**
   *
   *		API POST Methods go here
@@ -968,39 +1056,122 @@ $app->put( '/colorcode/:colorname', function($colorname) use ($app) {
 
 $app->put( '/device/:devicelabel', function($devicelabel) use ($app) {
 	$dev=new Device();
+	$customValues = array();
 	// This isn't super great and could lead to some weirdness in the logging but 
 	// we'll make it more specific later if it becomes and issue.
 	foreach($app->request->put() as $prop => $val){
-		$dev->$prop=$val;
+		if(property_exists("Device", $prop)) {
+			$dev->$prop=$val;
+		} else {
+			foreach(DeviceCustomAttribute::GetDeviceCustomAttributeList() as $customAttribute) {
+				if($customAttribute->Label == $prop) {
+					$customValues[$customAttribute->AttributeID] = $val;
+				}
+			}
+		}
 	}
 	// This should be in the commit data but if we get a smartass saying it's in the URL
 	$dev->Label=$devicelabel;
 
-	$cab=new Cabinet();
-	$cab->CabinetID=$dev->Cabinet;
-	if(!$cab->GetCabinet()){
-		$response['error']=true;
-		$response['errorcode']=404;
-		$response['message']=__("Cabinet not found");
-	}else{
-		if($cab->Rights!="Write"){
+	if($dev->Cabinet == -1) {
+		if(!$dev->CreateDevice()){
 			$response['error']=true;
-			$response['errorcode']=403;
-			$response['message']=__("Unauthorized");
+			$response['errorcode']=404;
+			$response['message']=__("Device creation failed");
 		}else{
-			if(!$dev->CreateDevice()){
+			foreach($customValues as $id => $value)
+				$dev->InsertCustomValue($id, $value);
+			$response['error']=false;
+			$response['errorcode']=200;
+			$response['device']=$dev;
+		}
+	} else {
+		$cab=new Cabinet();
+		$cab->CabinetID=$dev->Cabinet;
+		if(!$cab->GetCabinet()){
+			$response['error']=true;
+			$response['errorcode']=404;
+			$response['message']=__("Cabinet not found");
+		}else{
+			if($cab->Rights!="Write"){
 				$response['error']=true;
-				$response['errorcode']=404;
-				$response['message']=__("Device creation failed");
+				$response['errorcode']=403;
+				$response['message']=__("Unauthorized");
 			}else{
-				$response['error']=false;
-				$response['errorcode']=200;
-				$response['device']=$dev;
+				if(!$dev->CreateDevice()){
+					$response['error']=true;
+					$response['errorcode']=404;
+					$response['message']=__("Device creation failed");
+				}else{
+					foreach($customValues as $id => $value)
+						$dev->InsertCustomValue($id, $value);
+					$response['error']=false;
+					$response['errorcode']=200;
+					$response['device']=$dev;
+				}
 			}
 		}
 	}
 
 	echoResponse($response['errorcode'],$response);
+});
+
+//
+//	URL:	/api/v1/manufacturer/:Name
+//	Method:	PUT
+//	Params: 
+//		Required: Name (passed in URL)
+//		Optional: SubscribeToUpdates
+//	Returns: record as created
+//
+
+$app->put( '/manufacturer/:Name', function($name) use ($app) {
+	$manu=new Manufacturer();
+	$manu->Name = $name;
+	foreach($app->request->put() as $prop => $val){
+		$manu->$prop=$val;
+	}
+
+	if(!$manu->CreateManufacturer()){
+		$response['error']=true;
+		$response['errorcode']=403;
+		$response['message']=__("Error creating new manufacturer.");
+	}else{
+		$response['error']=false;
+		$response['errorcode']=200;
+		$response['message']=__("New manufacturer created successfully.");
+		$response['manufacturer']=$manu;
+	}
+	echoResponse(200,$response);
+});
+
+//
+//	URL:	/api/v1/template/:Model
+//	Method:	PUT
+//	Params: 
+//		Required: Model (passed in URL)
+//		Optional: everything else
+//	Returns: record as created
+//
+
+$app->put( '/devicetemplate/:Model', function($model) use ($app) {
+	$temp=new DeviceTemplate();
+	$temp->Model = $model;
+	foreach($app->request->put() as $prop => $val){
+		$temp->$prop=$val;
+	}
+
+	if(!$temp->CreateTemplate()){
+		$response['error']=true;
+		$response['errorcode']=403;
+		$response['message']=__("Error creating new template.");
+	}else{
+		$response['error']=false;
+		$response['errorcode']=200;
+		$response['message']=__("New template created successfully.");
+		$response['devicetemplate']=$temp;
+	}
+	echoResponse(200,$response);
 });
 
 /**

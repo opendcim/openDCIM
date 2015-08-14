@@ -509,7 +509,7 @@
 	$copy = false;
 	$copyerr=__("This device is a copy of an existing device.  Remember to set the new location before saving.");
 	$childList=array();
-echo "hhe";
+
 	// This page was called from somewhere so let's do stuff.
 	// If this page wasn't called then present a blank record for device creation.
 	if(isset($_REQUEST['action'])||isset($_REQUEST['DeviceID'])){
