@@ -213,8 +213,8 @@ echo '<div class="main">
 		<div>',sprintf("%7d %s", $rciStats["RCILowCount"] / $rciStats["TotalCabinets"] * 100, __("%")),'</div>
   </div>
   <div>
-		<div>',__("RCI High Percentage (Undercooling)"), '</div>
-		<div>',sprintf( "%7d %s", $rciStats["RCIHighCount"] / $rciStats["TotalCabinets"] * 100, __("%")),'</div>
+		<div>',__("RCI High Percentage (Cabinets Satisfied)"), '</div>
+		<div>',sprintf( "%7d %s", (1-$rciStats["RCIHighCount"] / $rciStats["TotalCabinets"]) * 100, __("%")),'</div>
   </div>
 </div> <!-- END div.table -->
 </div> <!-- END div.centermargin -->
