@@ -35,7 +35,7 @@ class EnergyType {
 	function MakeSafe() {
 		$this->EnergyTypeID=intval($this->EnergyTypeID);
 		$this->Name=sanitize($this->Name);
-		$this->GasEmissionFactor=floatval($this->GasEmissionFactor);
+		$this->GasEmissionFactor=number_format($this->GasEmissionFactor, 3);
 	}
 
 	function MakeDisplay() {
