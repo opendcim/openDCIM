@@ -1477,6 +1477,13 @@ echo '<div class="main">
 					<div><label for="HumidityYellowLow">',__("Low Humidity Caution"),'</label></div>
 					<div><input type="text" defaultvalue="',$config->defaults["HumidityYellowLow"],'" name="HumidityYellowLow" value="',$config->ParameterArray["HumidityYellowLow"],'"></div>
 				</div>
+				<div>
+					<div><label for="RCIHigh">',__("RCI (Rack Cooling Index) High"),'</label></div>
+					<div><input type="text" defaultvalue="',$config->defaults["RCIHigh"],'" name="RCIHigh" value="',$config->ParameterArray["RCIHigh"],'"></div>
+					<div></div>
+					<div><label for="RCILow">',__("RCI (Rack Cooling Index) Low"),'</label></div>
+					<div><input type="text" defaultvalue="',$config->defaults["RCILow"],'" name="RCILow" value="',$config->ParameterArray["RCILow"],'"></div>
+				</div>
 			</div> <!-- end table -->
 			<h3>',__("Virtual Machines"),'</h3>
 			<div class="table" id="rackusage">

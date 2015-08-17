@@ -224,6 +224,7 @@
 			$cdutemplate->ProcessingProfile=$_POST['ProcessingProfile'];
 			$cdutemplate->Voltage=$_POST["Voltage"];
 			$cdutemplate->Amperage=$_POST["Amperage"];
+			$cdutemplate->NumOutlets=$template->PSCount;
 			$status=($cdutemplate->UpdateTemplate())?$status:__('Error updating cdu attributes');
 
 			return $status;

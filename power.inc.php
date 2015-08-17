@@ -1563,21 +1563,13 @@ class PowerPanel {
 
 		// This will store all our extended sql
 		$sqlextend="";
-		function findit($prop,$val,&$sql,$loose){
-			$method=($loose)?" LIKE \"%$val%\"":"=\"$val\"";
-			if($sql){
-				$sql.=" AND $prop$method";
-			}else{
-				$sql.=" WHERE $prop$method";
-			}
-		}
 		foreach($this as $prop => $val){
 			// We force NumberScheme to a known value so this is to check if they wanted to search for the default
 			if($prop=="NumberScheme" && $val=="Sequential" && $os!="Sequential"){
 				continue;
 			}
 			if($val){
-				findit($prop,$val,$sqlextend,$loose);
+				extendsql($prop,$val,$sqlextend,$loose);
 			}
 		}
 
