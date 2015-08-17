@@ -53,21 +53,24 @@
 		$pdu->PanelID = $panel->PanelID;
 		$pduList=$pdu->GetPDUbyPanel();
 		
+		//Check for locale-related bug
+		if (sprintf('%.1f', 1.0) != '1.0') setlocale(LC_NUMERIC, 'C');
+
 		$panelLoad = sprintf( "%01.2f", $panel->GetPanelLoad() / 1000 );
-		$panelCap = $panel->PanelVoltage * $panel->MainBreakerSize * sqrt(3);
+		$panelCap = $panel->PanelVoltage * $panel->MainBreakerSize * sqrt(3) * 0.8;
 		
 		$dataMajorTicks = "";
 		for ( $i = 0; $i < $panelCap; $i+=( $panelCap / 10 ) ) {
-			$dataMajorTicks .= sprintf( "%d ", $i / 1000 );
+			$dataMajorTicks .= sprintf( "%.1f ", $i / 1000 );
 		}
-		$dataMajorTicks .= sprintf( "%d", $panelCap / 1000 );
-		
-		$dataMaxValue = sprintf( "%d", $panelCap / 1000 );
+		$dataMajorTicks .= sprintf( "%.1f", $panelCap / 1000 );
+
+		$dataMaxValue = sprintf( "%.1f", $panelCap / 1000 );
 		
 		$dataHighlights = sprintf( "0 %d #eee, %d %d #fffacd, %d %d #eaa", $panelCap / 1000 * .6, $panelCap / 1000 * .6, $panelCap / 1000 * .8, $panelCap / 1000 * .8, $panelCap / 1000);
 
 		$mtarray=implode(",",explode(" ",$dataMajorTicks));
-		$hilights = sprintf( "{from: 0, to: %d, color: '#eee'}, {from: %d, to: %d, color: '#fffacd'}, {from: %d, to: %d, color: '#eaa'}", $panelCap / 1000 * .6, $panelCap / 1000 * .6, $panelCap / 1000 * .8, $panelCap / 1000 * .8, $panelCap / 1000);
+		$hilights = sprintf( "{from: 0, to: %.1f, color: '#eee'}, {from: %.1f, to: %.1f, color: '#fffacd'}, {from: %.1f, to: %.1f, color: '#eaa'}", $panelCap / 1000 * .6, $panelCap / 1000 * .6, $panelCap / 1000 * .8, $panelCap / 1000 * .8, $panelCap / 1000);
 		// Generate JS for load display
 		$script="
 	var gauge=new Gauge({
@@ -103,6 +106,8 @@
         gauge.setValue($.get('api/v1/power/whateverhere'));
     }, 1000);
 */
+	//Return to the original numeric formatting
+	setlocale(LC_NUMERIC, NULL);
 	}
 
 	$panelList=$panel->getPanelList();
