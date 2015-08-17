@@ -63,13 +63,14 @@
 		for ( $i = 0; $i < $panelCap; $i+=( $panelCap / 10 ) ) {
 			$dataMajorTicks .= sprintf( "%.1f ", $i / 1000 );
 		}
+		$dataMajorTicks .= sprintf( "%.1f", $panelCap / 1000 );
 
-		$dataMaxValue = sprintf( "%d", $panelCap / 1000 );
+		$dataMaxValue = sprintf( "%.1f", $panelCap / 1000 );
 		
 		$dataHighlights = sprintf( "0 %d #eee, %d %d #fffacd, %d %d #eaa", $panelCap / 1000 * .6, $panelCap / 1000 * .6, $panelCap / 1000 * .8, $panelCap / 1000 * .8, $panelCap / 1000);
 
 		$mtarray=implode(",",explode(" ",$dataMajorTicks));
-		$hilights = sprintf( "{from: 0, to: %d, color: '#eee'}, {from: %d, to: %d, color: '#fffacd'}, {from: %d, to: %d, color: '#eaa'}", $panelCap / 1000 * .6, $panelCap / 1000 * .6, $panelCap / 1000 * .8, $panelCap / 1000 * .8, $panelCap / 1000);
+		$hilights = sprintf( "{from: 0, to: %.1f, color: '#eee'}, {from: %.1f, to: %.1f, color: '#fffacd'}, {from: %.1f, to: %.1f, color: '#eaa'}", $panelCap / 1000 * .6, $panelCap / 1000 * .6, $panelCap / 1000 * .8, $panelCap / 1000 * .8, $panelCap / 1000);
 		// Generate JS for load display
 		$script="
 	var gauge=new Gauge({
