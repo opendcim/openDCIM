@@ -53,7 +53,7 @@
 		$pdu->PanelID = $panel->PanelID;
 		$pduList=$pdu->GetPDUbyPanel();
 		
-		$panelLoad = sprintf( "%01.2f", $panel->GetPanelLoad() / 1000 );
+		$panelLoad = sprintf( "%01.2F", $panel->GetPanelLoad() / 1000 );
 		$panelCap = $panel->PanelVoltage * $panel->MainBreakerSize * sqrt(3);
 		
 		$dataMajorTicks = "";
