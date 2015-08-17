@@ -1231,6 +1231,39 @@ class PowerDistribution {
 			return true;
 		}
 	}
+
+	function GetWattage() {
+                $ret->Wattage1 = 0;
+                $ret->Wattage2 = 0;
+                $ret->Wattage3 = 0;
+                $ret->LastRead = date("Y-m-d H:i:s");
+
+                $measureFound = false;
+
+                $mpList = new MeasurePoint();
+                $mpList->EquipmentType = "Device";
+                $mpList->EquipmentID = $this->PDUID;
+                $mpList = $mpList->GetMPByEquipment();
+
+                foreach($mpList as $mp) {
+                        if($mp->Type == "elec") {
+				$lastMeasure = new ElectricalMeasure();
+				$lastMeasure->MPID = $mp->MPID;
+				$lastMeasure = $lastMeasure->GetLastMeasure();
+
+				if(!is_null($lastMeasure->Date)) {
+					$measureFound = true;
+					$ret->Wattage1 += $lastMeasure->Wattage1;
+					$ret->Wattage2 += $lastMeasure->Wattage2;
+					$ret->Wattage3 += $lastMeasure->Wattage3;
+					if(strtotime($lastMeasure->Date) < strtotime($ret->LastRead))
+						$ret->LastRead = $lastMeasure->Date;
+				}
+                        }
+                }
+                return ($measureFound)?$ret:false;
+        }
+
 }
 
 class PowerPanel {
@@ -1567,6 +1600,83 @@ class PowerPanel {
 	function LooseSearch($indexedbyid=false){
 		return $this->Search($indexedbyid,true);
 	}
+
+	function GetWattage() {
+                $ret->Wattage1 = 0;
+                $ret->Wattage2 = 0;
+                $ret->Wattage3 = 0;
+                $ret->LastRead = date("Y-m-d H:i:s");
+
+                $measureFound = false;
+
+                $mpList = new MeasurePoint();
+                $mpList->EquipmentType = "PowerPanel";
+                $mpList->EquipmentID = $this->PanelID;
+                $mpList = $mpList->GetMPByEquipment();
+
+                foreach($mpList as $mp) {
+                        if($mp->Type == "elec") {
+                                if($mp->Category!="UPS Output") {
+                                        $lastMeasure = new ElectricalMeasure();
+                                        $lastMeasure->MPID = $mp->MPID;
+                                        $lastMeasure = $lastMeasure->GetLastMeasure();
+
+                                        if(!is_null($lastMeasure->Date)) {
+                                                $measureFound = true;
+                                                $ret->Wattage1 += $lastMeasure->Wattage1;
+						$ret->Wattage2 += $lastMeasure->Wattage2;
+						$ret->Wattage3 += $lastMeasure->Wattage3;
+                                                if(strtotime($lastMeasure->Date) < strtotime($ret->LastRead))
+                                                        $ret->LastRead = $lastMeasure->Date;
+                                        }
+                                }
+                        }
+                }
+
+		if(!$measureFound) {
+			$pduList = new PowerDistribution();
+			$pduList->PanelID = $this->PanelID;
+			$pduList = $pduList->GetPDUbyPanel();
+			$mechList = new MechanicalDevice();
+			$mechList->PanelID = $this->PanelID;
+			$mechList = $mechList->GetMechByPanel();
+			$panelList = new PowerPanel();
+			$panelList->ParentPanelID = $this->PanelID;
+			$panelList = $panelList->getPanelListBySource(true);
+
+			foreach($pduList as $pdu) {
+				if($wattage = $pdu->GetWattage()) {
+					$measureFound = true;
+					$ret->Wattage1 += $wattage->Wattage1;
+					$ret->Wattage2 += $wattage->Wattage2;
+					$ret->Wattage3 += $wattage->Wattage3;
+					if(strtotime($wattage->Date) < strtotime($ret->LastRead))
+                                        	$ret->LastRead = $wattage->Date;
+				}
+			}
+			foreach($mechList as $mech) {
+				if($wattage = $mech->GetWattage()) {
+					$measureFound = true;
+					$ret->Wattage1 += $wattage->Wattage1;
+					$ret->Wattage2 += $wattage->Wattage2;
+					$ret->Wattage3 += $wattage->Wattage3;
+					if(strtotime($wattage->Date) < strtotime($ret->LastRead))
+                                        	$ret->LastRead = $wattage->Date;
+				}
+			}
+			foreach($panelList as $panel) {
+				if($wattage = $panel->GetWattage()) {
+					$measureFound = true;
+					$ret->Wattage1 += $wattage->Wattage1;
+					$ret->Wattage2 += $wattage->Wattage2;
+					$ret->Wattage3 += $wattage->Wattage3;
+					if(strtotime($wattage->Date) < strtotime($ret->LastRead))
+                                        	$ret->LastRead = $wattage->Date;
+				}
+			}
+		}
+                return ($measureFound)?$ret:false;
+        }
 }
 
 class PanelSchedule {

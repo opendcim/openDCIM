@@ -564,7 +564,7 @@ function renderLinechart() {
 		seriesDefaults:{
 			showMarker: false,
 			fill:true,
-			fillAndStroke:true
+			fillAndStroke:true,
 		},
 		axes:{
 			yaxis:{

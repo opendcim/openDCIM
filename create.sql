@@ -834,7 +834,10 @@ INSERT INTO fac_Config VALUES
 	('v3AuthProtocol', '', 'SHA/MD5', 'string', 'SHA'),
 	('v3AuthPassphrase', '', 'Password', 'string', ''),
 	('v3PrivProtocol', '', 'SHA/MD5', 'string', 'SHA'),
-	('v3PrivPassphrase', '', 'Password', 'string', '')
+	('v3PrivPassphrase', '', 'Password', 'string', ''),
+	("Phase1Color", "#000000", "HexColor", "string", "#000000"),
+	("Phase2Color", "#FF0000", "HexColor", "string", "#FF0000"),
+	("Phase3Color", "#0000FF", "HexColor", "string", "#0000FF")
 ;
 
 --

@@ -35,7 +35,7 @@ class EnergyType {
 	function MakeSafe() {
 		$this->EnergyTypeID=intval($this->EnergyTypeID);
 		$this->Name=sanitize($this->Name);
-		$this->GasEmissionFactor=floatval($this->GasEmissionFactor);
+		$this->GasEmissionFactor=number_format($this->GasEmissionFactor, 3);
 	}
 
 	function MakeDisplay() {
@@ -228,11 +228,11 @@ class MeasurePoint {
 					$snmpresult[$key]=(is_null($oid))?$snmpHost->useSystem()->$snmplookup(true):$snmpHost->get($oid);
 				}catch (Exception $e){
 					//$mp->IncrementFailures();
-					$snmpresult[$key] = false;
+					$snmpresult[$key] = null;
 					error_log("MeasurePoint::$caller($mp->MPID) ".$e->getMessage());
 				}
 			} else {
-				$snmpresult[$key] = false;
+				$snmpresult[$key] = null;
 			}
 		}
 
@@ -265,10 +265,10 @@ class MeasurePoint {
 						$val = $val * 65536 + $r;
 					$valTab[$key] = $val;
 				} else {
-					$valTab[$key] = false;
+					$valTab[$key] = null;
 				}
 			} else {
-				$valTab[$key] = false;
+				$valTab[$key] = null;
 			}
 		}
 		$modbus->ModClose();
@@ -300,6 +300,8 @@ class MeasurePoint {
 		global $dbh;
 		
 		$this->MakeSafe();
+
+		$this->DeleteMeasures();
 
 		$sql="DELETE FROM fac_AssoMeasurePointGroup WHERE MPID=$this->MPID;";	
 		$dbh->exec($sql);
@@ -416,6 +418,46 @@ class MeasurePoint {
 		fclose($file);
 		return __("Error: Couldn't read columns title.");
 	}
+
+	function DeleteMeasures() {
+		global $dbh;
+
+		$measureClass = MeasurePoint::$TypeTab[$this->Type]."Measure";
+		$sql = "DELETE FROM fac_$measureClass WHERE MPID=$this->MPID;";
+
+		if(!$dbh->exec($sql))
+                	return false;
+                return true;
+	}
+
+	function GetNbMeasures() {
+		global $dbh;
+
+		$this->MakeSafe();
+
+		$measureClass = MeasurePoint::$TypeTab[$this->Type]."Measure";
+                $sql = "SELECT COUNT(Date) AS Qtt FROM fac_$measureClass WHERE MPID=$this->MPID;";
+
+                if($row = $dbh->query($sql)->fetch())
+                        return $row["Qtt"];
+                return 0;
+	}
+
+	function GetNbMeasuresOnInterval($startDate, $endDate) {
+		global $dbh;
+
+		if($endDate <= $startDate)
+			return -1;
+
+		$this->MakeSafe();
+
+		$measureClass = MeasurePoint::$TypeTab[$this->Type]."Measure";
+		$sql = "SELECT COUNT(Date) AS Qtt FROM fac_$measureClass WHERE MPID=$this->MPID AND Date >= \"$startDate\" AND Date <= \"$endDate\";";
+
+                if($row = $dbh->query($sql)->fetch())
+                        return $row["Qtt"];
+                return 0;
+	}
 }
 
 
@@ -492,9 +534,6 @@ class ElectricalMeasurePoint extends MeasurePoint{
 
 		if(parent::DeleteMP()) {
 			
-			$sql="DELETE FROM fac_ElectricalMeasure WHERE MPID=$this->MPID;";
-			$dbh->exec($sql);
-
 			$sql="DELETE FROM fac_ElectricalMeasurePoint WHERE MPID=$this->MPID;";
 			if(!$dbh->exec($sql))
 				return false;
@@ -599,27 +638,25 @@ class ElectricalMeasurePoint extends MeasurePoint{
 				$values = self::Modbus_Lookup($this, array($this->Register1, $this->Register2, $this->Register3, $this->RegisterEnergy));
 				break;
 		}
-		if($values[0]!=false || $values[1]!=false || $values[2]!=false){
-			$m->Wattage1=intval($values[0] * $this->PowerMultiplier);
+		if(!is_null($values[0]) || !is_null($values[1]) || !is_null($values[2])){
+			$m->Wattage1=@intval($values[0] * $this->PowerMultiplier);
 			$m->Wattage2=@intval($values[1] * $this->PowerMultiplier);
 			$m->Wattage3=@intval($values[2] * $this->PowerMultiplier);
 		}
-		if($values[3] != false) {
+		if(!is_null($values[3])) {
 			$m->Energy=@intval($values[3] * $this->EnergyMultiplier);
-		}
-		else if($values[0]!=false || $values[1]!=false || $values[2]!=false){
-			if($lastMeasure->Energy != null) {
+			$m->Date=date("Y-m-d H:i:s");
+			$m->CreateMeasure();
+		} else if(!is_null($values[0]) || !is_null($values[1]) || !is_null($values[2])) {
+			if(!is_null($lastMeasure->Energy)) {
 				$values[3] = intval($lastMeasure->Energy + (($m->Wattage1 + $m->Wattage2 + $m->Wattage3) * (strtotime(date("Y-m-d H:i:s")) - strtotime($lastMeasure->Date)) / 3600) / 1000);
 				$m->Energy = intval($values[3] * $this->EnergyMultiplier);
 			} else {
 				$m->Energy=0;
 			}
-		} else {
-			//nothing to record
-			return;
-		}
-		$m->Date=date("Y-m-d H:i:s");
-		$m->CreateMeasure();
+			$m->Date=date("Y-m-d H:i:s");
+			$m->CreateMeasure();
+		}	
 	}
 }
 
@@ -1339,9 +1376,6 @@ class CoolingMeasurePoint extends MeasurePoint{
 		$this->MakeSafe();
 
 		if(parent::DeleteMP()) {
-			$sql="DELETE FROM fac_CoolingMeasure WHERE MPID=$this->MPID;";
-			$dbh->exec($sql);
-
 			$sql="DELETE FROM fac_CoolingMeasurePoint WHERE MPID=$this->MPID;";
                         if(!$dbh->exec($sql))
                                 return false;
@@ -1424,7 +1458,7 @@ class CoolingMeasurePoint extends MeasurePoint{
 				$values = self::Modbus_Lookup($this, array($this->FanSpeedRegister, $this->CoolingRegister));
 				break;
 		}
-		if($values[0]!=false || $values[1]!=false) {
+		if(!is_null($values[0]) || !is_null($values[1])) {
 			$m->FanSpeed=@intval($values[0]) * floatval($this->FanSpeedMultiplier);
 			$m->Cooling=@intval($values[1]) * floatval($this->CoolingMultiplier);
 
@@ -1626,7 +1660,7 @@ class ModbusCoolingMeasurePoint extends CoolingMeasurePoint {
 
 	var $UnitID;			//ID of the cooling measure point in the bus
 	var $NbWords;			//quantity of words to read
-	var $FanSPeedRegister;		// register to measure fan speed
+	var $FanSpeedRegister;		// register to measure fan speed
 	var $CoolingRegister;		// register to measure compressor usage
 	
 	function MakeSafe() {
@@ -1905,9 +1939,6 @@ class AirMeasurePoint extends MeasurePoint{
 		$this->MakeSafe();
 
 		if(parent::DeleteMP()) {
-			$sql="DELETE FROM fac_AirMeasure WHERE MPID=$this->MPID;";
-			$dbh->exec($sql);
-
 			$sql="DELETE FROM fac_AirMeasurePoint WHERE MPID=$this->MPID;";
                         if(!$dbh->exec($sql))
                                 return false;
@@ -1989,7 +2020,7 @@ class AirMeasurePoint extends MeasurePoint{
 				$values = self::Modbus_Lookup($this, array($this->TemperatureRegister, $this->HumidityRegister));
 				break;
 		}
-		if($values[0]!=false || $values[1]!=false) {
+		if(!is_null($values[0]) || !is_null($values[1])) {
 			$m->Temperature=@floatval($values[0]) * floatval($this->TemperatureMultiplier);
 			$m->Humidity=@floatval($values[1]) * floatval($this->HumidityMultiplier);
 

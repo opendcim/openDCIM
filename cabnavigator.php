@@ -353,7 +353,8 @@ function renderUnassignedTemplateOwnership($noTemplFlag, $noOwnerFlag, $device) 
 	@$SpacePercent=($cab->CabinetHeight>0)?number_format($used/$cab->CabinetHeight*100,0):0;
 	@$WeightPercent=number_format($totalWeight/$cab->MaxWeight*100,0);
 	@$PowerPercent=number_format(($totalWatts/1000)/$cab->MaxKW*100,0);
-	$measuredWatts = $pdu->GetWattageByCabinet( $cab->CabinetID );
+	$wattage = $cab->GetWattage();
+	$measuredWatts = $wattage->Wattage;
 	@$MeasuredPercent=number_format(($measuredWatts/1000)/$cab->MaxKW*100,0);
 	$CriticalColor=$config->ParameterArray["CriticalColor"];
 	$CautionColor=$config->ParameterArray["CautionColor"];
@@ -469,8 +470,9 @@ $body.='<div id="infopanel">
 		<div>';
 
 	foreach($PDUList as $PDUdev){
-		$lastreading=$PDUdev->GetLastReading();
-		$pduDraw=($lastreading)?$lastreading->Wattage:0;
+		//$lastreading=$PDUdev->GetLastReading();
+		$lastreading=$PDUdev->GetWattage();
+		$pduDraw=($lastreading)?($lastreading->Wattage1 + $lastreading->Wattage2 + $lastreading->Wattage3):0;
 
 		$pan->PanelID=$PDUdev->PanelID;
 		$pan->getPanel();
@@ -487,15 +489,32 @@ $body.='<div id="infopanel">
 		$maxDraw*=0.8;
 
 		if($maxDraw>0){
-			$PDUPercent=intval($pduDraw/$maxDraw*100);
+			$PDUPercent=$pduDraw/$maxDraw*100;
+			$PDUPhase1=$lastreading->Wattage1/$maxDraw*100;
+			$PDUPhase2=$lastreading->Wattage2/$maxDraw*100;
+			$PDUPhase3=$lastreading->Wattage3/$maxDraw*100;
 		}else{
 			$PDUPercent=0;
 		}
 
 		$PDUColor=($PDUPercent>intval($config->ParameterArray["PowerRed"])?$CriticalColor:($PDUPercent>intval($config->ParameterArray["PowerYellow"])?$CautionColor:$GoodColor));
+		$Phase1Color = $config->ParameterArray["Phase1Color"];
+		$Phase2Color = $config->ParameterArray["Phase2Color"];
+		$Phase3Color = $config->ParameterArray["Phase3Color"];
 
 		$body.=sprintf("\n\t\t\t<a href=\"devices.php?DeviceID=%d\">CDU %s</a><br>(%.2f kW) / (%.2f kW Max)<br>\n", $PDUdev->PDUID, $PDUdev->Label, $pduDraw / 1000, $maxDraw / 1000 );
-		$body.="\t\t\t\t<div class=\"meter-wrap\">\n\t\t\t\t\t<div class=\"meter-value\" style=\"background-color: $PDUColor; width: $PDUPercent%;\">\n\t\t\t\t\t\t<div class=\"meter-text\">$PDUPercent%</div>\n\t\t\t\t\t</div>\n\t\t\t\t</div>\n\t\t\t<br>\n";
+		$body.="\t\t\t\t<div class=\"meter-wrap\">\n\t\t\t\t\t<div class=\"meter-value\" style=\"background-color: $PDUColor; width: ".number_format($PDUPercent,2)."%;\">\n\t\t\t\t\t\t<div class=\"meter-text\">".round($PDUPercent)."%</div>\n\t\t\t\t\t</div>\n\t\t\t\t</div>\n";
+		if($PDUdev->BreakerSize > 1) {
+			$body.="<div class=\"meter-wrap\" style=\"height: 0.7em;\">";
+			$body.="<span title=\"".__("Phase")." 1: ".round($PDUPhase1)."%\"><div class=\"meter-value\" style=\"background-color: $Phase1Color; width: ".number_format($PDUPhase1,2)."%; display: inline-block\"></div></span>";
+			$body.="<span title=\"".__("Phase")." 2: ".round($PDUPhase2)."%\"><div class=\"meter-value\" style=\"background-color: $Phase2Color; width: ".number_format($PDUPhase2,2)."%; display: inline-block\"></div></span>";
+			$body.="<span title=\"".__("Phase")." 3: ".round($PDUPhase3)."%\"><div class=\"meter-value\" style=\"background-color: $Phase3Color; width: ".number_format($PDUPhase3,2)."%; display: inline-block\"></div></span>";
+			$body.="</div><br>
+				<div class=\"colorbox border\" style=\"background-color: $Phase1Color;\"></div><label>".__("Phase")." 1: $lastreading->Wattage1 W</label><br>
+				<div class=\"colorbox border\" style=\"background-color: $Phase2Color;\"></div><label>".__("Phase")." 2: $lastreading->Wattage2 W</label><br>
+				<div class=\"colorbox border\" style=\"background-color: $Phase3Color;\"></div><label>".__("Phase")." 3: $lastreading->Wattage3 W</label><br>";
+		}
+		$body.="<br>";
 
 		if ( $PDUdev->FailSafe ) {
 			$tmpl = new CDUTemplate();

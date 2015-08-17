@@ -1578,6 +1578,30 @@ echo '<div class="main">
 					<div></div>
 				</div>
 				<div>
+					<div><label for="Phase1Color">',__("Phase 1 Color"),'</label></div>
+					<div><div class="cp"><input type="text" class="color-picker" name="Phase1Color" value="',$config->ParameterArray["Phase1Color"],'"></div></div>
+					<div><button type="button">&lt;--</button></div>
+					<div><span>',strtoupper($config->defaults["Phase1Color"]),'</span></div>
+				</div>
+				<div>
+					<div><label for="Phase2Color">',__("Phase 2 Color"),'</label></div>
+					<div><div class="cp"><input type="text" class="color-picker" name="Phase2Color" value="',$config->ParameterArray["Phase2Color"],'"></div></div>
+					<div><button type="button">&lt;--</button></div>
+					<div><span>',strtoupper($config->defaults["Phase2Color"]),'</span></div>
+				</div>
+				<div>
+					<div><label for="Phase3Color">',__("Phase 3 Color"),'</label></div>
+					<div><div class="cp"><input type="text" class="color-picker" name="Phase3Color" value="',$config->ParameterArray["Phase3Color"],'"></div></div>
+					<div><button type="button">&lt;--</button></div>
+					<div><span>',strtoupper($config->defaults["Phase3Color"]),'</span></div>
+				</div>
+				<div>
+					<div>&nbsp;</div>
+					<div></div>
+					<div></div>
+					<div></div>
+				</div>
+				<div>
 					<div><label for="ReservedColor">',__("Reserved Devices"),'</label></div>
 					<div><div class="cp"><input type="text" class="color-picker" name="ReservedColor" value="',$config->ParameterArray["ReservedColor"],'"></div></div>
 					<div><button type="button">&lt;--</button></div>

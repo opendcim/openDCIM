@@ -837,9 +837,7 @@ if ( $person->SiteAdmin ) {
         $samenu[__("Infrastructure Management")][]='<a href="mechanical_device.php"><span>'.__("Edit Mechanical Devices").'</span></a>';
 	$samenu[__("Infrastructure Management")][]='<a href="image_management.php#drawings"><span>'.__("Facilities Image Management").'</span></a>';
         $samenu[__("Infrastructure Management")][]='<a href="import_devices.php"><span>'.__("Import Devices").'</span></a>';
-        $samenu[__("Measure Management")][]='<a href="measure_point_air.php"><span>'.__("Edit Air Measure Points").'</span></a>';
-        $samenu[__("Measure Management")][]='<a href="measure_point_cooling.php"><span>'.__("Edit Cooling Measure Points").'</span></a>';
-        $samenu[__("Measure Management")][]='<a href="measure_point_elec.php"><span>'.__("Edit Electrical Measure Points").'</span></a>';
+        $samenu[__("Measure Management")][]='<a href="measure_point.php"><span>'.__("Edit Measure Points").'</span></a>';
         $samenu[__("Measure Management")][]='<a href="measure_point_group.php"><span>'.__("Edit Measure Point Groups").'</span></a>';
         $samenu[__("Measure Management")][]='<a href="script_management.php"><span>'.__("Polling Scripts Management").'</span></a>';
 	$samenu[__("Power Management")][]='<a href="power_panel.php"><span>'.__("Edit Power Panels").'</span></a>';

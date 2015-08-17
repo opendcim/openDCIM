@@ -188,7 +188,7 @@ echo '<div class="main">
   </div>
   <div>
 		<div>',__("Measured Wattage"), '</div>
-		<div>',sprintf("%7d %s", $zoneStats["MeasuredWatts"], __("Watts")),'</div>
+		<div>',sprintf("%7d %s", $zoneStats["MeasuredWatts"]->Wattage, __("Watts")),'</div>
   </div>
   <div>
         <div>',__("BTU Computation from Computed Watts"),'</div>

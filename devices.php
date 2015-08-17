@@ -491,24 +491,6 @@
 		}
 		exit;
 	}
-
-	if(isset($_POST["currwatts"]) && isset($_POST['pduid']) && $_POST['pduid'] >0){
-		$pdu=new PowerDistribution();
-		$pdu->PDUID=$_POST['pduid'];
-		$wattage->Wattage='Err';
-		$wattage->LastRead='Err';
-		if($pdu->GetPDU()){
-			$cab->CabinetID=$pdu->CabinetID;
-			$cab->GetCabinet();
-			if($person->canWrite($cab->AssignedTo)){
-				$wattage=$pdu->LogManualWattage($_POST["currwatts"]);
-				$wattage->LastRead=strftime("%c",strtotime($wattage->LastRead));
-			}
-		}
-		header('Content-Type: application/json');
-		echo json_encode($wattage);
-		exit;
-	}
 	// END AJAX
 
 
@@ -711,12 +693,11 @@
 
 				if($dev->DeviceType=='Switch'){
 					$linkList=SwitchInfo::getPortStatus($dev->DeviceID);
-				}elseif($dev->DeviceType=='CDU'){
-					$pdu->PDUID=$dev->DeviceID;
-					$pdu->GetPDU();
-
-					$lastreading=$pdu->GetLastReading();
-					$LastWattage=($lastreading)?$lastreading->Wattage:0;
+				} else if($dev->DeviceType=='CDU'){
+-					$pdu->PDUID=$dev->DeviceID;
+-					$pdu->GetPDU();
+					$lastreading=$dev->GetWattage();
+					$LastWattage=($lastreading)?($lastreading->Wattage1 + $lastreading->Wattage2 + $lastreading->Wattage3):0;
 					$LastRead=($lastreading)?strftime("%c",strtotime($lastreading->LastRead)):"Never";
 				}
 			}
@@ -944,8 +925,15 @@ if(isset($_POST["action"]) && $_POST["action"]=="Create_mp") {
         $newMP = new $class;
         $newMP->Label = $_POST["mp_label"];
         $newMP->Type = $_POST["mp_type"];
+	$newMP->IPAddress = $dev->PrimaryIP;
         $newMP->EquipmentType = "Device";
         $newMP->EquipmentID = $dev->DeviceID;
+	if($newMP->Type == "elec") {
+		$cab = new Cabinet();
+		$cab->CabinetID = $dev->Cabinet;
+		$cab->GetCabinet();
+		$newMP->DataCenterID = $cab->DataCenterID;
+	}
         $newMP->CreateMP();
 }
 
@@ -1128,26 +1116,19 @@ $(document).ready(function() {
 			$('#voltage').html(data['PanelVoltage'] +'/'+ Math.floor(data['PanelVoltage']/1.73));
 		});
 	});
-	$('#btn_override').on('click',function(e){
-		var btn=$(e.currentTarget);
-		var target=$(e.currentTarget.previousSibling);
-		if(btn.val()=='edit'){
-			var specialinput=$('<input>').attr('size',5).val(target.text());
-			specialinput.keypress(function(event){
-				if(event.keyCode==10 || event.keyCode==13){
-					event.preventDefault();
-					btn.click();
-				}
-			});
-			btn.val('submit').text(btn.data('submit')).css('height','2em');
-			target.replaceWith(specialinput);
-			specialinput.focus().select();
-		}else{
-			btn.val('edit').text(btn.data('edit')).css('height','');
-			$.post('',{currwatts: target.val(), pduid:$('#DeviceID').val()}).done(function(data){
-				target.replaceWith($('<span>').text(data.Wattage));
-				$('#lastread').text(data.LastRead);
-			});
+
+	$('#mp_mpid').change(function(){
+		if(this.value > 0) {
+			document.getElementById("div_mp_label").style.display = "none";
+			document.getElementById("div_mp_type").style.display = "none";
+			document.getElementById("mp_create").style.display = "none";
+			document.getElementById("mp_link").style.display = "";
+			document.getElementById("mp_link").href="measure_point.php?mpid="+this.value;
+		} else {
+			document.getElementById("div_mp_label").style.display = "";
+			document.getElementById("div_mp_type").style.display = "";
+			document.getElementById("mp_create").style.display = "";
+			document.getElementById("mp_link").style.display = "none";
 		}
 	});
 
@@ -2028,7 +2009,7 @@ echo '
 		</div>
 		<div>
 			<div><label for="currwatts">',__("Wattage"),'</label></div>
-			<div><span>',$LastWattage,'</span><button type="button" id="btn_override" value="edit" data-edit="',__("Manual Entry"),'" data-submit="',__("Submit"),'">',__("Manual Entry"),'</button></div>
+			<div><span>',$LastWattage,'</span></div>
 		</div>
 		<div>
 			<div>',__("Last Update"),':</div>
@@ -2129,49 +2110,38 @@ echo '		<div class="caption">
 
 	$mpOptions="";
 	foreach($mpList as $mp) {
-		if($_POST["mp_mpid"] == $mp->MPID) {
-			$selected = " selected";
-			$selectedMP = $mp;
-		} else {
-			$selected = "";
-		}
-		$mpOptions .= "<option value=\"$mp->MPID\"$selected>[".MeasurePoint::$TypeTab[$mp->Type]."] $mp->Label</option>";
+		$mpOptions .= "<option value=\"$mp->MPID\">[".__(MeasurePoint::$TypeTab[$mp->Type])."] $mp->Label</option>";
 	}
 
 	$typeOptions="";
 	foreach(MeasurePoint::$TypeTab as $key => $type) {
-		$typeOptions .= "<option value=\"$key\">$type</option>";
+		$typeOptions .= "<option value=\"$key\">".__($type)."</option>";
 	}
 
 	echo '<fieldset class="measurepoints">
 	<legend>'.__("Measure Points").'</legend>
-	<div class="table">'.$_POST["mp_mpid"].'
+	<div class="table">
 		<div>
 			<div><label for="mp_mpid">'.__("Measure Point ID").'</label></div>
-			<div><select name="mp_mpid" onChange="submit();">
+			<div><select name="mp_mpid" id="mp_mpid">
 				<option value="0">'.__("New Measure Point").'</option>
 				'.$mpOptions.'
 			</select></div>
-		</div>';
-
-	if($_POST["mp_mpid"] == 0) {
-		echo '<div>
+		</div>
+		<div id="div_mp_label">
                 	<div><label for="mp_label">'.__("Label").'</label></div>
                         <div><input type="text" name="mp_label" id="mp_label"></div>
 		</div>
-                <div>
+                <div id="div_mp_type">
                 	<div><label for="mp_type">'.__("Type").'</label></div>
                         <div><select name="mp_type">
                         	'.$typeOptions.'
                         </select></div>
                 </div>
 		<div class="caption">
-                	<button type="submit" name="action" value="Create_mp">',__("Create Measure Point"),'</button>';
-                } else {
-                        echo '  <div class="caption">
-			<a href="measure_point_'.$selectedMP->Type.'.php?mpid='.$selectedMP->MPID.'">[ '.__("Edit Measure Point").' ]</a>';
-                }
-	echo '</div>
+                	<button type="submit" name="action" id="mp_create" value="Create_mp">',__("Create Measure Point"),'</button>
+			<a href="" id="mp_link" style="display: none;">[ '.__("Edit Measure Point").' ]</a>
+		</div>
 	</div>
 </fieldset>';
 
