@@ -57,7 +57,7 @@
 		if (sprintf('%.1f', 1.0) != '1.0') setlocale(LC_NUMERIC, 'C');
 
 		$panelLoad = sprintf( "%01.2f", $panel->GetPanelLoad() / 1000 );
-		$panelCap = $panel->PanelVoltage * $panel->MainBreakerSize * sqrt(3);
+		$panelCap = $panel->PanelVoltage * $panel->MainBreakerSize * sqrt(3) * 0.8;
 		
 		$dataMajorTicks = "";
 		for ( $i = 0; $i < $panelCap; $i+=( $panelCap / 10 ) ) {
