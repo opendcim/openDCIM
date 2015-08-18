@@ -36,9 +36,11 @@
 
 			$name = $side."MPG_".$mpg->MPGID;
 			$checked = ($_POST[$name])?"checked":"";
-			$equipmentList .= '<li><div class="equipmentBox">
-						<label class="equipmentLabel" for="'.$name.'">'.$mpg->Name.'</label>
-						<input type="checkbox" name="'.$name.'" id="'.$name.'" list="'.$list.'" onChange="OnCheckGroup(this,\''.$side.'\')" '.$checked.'>
+			$equipmentList .= '<li><div class="table equipmentBox">
+						<div>
+							<div><label class="equipmentLabel" for="'.$name.'">'.$mpg->Name.'</label></div>
+							<div style="text-align: right; width: 100%;"><input type="checkbox" name="'.$name.'" id="'.$name.'" list="'.$list.'" onChange="OnCheckGroup(this,\''.$side.'\')" '.$checked.'></div>
+						</div>
 					</div></li>';
 		}
 
@@ -51,11 +53,13 @@
 			if($mp->GetNbMeasuresOnInterval($startDate, $endDate) >= 2) {
 				$name = $side."MP_".$mp->MPID;
 				$checked = ($_POST[$name])?"checked":"";
-				$equipmentList .= '<li><div class="equipmentBox">
+				$equipmentList .= '<li><div class="table equipmentBox">
 							<input type="number" value="'.$mp->MPID.'" hidden>
 							<input type="text" id="'.$name.'_label" value="'.$mp->Label.'" hidden>
-							<label class="equipmentLabel" for="'.$name.'">'.$mp->Label.'</label>
-							<input type="checkbox" name="'.$name.'" id="'.$name.'" '.$checked.' onChange="OnCheckMP(this, \''.$side.'\');">
+							<div>
+								<div><label class="equipmentLabel" for="'.$name.'">'.$mp->Label.'</label></div>
+								<div style="text-align: right; width: 100%;"><input type="checkbox" name="'.$name.'" id="'.$name.'" '.$checked.' onChange="OnCheckMP(this, \''.$side.'\');"></div>
+							</div>
 						</div></li>';
 			}
 		}
@@ -162,12 +166,9 @@
 .equipmentBox
 {
 	border: 1px solid grey;
-	text-align: right;
 }
 .equipmentLabel
 {
-	text-align: left;
-	float: left;
 	padding: 3px;
 }
 </style>
