@@ -56,10 +56,16 @@
 		$mech->PanelID = $panel->PanelID;
 		$mechList=$mech->GetMechByPanel();
 		
-		$wattage = $panel->GetWattage();
-		$panelLoad = sprintf( "%01.2f", ($wattage->Wattage1 + $wattage->Wattage2 + $wattage->Wattage3) / 1000 );
+		$inputWattage = $panel->GetWattage(true);
+		$outputWattage = $panel->GetWattage(false);
+
+		if($inputWattage) {
+			$inputPanelLoad = sprintf( "%01.2f", ($inputWattage->Wattage1 + $inputWattage->Wattage2 + $inputWattage->Wattage3) / 1000 );
+		}
+		if($outputWattage) {
+			$outputPanelLoad = sprintf( "%01.2f", ($outputWattage->Wattage1 + $outputWattage->Wattage2 + $outputWattage->Wattage3) / 1000 );
+		}
 		$panelCap = $panel->PanelVoltage * $panel->MainBreakerSize * sqrt(3);
-		
 		$dataMajorTicks = "";
 		for ( $i = 0; $i < $panelCap; $i+=( $panelCap / 10 ) ) {
 			$dataMajorTicks .= sprintf( "%d ", $i / 1000 );
@@ -72,12 +78,17 @@
 
 		$mtarray=implode(",",explode(" ",$dataMajorTicks));
 		$hilights = sprintf( "{from: 0, to: %d, color: '#eee'}, {from: %d, to: %d, color: '#fffacd'}, {from: %d, to: %d, color: '#eaa'}", $panelCap / 1000 * .6, $panelCap / 1000 * .6, $panelCap / 1000 * .8, $panelCap / 1000 * .8, $panelCap / 1000);
+
 		// Generate JS for load display
-		$script="
+		$script="";
+		if($inputWattage && $inputWattage->hasUPS) {
+			$script.="
 	var gauge=new Gauge({
-		renderTo: 'power-gauge',
+		renderTo: 'power-gauge-input',
 		type: 'canv-gauge',
-		title: 'Load',
+		title: 'Input',
+		width: 200,
+		height: 200,
 		minValue: '0',
 		maxValue: '$dataMaxValue',
 		majorTicks: [ $mtarray ],
@@ -97,8 +108,39 @@
 			},
 		highlights: [ $hilights ],
 		});
-	gauge.draw().setValue($panelLoad);
+	gauge.draw().setValue($inputPanelLoad);
 ";
+		}
+		if($outputWattage) {
+			$script.="
+	var gauge=new Gauge({
+		renderTo: 'power-gauge-output',
+		type: 'canv-gauge',
+		title: 'Output',
+		width: 200,
+		height: 200,
+		minValue: '0',
+		maxValue: '$dataMaxValue',
+		majorTicks: [ $mtarray ],
+		minorTicks: '2',
+		strokeTicks: false,
+		units: 'kW',
+		valueFormat: { int : 3, dec : 2 },
+		glow: false,
+		animation: {
+			delay: 10,
+			duration: 200,
+			fn: 'bounce'
+			},
+		colors: {
+			needle: {start: '#f00', end: '#00f' },
+			title: '#00f',
+			},
+		highlights: [ $hilights ],
+		});
+	gauge.draw().setValue($outputPanelLoad);
+";
+		}
 /*
   Example for updating the gauge later.  This will start an endless loop that will update
   the gauge once a second.
@@ -271,13 +313,11 @@ echo '	</select></div>
 ?>
 </div>
 </div><!-- END div.table -->
-</form>
+
 <?php
 	// Build a panel schedule if this is not a new panel being created
 	// Also show the power gauge
 	if($panel->PanelID >0){
-		echo '<div><canvas id="power-gauge" width="200" height="200"></canvas></div>';
-
 		$mpOptions="";
 		foreach($mpList as $mp) {
 			$mpOptions .= "<option value=\"$mp->MPID\"$selected>[".__(MeasurePoint::$TypeTab[$mp->Type])."] $mp->Label</option>";
@@ -290,32 +330,30 @@ echo '	</select></div>
 
 		echo '<br>
 	<center>
-		<form method="POST">
-			<h2>'.__("Measure Points").'</h2>
-			<div class="table">
-				<div>
-					<div><label for="mp_mpid">'.__("Measure Point ID").'</label></div>
-					<div><select name="mp_mpid" id="mp_mpid">
-						<option value="0">'.__("New Measure Point").'</option>
-						'.$mpOptions.'
-					</select></div>
-				</div>
-				<div id="div_mp_label">
-					<div><label for="mp_label">'.__("Label").'</label></div>
-					<div><input type="text" name="mp_label" id="mp_label"></div>
-				</div>
-				<div id="div_mp_type">
-					<div><label for="mp_type">'.__("Type").'</label></div>
-					<div><select name="mp_type">
-					'.$typeOptions.'
-					</select></div>
-				</div>
-				<div class="caption">
-					<button type="submit" name="action" id="mp_create" value="Create_mp">',__("Create Measure Point"),'</button>
-					<a href="" id="mp_link" style="display: none;">[ '.__("Edit Measure Point").' ]</a>
-				</div>
+		<h2>'.__("Measure Points").'</h2>
+		<div class="table">
+			<div>
+				<div><label for="mp_mpid">'.__("Measure Point ID").'</label></div>
+				<div><select name="mp_mpid" id="mp_mpid">
+					<option value="0">'.__("New Measure Point").'</option>
+					'.$mpOptions.'
+				</select></div>
 			</div>
-		</form>
+			<div id="div_mp_label">
+				<div><label for="mp_label">'.__("Label").'</label></div>
+				<div><input type="text" name="mp_label" id="mp_label"></div>
+			</div>
+			<div id="div_mp_type">
+				<div><label for="mp_type">'.__("Type").'</label></div>
+				<div><select name="mp_type">
+				'.$typeOptions.'
+				</select></div>
+			</div>
+			<div class="caption">
+				<button type="submit" name="action" id="mp_create" value="Create_mp">',__("Create Measure Point"),'</button>
+				<a href="" id="mp_link" style="display: none;">[ '.__("Edit Measure Point").' ]</a>
+			</div>
+		</div>
 	</center>';
 	
 		/* Loop through PDUs and find all that are attached to this panel and build a temp array to hold them.
@@ -508,6 +546,13 @@ echo '	</select></div>
 			print "					<div><div>$err</div></div>\n";
 		}
 		print "				</div><!-- END div.table -->\n			</fieldset>\n		</div>\n		<div>".__("PDUs displayed here could not be drawn on the panel because of an overlapping circuit ID assignment. Please check the pole positions on the panels again.")."</div>\n	</div>\n</div><!-- END div.table -->\n";
+	}
+	echo "</form>";
+	if($panel->PanelID > 0) {
+		echo '	<div>
+				<canvas id="power-gauge-input" width="0" height="0"></canvas><br>
+				<canvas id="power-gauge-output" width="0" height="0"></canvas>
+			</div>';
 	}
 ?>
 </div></div>

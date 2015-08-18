@@ -1601,11 +1601,12 @@ class PowerPanel {
 		return $this->Search($indexedbyid,true);
 	}
 
-	function GetWattage() {
+	function GetWattage($displayInput=true) {
                 $ret->Wattage1 = 0;
                 $ret->Wattage2 = 0;
                 $ret->Wattage3 = 0;
                 $ret->LastRead = date("Y-m-d H:i:s");
+		$ret->hasUPS = false;
 
                 $measureFound = false;
 
@@ -1614,9 +1615,13 @@ class PowerPanel {
                 $mpList->EquipmentID = $this->PanelID;
                 $mpList = $mpList->GetMPByEquipment();
 
+		$excludeCategory = ($displayInput)?"UPS Output":"UPS Input";
+
                 foreach($mpList as $mp) {
                         if($mp->Type == "elec") {
-                                if($mp->Category!="UPS Output") {
+                                if($mp->Category!=$excludeCategory) {
+					if($mp->Category=="UPS Input" || $mp->Category=="UPS Output")
+						$ret->hasUPS = true;
                                         $lastMeasure = new ElectricalMeasure();
                                         $lastMeasure->MPID = $mp->MPID;
                                         $lastMeasure = $lastMeasure->GetLastMeasure();
@@ -1633,7 +1638,7 @@ class PowerPanel {
                         }
                 }
 
-		if(!$measureFound) {
+		if(!$measureFound && !$displayInput) {
 			$pduList = new PowerDistribution();
 			$pduList->PanelID = $this->PanelID;
 			$pduList = $pduList->GetPDUbyPanel();
