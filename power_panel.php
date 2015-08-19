@@ -54,7 +54,7 @@
 		$pduList=$pdu->GetPDUbyPanel();
 		
 		$panelLoad = sprintf( "%01.2F", $panel->GetPanelLoad() / 1000 );
-		$panelCap = sprintf( "%01.2F", $panel->PanelVoltage * $panel->MainBreakerSize * sqrt(3));
+		$panelCap = sprintf( "%01.2F", $panel->PanelVoltage * $panel->MainBreakerSize * sqrt(3) * 0.8 ); //With derate max amperage of the breaker
 		
 		$dataMajorTicks = "";
 		if( $panelCap < 10000 ) {
