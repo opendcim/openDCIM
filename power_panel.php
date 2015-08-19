@@ -68,13 +68,13 @@
 			$hilights = sprintf( "{from: 0, to: %.1F, color: '#eee'}, {from: %.1F, to: %.1F, color: '#fffacd'}, {from: %.1F, to: %.1F, color: '#eaa'}", $panelCap / 1000 * .6, $panelCap / 1000 * .6, $panelCap / 1000 * .8, $panelCap / 1000 * .8, $panelCap / 1000);
 		}else{
 			for ( $i = 0; $i < 10; $i++ ) {
-				$dataMajorTicks .= sprintf( "%.d ", $panelCap * $i / 10000 );
+				$dataMajorTicks .= sprintf( "%d ", $panelCap * $i / 10000 );
 			}
-			$dataMajorTicks .= sprintf( "%.d", $panelCap / 1000 );
-			$dataMaxValue = sprintf( "%.1d", $panelCap / 1000 );
+			$dataMajorTicks .= sprintf( "%d", $panelCap / 1000 );
+			$dataMaxValue = sprintf( "%d", $panelCap / 1000 );
 			
 			//$dataHighlights = sprintf( "0 %d #eee, %d %d #fffacd, %d %d #eaa", $panelCap / 1000 * .6, $panelCap / 1000 * .6, $panelCap / 1000 * .8, $panelCap / 1000 * .8, $panelCap / 1000);
-			$hilights = sprintf( "{from: 0, to: %.d, color: '#eee'}, {from: %.d, to: %.d, color: '#fffacd'}, {from: %.d, to: %.d, color: '#eaa'}", $panelCap / 1000 * .6, $panelCap / 1000 * .6, $panelCap / 1000 * .8, $panelCap / 1000 * .8, $panelCap / 1000);
+			$hilights = sprintf( "{from: 0, to: %d, color: '#eee'}, {from: %d, to: %d, color: '#fffacd'}, {from: %d, to: %d, color: '#eaa'}", $panelCap / 1000 * .6, $panelCap / 1000 * .6, $panelCap / 1000 * .8, $panelCap / 1000 * .8, $panelCap / 1000);
 		}
 		$mtarray=implode(",",explode(" ",$dataMajorTicks));
 		
