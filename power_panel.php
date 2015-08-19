@@ -54,20 +54,30 @@
 		$pduList=$pdu->GetPDUbyPanel();
 		
 		$panelLoad = sprintf( "%01.2F", $panel->GetPanelLoad() / 1000 );
-		$panelCap = $panel->PanelVoltage * $panel->MainBreakerSize * sqrt(3);
+		$panelCap = sprintf( "%01.2F", $panel->PanelVoltage * $panel->MainBreakerSize * sqrt(3));
 		
 		$dataMajorTicks = "";
-		for ( $i = 0; $i < $panelCap; $i+=( $panelCap / 10 ) ) {
-			$dataMajorTicks .= sprintf( "%d ", $i / 1000 );
+		if( $panelCap < 10000 ) {
+			for ( $i = 0; $i < 10; $i++ ) {
+				$dataMajorTicks .= sprintf( "%.1F ", $panelCap * $i / 10000 );
+			}
+			$dataMajorTicks .= sprintf( "%.1F", $panelCap / 1000 );
+			$dataMaxValue = sprintf( "%.1F", $panelCap / 1000 );
+			
+			//$dataHighlights = sprintf( "0 %d #eee, %d %d #fffacd, %d %d #eaa", $panelCap / 1000 * .6, $panelCap / 1000 * .6, $panelCap / 1000 * .8, $panelCap / 1000 * .8, $panelCap / 1000);
+			$hilights = sprintf( "{from: 0, to: %.1F, color: '#eee'}, {from: %.1F, to: %.1F, color: '#fffacd'}, {from: %.1F, to: %.1F, color: '#eaa'}", $panelCap / 1000 * .6, $panelCap / 1000 * .6, $panelCap / 1000 * .8, $panelCap / 1000 * .8, $panelCap / 1000);
+		}else{
+			for ( $i = 0; $i < 10; $i++ ) {
+				$dataMajorTicks .= sprintf( "%.d ", $panelCap * $i / 10000 );
+			}
+			$dataMajorTicks .= sprintf( "%.d", $panelCap / 1000 );
+			$dataMaxValue = sprintf( "%.1d", $panelCap / 1000 );
+			
+			//$dataHighlights = sprintf( "0 %d #eee, %d %d #fffacd, %d %d #eaa", $panelCap / 1000 * .6, $panelCap / 1000 * .6, $panelCap / 1000 * .8, $panelCap / 1000 * .8, $panelCap / 1000);
+			$hilights = sprintf( "{from: 0, to: %.d, color: '#eee'}, {from: %.d, to: %.d, color: '#fffacd'}, {from: %.d, to: %.d, color: '#eaa'}", $panelCap / 1000 * .6, $panelCap / 1000 * .6, $panelCap / 1000 * .8, $panelCap / 1000 * .8, $panelCap / 1000);
 		}
-		$dataMajorTicks .= sprintf( "%d", $panelCap / 1000 );
-		
-		$dataMaxValue = sprintf( "%d", $panelCap / 1000 );
-		
-		$dataHighlights = sprintf( "0 %d #eee, %d %d #fffacd, %d %d #eaa", $panelCap / 1000 * .6, $panelCap / 1000 * .6, $panelCap / 1000 * .8, $panelCap / 1000 * .8, $panelCap / 1000);
-
 		$mtarray=implode(",",explode(" ",$dataMajorTicks));
-		$hilights = sprintf( "{from: 0, to: %d, color: '#eee'}, {from: %d, to: %d, color: '#fffacd'}, {from: %d, to: %d, color: '#eaa'}", $panelCap / 1000 * .6, $panelCap / 1000 * .6, $panelCap / 1000 * .8, $panelCap / 1000 * .8, $panelCap / 1000);
+		
 		// Generate JS for load display
 		$script="
 	var gauge=new Gauge({
