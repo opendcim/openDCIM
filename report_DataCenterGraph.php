@@ -4,7 +4,7 @@ require_once "facilities.inc.php";
 
 $dotCommand = $config->ParameterArray["dot"];
 
-function createName($label, $nameList) {
+function createName($label, &$nameList) {
 	$suffix = "";
 	$cnt = 2;
 	while(in_array($label.$suffix, $nameList)) {
@@ -45,6 +45,7 @@ if(isset($_GET["datacenterid"])) {
 	while(isset($data[$line])) {
 		foreach($data[$line] as $index => $element) {
 			$element->Name = createName($element->object->PanelLabel, $nameList);
+			$element->Label = $element->object->PanelLabel;
 
 			$children = new PowerPanel();
 			$children->ParentPanelID = $element->object->PanelID;
@@ -75,6 +76,7 @@ if(isset($_GET["datacenterid"])) {
 				$pduElement = new stdClass();
 				$pduElement->object = $pdu;
 				$pduElement->Name = createName($pdu->Label, $nameList);
+				$pduElement->Label = $pdu->Label;
 				$pduElement->children = array();
 				$pduElement->hasEMP = hasMPLinked($pdu->PDUID, "Device", "elec");
 				$pduElement->hasCMP = hasMPLinked($pdu->PDUID, "Device", "cooling");
@@ -94,6 +96,7 @@ if(isset($_GET["datacenterid"])) {
 				$mechElement = new stdClass();
 				$mechElement->object = $mech;
 				$mechElement->Name = createName($mech->Label, $nameList);
+				$mechElement->Label = $mech->Label;
 				$mechElement->children = array();
 				$mechElement->hasEMP = hasMPLinked($mech->MechID, "MechanicalDevice", "elec");
 				$mechElement->hasCMP = hasMPLinked($mech->MechID, "MechanicalDevice", "cooling");
@@ -121,6 +124,7 @@ if(isset($_GET["datacenterid"])) {
 					$devElement = new stdClass();
 					$devElement->object = $dev;
 					$devElement->Name = createName($dev->Label, $nameList);
+					$devElement->Label = $dev->Label;
 					$devElement->children = array();
 					$devElement->hasEMP = hasMPLinked($dev->DeviceID, "Device", "elec");
 					$devElement->hasCMP = hasMPLinked($dev->DeviceID, "Device", "cooling");
@@ -154,7 +158,7 @@ if(isset($_GET["datacenterid"])) {
 		foreach($line as $element) {
 			$graphstr .= "\t\t\"$element->Name\"[label=<<TABLE BORDER=\"0\" CELLBORDER=\"1\" CELLSPACING=\"0\"><TR>";
 			if($element->hasEMP || $element->hasCMP || $element->hasAMP) {
-				$graphstr .= "<TD PORT=\"IN\">$element->Name</TD></TR><TR><TD PORT=\"OUT\">";
+				$graphstr .= "<TD PORT=\"IN\">$element->Label</TD></TR><TR><TD PORT=\"OUT\">";
 				if($element->hasEMP)
 					$graphstr .= "<FONT COLOR=\"darkorange\">E</FONT>";
 				if($element->hasCMP)
@@ -163,7 +167,7 @@ if(isset($_GET["datacenterid"])) {
 					$graphstr .= "<FONT COLOR=\"steelblue\">A</FONT>";
 				$graphstr .= "</TD></TR></TABLE>> color=mediumblue]";
 			} else {
-				$graphstr .= "<TD PORT=\"INOUT\">$element->Name</TD></TR></TABLE>>]";
+				$graphstr .= "<TD PORT=\"INOUT\">$element->Label</TD></TR></TABLE>>]";
 			}
 			$graphstr .= ";\n";
 		}
@@ -196,7 +200,7 @@ if(isset($_GET["datacenterid"])) {
 
 		if($retval == 0) {
 			header("Content-Type: image/png");
-			//unlink($dotfile);
+			unlink($dotfile);
 			print file_get_contents($graphfile);
 			unlink($graphfile);
 			exit;
