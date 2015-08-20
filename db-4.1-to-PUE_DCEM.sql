@@ -65,6 +65,22 @@ CREATE TABLE IF NOT EXISTS fac_ModbusElectricalMeasurePoint (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 --
+-- Table structure for fac_IPMIElectricalMeasurePoint
+--
+
+CREATE TABLE IF NOT EXISTS fac_IPMIElectricalMeasurePoint (
+  MPID INT(11) NOT NULL,
+  UserName VARCHAR(80) NOT NULL,
+  Password VARCHAR(80) NOT NULL,
+  Interface VARCHAR(80) NOT NULL,
+  Sensor1 VARCHAR(80) NOT NULL,
+  Sensor2 VARCHAR(80) NOT NULL,
+  Sensor3 VARCHAR(80) NOT NULL,
+  SensorEnergy VARCHAR(80) NOT NULL,
+  UNIQUE KEY MPID (MPID)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+--
 -- Table structure for fac_ElectricalMeasure
 --
 
@@ -144,6 +160,21 @@ CREATE TABLE IF NOT EXISTS fac_ModbusCoolingMeasurePoint (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 --
+-- Table structure for fac_IPMICoolingMeasurePoint
+--
+
+
+CREATE TABLE IF NOT EXISTS fac_IPMICoolingMeasurePoint (
+  MPID INT(11) NOT NULL,
+  UserName VARCHAR(80) NOT NULL,
+  Password VARCHAR(80) NOT NULL,
+  Interface VARCHAR(80) NOT NULL,
+  FanSpeedSensor VARCHAR(80) NOT NULL,
+  CoolingSensor VARCHAR(80) NOT NULL,
+  UNIQUE KEY MPID (MPID)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+--
 -- Table structure for fac_CoolingMeasure
 --
 
@@ -199,6 +230,20 @@ CREATE TABLE IF NOT EXISTS fac_ModbusAirMeasurePoint (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 --
+-- Table structure for fac_IPMIAirMeasurePoint
+--
+
+CREATE TABLE IF NOT EXISTS fac_IPMIAirMeasurePoint (
+  MPID INT(11) NOT NULL,
+  UserName VARCHAR(80) NOT NULL,
+  Password VARCHAR(80) NOT NULL,
+  Interface VARCHAR(80) NOT NULL,
+  TemperatureSensor VARCHAR(80) NOT NULL,
+  HumiditySensor VARCHAR(80) NOT NULL,
+  UNIQUE KEY MPID (MPID)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+--
 -- Table structure for fac_AirMeasure
 --
 
@@ -234,6 +279,8 @@ CREATE TABLE IF NOT EXISTS fac_MechanicalDevice (
   PanelID INT(11) NOT NULL,
   BreakerSize INT(11) NOT NULL,
   PanelPole INT(11) NOT NULL,
+  PanelID2 INT(11) NOT NULL,
+  PanelPole2 INT(11) NOT NULL,
   IPAddress VARCHAR(45) NOT NULL,
   SNMPVersion VARCHAR(2) NOT NULL DEFAULT "2c",
   SNMPCommunity VARCHAR(80) NOT NULL,
@@ -266,6 +313,7 @@ INSERT INTO fac_Config set Parameter="TimeInterval", Value="Last 7 Days", UnitOf
 INSERT INTO fac_Config set Parameter="Phase1Color", Value="#000000", UnitOfMeasure="HexColor", ValType="string", DefaultVal="#000000";
 INSERT INTO fac_Config set Parameter="Phase2Color", Value="#FF0000", UnitOfMeasure="HexColor", ValType="string", DefaultVal="#FF0000";
 INSERT INTO fac_Config set Parameter="Phase3Color", Value="#0000FF", UnitOfMeasure="HexColor", ValType="string", DefaultVal="#0000FF";
+INSERT INTO fac_Config set Parameter="ipmitool", Value="/usr/bin/ipmitool", UnitOfMeasure="path", ValType="string", DefaultVal="/usr/bin/ipmitool";
 
 --
 -- Bump up the database version

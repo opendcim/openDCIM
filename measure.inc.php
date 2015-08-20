@@ -165,7 +165,8 @@ class MeasurePoint {
 					"air" => "Air");
 
 	static $ConnectionTypeTab = array(	"SNMP" => "SNMP",
-						"Modbus" => "Modbus");
+						"Modbus" => "Modbus",
+						"IPMI" => "IPMI");
 
 	function __construct() {
 		if(func_num_args() == 1)
@@ -175,7 +176,7 @@ class MeasurePoint {
 
 	protected function MakeSafe() {
 		$validEquipmentType = array('None', 'Device', 'PowerPanel', 'MechanicalDevice');
-		$validConnectionTypes = array('SNMP', 'Modbus');
+		$validConnectionTypes = array('SNMP', 'Modbus', 'IPMI');
 		$validTypes = array('elec', 'cooling', 'air');
 		$this->MPID=intval($this->MPID);
 		$this->Label=sanitize($this->Label);
@@ -249,7 +250,6 @@ class MeasurePoint {
 		 *	-register: First register to read
 		 *	-nbWords: nb registers to read
 		 */
-		global $config;
 		usleep(1000);
 		$valTab = array();
 		$modbus = new ModbusTcp();
@@ -272,6 +272,27 @@ class MeasurePoint {
 			}
 		}
 		$modbus->ModClose();
+		return $valTab;
+	}
+
+	static protected function IPMI_Lookup($mp, $sensorTab=null) {
+		global $config;
+		$valTab = array();
+		foreach($sensorTab as $sensor) {
+			if($sensor != "") {
+				$cmd = $config->ParameterArray["ipmitool"]." -I $mp->Interface -H $mp->IPAddress -U $mp->UserName -P $mp->Password sdr get \"$sensor\" | grep \"Sensor Reading\"";
+				exec($cmd, $output, $status);
+				if($status == 0) {
+					$output = str_replace("Sensor Reading        : ", "", $output);
+					$output = str_replace(" (+/- 0) Watts", "", $output);
+					$valTab[] = $output[0];
+				} else {
+					$valTab[] = null;
+				}
+			} else {
+				$valTab[] = null;
+			}
+		}
 		return $valTab;
 	}
 
@@ -636,6 +657,9 @@ class ElectricalMeasurePoint extends MeasurePoint{
 				break;
 			case "Modbus":
 				$values = self::Modbus_Lookup($this, array($this->Register1, $this->Register2, $this->Register3, $this->RegisterEnergy));
+				break;
+			case "IPMI":
+				$values = self::IPMI_Lookup($this, array($this->Sensor1, $this->Sensor2, $this->Sensor3, $this->SensorEnergy));
 				break;
 		}
 		if(!is_null($values[0]) || !is_null($values[1]) || !is_null($values[2])){
@@ -1045,6 +1069,188 @@ class ModbusElectricalMeasurePoint extends ElectricalMeasurePoint {
 		$MPList=array();
 		foreach($dbh->query($sql) as $row) {
 			$MPList[]=ModbusElectricalMeasurePoint::RowToObject($row);
+		}
+		return $MPList;
+	}
+}
+
+class IPMIElectricalMeasurePoint extends ElectricalMeasurePoint {
+	
+	//Defintion of an electrical measure point with an IPMI connection
+
+	var $UserName;		//User name for authentication
+	var $Password;		//password for authentication
+	var $Interface;		//interface to use
+	var $Sensor1;		//sensor name of the first phase to measure power (W). If the measure point has less than 3 phases, let other registers blank
+	var $Sensor2;		//sensor name of the second phase.
+	var $Sensor3;		//sensor name of the third phase.
+	var $SensorEnergy;	//register to measure the energy. Measure has to be a counter (kW.h).
+
+	function MakeSafe() {
+		parent::Makesafe();
+		$this->UserName=sanitize($this->UserName);
+		$this->Password=sanitize($this->Password);
+		$this->Interface=sanitize($this->Interface);
+		$this->Sensor1=sanitize($this->Sensor1);
+		$this->Sensor2=sanitize($this->Sensor2);
+		$this->Sensor3=sanitize($this->Sensor3);
+		$this->SensorEnergy=sanitize($this->SensorEnergy);
+	}
+
+	function MakeDisplay() {
+		parent::MakeDisplay();
+	}
+
+	static function RowToObject($dbRow) {
+		$mp=new IPMIElectricalMeasurePoint(parent::RowToObject($dbRow));
+		$mp->UserName=$dbRow["UserName"];
+		$mp->Password=$dbRow["Password"];
+		$mp->Interface=$dbRow["Interface"];
+		$mp->Sensor1=$dbRow["Sensor1"];
+		$mp->Sensor2=$dbRow["Sensor2"];
+		$mp->Sensor3=$dbRow["Sensor3"];
+		$mp->SensorEnergy=$dbRow["SensorEnergy"];
+
+		$mp->MakeDisplay();
+
+		return $mp;
+	}
+
+	function CreateMP() {
+		global $dbh;
+
+		$this->MakeSafe();
+
+		if(parent::CreateMP()) {
+
+			$sql = "INSERT INTO fac_IPMIElectricalMeasurePoint SET
+					MPID=$this->MPID,
+					UserName=\"$this->UserName\",
+					Password=\"$this->Password\",
+					Interface=\"$this->Interface\",
+					Sensor1=\"$this->Sensor1\",
+					Sensor2=\"$this->Sensor2\",
+					Sensor3=\"$this->Sensor3\",
+					SensorEnergy=\"$this->SensorEnergy\";";
+			
+			if(!$dbh->exec($sql))
+				return false;
+		
+			(class_exists('LogActions'))?LogActions::LogThis($this):'';
+			return $this->MPID;
+		}
+		return false;
+	}
+
+	function DeleteMP() {
+		global $dbh;
+		
+		$this->MakeSafe();
+		
+		if(parent::DeleteMP()) {
+			$sql="DELETE FROM fac_IPMIElectricalMeasurePoint WHERE MPID=$this->MPID;";
+			if(!$dbh->exec($sql))
+				return false;
+
+			(class_exists('LogActions'))?LogActions::LogThis($this):'';
+			return true;
+		}
+		return false;
+	}
+
+	function UpdateMP(){
+		global $dbh;
+		
+		$this->MakeSafe();
+
+		$oldmp = new MeasurePoint();
+		$oldmp->MPID = $this->MPID;
+		$oldmp = $oldmp->GetMP();
+
+		if($oldmp->ConnectionType != $this->ConnectionType || $oldmp->Type != $this->Type) {
+			$oldClass = MeasurePoint::$ConnectionTypeTab[$oldmp->ConnectionType].MeasurePoint::$TypeTab[$oldmp->Type]."MeasurePoint";
+			$sql="DELETE FROM fac_".$oldClass." WHERE MPID=$this->MPID;";
+			if(!$dbh->exec($sql))
+				return false;
+
+			$sql = "INSERT INTO fac_IPMIElectricalMeasurePoint SET
+					MPID=$this->MPID,
+					UserName=\"$this->UserName\",
+					Password=\"$this->Password\",
+					Interface=\"$this->Interface\",
+					Sensor1=\"$this->Sensor1\",
+					Sensor2=\"$this->Sensor2\",
+					Sensor3=\"$this->Sensor3\",
+					SensorEnergy=\"$this->SensorEnergy\";";
+			if(!$dbh->exec($sql))
+				return false;
+		} else {
+			$sql="UPDATE fac_IPMIElectricalMeasurePoint SET 
+				MPID=$this->MPID,
+				UserName=\"$this->UserName\",
+				Password=\"$this->Password\",
+				Interface=\"$this->Interface\",
+				Sensor1=\"$this->Sensor1\",
+				Sensor2=\"$this->Sensor2\",
+				Sensor3=\"$this->Sensor3\",
+				SensorEnergy=\"$this->SensorEnergy\"
+				WHERE MPID=$this->MPID;"; echo $sql;
+			if(!$dbh->query($sql))
+				return false;
+		}
+
+		if(parent::UpdateMP())
+			return false;
+		(class_exists('LogActions'))?LogActions::LogThis($this,$oldmp):'';
+		return true;
+	}
+
+	function GetMP() {
+		global $dbh;
+
+		$this->MakeSafe();
+
+		$sql="select * from fac_MeasurePoint NATURAL JOIN fac_ElectricalMeasurePoint NATURAL JOIN fac_IPMIElectricalMeasurePoint where MPID=$this->MPID;";
+
+		if($row=$dbh->query($sql)->fetch()){
+			foreach(IPMIElectricalMeasurePoint::RowToObject($row) as $prop => $value){
+				$this->$prop=$value;
+			}
+		}else{
+			foreach($this as $prop => $value){
+				if($prop!='MPID'){
+					$this->$prop=null;
+				}
+			}
+		}
+		return $this;
+	}
+
+	function GetMPList() {
+		global $dbh;
+
+		$this->MakeSafe();
+
+		$sql="SELECT * FROM fac_MeasurePoint NATURAL JOIN fac_ElectricalMeasurePoint NATURAL JOIN fac_IPMIElectricalMeasurePoint ORDER BY Label ASC;";
+
+		$MPList=array();
+		foreach($dbh->query($sql) as $row){
+			$MPList[]=IPMIElectricalMeasurePoint::RowToObject($row);
+		}
+
+		return $MPList;
+	}
+
+	function GetMeasurePointsByDC() {
+		global $dbh;
+
+		$this->MakeSafe();
+
+		$sql="select * from fac_MeasurePoint NATURAL JOIN fac_ElectricalMeasurePoint NATURAL JOIN fac_IPMIElectricalMeasurePoint where DataCenterID=$this->DataCenterID ORDER BY Label ASC;";
+
+		$MPList=array();
+		foreach($dbh->query($sql) as $row) {
+			$MPList[]=IPMIElectricalMeasurePoint::RowToObject($row);
 		}
 		return $MPList;
 	}
@@ -1801,6 +2007,176 @@ class ModbusCoolingMeasurePoint extends CoolingMeasurePoint {
 	}
 }
 
+class IPMICoolingMeasurePoint extends CoolingMeasurePoint {
+	
+	//Defintion of an electrical measure point with an IPMI connection
+
+	var $UserName;		//User name for authentication
+	var $Password;		//password for authentication
+	var $Interface;		//interface to use
+	var $FanSpeedSensor;	//sensor name of the fanspeed
+	var $CoolingSensor;	//sensor name of the compressor usage.
+
+	function MakeSafe() {
+		parent::Makesafe();
+		$this->UserName=sanitize($this->UserName);
+		$this->Password=sanitize($this->Password);
+		$this->Interface=sanitize($this->Interface);
+		$this->FanSpeedSensor=sanitize($this->FanSpeedSensor);
+		$this->CoolingSensor=sanitize($this->CoolingSensor);
+	}
+
+	function MakeDisplay() {
+		parent::MakeDisplay();
+	}
+
+	static function RowToObject($dbRow) {
+		$mp=new IPMICoolingMeasurePoint(parent::RowToObject($dbRow));
+		$mp->UserName=$dbRow["UserName"];
+		$mp->Password=$dbRow["Password"];
+		$mp->Interface=$dbRow["Interface"];
+		$mp->FanSpeedSensor=$dbRow["FanSpeedSensor"];
+		$mp->CoolingSensor=$dbRow["CoolingSensor"];
+
+		$mp->MakeDisplay();
+
+		return $mp;
+	}
+
+	function CreateMP() {
+		global $dbh;
+
+		$this->MakeSafe();
+
+		if(parent::CreateMP()) {
+
+			$sql = "INSERT INTO fac_IPMICoolingMeasurePoint SET
+					MPID=$this->MPID,
+					UserName=\"$this->UserName\",
+					Password=\"$this->Password\",
+					Interface=\"$this->Interface\",
+					FanSpeedSensor=\"$this->FanSpeedSensor\",
+					CoolingSensor=\"$this->CoolingSensor\";";
+			
+			if(!$dbh->exec($sql))
+				return false;
+		
+			(class_exists('LogActions'))?LogActions::LogThis($this):'';
+			return $this->MPID;
+		}
+		return false;
+	}
+
+	function DeleteMP() {
+		global $dbh;
+		
+		$this->MakeSafe();
+		
+		if(parent::DeleteMP()) {
+			$sql="DELETE FROM fac_IPMICoolingMeasurePoint WHERE MPID=$this->MPID;";
+			if(!$dbh->exec($sql))
+				return false;
+
+			(class_exists('LogActions'))?LogActions::LogThis($this):'';
+			return true;
+		}
+		return false;
+	}
+
+	function UpdateMP(){
+		global $dbh;
+		
+		$this->MakeSafe();
+
+		$oldmp = new MeasurePoint();
+		$oldmp->MPID = $this->MPID;
+		$oldmp = $oldmp->GetMP();
+
+		if($oldmp->ConnectionType != $this->ConnectionType || $oldmp->Type != $this->Type) {
+			$oldClass = MeasurePoint::$ConnectionTypeTab[$oldmp->ConnectionType].MeasurePoint::$TypeTab[$oldmp->Type]."MeasurePoint";
+			$sql="DELETE FROM fac_".$oldClass." WHERE MPID=$this->MPID;";
+			if(!$dbh->exec($sql))
+				return false;
+
+			$sql = "INSERT INTO fac_IPMICoolingMeasurePoint SET
+					MPID=$this->MPID,
+					UserName=\"$this->UserName\",
+					Password=\"$this->Password\",
+					Interface=\"$this->Interface\",
+					FanSpeedSensor=\"$this->FanSpeedSensor\",
+					CoolingSensor=\"$this->CoolingSensor\";";
+			if(!$dbh->exec($sql))
+				return false;
+		} else {
+			$sql="UPDATE fac_IPMICoolingMeasurePoint SET 
+				MPID=$this->MPID,
+				UserName=\"$this->UserName\",
+				Password=\"$this->Password\",
+				Interface=\"$this->Interface\",
+				FanSpeedSensor=\"$this->FanSpeedSensor\",
+				CoolingSensor=\"$this->CoolingSensor\"
+				WHERE MPID=$this->MPID;";
+			if(!$dbh->query($sql))
+				return false;
+		}
+
+		if(parent::UpdateMP())
+			return false;
+		(class_exists('LogActions'))?LogActions::LogThis($this,$oldmp):'';
+		return true;
+	}
+
+	function GetMP() {
+		global $dbh;
+
+		$this->MakeSafe();
+
+		$sql="select * from fac_MeasurePoint NATURAL JOIN fac_CoolingMeasurePoint NATURAL JOIN fac_IPMICoolingMeasurePoint where MPID=$this->MPID;";
+
+		if($row=$dbh->query($sql)->fetch()){
+			foreach(IPMICoolingMeasurePoint::RowToObject($row) as $prop => $value){
+				$this->$prop=$value;
+			}
+		}else{
+			foreach($this as $prop => $value){
+				if($prop!='MPID'){
+					$this->$prop=null;
+				}
+			}
+		}
+		return $this;
+	}
+
+	function GetMPList() {
+		global $dbh;
+
+		$this->MakeSafe();
+
+		$sql="SELECT * FROM fac_MeasurePoint NATURAL JOIN fac_CoolingMeasurePoint NATURAL JOIN fac_IPMICoolingMeasurePoint ORDER BY Label ASC;";
+
+		$MPList=array();
+		foreach($dbh->query($sql) as $row){
+			$MPList[]=IPMICoolingMeasurePoint::RowToObject($row);
+		}
+
+		return $MPList;
+	}
+
+	function GetMeasurePointsByDC() {
+		global $dbh;
+
+		$this->MakeSafe();
+
+		$sql="select * from fac_MeasurePoint NATURAL JOIN fac_CoolingMeasurePoint NATURAL JOIN fac_IPMICoolingMeasurePoint where DataCenterID=$this->DataCenterID ORDER BY Label ASC;";
+
+		$MPList=array();
+		foreach($dbh->query($sql) as $row) {
+			$MPList[]=IPMICoolingMeasurePoint::RowToObject($row);
+		}
+		return $MPList;
+	}
+}
+
 class CoolingMeasure {
 
 	// A Measure contains the values measured by a CoolingMeasurePoint at a given date
@@ -2359,6 +2735,176 @@ class ModbusAirMeasurePoint extends AirMeasurePoint {
 			$MPList[]=ModbusAirMeasurePoint::RowToObject($row);
 		}
 
+		return $MPList;
+	}
+}
+
+class IPMIAirMeasurePoint extends AirMeasurePoint {
+	
+	//Defintion of an electrical measure point with an IPMI connection
+
+	var $UserName;		//User name for authentication
+	var $Password;		//password for authentication
+	var $Interface;		//interface to use
+	var $TemperatureSensor;		//sensor name of the temperature
+	var $HumiditySensor;		//sensor name of the humidity.
+
+	function MakeSafe() {
+		parent::Makesafe();
+		$this->UserName=sanitize($this->UserName);
+		$this->Password=sanitize($this->Password);
+		$this->Interface=sanitize($this->Interface);
+		$this->TemperatureSensor=sanitize($this->TemperatureSensor);
+		$this->HumiditySensor=sanitize($this->HumiditySensor);
+	}
+
+	function MakeDisplay() {
+		parent::MakeDisplay();
+	}
+
+	static function RowToObject($dbRow) {
+		$mp=new IPMIAirMeasurePoint(parent::RowToObject($dbRow));
+		$mp->UserName=$dbRow["UserName"];
+		$mp->Password=$dbRow["Password"];
+		$mp->Interface=$dbRow["Interface"];
+		$mp->TemperatureSensor=$dbRow["TemperatureSensor"];
+		$mp->HumiditySensor=$dbRow["HumiditySensor"];
+
+		$mp->MakeDisplay();
+
+		return $mp;
+	}
+
+	function CreateMP() {
+		global $dbh;
+
+		$this->MakeSafe();
+
+		if(parent::CreateMP()) {
+
+			$sql = "INSERT INTO fac_IPMIAirMeasurePoint SET
+					MPID=$this->MPID,
+					UserName=\"$this->UserName\",
+					Password=\"$this->Password\",
+					Interface=\"$this->Interface\",
+					TemperatureSensor=\"$this->TemperatureSensor\",
+					HumiditySensor=\"$this->HumiditySensor\";";
+			
+			if(!$dbh->exec($sql))
+				return false;
+		
+			(class_exists('LogActions'))?LogActions::LogThis($this):'';
+			return $this->MPID;
+		}
+		return false;
+	}
+
+	function DeleteMP() {
+		global $dbh;
+		
+		$this->MakeSafe();
+		
+		if(parent::DeleteMP()) {
+			$sql="DELETE FROM fac_IPMIAirMeasurePoint WHERE MPID=$this->MPID;";
+			if(!$dbh->exec($sql))
+				return false;
+
+			(class_exists('LogActions'))?LogActions::LogThis($this):'';
+			return true;
+		}
+		return false;
+	}
+
+	function UpdateMP(){
+		global $dbh;
+		
+		$this->MakeSafe();
+
+		$oldmp = new MeasurePoint();
+		$oldmp->MPID = $this->MPID;
+		$oldmp = $oldmp->GetMP();
+
+		if($oldmp->ConnectionType != $this->ConnectionType || $oldmp->Type != $this->Type) {
+			$oldClass = MeasurePoint::$ConnectionTypeTab[$oldmp->ConnectionType].MeasurePoint::$TypeTab[$oldmp->Type]."MeasurePoint";
+			$sql="DELETE FROM fac_".$oldClass." WHERE MPID=$this->MPID;";
+			if(!$dbh->exec($sql))
+				return false;
+
+			$sql = "INSERT INTO fac_IPMIAirMeasurePoint SET
+					MPID=$this->MPID,
+					UserName=\"$this->UserName\",
+					Password=\"$this->Password\",
+					Interface=\"$this->Interface\",
+					TemperatureSensor=\"$this->TemperatureSensor\",
+					HumiditySensor=\"$this->HumiditySensor\";";
+			if(!$dbh->exec($sql))
+				return false;
+		} else {
+			$sql="UPDATE fac_IPMIAirMeasurePoint SET 
+				MPID=$this->MPID,
+				UserName=\"$this->UserName\",
+				Password=\"$this->Password\",
+				Interface=\"$this->Interface\",
+				TemperatureSensor=\"$this->TemperatureSensor\",
+				HumiditySensor=\"$this->HumiditySensor\"
+				WHERE MPID=$this->MPID;";
+			if(!$dbh->query($sql))
+				return false;
+		}
+
+		if(parent::UpdateMP())
+			return false;
+		(class_exists('LogActions'))?LogActions::LogThis($this,$oldmp):'';
+		return true;
+	}
+
+	function GetMP() {
+		global $dbh;
+
+		$this->MakeSafe();
+
+		$sql="select * from fac_MeasurePoint NATURAL JOIN fac_AirMeasurePoint NATURAL JOIN fac_IPMIAirMeasurePoint where MPID=$this->MPID;";
+
+		if($row=$dbh->query($sql)->fetch()){
+			foreach(IPMIAirMeasurePoint::RowToObject($row) as $prop => $value){
+				$this->$prop=$value;
+			}
+		}else{
+			foreach($this as $prop => $value){
+				if($prop!='MPID'){
+					$this->$prop=null;
+				}
+			}
+		}
+		return $this;
+	}
+
+	function GetMPList() {
+		global $dbh;
+
+		$this->MakeSafe();
+
+		$sql="SELECT * FROM fac_MeasurePoint NATURAL JOIN fac_AirMeasurePoint NATURAL JOIN fac_IPMIAirMeasurePoint ORDER BY Label ASC;";
+
+		$MPList=array();
+		foreach($dbh->query($sql) as $row){
+			$MPList[]=IPMIAirMeasurePoint::RowToObject($row);
+		}
+
+		return $MPList;
+	}
+
+	function GetMeasurePointsByDC() {
+		global $dbh;
+
+		$this->MakeSafe();
+
+		$sql="select * from fac_MeasurePoint NATURAL JOIN fac_AirMeasurePoint NATURAL JOIN fac_IPMIAirMeasurePoint where DataCenterID=$this->DataCenterID ORDER BY Label ASC;";
+
+		$MPList=array();
+		foreach($dbh->query($sql) as $row) {
+			$MPList[]=IPMIAirMeasurePoint::RowToObject($row);
+		}
 		return $MPList;
 	}
 }

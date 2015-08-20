@@ -125,6 +125,12 @@
 						$mp->Register3=$_REQUEST['register3'];
 						$mp->RegisterEnergy=$_REQUEST['registerenergy'];
 						break;
+					case "IPMI":
+						$mp->Sensor1=$_REQUEST['sensor1'];
+						$mp->Sensor2=$_REQUEST['sensor2'];
+						$mp->Sensor3=$_REQUEST['sensor3'];
+						$mp->SensorEnergy=$_REQUEST['sensorenergy'];
+						break;
 				}
 				break;
 			case "cooling":
@@ -139,6 +145,10 @@
 						$mp->FanSpeedRegister=$_REQUEST['fanspeedregister'];
 						$mp->CoolingRegister=$_REQUEST['coolingregister'];
 						break;
+					case "IPMI":
+						$mp->FanSpeedSensor=$_REQUEST['fanspeedsensor'];
+						$mp->CoolingSensor=$_REQUEST['coolingsensor'];
+						break;
 				}
 				break;
 			case "air":
@@ -152,6 +162,10 @@
 					case "Modbus":
 						$mp->TemperatureRegister=$_REQUEST['temperatureregister'];
 						$mp->HumidityRegister=$_REQUEST['humidityregister'];
+						break;
+					case "IPMI":
+						$mp->TemperatureSensor=$_REQUEST['temperaturesensor'];
+						$mp->HumiditySensor=$_REQUEST['humiditysensor'];
 						break;
 				}
 				break;
@@ -171,6 +185,11 @@
 			case "Modbus":
 				$mp->UnitID=$_REQUEST['unitid'];
 				$mp->NbWords=$_REQUEST['nbwords'];
+				break;
+			case "IPMI":
+				$mp->UserName=$_REQUEST['username'];
+				$mp->Password=$_REQUEST['password'];
+				$mp->Interface=$_REQUEST['interface'];
 				break;
 		}
                 if($_REQUEST['action']=='Create'){
@@ -221,7 +240,7 @@
                         "PowerPanel" => __("Power Panel"),
                         "MechanicalDevice" => __("Mechanical Device"));
 
-        $coTypes = array("SNMP", "Modbus");
+        $coTypes = array("SNMP", "Modbus", "IPMI");
 
         $categories = array("none", "IT", "Cooling", "Other Mechanical", "UPS Input", "UPS Output", "Energy Reuse", "Renewable Energy");
 
@@ -429,6 +448,8 @@
 			$('#snmpcommunity,#v3authpassphrase,#v3privpassphrase')
 				.focus(function(){$(this).attr('type','text');})
                 		.blur(function(){$(this).attr('type','password');});
+			
+			OnCategoryChange();
 		});
 
 		function OnEquipmentTypeChange() {
@@ -520,20 +541,31 @@
 				cotypeList[n].style.display = "none";
 			}
 
-			if(connectionType == 'SNMP') {
-				var snmpList = document.getElementsByClassName("mp_SNMP");
-                                for(var n=0; n<snmpList.length; n++)
-                                        snmpList[n].style.display = "";
-				var snmpTypeList = document.getElementsByClassName("mp_SNMP"+type);
-				for(var n=0; n<snmpTypeList.length; n++)
-					snmpTypeList[n].style.display = "";
-			} else if(connectionType == 'Modbus'){
-				var modbusList = document.getElementsByClassName("mp_Modbus");
-				for(var n=0; n<modbusList.length; n++)
-					modbusList[n].style.display = "";
-				var modbusTypeList = document.getElementsByClassName("mp_Modbus"+type);
-				for(var n=0; n<modbusTypeList.length; n++)
-					modbusTypeList[n].style.display = "";
+			switch(connectionType) {
+				case 'SNMP':
+					var snmpList = document.getElementsByClassName("mp_SNMP");
+					for(var n=0; n<snmpList.length; n++)
+						snmpList[n].style.display = "";
+					var snmpTypeList = document.getElementsByClassName("mp_SNMP"+type);
+					for(var n=0; n<snmpTypeList.length; n++)
+						snmpTypeList[n].style.display = "";
+					break;
+				case 'Modbus':
+					var modbusList = document.getElementsByClassName("mp_Modbus");
+					for(var n=0; n<modbusList.length; n++)
+						modbusList[n].style.display = "";
+					var modbusTypeList = document.getElementsByClassName("mp_Modbus"+type);
+					for(var n=0; n<modbusTypeList.length; n++)
+						modbusTypeList[n].style.display = "";
+					break;
+				case 'IPMI':
+					var ipmiList = document.getElementsByClassName("mp_IPMI");
+					for(var n=0; n<ipmiList.length; n++)
+						ipmiList[n].style.display = "";
+					var ipmiTypeList = document.getElementsByClassName("mp_IPMI"+type);
+					for(var n=0; n<ipmiTypeList.length; n++)
+						ipmiTypeList[n].style.display = "";
+					break;
 			}
 			OnSNMPVersionChange();
 		}
@@ -551,6 +583,14 @@
 			for(var n=0; n<v3List.length; n++) {
 				v3List[n].style.display = val;
 			}
+		}
+
+		function OnCategoryChange() {
+			var category = document.getElementById("category").value;
+			if(category == "UPS Input" || category == "UPS Output")
+				document.getElementById("div_upspowered").style.display = "none";
+			else
+				document.getElementById("div_upspowered").style.display = "";
 		}
 	</script>
 </head>
@@ -775,7 +815,7 @@ echo '                                                  </select></div>
 						</div>
 						<div class="mp_cotype mp_SNMP">
                                                         <div><label for="air_snmpcommunity">',__("SNMP Community"),'</label></div>
-                                                        <div><input type="text" name="snmpcommunity" id="snmpcommunity" value=',($mp->ConnectionType=="SNMP")?$mp->SNMPCommunity:"",'></div>
+                                                        <div><input type="text" name="snmpcommunity" id="snmpcommunity" value="',($mp->ConnectionType=="SNMP")?$mp->SNMPCommunity:"",'"></div>
                                                 </div>
                                                 <div class="mp_cotype mp_SNMP">
                                                         <div><label for="air_snmpversion">',__("SNMP Version"),'</label></div>
@@ -815,7 +855,7 @@ echo '                                                  </select></div>
                                                 </div>
                                                 <div class="mp_cotype mp_SNMP SNMPv3">
                                                         <div><label for="v3authpassphrase">',__("SNMPv3 AuthPassphrase"),'</label></div>
-                                                        <div><input type="password" name="v3authpassphrase" id="v3authpassphrase" value=',($mp->SNMPVersion=="3")?$mp->v3AuthPassphrase:"",'></div>
+                                                        <div><input type="password" name="v3authpassphrase" id="v3authpassphrase" value="',($mp->SNMPVersion=="3")?$mp->v3AuthPassphrase:"",'"></div>
                                                 </div>
                                                 <div class="mp_cotype mp_SNMP SNMPv3">
                                                         <div><label for="v3privprotocol">',__("SNMPv3 PrivProtocol"),'</label></div>
@@ -831,7 +871,7 @@ echo '                                                  </select></div>
                                                 </div>
                                                 <div class="mp_cotype mp_SNMP SNMPv3">
                                                         <div><label for="v3privpassphrase">',__("SNMPv3 PrivPassphrase"),'</label></div>
-                                                        <div><input type="password" name="v3privpassphrase" id="v3privpassphrase" value=',($mp->SNMPVersion=="3")?$mp->v3PrivPassphrase:"",'></div>
+                                                        <div><input type="password" name="v3privpassphrase" id="v3privpassphrase" value="',($mp->SNMPVersion=="3")?$mp->v3PrivPassphrase:"",'"></div>
                                                 </div>
 						<div class="mp_cotype mp_Modbus">
                                                         <div><label for="unitid">',__("Unit ID"),'</label></div>
@@ -841,40 +881,52 @@ echo '                                                  </select></div>
                                                         <div><label for="nbwords">',__("Number of words"),'</label></div>
                                                         <div><input type="text" name="nbwords" value=',($mp->ConnectionType=="Modbus")?$mp->NbWords:"",'></div>
                                                 </div>
+                                                <div class="mp_cotype mp_IPMI">
+                                                        <div><label for="username">',__("User Name"),'</label></div>
+                                                        <div><input type="text" name="username" value="',($mp->ConnectionType=="IPMI")?$mp->UserName:"",'"></div>
+                                                </div>
+						<div class="mp_cotype mp_IPMI">
+                                                        <div><label for="password">',__("Password"),'</label></div>
+                                                        <div><input type="password" name="password" value="',($mp->ConnectionType=="IPMI")?$mp->Password:"",'"></div>
+                                                </div>
+                                                <div class="mp_cotype mp_IPMI">
+                                                        <div><label for="interface">',__("Interface"),'</label></div>
+                                                        <div><input type="text" name="interface" value=',($mp->ConnectionType=="IPMI")?$mp->Interface:"",'></div>
+                                                </div>
 						<div>
 							<div>&nbsp;</div>
 						</div>
                                                 <div class="mp_cotype mp_SNMPelec">
                                                         <div><label for="oid1">',__("OID 1"),'</label></div>
-                                                        <div><input type="text" name="oid1" value=',($mp->ConnectionType=="SNMP")?$mp->OID1:"",'></div>
+                                                        <div><input type="text" name="oid1" value="',($mp->ConnectionType=="SNMP")?$mp->OID1:"",'"></div>
                                                 </div>
                                                 <div class="mp_cotype mp_SNMPelec">
                                                         <div><label for="oid2">',__("OID 2"),'</label></div>
-                                                        <div><input type="text" name="oid2" value=',($mp->ConnectionType=="SNMP")?$mp->OID2:"",'></div>
+                                                        <div><input type="text" name="oid2" value="',($mp->ConnectionType=="SNMP")?$mp->OID2:"",'"></div>
                                                 </div>
                                                 <div class="mp_cotype mp_SNMPelec">
                                                         <div><label for="oid3">',__("OID 3"),'</label></div>
-                                                        <div><input type="text" name="oid3" value=',($mp->ConnectionType=="SNMP")?$mp->OID3:"",'></div>
+                                                        <div><input type="text" name="oid3" value="',($mp->ConnectionType=="SNMP")?$mp->OID3:"",'"></div>
                                                 </div>
                                                 <div class="mp_cotype mp_SNMPelec">
                                                         <div><label for="oidenergy">',__("OID Energy"),'</label></div>
-                                                        <div><input type="text" name="oidenergy" value=',($mp->ConnectionType=="SNMP")?$mp->OIDEnergy:"",'></div>
+                                                        <div><input type="text" name="oidenergy" value="',($mp->ConnectionType=="SNMP")?$mp->OIDEnergy:"",'"></div>
                                                 </div>
                                                 <div class="mp_cotype mp_SNMPcooling">
                                                         <div><label for="fanspeedoid">',__("Fan Speed OID"),'</label></div>
-                                                        <div><input type="text" name="fanspeedoid" id="fanspeedoid" value=',($mp->ConnectionType=="SNMP")?$mp->FanSpeedOID:"",'></div>
+                                                        <div><input type="text" name="fanspeedoid" id="fanspeedoid" value="',($mp->ConnectionType=="SNMP")?$mp->FanSpeedOID:"",'"></div>
                                                 </div>
                                                 <div class="mp_cotype mp_SNMPcooling">
                                                         <div><label for="coolingoid">',__("Cooling OID"),'</label></div>
-                                                        <div><input type="text" name="coolingoid" id="coolingoid" value=',($mp->ConnectionType=="SNMP")?$mp->CoolingOID:"",'></div>
+                                                        <div><input type="text" name="coolingoid" id="coolingoid" value="',($mp->ConnectionType=="SNMP")?$mp->CoolingOID:"",'"></div>
                                                 </div>
                                                 <div class="mp_cotype mp_SNMPair">
                                                         <div><label for="temperatureoid">',__("Temperature OID"),'</label></div>
-                                                        <div><input type="text" name="temperatureoid" id="temperatureoid" value=',($mp->ConnectionType=="SNMP")?$mp->TemperatureOID:"",'></div>
+                                                        <div><input type="text" name="temperatureoid" id="temperatureoid" value="',($mp->ConnectionType=="SNMP")?$mp->TemperatureOID:"",'"></div>
                                                 </div>
                                                 <div class="mp_cotype mp_SNMPair">
                                                         <div><label for="humidityoid">',__("Humidity OID"),'</label></div>
-                                                        <div><input type="text" name="humidityoid" id="humidityoid" value=',($mp->ConnectionType=="SNMP")?$mp->HumidityOID:"",'></div>
+                                                        <div><input type="text" name="humidityoid" id="humidityoid" value="',($mp->ConnectionType=="SNMP")?$mp->HumidityOID:"",'"></div>
                                                 </div>
                                                 <div class="mp_cotype mp_Modbuselec">
                                                         <div><label for="register1">',__("Register 1"),'</label></div>
@@ -907,6 +959,38 @@ echo '                                                  </select></div>
                                                 <div class="mp_cotype mp_Modbusair">
                                                         <div><label for="humidityregister">',__("Humidity Register"),'</label></div>
                                                         <div><input type="text" name="humidityregister" id="humidityregister" value=',($mp->ConnectionType=="Modbus")?$mp->HumidityRegister:"",'></div>
+                                                </div>
+                                                <div class="mp_cotype mp_IPMIelec">
+                                                        <div><label for="sensor1">',__("Sensor 1"),'</label></div>
+                                                        <div><input type="text" name="sensor1" id="sensor1" value="',($mp->ConnectionType=="IPMI")?$mp->Sensor1:"",'"></div>
+                                                </div>
+                                                <div class="mp_cotype mp_IPMIelec">
+                                                        <div><label for="sensor2">',__("Sensor 2"),'</label></div>
+                                                        <div><input type="text" name="sensor2" id="sensor2" value="',($mp->ConnectionType=="IPMI")?$mp->Sensor2:"",'"></div>
+                                                </div>
+                                                <div class="mp_cotype mp_IPMIelec">
+                                                        <div><label for="sensor3">',__("Sensor 3"),'</label></div>
+                                                        <div><input type="text" name="sensor3" id="sensor3" value="',($mp->ConnectionType=="IPMI")?$mp->Sensor3:"",'"></div>
+                                                </div>
+                                                <div class="mp_cotype mp_IPMIelec">
+                                                        <div><label for="sensorenergy">',__("Sensor Energy"),'</label></div>
+                                                        <div><input type="text" name="sensorenergy" id="sensorenergy" value="',($mp->ConnectionType=="IPMI")?$mp->SensorEnergy:"",'"></div>
+                                                </div>
+                                                <div class="mp_cotype mp_IPMIcooling">
+                                                        <div><label for="fanspeedsensor">',__("Fan Speed Sensor"),'</label></div>
+                                                        <div><input type="text" name="fanspeedsensor" id="fanspeedsensor" value="',($mp->ConnectionType=="IPMI")?$mp->FanSpeedSensor:"",'"></div>
+                                                </div>
+                                                <div class="mp_cotype mp_IPMIcooling">
+                                                        <div><label for="coolingsensor">',__("Cooling Sensor"),'</label></div>
+                                                        <div><input type="text" name="coolingsensor" id="coolingsensor" value="',($mp->ConnectionType=="IPMI")?$mp->CoolingSensor:"",'"></div>
+                                                </div>
+                                                <div class="mp_cotype mp_IPMIair">
+                                                        <div><label for="temperaturesensor">',__("Temperature Sensor"),'</label></div>
+                                                        <div><input type="text" name="temperaturesensor" id="temperaturesensor" value="',($mp->ConnectionType=="IPMI")?$mp->TemperatureSensor:"",'"></div>
+                                                </div>
+                                                <div class="mp_cotype mp_IPMIair">
+                                                        <div><label for="humiditysensor">',__("Humidity Sensor"),'</label></div>
+                                                        <div><input type="text" name="humiditysensor" id="humiditysensor" value="',($mp->ConnectionType=="IPMI")?$mp->HumiditySensor:"",'"></div>
                                                 </div>
 						<div class="caption">';
 if($mp->MPID > 0) {
