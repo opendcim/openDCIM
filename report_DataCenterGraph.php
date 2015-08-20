@@ -112,7 +112,7 @@ if(isset($_GET["datacenterid"])) {
 	}
 	$line++;
 
-	foreach ($data[$line - 1] as $element) {
+	/*foreach ($data[$line - 1] as $element) {
 		$connections = new PowerPorts();
 		$connections->DeviceID = $element->object->PDUID;
 		$connections = $connections->getPorts();
@@ -138,7 +138,7 @@ if(isset($_GET["datacenterid"])) {
 				}
 			}
 		}
-	}
+	}*/
 
 	$graphstr = "digraph G {
 		node[shape=plaintext]
