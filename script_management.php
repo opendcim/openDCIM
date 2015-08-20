@@ -104,7 +104,8 @@
 		{
 			border: 1px solid lightgrey;
 			height: 100%;
-			width: 5px;
+			width: 1px;
+			padding: 2px;
 		}
 	</style>
 	<!--[if lt IE 9]>
