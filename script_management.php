@@ -129,7 +129,7 @@ foreach($mpgList as $mpg) {
 	$mpgBoxList.= '	<li class="box"><div class="table" style="width: 100%;">
 				<div>
 					<div class="colorBox" style="background-color: '.$color.'"></div>
-					<div style="padding-right: 15px;">
+					<div style="padding-right: 15px; max-width: 200px;">
 						<label>'.$mpg->Name.'</label>
 					</div>
 					<div style="text-align: right;">
