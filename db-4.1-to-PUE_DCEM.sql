@@ -25,6 +25,8 @@ CREATE TABLE IF NOT EXISTS fac_ElectricalMeasurePoint (
   UPSPowered TINYINT(1) NOT NULL,
   PowerMultiplier VARCHAR(6) NULL DEFAULT NULL,
   EnergyMultiplier VARCHAR(6) NULL DEFAULT NULL,
+  ProcessingProfile VARCHAR(20) NOT NULL DEFAULT "Watts",
+  Voltage INT(11) NOT NULL,
   UNIQUE KEY MPID(MPID),
   KEY DataCenterID (DataCenterID)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;

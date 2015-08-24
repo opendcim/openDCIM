@@ -297,7 +297,7 @@ function OnCheckGroup(element, side) {
 }
 
 function OnCheckMP(element, side) {
-	var id = element.parentElement.children[0].value;
+	var id = element.parentElement.parentElement.parentElement.children[0].value;
 	var table;
 
 	if(side == 'l')
@@ -348,7 +348,7 @@ var unitTable = {
 		};
 
 function MPData(id, side) {
-	this.mpid = id;
+	this.mpid = id;alert(side+"MP_"+id+"_label");
 	this.label = document.getElementById(side+"MP_"+id+"_label").value;
 	this.side = side;
 	this.data = new Array();

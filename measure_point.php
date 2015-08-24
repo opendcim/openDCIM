@@ -112,6 +112,8 @@
 				$mp->UPSPowered=($_REQUEST['upspowered'] == "on")?1:0;
 				$mp->PowerMultiplier=$_REQUEST['powermultiplier'];
 				$mp->EnergyMultiplier=$_REQUEST['energymultiplier'];
+				$mp->ProcessingProfile=$_REQUEST['processingprofile'];
+				$mp->Voltage=$_REQUEST['voltage'];
 				switch($mp->ConnectionType) {
 					case "SNMP":
 						$mp->OID1=$_REQUEST['oid1'];
@@ -244,7 +246,9 @@
 
         $categories = array("none", "IT", "Cooling", "Other Mechanical", "UPS Input", "UPS Output", "Energy Reuse", "Renewable Energy");
 
-        $multiplierList = array('0.01', '0.1', '1', '10', '100');
+        $multiplierList = array('0.001', '0.01', '0.1', '1', '10', '100', '1000');
+
+	$processingProfileList = array('Watts', 'CombineAmperes', 'ConvertAmperes');
 
         $versionList = array('1','2c','3');
 
@@ -517,6 +521,7 @@
 					var elecList = document.getElementsByClassName("mp_elec");
 					for(var n=0; n<elecList.length; n++)
 						elecList[n].style.display = "";
+					OnProcessingProfileChange();
 					break;
 				case "cooling":
 					var coolingList = document.getElementsByClassName("mp_cooling");
@@ -591,6 +596,14 @@
 				document.getElementById("div_upspowered").style.display = "none";
 			else
 				document.getElementById("div_upspowered").style.display = "";
+		}
+
+		function OnProcessingProfileChange() {
+			var pp = document.getElementById("processingprofile").value;
+			if(pp == "Watts")
+				document.getElementById("div_voltage").style.display = "none";
+			else
+				document.getElementById("div_voltage").style.display = "";
 		}
 	</script>
 </head>
@@ -761,6 +774,22 @@ echo '                                                  </select></div>
                 print "\t\t\t\t\t\t\t\t<option value=\"$m\"$selected>$m</option>\n";
         }
 echo '                                  		</select></div>
+						</div>
+						<div class="mp_type mp_elec">
+							<div><label for="processingprofile">',__("Processing Profile"),'</label></div>
+							<div><select name="processingprofile" id="processingprofile" onChange="OnProcessingProfileChange()">';
+	foreach($processingProfileList as $pp) {
+		if($pp == $mp->ProcessingProfile)
+			$selected=' selected';
+		else
+			$selected='';
+		print "\t\t\t\t\t\t\t\t<option value=\"$pp\"$selected>$pp</option>\n";
+	}
+echo '							</select></div>
+						</div>
+						<div class="mp_type mp_elec" id="div_voltage">
+							<div><label for="voltage">',__("Voltage"),'</label></div>
+							<div><input type="number" name="voltage" value=',($mp->Type == 'elec')?$mp->Voltage:0,'></div>
 						</div>
 						<div class="mp_type mp_cooling">
 							<div><label for="fanspeedmultiplier">'.__("Fan Speed Multiplier").'</label></div>

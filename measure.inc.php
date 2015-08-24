@@ -494,10 +494,13 @@ class ElectricalMeasurePoint extends MeasurePoint{
 	var $UPSPowered;	//is this mp powered by an UPS
 	var $PowerMultiplier;	//multiplier to apply to power measure
 	var $EnergyMultiplier;	//multiplier to apply to energy measure
+	var $ProcessingProfile; //allow to measure amperes instead of watts
+	var $Voltage;		//if watt calculation uses amperes, we need volts too
 
 	protected function MakeSafe() {
-		$validMultipliers = array('0.01','0.1','1','10','100');
+		$validMultipliers = array('0.001','0.01','0.1','1','10','100','1000');
 		$validCategories = array('none', 'IT', 'Cooling', 'Other Mechanical', 'UPS Input', 'UPS Output', 'Energy Reuse', 'Renewable Energy');
+		$validProcessingProfiles = array('Watts', 'CombineAmperes', 'ConvertAmperes');
 
 		parent::MakeSafe();
 
@@ -507,6 +510,8 @@ class ElectricalMeasurePoint extends MeasurePoint{
 		$this->UPSPowered=intval($this->UPSPowered);
 		$this->PowerMultiplier=(in_array($this->PowerMultiplier, $validMultipliers))?$this->PowerMultiplier:'1';
 		$this->EnergyMultiplier=(in_array($this->EnergyMultiplier, $validMultipliers))?$this->EnergyMultiplier:'1';
+		$this->ProcessingProfile=(in_array($this->ProcessingProfile, $validProcessingProfiles))?$this->ProcessingProfile:'Watts';
+		$this->Voltage=intval($this->Voltage);
 	}
 
 	protected function MakeDisplay() {
@@ -521,6 +526,8 @@ class ElectricalMeasurePoint extends MeasurePoint{
 		$mp->UPSPowered=$dbRow["UPSPowered"];
 		$mp->PowerMultiplier=$dbRow["PowerMultiplier"];
 		$mp->EnergyMultiplier=$dbRow["EnergyMultiplier"];
+		$mp->ProcessingProfile=$dbRow["ProcessingProfile"];
+		$mp->Voltage=$dbRow["Voltage"];
 
 		return $mp;
 	}
@@ -538,7 +545,9 @@ class ElectricalMeasurePoint extends MeasurePoint{
 					Category=\"$this->Category\",
 					UPSPowered=\"$this->UPSPowered\",
 					PowerMultiplier=\"$this->PowerMultiplier\",
-					EnergyMultiplier=\"$this->EnergyMultiplier\";";
+					EnergyMultiplier=\"$this->EnergyMultiplier\",
+					ProcessingProfile=\"$this->ProcessingProfile\",
+					Voltage=$this->Voltage;";
 			
 			if(!$dbh->exec($sql))
 				return false;
@@ -591,7 +600,9 @@ class ElectricalMeasurePoint extends MeasurePoint{
 					Category=\"$this->Category\",
 					UPSPowered=\"$this->UPSPowered\",
 					PowerMultiplier=\"$this->PowerMultiplier\",
-					EnergyMultiplier=\"$this->EnergyMultiplier\";";
+					EnergyMultiplier=\"$this->EnergyMultiplier\",
+					ProcessingProfile=\"$this->ProcessingProfile\",
+					Voltage=$this->Voltage;";
 				if(!$dbh->exec($sql))
 					return false;
 			} else {
@@ -601,7 +612,9 @@ class ElectricalMeasurePoint extends MeasurePoint{
 					Category=\"$this->Category\", 
 					UPSPowered=\"$this->UPSPowered\",
 					PowerMultiplier=\"$this->PowerMultiplier\", 
-					EnergyMultiplier=\"$this->EnergyMultiplier\" 
+					EnergyMultiplier=\"$this->EnergyMultiplier\",
+					ProcessingProfile=\"$this->ProcessingProfile\",
+                                        Voltage=$this->Voltage 
 					WHERE MPID=$this->MPID;";
 				if(!$dbh->query($sql))
 					return false;
@@ -663,9 +676,23 @@ class ElectricalMeasurePoint extends MeasurePoint{
 				break;
 		}
 		if(!is_null($values[0]) || !is_null($values[1]) || !is_null($values[2])){
-			$m->Wattage1=@intval($values[0] * $this->PowerMultiplier);
-			$m->Wattage2=@intval($values[1] * $this->PowerMultiplier);
-			$m->Wattage3=@intval($values[2] * $this->PowerMultiplier);
+			switch($this->ProcessingProfile) {
+				case 'Watts':
+					$m->Wattage1=@intval($values[0] * $this->PowerMultiplier);
+					$m->Wattage2=@intval($values[1] * $this->PowerMultiplier);
+					$m->Wattage3=@intval($values[2] * $this->PowerMultiplier);
+					break;
+				case 'CombineAmperes':
+					$m->Wattage1=@intval($values[0] * $this->PowerMultiplier * $this->Voltage);
+                                        $m->Wattage2=@intval($values[1] * $this->PowerMultiplier * $this->Voltage);
+                                        $m->Wattage3=@intval($values[2] * $this->PowerMultiplier * $this->Voltage);
+					break;
+				case 'ConvertAmperes':
+					$m->Wattage1=@intval($values[0] * $this->PowerMultiplier * 1.732 * $this->Voltage / 3);
+                                        $m->Wattage2=@intval($values[1] * $this->PowerMultiplier * 1.732 * $this->Voltage / 3);
+                                        $m->Wattage3=@intval($values[2] * $this->PowerMultiplier * 1.732 * $this->Voltage / 3);
+					break;
+			}
 		}
 		if(!is_null($values[3])) {
 			$m->Energy=@intval($values[3] * $this->EnergyMultiplier);
@@ -1357,6 +1384,7 @@ class MeasurePointGroup {
 	function MakeSafe() {
 		$this->MPGID=intval($this->MPGID);
 		$this->Name=sanitize($this->Name);
+		$this->Name=str_replace(' ', '_', $this->Name);
 		if(is_array($this->MPList))
 			foreach($this->MPList as $mpid)
 				$mpid=intval($mpid);
@@ -1535,7 +1563,7 @@ class CoolingMeasurePoint extends MeasurePoint{
 	var $CoolingMultiplier;		//multiplier to apply to compressor usage measure
 
 	protected function MakeSafe() {
-		$validMultipliers = array('0.01','0.1','1','10','100');
+		$validMultipliers = array('0.001','0.01','0.1','1','10','100','1000');
 
 		parent::MakeSafe();
 
@@ -2267,7 +2295,7 @@ class AirMeasurePoint extends MeasurePoint{
 	var $HumidityMultiplier;
 	
 	protected function MakeSafe() {
-		$validMultipliers = array('0.01','0.1','1','10','100');
+		$validMultipliers = array('0.001','0.01','0.1','1','10','100','1000');
 
 		parent::MakeSafe();
 
