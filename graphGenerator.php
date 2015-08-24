@@ -348,7 +348,7 @@ var unitTable = {
 		};
 
 function MPData(id, side) {
-	this.mpid = id;alert(side+"MP_"+id+"_label");
+	this.mpid = id;
 	this.label = document.getElementById(side+"MP_"+id+"_label").value;
 	this.side = side;
 	this.data = new Array();
