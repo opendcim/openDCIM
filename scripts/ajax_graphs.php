@@ -163,6 +163,10 @@ function getDefaultLine() {
 	$id = $_POST["id"];
 
 	switch($_POST["type"]) {
+		case "energy-counter":
+			$measure = new ElectricalMeasure();
+			$dataName = "Energy";
+			break;
 		case "temperature":
 			$measure = new AirMeasure();
 			$dataName = "Temperature";
