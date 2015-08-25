@@ -1079,6 +1079,95 @@ function cabinetimagecontrols(){
 }
 // END = Cabinet image / label controls
 
+// Cabinet device population
+$(document).ready(function(){
+	// Make an array to store all the unique cabinet id's shown on the page
+	var cabs=new Array();
+	// Find all the tables that are labeled as cabinetX and add them to the array
+	$('table[id^=cabinet]').each(function(){
+		cabs.push(this.id);
+	});
+	// Strip out the duplicates
+	cabs=$.unique(cabs);
+	// Add the devices to the page
+	for(var id in cabs){
+		$.get('http://dev.opendcim.org/api/v1/device?Cabinet='+cabs[id].replace('cabinet','')+'&ParentDevice=0').done(function(data){
+			for(var x in data.device){
+				InsertDevice(data.device[x]);
+			}
+		});
+	}
+});
+
+function InsertDevice(obj){
+	if(obj.Position!=0){
+		function getPic(insertobj,rear){
+			var showrear=(rear)?'?rear':'';
+			$.get('api/v1/device/'+obj.DeviceID+'/getpicture'+showrear).done(function(data){
+				if(!data.error){
+					insertobj.append(data.picture).css('border','');
+				}else{ // We didn't get a picture back from the function to give it a text link
+					var label=(obj.Label)?obj.Label:'no label';
+					insertobj.append($('<a>').prop('href','devices.php?DeviceID='+obj.DeviceID).text(label));
+				}
+			});
+		}
+
+		var racktop=parseInt($('#cabinet'+obj.Cabinet+' tr:nth-child(3)').prop('id').replace('pos',''));
+
+		if(racktop=='undefined'){
+			// rack didn't draw right just give up
+			alert("Rack didn't render correctly so devices won't populate");
+		}
+
+		//box model is being a bitch lock this shit down to 21px
+		var lineheight=21;
+		var height=obj.Height*lineheight;
+
+		// calculate the top edge of the device relative to the top of the container
+		var containertop=$('#cabinet'+obj.Cabinet+' div[id^=servercontainer]').offset().top;
+		var utop=$('#cabinet'+obj.Cabinet+' #pos'+obj.Position).offset().top;
+		var diff=utop-containertop-((obj.Height-1)*lineheight);
+		// this is the object we're injecting to the dom
+		var equipment=$('<div>').addClass('draggable').addClass('dept'+obj.Owner).css({'position':'absolute','top':diff+'px','height':height-4+'px','border':'2px solid red','width':'216px','background-color':'white'});
+		var rearequipment=equipment.clone(true);
+
+		// insert the device into the dom
+		if(!obj.BackSide){
+			// front devices
+			getPic(equipment,false);
+			equipment.appendTo('#cabinet'+obj.Cabinet+' #servercontainer');
+			if(!obj.HalfDepth && $('#cabinet'+obj.Cabinet+' #servercontainer-rear').length){
+				// back of the device
+				getPic(rearequipment,true);
+				rearequipment.appendTo('#cabinet'+obj.Cabinet+' #servercontainer-rear');
+			}else if(obj.HalfDepth){
+				equipment.addClass('front-halfdepth');
+				getPic(rearequipment,true);
+				rearequipment.css({'opacity':0,'pointer-events':'none'}).addClass('front-halfdepth');
+				rearequipment.appendTo('#cabinet'+obj.Cabinet+' #servercontainer-rear');
+			}
+		}else{
+			// rear facing devices
+			getPic(rearequipment,false);
+			rearequipment.appendTo('#cabinet'+obj.Cabinet+' #servercontainer-rear');
+			if(!obj.HalfDepth && $('#cabinet'+obj.Cabinet+' #servercontainer').length){
+				// back of the device
+				getPic(equipment,true);
+				equipment.appendTo('#cabinet'+obj.Cabinet+' #servercontainer');
+			}else if(obj.HalfDepth){
+				rearequipment.addClass('front-halfdepth');
+				getPic(equipment,true);
+				equipment.css({'opacity':0,'pointer-events':'none'}).addClass('rear-halfdepth');
+				equipment.appendTo('#cabinet'+obj.Cabinet+' #servercontainer');
+			}
+		}
+	}
+}
+
+// END = Cabinet device population
+
+
 // logging functions
 function LameLogDisplay(){
 	var test=$('<button>').attr('type','button').text('Log View').click(function(){
