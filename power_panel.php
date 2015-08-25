@@ -60,11 +60,12 @@
 		$outputWattage = $panel->GetWattage(false);
 
 		if($inputWattage) {
-			$inputPanelLoad = sprintf( "%01.2f", ($inputWattage->Wattage1 + $inputWattage->Wattage2 + $inputWattage->Wattage3) / 1000 );
+			$inputPanelLoad = sprintf( "%01.2F", ($inputWattage->Wattage1 + $inputWattage->Wattage2 + $inputWattage->Wattage3) / 1000 );
 		}
 		if($outputWattage) {
-			$outputPanelLoad = sprintf( "%01.2f", ($outputWattage->Wattage1 + $outputWattage->Wattage2 + $outputWattage->Wattage3) / 1000 );
+			$outputPanelLoad = sprintf( "%01.2F", ($outputWattage->Wattage1 + $outputWattage->Wattage2 + $outputWattage->Wattage3) / 1000 );
 		}
+
 		$panelCap = $panel->PanelVoltage * $panel->MainBreakerSize * sqrt(3);
 		$dataMajorTicks = "";
 		for ( $i = 0; $i < $panelCap; $i+=( $panelCap / 10 ) ) {
