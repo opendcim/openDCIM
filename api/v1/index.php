@@ -1135,7 +1135,7 @@ $app->delete( '/device/:deviceid', function($deviceid) {
 		$response['errorcode']=404;
 		$response['message']=__("Device doesn't exist");
 	}else{
-		if(!$dev->Rights!="Write"){
+		if($dev->Rights!="Write"){
 			$response['error']=true;
 			$response['errorcode']=403;
 			$response['message']=__("Unauthorized");
