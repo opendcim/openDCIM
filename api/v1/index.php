@@ -449,6 +449,39 @@ $app->get( '/device/:deviceid', function($deviceid) {
 	}
 });
 
+//
+//	URL:	/api/v1/device/:deviceid/getpicture
+//	Method:	GET
+//	Params:	
+//		required: deviceid (passed in URL)
+//		optional: rear (will return the rear face of the device) 
+//	Returns:  HTML representation of a device
+//
+
+$app->get( '/device/:deviceid/getpicture', function($deviceid) {
+	$dev=new Device($deviceid);
+	
+	$response['error']=true;
+	$response['errorcode']=404;
+	$response['message']=__("Unknown error");
+
+	if(!$dev->GetDevice(false)){
+		$response['message']=__("Device not found");
+	}else{
+		if($dev->Rights=="None"){
+			$response['errorcode']=403;
+			$response['message']=__("Permission denied");
+		}else{
+			$response['error']=false;
+			$response['errorcode']=200;
+			$response['message']="";
+			$response['picture']=$dev->GetDevicePicture(isset($_GET['rear']));
+		}
+	}
+
+	echoResponse(200,$response);
+});
+
 $app->get( '/device/:deviceid/getsensorreadings', function($deviceid) {
 	$dev=new Device();
 	$dev->DeviceID=intval($deviceid);

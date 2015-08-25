@@ -219,127 +219,15 @@ function renderUnassignedTemplateOwnership($noTemplFlag, $noOwnerFlag, $device) 
 	$noOwnerFlag=false;
 	$noTemplFlag=false;
 	$noReservationFlag=false;
-	$backside=false;
+	$backside=true;
 
 	// This function with no argument will build the front cabinet face. Specify
 	// rear and it will build the back.
-	function BuildCabinet($rear=false){
-		// This is fucking horrible, there has to be a better way to accomplish this.
-		global $cab_color, $cab, $device, $body, $currentHeight, $heighterr,
-				$devList, $templ, $tempDept, $backside, $deptswithcolor, $tempDept,
-				$totalWeight, $totalWatts, $totalMoment, $zeroheight,
-				$noTemplFlag, $noOwnerFlag, $noReservationFlag;
-
-		$currentHeight=$cab->CabinetHeight;
-		
-		$body.="<div class=\"cabinet\">\n\t<table>
-		<tr><th id=\"cabid\" data-cabinetid=$cab->CabinetID colspan=2 $cab_color>".__("Cabinet")." $cab->Location".($rear?" (".__("Rear").")":"")."</th></tr>
-		<tr><td class=\"cabpos\">".__("Pos")."</td><td>".__("Device")."</td></tr>\n";
-
-		$heighterr="";
-		while(list($dev_index,$device)=each($devList)){
-            list($noTemplFlag, $noOwnerFlag, $highlight) =
-                renderUnassignedTemplateOwnership($noTemplFlag, $noOwnerFlag, $device);
-			if($device->Height<1 && !$rear && $device->DeviceType!="CDU" && $device->DeviceType!="Sensor"){
-				if($device->Rights!="None"){
-					$zeroheight.="\t\t\t<a href=\"devices.php?DeviceID=$device->DeviceID\" data-deviceid=$device->DeviceID>$highlight $device->Label</a>\n";
-				}else{
-					// empty html anchor for a line break
-					$zeroheight.="\t\t\t$highlight $device->Label\n<a></a>";
-				}
-			}
-
-			// This entire function needs to be reworked.
-			if($device->DeviceType=='Chassis' && $device->RearChassisSlots>0){
-				$backside=true;
-			}
-
-			if ((!$device->HalfDepth || !$device->BackSide)&&!$rear || (!$device->HalfDepth || $device->BackSide)&&$rear){
-				$backside=($device->HalfDepth || $device->BackSide)?true:$backside;
-				$devTop=$device->Position + $device->Height - 1;
-				
-				$templ->TemplateID=$device->TemplateID;
-				$templ->GetTemplateByID();
-
-				$tempDept->DeptID=$device->Owner;
-				$tempDept->GetDeptByID();
-
-				// If a dept has been changed from white then it needs to be added to the stylesheet, legend, and device
-				if(!$device->Reservation && strtoupper($tempDept->DeptColor)!="#FFFFFF"){
-					// Fill array with deptid and color so we can process the list once for the legend and style information
-					$deptswithcolor[$device->Owner]["color"]=$tempDept->DeptColor;
-					$deptswithcolor[$device->Owner]["name"]=$tempDept->Name;
-				}
-
-				//only computes this device if it is its front side
-				if (!$device->BackSide && !$rear || $device->BackSide && $rear){
-					$totalWatts+=$device->GetDeviceTotalPower();
-					$DeviceTotalWeight=$device->GetDeviceTotalWeight();
-					$totalWeight+=$DeviceTotalWeight;
-					$totalMoment+=($DeviceTotalWeight*($device->Position+($device->Height/2)));
-				}
-
-				$reserved="";
-				if($device->Reservation==true){
-					$reserved=" reserved";
-					$noReservationFlag=true;
-				}
-				if($devTop<$currentHeight && $currentHeight>0){
-					for($i=$currentHeight;($i>$devTop);$i--){
-						$errclass=($i>$cab->CabinetHeight)?' error':'';
-						if($errclass!=''){$heighterr="yup";}
-						if($i==$currentHeight && $i>1){
-							$blankHeight=$currentHeight-$devTop;
-							if($devTop==-1){--$blankHeight;}
-							$body.="\t\t<tr><td class=\"cabpos freespace$errclass\">$i</td><td class=\"freespace\" rowspan=$blankHeight>&nbsp;</td></tr>\n";
-						} else {
-							$fix=($i==1)?'<td></td>':'';
-							$body.="\t\t<tr><td class=\"cabpos freespace$errclass\">$i</td>$fix</tr>\n";
-							if($i==1){break;}
-						}
-					}
-				}
-				for($i=$devTop;$i>=$device->Position;$i--){
-					$errclass=($i>$cab->CabinetHeight)?' error':'';
-					if($errclass!=''){$heighterr="yup";}
-					if($i==$devTop){
-						// Create the filler for the rack either text or a picture
-						$picture=(!$device->BackSide && !$rear || $device->BackSide && $rear)?$device->GetDevicePicture():$device->GetDevicePicture("rear");
-						$devlabel=$device->Label.(((!$device->BackSide && $rear || $device->BackSide && !$rear) && !$device->HalfDepth)?"(".__("Rear").")":"");
-						$text=($device->Rights!="None")?"<a href=\"devices.php?DeviceID=$device->DeviceID\">$highlight $devlabel</a>":$devlabel;
-						
-						// Put the device in the rack
-						$body.="\t\t<tr><td class=\"cabpos$reserved dept$device->Owner$errclass\">$i</td><td class=\"dept$device->Owner$reserved\" rowspan=$device->Height data-deviceid=$device->DeviceID>";
-						$body.=($picture)?$picture:$text;
-						$body.="</td></tr>\n";
-					}else{
-						$body.="\t\t<tr><td class=\"cabpos$reserved dept$device->Owner$errclass\">$i</td></tr>\n";
-					}
-				}
-				$currentHeight=$device->Position - 1;
-			}elseif(!$rear){
-				$backside=true;
-			}
-		}
-
-		// Fill in to the bottom
-		for($i=$currentHeight;$i>0;$i--){
-			if($i==$currentHeight){
-				$blankHeight=$currentHeight;
-
-				$body.="\t\t<tr><td class=\"cabpos freespace\">$i</td><td class=\"freespace\" rowspan=$blankHeight>&nbsp;</td></tr>\n";
-			}else{
-				$body.="\t\t<tr><td class=\"cabpos freespace\">$i</td></tr>\n";
-			}
-		}
-		$body.="\t</table>\n</div>\n";
-		reset($devList);
-	}  //END OF BuildCabinet
 
 	// Generate rack view
-	BuildCabinet();
+	$body.=BuildCabinet($cab->CabinetID);
 	// Generate rear rack view if needed
-	($backside)?BuildCabinet('rear'):'';
+	$body.=($backside)?BuildCabinet($cab->CabinetID,'rear'):'';
 
 	if($heighterr!=''){
         $legend.='<div class="legenditem"><span style="background-color:'
