@@ -3352,6 +3352,7 @@ class Device {
 				}
 			}
 		}
+	
 		return ($measureFound)?$ret:false;
 	}
 
