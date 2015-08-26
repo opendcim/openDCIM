@@ -36,9 +36,11 @@
 
 			$name = $side."MPG_".$mpg->MPGID;
 			$checked = ($_POST[$name])?"checked":"";
-			$equipmentList .= '<li><div class="equipmentBox">
-						<label class="equipmentLabel" for="'.$name.'">'.$mpg->Name.'</label>
-						<input type="checkbox" name="'.$name.'" id="'.$name.'" list="'.$list.'" onChange="OnCheckGroup(this,\''.$side.'\')" '.$checked.'>
+			$equipmentList .= '<li><div class="table equipmentBox">
+						<div>
+							<div><label class="equipmentLabel" for="'.$name.'">'.$mpg->Name.'</label></div>
+							<div style="text-align: right; width: 100%;"><input type="checkbox" name="'.$name.'" id="'.$name.'" list="'.$list.'" onChange="OnCheckGroup(this,\''.$side.'\')" '.$checked.'></div>
+						</div>
 					</div></li>';
 		}
 
@@ -51,11 +53,13 @@
 			if($mp->GetNbMeasuresOnInterval($startDate, $endDate) >= 2) {
 				$name = $side."MP_".$mp->MPID;
 				$checked = ($_POST[$name])?"checked":"";
-				$equipmentList .= '<li><div class="equipmentBox">
+				$equipmentList .= '<li><div class="table equipmentBox">
 							<input type="number" value="'.$mp->MPID.'" hidden>
 							<input type="text" id="'.$name.'_label" value="'.$mp->Label.'" hidden>
-							<label class="equipmentLabel" for="'.$name.'">'.$mp->Label.'</label>
-							<input type="checkbox" name="'.$name.'" id="'.$name.'" '.$checked.' onChange="OnCheckMP(this, \''.$side.'\');">
+							<div>
+								<div><label class="equipmentLabel" for="'.$name.'">'.$mp->Label.'</label></div>
+								<div style="text-align: right; width: 100%;"><input type="checkbox" name="'.$name.'" id="'.$name.'" '.$checked.' onChange="OnCheckMP(this, \''.$side.'\');"></div>
+							</div>
 						</div></li>';
 			}
 		}
@@ -106,6 +110,22 @@
 			$optionRight.='<option value="'.$id.'">'.$val.'</option>';
 	}
 
+	$selectEnergyGraphType = array(	"energy" => __("Instant relative consumption"),
+					"energy-counter" => __("Absolute Energy consumed"));
+
+	if(isset($_POST["energy_graphtype"]))
+		$energy_graphtype = $_POST["energy_graphtype"];
+	else
+		$energy_graphtype = "energy";
+
+	$optionEnergyGraphType="";
+	foreach($selectEnergyGraphType as $id => $val) {
+                if($id == $energy_graphtype)
+                        $optionEnergyGraphType.='<option value="'.$id.'" selected>'.$val.'</option>';
+                else
+                        $optionEnergyGraphType.='<option value="'.$id.'">'.$val.'</option>';
+        }
+
 	$selectFrequency = array(	"hourly" => __("Hourly"), 
 					"daily" => __("Daily"), 
 					"monthly" => __("Monthly"), 
@@ -124,10 +144,16 @@
 			$optionFrequency.='<option value="'.$id.'">'.$val.'</option>';
 	}
 
-	if($leftType == "energy" || $rightType == "energy")
-		$displayFrequency = "";
-	else
+	if($leftType == "energy" || $rightType == "energy") {
+		$displayEnergyGraphType = "";
+		if($energy_graphtype == "energy")
+			$displayFrequency = "";
+		else
+			$displayFrequency = "display: none;";
+	} else {
+		$displayEnergyGraphType = "display: none;";
 		$displayFrequency = "display: none;";
+	}
 
 	if($leftType == "power" || $rightType == "power")
 		$displaySplitPhases = "";
@@ -162,12 +188,9 @@
 .equipmentBox
 {
 	border: 1px solid grey;
-	text-align: right;
 }
 .equipmentLabel
 {
-	text-align: left;
-	float: left;
 	padding: 3px;
 }
 </style>
@@ -204,6 +227,12 @@
 			<label for="enddate">',__("to"),' : </label>
 			<input type="date" min="1970-01-01" max="9999-12-31" name="enddate" id="enddate" value="',$enddate,'"/>
 			<button type="submit" name="generate" value="true">',__("Generate"),'</button><br>
+			<div style="'.$displayEnergyGraphType.'">
+				<label for="energy_graphtype">'.__("Energy Graph Type").' : </label>
+				<select id="energy_graphtype" name="energy_graphtype" onChange="submit();">
+					'.$optionEnergyGraphType.'
+				</select>
+			</div>
 			<div style="'.$displayFrequency.'">
 				<label for="frequency">'.__("Energy Measures Frequency").' : </label>
                         	<select id="frequency" name="frequency" onChange="submit();">
@@ -296,7 +325,7 @@ function OnCheckGroup(element, side) {
 }
 
 function OnCheckMP(element, side) {
-	var id = element.parentElement.children[0].value;
+	var id = element.parentElement.parentElement.parentElement.children[0].value;
 	var table;
 
 	if(side == 'l')
@@ -322,6 +351,8 @@ var splitPhases;
 
 var leftType;
 var rightType;
+
+var energy_graphtype;
 
 var left_mpTab;
 var right_mpTab;
@@ -368,6 +399,9 @@ MPData.prototype.loadData = function() {
 	else
 		type = rightType;
 
+	if(type == "energy")
+		type = energy_graphtype;
+
 	this.data = new Array();
 	$.ajax({url: 'scripts/ajax_graphs.php', 
 		data: {type: type, id: this.mpid, startdate: start.value, enddate: end.value, graphtype: "line",
@@ -375,7 +409,7 @@ MPData.prototype.loadData = function() {
 		type: "POST",
 		success: function(data) {
 			mp.data = JSON.parse(data);
-			//alert(mp.data);
+
 			MPData.nbLoaded++;
 			if(MPData.nbLoaded == MPData.nbToLoad)
 				renderGraph();
@@ -398,6 +432,8 @@ $(document).ready(function() {
 	rightType = document.getElementById("righttype");
 	rightType = rightType.options[rightType.selectedIndex].value;
 
+	energy_graphtype = document.getElementById("energy_graphtype").value;
+
 	leftMPList = document.getElementById("MP_list_l").children;
 	if(rightType != "none")
 		rightMPList = document.getElementById("MP_list_r").children;
@@ -409,7 +445,7 @@ $(document).ready(function() {
 
 	for(var n=1; n<leftMPList.length; n++) {
 		id = leftMPList[n].children[0].children[0].value;
-		//alert(id);
+
 		if(document.getElementById("lMP_"+id).checked)
 			left_mpTab[id] = new MPData(id, 'l');
 	}
@@ -436,6 +472,8 @@ function renderGraph() {
 	var data = new Array();
 	var series = new Array();
 	var dateFormat;
+	var ymin = 0;
+	var y2min = 0;
 
 	if(linechart)
 		linechart.destroy();
@@ -471,26 +509,36 @@ function renderGraph() {
 			}
         }
 
-	if(leftType == "energy" || rightType == "energy")
-		switch(frequency.options[frequency.selectedIndex].value) {
-			case "hourly":
-				dateFormat = "<center>%Y-%m-%d<br>%H:%M:%S</center>";
-				break;
-			case "daily":
-				dateFormat = "%Y-%m-%d";
-				break;
-			case "monthly":
-				dateFormat = "%Y-%m-%d";
-                                break;
-			case "yearly":
-				dateFormat = "%Y";
-                                break;
-			default:
-				dateFormat = "%Y-%m-%d";
-                                break;
-		}
-	else
+	if(leftType == "energy" || rightType == "energy") {
+		if(energy_graphtype == "energy") {
+			switch(frequency.options[frequency.selectedIndex].value) {
+				case "hourly":
+					dateFormat = "<center>%Y-%m-%d<br>%H:%M:%S</center>";
+					break;
+				case "daily":
+					dateFormat = "%Y-%m-%d";
+					break;
+				case "monthly":
+					dateFormat = "%Y-%m-%d";
+					break;
+				case "yearly":
+					dateFormat = "%Y";
+					break;
+				default:
+					dateFormat = "%Y-%m-%d";
+					break;
+			}
+		} else {
+			dateFormat = "%Y-%m-%d";
+			if(leftType == "energy")
+				ymin = null;
+			else
+				y2min = null;
+		} 
+		
+	} else {
 		dateFormat = "%Y-%m-%d";
+	}
 
 	if(data.length == 0)
 		data = [[null]];
@@ -502,12 +550,12 @@ function renderGraph() {
                 },
 		axes:{
                         yaxis:{
-                                min: 0,
+                                min: ymin,
 				label: typeTable[leftType]+" ("+unitTable[leftType]+")",
 				labelRenderer: $.jqplot.CanvasAxisLabelRenderer
                         },
                         y2axis:{
-                                min: 0,
+                                min: y2min,
 				label: typeTable[rightType]+" ("+unitTable[rightType]+")",
 				labelRenderer: $.jqplot.CanvasAxisLabelRenderer,
                                 tickOptions:{

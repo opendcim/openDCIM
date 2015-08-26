@@ -835,9 +835,10 @@ INSERT INTO fac_Config VALUES
 	('v3AuthPassphrase', '', 'Password', 'string', ''),
 	('v3PrivProtocol', '', 'SHA/MD5', 'string', 'SHA'),
 	('v3PrivPassphrase', '', 'Password', 'string', ''),
-	("Phase1Color", "#000000", "HexColor", "string", "#000000"),
-	("Phase2Color", "#FF0000", "HexColor", "string", "#FF0000"),
-	("Phase3Color", "#0000FF", "HexColor", "string", "#0000FF")
+	('Phase1Color', '#000000', 'HexColor', 'string', '#000000'),
+	('Phase2Color', '#FF0000', 'HexColor', 'string', '#FF0000'),
+	('Phase3Color', '#0000FF', 'HexColor', 'string', '#0000FF'),
+	('ipmitool', '/usr/bin/ipmitool', 'path', 'string', '/usr/bin/ipmitool')
 ;
 
 --
@@ -904,6 +905,8 @@ CREATE TABLE IF NOT EXISTS fac_ElectricalMeasurePoint (
   UPSPowered TINYINT(1) NOT NULL,
   PowerMultiplier VARCHAR(6) NULL DEFAULT NULL,
   EnergyMultiplier VARCHAR(6) NULL DEFAULT NULL,
+  ProcessingProfile VARCHAR(20) NOT NULL DEFAULT "Watts",
+  Voltage INT(11) NOT NULL,
   UNIQUE KEY MPID(MPID),
   KEY DataCenterID (DataCenterID)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
@@ -940,6 +943,22 @@ CREATE TABLE IF NOT EXISTS fac_ModbusElectricalMeasurePoint (
   Register2 INT(11) NOT NULL,
   Register3 INT(11) NOT NULL,
   RegisterEnergy INT(11) NOT NULL,
+  UNIQUE KEY MPID (MPID)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+--
+-- Table structure for fac_IPMIElectricalMeasurePoint
+--
+
+CREATE TABLE IF NOT EXISTS fac_IPMIElectricalMeasurePoint (
+  MPID INT(11) NOT NULL,
+  UserName VARCHAR(80) NOT NULL,
+  Password VARCHAR(80) NOT NULL,
+  Interface VARCHAR(80) NOT NULL,
+  Sensor1 VARCHAR(80) NOT NULL,
+  Sensor2 VARCHAR(80) NOT NULL,
+  Sensor3 VARCHAR(80) NOT NULL,
+  SensorEnergy VARCHAR(80) NOT NULL,
   UNIQUE KEY MPID (MPID)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
@@ -1023,6 +1042,20 @@ CREATE TABLE IF NOT EXISTS fac_ModbusCoolingMeasurePoint (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 --
+-- Table structure for fac_IPMICoolingMeasurePoint
+--
+
+CREATE TABLE IF NOT EXISTS fac_IPMICoolingMeasurePoint (
+  MPID INT(11) NOT NULL,
+  UserName VARCHAR(80) NOT NULL,
+  Password VARCHAR(80) NOT NULL,
+  Interface VARCHAR(80) NOT NULL,
+  FanSpeedSensor VARCHAR(80) NOT NULL,
+  CoolingSensor VARCHAR(80) NOT NULL,
+  UNIQUE KEY MPID (MPID)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+--
 -- Table structure for fac_CoolingMeasure
 --
 
@@ -1078,6 +1111,20 @@ CREATE TABLE IF NOT EXISTS fac_ModbusAirMeasurePoint (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 --
+-- Table structure for fac_IPMIAirMeasurePoint
+--
+
+CREATE TABLE IF NOT EXISTS fac_IPMIAirMeasurePoint (
+  MPID INT(11) NOT NULL,
+  UserName VARCHAR(80) NOT NULL,
+  Password VARCHAR(80) NOT NULL,
+  Interface VARCHAR(80) NOT NULL,
+  TemperatureSensor VARCHAR(80) NOT NULL,
+  HumiditySensor VARCHAR(80) NOT NULL,
+  UNIQUE KEY MPID (MPID)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+--
 -- Table structure for fac_AirMeasure
 --
 
@@ -1113,6 +1160,8 @@ CREATE TABLE IF NOT EXISTS fac_MechanicalDevice (
   PanelID INT(11) NOT NULL,
   BreakerSize INT(11) NOT NULL,
   PanelPole INT(11) NOT NULL,
+  PanelID2 INT(11) NOT NULL,
+  PanelPole2 INT(11) NOT NULL,
   IPAddress VARCHAR(45) NOT NULL,
   SNMPVersion VARCHAR(2) NOT NULL DEFAULT "2c",
   SNMPCommunity VARCHAR(80) NOT NULL,

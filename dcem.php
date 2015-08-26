@@ -80,7 +80,7 @@ foreach($dcList as $dc) {
 			$endGap = strtotime($endDate) - strtotime($measureList[count($measureList)-1]->Date);
 
 			$dataList[$category][$dc->DataCenterID][$mp->MPID] = '<div><label for="'.$energyName.'">'.$mp->Label.'</label></div>
-					<div><nobr><input type="number" id="'.$energyName.'" name="'.$energyName.'" value="'.$energy.'" step="0.001" min="0" onChange="'.$updateFuncName.'('.$dc->DataCenterID.')">kW.h</nobr></div>';
+					<div><nobr><input type="number" id="'.$energyName.'" name="'.$energyName.'" value="'.$energy.'" step="0.001" min="0" onChange="'.$updateFuncName.'('.$dc->DataCenterID.')"/>kW.h</nobr></div>';
 
 			if($addPenalty)
 				$dataList[$category][$dc->DataCenterID][$mp->MPID] .= '<div><input type="number" id="'.$penaltyName.'" name="'.$penaltyName.'" value="'.$penalty.'" step="0.001" min="0" onChange="'.$updateFuncName.'('.$dc->DataCenterID.')"></div>';
@@ -471,7 +471,7 @@ input[type=number]
                                 energy += parseFloat(noUPSTab.children[n].children[energyID].children[0].children[0].value) * (1 + parseFloat(noUPSTab.children[n].children[penaltyID].children[0].value));
                                 n++;
                         }
-			
+
 			document.getElementById('UPS_'+dc+'_tot').value=energy.toFixed(3);
 			updateKPI_EC();
 			updateKPI_TE();
@@ -483,7 +483,6 @@ input[type=number]
 			var n=1;
 			var itTab = document.getElementById("IT_"+dc);
 			var energy=0;
-
 			while(itTab.children[n] != undefined) {
                                 energy += parseFloat(itTab.children[n].children[energyID].children[0].children[0].value) * (1 + parseFloat(itTab.children[n].children[penaltyID].children[0].value));
                                 n++;
@@ -524,8 +523,8 @@ input[type=number]
 
 		function updateKPI_EC() {
 			var energy=0;
-			for(dc of dcIDList) {
-				energy += parseFloat(document.getElementById('UPS_'+dc+'_tot').value);
+			for(var n in dcIDList) {
+				energy += parseFloat(document.getElementById('UPS_'+dcIDList[n]+'_tot').value);
 			}
 			document.getElementById('KPI_EC').value=energy.toFixed(3);
 			updateKPI_EM();
@@ -534,8 +533,11 @@ input[type=number]
 
 		function updateKPI_TE() {
 			var energy=0;
-			for(dc of dcIDList) {
-				energy += parseFloat(document.getElementById('UPS_'+dc+'_tot').value / document.getElementById('IT_'+dc+'_tot').value);
+			for(var n in dcIDList) {
+				var ups = document.getElementById('UPS_'+dcIDList[n]+'_tot').value;
+				var it = document.getElementById('IT_'+dcIDList[n]+'_tot').value;
+				if(it != 0)
+					energy += ups / it;
 			}
 			document.getElementById('KPI_TE').value=energy.toFixed(3);
 			updateKPI_EM();
@@ -543,8 +545,11 @@ input[type=number]
 
 		function updateKPI_REN() {
 			var energy=0;
-			for(dc of dcIDList) {
-				energy += parseFloat(document.getElementById('Renewable_'+dc+'_tot').value / document.getElementById('UPS_'+dc+'_tot').value);
+			for(var n in dcIDList) {
+				var renewable = document.getElementById('Renewable_'+dcIDList[n]+'_tot').value;
+				var ups = document.getElementById('UPS_'+dcIDList[n]+'_tot').value;
+				if(ups != 0)
+					energy += renewable / ups;
 			}
 			document.getElementById('KPI_REN').value=energy.toFixed(3);
 			updateKPI_EM();
@@ -556,12 +561,13 @@ input[type=number]
 			var L;
 			var W;
 			var C;
-			for(dc of dcIDList) {
-				RU = document.getElementById('Reuse_'+dc+'_tot').value;
-				L = document.getElementById('IT_'+dc+'_tot').value;
-				W = document.getElementById('Reuse_'+dc+'_Ratio').value;
-				C = document.getElementById('UPS_'+dc+'_tot').value;
-				energy += parseFloat((Math.min(RU, L) + W * Math.max(0, RU - L)) / C);
+			for(var n in dcIDList) {
+				RU = document.getElementById('Reuse_'+dcIDList[n]+'_tot').value;
+				L = document.getElementById('IT_'+dcIDList[n]+'_tot').value;
+				W = document.getElementById('Reuse_'+dcIDList[n]+'_Ratio').value;
+				C = document.getElementById('UPS_'+dcIDList[n]+'_tot').value;
+				if(C != 0)
+					energy += parseFloat((Math.min(RU, L) + W * Math.max(0, RU - L)) / C);
 			}
 			document.getElementById('KPI_REUSE').value=energy.toFixed(3);
 			updateKPI_EM();
@@ -625,21 +631,19 @@ input[type=number]
 			document.getElementById('KPI_DCEM').value = document.getElementById('DCG').value + ',' + String.fromCharCode(parseInt(document.getElementById('DCPclass').value) + 65);
 		}
 
-		function Load() {
-			for(dc of dcIDList) {
-				updateUPS(dc);
-				updateIT(dc);
-				updateReuse(dc);
-				updateRenewable(dc);
+		$(document).ready(function() {
+			for(n in dcIDList) {
+				updateUPS(dcIDList[n]);
+				updateIT(dcIDList[n]);
+				updateReuse(dcIDList[n]);
+				updateRenewable(dcIDList[n]);
 			}
-		}
+		});
 
 		$(function(){
 			$('#startdate').datepicker({dateFormat: "yy-mm-dd"});
 			$('#enddate').datepicker({dateFormat: "yy-mm-dd"});
 		});
-
-		window.onload = Load;
 
 		</script>
 	</div>

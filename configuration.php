@@ -1827,6 +1827,10 @@ echo '<div class="main">
 					<div><label for="dot">',__("dot"),'</label></div>
 					<div><input type="text" defaultvalue="',$config->defaults["dot"],'" name="dot" value="',$config->ParameterArray["dot"],'"></div>
 				</div>
+				<div>
+                                        <div><label for="ipmitool">',__("ipmitool"),'</label></div>
+                                        <div><input type="text" defaultvalue="',$config->defaults["ipmitool"],'" name="ipmitool" value="',$config->ParameterArray["ipmitool"],'"></div>
+                                </div>
 			</div> <!-- end table -->
 			<h3>',__("Graph Dates"),'</h3>
                         <div class="table">

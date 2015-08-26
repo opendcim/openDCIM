@@ -506,6 +506,24 @@ $app->get( '/device/:deviceid/getsensorreadings', function($deviceid) {
 	echoResponse(200,$response);
 });
 
+//
+//	URL:	/api/v1/device/bycustomattribute/:searchterm
+//	Method:	GET
+//	Params:
+//		required: searchterm : list of values to search in custom values (passed in URL)
+//	Returns:	Matching devices
+
+$app->get('/device/bycustomattribute/:searchterm', function($searchTerm) {
+	$devList = new Device();
+	$devList = $devList->SearchByCustomAttribute($searchTerm);
+
+	$response['error']=false;
+        $response['errorcode']=200;
+        $response['device']=$devList;
+
+        echoResponse(200,$response);
+}); 
+
 // this is messy as all hell and i'm still thinking about how to do it better
 
 //
