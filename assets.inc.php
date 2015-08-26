@@ -2842,16 +2842,22 @@ class Device {
 		$parentDev=$parentDetails->parentDev;
 		$parentTempl=$parentDetails->parentTempl;
 
+		// API path correction
+		$path="";
+		if(preg_match('/api\//',str_replace(DIRECTORY_SEPARATOR, '/',getcwd()))){
+			$path="../../";
+		}
+
 		// We'll only consider checking a rear image on a child if it is sitting on a shelf
 		if(($parentTempl->Model=='HTRAY' || $parentTempl->Model=='VTRAY') && $rear){
 			$picturefile="pictures/$templ->RearPictureFile";
 		}else{
 			$picturefile="pictures/$templ->FrontPictureFile";
 		}
-		if (!file_exists($picturefile)){
+		if (!file_exists($path.$picturefile)){
 			$picturefile="pictures/P_ERROR.png";
 		}
-		@list($width, $height)=getimagesize($picturefile);
+		@list($width, $height)=getimagesize($path.$picturefile);
 		// Make sure there is an image! DOH! If either is 0 then use a text box
 		$width=intval($width);
 		$height=intval($height);
@@ -2873,8 +2879,8 @@ class Device {
 		// We only need these numbers in the event that we have a nested device
 		// and need to scale the coordinates based off the original image size
 		$kidsHavingKids=new stdClass();
-		$kidsHavingKids->Height=$height;
-		$kidsHavingKids->Width=$width;
+		$kidsHavingKids->Height=($height)?$height:1;
+		$kidsHavingKids->Width=($width)?$width:1;
 
 		$slot=new Slot();
 		$slotOK=false;
@@ -3062,13 +3068,17 @@ class Device {
 
 		if(($templ->FrontPictureFile!="" && !$rear) || ($templ->RearPictureFile!="" && $rear)){
 			$picturefile="pictures/";
+			$path="";
+			if(preg_match('/api\//',str_replace(DIRECTORY_SEPARATOR, '/',getcwd()))){
+				$path="../../";
+			}
 			$picturefile.=($rear)?$templ->RearPictureFile:$templ->FrontPictureFile;
-			if (!file_exists($picturefile)){
+			if (!file_exists($path.$picturefile)){
 				$picturefile="pictures/P_ERROR.png";
 			}
 
 			// Get the true size of the template image
-			list($pictW, $pictH)=getimagesize($picturefile);
+			list($pictW, $pictH)=getimagesize($path.$picturefile);
 
 			// adjusted height = targetWidth * height:width ratio for 1u * height of device in U
 			$targetHeight=$targetWidth*1.75/19*$this->Height;

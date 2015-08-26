@@ -934,4 +934,113 @@ function getEndDate($interval, $showTime = true) {
                         return date("Y-m-d", $date->GetTimestamp()-86400).$time;
         }
 }
+
+/*
+ * In an attempt to keep html generation out of the primary class definitions 
+ * this function is being put here to make a quick convenient method of drawing
+ * racks.  This will NOT put the devices in the rack.
+ *
+ * Example usage:  echo BuildCabinet(123);
+ *
+ * @param int $cabid
+ * @param string $face (front,rear,side)
+ * @return html table
+ *
+ */
+
+if(!function_exists("BuildCabinet")){
+function BuildCabinet($cabid,$face="front"){
+	$cab=new Cabinet($cabid);
+	$cab->GetCabinet();
+	$order=($cab->U1Position=="Top")?false:true;
+	$dev=new Device();
+	$dev->Cabinet=$cab->CabinetID;
+	$dev->ParentDevice=0;
+	$bounds=array(
+		'max'=>array('position'=>0,'height'=>0),
+		'min'=>array('position'=>0,'height'=>0),
+	);
+
+	// Read in all the devices and make sure they fit the cabinet.  If not expand it
+	foreach($dev->Search() as $device){
+		if($device->Position==0){
+			continue;
+		}
+		$pos=($order)?$device->Position:$device->Position-$device->Height;
+
+		if($device->Position>$bounds['max']['position']){
+			$bounds['max']['position']=$device->Position;
+			$bounds['max']['height']=$device->Height;
+		}
+		if($pos<$bounds['min']['position']){
+			$bounds['min']['position']=$pos;
+			$bounds['min']['height']=1;
+		}
+	}
+	if($order){
+		$top=max($cab->CabinetHeight,$bounds['max']['position']+$bounds['max']['height']-1);
+		$bottom=min(0,$bounds['min']['position']);
+	}else{
+		// Reverse order
+		$top=min(1,$bounds['min']['position']-$bounds['min']['height']);
+		$bottom=max($cab->CabinetHeight,$bounds['max']['position']);
+	}
+
+	// Build cabinet HTML
+	$cab->Location=($face=="rear")?"$cab->Location (".__("Rear").")":$cab->Location;
+
+	// helper function to print the rows of the cabinet table
+	if(!function_exists("printrow")){
+		function printrow($i,$top,$bottom,$order,$face,&$htmlcab){
+			if($order){
+				$x=($i<=0)?$i-1:$i;
+			}else{
+				$x=($i>=0)?$i+1:$i;
+			}
+			if($i==$top){
+				if($face=="rear"){
+					$rs="-rear";
+				}elseif($face=="side"){
+					$rs="-side";
+				}else{
+					$rs="";
+				}
+				$rowspan=abs($top)+abs($bottom);
+				$height=(((abs($top)+abs($bottom))*ceil(220*(1.75/19))))."px";
+				$htmlcab.="\t<tr id=\"pos$x\"><td>$x</td><td rowspan=$rowspan><div id=\"servercontainer$rs\" style=\"width: 220px; height: $height\" data-face=\"$face\"></div></td></tr>\n";
+			}else{
+				$htmlcab.="\t<tr id=\"pos$x\"><td>$x</td></tr>\n";
+			}
+		}
+	}
+
+	$htmlcab="<table class=\"cabinet\" id=\"cabinet$cab->CabinetID\">
+	<tr><th colspan=2>$cab->Location</th></tr>
+	<tr><td>Pos</td><td>Device</td></tr>\n";
+
+	// loop here for the height
+	// numbered high to low, top to bottom
+	if($order){
+		for($i=$top;$i>$bottom;$i--){
+			printrow($i,$top,$bottom,$order,$face,$htmlcab);
+		}
+	}else{ // numbered low to high, top to bottom
+		for($i=$top;$bottom>$i;$i++){
+			printrow($i,$top,$bottom,$order,$face,$htmlcab);
+		}
+	}
+
+	$htmlcab.="</table>\n";
+
+	// Wrap it in a nice div
+	$htmlcab='<div class="cabinet">'.$htmlcab.'</div>';
+
+	// debug information
+	// print "Cabinet:  $cab->CabinetID   Top: $top   Bottom: $bottom<br>\n";
+
+	return $htmlcab;
+}
+}
+
+
 ?>
