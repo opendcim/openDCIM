@@ -63,6 +63,8 @@
 	$zoneStats=$zone->GetZoneStatistics();
 	$dc->DataCenterID=$zone->DataCenterID;
 	$dc->GetDataCenterbyID();
+	
+	$rciStats = RCI::GetStatistics( "zone", $zone->ZoneID );
 
 	function MakeImageMap($dc,$zone) {
 		$zoom=$zone->MapZoom/100;
@@ -213,6 +215,14 @@ echo '<div class="main">
   <div>
         <div>',__("Average Humidity"), '</div>
         <div>',sprintf("%7d %s", $zoneStats["AvgHumidity"], __("%")),'</div>
+  </div>
+  <div>
+		<div>',__("RCI Low Percentage (Overcooling)"), '</div>
+		<div>',sprintf("%7d %s", $rciStats["RCILowCount"] / $rciStats["TotalCabinets"] * 100, __("%")),'</div>
+  </div>
+  <div>
+		<div>',__("RCI High Percentage (Cabinets Satisfied)"), '</div>
+		<div>',sprintf( "%7d %s", (1-$rciStats["RCIHighCount"] / $rciStats["TotalCabinets"]) * 100, __("%")),'</div>
   </div>
 </div> <!-- END div.table -->
 </div> <!-- END div.centermargin -->

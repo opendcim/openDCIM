@@ -56,6 +56,8 @@
 	$dc->DataCenterID=$_GET["dc"];
 	$dc->GetDataCenterbyID();
 	$dcStats=$dc->GetDCStatistics();
+
+	$rciStats = RCI::GetStatistics( "dc", $dc->DataCenterID );
 	
 	function MakeImageMap($dc){
 		$mapHTML="";
@@ -205,6 +207,14 @@ echo '<div class="main">
   <div>
         <div>',__("Average Humidity"), '</div>
         <div>',sprintf("%7d %s", $dcStats["AvgHumidity"], __("%")),'</div>
+  </div>
+  <div>
+		<div>',__("RCI Low Percentage (Overcooling)"), '</div>
+		<div>',sprintf("%7d %s", $rciStats["RCILowCount"] / $rciStats["TotalCabinets"] * 100, __("%")),'</div>
+  </div>
+  <div>
+		<div>',__("RCI High Percentage (Cabinets Satisfied)"), '</div>
+		<div>',sprintf( "%7d %s", (1-$rciStats["RCIHighCount"] / $rciStats["TotalCabinets"]) * 100, __("%")),'</div>
   </div>
 </div> <!-- END div.table -->
 </div> <!-- END div.centermargin -->

@@ -192,7 +192,8 @@ class DataCenter {
 	var $PUEFrequency;
 	var $MapX;
 	var $MapY;
-	
+	var $U1Position;
+
 	function MakeSafe(){
 		$validPUELevel=array('L1','L2','L3');
 		$validPUEFrequency=array('-','C','D','W','M');
@@ -210,6 +211,7 @@ class DataCenter {
 		$this->PUEFrequency=(in_array($this->PUEFrequency, $validPUEFrequency))?$this->PUEFrequency:'M';
 		$this->MapX=abs($this->MapX);
 		$this->MapY=abs($this->MapY);
+		$this->U1Position=in_array($this->U1Position, array("Top","Bottom","Default"))?$this->U1Position:"Default";
 	}
 
 	function MakeDisplay(){
@@ -235,6 +237,7 @@ class DataCenter {
 		$dc->PUEFrequency=$row["PUEFrequency"];
 		$dc->MapX=$row["MapX"];
 		$dc->MapY=$row["MapY"];
+		$dc->U1Position=$row["U1Position"];
 		$dc->MakeDisplay();
 
 		return $dc;
@@ -259,7 +262,8 @@ class DataCenter {
 			CreationDate=\"$this->CreationDate\", Administrator=\"$this->Administrator\", 
 			MaxkW=$this->MaxkW, DrawingFileName=\"$this->DrawingFileName\", EntryLogging=0,	
 			ContainerID=$this->ContainerID, PUELevel=\"$this->PUELevel\", 
-			PUEFrequency=\"$this->PUEFrequency\", MapX=$this->MapX, MapY=$this->MapY;";
+			PUEFrequency=\"$this->PUEFrequency\", MapX=$this->MapX, MapY=$this->MapY,
+			U1Position=\"$this->U1Position\";";
 
 		if(!$dbh->exec($sql)){
 			$info=$dbh->errorInfo();
@@ -349,8 +353,8 @@ class DataCenter {
 			CreationDate=\"$this->CreationDate\", Administrator=\"$this->Administrator\", 
 			MaxkW=$this->MaxkW, DrawingFileName=\"$this->DrawingFileName\", EntryLogging=0,	
 			ContainerID=$this->ContainerID,	PUELevel=\"$this->PUELevel\", 
-			PUEFrequency=\"$this->PUEFrequency\", MapX=$this->MapX, MapY=$this->MapY 
-			WHERE DataCenterID=$this->DataCenterID;";
+			PUEFrequency=\"$this->PUEFrequency\", MapX=$this->MapX, MapY=$this->MapY, 
+			U1Position=\"$this->U1Position\" WHERE DataCenterID=$this->DataCenterID;";
 
 		$this->MakeDisplay();
 	
@@ -600,9 +604,6 @@ class DataCenter {
 						}
 					}
 					
-					$titletemp=(!is_null($metrics->LastRead)&&($metrics->LastRead>$titletemp))?date('%c',strtotime(($metrics->LastRead))):$titletemp;
-					// $titlerp=(!is_null($cabRow["RPLastRead"])&&($cabRow["RPLastRead"]>$titlerp))?date('%c',strtotime(($cabRow["RPLastRead"]))):$titlerp;
-
 					$overview[$cabRow->CabinetID]=$color;
 					$space[$cabRow->CabinetID]=$scolor;
 					$weight[$cabRow->CabinetID]=$wcolor;
@@ -614,14 +615,22 @@ class DataCenter {
 				}
 			}
 			
+			$tempSQL = "select max(LastRead) as ReadingTime from fac_SensorReadings where DeviceID in (select DeviceID from fac_Device where DeviceType='Sensor' and Cabinet in (select CabinetID from fac_Cabinet where DataCenterID=" . $this->DataCenterID . "))";
+			$tempRes = $this->query( $tempSQL );
+			$tempRow = $tempRes->fetch();
+			
+			$pwrSQL = "select max(LastRead) as ReadingTime from fac_PDUStats where PDUID in (select DeviceID from fac_Device where DeviceType='CDU' and Cabinet in (select CabinetID from fac_Cabinet where DataCenterID=" . $this->DataCenterID . "))";
+			$pwrRes = $this->query( $pwrSQL );
+			$pwrRow = $pwrRes->fetch();
+			
 			//Key
 			$overview['title']=__("Composite View of Cabinets");
 			$space['title']=__("Occupied Space");
 			$weight['title']=__("Calculated Weight");
 			$power['title']=__("Calculated Power Usage");
-			$temperature['title']=($titletemp>0)?__("Measured on")." ".$titletemp:__("no data");
-			$humidity['title']=($titletemp>0)?__("Measured on")." ".$titletemp:__("no data");
-			$realpower['title']=($titlerp>0)?__("Measured on")." ".$titlerp:__("no data");
+			$temperature['title']=($tempRow["ReadingTime"]>0)?__("Measured on")." ".date( 'c', strtotime( $tempRow["ReadingTime"])):__("no data");
+			$humidity['title']=($tempRow["ReadingTime"]>0)?__("Measured on")." ".date( 'c', strtotime( $tempRow["ReadingTime"])):__("no data");
+			$realpower['title']=($pwrRow["ReadingTime"]>0)?__("Measured on")." ".date( 'c', strtotime( $pwrRow["ReadingTime"])):__("no data");
 			$airflow['title']=__("Air Flow");
 
 			$statusarray=array('overview' => $overview,

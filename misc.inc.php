@@ -187,6 +187,21 @@ function arsort2d ($array, $index){
 }  
 
 /*
+ * Extend sql queries
+ *
+ */
+function extendsql($prop,$val,&$sql,$loose){
+	$method=($loose)?" LIKE \"%$val%\"":"=\"$val\"";
+	if($sql){
+		$sql.=" AND $prop$method";
+	}else{
+		$sql.=" WHERE $prop$method";
+	}
+}
+
+
+
+/*
  * Define multibyte string functions in case they aren't present
  *
  */
