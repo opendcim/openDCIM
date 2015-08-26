@@ -1162,6 +1162,8 @@ function InsertDevice(obj){
 				equipment.appendTo('#cabinet'+obj.Cabinet+' #servercontainer');
 			}
 		}
+		// side view
+		equipment.clone(true).css({'background-color':'black'}).appendTo('#cabinet'+obj.Cabinet+' #servercontainer-side');
 	}
 }
 

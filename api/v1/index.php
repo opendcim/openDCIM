@@ -465,18 +465,16 @@ $app->get( '/device/:deviceid/getpicture', function($deviceid) {
 	$response['errorcode']=404;
 	$response['message']=__("Unknown error");
 
-	if(!$dev->GetDevice(false)){
+	if(!$dev->GetDevice()){
 		$response['message']=__("Device not found");
 	}else{
-		if($dev->Rights=="None"){
-			$response['errorcode']=403;
-			$response['message']=__("Permission denied");
-		}else{
-			$response['error']=false;
-			$response['errorcode']=200;
-			$response['message']="";
-			$response['picture']=$dev->GetDevicePicture(isset($_GET['rear']));
-		}
+		// we filter out most of the details if you don't have rights in the 
+		// GetDevicePicture function so this might lead to some probing but 
+		// should be minimal
+		$response['error']=false;
+		$response['errorcode']=200;
+		$response['message']="";
+		$response['picture']=$dev->GetDevicePicture(isset($_GET['rear']));
 	}
 
 	echoResponse(200,$response);
