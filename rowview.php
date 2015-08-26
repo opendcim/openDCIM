@@ -105,7 +105,7 @@ function renderUnassignedTemplateOwnership($noTemplFlag, $noOwnerFlag, $device) 
 		if($side){
 			$side='side';
 		}else{
-			if($frontedge==$cabinet->FrontEdge){
+			if($frontedge==$cabinet->FrontEdge || ($frontedge!=$cabinet->FrontEdge && isset($_GET["rear"]))){
 				$side='front';
 			}else{
 				$side='rear';
@@ -208,7 +208,7 @@ if($config->ParameterArray["ToolTips"]=='enabled'){
 </div> <!-- END div#centeriehack -->
 <script type="text/javascript">
 // 258 width of cabinet + 20 margin
-$('#centeriehack').width($('#centeriehack .cabinet').length * 278);
+$('#centeriehack').width($('#centeriehack div.cabinet').length * 278);
 </script>
 </div></div>
 <?php

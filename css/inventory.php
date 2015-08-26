@@ -474,7 +474,7 @@ div.cabinet {
 	margin-right: 20px;
 }
 
-.cabinet #servercontainer, .cabinet #servercontainer-rear { background-image: url("../images/racku-background.png"); position: relative; padding: 0px; margin: 0px;}
+.cabinet #servercontainer, .cabinet #servercontainer-rear, .cabinet #servercontainer-side { background-image: url("../images/racku-background.png"); position: relative; padding: 0px; margin: 0px;}
 .genericdevice {display: flex;justify-content: center; align-items: center; height: 100%; border: 2px black solid;}
 
 .cabinet td + td {vertical-align: middle;width: 220px; }
