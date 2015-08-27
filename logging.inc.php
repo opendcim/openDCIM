@@ -173,16 +173,25 @@ class LogActions {
 			case "ModbusElectricalMeasurePoint":
 				$log->ObjectID=$object->MPID;
 				break;
+			case "IPMIElectricalMeasurePoint":
+				$log->ObjectID=$object->MPID;
+				break;
 			case "SNMPCoolingMeasurePoint":
 				$log->ObjectID=$object->MPID;
 				break;
 			case "ModbusCoolingMeasurePoint":
 				$log->ObjectID=$object->MPID;
 				break;
+			case "IPMICoolingMeasurePoint":
+				$log->ObjectID=$object->MPID;
+				break;
 			case "SNMPAirMeasurePoint":
 				$log->ObjectID=$object->MPID;
 				break;
 			case "ModbusAirMeasurePoint":
+				$log->ObjectID=$object->MPID;
+				break;
+			case "IPMIAirMeasurePoint":
 				$log->ObjectID=$object->MPID;
 				break;
 			case "MechanicalDevice":
