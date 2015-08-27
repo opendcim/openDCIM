@@ -987,7 +987,16 @@ function BuildCabinet($cabid,$face="front"){
 	}
 
 	// Build cabinet HTML
-	$cab->Location=($face=="rear")?"$cab->Location (".__("Rear").")":$cab->Location;
+	switch ($face) {
+		case "rear":
+			$cab->Location="$cab->Location (".__("Rear").")";
+			break;
+		case "side":
+			$cab->Location="$cab->Location (".__("Side").")";
+			break;
+		default:
+			// Leave the location alone
+	}
 
 	// helper function to print the rows of the cabinet table
 	if(!function_exists("printrow")){
