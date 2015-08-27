@@ -1189,11 +1189,6 @@ function InsertDevice(obj){
 			StartingU.find('.pos').addClass('dept'+obj.Owner);
 			StartingU=StartingU.prev(); // move our pointer up a u
 		}
-
-		//Reshuffle the tiles on the cabnavigator page
-		if (typeof $().masonry == 'function') {
-				$('#infopanel').masonry('layout');
-		}
 	}
 
 	// Here's as good a place as any to add in zero-u devices
@@ -1213,6 +1208,11 @@ function InsertDevice(obj){
 			$('#legend > .legenditem > span.owner').parent('div').removeClass('hide');
 		}
 		$('#zerou > div').append(linkinsert);
+	}
+
+	//Reshuffle the tiles on the cabnavigator page
+	if (typeof $().masonry == 'function') {
+			$('#infopanel').masonry('layout');
 	}
 }
 
