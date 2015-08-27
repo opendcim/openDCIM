@@ -204,11 +204,7 @@ function renderUnassignedTemplateOwnership($noTemplFlag, $noOwnerFlag, $device) 
 	// Generate rear rack view if needed
 	$body.=($backside)?BuildCabinet($cab->CabinetID,'rear'):'';
 
-	if($heighterr!=''){
-        $legend.='<div class="legenditem"><span style="background-color:'
-            . $config->ParameterArray['CriticalColor'] . '; text-align:center" class="error colorbox border">*</span> - '
-            . __("Above defined rack height").'</div>'."\n";
-    }
+	$legend.='<div class="legenditem hide"><span style="background-color:'.$config->ParameterArray['CriticalColor'].'; text-align:center" class="error colorbox border">*</span> - '.__("Above defined rack height").'</div>'."\n";
 
 	$CenterofGravity=@round($totalMoment/$totalWeight);
 

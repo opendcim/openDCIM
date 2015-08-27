@@ -1176,6 +1176,11 @@ function InsertDevice(obj){
 
 		// Color the rack for the department
 		var StartingU=$('#cabinet'+obj.Cabinet+' #pos'+obj.Position);
+
+		if(StartingU.hasClass('error')){
+			$('#legend > .legenditem > span.error').parent('div').removeClass('hide');
+		}
+
 		for(var i=0;obj.Height-1>=i;i++){
 			if(obj.Reservation){
 				StartingU.find('.pos').addClass('reserved');
