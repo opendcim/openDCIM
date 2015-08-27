@@ -1320,12 +1320,13 @@ class ElectricalMeasure {
 
 		$this->MakeSafe();
 
+		$this->Energy *= 1000;
 		$sql = "INSERT INTO fac_ElectricalMeasure SET
 				MPID=$this->MPID,
 				Wattage1=\"$this->Wattage1\",
 				Wattage2=\"$this->Wattage2\",
 				Wattage3=\"$this->Wattage3\",
-				Energy=\"{$this->Energy * 1000}\",
+				Energy=\"$this->Energy\",
 				Date=\"$this->Date\";";
 			
 		if(!$dbh->exec($sql))
