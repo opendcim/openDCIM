@@ -3090,7 +3090,7 @@ class Device {
 			
 			// Add in flags for missing ownership
 			$flags=($this->Owner==0)?'(O)':'';
-			$flags=($this->TemplateID==0)?'(T)':'';
+			$flags.=($this->TemplateID==0)?'(T)':'';
 			$flags=($flags!='')?'<span class="hlight">'.$flags.'</span>':'';
 
 			// If they have rights to the device then make the picture clickable

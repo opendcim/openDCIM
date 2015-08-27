@@ -477,7 +477,7 @@ div.cabinet {
 #servercontainer .dept0, #servercontainer-rear .dept0, #servercontainer-side .dept0 {background-color: #fff;}
 
 .cabinet #servercontainer, .cabinet #servercontainer-rear, .cabinet #servercontainer-side { background-image: url("../images/racku-background.png"); position: relative; padding: 0px; margin: 0px;}
-.genericdevice {display: flex;justify-content: center; align-items: center; height: 100%; border: 2px black solid; background-color: inherit;}
+.genericdevice {display: flex;justify-content: center; align-items: center; height: 100%; border: 2px black solid; background-color: inherit; overflow: hidden; white-space: nowrap;}
 
 .cabinet td + td {vertical-align: middle;width: 220px; }
 .cabinet td.cabpos {text-align: center; vertical-align: middle;padding: 0.25em 0.5em;width: 10%;}

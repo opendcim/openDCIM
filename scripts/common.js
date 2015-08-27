@@ -1175,24 +1175,39 @@ function InsertDevice(obj){
 		}
 
 		// Color the rack for the department
-		if(obj.Height>0){
-			var StartingU=$('#cabinet'+obj.Cabinet+' #pos'+obj.Position);
-			for(var i=0;obj.Height-1>=i;i++){
-				if(obj.Reservation){
-					StartingU.find('.pos').addClass('reserved');
-					$('#legend > .legenditem > span.reserved').parent('div').removeClass('hide');
-				}
-				StartingU.find('.pos').addClass('dept'+obj.Owner);
-				StartingU=StartingU.prev(); // move our pointer up a u
+		var StartingU=$('#cabinet'+obj.Cabinet+' #pos'+obj.Position);
+		for(var i=0;obj.Height-1>=i;i++){
+			if(obj.Reservation){
+				StartingU.find('.pos').addClass('reserved');
+				$('#legend > .legenditem > span.reserved').parent('div').removeClass('hide');
 			}
-		}else{ // Here's as good a place as any to add in zero-u devices
-
+			StartingU.find('.pos').addClass('dept'+obj.Owner);
+			StartingU=StartingU.prev(); // move our pointer up a u
 		}
 
 		//Reshuffle the tiles on the cabnavigator page
 		if (typeof $().masonry == 'function') {
 				$('#infopanel').masonry('layout');
 		}
+	}
+
+	// Here's as good a place as any to add in zero-u devices
+	if(obj.Height==0 && obj.DeviceType!='CDU' && obj.DeviceType!='Sensor'){ 
+		$('#zerou').removeClass('hide');
+		var linkinsert=$('<a>').prop('href','devices.php?DeviceID='+obj.DeviceID).data('deviceid',obj.DeviceID).text(obj.Label);
+		if(obj.Rights=='None'){
+			linkinsert.prop('href','');
+		}
+		// Unhide crap in the legend
+		if(obj.TemplateID==0){
+			$('<span>').addClass('hlight').text('(T)').prependTo(linkinsert);
+			$('#legend > .legenditem > span.template').parent('div').removeClass('hide');
+		}
+		if(obj.Owner==0){
+			$('<span>').addClass('hlight').text('(O)').prependTo(linkinsert);
+			$('#legend > .legenditem > span.owner').parent('div').removeClass('hide');
+		}
+		$('#zerou > div').append(linkinsert);
 	}
 }
 

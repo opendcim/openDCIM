@@ -298,18 +298,12 @@ $body.='<div id="infopanel">
 			'.$cab->Keylock.'
 		</div>
 	</fieldset>
-';
-
-	if($zeroheight!=""){
-		$body.='	<fieldset id="zerou">
+	<fieldset id="zerou" class="hide">
 		<legend>'.__("Zero-U Devices").'</legend>
 		<div>
-'.$zeroheight.'
 		</div>
 	</fieldset>
-';
-	}
-	$body.='	<fieldset name="pdu">
+	<fieldset name="pdu">
 		<legend>'.__("Power Distribution").'</legend>
 		<div>';
 
