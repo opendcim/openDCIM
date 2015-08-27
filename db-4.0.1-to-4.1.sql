@@ -10,7 +10,7 @@ INSERT INTO fac_Config SET Parameter="U1Position", Value="Bottom", UnitOfMeasure
 -- Add new configuration values for Rack Cooling Index metric (RCI).
 --
 
-INSERT INTO fac_Config SET Paramter='RCIHigh', Value='80', UnitOfMeasure='degrees', ValType='float', DefaultVal='80';
+INSERT INTO fac_Config SET Parameter='RCIHigh', Value='80', UnitOfMeasure='degrees', ValType='float', DefaultVal='80';
 INSERT INTO fac_Config SET Parameter='RCILow', Value='65', UnitOfMeasure='degrees', ValType='float', DefaultVal='65';
 
 --
