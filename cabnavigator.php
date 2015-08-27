@@ -12,33 +12,6 @@
 
 
 /**
- * Determines ownership of the cabinet and returns the CSS class in case a
- * color unequal white is assigned to the owner.
- *
- * @param Cabinet $cabinet
- * @param array $deptswithcolor
- * @return (string|array)[] CSS class or empty string
- */
-function getColorofCabinetOwner($cabinet, $deptswithcolor)
-{
-	$cab_color = '';
-	if ($cabinet->AssignedTo != 0) {
-		$tempDept = new Department();
-		$tempDept->DeptID = $cabinet->AssignedTo;
-		$deptid = $tempDept->DeptID;
-		if ($tempDept->GetDeptByID()) {
-			if (strtoupper($tempDept->DeptColor) != '#FFFFFF') {
-				$deptswithcolor[$cabinet->AssignedTo]['color'] =
-				    $tempDept->DeptColor;
-				$deptswithcolor[$cabinet->AssignedTo]['name'] = $tempDept->Name;
-				$cab_color = "class=\"dept$deptid\"";
-			}
-		}
-  	}
-	return array($cab_color, $deptswithcolor);
-}
-
-/**
  * Merge the tags into one HTML string
  *
  * @param Device|Cabinet $dev
@@ -203,13 +176,15 @@ function renderUnassignedTemplateOwnership($noTemplFlag, $noOwnerFlag, $device) 
 	$totalWeight=0;
 	$totalMoment=0;
 
-	$deptswithcolor=array();
-	list($cab_color, $deptswithcolor) = getColorofCabinetOwner($cab, $deptswithcolor);
-
 	if($config->ParameterArray["ReservedColor"] != "#FFFFFF" || $config->ParameterArray["FreeSpaceColor"] != "#FFFFFF"){
 		$head .= "		<style type=\"text/css\">
 			.reserved {background-color: {$config->ParameterArray['ReservedColor']} !important;}
 			.freespace {background-color: {$config->ParameterArray['FreeSpaceColor']};}\n";
+
+		// Only show reserved in the legend if the color is something other than white 
+		if($config->ParameterArray["ReservedColor"] != "#FFFFFF"){
+			$legend.="\t\t<div class=\"legenditem hide\"><span class=\"reserved colorbox border\"></span> - ".__("Reservation")."</div>\n";
+		}
 
 		if($config->ParameterArray["FreeSpaceColor"] != "#FFFFFF"){
 			$legend.='<div class="legenditem"><span class="freespace colorbox border"></span> - '.__("Free Space").'</div>'."\n";
@@ -257,36 +232,18 @@ function renderUnassignedTemplateOwnership($noTemplFlag, $noOwnerFlag, $device) 
 	$PowerColor=($PowerPercent>intval($config->ParameterArray["PowerRed"])?$CriticalColor:($PowerPercent>intval($config->ParameterArray["PowerYellow"])?$CautionColor:$GoodColor));
 	$MeasuredColor=($MeasuredPercent>intval($config->ParameterArray["PowerRed"])?$CriticalColor:($MeasuredPercent>intval($config->ParameterArray["PowerYellow"])?$CautionColor:$GoodColor));
 
-	// I don't feel like fixing the check properly to not add in a dept with id of 0 so just remove it at the last second
-	// 0 is when a dept owner hasn't been assigned, just for the record
-	if(isset($deptswithcolor[0])){unset($deptswithcolor[0]);}
-	if(isset($deptswithcolor[""])){unset($deptswithcolor[""]);}
-
-	// We're done processing devices so build the legend and style blocks
-    if (!empty($deptswithcolor)) {
-        foreach ($deptswithcolor as $deptid => $row) {
+	foreach(Department::GetDepartmentListIndexedbyID() as $deptid => $d){
+		if($d->DeptColor!="#FFFFFF"){
             // If head is empty then we don't have any custom colors defined above so add a style container for these
-            if($head==""){
-                $head.="\t\t<style type=\"text/css\">\n";
-            }
-            $head.="\t\t\t.dept$deptid {background-color: {$row['color']};}\n";
-            $legend.="\t\t<div class=\"legenditem\"><span class=\"border colorbox dept$deptid\"></span> - <span>{$row['name']}</span></div>\n";
-        }
-    }
-
-	// This will add an item to the legend for a white box. If we ever get a good name for it.
-	if($legend!=""){
-	//	$legend.='<div class="legenditem"><span class="colorbox border"></span> - Custom Color Not Assigned</div>';
+            $head=($head=="")?"\t\t<style type=\"text/css\">\n":$head;
+			$head.="\t\t\t.dept$deptid {background-color:$d->DeptColor;}\n";
+            $legend.="\t\t<div class=\"legenditem hide\"><span class=\"border colorbox dept$deptid\"></span> - <span>$d->Name</span></div>\n";
+		}
 	}
 
 	// add legend for the flags which actually are used in the cabinet
-	$legend=($noOwnerFlag)?"\t\t<div class=\"legenditem\"><span class=\"hlight\">(O)</span> - ".__("Owner Unassigned")."</div>\n".$legend:$legend;
-	$legend=($noTemplFlag)?"\t\t<div class=\"legenditem\"><span class=\"hlight\">(T)</span> - ".__("Template Unassigned")."</div>\n".$legend:$legend;
-
-	// Only show reserved in the legend if a device is set to reserved AND the color is something other than white
-	if($config->ParameterArray["ReservedColor"] != "#FFFFFF" && $noReservationFlag){
-		$legend.="\t\t<div class=\"legenditem\"><span class=\"reserved colorbox border\"></span> - ".__("Reservation")."</div>\n";
-	}
+	$legend.="\t\t<div class=\"legenditem hide\"><span class=\"hlight owner\">(O)</span> - ".__("Owner Unassigned")."</div>\n";
+	$legend.="\t\t<div class=\"legenditem hide\"><span class=\"hlight template\">(T)</span> - ".__("Template Unassigned")."</div>\n";
 
 $body.='<div id="infopanel">
 	<fieldset id="legend">
