@@ -695,12 +695,12 @@ class ElectricalMeasurePoint extends MeasurePoint{
 			}
 		}
 		if(!is_null($values[3])) {
-			$m->Energy=@floatval($values[3] * $this->EnergyMultiplier * 1000);
+			$m->Energy=@floatval($values[3] * $this->EnergyMultiplier);
 			$m->Date=date("Y-m-d H:i:s");
 			$m->CreateMeasure();
 		} else if(!is_null($values[0]) || !is_null($values[1]) || !is_null($values[2])) {
 			if(!is_null($lastMeasure->Energy)) {
-				$values[3] = intval($lastMeasure->Energy + ($m->Wattage1 + $m->Wattage2 + $m->Wattage3) * (strtotime(date("Y-m-d H:i:s")) - strtotime($lastMeasure->Date)) / 3600);
+				$values[3] = intval($lastMeasure->Energy + (($m->Wattage1 + $m->Wattage2 + $m->Wattage3) * (strtotime(date("Y-m-d H:i:s")) - strtotime($lastMeasure->Date)) / 3600) / 1000);
 				$m->Energy = intval($values[3] * $this->EnergyMultiplier);
 			} else {
 				$m->Energy=0;
@@ -1325,7 +1325,7 @@ class ElectricalMeasure {
 				Wattage1=\"$this->Wattage1\",
 				Wattage2=\"$this->Wattage2\",
 				Wattage3=\"$this->Wattage3\",
-				Energy=\"$this->Energy\",
+				Energy=\"{$this->Energy * 1000}\",
 				Date=\"$this->Date\";";
 			
 		if(!$dbh->exec($sql))
