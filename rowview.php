@@ -7,60 +7,6 @@
 	// Get the list of departments that this user is a member of
 	$viewList = $person->isMemberOf();
 
-/**
- * Determines ownership of the cabinet and returns the CSS class in case a
- * color unequal white is assigned to the owner
- *
- * @param 	Cabinet 	$cabinet
- * @param 	array 		&$deptswithcolor
- * @return 	string		CSS class or empty string
- */
-function get_cabinet_owner_color($cabinet, &$deptswithcolor) {
-  $cab_color = '';
-  if ($cabinet->AssignedTo != 0) {
-    $tempDept = new Department();
-    $tempDept->DeptID = $cabinet->AssignedTo;
-    $deptid = $tempDept->DeptID;
-    $tempDept->GetDeptByID();
-    if (strtoupper($tempDept->DeptColor) != "#FFFFFF") {
-       $deptswithcolor[$cabinet->AssignedTo]["color"] = $tempDept->DeptColor;
-       $deptswithcolor[$cabinet->AssignedTo]["name"]= $tempDept->Name;
-       $cab_color = "class=\"dept$deptid\"";
-    }
-  }
-  return $cab_color;
-}
-
-
-
-// This function with no argument will build the front cabinet face. Specify
-// rear and it will build the back.
-
-/**
- * Render the indicator that a device has no ownership or template assigned.
- *
- * @param boolean $noTemplFlag flag indicating no template is assigned to device
- * @param boolean $noOwnerFlag flag indicating no ownership is assigned to device
- * @param Device $device
- * @return (boolean|boolean|string)[] CSS class or empty stringtype
- */
-function renderUnassignedTemplateOwnership($noTemplFlag, $noOwnerFlag, $device) {
-	$retstr=$noTemplate=$noOwnership='';
-	if ($device->TemplateID == 0) {
-		$noTemplate = '(T)';
-		$noTemplFlag = true;
-	}
-	if ($device->Owner == 0) {
-		$noOwnership = '(O)';
-		$noOwnerFlag = true;
-	}
-	if ($noTemplFlag or $noOwnerFlag) {
-		$retstr = '<span class="hlight">' . $noTemplate . $noOwnership . '</span>';
-	}
-	return array($noTemplFlag, $noOwnerFlag, $retstr);
-}
-
-
 	$cab=new Cabinet();
 	$head=$legend=$zeroheight=$body=$deptcolor="";
 	$deptswithcolor=array();
@@ -83,8 +29,6 @@ function renderUnassignedTemplateOwnership($noTemplFlag, $noOwnerFlag, $device) 
 	//start loop to parse all cabinets in the row
 	foreach($cabinets as $index => $cabinet){
 		$currentHeight=$cabinet->CabinetHeight;
-
-		$cab_color=get_cabinet_owner_color($cabinet, $deptswithcolor);
 
 		if($config->ParameterArray["ReservedColor"] != "#FFFFFF" || $config->ParameterArray["FreeSpaceColor"] != "#FFFFFF"){
 			$head.="		<style type=\"text/css\">
@@ -118,16 +62,14 @@ function renderUnassignedTemplateOwnership($noTemplFlag, $noOwnerFlag, $device) 
 	$dc->DataCenterID=$dcID;
 	$dc->GetDataCenterbyID();
 
-	// We're done processing devices so build the legend and style blocks
-    if (!empty($deptswithcolor)) {
-        foreach ($deptswithcolor as $deptid => $row) {
+	foreach(Department::GetDepartmentListIndexedbyID() as $deptid => $d){
+		if($d->DeptColor!="#FFFFFF"){
             // If head is empty then we don't have any custom colors defined above so add a style container for these
-            if($head==""){
-                $head.="\t\t<style type=\"text/css\">\n";
-            }
-            $head.="\t\t\t.dept$deptid {background-color: {$row['color']};}\n";
-        }
-    }
+            $head=($head=="")?"\t\t<style type=\"text/css\">\n":$head;
+			$head.="\t\t\t.dept$deptid {background-color:$d->DeptColor;}\n";
+            $legend.="\t\t<div class=\"legenditem\"><span class=\"border colorbox dept$deptid\"></span> - <span>$d->Name</span></div>\n";
+		}
+	}
 
 	// If $head isn't empty then we must have added some style information so close the tag up.
 	if($head!=""){
@@ -199,7 +141,7 @@ if($config->ParameterArray["ToolTips"]=='enabled'){
 <?php
 	include( "sidebar.inc.php" );
 ?>
-<div class="main cabnavigator rowview">
+<div class="main rowview">
 <div class="center"><div>
 <div id="centeriehack">
 <?php

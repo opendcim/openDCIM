@@ -1000,7 +1000,8 @@ function BuildCabinet($cabid,$face="front"){
 
 	// helper function to print the rows of the cabinet table
 	if(!function_exists("printrow")){
-		function printrow($i,$top,$bottom,$order,$face,&$htmlcab){
+		function printrow($i,$top,$bottom,$order,$face,&$htmlcab,$cabobject){
+			$error=($i>$cabobject->CabinetHeight || $i<=0)?' error':'';
 			if($order){
 				$x=($i<=0)?$i-1:$i;
 			}else{
@@ -1016,26 +1017,30 @@ function BuildCabinet($cabid,$face="front"){
 				}
 				$rowspan=abs($top)+abs($bottom);
 				$height=(((abs($top)+abs($bottom))*ceil(220*(1.75/19))))."px";
-				$htmlcab.="\t<tr id=\"pos$x\"><td>$x</td><td rowspan=$rowspan><div id=\"servercontainer$rs\" style=\"width: 220px; height: $height\" data-face=\"$face\"></div></td></tr>\n";
+				$htmlcab.="\t<tr id=\"pos$x\"><td class=\"pos$error\">$x</td><td rowspan=$rowspan><div id=\"servercontainer$rs\" class=\"freespace\" style=\"width: 220px; height: $height\" data-face=\"$face\"></div></td></tr>\n";
 			}else{
-				$htmlcab.="\t<tr id=\"pos$x\"><td>$x</td></tr>\n";
+				$htmlcab.="\t<tr id=\"pos$x\"><td class=\"pos$error\">$x</td></tr>\n";
 			}
 		}
 	}
 
+	// If they have rights to the device then make the picture clickable
+	$clickable=($cab->Rights!="None")?"\t\t<a href=\"cabnavigator.php?cabinetid=$cab->CabinetID\">\n\t":"";
+	$clickableend=($cab->Rights!="None")?"\n\t\t</a>\n":"";
+
 	$htmlcab="<table class=\"cabinet\" id=\"cabinet$cab->CabinetID\">
-	<tr><th colspan=2>$cab->Location</th></tr>
+	<tr><th colspan=2>$clickable$cab->Location$clickableend</th></tr>
 	<tr><td>Pos</td><td>Device</td></tr>\n";
 
 	// loop here for the height
 	// numbered high to low, top to bottom
 	if($order){
 		for($i=$top;$i>$bottom;$i--){
-			printrow($i,$top,$bottom,$order,$face,$htmlcab);
+			printrow($i,$top,$bottom,$order,$face,$htmlcab,$cab);
 		}
 	}else{ // numbered low to high, top to bottom
 		for($i=$top;$bottom>$i;$i++){
-			printrow($i,$top,$bottom,$order,$face,$htmlcab);
+			printrow($i,$top,$bottom,$order,$face,$htmlcab,$cab);
 		}
 	}
 
