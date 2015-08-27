@@ -1208,7 +1208,7 @@
 
 		// Reporting - Utilities
 
-		$('input[id^="snmp"],input[id="cut"],input[id="dot"]').each(function(){
+		$('input[id^="snmp"],input[id="cut"],input[id="dot"],input[id="ipmitool"]').each(function(){
 			var a=$(this);
 			var icon=$('<span>',{style: 'float:right;margin-top:5px;'}).addClass('ui-icon').addClass('ui-icon-info');
 			a.parent('div').append(icon);
@@ -1836,12 +1836,19 @@ echo '<div class="main">
                         <div class="table">
                                 <div>
                                         <div><label for="TimeInterval">',__("Time Interval"),'</label></div>
-                                        <div><select type="text" defaultvalue="',$config->defaults["TimeInterval"],'" name="TimeInterval" data="',$config->ParameterArray["TimeInterval"],'">
+                                        <div><select defaultvalue="',$config->defaults["TimeInterval"],'" name="TimeInterval" data="',$config->ParameterArray["TimeInterval"],'">
                                                         <option value="Last 7 Days">',__("Last 7 Days"),'</option>
                                                         <option value="Last Month">',__("Last Month"),'</option>
                                                         <option value="Last Year">',__("Last Year"),'</option>
                                                 </select>
                                         </div>
+                                </div>
+                        </div>
+			<h3>',__("Measure Parameters"),'</h3>
+                        <div class="table">
+                                <div>
+                                        <div><label for="TimeInterval">',__("Days Before Compression"),'</label></div>
+                                        <div><input type="number" defaultvalue="',$config->defaults["DaysBeforeCompression"],'" name="DaysBeforeCompression" min="0" value="',$config->ParameterArray["DaysBeforeCompression"],'"></div>
                                 </div>
                         </div>
 

@@ -1361,7 +1361,7 @@ class ElectricalMeasure {
 
 		$this->MakeSafe();
 
-		$sql = "SELECT * FROM fac_ElectricalMeasure WHERE MPID=$this->MPID AND Date >= \"$start\" AND Date <= \"$end\" ORDER BY Date;";
+		$sql = "SELECT * FROM fac_ElectricalMeasure WHERE MPID=$this->MPID AND Date >= \"$start\" AND Date < \"$end\" ORDER BY Date;";
 
 		$measureList = array();
 		foreach($dbh->query($sql) as $row) {

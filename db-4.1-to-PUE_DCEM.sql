@@ -316,6 +316,7 @@ INSERT INTO fac_Config set Parameter="Phase1Color", Value="#000000", UnitOfMeasu
 INSERT INTO fac_Config set Parameter="Phase2Color", Value="#FF0000", UnitOfMeasure="HexColor", ValType="string", DefaultVal="#FF0000";
 INSERT INTO fac_Config set Parameter="Phase3Color", Value="#0000FF", UnitOfMeasure="HexColor", ValType="string", DefaultVal="#0000FF";
 INSERT INTO fac_Config set Parameter="ipmitool", Value="/usr/bin/ipmitool", UnitOfMeasure="path", ValType="string", DefaultVal="/usr/bin/ipmitool";
+INSERT INTO fac_Config set Parameter="DaysBeforeCompression", Value="365", UnitOfMeasure="Days", ValType="int", DefaulteVal="365";
 
 --
 -- Bump up the database version
