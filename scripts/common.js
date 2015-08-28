@@ -1091,7 +1091,7 @@ $(document).ready(function(){
 	cabs=$.unique(cabs);
 	// Add the devices to the page
 	for(var id in cabs){
-		$.get('http://dev.opendcim.org/api/v1/device?Cabinet='+cabs[id].replace('cabinet','')+'&ParentDevice=0').done(function(data){
+		$.get('api/v1/device?Cabinet='+cabs[id].replace('cabinet','')+'&ParentDevice=0').done(function(data){
 			for(var x in data.device){
 				InsertDevice(data.device[x]);
 			}
