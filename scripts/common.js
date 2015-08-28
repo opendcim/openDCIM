@@ -1091,7 +1091,7 @@ $(document).ready(function(){
 	cabs=$.unique(cabs);
 	// Add the devices to the page
 	for(var id in cabs){
-		$.get('http://dev.opendcim.org/api/v1/device?Cabinet='+cabs[id].replace('cabinet','')+'&ParentDevice=0').done(function(data){
+		$.get('api/v1/device?Cabinet='+cabs[id].replace('cabinet','')+'&ParentDevice=0').done(function(data){
 			for(var x in data.device){
 				InsertDevice(data.device[x]);
 			}
@@ -1189,11 +1189,6 @@ function InsertDevice(obj){
 			StartingU.find('.pos').addClass('dept'+obj.Owner);
 			StartingU=StartingU.prev(); // move our pointer up a u
 		}
-
-		//Reshuffle the tiles on the cabnavigator page
-		if (typeof $().masonry == 'function') {
-				$('#infopanel').masonry('layout');
-		}
 	}
 
 	// Here's as good a place as any to add in zero-u devices
@@ -1213,6 +1208,11 @@ function InsertDevice(obj){
 			$('#legend > .legenditem > span.owner').parent('div').removeClass('hide');
 		}
 		$('#zerou > div').append(linkinsert);
+	}
+
+	//Reshuffle the tiles on the cabnavigator page
+	if (typeof $().masonry == 'function') {
+			$('#infopanel').masonry('layout');
 	}
 }
 
