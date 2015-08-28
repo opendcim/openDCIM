@@ -972,7 +972,7 @@ CREATE TABLE IF NOT EXISTS fac_ElectricalMeasure (
   Wattage1 INT(11) NOT NULL,
   Wattage2 INT(11) NOT NULL,
   Wattage3 INT(11) NOT NULL,
-  Energy BIGINT(20) NOT NULL,
+  Energy DOUBLE NOT NULL,
   Date DATETIME NOT NULL,
   KEY MPID (MPID),
   UNIQUE KEY (MPID, Date)

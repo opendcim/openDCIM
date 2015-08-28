@@ -1299,7 +1299,7 @@ class ElectricalMeasure {
 		$this->Wattage1=intval($this->Wattage1);
 		$this->Wattage2=intval($this->Wattage2);
 		$this->Wattage3=intval($this->Wattage3);
-		$this->Energy=intval($this->Energy);
+		$this->Energy=floatval($this->Energy);
 		$this->Date=date("Y-m-d H:i:s",strtotime($this->Date));
 	}
 
@@ -1309,7 +1309,7 @@ class ElectricalMeasure {
 		$m->Wattage1=$dbRow["Wattage1"];
 		$m->Wattage2=$dbRow["Wattage2"];
 		$m->Wattage3=$dbRow["Wattage3"];
-		$m->Energy=intval($dbRow["Energy"] / 1000);
+		$m->Energy=$dbRow["Energy"];
 		$m->Date=$dbRow["Date"];
 
 		return $m;
@@ -1317,8 +1317,6 @@ class ElectricalMeasure {
 
 	function CreateMeasure() {
 		global $dbh;
-
-		$this->Energy *= 1000;
 
 		$this->MakeSafe();
 		$sql = "INSERT INTO fac_ElectricalMeasure SET
