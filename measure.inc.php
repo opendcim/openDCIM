@@ -700,8 +700,8 @@ class ElectricalMeasurePoint extends MeasurePoint{
 			$m->CreateMeasure();
 		} else if(!is_null($values[0]) || !is_null($values[1]) || !is_null($values[2])) {
 			if(!is_null($lastMeasure->Energy)) {
-				$values[3] = intval($lastMeasure->Energy + (($m->Wattage1 + $m->Wattage2 + $m->Wattage3) * (strtotime(date("Y-m-d H:i:s")) - strtotime($lastMeasure->Date)) / 3600) / 1000);
-				$m->Energy = intval($values[3] * $this->EnergyMultiplier);
+				$values[3] = floatval($lastMeasure->Energy + (($m->Wattage1 + $m->Wattage2 + $m->Wattage3) * (strtotime(date("Y-m-d H:i:s")) - strtotime($lastMeasure->Date)) / 3600) / 1000);
+				$m->Energy = $values[3] * $this->EnergyMultiplier;
 			} else {
 				$m->Energy=0;
 			}
@@ -1221,7 +1221,7 @@ class IPMIElectricalMeasurePoint extends ElectricalMeasurePoint {
 				Sensor2=\"$this->Sensor2\",
 				Sensor3=\"$this->Sensor3\",
 				SensorEnergy=\"$this->SensorEnergy\"
-				WHERE MPID=$this->MPID;"; echo $sql;
+				WHERE MPID=$this->MPID;";
 			if(!$dbh->query($sql))
 				return false;
 		}
@@ -1318,9 +1318,9 @@ class ElectricalMeasure {
 	function CreateMeasure() {
 		global $dbh;
 
-		$this->MakeSafe();
-
 		$this->Energy *= 1000;
+
+		$this->MakeSafe();
 		$sql = "INSERT INTO fac_ElectricalMeasure SET
 				MPID=$this->MPID,
 				Wattage1=\"$this->Wattage1\",
@@ -1971,7 +1971,6 @@ class ModbusCoolingMeasurePoint extends CoolingMeasurePoint {
 
 		if($oldmp->ConnectionType != $this->ConnectionType || $oldmp->Type != $this->Type) {
 			$oldClass = MeasurePoint::$ConnectionTypeTab[$oldmp->ConnectionType].MeasurePoint::$TypeTab[$oldmp->Type]."MeasurePoint";
-			echo $oldClass." ".$oldmp->ConnectionType.$oldmp->Type;
 			$sql="DELETE FROM fac_".$oldClass." WHERE MPID=$this->MPID;";
 			if(!$dbh->exec($sql))
 				return false;
