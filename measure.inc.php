@@ -1309,7 +1309,7 @@ class ElectricalMeasure {
 		$m->Wattage1=$dbRow["Wattage1"];
 		$m->Wattage2=$dbRow["Wattage2"];
 		$m->Wattage3=$dbRow["Wattage3"];
-		$m->Energy=$dbRow["Energy"] / 1000;
+		$m->Energy=intval($dbRow["Energy"] / 1000);
 		$m->Date=$dbRow["Date"];
 
 		return $m;
