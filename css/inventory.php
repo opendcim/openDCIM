@@ -474,8 +474,11 @@ div.cabinet {
 	margin-right: 20px;
 }
 
+#servercontainer .dept0, #servercontainer-rear .dept0, #servercontainer-side .dept0 {background-color: #fff;}
+
+.cabinet .pos { text-align: center; }
 .cabinet #servercontainer, .cabinet #servercontainer-rear, .cabinet #servercontainer-side { background-image: url("../images/racku-background.png"); position: relative; padding: 0px; margin: 0px;}
-.genericdevice {display: flex;justify-content: center; align-items: center; height: 100%; border: 2px black solid;}
+.genericdevice {display: flex;justify-content: center; align-items: center; height: 100%; border: 2px black solid; background-color: inherit; overflow: hidden; white-space: nowrap;}
 
 .cabinet td + td {vertical-align: middle;width: 220px; }
 .cabinet td.cabpos {text-align: center; vertical-align: middle;padding: 0.25em 0.5em;width: 10%;}
@@ -485,6 +488,8 @@ div.cabinet {
 .cabnavigator .nav { text-align: center; }
 .cabnavigator .nav li { margin-top: 0.1em; border: 1px solid darkGray;}
 .cabnavigator .nav a:hover li { border-color: black; }
+
+.cabnavigator th a { color: black; text-decoration: none; pointer-events: none; }
 
 .cabnavigator.tooltip {
 	min-height: 30px;
