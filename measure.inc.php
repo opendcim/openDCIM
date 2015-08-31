@@ -1299,7 +1299,7 @@ class ElectricalMeasure {
 		$this->Wattage1=intval($this->Wattage1);
 		$this->Wattage2=intval($this->Wattage2);
 		$this->Wattage3=intval($this->Wattage3);
-		$this->Energy=floatval($this->Energy);
+		$this->Energy=number_format($this->Energy, 3);
 		$this->Date=date("Y-m-d H:i:s",strtotime($this->Date));
 	}
 
