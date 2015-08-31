@@ -532,7 +532,6 @@ function renderLinechart() {
 		cntData++;
 	}
 
-	//firstDate = new Date(firstDate * 1000).toString();
 	nbTicks = Math.round((lastDate - firstDate) / 86400)+1;
 	if(nbTicks > 12)
 		nbTicks = 12;
@@ -561,6 +560,12 @@ function renderLinechart() {
 	pueMin = Math.floor(pueMin - 0.1);
 
 	//lets create the line plot
+	//we use the data we generated before in linechartData as following:
+	//- UPS Input -> Power Sources loss
+	//- UPS Output -> Other
+	//- Other Mechanical -> Other Mechanical Devices
+	//- Cooling -> Cooling
+	//- IT -> IT
 
 	linechart=$.jqplot('linechart',  linechartData, {
 		seriesDefaults:{

@@ -1299,7 +1299,7 @@ class ElectricalMeasure {
 		$this->Wattage1=intval($this->Wattage1);
 		$this->Wattage2=intval($this->Wattage2);
 		$this->Wattage3=intval($this->Wattage3);
-		$this->Energy=number_format($this->Energy, 3);
+		$this->Energy=floatval($this->Energy);
 		$this->Date=date("Y-m-d H:i:s",strtotime($this->Date));
 	}
 
@@ -1319,12 +1319,15 @@ class ElectricalMeasure {
 		global $dbh;
 
 		$this->MakeSafe();
+
+		$energy = number_format($this->Energy, 3, ".", "");
+
 		$sql = "INSERT INTO fac_ElectricalMeasure SET
 				MPID=$this->MPID,
 				Wattage1=\"$this->Wattage1\",
 				Wattage2=\"$this->Wattage2\",
 				Wattage3=\"$this->Wattage3\",
-				Energy=\"$this->Energy\",
+				Energy=\"$energy\",
 				Date=\"$this->Date\";";
 			
 		if(!$dbh->exec($sql))
