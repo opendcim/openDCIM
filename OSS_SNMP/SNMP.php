@@ -444,10 +444,14 @@ class SNMP
                 break;
 
             case 'INTEGER':
-                if( !is_numeric( $value ) )
-                    $rtn = (int)substr( substr( $value, strpos( $value, '(' ) + 1 ), 0, -1 );
-                else
+                if( !is_numeric( $value ) ){
+                    // find the first digit and offset the string to that point
+                    // just in case there is some mib strangeness going on
+                    preg_match('/\d/', $value, $m, PREG_OFFSET_CAPTURE);
+                    $rtn = (int)substr( $value, $m[0][1] );
+                }else{
                     $rtn = (int)$value;
+				}
                 break;
 
             case 'Counter32':
