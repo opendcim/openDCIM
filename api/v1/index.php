@@ -1054,6 +1054,9 @@ $app->put( '/device/:devicelabel', function($devicelabel) use ($app) {
 				$response['errorcode']=404;
 				$response['message']=__("Device creation failed");
 			}else{
+				// refresh the model in case we extended it elsewhere
+				$dev=new Device($dev->DeviceID);
+				$dev->GetDevice();
 				$response['error']=false;
 				$response['errorcode']=200;
 				$response['device']=$dev;

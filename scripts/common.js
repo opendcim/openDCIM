@@ -1220,16 +1220,46 @@ function initdrag(){
 				// if there is another face of the device we moved make it match this
 				(twofacedev)?$('#adjustmeandclearthis')[0].style.top=device.style.top:'';
 
-				// update via the api
-				$.post("api/v1/device/"+deviceid,{"Position":newposition},function(data){
-					if(data.error){
-//							alert('api error updating position');
-						// Device didn't update so revert to original position
-						device.style.left=ui.originalPosition.left+'px';
-						device.style.top=ui.originalPosition.top+'px';
-						(twofacedev)?$('#adjustmeandclearthis')[0].style.top=device.style.top:'';
-					}
-				});
+				if(event.ctrlKey){
+					// We're copying a device so put the original back in place. 
+					device.style.left=ui.originalPosition.left+'px';
+					device.style.top=ui.originalPosition.top+'px';
+					(twofacedev)?$('#adjustmeandclearthis')[0].style.top=device.style.top:'';
+
+					// Get a copy of the original device from the api
+					$.get("api/v1/device/"+deviceid,function(data){
+						if(!data.error){
+							var devcopy=data.device;
+							// Change the position of the copy to where we dropped it
+							devcopy.Position=newposition;
+							// Attempt to create the new device
+							$.ajax({
+								type: 'put',
+								url: 'api/v1/device/'+'copy '+devcopy.Label,
+								async: false,
+								data: devcopy,
+								success: function(data){
+									if(!data.error){
+										InsertDevice(data.device);
+									}
+								},
+								error: function(data){
+									console.log('error, figure it out');
+								}
+							});
+						}
+					});
+				}else{
+					// update via the api
+					$.post("api/v1/device/"+deviceid,{"Position":newposition},function(data){
+						if(data.error){
+							// Device didn't update so revert to original position
+							device.style.left=ui.originalPosition.left+'px';
+							device.style.top=ui.originalPosition.top+'px';
+							(twofacedev)?$('#adjustmeandclearthis')[0].style.top=device.style.top:'';
+						}
+					});
+				}
 				// clear the tag from the other face of the device
 				(twofacedev)?$('#adjustmeandclearthis').removeProp('id'):'';
 			}
