@@ -1095,9 +1095,150 @@ $(document).ready(function(){
 			for(var x in data.device){
 				InsertDevice(data.device[x]);
 			}
-		});
+		}).then(initdrag);
 	}
 });
+
+// function to determine if two objects overlap
+function intersectRect(r1, r2) {
+	return !(r2.left > r1.right || 
+			r2.right < r1.left || 
+			r2.top > r1.bottom ||
+			r2.bottom < r1.top);
+}
+
+// function to make server objects draggable in the UI
+function initdrag(){
+	$('.draggable').draggable({
+		helper: 'clone',
+		grid: [ 220, 1 ],
+		containment: 'parent',
+		stack: '.draggable',
+		axis: 'y',
+		start: function( event, ui ) {
+			// make the original semi-transparent
+			this.style.opacity=0.3;
+			// mark our original object so we can ignore it for intersects
+			this.classList.add('ignore');
+		},
+		drag: function( event, ui ) {
+			var thisdrag=this;
+			var twofacedev=($('#adjustmeandclearthis').length==0)?false:true;
+			var cabinetid=this.parentElement.parentElement.parentElement.parentElement.parentElement.id.replace('cabinet','');
+			// determine what face we're looking at
+			if(this.parentElement.id.search('rear')!='-1'){
+				//find the matching front device
+				if(twofacedev){
+					$('#adjustmeandclearthis')[0].style.top=ui.position.top+'px';
+				}else{
+					$('table#cabinet'+cabinetid+' #servercontainer > div').each(function(i,e){
+						if(thisdrag.offsetTop==e.offsetTop){
+							e.id='adjustmeandclearthis';
+							e.style.top=ui.position.top+'px';
+							return false;
+						}
+					});
+				}
+			}else if(this.parentElement.id.search('side')!='-1'){
+				//this is a side view so don't do anything
+			}else{
+				//find the matching rear device
+				if(twofacedev){
+					$('#adjustmeandclearthis')[0].style.top=ui.position.top+'px';
+				}else{
+					$('table#cabinet'+cabinetid+' #servercontainer-rear > div').each(function(index,element){
+						if(thisdrag.offsetTop==element.offsetTop){
+							element.id='adjustmeandclearthis';
+							element.style.top=ui.position.top+'px';
+							return false;
+						}
+					});
+				}
+			}
+		},
+		stop: function( event, ui ) {
+			var twofacedev=($('#adjustmeandclearthis').length==0)?false:true;
+			var collision=0;
+			var uirect={ 
+				left: ui.position.left, 
+				top: Math.floor(ui.position.top)-1, 
+				right: ui.position.left+this.offsetWidth,
+				// subtract 1px to account for stuff lining up exactly. 
+				bottom: Math.floor(ui.position.top+this.offsetHeight)-1
+			};
+			for(var i in this.parentElement.children){
+				var node=this.parentElement.children[i];
+				// check for intersects between any other device and our drop target
+				if(node.offsetLeft!=undefined && node.className.search('ignore')=='-1' && node.className.search('dragging')=='-1'){
+					if(this.className.search('halfdepth')!='-1' && node.style.opacity=="0"){
+						// if the device is half depth we'll allow it over another half depth
+						continue;
+					}
+					var noderect={ 
+						left: node.offsetLeft, 
+						top: Math.floor(node.offsetTop), 
+						right: node.offsetLeft+node.offsetWidth, 
+						bottom: Math.floor(node.offsetTop+node.offsetHeight)
+					};
+					if(intersectRect(noderect,uirect)){
+						collision++;
+					}
+				}
+			}
+			// If it's greater than 1 we have a match
+			if(collision>0){
+				// revert back to original position
+			}else{ // no object collision so move the device
+				//find deviceid or default to 0
+				var deviceid=0;
+				if($(this).find('a').length>0){
+					deviceid=$(this).find('a')[0].href.split('=').pop();
+				}
+				//calulate our new position
+				getElementIndex = function(node) {
+					var prop = document.body.previousElementSibling ? 'previousElementSibling' : 'previousSibling';
+					var i = 0;
+					while (node = node[prop]) { ++i }
+					return i;
+				}
+
+				// U above device + height of device in U + X rows for the header
+				var diff=Math.round(ui.position.top/21) + Math.ceil(this.offsetHeight/21) + getElementIndex($(this).parents('div.cabinet > table tr[id^=pos]')[0]);
+				var newposition=parseInt($(this.parentElement.parentElement.parentElement.parentElement).find('tr:nth-child('+diff+') td:first-child').text());
+				var device=this;
+				device.style.left=ui.position.left+'px';
+				device.style.top=ui.position.top+'px';
+//debug info
+//console.log('Math.floor('+ui.position.top+'/21) + Math.ceil('+this.offsetHeight+'/21) + 2');
+//console.log('position: '+newposition+' diff: '+diff);
+				// Force devices to align to a 21px grid
+				// offset from top = container height - device height - height from bottom to bottom of U
+				device.style.top=parseInt(device.parentElement.offsetHeight) - 
+					parseInt(device.offsetHeight) - 
+					parseInt((newposition - 1) * 21) - 4+'px';
+
+				// if there is another face of the device we moved make it match this
+				(twofacedev)?$('#adjustmeandclearthis')[0].style.top=device.style.top:'';
+
+				// update via the api
+				$.post("api/v1/device/"+deviceid,{"Position":newposition},function(data){
+					if(data.error){
+//							alert('api error updating position');
+						// Device didn't update so revert to original position
+						device.style.left=ui.originalPosition.left+'px';
+						device.style.top=ui.originalPosition.top+'px';
+						(twofacedev)?$('#adjustmeandclearthis')[0].style.top=device.style.top:'';
+					}
+				});
+				// clear the tag from the other face of the device
+				(twofacedev)?$('#adjustmeandclearthis').removeProp('id'):'';
+			}
+			// Make the device opaque again
+			this.style.opacity=1;
+			this.classList.remove('ignore');
+		}
+	});
+}
 
 function InsertDevice(obj){
 	if(obj.Position!=0){

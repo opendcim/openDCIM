@@ -149,7 +149,7 @@ $app->get('/people', function() {
 		$response['error'] = true;
 		$response['errorcode'] = 400;
 		$response['message'] = "Insufficient privilege level";
-		echoResponse(400, $response);
+		echoResponse(200, $response);
 	} else {
 		$pList = $person->GetUserList();
 		$response['error'] = false;
@@ -237,7 +237,7 @@ $app->get( '/datacenter/:id', function( $DataCenterID ) {
 		$response['error'] = true;
 		$response['errorcode'] = 404;
 		$response['message'] = 'The requested resource does not exist.';
-		echoResponse(404, $response);
+		echoResponse(200, $response);
 	} else {
 		$response['error'] = false;
 		$response['errorcode'] = 200;
@@ -303,7 +303,7 @@ $app->get( '/cabinet/:cabinetid', function($cabinetid) {
 		$response['error'] = true;
 		$response['errorcode'] = 404;
 		$response['message'] = 'No cabinet found with CabinetID of '. $cabinetid;
-		echoResponse( 404, $response );
+		echoResponse( 200, $response );
 	} else {
 		$response['error'] = false;
 		$response['errorcode'] = 200;
@@ -429,7 +429,7 @@ $app->get( '/device/:deviceid', function($deviceid) {
 		$response['error']=true;
 		$response['errorcode']=404;
 		$response['message']=__("No device found with DeviceID").$deviceid;
-		echoResponse(404,$response);
+		echoResponse(200,$response);
 	}else{
 		if ( is_array( $dev->CustomValues ) ) {
 			$cattr = new DeviceCustomAttribute();
@@ -522,7 +522,7 @@ $app->get('/deviceport/:deviceid', function($deviceid) use($app) {
 	$dp->DeviceID = $deviceid;
 	$response['deviceport']=$dp->getPorts();
 
-	echoResponse($response['errorcode'],$response);
+	echoResponse(200,$response);
 });
 
 //
@@ -656,7 +656,7 @@ $app->get( '/powerport/:deviceid', function($deviceid) use ($app) {
 		$response['powerport']=$pp->getPorts();
 	}
 
-	echoResponse($response['errorcode'],$response);
+	echoResponse(200,$response);
 });
 
 
@@ -672,7 +672,7 @@ $app->get( '/colorcode', function() {
 	$response['errorcode']=200;
 	$response['colorcode']=ColorCoding::GetCodeList();;
 		
-	echoResponse($response['errorcode'],$response);
+	echoResponse(200,$response);
 });
 
 //
@@ -690,7 +690,7 @@ $app->get( '/colorcode/:colorid', function($colorid) {
 		$response['error']=true;
 		$response['errorcode']=404;
 		$response['message']=__("No color code found with ColorID")." $cc->ColorID";
-		echoResponse(404,$response);
+		echoResponse(200,$response);
 	}else{
 		$response['error']=false;
 		$response['errorcode']=200;
@@ -712,7 +712,7 @@ $app->get( '/colorcode/:colorid/timesused', function($colorid) {
 	$response['errorcode']=200;
 	$response['colorcode']=ColorCoding::TimesUsed($colorid);
 	
-	echoResponse($response['errorcode'],$response);
+	echoResponse(200,$response);
 });
 
 
@@ -728,7 +728,7 @@ $app->get( '/devicetemplate/image', function() {
 	$response['errorcode']=200;
 	$response['image']=DeviceTemplate::getAvailableImages();
 
-	echoResponse($response['errorcode'],$response);
+	echoResponse(200,$response);
 });
 
 /**
@@ -754,7 +754,7 @@ $app->post('/people/:personid', function($personid) use ($app,$person) {
 		$response['error']=true;
 		$response['errorcode']=400;
 		$response['message']=__("Insufficient privilege level");
-		echoResponse($response['errorcode'],$response);
+		echoResponse(200,$response);
 		$app->stop();
 	}
 
@@ -765,7 +765,7 @@ $app->post('/people/:personid', function($personid) use ($app,$person) {
 		$response['error']=true;
 		$response['errorcode']=404;
 		$response['message']=__("User not found in database.");
-		echoResponse($response['errorcode'],$response);
+		echoResponse(200,$response);
 	} else {	
 		// Slim Framework will simply return null for any variables that were not passed, so this is safe to call without blowing up the script
 		foreach($p as $prop){
@@ -777,14 +777,14 @@ $app->post('/people/:personid', function($personid) use ($app,$person) {
 			$response['error']=true;
 			$response['errorcode']=403;
 			$response['message']=__("Unable to update People resource with the given parameters.");
-			echoResponse($response['errorcode'],$response);
+			echoResponse(200,$response);
 		}else{
 			$response['error']=false;
 			$response['errorcode']=200;
 			$response['message']=sprintf(__('People resource for UserID=%1$s updated successfully.'),$p->UserID);
 			$response['people']=$p;
 
-			echoResponse($response['errorcode'],$response);
+			echoResponse(200,$response);
 		}
 	}
 });
@@ -828,7 +828,7 @@ $app->post('/people/:peopleid/transferdevicesto/:newpeopleid', function($peoplei
 		}
 	}
 
-	echoResponse($response['errorcode'],$response);
+	echoResponse(200,$response);
 });
 
 //
@@ -850,7 +850,7 @@ $app->post( '/powerport/:deviceid', function($deviceid) use ($app, $person) {
 	$response['error']=($pp->updatePort())?false:true;
 	$response['errorcode']=200;
 
-	echoResponse($response['errorcode'],$response);
+	echoResponse(200,$response);
 });
 
 //
@@ -871,7 +871,7 @@ $app->post( '/colorcode/:colorid', function($colorid) use ($app, $person) {
 	$response['error']=($cc->UpdateCode())?false:true;
 	$response['errorcode']=200;
 
-	echoResponse($response['errorcode'],$response);
+	echoResponse(200,$response);
 });
 
 //
@@ -887,7 +887,7 @@ $app->post( '/colorcode/:colorid/replacewith/:newcolorid', function($colorid,$ne
 	$response['error']=(ColorCoding::ResetCode($colorid,$newcolorid))?false:true;
 	$response['errorcode']=200;
 
-	echoResponse($response['errorcode'],$response);
+	echoResponse(200,$response);
 });
 
 //
@@ -925,7 +925,7 @@ $app->post( '/device/:deviceid', function($deviceid) use ($app) {
 		}
 	}
 
-	echoResponse($response['errorcode'],$response);
+	echoResponse(200,$response);
 });
 /**
   *
@@ -950,7 +950,7 @@ $app->put('/people/:userid', function($userid) use ($app,$person) {
 		$response['error'] = true;
 		$response['errorcode'] = 400;
 		$response['message'] = "Insufficient privilege level";
-		echoResponse(400, $response);
+		echoResponse(200, $response);
 		$app->stop();
 	}
 	
@@ -964,7 +964,7 @@ $app->put('/people/:userid', function($userid) use ($app,$person) {
 		$response['error']=true;
 		$response['errorcode']=403;
 		$response['message']=__("UserID already in database.  Use the update API to modify record.");
-		echoResponse(403, $response );
+		echoResponse(200, $response );
 	} else {	
 		// Slim Framework will simply return null for any variables that were not passed, so this is safe to call without blowing up the script
 		foreach($p as $prop){
@@ -978,7 +978,7 @@ $app->put('/people/:userid', function($userid) use ($app,$person) {
 			$response['error']=true;
 			$response['errorcode']=403;
 			$response['message']=__("Unable to create People resource with the given parameters.");
-			echoResponse(403,$response);
+			echoResponse(200,$response);
 		}else{
 			$response['error']=false;
 			$responde['errorcode']=200;
@@ -1061,7 +1061,7 @@ $app->put( '/device/:devicelabel', function($devicelabel) use ($app) {
 		}
 	}
 
-	echoResponse($response['errorcode'],$response);
+	echoResponse(200,$response);
 });
 
 /**
@@ -1125,7 +1125,7 @@ $app->delete( '/powerport/:deviceid', function($deviceid) use ($app, $person) {
 
 	$response['errorcode']=200;
 
-	echoResponse($response['errorcode'],$response);
+	echoResponse(200,$response);
 });
 
 //
