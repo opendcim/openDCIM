@@ -70,6 +70,7 @@
 		$cab->InstallationDate=$_POST['installationdate'];
 		$cab->Notes=trim($_POST['notes']);
 		$cab->Notes=($cab->Notes=="<br>")?"":$cab->Notes;
+		$cab->U1Position=$_POST['u1position'];
 
 		if($cab->Location!=""){
 			if(($cab->CabinetID >0)&&($_POST['action']=='Update')){
@@ -248,6 +249,18 @@ echo '  </select>
 <div>
    <div>',__("Cabinet Height"),' (U)</div>
    <div><input type="text" class="validate[optional,custom[onlyNumberSp]]" name="cabinetheight" size=4 maxlength=4 value="',$cab->CabinetHeight,'"></div>
+</div>
+<div>
+   <div>',__("U1 Position"),'</div>
+   <div><select name="u1position">';
+
+$posarray=array('Bottom' => __("Bottom"),'Top' => __("Top"),'Default' => __("Default"));
+foreach($posarray as $pos => $translation){
+	$selected=($cab->U1Position==$pos)?' selected':'';
+	print "      <option value=\"$pos\"$selected>$translation</option>\n";
+}
+   
+echo '</select></div>
 </div>
 <div>
    <div>',__("Model"),'</div>

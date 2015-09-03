@@ -1445,10 +1445,25 @@ print "		var dialog=$('<div>').prop('title',\"".__("Verify Delete Device")."\").
 				var ucount=Object.keys(data).length;
 				var rackhtmlleft='';
 				var rackhtmlright='';
-				for(ucount=ucount; ucount>0; ucount--){
-					if(data[ucount]){var cssclass='notavail'}else{var cssclass=''};
-					rackhtmlleft+='<div>'+ucount+'</div>';
-					rackhtmlright+='<div val='+ucount+' class="'+cssclass+'"></div>';
+
+				// This code was gonna be repeated so I just made it a function
+				function parseusage(u){
+					if(data[u]){var cssclass='notavail'}else{var cssclass=''};
+					rackhtmlleft+='<div>'+u+'</div>';
+					rackhtmlright+='<div val='+u+' class="'+cssclass+'"></div>';
+				}
+
+				// If slot 0 is set to top then it will reverse order otherwise high to low
+				if(data["0"]=="Top"){
+					// low to high
+					for(var ucount=1; ucount<=Object.keys(data).length-1; ucount++) {
+						parseusage(ucount);
+					}
+				}else{
+					// high to low
+					for(var ucount=Object.keys(data).length-1; ucount>=1; ucount--) {
+						parseusage(ucount);
+					}
 				}
 				var rackhtml='<div class="table border positionselector"><div><div>'+rackhtmlleft+'</div><div>'+rackhtmlright+'</div></div></div>';
 				$('#Positionselector').html(rackhtml);
