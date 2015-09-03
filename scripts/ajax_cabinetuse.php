@@ -35,8 +35,8 @@
 		$i--;
 	}
 
-	$dev->BackSide=(isset($_GET['backside']) && $_GET['backside']=='true')?true:false;
-	$dev->HalfDepth=(isset($_GET['halfdepth']) && $_GET['halfdepth']=='true')?true:false;
+	$dev->BackSide=(isset($_GET['BackSide']) && $_GET['BackSide']=='true')?true:false;
+	$dev->HalfDepth=(isset($_GET['HalfDepth']) && $_GET['HalfDepth']=='true')?true:false;
 	
 	// Build array of each position used
 	foreach($devList as $key => $device) {
