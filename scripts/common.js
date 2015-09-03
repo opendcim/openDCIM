@@ -1979,10 +1979,11 @@ function LameLogDisplay(){
 				if(!data.error){
 					for(var i in data.device){
 						var device=data.device[i];
-						if((!cdulimit && (device.DeviceType=='CDU' || device.PowerSupplyCount==0)) || (cdulimit && device.PowerSupplyCount==0)){
+						if((!cdulimit && (device.PowerSupplyCount==0)) || (cdulimit && device.PowerSupplyCount==0)){
 							// on cdu devices we don't want to display other CDU devices
 							continue;
 						}
+						device.Label=(device.Label=='')?'&lt;no label - '+device.DeviceID+'&gt;':device.Label;
 						if($(document).data('showdc')==true || $(document).data('showdc')=='enabled'){
 							var rack=$('#datacenters a[href$="cabinetid='+device.CabinetID+'"]');
 							var dc=rack.parentsUntil('li[id^=dc]').last().prev('a').text();
