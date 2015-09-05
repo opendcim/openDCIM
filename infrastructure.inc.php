@@ -978,7 +978,8 @@ class DeviceTemplate {
 			}
 		}
 
-		$sql="SELECT * FROM fac_DeviceTemplate a, fac_Manufacturer b WHERE
+		// The join is purely to sort the templates by the manufacturer's name
+		$sql="SELECT a.* FROM fac_DeviceTemplate a, fac_Manufacturer b WHERE
 			a.ManufacturerID=b.ManufacturerID$sqlextend ORDER BY Name ASC, Model ASC;";
 
 		$templateList=array();

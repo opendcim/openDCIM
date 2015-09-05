@@ -690,14 +690,13 @@ $app->get( '/colorcode/:colorid', function($colorid) {
 		$response['error']=true;
 		$response['errorcode']=404;
 		$response['message']=__("No color code found with ColorID")." $cc->ColorID";
-		echoResponse(200,$response);
 	}else{
 		$response['error']=false;
 		$response['errorcode']=200;
 		$response['colorcode'][$cc->ColorID]=$cc;
-		
-		echoResponse(200,$response);
 	}
+
+	echoResponse(200,$response);
 });
 
 //
@@ -717,6 +716,72 @@ $app->get( '/colorcode/:colorid/timesused', function($colorid) {
 
 
 //
+//	URL:	/api/v1/devicetemplate
+//	Method:	GET
+//	Params: none	
+//	Returns: All available device templates
+//
+
+$app->get( '/devicetemplate', function() use ($app) {
+	$dt=new DeviceTemplate();
+	foreach($app->request->get() as $prop => $val){
+		$dt->$prop=$val;
+	}
+
+	$response['error']=false;
+	$response['errorcode']=200;
+	$response['devicetemplate']=$dt->Search();
+
+	echoResponse(200,$response);
+});
+
+//
+//	URL:	/api/v1/devicetemplate/:templateid
+//	Method:	GET
+//	Params: templateid
+//	Returns: Device template for templateid
+//
+
+$app->get( '/devicetemplate/:templateid', function($templateid) use ($app) {
+	$dt=new DeviceTemplate();
+	$dt->TemplateID=$templateid;
+	if(!$dt->GetTemplateByID()){
+		$response['error']=true;
+		$response['errorcode']=404;
+		$response['message']=__("No template found with TemplateID: ")." $templateid";
+	}else{
+		$response['error']=false;
+		$response['errorcode']=200;
+		$response['template']=$dt;
+	}
+
+	echoResponse(200,$response);
+});
+
+//
+//	URL:	/api/v1/devicetemplate/:templateid/dataports
+//	Method:	GET
+//	Params: templateid
+//	Returns: Data ports defined for device template with templateid
+//
+
+$app->get( '/devicetemplate/:templateid/dataports', function($templateid) use ($app) {
+	$tp=new TemplatePorts();
+	$tp->TemplateID=$templateid;
+	if(!$ports=$tp->getPorts()){
+		$response['error']=true;
+		$response['errorcode']=404;
+		$response['message']=__("No ports found for TemplateID: ")." $templateid";
+	}else{
+		$response['error']=false;
+		$response['errorcode']=200;
+		$response['dataports']=$ports;
+	}
+
+	echoResponse(200,$response);
+});
+
+//
 //	URL:	/api/v1/devicetemplate/image
 //	Method:	GET
 //	Params: none	
@@ -730,6 +795,29 @@ $app->get( '/devicetemplate/image', function() {
 
 	echoResponse(200,$response);
 });
+
+//
+//	URL:	/api/v1/manufacturer
+//	Method:	GET
+//	Params:	none
+//	Returns:  All defined manufacturers 
+//
+
+$app->get( '/manufacturer', function() use ($app) {
+	$man=new Manufacturer();
+	
+	$response['error']=false;
+	$response['errorcode']=200;
+	foreach($app->request->get() as $prop => $val){
+		$man->$prop=$val;
+	}
+	$response['manufacturer']=$man->GetManufacturerList();
+
+	echoResponse(200,$response);
+});
+
+
+
 
 /**
   *
