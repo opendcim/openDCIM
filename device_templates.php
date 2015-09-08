@@ -382,8 +382,7 @@
 			$('#Model').trigger('change');
 
 			// Flag all ports and slots as changed so they will retain their data
-			$('#regulartemplateattributes [id^="hidden"] .table > div ~ div').data('change',true);
-
+			$('#deviceform [id^="hidden"] .table > div ~ div').data('change',true);
 		});
 
 		$('#FrontPictureFile,#RearPictureFile').click(function(){
