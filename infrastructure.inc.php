@@ -801,7 +801,7 @@ class DeviceTemplate {
 	    $this->RearPictureFile=stripslashes($this->RearPictureFile);
 	}
 
-	static function RowToObject($row){
+	static function RowToObject($row,$extendmodel=true){
 		$Template=new DeviceTemplate();
 		$Template->TemplateID=$row["TemplateID"];
 		$Template->ManufacturerID=$row["ManufacturerID"];
@@ -824,6 +824,25 @@ class DeviceTemplate {
         $Template->MakeDisplay();
 		$Template->GetCustomValues();
 
+		if($extendmodel){
+			// Extend our device model
+			if($Template->DeviceType=="CDU"){
+				$cdut=new CDUTemplate();
+				$cdut->TemplateID=$Template->TemplateID;
+				$cdut->GetTemplate();
+				foreach($cdut as $prop => $val){
+					$Template->$prop=$val;
+				}
+			}
+			if($Template->DeviceType=="Sensor"){
+				$st=new SensorTemplate();
+				$st->TemplateID=$Template->TemplateID;
+				$st->GetTemplate();
+				foreach($st as $prop => $val){
+					$Template->$prop=$val;
+				}
+			}
+		}
 		return $Template;
 	}
   
@@ -869,16 +888,22 @@ class DeviceTemplate {
 			if($this->DeviceType=="CDU"){
 				// If this is a cdu make the corresponding other hidden template
 				$cdut=new CDUTemplate();
-				$cdut->Model=$this->Model;
-				$cdut->ManufacturerID=$this->ManufacturerID;
+				foreach($cdut as $prop => $val){
+					if(isset($this->$prop)){
+						$cdut->$prop=$val;
+					}
+				}
 				$cdut->CreateTemplate($this->TemplateID);
 			}
 
 			if($this->DeviceType=="Sensor"){
 				// If this is a sensor make the corresponding other hidden template
 				$st=new SensorTemplate();
-				$st->Model=$this->Model;
-				$st->ManufacturerID=$this->ManufacturerID;
+				foreach($st as $prop => $val){
+					if(isset($this->$prop)){
+						$st->$prop=$val;
+					}
+				}
 				$st->CreateTemplate($this->TemplateID);
 			}
 

@@ -782,6 +782,53 @@ $app->get( '/devicetemplate/:templateid/dataports', function($templateid) use ($
 });
 
 //
+//	URL:	/api/v1/devicetemplate/:templateid/dataports/:portnumber
+//	Method:	GET
+//	Params: templateid. portnumber
+//	Returns: Single data port defined for device template with templateid and portnum
+//
+
+$app->get( '/devicetemplate/:templateid/dataports/:portnumber', function($templateid,$portnumber) use ($app) {
+	$tp=new TemplatePorts();
+	$tp->TemplateID=$templateid;
+	$tp->PortNumber=$portnumber;
+	if(!$tp->getPort()){
+		$response['error']=true;
+		$response['errorcode']=404;
+		$response['message']=__("Port not found for TemplateID: ")." $templateid:$portnumber";
+	}else{
+		$response['error']=false;
+		$response['errorcode']=200;
+		$response['dataports']=$tp;
+	}
+
+	echoResponse(200,$response);
+});
+
+//
+//	URL:	/api/v1/devicetemplate/:templateid/powerports
+//	Method:	GET
+//	Params: templateid
+//	Returns: Power ports defined for device template with templateid
+//
+
+$app->get( '/devicetemplate/:templateid/powerports', function($templateid) use ($app) {
+	$tp=new TemplatePowerPorts();
+	$tp->TemplateID=$templateid;
+	if(!$ports=$tp->getPorts()){
+		$response['error']=true;
+		$response['errorcode']=404;
+		$response['message']=__("No ports found for TemplateID: ")." $templateid";
+	}else{
+		$response['error']=false;
+		$response['errorcode']=200;
+		$response['powerports']=$ports;
+	}
+
+	echoResponse(200,$response);
+});
+
+//
 //	URL:	/api/v1/devicetemplate/image
 //	Method:	GET
 //	Params: none	
@@ -1015,6 +1062,90 @@ $app->post( '/device/:deviceid', function($deviceid) use ($app) {
 
 	echoResponse(200,$response);
 });
+
+//
+//	URL:	/api/v1/devicetemplate/:templateid
+//	Method:	POST
+//	Params:	
+//		Required: templateid
+//		Optional: everything else
+//	Returns: true/false on update operation 
+//
+
+$app->put( '/devicetemplate/:templateid', function($templateid) use ($app) {
+	$dt=new DeviceTemplate();
+	// This should be in the commit data but if we get a smartass saying it's in the URL
+	$dt->templateid=$templateid;
+
+	if(!$person->WriteAccess){
+		$response['error']=true;
+		$response['errorcode']=403;
+		$response['message']=__("Unauthorized");
+	}else{
+		if(!$dt->GetTemplateByID()){
+			$response['error']=true;
+			$response['errorcode']=404;
+			$response['message']=__("No device template found with TemplateID: ").$templateid;
+		}else{
+			foreach($app->request->post() as $prop => $val){
+				$dt->$prop=$val;
+			}
+			if(!$dt->UpdateTemplate()){
+				$response['error']=true;
+				$response['errorcode']=404;
+				$response['message']=__("Device template update failed");
+			}else{
+				$response['error']=false;
+				$response['errorcode']=200;
+			}
+		}
+	}
+	echoResponse(200,$response);
+});
+
+//
+//	URL:	/api/v1/devicetemplate/:templateid/dataport/:portnumber
+//	Method:	POST
+//	Params:	
+//		Required: templateid, portnumber, portlabel
+//		Optional: everything else
+//	Returns: true/false on update operation
+//
+
+$app->put( '/devicetemplate/:templateid/dataports/:portnumber', function($templateid,$portnumber) use ($app) {
+	$tp=new TemplatePorts();
+	$tp->TemplateID=$templateid;
+	$tp->PortNumber=$portnumber;
+
+	if(!$person->WriteAccess){
+		$response['error']=true;
+		$response['errorcode']=403;
+		$response['message']=__("Unauthorized");
+	}else{
+		if(!$tp->getPort()){
+			$response['error']=true;
+			$response['errorcode']=404;
+			$response['message']=__("Template port not found with id: ")." $templateid:$portnum";
+		}else{
+			foreach($app->request->post() as $prop => $val){
+				$tp->$prop=$val;
+			}
+			if(!$tp->updatePort()){
+				$response['error']=true;
+				$response['errorcode']=404;
+				$response['message']=__("Template port update failed");
+			}else{
+				$response['error']=false;
+				$response['errorcode']=200;
+				$response['dataports']=$tp;
+			}
+		}
+	}
+
+	echoResponse(200,$response);
+});
+
+
 /**
   *
   *		API PUT Methods go here
@@ -1149,6 +1280,84 @@ $app->put( '/device/:devicelabel', function($devicelabel) use ($app) {
 				$response['errorcode']=200;
 				$response['device']=$dev;
 			}
+		}
+	}
+
+	echoResponse(200,$response);
+});
+
+//
+//	URL:	/api/v1/devicetemplate/:model
+//	Method:	PUT
+//	Params:	
+//		Required: Label
+//		Optional: everything else
+//	Returns: record as created 
+//
+
+$app->put( '/devicetemplate/:model', function($model) use ($app) {
+	$dt=new DeviceTemplate();
+	// This isn't super great and could lead to some weirdness in the logging but 
+	// we'll make it more specific later if it becomes and issue.
+	foreach($app->request->put() as $prop => $val){
+		$dt->$prop=$val;
+	}
+	// This should be in the commit data but if we get a smartass saying it's in the URL
+	$dt->Model=$model;
+
+	if(!$person->WriteAccess){
+		$response['error']=true;
+		$response['errorcode']=403;
+		$response['message']=__("Unauthorized");
+	}else{
+		if(!$dt->CreateTemplate()){
+			$response['error']=true;
+			$response['errorcode']=404;
+			$response['message']=__("Device template creation failed");
+		}else{
+			// refresh the model in case we extended it elsewhere
+			$d=new DeviceTemplate($dt->TemplateID);
+			$d->GetTemplateByID();
+			$response['error']=false;
+			$response['errorcode']=200;
+			$response['devicetemplate']=$d;
+		}
+	}
+
+	echoResponse(200,$response);
+});
+
+//
+//	URL:	/api/v1/devicetemplate/:templateid/dataport/:portnum
+//	Method:	PUT
+//	Params:	
+//		Required: templateid, portnum, portlabel
+//		Optional: everything else
+//	Returns: record as created 
+//
+
+$app->put( '/devicetemplate/:templateid/dataports/:portnum', function($templateid,$portnum) use ($app) {
+	$tp=new TemplatePorts();
+	foreach($app->request->put() as $prop => $val){
+		$tp->$prop=$val;
+	}
+	// This should be in the commit data but if we get a smartass saying it's in the URL
+	$tp->TemplateID=$templateid;
+	$tp->PortNumber=$portnum;
+
+	if(!$person->WriteAccess){
+		$response['error']=true;
+		$response['errorcode']=403;
+		$response['message']=__("Unauthorized");
+	}else{
+		if(!$tp->CreatePort()){
+			$response['error']=true;
+			$response['errorcode']=404;
+			$response['message']=__("Device template port creation failed");
+		}else{
+			$response['error']=false;
+			$response['errorcode']=200;
+			$response['dataports']=$tp;
 		}
 	}
 
