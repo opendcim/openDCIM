@@ -1135,176 +1135,6 @@ if(isset($results)){
 		return $imageselect;
 	}
 
-// AJAX Requests
-	if(isset($_GET['fl'])){
-		echo BuildFileList();
-		exit;
-	}
-	if(isset($_POST['fe'])){
-		echo(is_file($_POST['fe']))?1:0;
-		exit;
-	}
-	if(isset($_POST['cc'])){  // Cable color codes
-		$col=new ColorCoding();
-		$col->Name=trim($_POST['cc']);
-		$col->DefaultNote=trim($_POST['ccdn']);
-		if(isset($_POST['cid'])){ // If set we're updating an existing entry
-			$col->ColorID=$_POST['cid'];
-			if(isset($_POST['original'])){
-				$col->GetCode();
-			    header('Content-Type: application/json');
-				echo json_encode($col);
-				exit;
-			}
-			if(isset($_POST['clear']) || isset($_POST['change'])){
-				$newcolorid=0;
-				if(isset($_POST['clear'])){
-					ColorCoding::ResetCode($col->ColorID);
-				}else{
-					$newcolorid=$_POST['change'];
-					ColorCoding::ResetCode($col->ColorID,$newcolorid);
-				}
-				$mediatypes=MediaTypes::GetMediaTypeList();
-				foreach($mediatypes as $mt){
-					if($mt->ColorID==$col->ColorID){
-						$mt->ColorID=$newcolorid;
-						$mt->UpdateType();
-					}
-				}
-				if($col->DeleteCode()){
-					echo 'u';
-				}else{
-					echo 'f';
-				}
-				exit;
-			}
-			if($col->UpdateCode()){
-				echo 'u';
-			}else{
-				echo 'f';
-			}
-		}else{
-			if($col->CreateCode()){
-				echo $col->ColorID;
-			}else{
-				echo 'f';
-			}
-		}
-		exit;
-	}
-	if(isset($_POST['ccused'])){
-		$count=ColorCoding::TimesUsed($_POST['ccused']);
-		if($count==0){
-			$col=new ColorCoding();
-			$col->ColorID=$_POST['ccused'];
-			$col->DeleteCode();
-		}
-		echo $count;
-		exit;
-	}
-	if(isset($_POST['mt'])){ // Media Types
-		$mt=new MediaTypes();
-		$mt->MediaType=trim($_POST['mt']);
-		$mt->ColorID=$_POST['mtcc'];
-		if(isset($_POST['mtid'])){ // If set we're updating an existing entry
-			$mt->MediaID=$_POST['mtid'];
-			if(isset($_POST['original'])){
-				$mt->GetType();
-			    header('Content-Type: application/json');
-				echo json_encode($mt);
-				exit;
-			}
-			if(isset($_POST['clear']) || isset($_POST['change'])){
-				if(isset($_POST['clear'])){
-					MediaTypes::ResetType($mt->MediaID);
-				}else{
-					$newmediaid=$_POST['change'];
-					MediaTypes::ResetType($mt->MediaID,$newmediaid);
-				}
-				if($mt->DeleteType()){
-					echo 'u';
-				}else{
-					echo 'f';
-				}
-				exit;
-			}
-			if($mt->UpdateType()){
-				echo 'u';
-			}else{
-				echo 'f';
-			}
-		}else{
-			if($mt->CreateType()){
-				echo $mt->MediaID;
-			}else{
-				echo 'f';
-			}
-			
-		}
-		exit;
-	}
-	if(isset($_POST['mtused'])){
-		$count=MediaTypes::TimesUsed($_POST['mtused']);
-		if($count==0){
-			$mt=new MediaTypes();
-			$mt->MediaID=$_POST['mtused'];
-			$mt->DeleteType();
-		}
-		echo $count;
-		exit;
-	}
-	if(isset($_POST['mtlist'])){
-		$codeList=MediaTypes::GetMediaTypeList();
-		$output='<option value=""></option>';
-		foreach($codeList as $mt){
-			$output.="<option value=\"$mt->MediaID\">$mt->MediaType</option>";
-		}
-		echo $output;
-		exit;		
-	}
-	if(isset($_POST['cclist'])){
-		$codeList=ColorCoding::GetCodeList();
-		$output='<option value=""></option>';
-		foreach($codeList as $cc){
-			$output.="<option value=\"$cc->ColorID\">$cc->Name</option>";
-		}
-		echo $output;
-		exit;		
-	}
-// END AJAX Requests
-
-// Configuration Form Submission
-	if(isset($_REQUEST["confaction"]) && $_REQUEST["confaction"]=="Update"){
-		foreach($config->ParameterArray as $key=>$value){
-			if($key=="ClassList"){
-				$List=explode(", ",$_REQUEST[$key]);
-				$config->ParameterArray[$key]=$List;
-			}else{
-				$config->ParameterArray[$key]=$_REQUEST[$key];
-			}
-		}
-		$config->UpdateConfig();
-
-		//Disable all tooltip items and clear the SortOrder
-		$dbh->query("UPDATE fac_CabinetToolTip SET SortOrder = NULL, Enabled=0;");
-		if(isset($_POST["tooltip"]) && !empty($_POST["tooltip"])){
-			foreach($_POST["tooltip"] as $order => $field){
-				$dbh->query("UPDATE fac_CabinetToolTip SET SortOrder=".intval($order).", Enabled=1 WHERE Field='".addslashes($field)."' LIMIT 1;");
-			}
-		}
-
-		//Disable all cdu tooltip items and clear the SortOrder
-		$dbh->exec("UPDATE fac_CDUToolTip SET SortOrder = NULL, Enabled=0;");
-		if(isset($_POST["cdutooltip"]) && !empty($_POST["cdutooltip"])){
-			$p=$dbh->prepare("UPDATE fac_CDUToolTip SET SortOrder=:sortorder, Enabled=1 WHERE Field=:field LIMIT 1;");
-			foreach($_POST["cdutooltip"] as $order => $field){
-				$p->bindParam(":sortorder",$order);
-				$p->bindParam(":field",$field);
-				$p->execute();
-			}
-		}
-	}
-
 // Departments Form Submission
 	if(isset($_REQUEST['deptid'])&&($_REQUEST['deptid']>0)){
 		$dept->DeptID = $_REQUEST['deptid'];
@@ -1474,481 +1304,9 @@ if(isset($results)){
   <script type="text/javascript" src="scripts/jquery.ui.multiselect.js"></script>
   <script type="text/javascript">
 	$(document).ready( function() {
-		$('#tooltip, #cdutooltip').multiselect();
 		$("select:not('#tooltip, #cdutooltip')").each(function(){
 			$(this).val($(this).attr('data'));
 		});
-        function colorchange(hex,id){
-			if(id==='HeaderColor'){
-				$('#header').css('background-color',hex);
-			}else if(id==='BodyColor'){
-				$('.main').css('background-color',hex);
-			}
-		}
-		$(".color-picker").minicolors({
-			letterCase: 'uppercase',
-			change: function(hex, rgb){
-				colorchange($(this).val(),$(this).attr('id'));
-			}
-		}).change(function(){colorchange($(this).val(),$(this).attr('id'));});
-		$("#configtabs").tabs();
-		$('#configtabs input[defaultvalue],#configtabs select[defaultvalue]').each(function(){
-			$(this).parent().after('<div><button type="button">&lt;--</button></div><div><span>'+$(this).attr('defaultvalue')+'</span></div>');
-		});
-		$("#configtabs input").each(function(){
-			$(this).attr('id', $(this).attr('name'));
-			$(this).removeAttr('defaultvalue');
-		});
-		$("#configtabs button").each(function(){
-			var a = $(this).parent().prev().find('input,select');
-			$(this).click(function(){
-				a.val($(this).parent().next().children('span').text());
-				if(a.hasClass('color-picker')){
-					a.minicolors('value', $(this).parent().next().children('span').text()).trigger('change');
-				}
-				a.triggerHandler("paste");
-				a.focus();
-				$('input[name="OrgName"]').focus();
-			});
-		});
-		$('input[name="LinkColor"]').blur(function(){
-			$("head").append("<style type=\"text/css\">a:link, a:hover, a:visited:hover {color: "+$(this).val()+";}</style>");
-		});
-		$('input[name="VisitedLinkColor"]').blur(function(){
-			$("head").append("<style type=\"text/css\">a:visited {color: "+$(this).val()+";}</style>");
-		});
-		$('#PDFLogoFile').click(function(){
-			$.get('',{fl: '1'}).done(function(data){
-				$("#imageselection").html(data);
-				$("#imageselection").dialog({
-					resizable: false,
-					height:300,
-					width: 400,
-					modal: true,
-					buttons: {
-	<?php echo '					',__("Select"),': function() {'; ?>
-							if($('#imageselection #preview').attr('image')!=""){
-								$('#PDFLogoFile').val($('#imageselection #preview').attr('image'));
-							}
-							$(this).dialog("close");
-						}
-					}
-				});
-				$("#imageselection span").each(function(){
-					var preview=$('#imageselection #preview');
-					$(this).click(function(){
-						preview.html('<img src="images/'+$(this).text()+'" alt="preview">').attr('image',$(this).text()).css('border-width', '5px');
-						preview.children('img').load(function(){
-							var topmargin=0;
-							var leftmargin=0;
-							if($(this).height()<$(this).width()){
-								$(this).width(preview.innerHeight());
-								$(this).css({'max-width': preview.innerWidth()+'px'});
-								topmargin=Math.floor((preview.innerHeight()-$(this).height())/2);
-							}else{
-								$(this).height(preview.innerHeight());
-								$(this).css({'max-height': preview.innerWidth()+'px'});
-								leftmargin=Math.floor((preview.innerWidth()-$(this).width())/2);
-							}
-							$(this).css({'margin-top': topmargin+'px', 'margin-left': leftmargin+'px'});
-						});
-						$("#imageselection span").each(function(){
-							$(this).removeAttr('style');
-						});
-						$(this).css('border','1px dotted black')
-						$('#header').css('background-image', 'url("images/'+$(this).text()+'")');
-					});
-					if($('#PDFLogoFile').val()==$(this).text()){
-						$(this).click();
-					}
-				});
-			});
-		});
-		$("#tzmenu").menu();
-		$("#tzmenu ul > li").click(function(e){
-			e.preventDefault();
-			$("#timezone").val($(this).children('a').attr('data'));
-			$("#tzmenu").toggle();
-		});
-		$("#tzmenu").focusout(function(){
-			$("#tzmenu").toggle();
-		});
-		$('<button type="button">').attr({
-				id: 'btn_tzmenu'
-		}).appendTo("#general");
-		$('#btn_tzmenu').each(function(){
-			var input=$("#timezone");
-			var offset=input.position();
-			var height=input.outerHeight();
-			$(this).css({
-				'height': height+'px',
-				'width': height+'px',
-				'position': 'absolute',
-				'left': offset.left+input.width()-height-((input.outerHeight()-input.height())/2)+'px',
-				'top': offset.top+'px'
-			}).click(function(){
-				$("#tzmenu").toggle();
-				$("#tzmenu").focus().click();
-			});
-			offset=$(this).position();
-			$("#tzmenu").css({
-				'position': 'absolute',
-				'left': offset.left+(($(this).outerWidth()-$(this).width())/2)+'px',
-				'top': offset.top+height+'px'
-			});
-			$(this).addClass('text-arrow');
-		});
-		$('input[id^="snmp"],input[id="cut"]').each(function(){
-			var a=$(this);
-			var icon=$('<span>',{style: 'float:right;margin-top:5px;'}).addClass('ui-icon').addClass('ui-icon-info');
-			a.parent('div').append(icon);
-			$(this).keyup(function(){
-				var b=a.next('span');
-				$.post('',{fe: $(this).val()}).done(function(data){
-					if(data==1){
-						a.effect('highlight', {color: 'lightgreen'}, 1500);
-						b.addClass('ui-icon-circle-check').removeClass('ui-icon-info').removeClass('ui-icon-circle-close');
-					}else{
-						a.effect('highlight', {color: 'salmon'}, 1500);
-						b.addClass('ui-icon-circle-close').removeClass('ui-icon-info').removeClass('ui-icon-circle-check');
-					}
-				});
-			});
-			$(this).trigger('keyup');
-		});
-
-
-		// Cabling - Media Types
-		function removemedia(row){
-			$.post('',{mtused: row.find('div:nth-child(2) input').attr('data')}).done(function(data){
-				if(data.trim()==0){
-					row.effect('explode', {}, 500, function(){
-						$(this).remove();
-					});
-				}else{
-					var defaultbutton={
-						"<?php echo __("Clear all"); ?>": function(){
-							$.post('',{mtid: row.find('div:nth-child(2) input').attr('data'),mt: '', mtcc: '', clear: ''}).done(function(data){
-								if(data.trim()=='u'){ // success
-									$('#modal').dialog("destroy");
-									row.effect('explode', {}, 500, function(){
-										$(this).remove();
-									});
-								}else{ // failed to delete
-									$('#modaltext').html('AAAAAAAAAAHHHHHHHHHH!!!  *crash* *fire* *chaos*<br><br><?php echo __("Something just went horribly wrong."); ?>');
-									$('#modal').dialog('option','buttons',cancelbutton);
-								}
-							});
-						}
-					}
-					var replacebutton={
-						"<?php echo __("Replace"); ?>": function(){
-							// send command to replace all connections with x
-							$.post('',{mtid: row.find('div:nth-child(2) input').attr('data'),mt: '', mtcc: '', change: $('#modal select').val()}).done(function(data){
-								if(data.trim()=='u'){ // success
-									$('#modal').dialog("destroy");
-									row.effect('explode', {}, 500, function(){
-										$(this).remove();
-									});
-								}else{ // failed to delete
-									$('#modaltext').html('AAAAAAAAAAHHHHHHHHHH!!!  *crash* *fire* *chaos*<br><br><?php echo __("Something just went horribly wrong."); ?>');
-									$('#modal').dialog('option','buttons',cancelbutton);
-								}
-							});
-						}
-					}
-					var cancelbutton={
-						"<?php echo __("Cancel"); ?>": function(){
-							$(this).dialog("destroy");
-						}
-					}
-<?php echo "					var modal=$('<div />', {id: 'modal', title: '".__("Media Type Delete Override")."'}).html('<div id=\"modaltext\">".__("This media type is in use somewhere. Select an alternate type to assign to all the records to or choose clear all.")."<select id=\"replaceme\"></select></div>').dialog({"; ?>
-						dialogClass: 'no-close',
-						appendTo: 'body',
-						modal: true,
-						buttons: $.extend({}, defaultbutton, cancelbutton)
-					});
-					$.post('',{mtlist: ''}).done(function(data){
-						var choices=$('<select />');
-						choices.html(data);
-						choices.find('option').each(function(){
-							if($(this).val()==row.find('div:nth-child(2) input').attr('data')){$(this).remove();}
-						});
-						choices.change(function(){
-							if($(this).val()==''){ // clear all
-								modal.dialog('option','buttons',$.extend({}, defaultbutton, cancelbutton));
-							}else{ // replace
-								modal.dialog('option','buttons',$.extend({}, replacebutton, cancelbutton));
-							}
-						});
-						modal.find($('#replaceme')).replaceWith(choices);
-						
-					});
-				}
-			});
-
-		}
-
-		var blankmediarow=$('<div />').html('<div><img src="images/del.gif"></div><div><input id="mediatype[]" name="mediatype[]" type="text"></div><div><select name="mediacolorcode[]"></select></div>');
-		function bindmediarow(row){
-			var addrem=row.find('div:first-child');
-			var mt=row.find('div:nth-child(2) input');
-			var mtcc=row.find('div:nth-child(3) select');
-			if(mt.val().trim()!='' && addrem.attr('id')!='newline'){
-				addrem.click(function(){
-					removemedia(row);
-				});
-			}
-			mt.keypress(function(event){
-				if(event.keyCode==10 || event.keyCode==13){
-					event.preventDefault();
-					mt.change();
-				}
-			});
-			function update(inputobj){
-				if(mt.val().trim()==''){
-					// reset value to previous
-					$.post('',{mt: mt.val(), mtid: mt.attr('data'), mtcc: mtcc.val(),original:''}).done(function(jsondata){
-						mt.val(jsondata.MediaType);
-						mtcc.val(jsondata.ColorID);
-					});
-					mt.effect('highlight', {color: 'salmon'}, 1500);
-					mtcc.effect('highlight', {color: 'salmon'}, 1500);
-				}else{
-					// attempt to update
-					$.post('',{mt: mt.val(), mtid: mt.attr('data'), mtcc: mtcc.val()}).done(function(data){
-						if(data.trim()=='f'){ // fail
-							$.post('',{mt: mt.val(), mtid: mt.attr('data'), mtcc: mtcc.val(),original:''}).done(function(jsondata){
-								mt.val(jsondata.MediaType);
-								mtcc.val(jsondata.ColorID);
-							});
-							mt.effect('highlight', {color: 'salmon'}, 1500);
-							mtcc.effect('highlight', {color: 'salmon'}, 1500);
-						}else if(data.trim()=='u'){ // updated
-							mt.effect('highlight', {color: 'lightgreen'}, 2500);
-							mtcc.effect('highlight', {color: 'lightgreen'}, 2500);
-						}else{ // created
-							var newitem=blankmediarow.clone();
-							newitem.find('div:nth-child(2) input').val(mt.val()).attr('data',data.trim());
-							newitem.find('div:nth-child(3) select').replaceWith(mtcc.clone());
-							bindmediarow(newitem);
-							row.before(newitem);
-							newitem.find('div:nth-child(3) select').val(mtcc.val()).focus();
-							if(addrem.attr('id')=='newline'){
-								mt.val('');
-								mtcc.val('');
-							}else{
-								row.remove();
-							}
-						}
-					});
-				}
-			}
-			mt.change(function(){
-				update($(this));
-			});
-			mtcc.change(function(){
-				var row=$(this).parent('div').parent('div');
-				if(row.find('div:first-child').attr('id')!='newline'){
-					update($(this));
-				}else if(row.find('div:nth-child(2) input').val().trim()!=''){
-					update($(this));
-				}
-			});
-		}
-
-		// Add a new blank row
-		$('#mediatypes > div ~ div > div:first-child').each(function(){
-			if($(this).attr('id')=='newline'){
-				var row=$(this).parent('div');
-				$(this).click(function(){
-					var newitem=blankmediarow.clone();
-					// Clone the current dropdown list
-					newitem.find('select[name="mediacolorcode[]"]').replaceWith((row.find('select[name="mediacolorcode[]"]').clone()));
-					newitem.find('div:first-child').click(function(){
-						removecolor($(this).parent('div'),false);
-					});
-					bindmediarow(newitem);
-					row.before(newitem);
-				});
-			}
-			bindmediarow($(this).parent('div'));
-		});
-
-		// Update color drop lists
-		function updatechoices(){
-			$.post('',{cclist: ''}).done(function(data){
-				$('#mediatypes > div ~ div').each(function(){
-					var list=$(this).find('select[name="mediacolorcode[]"]');
-					var dc=list.val();
-					list.html(data);
-					$(this).find('select[name="mediacolorcode[]"]').val(dc);
-				});
-			});
-		}
-
-		// Cabling - Cable Colors
-
-		function removecolor(rowobject,lookup){
-			if(!lookup){
-				rowobject.remove();
-			}else{
-				$.post('',{ccused: rowobject.find('div:nth-child(2) input').attr('data')}).done(function(data){
-					if(data.trim()==0){
-						updatechoices();
-						rowobject.effect('explode', {}, 500, function(){
-							$(this).remove();
-						});
-					}else{
-						var defaultbutton={
-							"<?php echo __("Clear all"); ?>": function(){
-								$.post('',{cid: rowobject.find('div:nth-child(2) input').attr('data'),cc: '', ccdn: '', clear: ''}).done(function(data){
-									if(data.trim()=='u'){ // success
-										$('#modal').dialog("destroy");
-										updatechoices();
-										rowobject.effect('explode', {}, 500, function(){
-											$(this).remove();
-										});
-									}else{ // failed to delete
-										$('#modaltext').html('AAAAAAAAAAHHHHHHHHHH!!!  *crash* *fire* *chaos*<br><br><?php echo __("Something just went horribly wrong."); ?>');
-										$('#modal').dialog('option','buttons',cancelbutton);
-									}
-								});
-							}
-						}
-						var replacebutton={
-							"<?php echo __("Replace"); ?>": function(){
-								// send command to replace all connections with x
-								$.post('',{cid: rowobject.find('div:nth-child(2) input').attr('data'),cc: '', ccdn: '', change: $('#modal select').val()}).done(function(data){
-									if(data.trim()=='u'){ // success
-										$('#modal').dialog("destroy");
-										updatechoices();
-										rowobject.effect('explode', {}, 500, function(){
-											$(this).remove();
-										});
-										// Need to trigger a reload of any of the media types that had this 
-										// color so they will display the new color
-										$('#mediatypes > div ~ div:not(:last-child) input').val('').change();
-									}else{ // failed to delete
-										$('#modaltext').html('AAAAAAAAAAHHHHHHHHHH!!!  *crash* *fire* *chaos*<br><br><?php echo __("Something just went horribly wrong."); ?>');
-										$('#modal').dialog('option','buttons',cancelbutton);
-									}
-								});
-							}
-						}
-						var cancelbutton={
-							"<?php echo __("Cancel"); ?>": function(){
-								$(this).dialog("destroy");
-							}
-						}
-<?php echo "						var modal=$('<div />', {id: 'modal', title: '".__("Code Delete Override")."'}).html('<div id=\"modaltext\">".__("This code is in use somewhere. You can either choose to clear all instances of this color being used or choose to have them replaced with another color.")." <select id=\"replaceme\"></select></div>').dialog({"; ?>
-							dialogClass: 'no-close',
-							appendTo: 'body',
-							modal: true,
-							buttons: $.extend({}, defaultbutton, cancelbutton)
-						});
-						var choices=$('div#mediatypes.table div:last-child div select').clone();
-						choices.find('option').each(function(){
-							if($(this).val()==rowobject.find('div:nth-child(2) input').attr('data')){$(this).remove();}
-						});
-						choices.change(function(){
-							if($(this).val()==''){ // clear all
-								modal.dialog('option','buttons',$.extend({}, defaultbutton, cancelbutton));
-							}else{ // replace
-								modal.dialog('option','buttons',$.extend({}, replacebutton, cancelbutton));
-							}
-						});
-						modal.find($('#replaceme')).replaceWith(choices);
-					}
-				});
-			}
-		}
-		var blankrow=$('<div />').html('<div><img src="images/del.gif"></div><div><input type="text" name="colorcode[]"></div><div><input type="text" name="ccdefaulttext[]"></div>');
-		function bindrow(row){
-			var addrem=row.find('div:first-child');
-			var cc=row.find('div:nth-child(2) input');
-			var ccdn=row.find('div:nth-child(3) input');
-			if(cc.val().trim()!='' && addrem.attr('id')!='newline'){
-				addrem.click(function(){
-					removecolor(row,true);
-				});
-			}
-			cc.keypress(function(event){
-				if(event.keyCode==10 || event.keyCode==13){
-					event.preventDefault();
-					cc.change();
-				}
-			});
-			ccdn.keypress(function(event){
-				if(event.keyCode==10 || event.keyCode==13){
-					event.preventDefault();
-					ccdn.change();
-				}
-			});
-			row.find('div > input').each(function(){
-				// If a value changes then check it for conflicts, if no conflict update
-				$(this).change(function(){
-					if(cc.val().trim()!=''){
-						$.post('',{cid: cc.attr('data'),cc: cc.val(), ccdn: ccdn.val()}).done(function(data){
-							if(data.trim()=='f'){ // fail
-								$.post('',{cid: cc.attr('data'),cc: cc.val(), ccdn: ccdn.val(),original:data.trim()}).done(function(jsondata){
-									cc.val(jsondata.Name);
-									ccdn.val(jsondata.DefaultNote);
-								});
-								cc.effect('highlight', {color: 'salmon'}, 1500);
-								ccdn.effect('highlight', {color: 'salmon'}, 1500);
-							}else if(data.trim()=='u'){ // updated
-								cc.effect('highlight', {color: 'lightgreen'}, 2500);
-								ccdn.effect('highlight', {color: 'lightgreen'}, 2500);
-								// update media type color pick lists
-								updatechoices();
-							}else{ // created
-								var newitem=blankrow.clone();
-								newitem.find('div:nth-child(2) input').val(cc.val()).attr('data',data.trim());
-								bindrow(newitem);
-								row.before(newitem);
-								newitem.find('div:nth-child(3) input').val(ccdn.val()).focus();
-								if(addrem.attr('id')=='newline'){
-									cc.val('');
-									ccdn.val('');
-								}else{
-									row.remove();
-								}
-								// update media type color pick lists
-								updatechoices();
-							}
-						});
-					}else if(cc.val().trim()=='' && ccdn.val().trim()=='' && addrem.attr('id')!='newline'){
-						// If both blanks are emptied of values and they were an existing data pair
-						$.post('',{cid: cc.attr('data'),cc: cc.val(), ccdn: ccdn.val(),original:''}).done(function(jsondata){
-							cc.val(jsondata.Name);
-							ccdn.val(jsondata.DefaultNote);
-						});
-						cc.effect('highlight', {color: 'salmon'}, 1500);
-						ccdn.effect('highlight', {color: 'salmon'}, 1500);
-					}
-				});
-			});
-		}
-		$('#cablecolor > div ~ div > div:first-child').each(function(){
-			if($(this).attr('id')=='newline'){
-				var row=$(this).parent('div');
-				$(this).click(function(){
-					var newitem=blankrow.clone();
-					newitem.find('div:first-child').click(function(){
-						removecolor($(this).parent('div'),false);
-					});
-					bindrow(newitem);
-					row.before(newitem);
-				});
-			}
-			bindrow($(this).parent('div'));
-		});
-
-
-
-
-
 	});
 
   </script>
@@ -1960,18 +1318,6 @@ if(isset($results)){
 	if((!isset($_GET["cab"])&&!isset($_GET["dc"])&&!isset($_GET["complete"]))||isset($_GET["dept"])){
 		$deptList = $dept->GetDepartmentList();
 ?>
-<script type="text/javascript">
-function showgroup(obj){
-	self.frames['groupadmin'].location.href='dept_groups.php?deptid='+obj;
-	document.getElementById('groupadmin').style.display = "block";
-	document.getElementById('deptname').readOnly = true
-	document.getElementById('deptsponsor').readOnly = true
-	document.getElementById('deptmgr').readOnly = true
-	document.getElementById('deptclass').disabled = true
-	document.getElementById('controls').id = "displaynone";
-}
-</script>
-
 <div class="page installer">
 
 <div id="sidebar">
@@ -2035,14 +1381,11 @@ function showgroup(obj){
 <?php
 	if($dept->DeptID > 0){
 		echo '<input type="submit" name="deptaction" value="Update">';
-//		print "<input type=\"button\" onClick=\"self.frames['groupadmin'].location.href='dept_groups.php?deptid=$dept->DeptID'\" value=\"Assign Contacts\">";
-//		print "<input type=\"button\" onClick=\"window.open('dept_groups.php?deptid=$dept->DeptID', 'popup')\" value=\"Assign Contacts\">";
 	}
 ?>
 </div>
 </div> <!-- END div.table -->
 </form>
-<iframe name="groupadmin" id="groupadmin" frameborder=0 scrolling="no"></iframe>
 <br>
 </div></div>
 </div> <!-- END div.main -->
@@ -2159,74 +1502,71 @@ function showgroup(obj){
 <?php echo $nodccab; ?>
 <div class='center'><div>
 <form action='<?php echo $_SERVER['PHP_SELF']; ?>?cab&preflight-ok' method='POST'>
-<div class='table'>
+<?php echo '
+<div class="table">
 <div>
    <div>Cabinet</div>
-   <div><select name='cabinetid' onChange='form.submit()' <?php echo $nodcdrop;  print "data=\"$cab->CabinetID\"";?>>
-   <option value='0'>New Cabinet</option>
-<?php
+   <div><select name="cabinetid" onChange="form.submit()" '.$nodcdrop.' data='.$cab->CabinetID.'>
+   <option value=0>New Cabinet</option>
+';
 	foreach($cabList as $cabRow){
-		echo '<option value=\''.$cabRow->CabinetID.'\'';
-		if($cabRow->CabinetID == $cab->CabinetID){
-			echo ' selected';
-		}
-		echo '>'.$cabRow->Location.'</option>\n';
+		$selected=($cabRow->CabinetID==$cab->CabinetID)?' selected':'';
+		print "\t\t\t<option value=$cabRow->CabinetID>$cabRow->Location</option>\n";
 	}
-?>
+echo '
    </select></div>
 </div>
 <div>
    <div>Data Center</div>
    <div>
-		<select name="datacenterid" id="datacenterid">
-<?php
+		<select name="datacenterid" id="datacenterid" data='.$cab->DataCenterID.'>
+';
 	foreach(DataCenter::GetDCList() as $dc){
 		$selected=($dc->DataCenterID==$cab->DataCenterID)?' selected':'';
 		print "\t\t\t<option value=\"$dc->DataCenterID\"$selected>$dc->Name</option>\n";
 	}
-?>
+echo '
 		</select>
 	</div>
 </div>
 <div>
    <div>Location</div>
-   <div><input type='text' name='location' size='8' value='<?php echo $cab->Location; ?>' <?php echo $nodcfield;?>></div>
+   <div><input type="text" name="location" size=8 value="'.$cab->Location.'" '.$nodcfield.'></div>
 </div>
 <div>
   <div>Assigned To:</div>
-  <div><select name='assignedto' <?php echo $nodcdrop; print "data=\"$cab->AssignedTo\"";?>>
-    <option value='0'>General Use</option>
-<?php
+  <div><select name="assignedto" '.$nodcdrop.' data='.$cab->AssignedTo.'>
+    <option value=0>General Use</option>
+';
 	foreach($deptList as $deptRow){
-		echo '<option value=\''.$deptRow->DeptID.'\'';
-		if($deptRow->DeptID == $cab->AssignedTo){echo ' selected=\'selected\'';}
-		echo '>'.$deptRow->Name.'</option>\n';
+		$selected=($deptRow->DeptID==$cab->AssignedTo)?' selected':'';
+		print "\t\t\t<option value=$deptRow->DeptID$selected>$deptRow->Name</option>\n";
 	}
-?>
+echo '
   </select>
   </div>
 </div>
 <div>
    <div>Cabinet Height (U)</div>
-   <div><input type='text' name='cabinetheight' size='4' value='<?php echo $cab->CabinetHeight; ?>' <?php echo $nodcfield;?>></div>
+   <div><input type="text" name="cabinetheight" size=4 value='.$cab->CabinetHeight.' '.$nodcfield.'></div>
 </div>
 <div>
    <div>Model</div>
-   <div><input type='text' name='model' size='30' value='<?php echo $cab->Model; ?>' <?php echo $nodcfield;?>></div>
+   <div><input type="text" name="model" size=30 value="'.$cab->Model.'" '.$nodcfield.'></div>
 </div>
 <div>
    <div>Maximum kW</div>
-   <div><input type='text' name='maxkw' size='30' value='<?php echo $cab->MaxKW; ?>' <?php echo $nodcfield;?>></div>
+   <div><input type="text" name="maxkw" size=30 value='.$cab->MaxKW.' '.$nodcfield.'></div>
 </div>
 <div>
    <div>Maximum Weight</div>
-   <div><input type='text' name='maxweight' size='30' value='<?php echo $cab->MaxWeight; ?>' <?php echo $nodcfield;?>></div>
+   <div><input type="text" name="maxweight" size=30 value='.$cab->MaxWeight.' '.$nodcfield.'></div>
 </div>
 <div>
    <div>Date of Installation</div>
-   <div><input type='text' name='installationdate' size='15' value='<?php echo date('m/d/Y', strtotime($cab->InstallationDate)); ?>' <?php echo $nodcfield;?>></div>
+   <div><input type="text" name="installationdate" size=15 value="'.date('m/d/Y', strtotime($cab->InstallationDate)).'" '.$nodcfield.'></div>
 </div>
-<?php
+';
 	if($nodcdrop==""){
 		echo '<div class=\'caption\'>';
 		if($cab->CabinetID >0){
