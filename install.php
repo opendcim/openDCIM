@@ -2035,7 +2035,6 @@ function showgroup(obj){
 <?php
 	if($dept->DeptID > 0){
 		echo '<input type="submit" name="deptaction" value="Update">';
-		echo "<input type=\"button\" onClick=\"showgroup($dept->DeptID)\" value=\"Assign Contacts\">";
 //		print "<input type=\"button\" onClick=\"self.frames['groupadmin'].location.href='dept_groups.php?deptid=$dept->DeptID'\" value=\"Assign Contacts\">";
 //		print "<input type=\"button\" onClick=\"window.open('dept_groups.php?deptid=$dept->DeptID', 'popup')\" value=\"Assign Contacts\">";
 	}
