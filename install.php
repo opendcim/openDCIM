@@ -1174,7 +1174,9 @@ if(isset($results)){
 		$dc->DrawingFileName = $_REQUEST['drawingfilename'];
 		
 		if($_REQUEST['dcaction']=='Create'){
-			$dc->CreateDataCenter();
+			if(!($dc->CreateDataCenter())) {
+				$errormsg = "<h3>Check your error log.</h3>";
+			}
 		}else{
 			$dc->UpdateDataCenter();
 		}
@@ -1189,6 +1191,7 @@ if(isset($results)){
 	$result->execute();
 	if($result->rowCount()==0){ // No data centers configured disable cabinets and complete options
 		$nodc="<h3>Define a data center</h3>";
+		$nodc.=(isset($errormsg))?$errormsg:"";
 		$nodccab="<h3>You must create a Data Center before you can create cabinets in it.</h3>";
 		$nodcfield="disabled";
 		$nodcdrop="readonly";
