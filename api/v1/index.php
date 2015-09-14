@@ -741,20 +741,29 @@ $app->get( '/devicetemplate', function() use ($app) {
 //	Params: templateid
 //	Returns: Device template for templateid
 //
+//  While this will be non-standard it's gonna be necessary to support the existing
+//  spec.  If we device to change the images function later the proposal for an images
+//  path might be revisited.
+//
 
 $app->get( '/devicetemplate/:templateid', function($templateid) use ($app) {
-	$dt=new DeviceTemplate();
-	$dt->TemplateID=$templateid;
-	if(!$dt->GetTemplateByID()){
-		$response['error']=true;
-		$response['errorcode']=404;
-		$response['message']=__("No template found with TemplateID: ")." $templateid";
-	}else{
+	if($templateid=='image'){
 		$response['error']=false;
 		$response['errorcode']=200;
-		$response['template']=$dt;
+		$response['image']=DeviceTemplate::getAvailableImages();
+	}else{
+		$dt=new DeviceTemplate();
+		$dt->TemplateID=$templateid;
+		if(!$dt->GetTemplateByID()){
+			$response['error']=true;
+			$response['errorcode']=404;
+			$response['message']=__("No template found with TemplateID: ")." $templateid";
+		}else{
+			$response['error']=false;
+			$response['errorcode']=200;
+			$response['template']=$dt;
+		}
 	}
-
 	echoResponse(200,$response);
 });
 
@@ -824,21 +833,6 @@ $app->get( '/devicetemplate/:templateid/powerports', function($templateid) use (
 		$response['errorcode']=200;
 		$response['powerports']=$ports;
 	}
-
-	echoResponse(200,$response);
-});
-
-//
-//	URL:	/api/v1/devicetemplate/image
-//	Method:	GET
-//	Params: none	
-//	Returns: Array of filenames available 
-//
-
-$app->get( '/devicetemplate/image', function() {
-	$response['error']=false;
-	$response['errorcode']=200;
-	$response['image']=DeviceTemplate::getAvailableImages();
 
 	echoResponse(200,$response);
 });
