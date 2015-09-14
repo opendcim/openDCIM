@@ -829,13 +829,13 @@ $app->get( '/devicetemplate/:templateid/powerports', function($templateid) use (
 });
 
 //
-//	URL:	/api/v1/devicetemplate/image
+//	URL:	/api/v1/image/devicetemplate
 //	Method:	GET
 //	Params: none	
-//	Returns: Array of filenames available 
+//	Returns: Array of filenames for available images
 //
 
-$app->get( '/devicetemplate/image', function() {
+$app->get( '/image/devicetemplate', function() {
 	$response['error']=false;
 	$response['errorcode']=200;
 	$response['image']=DeviceTemplate::getAvailableImages();

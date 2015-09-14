@@ -1036,7 +1036,7 @@ if (isset($result["log"])){
 <!-- end dialog: importFile -->
 <script type="text/javascript">
 function reload() {
-	$.get('api/v1/devicetemplate/image').done(function(data){
+	$.get('api/v1/image/devicetemplate').done(function(data){
 		var filelist=$('#filelist');
 		filelist.html('');
 		for(var f in data.image){
