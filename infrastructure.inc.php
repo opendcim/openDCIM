@@ -215,8 +215,7 @@ class DataCenter {
 
 	public function __construct($dcid=false){
 		if($dcid){
-			$this->DataCenterID=$dcid;
-			$this->GetDataCenter();
+			$this->DataCenterID=intval($dcid);
 		}
 		return $this;
 	}
