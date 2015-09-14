@@ -1175,7 +1175,7 @@ if(isset($results)){
 		
 		if($_REQUEST['dcaction']=='Create'){
 			if(!($dc->CreateDataCenter())) {
-				$errormsg = "<h3>Check your error log.</h3>";
+				$errormsg = "<h3>Datacenter not created, check the apache error log</h3>";
 			}
 		}else{
 			$dc->UpdateDataCenter();
