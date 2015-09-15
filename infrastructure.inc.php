@@ -213,6 +213,13 @@ class DataCenter {
 		$this->DrawingFileName=stripslashes($this->DrawingFileName);
 	}
 
+	public function __construct($dcid=false){
+		if($dcid){
+			$this->DataCenterID=intval($dcid);
+		}
+		return $this;
+	}
+
 	static function RowToObject($row){
 		$dc=New DataCenter();
 		$dc->DataCenterID=$row["DataCenterID"];
