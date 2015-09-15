@@ -210,11 +210,17 @@ echo '<div class="main">
   </div>
   <div>
 		<div>',__("RCI Low Percentage (Overcooling)"), '</div>
-		<div>',sprintf("%7d %s", $rciStats["RCILowCount"] / $rciStats["TotalCabinets"] * 100, __("%")),'</div>
+		<div>',(($rciStats["TotalCabinets"])?sprintf("%7d %s",
+					$rciStats["RCILowCount"] / $rciStats["TotalCabinets"] * 100,
+		   			__("%")):"0 ".__("%")),
+		'</div>
   </div>
   <div>
 		<div>',__("RCI High Percentage (Cabinets Satisfied)"), '</div>
-		<div>',sprintf( "%7d %s", (1-$rciStats["RCIHighCount"] / $rciStats["TotalCabinets"]) * 100, __("%")),'</div>
+		<div>',(($rciStats["TotalCabinets"])?sprintf("%7d %s",
+		   			(1-$rciStats["RCIHighCount"] / $rciStats["TotalCabinets"]) * 100,
+					__("%")):"100 ". __("%")),
+		'</div>
   </div>
 </div> <!-- END div.table -->
 </div> <!-- END div.centermargin -->
