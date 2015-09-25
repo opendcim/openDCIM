@@ -983,9 +983,12 @@ class DeviceTemplate {
 	}
 
 	function Search($indexedbyid=false,$loose=false){
-		// Store the value of devicetype before we muck with it and SNMPVersion
-		$ot=$this->DeviceType;
-		$ov=$this->SNMPVersion;
+		// Store any values that have been added before we make them safe 
+		foreach($this as $prop => $val){
+			if(isset($val)){
+				$o[$prop]=$val;
+			}
+		}
 
 		// Make everything safe for us to search with
 		$this->MakeSafe();
@@ -996,18 +999,8 @@ class DeviceTemplate {
 			$method=($loose)?" LIKE \"%$val%\"":"=\"$val\"";
 			$sql.=" AND a.$prop$method";
 		}
-		foreach($this as $prop => $val){
-			// We force DeviceType to a known value so this is to check if they wanted to search for the default
-			if($prop=="DeviceType" && $val=="Server" && $ot!="Server"){
-				continue;
-			}
-			// We force the SNMPVersion to 2c above so this is to check if they wanted to search for the default
-			if($prop=="SNMPVersion" && $val=="2c" && $ov!="2c"){
-				continue;
-			}
-			if($val){
-				findit($prop,$val,$sqlextend,$loose);
-			}
+		foreach($o as $prop => $val){
+			findit($prop,$this->$prop,$sqlextend,$loose);
 		}
 
 		// The join is purely to sort the templates by the manufacturer's name

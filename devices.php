@@ -1522,6 +1522,12 @@ print "		var dialog=$('<div>').prop('title',\"".__("Verify Delete Device")."\").
 <?php
 		}
 ?>
+		$('select[name=ParentDevice],#BackSide').change(function(){
+			var slotcount=($('#BackSide:checked').length)?'rearchassisslots':'chassisslots';
+			var maxval=$('select[name=ParentDevice] option:selected').data(slotcount);
+			var posclass=$('#Position').attr('class');
+			$('#Position').attr('class',posclass.replace(/max\[([0-9]).*?\]/gi,"max["+maxval+"]")).trigger('focusout');
+		});
 
 		$('#Reservation').change(function(){
 			if(!$(this).prop("checked")){
@@ -1776,7 +1782,7 @@ echo '
 
 			foreach($parentList as $parDev){
 				if($pDev->DeviceID==$parDev->DeviceID){$selected=" selected";}else{$selected="";}
-				print "\t\t\t\t<option value=\"$parDev->DeviceID\"$selected>$parDev->Label</option>\n";
+				print "\t\t\t\t<option value=\"$parDev->DeviceID\"$selected data-ChassisSlots=$parDev->ChassisSlots data-RearChassisSlots=$parDev->RearChassisSlots>$parDev->Label</option>\n";
 			}
 			print "\t\t\t</select></div>\n";
 		}
