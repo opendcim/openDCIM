@@ -1527,6 +1527,13 @@ print "		var dialog=$('<div>').prop('title',\"".__("Verify Delete Device")."\").
 			var maxval=$('select[name=ParentDevice] option:selected').data(slotcount);
 			var posclass=$('#Position').attr('class');
 			$('#Position').attr('class',posclass.replace(/max\[([0-9]).*?\]/gi,"max["+maxval+"]")).trigger('focusout');
+			// Make a pointer to the hidden cabinetid input object
+			var hdn_cabinetid=$('input[name=CabinetID]');
+			hdn_cabinetid.val($('select[name=ParentDevice] option:selected').data('cabinetid'));
+			// Match the cabinet id to something over in the menu so we can show it on the page
+			var rack=$('#datacenters a[href$="cabinetid='+hdn_cabinetid.val()+'"]');
+			// Update the hidden cabinet id field to match the new parent device and show the name
+			hdn_cabinetid.parent('div').text(rack.text()).append(hdn_cabinetid);
 		});
 
 		$('#Reservation').change(function(){
@@ -1782,7 +1789,7 @@ echo '
 
 			foreach($parentList as $parDev){
 				if($pDev->DeviceID==$parDev->DeviceID){$selected=" selected";}else{$selected="";}
-				print "\t\t\t\t<option value=\"$parDev->DeviceID\"$selected data-ChassisSlots=$parDev->ChassisSlots data-RearChassisSlots=$parDev->RearChassisSlots>$parDev->Label</option>\n";
+				print "\t\t\t\t<option value=\"$parDev->DeviceID\"$selected data-ChassisSlots=$parDev->ChassisSlots data-RearChassisSlots=$parDev->RearChassisSlots data-CabinetID=$parDev->Cabinet>$parDev->Label</option>\n";
 			}
 			print "\t\t\t</select></div>\n";
 		}
