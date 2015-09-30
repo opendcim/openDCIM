@@ -122,6 +122,13 @@ class LogActions {
 
 			// Note the changed values
 			foreach($diff as $key => $value){
+				if(preg_match("/(date|expire)/i", $key)){
+					if(strtotime($originalobject->$key)==strtotime($object->$key)){
+						// dates match but maybe different format so remove this match and go on
+						unset($diff[$key]);
+						continue;
+					}
+				}
 				// Suppressing errors here because if a new value exists on the object there won't be one in the 
 				// original and it will throw an error on the web server
 				@$diff[$key]=$key.": ".$originalobject->$key." => ".$object->$key;

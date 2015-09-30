@@ -3125,7 +3125,10 @@ class Device {
 		$sql="DELETE FROM fac_DeviceCustomValue WHERE DeviceID = $this->DeviceID;";
 		if($dbh->query($sql)) {
 			$this->GetCustomValues();
-			(class_exists('LogActions'))?LogActions::LogThis($this):'';
+// Commenting this out for now because it is making a confusing entry int he devicelog
+// showing that a value was deleted but not what exactly.  Will revisit logging this
+// when I move to make the custom values part of the primary device model
+//			(class_exists('LogActions'))?LogActions::LogThis($this):'';
 			return true;
 		}
 		return false;
