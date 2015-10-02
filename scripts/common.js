@@ -1187,7 +1187,11 @@ function initdrag(){
 			}
 			// If it's greater than 1 we have a match
 			if(collision>0){
+				var device=this;
 				// revert back to original position
+				device.style.left=ui.originalPosition.left+'px';
+				device.style.top=ui.originalPosition.top+'px';
+				(twofacedev)?$('#adjustmeandclearthis')[0].style.top=device.style.top:'';
 			}else{ // no object collision so move the device
 				//find deviceid or default to 0
 				var deviceid=0;
@@ -1202,20 +1206,28 @@ function initdrag(){
 					return i;
 				}
 
+				// This is the first u below the cabinet header
+				var topu=$(this).parents('div.cabinet > table tr[id^=pos]');
+
 				// U above device + height of device in U + X rows for the header
-				var diff=Math.round(ui.position.top/21) + Math.ceil(this.offsetHeight/21) + getElementIndex($(this).parents('div.cabinet > table tr[id^=pos]')[0]);
+				var diff=Math.round(ui.position.top/21) + Math.ceil(this.offsetHeight/21) + getElementIndex(topu[0]);
 				var newposition=parseInt($(this.parentElement.parentElement.parentElement.parentElement).find('tr:nth-child('+diff+') td:first-child').text());
+				var newu=$('tr#pos' + newposition);
 				var device=this;
 				device.style.left=ui.position.left+'px';
 				device.style.top=ui.position.top+'px';
 //debug info
-//console.log('Math.floor('+ui.position.top+'/21) + Math.ceil('+this.offsetHeight+'/21) + 2');
-//console.log('position: '+newposition+' diff: '+diff);
+//console.log('new position : '+newposition);
+//console.log(newu);
+//console.log('newu.offsetTop + newu.offsetHeight : '+parseInt(newu[0].offsetTop + newu[0].offsetHeight));
+//console.log('device.offsetHeight : '+device.offsetHeight);
+//console.log('topu : '+topu[0].offsetTop);
+//console.log(topu);
 				// Force devices to align to a 21px grid
-				// offset from top = container height - device height - height from bottom to bottom of U
-				device.style.top=parseInt(device.parentElement.offsetHeight) - 
-					parseInt(device.offsetHeight) - 
-					parseInt((newposition - 1) * 21) - 4+'px';
+				// offset from top = bottom of new position - device height - top of screen to top of first u
+				device.style.top=parseInt(newu[0].offsetTop + newu[0].offsetHeight) -
+					parseInt(device.offsetHeight) -
+					parseInt(topu[0].offsetTop) - 4+'px';
 
 				// if there is another face of the device we moved make it match this
 				(twofacedev)?$('#adjustmeandclearthis')[0].style.top=device.style.top:'';
