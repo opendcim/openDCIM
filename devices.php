@@ -1554,6 +1554,7 @@ print "		var dialog=$('<div>').prop('title',\"".__("Verify Delete Device")."\").
 <?php echo '				',__("Yes"),': function(){'; ?>
 						$(this).dialog("destroy");
 						form.append('<input type="hidden" name="'+btn.attr("name")+'" value="'+btn.val()+'">');
+						form.validationEngine("detach");
 						form.submit();
 					},
 <?php echo '				',__("No"),': function(){'; ?>
