@@ -770,6 +770,11 @@
 						'Patch Panel' => __("Patch Panel"),
 						'Sensor' => __("Sensor"),
 						);
+
+		/* If you only have rear slots, don't make the user click Backside, which they forget to do half the time, anyway */
+		if ( $pDev->ChassisSlots < 1 && $pDev->RearChassisSlots > 0 ) {
+			$dev->BackSide = 1;
+		}
 	}else{
 		$devarray=array('Server' => __("Server"),
 						'Appliance' => __("Appliance"),
