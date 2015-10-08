@@ -949,7 +949,7 @@ function BuildCabinet($cabid,$face="front"){
 	// helper function to print the rows of the cabinet table
 	if(!function_exists("printrow")){
 		function printrow($i,$top,$bottom,$order,$face,&$htmlcab,$cabobject){
-			$error=($i>$cabobject->CabinetHeight || $i<=0)?' error':'';
+			$error=($i>$cabobject->CabinetHeight || ($i<=0 && $order)  || ($i<0 && !$order))?' error':'';
 			if($order){
 				$x=($i<=0)?$i-1:$i;
 			}else{
