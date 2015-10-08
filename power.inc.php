@@ -42,7 +42,6 @@ class CDUTemplate {
 	var $NumOutlets;
 
 	function MakeSafe(){
-		$validSNMPVersions=array(1,'2c');
 		$validMultipliers=array(0.01,0.1,1,10,100);
 		$validProcessingProfiles=array('SingleOIDWatts','SingleOIDAmperes',
 			'Combine3OIDWatts','Combine3OIDAmperes','Convert3PhAmperes');

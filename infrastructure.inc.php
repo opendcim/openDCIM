@@ -781,6 +781,9 @@ class DeviceTemplate {
 		$validDeviceTypes=array('Server','Appliance','Storage Array','Switch','Chassis','Patch Panel','Physical Infrastructure','CDU','Sensor');
 		$validSNMPVersions=array(1,'2c',3);
 
+		// Instead of defaulting to v2c for snmp we'll default to whatever the system default is
+		global $config;
+
 		$this->TemplateID=intval($this->TemplateID);
 		$this->ManufacturerID=intval($this->ManufacturerID);
 		$this->Model=sanitize($this->Model);
@@ -795,7 +798,7 @@ class DeviceTemplate {
 	    $this->RearPictureFile=sanitize($this->RearPictureFile);
 		$this->ChassisSlots=intval($this->ChassisSlots);
 		$this->RearChassisSlots=intval($this->RearChassisSlots);
-		$this->SNMPVersion=(in_array($this->SNMPVersion, $validSNMPVersions))?$this->SNMPVersion:"2c";
+		$this->SNMPVersion=(in_array($this->SNMPVersion, $validSNMPVersions))?$this->SNMPVersion:$config->ParameterArray["SNMPVersion"];
 		$this->GlobalID=intval($this->GlobalID);
 		$this->ShareToRepo=intval($this->ShareToRepo);
 		$this->KeepLocal=intval($this->KeepLocal);

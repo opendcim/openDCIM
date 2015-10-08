@@ -1217,7 +1217,10 @@ class Device {
 			// If called from a static procedure, $this is not a valid object and the routine will throw an error
 			return;
 		}
-		
+
+		// Instead of defaulting to v2c for snmp we'll default to whatever the system default is
+		global $config;
+
 		//Keep weird values out of DeviceType
 		$validdevicetypes=array('Server','Appliance','Storage Array','Switch','Chassis','Patch Panel','Physical Infrastructure','CDU','Sensor');
 		$validSNMPVersions=array(1,'2c',3);
@@ -1230,7 +1233,7 @@ class Device {
 		$this->SerialNo=sanitize($this->SerialNo);
 		$this->AssetTag=sanitize($this->AssetTag);
 		$this->PrimaryIP=sanitize($this->PrimaryIP);
-		$this->SNMPVersion=(in_array($this->SNMPVersion, $validSNMPVersions))?$this->SNMPVersion:'2c';
+		$this->SNMPVersion=(in_array($this->SNMPVersion, $validSNMPVersions))?$this->SNMPVersion:$config->ParameterArray["SNMPVersion"];
 		$this->SNMPCommunity=sanitize($this->SNMPCommunity);
 		$this->v3SecurityLevel=(in_array($this->v3SecurityLevel, $validv3SecurityLevels))?$this->v3SecurityLevel:'noAuthNoPriv';
 		$this->v3AuthProtocol=(in_array($this->v3AuthProtocol, $validv3AuthProtocols))?$this->v3AuthProtocol:'MD5';
