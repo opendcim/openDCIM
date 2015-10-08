@@ -838,6 +838,27 @@ $app->get( '/devicetemplate/:templateid/powerports', function($templateid) use (
 });
 
 //
+//	URL:	/api/v1/devicetemplate/:templateid/slots
+//	Method:	GET
+//	Params: templateid
+//	Returns: Slots defined for device template with templateid
+//
+
+$app->get( '/devicetemplate/:templateid/slots', function($templateid) use ($app) {
+	if(!$slots=slot::GetAll($templateid)){
+		$response['error']=true;
+		$response['errorcode']=404;
+		$response['message']=__("No slots found for TemplateID: ")." $templateid";
+	}else{
+		$response['error']=false;
+		$response['errorcode']=200;
+		$response['slots']=$slots;
+	}
+
+	echoResponse(200,$response);
+});
+
+//
 //	URL:	/api/v1/manufacturer
 //	Method:	GET
 //	Params:	none
