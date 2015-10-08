@@ -1087,7 +1087,7 @@ $app->post( '/device/:deviceid', function($deviceid) use ($app) {
 //	Returns: true/false on update operation 
 //
 
-$app->put( '/devicetemplate/:templateid', function($templateid) use ($app) {
+$app->put( '/devicetemplate/:templateid', function($templateid) use ($app,$person) {
 	$dt=new DeviceTemplate();
 	// This should be in the commit data but if we get a smartass saying it's in the URL
 	$dt->templateid=$templateid;
@@ -1127,7 +1127,7 @@ $app->put( '/devicetemplate/:templateid', function($templateid) use ($app) {
 //	Returns: true/false on update operation
 //
 
-$app->put( '/devicetemplate/:templateid/dataports/:portnumber', function($templateid,$portnumber) use ($app) {
+$app->put( '/devicetemplate/:templateid/dataports/:portnumber', function($templateid,$portnumber) use ($app,$person) {
 	$tp=new TemplatePorts();
 	$tp->TemplateID=$templateid;
 	$tp->PortNumber=$portnumber;
@@ -1160,6 +1160,41 @@ $app->put( '/devicetemplate/:templateid/dataports/:portnumber', function($templa
 	echoResponse(200,$response);
 });
 
+//
+//	URL:	/api/v1/manufacturer
+//	Method:	POST
+//	Params:	none
+//	Returns: true/false on update operation
+//
+
+$app->post( '/manufacturer/:manufacturerid', function($manufacturerid) use ($app,$person) {
+	$man=new Manufacturer();
+	$man->ManufacturerID=$manufacturerid;
+	
+	$response['error']=true;
+	$response['errorcode']=404;
+
+	if(!$person->SiteAdmin){
+		$response['errorcode']=403;
+		$response['message']=__("Unauthorized");
+	}else{
+		if(!$man->GetManufacturerByID()){
+			$response['message']=__("Manufacturer not found with id: ")." $manufacturerid";
+		}else{
+			foreach($app->request->post() as $prop => $val){
+				$man->$prop=$val;
+			}
+			if(!$man->UpdateManufacturer()){
+				$response['message']=__("Manufacturer update failed");
+			}else{
+				$response['error']=false;
+				$response['errorcode']=200;
+			}
+		}
+	}
+
+	echoResponse(200,$response);
+});
 
 /**
   *
