@@ -14,7 +14,7 @@
 	if(isset($_POST['snmptest'])){
 		// Parse through the post data and pull in site defaults if necessary
 		$community=($_POST['SNMPCommunity']=="")?$config->ParameterArray["SNMPCommunity"]:$_POST['SNMPCommunity'];
-		$version=($_POST['SNMPVersion']=="")?$config->ParameterArray["SNMPVersion"]:$_POST['SNMPVersion'];
+		$version=($_POST['SNMPVersion']=="" || $_POST['SNMPVersion']=="default")?$config->ParameterArray["SNMPVersion"]:$_POST['SNMPVersion'];
 		$v3SecurityLevel=($_POST['v3SecurityLevel']=="")?$config->ParameterArray["v3SecurityLevel"]:$_POST['v3SecurityLevel'];
 		$v3AuthProtocol=($_POST['v3AuthProtocol']=="")?$config->ParameterArray["v3AuthProtocol"]:$_POST['v3AuthProtocol'];
 		$v3AuthPassphrase=($_POST['v3AuthPassphrase']=="")?$config->ParameterArray["v3AuthPassphrase"]:$_POST['v3AuthPassphrase'];
