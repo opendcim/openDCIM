@@ -1097,7 +1097,6 @@ $app->post( '/devicetemplate/:templateid', function($templateid) use ($app,$pers
 		$response['message']=__("Unauthorized");
 	}else{
 		if(!$dt->GetTemplateByID()){
-error_log(print_r($dt,true));
 			$response['error']=true;
 			$response['errorcode']=404;
 			$response['message']=__("No device template found with TemplateID: ").$templateid;
