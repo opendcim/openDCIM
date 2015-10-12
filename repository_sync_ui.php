@@ -346,12 +346,12 @@ function convertImgToBase64(url, imgobj) {
 
 						if(postorput==='put'){
 							// Add front image
-							if(row.data("globaldev").FrontPictureFile.search('http')!='-1'){
+							if(row.data("globaldev").FrontPictureFile!=''){
 								AddImage(row.FrontPictureFile.find('img').data('file'));
 							}
 
 							// Add rear image
-							if(row.data("globaldev").RearPictureFile.search('http')!='-1'){
+							if(row.data("globaldev").RearPictureFile!=''){
 								AddImage(row.data("object").RearPictureFile.find('img').data('file'));
 							}
 						}else{
