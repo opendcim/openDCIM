@@ -777,6 +777,13 @@ class DeviceTemplate {
 	var $ShareToRepo;
 	var $KeepLocal;
     
+	public function __construct($dtid=false){
+		if($dtid){
+			$this->TemplateID=intval($dtid);
+		}
+		return $this;
+	}
+
 	function MakeSafe(){
 		$validDeviceTypes=array('Server','Appliance','Storage Array','Switch','Chassis','Patch Panel','Physical Infrastructure','CDU','Sensor');
 		$validSNMPVersions=array(1,'2c',3);
@@ -894,13 +901,12 @@ class DeviceTemplate {
 			return false;
 		}else{
 			$this->TemplateID=$dbh->lastInsertId();
-
 			if($this->DeviceType=="CDU"){
 				// If this is a cdu make the corresponding other hidden template
 				$cdut=new CDUTemplate();
 				foreach($cdut as $prop => $val){
 					if(isset($this->$prop)){
-						$cdut->$prop=$val;
+						$cdut->$prop=$this->$prop;
 					}
 				}
 				$cdut->CreateTemplate($this->TemplateID);
@@ -911,7 +917,7 @@ class DeviceTemplate {
 				$st=new SensorTemplate();
 				foreach($st as $prop => $val){
 					if(isset($this->$prop)){
-						$st->$prop=$val;
+						$st->$prop=$this->$prop;
 					}
 				}
 				$st->CreateTemplate($this->TemplateID);

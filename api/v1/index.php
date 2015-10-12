@@ -1087,17 +1087,17 @@ $app->post( '/device/:deviceid', function($deviceid) use ($app) {
 //	Returns: true/false on update operation 
 //
 
-$app->put( '/devicetemplate/:templateid', function($templateid) use ($app,$person) {
-	$dt=new DeviceTemplate();
+$app->post( '/devicetemplate/:templateid', function($templateid) use ($app,$person) {
+	$dt=new DeviceTemplate($templateid);
 	// This should be in the commit data but if we get a smartass saying it's in the URL
-	$dt->templateid=$templateid;
-
+	$dt->TemplateID=$templateid;
 	if(!$person->WriteAccess){
 		$response['error']=true;
 		$response['errorcode']=403;
 		$response['message']=__("Unauthorized");
 	}else{
 		if(!$dt->GetTemplateByID()){
+error_log(print_r($dt,true));
 			$response['error']=true;
 			$response['errorcode']=404;
 			$response['message']=__("No device template found with TemplateID: ").$templateid;
@@ -1127,7 +1127,7 @@ $app->put( '/devicetemplate/:templateid', function($templateid) use ($app,$perso
 //	Returns: true/false on update operation
 //
 
-$app->put( '/devicetemplate/:templateid/dataports/:portnumber', function($templateid,$portnumber) use ($app,$person) {
+$app->post( '/devicetemplate/:templateid/dataports/:portnumber', function($templateid,$portnumber) use ($app,$person) {
 	$tp=new TemplatePorts();
 	$tp->TemplateID=$templateid;
 	$tp->PortNumber=$portnumber;
@@ -1345,7 +1345,7 @@ $app->put( '/device/:devicelabel', function($devicelabel) use ($app) {
 //	Returns: record as created 
 //
 
-$app->put( '/devicetemplate/:model', function($model) use ($app) {
+$app->put( '/devicetemplate/:model', function($model) use ($app,$person) {
 	$dt=new DeviceTemplate();
 	// This isn't super great and could lead to some weirdness in the logging but 
 	// we'll make it more specific later if it becomes and issue.

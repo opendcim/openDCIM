@@ -245,8 +245,13 @@ class LogActions {
 		$stmt->bindParam(':Action', $this->Action);
 		$stmt->bindParam(':Property', $this->Property);
 		$stmt->bindParam(':OldVal', $this->OldVal);
+		// Array data is causing this to spew errors. If we want to log what the array
+		// contains we can change this to print_r($this->NewVal,TRUE) but I think that
+		// isn't going to be useful
+		if(is_array($this->NewVal)){
+			$this->NewVal='array()';
+		}
 		$stmt->bindParam(':NewVal', $this->NewVal);
-
 		// These values can't be null and the PDO statement was being a bitch about it
 		$this->Action=(is_null($this->Action))?'':$this->Action;
 		$this->Property=(is_null($this->Property))?'':$this->Property;

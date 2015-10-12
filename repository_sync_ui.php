@@ -6,6 +6,23 @@
 //	$header=__("");
 	$subheader=__("Data Center Operations Metrics");
 
+// AJAX Start
+	// Return JSON array indexed by templateid that contains the last date and time it was modified
+	if(isset($_POST['getModifiedTimes'])){
+		$results=array();
+
+		$sql='SELECT ObjectID, MAX(Time) AS Time FROM fac_GenericLog WHERE Class="DeviceTemplate" GROUP BY ObjectID;';
+		foreach($dbh->query($sql) as $row){
+			$results[$row['ObjectID']]=$row['Time'];
+		}
+
+		header('Content-Type: application/json');
+		echo json_encode($results);
+		exit;
+	}
+
+// AJAX End
+
 ?>
 <!doctype html>
 <html>
@@ -135,27 +152,17 @@ function convertImgToBase64(url, imgobj) {
 		canvas = null;
 	};
 }
-function test(imageURL){
-	upload=function(data){
-		//.......do something with file
-		var uploadform = new FormData();
-		uploadform.append("dir", "pictures");
-		uploadform.append("filename", imageURL.split('/').pop());
-		uploadform.append("token", token);
-		uploadform.append("timestamp", now);
-		uploadform.append("Filedata",data,imageURL.split('/').pop());
-		var request = new XMLHttpRequest();
-		request.open("POST", "scripts/uploadifive.php");
-		request.send(uploadform);
-	}
-	convertImgToBase64(imageURL, upload);
-}
 
 	$(document).ready(function(){
-		var select_manufacturerid=$('<select>').prop({'id':'slct_ManufacturerID'}).change(PullGlobalTemplates);
+		var select_manufacturerid=$('<select>').prop({'id':'slct_ManufacturerID'});
 		var div_results=$('<div>').prop({'id':'results'});
 		var tbl_results=$('<div>').addClass('table');
 		var arr_localmanf=new Array();
+		var arr_localmodified=new Array();
+
+		$.post('',{'getModifiedTimes':''},function(data){
+			arr_localmodified=data;
+		});
 
 		function MakeRow(dev,type){
 			type=(typeof type=='undefined')?'GlobalID':'LocalID';
@@ -172,7 +179,11 @@ function test(imageURL){
 					row.data('TemplateID',dev.TemplateID).addClass(type+dev.TemplateID);
 					// nest the object so we can use it later
 					row.data('object',row);
-					var cellcontent=$('<div>').text(dev[props[i]]).appendTo(row);
+
+					// Get the local LastModified time from the logging data
+					var localvalue=(typeof dev[props[i]]=='undefined' && props[i]=='LastModified')?arr_localmodified[dev['TemplateID']]:dev[props[i]];
+
+					var cellcontent=$('<div>').text(localvalue).appendTo(row);
 					row[props[i]]=cellcontent;
 					// convert url to an actual image
 					if(props[i].search('PictureFile')!='-1' && dev[props[i]]!=''){
@@ -212,50 +223,8 @@ function test(imageURL){
 
 			// Extend the table row by one field for a button to create/sync/push this template
 			row['command']=$('<div>').appendTo(row);
-			var btn_command=$('<button>').text('pull').appendTo(row['command']);
-
-			// Bind a click event to the button
-			btn_command.on('click',function(e){
-				$.ajax({
-					type: 'put',
-					url: 'https://repository.opendcim.org/api/templatealt',
-					async: false,
-					dataType: "JSON",
-					headers: {
-						'APIKey':window.APIKey,
-						'UserID':window.UserID
-					},
-					data: {
-						template: row.data("localdev"), 
-						templateports: row.data("localdataports"), 
-						templatepowerports: row.data("localpowerports"),
-						slots: row.data("localslots")
-					},
-					success: function(data){
-						if(!data.error){
-							var filedata;
-							// make these easier to reference
-							var fp=row.FrontPictureFile.find('img').data('file');
-							var rp=row.RearPictureFile.find('img').data('file');
-
-							filedata=new FormData();
-							if(typeof fp!='undefined'){
-								filedata.append("front",fp,fp.name);
-							}
-							if(typeof rp!='undefined'){
-								filedata.append("rear",rp,rp.name);
-							}
-							var request = new XMLHttpRequest();
-							request.open("POST", "https://repository.opendcim.org/api/template/addpictures/"+data.template.RequestID);
-							request.setRequestHeader("APIKey",window.APIKey );
-							request.setRequestHeader("UserID",window.UserID );
-							request.send(filedata);
-						}
-					},
-					error: function(data){
-					}
-				});
-			});
+			// Create button for btn_command
+			$('<button>').text('pull').appendTo(row['command']);
 
 			// Make a dialog to show how the ports are named
 			row['DataPorts']=$('<div>').addClass('hiddenports');
@@ -280,6 +249,163 @@ function test(imageURL){
 			resize();
 
 			return row;
+		}
+
+		// Function to sync current global template with local api
+		function pulltoapi(row){
+			var postorput=(typeof row.data('localdev')=='undefined')?'put':'post';
+			var nameorid=(typeof row.data('localdev')=='undefined')?row.data('globaldev').Model:row.data('localdev').TemplateID;
+
+			// Move data off the globaldev object into something we can parse easier
+			var ports=row.data("globaldev").ports;
+			var powerports=row.data("globaldev").powerports;
+			var slots=row.data("globaldev").slots;
+
+			// Check for dolemite's nesting and undo it
+			// Is this a CDU?
+			if(typeof row.data("globaldev").cdutemplate!='undefined'){
+				var dev=row.data("globaldev");
+				for(var i in dev.cdutemplate){
+					dev[i]=dev.cdutemplate[i];
+				}
+				delete dev.cdutemplate;
+			}
+
+			// Is this a Sensor?
+			if(typeof row.data("globaldev").sensor!='undefined'){
+				var dev=row.data("globaldev");
+				for(var i in dev.sensor){
+					dev[i]=dev.sensor[i];
+				}
+				delete dev.sensor;
+			}
+
+			// Are there any dataports defined?
+			if(typeof row.data("globaldev").ports!='undefined'){
+				delete row.data("globaldev").ports;
+			}
+
+			// Are there any power ports defined?
+			if(typeof row.data("globaldev").powerports!='undefined'){
+				delete row.data("globaldev").powerports;
+			}
+
+			// Are there any slots defined?
+			if(typeof row.data("globaldev").slots!='undefined'){
+				delete row.data("globaldev").slots;
+			}
+
+			// Add the front file name
+			if(row.data("globaldev").FrontPictureFile.search('http')!='-1'){
+				row.data("globaldev").FrontPictureFile=row.data("globaldev").FrontPictureFile.split('/').pop();
+			}
+
+			// Alter the rear file name
+			if(row.data("globaldev").RearPictureFile.search('http')!='-1'){
+				row.data("globaldev").RearPictureFile=row.data("globaldev").RearPictureFile.split('/').pop();
+			}
+
+			// Set the global id
+			row.data("globaldev").GlobalID=row.data("globaldev").TemplateID;
+
+			// Set the templateid back to the local value
+			if(postorput==='post'){
+				row.data("globaldev").TemplateID=row.data("localdev").TemplateID;
+			}
+
+			// Find the local manufacturer id from the global value
+			for(var key in arr_localmanf){
+				if(arr_localmanf[key] === row.data("globaldev").ManufacturerID){
+					row.data("globaldev").ManufacturerID=key;
+				}
+			}
+
+			// Slice and dice the image data, if it is set
+			function AddImage(imageURL){
+				var uploadform = new FormData();
+				uploadform.append("dir", "pictures");
+				uploadform.append("filename", imageURL.name);
+				uploadform.append("token", token);
+				uploadform.append("timestamp", now);
+				uploadform.append("Filedata",imageURL,imageURL.name);
+				var request = new XMLHttpRequest();
+				request.open("POST", "scripts/uploadifive.php");
+				request.send(uploadform);
+			}
+
+			$.ajax({
+				type: postorput,
+				url: 'api/v1/devicetemplate/'+nameorid,
+				async: false,
+				dataType: "JSON",
+				data: row.data("globaldev"),
+				success: function(data){
+					if(!data.error){
+						// Template has been created now we need to make the extra bits
+						// Ports, slots, pictures, etc
+
+						if(postorput==='put'){
+							// Add front image
+							if(row.data("globaldev").FrontPictureFile.search('http')!='-1'){
+								AddImage(row.FrontPictureFile.find('img').data('file'));
+							}
+
+							// Add rear image
+							if(row.data("globaldev").RearPictureFile.search('http')!='-1'){
+								AddImage(row.data("object").RearPictureFile.find('img').data('file'));
+							}
+						}else{
+							row.removeClass('change');
+						}
+
+						var btn_command=row.data('object').command.find('button');
+						btn_command.hide();
+					}
+				}
+			});
+		}
+
+		// Function to send current template to the repository
+		function pushtorepo(row){
+			$.ajax({
+				type: 'put',
+				url: 'https://repository.opendcim.org/api/templatealt',
+				async: false,
+				dataType: "JSON",
+				headers: {
+					'APIKey':window.APIKey,
+					'UserID':window.UserID
+				},
+				data: {
+					template: row.data("localdev"), 
+					templateports: row.data("localdataports"), 
+					templatepowerports: row.data("localpowerports"),
+					slots: row.data("localslots")
+				},
+				success: function(data){
+					if(!data.error){
+						var filedata;
+						// make these easier to reference
+						var fp=row.FrontPictureFile.find('img').data('file');
+						var rp=row.RearPictureFile.find('img').data('file');
+
+						filedata=new FormData();
+						if(typeof fp!='undefined'){
+							filedata.append("front",fp,fp.name);
+						}
+						if(typeof rp!='undefined'){
+							filedata.append("rear",rp,rp.name);
+						}
+						var request = new XMLHttpRequest();
+						request.open("POST", "https://repository.opendcim.org/api/template/addpictures/"+data.template.RequestID);
+						request.setRequestHeader("APIKey",window.APIKey );
+						request.setRequestHeader("UserID",window.UserID );
+						request.send(filedata);
+					}
+				},
+				error: function(data){
+				}
+			});
 		}
 
 		function MakeDataPortsTable(ports,insertTarget,label){
@@ -319,6 +445,12 @@ function test(imageURL){
 									btn_command.text('sync');
 								}
 							}
+
+							// check and see if we need to hide the button because the templates are in sync
+							if(!row.hasClass('change')){
+								row['command'].find('button').hide();
+							}	
+
 							// Store the template at the row level so we have easy access later
 							row.data('localdev',data.devicetemplate[i]);
 							$.get('api/v1/devicetemplate/'+data.devicetemplate[i].TemplateID+'/dataports').done(function(data){
@@ -329,6 +461,12 @@ function test(imageURL){
 								row.data('localpowerports',data.powerports);
 //								MakeDataPortsTable(data.dataports,row,'Local');
 							});
+							// Make sure we have a button first, then add the click functionality to it
+							if(typeof btn_command!='undefined'){
+								btn_command.unbind('click').click(function(e){
+									pulltoapi($(e.currentTarget.parentElement.parentElement).data('object'));
+								});
+							}
 						}else{
 							// compare to existing templates that might match, or add a new row
 							var row=MakeRow(data.devicetemplate[i],'LocalID');
@@ -356,7 +494,10 @@ function test(imageURL){
 								});
 							}
 							var btn_command=row['command'].find('button');
-							btn_command.text('push');
+							// Bind a click event to the button
+							btn_command.text('push').click(function(e){
+								pushtorepo(row);
+							});
 						}
 					}
 				}
@@ -371,15 +512,21 @@ function test(imageURL){
 				if(!data.error){
 					MakeRow();
 					for(var i in data.templates){
-						MakeRow(data.templates[i]);
+						var row=MakeRow(data.templates[i]);
+						var btn_command=row['command'].find('button');
+						btn_command.on('click',function(e){
+							pulltoapi($(e.currentTarget.parentElement.parentElement).data('object'));
+						});
 					}
 				}
 			}).then(PullLocalTemplates);
 		}
 
 		$('#btn_pull_templates').click(function(){
+			// redefine the select box here so we can redraw it and maintain the change event
+			select_manufacturerid=$('<select>').prop({'id':'slct_ManufacturerID'});
 			// reset the select list
-			select_manufacturerid.html('').append($('<option>').val(0));
+			select_manufacturerid.html('').append($('<option>').val(0)).on('change',PullGlobalTemplates);
 			$.get('api/v1/manufacturer').done(function(data){
 				if(data.error){
 					alert('api error');
@@ -525,7 +672,7 @@ function test(imageURL){
 		for(var i in ll){
 			table.append(BuildRow(ll[i]));
 		}
-//findme
+
 		$('.main > div.center').html(table);
 		$('#using').remove();
 
