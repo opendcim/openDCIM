@@ -626,7 +626,7 @@ $app->get( '/device/bydatacenter/:datacenterid', function( $datacenterid ) {
 //
 
 $app->get( '/powerport/:deviceid', function($deviceid) use ($app) {
-	$pp=new PowerPorts();
+	$pp=new powerport();
 	
 	$response['error']=false;
 	$response['errorcode']=200;
@@ -642,7 +642,7 @@ $app->get( '/powerport/:deviceid', function($deviceid) use ($app) {
 		// This is to cut down on api calls to get the connected device and port names
 		if($pp->ConnectedDeviceID){
 			$dev=new Device();
-			$dpp=new PowerPorts();
+			$dpp=new powerport();
 			$dev->DeviceID=$dpp->DeviceID=$pp->ConnectedDeviceID;
 			$dpp->PortNumber=$pp->ConnectedPort;
 			$dev->GetDevice();
@@ -768,13 +768,13 @@ $app->get( '/devicetemplate/:templateid', function($templateid) use ($app) {
 });
 
 //
-//	URL:	/api/v1/devicetemplate/:templateid/dataports
+//	URL:	/api/v1/devicetemplate/:templateid/dataport
 //	Method:	GET
 //	Params: templateid
 //	Returns: Data ports defined for device template with templateid
 //
 
-$app->get( '/devicetemplate/:templateid/dataports', function($templateid) use ($app) {
+$app->get( '/devicetemplate/:templateid/dataport', function($templateid) use ($app) {
 	$tp=new TemplatePorts();
 	$tp->TemplateID=$templateid;
 	if(!$ports=$tp->getPorts()){
@@ -784,20 +784,20 @@ $app->get( '/devicetemplate/:templateid/dataports', function($templateid) use ($
 	}else{
 		$response['error']=false;
 		$response['errorcode']=200;
-		$response['dataports']=$ports;
+		$response['dataport']=$ports;
 	}
 
 	echoResponse(200,$response);
 });
 
 //
-//	URL:	/api/v1/devicetemplate/:templateid/dataports/:portnumber
+//	URL:	/api/v1/devicetemplate/:templateid/dataport/:portnumber
 //	Method:	GET
 //	Params: templateid. portnumber
 //	Returns: Single data port defined for device template with templateid and portnum
 //
 
-$app->get( '/devicetemplate/:templateid/dataports/:portnumber', function($templateid,$portnumber) use ($app) {
+$app->get( '/devicetemplate/:templateid/dataport/:portnumber', function($templateid,$portnumber) use ($app) {
 	$tp=new TemplatePorts();
 	$tp->TemplateID=$templateid;
 	$tp->PortNumber=$portnumber;
@@ -808,20 +808,20 @@ $app->get( '/devicetemplate/:templateid/dataports/:portnumber', function($templa
 	}else{
 		$response['error']=false;
 		$response['errorcode']=200;
-		$response['dataports']=$tp;
+		$response['dataport']=$tp;
 	}
 
 	echoResponse(200,$response);
 });
 
 //
-//	URL:	/api/v1/devicetemplate/:templateid/powerports
+//	URL:	/api/v1/devicetemplate/:templateid/powerport
 //	Method:	GET
 //	Params: templateid
 //	Returns: Power ports defined for device template with templateid
 //
 
-$app->get( '/devicetemplate/:templateid/powerports', function($templateid) use ($app) {
+$app->get( '/devicetemplate/:templateid/powerport', function($templateid) use ($app) {
 	$tp=new TemplatePowerPorts();
 	$tp->TemplateID=$templateid;
 	if(!$ports=$tp->getPorts()){
@@ -831,7 +831,7 @@ $app->get( '/devicetemplate/:templateid/powerports', function($templateid) use (
 	}else{
 		$response['error']=false;
 		$response['errorcode']=200;
-		$response['powerports']=$ports;
+		$response['powerport']=$ports;
 	}
 
 	echoResponse(200,$response);
@@ -991,7 +991,7 @@ $app->post('/people/:peopleid/transferdevicesto/:newpeopleid', function($peoplei
 //
 
 $app->post( '/powerport/:deviceid', function($deviceid) use ($app, $person) {
-	$pp=new PowerPorts();
+	$pp=new powerport();
 	$pp->DeviceID=$deviceid;
 	foreach($app->request->post() as $prop => $val){
 		$pp->$prop=$val;
@@ -1126,7 +1126,7 @@ $app->post( '/devicetemplate/:templateid', function($templateid) use ($app,$pers
 //	Returns: true/false on update operation
 //
 
-$app->post( '/devicetemplate/:templateid/dataports/:portnumber', function($templateid,$portnumber) use ($app,$person) {
+$app->post( '/devicetemplate/:templateid/dataport/:portnumber', function($templateid,$portnumber) use ($app,$person) {
 	$tp=new TemplatePorts();
 	$tp->TemplateID=$templateid;
 	$tp->PortNumber=$portnumber;
@@ -1151,7 +1151,7 @@ $app->post( '/devicetemplate/:templateid/dataports/:portnumber', function($templ
 			}else{
 				$response['error']=false;
 				$response['errorcode']=200;
-				$response['dataports']=$tp;
+				$response['dataport']=$tp;
 			}
 		}
 	}
@@ -1385,7 +1385,7 @@ $app->put( '/devicetemplate/:model', function($model) use ($app,$person) {
 //	Returns: record as created 
 //
 
-$app->put( '/devicetemplate/:templateid/dataports/:portnum', function($templateid,$portnum) use ($app) {
+$app->put( '/devicetemplate/:templateid/dataport/:portnum', function($templateid,$portnum) use ($app,$person) {
 	$tp=new TemplatePorts();
 	foreach($app->request->put() as $prop => $val){
 		$tp->$prop=$val;
@@ -1406,7 +1406,44 @@ $app->put( '/devicetemplate/:templateid/dataports/:portnum', function($templatei
 		}else{
 			$response['error']=false;
 			$response['errorcode']=200;
-			$response['dataports']=$tp;
+			$response['dataport']=$tp;
+		}
+	}
+
+	echoResponse(200,$response);
+});
+
+//
+//	URL:	/api/v1/devicetemplate/:templateid/powerport/:portnum
+//	Method:	PUT
+//	Params:	
+//		Required: templateid, portnum, portlabel
+//		Optional: everything else
+//	Returns: record as created 
+//
+
+$app->put( '/devicetemplate/:templateid/powerport/:portnum', function($templateid,$portnum) use ($app,$person) {
+	$tp=new TemplatePowerPorts();
+	foreach($app->request->put() as $prop => $val){
+		$tp->$prop=$val;
+	}
+	// This should be in the commit data but if we get a smartass saying it's in the URL
+	$tp->TemplateID=$templateid;
+	$tp->PortNumber=$portnum;
+
+	if(!$person->WriteAccess){
+		$response['error']=true;
+		$response['errorcode']=403;
+		$response['message']=__("Unauthorized");
+	}else{
+		if(!$tp->CreatePort()){
+			$response['error']=true;
+			$response['errorcode']=404;
+			$response['message']=__("Device template port creation failed");
+		}else{
+			$response['error']=false;
+			$response['errorcode']=200;
+			$response['powerport']=$tp;
 		}
 	}
 
@@ -1431,7 +1468,7 @@ $app->put( '/devicetemplate/:templateid/dataports/:portnum', function($templatei
 //
 
 $app->delete( '/powerport/:deviceid', function($deviceid) use ($app, $person) {
-	$pp=new PowerPorts();
+	$pp=new powerport();
 	$pp->DeviceID=$deviceid;
 	foreach($app->request->delete() as $prop => $val){
 		$pp->$prop=$val;

@@ -470,7 +470,7 @@ CREATE TABLE fac_People (
   APIToken varchar(80) NOT NULL,
   Disabled tinyint(1) NOT NULL,
   PRIMARY KEY(PersonID),
-  KEY(UserID)
+  UNIQUE KEY UserID (UserID)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 --

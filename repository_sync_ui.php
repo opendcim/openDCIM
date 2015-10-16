@@ -226,9 +226,9 @@ function convertImgToBase64(url, imgobj) {
 			// Create button for btn_command
 			$('<button>').text('pull').appendTo(row['command']);
 
-			// Make a dialog to show how the ports are named
+			// Make a dialog to show how the data ports are named
 			row['DataPorts']=$('<div>').addClass('hiddenports');
-			row.NumPorts.click(function(){
+			row.NumPorts.click(function(e){
 				row['DataPorts'].dialog({
 					width: 350,
 					modal: true,
@@ -240,10 +240,26 @@ function convertImgToBase64(url, imgobj) {
 				});
 			});
 
+			// Make a dialog to show how the power ports are named
+			row['PowerPorts']=$('<div>').addClass('hiddenports');
+			row.PSCount.click(function(e){
+				row['PowerPorts'].dialog({
+					width: 350,
+					modal: true,
+					open: function(){
+						$('.ui-widget-overlay').bind('click',function(){
+							row['PowerPorts'].dialog('close');
+						});
+					}
+				});
+			});
+
 			// Store the ports at the row level for easy access later
 			(type=='GlobalID')?row.data('globaldataports',dev.ports):row.data('localdataports',dev.ports);
+			(type=='GlobalID')?row.data('globalpowerports',dev.powerports):row.data('localpowerports',dev.powerports);
 			// Add the data ports table to the dialog made above
-			MakeDataPortsTable(dev.ports,row,'Repository');
+			MakePortsTable(dev.ports,row,'Repository','data');
+			MakePortsTable(dev.powerports,row,'Repository','power');
 
 			// Call page resize function since we just inserted something to the dom
 			resize();
@@ -354,6 +370,14 @@ function convertImgToBase64(url, imgobj) {
 							if(row.data("globaldev").RearPictureFile!=''){
 								AddImage(row.data("object").RearPictureFile.find('img').data('file'));
 							}
+
+							// Create ports
+							for(var i in row.data("globaldataports")){
+								$.ajax({type: postorput,url: 'api/v1/devicetemplate/'+data.devicetemplate.TemplateID+'/dataport/'+(parseInt(i)+1),async: false,data: row.data("globaldataports")[i]}).complete(function(data){});
+							}
+							for(var i in row.data("globalpowerports")){
+								$.ajax({type: postorput,url: 'api/v1/devicetemplate/'+data.devicetemplate.TemplateID+'/powerport/'+(parseInt(i)+1),async: false,data: row.data("globalpowerports")[i]}).complete(function(data){});
+							}
 						}else{
 							row.removeClass('change');
 						}
@@ -408,10 +432,20 @@ function convertImgToBase64(url, imgobj) {
 			});
 		}
 
-		function MakeDataPortsTable(ports,insertTarget,label){
+		/*
+		 * Simple function to generate a table to display the port names
+		 *
+		 * ports: array of ports
+		 * insertTarget: jquery row object
+		 * label: Local or Repository
+		 * type: data or power
+		 */
+
+		function MakePortsTable(ports,insertTarget,label,type){
 			// Make a table to embed in the dialog we established above 
 			var tbl_dataports=$('<div>').addClass('table');
-			insertTarget['DataPorts'].append(tbl_dataports);
+			var porttype=(type=='data')?'DataPorts':'PowerPorts';
+			insertTarget[porttype].append(tbl_dataports);
 			// wrap the table with another div so we can do an inline-block
 			tbl_dataports.wrap('<div></div>');
 			var portheader=$('<div>');
@@ -434,10 +468,9 @@ function convertImgToBase64(url, imgobj) {
 				if(!data.error){
 					for(var i in data.devicetemplate){
 						if(data.devicetemplate[i].GlobalID>0){
-							var row;
+							var row=$('.GlobalID'+data.devicetemplate[i].GlobalID).data('object');
 							// compare to existing template to see if anything has changed
 							for(var p in props=['Model','Height','Weight','Wattage','DeviceType','PSCount','NumPorts','ChassisSlots','RearChassisSlots']){
-								row=$('.GlobalID'+data.devicetemplate[i].GlobalID).data('object');
 								if(row[props[p]].text()!=data.devicetemplate[i][props[p]]){
 									row.addClass('change');
 									row[props[p]].addClass('diff').prop('title',data.devicetemplate[i][props[p]]);
@@ -450,16 +483,15 @@ function convertImgToBase64(url, imgobj) {
 							if(!row.hasClass('change')){
 								row['command'].find('button').hide();
 							}	
-
 							// Store the template at the row level so we have easy access later
 							row.data('localdev',data.devicetemplate[i]);
-							$.get('api/v1/devicetemplate/'+data.devicetemplate[i].TemplateID+'/dataports').done(function(data){
+							$.ajax({url:'api/v1/devicetemplate/'+data.devicetemplate[i].TemplateID+'/dataport',type:'get',async:false}).done(function(data){
 								row.data('localdataports',data.dataports);
-								MakeDataPortsTable(data.dataports,row,'Local');
+								MakePortsTable(data.dataports,row,'Local','data');
 							});
-							$.get('api/v1/devicetemplate/'+data.devicetemplate[i].TemplateID+'/powerports').done(function(data){
+							$.ajax({url:'api/v1/devicetemplate/'+data.devicetemplate[i].TemplateID+'/powerport',type:'get',async:false}).done(function(data){
 								row.data('localpowerports',data.powerports);
-//								MakeDataPortsTable(data.dataports,row,'Local');
+								MakePortsTable(data.powerports,row,'Local','power');
 							});
 							// Make sure we have a button first, then add the click functionality to it
 							if(typeof btn_command!='undefined'){
@@ -471,15 +503,15 @@ function convertImgToBase64(url, imgobj) {
 							// compare to existing templates that might match, or add a new row
 							var row=MakeRow(data.devicetemplate[i],'LocalID');
 							if(data.devicetemplate[i].NumPorts>0){
-								$.ajax({url: 'api/v1/devicetemplate/'+data.devicetemplate[i].TemplateID+'/dataports', type:'get',async: false}).done(function(data){
+								$.ajax({url: 'api/v1/devicetemplate/'+data.devicetemplate[i].TemplateID+'/dataport', type:'get',async: false}).done(function(data){
 									row.data('localdataports',data.dataports);
-									MakeDataPortsTable(data.dataports,row,'Local');
+									MakePortsTable(data.dataports,row,'Local','data');
 								});
 							}
 							if(data.devicetemplate[i].PSCount>0){
-								$.ajax({url: 'api/v1/devicetemplate/'+data.devicetemplate[i].TemplateID+'/powerports', type:'get',async: false}).done(function(data){
+								$.ajax({url: 'api/v1/devicetemplate/'+data.devicetemplate[i].TemplateID+'/powerport', type:'get',async: false}).done(function(data){
 									row.data('localpowerports',data.powerports);
-	//								MakeDataPortsTable(data.dataports,row,'Local');
+									MakePortsTable(data.powerports,row,'Local','power');
 								});
 							}
 							if(data.devicetemplate[i].ChassisSlots>0 || data.devicetemplate[i].RearChassisSlots>0){
@@ -496,7 +528,7 @@ function convertImgToBase64(url, imgobj) {
 							var btn_command=row['command'].find('button');
 							// Bind a click event to the button
 							btn_command.text('push').click(function(e){
-								pushtorepo(row);
+								pushtorepo($(e.currentTarget.parentElement.parentElement).data('object'));
 							});
 						}
 					}
