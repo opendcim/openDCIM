@@ -838,56 +838,6 @@ function convertImgToBase64(url, imgobj) {
 
 		return pl;
 	}
-
-	function DeleteManufacturer(){
-		function DeleteNow(manufacturerid){
-			// If manufacturerid unset then just delete 
-			transferto=(typeof(manufacturerid)=='undefined')?0:manufacturerid;
-			$.post('',{ManufacturerID: $('#ManufacturerID').val(), TransferTo: transferto, action: 'Delete'},function(data){
-				if(data){
-					location.href='';
-				}else{
-					alert("Something's gone horrible wrong");
-				}
-			});
-		}
-
-		// if there aren't any templates using this manufacturer just delete it.
-		if(parseInt(UpdateCount())){
-			$('#copy').replaceWith($('#ManufacturerID').clone().attr('id','copy'));
-			$('#copy option[value=0]').remove();
-			$('#copy option[value='+$('#ManufacturerID').val()+']').remove();
-			$('#deletemodal').dialog({
-				width: 600,
-				modal: true,
-				buttons: {
-					Transfer: function(e){
-						$('#doublecheck').dialog({
-							width: 600,
-							modal: true,
-							buttons: {
-								Yes: function(e){
-									DeleteNow($('#copy').val());
-								},
-								No: function(e){
-									$('#doublecheck').dialog('destroy');
-									$('#deletemodal').dialog('destroy');
-								}
-							}
-						});
-					},
-					No: function(e){
-						$('#deletemodal').dialog('destroy');
-					}
-				}
-			});
-		}else{
-			DeleteNow();
-		}
-	}
-
-
-
   </script>
 </head>
 <body>
