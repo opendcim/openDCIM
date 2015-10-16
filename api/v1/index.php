@@ -626,7 +626,7 @@ $app->get( '/device/bydatacenter/:datacenterid', function( $datacenterid ) {
 //
 
 $app->get( '/powerport/:deviceid', function($deviceid) use ($app) {
-	$pp=new powerport();
+	$pp=new PowerPorts();
 	
 	$response['error']=false;
 	$response['errorcode']=200;
@@ -642,7 +642,7 @@ $app->get( '/powerport/:deviceid', function($deviceid) use ($app) {
 		// This is to cut down on api calls to get the connected device and port names
 		if($pp->ConnectedDeviceID){
 			$dev=new Device();
-			$dpp=new powerport();
+			$dpp=new PowerPorts();
 			$dev->DeviceID=$dpp->DeviceID=$pp->ConnectedDeviceID;
 			$dpp->PortNumber=$pp->ConnectedPort;
 			$dev->GetDevice();
@@ -991,7 +991,7 @@ $app->post('/people/:peopleid/transferdevicesto/:newpeopleid', function($peoplei
 //
 
 $app->post( '/powerport/:deviceid', function($deviceid) use ($app, $person) {
-	$pp=new powerport();
+	$pp=new PowerPorts();
 	$pp->DeviceID=$deviceid;
 	foreach($app->request->post() as $prop => $val){
 		$pp->$prop=$val;
@@ -1468,7 +1468,7 @@ $app->put( '/devicetemplate/:templateid/powerport/:portnum', function($templatei
 //
 
 $app->delete( '/powerport/:deviceid', function($deviceid) use ($app, $person) {
-	$pp=new powerport();
+	$pp=new PowerPorts();
 	$pp->DeviceID=$deviceid;
 	foreach($app->request->delete() as $prop => $val){
 		$pp->$prop=$val;
