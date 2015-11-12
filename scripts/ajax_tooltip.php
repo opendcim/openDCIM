@@ -289,6 +289,16 @@ if($object>0){
 				case "PanelPole":
 					$tooltip.=__($row["Label"]).": ".$pdu->GetAllBreakerPoles()."<br>\n";
 					break;
+				case "PrimaryContact":
+					$pc = new People();
+					$pc->PersonID = $dev->PrimaryContact;
+					if ( $pc->PersonID > 0 ) {
+						$pc->GetPerson();
+						$tooltip.=__($row["Label"]).": ".$pc->LastName.", ".$pc->FirstName."<br>\n";
+					} else {
+						$tooltip.=__($row["Label"]).": ".__("Unassigned")."<br>\n";
+					}
+					break;
 				case "Weight":
 					$dev->$row["Field"]=$dev->GetDeviceTotalWeight();
 					goto end; // cringe now
