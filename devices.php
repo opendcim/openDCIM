@@ -2171,6 +2171,20 @@ echo '	<div class="table">
 <div><div>
 <div class="table style">
 <?php
+// Button block used for selection limiter
+$connectioncontrols=($dev->DeviceID>0 && !empty($portList))?'
+<span style="display: inline-block; vertical-align: super;">'.__("Limit device selection to").':</span>
+<div id="connection-limiter" data-role="controlgroup" data-type="horizontal">
+	<input type="radio" name="connection-limiter" id="radio-choice-1" value="row" />
+	<label for="radio-choice-1">Row</label>
+	<input type="radio" name="connection-limiter" id="radio-choice-2" value="zone" />
+	<label for="radio-choice-2">Zone</label>
+	<input type="radio" name="connection-limiter" id="radio-choice-3" value="datacenter" />
+	<label for="radio-choice-3">Datacenter</label>
+	<input type="radio" name="connection-limiter" id="radio-choice-4" value="global" />
+	<label for="radio-choice-4">Global</label>
+</div>':'';
+
 	// Operational log
 	// This is an optional block if logging is enabled
 	if(class_exists('LogActions') && $dev->DeviceID >0){
@@ -2191,8 +2205,10 @@ echo '	<div class="table">
 		// The input box and button
 		print "\t\t\t<div><div><button type=\"button\">Add note</button><div><input /></div></div></div>\n";
 
+
 		print "\t\t  </div></div>\n\t\t</div>\n";
-		print "\t\t<!-- Spacer --><div><div>&nbsp;</div><div></div></div><!-- END Spacer -->\n"; // spacer row
+		//hide the connection limiters if not on a patch panel.
+		print "\t\t<!-- Spacer --><div><div>&nbsp;</div><div>".(($dev->DeviceType=='Patch Panel')?$connectioncontrols:'')."</div></div><!-- END Spacer -->\n"; // spacer row
 	}
 
 	//HTML content condensed for PHP logic clarity.
@@ -2232,18 +2248,6 @@ echo '	<div class="table">
 					<div data-default=\"$cord->Notes\">$cord->Notes</div>
 				</div>\n";
 			}
-$connectioncontrols=($dev->DeviceID>0 && !empty($portList))?'
-<span style="display: inline-block; vertical-align: super;">'.__("Limit device selection to").':</span>
-<div id="connection-limiter" data-role="controlgroup" data-type="horizontal">
-	<input type="radio" name="connection-limiter" id="radio-choice-1" value="row" />
-	<label for="radio-choice-1">Row</label>
-	<input type="radio" name="connection-limiter" id="radio-choice-2" value="zone" />
-	<label for="radio-choice-2">Zone</label>
-	<input type="radio" name="connection-limiter" id="radio-choice-3" value="datacenter" />
-	<label for="radio-choice-3">Datacenter</label>
-	<input type="radio" name="connection-limiter" id="radio-choice-4" value="global" />
-	<label for="radio-choice-4">Global</label>
-</div>':'';
 
 			print "			</div><!-- END div.table --></div>\n		</div><!-- END power connections -->\n		<!-- Spacer --><div><div>&nbsp;</div><div>$connectioncontrols</div></div><!-- END Spacer -->\n";
 
