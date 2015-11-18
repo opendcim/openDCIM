@@ -110,7 +110,7 @@ echo $head,'  <script type="text/javascript" src="scripts/jquery.min.js"></scrip
 
 if($config->ParameterArray["ToolTips"]=='enabled'){
 ?>
-		$('.cabinet td:has(a):not(:has(img)), #zerou div > a, .cabinet .picture a img, .cabinet .picture a > div').mouseenter(function(){
+		$('.cabinet div[id^="servercontainer"], #infopanel').on('mouseenter', 'div > div.genericdevice, div > div a > img, #zerou div > a', function(){
 			var pos=$(this).offset();
 			var tooltip=$('<div />').css({
 				'left':pos.left+this.getBoundingClientRect().width+15+'px',
