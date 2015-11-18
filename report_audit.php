@@ -245,7 +245,7 @@ $(function(){
 	
 	// First query - Summary of all auditors, including the total within the selected period and the date of the last audit
 	
-	$sql = sprintf( "select count(*) as TotalCabinets, a.*, b.Name from fac_GenericLog a, fac_User b where a.Action=\"CertifyAudit\" and a.UserID=b.UserID and %s date(Time)>='%s' and date(Time)<='%s' group by UserID order by count(*) ASC", $dcLimit, $startDate, $endDate );
+	$sql = sprintf( "select count(*) as TotalCabinets, a.*, CONCAT(b.LastName,', ',b.FirstName) as Name from fac_GenericLog a, fac_People b where a.Action=\"CertifyAudit\" and a.UserID=b.UserID and %s date(Time)>='%s' and date(Time)<='%s' group by UserID order by count(*) ASC", $dcLimit, $startDate, $endDate );
 	$summaryResult=$dbh->query($sql);
 	
 	// Second query - List of all cabinets audits in the time period, sorted and grouped by date
@@ -335,7 +335,7 @@ $(function(){
 		$showDate = true;
 		$pdf->Bookmark( $auditDate, 1, 0 );
 		
-		$sql = sprintf( "select b.Location as 'Cabinet Location', c.Name as Auditor, a.NewVal as Comments from fac_GenericLog a, fac_Cabinet b, fac_User c where a.Action=\"CertifyAudit\" and a.UserID=c.UserID and a.ObjectID=b.CabinetID and date(a.Time)=\"%s\"", $row["AuditDate"] );
+		$sql = sprintf( "select b.Location as 'Cabinet Location', CONCAT(c.LastName,', ',c.FirstName) as Auditor, a.NewVal as Comments from fac_GenericLog a, fac_Cabinet b, fac_People c where a.Action=\"CertifyAudit\" and a.UserID=c.UserID and a.ObjectID=b.CabinetID and date(a.Time)=\"%s\"", $row["AuditDate"] );
 
 		foreach($dbh->query($sql) as $resRow){		
 			if ( $showDate ) {
@@ -419,7 +419,7 @@ $(function(){
 	$pdf->Ln();
 	
 	foreach ( $cabList as $tmpCab ) {
-		$sql = sprintf( "select a.Time as AuditDate, b.Name as Auditor, a.NewVal as Comments from fac_GenericLog a, fac_User b where a.Action=\"CertifyAudit\" and a.UserID=b.UserID and ObjectID='%d' and date(Time)>='%s' and date(Time)<='%s' order by Time DESC", $tmpCab->CabinetID, $startDate, $endDate );
+		$sql = sprintf( "select a.Time as AuditDate, CONCAT(b.LastName,', ',b.FirstName) as Auditor, a.NewVal as Comments from fac_GenericLog a, fac_People b where a.Action=\"CertifyAudit\" and a.UserID=b.UserID and ObjectID='%d' and date(Time)>='%s' and date(Time)<='%s' order by Time DESC", $tmpCab->CabinetID, $startDate, $endDate );
 
 		$showCab = true;
 
