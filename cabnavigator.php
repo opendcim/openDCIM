@@ -135,7 +135,7 @@ function renderUnassignedTemplateOwnership($noTemplFlag, $noOwnerFlag, $device) 
 
 	// You just have WriteAccess in order to perform/certify a rack audit
 	if(isset($_POST["audit"]) && $_POST["audit"]=="yes" && $person->CanWrite($cab->AssignedTo)){
-		$audit->Comments=sanitize($_POST["comment"]);
+		$audit->Comments=sanitize($_POST["comments"]);
 		// Log the response
 		$audit->CertifyAudit();
 

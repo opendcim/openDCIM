@@ -571,6 +571,7 @@
 					}
 				}
 
+				// This shouldn't be needed now that we have the pdu model getting extended onto the device model. and we can just reference pdu as a variable to dev
 				if($dev->DeviceType=="CDU" || (isset($_POST['DeviceType']) && $_POST['DeviceType']=="CDU")){
 					$pdu->PDUID=$dev->DeviceID;
 					$pdu->GetPDU();
