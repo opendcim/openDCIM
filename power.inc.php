@@ -553,6 +553,31 @@ class PowerPorts {
 		
 		return $portList;
 	}
+
+	static function getConnectedPortList($DeviceID){
+		global $dbh;
+		
+		$dev=new Device();
+		$dev->DeviceID=$DeviceID;
+		if(!$dev->GetDevice()){
+			return false;	// This device doesn't exist
+		}
+		
+		$sql="SELECT * FROM fac_PowerPorts WHERE DeviceID=$dev->DeviceID and ConnectedDeviceID>0";
+		
+		$portList=array();
+		foreach($dbh->query($sql) as $row){
+			$portList[$row['PortNumber']]=PowerPorts::RowToObject($row);
+		}
+		
+		if( sizeof($portList)==0 && $dev->DeviceType!="Physical Infrastructure" ){
+			// somehow this device doesn't have ports so make them now
+			$portList=PowerPorts::createPorts($dev->DeviceID);
+		}
+		
+		return $portList;
+	}
+
 }
 
 class PowerConnection {

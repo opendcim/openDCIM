@@ -45,16 +45,22 @@ if (!isset($_REQUEST['action'])){
 		printf( "<tr><td>%s:</td><td>\n", __("Data Center") );
 		printf( "<select name=\"datacenterid\" onChange=\"form.submit()\">\n" );
 		printf( "<option value=\"\">%s</option>\n", __("Select data center") );
-		
+		printf( "<option value=\"-1\">%s</option>\n", __("All Data Centers"));
 		foreach ( $dcList as $dc )
 			printf( "<option value=\"%d\">%s</option>\n", $dc->DataCenterID, $dc->Name );
 		
 		printf( "</td></tr>" );
 	} else {
-		$datacenter->DataCenterID = $_REQUEST['datacenterid'];
-		$datacenter->GetDataCenter();
-		
-		$sourceList = $pwrPanel->getSourcesByDataCenter( $datacenter->DataCenterID );
+		if ( $_REQUEST['datacenterid'] > 0 ) {
+			/* If the datacenterid > 0, then it's a single data center */
+			$datacenter->DataCenterID = $_REQUEST['datacenterid'];
+			$datacenter->GetDataCenter();
+			
+			$sourceList = $pwrPanel->getSourcesByDataCenter( $datacenter->DataCenterID );
+		} else {
+			/*	All data centers were selected, so get ALL sources */
+			$sourceList = $pwrPanel->GetSources();
+		}
 		printf( "<input type=\"hidden\" name=\"datacenterid\" value=\"%d\">\n", $datacenter->DataCenterID );
 		
 		printf( "<h3>%s: %s</h3>", __("Choose either power sources or panels to simulate for Data Center"), $datacenter->Name );
@@ -156,9 +162,9 @@ echo '		<div class="main">
 	$pdu = new PowerDistribution();
 	$dev = new Device();
 	$cab = new Cabinet();
+	$tmpPerson = new People();
 	$dept = new Department();
 	$dc = new DataCenter();
-	$pwrConn = new PowerConnection();
 	
 	// Make some quick user defined sort comparisons for this report only
 	
@@ -240,7 +246,7 @@ echo '		<div class="main">
 		
 		array_push( $pnlArray, $pnlDown->PanelID );
 	}
-	
+
 	// And finally, build a list of cabinets that have at least one circuit from the affected panels
 	
 	$cabIDList = array();
@@ -286,7 +292,7 @@ echo '		<div class="main">
 	}
 	
 	echo "<table id=\"report\" class=\"display\">\n<thead>\n";
-	foreach ( array( __("Cabinet"), __("Device Name"), __("Status"), __("Position"), __("Affected Panels"), __("Owner") ) as $header )
+	foreach ( array( __("Cabinet"), __("Device Name"), __("Status"), __("Position"), __("Primary Contact"), __("Owner") ) as $header )
 		printf( "<th>%s</th>\n", $header );
 	echo "</thead>\n<tbody>\n";
 		
@@ -302,18 +308,10 @@ echo '		<div class="main">
 		$st->setFetchMode( PDO::FETCH_CLASS, "PowerPanel" );
 		
 		$diversity = false;
-		$cduPanelList = array();
-		foreach ( $cabPDUList as $testPDU ) {
-			if ( ! in_array( $testPDU->PanelID, $pnlArray ) )
-				$diversity = true;
-			$st->execute( array( ":PanelID"=>$testPDU->PanelID ) );
-			while ( $row = $st->fetch() ) {
-				$cduPanelList[$testPDU->PDUID] = $row;
-			}
-		}
-		
+
 		// Basic device selection based on the CabinetID
-		$sql = "SELECT fac_Device.* FROM fac_Device WHERE Cabinet=" . intval( $cabRow->CabinetID );
+		// Filter out all reservations, devices with no power supplies, power strips, and chassis slot cards
+		$sql = "SELECT * FROM fac_Device WHERE Reservation=0 AND PowerSupplyCount>0 AND DeviceType not in ('CDU','Patch Panel','Physical Infrastructure') AND ParentDevice=0 AND Cabinet=" . intval( $cabRow->CabinetID );
 
 		// If tags were added, only include devices with tags that are in the Include array
 		if ( sizeof( $includeTags ) > 0 ) {
@@ -352,76 +350,85 @@ echo '		<div class="main">
 				$downPanels = "";
 				$outageStatus = __("Down");
 				
-				if ( (! $devRow->Reservation) && $devRow->PowerSupplyCount > 0 ) {	// No need to even process devices that aren't installed, yet or that have 0 power supplies
-					// If there is not a circuit to the cabinet that is unaffected, no need to even check
-					if ( $diversity ) {
-						// If a circuit was entered with no panel ID, or a device has no connections documented, mark it as unknown
-						// The only way to be sure a device will stay up is if we have a connection to an unaffected circuit,
-						// or to a failsafe switch (ATS) connected to at least one unaffected circuit.
-						$outageStatus = __("Down");
-						
-						$pwrConn->DeviceID = $devRow->DeviceID;
-						$connList = $pwrConn->GetConnectionsByDevice();
-						
-						$devPDUList = array();
-						$fsDiverse = false;
-						
-						if ( count( $connList ) == 0 ) {
-							$outageStatus = __("Unknown");
-						}
-
-						foreach ( $connList as $connection ) {
-							// If the connection is to a PDU that is NOT in the affected PDU list, and is not already in the diversity list, add it
-
-							if ( ! in_array( $connection->PDUID, $pduArray ) ) {
-								if ( ! in_array( $connection->PDUID, $devPDUList ) )
-									array_push( $devPDUList, $connection->PDUID );
-
-							}
-
-							if ( in_array( $connection->PDUID, $fsArray ) ) {
-								$fsDiverse = true;
-							}
-						}
-						
-						if ( count( $devPDUList ) > 0 ) {
-							if ( count( $devPDUList ) < $devRow->PowerSupplyCount )
-								$outageStatus = __("Degraded");
-							elseif ( $fsDiverse )
-								$outageStatus = __("Degraded/Fail-Safe");
-							else
-								$outageStatus = __("Normal");
-						}
-						
-						foreach ( $devPDUList as $dp ) {
-							if ( strlen( $downPanels ) > 0 ) {
-								$downPanels .= ", ";
-							}
-							$downPanels .= @$cduPanelList[$dp]->PanelLabel;
-						}
-					} else {
-						foreach ( $cduPanelList as $cp ) {
-							if ( strlen( $downPanels ) > 0 ) {
-								$downPanels .= ", ";
-							}
-							$downPanels .= $cp->PanelLabel;
-						}
+				// If there is not a circuit to the cabinet that is unaffected, no need to even check
+				if ( $diversity ) {
+					// If a circuit was entered with no panel ID, or a device has no connections documented, mark it as unknown
+					// The only way to be sure a device will stay up is if we have a connection to an unaffected circuit,
+					// or to a failsafe switch (ATS) connected to at least one unaffected circuit.
+					$outageStatus = __("Down");
+					
+					$connList = PowerPorts::getConnectedPortList( $devRow->DeviceID );
+					
+					$devPDUList = array();
+					$fsDiverse = false;
+					
+					if ( count( $connList ) == 0 ) {
+						$outageStatus = __("Undocumented");
 					}
 
-					if ( ! $skipNormal || ( $skipNormal && ( $outageStatus == __("Down") || $outageStatus == __("Unknown") ) ) ) {
+					foreach ( $connList as $connection ) {
+						// If the connection is to a PDU that is NOT in the affected PDU list, and is not already in the diversity list, add it
+
+						if ( ! in_array( $connection->ConnectedDeviceID, $pduArray ) ) {
+							if ( ! in_array( $connection->ConnectedDeviceID, $devPDUList ) )
+								array_push( $devPDUList, $connection->ConnectedDeviceID );
+
+						}
+
+						if ( in_array( $connection->ConnectedDeviceID, $fsArray ) ) {
+							$fsDiverse = true;
+						}
+					}
+					
+					if ( count( $devPDUList ) > 0 ) {
+						if ( count( $devPDUList ) < $devRow->PowerSupplyCount )
+							$outageStatus = __("Degraded");
+						elseif ( $fsDiverse )
+							$outageStatus = __("Degraded/Fail-Safe");
+						else
+							$outageStatus = __("Normal");
+					}
+				}
+
+				if ( ! $skipNormal || ( $skipNormal && ( $outageStatus == __("Down") || $outageStatus == __("Undocumented") ) ) ) {
+					echo "<tr>\n";
+					printf( "<td>%s</td>\n", $cabRow->Location );
+					printf( "<td>%s</td>\n", $devRow->Label );
+					printf( "<td>%s</td>\n", $outageStatus );
+					printf( "<td>%s</td>\n", $devRow->Position );
+
+					$tmpPerson->PersonID = $devRow->PrimaryContact;
+					$tmpPerson->GetPerson();
+
+					printf( "<td>%s</td>\n", $tmpPerson->Email );
+
+					$dept->DeptID = $devRow->Owner;
+					$dept->GetDeptByID();
+
+					printf( "<td>%s</td>\n", $dept->Name );
+					
+					echo "</tr>\n";
+				}
+
+				if ( $devRow->ChassisSlots>0 || $devRow->RearChassisSlots>0 ) {
+					$kidList = $devRow->GetDeviceChildren();
+					foreach ( $kidList as $k ) {
+						$tmpPerson->PersonID = $devRow->PrimaryContact;
+						$tmpPerson->GetPerson();
 						echo "<tr>\n";
 						printf( "<td>%s</td>\n", $cabRow->Location );
-						printf( "<td>%s</td>\n", $devRow->Label );
+						printf( "<td>%s</td>\n", $k->Label );
 						printf( "<td>%s</td>\n", $outageStatus );
-						printf( "<td>%s</td>\n", $devRow->Position );
-						printf( "<td>%s</td>\n", $downPanels );
+						printf( "<td>%s</td>\n", __("Child"));
+						printf( "<td>%s</td>\n", $tmpPerson->Email );
 
-						$dept->DeptID = $devRow->Owner;
+						$dept->DeptID = $k->Owner;
 						$dept->GetDeptByID();
 
 						printf( "<td>%s</td>\n", $dept->Name );
 						
 						echo "</tr>\n";
+
 					}
 				}
 			}
