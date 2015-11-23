@@ -10,6 +10,7 @@
 	$templ=new DeviceTemplate();
 	$dept=new Department();
 	$dev=new Device();
+	$cont=new Contact();
 	
 	$body="";
 
@@ -18,9 +19,9 @@
 		if($dc!=''){
 			$dc=intval($dc);
 			if($dc==0){
-				$sql="select a.Name as DataCenter, b.DeviceID, c.Location, b.Position, b.Height, b.Label, b.DeviceType, b.AssetTag, b.SerialNo, b.InstallDate, b.TemplateID, b.Owner from fac_DataCenter a, fac_Device b, fac_Cabinet c where b.Cabinet=c.CabinetID and c.DataCenterID=a.DataCenterID order by DataCenter ASC, Location ASC, Position ASC";
+				$sql="select a.Name as DataCenter, b.DeviceID, c.Location, b.Position, b.Height, b.Label, b.DeviceType, b.AssetTag, b.SerialNo, b.InstallDate, b.TemplateID, b.Owner, b.PrimaryContact from fac_DataCenter a, fac_Device b, fac_Cabinet c where b.Cabinet=c.CabinetID and c.DataCenterID=a.DataCenterID order by DataCenter ASC, Location ASC, Position ASC";
 			}else{
-				$sql="select a.Name as DataCenter, b.DeviceID, c.Location, b.Position, b.Height, b.Label, b.DeviceType, b.AssetTag, b.SerialNo, b.InstallDate, b.TemplateID, b.Owner from fac_DataCenter a, fac_Device b, fac_Cabinet c where b.Cabinet=c.CabinetID and c.DataCenterID=a.DataCenterID and c.DataCenterID=$dc order by Location ASC, Position ASC";
+				$sql="select a.Name as DataCenter, b.DeviceID, c.Location, b.Position, b.Height, b.Label, b.DeviceType, b.AssetTag, b.SerialNo, b.InstallDate, b.TemplateID, b.Owner, b.PrimaryContact from fac_DataCenter a, fac_Device b, fac_Cabinet c where b.Cabinet=c.CabinetID and c.DataCenterID=a.DataCenterID and c.DataCenterID=$dc order by Location ASC, Position ASC";
 			}
 			$result=$dbh->query($sql);
 		}else{
@@ -40,6 +41,7 @@
 			\t<th>".__("Template")."</th>
 			\t<th>".__("Tags")."</th>
 			\t<th>".__("Owner")."</th>
+			\t<th>".__("Primary Contact")."</th>
 			\t<th>".__("Installation Date")."</th>
 			</tr>\n\t</thead>\n\t<tbody>\n";
 
@@ -49,6 +51,8 @@
 			$date=date("d M Y",strtotime($row["InstallDate"]));
 				$Model="";
 				$Department="";
+				$ContactLN="";
+				$ContactFN="";
 			
 			if($row["TemplateID"] >0){
 				$templ->TemplateID=$row["TemplateID"];
@@ -61,6 +65,15 @@
 				$dept->GetDeptByID();
 				$Department=$dept->Name;
 			}
+			
+			if($row["PrimaryContact"] >0){
+				$cont->ContactID=$row["PrimaryContact"];
+				$cont->GetContactByID();
+				$ContactLN="$cont->LastName,";
+				$ContactFN=$cont->FirstName;
+			}
+
+			
 			$dev->DeviceID=$row["DeviceID"];
 			$tags=implode(",", $dev->GetTags());
 			$body.="\t\t<tr>
@@ -75,6 +88,7 @@
 			\t<td>$Model</td>
 			\t<td>$tags</td>
 			\t<td>$Department</td>
+			\t<td>$ContactLN $ContactFN</td>
 			\t<td>$date</td>\n\t\t</tr>\n";
 			
 			if($row["DeviceType"]=="Chassis"){
@@ -85,6 +99,8 @@
 					$cdate=date("d M Y",strtotime($child->InstallDate));
 					$cModel="";
 					$cDepartment="";					
+					$cContactLN="";
+					$cContactFN="";
 
 					$ctags=implode(",", $child->GetTags());
 					if($child->TemplateID >0){
@@ -99,6 +115,13 @@
 						$cDepartment=$dept->Name;
 					}
 
+					if($child->PrimaryContact >0){
+						$cont->ContactID=$child->ContactID;
+						$cont->GetContactByID();
+						$cContactLN="$cont->LastName,";
+						$cContactFN=$cont->FirstName;
+					}
+
 					$body .= "\t\t<tr>
 					\t<td>{$row["DataCenter"]}</td>
 					\t<td>{$row["Location"]}</td>
@@ -111,6 +134,7 @@
 					\t<td>$cModel</td>
 					\t<td>$ctags</td>
 					\t<td>$cDepartment</td>
+					\t<td>$cContactLN $cContactFN</td>
 					\t<td>$cdate</td>\n\t\t</tr>\n";
 				}
 			}
