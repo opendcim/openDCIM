@@ -5041,7 +5041,7 @@ class DeviceCustomAttribute {
 	var $DefaultValue;
 
 	function MakeSafe() {
-		$validtypes=array("string","number","integer","date","phone","email","ipv4","url","checkbox");
+		$validtypes=array("string","number","integer","date","phone","email","ipv4","url","checkbox","set");
 
 		$this->AttributeID=intval($this->AttributeID);
 		$this->Label=sanitize($this->Label);
@@ -5237,7 +5237,7 @@ class DeviceCustomAttribute {
 	}
 
 	static function GetDeviceCustomAttributeTypeList() {
-		$validtypes=array("string","number","integer","date","phone","email","ipv4","url","checkbox");
+		$validtypes=array("string","number","integer","date","phone","email","ipv4","url","checkbox","set");
 
 		return $validtypes;
 	}	
