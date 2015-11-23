@@ -898,7 +898,7 @@
 				}
 				echo '<div><input type="checkbox" name="',$inputname,'" id="',$inputname,'"',$checked,'></div>';
 			} else if ($cvtype=="set") {
-				$dcaValues = explode(',',$dca->DefaultValue);
+				$dcaValues = explode(',',$dcaList[$customkey]->DefaultValue);
 				$selected = "";
 				echo '<div><select name="',$inputname,'" id="',$inputname,'">';
 				foreach($dcaValues as $dcaValue){
