@@ -801,7 +801,7 @@ foreach($dcaList as $dca) {
 				var type = $("#"+typeid).val();
 				if(this.checked){
 					$("#"+inputid).removeClass();
-					if(type!="checkbox" && type!="string"){
+					if(type!="checkbox" && type!="string" && type!="set"){
 						$("#"+inputid).addClass("validate[custom["+type+"]]");
 					}
 				} else {
