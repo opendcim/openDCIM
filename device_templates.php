@@ -763,15 +763,10 @@ foreach($dcaList as $dca) {
 		}
 		echo __("Default:").' <input type="checkbox" name="tdca[',$dca->AttributeID,'][value]" ',$checked,'>';
 	} else if ($dca->AttributeType=="set") {
-		$dcaValues = explode(',',$dca->DefaultValue);
-		$selected = "";
-		echo '<select name="tdca[',$dca->AttributeID,'][value]" id="tdca[',$dca->AttributeID,'][value]">';
-		foreach($dcaValues as $dcaValue){
-			$selected = "";
-			if(strcmp($templatedcaValue, $dcaValue)==0){
-				$selected=" selected";
-			}
-			echo '<option',$selected,' value="',$dcaValue,'">',$dcaValue,'</option>';
+		echo '<select name="tdca[',$dca->AttributeID,'][value]">';
+		foreach(explode(',',$dca->DefaultValue) as $dcaValue){
+			$selected=($templatedcaValue==$dcaValue)?' selected':'';
+			print "\n\t<option value="\$dcaValue\" $selected>$dcaValue</option>";
 		}
 		echo '</select>';
 	} else {

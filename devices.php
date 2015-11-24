@@ -898,15 +898,10 @@
 				}
 				echo '<div><input type="checkbox" name="',$inputname,'" id="',$inputname,'"',$checked,'></div>';
 			} else if ($cvtype=="set") {
-				$dcaValues = explode(',',$dcaList[$customkey]->DefaultValue);
-				$selected = "";
 				echo '<div><select name="',$inputname,'" id="',$inputname,'">';
-				foreach($dcaValues as $dcaValue){
-					$selected = "";
-					if(strcmp($customdata["value"], $dcaValue)==0){
-						$selected=" selected";
-					}
-					echo '<option',$selected,' value="',$dcaValue,'">',$dcaValue,'</option>';
+				foreach(explode(',',$dcaList[$customkey]->DefaultValue) as $dcaValue){
+					$selected=($customdata["value"]==$dcaValue)?' selected':'';
+					print "\n\t<option value=\"$dcaValue\"$selected>$dcaValue</option>";
 				}
 				echo '</select></div>';
 			} else {
