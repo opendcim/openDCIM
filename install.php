@@ -138,6 +138,7 @@ function ArraySearchRecursive($Needle,$Haystack,$NeedleKey="",$Strict=false,$Pat
 	if($usePeople){
 		$person=new People();
 	}else{
+		require_once("installer.userconversion.inc.php");
 		$person=new User();
 	}
 	if(AUTHENTICATION=="Apache"){
@@ -653,7 +654,6 @@ function upgrade(){
 
 		// Bring up the rest of the classes
 		require_once("facilities.inc.php");
-
 
 		// People conversion 
 		$p=new People();
