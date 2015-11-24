@@ -765,7 +765,7 @@ foreach($dcaList as $dca) {
 	} else if ($dca->AttributeType=="set") {
 		$dcaValues = explode(',',$dca->DefaultValue);
 		$selected = "";
-		echo '<select name="tdca[',$dca->AttributeID,'][value]"',$validation,' id="tdca[',$dca->AttributeID,'][value]">';
+		echo '<select name="tdca[',$dca->AttributeID,'][value]" id="tdca[',$dca->AttributeID,'][value]">';
 		foreach($dcaValues as $dcaValue){
 			$selected = "";
 			if(strcmp($templatedcaValue, $dcaValue)==0){
