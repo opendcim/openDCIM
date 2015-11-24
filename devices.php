@@ -897,6 +897,18 @@
 					$checked = " checked";
 				}
 				echo '<div><input type="checkbox" name="',$inputname,'" id="',$inputname,'"',$checked,'></div>';
+			} else if ($cvtype=="set") {
+				$dcaValues = explode(',',$dcaList[$customkey]->DefaultValue);
+				$selected = "";
+				echo '<div><select name="',$inputname,'" id="',$inputname,'">';
+				foreach($dcaValues as $dcaValue){
+					$selected = "";
+					if(strcmp($customdata["value"], $dcaValue)==0){
+						$selected=" selected";
+					}
+					echo '<option',$selected,' value="',$dcaValue,'">',$dcaValue,'</option>';
+				}
+				echo '</select></div>';
 			} else {
 				echo '<div><input type="text"',$validation,' name="',$inputname,'" id="',$inputname,'" value="',$customdata["value"],'"></div>';
 
