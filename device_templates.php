@@ -766,7 +766,7 @@ foreach($dcaList as $dca) {
 		echo '<select name="tdca[',$dca->AttributeID,'][value]">';
 		foreach(explode(',',$dca->DefaultValue) as $dcaValue){
 			$selected=($templatedcaValue==$dcaValue)?' selected':'';
-			print "\n\t<option value="\$dcaValue\" $selected>$dcaValue</option>";
+			print "\n\t<option value=\"$dcaValue\"$selected>$dcaValue</option>";
 		}
 		echo '</select>';
 	} else {
