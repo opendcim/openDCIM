@@ -5086,6 +5086,21 @@ class DeviceCustomAttribute {
 					$acceptable = array("0", "1", "true", "false", "on", "off");
 					if(!in_array($this->DefaultValue, $acceptable)) { return false; }		
 					break;
+				case "set":
+					// Attempt to stem S.U.T. here
+					// will track if we want a blank space at the beginning of our list
+					$blankstart=substr($this->DefaultValue,0,1)==',';
+					// will store an array of our stuff
+					$dirtyarray=array();
+					// parse the list combining / removing duplicates
+					foreach(explode(',',$this->DefaultValue) as $item){
+						$dirtyarray[$item]=$item;
+					}
+					// trim possible leading blank spaces / other blanks
+					if(!$blankstart){unset($dirtyarray['']);}
+					// condense back to csv
+					$this->DefaultValue=implode(',',$dirtyarray);
+					break;
 			}
 		}
 		return true;
