@@ -76,7 +76,22 @@
 		$devList=$dev->LooseSearch(true);
 		$cab->Notes=$searchTerm;
 		$cabList=$cab->LooseSearch(true);
-		// add in search for the port notes here later.
+		// DevicePorts and PowerPorts use the same structures and functions so 
+		// we're just looping the search to not repeat code 
+		foreach(array('DevicePorts','PowerPorts') as $pt){
+			$p=new $pt();
+			$p->Notes=$searchTerm;
+			foreach($p->LooseSearch() as $port){
+				// This is gonna be a little slow but this will cut down on duplicate lookups
+				if(!isset($devList[$port->DeviceID])){
+					$d=new Device($port->DeviceID);
+					// These should all be valid but just in case, skip it
+					if($d->GetDevice()){
+						$devList[$d->DeviceID]=$d;
+					}
+				}
+			}
+		}
 		$resultcount=count($devList)+count($cabList); 
 		$title=__("Notes search results for")." &quot;$searchTerm&quot;";
 	}elseif($searchKey="dev"){

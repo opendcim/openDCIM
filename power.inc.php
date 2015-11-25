@@ -578,6 +578,42 @@ class PowerPorts {
 		return $portList;
 	}
 
+	function Search($indexedbyid=false,$loose=false){
+		global $dbh;
+		// Store any values that have been added before we make them safe 
+		foreach($this as $prop => $val){
+			if(isset($val)){
+				$o[$prop]=$val;
+			}
+		}
+
+		// Make everything safe for us to search with
+		$this->MakeSafe();
+
+		// This will store all our extended sql
+		$sqlextend="";
+		foreach($o as $prop => $val){
+			extendsql($prop,$this->$prop,$sqlextend,$loose);
+		}
+		$sql="SELECT * FROM fac_PowerPorts $sqlextend ORDER BY DeviceID, PortNumber ASC;";
+
+		$portList=array();
+
+		foreach($dbh->query($sql) as $portRow){
+			if($indexedbyid){
+				$portList[$portRow["DeviceID"].$portRow["PortNumber"]]=PowerPorts::RowToObject($portRow);
+			}else{
+				$portList[]=PowerPorts::RowToObject($portRow);
+			}
+		}
+
+		return $portList;
+	}
+
+	// Make a simple reference to a loose search
+	function LooseSearch($indexedbyid=false){
+		return $this->Search($indexedbyid,true);
+	}
 }
 
 class PowerConnection {

@@ -21,6 +21,12 @@ ALTER TABLE fac_People DROP INDEX UserID;
 ALTER TABLE fac_People ADD UNIQUE (UserID);
 
 --
+-- Add indexes to the Notes fields of the ports tables
+--
+ALTER TABLE fac_Ports ADD INDEX (Notes);
+ALTER TABLE fac_PowerPorts ADD INDEX (Notes);
+
+--
 -- Bump up the database version
 --
 -- UPDATE fac_Config set Value='4.1' WHERE Parameter='Version';
