@@ -1520,11 +1520,11 @@ class Device {
 		return $this->DeviceID;
 	}
 
-	function CopyDevice($clonedparent=null) {
+	function CopyDevice($clonedparent=null,$newPosition=null) {
 		/*
 		 * Need to make a copy of a device for the purpose of assigning a reservation during a move
 		 *
-		 * The second paremeter is optional for a copy.  if it is set and the device is a chassis
+		 * The second parameter is optional for a copy.  If it is set and the device is a chassis
 		 * this should be set to the ID of the new parent device.
 		 *
 		 * Also do not copy any power or network connections!
@@ -1535,6 +1535,12 @@ class Device {
 		
 		// If this is a chassis device then check for children to cloned BEFORE we change the deviceid
 		if($this->DeviceType=="Chassis"){
+			// Examine the name to try to make a smart decision about the naming
+			if ( preg_match("/(.+?)\[?(\d+)-(\d+)]?/", $this->Label, $tmpName ) ) {
+				$this->Label = sprintf( "%s[%d-%d]", $tmpName[1], $tmpName[3]+1, $tmpName[3]+($tmpName[3]-$tmpName[2]+1));
+			} else {
+				$this->Label = $this->Label . " (" . __("Copy") . ")";
+			}
 			$childList=$this->GetDeviceChildren();
 		}	
 
@@ -1548,6 +1554,7 @@ class Device {
 			$tmpdev=new Device();
 			$tmpdev->DeviceID=$this->ParentDevice;
 			$tmpdev->GetDevice();
+			preg_match("/(.+?)\[?(\d+)-(\d+)]?/", $tmpdev->Label, $tmpName);
 			$children=$tmpdev->GetDeviceChildren();
 			if($tmpdev->ChassisSlots>0 || $tmpdev->RearChassisSlots>0){
 				// If we're cloning every child then there is no need to attempt to find empty slots
@@ -1586,6 +1593,9 @@ class Device {
 					$olddev=new Device();
 					$olddev->DeviceID=$this->DeviceID;
 					$olddev->GetDevice();
+					if ( preg_match("/(.*)(.\d)+(\ *[\]|\)])?/", $olddev->Label, $tmpChild ) ) {
+						$this->Label = sprintf( "%s%d%s", $tmpChild[1], $tmpName[3]+$this->Position, isset( $tmpChild[3]) ? $tmpChild[3] : "");
+					}
 					$this->CreateDevice();
 					$olddev->CopyDeviceCustomValues($this);
 				}else{
@@ -1598,7 +1608,11 @@ class Device {
 			$cab=new Cabinet();
 			$cab->CabinetID=$this->Cabinet;
 			$cab->GetCabinet();
-			$this->Position=$cab->CabinetHeight+1;
+			if ( $newPosition == null ) {
+				$this->Position=$cab->CabinetHeight+1;
+			} else {
+				$this->Position = $newPosition;
+			}
 
 			$olddev=new Device();
 			$olddev->DeviceID=$this->DeviceID;

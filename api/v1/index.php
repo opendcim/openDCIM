@@ -1336,6 +1336,51 @@ $app->put( '/device/:devicelabel', function($devicelabel) use ($app) {
 });
 
 //
+//	Copy an existing device to the new position, adjusting the name automagically per rules in the CopyDevice method
+//	URL:	/api/v1/device/:deviceid/copyto/:newposition
+//	Method:	PUT
+//	Params:	deviceid (passed in URL)
+//		Required: Label, cabinetid
+//		Optional: everything else
+//	Returns: record as created 
+//
+
+$app->put( '/device/:deviceid/copyto/:newposition', function($deviceid, $newposition) use ($app) {
+	$dev=new Device();
+	$dev->DeviceID=$deviceid;
+	$dev->GetDevice();
+
+	$cab=new Cabinet();
+	$cab->CabinetID=$dev->Cabinet;
+	if(!$cab->GetCabinet()){
+		$response['error']=true;
+		$response['errorcode']=404;
+		$response['message']=__("Cabinet not found");
+	}else{
+		if($cab->Rights!="Write"){
+			$response['error']=true;
+			$response['errorcode']=403;
+			$response['message']=__("Unauthorized");
+		}else{
+			if(!$dev->CopyDevice(null,$newposition)){
+				$response['error']=true;
+				$response['errorcode']=404;
+				$response['message']=__("Device creation failed");
+			}else{
+				// refresh the model in case we extended it elsewhere
+				$dev=new Device($dev->DeviceID);
+				$dev->GetDevice();
+				$response['error']=false;
+				$response['errorcode']=200;
+				$response['device']=$dev;
+			}
+		}
+	}
+
+	echoResponse(200,$response);
+});
+
+//
 //	URL:	/api/v1/devicetemplate/:model
 //	Method:	PUT
 //	Params:	

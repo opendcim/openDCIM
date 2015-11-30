@@ -1244,10 +1244,11 @@ function initdrag(){
 							var devcopy=data.device;
 							// Change the position of the copy to where we dropped it
 							devcopy.Position=newposition;
+							var apiurl=(event.shiftKey)?'/api/v1/device/'+deviceid+'/copyto/'+newposition:'api/v1/device/'+'Copy '+devcopy.Label;
 							// Attempt to create the new device
 							$.ajax({
 								type: 'put',
-								url: 'api/v1/device/'+'copy '+devcopy.Label,
+								url: apiurl,
 								async: false,
 								data: devcopy,
 								success: function(data){
@@ -1261,7 +1262,7 @@ function initdrag(){
 							});
 						}
 					});
-				}else{
+				} else {
 					// update via the api
 					$.post("api/v1/device/"+deviceid,{"Position":newposition},function(data){
 						if(data.error){
