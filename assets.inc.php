@@ -1345,6 +1345,19 @@ class Device {
 					$dev->$prop=$val;
 				}
 			}
+			// This will extend the device model but isn't currently being used anywhere
+			$dev->GetCustomValues();
+			if(count($dev->CustomValues)){
+				$dcaList=DeviceCustomAttribute::GetDeviceCustomAttributeList();
+				foreach($dev->CustomValues as $dcaid => $val){
+					$label=$dcaList[$dcaid]->Label;
+					// Keep users from attempting to overwrite shit like devicetype
+					if(!isset($dev->$label)){
+						$dev->$label=$val;
+					}
+				}
+				unset($dev->CustomValues);
+			}
 		}
 		if($filterrights){
 			$dev->FilterRights();
