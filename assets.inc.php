@@ -2872,7 +2872,6 @@ class Device {
 				$parentDetails->zoomX=1;
 				$parentDetails->zoomY=1;
 			}
-
 			// Check for slot orientation before we possibly modify it via height
 			$hor_slot=($slot->W>$slot->H);
 
@@ -3075,7 +3074,9 @@ class Device {
 			$childList=$this->GetDeviceChildren();
 
 			// Edge case where someone put more devices in a tray than they specified it slots
-			$this->ChassisSlots=(($templ->Model=='HTRAY' || $templ->Model=='VTRAY') && $this->ChassisSlots>=count($childList))?$this->ChassisSlots:count($childList);
+			if(($templ->Model=='HTRAY' || $templ->Model=='VTRAY') || ($this->ChassisSlots<count($childList))){
+				$this->ChassisSlots=count($childList);
+			}
 			if (count($childList)>0){
 				if(($this->ChassisSlots >0 && !$rear) || ($this->RearChassisSlots >0 && $rear) || ($templ->Model=='HTRAY' || $templ->Model=='VTRAY')){
 					//children in front face
