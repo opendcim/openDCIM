@@ -1536,9 +1536,9 @@ class Device {
 		// If this is a chassis device then check for children to cloned BEFORE we change the deviceid
 		if($this->DeviceType=="Chassis"){
 			// Examine the name to try to make a smart decision about the naming
-			if ( preg_match("/(.+?)\[?(\d+)-(\d+)]?/", $this->Label, $tmpName ) ) {
+			if ( preg_match("/(.+?[\[?\(]?)(\d+)-(\d+)([\)\]])?/", $this->Label, $tmpName ) ) {
 				$numLen = strlen($tmpName[3]);
-				$this->Label = sprintf( "%s[%0".$numLen."d-%0".$numLen."d]", $tmpName[1], $tmpName[3]+1, $tmpName[3]+($tmpName[3]-$tmpName[2]+1));
+				$this->Label = sprintf( "%s%0".$numLen."d-%0".$numLen."d%s", $tmpName[1], $tmpName[3]+1, $tmpName[3]+($tmpName[3]-$tmpName[2]+1), @$tmpName[4]);
 			} else {
 				$this->Label = $this->Label . " (" . __("Copy") . ")";
 			}
@@ -1555,7 +1555,7 @@ class Device {
 			$tmpdev=new Device();
 			$tmpdev->DeviceID=$this->ParentDevice;
 			$tmpdev->GetDevice();
-			preg_match("/(.+?)\[?(\d+)-(\d+)]?/", $tmpdev->Label, $tmpName);
+			preg_match("/(.+?[\[?\(]?)(\d+)-(\d+)([\)\]])?/", $tmpdev->Label, $tmpName);
 			$children=$tmpdev->GetDeviceChildren();
 			if($tmpdev->ChassisSlots>0 || $tmpdev->RearChassisSlots>0){
 				// If we're cloning every child then there is no need to attempt to find empty slots
