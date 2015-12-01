@@ -1244,7 +1244,7 @@ function initdrag(){
 							var devcopy=data.device;
 							// Change the position of the copy to where we dropped it
 							devcopy.Position=newposition;
-							var apiurl=(event.shiftKey)?'/api/v1/device/'+deviceid+'/copyto/'+newposition:'api/v1/device/'+'Copy '+devcopy.Label;
+							var apiurl=(event.shiftKey)?'api/v1/device/'+deviceid+'/copyto/'+newposition:'api/v1/device/'+'Copy '+devcopy.Label;
 							// Attempt to create the new device
 							$.ajax({
 								type: 'put',

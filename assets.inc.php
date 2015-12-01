@@ -1596,7 +1596,7 @@ class Device {
 					$olddev->GetDevice();
 					if ( preg_match("/(.*)(.\d)+(\ *[\]|\)])?/", $olddev->Label, $tmpChild ) ) {
 						$numLen = strlen($tmpChild[2]);
-						$this->Label = sprintf( "%s%0".$numLen."d%s", $tmpChild[1], $tmpName[3]+$this->Position, isset( $tmpChild[3]) ? $tmpChild[3] : "");
+						$this->Label = sprintf( "%s%0".$numLen."d%s", $tmpChild[1], $tmpName[3]+$this->Position, @$tmpChild[3]);
 					}
 					$this->CreateDevice();
 					$olddev->CopyDeviceCustomValues($this);
