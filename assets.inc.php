@@ -1537,7 +1537,8 @@ class Device {
 		if($this->DeviceType=="Chassis"){
 			// Examine the name to try to make a smart decision about the naming
 			if ( preg_match("/(.+?)\[?(\d+)-(\d+)]?/", $this->Label, $tmpName ) ) {
-				$this->Label = sprintf( "%s[%d-%d]", $tmpName[1], $tmpName[3]+1, $tmpName[3]+($tmpName[3]-$tmpName[2]+1));
+				$numLen = strlen($tmpName[3]);
+				$this->Label = sprintf( "%s[%0".$numLen."d-%0".$numLen."d]", $tmpName[1], $tmpName[3]+1, $tmpName[3]+($tmpName[3]-$tmpName[2]+1));
 			} else {
 				$this->Label = $this->Label . " (" . __("Copy") . ")";
 			}
@@ -1594,7 +1595,8 @@ class Device {
 					$olddev->DeviceID=$this->DeviceID;
 					$olddev->GetDevice();
 					if ( preg_match("/(.*)(.\d)+(\ *[\]|\)])?/", $olddev->Label, $tmpChild ) ) {
-						$this->Label = sprintf( "%s%d%s", $tmpChild[1], $tmpName[3]+$this->Position, isset( $tmpChild[3]) ? $tmpChild[3] : "");
+						$numLen = strlen($tmpChild[2]);
+						$this->Label = sprintf( "%s%0".$numLen."d%s", $tmpChild[1], $tmpName[3]+$this->Position, isset( $tmpChild[3]) ? $tmpChild[3] : "");
 					}
 					$this->CreateDevice();
 					$olddev->CopyDeviceCustomValues($this);
