@@ -27,6 +27,11 @@ ALTER TABLE fac_Ports ADD INDEX (Notes);
 ALTER TABLE fac_PowerPorts ADD INDEX (Notes);
 
 --
+-- Add PrimaryContact to VMInventory
+--
+ALTER TABLE fac_VMInventory ADD COLUMN PrimaryContact int(11) NOT NULL;
+
+--
 -- Bump up the database version
 --
 -- UPDATE fac_Config set Value='4.1' WHERE Parameter='Version';

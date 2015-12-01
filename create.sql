@@ -606,6 +606,7 @@ CREATE TABLE fac_VMInventory (
   vmName varchar(80) NOT NULL,
   vmState varchar(80) NOT NULL,
   Owner int(11) NOT NULL,
+  PrimaryContact int(11) NOT NULL,
   PRIMARY KEY (VMIndex),
   KEY ValidDevice (DeviceID)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;

@@ -3944,6 +3944,7 @@ class ESX {
 	var $vmName;
 	var $vmState;
 	var $Owner;
+	var $PrimaryContact;
   
 	static function RowToObject($dbRow){
 		/*
@@ -3959,6 +3960,7 @@ class ESX {
 		$vm->vmName=$dbRow["vmName"];
 		$vm->vmState=$dbRow["vmState"];
 		$vm->Owner=$dbRow["Owner"];
+		$vm->PrimaryContact=$dbRow["PrimaryContact"];
 
 		return $vm;
 	}
@@ -4088,7 +4090,7 @@ class ESX {
 	function UpdateVMOwner() {
 		global $dbh;
 
-		$sql="UPDATE fac_VMInventory SET Owner=$this->Owner WHERE VMIndex=$this->VMIndex;";
+		$sql="UPDATE fac_VMInventory SET Owner=$this->Owner, PrimaryContact=$this->PrimaryContact WHERE VMIndex=$this->VMIndex;";
 		$dbh->query($sql);
 	} 
   

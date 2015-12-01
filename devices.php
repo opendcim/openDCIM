@@ -821,7 +821,7 @@
 		$ESX->DeviceID=$DeviceID;
 		$vmList=$ESX->GetDeviceInventory();
 
-		print "\n<div class=\"table border\"><div><div>".__("VM Name")."</div><div>".__("Status")."</div><div>".__("Owner")."</div><div>".__("Last Updated")."</div></div>\n";
+		print "\n<div class=\"table border\"><div><div>".__("VM Name")."</div><div>".__("Status")."</div><div>".__("Owner")."</div><div>".__("Primary Contact")."</div><div>".__("Last Updated")."</div></div>\n";
 		foreach($vmList as $vmRow){
 			$onOff=(preg_match('/off/i',$vmRow->vmState))?'off':'on';
 			$Dept=new Department();
@@ -831,7 +831,15 @@
 			}else{
 				$Dept->Name=__("Unknown");
 			}
-			print "<div><div>$vmRow->vmName</div><div class=\"$onOff\">$vmRow->vmState</div><div><a href=\"updatevmowner.php?vmindex=$vmRow->VMIndex\">$Dept->Name</a></div><div>$vmRow->LastUpdated</div></div>\n";
+			if ( $vmRow->PrimaryContact > 0 ) {
+				$con = new People();
+				$con->PersonID = $vmRow->PrimaryContact;
+				$con->GetPerson();
+				$PCName = $con->LastName . ", " . $con->FirstName;
+			} else {
+				$PCName = __("Unknown");
+			}
+			print "<div><div>$vmRow->vmName</div><div class=\"$onOff\">$vmRow->vmState</div><div><a href=\"updatevmowner.php?vmindex=$vmRow->VMIndex\">$Dept->Name</a></div><div><a href=\"updatevmowner.php?vmindex=$vmRow->VMIndex\">$PCName</a></div><div>$vmRow->LastUpdated</div></div>\n";
 		}
 		echo '</div> <!-- END div.table -->';
 	}

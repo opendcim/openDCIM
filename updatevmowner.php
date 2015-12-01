@@ -12,6 +12,7 @@
 
 	$dept=new Department();
 	$esx=new ESX();
+	$con = new People();
 	$dev=new Device();
 
 	if($_REQUEST['vmindex'] >0){
@@ -21,6 +22,7 @@
 		$dev->GetDevice();
 		if(isset($_REQUEST['action']) && $_REQUEST['action']=='Update'){
 			$esx->Owner=$_REQUEST['owner'];
+			$esx->PrimaryContact=$_REQUEST['contact'];
 			$esx->UpdateVMOwner();
 			header('Location: '.redirect("devices.php?DeviceID=$esx->DeviceID"));
 		}
@@ -30,6 +32,7 @@
 		exit;
 	}
 
+	$contactList = $con->GetUserList();
 	$deptList=$dept->GetDepartmentList();
 ?>
 <!doctype html>
@@ -67,6 +70,19 @@
 		print "			<option value=$deptRow->DeptID";
 		if($esx->Owner==$deptRow->DeptID){echo ' selected="selected"';}
 		print ">$deptRow->Name</option>\n";
+	}
+?>
+		</select></div>
+	</div>
+	<div>
+		<div>Primary Contact</div>
+		<div><select name="contact">
+			<option value=0>Select Primary Contact</option>
+<?php
+	foreach( $contactList as $conRow ) {
+		print "			<option value=$conRow->PersonID";
+		if ( $esx->PrimaryContact == $conRow->PersonID ) {echo ' selected';}
+		print ">$conRow->LastName, $conRow->FirstName</option>\n";
 	}
 ?>
 		</select></div>
