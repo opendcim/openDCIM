@@ -1254,6 +1254,7 @@ function initdrag(){
 								success: function(data){
 									if(!data.error){
 										InsertDevice(data.device);
+										initdrag();
 									}
 								},
 								error: function(data){
@@ -1279,6 +1280,9 @@ function initdrag(){
 			// Make the device opaque again
 			this.style.opacity=1;
 			this.classList.remove('ignore');
+
+			// Clean up any tooltips that got stranded somehow
+			$('#tt').remove();
 		}
 	});
 }
