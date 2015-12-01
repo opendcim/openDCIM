@@ -177,7 +177,7 @@ function ArraySearchRecursive($Needle,$Haystack,$NeedleKey="",$Strict=false,$Pat
 	if($sth->rowCount()<1){
 		// no users in the system or no users with site admin rights, either way we're missing the class of people we need
 		// put stuff here like correcting for a missing site admin
-		print "There are no users in the database with sufficient privileges to perform this update";
+		print "There are no users in the database with sufficient privileges to perform this update.  Current userid=" . $person->UserID;
 		exit;
 		$rightserror=1;
 	}else{ // so we have users and at least one site admin
@@ -185,7 +185,7 @@ function ArraySearchRecursive($Needle,$Haystack,$NeedleKey="",$Strict=false,$Pat
 
 		if(!$person->SiteAdmin){
 			// dolemite says you aren't an admin so you can't apply the update
-			print "An update has been applied to the system but the system hasn't been taken out of maintenance mode. Please contact a site Administrator to correct this issue.";
+			print "An update has been applied to the system but the system hasn't been taken out of maintenance mode. Please contact a site Administrator to correct this issue.  Current userid=" . $person->UserID;
 			exit;
 		}
 		$rightserror=0;
