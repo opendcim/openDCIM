@@ -135,25 +135,30 @@
 	if(isset($vmList)){
 		foreach($vmList as $vmRow){
 			$dev->DeviceID=$vmRow->DeviceID;
-			$dev->GetDevice();
-			$a=ArraySearchRecursive($vmRow->DeviceID,$temp,'devid');
-			// if we find a matching server in the existing list set it to type vm so it will nest in the results
-			if(is_array($a)){
-				$temp[$a[0]]['label']=$dev->Label;
-				$temp[$a[0]]['type']='vm';
-			}else{
-				// We didn't find the host server of this vm so we're gonna add it to the list
-				$temp[$x]['devid']=$dev->DeviceID;
-				$temp[$x]['label']=$dev->Label;
-				$temp[$x]['type']='vm';
-				$temp[$x]['cabinet']=$dev->Cabinet;
-				$temp[$x]['parent']=$dev->ParentDevice;
-				$temp[$x]['rights']=$dev->Rights;
-				$cabtemp[$dev->Cabinet]['name']="";
-				++$x;
-				if($dev->ParentDevice!=0){
-					$childList[$dev->ParentDevice]=""; // Create a list of chassis devices based on children present
+			// Prevent any vm's that might have been stranded from making bad links
+			if($dev->GetDevice()){
+				$a=ArraySearchRecursive($vmRow->DeviceID,$temp,'devid');
+				// if we find a matching server in the existing list set it to type vm so it will nest in the results
+				if(is_array($a)){
+					$temp[$a[0]]['label']=$dev->Label;
+					$temp[$a[0]]['type']='vm';
+				}else{
+					// We didn't find the host server of this vm so we're gonna add it to the list
+					$temp[$x]['devid']=$dev->DeviceID;
+					$temp[$x]['label']=$dev->Label;
+					$temp[$x]['type']='vm';
+					$temp[$x]['cabinet']=$dev->Cabinet;
+					$temp[$x]['parent']=$dev->ParentDevice;
+					$temp[$x]['rights']=$dev->Rights;
+					$cabtemp[$dev->Cabinet]['name']="";
+					++$x;
+					if($dev->ParentDevice!=0){
+						$childList[$dev->ParentDevice]=""; // Create a list of chassis devices based on children present
+					}
 				}
+			}else{
+				// remove this reslult from the overall count
+				$resultcount--;
 			}
 		}
 	}
