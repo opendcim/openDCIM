@@ -526,10 +526,14 @@ function convertImgToBase64(url, imgobj) {
 								});
 							}
 							var btn_command=row['command'].find('button');
-							// Bind a click event to the button
-							btn_command.text('push').click(function(e){
-								pushtorepo($(e.currentTarget.parentElement.parentElement).data('object'));
-							});
+							if(window.APIKey=="" || window.UserID==""){
+								btn_command.hide();
+							}else{
+								// Bind a click event to the button
+								btn_command.text('push').click(function(e){
+									pushtorepo($(e.currentTarget.parentElement.parentElement).data('object'));
+								});
+							}
 						}
 					}
 				}
