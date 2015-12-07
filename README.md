@@ -38,6 +38,7 @@ Follow the [guide](http://php.net/manual/en/book.mysql.php)
 Create the database and user
 ```shell
 	mysql -uroot -p -e "CREATE DATABASE dcim;CREATE USER 'dcim'@'localhost' IDENTIFIED BY 'dcim';GRANT ALL ON dcim.* TO 'dcim'@'localhost';"
+	mysql -udcim -pdcim < create.sql
 ```
 
 Make db.inc.php from db.inc.php-dist
