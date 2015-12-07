@@ -25,7 +25,7 @@ openDCIM
 
 Installation
 ------------
-Supposing you are using apache, php and apache-php-module firstly clone openDCIM in a directory which is accessible by apache user (e.g. /srv/http/) and configure apache to load required modules and have access to project directory (you can define virtual host too).
+Supposing you are using apache, php and apache-php-module firstly clone openDCIM in a directory which is accessible by apache user (e.g. /srv/http/) and then configure apache to load required modules and have access to project directory (you can define virtual host too).
 
 If you're gonna create Dockerized development environment, you should enable apache's fast-cgi to connect to php-fpm's container
 
@@ -42,7 +42,7 @@ Create the database and user
 
 Make db.inc.php from db.inc.php-dist
 ```shell
-	copy db.inc.php-dist db.inc.php
+	cp db.inc.php-dist db.inc.php
 ```
 
 ## PHP SNMP Module
