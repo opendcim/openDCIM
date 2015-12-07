@@ -23,6 +23,51 @@ openDCIM
 
         For further details on the license, see http://www.gnu.org/licenses
 
+Installation
+------------
+Supposing you are using apache, php and apache-php-module firstly clone openDCIM in a directory which is accessible by apache user (e.g. /srv/http/) and then configure apache to load required modules and have access to project directory (you can define virtual host too).
+
+If you're gonna create Dockerized development environment, you should enable apache's fast-cgi to connect to php-fpm's container
+
+## Database (PDO, PDODRIVERS, DB.INC)
+
+### Install and Configure Mysql and PHP-Mysql
+Follow the [guide](http://php.net/manual/en/book.mysql.php)
+
+### Create Database and Configuration File
+Create the database and user
+```shell
+	mysql -uroot -p -e "CREATE DATABASE dcim;CREATE USER 'dcim'@'localhost' IDENTIFIED BY 'dcim';GRANT ALL ON dcim.* TO 'dcim'@'localhost';"
+	mysql -udcim -pdcim < create.sql
+```
+
+Make db.inc.php from db.inc.php-dist
+```shell
+	cp db.inc.php-dist db.inc.php
+```
+
+## PHP SNMP Module
+Install [php-snmp](http://php.net/manual/en/book.snmp.php) and enable it in `/etc/php/php.ini` by uncomment or adding the line containing: `extension=snmp.so`
+
+## Apache User Authentication (AUTHENTICATION, REMOTE USER)
+Enbale below apache modules:
+* mod_authn_file.so
+* mod_authn_core.so
+* mod_authz_user.so
+* mod_authz_core.so
+* mod_auth_basic.so
+
+Then follow this [link](http://www.apacheweek.com/features/userauth) To create apache authentication database (such as htpasswd) and enable apache auth in openDCIM directory (e.g. using .htaccess in root). As an example you can follow this instruction (Don't forget to change paths and names to correct onse):
+```shell
+sudo htpasswd -c /etc/httpd/users pouyan
+echo 'AuthName "restricted stuff"\nAuthType Basic\nAuthUserFile /etc/httpd/users\nrequire valid-user' > /srv/http/openDCIM
+```
+
+## Apache Rewrite (MOD_REWRITE)
+Install [Apache Rewrite Module](http://httpd.apache.org/docs/current/mod/mod_rewrite.html) and enable it
+
+## Run the application
+Execute application by openning it in browser and do the installation
 
 Contribution
 ---
@@ -31,7 +76,7 @@ Contributions are always welcome, please follow these steps to submit your chang
 1. Install git from http://git-scm.com/
 2. Create a github account on https://github.com
 3. Set up your git ssh key using these instructions http://help.github.com/set-up-git-redirect
-4. Open the jQuery Validation Engine project home page on github on https://github.com/samilliken/openDCIM/
+4. Open the openDCIM project home page on github on https://github.com/samilliken/openDCIM/
 5. Click the "Fork" button, this will get you to a new page: your own copy of the code.
 6. Copy the SSH URL at the top of the page and clone the repository on your local machine
 
