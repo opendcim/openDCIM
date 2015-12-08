@@ -17,11 +17,13 @@
 		$dc=isset($_POST['datacenterid'])?$_POST['datacenterid']:$_GET['datacenterid'];
 		if($dc!=''){
 			$dc=intval($dc);
-			if($dc==0){
-				$sql="select a.Name as DataCenter, b.DeviceID, c.Location, b.Position, b.Height, b.Label, b.DeviceType, b.AssetTag, b.SerialNo, b.InstallDate, b.TemplateID, b.Owner from fac_DataCenter a, fac_Device b, fac_Cabinet c where b.Cabinet=c.CabinetID and c.DataCenterID=a.DataCenterID order by DataCenter ASC, Location ASC, Position ASC";
-			}else{
-				$sql="select a.Name as DataCenter, b.DeviceID, c.Location, b.Position, b.Height, b.Label, b.DeviceType, b.AssetTag, b.SerialNo, b.InstallDate, b.TemplateID, b.Owner from fac_DataCenter a, fac_Device b, fac_Cabinet c where b.Cabinet=c.CabinetID and c.DataCenterID=a.DataCenterID and c.DataCenterID=$dc order by Location ASC, Position ASC";
-			}
+			$dclimit=($dc==0)?'':" and c.DataCenterID=$dc ";
+			$sql="SELECT a.Name AS DataCenter, b.DeviceID, c.Location, b.Position, 
+				b.Height, b.Label, b.DeviceType, b.AssetTag, b.SerialNo, b.InstallDate, 
+				b.TemplateID, b.Owner, c.CabinetID, c.DataCenterID FROM fac_DataCenter a, 
+				fac_Device b, fac_Cabinet c WHERE b.Cabinet=c.CabinetID AND 
+				c.DataCenterID=a.DataCenterID $dclimit ORDER BY DataCenter ASC, Location ASC, 
+				Position ASC;";
 			$result=$dbh->query($sql);
 		}else{
 			$result=array();
@@ -53,7 +55,7 @@
 			if($row["TemplateID"] >0){
 				$templ->TemplateID=$row["TemplateID"];
 				$templ->GetTemplateByID();
-				$Model=$templ->Model;
+				$Model="<a href=\"device_templates.php?TemplateID=$templ->TemplateID\" target=\"template\">$templ->Model</a>";
 			}
 			
 			if($row["Owner"] >0){
@@ -64,14 +66,14 @@
 			$dev->DeviceID=$row["DeviceID"];
 			$tags=implode(",", $dev->GetTags());
 			$body.="\t\t<tr>
-			\t<td>{$row["DataCenter"]}</td>
-			\t<td>{$row["Location"]}</td>
+			\t<td><a href=\"dc_stats.php?dc={$row["DataCenterID"]}\" target=\"datacenter\">{$row["DataCenter"]}</a></td>
+			\t<td><a href=\"cabnavigator.php?cabinetid={$row["CabinetID"]}\" target=\"cabinet\">{$row["Location"]}</a></td>
 			\t<td>{$row["Position"]}</td>
 			\t<td>{$row["Height"]}</td>
-			\t<td>{$row["Label"]}</td>
+			\t<td><a href=\"devices.php?DeviceID=$dev->DeviceID\" target=\"device\">{$row["Label"]}</a></td>
 			\t<td>{$row["SerialNo"]}</td>
 			\t<td>{$row["AssetTag"]}</td>
-			\t<td>{$row["DeviceType"]}</td>
+			\t<td><a href=\"search.php?key=dev&DeviceType={$row["DeviceType"]}\" target=\"search\">{$row["DeviceType"]}</a></td>
 			\t<td>$Model</td>
 			\t<td>$tags</td>
 			\t<td>$Department</td>
@@ -90,7 +92,7 @@
 					if($child->TemplateID >0){
 						$templ->TemplateID=$child->TemplateID;
 						$templ->GetTemplateByID();
-						$cModel=$templ->Model;
+						$cModel="<a href=\"device_templates.php?TemplateID=$templ->TemplateID\" target=\"template\">$templ->Model</a>";
 					}
 					
 					if($child->Owner >0){
@@ -100,14 +102,14 @@
 					}
 
 					$body .= "\t\t<tr>
-					\t<td>{$row["DataCenter"]}</td>
-					\t<td>{$row["Location"]}</td>
+					\t<td><a href=\"dc_stats.php?dc={$row["DataCenterID"]}\" target=\"datacenter\">{$row["DataCenter"]}</a></td>
+					\t<td><a href=\"cabnavigator.php?cabinetid={$row["CabinetID"]}\" target=\"cabinet\">{$row["Location"]}</a></td>
 					\t<td>{$row["Position"]}</td>
 					\t<td>[-Child-]</td>
-					\t<td>$child->Label</td>
+					\t<td><a href=\"devices.php?DeviceID=$child->DeviceID\" target=\"device\">$child->Label</a></td>
 					\t<td>$child->SerialNo</td>
 					\t<td>$child->AssetTag</td>
-					\t<td>$child->DeviceType</td>
+					\t<td><a href=\"search.php?key=dev&DeviceType=$child->DeviceType\" target=\"search\">$child->DeviceType</a></td>
 					\t<td>$cModel</td>
 					\t<td>$ctags</td>
 					\t<td>$cDepartment</td>
