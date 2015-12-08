@@ -221,6 +221,11 @@ function convertImgToBase64(url, imgobj) {
 				return false;
 			}
 
+			// Make the template name into a link for easy reference
+			if(type=="LocalID"){
+				row['Model'].html('<a href="device_templates.php?TemplateID='+dev.TemplateID+'" target="template">'+row['Model'].text()+'</a>');
+			}
+
 			// Extend the table row by one field for a button to create/sync/push this template
 			row['command']=$('<div>').appendTo(row);
 			// Create button for btn_command
@@ -499,6 +504,9 @@ function convertImgToBase64(url, imgobj) {
 									pulltoapi($(e.currentTarget.parentElement.parentElement).data('object'));
 								});
 							}
+
+							// Make the template name into a link for easy reference
+							row['Model'].html('<a href="device_templates.php?TemplateID='+data.devicetemplate[i].TemplateID+'" target="template">'+row['Model'].text()+'</a>');
 						}else{
 							// compare to existing templates that might match, or add a new row
 							var row=MakeRow(data.devicetemplate[i],'LocalID');
