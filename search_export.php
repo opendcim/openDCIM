@@ -73,7 +73,7 @@
 			\t<td><a href=\"devices.php?DeviceID=$dev->DeviceID\" target=\"device\">{$row["Label"]}</a></td>
 			\t<td>{$row["SerialNo"]}</td>
 			\t<td>{$row["AssetTag"]}</td>
-			\t<td><a href=\"search.php?key=dev&DeviceType={$row["DeviceType"]}\" target=\"search\">{$row["DeviceType"]}</a></td>
+			\t<td><a href=\"search.php?key=dev&DeviceType={$row["DeviceType"]}&search\" target=\"search\">{$row["DeviceType"]}</a></td>
 			\t<td>$Model</td>
 			\t<td>$tags</td>
 			\t<td>$Department</td>
@@ -109,7 +109,7 @@
 					\t<td><a href=\"devices.php?DeviceID=$child->DeviceID\" target=\"device\">$child->Label</a></td>
 					\t<td>$child->SerialNo</td>
 					\t<td>$child->AssetTag</td>
-					\t<td><a href=\"search.php?key=dev&DeviceType=$child->DeviceType\" target=\"search\">$child->DeviceType</a></td>
+					\t<td><a href=\"search.php?key=dev&DeviceType=$child->DeviceType&search\" target=\"search\">$child->DeviceType</a></td>
 					\t<td>$cModel</td>
 					\t<td>$ctags</td>
 					\t<td>$cDepartment</td>
