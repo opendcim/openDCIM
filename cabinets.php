@@ -9,20 +9,6 @@
 	$status="";
 
 	// AJAX Requests
-		//Zone Lists
-		if(isset($_POST['zonelist'])){
-			$cab->DataCenterID=$_POST['zonelist'];
-			echo $cab->GetZoneSelectList();
-			exit;
-		}
-		if(isset($_POST['rowlist'])){
-			$cab->ZoneID=$_POST['rowlist'];
-			echo $cab->GetCabRowSelectList();
-			exit;
-		}
-	
-		//Row Lists
-
 	// END - AJAX Requests
 
 	$write=($person->WriteAccess)?true:false;
@@ -143,23 +129,57 @@
   <script type="text/javascript">
 	$(document).ready(function() {
 		$('#datacenterid').change(function(){
-			$.post('',{zonelist: $(this).val()}).done(function(data){
-				$('#zoneid').html('');
-				$(data).find('option').each(function(){
-					$('#zoneid').append($(this));	
-				});
-				$('#zoneid').val(0);
+			//store the value of the zone id prior to changing the list, we might need it
+			var ov=$('#zoneid').val();
+			$('#zoneid').html('');
+			// Add the option for no zone
+			$.get('api/v1/zone?DataCenterID='+$('#datacenterid').val()).done(function(data){
+				$('#zoneid').append($('<option>').val(0).text('None'));
+				if(!data.error){
+					for(var x in data.zone){
+						var opt=$('<option>').val(data.zone[x].ZoneID).text(data.zone[x].Description);
+						$('#zoneid').append(opt);
+					}
+				}
+			}).then(function(e){
+				// Attempt to set the original value of zoneid back after we've updated the options
+				$('#zoneid').val(ov);
+				// if the original value is no longer valid this will reset it to none
+				if($.isEmptyObject($('#zoneid').val())){
+					$('#zoneid').val(0);
+				}
 				$('#zoneid').change();
 			});
 		});
 		$('#zoneid').change(function(){
-			$.post('',{rowlist: $(this).val()}).done(function(data){
-				$('#cabrowid').html('');
-				$(data).find('option').each(function(){
-					$('#cabrowid').append($(this));	
-				});
-				$('#cabrowid').val(0);
+			//store the value of the zone id prior to changing the list, we might need it
+			var ov=$('#cabrowid').val();
+			$('#cabrowid').html('');
+			// Add the option for no row
+			$('#cabrowid').append($('<option>').val(0).text('None'));
+			var zonelimit=($('#zoneid').val()!=0)?'&ZoneID='+$('#zoneid').val():'';
+			$.get('api/v1/cabrow?DataCenterID='+$('#datacenterid').val()+zonelimit).done(function(data){
+				if(!data.error){
+					$('#cabrowid').data('cabrow',data.cabrow);
+					for(var x in data.cabrow){
+						var opt=$('<option>').val(data.cabrow[x].CabRowID).text(data.cabrow[x].Name);
+						$('#cabrowid').append(opt);
+					}
+				}
+			}).then(function(e){
+				// Attempt to set the original value of zoneid back after we've updated the options
+				$('#cabrowid').val(ov);
+				// if the original value is no longer valid this will reset it to none
+				if($.isEmptyObject($('#cabrowid').val())){
+					$('#cabrowid').val(0);
+				}
 			});
+		});
+		$('#cabrowid').change(function(e){
+			if($('#cabrowid').val()!=0){
+				$('#zoneid').val($('#cabrowid').data('cabrow')[$('#cabrowid').val()].ZoneID);
+				$('#zoneid').trigger('change');
+			}
 		});
 
 		// Init form

@@ -992,10 +992,11 @@ class DeviceTemplate {
 	}
 
 	function Search($indexedbyid=false,$loose=false){
+		$o=new stdClass();
 		// Store any values that have been added before we make them safe 
 		foreach($this as $prop => $val){
 			if(isset($val)){
-				$o[$prop]=$val;
+				$o->$prop=$val;
 			}
 		}
 
@@ -2040,7 +2041,7 @@ class Zone {
 		foreach($cabrow->GetCabRowsByZones() as $row){
 			$children[]=$row;
 		}
-		// While not currently supported this will us to nest cabinets into zones directly without a cabinet row
+		// While not currently supported this will allow us to nest cabinets into zones directly without a cabinet row
 		$cab=new Cabinet();
 		$cab->ZoneID=$this->ZoneID;
 		foreach($cab->GetCabinetsByZone() as $cab){
@@ -2152,6 +2153,43 @@ class Zone {
 		$zoneStats["AvgHumidity"]=($test=round($this->query($sql)->fetchColumn()))?$test:0;
 
 		return $zoneStats;
+	}
+
+	function Search($indexedbyid=false,$loose=false){
+		$o=new stdClass();
+		// Store any values that have been added before we make them safe 
+		foreach($this as $prop => $val){
+			if(isset($val)){
+				$o->$prop=$val;
+			}
+		}
+
+		// Make everything safe for us to search with
+		$this->MakeSafe();
+
+		// This will store all our extended sql
+		$sqlextend="";
+		foreach($o as $prop => $val){
+			extendsql($prop,$this->$prop,$sqlextend,$loose);
+		}
+
+		$sql="SELECT * FROM fac_Zone $sqlextend ORDER BY Description ASC;";
+
+		$zoneList=array();
+		foreach($this->query($sql) as $zoneRow){
+			if($indexedbyid){
+				$zoneList[$zoneRow["ZoneID"]]=Zone::RowToObject($zoneRow);
+			}else{
+				$zoneList[]=Zone::RowToObject($zoneRow);
+			}
+		}
+
+		return $zoneList;
+	}
+
+	// Make a simple reference to a loose search
+	function LooseSearch($indexedbyid=false){
+		return $this->Search($indexedbyid,true);
 	}
 }
 
@@ -2332,6 +2370,45 @@ class CabRow {
 		}
 
 		return "";
+	}
+
+	function Search($indexedbyid=false,$loose=false){
+		$o=new stdClass();
+		// Store any values that have been added before we make them safe 
+		foreach($this as $prop => $val){
+			if(isset($val)){
+				$o->$prop=$val;
+			}
+		}
+
+		// Make everything safe for us to search with
+		$this->MakeSafe();
+
+		// This will store all our extended sql
+		$sqlextend="";
+		foreach($o as $prop => $val){
+			extendsql($prop,$this->$prop,$sqlextend,$loose);
+		}
+
+		// The join is purely to sort the templates by the manufacturer's name
+		$sql="SELECT * FROM fac_CabRow $sqlextend ORDER BY Name ASC;";
+
+		$rowList=array();
+
+		foreach($this->query($sql) as $row){
+			if($indexedbyid){
+				$rowList[$row["CabRowID"]]=CabRow::RowToObject($row);
+			}else{
+				$rowList[]=CabRow::RowToObject($row);
+			}
+		}
+
+		return $rowList;
+	}
+
+	// Make a simple reference to a loose search
+	function LooseSearch($indexedbyid=false){
+		return $this->Search($indexedbyid,true);
 	}
 }  //END OF CLASS CabRow
 

@@ -878,7 +878,66 @@ $app->get( '/manufacturer', function() use ($app) {
 	echoResponse(200,$response);
 });
 
+//
+//	URL:	/api/v1/zone
+//	Method:	GET
+//	Params:	none
+//	Returns:  All zones for which the user's rights have access to view
+//
 
+$app->get( '/zone', function() use ($app) {
+	$zone=new Zone();
+	
+	$response['error']=false;
+	$response['errorcode']=200;
+	foreach($app->request->get() as $prop => $val){
+		$zone->$prop=$val;
+	}
+	$response['zone']=$zone->Search(true);
+
+	echoResponse(200,$response);
+});
+
+//
+//	URL:	/api/v1/zone/:zoneid
+//	Method:	GET
+//	Params:	none
+//	Returns: Zone identified by :zoneid 
+//
+
+$app->get( '/zone/:zoneid', function($zoneid) use ($app) {
+	$zone=new Zone();
+	$zone->ZoneID=$zoneid;
+	
+	$response['error']=false;
+	$response['errorcode']=200;
+	foreach($app->request->get() as $prop => $val){
+		$dev->$prop=$val;
+	}
+	$response['zone']=$zone->GetZone();
+
+	echoResponse(200,$response);
+});
+
+//
+//	URL:	/api/v1/cabrow
+//	Method:	GET
+//	Params:	none
+//	Returns:  All cabinet rows for which the user's rights have access to view
+//
+
+$app->get( '/cabrow', function() use ($app) {
+	$cabrow=new CabRow();
+	
+	$response['error']=false;
+	$response['errorcode']=200;
+	foreach($app->request->get() as $prop => $val){
+		$cabrow->$prop=$val;
+	}
+	$response['cabrow']=$cabrow->Search(true);
+
+	echoResponse(200,$response);
+});
 
 
 /**
