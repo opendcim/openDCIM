@@ -1600,6 +1600,7 @@ class Device {
 					}
 					$this->CreateDevice();
 					$olddev->CopyDeviceCustomValues($this);
+					$this->DuplicateTags( $olddev->DeviceID );
 				}else{
 					return false;
 				}
@@ -1623,6 +1624,7 @@ class Device {
 			// And finally create a new device based on the exact same info
 			$this->CreateDevice();
 			$olddev->CopyDeviceCustomValues($this);
+			$this->DuplicateTags( $olddev->DeviceID );
 		}
 
 		// If this is a chassis device and children are present clone them
@@ -1649,6 +1651,12 @@ class Device {
 			}
 			return true;
 		} else { return false; }
+	}
+
+	function DuplicateTags( $sourceDeviceID ) {
+		global $dbh;
+
+		$dbh->exec( "insert ignore into fac_DeviceTags (DeviceID, TagID) select '" . $this->DeviceID . "', TagID from fac_DeviceTags where DeviceID='" . $sourceDeviceID . "'");
 	}
 	
 	function IncrementFailures(){
