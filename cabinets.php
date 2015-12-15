@@ -128,6 +128,10 @@
 
   <script type="text/javascript">
 	$(document).ready(function() {
+		$('select[name=cabinetid]').change(function(e){
+			location.href='cabinets.php?cabinetid='+this.value;
+		});
+
 		$('#datacenterid').change(function(){
 			//store the value of the zone id prior to changing the list, we might need it
 			var ov=$('#zoneid').val();
@@ -183,9 +187,7 @@
 		});
 
 		// Init form
-		if($('#zoneid').val()==0 && $('#cabrowid').val()==0){
-			$('#datacenterid').trigger('change');
-		}
+		$('#datacenterid').trigger('change');
 
 		$('#rackform').validationEngine({});
 		$('input[name="installationdate"]').datepicker({});
@@ -217,7 +219,7 @@ echo '<div class="main">
 <div class="table">
 <div>
    <div>',__("Cabinet"),'</div>
-   <div><select name="cabinetid" onChange="form.submit()">
+   <div><select name="cabinetid">
    <option value=0>',__("New Cabinet"),'</option>';
 
 	foreach($cabList as $cabRow){
