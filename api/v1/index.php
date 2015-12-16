@@ -1563,6 +1563,9 @@ $app->put( '/devicetemplate/:templateid/powerport/:portnum', function($templatei
 
 $app->put( '/manufacturer/:name', function($name) use ($app,$person) {
 	$man=new Manufacturer();
+	foreach($app->request->put() as $prop => $val){
+		$man->$prop=$val;
+	}
 	$man->Name=$name;
 	
 	$response['error']=true;
@@ -1575,12 +1578,6 @@ $app->put( '/manufacturer/:name', function($name) use ($app,$person) {
 		if(!$man->CreateManufacturer()){
 			$response['message']=__("Manufacturer not created: ")." $manufacturerid";
 		}else{
-			foreach($app->request->put() as $prop => $val){
-				if($prop!='ManufacturerID'){
-					$man->$prop=$val;
-				}
-			}
-			$man->UpdateManufacturer();
 			$response['error']=false;
 			$response['errorcode']=200;
 			$response['manufacturer']=$man;
