@@ -1554,6 +1554,41 @@ $app->put( '/devicetemplate/:templateid/powerport/:portnum', function($templatei
 	echoResponse(200,$response);
 });
 
+//
+//	URL:	/api/v1/manufacturer/:name
+//	Method:	PUT
+//	Params:	none
+//	Returns: Record as created 
+//
+
+$app->put( '/manufacturer/:name', function($name) use ($app,$person) {
+	$man=new Manufacturer();
+	$man->Name=$name;
+	
+	$response['error']=true;
+	$response['errorcode']=404;
+
+	if(!$person->SiteAdmin){
+		$response['errorcode']=403;
+		$response['message']=__("Unauthorized");
+	}else{
+		if(!$man->CreateManufacturer()){
+			$response['message']=__("Manufacturer not created: ")." $manufacturerid";
+		}else{
+			foreach($app->request->put() as $prop => $val){
+				if($prop!='ManufacturerID'){
+					$man->$prop=$val;
+				}
+			}
+			$man->UpdateManufacturer();
+			$response['error']=false;
+			$response['errorcode']=200;
+			$response['manufacturer']=$man;
+		}
+	}
+
+	echoResponse(200,$response);
+});
 /**
   *
   *		API DELETE Methods go here
