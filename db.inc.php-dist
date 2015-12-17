@@ -23,7 +23,7 @@
 	define( "AUTHENTICATION", "Apache" );
 	/* If you want to use Oauth authentication, uncomment the next 2 lines
 	   and place your authentication handler in login.php (create symbolic link). 
-	   ex.  ln -s oauth/login_with_google.php oauth/login.php
+	   ex.  cp oauth/login_with_google.php oauth/login.php
 	*/
 	// define( "AUTHENTICATION", "Oauth" );
 	// session_start();

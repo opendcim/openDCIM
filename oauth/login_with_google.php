@@ -21,10 +21,10 @@
 
 	$client->debug = false;
 	$client->debug_http = true;
-	$client->redirect_uri = 'http://dcim.home.themillikens.com/login.php';
+	$client->redirect_uri = 'http' . (isset($_SERVER['HTTPS']) ? 's' : '') . '://' . "{$_SERVER['HTTP_HOST']}/{$_SERVER['REQUEST_URI']}";
 
-	$client->client_id = '861442472439-n1l3t62kiq2bdb0m5vbro3sqqqlfa67m.apps.googleusercontent.com';  $application_line = __LINE__;
-	$client->client_secret = 'mWqqzeL2qvqLekoTyCPeuXEz';
+	$client->client_id = '';  $application_line = __LINE__;
+	$client->client_secret = '';
 
 	if(strlen($client->client_id) == 0
 	|| strlen($client->client_secret) == 0)
@@ -62,6 +62,7 @@
 	if($success)
 	{
 		$_SESSION['userid']=$user->email;
+		header('Location: ..');
 	}
 	else
 	{
