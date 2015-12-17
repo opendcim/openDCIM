@@ -838,13 +838,13 @@ $app->get( '/devicetemplate/:templateid/powerport', function($templateid) use ($
 });
 
 //
-//	URL:	/api/v1/devicetemplate/:templateid/slots
+//	URL:	/api/v1/devicetemplate/:templateid/slot
 //	Method:	GET
 //	Params: templateid
 //	Returns: Slots defined for device template with templateid
 //
 
-$app->get( '/devicetemplate/:templateid/slots', function($templateid) use ($app) {
+$app->get( '/devicetemplate/:templateid/slot', function($templateid) use ($app) {
 	if(!$slots=slot::GetAll($templateid)){
 		$response['error']=true;
 		$response['errorcode']=404;
@@ -852,7 +852,7 @@ $app->get( '/devicetemplate/:templateid/slots', function($templateid) use ($app)
 	}else{
 		$response['error']=false;
 		$response['errorcode']=200;
-		$response['slots']=$slots;
+		$response['slot']=$slots;
 	}
 
 	echoResponse(200,$response);
@@ -1219,6 +1219,51 @@ $app->post( '/devicetemplate/:templateid/dataport/:portnumber', function($templa
 });
 
 //
+//	URL:	/api/v1/devicetemplate/:templateid/slot/:slotnum
+//	Method:	POST
+//	Params:	
+//		Required: templateid, slutnum
+//		Optional: everything else
+//	Returns: true/false on update operation
+//
+
+$app->post( '/devicetemplate/:templateid/slot/:slotnum', function($templateid,$slotnum) use ($app,$person) {
+	$s=new Slot();
+	$s->TemplateID=$templateid;
+	$s->PortNumber=$slotnum;
+
+	if(!$person->WriteAccess){
+		$response['error']=true;
+		$response['errorcode']=403;
+		$response['message']=__("Unauthorized");
+	}else{
+		if(!$s->GetSlot()){
+			$response['error']=true;
+			$response['errorcode']=404;
+			$response['message']=__("Template slot not found with id: ")." $templateid:$slotnum";
+		}else{
+			foreach($app->request->post() as $prop => $val){
+				$s->$prop=$val;
+			}
+			// Just to make sure 
+			$s->TemplateID=$templateid;
+			$s->PortNumber=$slotnum;
+			if(!$s->UpdateSlot()){
+				$response['error']=true;
+				$response['errorcode']=404;
+				$response['message']=__("Template slot update failed");
+			}else{
+				$response['error']=false;
+				$response['errorcode']=200;
+				$response['dataport']=$s;
+			}
+		}
+	}
+
+	echoResponse(200,$response);
+});
+
+//
 //	URL:	/api/v1/manufacturer
 //	Method:	POST
 //	Params:	none
@@ -1548,6 +1593,43 @@ $app->put( '/devicetemplate/:templateid/powerport/:portnum', function($templatei
 			$response['error']=false;
 			$response['errorcode']=200;
 			$response['powerport']=$tp;
+		}
+	}
+
+	echoResponse(200,$response);
+});
+
+//
+//	URL:	/api/v1/devicetemplate/:templateid/slot/:slotnum
+//	Method:	PUT
+//	Params:	
+//		Required: templateid, slotnum
+//		Optional: everything else
+//	Returns: record as created 
+//
+
+$app->put( '/devicetemplate/:templateid/slot/:slotnum', function($templateid,$slotnum) use ($app,$person) {
+	$s=new Slot();
+	foreach($app->request->put() as $prop => $val){
+		$s->$prop=$val;
+	}
+	// This should be in the commit data but if we get a smartass saying it's in the URL
+	$s->TemplateID=$templateid;
+	$s->Position=$slotnum;
+
+	if(!$person->WriteAccess){
+		$response['error']=true;
+		$response['errorcode']=403;
+		$response['message']=__("Unauthorized");
+	}else{
+		if(!$s->CreateSlot()){
+			$response['error']=true;
+			$response['errorcode']=404;
+			$response['message']=__("Device template slot creation failed");
+		}else{
+			$response['error']=false;
+			$response['errorcode']=200;
+			$response['powerport']=$s;
 		}
 	}
 

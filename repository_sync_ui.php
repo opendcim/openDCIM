@@ -262,6 +262,7 @@ function convertImgToBase64(url, imgobj) {
 			// Store the ports at the row level for easy access later
 			(type=='GlobalID')?row.data('globaldataports',dev.ports):row.data('localdataports',dev.ports);
 			(type=='GlobalID')?row.data('globalpowerports',dev.powerports):row.data('localpowerports',dev.powerports);
+			(type=='GlobalID')?row.data('globalslots',dev.slots):row.data('localslots',dev.slots);
 			// Add the data ports table to the dialog made above
 			MakePortsTable(dev.ports,row,'Repository','data');
 			MakePortsTable(dev.powerports,row,'Repository','power');
@@ -366,6 +367,9 @@ function convertImgToBase64(url, imgobj) {
 						// Ports, slots, pictures, etc
 
 						if(postorput==='put'){
+							// Linkify the template name
+							row.data('object')['Model'].html('<a href="device_templates.php?TemplateID='+data.devicetemplate.TemplateID+'" target="template">'+row.data('object')['Model'].text()+'</a>');
+
 							// Add front image
 							if(row.data("globaldev").FrontPictureFile!=''){
 								AddImage(row.FrontPictureFile.find('img').data('file'));
@@ -382,6 +386,11 @@ function convertImgToBase64(url, imgobj) {
 							}
 							for(var i in row.data("globalpowerports")){
 								$.ajax({type: postorput,url: 'api/v1/devicetemplate/'+data.devicetemplate.TemplateID+'/powerport/'+(parseInt(i)+1),async: false,data: row.data("globalpowerports")[i]}).complete(function(data){});
+							}
+
+							// Create slots
+							for(var i in row.data("globalslots")){
+								$.ajax({type: postorput,url: 'api/v1/devicetemplate/'+data.devicetemplate.TemplateID+'/slot/'+(parseInt(i)+1),async: false,data: row.data("globalslots")[i]}).complete(function(data){});
 							}
 						}else{
 							row.removeClass('change');
@@ -491,12 +500,12 @@ function convertImgToBase64(url, imgobj) {
 							// Store the template at the row level so we have easy access later
 							row.data('localdev',data.devicetemplate[i]);
 							$.ajax({url:'api/v1/devicetemplate/'+data.devicetemplate[i].TemplateID+'/dataport',type:'get',async:false}).done(function(data){
-								row.data('localdataports',data.dataports);
-								MakePortsTable(data.dataports,row,'Local','data');
+								row.data('localdataports',data.dataport);
+								MakePortsTable(data.dataport,row,'Local','data');
 							});
 							$.ajax({url:'api/v1/devicetemplate/'+data.devicetemplate[i].TemplateID+'/powerport',type:'get',async:false}).done(function(data){
-								row.data('localpowerports',data.powerports);
-								MakePortsTable(data.powerports,row,'Local','power');
+								row.data('localpowerports',data.powerport);
+								MakePortsTable(data.powerport,row,'Local','power');
 							});
 							// Make sure we have a button first, then add the click functionality to it
 							if(typeof btn_command!='undefined'){
@@ -512,21 +521,21 @@ function convertImgToBase64(url, imgobj) {
 							var row=MakeRow(data.devicetemplate[i],'LocalID');
 							if(data.devicetemplate[i].NumPorts>0){
 								$.ajax({url: 'api/v1/devicetemplate/'+data.devicetemplate[i].TemplateID+'/dataport', type:'get',async: false}).done(function(data){
-									row.data('localdataports',data.dataports);
-									MakePortsTable(data.dataports,row,'Local','data');
+									row.data('localdataports',data.dataport);
+									MakePortsTable(data.dataport,row,'Local','data');
 								});
 							}
 							if(data.devicetemplate[i].PSCount>0){
 								$.ajax({url: 'api/v1/devicetemplate/'+data.devicetemplate[i].TemplateID+'/powerport', type:'get',async: false}).done(function(data){
-									row.data('localpowerports',data.powerports);
-									MakePortsTable(data.powerports,row,'Local','power');
+									row.data('localpowerports',data.powerport);
+									MakePortsTable(data.powerport,row,'Local','power');
 								});
 							}
 							if(data.devicetemplate[i].ChassisSlots>0 || data.devicetemplate[i].RearChassisSlots>0){
-								$.ajax({url: 'api/v1/devicetemplate/'+data.devicetemplate[i].TemplateID+'/slots', type:'get',async: false}).done(function(data){
+								$.ajax({url: 'api/v1/devicetemplate/'+data.devicetemplate[i].TemplateID+'/slot', type:'get',async: false}).done(function(data){
 									// Make these into a single list and a standard array
-									var frontslots=(typeof data.slots[0]!='undefined')?data.slots[0]:{};
-									var rearslots=(typeof data.slots[1]!='undefined')?data.slots[1]:{};
+									var frontslots=(typeof data.slot[0]!='undefined')?data.slot[0]:{};
+									var rearslots=(typeof data.slot[1]!='undefined')?data.slot[1]:{};
 									frontslots=Object.keys(frontslots).map(function (key) {return frontslots[key]});
 									rearslots=Object.keys(rearslots).map(function (key) {return rearslots[key]});
 									row.data('localslots', frontslots.concat(rearslots));
