@@ -43,9 +43,6 @@ class Cabinet {
 	var $MaxKW;
 	var $MaxWeight;
 	var $InstallationDate;
-	var $SensorIPAddress;
-	var $SensorCommunity;
-	var $SensorTemplateID;
 	var $MapX1;
 	var $MapY1;
 	var $MapX2;
@@ -68,9 +65,6 @@ class Cabinet {
 		$this->MaxKW=floatval($this->MaxKW);
 		$this->MaxWeight=intval($this->MaxWeight);
 		$this->InstallationDate=date("Y-m-d", strtotime($this->InstallationDate));
-		$this->SensorIPAddress=sanitize($this->SensorIPAddress);
-		$this->SensorCommunity=sanitize($this->SensorCommunity);
-		$this->SensorTemplateID=intval($this->SensorTemplateID);
 		$this->MapX1=abs($this->MapX1);
 		$this->MapY1=abs($this->MapY1);
 		$this->MapX2=abs($this->MapX2);
@@ -106,9 +100,6 @@ class Cabinet {
 		$cab->MaxKW=$dbRow["MaxKW"];
 		$cab->MaxWeight=$dbRow["MaxWeight"];
 		$cab->InstallationDate=$dbRow["InstallationDate"];
-		$cab->SensorIPAddress=$dbRow["SensorIPAddress"];
-		$cab->SensorCommunity=$dbRow["SensorCommunity"];
-		$cab->SensorTemplateID=$dbRow["SensorTemplateID"];
 		$cab->MapX1=$dbRow["MapX1"];
 		$cab->MapY1=$dbRow["MapY1"];
 		$cab->MapX2=$dbRow["MapX2"];
@@ -165,9 +156,8 @@ class Cabinet {
 			CabinetHeight=$this->CabinetHeight, Model=\"$this->Model\", 
 			Keylock=\"$this->Keylock\", MaxKW=$this->MaxKW, MaxWeight=$this->MaxWeight, 
 			InstallationDate=\"".date("Y-m-d", strtotime($this->InstallationDate))."\", 
-			SensorIPAddress=\"$this->SensorIPAddress\", MapX1=$this->MapX1, 
-			SensorCommunity=\"$this->SensorCommunity\", MapY1=$this->MapY1, 
-			SensorTemplateID=$this->SensorTemplateID, MapX2=$this->MapX2, MapY2=$this->MapY2,
+			MapX1=$this->MapX1, MapY1=$this->MapY1, 
+			MapX2=$this->MapX2, MapY2=$this->MapY2,
 			FrontEdge=\"$this->FrontEdge\", Notes=\"$this->Notes\", 
 			U1Position=\"$this->U1Position\";";
 
@@ -199,9 +189,8 @@ class Cabinet {
 			CabinetHeight=$this->CabinetHeight, Model=\"$this->Model\", 
 			Keylock=\"$this->Keylock\", MaxKW=$this->MaxKW, MaxWeight=$this->MaxWeight, 
 			InstallationDate=\"".date("Y-m-d", strtotime($this->InstallationDate))."\", 
-			SensorIPAddress=\"$this->SensorIPAddress\", MapX1=$this->MapX1, 
-			SensorCommunity=\"$this->SensorCommunity\", MapY1=$this->MapY1, 
-			SensorTemplateID=$this->SensorTemplateID, MapX2=$this->MapX2, MapY2=$this->MapY2,
+			MapX1=$this->MapX1, MapY1=$this->MapY1, 
+			MapX2=$this->MapX2, MapY2=$this->MapY2,
 			FrontEdge=\"$this->FrontEdge\", Notes=\"$this->Notes\", 
 			U1Position=\"$this->U1Position\" WHERE CabinetID=$this->CabinetID;";
 

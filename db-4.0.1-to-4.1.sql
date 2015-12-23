@@ -32,6 +32,14 @@ ALTER TABLE fac_PowerPorts ADD INDEX (Notes);
 ALTER TABLE fac_VMInventory ADD COLUMN PrimaryContact int(11) NOT NULL;
 
 --
+-- Clean up the db to remove no longer used elements
+--
+
+ALTER TABLE fac_Cabinet DROP COLUMN SensorIPAddress;
+ALTER TABLE fac_Cabinet DROP COLUMN SensorCommunity;
+ALTER TABLE fac_Cabinet DROP COLUMN SensorTemplateID;
+
+--
 -- Bump up the database version
 --
 -- UPDATE fac_Config set Value='4.1' WHERE Parameter='Version';
