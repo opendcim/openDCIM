@@ -308,6 +308,8 @@ $app->get( '/cabinet/:cabinetid', function($cabinetid) {
 		$response['error'] = false;
 		$response['errorcode'] = 200;
 		$response['cabinet'] = array();
+
+		$cab->GetCabinet();
 		
 		$tmp = array();
 		foreach( $cab as $prop=>$value ) {
