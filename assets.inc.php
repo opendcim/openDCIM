@@ -110,6 +110,9 @@ class Cabinet {
 
 		if($filterrights){
 			$cab->FilterRights();
+		} else {
+			// Assume that you can read everything if there's no FilterRights call.
+			$cab->Rights = "Read";
 		}
 
 		if($cab->U1Position=="Default"){
@@ -233,7 +236,8 @@ class Cabinet {
 		$sql="SELECT * FROM fac_Cabinet ORDER BY $orderbydc LocationSortable ASC;";
 
 		foreach($dbh->query($sql) as $cabinetRow){
-			$cabinetList[]=Cabinet::RowToObject($cabinetRow);
+			$filter = $config->ParameterArray["FilterCabinetList"] == 'Enabled' ? true:false;
+			$cabinetList[]=Cabinet::RowToObject($cabinetRow, $filter);
 		}
 
 		return $cabinetList;
@@ -1350,6 +1354,9 @@ class Device {
 		}
 		if($filterrights){
 			$dev->FilterRights();
+		} else {
+			// Assume that you can read everything if the rights filtering is turned off
+			$dev->Rights='Read';
 		}
 
 		return $dev;

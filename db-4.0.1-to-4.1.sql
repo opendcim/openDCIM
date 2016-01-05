@@ -40,6 +40,12 @@ ALTER TABLE fac_Cabinet DROP COLUMN SensorCommunity;
 ALTER TABLE fac_Cabinet DROP COLUMN SensorTemplateID;
 
 --
+-- Add in new parameter to control whether or not to filter the cabinet listing (Disable for Performance Boost on large installs)
+--
+
+INSERT INTO fac_Config SET Parameter='FilterCabinetList', Value='Enabled', UnitOfMeasure='Enabled/Disabled', ValType='string', DefaultVal='Enabled';
+
+--
 -- Bump up the database version
 --
 -- UPDATE fac_Config set Value='4.1' WHERE Parameter='Version';

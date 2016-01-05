@@ -1505,6 +1505,17 @@ echo '<div class="main">
 					</div>
 				</div>
 			</div> <!-- end table -->
+			<h3>',__("Site Level Security Options"),'</h3>
+			<div class="table">
+				<div>
+					<div><label for="FilterCabinetList">',__("Filter Cabinet List"),'</label></div>
+					<div><select id="FilterCabinetList" name="FilterCabinetList" defaultvalue="',$config->defaults["FilterCabinetList"],'" data="',$config->ParameterArray["FilterCabinetList"],'">
+							<option value="disabled">',__("Disabled"),'</option>
+							<option value="enabled">',__("Enabled"),'</option>
+						</select>
+					</div>
+				</div>
+			</div> <!-- end table -->			
 			<h3>',__("Rack Requests"),'</h3>
 			<div class="table">
 				<div>
