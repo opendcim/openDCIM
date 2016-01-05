@@ -303,11 +303,15 @@ echo '		<div class="main">
 		$pdu->CabinetID = $cabRow->CabinetID;
 		$cabPDUList = $pdu->GetPDUbyCabinet();
 
-		// Double duty - check for diversity (At least one CDU is fed from an unaffected panel); build an array of the panels with the PDUID as the key
-		$st = $dbh->prepare( "select * from fac_PowerPanel where PanelID=:PanelID" );
-		$st->setFetchMode( PDO::FETCH_CLASS, "PowerPanel" );
-		
 		$diversity = false;
+
+		// If you can find one CDU for the Cabinet that is not in the list of down CDUs, then you have at least some diversity
+		foreach ( $cabPDUList as $cabPDU ) {
+			if ( ! objArraySearch( $pduList, "DeviceID", $cabPDU->PDUID)) {
+				$diversity = true;
+				break;
+			}
+		}
 
 		// Basic device selection based on the CabinetID
 		// Filter out all reservations, devices with no power supplies, power strips, and chassis slot cards

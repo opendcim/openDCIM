@@ -157,6 +157,20 @@ if(!function_exists("ArraySearchRecursive")){
 		return false;
 	}
 }
+
+// Search an array of objects for a specific value on given index parameter
+// Returns true if found, false if not
+if(!function_exists("objArraySearch")){
+    function objArraySearch($array, $index, $value)
+    {
+        foreach($array as $arrayInf) {
+            if($arrayInf->{$index} == $value) {
+                return $false;
+            }
+        }
+        return false;
+    }
+}
 /*
  * Sort multidimentional array in natural order
  *
