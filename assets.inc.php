@@ -1749,6 +1749,16 @@ class Device {
 	
 		$this->MakeSafe();	
 
+		if($tmpDev->Cabinet!=$this->Cabinet){
+			$cab=new Cabinet();
+			$cab->CabinetID=$this->Cabinet;
+			$cab->GetCabinet();
+			// Make sure the user has rights to save a device into the new cabinet
+			if($cab->Rights!="Write"){return false;}
+		}
+
+		// Everything after this point you already know that the Person has rights to make changes
+
 		// A child device's cabinet must always match the parent so force it here
 		if($this->ParentDevice){
 			$parent=new Device();
@@ -1777,6 +1787,7 @@ class Device {
 			WarrantyExpire=\"".date("Y-m-d", strtotime($this->WarrantyExpire))."\", Notes=\"$this->Notes\", 
 			Reservation=$this->Reservation, HalfDepth=$this->HalfDepth, BackSide=$this->BackSide WHERE DeviceID=$this->DeviceID;";
 
+
 		// If the device won't update for some reason there is no cause to touch anything else about it
 		if(!$dbh->query($sql)){
 			$info=$dbh->errorInfo();
@@ -1784,19 +1795,9 @@ class Device {
 			return false;
 		}
 		
-		// If you changed cabinets then the power connections need to be removed
-		if($tmpDev->Cabinet!=$this->Cabinet){
-			$cab=new Cabinet();
-			$cab->CabinetID=$this->Cabinet;
-			$cab->GetCabinet();
-			// Make sure the user has rights to save a device into the new cabinet
-			if($cab->Rights!="Write"){return false;}
-
-			// They have rights to do this so clear the power connections now
-			$powercon=new PowerConnection();
-			$powercon->DeviceID=$this->DeviceID;
-			$powercon->DeleteConnections();
-		}
+		// Clear the power connections
+		
+		PowerPorts::removeConnections($this->DeviceID);
   
 		if($tmpDev->DeviceType == "Chassis" && $tmpDev->DeviceType != $this->DeviceType){
 			// SUT #148 - Previously defined chassis is no longer a chassis
