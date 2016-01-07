@@ -1714,8 +1714,8 @@ echo '<div class="main">
 					<div><input type="text" defaultvalue="',$config->defaults["annualCostPerUYear"],'" name="annualCostPerUYear" value="',$config->ParameterArray["annualCostPerUYear"],'"></div>
 				</div>
 				<div>
-					<div><label for="annualCostPerWattYear">',__("Annual Cost Per Watt (Year)"),'</label></div>
-					<div><input type="text" defaultvalue="',$config->defaults["annualCostPerWattYear"],'" name="annualCostPerWattYear" value="',$config->ParameterArray["annualCostPerWattYear"],'"></div>
+					<div><label for="CostPerKwHr">',__("Cost Per KwHr"),'</label></div>
+					<div><input type="text" defaultvalue="',$config->defaults["CostPerKwHr"],'" name="CostPerKwHr" value="',$config->ParameterArray["CostPerKwHr"],'"></div>
 				</div>
 				<div>
 					<div><label for="PDFLogoFile">',__("Logo file for headers"),'</label></div>

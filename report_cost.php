@@ -8,7 +8,7 @@
 	setLocale( LC_ALL, $config->ParameterArray["Locale"] );
 	
 	$annualCostPerUYear = intval($config->ParameterArray["annualCostPerUYear"]);
-	$annualCostPerWattYear = floatval($config->ParameterArray["annualCostPerWattYear"]);
+	$powerRate = floatval($config->ParameterArray["CostPerKwHr"]);
 
 	$dept = new Department();
 	$con = new People();
@@ -387,10 +387,10 @@ class PDF_Diag extends PDF_Sector {
 	$pdf->SetFont( $config->ParameterArray["PDFfont"], "", 12 );
 	if(function_exists('money_format')){
 		$pdf->Cell( 300, 5, __("Annual Cost Per Rack Unit (Year)").': ' . money_format( "%.2n", $annualCostPerUYear ), "", 1, "L", "" );
-		$pdf->Cell( 300, 5, __("Annual Cost Per Watt (Year)").': ' . money_format( "%.4n", $annualCostPerWattYear ), "", 1, "L", "" );
+		$pdf->Cell( 300, 5, __("Annual Cost Per Watt (Year)").': ' . money_format( "%.4n", $powerRate *  8.760), "", 1, "L", "" );
 	}else{
 		$pdf->Cell( 300, 5, __("Annual Cost Per Rack Unit (Year)").': ' . sprintf( $annualCostPerUYear, "%.2n" ), "", 1, "L", "" );
-		$pdf->Cell( 300, 5, __("Annual Cost Per Watt (Year)").': ' . sprintf( $annualCostPerWattYear, "%.4n" ), "", 1, "L", "" );
+		$pdf->Cell( 300, 5, __("Annual Cost Per Watt (Year)").': ' . sprintf( $powerRate * 8.760, "%.4n" ), "", 1, "L", "" );
 	}
 	$pdf->Ln();
   $pdf->Ln(); 
@@ -490,7 +490,7 @@ class PDF_Diag extends PDF_Sector {
 			}
 
       $hostingCost = $annualCostPerUYear * $devRow->Height;
-      $electricalCost = ( $devRow->NominalWatts * $annualCostPerWattYear );
+      $electricalCost = ( $devRow->NominalWatts * $powerRate * 8.760 );
       $totalElectricalCost += $electricalCost;
       $totalHostingCost += $hostingCost;
       
