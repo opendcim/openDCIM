@@ -656,14 +656,23 @@ class CabinetMetrics {
 		}
 
 		// Now the devices in the cabinet
-		$sql = "select sum(a.NominalWatts) as Power, sum(a.Height) as SpaceUsed, sum(b.Weight) as Weight from fac_Device a, fac_DeviceTemplate b where a.TemplateID=b.TemplateID and Cabinet=:CabinetID and HalfDepth=0";
+		// Watts needs to count ALL devices
+		$sql = "select sum(a.NominalWatts) as Power, sum(a.Height) as SpaceUsed, sum(b.Weight) as Weight from fac_Device a, fac_DeviceTemplate b where a.TemplateID=b.TemplateID and Cabinet=:CabinetID";
 		$st = $dbh->prepare( $sql );
 		$st->execute( $params );
 		if ( $row = $st->fetch() ) {
 			$m->CalculatedPower = $row["Power"];
 			$m->CalculatedWeight = $row["Weight"];
-			$m->SpaceUsed = $row["SpaceUsed"];
 		}
+
+		// Space needs to only count devices that are not children of other devices (slots in a chassis)
+		$sql = "select sum(if(HalfDepth,Height/2,Height)) as SpaceUsed from fac_Device where Cabinet=:CabinetID and ParentDevice=0";
+		$st = $dbh->prepare( $sql );
+		$st->execute( $params );
+		if ( $row = $st->fetch() ) {
+					$m->SpaceUsed = $row["SpaceUsed"];
+		}
+
 		
 		// And finally the power readings
 		$sql = "select sum(Wattage) as Power from fac_PDUStats where PDUID in (select DeviceID from fac_Device where DeviceType='CDU' and Cabinet=:CabinetID)";
