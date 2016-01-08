@@ -119,5 +119,27 @@ echo '<div class="main">
 </div><!-- END div.JMGA -->
 </div><!-- END div.main -->
 </div><!-- END div.page -->
+<script type="text/javascript">
+	$(document).ready(function() {
+		// Hard set widths to stop IE from being retarded
+		$('#mapCanvas').css('width', $('.canvas > img[alt="clearmap over canvas"]').width()+'px');
+		$('#mapCanvas').parent('.canvas').css('width', $('.canvas > img[alt="clearmap over canvas"]').width()+'px');
+
+		// Don't attempt to open the datacenter tree until it is loaded
+		function opentree(){
+			if($('#datacenters .bullet').length==0){
+				setTimeout(function(){
+					opentree();
+				},500);
+			}else{
+				var firstcabinet=$('#c<?php echo $c->ContainerID;?> > ul > li:first-child').attr('id');
+				expandToItem('datacenters',firstcabinet);
+			}
+		}
+
+		// Bind tooltips, highlight functions to the map
+		opentree();
+	});
+</script>
 </body>
 </html>
