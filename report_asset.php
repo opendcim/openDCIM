@@ -42,7 +42,7 @@ class PDF extends FPDF {
 	include_once("loadfonts.php");
 	$pdf->AliasNbPages();
 	$pdf->AddPage();
-	$pdf->SetFont($config->ParameterArray['PDFfont'],'',8);
+	$pdf->SetFont($config->ParameterArray['PDFfont'],'',6);
 
 	$pdf->SetFillColor( 0, 0, 0 );
 	$pdf->SetTextColor( 255 );
@@ -70,7 +70,7 @@ class PDF extends FPDF {
 	if ( $DataCenterID > 0 )
 		$Criteria .= 'b.DataCenterID=\'' . intval( $DataCenterID ) . '\' and ';
 		
-    $searchSQL = 'select a.Name,b.Location,c.Position,c.Height,c.Label,c.SerialNo,c.AssetTag,c.DeviceID,c.DeviceType from fac_DataCenter a, fac_Cabinet b, fac_Device c where ' . $Criteria . 'c.Cabinet=b.CabinetID and b.DataCenterID=a.DataCenterID and c.Reservation=false order by a.Name,b.Location,c.Position';
+    $searchSQL = 'select a.Name,b.Location,c.Position,c.Height,c.Label,c.SerialNo,c.AssetTag,c.DeviceID,c.DeviceType from fac_DataCenter a, fac_Cabinet b, fac_Device c where ' . $Criteria . 'c.ParentDevice=0 and c.Cabinet=b.CabinetID and b.DataCenterID=a.DataCenterID and c.Reservation=false order by a.Name,b.Location,c.Position';
 
 	$lastDC = '';
 	$lastCab = '';
