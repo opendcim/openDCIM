@@ -57,7 +57,7 @@
 		$panelCap = $panel->PanelVoltage * $panel->MainBreakerSize * sqrt(3);
 		
 		$decimalplaces=0;
-		function FindTicks($decimalplaces,$panelCap,&$dataMajorTicks){
+		function FindTicks(&$decimalplaces,$panelCap,&$dataMajorTicks){
 			$err=false;
 			for ( $i = 0; $i < $panelCap; $i+=( $panelCap / 10 ) ) {
 				$tick = sprintf( "%.0${decimalplaces}lf ", $i / 1000 );
@@ -69,7 +69,7 @@
 			}
 			return $err;
 		}	
-		while(FindTicks($decimalplaces,$panelCap,&$dataMajorTicks)){
+		while(FindTicks($decimalplaces,$panelCap,$dataMajorTicks)){
 			$decimalplaces++;
 			$dataMajorTicks = "";
 		}
@@ -79,7 +79,7 @@
 		$dataHighlights = sprintf( "0 %d #eee, %d %d #fffacd, %d %d #eaa", $panelCap / 1000 * .6, $panelCap / 1000 * .6, $panelCap / 1000 * .8, $panelCap / 1000 * .8, $panelCap / 1000);
 
 		$mtarray=implode(",",explode(" ",$dataMajorTicks));
-		$hilights = sprintf( "{from: 0, to: %d, color: '#eee'}, {from: %d, to: %d, color: '#fffacd'}, {from: %d, to: %d, color: '#eaa'}", $panelCap / 1000 * .6, $panelCap / 1000 * .6, $panelCap / 1000 * .8, $panelCap / 1000 * .8, $panelCap / 1000);
+		$hilights = sprintf( "{from: 0, to: %.0${decimalplaces}lf, color: '#eee'}, {from: %.0${decimalplaces}lf, to: %.0${decimalplaces}lf, color: '#fffacd'}, {from: %.0${decimalplaces}lf, to: %.0${decimalplaces}lf, color: '#eaa'}", $panelCap / 1000 * .6, $panelCap / 1000 * .6, $panelCap / 1000 * .8, $panelCap / 1000 * .8, $panelCap / 1000);
 		// Generate JS for load display
 		$script="
 	var gauge=new Gauge({
