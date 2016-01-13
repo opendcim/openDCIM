@@ -56,13 +56,25 @@
 		$panelLoad = sprintf( "%01.2F", $panel->GetPanelLoad() / 1000 );
 		$panelCap = $panel->PanelVoltage * $panel->MainBreakerSize * sqrt(3);
 		
-		$dataMajorTicks = "";
-		for ( $i = 0; $i < $panelCap; $i+=( $panelCap / 10 ) ) {
-			$dataMajorTicks .= sprintf( "%d ", $i / 1000 );
+		$decimalplaces=0;
+		function FindTicks($decimalplaces,$panelCap,&$dataMajorTicks){
+			$err=false;
+			for ( $i = 0; $i < $panelCap; $i+=( $panelCap / 10 ) ) {
+				$tick = sprintf( "%.0${decimalplaces}lf ", $i / 1000 );
+				if(preg_match("/$tick/",$dataMajorTicks)){
+					$err=true;
+					break;
+				}
+				$dataMajorTicks .= $tick;
+			}
+			return $err;
+		}	
+		while(FindTicks($decimalplaces,$panelCap,&$dataMajorTicks)){
+			$decimalplaces++;
+			$dataMajorTicks = "";
 		}
-		$dataMajorTicks .= sprintf( "%d", $panelCap / 1000 );
 		
-		$dataMaxValue = sprintf( "%d", $panelCap / 1000 );
+		$dataMaxValue = sprintf( "%.0${decimalplaces}lf", $panelCap / 1000 );
 		
 		$dataHighlights = sprintf( "0 %d #eee, %d %d #fffacd, %d %d #eaa", $panelCap / 1000 * .6, $panelCap / 1000 * .6, $panelCap / 1000 * .8, $panelCap / 1000 * .8, $panelCap / 1000);
 
