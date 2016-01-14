@@ -6,7 +6,7 @@
 
 	if(strtolower(PHP_OS)=='linux'){
 		$tests['os']['state']="good";
-		$tests['os']['message']='';
+		$tests['os']['message']='OS Detected: '.PHP_OS;
 	}else{
 		$tests['os']['state']="fail";
 		$tests['os']['message']='OS Detected: '.PHP_OS.' We strongly recommend against running this on anything other than Linux.';
@@ -40,8 +40,8 @@
 		}
 
 		$locales=array();
-		foreach(explode("\n",shell_exec('locale -a | grep -i utf')) as $line){
-			$locales[]=array_shift(explode(".",$line));
+		foreach(explode("\n",trim(shell_exec('locale -a | grep -i utf'))) as $line){
+			$locales[]=substr($line, 0, strpos($line, '.'));
 		}
 		if(count($locales)>1){
 			$tests['gettext']['message'].="Locales detected: ";
@@ -142,14 +142,41 @@
 		$errors++;
 	}
 
-	if(in_array('mod_rewrite', apache_get_modules())){
+	//Adding in some preliminary support for nginix
+	if(strtolower($_SERVER['SERVER_SOFTWARE'])==strtolower('Apache')){
+		if(function_exists('apache_get_modules')){
+			if(in_array('mod_rewrite', apache_get_modules())){
+				$tests['mod_rewrite']['state']="good";
+				$tests['mod_rewrite']['message']='mod_rewrite detected';
+				$tests['api_test']['state']="fail";
+				$tests['api_test']['message']="Apache does not appear to be rewriting URLs correctly. Check your AllowOverride directive and change to 'AllowOverride All'";
+			}else{
+				$tests['mod_rewrite']['state']="fail";
+				$tests['mod_rewrite']['message']='Apache is missing the <a href="http://httpd.apache.org/docs/current/mod/mod_rewrite.html">mod_rewrite</a> module and it is required for the API to function correctly.  Please install it.';
+				$errors++;
+			}
+		}else{ // if function apache_get_modules isn't present then php might be running as mod_cgi
+			$tests['mod_rewrite']['state']="good";
+			$tests['mod_rewrite']['message']='PHP is running as modcgi and cannot be detected, assuming present';
+			$tests['api_test']['state']="fail";
+			$tests['api_test']['message']="Apache does not appear to be rewriting URLs correctly. Check your AllowOverride directive and change to 'AllowOverride All'";
+		}
+	}elseif(strtolower($_SERVER['SERVER_SOFTWARE'])==strtolower('nginx')){
 		$tests['mod_rewrite']['state']="good";
-		$tests['mod_rewrite']['message']='mod_rewrite detected';
+		$tests['mod_rewrite']['message']="nginx doesn't support mod_rewrite. You must manually create rewrite rules, like these.<pre>
+    location ~ ^/opendcim/api/v1 {
+        rewrite ^(.*) /opendcim/api/v1/index.php last;
+    }
+    location ~ ^/opendcim/api/test {
+        rewrite ^(.*) /opendcim/api/test/index.php last;
+    }</pre>";
 		$tests['api_test']['state']="fail";
 		$tests['api_test']['message']="Apache does not appear to be rewriting URLs correctly. Check your AllowOverride directive and change to 'AllowOverride All'";
+
 	}else{
-		$tests['mod_rewrite']['state']="fail";
-		$tests['mod_rewrite']['message']='Apache is missing the <a href="http://httpd.apache.org/docs/current/mod/mod_rewrite.html">mod_rewrite</a> module and it is required for the API to function correctly.  Please install it.';
+		$tests['web_server']['state']="fail";
+		$tests['web_server']['message']="Did not detect a supported web server. Server Detected: <b> {$_SERVER['SERVER_SOFTWARE']}</b>";
+		$errors++;
 	}
 
 	if (function_exists('json_encode')) {
