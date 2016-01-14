@@ -141,27 +141,23 @@ function authenticate(\Slim\Route $route) {
 //	Params:  none
 //	Returns:  List of all people in the database
 //
-$app->get('/people', function() {
+$app->get('/people', function() use ($app) {
 	global $person;
 	
 	$person->GetUserRights();
-	if ( !$person->ContactAdmin ) {
+	if(!$person->ContactAdmin){
 		$response['error'] = true;
 		$response['errorcode'] = 400;
 		$response['message'] = "Insufficient privilege level";
 		echoResponse(200, $response);
-	} else {
-		$pList = $person->GetUserList();
+	}else{
 		$response['error'] = false;
 		$response['errorcode'] = 200;
-		$response['people'] = array();
-		foreach ( $pList as $p ) {
-			$tmp = array();
-			foreach ( $p as $prop=>$value ) {
-				$tmp[$prop] = $value;
-			}
-			array_push( $response['people'], $tmp );
+		$sp=new People();
+		foreach($app->request->get() as $prop => $val){
+			$sp->$prop=$val;
 		}
+		$response['people']=$sp->Search();
 		
 		echoResponse(200, $response);
 	}

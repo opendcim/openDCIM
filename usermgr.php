@@ -133,6 +133,14 @@
 		$('#copy').replaceWith($('#PersonID').clone().attr('id','copy'));
 		$('#copy option[value=0]').text('');
 		$('#copy option[value='+$('#PersonID').val()+']').remove();
+		// remove any disabled userids from the available transfer list
+		$.get('api/v1/people?Disabled=1').done(function(data){
+			if(!data.error){
+				for(var x in data.people){
+					$('#copy option[value='+data.people[x].PersonID+']').remove();
+				}
+			}
+		});
 		$('#deletemodal').dialog({
 			dialogClass: "no-close",
 			width: 600,

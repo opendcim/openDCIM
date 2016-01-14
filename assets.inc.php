@@ -3901,6 +3901,7 @@ class DevicePorts {
 
 	function Search($indexedbyid=false,$loose=false){
 		global $dbh;
+		$o=array();
 		// Store any values that have been added before we make them safe 
 		foreach($this as $prop => $val){
 			if(isset($val)){
