@@ -1212,7 +1212,7 @@ function initdrag(){
 				// U above device + height of device in U + X rows for the header
 				var diff=Math.round(ui.position.top/21) + Math.ceil(this.offsetHeight/21) + getElementIndex(topu[0]);
 				var newposition=parseInt($(this.parentElement.parentElement.parentElement.parentElement).find('tr:nth-child('+diff+') td:first-child').text());
-				var newu=$('tr#pos' + newposition);
+				var newu=topu.parents('.cabinet').find('tr#pos' + newposition);
 				var device=this;
 				device.style.left=ui.position.left+'px';
 				device.style.top=ui.position.top+'px';
