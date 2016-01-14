@@ -40,8 +40,8 @@
 		}
 
 		$locales=array();
-		foreach(explode("\n",shell_exec('locale -a | grep -i utf')) as $line){
-			$locales[]=array_shift(explode(".",$line));
+		foreach(explode("\n",trim(shell_exec('locale -a | grep -i utf'))) as $line){
+			$locales[]=substr($line, 0, strpos($line, '.'));
 		}
 		if(count($locales)>1){
 			$tests['gettext']['message'].="Locales detected: ";
@@ -142,14 +142,21 @@
 		$errors++;
 	}
 
-	if(in_array('mod_rewrite', apache_get_modules())){
-		$tests['mod_rewrite']['state']="good";
-		$tests['mod_rewrite']['message']='mod_rewrite detected';
-		$tests['api_test']['state']="fail";
-		$tests['api_test']['message']="Apache does not appear to be rewriting URLs correctly. Check your AllowOverride directive and change to 'AllowOverride All'";
-	}else{
-		$tests['mod_rewrite']['state']="fail";
-		$tests['mod_rewrite']['message']='Apache is missing the <a href="http://httpd.apache.org/docs/current/mod/mod_rewrite.html">mod_rewrite</a> module and it is required for the API to function correctly.  Please install it.';
+    if (function_exists('apache_get_modules')) {
+        if (in_array('mod_rewrite', apache_get_modules())) {
+            $tests['mod_rewrite']['state']="good";
+            $tests['mod_rewrite']['message']='mod_rewrite detected';
+            $tests['api_test']['state']="fail";
+            $tests['api_test']['message']="Apache does not appear to be rewriting URLs correctly. Check your AllowOverride directive and change to 'AllowOverride All'";
+        } else{
+            $tests['mod_rewrite']['state']="fail";
+            $tests['mod_rewrite']['message']='Apache is missing the <a href="http://httpd.apache.org/docs/current/mod/mod_rewrite.html">mod_rewrite</a> module and it is required for the API to function correctly.  Please install it.';
+        }
+    } else {
+        $tests['mod_rewrite']['state']="good";
+        $tests['mod_rewrite']['message']='assume mod_rewrite is enabled';
+		$tests['api_test']['state']="good";
+		$tests['api_test']['message']="Good";
 	}
 
 	if (function_exists('json_encode')) {
