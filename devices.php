@@ -1763,8 +1763,15 @@ echo '				</select></div>
 				<option value=0>',__("Unassigned"),'</option>';
 
 			foreach($contactList as $contactRow){
-				if($contactRow->PersonID==$dev->PrimaryContact){$contactUserID=$contactRow->UserID;$selected=" selected";}else{$selected="";}
-				print "\t\t\t\t<option value=\"$contactRow->PersonID\"$selected>$contactRow->LastName, $contactRow->FirstName</option>\n";
+				if($contactRow->PersonID==$dev->PrimaryContact) {
+					$contactUserID=$contactRow->UserID;$selected=" selected";
+				} else {
+					$selected="";
+				}
+				// Only non-disabled User/Contact accounts should be selectable, but be sure not to filter out the currently assigned one
+				if ( ! $contactRow->Disabled && $contactRow->PersonID!=$dev->PrimaryContact) {
+					print "\t\t\t\t<option value=\"$contactRow->PersonID\"$selected>$contactRow->LastName, $contactRow->FirstName</option>\n";
+				}
 			}
 
 			print "\t\t\t</select>\n";
