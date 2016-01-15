@@ -3120,13 +3120,25 @@ class Device {
 			if(($this->Height<3 && $this->DeviceType=='Chassis' && (($rear && $this->RearChassisSlots > 0) || (!$rear && $this->ChassisSlots > 0))) || ($templ->Model=='HTRAY' || $templ->Model=='VTRAY') ){
 
 			}else{
-				if (! $this->HalfDepth && (( $this->BackSide && $rear ) || ( !$this->BackSide && !$rear ))) {
-					$toneloc = " (" . __("Rear") . ")";
-				} else {
-					$toneloc = "";
+				$toneloc="";
+				/* 
+				 * We're going to assume that anytime we have a half-depth device it will always
+				 * be mounted with its face showing.  If you email the list for help with showing
+				 * the back of one, even with a valid reason, I will mock and belittle you, asshole.
+				 *
+				 * $rear true/false if we want the front face of the device
+				 */
+				if(!$this->HalfDepth){
+					// if device is mounted on the back of the rack && we want the rear face
+					if($this->BackSide && $rear){
+						$toneloc="(".__("Rear").")";
+					// if the device is mounted normally && we want the rear face
+					}elseif(!$this->BackSide && $rear){
+						$toneloc="(".__("Rear").")";
+					}
 				}
 
-				$resp.="\t\t<div class=\"label\"><div>$flags{$this->Label}{$toneloc}</div></div>\n";
+				$resp.="\t\t<div class=\"label\"><div>$flags$this->Label$toneloc</div></div>\n";
 			}
 
 			$parent=new stdClass();
