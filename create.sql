@@ -23,6 +23,7 @@ CREATE TABLE fac_Cabinet (
   MapY1 int(11) NOT NULL,
   MapY2 int(11) NOT NULL,
   Notes text NULL,
+  U1Position varchar(7) NOT NULL DEFAULT "Default",
   PRIMARY KEY (CabinetID)
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
 
@@ -198,6 +199,7 @@ CREATE TABLE fac_DataCenter (
   ContainerID INT(11) NOT NULL,
   MapX int(11) NOT NULL,
   MapY int(11) NOT NULL,
+  U1Position varchar(7) NOT NULL DEFAULT "Default",
   PRIMARY KEY (DataCenterID)
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
 
@@ -401,7 +403,8 @@ CREATE TABLE fac_Ports (
   Notes varchar(80) NOT NULL,
   PRIMARY KEY (DeviceID,PortNumber),
   UNIQUE KEY LabeledPort (DeviceID,PortNumber,Label),
-  UNIQUE KEY ConnectedDevice (ConnectedDeviceID,ConnectedPort)
+  UNIQUE KEY ConnectedDevice (ConnectedDeviceID,ConnectedPort),
+  KEY Notes (Notes)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 --
@@ -542,7 +545,8 @@ CREATE TABLE fac_PowerPorts (
   Notes varchar(80) NOT NULL,
   PRIMARY KEY (DeviceID,PortNumber),
   UNIQUE KEY LabeledPort (DeviceID,PortNumber,Label),
-  UNIQUE KEY ConnectedDevice (ConnectedDeviceID,ConnectedPort)
+  UNIQUE KEY ConnectedDevice (ConnectedDeviceID,ConnectedPort),
+  KEY Notes (Notes)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 --
@@ -766,7 +770,6 @@ INSERT INTO fac_Config VALUES
 	('MediaEnforce', 'Disabled', 'Enabled/Disabled', 'string', 'Disabled'),
 	('DefaultPanelVoltage','208','Volts','int','208'),
 	('annualCostPerUYear','200','Dollars','float','200'),
-	('annualCostPerWattYear','0.7884','Dollars','float','0.7884'),
 	('Locale','en_US.utf8','TextLocale','string','en_US.utf8'),
 	('timezone', 'America/Chicago', 'string', 'string', 'America/Chicago'),
 	('PDFLogoFile','logo.png','Filename','string','logo.png'),
@@ -784,7 +787,7 @@ INSERT INTO fac_Config VALUES
 	('NetworkThreshold', '75', 'Percentage', 'integer', '75' ),
 	('FacMgrMail','DataCenterMgr@your.domain','Email','string','DataCenterMgr@your.domain'),
 	('InstallURL','','URL','string','https://dcim.your.domain'),
-	('Version','4.0','','',''),
+	('Version','4.1','','',''),
 	('UserLookupURL','https://','URL','string','https://'),
 	('ReservedColor','#00FFFF','HexColor','string','#FFFFFF'),
 	('FreeSpaceColor','#FFFFFF','HexColor','string','#FFFFFF'),
@@ -824,6 +827,11 @@ INSERT INTO fac_Config VALUES
 	('RequireDefinedUser', 'disabled', 'Enabled/Disabled', 'string', 'Disabled'),
 	('KeepLocal', 'enabled', 'Enabled/Disabled', 'string', 'Enabled'),
 	('SNMPVersion', '2c', 'Version', 'string', '2c'),
+	('U1Position', 'Bottom', 'Top/Bottom', 'string', 'Bottom'),
+	('RCIHigh', '80', 'degrees', 'float', '80'),
+	('RCILow', '65', 'degress', 'float', '65'),
+	('FilterCabinetList', 'Disabled', 'Enabled/Disabled', 'string', 'Disabled'),
+	('CostPerKwHr', '.25', 'Currency', 'float', '.25'),
 	('v3SecurityLevel', '', 'noAuthNoPriv/authNoPriv/authPriv', 'string', 'noAuthNoPriv'),
 	('v3AuthProtocol', '', 'SHA/MD5', 'string', 'SHA'),
 	('v3AuthPassphrase', '', 'Password', 'string', ''),

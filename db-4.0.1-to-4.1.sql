@@ -10,8 +10,8 @@ INSERT INTO fac_Config SET Parameter="U1Position", Value="Bottom", UnitOfMeasure
 -- Add new configuration values for Rack Cooling Index metric (RCI).
 --
 
-INSERT INTO fac_Config SET Parameter='RCIHigh', Value='80', UnitOfMeasure='degrees', ValType='float', DefaultVal='80';
-INSERT INTO fac_Config SET Parameter='RCILow', Value='65', UnitOfMeasure='degrees', ValType='float', DefaultVal='65';
+INSERT INTO fac_Config SET Parameter="RCIHigh", Value="80", UnitOfMeasure="degrees", ValType="float", DefaultVal="80";
+INSERT INTO fac_Config SET Parameter="RCILow", Value="65", UnitOfMeasure="degrees", ValType="float", DefaultVal="65";
 
 --
 -- Make UserID unique in the fac_People table
@@ -43,16 +43,16 @@ ALTER TABLE fac_Cabinet DROP COLUMN SensorTemplateID;
 -- Add in new parameter to control whether or not to filter the cabinet listing (Disable for Performance Boost on large installs)
 --
 
-INSERT INTO fac_Config SET Parameter='FilterCabinetList', Value='Enabled', UnitOfMeasure='Enabled/Disabled', ValType='string', DefaultVal='Enabled';
+INSERT INTO fac_Config SET Parameter="FilterCabinetList", Value="Enabled", UnitOfMeasure="Enabled/Disabled", ValType="string", DefaultVal="Enabled";
 
 --
 -- Finally change the cost model from annual cost per Watt to straight up Cost per KwHr
 --
 
 DELETE FROM fac_Config WHERE Parameter="annualCostPerWattYear";
-INSERT INTO fac_Config SET Parameter='CostPerKwHr', Value='.25', UnitOfMeasure='Currency', ValType='float', DefaultVal='.25';
+INSERT INTO fac_Config SET Parameter="CostPerKwHr", Value=".25", UnitOfMeasure="Currency", ValType="float", DefaultVal=".25";
 
 --
 -- Bump up the database version
 --
--- UPDATE fac_Config set Value='4.1' WHERE Parameter='Version';
+UPDATE fac_Config set Value="4.1" WHERE Parameter="Version";
