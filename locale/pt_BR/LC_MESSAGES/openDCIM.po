@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: openDCIM.po\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2016-01-14 07:37-0600\n"
+"POT-Creation-Date: 2016-01-14 14:38-0600\n"
 "PO-Revision-Date: 2014-03-24 08:48-0500\n"
 "Last-Translator: Wilbur Longwisch <wilbur@wilpig.org>\n"
 "Language-Team: openDCIM <discussion@list.opendcim.org>\n"
@@ -751,7 +751,7 @@ msgstr "Atributos customizados do equipamento "
 
 #: openDCIM/configuration.php:1359
 msgid "Pre-Flight Check"
-msgstr ""
+msgstr "Verificação pré inicio"
 
 #: openDCIM/configuration.php:1364
 msgid "Organization Name"
@@ -907,11 +907,11 @@ msgstr "Atenção - Baixa Umidade "
 
 #: openDCIM/configuration.php:1481
 msgid "RCI (Rack Cooling Index) High"
-msgstr ""
+msgstr "RCI (Rack Cooling Index) Alto"
 
 #: openDCIM/configuration.php:1484
 msgid "RCI (Rack Cooling Index) Low"
-msgstr ""
+msgstr "RCI (Rack Cooling Index) Baixo"
 
 #: openDCIM/configuration.php:1488 openDCIM/index.php:126
 msgid "Virtual Machines"
@@ -930,8 +930,9 @@ msgid "Site Level Security Options"
 msgstr ""
 
 #: openDCIM/configuration.php:1511
+#, fuzzy
 msgid "Filter Cabinet List"
-msgstr ""
+msgstr "Lista de Racks"
 
 #: openDCIM/configuration.php:1519 openDCIM/configuration.php:1522
 msgid "Rack Requests"
@@ -1542,11 +1543,11 @@ msgstr "%"
 
 #: openDCIM/dc_stats.php:212 openDCIM/zone_stats.php:220
 msgid "RCI Low Percentage (Overcooling)"
-msgstr ""
+msgstr "RCI Baixo percentual (Sobre refrigeração)"
 
 #: openDCIM/dc_stats.php:219 openDCIM/zone_stats.php:227
 msgid "RCI High Percentage (Cabinets Satisfied)"
-msgstr ""
+msgstr "RCI Alto percentual (Racks Atendidos)"
 
 #: openDCIM/dc_stats.php:235 openDCIM/zone_stats.php:242
 #: openDCIM/scripts/ajax_tooltip.php:139
@@ -4539,7 +4540,7 @@ msgstr "Porta não encontrada para este TemplateID:"
 
 #: openDCIM/api/v1/index.php:849
 msgid "No slots found for TemplateID: "
-msgstr ""
+msgstr "Slots não encontrado para esse TemplateID:"
 
 #: openDCIM/api/v1/index.php:963
 msgid "Insufficient privilege level"
@@ -4578,35 +4579,37 @@ msgstr "Falha na atualização"
 
 #: openDCIM/api/v1/index.php:1159
 msgid "No device template found with TemplateID: "
-msgstr ""
+msgstr "Não foi encontrado template de dispositivo com esse TemplateID:"
 
 #: openDCIM/api/v1/index.php:1167
 msgid "Device template update failed"
-msgstr ""
+msgstr "Falha na atualização da template do equipamento"
 
 #: openDCIM/api/v1/index.php:1199
 msgid "Template port not found with id: "
-msgstr ""
+msgstr "Não foi encontrado template de porta com o ID:"
 
 #: openDCIM/api/v1/index.php:1207
 msgid "Template port update failed"
-msgstr ""
+msgstr "Falha na atualização da template da porta"
 
 #: openDCIM/api/v1/index.php:1241
+#, fuzzy
 msgid "Template slot not found with id: "
-msgstr ""
+msgstr "Não foi encontrado template de porta com o ID:"
 
 #: openDCIM/api/v1/index.php:1252
+#, fuzzy
 msgid "Template slot update failed"
-msgstr ""
+msgstr "Falha na atualização da template da porta"
 
 #: openDCIM/api/v1/index.php:1283
 msgid "Manufacturer not found with id: "
-msgstr ""
+msgstr "Fabricante não encontrado com o id:"
 
 #: openDCIM/api/v1/index.php:1289
 msgid "Manufacturer update failed"
-msgstr ""
+msgstr "Falha na atualização do fabricante"
 
 #: openDCIM/api/v1/index.php:1336
 msgid "UserID already in database.  Use the update API to modify record."
@@ -4640,19 +4643,21 @@ msgstr "Falha na criação do Equipamento"
 
 #: openDCIM/api/v1/index.php:1512
 msgid "Device template creation failed"
-msgstr ""
+msgstr "Falha na criação da Template do equipamento"
 
 #: openDCIM/api/v1/index.php:1552 openDCIM/api/v1/index.php:1589
 msgid "Device template port creation failed"
-msgstr ""
+msgstr "Falha na criação da Template do porta do equipamento"
 
 #: openDCIM/api/v1/index.php:1626
+#, fuzzy
 msgid "Device template slot creation failed"
-msgstr ""
+msgstr "Falha na criação da Template do porta do equipamento"
 
 #: openDCIM/api/v1/index.php:1659
+#, fuzzy
 msgid "Manufacturer not created: "
-msgstr ""
+msgstr "Fabricante não encontrado com o id:"
 
 #: openDCIM/api/v1/index.php:1747
 msgid "Failed to delete color with ColorID"

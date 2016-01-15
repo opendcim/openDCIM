@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: openDCIM.po\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2016-01-14 07:37-0600\n"
+"POT-Creation-Date: 2016-01-14 14:38-0600\n"
 "PO-Revision-Date: 2014-03-24 08:48-0500\n"
 "Last-Translator: Wilbur Longwisch <wilbur@wilpig.org>\n"
 "Language-Team: openDCIM <discussion@list.opendcim.org>\n"
@@ -920,8 +920,9 @@ msgid "Site Level Security Options"
 msgstr ""
 
 #: openDCIM/configuration.php:1511
+#, fuzzy
 msgid "Filter Cabinet List"
-msgstr ""
+msgstr "编辑机柜"
 
 #: openDCIM/configuration.php:1519 openDCIM/configuration.php:1522
 msgid "Rack Requests"
@@ -4541,8 +4542,9 @@ msgid "Template slot not found with id: "
 msgstr ""
 
 #: openDCIM/api/v1/index.php:1252
+#, fuzzy
 msgid "Template slot update failed"
-msgstr ""
+msgstr "模板文件导入"
 
 #: openDCIM/api/v1/index.php:1283
 msgid "Manufacturer not found with id: "
@@ -4593,8 +4595,9 @@ msgid "Device template slot creation failed"
 msgstr ""
 
 #: openDCIM/api/v1/index.php:1659
+#, fuzzy
 msgid "Manufacturer not created: "
-msgstr ""
+msgstr "制造日期"
 
 #: openDCIM/api/v1/index.php:1747
 msgid "Failed to delete color with ColorID"

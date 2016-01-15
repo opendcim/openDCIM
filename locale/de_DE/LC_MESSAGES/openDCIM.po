@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: openDCIM.po\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2016-01-14 07:37-0600\n"
+"POT-Creation-Date: 2016-01-14 14:38-0600\n"
 "PO-Revision-Date: 2014-03-24 08:48-0500\n"
 "Last-Translator: Wilbur Longwisch <wilbur@wilpig.org>\n"
 "Language-Team: openDCIM <discussion@list.opendcim.org>\n"
@@ -752,7 +752,7 @@ msgstr "Benutzerdefinierte Geräteattribute"
 
 #: openDCIM/configuration.php:1359
 msgid "Pre-Flight Check"
-msgstr ""
+msgstr "Preflight-Prüfung"
 
 #: openDCIM/configuration.php:1364
 msgid "Organization Name"
@@ -908,11 +908,11 @@ msgstr "Niedrige Luftfeuchtigkeit Vorsicht"
 
 #: openDCIM/configuration.php:1481
 msgid "RCI (Rack Cooling Index) High"
-msgstr ""
+msgstr "RCI (Rack Cooling Index) Hoch"
 
 #: openDCIM/configuration.php:1484
 msgid "RCI (Rack Cooling Index) Low"
-msgstr ""
+msgstr "RCI (Rack Cooling Index) Tief"
 
 #: openDCIM/configuration.php:1488 openDCIM/index.php:126
 msgid "Virtual Machines"
@@ -931,8 +931,9 @@ msgid "Site Level Security Options"
 msgstr ""
 
 #: openDCIM/configuration.php:1511
+#, fuzzy
 msgid "Filter Cabinet List"
-msgstr ""
+msgstr "Cabinet Liste"
 
 #: openDCIM/configuration.php:1519 openDCIM/configuration.php:1522
 msgid "Rack Requests"
@@ -1545,11 +1546,11 @@ msgstr "%"
 
 #: openDCIM/dc_stats.php:212 openDCIM/zone_stats.php:220
 msgid "RCI Low Percentage (Overcooling)"
-msgstr ""
+msgstr "RCI Tief Anteil (Zu starke Kühlung)"
 
 #: openDCIM/dc_stats.php:219 openDCIM/zone_stats.php:227
 msgid "RCI High Percentage (Cabinets Satisfied)"
-msgstr ""
+msgstr "RCI Hoch Anteil (Ausreichend für Racks)"
 
 #: openDCIM/dc_stats.php:235 openDCIM/zone_stats.php:242
 #: openDCIM/scripts/ajax_tooltip.php:139
@@ -2757,7 +2758,7 @@ msgstr "Hersteller bearbeiten"
 
 #: openDCIM/misc.inc.php:857
 msgid "Repository Sync"
-msgstr ""
+msgstr "Repository Synchronisierung"
 
 #: openDCIM/misc.inc.php:858 openDCIM/misc.inc.php:859
 msgid "Supplies Management"
@@ -3874,7 +3875,7 @@ msgstr "Abgeschaltet"
 #: openDCIM/report_outage_simulator.php:370
 #: openDCIM/report_outage_simulator.php:397
 msgid "Undocumented"
-msgstr ""
+msgstr "Undokumentiert"
 
 #: openDCIM/report_outage_simulator.php:389
 msgid "Degraded"
@@ -4174,7 +4175,7 @@ msgstr "Suchergebnisse für benutzerdefinierte Attribute"
 
 #: openDCIM/search.php:96
 msgid "Notes search results for"
-msgstr ""
+msgstr "Notizen Suchergebnisse für"
 
 #: openDCIM/search.php:251
 #, php-format
@@ -4200,7 +4201,7 @@ msgstr "Nur Racks"
 
 #: openDCIM/search.php:421
 msgid "No label"
-msgstr ""
+msgstr "Keine Bezeichnung"
 
 #: openDCIM/sidebar.inc.php:6
 msgid "Search by Name:"
@@ -4532,7 +4533,7 @@ msgstr "Kein Gerät mit DeviceID gefunden"
 
 #: openDCIM/api/v1/index.php:464
 msgid "Unknown error"
-msgstr ""
+msgstr "Unbekannter Fehler"
 
 #: openDCIM/api/v1/index.php:494
 msgid "Device is not a sensor or is missing a template"
@@ -4544,19 +4545,19 @@ msgstr "Kein Farbcode mit ColorID gefunden"
 
 #: openDCIM/api/v1/index.php:758
 msgid "No template found with TemplateID: "
-msgstr ""
+msgstr "Keine Vorlage gefunden mit TempateID:"
 
 #: openDCIM/api/v1/index.php:781 openDCIM/api/v1/index.php:828
 msgid "No ports found for TemplateID: "
-msgstr ""
+msgstr "Keine Anschlüsse gefunden für TempateID:"
 
 #: openDCIM/api/v1/index.php:805
 msgid "Port not found for TemplateID: "
-msgstr ""
+msgstr "Anschluss nicht gefunden für TempateID:"
 
 #: openDCIM/api/v1/index.php:849
 msgid "No slots found for TemplateID: "
-msgstr ""
+msgstr "Keine Steckplätze gefunden für TempateID:"
 
 #: openDCIM/api/v1/index.php:963
 msgid "Insufficient privilege level"
@@ -4612,20 +4613,22 @@ msgid "Template port update failed"
 msgstr ""
 
 #: openDCIM/api/v1/index.php:1241
+#, fuzzy
 msgid "Template slot not found with id: "
-msgstr ""
+msgstr "Hersteller nicht gefunden mit ID:"
 
 #: openDCIM/api/v1/index.php:1252
+#, fuzzy
 msgid "Template slot update failed"
-msgstr ""
+msgstr "Hersteller Aktualisierung fehlgeschlagen"
 
 #: openDCIM/api/v1/index.php:1283
 msgid "Manufacturer not found with id: "
-msgstr ""
+msgstr "Hersteller nicht gefunden mit ID:"
 
 #: openDCIM/api/v1/index.php:1289
 msgid "Manufacturer update failed"
-msgstr ""
+msgstr "Hersteller Aktualisierung fehlgeschlagen"
 
 #: openDCIM/api/v1/index.php:1336
 msgid "UserID already in database.  Use the update API to modify record."
@@ -4661,19 +4664,21 @@ msgstr "Anlegen Gerät fehlgeschlagen"
 
 #: openDCIM/api/v1/index.php:1512
 msgid "Device template creation failed"
-msgstr ""
+msgstr "Erstellung der Gerätevorlage fehlgeschlagen"
 
 #: openDCIM/api/v1/index.php:1552 openDCIM/api/v1/index.php:1589
 msgid "Device template port creation failed"
-msgstr ""
+msgstr "Erstellung der Vorlage des Geräteanschlusses fehlgeschlagen"
 
 #: openDCIM/api/v1/index.php:1626
+#, fuzzy
 msgid "Device template slot creation failed"
-msgstr ""
+msgstr "Erstellung der Vorlage des Geräteanschlusses fehlgeschlagen"
 
 #: openDCIM/api/v1/index.php:1659
+#, fuzzy
 msgid "Manufacturer not created: "
-msgstr ""
+msgstr "Hersteller nicht gefunden mit ID:"
 
 #: openDCIM/api/v1/index.php:1747
 msgid "Failed to delete color with ColorID"

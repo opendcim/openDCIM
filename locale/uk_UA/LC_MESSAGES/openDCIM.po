@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: openDCIM.po\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2016-01-14 07:37-0600\n"
+"POT-Creation-Date: 2016-01-14 14:38-0600\n"
 "PO-Revision-Date: 2014-03-24 08:48-0500\n"
 "Last-Translator: Wilbur Longwisch <wilbur@wilpig.org>\n"
 "Language-Team: openDCIM <discussion@list.opendcim.org>\n"
@@ -927,11 +927,12 @@ msgstr "Наряди на роботу"
 
 #: openDCIM/configuration.php:1508
 msgid "Site Level Security Options"
-msgstr "Параметри безпеки сервера openDCIM"
+msgstr ""
 
 #: openDCIM/configuration.php:1511
+#, fuzzy
 msgid "Filter Cabinet List"
-msgstr "Фільтр по списку шаф"
+msgstr "Друк схематичного розташування обладнання по шафам"
 
 #: openDCIM/configuration.php:1519 openDCIM/configuration.php:1522
 msgid "Rack Requests"
@@ -4588,12 +4589,14 @@ msgid "Template port update failed"
 msgstr "Помилка оновлення шаблона порта"
 
 #: openDCIM/api/v1/index.php:1241
+#, fuzzy
 msgid "Template slot not found with id: "
-msgstr "Не знайдено шаблон слота з id: "
+msgstr "Не знайдено шаблон порта з id: "
 
 #: openDCIM/api/v1/index.php:1252
+#, fuzzy
 msgid "Template slot update failed"
-msgstr "Помилка оновлення шаблона слота"
+msgstr "Помилка оновлення шаблона порта"
 
 #: openDCIM/api/v1/index.php:1283
 msgid "Manufacturer not found with id: "
@@ -4641,12 +4644,14 @@ msgid "Device template port creation failed"
 msgstr "Помилка створення шаблона порта"
 
 #: openDCIM/api/v1/index.php:1626
+#, fuzzy
 msgid "Device template slot creation failed"
-msgstr "Помилка створення шаблона слота"
+msgstr "Помилка створення шаблона порта"
 
 #: openDCIM/api/v1/index.php:1659
+#, fuzzy
 msgid "Manufacturer not created: "
-msgstr "Помилка створення виробника: "
+msgstr "Не знайдено виробника з id: "
 
 #: openDCIM/api/v1/index.php:1747
 msgid "Failed to delete color with ColorID"
