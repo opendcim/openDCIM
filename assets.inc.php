@@ -567,8 +567,8 @@ class Cabinet {
 		$cabstats=new stdClass();
 		//Weight
 		$sql="SELECT SUM(NominalWatts) AS watts, SUM(b.Weight) AS weight FROM 
-			fac_Device a, fac_DeviceTemplate b WHERE Cabinet=62 AND a.TemplateID>0 AND 
-			a.TemplateID=b.TemplateID;";
+			fac_Device a, fac_DeviceTemplate b WHERE Cabinet=$cab->CabinetID AND 
+			a.TemplateID>0 AND a.TemplateID=b.TemplateID;";
 
 		foreach($dbh->query($sql) as $row){
 			$cabstats->Weight=$row['weight'];
