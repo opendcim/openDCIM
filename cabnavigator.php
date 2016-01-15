@@ -172,8 +172,10 @@ function renderUnassignedTemplateOwnership($noTemplFlag, $noOwnerFlag, $device) 
 	$search->DeviceType="Sensor";
 	$SensorList=$search->Search();
 
-	$totalWatts=0;
-	$totalWeight=0;
+	$stats=$cab->getStats($cab->CabinetID);
+
+	$totalWatts=$stats->Wattage;
+	$totalWeight=$stats->Weight;
 	$totalMoment=0;
 
 	if($config->ParameterArray["ReservedColor"] != "#FFFFFF" || $config->ParameterArray["FreeSpaceColor"] != "#FFFFFF"){

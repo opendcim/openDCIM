@@ -558,6 +558,25 @@ class Cabinet {
 		}
 		return 0;
 	}
+
+	static function getStats($CabinetID){
+		global $dbh;
+		$cab=new Cabinet($CabinetID);
+		if(!$cab->GetCabinet()){return false;}
+
+		$cabstats=new stdClass();
+		//Weight
+		$sql="SELECT SUM(NominalWatts) AS watts, SUM(b.Weight) AS weight FROM 
+			fac_Device a, fac_DeviceTemplate b WHERE Cabinet=62 AND a.TemplateID>0 AND 
+			a.TemplateID=b.TemplateID;";
+
+		foreach($dbh->query($sql) as $row){
+			$cabstats->Weight=$row['weight'];
+			$cabstats->Wattage=$row['watts'];
+		}
+
+		return $cabstats;
+	}
 }
 
 class CabinetAudit {
