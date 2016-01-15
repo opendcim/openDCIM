@@ -3120,9 +3120,13 @@ class Device {
 			if(($this->Height<3 && $this->DeviceType=='Chassis' && (($rear && $this->RearChassisSlots > 0) || (!$rear && $this->ChassisSlots > 0))) || ($templ->Model=='HTRAY' || $templ->Model=='VTRAY') ){
 
 			}else{
-				$resp.="\t\t<div class=\"label\"><div>$flags$this->Label".
-					(((!$this->BackSide && $rear || $this->BackSide && !$rear) && !$this->HalfDepth)?" (".__("Rear").")":"");
-				$resp.="</div></div>\n";
+				if (( $this->BackSide && $rear ) || ( !$this->BackSide && !$rear )) {
+					$toneloc = " (" . __("Rear") . ")";
+				} else {
+					$toneloc = "";
+				}
+
+				$resp.="\t\t<div class=\"label\"><div>$flags{$this->Label}{$toneloc}</div></div>\n";
 			}
 
 			$parent=new stdClass();
