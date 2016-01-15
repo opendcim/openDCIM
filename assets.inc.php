@@ -3120,7 +3120,7 @@ class Device {
 			if(($this->Height<3 && $this->DeviceType=='Chassis' && (($rear && $this->RearChassisSlots > 0) || (!$rear && $this->ChassisSlots > 0))) || ($templ->Model=='HTRAY' || $templ->Model=='VTRAY') ){
 
 			}else{
-				if (( $this->BackSide && $rear ) || ( !$this->BackSide && !$rear )) {
+				if (! $this->HalfDepth && (( $this->BackSide && $rear ) || ( !$this->BackSide && !$rear ))) {
 					$toneloc = " (" . __("Rear") . ")";
 				} else {
 					$toneloc = "";
