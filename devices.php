@@ -1862,16 +1862,18 @@ echo '		<div>
 echo '		<div>
 			<div><label for="BackSide">'.__("Back Side").'</label></div>
 			<div><input type="checkbox" name="BackSide" id="BackSide"'.(($dev->BackSide)?" checked":"").'></div>
-		</div>';
-
-		echo '		<div id="dphtml">
+		</div>
+		<div id="dphtml">
 		   <div><label for="Ports">',__("Number of Data Ports"),'</label></div>
 		   <div><input type="number" class="optional,validate[custom[onlyNumberSp]]" name="Ports" id="Ports" value="',$dev->Ports,'"></div>
-		</div>';
-
-echo '		<div>
+		</div>
+		<div>
 		   <div><label for="NominalWatts">',__("Nominal Draw (Watts)"),'</label></div>
 		   <div><input type="text" class="optional,validate[custom[onlyNumberSp]]" name="NominalWatts" id="NominalWatts" value="',$dev->NominalWatts,'"></div>
+		</div>
+		<div>
+		   <div><label for="Weight">',__("Weight"),'</label></div>
+		   <div><input type="text" class="optional,validate[custom[onlyNumberSp]]" name="Weight" id="Weight" value="',$dev->Weight,'"></div>
 		</div>';
 
 		// Blade devices don't have power supplies

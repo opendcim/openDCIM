@@ -53,6 +53,12 @@ DELETE FROM fac_Config WHERE Parameter="annualCostPerWattYear";
 INSERT INTO fac_Config SET Parameter="CostPerKwHr", Value=".25", UnitOfMeasure="Currency", ValType="float", DefaultVal=".25";
 
 --
+-- Extend device table to include weight
+--
+ALTER TABLE fac_Device ADD Weight INT( 11 ) NOT NULL DEFAULT "0";
+UPDATE fac_Device d, fac_DeviceTemplate t SET d.Weight=t.Weight WHERE d.TemplateID=t.TemplateID;
+
+--
 -- Bump up the database version
 --
 UPDATE fac_Config set Value="4.1" WHERE Parameter="Version";

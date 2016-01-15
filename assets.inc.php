@@ -566,9 +566,8 @@ class Cabinet {
 
 		$cabstats=new stdClass();
 		//Weight
-		$sql="SELECT SUM(NominalWatts) AS watts, SUM(b.Weight) AS weight FROM 
-			fac_Device a, fac_DeviceTemplate b WHERE Cabinet=$cab->CabinetID AND 
-			a.TemplateID>0 AND a.TemplateID=b.TemplateID;";
+		$sql="SELECT SUM(NominalWatts) AS watts, SUM(Weight) AS weight FROM 
+			fac_Device WHERE Cabinet=$cab->CabinetID;";
 
 		foreach($dbh->query($sql) as $row){
 			$cabstats->Weight=$row['weight'];
@@ -1225,6 +1224,7 @@ class Device {
 	var $BackSide;
 	var $AuditStamp;
 	var $CustomValues;
+	var $Weight;
 
 	public function __construct($deviceid=false){
 		if($deviceid){
@@ -1287,6 +1287,7 @@ class Device {
 		$this->Reservation=intval($this->Reservation);
 		$this->HalfDepth=intval($this->HalfDepth);
 		$this->BackSide=intval($this->BackSide);
+		$this->Weight=intval($this->Weight);
 	}
 	
 	function MakeDisplay() {
@@ -1352,6 +1353,7 @@ class Device {
 		$dev->HalfDepth=$dbRow["HalfDepth"];
 		$dev->BackSide=$dbRow["BackSide"];
 		$dev->AuditStamp=$dbRow["AuditStamp"];
+		$dev->Weight=$dbRow["Weight"];
 		$dev->GetCustomValues();
 		
 		$dev->MakeDisplay();
@@ -1505,7 +1507,7 @@ class Device {
 			PrimaryContact=$this->PrimaryContact, Cabinet=$this->Cabinet, Position=$this->Position, Height=$this->Height, Ports=$this->Ports, 
 			FirstPortNum=$this->FirstPortNum, TemplateID=$this->TemplateID, NominalWatts=$this->NominalWatts, 
 			PowerSupplyCount=$this->PowerSupplyCount, DeviceType=\"$this->DeviceType\", ChassisSlots=$this->ChassisSlots, 
-			RearChassisSlots=$this->RearChassisSlots,ParentDevice=$this->ParentDevice, 
+			RearChassisSlots=$this->RearChassisSlots,ParentDevice=$this->ParentDevice, Weight=$this->Weight, 
 			MfgDate=\"".date("Y-m-d", strtotime($this->MfgDate))."\", 
 			InstallDate=\"".date("Y-m-d", strtotime($this->InstallDate))."\", WarrantyCo=\"$this->WarrantyCo\", 
 			WarrantyExpire=\"".date("Y-m-d", strtotime($this->WarrantyExpire))."\", Notes=\"$this->Notes\", 
@@ -1809,7 +1811,7 @@ class Device {
 			Cabinet=$this->Cabinet, Position=$this->Position, Height=$this->Height, Ports=$this->Ports, 
 			FirstPortNum=$this->FirstPortNum, TemplateID=$this->TemplateID, NominalWatts=$this->NominalWatts, 
 			PowerSupplyCount=$this->PowerSupplyCount, DeviceType=\"$this->DeviceType\", ChassisSlots=$this->ChassisSlots, 
-			RearChassisSlots=$this->RearChassisSlots,ParentDevice=$this->ParentDevice, 
+			RearChassisSlots=$this->RearChassisSlots,ParentDevice=$this->ParentDevice, Weight=$this->Weight,
 			MfgDate=\"".date("Y-m-d", strtotime($this->MfgDate))."\", 
 			InstallDate=\"".date("Y-m-d", strtotime($this->InstallDate))."\", WarrantyCo=\"$this->WarrantyCo\", 
 			WarrantyExpire=\"".date("Y-m-d", strtotime($this->WarrantyExpire))."\", Notes=\"$this->Notes\", 

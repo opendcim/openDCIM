@@ -287,6 +287,7 @@ CREATE TABLE fac_Device (
   HalfDepth tinyint(1) NOT NULL DEFAULT '0',
   BackSide tinyint(1) NOT NULL DEFAULT '0',
   AuditStamp DATETIME NOT NULL,
+  Weight int(11) NOT NULL DEFAULT '0',
   PRIMARY KEY (DeviceID),
   KEY SerialNo (SerialNo,`AssetTag`,`PrimaryIP`),
   KEY AssetTag (AssetTag),

@@ -230,6 +230,11 @@ function renderUnassignedTemplateOwnership($noTemplFlag, $noOwnerFlag, $device) 
 	$PowerColor=($PowerPercent>intval($config->ParameterArray["PowerRed"])?$CriticalColor:($PowerPercent>intval($config->ParameterArray["PowerYellow"])?$CautionColor:$GoodColor));
 	$MeasuredColor=($MeasuredPercent>intval($config->ParameterArray["PowerRed"])?$CriticalColor:($MeasuredPercent>intval($config->ParameterArray["PowerYellow"])?$CautionColor:$GoodColor));
 
+	if($cab->MaxWeight==0){
+		$cab->MaxWeight=$WeightPercent=__("Maximum Weight Not Set");
+		$WeightColor=$CriticalColor;
+	}
+
 	foreach(Department::GetDepartmentListIndexedbyID() as $deptid => $d){
 		if($d->DeptColor!="#FFFFFF"){
             // If head is empty then we don't have any custom colors defined above so add a style container for these
@@ -288,7 +293,7 @@ $body.='<div id="infopanel">
 			</td>
 		</tr>
 		</table>
-		<p>'.__("Approximate Center of Gravity").': '.$CenterofGravity.' U</p>
+		<p>'.__("Approximate Center of Gravity").': <span id="tippingpoint">'.$CenterofGravity.'</span></p>
 	</fieldset>
 	<fieldset id="keylock">
 		<legend>'.__("Key/Lock Information").'</legend>
@@ -437,6 +442,7 @@ echo $head,'  <script type="text/javascript" src="scripts/jquery.min.js"></scrip
   <script type="text/javascript" src="scripts/common.js"></script>
   <script type="text/javascript" src="scripts/masonry.pkgd.min.js"></script>
   <script type="text/javascript">
+	window.weight=',$totalWeight,';
 	var form=$("<form>").attr({ method: "post", action: "cabnavigator.php" });
 	$("<input>").attr({ type: "hidden", name: "cabinetid", value: "',$cab->CabinetID,'"}).appendTo(form);
 

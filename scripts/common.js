@@ -1091,10 +1091,28 @@ $(document).ready(function(){
 	cabs=$.unique(cabs);
 	// Add the devices to the page
 	for(var id in cabs){
+		var totalmoment=0;
+		var totalweight=0;
+		var rackbottom=$('#'+cabs[id]+' tr:last-child').prop('id').replace('pos','');
+		// we don't want to include devices that could be below the floor in the moment calcs
+		rackbottom=(rackbottom < 1)?'1':rackbottom;
 		$.get('api/v1/device?Cabinet='+cabs[id].replace('cabinet','')+'&ParentDevice=0').done(function(data){
 			for(var x in data.device){
 				InsertDevice(data.device[x]);
+				// this is for figuring the device position for moment calcs
+				if(data.device[x].Position > 0){
+					var devheight=data.device[x].Height/2;
+					if(data.device[x].Position < rackbottom){
+						data.device[x].Position=rackbottom - data.device[x].Position;
+					}
+					totalmoment += data.device[x].Weight * (data.device[x].Position + devheight);
+					totalweight += data.device[x].Weight;
+				}
 			}
+			var tippingpoint=Math.round(totalmoment/totalweight);
+			$('#tippingpoint').text(tippingpoint+'U');
+// Debug info
+//			console.log(cabs[id]+' totalmoment: '+totalmoment+' totalweight: '+totalweight+' tipping point: '+tippingpoint);
 		}).then(initdrag);
 	}
 });
