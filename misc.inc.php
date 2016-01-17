@@ -794,7 +794,7 @@ if(isset($devMode)&&$devMode){
 	we are.  It may be needed for the installation.
 */
 
-if(!isset($_SERVER["REMOTE_USER"]) && !isset($_SESSION['userid']) && AUTHENTICATION=="Oauth"){
+if(!isset($_SERVER["REMOTE_USER"]) && !isset($_SESSION['userid']) && php_sapi_name()!="cli" && AUTHENTICATION=="Oauth"){
 	header("Location: ".redirect('oauth/login.php'));
 	exit;
 }
