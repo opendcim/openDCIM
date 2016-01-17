@@ -5,6 +5,7 @@
 	Not truly multi-threaded, as that requires the PECL pthreads extension, which in turns requires manual
 	compilation.  Instead, we will use multi-processing techniques and the pcntl_ set of intrinsic PHP functions.
 	 */
+	define( 'AUTHENTICATION', 'Apache' );
 	DEFINE("MAXPROCESS", 10);
 
 	require_once("db.inc.php");
