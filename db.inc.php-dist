@@ -23,12 +23,14 @@
 	if ( !defined( "AUTHENTICATION") ) {
 		define( "AUTHENTICATION", "Apache" );
 	}
-	/* If you want to use Oauth authentication, uncomment the next 2 lines
+	/* If you want to use Oauth authentication, comment the above 3 lines, uncomment the next 4 lines
 	   and place your authentication handler in login.php (create symbolic link). 
 	   ex.  cp oauth/login_with_google.php oauth/login.php
 	*/
 	// define( "AUTHENTICATION", "Oauth" );
-	// session_start();
+	// if ( php_sapi_name() != "cli" ) {
+	//      session_start();
+	// }
 	
 	require_once( 'config.inc.php');
 	$config=new Config();
