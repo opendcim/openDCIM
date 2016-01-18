@@ -1285,6 +1285,7 @@ $(document).ready(function() {
 			$('#Height').val(data['Height']);
 			$('#Ports').val(data['NumPorts']);
 			$('#NominalWatts').val(data['Wattage']);
+			$('#Weight').val(data['Weight']);
 			$('#PowerSupplyCount').val(data['PSCount']);
 			$('select[name=DeviceType]').val(data['DeviceType']).trigger('change');
 			$('#Height').trigger('change');
