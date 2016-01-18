@@ -1153,7 +1153,7 @@ class DeviceTemplate {
 		$this->MakeSafe();
 
 		$sql="UPDATE fac_Device SET Height=$this->Height, NominalWatts=$this->Wattage, 
-			PowerSupplyCount=$this->PSCount, ChassisSlots=$this->ChassisSlots, 
+			PowerSupplyCount=$this->PSCount, ChassisSlots=$this->ChassisSlots, Weight=$this->Weight,
 			RearChassisSlots=$this->RearChassisSlots, SNMPVersion=\"$this->SNMPVersion\" WHERE TemplateID=$this->TemplateID;";
 
 		return $this->query($sql);
