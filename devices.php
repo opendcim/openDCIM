@@ -2579,9 +2579,9 @@ $connectioncontrols=($dev->DeviceID>0 && !empty($portList))?'
 		// Set the default selection on the filter to the value of the cookie OR default to global
 		var dsl=getCookie('DeviceSelectionLimit');
 		if(dsl){
-			$('#connection-limiter input[value='+dsl+']').select().focus().click();
+			$('#connection-limiter input[value='+dsl+']').select().click();
 		}else{
-			$('#connection-limiter input[value=global]').select().focus().click();
+			$('#connection-limiter input[value=global]').select().click();
 		}
 	});
 </script>
