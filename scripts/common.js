@@ -1137,19 +1137,24 @@ $(document).ready(function(){
 					}
 				}
 			}
+//console.log(arr_weightbyu);
 			// one last time to go over all the devices to figure moment.
 			for(var x in data.device){
-				if(data.device[x].ParentDevice==0 && arr_weightbyu[data.device[x].Position] > 0){
+				if(data.device[x].ParentDevice==0){
 					var devheight=data.device[x].Height/2;
-					if(data.device[x].Position < rackbottom){
-						data.device[x].Position=rackbottom - data.device[x].Position;
-					}
-					totalmoment += arr_weightbyu[data.device[x].Position] * (data.device[x].Position + devheight);
+					var posfromfloor=(data.device[x].Position < rackbottom)?rackbottom - data.device[x].Position:data.device[x].Position;
+//console.log('totalmoment : '+totalmoment+' totalweight : '+totalweight);
+					totalmoment += arr_weightbyu[data.device[x].Position] * (posfromfloor + devheight);
 				}
 			}
-
+			var rackpositions=$('table#'+cabs[id]+' tr[id^=pos]');
+//console.log(rackpositions);
+			var numu=rackpositions.length;
+//console.log('numu : '+numu);
 			var tippingpoint=Math.round(totalmoment/totalweight);
-			$('#tippingpoint').text(tippingpoint+'U');
+//console.log('tipping point : '+tippingpoint);
+			var tpobj=rackpositions[tippingpoint];
+			$('#tippingpoint').text(tpobj.id.replace('pos','')+'U');
 // Debug info
 //			console.log(cabs[id]+' totalmoment: '+totalmoment+' totalweight: '+totalweight+' tipping point: '+tippingpoint);
 		}).then(initdrag);
