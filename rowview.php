@@ -49,10 +49,18 @@
 		if($side){
 			$side='side';
 		}else{
-			if($frontedge==$cabinet->FrontEdge || ($frontedge!=$cabinet->FrontEdge && isset($_GET["rear"]))){
-				$side='front';
+			if(isset($_GET["rear"])){  // if rear is specified we want the opposite of what the rack would be usually
+				if($frontedge==$cabinet->FrontEdge || ($frontedge!=$cabinet->FrontEdge)){
+					$side='rear';
+				}else{
+					$side='front';
+				}
 			}else{
-				$side='rear';
+				if($frontedge==$cabinet->FrontEdge || ($frontedge!=$cabinet->FrontEdge)){
+					$side='front';
+				}else{
+					$side='rear';
+				}
 			}
 		}
 		$body.=BuildCabinet($cabinet->CabinetID,$side);
