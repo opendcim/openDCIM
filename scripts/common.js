@@ -1093,22 +1093,61 @@ $(document).ready(function(){
 	for(var id in cabs){
 		var totalmoment=0;
 		var totalweight=0;
+		var arr_position=[];
+		var arr_weightbyu=[];
+		var arr_parents=[];
 		var rackbottom=$('#'+cabs[id]+' tr:last-child').prop('id').replace('pos','');
 		// we don't want to include devices that could be below the floor in the moment calcs
 		rackbottom=(rackbottom < 1)?'1':rackbottom;
-		$.get('api/v1/device?Cabinet='+cabs[id].replace('cabinet','')+'&ParentDevice=0').done(function(data){
+		$.get('api/v1/device?Cabinet='+cabs[id].replace('cabinet','')).done(function(data){
+			// draw all the devices on the screen
 			for(var x in data.device){
-				InsertDevice(data.device[x]);
-				// this is for figuring the device position for moment calcs
-				if(data.device[x].Position > 0){
+				if(data.device[x].ParentDevice==0){
+					InsertDevice(data.device[x]);
+				}
+			}
+			// make an index of all non-children and their rack position
+			for(var x in data.device){
+				if(data.device[x].ParentDevice==0){
+					arr_position[data.device[x].DeviceID]=data.device[x].Position;
+				}
+				arr_parents[data.device[x].DeviceID]=data.device[x].ParentDevice;
+			}
+			// iterate over all the devices again for figuring weight by u 
+			for(var x in data.device){
+				totalweight += data.device[x].Weight;
+				if(data.device[x].ParentDevice==0){
+					if(typeof arr_weightbyu[data.device[x].Position]=='undefined'){
+						arr_weightbyu[data.device[x].Position]=data.device[x].Weight;
+					}else{
+						arr_weightbyu[data.device[x].Position]+=data.device[x].Weight;
+					}
+				}else{ // add children into their parent
+					function findrootparent(devid){
+						while(arr_parents[devid]!=0){
+							devid=arr_parents[devid];
+						}
+						return devid;
+					}
+					var parentid=findrootparent(data.device[x].DeviceID);
+					if(typeof arr_weightbyu[arr_position[parentid]]=='undefined'){
+						arr_weightbyu[arr_position[parentid]]=data.device[x].Weight;
+					}else{
+						arr_weightbyu[arr_position[parentid]]+=data.device[x].Weight;
+					}
+				}
+			}
+			// one last time to go over all the devices to figure moment.
+			for(var x in data.device){
+				if(data.device[x].ParentDevice==0 && arr_weightbyu[data.device[x].Position] > 0){
 					var devheight=data.device[x].Height/2;
 					if(data.device[x].Position < rackbottom){
 						data.device[x].Position=rackbottom - data.device[x].Position;
 					}
-					totalmoment += data.device[x].Weight * (data.device[x].Position + devheight);
-					totalweight += data.device[x].Weight;
+					totalmoment += arr_weightbyu[data.device[x].Position] * (data.device[x].Position + devheight);
 				}
 			}
+
 			var tippingpoint=Math.round(totalmoment/totalweight);
 			$('#tippingpoint').text(tippingpoint+'U');
 // Debug info
