@@ -6,6 +6,32 @@ GitHub, at http://github.com/samilliken/openDCIM/issues, where you can also down
 the latest development version.  However, it is not advised to pull from GitHub unless you
 are simply testing, as some functionality can break between releases.
 
+*** We have had a user contributed branch for monitoring Modbus-TCP devices for 
+auto computation of PUE and other metrics.  These features will be merged in as 
+part of the next major release.
+
+
+Changes in 4.1
+--------------
+* Drag and Drop Support!  Move a device by dragging and dropping.  Copy by holding down Shift+Click.
+* "Smart Naming" on device copies.  name[nn-NN] and nameNN are special patterns that get incremented, including children.
+* Copy of a device now copies the tags as well
+* Support for reverse cabinet ordering for people who like to stand on their head
+* Data Center/Zone now shows the RCI Low/High index values
+* Support for SNMPv3
+* Primary Contact added for Virtual Machines
+* Sidebar is now loaded assymetrically (better performance)
+* Ability to turn off filtering of cabinet tree based on rights (major performance boost for large installations)
+* Corrected the Audit reports
+* Fix where Epoch date was different depending on timezone
+* Fixed the Power Outage Simulation report
+* Slot devices added to a chassis with only rear slots automatically selects the Rear attribute
+* Fixed tooltip for Contact (was showing ID rather than name)
+* More API expansions (yes, we need to document it much, much more)
+* When transferring devices to another contact, only non-disabled ones are in the selection box
+* Correction of labeling (Rear) shows up on the correct side
+* More bug fixes
+
 Changes in 4.0
 --------------
 * New online repository for templates and images (requires internet connection, requires an API key if you wish to contribute)
