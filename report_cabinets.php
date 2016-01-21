@@ -160,7 +160,7 @@
         return array($noTemplFlag, $noOwnerFlag, $retstr);
     }
 
-    function BuildCabinet($rear=false,$side=null) {
+    function MakeCabinet($rear=false,$side=null) {
         global $cab_color, $cabinet, $device, $body, $currentHeight, $heighterr,
                 $devList, $templ, $tempDept, $backside, $deptswithcolor, $tempDept,
                 $totalWeight, $totalWatts, $totalMoment, $zeroheight,
@@ -325,9 +325,9 @@
         // wrap it all in a table so both sides of a cabinet get on the same page
 
         $body .= "<table style=\"border:0px;\" width=\"100%\"><tr><td width=\"50%\" align=\"center\">"; 
-        BuildCabinet();
+        MakeCabinet();
         $body .= "</td><td width=\"50%\" align=\"center\">";
-        BuildCabinet("rear");
+        MakeCabinet("rear");
         $body .= "</td></tr></table>";
     }  // Done with for each loop of cabinets
 
