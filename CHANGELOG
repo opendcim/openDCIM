@@ -20,7 +20,8 @@ Changes in 4.1
 * Data Center/Zone now shows the RCI Low/High index values
 * Support for SNMPv3
 * Primary Contact added for Virtual Machines
-* Sidebar is now loaded assymetrically (better performance)
+* Sidebar is now loaded asymetrically (better performance)
+* Devices loaded into cabinet asymetrically (better performance)
 * Ability to turn off filtering of cabinet tree based on rights (major performance boost for large installations)
 * Corrected the Audit reports
 * Fix where Epoch date was different depending on timezone
@@ -30,6 +31,7 @@ Changes in 4.1
 * More API expansions (yes, we need to document it much, much more)
 * When transferring devices to another contact, only non-disabled ones are in the selection box
 * Correction of labeling (Rear) shows up on the correct side
+* Pre-flight check is now available as a tab on the Configuration screen, has been moved to be separate from installer
 * More bug fixes
 
 Changes in 4.0
