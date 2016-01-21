@@ -143,7 +143,7 @@
 	}
 
 	//Adding in some preliminary support for nginix
-	if(strtolower($_SERVER['SERVER_SOFTWARE'])==strtolower('Apache')){
+	if(preg_match("/apache/i", $_SERVER['SERVER_SOFTWARE'])){
 		if(function_exists('apache_get_modules')){
 			if(in_array('mod_rewrite', apache_get_modules())){
 				$tests['mod_rewrite']['state']="good";
@@ -161,7 +161,7 @@
 			$tests['api_test']['state']="fail";
 			$tests['api_test']['message']="Apache does not appear to be rewriting URLs correctly. Check your AllowOverride directive and change to 'AllowOverride All'";
 		}
-	}elseif(strtolower($_SERVER['SERVER_SOFTWARE'])==strtolower('nginx')){
+	}elseif(preg_match("/nginx/i", $_SERVER['SERVER_SOFTWARE'])){
 		$tests['mod_rewrite']['state']="good";
 		$tests['mod_rewrite']['message']="nginx doesn't support mod_rewrite. You must manually create rewrite rules, like these.<pre>
     location ~ ^/opendcim/api/v1 {
