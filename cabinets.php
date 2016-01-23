@@ -58,6 +58,19 @@
 		$cab->Notes=($cab->Notes=="<br>")?"":$cab->Notes;
 		$cab->U1Position=$_POST['u1position'];
 
+		if ( $cab->U1Position == "Default" ) {
+			$dc = new DataCenter();
+			$dc->DataCenterID = $cab->DataCenterID;
+			$dc->GetDataCenter();
+			if ( $dc->U1Position == "Top" ) {
+				$cab->U1Position = "Top";
+			} elseif ( $dc->U1Position == "Default" ) {
+				$cab->U1Position = $config->ParameterArray["U1Position"];
+			} else {
+				$cab->U1Position = "Bottom";
+			}
+		}
+		
 		if($cab->Location!=""){
 			if(($cab->CabinetID >0)&&($_POST['action']=='Update')){
 				$status=__("Updated");
