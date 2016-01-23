@@ -1,6 +1,9 @@
 <?php
 /* All functions contained herein will be general use functions */
 
+/* Create a quick reference for datacenter data */
+$_SESSION['datacenters']=Datacenter::GetDCList(true);
+
 /* Generic html sanitization routine */
 
 if(!function_exists("sanitize")){

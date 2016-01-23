@@ -116,9 +116,7 @@ class Cabinet {
 		}
 
 		if($cab->U1Position=="Default"){
-			$dc=new DataCenter();
-			$dc->DataCenterID=$cab->DataCenterID;
-			$dc->GetDataCenter();
+			$dc=$_SESSION['datacenters'][$cab->DataCenterID];
 			if($dc->U1Position=="Default"){
 				global $config;
 				$cab->U1Position=$config->ParameterArray["U1Position"];

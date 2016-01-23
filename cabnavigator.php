@@ -595,7 +595,9 @@ if ( $config->ParameterArray["WorkOrderBuilder"]=='enabled' ) {
 			workOrder.add(0);
 		}
 
-		$('.cabinet td:has(a):not(:has(img)), #zerou div > a, .cabinet .picture a img, .cabinet	.picture a > div').each( function(){
+console.log($('.cabinet div[id^="servercontainer"]'));
+        $('.cabinet div[id^="servercontainer"], #infopanel').on('ready', 'div > div.genericdevice, div > div a > img, #zerou div > a', function(){
+console.log(this);
 			var devid=$(this).data('deviceid');
 			var target=(this.nodeName=="IMG"||this.parentNode.parentNode.parentNode.nodeName=="DIV")?this.parentElement.parentElement:this;
 			var clickpos=(this.parentNode.parentNode.className=="rotar_d")?' left: 0;':' right: 0;';
