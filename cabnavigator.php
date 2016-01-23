@@ -586,50 +586,6 @@ if( $config->ParameterArray["ToolTips"]=='enabled' ){
 <?php
 }
 
-if ( $config->ParameterArray["WorkOrderBuilder"]=='enabled' ) {
-?>
-		var workOrder = $.fn.cookieList("workOrder");
-
-		// This is a shitty hack and we should do something better
-		if(!$.cookie('workOrder')){
-			workOrder.add(0);
-		}
-
-console.log($('.cabinet div[id^="servercontainer"]'));
-        $('.cabinet div[id^="servercontainer"], #infopanel').on('ready', 'div > div.genericdevice, div > div a > img, #zerou div > a', function(){
-console.log(this);
-			var devid=$(this).data('deviceid');
-			var target=(this.nodeName=="IMG"||this.parentNode.parentNode.parentNode.nodeName=="DIV")?this.parentElement.parentElement:this;
-			var clickpos=(this.parentNode.parentNode.className=="rotar_d")?' left: 0;':' right: 0;';
-			var style=(this.nodeName=="IMG")?'position: absolute; top: 0; background-color: white;'+clickpos:'float: right; background-color: white;';
-
-			// Make a point for us to click to add to this nonsense
-			var span=$('<span>').attr('style',style).addClass('ui-icon');
-			span.addClass(($.parseJSON($.cookie('workOrder')).indexOf(devid)==-1)?'ui-icon-circle-plus':'ui-icon-circle-check');
-
-			// Bind the click action
-			span.on('click', function(){
-				location.reload();
-				sneaky.sneak();
-				flippyfloppy();
-			});
-
-			// Set the sign on the element according to if it is in the array or not
-			function flippyfloppy(){
-				if($.parseJSON($.cookie('workOrder')).indexOf(devid)==-1){
-					workOrder.add(devid);
-					span.removeClass('ui-icon-circle-plus').addClass('ui-icon-circle-plus');
-				}else{
-					workOrder.remove(devid);
-					span.addClass('ui-icon-circle-plus').removeClass('ui-icon-circle-check');
-				}
-			}
-			// Add the click target to the page
-			$(target).append(span);
-		});
-
-<?php
-}
 
 if($config->ParameterArray["CDUToolTips"]=='enabled'){
 ?>
@@ -760,8 +716,76 @@ if($config->ParameterArray["CDUToolTips"]=='enabled'){
 		// Damn translators not using abreviations
 		// This will lock the cabinet into the correct size
 		$('.cabinet #cabid').parent('tr').next('tr').find('.cabpos').css('padding','0px').wrapInner($('<div>').css({'overflow':'hidden','width':'30px'}));
-
 	});
+
+<?php
+if ( $config->ParameterArray["WorkOrderBuilder"]=='enabled' ) {
+?>
+
+	var workOrder = $.fn.cookieList("workOrder");
+
+	// This is a shitty hack and we should do something better
+	if(!$.cookie('workOrder')){
+		workOrder.add(0);
+	}
+
+	function bindworkorder(obj){
+        obj.find('div.genericdevice, div a > img').each(function(){
+			var devid=$(this).data('deviceid');
+			var target=(this.nodeName=="IMG"||this.parentNode.parentNode.parentNode.nodeName=="DIV")?this.parentElement.parentElement:this;
+			var clickpos=(this.parentNode.parentNode.className=="rotar_d")?' left: 0;':' right: 0;';
+			//var style=(this.nodeName=="IMG")?'position: absolute; top: 0; background-color: white;'+clickpos:'float: right; background-color: white;';
+			var style=(this.nodeName=="IMG")?'position: absolute; top: 0; background-color: white;'+clickpos:'position: absolute; top: 2px; right: -4px; background-color: white;';
+
+			// Make a point for us to click to add to this nonsense
+			var span=$('<span>').attr('style',style).addClass('ui-icon');
+			span.addClass(($.parseJSON($.cookie('workOrder')).indexOf(devid)==-1)?'ui-icon-circle-plus':'ui-icon-circle-check');
+
+			// Bind the click action
+			span.on('click', function(){
+				sneaky.sneak();
+				flippyfloppy();
+				// reload the page to show the workorder button if it isn't showing
+				if($('a[href="workorder.php"]').length==0){
+					location.reload();
+				}
+			});
+
+			function findall(devid){
+				var objects=[];
+				$('*[data-deviceid='+devid+']').each(function(){
+					if(this.nodeName=="IMG"){
+						objects.push($(this).parent().parent().find('span'));
+					}else{
+						objects.push($(this).find('span:not(.hlight)'));
+					}
+				});
+				return objects;
+			}
+
+			// Set the sign on the element according to if it is in the array or not
+			function flippyfloppy(){
+				if($.parseJSON($.cookie('workOrder')).indexOf(devid)==-1){
+					workOrder.add(devid);
+					var objects=findall(devid);
+					for(var i in objects){
+						objects[i].addClass('ui-icon-circle-check').removeClass('ui-icon-circle-plus');
+					}
+				}else{
+					workOrder.remove(devid);
+					var objects=findall(devid);
+					for(var i in objects){
+						objects[i].removeClass('ui-icon-circle-check').addClass('ui-icon-circle-plus');
+					}
+				}
+			}
+			// Add the click target to the page
+			$(target).append(span);
+		});
+	}
+<?php
+}
+?>
 </script>
 </body>
 </html>

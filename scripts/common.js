@@ -1124,7 +1124,7 @@ $(document).ready(function(){
 					}
 				}else{ // add children into their parent
 					function findrootparent(devid){
-						while(arr_parents[devid]!=0){
+						while(arr_parents[devid]!=0 && typeof devid!='undefined'){
 							devid=arr_parents[devid];
 						}
 						return devid;
@@ -1153,7 +1153,8 @@ $(document).ready(function(){
 //console.log('numu : '+numu);
 			var tippingpoint=Math.round(totalmoment/totalweight);
 //console.log('tipping point : '+tippingpoint);
-			var tpobj=rackpositions[tippingpoint];
+			var tpobj={id:"0"};
+			tpobj=(typeof rackpositions[tippingpoint]=='undefined')?tpobj:rackpositions[tippingpoint];
 			$('#tippingpoint').text(tpobj.id.replace('pos','')+'U');
 // Debug info
 //			console.log(cabs[id]+' totalmoment: '+totalmoment+' totalweight: '+totalweight+' tipping point: '+tippingpoint);
@@ -1360,6 +1361,9 @@ function InsertDevice(obj){
 					var label=(obj.Label)?obj.Label:'no label';
 					insertobj.append($('<a>').prop('href','devices.php?DeviceID='+obj.DeviceID).text(label));
 				}
+				if(typeof bindworkorder=='function'){
+					bindworkorder(insertobj);
+				}
 			});
 		}
 
@@ -1412,6 +1416,7 @@ function InsertDevice(obj){
 				equipment.appendTo('#cabinet'+obj.Cabinet+' #servercontainer');
 			}
 		}
+
 		// side view
 		equipment.clone(true).css({'background-color':'black'}).appendTo('#cabinet'+obj.Cabinet+' #servercontainer-side');
 
