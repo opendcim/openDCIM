@@ -782,8 +782,11 @@ if ( $config->ParameterArray["WorkOrderBuilder"]=='enabled' ) {
 					}
 				}
 			}
+
 			// Add the click target to the page
-			$(target).append(span);
+			if($(target).find('div:not(.label):not(.label > div)').length==0){
+				$(target).append(span);
+			}
 		});
 	}
 <?php
