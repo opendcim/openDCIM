@@ -730,12 +730,15 @@ if ( $config->ParameterArray["WorkOrderBuilder"]=='enabled' ) {
 	}
 
 	function bindworkorder(obj){
-        obj.find('div.genericdevice, div a > img').each(function(){
+        obj.find('div.genericdevice, div a > img, .picture a > div').each(function(){
 			var devid=$(this).data('deviceid');
 			var target=(this.nodeName=="IMG"||this.parentNode.parentNode.parentNode.nodeName=="DIV")?this.parentElement.parentElement:this;
 			var clickpos=(this.parentNode.parentNode.className=="rotar_d")?' left: 0;':' right: 0;';
-			//var style=(this.nodeName=="IMG")?'position: absolute; top: 0; background-color: white;'+clickpos:'float: right; background-color: white;';
-			var style=(this.nodeName=="IMG")?'position: absolute; top: 0; background-color: white;'+clickpos:'position: absolute; top: 2px; right: -4px; background-color: white;';
+			var style=(this.nodeName=="IMG")?'position: absolute; top: 0; background-color: white; z-index: 999;'+clickpos:'position: absolute; top: 2px; right: -4px; background-color: white; z-index: 999;';
+			// nested children needed a slight nudge for positions
+			if($('.picture').find('div[data-deviceid='+devid+']').length>0){
+				style=style.replace('2px','0px').replace('-4px','2px');
+			}
 
 			// Make a point for us to click to add to this nonsense
 			var span=$('<span>').attr('style',style).addClass('ui-icon');
@@ -754,8 +757,8 @@ if ( $config->ParameterArray["WorkOrderBuilder"]=='enabled' ) {
 			function findall(devid){
 				var objects=[];
 				$('*[data-deviceid='+devid+']').each(function(){
-					if(this.nodeName=="IMG"){
-						objects.push($(this).parent().parent().find('span'));
+					if(this.nodeName=="IMG" || this.classList.contains('noimage')){
+						objects.push($(this).parent().parent().find('> span'));
 					}else{
 						objects.push($(this).find('span:not(.hlight)'));
 					}
