@@ -742,7 +742,6 @@ if ( $config->ParameterArray["WorkOrderBuilder"]=='enabled' ) {
 			// move the chassis position to the opposite side, this looks dumb
 			if($(target).find('div:not(.label):not(.label > div)').length>0){
 				style=style.replace('right','left');
-				console.log(style);
 			}
 
 			// Make a point for us to click to add to this nonsense
@@ -753,9 +752,12 @@ if ( $config->ParameterArray["WorkOrderBuilder"]=='enabled' ) {
 			span.on('click', function(){
 				sneaky.sneak();
 				flippyfloppy();
+console.log(workOrder.items().length);
 				// reload the page to show the workorder button if it isn't showing
-				if($('a[href="workorder.php"]').length==0){
-					location.reload();
+				if(workOrder.items().length>1){
+					$('a[href="workorder.php"]').removeClass('hide');
+				}else{
+					$('a[href="workorder.php"]').addClass('hide');
 				}
 			});
 
