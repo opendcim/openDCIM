@@ -739,6 +739,11 @@ if ( $config->ParameterArray["WorkOrderBuilder"]=='enabled' ) {
 			if($('.picture').find('div[data-deviceid='+devid+']').length>0){
 				style=style.replace('2px','0px').replace('-4px','2px');
 			}
+			// move the chassis position to the opposite side, this looks dumb
+			if($(target).find('div:not(.label):not(.label > div)').length>0){
+				style=style.replace('right','left');
+				console.log(style);
+			}
 
 			// Make a point for us to click to add to this nonsense
 			var span=$('<span>').attr('style',style).addClass('ui-icon');
@@ -784,9 +789,7 @@ if ( $config->ParameterArray["WorkOrderBuilder"]=='enabled' ) {
 			}
 
 			// Add the click target to the page
-			if($(target).find('div:not(.label):not(.label > div)').length==0){
-				$(target).append(span);
-			}
+			$(target).append(span);
 		});
 	}
 <?php
