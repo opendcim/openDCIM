@@ -752,7 +752,6 @@ if ( $config->ParameterArray["WorkOrderBuilder"]=='enabled' ) {
 			span.on('click', function(){
 				sneaky.sneak();
 				flippyfloppy();
-console.log(workOrder.items().length);
 				// reload the page to show the workorder button if it isn't showing
 				if(workOrder.items().length>1){
 					$('a[href="workorder.php"]').removeClass('hide');
