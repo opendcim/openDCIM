@@ -142,8 +142,13 @@
 				// Just send back zero if we don't get a result.
 				$pollValue1=$pollValue2=$pollValue3=0;
 
+				// This stuff is normally done by BasicTests() but for this version we called it outside of the loop
+				// So just a couple of parts of that function need to be reexecuted
 				$dev->DeviceID = $row["PDUID"];
 				$dev->GetDevice();
+
+				// If the device doesn't have an SNMP community set, check and see if we have a global one
+				$dev->SNMPCommunity=($dev->SNMPCommunity=="")?$config->ParameterArray["SNMPCommunity"]:$dev->SNMPCommunity;	
 
 				$pollValue1=floatval(OSS_SNMP_Lookup($dev,null,$row["OID1"]));
 				// We won't use OID2 or 3 without the other so make sure both are set or just ignore them
