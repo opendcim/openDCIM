@@ -12,3 +12,9 @@ locale/*/LC_MESSAGES/openDCIM.po*
 
 #ignore pictures
 pictures/
+
+#ignore drawings
+drawings/
+
+#ignore .htaccess / .htpass
+.ht*
