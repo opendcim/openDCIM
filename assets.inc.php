@@ -1783,6 +1783,10 @@ class Device {
 			$cab->GetCabinet();
 			// Make sure the user has rights to save a device into the new cabinet
 			if($cab->Rights!="Write"){return false;}
+
+			// Clear the power connections
+		
+			PowerPorts::removeConnections($this->DeviceID);
 		}
 
 		// Everything after this point you already know that the Person has rights to make changes
@@ -1823,10 +1827,6 @@ class Device {
 			return false;
 		}
 		
-		// Clear the power connections
-		
-		PowerPorts::removeConnections($this->DeviceID);
-  
 		if($tmpDev->DeviceType == "Chassis" && $tmpDev->DeviceType != $this->DeviceType){
 			// SUT #148 - Previously defined chassis is no longer a chassis
 			// If it has children, return with no update
