@@ -1324,21 +1324,30 @@ $app->put('/people/:userid', function($userid) use ($app,$person) {
 		$app->stop();
 	}
 	
-	// Only one field is required - all others are optional
-	verifyRequiredParams(array('UserID'));
-	
 	$response = array();
 	$p = new People();
-	$p->UserID = $app->request->put('UserID');
+
+	if ( $vars = json_decode( $app->request->getBody() )) {
+		$p->UserID = $vars->UserID;
+	} else {
+		$p->UserID = $app->request->put('UserID');
+	}
+
 	if($p->GetPersonByUserID()){
 		$response['error']=true;
 		$response['errorcode']=403;
 		$response['message']=__("UserID already in database.  Use the update API to modify record.");
 		echoResponse(200, $response );
 	} else {	
-		// Slim Framework will simply return null for any variables that were not passed, so this is safe to call without blowing up the script
-		foreach($p as $prop => $val){
-			$p->$prop=$app->request->put($prop);
+		if ( is_object( $vars )) {
+			foreach ( $vars as $prop=>$val ) {
+				$p->$prop = $val;
+			}
+		} else {
+			// Slim Framework will simply return null for any variables that were not passed, so this is safe to call without blowing up the script
+			foreach($p as $prop=>$val){
+				$p->$prop=$app->request->put($prop);
+			}
 		}
 		$p->Disabled = false;
 		
