@@ -975,7 +975,7 @@ $app->post('/people/:personid', function($personid) use ($app,$person) {
 		echoResponse(200,$response);
 	} else {	
 		// Slim Framework will simply return null for any variables that were not passed, so this is safe to call without blowing up the script
-		foreach($p as $prop){
+		foreach($p as $prop => $val){
 			$p->$prop=$app->request->post($prop);
 		}
 		$p->Disabled=false;
