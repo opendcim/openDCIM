@@ -476,12 +476,15 @@ class Cabinet {
 			if($prop=="FrontEdge" && $val=="Top" && $ot!="Top"){
 				continue;
 			}
+			if($prop=="U1Position" && $val=="Default" && $ot!="Default") {
+				continue;
+			}
 			if($val && $val!=date("Y-m-d", strtotime(0))){
 				extendsql($prop,$val,$sqlextend,$loose);
 			}
 		}
 
-		$sql="SELECT * FROM fac_Cabinet $sqlextend ORDER BY LocationSortable ASC;";
+		$sql="SELECT * FROM fac_Cabinet $sqlextend ORDER BY LocationSortable ASC";
 
 		$cabList=array();
 		foreach($dbh->query($sql) as $cabRow){
