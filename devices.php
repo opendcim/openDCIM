@@ -624,7 +624,10 @@
 							if($dev->Cabinet <0){
 								$dev->MoveToStorage();
 							}else{
+print_r($dev);
 								$dev->UpdateDevice();
+print "Post update \n";
+print_r($dev);
 								updateCustomValues($dev);
 							}
 							break;
@@ -1764,15 +1767,10 @@ echo '				</select></div>
 				<option value=0>',__("Unassigned"),'</option>';
 
 			foreach($contactList as $contactRow){
-				if($contactRow->PersonID==$dev->PrimaryContact) {
-					$contactUserID=$contactRow->UserID;$selected=" selected";
-				} else {
-					$selected="";
-				}
+				$selected=($contactRow->PersonID==$dev->PrimaryContact)?' selected':'';
 				// Only non-disabled User/Contact accounts should be selectable, but be sure not to filter out the currently assigned one
-				if ( ! $contactRow->Disabled && $contactRow->PersonID!=$dev->PrimaryContact) {
-					print "\t\t\t\t<option value=\"$contactRow->PersonID\"$selected>$contactRow->LastName, $contactRow->FirstName</option>\n";
-				}
+				$disabled=($contactRow->Disabled && $contactRow->PersonID!=$dev->PrimaryContact)?' disabled':'';
+				print "\t\t\t\t<option value=\"$contactRow->PersonID\"$selected$disabled>$contactRow->LastName, $contactRow->FirstName</option>\n";
 			}
 
 			print "\t\t\t</select>\n";
