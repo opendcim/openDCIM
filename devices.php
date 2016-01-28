@@ -624,10 +624,7 @@
 							if($dev->Cabinet <0){
 								$dev->MoveToStorage();
 							}else{
-print_r($dev);
 								$dev->UpdateDevice();
-print "Post update \n";
-print_r($dev);
 								updateCustomValues($dev);
 							}
 							break;
