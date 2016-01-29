@@ -1021,5 +1021,48 @@ function BuildCabinet($cabid,$face="front"){
 }
 }
 
+class JobQueue {
+	var $SessionID;
+	var $Percentage;
 
+	static function startJob( $SessionID ) {
+		global $dbh;
+
+		$sql = "insert into fac_Jobs set SessionID=:SessionID, Percentage=0 on duplicate key update Percentage=0";
+		$st = $dbh->prepare( $sql );
+		$st->execute( array( ":SessionID"=>$SessionID ));
+
+		return;
+	}
+
+	static function updateJob( $SessionID, $Percentage ) {
+		global $dbh;
+
+		if ( $Percentage < 100 ) {
+			$sql = "update fac_Jobs set Percentage=:Percentage where SessionID=:SessionID";
+			$st = $dbh->prepare( $sql );
+			$result = $st->execute( array( ":Percentage"=>$Percentage, ":SessionID"=>$SessionID ));
+		} else {
+			$sql = "delete from fac_Jobs where SessionID=:SessionID";
+			$st = $dbh->prepare( $sql );
+			$st->execute( array( ":SessionID"=>$SessionID ));
+		}
+
+		return;
+	}
+
+	static function getStatus( $SessionID ) {
+		global $dbh;
+
+		$sql = "select * from fac_Jobs where SessionID=:SessionID";
+		$st = $dbh->prepare( $sql );
+		$st->execute( array( ":SessionID"=>$SessionID ));
+		if ( $row = $st->fetch() ) {
+			return $row["Percentage"];
+		} else {
+			// If a job has already cleared out (or was never initialized) then tell the monitor to stop waiting
+			return 100;
+		}
+	}
+}
 ?>
