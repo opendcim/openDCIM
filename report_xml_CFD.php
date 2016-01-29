@@ -14,6 +14,9 @@
 <head>
   <meta http-equiv="X-UA-Compatible" content="IE=Edge">
   <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <meta http-equiv="CACHE-CONTROL" content="NO-CACHE">
+  <meta http-equiv="EXPIRES" content="Mon, 01 Jan 1997 01:00:00 GMT">
+  <meta http-equiv="PRAGMA" content="NO-CACHE">
   
   <title>openDCIM Data Center Inventory</title>
   <link rel="stylesheet" href="css/inventory.php" type="text/css">
@@ -81,7 +84,7 @@ echo '			</select>
 	$cabList=$cab->ListCabinetsByDC();
 	
 	header('Content-type: text/xml');
-	header('Cache-Control: no-store, no-cache');
+	header('Cache-Control: no-store, NO-CACHE');
 	header('Content-Disposition: attachment; filename="opendcim.xml"');
 	
 	print "<?xml version=\"1.0\" encoding=\"ISO-8859-1\"?>\n<datacenter>\n

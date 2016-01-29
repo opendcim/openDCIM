@@ -51,7 +51,7 @@
         );
         $deviceTypes = array(
                 'Server','Appliance','Storage Array','Switch','Chassis',
-                'Patch Panel','Physical Infrastructure','CDU','Sensor'
+                'Patch Panel','Physical Infrastructure','CDU','Sensor','WiFi AP','Router'
         );
         # handle the request variables and build the device lists.
         if(isset($_REQUEST['containerid'])){
@@ -566,6 +566,9 @@ overlap = scale;
 <head>
   <meta http-equiv="X-UA-Compatible" content="IE=Edge">
   <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <meta http-equiv="CACHE-CONTROL" content="NO-CACHE">
+  <meta http-equiv="EXPIRES" content="Mon, 01 Jan 1997 01:00:00 GMT">
+  <meta http-equiv="PRAGMA" content="NO-CACHE">
   <link rel="stylesheet" href="css/inventory.php" type="text/css">
   <link rel="stylesheet" href="css/print.css" type="text/css" media="print">
   <link rel="stylesheet" href="css/jquery-ui.css" type="text/css">
