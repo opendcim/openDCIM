@@ -13,7 +13,10 @@
         if ( session_id() === "" ) {
                 $resp->Percentage = 0;
         } else {
-                $resp->Percentage = JobQueue::getStatus( session_id() );
+                $job = JobQueue::getStatus( session_id() );
+                $resp->SessionID = $job["SessionID"];
+                $resp->Percentage = $job["Percentage"];
+                $resp->Status = $job["Status"];
         }
 
         header('Content-Type: application/json');
