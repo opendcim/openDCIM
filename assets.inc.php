@@ -1786,7 +1786,7 @@ class Device {
 			$cab->CabinetID=$this->Cabinet;
 			$cab->GetCabinet();
 			// Make sure the user has rights to save a device into the new cabinet
-			if($cab->Rights!="Write"){return false;}
+			if($cab->Rights!="Write" && $this->Cabinet!='-1'){return false;}
 
 			// Clear the power connections
 		
