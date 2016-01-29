@@ -24,6 +24,8 @@ if (!isset($_GET["stage"])) {
 
     JobQueue::startJob( $sessID );
 
+    $title = __("Asset Report (Excel)");
+
 ?>
 <!doctype html>
 <html>
@@ -61,7 +63,9 @@ $(document).ready( function() {
                 }
             }
         })
-    }, 1500 )
+    }, 1500 );
+
+    init=$('<iframe/>', {'src':location.href+'?stage=2', height:'0px',width:'0px'}).appendTo('body');
 });
 </script>
 </head>
@@ -77,18 +81,7 @@ $(document).ready( function() {
         'readOnly': true
     });
 </script>
-<iframe id="report" src="" width="1" height="1"></iframe>
-<script>
-function setIframeSrc() {
-    var s = "<?php print $_SERVER["PHP_SELF"] . "?stage=2"; ?>";
-    var reportFrame = document.getElementById('report');
-    if ( -1 == navigator.userAgent.indexOf("MSIE")) {
-        reportFrame.src = s;
-    } else {
-        reportFrame.location = s;
-    }
-}
-</script>
+
 </body>
 </html>
 <?php
@@ -1143,6 +1136,13 @@ function computeSheetBodyDCInventory($DProps)
     $limitedUser = false;
     $dcList = $dc->GetDCList();
     $Stats = array();
+
+    // This is where the bulk of the computing happens, so most of the progress reporting will happen here
+
+    $percentDone = 0;
+    $sectionMaxPercent = 90;
+    $incrementalPercent = 1 / sizeof( $dcList ) * $sectionMaxPercent;
+
     foreach ($dcList as $dc) {
         $dcContainerList = $dc->getContainerList();
         $dcStats = array();
@@ -1292,6 +1292,9 @@ function computeSheetBodyDCInventory($DProps)
             }
         }
         assignStatsVal($Stats, $dc, $dcStats);
+
+        $percentDone += $incrementalPercent;
+        JobQueue::updateJob( session_id(), $percentDone );
     }
 
     return array($Stats, $invData, $invCab, $limitedUser);
@@ -1665,8 +1668,6 @@ function writeExcelReport(&$DProps, $objPHPExcel, $thisDate)
         $objPHPExcel, $thisDate);
     ReportStats::get()->report('Info', 'DC Inventory');
 
-    JobQueue::updateJob( session_id(), 33 );
-
     if (! $limitedUser) {
         writeDCStatsSummary($DProps, $objPHPExcel, $DCStats, $thisDate);
         ReportStats::get()->report('Info', 'DC Stats');
@@ -1674,8 +1675,6 @@ function writeExcelReport(&$DProps, $objPHPExcel, $thisDate)
 
     writeRackInventory($DProps, $objPHPExcel, $Rack_Inv, $thisDate);
     ReportStats::get()->report('Info', 'Rack Inventory');
-
-    JobQueue::updateJob( session_id(), 66 );
 
     writeFrontPage($DProps, $config, $objPHPExcel, $thisDate);
     ReportStats::get()->report('Info', 'Front Page');
