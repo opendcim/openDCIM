@@ -16,8 +16,11 @@
 require_once 'db.inc.php';
 require_once 'facilities.inc.php';
 
+global $sessID;
+
 session_start();
 $sessID = session_id();
+session_write_close();
 
 if (!isset($_GET["stage"])) {
     // This is the top leve/first call to the file, so set up the progress bar, etc.
@@ -55,6 +58,7 @@ $(document).ready( function() {
             url: 'scripts/ajax_progress.php',
             dataType: 'json',
             success: function(data) {
+                $("#status").text(data.Status);
                 $(".dial").val(data.Percentage);
                 $(".dial").trigger("change");
                 if ( data.Percentage >= 100 ) {
@@ -70,8 +74,10 @@ $(document).ready( function() {
 </script>
 </head>
 <body>
+<div>
+<h3 id="status">Starting</h3>
 <input type="text" value="0" class="dial">
-
+</div>
 <script>
     $(".dial").knob({
         'min': 0,
@@ -899,7 +905,7 @@ function getContactName($contactList, $contactID)
 {
     $contactName = null;
     if ($contactID) {
-        $contactName = implode(', ', array($contactList[$contactID]->LastName,
+        $contactName = implode(', ', array(@$contactList[$contactID]->LastName,
             $contactList[$contactID]->FirstName));
     }
 
@@ -1122,6 +1128,7 @@ function addRackStat(&$invCab, $cab, $cabinetColumns, $dc, $dcContainerList)
 function computeSheetBodyDCInventory($DProps)
 {
     global $person;
+    global $sessID;
     $dc = new DataCenter();
     $cab = new Cabinet();
     $device = new Device();
@@ -1137,10 +1144,10 @@ function computeSheetBodyDCInventory($DProps)
     $dcList = $dc->GetDCList();
     $Stats = array();
 
-    // This is where the bulk of the computing happens, so most of the progress reporting will happen here
+    // A little code to update the counter
 
     $percentDone = 0;
-    $sectionMaxPercent = 90;
+    $sectionMaxPercent = 40;
     $incrementalPercent = 1 / sizeof( $dcList ) * $sectionMaxPercent;
 
     foreach ($dcList as $dc) {
@@ -1294,7 +1301,7 @@ function computeSheetBodyDCInventory($DProps)
         assignStatsVal($Stats, $dc, $dcStats);
 
         $percentDone += $incrementalPercent;
-        JobQueue::updateJob( session_id(), $percentDone );
+        JobQueue::updatePercentage( $sessID, $percentDone );
     }
 
     return array($Stats, $invData, $invCab, $limitedUser);
@@ -1335,11 +1342,24 @@ function computeDCStatsSummary(&$DCStats, $KPIS)
  */
 function writeRackInventoryContent($worksheet, $sheetProps, $Rack_Inv)
 {
+    global $sessID;
+
+
+    // A little code to update the counter
+
+    $percentDone = 50;
+    $sectionMaxPercent = 40;
+    $incrementalPercent = 1 / sizeof( $Rack_Inv) * $sectionMaxPercent;
+
     $row = 2;
     ksort($Rack_Inv);
     foreach ($Rack_Inv as $DCRoom => $rack) {
         $dc_racks = $Rack_Inv[$DCRoom];
         ksort($dc_racks);
+
+        $subSectionMax = $incrementalPercent;
+        $subIncrement = 1 / sizeof($dc_racks) * $subSectionMax;
+
         foreach ($dc_racks as $name => $rack) {
             $worksheet->fromArray($rack, null, 'A' . $row);
             foreach ($sheetProps['ExpStr'] as $colName) {
@@ -1349,8 +1369,13 @@ function writeRackInventoryContent($worksheet, $sheetProps, $Rack_Inv)
                     PHPExcel_Cell_DataType::TYPE_STRING);
             }
             $row++;
+            $percentDone += $subIncrement;
+            JobQueue::updatePercentage( $sessID, $percentDone );
         }
     }
+
+    // Round up the math
+    JobQueue::updatePercentage( $sessID, 90 );
 }
 
 /**
@@ -1566,6 +1591,7 @@ function writeDCInvContent($worksheet, $sheetProps, $invData)
     $worksheet->fromArray($invData, null, 'A2');
     ReportStats::get()->report('Info', 'Number of Inventory entries '.count($invData));
     $highestRow = count($invData);
+
     foreach ($sheetProps['ExpStr'] as $colName) {
         $colLetter = $colIdx[$colName][1];
         for ($row = 0; $row < $highestRow; $row++) {
@@ -1586,9 +1612,13 @@ function writeDCInvContent($worksheet, $sheetProps, $invData)
  */
 function writeDCInventory($DProps, $objPHPExcel, $thisDate)
 {
+    global $sessID;
+
     $wsKind = 'DC Inventory';
     $worksheet = $objPHPExcel->getActiveSheet();
     $objPHPExcel->setActiveSheetIndex(0);
+
+    JobQueue::updateStatus( $sessID, __("Computing DC Inventory" ));
 
     setWorksheetProperties($worksheet, $wsKind, $DProps, $thisDate);
     writeWSHeader($worksheet, $wsKind, $DProps[$wsKind]);
@@ -1596,8 +1626,15 @@ function writeDCInventory($DProps, $objPHPExcel, $thisDate)
     list($DCStats, $invData, $Rack_Inv, $limitedUser) =
         computeSheetBodyDCInventory($DProps);
     ReportStats::get()->report('Info', $wsKind . ' - computed body');
+
+    JobQueue::updateStatus( $sessID, __("Writing Inventory to Spreadsheet" ));
+    JobQueue::updatePercentage( $sessID, 50 );
+
     writeDCInvContent($worksheet, $DProps[$wsKind], $invData);
     ReportStats::get()->report('Info', $wsKind . ' - write body');
+
+    JobQueue::updateStatus( $sessID, __("Formatting Spreadsheet" ));
+
     formatWSColumns($worksheet, $DProps[$wsKind]['Columns']);
     $worksheet->setAutoFilter($worksheet->calculateWorksheetDimension());
 
@@ -1679,7 +1716,7 @@ function writeExcelReport(&$DProps, $objPHPExcel, $thisDate)
     writeFrontPage($DProps, $config, $objPHPExcel, $thisDate);
     ReportStats::get()->report('Info', 'Front Page');
 
-    JobQueue::updateJob( session_id(), 100 );
+    JobQueue::updateStatus( session_id(), "Preparing to transmit file" );
 }
 
 /*
@@ -1716,3 +1753,5 @@ if (PHP_SAPI != 'cli') {
 ReportStats::get()->report('Totals');
 $objPHPExcel->disconnectWorksheets();
 unset($objPHPExcel);
+
+JobQueue::updatePercentage( $sessID, 100 );

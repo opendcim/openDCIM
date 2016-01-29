@@ -1024,6 +1024,7 @@ function BuildCabinet($cabid,$face="front"){
 class JobQueue {
 	var $SessionID;
 	var $Percentage;
+	var $Status;
 
 	static function startJob( $SessionID ) {
 		global $dbh;
@@ -1035,7 +1036,7 @@ class JobQueue {
 		return;
 	}
 
-	static function updateJob( $SessionID, $Percentage ) {
+	static function updatePercentage( $SessionID, $Percentage ) {
 		global $dbh;
 
 		if ( $Percentage < 100 ) {
@@ -1051,6 +1052,17 @@ class JobQueue {
 		return;
 	}
 
+	static function updateStatus( $SessionID, $StatusMessage ) {
+		global $dbh;
+
+		// Since using prepared statements, PHP will auto sanitize the input
+		$sql = "update fac_Jobs set Status=:Status where SessionID=:SessionID";
+		$st = $dbh->prepare( $sql );
+		$st->execute( array( ":Status"=>$StatusMessage, ":SessionID"=>$SessionID ));
+
+		return;
+	}
+
 	static function getStatus( $SessionID ) {
 		global $dbh;
 
@@ -1058,10 +1070,10 @@ class JobQueue {
 		$st = $dbh->prepare( $sql );
 		$st->execute( array( ":SessionID"=>$SessionID ));
 		if ( $row = $st->fetch() ) {
-			return $row["Percentage"];
+			return $row;
 		} else {
 			// If a job has already cleared out (or was never initialized) then tell the monitor to stop waiting
-			return 100;
+			return array( "SessionID"=>$SessionID, "Percentage"=>100, "Status"=>"Completed");
 		}
 	}
 }
