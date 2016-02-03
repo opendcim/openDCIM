@@ -1139,7 +1139,7 @@ class PowerDistribution {
 			$amps=0;
 			$watts=0;
 
-            $threeOIDs = array("Combine3OIDAmperes","Convert3PhAmperes","Combine3OIDWatts");
+			$threeOIDs = array("Combine3OIDAmperes","Convert3PhAmperes","Combine3OIDWatts");
 			if((in_array($row["ProcessingProfile"], $threeOIDs) && ($pollValue1 || $pollValue2 || $pollValue3)) || $pollValue1){
 				// The multiplier should be an int but no telling what voodoo the db might cause
 				$multiplier=floatval($row["Multiplier"]);
