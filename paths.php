@@ -146,8 +146,10 @@
 			}else{ 
 				$pathid=$_POST['pathid'];
 			}
+
+			// No SQL injection for joo
+			$pathid=sanitize($pathid);
 			
-			// Need to santize this $pathid, this is a sql injection point 2016-02-03 pig
 			$sql="SELECT DeviceID, PortNumber FROM fac_Ports WHERE Notes=\"$pathid\"";
 
 			$result = $dbh->prepare($sql);
