@@ -759,13 +759,13 @@ function getDeviceTemplateName($devTemplates, $device)
     $retval = array('_NoDevModel', '_NoManufDefined');
     $templID = $device->TemplateID;
     if ($templID != 0) {
-		// Data validation error
-		if(!isset($devTemplates[$templID])){
-			$devTemplates[$templID]=new DeviceTemplate();
-			$devTemplates[$templID]->TemplateID=$templID;
-			$devTemplates[$templID]->ManufacturerID=0;
-			$devTemplates[$templID]->Model=__("Template Missing");
-		}
+        // Data validation error
+        if(!isset($devTemplates[$templID])){
+            $devTemplates[$templID]=new DeviceTemplate();
+            $devTemplates[$templID]->TemplateID=$templID;
+            $devTemplates[$templID]->ManufacturerID=0;
+            $devTemplates[$templID]->Model=__("Template Missing");
+        }
         $manufacturer = new Manufacturer();
         $manufacturer->ManufacturerID = $devTemplates[$templID]->ManufacturerID;
         $retcode = $manufacturer->GetManufacturerByID();
