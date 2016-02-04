@@ -1,3 +1,4 @@
+<?php
 class Contact {
 	/*	Contact:	A responsible party associated with one or more assets.
 					Not to be confused with a user, who is an actual

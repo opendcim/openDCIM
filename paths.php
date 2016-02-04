@@ -146,7 +146,9 @@
 			}else{ 
 				$pathid=$_POST['pathid'];
 			}
-			
+
+			// No SQL injection for joo
+			$pathid=sanitize($pathid);
 			
 			$sql="SELECT DeviceID, PortNumber FROM fac_Ports WHERE Notes=\"$pathid\"";
 
@@ -210,8 +212,7 @@
 					//Can the path continue?
 					if ($dev->DeviceType=="Patch Panel"){
 						$path.="\n\t\t<td class=\"connection-$tipo_con-1\">";
-					}
-					else{
+					}else{
 						$path.="\n\t\t<td>";
 					}
 				
@@ -255,10 +256,10 @@
 					$path.=str_repeat("\t",$t--)."</tr>\n";
 					
 					//Ending device table
-					for ($i=sizeof($devList); $i>2; $i--){
+					for ($i=sizeof($devList); $i>1; $i--){
+						$path.=str_repeat("\t",$t--)."</table>\n";
 						$path.=str_repeat("\t",$t--)."</td>\n";
 						$path.=str_repeat("\t",$t--)."</tr>\n";
-						$path.=str_repeat("\t",$t--)."</table>\n";
 					}
 					if ($cp->PortNumber>0){
 						$t++;

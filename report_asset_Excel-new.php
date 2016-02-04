@@ -18,7 +18,10 @@ require_once 'facilities.inc.php';
 
 global $sessID;
 
-session_start();
+// everyone hates error_log spam
+if(!isset($_SESSION)){
+	session_start();
+}
 $sessID = session_id();
 session_write_close();
 
@@ -93,7 +96,7 @@ $(document).ready( function() {
         })
     }, 1500 );
 
-    init=$('<iframe/>', {'src':location.href+'?stage=2', height:'0px',width:'0px'}).appendTo('body');
+    init=$('<iframe/>', {'src':location.href+'?stage=2', height:'100px',width:'100px'}).appendTo('body');
 });
 </script>
 </head>
@@ -756,6 +759,13 @@ function getDeviceTemplateName($devTemplates, $device)
     $retval = array('_NoDevModel', '_NoManufDefined');
     $templID = $device->TemplateID;
     if ($templID != 0) {
+        // Data validation error
+        if(!isset($devTemplates[$templID])){
+            $devTemplates[$templID]=new DeviceTemplate();
+            $devTemplates[$templID]->TemplateID=$templID;
+            $devTemplates[$templID]->ManufacturerID=0;
+            $devTemplates[$templID]->Model=__("Template Missing");
+        }
         $manufacturer = new Manufacturer();
         $manufacturer->ManufacturerID = $devTemplates[$templID]->ManufacturerID;
         $retcode = $manufacturer->GetManufacturerByID();
@@ -1758,6 +1768,11 @@ if (PHP_SAPI != 'cli') {
     header("Content-Disposition: attachment; filename=DC_Statistics_" . $thisDate
      . ".xlsx");
     header('Cache-Control: max-age=0');
+
+    // save the file to the system temp directory for use as a download link
+//    $realfile = tempnam(sys_get_temp_dir(),'openDCIM');
+//    $objWriter->save($realfile);
+
     // write file to the browser
     $objWriter->save('php://output');
 } else {
