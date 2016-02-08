@@ -960,11 +960,11 @@
 			var dcaa=row.find('div:nth-child(5) input');
 			var dcav=row.find('div:nth-child(6) input');
 			row.addrem=row.find('div:first-child');
-			row.Label=row.find('div:nth-child(2) input').change(update);
-			row.AttributeType=row.find('div:nth-child(3) select').change(update);
-			row.Required=row.find('div:nth-child(4) input').change(update);
-			row.AllDevices=row.find('div:nth-child(5) input').change(update);
-			row.DefaultValue=row.find('div:nth-child(6) input').change(update);
+			row.Label=row.find('div:nth-child(2) input');
+			row.AttributeType=row.find('div:nth-child(3) select');
+			row.Required=row.find('div:nth-child(4) input');
+			row.AllDevices=row.find('div:nth-child(5) input');
+			row.DefaultValue=row.find('div:nth-child(6) input');
 
 			// Create click target for add / remove row
 			if(addrem.attr('id')!='newline' && row.Label.val()!=''){
@@ -973,7 +973,7 @@
 				});
 			}
 			// This is to keep an enter from submitting the form
-			row.find(':input').keypress(function(e){
+			row.find(':input').change(update).keypress(function(e){
 				if(e.keyCode==10 || e.keyCode==13){
 					e.preventDefault();
 					$(this).change();
