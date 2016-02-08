@@ -133,6 +133,7 @@ div#imageselection { display: none;}
 #tooltip, #cdutooltip { min-height: 300px; min-width: 550px; }
 
 .customattrsheader { padding-right: 10px; }
+#customattrs input, #customattrs select { background-color: transparent; border-style: ridge; }
 
 /* index */
 .index .table, .index .table .title {background-color: white;}

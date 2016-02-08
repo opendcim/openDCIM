@@ -928,6 +928,30 @@
 
 		// device custom attribute rows
 		var blankdcarow=$('<div />').html('<div><img src="images/del.gif"></div><div><input type="text" name="dcalabel[]"></div><div><select name="dcatype[]" id="dcatype"></select></div></div><div><input type="checkbox" name="dcarequired[]"></div><div><input type="checkbox" name=dcaalldevices[]"></div><div><input type="text" name="dcavalue[]"></div>');
+
+		// row is expected to be the row object and data to be a valid object
+		function updatecarow(row,data){
+			for(var x in data){
+				if(x=='AttributeID'){continue;}
+				if(x=='AllDevices' || x=='Required'){
+					eval("row."+x+".prop('checked',"+data[x]+")");
+				}else{
+					eval("row."+x+".val(\""+data[x]+"\")");
+				}
+			}
+		}
+
+		function revertdefault(row,error){
+			$.post('',{dcal:'',dcaid:row.Label.attr('data'),original:''}).done(function(data){
+				updatecarow(row,data);
+			});
+			if(error){
+				row.effect('highlight', {color: 'salmon'}, 1500);
+			}else{
+				row.effect('highlight', {color: 'lightgreen'}, 1500);
+			}
+		}
+
 		function binddcarow(row) {
 			var addrem=row.find('div:first-child');
 			var dcal=row.find('div:nth-child(2) input');
@@ -935,206 +959,140 @@
 			var dcar=row.find('div:nth-child(4) input');
 			var dcaa=row.find('div:nth-child(5) input');
 			var dcav=row.find('div:nth-child(6) input');
-			if(dcal.val().trim()!='' && addrem.attr('id')!='newline'){
+			row.addrem=row.find('div:first-child');
+			row.Label=row.find('div:nth-child(2) input').change(update);
+			row.AttributeType=row.find('div:nth-child(3) select').change(update);
+			row.Required=row.find('div:nth-child(4) input').change(update);
+			row.AllDevices=row.find('div:nth-child(5) input').change(update);
+			row.DefaultValue=row.find('div:nth-child(6) input').change(update);
+
+			// Create click target for add / remove row
+			if(addrem.attr('id')!='newline' && row.Label.val()!=''){
 				addrem.click(function(){
 					removedca(row,true);
 				});
 			}
-			dcal.keypress(function(event){
-				if(event.keyCode==10 || event.keyCode==13){
-					event.preventDefault();
-					dcal.change();
+			// This is to keep an enter from submitting the form
+			row.find(':input').keypress(function(e){
+				if(e.keyCode==10 || e.keyCode==13){
+					e.preventDefault();
+					$(this).change();
 				}
 			});
-			dcar.keypress(function(event){
-				if(event.keyCode==10 || event.keyCode==13){
-					event.preventDefault();
-					dcar.change();
-				}
-			});
-			dcaa.keypress(function(event){
-				if(event.keyCode==10 || event.keyCode==13){
-					event.preventDefault();
-					dcaa.change();
-				}
-			});
-			dcav.keypress(function(event){
-				if(event.keyCode==10 || event.keyCode==13){
-					event.preventDefault();
-					dcav.change();
-				}
-			});
-			if(dcat.length>0){dcat.data('current', dcat.val());}
-			function update(inputobj){
-				var dcavtosend=dcav.val();
-				if(dcat.val()=='checkbox'){
-					dcavtosend=dcav.prop('checked');
-				}	
-				if(dcal.val().trim()==''){
-					//reset to previous value
-					$.post('',{dcal: dcal.val(), dcaid: dcal.attr('data'), dcat: dcat.val(),dcar: dcar.prop('checked'),dcaa: dcaa.prop('checked'),dcav: dcavtosend,original:''}).done(function(jsondata){
-						dcal.val(jsondata.Label);
-						dcat.val(jsondata.AttributeType);
-						dcar.val(jsondata.Required);
-						dcaa.val(jsondata.AllDevices);
-						dcav.val(jsondata.DefaultValue);
-					});
-					dcal.effect('highlight', {color: 'salmon'}, 1500);
-					dcat.effect('highlight', {color: 'salmon'}, 1500);
-					dcar.effect('highlight', {color: 'salmon'}, 1500);
-					dcaa.effect('highlight', {color: 'salmon'}, 1500);
-					dcav.effect('highlight', {color: 'salmon'}, 1500);
-				} else {
-					// attempt to update
-					$.post('',{dcal: dcal.val(), dcaid: dcal.attr('data'), dcat: dcat.val(), dcar: dcar.prop('checked'), dcaa: dcaa.prop('checked'), dcav: dcavtosend}).done(function(data){
-						if(data.trim()=='f'){ //fail
-							$.post('',{dcal: dcal.val(), dcaid:dcal.attr('data'), dcat: dcat.val(), dcar: dcar.prop('checked'), dcaa: dcaa.prop('checked'), dcav: dcavtosend,original:''}).done(function(jsondata){
-							dcal.val(jsondata.Label);
-							dcat.val(jsondata.AttributeType);
-							dcar.val(jsondata.Required);
-							dcaa.val(jsondata.AllDevices);
-							dcav.val(jsondata.DefaultValue);
-							});
-							dcal.effect('highlight', {color: 'salmon'}, 1500);
-							dcat.effect('highlight', {color: 'salmon'}, 1500);
-							dcar.effect('highlight', {color: 'salmon'}, 1500);
-							dcaa.effect('highlight', {color: 'salmon'}, 1500);
-							dcav.effect('highlight', {color: 'salmon'}, 1500);
-						} else if(data.trim()=='u') { // updated
-							dcal.effect('highlight', {color: 'lightgreen'}, 2500);
-							dcat.effect('highlight', {color: 'lightgreen'}, 2500);
-							dcar.effect('highlight', {color: 'lightgreen'}, 2500);
-							dcaa.effect('highlight', {color: 'lightgreen'}, 2500);
-							dcav.effect('highlight', {color: 'lightgreen'}, 2500);
-						} else { // created
-							var newitem=blankdcarow.clone();
-							newitem.find('div:nth-child(2) input').val(dcal.val()).attr('data',data.trim());
-							newitem.find('div:nth-child(3) select').replaceWith(dcat.clone());
-							newitem.find('div:nth-child(3) select').val(dcat.val());
-							newitem.find('div:nth-child(4) input').replaceWith(dcar.clone());
-							newitem.find('div:nth-child(5) input').replaceWith(dcaa.clone());
-							if(newitem.find('div:nth-child(3) select').val() == "checkbox") {
-								newitem.find('div:nth-child(6) input').attr('type', 'checkbox');
-								newitem.find('div:nth-child(6) input').prop('checked', dcav.prop('checked'));
-							}
-							newitem.find('div:nth-child(6) input').val(dcav.val());
-							binddcarow(newitem);
-							row.before(newitem);
-							newitem.find('div:nth-child(6) input').val(dcav.val()).focus();
-							if(addrem.attr('id')=='newline'){
-								dcal.val('');
-								dcat.val('string');
-								dcar.prop('checked',false);
-								dcaa.prop('checked',false);
-								dcav.attr('type', 'text');
-								dcav.val('');
-							} else {
-								row.remove();
-							}	
-						}
-					});
-				}
-			}
-			dcal.change(function(){
-				update($(this));
-			});
-			dcat.change(function(){
-				var row=$(this).parent('div').parent('div');
-				var currtype=$(this);
-				function processChange() { 
-					if(currtype.val() == "checkbox") {
-						row.find('div:nth-child(6) input').attr('type', 'checkbox');
-						row.find('div:nth-child(6) input').prop('checked', false);
-						row.find('div:nth-child(6) input').val('');
-						
-					} else {
-						row.find('div:nth-child(6) input').attr('type', 'text');
-						row.find('div:nth-child(6) input').val('');
-					}
-					if(row.find('div:first-child').attr('id')!='newline'){
-						update(currtype);
-					} else if(row.find('div:nth-child(2) input').val().trim()!=''){
-						update(currtype);
-					}
-					currtype.data('current', currtype.val());
-				}
-				
-				if(row.find('div:first-child').attr('id')=='newline') { 
-					processChange();
-				} else {
-					$.post('',{dcaused: row.find('div:nth-child(2) input').attr('data')}).done(function(data){
-						if(data.trim()==0){
-							// if not in use, just let the type change
-							processChange();
-						} else if(data.trim()=="fail") {
-							var cancelbutton={
-								"<?php echo __("Cancel"); ?>": function(){
-									currtype.val(currtype.data('current'));
-									$(this).dialog("destroy");
-								}
-							}
-							<?php echo "				var modal=$('<div />', {id: 'modal', title: '".__("Custom Device Attribute Type Change Error")."'}).html('<div id=\"modaltext\">AAAAAAAAAAHHHHHHHHHH!!!  *crash* *fire* *chaos*<br><br>".__("Something just went horribly wrong.")."</div>').dialog({"; ?>
-							dialogClass: 'no-close',
-							appendTo: 'body',
-							modal: true,
-							buttons: $.extend({}, cancelbutton)
-							});
+
+			function update(e){
+				if(e.currentTarget.tagName=="SELECT"){
+					function processChange() { 
+						if(e.currentTarget.value == "checkbox") {
+							row.DefaultValue.attr('type', 'checkbox');
+							row.DefaultValue.prop('checked', false);
+							row.DefaultValue.val('');
 						} else {
-							var defaultbutton={
-								"<?php echo __("Change Type and Clear all uses"); ?>": function(){
-									$.post('',{dcaid: row.find('div:nth-child(2) input').attr('data'),dcal: '', dcar: '', dcaa: '', dcav: '', dcat: '', removeuses: ''}).done(function(data){
-										if(data.trim()=='u'){ // success
-											$('#modal').dialog("destroy");
-											processChange();
-										}else{ // failed to delete
-											$('#modaltext').html('AAAAAAAAAAHHHHHHHHHH!!!  *crash* *fire* *chaos*<br><br><?php echo __("Something just went horribly wrong."); ?>');
-											$('#modal').dialog('option','buttons',cancelbutton);
-											currtype.val(currtype.data('current'));
-										}
+							row.DefaultValue.attr('type', 'text');
+							row.DefaultValue.val('');
+						}
+						if(row.addrem.attr('id')!='newline'){
+							row.DefaultValue.change();
+						} else if(row.Label.val().trim()!=''){
+							row.DefaultValue.change();
+						}
+					}
+					
+					if(row.addrem.attr('id')=='newline') { 
+						processChange();
+					} else {
+						$.post('',{dcaused: row.Label.attr('data')}).done(function(data){
+							if(data.trim()==0){
+								// if not in use, just let the type change
+								processChange();
+							} else if(data.trim()=="fail") {
+								var cancelbutton={
+									"<?php echo __("Cancel"); ?>": function(){
+										revertdefault(row,true);
+										$(this).dialog("destroy");
+									}
+								}
+								<?php echo "				var modal=$('<div />', {id: 'modal', title: '".__("Custom Device Attribute Type Change Error")."'}).html('<div id=\"modaltext\">AAAAAAAAAAHHHHHHHHHH!!!  *crash* *fire* *chaos*<br><br>".__("Something just went horribly wrong.")."</div>').dialog({"; ?>
+								dialogClass: 'no-close',
+								appendTo: 'body',
+								modal: true,
+								buttons: $.extend({}, cancelbutton)
+								});
+							} else {
+								var defaultbutton={
+									"<?php echo __("Change Type and Clear all uses"); ?>": function(){
+										$.post('',{dcaid: row.Label.attr('data'),dcal: '', dcar: '', dcaa: '', dcav: '', dcat: '', removeuses: ''}).done(function(data){
+											if(data.trim()=='u'){ // success
+												$('#modal').dialog("destroy");
+												processChange();
+											}else{ // failed to delete
+												$('#modaltext').html('AAAAAAAAAAHHHHHHHHHH!!!  *crash* *fire* *chaos*<br><br><?php echo __("Something just went horribly wrong."); ?>');
+												$('#modal').dialog('option','buttons',cancelbutton);
+												revertdefault(row,true);
+											}
+										});
+									}
+								}
+								var cancelbutton={
+									"<?php echo __("Cancel"); ?>": function(){
+										revertdefault(row,true);
+										$(this).dialog("destroy");
+									}
+								}
+								<?php echo "				var modal=$('<div />', {id: 'modal', title: '".__("Custom Device Attribute Type Change Override")."'}).html('<div id=\"modaltext\">".__("This custom device attribute is in use somewhere. If you choose to change the attribute type, it will be cleared from all devices and device templates.")."</div>').dialog({"; ?>
+								dialogClass: 'no-close',
+								appendTo: 'body',
+								modal: true,
+								buttons: $.extend({}, defaultbutton, cancelbutton)
+								});
+							}
+						});
+					}
+				}else{
+					var dcavtosend=row.DefaultValue.val();
+					if(row.AttributeType.val()=='checkbox'){
+						dcavtosend=row.DefaultValue.prop('checked');
+					}	
+					if(row.Label.val().trim()=='' && row.addrem.prop('id')!='newline'){
+						//reset to previous value
+						revertdefault(row,true);
+					} else {
+						// attempt to update
+						if((row.addrem.prop('id')=='newline' && row.Label.val()!='') || row.addrem.prop('id')!='newline'){
+							$.post('',{dcal: dcal.val(), dcaid: dcal.attr('data'), dcat: dcat.val(), dcar: dcar.prop('checked'), dcaa: dcaa.prop('checked'), dcav: dcavtosend}).done(function(data){
+								if(data.trim()=='f'){ //fail
+									revertdefault(row,true);
+								} else if(data.trim()=='u') { // updated
+									row.effect('highlight', {color: 'lightgreen'}, 2500);
+								} else { // created
+									var newitem=blankdcarow.clone();
+									binddcarow(newitem);
+									newitem.AttributeType.replaceWith(row.AttributeType.clone());
+									newitem.Label.attr('data',data);
+									row.before(newitem);
+									revertdefault(newitem,false);
+									// The new row didn't have data when the bind ran
+									// this will allow it to be removed immediately
+									newitem.addrem.click(function(){
+										removedca(newitem,true);
 									});
+									newitem.DefaultValue.val(dcav.val()).focus();
+									if(addrem.attr('id')=='newline'){
+										dcal.val('');
+										dcat.val('string');
+										dcar.prop('checked',false);
+										dcaa.prop('checked',false);
+										dcav.attr('type', 'text');
+										dcav.val('');
+									} else {
+										row.remove();
+									}	
 								}
-							}
-							var cancelbutton={
-								"<?php echo __("Cancel"); ?>": function(){
-									currtype.val(currtype.data('current'));
-									$(this).dialog("destroy");
-								}
-							}
-							<?php echo "				var modal=$('<div />', {id: 'modal', title: '".__("Custom Device Attribute Type Change Override")."'}).html('<div id=\"modaltext\">".__("This custom device attribute is in use somewhere. If you choose to change the attribute type, it will be cleared from all devices and device templates.")."</div>').dialog({"; ?>
-							dialogClass: 'no-close',
-							appendTo: 'body',
-							modal: true,
-							buttons: $.extend({}, defaultbutton, cancelbutton)
 							});
 						}
-				});
+					}
+				}
 			}
-		});
-			// TODO it seems like these 3 could be condensed, but when i made it a single function everything freaked out
-			dcar.change(function(){
-				var row=$(this).parent('div').parent('div');
-				if(row.find('div:first-child').attr('id')!='newline'){
-					update($(this));
-				} else if(row.find('div:nth-child(2) input').val().trim()!=''){
-					update($(this));
-				}
-			});
-			dcaa.change(function(){
-				var row=$(this).parent('div').parent('div');
-				if(row.find('div:first-child').attr('id')!='newline'){
-					update($(this));
-				} else if(row.find('div:nth-child(2) input').val().trim()!=''){
-					update($(this));
-				}
-			});
-			dcav.change(function(){
-				var row=$(this).parent('div').parent('div');
-				if(row.find('div:first-child').attr('id')!='newline'){
-					update($(this));
-				} else if(row.find('div:nth-child(2) input').val().trim()!=''){
-					update($(this));
-				}
-			});
 		}
 		$('#customattrs > div ~ div > div:first-child').each(function(){
 			if($(this).attr('id')=='newline'){
@@ -1152,11 +1110,12 @@
 			binddcarow($(this).parent('div'));
 		});
 
-                function removedca(row,lookup){
+        function removedca(row,lookup){
 		  if(!lookup) {
 			row.remove();
 		  } else {
-			$.post('',{dcaused: row.find('div:nth-child(2) input').attr('data'), remove: ''}).done(function(data){
+console.log(row.Label);
+			$.post('',{dcaused: row.Label.attr('data'), remove: ''}).done(function(data){
 				if(data.trim()==0){
 					row.effect('explode', {}, 500, function(){
 						$(this).remove();

@@ -1371,7 +1371,6 @@ class Device {
 				}
 			}
 			// This will extend the device model but isn't currently being used anywhere
-			$dev->GetCustomValues();
 			if(count($dev->CustomValues)){
 				$dcaList=DeviceCustomAttribute::GetDeviceCustomAttributeList();
 				foreach($dev->CustomValues as $dcaid => $val){
@@ -1381,7 +1380,7 @@ class Device {
 						$dev->$label=$val;
 					}
 				}
-				unset($dev->CustomValues);
+		//		unset($dev->CustomValues);
 			}
 		}
 		if($filterrights){

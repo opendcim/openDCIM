@@ -10,6 +10,11 @@ CREATE TABLE fac_Jobs (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 --
+-- Make custom attributes unique, need to add a test for this
+-- 
+ALTER TABLE fac_DeviceCustomAttribute ADD UNIQUE (Label);
+
+--
 -- Bump up the database version (uncomment below once released)
 --
 -- UPDATE fac_Config set Value="4.2" WHERE Parameter="Version";
