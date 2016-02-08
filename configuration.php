@@ -1114,7 +1114,6 @@
 		  if(!lookup) {
 			row.remove();
 		  } else {
-console.log(row.Label);
 			$.post('',{dcaused: row.Label.attr('data'), remove: ''}).done(function(data){
 				if(data.trim()==0){
 					row.effect('explode', {}, 500, function(){
@@ -1850,6 +1849,17 @@ echo '<div class="main">
 					<div><input type="text" name="ccdefaulttext[]"></div>
 				</div>
 			</div> <!-- end table -->
+			<h3>',__("Connection Filtering"),'</h3>
+			<div class="table" id="connectionfiltering">
+				<div>
+					<div><label for="PatchPanelsOnly">',__("Patch panel rear connection filtering"),'</label></div>
+					<div><select id="PatchPanelsOnly" name="PatchPanelsOnly" defaultvalue="',$config->defaults["PatchPanelsOnly"],'" data="',$config->ParameterArray["PatchPanelsOnly"],'">
+							<option value="disabled">',__("Disabled"),'</option>
+							<option value="enabled">',__("Enforce"),'</option>
+						</select>
+					</div>
+				</div>
+			</div>
 			<h3>',__("Connection Pathing"),'</h3>
 			<div class="table" id="pathweights">
 				<div>

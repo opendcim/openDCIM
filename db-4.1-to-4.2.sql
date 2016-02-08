@@ -15,6 +15,12 @@ CREATE TABLE fac_Jobs (
 ALTER TABLE fac_DeviceCustomAttribute ADD UNIQUE (Label);
 
 --
+-- Add in new parameter to control whether or not to filter the cabinet listing (Disable for Performance Boost on large installs)
+--
+
+INSERT INTO fac_Config SET Parameter="PatchPanelsOnly", Value="enabled", UnitOfMeasure="Enabled/Disabled", ValType="string", DefaultVal="enabled";
+
+--
 -- Bump up the database version (uncomment below once released)
 --
 -- UPDATE fac_Config set Value="4.2" WHERE Parameter="Version";

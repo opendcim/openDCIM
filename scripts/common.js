@@ -2355,8 +2355,9 @@ function LameLogDisplay(){
 			postoptions=$.extend(postoptions,{limiter: limiter});
 
 			if(target===this.rdevice){
-		//	Uncomment this line to restrict the device list to just patch panels
-		//		postoptions=$.extend(postoptions,{rear: ''});
+				if(window.PatchPanelsOnly=='enabled'){
+					postoptions=$.extend(postoptions,{rear: ''});
+				}
 			}
 			$.post('',postoptions).done(function(data){
 				var devlist=$("<select>").append('<option value=0>&nbsp;</option>');

@@ -1020,6 +1020,9 @@ function getHash(){
 </SCRIPT>
 
 <script type="text/javascript">
+window.PatchPanelsOnly="<?php print $config->ParameterArray["PatchPanelsOnly"]; ?>";
+
+
 /*
 IE work around
 http://stackoverflow.com/questions/5227088/creating-style-node-adding-innerhtml-add-to-dom-and-ie-headaches
