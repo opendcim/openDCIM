@@ -29,8 +29,8 @@
 	
 	// Fill in rack positions for true/false checks
 	$cabinetuse=array();
-	$i=$cab->CabinetHeight;
-	while($i>0){
+	$i=$cab->CabinetHeight+$cab->StartUNum-1;
+	while($i>($cab->StartUNum-1)){
 		$cabinetuse[$i]=false;
 		$i--;
 	}
