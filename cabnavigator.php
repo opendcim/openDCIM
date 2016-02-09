@@ -235,6 +235,10 @@ function renderUnassignedTemplateOwnership($noTemplFlag, $noOwnerFlag, $device) 
 		$WeightColor=$CriticalColor;
 	}
 
+	if ($cab->StartUNum>1) {
+		$legend.='<div class="legenditem"><span class="start_unit_number">'.__("Number on first unit").'</span> - '.$cab->StartUNum.'</div>'."\n";
+	}
+
 	foreach(Department::GetDepartmentListIndexedbyID() as $deptid => $d){
 		if($d->DeptColor!="#FFFFFF"){
             // If head is empty then we don't have any custom colors defined above so add a style container for these

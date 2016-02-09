@@ -1446,10 +1446,28 @@ print "		var dialog=$('<div>').prop('title',\"".__("Verify Delete Device")."\").
 ?>
 		$('#CabinetID').change(function(){
 			$.post('', {cab: $("select#CabinetID").val()}, function(data){
-				var posclass=$('#Position').attr('class');
-				if(parseInt(data.trim())>0){
-					$('#Position').attr('class',posclass.replace(/max\[([0-9]).*?\]/gi,"max["+data.trim()+"]")).trigger('focusout');
-				}
+				var cab=$("select#CabinetID").val();
+				var hd=$('#HalfDepth').is(':checked');
+				var bs=$('#BackSide').is(':checked');
+				$.getJSON('scripts/ajax_cabinetuse.php?cabinet='+cab+'&DeviceID='+$("#DeviceID").val()+'&HalfDepth='+hd+'&BackSide='+bs, function(data) {
+					var posclass=$('#Position').attr('class');
+					var ustop=Object.keys(data)[Object.keys(data).length-1];
+					if(parseInt(ustop.trim())>0){
+						$('#Position').attr('class',posclass.replace(/max\[([0-9]).*?\]/gi,"max["+ustop.trim()+"]")).trigger('focusout');
+					}
+				}, 'json');
+			});
+			$.post('', {cab: $("select#CabinetID").val()}, function(data){
+				var cab=$("select#CabinetID").val();
+				var hd=$('#HalfDepth').is(':checked');
+				var bs=$('#BackSide').is(':checked');
+				$.getJSON('scripts/ajax_cabinetuse.php?cabinet='+cab+'&DeviceID='+$("#DeviceID").val()+'&HalfDepth='+hd+'&BackSide='+bs, function(data) {
+					var posclass=$('#Position').attr('class');
+					var ustart=Object.keys(data)[1];
+					if(parseInt(ustart.trim())>0){
+						$('#Position').attr('class',posclass.replace(/min\[([0-9]).*?\]/gi,"min["+ustart.trim()+"]")).trigger('focusout');
+					}
+				}, 'json');
 			});
 		});
 		var tmpheight=$('<input>').attr({'type':'hidden','name':'Position'}).val(0);
@@ -1468,6 +1486,8 @@ print "		var dialog=$('<div>').prop('title',\"".__("Verify Delete Device")."\").
 			var bs=$('#BackSide').is(':checked');
 			$.getJSON('scripts/ajax_cabinetuse.php?cabinet='+cab+'&DeviceID='+$("#DeviceID").val()+'&HalfDepth='+hd+'&BackSide='+bs, function(data) {
 				var ucount=Object.keys(data).length;
+				var ustart=Object.keys(data)[1];
+				var ustop=Object.keys(data)[Object.keys(data).length-1];
 				var rackhtmlleft='';
 				var rackhtmlright='';
 
@@ -1481,12 +1501,12 @@ print "		var dialog=$('<div>').prop('title',\"".__("Verify Delete Device")."\").
 				// If slot 0 is set to top then it will reverse order otherwise high to low
 				if(data["0"]=="Top"){
 					// low to high
-					for(var ucount=1; ucount<=Object.keys(data).length-1; ucount++) {
+					for(var ucount=ustart; ucount<=ustop.length-1; ucount++) {
 						parseusage(ucount);
 					}
 				}else{
 					// high to low
-					for(var ucount=Object.keys(data).length-1; ucount>=1; ucount--) {
+					for(var ucount=ustop; ucount>=ustart; ucount--) {
 						parseusage(ucount);
 					}
 				}
@@ -1847,7 +1867,7 @@ echo '			</select>
 		</div>
 		<div>
 		   <div><label for="Position">',__("Position"),'</label></div>
-		   <div><input type="number" class="required,validate[custom[onlyNumberSp],min[1],max[',$cab->CabinetHeight,']]" name="Position" id="Position" value="',$dev->Position,'"></div>
+		   <div><input type="number" class="required,validate[custom[onlyNumberSp],min[',$cab->StartUNum,'],max[',$cab->CabinetHeight+$cab->StartUNum-1,']]" name="Position" id="Position" value="',$dev->Position,'"></div>
 		</div>
 		';
 
