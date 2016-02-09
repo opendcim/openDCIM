@@ -32,7 +32,7 @@
 
 		if($config->ParameterArray["ReservedColor"] != "#FFFFFF" || $config->ParameterArray["FreeSpaceColor"] != "#FFFFFF"){
 			$head.="		<style type=\"text/css\">
-			.reserved{background-color: {$config->ParameterArray['ReservedColor']};}
+			.reserved{background-color: {$config->ParameterArray['ReservedColor']} !important;}
 			.freespace{background-color: {$config->ParameterArray['FreeSpaceColor']};}\n";
 		}
 
