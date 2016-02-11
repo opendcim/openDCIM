@@ -4631,7 +4631,7 @@ class SwitchInfo {
 		
 		$x=array();
 		foreach(self::OSS_SNMP_Lookup($dev,"names") as $index => $portdesc ) {
-			if ( preg_match( "/(bond|\"[A-Z]|swp|eth|Ethernet|Port-Channel|\/)[01]$/", $portdesc )) {
+			if ( preg_match( "/([0-9]\:|bond|\"[A-Z]|swp|eth|Ethernet|Port-Channel|\/)[01]$/", $portdesc )) {
 				$x[$index] = $portdesc;
 			} // Find lines that end with /1
 		}
