@@ -2197,7 +2197,21 @@ echo '	<div class="table">
 <?php
 // Button block used for selection limiter
 $connectioncontrols=($dev->DeviceID>0 && !empty($portList))?'
-<span style="display: inline-block; vertical-align: super;">'.__("Limit device selection to").':</span>
+<div><span style="display: inline-block; vertical-align: super;">'.__("Limit device type selection to").':</span>
+<div id="devicetype-limiter" data-role="controlgroup" data-type="horizontal">
+	<input type="radio" name="devicetype-limiter" id="dt-choice-1" value="all" />
+	<label for="dt-choice-1">All</label>
+	<input type="radio" name="devicetype-limiter" id="dt-choice-2" value="server" />
+	<label for="dt-choice-2">Server</label>
+	<input type="radio" name="devicetype-limiter" id="dt-choice-3" value="switch" />
+	<label for="dt-choice-3">Switch</label>
+	<input type="radio" name="devicetype-limiter" id="dt-choice-4" value="patchpanel" />
+	<label for="dt-choice-4">Patch Panel</label>
+	<input type="radio" name="devicetype-limiter" id="dt-choice-5" value="cdu" />
+	<label for="dt-choice-5">CDU</label>
+</div></div>':'';
+$connectioncontrols.=($dev->DeviceID>0 && !empty($portList))?'
+<div><span style="display: inline-block; vertical-align: super;">'.__("Limit device selection to").':</span>
 <div id="connection-limiter" data-role="controlgroup" data-type="horizontal">
 	<input type="radio" name="connection-limiter" id="radio-choice-1" value="row" />
 	<label for="radio-choice-1">Row</label>
@@ -2207,7 +2221,7 @@ $connectioncontrols=($dev->DeviceID>0 && !empty($portList))?'
 	<label for="radio-choice-3">Datacenter</label>
 	<input type="radio" name="connection-limiter" id="radio-choice-4" value="global" />
 	<label for="radio-choice-4">Global</label>
-</div>':'';
+</div></div>':'';
 
 	// Operational log
 	// This is an optional block if logging is enabled
@@ -2563,8 +2577,11 @@ $connectioncontrols=($dev->DeviceID>0 && !empty($portList))?'
 		$('#TemplateID').combobox();
 		$('select[name=ParentDevice]').combobox();
 
+		// Hide this for now
+		$('#devicetype-limiter').parent('div').hide();
+
 		// Connection limitation selection
-		$('#connection-limiter').buttonset().parent('div').css('text-align','right');
+		$('#connection-limiter, #devicetype-limiter').buttonset().parent('div').css('text-align','right');
 		$('#connection-limiter input').click(function(e){
 			setCookie("DeviceSelectionLimit",e.currentTarget.value);
 			$('.table.switch > div ~ div').each(function(){
