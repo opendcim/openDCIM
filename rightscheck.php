@@ -23,7 +23,7 @@ print "<table>
 	<tr>
 		<th>Directory</th>
 		<th>Writable</th>
-		<th>Rights</th>
+		<th colspan=2>Rights</th>
 		<th>Owner:Group</th>
 	</tr>";
 function matches(&$check,$const){
@@ -101,7 +101,7 @@ foreach($scanned_directory as $i => $file){
 	$class=(in_array($uploadDir,$wantedpaths))?' class="wanted"':'';
 	$class=(preg_match('/LimeGreen/',$not) && !in_array($uploadDir,$wantedpaths))?' class="warning"':$class;
 
-	print "\n\t<tr$class>\n\t\t<td>$uploadDir</td><td>$not</td><td>$info&nbsp;&nbsp;$perms</td><td>$owner:$group</td></tr>";
+	print "\n\t<tr$class>\n\t\t<td>$uploadDir</td><td>$not</td><td>$info</td><td>$perms</td><td>$owner:$group</td></tr>";
 
 }
 
