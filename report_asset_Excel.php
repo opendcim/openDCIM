@@ -19,7 +19,7 @@ require_once 'facilities.inc.php';
 global $sessID;
 
 // everyone hates error_log spam
-if(!isset($_SESSION)){
+if(session_id()==""){
 	session_start();
 }
 $sessID = session_id();

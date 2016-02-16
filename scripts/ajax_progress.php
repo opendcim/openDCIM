@@ -9,7 +9,7 @@
         $resp = new Response();
 
         // everyone hates error_log spam
-        if(!isset($_SESSION)){
+        if(session_id()==""){
                 session_start();
         }
 
