@@ -133,6 +133,7 @@ div#imageselection { display: none;}
 #tooltip, #cdutooltip { min-height: 300px; min-width: 550px; }
 
 .customattrsheader { padding-right: 10px; }
+#customattrs input, #customattrs select { background-color: transparent; border-style: ridge; }
 
 /* index */
 .index .table, .index .table .title {background-color: white;}
@@ -760,9 +761,10 @@ div.cabinet {
 
 #olog .table > div > div ~ div {white-space: pre-wrap; max-width: 800px; word-wrap: break-word;}
 
-#connection-limiter { display: inline-block; margin-top: 10px; margin-bottom: 2px; vertical-align: super; }
+#devicetype-limiter, #connection-limiter { display: inline-block; margin-top: 10px; margin-bottom: 2px; vertical-align: super; }
+#devicetype-limiter .ui-button-text-only .ui-button-text,
 #connection-limiter .ui-button-text-only .ui-button-text { padding: 0.2em; }
-#connection-limiter label { width: auto; }
+#devicetype-limiter label, #connection-limiter label { width: auto; }
 
 
 .device #tags { width: 95%; min-width: 250px;}

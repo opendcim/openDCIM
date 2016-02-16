@@ -1371,7 +1371,6 @@ class Device {
 				}
 			}
 			// This will extend the device model but isn't currently being used anywhere
-			$dev->GetCustomValues();
 			if(count($dev->CustomValues)){
 				$dcaList=DeviceCustomAttribute::GetDeviceCustomAttributeList();
 				foreach($dev->CustomValues as $dcaid => $val){
@@ -1381,7 +1380,7 @@ class Device {
 						$dev->$label=$val;
 					}
 				}
-				unset($dev->CustomValues);
+		//		unset($dev->CustomValues);
 			}
 		}
 		if($filterrights){
@@ -1500,20 +1499,28 @@ class Device {
 		$this->SerialNo=transform($this->SerialNo);
 		$this->AssetTag=transform($this->AssetTag);
 		
-		// SNMPFailureCount isn't in this list, because it should always start at zero (default) on new devices
-		$sql="INSERT INTO fac_Device SET Label=\"$this->Label\", SerialNo=\"$this->SerialNo\", AssetTag=\"$this->AssetTag\", 
-			PrimaryIP=\"$this->PrimaryIP\", SNMPVersion=\"$this->SNMPVersion\",  
-			v3SecurityLevel=\"$this->v3SecurityLevel\",	v3AuthProtocol=\"$this->v3AuthProtocol\", v3AuthPassphrase=\"$this->v3AuthPassphrase\", 
-			v3PrivProtocol=\"$this->v3PrivProtocol\", v3PrivPassphrase=\"$this->v3PrivPassphrase\", SNMPCommunity=\"$this->SNMPCommunity\", 
-			ESX=$this->ESX, Owner=$this->Owner, EscalationTimeID=$this->EscalationTimeID, EscalationID=$this->EscalationID, 
-			PrimaryContact=$this->PrimaryContact, Cabinet=$this->Cabinet, Position=$this->Position, Height=$this->Height, Ports=$this->Ports, 
-			FirstPortNum=$this->FirstPortNum, TemplateID=$this->TemplateID, NominalWatts=$this->NominalWatts, 
-			PowerSupplyCount=$this->PowerSupplyCount, DeviceType=\"$this->DeviceType\", ChassisSlots=$this->ChassisSlots, 
-			RearChassisSlots=$this->RearChassisSlots,ParentDevice=$this->ParentDevice, Weight=$this->Weight, 
+		// SNMPFailureCount isn't in this list, because it should always start at zero 
+		// (default) on new devices
+		$sql="INSERT INTO fac_Device SET Label=\"$this->Label\",  
+			AssetTag=\"$this->AssetTag\", PrimaryIP=\"$this->PrimaryIP\", 
+			SNMPCommunity=\"$this->SNMPCommunity\", SNMPVersion=\"$this->SNMPVersion\",
+			v3SecurityLevel=\"$this->v3SecurityLevel\", EscalationID=$this->EscalationID, 
+			v3AuthProtocol=\"$this->v3AuthProtocol\", Position=$this->Position, 
+			v3AuthPassphrase=\"$this->v3AuthPassphrase\", DeviceType=\"$this->DeviceType\",
+			v3PrivProtocol=\"$this->v3PrivProtocol\", NominalWatts=$this->NominalWatts, 
+			v3PrivPassphrase=\"$this->v3PrivPassphrase\", Weight=$this->Weight,
+			SNMPFailureCount=$this->SNMPFailureCount, ESX=$this->ESX, Owner=$this->Owner, 
+			EscalationTimeID=$this->EscalationTimeID, PrimaryContact=$this->PrimaryContact, 
+			Cabinet=$this->Cabinet, Height=$this->Height, Ports=$this->Ports, 
+			FirstPortNum=$this->FirstPortNum, TemplateID=$this->TemplateID, 
+			PowerSupplyCount=$this->PowerSupplyCount, ChassisSlots=$this->ChassisSlots, 
+			RearChassisSlots=$this->RearChassisSlots,ParentDevice=$this->ParentDevice,
 			MfgDate=\"".date("Y-m-d", strtotime($this->MfgDate))."\", 
-			InstallDate=\"".date("Y-m-d", strtotime($this->InstallDate))."\", WarrantyCo=\"$this->WarrantyCo\", 
-			WarrantyExpire=\"".date("Y-m-d", strtotime($this->WarrantyExpire))."\", Notes=\"$this->Notes\", 
-			Reservation=$this->Reservation, HalfDepth=$this->HalfDepth, BackSide=$this->BackSide;";
+			InstallDate=\"".date("Y-m-d", strtotime($this->InstallDate))."\", 
+			WarrantyCo=\"$this->WarrantyCo\", Notes=\"$this->Notes\", 
+			WarrantyExpire=\"".date("Y-m-d", strtotime($this->WarrantyExpire))."\", 
+			Reservation=$this->Reservation, HalfDepth=$this->HalfDepth, 
+			BackSide=$this->BackSide, SerialNo=\"$this->SerialNo\";";
 
 		if(!$dbh->exec($sql)){
 			$info = $dbh->errorInfo();
@@ -1763,20 +1770,28 @@ class Device {
   
 	function UpdateDevice() {
 		global $dbh;
-		// Stupid User Tricks #417 - A user could change a device that has connections (switch or patch panel) to one that doesn't
-		// Stupid User Tricks #148 - A user could change a device that has children (chassis) to one that doesn't
-		//
-		// As a "safety mechanism" we simply won't allow updates if you try to change a chassis IF it has children
-		// For the switch and panel connections, though, we drop any defined connections
+		/*
+		 * Stupid User Tricks #417 - A user could change a device that has connections 
+		 *   (switch or patch panel) to one that doesn't
+		 * Stupid User Tricks #148 - A user could change a device that has children 
+		 *   (chassis) to one that doesn't
+		 *
+		 * As a "safety mechanism" we simply won't allow updates if you try to change 
+		 *   a chassis IF it has children
+		 * For the switch and panel connections, though, we drop any defined connections
+		 *
+		 */
 		
 		$tmpDev=new Device();
 		$tmpDev->DeviceID=$this->DeviceID;
-		// You can't update what doesn't exist, so check for existing record first and retrieve the current location
+		// You can't update what doesn't exist, so check for existing record first and 
+		// retrieve the current location
 		if(!$tmpDev->GetDevice()){
 			return false;
 		}
 
-		// Check the user's permissions to modify this device, but only if it's not a CLI call
+		// Check the user's permissions to modify this device, but only if it's not a 
+		// CLI call
 		if( php_sapi_name() != "cli" && $tmpDev->Rights!='Write'){return false;}
 	
 		$this->MakeSafe();	
@@ -1789,11 +1804,11 @@ class Device {
 			if($cab->Rights!="Write" && $this->Cabinet!='-1'){return false;}
 
 			// Clear the power connections
-		
 			PowerPorts::removeConnections($this->DeviceID);
 		}
 
-		// Everything after this point you already know that the Person has rights to make changes
+		// Everything after this point you already know that the Person has rights 
+		// to make changes
 
 		// A child device's cabinet must always match the parent so force it here
 		if($this->ParentDevice){
@@ -1803,45 +1818,52 @@ class Device {
 			$this->Cabinet=$parent->Cabinet;
 		}
 
+		// SUT #148 - Previously defined chassis is no longer a chassis
+		if($tmpDev->DeviceType == "Chassis" && $tmpDev->DeviceType != $this->DeviceType){
+			// If it has children, return with no update
+			$childList=$this->GetDeviceChildren();
+			if(sizeof($childList)>0){
+				$this->GetDevice();
+				return false;
+			}
+		}
+
 		// Force all uppercase for labels
 		$this->Label=transform($this->Label);
 		$this->SerialNo=transform($this->SerialNo);
 		$this->AssetTag=transform($this->AssetTag);
 
-		$sql="UPDATE fac_Device SET Label=\"$this->Label\", SerialNo=\"$this->SerialNo\", AssetTag=\"$this->AssetTag\", 
-			PrimaryIP=\"$this->PrimaryIP\", SNMPCommunity=\"$this->SNMPCommunity\", SNMPVersion=\"$this->SNMPVersion\",
-			v3SecurityLevel=\"$this->v3SecurityLevel\", v3AuthProtocol=\"$this->v3AuthProtocol\",
-			v3AuthPassphrase=\"$this->v3AuthPassphrase\", v3PrivProtocol=\"$this->v3PrivProtocol\", v3PrivPassphrase=\"$this->v3PrivPassphrase\",
-			SNMPFailureCount=$this->SNMPFailureCount, ESX=$this->ESX, Owner=$this->Owner, EscalationTimeID=$this->EscalationTimeID, 
-			EscalationID=$this->EscalationID, PrimaryContact=$this->PrimaryContact, 
-			Cabinet=$this->Cabinet, Position=$this->Position, Height=$this->Height, Ports=$this->Ports, 
-			FirstPortNum=$this->FirstPortNum, TemplateID=$this->TemplateID, NominalWatts=$this->NominalWatts, 
-			PowerSupplyCount=$this->PowerSupplyCount, DeviceType=\"$this->DeviceType\", ChassisSlots=$this->ChassisSlots, 
-			RearChassisSlots=$this->RearChassisSlots,ParentDevice=$this->ParentDevice, Weight=$this->Weight,
+		$sql="UPDATE fac_Device SET Label=\"$this->Label\", SerialNo=\"$this->SerialNo\", 
+			AssetTag=\"$this->AssetTag\", PrimaryIP=\"$this->PrimaryIP\", 
+			SNMPCommunity=\"$this->SNMPCommunity\", SNMPVersion=\"$this->SNMPVersion\",
+			v3SecurityLevel=\"$this->v3SecurityLevel\", EscalationID=$this->EscalationID, 
+			v3AuthProtocol=\"$this->v3AuthProtocol\", Position=$this->Position, 
+			v3AuthPassphrase=\"$this->v3AuthPassphrase\", DeviceType=\"$this->DeviceType\",
+			v3PrivProtocol=\"$this->v3PrivProtocol\", NominalWatts=$this->NominalWatts, 
+			v3PrivPassphrase=\"$this->v3PrivPassphrase\", Weight=$this->Weight,
+			SNMPFailureCount=$this->SNMPFailureCount, ESX=$this->ESX, Owner=$this->Owner, 
+			EscalationTimeID=$this->EscalationTimeID, PrimaryContact=$this->PrimaryContact, 
+			Cabinet=$this->Cabinet, Height=$this->Height, Ports=$this->Ports, 
+			FirstPortNum=$this->FirstPortNum, TemplateID=$this->TemplateID, 
+			PowerSupplyCount=$this->PowerSupplyCount, ChassisSlots=$this->ChassisSlots, 
+			RearChassisSlots=$this->RearChassisSlots,ParentDevice=$this->ParentDevice,
 			MfgDate=\"".date("Y-m-d", strtotime($this->MfgDate))."\", 
-			InstallDate=\"".date("Y-m-d", strtotime($this->InstallDate))."\", WarrantyCo=\"$this->WarrantyCo\", 
-			WarrantyExpire=\"".date("Y-m-d", strtotime($this->WarrantyExpire))."\", Notes=\"$this->Notes\", 
-			Reservation=$this->Reservation, HalfDepth=$this->HalfDepth, BackSide=$this->BackSide WHERE DeviceID=$this->DeviceID;";
+			InstallDate=\"".date("Y-m-d", strtotime($this->InstallDate))."\", 
+			WarrantyCo=\"$this->WarrantyCo\", Notes=\"$this->Notes\", 
+			WarrantyExpire=\"".date("Y-m-d", strtotime($this->WarrantyExpire))."\", 
+			Reservation=$this->Reservation, HalfDepth=$this->HalfDepth, 
+			BackSide=$this->BackSide WHERE DeviceID=$this->DeviceID;";
 
-
-		// If the device won't update for some reason there is no cause to touch anything else about it
+		// If the device won't update for some reason there is no cause to touch 
+		// anything else about it so just return false
 		if(!$dbh->query($sql)){
 			$info=$dbh->errorInfo();
 			error_log("UpdateDevice::PDO Error: {$info[2]} SQL=$sql");
 			return false;
 		}
 		
-		if($tmpDev->DeviceType == "Chassis" && $tmpDev->DeviceType != $this->DeviceType){
-			// SUT #148 - Previously defined chassis is no longer a chassis
-			// If it has children, return with no update
-			$childList=$this->GetDeviceChildren();
-			if(sizeof($childList)>0){
-				$this->GetDevice();
-				return;
-			}
-		}
-
-		// Device has been changed to be a CDU from something else so we need to create the extra records
+		// Device has been changed to be a CDU from something else so we need to 
+		// create the extra records
 		if($this->DeviceType=="CDU" && $tmpDev->DeviceType!=$this->DeviceType){
 			$pdu=new PowerDistribution();
 			$pdu->CreatePDU($dev->DeviceID);
@@ -1852,7 +1874,8 @@ class Device {
 			$pdu->DeletePDU();
 		}
 
-		// If we made it to a device update and the number of ports available don't match the device, just fix it.
+		// If we made it to a device update and the number of ports available don't 
+		// match the device, just fix it.
 		if($tmpDev->Ports!=$this->Ports){
 			if($tmpDev->Ports>$this->Ports){ // old device has more ports
 				for($n=$this->Ports; $n<$tmpDev->Ports; $n++){
@@ -1870,22 +1893,26 @@ class Device {
 			}
 		}
 
-		// If we made it to a device update and the number of power ports available don't match the device, just fix it.
+		// If we made it to a device update and the number of power ports available 
+		// don't match the device, just fix it.
 		if($tmpDev->PowerSupplyCount!=$this->PowerSupplyCount){
-			if($tmpDev->PowerSupplyCount>$this->PowerSupplyCount){ // old device has more ports
+			if($tmpDev->PowerSupplyCount>$this->PowerSupplyCount){
+				// old device has more ports
 				for($n=$this->PowerSupplyCount; $n<$tmpDev->PowerSupplyCount; $n++){
 					$p=new PowerPorts();
 					$p->DeviceID=$this->DeviceID;
 					$p->PortNumber=$n+1;
 					$p->removePort();
 				}
-			}else{ // new device has more ports
+			}else{ 
+				// new device has more ports
 				PowerPorts::createPorts($this->DeviceID,true);
 			}
 		}
 		
 		if(($tmpDev->DeviceType=="Switch" || $tmpDev->DeviceType=="Patch Panel") && $tmpDev->DeviceType!=$this->DeviceType){
-			// SUT #417 - Changed a Switch or Patch Panel to something else (even if you change a switch to a Patch Panel, the connections are different)
+			// SUT #417 - Changed a Switch or Patch Panel to something else (even if you 
+			// change a switch to a Patch Panel, the connections are different)
 			if($tmpDev->DeviceType=="Switch"){
 				DevicePorts::removeConnections($this->DeviceID);
 			}
@@ -1903,11 +1930,13 @@ class Device {
 		}
 
 		if($this->DeviceType == "Patch Panel" && $tmpDev->DeviceType != $this->DeviceType){
-			// This asshole just changed a switch or something into a patch panel. Make the rear ports.
+			// This asshole just changed a switch or something into a patch panel. Make 
+			// the rear ports.
 			$p=new DevicePorts();
 			$p->DeviceID=$this->DeviceID;
 			if($tmpDev->Ports!=$this->Ports && $tmpDev->Ports<$this->Ports){
-				// since we just made the new rear ports up there only make the first few, hopefully.
+				// since we just made the new rear ports up there only make the first few, 
+				// hopefully.
 				for($n=1;$n<=$tmpDev->Ports;$n++){
 					$i=$n*-1;
 					$p->PortNumber=$i;
@@ -1923,7 +1952,8 @@ class Device {
 			}
 		}
 
-		// Check and see if we extended the model to include any of the attributes for a CDU
+		// Check and see if we extended the model to include any of the attributes for 
+		// a CDU
 		if($this->DeviceType=="CDU"){
 			$pdu=new PowerDistribution();
 			$pdu->PDUID=$this->DeviceID;
@@ -4601,7 +4631,7 @@ class SwitchInfo {
 		
 		$x=array();
 		foreach(self::OSS_SNMP_Lookup($dev,"names") as $index => $portdesc ) {
-			if ( preg_match( "/(bond|\"[A-Z]|swp|eth|Ethernet|Port-Channel|\/)[01]$/", $portdesc )) {
+			if ( preg_match( "/([0-9]\:|bond|\"[A-Z]|swp|eth|Ethernet|Port-Channel|\/)[01]$/", $portdesc )) {
 				$x[$index] = $portdesc;
 			} // Find lines that end with /1
 		}
@@ -5166,11 +5196,9 @@ class DeviceCustomAttribute {
 	var $DefaultValue;
 
 	function MakeSafe() {
-		$validtypes=array("string","number","integer","date","phone","email","ipv4","url","checkbox","set");
-
 		$this->AttributeID=intval($this->AttributeID);
 		$this->Label=sanitize($this->Label);
-		$this->AttributeType=(in_array($this->AttributeType,$validtypes))?$this->AttributeType:'string';
+		$this->AttributeType=(in_array($this->AttributeType,$this->GetDeviceCustomAttributeTypeList()))?$this->AttributeType:'string';
 		$this->Required=(intval($this->Required)>=1)?1:0;
 		$this->AllDevices=(intval($this->AllDevices)>=1)?1:0;
 		$this->DefaultValue=sanitize($this->DefaultValue);
@@ -5315,26 +5343,27 @@ class DeviceCustomAttribute {
 		$this->AttributeID=intval($this->AttributeID);
 	
 		$sql="DELETE FROM fac_DeviceTemplateCustomValue WHERE AttributeID=$this->AttributeID;";
-                if(!$dbh->query($sql)){
-                        $info=$dbh->errorInfo();
-                        error_log("RemoveDeviceCustomAttribute::PDO Error: {$info[2]} SQL=$sql" );
-                        return false;
-                }
+		if(!$dbh->query($sql)){
+			$info=$dbh->errorInfo();
+			error_log("RemoveDeviceCustomAttribute::PDO Error: {$info[2]} SQL=$sql" );
+			return false;
+		}
+
 		$sql="DELETE FROM fac_DeviceCustomValue WHERE AttributeID=$this->AttributeID;";
-                if(!$dbh->query($sql)){
-                        $info=$dbh->errorInfo();
-                        error_log("RemoveDeviceCustomAttribute::PDO Error: {$info[2]} SQL=$sql" );
-                        return false;
-                }
-
+		if(!$dbh->query($sql)){
+			$info=$dbh->errorInfo();
+			error_log("RemoveDeviceCustomAttribute::PDO Error: {$info[2]} SQL=$sql" );
+			return false;
+		}
+		
 		$sql="DELETE FROM fac_DeviceCustomAttribute WHERE AttributeID=$this->AttributeID;";
-                if(!$dbh->query($sql)){
-                        $info=$dbh->errorInfo();
-                        error_log("RemoveDeviceCustomAttribute::PDO Error: {$info[2]} SQL=$sql" );
-                        return false;
-                }
-
-                (class_exists('LogActions'))?LogActions::LogThis($this):'';
+		if(!$dbh->query($sql)){
+			$info=$dbh->errorInfo();
+			error_log("RemoveDeviceCustomAttribute::PDO Error: {$info[2]} SQL=$sql" );
+			return false;
+		}
+		
+		(class_exists('LogActions'))?LogActions::LogThis($this):'';
 		return true;
 
 	}
@@ -5344,21 +5373,21 @@ class DeviceCustomAttribute {
 		$this->AttributeID=intval($this->AttributeID);
 	
 		$sql="DELETE FROM fac_DeviceTemplateCustomValue WHERE AttributeID=$this->AttributeID;";
-                if(!$dbh->query($sql)){
-                        $info=$dbh->errorInfo();
-                        error_log("RemoveDeviceCustomAttribute::PDO Error: {$info[2]} SQL=$sql" );
-                        return false;
-                }
+		if(!$dbh->query($sql)){
+			$info=$dbh->errorInfo();
+			error_log("RemoveDeviceCustomAttribute::PDO Error: {$info[2]} SQL=$sql" );
+			return false;
+		}
+
 		$sql="DELETE FROM fac_DeviceCustomValue WHERE AttributeID=$this->AttributeID;";
-                if(!$dbh->query($sql)){
-                        $info=$dbh->errorInfo();
-                        error_log("RemoveDeviceCustomAttribute::PDO Error: {$info[2]} SQL=$sql" );
-                        return false;
-                }
-
-                (class_exists('LogActions'))?LogActions::LogThis($this):'';
+		if(!$dbh->query($sql)){
+			$info=$dbh->errorInfo();
+			error_log("RemoveDeviceCustomAttribute::PDO Error: {$info[2]} SQL=$sql" );
+			return false;
+		}
+		
+		(class_exists('LogActions'))?LogActions::LogThis($this):'';
 		return true;
-
 	}
 
 	static function GetDeviceCustomAttributeList() {
@@ -5386,15 +5415,15 @@ class DeviceCustomAttribute {
 		global $dbh;
 		$AttributeID=intval($AttributeID);
 
-                // get a count of the number of times this attribute is in templates or devices
-                $sql="SELECT COUNT(*) + (SELECT COUNT(*) FROM fac_DeviceCustomValue WHERE AttributeID=$AttributeID)
-                        AS Result FROM fac_DeviceTemplateCustomValue WHERE AttributeID=$AttributeID";
-                $count=$dbh->prepare($sql);
-                $count->execute();
+		// get a count of the number of times this attribute is in templates or devices
+		$sql="SELECT COUNT(*) + (SELECT COUNT(*) FROM fac_DeviceCustomValue WHERE 
+		AttributeID=$AttributeID) AS Result FROM fac_DeviceTemplateCustomValue WHERE 
+		AttributeID=$AttributeID";
 
-
-                return $count->fetchColumn();
-
+		$count=$dbh->prepare($sql);
+		$count->execute();
+		
+		return $count->fetchColumn();
 	}
 }
 ?>
