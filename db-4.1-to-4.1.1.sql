@@ -2,7 +2,7 @@
 -- Add the new table for monitoring jobs
 --
 
-CREATE TABLE fac_Jobs (
+CREATE TABLE IF NOT EXISTS fac_Jobs (
 	SessionID varchar(80) NOT NULL,
 	Percentage int(11) NOT NULL DEFAULT "0",
 	Status varchar(255) NOT NULL,
@@ -12,4 +12,5 @@ CREATE TABLE fac_Jobs (
 --
 -- Bump up the database version (uncomment below once released)
 --
--- UPDATE fac_Config set Value="4.2" WHERE Parameter="Version";
+
+UPDATE fac_Config set Value="4.1.1" WHERE Parameter="Version";
