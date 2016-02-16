@@ -236,12 +236,10 @@ function renderUnassignedTemplateOwnership($noTemplFlag, $noOwnerFlag, $device) 
 	}
 
 	foreach(Department::GetDepartmentListIndexedbyID() as $deptid => $d){
-		if($d->DeptColor!="#FFFFFF"){
-            // If head is empty then we don't have any custom colors defined above so add a style container for these
-            $head=($head=="")?"\t\t<style type=\"text/css\">\n":$head;
-			$head.="\t\t\t.dept$deptid {background-color:$d->DeptColor;}\n";
-            $legend.="\t\t<div class=\"legenditem hide\"><span class=\"border colorbox dept$deptid\"></span> - <span>$d->Name</span></div>\n";
-		}
+        // Add a style container for these
+        $head=($head=="")?"\t\t<style type=\"text/css\">\n":$head;
+		$head.="\t\t\t.dept$deptid {background-color:$d->DeptColor;}\n";
+        $legend.="\t\t<div class=\"legenditem hide\"><span class=\"border colorbox dept$deptid\"></span> - <span>$d->Name</span></div>\n";
 	}
 
 	// add legend for the flags which actually are used in the cabinet
