@@ -113,6 +113,7 @@ $(document).ready( function() {
 
 
 </div></div>
+<?php echo '<a href="reports.php">[ ',__("Return to Reports"),' ]</a>'; ?>
 </div><!-- END div.main -->
 </div><!-- END div.page -->
 </body>
