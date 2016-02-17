@@ -101,12 +101,24 @@ $(document).ready( function() {
 </script>
 </head>
 <body>
-<div>
+<?php include( 'header.inc.php' ); ?>
+<div class="page index">
+<?php
+	include( 'sidebar.inc.php' );
+?>
+<div class="main">
+<div class="center"><div>
 <h3 id="status">Starting</h3>
 <div><canvas id="power-gauge" width="200" height="200"></canvas></div>
-</div>
+
+
+</div></div>
+</div><!-- END div.main -->
+</div><!-- END div.page -->
 </body>
 </html>
+
+
 <?php
     exit;
 }
