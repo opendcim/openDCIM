@@ -235,6 +235,10 @@ function renderUnassignedTemplateOwnership($noTemplFlag, $noOwnerFlag, $device) 
 		$WeightColor=$CriticalColor;
 	}
 
+	if ($cab->StartUNum>1) {
+		$legend.='<div class="legenditem"><span class="start_unit_number">'.__("Number on first unit").'</span> - '.$cab->StartUNum.'</div>'."\n";
+	}
+
 	foreach(Department::GetDepartmentListIndexedbyID() as $deptid => $d){
         // Add a style container for these
         $head=($head=="")?"\t\t<style type=\"text/css\">\n":$head;

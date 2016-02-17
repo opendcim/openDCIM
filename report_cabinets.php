@@ -110,7 +110,7 @@
         foreach ( $cabList as $cab ) {
             print "<div><div><input type=\"checkbox\" class=\"selectedId\" id=\"selectedId\" name=\"cabinetid[]\" value=\"$cab->CabinetID\">$cab->Location</input></div></div>\n";
         }
-    }        
+    }
 ?>
 </div>
 </form>
@@ -167,6 +167,8 @@
                 $noTemplFlag, $noOwnerFlag;
 
         $currentHeight=$cabinet->CabinetHeight;
+        $currentStartUNum=$cabinet->StartUNum;
+        $currentStopUNum=($currentStartUNum+$currentHeight-1);
 
         // Determine which label to put on the rack, if any
         $rs="";
@@ -210,12 +212,17 @@
                 if($device->Reservation==true){
                     $reserved=" reserved";
                 }
-                if($devTop<$currentHeight && $currentHeight>0){
-                    for($i=$currentHeight;($i>$devTop);$i--){
-                        $errclass=($i>$cabinet->CabinetHeight)?' error':'';
+                if($devTop<$currentStopUNum && $currentStopUNum>($currentStartUNum-1)){
+                    if ($devTop>0){ // If device installed not in zero unit
+                        $Rows=$devTop;
+                    } else {
+                        $Rows=$currentStartUNum-1;
+                    }
+                    for($i=$currentStopUNum;($i>$Rows);$i--){
+                        $errclass=($i>$currentStartUNum)?' error':'';
                         if($errclass!=''){$heighterr="yup";}
-                        if($i==$currentHeight && $i>1){
-                            $blankHeight=$currentHeight-$devTop;
+                        if($i==$currentStopUNum && $i>1){
+                            $blankHeight=$currentStopUNum-$devTop;
                             if($devTop==-1){--$blankHeight;}
                             $body.="\t\t<tr><td class=\"cabpos freespace$errclass\">$i</td><td class=\"freespace\" rowspan=$blankHeight>&nbsp;</td></tr>\n";
                         } else {
@@ -225,7 +232,7 @@
                     }
                 }
                 for($i=$devTop;$i>=$device->Position;$i--){
-                    $errclass=($i>$cabinet->CabinetHeight)?' error':'';
+                    $errclass=($i>($cabinet->CabinetHeight+$cabinet->StartUNum))?' error':'';
                     if($errclass!=''){$heighterr="yup";}
                     if($i==$devTop){
                         // If we're looking at the side of the rack don't give any details but show the
@@ -250,18 +257,18 @@
                         $body.="\t\t<tr><td class=\"cabpos$reserved dept$device->Owner$errclass\">$i</td></tr>\n";
                     }
                 }
-                $currentHeight=$device->Position - 1;
+                $currentStopUNum=$device->Position - 1;
             }elseif(!$rear){
                 $backside=true;
             }
         }
 
         // Fill in to the bottom
-        for($i=$currentHeight;$i>0;$i--){
-            if($i==$currentHeight){
-                $blankHeight=$currentHeight;
-
+        for($i=$currentStopUNum;$i>($currentStartUNum-1);$i--){
+            if($i==$currentStopUNum){
+                $blankHeight=$currentStopUNum;
                 $body.="\t\t<tr><td class=\"cabpos freespace\">$i</td><td class=\"freespace\" rowspan=$blankHeight>&nbsp;</td></tr>\n";
+
             }else{
                 $body.="\t\t<tr><td class=\"cabpos freespace\">$i</td></tr>\n";
             }

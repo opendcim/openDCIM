@@ -1354,6 +1354,10 @@ echo '<div class="main">
 					</div>
 				</div>
 				<div>
+					<div><label for="StartUNum">',__("Number on first unit"),'</label></div>
+					<div><input type="text" defaultvalue="',$config->defaults["StartUNum"],'" name="StartUNum" value="',$config->ParameterArray["StartUNum"],'"></div>
+				</div>
+				<div>
 					<div><label for="mUnits">',__("Measurement Units"),'</label></div>
 					<div><select id="mUnits" name="mUnits" defaultvalue="',$config->defaults["mUnits"],'" data="',$config->ParameterArray["mUnits"],'">
 							<option value="english"',(($config->ParameterArray["mUnits"]=="english")?' selected="selected"':''),'>',__("English"),'</option>

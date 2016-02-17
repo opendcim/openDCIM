@@ -5,6 +5,8 @@
 ALTER TABLE fac_Cabinet ADD COLUMN U1Position VARCHAR(7) NOT NULL DEFAULT "Default" AFTER Notes;
 ALTER TABLE fac_DataCenter ADD COLUMN U1Position VARCHAR(7) NOT NULL DEFAULT "Default" AFTER MapY;
 INSERT INTO fac_Config SET Parameter="U1Position", Value="Bottom", UnitOfMeasure="Top/Bottom", ValType="string", DefaultVal="Bottom";
+ALTER TABLE fac_Cabinet ADD COLUMN StartUNum int(3) NOT NULL DEFAULT "1" AFTER CabinetHeight;
+INSERT INTO fac_Config VALUES('StartUNum',1,'','int',1);
 
 --
 -- Add new configuration values for Rack Cooling Index metric (RCI).

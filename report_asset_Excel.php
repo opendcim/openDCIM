@@ -1219,6 +1219,8 @@ function computeSheetBodyDCInventory($DProps)
                 $rowName = getRowName($cab);
                 addRackStat($invCab, $cab, $cabinetColumns, $dc, $dcContainerList);
                 $cab_height = $cab->CabinetHeight;
+                $cab_start_unum = $cab->StartUNum;
+                $cab_top = $cab_height + $cab_start_unum - 1;
                 if (mb_strtoupper($cab->Model) == 'RESERVED') {
                     $dcStats['Rk_Res']++;
                 } else {
@@ -1228,27 +1230,27 @@ function computeSheetBodyDCInventory($DProps)
                 $device->Cabinet = $cab->CabinetID;
                 $device_list = $device->ViewDevicesByCabinet();
                 // empty cabinet
-                if ((count($device_list) == 0) && ($cab->CabinetHeight > 0)) {
+                if ((count($device_list) == 0) && ($cab_height > 0)) {
                     $dcStats['Rk_UtE'] += $cab_height;
                     $devSpec = makeEmptySpec($sheetColumns, $dcContainerList);
                     $devSpec['Zone'] = $zoneName;
                     $devSpec['Row'] = $rowName;
                     $devSpec['DC Name'] = $dc->Name;
                     $devSpec['Cabinet'] = $cab->Location;
-                    $devSpec['Position'] = 1;
-                    $devSpec['Height'] = $cab->CabinetHeight;
+                    $devSpec['Position'] = $cab_start_unum;
+                    $devSpec['Height'] = $cab_height;
                     $devSpec['Device'] = '__EMPTY';
                     $invData[] = $devSpec;
                 } else {
                     usort($device_list, 'cmpDevPos');
-                    $low_idx = 1;
+                    $low_idx = $cab_start_unum;
                     foreach ($device_list as $dev) {
                         if ($low_idx < $dev->Position) {
                             // range of empty slots
                             if ($dev->Position <= $cab_height) {
                                 $height = $dev->Position - $low_idx;
                             } else {
-                                $height = $cab_height - $low_idx + 1;
+                                $height = $cab_top - $low_idx;
                             }
                             if ($height > 0) {
                                 $dcStats['Rk_UtE'] += $height;

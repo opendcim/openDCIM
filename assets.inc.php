@@ -38,6 +38,7 @@ class Cabinet {
 	var $ZoneID;
 	var $CabRowID;      //JMGA: Row of this cabinet
 	var $CabinetHeight;
+	var $StartUNum; // Number on first unit
 	var $Model;
 	var $Keylock;
 	var $MaxKW;
@@ -60,6 +61,7 @@ class Cabinet {
 		$this->ZoneID=intval($this->ZoneID);
 		$this->CabRowID=intval($this->CabRowID);
 		$this->CabinetHeight=intval($this->CabinetHeight);
+		$this->StartUNum=intval($this->StartUNum);
 		$this->Model=sanitize($this->Model);
 		$this->Keylock=sanitize($this->Keylock);
 		$this->MaxKW=floatval($this->MaxKW);
@@ -95,6 +97,7 @@ class Cabinet {
 		$cab->ZoneID=$dbRow["ZoneID"];
 		$cab->CabRowID=$dbRow["CabRowID"];
 		$cab->CabinetHeight=$dbRow["CabinetHeight"];
+		$cab->StartUNum=$dbRow["StartUNum"];
 		$cab->Model=$dbRow["Model"];
 		$cab->Keylock=$dbRow["Keylock"];
 		$cab->MaxKW=$dbRow["MaxKW"];
@@ -154,7 +157,7 @@ class Cabinet {
 		$sql="INSERT INTO fac_Cabinet SET DataCenterID=$this->DataCenterID, 
 			Location=\"$this->Location\", LocationSortable=\"$this->LocationSortable\",
 			AssignedTo=$this->AssignedTo, ZoneID=$this->ZoneID, CabRowID=$this->CabRowID, 
-			CabinetHeight=$this->CabinetHeight, Model=\"$this->Model\", 
+			CabinetHeight=$this->CabinetHeight, StartUNum=$this->StartUNum, Model=\"$this->Model\", 
 			Keylock=\"$this->Keylock\", MaxKW=$this->MaxKW, MaxWeight=$this->MaxWeight, 
 			InstallationDate=\"".date("Y-m-d", strtotime($this->InstallationDate))."\", 
 			MapX1=$this->MapX1, MapY1=$this->MapY1, 
@@ -187,7 +190,7 @@ class Cabinet {
 		$sql="UPDATE fac_Cabinet SET DataCenterID=$this->DataCenterID, 
 			Location=\"$this->Location\", LocationSortable=\"$this->LocationSortable\",
 			AssignedTo=$this->AssignedTo, ZoneID=$this->ZoneID, CabRowID=$this->CabRowID, 
-			CabinetHeight=$this->CabinetHeight, Model=\"$this->Model\", 
+			CabinetHeight=$this->CabinetHeight, StartUNum=$this->StartUNum, Model=\"$this->Model\", 
 			Keylock=\"$this->Keylock\", MaxKW=$this->MaxKW, MaxWeight=$this->MaxWeight, 
 			InstallationDate=\"".date("Y-m-d", strtotime($this->InstallationDate))."\", 
 			MapX1=$this->MapX1, MapY1=$this->MapY1, 
@@ -1647,9 +1650,9 @@ class Device {
 			$cab->CabinetID=$this->Cabinet;
 			$cab->GetCabinet();
 			if ( $newPosition == null ) {
-				$this->Position=$cab->CabinetHeight+1;
+				$this->Position = $cab->CabinetHeight+$cab->StartUNum;
 			} else {
-				$this->Position = $newPosition;
+				$this->Position = $cab->StartUNum+$newPosition-1;
 			}
 
 			$olddev=new Device();
