@@ -1350,8 +1350,30 @@ function initdrag(){
 	});
 }
 
+var getMinUnit = function (cab) {
+    var result = null;
+    $.ajax({
+        url: 'scripts/ajax_cabinetuse.php?cabinet='+cab,
+        success: function(data, textStatus, jqXHR){
+            var cabArrCount=Object.keys(data).length-4;
+            for(var i=cabArrCount; i>=0; i--){
+                if(i==cabArrCount){
+                    result=parseInt(Object.keys(data)[cabArrCount]);
+                }
+                if (parseInt(Object.keys(data)[i])<result){
+                    result=parseInt(Object.keys(data)[i]);
+                }
+            }
+        },
+        async: false
+    });
+    return result;
+};
+
+
 function InsertDevice(obj){
-	if(obj.Position!=0){
+	var devMinPosition=getMinUnit(obj.Cabinet);
+	if(obj.Position>=devMinPosition){
 		function getPic(insertobj,rear){
 			var showrear=(rear)?'?rear':'';
 			$.get('api/v1/device/'+obj.DeviceID+'/getpicture'+showrear).done(function(data){

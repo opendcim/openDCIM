@@ -24,3 +24,9 @@ INSERT INTO fac_Config SET Parameter="PatchPanelsOnly", Value="enabled", UnitOfM
 -- Bump up the database version (uncomment below once released)
 --
 -- UPDATE fac_Config set Value="4.2" WHERE Parameter="Version";
+
+--
+-- Add feature "start any number on first unit"
+--
+ALTER TABLE fac_Cabinet ADD COLUMN StartUNum int(3) NOT NULL DEFAULT "1" AFTER CabinetHeight;
+INSERT INTO fac_Config VALUES('StartUNum',1,'','int',1);

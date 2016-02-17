@@ -57,6 +57,7 @@
 		$cab->Notes=trim($_POST['notes']);
 		$cab->Notes=($cab->Notes=="<br>")?"":$cab->Notes;
 		$cab->U1Position=$_POST['u1position'];
+		$cab->StartUNum=$_POST['startunum'];
 
 		if ( $cab->U1Position == "Default" ) {
 			$dc = new DataCenter();
@@ -96,6 +97,7 @@
 		$cab->ZoneID=(isset($_GET['zoneid']))?intval($_GET['zoneid']):null;
 		$cab->CabRowID=(isset($_GET['cabrowid']))?intval($_GET['cabrowid']):null;
 		$cab->CabinetHeight=null;
+		$cab->StartUNum=$config->ParameterArray["StartUNum"];
 		$cab->Model=null;
 		$cab->Keylock=null;
 		$cab->MaxKW=null;
@@ -284,6 +286,9 @@ echo '  </select>
 <div>
    <div>',__("Cabinet Height"),' (U)</div>
    <div><input type="text" class="validate[optional,custom[onlyNumberSp]]" name="cabinetheight" size=4 maxlength=4 value="',$cab->CabinetHeight,'"></div>
+</div>
+<div>',__("Number on first unit"),' (U)</div>
+   <div><input type="text" class="validate[optional,custom[onlyNumberSp]]" name="startunum" size=4 maxlength=4 value="',$cab->StartUNum,'"></div>
 </div>
 <div>
    <div>',__("U1 Position"),'</div>

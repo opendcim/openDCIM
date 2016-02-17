@@ -235,6 +235,10 @@ function renderUnassignedTemplateOwnership($noTemplFlag, $noOwnerFlag, $device) 
 		$WeightColor=$CriticalColor;
 	}
 
+	if ($cab->StartUNum!=1) {
+		$legend.='<div class="legenditem"><span class="start_unit_number">'.__("Number on first unit").'</span> - '.$cab->StartUNum.'</div>'."\n";
+	}
+
 	foreach(Department::GetDepartmentListIndexedbyID() as $deptid => $d){
 		if($d->DeptColor!="#FFFFFF"){
             // If head is empty then we don't have any custom colors defined above so add a style container for these
@@ -442,7 +446,7 @@ echo $head,'  <script type="text/javascript" src="scripts/jquery.min.js"></scrip
   <script type="text/javascript" src="scripts/common.js"></script>
   <script type="text/javascript" src="scripts/masonry.pkgd.min.js"></script>
   <script type="text/javascript">
-	window.weight=',$totalWeight,';
+	window.weight="',$totalWeight,'";
 	var form=$("<form>").attr({ method: "post", action: "cabnavigator.php" });
 	$("<input>").attr({ type: "hidden", name: "cabinetid", value: "',$cab->CabinetID,'"}).appendTo(form);
 

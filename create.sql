@@ -12,6 +12,7 @@ CREATE TABLE fac_Cabinet (
   ZoneID int(11) NOT NULL,
   CabRowID int(11) NOT NULL,
   CabinetHeight int(11) NOT NULL,
+  StartUNum int(3) NOT NULL DEFAULT 1,
   Model varchar(80) NOT NULL,
   Keylock varchar(30) NOT NULL,
   MaxKW float(11) NOT NULL,
@@ -837,7 +838,8 @@ INSERT INTO fac_Config VALUES
 	('v3AuthProtocol', '', 'SHA/MD5', 'string', 'SHA'),
 	('v3AuthPassphrase', '', 'Password', 'string', ''),
 	('v3PrivProtocol', '', 'SHA/MD5', 'string', 'SHA'),
-	('v3PrivPassphrase', '', 'Password', 'string', '')
+	('v3PrivPassphrase', '', 'Password', 'string', ''),
+	('StartUNum','1','','int','1')
 ;
 
 --

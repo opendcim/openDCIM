@@ -923,16 +923,18 @@ function BuildCabinet($cabid,$face="front"){
 	$dev->ParentDevice=0;
 	$bounds=array(
 		'max'=>array('position'=>0,'height'=>0),
-		'min'=>array('position'=>0,'height'=>0),
+		'min'=>array('position'=>$cab->StartUNum,'height'=>0),
 	);
 
 	// Read in all the devices and make sure they fit the cabinet.  If not expand it
 	foreach($dev->Search() as $device){
-		if($device->Position==0){
+		//if($device->Position<0){
+		//	continue;
+		//}
+		if ($device->Height<=0){
 			continue;
 		}
-		$pos=($order)?$device->Position:$device->Position-$device->Height;
-
+		$pos=($order)?$device->Position:$device->Position-$device->Height+1;
 		if($device->Position>$bounds['max']['position']){
 			$bounds['max']['position']=$device->Position;
 			$bounds['max']['height']=$device->Height;
@@ -943,12 +945,13 @@ function BuildCabinet($cabid,$face="front"){
 		}
 	}
 	if($order){
-		$top=max($cab->CabinetHeight,$bounds['max']['position']+$bounds['max']['height']-1);
-		$bottom=min(0,$bounds['min']['position']);
+		$top=max($cab->CabinetHeight+$cab->StartUNum-1,$bounds['max']['position']+$bounds['max']['height']-1);
+		$bottom=min($bounds['min']['position'],$cab->StartUNum);
 	}else{
 		// Reverse order
-		$top=min(1,$bounds['min']['position']-$bounds['min']['height']);
-		$bottom=max($cab->CabinetHeight,$bounds['max']['position']);
+		$subMinU=($bounds['min']['position']<$cab->StartUNum)?1:0;
+		$top=min($cab->StartUNum,$bounds['min']['position']+$bounds['min']['height']-$subMinU);
+		$bottom=max(abs($cab->CabinetHeight+$cab->StartUNum-1),$bounds['max']['position']);
 	}
 
 	// Build cabinet HTML
@@ -966,12 +969,8 @@ function BuildCabinet($cabid,$face="front"){
 	// helper function to print the rows of the cabinet table
 	if(!function_exists("printrow")){
 		function printrow($i,$top,$bottom,$order,$face,&$htmlcab,$cabobject){
-			$error=($i>$cabobject->CabinetHeight || ($i<=0 && $order)  || ($i<0 && !$order))?' error':'';
-			if($order){
-				$x=($i<=0)?$i-1:$i;
-			}else{
-				$x=($i>=0)?$i+1:$i;
-			}
+			$error=($i<$cabobject->StartUNum || ($i>$cabobject->CabinetHeight+$cabobject->StartUNum-1))?' error':'';
+			$x=$i;
 			if($i==$top){
 				if($face=="rear"){
 					$rs="-rear";
@@ -980,8 +979,12 @@ function BuildCabinet($cabid,$face="front"){
 				}else{
 					$rs="";
 				}
-				$rowspan=abs($top)+abs($bottom);
-				$height=(((abs($top)+abs($bottom))*ceil(220*(1.75/19))))."px";
+				if($order){
+					$rowspan=abs($top-$bottom+1);
+				}else{
+					$rowspan=abs($top-$bottom-1);
+				}
+				$height=($rowspan*ceil(220*(1.75/19)))."px";
 				$htmlcab.="\t<tr id=\"pos$x\"><td class=\"pos$error\">$x</td><td rowspan=$rowspan><div id=\"servercontainer$rs\" class=\"freespace\" style=\"width: 220px; height: $height\" data-face=\"$face\"></div></td></tr>\n";
 			}else{
 				$htmlcab.="\t<tr id=\"pos$x\"><td class=\"pos$error\">$x</td></tr>\n";
@@ -1000,11 +1003,11 @@ function BuildCabinet($cabid,$face="front"){
 	// loop here for the height
 	// numbered high to low, top to bottom
 	if($order){
-		for($i=$top;$i>$bottom;$i--){
+		for($i=$top;$i>=($bottom/*+$cab->StartUNum-1*/);$i--){
 			printrow($i,$top,$bottom,$order,$face,$htmlcab,$cab);
 		}
 	}else{ // numbered low to high, top to bottom
-		for($i=$top;$bottom>$i;$i++){
+		for($i=$top;$bottom>=$i;$i++){
 			printrow($i,$top,$bottom,$order,$face,$htmlcab,$cab);
 		}
 	}
