@@ -132,6 +132,7 @@
 
 	function processPDUList( $list, $start, $increment ) {
 		global $dbh;
+		global $config;
 
 		$dev = new Device();
 		$cdu = new PowerDistribution();
