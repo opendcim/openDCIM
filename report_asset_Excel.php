@@ -19,7 +19,7 @@ require_once 'facilities.inc.php';
 global $sessID;
 
 // everyone hates error_log spam
-if(!isset($_SESSION)){
+if(session_id()==""){
 	session_start();
 }
 $sessID = session_id();
@@ -101,12 +101,25 @@ $(document).ready( function() {
 </script>
 </head>
 <body>
-<div>
+<?php include( 'header.inc.php' ); ?>
+<div class="page index">
+<?php
+	include( 'sidebar.inc.php' );
+?>
+<div class="main">
+<div class="center"><div>
 <h3 id="status">Starting</h3>
 <div><canvas id="power-gauge" width="200" height="200"></canvas></div>
-</div>
+
+
+</div></div>
+<?php echo '<a href="reports.php">[ ',__("Return to Reports"),' ]</a>'; ?>
+</div><!-- END div.main -->
+</div><!-- END div.page -->
 </body>
 </html>
+
+
 <?php
     exit;
 }
