@@ -255,171 +255,60 @@ echo '	</select></div>
 	if($panel->PanelID >0){
 		echo '<div><canvas id="power-gauge" width="200" height="200"></canvas></div>';
 	
-		/* Loop through PDUs and find all that are attached to this panel and build a temp array to hold them.
-		   Array is indexed by circuit IDs.  Each ID is an array of objects that are connected there.  This 
-		   allows for multiple PDUs to be connected to a single breaker.
-
-			Structure:
-				$pduarray[$panel->PanelPole]->ArrayofPDUs[]->PowerDistribution Object
-
-		   */
-		$pduarray=array();
-		foreach($pduList as $pnlPDU){
-			if($pnlPDU->PanelID == $panel->PanelID){
-				$pduarray[$pnlPDU->PanelPole][]=$pnlPDU;
-			}elseif($pnlPDU->PanelID2 == $panel->PanelID){
-				$pduarray[$pnlPDU->PanelPole2][]=$pnlPDU;
-			}
-		}
+		$panelSchedule=$panel->getPanelSchedule();
 		print "<center><h2>".__("Panel Schedule")."</h2></center>\n<table>";
 
-		$nextPole=1;
-		$odd=$even=0;
-		
-		if($panel->NumberScheme=="Sequential"){
-			while($nextPole <= $panel->NumberOfPoles){
-				print "<tr><td class=\"polenumber\">$nextPole</td>";
-				// Someone input a pole number wrong and this one would have been skipped
-				// store the value and deal with it later.
-				if(isset($pduarray[$nextPole])&&$odd!=0){
-					foreach($pduarray[$nextPole] as $pduvar){
-					$errors[]="<a href=\"devices.php?DeviceID=$pduvar->PDUID\">$pduvar->Label</a>";
-					}
+		if($panel->NumberScheme=="Odd/Even") {
+
+			print "<table>";
+			for($count=1; $count<=$panel->NumberOfPoles; $count++) {
+				if(($count % 2) == 0) {
+					print "<td class=\"polenumber\">$count</td>";
+					print $panel->getPanelScheduleLabelHtml($panelSchedule["panelSchedule"], $count, "panelright", false);
+					print "</tr>";
+				} else {
+					print "<tr><td class=\"polenumber\">$count</td>";
+					print $panel->getPanelScheduleLabelHtml($panelSchedule["panelSchedule"], $count, "panelleft", false);
 				}
-				// Get info for pdu on this pole if it is populated.
-				$lastCabinet=0;
-				if($odd==0){
-					if(isset($pduarray[$nextPole])){
-						$pn="";
-						foreach($pduarray[$nextPole] as $pduvar) {
-							$cab->CabinetID=$pduvar->CabinetID;
-							$cab->GetCabinet(  );
-							
-							if ($lastCabinet<>$pduvar->CabinetID)
-								$pn.="<a href=\"cabnavigator.php?cabinetid=$pduvar->CabinetID\">$cab->Location</a>";
-                            $pn.="<a href=\"devices.php?DeviceID=$pduvar->PDUID\"><span>$pduvar->Label</span></a>";
-                            $lastCabinet=$pduvar->CabinetID;
-							
-							switch($pduvar->BreakerSize){
-								case '3': $odd=3; break;
-								case '2': $odd=2; break;
-								default: $odd=0;
-							}
-						}
-					}else{
-						$pn="";
-					}
-					if($odd==0){
-						print "<td class=\"polelabel\">$pn</td></tr>";
-					}else{
-						print "<td class=\"polelabel\" rowspan=$odd>$pn</td></tr>";
-						--$odd;
-					}
-				}else{ // we've already started to display a circuit.  no new circuits will be drawn til this count hits zero.
-					--$odd;
-				}
-				++$nextPole;
 			}
-		}else{
-			// Build single table with four colums to represent an odd/even panel layout
-			// $odd and $even will be travel counters to ensure the table is built in a sane manner
-			while($nextPole <= $panel->NumberOfPoles){
-				print "<tr><td class=\"polenumber\">$nextPole</td>";
-				// Someone input a pole number wrong and this one would have been skipped
-				// store the value and deal with it later.
-				if(isset($pduarray[$nextPole])&&$odd!=0){
-					foreach($pduarray[$nextPole] as $pduvar){
-					$errors[]="<a href=\"devices.php?DeviceID=$pduvar->PDUID\">$pduvar->Label</a>";
-					}
-				}
-				// Get info for pdu on this pole if it is populated.
-				$lastCabinet=0;
-				if($odd==0){
-					if(isset($pduarray[$nextPole])){
-						$pn="";
-						foreach($pduarray[$nextPole] as $pduvar) {
-							$cab->CabinetID=$pduvar->CabinetID;
-							$cab->GetCabinet(  );
-							
-							if ($lastCabinet<>$pduvar->CabinetID)
-								$pn.="<a href=\"cabnavigator.php?cabinetid=$pduvar->CabinetID\">$cab->Location</a>";
-                            $pn.="<a href=\"devices.php?DeviceID=$pduvar->PDUID\"><span>$pduvar->Label</span></a>";
-                            $lastCabinet=$pduvar->CabinetID;
-							
-							switch($pduvar->BreakerSize){
-								case '3': $odd=3; break;
-								case '2': $odd=2; break;
-								default: $odd=0;
-							}
-						}
-					}else{
-						$pn="";
-					}
-					if($odd==0){
-						print "<td class=\"polelabel\">$pn</td>";
-					}else{
-						print "<td class=\"polelabel\" rowspan=$odd>$pn</td>";
-						--$odd;
-					}
-				}else{ // we've already started to display a circuit.  no new circuits will be drawn til this count hits zero.
-					--$odd;
-				}
-				//Odd side done. Print even side circuit id then check for connected device.
-				++$nextPole;
-				print "<td class=\"polenumber\">$nextPole</td>";
-				// Someone input a pole number wrong and this one would have been skipped
-				// store the value and deal with it later.
-				if(isset($pduarray[$nextPole])&&$even!=0){ 
-					foreach($pduarray[$nextPole] as $pduvar){
-					$errors[]="<a href=\"devices.php?DeviceID=".$pduvar->PDUID."\">".$pduvar->Label."</a>";
-					}
-				}
-				if($even==0){
-					if(isset($pduarray[$nextPole])){
-						$pn="";
-						foreach($pduarray[$nextPole] as $pduvar) {
-							$cab->CabinetID=$pduvar->CabinetID;
-							$cab->GetCabinet(  );
-							
-							if ($lastCabinet<>$pduvar->CabinetID)
-								$pn.="<a href=\"cabnavigator.php?cabinetid=$pduvar->CabinetID\">$cab->Location</a>";
-                            $pn.="<a href=\"devices.php?DeviceID=$pduvar->PDUID\"><span>$pduvar->Label</span></a>";
-                            $lastCabinet=$pduvar->CabinetID;
-							
-                            switch($pduvar->BreakerSize){
-								case '3': $even=3; break;
-								case '2': $even=2; break;
-								default: $even=0;
-							}
-						}
-					}else{
-						$pn="";
-					}
-					if($even==0){
-						print "<td class=\"polelabel\">$pn</td></tr>\n";
-					}else{
-						print "<td class=\"polelabel\" rowspan=$even>$pn</td>";
-						--$even;
-					}
-				}else{ // we've already started to display a circuit.  no new circuits will be drawn til this count hits zero.
-					--$even;
-				}
-				//Even side done. Incriment counter and restart loop for next row.
-				++$nextPole;
+			print "</table>";
+		} else {
+			print "<table>";
+			for($count=1; $count<=$panel->NumberOfPoles; $count++) {
+				print "<tr><td class=\"polenumber\">$count</td>";
+				print $panel->getPanelScheduleLabelHtml($panelSchedule["panelSchedule"], $count, "panelleft", false);
+				print "</tr>";
 			}
+			print "</table>";
 		}
 	}
-	print "</table>";
-	// Okay so someone didn't get correct information from the breaker panel
-	if(isset($errors)){
-		print "<div class=\"table error\">\n	<div>\n		<div>\n			<fieldset>\n				<legend>".__("Errors")."</legend>\n				<div class=\"table\">\n";
-		foreach($errors as $err){
-			print "					<div><div>$err</div></div>\n";
+
+	// there are panels/pdus without a pole defined, print those out
+	if(isset($panelSchedule["unscheduled"]) && !empty($panelSchedule["unscheduled"])){
+		print "<div class=\"table error\">\n	<div>\n		<div>\n			<fieldset>\n				<legend>".__("Unknown Pole")."</legend>\n				<div class=\"table\">\n";
+		foreach($panelSchedule["unscheduled"] as $err){
+			$errData = $panel->getScheduleItemHtml($err, 0, false);	
+			print "					<div><div>";
+			print $errData["html"];
+			print "</div></div>\n";
 		}
-		print "				</div><!-- END div.table -->\n			</fieldset>\n		</div>\n		<div>".__("PDUs displayed here could not be drawn on the panel because of an overlapping circuit ID assignment. Please check the pole positions on the panels again.")."</div>\n	</div>\n</div><!-- END div.table -->\n";
+		print "				</div><!-- END div.table -->\n			</fieldset>\n		</div>\n		<div>".__("PDUs and Panels displayed here could not be drawn on the panel because no circuit ID was defined. Please check the pole positions on the panels again.")."</div>\n	</div>\n</div><!-- END div.table -->\n";
+	}
+	"<br>";
+	// Okay so someone didn't get correct information from the breaker panel
+	if(isset($panelSchedule["errors"]) && !empty($panelSchedule["errors"])){
+		print "<div class=\"table error\">\n	<div>\n		<div>\n			<fieldset>\n				<legend>".__("Errors")."</legend>\n				<div class=\"table\">\n";
+		foreach($panelSchedule["errors"] as $err){
+			$errData = $panel->getScheduleItemHtml($err, 0, false);	
+			print "					<div><div>";
+			print $errData["html"];
+			print "</div></div>\n";
+		}
+		print "				</div><!-- END div.table -->\n			</fieldset>\n		</div>\n		<div>".__("PDUs and Panels displayed here could not be drawn on the panel because of an overlapping circuit ID assignment. Please check the pole positions on the panels again.")."</div>\n	</div>\n</div><!-- END div.table -->\n";
 	}
 ?>
 </div></div>
+
 <?php echo '<a href="index.php">[ ',__("Return to Main Menu"),' ]</a>
 <!-- hiding modal dialogs here so they can be translated easily -->
 <div class="hide">

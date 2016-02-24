@@ -1294,6 +1294,15 @@ class PowerDistribution {
 	}
 }
 
+class PanelScheduleItem {
+	var $Pole=0;
+	var $DataType;
+	var $Spanned=false;
+	var $SpanSize=0;
+	var $NoPrint=false;
+	var $Data;
+}
+
 class PowerPanel {
 	/* PowerPanel:	PowerPanel(s) are the parents of PowerDistribution (power strips) and the children
 					each other.  Panels are arranged as either Odd/Even (odd numbers on the left,
@@ -1430,17 +1439,34 @@ class PowerPanel {
 		while ( $row = $st->fetch() ) {
 			$pList[] = $row;
 		}
-		
 		if ( ! $onlyFirstGen ) {
 			foreach ( $pList as $currPan ) {
-				$st->execute( array( ":ParentPanelID"=>$currPan->PanelID ) );
-				while ( $row = $st->fetch() ) {
-					$pList[] = $row;
-				}
+				$this->ParentPanelID=$currPan->PanelID;
+				$pList = array_merge($pList, $this->getPanelListBySource());
 			}
 		}
 		
 		return $pList;
+	}
+
+	function getSubPanels( $onlyFirstGen = false ) {
+		$sql = "select * from fac_PowerPanel where ParentPanelID=:ParentPanelID order by PanelLabel ASC";
+		$st = $this->prepare($sql);
+		$st->setFetchMode(PDO::FETCH_CLASS, "PowerPanel");
+		$st->execute(array(":ParentPanelID"=>$this->PanelID));
+
+		$pList = array();
+		while($row=$st->fetch()) {
+			$pList[] = $row;
+		}
+		if(!$onlyFirstGen) {
+			foreach($pList as $key=>$currPan) {
+				$pList[$key]->SubPanels = $currPan->getSubPanels();
+			}
+		}
+
+		return $pList;
+
 	}
 	
 	function getSources() {
@@ -1518,6 +1544,206 @@ class PowerPanel {
 			(class_exists('LogActions'))?LogActions::LogThis($this):'';
 			return $this->PanelID;
 		}
+	}
+
+	function getParentTree() {
+		// get a list of all parent panels above this one, as an ordered array
+
+		$this->MakeSafe();
+		$ret = array();
+		if($this->ParentPanelID==0) {
+			return $ret;
+		} else {
+			$ppanel=new PowerPanel();
+			$ppanel->PanelID=$this->ParentPanelID;
+			$ppanel->getPanel();
+			$ppt = $ppanel->getParentTree();
+			$ret = array_merge($ret, $ppt);
+			$ret[] = $ppanel;
+			return $ret;
+		}
+	}
+
+	function getPanelSchedule() {
+		$this->MakeSafe();
+
+		$pdu = new PowerDistribution();
+		$pdu->PanelID = $this->PanelID;
+		$pduList = $pdu->GetPDUByPanel();
+	
+		$panelSchedule = array();
+		$unscheduled = array();
+		$errors = array();
+
+		foreach($pduList as $currPdu) {
+			if($currPdu->PanelID == $this->PanelID) {
+				$poleId = $currPdu->PanelPole;
+			} elseif($currPdu->PanelID2 == $this->PanelID) {
+				$poleId = $currPdu->PanelPole2;
+			}
+			$scheduleItem = new PanelScheduleItem();
+			$scheduleItem->DataType = "PDU";
+			$scheduleItem->Spanned=false;
+			$scheduleItem->SpanSize=0;
+			$scheduleItem->NoPrint=false;
+			$scheduleItem->Data=$currPdu;
+
+			if($poleId) {
+				$scheduleItem->Pole = $poleId;
+				$adder=1;
+				if($this->NumberScheme=="Odd/Even") {
+					$adder=2;
+				}
+				$addError=false;	
+				$endCount=$scheduleItem->Pole+($currPdu->BreakerSize*$adder);
+
+				// check if this item would conflict with any others (so far)
+				for($count=$scheduleItem->Pole; $count<$endCount; $count+=$adder) {
+					if(array_key_exists($count, $panelSchedule)) {
+						if($currPdu->BreakerSize > 1) {
+							$addError=true;
+						} else {
+							foreach($panelSchedule[$count] as $psItem) {
+								if($psItem->Spanned) {
+									$addError=true;
+								}
+							}
+						}
+					}
+				}
+				if($addError) {
+					$errors[]=$scheduleItem;	
+				} else {
+					if($currPdu->BreakerSize>1) {
+						$scheduleItem->Spanned=true;
+						$scheduleItem->SpanSize=$currPdu->BreakerSize;
+					}
+					for($count=$scheduleItem->Pole; $count<$endCount; $count+=$adder) {
+						$nextItem=clone $scheduleItem;
+						$nextItem->Pole=$count;
+						if($count!=$scheduleItem->Pole) {
+							$nextItem->NoPrint=true;
+						}
+						$panelSchedule[$count][]=$nextItem;
+						
+					}
+				}
+			} else {
+				$scheduleItem->Pole=0;
+				$unscheduled[]=$scheduleItem;
+			}
+		}
+		// add first-level panels
+		$subPanels = $this->getSubPanels(true);
+
+		foreach($subPanels as $currSub) {
+			$scheduleItem = new PanelScheduleItem();
+			$scheduleItem->DataType = "PANEL";
+			$scheduleItem->Spanned=false;
+			$scheduleItem->SpanSize=0;
+			$scheduleItem->NoPrint=false;
+			$scheduleItem->Data=$currSub;
+			if($currSub->ParentBreakerName) {
+				$scheduleItem->Pole=$currSub->ParentBreakerName;
+				$addError=false;
+				if(array_key_exists($scheduleItem->Pole, $panelSchedule)) {
+					foreach($panelSchedule[$scheduleItem->Pole] as $currItem) {
+						if($currItem->Spanned) {
+							$addError = true;
+						}
+					}
+				}
+				if($addError) {
+					$errors[]=$scheduleItem;
+				} else {
+					$panelSchedule[$scheduleItem->Pole][]=$scheduleItem;
+				}
+
+			} else {
+				$scheduleItem->Pole=0;
+				$unscheduled[]=$scheduleItem;
+			}
+
+		}
+
+		# poles get added out of order, so resort by the keys so they are in order
+		ksort($panelSchedule);
+		// return array holds: "panelSchedule", "unscheduled", "errors"
+		return array("panelSchedule"=>$panelSchedule, "unscheduled"=>$unscheduled, "errors"=>$errors);
+
+	}
+
+
+	function getScheduleItemHtml($si, $currentCabinetID=0, $mpdf=false) {
+		$html = "";
+		if($si) {
+			$data = $si->Data;
+			if($si->DataType=="PDU") {
+				$cab = new Cabinet();
+				$cab->CabinetID = $data->CabinetID;
+				if($currentCabinetID != 0 && $currentCabinetID != $cab->CabinetID) {
+					// printing a new cabinet, so separate it from the others
+					$html .= "<br>";
+				}
+				if($currentCabinetID==0 || $currentCabinetID != $cab->CabinetID) {
+					$cab->GetCabinet();
+					$currentCabinetID = $cab->CabinetID;
+					if(!$mpdf) $html.= "<a href=\"cabnavigator.php?cabinetid=$cab->CabinetID\">";
+					$html.= $cab->Location;
+					if(!$mpdf) $html.="</a>";
+				}
+				// this is a stupid hack, but mpdf doesn't recognize any of the CSS that would allow this to happen any other way
+				if($mpdf) {
+					$html.= "<br>";
+					$html.= "&nbsp;&nbsp;&nbsp;&nbsp;";
+				}
+				if(!$mpdf) $html.= "<a href=\"devices.php?DeviceID=$data->PDUID\">";
+				$html.= "<span>$data->Label</span>";
+				if(!$mpdf) $html.= "</a>";
+			} elseif($si->DataType=="PANEL") {
+				if(!$mpdf) $html.= "<a href=\"power_panel.php?PanelID=$data->PanelID\">";
+				$html.=$data->PanelLabel;
+				if(!$mpdf) $html.= "</a>";
+			} else {
+				$html.= "unknown type!";
+			}
+		}
+		return array("html"=>$html, "currentCabinetID"=>$currentCabinetID);
+	}
+
+	function getPanelScheduleLabelHtml($ps, $count, $side="panelleft", $mpdf=false) {
+		$html = "";
+		if(array_key_exists($count, $ps)) {
+			$currPole = $ps[$count];
+			if(count($currPole) > 1) {
+				//if there are more than 1 items in the current pole, we don't
+				// need to worry about checking for spans because that would
+				// have caused a conflict error on generation
+				$html.= "<td class=\"polelabel $side\">";
+				$currentCabinetID=0;
+				foreach($currPole as $currScheduleItem) {
+					$csiPrint = $this->getScheduleItemHtml($currScheduleItem, $currentCabinetID, $mpdf);
+					$currentCabinetID = $csiPrint["currentCabinetID"];
+					$html.= $csiPrint["html"];
+				}
+				$html.= " </td>";
+			} else {
+				// don't need to worry about whether cabinet was printed yet
+				if(!$currPole[0]->NoPrint) {
+					$spanPrint = "";
+					if($currPole[0]->Spanned) {
+						$spanPrint = "rowspan=\"".$currPole[0]->SpanSize."\"";
+					}
+					$html.= "<td class=\"polelabel $side\" $spanPrint>";
+					$csiPrint = $this->getScheduleItemHtml($currPole[0], 0, $mpdf);
+					$html.= $csiPrint["html"];
+					$html.= "&nbsp;</td>";
+				}
+			}
+		} else {
+			$html.= "<td class=\"polelabel\">&nbsp;</td>";
+		}
+		return $html;
 	}
 	
 	function deletePanel() {

@@ -429,6 +429,7 @@ div.error {margin-top: 2em;margin-bottom: 2em;border: 1px dotted gray;}
 .error legend {color: red;font-weight: bold;}
 .error > div > div {width: 200px;vertical-align: top !important;}
 .error > div > div + div {font-style: italic;}
+.error span {display: block;margin-left: 1.5em;}
 #pdutest {display: none;}
 .panelmgr .main form, .panelmgr .main form ~ div { display: inline-block; vertical-align: top;}
 
