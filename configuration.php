@@ -1314,6 +1314,7 @@ echo '<div class="main">
 			<li><a href="#tt">',__("ToolTips"),'</a></li>
 			<li><a href="#cc">',__("Cabling"),'</a></li>
 			<li><a href="#dca">',__("Custom Device Attributes"),'</a></li>
+			<li><a href="#ldap">',__("LDAP"),'</a></li>
 			<li><a href="#preflight">',__("Pre-Flight Check"),'</a></li>
 		</ul>
 		<div id="general">
@@ -1898,6 +1899,62 @@ echo '<div class="main">
 				</div>
 			</div>
 
+		</div>
+		<div id="LDAP">
+			<h3>',__("LDAP Authentication and Authorization Configuration"),'</h3>
+			<div class="table">
+				<div>
+					<div><label for="LDAPServer">',__("LDAP Server URI"),'</label></div>
+					<div><input type="text" defaultvalue="',$config->defaults["LDAPServer"],'" name="LDAPServer" value="',$config->ParameterArray["LDAPServer"],'"></div>
+				</div>
+				<div>
+					<div><label for="LDAPBaseDN">',__("Base DN"),'</label></div>
+					<div><input type="text" defaultvalue="',$config->defaults["LDAPBaseDN"],'" name="LDAPBaseDN" value="',$config->ParameterArray["LDAPBaseDN"],'"></div>
+				</div>
+				<div>
+					<div><label for="LDAPBindDN">',__("Bind DN"),'</label></div>
+					<div><input type="text" defaultvalue="',$config->defaults["LDAPBindDN"],'" name="LDAPBindDN" value="',$config->ParameterArray["LDAPBindDN"],'"></div>
+				</div>
+			</div>
+			<h3>',__("Group Distinguished Names"),'</h3>
+			<div class="table">
+				<div>
+					<div><label for="LDAPSiteAccess">',__("Site Access"),'</label></div>
+					<div><input type="text" size="60" defaultvalue="',$config->defaults["LDAPSiteAccess"],'" name="LDAPSiteAccess" value="',$config->ParameterArray["LDAPSiteAccess"],'"></div>
+				</div>
+				<div>
+					<div><label for="LDAPReadAccess">',__("Global Read"),'</label></div>
+					<div><input type="text" size="60" defaultvalue="',$config->defaults["LDAPReadAccess"],'" name="LDAPReadAccess" value="',$config->ParameterArray["LDAPReadAccess"],'"></div>
+				</div>
+				<div>
+					<div><label for="LDAPWriteAccess">',__("Global Write"),'</label></div>
+					<div><input type="text" size="60" defaultvalue="',$config->defaults["LDAPWriteAccess"],'" name="LDAPWriteAccess" value="',$config->ParameterArray["LDAPWriteAccess"],'"></div>
+				</div>
+				<div>
+					<div><label for="LDAPDeleteAccess">',__("Global Delete"),'</label></div>
+					<div><input type="text" size="60" defaultvalue="',$config->defaults["LDAPDeleteAccess"],'" name="LDAPDeleteAccess" value="',$config->ParameterArray["LDAPDeleteAccess"],'"></div>
+				</div>
+				<div>
+					<div><label for="LDAPAdminOwnDevices">',__("Admin Owned Devices"),'</label></div>
+					<div><input type="text" size="60" defaultvalue="',$config->defaults["LDAPAdminOwnDevices"],'" name="LDAPAdminOwnDevices" value="',$config->ParameterArray["LDAPAdminOwnDevices"],'"></div>
+				</div>
+				<div>
+					<div><label for="LDAPRackRequest">',__("Enter Rack Request"),'</label></div>
+					<div><input type="text" size="60" defaultvalue="',$config->defaults["LDAPRackRequest"],'" name="LDAPRackRequest" value="',$config->ParameterArray["LDAPRackRequest"],'"></div>
+				</div>
+				<div>
+					<div><label for="LDAPRackAdmin">',__("Complete Rack Request"),'</label></div>
+					<div><input type="text" size="60" defaultvalue="',$config->defaults["LDAPRackAdmin"],'" name="LDAPRackAdmin" value="',$config->ParameterArray["LDAPRackAdmin"],'"></div>
+				</div>
+				<div>
+					<div><label for="LDAPContactAdmin">',__("Contact Admin"),'</label></div>
+					<div><input type="text" size="60" defaultvalue="',$config->defaults["LDAPContactAdmin"],'" name="LDAPContactAdmin" value="',$config->ParameterArray["LDAPContactAdmin"],'"></div>
+				</div>
+				<div>
+					<div><label for="LDAPSiteAdmin">',__("Site Admin"),'</label></div>
+					<div><input type="text" size="60" defaultvalue="',$config->defaults["LDAPSiteAdmin"],'" name="LDAPSiteAdmin" value="',$config->ParameterArray["LDAPSiteAdmin"],'"></div>
+				</div>
+			</div>
 		</div>
 		<div id="preflight">
 			<iframe src="preflight.inc.php"></iframe>

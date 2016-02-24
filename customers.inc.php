@@ -141,6 +141,17 @@ class People {
 		}
 	}
 
+	function revokeAll() {
+		$this->ReadAccess = false;
+		$this->WriteAccess = false;
+		$this->DeleteAccess = false;
+		$this->AdminOwnDevices = false;
+		$this->RackRequest = false;
+		$this->RackAdmin = false;
+		$this->ContactAdmin = false;
+		$this->SiteAdmin = false;
+	}
+
 	function canRead( $Owner ) {
 		// If the user has Global rights, don't waste compute cycles on more granular checks
 		if ( $this->ReadAccess ) {

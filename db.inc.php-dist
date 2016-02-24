@@ -1,5 +1,13 @@
 <?php
 
+	// Not everyone will have the ability to (or, let's face it, attention span) set the PHP directive session.auto_start = 1
+	// so we will simply start a session here (which will not cause any issues if auto_start is already set to 1) unless
+	// we are being invoked from the command line
+
+	if ( php_sapi_name() != "cli" ) {
+	      session_start();
+	}
+
 	$dbhost = 'localhost';
 	$dbname = 'dcim';
 	$dbuser = 'dcim';
@@ -22,16 +30,17 @@
 	
 	if ( !defined( "AUTHENTICATION") ) {
 		define( "AUTHENTICATION", "Apache" );
-	}
+
 	/* If you want to use Oauth authentication, comment the above 3 lines, uncomment the next 4 lines
 	   and place your authentication handler in login.php (create symbolic link). 
 	   ex.  cp oauth/login_with_google.php oauth/login.php
 	*/
-	// define( "AUTHENTICATION", "Oauth" );
-	// if ( php_sapi_name() != "cli" ) {
-	//      session_start();
-	// }
-	
+		// define( "AUTHENTICATION", "Oauth" );
+
+	/* In process - LDAP authentication and authorization */
+		// define( "AUTHENTICATION", "LDAP" );
+	}
+
 	require_once( 'config.inc.php');
 	$config=new Config();
 	
