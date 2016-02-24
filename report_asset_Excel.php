@@ -1,5 +1,4 @@
 <?php
-
 /**
  * This is a library to create an Excel file with the information on all devices
  * and cabinets in all data centers serialized.
@@ -16,6 +15,116 @@
  */
 require_once 'db.inc.php';
 require_once 'facilities.inc.php';
+
+global $sessID;
+
+// everyone hates error_log spam
+if(session_id()==""){
+	session_start();
+}
+$sessID = session_id();
+session_write_close();
+
+if (!isset($_GET["stage"])) {
+    // This is the top leve/first call to the file, so set up the progress bar, etc.
+
+    JobQueue::startJob( $sessID );
+
+    $title = __("Asset Report (Excel)");
+
+?>
+<!doctype html>
+<html>
+<head>
+  <meta http-equiv="X-UA-Compatible" content="IE=Edge">
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+
+  <title><?php echo $title; ?></title>
+  <link rel="stylesheet" href="css/inventory.php" type="text/css">
+  <link rel="stylesheet" href="css/jquery-ui.css" type="text/css">
+  <style type="text/css"></style>
+  <!--[if lt IE 9]>
+  <link rel="stylesheet"  href="css/ie.css" type="text/css" />
+  <![endif]-->
+  <script type="text/javascript" src="scripts/jquery.min.js"></script>
+  <script type="text/javascript" src="scripts/jquery-ui.min.js"></script>
+  <script type="text/javascript" src="scripts/common.js"></script>
+  <script type="text/javascript" src="scripts/gauge.min.js"></script>
+
+<SCRIPT type="text/javascript" >
+var timer;
+var gauge;
+
+$(document).ready( function() {
+	gauge=new Gauge({
+		renderTo: 'power-gauge',
+		type: 'canv-gauge',
+		title: '% Complete',
+		minValue: '0',
+		maxValue: '100',
+		majorTicks: [ 0,10,20,30,40,50,60,70,80,90,100 ],
+		minorTicks: '2',
+		strokeTicks: false,
+		units: '%',
+		valueFormat: { int : 3, dec : 0 },
+		glow: false,
+		animation: {
+			delay: 10,
+			duration: 200,
+			fn: 'bounce'
+			},
+		colors: {
+			needle: {start: '#000', end: '#000' },
+			title: '#00f',
+			},
+		highlights: [ {from: 0, to: 50, color: '#eaa'}, {from: 50, to: 80, color: '#fffacd'}, {from: 80, to: 100, color: '#0a0'} ],
+		});
+	gauge.draw().setValue(0);
+    timer = setInterval( function() {
+        $.ajax({
+            type: 'GET',
+            url: 'scripts/ajax_progress.php',
+            dataType: 'json',
+            success: function(data) {
+                $("#status").text(data.Status);
+				gauge.draw().setValue(data.Percentage);
+                if ( data.Percentage >= 100 ) {
+                    clearInterval(timer);
+                    // Reload with Stage 3 to send the file to the user
+                }
+            }
+        })
+    }, 1500 );
+
+    init=$('<iframe/>', {'src':location.href+'?stage=2', height:'100px',width:'100px'}).appendTo('body');
+});
+</script>
+</head>
+<body>
+<?php include( 'header.inc.php' ); ?>
+<div class="page index">
+<?php
+	include( 'sidebar.inc.php' );
+?>
+<div class="main">
+<div class="center"><div>
+<h3 id="status">Starting</h3>
+<div><canvas id="power-gauge" width="200" height="200"></canvas></div>
+
+
+</div></div>
+<?php echo '<a href="reports.php">[ ',__("Return to Reports"),' ]</a>'; ?>
+</div><!-- END div.main -->
+</div><!-- END div.page -->
+</body>
+</html>
+
+
+<?php
+    exit;
+}
+
+
 
 // TODO: Potentially sorting of rack inventory might need to be done not
 // according to the data center ID but to the names
@@ -663,6 +772,13 @@ function getDeviceTemplateName($devTemplates, $device)
     $retval = array('_NoDevModel', '_NoManufDefined');
     $templID = $device->TemplateID;
     if ($templID != 0) {
+        // Data validation error
+        if(!isset($devTemplates[$templID])){
+            $devTemplates[$templID]=new DeviceTemplate();
+            $devTemplates[$templID]->TemplateID=$templID;
+            $devTemplates[$templID]->ManufacturerID=0;
+            $devTemplates[$templID]->Model=__("Template Missing");
+        }
         $manufacturer = new Manufacturer();
         $manufacturer->ManufacturerID = $devTemplates[$templID]->ManufacturerID;
         $retcode = $manufacturer->GetManufacturerByID();
@@ -826,7 +942,7 @@ function getContactName($contactList, $contactID)
 {
     $contactName = null;
     if ($contactID) {
-        $contactName = implode(', ', array($contactList[$contactID]->LastName,
+        $contactName = implode(', ', array(@$contactList[$contactID]->LastName,
             $contactList[$contactID]->FirstName));
     }
 
@@ -1049,6 +1165,7 @@ function addRackStat(&$invCab, $cab, $cabinetColumns, $dc, $dcContainerList)
 function computeSheetBodyDCInventory($DProps)
 {
     global $person;
+    global $sessID;
     $dc = new DataCenter();
     $cab = new Cabinet();
     $device = new Device();
@@ -1063,6 +1180,13 @@ function computeSheetBodyDCInventory($DProps)
     $limitedUser = false;
     $dcList = $dc->GetDCList();
     $Stats = array();
+
+    // A little code to update the counter
+
+    $percentDone = 0;
+    $sectionMaxPercent = 40;
+    $incrementalPercent = 1 / sizeof( $dcList ) * $sectionMaxPercent;
+
     foreach ($dcList as $dc) {
         $dcContainerList = $dc->getContainerList();
         $dcStats = array();
@@ -1212,6 +1336,9 @@ function computeSheetBodyDCInventory($DProps)
             }
         }
         assignStatsVal($Stats, $dc, $dcStats);
+
+        $percentDone += $incrementalPercent;
+        JobQueue::updatePercentage( $sessID, $percentDone );
     }
 
     return array($Stats, $invData, $invCab, $limitedUser);
@@ -1252,11 +1379,24 @@ function computeDCStatsSummary(&$DCStats, $KPIS)
  */
 function writeRackInventoryContent($worksheet, $sheetProps, $Rack_Inv)
 {
+    global $sessID;
+
+
+    // A little code to update the counter
+
+    $percentDone = 50;
+    $sectionMaxPercent = 40;
+    $incrementalPercent = 1 / sizeof( $Rack_Inv) * $sectionMaxPercent;
+
     $row = 2;
     ksort($Rack_Inv);
     foreach ($Rack_Inv as $DCRoom => $rack) {
         $dc_racks = $Rack_Inv[$DCRoom];
         ksort($dc_racks);
+
+        $subSectionMax = $incrementalPercent;
+        $subIncrement = 1 / sizeof($dc_racks) * $subSectionMax;
+
         foreach ($dc_racks as $name => $rack) {
             $worksheet->fromArray($rack, null, 'A' . $row);
             foreach ($sheetProps['ExpStr'] as $colName) {
@@ -1266,8 +1406,13 @@ function writeRackInventoryContent($worksheet, $sheetProps, $Rack_Inv)
                     PHPExcel_Cell_DataType::TYPE_STRING);
             }
             $row++;
+            $percentDone += $subIncrement;
+            JobQueue::updatePercentage( $sessID, $percentDone );
         }
     }
+
+    // Round up the math
+    JobQueue::updatePercentage( $sessID, 90 );
 }
 
 /**
@@ -1483,6 +1628,7 @@ function writeDCInvContent($worksheet, $sheetProps, $invData)
     $worksheet->fromArray($invData, null, 'A2');
     ReportStats::get()->report('Info', 'Number of Inventory entries '.count($invData));
     $highestRow = count($invData);
+
     foreach ($sheetProps['ExpStr'] as $colName) {
         $colLetter = $colIdx[$colName][1];
         for ($row = 0; $row < $highestRow; $row++) {
@@ -1503,9 +1649,13 @@ function writeDCInvContent($worksheet, $sheetProps, $invData)
  */
 function writeDCInventory($DProps, $objPHPExcel, $thisDate)
 {
+    global $sessID;
+
     $wsKind = 'DC Inventory';
     $worksheet = $objPHPExcel->getActiveSheet();
     $objPHPExcel->setActiveSheetIndex(0);
+
+    JobQueue::updateStatus( $sessID, __("Computing DC Inventory" ));
 
     setWorksheetProperties($worksheet, $wsKind, $DProps, $thisDate);
     writeWSHeader($worksheet, $wsKind, $DProps[$wsKind]);
@@ -1513,8 +1663,15 @@ function writeDCInventory($DProps, $objPHPExcel, $thisDate)
     list($DCStats, $invData, $Rack_Inv, $limitedUser) =
         computeSheetBodyDCInventory($DProps);
     ReportStats::get()->report('Info', $wsKind . ' - computed body');
+
+    JobQueue::updateStatus( $sessID, __("Writing Inventory to Spreadsheet" ));
+    JobQueue::updatePercentage( $sessID, 50 );
+
     writeDCInvContent($worksheet, $DProps[$wsKind], $invData);
     ReportStats::get()->report('Info', $wsKind . ' - write body');
+
+    JobQueue::updateStatus( $sessID, __("Formatting Spreadsheet" ));
+
     formatWSColumns($worksheet, $DProps[$wsKind]['Columns']);
     $worksheet->setAutoFilter($worksheet->calculateWorksheetDimension());
 
@@ -1571,6 +1728,8 @@ function writeExcelReport(&$DProps, $objPHPExcel, $thisDate)
     ReportStats::get()->report('Info', 'User: ' . $DProps['Doc']['User']
         . ' Version: ' . $DProps['Doc']['version']);
 
+    // Crude status reporting
+
     $config = new Config();
     $config->Config();
     addColumnIndices($DProps);
@@ -1593,6 +1752,8 @@ function writeExcelReport(&$DProps, $objPHPExcel, $thisDate)
 
     writeFrontPage($DProps, $config, $objPHPExcel, $thisDate);
     ReportStats::get()->report('Info', 'Front Page');
+
+    JobQueue::updateStatus( session_id(), "Preparing to transmit file" );
 }
 
 /*
@@ -1620,6 +1781,11 @@ if (PHP_SAPI != 'cli') {
     header("Content-Disposition: attachment; filename=DC_Statistics_" . $thisDate
      . ".xlsx");
     header('Cache-Control: max-age=0');
+
+    // save the file to the system temp directory for use as a download link
+//    $realfile = tempnam(sys_get_temp_dir(),'openDCIM');
+//    $objWriter->save($realfile);
+
     // write file to the browser
     $objWriter->save('php://output');
 } else {
@@ -1629,3 +1795,5 @@ if (PHP_SAPI != 'cli') {
 ReportStats::get()->report('Totals');
 $objPHPExcel->disconnectWorksheets();
 unset($objPHPExcel);
+
+JobQueue::updatePercentage( $sessID, 100 );

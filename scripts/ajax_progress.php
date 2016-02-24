@@ -8,7 +8,10 @@
 
         $resp = new Response();
 
-        session_start();
+        // everyone hates error_log spam
+        if(session_id()==""){
+                session_start();
+        }
 
         if ( session_id() === "" ) {
                 $resp->Percentage = 0;
