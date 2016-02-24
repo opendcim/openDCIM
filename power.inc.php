@@ -1450,15 +1450,10 @@ class PowerPanel {
 	}
 
 	function getSubPanels( $onlyFirstGen = false ) {
-		$sql = "select * from fac_PowerPanel where ParentPanelID=:ParentPanelID order by PanelLabel ASC";
-		$st = $this->prepare($sql);
-		$st->setFetchMode(PDO::FETCH_CLASS, "PowerPanel");
-		$st->execute(array(":ParentPanelID"=>$this->PanelID));
+		$pp=new PowerPanel();
+		$pp->ParentPanelID=$this->PanelID;
+		$pList = $pp->Search();
 
-		$pList = array();
-		while($row=$st->fetch()) {
-			$pList[] = $row;
-		}
 		if(!$onlyFirstGen) {
 			foreach($pList as $key=>$currPan) {
 				$pList[$key]->SubPanels = $currPan->getSubPanels();
