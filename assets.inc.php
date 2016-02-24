@@ -572,8 +572,8 @@ class Cabinet {
 			fac_Device WHERE Cabinet=$cab->CabinetID;";
 
 		foreach($dbh->query($sql) as $row){
-			$cabstats->Weight=$row['weight'];
-			$cabstats->Wattage=$row['watts'];
+			$cabstats->Weight=(!is_null($row['weight']))?$row['weight']:0;
+			$cabstats->Wattage=(!is_null($row['watts']))?$row['watts']:0;
 		}
 
 		return $cabstats;
