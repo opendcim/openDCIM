@@ -886,8 +886,10 @@ if ( $person->SiteAdmin ) {
 	$samenu[]='<a href="configuration.php"><span>'.__("Edit Configuration").'</span></a>';
 }
 if( AUTHENTICATION == "LDAP" ) {
-	// Clear out the Reports menu button and create the Login menu button
-	$rmenu = array();
+	// Clear out the Reports menu button and create the Login menu button when not logged in
+	if ( $loginPage ) {
+		$rmenu = array();
+	}
 	$lmenu[]='<a href="login_ldap.php?logout"><span>'.__("Logout").'</span></a>';
 }
 

@@ -1656,6 +1656,12 @@ class Device {
 			$olddev->DeviceID=$this->DeviceID;
 			$olddev->GetDevice();
 
+			// Try to do some intelligent naming (sequence) if ending in a number
+			if ( preg_match("/(.*)(.\d)+(\ *[\]|\)])?/", $olddev->Label, $tmpName ) ) {
+				$numLen = strlen($tmpName[2]);
+				$this->Label = sprintf( "%s%0".$numLen."d%s", $tmpName[1], $tmpName[2]+1, @$tmpName[3]);
+			}
+
 			// And finally create a new device based on the exact same info
 			$this->CreateDevice();
 			$olddev->CopyDeviceCustomValues($this);
