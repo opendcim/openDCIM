@@ -26,15 +26,17 @@
 			$userRights->Phone2=$_POST['Phone2'];
 			$userRights->Phone3=$_POST['Phone3'];
 			$userRights->Email=$_POST['Email'];
-			$userRights->AdminOwnDevices=(isset($_POST['AdminOwnDevices']))?1:0;
-			$userRights->ReadAccess=(isset($_POST['ReadAccess']))?1:0;
-			$userRights->WriteAccess=(isset($_POST['WriteAccess']))?1:0;
-			$userRights->DeleteAccess=(isset($_POST['DeleteAccess']))?1:0;
-			$userRights->ContactAdmin=(isset($_POST['ContactAdmin']))?1:0;
-			$userRights->RackRequest=(isset($_POST['RackRequest']))?1:0;
-			$userRights->RackAdmin=(isset($_POST['RackAdmin']))?1:0;
-			$userRights->SiteAdmin=(isset($_POST['SiteAdmin']))?1:0;
-			$userRights->Disabled=(isset($_POST['Disabled']))?1:0;
+			if ( AUTHENTICATION != "LDAP" ) {
+				$userRights->AdminOwnDevices=(isset($_POST['AdminOwnDevices']))?1:0;
+				$userRights->ReadAccess=(isset($_POST['ReadAccess']))?1:0;
+				$userRights->WriteAccess=(isset($_POST['WriteAccess']))?1:0;
+				$userRights->DeleteAccess=(isset($_POST['DeleteAccess']))?1:0;
+				$userRights->ContactAdmin=(isset($_POST['ContactAdmin']))?1:0;
+				$userRights->RackRequest=(isset($_POST['RackRequest']))?1:0;
+				$userRights->RackAdmin=(isset($_POST['RackAdmin']))?1:0;
+				$userRights->SiteAdmin=(isset($_POST['SiteAdmin']))?1:0;
+				$userRights->Disabled=(isset($_POST['Disabled']))?1:0;
+			}
 
 			if($_POST['action']=='Create'){
   				$userRights->CreatePerson();
@@ -63,6 +65,19 @@
 	$RackAdmin=($userRights->RackAdmin)?"checked":"";
 	$admin=($userRights->SiteAdmin)?"checked":"";
 	$Disabled=($userRights->Disabled)?"checked":"";
+
+	if ( AUTHENTICATION == "LDAP" ) {
+		// Show the current values, but don't allow them to be changed
+		$adminown .= " disabled";
+		$read .= " disabled";
+		$write .= " disabled"; 
+		$delete .= " disabled";
+		$contact .= " disabled";
+		$request .= " disabled";
+		$RackAdmin .= " disabled";
+		$admin .= " disabled";
+		$Disabled .= " disabled";
+	}
 
 ?>
 <!doctype html>

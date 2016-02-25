@@ -797,16 +797,26 @@ if(isset($devMode)&&$devMode){
 	we are.  It may be needed for the installation.
 */
 
-if(!isset($_SERVER["REMOTE_USER"]) && !isset($_SESSION['userid']) && php_sapi_name()!="cli" && AUTHENTICATION=="Oauth"){
+if( AUTHENTICATION=="Oauth" && !isset($_SESSION['userid']) && php_sapi_name()!="cli" ){
 	header("Location: ".redirect('oauth/login.php'));
 	exit;
 }
 
+
+if( AUTHENTICATION=="LDAP" && !isset($_SESSION['userid']) && php_sapi_name()!="cli" && !isset($loginPage)) {
+	header("Location: ".redirect($config->ParameterArray['InstallURL'].'login_ldap.php'));
+	exit;
+}
+
+// And just because you're logged in, it doesn't mean that we have your People record...
 if(!People::Current()){
 	if(AUTHENTICATION=="Oauth"){
 		header("Location: ".redirect('oauth/login.php'));
 		exit;
-	}elseif(AUTHENTICATION=="Apache"){
+	} elseif ( AUTHENTICATION=="LDAP" && !isset($loginPage) ) {
+		header("Location: ".redirect($config->ParameterArray['InstallURL'].'login_ldap.php'));
+		exit;
+	} elseif(AUTHENTICATION=="Apache"){
 		print "<h1>You must have some form of Authentication enabled to use openDCIM.</h1>";
 		exit;
 	}
@@ -815,11 +825,17 @@ if(!People::Current()){
 
 /* This is used on every page so we might as well just init it once */
 $person=People::Current();
-if(($person->Disabled || ($person->PersonID==0 && $person->UserID!="cli_admin")) && $config->ParameterArray["RequireDefinedUser"]=="enabled"){
+// If we're in the process of logging in, just to get us through this, create an instance with all rights revoked
+if ( isset( $loginPage ) ) {
+	$person = new People();
+	$person->revokeAll();
+}
+
+if(($person->Disabled || ($person->PersonID==0 && $person->UserID!="cli_admin")) && $config->ParameterArray["RequireDefinedUser"]=="enabled" && !isset($loginPage)){
 	header("Location: ".redirect('unauthorized.php'));
 	exit;
 }
-	
+
 /* 
  * This is an attempt to be sane about the rights management and the menu.
  * The menu will be built off a master array that is a merger of what options
@@ -831,7 +847,7 @@ if(($person->Disabled || ($person->PersonID==0 && $person->UserID!="cli_admin"))
  *
  */
 
-$menu=$rmenu=$rrmenu=$camenu=$wamenu=$samenu=array();
+$menu=$rmenu=$rrmenu=$camenu=$wamenu=$samenu=$lmenu=array();
 
 $rmenu[]='<a href="reports.php"><span>'.__("Reports").'</span></a>';
 
@@ -868,6 +884,11 @@ if ( $person->SiteAdmin ) {
 	$samenu[__("Path Connections")][]='<a href="paths.php"><span>'.__("View Path Connection").'</span></a>';
 	$samenu[__("Path Connections")][]='<a href="pathmaker.php"><span>'.__("Make Path Connection").'</span></a>';
 	$samenu[]='<a href="configuration.php"><span>'.__("Edit Configuration").'</span></a>';
+}
+if( AUTHENTICATION == "LDAP" ) {
+	// Clear out the Reports menu button and create the Login menu button
+	$rmenu = array();
+	$lmenu[]='<a href="login_ldap.php?logout"><span>'.__("Logout").'</span></a>';
 }
 
 function download_file($archivo, $downloadfilename = null) {

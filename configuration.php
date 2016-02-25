@@ -1900,7 +1900,7 @@ echo '<div class="main">
 			</div>
 
 		</div>
-		<div id="LDAP">
+		<div id="ldap">
 			<h3>',__("LDAP Authentication and Authorization Configuration"),'</h3>
 			<div class="table">
 				<div>
@@ -1955,6 +1955,7 @@ echo '<div class="main">
 					<div><input type="text" size="60" defaultvalue="',$config->defaults["LDAPSiteAdmin"],'" name="LDAPSiteAdmin" value="',$config->ParameterArray["LDAPSiteAdmin"],'"></div>
 				</div>
 			</div>
+
 		</div>
 		<div id="preflight">
 			<iframe src="preflight.inc.php"></iframe>

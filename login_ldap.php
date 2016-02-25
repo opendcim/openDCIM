@@ -1,9 +1,15 @@
 <?php
+
+  // Set a variable so that misc.inc.php knows not to throw us into an infinite redirect loop
+  $loginPage = true;
+
 	require_once('db.inc.php');
 	require_once('facilities.inc.php');
 
 //	Uncomment these if you need/want to set a title in the header
 	$header=__("openDCIM Login");
+  $content = "";
+  $person = new People();
 
   if ( isset($_GET['logout'])) {
     // Unfortunately session_destroy() doesn't actually clear out existing variables, so let's nuke from orbit
@@ -41,7 +47,6 @@
         // to keep in the openDCIM database just in case the user gets removed from LDAP.  This also
         // makes it easier to check access rights by replicating the user's rights from LDAP into the
         // local db for the session.  Revoke all rights every login and pull a fresh set from LDAP.
-        $person = new People();
         $person->UserID = $ldapUser;
         $person->GetPersonByUserID();
         $person->revokeAll();
@@ -83,19 +88,20 @@
             default:
               // Ignore any non-openDCIM related group memberships
           }
-
-          if ( isset($_SESSION['UserID']) ) {
-            if ( $person->PersonID > 0 ) {
-              $person->UpdatePerson();
-            } else {
-              $person->CreatePerson();
-            }
-            header('Location: '.redirect());
-            exit;
-          } else {
-            $content .= "<h3>Login failed due to missing rights.</h3>";
-          }
         }
+
+        if ( isset($_SESSION['userid']) ) {
+          if ( $person->PersonID > 0 ) {
+            $person->UpdatePerson();
+          } else {
+            $person->CreatePerson();
+          }
+          echo "<meta http-equiv='refresh' content='0; index.php'>";
+          exit;
+        } else {
+          $content .= "<h3>Login failed.  Incorrect username, password, or rights.</h3>";
+        }
+
       }
     }
 
@@ -141,7 +147,8 @@
     <div><input type="password" name="password"></div>
   </div>
   <div>
-    <div><input type="submit" name="submit" value="<?php echo __("Submit"); ?>"><input type="button" name="logout" value="<?php echo __("Logout"); ?>" onclick="login_ldap.php?logout"></div>
+    <div></div>
+    <div><input type="submit" name="submit" value="<?php echo __("Submit"); ?>"></div>
   </div>
 </div>
 </form>

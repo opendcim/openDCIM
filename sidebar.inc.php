@@ -86,7 +86,7 @@
 		return $level;
 	}
 	
-	$menu=buildmenu(array_merge_recursive($rmenu,$rrmenu,$camenu,$wamenu,$samenu));
+	$menu=buildmenu(array_merge_recursive($rmenu,$rrmenu,$camenu,$wamenu,$samenu,$lmenu));
 	
 	print "<ul class=\"nav\">$menu</ul>
 	<hr>
