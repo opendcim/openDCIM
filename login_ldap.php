@@ -124,6 +124,11 @@
   
   <script type="text/javascript" src="scripts/jquery.min.js"></script>
   <script type="text/javascript" src="scripts/jquery-ui.min.js"></script>
+<script type="text/javascript">
+$(document).ready(function() {
+  $("#username").focus();
+});
+</script>
 </head>
 <body>
 <?php include( 'header.inc.php' ); ?>
@@ -140,7 +145,7 @@
 <div class="table">
   <div>
     <div><label for="username"><?php echo __("Username:"); ?></label></div>
-    <div><input type="text" name="username"></div>
+    <div><input type="text" id="username" name="username"></div>
   </div>
   <div>
     <div><label for="password"><?php echo __("Password:"); ?></label></div>
