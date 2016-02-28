@@ -639,6 +639,7 @@ class CabinetAudit {
 }
 
 class CabinetMetrics {
+	var $CabinetID;
 	var $IntakeTemperature;
 	var $IntakeHumidity;
 	var $ExhaustTemperature;
@@ -653,6 +654,8 @@ class CabinetMetrics {
 		global $dbh;
 		
 		$m = new CabinetMetrics();
+		$m->CabinetID = $CabinetID;
+		
 		$params = array( ":CabinetID"=>$CabinetID );
 		// Get the intake side
 		$sql = "select max(Temperature) as Temp, max(Humidity) as Humid, LastRead from fac_SensorReadings where DeviceID in (select DeviceID from fac_Device where DeviceType='Sensor' and BackSide=0 and Cabinet=:CabinetID)";

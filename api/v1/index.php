@@ -363,6 +363,25 @@ $app->get( '/cabinet/bydc/:datacenterid', function($datacenterid) {
 });
 
 //
+//	URL:	/api/v1/cabinet/:cabinetid/sensors
+//	Method:	GET
+//	Params: cabinetid (passed in URL)
+//	Returns: All cabinet sensor information for the specified cabinet, if any
+//
+
+$app->get( '/cabinet/:cabinetid/sensor', function($cabinetid) {
+	$response['error'] = false;
+	$response['errorcode'] = 200;
+	$response['sensors'] = array();
+
+	if ( $m = CabinetMetrics::getMetrics($cabinetid) ) {
+		$response['sensors'] = $m;
+	}	
+
+	echoResponse( 200, $response );
+});
+
+//
 //	URL:	/api/v1/cabinet/bydept/:deptid
 //	Method:	GET
 //	Params: deptid (passed in URL)
