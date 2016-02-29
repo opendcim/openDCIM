@@ -370,11 +370,14 @@ $app->get( '/cabinet/bydc/:datacenterid', function($datacenterid) {
 //
 
 $app->get( '/cabinet/:cabinetid/sensor', function($cabinetid) {
+	global $config;
+	
 	$response['error'] = false;
 	$response['errorcode'] = 200;
 	$response['sensors'] = array();
 
 	if ( $m = CabinetMetrics::getMetrics($cabinetid) ) {
+		$m->mUnits = $config->ParameterArray["mUnits"];
 		$response['sensors'] = $m;
 	}	
 
