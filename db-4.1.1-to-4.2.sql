@@ -17,6 +17,12 @@ INSERT INTO fac_Config set Parameter="LDAPContactAdmin", Value="cn=ContactAdmin,
 INSERT INTO fac_Config set Parameter="LDAPSiteAdmin", Value="cn=SiteAdmin,cn=openDCIM,ou=groups,dc=opendcim,dc=org", UnitOfMeasure="DN", ValType="string", DefaultVal="cn=SiteAdmin,cn=openDCIM,ou=groups,dc=opendcim,dc=org";
 
 --
+-- Alter the fac_People table to allow for API Key accounts
+--
+
+ALTER TABLE fac_People ADD COLUMN APIKey VARCHAR(80) NOT NULL DEFAULT '';
+
+--
 -- Bump up the database version (uncomment below once released)
 --
 

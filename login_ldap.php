@@ -53,42 +53,61 @@
 
         for ( $i = 0; $i < $ldapResults['count']; $i++ ) {
           $content .= "Group: " . $ldapResults[$i]['dn'] . "<br>\n";
+
+          // Originally this was a Switch/Case statement, which would seem to make more sense.
+          // However, if someone wants to use the same Group identifier for more than one right,
+          // the switch/case would only allow for that group membership to be used once.
+          //
+          // So, here we are with a ton of if/then statements.
+
           if ( $config->ParameterArray['LDAPSiteAccess'] == "" || $ldapResults[$i]['dn'] == $config->ParameterArray['LDAPSiteAccess'] ) {
             // No specific group membership required to access openDCIM or they have a match to the group required
             $_SESSION['userid'] = $ldapUser;
             session_commit();
           }
 
-
-          switch( $ldapResults[$i]['dn'] ) {
-            case $config->ParameterArray['LDAPReadAccess']:
+          if ( $ldapResults[$i]['dn'] == $config->ParameterArray['LDAPReadAccess'] ) {
               $person->ReadAccess = true;
-              break;
-            case $config->ParameterArray['LDAPWriteAccess']:
+          }
+          
+          if ( $ldapResults[$i]['dn'] == $config->ParameterArray['LDAPWriteAccess'] ) {
               $person->WriteAccess = true;
-              break;
-            case $config->ParameterArray['LDAPDeleteAccess']:
+          }
+
+          if ( $ldapResults[$i]['dn'] == $config->ParameterArray['LDAPDeleteAccess'] ) {
               $person->DeleteAccess = true;
-              break;
-            case $config->ParameterArray['LDAPAdminOwnDevices']:
+          }
+          
+          if ( $ldapResults[$i]['dn'] == $config->ParameterArray['LDAPAdminOwnDevices'] ) {
               $person->AdminOwnDevices = true;
-              break;
-            case $config->ParameterArray['LDAPRackRequest']:
+          }
+          
+          if ( $ldapResults[$i]['dn'] == $config->ParameterArray['LDAPRackRequest'] ) {
               $person->RackRequest = true;
-              break;
-            case $config->ParameterArray['LDAPRackAdmin']:
+          }
+          
+          if ( $ldapResults[$i]['dn'] == $config->ParameterArray['LDAPRackAdmin'] ) {
               $person->RackAdmin = true;
-              break;
-            case $config->ParameterArray['LDAPContactAdmin']:
+          }
+          
+          if ( $ldapResults[$i]['dn'] == $config->ParameterArray['LDAPContactAdmin'] ) {
               $person->ContactAdmin = true;
-              break;
-            case $config->ParameterArray['LDAPSiteAdmin']:
+          }
+          
+          if ( $ldapResults[$i]['dn'] == $config->ParameterArray['LDAPSiteAdmin'] ) {
               $person->SiteAdmin = true;
-              break;
-            default:
-              // Ignore any non-openDCIM related group memberships
           }
         }
+
+        // Now get some more info about the user
+        $ldapSearch = ldap_search( $ldapConn, $config->ParameterArray['LDAPBaseDN'], "(|(uid=$ldapUser))" );
+        $ldapResults = ldap_get_entries( $ldapConn, $ldapSearch );
+
+        // These are standard schema items, so they aren't configurable
+        // However, suppress any errors that may crop up from not finding them
+        $person->FirstName = @$ldapResults[0]['givenname'][0];
+        $person->LastName = @$ldapResults[0]['sn'][0];
+        $person->Email = @$ldapResults[0]['mail'][0];
 
         if ( isset($_SESSION['userid']) ) {
           if ( $person->PersonID > 0 ) {

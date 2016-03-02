@@ -887,7 +887,7 @@ if ( $person->SiteAdmin ) {
 }
 if( AUTHENTICATION == "LDAP" ) {
 	// Clear out the Reports menu button and create the Login menu button when not logged in
-	if ( $loginPage ) {
+	if ( isset($loginPage) ) {
 		$rmenu = array();
 	}
 	$lmenu[]='<a href="login_ldap.php?logout"><span>'.__("Logout").'</span></a>';

@@ -26,17 +26,23 @@
 			$userRights->Phone2=$_POST['Phone2'];
 			$userRights->Phone3=$_POST['Phone3'];
 			$userRights->Email=$_POST['Email'];
-			if ( AUTHENTICATION != "LDAP" ) {
-				$userRights->AdminOwnDevices=(isset($_POST['AdminOwnDevices']))?1:0;
-				$userRights->ReadAccess=(isset($_POST['ReadAccess']))?1:0;
-				$userRights->WriteAccess=(isset($_POST['WriteAccess']))?1:0;
-				$userRights->DeleteAccess=(isset($_POST['DeleteAccess']))?1:0;
-				$userRights->ContactAdmin=(isset($_POST['ContactAdmin']))?1:0;
-				$userRights->RackRequest=(isset($_POST['RackRequest']))?1:0;
-				$userRights->RackAdmin=(isset($_POST['RackAdmin']))?1:0;
-				$userRights->SiteAdmin=(isset($_POST['SiteAdmin']))?1:0;
-				$userRights->Disabled=(isset($_POST['Disabled']))?1:0;
+
+			if ( isset($_POST['NewKey']) ) {
+				$userRights->APIKey=md5($userRights->UserID . date('Y-m-d H:i:s') );
 			}
+
+			// if AUTHENTICATION == "LDAP" these get overwritten whenever an LDAP user logs in
+			// however, an LDAP site still needs to be able to add a userid for API access
+			// and set their rights
+			$userRights->AdminOwnDevices=(isset($_POST['AdminOwnDevices']))?1:0;
+			$userRights->ReadAccess=(isset($_POST['ReadAccess']))?1:0;
+			$userRights->WriteAccess=(isset($_POST['WriteAccess']))?1:0;
+			$userRights->DeleteAccess=(isset($_POST['DeleteAccess']))?1:0;
+			$userRights->ContactAdmin=(isset($_POST['ContactAdmin']))?1:0;
+			$userRights->RackRequest=(isset($_POST['RackRequest']))?1:0;
+			$userRights->RackAdmin=(isset($_POST['RackAdmin']))?1:0;
+			$userRights->SiteAdmin=(isset($_POST['SiteAdmin']))?1:0;
+			$userRights->Disabled=(isset($_POST['Disabled']))?1:0;
 
 			if($_POST['action']=='Create'){
   				$userRights->CreatePerson();
@@ -65,19 +71,6 @@
 	$RackAdmin=($userRights->RackAdmin)?"checked":"";
 	$admin=($userRights->SiteAdmin)?"checked":"";
 	$Disabled=($userRights->Disabled)?"checked":"";
-
-	if ( AUTHENTICATION == "LDAP" ) {
-		// Show the current values, but don't allow them to be changed
-		$adminown .= " disabled";
-		$read .= " disabled";
-		$write .= " disabled"; 
-		$delete .= " disabled";
-		$contact .= " disabled";
-		$request .= " disabled";
-		$RackAdmin .= " disabled";
-		$admin .= " disabled";
-		$Disabled .= " disabled";
-	}
 
 ?>
 <!doctype html>
@@ -263,6 +256,14 @@ echo '	</select>&nbsp;&nbsp;<span title="',__("This user is the primary contact 
 <div>
    <div><label for="Email">',__("Email Address"),'</label></div>
    <div><input type="text" class="validate[optional,custom[email],condRequired[RackRequest]]" name="Email" id="Email" value="',$userRights->Email,'"></div>
+</div>
+<div>
+   <div><label for="APIKey">',__("API Key"),'</label></div>
+   <div><input type="text" size="60" name="APIKey" id="APIKey" value="',$userRights->APIKey,'" readonly></div>
+</div>
+<div>
+   <div><label for="NewKey">',__("Generate New Key"),'</label></div>
+   <div><input name="NewKey" id="NewKey" type="checkbox"></div>
 </div>
 <div>
    <div><label>',__("Rights"),'</label></div>

@@ -47,6 +47,7 @@ class People {
 	var $RackRequest;
 	var $RackAdmin;
 	var $SiteAdmin;
+	var $APIKey;
 	var $Disabled;
 	
 	function MakeSafe(){
@@ -107,6 +108,7 @@ class People {
 		$person->RackRequest=$row["RackRequest"];
 		$person->RackAdmin=$row["RackAdmin"];
 		$person->SiteAdmin=$row["SiteAdmin"];
+		$person->APIKey=$row["APIKey"];
 		$person->Disabled=$row["Disabled"];
 
 		$person->MakeDisplay();
@@ -189,7 +191,7 @@ class People {
 			AdminOwnDevices=$this->AdminOwnDevices, ReadAccess=$this->ReadAccess, 
 			WriteAccess=$this->WriteAccess, DeleteAccess=$this->DeleteAccess, 
 			ContactAdmin=$this->ContactAdmin, RackRequest=$this->RackRequest, 
-			RackAdmin=$this->RackAdmin, SiteAdmin=$this->SiteAdmin, Disabled=$this->Disabled;";
+			RackAdmin=$this->RackAdmin, SiteAdmin=$this->SiteAdmin, APIKey=\"$this->APIKey\", Disabled=$this->Disabled;";
 
 		if(!$this->query($sql)){
 			$info=$dbh->errorInfo();
@@ -373,7 +375,7 @@ class People {
 			AdminOwnDevices=$this->AdminOwnDevices, ReadAccess=$this->ReadAccess, 
 			WriteAccess=$this->WriteAccess, DeleteAccess=$this->DeleteAccess, 
 			ContactAdmin=$this->ContactAdmin, RackRequest=$this->RackRequest, 
-			RackAdmin=$this->RackAdmin, SiteAdmin=$this->SiteAdmin, Disabled=$this->Disabled
+			RackAdmin=$this->RackAdmin, SiteAdmin=$this->SiteAdmin, APIKey=\"$this->APIKey\", Disabled=$this->Disabled
 			WHERE PersonID=$this->PersonID;";
 			
 		if ( $this->query( $sql ) ) {
