@@ -37,7 +37,6 @@
 
       if ( ! $ldapBind ) {
         $content = "<h3>Login failed.  Incorrect username, password, or rights.</h3>";
-        $content .= "ldapDN: $ldapDN<br>ldapPassword: $ldapPassword<br>";
       } else {
         // User was able to authenticate, but might not have authorization to access openDCIM.  Here we check for those rights.
         $ldapSearch = ldap_search( $ldapConn, $config->ParameterArray['LDAPBaseDN'], "(&(objectClass=posixGroup)(memberUid=$ldapUser))" );
@@ -52,8 +51,6 @@
         $person->revokeAll();
 
         for ( $i = 0; $i < $ldapResults['count']; $i++ ) {
-          $content .= "Group: " . $ldapResults[$i]['dn'] . "<br>\n";
-
           // Originally this was a Switch/Case statement, which would seem to make more sense.
           // However, if someone wants to use the same Group identifier for more than one right,
           // the switch/case would only allow for that group membership to be used once.
@@ -115,7 +112,11 @@
           } else {
             $person->CreatePerson();
           }
-          echo "<meta http-equiv='refresh' content='0; index.php'>";
+          if ( isset($_COOKIE['targeturl'] )) {
+            header('Location: ' . html_entity_decode($_COOKIE['targeturl']));
+          } else {
+            header('Location: ' . redirect('index.php'));
+          }
           exit;
         } else {
           $content .= "<h3>Login failed.  Incorrect username, password, or rights.</h3>";

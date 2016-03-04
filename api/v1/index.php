@@ -101,7 +101,7 @@ function echoResponse($status_code, $response) {
  * Adding Middle Layer to authenticate every request
  * Checking if the request has valid api key in the 'Authorization' header
  */
-$app->hook('slim.before.dispatch', function () {
+$app->hook('slim.before.dispatch', function () use($person) {
 	if ( AUTHENTICATION == "LDAP" ) {
 	    // Getting request headers
 	    $headers = apache_request_headers();
@@ -110,12 +110,14 @@ $app->hook('slim.before.dispatch', function () {
 
 	    $valid = false;
 	 
-	    // Verifying Authorization Header
-	    if ( isset($headers['UserID']) && isset($headers['APIKey'])) {
+	 	if ( isset( $_SESSION['userid'] ) ) {
+	 		$valid = true;
+
+	 		$person->UserID = $_SESSION['userid'];
+	 		$person->GetPersonByUserID();
+	 	} elseif ( isset($headers['UserID']) && isset($headers['APIKey'])) {
 	    	// Load up the $person variable - so at this point, everything else functions
 	    	// the same way as with Apache authorization - using the $person class
-	    	global $person;
-
 	    	$person->UserID = $headers['UserID'];
 	    	$person->GetPersonByUserID();
 
@@ -128,7 +130,7 @@ $app->hook('slim.before.dispatch', function () {
 	        // api key is missing in header
 	        $response["error"] = true;
 	        $response["message"] = "API key is misssing or invalid";
-	        echoResponse(400, $response);
+	        echoResponse(200, $response);
 	        $app->stop();
 	    }
 	}

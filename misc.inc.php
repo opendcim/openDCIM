@@ -804,7 +804,9 @@ if( AUTHENTICATION=="Oauth" && !isset($_SESSION['userid']) && php_sapi_name()!="
 
 
 if( AUTHENTICATION=="LDAP" && !isset($_SESSION['userid']) && php_sapi_name()!="cli" && !isset($loginPage)) {
-	header("Location: ".redirect($config->ParameterArray['InstallURL'].'login_ldap.php'));
+	$savedurl = $_SERVER['PHP_SELF'] . "?" . $_SERVER['QUERY_STRING'];
+	setcookie( 'targeturl', $savedurl, time()+60 );
+	header("Location: ".redirect('login_ldap.php'));
 	exit;
 }
 
