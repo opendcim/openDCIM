@@ -788,7 +788,7 @@ INSERT INTO fac_Config VALUES
 	('NetworkThreshold', '75', 'Percentage', 'integer', '75' ),
 	('FacMgrMail','DataCenterMgr@your.domain','Email','string','DataCenterMgr@your.domain'),
 	('InstallURL','','URL','string','https://dcim.your.domain'),
-	('Version','4.1','','',''),
+	('Version','4.1.1','','',''),
 	('UserLookupURL','https://','URL','string','https://'),
 	('ReservedColor','#00FFFF','HexColor','string','#FFFFFF'),
 	('FreeSpaceColor','#FFFFFF','HexColor','string','#FFFFFF'),
@@ -831,13 +831,14 @@ INSERT INTO fac_Config VALUES
 	('U1Position', 'Bottom', 'Top/Bottom', 'string', 'Bottom'),
 	('RCIHigh', '80', 'degrees', 'float', '80'),
 	('RCILow', '65', 'degress', 'float', '65'),
-	('FilterCabinetList', 'Disabled', 'Enabled/Disabled', 'string', 'Disabled'),
+	('FilterCabinetList', 'disabled', 'Enabled/Disabled', 'string', 'Disabled'),
 	('CostPerKwHr', '.25', 'Currency', 'float', '.25'),
 	('v3SecurityLevel', '', 'noAuthNoPriv/authNoPriv/authPriv', 'string', 'noAuthNoPriv'),
 	('v3AuthProtocol', '', 'SHA/MD5', 'string', 'SHA'),
 	('v3AuthPassphrase', '', 'Password', 'string', ''),
 	('v3PrivProtocol', '', 'SHA/MD5', 'string', 'SHA'),
-	('v3PrivPassphrase', '', 'Password', 'string', '')
+	('v3PrivPassphrase', '', 'Password', 'string', ''),
+  ('PatchPanelsOnly','enabled', 'Enabled/Disabled', 'string', 'enabled')
 ;
 
 --
@@ -851,7 +852,8 @@ CREATE TABLE fac_DeviceCustomAttribute(
   Required tinyint(1) NOT NULL DEFAULT 0,
   AllDevices tinyint(1) NOT NULL DEFAULT 0,
   DefaultValue varchar(65000),
-  PRIMARY KEY (AttributeID)
+  PRIMARY KEY (AttributeID),
+  UNIQUE (Label)
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 --
@@ -877,3 +879,12 @@ CREATE TABLE fac_DeviceCustomValue (
   PRIMARY KEY (DeviceID, AttributeID)
 ) ENGINE=InnoDB CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
+--
+-- Table for monitoring long running jobs
+--
+CREATE TABLE IF NOT EXISTS fac_Jobs (
+  SessionID varchar(80) NOT NULL,
+  Percentage int(11) NOT NULL DEFAULT "0",
+  Status varchar(255) NOT NULL,
+  PRIMARY KEY(SessionID)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
