@@ -1,5 +1,5 @@
 <?php
-$codeversion="4.1.1";
+$codeversion="4.2";
 
 require_once( "preflight.inc.php" );
 
@@ -143,7 +143,7 @@ function ArraySearchRecursive($Needle,$Haystack,$NeedleKey="",$Strict=false,$Pat
 	}
 	if(AUTHENTICATION=="Apache"){
 		$person->UserID=$_SERVER['REMOTE_USER'];
-	}elseif(AUTHENTICATION=="Oauth"){
+	}elseif(AUTHENTICATION=="Oauth" || AUTHENTICATION=="LDAP"){
 		$person->UserID=$_SESSION['userid'];
 	}
 	/* Check the table to see if there are any users

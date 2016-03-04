@@ -130,6 +130,13 @@
 			}else{
 				$tests['Remote User']['message']='Click <a href="oauth/login.php">here</a> to authenticate via Oauth';
 			}
+		}elseif(AUTHENTICATION=="LDAP") {
+			if(isset($_SESSION['userid'])){
+				$tests['Remote User']['state']="good";
+				$tests['Remote User']['message']='Authenticated as UserID='.$_SESSION['userid'];
+			}else{
+				header("Location: ldap_bootstrap.php" );
+			}
 		}
 		// Try to not duplicate everything
 		if(!isset($tests['Remote User']['state'])){

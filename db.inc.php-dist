@@ -37,7 +37,9 @@
 	*/
 		// define( "AUTHENTICATION", "Oauth" );
 
-	/* In process - LDAP authentication and authorization */
+	/* 	LDAP authentication and authorization, which is far from simple.
+		Don't even try to enable this unless you know how to query
+		your LDAP server.  */
 		// define( "AUTHENTICATION", "LDAP" );
 	}
 
