@@ -546,6 +546,9 @@
 			resize();
 		}).trigger('change');
 
+		$('#TemplateID').combobox();
+		$('#ManufacturerID').combobox();
+
 		$('#FrontPictureFile,#RearPictureFile,#ChassisSlots,#RearChassisSlots,#NumPorts,#PSCount').on('change keyup keydown', function(){ TemplateButtons(); });
 
 
