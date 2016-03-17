@@ -103,7 +103,7 @@ if ((!empty($_FILES) || isset($_POST['filename']) ) && $_POST['token'] == $verif
 	if(!empty($_FILES) || isset($_POST['filename'])){}else{$status['msg']=__("No files uploaded");}
 	if($person->WriteAccess || $person->SiteAdmin){}else{$status['msg']=__("You must be a site admin to add images");}
 	if($_POST['token']!=$verifyToken){$status['msg']=__("Token mismatch");}
-	$status['msg']=($status['msg']=='')?__("God help us something has gone horrible wrong"):$status['msg'];
+	$status['msg']=($status['msg']=='')?__("God help us something has gone horribly wrong"):$status['msg'];
 }
 
 echo json_encode($status);
