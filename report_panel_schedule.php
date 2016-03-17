@@ -74,7 +74,6 @@
 		foreach ( $sourceList as $source ) {
 			$pwrPanel->ParentPanelID = $source->PanelID;
 			$panelList = $pwrPanel->getPanelListBySource();
-			
 			printf( "<tr><td><input type=\"checkbox\" name=\"sourceid[]\" value=\"%d\">%s</td>\n", $source->PanelID, $source->PanelLabel );
 			
 			printf( "<td><table>\n" );
@@ -100,28 +99,11 @@
     //
     $pan = new PowerPanel();
     $pdu = new PowerDistribution();
-    $dev = new Device();
     $cab = new Cabinet();
-    $dept = new Department();
     $dc = new DataCenter();
-    $pwrConn = new PowerConnection();
-    //
-    // Make some quick user defined sort comparisons for this report only
-    //
-    function compareCab( $a, $b ) {
-        if ( $a->Location == $b->Location )
-            return 0;
-        return ( $a->Location > $b->Location ) ? +1 : -1;
-    }
 
     $dc->DataCenterID = intval( $_REQUEST['datacenterid'] );
     $dc->GetDataCenter();
-
-    $skipNormal = false;
-
-    if (isset( $_REQUEST["skipnormal"] ) ) {
-        $skipNormal = $_REQUEST["skipnormal"];
-    }
 
     $pnlArray=array();
 
@@ -136,20 +118,15 @@
 	$pnlList = array();
 
 	if ( count( $srcArray ) > 0 ) {
-		// Build an array of the Panels affected when the entire source goes down.
-		// This will allow us to use one section of code to calculate effects of panels going down and use it for both cases.
-		
+		// we were passed in a list of power source ids, so generate panel array baseed off of that
 		$pnlList = array();
-		
 		foreach ( $srcArray as $srcID ) {
 			$pan->ParentPanelID = $srcID;
-			
 			$pnlList = array_merge( $pnlList, $pan->getPanelListBySource() );
 		}
 	} else {
-		// Need to build an array of Panel Objects (what we got from input was just the IDs)
+		// we were passed in a list of panel ids, so create the panel array from that
 		$pnlList = array();
-		
 		foreach ( $pnlArray as $pnlID ) {
 			$pnlCount = count( $pnlList );
 			$pnlList[$pnlCount] = new PowerPanel();
@@ -164,215 +141,200 @@
     // Loop through all the panels from the list and build a schedule
     $reportHTML="";
     foreach ( $pnlList as $panel) {
-        $nextPole=1;
-        $odd=$even=0;
-        $pdu=new PowerDistribution();
 
-        $pdu->PanelID = $panel->PanelID;
-        $pduList=$pdu->GetPDUbyPanel();
+		$panelSchedule=$panel->getPanelSchedule();
 
-		$ps = $panel->getPowerSource();
-		
-        $pduarray=array();
-        foreach($pduList as $pnlPDU){
-            if($pnlPDU->PanelID == $panel->PanelID){
-                $pduarray[$pnlPDU->PanelPole][]=$pnlPDU;
-            }elseif($pnlPDU->PanelID2 == $panel->PanelID){
-                $pduarray[$pnlPDU->PanelPole2][]=$pnlPDU;
-            }
-        }
-        $reportHTML.= '<table class="items" width="100%">';
+		$powerSource = "";
+		$parentTree = $panel->getParentTree();
+		$lastTreeElement = key(end($parentTree));
+		foreach($parentTree as $key=>$currParent) {
+			if($key!=$lastTreeElement) {
+				$powerSource.=" / ";
+			}
+			$powerSource.=$currParent->PanelLabel;
+		}
 
-        if($panel->NumberScheme=="Sequential"){
-            $fill=0;
-            $fillcolor="";
-            $reportHTML.= '<thead>';
-            $reportHTML.= '<tr><td colspan="2" width="100%"><h4>'.__("Panel Schedule for").':<br>';
-            $reportHTML.= __("Data Center").': '.$dc->Name.'<br>';
-            $reportHTML.= __("Power Source").': '.$ps->PanelLabel.'<br>';
-            $reportHTML.= __("Power Panel").': '.$panel->PanelLabel.'</h4></td></tr>'; 
-            $reportHTML.= '<tr><td width="5%">'.__("Pole").'</td>';
-            $reportHTML.= '<td width="95%">'.__("Circuit").'</td></tr></thead><tbody>';
-            while($nextPole <= $panel->NumberOfPoles){
-                $reportHTML .= '<tr'.$fillcolor.'><td align="center">'.$nextPole.'</td>';
-                // Someone input a pole number wrong and this one would have been skipped
-                // store the value and deal with it later.
-                if(isset($pduarray[$nextPole])&&$odd!=0){
-                    foreach($pduarray[$nextPole] as $pduvar){
-                    $errors[]="$pduvar->Label";
-                    }
-                }
-                // Get info for pdu on this pole if it is populated.
-                $lastCabinet=0;
-                if($odd==0){
-                    if(isset($pduarray[$nextPole])){
-                        $pn="";
-                        foreach($pduarray[$nextPole] as $pduvar) {
-                            $cab->CabinetID=$pduvar->CabinetID;
-                            $cab->GetCabinet(  );
+		$totalCols=2;
+		if($panel->NumberScheme=="Odd/Even") {
+			$totalCols=4;
+		}
+        
+		$reportHTML.= '<table class="items" width="100%">';
+		$reportHTML.= '<thead>';
+		$reportHTML.= '<tr><td colspan="'.$totalCols.'" width="100%"><h4>'.__("Panel Schedule for").':<br>';
+		$reportHTML.= __("Data Center").': '.$dc->Name.'<br>';
+		$reportHTML.= __("Power Source").': '.$powerSource.'<br>';
+		$reportHTML.= __("Power Panel").': '.$panel->PanelLabel.'</h4></td></tr>'; 
 
-                            if ($lastCabinet<>$pduvar->CabinetID)
-                                $pn.="$cab->Location<br>";
-                            // mpdf doesn't support text-indent inside of tables
-                            $pn.="&nbsp;&nbsp;&nbsp;$pduvar->Label";
-                            $lastCabinet=$pduvar->CabinetID;
+		if($panel->NumberScheme=="Odd/Even") {
+			$reportHTML.= '<tr><td width="5%">'.__("Pole").'</td>';
+			$reportHTML.= '<td width="45%">'.__("Circuit").'</td>';
+			$reportHTML.= '<td width="5%">'.__("Pole").'</td>';
+			$reportHTML.= '<td width="45%">'.__("Circuit").'</td></tr></thead><tbody>';
 
-                            switch($pduvar->BreakerSize){
-                                case '3': $odd=3; break;
-                                case '2': $odd=2; break;
-                                default: $odd=0;
-                            }
-                        }
-                    }else{
-                        $pn="Available";
-                    }
-                    if($odd==0){
-                        $reportHTML .= '<td>'.$pn.'</td></tr>';
-                        $fill=!$fill;
-                        $fillcolor=$fill?' class="altcolor" ':'';
-                    }else{
-                        $reportHTML .= '<td rowspan="'.$odd.'">'.$pn.'</td></tr>';
-                        --$odd;
-                    }
-                }else{ // we've already started to display a circuit.  no new circuits will be drawn til this count hits zero.
-                    $reportHTML .= '</tr>';
-                    --$odd;
-                    if($odd==0) {
-                        $fill=!$fill;
-                        $fillcolor=$fill?' class="altcolor" ':'';
-                    }
-                }
-                ++$nextPole;
-            } 
-            $reportHTML .= '</tbody></table>';
-        } // Done with table for Sequential
+			for($count=1; $count<=$panel->NumberOfPoles; $count++) {
+				if($count % 2 == 0) {
+					$reportHTML .= '<td class="polenumber panelright">'.$count.'</td>';
+					$reportHTML .= $panel->getPanelScheduleLabelHtml($panelSchedule["panelSchedule"], $count, "panelright", true);
+					$reportHTML .= '</tr>';
+				} else {
+					$reportHTML .= '<tr><td class="polenumber panelleft">'.$count.'</td>';
+					$reportHTML .= $panel->getPanelScheduleLabelHtml($panelSchedule["panelSchedule"], $count, "panelleft", true);
+				}
+			}
+
+		} else {
+			$reportHTML.= '<tr><td width="5%">'.__("Pole").'</td>';
+			$reportHTML.= '<td width="95%">'.__("Circuit").'</td></tr></thead><tbody>';
+			for($count=1; $count<=$panel->NumberOfPoles; $count++) {
+				$reportHTML .= '<tr id="itemRow"><td align="center">'.$count.'</td>';
+				$reportHTML .= $panel->getPanelScheduleLabelHtml($panelSchedule["panelSchedule"], $count, "panelleft", true);
+				$reportHTML .- '</tr>';
+			}
+		}
+
+		$reportHTML .= '</tbody></table>';
 
 
-        if ($panel->NumberScheme=="Odd/Even"){
-            $ofill=0;
-            $ofillcolor="";
-            $efill=1;
-            $efillcolor=' class="altcolor" ';
-            $reportHTML.= '<thead>';
-            $reportHTML.= '<tr><td colspan="4" width="100%"><h4>'.__("Panel Schedule for").':<br>';
-            $reportHTML.= __("Data Center").': '.$dc->Name.'<br>';
-            $reportHTML.= __("Power Source").': '.$currSource->SourceName.'<br>';
-            $reportHTML.= __("Power Panel").': '.$panel->PanelLabel.'</h4></td></tr>'; 
-            $reportHTML.= '<tr><td width="5%">'.__("Pole").'</td>';
-            $reportHTML.= '<td width="45%">'.__("Circuit").'</td>';
-            $reportHTML.= '<td width="5%">'.__("Pole").'</td>';
-            $reportHTML.= '<td width="45%">'.__("Circuit").'</td></tr></thead><tbody>';
-            // Build single table with four columns to represent an odd/even panel layout
-            // $odd and $even will be travel counters to ensure the table is built in a sane manner
-            while($nextPole <= $panel->NumberOfPoles){
-                $reportHTML .= '<tr><td align="center"'.$ofillcolor.'>'.$nextPole.'</td>';
-                // Someone input a pole number wrong and this one would have been skipped
-                // store the value and deal with it later.
-                if(isset($pduarray[$nextPole])&&$odd!=0){
-                    foreach($pduarray[$nextPole] as $pduvar){
-                    $errors[]="$pduvar->Label";
-                    }
-                }
-                // Get info for pdu on this pole if it is populated.
-                $lastCabinet=0;
-                if($odd==0){
-                    if(isset($pduarray[$nextPole])){
-                        $pn="";
-                        foreach($pduarray[$nextPole] as $pduvar) {
-                            $cab->CabinetID=$pduvar->CabinetID;
-                            $cab->GetCabinet(  );
+		// put a pagebreak for each table in mpdf, but don't do it after the
+		// last table
+		if($panel !== end($pnlList)) {
+			$reportHTML .= '<!--mpdf <pagebreak /> mpdf-->';
+		}
+	} //Done with panel loop
 
-                            if ($lastCabinet<>$pduvar->CabinetID)
-                                $pn.="$cab->Location<br>";
-                            $pn.="&nbsp;&nbsp;&nbsp;$pduvar->Label";
-                            $lastCabinet=$pduvar->CabinetID;
 
-                            switch($pduvar->BreakerSize){
-                                case '3': $odd=3; break;
-                                case '2': $odd=2; break;
-                                default: $odd=0;
-                            }
-                        }
-                    }else{
-                        $pn="Available";
-                    }
-                    if($odd==0){
-                        $reportHTML .= '<td'.$ofillcolor.'>'.$pn.'</td>';
-                        $ofill=!$ofill;
-                        $ofillcolor=$ofill?' class="altcolor" ':'';
-                    }else{
-                        $reportHTML .= '<td rowspan="'.$odd.'"'.$ofillcolor.'>'.$pn.'</td>';
-                        --$odd;
-                    }
-                }else{ // we've already started to display a circuit.  no new circuits will be drawn til this count hits zero.
-                    --$odd;
-                    if($odd==0) {
-                        $ofill=!$ofill;
-                        $ofillcolor=$ofill?' class="altcolor" ':'';
-                    }
-                }
-                //Odd side done. Print even side circuit id then check for connected device.
-                ++$nextPole;
-                $reportHTML .= '<td align="center"'.$efillcolor.'>'.$nextPole.'</td>';
-                // Someone input a pole number wrong and this one would have been skipped
-                // store the value and deal with it later.
-                if(isset($pduarray[$nextPole])&&$even!=0){ 
-                    foreach($pduarray[$nextPole] as $pduvar){
-                    $errors[]="$pduvar->Label";
-                    }
-                }
-                if($even==0){
-                    if(isset($pduarray[$nextPole])){
-                        $pn="";
-                        foreach($pduarray[$nextPole] as $pduvar) {
-                            $cab->CabinetID=$pduvar->CabinetID;
-                            $cab->GetCabinet(  );
+	// go back and zebra stripe the report
+	require_once("simple_html_dom.php");
 
-                            if ($lastCabinet<>$pduvar->CabinetID)
-                                $pn.="$cab->Location<br>";
-                            $pn.="&nbsp;&nbsp;&nbsp;$pduvar->Label";
-                            $lastCabinet=$pduvar->CabinetID;
+	$dom = str_get_html($reportHTML);
 
-                            switch($pduvar->BreakerSize){
-                                case '3': $even=3; break;
-                                case '2': $even=2; break;
-                                default: $even=0;
-                            }
-                        }
-                    }else{
-                        $pn="Available";
-                    }
-                    if($even==0){
-                        $reportHTML .= '<td'.$efillcolor.'>'.$pn.'</td></tr>';
-                        $efill=!$efill;
-                        $efillcolor=$efill?' class="altcolor" ':'';
-                    }else{
-                        $reportHTML .= '<td rowspan="'.$even.'"'.$efillcolor.'>'.$pn.'</td></tr>';
-                        --$even;
-                    }
-                }else{ // we've already started to display a circuit.  no new circuits will be drawn til this count hits zero.
-                    $reportHTML .= '</tr>';
-                    --$even;
-                    if($even==0) {
-                        $efill=!$efill;
-                        $efillcolor=$efill?' class="altcolor" ':'';
-                    }
-                }
-                //Even side done. Increment counter and restart loop for next row.
-                ++$nextPole;
-            } 
-            $reportHTML .= '</tbody></table>';
-        } //Done with table for Odd/Even
+	// find all item tables, which is what we will zebra stripe
+	foreach($dom->find('table.items') as $currTable) {
+		$numTD=0;
+		// get the first row that has a td with rowspan attribute
+		$firstRow= $currTable->find('tr td[rowspan]', 0);
+		if(!$firstRow) {
+			// no row found, instead get the first row that has a td without colspan attribute
+			$firstRow = $currTable->find('tr td[!colspan]', 0);
+		}
+		if($firstRow) {
+			// calculate the number of tds inside the found tr
+			$numTD = count($firstRow->parent()->children());
+		}
 
-        // put a pagebreak for each table in mpdf, but don't do it after the
-        // last table
-        if($panel !== end($pnlList)) {
-            $reportHTML .= '<!--mpdf <pagebreak /> mpdf-->';
-        }
-    } //Done with panel loop
+		if($numTD==4) {
+			// this is odd/even
+			$filterTrLeft=array();
+			$filterTrRight=array();
+			foreach($currTable->find('tr') as $currTr) {
+				// simplehtmldoms handling of tbody in find() is broken, so filter it here
+				$currTrChildren = $currTr->children();
+				$currTrChildrenCount = count($currTrChildren);
+				if( $currTr->parent()->tag!="thead") {
+					if($currTrChildrenCount==$numTD) {
+						$filterTrLeft[]=array($currTrChildren[0], $currTrChildren[1]);
+						$filterTrRight[]=array($currTrChildren[2], $currTrChildren[3]);
+					} elseif($currTrChildrenCount == 3) {
+						// if child count is 3, then we need to figure out if the left half or the 
+						// right half is rowspanned. easiest way is to look at the second item
+						// and see if it is just an integer (the pole number) and if so, the
+						// left side is rowspanned, otherwise the right side is
+						if(is_numeric($currTrChildren[1]->innertext)) {
+							$filterTrRight[]=array($currTrChildren[1], $currTrChildren[2]);
+						} else {
+							$filterTrLeft[]=array($currTrChildren[0], $currTrChildren[1]);
+						}
+					} 
+				}
+			}
 
-    // generate the report using the template
-    include('template_mpdf_reports.inc.php');
+			// this colors the main part of the filtered rows, but not the rowspanned parts
+			for($count=0; $count<count($filterTrLeft); $count++) {
+				if($count%2!=0) {
+					$filterTrLeft[$count][0]->class.=" altcolor";
+					$filterTrLeft[$count][1]->class.=" altcolor";
+				}
+			}
+			for($count=0; $count<count($filterTrRight); $count++) {
+				if($count%2==0) {
+					$filterTrRight[$count][0]->class.=" altcolor";
+					$filterTrRight[$count][1]->class.=" altcolor";
+				}
+			}
+
+		} else {
+			// this is sequential
+
+			// filter the list of trs so we only get ones that are in tbody, and have a count
+			// equal to the full number of tds for the table - these are the rows we are
+			// actually going to zebra stripe (basically, excludes rowspanned rows)
+			$filterTr=array();
+			foreach($currTable->find('tr') as $currTr) {
+				// simplehtmldoms handling of tbody in find() is broken, so filter it here
+				if( $currTr->parent()->tag!="thead" && count($currTr->children())==$numTD) {
+					$filterTr[]=$currTr;
+				}	
+			}
+			// now, go through the list and add the altcolor class to every other filtered row
+			for($count=0; $count<count($filterTr); $count++) {
+				if($count%2!=0) {
+					$filterTr[$count]->class.=" altcolor";
+				}
+			}
+		}
+
+	}
+
+	// now, we need to also color any rowspanned rows, and at this point we know which those are
+
+	// this is for odd/even (which are done at the td level)
+	foreach($dom->find('table.items tr td.altcolor') as $currTd) {
+		if(strpos($currTd->class, "altcolor") && $currTd->rowspan) {
+			$nextTr=$currTd->parent()->next_sibling();
+			for($count=0; $count<$currTd->rowspan-1; $count++) {
+				if(strpos($currTd->class, "panelleft")) {
+					foreach($nextTr->children() as $nextTd) {
+						if(strpos($nextTd->class, "panelleft") && !strpos($nextTd->class, "altcolor")) {
+							$nextTd->class.=" altcolor";
+						}
+					}
+				} elseif(strpos($currTd->class, "panelright")) {
+					foreach($nextTr->children() as $nextTd) {
+						if(strpos($nextTd->class, "panelright") && !strpos($nextTd->class, "altcolor")) {
+							$nextTd->class.=" altcolor";
+						}
+					}
+				}
+				$nextTr=$nextTr->next_sibling();
+			}
+		}
+	}
+
+
+
+	// this is for sequential (which are done at the tr level)
+	foreach($dom->find('table.items tr.altcolor td[rowspan]') as $currTd) {
+		//for some reason, the find above doesn't always filter out trs that don't have 
+		// altcolor set, so make doubly sure
+		if(strpos($currTd->parent()->class, "altcolor")) {
+			// at this point, the currTd parent should be a row that is altcolored, and has a rowspan
+			// loop through all of the follow-up trs until we color all of the ones in the rowspan
+			$nextTr = $currTd->parent()->next_sibling();
+			for($count=0; $count<$currTd->rowspan-1; $count++) {
+				$nextTr->class.=" altcolor";
+				$nextTr = $nextTr->next_sibling();
+			}
+		}
+	}
+
+
+	$reportHTML = $dom->save();
+
+	// generate the report using the template
+	include('template_mpdf_reports.inc.php');
+
+	print $reportHTML;
 
 }
 ?>
