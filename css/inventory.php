@@ -305,6 +305,7 @@ canvas#background { position: absolute; }
 .templatemaker #previewimage { width: 400px;}
 .templatemaker fieldset label {padding-right: 1em;padding-left:0.25em;}
 .templatemaker #atsbox {border: 1px solid black;padding:0.25em;margin-top: 1em;}
+.templatemaker .ui-button { margin: 0; }
 .table.front #previewimage, .table.rear #previewimage { position: relative; }
 .table.front #coordstable, .table.rear #coordstable { width: 320px; padding-left: 10px;}
 #coordstable input { width: 40px; }

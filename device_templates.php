@@ -549,6 +549,10 @@
 		$('#TemplateID').combobox();
 		$('#ManufacturerID').combobox();
 
+		// fuckin layout bug
+		$('span.custom-combobox').width($('span.custom-combobox').width()+2);
+		$('.templatemaker input[type=checkbox]').css('margin','2px');
+
 		$('#FrontPictureFile,#RearPictureFile,#ChassisSlots,#RearChassisSlots,#NumPorts,#PSCount').on('change keyup keydown', function(){ TemplateButtons(); });
 
 
