@@ -1254,6 +1254,21 @@ if(isset($results)){
 		}
 	}
 
+	if ( isset($_REQUEST['ldapaction']) && $_REQUEST['ldapaction'] == "Set" ) {
+		Config::UpdateParameter( 'LDAPServer', $_REQUEST['LDAPServer']);
+		Config::UpdateParameter( 'LDAPBaseDN', $_REQUEST['LDAPBaseDN']);
+		Config::UpdateParameter( 'LDAPBindDN', $_REQUEST['LDAPBindDN']);
+		Config::UpdateParameter( 'LDAPSiteAccess', $_REQUEST['LDAPSiteAccess']);
+		Config::UpdateParameter( 'LDAPReadAccess', $_REQUEST['LDAPReadAccess']);
+		Config::UpdateParameter( 'LDAPWriteAccess', $_REQUEST['LDAPWriteAccess']);
+		Config::UpdateParameter( 'LDAPDeleteAccess', $_REQUEST['LDAPDeleteAccess']);
+		Config::UpdateParameter( 'LDAPAdminOwnDevices', $_REQUEST['LDAPAdminOwnDevices']);
+		Config::UpdateParameter( 'LDAPRackRequest', $_REQUEST['LDAPRackRequest']);
+		Config::UpdateParameter( 'LDAPRackAdmin', $_REQUEST['LDAPRackAdmin']);
+		Config::UpdateParameter( 'LDAPContactAdmin', $_REQUEST['LDAPContactAdmin']);
+		Config::UpdateParameter( 'LDAPSiteAdmin', $_REQUEST['LDAPSiteAdmin']);
+	}
+
 // Synchronization
 	if ( isset( $_POST["repoaction"] ) && $_POST["repoaction"] == "Sync" ) {
 		$c = curl_init('https://repository.opendcim.org/api/manufacturer');
@@ -1332,7 +1347,7 @@ if(isset($results)){
 <div id="header"></div>
 <?php
 
-	if((!isset($_GET["cab"])&&!isset($_GET["dc"])&&!isset($_GET["complete"]))||isset($_GET["dept"])){
+	if((!isset($_GET["cab"])&&!isset($_GET["dc"])&&!isset($_GET["ldap"])&&!isset($_GET["complete"]))||isset($_GET["dept"])){
 		$deptList = $dept->GetDepartmentList();
 ?>
 <div class="page installer">
@@ -1342,6 +1357,7 @@ if(isset($results)){
 <a><li class="active">Departments</li></a>
 <a href="?dc&preflight-ok"><li>Data Centers</li></a>
 <a href="?cab&preflight-ok"><li>Cabinets</li></a>
+<?php if ( AUTHENTICATION == "LDAP" ) echo '<a href="?ldap&preflight-ok"><li>LDAP</li></a>'; ?>
 <?php if(isset($complete)){ echo '<a href="?complete&preflight-ok"><li>Complete</li></a>'; }?>
 </ul>
 </div>
@@ -1419,6 +1435,7 @@ if(isset($results)){
 <a href="?dept&preflight-ok"><li>Departments</li></a>
 <a><li class="active">Data Centers</li></a>
 <a href="?cab&preflight-ok"><li>Cabinets</li></a>
+<?php if ( AUTHENTICATION == "LDAP" ) echo '<a href="?ldap&preflight-ok"><li>LDAP</li></a>'; ?>
 <?php if(isset($complete)){ echo '<a href="?complete&preflight-ok"><li>Complete</li></a>'; }?>
 </ul>
 </div>
@@ -1510,6 +1527,7 @@ if(isset($results)){
 <a href="?dept&preflight-ok"><li>Departments</li></a>
 <a href="?dc&preflight-ok"><li>Data Centers</li></a>
 <a><li class="active">Cabinets</li></a>
+<?php if ( AUTHENTICATION == "LDAP" ) echo '<a href="?ldap&preflight-ok"><li>LDAP</li></a>'; ?>
 <?php if(isset($complete)){ echo '<a href="?complete&preflight-ok"><li>Complete</li></a>'; }?>
 </ul>
 </div>
@@ -1600,6 +1618,89 @@ echo '
 </div><!-- END div.main -->
 </div><!-- END div.page -->
 <?php
+	} elseif (isset($_GET['ldap'])) {
+
+?>
+<div class='page installer'>
+<div id="sidebar">
+<ul>
+<a href="?dept&preflight-ok"><li>Departments</li></a>
+<a href="?dc&preflight-ok"><li>Data Centers</li></a>
+<a href="?cab&preflight-ok"><li>Cabinets</li></a>
+<a><li class="active">LDAP</li></a>
+<?php if(isset($complete)){ echo '<a href="?complete&preflight-ok"><li>Complete</li></a>'; }?>
+</ul>
+</div>
+<div class='main'>
+<h2><?php echo $config->ParameterArray['OrgName']; ?></h2>
+<h3>Installation Complete</h3>
+<?php echo $nodccab; ?>
+<div class='center'><div>
+<form action="<?php echo $_SERVER['PHP_SELF']; ?>?ldap&preflight-ok" method="POST">
+<?php
+echo '<div id="ldap">
+	<h3>',__("LDAP Authentication and Authorization Configuration"),'</h3>
+	<div class="table">
+		<div>
+			<div><label for="LDAPServer">',__("LDAP Server URI"),'</label></div>
+			<div><input type="text" size="40" defaultvalue="',$config->defaults["LDAPServer"],'" name="LDAPServer" value="',$config->ParameterArray['LDAPServer'],'"></div>
+		</div>
+		<div>
+			<div><label for="LDAPBaseDN">',__("Base DN"),'</label></div>
+			<div><input type="text" size="40" defaultvalue="',$config->defaults["LDAPBaseDN"],'" name="LDAPBaseDN" value="',$config->ParameterArray["LDAPBaseDN"],'"></div>
+		</div>
+		<div>
+			<div><label for="LDAPBindDN">',__("Bind DN"),'</label></div>
+			<div><input type="text" size="40" defaultvalue="',$config->defaults["LDAPBindDN"],'" name="LDAPBindDN" value="',$config->ParameterArray["LDAPBindDN"],'"></div>
+		</div>
+	</div>
+	<h3>',__("Group Distinguished Names"),'</h3>
+	<div class="table">
+		<div>
+			<div><label for="LDAPSiteAccess">',__("Site Access"),'</label></div>
+			<div><input type="text" size="70" defaultvalue="',$config->defaults["LDAPSiteAccess"],'" name="LDAPSiteAccess" value="',$config->ParameterArray["LDAPSiteAccess"],'"></div>
+		</div>
+		<div>
+			<div><label for="LDAPReadAccess">',__("Global Read"),'</label></div>
+			<div><input type="text" size="70" defaultvalue="',$config->defaults["LDAPReadAccess"],'" name="LDAPReadAccess" value="',$config->ParameterArray["LDAPReadAccess"],'"></div>
+		</div>
+		<div>
+			<div><label for="LDAPWriteAccess">',__("Global Write"),'</label></div>
+			<div><input type="text" size="70" defaultvalue="',$config->defaults["LDAPWriteAccess"],'" name="LDAPWriteAccess" value="',$config->ParameterArray["LDAPWriteAccess"],'"></div>
+		</div>
+		<div>
+			<div><label for="LDAPDeleteAccess">',__("Global Delete"),'</label></div>
+			<div><input type="text" size="70" defaultvalue="',$config->defaults["LDAPDeleteAccess"],'" name="LDAPDeleteAccess" value="',$config->ParameterArray["LDAPDeleteAccess"],'"></div>
+		</div>
+		<div>
+			<div><label for="LDAPAdminOwnDevices">',__("Admin Owned Devices"),'</label></div>
+			<div><input type="text" size="70" defaultvalue="',$config->defaults["LDAPAdminOwnDevices"],'" name="LDAPAdminOwnDevices" value="',$config->ParameterArray["LDAPAdminOwnDevices"],'"></div>
+		</div>
+		<div>
+			<div><label for="LDAPRackRequest">',__("Enter Rack Request"),'</label></div>
+			<div><input type="text" size="70" defaultvalue="',$config->defaults["LDAPRackRequest"],'" name="LDAPRackRequest" value="',$config->ParameterArray["LDAPRackRequest"],'"></div>
+		</div>
+		<div>
+			<div><label for="LDAPRackAdmin">',__("Complete Rack Request"),'</label></div>
+			<div><input type="text" size="70" defaultvalue="',$config->defaults["LDAPRackAdmin"],'" name="LDAPRackAdmin" value="',$config->ParameterArray["LDAPRackAdmin"],'"></div>
+		</div>
+		<div>
+			<div><label for="LDAPContactAdmin">',__("Contact Admin"),'</label></div>
+			<div><input type="text" size="70" defaultvalue="',$config->defaults["LDAPContactAdmin"],'" name="LDAPContactAdmin" value="',$config->ParameterArray["LDAPContactAdmin"],'"></div>
+		</div>
+		<div>
+			<div><label for="LDAPSiteAdmin">',__("Site Admin"),'</label></div>
+			<div><input type="text" size="70" defaultvalue="',$config->defaults["LDAPSiteAdmin"],'" name="LDAPSiteAdmin" value="',$config->ParameterArray["LDAPSiteAdmin"],'"></div>
+		</div>
+	</div>
+	<div>
+		<div>
+			<div><input type="submit" name="ldapaction" value="Set"></div>
+		</div>
+	</div>
+';
+
+
 	}elseif(isset($_GET["complete"])){
 ?>
 <div class='page installer'>
@@ -1608,6 +1709,7 @@ echo '
 <a href="?dept&preflight-ok"><li>Departments</li></a>
 <a href="?dc&preflight-ok"><li>Data Centers</li></a>
 <a href="?cab&preflight-ok"><li>Cabinets</li></a>
+<?php if ( AUTHENTICATION == "LDAP" ) echo '<a href="?ldap&preflight-ok"><li>LDAP</li></a>'; ?>
 <?php if(isset($complete)){ echo '<a><li class="active">Complete</li></a>'; }?>
 </ul>
 </div>

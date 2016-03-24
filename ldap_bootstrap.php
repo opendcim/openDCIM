@@ -102,12 +102,6 @@ $(document).ready(function() {
   </div>
 </div>
 </form>
-<pre>
-<?php print_r($_SESSION); ?>
-</pre>
-
-
-
 
 </div></div>
 </div><!-- END div.main -->
