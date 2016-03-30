@@ -5,6 +5,7 @@
 INSERT INTO fac_Config set Parameter="LDAPServer", Value="localhost", UnitOfMeasure="URI", ValType="string", DefaultVal="localhost";
 INSERT INTO fac_Config set Parameter="LDAPBaseDN", Value="dc=opendcim,dc=org", UnitOfMeasure="DN", ValType="string", DefaultVal="dc=opendcim,dc=org";
 INSERT INTO fac_Config set Parameter="LDAPBindDN", Value="cn=%userid%,ou=users,dc=opendcim,dc=org", UnitOfMeasure="DN", ValType="string", DefaultVal="cn=%userid%,ou=users,dc=opendcim,dc=org";
+INSERT INTO fac_Config set Parameter="LDAPSessionExpiration", Value="0", UnitOfMeasure="Seconds", ValType="int", DefaultVal="0";
 
 INSERT INTO fac_Config set Parameter="LDAPSiteAccess", Value="cn=openDCIM,ou=groups,dc=opendcim,dc=org", UnitOfMeasure="DN", ValType="string", DefaultVal="cn=openDCIM,ou=groups,dc=opendcim,dc=org";
 INSERT INTO fac_Config set Parameter="LDAPReadAccess", Value="cn=ReadAccess,cn=openDCIM,ou=groups,dc=opendcim,dc=org", UnitOfMeasure="DN", ValType="string", DefaultVal="cn=ReadAccess,cn=openDCIM,ou=groups,dc=opendcim,dc=org";

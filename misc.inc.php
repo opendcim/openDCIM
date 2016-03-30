@@ -802,6 +802,14 @@ if( AUTHENTICATION=="Oauth" && !isset($_SESSION['userid']) && php_sapi_name()!="
 	exit;
 }
 
+// Just to keep things from getting extremely wonky and complicated, even though this COULD be in one giant
+// if/then/else stanza, I'm breaking it into two
+
+if( AUTHENTICATION=="LDAP" && $config->ParameterArray["LDAPSessionExpiration"] > 0 && isset($_SESSION['userid']) && ((time() - $_SESSION['LoginTime']) > $config->ParameterArray['LDAPSessionExpiration'])) {
+	session_unset();
+	session_destroy();
+	session_start();
+}
 
 if( AUTHENTICATION=="LDAP" && !isset($_SESSION['userid']) && php_sapi_name()!="cli" && !isset($loginPage)) {
 	$savedurl = $_SERVER['PHP_SELF'] . "?" . $_SERVER['QUERY_STRING'];

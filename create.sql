@@ -843,6 +843,7 @@ INSERT INTO fac_Config VALUES
   ('LDAPServer', 'localhost', 'URI', 'string', 'localhost'),
   ('LDAPBaseDN', 'dc=opendcim,dc=org', 'DN', 'string', 'dc=opendcim,dc=org'),
   ('LDAPBindDN', 'cn=%userid%,ou=users,dc=opendcim,dc=org', 'DN', 'string', 'cn=%userid%,ou=users,dc=opendcim,dc=org'),
+  ('LDAPSessionExpiration', '0', 'Seconds', 'int', '0'),
   ('LDAPSiteAccess', 'cn=openDCIM,ou=groups,dc=opendcim,dc=org', 'DN', 'string', 'cn=openDCIM,ou=groups,dc=opendcim,dc=org'),
   ('LDAPReadAccess', 'cn=ReadAccess,cn=openDCIM,ou=groups,dc=opendcim,dc=org', 'DN', 'string', 'cn=ReadAccess,cn=openDCIM,ou=groups,dc=opendcim,dc=org'),
   ('LDAPWriteAccess', 'cn=WriteAccess,cn=openDCIM,ou=groups,dc=opendcim,dc=org', 'DN', 'string', 'cn=WriteAccess,cn=openDCIM,ou=groups,dc=opendcim,dc=org'),

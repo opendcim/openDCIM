@@ -1258,6 +1258,7 @@ if(isset($results)){
 		Config::UpdateParameter( 'LDAPServer', $_REQUEST['LDAPServer']);
 		Config::UpdateParameter( 'LDAPBaseDN', $_REQUEST['LDAPBaseDN']);
 		Config::UpdateParameter( 'LDAPBindDN', $_REQUEST['LDAPBindDN']);
+		Config::UpdateParameter( 'LDAPSessionExpiration', $_REQUEST['LDAPSessionExpiration'] );
 		Config::UpdateParameter( 'LDAPSiteAccess', $_REQUEST['LDAPSiteAccess']);
 		Config::UpdateParameter( 'LDAPReadAccess', $_REQUEST['LDAPReadAccess']);
 		Config::UpdateParameter( 'LDAPWriteAccess', $_REQUEST['LDAPWriteAccess']);
@@ -1652,6 +1653,10 @@ echo '<div id="ldap">
 		<div>
 			<div><label for="LDAPBindDN">',__("Bind DN"),'</label></div>
 			<div><input type="text" size="40" defaultvalue="',$config->defaults["LDAPBindDN"],'" name="LDAPBindDN" value="',$config->ParameterArray["LDAPBindDN"],'"></div>
+		</div>
+		<div>
+			<div><label for="LDAPSessionExpiration">',__("LDAP Session Expiration (Seconds)"),'</label></div>
+			<div><input type="text" defaultvalue="',$config->defaults["LDAPSessionExpiration"],'" name="LDAPSessionExpiration" value="',$config->ParameterArray["LDAPSessionExpiration"],'"></div>
 		</div>
 	</div>
 	<h3>',__("Group Distinguished Names"),'</h3>

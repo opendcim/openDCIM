@@ -60,6 +60,7 @@
           if ( $config->ParameterArray['LDAPSiteAccess'] == "" || $ldapResults[$i]['dn'] == $config->ParameterArray['LDAPSiteAccess'] ) {
             // No specific group membership required to access openDCIM or they have a match to the group required
             $_SESSION['userid'] = $ldapUser;
+            $_SESSION['LoginTime'] = time();
             session_commit();
           }
 

@@ -1915,6 +1915,10 @@ echo '<div class="main">
 					<div><label for="LDAPBindDN">',__("Bind DN"),'</label></div>
 					<div><input type="text" defaultvalue="',$config->defaults["LDAPBindDN"],'" name="LDAPBindDN" value="',$config->ParameterArray["LDAPBindDN"],'"></div>
 				</div>
+				<div>
+					<div><label for="LDAPSessionExpiration">',__("LDAP Session Expiration (Seconds)"),'</label></div>
+			<div><input type="text" defaultvalue="',$config->defaults["LDAPSessionExpiration"],'" name="LDAPSessionExpiration" value="',$config->ParameterArray["LDAPSessionExpiration"],'"></div>
+		</div>
 			</div>
 			<h3>',__("Group Distinguished Names"),'</h3>
 			<div class="table">
