@@ -8,6 +8,9 @@
 	      session_start();
 	}
 
+	// Set to true if you want to skip the installer check
+	$devMode = false;
+
 	$dbhost = 'localhost';
 	$dbname = 'dcim';
 	$dbuser = 'dcim';
@@ -28,6 +31,8 @@
 			die();
 	}
 	
+	// Make sure that you only have ONE of these authentication types uncommented.  You will get an error if you
+	// try to define the same name twice.
 	if ( !defined( "AUTHENTICATION") ) {
 		define( "AUTHENTICATION", "Apache" );
 

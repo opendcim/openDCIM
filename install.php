@@ -1085,6 +1085,13 @@ function upgrade(){
 		// Rebuild the config table just in case.
 		$config->rebuild();
 	}
+	if($version=="4.1.1"){
+		// First apply the schema updates needed.
+		$results[]=applyupdate("db-4.1.1-to-4.2.sql");
+
+		// Rebuild the config table just in case.
+		$config->rebuild();		
+	}
 }
 
 	if($upgrade==true){ //If we're doing an upgrade don't call the rest of the installer.
