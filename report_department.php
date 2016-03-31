@@ -2,6 +2,12 @@
 	require_once( 'db.inc.php' );
 	require_once( 'facilities.inc.php' );
 
+if(!$person->ContactAdmin){
+    // No soup for you.
+    header('Location: '.redirect());
+    exit;
+}
+
 	define('FPDF_FONTPATH','font/');
 	require('fpdf.php');
 

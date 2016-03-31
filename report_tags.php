@@ -2,6 +2,12 @@
 	require_once('db.inc.php');
 	require_once('facilities.inc.php');
 
+if(!$person->ReadAccess){
+    // No soup for you.
+    header('Location: '.redirect());
+    exit;
+}
+
 	$subheader=__("Inventory Reporting By Tag");
 
 	$tagsList=Tags::FindAll();

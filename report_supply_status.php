@@ -7,6 +7,12 @@
 	require_once( "facilities.inc.php" );
 	require_once( "mpdf/mpdf.php" );
 	
+	if(!$person->ReadAccess){
+	    // No soup for you.
+	    header('Location: '.redirect());
+	    exit;
+	}
+
 	/* Version 1.0 of this report has no selectable parameters - you just get a complete dump */
 	
 	$mpdf=new mPDF('win-1252','A4','','',20,15,48,25,10,10); 

@@ -2,6 +2,12 @@
 	require_once('db.inc.php');
 	require_once('facilities.inc.php');
 
+if(!$person->SiteAdmin){
+    // No soup for you.
+    header('Location: '.redirect());
+    exit;
+}
+
 
 if(isset($_POST['refresh'])){
 	$log=new LogActions();

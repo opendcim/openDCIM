@@ -16,6 +16,12 @@
 require_once 'db.inc.php';
 require_once 'facilities.inc.php';
 
+if(!$person->ReadAccess){
+    // No soup for you.
+    header('Location: '.redirect());
+    exit;
+}
+
 global $sessID;
 
 // everyone hates error_log spam
