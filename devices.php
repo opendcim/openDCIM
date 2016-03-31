@@ -711,7 +711,8 @@
 				$pwrCords=$pwrConnection->getPorts();
 
 				if($dev->DeviceType=='Switch'){
-					$linkList=SwitchInfo::getPortStatus($dev->DeviceID);
+					// $linkList=SwitchInfo::getPortStatus($dev->DeviceID);
+					$initialSwitchLoad = true;
 				}elseif($dev->DeviceType=='CDU'){
 					$pdu->PDUID=$dev->DeviceID;
 					$pdu->GetPDU();
@@ -1363,6 +1364,12 @@ $(document).ready(function() {
 	$('#firstport button[name=Notes]').click(function(){
 		refreshswitch($('#DeviceID').val(),'Notes');
 	});
+
+<?php
+	if ( $initialSwitchLoad ) {
+		echo "refreshswitch($('#DeviceID').val());\n";
+	}
+?>
 	function refreshswitch(devid,names){
 		var modal=$('<div />', {id: 'modal', title: 'Please wait...'}).html('<div id="modaltext"><img src="images/animatedswitch.gif" style="width: 100%;"><br>Polling device...</div><br><div id="modalstatus" class="warning"></div>').dialog({
 			appendTo: 'body',
