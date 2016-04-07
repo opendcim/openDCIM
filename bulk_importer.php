@@ -53,7 +53,7 @@
 
     // We're good, so now get the top row so that we can map it out to fields
 
-    $content = "<h3>" . __("Pick the appropriate column for each field name listed below." ) . "</h3>";
+    $content = "<h3>" . __("Pick the appropriate column header (line 1) for each field name listed below." ) . "</h3>";
 
     $content .= '<form action="' . $_SERVER['PHP_SELF'] . '" method="POST">
                     <input type="hidden" name="stage" value="validate">
@@ -73,7 +73,7 @@
 
     $fieldNum = 1;
 
-    foreach ( array( "DataCenterID", "Cabinet", "Position", "Label", "Height", "Manufacturer", "Model", "Hostname", "SerialNo", "AssetTag", "Owner", "PrimaryContact" ) as $fieldName ) {
+    foreach ( array( "DataCenterID", "Cabinet", "Position", "Label", "Height", "Manufacturer", "Model", "Hostname", "SerialNo", "AssetTag", "ESX", "InstallDate", "Reservation", "Owner", "PrimaryContact" ) as $fieldName ) {
       $content .= '<div>
                     <div>' . __($fieldName) . ': </div><div><select name="' . $fieldName . '">';
       for ( $n = 0; $n < sizeof( $fieldList ); $n++ ) {
@@ -143,20 +143,30 @@
       $content = "";
     }
     if ( $valid ) {
-      $fields = array( "DataCenterID", "Cabinet", "Position", "Label", "Height", "Manufacturer", "Model", "Hostname", "SerialNo", "AssetTag", "Owner", "PrimaryContact" );
       $values = array();
-
+      $fields = array( "DataCenterID", "Cabinet", "Manufacturer", "Model", "Owner", "PrimaryContact" );
       // Skip the first row, which has the headers in it
       for ( $n = 2; $n <= $highestRow; $n++ ) {
-        foreach ( $fields as $fname ) {
+        foreach( $fields as $fname ) {
           $addr = chr( 64 + $_REQUEST[$fname]);
-          $values[$fname][] = $sheet->getCell( $addr . $n )->getValue();
+          $row[$fname] = $sheet->getCell( $addr . $n )->getValue();
         }
+
+        // Have to do this part by hand because some fields are actually context dependent upon others
+        $values["DataCenterID"][] = $row["DataCenterID"];
+        $tmpCab["DataCenterID"] = $row["DataCenterID"];
+        $tmpCab["Cabinet"] = $row["Cabinet"];
+        $values["Cabinet"][] = $tmpCab;
+        $values["Manufacturer"][] = $row["Manufacturer"];
+        $tmpModel["Manufacturer"] = $row["Manufacturer"];
+        $tmpModel["Model"] = $row["Model"];
+        $values["Model"][] = $tmpModel;
+        $values["Owner"][] = $row["Owner"];
+        $values["PrimaryContact"][] = $row["PrimaryContact"];
       }
 
-      // Get rid of duplicate values in each array
-      foreach( $fields as $fname ) {
-        $values[$fname] = array_unique($values[$fname]);
+      foreach( $values as $key => $val ) {
+        $values[$key] = array_unique( $values[$key], SORT_REGULAR );
       }
       
       if ( $valid ) {
@@ -175,12 +185,20 @@
           }
         }
 
-        // To check validity of cabinets, we have to know the data center for that specific cabinet.  To do later.
+        // To check validity of cabinets, we have to know the data center for that specific cabinet.
+        $st = $dbh->prepare( "select CabinetID from fac_Cabinet where ucase(Location)=ucase( :Location ) and DataCenterID in (select DataCenterID from fac_DataCenter where ucase(Name)=ucase( :DataCenter ))" );
+        foreach( $values["Cabinet"] as $row ) {
+          $st->execute( array( ":Location"=>$row["Cabinet"], ":DataCenter"=>$row["DataCenterID"] ));
+          if ( ! $st->fetch()) {
+            $valid = false;
+            $tmpCon .= "<li>" . __("Cabinet") . ": " . $row["DataCenterID"] . " - " . $row["Cabinet"];
+          }
+        }
 
         // Check the Manufacturer Names for validity
         $st = $dbh->prepare( "select ManufacturerID from fac_Manufacturer where ucase(Name)=ucase(:Name)" );
         foreach ( $values["Manufacturer"] as $val ) {
-          $st->execute( array( ":Name" => $val );
+          $st->execute( array( ":Name" => $val ) );
           if ( ! $st->fetch() ) {
             $valid = false;
             $tmpCon .= "<li>" . __("Manufacturer");
@@ -188,13 +206,56 @@
         }
 
         // Check the Model for validity, which is like cabinets - it requires the Manufacturer paired with the Model to check.
-        
+        $st = $dbh->prepare( "select TemplateID from fac_DeviceTemplate where ucase(Model)=ucase(:Model) and ManufacturerID in (select ManufacturerID from fac_Manufacturer where ucase(Name)=ucase(:Manufacturer))" );        
+        foreach( $values["Model"] as $row ) {
+          $st->execute( array( ":Model"=>$row["Model"], ":Manufacturer"=>$row["Manufacturer"] ));
+          if ( ! $st->fetch() ) {
+            $valid = false;
+            $tmpCon .= "<li>" . __("Model") . ": " . $row["Manufacturer"] . " - " . $row["Model"];
+          }
+        }
+
+        // Check for the Department to be valid
+        $st = $dbh->prepare( "select DeptID from fac_Department where ucase(Name)=ucase( :Name )" );
+        foreach( $values["Owner"] as $val ) {
+          $st->execute( array( ":Name"=>$val ));
+          if ( ! $st->fetch() ) {
+            $valid = false;
+            $tmpCon .= "<li>" . __("Department") . ": " . $val;
+          }
+        }
+
+        // Finally, check on the Primary Contact
+
+        //  TO DO LATER
 
         if ( ! $valid ) {
           $content .= $tmpCon . "</ul>";
+        } else {
+          $content = '<form action="' . $_SERVER['PHP_SELF']. '" method="POST" ENCTYPE="multipart/form-data">';
+          $content .= "<h3>" . __( "The file has passed validation.  Press the Process button to import." ) . "</h3>";
+          $content .= '<input type="hidden" name="stage" value="process">
+                    <div>
+                    <input type="submit" value="' . __("Process") . '" name="submit">
+                    </div>
+                  </form>';
         }
+
       }
     }
+  } elseif ( isset($_REQUEST['stage']) && $_REQUEST['stage'] == 'process' ) {
+    // Open the file to finally do some actual inserts this time
+
+    $targetFile = $_SESSION['inputfile'];
+    try {
+      $inFileType = PHPExcel_IOFactory::identify($targetFile);
+      $objReader = PHPExcel_IOFactory::createReader($inFileType);
+      $objXL = $objReader->load($targetFile);
+    } catch (Exception $e) {
+      die("Error opening file: ".$e->getMessage());
+    }
+
+
   } else {
     //
     //  No parameters were passed with the URL, so this is the top level, where
