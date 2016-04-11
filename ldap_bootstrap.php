@@ -6,25 +6,25 @@
 	$header="openDCIM LDAP Setup";
   $content = "";
 
-  if ( isset($_POST['ldapserver'])) {
-    $ldapConn = ldap_connect( $config->ParameterArray['LDAPServer'] );
+  if ( isset($_REQUEST['ldapserver'])) {
+    $ldapConn = ldap_connect( $_REQUEST['ldapserver'] );
     if ( ! $ldapConn ) {
       $content = "<h3>Fatal error.  The LDAP server is not reachable.  Please try again later, or contact your system administrator to check the configuration.</h3>";
-      error_log( "Unable to connect to LDAP Server: " . $_POST['ldapserver']);
+      error_log( "Unable to connect to LDAP Server: " . $_REQUEST['ldapserver']);
     } else {
       ldap_set_option( $ldapConn, LDAP_OPT_PROTOCOL_VERSION, 3 );
 
-      $ldapDN = $_POST['binddn'];
-      $ldapPassword = $_POST['password'];
+      $ldapDN = $_REQUEST['binddn'];
+      $ldapPassword = $_REQUEST['password'];
 
       $ldapBind = ldap_bind( $ldapConn, $ldapDN, $ldapPassword );
 
       if ( ! $ldapBind ) {
         $content = "<h3>Login failed.  Incorrect username, password, or rights.</h3>";
       } else {
-        $_SESSION['userid'] = $_POST['userid'];
-        $_SESSION['ldapserver'] = $_POST['ldapserver'];
-        $_SESSION['binddn'] = $_POST['binddn'];
+        $_SESSION['userid'] = $_REQUEST['userid'];
+        $_SESSION['ldapserver'] = $_REQUEST['ldapserver'];
+        $_SESSION['binddn'] = $_REQUEST['binddn'];
 
         session_commit();
         header('Location: install.php');
