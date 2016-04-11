@@ -849,4 +849,224 @@ class EscalationTimes {
 	}
 }
 
+class Projects {
+	//
+	//	Projects
+	//
+	//	Projects can also be thought of as services in terms of a service catalog.  The premise is to create a record with metadata regarding
+	//	who the ProjectSponsor (or Product Manager/Service Manager) is, along with the lifetime information regarding that project.  Devices
+	//	may then be added to the project.  Devices can be members of multiple projects, and projects can have multiple devices in them.
+	//
+	//	The inclusion of this information will allow reports to be tailored such that they can report on the projects/services affected rather
+	//	than simply spitting out hundreds of devices, which can be especially helpful when trying to run a power outage simulation report.
+	//
+	var $ProjectID;
+	var $ProjectName;
+	var $ProjectSponsor;
+	var $ProjectStartDate;
+	var $ProjectExpirationDate;
+	var $ProjectActualEndDate;
+
+	function prepare($sql){
+		global $dbh;
+		return $dbh->prepare($sql);
+	}
+	
+	function lastID($sql) {
+		global $dbh;
+		return $dbh->lastInsertID();
+	}
+	
+	static function getProject( $ProjectID ) {
+		global $dbh;
+
+		$st = $dbh->prepare( "select * from fac_Projects where ProjectID=:ProjectID" );
+		$st->setFetchMode( PDO::FETCH_CLASS, "Projects" );
+		$st->execute( array( ":ProjectID"=>$ProjectID ));
+		if ( $row = $st->fetch() ) {
+			return $row;
+		} else {
+			return false;
+		}
+	}
+
+	static function getProjectList( $orderBy = "ProjectName" ) {
+		global $dbh;
+
+		$st = $dbh->prepare( "select * from fac_Projects order by " . $orderBy . " ASC" );
+		$st->setFetchMode( PDO::FETCH_CLASS, "Projects" );
+		$st->execute();
+
+		$result = array();
+		while ( $row = $st->fetch() ) {
+			$result[] = $row;
+		}
+
+		return $result;
+	}
+
+	static function deleteProject( $ProjectID ) {
+		global $dbh;
+
+		$oldProject = Projects::getProject( $ProjectID );
+		if ( ProjectMembership::clearMembership( $ProjectID ) ) {
+			$st = $dbh->prepare( "delete from fac_Projects where ProjectID=:ProjectID" );
+			if ( $st->execute( array( ":ProjectID"=>$ProjectID ) ) ) {
+				(class_exists('LogActions'))?LogActions::LogThis($oldProject):'';
+				return true;
+			}
+		} else {
+			return false;
+		}
+	}
+
+	function createProject() {
+		$st = $this->prepare( "insert into fac_Projects set ProjectName=:ProjectName, ProjectSponsor=:ProjectSponsor, ProjectStartDate=:ProjectStartDate,
+			ProjectExpirationDate=:ProjectExpirationDate, ProjectActualEndDate=:ProjectActualEndDate" );
+		$st->execute( array( 	":ProjectName"=>$this->ProjectName,
+								":ProjectSponsor"=>$this->ProjectSponsor,
+								":ProjectStartDate"=>$this->ProjectStartDate,
+								":ProjectExpirationDate"=>$this->ProjectExpirationDate,
+								":ProjectActualEndDate"=>$this->ProjectActualEndDate ) );
+		$this->ProjectID = $this->lastID();
+
+		(class_exists('LogActions'))?LogActions::LogThis($this):'';
+		return $this->ProjectID;
+	}
+
+	function updateProject() {
+		$oldProject = Projects::getProject( $this->ProjectID );
+
+		$st = $this->prepare( "update fac_Projects set ProjectName=:ProjectName, ProjectSponsor=:ProjectSponsor, ProjectStartDate=:ProjectStartDate,
+			ProjectExpirationDate=:ProjectExpirationDate, ProjectActualEndDate=:ProjectActualEndDate where ProjectID=:ProjectID" );
+		if( $st->execute( array( 	":ProjectName"=>$this->ProjectName,
+								":ProjectSponsor"=>$this->ProjectSponsor,
+								":ProjectStartDate"=>$this->ProjectStartDate,
+								":ProjectExpirationDate"=>$this->ProjectExpirationDate,
+								":ProjectActualEndDate"=>$this->ProjectActualEndDate,
+								":ProjectID"=>$this->ProjectID ) ) ) {
+			(class_exists('LogActions'))?LogActions::LogThis($this, $oldProject):'';
+			return true;
+		} else {
+			return false;
+		}
+	}
+
+	function Search($indexedbyid=false,$loose=false){
+		// This will store all our extended sql
+		$sqlextend="";
+		$args = array();
+		foreach($this as $prop => $val){
+			if ( isset( $val ) ) {
+				$method=($loose)?" LIKE \":" . $prop . "%\"":"=:" . $prop;
+				if ($sqlextend) {
+					$sqlextend .= " AND $prop$method";
+				} else {
+					$sqlextend .= " WHERE $prop$method";
+				}
+				$args[":" . $prop] = $val;
+			}
+		}
+		$st = $this->prepare( "select * from fac_Projects " . $sqlextend . " ORDER BY ProjectName ASC" );
+		$st->setFetchMode( PDO::FETCH_CLASS, "Projects" );
+		$st->execute( $args );
+		$projectList=array();
+		while( $row = $st->fetch() ) {
+			if($indexedbyid){
+				$projectList[$row["ProjectID"]]=$row;
+			}else{
+				$projectList[]=$row;
+			}
+		}
+
+		return $projectList;
+	}
+
+	// Make a simple reference to a loose search
+	function LooseSearch($indexedbyid=false){
+		return $this->Search($indexedbyid,true);
+	}
+}
+
+class ProjectMembership {
+	var $ProjectID;
+	var $DeviceID;
+
+	// 	function getProjectMembership
+	//
+	//	Parameters:  ProjectID
+	//
+	//	Returns:	Array of Device objects for all members of the given ProjectID
+	//
+	static function getProjectMembership( $ProjectID ) {
+		global $dbh;
+
+		$st = $dbh->prepare( "select * from fac_ProjectMembership where ProjectID=:ProjectID" );
+		$st->setFetchMode( PDO::FETCH_CLASS, "ProjectMembership" );
+		
+		// Since we are using PDO, it is safe to send this blindly to the query.
+		$st->execute( array( ":ProjectID"=>$ProjectID ));
+		$result = array();
+		while ( $row = $st->fetch() ) {
+			$d = new Device();
+			$d->DeviceID = $row->DeviceID;
+			$d->GetDevice();
+			$result[] = $d;
+		}
+
+		return $result;
+	}
+
+	//	function getDeviceMembership
+	//
+	//	Parameters:	DeviceID
+	//
+	//	Returns:	Array of Project objects for all projects the DeviceID is a member of
+	//
+	static function getDeviceMembership( $DeviceID ) {
+		global $dbh;
+
+		$st = $dbh->prepare( "select * from fac_ProjectMembership where DeviceID=:DeviceID" );
+		$st->setFetchMode( PDO::FETCH_CLASS, "ProjectMembership" );
+
+		$st->execute( array( ":DeviceID"=>$DeviceID ));
+		$result = array();
+		while ( $row = $st->fetch() ) {
+			$result[] = Projects::getProject( $row->ProjectID );
+		}
+
+		return $result;
+	}
+
+	// 	function clearMembership
+	//		Removes all devices from the given ProjectID
+	//
+	//	Parameters:	ProjectID
+	//
+	//	Returns:	true if success, false if not.
+	//
+	static function clearMembership( $ProjectID ) {
+		global $dbh;
+
+		// Just like above - since we are using prepared statements, it is safe to send blind values
+		$st = $dbh->prepare( "delete from fac_ProjectMembership where ProjectID=:ProjectID" );
+		return $st->execute( array( ":ProjectID"=>$ProjectID ));
+	}
+
+	//	function addMember
+	//		Adds the given DeviceID to the membership of the given ProjectID.  In the event that the DeviceID
+	//		is already a member, the function will still return success.
+	//
+	//	Parameters:	ProjectID, DeviceID
+	//
+	//	Returns:	true if success, false if not
+	//
+	static function addMember( $ProjectID, $DeviceID ) {
+		global $dbh;
+
+		// Just like above - since we are using prepared statements, it is safe to send blind values
+		$st = $dbh->prepare( "insert into fac_ProjectMembership set ProjectID=:ProjectID, DeviceID=:DeviceID on duplicate key update DeviceID=DeviceID" );
+		return $st->execute( array( ":ProjectID"=>$ProjectID, ":DeviceID"=>$DeviceID ));
+	}
+}
 ?>

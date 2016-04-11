@@ -649,6 +649,53 @@ $app->get( '/device/bydatacenter/:datacenterid', function( $datacenterid ) {
 });
 
 //
+//	URL:	/api/v1/device/byproject/:projectid
+//	Method:	GET
+//	Params:	projectid (passed in URL)
+//	Returns:  All devices for which the user's rights have access to view
+//
+
+$app->get( '/device/byproject/:projectid', function( $projectid ) {
+	$response['error']=false;
+	$response['errorcode']=200;
+	$response['device']=ProjectMembership::getProjectMembership( $projectid );
+
+	echoResponse( 200, $response );
+});
+
+
+//
+//	URL:	/api/v1/project
+//	Method:	GET
+//	Params:	None
+//	Returns:  All project metadata
+//
+
+$app->get( '/project', function() {
+	$response['error']=false;
+	$response['errorcode']=200;
+	$response['project']=Projects::getProjectList();
+
+	echoResponse( 200, $response );
+});
+
+//
+//	URL:	/api/v1/project/bydevice/:deviceid
+//	Method:	GET
+//	Params:	DeviceID
+//	Returns:  All project metadata for projects the deviceid is a member of
+//
+
+$app->get( '/project/bydevice/:deviceid', function( $deviceid ) {
+	$response['error']=false;
+	$response['errorcode']=200;
+	$response['project']=ProjectMembership::getDeviceMembership( $deviceid );
+
+	echoResponse( 200, $response );
+});
+
+
+//
 //	URL:	/api/v1/powerport/:deviceid
 //	Method:	GET
 //	Params:	deviceid (required), portnumber (optional)

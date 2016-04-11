@@ -97,6 +97,7 @@
     $content .= '</form>
         </div>';
   } elseif ( isset($_REQUEST['stage']) && $_REQUEST['stage'] == 'validate' ) {
+    
     // Certain fields we are going to require that the values exist in the db already
     //
     // Data Center

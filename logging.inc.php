@@ -156,6 +156,9 @@ class LogActions {
 				$log->ObjectID=$object->DeviceID;
 				$log->ChildID=$object->PortNumber;
 				break;
+			case "Projects":
+				$log->ObjectID=$object->ProjectID;
+				break;
 			case "TemplatePorts":
 				$log->ObjectID=$object->TemplateID;
 				$log->ChildID=$object->PortNumber;

@@ -896,9 +896,33 @@ CREATE TABLE fac_DeviceCustomValue (
 --
 -- Table for monitoring long running jobs
 --
+
 CREATE TABLE IF NOT EXISTS fac_Jobs (
   SessionID varchar(80) NOT NULL,
   Percentage int(11) NOT NULL DEFAULT "0",
   Status varchar(255) NOT NULL,
   PRIMARY KEY(SessionID)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+--
+-- Tables for tracking Projects/ Services
+--
+
+DROP TABLE IF EXISTS fac_Projects;
+CREATE TABLE fac_Projects (
+  ProjectID int(11) NOT NULL AUTO_INCREMENT,
+  ProjectName varchar(80) NOT NULL,
+  ProjectSponsor varchar(80) NOT NULL,
+  ProjectStartDate date NOT NULL,
+  ProjectExpirationDate date NOT NULL,
+  ProjectActualEndDate date NOT NULL,
+  PRIMARY KEY (ProjectID)
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
+
+
+DROP TABLE IF EXISTS fac_ProjectMembership;
+CREATE TABLE fac_ProjectMembership (
+  ProjectID int(11) NOT NULL,
+  DeviceID int(11) NOT NULL,
+  PRIMARY KEY (ProjectID,DeviceID)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
