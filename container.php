@@ -146,8 +146,8 @@
 			var form=$(this).parents('form');
 			var btn=$(this);
 <?php
-print "		var dialog=$('<div>').prop('title','".__("Verify Delete Container")."').html('<p><span class=\"ui-icon ui-icon-alert\" style=\"float:left; margin:0 7px 20px 0;\"></span><span></span></p>');";
-print "		dialog.find('span + span').html('".__("This container will be deleted and there is no undo. Their direct descendants will be moved to \'home\'.")."<br>".__("Are you sure?")."');"; 
+print '		var dialog=$("<div>").prop("title","'.__("Verify Delete Container").'").html("<p><span class=\"ui-icon ui-icon-alert\" style=\"float:left; margin:0 7px 20px 0;\"></span><span></span></p>");';
+print '		dialog.find("span + span").html("'.__("This container will be deleted and there is no undo. Their direct descendants will be moved to \'home\'.").'<br>'.__("Are you sure?").'");'; 
 ?>
 			dialog.dialog({
 				resizable: false,
