@@ -73,7 +73,7 @@
 
     $fieldNum = 1;
 
-    foreach ( array( "DataCenterID", "Cabinet", "Position", "Label", "Height", "Manufacturer", "Model", "Hostname", "SerialNo", "AssetTag", "ESX", "InstallDate", "Reservation", "Owner", "PrimaryContact" ) as $fieldName ) {
+    foreach ( array( "DataCenterID", "Cabinet", "Position", "Label", "Height", "Manufacturer", "Model", "Hostname", "SerialNo", "AssetTag", "HalfDepth", "BackSide", "ESX", "InstallDate", "Reservation", "Owner", "PrimaryContact" ) as $fieldName ) {
       $content .= '<div>
                     <div>' . __($fieldName) . ': </div><div><select name="' . $fieldName . '">';
       for ( $n = 0; $n < sizeof( $fieldList ); $n++ ) {
@@ -207,7 +207,7 @@
         }
 
         // Check the Model for validity, which is like cabinets - it requires the Manufacturer paired with the Model to check.
-        $st = $dbh->prepare( "select TemplateID from fac_DeviceTemplate where ucase(Model)=ucase(:Model) and ManufacturerID in (select ManufacturerID from fac_Manufacturer where ucase(Name)=ucase(:Manufacturer))" );        
+        $st = $dbh->prepare( "select * from fac_DeviceTemplate where ucase(Model)=ucase(:Model) and ManufacturerID in (select ManufacturerID from fac_Manufacturer where ucase(Name)=ucase(:Manufacturer))" );        
         foreach( $values["Model"] as $row ) {
           $st->execute( array( ":Model"=>$row["Model"], ":Manufacturer"=>$row["Manufacturer"] ));
           if ( ! $st->fetch() ) {
@@ -233,15 +233,18 @@
         if ( ! $valid ) {
           $content .= $tmpCon . "</ul>";
         } else {
-          $content = '<form action="' . $_SERVER['PHP_SELF']. '" method="POST" ENCTYPE="multipart/form-data">';
+          $content = '<form action="' . $_SERVER['PHP_SELF']. '" method="POST">';
           $content .= "<h3>" . __( "The file has passed validation.  Press the Process button to import." ) . "</h3>";
-          $content .= '<input type="hidden" name="stage" value="process">
-                    <div>
+          $content .= "<input type=\"hidden\" name=\"stage\" value=\"process\">\n";
+          foreach( array( "DataCenterID", "Cabinet", "Position", "Label", "Height", "Manufacturer", "Model", "Hostname", "SerialNo", "AssetTag", "ESX", "BackSide", "HalfDepth", "Reservation", "InstallDate", "Owner", "PrimaryContact" ) as $mapVar ) {
+            $content .= "<input type=\"hidden\" name=\"" . $mapVar . "\" value=\"" . $_REQUEST[$mapVar] . "\">\n";
+          }
+
+          $content .= '<div>
                     <input type="submit" value="' . __("Process") . '" name="submit">
                     </div>
                   </form>';
         }
-
       }
     }
   } elseif ( isset($_REQUEST['stage']) && $_REQUEST['stage'] == 'process' ) {
@@ -256,7 +259,98 @@
       die("Error opening file: ".$e->getMessage());
     }
 
+    // Start off with the assumption that we have zero processing errors
+    $errors = false;
 
+    $sheet = $objXL->getSheet(0);
+    $highestRow = $sheet->getHighestRow();
+
+    // Also make sure we start with an empty string to display
+    $content = "";
+    $fields = array( "DataCenterID", "Cabinet", "Position", "Label", "Height", "Manufacturer", "Model", "Hostname", "SerialNo", "AssetTag", "ESX", "BackSide", "HalfDepth", "Reservation", "Owner", "InstallDate", "PrimaryContact" );
+
+    for ( $n = 2; $n <= $highestRow; $n++ ) {
+      // Instantiate a fresh Device object for each insert
+      $dev = new Device();
+      $tmpCon = "";
+
+      // Load up the $row[] array with the values according to the mapping supplied by the user
+      foreach( $fields as $fname ) {
+        $addr = chr( 64 + $_REQUEST[$fname]);
+        $row[$fname] = $sheet->getCell( $addr . $n )->getValue();
+      }
+
+      // Now start getting the foreign keys as needed and set them in the $dev variable
+      $st = $dbh->prepare( "select DataCenterID from fac_DataCenter where ucase(Name)=ucase(:Name)" );
+      $st->execute( array( ":Name" => $row["DataCenterID"] ));
+      if ( ! $val = $st->fetch()) {
+        $errors = true;
+        $tmpCon .= "<li>" . __("Data Center") . ": " . $row["DataCenterID"];
+      }
+      $dev->DataCenterID = $val["DataCenterID"];
+
+      $st = $dbh->prepare( "select CabinetID from fac_Cabinet where ucase(Location)=ucase(:Location)" );
+      $st->execute( array( ":Location" => $row["Cabinet"] ));
+      if ( ! $val = $st->fetch()) {
+        $errors = true;
+        $tmpCon .= "<li>" . __("Cabinet") . ": " . $row["Cabinet"];
+      }
+      $dev->Cabinet = $val["CabinetID"];
+      $dev->Position = $row["Position"];
+      $dev->Label = $row["Label"];
+      $dev->Height = $row["Height"];
+
+      $st = $dbh->prepare( "select * from fac_DeviceTemplate where ucase(Model)=ucase(:Model) and ManufacturerID in (select ManufacturerID from fac_Manufacturer where ucase(Name)=ucase(:Manufacturer))" );
+      $st->execute( array( ":Model" => $row["Model"], ":Manufacturer"=>$row["Manufacturer"] ));
+      if ( ! $val = $st->fetch()) {
+        $errors = true;
+        $tmpCon .= "<li>" . __("Template") . ": " . $row["Manufacturer"] . " - " . $row["Model"];
+      }
+      $dev->TemplateID = $val["TemplateID"];
+      $dev->Ports = $val["NumPorts"];
+      $dev->NominalWatts = $val["Wattage"];
+      $dev->DeviceType = $val["DeviceType"];
+      $dev->PowerSupplyCount = $val["PSCount"];
+      $dev->Weight = $val["Weight"];
+
+      $dev->PrimaryIP = $row["Hostname"];
+      $dev->SerialNo = $row["SerialNo"];
+      $dev->AssetTag = $row["AssetTag"];
+      $dev->BackSide = ($row["BackSide"] == 1 || strtoupper($row["BackSide"] == "Y"))?1:0;
+      $dev->HalfDepth = ($row["HalfDepth"] == 1 || strtoupper($row["HalfDepth"] == "Y"))?1:0;
+      $dev->ESX = ($row["ESX"] == 1 || strtoupper($row["ESX"]) == "Y")?1:0;
+      $dev->InstallDate = date( "Y-m-d", strtotime( $row["InstallDate"]));
+      $dev->Reservation = ($row["Reservation"] == 1 || strtoupper($row["Reservation"]) == "Y")?1:0;
+
+      $st = $dbh->prepare( "select DeptID from fac_Department where ucase(Name)=ucase(:Name)" );
+      $st->execute( array( ":Name" => $row["Owner"] ));
+      if ( ! $val = $st->fetch()) {
+        $errors = true;
+        $tmpCon .= "<li>" . __("Owner") . ": " . $row["Owner"];
+      }
+
+      $dev->Owner = $val["DeptID"];
+
+      $st = $dbh->prepare( "select PersonID from fac_People where ucase(concat(LastName, ', ', FirstName))=ucase(:Contact)" );
+      $st->execute( array( ":Contact" => $row["PrimaryContact"] ));
+      if ( ! $val = $st->fetch()) {
+        $errors = true;
+        $tmpCon .= "<li>" . __("Data Center") . ": " . $row["DataCenterID"];
+      }
+
+      $dev->PrimaryContact = $val["PersonID"];
+
+      if ( ! $dev->CreateDevice() ) {
+        $errors = true;
+        $content .= "Unable to insert record.<ul>$tmpCon</ul>";
+      } else {
+        $goodContent .= "<li>" . $dev->Label . "(" . $dev->DeviceID . ")";
+      }
+    }
+
+    if ( ! $errors ) {
+      $content = "Records imported successfully.<ul>" . $goodContent . "</ul>";
+    }
   } else {
     //
     //  No parameters were passed with the URL, so this is the top level, where
