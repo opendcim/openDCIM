@@ -272,7 +272,6 @@
     for ( $n = 2; $n <= $highestRow; $n++ ) {
       // Instantiate a fresh Device object for each insert
       $dev = new Device();
-      $tmpCon = "";
 
       // Load up the $row[] array with the values according to the mapping supplied by the user
       foreach( $fields as $fname ) {
@@ -284,16 +283,17 @@
       $st = $dbh->prepare( "select DataCenterID from fac_DataCenter where ucase(Name)=ucase(:Name)" );
       $st->execute( array( ":Name" => $row["DataCenterID"] ));
       if ( ! $val = $st->fetch()) {
-        $errors = true;
-        $tmpCon .= "<li>" . __("Data Center") . ": " . $row["DataCenterID"];
+        // We just checked this, so there really shouldn't be an issue unless the db died
+        $info = $dbh->errorInfo();
+        error_log( "PDO Error: {$info[2]}");
       }
       $dev->DataCenterID = $val["DataCenterID"];
 
       $st = $dbh->prepare( "select CabinetID from fac_Cabinet where ucase(Location)=ucase(:Location)" );
       $st->execute( array( ":Location" => $row["Cabinet"] ));
       if ( ! $val = $st->fetch()) {
-        $errors = true;
-        $tmpCon .= "<li>" . __("Cabinet") . ": " . $row["Cabinet"];
+        $info = $dbh->errorInfo();
+        error_log( "PDO Error: {$info[2]}");
       }
       $dev->Cabinet = $val["CabinetID"];
       $dev->Position = $row["Position"];
@@ -303,8 +303,8 @@
       $st = $dbh->prepare( "select * from fac_DeviceTemplate where ucase(Model)=ucase(:Model) and ManufacturerID in (select ManufacturerID from fac_Manufacturer where ucase(Name)=ucase(:Manufacturer))" );
       $st->execute( array( ":Model" => $row["Model"], ":Manufacturer"=>$row["Manufacturer"] ));
       if ( ! $val = $st->fetch()) {
-        $errors = true;
-        $tmpCon .= "<li>" . __("Template") . ": " . $row["Manufacturer"] . " - " . $row["Model"];
+        $info = $dbh->errorInfo();
+        error_log( "PDO Error: {$info[2]}");
       }
       $dev->TemplateID = $val["TemplateID"];
       $dev->Ports = $val["NumPorts"];
@@ -325,8 +325,8 @@
       $st = $dbh->prepare( "select DeptID from fac_Department where ucase(Name)=ucase(:Name)" );
       $st->execute( array( ":Name" => $row["Owner"] ));
       if ( ! $val = $st->fetch()) {
-        $errors = true;
-        $tmpCon .= "<li>" . __("Owner") . ": " . $row["Owner"];
+        $info = $dbh->errorInfo();
+        error_log( "PDO Error: {$info[2]}");
       }
 
       $dev->Owner = $val["DeptID"];
@@ -334,22 +334,24 @@
       $st = $dbh->prepare( "select PersonID from fac_People where ucase(concat(LastName, ', ', FirstName))=ucase(:Contact)" );
       $st->execute( array( ":Contact" => $row["PrimaryContact"] ));
       if ( ! $val = $st->fetch()) {
-        $errors = true;
-        $tmpCon .= "<li>" . __("Data Center") . ": " . $row["DataCenterID"];
+        $info = $dbh->errorInfo();
+        error_log( "PDO Error: {$info[2]}");
       }
 
       $dev->PrimaryContact = $val["PersonID"];
 
       if ( ! $dev->CreateDevice() ) {
         $errors = true;
-        $content .= "Unable to insert record.<ul>$tmpCon</ul>";
+        $content .= "<li><strong>Error adding device on Row $n of the spreadsheet.</strong>";
       } else {
-        $goodContent .= "<li>" . $dev->Label . "(" . $dev->DeviceID . ")";
+        $content .= "<li>Added device " . $dev->Label . "(" . $dev->DeviceID . ")";
       }
     }
 
     if ( ! $errors ) {
-      $content = "Records imported successfully.<ul>" . $goodContent . "</ul>";
+      $content = __("All records imported successfully.") . "<ul>" . $content . "</ul>";
+    } else {
+      $content = __("At least one error was encountered processing the file.  Please see below.") . "<ul>" . $content . "</ul>";
     }
   } else {
     //
