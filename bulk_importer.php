@@ -5,7 +5,7 @@
 
 //	Uncomment these if you need/want to set a title in the header
 //	$header=__("");
-	$subheader=__("Bulk Importer");
+	$subheader=__("Bulk Device Importer");
 
   $content = "";
 
