@@ -145,8 +145,7 @@
 
     for ( $n = 2; $n <= $highestRow; $n++ ) {
       $devPort = new DevicePorts();
-      $matchPort = new DevicePorts();
-
+ 
       // Load up the $row[] array with the values according to the mapping supplied by the user
       foreach( $fields as $fname ) {
         $addr = chr( 64 + $_REQUEST[$fname]);
@@ -182,10 +181,9 @@
 
       if ( $val["TotalMatches"] == 1 ) {
         $devPort->DeviceID = $val["DeviceID"];
-        $matchPort->ConnectedDeviceID = $devPort->DeviceID;
       } else {
         $errors = true;
-        $content .= "<li>Source Device: $idField = " . $row["SourceDeviceID"] . " is not unique.";
+        $content .= "<li>Source Device: $idField = " . $row["SourceDeviceID"] . " is not unique or not found.";
       }
 
       /*
@@ -202,10 +200,9 @@
 
       if ( $val["TotalMatches"] == 1 ) {
         $devPort->ConnectedDeviceID = $val["DeviceID"];
-        $matchPort->DeviceID = $devPort->ConnectedDeviceID;
       } else {
         $errors = true;
-        $content .= "<li>Target Device: $idField = " . $row["TargetDeviceID"] . " is not unique.";
+        $content .= "<li>Target Device: $idField = " . $row["TargetDeviceID"] . " is not unique or not found.";
       }
 
       /*
@@ -222,11 +219,10 @@
 
       if ( $val["TotalMatches"] == 1 ) {
         $devPort->PortNumber = $val["PortNumber"];
-        $matchPort->ConnectedPort = $devPort->PortNumber;
         $devPort->Label = $val["Label"];
       } else {
         $errors = true;
-        $content .= "<li>Source Port: " . $row["SourcePort"] . " is not unique.";
+        $content .= "<li>Source Port: " . $row["SourcePort"] . " is not unique or not found.";
       }
 
       /*
@@ -243,29 +239,24 @@
 
       if ( $val["TotalMatches"] == 1 ) {
         $devPort->ConnectedPort = $val["PortNumber"];
-        $matchPort->PortNumber = $devPort->ConnectedPort;
-        $matchPort->Label = $val["Label"];
       } else {
         $errors = true;
-        $content .= "<li>Target Port: " . $row["TargetDeviceID"] . "::" . $row["TargetPort"] . " is not unique.";
+        $content .= "<li>Target Port: " . $row["TargetDeviceID"] . "::" . $row["TargetPort"] . " is not unique or not found.";
       }
 
       // Do not fail if the Color Code or Media Type are not defined for the site.
       if ( $row["MediaType"] != "" ) {
         $devPort->MediaID = @$media[strtoupper($row["MediaType"])];
-        $matchPort->MediaID = $devPort->MediaID;
       }
 
       if ( $row["ColorCode"] != "" ) {
         $devPort->ColorID = @$colors[strtoupper($row["ColorCode"])];
-        $matchPort->ColorID = $devPort->ColorID;
       }
 
       $devPort->Notes = $row["Notes"];
-      $matchPort->Notes = $row["Notes"];
 
       if ( ! $errors ) {
-        if ( ! ($devPort->updatePort() && $matchPort->updatePort()) ) {
+        if ( ! $devPort->updatePort() ) {
           $errors = true;
         }
       }
