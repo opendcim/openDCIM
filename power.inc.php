@@ -1465,10 +1465,17 @@ class PowerPanel {
 	}
 	
 	function getSources() {
-		$clean=new PowerPanel();
-		$clean->ParentPanelID=0;
+		// The $this->Search() function doesn't work for this because it doesn't recognize that we're looking for 0 or null
+		$st = $this->prepare( "select * from fac_PowerPanel where ParentPanelID=0 or ParentPanelID=null" );
+		$st->setFetchMode( PDO::FETCH_CLASS, "PowerPanel" );
+		$st->execute();
 
-		return $clean->Search();
+		$sourceList = array();
+		while ( $row = $st->fetch() ) {
+			$sourceList[] = $row;
+		}
+
+		return $sourceList;
 	}
 
 	function getPanelsByDataCenter( $DataCenterID ) {
