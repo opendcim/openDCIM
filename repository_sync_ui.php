@@ -389,10 +389,10 @@ function convertImgToBase64(url, imgobj) {
 			}
 
 			// Is this a Sensor?
-			if(typeof row.data("globaldev").sensor!='undefined'){
+			if(typeof row.data("globaldev").sensortemplate!='undefined'){
 				var dev=row.data("globaldev");
-				for(var i in dev.sensor){
-					dev[i]=dev.sensor[i];
+				for(var i in dev.sensortemplate){
+					dev[i]=dev.sensortemplate[i];
 				}
 				delete dev.sensor;
 			}
