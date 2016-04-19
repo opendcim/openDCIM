@@ -73,9 +73,9 @@
 
     $fieldNum = 1;
 
-    foreach ( array( "DataCenterID", "Cabinet", "Position", "Label", "Height", "Manufacturer", "Model", "Hostname", "SerialNo", "AssetTag", "HalfDepth", "BackSide", "ESX", "InstallDate", "Reservation", "Owner", "PrimaryContact" ) as $fieldName ) {
+    foreach ( array( "DataCenterID"=>"The exact name of the target data center for import.", "Cabinet"=>"The name (Location) of the target cabinet.", "Position"=>"The position in the cabinet for the device.  0 is valid for zero-U devices.", "Label"=>"The value to place in the Label field.", "Height"=>"The height of the device, 0 is a valid value.", "Manufacturer"=>"The name of the Manufacturer.  This is combined with the Model field to create the 'Device Class'.", "Model"=>"The model name, as specified in the existing Device Template, which will be combined with the Manufacturer to choose the 'Device Class'.", "Hostname"=>"An optional IP address or hostname for the device.", "SerialNo"=>"An optional value to place in the Serial Number field of the device.", "AssetTag"=>"An option Asset or Property number to assign to the device.", "HalfDepth"=>"Optional, specify 1 or Y to indicate this device only occupies half the depth of the cabinet.", "BackSide"=>"Optional, specify 1 or Y to indicate that this device is mounted from the rear of the cabinet.", "ESX"=>"Optional, specify 1 or Y to indicate this device is a VMWare ESX Hypervisor.", "InstallDate"=>"If blank, current date is used, otherwise this mandatory field can contain any ISO valid date format.", "Reservation"=>"Optional, specify 1 or Y to indicate the device is a reservation and not physically installed at this time.", "Owner"=>"Optional, and may be blank.  This is the name of the Department that owns the device.", "PrimaryContact"=>"Optional, and may be blank.  The exact name of the Primary Contact for this device in LastName, FirstName format." ) as $fieldName=>$helpText ) {
       $content .= '<div>
-                    <div>' . __($fieldName) . ': </div><div><select name="' . $fieldName . '">';
+                    <div><span title="' . __($helpText) . '">' . __($fieldName) . '</span>: </div><div><select name="' . $fieldName . '">';
       for ( $n = 0; $n < sizeof( $fieldList ); $n++ ) {
         if ( $n == $fieldNum )
             $selected = "SELECTED";
