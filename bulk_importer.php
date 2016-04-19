@@ -98,7 +98,7 @@
         </div>';
   } elseif ( isset($_REQUEST['stage']) && $_REQUEST['stage'] == 'validate' ) {
     
-    // Certain fields we are going to require that the values exist in the db already
+    // Certain fields we are going to require that the values exist in the db already (if a value is specified)
     //
     // Data Center
     // Cabinet
@@ -149,9 +149,14 @@
       // Skip the first row, which has the headers in it
       for ( $n = 2; $n <= $highestRow; $n++ ) {
         foreach( $fields as $fname ) {
-          $addr = chr( 64 + $_REQUEST[$fname]);
-          $row[$fname] = $sheet->getCell( $addr . $n )->getValue();
+          if ( $_REQUEST[$fname] != 0 ) {
+            $addr = chr( 64 + $_REQUEST[$fname]);
+            $row[$fname] = $sheet->getCell( $addr . $n )->getValue();
+          } else {
+            $row[$fname] = "";
+          }
         }
+
 
         // Have to do this part by hand because some fields are actually context dependent upon others
         $values["DataCenterID"][] = $row["DataCenterID"];
@@ -162,8 +167,12 @@
         $tmpModel["Manufacturer"] = $row["Manufacturer"];
         $tmpModel["Model"] = $row["Model"];
         $values["Model"][] = $tmpModel;
-        $values["Owner"][] = $row["Owner"];
-        $values["PrimaryContact"][] = $row["PrimaryContact"];
+        if ( $row["Owner"]  != "" ) {
+          $values["Owner"][] = $row["Owner"];
+        }
+        if ( $row["PrimaryContact"] != "" ) {
+          $values["PrimaryContact"][] = $row["PrimaryContact"];
+        }
       }
 
       foreach( $values as $key => $val ) {
@@ -275,8 +284,12 @@
 
       // Load up the $row[] array with the values according to the mapping supplied by the user
       foreach( $fields as $fname ) {
-        $addr = chr( 64 + $_REQUEST[$fname]);
-        $row[$fname] = $sheet->getCell( $addr . $n )->getValue();
+        if ( $_REQUEST[$fname] != 0 ) {
+          $addr = chr( 64 + $_REQUEST[$fname]);
+          $row[$fname] = $sheet->getCell( $addr . $n )->getValue();
+        } else {
+          $row[$fname] = "";
+        }
       }
 
       // Now start getting the foreign keys as needed and set them in the $dev variable
