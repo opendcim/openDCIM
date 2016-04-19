@@ -54,6 +54,7 @@
     // We're good, so now get the top row so that we can map it out to fields
 
     $content = "<h3>" . __("Pick the appropriate column header (line 1) for each field name listed below." ) . "</h3>";
+    $content .= "<h3>" . __("Mouse over each field for help text.") . "</h3>";
 
     $content .= '<form action="' . $_SERVER['PHP_SELF'] . '" method="POST">
                     <input type="hidden" name="stage" value="process">
@@ -73,9 +74,9 @@
 
     $fieldNum = 1;
 
-    foreach ( array( "SourceDeviceID", "SourcePort", "TargetDeviceID", "TargetPort", "MediaType", "ColorCode", "Notes" ) as $fieldName ) {
+    foreach ( array( "SourceDeviceID"=>"The key value to indicate the existing device the connection originates from.", "SourcePort"=>"The name of the existing port for the origination of the connection.", "TargetDeviceID"=>"The key value to indicate the existing device the connection terminates at.", "TargetPort"=>"The name of the existing port for the termination of the connection.", "MediaType"=>"Optional, but if specified the name must match an existing Media Type in the openDCIM installation.", "ColorCode"=>"Optional, but if specified the name must match an existing Color name in the openDCIM installation.", "Notes"=>"Optional, free form text to add to the Notes field for the connection." ) as $fieldName=>$helpText ) {
       $content .= '<div>
-                    <div>' . __($fieldName) . ': </div><div><select name="' . $fieldName . '">';
+                    <div><span title="' . __($helpText) . '">' . __($fieldName) . '</span>: </div><div><select name="' . $fieldName . '">';
       for ( $n = 0; $n < sizeof( $fieldList ); $n++ ) {
         if ( $n == $fieldNum )
             $selected = "SELECTED";
@@ -92,7 +93,7 @@
       $fieldNum++;
     }
 
-    $content .= "<div><div>" . __("Type of Device ID") . "</div><div><select name='IDType'>";
+    $content .= "<div><div><span title=\"" . __("The type of key field that is being used to match devices in openDCIM.  Only one type may be specified per file.") . "\">" . __("KeyField") . "</span></div><div><select name='KeyField'>";
     foreach( array( "Label", "Hostname", "AssetTag", "SerialNo" ) as $option ) {
       $content .= "<option val=\"$option\">$option</option>";
     }
@@ -144,6 +145,8 @@
     $fields = array( "SourceDeviceID", "SourcePort", "TargetDeviceID", "TargetPort", "MediaType", "ColorCode", "Notes" );
 
     for ( $n = 2; $n <= $highestRow; $n++ ) {
+      $rowError = false;
+
       $devPort = new DevicePorts();
  
       // Load up the $row[] array with the values according to the mapping supplied by the user
@@ -152,7 +155,7 @@
         $row[$fname] = $sheet->getCell( $addr . $n )->getValue();
       }
 
-      switch( $_REQUEST["IDType"] ) {
+      switch( $_REQUEST["KeyField"] ) {
         case "Hostname":
           $idField = "PrimaryIP";
           break;
@@ -255,13 +258,15 @@
 
       $devPort->Notes = $row["Notes"];
 
-      if ( ! $errors ) {
+      if ( ! $rowError ) {
         if ( ! $devPort->updatePort() ) {
           $errors = true;
         }
+      } else {
+        $errors = true;
       }
 
-      if ( $errors ) {
+      if ( $rowError ) {
         $content .= "<li><strong>Error making port connection on Row $n of the spreadsheet.</strong>";
       }
     }

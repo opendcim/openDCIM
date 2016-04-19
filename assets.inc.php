@@ -4748,7 +4748,8 @@ class Tags {
 
 		if(!is_null($TagName)){
 			$TagName=sanitize($TagName);
-			$sql="SELECT TagID FROM fac_Tags WHERE Name = '$TagName';";
+			// When searching, do a case insensitive search, but when adding you pay attention to case
+			$sql="SELECT TagID FROM fac_Tags WHERE ucase(Name) = ucase('$TagName');";
 			if($TagID=$dbh->query($sql)->fetchColumn()){
 				return $TagID;
 			}
