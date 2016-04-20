@@ -209,10 +209,12 @@
         // Check the Manufacturer Names for validity
         $st = $dbh->prepare( "select ManufacturerID from fac_Manufacturer where ucase(Name)=ucase(:Name)" );
         foreach ( $values["Manufacturer"] as $val ) {
-          $st->execute( array( ":Name" => $val ) );
-          if ( ! $st->fetch() ) {
-            $valid = false;
-            $tmpCon .= "<li>" . __("Manufacturer");
+          if ( $val != "" ) {
+            $st->execute( array( ":Name" => $val ) );
+            if ( ! $st->fetch() ) {
+              $valid = false;
+              $tmpCon .= "<li>" . __("Manufacturer") . ": " . $val;
+            }
           }
         }
 

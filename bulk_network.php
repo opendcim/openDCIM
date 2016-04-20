@@ -137,7 +137,7 @@
     $st->execute();
     $media = array();
     while ( $row = $st->fetch() ) {
-      $media[strtoupper($row['MediaType'])] = $row['ColorID'];
+      $media[strtoupper($row['MediaType'])] = $row['MediaID'];
     }
 
     // Also make sure we start with an empty string to display
