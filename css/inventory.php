@@ -381,6 +381,9 @@ div.table > div + div + div + div > div + div label {float: none;}
 #primarycontact {cursor:pointer;}
 #deptgroup .ui-multiselect ul.available li { overflow-x: hidden; }
 
+/* Project Catalog */
+#projectgroup .ui-multiselect ul.available li { padding: 0.5em 0.5em 0.5em 20px; height: auto; line-height: inherit;}
+
 /* Contact Editor */
 #deletedialog {display: none;}
 #deletedialog p {font-weight: bold;}

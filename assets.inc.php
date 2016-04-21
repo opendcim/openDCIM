@@ -2054,6 +2054,21 @@ class Device {
 		return $deviceList;
 	}	
 
+	static function getDevicesByDC( $DataCenterID ) {
+		global $dbh;
+
+		$st = $dbh->prepare( "select * from fac_Device where Cabinet in (select CabinetID from fac_Cabinet where DataCenterID=:DataCenterID)" );
+		$st->execute( array( ":DataCenterID"=>$DataCenterID ));
+		$devList = array();
+
+		while ( $row = $st->fetch() ) {
+			// We are using this mechanism instead of retrieving as PDO::FETCH_CLASS because we need to do rights filtering
+			$devList[]=Device::RowToObject( $row );
+		}
+
+		return $devList;
+	}
+
 	static function GetDevicesByTemplate($templateID) {
 		global $dbh;
 		

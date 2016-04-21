@@ -4,7 +4,7 @@
 
 	$subheader=__("Project Detail");
 
-	if(!$person->ContactAdmin){
+	if(!$person->WriteAccess){
 		// No soup for you.
 		header('Location: '.redirect());
 		exit;
@@ -12,17 +12,12 @@
 
 	// AJAX requests
 
-	if(isset($_POST['action']) && $_POST["action"]=="Delete"){
+	if(isset($_POST["delete"]) && $_POST["delete"]=="yes" && $person->ContactAdmin ) {
+		Projects::deleteProject( $_POST["projectid"] );
+		$status['code']=200;
+		$status['msg']=redirect("project_mgr.php?projectid=0");
 		header('Content-Type: application/json');
-		$response=false;
-		if(isset($_POST["TransferTo"])){
-			$dept=new Department();
-			$dept->DeptID=$_POST['deptid'];
-			if($dept->DeleteDepartment($_POST["TransferTo"])){
-				$response=true;
-			}
-		}
-		echo json_encode($response);
+		echo json_encode($status);
 		exit;
 	}
 	// END - AJAX requests
@@ -82,8 +77,8 @@
   <script type="text/javascript" src="scripts/jquery.validationEngine.js"></script>
 <script type="text/javascript">
 	function showgroup(obj){
-		self.frames['groupadmin'].location.href='dept_groups.php?deptid='+obj;
-		document.getElementById('groupadmin').style.display = "block";
+		self.frames['deviceadmin'].location.href='project_members.php?projectid='+obj;
+		document.getElementById('deviceadmin').style.display = "block";
 		document.getElementById('controls').id = "displaynone";
 		$('.main .center form :input:not([name="projectid"])').attr({readonly:'readonly',disabled:'disabled'})
 		$('.color-picker').minicolors('destroy');
@@ -94,36 +89,28 @@
 			location.href='project_mgr.php?projectid='+this.value;
 		});
 		$('.main .center form').validationEngine();
-		$('button[value="Delete"]').click(function(e){
-			$('#copy').replaceWith($('#deptid').clone().attr('id','copy'));
-			$('#copy option[value=0]').text('');
-			$('#copy option[value='+$('#deptid').val()+']').remove();
-
-			$('#deletemodal').dialog({
-				width: 900,
-				modal: true,
-				buttons: {
-					Transfer: function(e){
-						$('#doublecheck').dialog({
-							width: 600,
-							modal: true,
-							buttons: {
-								Yes: function(e){
-									$.post('',{action:'Delete',deptid:$('#deptid').val(),TransferTo:$('#copy').val()},function(data){
-										if(data){
-											location.href='departments.php?deptid='+$('#copy').val();
-										}else{
-											alert('something stupid has happened');
-										}
-									});
-								}
-							}
-						});
-					},
-					No: function(e){
-						$('#deletemodal').dialog('destroy');
-					}
+		$('button[value=Delete]').click(function(){
+			var defaultbutton={
+				"<?php echo __("Yes"); ?>": function(){
+					$.post('', {projectid: $('select[name=projectid]').val(),delete: 'yes' }, function(data){
+						if(data.code==200){
+							window.location.assign(data.msg);
+						}else{
+							alert("Danger, Will Robinson! DANGER!  Something didn't go as planned.");
+						}
+					});
 				}
+			}
+			var cancelbutton={
+				"<?php echo __("No"); ?>": function(){
+					$(this).dialog("destroy");
+				}
+			}
+			var modal=$('#deletemodal').dialog({
+				dialogClass: 'no-close',
+				modal: true,
+				width: 'auto',
+				buttons: $.extend({}, defaultbutton, cancelbutton)
 			});
 		});
 	});
@@ -183,23 +170,14 @@
 </div>
 </div> <!-- END div.table -->
 </form>
-<iframe name="groupadmin" id="groupadmin" frameborder=0 scrolling="no"></iframe>
+<iframe name="deviceadmin" id="deviceadmin" frameborder=0 scrolling="no"></iframe>
 <br>
 </div></div>
 <?php echo '<a href="index.php">[ ',__("Return to Main Menu"),' ]</a>
 <!-- hiding modal dialogs here so they can be translated easily -->
 <div class="hide">
-	<div title="',__("Department delete confirmation"),'" id="deletemodal">
-		<div id="modaltext"><span style="float:left; margin:0 7px 20px 0;" class="ui-icon ui-icon-alert"></span>',__("Are you sure that you want to delete this Department?"),'
-		<br><br>
-		<div>',__("Cabinets"),': <span id="cnt_cabinets"></span>&nbsp;&nbsp;&nbsp;',__("Devices"),': <span id="cnt_devices"></span>&nbsp;&nbsp;&nbsp;',__("Users"),': <span id="cnt_users"></span></div>
-		<br>
-		<div>Transfer all existing equipment and users to <select id="copy"></select></div>
-		</div>
-	</div>
-	<div title="',__("Are you REALLY sure?"),'" id="doublecheck">
-		<div id="modaltext" class="warning"><span style="float:left; margin:0 7px 20px 0;" class="ui-icon ui-icon-alert"></span>',__("Are you sure REALLY sure?  There is no undo!!"),'
-		<br><br>
+	<div title="',__("Cabinet delete confirmation"),'" id="deletemodal">
+		<div id="modaltext"><span style="float:left; margin:0 7px 20px 0;" class="ui-icon ui-icon-alert"></span>',__("Are you sure that you want to delete this project? (Devices will be unassociated, but will not be deleted)."),'<br><br><b>',__("THERE IS NO UNDO"),'</b>
 		</div>
 	</div>
 </div>'; ?>

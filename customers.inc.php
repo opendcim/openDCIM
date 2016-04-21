@@ -860,19 +860,19 @@ class Projects {
 	//	The inclusion of this information will allow reports to be tailored such that they can report on the projects/services affected rather
 	//	than simply spitting out hundreds of devices, which can be especially helpful when trying to run a power outage simulation report.
 	//
-	var $ProjectID;
-	var $ProjectName;
-	var $ProjectSponsor;
-	var $ProjectStartDate;
-	var $ProjectExpirationDate;
-	var $ProjectActualEndDate;
+	public $ProjectID;
+	public $ProjectName;
+	public $ProjectSponsor;
+	public $ProjectStartDate;
+	public $ProjectExpirationDate;
+	public $ProjectActualEndDate;
 
 	function prepare($sql){
 		global $dbh;
 		return $dbh->prepare($sql);
 	}
 	
-	function lastID($sql) {
+	function lastID() {
 		global $dbh;
 		return $dbh->lastInsertID();
 	}
