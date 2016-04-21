@@ -1001,7 +1001,7 @@ class ProjectMembership {
 	static function getProjectMembership( $ProjectID ) {
 		global $dbh;
 
-		$st = $dbh->prepare( "select * from fac_ProjectMembership where ProjectID=:ProjectID" );
+		$st = $dbh->prepare( "select * from fac_ProjectMembership where ProjectID=:ProjectID order by DeviceID ASC" );
 		$st->setFetchMode( PDO::FETCH_CLASS, "ProjectMembership" );
 		
 		// Since we are using PDO, it is safe to send this blindly to the query.
@@ -1026,7 +1026,7 @@ class ProjectMembership {
 	static function getDeviceMembership( $DeviceID ) {
 		global $dbh;
 
-		$st = $dbh->prepare( "select * from fac_ProjectMembership where DeviceID=:DeviceID" );
+		$st = $dbh->prepare( "select * from fac_ProjectMembership where DeviceID=:DeviceID order by ProjectID ASC" );
 		$st->setFetchMode( PDO::FETCH_CLASS, "ProjectMembership" );
 
 		$st->execute( array( ":DeviceID"=>$DeviceID ));

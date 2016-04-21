@@ -456,6 +456,21 @@ div.error {margin-top: 2em;margin-bottom: 2em;border: 1px dotted gray;}
 #displaynone {display: none !important;}
 #cnt_cabinets, #cnt_devices, #cnt_users { cursor: pointer; text-decoration: underline; }
 
+#projectadmin {
+	overflow: hidden;
+	min-width: 700px;
+	min-height: 150px;
+	display: none;
+	margin-top: 20px;
+	border: 1px solid gray;
+}
+#projectgroup {background-color: <?php echo $config->ParameterArray['BodyColor']; ?>;}
+#projectgroup > div {padding:5px 10px;width:580px;min-height:300px;}
+#projectgroup > div h3 {margin-top: 0;margin-bottom: 5px;}
+#projectgroup > div h3 button {margin-left:10px;vertical-align:middle;}
+#projectgroup h3 + div {margin-left: 42.5px;}
+#projectgroup select {width: 600px;}
+
 /* Rack Content */
 .legenditem {padding: 0.2em;height: 1.1em;line-height: 1.2em;overflow: hidden;padding: 0.2em;white-space: nowrap;width: 210px;}
 .colorbox {width: 1.1em; display: inline-block; vertical-align: text-bottom;height: 1.1em; margin: 0px; padding: 0px;}

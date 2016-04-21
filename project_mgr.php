@@ -77,8 +77,8 @@
   <script type="text/javascript" src="scripts/jquery.validationEngine.js"></script>
 <script type="text/javascript">
 	function showgroup(obj){
-		self.frames['deviceadmin'].location.href='project_members.php?projectid='+obj;
-		document.getElementById('deviceadmin').style.display = "block";
+		self.frames['projectadmin'].location.href='project_members.php?projectid='+obj;
+		document.getElementById('projectadmin').style.display = "block";
 		document.getElementById('controls').id = "displaynone";
 		$('.main .center form :input:not([name="projectid"])').attr({readonly:'readonly',disabled:'disabled'})
 		$('.color-picker').minicolors('destroy');
@@ -170,13 +170,13 @@
 </div>
 </div> <!-- END div.table -->
 </form>
-<iframe name="deviceadmin" id="deviceadmin" frameborder=0 scrolling="no"></iframe>
+<iframe name="projectadmin" id="projectadmin" width="700px" frameborder=0 scrolling="no"></iframe>
 <br>
 </div></div>
 <?php echo '<a href="index.php">[ ',__("Return to Main Menu"),' ]</a>
 <!-- hiding modal dialogs here so they can be translated easily -->
 <div class="hide">
-	<div title="',__("Cabinet delete confirmation"),'" id="deletemodal">
+	<div title="',__("Project delete confirmation"),'" id="deletemodal">
 		<div id="modaltext"><span style="float:left; margin:0 7px 20px 0;" class="ui-icon ui-icon-alert"></span>',__("Are you sure that you want to delete this project? (Devices will be unassociated, but will not be deleted)."),'<br><br><b>',__("THERE IS NO UNDO"),'</b>
 		</div>
 	</div>
