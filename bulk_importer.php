@@ -200,7 +200,7 @@
         $st = $dbh->prepare( "select CabinetID from fac_Cabinet where ucase(Location)=ucase( :Location ) and DataCenterID in (select DataCenterID from fac_DataCenter where ucase(Name)=ucase( :DataCenter ))" );
         foreach( $values["Cabinet"] as $row ) {
           $st->execute( array( ":Location"=>$row["Cabinet"], ":DataCenter"=>$row["DataCenterID"] ));
-          if ( ! $st->fetch()) {
+          if ( ! $row = $st->fetch()) {
             $valid = false;
             $tmpCon .= "<li>" . __("Cabinet") . ": " . $row["DataCenterID"] . " - " . $row["Cabinet"];
           }
@@ -239,8 +239,52 @@
         }
 
         // Finally, check on the Primary Contact
+        $st = $dbh->prepare( "select PersonID from fac_People where ucase(concat(LastName, ', ', FirstName))=ucase(:Contact)" );
+        foreach( $values["PrimaryContact"] as $val ) {
+          if ( $val != "" ) {
+            $st->execute( array( ":Contact" => $val ));
+            if ( ! $st->fetch()) {
+              $valid = false;
+              $tmpCon .= "<li>" . __("Primary Contact") . ":" . $val;
+            }
+          }
+        }
 
-        //  TO DO LATER
+
+        // Now quickly run back through all of the rows and check for collisions
+
+        $st = $dbh->prepare( "select DeviceID, Label from fac_Device where Cabinet in (select CabinetID from fac_Cabinet where DataCenterID in (select DataCenterID from fac_DataCenter where ucase(Name)=ucase(:DataCenterID)) and ucase(Location)=ucase(:Cabinet)) and (Position between :StartPos and :EndPos or Position+Height between :StartPos2 and :EndPos2)" );
+
+        $cFields = array( "DataCenterID", "Cabinet", "Position", "Height", "Label" );
+        for ( $n = 2; $n <= $highestRow; $n++ ) {
+          foreach( $cFields as $fname ) {
+            if ( $_REQUEST[$fname] != 0 ) {
+              $addr = chr( 64 + $_REQUEST[$fname]);
+              $row[$fname] = $sheet->getCell( $addr . $n )->getValue();
+            } else {
+              $row[$fname] = "";
+            }
+          }
+
+          if ( $row["Height"] > 0 ) {
+            $endPos = $row["Position"] + $row["Height"];
+
+            if ( ! $st->execute( array( ":DataCenterID"=>$row["DataCenterID"],
+              ":Cabinet"=>$row["Cabinet"],
+              ":StartPos"=>$row["Position"],
+              ":EndPos"=>$endPos,
+              ":StartPos2"=>$row["Position"],
+              ":EndPos2"=>$endPos )) ) {
+              $info = $dbh->errorInfo();
+              error_log( "PDO Error on Collision Detection: {$info[2]}" );
+            }
+
+            if ( $collisionRow = $st->fetch() ) {
+              $tmpCon .= "<li>" . __("Collision Detected") . ": " . $row["DataCenterID"] . ":" . $row["Cabinet"] . " - " . $row["Position"] . " :: " . $row["Label"];
+              $valid = false;
+            }
+          }
+        }
 
         if ( ! $valid ) {
           $content .= $tmpCon . "</ul>";

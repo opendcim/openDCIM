@@ -145,9 +145,11 @@
 
     $sheet = $objXL->getSheet(0);
     $highestRow = $sheet->getHighestRow();
+    $tmpCon = "<h3>" . __("The following values in the bulk move/delete file require entries in openDCIM before you may proceed.") . "</h3>";
+    $tmpCon .= "<ul>";
 
     $values = array();
-    $fields = array( "DeviceID", "DataCenterID", "Cabinet" );
+    $fields = array( "DeviceID", "DataCenterID", "Cabinet", "Position" );
     // Skip the first row, which has the headers in it
     for ( $n = 2; $n <= $highestRow; $n++ ) {
       foreach( $fields as $fname ) {
@@ -159,77 +161,86 @@
         }
       }
 
-      // Have to do this part by hand because some fields are actually context dependent upon others
-      $values["DeviceID"][] = $row["DeviceID"];
-      $values["DataCenterID"][] = $row["DataCenterID"];
-      $tmpCab["DataCenterID"] = $row["DataCenterID"];
-      $tmpCab["Cabinet"] = $row["Cabinet"];
-      $values["Cabinet"][] = $tmpCab;
-    }
+      $tmpDev = new Device();
 
-    foreach( $values as $key => $val ) {
-      $values[$key] = array_unique( $values[$key], SORT_REGULAR );
-    }
-    
-    if ( $valid ) {
       // This could probably be economized in some fashion, but I can just crank this out faster one at a time and worry about efficiency later
       //
 
-      $tmpCon = "<h3>" . __("The following values in the bulk move/delete file require entries in openDCIM before you may proceed.") . "</h3>";
-      $tmpCon .= "<ul>";
+      $st = $dbh->prepare( "select count(DeviceID) as TotalMatches, DeviceID from fac_Device where ucase(" . $idField . ")=ucase(:DeviceKey)" );
+      $st->execute( array( ":DeviceKey"=>$row["DeviceID"]));
+      if ( ! $devRow = $st->fetch()) {
+        $info = $dbh->errorInfo();
+        error_log( "PDO Error: {$info[2]}");
+        $rowError = true;
+      }
 
-      $st = $dbh->prepare( "select count(DeviceID) as TotalMatches from fac_Device where ucase(" . $idField . ")=ucase(:DeviceKey)" );
-      foreach( $values["DeviceID"] as $val ) {
-        $st->execute( array( ":DeviceKey"=>$val));
-        if ( ! $row = $st->fetch()) {
+      if ( $devRow["TotalMatches"] != 1 ) {
+        $rowError = true;
+        $tmpCon .= "<li>Device: $idField = " . $row["DeviceID"] . " is not unique or not found.";
+      } else {
+        $tmpDev->DeviceID = $devRow["DeviceID"];
+        $tmpDev->GetDevice();
+      }
+
+      $DataCenterID = 0;
+      $st = $dbh->prepare( "select count(DataCenterID) as TotalMatches, DataCenterID from fac_DataCenter where ucase(Name)=ucase(:Name)" );
+      if ( $row["DataCenterID"] != "" ) {
+        $st->execute( array( ":Name" => $row["DataCenterID"] ));
+        if ( ! $dcRow = $st->fetch()) {
           $info = $dbh->errorInfo();
           error_log( "PDO Error: {$info[2]}");
           $rowError = true;
         }
 
-        if ( $row["TotalMatches"] != 1 ) {
+        if ( $dcRow["TotalMatches"] != 1 ) {
           $rowError = true;
-          $tmpCon .= "<li>Device: $idField = " . $val . " is not unique or not found.";
+          $tmpCon .= "<li>DataCenterID: " . $row["DataCenterID"] . " is not unique or not found.";
+        } else {
+          $DataCenterID = $dcRow["DataCenterID"];
         }
       }
 
-      $st = $dbh->prepare( "select count(DataCenterID) as TotalMatches from fac_DataCenter where ucase(Name)=ucase(:Name)" );
-      foreach ( $values["DataCenterID"] as $val ) {
-        if ( $val != "" ) {
-          $st->execute( array( ":Name" => $val ));
-          if ( ! $row = $st->fetch()) {
-            $info = $dbh->errorInfo();
-            error_log( "PDO Error: {$info[2]}");
-            $rowError = true;
-          }
-
-          if ( $row["TotalMatches"] != 1 ) {
-            $rowError = true;
-            $tmpCon .= "<li>DataCenterID: " . $val . " is not unique or not found.";
-          }
-        }
-      }
-
+      $CabinetID = 0;
       // To check validity of cabinets, we have to know the data center for that specific cabinet.
-      $st = $dbh->prepare( "select count(CabinetID) as TotalMatches from fac_Cabinet where ucase(Location)=ucase( :Location ) and DataCenterID in (select DataCenterID from fac_DataCenter where ucase(Name)=ucase( :DataCenter ))" );
-      foreach( $values["Cabinet"] as $val ) {
-        if ( $val["DataCenterID"] != "" ) {
-          $st->execute( array( ":Location"=>$val["Cabinet"], ":DataCenter"=>$val["DataCenterID"] ));
-          if ( ! $row = $st->fetch()) {
-            $info = $dbh->errorInfo();
-            error_log( "PDO Error: {$info[2]}");
-            $rowError = true;
-          }
+      $st = $dbh->prepare( "select count(CabinetID) as TotalMatches, CabinetID from fac_Cabinet where ucase(Location)=ucase( :Location ) and DataCenterID=:DataCenter" );
+      if ( $DataCenterID>0 ) {
+        $st->execute( array( ":Location"=>$row["Cabinet"], ":DataCenter"=>$DataCenterID ));
+        if ( ! $cabRow = $st->fetch()) {
+          $info = $dbh->errorInfo();
+          error_log( "PDO Error: {$info[2]}");
+          $rowError = true;
+        }
 
-          if ( $row["TotalMatches"] != 1 ) {
-            $rowError = true;
-            $tmpCon .= "<li>" . __("Cabinet") . ": " . $row["DataCenterID"] . " - " . $row["Cabinet"];
-          }
+        if ( $cabRow["TotalMatches"] != 1 ) {
+          $rowError = true;
+          $tmpCon .= "<li>" . __("Cabinet") . ": " . $row["DataCenterID"] . " - " . $row["Cabinet"];
+        } else {
+          $CabinetID = $cabRow["CabinetID"];
+        }
+      }
+
+      $st = $dbh->prepare( "select DeviceID, Label from fac_Device where Cabinet=:CabinetID and (Position between :StartPos and :EndPos or Position+Height between :StartPos2 and :EndPos2)" );
+
+      if ( $tmpDev->DeviceID > 0 ) {
+        $endPos = $row["Position"] + $tmpDev->Height;
+
+        if ( ! $st->execute( array( ":CabinetID"=>$CabinetID,
+          ":StartPos"=>$row["Position"],
+          ":EndPos"=>$endPos,
+          ":StartPos2"=>$row["Position"],
+          ":EndPos2"=>$endPos )) ) {
+          $info = $dbh->errorInfo();
+          error_log( "PDO Error on Collision Detection: {$info[2]}" );
+        }
+
+        if ( $collisionRow = $st->fetch() ) {
+          $tmpCon .= "<li>" . __("Collision Detected") . ": " . $row["DataCenterID"] . ":" . $row["Cabinet"] . " - " . $row["Position"] . " :: " . $row["DeviceID"];
+          $rowError = true;
         }
       }
     }
 
-    if ( ! $valid ) {
+    if ( $rowError ) {
       $content .= $tmpCon . "</ul>";
     } else {
       $content = '<form action="' . $_SERVER['PHP_SELF']. '" method="POST">';

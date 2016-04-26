@@ -213,7 +213,7 @@
        *  Section for looking up the SourcePort by name and setting the true PortNumber in the devPort variable
        *
        */
-      $st = $dbh->prepare( "select count(*) as TotalMatches, Label, PortNumber from fac_Ports where DeviceID=:DeviceID and ucase(Label)=ucase(:SourcePort)" );
+      $st = $dbh->prepare( "select count(*) as TotalMatches, Label, PortNumber from fac_Ports where DeviceID=:DeviceID and PortNumber>0 and ucase(Label)=ucase(:SourcePort)" );
       $st->execute( array( ":DeviceID"=>$devPort->DeviceID, ":SourcePort"=>$row["SourcePort"] ));
       if ( ! $val = $st->fetch() ) {
         $info = $dbh->errorInfo();
@@ -231,9 +231,10 @@
       /*
        *
        *  Section for looking up the TargetPort by name and setting the true PortNumber in the devPort variable
+       *  Limits to positive port numbers so that you can match Patch Panel frontside ports
        *
        */
-      $st = $dbh->prepare( "select count(*) as TotalMatches, Label, PortNumber from fac_Ports where DeviceID=:DeviceID and ucase(Label)=ucase(:TargetPort)" );
+      $st = $dbh->prepare( "select count(*) as TotalMatches, Label, PortNumber from fac_Ports where DeviceID=:DeviceID and PortNumber>0 and ucase(Label)=ucase(:TargetPort)" );
       $st->execute( array( ":DeviceID"=>$devPort->ConnectedDeviceID, ":TargetPort"=>$row["TargetPort"] ));
       if ( ! $val = $st->fetch() ) {
         $info = $dbh->errorInfo();
