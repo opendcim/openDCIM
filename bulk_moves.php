@@ -219,7 +219,7 @@
         }
       }
 
-      $st = $dbh->prepare( "select DeviceID, Label from fac_Device where Cabinet=:CabinetID and (Position between :StartPos and :EndPos or Position+Height between :StartPos2 and :EndPos2)" );
+      $st = $dbh->prepare( "select DeviceID, Label from fac_Device where ParentDevice=0 and Cabinet=:CabinetID and (Position between :StartPos and :EndPos or Position+Height between :StartPos2 and :EndPos2)" );
 
       if ( $tmpDev->DeviceID > 0 ) {
         $endPos = $row["Position"] + $tmpDev->Height;
