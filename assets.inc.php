@@ -246,7 +246,7 @@ class Cabinet {
 		
 		$this->MakeSafe();
 
-		$sql = "select * from fac_Cabinet where DataCenterID='" . $this->DataCenterID . "'";
+		$sql = "select * from fac_Cabinet where DataCenterID='" . $this->DataCenterID . "' ORDER BY Location ASC";
 		if ( $limitzone ) {
 			$sql .= " and ZoneID='" . $this->ZoneID . "'";
 		}		
