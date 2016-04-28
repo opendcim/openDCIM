@@ -266,22 +266,29 @@
             }
           }
 
-          if ( $row["Height"] > 0 ) {
-            $endPos = $row["Position"] + $row["Height"];
+          // Any floatind point value refers to a card going into a server.  Since the server
+          // being added could be a row in this field, we simply don't detect collisions
+          // and will show an error during processing if it comes to that.
+          $pos = explode( ".", $row["Position"]);
 
-            if ( ! $st->execute( array( ":DataCenterID"=>$row["DataCenterID"],
-              ":Cabinet"=>$row["Cabinet"],
-              ":StartPos"=>$row["Position"],
-              ":EndPos"=>$endPos,
-              ":StartPos2"=>$row["Position"],
-              ":EndPos2"=>$endPos )) ) {
-              $info = $dbh->errorInfo();
-              error_log( "PDO Error on Collision Detection: {$info[2]}" );
-            }
+          if ( sizeof( $pos ) > 1 ) {
+            if ( $row["Height"] > 0 ) {
+              $endPos = $row["Position"] + $row["Height"];
 
-            if ( $collisionRow = $st->fetch() ) {
-              $tmpCon .= "<li>" . __("Collision Detected") . ": " . $row["DataCenterID"] . ":" . $row["Cabinet"] . " - " . $row["Position"] . " :: " . $row["Label"];
-              $valid = false;
+              if ( ! $st->execute( array( ":DataCenterID"=>$row["DataCenterID"],
+                ":Cabinet"=>$row["Cabinet"],
+                ":StartPos"=>$row["Position"],
+                ":EndPos"=>$endPos,
+                ":StartPos2"=>$row["Position"],
+                ":EndPos2"=>$endPos )) ) {
+                $info = $dbh->errorInfo();
+                error_log( "PDO Error on Collision Detection: {$info[2]}" );
+              }
+
+              if ( $collisionRow = $st->fetch() ) {
+                $tmpCon .= "<li>" . __("Collision Detected") . ": " . $row["DataCenterID"] . ":" . $row["Cabinet"] . " - " . $row["Position"] . " :: " . $row["Label"];
+                $valid = false;
+              }
             }
           }
         }
@@ -356,7 +363,25 @@
         error_log( "PDO Error: {$info[2]} (Cabinet search)");
       }
       $dev->Cabinet = $val["CabinetID"];
-      $dev->Position = $row["Position"];
+
+      $pos = explode( ".", $row["Position"] );
+      if ( sizeof( $pos ) > 1 ) {
+        // This is a child (card) so we need to find the parent
+        $pDev = new Device();
+        $pDev->Cabinet = $dev->Cabinet;
+        $pDev->Position = $pos[0];
+        $pList = $pDev->Search();
+        if ( sizeof( $pList ) != 1 ) {
+          $content .= "<li>" . __("Parent device does not exist at specified location." );
+          $errors = true;
+        } else {
+          $dev->ParentDevice = $pList[0]->DeviceID;
+          $dev->Position = $pos[1];
+        }
+      } else {
+        $dev->Position = $row["Position"];
+      }
+
       $dev->Label = $row["Label"];
       $dev->Height = $row["Height"];
 
@@ -371,6 +396,8 @@
       $dev->NominalWatts = $val["Wattage"];
       $dev->DeviceType = $val["DeviceType"];
       $dev->PowerSupplyCount = $val["PSCount"];
+      $dev->ChassisSlots = $val["ChassisSlots"];
+      $dev->RearChassisSlots = $val["RearChassisSlots"];
       $dev->Weight = $val["Weight"];
 
       $dev->PrimaryIP = $row["Hostname"];
@@ -408,9 +435,9 @@
         $dev->PrimaryContact = $val["PersonID"];
       }
 
-      if ( ! $dev->CreateDevice() ) {
+      if ( ! $errors && ! $dev->CreateDevice() ) {
         $errors = true;
-        $content .= "<li><strong>Error adding device on Row $n of the spreadsheet.</strong>";
+        $content .= "<li><strong>" . __("Error adding device on Row $n of the spreadsheet.") . "</strong>";
       } else {
         if ( $row["CustomTags"] != "" ) {
           $tagList = array_map( 'trim', explode( ",", $row["CustomTags"] ));
