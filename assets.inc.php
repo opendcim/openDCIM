@@ -245,11 +245,19 @@ class Cabinet {
 		global $dbh;
 		
 		$this->MakeSafe();
+
+		$sql = "select * from fac_Cabinet where DataCenterID='" . $this->DataCenterID . "'";
+		if ( $limitzone ) {
+			$sql .= " and ZoneID='" . $this->ZoneID . "'";
+		}		
+
+		foreach( $dbh->query($sql) as $cabinetRow){
+			$filter = $config->ParameterArray["FilterCabinetList"] == 'Enabled' ? true:false;
+			$cabinetList[]=Cabinet::RowToObject($cabinetRow, $filter);		
+		}
 		
-		$cabinetList=$this->ListCabinets(true);
 		foreach($cabinetList as $i => $cab){
 			if(
-				($cab->DataCenterID!=$this->DataCenterID) ||
 				($limitzone && $this->ZoneID>0 && $cab->ZoneID!=$this->ZoneID) ||
 				($limit && ($cab->MapX1==$cab->MapX2 || $cab->MapY1==$cab->MapY2))
 			)
@@ -263,10 +271,13 @@ class Cabinet {
 		global $dbh;
 
 		$this->MakeSafe();
-		
-		$cabinetList=$this->ListCabinets();
-		foreach($cabinetList as $i => $cab){
-			if($cab->AssignedTo!=$this->AssignedTo){unset($cabinetList[$i]);}
+
+		$cabinetList = array();
+
+		$sql = "select * from fac_Cabinet where AssignedTo='" . $this->AssignedTo . "'";
+		foreach( $dbh->query($sql) as $cabinetRow){
+			$filter = $config->ParameterArray["FilterCabinetList"] == 'Enabled' ? true:false;
+			$cabinetList[]=Cabinet::RowToObject($cabinetRow, $filter);		
 		}
 
 		return $cabinetList;
@@ -276,12 +287,13 @@ class Cabinet {
 		global $dbh;
 
 		$this->MakeSafe();
-		
-		$cabinetList=$this->ListCabinets();
-		foreach($cabinetList as $i => $cab){
-			if($cab->ZoneID!=$this->ZoneID || $cab->ZoneID==0){unset($cabinetList[$i]);}
-		}
 
+		$cabinetList = array();		
+		$sql = "select * from fac_Cabinet where ZoneID='" . $this->ZoneID . "'";
+		foreach( $dbh->query($sql) as $cabinetRow){
+			$filter = $config->ParameterArray["FilterCabinetList"] == 'Enabled' ? true:false;
+			$cabinetList[]=Cabinet::RowToObject($cabinetRow, $filter);		
+		}
 		return $cabinetList;
 	}
 	
