@@ -229,27 +229,30 @@
         }
 
         // Check for the Department to be valid
-        $st = $dbh->prepare( "select DeptID from fac_Department where ucase(Name)=ucase( :Name )" );
-        foreach( $values["Owner"] as $val ) {
-          $st->execute( array( ":Name"=>$val ));
-          if ( ! $st->fetch() ) {
-            $valid = false;
-            $tmpCon .= "<li>" . __("Department") . ": " . $val;
-          }
-        }
-
-        // Finally, check on the Primary Contact
-        $st = $dbh->prepare( "select PersonID from fac_People where ucase(concat(LastName, ', ', FirstName))=ucase(:Contact)" );
-        foreach( $values["PrimaryContact"] as $val ) {
-          if ( $val != "" ) {
-            $st->execute( array( ":Contact" => $val ));
-            if ( ! $st->fetch()) {
+        if ( isset($values["Owner"] )) {
+          $st = $dbh->prepare( "select DeptID from fac_Department where ucase(Name)=ucase( :Name )" );
+          foreach( $values["Owner"] as $val ) {
+            $st->execute( array( ":Name"=>$val ));
+            if ( ! $st->fetch() ) {
               $valid = false;
-              $tmpCon .= "<li>" . __("Primary Contact") . ":" . $val;
+              $tmpCon .= "<li>" . __("Department") . ": " . $val;
             }
           }
         }
 
+        // Finally, check on the Primary Contact
+        if ( isset($values["PrimaryContact"] )) {
+          $st = $dbh->prepare( "select PersonID from fac_People where ucase(concat(LastName, ', ', FirstName))=ucase(:Contact)" );
+          foreach( $values["PrimaryContact"] as $val ) {
+            if ( $val != "" ) {
+              $st->execute( array( ":Contact" => $val ));
+              if ( ! $st->fetch()) {
+                $valid = false;
+                $tmpCon .= "<li>" . __("Primary Contact") . ":" . $val;
+              }
+            }
+          }
+        }
 
         // Now quickly run back through all of the rows and check for collisions
 
@@ -356,8 +359,8 @@
       }
       $dev->DataCenterID = $val["DataCenterID"];
 
-      $st = $dbh->prepare( "select CabinetID from fac_Cabinet where ucase(Location)=ucase(:Location)" );
-      $st->execute( array( ":Location" => $row["Cabinet"] ));
+      $st = $dbh->prepare( "select CabinetID from fac_Cabinet where ucase(Location)=ucase( :Location ) and DataCenterID=:DataCenterID" );
+      $st->execute( array( ":Location"=>$row["Cabinet"], ":DataCenterID"=>$dev->DataCenterID ));
       if ( ! $val = $st->fetch()) {
         $info = $dbh->errorInfo();
         error_log( "PDO Error: {$info[2]} (Cabinet search)");
@@ -369,6 +372,7 @@
         // This is a child (card) so we need to find the parent
         $pDev = new Device();
         $pDev->Cabinet = $dev->Cabinet;
+        $pDev->ParentDevice = 0;
         $pDev->Position = $pos[0];
         $pList = $pDev->Search();
         if ( sizeof( $pList ) != 1 ) {

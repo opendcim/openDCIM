@@ -243,6 +243,7 @@ class Cabinet {
 
 	function ListCabinetsByDC($limit=false,$limitzone=false){
 		global $dbh;
+		global $config;
 		
 		$this->MakeSafe();
 
@@ -251,6 +252,8 @@ class Cabinet {
 			$sql .= " and ZoneID='" . $this->ZoneID . "'";
 		}		
 
+		$cabinetList = array();
+		
 		foreach( $dbh->query($sql) as $cabinetRow){
 			$filter = $config->ParameterArray["FilterCabinetList"] == 'Enabled' ? true:false;
 			$cabinetList[]=Cabinet::RowToObject($cabinetRow, $filter);		
