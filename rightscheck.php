@@ -17,7 +17,7 @@ $userid=exec('id -u');
 $grpid=exec('id -g');
 
 // The directories we want writable for uploads
-$wantedpaths=array('pictures','images');
+$wantedpaths=array('pictures','drawings');
 
 print "<table>
 	<tr>
