@@ -16,6 +16,8 @@
 			$field="AssetTag";
 		}elseif(isset($_REQUEST["ctag"])){
 			$field="CustomTag";
+		}elseif(isset($_REQUEST["project"])) {
+			$field="ProjectName";
 		}elseif(isset($_REQUEST["owner"])){
 			$field="Owner";
 		}elseif(isset($_REQUEST["notes"])){
@@ -37,6 +39,8 @@
 				FROM fac_VMInventory WHERE vmName LIKE '%$searchTerm%';";
 		}elseif($field=="CustomTag"){
 			$sql="SELECT DISTINCT Name FROM fac_Tags WHERE Name LIKE '%$searchTerm%'";
+		}elseif($field=="ProjectName"){
+			$sql="SELECT DISTINCT ProjectName FROM fac_Projects WHERE ProjectName LIKE '%$searchTerm%'";
 		}elseif($field=="Owner"){
 			$sql="SELECT DISTINCT Name FROM fac_Department WHERE Name LIKE '%$searchTerm%'";
 		}elseif($field=="Notes"){

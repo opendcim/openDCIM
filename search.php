@@ -16,6 +16,7 @@
 	$cab=new Cabinet();
 	$pdu=new PowerDistribution();
 	$dept=new Department();
+	$proj=new Projects();
 	$resultcount=0;
 	$title=__("Search Results");
 
@@ -67,6 +68,16 @@
 		$cabList=$cab->SearchByCustomTag($searchTerm);
 		$resultcount=count($devList)+count($cabList);
 		$title=__("Custom tag search results for")." &quot;$searchTerm&quot;";
+	}elseif($searchKey=="project"){
+		$proj->ProjectName=$searchTerm;
+		$projList = $proj->Search();
+		$devList = array();
+		foreach( $projList as $p ) {
+			$tmpList = ProjectMembership::getProjectMembership( $p->ProjectID );
+			$devList = array_merge( $devList, $tmpList );
+		}
+		$resultcount=count($devList);
+		$title=__("Project Catalog search results for")." &quot;$searchTerm&quot;";
 	}elseif($searchKey=="cattr"){
 		$devList=$dev->SearchByCustomAttribute($searchTerm);
 		$resultcount=count($devList);

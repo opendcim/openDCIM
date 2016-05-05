@@ -18,6 +18,7 @@
 	<option value="serial">',__("Serial Number"),'</option>
 	<option value="asset">',__("Asset Tag"),'</option>
 	<option value="owner">',__("Owner"),'</option>
+	<option value="project">',__("Project"),'</option>
 	<option value="ip">',__("PrimaryIP"),'</option>
 	<option value="cattr">',__("Custom Attribute"),'</option>
 	<option value="notes">',__("Notes"),'</option>
