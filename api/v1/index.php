@@ -97,6 +97,25 @@ function echoResponse($status_code, $response) {
     echo json_encode($response);
 }
 
+function specifyAttributes( $attrList, $objList ) {
+	if ( sizeof( $attrList ) > 0 ) {
+		$trimList = array();
+		foreach( $objList as $o ) {
+			$n = new StdClass();
+			foreach( $attrList as $prop ) {
+				if ( isset( $o->$prop )) {
+					$n->$prop = $o->$prop;
+				}
+			}
+			$trimList[] = $n;
+		}
+
+		return $trimList;
+	} else {
+		return $objList;
+	}
+}
+
 /**
  * Adding Middle Layer to authenticate every request
  * Checking if the request has valid api key in the 'Authorization' header
@@ -164,10 +183,18 @@ $app->get('/people', function() use ($app) {
 		$response['error'] = false;
 		$response['errorcode'] = 200;
 		$sp=new People();
+		$loose = false;
+		$outputAttr = array();
 		foreach($app->request->get() as $prop => $val){
-			$sp->$prop=$val;
+			if ( strtoupper($prop) == "WILDCARDS" ) {
+				$loose = true;
+			} elseif ( strtoupper($prop) == "ATTRIBUTES" ) {
+				$outputAttr = explode( ",", $val );
+			} else {
+				$sp->$prop=$val;
+			}
 		}
-		$response['people']=$sp->Search();
+		$response['people']=specifyAttributes( $outputAttr, $sp->Search( false, $loose ));
 		
 		echoResponse(200, $response);
 	}
@@ -179,27 +206,31 @@ $app->get('/people', function() use ($app) {
 //	Params:  none
 //	Returns:  List of all departments in the database
 //
-$app->get('/department', function() {
+$app->get('/department', function() use ($app) {
 	global $person;
 	$dept=new Department();
-	$depts=$dept->GetDepartmentList();
+	$loose = false;
+	$outputAttr = array();
 
 	if(!$person->ContactAdmin){
 		$response['error']=true;
 		$response['message'] = "Insufficient privilege level";
-		foreach($depts as $d){
-			foreach($d as $prop => $val){
-				if($prop!='DeptID' && $prop!='DeptColor'){
-					$d->$prop='';
-				}
-			}
-		}
+		$outputAttr = array( "DeptID", "DeptColor" );
 	} else {
 		$response['error'] = false;
 		$response['errorcode'] = 200;
+		foreach($app->request->get() as $prop => $val){
+			if ( strtoupper($prop) == "WILDCARDS" ) {
+				$loose = true;
+			} elseif ( strtoupper($prop) == "ATTRIBUTES" ) {
+				$outputAttr = explode( ",", $val );
+			} else {
+				$dept->$prop=$val;
+			}
+		}		
 	}
 
-	$response['department']=$depts;
+	$response['department'] = specifyAttributes( $outputAttr, $dept->Search( false, $loose ));
 	echoResponse(200, $response);
 });
 
@@ -268,10 +299,20 @@ $app->get( '/datacenter/:id', function( $DataCenterID ) {
 $app->get( '/cabinet', function() use ($app) {
 	$cab = new Cabinet;
 	$dc = new DataCenter();
+	$loose = false;
+	$outputAttr = array();
+
 	foreach($app->request->get() as $prop => $val){
-		$cab->$prop=$val;
+		if ( strtoupper($prop) == "WILDCARDS" ) {
+			$loose = true;
+		} elseif ( strtoupper($prop) == "ATTRIBUTES" ) {
+			$outputAttr = explode( ",", $val );
+		} else {
+			$cab->$prop=$val;
+		}
 	}
-	$cList = $cab->Search();
+
+	$cList = specifyAttributes( $outputAttr, $cab->Search(false, $loose));
 	
 	$response['error'] = false;
 	$response['errorcode'] = 200;
@@ -282,12 +323,14 @@ $app->get( '/cabinet', function() use ($app) {
 		foreach( $c as $prop=>$value ) {
 			$tmp[$prop] = $value;
 		}
-		if ( $dc->DataCenterID != $c->DataCenterID ) {
-			$dc->DataCenterID = $c->DataCenterID;
-			$dc->GetDataCenter();
-		}
+		if ( isset( $c->DataCenterID ) ) {
+			if ( $dc->DataCenterID != $c->DataCenterID ) {
+				$dc->DataCenterID = $c->DataCenterID;
+				$dc->GetDataCenter();
+			}
 		
-		$tmp['DataCenterName'] = $dc->Name;
+			$tmp['DataCenterName'] = $dc->Name;
+		}
 		
 		array_push( $response['cabinet'], $tmp );
 	}
@@ -436,10 +479,22 @@ $app->get( '/device', function() use ($app) {
 	
 	$response['error']=false;
 	$response['errorcode']=200;
+	$loose = false;
+	$outputAttr = array();
+
 	foreach($app->request->get() as $prop => $val){
-		$dev->$prop=$val;
+		if ( strtoupper($prop) == "WILDCARDS" ) {
+			$loose = true;
+		} elseif (strtoupper($prop) == "ATTRIBUTES" ) {
+			$outputAttr = explode( ",", $val );
+		} else {
+			$dev->$prop=$val;
+		}
 	}
-	$response['device']=$dev->Search();
+	
+	$devList = $dev->Search( false, $loose );
+
+	$response['device']=specifyAttributes( $outputAttr, $devList );
 
 	echoResponse(200,$response);
 });

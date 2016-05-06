@@ -663,6 +663,41 @@ class Department {
 			$this->GetDeptByID();
 		}
 	}
+
+	function Search($indexedbyid=false,$loose=false){
+		$o=array();
+		// Store any values that have been added before we make them safe 
+		foreach($this as $prop => $val){
+			if(isset($val)){
+				$o[$prop]=$val;
+			}
+		}
+
+		// Make everything safe for us to search with
+		$this->MakeSafe();
+
+		// This will store all our extended sql
+		$sqlextend="";
+		foreach($o as $prop => $val){
+			extendsql($prop,$this->$prop,$sqlextend,$loose);
+		}
+		$sql="SELECT * FROM fac_Department $sqlextend ORDER BY Name ASC;";
+		$deptList=array();
+		foreach($this->query($sql) as $deptRow){
+			if($indexedbyid){
+				$deptList[$deptRow["DeptID"]]=Department::RowToObject($deptRow);
+			}else{
+				$deptList[]=Department::RowToObject($deptRow);
+			}
+		}
+
+		return $deptList;
+	}
+
+	// Make a simple reference to a loose search
+	function LooseSearch($indexedbyid=false){
+		return $this->Search($indexedbyid,true);
+	}
 }
 
 class Escalations {
