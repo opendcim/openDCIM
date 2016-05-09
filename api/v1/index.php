@@ -241,21 +241,28 @@ $app->get('/department', function() use ($app) {
 //	Returns: List of all data centers in the database
 //
 
-$app->get('/datacenter', function() {
+$app->get('/datacenter', function() use ($app) {
 	// Don't have to worry about rights, other than basic connection, to get data center list
 	
 	$dc = new DataCenter();
 	$dcList = $dc->GetDCList();
 	$response['error'] = false;
 	$response['errorcode'] = 200;
-	$response['datacenter'] = array();
-	foreach ( $dcList as $d ) {
-		$tmp = array();
-		foreach( $d as $prop=>$value ) {
-			$tmp[$prop] = $value;
+
+	$outputAttr = array();
+	$loose = false;
+
+	foreach( $app->request->get() as $prop=>$val ) {
+		if (strtoupper($prop) == "WILDCARDS" ) {
+			$loose = true;
+		} elseif( strtoupper($prop) == "ATTRIBUTES" ) {
+			$outputAttr = explode( ",", $val );
+		} else {
+			$dc->$prop = $val;
 		}
-		array_push( $response['datacenter'], $tmp );
 	}
+
+	$response['datacenter'] = specifyAttributes( $outputAttr, $dc->Search( false, $loose ));
 	
 	echoResponse( 200, $response );
 });

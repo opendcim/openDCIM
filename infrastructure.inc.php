@@ -248,7 +248,47 @@ class DataCenter {
 		global $dbh;
 		return $dbh->exec($sql);
 	}
-	
+
+	function Search($indexedbyid=false,$loose=false){
+		$o=new stdClass();
+		// Store any values that have been added before we make them safe 
+		foreach($this as $prop => $val){
+			if(isset($val)){
+				$o->$prop=$val;
+			}
+		}
+
+		// Make everything safe for us to search with
+		$this->MakeSafe();
+
+		// This will store all our extended sql
+		$sqlextend="";
+		foreach($this as $prop => $val){
+			if($val){
+				extendsql($prop,$val,$sqlextend,$loose);
+			}
+		}
+
+		$sql="SELECT * FROM fac_DataCenter $sqlextend ORDER BY Name ASC;";
+
+		$dcList=array();
+
+		foreach($this->query($sql) as $row){
+			if($indexedbyid){
+				$dcList[$row["DataCenterID"]]=DataCenter::RowToObject($row);
+			}else{
+				$dcList[]=DataCenter::RowToObject($row);
+			}
+		}
+
+		return $dcList;
+	}
+
+	// Make a simple reference to a loose search
+	function LooseSearch($indexedbyid=false){
+		return $this->Search($indexedbyid,true);
+	}
+
 	function CreateDataCenter(){
 		global $dbh;
 		$this->MakeSafe();
