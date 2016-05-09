@@ -247,10 +247,11 @@ class Cabinet {
 		
 		$this->MakeSafe();
 
-		$sql = "select * from fac_Cabinet where DataCenterID='" . $this->DataCenterID . "' ORDER BY Location ASC";
-		if ( $limitzone ) {
+		$sql = "select * from fac_Cabinet where DataCenterID='" . $this->DataCenterID . "'";
+		if ( $limitzone && $this->ZoneID>0 ) {
 			$sql .= " and ZoneID='" . $this->ZoneID . "'";
-		}		
+		}
+		$sql .= " ORDER BY Location ASC";
 
 		$cabinetList = array();
 		
@@ -260,11 +261,9 @@ class Cabinet {
 		}
 		
 		foreach($cabinetList as $i => $cab){
-			if(
-				($limitzone && $this->ZoneID>0 && $cab->ZoneID!=$this->ZoneID) ||
-				($limit && ($cab->MapX1==$cab->MapX2 || $cab->MapY1==$cab->MapY2))
-			)
-			{unset($cabinetList[$i]);}
+			if($limit && ($cab->MapX1==$cab->MapX2 || $cab->MapY1==$cab->MapY2)){
+				unset($cabinetList[$i]);
+			}
 		}
 
 		return $cabinetList;
@@ -288,14 +287,17 @@ class Cabinet {
 
 	function GetCabinetsByZone(){
 		global $dbh;
+		global $config;
 
 		$this->MakeSafe();
 
-		$cabinetList = array();		
-		$sql = "select * from fac_Cabinet where ZoneID='" . $this->ZoneID . "'";
-		foreach( $dbh->query($sql) as $cabinetRow){
-			$filter = $config->ParameterArray["FilterCabinetList"] == 'Enabled' ? true:false;
-			$cabinetList[]=Cabinet::RowToObject($cabinetRow, $filter);		
+		$cabinetList = array();
+		if ( $this->ZoneID>0) {	
+			$sql = "select * from fac_Cabinet where ZoneID='" . $this->ZoneID . "'";
+			foreach( $dbh->query($sql) as $cabinetRow){
+				$filter = $config->ParameterArray["FilterCabinetList"] == 'Enabled' ? true:false;
+				$cabinetList[]=Cabinet::RowToObject($cabinetRow, $filter);		
+			}
 		}
 		return $cabinetList;
 	}
