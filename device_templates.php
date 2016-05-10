@@ -576,6 +576,9 @@
 			TemplateID2=$('#TemplateID').clone().prop('id','TemplateID2').removeAttr('onchange').removeAttr('style');
 			// Remove the 'New Template' option
 			TemplateID2.find('option:first-child').remove();
+			// Remove the currently selected template as a valid option
+			TemplateID2.find('option[value='+TemplateID2.val()+']').remove();
+
 
 			if(eval(this.value)){
 				dlg_transfer.append('<br><br>');
