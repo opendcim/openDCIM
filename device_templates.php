@@ -573,7 +573,7 @@
 		// logic for dealing someone saying yes they want to swap to another template
 		dlg_select.on('change',function(){
 			// Clone the existing device template list
-			TemplateID2=$('#TemplateID').clone().prop('id','TemplateID2').removeAttr('onchange');
+			TemplateID2=$('#TemplateID').clone().prop('id','TemplateID2').removeAttr('onchange').removeAttr('style');
 			// Remove the 'New Template' option
 			TemplateID2.find('option:first-child').remove();
 
