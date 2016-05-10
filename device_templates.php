@@ -329,6 +329,9 @@
 <head>
   <meta http-equiv="X-UA-Compatible" content="IE=Edge">
   <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <meta http-equiv="CACHE-CONTROL" content="NO-CACHE">
+  <meta http-equiv="EXPIRES" content="Mon, 01 Jan 1997 01:00:00 GMT">
+  <meta http-equiv="PRAGMA" content="NO-CACHE">
   
   <title>openDCIM Device Class Templates</title>
   <link rel="stylesheet" href="css/inventory.php" type="text/css">
@@ -680,7 +683,7 @@ echo '    </select>
    <div><label for="DeviceType">',__("Device Type"),'</label></div>
    <div><select name="DeviceType" id="DeviceType">';
 
-	foreach(array('Server','Appliance','Storage Array','Switch','Chassis','Patch Panel','Physical Infrastructure','CDU','Sensor') as $DevType){
+	foreach(array('Server','Appliance','Storage Array','Switch','Chassis','Patch Panel','Physical Infrastructure','CDU','Sensor','WiFi AP','Router') as $DevType){
 		if($DevType==$template->DeviceType){$selected=" selected";}else{$selected="";}
 		print "		<option value=\"$DevType\"$selected>$DevType</option>\n";
 	}
