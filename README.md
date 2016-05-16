@@ -23,6 +23,11 @@ openDCIM
 
         For further details on the license, see http://www.gnu.org/licenses
 
+
+*THE CURRENT RELEASE IN GITHUB IS FOR DEVELOPMENT ONLY*
+-------------------------------------------------------
+
+
 Installation
 ------------
 Supposing you are using apache, php and apache-php-module firstly clone openDCIM in a directory which is accessible by apache user (e.g. /srv/http/) and then configure apache to load required modules and have access to project directory (you can define virtual host too).
