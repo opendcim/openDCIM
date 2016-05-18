@@ -911,10 +911,13 @@
 				}
 				echo '</select></div>';
 			} else {
-				echo '<div><input type="text"',$validation,' name="',$inputname,'" id="',$inputname,'" value="',$customdata["value"],'"></div>';
-
+				echo '<div><input type="text"',$validation,' name="',$inputname,'" id="',$inputname,'" value="',$customdata["value"],'">';
+				if ($cvtype=="url") {
+					echo '<button type="button" onclick=window.open("',$customdata["value"],'","_blank"); value="open">',__("Open"),'</button>';
+				}
+				echo '</div>';
 			}
-		     	echo '</div>';
+		    echo '</div>';
 		}
 		echo '</div>';
 	}
