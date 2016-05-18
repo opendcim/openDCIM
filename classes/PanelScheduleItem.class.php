@@ -23,25 +23,13 @@
 	For further details on the license, see http://www.gnu.org/licenses
 */
 
-/*	Master include file - while all could fit easily into this one include,
-	for the sake of modularity and ease of checking out portions for multiple
-	developers, functions have been split out into more granular groupings.
-*/
-
-date_default_timezone_set($config->ParameterArray['timezone']);
-
-$rootdir = dirname(__FILE__);
-
-foreach( glob($rootdir."/classes/*.class.php") as $filename ) {
-	include_once $filename;
-}
-
-require_once( "misc.inc.php" );
-
-
-// SNMP Library, don't attempt to load without php-snmp extensions
-if(extension_loaded('snmp')){
-	require_once('OSS_SNMP/SNMP.php');
+class PanelScheduleItem {
+	var $Pole=0;
+	var $DataType;
+	var $Spanned=false;
+	var $SpanSize=0;
+	var $NoPrint=false;
+	var $Data;
 }
 
 ?>

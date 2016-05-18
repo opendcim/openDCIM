@@ -22,26 +22,33 @@
 
 	For further details on the license, see http://www.gnu.org/licenses
 */
+class BinAudits {
+	var $BinID;
+	var $UserID;
+	var $AuditStamp;
 
-/*	Master include file - while all could fit easily into this one include,
-	for the sake of modularity and ease of checking out portions for multiple
-	developers, functions have been split out into more granular groupings.
-*/
+	function MakeSafe(){
+		$this->BinID=intval($this->BinID);
+		$this->UserID=sanitize($this->UserID);
+		$this->AuditStamp=sanitize($this->AuditStamp);
+	}
 
-date_default_timezone_set($config->ParameterArray['timezone']);
+	function MakeDisplay(){
+		$this->UserID=stripslashes($this->UserID);
+		$this->AuditStamp=stripslashes($this->AuditStamp);
+	}
 
-$rootdir = dirname(__FILE__);
+	function exec($sql){
+		global $dbh;
+		return $dbh->exec($sql);
+	}
+	
+	function AddAudit(){
+		$this->AuditStamp=date("Y-m-d",strtotime($this->AuditStamp));
+		$this->MakeSafe();
 
-foreach( glob($rootdir."/classes/*.class.php") as $filename ) {
-	include_once $filename;
+		$sql="INSERT INTO fac_BinAudits SET BinID=$this->BinID, UserID=\"$this->UserID\", AuditStamp=\"$this->AuditStamp\";";
+		$this->exec($sql);
+	}
 }
-
-require_once( "misc.inc.php" );
-
-
-// SNMP Library, don't attempt to load without php-snmp extensions
-if(extension_loaded('snmp')){
-	require_once('OSS_SNMP/SNMP.php');
-}
-
 ?>

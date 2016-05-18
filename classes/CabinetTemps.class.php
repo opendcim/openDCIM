@@ -23,25 +23,32 @@
 	For further details on the license, see http://www.gnu.org/licenses
 */
 
-/*	Master include file - while all could fit easily into this one include,
-	for the sake of modularity and ease of checking out portions for multiple
-	developers, functions have been split out into more granular groupings.
-*/
 
-date_default_timezone_set($config->ParameterArray['timezone']);
+class CabinetTemps {
+	/* CabinetTemps:	Temperature sensor readings from intelligent, SNMP readable temperature sensors */
+	
+	var $CabinetID;
+	var $LastRead;
+	var $Temp;
+	var $Humidity;
 
-$rootdir = dirname(__FILE__);
+	function GetReading() {
+		global $dbh;
+		
+		$sql = sprintf( "select * from fac_CabinetTemps where CabinetID=%d", $this->CabinetID );
+		
+		if ( $row = $dbh->query( $sql )->fetch() ) {
+			$this->LastRead = date( "m-d-Y H:i:s", strtotime($row["LastRead"]) );
+			$Temp = $row["Temp"];
+			$Humidity = $row["Humidity"];
+		} else {
+			$info = $dbh->errorInfo();
 
-foreach( glob($rootdir."/classes/*.class.php") as $filename ) {
-	include_once $filename;
+			error_log( "PDO Error: " . $info[2] . " SQL=" . $sql );
+			return false;
+		}
+		
+		return;
+	}	
 }
-
-require_once( "misc.inc.php" );
-
-
-// SNMP Library, don't attempt to load without php-snmp extensions
-if(extension_loaded('snmp')){
-	require_once('OSS_SNMP/SNMP.php');
-}
-
 ?>
