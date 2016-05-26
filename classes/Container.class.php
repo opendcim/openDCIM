@@ -448,7 +448,7 @@ class Container {
 				$cStats["SquareFootage"]+=$childStats["SquareFootage"];
 				$cStats["ComputedWatts"]+=$childStats["ComputedWatts"];
 				$cStats["MeasuredWatts"]+=$childStats["MeasuredWatts"];
-				$cStats["TotalCabines"]+=$childStats["TotalCabinets"];
+				$cStats["TotalCabinets"]+=$childStats["TotalCabinets"];
 				$cStats["MaxkW"]+=$childStats["MaxkW"];
 			}
 		}
