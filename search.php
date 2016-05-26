@@ -17,6 +17,7 @@
 	$pdu=new PowerDistribution();
 	$dept=new Department();
 	$proj=new Projects();
+	$tmpl=new DeviceTemplate();
 	$resultcount=0;
 	$title=__("Search Results");
 
@@ -78,6 +79,18 @@
 		}
 		$resultcount=count($devList);
 		$title=__("Project Catalog search results for")." &quot;$searchTerm&quot;";
+	}elseif($searchKey="model"){
+		$tmpl->Model = $searchTerm;
+		$tmpList = $tmpl->Search( false, true );
+		$devList = array();
+		foreach( $tmpList as $t ) {
+			$dev = new Device();
+			$dev->TemplateID = $t->TemplateID;
+			$tList = $dev->Search( false, false );
+			$devList = array_merge( $devList, $tList );
+		}
+		$resultcount=count($devList);
+		$title=__("Device Model search results for")." &quot;$searchTerm&quot;";
 	}elseif($searchKey=="cattr"){
 		$devList=$dev->SearchByCustomAttribute($searchTerm);
 		$resultcount=count($devList);
