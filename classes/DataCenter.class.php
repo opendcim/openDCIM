@@ -532,16 +532,16 @@ class DataCenter {
 		$dcStats["TotalU"]=($test=$this->query($sql)->fetchColumn())?$test:0;
 
 		$sql="SELECT SUM(a.Height) as TotalU FROM fac_Device a,fac_Cabinet b WHERE 
-			a.Cabinet=b.CabinetID AND b.DataCenterID=$this->DataCenterID AND 
+			a.Cabinet=b.CabinetID AND b.DataCenterID=$this->DataCenterID AND ParentDevice=0 AND
 			a.DeviceType NOT IN ('Server','Storage Array');";
 		$dcStats["Infrastructure"]=($test=$this->query($sql)->fetchColumn())?$test:0;
  
 		$sql="SELECT SUM(a.Height) as TotalU FROM fac_Device a,fac_Cabinet b WHERE 
-			a.Cabinet=b.CabinetID AND b.DataCenterID=$this->DataCenterID AND 
+			a.Cabinet=b.CabinetID AND b.DataCenterID=$this->DataCenterID AND ParentDevice=0 AND
 			a.Reservation=false AND a.DeviceType IN ('Server', 'Storage Array');";
 		$dcStats["Occupied"]=($test=$this->query($sql)->fetchColumn())?$test:0;
 
-		$sql="SELECT SUM(a.Height) FROM fac_Device a,fac_Cabinet b WHERE
+		$sql="SELECT SUM(a.Height) FROM fac_Device a,fac_Cabinet b WHERE ParentDevice=0 AND
 			a.Cabinet=b.CabinetID AND a.Reservation=true AND b.DataCenterID=$this->DataCenterID;";
 		$dcStats["Allocated"]=($test=$this->query($sql)->fetchColumn())?$test:0;
 		

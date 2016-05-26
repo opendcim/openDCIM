@@ -234,17 +234,18 @@ class Zone {
 		$zoneStats["TotalU"]=($test=$this->query($sql)->fetchColumn())?$test:0;
 
 		$sql="SELECT SUM(a.Height) as TotalU FROM fac_Device a,fac_Cabinet b WHERE
-			a.Cabinet=b.CabinetID AND b.ZoneID=$this->ZoneID AND
+			a.Cabinet=b.CabinetID AND b.ZoneID=$this->ZoneID AND ParentDevice=0 AND
 			a.DeviceType NOT IN ('Server','Storage Array');";
 		$zoneStats["Infrastructure"]=($test=$this->query($sql)->fetchColumn())?$test:0;
 
 		$sql="SELECT SUM(a.Height) as TotalU FROM fac_Device a,fac_Cabinet b WHERE
-			a.Cabinet=b.CabinetID AND b.ZoneID=$this->ZoneID AND
+			a.Cabinet=b.CabinetID AND b.ZoneID=$this->ZoneID AND ParentDevice=0 AND
 			a.Reservation=false AND a.DeviceType IN ('Server', 'Storage Array');";
 		$zoneStats["Occupied"]=($test=$this->query($sql)->fetchColumn())?$test:0;
 
         $sql="SELECT SUM(a.Height) FROM fac_Device a,fac_Cabinet b WHERE
-			a.Cabinet=b.CabinetID AND a.Reservation=true AND b.ZoneID=$this->ZoneID;";
+			a.Cabinet=b.CabinetID AND a.Reservation=true AND ParentDevice=0 AND
+			b.ZoneID=$this->ZoneID;";
 		$zoneStats["Allocated"]=($test=$this->query($sql)->fetchColumn())?$test:0;
 		
         $zoneStats["Available"]=$zoneStats["TotalU"] - $zoneStats["Occupied"] - $zoneStats["Infrastructure"] - $zoneStats["Allocated"];
