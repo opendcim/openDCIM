@@ -571,6 +571,9 @@ class DataCenter {
 		
 		$pdu=new PowerDistribution();
 		$dcStats["MeasuredWatts"]=$pdu->GetWattageByDC($this->DataCenterID);
+
+		$sql = "select count(*) from fac_Cabinet where DataCenterID=" . intval($this->DataCenterID);
+		$dcStats["TotalCabinets"] = ($test=$this->query($sql)->fetchColumn())?$test:0;
 		
 		return $dcStats;
 	}

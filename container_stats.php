@@ -107,6 +107,10 @@ echo '<div class="main">
         <div>',__("Minimum Cooling Tonnage Required"),'</div>
         <div>',sprintf("%s ".__("Tons"),number_format($cStats["ComputedWatts"]*3.412*1.15/12000,0, ",", ".")),'</div>
   </div>
+  <div>
+    <div>',__("Total Cabinets"),'</div>
+    <div>',sprintf( "%s", number_format($cStats["TotalCabinets"],0,",",".")),'</div>
+  </div>
 </div> <!-- END div.table -->
 </div>
 

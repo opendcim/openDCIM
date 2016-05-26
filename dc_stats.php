@@ -197,6 +197,10 @@ echo '<div class="main">
         <div>',(($dc->SquareFootage)?sprintf("%8d ".__("Watts"),$dcStats["ComputedWatts"]/$dc->SquareFootage):"0 ".__("Watts")),'</div>
   </div>
   <div>
+  	<div>',__("Total Cabinets"),'</div>
+  	<div>',sprintf( "%d", $dcStats["TotalCabinets"] ),'</div>
+  </div>
+  <div>
         <div>',__("Minimum Cooling Tonnage (Based on Computed Watts)"),'</div>
         <div>',sprintf("%7d ".__("Tons"),$dcStats["ComputedWatts"]*3.412*1.15/12000),'</div>
   </div>

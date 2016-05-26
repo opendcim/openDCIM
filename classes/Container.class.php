@@ -415,6 +415,7 @@ class Container {
 		$cStats["MaxkW"] = 0;
 		$cStats["ComputedWatts"] = 0;
 		$cStats["MeasuredWatts"] = 0;
+		$cStats["TotalCabinets"] = 0;
 		
 		$dcList=$this->GetChildDCList();
 		if(count($dcList) >0){
@@ -429,6 +430,7 @@ class Container {
 				$cStats["SquareFootage"]+=$datacenter->SquareFootage;
 				$cStats["ComputedWatts"]+=$dcStats["ComputedWatts"];
 				$cStats["MeasuredWatts"]+=$dcStats["MeasuredWatts"];
+				$cStats["TotalCabinets"]+=$dcStats["TotalCabinets"];
 				$cStats["MaxkW"]+=$datacenter->MaxkW;
 			} 
 		}
@@ -446,6 +448,7 @@ class Container {
 				$cStats["SquareFootage"]+=$childStats["SquareFootage"];
 				$cStats["ComputedWatts"]+=$childStats["ComputedWatts"];
 				$cStats["MeasuredWatts"]+=$childStats["MeasuredWatts"];
+				$cStats["TotalCabines"]+=$childStats["TotalCabinets"];
 				$cStats["MaxkW"]+=$childStats["MaxkW"];
 			}
 		}

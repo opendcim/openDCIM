@@ -278,6 +278,9 @@ class Zone {
 			WHERE ZoneID=$this->ZoneID);";
 		$zoneStats["AvgHumidity"]=($test=round($this->query($sql)->fetchColumn()))?$test:0;
 
+		$sql = "select count(*) from fac_Cabinet where ZoneID=" . intval($this->ZoneID);
+		$zoneStats["TotalCabinets"]=($test=$this->query($sql)->fetchColumn())?$test:0;
+		
 		return $zoneStats;
 	}
 
