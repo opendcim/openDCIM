@@ -443,7 +443,7 @@ class DevicePorts {
 		// Check the user's permissions to modify this device
 		if($dev->Rights!='Write'){return false;}
 
-		$sql="UPDATE fac_Ports SET ConnectedDeviceID=NULL, ConnectedPort=NULL WHERE
+		$sql="UPDATE fac_Ports SET ConnectedDeviceID=NULL, ConnectedPort=NULL, Notes='' WHERE
 			DeviceID=$dev->DeviceID OR ConnectedDeviceID=$dev->DeviceID;";
 
 		$dbh->exec($sql); // don't need to log if this fails
