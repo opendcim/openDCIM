@@ -41,6 +41,7 @@
 			$userRights->ContactAdmin=(isset($_POST['ContactAdmin']))?1:0;
 			$userRights->RackRequest=(isset($_POST['RackRequest']))?1:0;
 			$userRights->RackAdmin=(isset($_POST['RackAdmin']))?1:0;
+			$userRights->BulkOperations=(isset($_POST['BulkOperations']))?1:0;
 			$userRights->SiteAdmin=(isset($_POST['SiteAdmin']))?1:0;
 			$userRights->Disabled=(isset($_POST['Disabled']))?1:0;
 
@@ -69,6 +70,7 @@
 	$contact=($userRights->ContactAdmin)?"checked":"";
 	$request=($userRights->RackRequest)?"checked":"";
 	$RackAdmin=($userRights->RackAdmin)?"checked":"";
+	$BulkOperations=($userRights->BulkOperations)?"checked":"";
 	$admin=($userRights->SiteAdmin)?"checked":"";
 	$Disabled=($userRights->Disabled)?"checked":"";
 
@@ -275,6 +277,7 @@ echo '	</select>&nbsp;&nbsp;<span title="',__("This user is the primary contact 
 	<input name="ContactAdmin" id="ContactAdmin" type="checkbox" ',$contact,'><label for="ContactAdmin">',__("Enter/Modify Contacts and Departments"),'</label><br>
 	<input name="RackRequest" id="RackRequest" type="checkbox" ',$request,'><label for="RackRequest">',__("Enter Rack Requests"),'</label><br>
 	<input name="RackAdmin" id="RackAdmin" type="checkbox" ',$RackAdmin,'><label for="RackAdmin">',__("Complete Rack Requests"),'</label><br>
+	<input name="BulkOperations" id="BulkOperations" type="checkbox" ',$BulkOperations,'><label for="BulkOperations">',__("Perform Bulk Operations"),'</label><br>
 	<input name="SiteAdmin" id="SiteAdmin" type="checkbox" ',$admin,'><label for="SiteAdmin">',__("Manage Site and Users"),'</label><br>
 	<input name="Disabled" id="Disabled" type="checkbox" ',$Disabled,'><label for="Disabled">',__("Disabled"),'</label><br>	
    </div>

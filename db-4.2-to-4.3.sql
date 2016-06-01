@@ -21,6 +21,15 @@ CREATE TABLE fac_ProjectMembership (
 	PRIMARY KEY (ProjectID,DeviceID)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
+
+--
+-- Add user right of BulkOperations for both table based and LDAP based rights
+--
+
+ALTER TABLE fac_People ADD COLUMN BulkOperations tinyint(1) NOT NULL DEFAULT 0 AFTER RackAdmin;
+
+INSERT INTO fac_Config VALUES ( 'LDAPBulkOperations', 'cn=BulkOperations,cn=openDCIM,ou=groups,dc=opendcim,dc=org', 'DN', 'string', 'cn=BulkOperations,cn=openDCIM,ou=groups,dc=opendcim,dc=org');
+
 --
 -- Bump up the database version (uncomment below once released)
 --

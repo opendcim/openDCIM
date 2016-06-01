@@ -3,6 +3,11 @@
 	require_once('facilities.inc.php');
   require_once('PHPExcel/PHPExcel/IOFactory.php');
 
+  if(!$person->BulkOperations){
+    header('Location: '.redirect());
+    exit;
+  }
+
 //	Uncomment these if you need/want to set a title in the header
 //	$header=__("");
 	$subheader=__("Bulk Network Importer");

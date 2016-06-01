@@ -46,6 +46,7 @@ class People {
 	var $ContactAdmin;
 	var $RackRequest;
 	var $RackAdmin;
+	var $BulkOperations;
 	var $SiteAdmin;
 	var $APIKey;
 	var $Disabled;
@@ -66,6 +67,7 @@ class People {
 		$this->ContactAdmin=intval($this->ContactAdmin);
 		$this->RackRequest=intval($this->RackRequest);
 		$this->RackAdmin=intval($this->RackAdmin);
+		$this->BulkOperations=intval($this->BulkOperations);
 		$this->SiteAdmin=intval($this->SiteAdmin);
 		$this->Disabled=intval($this->Disabled);
 	}
@@ -86,6 +88,7 @@ class People {
 		$this->ContactAdmin=intval($this->ContactAdmin);
 		$this->RackRequest=intval($this->RackRequest);
 		$this->RackAdmin=intval($this->RackAdmin);
+		$this->BulkOperations=intval($this->BulkOperations);
 		$this->SiteAdmin=intval($this->SiteAdmin);
 		$this->Disabled=intval($this->Disabled);
 	}
@@ -107,6 +110,7 @@ class People {
 		$person->ContactAdmin=$row["ContactAdmin"];
 		$person->RackRequest=$row["RackRequest"];
 		$person->RackAdmin=$row["RackAdmin"];
+		$person->BulkOperations=$row["BulkOperations"];
 		$person->SiteAdmin=$row["SiteAdmin"];
 		$person->APIKey=$row["APIKey"];
 		$person->Disabled=$row["Disabled"];
@@ -151,6 +155,7 @@ class People {
 		$this->RackRequest = false;
 		$this->RackAdmin = false;
 		$this->ContactAdmin = false;
+		$this->BulkOperations = false;
 		$this->SiteAdmin = false;
 	}
 
@@ -191,7 +196,8 @@ class People {
 			AdminOwnDevices=$this->AdminOwnDevices, ReadAccess=$this->ReadAccess, 
 			WriteAccess=$this->WriteAccess, DeleteAccess=$this->DeleteAccess, 
 			ContactAdmin=$this->ContactAdmin, RackRequest=$this->RackRequest, 
-			RackAdmin=$this->RackAdmin, SiteAdmin=$this->SiteAdmin, APIKey=\"$this->APIKey\", Disabled=$this->Disabled;";
+			RackAdmin=$this->RackAdmin, BulkOperations=$this->BulkOperations, SiteAdmin=$this->SiteAdmin,
+			APIKey=\"$this->APIKey\", Disabled=$this->Disabled;";
 
 		if(!$this->query($sql)){
 			$info=$dbh->errorInfo();
@@ -375,7 +381,8 @@ class People {
 			AdminOwnDevices=$this->AdminOwnDevices, ReadAccess=$this->ReadAccess, 
 			WriteAccess=$this->WriteAccess, DeleteAccess=$this->DeleteAccess, 
 			ContactAdmin=$this->ContactAdmin, RackRequest=$this->RackRequest, 
-			RackAdmin=$this->RackAdmin, SiteAdmin=$this->SiteAdmin, APIKey=\"$this->APIKey\", Disabled=$this->Disabled
+			RackAdmin=$this->RackAdmin, BulkOperations=$this->BulkOperations, SiteAdmin=$this->SiteAdmin,
+			APIKey=\"$this->APIKey\", Disabled=$this->Disabled
 			WHERE PersonID=$this->PersonID;";
 			
 		if ( $this->query( $sql ) ) {

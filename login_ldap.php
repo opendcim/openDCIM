@@ -92,6 +92,10 @@
               $person->ContactAdmin = true;
           }
           
+          if ( $ldapResults[$i]['dn'] == $config->ParameterArray['LDAPBulkOperations'] ) {
+              $person->BulkOperations = true;
+          }
+
           if ( $ldapResults[$i]['dn'] == $config->ParameterArray['LDAPSiteAdmin'] ) {
               $person->SiteAdmin = true;
           }

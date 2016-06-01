@@ -1955,6 +1955,10 @@ echo '<div class="main">
 					<div><input type="text" size="60" defaultvalue="',$config->defaults["LDAPContactAdmin"],'" name="LDAPContactAdmin" value="',$config->ParameterArray["LDAPContactAdmin"],'"></div>
 				</div>
 				<div>
+					<div><label for="LDAPBulkOperations">',__("Bulk Operations"),'</label></div>
+					<div><input type="text" size="60" defaultvalue="',$config->defaults["LDAPBulkOperations"],'" name="LDAPBulkOperations" value="',$config->ParameterArray["BulkOperations"],'"></div>
+				</div>
+				<div>
 					<div><label for="LDAPSiteAdmin">',__("Site Admin"),'</label></div>
 					<div><input type="text" size="60" defaultvalue="',$config->defaults["LDAPSiteAdmin"],'" name="LDAPSiteAdmin" value="',$config->ParameterArray["LDAPSiteAdmin"],'"></div>
 				</div>
