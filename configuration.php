@@ -1964,7 +1964,7 @@ echo '<div class="main">
 				</div>
 				<div>
 					<div><label for="LDAPBulkOperations">',__("Bulk Operations"),'</label></div>
-					<div><input type="text" size="60" defaultvalue="',$config->defaults["LDAPBulkOperations"],'" name="LDAPBulkOperations" value="',$config->ParameterArray["BulkOperations"],'"></div>
+					<div><input type="text" size="60" defaultvalue="',$config->defaults["LDAPBulkOperations"],'" name="LDAPBulkOperations" value="',$config->ParameterArray["LDAPBulkOperations"],'"></div>
 				</div>
 				<div>
 					<div><label for="LDAPSiteAdmin">',__("Site Admin"),'</label></div>
