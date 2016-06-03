@@ -1912,8 +1912,16 @@ echo '<div class="main">
 					<div><input type="text" defaultvalue="',$config->defaults["LDAPBaseDN"],'" name="LDAPBaseDN" value="',$config->ParameterArray["LDAPBaseDN"],'"></div>
 				</div>
 				<div>
+					<div><label for="LDAPBaseSearch">',__("Base Search"),'</label></div>
+					<div><input type="text" defaultvalue="',$config->defaults["LDAPBaseSearch"],'" name="LDAPBaseSearch" value="',$config->ParameterArray["LDAPBaseSearch"],'"></div>
+				</div>
+				<div>
 					<div><label for="LDAPBindDN">',__("Bind DN"),'</label></div>
 					<div><input type="text" defaultvalue="',$config->defaults["LDAPBindDN"],'" name="LDAPBindDN" value="',$config->ParameterArray["LDAPBindDN"],'"></div>
+				</div>
+				<div>
+					<div><label for="LDAPUserSearch">',__("User Search"),'</label></div>
+					<div><input type="text" defaultvalue="',$config->defaults["LDAPUserSearch"],'" name="LDAPUserSearch" value="',$config->ParameterArray["LDAPUserSearch"],'"></div>
 				</div>
 				<div>
 					<div><label for="LDAPSessionExpiration">',__("LDAP Session Expiration (Seconds)"),'</label></div>

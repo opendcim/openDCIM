@@ -31,6 +31,13 @@ ALTER TABLE fac_People ADD COLUMN BulkOperations tinyint(1) NOT NULL DEFAULT 0 A
 INSERT INTO fac_Config VALUES ( 'LDAPBulkOperations', 'cn=BulkOperations,cn=openDCIM,ou=groups,dc=opendcim,dc=org', 'DN', 'string', 'cn=BulkOperations,cn=openDCIM,ou=groups,dc=opendcim,dc=org');
 
 --
+-- More LDAP configuration options so that it will play nice with AD
+--
+
+INSERT INTO fac_Config VALUES ( 'LDAPBaseSearch', '(&(objectClass=posixGroup)(memberUid=%userid%))', 'DN', 'string', '(&(objectClass=posixGroup)(memberUid=%userid%))');
+INSERT INTO fac_Config VALUES ( 'LDAPUserSearch', '(|(uid=%userid%))', 'DN', 'string', '(|(uid=%userid%))');
+
+--
 -- Bump up the database version (uncomment below once released)
 --
 

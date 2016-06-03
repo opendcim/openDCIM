@@ -39,7 +39,8 @@
         $content = "<h3>Login failed.  Incorrect username, password, or rights.</h3>";
       } else {
         // User was able to authenticate, but might not have authorization to access openDCIM.  Here we check for those rights.
-        $ldapSearch = ldap_search( $ldapConn, $config->ParameterArray['LDAPBaseDN'], "(&(objectClass=posixGroup)(memberUid=$ldapUser))" );
+        $ldapSearchDN = str_replace( "%userid%", $ldapUser, $config->ParameterArray['LDAPBaseSearch']);
+        $ldapSearch = ldap_search( $ldapConn, $config->ParameterArray['LDAPBaseDN'], $ldapSearchDN );
         $ldapResults = ldap_get_entries( $ldapConn, $ldapSearch );
 
         // Because we have audit logs to maintain, we need to make a local copy of the User's record
@@ -102,7 +103,8 @@
         }
 
         // Now get some more info about the user
-        $ldapSearch = ldap_search( $ldapConn, $config->ParameterArray['LDAPBaseDN'], "(|(uid=$ldapUser))" );
+        $userSearch = str_replace( "%userid%", $ldapUser, $config->ParameterArray['LDAPUserSearch']);
+        $ldapSearch = ldap_search( $ldapConn, $config->ParameterArray['LDAPBaseDN'], $userSearch );
         $ldapResults = ldap_get_entries( $ldapConn, $ldapSearch );
 
         // These are standard schema items, so they aren't configurable
