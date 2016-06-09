@@ -1331,6 +1331,10 @@ echo '<div class="main">
 					<div><label for="DefaultPanelVoltage">',__("Default Panel Voltage"),'</label></div>
 					<div><input type="text" defaultvalue="',$config->defaults["DefaultPanelVoltage"],'" name="DefaultPanelVoltage" value="',$config->ParameterArray["DefaultPanelVoltage"],'"></div>
 				</div>
+				<div>
+					<div><label for="AutocompleteMinSize">',__("Autocomplete Min Size"),'</label></div>
+					<div><input type="text" defaultvalue="',$config->defaults["AutocompleteMinSize"],'" name="AutocompleteMinSize" value="',$config->ParameterArray["AutocompleteMinSize"],'"></div>
+				</div>
 			</div> <!-- end table -->
 			<h3>',__("Time and Measurements"),'</h3>
 			<div class="table" id="timeandmeasurements">

@@ -39,7 +39,7 @@
         $content = "<h3>Login failed.  Incorrect username, password, or rights.</h3>";
       } else {
         // User was able to authenticate, but might not have authorization to access openDCIM.  Here we check for those rights.
-        $ldapSearchDN = str_replace( "%userid%", $ldapUser, $config->ParameterArray['LDAPBaseSearch']);
+        $ldapSearchDN = str_replace( "%userid%", $ldapUser, html_entity_decode($config->ParameterArray['LDAPBaseSearch']));
         $ldapSearch = ldap_search( $ldapConn, $config->ParameterArray['LDAPBaseDN'], $ldapSearchDN );
         $ldapResults = ldap_get_entries( $ldapConn, $ldapSearch );
 
@@ -103,7 +103,7 @@
         }
 
         // Now get some more info about the user
-        $userSearch = str_replace( "%userid%", $ldapUser, $config->ParameterArray['LDAPUserSearch']);
+        $userSearch = str_replace( "%userid%", $ldapUser, html_entity_decode($config->ParameterArray['LDAPUserSearch']));
         $ldapSearch = ldap_search( $ldapConn, $config->ParameterArray['LDAPBaseDN'], $userSearch );
         $ldapResults = ldap_get_entries( $ldapConn, $ldapSearch );
 
