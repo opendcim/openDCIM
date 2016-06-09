@@ -42,6 +42,7 @@
 		// add the autocomplete
 		inputobj.autocomplete({
 			minLength: 0,
+			delay: 600,
 			autoFocus: true,
 			source: function(req, add){
 				$.getJSON('scripts/ajax_search.php?'+lookuptype, {q: req.term}, function(data){
