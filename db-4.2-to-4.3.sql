@@ -38,12 +38,6 @@ INSERT INTO fac_Config VALUES ( 'LDAPBaseSearch', '(&(objectClass=posixGroup)(me
 INSERT INTO fac_Config VALUES ( 'LDAPUserSearch', '(|(uid=%userid%))', 'DN', 'string', '(|(uid=%userid%))');
 
 --
--- And another config item
---
-
-INSERT INTO fac_Config VALUES ( 'AutocompleteMinSize', '1', 'Size', 'int', '1' );
-
---
 -- Bump up the database version (uncomment below once released)
 --
 

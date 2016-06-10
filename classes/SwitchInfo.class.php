@@ -43,6 +43,10 @@ class SwitchInfo {
 		// If the device doesn't have an SNMP community set, check and see if we have a global one
 		$dev->SNMPCommunity=($dev->SNMPCommunity=="")?$config->ParameterArray["SNMPCommunity"]:$dev->SNMPCommunity;
 
+		// Make this false faster
+		$dev->SNMPCommunity=trim($dev->SNMPCommunity);
+		if($dev->SNMPCommunity==""){return false;}
+
 		// We've passed all the repeatable tests, return the device object for digging
 		return $dev;
 	}
