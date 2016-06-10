@@ -168,6 +168,16 @@
                 }
                 $devList[$dev->DeviceType][$dev->DeviceID]=array();
             }
+        } elseif (isset($_REQUEST['projectid'])) {
+            $p = Projects::getProject( $_REQUEST["projectid"]);
+            $graphname .= __("Project Name") . ": " . $p->ProjectName;
+            $dList = ProjectMembership::getProjectMembership($p->ProjectID);
+            foreach( $dList as $dev ) {
+                if ( !isset($devList[$dev->DeviceType])) {
+                    $devList[$dev->DeviceType] = array();    
+                }
+                $devList[$dev->DeviceType][$dev->DeviceID]=array();
+            }
         }
         # start building the graphfile.
         $graphstr .= "graph openDCIM {
@@ -471,7 +481,7 @@ overlap = scale;
             if($containmentType != "") {
                 $body = "<form method='post'>";
                 $options = array();
-                if($containmentType == 0){
+                if($containmentType == "container" ){
                     # filtering by container
                     $cList = new Container();    
                     $cList = $cList->GetContainerList();
@@ -479,7 +489,7 @@ overlap = scale;
                     foreach($cList as $c){
                         $options[$c->ContainerID] = $c->Name;
                     }
-                } elseif($containmentType == 1){
+                } elseif($containmentType == "datacenter" ){
                     # filtering by dc
                     $dcList = new DataCenter();    
                     $dcList = $dcList->GetDCList();
@@ -487,7 +497,7 @@ overlap = scale;
                     foreach($dcList as $dc){
                         $options[$dc->DataCenterID] = $dc->Name;
                     }
-                } elseif($containmentType == 2){
+                } elseif($containmentType == "zone" ){
                     #filtering by zone
                     $zList = new Zone();    
                     $zList = $zList->GetZoneList();
@@ -498,7 +508,7 @@ overlap = scale;
                         $dc->GetDataCenter();
                         $options[$zone->ZoneID] = $dc->Name."::".$zone->Description;
                     }
-                } elseif($containmentType == 3){
+                } elseif($containmentType == "cabinetrow" ){
                     # filter by cabrow
                     $crList = new CabRow();    
                     $crList = $crList->GetCabRowList();
@@ -506,7 +516,7 @@ overlap = scale;
                     foreach($crList as $cabrow){
                         $options[$cabrow->CabRowID] = $cabrow->Name;
                     }
-                } elseif($containmentType == 4){
+                } elseif($containmentType == "cabinet" ){
                     # filter by cabinet
                     $cList = new Cabinet();    
                     $cList = $cList->ListCabinets();
@@ -517,12 +527,19 @@ overlap = scale;
                         $dc->GetDataCenter();
                         $options[$cabinet->CabinetID] = $dc->Name."::".$cabinet->Location;
                     }
-                } elseif($containmentType == 5) {
+                } elseif($containmentType == "customtag" ) {
                     # filter by custom tag
                     $tList = Tags::FindAll();
                     $body .= "<select name=tagname id=tagname>";
                     foreach( $tList as $TagID=>$Name ){
                         $options[$Name] = $Name;
+                    }
+                } elseif($containmentType == "project" ) {
+                    # filter by project / service
+                    $pList = Projects::getProjectList();
+                    $body .= "<select name=projectid id=projectid>";
+                    foreach( $pList as $p ) {
+                        $options[$p->ProjectID] = $p->ProjectName;
                     }
                 }
                 # sort and output the options based on the name of the option
@@ -596,12 +613,13 @@ echo '          <div class="main">
                         <label for="containmenttype">',__("Filter type:"),'</label>
                         <select name="containmenttype" id="containmenttype">
                                 <option value="">',__("Select filter type"),'</option>
-                                <option value="0">',__("Container"),'</option>
-                                <option value="1">',__("Data Center"),'</option>
-                                <option value="2">',__("Zone"),'</option>
-                                <option value="3">',__("Cabinet Row"),'</option>
-                                <option value="4">',__("Cabinet"),'</option>
-                                <option value="5">',__("Custom Tag"),'</option>
+                                <option value="cabinet">',__("Cabinet"),'</option>
+                                <option value="cabinetrow">',__("Cabinet Row"),'</option>
+                                <option value="container">',__("Container"),'</option>
+                                <option value="customtag">',__("Custom Tag"),'</option>
+                                <option value="datacenter">',__("Data Center"),'</option>
+                                <option value="project">',__("Project"),'</option>
+                                <option value="zone">',__("Zone"),'</option>
                         </select>';?>
                         <br><br>
                         <div id="datacontainer">
