@@ -41,6 +41,7 @@ echo '<div class="main">
     <a href="report_asset_Excel.php">',__("Data Center Asset Report [Excel]"),'</a>
 	<a href="report_cost.php">',__("Data Center Asset Costing Report"),'</a>
 	<a href="report_aging.php">',__("Asset Aging Report"),'</a>
+	<a href="report-projects.php">',__("Project Asset Report"),'</a>
     <a href="report_warranty.php">',__("Warranty Expiration Report"),'</a>
 	<a href="report_vm_by_department.php">',__("Virtual Machines by Department"),'</a>
 	<a href="report_network_map.php">',__("Network Map"),'</a>
