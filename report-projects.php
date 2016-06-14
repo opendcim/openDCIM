@@ -21,8 +21,8 @@
 			}
 			$sql="SELECT a.ProjectID, a.ProjectName, b.DeviceID, c.Location, b.Position, 
 				b.Height, b.Label, b.DeviceType, b.AssetTag, b.SerialNo, b.InstallDate, 
-				b.TemplateID, b.Owner, e.Name as DataCenterName FROM fac_Projects a, fac_Device b, fac_Cabinet c, 
-				fac_ProjectMembership d , fac_DataCenter e WHERE b.ParentDevice>0 and a.ProjectID=d.ProjectID and d.DeviceID=b.DeviceID 
+				b.TemplateID, b.Owner, e.Name as DataCenterName, c.CabinetID FROM fac_Projects a, fac_Device b, fac_Cabinet c, 
+				fac_ProjectMembership d , fac_DataCenter e WHERE b.ParentDevice=0 and a.ProjectID=d.ProjectID and d.DeviceID=b.DeviceID 
 				and b.Cabinet=c.CabinetID and c.DataCenterID=e.DataCenterID $projLimit order by
 				a.ProjectName ASC, e.Name ASC, c.Location ASC, b.Position ASC";
 			error_log( $sql );
@@ -64,7 +64,7 @@
 			$tags=implode(",", $dev->GetTags());
 			$body.="\t\t<tr>
 			\t<td><a href=\"project_mgr.php?projectid={$row["ProjectID"]}\" target=\"project\">{$row["ProjectName"]}</a></td>
-			\t<td><a href=\"dc_stats.php?dc={$row["DataCenterID"]}\" target=\"datacenter\">{$row["DataCenter"]}</a></td>
+			\t<td><a href=\"dc_stats.php?dc={$row["DataCenterID"]}\" target=\"datacenter\">{$row["DataCenterName"]}</a></td>
 			\t<td><a href=\"cabnavigator.php?cabinetid={$row["CabinetID"]}\" target=\"cabinet\">{$row["Location"]}</a></td>
 			\t<td>{$row["Position"]}</td>
 			\t<td>{$row["Height"]}</td>
@@ -82,7 +82,6 @@
 				$childList=$dev->GetDeviceChildren();
 				
 				foreach($childList as $child){
-					$cdate=date("d M Y",strtotime($child->InstallDate));
 					$cModel="";
 					$cDepartment="";					
 
@@ -99,8 +98,19 @@
 						$cDepartment=$dept->Name;
 					}
 
+					// See if this is a direct member of the project, or just along for the ride (inherited from chassis)
+					$mList = ProjectMembership::getDeviceMembership( $child->DeviceID );
+					$lineage = "<a href=\"project_mgr.php?projectid={$row["ProjectID"]}\" target=\"project\">{$row["ProjectName"]} (Inherited)</a>";
+					foreach( $mList as $member ) {
+						if ( $member->ProjectID == $row["ProjectID"] ) {
+								$lineage = "<a href=\"project_mgr.php?projectid={$row["ProjectID"]}\" target=\"project\">{$row["ProjectName"]}</a>";
+								break;
+						}
+					}
+
 					$body .= "\t\t<tr>
-					\t<td><a href=\"dc_stats.php?dc={$row["DataCenterID"]}\" target=\"datacenter\">{$row["DataCenter"]}</a></td>
+					\t<td>$lineage</td>
+					\t<td><a href=\"dc_stats.php?dc={$row["DataCenterID"]}\" target=\"datacenter\">{$row["DataCenterName"]}</a></td>
 					\t<td><a href=\"cabnavigator.php?cabinetid={$row["CabinetID"]}\" target=\"cabinet\">{$row["Location"]}</a></td>
 					\t<td>{$row["Position"]}</td>
 					\t<td>[-Child-]</td>
@@ -111,9 +121,10 @@
 					\t<td>$cModel</td>
 					\t<td>$ctags</td>
 					\t<td>$cDepartment</td>
-					\t<td>$cdate</td>\n\t\t</tr>\n";
+					\n\t\t</tr>\n";
 				}
 			}
+
 		}
 		$body.="\t\t</tbody>\n\t</table>\n";
 		if(isset($_REQUEST['ajax'])){
@@ -149,6 +160,7 @@
 		function dt(){
 			$('#export').dataTable({
 				"iDisplayLength": 25,
+				"ordering": false,
 				"sDom": 'CT<"clear">lfrtip',
 				"oTableTools": {
 					"sSwfPath": "scripts/copy_csv_xls.swf",
