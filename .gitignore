@@ -12,3 +12,5 @@ locale/*/LC_MESSAGES/openDCIM.po*
 
 #ignore pictures
 pictures/
+
+.htaccess

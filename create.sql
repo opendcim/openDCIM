@@ -468,6 +468,7 @@ CREATE TABLE fac_People (
   ContactAdmin tinyint(1) NOT NULL,
   RackRequest tinyint(1) NOT NULL,
   RackAdmin tinyint(1) NOT NULL,
+  BulkOperations tinyint(1) NOT NULL,
   SiteAdmin tinyint(1) NOT NULL,
   APIToken varchar(80) NOT NULL,
   Disabled tinyint(1) NOT NULL,
