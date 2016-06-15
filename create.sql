@@ -468,6 +468,7 @@ CREATE TABLE fac_People (
   ContactAdmin tinyint(1) NOT NULL,
   RackRequest tinyint(1) NOT NULL,
   RackAdmin tinyint(1) NOT NULL,
+  BulkOperations tinyint(1) NOT NULL,
   SiteAdmin tinyint(1) NOT NULL,
   APIToken varchar(80) NOT NULL,
   Disabled tinyint(1) NOT NULL,
@@ -756,6 +757,7 @@ CREATE TABLE fac_Config (
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
 
 INSERT INTO fac_Config VALUES
+  ('Version','4.3','','',''),
 	('OrgName','openDCIM Computer Facilities','Name','string','openDCIM Computer Facilities'),
 	('ClassList','ITS, Internal, Customer','List','string','ITS, Internal, Customer'),
 	('SpaceRed','80','percentage','float','80'),
@@ -789,7 +791,6 @@ INSERT INTO fac_Config VALUES
 	('NetworkThreshold', '75', 'Percentage', 'integer', '75' ),
 	('FacMgrMail','DataCenterMgr@your.domain','Email','string','DataCenterMgr@your.domain'),
 	('InstallURL','','URL','string','https://dcim.your.domain'),
-	('Version','4.2','','',''),
 	('UserLookupURL','https://','URL','string','https://'),
 	('ReservedColor','#00FFFF','HexColor','string','#FFFFFF'),
 	('FreeSpaceColor','#FFFFFF','HexColor','string','#FFFFFF'),
@@ -843,6 +844,8 @@ INSERT INTO fac_Config VALUES
   ('LDAPServer', 'localhost', 'URI', 'string', 'localhost'),
   ('LDAPBaseDN', 'dc=opendcim,dc=org', 'DN', 'string', 'dc=opendcim,dc=org'),
   ('LDAPBindDN', 'cn=%userid%,ou=users,dc=opendcim,dc=org', 'DN', 'string', 'cn=%userid%,ou=users,dc=opendcim,dc=org'),
+  ('LDAPBaseSearch', '(&(objectClass=posixGroup)(memberUid=%userid%))', 'DN', 'string', '(&(objectClass=posixGroup)(memberUid=%userid%))'),
+  ('LDAPUserSearch', '(|(uid=%userid%))', 'DN', 'string', '(|(uid=%userid%))'),
   ('LDAPSessionExpiration', '0', 'Seconds', 'int', '0'),
   ('LDAPSiteAccess', 'cn=openDCIM,ou=groups,dc=opendcim,dc=org', 'DN', 'string', 'cn=openDCIM,ou=groups,dc=opendcim,dc=org'),
   ('LDAPReadAccess', 'cn=ReadAccess,cn=openDCIM,ou=groups,dc=opendcim,dc=org', 'DN', 'string', 'cn=ReadAccess,cn=openDCIM,ou=groups,dc=opendcim,dc=org'),
@@ -851,6 +854,7 @@ INSERT INTO fac_Config VALUES
   ('LDAPAdminOwnDevices', 'cn=AdminOwnDevices,cn=openDCIM,ou=groups,dc=opendcim,dc=org', 'DN', 'string', 'cn=AdminOwnDevices,cn=openDCIM,ou=groups,dc=opendcim,dc=org'),
   ('LDAPRackRequest', 'cn=RackRequest,cn=openDCIM,ou=groups,dc=opendcim,dc=org', 'DN', 'string', 'cn=RackRequest,cn=openDCIM,ou=groups,dc=opendcim,dc=org'),
   ('LDAPRackAdmin', 'cn=RackAdmin,cn=openDCIM,ou=groups,dc=opendcim,dc=org', 'DN', 'string', 'cn=RackAdmin,cn=openDCIM,ou=groups,dc=opendcim,dc=org'),
+  ('LDAPBulkOperations', 'cn=BulkOperations,cn=openDCIM,ou=groups,dc=opendcim,dc=org', 'DN', 'string', 'cn=BulkOperations,cn=openDCIM,ou=groups,dc=opendcim,dc=org'),
   ('LDAPContactAdmin', 'cn=ContactAdmin,cn=openDCIM,ou=groups,dc=opendcim,dc=org', 'DN', 'string', 'cn=ContactAdmin,cn=openDCIM,ou=groups,dc=opendcim,dc=org'),
   ('LDAPSiteAdmin', 'cn=SiteAdmin,cn=openDCIM,ou=groups,dc=opendcim,dc=org', 'DN', 'string', 'cn=SiteAdmin,cn=openDCIM,ou=groups,dc=opendcim,dc=org')
 ;

@@ -1,5 +1,5 @@
 <?php
-$codeversion="4.2";
+$codeversion="4.3";
 
 require_once( "preflight.inc.php" );
 
@@ -133,7 +133,7 @@ function ArraySearchRecursive($Needle,$Haystack,$NeedleKey="",$Strict=false,$Pat
 	$usePeople=($result->rowCount()>0 && !ArraySearchRecursive('fac_People',$test))?($result->rowCount()>0 && !ArraySearchRecursive('fac_people',$test))?false:true:true;
 
 	// New install so create a user
-	require_once("customers.inc.php");
+	require_once("classes/People.class.php");
 
 	if($usePeople){
 		$person=new People();
@@ -181,7 +181,7 @@ function ArraySearchRecursive($Needle,$Haystack,$NeedleKey="",$Strict=false,$Pat
 		exit;
 		$rightserror=1;
 	}else{ // so we have users and at least one site admin
-		require_once("customers.inc.php");
+		require_once("classes/People.class.php");
 
 		if(!$person->SiteAdmin){
 			// dolemite says you aren't an admin so you can't apply the update
@@ -1091,6 +1091,11 @@ function upgrade(){
 
 		// Rebuild the config table just in case.
 		$config->rebuild();		
+	}
+	if($version=="4.2"){
+		$results[]=applyupdate("db-4.2-to-4.3.sql");
+
+		$config->rebuild();
 	}
 }
 

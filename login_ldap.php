@@ -39,6 +39,11 @@
         $content = "<h3>Login failed.  Incorrect username, password, or rights.</h3>";
       } else {
         // User was able to authenticate, but might not have authorization to access openDCIM.  Here we check for those rights.
+        /* If this install doesn't have the new parameter, use the old default */
+        if ( !isset($config->ParameterArray['LDAPBaseSearch'])) {
+          $config->ParameterArray['LDAPBaseSearch'] = "(&(objectClass=posixGroup)(memberUid=%userid%))";
+        }
+
         $ldapSearchDN = str_replace( "%userid%", $ldapUser, html_entity_decode($config->ParameterArray['LDAPBaseSearch']));
         $ldapSearch = ldap_search( $ldapConn, $config->ParameterArray['LDAPBaseDN'], $ldapSearchDN );
         $ldapResults = ldap_get_entries( $ldapConn, $ldapSearch );
@@ -103,6 +108,10 @@
         }
 
         // Now get some more info about the user
+        // Insert the default 4.2 UserSearch string in case this is an upgrade instance
+        if ( ! isset($config->ParameterArray['LDAPUserSearch'])) {
+          $config->ParameterArray['LDAPUserSearch'] = "(|(uid=%userid%))";
+        }
         $userSearch = str_replace( "%userid%", $ldapUser, html_entity_decode($config->ParameterArray['LDAPUserSearch']));
         $ldapSearch = ldap_search( $ldapConn, $config->ParameterArray['LDAPBaseDN'], $userSearch );
         $ldapResults = ldap_get_entries( $ldapConn, $ldapSearch );
