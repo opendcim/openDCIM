@@ -1282,45 +1282,6 @@ if(isset($results)){
 		Config::UpdateParameter( 'LDAPSiteAdmin', $_REQUEST['LDAPSiteAdmin']);
 	}
 
-// Synchronization
-	if ( isset( $_POST["repoaction"] ) && $_POST["repoaction"] == "Sync" ) {
-		$c = curl_init('https://repository.opendcim.org/api/manufacturer');
-		
-		curl_setopt( $c, CURLOPT_CONNECTTIMEOUT, 30 );
-		curl_setopt( $c, CURLOPT_USERAGENT, "Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.1)");
-		curl_setopt( $c, CURLOPT_RETURNTRANSFER, true );
-		curl_setopt( $c, CURLOPT_COOKIEFILE, "/tmp/repocookies.txt" );
-		curl_setopt( $c, CURLOPT_COOKIEJAR, "/tmp/repocookies.txt" );
-		curl_setopt( $c, CURLOPT_FOLLOWLOCATION, 1 );
-		curl_setopt( $c, CURLOPT_CUSTOMREQUEST, 'GET' );
-		
-		$result = curl_exec( $c );
-		$jr = json_decode( $result );
-		$m = new Manufacturer();
-		
-		if ( is_array( $jr->manufacturers ) ) {
-			foreach( $jr->manufacturers as $tmpman ) {
-				$m->GlobalID = $tmpman->ManufacturerID;
-				if ( $m->getManufacturerByGlobalID() ) { 
-					$m->Name = $tmpman->Name;
-					$m->UpdateManufacturer();
-				} else {
-					// We don't already have this one linked, so search for a candidate or add as a new one
-					$m->Name = $tmpman->Name;
-					if ( $m->GetManufacturerByName() ) {
-						// Reset to the values from the repo (especially CaSe)
-						$m->GlobalID = $tmpman->ManufacturerID;
-						$m->Name = $tmpman->Name;
-						$m->UpdateManufacturer();
-					} else {
-						$m->ManufacturerID = $tmpman->ManufacturerID;
-						$m->Name = $tmpman->Name;
-						$m->CreateManufacturer();
-					}
-				}
-			}
-		}
-	}
 	
 //Installation Complete
 	if($nodept=="" && $nodc=="" && $nocab==""){ // All three primary sections have had at least one item created
@@ -1743,12 +1704,7 @@ echo '<div id="ldap">
 <h2>Online Repository</h2>
 <p>If you wish to synchronize with the online repository, you must first pull the current listing of Manufacturer Names, which requires an active connection to the internet
 from the server running openDCIM.  In order to allow you to restrict connections as much as possible, the entire process runs across an SSL connection to
-https://repository.opendcim.org.  Once you have synchronized the Manufacturer Names, you may subscribe to each line of equipment by manufacturer.  Subscriptions will be
-updated as you run [install_dir]/repository_sync.php manually or via a cron job.  It is requested that you do not attempt to synchronize more than once per day in order to
-reduce bandwidth requirements at the repository.</p>
-<p>To initiate the initial pull of manufacturer data, click the button below.</p>
-<form action="<?php echo $_SERVER['PHP_SELF']; ?>?repo&preflight-ok" method="POST">
-<input type="submit" name="repoaction" value="Sync">
+https://repository.opendcim.org.  This process is managed through the Template Management -> Repository Sync interface.  Once you have a manufacturer synchronized, you may download individual templates for that manufacturer.</p>
 </form>
 
 </div></div>

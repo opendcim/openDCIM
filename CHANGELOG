@@ -12,6 +12,7 @@ part of the next major release.  This is now queued up as the next release.
 
 Changes in 4.3
 --------------
+* Removed support for repository_sync.php job - all synchronization to be done through the UI at this point.
 * Addition of Bulk Upload operations (import, move, delete).  I hate you people.
 * Added some more fields in the LDAP config so that it will play nice with Active Directory (see the WIKI for what to change)
 * Expanded the rights so that you can give someone the ability to do Bulk Operations without being a Site Admin
