@@ -195,8 +195,13 @@ $(document).ready(function() {
 </form>
 
 
-
-
+<div>
+<?php
+if ( file_exists("sitecontact.html")) {
+  include("sitecontact.html");
+}
+?>
+</div>
 </div></div>
 </div><!-- END div.main -->
 </div><!-- END div.page -->
