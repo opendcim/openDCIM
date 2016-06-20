@@ -1551,8 +1551,9 @@ $app->put( '/device/:devicelabel', function($devicelabel) use ($app) {
 	$dev=new Device();
 	// We're creating a device and should load in the template values first
 	// if requested.
-	if(isset($app->request->put('TemplateID'))){
-		$tmpl=new DeviceTemplate($app->request->put('TemplateID'));
+	$tmpl=$app->request->put('TemplateID');
+	if(isset($tmpl) && $tmpl>0){
+		$tmpl=new DeviceTemplate($tmpl);
 		$tmpl->GetTemplateByID();
 		foreach($tmpl as $prop => $val){
 			$dev->$prop=$val;
