@@ -1988,7 +1988,9 @@ class Device {
 			list($pictW, $pictH)=getimagesize($path.$picturefile);
 
 			// adjusted height = targetWidth * height:width ratio for 1u * height of device in U
-			$targetHeight=$targetWidth*1.75/19*$this->Height;
+			$targetHeight=$targetWidth*21/220*$this->Height;
+			// Original calculation
+//			$targetHeight=$targetWidth*1.75/19*$this->Height;
 
 			// We need integers for the height and width because browsers act funny with decimals
 			$targetHeight=intval($targetHeight);

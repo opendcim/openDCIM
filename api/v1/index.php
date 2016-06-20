@@ -1549,6 +1549,16 @@ $app->put( '/colorcode/:colorname', function($colorname) use ($app) {
 
 $app->put( '/device/:devicelabel', function($devicelabel) use ($app) {
 	$dev=new Device();
+	// We're creating a device and should load in the template values first
+	// if requested.
+	if(isset($app->request->put('TemplateID'))){
+		$tmpl=new DeviceTemplate($app->request->put('TemplateID'));
+		$tmpl->GetTemplateByID();
+		foreach($tmpl as $prop => $val){
+			$dev->$prop=$val;
+		}
+	}
+
 	// This isn't super great and could lead to some weirdness in the logging but 
 	// we'll make it more specific later if it becomes and issue.
 	foreach($app->request->put() as $prop => $val){
