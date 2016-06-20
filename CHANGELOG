@@ -8,7 +8,26 @@ are simply testing, as some functionality can break between releases.
 
 *** We have had a user contributed branch for monitoring Modbus-TCP devices for 
 auto computation of PUE and other metrics.  These features will be merged in as 
-part of the next major release.
+part of the next major release.  This is now queued up as the next release.
+
+Changes in 4.3
+--------------
+* Removed support for repository_sync.php job - all synchronization to be done through the UI at this point.
+* Addition of Bulk Upload operations (import, move, delete).  I hate you people.
+* Added some more fields in the LDAP config so that it will play nice with Active Directory (see the WIKI for what to change)
+* Expanded the rights so that you can give someone the ability to do Bulk Operations without being a Site Admin
+* Ability to search by model name in the quick search bar
+* Added a few statistics to the main home page
+* Classes have been moved to the classes/ folder and broken into a single class per file.  Hopefully this will make it simpler for new contributors to find what they're looking for.
+* Updated the main API searches (datacenter, people, cabinet, device) to support wildcards and also specify which attributes are returned.  See the WIKI.
+* Major, major performance improvements, especially for installations with 10,000+ cabinets spread across multiple data centers.  Less of an improvement for large sites built out as very few data centers, but still some improvement.
+* Added in a Project / Service Catalog capability.  Can now limit some reports based on the project.  (ie - These 35 servers make up my Exchange environment)
+* Some more bug fixes, because bugs always pop up
+
+Changes in 4.2
+--------------
+* Rollup of bug fixes since 4.1.1
+* Added support for use of LDAP server for not only Authentication, but also Authorization
 
 Changes in 4.1.1
 ----------------

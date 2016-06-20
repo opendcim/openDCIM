@@ -143,6 +143,12 @@ echo '
 	<div>',$StatsCabinet,'</div>
 </div>
 </div> <!-- END div.table -->
+	<div>';
+
+if( file_exists("sitecontact.html") ) {
+	include( "sitecontact.html" );
+}
+echo '	</div>
 </div>
 </div>
 </div>
