@@ -181,11 +181,8 @@ function ArraySearchRecursive($Needle,$Haystack,$NeedleKey="",$Strict=false,$Pat
 		exit;
 		$rightserror=1;
 	}else{ // so we have users and at least one site admin
-<<<<<<< HEAD
-=======
 		require_once("classes/People.class.php");
 
->>>>>>> dcb1533552c6b5e06207cefc74658076ff5f656f
 		if(!$person->SiteAdmin){
 			// dolemite says you aren't an admin so you can't apply the update
 			print "An update has been applied to the system but the system hasn't been taken out of maintenance mode. Please contact a site Administrator to correct this issue.  Current userid=" . $person->UserID;
