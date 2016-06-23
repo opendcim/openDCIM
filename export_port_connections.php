@@ -87,7 +87,7 @@
 
 		// Excel limits sheet titles to 31 characters or less
 		// Also invalid chars of /\*?[]
-		$sheetTitle = substr( $dev->Label, 1, 31 );
+		$sheetTitle = substr( $dev->Label, 0, 30 );
 		$sheetTitle = preg_replace( '/[\\/\*\?\[\]]/', '_', $sheetTitle ); 
 		$sheet->getActiveSheet()->setTitle( $sheetTitle );
 		
@@ -231,13 +231,20 @@
 		$sheet->getActiveSheet()->getColumnDimension($columnID)->setAutoSize(true);
 	}
 	
-	header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
-	if ( $_REQUEST["deviceid"] == "wo" ) {
-		header( sprintf( "Content-Disposition: attachment;filename=\"openDCIM-workorder-%s-connections.xlsx\"", date( "YmdHis" ) ) );	
+	$writer = new PHPExcel_Writer_Excel2007($sheet);
+
+	if(isset($_REQUEST["temp"]) && $_REQUEST["temp"]=="1"){
+		$tmpName = @tempnam(PHPExcel_Shared_File::sys_get_temp_dir(),'tmpcnxs');
+		$writer->save($tmpName);
 	} else {
-		header( "Content-Disposition: attachment;filename=\"openDCIM-dev" . $dev->DeviceID . "-connections.xlsx\"" );
+		header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+		if ( $_REQUEST["deviceid"] == "wo" ) {
+			header( sprintf( "Content-Disposition: attachment;filename=\"openDCIM-workorder-%s-connections.xlsx\"", date( "YmdHis" ) ) );	
+		} else {
+			header( "Content-Disposition: attachment;filename=\"openDCIM-dev" . $dev->DeviceID . "-connections.xlsx\"" );
+		}
+
+		$writer->save("php://output");
 	}
 	
-	$writer = new PHPExcel_Writer_Excel2007($sheet);
-	$writer->save('php://output');
 ?>

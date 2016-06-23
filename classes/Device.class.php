@@ -1871,7 +1871,7 @@ class Device {
 						$slot->H=$ymax-$ymin;
 					}else{
 						// Last slot isn't defined so just error out
-						break;
+						return;
 					}
 				}
 				$slotOK=true;
