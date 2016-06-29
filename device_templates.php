@@ -1140,7 +1140,7 @@ function uploadifive() {
 function drawSlots(){
 	var acolor, b, color, el, g, i, number, point, points, r, _i, _ref;
 
-	number = parseInt($('#coordstable > .table > div ~ div').length, 10);
+	number = parseInt($('#coordstable > .table > div ~ div').length+1, 10);
 	points = new Points(number);
 	point = null;
 	bordercolors = [];
