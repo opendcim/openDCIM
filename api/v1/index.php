@@ -863,13 +863,24 @@ $app->get( '/colorcode/:colorid/timesused', function($colorid) {
 
 $app->get( '/devicetemplate', function() use ($app) {
 	$dt=new DeviceTemplate();
-	foreach($app->request->get() as $prop => $val){
-		$dt->$prop=$val;
-	}
-
 	$response['error']=false;
 	$response['errorcode']=200;
-	$response['devicetemplate']=$dt->Search();
+	$loose = false;
+	$outputAttr = array();
+
+	foreach($app->request->get() as $prop => $val){
+		if ( strtoupper($prop) == "WILDCARDS" ) {
+			$loose = true;
+		} elseif (strtoupper($prop) == "ATTRIBUTES" ) {
+			$outputAttr = explode( ",", $val );
+		} else {
+			$dt->$prop=$val;
+		}
+	}
+	
+	$tmpList = $dt->Search( false, $loose );
+
+	$response['devicetemplate']=specifyAttributes( $outputAttr, $tmpList );
 
 	echoResponse(200,$response);
 });
