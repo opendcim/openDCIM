@@ -1351,7 +1351,7 @@ function initdrag(){
 }
 
 function InsertDevice(obj){
-	if(obj.Position!=0){
+	if(obj.Position!=0 && obj.Height!=0){
 		function getPic(insertobj,rear){
 			var showrear=(rear)?'?rear':'';
 			$.get('api/v1/device/'+obj.DeviceID+'/getpicture'+showrear).done(function(data){
