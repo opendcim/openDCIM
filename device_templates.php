@@ -1138,7 +1138,7 @@ function uploadifive() {
 // Functions for generating random number of colors.
 
 function drawSlots(){
-	var b, color, el, g, i, number, point, points, r, _i, _ref;
+	var acolor, b, color, el, g, i, number, point, points, r, _i, _ref;
 
 	number = parseInt($('#coordstable > .table > div ~ div').length, 10);
 	points = new Points(number);
@@ -1181,6 +1181,7 @@ function drawSlots(){
 			'width':($('input[name="W'+fr+slotnum+'"]').val()*ratio)-2+'px',
 			'height':($('input[name="H'+fr+slotnum+'"]').val()*ratio)-2+'px',
 			'border-color':bordercolors[slotnum],
+			'background-color':bordercolors[slotnum].replace(/\)/,", .4)").replace(/rgb/,"rgba"),
 			'padding-left':0,
 			'position':'absolute'
 		}).appendTo(imgDiv);
