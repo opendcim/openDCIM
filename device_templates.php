@@ -1199,7 +1199,6 @@ function drawSlots(){
 		// color the row to match the slot.
 		$(row).css({'background-color':bordercolors[slotnum]});
 	});
-	console.log(placeholder);
 }
 
 var Points, RYB, display, generateColors, numberColors,
