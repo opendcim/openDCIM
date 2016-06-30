@@ -1137,6 +1137,10 @@ function uploadifive() {
 // https://github.com/afriggeri/RYB
 // Functions for generating random number of colors.
 
+var placeholder={};
+placeholder.F=$('<img>');
+placeholder.R=$('<img>');
+
 function drawSlots(){
 	var acolor, b, color, el, g, i, number, point, points, r, _i, _ref;
 
@@ -1170,6 +1174,12 @@ function drawSlots(){
 		var imgDiv=img.parent('div');
 		imgDiv.css('position','relative');
 
+		// ie is garbage and this will attempt to make it less suck
+		imgDiv.css({'vertical-align':'top'});
+		img.css({'position':'absolute','top':'0px','left':'0px'});
+		placeholder[fr].attr({'src':'css/blank.gif','width':img.width(),'height':img.height()});
+		placeholder[fr].prependTo(imgDiv);
+
 		// amount to multiply the coordinate by to scale it to our image
 		var ratio=parseInt(img.width())/parseInt(img.naturalWidth());
 
@@ -1189,6 +1199,7 @@ function drawSlots(){
 		// color the row to match the slot.
 		$(row).css({'background-color':bordercolors[slotnum]});
 	});
+	console.log(placeholder);
 }
 
 var Points, RYB, display, generateColors, numberColors,
