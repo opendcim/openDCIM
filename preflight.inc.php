@@ -65,6 +65,14 @@
 		$tests['snmp']['message']='PHP is missing the <a href="http://php.net/manual/book.snmp.php">snmp extension</a>. Please install it.';
 	}
 
+	if(function_exists('utf8_decode')){
+		$tests['snmp']['state']="good";
+		$tests['snmp']['message']='';
+	}else{
+		$tests['snmp']['state']="fail";
+		$tests['snmp']['message']='PHP is missing the <a href="http://us3.php.net/manual/en/book.xml.php">XML Parser</a>.  Please install it.<br><br>For CENT/RHEL yum -y intall php-xml';
+	}
+
 	$tests['pdo']['message']='';
 	if (extension_loaded('PDO')) {
 		$tests['pdo']['state']="good";
