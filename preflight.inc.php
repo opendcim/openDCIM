@@ -66,11 +66,11 @@
 	}
 
 	if(function_exists('utf8_decode')){
-		$tests['snmp']['state']="good";
-		$tests['snmp']['message']='';
+		$tests['php-xml']['state']="good";
+		$tests['php-xml']['message']='';
 	}else{
-		$tests['snmp']['state']="fail";
-		$tests['snmp']['message']='PHP is missing the <a href="http://us3.php.net/manual/en/book.xml.php">XML Parser</a>.  Please install it.<br><br>For CENT/RHEL yum -y intall php-xml';
+		$tests['php-xml']['state']="fail";
+		$tests['php-xml']['message']='PHP is missing the <a href="http://us3.php.net/manual/en/book.xml.php">XML Parser</a>.  Please install it.<br><br>For CENT/RHEL yum -y intall php-xml';
 	}
 
 	$tests['pdo']['message']='';
