@@ -1447,26 +1447,26 @@ msgstr "部门联系人列表"
 
 #: openDCIM/container.php:5
 msgid "Container Detail"
-msgstr "机柜详细信息"
+msgstr "地区详细信息"
 
 #: openDCIM/container.php:149
 msgid "Verify Delete Container"
-msgstr "机柜删除验证"
+msgstr "地区删除验证"
 
 #: openDCIM/container.php:150
 msgid ""
 "This container will be deleted and there is no undo. Their direct "
 "descendants will be moved to \\'home\\'."
-msgstr "该机柜将被删除并且无法恢复. 机柜中的设备将被转移至\\'home\\'."
+msgstr "该地区将被删除并且无法恢复. 地区中的组件将被转移至\\'home\\'."
 
 #: openDCIM/container.php:222 openDCIM/datacenter.php:276
 #: openDCIM/report_network_map.php:599
 msgid "Container"
-msgstr "机柜"
+msgstr "地区"
 
 #: openDCIM/container.php:224
 msgid "New Container"
-msgstr "新的机柜"
+msgstr "新的地区"
 
 #: openDCIM/container.php:238 openDCIM/datacenter.php:267
 msgid "Drawing URL"
@@ -1474,7 +1474,7 @@ msgstr "制图URL"
 
 #: openDCIM/container.php:243
 msgid "Parent Container"
-msgstr "刀片机柜"
+msgstr "上级地区"
 
 #: openDCIM/container.php:245 openDCIM/datacenter.php:278
 msgid "None"
@@ -1482,7 +1482,7 @@ msgstr "无"
 
 #: openDCIM/container.php:270
 msgid "Click on the image to select container coordinates"
-msgstr "点击图片选择机柜的坐标"
+msgstr "点击图片选择地区的坐标"
 
 #: openDCIM/container_stats.php:5 openDCIM/dc_dashboard.php:5
 #: openDCIM/dc_stats.php:5 openDCIM/report_asset_Excel.php:154
@@ -2871,7 +2871,7 @@ msgstr "编辑数据中心"
 
 #: openDCIM/misc.inc.php:895
 msgid "Edit Containers"
-msgstr "编辑机柜"
+msgstr "编辑地区"
 
 #: openDCIM/misc.inc.php:896
 msgid "Edit Zones"
