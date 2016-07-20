@@ -5,7 +5,7 @@
 	$subheader=__("Data Center Operations Work Order Builder");
 	$error = '';
 	$result = 0;
-	
+
 	if(!isset($_COOKIE["workOrder"]) || (isset($_COOKIE["workOrder"]) && $_COOKIE["workOrder"]=="" )){
 		header("Location: ".redirect());
 		exit;
@@ -23,12 +23,14 @@
 
 	if (isset($_POST['action']) && $_POST['action'] == 'Send'){
 
-		$_REQUEST['deviceid'] = 'wo';
-		$_REQUEST['temp'] = '1';
+		require_once( "swiftmailer/swift_required.php" );
+		require_once( "connections_spreadsheet.php" );
+		require_once( "PHPExcel/PHPExcel/Writer/Excel2007.php" );
 
-		include 'export_port_connections.php';
+		$writer = new PHPExcel_Writer_Excel2007(generate_spreadsheet($devList));
 
-		require_once( 'swiftmailer/swift_required.php' );
+		$tmpName = @tempnam(PHPExcel_Shared_File::sys_get_temp_dir(),'tmpcnxs');
+		$writer->save($tmpName);
 
 		// If any port other than 25 is specified, assume encryption and authentication
 		if($config->ParameterArray['SMTPPort']!= 25){
@@ -47,11 +49,7 @@
 		$mailer = Swift_Mailer::newInstance($transport);
 		$message = Swift_Message::NewInstance();
 
-		if ( $_REQUEST["deviceid"] == "wo" ) {
-			$message->setSubject( __("openDCIM-workorder-".date( "YmdHis" )."-connections") );
-		} else {
-			$message->setSubject( __($dev->DeviceID."-connections") );
-		}
+		$message->setSubject( __("openDCIM-workorder-".date( "YmdHis" )."-connections") );
 
 		// Set from address
 		try{		
