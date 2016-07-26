@@ -2605,7 +2605,7 @@ $connectioncontrols.=($dev->DeviceID>0 && !empty($portList))?'
 		}
 
 		// Grab the custom attributes blanks and make them use the update button on pressing enter
-		$(':input[id^=customvalue]').keypress(function(event){
+		$(':input[id^=customvalue], div.left :input').keypress(function(event){
 			if(event.keyCode==10 || event.keyCode==13){
 				event.preventDefault();
 				$('.caption > button[value=Update]').trigger('click');
