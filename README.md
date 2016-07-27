@@ -27,6 +27,8 @@ openDCIM
 *THE CURRENT RELEASE IN GITHUB IS FOR DEVELOPMENT ONLY*
 -------------------------------------------------------
 
+## Github issues are not for asking questions - use the mailing list for that.
+[Official Website](http://www.opendcim.org/participation.html)
 
 Installation
 ------------
