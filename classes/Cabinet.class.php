@@ -231,7 +231,7 @@ class Cabinet {
 
 		// if AppendCabDC is set then we will be appending the DC to lists so sort them accordingly
 		$orderbydc=(!is_null($orderbydc) || $config->ParameterArray['AppendCabDC']=='enabled')?'DataCenterID, ':'';
-		$sql="SELECT * FROM fac_Cabinet ORDER BY $orderbydc LocationSortable ASC;";
+		$sql="SELECT * FROM fac_Cabinet ORDER BY $orderbydc LENGTH(LocationSortable), LocationSortable ASC;";
 
 		foreach($dbh->query($sql) as $cabinetRow){
 			$filter = $config->ParameterArray["FilterCabinetList"] == 'Enabled' ? true:false;
