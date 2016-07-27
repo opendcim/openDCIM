@@ -31,8 +31,16 @@
 			exit;
 		}
 	}
-	
-	$writer = new PHPExcel_Writer_Excel2007(generate_spreadsheet($devList));
+	$mediaIDList = array();
+	if( $_REQUEST["deviceid"] == "wo" && isset($_COOKIE['connectionsMediaList'])){
+		$mediaIDList = json_decode($_COOKIE['connectionsMediaList']);
+	}else{
+		$mediaIDList[]='-1';
+		foreach(MediaTypes::GetMediaTypeList() as $mt){
+			$mediaIDList[]=''.$mt->MediaID;
+		}
+	}
+	$writer = new PHPExcel_Writer_Excel2007(generate_spreadsheet($devList,$mediaIDList));
 
 	header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
 	if ( $_REQUEST["deviceid"] == "wo" ) {

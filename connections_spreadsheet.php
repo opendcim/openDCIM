@@ -3,7 +3,7 @@
 	require_once( "facilities.inc.php" );
 	require_once( "PHPExcel/PHPExcel.php" );
 
-	function generate_spreadsheet($devList,$hideEmptyPower=false){
+	function generate_spreadsheet($devList,$mediaIDList=array(),$hideEmptyPower=false){
 
 		$devTmpl = new DeviceTemplate();
 		$cab = new Cabinet();
@@ -24,6 +24,7 @@
 		$sheet->getActiveSheet()->SetCellValue('E1',__("Notes"));
 		$sheet->getActiveSheet()->SetCellValue('F1',__("MediaType"));
 		$sheet->getActiveSheet()->SetCellValue('G1',__("Color"));
+
 		
 		$sheet->getActiveSheet()->setTitle(__("Connections"));
 		$row = 2;
@@ -92,34 +93,36 @@
 			exit;
 		}	
 	*/
-			$pport=new PowerPorts();
-			$pport->DeviceID=$dev->DeviceID;
-			$pportList=$pport->getPorts();
+			if(in_array('-1', $mediaIDList)){
+				$pport=new PowerPorts();
+				$pport->DeviceID=$dev->DeviceID;
+				$pportList=$pport->getPorts();
 
-			// Make power cable labels based on the number of power supplies
-			foreach($pportList as $powerPort){
-				if(!$hideEmptyPower || $powerPort->ConnectedDeviceID > 0){
-					$sheet->getActiveSheet()->SetCellValue('A' . $row, $dev->Label );
-					$sheet->getActiveSheet()->SetCellValue('B' . $row, $powerPort->Label );
+				// Make power cable labels based on the number of power supplies
+				foreach($pportList as $powerPort){
+					if(!$hideEmptyPower || $powerPort->ConnectedDeviceID > 0){
+						$sheet->getActiveSheet()->SetCellValue('A' . $row, $dev->Label );
+						$sheet->getActiveSheet()->SetCellValue('B' . $row, $powerPort->Label );
 
-					if($powerPort->ConnectedDeviceID > 0){
-					
-						$targetDev=new Device();
-						$targetPort=new PowerPorts();
-
-						$targetDev->DeviceID=$powerPort->ConnectedDeviceID;
-						$targetDev->GetDevice();
-
-						$targetPort->DeviceID=$targetDev->DeviceID;
-						$targetPort->PortNumber=$powerPort->ConnectedPort;
-						$targetPort->getPort();
-
-						$sheet->getActiveSheet()->SetCellValue('C' . $row, $targetDev->Label);
-						$sheet->getActiveSheet()->SetCellValue('D' . $row, $targetPort->Label);
-						$sheet->getActiveSheet()->SetCellValue('H' . $row, __("Power Connection"));
+						if($powerPort->ConnectedDeviceID > 0){
 						
+							$targetDev=new Device();
+							$targetPort=new PowerPorts();
+
+							$targetDev->DeviceID=$powerPort->ConnectedDeviceID;
+							$targetDev->GetDevice();
+
+							$targetPort->DeviceID=$targetDev->DeviceID;
+							$targetPort->PortNumber=$powerPort->ConnectedPort;
+							$targetPort->getPort();
+
+							$sheet->getActiveSheet()->SetCellValue('C' . $row, $targetDev->Label);
+							$sheet->getActiveSheet()->SetCellValue('D' . $row, $targetPort->Label);
+							$sheet->getActiveSheet()->SetCellValue('H' . $row, __("Power Connection"));
+							
+						}
+						$row++;
 					}
-					$row++;
 				}
 			}
 			
@@ -146,19 +149,21 @@
 					$color->ColorID = $devPort->ColorID;
 					$color->GetCode();
 					
-					$mediaType->MediaID = $devPort->MediaID;
-					$mediaType->GetType();
-					
-					$sheet->getActiveSheet()->SetCellValue('A' . $row, $dev->Label);
-					$sheet->getActiveSheet()->SetCellValue('B' . $row, $devPort->Label);
-					$sheet->getActiveSheet()->SetCellValue('C' . $row,  $targetDev->Label);
+					if (in_array(''.$devPort->MediaID,$mediaIDList)){
+						$mediaType->MediaID = $devPort->MediaID;
+						$mediaType->GetType();
 
-					$sheet->getActiveSheet()->SetCellValue('D' . $row, $targetPort->Label);
-					$sheet->getActiveSheet()->SetCellValue('E' . $row, $devPort->Notes);
-					$sheet->getActiveSheet()->SetCellValue('F' . $row, $mediaType->MediaType);
-					$sheet->getActiveSheet()->SetCellValue('G' . $row, $color->Name);
+						$sheet->getActiveSheet()->SetCellValue('A' . $row, $dev->Label);
+						$sheet->getActiveSheet()->SetCellValue('B' . $row, $devPort->Label);
+						$sheet->getActiveSheet()->SetCellValue('C' . $row, $targetDev->Label);
 
-					$row++;
+						$sheet->getActiveSheet()->SetCellValue('D' . $row, $targetPort->Label);
+						$sheet->getActiveSheet()->SetCellValue('E' . $row, $devPort->Notes);
+						$sheet->getActiveSheet()->SetCellValue('F' . $row, $mediaType->MediaType);
+						$sheet->getActiveSheet()->SetCellValue('G' . $row, $color->Name);
+
+						$row++;
+					}
 				}
 				
 				if ( $targetDev->DeviceType == "Patch Panel" ) {
