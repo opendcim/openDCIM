@@ -5,7 +5,7 @@
 	$subheader=__("Data Center Operations Work Order Builder");
 	$error = '';
 	$result = 0;
-	
+
 	if(!isset($_COOKIE["workOrder"]) || (isset($_COOKIE["workOrder"]) && $_COOKIE["workOrder"]=="" )){
 		header("Location: ".redirect());
 		exit;
@@ -23,12 +23,23 @@
 
 	if (isset($_POST['action']) && $_POST['action'] == 'Send'){
 
-		$_REQUEST['deviceid'] = 'wo';
-		$_REQUEST['temp'] = '1';
+		require_once( "swiftmailer/swift_required.php" );
+		require_once( "connections_spreadsheet.php" );
+		require_once( "PHPExcel/PHPExcel/Writer/Excel2007.php" );
 
-		include 'export_port_connections.php';
+		$mediaIDList = array();
+		if(isset($_COOKIE['connectionsMediaList'])){
+			$mediaIDList = json_decode($_COOKIE['connectionsMediaList']);
+		}else{
+			$mediaIDList[]='-1';
+			foreach(MediaTypes::GetMediaTypeList() as $mt){
+				$mediaIDList[]=''.$mt->MediaID;
+			}
+		}
+		$writer = new PHPExcel_Writer_Excel2007(generate_spreadsheet($devList,$mediaIDList));
 
-		require_once( 'swiftmailer/swift_required.php' );
+		$tmpName = @tempnam(PHPExcel_Shared_File::sys_get_temp_dir(),'tmpcnxs');
+		$writer->save($tmpName);
 
 		// If any port other than 25 is specified, assume encryption and authentication
 		if($config->ParameterArray['SMTPPort']!= 25){
@@ -47,11 +58,7 @@
 		$mailer = Swift_Mailer::newInstance($transport);
 		$message = Swift_Message::NewInstance();
 
-		if ( $_REQUEST["deviceid"] == "wo" ) {
-			$message->setSubject( __("openDCIM-workorder-".date( "YmdHis" )."-connections") );
-		} else {
-			$message->setSubject( __($dev->DeviceID."-connections") );
-		}
+		$message->setSubject( __("openDCIM-workorder-".date( "YmdHis" )."-connections") );
 
 		// Set from address
 		try{		
@@ -115,7 +122,29 @@
 			$.removeCookie('workOrder');
 			location.href="index.php";
 		});
+		storeMediaList();
 	});
+</script>
+<script type="text/javascript">
+	// Select all the elements in the list of Media Types
+	function selectAll(){
+		var sel = document.getElementById("mediaTypes");
+		for (i=0;i<sel.length;i++){
+			sel.options[i].selected = true;
+		}
+		storeMediaList();
+	}
+	// Store the desired Media IDs in a cookie
+	function storeMediaList(){
+		var sel = document.getElementById("mediaTypes");
+		var connectionsMediaList = new Array();
+		for(i=0;i<sel.length;i++){
+			if(sel.options[i].selected){
+				connectionsMediaList.push(sel.options[i].value);
+			}
+		}
+		$.cookie('connectionsMediaList',JSON.stringify(connectionsMediaList));
+	}
 </script>
 </head>
 <body>
@@ -135,7 +164,7 @@
 <?php
 	echo '<form name="orderform" id="orderform" action="',$_SERVER["PHP_SELF"],'" method="POST">';
 	print "<h2>".__("Work Order Contents")."</h2>
-<div class=\"table\">
+<div style=\"width: 100%; overflow: hidden;\"><div class=\"table\" style=\"float: left;\">
 	<div><div>".__("Cabinet")."</div><div>".__("Position")."</div><div>".__("Label")."</div><div>".__("Image")."</div></div>\n";
 	
 	foreach($devList as $dev){
@@ -161,12 +190,23 @@
 		print "<div><div>$cab->Location</div><div>$position</div><div>$dev->Label</div><div>".$dev->GetDevicePicture('','','nolinks')."</div></div>\n";
 	}
 	
-	print '</div>
+	print '</div><div style="display: inline-block; height: 100%; margin: 0pt 0pt 0pt 24pt;">';
+
+	$checklist='<a style="background:#fff; width: 100%; text-align: center; display: block;">Media Types</a>
+<select id="mediaTypes" name="Media Types" multiple="multiple" onchange="storeMediaList()"
+ style="width: 100%" size=15>\n';
+	$checklist .= '<option value="-1" selected>Power Connections</option>\n';
+	foreach(MediaTypes::GetMediaTypeList() as $mt){
+		$checklist .= '<option value="'.$mt->MediaID.'" selected>'.$mt->MediaType.'</option>\n';
+	}
+	$checklist.='</select><br/><button type="button" style="width: 100%;" onclick="selectAll()">'.__("Select All").'</button>';
+
+	print $checklist.'</div></div><br/><div style="display: block; margin: auto;">
 <a href="export_port_connections.php?deviceid=wo"><button type="button">'.__("Export Connections").'</button></a>
-<button type="submit" name="action" value="Send">'.__("Send Connections to Data Center Team").'</button></a>';
+<button type="submit" name="action" value="Send">'.__("Send Connections to Data Center Team").'</button>';
 ?>
 
-<button type="button" id="clear"><?php print __("Clear"); ?></button>
+<button type="button" id="clear"><?php print __("Clear"); ?></button></div>
 </form>
 </div></div>
 </div><!-- END div.main -->
