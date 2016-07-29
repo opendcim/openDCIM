@@ -274,12 +274,13 @@
             }
           }
 
-          // Any floatind point value refers to a card going into a server.  Since the server
+          // Any floating point value refers to a card going into a server.  Since the server
           // being added could be a row in this field, we simply don't detect collisions
           // and will show an error during processing if it comes to that.
           $pos = explode( ".", $row["Position"]);
 
-          if ( sizeof( $pos ) > 1 ) {
+          // Floating point entries once split will have 2 or more members in the $pos array
+          if ( sizeof( $pos ) < 2 ) {
             if ( $row["Height"] > 0 ) {
               $endPos = $row["Position"] + $row["Height"];
 
