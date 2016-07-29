@@ -215,7 +215,7 @@ class ESX {
 	}
   
 	function GetOrphanVMList(){
-		$sql="SELECT * FROM fac_VMInventory WHERE Owner IS NULL;"; 
+		$sql="SELECT * FROM fac_VMInventory WHERE Owner=0;"; 
 		return $this->search($sql);
 	}
 

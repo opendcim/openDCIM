@@ -79,7 +79,7 @@
 		}
 		$resultcount=count($devList);
 		$title=__("Project Catalog search results for")." &quot;$searchTerm&quot;";
-	}elseif($searchKey="model"){
+	}elseif($searchKey=="model"){
 		$tmpl->Model = $searchTerm;
 		$tmpList = $tmpl->Search( false, true );
 		$devList = array();
@@ -118,7 +118,7 @@
 		}
 		$resultcount=count($devList)+count($cabList); 
 		$title=__("Notes search results for")." &quot;$searchTerm&quot;";
-	}elseif($searchKey="dev"){
+	}elseif($searchKey=="dev"){
 		// This is gonna be a generic catch all
 		foreach($dev as $prop => $val){
 			$dev->$prop=(isset($_GET[$prop]))?$_GET[$prop]:$val;
