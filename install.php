@@ -1077,6 +1077,7 @@ function upgrade(){
 
 		// Rebuild the config table just in case.
 		$config->rebuild();
+		$version="4.1";
 	}
 	if($version=="4.1"){
 		// First apply the schema updates needed.
@@ -1084,6 +1085,7 @@ function upgrade(){
 
 		// Rebuild the config table just in case.
 		$config->rebuild();
+		$version="4.1.1";
 	}
 	if($version=="4.1.1"){
 		// First apply the schema updates needed.
@@ -1091,6 +1093,7 @@ function upgrade(){
 
 		// Rebuild the config table just in case.
 		$config->rebuild();		
+		$version="4.2";
 	}
 	if($version=="4.2"){
 		$results[]=applyupdate("db-4.2-to-4.3.sql");
