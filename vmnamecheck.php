@@ -47,13 +47,26 @@
 		$error.=__("Data center team address").": <span class=\"errmsg\">".$e->getMessage()."</span><br>\n";
 	}
 
+	$logo=getcwd().'/images/'.$config->ParameterArray["PDFLogoFile"];
+	$logo=$message->embed(Swift_Image::fromPath($logo)->setFilename('logo.png'));
+	
+	$style = "
+<style type=\"text/css\">
+@media print {
+	h2 {
+		page-break-before: always;
+	}
+}
+</style>";
+
+	$htmlMessage = sprintf( "<!doctype html><html><head><meta http-equiv=\"Content-Type\" content=\"text/html; charset=UTF-8\"><title>%s</title>%s</head><body><div id=\"header\" style=\"padding: 5px 0;background: %s;\"><center><img src=\"%s\"></center></div><div class=\"page\"><p>\n", __("Virtual Machine Inventory Exception Report"), $style, $config->ParameterArray["HeaderColor"], $logo  );
 
 	// Send email about Virtual Machines that don't have owners assigned
 	$esxList=$esx->GetOrphanVMList();
 	if(count($esxList) >0){
 		$esxCount=count($esxList);
       
-		$htmlMessage="<html>
+		$htmlMessage.="<html>
 			<head>
 			   <title>".__("Virtual Machine Inventory Exception Report")."</title>
 			</head>
@@ -101,7 +114,7 @@
 	if(count($esxList) >0){
 		$esxCount=count($esxList);
       
-		$htmlMessage="<html>
+		$htmlMessage.="<html>
 			<head>
 			   <title>".__("Virtual Machine Inventory Expiration Report")."</title>
 			</head>
