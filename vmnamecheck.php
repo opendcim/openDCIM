@@ -59,19 +59,13 @@
 }
 </style>";
 
-	$htmlMessage = sprintf( "<!doctype html><html><head><meta http-equiv=\"Content-Type\" content=\"text/html; charset=UTF-8\"><title>%s</title>%s</head><body><div id=\"header\" style=\"padding: 5px 0;background: %s;\"><center><img src=\"%s\"></center></div><div class=\"page\"><p>\n", __("Virtual Machine Inventory Exception Report"), $style, $config->ParameterArray["HeaderColor"], $logo  );
-
 	// Send email about Virtual Machines that don't have owners assigned
 	$esxList=$esx->GetOrphanVMList();
 	if(count($esxList) >0){
 		$esxCount=count($esxList);
-      
-		$htmlMessage.="<html>
-			<head>
-			   <title>".__("Virtual Machine Inventory Exception Report")."</title>
-			</head>
-			<body>
-			<p>".__("This is an automated message from the")." {$config->ParameterArray["OrgName"]} ".__("Inventory
+
+		$htmlMessage = sprintf( "<!doctype html><html><head><meta http-equiv=\"Content-Type\" content=\"text/html; charset=UTF-8\"><title>%s</title>%s</head><body><div id=\"header\" style=\"padding: 5px 0;background: %s;\"><center><img src=\"%s\"></center></div><div class=\"page\"><p>\n", __("Virtual Machine Inventory Exception Report"), $style, $config->ParameterArray["HeaderColor"], $logo  );
+		$htmlMessage.="<p>".__("This is an automated message from the")." {$config->ParameterArray["OrgName"]} ".__("Inventory
 			Process.  This process is scheduled to run once each business day.</p>
 			<p>The following")." $esxCount ".__("Virtual Machines were detected in the environment
 			and do not have an associated owner record.  It is assumed that
@@ -113,13 +107,9 @@
 	$esxList=$esx->GetExpiredVMList($config->ParameterArray["VMExpirationTime"]);
 	if(count($esxList) >0){
 		$esxCount=count($esxList);
-      
-		$htmlMessage.="<html>
-			<head>
-			   <title>".__("Virtual Machine Inventory Expiration Report")."</title>
-			</head>
-			<body>
-			<p>".__("This is an automated message from the")." {$config->ParameterArray["OrgName"]} ".__("Virtual Machine Inventory
+
+      		$htmlMessage = sprintf( "<!doctype html><html><head><meta http-equiv=\"Content-Type\" content=\"text/html; charset=UTF-8\"><title>%s</title>%s</head><body><div id=\"header\" style=\"padding: 5px 0;background: %s;\"><center><img src=\"%s\"></center></div><div class=\"page\"><p>\n", __("Virtual Machine Inventory Expiration Report"), $style, $config->ParameterArray["HeaderColor"], $logo  );
+		$htmlMessage.="<p>".__("This is an automated message from the")." {$config->ParameterArray["OrgName"]} ".__("Virtual Machine Inventory
 			Process.  This process is scheduled to run once each business day.")."</p>
 			<p>".__("The following")." $esxCount ".__("Virtual Machines have not been detected within the
 			past")." {$config->ParameterArray["VMExpirationTime"]} ".__("days and are assumed to be expired.  They are being removed from the
