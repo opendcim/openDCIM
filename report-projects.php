@@ -21,11 +21,12 @@
 			}
 			$sql="SELECT a.ProjectID, a.ProjectName, b.DeviceID, c.Location, b.Position, 
 				b.Height, b.Label, b.DeviceType, b.AssetTag, b.SerialNo, b.InstallDate, 
-				b.TemplateID, b.Owner, e.Name as DataCenterName, c.CabinetID FROM fac_Projects a, fac_Device b, fac_Cabinet c, 
-				fac_ProjectMembership d , fac_DataCenter e WHERE b.ParentDevice=0 and a.ProjectID=d.ProjectID and d.DeviceID=b.DeviceID 
-				and b.Cabinet=c.CabinetID and c.DataCenterID=e.DataCenterID $projLimit order by
-				a.ProjectName ASC, e.Name ASC, c.Location ASC, b.Position ASC";
-			error_log( $sql );
+				b.TemplateID, b.Owner, e.Name as DataCenterName, c.CabinetID, e.DataCenterID 
+				FROM fac_Projects a, fac_Device b, fac_Cabinet c, fac_ProjectMembership d, 
+				fac_DataCenter e WHERE b.ParentDevice=0 AND a.ProjectID=d.ProjectID AND 
+				d.DeviceID=b.DeviceID AND b.Cabinet=c.CabinetID AND 
+				c.DataCenterID=e.DataCenterID $projLimit ORDER BY a.ProjectName ASC, 
+				e.Name ASC, c.Location ASC, b.Position ASC";
 			$result=$dbh->query($sql);
 		}else{
 			$result=array();
@@ -59,6 +60,9 @@
 				$dept->DeptID=$row["Owner"];
 				$dept->GetDeptByID();
 				$Department=$dept->Name;
+			}else{
+				// Adding a placeholder to silence an error
+				$Department='';
 			}
 			$dev->DeviceID=$row["DeviceID"];
 			$tags=implode(",", $dev->GetTags());
