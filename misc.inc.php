@@ -317,6 +317,7 @@ if(extension_loaded('gettext')){
 			}
 		}
 		putenv("LC_ALL=$locale");
+		putenv("LANGUAGE=$locale");
 		bindtextdomain("openDCIM","./locale");
 
 		$codeset='utf8';

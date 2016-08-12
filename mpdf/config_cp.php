@@ -1,5 +1,7 @@
 <?php
 
+mkdir(sys_get_temp_dir().DIRECTORY_SEPARATOR.'mpdf.opendcim'.DIRECTORY_SEPARATOR);
+define('_MPDF_TEMP_PATH',sys_get_temp_dir().DIRECTORY_SEPARATOR.'mpdf.opendcim'); 
 
 function GetLangOpts($llcc, $adobeCJK) {
 	if (strlen($llcc) == 5) {
