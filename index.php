@@ -136,7 +136,7 @@ echo '
 </div>
 <div>
 	<div>',__("Virtualization Ratio"),'</div>
-	<div>',intval($StatsVM/$StatsHost),':1</div>
+	<div>',intval($StatsVM/(($StatsHost==0)?1:$StatsHost)),':1</div>
 </div>
 <div>
 	<div>',__("Total Cabinets"),'</div>
