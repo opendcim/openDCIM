@@ -1532,8 +1532,16 @@ $app->put('/people/:userid', function($userid) use ($app,$person) {
 
 $app->put( '/colorcode/:colorname', function($colorname) use ($app) {
 	$cc=new ColorCoding();
-	foreach($app->request->put() as $prop => $val){
-		$cc->$prop=$val;
+
+	// Allow for input as either PUT variables or a JSON payload
+	if ( $vars = json_decode( $app->request->getBody() )) {
+		foreach( $vars as $prop=>$val ) {
+			$cc->$prop = $val;
+		}
+	} else {
+		foreach( $cc as $prop=>$val ) {
+			$cc->$prop=$app->request->put($prop);
+		}
 	}
 
 	if(!$cc->CreateCode()){
@@ -1560,22 +1568,40 @@ $app->put( '/colorcode/:colorname', function($colorname) use ($app) {
 
 $app->put( '/device/:devicelabel', function($devicelabel) use ($app) {
 	$dev=new Device();
+
+	// Allow for input as either PUT variables or a JSON payload
+	if ( $vars = json_decode( $app->request->getBody() )) {
+		foreach( $vars as $prop=>$val ) {
+			$dev->$prop = $val;
+		}
+	} else {
+		foreach( $dev as $prop=>$val ) {
+			$dev->$prop=$app->request->put($prop);
+		}
+	}
+
 	// We're creating a device and should load in the template values first
 	// if requested.
-	$tmpl=$app->request->put('TemplateID');
-	if(isset($tmpl) && $tmpl>0){
-		$tmpl=new DeviceTemplate($tmpl);
+	if(isset($dev->TemplateID) && $dev->TemplateID>0){
+		$tmpl=new DeviceTemplate($dev->TemplateID);
 		$tmpl->GetTemplateByID();
 		foreach($tmpl as $prop => $val){
 			$dev->$prop=$val;
 		}
 	}
 
-	// This isn't super great and could lead to some weirdness in the logging but 
-	// we'll make it more specific later if it becomes and issue.
-	foreach($app->request->put() as $prop => $val){
-		$dev->$prop=$val;
+	// Slurp all the data back in again, though, just in case someone specified an override from the template values
+	// Yes, this is messy.
+	if ( $vars = json_decode( $app->request->getBody() )) {
+		foreach( $vars as $prop=>$val ) {
+			$dev->$prop = $val;
+		}
+	} else {
+		foreach( $dev as $prop=>$val ) {
+			$dev->$prop=$app->request->put($prop);
+		}
 	}
+
 	// This should be in the commit data but if we get a smartass saying it's in the URL
 	$dev->Label=$devicelabel;
 
@@ -1665,11 +1691,18 @@ $app->put( '/device/:deviceid/copyto/:newposition', function($deviceid, $newposi
 
 $app->put( '/devicetemplate/:model', function($model) use ($app,$person) {
 	$dt=new DeviceTemplate();
-	// This isn't super great and could lead to some weirdness in the logging but 
-	// we'll make it more specific later if it becomes and issue.
-	foreach($app->request->put() as $prop => $val){
-		$dt->$prop=$val;
+
+	// Allow for input as either PUT variables or a JSON payload
+	if ( $vars = json_decode( $app->request->getBody() )) {
+		foreach( $vars as $prop=>$val ) {
+			$dt->$prop = $val;
+		}
+	} else {
+		foreach( $dt as $prop=>$val ) {
+			$dt->$prop=$app->request->put($prop);
+		}
 	}
+
 	// This should be in the commit data but if we get a smartass saying it's in the URL
 	$dt->Model=$model;
 
@@ -1706,9 +1739,18 @@ $app->put( '/devicetemplate/:model', function($model) use ($app,$person) {
 
 $app->put( '/devicetemplate/:templateid/dataport/:portnum', function($templateid,$portnum) use ($app,$person) {
 	$tp=new TemplatePorts();
-	foreach($app->request->put() as $prop => $val){
-		$tp->$prop=$val;
+	
+	// Allow for input as either PUT variables or a JSON payload
+	if ( $vars = json_decode( $app->request->getBody() )) {
+		foreach( $vars as $prop=>$val ) {
+			$tp->$prop = $val;
+		}
+	} else {
+		foreach( $tp as $prop=>$val ) {
+			$tp->$prop=$app->request->put($prop);
+		}
 	}
+
 	// This should be in the commit data but if we get a smartass saying it's in the URL
 	$tp->TemplateID=$templateid;
 	$tp->PortNumber=$portnum;
@@ -1743,9 +1785,18 @@ $app->put( '/devicetemplate/:templateid/dataport/:portnum', function($templateid
 
 $app->put( '/devicetemplate/:templateid/powerport/:portnum', function($templateid,$portnum) use ($app,$person) {
 	$tp=new TemplatePowerPorts();
-	foreach($app->request->put() as $prop => $val){
-		$tp->$prop=$val;
+
+	// Allow for input as either PUT variables or a JSON payload
+	if ( $vars = json_decode( $app->request->getBody() )) {
+		foreach( $vars as $prop=>$val ) {
+			$tp->$prop = $val;
+		}
+	} else {
+		foreach( $tp as $prop=>$val ) {
+			$tp->$prop=$app->request->put($prop);
+		}
 	}
+
 	// This should be in the commit data but if we get a smartass saying it's in the URL
 	$tp->TemplateID=$templateid;
 	$tp->PortNumber=$portnum;
@@ -1815,9 +1866,18 @@ $app->put( '/devicetemplate/:templateid/slot/:slotnum', function($templateid,$sl
 
 $app->put( '/manufacturer/:name', function($name) use ($app,$person) {
 	$man=new Manufacturer();
-	foreach($app->request->put() as $prop => $val){
-		$man->$prop=$val;
+
+	// Allow for input as either PUT variables or a JSON payload
+	if ( $vars = json_decode( $app->request->getBody() )) {
+		foreach( $vars as $prop=>$val ) {
+			$man->$prop = $val;
+		}
+	} else {
+		foreach( $man as $prop=>$val ) {
+			$man->$prop=$app->request->put($prop);
+		}
 	}
+
 	$man->Name=$name;
 	
 	$response['error']=true;
