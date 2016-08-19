@@ -30,9 +30,15 @@
       ldap_set_option( $ldapConn, LDAP_OPT_PROTOCOL_VERSION, 3 );
 
       $ldapUser = htmlspecialchars($_POST['username']);
-      $ldapDN = str_replace( "%userid%", $ldapUser, $config->ParameterArray['LDAPBindDN']);
       $ldapPassword = $_POST['password'];
-
+      if ( $config->ParameterArray['LDAPBindDN'] == "" ) {
+        $ldapAnonymousBind = ldap_bind($ldapConn);
+        $ldapSearchDN = ldap_search($ldapConn, $config->ParameterArray['LDAPBaseDN'], "(uid=$ldapUser)");
+        $ldapDNResult = ldap_get_entries( $ldapConn, $ldapSearchDN );
+        $ldapDN = $ldapDNResult[0]['dn'];
+      } else {
+        $ldapDN = str_replace( "%userid%", $ldapUser, $config->ParameterArray['LDAPBindDN']);
+      }
       $ldapBind = ldap_bind( $ldapConn, $ldapDN, $ldapPassword );
 
       if ( ! $ldapBind ) {
