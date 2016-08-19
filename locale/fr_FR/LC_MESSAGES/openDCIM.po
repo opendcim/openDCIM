@@ -705,7 +705,7 @@ msgstr "Tout supprimer"
 #: openDCIM/configuration.php:1015 openDCIM/configuration.php:1029
 #: openDCIM/configuration.php:1128 openDCIM/configuration.php:1145
 msgid "Something just went horribly wrong."
-msgstr "Quelque chose n'a pas fonctionné correctement"
+msgstr "Quelque chose n\\'a pas fonctionné correctement"
 
 #: openDCIM/configuration.php:593 openDCIM/configuration.php:778
 msgid "Replace"
