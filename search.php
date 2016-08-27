@@ -81,13 +81,13 @@
 		$title=__("Project Catalog search results for")." &quot;$searchTerm&quot;";
 	}elseif($searchKey=="model"){
 		$tmpl->Model = $searchTerm;
-		$tmpList = $tmpl->Search( false, true );
+		$tmpList = $tmpl->Search(true,true);
 		$devList = array();
 		foreach( $tmpList as $t ) {
 			$dev = new Device();
 			$dev->TemplateID = $t->TemplateID;
-			$tList = $dev->Search( false, false );
-			$devList = array_merge( $devList, $tList );
+			$tList = $dev->Search(true,false);
+			$devList = $devList + $tList;
 		}
 		$resultcount=count($devList);
 		$title=__("Device Model search results for")." &quot;$searchTerm&quot;";
