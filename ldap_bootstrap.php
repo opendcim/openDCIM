@@ -72,7 +72,90 @@ $(document).ready(function() {
 </script>
 </head>
 <body>
+<?php include( 'header.inc.php' ); ?>
 <div class="page index">
+<div id="sidebar">
+<script type="text/javascript">
+
+function resize(){
+	// Reset widths to make shrinking screens work better
+	$('#header,div.main,div.page').css('width','auto');
+	// This function will run each 500ms for 2.5s to account for slow loading content
+	var count=0;
+	subresize();
+	var longload=setInterval(function(){
+		subresize();
+		if(count>4){
+			clearInterval(longload);
+			window.resized=true;
+		}
+		++count;
+	},500);
+
+	function subresize(){
+		// page width is calcuated different between ie, chrome, and ff
+		$('#header').width(Math.floor($(window).outerWidth()-(16*3))); //16px = 1em per side padding
+		var widesttab=0;
+		// make all the tabs on the config page the same width
+		$('#configtabs > ul ~ div').each(function(){
+			widesttab=($(this).width()>widesttab)?$(this).width():widesttab;
+		});
+		$('#configtabs > ul ~ div').each(function(){
+			$(this).width(widesttab);
+		});
+
+		if(typeof getCookie=='function' && getCookie("layout")=="Landscape"){
+			// edge case where a ridiculously long device type can expand the field selector out too far
+			var rdivwidth=$('div.right').outerWidth();
+			$('div.right fieldset').each(function(){
+				rdivwidth=($(this).outerWidth()>rdivwidth)?$(this).outerWidth():rdivwidth;
+			});
+			// offset for being centered
+			rdivwidth=(rdivwidth>495)?(rdivwidth-495)+rdivwidth:rdivwidth;
+		}else{
+			rdivwidth=0;
+		}
+
+		var pnw=$('#pandn').outerWidth(),hw=$('#header').outerWidth(),maindiv=$('div.main').outerWidth(),
+			sbw=$('#sidebar').outerWidth(),width,mw=$('div.left').outerWidth()+rdivwidth+20,
+			main,cw=$('.main > .center').outerWidth();
+		widesttab+=58;
+
+		// find widths
+		width=(cw>mw)?cw:mw;
+		main=(pnw>width)?pnw:width; // Find the largest width of possible content in maindiv
+		main+=12; // add in padding and borders
+		width=((main+sbw)>hw)?main+sbw:hw; // find the widest point of the page
+
+		// The math just isn't adding up across browsers and FUCK IE
+		if((main+sbw)<width){ // page is larger than content expand main to fit
+			$('#header').outerWidth(width);
+			$('div.main').outerWidth(width-sbw-4); 
+			$('div.page').outerWidth(width);
+		}else{ // page is smaller than content expand the page to fit
+			$('div.main').width(width-sbw-12); 
+			$('#header').width(width+4);
+			$('div.page').width(width+6);
+		}
+
+		// If the function MoveButtons is defined run it
+		if(typeof movebuttons=='function'){
+			movebuttons();
+		}
+	}
+}
+$(document).ready(function(){
+	resize();
+	// redraw the screen if the window size changes for some reason
+	$(window).resize(function(){
+		if(this.resizeTO){ clearTimeout(this.resizeTO);}
+		this.resizeTO=setTimeout(function(){
+			resize();
+		}, 500);
+	});
+});
+</script>
+</div>
 <div class="main">
 <div class="center"><div>
 
@@ -86,11 +169,11 @@ $(document).ready(function() {
   </div>
   <div>
     <div><label for="binddn">LDAP Bind DN:</label></div>
-    <div><input type="text" id="binddn" name="binddn" value=<?php echo "\"$binddn\""; ?>"></div>
+    <div><input type="text" id="binddn" name="binddn" value=<?php echo "\"$binddn\""; ?>></div>
   </div>
   <div>
     <div><label for="userid">UserID:</label></div>
-    <div><input type="text" name="userid" value=<?php echo "\"$userid\""; ?>"></div>
+    <div><input type="text" name="userid" value=<?php echo "\"$userid\""; ?>></div>
   </div>
   <div>
     <div><label for="password">LDAP Bind Password:</label></div>
