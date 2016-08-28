@@ -170,7 +170,7 @@
 						if(isset($currentdca["required"]) && $currentdca["required"] == "on") {
 							$requiredval = 1;
 						}
-						$status=($template->InsertCustomValue($dcaid, $insertval,$requiredval))?$status:__('Error updating device template custom values');
+						$status=($template->InsertCustomValue($dcaid, $insertval,$requiredval))?$status:__("Error updating device template custom values");
 					} elseif(array_key_exists($dcaid, $dcaList) && $dcaList[$dcaid]->AllDevices==1) {
 					/* since the enabled checkbox for attributes marked as "all devices" is disabled, it doesn't get passed in with the form,
 						so parse through and if the value or required status are different than the defaults, add a row for them as well. this
@@ -185,7 +185,7 @@
 							$requiredval = 1;
 						}
 						if(($insertval != $dcaList[$dcaid]->DefaultValue) || ($requiredval != $dcaList[$dcaid]->Required)) {
-							$status=($template->InsertCustomValue($dcaid, $insertval, $requiredval))?$status:__('Error updating device template custom values');
+							$status=($template->InsertCustomValue($dcaid, $insertval, $requiredval))?$status:__("Error updating device template custom values");
 						}
 					}
 				}
@@ -203,7 +203,7 @@
 			$sensortemplate->TempMultiplier=$_POST['TempMultiplier'];
 			$sensortemplate->HumidityMultiplier=$_POST['HumidityMultiplier'];
 			$sensortemplate->mUnits=$_POST['mUnits'];
-			$status=($sensortemplate->UpdateTemplate())?$status:__('Error updating cdu attributes');
+			$status=($sensortemplate->UpdateTemplate())?$status:__("Error updating cdu attributes");
 			return $status;
 		}
 
@@ -225,7 +225,7 @@
 			$cdutemplate->Voltage=$_POST["Voltage"];
 			$cdutemplate->Amperage=$_POST["Amperage"];
 			$cdutemplate->NumOutlets=$template->PSCount;
-			$status=($cdutemplate->UpdateTemplate())?$status:__('Error updating cdu attributes');
+			$status=($cdutemplate->UpdateTemplate())?$status:__("Error updating cdu attributes");
 
 			return $status;
 		}

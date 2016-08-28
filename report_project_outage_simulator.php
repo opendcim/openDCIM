@@ -594,7 +594,7 @@ if (!isset($_REQUEST['action'])){
 		$tags.= ' '.$tag;
 	if($tags != ''){
 		$row++;
-		$activeSheet->SetCellValue('A'.$row,__('Included Tags').':'.$tags);
+		$activeSheet->SetCellValue('A'.$row,__("Included Tags").':'.$tags);
 		$activeSheet->mergeCells('A'.$row.':D'.$row);
 	}
 
@@ -603,7 +603,7 @@ if (!isset($_REQUEST['action'])){
 		$tags.= ' '.$tag;
 	if($tags != ''){
 		$row++;
-		$activeSheet->SetCellValue('A'.$row,__('Excluded Tags').':'.$tags);
+		$activeSheet->SetCellValue('A'.$row,__("Excluded Tags").':'.$tags);
 		$activeSheet->mergeCells('A'.$row.':D'.$row);
 	}
 

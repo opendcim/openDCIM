@@ -20,7 +20,7 @@ global $dbh;
 $object=(isset($_POST['tooltip']))?intval($_POST['tooltip']):0;
 
 // Default tooltip 
-$tooltip=__('Error');
+$tooltip=__("Error");
 
 // Init Objects
 $cab=new Cabinet();
