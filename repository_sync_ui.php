@@ -156,12 +156,13 @@ function convertImgToBase64(url, imgobj) {
 	};
 }
 
+	var arr_localmanf=new Array();
+	var arr_localmodified=new Array();
+
 	$(document).ready(function(){
 		var select_manufacturerid=$('<select>').prop({'id':'slct_ManufacturerID'});
 		var div_results=$('<div>').prop({'id':'results'});
 		var tbl_results=$('<div>').addClass('table');
-		var arr_localmanf=new Array();
-		var arr_localmodified=new Array();
 
 		$.post('',{'getModifiedTimes':''},function(data){
 			arr_localmodified=data;
