@@ -435,6 +435,8 @@ function convertImgToBase64(url, imgobj) {
 			for(var key in arr_localmanf){
 				if(arr_localmanf[key] === row.data("globaldev").ManufacturerID){
 					row.data("globaldev").ManufacturerID=key;
+					// Prevent further matches
+					break;
 				}
 			}
 
