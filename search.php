@@ -74,12 +74,8 @@
 		$projList = $proj->Search();
 		$devList = array();
 		foreach( $projList as $p ) {
-			$tmpList = ProjectMembership::getProjectMembership( $p->ProjectID );
-			// this is going to throw incorrect search results.
-			// function listed above doesn't have an index option like the 
-			// rest of the device search functions.
-			// https://github.com/samilliken/openDCIM/commit/fb9f94f
-			$devList = array_merge( $devList, $tmpList );
+			$tmpList = ProjectMembership::getProjectMembership( $p->ProjectID, true );
+			$devList = $devList + $tmpList;
 		}
 		$resultcount=count($devList);
 		$title=__("Project Catalog search results for")." &quot;$searchTerm&quot;";
