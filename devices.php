@@ -645,7 +645,7 @@
 						case 'Copy':
 							$copy=true;
 							$parent=($dev->ParentDevice)?$dev->ParentDevice:null;
-							if(!$dev->CopyDevice($parent)){
+							if(!$dev->CopyDevice($parent,null,false)){
 								$copyerr=__("Device did not copy.  Error.");
 							}
 							break;

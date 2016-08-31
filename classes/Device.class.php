@@ -403,7 +403,7 @@ class Device {
 		return $this->DeviceID;
 	}
 
-	function CopyDevice($clonedparent=null,$newPosition=null) {
+	function CopyDevice($clonedparent=null,$newPosition=null,$smartName=true) {
 		/*
 		 * Need to make a copy of a device for the purpose of assigning a reservation during a move
 		 *
@@ -419,7 +419,7 @@ class Device {
 		// If this is a chassis device then check for children to cloned BEFORE we change the deviceid
 		if($this->DeviceType=="Chassis"){
 			// Examine the name to try to make a smart decision about the naming
-			if ( preg_match("/(.+?[\[?\(]?)(\d+)-(\d+)([\)\]])?/", $this->Label, $tmpName ) ) {
+			if ( $smartName == true && preg_match("/(.+?[\[?\(]?)(\d+)-(\d+)([\)\]])?/", $this->Label, $tmpName ) ) {
 				$numLen = strlen($tmpName[3]);
 				$this->Label = sprintf( "%s%0".$numLen."d-%0".$numLen."d%s", $tmpName[1], $tmpName[3]+1, $tmpName[3]+($tmpName[3]-$tmpName[2]+1), @$tmpName[4]);
 			} else {
@@ -477,7 +477,7 @@ class Device {
 					$olddev=new Device();
 					$olddev->DeviceID=$this->DeviceID;
 					$olddev->GetDevice();
-					if ( preg_match("/(.*)(.\d)+(\ *[\]|\)])?/", $olddev->Label, $tmpChild ) ) {
+					if ( $smartName == true && preg_match("/(.*)(.\d)+(\ *[\]|\)])?/", $olddev->Label, $tmpChild ) ) {
 						$numLen = strlen($tmpChild[2]);
 						$this->Label = sprintf( "%s%0".$numLen."d%s", $tmpChild[1], $tmpChild[2]+sizeof($children), @$tmpChild[3]);
 					}
@@ -505,7 +505,7 @@ class Device {
 			$olddev->GetDevice();
 
 			// Try to do some intelligent naming (sequence) if ending in a number
-			if ( preg_match("/(.*)(.\d)+(\ *[\]|\)])?/", $olddev->Label, $tmpName ) ) {
+			if ( $smartName == true && preg_match("/(.*)(.\d)+(\ *[\]|\)])?/", $olddev->Label, $tmpName ) ) {
 				$numLen = strlen($tmpName[2]);
 				$this->Label = sprintf( "%s%0".$numLen."d%s", $tmpName[1], $tmpName[2]+1, @$tmpName[3]);
 			}
@@ -519,7 +519,7 @@ class Device {
 		// If this is a chassis device and children are present clone them
 		if(isset($childList)){
 			foreach($childList as $child){
-				$child->CopyDevice($this->DeviceID);
+				$child->CopyDevice($this->DeviceID,null,$smartName);
 			}
 		}
 

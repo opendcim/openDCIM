@@ -1662,7 +1662,7 @@ $app->put( '/device/:deviceid/copyto/:newposition', function($deviceid, $newposi
 			$response['errorcode']=403;
 			$response['message']=__("Unauthorized");
 		}else{
-			if(!$dev->CopyDevice(null,$newposition)){
+			if(!$dev->CopyDevice(null,$newposition,true)){
 				$response['error']=true;
 				$response['errorcode']=404;
 				$response['message']=__("Device creation failed");
