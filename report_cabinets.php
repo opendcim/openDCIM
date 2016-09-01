@@ -166,7 +166,12 @@
                 $totalWeight, $totalWatts, $totalMoment, $zeroheight,
                 $noTemplFlag, $noOwnerFlag;
 
-        $currentHeight=$cabinet->CabinetHeight;
+        if ( $cabinet->U1Position == "Top" ) {
+            $currentHeight = 1;
+            array_reverse($devList);
+        } else {
+            $currentHeight=$cabinet->CabinetHeight;
+        }
 
         // Determine which label to put on the rack, if any
         $rs="";
@@ -192,7 +197,11 @@
 
             if ((!$device->HalfDepth || !$device->BackSide)&&!$rear || (!$device->HalfDepth || $device->BackSide)&&$rear){
                 $backside=($device->HalfDepth)?true:$backside;
-                $devTop=$device->Position + $device->Height - 1;
+                if ( $cabinet->U1Position == "Top" ) {
+                    $devTop=$device->Position - $device->Height + 1;
+                } else {
+                    $devTop=$device->Position + $device->Height - 1;
+                }
 
                 $templ->TemplateID=$device->TemplateID;
                 $templ->GetTemplateByID();
@@ -210,62 +219,122 @@
                 if($device->Reservation==true){
                     $reserved=" reserved";
                 }
-                if($devTop<$currentHeight && $currentHeight>0){
-                    for($i=$currentHeight;($i>$devTop);$i--){
+                if ( $cabinet->U1Position == "Top" ) {
+                    if($devTop>$currentHeight && $currentHeight>0){
+                        for($i=$currentHeight;$i<$devTop;$i++){
+                            $errclass=($i>$cabinet->CabinetHeight)?' error':'';
+                            if($errclass!=''){$heighterr="yup";}
+                            if($i==$currentHeight && $i<$cabinet->CabinetHeight){
+                                $blankHeight=$devTop-$currentHeight;
+                                if($devTop==-1){--$blankHeight;}
+                                $body.="\t\t<tr><td class=\"cabpos freespace$errclass\">$i</td><td class=\"freespace\" rowspan=$blankHeight></td></tr>\n";
+                            } else {
+                                $body.="\t\t<tr><td class=\"cabpos freespace$errclass\">$i</td></tr>\n";
+                                if($i==1){break;}
+                            }
+                        }
+                    }
+                    for($i=$devTop;$i<=$device->Position;$i++){
                         $errclass=($i>$cabinet->CabinetHeight)?' error':'';
                         if($errclass!=''){$heighterr="yup";}
-                        if($i==$currentHeight && $i>1){
-                            $blankHeight=$currentHeight-$devTop;
-                            if($devTop==-1){--$blankHeight;}
-                            $body.="\t\t<tr><td class=\"cabpos freespace$errclass\">$i</td><td class=\"freespace\" rowspan=$blankHeight>&nbsp;</td></tr>\n";
-                        } else {
-                            $body.="\t\t<tr><td class=\"cabpos freespace$errclass\">$i</td></tr>\n";
-                            if($i==1){break;}
-                        }
-                    }
-                }
-                for($i=$devTop;$i>=$device->Position;$i--){
-                    $errclass=($i>$cabinet->CabinetHeight)?' error':'';
-                    if($errclass!=''){$heighterr="yup";}
-                    if($i==$devTop){
-                        // If we're looking at the side of the rack don't give any details but show the
-                        // space as being occupied.
-                        $sideview="";
-                        if(!is_null($side)){
-                            $picture=$text="";
-                            $sideview=" blackout";
-                        }else{
-                            // Create the filler for the rack either text or a picture
-                            #$picture=(!$device->BackSide && !$rear || $device->BackSide && $rear)?$device->GetDevicePicture():$device->GetDevicePicture("rear");
-                            $picture="";
-                            $devlabel=$device->Label.(((!$device->BackSide && $rear || $device->BackSide && !$rear) && !$device->HalfDepth)?"(".__("Rear").")":"");
-                            $text="$highlight $devlabel";
-                        }
+                        if($i==$devTop){
+                            // If we're looking at the side of the rack don't give any details but show the
+                            // space as being occupied.
+                            $sideview="";
+                            if(!is_null($side)){
+                                $picture=$text="";
+                                $sideview=" blackout";
+                            }else{
+                                // Create the filler for the rack either text or a picture
+                                #$picture=(!$device->BackSide && !$rear || $device->BackSide && $rear)?$device->GetDevicePicture():$device->GetDevicePicture("rear");
+                                $picture="";
+                                $devlabel=$device->Label.(((!$device->BackSide && $rear || $device->BackSide && !$rear) && !$device->HalfDepth)?"(".__("Rear").")":"");
+                                $text="$highlight $devlabel";
+                            }
 
-                        // Put the device in the rack
-                        $body.="\t\t<tr><td class=\"cabpos$reserved dept$device->Owner$errclass\">$i</td><td class=\"dept$device->Owner$reserved$sideview\" rowspan=$device->Height data-deviceid=$device->DeviceID>";
-                        $body.=($picture)?$picture:$text;
-                        $body.="</td></tr>\n";
-                    }else{
-                        $body.="\t\t<tr><td class=\"cabpos$reserved dept$device->Owner$errclass\">$i</td></tr>\n";
+                            // Put the device in the rack
+                            $body.="\t\t<tr><td class=\"cabpos$reserved dept$device->Owner$errclass\">$i</td><td class=\"dept$device->Owner$reserved$sideview\" rowspan=$device->Height data-deviceid=$device->DeviceID>";
+                            $body.=($picture)?$picture:$text;
+                            $body.="</td></tr>\n";
+                        }else{
+                            $body.="\t\t<tr><td class=\"cabpos$reserved dept$device->Owner$errclass\">$i</td></tr>\n";
+                        }
+                    }
+                } else {
+                    if($devTop<$currentHeight && $currentHeight>0){
+                        for($i=$currentHeight;($i>$devTop);$i--){
+                            $errclass=($i>$cabinet->CabinetHeight)?' error':'';
+                            if($errclass!=''){$heighterr="yup";}
+                            if($i==$currentHeight && $i>1){
+                                $blankHeight=$currentHeight-$devTop;
+                                if($devTop==-1){--$blankHeight;}
+                                $body.="\t\t<tr><td class=\"cabpos freespace$errclass\">$i</td><td class=\"freespace\" rowspan=$blankHeight>&nbsp;</td></tr>\n";
+                            } else {
+                                $body.="\t\t<tr><td class=\"cabpos freespace$errclass\">$i</td></tr>\n";
+                                if($i==1){break;}
+                            }
+                        }
+                    }
+                    for($i=$devTop;$i>=$device->Position;$i--){
+                        $errclass=($i>$cabinet->CabinetHeight)?' error':'';
+                        if($errclass!=''){$heighterr="yup";}
+                        if($i==$devTop){
+                            // If we're looking at the side of the rack don't give any details but show the
+                            // space as being occupied.
+                            $sideview="";
+                            if(!is_null($side)){
+                                $picture=$text="";
+                                $sideview=" blackout";
+                            }else{
+                                // Create the filler for the rack either text or a picture
+                                #$picture=(!$device->BackSide && !$rear || $device->BackSide && $rear)?$device->GetDevicePicture():$device->GetDevicePicture("rear");
+                                $picture="";
+                                $devlabel=$device->Label.(((!$device->BackSide && $rear || $device->BackSide && !$rear) && !$device->HalfDepth)?"(".__("Rear").")":"");
+                                $text="$highlight $devlabel";
+                            }
+
+                            // Put the device in the rack
+                            $body.="\t\t<tr><td class=\"cabpos$reserved dept$device->Owner$errclass\">$i</td><td class=\"dept$device->Owner$reserved$sideview\" rowspan=$device->Height data-deviceid=$device->DeviceID>";
+                            $body.=($picture)?$picture:$text;
+                            $body.="</td></tr>\n";
+                        }else{
+                            $body.="\t\t<tr><td class=\"cabpos$reserved dept$device->Owner$errclass\">$i</td></tr>\n";
+                        }
                     }
                 }
-                $currentHeight=$device->Position - 1;
+                if ( $cabinet->U1Position == "Top" ) {
+                    $currentHeight=$device->Position + 1;
+                } else {
+                    $currentHeight=$device->Position - 1;
+                }
             }elseif(!$rear){
                 $backside=true;
             }
         }
 
         // Fill in to the bottom
-        for($i=$currentHeight;$i>0;$i--){
-            if($i==$currentHeight){
-                $blankHeight=$currentHeight;
+        if ( $cabinet->U1Position == "Top" ) {
+            for ( $i=$currentHeight; $i<$cabinet->CabinetHeight+1; $i++ ) {
+                if($i==$currentHeight){
+                    $blankHeight=$cabinet->CabinetHeight - $currentHeight + 1;
 
-                $body.="\t\t<tr><td class=\"cabpos freespace\">$i</td><td class=\"freespace\" rowspan=$blankHeight>&nbsp;</td></tr>\n";
-            }else{
-                $body.="\t\t<tr><td class=\"cabpos freespace\">$i</td></tr>\n";
+                    $body.="\t\t<tr><td class=\"cabpos freespace\">$i</td><td class=\"freespace\" rowspan=$blankHeight>&nbsp;</td></tr>\n";
+                }else{
+                    $body.="\t\t<tr><td class=\"cabpos freespace\">$i</td></tr>\n";
+                }                
+            }
+        } else {
+            for($i=$currentHeight;$i>0;$i--){
+                if($i==$currentHeight){
+                    $blankHeight=$currentHeight;
+
+                    $body.="\t\t<tr><td class=\"cabpos freespace\">$i</td><td class=\"freespace\" rowspan=$blankHeight>&nbsp;</td></tr>\n";
+                }else{
+                    $body.="\t\t<tr><td class=\"cabpos freespace\">$i</td></tr>\n";
+                }
             }
         }
+
         $body.="</tbody></table>";
         reset($devList);
     }
