@@ -19,7 +19,12 @@
 
 		while($i>0){
 			$i--;
-			$u=$dev->Position+$i;
+			if($cabarray[0]=='Bottom'){
+				$u=$dev->Position+$i;
+			}else{
+				// upside down racks need to go the other direction
+				$u=$dev->Position-$i;
+			}
 			//constraight the rack usage to just what is a valid rack position
 			if($u<=max(array_keys($cabarray)) && $u>=1){
 				$cabarray[$u]=true;
@@ -35,6 +40,9 @@
 		$i--;
 	}
 
+	// Add in the rack orientation
+	$cabinetuse[0]=$cab->U1Position;
+ 
 	$dev->BackSide=(isset($_GET['BackSide']) && $_GET['BackSide']=='true')?true:false;
 	$dev->HalfDepth=(isset($_GET['HalfDepth']) && $_GET['HalfDepth']=='true')?true:false;
 	
@@ -62,8 +70,6 @@
 		}
 	}
 
-	$cabinetuse[0]=$cab->U1Position;
- 
 	// Reverse sort by rack position
 	krsort($cabinetuse);
 	header('Content-Type: application/json');
