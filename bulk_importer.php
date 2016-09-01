@@ -157,7 +157,7 @@
         foreach( $fields as $fname ) {
           if ( $_REQUEST[$fname] != 0 ) {
             $addr = chr( 64 + $_REQUEST[$fname]);
-            $row[$fname] = $sheet->getCell( $addr . $n )->getValue();
+            $row[$fname] = sanitize($sheet->getCell( $addr . $n )->getValue());
           } else {
             $row[$fname] = "";
           }
@@ -268,7 +268,7 @@
           foreach( $cFields as $fname ) {
             if ( $_REQUEST[$fname] != 0 ) {
               $addr = chr( 64 + $_REQUEST[$fname]);
-              $row[$fname] = $sheet->getCell( $addr . $n )->getValue();
+              $row[$fname] = sanitize($sheet->getCell( $addr . $n )->getValue());
             } else {
               $row[$fname] = "";
             }
@@ -349,7 +349,7 @@
       foreach( $fields as $fname ) {
         if ( $_REQUEST[$fname] != 0 ) {
           $addr = chr( 64 + $_REQUEST[$fname]);
-          $row[$fname] = $sheet->getCell( $addr . $n )->getValue();
+          $row[$fname] = sanitize($sheet->getCell( $addr . $n )->getValue());
         } else {
           $row[$fname] = "";
         }
