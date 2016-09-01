@@ -160,7 +160,7 @@
       foreach( $fields as $fname ) {
         if ( $_REQUEST[$fname] != 0 ) {
           $addr = chr( 64 + $_REQUEST[$fname]);
-          $row[$fname] = $sheet->getCell( $addr . $n )->getValue();
+          $row[$fname] = sanitize($sheet->getCell( $addr . $n )->getValue());
         } else {
           $row[$fname] = "";
         }
@@ -292,7 +292,7 @@
       // Load up the $row[] array with the values according to the mapping supplied by the user
       foreach( $fields as $fname ) {
         $addr = chr( 64 + $_REQUEST[$fname]);
-        $row[$fname] = $sheet->getCell( $addr . $n )->getValue();
+        $row[$fname] = sanitize($sheet->getCell( $addr . $n )->getValue());
       }
 
       switch( $_REQUEST["KeyField"] ) {
