@@ -52,6 +52,13 @@
 		$panel->getPanel();
 		$pdu->PanelID = $panel->PanelID;
 		$pduList=$pdu->GetPDUbyPanel();
+
+		$estLoad = 0;
+		foreach ($pduList as $p) {
+			$estLoad += PowerDistribution::calculateEstimatedLoad($p->PDUID);
+		}
+
+		$estLoad = sprintf( "%01.2F", $estLoad / 1000 );
 		
 		$panelLoad = sprintf( "%01.2F", $panel->GetPanelLoad() / 1000 );
 		$panelCap = $panel->PanelVoltage * $panel->MainBreakerSize * sqrt(3);
@@ -81,11 +88,15 @@
 		$mtarray=implode(",",explode(" ",$dataMajorTicks));
 		$hilights = sprintf( "{from: 0, to: %.0${decimalplaces}lf, color: '#eee'}, {from: %.0${decimalplaces}lf, to: %.0${decimalplaces}lf, color: '#fffacd'}, {from: %.0${decimalplaces}lf, to: %.0${decimalplaces}lf, color: '#eaa'}", $panelCap / 1000 * .6, $panelCap / 1000 * .6, $panelCap / 1000 * .8, $panelCap / 1000 * .8, $panelCap / 1000);
 		// Generate JS for load display
+
+		$inheritTitle = __("Inherited Load");
+		$estimateTitle = __("Estimated Load");
+		
 		$script="
 	var gauge=new Gauge({
 		renderTo: 'power-gauge',
 		type: 'canv-gauge',
-		title: 'Load',
+		title: '$inheritTitle',
 		minValue: '0',
 		maxValue: '$dataMaxValue',
 		majorTicks: [ $mtarray ],
@@ -107,6 +118,33 @@
 		});
 	gauge.draw().setValue($panelLoad);
 ";
+
+		$script="
+	var gauge=new Gauge({
+		renderTo: 'power-estimate',
+		type: 'canv-gauge',
+		title: '$estimateTitle',
+		minValue: '0',
+		maxValue: '$dataMaxValue',
+		majorTicks: [ $mtarray ],
+		minorTicks: '2',
+		strokeTicks: false,
+		units: 'kW',
+		valueFormat: { int : 3, dec : 2 },
+		glow: false,
+		animation: {
+			delay: 10,
+			duration: 200,
+			fn: 'bounce'
+			},
+		colors: {
+			needle: {start: '#f00', end: '#00f' },
+			title: '#00f',
+			},
+		highlights: [ $hilights ],
+		});
+	gauge.draw().setValue($estLoad);
+	";
 /*
   Example for updating the gauge later.  This will start an endless loop that will update
   the gauge once a second.
@@ -254,6 +292,7 @@ echo '	</select></div>
 	// Also show the power gauge
 	if($panel->PanelID >0){
 		echo '<div><canvas id="power-gauge" width="200" height="200"></canvas></div>';
+		echo '<div><canvas id="power-estimate" width="200" height="200"></canvas></div>';
 	
 		$panelSchedule=$panel->getPanelSchedule();
 		print "<center><h2>".__("Panel Schedule")."</h2></center>\n<table>";
