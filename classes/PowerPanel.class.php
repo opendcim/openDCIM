@@ -134,8 +134,6 @@ class PowerPanel {
 			$watts += PowerPanel::getInheritedLoad( $pnl["PanelID"] );
 		}
 
-		error_log( "PowerPanel::getInheritedLoad($PanelID)=$watts");
-
 		return $watts;
 	}
 
