@@ -87,14 +87,19 @@
 
 		$mtarray=implode(",",explode(" ",$dataMajorTicks));
 		$hilights = sprintf( "{from: 0, to: %.0${decimalplaces}lf, color: '#eee'}, {from: %.0${decimalplaces}lf, to: %.0${decimalplaces}lf, color: '#fffacd'}, {from: %.0${decimalplaces}lf, to: %.0${decimalplaces}lf, color: '#eaa'}", $panelCap / 1000 * .6, $panelCap / 1000 * .6, $panelCap / 1000 * .8, $panelCap / 1000 * .8, $panelCap / 1000);
+
+		// For future
+		$msrLoad = 0;
+		
 		// Generate JS for load display
 
-		$inheritTitle = __("Inherited Load");
+		$inheritTitle = __("Inherited Meter Load");
 		$estimateTitle = __("Estimated Load");
+		$measuredTitle = __("Panel Meter Load");
 		
 		$script="
-	var gauge=new Gauge({
-		renderTo: 'power-gauge',
+	var pwrGauge=new Gauge({
+		renderTo: 'power-inherited',
 		type: 'canv-gauge',
 		title: '$inheritTitle',
 		minValue: '0',
@@ -116,11 +121,9 @@
 			},
 		highlights: [ $hilights ],
 		});
-	gauge.draw().setValue($panelLoad);
-";
+	pwrGauge.draw().setValue($panelLoad);
 
-		$script="
-	var gauge=new Gauge({
+	var estGauge=new Gauge({
 		renderTo: 'power-estimate',
 		type: 'canv-gauge',
 		title: '$estimateTitle',
@@ -143,8 +146,35 @@
 			},
 		highlights: [ $hilights ],
 		});
-	gauge.draw().setValue($estLoad);
+	estGauge.draw().setValue($estLoad);
+
+	var msrGauge=new Gauge({
+		renderTo: 'power-measured',
+		type: 'canv-gauge',
+		title: '$measuredTitle',
+		minValue: '0',
+		maxValue: '$dataMaxValue',
+		majorTicks: [ $mtarray ],
+		minorTicks: '2',
+		strokeTicks: false,
+		units: 'kW',
+		valueFormat: { int : 3, dec : 2 },
+		glow: false,
+		animation: {
+			delay: 10,
+			duration: 200,
+			fn: 'bounce'
+			},
+		colors: {
+			needle: {start: '#f00', end: '#00f' },
+			title: '#00f',
+			},
+		highlights: [ $hilights ],
+		});
+	msrGauge.draw().setValue($msrLoad);
 	";
+
+
 /*
   Example for updating the gauge later.  This will start an endless loop that will update
   the gauge once a second.
@@ -291,7 +321,8 @@ echo '	</select></div>
 	// Build a panel schedule if this is not a new panel being created
 	// Also show the power gauge
 	if($panel->PanelID >0){
-		echo '<div><canvas id="power-gauge" width="200" height="200"></canvas></div>';
+		echo '<div><canvas id="power-measured" width="200" height="200"></canvas></div>';
+		echo '<div><canvas id="power-inherited" width="200" height="200"></canvas></div>';
 		echo '<div><canvas id="power-estimate" width="200" height="200"></canvas></div>';
 	
 		$panelSchedule=$panel->getPanelSchedule();
