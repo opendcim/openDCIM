@@ -53,14 +53,6 @@
 		$pdu->PanelID = $panel->PanelID;
 		$pduList=$pdu->GetPDUbyPanel();
 
-		$estLoad = 0;
-		foreach ($pduList as $p) {
-			$estLoad += PowerDistribution::calculateEstimatedLoad($p->PDUID);
-		}
-
-		$estLoad = sprintf( "%01.2F", $estLoad / 1000 );
-		
-		$panelLoad = sprintf( "%01.2F", $panel->GetPanelLoad() / 1000 );
 		$panelCap = $panel->PanelVoltage * $panel->MainBreakerSize * sqrt(3);
 		
 		$decimalplaces=0;
@@ -87,10 +79,11 @@
 
 		$mtarray=implode(",",explode(" ",$dataMajorTicks));
 		$hilights = sprintf( "{from: 0, to: %.0${decimalplaces}lf, color: '#eee'}, {from: %.0${decimalplaces}lf, to: %.0${decimalplaces}lf, color: '#fffacd'}, {from: %.0${decimalplaces}lf, to: %.0${decimalplaces}lf, color: '#eaa'}", $panelCap / 1000 * .6, $panelCap / 1000 * .6, $panelCap / 1000 * .8, $panelCap / 1000 * .8, $panelCap / 1000);
-
-		// For future
-		$msrLoad = 0;
 		
+		$panelLoad = sprintf( "%.0${decimalplaces}lf", PowerPanel::getInheritedLoad($panel->PanelID) / 1000 );
+		$msrLoad = sprintf( "%.0${decimalplaces}lf", $panel->getPanelLoad() / 1000 );
+		$estLoad = sprintf( "%.0${decimalplaces}lf", PowerPanel::getEstimatedLoad($panel->PanelID) / 1000 );
+
 		// Generate JS for load display
 
 		$inheritTitle = __("Inherited Meter Load");

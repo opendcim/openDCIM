@@ -117,6 +117,47 @@ class PowerPanel {
 		}
 	}
 
+	static function getInheritedLoad( $PanelID ) {
+		global $dbh;
+
+		// Get the combination of all direct branch circuit meters first, then recursively get all of the subpanels
+		// This gets the direct branch circuits with metered power strips (if any)
+		$watts = 0;
+
+		$sql = "select sum(Wattage) from fac_PDUStats where PDUID in (select PDUID from fac_PowerDistribution where PanelID=" . intval($PanelID) . ")";
+		// Use intval since an empty set will return a NULL for the sum
+		$watts = intval($dbh->query( $sql )->fetchColumn());
+		
+		// Ok, now repeat for the subpanels
+		$sql = "select PanelID from fac_PowerPanel where ParentPanelID=" . intval( $PanelID);
+		foreach ( $dbh->query( $sql ) as $pnl) {
+			$watts += PowerPanel::getInheritedLoad( $pnl["PanelID"] );
+		}
+
+		error_log( "PowerPanel::getInheritedLoad($PanelID)=$watts");
+
+		return $watts;
+	}
+
+	static function getEstimatedLoad( $PanelID ) {
+		global $dbh;
+		$watts = 0;
+
+		// Same as with the InheritedLoad - get all the power strips off of the requested panel, then all of the subpanels
+		$sql = "select PDUID from fac_PowerDistribution where PanelID=" . intval( $PanelID );
+		foreach( $dbh->query( $sql ) as $pdu ) {
+			$watts += PowerDistribution::calculateEstimatedLoad( $pdu["PDUID"] );
+		}
+
+		// Now get the subpanels
+		$sql = "select PanelID from fac_PowerPanel where ParentPanelID=" . intval( $PanelID );
+		foreach( $dbh->query( $sql ) as $pnl ) {
+			$watts += PowerPanel::getEstimatedLoad( $pnl["PanelID"] );
+		}
+
+		return $watts;
+	}
+
 	function getPanelList() {
 		// Make this a clean list because it will be confusing if it's filtered
 		$clean=new PowerPanel();
