@@ -92,6 +92,8 @@
 		
 		$script="
 	var pwrGauge=new Gauge({
+		height: 175,
+		width: 175,
 		renderTo: 'power-inherited',
 		type: 'canv-gauge',
 		title: '$inheritTitle',
@@ -117,6 +119,8 @@
 	pwrGauge.draw().setValue($panelLoad);
 
 	var estGauge=new Gauge({
+		height: 175,
+		width: 175,
 		renderTo: 'power-estimate',
 		type: 'canv-gauge',
 		title: '$estimateTitle',
@@ -142,6 +146,8 @@
 	estGauge.draw().setValue($estLoad);
 
 	var msrGauge=new Gauge({
+		height: 175,
+		width: 175,
 		renderTo: 'power-measured',
 		type: 'canv-gauge',
 		title: '$measuredTitle',
@@ -314,9 +320,12 @@ echo '	</select></div>
 	// Build a panel schedule if this is not a new panel being created
 	// Also show the power gauge
 	if($panel->PanelID >0){
-		echo '<div><canvas id="power-measured" width="200" height="200"></canvas></div>';
-		echo '<div><canvas id="power-inherited" width="200" height="200"></canvas></div>';
-		echo '<div><canvas id="power-estimate" width="200" height="200"></canvas></div>';
+		echo '
+<div class="pwr_gauge"><canvas id="power-measured" width="150" height="150"></canvas></div>
+<div class="pwr_gauge"><canvas id="power-inherited" width="150" height="150"></canvas></div>
+<div class="pwr_gauge"><canvas id="power-estimate" width="150" height="150"></canvas></div>
+
+';
 	
 		$panelSchedule=$panel->getPanelSchedule();
 		print "<center><h2>".__("Panel Schedule")."</h2></center>\n<table>";

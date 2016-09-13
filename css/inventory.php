@@ -437,6 +437,10 @@ div.error {margin-top: 2em;margin-bottom: 2em;border: 1px dotted gray;}
 .error span {display: block;margin-left: 1.5em;}
 #pdutest {display: none;}
 .panelmgr .main form, .panelmgr .main form ~ div { display: inline-block; vertical-align: top;}
+.panelmgr .main .center > div { margin-right: 200px; }
+.pwr_gauge { position: absolute; right: 50px; top: 0px; }
+.pwr_gauge + .pwr_gauge { top: 200px; }
+.pwr_gauge + .pwr_gauge + .pwr_gauge { top: 400px; }
 
 /* Department Administration */
 #groupadmin {
