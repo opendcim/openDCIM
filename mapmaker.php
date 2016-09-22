@@ -64,7 +64,16 @@
     <?php if(isset($ie8fix)){echo $ie8fix;} ?>
   <![endif]-->
   <?php if(isset($screenadjustment)){echo $screenadjustment;} ?>
-  
+ 
+<script type="text/javascript">
+	$(document).keydown(function(event){ 
+		if (event.ctrlKey && event.keyCode == 83) {
+			$('input[name=action]').trigger('click');
+			return false;
+		}
+	});
+</script>
+ 
 </head>
 <body>
 <?php include( 'header.inc.php' ); ?>
