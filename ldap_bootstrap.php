@@ -28,11 +28,14 @@
 
       if ( ! $ldapBind ) {
         $content .= "<h3>Login failed.  Incorrect username, password, rights or the server is not reachable.</h3>";
-	error_log( "Unable to connect to LDAP Server: " . $_REQUEST['ldapserver']);
+	error_log( "Unable to connect or authenticate to LDAP Server: " . $_REQUEST['ldapserver']);
       } else {
         $_SESSION['userid'] = $_REQUEST['userid'];
 	$_SESSION['ldapserver'] = $_REQUEST['ldapserver'];
-	$_SESSION['ldapbinddn'] = $_REQUEST['binddn'];
+	
+	if ( AUTHENTICATION == "LDAP" ) {
+		$_SESSION['ldapbinddn'] = $_REQUEST['binddn'];
+	}
 
 	// Try to be helpful during install phase and take a guess at the base DN value
 	// based on the LDAP server name. The user can always change this if we get it wrong.
