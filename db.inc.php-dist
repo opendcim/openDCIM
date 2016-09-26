@@ -47,6 +47,11 @@
 		Don't even try to enable this unless you know how to query
 		your LDAP server.  */
 		// define( "AUTHENTICATION", "LDAP" );
+
+	/*	Active Directory authentication and authorization. Even though AD is based on LDAP,
+		the LDAP authentication code doesn't always play nicely with AD, especially with more
+		complex environments (e.g. multiple domains).  */
+		// define( "AUTHENTICATION", "AD" );
 	}
 
 	require_once( 'config.inc.php');
