@@ -143,7 +143,7 @@ function ArraySearchRecursive($Needle,$Haystack,$NeedleKey="",$Strict=false,$Pat
 	}
 	if(AUTHENTICATION=="Apache"){
 		$person->UserID=$_SERVER['REMOTE_USER'];
-	}elseif(AUTHENTICATION=="Oauth" || AUTHENTICATION=="LDAP"){
+	}else{
 		$person->UserID=$_SESSION['userid'];
 	}
 	/* Check the table to see if there are any users
@@ -1288,14 +1288,31 @@ if(isset($results)){
 		Config::UpdateParameter( 'LDAPRackRequest', $_REQUEST['LDAPRackRequest']);
 		Config::UpdateParameter( 'LDAPRackAdmin', $_REQUEST['LDAPRackAdmin']);
 		Config::UpdateParameter( 'LDAPContactAdmin', $_REQUEST['LDAPContactAdmin']);
+		Config::UpdateParameter( 'LDAPBulkOperations', $_REQUEST['LDAPBulkOperations']);
 		Config::UpdateParameter( 'LDAPSiteAdmin', $_REQUEST['LDAPSiteAdmin']);
+
+		if ( AUTHENTICATION == "AD") {
+			Config::UpdateParameter( 'LDAPUserSearch', $_REQUEST['LDAPUserSearch']);
+		}
+
+		$_SESSION['ldapserver'] = $_REQUEST['LDAPServer'];
+		$_SESSION['ldapbasedn'] = $_REQUEST['LDAPBaseDN'];
+		$_SESSION['ldapbinddn'] = $_REQUEST['LDAPBindDN'];
+		$_SESSION['ldapauthset'] = true;
 	}
 
 	
 //Installation Complete
-	if($nodept=="" && $nodc=="" && $nocab==""){ // All three primary sections have had at least one item created
-		//enable the finish menu option
-		$complete=true;
+	if ( AUTHENTICATION == "LDAP" || AUTHENTICATION == "AD" ) {
+		if($nodept=="" && $nodc=="" && $nocab=="" && isset($_SESSION['ldapauthset'])){ // All four primary sections have been completed
+			//enable the finish menu option
+			$complete=true;
+		}
+	} else {
+		if($nodept=="" && $nodc=="" && $nocab==""){ // All three primary sections have had at least one item created
+			//enable the finish menu option
+			$complete=true;
+		}
 	}
 
 ?>
@@ -1327,7 +1344,7 @@ if(isset($results)){
   </script>
 </head>
 <body>
-<div id="header"></div>
+<?php include( 'header.inc.php' ); ?>
 <?php
 
 	if((!isset($_GET["cab"])&&!isset($_GET["dc"])&&!isset($_GET["ldap"])&&!isset($_GET["complete"]))||isset($_GET["dept"])){
@@ -1341,6 +1358,7 @@ if(isset($results)){
 <a href="?dc&preflight-ok"><li>Data Centers</li></a>
 <a href="?cab&preflight-ok"><li>Cabinets</li></a>
 <?php if ( AUTHENTICATION == "LDAP" ) echo '<a href="?ldap&preflight-ok"><li>LDAP</li></a>'; ?>
+<?php if ( AUTHENTICATION == "AD" ) echo '<a href="?ldap&preflight-ok"><li>AD</li></a>'; ?>
 <?php if(isset($complete)){ echo '<a href="?complete&preflight-ok"><li>Complete</li></a>'; }?>
 </ul>
 </div>
@@ -1419,6 +1437,7 @@ if(isset($results)){
 <a><li class="active">Data Centers</li></a>
 <a href="?cab&preflight-ok"><li>Cabinets</li></a>
 <?php if ( AUTHENTICATION == "LDAP" ) echo '<a href="?ldap&preflight-ok"><li>LDAP</li></a>'; ?>
+<?php if ( AUTHENTICATION == "AD" ) echo '<a href="?ldap&preflight-ok"><li>AD</li></a>'; ?>
 <?php if(isset($complete)){ echo '<a href="?complete&preflight-ok"><li>Complete</li></a>'; }?>
 </ul>
 </div>
@@ -1511,6 +1530,7 @@ if(isset($results)){
 <a href="?dc&preflight-ok"><li>Data Centers</li></a>
 <a><li class="active">Cabinets</li></a>
 <?php if ( AUTHENTICATION == "LDAP" ) echo '<a href="?ldap&preflight-ok"><li>LDAP</li></a>'; ?>
+<?php if ( AUTHENTICATION == "AD" ) echo '<a href="?ldap&preflight-ok"><li>AD</li></a>'; ?>
 <?php if(isset($complete)){ echo '<a href="?complete&preflight-ok"><li>Complete</li></a>'; }?>
 </ul>
 </div>
@@ -1610,38 +1630,66 @@ echo '
 <a href="?dept&preflight-ok"><li>Departments</li></a>
 <a href="?dc&preflight-ok"><li>Data Centers</li></a>
 <a href="?cab&preflight-ok"><li>Cabinets</li></a>
-<a><li class="active">LDAP</li></a>
+<?php if ( AUTHENTICATION == "LDAP" ) echo '<a><li class="active">LDAP</li></a>'; ?>
+<?php if ( AUTHENTICATION == "AD" ) echo '<a><li class="active">AD</li></a>'; ?>
 <?php if(isset($complete)){ echo '<a href="?complete&preflight-ok"><li>Complete</li></a>'; }?>
 </ul>
 </div>
 <div class='main'>
 <h2><?php echo $config->ParameterArray['OrgName']; ?></h2>
-<h3>Installation Complete</h3>
-<?php echo $nodccab; ?>
+<h3>Authentication and Authorization</h3>
+<?php
+if (!isset($_SESSION['ldapauthset'])) {
+	echo '<h3>Configure and check settings, then press Set.</h3>';
+}
+?>
 <div class='center'><div>
 <form action="<?php echo $_SERVER['PHP_SELF']; ?>?ldap&preflight-ok" method="POST">
+<div id="ldap">
 <?php
-echo '<div id="ldap">
-	<h3>',__("LDAP Authentication and Authorization Configuration"),'</h3>
+if ( AUTHENTICATION == "LDAP" ) {
+	echo '<h3>',__("LDAP Server Configuration"),'</h3>
 	<div class="table">
 		<div>
 			<div><label for="LDAPServer">',__("LDAP Server URI"),'</label></div>
-			<div><input type="text" size="40" defaultvalue="',$config->defaults["LDAPServer"],'" name="LDAPServer" value="',$config->ParameterArray['LDAPServer'],'"></div>
+			<div><input type="text" size="40" defaultvalue="',$config->defaults["LDAPServer"],'" name="LDAPServer" value="',$_SESSION['ldapserver'],'"></div>
 		</div>
 		<div>
 			<div><label for="LDAPBaseDN">',__("Base DN"),'</label></div>
-			<div><input type="text" size="40" defaultvalue="',$config->defaults["LDAPBaseDN"],'" name="LDAPBaseDN" value="',$config->ParameterArray["LDAPBaseDN"],'"></div>
+			<div><input type="text" size="40" defaultvalue="',$config->defaults["LDAPBaseDN"],'" name="LDAPBaseDN" value="',$_SESSION['ldapbasedn'],'"></div>
 		</div>
 		<div>
 			<div><label for="LDAPBindDN">',__("Bind DN"),'</label></div>
-			<div><input type="text" size="40" defaultvalue="',$config->defaults["LDAPBindDN"],'" name="LDAPBindDN" value="',$config->ParameterArray["LDAPBindDN"],'"></div>
+			<div><input type="text" size="40" defaultvalue="',$config->defaults["LDAPBindDN"],'" name="LDAPBindDN" value="',$_SESSION["ldapbinddn"],'"></div>
 		</div>
 		<div>
 			<div><label for="LDAPSessionExpiration">',__("LDAP Session Expiration (Seconds)"),'</label></div>
 			<div><input type="text" defaultvalue="',$config->defaults["LDAPSessionExpiration"],'" name="LDAPSessionExpiration" value="',$config->ParameterArray["LDAPSessionExpiration"],'"></div>
 		</div>
+	</div>';
+} elseif ( AUTHENTICATION == "AD" ) {
+	echo '<h3>',__("AD Server Configuration"),'</h3>
+	<div class="table">
+		<div>
+			<div><label for="LDAPServer">',__("AD Global Catalog Server"),'</label></div>
+			<div><input type="text" size="40" defaultvalue="',$config->defaults["LDAPServer"],'" name="LDAPServer" value="',$_SESSION['ldapserver'],'"></div>
+		</div>
+		<div>
+			<div><label for="LDAPBaseDN">',__("Base DN"),'</label></div>
+			<div><input type="text" size="40" defaultvalue="',$config->defaults["LDAPBaseDN"],'" name="LDAPBaseDN" value="',$_SESSION["ldapbasedn"],'"></div>
+		</div>
+		<div>
+			<div><label for="LDAPSessionExpiration">',__("AD Session Expiration (Seconds)"),'</label></div>
+			<div><input type="text" defaultvalue="',$config->defaults["LDAPSessionExpiration"],'" name="LDAPSessionExpiration" value="',$config->ParameterArray["LDAPSessionExpiration"],'"></div>
+		</div>
 	</div>
-	<h3>',__("Group Distinguished Names"),'</h3>
+	<input type="hidden" name="LDAPBindDN" value="%userid%">
+	<input type="hidden" name="LDAPUserSearch" value="(|(userPrincipalName=%userid%))">';
+}
+?>
+</div>
+<?php
+echo '<h3>',__("Group Distinguished Names"),'</h3>
 	<div class="table">
 		<div>
 			<div><label for="LDAPSiteAccess">',__("Site Access"),'</label></div>
@@ -1676,6 +1724,10 @@ echo '<div id="ldap">
 			<div><input type="text" size="70" defaultvalue="',$config->defaults["LDAPContactAdmin"],'" name="LDAPContactAdmin" value="',$config->ParameterArray["LDAPContactAdmin"],'"></div>
 		</div>
 		<div>
+			<div><label for="LDAPBulkOperations">',__("Bulk Operations"),'</label></div>
+			<div><input type="text" size="70" defaultvalue="',$config->defaults["LDAPBulkOperations"],'" name="LDAPBulkOperations" value="',$config->ParameterArray["LDAPBulkOperations"],'"></div>
+		</div>
+		<div>
 			<div><label for="LDAPSiteAdmin">',__("Site Admin"),'</label></div>
 			<div><input type="text" size="70" defaultvalue="',$config->defaults["LDAPSiteAdmin"],'" name="LDAPSiteAdmin" value="',$config->ParameterArray["LDAPSiteAdmin"],'"></div>
 		</div>
@@ -1686,8 +1738,6 @@ echo '<div id="ldap">
 		</div>
 	</div>
 ';
-
-
 	}elseif(isset($_GET["complete"])){
 ?>
 <div class='page installer'>
@@ -1697,6 +1747,7 @@ echo '<div id="ldap">
 <a href="?dc&preflight-ok"><li>Data Centers</li></a>
 <a href="?cab&preflight-ok"><li>Cabinets</li></a>
 <?php if ( AUTHENTICATION == "LDAP" ) echo '<a href="?ldap&preflight-ok"><li>LDAP</li></a>'; ?>
+<?php if ( AUTHENTICATION == "AD" ) echo '<a href="?ldap&preflight-ok"><li>AD</li></a>'; ?>
 <?php if(isset($complete)){ echo '<a><li class="active">Complete</li></a>'; }?>
 </ul>
 </div>
