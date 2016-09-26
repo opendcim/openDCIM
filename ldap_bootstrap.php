@@ -31,6 +31,14 @@
 	error_log( "Unable to connect to LDAP Server: " . $_REQUEST['ldapserver']);
       } else {
         $_SESSION['userid'] = $_REQUEST['userid'];
+	$_SESSION['ldapserver'] = $_REQUEST['ldapserver'];
+	$_SESSION['ldapbinddn'] = $_REQUEST['binddn'];
+
+	// Try to be helpful during install phase and take a guess at the base DN value
+	// based on the LDAP server name. The user can always change this if we get it wrong.
+	if ( preg_match('/\w+\.([\w.]+)/', $_REQUEST['ldapserver'], $matches) ) {
+		$_SESSION['ldapbasedn'] = "dc=" . str_replace('.', ',dc=', $matches[1]);
+	}
 
         session_commit();
         header('Location: install.php');
