@@ -149,7 +149,8 @@
 					$color->ColorID = $devPort->ColorID;
 					$color->GetCode();
 					
-					if (in_array(''.$devPort->MediaID,$mediaIDList)){
+					// Always print unspecified media types for those who don't want to specify them
+					if ($devPort->MediaID==0 || in_array(''.$devPort->MediaID,$mediaIDList)){
 						$mediaType->MediaID = $devPort->MediaID;
 						$mediaType->GetType();
 
