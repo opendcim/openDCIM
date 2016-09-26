@@ -5,7 +5,7 @@
 	// we are being invoked from the command line
 
 	if ( php_sapi_name() != "cli" ) {
-	      session_start();
+	      @session_start();
 	}
 
 	// Set to true if you want to skip the installer check
