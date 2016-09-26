@@ -2,51 +2,57 @@
   // Very important since we are using session variables to pass into install.php so that it knows we at least have some level of auth set up
   session_start();
 
+  require_once("db.inc.php");
+
   //	Uncomment these if you need/want to set a title in the header
-	$header="openDCIM LDAP Setup";
+	$header="openDCIM LDAP/AD Authentication Bootstrap";
   $content = "";
 
   if ( isset($_REQUEST['ldapserver'])) {
     $ldapConn = ldap_connect( $_REQUEST['ldapserver'] );
-    if ( ! $ldapConn ) {
-      $content = "<h3>Fatal error.  The LDAP server is not reachable.  Please try again later, or contact your system administrator to check the configuration.</h3>";
-      error_log( "Unable to connect to LDAP Server: " . $_REQUEST['ldapserver']);
+    if ( AUTHENTICATION == "AD" && ( empty($_REQUEST['password']) || empty($_REQUEST['userid']) ) ) {
+      // Password should not be empty when using AD authentication, otherwise
+      // we bind anonymously which kind of defeats the purpose of authenticating...
+      $content .= "<h3>A username and password are required.</h3>";
     } else {
       ldap_set_option( $ldapConn, LDAP_OPT_PROTOCOL_VERSION, 3 );
 
-      $ldapDN = $_REQUEST['binddn'];
+      if ( AUTHENTICATION == "AD" ) {
+	      $ldapDN = $_REQUEST['userid'];
+      } else {
+	      $ldapDN = $_REQUEST['binddn'];
+      }
       $ldapPassword = $_REQUEST['password'];
 
       $ldapBind = ldap_bind( $ldapConn, $ldapDN, $ldapPassword );
 
       if ( ! $ldapBind ) {
-        $content = "<h3>Login failed.  Incorrect username, password, or rights.</h3>";
+        $content .= "<h3>Login failed.  Incorrect username, password, rights or the server is not reachable.</h3>";
+	error_log( "Unable to connect to LDAP Server: " . $_REQUEST['ldapserver']);
       } else {
         $_SESSION['userid'] = $_REQUEST['userid'];
-        $_SESSION['ldapserver'] = $_REQUEST['ldapserver'];
-        $_SESSION['binddn'] = $_REQUEST['binddn'];
 
         session_commit();
         header('Location: install.php');
         exit;
       }
 
-      $content .= "<h3>Login failed.  Incorrect configuration.</h3>";
+    }
 
-      }
+    $content .= "<h3>Incorrect configuration.</h3>";
   }
 
   $ldapserver = $binddn = $userid = "";
-  if ( isset( $_SESSION['ldapserver'] )) {
-    $ldapserver = $_SESSION['ldapserver'];
+  if ( isset( $_REQUEST['ldapserver'] )) {
+    $ldapserver = $_REQUEST['ldapserver'];
   }
 
-  if ( isset( $_SESSION['binddn'])) {
-    $binddn = $_SESSION['binddn'];
+  if ( isset( $_REQUEST['binddn'])) {
+    $binddn = $_REQUEST['binddn'];
   }
 
-  if ( isset( $_SESSION['userid'] ) ) {
-    $userid = $_SESSION['userid'];
+  if ( isset( $_REQUEST['userid'] ) ) {
+    $userid = $_REQUEST['userid'];
   }
 ?>
 
@@ -163,6 +169,9 @@ $(document).ready(function(){
 
 <form action="ldap_bootstrap.php" method="post">
 <div class="table">
+<?php
+if ( AUTHENTICATION == "LDAP" ) {
+?>
   <div>
     <div><label for="ldapserver">LDAP Server:</label></div>
     <div><input type="text" id="ldapserver" name="ldapserver" value=<?php echo "\"$ldapserver\""; ?>></div>
@@ -179,6 +188,24 @@ $(document).ready(function(){
     <div><label for="password">LDAP Bind Password:</label></div>
     <div><input type="password" name="password"></div>
   </div>
+<?php
+} elseif ( AUTHENTICATION == "AD" ) {
+?>
+  <div>
+    <div><label for="ldapserver">AD Global Catalog Server:</label></div>
+    <div><input type="text" id="ldapserver" name="ldapserver" value=<?php echo "\"$ldapserver\""; ?>></div>
+  </div>
+  <div>
+    <div><label for="userid">Username (UPN):</label></div>
+    <div><input type="text" name="userid" value=<?php echo "\"$userid\""; ?>></div>
+  </div>
+  <div>
+    <div><label for="password">Password:</label></div>
+    <div><input type="password" name="password"></div>
+  </div>
+<?php
+}
+?>
   <div>
     <div></div>
     <div><input type="submit" name="submit" value="Submit"></div>
