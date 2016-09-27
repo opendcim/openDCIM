@@ -11,16 +11,6 @@
   $content = "";
   $person = new People();
 
-  if ( isset($_GET['logout'])) {
-    // Unfortunately session_destroy() doesn't actually clear out existing variables, so let's nuke from orbit
-    session_unset();
-    $_SESSION = array();
-    unset($_SESSION["userid"]);
-    session_destroy();
-    session_commit();
-    $content = "<h3>Logout successful.</h3>";
-  }
-
   if ( isset($_POST['username'])) {
     $ldapConn = ldap_connect( $config->ParameterArray['LDAPServer'] );
     if ( ! $ldapConn ) {
