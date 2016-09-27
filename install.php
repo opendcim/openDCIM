@@ -1647,20 +1647,24 @@ if (!isset($_SESSION['ldapauthset'])) {
 <form action="<?php echo $_SERVER['PHP_SELF']; ?>?ldap&preflight-ok" method="POST">
 <div id="ldap">
 <?php
+$ldapserver = (!isset($_SESSION['ldapserver']))?$config->ParameterArray["LDAPServer"]:$_SESSION['ldapserver'];
+$ldapbasedn = (!isset($_SESSION['ldapserver']))?$config->ParameterArray["LDAPBaseDN"]:$_SESSION['ldapbasedn'];
+$ldapbinddn = (!isset($_SESSION['ldapserver']))?$config->ParameterArray["LDAPBindDN"]:$_SESSION['ldapbinddn'];
+
 if ( AUTHENTICATION == "LDAP" ) {
 	echo '<h3>',__("LDAP Server Configuration"),'</h3>
 	<div class="table">
 		<div>
 			<div><label for="LDAPServer">',__("LDAP Server URI"),'</label></div>
-			<div><input type="text" size="40" defaultvalue="',$config->defaults["LDAPServer"],'" name="LDAPServer" value="',$_SESSION['ldapserver'],'"></div>
+			<div><input type="text" size="40" defaultvalue="',$config->defaults["LDAPServer"],'" name="LDAPServer" value="',$ldapserver,'"></div>
 		</div>
 		<div>
 			<div><label for="LDAPBaseDN">',__("Base DN"),'</label></div>
-			<div><input type="text" size="40" defaultvalue="',$config->defaults["LDAPBaseDN"],'" name="LDAPBaseDN" value="',$_SESSION['ldapbasedn'],'"></div>
+			<div><input type="text" size="40" defaultvalue="',$config->defaults["LDAPBaseDN"],'" name="LDAPBaseDN" value="',$ldapbasedn,'"></div>
 		</div>
 		<div>
 			<div><label for="LDAPBindDN">',__("Bind DN"),'</label></div>
-			<div><input type="text" size="40" defaultvalue="',$config->defaults["LDAPBindDN"],'" name="LDAPBindDN" value="',$_SESSION["ldapbinddn"],'"></div>
+			<div><input type="text" size="40" defaultvalue="',$config->defaults["LDAPBindDN"],'" name="LDAPBindDN" value="',$ldapbinddn,'"></div>
 		</div>
 		<div>
 			<div><label for="LDAPSessionExpiration">',__("LDAP Session Expiration (Seconds)"),'</label></div>
@@ -1672,11 +1676,11 @@ if ( AUTHENTICATION == "LDAP" ) {
 	<div class="table">
 		<div>
 			<div><label for="LDAPServer">',__("AD Global Catalog Server"),'</label></div>
-			<div><input type="text" size="40" defaultvalue="',$config->defaults["LDAPServer"],'" name="LDAPServer" value="',$_SESSION['ldapserver'],'"></div>
+			<div><input type="text" size="40" defaultvalue="',$config->defaults["LDAPServer"],'" name="LDAPServer" value="',$ldapserver,'"></div>
 		</div>
 		<div>
 			<div><label for="LDAPBaseDN">',__("Base DN"),'</label></div>
-			<div><input type="text" size="40" defaultvalue="',$config->defaults["LDAPBaseDN"],'" name="LDAPBaseDN" value="',$_SESSION["ldapbasedn"],'"></div>
+			<div><input type="text" size="40" defaultvalue="',$config->defaults["LDAPBaseDN"],'" name="LDAPBaseDN" value="',$ldapbasedn,'"></div>
 		</div>
 		<div>
 			<div><label for="LDAPSessionExpiration">',__("AD Session Expiration (Seconds)"),'</label></div>
