@@ -1948,6 +1948,10 @@ echo '<div class="main">
 					<div><input type="text" defaultvalue="',$config->defaults["LDAPBaseDN"],'" name="LDAPBaseDN" value="',$config->ParameterArray["LDAPBaseDN"],'"></div>
 				</div>
 				<div>
+					<div><label for="LDAPUserSearch">',__("User Search"),'</label></div>
+					<div><input type="text" defaultvalue="',$config->defaults["LDAPUserSearch"],'" name="LDAPUserSearch" value="',$config->ParameterArray["LDAPUserSearch"],'"></div>
+				</div>
+				<div>
 					<div><label for="LDAPSessionExpiration">',__("AD Session Expiration (Seconds)"),'</label></div>
 					<div><input type="text" defaultvalue="',$config->defaults["LDAPSessionExpiration"],'" name="LDAPSessionExpiration" value="',$config->ParameterArray["LDAPSessionExpiration"],'"></div>
 				</div>
