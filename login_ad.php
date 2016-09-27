@@ -29,7 +29,7 @@
 
 	// Flip the group members array so the value becomes the key.
 	// This allows us to use isset() instead of in_array().
-	$groupMemberss = array_flip($groupMembers);
+	$groupMembers = array_flip($groupMembers);
 
 	// Use isset() because it's faster than in_array() and others.
 	foreach($userMemberOf as $userGroup) {
