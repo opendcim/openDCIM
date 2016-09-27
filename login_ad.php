@@ -57,10 +57,9 @@
     ldap_set_option( $ldapConn, LDAP_OPT_PROTOCOL_VERSION, 3 );
 
     $ldapUser = htmlspecialchars($_POST['username']);
-    $ldapDN = str_replace( "%userid%", $ldapUser, $config->ParameterArray['LDAPBindDN']);
     $ldapPassword = $_POST['password'];
 
-    $ldapBind = ldap_bind( $ldapConn, $ldapDN, $ldapPassword );
+    $ldapBind = ldap_bind( $ldapConn, $ldapUser, $ldapPassword );
 
     if ( ! $ldapBind ) {
     	$content = "<h3>Login failed.  " . ldap_error($ldapConn) . ".</h3>";
