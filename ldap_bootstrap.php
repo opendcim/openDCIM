@@ -11,7 +11,7 @@
   if ( isset($_REQUEST['ldapserver'])) {
     $ldapConn = ldap_connect( $_REQUEST['ldapserver'] );
     if ( AUTHENTICATION == "AD" && ( empty($_REQUEST['password']) || empty($_REQUEST['userid']) ) ) {
-      // Password should not be empty when using AD authentication, otherwise
+      // Username and password should not be empty when using AD authentication, otherwise
       // we bind anonymously which kind of defeats the purpose of authenticating...
       $content .= "<h3>A username and password are required.</h3>";
     } else {
