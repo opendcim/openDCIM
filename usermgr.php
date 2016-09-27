@@ -31,8 +31,8 @@
 				$userRights->APIKey=md5($userRights->UserID . date('Y-m-d H:i:s') );
 			}
 
-			// if AUTHENTICATION == "LDAP" these get overwritten whenever an LDAP user logs in
-			// however, an LDAP site still needs to be able to add a userid for API access
+			// if AUTHENTICATION == "LDAP" or "AD", these get overwritten whenever a user logs in
+			// however, an LDAP/AD site still needs to be able to add a userid for API access
 			// and set their rights
 			$userRights->AdminOwnDevices=(isset($_POST['AdminOwnDevices']))?1:0;
 			$userRights->ReadAccess=(isset($_POST['ReadAccess']))?1:0;
