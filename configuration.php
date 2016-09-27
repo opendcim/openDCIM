@@ -1314,7 +1314,7 @@ echo '<div class="main">
 			<li><a href="#tt">',__("ToolTips"),'</a></li>
 			<li><a href="#cc">',__("Cabling"),'</a></li>
 			<li><a href="#dca">',__("Custom Device Attributes"),'</a></li>
-			<li><a href="#ldap">',__("LDAP"),'</a></li>
+			<li><a href="#ldap">',__("LDAP/AD"),'</a></li>
 			<li><a href="#preflight">',__("Pre-Flight Check"),'</a></li>
 		</ul>
 		<div id="general">
@@ -1900,8 +1900,9 @@ echo '<div class="main">
 			</div>
 
 		</div>
-		<div id="ldap">
-			<h3>',__("LDAP Authentication and Authorization Configuration"),'</h3>
+		<div id="ldap">';
+		if ( AUTHENTICATION == "LDAP" ) {
+			echo '<h3>',__("LDAP Server Configuration"),'</h3>
 			<div class="table">
 				<div>
 					<div><label for="LDAPServer">',__("LDAP Server URI"),'</label></div>
@@ -1925,10 +1926,27 @@ echo '<div class="main">
 				</div>
 				<div>
 					<div><label for="LDAPSessionExpiration">',__("LDAP Session Expiration (Seconds)"),'</label></div>
-			<div><input type="text" defaultvalue="',$config->defaults["LDAPSessionExpiration"],'" name="LDAPSessionExpiration" value="',$config->ParameterArray["LDAPSessionExpiration"],'"></div>
-		</div>
-			</div>
-			<h3>',__("Group Distinguished Names"),'</h3>
+					<div><input type="text" defaultvalue="',$config->defaults["LDAPSessionExpiration"],'" name="LDAPSessionExpiration" value="',$config->ParameterArray["LDAPSessionExpiration"],'"></div>
+				</div>
+			</div>';
+		} elseif ( AUTHENTICATION == "AD" ) {
+			echo '<h3>',__("AD Server Configuration"),'</h3>
+			<div class="table">
+				<div>
+					<div><label for="LDAPServer">',__("AD Global Catalog Server"),'</label></div>
+					<div><input type="text" defaultvalue="',$config->defaults["LDAPServer"],'" name="LDAPServer" value="',$config->ParameterArray["LDAPServer"],'"></div>
+				</div>
+				<div>
+					<div><label for="LDAPBaseDN">',__("Base DN"),'</label></div>
+					<div><input type="text" defaultvalue="',$config->defaults["LDAPBaseDN"],'" name="LDAPBaseDN" value="',$config->ParameterArray["LDAPBaseDN"],'"></div>
+				</div>
+				<div>
+					<div><label for="LDAPSessionExpiration">',__("AD Session Expiration (Seconds)"),'</label></div>
+					<div><input type="text" defaultvalue="',$config->defaults["LDAPSessionExpiration"],'" name="LDAPSessionExpiration" value="',$config->ParameterArray["LDAPSessionExpiration"],'"></div>
+				</div>
+			</div>';
+		}
+			echo '<h3>',__("Group Distinguished Names"),'</h3>
 			<div class="table">
 				<div>
 					<div><label for="LDAPSiteAccess">',__("Site Access"),'</label></div>
