@@ -27,12 +27,12 @@
       $ldapBind = ldap_bind( $ldapConn, $ldapDN, $ldapPassword );
 
       if ( ! $ldapBind ) {
-        $content .= "<h3>Login failed.  Incorrect username, password, rights or the server is not reachable.</h3>";
-	error_log( "Unable to connect or authenticate to LDAP Server: " . $_REQUEST['ldapserver']);
+        $content .= "<h3>Login failed.  " . ldap_error($ldapConn) . ".</h3>";
+	error_log( "Login failed for $ldapDN: " . ldap_error($ldapConn));
       } else {
         $_SESSION['userid'] = $_REQUEST['userid'];
 	$_SESSION['ldapserver'] = $_REQUEST['ldapserver'];
-	
+
 	if ( AUTHENTICATION == "LDAP" ) {
 		$_SESSION['ldapbinddn'] = $_REQUEST['binddn'];
 	}
