@@ -40,6 +40,10 @@
 	// Try to be helpful during install phase and take a guess at the base DN value
 	// based on the LDAP server name. The user can always change this if we get it wrong.
 	if ( preg_match('/\w+\.([\w.]+)/', $_REQUEST['ldapserver'], $matches) ) {
+		// Take LDAP server, match everything after the first period (and excluding any ports).
+		// Replace any periods with "dc=". e.g. if LDAP server = server.corp.opendcim.org,
+		// the base DN would be dc=corp,dc=opendcim,dc=org
+
 		$_SESSION['ldapbasedn'] = "dc=" . str_replace('.', ',dc=', $matches[1]);
 	}
 
