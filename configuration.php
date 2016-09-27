@@ -1901,7 +1901,10 @@ echo '<div class="main">
 
 		</div>
 		<div id="ldap">';
-		if ( AUTHENTICATION == "LDAP" ) {
+		// Show LDAP configuration if AUTHENTICATION is LDAP or Apache.
+		// We show the config if Apache auth is being used in case the user broke something and they need
+		// to use Apache as a fallback to fix things.
+		if ( AUTHENTICATION == "LDAP" || AUTHENTICATION == "Apache" ) {
 			echo '<h3>',__("LDAP Server Configuration"),'</h3>
 			<div class="table">
 				<div>
@@ -1929,7 +1932,11 @@ echo '<div class="main">
 					<div><input type="text" defaultvalue="',$config->defaults["LDAPSessionExpiration"],'" name="LDAPSessionExpiration" value="',$config->ParameterArray["LDAPSessionExpiration"],'"></div>
 				</div>
 			</div>';
-		} elseif ( AUTHENTICATION == "AD" ) {
+		}
+		// Show AD configuration if AUTHENTICATION is AD or Apache.
+		// We show the config if Apache auth is being used in case the user broke something and they need
+		// to use Apache as a fallback to fix things.
+		if ( AUTHENTICATION == "AD" || AUTHENTICATION == "Apache" ) {
 			echo '<h3>',__("AD Server Configuration"),'</h3>
 			<div class="table">
 				<div>
