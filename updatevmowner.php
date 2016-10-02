@@ -59,7 +59,7 @@
 <div class="main">
 <div class="center"><div>
 
-<form action="<?php echo $_SERVER['PHP_SELF']; ?>" method="POST">
+<form method="POST">
 <div class="table">
 	<div>
 		<div>Owner (Department)</div>

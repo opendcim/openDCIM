@@ -1350,7 +1350,7 @@ if(isset($results)){
 <h3>Data Center Department Detail</h3>
 <?php echo $nodept; ?>
 <div class="center"><div>
-<form action="<?php echo $_SERVER['PHP_SELF']; ?>?dept&preflight-ok" method="POST">
+<form action="<?php echo $_SERVER['SCRIPT_NAME']; ?>?dept&preflight-ok" method="POST">
 <div class="table centermargin">
 <div>
    <div>Department</div>
@@ -1428,7 +1428,7 @@ if(isset($results)){
 <h3>Data Center Detail</h3>
 <?php echo $nodc; ?>
 <div class="center"><div>
-<form action="<?php echo $_SERVER['PHP_SELF']; ?>?dc&preflight-ok" method="POST">
+<form action="<?php echo $_SERVER['SCRIPT_NAME']; ?>?dc&preflight-ok" method="POST">
 <div class="table">
 <div>
    <div><label for="datacenterid">Data Center ID</label></div>
@@ -1519,7 +1519,7 @@ if(isset($results)){
 <h3>Data Center Cabinet Inventory</h3>
 <?php echo $nodccab; ?>
 <div class='center'><div>
-<form action='<?php echo $_SERVER['PHP_SELF']; ?>?cab&preflight-ok' method='POST'>
+<form action='<?php echo $_SERVER['SCRIPT_NAME']; ?>?cab&preflight-ok' method='POST'>
 <?php echo '
 <div class="table">
 <div>
@@ -1619,7 +1619,7 @@ echo '
 <h3>Installation Complete</h3>
 <?php echo $nodccab; ?>
 <div class='center'><div>
-<form action="<?php echo $_SERVER['PHP_SELF']; ?>?ldap&preflight-ok" method="POST">
+<form action="<?php echo $_SERVER['SCRIPT_NAME']; ?>?ldap&preflight-ok" method="POST">
 <?php
 echo '<div id="ldap">
 	<h3>',__("LDAP Authentication and Authorization Configuration"),'</h3>

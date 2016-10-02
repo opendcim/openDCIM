@@ -1301,7 +1301,7 @@
 echo '<div class="main">
 <div class="center"><div>
 <h3></h3><h3 id="messages"></h3>
-<form enctype="multipart/form-data" action="',$_SERVER["PHP_SELF"],'" method="POST">
+<form enctype="multipart/form-data" method="POST">
    <input type="hidden" name="Version" value="',$config->ParameterArray["Version"],'">
 
 	<div id="configtabs">

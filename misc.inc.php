@@ -786,7 +786,7 @@ if(!function_exists("buildNavTreeHTML")){
 if(isset($devMode)&&$devMode){
 	// Development mode, so don't apply the upgrades
 }else{
-	if(file_exists("install.php") && basename($_SERVER['PHP_SELF'])!="install.php" ){
+	if(file_exists("install.php") && basename($_SERVER['SCRIPT_NAME'])!="install.php" ){
 		// new installs need to run the install first.
 		header("Location: ".redirect('install.php'));
 		exit;
@@ -813,7 +813,7 @@ if( AUTHENTICATION=="LDAP" && $config->ParameterArray["LDAPSessionExpiration"] >
 }
 
 if( AUTHENTICATION=="LDAP" && !isset($_SESSION['userid']) && php_sapi_name()!="cli" && !isset($loginPage)) {
-	$savedurl = $_SERVER['PHP_SELF'] . "?" . $_SERVER['QUERY_STRING'];
+	$savedurl = $_SERVER['SCRIPT_NAME'] . "?" . $_SERVER['QUERY_STRING'];
 	setcookie( 'targeturl', $savedurl, time()+60 );
 	header("Location: ".redirect('login_ldap.php'));
 	exit;

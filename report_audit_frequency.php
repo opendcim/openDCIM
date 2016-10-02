@@ -20,7 +20,7 @@ class PDF extends FPDF {
   
 	function Header() {
 		$this->pdfconfig = new Config();
-		$this->Link( 10, 8, 100, 20, 'https://' . $_SERVER['SERVER_NAME'] . $_SERVER['PHP_SELF'] );
+		$this->Link( 10, 8, 100, 20, 'https://' . $_SERVER['SERVER_NAME'] . $_SERVER['SCRIPT_NAME'] );
 		if ( file_exists( 'images/' . $this->pdfconfig->ParameterArray['PDFLogoFile'] )) {
 	    	$this->Image( 'images/' . $this->pdfconfig->ParameterArray['PDFLogoFile'],10,8,100);
 		}
@@ -162,7 +162,7 @@ $(function(){
 ?>
 <div class="main">
 <div class="center"><div>
-<form action="<?php echo $_SERVER['PHP_SELF']; ?>" method="post" id="auditform">
+<form method="post" id="auditform">
 <div class="table">
 	<div>
 		<div><label for="datacenterid">Data Center:</label></div>

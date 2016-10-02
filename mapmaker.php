@@ -88,7 +88,7 @@
 
 	<div class="table">
         <div class="title"><?php echo __("Coordinates"); ?></div> 
-	<form action="<?php echo $_SERVER["PHP_SELF"]; ?>" method="POST">
+	<form method="POST">
     <div class="table"> 
 	<input type="hidden" name="cabinetid" value="<?php printf( "%d", $cab->CabinetID ); ?>">
         <div> 

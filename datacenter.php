@@ -233,7 +233,7 @@
 echo '<div class="main">
 <h3>',$status,'</h3>
 <div class="center"><div>
-<form id="datacenterform" action="',$_SERVER["PHP_SELF"],'" method="POST">
+<form id="datacenterform" method="POST">
 <div class="table">
 <div>
    <div><label for="datacenterid">',__("Data Center ID"),'</label></div>

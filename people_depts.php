@@ -61,7 +61,7 @@
 <body id="deptgroup">
 <div class="centermargin">
 <?php
-echo '<form action="',$_SERVER["PHP_SELF"],'" method="POST">
+echo '<form method="POST">
 <input type="hidden" name="personid" value="',$person->PersonID,'">
 <h3>',__("Department Membership"),': ',$dept->Name,'<button type="submit" value="Submit" name="action">',__("Submit"),'</button></h3>
 <div>

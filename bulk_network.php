@@ -36,7 +36,7 @@
 
     $_SESSION['inputfile'] = $targetFile;
 
-    echo "<meta http-equiv='refresh' content='0; url=" . $_SERVER['PHP_SELF'] . "?stage=headers'>";
+    echo "<meta http-equiv='refresh' content='0; url=" . $_SERVER['SCRIPT_NAME'] . "?stage=headers'>";
     exit;
   } elseif ( isset( $_REQUEST['stage'] ) && $_REQUEST['stage'] == 'headers' ) {
     //
@@ -61,7 +61,7 @@
     $content = "<h3>" . __("Pick the appropriate column header (line 1) for each field name listed below." ) . "</h3>";
     $content .= "<h3>" . __("Mouse over each field for help text.") . "</h3>";
 
-    $content .= '<form action="' . $_SERVER['PHP_SELF'] . '" method="POST">
+    $content .= '<form method="POST">
                     <input type="hidden" name="stage" value="process">
                     <div class="table">';
 
@@ -287,7 +287,7 @@
     //  No parameters were passed with the URL, so this is the top level, where
     //  we need to ask for the user to specify a file to upload.
     //
-    $content = '<form action="' . $_SERVER['PHP_SELF']. '" method="POST" ENCTYPE="multipart/form-data">';
+    $content = '<form method="POST" ENCTYPE="multipart/form-data">';
     $content .= '<div class="table">
                   <div>
                     <div>' . __("Select file to upload:") . '

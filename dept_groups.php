@@ -61,7 +61,7 @@
 <body id="deptgroup">
 <div class="centermargin">
 <?php
-echo '<form action="',$_SERVER["PHP_SELF"],'" method="POST">
+echo '<form method="POST">
 <input type="hidden" name="deptid" value="',$dept->DeptID,'">
 <h3>',__("Group to Administer"),': ',$dept->Name,'<button type="submit" value="Submit" name="action">',__("Submit"),'</button></h3>
 <div>
