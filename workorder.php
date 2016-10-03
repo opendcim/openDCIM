@@ -162,7 +162,7 @@
 <div class="center"><div>
 <!-- CONTENT GOES HERE -->
 <?php
-	echo '<form name="orderform" id="orderform" action="',$_SERVER["PHP_SELF"],'" method="POST">';
+	echo '<form name="orderform" id="orderform" method="POST">';
 	print "<h2>".__("Work Order Contents")."</h2>
 <div style=\"width: 100%; overflow: hidden;\"><div class=\"table\" style=\"float: left;\">
 	<div><div>".__("Cabinet")."</div><div>".__("Position")."</div><div>".__("Label")."</div><div>".__("Image")."</div></div>\n";

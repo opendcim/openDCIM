@@ -45,7 +45,7 @@
 <?php include( 'sidebar.inc.php' ); ?>
 <div class="main">
 <div class="center"><div>
-<form action="<?php echo $_SERVER['PHP_SELF']; ?>" method="post" id="panelform">
+<form method="post" id="panelform">
 
 <?php
 	if ( @$_REQUEST['datacenterid'] == 0 ) {

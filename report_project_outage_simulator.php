@@ -41,7 +41,7 @@ if (!isset($_REQUEST['action'])){
 <div class="main">
 <h2>openDCIM</h2>
 <h3>Outage Impact Simulation</h3>
-<form action="<?php printf( "%s", $_SERVER['PHP_SELF'] ); ?>" method="post">
+<form method="post">
 <table align="center" border=0>
 <?php
 	if ( @$_REQUEST['datacenterid'] == 0 ) {

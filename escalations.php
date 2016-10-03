@@ -62,7 +62,7 @@
 echo '<div class="main">
 <h3>',$status,'</h3>
 <div class="center"><div>
-<form action="',$_SERVER["PHP_SELF"],'" method="POST">
+<form method="POST">
 <div class="table">
 <div>
    <div><label for="escalationid">',__("Escalation Rule"),'</label></div>
