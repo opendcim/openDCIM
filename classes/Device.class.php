@@ -46,7 +46,7 @@ class Device {
 	var $v3PrivPassphrase;
 	var $SNMPCommunity;
 	var $SNMPFailureCount;
-	var $ESX;
+	var $Hypervisor;
 	var $Owner;
 	var $EscalationTimeID;
 	var $EscalationID;
@@ -94,6 +94,7 @@ class Device {
 
 		//Keep weird values out of DeviceType
 		$validdevicetypes=array('Server','Appliance','Storage Array','Switch','Chassis','Patch Panel','Physical Infrastructure','CDU','Sensor');
+		$validHypervisors=array('ESX', 'ProxMox', 'None' );
 		$validSNMPVersions=array(1,'2c',3);
 		$validv3SecurityLevels=array('noAuthNoPriv','authNoPriv','authPriv');
 		$validv3AuthProtocols=array('MD5','SHA');
@@ -112,7 +113,7 @@ class Device {
 		$this->v3PrivProtocol=(in_array($this->v3PrivProtocol,$validv3PrivProtocols))?$this->v3PrivProtocol:'DES';
 		$this->v3PrivPassphrase=sanitize($this->v3PrivPassphrase);
 		$this->SNMPFailureCount=intval($this->SNMPFailureCount);
-		$this->ESX=intval($this->ESX);
+		$this->Hypervisor=(in_array($this->Hypervisor, $validHypervisors))?$this->Hypervisor:'None';
 		$this->Owner=intval($this->Owner);
 		$this->EscalationTimeID=intval($this->EscalationTimeID);
 		$this->EscalationID=intval($this->EscalationID);
@@ -176,7 +177,7 @@ class Device {
 		$dev->SNMPVersion=$dbRow["SNMPVersion"];
 		$dev->SNMPCommunity=$dbRow["SNMPCommunity"];
 		$dev->SNMPFailureCount=$dbRow["SNMPFailureCount"];
-		$dev->ESX=$dbRow["ESX"];
+		$dev->Hypervisor=$dbRow["Hypervisor"];
 		$dev->Owner=$dbRow["Owner"];
 		// Suppressing errors on the following two because they can be null and that generates an apache error
 		@$dev->EscalationTimeID=$dbRow["EscalationTimeID"];
@@ -357,7 +358,7 @@ class Device {
 			v3AuthPassphrase=\"$this->v3AuthPassphrase\", DeviceType=\"$this->DeviceType\",
 			v3PrivProtocol=\"$this->v3PrivProtocol\", NominalWatts=$this->NominalWatts, 
 			v3PrivPassphrase=\"$this->v3PrivPassphrase\", Weight=$this->Weight,
-			SNMPFailureCount=$this->SNMPFailureCount, ESX=$this->ESX, Owner=$this->Owner, 
+			SNMPFailureCount=$this->SNMPFailureCount, Hypervisor=$this->Hypervisor, Owner=$this->Owner, 
 			EscalationTimeID=$this->EscalationTimeID, PrimaryContact=$this->PrimaryContact, 
 			Cabinet=$this->Cabinet, Height=$this->Height, Ports=$this->Ports, 
 			FirstPortNum=$this->FirstPortNum, TemplateID=$this->TemplateID, 
@@ -695,7 +696,7 @@ class Device {
 			v3AuthPassphrase=\"$this->v3AuthPassphrase\", DeviceType=\"$this->DeviceType\",
 			v3PrivProtocol=\"$this->v3PrivProtocol\", NominalWatts=$this->NominalWatts, 
 			v3PrivPassphrase=\"$this->v3PrivPassphrase\", Weight=$this->Weight,
-			SNMPFailureCount=$this->SNMPFailureCount, ESX=$this->ESX, Owner=$this->Owner, 
+			SNMPFailureCount=$this->SNMPFailureCount, Hypervisor=$this->Hypervisor, Owner=$this->Owner, 
 			EscalationTimeID=$this->EscalationTimeID, PrimaryContact=$this->PrimaryContact, 
 			Cabinet=$this->Cabinet, Height=$this->Height, Ports=$this->Ports, 
 			FirstPortNum=$this->FirstPortNum, TemplateID=$this->TemplateID, 
