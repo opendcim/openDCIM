@@ -585,6 +585,7 @@
 					foreach($dev as $prop => $val){
 						$dev->$prop=(isset($_POST[$prop]))?$_POST[$prop]:$val;
 					}
+
 					// Put the device rights back just in case we had someone try to inject them
 					$dev->Rights=$devrights;
 					// Stupid Cabinet vs CabinetID
@@ -2184,8 +2185,8 @@ echo '		<div class="caption">
 
 echo '	<div class="table">
 		<div>
-		   <div><label for="ESX">'.__("Hypervisor").'</label></div>
-		   <div><select name="ESX" id="ESX">';
+		   <div><label for="Hypervisor">'.__("Hypervisor").'</label></div>
+		   <div><select name="Hypervisor" id="Hypervisor">';
    foreach ($validHypervisors as $h ) {
    		if ($dev->Hypervisor == $h) {
    			$hs = "selected";
@@ -2193,7 +2194,7 @@ echo '	<div class="table">
    			$hs = "";
    		}
 
-   		print "<option value=\"$h\" $selected>$h</option>\n";
+   		print "<option value=\"$h\" $hs>$h</option>\n";
    	}
 
 echo '</select></div>

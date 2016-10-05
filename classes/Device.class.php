@@ -696,7 +696,7 @@ class Device {
 			v3AuthPassphrase=\"$this->v3AuthPassphrase\", DeviceType=\"$this->DeviceType\",
 			v3PrivProtocol=\"$this->v3PrivProtocol\", NominalWatts=$this->NominalWatts, 
 			v3PrivPassphrase=\"$this->v3PrivPassphrase\", Weight=$this->Weight,
-			SNMPFailureCount=$this->SNMPFailureCount, Hypervisor=$this->Hypervisor, Owner=$this->Owner, 
+			SNMPFailureCount=$this->SNMPFailureCount, Hypervisor=\"$this->Hypervisor\", Owner=$this->Owner, 
 			EscalationTimeID=$this->EscalationTimeID, PrimaryContact=$this->PrimaryContact, 
 			Cabinet=$this->Cabinet, Height=$this->Height, Ports=$this->Ports, 
 			FirstPortNum=$this->FirstPortNum, TemplateID=$this->TemplateID, 
