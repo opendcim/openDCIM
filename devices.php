@@ -7,6 +7,8 @@
 	$dev=new Device();
 	$cab=new Cabinet();
 
+	$validHypervisors=array( "ESX", "ProxMox", "None" );
+
 	$taginsert="";
 
 	// Ajax functions
@@ -583,12 +585,12 @@
 					foreach($dev as $prop => $val){
 						$dev->$prop=(isset($_POST[$prop]))?$_POST[$prop]:$val;
 					}
+
 					// Put the device rights back just in case we had someone try to inject them
 					$dev->Rights=$devrights;
 					// Stupid Cabinet vs CabinetID
 					$dev->Cabinet=$_POST['CabinetID'];
 					// Checkboxes don't work quite like normal inputs
-					$dev->ESX=(isset($_POST['ESX']))?$_POST['ESX']:0;
 					$dev->BackSide=(isset($_POST['BackSide']))?($_POST['BackSide']=="on")?1:0:0;
 					$dev->HalfDepth=(isset($_POST['HalfDepth']))?($_POST['HalfDepth']=="on")?1:0:0;
 					$dev->Reservation=(isset($_POST['Reservation']))?($_POST['Reservation']=="on")?1:0:0;
@@ -2177,19 +2179,30 @@ echo '		<div class="caption">
 
 	// Do not display ESX block if device isn't a virtual server and the user doesn't have write access
 	if(($write || $dev->ESX) && ($dev->DeviceType=="Server" || $dev->DeviceType=="")){
-		echo '<fieldset id="ESXframe">	<legend>',__("VMWare ESX Server Information"),'</legend>';
+		echo '<fieldset id="ESXframe">	<legend>',__("Hypervisor Server Information"),'</legend>';
 	// If the user doesn't have write access display the list of VMs but not the configuration information.
 		if($write){
 
 echo '	<div class="table">
 		<div>
-		   <div><label for="ESX">'.__("ESX Server?").'</label></div>
-		   <div><select name="ESX" id="ESX"><option value="1"'.(($dev->ESX==1)?" selected":"").'>'.__("True").'</option><option value="0"'.(($dev->ESX==0)?" selected":"").'>'.__("False").'</option></select></div>
+		   <div><label for="Hypervisor">'.__("Hypervisor").'</label></div>
+		   <div><select name="Hypervisor" id="Hypervisor">';
+   foreach ($validHypervisors as $h ) {
+   		if ($dev->Hypervisor == $h) {
+   			$hs = "selected";
+   		} else {
+   			$hs = "";
+   		}
+
+   		print "<option value=\"$h\" $hs>$h</option>\n";
+   	}
+
+echo '</select></div>
 		</div>
 	</div><!-- END div.table -->';
 
 		}
-		if($dev->ESX){
+		if($dev->Hypervisor!="None"){
 			buildESXtable($dev->DeviceID);
 		}
 		print "</fieldset>\n";
