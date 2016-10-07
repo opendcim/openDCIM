@@ -47,6 +47,8 @@
 		$_SESSION['ldapbasedn'] = "dc=" . str_replace('.', ',dc=', $matches[1]);
 	}
 
+	$_SESSION['LoginTime'] = time();
+
         session_commit();
         header('Location: install.php');
         exit;
