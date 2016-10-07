@@ -157,6 +157,8 @@ function ArraySearchRecursive($Needle,$Haystack,$NeedleKey="",$Strict=false,$Pat
 
 	if($users==0){
 		$person->Name="Default Admin";
+		$person->FirstName="Default";
+		$person->LastName="Admin";
 		foreach($person as $prop => $value){
 			if(strstr($prop,"Admin") || strstr($prop,"Access") || $prop == "BulkOperations"){
 				$person->$prop=true;
