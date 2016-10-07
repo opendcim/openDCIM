@@ -1901,10 +1901,25 @@ echo '<div class="main">
 
 		</div>
 		<div id="ldap">';
-		// Show LDAP configuration if AUTHENTICATION is LDAP or Apache.
-		// We show the config if Apache auth is being used in case the user broke something and they need
-		// to use Apache as a fallback to fix things.
-		if ( AUTHENTICATION == "LDAP" || AUTHENTICATION == "Apache" ) {
+		if ( AUTHENTICATION == "AD" ) {
+			// Show AD specific configuration if AUTHENTICATION is AD.
+			echo '<h3>',__("AD Server Configuration"),'</h3>
+			<div class="table">
+				<div>
+					<div><label for="LDAPServer">',__("AD Global Catalog Server"),'</label></div>
+					<div><input type="text" defaultvalue="',$config->defaults["LDAPServer"],'" name="LDAPServer" value="',$config->ParameterArray["LDAPServer"],'"></div>
+				</div>
+				<div>
+					<div><label for="LDAPBaseDN">',__("Base DN"),'</label></div>
+					<div><input type="text" defaultvalue="',$config->defaults["LDAPBaseDN"],'" name="LDAPBaseDN" value="',$config->ParameterArray["LDAPBaseDN"],'"></div>
+				</div>
+				<div>
+					<div><label for="LDAPSessionExpiration">',__("AD Session Expiration (Seconds)"),'</label></div>
+					<div><input type="text" defaultvalue="',$config->defaults["LDAPSessionExpiration"],'" name="LDAPSessionExpiration" value="',$config->ParameterArray["LDAPSessionExpiration"],'"></div>
+				</div>
+			</div>';
+		} else  {
+			// Show LDAP specific configuration if AUTHENTICATION is anything other than AD.
 			echo '<h3>',__("LDAP Server Configuration"),'</h3>
 			<div class="table">
 				<div>
@@ -1929,30 +1944,6 @@ echo '<div class="main">
 				</div>
 				<div>
 					<div><label for="LDAPSessionExpiration">',__("LDAP Session Expiration (Seconds)"),'</label></div>
-					<div><input type="text" defaultvalue="',$config->defaults["LDAPSessionExpiration"],'" name="LDAPSessionExpiration" value="',$config->ParameterArray["LDAPSessionExpiration"],'"></div>
-				</div>
-			</div>';
-		}
-		// Show AD configuration if AUTHENTICATION is AD or Apache.
-		// We show the config if Apache auth is being used in case the user broke something and they need
-		// to use Apache as a fallback to fix things.
-		if ( AUTHENTICATION == "AD" || AUTHENTICATION == "Apache" ) {
-			echo '<h3>',__("AD Server Configuration"),'</h3>
-			<div class="table">
-				<div>
-					<div><label for="LDAPServer">',__("AD Global Catalog Server"),'</label></div>
-					<div><input type="text" defaultvalue="',$config->defaults["LDAPServer"],'" name="LDAPServer" value="',$config->ParameterArray["LDAPServer"],'"></div>
-				</div>
-				<div>
-					<div><label for="LDAPBaseDN">',__("Base DN"),'</label></div>
-					<div><input type="text" defaultvalue="',$config->defaults["LDAPBaseDN"],'" name="LDAPBaseDN" value="',$config->ParameterArray["LDAPBaseDN"],'"></div>
-				</div>
-				<div>
-					<div><label for="LDAPUserSearch">',__("User Search"),'</label></div>
-					<div><input type="text" defaultvalue="',$config->defaults["LDAPUserSearch"],'" name="LDAPUserSearch" value="',$config->ParameterArray["LDAPUserSearch"],'"></div>
-				</div>
-				<div>
-					<div><label for="LDAPSessionExpiration">',__("AD Session Expiration (Seconds)"),'</label></div>
 					<div><input type="text" defaultvalue="',$config->defaults["LDAPSessionExpiration"],'" name="LDAPSessionExpiration" value="',$config->ParameterArray["LDAPSessionExpiration"],'"></div>
 				</div>
 			</div>';
