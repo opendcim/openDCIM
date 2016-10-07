@@ -847,6 +847,9 @@ function convertImgToBase64(url, imgobj) {
 						var nameorid=(row.local.ManufacturerID==0)?row.local.Name:row.local.ManufacturerID;
 						var postorput=(row.local.ManufacturerID==0)?'put':'post';
 
+						// S.U.T. #4831 - Submit a manufacturer with a / to the api name
+						nameorid=encodeURIComponent(nameorid);
+
 						// Update local record with data from master
 						$.ajax({
 							type: postorput,

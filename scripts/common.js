@@ -971,8 +971,10 @@ function cabinetimagecontrols(){
 	controlrow.td=controlrow.find('td');
 	var imgbtn=$('<button>').attr('type','button').css({'line-height': '1em', 'height': '1.5em'}).data('show',false).text('Images');
 	var lblbtn=imgbtn.clone().text('Labels');
+	var posbtn=imgbtn.clone().text('Position');
 	controlrow.td.append(imgbtn);
 	controlrow.td.append(lblbtn);
+	controlrow.td.append(posbtn);
 
 	imgbtn.on('click',function(){
 		if($(this).data('show')){
@@ -990,6 +992,14 @@ function cabinetimagecontrols(){
 		}
 	});
 
+	posbtn.on('click',function(){
+		if($(this).data('show')){
+			snoitisoPoN();
+		}else{
+			NoPositions();
+		}
+	});
+
 	function NoLabels(){
 		lblbtn.data('show',true);
 		setCookie('devlabels', 'hide');
@@ -1002,6 +1012,26 @@ function cabinetimagecontrols(){
 		$('.picture .label').show();
 	}
 
+	function NoPositions(){
+		posbtn.data('show',true);
+		setCookie('cabpos','hide');
+		$('.pos').hide();
+		$('table[id^=cabinet] > tbody > tr:nth-child(2)').hide();
+		$('table[id^=cabinet] th').prop('colspan',1);
+		$('table[id^=cabinet]').width('450px');
+	}
+
+	function snoitisoPoN(){
+		posbtn.data('show',false);
+		setCookie('cabpos','show');
+		$('.pos').show();
+		$('table[id^=cabinet] > tbody > tr:nth-child(2)').show();
+		$('table[id^=cabinet] th').prop('colspan',2);
+		$('table[id^=cabinet]').width('501px');
+	}
+
+	// TODO : Clean this shit up.  Make it more generic 
+
 	// Read the cookie and do stuff
 	if(typeof $.cookie('devlabels')=='undefined' || $.cookie('devlabels')=='show'){
 		slebaLoN();
@@ -1009,13 +1039,18 @@ function cabinetimagecontrols(){
 		NoLabels();
 	}
 
-	// TODO : Clean this shit up.  Make it more generic and get it into the common.js and outta here
-
 	// Read the cookie and do stuff
 	if(typeof $.cookie('cabpics')=='undefined' || $.cookie('cabpics')=='show'){
 		serutciPoN();
 	}else{
 		NoPictures();
+	}
+		
+	// Read the cookie and do stuff
+	if(typeof $.cookie('cabpos')=='undefined' || $.cookie('cabpos')=='show'){
+		snoitisoPoN();
+	}else{
+		NoPositions();
 	}
 		
 	function serutciPoN(){
