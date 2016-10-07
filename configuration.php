@@ -196,7 +196,9 @@
 				$List=explode(", ",$_REQUEST[$key]);
 				$config->ParameterArray[$key]=$List;
 			}else{
-				$config->ParameterArray[$key]=$_REQUEST[$key];
+				if (isset($_REQUEST[$key])) {
+					$config->ParameterArray[$key]=$_REQUEST[$key];
+				}
 			}
 		}
 		$config->UpdateConfig();
