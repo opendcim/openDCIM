@@ -158,7 +158,7 @@ function ArraySearchRecursive($Needle,$Haystack,$NeedleKey="",$Strict=false,$Pat
 	if($users==0){
 		$person->Name="Default Admin";
 		foreach($person as $prop => $value){
-			if(strstr($prop,"Admin") || strstr($prop,"Access")){
+			if(strstr($prop,"Admin") || strstr($prop,"Access") || $prop == "BulkOperations"){
 				$person->$prop=true;
 			}
 		}
@@ -1275,6 +1275,7 @@ if(isset($results)){
 		}
 	}
 
+// Authentication form submission
 	if ( isset($_REQUEST['ldapaction']) && $_REQUEST['ldapaction'] == "Set" ) {
 		Config::UpdateParameter( 'LDAPServer', $_REQUEST['LDAPServer']);
 		Config::UpdateParameter( 'LDAPBaseDN', $_REQUEST['LDAPBaseDN']);
@@ -1295,9 +1296,9 @@ if(isset($results)){
 			Config::UpdateParameter( 'LDAPUserSearch', $_REQUEST['LDAPUserSearch']);
 		}
 
-		$_SESSION['ldapserver'] = $_REQUEST['LDAPServer'];
-		$_SESSION['ldapbasedn'] = $_REQUEST['LDAPBaseDN'];
-		$_SESSION['ldapbinddn'] = $_REQUEST['LDAPBindDN'];
+		// Refresh config.
+		$config->Config();
+
 		$_SESSION['ldapauthset'] = true;
 	}
 
@@ -1648,8 +1649,8 @@ if (!isset($_SESSION['ldapauthset'])) {
 <div id="ldap">
 <?php
 $ldapserver = (!isset($_SESSION['ldapserver']))?$config->ParameterArray["LDAPServer"]:$_SESSION['ldapserver'];
-$ldapbasedn = (!isset($_SESSION['ldapserver']))?$config->ParameterArray["LDAPBaseDN"]:$_SESSION['ldapbasedn'];
-$ldapbinddn = (!isset($_SESSION['ldapserver']))?$config->ParameterArray["LDAPBindDN"]:$_SESSION['ldapbinddn'];
+$ldapbasedn = (!isset($_SESSION['ldapbasedn']))?$config->ParameterArray["LDAPBaseDN"]:$_SESSION['ldapbasedn'];
+$ldapbinddn = (!isset($_SESSION['ldapbinddn']))?$config->ParameterArray["LDAPBindDN"]:$_SESSION['ldapbinddn'];
 
 if ( AUTHENTICATION == "LDAP" ) {
 	echo '<h3>',__("LDAP Server Configuration"),'</h3>
