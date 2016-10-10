@@ -205,13 +205,13 @@ if($object>0){
 					if(isset($pdu->SNMPCommunity)){
 						$tooltip.=__($row["Label"]).": ".$pdu->$row["Field"]."<br>\n";
 					}else{
-						if($dev->ESX){
+						if($dev->Hypervisor){
 							$tooltip.=__($row["Label"]).": ".$dev->$row["Field"]."<br>\n";
 						}
 					}
 					break;
-				case "ESX":
-					if($dev->ESX){
+				case "Hypervisor":
+					if($dev->Hypervisor){
 						$tooltip.=__($row["Label"]).": ".$dev->$row["Field"]."<br>\n";
 					}
 					break;
