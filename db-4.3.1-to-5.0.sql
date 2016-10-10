@@ -6,6 +6,7 @@ ALTER TABLE fac_Device CHANGE ESX Hypervisor varchar(40);
 
 UPDATE fac_Device set Hypervisor='ESX' where Hypervisor='1';
 UPDATE fac_Device set Hypervisor='None' where Hypervisor='0';
+UPDATE fac_CabinetToolTip SET Field='Hypervisor', Label='VM Hypervisor' WHERE Field='ESX';
 
 --
 -- Now add a unique index on the VMInventory table
