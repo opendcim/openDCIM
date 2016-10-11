@@ -1016,18 +1016,32 @@ function cabinetimagecontrols(){
 		posbtn.data('show',true);
 		setCookie('cabpos','hide');
 		$('.pos').hide();
-		$('table[id^=cabinet] > tbody > tr:nth-child(2)').hide();
 		$('table[id^=cabinet] th').prop('colspan',1);
-		$('table[id^=cabinet]').width('450px');
+		// rowview has a single rack width, cabnavigator has a double
+		if(location.href.contains('rowview')){
+			$('table[id^=cabinet]').width('225px');
+			$('#centeriehack > div.cabinet:first-child tbody > tr:nth-child(3)').hide();
+			$('#centeriehack > div.cabinet + div.cabinet tbody > tr:nth-child(2)').hide();
+		}else{
+			$('table[id^=cabinet]').width('450px');
+			$('table[id^=cabinet] > tbody > tr:nth-child(2)').hide();
+		}
 	}
 
 	function snoitisoPoN(){
 		posbtn.data('show',false);
 		setCookie('cabpos','show');
 		$('.pos').show();
-		$('table[id^=cabinet] > tbody > tr:nth-child(2)').show();
 		$('table[id^=cabinet] th').prop('colspan',2);
-		$('table[id^=cabinet]').width('501px');
+		// rowview has a single rack width, cabnavigator has a double
+		if(location.href.contains('rowview')){
+			$('table[id^=cabinet]').width('247px');
+			$('#centeriehack > div.cabinet:first-child tbody > tr:nth-child(3)').show();
+			$('#centeriehack > div.cabinet + div.cabinet tbody > tr:nth-child(2)').show();
+		}else{
+			$('table[id^=cabinet]').width('501px');
+			$('table[id^=cabinet] > tbody > tr:nth-child(2)').show();
+		}
 	}
 
 	// TODO : Clean this shit up.  Make it more generic 
