@@ -282,7 +282,7 @@
           // Floating point entries once split will have 2 or more members in the $pos array
           if ( sizeof( $pos ) < 2 ) {
             if ( $row["Height"] > 0 ) {
-              $endPos = $row["Position"] + $row["Height"];
+              $endPos = $row["Position"] + $row["Height"] - 1;
 
               if ( ! $st->execute( array( ":DataCenterID"=>$row["DataCenterID"],
                 ":Cabinet"=>$row["Cabinet"],
