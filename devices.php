@@ -439,12 +439,12 @@
 		echo json_encode($list);
 		exit;
 	}
-	if(isset($_POST['ESXrefresh'])){
-		$dev->DeviceID=$_POST['ESXrefresh'];
+	if(isset($_POST['VMrefresh'])){
+		$dev->DeviceID=$_POST['VMrefresh'];
 		$dev->GetDevice();
 		if($dev->Rights=="Write"){
-			ESX::RefreshInventory($_POST['ESXrefresh']);
-			buildESXtable($_POST['ESXrefresh']);
+			ESX::RefreshInventory($_POST['VMrefresh']);
+			buildVMtable($_POST['VMrefresh']);
 		}
 		exit;
 	}
@@ -816,10 +816,10 @@
 	
 	$title=($dev->Label!='')?"$dev->Label :: $dev->DeviceID":__("openDCIM Device Maintenance");
 
-	function buildESXtable($DeviceID){
-		$ESX=new ESX();
-		$ESX->DeviceID=$DeviceID;
-		$vmList=$ESX->GetDeviceInventory();
+	function buildVMtable($DeviceID){
+		$Hyper=new ESX();
+		$Hyper->DeviceID=$DeviceID;
+		$vmList=$Hyper->GetDeviceInventory();
 
 		print "\n<div class=\"table border\"><div><div>".__("VM Name")."</div><div>".__("Status")."</div><div>".__("Owner")."</div><div>".__("Primary Contact")."</div><div>".__("Last Updated")."</div></div>\n";
 		foreach($vmList as $vmRow){
@@ -1213,15 +1213,15 @@ $(document).ready(function() {
 	});
 
 	// Add in refresh functions for virtual machines
-	var ESXtable=$('<div>').addClass('table border').append('<div><div>VM Name</div><div>Status</div><div>Owner</div><div>Last Updated</div></div>');
-	var ESXbutton=$('<button>',{'type':'button'}).css({'position':'absolute','top':'10px','right':'2px'}).text('Refresh');
-	ESXbutton.click(ESXrefresh);
-	if($('#ESX').val()==1){
-		$('#ESXframe').css('position','relative').append(ESXbutton);
+	var VMtable=$('<div>').addClass('table border').append('<div><div>VM Name</div><div>Status</div><div>Owner</div><div>Last Updated</div></div>');
+	var VMbutton=$('<button>',{'type':'button'}).css({'position':'absolute','top':'10px','right':'2px'}).text('Refresh');
+	VMbutton.click(VMrefresh);
+	if($('#VM').val()==1){
+		$('#VMframe').css('position','relative').append(VMbutton);
 	}
-	function ESXrefresh(){
-		$.post('',{ESXrefresh: $('#DeviceID').val()}).done(function(data){
-			$('#ESXframe .table ~ .table').replaceWith(data);
+	function VMrefresh(){
+		$.post('',{VMrefresh: $('#DeviceID').val()}).done(function(data){
+			$('#VMframe .table ~ .table').replaceWith(data);
 		});
 	}
 
@@ -1318,9 +1318,9 @@ $(document).ready(function() {
 			$('.switch div[id^="st"]').hide();
 		}
 		if($(this).val()=='Server'){
-			$('#ESXframe').show();
+			$('#VMframe').show();
 		}else{
-			$('#ESXframe').hide();
+			$('#VMframe').hide();
 		}
 		if($(this).val()=='CDU'){
 			$('#cdu').show().removeClass('hide');
@@ -2177,9 +2177,9 @@ echo '		<div class="caption">
 <?php
 	}
 
-	// Do not display ESX block if device isn't a virtual server and the user doesn't have write access
-	if(($write || $dev->ESX) && ($dev->DeviceType=="Server" || $dev->DeviceType=="")){
-		echo '<fieldset id="ESXframe">	<legend>',__("Hypervisor Server Information"),'</legend>';
+	// Do not display VM block if device isn't a virtual server and the user doesn't have write access
+	if($write && ($dev->DeviceType=="Server" || $dev->DeviceType=="")){
+		echo '<fieldset id="VMframe">	<legend>',__("Hypervisor Server Information"),'</legend>';
 	// If the user doesn't have write access display the list of VMs but not the configuration information.
 		if($write){
 
@@ -2203,7 +2203,7 @@ echo '</select></div>
 
 		}
 		if($dev->Hypervisor!="None"){
-			buildESXtable($dev->DeviceID);
+			buildVMtable($dev->DeviceID);
 		}
 		print "</fieldset>\n";
 	}
