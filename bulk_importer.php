@@ -79,7 +79,7 @@
 
     $fieldNum = 1;
 
-    foreach ( array( "DataCenterID"=>"The exact name of the target data center for import.", "Cabinet"=>"The name (Location) of the target cabinet.", "Position"=>"The position in the cabinet for the device.  0 is valid for zero-U devices.  No collision checking is performed.", "Label"=>"The value to place in the Label field.", "Height"=>"The height of the device, 0 is a valid value.", "Manufacturer"=>"The name of the Manufacturer.  This is combined with the Model field to create the 'Device Class'.", "Model"=>"The model name, as specified in the existing Device Template, which will be combined with the Manufacturer to choose the 'Device Class'.", "Hostname"=>"An optional IP address or hostname for the device.", "SerialNo"=>"An optional value to place in the Serial Number field of the device.", "AssetTag"=>"An optional Asset or Property number to assign to the device.", "HalfDepth"=>"Optional, specify 1 or Y to indicate this device only occupies half the depth of the cabinet.", "BackSide"=>"Optional, specify 1 or Y to indicate that this device is mounted from the rear of the cabinet.", "ESX"=>"Optional, specify 1 or Y to indicate this device is a VMWare ESX Hypervisor.", "InstallDate"=>"If blank, current date is used, otherwise this mandatory field can contain any ISO valid date format.", "Reservation"=>"Optional, specify 1 or Y to indicate the device is a reservation and not physically installed at this time.", "Owner"=>"Optional, and may be blank.  This is the name of the Department that owns the device.", "PrimaryContact"=>"Optional, and may be blank.  The exact name of the Primary Contact for this device in LastName, FirstName format.", "CustomTags"=>"A comma separated list of tags to apply to the device.  Tags do not have to already exist within openDCIM." ) as $fieldName=>$helpText ) {
+    foreach ( array( "DataCenterID"=>"The exact name of the target data center for import.", "Cabinet"=>"The name (Location) of the target cabinet.", "Position"=>"The position in the cabinet for the device.  0 is valid for zero-U devices.  No collision checking is performed.", "Label"=>"The value to place in the Label field.", "Height"=>"The height of the device, 0 is a valid value.", "Manufacturer"=>"The name of the Manufacturer.  This is combined with the Model field to create the 'Device Class'.", "Model"=>"The model name, as specified in the existing Device Template, which will be combined with the Manufacturer to choose the 'Device Class'.", "Hostname"=>"An optional IP address or hostname for the device.", "SerialNo"=>"An optional value to place in the Serial Number field of the device.", "AssetTag"=>"An optional Asset or Property number to assign to the device.", "HalfDepth"=>"Optional, specify 1 or Y to indicate this device only occupies half the depth of the cabinet.", "BackSide"=>"Optional, specify 1 or Y to indicate that this device is mounted from the rear of the cabinet.", "Hypervisor"=>"Optional, specify 'ESX', 'ProxMox', or blank (for default behavior of 'None').", "InstallDate"=>"If blank, current date is used, otherwise this mandatory field can contain any ISO valid date format.", "Reservation"=>"Optional, specify 1 or Y to indicate the device is a reservation and not physically installed at this time.", "Owner"=>"Optional, and may be blank.  This is the name of the Department that owns the device.", "PrimaryContact"=>"Optional, and may be blank.  The exact name of the Primary Contact for this device in LastName, FirstName format.", "CustomTags"=>"A comma separated list of tags to apply to the device.  Tags do not have to already exist within openDCIM." ) as $fieldName=>$helpText ) {
       $content .= '<div>
                     <div><span title="' . __($helpText) . '">' . __($fieldName) . '</span>: </div><div><select name="' . $fieldName . '">';
       for ( $n = 0; $n < sizeof( $fieldList ); $n++ ) {
@@ -308,7 +308,7 @@
           $content = '<form method="POST">';
           $content .= "<h3>" . __( "The file has passed validation.  Press the Process button to import." ) . "</h3>";
           $content .= "<input type=\"hidden\" name=\"stage\" value=\"process\">\n";
-          foreach( array( "DataCenterID", "Cabinet", "Position", "Label", "Height", "Manufacturer", "Model", "Hostname", "SerialNo", "AssetTag", "ESX", "BackSide", "HalfDepth", "Reservation", "InstallDate", "Owner", "PrimaryContact", "CustomTags" ) as $mapVar ) {
+          foreach( array( "DataCenterID", "Cabinet", "Position", "Label", "Height", "Manufacturer", "Model", "Hostname", "SerialNo", "AssetTag", "Hypervisor", "BackSide", "HalfDepth", "Reservation", "InstallDate", "Owner", "PrimaryContact", "CustomTags" ) as $mapVar ) {
             $content .= "<input type=\"hidden\" name=\"" . $mapVar . "\" value=\"" . $_REQUEST[$mapVar] . "\">\n";
           }
 
@@ -339,7 +339,7 @@
 
     // Also make sure we start with an empty string to display
     $content = "";
-    $fields = array( "DataCenterID", "Cabinet", "Position", "Label", "Height", "Manufacturer", "Model", "Hostname", "SerialNo", "AssetTag", "ESX", "BackSide", "HalfDepth", "Reservation", "Owner", "InstallDate", "PrimaryContact", "CustomTags" );
+    $fields = array( "DataCenterID", "Cabinet", "Position", "Label", "Height", "Manufacturer", "Model", "Hostname", "SerialNo", "AssetTag", "Hypervisor", "BackSide", "HalfDepth", "Reservation", "Owner", "InstallDate", "PrimaryContact", "CustomTags" );
 
     for ( $n = 2; $n <= $highestRow; $n++ ) {
       // Instantiate a fresh Device object for each insert
@@ -415,7 +415,7 @@
       $dev->AssetTag = $row["AssetTag"];
       $dev->BackSide = ($row["BackSide"] == 1 || strtoupper($row["BackSide"] == "Y"))?1:0;
       $dev->HalfDepth = ($row["HalfDepth"] == 1 || strtoupper($row["HalfDepth"] == "Y"))?1:0;
-      $dev->ESX = ($row["ESX"] == 1 || strtoupper($row["ESX"]) == "Y")?1:0;
+      $dev->Hypervisor = (in_array( $row["Hypervisor"], array( "ESX", "ProxMox"))?$row["Hypervisor"]:"None";
       if ( $row["InstallDate"] != "" ) {
         $dev->InstallDate = date( "Y-m-d", strtotime( $row["InstallDate"]));
       } else {
