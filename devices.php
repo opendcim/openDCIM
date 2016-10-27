@@ -1337,12 +1337,18 @@ $(document).ready(function() {
 			$('#SNMPVersion').val(3).change().parent('div').parent('div').hide();
 			// Hide the existing labels for the snmp fields
 			$('.normal').addClass('hide');
-			// Shwo the proxmox alternatives
+			// Show the proxmox alternatives
 			$('.proxmox').removeClass('hide');
 			$(':input[id^="v3"],#SNMPCommunity').parent('div').parent('div').hide();
 			$(':input[id$="Passphrase"]').parent('div').parent('div').show();
+			// Allow the user name to show
+			$('#SNMPCommunity,#v3AuthPassphrase').attr('type','text').unbind('focus').unbind('blur');
 		}else{
 			// Put back any hidden / renamed fields
+			$('#SNMPCommunity,#v3AuthPassphrase,#v3PrivPassphrase')
+				.focus(function(){$(this).attr('type','text');})
+				.blur(function(){$(this).attr('type','password');});
+			$('#SNMPCommunity,#v3AuthPassphrase').attr('type','password');
 			$('#SNMPVersion').change().parent('div').parent('div').show();
 			$('#SNMPCommunity').parent('div').parent('div').show();
 			// Hide the existing labels for the snmp fields
