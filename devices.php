@@ -1331,6 +1331,27 @@ $(document).ready(function() {
 		}
 		resize();
 	}).change();
+
+	$('select#Hypervisor').change(function(){
+		if($(this).val()=='ProxMox'){
+			$('#SNMPVersion').val(3).change().parent('div').parent('div').hide();
+			// Hide the existing labels for the snmp fields
+			$('.normal').addClass('hide');
+			// Shwo the proxmox alternatives
+			$('.proxmox').removeClass('hide');
+			$(':input[id^="v3"],#SNMPCommunity').parent('div').parent('div').hide();
+			$(':input[id$="Passphrase"]').parent('div').parent('div').show();
+		}else{
+			// Put back any hidden / renamed fields
+			$('#SNMPVersion').change().parent('div').parent('div').show();
+			$('#SNMPCommunity').parent('div').parent('div').show();
+			// Hide the existing labels for the snmp fields
+			$('.normal').removeClass('hide');
+			// Shwo the proxmox alternatives
+			$('.proxmox').addClass('hide');
+		}
+	}).change();
+
 	$('#firstport button[name=firstport]').click(function(){
 		// S.U.T. Update the IP and snmp community then click on the switch controls.
 		// we'll combat that with a limited device update.
@@ -1973,7 +1994,7 @@ echo '
 		  </div>
 		</div>
 		<div>
-		  <div><label for="v3AuthPassphrase">'.__("SNMPv3 Passphrase").'</label></div>
+		  <div><label for="v3AuthPassphrase" class="normal">'.__("SNMPv3 Passphrase").'</label><label for="v3AuthPassphrase" class="proxmox hide">'.__("API Username").'</label></div>
 		  <div><input type="password" name="v3AuthPassphrase" id="v3AuthPassphrase" value="'.$dev->v3AuthPassphrase.'"></div>
 		</div>
 		<div>
@@ -1990,7 +2011,7 @@ echo '
 		  </div>
 		</div>
 		<div>
-		  <div><label for="v3PrivPassphrase">'.__("SNMPv3 PrivPassphrase").'</label></div>
+		  <div><label for="v3PrivPassphrase" class="normal">'.__("SNMPv3 PrivPassphrase").'</label><label for="v3PrivPassphrase" class="proxmox hide">'.__("API Password").'</label></div>
 		  <div><input type="password" name="v3PrivPassphrase" id="v3PrivPassphrase" value="'.$dev->v3PrivPassphrase.'"></div>
 		</div>
 		<div>
