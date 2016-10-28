@@ -19,8 +19,10 @@ foreach( $devList as $dev ) {
 
 	$credentials = [
 		'hostname' => $dev->PrimaryIP,
-		'username' => $dev->v3AuthPassphrase,
-		'password' => $dev->v3PrivPassphrase
+		'username' => $dev->APIUsername,
+		'password' => $dev->APIPassword,
+		'port' => $dev->APIPort,
+		'realm' => $dev->ProxMoxRealm
 	];
 	try {
 		$proxmox = new Proxmox($credentials);
