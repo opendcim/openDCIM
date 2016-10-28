@@ -1,5 +1,6 @@
 #users should be creating this
 db.inc.php
+config.ini
 
 #we don't want to accidentally send this out populated, again
 install.log

@@ -1,0 +1,11 @@
+[core]
+debug=0
+
+[db]
+dbhost=localhost
+dbname=dcim
+dbuser=dcim
+dbpass=dcim
+
+[auth]
+mechanism=Apache
