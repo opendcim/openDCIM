@@ -13,10 +13,10 @@
 
 		$devMode = $cfg['debug'];
 
-		$dbhost = $cfg['host'];
-		$dbname = $cfg['name'];
-		$dbuser = $cfg['user'];
-		$dbpass = $cfg['pass'];
+		$dbhost = $cfg['dbhost'];
+		$dbname = $cfg['dbname'];
+		$dbuser = $cfg['dbuser'];
+		$dbpass = $cfg['dbpass'];
 
 		define( "AUTHENTICATION", $cfg['mechanism']);
 	} else {
