@@ -9,25 +9,25 @@
 	}
 
 	if (file_exists('config.ini') && is_readable('config.ini')) {
-        $cfg = parse_ini_file('config.ini');
+		$cfg = parse_ini_file('config.ini');
 
-        $devMode = $cfg['core']['debug'];
+		$devMode = $cfg['debug'];
 
-        $dbhost = $cfg['db']['host'];
-        $dbname = $cfg['db']['name'];
-        $dbuser = $cfg['db']['user'];
-        $dbpass = $cfg['db']['pass'];
+		$dbhost = $cfg['host'];
+		$dbname = $cfg['name'];
+		$dbuser = $cfg['user'];
+		$dbpass = $cfg['pass'];
 
-        define( "AUTHENTICATION", $cfg['auth']['mechanism']);
-    } else {
-        // Set to true if you want to skip the installer check
-        $devMode = false;
+		define( "AUTHENTICATION", $cfg['mechanism']);
+	} else {
+		// Set to true if you want to skip the installer check
+		$devMode = false;
 
-        $dbhost = 'localhost';
-        $dbname = 'dcim';
-        $dbuser = 'dcim';
-        $dbpass = 'dcim';
-    }
+		$dbhost = 'localhost';
+		$dbname = 'dcim';
+		$dbuser = 'dcim';
+		$dbpass = 'dcim';
+	}
 
 	$locale = "en_US";
 	$codeset = "UTF-8";
