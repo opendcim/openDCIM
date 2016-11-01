@@ -47,6 +47,10 @@ class Device {
 	var $SNMPCommunity;
 	var $SNMPFailureCount;
 	var $Hypervisor;
+	var $APIUsername;
+	var $APIPassword;
+	var $APIPort;
+	var $ProxMoxRealm;
 	var $Owner;
 	var $EscalationTimeID;
 	var $EscalationID;
@@ -114,6 +118,10 @@ class Device {
 		$this->v3PrivPassphrase=sanitize($this->v3PrivPassphrase);
 		$this->SNMPFailureCount=intval($this->SNMPFailureCount);
 		$this->Hypervisor=(in_array($this->Hypervisor, $validHypervisors))?$this->Hypervisor:'None';
+		$this->APIUserName=sanitize($this->APIUsername);
+		$this->APIPassword=sanitize($this->APIPassword);
+		$this->APIPort = intval($this->APIPort);
+		$this->ProxMoxRealm=sanitize($this->ProxMoxRealm);
 		$this->Owner=intval($this->Owner);
 		$this->EscalationTimeID=intval($this->EscalationTimeID);
 		$this->EscalationID=intval($this->EscalationID);
@@ -178,6 +186,10 @@ class Device {
 		$dev->SNMPCommunity=$dbRow["SNMPCommunity"];
 		$dev->SNMPFailureCount=$dbRow["SNMPFailureCount"];
 		$dev->Hypervisor=$dbRow["Hypervisor"];
+		$dev->APIUsername=$dbRow["APIUsername"];
+		$dev->APIPassword=$dbRow["APIPassword"];
+		$dev->APIPort=$dbRow["APIPort"];
+		$dev->ProxMoxRealm=$dbRow["ProxMoxRealm"];
 		$dev->Owner=$dbRow["Owner"];
 		// Suppressing errors on the following two because they can be null and that generates an apache error
 		@$dev->EscalationTimeID=$dbRow["EscalationTimeID"];
@@ -358,10 +370,12 @@ class Device {
 			v3AuthPassphrase=\"$this->v3AuthPassphrase\", DeviceType=\"$this->DeviceType\",
 			v3PrivProtocol=\"$this->v3PrivProtocol\", NominalWatts=$this->NominalWatts, 
 			v3PrivPassphrase=\"$this->v3PrivPassphrase\", Weight=$this->Weight,
-			SNMPFailureCount=$this->SNMPFailureCount, Hypervisor=$this->Hypervisor, Owner=$this->Owner, 
-			EscalationTimeID=$this->EscalationTimeID, PrimaryContact=$this->PrimaryContact, 
-			Cabinet=$this->Cabinet, Height=$this->Height, Ports=$this->Ports, 
-			FirstPortNum=$this->FirstPortNum, TemplateID=$this->TemplateID, 
+			SNMPFailureCount=$this->SNMPFailureCount, Hypervisor=\"$this->Hypervisor\", 
+			APIUsername=\"$this->APIUsername\", APIPassword=\"$this->APIPassword\",
+			APIPort=$this->APIPort, ProxMoxRealm=\"$this->ProxMoxRealm\",
+			Owner=$this->Owner, EscalationTimeID=$this->EscalationTimeID, 
+			PrimaryContact=$this->PrimaryContact, Cabinet=$this->Cabinet, Height=$this->Height, 
+			Ports=$this->Ports, FirstPortNum=$this->FirstPortNum, TemplateID=$this->TemplateID, 
 			PowerSupplyCount=$this->PowerSupplyCount, ChassisSlots=$this->ChassisSlots, 
 			RearChassisSlots=$this->RearChassisSlots,ParentDevice=$this->ParentDevice,
 			MfgDate=\"".date("Y-m-d", strtotime($this->MfgDate))."\", 
@@ -696,7 +710,9 @@ class Device {
 			v3AuthPassphrase=\"$this->v3AuthPassphrase\", DeviceType=\"$this->DeviceType\",
 			v3PrivProtocol=\"$this->v3PrivProtocol\", NominalWatts=$this->NominalWatts, 
 			v3PrivPassphrase=\"$this->v3PrivPassphrase\", Weight=$this->Weight,
-			SNMPFailureCount=$this->SNMPFailureCount, Hypervisor=\"$this->Hypervisor\", Owner=$this->Owner, 
+			SNMPFailureCount=$this->SNMPFailureCount, Hypervisor=\"$this->Hypervisor\", 
+			APIUsername=\"$this->APIUsername\", APIPassword=\"$this->APIPassword\",
+			APIPort=$this->APIPort, ProxMoxRealm=\"$this->ProxMoxRealm\", Owner=$this->Owner, 
 			EscalationTimeID=$this->EscalationTimeID, PrimaryContact=$this->PrimaryContact, 
 			Cabinet=$this->Cabinet, Height=$this->Height, Ports=$this->Ports, 
 			FirstPortNum=$this->FirstPortNum, TemplateID=$this->TemplateID, 
@@ -1224,7 +1240,7 @@ class Device {
   function GetESXDevices() {
 		global $dbh;
 		
-		$sql="SELECT * FROM fac_Device WHERE ESX=TRUE ORDER BY DeviceID;";
+		$sql="SELECT * FROM fac_Device WHERE Hypervisor='ESX' ORDER BY DeviceID;";
 
 		$deviceList = array();
 

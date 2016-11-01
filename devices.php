@@ -439,12 +439,12 @@
 		echo json_encode($list);
 		exit;
 	}
-	if(isset($_POST['ESXrefresh'])){
-		$dev->DeviceID=$_POST['ESXrefresh'];
+	if(isset($_POST['VMrefresh'])){
+		$dev->DeviceID=$_POST['VMrefresh'];
 		$dev->GetDevice();
 		if($dev->Rights=="Write"){
-			ESX::RefreshInventory($_POST['ESXrefresh']);
-			buildESXtable($_POST['ESXrefresh']);
+			ESX::RefreshInventory($_POST['VMrefresh']);
+			buildVMtable($_POST['VMrefresh']);
 		}
 		exit;
 	}
@@ -816,10 +816,10 @@
 	
 	$title=($dev->Label!='')?"$dev->Label :: $dev->DeviceID":__("openDCIM Device Maintenance");
 
-	function buildESXtable($DeviceID){
-		$ESX=new ESX();
-		$ESX->DeviceID=$DeviceID;
-		$vmList=$ESX->GetDeviceInventory();
+	function buildVMtable($DeviceID){
+		$Hyper=new ESX();
+		$Hyper->DeviceID=$DeviceID;
+		$vmList=$Hyper->GetDeviceInventory();
 
 		print "\n<div class=\"table border\"><div><div>".__("VM Name")."</div><div>".__("Status")."</div><div>".__("Owner")."</div><div>".__("Primary Contact")."</div><div>".__("Last Updated")."</div></div>\n";
 		foreach($vmList as $vmRow){
@@ -1213,15 +1213,15 @@ $(document).ready(function() {
 	});
 
 	// Add in refresh functions for virtual machines
-	var ESXtable=$('<div>').addClass('table border').append('<div><div>VM Name</div><div>Status</div><div>Owner</div><div>Last Updated</div></div>');
-	var ESXbutton=$('<button>',{'type':'button'}).css({'position':'absolute','top':'10px','right':'2px'}).text('Refresh');
-	ESXbutton.click(ESXrefresh);
-	if($('#ESX').val()==1){
-		$('#ESXframe').css('position','relative').append(ESXbutton);
+	var VMtable=$('<div>').addClass('table border').append('<div><div>VM Name</div><div>Status</div><div>Owner</div><div>Last Updated</div></div>');
+	var VMbutton=$('<button>',{'type':'button'}).css({'position':'absolute','top':'10px','right':'2px'}).text('Refresh');
+	VMbutton.click(VMrefresh);
+	if($('#VM').val()==1){
+		$('#VMframe').css('position','relative').append(VMbutton);
 	}
-	function ESXrefresh(){
-		$.post('',{ESXrefresh: $('#DeviceID').val()}).done(function(data){
-			$('#ESXframe .table ~ .table').replaceWith(data);
+	function VMrefresh(){
+		$.post('',{VMrefresh: $('#DeviceID').val()}).done(function(data){
+			$('#VMframe .table ~ .table').replaceWith(data);
 		});
 	}
 
@@ -1318,9 +1318,9 @@ $(document).ready(function() {
 			$('.switch div[id^="st"]').hide();
 		}
 		if($(this).val()=='Server'){
-			$('#ESXframe').show();
+			$('#VMframe').show();
 		}else{
-			$('#ESXframe').hide();
+			$('#VMframe').hide();
 		}
 		if($(this).val()=='CDU'){
 			$('#cdu').show().removeClass('hide');
@@ -1331,6 +1331,33 @@ $(document).ready(function() {
 		}
 		resize();
 	}).change();
+
+	$('select#Hypervisor').change(function(){
+		if($(this).val()=='ProxMox'){
+			$('#SNMPVersion').val(3).change().parent('div').parent('div').hide();
+			// Hide the existing labels for the snmp fields
+			$('.normal').addClass('hide');
+			// Show the proxmox alternatives
+			$('.proxmox').removeClass('hide');
+			$(':input[id^="v3"],#SNMPCommunity').parent('div').parent('div').hide();
+			$(':input[id$="Passphrase"]').parent('div').parent('div').show();
+			// Allow the user name to show
+			$('#SNMPCommunity,#v3AuthPassphrase').attr('type','text').unbind('focus').unbind('blur');
+		}else{
+			// Put back any hidden / renamed fields
+			$('#SNMPCommunity,#v3AuthPassphrase,#v3PrivPassphrase')
+				.focus(function(){$(this).attr('type','text');})
+				.blur(function(){$(this).attr('type','password');});
+			$('#SNMPCommunity,#v3AuthPassphrase').attr('type','password');
+			$('#SNMPVersion').change().parent('div').parent('div').show();
+			$('#SNMPCommunity').parent('div').parent('div').show();
+			// Hide the existing labels for the snmp fields
+			$('.normal').removeClass('hide');
+			// Shwo the proxmox alternatives
+			$('.proxmox').addClass('hide');
+		}
+	}).change();
+
 	$('#firstport button[name=firstport]').click(function(){
 		// S.U.T. Update the IP and snmp community then click on the switch controls.
 		// we'll combat that with a limited device update.
@@ -1973,7 +2000,7 @@ echo '
 		  </div>
 		</div>
 		<div>
-		  <div><label for="v3AuthPassphrase">'.__("SNMPv3 Passphrase").'</label></div>
+		  <div><label for="v3AuthPassphrase" class="normal">'.__("SNMPv3 Passphrase").'</label><label for="v3AuthPassphrase" class="proxmox hide">'.__("API Username").'</label></div>
 		  <div><input type="password" name="v3AuthPassphrase" id="v3AuthPassphrase" value="'.$dev->v3AuthPassphrase.'"></div>
 		</div>
 		<div>
@@ -1990,7 +2017,7 @@ echo '
 		  </div>
 		</div>
 		<div>
-		  <div><label for="v3PrivPassphrase">'.__("SNMPv3 PrivPassphrase").'</label></div>
+		  <div><label for="v3PrivPassphrase" class="normal">'.__("SNMPv3 PrivPassphrase").'</label><label for="v3PrivPassphrase" class="proxmox hide">'.__("API Password").'</label></div>
 		  <div><input type="password" name="v3PrivPassphrase" id="v3PrivPassphrase" value="'.$dev->v3PrivPassphrase.'"></div>
 		</div>
 		<div>
@@ -2177,9 +2204,9 @@ echo '		<div class="caption">
 <?php
 	}
 
-	// Do not display ESX block if device isn't a virtual server and the user doesn't have write access
-	if(($write || $dev->ESX) && ($dev->DeviceType=="Server" || $dev->DeviceType=="")){
-		echo '<fieldset id="ESXframe">	<legend>',__("Hypervisor Server Information"),'</legend>';
+	// Do not display VM block if device isn't a virtual server and the user doesn't have write access
+	if($write && ($dev->DeviceType=="Server" || $dev->DeviceType=="")){
+		echo '<fieldset id="VMframe">	<legend>',__("Hypervisor Server Information"),'</legend>';
 	// If the user doesn't have write access display the list of VMs but not the configuration information.
 		if($write){
 
@@ -2203,7 +2230,7 @@ echo '</select></div>
 
 		}
 		if($dev->Hypervisor!="None"){
-			buildESXtable($dev->DeviceID);
+			buildVMtable($dev->DeviceID);
 		}
 		print "</fieldset>\n";
 	}

@@ -1,5 +1,6 @@
 <?php
 
+require_once 'db.inc.php';
 require_once 'vendor/autoload.php';
 require_once 'facilities.inc.php';
 
@@ -10,33 +11,34 @@ global $dbh;
 
 $d = new Device;
 
-/************************************
-*		TO DO: 						*
-*									*
-*	Since ProxMox will start every 	*
-*	cluster over with VMID = 100 	*
-*	how will we keep uniqueness		*
-* 	among the VM inventory.			*
-************************************/
-
 $d->Hypervisor = "ProxMox";
 $devList = $d->Search();
 
 foreach( $devList as $dev ) {
 	// Establish credentials for this particular device
 
-	$server = $dev->IPAddress;
-	$user = $dev->SNMPv3Passphrase;
-	$pass = $dev->SNMPv3PrivPassphrase;
+	$credentials = [
+		'hostname' => $dev->PrimaryIP,
+		'username' => $dev->APIUsername,
+		'password' => $dev->APIPassword,
+		'port' => $dev->APIPort,
+		'realm' => $dev->ProxMoxRealm
+	];
+	try {
+		$proxmox = new Proxmox($credentials);
+		$vmList = $proxmox->get('/nodes/' . $dev->SNMPCommunity . '/qemu' );
+	} 
+	catch( Exception $e ) {
+		error_log( "Unable to poll ProxMox for inventory.  DeviceID=" . $dev->DeviceID );
+		exit;
+	}
 
-	$credentials = new Credentials($server, $user, $pass);
-	$proxmox = new Proxmox($credentials);
-	$vmList = $proxmox->get('/nodes/' . $dev->SNMPCommunity . '/qemu' );
+	$st = $dbh->prepare( "insert into fac_VMInventory set DeviceID=:DeviceID, LastUpdated=:LastUpdated, vmID=:vmID, vmState=:vmState, vmName=:vmName ON DUPLICATE KEY Update DeviceID=:DeviceID, vmState=:vmState, LastUpdated=:LastUpdated" );
 
 	foreach ( $vmList['data'] as $vm ) {
 		$parameters = array( ":DeviceID"=>$dev->DeviceID, ":LastUpdated"=>date("Y-m-d H:i:s"), ":vmID"=>$vm['vmid'], ":vmState"=>$vm['status'], ":vmName"=>$vm['name'] );
 
-
+		$st->execute( $parameters );	
 	}
 }
 ?>
