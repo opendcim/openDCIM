@@ -443,7 +443,11 @@
 		$dev->DeviceID=$_POST['VMrefresh'];
 		$dev->GetDevice();
 		if($dev->Rights=="Write"){
-			ESX::RefreshInventory($_POST['VMrefresh']);
+			if ( $dev->Hypervisor == "ESX" ) {
+				ESX::RefreshInventory($_POST['VMrefresh']);
+			} elseif ( $dev->Hypervisor == "ProxMox" ) {
+				ProxMox::RefreshInventory( $_POST['VMrefresh']);
+			}
 			buildVMtable($_POST['VMrefresh']);
 		}
 		exit;
@@ -817,7 +821,7 @@
 	$title=($dev->Label!='')?"$dev->Label :: $dev->DeviceID":__("openDCIM Device Maintenance");
 
 	function buildVMtable($DeviceID){
-		$Hyper=new ESX();
+		$Hyper=new VM();
 		$Hyper->DeviceID=$DeviceID;
 		$vmList=$Hyper->GetDeviceInventory();
 
