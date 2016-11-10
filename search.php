@@ -12,7 +12,7 @@
 	$dcList=$dc->GetDCList();
 	
 	$dev=new Device();
-	$esx=new ESX();
+	$vm=new VM();
 	$cab=new Cabinet();
 	$pdu=new PowerDistribution();
 	$dept=new Department();
@@ -35,8 +35,8 @@
 		$dev->Label=$searchTerm;
 		$devList=$dev->SearchDevicebyLabel();
 		//Virtual machines will never be search via asset tags or serial numbers
-		$esx->vmName=$dev->Label;
-		$vmList=$esx->SearchByVMName();
+		$vm->vmName=$dev->Label;
+		$vmList=$vm->SearchByVMName();
 		$cab->Location=$searchTerm;
 		$cabList=$cab->LooseSearch(true);
 		$resultcount=count($devList)+count($cabList)+count($vmList);
@@ -51,8 +51,8 @@
 		}
 		$dev->Owner=$dept->DeptID;
 		$devList=$dev->GetDevicesbyOwner();
-		$esx->Owner=$dept->DeptID;
-		$vmList=$esx->GetVMListbyOwner();
+		$vm->Owner=$dept->DeptID;
+		$vmList=$vm->GetVMListbyOwner();
 		$cab->AssignedTo=$dept->DeptID;
 		$cabList=$cab->Search(true);
 		//PDUs have no ownership information so don't search them

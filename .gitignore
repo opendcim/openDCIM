@@ -12,5 +12,6 @@ locale/*/LC_MESSAGES/openDCIM.po*
 
 #ignore pictures
 pictures/
+drawings/
 /composer.json
 /composer.lock

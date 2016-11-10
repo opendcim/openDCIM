@@ -22,19 +22,18 @@
 
 	For further details on the license, see http://www.gnu.org/licenses
 */
+require_once '../vendor/autoload.php';
 
-class ProxMox {
+use ProxmoxVE\Credentials;
+use ProxmoxVE\Proxmox;
+
+class PMox {
 	/*	ProxMox:	Class that contains methods, only, specific to ProxMox.
 
 					All properties and methods that are generic to VMs are in VM.class.php
 	*/
 
 	static function EnumerateVMs($d,$debug=false){
-		require_once 'vendor/autoload.php';
-
-		use ProxmoxVE\Credentials;
-		use ProxmoxVE\Proxmox;
-
 		$vmList=array();
 
 		// Establish credentials for this particular device
@@ -85,7 +84,7 @@ class ProxMox {
 			}
 
 			if ( $pveDev->SNMPFailureCount < 3 ) {
-				$vmList = ProxMox::RefreshInventory( $pveDev, $debug );
+				$vmList = PMox::RefreshInventory( $pveDev, $debug );
 			}
 
 			if($debug){
@@ -109,7 +108,7 @@ class ProxMox {
 		$update = $dbh->prepare( "update fac_VMInventory set DeviceID=:DeviceID, LastUpdated=:LastUpdated, vmID=:vmID, vmState=:vmState where vmName=:vmName" );
 		$insert = $dbh->prepare( "insert into fac_VMInventory set DeviceID=:DeviceID, LastUpdated=:LastUpdated, vmID=:vmID, vmState=:vmState, vmName=:vmName" );
 		
-		$vmList = ProxMox::EnumerateVMs( $dev, $debug );
+		$vmList = PMox::EnumerateVMs( $dev, $debug );
 		if ( count( $vmList ) > 0 ) {
 			foreach( $vmList as $vm ) {
 				$search->execute( array( ":vmName"=>$vm->vmName ) );
