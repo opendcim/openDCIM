@@ -713,7 +713,7 @@
 				// clearing errors for now
 				$LastWattage=$LastRead=$upTime=0;
 
-				$pwrConnection->DeviceID=($dev->ParentDevice>0)?$dev->GetRootDeviceID():$dev->DeviceID;
+				$pwrConnection->DeviceID=($dev->ParentDevice>0&&$dev->PowerSupplyCount==0)?$dev->GetRootDeviceID():$dev->DeviceID;
 				$pwrCords=$pwrConnection->getPorts();
 
 				if($dev->DeviceType=='CDU'){
@@ -1607,7 +1607,7 @@ print "		var dialog=$('<div>').prop('title',\"".__("Verify Delete Device")."\").
 		});
 		// Delete device confirmation dialog
 		$('button[value="Delete"]').click(function(e){
-			var form=$(this).parents('form');
+					var form=$(this).parents('form');
 			var btn=$(this);
 <?php echo '				dialog.find(\'span + span\').text("',__("This device will be deleted and there is no undo. Are you sure?"),'");'; ?>
 			dialog.dialog({
@@ -1914,12 +1914,12 @@ echo '		<div>
 		</div>';
 
 		// Blade devices don't have power supplies
-		if($dev->ParentDevice==0){
+		// if($dev->ParentDevice==0){
 			echo '		<div>
 		   <div><label for="PowerSupplyCount">',__("Power Connections"),'</label></div>
 		   <div><input type="number" class="optional,validate[custom[onlyNumberSp]]" name="PowerSupplyCount" id="PowerSupplyCount" value="',$dev->PowerSupplyCount,'"></div>
 		</div>';
-		}
+		// }
 
 		// Show extra info for chassis devices
 		if($dev->DeviceType=="Chassis"){
