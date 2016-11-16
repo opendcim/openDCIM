@@ -5,7 +5,7 @@
 	// Not really a loginPage, but this variable will keep us from getting redirected when
 	// using LDAP auth and there's no session (so true RESTful API capability)
 	//
-	if ( AUTHENTICATION == "LDAP" ) {
+	if ( AUTHENTICATION == "LDAP" || AUTHENTICATION == "AD" ) {
 		$loginPage = true;
 	}
 
@@ -121,7 +121,7 @@ function specifyAttributes( $attrList, $objList ) {
  * Checking if the request has valid api key in the 'Authorization' header
  */
 $app->hook('slim.before.dispatch', function () use($person) {
-	if ( AUTHENTICATION == "LDAP" ) {
+	if ( AUTHENTICATION == "LDAP" || AUTHENTICATION == "AD" ) {
 	    // Getting request headers
 	    $headers = apache_request_headers();
 	    $response = array();

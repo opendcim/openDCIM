@@ -225,13 +225,13 @@ class People {
 				return false;
 			}
 			$cperson->UserID=$_SERVER['REMOTE_USER'];
-			$cperson->GetUserRights();
-		} elseif(AUTHENTICATION=="Oauth" || AUTHENTICATION=="LDAP"){
+			$cperson->getUserRights();
+		}else{
 			if(!isset($_SESSION['userid'])){
 				return false;
 			}
 			$cperson->UserID=$_SESSION['userid'];
-			$cperson->GetUserRights();
+			$cperson->getUserRights();
 		}
 		
 		return $cperson;

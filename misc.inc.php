@@ -806,28 +806,36 @@ if( AUTHENTICATION=="Oauth" && !isset($_SESSION['userid']) && php_sapi_name()!="
 // Just to keep things from getting extremely wonky and complicated, even though this COULD be in one giant
 // if/then/else stanza, I'm breaking it into two
 
-if( AUTHENTICATION=="LDAP" && $config->ParameterArray["LDAPSessionExpiration"] > 0 && isset($_SESSION['userid']) && ((time() - $_SESSION['LoginTime']) > $config->ParameterArray['LDAPSessionExpiration'])) {
+if( ( AUTHENTICATION=="LDAP" || AUTHENTICATION=="AD" ) && $config->ParameterArray["LDAPSessionExpiration"] > 0 && isset($_SESSION['userid']) && ((time() - $_SESSION['LoginTime']) > $config->ParameterArray['LDAPSessionExpiration'])) {
 	session_unset();
 	session_destroy();
 	session_start();
 }
 
-if( AUTHENTICATION=="LDAP" && !isset($_SESSION['userid']) && php_sapi_name()!="cli" && !isset($loginPage)) {
+if( ( AUTHENTICATION=="LDAP" || AUTHENTICATION=="AD" ) && !isset($_SESSION['userid']) && php_sapi_name()!="cli" && !isset($loginPage)) {
 	$savedurl = $_SERVER['SCRIPT_NAME'] . "?" . $_SERVER['QUERY_STRING'];
 	setcookie( 'targeturl', $savedurl, time()+60 );
-	header("Location: ".redirect('login_ldap.php'));
-	exit;
+	if ( AUTHENTICATION=="AD" ) {
+		header("Location: ".redirect('login_ad.php'));
+		exit;
+	} else {
+		header("Location: ".redirect('login_ldap.php'));
+		exit;
+	}
 }
 
 // And just because you're logged in, it doesn't mean that we have your People record...
 if(!People::Current()){
-	if(AUTHENTICATION=="Oauth"){
+	if( AUTHENTICATION=="Oauth" ){
 		header("Location: ".redirect('oauth/login.php'));
 		exit;
 	} elseif ( AUTHENTICATION=="LDAP" && !isset($loginPage) ) {
 		header("Location: ".redirect($config->ParameterArray['InstallURL'].'login_ldap.php'));
 		exit;
-	} elseif(AUTHENTICATION=="Apache"){
+	} elseif ( AUTHENTICATION=="AD" && !isset($loginPage) ) {
+		header("Location: ".redirect($config->ParameterArray['InstallURL'].'login_ad.php'));
+		exit;
+	} elseif ( AUTHENTICATION=="Apache" ) {
 		print "<h1>You must have some form of Authentication enabled to use openDCIM.</h1>";
 		exit;
 	}
@@ -903,12 +911,13 @@ if ( $person->SiteAdmin ) {
 	$samenu[__("Path Connections")][]='<a href="pathmaker.php"><span>'.__("Make Path Connection").'</span></a>';
 	$samenu[]='<a href="configuration.php"><span>'.__("Edit Configuration").'</span></a>';
 }
-if( AUTHENTICATION == "LDAP" ) {
+if( AUTHENTICATION == "LDAP" || AUTHENTICATION == "AD" ) {
 	// Clear out the Reports menu button and create the Login menu button when not logged in
 	if ( isset($loginPage) ) {
 		$rmenu = array();
 	}
-	$lmenu[]='<a href="login_ldap.php?logout"><span>'.__("Logout").'</span></a>';
+
+	$lmenu[]='<a href="logout.php"><span>'.__("Logout").'</span></a>';
 }
 
 function download_file($archivo, $downloadfilename = null) {
