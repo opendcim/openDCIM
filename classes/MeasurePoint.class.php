@@ -32,6 +32,32 @@ class MeasurePoint {
 	var $AcquisitionMechanism;
 	var $Resource;
 
+	function prepare( $sql ) {
+		global $dbh;
+
+		return $dbh->prepare( $sql );
+	}
+
+	function lastInsertId() {
+		global $dbh;
+
+		return $dbh->lastInsertId();
+	}
+
+	function makeSafe() {
+		// Valid measurement types (for starters)
+		$validMeasureTypes = array( "Power", "Temperature", "Humidity", "Position", "Capacity", "Flow" );
+		// Valid units of measure (for now)
+		$validUoM = array( "Watts", "Degrees", "Percentage", "CFM" );
+
+		$this->MeasurePointID = intval( $this->MeasurePointID );
+		$this->Name = sanitize( $this->Name );
+		$this->MeasurementType = ( in_array( $this->MeasurementType, $validMeasureTypes ))?$this->MeasurementType:"Power";
+		$this->LoadSide = ( $this->LoadSide == 1 )?1:0;
+		$this->AcquisitionMechanism = intval( $this->AcquisitionMechanism );
+		// This might have to be removed depending on what we encounter with API specs, but I think it should be ok
+		$this->Resource = sanitize( $this->Resource );
+	}
 }
 
 ?>
