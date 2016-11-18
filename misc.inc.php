@@ -2,7 +2,7 @@
 /* All functions contained herein will be general use functions */
 
 /* Create a quick reference for datacenter data */
-$_SESSION['datacenters']=Datacenter::GetDCList(true);
+$_SESSION['datacenters']=DataCenter::GetDCList(true);
 
 /* Generic html sanitization routine */
 

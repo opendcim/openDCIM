@@ -22,7 +22,6 @@
 
 	For further details on the license, see http://www.gnu.org/licenses
 */
-require_once '../vendor/autoload.php';
 
 use ProxmoxVE\Credentials;
 use ProxmoxVE\Proxmox;

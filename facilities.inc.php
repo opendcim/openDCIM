@@ -30,11 +30,8 @@
 
 date_default_timezone_set($config->ParameterArray['timezone']);
 
-$rootdir = dirname(__FILE__);
-
-foreach( glob($rootdir."/classes/*.class.php") as $filename ) {
-	include_once $filename;
-}
+// Pull in the Composer autoloader
+require_once( __DIR__ . "/vendor/autoload.php" );
 
 require_once( "misc.inc.php" );
 
@@ -43,5 +40,6 @@ require_once( "misc.inc.php" );
 if(extension_loaded('snmp')){
 	require_once('OSS_SNMP/SNMP.php');
 }
+
 
 ?>
