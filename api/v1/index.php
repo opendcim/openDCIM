@@ -120,6 +120,7 @@ function specifyAttributes( $attrList, $objList ) {
  * Checking if the request has valid api key in the 'Authorization' header
  */
 
+// Since Middleware is applied in reverse order that it is added, make sure the Authentication function below is always the last one
 
 $app->add(function($request, $response, $next) use($person) {
 	if ( AUTHENTICATION == "LDAP" ) {
@@ -353,7 +354,7 @@ $app->get( '/cabinet', function(Request $request, Response $response) {
 		array_push( $r['cabinet'], $tmp );
 	}
 	
-	$this->view->render( $response, $r, $r['errorcode'] );
+	return $this->view->render( $response, $r, $r['errorcode'] );
 });
 
 //
@@ -387,9 +388,9 @@ $app->get( '/cabinet/{cabinetid}', function(Request $request, Response $response
 		$tmp['DataCenterName'] = $dc->Name;
 		
 		array_push( $r['cabinet'], $tmp );
-		
-		$this->view->render( $response, $r, $r['errorcode'] );
 	}
+
+	return $this->view->render( $response, $r, $r['errorcode'] );
 });
 
 //
@@ -424,7 +425,7 @@ $app->get( '/cabinet/bydc/{datacenterid}', function(Request $request, Response $
 		array_push( $r['cabinet'], $tmp );
 	}
 	
-	$this->view->render( $response, $r, $r['errorcode'] );
+	return $this->view->render( $response, $r, $r['errorcode'] );
 });
 
 //
@@ -446,7 +447,7 @@ $app->get( '/cabinet/{cabinetid}/sensor', function( Request $request, Response $
 		$r['sensors'] = $m;
 	}	
 
-	$this->view->render( $response, $r, $r['errorcode'] );
+	return $this->view->render( $response, $r, $r['errorcode'] );
 });
 
 //
@@ -481,7 +482,7 @@ $app->get( '/cabinet/bydept/{deptid}', function( Request $request, Response $res
 		array_push( $r['cabinet'], $tmp );
 	}
 	
-	$this->view->render( $response, $r, $r['errorcode'] );
+	return $this->view->render( $response, $r, $r['errorcode'] );
 });
 
 //
@@ -513,7 +514,7 @@ $app->get( '/device', function( Request $request, Response $response ) {
 
 	$r['device']=specifyAttributes( $outputAttr, $devList );
 
-	$this->view->render( $response, $r, $r['errorcode'] );
+	return $this->view->render( $response, $r, $r['errorcode'] );
 });
 
 //
@@ -531,7 +532,7 @@ $app->get( '/device/{deviceid}', function( Request $request, Response $response,
 		$r['error']=true;
 		$r['errorcode']=404;
 		$r['message']=__("No device found with DeviceID").$deviceid;
-		echoResponse(200,$response);
+		return $this->view->render( $response, $r, $r['errorcode'] );
 	}else{
 		if ( is_array( $dev->CustomValues ) ) {
 			$cattr = new DeviceCustomAttribute();
@@ -546,12 +547,11 @@ $app->get( '/device/{deviceid}', function( Request $request, Response $response,
 		$r['error']=false;
 		$r['errorcode']=200;
 		$r['device']=$dev;
-		
-		$this->view->render( $response, $r, $r['errorcode'] );
 	}
-});
 
-/*
+	return $this->view->render( $response, $r, $r['errorcode'] );
+
+});
 
 //
 //	URL:	/api/v1/device/:deviceid/getpicture
@@ -562,8 +562,8 @@ $app->get( '/device/{deviceid}', function( Request $request, Response $response,
 //	Returns:  HTML representation of a device
 //
 
-$app->get( '/device/:deviceid/getpicture', function($deviceid) {
-	$dev=new Device($deviceid);
+$app->get( '/device/{deviceid}/getpicture', function( Request $request, Response $response, $args ) {
+	$dev=new Device($args['deviceid']);
 	
 	$r['error']=true;
 	$r['errorcode']=404;
@@ -581,12 +581,12 @@ $app->get( '/device/:deviceid/getpicture', function($deviceid) {
 		$r['picture']=$dev->GetDevicePicture(isset($_GET['rear']));
 	}
 
-	echoResponse(200,$response);
+	return $this->view->render( $response, $r, $r['errorcode'] );
 });
 
-$app->get( '/device/:deviceid/getsensorreadings', function($deviceid) {
+$app->get( '/device/{deviceid}/getsensorreadings', function( Request $request, Response $response, $args ) {
 	$dev=new Device();
-	$dev->DeviceID=intval($deviceid);
+	$dev->DeviceID=intval($args['deviceid']);
 	
 	if(!$dev->GetDevice(false)){
 		$r['error']=true;
@@ -605,7 +605,7 @@ $app->get( '/device/:deviceid/getsensorreadings', function($deviceid) {
 		}
 	}
 
-	echoResponse(200,$response);
+	return $this->view->render( $response, $r, $r['errorcode'] );
 });
 
 // this is messy as all hell and i'm still thinking about how to do it better
@@ -618,15 +618,15 @@ $app->get( '/device/:deviceid/getsensorreadings', function($deviceid) {
 //		Required:  :deviceid - DeviceID for which you wish to retrieve ports
 //	Returns:	All ports for the given device
 
-$app->get('/deviceport/:deviceid', function($deviceid) use($app) {
+$app->get('/deviceport/{deviceid}', function( Request $request, Response $response, $args ) {
 	$dp = new DevicePorts();
 	
 	$r['error'] = false;
 	$r['errorcode'] = 200;
-	$dp->DeviceID = $deviceid;
+	$dp->DeviceID = $args['deviceid'];
 	$r['deviceport']=$dp->getPorts();
 
-	echoResponse(200,$response);
+	return $this->view->render( $response, $r, $r['errorcode'] );
 });
 
 //
@@ -642,13 +642,13 @@ $app->get('/deviceport/:deviceid', function($deviceid) use($app) {
 //	Returns:  All devices that this device can connect to
 //
 
-$app->get( '/deviceport/:deviceid/patchcandidates', function($deviceid) use ($app) {
+$app->get( '/deviceport/{deviceid}/patchcandidates', function( Request $request, Response $response, $args ) {
 	$s=new stdClass();
-	$s->portnumber=$app->request->get('portnumber');
-	$s->connectto=$app->request->get('connectto');
-	$s->listports=$app->request->get('listports');
-	$s->patchpanels=$app->request->get('patchpanels');
-	$s->limiter=$app->request->get('limiter');
+	$s->portnumber=$request->getQueryParams['portnumber'];
+	$s->connectto=$request->getQueryParams['connectto'];
+	$s->listports=$request->getQueryParams['listports'];
+	$s->patchpanels=$request->getQueryParams['patchpanels'];
+	$s->limiter=$request->getQueryParams['limiter'];
 
 	$r['error']=false;
 	$r['errorcode']=200;
@@ -659,7 +659,7 @@ $app->get( '/deviceport/:deviceid/patchcandidates', function($deviceid) use ($ap
 	}
 
 	if(is_null($s->listports)){
-		$r['device']=DevicePorts::getPatchCandidates($deviceid,$s->portnumber,null,$s->patchpanels,$s->limiter);
+		$r['device']=DevicePorts::getPatchCandidates($args['deviceid'],$s->portnumber,null,$s->patchpanels,$s->limiter);
 	}else{
 		$dp=new DevicePorts();
 		$dp->DeviceID=$s->connectto;
@@ -677,7 +677,7 @@ $app->get( '/deviceport/:deviceid/patchcandidates', function($deviceid) use ($ap
 		}
 
 		// S.U.T. #2342 I touch myself
-		if($dp->DeviceID == $deviceid && isset($list[$s->portnumber])){
+		if($dp->DeviceID == $args['deviceid'] && isset($list[$s->portnumber])){
 			unset($list[$s->portnumber]);
 		}
 
@@ -702,7 +702,7 @@ $app->get( '/deviceport/:deviceid/patchcandidates', function($deviceid) use ($ap
 		$r['deviceport']=$list;
 	}
 
-	echoResponse(200,$response);
+	return $this->view->render( $response, $r, $r['errorcode'] );
 });
 
 //
@@ -712,14 +712,14 @@ $app->get( '/deviceport/:deviceid/patchcandidates', function($deviceid) use ($ap
 //	Returns:  All devices for which the user's rights have access to view
 //
 
-$app->get( '/device/bydatacenter/:datacenterid', function( $datacenterid ) {
+$app->get( '/device/bydatacenter/{datacenterid}', function( Request $request, Response $response, $args ) {
 	$dev=new Device();
 	
 	$r['error']=false;
 	$r['errorcode']=200;
-	$r['device']=$dev->GetDeviceList(intval($datacenterid));
+	$r['device']=$dev->GetDeviceList(intval($args['datacenterid']));
 
-	echoResponse( 200, $response );
+	return $this->view->render( $response, $r, $r['errorcode'] );
 });
 
 //
@@ -729,12 +729,12 @@ $app->get( '/device/bydatacenter/:datacenterid', function( $datacenterid ) {
 //	Returns:  All devices for which the user's rights have access to view
 //
 
-$app->get( '/device/byproject/:projectid', function( $projectid ) {
+$app->get( '/device/byproject/{projectid}', function( Request $request, Response $response, $args ) {
 	$r['error']=false;
 	$r['errorcode']=200;
-	$r['device']=ProjectMembership::getProjectMembership( $projectid );
+	$r['device']=ProjectMembership::getProjectMembership( $args['projectid'] );
 
-	echoResponse( 200, $response );
+	return $this->view->render( $response, $r, $r['errorcode'] );
 });
 
 
@@ -745,12 +745,12 @@ $app->get( '/device/byproject/:projectid', function( $projectid ) {
 //	Returns:  All project metadata
 //
 
-$app->get( '/project', function() {
+$app->get( '/project', function( Request $request, Response $response ) {
 	$r['error']=false;
 	$r['errorcode']=200;
 	$r['project']=Projects::getProjectList();
 
-	echoResponse( 200, $response );
+	return $this->view->render( $response, $r, $r['errorcode'] );
 });
 
 //
@@ -760,12 +760,12 @@ $app->get( '/project', function() {
 //	Returns:  All project metadata for projects the deviceid is a member of
 //
 
-$app->get( '/project/bydevice/:deviceid', function( $deviceid ) {
+$app->get( '/project/bydevice/{deviceid}', function( Request $request, Response $response, $args ) {
 	$r['error']=false;
 	$r['errorcode']=200;
-	$r['project']=ProjectMembership::getDeviceMembership( $deviceid );
+	$r['project']=ProjectMembership::getDeviceMembership( $args['deviceid'] );
 
-	echoResponse( 200, $response );
+	return $this->view->render( $response, $r, $r['errorcode'] );
 });
 
 
@@ -776,12 +776,12 @@ $app->get( '/project/bydevice/:deviceid', function( $deviceid ) {
 //	Returns:  All power ports for a device or a specific port
 //
 
-$app->get( '/powerport/:deviceid', function($deviceid) use ($app) {
+$app->get( '/powerport/{deviceid}', function( Request $request, Response $response, $args ) {
 	$pp=new PowerPorts();
 	
 	$r['error']=false;
 	$r['errorcode']=200;
-	$pp->DeviceID=$deviceid;
+	$pp->DeviceID=$args['deviceid'];
 	foreach($app->request->get() as $prop => $val){
 		$pp->$prop=$val;
 	}
@@ -807,7 +807,7 @@ $app->get( '/powerport/:deviceid', function($deviceid) use ($app) {
 		$r['powerport']=$pp->getPorts();
 	}
 
-	echoResponse(200,$response);
+	return $this->view->render( $response, $r, $r['errorcode'] );
 });
 
 
@@ -823,7 +823,7 @@ $app->get( '/colorcode', function() {
 	$r['errorcode']=200;
 	$r['colorcode']=ColorCoding::GetCodeList();;
 		
-	echoResponse(200,$response);
+	return $this->view->render( $response, $r, $r['errorcode'] );
 });
 
 //
@@ -833,9 +833,9 @@ $app->get( '/colorcode', function() {
 //	Returns:  All defined color codes matching :colorid 
 //
 
-$app->get( '/colorcode/:colorid', function($colorid) {
+$app->get( '/colorcode/{colorid}', function( Request $request, Response $response, $args ) {
 	$cc=new ColorCoding();
-	$cc->ColorID=$colorid;
+	$cc->ColorID=$args['colorid'];
 	
 	if(!$cc->GetCode()){
 		$r['error']=true;
@@ -847,7 +847,7 @@ $app->get( '/colorcode/:colorid', function($colorid) {
 		$r['colorcode'][$cc->ColorID]=$cc;
 	}
 
-	echoResponse(200,$response);
+	return $this->view->render( $response, $r, $r['errorcode'] );
 });
 
 //
@@ -862,7 +862,7 @@ $app->get( '/colorcode/:colorid/timesused', function($colorid) {
 	$r['errorcode']=200;
 	$r['colorcode']=ColorCoding::TimesUsed($colorid);
 	
-	echoResponse(200,$response);
+	return $this->view->render( $response, $r, $r['errorcode'] );
 });
 
 
@@ -873,19 +873,19 @@ $app->get( '/colorcode/:colorid/timesused', function($colorid) {
 //	Returns: All available device templates
 //
 
-$app->get( '/devicetemplate', function() use ($app) {
+$app->get( '/devicetemplate', function() {
 	$dt=new DeviceTemplate();
 	$r['error']=false;
 	$r['errorcode']=200;
 	$loose = false;
 	$outputAttr = array();
 
-	foreach($app->request->get() as $prop => $val){
+	foreach($request->getQueryParams() as $prop => $val){
 		if ( strtoupper($prop) == "WILDCARDS" ) {
 			$loose = true;
 		} elseif (strtoupper($prop) == "ATTRIBUTES" ) {
 			$outputAttr = explode( ",", $val );
-		} else {
+		} elseif (property_exists( $dt, $prop )) {
 			$dt->$prop=$val;
 		}
 	}
@@ -894,7 +894,7 @@ $app->get( '/devicetemplate', function() use ($app) {
 
 	$r['devicetemplate']=specifyAttributes( $outputAttr, $tmpList );
 
-	echoResponse(200,$response);
+	return $this->view->render( $response, $r, $r['errorcode'] );
 });
 
 //
@@ -908,25 +908,25 @@ $app->get( '/devicetemplate', function() use ($app) {
 //  path might be revisited.
 //
 
-$app->get( '/devicetemplate/:templateid', function($templateid) use ($app) {
+$app->get( '/devicetemplate/{templateid}', function( Request $request, Response $response, $args ) {
 	if($templateid=='image'){
 		$r['error']=false;
 		$r['errorcode']=200;
 		$r['image']=DeviceTemplate::getAvailableImages();
 	}else{
 		$dt=new DeviceTemplate();
-		$dt->TemplateID=$templateid;
+		$dt->TemplateID=$args['templateid'];
 		if(!$dt->GetTemplateByID()){
 			$r['error']=true;
 			$r['errorcode']=404;
-			$r['message']=__("No template found with TemplateID: ")." $templateid";
+			$r['message']=__("No template found with TemplateID: ")." ".$args['templateid'];
 		}else{
 			$r['error']=false;
 			$r['errorcode']=200;
 			$r['template']=$dt;
 		}
 	}
-	echoResponse(200,$response);
+	return $this->view->render( $response, $r, $r['errorcode'] );
 });
 
 //
@@ -936,20 +936,20 @@ $app->get( '/devicetemplate/:templateid', function($templateid) use ($app) {
 //	Returns: Data ports defined for device template with templateid
 //
 
-$app->get( '/devicetemplate/:templateid/dataport', function($templateid) use ($app) {
+$app->get( '/devicetemplate/{templateid}/dataport', function( Request $request, Response $response, $args ) {
 	$tp=new TemplatePorts();
-	$tp->TemplateID=$templateid;
+	$tp->TemplateID=$args['templateid'];
 	if(!$ports=$tp->getPorts()){
 		$r['error']=true;
 		$r['errorcode']=404;
-		$r['message']=__("No ports found for TemplateID: ")." $templateid";
+		$r['message']=__("No ports found for TemplateID: ")." ".$args['templateid'];
 	}else{
 		$r['error']=false;
 		$r['errorcode']=200;
 		$r['dataport']=$ports;
 	}
 
-	echoResponse(200,$response);
+	return $this->view->render( $response, $r, $r['errorcode'] );
 });
 
 //
@@ -959,21 +959,21 @@ $app->get( '/devicetemplate/:templateid/dataport', function($templateid) use ($a
 //	Returns: Single data port defined for device template with templateid and portnum
 //
 
-$app->get( '/devicetemplate/:templateid/dataport/:portnumber', function($templateid,$portnumber) use ($app) {
+$app->get( '/devicetemplate/{templateid}/dataport/{portnumber}', function( Request $request, Response $response, $args ) {
 	$tp=new TemplatePorts();
-	$tp->TemplateID=$templateid;
-	$tp->PortNumber=$portnumber;
+	$tp->TemplateID=$args['templateid'];
+	$tp->PortNumber=$args['portnumber'];
 	if(!$tp->getPort()){
 		$r['error']=true;
 		$r['errorcode']=404;
-		$r['message']=__("Port not found for TemplateID: ")." $templateid:$portnumber";
+		$r['message']=__("Port not found for TemplateID: ")." ".$args['templateid'].":".$args['portnumber'];
 	}else{
 		$r['error']=false;
 		$r['errorcode']=200;
 		$r['dataport']=$tp;
 	}
 
-	echoResponse(200,$response);
+	return $this->view->render( $response, $r, $r['errorcode'] );
 });
 
 //
@@ -983,20 +983,20 @@ $app->get( '/devicetemplate/:templateid/dataport/:portnumber', function($templat
 //	Returns: Power ports defined for device template with templateid
 //
 
-$app->get( '/devicetemplate/:templateid/powerport', function($templateid) use ($app) {
+$app->get( '/devicetemplate/{templateid}/powerport', function( Request $request, Response $response, $args ) {
 	$tp=new TemplatePowerPorts();
-	$tp->TemplateID=$templateid;
+	$tp->TemplateID=$args['templateid'];
 	if(!$ports=$tp->getPorts()){
 		$r['error']=true;
 		$r['errorcode']=404;
-		$r['message']=__("No ports found for TemplateID: ")." $templateid";
+		$r['message']=__("No ports found for TemplateID: ")." ".$args['templateid'];
 	}else{
 		$r['error']=false;
 		$r['errorcode']=200;
 		$r['powerport']=$ports;
 	}
 
-	echoResponse(200,$response);
+	return $this->view->render( $response, $r, $r['errorcode'] );
 });
 
 //
@@ -1006,18 +1006,18 @@ $app->get( '/devicetemplate/:templateid/powerport', function($templateid) use ($
 //	Returns: Slots defined for device template with templateid
 //
 
-$app->get( '/devicetemplate/:templateid/slot', function($templateid) use ($app) {
-	if(!$slots=slot::GetAll($templateid)){
+$app->get( '/devicetemplate/{templateid}/slot', function( Request $request, Response $response, $args ) {
+	if(!$slots=slot::GetAll($args['templateid'])){
 		$r['error']=true;
 		$r['errorcode']=404;
-		$r['message']=__("No slots found for TemplateID: ")." $templateid";
+		$r['message']=__("No slots found for TemplateID: ")." ".$args['templateid'];
 	}else{
 		$r['error']=false;
 		$r['errorcode']=200;
 		$r['slot']=$slots;
 	}
 
-	echoResponse(200,$response);
+	return $this->view->render( $response, $r, $r['errorcode'] );
 });
 
 //
@@ -1027,17 +1027,17 @@ $app->get( '/devicetemplate/:templateid/slot', function($templateid) use ($app) 
 //	Returns:  All defined manufacturers 
 //
 
-$app->get( '/manufacturer', function() use ($app) {
+$app->get( '/manufacturer', function( Request $request, Response $response ) {
 	$man=new Manufacturer();
 	
 	$r['error']=false;
 	$r['errorcode']=200;
-	foreach($app->request->get() as $prop => $val){
+	foreach($request->getQueryParams() as $prop => $val){
 		$man->$prop=$val;
 	}
 	$r['manufacturer']=$man->GetManufacturerList();
 
-	echoResponse(200,$response);
+	return $this->view->render( $response, $r, $r['errorcode'] );
 });
 
 //
@@ -1047,17 +1047,17 @@ $app->get( '/manufacturer', function() use ($app) {
 //	Returns:  All zones for which the user's rights have access to view
 //
 
-$app->get( '/zone', function() use ($app) {
+$app->get( '/zone', function( Request $request, Response $response ) {
 	$zone=new Zone();
 	
 	$r['error']=false;
 	$r['errorcode']=200;
-	foreach($app->request->get() as $prop => $val){
+	foreach($request->getQueryParams() as $prop => $val){
 		$zone->$prop=$val;
 	}
 	$r['zone']=$zone->Search(true);
 
-	echoResponse(200,$response);
+	return $this->view->render( $response, $r, $r['errorcode'] );
 });
 
 //
@@ -1067,18 +1067,18 @@ $app->get( '/zone', function() use ($app) {
 //	Returns: Zone identified by :zoneid 
 //
 
-$app->get( '/zone/:zoneid', function($zoneid) use ($app) {
+$app->get( '/zone/{zoneid}', function( Request $request, Response $response, $args ) {
 	$zone=new Zone();
-	$zone->ZoneID=$zoneid;
+	$zone->ZoneID=$args['zoneid'];
 	
 	$r['error']=false;
 	$r['errorcode']=200;
-	foreach($app->request->get() as $prop => $val){
+	foreach($request->getQueryParams() as $prop => $val){
 		$dev->$prop=$val;
 	}
 	$r['zone']=$zone->GetZone();
 
-	echoResponse(200,$response);
+	return $this->view->render( $response, $r, $r['errorcode'] );
 });
 
 //
@@ -1088,17 +1088,17 @@ $app->get( '/zone/:zoneid', function($zoneid) use ($app) {
 //	Returns:  All cabinet rows for which the user's rights have access to view
 //
 
-$app->get( '/cabrow', function() use ($app) {
+$app->get( '/cabrow', function( Request $request, Response $response ) {
 	$cabrow=new CabRow();
 	
 	$r['error']=false;
 	$r['errorcode']=200;
-	foreach($app->request->get() as $prop => $val){
+	foreach($request->getQueryParams() as $prop => $val){
 		$cabrow->$prop=$val;
 	}
 	$r['cabrow']=$cabrow->Search(true);
 
-	echoResponse(200,$response);
+	return $this->view->render( $response, $r, $r['errorcode'] );
 });
 
 
@@ -1126,7 +1126,7 @@ $app->post('/people/:personid', function($personid) use ($app,$person) {
 		$r['error']=true;
 		$r['errorcode']=400;
 		$r['message']=__("Insufficient privilege level");
-		echoResponse(200,$response);
+		return $this->view->render( $response, $r, $r['errorcode'] );
 		$app->stop();
 	}
 
@@ -1137,7 +1137,7 @@ $app->post('/people/:personid', function($personid) use ($app,$person) {
 		$r['error']=true;
 		$r['errorcode']=404;
 		$r['message']=__("User not found in database.");
-		echoResponse(200,$response);
+		return $this->view->render( $response, $r, $r['errorcode'] );
 	} else {	
 		// Slim Framework will simply return null for any variables that were not passed, so this is safe to call without blowing up the script
 		foreach($p as $prop => $val){
@@ -1149,14 +1149,14 @@ $app->post('/people/:personid', function($personid) use ($app,$person) {
 			$r['error']=true;
 			$r['errorcode']=403;
 			$r['message']=__("Unable to update People resource with the given parameters.");
-			echoResponse(200,$response);
+			return $this->view->render( $response, $r, $r['errorcode'] );
 		}else{
 			$r['error']=false;
 			$r['errorcode']=200;
 			$r['message']=sprintf(__('People resource for UserID=%1$s updated successfully.'),$p->UserID);
 			$r['people']=$p;
 
-			echoResponse(200,$response);
+			return $this->view->render( $response, $r, $r['errorcode'] );
 		}
 	}
 });
@@ -1200,7 +1200,7 @@ $app->post('/people/:peopleid/transferdevicesto/:newpeopleid', function($peoplei
 		}
 	}
 
-	echoResponse(200,$response);
+	return $this->view->render( $response, $r, $r['errorcode'] );
 });
 
 //
@@ -1222,7 +1222,7 @@ $app->post( '/powerport/:deviceid', function($deviceid) use ($app, $person) {
 	$r['error']=($pp->updatePort())?false:true;
 	$r['errorcode']=200;
 
-	echoResponse(200,$response);
+	return $this->view->render( $response, $r, $r['errorcode'] );
 });
 
 //
@@ -1243,7 +1243,7 @@ $app->post( '/colorcode/:colorid', function($colorid) use ($app, $person) {
 	$r['error']=($cc->UpdateCode())?false:true;
 	$r['errorcode']=200;
 
-	echoResponse(200,$response);
+	return $this->view->render( $response, $r, $r['errorcode'] );
 });
 
 //
@@ -1259,7 +1259,7 @@ $app->post( '/colorcode/:colorid/replacewith/:newcolorid', function($colorid,$ne
 	$r['error']=(ColorCoding::ResetCode($colorid,$newcolorid))?false:true;
 	$r['errorcode']=200;
 
-	echoResponse(200,$response);
+	return $this->view->render( $response, $r, $r['errorcode'] );
 });
 
 //
@@ -1297,7 +1297,7 @@ $app->post( '/device/:deviceid', function($deviceid) use ($app) {
 		}
 	}
 
-	echoResponse(200,$response);
+	return $this->view->render( $response, $r, $r['errorcode'] );
 });
 
 //
@@ -1336,7 +1336,7 @@ $app->post( '/devicetemplate/:templateid', function($templateid) use ($app,$pers
 			}
 		}
 	}
-	echoResponse(200,$response);
+	return $this->view->render( $response, $r, $r['errorcode'] );
 });
 
 //
@@ -1378,7 +1378,7 @@ $app->post( '/devicetemplate/:templateid/dataport/:portnumber', function($templa
 		}
 	}
 
-	echoResponse(200,$response);
+	return $this->view->render( $response, $r, $r['errorcode'] );
 });
 
 //
@@ -1423,7 +1423,7 @@ $app->post( '/devicetemplate/:templateid/slot/:slotnum', function($templateid,$s
 		}
 	}
 
-	echoResponse(200,$response);
+	return $this->view->render( $response, $r, $r['errorcode'] );
 });
 
 //
@@ -1459,7 +1459,7 @@ $app->post( '/manufacturer/:manufacturerid', function($manufacturerid) use ($app
 		}
 	}
 
-	echoResponse(200,$response);
+	return $this->view->render( $response, $r, $r['errorcode'] );
 });
 
 /**
@@ -1523,14 +1523,14 @@ $app->put('/people/:userid', function($userid) use ($app,$person) {
 			$r['error']=true;
 			$r['errorcode']=403;
 			$r['message']=__("Unable to create People resource with the given parameters.");
-			echoResponse(200,$response);
+			return $this->view->render( $response, $r, $r['errorcode'] );
 		}else{
 			$r['error']=false;
 			$responde['errorcode']=200;
 			$r['message']=__("People resource created successfully.");
 			$r['people']=$p;
 
-			echoResponse(200,$response);
+			return $this->view->render( $response, $r, $r['errorcode'] );
 		}
 	}
 });
@@ -1568,7 +1568,7 @@ $app->put( '/colorcode/:colorname', function($colorname) use ($app) {
 		$r['message']=__("New color created successfully.");
 		$r['colorcode'][$cc->ColorID]=$cc;
 	}
-	echoResponse(200,$response);
+	return $this->view->render( $response, $r, $r['errorcode'] );
 });
 
 //
@@ -1646,7 +1646,7 @@ $app->put( '/device/:devicelabel', function($devicelabel) use ($app) {
 		}
 	}
 
-	echoResponse(200,$response);
+	return $this->view->render( $response, $r, $r['errorcode'] );
 });
 
 //
@@ -1691,7 +1691,7 @@ $app->put( '/device/:deviceid/copyto/:newposition', function($deviceid, $newposi
 		}
 	}
 
-	echoResponse(200,$response);
+	return $this->view->render( $response, $r, $r['errorcode'] );
 });
 
 //
@@ -1739,7 +1739,7 @@ $app->put( '/devicetemplate/:model', function($model) use ($app,$person) {
 		}
 	}
 
-	echoResponse(200,$response);
+	return $this->view->render( $response, $r, $r['errorcode'] );
 });
 
 //
@@ -1785,7 +1785,7 @@ $app->put( '/devicetemplate/:templateid/dataport/:portnum', function($templateid
 		}
 	}
 
-	echoResponse(200,$response);
+	return $this->view->render( $response, $r, $r['errorcode'] );
 });
 
 //
@@ -1831,7 +1831,7 @@ $app->put( '/devicetemplate/:templateid/powerport/:portnum', function($templatei
 		}
 	}
 
-	echoResponse(200,$response);
+	return $this->view->render( $response, $r, $r['errorcode'] );
 });
 
 //
@@ -1868,7 +1868,7 @@ $app->put( '/devicetemplate/:templateid/slot/:slotnum', function($templateid,$sl
 		}
 	}
 
-	echoResponse(200,$response);
+	return $this->view->render( $response, $r, $r['errorcode'] );
 });
 
 //
@@ -1910,7 +1910,7 @@ $app->put( '/manufacturer/:name', function($name) use ($app,$person) {
 		}
 	}
 
-	echoResponse(200,$response);
+	return $this->view->render( $response, $r, $r['errorcode'] );
 });
 /**
   *
@@ -1975,7 +1975,7 @@ $app->delete( '/powerport/:deviceid', function($deviceid) use ($app, $person) {
 
 	$r['errorcode']=200;
 
-	echoResponse(200,$response);
+	return $this->view->render( $response, $r, $r['errorcode'] );
 });
 
 //
@@ -1997,7 +1997,7 @@ $app->delete( '/colorcode/:colorid', function($colorid) {
 		$r['error']=false;
 		$r['errorcode']=200;
 	}
-	echoResponse(200,$response);
+	return $this->view->render( $response, $r, $r['errorcode'] );
 });
 
 //
@@ -2031,7 +2031,7 @@ $app->delete( '/device/:deviceid', function($deviceid) {
 			}
 		}
 	}
-	echoResponse(200,$response);
+	return $this->view->render( $response, $r, $r['errorcode'] );
 });
 
 */
