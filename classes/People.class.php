@@ -263,6 +263,8 @@ class People {
 			foreach( People::RowToObject( $row ) as $prop=>$value ) {
 				$this->$prop=$value;
 			}
+
+			return true;
 		} else {
 			// Kick back a blank record if the PersonID was not found
 			foreach ( $this as $prop => $value ) {
@@ -270,6 +272,8 @@ class People {
 					$this->$prop = '';
 				}
 			}
+
+			return false;
 		}
 	}
 	

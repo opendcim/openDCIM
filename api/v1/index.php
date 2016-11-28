@@ -49,52 +49,6 @@
  */
  
 	$user_id = NULL;
-	
-/**
- * Verifying required params posted or not
- */
-function verifyRequiredParams($required_fields) {
-    $error = false;
-    $error_fields = "";
-    $request_params = array();
-    $request_params = $_REQUEST;
-    // Handling PUT request params
-    if ($_SERVER['REQUEST_METHOD'] == 'PUT') {
-        $app = \Slim\Slim::getInstance();
-        parse_str($app->request()->getBody(), $request_params);
-    }
-    foreach ($required_fields as $field) {
-        if (!isset($request_params[$field]) || strlen(trim($request_params[$field])) <= 0) {
-            $error = true;
-            $error_fields .= $field . ', ';
-        }
-    }
- 
-    if ($error) {
-        // Required field(s) are missing or empty
-        // echo error json and stop the app
-        $response = array();
-        $app = \Slim\Slim::getInstance();
-        $r["error"] = true;
-        $r["message"] = 'Required field(s) ' . substr($error_fields, 0, -2) . ' is missing or empty';
-        echoResponse(400, $response);
-        $app->stop();
-    }
-}
- 
-/**
- * Validating email address
- */
-function validateEmail($email) {
-    $app = \Slim\Slim::getInstance();
-    if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
-        $r["error"] = true;
-        $r["message"] = 'Email address is not valid';
-        echoResponse(400, $response);
-        $app->stop();
-    }
-}
- 
 
 function specifyAttributes( $attrList, $objList ) {
 	if ( sizeof( $attrList ) > 0 ) {
@@ -134,6 +88,7 @@ $app->add(function($request, $response, $next) use($person) {
 
 	 		$person->UserID = $_SESSION['userid'];
 	 		$person->GetPersonByUserID();
+
 	 	} elseif ( isset($headers['HTTP_USERID']) && isset($headers['HTTP_APIKEY'])) {
 	    	// Load up the $person variable - so at this point, everything else functions
 	    	// the same way as with Apache authorization - using the $person class
@@ -1110,7 +1065,6 @@ $app->get( '/cabrow', function( Request $request, Response $response ) {
   *
   **/
 
-/*
 //
 //	URL:	/api/v1/people
 //	Method: POST
@@ -1121,44 +1075,46 @@ $app->get( '/cabrow', function( Request $request, Response $response ) {
 //	Returns: record as modified
 //
 
-$app->post('/people/:personid', function($personid) use ($app,$person) {
+$app->post('/people/{personid}', function( Request $request, Response $response, $args ) use ($person) {
 	if(!$person->ContactAdmin){
 		$r['error']=true;
 		$r['errorcode']=400;
 		$r['message']=__("Insufficient privilege level");
-		return $this->view->render( $response, $r, $r['errorcode'] );
-		$app->stop();
-	}
-
-	$response=array();
-	$p=new People();
-	$p->PersonID=$personid;
-	if(!$p->GetPerson()){
-		$r['error']=true;
-		$r['errorcode']=404;
-		$r['message']=__("User not found in database.");
-		return $this->view->render( $response, $r, $r['errorcode'] );
-	} else {	
-		// Slim Framework will simply return null for any variables that were not passed, so this is safe to call without blowing up the script
-		foreach($p as $prop => $val){
-			$p->$prop=$app->request->post($prop);
-		}
-		$p->Disabled=false;
-		
-		if(!$p->UpdatePerson()){
+	} else {
+		$r = array();
+		$p=new People();
+		$p->PersonID=$args['personid'];
+		if(!$p->GetPerson()){
 			$r['error']=true;
-			$r['errorcode']=403;
-			$r['message']=__("Unable to update People resource with the given parameters.");
-			return $this->view->render( $response, $r, $r['errorcode'] );
-		}else{
-			$r['error']=false;
-			$r['errorcode']=200;
-			$r['message']=sprintf(__('People resource for UserID=%1$s updated successfully.'),$p->UserID);
-			$r['people']=$p;
-
-			return $this->view->render( $response, $r, $r['errorcode'] );
+			$r['errorcode']=404;
+			$r['message']=__("UserID=" . $p->PersonID . " not found in database.");
+		} else {	
+			// Slim Framework will simply return null for any variables that were not passed, so this is safe to call without blowing up the script
+			$vars = $request->getParsedBody();
+			foreach($p as $prop => $val){
+				if ( isset( $vars[$prop] ) ){
+					$p->$prop=$vars[$prop];
+				}
+			}
+			$p->Disabled=false;
+			
+			if(!$p->UpdatePerson()){
+				$r['error']=true;
+				$r['errorcode']=403;
+				$r['message']=__("Unable to update People resource with the given parameters.");
+			}else{
+				$r['error']=false;
+				$r['errorcode']=200;
+				$r['message']=sprintf(__('People resource for UserID=%s updated successfully.'),$p->UserID);
+				$r['people']=$p;
+			}
 		}
 	}
+
+	// Possible to-do list for someone to figure out...  why the $app->view scope isn't included
+	// when you have the use($person) clause - also doesn't work if you make it use ($app, $person)
+	$response = $response->withJson( $r, $r['errorcode'] );
+	return $response;
 });
 
 //
@@ -1169,7 +1125,7 @@ $app->post('/people/:personid', function($personid) use ($app,$person) {
 //	Returns: true / false on the updates being successful 
 //
 
-$app->post('/people/:peopleid/transferdevicesto/:newpeopleid', function($peopleid,$newpeopleid) use ($app, $person) {
+$app->post('/people/{peopleid}/transferdevicesto/{newpeopleid}', function( Request $request, Response $response, $args ) use ( $person) {
 	$r['error']=false;
 	$r['errorcode']=200;
 
@@ -1177,8 +1133,8 @@ $app->post('/people/:peopleid/transferdevicesto/:newpeopleid', function($peoplei
 	foreach(array('peopleid','newpeopleid') as $var){
 		$p=new People();
 
-		$p->UserID=$$var;
-		if(!$p->GetPerson() && ($var!='newpeopleid' && $$var==0)){
+		$p->UserID=$args[$var];
+		if(!$p->GetPerson() && ($var!='newpeopleid' && $args[$var]==0)){
 			$r['error']=true;
 			$r['message']="$var is not valid";
 			continue;
@@ -1188,9 +1144,9 @@ $app->post('/people/:peopleid/transferdevicesto/:newpeopleid', function($peoplei
 	// If we error above don't attempt to make changes
 	if(!$r['error']){
 		$dev=new Device();
-		$dev->PrimaryContact=$peopleid;
+		$dev->PrimaryContact=$args['peopleid'];
 		foreach($dev->Search() as $d){
-			$d->PrimaryContact=$newpeopleid;
+			$d->PrimaryContact=$args['newpeopleid'];
 			if(!$d->UpdateDevice()){
 				// If we encounter an error stop immediately
 				$r['error']=true;
@@ -1200,7 +1156,8 @@ $app->post('/people/:peopleid/transferdevicesto/:newpeopleid', function($peoplei
 		}
 	}
 
-	return $this->view->render( $response, $r, $r['errorcode'] );
+	$response = $response->withJson( $r, $r['errorcode'] );
+	return $response;
 });
 
 //
@@ -1212,17 +1169,19 @@ $app->post('/people/:peopleid/transferdevicesto/:newpeopleid', function($peoplei
 //	Returns:  true/false on update operation
 //
 
-$app->post( '/powerport/:deviceid', function($deviceid) use ($app, $person) {
+$app->post( '/powerport/{deviceid}', function( Request $request, Response $response, $args ) use ($person) {
 	$pp=new PowerPorts();
-	$pp->DeviceID=$deviceid;
-	foreach($app->request->post() as $prop => $val){
+	$pp->DeviceID=$args['deviceid'];
+	$vars = $request->getParsedBody();
+	foreach($vars as $prop => $val){
 		$pp->$prop=$val;
 	}
 
 	$r['error']=($pp->updatePort())?false:true;
 	$r['errorcode']=200;
 
-	return $this->view->render( $response, $r, $r['errorcode'] );
+	$response = $response->withJson( $r, $r['errorcode'] );
+	return $response;
 });
 
 //
@@ -1234,18 +1193,20 @@ $app->post( '/powerport/:deviceid', function($deviceid) use ($app, $person) {
 //	Returns:  true/false on update operation
 //
 
-$app->post( '/colorcode/:colorid', function($colorid) use ($app, $person) {
+$app->post( '/colorcode/{colorid}', function( Request $request, Response $response, $args ) use ($person) {
 	$cc=new ColorCoding();
-	foreach($app->request->post() as $prop => $val){
+	$vars = $request->getParsedBody();
+	foreach($vars as $prop => $val){
 		$cc->$prop=$val;
 	}
 
 	$r['error']=($cc->UpdateCode())?false:true;
 	$r['errorcode']=200;
 
-	return $this->view->render( $response, $r, $r['errorcode'] );
+	$response = $response->withJson( $r, $r['errorcode'] );
+	return $response;
 });
-
+/*
 //
 //	URL:	/api/v1/colorcode/:colorid/replacewith/:newcolorid
 //	Method:	POST
