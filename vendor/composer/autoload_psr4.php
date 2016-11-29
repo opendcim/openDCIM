@@ -6,7 +6,6 @@ $vendorDir = dirname(dirname(__FILE__));
 $baseDir = dirname($vendorDir);
 
 return array(
-    'Slim\\Views\\' => array($vendorDir . '/bdemirkir/slim-json-view/src'),
     'Slim\\' => array($vendorDir . '/slim/slim/Slim'),
     'Psr\\Http\\Message\\' => array($vendorDir . '/psr/http-message/src'),
     'ProxmoxVE\\' => array($vendorDir . '/zzantares/proxmoxve/src'),

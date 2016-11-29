@@ -338,61 +338,6 @@
         ]
     },
     {
-        "name": "swiftmailer/swiftmailer",
-        "version": "v5.4.3",
-        "version_normalized": "5.4.3.0",
-        "source": {
-            "type": "git",
-            "url": "https://github.com/swiftmailer/swiftmailer.git",
-            "reference": "4cc92842069c2bbc1f28daaaf1d2576ec4dfe153"
-        },
-        "dist": {
-            "type": "zip",
-            "url": "https://api.github.com/repos/swiftmailer/swiftmailer/zipball/4cc92842069c2bbc1f28daaaf1d2576ec4dfe153",
-            "reference": "4cc92842069c2bbc1f28daaaf1d2576ec4dfe153",
-            "shasum": ""
-        },
-        "require": {
-            "php": ">=5.3.3"
-        },
-        "require-dev": {
-            "mockery/mockery": "~0.9.1"
-        },
-        "time": "2016-07-08 11:51:25",
-        "type": "library",
-        "extra": {
-            "branch-alias": {
-                "dev-master": "5.4-dev"
-            }
-        },
-        "installation-source": "dist",
-        "autoload": {
-            "files": [
-                "lib/swift_required.php"
-            ]
-        },
-        "notification-url": "https://packagist.org/downloads/",
-        "license": [
-            "MIT"
-        ],
-        "authors": [
-            {
-                "name": "Chris Corbyn"
-            },
-            {
-                "name": "Fabien Potencier",
-                "email": "fabien@symfony.com"
-            }
-        ],
-        "description": "Swiftmailer, free feature-rich PHP mailer",
-        "homepage": "http://swiftmailer.org",
-        "keywords": [
-            "email",
-            "mail",
-            "mailer"
-        ]
-    },
-    {
         "name": "container-interop/container-interop",
         "version": "1.1.0",
         "version_normalized": "1.1.0.0",
@@ -567,18 +512,73 @@
         ]
     },
     {
-        "name": "slim/slim",
-        "version": "3.5.0",
-        "version_normalized": "3.5.0.0",
+        "name": "swiftmailer/swiftmailer",
+        "version": "v5.4.4",
+        "version_normalized": "5.4.4.0",
         "source": {
             "type": "git",
-            "url": "https://github.com/slimphp/Slim.git",
-            "reference": "184352bc1913d7ba552ab4131d62f4730ddb0893"
+            "url": "https://github.com/swiftmailer/swiftmailer.git",
+            "reference": "545ce9136690cea74f98f86fbb9c92dd9ab1a756"
         },
         "dist": {
             "type": "zip",
-            "url": "https://api.github.com/repos/slimphp/Slim/zipball/184352bc1913d7ba552ab4131d62f4730ddb0893",
-            "reference": "184352bc1913d7ba552ab4131d62f4730ddb0893",
+            "url": "https://api.github.com/repos/swiftmailer/swiftmailer/zipball/545ce9136690cea74f98f86fbb9c92dd9ab1a756",
+            "reference": "545ce9136690cea74f98f86fbb9c92dd9ab1a756",
+            "shasum": ""
+        },
+        "require": {
+            "php": ">=5.3.3"
+        },
+        "require-dev": {
+            "mockery/mockery": "~0.9.1"
+        },
+        "time": "2016-11-24 01:01:23",
+        "type": "library",
+        "extra": {
+            "branch-alias": {
+                "dev-master": "5.4-dev"
+            }
+        },
+        "installation-source": "dist",
+        "autoload": {
+            "files": [
+                "lib/swift_required.php"
+            ]
+        },
+        "notification-url": "https://packagist.org/downloads/",
+        "license": [
+            "MIT"
+        ],
+        "authors": [
+            {
+                "name": "Chris Corbyn"
+            },
+            {
+                "name": "Fabien Potencier",
+                "email": "fabien@symfony.com"
+            }
+        ],
+        "description": "Swiftmailer, free feature-rich PHP mailer",
+        "homepage": "http://swiftmailer.org",
+        "keywords": [
+            "email",
+            "mail",
+            "mailer"
+        ]
+    },
+    {
+        "name": "slim/slim",
+        "version": "3.6.0",
+        "version_normalized": "3.6.0.0",
+        "source": {
+            "type": "git",
+            "url": "https://github.com/slimphp/Slim.git",
+            "reference": "a685fe91a9435e1432e8eeb7cf516e2f5cee7f64"
+        },
+        "dist": {
+            "type": "zip",
+            "url": "https://api.github.com/repos/slimphp/Slim/zipball/a685fe91a9435e1432e8eeb7cf516e2f5cee7f64",
+            "reference": "a685fe91a9435e1432e8eeb7cf516e2f5cee7f64",
             "shasum": ""
         },
         "require": {
@@ -595,7 +595,7 @@
             "phpunit/phpunit": "^4.0",
             "squizlabs/php_codesniffer": "^2.5"
         },
-        "time": "2016-07-26 15:12:13",
+        "time": "2016-11-20 20:48:49",
         "type": "library",
         "installation-source": "dist",
         "autoload": {
@@ -636,53 +636,6 @@
             "framework",
             "micro",
             "router"
-        ]
-    },
-    {
-        "name": "bdemirkir/slim-json-view",
-        "version": "0.1.1",
-        "version_normalized": "0.1.1.0",
-        "source": {
-            "type": "git",
-            "url": "https://github.com/bdemirkir/slim-json-view.git",
-            "reference": "4308e2d1abb474edfad67acb7c5ef2a01e1c3f04"
-        },
-        "dist": {
-            "type": "zip",
-            "url": "https://api.github.com/repos/bdemirkir/slim-json-view/zipball/4308e2d1abb474edfad67acb7c5ef2a01e1c3f04",
-            "reference": "4308e2d1abb474edfad67acb7c5ef2a01e1c3f04",
-            "shasum": ""
-        },
-        "require": {
-            "php": ">=5.5.0",
-            "psr/http-message": "^1.0"
-        },
-        "time": "2015-12-24 11:04:47",
-        "type": "library",
-        "installation-source": "dist",
-        "autoload": {
-            "psr-4": {
-                "Slim\\Views\\": "src"
-            }
-        },
-        "notification-url": "https://packagist.org/downloads/",
-        "license": [
-            "MIT"
-        ],
-        "authors": [
-            {
-                "name": "Berk Demirkır",
-                "email": "bdemirkir@gmail.com"
-            }
-        ],
-        "description": "Slim Framework 3 view helper for simple JSON API's",
-        "homepage": "https://github.com/bdemirkir/slim-json-view",
-        "keywords": [
-            "framework",
-            "helper",
-            "json",
-            "slim",
-            "view"
         ]
     }
 ]
