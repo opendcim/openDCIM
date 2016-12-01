@@ -1,4 +1,12 @@
 <?php
+
+	/*	Even though we're including these files in to an upstream index.php that already declares
+		the namespaces, PHP treats it as a difference context, so we have to redeclare in each
+		included file.
+	*/
+	use Psr\Http\Message\ServerRequestInterface as Request;
+	use Psr\Http\Message\ResponseInterface as Response;
+
 /**
   *
   *		API DELETE Methods go here
@@ -7,7 +15,6 @@
   *
   **/
 
-/*
 
 //
 //	URL:	/api/v1/powerport/:deviceid
@@ -18,11 +25,15 @@
 //	Returns:  true/false on update operation
 //
 
-$app->delete( '/powerport/:deviceid', function($deviceid) use ($app, $person) {
+$app->delete( '/powerport/{deviceid}', function( Request $request, Response $response, $args ) use ($person) {
 	$pp=new PowerPorts();
-	$pp->DeviceID=$deviceid;
-	foreach($app->request->delete() as $prop => $val){
-		$pp->$prop=$val;
+	$pp->DeviceID=$args['deviceid'];
+	$args = $request->getParsedBody();
+
+	foreach($vars as $prop => $val){
+		if ( property_exists( $pp, $prop )) {
+			$pp->$prop=$val;
+		}
 	}
 
 	function updatedevice($deviceid){
@@ -73,18 +84,25 @@ $app->delete( '/powerport/:deviceid', function($deviceid) use ($app, $person) {
 //	Returns:  true/false on update operation
 //
 
-$app->delete( '/colorcode/:colorid', function($colorid) {
-	$cc=new ColorCoding();
-	$cc->ColorID=$colorid;
-	
-	if(!$cc->DeleteCode()){
-		$r['error']=true;
-		$r['errorcode']=404;
-		$r['message']=__("Failed to delete color with ColorID")." $cc->ColorID";
-	}else{
-		$r['error']=false;
-		$r['errorcode']=200;
+$app->delete( '/colorcode/{colorid}', function( Request $request, Response $response, $args ) use($person) {
+	if ( ! $person->SiteAdmin ) {
+		$r['error'] = true;
+		$r['errorcode'] = 401;
+		$r['message'] = __("Access Denied");
+	} else {
+		$cc=new ColorCoding();
+		$cc->ColorID=$colorid;
+		
+		if(!$cc->DeleteCode()){
+			$r['error']=true;
+			$r['errorcode']=404;
+			$r['message']=__("Failed to delete color with ColorID")." $cc->ColorID";
+		}else{
+			$r['error']=false;
+			$r['errorcode']=200;
+		}
 	}
+
 	$response = $response->withJson( $r, $r['errorcode'] );
 	return $response;
 });
@@ -96,9 +114,9 @@ $app->delete( '/colorcode/:colorid', function($colorid) {
 //	Returns:  true/false on update operation
 //
 
-$app->delete( '/device/:deviceid', function($deviceid) {
+$app->delete( '/device/{deviceid}', function( Request $request, Response $response, $args ) {
 	$dev=new Device();
-	$dev->DeviceID=$deviceid;
+	$dev->DeviceID=$args['deviceid'];
 	
 	if(!$dev->GetDevice()){
 		$r['error']=true;
@@ -124,5 +142,5 @@ $app->delete( '/device/:deviceid', function($deviceid) {
 	return $response;
 });
 
-*/
+
 ?>

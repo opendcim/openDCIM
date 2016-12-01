@@ -1,4 +1,12 @@
 <?php
+
+	/*	Even though we're including these files in to an upstream index.php that already declares
+		the namespaces, PHP treats it as a difference context, so we have to redeclare in each
+		included file.
+	*/
+	use Psr\Http\Message\ServerRequestInterface as Request;
+	use Psr\Http\Message\ResponseInterface as Response;
+
 /**
   *
   *		API GET Methods go here
@@ -339,7 +347,7 @@ $app->get( '/cabinet/bydept/{deptid}', function( Request $request, Response $res
 //	Returns:  All devices for which the user's rights have access to view
 //
 
-$app->get( '/device', function( Request $request, Response $response ) {
+$app->get( '/device', function( Request $request, Response $response, $args ) {
 	$dev=new Device();
 	
 	$r['error']=false;
@@ -677,7 +685,7 @@ $app->get( '/powerport/{deviceid}', function( Request $request, Response $respon
 //	Returns:  All defined color codes 
 //
 
-$app->get( '/colorcode', function() {
+$app->get( '/colorcode', function( Request $request, Response $response ) {
 	$r['error']=false;
 	$r['errorcode']=200;
 	$r['colorcode']=ColorCoding::GetCodeList();;

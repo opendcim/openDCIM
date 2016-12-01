@@ -1,5 +1,13 @@
 <?php
 
+	/*	Even though we're including these files in to an upstream index.php that already declares
+		the namespaces, PHP treats it as a difference context, so we have to redeclare in each
+		included file.
+	*/
+	use Psr\Http\Message\ServerRequestInterface as Request;
+	use Psr\Http\Message\ResponseInterface as Response;
+
+
 /**
   *
   *		API POST Methods go here

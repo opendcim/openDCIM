@@ -1,4 +1,13 @@
 <?php
+
+	/*	Even though we're including these files in to an upstream index.php that already declares
+		the namespaces, PHP treats it as a difference context, so we have to redeclare in each
+		included file.
+	*/
+	use Psr\Http\Message\ServerRequestInterface as Request;
+	use Psr\Http\Message\ResponseInterface as Response;
+
+
 /**
   *
   *		API PUT Methods go here
@@ -7,7 +16,7 @@
   *
   **/
 
-/*
+
 //
 //	URL:	/api/v1/people/:userid
 //	Method: PUT
@@ -18,38 +27,27 @@
 //	Returns: record as created
 //
   
-$app->put('/people/:userid', function($userid) use ($app,$person) {
+$app->put('/people/{userid}', function( Request $request, Response $response, $args ) use ($person) {
+	$r = array();
+
 	if ( !$person->ContactAdmin ) {
 		$r['error'] = true;
-		$r['errorcode'] = 400;
-		$r['message'] = "Insufficient privilege level";
-		echoResponse(200, $response);
-		$app->stop();
+		$r['errorcode'] = 401;
+		$r['message'] = __("Access Denied");
 	}
 	
-	$response = array();
 	$p = new People();
-
-	if ( $vars = json_decode( $app->request->getBody() )) {
-		$p->UserID = $vars->UserID;
-	} else {
-		$p->UserID = $app->request->put('UserID');
-	}
+	$vars = $request->getParsedBody();
+	$p->UserID = $args['userid'];
 
 	if($p->GetPersonByUserID()){
 		$r['error']=true;
 		$r['errorcode']=403;
 		$r['message']=__("UserID already in database.  Use the update API to modify record.");
-		echoResponse(200, $response );
 	} else {	
-		if ( is_object( $vars )) {
-			foreach ( $vars as $prop=>$val ) {
+		foreach ( $vars as $prop=>$val ) {
+			if ( property_exists( $p, $prop ) ) {
 				$p->$prop = $val;
-			}
-		} else {
-			// Slim Framework will simply return null for any variables that were not passed, so this is safe to call without blowing up the script
-			foreach($p as $prop=>$val){
-				$p->$prop=$app->request->put($prop);
 			}
 		}
 		$p->Disabled = false;
@@ -60,18 +58,17 @@ $app->put('/people/:userid', function($userid) use ($app,$person) {
 			$r['error']=true;
 			$r['errorcode']=403;
 			$r['message']=__("Unable to create People resource with the given parameters.");
-			$response = $response->withJson( $r, $r['errorcode'] );
-	return $response;
 		}else{
 			$r['error']=false;
-			$responde['errorcode']=200;
+			$r['errorcode']=200;
 			$r['message']=__("People resource created successfully.");
 			$r['people']=$p;
-
-			$response = $response->withJson( $r, $r['errorcode'] );
-	return $response;
 		}
 	}
+
+	$response = $response->withJson( $r, $r['errorcode'] );
+	return $response;
+
 });
 
 //
@@ -83,30 +80,33 @@ $app->put('/people/:userid', function($userid) use ($app,$person) {
 //	Returns: record as created
 //
 
-$app->put( '/colorcode/:colorname', function($colorname) use ($app) {
-	$cc=new ColorCoding();
-
-	// Allow for input as either PUT variables or a JSON payload
-	if ( $vars = json_decode( $app->request->getBody() )) {
-		foreach( $vars as $prop=>$val ) {
-			$cc->$prop = $val;
-		}
+$app->put( '/colorcode/{colorname}', function( Request $request, Response $response, $args ) use ($person) {
+	if ( ! $person->SiteAdmin ) {
+		$r['error'] = true;
+		$r['errorcode'] = 401;
+		$r['message'] = __("Access Denied");
 	} else {
-		foreach( $cc as $prop=>$val ) {
-			$cc->$prop=$app->request->put($prop);
+		$cc=new ColorCoding();
+		$vars = $request->getParsedBody();
+
+		foreach( $vars as $prop=>$val ) {
+			if ( property_exists( $cc, $prop )) {
+				$cc->$prop = $val;
+			}
+		}
+
+		if(!$cc->CreateCode()){
+			$r['error']=true;
+			$r['errorcode']=403;
+			$r['message']=__("Error creating new color.");
+		}else{
+			$r['error']=false;
+			$r['errorcode']=200;
+			$r['message']=__("New color created successfully.");
+			$r['colorcode'][$cc->ColorID]=$cc;
 		}
 	}
 
-	if(!$cc->CreateCode()){
-		$r['error']=true;
-		$r['errorcode']=403;
-		$r['message']=__("Error creating new color.");
-	}else{
-		$r['error']=false;
-		$r['errorcode']=200;
-		$r['message']=__("New color created successfully.");
-		$r['colorcode'][$cc->ColorID]=$cc;
-	}
 	$response = $response->withJson( $r, $r['errorcode'] );
 	return $response;
 });
@@ -120,17 +120,14 @@ $app->put( '/colorcode/:colorname', function($colorname) use ($app) {
 //	Returns: record as created 
 //
 
-$app->put( '/device/:devicelabel', function($devicelabel) use ($app) {
+$app->put( '/device/{devicelabel}', function( Request $request, Response $response, $args ) {
 	$dev=new Device();
 
-	// Allow for input as either PUT variables or a JSON payload
-	if ( $vars = json_decode( $app->request->getBody() )) {
-		foreach( $vars as $prop=>$val ) {
+	$vars = $request->getParsedBody();
+
+	foreach( $vars as $prop=>$val ) {
+		if ( property_exists( $dev, $prop )) {
 			$dev->$prop = $val;
-		}
-	} else {
-		foreach( $dev as $prop=>$val ) {
-			$dev->$prop=$app->request->put($prop);
 		}
 	}
 
@@ -146,18 +143,14 @@ $app->put( '/device/:devicelabel', function($devicelabel) use ($app) {
 
 	// Slurp all the data back in again, though, just in case someone specified an override from the template values
 	// Yes, this is messy.
-	if ( $vars = json_decode( $app->request->getBody() )) {
-		foreach( $vars as $prop=>$val ) {
+	foreach( $vars as $prop=>$val ) {
+		if ( property_exists( $dev, $prop )) {
 			$dev->$prop = $val;
-		}
-	} else {
-		foreach( $dev as $prop=>$val ) {
-			$dev->$prop=$app->request->put($prop);
 		}
 	}
 
 	// This should be in the commit data but if we get a smartass saying it's in the URL
-	$dev->Label=$devicelabel;
+	$dev->Label=$args['devicelabel'];
 
 	$cab=new Cabinet();
 	$cab->CabinetID=$dev->Cabinet;
@@ -168,8 +161,8 @@ $app->put( '/device/:devicelabel', function($devicelabel) use ($app) {
 	}else{
 		if($cab->Rights!="Write"){
 			$r['error']=true;
-			$r['errorcode']=403;
-			$r['message']=__("Unauthorized");
+			$r['errorcode']=401;
+			$r['message']=__("Access Denied");
 		}else{
 			if(!$dev->CreateDevice()){
 				$r['error']=true;
@@ -200,9 +193,9 @@ $app->put( '/device/:devicelabel', function($devicelabel) use ($app) {
 //	Returns: record as created 
 //
 
-$app->put( '/device/:deviceid/copyto/:newposition', function($deviceid, $newposition) use ($app) {
+$app->put( '/device/{deviceid}/copyto/{newposition}', function( Request $request, Response $response, $args ) {
 	$dev=new Device();
-	$dev->DeviceID=$deviceid;
+	$dev->DeviceID=$args['deviceid'];
 	$dev->GetDevice();
 
 	$cab=new Cabinet();
@@ -217,7 +210,7 @@ $app->put( '/device/:deviceid/copyto/:newposition', function($deviceid, $newposi
 			$r['errorcode']=403;
 			$r['message']=__("Unauthorized");
 		}else{
-			if(!$dev->CopyDevice(null,$newposition,true)){
+			if(!$dev->CopyDevice(null,$args['newposition'],true)){
 				$r['error']=true;
 				$r['errorcode']=404;
 				$r['message']=__("Device creation failed");
@@ -245,22 +238,19 @@ $app->put( '/device/:deviceid/copyto/:newposition', function($deviceid, $newposi
 //	Returns: record as created 
 //
 
-$app->put( '/devicetemplate/:model', function($model) use ($app,$person) {
+$app->put( '/devicetemplate/{model}', function( Request $request, Response $response, $args ) use ($person) {
 	$dt=new DeviceTemplate();
 
-	// Allow for input as either PUT variables or a JSON payload
-	if ( $vars = json_decode( $app->request->getBody() )) {
-		foreach( $vars as $prop=>$val ) {
+	$vars = $request->getParsedBody();
+
+	foreach( $vars as $prop=>$val ) {
+		if ( property_exists( $dt, $prop )) {
 			$dt->$prop = $val;
-		}
-	} else {
-		foreach( $dt as $prop=>$val ) {
-			$dt->$prop=$app->request->put($prop);
 		}
 	}
 
 	// This should be in the commit data but if we get a smartass saying it's in the URL
-	$dt->Model=$model;
+	$dt->Model=$args['model'];
 
 	if(!$person->WriteAccess){
 		$r['error']=true;
@@ -294,23 +284,20 @@ $app->put( '/devicetemplate/:model', function($model) use ($app,$person) {
 //	Returns: record as created 
 //
 
-$app->put( '/devicetemplate/:templateid/dataport/:portnum', function($templateid,$portnum) use ($app,$person) {
+$app->put( '/devicetemplate/{templateid}/dataport/{portnum}', function( Request $request, Response $response, $args ) use($person) {
 	$tp=new TemplatePorts();
 	
-	// Allow for input as either PUT variables or a JSON payload
-	if ( $vars = json_decode( $app->request->getBody() )) {
-		foreach( $vars as $prop=>$val ) {
+	$vars = $request->getParsedBody();
+
+	foreach( $vars as $prop=>$val ) {
+		if ( property_exists($tp, $prop)) {
 			$tp->$prop = $val;
-		}
-	} else {
-		foreach( $tp as $prop=>$val ) {
-			$tp->$prop=$app->request->put($prop);
 		}
 	}
 
 	// This should be in the commit data but if we get a smartass saying it's in the URL
-	$tp->TemplateID=$templateid;
-	$tp->PortNumber=$portnum;
+	$tp->TemplateID=$args['templateid'];
+	$tp->PortNumber=$args['portnum'];
 
 	if(!$person->WriteAccess){
 		$r['error']=true;
@@ -341,23 +328,20 @@ $app->put( '/devicetemplate/:templateid/dataport/:portnum', function($templateid
 //	Returns: record as created 
 //
 
-$app->put( '/devicetemplate/:templateid/powerport/:portnum', function($templateid,$portnum) use ($app,$person) {
+$app->put( '/devicetemplate/{templateid}/powerport/{portnum}', function( Request $request, Response $response, $args ) use ($person) {
 	$tp=new TemplatePowerPorts();
 
-	// Allow for input as either PUT variables or a JSON payload
-	if ( $vars = json_decode( $app->request->getBody() )) {
-		foreach( $vars as $prop=>$val ) {
+	$vars = $request->getParsedBody();
+
+	foreach( $vars as $prop=>$val ) {
+		if ( property_exists($tp, $prop)) {
 			$tp->$prop = $val;
-		}
-	} else {
-		foreach( $tp as $prop=>$val ) {
-			$tp->$prop=$app->request->put($prop);
 		}
 	}
 
 	// This should be in the commit data but if we get a smartass saying it's in the URL
-	$tp->TemplateID=$templateid;
-	$tp->PortNumber=$portnum;
+	$tp->TemplateID=$args['templateid'];
+	$tp->PortNumber=$args['portnum'];
 
 	if(!$person->WriteAccess){
 		$r['error']=true;
@@ -388,14 +372,18 @@ $app->put( '/devicetemplate/:templateid/powerport/:portnum', function($templatei
 //	Returns: record as created 
 //
 
-$app->put( '/devicetemplate/:templateid/slot/:slotnum', function($templateid,$slotnum) use ($app,$person) {
+$app->put( '/devicetemplate/{templateid}/slot/{slotnum}', function( Request $request, Response $response, $args ) use($person) {
 	$s=new Slot();
-	foreach($app->request->put() as $prop => $val){
-		$s->$prop=$val;
+
+	$vars = $request->getParsedBody();
+	foreach($vars as $prop => $val){
+		if ( property_exists($s, $prop)) {
+			$s->$prop=$val;
+		}
 	}
 	// This should be in the commit data but if we get a smartass saying it's in the URL
-	$s->TemplateID=$templateid;
-	$s->Position=$slotnum;
+	$s->TemplateID=$args['templateid'];
+	$s->Position=$args['slotnum'];
 
 	if(!$person->WriteAccess){
 		$r['error']=true;
@@ -424,21 +412,18 @@ $app->put( '/devicetemplate/:templateid/slot/:slotnum', function($templateid,$sl
 //	Returns: Record as created 
 //
 
-$app->put( '/manufacturer/:name', function($name) use ($app,$person) {
+$app->put( '/manufacturer/{name}', function( Request $request, Response $response, $args ) use($person) {
 	$man=new Manufacturer();
 
-	// Allow for input as either PUT variables or a JSON payload
-	if ( $vars = json_decode( $app->request->getBody() )) {
-		foreach( $vars as $prop=>$val ) {
+	$vars = $request->getParsedBody();
+
+	foreach( $vars as $prop=>$val ) {
+		if ( property_exists( $man, $prop )) {
 			$man->$prop = $val;
-		}
-	} else {
-		foreach( $man as $prop=>$val ) {
-			$man->$prop=$app->request->put($prop);
 		}
 	}
 
-	$man->Name=$name;
+	$man->Name=$args['name'];
 	
 	$r['error']=true;
 	$r['errorcode']=404;
@@ -459,5 +444,5 @@ $app->put( '/manufacturer/:name', function($name) use ($app,$person) {
 	$response = $response->withJson( $r, $r['errorcode'] );
 	return $response;
 });
-*/
+
 ?>
