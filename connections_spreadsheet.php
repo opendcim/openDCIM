@@ -1,7 +1,6 @@
 <?php
 	require_once( "db.inc.php" );
 	require_once( "facilities.inc.php" );
-	require_once( "PHPExcel/PHPExcel.php" );
 
 	function generate_spreadsheet($devList,$mediaIDList=array(),$hideEmptyPower=false){
 

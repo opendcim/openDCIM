@@ -2,7 +2,6 @@
 	require_once( "db.inc.php" );
 	require_once( "facilities.inc.php" );
 	require_once( "connections_spreadsheet.php" );
-	require_once( "PHPExcel/PHPExcel/Writer/Excel2007.php" );
 	
 	if((isset($_REQUEST["deviceid"]) && ($_REQUEST["deviceid"]=="" || $_REQUEST["deviceid"]==null)) || !isset($_REQUEST["deviceid"])){
 		// No soup for you.
@@ -46,7 +45,7 @@
 	if ( $_REQUEST["deviceid"] == "wo" ) {
 		header( sprintf( "Content-Disposition: attachment;filename=\"openDCIM-workorder-%s-connections.xlsx\"", date( "YmdHis" ) ) );	
 	} else {
-		header( "Content-Disposition: attachment;filename=\"openDCIM-dev" . $dev->DeviceID . "-connections.xlsx\"" );
+		header( "Content-Disposition: attachment;filename=\"openDCIM-dev" . $devList[0]->DeviceID . "-connections.xlsx\"" );
 	}
 
 	$writer->save("php://output");
