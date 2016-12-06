@@ -140,10 +140,6 @@ error_reporting(E_ALL);
 ini_set('memory_limit', '840M');
 ini_set('max_execution_time', '0');
 
-set_include_path(get_include_path().PATH_SEPARATOR.__DIR__.'/PHPExcel');
-require 'PHPExcel.php';
-require 'PHPExcel/Writer/Excel2007.php';
-
 // Configuration variables.
 // Properties of the document and worksheets.
 $DProps = array(

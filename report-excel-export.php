@@ -1,8 +1,6 @@
 <?php
 	require_once( "db.inc.php" );
 	require_once( "facilities.inc.php" );
-	require_once( "PHPExcel/PHPExcel.php" );
-	require_once( "PHPExcel/PHPExcel/Writer/Excel2007.php" );
 
 	if(!$person->ReadAccess){
 		// No soup for you.
