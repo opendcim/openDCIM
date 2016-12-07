@@ -1,31 +1,26 @@
 <?php
-	require_once( "../../Slim/Slim.php" );
+	require_once "../../vendor/autoload.php";
 	
-	\Slim\Slim::registerAutoloader();
 	
-	$app = new \Slim\Slim();
+	use Psr\Http\Message\ServerRequestInterface as Request;
+	use Psr\Http\Message\ResponseInterface as Response;
 
-	$app->get('/test', function() {
-		$response['error'] = false;
-		$response['errorcode'] = 200;
-		echoResponse(200, $response);
+	$configuration = [
+		'settings' => [
+			'displayErrorDetails' => true,
+		],
+	];
+
+	$c = new \Slim\Container($configuration);
+	
+	$app = new \Slim\App($c);
+
+	$app->get('/test', function( Request $in, Response $out ) {
+		$r['error'] = false;
+		$r['errorcode'] = 200;
+		$out = $out->withJson($r, $r['errorcode'] );
+		return $out;
 	});
  
-/**
- * Echoing json response to client
- * @param String $status_code Http response code
- * @param Int $response Json response
- */
-function echoResponse($status_code, $response) {
-    $app = \Slim\Slim::getInstance();
-    // Http response code
-    $app->status($status_code);
- 
-    // setting response content type to json
-    $app->contentType('application/json');
- 
-    echo json_encode($response);
-}
-
 $app->run();
 ?>
