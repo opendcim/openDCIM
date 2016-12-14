@@ -3,10 +3,13 @@
 	/*	Even though we're including these files in to an upstream index.php that already declares
 		the namespaces, PHP treats it as a difference context, so we have to redeclare in each
 		included file.
-	*/
+	
+		Framework v3 Specific
+
 	use Psr\Http\Message\ServerRequestInterface as Request;
 	use Psr\Http\Message\ResponseInterface as Response;
 
+	*/
 /**
   *
   *		API DELETE Methods go here
@@ -25,10 +28,11 @@
 //	Returns:  true/false on update operation
 //
 
-$app->delete( '/powerport/{deviceid}', function( Request $request, Response $response, $args ) use ($person) {
+// $app->delete( '/powerport/{deviceid}', function( Request $request, Response $response, $args ) use ($person) {
+$app->delete( '/powerport/:deviceid', function( $deviceid ) use ($app) {
 	$pp=new PowerPorts();
-	$pp->DeviceID=$args['deviceid'];
-	$args = $request->getParsedBody();
+	$pp->DeviceID=$deviceid;
+	$vars = getParsedBody();
 
 	foreach($vars as $prop => $val){
 		if ( property_exists( $pp, $prop )) {
@@ -73,8 +77,7 @@ $app->delete( '/powerport/{deviceid}', function( Request $request, Response $res
 
 	$r['errorcode']=200;
 
-	$response = $response->withJson( $r, $r['errorcode'] );
-	return $response;
+	echoResponse( $r );
 });
 
 //
@@ -84,7 +87,7 @@ $app->delete( '/powerport/{deviceid}', function( Request $request, Response $res
 //	Returns:  true/false on update operation
 //
 
-$app->delete( '/colorcode/{colorid}', function( Request $request, Response $response, $args ) use($person) {
+$app->delete( '/colorcode/:colorid', function( $colorid ) use($person) {
 	if ( ! $person->SiteAdmin ) {
 		$r['error'] = true;
 		$r['errorcode'] = 401;
@@ -103,8 +106,7 @@ $app->delete( '/colorcode/{colorid}', function( Request $request, Response $resp
 		}
 	}
 
-	$response = $response->withJson( $r, $r['errorcode'] );
-	return $response;
+	echoResponse( $r );
 });
 
 //
@@ -114,7 +116,7 @@ $app->delete( '/colorcode/{colorid}', function( Request $request, Response $resp
 //	Returns:  true/false on update operation
 //
 
-$app->delete( '/device/{deviceid}', function( Request $request, Response $response, $args ) {
+$app->delete( '/device/:deviceid', function( $deviceid ) {
 	$dev=new Device();
 	$dev->DeviceID=$args['deviceid'];
 	
@@ -138,8 +140,7 @@ $app->delete( '/device/{deviceid}', function( Request $request, Response $respon
 			}
 		}
 	}
-	$response = $response->withJson( $r, $r['errorcode'] );
-	return $response;
+	echoResponse( $r );
 });
 
 

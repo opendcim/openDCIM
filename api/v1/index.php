@@ -10,7 +10,11 @@
 	}
 
 	require_once( "../../facilities.inc.php" );
-	
+
+/*	Slim Framework v3 Specific Code
+
+	We had to roll back due to PHP version requirements.
+
 	use Psr\Http\Message\ServerRequestInterface as Request;
 	use Psr\Http\Message\ResponseInterface as Response;
 
@@ -23,6 +27,9 @@
 	$c = new \Slim\Container($configuration);
 	
 	$app = new \Slim\App($c);
+*/
+
+	$app = new \Slim\Slim();
 
 	// Import any local extensions to the API, which obviously will not be supported
 	foreach( glob("../local/*.php") as $filename) {
@@ -63,6 +70,19 @@ function specifyAttributes( $attrList, $objList ) {
 	}
 }
 
+// Framework v2 Specific - we have to do our own output formatting
+function echoResponse( $response ) {
+	$app = \Slim\Slim::getInstance();
+
+	if ( array_key_exists( 'errorcode', $response )) {
+		$app->status( $response['errorcode'] );
+	}
+
+	$app->contentType( 'application/json' );
+
+	echo json_encode( $response );
+}
+
 /**
  * Adding Middle Layer to authenticate every request
  * Checking if the request has valid api key in the 'Authorization' header
@@ -70,6 +90,7 @@ function specifyAttributes( $attrList, $objList ) {
 
 // Since Middleware is applied in reverse order that it is added, make sure the Authentication function below is always the last one
 
+/* Framework v3 Version of the Authentication Middleware
 $app->add(function($request, $response, $next) use($person) {
 	if ( AUTHENTICATION == "LDAP" ) {
 	    // Getting request headers
@@ -106,6 +127,56 @@ $app->add(function($request, $response, $next) use($person) {
 
 	return $response;
 });
+
+*/
+
+//	Slim Framework 2 middleware
+$app->hook( 'slim.before.dispatch', function() use($person) {
+	if ( AUTHENTICATION == "LDAP" || "AD" ) {
+		// Getting request headers
+		$headers = apache_request_headers();
+		$response = array();
+		$app = \Slim\Slim::getInstance();
+
+		$valid = false;
+
+		if ( isset( $_SESSION['userid'] )) {
+			$valid = true;
+
+			$person->UserID = $_SESSION['userid'];
+			$person->GetPersonByUserID();
+		} elseif ( isset( $headers['UserID']) && isset( $headers['APIKey'])) {
+			// Load up the $person variable
+			$person->UserID = $headers['UserID'];
+			$person->GetPersonByUserID();
+
+			// Now verify that their key matches
+			if ( $person->APIKey == $headers['APIKey'] ) {
+				$valid = true;
+			}
+		}
+
+		if ( ! $valid ) {
+				// API Key is missing in the header
+			$response['error'] = true;
+			$response['message'] = _("Access Denied");
+			$response['errorcode'] = 401;
+		}
+	}
+
+	// Nothing to do if using Apache Authentication
+});
+
+// Another Framework v2 function to simulate some of the v3 stuff
+function getParsedBody() {
+	$app = \Slim\Slim::getInstance();
+
+	if ( ! $vars = json_decode( $app->request->getBody(), true )) {
+		$vars = $app->request->params();		
+	}
+
+	return $vars;
+}
 
 include_once 'getRoutes.php';
 include_once 'postRoutes.php';

@@ -310,9 +310,9 @@ if($object>0){
 				end:
 				default:
 					if(isset($_POST['cdu'])){
-						$tooltip.=__($row["Label"]).": ".$pdu->$row["Field"]."<br>\n";
+						@$tooltip.=__($row["Label"]).": ".$pdu->$row["Field"]."<br>\n";
 					}else{
-						$tooltip.=__($row["Label"]).": ".$dev->$row["Field"]."<br>\n";
+						@$tooltip.=__($row["Label"]).": ".$dev->$row["Field"]."<br>\n";
 					}
 			}
 		}

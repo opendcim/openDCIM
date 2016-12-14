@@ -23,9 +23,7 @@
 
 	if (isset($_POST['action']) && $_POST['action'] == 'Send'){
 
-		require_once( "swiftmailer/swift_required.php" );
 		require_once( "connections_spreadsheet.php" );
-		require_once( "PHPExcel/PHPExcel/Writer/Excel2007.php" );
 
 		$mediaIDList = array();
 		if(isset($_COOKIE['connectionsMediaList'])){

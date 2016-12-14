@@ -3,9 +3,13 @@
 	/*	Even though we're including these files in to an upstream index.php that already declares
 		the namespaces, PHP treats it as a difference context, so we have to redeclare in each
 		included file.
-	*/
+	
+	Framework v3 Specific
+
 	use Psr\Http\Message\ServerRequestInterface as Request;
 	use Psr\Http\Message\ResponseInterface as Response;
+
+	*/
 
 /**
   *
@@ -22,20 +26,19 @@
 //	Params:  none
 //	Returns:  List of all people in the database
 //
-$app->get('/people', function(Request $request, Response $response) {
+$app->get('/people', function() {
 	global $person;
 	
 	$person->GetUserRights();
 	if(!$person->ContactAdmin){
 		$r['error'] = true;
 		$r['errorcode'] = 401;
-		$r['message'] = "Insufficient privilege level.";
-		return $this->view->render( $response, $r, 401 );
+		$r['message'] = _("Access Denied");
 	}else{
 		$sp=new People();
 		$loose = false;
 		$outputAttr = array();
-		$attrList = $request->getQueryParams();
+		$attrList = getParsedBody();
 		foreach($attrList as $prop => $val){
 			if ( strtoupper($prop) == "WILDCARDS" ) {
 				$loose = true;
@@ -50,8 +53,9 @@ $app->get('/people', function(Request $request, Response $response) {
 		$r['error'] = false;
 		$r['errorcode'] = 200;
 		$r['people'] = specifyAttributes( $outputAttr, $sp->Search( false, $loose ));
-		return $this->view->render( $response, $r, 200 );		
 	}
+
+	echoResponse( $r );
 });
 
 //
@@ -61,19 +65,19 @@ $app->get('/people', function(Request $request, Response $response) {
 //	Returns:  List of all departments in the database
 //
 
-$app->get('/department', function(Request $request, Response $response) use($person) {
+$app->get('/department', function() use($person) {
 	$r = array();
 
 	if ( !$person->ContactAdmin){
 		$r['error'] = true;
 		$r['errorcode'] = 401;
-		$r['message'] = "Insufficient privilege level.";
+		$r['message'] = _("Access Denied");
 	} else {
 		$dList = array();
 		$dept=new Department();
 		$loose = false;
 		$outputAttr = array();
-		$attrList = $request->getQueryParams();
+		$attrList = getParsedBody();
 		foreach($attrList as $prop => $val){
 			if ( strtoupper($prop) == "WILDCARDS" ) {
 				$loose = true;
@@ -89,8 +93,7 @@ $app->get('/department', function(Request $request, Response $response) use($per
 		$r['department'] = specifyAttributes( $outputAttr, $dept->Search( false, $loose ));
 	}
 
-	$response = $response->withJson( $r, $r['errorcode'] );
-	return $response;
+	echoResponse( $r );
 });
 
 //
@@ -100,7 +103,7 @@ $app->get('/department', function(Request $request, Response $response) use($per
 //	Returns: List of all data centers in the database
 //
 
-$app->get('/datacenter', function(Request $request, Response $response) {
+$app->get('/datacenter', function() {
 	// Don't have to worry about rights, other than basic connection, to get data center list
 	
 	$dc = new DataCenter();
@@ -109,7 +112,9 @@ $app->get('/datacenter', function(Request $request, Response $response) {
 	$outputAttr = array();
 	$loose = false;
 
-	foreach( $request->getQueryParams() as $prop=>$val ) {
+	$vars = getParsedBody();
+
+	foreach( $vars as $prop=>$val ) {
 		if (strtoupper($prop) == "WILDCARDS" ) {
 			$loose = true;
 		} elseif( strtoupper($prop) == "ATTRIBUTES" ) {
@@ -124,8 +129,7 @@ $app->get('/datacenter', function(Request $request, Response $response) {
 	$r['errorcode'] = 200;
 	$r['department'] = specifyAttributes( $outputAttr, $dc->Search( false, $loose ));
 
-	$response = $response->withJson( $r, $r['errorcode'] );
-	return $response;
+	echoResponse( $r );
 });
 
 //
@@ -135,10 +139,10 @@ $app->get('/datacenter', function(Request $request, Response $response) {
 //	Returns: Details of specified datacenter
 //
 
-$app->get( '/datacenter/{id}', function( Request $request, Response $response, $args ) {
+$app->get( '/datacenter/:id', function( $id ) {
 	$dc = new DataCenter();
 	$r = array();
-	$dc->DataCenterID = intval($args['id']);
+	$dc->DataCenterID = $id;
 	if ( ! $dc->GetDataCenter() ) {
 		$r['error'] = true;
 		$r['errorcode'] = 400;
@@ -154,8 +158,7 @@ $app->get( '/datacenter/{id}', function( Request $request, Response $response, $
 		array_push( $r['datacenter'], $tmp );
 	}
 
-	$response = $response->withJson( $r, $r['errorcode'] );
-	return $response;
+	echoResponse( $r );
 });
 
 //
@@ -165,13 +168,15 @@ $app->get( '/datacenter/{id}', function( Request $request, Response $response, $
 //	Returns: All cabinet information
 //
 
-$app->get( '/cabinet', function(Request $request, Response $response) {
+$app->get( '/cabinet', function() {
 	$cab = new Cabinet;
 	$dc = new DataCenter();
 	$loose = false;
 	$outputAttr = array();
 
-	foreach($request->getQueryParams() as $prop => $val){
+	$vars = getParsedBody();
+
+	foreach($vars as $prop => $val){
 		if ( strtoupper($prop) == "WILDCARDS" ) {
 			$loose = true;
 		} elseif ( strtoupper($prop) == "ATTRIBUTES" ) {
@@ -204,8 +209,7 @@ $app->get( '/cabinet', function(Request $request, Response $response) {
 		array_push( $r['cabinet'], $tmp );
 	}
 	
-	$response = $response->withJson( $r, $r['errorcode'] );
-	return $response;
+	echoResponse( $r );
 });
 
 //
@@ -215,10 +219,10 @@ $app->get( '/cabinet', function(Request $request, Response $response) {
 //	Returns: All cabinet information for given ID
 //
 
-$app->get( '/cabinet/{cabinetid}', function(Request $request, Response $response, $args) {
+$app->get( '/cabinet/:cabinetid', function( $cabinetid ) {
 	$cab = new Cabinet;
 	$dc = new DataCenter();
-	if ( ! $cab->CabinetID = intval($args['cabinetid']) ) {
+	if ( ! $cab->CabinetID = intval($cabinetid) ) {
 		$r['error'] = true;
 		$r['errorcode'] = 400;
 		$r['message'] = 'No cabinet found with CabinetID of '. $cabinetid;
@@ -241,8 +245,7 @@ $app->get( '/cabinet/{cabinetid}', function(Request $request, Response $response
 		array_push( $r['cabinet'], $tmp );
 	}
 
-	$response = $response->withJson( $r, $r['errorcode'] );
-	return $response;
+	echoResponse( $r );
 });
 
 //
@@ -252,10 +255,10 @@ $app->get( '/cabinet/{cabinetid}', function(Request $request, Response $response
 //	Returns: All cabinet information within the given data center, if any
 //
 
-$app->get( '/cabinet/bydc/{datacenterid}', function(Request $request, Response $response, $args ) {
+$app->get( '/cabinet/bydc/:datacenterid', function( $datacenterid ) {
 	$cab = new Cabinet;
 	$dc = new DataCenter();
-	$cab->DataCenterID = intval($args['datacenterid']);
+	$cab->DataCenterID = intval($datacenterid);
 	$cList = $cab->ListCabinetsByDC();
 	
 	$r['error'] = false;
@@ -277,8 +280,7 @@ $app->get( '/cabinet/bydc/{datacenterid}', function(Request $request, Response $
 		array_push( $r['cabinet'], $tmp );
 	}
 	
-	$response = $response->withJson( $r, $r['errorcode'] );
-	return $response;
+	echoResponse( $r );
 });
 
 //
@@ -288,20 +290,19 @@ $app->get( '/cabinet/bydc/{datacenterid}', function(Request $request, Response $
 //	Returns: All cabinet sensor information for the specified cabinet, if any
 //
 
-$app->get( '/cabinet/{cabinetid}/sensor', function( Request $request, Response $response, $args ) {
+$app->get( '/cabinet/:cabinetid/sensor', function( $cabinetid ) {
 	global $config;
 	
 	$r['error'] = false;
 	$r['errorcode'] = 200;
 	$r['sensors'] = array();
 
-	if ( $m = CabinetMetrics::getMetrics($args['cabinetid']) ) {
+	if ( $m = CabinetMetrics::getMetrics($cabinetid) ) {
 		$m->mUnits = $config->ParameterArray["mUnits"];
 		$r['sensors'] = $m;
 	}	
 
-	$response = $response->withJson( $r, $r['errorcode'] );
-	return $response;
+	echoResponse( $r );
 });
 
 //
@@ -311,10 +312,10 @@ $app->get( '/cabinet/{cabinetid}/sensor', function( Request $request, Response $
 //	Returns: All cabinet information for cabinets assigned to supplied deptid
 //
 
-$app->get( '/cabinet/bydept/{deptid}', function( Request $request, Response $response, $args ) {
+$app->get( '/cabinet/bydept/:deptid', function( $deptid ) {
 	$cab = new Cabinet;
 	$dc = new DataCenter();
-	$cab->DeptID=intval($args['deptid']);
+	$cab->DeptID=intval($deptid);
 	$cList = $cab->GetCabinetsByDept();
 	
 	$r['error'] = false;
@@ -336,8 +337,7 @@ $app->get( '/cabinet/bydept/{deptid}', function( Request $request, Response $res
 		array_push( $r['cabinet'], $tmp );
 	}
 	
-	$response = $response->withJson( $r, $r['errorcode'] );
-	return $response;
+	echoResponse( $r );
 });
 
 //
@@ -347,7 +347,7 @@ $app->get( '/cabinet/bydept/{deptid}', function( Request $request, Response $res
 //	Returns:  All devices for which the user's rights have access to view
 //
 
-$app->get( '/device', function( Request $request, Response $response, $args ) {
+$app->get( '/device', function() {
 	$dev=new Device();
 	
 	$r['error']=false;
@@ -355,7 +355,9 @@ $app->get( '/device', function( Request $request, Response $response, $args ) {
 	$loose = false;
 	$outputAttr = array();
 
-	foreach($request->getQueryParams() as $prop => $val){
+	$vars = getParsedBody();
+
+	foreach($vars as $prop => $val){
 		if ( strtoupper($prop) == "WILDCARDS" ) {
 			$loose = true;
 		} elseif (strtoupper($prop) == "ATTRIBUTES" ) {
@@ -369,8 +371,7 @@ $app->get( '/device', function( Request $request, Response $response, $args ) {
 
 	$r['device']=specifyAttributes( $outputAttr, $devList );
 
-	$response = $response->withJson( $r, $r['errorcode'] );
-	return $response;
+	echoResponse( $r );
 });
 
 //
@@ -380,16 +381,15 @@ $app->get( '/device', function( Request $request, Response $response, $args ) {
 //	Returns:  All devices for which the user's rights have access to view
 //
 
-$app->get( '/device/{deviceid}', function( Request $request, Response $response, $args ) {
+$app->get( '/device/:deviceid', function( $deviceid ) {
 	$dev=new Device();
-	$dev->DeviceID=intval($args['deviceid']);
+	$dev->DeviceID=intval($deviceid);
 	
 	if(!$dev->GetDevice()){
 		$r['error']=true;
 		$r['errorcode']=404;
 		$r['message']=__("No device found with DeviceID").$deviceid;
-		$response = $response->withJson( $r, $r['errorcode'] );
-	return $response;
+		echoResponse( $r );
 	}else{
 		if ( is_array( $dev->CustomValues ) ) {
 			$cattr = new DeviceCustomAttribute();
@@ -406,8 +406,7 @@ $app->get( '/device/{deviceid}', function( Request $request, Response $response,
 		$r['device']=$dev;
 	}
 
-	$response = $response->withJson( $r, $r['errorcode'] );
-	return $response;
+	echoResponse( $r );
 
 });
 
@@ -420,8 +419,8 @@ $app->get( '/device/{deviceid}', function( Request $request, Response $response,
 //	Returns:  HTML representation of a device
 //
 
-$app->get( '/device/{deviceid}/getpicture', function( Request $request, Response $response, $args ) {
-	$dev=new Device($args['deviceid']);
+$app->get( '/device/:deviceid/getpicture', function( $deviceid ) {
+	$dev=new Device($deviceid);
 	
 	$r['error']=true;
 	$r['errorcode']=404;
@@ -439,13 +438,12 @@ $app->get( '/device/{deviceid}/getpicture', function( Request $request, Response
 		$r['picture']=$dev->GetDevicePicture(isset($_GET['rear']));
 	}
 
-	$response = $response->withJson( $r, $r['errorcode'] );
-	return $response;
+	echoResponse( $r );
 });
 
-$app->get( '/device/{deviceid}/getsensorreadings', function( Request $request, Response $response, $args ) {
+$app->get( '/device/:deviceid/getsensorreadings', function($deviceid) {
 	$dev=new Device();
-	$dev->DeviceID=intval($args['deviceid']);
+	$dev->DeviceID=intval($deviceid);
 	
 	if(!$dev->GetDevice(false)){
 		$r['error']=true;
@@ -464,8 +462,7 @@ $app->get( '/device/{deviceid}/getsensorreadings', function( Request $request, R
 		}
 	}
 
-	$response = $response->withJson( $r, $r['errorcode'] );
-	return $response;
+	echoResponse( $r );
 });
 
 // this is messy as all hell and i'm still thinking about how to do it better
@@ -478,16 +475,15 @@ $app->get( '/device/{deviceid}/getsensorreadings', function( Request $request, R
 //		Required:  :deviceid - DeviceID for which you wish to retrieve ports
 //	Returns:	All ports for the given device
 
-$app->get('/deviceport/{deviceid}', function( Request $request, Response $response, $args ) {
+$app->get('/deviceport/:deviceid', function($deviceid) {
 	$dp = new DevicePorts();
 	
 	$r['error'] = false;
 	$r['errorcode'] = 200;
-	$dp->DeviceID = $args['deviceid'];
+	$dp->DeviceID = $deviceid;
 	$r['deviceport']=$dp->getPorts();
 
-	$response = $response->withJson( $r, $r['errorcode'] );
-	return $response;
+	echoResponse( $r );
 });
 
 //
@@ -503,13 +499,14 @@ $app->get('/deviceport/{deviceid}', function( Request $request, Response $respon
 //	Returns:  All devices that this device can connect to
 //
 
-$app->get( '/deviceport/{deviceid}/patchcandidates', function( Request $request, Response $response, $args ) {
+$app->get( '/deviceport/:deviceid/patchcandidates', function($deviceid) {
 	$s=new stdClass();
-	$s->portnumber=$request->getQueryParams['portnumber'];
-	$s->connectto=$request->getQueryParams['connectto'];
-	$s->listports=$request->getQueryParams['listports'];
-	$s->patchpanels=$request->getQueryParams['patchpanels'];
-	$s->limiter=$request->getQueryParams['limiter'];
+	$vars = getParsedBody();
+	$s->portnumber=$vars['PortNumber'];
+	$s->connectto=$vars['connectto'];
+	$s->listports=$vars['listports'];
+	$s->patchpanels=$vars['patchpanels'];
+	$s->limiter=$vars['limiter'];
 
 	$r['error']=false;
 	$r['errorcode']=200;
@@ -520,7 +517,7 @@ $app->get( '/deviceport/{deviceid}/patchcandidates', function( Request $request,
 	}
 
 	if(is_null($s->listports)){
-		$r['device']=DevicePorts::getPatchCandidates($args['deviceid'],$s->portnumber,null,$s->patchpanels,$s->limiter);
+		$r['device']=DevicePorts::getPatchCandidates($deviceid,$s->portnumber,null,$s->patchpanels,$s->limiter);
 	}else{
 		$dp=new DevicePorts();
 		$dp->DeviceID=$s->connectto;
@@ -538,7 +535,7 @@ $app->get( '/deviceport/{deviceid}/patchcandidates', function( Request $request,
 		}
 
 		// S.U.T. #2342 I touch myself
-		if($dp->DeviceID == $args['deviceid'] && isset($list[$s->portnumber])){
+		if($dp->DeviceID == $deviceid && isset($list[$s->portnumber])){
 			unset($list[$s->portnumber]);
 		}
 
@@ -563,8 +560,7 @@ $app->get( '/deviceport/{deviceid}/patchcandidates', function( Request $request,
 		$r['deviceport']=$list;
 	}
 
-	$response = $response->withJson( $r, $r['errorcode'] );
-	return $response;
+	echoResponse( $r );
 });
 
 //
@@ -574,15 +570,14 @@ $app->get( '/deviceport/{deviceid}/patchcandidates', function( Request $request,
 //	Returns:  All devices for which the user's rights have access to view
 //
 
-$app->get( '/device/bydatacenter/{datacenterid}', function( Request $request, Response $response, $args ) {
+$app->get( '/device/bydatacenter/:datacenterid', function($datacenterid) {
 	$dev=new Device();
 	
 	$r['error']=false;
 	$r['errorcode']=200;
-	$r['device']=$dev->GetDeviceList(intval($args['datacenterid']));
+	$r['device']=$dev->GetDeviceList(intval($datacenterid));
 
-	$response = $response->withJson( $r, $r['errorcode'] );
-	return $response;
+	echoResponse( $r );
 });
 
 //
@@ -592,13 +587,12 @@ $app->get( '/device/bydatacenter/{datacenterid}', function( Request $request, Re
 //	Returns:  All devices for which the user's rights have access to view
 //
 
-$app->get( '/device/byproject/{projectid}', function( Request $request, Response $response, $args ) {
+$app->get( '/device/byproject/:projectid', function($projectid) {
 	$r['error']=false;
 	$r['errorcode']=200;
-	$r['device']=ProjectMembership::getProjectMembership( $args['projectid'] );
+	$r['device']=ProjectMembership::getProjectMembership( $projectid );
 
-	$response = $response->withJson( $r, $r['errorcode'] );
-	return $response;
+	echoResponse( $r );
 });
 
 
@@ -609,13 +603,12 @@ $app->get( '/device/byproject/{projectid}', function( Request $request, Response
 //	Returns:  All project metadata
 //
 
-$app->get( '/project', function( Request $request, Response $response ) {
+$app->get( '/project', function() {
 	$r['error']=false;
 	$r['errorcode']=200;
 	$r['project']=Projects::getProjectList();
 
-	$response = $response->withJson( $r, $r['errorcode'] );
-	return $response;
+	echoResponse( $r );
 });
 
 //
@@ -625,13 +618,12 @@ $app->get( '/project', function( Request $request, Response $response ) {
 //	Returns:  All project metadata for projects the deviceid is a member of
 //
 
-$app->get( '/project/bydevice/{deviceid}', function( Request $request, Response $response, $args ) {
+$app->get( '/project/bydevice/:deviceid', function($deviceid) {
 	$r['error']=false;
 	$r['errorcode']=200;
-	$r['project']=ProjectMembership::getDeviceMembership( $args['deviceid'] );
+	$r['project']=ProjectMembership::getDeviceMembership( $deviceid );
 
-	$response = $response->withJson( $r, $r['errorcode'] );
-	return $response;
+	echoResponse( $r );
 });
 
 
@@ -642,12 +634,12 @@ $app->get( '/project/bydevice/{deviceid}', function( Request $request, Response 
 //	Returns:  All power ports for a device or a specific port
 //
 
-$app->get( '/powerport/{deviceid}', function( Request $request, Response $response, $args ) {
+$app->get( '/powerport/:deviceid', function($deviceid) {
 	$pp=new PowerPorts();
 	
 	$r['error']=false;
 	$r['errorcode']=200;
-	$pp->DeviceID=$args['deviceid'];
+	$pp->DeviceID=$deviceid;
 	foreach($app->request->get() as $prop => $val){
 		$pp->$prop=$val;
 	}
@@ -673,8 +665,7 @@ $app->get( '/powerport/{deviceid}', function( Request $request, Response $respon
 		$r['powerport']=$pp->getPorts();
 	}
 
-	$response = $response->withJson( $r, $r['errorcode'] );
-	return $response;
+	echoResponse( $r );
 });
 
 
@@ -685,13 +676,12 @@ $app->get( '/powerport/{deviceid}', function( Request $request, Response $respon
 //	Returns:  All defined color codes 
 //
 
-$app->get( '/colorcode', function( Request $request, Response $response ) {
+$app->get( '/colorcode', function() {
 	$r['error']=false;
 	$r['errorcode']=200;
 	$r['colorcode']=ColorCoding::GetCodeList();;
 		
-	$response = $response->withJson( $r, $r['errorcode'] );
-	return $response;
+	echoResponse( $r );
 });
 
 //
@@ -701,9 +691,9 @@ $app->get( '/colorcode', function( Request $request, Response $response ) {
 //	Returns:  All defined color codes matching :colorid 
 //
 
-$app->get( '/colorcode/{colorid}', function( Request $request, Response $response, $args ) {
+$app->get( '/colorcode/:colorid', function($colorid) {
 	$cc=new ColorCoding();
-	$cc->ColorID=$args['colorid'];
+	$cc->ColorID=$colorid;
 	
 	if(!$cc->GetCode()){
 		$r['error']=true;
@@ -715,8 +705,7 @@ $app->get( '/colorcode/{colorid}', function( Request $request, Response $respons
 		$r['colorcode'][$cc->ColorID]=$cc;
 	}
 
-	$response = $response->withJson( $r, $r['errorcode'] );
-	return $response;
+	echoResponse( $r );
 });
 
 //
@@ -731,8 +720,7 @@ $app->get( '/colorcode/:colorid/timesused', function($colorid) {
 	$r['errorcode']=200;
 	$r['colorcode']=ColorCoding::TimesUsed($colorid);
 	
-	$response = $response->withJson( $r, $r['errorcode'] );
-	return $response;
+	echoResponse( $r );
 });
 
 
@@ -750,7 +738,9 @@ $app->get( '/devicetemplate', function() {
 	$loose = false;
 	$outputAttr = array();
 
-	foreach($request->getQueryParams() as $prop => $val){
+	$vars = getParsedBody();
+
+	foreach($vars as $prop => $val){
 		if ( strtoupper($prop) == "WILDCARDS" ) {
 			$loose = true;
 		} elseif (strtoupper($prop) == "ATTRIBUTES" ) {
@@ -764,8 +754,7 @@ $app->get( '/devicetemplate', function() {
 
 	$r['devicetemplate']=specifyAttributes( $outputAttr, $tmpList );
 
-	$response = $response->withJson( $r, $r['errorcode'] );
-	return $response;
+	echoResponse( $r );
 });
 
 //
@@ -779,26 +768,25 @@ $app->get( '/devicetemplate', function() {
 //  path might be revisited.
 //
 
-$app->get( '/devicetemplate/{templateid}', function( Request $request, Response $response, $args ) {
+$app->get( '/devicetemplate/:templateid', function($templateid) {
 	if($templateid=='image'){
 		$r['error']=false;
 		$r['errorcode']=200;
 		$r['image']=DeviceTemplate::getAvailableImages();
 	}else{
 		$dt=new DeviceTemplate();
-		$dt->TemplateID=$args['templateid'];
+		$dt->TemplateID=$templateid;
 		if(!$dt->GetTemplateByID()){
 			$r['error']=true;
 			$r['errorcode']=404;
-			$r['message']=__("No template found with TemplateID: ")." ".$args['templateid'];
+			$r['message']=__("No template found with TemplateID: ")." ".$templateid;
 		}else{
 			$r['error']=false;
 			$r['errorcode']=200;
 			$r['template']=$dt;
 		}
 	}
-	$response = $response->withJson( $r, $r['errorcode'] );
-	return $response;
+	echoResponse( $r );
 });
 
 //
@@ -808,21 +796,20 @@ $app->get( '/devicetemplate/{templateid}', function( Request $request, Response 
 //	Returns: Data ports defined for device template with templateid
 //
 
-$app->get( '/devicetemplate/{templateid}/dataport', function( Request $request, Response $response, $args ) {
+$app->get( '/devicetemplate/:templateid/dataport', function($templateid) {
 	$tp=new TemplatePorts();
-	$tp->TemplateID=$args['templateid'];
+	$tp->TemplateID=$templateid;
 	if(!$ports=$tp->getPorts()){
 		$r['error']=true;
 		$r['errorcode']=404;
-		$r['message']=__("No ports found for TemplateID: ")." ".$args['templateid'];
+		$r['message']=__("No ports found for TemplateID: ")." ".$templateid;
 	}else{
 		$r['error']=false;
 		$r['errorcode']=200;
 		$r['dataport']=$ports;
 	}
 
-	$response = $response->withJson( $r, $r['errorcode'] );
-	return $response;
+	echoResponse( $r );
 });
 
 //
@@ -832,22 +819,21 @@ $app->get( '/devicetemplate/{templateid}/dataport', function( Request $request, 
 //	Returns: Single data port defined for device template with templateid and portnum
 //
 
-$app->get( '/devicetemplate/{templateid}/dataport/{portnumber}', function( Request $request, Response $response, $args ) {
+$app->get( '/devicetemplate/:templateid/dataport/:portnumber', function($templateid, $portnumber) {
 	$tp=new TemplatePorts();
-	$tp->TemplateID=$args['templateid'];
-	$tp->PortNumber=$args['portnumber'];
+	$tp->TemplateID=$templateid;
+	$tp->PortNumber=$portnumber;
 	if(!$tp->getPort()){
 		$r['error']=true;
 		$r['errorcode']=404;
-		$r['message']=__("Port not found for TemplateID: ")." ".$args['templateid'].":".$args['portnumber'];
+		$r['message']=__("Port not found for TemplateID: ")." $templateid:$portnumber";
 	}else{
 		$r['error']=false;
 		$r['errorcode']=200;
 		$r['dataport']=$tp;
 	}
 
-	$response = $response->withJson( $r, $r['errorcode'] );
-	return $response;
+	echoResponse( $r );
 });
 
 //
@@ -857,21 +843,20 @@ $app->get( '/devicetemplate/{templateid}/dataport/{portnumber}', function( Reque
 //	Returns: Power ports defined for device template with templateid
 //
 
-$app->get( '/devicetemplate/{templateid}/powerport', function( Request $request, Response $response, $args ) {
+$app->get( '/devicetemplate/:templateid/powerport', function($templateid) {
 	$tp=new TemplatePowerPorts();
-	$tp->TemplateID=$args['templateid'];
+	$tp->TemplateID=$templateid;
 	if(!$ports=$tp->getPorts()){
 		$r['error']=true;
 		$r['errorcode']=404;
-		$r['message']=__("No ports found for TemplateID: ")." ".$args['templateid'];
+		$r['message']=__("No ports found for TemplateID: ")." ".$templateid;
 	}else{
 		$r['error']=false;
 		$r['errorcode']=200;
 		$r['powerport']=$ports;
 	}
 
-	$response = $response->withJson( $r, $r['errorcode'] );
-	return $response;
+	echoResponse( $r );
 });
 
 //
@@ -881,19 +866,18 @@ $app->get( '/devicetemplate/{templateid}/powerport', function( Request $request,
 //	Returns: Slots defined for device template with templateid
 //
 
-$app->get( '/devicetemplate/{templateid}/slot', function( Request $request, Response $response, $args ) {
-	if(!$slots=slot::GetAll($args['templateid'])){
+$app->get( '/devicetemplate/:templateid/slot', function($templateid) {
+	if(!$slots=slot::GetAll($templateid)){
 		$r['error']=true;
 		$r['errorcode']=404;
-		$r['message']=__("No slots found for TemplateID: ")." ".$args['templateid'];
+		$r['message']=__("No slots found for TemplateID: ")." ".$templateid;
 	}else{
 		$r['error']=false;
 		$r['errorcode']=200;
 		$r['slot']=$slots;
 	}
 
-	$response = $response->withJson( $r, $r['errorcode'] );
-	return $response;
+	echoResponse( $r );
 });
 
 //
@@ -903,18 +887,18 @@ $app->get( '/devicetemplate/{templateid}/slot', function( Request $request, Resp
 //	Returns:  All defined manufacturers 
 //
 
-$app->get( '/manufacturer', function( Request $request, Response $response ) {
+$app->get( '/manufacturer', function() {
 	$man=new Manufacturer();
 	
 	$r['error']=false;
 	$r['errorcode']=200;
-	foreach($request->getQueryParams() as $prop => $val){
+	$vars = getParsedBody();
+	foreach($vars as $prop => $val){
 		$man->$prop=$val;
 	}
 	$r['manufacturer']=$man->GetManufacturerList();
 
-	$response = $response->withJson( $r, $r['errorcode'] );
-	return $response;
+	echoResponse( $r );
 });
 
 //
@@ -924,18 +908,18 @@ $app->get( '/manufacturer', function( Request $request, Response $response ) {
 //	Returns:  All zones for which the user's rights have access to view
 //
 
-$app->get( '/zone', function( Request $request, Response $response ) {
+$app->get( '/zone', function() {
 	$zone=new Zone();
 	
 	$r['error']=false;
 	$r['errorcode']=200;
-	foreach($request->getQueryParams() as $prop => $val){
+	$vars = getParsedBody();
+	foreach($vars as $prop => $val){
 		$zone->$prop=$val;
 	}
 	$r['zone']=$zone->Search(true);
 
-	$response = $response->withJson( $r, $r['errorcode'] );
-	return $response;
+	echoResponse( $r );
 });
 
 //
@@ -945,19 +929,19 @@ $app->get( '/zone', function( Request $request, Response $response ) {
 //	Returns: Zone identified by :zoneid 
 //
 
-$app->get( '/zone/{zoneid}', function( Request $request, Response $response, $args ) {
+$app->get( '/zone/:zoneid', function($zoneid) {
 	$zone=new Zone();
-	$zone->ZoneID=$args['zoneid'];
+	$zone->ZoneID=$zoneid;
 	
 	$r['error']=false;
 	$r['errorcode']=200;
-	foreach($request->getQueryParams() as $prop => $val){
+	$vars = getParsedBody();
+	foreach($vars as $prop => $val){
 		$dev->$prop=$val;
 	}
 	$r['zone']=$zone->GetZone();
 
-	$response = $response->withJson( $r, $r['errorcode'] );
-	return $response;
+	echoResponse( $r );
 });
 
 //
@@ -967,18 +951,20 @@ $app->get( '/zone/{zoneid}', function( Request $request, Response $response, $ar
 //	Returns:  All cabinet rows for which the user's rights have access to view
 //
 
-$app->get( '/cabrow', function( Request $request, Response $response ) {
+$app->get( '/cabrow', function() {
 	$cabrow=new CabRow();
 	
 	$r['error']=false;
 	$r['errorcode']=200;
-	foreach($request->getQueryParams() as $prop => $val){
+
+	$vars = getParsedBody();
+
+	foreach($vars as $prop => $val){
 		$cabrow->$prop=$val;
 	}
 	$r['cabrow']=$cabrow->Search(true);
 
-	$response = $response->withJson( $r, $r['errorcode'] );
-	return $response;
+	echoResponse( $r );
 });
 
 
