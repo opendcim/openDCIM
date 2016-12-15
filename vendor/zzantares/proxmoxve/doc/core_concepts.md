@@ -7,7 +7,7 @@ You must now that any ProxmoxVE server has a web service that can be used to man
 ProxmoxVE API Client library
 ----------------------------
 
-This PHP5 library will handle all HTTP requests that the Proxmox web service needs in order to create, fetch, modify and delete all kind of Proxmox resources.
+This PHP5 library will handle all HTTP requests that the Proxmox web service needs in order to create, fetch, modify and delete all Proxmox resources.
 
 
 Installation
@@ -18,7 +18,7 @@ Recomended installation is using [Composer](https://getcomposer.org/), if you do
 In the root of your project execute the following:
 
 ```sh
-$ composer require zzantares/proxmoxve ~3.0
+$ composer require zzantares/proxmoxve ~1.0
 ```
 
 Or add this to your `composer.json` file:
@@ -26,7 +26,7 @@ Or add this to your `composer.json` file:
 ```json
 {
     "require": {
-        "zzantares/proxmoxve": "~3.0"
+        "zzantares/proxmoxve": "~1.0"
     }
 }
 ```
@@ -45,26 +45,21 @@ Basic usage
 // Require the autoloader
 require_once 'vendor/autoload.php';
 
-// Use the library namespace
+// Use the library namespaces
+use ProxmoxVE\Credentials;
 use ProxmoxVE\Proxmox;
 
-// Create your credentials array
-$credentials = [
-    'hostname' => 'proxmox.server.com',  // Also can be an IP
-    'username' => 'root',
-    'password' => 'secret',
-];
+$server = 'your.server.tld';
+$user = 'root';
+$pass = 'secret';
+
+// Create your Credentials object
+$credentials = new Credentials($server, $user, $pass);
 
 // realm and port defaults to 'pam' and '8006' but you can specify them like so
-$credentials = [
-    'hostname' => 'proxmox.server.com',
-    'username' => 'root',
-    'password' => 'secret',
-    'realm' => 'pve',
-    'port' => '9009',
-];
+$credentials = new Credentials($server, $user, $pass, 'pve', '9009');
 
-// Then simply pass your credentials array when creating the API client object.
+// Then simply pass your Credentials object when creating the API client object.
 $proxmox = new Proxmox($credentials);
 
 $allNodes = $proxmox->get('/nodes');
@@ -100,6 +95,48 @@ Array
 )
 ```
 
+For the lazy ones it is possible to create a ProxmoxVE instance passing an associative array but you need to specify all fields including *realm* and *port*:
+
+```php
+<?php
+// Once again require the autoloader
+require_once 'vendor/autoload.php';
+
+// You can define your credentials using an array
+$credentials = array(
+    'hostname' => 'your.server.tld',
+    'username' => 'root',
+    'password' => 'secret',
+    'realm' => 'pam',
+    'port' => '8006',
+);
+
+// Create ProxmoxVE instance by passing the $credentials array
+$proxmox = new ProxmoxVE\Proxmox($credentials);
+
+// Then you can use it, for example create a new user.
+
+// Define params
+$params = array(
+    'userid' => 'new_user@pve',  // Proxmox requires to specify the realm (see the docs)
+    'comment' => 'Creating a new user',
+    'password' => 'canyoukeepasecret?',
+);
+
+// Send request passing params
+$result = $proxmox->create('/access/users', $params);
+
+// If an error occurred the 'errors' key will exist in the response array
+if (isset($result['errors'])) {
+    error_log('Unable to create new proxmox user.');
+    foreach ($result['errors'] as $title => $description) {
+        error_log($title . ': ' . $description);
+    }
+} else {
+    echo 'Successful user creation!';
+}
+```
+
 
 Available functions
 -------------------
@@ -107,10 +144,10 @@ Available functions
 On your proxmox client object you can use `get()`, `create()`, `set()` and `delete()` functions for all resources specified at [PVE2 API Documentation](http://pve.proxmox.com/pve2-api-doc/
 ), params are passed as the second parameter in an associative array.
 
-- [Read more about create() function](./create.md).
-- [Read more about get() function](./get.md).
-- [Read more about set() function](./set.md).
-- [Read more about delete() function](./delete.md).
+- [Read more about create() function](https://github.com/ZzAntares/ProxmoxVE/blob/master/doc/create.md).
+- [Read more about get() function](https://github.com/ZzAntares/ProxmoxVE/blob/master/doc/get.md).
+- [Read more about set() function](https://github.com/ZzAntares/ProxmoxVE/blob/master/doc/set.md).
+- [Read more about delete() function](https://github.com/ZzAntares/ProxmoxVE/blob/master/doc/delete.md).
 
 
 Also any ProxmoxVE object has this functions that might be useful to you:
@@ -125,13 +162,13 @@ Some times your program will need to query multiple proxmox servers. You can use
 <?php
 require_once 'vendor/autoload.php';
 
-$serverA = ['hostname' => 'hostA', 'username' => 'userA', 'password' => 'passwdA'];
+$serverA = new ProxmoxVE\Credentials('hostA', 'userA', 'passwdA');
 $proxmox = new ProxmoxVE\Proxmox($serverA);  // API object created only once
 
 // Get nodes on server A
 $proxmox->get('/nodes');
 
-$serverB = ['hostname' => 'hostB', 'username' => 'userB', 'password' => 'passwdB'];
+$serverB = new ProxmoxVE\Credentials('hostB', 'userB', 'passwdB');
 $proxmox->setCredentials($serverB);
 
 // After that every communication is sent to the new server
@@ -148,52 +185,7 @@ echo 'Hostname: ' . $credentialsB->getHostname();  // Hostname: hostB
 Using custom credentials object
 -------------------------------
 
-Also is possible to create a ProxmoxVE instance passing a custom object that has all related data needed to connect to the Proxmox server:
-
-```php
-<?php
-// Once again require the autoloader
-require_once 'vendor/autoload.php';
-
-// Sample custom credentials class
-class CustomCredentials
-{
-    public function __construct($host, $user, $pass)
-    {
-        $this->hostname = $host;
-        $this->username = $user;
-        $this->password = $pass;
-    }
-}
-
-// Create ProxmoxVE instance by passing your custom credentials object
-$credentials = new CustomCredentials('proxmox.server.com', 'root', 'secret');
-$proxmox = new ProxmoxVE\Proxmox($credentials);
-
-// Then you can use it, for example create a new user.
-
-// Define params
-$params = [
-    'userid' => 'new_user@pve',  // Proxmox requires to specify the realm (see the docs)
-    'comment' => 'Creating a new user',
-    'password' => 'canyoukeepasecret?',
-];
-
-// Send request passing params
-$result = $proxmox->create('/access/users', $params);
-
-// If an error occurred the 'errors' key will exist in the response array
-if (isset($result['errors'])) {
-    error_log('Unable to create new proxmox user.');
-    foreach ($result['errors'] as $title => $description) {
-        error_log($title . ': ' . $description);
-    }
-} else {
-    echo 'Successful user creation!';
-}
-```
-
-Using a custom credentials object is useful when your application uses some *ORM models* with the connecting data inside them, so you can pass for example an *Eloquent* model that holds the credentials inside. The only thing your custom credentials object needs, is to have the required accesible properties:
+You can pass your own custom credentials object when creating the API client object, for now this library internally will create a valid credentials object. The only thing you custom credentials object needs, is to have the required accesible properties:
 
 - `hostname`
 - `username`
@@ -209,29 +201,18 @@ If you feel using getters is better, the Proxmox API client object will search f
 - `getRealm()` (optional defaults to `pam`)
 - `getPort()` (optional defaults to `8006`)
 
-If your custom object uses `__get` magic method to access properties you're covered too!.
-
 ```php
-<?php
+<?
 require_once 'vendor/autoload.php';
 
 // Example of custom credentials class
 class CustomCredentials
 {
-    private $hostname;
-    private $username;
-    private $password;
-    
     public function __construct($host, $user, $pass)
     {
         $this->hostname = $host;
         $this->username = $user;
         $this->password = $pass;
-    }
-    
-    public function __get($property)
-    {
-        if (property_exists($this, $property)) return $this->$property;
     }
 }
 
@@ -272,8 +253,8 @@ $proxmox->get('/nodes');
 // If you want again return PHP arrays you can use the 'array' format.
 $proxmox->setResponseType('array');
 
-// Also you can call getResponseType for whatever reason you have
-$responseType = $proxmox->getResponseType();  // array
+// Also you can call getResponseType for whatever reason have
+$format = $proxmox->getResponseType();  // array
 ```
 
 This library can respond in 2 extra formats, *array* and *pngb64*. If no response format is specified when creating the API client object, *array* will be used by default, which will give you back a PHP array as response.
@@ -282,11 +263,7 @@ This library can respond in 2 extra formats, *array* and *pngb64*. If no respons
 <?php
 require_once 'vendor/autoload.php';
 
-$serverCredentials = [
-    'hostname' => 'server',
-    'username' => 'some_user',
-    'password' => 'secret.passwd',
-];
+$serverCredentials = new ProxmoxVE\Credentials('host', 'user', 'passwd');
 
 // You can specify format as 2nd argument when creating API client object.
 $proxmox = new ProxmoxVE\Proxmox($serverCredentials, 'png');
@@ -295,21 +272,11 @@ $proxmox = new ProxmoxVE\Proxmox($serverCredentials, 'png');
 $proxmox->get('/nodes');
 
 // Asking for a PNG resource will give you back binary data.
-$binaryPNG = $proxmox->get('/nodes/mynode/rrd', ['ds' => 'cpu', 'timeframe' => 'day']);
+$binaryPNG = $proxmox->get('/nodes/mynode/rrd', array('ds' => 'cpu', 'timeframe' => 'day'));
 
-// You can do this with the returned data
-if ($resource = imagecreatefromstring($response)) {
-    // We can save the image, or render to the browser, whatever you like
-    imagepng($resource, 'sample.png');
-    imagedestroy($resource);
-}
-
-// It is common to fetch images and then use base64 to display the image easily in a webpage
-$proxmox->setResponseType('pngb64');  // Sample format: data:image/png;base64,iVBORw0KGgoAAAA...
-$base64 = $proxmox->get('/nodes/mynode/rrd', ['ds' => 'cpu', 'timeframe' => 'day']);
-
-// So we can do something like this
-echo "<img src='{$base64}' \>";
+// It is common to fetch images and then use base64 to display the image easily
+$proxmox->setResponseType('pngb64');  // format: data:image/png;base64,iVBORw0KGgoAAAA...
+$base64 = $proxmox->get('/nodes/mynode/rrd', array('ds' => 'cpu', 'timeframe' => 'day'));
 
 // 'array' it is used as default response type when unrecognized or no format is specified.
 $proxmox->setResponseType();  // sets response type to 'array'

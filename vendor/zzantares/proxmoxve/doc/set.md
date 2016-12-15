@@ -3,7 +3,7 @@ Update resources
 
 On your Proxmox API client object you can call the `set()` function in order to change the state of a resource, depending on the resource type you will need to send an array filled with proper parameters.
 
-Let see how can we update the *email* of the proxmox user *bob* which is using the realm *pve*:
+Lets see how can we update the *email* of the proxmox user *bob* which is using the realm *pve*:
 
 ```php
 <?php
@@ -11,20 +11,27 @@ Let see how can we update the *email* of the proxmox user *bob* which is using t
 // Require the autoloader
 require_once 'vendor/autoload.php';
 
-// Create your credentials array
-$credentials = [
-    'hostname' => 'my.proxmox.tld',
-    'username' => 'root',
-    'password' => 'secret',
-];
+// Use the library namespaces
+use ProxmoxVE\Credentials;
+use ProxmoxVE\Proxmox;
 
-// Then simply pass your credentials when creating the API client object
-$proxmox = new ProxmoxVE\Proxmox($credentials);
+$server = 'my.proxmox.tld';
+$user = 'root';
+$pass = 'secret';
+
+// Create your Credentials object
+$credentials = new Credentials($server, $user, $pass);
+
+// Then simply pass your Credentials object when creating the API client object
+$proxmox = new Proxmox($credentials);
+
+// Want to change the email of user bob@pve
+$userData = array(
+    'email' => 'bob.jamaica@mail.com',
+);
 
 // We use set() function since we want to make a change on a existing resource
-$result = $proxmox->set('/access/users/bob@pve', [
-    'email' => 'bob.jamaica@mail.com'  // Want to change the user's email
-]);
+$result = $proxmox->set('/access/users/bob@pve', $userData);
 
 print_r($result);
 ```

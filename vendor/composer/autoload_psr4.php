@@ -7,6 +7,4 @@ $baseDir = dirname($vendorDir);
 
 return array(
     'ProxmoxVE\\' => array($vendorDir . '/zzantares/proxmoxve/src'),
-    'GuzzleHttp\\Stream\\' => array($vendorDir . '/guzzlehttp/streams/src'),
-    'GuzzleHttp\\' => array($vendorDir . '/guzzlehttp/guzzle/src'),
 );

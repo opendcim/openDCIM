@@ -1,7 +1,7 @@
 ProxmoxVE API Client
 ====================
 
-This **PHP 5.4+** library allows you to interact with your Proxmox server via API.
+This **PHP 5.3+** library allows you to interact with your Proxmox server via API.
 
 [![Build Status](https://travis-ci.org/ZzAntares/ProxmoxVE.svg?branch=master)](https://travis-ci.org/ZzAntares/ProxmoxVE)
 [![Latest Stable Version](https://poser.pugx.org/zzantares/proxmoxve/v/stable.svg)](https://packagist.org/packages/zzantares/proxmoxve)
@@ -11,9 +11,7 @@ This **PHP 5.4+** library allows you to interact with your Proxmox server via AP
 [![Latest Unstable Version](https://poser.pugx.org/zzantares/proxmoxve/v/unstable.svg)](https://packagist.org/packages/zzantares/proxmoxve)
 [![License](https://poser.pugx.org/zzantares/proxmoxve/license.svg)](https://packagist.org/packages/zzantares/proxmoxve)
 
-> If you find any errors, typos or you detect that something is not working as expected please open an [issue](https://github.com/ZzAntares/ProxmoxVE/issues/new) or tweetme [@ZzAntares](https://twitter.com/ZzAntares). I'll try to release a fix asap.
-
-**looking for a PHP 5.3 library version?** Search through the [releases](https://github.com/ZzAntares/ProxmoxVE/releases) one that fits your needs, I recommend using the [2.1.1](https://github.com/ZzAntares/ProxmoxVE/releases/tag/v2.1.1) version.
+> If you find any errors or you detect that something is not working as expected please open an [issue](https://github.com/ZzAntares/ProxmoxVE/issues/new) or tweetme [@ZzAntares](https://twitter.com/ZzAntares). I'll try to release a fix asap.
 
 Installation
 ------------
@@ -23,7 +21,7 @@ Recomended installation is using [Composer], if you do not have [Composer] what 
 In the root of your project execute the following:
 
 ```sh
-$ composer require zzantares/proxmoxve ~3.0
+$ composer require zzantares/proxmoxve ~2.0
 ```
 
 Or add this to your `composer.json` file:
@@ -31,7 +29,7 @@ Or add this to your `composer.json` file:
 ```json
 {
     "require": {
-        "zzantares/proxmoxve": "~3.0"
+        "zzantares/proxmoxve": "~2.0"
     }
 }
 ```
@@ -50,26 +48,21 @@ Usage
 // Require the autoloader
 require_once 'vendor/autoload.php';
 
-// Use the library namespace
+// Use the library namespaces
+use ProxmoxVE\Credentials;
 use ProxmoxVE\Proxmox;
 
-// Create your credentials array
-$credentials = [
-    'hostname' => 'proxmox.server.com',  // Also can be an IP
-    'username' => 'root',
-    'password' => 'secret',
-];
+$server = 'your.server.tld';
+$user = 'root';
+$pass = 'secret';
+
+// Create your Credentials object
+$credentials = new Credentials($server, $user, $pass);
 
 // realm and port defaults to 'pam' and '8006' but you can specify them like so
-$credentials = [
-    'hostname' => 'proxmox.server.com',
-    'username' => 'root',
-    'password' => 'secret',
-    'realm' => 'pve',
-    'port' => '9009',
-];
+$credentials = new Credentials($server, $user, $pass, 'pve', '9009');
 
-// Then simply pass your credentials when creating the API client object.
+// Then simply pass your Credentials object when creating the API client object.
 $proxmox = new Proxmox($credentials);
 
 $allNodes = $proxmox->get('/nodes');
@@ -105,39 +98,33 @@ Array
 )
 ```
 
-Using custom credentials object
--------------------------------
-
-Also is possible to create a ProxmoxVE instance passing a custom object that has all related data needed to connect to the Proxmox server:
+For the lazy ones it's possible to create a ProxmoxVE instance passing an associative array but you need to specify all fields including realm and port:
 
 ```php
 <?php
 // Once again require the autoloader
 require_once 'vendor/autoload.php';
 
-// Sample custom credentials class
-class CustomCredentials
-{
-    public function __construct($host, $user, $pass)
-    {
-        $this->hostname = $host;
-        $this->username = $user;
-        $this->password = $pass;
-    }
-}
+// You can define your credentials using an array
+$credentials = array(
+    'hostname' => 'your.server.tld',
+    'username' => 'root',
+    'password' => 'secret',
+    'realm' => 'pam',
+    'port' => '8006',
+);
 
-// Create ProxmoxVE instance by passing your custom credentials object
-$credentials = new CustomCredentials('proxmox.server.com', 'root', 'secret');
+// Create ProxmoxVE instance by passing the $credentials array
 $proxmox = new ProxmoxVE\Proxmox($credentials);
 
 // Then you can use it, for example create a new user.
 
 // Define params
-$params = [
+$params = array(
     'userid' => 'new_user@pve',  // Proxmox requires to specify the realm (see the docs)
     'comment' => 'Creating a new user',
     'password' => 'canyoukeepasecret?',
-];
+);
 
 // Send request passing params
 $result = $proxmox->create('/access/users', $params);
@@ -153,8 +140,6 @@ if (isset($result['errors'])) {
 }
 ```
 
-Using a custom credentials object is useful when your application uses some *ORM models* with the connecting data inside them, so you can pass for example an *Eloquent* model that holds the credentials inside.
-
 
 Docs
 ----
@@ -169,9 +154,9 @@ In your proxmox server you can use the [pvesh CLI Tool](http://pve.proxmox.com/w
 
 Consult the [ProxmoxVE API] article at the [Proxmox wiki].
 
-**I feel you're hiding some cool tricks! I need more docs!**
+**I need more docs!**
 
-See the [doc](https://github.com/ZzAntares/ProxmoxVE/tree/master/doc) directory for more detailed documentation, it's all in there I swear it... I think.
+See the [doc](https://github.com/ZzAntares/ProxmoxVE/tree/master/doc) directory for more detailed documentation.
 
 
 License
@@ -205,19 +190,20 @@ If you feel guilty by using this open source software library for free, you can 
 > Fork and code! There is no better donation that your code contribution ;)
 
 
-[![@ZzAntares](https://lh4.googleusercontent.com/-y60LB84GXNk/U-gGlzNHUGI/AAAAAAAACDs/cuhszQOezYE/s50-no/twitter-logo.png)](https://twitter.com/ZzAntares)
-
-> Or just cheer me up [@ZzAntares](https://twitter.com/ZzAntares).
-
-Upcoming features
+TODO
 ----
-
-- SSL support.
+- Notify the user when a CNAME DNS record is provided as a hostname, Proxmox API seems to not work in this case.
+- Add SSL support.
 - Save AuthToken data in serialized form to avoid ticket creation per request.
+- Usage of the API need to allows you to specify return format.
+	- json
+	- extjs
+	- html
+	- text
 - Use an abstracted OOP layer to access all Proxmox resources.
 - Code useful tests ¬_¬!
 
-[LICENSE]:./LICENSE
+[LICENSE]:https://github.com/ZzAntares/ProxmoxVE/blob/master/LICENSE
 [PVE2 API Documentation]:http://pve.proxmox.com/pve2-api-doc/
 [ProxmoxVE API]:http://pve.proxmox.com/wiki/Proxmox_VE_API
 [Proxmox wiki]:http://pve.proxmox.com/wiki

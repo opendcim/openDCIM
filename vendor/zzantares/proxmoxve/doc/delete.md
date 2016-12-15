@@ -11,15 +11,19 @@ Lets see how can we destroy the proxmox user *bob* which is using the realm *pve
 // Require the autoloader
 require_once 'vendor/autoload.php';
 
-// Create your credentials array
-$credentials = [
-    'hostname' => 'my.proxmox.tld',
-    'username' => 'root',
-    'password' => 'secret',
-];
+// Use the library namespaces
+use ProxmoxVE\Credentials;
+use ProxmoxVE\Proxmox;
 
-// Then simply pass your credentials when creating the API client object
-$proxmox = new \ProxmoxVE\Proxmox($credentials);
+$server = 'my.proxmox.tld';
+$user = 'root';
+$pass = 'secret';
+
+// Create your Credentials object
+$credentials = new Credentials($server, $user, $pass);
+
+// Then simply pass your Credentials object when creating the API client object
+$proxmox = new Proxmox($credentials);
 
 // We use delete() function since we want to destroy a specified resource
 $result = $proxmox->delete('/access/users/bob@pve');
@@ -52,7 +56,7 @@ Array
 )
 ```
 
-As you can see the `destroy()` function receives the desired resource path you want to destroy. In rare cases you may want to pass params to the `destroy()` function, in that cases you should pass params in an associative array as second a parameter, justs as *create*, *get* and *set* functions behave.
+As you can see the `destroy()` function receives the desired resource path you want to destroy. In rare cases you may want to pass params to the `destroy()` function, in that cases you should pass params in an associative array as second a parameter.
 
 Search for the `errors` key in the `$result` array in order to know if your request was executed without errors.
 

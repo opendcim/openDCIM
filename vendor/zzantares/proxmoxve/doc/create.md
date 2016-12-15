@@ -11,24 +11,28 @@ Lets see how can we create a new proxmox user:
 // Require the autoloader
 require_once 'vendor/autoload.php';
 
-// Create your credentials array
-$credentials = [
-    'hostname' => 'my.proxmox.tld',
-    'username' => 'root',
-    'password' => 'secret',
-];
+// Use the library namespaces
+use ProxmoxVE\Credentials;
+use ProxmoxVE\Proxmox;
 
-// Pass your credentials when creating the Proxmox API Client object.
-$proxmox = new \ProxmoxVE\Proxmox($credentials);
+$server = 'my.proxmox.tld';
+$user = 'root';
+$pass = 'secret';
+
+// Create your Credentials object
+$credentials = new Credentials($server, $user, $pass);
+
+// Pass your Credentials object when creating the Proxmox API Client object.
+$proxmox = new Proxmox($credentials);
 
 // Prepare params to use
-$newUserData = [
+$newUserData = array(
     'userid' => 'bob@pve',
     'email' => 'uncle.bob@mail.com',
     'firstname' => 'Bob',
     'lastname' => 'Marley',
     'password' => 'StirItUp',
-];
+);
 
 // Create a new proxmox user
 $result = $proxmox->create('/access/users', $newUserData);
@@ -98,4 +102,3 @@ FAQ
 **How can I know what resource paths are available and which params needs to be passed?**
 
 It's all in the [PVE2 API Documentation](http://pve.proxmox.com/pve2-api-doc/).
-

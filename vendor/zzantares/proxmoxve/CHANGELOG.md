@@ -1,20 +1,3 @@
-v3.0.0
-------
-
-- PHP 5.4 required.
-- Proxmox API client logic rewritten (but the usage is pretty much the same).
-- GuzzleHttp used for sending HTTP requests.
-- Credentials default form is now an array not an object (read the docs).
-- Better docs (compliant with this new release).
-
-
-v2.1.1
-------
-
-- Small bug fixed, using an Eloquent model as a custom credentials object was not valid.
-- Code coverage and code quality service integrated.
-
-
 v2.1.0
 ------
 

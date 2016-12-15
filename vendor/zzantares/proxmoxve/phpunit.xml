@@ -9,7 +9,7 @@
     syntaxCheck="false"
     bootstrap="tests/bootstrap.php">
     <testsuites>
-        <testsuite name="Proxmox Test Suite">
+        <testsuite name="DigitalOcean Test Suite">
             <directory>tests/</directory>
         </testsuite>
     </testsuites>

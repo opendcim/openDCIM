@@ -10,7 +10,7 @@
 namespace ProxmoxVE;
 
 /**
- * AuthToken class. Handles all data used when talking to a promxox server like
+ * AuthToken class. Handle all data used when talking to a promxox server like
  * the CSRF token, login ticket, etc.
  *
  * @author César Muñoz <zzantares@gmail.com>
@@ -26,7 +26,7 @@ class AuthToken
 
 
     /**
-     * Random text used by Proxmox as CSRF prevention token in some requests.
+     * Random text used as CSRF prevention token by Proxmox in some requests.
      *
      * @see http://pve.proxmox.com/wiki/Proxmox_VE_API#Authentification
      * @var string
