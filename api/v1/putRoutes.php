@@ -3,10 +3,12 @@
 	/*	Even though we're including these files in to an upstream index.php that already declares
 		the namespaces, PHP treats it as a difference context, so we have to redeclare in each
 		included file.
-	*/
+	
+	Framework v3 Specific
+
 	use Psr\Http\Message\ServerRequestInterface as Request;
 	use Psr\Http\Message\ResponseInterface as Response;
-
+	*/
 
 /**
   *
@@ -27,7 +29,7 @@
 //	Returns: record as created
 //
   
-$app->put('/people/{userid}', function( Request $request, Response $response, $args ) use ($person) {
+$app->put('/people/:userid', function($userid) use ($person) {
 	$r = array();
 
 	if ( !$person->ContactAdmin ) {
@@ -37,8 +39,8 @@ $app->put('/people/{userid}', function( Request $request, Response $response, $a
 	}
 	
 	$p = new People();
-	$vars = $request->getParsedBody();
-	$p->UserID = $args['userid'];
+	$vars = getParsedBody();
+	$p->UserID = $userid;
 
 	if($p->GetPersonByUserID()){
 		$r['error']=true;
@@ -56,7 +58,7 @@ $app->put('/people/{userid}', function( Request $request, Response $response, $a
 		
 		if($p->PersonID==false){
 			$r['error']=true;
-			$r['errorcode']=403;
+			$r['errorcode']=400;
 			$r['message']=__("Unable to create People resource with the given parameters.");
 		}else{
 			$r['error']=false;
@@ -66,8 +68,7 @@ $app->put('/people/{userid}', function( Request $request, Response $response, $a
 		}
 	}
 
-	$response = $response->withJson( $r, $r['errorcode'] );
-	return $response;
+	echoResponse( $r );
 
 });
 
@@ -80,14 +81,14 @@ $app->put('/people/{userid}', function( Request $request, Response $response, $a
 //	Returns: record as created
 //
 
-$app->put( '/colorcode/{colorname}', function( Request $request, Response $response, $args ) use ($person) {
+$app->put( '/colorcode/:colorname', function($colorname) use ($person) {
 	if ( ! $person->SiteAdmin ) {
 		$r['error'] = true;
 		$r['errorcode'] = 401;
 		$r['message'] = __("Access Denied");
 	} else {
 		$cc=new ColorCoding();
-		$vars = $request->getParsedBody();
+		$vars = getParsedBody();
 
 		foreach( $vars as $prop=>$val ) {
 			if ( property_exists( $cc, $prop )) {
@@ -97,7 +98,7 @@ $app->put( '/colorcode/{colorname}', function( Request $request, Response $respo
 
 		if(!$cc->CreateCode()){
 			$r['error']=true;
-			$r['errorcode']=403;
+			$r['errorcode']=400;
 			$r['message']=__("Error creating new color.");
 		}else{
 			$r['error']=false;
@@ -107,8 +108,7 @@ $app->put( '/colorcode/{colorname}', function( Request $request, Response $respo
 		}
 	}
 
-	$response = $response->withJson( $r, $r['errorcode'] );
-	return $response;
+	echoResponse( $r );
 });
 
 //
@@ -120,10 +120,10 @@ $app->put( '/colorcode/{colorname}', function( Request $request, Response $respo
 //	Returns: record as created 
 //
 
-$app->put( '/device/{devicelabel}', function( Request $request, Response $response, $args ) {
+$app->put( '/device/:devicelabel', function($devicelabel) {
 	$dev=new Device();
 
-	$vars = $request->getParsedBody();
+	$vars = getParsedBody();
 
 	foreach( $vars as $prop=>$val ) {
 		if ( property_exists( $dev, $prop )) {
@@ -150,7 +150,7 @@ $app->put( '/device/{devicelabel}', function( Request $request, Response $respon
 	}
 
 	// This should be in the commit data but if we get a smartass saying it's in the URL
-	$dev->Label=$args['devicelabel'];
+	$dev->Label=$devicelabel;
 
 	$cab=new Cabinet();
 	$cab->CabinetID=$dev->Cabinet;
@@ -166,7 +166,7 @@ $app->put( '/device/{devicelabel}', function( Request $request, Response $respon
 		}else{
 			if(!$dev->CreateDevice()){
 				$r['error']=true;
-				$r['errorcode']=404;
+				$r['errorcode']=400;
 				$r['message']=__("Device creation failed");
 			}else{
 				// refresh the model in case we extended it elsewhere
@@ -179,8 +179,7 @@ $app->put( '/device/{devicelabel}', function( Request $request, Response $respon
 		}
 	}
 
-	$response = $response->withJson( $r, $r['errorcode'] );
-	return $response;
+	echoResponse( $r );
 });
 
 //
@@ -193,9 +192,9 @@ $app->put( '/device/{devicelabel}', function( Request $request, Response $respon
 //	Returns: record as created 
 //
 
-$app->put( '/device/{deviceid}/copyto/{newposition}', function( Request $request, Response $response, $args ) {
+$app->put( '/device/:deviceid/copyto/:newposition', function($deviceid, $newposition) {
 	$dev=new Device();
-	$dev->DeviceID=$args['deviceid'];
+	$dev->DeviceID=$deviceid;
 	$dev->GetDevice();
 
 	$cab=new Cabinet();
@@ -207,12 +206,12 @@ $app->put( '/device/{deviceid}/copyto/{newposition}', function( Request $request
 	}else{
 		if($cab->Rights!="Write"){
 			$r['error']=true;
-			$r['errorcode']=403;
-			$r['message']=__("Unauthorized");
+			$r['errorcode']=401;
+			$r['message']=__("Access Denied");
 		}else{
-			if(!$dev->CopyDevice(null,$args['newposition'],true)){
+			if(!$dev->CopyDevice(null,$newposition,true)){
 				$r['error']=true;
-				$r['errorcode']=404;
+				$r['errorcode']=400;
 				$r['message']=__("Device creation failed");
 			}else{
 				// refresh the model in case we extended it elsewhere
@@ -225,8 +224,7 @@ $app->put( '/device/{deviceid}/copyto/{newposition}', function( Request $request
 		}
 	}
 
-	$response = $response->withJson( $r, $r['errorcode'] );
-	return $response;
+	echoResponse( $r );
 });
 
 //
@@ -238,10 +236,10 @@ $app->put( '/device/{deviceid}/copyto/{newposition}', function( Request $request
 //	Returns: record as created 
 //
 
-$app->put( '/devicetemplate/{model}', function( Request $request, Response $response, $args ) use ($person) {
+$app->put( '/devicetemplate/:model', function($model) use ($person) {
 	$dt=new DeviceTemplate();
 
-	$vars = $request->getParsedBody();
+	$vars = getParsedBody();
 
 	foreach( $vars as $prop=>$val ) {
 		if ( property_exists( $dt, $prop )) {
@@ -250,16 +248,16 @@ $app->put( '/devicetemplate/{model}', function( Request $request, Response $resp
 	}
 
 	// This should be in the commit data but if we get a smartass saying it's in the URL
-	$dt->Model=$args['model'];
+	$dt->Model=$model;
 
 	if(!$person->WriteAccess){
 		$r['error']=true;
-		$r['errorcode']=403;
-		$r['message']=__("Unauthorized");
+		$r['errorcode']=401;
+		$r['message']=__("Access Denied");
 	}else{
 		if(!$dt->CreateTemplate()){
 			$r['error']=true;
-			$r['errorcode']=404;
+			$r['errorcode']=400;
 			$r['message']=__("Device template creation failed");
 		}else{
 			// refresh the model in case we extended it elsewhere
@@ -271,8 +269,7 @@ $app->put( '/devicetemplate/{model}', function( Request $request, Response $resp
 		}
 	}
 
-	$response = $response->withJson( $r, $r['errorcode'] );
-	return $response;
+	echoResponse( $r );
 });
 
 //
@@ -284,10 +281,10 @@ $app->put( '/devicetemplate/{model}', function( Request $request, Response $resp
 //	Returns: record as created 
 //
 
-$app->put( '/devicetemplate/{templateid}/dataport/{portnum}', function( Request $request, Response $response, $args ) use($person) {
+$app->put( '/devicetemplate/:templateid/dataport/:portnum', function($templateid, $portum) use($person) {
 	$tp=new TemplatePorts();
 	
-	$vars = $request->getParsedBody();
+	$vars = getParsedBody();
 
 	foreach( $vars as $prop=>$val ) {
 		if ( property_exists($tp, $prop)) {
@@ -296,17 +293,17 @@ $app->put( '/devicetemplate/{templateid}/dataport/{portnum}', function( Request 
 	}
 
 	// This should be in the commit data but if we get a smartass saying it's in the URL
-	$tp->TemplateID=$args['templateid'];
-	$tp->PortNumber=$args['portnum'];
+	$tp->TemplateID=$templateid;
+	$tp->PortNumber=$portnum;
 
 	if(!$person->WriteAccess){
 		$r['error']=true;
-		$r['errorcode']=403;
-		$r['message']=__("Unauthorized");
+		$r['errorcode']=401;
+		$r['message']=__("Access Denied");
 	}else{
 		if(!$tp->CreatePort()){
 			$r['error']=true;
-			$r['errorcode']=404;
+			$r['errorcode']=400;
 			$r['message']=__("Device template port creation failed");
 		}else{
 			$r['error']=false;
@@ -315,8 +312,7 @@ $app->put( '/devicetemplate/{templateid}/dataport/{portnum}', function( Request 
 		}
 	}
 
-	$response = $response->withJson( $r, $r['errorcode'] );
-	return $response;
+	echoResponse( $r );
 });
 
 //
@@ -328,10 +324,10 @@ $app->put( '/devicetemplate/{templateid}/dataport/{portnum}', function( Request 
 //	Returns: record as created 
 //
 
-$app->put( '/devicetemplate/{templateid}/powerport/{portnum}', function( Request $request, Response $response, $args ) use ($person) {
+$app->put( '/devicetemplate/:templateid/powerport/:portnum', function($templateid, $portnum) use ($person) {
 	$tp=new TemplatePowerPorts();
 
-	$vars = $request->getParsedBody();
+	$vars = getParsedBody();
 
 	foreach( $vars as $prop=>$val ) {
 		if ( property_exists($tp, $prop)) {
@@ -340,17 +336,17 @@ $app->put( '/devicetemplate/{templateid}/powerport/{portnum}', function( Request
 	}
 
 	// This should be in the commit data but if we get a smartass saying it's in the URL
-	$tp->TemplateID=$args['templateid'];
-	$tp->PortNumber=$args['portnum'];
+	$tp->TemplateID=$templateid;
+	$tp->PortNumber=$portnum;
 
 	if(!$person->WriteAccess){
 		$r['error']=true;
-		$r['errorcode']=403;
-		$r['message']=__("Unauthorized");
+		$r['errorcode']=401;
+		$r['message']=__("Access Denied");
 	}else{
 		if(!$tp->CreatePort()){
 			$r['error']=true;
-			$r['errorcode']=404;
+			$r['errorcode']=400;
 			$r['message']=__("Device template port creation failed");
 		}else{
 			$r['error']=false;
@@ -359,8 +355,7 @@ $app->put( '/devicetemplate/{templateid}/powerport/{portnum}', function( Request
 		}
 	}
 
-	$response = $response->withJson( $r, $r['errorcode'] );
-	return $response;
+	echoResponse( $r );
 });
 
 //
@@ -372,27 +367,27 @@ $app->put( '/devicetemplate/{templateid}/powerport/{portnum}', function( Request
 //	Returns: record as created 
 //
 
-$app->put( '/devicetemplate/{templateid}/slot/{slotnum}', function( Request $request, Response $response, $args ) use($person) {
+$app->put( '/devicetemplate/:templateid/slot/:slotnum', function($templateid, $slotnum) use($person) {
 	$s=new Slot();
 
-	$vars = $request->getParsedBody();
+	$vars = getParsedBody();
 	foreach($vars as $prop => $val){
 		if ( property_exists($s, $prop)) {
 			$s->$prop=$val;
 		}
 	}
 	// This should be in the commit data but if we get a smartass saying it's in the URL
-	$s->TemplateID=$args['templateid'];
-	$s->Position=$args['slotnum'];
+	$s->TemplateID=$templateid;
+	$s->Position=$slotnum;
 
 	if(!$person->WriteAccess){
 		$r['error']=true;
-		$r['errorcode']=403;
-		$r['message']=__("Unauthorized");
+		$r['errorcode']=401;
+		$r['message']=__("Access Denied");
 	}else{
 		if(!$s->CreateSlot()){
 			$r['error']=true;
-			$r['errorcode']=404;
+			$r['errorcode']=400;
 			$r['message']=__("Device template slot creation failed");
 		}else{
 			$r['error']=false;
@@ -401,8 +396,7 @@ $app->put( '/devicetemplate/{templateid}/slot/{slotnum}', function( Request $req
 		}
 	}
 
-	$response = $response->withJson( $r, $r['errorcode'] );
-	return $response;
+	echoResponse( $r );
 });
 
 //
@@ -412,10 +406,10 @@ $app->put( '/devicetemplate/{templateid}/slot/{slotnum}', function( Request $req
 //	Returns: Record as created 
 //
 
-$app->put( '/manufacturer/{name}', function( Request $request, Response $response, $args ) use($person) {
+$app->put( '/manufacturer/:name', function($name) use($person) {
 	$man=new Manufacturer();
 
-	$vars = $request->getParsedBody();
+	$vars = getParsedBody();
 
 	foreach( $vars as $prop=>$val ) {
 		if ( property_exists( $man, $prop )) {
@@ -423,14 +417,14 @@ $app->put( '/manufacturer/{name}', function( Request $request, Response $respons
 		}
 	}
 
-	$man->Name=$args['name'];
+	$man->Name=$name;
 	
 	$r['error']=true;
-	$r['errorcode']=404;
+	$r['errorcode']=400;
 
 	if(!$person->SiteAdmin){
-		$r['errorcode']=403;
-		$r['message']=__("Unauthorized");
+		$r['errorcode']=401;
+		$r['message']=__("Access Denied");
 	}else{
 		if(!$man->CreateManufacturer()){
 			$r['message']=__("Manufacturer not created: ")." $manufacturerid";
@@ -441,8 +435,7 @@ $app->put( '/manufacturer/{name}', function( Request $request, Response $respons
 		}
 	}
 
-	$response = $response->withJson( $r, $r['errorcode'] );
-	return $response;
+	echoResponse( $r );
 });
 
 ?>

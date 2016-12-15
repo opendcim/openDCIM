@@ -3,10 +3,13 @@
 	/*	Even though we're including these files in to an upstream index.php that already declares
 		the namespaces, PHP treats it as a difference context, so we have to redeclare in each
 		included file.
-	*/
+	
+
+	Framework v3 Specific
+
 	use Psr\Http\Message\ServerRequestInterface as Request;
 	use Psr\Http\Message\ResponseInterface as Response;
-
+	*/
 
 /**
   *
@@ -26,7 +29,7 @@
 //	Returns: record as modified
 //
 
-$app->post('/people/{personid}', function( Request $request, Response $response, $args ) use ($person) {
+$app->post('/people/:personid', function($personid) use ($person) {
 	if(!$person->ContactAdmin){
 		$r['error']=true;
 		$r['errorcode']=401;
@@ -34,14 +37,14 @@ $app->post('/people/{personid}', function( Request $request, Response $response,
 	} else {
 		$r = array();
 		$p=new People();
-		$p->PersonID=$args['personid'];
+		$p->PersonID=$personid;
 		if(!$p->GetPerson()){
 			$r['error']=true;
 			$r['errorcode']=404;
 			$r['message']=__("UserID=" . $p->PersonID . " not found in database.");
 		} else {	
 			// Slim Framework will simply return null for any variables that were not passed, so this is safe to call without blowing up the script
-			$vars = $request->getParsedBody();
+			$vars = getParsedBody();
 			foreach($p as $prop => $val){
 				if ( isset( $vars[$prop] ) ){
 					$p->$prop=$vars[$prop];
@@ -64,8 +67,7 @@ $app->post('/people/{personid}', function( Request $request, Response $response,
 
 	// Possible to-do list for someone to figure out...  why the $app->view scope isn't included
 	// when you have the use($person) clause - also doesn't work if you make it use ($app, $person)
-	$response = $response->withJson( $r, $r['errorcode'] );
-	return $response;
+	echoResponse( $r );
 });
 
 //
@@ -76,7 +78,7 @@ $app->post('/people/{personid}', function( Request $request, Response $response,
 //	Returns: true / false on the updates being successful 
 //
 
-$app->post('/people/{peopleid}/transferdevicesto/{newpeopleid}', function( Request $request, Response $response, $args ) use ( $person) {
+$app->post('/people/:peopleid/transferdevicesto/:newpeopleid', function($peopleid, $newpeopleid) use ( $person) {
 	if ( ! $person->ContactAdmin ) {
 		$r['error'] = true;
 		$r['errorcode'] = 401;
@@ -89,8 +91,8 @@ $app->post('/people/{peopleid}/transferdevicesto/{newpeopleid}', function( Reque
 		foreach(array('peopleid','newpeopleid') as $var){
 			$p=new People();
 
-			$p->UserID=$args[$var];
-			if(!$p->GetPerson() && ($var!='newpeopleid' && $args[$var]==0)){
+			$p->UserID=$$var;
+			if(!$p->GetPerson() && ($var!='newpeopleid' && $$var==0)){
 				$r['error']=true;
 				$r['message']="$var is not valid";
 				continue;
@@ -100,21 +102,27 @@ $app->post('/people/{peopleid}/transferdevicesto/{newpeopleid}', function( Reque
 		// If we error above don't attempt to make changes
 		if(!$r['error']){
 			$dev=new Device();
-			$dev->PrimaryContact=$args['peopleid'];
+			$dev->PrimaryContact=$peopleid;
+			$updated = 0;
 			foreach($dev->Search() as $d){
-				$d->PrimaryContact=$args['newpeopleid'];
+				$d->PrimaryContact=$newpeopleid;
 				if(!$d->UpdateDevice()){
 					// If we encounter an error stop immediately
 					$r['error']=true;
 					$r['message']=__("Device update has failed");
 					continue;
+				} else {
+					$updated++;
 				}
+			}
+
+			if ( $r['error'] == false ) {
+				$r['message'] = $updated." ".__("devices updated");
 			}
 		}
 	}
 
-	$response = $response->withJson( $r, $r['errorcode'] );
-	return $response;
+	echoResponse( $r );
 });
 
 //
@@ -126,15 +134,15 @@ $app->post('/people/{peopleid}/transferdevicesto/{newpeopleid}', function( Reque
 //	Returns:  true/false on update operation
 //
 
-$app->post( '/powerport/{deviceid}', function( Request $request, Response $response, $args ) use ($person) {
+$app->post( '/powerport/:deviceid', function($deviceid) use ($person) {
 	if ( ! $person->WriteAccess ) {
 		$r['error'] = true;
 		$r['errorcode'] = 401;
 		$r['message'] = __("Access Denied");
 	} else {
 		$pp=new PowerPorts();
-		$pp->DeviceID=$args['deviceid'];
-		$vars = $request->getParsedBody();
+		$pp->DeviceID=$deviceid;
+		$vars = getParsedBody();
 		foreach($vars as $prop => $val){
 			$pp->$prop=$val;
 		}
@@ -143,8 +151,7 @@ $app->post( '/powerport/{deviceid}', function( Request $request, Response $respo
 		$r['errorcode']=200;
 	}
 
-	$response = $response->withJson( $r, $r['errorcode'] );
-	return $response;
+	echoResponse( $r );
 });
 
 //
@@ -156,24 +163,33 @@ $app->post( '/powerport/{deviceid}', function( Request $request, Response $respo
 //	Returns:  true/false on update operation
 //
 
-$app->post( '/colorcode/{colorid}', function( Request $request, Response $response, $args ) use ($person) {
+$app->post( '/colorcode/:colorid', function($colorid) use ($person) {
 	if ( ! $person->SiteAdmin ) {
 		$r['error'] = true;
 		$r['errorcode'] = 401;
 		$r['message'] = __("Access Denied");
 	} else {
 		$cc=new ColorCoding();
-		$vars = $request->getParsedBody();
+		$vars = getParsedBody();
 		foreach($vars as $prop => $val){
-			$cc->$prop=$val;
+			if ( property_exists($cc, $prop)) {
+				$cc->$prop=$val;
+			}
 		}
 
-		$r['error']=($cc->UpdateCode())?false:true;
-		$r['errorcode']=200;
+		$cc->ColorID = $colorid;
+
+		if ( $cc->UpdateCode() ) {
+			$r['error']=false;
+			$r['errorcode']=200;
+		} else {
+			$r['error'] = true;
+			$r['errorcode'] = 400;
+			$r['message'] = __("Error updating color code.");
+		}
 	}
 
-	$response = $response->withJson( $r, $r['errorcode'] );
-	return $response;
+	echoResponse( $r );
 });
 
 //
@@ -185,18 +201,23 @@ $app->post( '/colorcode/{colorid}', function( Request $request, Response $respon
 //	Returns:  true/false on update operation
 //
 
-$app->post( '/colorcode/{colorid}/replacewith/{newcolorid}', function( Request $request, Response $response, $args ) use ( $person ) {
+$app->post( '/colorcode/:colorid/replacewith/:newcolorid', function($colorid, $newcolorid) use ( $person ) {
 	if ( ! $person->SiteAdmin ) {
 		$r['error'] = true;
 		$r['errorcode'] = 401;
 		$r['message'] = __("Access Denied");
 	} else {
-		$r['error']=(ColorCoding::ResetCode($args['colorid'],$args['newcolorid']))?false:true;
-		$r['errorcode']=200;
+		if ( ColorCoding::ResetCode($colorid, $newcolorid)) {
+			$r['error']=false;
+			$r['errorcode']=200;
+		} else {
+			$r['error'] = true;
+			$r['errorcode'] = 401;
+			$r['message'] = __("Invalid operation");
+		}
 	}
 
-	$response = $response->withJson( $r, $r['errorcode'] );
-	return $response;
+	echoResponse( $r );
 });
 
 //
@@ -206,28 +227,30 @@ $app->post( '/colorcode/{colorid}/replacewith/{newcolorid}', function( Request $
 //	Returns:  true/false on update operation
 //
 
-$app->post( '/device/{deviceid}', function( Request $request, Response $response, $args ) {
+$app->post( '/device/:deviceid', function($deviceid) {
 	// Rights are handled in the back end classes based upon the UserID attached to $person, so skip checks here
 	$dev=new Device();
-	$dev->DeviceID=$args['deviceid'];
+	$dev->DeviceID=$deviceid;
 	
 	if(!$dev->GetDevice()){
 		$r['error']=true;
 		$r['errorcode']=404;
-		$r['message']=__("No device found with DeviceID").$deviceid;
+		$r['message']=__("No device found with DeviceID")." $deviceid";
 	}else{
 		if($dev->Rights!="Write"){
 			$r['error']=true;
 			$r['errorcode']=401;
 			$r['message']=__("Access Denied");
 		}else{
-			$vars = $request->getParsedBody();
+			$vars = getParsedBody();
 			foreach($vars as $prop => $val){
-				$dev->$prop=$val;
+				if ( property_exists( $dev, $prop )) {
+					$dev->$prop=$val;
+				}
 			}
 			if(!$dev->UpdateDevice()){
 				$r['error']=true;
-				$r['errorcode']=404;
+				$r['errorcode']=401;
 				$r['message']=__("Update failed");
 			}else{
 				$r['error']=false;
@@ -236,8 +259,7 @@ $app->post( '/device/{deviceid}', function( Request $request, Response $response
 		}
 	}
 
-	$response = $response->withJson( $r, $r['errorcode'] );
-	return $response;
+	echoResponse( $r );
 });
 
 //
@@ -249,10 +271,8 @@ $app->post( '/device/{deviceid}', function( Request $request, Response $response
 //	Returns: true/false on update operation 
 //
 
-$app->post( '/devicetemplate/{templateid}', function( Request $request, Response $response, $args ) use ($person) {
-	$dt=new DeviceTemplate($args['templateid']);
-	// This should be in the commit data but if we get a smartass saying it's in the URL
-	$dt->TemplateID=$templateid;
+$app->post( '/devicetemplate/:templateid', function($templateid) use ($person) {
+	$dt=new DeviceTemplate($templateid);
 	if(!$person->WriteAccess){
 		$r['error']=true;
 		$r['errorcode']=401;
@@ -263,13 +283,15 @@ $app->post( '/devicetemplate/{templateid}', function( Request $request, Response
 			$r['errorcode']=404;
 			$r['message']=__("No device template found with TemplateID: ").$templateid;
 		}else{
-			$vars = $request->getParsedBody();
+			$vars = getParsedBody();
 			foreach($vars as $prop => $val){
-				$dt->$prop=$val;
+				if ( property_exists( $dt, $prop )) {
+					$dt->$prop=$val;
+				}
 			}
 			if(!$dt->UpdateTemplate()){
 				$r['error']=true;
-				$r['errorcode']=404;
+				$r['errorcode']=400;
 				$r['message']=__("Device template update failed");
 			}else{
 				$r['error']=false;
@@ -277,8 +299,7 @@ $app->post( '/devicetemplate/{templateid}', function( Request $request, Response
 			}
 		}
 	}
-	$response = $response->withJson( $r, $r['errorcode'] );
-	return $response;
+	echoResponse( $r );
 });
 
 //
@@ -290,10 +311,10 @@ $app->post( '/devicetemplate/{templateid}', function( Request $request, Response
 //	Returns: true/false on update operation
 //
 
-$app->post( '/devicetemplate/{templateid}/dataport/{portnumber}', function( Request $request, Response $response, $args ) use ($person) {
+$app->post( '/devicetemplate/:templateid/dataport/:portnumber', function($templateid, $portnumber) use ($person) {
 	$tp=new TemplatePorts();
-	$tp->TemplateID=$args['templateid'];
-	$tp->PortNumber=$args['portnumber'];
+	$tp->TemplateID=$templateid;
+	$tp->PortNumber=$portnumber;
 
 	if(!$person->WriteAccess){
 		$r['error']=true;
@@ -305,13 +326,15 @@ $app->post( '/devicetemplate/{templateid}/dataport/{portnumber}', function( Requ
 			$r['errorcode']=404;
 			$r['message']=__("Template port not found with id: ")." $templateid:$portnum";
 		}else{
-			$vars = $request->getParsedBody();
+			$vars = getParsedBody();
 			foreach($vars as $prop => $val){
-				$tp->$prop=$val;
+				if ( property_exists( $tp, $prop )) {
+					$tp->$prop=$val;
+				}
 			}
 			if(!$tp->updatePort()){
 				$r['error']=true;
-				$r['errorcode']=404;
+				$r['errorcode']=400;
 				$r['message']=__("Template port update failed");
 			}else{
 				$r['error']=false;
@@ -321,8 +344,7 @@ $app->post( '/devicetemplate/{templateid}/dataport/{portnumber}', function( Requ
 		}
 	}
 
-	$response = $response->withJson( $r, $r['errorcode'] );
-	return $response;
+	echoResponse( $r );
 });
 
 //
@@ -334,10 +356,10 @@ $app->post( '/devicetemplate/{templateid}/dataport/{portnumber}', function( Requ
 //	Returns: true/false on update operation
 //
 
-$app->post( '/devicetemplate/{templateid}/slot/{slotnum}', function( Request $request, Response $response, $args ) use ($person) {
+$app->post( '/devicetemplate/:templateid/slot/:slotnum', function($templateid, $slotnum) use ($person) {
 	$s=new Slot();
-	$s->TemplateID=$args['templateid'];
-	$s->PortNumber=$args['slotnum'];
+	$s->TemplateID=$templateid;
+	$s->PortNumber=$slotnum;
 
 	if(!$person->WriteAccess){
 		$r['error']=true;
@@ -349,16 +371,18 @@ $app->post( '/devicetemplate/{templateid}/slot/{slotnum}', function( Request $re
 			$r['errorcode']=404;
 			$r['message']=__("Template slot not found with id: ")." $templateid:$slotnum";
 		}else{
-			$vars = $request->getParsedBody();
+			$vars = getParsedBody();
 			foreach($vars as $prop => $val){
-				$s->$prop=$val;
+				if ( property_exists( $s, $prop )) {
+					$s->$prop=$val;
+				}
 			}
 			// Just to make sure 
-			$s->TemplateID=$args['templateid'];
-			$s->PortNumber=$args['slotnum'];
+			$s->TemplateID=$templateid;
+			$s->PortNumber=$slotnum;
 			if(!$s->UpdateSlot()){
 				$r['error']=true;
-				$r['errorcode']=404;
+				$r['errorcode']=400;
 				$r['message']=__("Template slot update failed");
 			}else{
 				$r['error']=false;
@@ -368,8 +392,7 @@ $app->post( '/devicetemplate/{templateid}/slot/{slotnum}', function( Request $re
 		}
 	}
 
-	$response = $response->withJson( $r, $r['errorcode'] );
-	return $response;
+	echoResponse( $r );
 });
 
 //
@@ -379,23 +402,26 @@ $app->post( '/devicetemplate/{templateid}/slot/{slotnum}', function( Request $re
 //	Returns: true/false on update operation
 //
 
-$app->post( '/manufacturer/{manufacturerid}', function( Request $request, Response $response, $args ) use ($person) {
+$app->post( '/manufacturer/:manufacturerid', function($manufacturerid) use ($person) {
 	$man=new Manufacturer();
-	$man->ManufacturerID=$args['manufacturerid'];
+	$man->ManufacturerID=$manufacturerid;
 	
 	$r['error']=true;
-	$r['errorcode']=404;
+	$r['errorcode']=400;
 
 	if(!$person->SiteAdmin){
 		$r['errorcode']=401;
 		$r['message']=__("Access Denied");
 	}else{
 		if(!$man->GetManufacturerByID()){
+			$r['errorcode'] = 404;
 			$r['message']=__("Manufacturer not found with id: ").$args['manufacturerid'];
 		}else{
-			$vars = $request->getParsedBody();
+			$vars = getParsedBody();
 			foreach($vars as $prop => $val){
-				$man->$prop=$val;
+				if ( property_exists($man, $prop)) {
+					$man->$prop=$val;
+				}
 			}
 			if(!$man->UpdateManufacturer()){
 				$r['message']=__("Manufacturer update failed");
@@ -406,8 +432,7 @@ $app->post( '/manufacturer/{manufacturerid}', function( Request $request, Respon
 		}
 	}
 
-	$response = $response->withJson( $r, $r['errorcode'] );
-	return $response;
+	echoResponse( $r );
 });
 
 ?>
