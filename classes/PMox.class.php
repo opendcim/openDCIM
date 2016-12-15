@@ -37,13 +37,11 @@ class PMox {
 
 		// Establish credentials for this particular device
 
-		$credentials = [
-			'hostname' => $d->PrimaryIP,
-			'username' => $d->APIUsername,
-			'password' => $d->APIPassword,
-			'port' => $d->APIPort,
-			'realm' => $d->ProxMoxRealm
-		];
+		$credentials = new Credentials( $d->PrimaryIP,
+			$d->APIUsername,
+			$d->APIPassword,
+			$d->ProxMoxRealm,
+			$d->APIPort );
 
 		try {
 			$proxmox = new Proxmox($credentials);
@@ -54,7 +52,7 @@ class PMox {
 			exit;
 		}
 
-		foreach( $pveList as $pve ) { 
+		foreach( $pveList["data"] as $pve ) { 
 			$tmpVM = new VM;
 
 			$tmpVM->DeviceID = $d->DeviceID;
@@ -62,6 +60,10 @@ class PMox {
 			$tmpVM->vmID = $pve["vmid"];
 			$tmpVM->vmName = $pve["name"];
 			$tmpVM->vmState = $pve["status"];
+
+			if ( $debug ) {
+				error_log( "VM: " . $tmpVM->vmName . " added to device " . $d->DeviceID );
+			}
 
 			$vmList[] = $tmpVM;
 		}
@@ -125,6 +127,9 @@ class PMox {
 				}
 			}
 		}
+
+		$expire = "delete from fac_VMInventory where to_days(now())-to_days(LastUpdated)>" . intval( $config->ParameterArray['VMExpirationTime']);
+		$dbh->query( $expire );
 		
 		return $vmList;
 	}
