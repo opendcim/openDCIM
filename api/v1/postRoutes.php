@@ -262,6 +262,37 @@ $app->post( '/device/:deviceid', function($deviceid) {
 	echoResponse( $r );
 });
 
+$app->post( '/device/:deviceid/store', function($deviceid) {
+	// Have to process all the extra bits involved with moving something to storage
+	// so that's why this is a different routine than simply updating a device
+
+	$dev=new Device();
+	$dev->DeviceID=$deviceid;
+
+	if(!$dev->GetDevice()){
+		$r['error']=true;
+		$r['errorcode']=404;
+		$r['message']=__("No device found with DeviceID")." $deviceid";
+	}else{
+		if($dev->Rights!="Write"){
+			$r['error']=true;
+			$r['errorcode']=401;
+			$r['message']=__("Access Denied");
+		}else{
+			if(!$dev->MoveToStorage()){
+				$r['error']=true;
+				$r['errorcode']=401;
+				$r['message']=__("Update failed");
+			}else{
+				$r['error']=false;
+				$r['errorcode']=200;
+			}
+		}
+	}
+
+	echoResponse( $r );
+});
+
 //
 //	URL:	/api/v1/devicetemplate/:templateid
 //	Method:	POST

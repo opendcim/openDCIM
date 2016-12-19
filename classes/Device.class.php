@@ -635,6 +635,8 @@ class Device {
 		$pc=new PowerConnection();
 		$pc->DeviceID=$this->DeviceID;
 		$pc->DeleteConnections();
+
+		return true;
 	}
   
 	function UpdateDevice() {
@@ -670,7 +672,7 @@ class Device {
 			$cab->CabinetID=$this->Cabinet;
 			$cab->GetCabinet();
 			// Make sure the user has rights to save a device into the new cabinet
-			if($cab->Rights!="Write" && $this->Cabinet!='-1'){return false;}
+			if($this->Cabinet!='-1' && $cab->Rights!="Write" ){return false;}
 
 			// Clear the power connections
 			PowerPorts::removeConnections($this->DeviceID);
