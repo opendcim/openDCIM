@@ -1185,7 +1185,7 @@ $(document).ready(function() {
 	}).trigger('change');
 
 	// Make SNMP community visible
-	$('#SNMPCommunity,#v3AuthPassphrase,#v3PrivPassphrase')
+	$('#SNMPCommunity,#v3AuthPassphrase,#v3PrivPassphrase,#APIPassword')
 		.focus(function(){$(this).attr('type','text');})
 		.blur(function(){$(this).attr('type','password');});
 
@@ -1338,27 +1338,12 @@ $(document).ready(function() {
 
 	$('select#Hypervisor').change(function(){
 		if($(this).val()=='ProxMox'){
-			$('#SNMPVersion').val(3).change().parent('div').parent('div').hide();
-			// Hide the existing labels for the snmp fields
-			$('.normal').addClass('hide');
-			// Show the proxmox alternatives
-			$('.proxmox').removeClass('hide');
-			$(':input[id^="v3"],#SNMPCommunity').parent('div').parent('div').hide();
-			$(':input[id$="Passphrase"]').parent('div').parent('div').show();
-			// Allow the user name to show
-			$('#SNMPCommunity,#v3AuthPassphrase').attr('type','text').unbind('focus').unbind('blur');
+			$('#proxmoxblock').removeClass('hide');
+			$('#snmpblock').addClass('hide');
 		}else{
 			// Put back any hidden / renamed fields
-			$('#SNMPCommunity,#v3AuthPassphrase,#v3PrivPassphrase')
-				.focus(function(){$(this).attr('type','text');})
-				.blur(function(){$(this).attr('type','password');});
-			$('#SNMPCommunity,#v3AuthPassphrase').attr('type','password');
-			$('#SNMPVersion').change().parent('div').parent('div').show();
-			$('#SNMPCommunity').parent('div').parent('div').show();
-			// Hide the existing labels for the snmp fields
-			$('.normal').removeClass('hide');
-			// Shwo the proxmox alternatives
-			$('.proxmox').addClass('hide');
+			$('#proxmoxblock').addClass('hide');
+			$('#snmpblock').removeClass('hide');
 		}
 	}).change();
 
@@ -1957,6 +1942,27 @@ echo '
 		<img id="devicerear" src="pictures/'.$templ->RearPictureFile.'" alt="rear of device">
 	</div>
 </fieldset>
+<fieldset id="proxmoxblock" class="hide">
+	<legend>'.__("ProxMox Configuration").'</legend>
+	<div class="table">
+		<div>
+		  <div><label for="APIUsername">'.__("API Username").'</label></div>
+		  <div><input type="text" name="APIUsername" id="APIUsername" value="'.$dev->APIUsername.'"></div>
+		</div>
+		<div>
+		  <div><label for="APIPassword">'.__("API Password").'</label></div>
+		  <div><input type="password" name="APIPassword" id="APIPassword" value="'.$dev->APIPassword.'"></div>
+		</div>
+		<div>
+		  <div><label for="APIPort">'.__("API Port").'</label></div>
+		  <div><input type="number" name="APIPort" id="APIPort" value="'.$dev->APIPort.'"></div>
+		</div>
+		<div>
+		  <div><label for="ProxMoxRealm">'.__("ProxMox Realm").'</label></div>
+		  <div><input type="text" name="ProxMoxRealm" id="ProxMoxRealm" value="'.$dev->ProxMoxRealm.'"></div>
+		</div>
+	</div>
+</fieldset>
 <fieldset id="snmpblock">
 	<legend>'.__("SNMP Configuration").'</legend>
 	<div class="table">
@@ -2004,7 +2010,7 @@ echo '
 		  </div>
 		</div>
 		<div>
-		  <div><label for="v3AuthPassphrase" class="normal">'.__("SNMPv3 Passphrase").'</label><label for="v3AuthPassphrase" class="proxmox hide">'.__("API Username").'</label></div>
+		  <div><label for="v3AuthPassphrase">'.__("SNMPv3 Passphrase").'</label></div>
 		  <div><input type="password" name="v3AuthPassphrase" id="v3AuthPassphrase" value="'.$dev->v3AuthPassphrase.'"></div>
 		</div>
 		<div>
@@ -2021,7 +2027,7 @@ echo '
 		  </div>
 		</div>
 		<div>
-		  <div><label for="v3PrivPassphrase" class="normal">'.__("SNMPv3 PrivPassphrase").'</label><label for="v3PrivPassphrase" class="proxmox hide">'.__("API Password").'</label></div>
+		  <div><label for="v3PrivPassphrase">'.__("SNMPv3 PrivPassphrase").'</label></div>
 		  <div><input type="password" name="v3PrivPassphrase" id="v3PrivPassphrase" value="'.$dev->v3PrivPassphrase.'"></div>
 		</div>
 		<div>
@@ -2216,19 +2222,15 @@ echo '		<div class="caption">
 
 echo '	<div class="table">
 		<div>
-		   <div><label for="Hypervisor">'.__("Hypervisor").'</label></div>
-		   <div><select name="Hypervisor" id="Hypervisor">';
+			<div><label for="Hypervisor">'.__("Hypervisor").'</label></div>
+			<div><select name="Hypervisor" id="Hypervisor">
+';
    foreach ($validHypervisors as $h ) {
-   		if ($dev->Hypervisor == $h) {
-   			$hs = "selected";
-   		} else {
-   			$hs = "";
-   		}
-
-   		print "<option value=\"$h\" $hs>$h</option>\n";
+		if($dev->Hypervisor==$h){$selected=" selected";}else{$selected="";}
+   		print "\t\t\t\t<option value=\"$h\" $selected>$h</option>\n";
    	}
 
-echo '</select></div>
+echo '			</select></div>
 		</div>
 	</div><!-- END div.table -->';
 
