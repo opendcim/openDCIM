@@ -54,14 +54,12 @@
 				UNION SELECT DISTINCT PortNotes AS Notes FROM fac_Ports	WHERE PortNotes LIKE '%$searchTerm%' 
 				UNION SELECT DISTINCT Notes FROM fac_PowerPorts	WHERE Notes LIKE '%$searchTerm%';";
 		}else{
-			$sql="SELECT DISTINCT $field FROM fac_Device WHERE $field LIKE '%$searchTerm%';";
+			$sql="SELECT DISTINCT $field FROM fac_Device WHERE $field LIKE '%$searchTerm%' LIMIT 500;";
 		}
 		$x=0;
-		if ( strlen($searchTerm)>0) {
-			foreach($dbh->query($sql) as $devrow){
-				$deviceList[$x]=$devrow[0];
-				++$x;
-			}
+		foreach($dbh->query($sql) as $devrow){
+			$deviceList[$x]=$devrow[0];
+			++$x;
 		}
 	}
 
