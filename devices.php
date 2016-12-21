@@ -446,7 +446,7 @@
 			if ( $dev->Hypervisor == "ESX" ) {
 				ESX::RefreshInventory($_POST['VMrefresh']);
 			} elseif ( $dev->Hypervisor == "ProxMox" ) {
-				ProxMox::RefreshInventory( $_POST['VMrefresh']);
+				PMox::RefreshInventory( $_POST['VMrefresh']);
 			}
 			buildVMtable($_POST['VMrefresh']);
 		}
@@ -1220,7 +1220,7 @@ $(document).ready(function() {
 	var VMtable=$('<div>').addClass('table border').append('<div><div>VM Name</div><div>Status</div><div>Owner</div><div>Last Updated</div></div>');
 	var VMbutton=$('<button>',{'type':'button'}).css({'position':'absolute','top':'10px','right':'2px'}).text('Refresh');
 	VMbutton.click(VMrefresh);
-	if($('#VM').val()==1){
+	if($('#Hypervisor').val()!="None"){
 		$('#VMframe').css('position','relative').append(VMbutton);
 	}
 	function VMrefresh(){
