@@ -57,9 +57,11 @@
 			$sql="SELECT DISTINCT $field FROM fac_Device WHERE $field LIKE '%$searchTerm%';";
 		}
 		$x=0;
-		foreach($dbh->query($sql) as $devrow){
-			$deviceList[$x]=$devrow[0];
-			++$x;
+		if ( strlen($searchTerm)>0) {
+			foreach($dbh->query($sql) as $devrow){
+				$deviceList[$x]=$devrow[0];
+				++$x;
+			}
 		}
 	}
 
