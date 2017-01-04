@@ -1188,7 +1188,7 @@ class Device {
 		}
 
 		(class_exists('LogActions'))?LogActions::LogThis($this):'';
-		return;
+		return true;
 	}
 
 	function SearchDevicebyLabel(){
