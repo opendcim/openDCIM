@@ -867,7 +867,7 @@ $app->get( '/devicetemplate/:templateid/powerport', function($templateid) {
 //
 
 $app->get( '/devicetemplate/:templateid/slot', function($templateid) {
-	if(!$slots=slot::GetAll($templateid)){
+	if(!$slots=Slot::GetAll($templateid)){
 		$r['error']=true;
 		$r['errorcode']=404;
 		$r['message']=__("No slots found for TemplateID: ")." ".$templateid;

@@ -281,7 +281,7 @@ $app->put( '/devicetemplate/:model', function($model) use ($person) {
 //	Returns: record as created 
 //
 
-$app->put( '/devicetemplate/:templateid/dataport/:portnum', function($templateid, $portum) use($person) {
+$app->put( '/devicetemplate/:templateid/dataport/:portnum', function($templateid, $portnum) use($person) {
 	$tp=new TemplatePorts();
 	
 	$vars = getParsedBody();

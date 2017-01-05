@@ -373,7 +373,13 @@ function convertImgToBase64(url, imgobj) {
 		function pulltoapi(row){
 			var postorput=(typeof row.data('localdev')=='undefined')?'put':'post';
 			var nameorid=(typeof row.data('localdev')=='undefined')?row.data('globaldev').Model:row.data('localdev').TemplateID;
-
+<?php
+		// This code is ONLY added to the javascript if the local site is set for metric
+		// otherwise there is no mangling to worry about
+		if ( $config->ParameterArray["mUnits"] != "english" ) {
+			echo "row.data('globaldev').Weight = row.data('globaldev').Weight / 2.2;";
+		}
+?>
 			// Move data off the globaldev object into something we can parse easier
 			var ports=row.data("globaldev").ports;
 			var powerports=row.data("globaldev").powerports;
@@ -503,6 +509,12 @@ function convertImgToBase64(url, imgobj) {
 
 		// Function to send current template to the repository
 		function pushtorepo(row){
+<?php
+		// Do the Metric->English conversion if the local site is configured for Metric
+		if ( $config->ParameterArray["mUnits"] != "english" ) {
+			echo "row.data('localdev').Weight=row.data('localdev').Weight*2.2;";
+		}
+?>
 			$.ajax({
 				type: 'put',
 				url: 'https://repository.opendcim.org/api/templatealt',
