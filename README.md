@@ -116,3 +116,9 @@ Contributions are always welcome, please follow these steps to submit your chang
 11. Click "Switch Branches" and select your branch (mynewfeature-patch)
 12. Click "Pull Request"
 13. Submit your pull request to the openDCIM Developers
+
+Translation - i18n
+---
+We do not accept any po files directly.  Please use the very simple, user friendly web interface at getlocalization.
+
+https://www.getlocalization.com/opendcim/
