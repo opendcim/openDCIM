@@ -1582,7 +1582,7 @@ print "		var dialog=$('<div>').prop('title',\"".__("Verify Delete Device")."\").
 			var rack=$('#datacenters a[href$="cabinetid='+hdn_cabinetid.val()+'"]');
 			// Update the hidden cabinet id field to match the new parent device and show the name
 			hdn_cabinetid.parent('div').text(rack.text()).append(hdn_cabinetid);
-		});
+		}).trigger('change');
 
 		$('#Reservation').change(function(){
 			if(!$(this).prop("checked")){
