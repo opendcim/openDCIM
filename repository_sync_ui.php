@@ -549,6 +549,9 @@ function convertImgToBase64(url, imgobj) {
 						request.setRequestHeader("APIKey",window.APIKey );
 						request.setRequestHeader("UserID",window.UserID );
 						request.send(filedata);
+
+						var btn_command=row.data('object').command.find('button');
+						btn_command.hide();
 					}
 				},
 				error: function(data){
