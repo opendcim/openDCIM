@@ -320,8 +320,8 @@ $body.='<div id="infopanel">
 			$maxDraw=$PDUdev->InputAmperage * $pan->PanelVoltage * 1.732;
 		}
 
-		// De-rate all breakers to 80% sustained load
-		$maxDraw*=0.8;
+		// De-rate all breakers to Power Critical % (from configuration page) sustained load
+		$maxDraw*=intval($config->ParameterArray["PowerRed"]) / 100;
 
 		if($maxDraw>0){
 			$PDUPercent=intval($pduDraw/$maxDraw*100);
