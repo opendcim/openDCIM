@@ -173,6 +173,16 @@ echo '<div class="main">
 </div> <!-- END div.table -->
 <div class="table border">
   <div>
+    <div>',__("Delivery Address"),'</div>
+    <div>',$dc->DeliveryAddress,'</div>
+  </div>
+  <div>
+    <div>',__("Administrator"),'</div>
+    <div>',$dc->Administrator,'</div>
+  </div>
+</div>
+<div class="table border">
+  <div>
         <div>',__("Computed Wattage"),'</div>
         <div>',sprintf("%7d %s", $dcStats["ComputedWatts"], __("Watts")),'</div>
   </div>
