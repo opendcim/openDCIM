@@ -1400,6 +1400,9 @@ echo '<div class="main">
 					<div></div>
 					<div><label for="TemperatureRed">',__("Temperature Critical"),'</label></div>
 					<div><input type="text" defaultvalue="',$config->defaults["TemperatureRed"],'" name="TemperatureRed" value="',$config->ParameterArray["TemperatureRed"],'"></div>
+					<div></div>
+					<div><label for="PanelPortsRed">',__("Patch panel ports Critical"),'</label></div>
+					<div><input type="text" defaultvalue="',$config->defaults["PanelPortsRed"],'" name="PanelPortsRed" value="',$config->ParameterArray["PanelPortsRed"],'"></div>
 				</div>
 				<div>
 					<div><label for="SpaceYellow">',__("Space Warning"),'</label></div>
@@ -1407,6 +1410,9 @@ echo '<div class="main">
 					<div></div>
 					<div><label for="TemperatureYellow">',__("Temperature Warning"),'</label></div>
 					<div><input type="text" defaultvalue="',$config->defaults["TemperatureYellow"],'" name="TemperatureYellow" value="',$config->ParameterArray["TemperatureYellow"],'"></div>
+					<div></div>
+					<div><label for="PanelPortsYellow">',__("Patch panel ports Warning"),'</label></div>
+					<div><input type="text" defaultvalue="',$config->defaults["PanelPortsYellow"],'" name="PanelPortsYellow" value="',$config->ParameterArray["PanelPortsYellow"],'"></div>
 				</div>
 				<div>
 					<div><label for="WeightRed">',__("Weight Critical"),'</label></div>
