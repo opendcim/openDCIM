@@ -31,7 +31,7 @@ if($config->ParameterArray["mUnits"]=="english"){
 	$weightunit="lbs";
 	$tempunit="F";
 }else{
-	$weightunit="Kg";
+	$weightunit="kg";
 	$tempunit="C";
 }
 
@@ -70,6 +70,8 @@ if($object>0){
 			$devList=$dev->ViewDevicesByCabinet();
 			$curHeight = $cab->CabinetHeight;
 			$totalWatts = $totalWeight = $totalMoment =0;
+			$totalPanelPorts=0;
+			$usedPanelPorts=0;
 			$curTemp=$temps["Temperature"];
 			$curHum=$temps["Humidity"];
 			$curRealPower=$wattage["RealPower"];
@@ -99,13 +101,22 @@ if($object>0){
 			$HumMedMin=intval($config->ParameterArray["HumidityYellowLow"]);			
 			$HumMedMax=intval($config->ParameterArray["HumidityYellowHigh"]);				
 			$HumMax=intval($config->ParameterArray["HumidityRedHigh"]);
-						
+			
+			// Patch panels Ports Usage
+			$PanelPortsRed=intval($config->ParameterArray["PanelPortsRed"]);
+			$PanelPortsYellow=intval($config->ParameterArray["PanelPortsYellow"]);
 			
 			while(list($devID,$device)=each($devList)){
 				$totalWatts+=$device->GetDeviceTotalPower();
 				$DeviceTotalWeight=$device->GetDeviceTotalWeight();
 				$totalWeight+=$DeviceTotalWeight;
 				$totalMoment+=($DeviceTotalWeight*($device->Position+($device->Height/2)));
+				
+				// Count totalPanelPorts and usedPanelPorts in all patch panels in cabinet (except reserved devices and only front ports)
+				if($device->DeviceType=='Patch Panel' && !$device->Reservation){
+					$totalPanelPorts+=$device->Ports;
+					$usedPanelPorts+=DevicePorts::getConnectedPortCount($device->DeviceID);
+				}
 			}
 				
 			$used=$cab->CabinetOccupancy($cab->CabinetID);
@@ -113,6 +124,8 @@ if($object>0){
 			if(!isset($cab->CabinetHeight)||$cab->CabinetHeight==0){$SpacePercent=100;}else{$SpacePercent=locale_number($used /$cab->CabinetHeight *100,0);}
 			// check to make sure there is a weight limit set to keep errors out of logs
 			if(!isset($cab->MaxWeight)||$cab->MaxWeight==0){$WeightPercent=0;}else{$WeightPercent=locale_number($totalWeight /$cab->MaxWeight *100,0);}
+			// check to make sure there is at lesat one patch panels to keep errors out of logs
+			if(!isset($totalPanelPorts)||$totalPanelPorts==0){$PanelPortsPercent=0;}else{$PanelPortsPercent=number_format($usedPanelPorts /$totalPanelPorts *100,0);}
 			// check to make sure there is a kilowatt limit set to keep errors out of logs
 			if(!isset($cab->MaxKW)||$cab->MaxKW==0){$PowerPercent=0;}else{$PowerPercent=locale_number(($totalWatts /1000 ) /$cab->MaxKW *100,0);}
 			if(!isset($cab->MaxKW)||$cab->MaxKW==0){$RealPowerPercent=0;}else{$RealPowerPercent=locale_number(($curRealPower /1000 ) /$cab->MaxKW *100,0);}
@@ -120,6 +133,7 @@ if($object>0){
 			//Decide which color to paint on the canvas depending on the thresholds
 			if($SpacePercent>$SpaceRed){$scolor=$rs;}elseif($SpacePercent>$SpaceYellow){$scolor=$ys;}else{$scolor=$gs;}
 			if($WeightPercent>$WeightRed){$wcolor=$rs;}elseif($WeightPercent>$WeightYellow){$wcolor=$ys;}else{$wcolor=$gs;}
+			if($totalPanelPorts==0){$ppcolor=$us;}elseif($PanelPortsPercent>$PanelPortsRed){$ppcolor=$rs;}elseif($PanelPortsPercent>$PanelPortsYellow){$ppcolor=$ys;}else{$ppcolor=$gs;}
 			if($PowerPercent>$PowerRed){$pcolor=$rs;}elseif($PowerPercent>$PowerYellow){$pcolor=$ys;}else{$pcolor=$gs;}
 			if($RPlastRead=='0'){$rpcolor=$us;}elseif($RealPowerPercent>$RealPowerRed){$rpcolor=$rs;}elseif($RealPowerPercent>$RealPowerYellow){$rpcolor=$ys;}else{$rpcolor=$gs;}
 			if($curTemp==0){$tcolor=$us;}elseif($curTemp>$TempRed){$tcolor=$rs;}elseif($curTemp>$TempYellow){$tcolor=$ys;}else{$tcolor=$gs;}
@@ -127,17 +141,19 @@ if($object>0){
 				
 			$labelsp=locale_number($used,0)." / $cab->CabinetHeight U";
 			$labelwe=locale_number($totalWeight,0)." / $cab->MaxWeight $weightunit";
+			$labelpp=locale_number($usedPanelPorts,0)." / ".locale_number($totalPanelPorts,0);
 			$labelpo=locale_number($totalWatts/1000,2)." / $cab->MaxKW kW";
 			$labelte=(($curTemp>0)?locale_number($curTemp,0)."&deg;$tempunit ($lastRead)":__("no data"));
-			$labelhu=(($curHum>0)?locale_number($curHum,0)." % ($lastRead)":__("no data"));
+			$labelhu=(($curHum>0)?locale_number($curHum,0)."% ($lastRead)":__("no data"));
 			$labelrp=(($RPlastRead!='0')?locale_number($curRealPower/1000,2)." / $cab->MaxKW kW ($RPlastRead)":__("no data"));
 			
 			$tooltip="<span>$cab->Location</span><ul>\n";
 			$tooltip.="<li>".__("Owner").": $dep->Name</li>\n";
 			$tooltip.="<li class=\"$scolor\">".__("Space").": $labelsp</li>\n";
 			$tooltip.="<li class=\"$wcolor\">".__("Weight").": $labelwe</li>\n";
+			$tooltip.="<li class=\"$ppcolor\">".__("Patch panels Ports").": $labelpp</li>\n";
 			$tooltip.="<li class=\"$pcolor\">".__("Calculated Power").": $labelpo</li>\n";
-			$tooltip.="<li class=\"$rpcolor\">".__("Measured Power Combined").": $labelrp</li>\n";
+			$tooltip.="<li class=\"$rpcolor\">".__("Measured Power").": $labelrp</li>\n";
 
 			// Individual CDUs
 			$sql="SELECT C.CabinetID, P.Label, P.RealPower, P.BreakerSize, P.InputAmperage * PP.PanelVoltage AS VoltAmp 
@@ -174,8 +190,8 @@ if($object>0){
 			}
 
 
-			$tooltip.="<li class=\"$tcolor\">".__("Temperature").": $labelte</li>\n";
-			$tooltip.="<li class=\"$hcolor\">".__("Humidity").": $labelhu</li></ul>\n";
+			$tooltip.="<li class=\"$tcolor\">".__("Intake Temperature").": $labelte</li>\n";
+			$tooltip.="<li class=\"$hcolor\">".__("Intake Humidity").": $labelhu</li></ul>\n";
 		}else{
 			$tooltip=__("Quit that! You don't have rights to view this.");
 		}
