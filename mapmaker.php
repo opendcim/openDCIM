@@ -118,7 +118,11 @@
 				$edgearray=array('Top' => __("Top"),
 						'Right' => __("Right"),
 						'Bottom' => __("Bottom"),
-						'Left' => __("Left"));
+						'Left' => __("Left"),
+						'Conditioner top' => __("Conditioner top"),
+						'Conditioner right' => __("Conditioner right"),
+						'Conditioner bottom' => __("Conditioner bottom"),
+						'Conditioner left' => __("Conditioner left"));
 				foreach($edgearray as $edge => $translation){
 					$selected=($edge==$cab->FrontEdge)?' SELECTED':'';
 					print "\t\t\t\t<option value=\"$edge\"$selected>$translation</option>\n";
