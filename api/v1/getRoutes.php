@@ -391,16 +391,6 @@ $app->get( '/device/:deviceid', function( $deviceid ) {
 		$r['message']=__("No device found with DeviceID").$deviceid;
 		echoResponse( $r );
 	}else{
-		if ( is_array( $dev->CustomValues ) ) {
-			$cattr = new DeviceCustomAttribute();
-			$newList = array();
-			foreach ( $dev->CustomValues as $key=>$val ) {
-				$cattr->AttributeID = $key;
-				$cattr->GetDeviceCustomAttribute();
-				$newList[$cattr->Label] = $val;
-			}
-			$dev->CustomValues = $newList;
-		}
 		$r['error']=false;
 		$r['errorcode']=200;
 		$r['device']=$dev;
