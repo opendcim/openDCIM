@@ -586,6 +586,31 @@
 				if($_POST['action']!='Child'){
 					// Preserve this as a special variable to keep an injection from being possible
 					$devrights=$dev->Rights;
+					// Add in the "all devices" custom attributes 
+					$dcaList=DeviceCustomAttribute::GetDeviceCustomAttributeList();
+					if(isset($dcaList)) {
+						foreach($dcaList as $dca) {
+							if($dca->AllDevices==1) {
+								// this will add in the attribute if it is empty
+								$label=$dca->Label;
+								if(!isset($dev->$label)){
+									$dev->{$dca->Label}='';
+								}
+							}
+						}
+					}
+					// Add in the template specific attributes
+					$tmpl=new DeviceTemplate($dev->TemplateID);
+					$tmpl->GetTemplateByID();
+					if(isset($tmpl->CustomValues)) {
+						foreach($tmpl->CustomValues as $index => $value) {
+							// this will add in the attribute if it is empty
+							if(!isset($this->{$dcaList[$index]->Label})){
+								$dev->{$dcaList[$index]->Label}='';
+							}
+						}
+					}
+
 					foreach($dev as $prop => $val){
 						$dev->$prop=(isset($_POST[$prop]))?$_POST[$prop]:$val;
 					}
@@ -631,7 +656,6 @@
 								$dev->MoveToStorage();
 							}else{
 								$dev->UpdateDevice();
-								updateCustomValues($dev);
 							}
 							break;
 						case 'Delete':
@@ -685,7 +709,6 @@
 					}
 					$dev->CreateDevice();
 					$dev->SetTags($tagarray);
-					updateCustomValues($dev);
 
 					// We've, hopefully, successfully created a new device. Force them to the new device page.
 					header('Location: '.redirect("devices.php?DeviceID=$dev->DeviceID"));
@@ -851,7 +874,6 @@
 	function buildCustomAttributes($template, $device) {
 		$dcaList=DeviceCustomAttribute::GetDeviceCustomAttributeList();
 		$tdcaList=$template->CustomValues;
-		$dcvList=$device->CustomValues;
 
 		$customvalues = array();
 
@@ -874,19 +896,13 @@
 
 			}
 		}
-		if(isset($dcvList)) {
-			// pull the values set at this device level if any exist, the assumption being that one of the 2 loops above has already populated the type and required fields
-			foreach($dcvList as $AttributeID=>$dcv) {
-				if(array_key_exists($AttributeID, $customvalues)) {
-					$customvalues[$AttributeID]["value"]=$dcv;
-				} else {
-					// this is probably an  error, what do?
-				}
-			}
+		foreach($customvalues as $customkey=>$customdata) {
+			$prop=$dcaList[$customkey]->Label;
+				$customvalues[$customkey]['value']=$device->$prop;
 		}
 		echo '<div class="table">';	
 		foreach($customvalues as $customkey=>$customdata) {
-			$inputname = "customvalue[$customkey]";
+			$inputname = $dcaList[$customkey]->Label;
 			$validation="";
 			$cvtype = $customvalues[$customkey]["type"];
 			if($customvalues[$customkey]["required"]==1 || $cvtype!="string"){
@@ -904,10 +920,7 @@
 			echo '<div>
 				<div><label for="',$inputname,'">',$dcaList[$customkey]->Label,'</label></div>';
 			if($cvtype=="checkbox"){
-				$checked = "";
-				if($customdata["value"] == "1" || $customdata["value"]=="on"){
-					$checked = " checked";
-				}
+				$checked=($customdata["value"] == "1" || $customdata["value"]=="on")?" checked":"";
 				echo '<div><input type="checkbox" name="',$inputname,'" id="',$inputname,'"',$checked,'></div>';
 			} else if ($cvtype=="set") {
 				echo '<div><select name="',$inputname,'" id="',$inputname,'">';
@@ -926,40 +939,6 @@
 		    echo '</div>';
 		}
 		echo '</div>';
-	}
-	function updateCustomValues($device) {
-		$template=new DeviceTemplate();
-		$template->TemplateID=$device->TemplateID;
-		$template->GetTemplateByID();
-		
-		$dcaList=DeviceCustomAttribute::GetDeviceCustomAttributeList();
-		$tdcaList=$template->CustomValues;
-		$defaultvalues = array();
-		if(isset($dcaList)) {
-			foreach($dcaList as $dca) {
-				if($dca->AllDevices==1) {
-					$defaultvalues[$dca->AttributeID]["value"]=$dca->DefaultValue;
-					$defaultvalues[$dca->AttributeID]["required"]=$dca->Required;
-				}
-			}
-		}
-		if(isset($tdcaList)) {
-			foreach($tdcaList as $AttributeID=>$tdca) {
-				$defaultvalues[$AttributeID]["value"]=$tdca["value"];
-				$defaultvalues[$AttributeID]["required"]=$tdca["required"];
-			}
-		}
-
-		$device->DeleteCustomValues();
-
-		if(isset($_POST["customvalue"])){
-			foreach($_POST["customvalue"] as $AttributeID=>$value) {
-				if(trim($value) != trim($defaultvalues[$AttributeID]["value"])) {
-					$device->InsertCustomValue($AttributeID, $value);	
-				}
-			}
-		}
-		
 	}
 // In the case of a child device we might define this above and in that case we
 // need to preserve the flag
@@ -1870,7 +1849,7 @@ echo '			</select>
 		</div>
 		<div>
 		   <div><label for="Position">',__("Position"),'</label></div>
-		   <div><input type="number" class="required,validate[custom[onlyNumberSp],min[1],max[',$cab->CabinetHeight,']]" name="Position" id="Position" value="',$dev->Position,'"></div>
+		   <div><input type="number" class="required,validate[custom[onlyNumberSp],min[0],max[',$cab->CabinetHeight,']]" name="Position" id="Position" value="',$dev->Position,'"></div>
 		</div>
 		';
 
