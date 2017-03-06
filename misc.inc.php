@@ -168,7 +168,7 @@ if(!function_exists("objArraySearch")){
     {
         foreach($array as $arrayInf) {
             if($arrayInf->{$index} == $value) {
-                return $false;
+                return true;
             }
         }
         return false;
