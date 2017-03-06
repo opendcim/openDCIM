@@ -260,7 +260,7 @@
 
         // Now quickly run back through all of the rows and check for collisions
 
-        $st = $dbh->prepare( "select DeviceID, Label from fac_Device where ParentDevice=0 and Cabinet in (select CabinetID from fac_Cabinet where DataCenterID in (select DataCenterID from fac_DataCenter where ucase(Name)=ucase(:DataCenterID)) and ucase(Location)=ucase(:Cabinet)) and (Position between :StartPos and :EndPos or Position+Height between :StartPos2 and :EndPos2)" );
+        $st = $dbh->prepare( "select DeviceID, Label from fac_Device where ParentDevice=0 and Cabinet in (select CabinetID from fac_Cabinet where DataCenterID in (select DataCenterID from fac_DataCenter where ucase(Name)=ucase(:DataCenterID)) and ucase(Location)=ucase(:Cabinet)) and (Position between :StartPos and :EndPos or Position+Height-1 between :StartPos2 and :EndPos2)" );
 
         $cFields = array( "DataCenterID", "Cabinet", "Position", "Height", "Label" );
         for ( $n = 2; $n <= $highestRow; $n++ ) {
@@ -414,7 +414,7 @@
       $dev->AssetTag = $row["AssetTag"];
       $dev->BackSide = ($row["BackSide"] == 1 || strtoupper($row["BackSide"] == "Y"))?1:0;
       $dev->HalfDepth = ($row["HalfDepth"] == 1 || strtoupper($row["HalfDepth"] == "Y"))?1:0;
-      $dev->Hypervisor = (in_array( $row["Hypervisor"], array( "ESX", "ProxMox"))?$row["Hypervisor"]:"None";
+      $dev->Hypervisor = (in_array( $row["Hypervisor"], array( "ESX", "ProxMox")))?$row["Hypervisor"]:"None";
       if ( $row["InstallDate"] != "" ) {
         $dev->InstallDate = date( "Y-m-d", strtotime( $row["InstallDate"]));
       } else {
