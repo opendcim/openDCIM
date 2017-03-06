@@ -174,6 +174,13 @@ if (!isset($_REQUEST['action'])){
 			
 			$pnlList = array_merge( $pnlList, $pan->getPanelListBySource() );
 		}
+
+		// Include the source, in case there are direct connections
+		$tmpPnl = new PowerPanel();
+		$tmpPnl->PanelID = $srcID;
+		$tmpPnl->GetPanel();
+
+		$pnlList[] = $tmpPnl;
 	} else {
 		// Need to build an array of Panel Objects (what we got from input was just the IDs)
 		$pnlList = array();
