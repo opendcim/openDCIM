@@ -231,17 +231,28 @@ class Device {
 					$dev->$prop=$val;
 				}
 			}
-			// This will extend the device model but isn't currently being used anywhere
-			if(count($dev->CustomValues)){
-				$dcaList=DeviceCustomAttribute::GetDeviceCustomAttributeList();
-				foreach($dev->CustomValues as $dcaid => $val){
-					$label=$dcaList[$dcaid]->Label;
-					// Keep users from attempting to overwrite shit like devicetype
-					if(!isset($dev->$label)){
-						$dev->$label=$val;
+			// Add in the "all devices" custom attributes 
+			$dcaList=DeviceCustomAttribute::GetDeviceCustomAttributeList();
+			if(isset($dcaList)) {
+				foreach($dcaList as $dca) {
+					if($dca->AllDevices==1) {
+						// this will add in the attribute if it is empty
+						if(!isset($dev->{$dca->Label})){
+							$dev->{$dca->Label}='';
+						}
 					}
 				}
-		//		unset($dev->CustomValues);
+			}
+			// Add in the template specific attributes
+			$tmpl=new DeviceTemplate($dev->TemplateID);
+			$tmpl->GetTemplateByID();
+			if(isset($tmpl->CustomValues)) {
+				foreach($tmpl->CustomValues as $index => $value) {
+					// this will add in the attribute if it is empty
+					if(!isset($dev->{$dcaList[$index]->Label})){
+						$dev->{$dcaList[$index]->Label}='';
+					}
+				}
 			}
 		}
 		if($filterrights){
@@ -359,7 +370,7 @@ class Device {
 		$this->Label=transform($this->Label);
 		$this->SerialNo=transform($this->SerialNo);
 		$this->AssetTag=transform($this->AssetTag);
-		
+
 		// SNMPFailureCount isn't in this list, because it should always start at zero 
 		// (default) on new devices
 		$sql="INSERT INTO fac_Device SET Label=\"$this->Label\",  
@@ -412,6 +423,14 @@ class Device {
 		// Make ports last because they depend on extended devices being created in some cases
 		DevicePorts::createPorts($this->DeviceID);
 		PowerPorts::createPorts($this->DeviceID);
+
+		// Deal with any custom attributes
+		$dcaList=DeviceCustomAttribute::GetDeviceCustomAttributeList(true);
+		// There shouldn't be any to delete, but just in case
+		$this->DeleteCustomValues();
+		foreach(array_intersect_key((array) $this, $dcaList) as $label=>$value){
+			$this->InsertCustomValue($dcaList[$label]->AttributeID, $this->$label);
+		}
 
 		(class_exists('LogActions'))?LogActions::LogThis($this):'';
 
@@ -841,6 +860,13 @@ class Device {
 			$pdu->CabinetID=$this->Cabinet;
 			$pdu->IPAddress=$this->PrimaryIP;
 			$pdu->UpdatePDU();
+		}
+
+		// Deal with any custom attributes
+		$dcaList=DeviceCustomAttribute::GetDeviceCustomAttributeList(true);
+		$this->DeleteCustomValues();
+		foreach(array_intersect_key((array) $this, $dcaList) as $label=>$value){
+			$this->InsertCustomValue($dcaList[$label]->AttributeID, $value);
 		}
 
 		//Update children, if necesary
@@ -2116,13 +2142,12 @@ class Device {
 
 		$this->MakeSafe();
 		$dcv = array();
-		$sql = "SELECT DeviceID, AttributeID, Value
-			FROM fac_DeviceCustomValue
-			WHERE DeviceID = $this->DeviceID;";
+		$sql = "SELECT v.DeviceID, v.AttributeID, a.Label, v.Value
+				FROM fac_DeviceCustomValue AS v, fac_DeviceCustomAttribute AS a
+				WHERE DeviceID = $this->DeviceID AND v.AttributeID = a.AttributeID";
 		foreach($dbh->query($sql) as $dcvrow){
-			$dcv[$dcvrow["AttributeID"]]=$dcvrow["Value"];
+			$this->{$dcvrow["Label"]}=$dcvrow["Value"];
 		}
-		$this->CustomValues=$dcv;
 	}	
 
 	function DeleteCustomValues() {
@@ -2149,16 +2174,13 @@ class Device {
 		$AttributeID = intval($AttributeID);
 		$Value=sanitize(trim($Value));
 
-		$sql = "INSERT INTO fac_DeviceCustomValue 
-			SET DeviceID = $this->DeviceID,
-			AttributeID = $AttributeID,
-			Value = \"$Value\";";
+		$sql = "INSERT INTO fac_DeviceCustomValue SET DeviceID = $this->DeviceID,
+			AttributeID = $AttributeID, Value = \"$Value\";";
 		if($dbh->query($sql)) {
-			$this->GetCustomValues();
-			(class_exists('LogActions'))?LogActions::LogThis($this):'';
 			return true;
+		}else{
+			return false;
 		}
-		return false;
 	}
 	function SetChildDevicesCabinet(){
 		global $dbh;

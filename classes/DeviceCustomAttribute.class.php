@@ -226,7 +226,7 @@ class DeviceCustomAttribute {
 		return true;
 	}
 
-	static function GetDeviceCustomAttributeList() {
+	static function GetDeviceCustomAttributeList($indexbyname=false) {
 		global $dbh;
 		$dcaList=array();
 		
@@ -235,7 +235,11 @@ class DeviceCustomAttribute {
 			ORDER BY Label, AttributeID;";
 
 		foreach($dbh->query($sql) as $dcaRow) {
-			$dcaList[$dcaRow["AttributeID"]]=DeviceCustomAttribute::RowToObject($dcaRow);
+			if($indexbyname){
+				$dcaList[$dcaRow["Label"]]=DeviceCustomAttribute::RowToObject($dcaRow);
+			}else{
+				$dcaList[$dcaRow["AttributeID"]]=DeviceCustomAttribute::RowToObject($dcaRow);
+			}
 		}
 
 		return $dcaList;

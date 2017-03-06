@@ -20,6 +20,11 @@ ALTER TABLE fac_Device ADD COLUMN ProxMoxRealm varchar(80) AFTER APIPort;
 CREATE UNIQUE INDEX VMList on fac_VMInventory (vmID,vmName);
 
 --
+-- Normalize the custom attribute labels
+--
+
+UPDATE fac_DeviceCustomAttribute SET Label = REPLACE (Label,' ','_');
+--
 -- Bump up the database version (uncomment below once released)
 --
 
