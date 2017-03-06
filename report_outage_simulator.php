@@ -355,24 +355,20 @@ if (!isset($_REQUEST['action'])){
 					$dept->GetDeptByID();
 				}
 
-				if ( ! $allDown ) {
-					$pp->DeviceID = $affectedDevice->DeviceID;
-					$ppList = $pp->getPorts();
+				$pp->DeviceID = $affectedDevice->DeviceID;
+				$ppList = $pp->getPorts();
 
-					$pduDown = 0;
-					$docCount = 0;
-					foreach ( $ppList as $checkPowerCon ) {
-						if ( objArraySearch( $pduList, "PDUID", $checkPowerCon->ConnectedDeviceID )) {
-							$pduDown++;
-						error_log( "DevID:".$affectedDevice->DeviceID.", PDUID:".$checkPowerCon->ConnectedDeviceID." - Down" );
-						}
-
-						if ( $checkPowerCon->ConnectedDeviceID > 0 ) {
-							$docCount++;
-						}
+				$pduDown = 0;
+				$docCount = 0;
+				foreach ( $ppList as $checkPowerCon ) {
+					if ( objArraySearch( $pduList, "PDUID", $checkPowerCon->ConnectedDeviceID )) {
+						$pduDown++;
+					error_log( "DevID:".$affectedDevice->DeviceID.", PDUID:".$checkPowerCon->ConnectedDeviceID." - Down" );
 					}
-				} else {
-					$pduDown = $affectedDevice->PowerSupplyCount;
+
+					if ( $checkPowerCon->ConnectedDeviceID > 0 ) {
+						$docCount++;
+					}
 				}
 
 				$currSheet->setCellValue( "A".$row, $dc->Name );
