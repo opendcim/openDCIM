@@ -1258,7 +1258,7 @@ function computeSheetBodyDCInventory($DProps)
                                 $dcStats['Rk_UtE'] += $height;
                                 $devSpec = makeEmptySpec($sheetColumns,
                                 $dcContainerList);
-                                $$devSpec['Zone'] = $zoneName;
+                                $devSpec['Zone'] = $zoneName;
                                 $devSpec['Row'] = $rowName;
                                 $devSpec['DC Name'] = $dc->Name;
                                 $devSpec['Cabinet'] = $cab->Location;
