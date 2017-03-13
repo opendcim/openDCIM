@@ -2541,7 +2541,7 @@ function LameLogDisplay(){
 					}
 					clist.change(function(){
 						// default note is associated with this color so set it
-						if($(this).data($(this).val())!=""){
+						if(typeof $(this).data($(this).val())!='undefined' && $(this).data($(this).val())!=""){
 							row.cnotes.children('input').val($(this).data($(this).val()));
 						}
 					});
