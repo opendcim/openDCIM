@@ -605,7 +605,7 @@
 					if(isset($tmpl->CustomValues)) {
 						foreach($tmpl->CustomValues as $index => $value) {
 							// this will add in the attribute if it is empty
-							if(!isset($this->{$dcaList[$index]->Label})){
+							if(!isset($dev->{$dcaList[$index]->Label})){
 								$dev->{$dcaList[$index]->Label}='';
 							}
 						}
