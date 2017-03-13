@@ -212,7 +212,7 @@ class Zone {
 	static function GetZoneList($indexedbyid=false){
 		global $dbh;
 
-		$sql="SELECT * FROM fac_Zone ORDER BY Description ASC;";
+		$sql="SELECT * FROM fac_Zone ORDER BY DataCenterID ASC, Description ASC;";
 
 		$zoneList=array();
 		foreach($dbh->query($sql) as $row){

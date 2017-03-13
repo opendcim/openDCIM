@@ -93,73 +93,27 @@ if (!isset($_REQUEST['action'])){
 </form>
 <?php
 } else {
-?>
-<!doctype html>
-<html>
-<head>
-  <meta http-equiv="X-UA-Compatible" content="IE=Edge">
-  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-  <link rel="stylesheet" href="css/inventory.php" type="text/css">
-  <link rel="stylesheet" href="css/print.css" type="text/css" media="print">
-  <link rel="stylesheet" href="css/jquery-ui.css" type="text/css">
-  <link rel="stylesheet" href="css/jquery.dataTables.css" type="text/css">
-  <link rel="stylesheet" href="css/ColVis.css" type="text/css">
-  <link rel="stylesheet" href="css/TableTools.css" type="text/css">
-  <style type="text/css"></style>
-  <!--[if lt IE 9]>
-  <link rel="stylesheet"  href="css/ie.css" type="text/css" />
-  <![endif]-->
-  <script type="text/javascript" src="scripts/jquery.min.js"></script>
-  <script type="text/javascript" src="scripts/jquery-ui.min.js"></script>
-  <script type="text/javascript" src="scripts/jquery.dataTables.min.js"></script>
-  <script type="text/javascript" src="scripts/ColVis.min.js"></script>
-  <script type="text/javascript" src="scripts/TableTools.min.js"></script>
-  
-  
-  <script type="text/javascript">
-	$(document).ready(function(){
-		var rows;
-		function dt(){
-			$('#report').dataTable({
-				"iDisplayLength": 25,
-				"sDom": 'CT<"clear">lfrtip',
-				"oTableTools": {
-					"sSwfPath": "scripts/copy_csv_xls.swf",
-					"aButtons": ["copy","csv","xls","print"]
-				}
-			});
-			redraw();
-		}
-		function redraw(){
-			if(($('#report').outerWidth()+$('#sidebar').outerWidth()+10)<$('.page').innerWidth()){
-				$('.main').width($('#header').innerWidth()-$('#sidebar').outerWidth()-16);
-			}else{
-				$('.main').width($('#report').outerWidth()+40);
-			}
-			$('.page').width($('.main').outerWidth()+$('#sidebar').outerWidth()+10);
-		}
-		dt();
-	});
-  </script>
+	$today = date( "Y-m-d" );
 
-</head>
-<body>
-<?php include( 'header.inc.php' ); ?>
-	<div class="page">
-<?php
-	include('sidebar.inc.php');
-echo '		<div class="main">
-			<div class="center">
-				<div id="tablecontainer">';
+	$xl = new PHPExcel();
+	
+	$xl->getProperties()->setCreator("openDCIM");
+	$xl->getProperties()->setLastModifiedBy("openDCIM");
+	$xl->getProperties()->setTitle("Data Center Inventory");
+	$xl->getProperties()->setSubject("Power Outage Simulation");
+	$xl->getProperties()->setDescription("Simulation of power outage event based upon user specified criteria.");
+	
+	$xl->setActiveSheetIndex(0);
 
-	//
-	//
-	//	Begin Report Generation
-	//
-	//
+	$currSheet = $xl->getActiveSheet();
+	$currSheet->SetCellValue( 'A1', 'Panel Name');
+	$currSheet->setCellValue( 'B1', 'Panel Voltage' );
+	$currSheet->setCellValue( 'C1', 'Main Breaker Size' );
+	$currSheet->setTitle("Affected Panels");
 
 	$pan = new PowerPanel();
 	$pdu = new PowerDistribution();
+	$pp = new PowerPorts();
 	$dev = new Device();
 	$cab = new Cabinet();
 	$tmpPerson = new People();
@@ -209,7 +163,7 @@ echo '		<div class="main">
 		}
 	}
 	
-	if ( count( $srcArray ) > 0 ) {
+	if ( @count( $srcArray ) > 0 ) {
 		// Build an array of the Panels affected when the entire source goes down.
 		// This will allow us to use one section of code to calculate effects of panels going down and use it for both cases.
 		
@@ -219,6 +173,13 @@ echo '		<div class="main">
 			$pan->ParentPanelID = $srcID;
 			
 			$pnlList = array_merge( $pnlList, $pan->getPanelListBySource() );
+
+					// Include the source, in case there are direct connections
+			$tmpPnl = new PowerPanel();
+			$tmpPnl->PanelID = $srcID;
+			$tmpPnl->GetPanel();
+
+			$pnlList[] = $tmpPnl;
 		}
 	} else {
 		// Need to build an array of Panel Objects (what we got from input was just the IDs)
@@ -231,7 +192,32 @@ echo '		<div class="main">
 			$pnlList[$pnlCount]->GetPanel();
 		}
 	}
+
+	// List out the panels affected in the first sheet of the workbook
 	
+	$row = 2;
+	foreach( $pnlList as $downPanel ) {
+		$currSheet->setCellValue( 'A'.$row, $downPanel->PanelLabel );
+		$currSheet->setCellValue( 'B'.$row, $downPanel->PanelVoltage );
+		$currSheet->setCellValue( 'C'.$row, $downPanel->MainBreakerSize );
+
+		$row++;
+	}
+
+	foreach( range( 'A', 'C' ) as $col ) {
+		$currSheet->getColumnDimension($col)->setAutoSize( true );
+	}
+	$currSheet->calculateColumnWidths();
+
+	// And finally, build a list of cabinets that have at least one circuit from the affected panels
+	
+	$cabIDList = array();
+	$cabList = array();
+	
+	// Also need to build a unique list of all PDU ID's included in outage
+	$pduArray = array();
+	$fsArray = array();
+
 	// Now that we have a complete list of the panels, we need a list of the CDUs affected by the outage
 	
 	$pduList = array();
@@ -246,15 +232,6 @@ echo '		<div class="main">
 		
 		array_push( $pnlArray, $pnlDown->PanelID );
 	}
-
-	// And finally, build a list of cabinets that have at least one circuit from the affected panels
-	
-	$cabIDList = array();
-	$cabList = array();
-	
-	// Also need to build a unique list of all PDU ID's included in outage
-	$pduArray = array();
-	$fsArray = array();
 
 	foreach ( $pduList as $outagePDU ) {
 		if ( array_search( $outagePDU->CabinetID, $cabIDList ) === false ) {
@@ -280,175 +257,160 @@ echo '		<div class="main">
 			array_push( $pduArray, $outagePDU->PDUID );
 		}
 	}
+
+	// Now, print a list of the Cabinets that are affected by this outage
 		
 	usort( $cabList, 'compareCab' );
-	
-	// error_log( "Cabinet List:" . print_r( $cabList, true ));
 
-	printf( "<h2>%s</h2>", __("Power Outage Simulation Report") );
-	
-	if ( $skipNormal )  {
-		printf( "<h3>%s</h3>\n", __("Only listing systems which are down or unknown.") );
+	$currSheet = $xl->createSheet();
+	$currSheet->setTitle( "Affected Cabinets" );
+
+	$currSheet->setCellValue( "A1", "Data Center" );
+	$currSheet->setCellValue( "B1", "Location" );
+	$currSheet->setCellValue( "C1", "Total Circuits" );
+	$currSheet->setCellValue( "D1", "Circuits Affected" );
+
+	$row = 2;
+
+	foreach ( $cabList as $affectedCabinet ) {
+		if ( $affectedCabinet->DataCenterID != $dc->DataCenterID ) {
+			$dc->DataCenterID = $affectedCabinet->DataCenterID;
+			$dc->getDataCenter();
+		}
+		$currSheet->setCellValue( 'A'.$row, $dc->Name );
+		$currSheet->setCellValue( 'B'.$row, $affectedCabinet->Location );
+
+		$pdu->CabinetID = $affectedCabinet->CabinetID;
+		$cabPDUList = $pdu->GetPDUByCabinet();
+
+		$currSheet->setCellValue( 'C'.$row, sizeof( $cabPDUList ));
+
+		$downCount = 0;
+		foreach( $cabPDUList as $p ) {
+			if ( objArraySearch( $pduList, "PDUID", $p->PDUID )) {
+				++$downCount;
+			}
+		}
+
+		$currSheet->setCellValue( 'D'.$row, $downCount );
+
+		if ( $downCount == sizeof( $cabPDUList )) {
+			$currSheet->getStyle('A'.$row.':D'.$row)
+				->applyFromArray(
+					array(
+							'fill' => array(
+								'type' => PHPExcel_Style_Fill::FILL_SOLID,
+								'color' => array( 'rgb' => 'F28A8C')
+							)
+					)
+				);
+		}
+
+		$row++;
 	}
-	
-	echo "<table id=\"report\" class=\"display\">\n<thead>\n";
-	foreach ( array( __("Cabinet"), __("Device Name"), __("Status"), __("Position"), __("Primary Contact"), __("Owner") ) as $header )
-		printf( "<th>%s</th>\n", $header );
-	echo "</thead>\n<tbody>\n";
-		
-	foreach ( $cabList as $cabRow ) {
-		$dev->Cabinet = $cabRow->CabinetID;
-		
-		// Check to see if all circuits to the cabinet are from the outage list - if so, the whole cabinet goes down
-		$pdu->CabinetID = $cabRow->CabinetID;
-		$cabPDUList = $pdu->GetPDUbyCabinet();
 
-		$diversity = false;
+	foreach( range( 'A', 'D' ) as $col ) {
+		$currSheet->getColumnDimension($col)->setAutoSize( true );
+	}
+	$currSheet->calculateColumnWidths();
 
-		// If you can find one CDU for the Cabinet that is not in the list of down CDUs, then you have at least some diversity
-		foreach ( $cabPDUList as $cabPDU ) {
-			if ( ! objArraySearch( $pduList, "DeviceID", $cabPDU->PDUID)) {
-				$diversity = true;
-				break;
+	/* Create third worksheet that shows detailed device listing for everything in the cabinets affected. */
+
+
+	$currSheet = $xl->createSheet();
+	$currSheet->setTitle( "Affected Devices" );
+
+	$currSheet->setCellValue( "A1", "Data Center" );
+	$currSheet->setCellValue( "B1", "Location" );
+	$currSheet->setCellValue( "C1", "Device Label" );
+	$currSheet->setCellValue( "D1", "Owner" );
+	$currSheet->setCellValue( "E1", "No. Connections");
+	$currSheet->setCellValue( "F1", "Documented Connections" );
+	$currSheet->setCellValue( "G1", "Down Connections" );
+
+	$row = 2;
+
+	foreach( $cabList as $affectedCabinet ) {
+		if ( $affectedCabinet->DataCenterID != $dc->DataCenterID ) {
+			$dc->DataCenterID = $affectedCabinet->DataCenterID;
+			$dc->getDataCenter();
+		}
+
+		$pdu->CabinetID = $affectedCabinet->CabinetID;
+		$cabPDUList = $pdu->GetPDUByCabinet();
+
+		$downCount = 0;
+		foreach( $cabPDUList as $p ) {
+			if ( objArraySearch( $pduList, "PDUID", $p->PDUID )) {
+				++$downCount;
 			}
 		}
 
-		// Basic device selection based on the CabinetID
-		// Filter out all reservations, devices with no power supplies, power strips, and chassis slot cards
-		$sql = "SELECT * FROM fac_Device WHERE Reservation=0 AND PowerSupplyCount>0 AND DeviceType not in ('CDU','Patch Panel','Physical Infrastructure') AND ParentDevice=0 AND Cabinet=" . intval( $cabRow->CabinetID );
-
-		// If tags were added, only include devices with tags that are in the Include array
-		if ( sizeof( $includeTags ) > 0 ) {
-			$sql .= " AND DeviceID in (select DeviceID from fac_DeviceTags a, fac_Tags b where a.TagID=b.TagID and b.Name in (";
-			for ( $n = 0; $n < sizeof( $includeTags ); $n++ ) {
-				if ( $n > 0 ) {
-					$sql .= ", ";
-				}
-				$sql .= "\"" . sanitize($includeTags[$n]) . "\"";
-			}
-			$sql .= ")) ";
+		if ( $downCount == sizeof( $cabPDUList )) {
+			$allDown = true;
+		} else {
+			$allDown = false;
 		}
-		
-		// If tags were added, only include devices that don't have tags in the Exclude array
-		if ( sizeof( $excludeTags ) > 0 ) {
-			$sql .= " AND DeviceID not in (select DeviceID from fac_DeviceTags a, fac_Tags b where a.TagID=b.TagID and b.Name in (";
-			for ( $n = 0; $n < sizeof( $excludeTags ); $n++ ) {
-				if ( $n > 0 ) {
-					$sql .= ", ";
-				}
-				$sql .= "\"" . sanitize( $excludeTags[$n] ) . "\"";
-			}
-			$sql .= ")) ";
-		}
-		
-		$st = $dbh->prepare( $sql );
-		$st->execute();
-		$st->setFetchMode( PDO::FETCH_CLASS, "Device" );
-		$devList = array();
-		while ( $row = $st->fetch() ) {
-			$devList[] = $row;
-		}
-		
-		if ( sizeof( $devList ) > 0 ) {
-			foreach ( $devList as $devRow ) {
-				$downPanels = "";
-				$outageStatus = __("Down");
-				
-				// If there is not a circuit to the cabinet that is unaffected, no need to even check
-				if ( $diversity ) {
-					// If a circuit was entered with no panel ID, or a device has no connections documented, mark it as unknown
-					// The only way to be sure a device will stay up is if we have a connection to an unaffected circuit,
-					// or to a failsafe switch (ATS) connected to at least one unaffected circuit.
-					$outageStatus = __("Down");
-					
-					$connList = PowerPorts::getConnectedPortList( $devRow->DeviceID );
-					
-					$devPDUList = array();
-					$fsDiverse = false;
-					
-					if ( count( $connList ) == 0 ) {
-						$outageStatus = __("Undocumented");
-					}
 
-					foreach ( $connList as $connection ) {
-						// If the connection is to a PDU that is NOT in the affected PDU list, and is not already in the diversity list, add it
+		$dev->Cabinet = $affectedCabinet->CabinetID;
+		$devList = $dev->ViewDevicesByCabinet( true );
 
-						if ( ! in_array( $connection->ConnectedDeviceID, $pduArray ) ) {
-							if ( ! in_array( $connection->ConnectedDeviceID, $devPDUList ) )
-								array_push( $devPDUList, $connection->ConnectedDeviceID );
-
-						}
-
-						if ( in_array( $connection->ConnectedDeviceID, $fsArray ) ) {
-							$fsDiverse = true;
-						}
-					}
-					
-					if ( count( $devPDUList ) > 0 ) {
-						if ( count( $devPDUList ) < $devRow->PowerSupplyCount )
-							$outageStatus = __("Degraded");
-						elseif ( $fsDiverse )
-							$outageStatus = __("Degraded/Fail-Safe");
-						else
-							$outageStatus = __("Normal");
-					}
-				}
-
-				if ( ! $skipNormal || ( $skipNormal && ( $outageStatus == __("Down") || $outageStatus == __("Undocumented") ) ) ) {
-					echo "<tr>\n";
-					printf( "<td>%s</td>\n", $cabRow->Location );
-					printf( "<td>%s</td>\n", $devRow->Label );
-					printf( "<td>%s</td>\n", $outageStatus );
-					printf( "<td>%s</td>\n", $devRow->Position );
-
-					$tmpPerson->PersonID = $devRow->PrimaryContact;
-					$tmpPerson->GetPerson();
-
-					printf( "<td>%s</td>\n", $tmpPerson->Email );
-
-					$dept->DeptID = $devRow->Owner;
+		foreach( $devList as $affectedDevice ) {
+			if ( $affectedDevice->DeviceType != "CDU" ) {
+				if ( $dept->DeptID != $affectedDevice->Owner ) {
+					$dept->DeptID = $affectedDevice->Owner;
 					$dept->GetDeptByID();
-
-					printf( "<td>%s</td>\n", $dept->Name );
-					
-					echo "</tr>\n";
 				}
 
-				if ( $devRow->ChassisSlots>0 || $devRow->RearChassisSlots>0 ) {
-					$kidList = $devRow->GetDeviceChildren();
-					foreach ( $kidList as $k ) {
-						$tmpPerson->PersonID = $devRow->PrimaryContact;
-						$tmpPerson->GetPerson();
-						echo "<tr>\n";
-						printf( "<td>%s</td>\n", $cabRow->Location );
-						printf( "<td>%s</td>\n", $k->Label );
-						printf( "<td>%s</td>\n", $outageStatus );
-						printf( "<td>%s</td>\n", __("Child"));
-						printf( "<td>%s</td>\n", $tmpPerson->Email );
+				$pp->DeviceID = $affectedDevice->DeviceID;
+				$ppList = $pp->getPorts();
 
-						$dept->DeptID = $k->Owner;
-						$dept->GetDeptByID();
+				$pduDown = 0;
+				$docCount = 0;
+				foreach ( $ppList as $checkPowerCon ) {
+					if ( objArraySearch( $pduList, "PDUID", $checkPowerCon->ConnectedDeviceID )) {
+						$pduDown++;
+					error_log( "DevID:".$affectedDevice->DeviceID.", PDUID:".$checkPowerCon->ConnectedDeviceID." - Down" );
+					}
 
-						printf( "<td>%s</td>\n", $dept->Name );
-						
-						echo "</tr>\n";
-
+					if ( $checkPowerCon->ConnectedDeviceID > 0 ) {
+						$docCount++;
 					}
 				}
+
+				$currSheet->setCellValue( "A".$row, $dc->Name );
+				$currSheet->setCellValue( "B".$row, $affectedCabinet->Location );
+				$currSheet->setCellValue( "C".$row, $affectedDevice->Label );
+				$currSheet->setCellValue( "D".$row, $dept->Name );
+				$currSheet->setCellValue( "E".$row, $affectedDevice->PowerSupplyCount );
+				$currSheet->setCellValue( "F".$row, $docCount++ );
+				$currSheet->setCellValue( "G".$row, $pduDown );
+
+				if ( $pduDown == $affectedDevice->PowerSupplyCount || $docCount < $affectedDevice->PowerSupplyCount ) {
+					$currSheet->getStyle('A'.$row.':G'.$row)
+						->applyFromArray(
+							array(
+									'fill' => array(
+										'type' => PHPExcel_Style_Fill::FILL_SOLID,
+										'color' => array( 'rgb' => 'F28A8C')
+									)
+							)
+						);					
+				}
+				$row++;
 			}
 		}
-	  
-	}    	
+	}
 
-?>
-					</tbody>
-					</table>
-				</div>
-			</div>
-		</div><!-- END div.main -->
-	</div><!-- END div.page -->
-</body>
-</html>
-<?php
+	foreach( range( 'A', 'G' ) as $col ) {
+		$currSheet->getColumnDimension($col)->setAutoSize( true );
+	}
+	$currSheet->calculateColumnWidths();
+
+	header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+	header( sprintf( "Content-Disposition: attachment;filename=\"opendcim-%s.xlsx\"", date( "YmdHis" ) ) );
+	
+	$writer = new PHPExcel_Writer_Excel2007($xl);
+	$writer->save('php://output');
 }
 ?>
