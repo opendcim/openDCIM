@@ -109,6 +109,13 @@ class DeviceCustomAttribute {
 	function CreateDeviceCustomAttribute() {
 		global $dbh;
 		$this->MakeSafe();
+
+		// Prevent custom attributes from being made that match attributes we already have present
+		$dev=new Device();
+		if (in_array(strtolower($this->Label),array_map('strtolower', array_keys((array) $dev)))){
+			return false;
+		}
+
 		if(!$this->CheckInput()) { return false; }
 		$sql="INSERT INTO fac_DeviceCustomAttribute SET Label=\"$this->Label\",
 			AttributeType=\"$this->AttributeType\", Required=$this->Required,
@@ -135,6 +142,13 @@ class DeviceCustomAttribute {
 	function UpdateDeviceCustomAttribute() {
 		global $dbh;
 		$this->MakeSafe();
+
+		// Prevent custom attributes from being renamed to somethign that already exists 
+		$dev=new Device();
+		if (in_array(strtolower($this->Label),array_map('strtolower', array_keys((array) $dev)))){
+			return false;
+		}
+
 		if(!$this->CheckInput()) { return false; }
 
 		$old = new DeviceCustomAttribute();
