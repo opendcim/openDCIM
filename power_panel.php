@@ -256,12 +256,17 @@ echo '	</select>
 
 // This is messy but since we are actually storing this value in the db and we use it elsewhere this
 // worked out best
-	if($panel->NumberScheme=="Odd/Even"){$selected=" selected";}else{$selected="";}
-	print "<option value=\"Odd/Even\"$selected>".__("Odd/Even")."</option>\n";
+    $panelType = array( "Odd/Even", "Sequential", "Busway" );
 
-	if($panel->NumberScheme=="Sequential"){$selected=" selected";}else{$selected="";}
-	print "<option value=\"Sequential\"$selected>".__("Sequential")."</option>\n";
+   	foreach ( $panelType as $pType ) {
+   		if ( $pType == $panel->NumberScheme ) {
+   			$pTypeSelect = "SELECTED";
+   		} else {
+   			$pTypeSelect = "";
+   		}
 
+   		print "<option value=\"$pType\" $pTypeSelect>$pType</option>\n";
+ 	}
 ?>
    </select>
    </div>
@@ -344,11 +349,19 @@ echo '	</select></div>
 				}
 			}
 			print "</table>";
-		} else {
+		} elseif ($panel->NumberScheme=="Sequential") {
 			print "<table>";
 			for($count=1; $count<=$panel->NumberOfPoles; $count++) {
 				print "<tr><td class=\"polenumber\">$count</td>";
 				print $panel->getPanelScheduleLabelHtml($panelSchedule["panelSchedule"], $count, "panelleft", false);
+				print "</tr>";
+			}
+			print "</table>";
+		} else {
+			print "<table>";
+			foreach( $panelSchedule["panelSchedule"] as $panKey=>$panItem ) {
+				print "<tr><td class=\"polenumber\">$panKey</td>";
+				print $panel->getPanelScheduleLabelHtml($panelSchedule["panelSchedule"], $panKey, "panelleft", false );
 				print "</tr>";
 			}
 			print "</table>";

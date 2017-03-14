@@ -24,11 +24,13 @@
 */
 
 class PowerPanel {
-	/* PowerPanel:	PowerPanel(s) are the parents of PowerDistribution (power strips) and the children
-					each other.  Panels are arranged as either Odd/Even (odd numbers on the left,
-					even on the right) or Sequential (1 to N in a single column) numbering for the
-					purpose of building out a panel schedule.  If a PowerPanel has no ParentPanelID defined
-					then it is considered to be the PowerSource.  In other words, it's a reverse linked list.
+	/* PowerPanel:	PowerPanel(s) are the parents of PowerDistribution (power strips) and
+					the children each other.  Panels are arranged as either Odd/Even (odd
+					numbers on the left,even on the right), Busway, or Sequential (1 to N
+					in a single column) numbering for the purpose of building out a panel
+					schedule.  If a PowerPanel has no ParentPanelID defined	then it is
+					considered to be the PowerSource.  In other words, it's a reverse linked
+					list.
 	*/
 	
 	var $PanelID;
@@ -73,7 +75,7 @@ class PowerPanel {
 		$this->NumberOfPoles=intval($this->NumberOfPoles);
 		$this->MainBreakerSize=intval($this->MainBreakerSize);
 		$this->PanelVoltage=intval($this->PanelVoltage);
-		$this->NumberScheme=($this->NumberScheme=='Odd/Even')?'Odd/Even':'Sequential';
+		$this->NumberScheme=in_array($this->NumberScheme, array( "Odd/Even", "Sequential", "Busway"))?$this->NumberScheme:"Sequential";
 		$this->ParentPanelID=intval($this->ParentPanelID);
 		$this->ParentBreakerName=sanitize($this->ParentBreakerName);
 		$this->PanelIPAddress=sanitize($this->PanelIPAddress);
@@ -349,7 +351,7 @@ class PowerPanel {
 			$scheduleItem->NoPrint=false;
 			$scheduleItem->Data=$currPdu;
 
-			if($poleId) {
+			if($this->NumberScheme!="Busway" && $poleId) {
 				$scheduleItem->Pole = $poleId;
 				$adder=1;
 				if($this->NumberScheme=="Odd/Even") {
@@ -389,9 +391,16 @@ class PowerPanel {
 						
 					}
 				}
-			} else {
+			} elseif ( $this->NumberScheme!="Busway" ) {
 				$scheduleItem->Pole=0;
 				$unscheduled[]=$scheduleItem;
+			} else {
+				$scheduleItem->Pole = $poleId;
+				$scheduleItem->Spanned = true;
+				$scheduleItem->SpanSize=1;
+				$nextItem = clone $scheduleItem;
+				$nextItem->Pole = $poleId;
+				$panelSchedule[$poleId][]=$nextItem;
 			}
 		}
 		// add first-level panels
