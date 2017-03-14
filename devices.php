@@ -1125,9 +1125,9 @@ $(document).ready(function() {
 	$(document).data('showdc','<?php echo $config->ParameterArray["AppendCabDC"]; ?>');
 
 	$('#deviceform').validationEngine();
-	$('#MfgDate').datepicker();
-	$('#InstallDate').datepicker();
-	$('#WarrantyExpire').datepicker();
+	$('#MfgDate').datepicker({dateFormat: "yy-mm-dd"});
+	$('#InstallDate').datepicker({dateFormat: "yy-mm-dd"});
+	$('#WarrantyExpire').datepicker({dateFormat: "yy-mm-dd"});
 	$('#Owner').next('button').click(function(){
 		window.open('contactpopup.php?deptid='+$('#Owner').val(), 'Contacts Lookup', 'width=800, height=700, resizable=no, toolbar=no');
 		return false;
