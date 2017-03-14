@@ -89,7 +89,7 @@
 			location.href='project_mgr.php?projectid='+this.value;
 		});
 		$('.main .center form').validationEngine();
-		$(':input[id$=date]').datepicker();
+		$(':input[id$=date]').datepicker({dateFormat: "yy-mm-dd"});
 		$('button[value=Delete]').click(function(){
 			var defaultbutton={
 				"<?php echo __("Yes"); ?>": function(){
