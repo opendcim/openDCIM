@@ -237,7 +237,7 @@ print "			$('#deviceform').validationEngine({'custom_error_messages' : {
 				}	
 			});";
 ?>
-			$('#mfgdate').datepicker({});
+			$('#mfgdate').datepicker({dateFormat: "yy-mm-dd"});
 			$('#deviceclass').change( function(){
 				$.get('scripts/ajax_template.php?q='+$(this).val(), function(data) {
 					$('#deviceheight').val(data['Height']);
@@ -375,7 +375,7 @@ echo '			</select>
 	</div>
 	<div>
 		<div><label for="mfgdate">',__("Manufacture Date"),'</label></div>
-		<div><input type="text" name="mfgdate" id="mfgdate" size="20" value="',date('m/d/Y',strtotime($req->MfgDate)),'"></div>
+		<div><input type="text" name="mfgdate" id="mfgdate" size="20" value="',date('Y-m-d',strtotime($req->MfgDate)),'"></div>
 	</div>
 	<div>
 		<div><label for="assettag">',__("Asset Tag"),'</label></div>

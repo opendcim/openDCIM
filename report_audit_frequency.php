@@ -148,8 +148,8 @@ if(!isset($_REQUEST['action'])){
 <script type="text/javascript">
 $(function(){
 	$('#auditform').validationEngine({});
-	$('#startdate').datepicker({});
-	$('#enddate').datepicker({});
+	$('#startdate').datepicker({dateFormat: "yy-mm-dd"});
+	$('#enddate').datepicker({dateFormat: "yy-mm-dd"});
 });
 </script>
 

@@ -25,14 +25,14 @@ class PDF extends FPDF {
   
 	function Header() {
 		if ( $_REQUEST["startdate"] > "" )
-			$startDate = date( "M d, Y", strtotime( $_REQUEST["startdate"] ));
+			$startDate = date( "Y-m-d", strtotime( $_REQUEST["startdate"] ));
 		else
-			$startDate = date( "M d, Y", strtotime( "1/1/2010"));
+			$startDate = date( "Y-m-d", strtotime( "1/1/2010"));
 			
 		if ( $_REQUEST["enddate"] > "" )
-			$endDate = date( "M d, Y", strtotime( $_REQUEST["enddate"] ));
+			$endDate = date( "Y-m-d", strtotime( $_REQUEST["enddate"] ));
 		else
-			$endDate = date( "M d, Y" );
+			$endDate = date( "Y-m-d" );
 		
 		$this->pdfconfig = new Config();
 		$this->Link( 10, 8, 100, 20, 'https://' . $_SERVER['SERVER_NAME'] . $_SERVER['SCRIPT_NAME'] );
@@ -163,8 +163,8 @@ if(!isset($_REQUEST['action'])){
 <script type="text/javascript">
 $(function(){
 	$('#auditform').validationEngine({});
-	$('#startdate').datepicker({});
-	$('#enddate').datepicker({});
+	$('#startdate').datepicker({dateFormat: "yy-mm-dd"});
+	$('#enddate').datepicker({dateFormat: "yy-mm-dd"});
 });
 </script>
 
@@ -338,7 +338,7 @@ $(function(){
 	}
 	
 	foreach($dateSumResult as $row){
-		$auditDate = date( "D, M d, Y", strtotime( $row["AuditDate"] ) );
+		$auditDate = date( "Y-m-d", strtotime( $row["AuditDate"] ) );
 		$dow = date( "D", strtotime( $row["AuditDate"] ) );
 		$showDate = true;
 		$pdf->Bookmark( $auditDate, 1, 0 );

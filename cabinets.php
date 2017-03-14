@@ -100,7 +100,7 @@
 		$cab->Keylock=null;
 		$cab->MaxKW=null;
 		$cab->MaxWeight=null;
-		$cab->InstallationDate=date('m/d/Y');
+		$cab->InstallationDate=date('Y-m-d');
 	}
 
 	$deptList=$dept->GetDepartmentList();
@@ -203,7 +203,7 @@
 		$('#datacenterid').trigger('change');
 
 		$('#rackform').validationEngine({});
-		$('input[name="installationdate"]').datepicker({});
+		$('input[name="installationdate"]').datepicker({dateFormat: "yy-mm-dd"});
 		$('#tags').width($('#tags').parent('div').parent('div').innerWidth()-$('#tags').parent('div').prev('div').outerWidth()-5);
 		
 		$('#tags').textext({
@@ -315,7 +315,7 @@ echo '</select></div>
 </div>
 <div>
    <div>',__("Date of Installation"),'</div>
-   <div><input type="text" name="installationdate" size=15 value="',date('m/d/Y', strtotime($cab->InstallationDate)),'"></div>
+   <div><input type="text" name="installationdate" size=15 value="',date('Y-m-d', strtotime($cab->InstallationDate)),'"></div>
 </div>
 <div>
 	<div><label for="tags">',__("Tags"),'</label></div>

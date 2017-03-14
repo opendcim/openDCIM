@@ -544,7 +544,7 @@
 		}
 		if(isset($_REQUEST['action'])&&$_REQUEST['action']=='new'){
 			// sets install date to today when a new device is being created
-			$dev->InstallDate=date("m/d/Y");
+			$dev->InstallDate=date("Y-m-d");
 			$dev->DeviceType=(isset($_REQUEST['DeviceType']))?$_REQUEST['DeviceType']:$dev->DeviceType;
 			// Some fields are pre-populated when you click "Add device to this cabinet"
 			// If you are adding a device that is assigned to a specific customer, assume that device is also owned by that customer
@@ -686,7 +686,7 @@
 							$dev->ParentDevice=$_REQUEST["ParentDevice"];
 
 							// sets install date to today when a new device is being created
-							$dev->InstallDate=date("m/d/Y");
+							$dev->InstallDate=date("Y-m-d");
 							break;
 					}
 				// Can't check the device for rights because it shouldn't exist yet
@@ -785,7 +785,7 @@
 		 */
 
 		// sets install date to today when a new device is being created
-		$dev->InstallDate=date("m/d/Y");
+		$dev->InstallDate=date("Y-m-d");
 	}
 
 	// We don't want someone accidentally adding a chassis device inside of a chassis slot.
@@ -1110,9 +1110,9 @@ $(document).ready(function() {
 	$(document).data('showdc','<?php echo $config->ParameterArray["AppendCabDC"]; ?>');
 
 	$('#deviceform').validationEngine();
-	$('#MfgDate').datepicker();
-	$('#InstallDate').datepicker();
-	$('#WarrantyExpire').datepicker();
+	$('#MfgDate').datepicker({dateFormat: "yy-mm-dd"});
+	$('#InstallDate').datepicker({dateFormat: "yy-mm-dd"});
+	$('#WarrantyExpire').datepicker({dateFormat: "yy-mm-dd"});
 	$('#Owner').next('button').click(function(){
 		window.open('contactpopup.php?deptid='+$('#Owner').val(), 'Contacts Lookup', 'width=800, height=700, resizable=no, toolbar=no');
 		return false;
@@ -1697,12 +1697,12 @@ echo '<div class="center"><div>
 		</div>
 		<div>
 		   <div><label for="MfgDate">'.__("Manufacture Date").'</label></div>
-		   <div><input type="text" class="validate[optional,custom[date]] datepicker" name="MfgDate" id="MfgDate" value="'.(($dev->MfgDate>'0000-00-00 00:00:00')?date('m/d/Y',strtotime($dev->MfgDate)):"").'">
+		   <div><input type="text" class="validate[optional,custom[date]] datepicker" name="MfgDate" id="MfgDate" value="'.(($dev->MfgDate>'0000-00-00 00:00:00')?date('Y-m-d',strtotime($dev->MfgDate)):"").'">
 		   </div>
 		</div>
 		<div>
 		   <div><label for="InstallDate">'.__("Install Date").'</label></div>
-		   <div><input type="text" class="validate[required,custom[date]] datepicker" name="InstallDate" id="InstallDate" value="'.(($dev->InstallDate>'0000-00-00 00:00:00')?date('m/d/Y',strtotime($dev->InstallDate)):"").'"></div>
+		   <div><input type="text" class="validate[required,custom[date]] datepicker" name="InstallDate" id="InstallDate" value="'.(($dev->InstallDate>'0000-00-00 00:00:00')?date('Y-m-d',strtotime($dev->InstallDate)):"").'"></div>
 		</div>
 		<div>
 		   <div><label for="WarrantyCo">'.__("Warranty Company").'</label></div>
@@ -1710,7 +1710,7 @@ echo '<div class="center"><div>
 		</div>
 		<div>
 		   <div><label for="WarrantyExpire">'.__("Warranty Expiration").'</label></div>
-		   <div><input type="text" class="validate[custom[date]] datepicker" name="WarrantyExpire" id="WarrantyExpire" value="'.date('m/d/Y',strtotime($dev->WarrantyExpire)).'"></div>
+		   <div><input type="text" class="validate[custom[date]] datepicker" name="WarrantyExpire" id="WarrantyExpire" value="'.date('Y-m-d',strtotime($dev->WarrantyExpire)).'"></div>
 		</div>
 		<div>
 		   <div>'.__("Last Audit Completed").'</div>
