@@ -17,7 +17,7 @@ $userid=exec('id -u');
 $grpid=exec('id -g');
 
 // The directories we want writable for uploads
-$wantedpaths=array('pictures','drawings');
+$wantedpaths=array('pictures','drawings','vendor'.DIRECTORY_SEPARATOR.'mpdf'.DIRECTORY_SEPARATOR.'mpdf'.DIRECTORY_SEPARATOR.'ttfontdata');
 
 print "<table>
 	<tr>
@@ -32,17 +32,9 @@ function matches(&$check,$const){
 	}
 }
 
-$directory=".";
-$scanned_directory = array_diff(scandir($directory), array('..', '.'));
-foreach($scanned_directory as $i => $file){
-	if(!is_dir($file)){
-		continue;
-	}
-
+function printrow($file,&$wantedpaths){
 	$uploadDir=$file;
-
 	$not=(is_writable('.'.DIRECTORY_SEPARATOR.$uploadDir))?'<font color="LimeGreen">Yes</font>':'<font color="red">No</font>';
-
 	$perms = fileperms('.'.DIRECTORY_SEPARATOR.$uploadDir);
 
 	if (($perms & 0xC000) == 0xC000) {
@@ -75,22 +67,22 @@ foreach($scanned_directory as $i => $file){
 	$info .= (($perms & 0x0100) ? 'r' : '-');
 	$info .= (($perms & 0x0080) ? 'w' : '-');
 	$info .= (($perms & 0x0040) ?
-				(($perms & 0x0800) ? 's' : 'x' ) :
-				(($perms & 0x0800) ? 'S' : '-'));
+			 (($perms & 0x0800) ? 's' : 'x' ) :
+			 (($perms & 0x0800) ? 'S' : '-'));
 
 	// Group
 	$info .= (($perms & 0x0020) ? 'r' : '-');
 	$info .= (($perms & 0x0010) ? 'w' : '-');
 	$info .= (($perms & 0x0008) ?
-				(($perms & 0x0400) ? 's' : 'x' ) :
-				(($perms & 0x0400) ? 'S' : '-'));
+			 (($perms & 0x0400) ? 's' : 'x' ) :
+			 (($perms & 0x0400) ? 'S' : '-'));
 
 	// World
 	$info .= (($perms & 0x0004) ? 'r' : '-');
 	$info .= (($perms & 0x0002) ? 'w' : '-');
 	$info .= (($perms & 0x0001) ?
-				(($perms & 0x0200) ? 't' : 'x' ) :
-				(($perms & 0x0200) ? 'T' : '-'));
+			 (($perms & 0x0200) ? 't' : 'x' ) :
+			 (($perms & 0x0200) ? 'T' : '-'));
 
 	$owner=fileowner($uploadDir);
 	$group=filegroup($uploadDir);
@@ -102,8 +94,20 @@ foreach($scanned_directory as $i => $file){
 	$class=(preg_match('/LimeGreen/',$not) && !in_array($uploadDir,$wantedpaths))?' class="warning"':$class;
 
 	print "\n\t<tr$class>\n\t\t<td>$uploadDir</td><td>$not</td><td>$info</td><td>$perms</td><td>$owner:$group</td></tr>";
-
 }
+
+$directory=".";
+$scanned_directory = array_diff(scandir($directory), array('..', '.'));
+foreach($scanned_directory as $i => $file){
+	if(!is_dir($file)){
+		continue;
+	}
+
+	printrow($file,$wantedpaths);
+}
+
+# Add in extra paths here that aren't part of the root loop.
+printrow('vendor'.DIRECTORY_SEPARATOR.'mpdf'.DIRECTORY_SEPARATOR.'mpdf'.DIRECTORY_SEPARATOR.'ttfontdata',$wantedpaths);
 
 print "\n</table>
 <table>
