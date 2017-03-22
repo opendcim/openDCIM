@@ -32,7 +32,7 @@ function matches(&$check,$const){
 	}
 }
 
-function printrow($file,&$wantedpaths){
+function printrow($file,&$wantedpaths,$userid,$grpid){
 	$uploadDir=$file;
 	$not=(is_writable('.'.DIRECTORY_SEPARATOR.$uploadDir))?'<font color="LimeGreen">Yes</font>':'<font color="red">No</font>';
 	$perms = fileperms('.'.DIRECTORY_SEPARATOR.$uploadDir);
@@ -103,11 +103,11 @@ foreach($scanned_directory as $i => $file){
 		continue;
 	}
 
-	printrow($file,$wantedpaths);
+	printrow($file,$wantedpaths,$userid,$grpid);
 }
 
 # Add in extra paths here that aren't part of the root loop.
-printrow('vendor'.DIRECTORY_SEPARATOR.'mpdf'.DIRECTORY_SEPARATOR.'mpdf'.DIRECTORY_SEPARATOR.'ttfontdata',$wantedpaths);
+printrow('vendor'.DIRECTORY_SEPARATOR.'mpdf'.DIRECTORY_SEPARATOR.'mpdf'.DIRECTORY_SEPARATOR.'ttfontdata',$wantedpaths,$userid,$grpid);
 
 print "\n</table>
 <table>
