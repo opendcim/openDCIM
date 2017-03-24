@@ -105,7 +105,7 @@ elementFormDefault="qualified">
 						<xs:element name="Label">
 							<xs:simpleType>
 								<xs:restriction base="xs:string">
-								<xs:maxLength value="40"/>
+								<xs:maxLength value="255"/>
 								</xs:restriction>
 							</xs:simpleType>
 						</xs:element> 
@@ -113,7 +113,7 @@ elementFormDefault="qualified">
 						<xs:element name="PortMedia">
 							<xs:simpleType>
 								<xs:restriction base="xs:string">
-								<xs:maxLength value="40"/>
+								<xs:maxLength value="255"/>
 								</xs:restriction>
 							</xs:simpleType>
 						</xs:element> 
