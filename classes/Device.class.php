@@ -1302,7 +1302,6 @@ class Device {
 			if ( property_exists( "Device", $prop )) {
 				extendsql($prop,$this->$prop,$sqlextend,$loose);
 			} else {
-				$customSearch = true;
 				if ( array_key_exists( $prop, $attrList ) ) {
 					if ( $loose ) {
 						$method = "LIKE '$val'";
