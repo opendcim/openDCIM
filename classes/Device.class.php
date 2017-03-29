@@ -1316,8 +1316,6 @@ class Device {
 		}
 		$sql="SELECT * FROM fac_Device $sqlextend $customSQL ORDER BY Label ASC;";
 
-		error_log( $sql );
-
 		$deviceList=array();
 
 		foreach($dbh->query($sql) as $deviceRow){
