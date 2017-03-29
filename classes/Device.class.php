@@ -1292,12 +1292,31 @@ class Device {
 		// Make everything safe for us to search with
 		$this->MakeSafe();
 
+		// Set this to assume we don't need to add in custom attributes until we explicitly need to
+		$customSQL = "";
+		$attrList = DeviceCustomAttribute::GetDeviceCustomAttributeList(true);
+
 		// This will store all our extended sql
 		$sqlextend="";
 		foreach($o as $prop => $val){
-			extendsql($prop,$this->$prop,$sqlextend,$loose);
+			if ( property_exists( "Device", $prop )) {
+				extendsql($prop,$this->$prop,$sqlextend,$loose);
+			} else {
+				$customSearch = true;
+				if ( array_key_exists( $prop, $attrList ) ) {
+					$customSQL = " AND DeviceID in (select DeviceID from fac_DeviceCustomValue where AttributeID=" . $attrList[$prop]->AttributeID . " and Value='" . $val . "')";
+				} else {
+					// The requested attribute is not valid.  Ain't nobody got time for that!
+				}
+			}
 		}
-		$sql="SELECT * FROM fac_Device $sqlextend ORDER BY Label ASC;";
+		if ( $sqlextend == "" ) {
+			// No base attributes to search, only custom
+			$sqlextend = "WHERE true";
+		}
+		$sql="SELECT * FROM fac_Device $sqlextend $customSQL ORDER BY Label ASC;";
+
+		error_log( $sql );
 
 		$deviceList=array();
 
