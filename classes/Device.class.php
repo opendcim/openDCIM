@@ -1304,7 +1304,12 @@ class Device {
 			} else {
 				$customSearch = true;
 				if ( array_key_exists( $prop, $attrList ) ) {
-					$customSQL = " AND DeviceID in (select DeviceID from fac_DeviceCustomValue where AttributeID=" . $attrList[$prop]->AttributeID . " and Value='" . $val . "')";
+					if ( $loose ) {
+						$method = "LIKE '$val'";
+					} else {
+						$method = "='$val'";
+					}
+					$customSQL = " AND DeviceID in (select DeviceID from fac_DeviceCustomValue where AttributeID=" . $attrList[$prop]->AttributeID . " and Value $method)";
 				} else {
 					// The requested attribute is not valid.  Ain't nobody got time for that!
 				}
@@ -1316,6 +1321,7 @@ class Device {
 		}
 		$sql="SELECT * FROM fac_Device $sqlextend $customSQL ORDER BY Label ASC;";
 
+		error_log( $sql );
 		$deviceList=array();
 
 		foreach($dbh->query($sql) as $deviceRow){
