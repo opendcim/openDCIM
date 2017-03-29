@@ -29,3 +29,11 @@ UPDATE fac_DeviceCustomAttribute SET Label = REPLACE (Label,' ','_');
 --
 
 -- UPDATE fac_Config set Value="5.0" WHERE Parameter="Version";
+
+--
+-- Allow for longer template image names
+--
+
+ALTER TABLE fac_DeviceTemplate MODIFY COLUMN FrontPictureFile varchar(255) NOT NULL;
+ALTER TABLE fac_DeviceTemplate MODIFY COLUMN  RearPictureFile varchar(255) NOT NULL;
+
