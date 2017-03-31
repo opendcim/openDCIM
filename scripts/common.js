@@ -258,6 +258,21 @@ $(document).ready(function(){
 		}
 	});
 
+	// The container helper function needs the menu to be visible 
+	function manglecontainer(){
+		if($('#datacenters .bullet').length==0){
+			setTimeout(function(){
+				manglecontainer();
+			},500);
+		}else{
+			// Add some helpers to the various container selectors
+			$('#container, #containerform #parentid, #containerid').each(function(){
+				containerhelper($(this));
+			});
+		}
+	}
+	manglecontainer();
+
 	// The document has to be loaded before the event handler can be bound for the map
 	bindmaptooltips();
 });
@@ -729,6 +744,31 @@ function buildpowerportstable(){
 
 // END - Image Management
 
+// Container Helper
+function containerhelper(select_obj){
+	var curval=select_obj.val();
+	select_obj.find('option[value!=0]').each(function(){
+		var option=this;
+		var cont=$('#datacenters a[href$="container='+this.value+'"]');
+		cont.parentsUntil('ul#datacenters.mktree').each(function(){
+			var cur_label=$(this).prev('a').text();
+			if(cur_label.trim()!=""){
+				option.text=cur_label+' > '+option.text;
+			}
+		});
+	});
+
+	var my_options = select_obj.find("option");
+	my_options.sort(function(a,b) {
+		if (a.text > b.text) return 1;
+		else if (a.text < b.text) return -1;
+		else return 0
+	})
+	select_obj.empty().append(my_options);
+	select_obj.find('option[value=0]').prependTo(select_obj);
+	select_obj.val(curval);
+}
+// END - Container Helper
 
 // DataCenter map / cabinet information
 function startmap(){

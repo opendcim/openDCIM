@@ -455,14 +455,18 @@ class Container {
 		return $cStats;
 	}
 	
-	static function GetContainerList(){
+	static function GetContainerList($indexedbyid=false){
 		global $dbh;
 
 		$sql="SELECT * FROM fac_Container ORDER BY LENGTH(Name), Name ASC;";
 
 		$containerList=array();
 		foreach($dbh->query($sql) as $row){
-			$containerList[]=Container::RowToObject($row);
+			if($indexedbyid){
+				$containerList[$row["ContainerID"]]=Container::RowToObject($row);
+			}else{
+				$containerList[]=Container::RowToObject($row);
+			}
 		}
 
 		return $containerList;
