@@ -99,8 +99,13 @@ class SwitchInfo {
 		}
 		// regex has failed us, return whatever mess we have
 		if(count($x)==0){
+			if(count($portlist)==0){
+				$err_msg=__("I don't know what type of device this is but it did not return any ports whatsoever.  Do not try to report this as an error.");
+			}else{
+				$err_msg=__("First port detection failed, please report to openDCIM developers");
+			}
 			$x=$portlist;
-			$x=array("err"=>"First port detection failed, please report to openDCIM developers")+$x;
+			$x=array("err"=>$err_msg)+$x;
 		}
 		return $x;
 	}
