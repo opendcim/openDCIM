@@ -263,7 +263,7 @@ $(document).ready(function(){
 		if($('#datacenters .bullet').length==0){
 			setTimeout(function(){
 				manglecontainer();
-			},500);
+			},100);
 		}else{
 			// Add some helpers to the various container selectors
 			$('#container, #containerform #parentid, #containerid').each(function(){
@@ -746,10 +746,14 @@ function buildpowerportstable(){
 
 // Container Helper
 function containerhelper(select_obj){
+	// store the current value of the select
 	var curval=select_obj.val();
+	// cycle through all the options available that aren't id == 0
 	select_obj.find('option[value!=0]').each(function(){
 		var option=this;
+		// find the container in the navigation tree
 		var cont=$('#datacenters a[href$="container='+this.value+'"]');
+		// crawl up the navigation tree adding each level to the label
 		cont.parentsUntil('ul#datacenters.mktree').each(function(){
 			var cur_label=$(this).prev('a').text();
 			if(cur_label.trim()!=""){
@@ -758,14 +762,19 @@ function containerhelper(select_obj){
 		});
 	});
 
+	// make a list of all the options so we can sort it
 	var my_options = select_obj.find("option");
+	// simple alphabetic sort of the newly mangled names
 	my_options.sort(function(a,b) {
 		if (a.text > b.text) return 1;
 		else if (a.text < b.text) return -1;
-		else return 0
-	})
+		else return 0;
+	});
+	// replace the options on screen with the newly sorted list
 	select_obj.empty().append(my_options);
+	// move whatever has value of 0 to the top of the list. ie new, none, etc
 	select_obj.find('option[value=0]').prependTo(select_obj);
+	// set the value of the select back to the original value
 	select_obj.val(curval);
 }
 // END - Container Helper
