@@ -229,7 +229,7 @@
 					foreach($portCandidates as $id => $portdesc){
 						$checked=($id==$dev->FirstPortNum)?' checked':'';
 						$disabled=($id=='err')?' disabled':'';
-						print '<input type="radio" name="FirstPortNum" id="fp'.$id.'" value="'.$id.'"'.$checked.$disabled'><label for="fp'.$id.'">'.$portdesc.'</label><br>';
+						print '<input type="radio" name="FirstPortNum" id="fp'.$id.'" value="'.$id.'"'.$checked.$disabled.'><label for="fp'.$id.'">'.$portdesc.'</label><br>';
 					}
 				}else{
 					print __("ERROR: No ports found");
