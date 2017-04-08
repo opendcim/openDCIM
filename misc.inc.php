@@ -216,7 +216,14 @@ function extendsql($prop,$val,&$sql,$loose){
 	}
 }
 
-
+function attribsql($attrib,$val,&$sql,$loose){
+	$method=($loose)?" (AttributeID=".intval($attrib)." AND Value LIKE \"%$val%\")":" (AttributeID=".intval($attrib)." AND Value=\"$val\")";
+	if($sql){
+		$sql .= " AND $method";
+	} else {
+		$sql = " AND DeviceID in (select DeviceID from fac_DeviceCustomValue where $method";
+	}
+}
 
 /*
  * Define multibyte string functions in case they aren't present

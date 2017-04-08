@@ -1300,15 +1300,10 @@ class Device {
 		$sqlextend="";
 		foreach($o as $prop => $val){
 			if ( property_exists( "Device", $prop )) {
-				extendsql($prop,$this->$prop,$sqlextend,$loose);
+				extendsql($prop,$this->prop,$sqlextend,$loose);
 			} else {
 				if ( array_key_exists( $prop, $attrList ) ) {
-					if ( $loose ) {
-						$method = "LIKE '$val'";
-					} else {
-						$method = "='$val'";
-					}
-					$customSQL = " AND DeviceID in (select DeviceID from fac_DeviceCustomValue where AttributeID=" . $attrList[$prop]->AttributeID . " and Value $method)";
+					attribsql( $attrList[$prop]->AttributeID, $val, $customSQL, $loose );
 				} else {
 					// The requested attribute is not valid.  Ain't nobody got time for that!
 				}
@@ -1317,6 +1312,10 @@ class Device {
 		if ( $sqlextend == "" ) {
 			// No base attributes to search, only custom
 			$sqlextend = "WHERE true";
+		}
+		if ( $customSQL != "" ) {
+			// Have to close out the subselectt
+			$customSQL .= ")";
 		}
 		$sql="SELECT * FROM fac_Device $sqlextend $customSQL ORDER BY Label ASC;";
 

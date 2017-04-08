@@ -126,7 +126,8 @@
 		$devList=$dev->Search(true);
 		$resultcount=count($devList);
 	}else{
-		$devList=array();
+		$dev->$searchKey=$searchTerm;
+		$devList = $dev->Search(true, true );
 	}
 
 	$x=0;
