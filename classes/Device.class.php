@@ -1300,7 +1300,7 @@ class Device {
 		$sqlextend="";
 		foreach($o as $prop => $val){
 			if ( property_exists( "Device", $prop )) {
-				extendsql($prop,$this->prop,$sqlextend,$loose);
+				extendsql($prop,$this->$prop,$sqlextend,$loose);
 			} else {
 				if ( array_key_exists( $prop, $attrList ) ) {
 					attribsql( $attrList[$prop]->AttributeID, $val, $customSQL, $loose );
