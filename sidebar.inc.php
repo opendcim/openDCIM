@@ -3,9 +3,8 @@
 <form action="search.php" method="post">
 <input type="hidden" name="key" value="label">
 <?php
-
-		$attrList = DeviceCustomAttribute::GetDeviceCustomAttributeList(true);
- echo'
+	$attrList=DeviceCustomAttribute::GetDeviceCustomAttributeList(true);
+	echo'
 <label for="searchname">',__("Search by Name:"),'</label><br>
 <input class="search" id="searchname" name="search"><button class="iebug" type="submit"><img src="css/searchbutton.png" alt="search"></button>
 </form>
@@ -26,11 +25,11 @@
 	<option value="ip">',__("PrimaryIP"),'</option>
 	<option value="notes">',__("Notes"),'</option>';
 
-	foreach( $attrList as $ca ) {
-		print "<option value=\"$ca->Label\">CustomAttr: $ca->Label</option>\n";
+	foreach($attrList as $ca){
+		print "\t<option value=\"$ca->Label\">CustomAttr: $ca->Label</option>\n";
 	}
-	echo '</select>';
 ?>
+</select>
 <div class="ui-icon ui-icon-close"></div>
 </form>
   <script type="text/javascript">
@@ -145,7 +144,7 @@ $('#searchname').width($('#sidebar').innerWidth() - $('#searchname ~ button').ou
 addlookup($('#searchname'),'name');
 $('#searchadv ~ select[name="key"]').change(function(){
 	addlookup($('#searchadv'),$(this).val())
-}).outerHeight($('#searchadv').outerHeight());
+}).outerHeight($('#searchadv').outerHeight()).outerWidth(157);
 
 // Really long cabinet / zone / dc combinations are making the screen jump around.
 // If they make this thing so big it's unusable, fuck em.
