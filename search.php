@@ -91,10 +91,6 @@
 		}
 		$resultcount=count($devList);
 		$title=__("Device Model search results for")." &quot;$searchTerm&quot;";
-	}elseif($searchKey=="cattr"){
-		$devList=$dev->SearchByCustomAttribute($searchTerm);
-		$resultcount=count($devList);
-		$title=__("Custom attribute search results for")." &quot$searchTerm&quot;";
 	}elseif($searchKey=="notes"){
 		$dev->Notes=$searchTerm;
 		$devList=$dev->LooseSearch(true);
@@ -125,9 +121,12 @@
 		}
 		$devList=$dev->Search(true);
 		$resultcount=count($devList);
-	}else{
+	}elseif($searchKey!=""){
+		// This should be catching custom attribute searches
 		$dev->$searchKey=$searchTerm;
-		$devList = $dev->Search(true, true );
+		$devList=$dev->Search(true, true );
+		$resultcount=count($devList);
+		$title=__("Search results for")." $searchKey = &quot;$searchTerm&quot;";
 	}
 
 	$x=0;
