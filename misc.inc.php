@@ -212,16 +212,16 @@ function extendsql($prop,$val,&$sql,$loose){
 	if($sql){
 		$sql.=" AND $prop$method";
 	}else{
-		$sql.=" WHERE $prop$method";
+		$sql.="WHERE $prop$method";
 	}
 }
 
 function attribsql($attrib,$val,&$sql,$loose){
-	$method=($loose)?" (AttributeID=".intval($attrib)." AND Value LIKE \"%$val%\")":" (AttributeID=".intval($attrib)." AND Value=\"$val\")";
+	$method=($loose)?"AttributeID=$attrib AND Value LIKE \"%$val%\"":"AttributeID=$attrib AND Value=\"$val\"";
 	if($sql){
-		$sql .= " AND $method";
+		$sql .= " AND DeviceID IN (SELECT DeviceID FROM fac_DeviceCustomValue WHERE $method)";
 	} else {
-		$sql = " AND DeviceID in (select DeviceID from fac_DeviceCustomValue where $method";
+		$sql = "WHERE $method";
 	}
 }
 

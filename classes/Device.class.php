@@ -1293,29 +1293,28 @@ class Device {
 		$this->MakeSafe();
 
 		// Set this to assume we don't need to add in custom attributes until we explicitly need to
-		$customSQL = "";
-		$attrList = DeviceCustomAttribute::GetDeviceCustomAttributeList(true);
+		$customSQL="";
+		$attrList=DeviceCustomAttribute::GetDeviceCustomAttributeList(true);
 
 		// This will store all our extended sql
 		$sqlextend="";
 		foreach($o as $prop => $val){
-			if ( property_exists( "Device", $prop )) {
+			if(property_exists("Device",$prop)){
 				extendsql($prop,$this->$prop,$sqlextend,$loose);
-			} else {
-				if ( array_key_exists( $prop, $attrList ) ) {
-					attribsql( $attrList[$prop]->AttributeID, $val, $customSQL, $loose );
-				} else {
+			}else{
+				if(array_key_exists($prop,$attrList)){
+					attribsql($attrList[$prop]->AttributeID,$val,$customSQL,$loose);
+				}else{
 					// The requested attribute is not valid.  Ain't nobody got time for that!
 				}
 			}
 		}
-		if ( $sqlextend == "" ) {
+		if($sqlextend==""){
 			// No base attributes to search, only custom
-			$sqlextend = "WHERE true";
+			$sqlextend="WHERE TRUE";
 		}
-		if ( $customSQL != "" ) {
-			// Have to close out the subselectt
-			$customSQL .= ")";
+		if($customSQL!=""){
+			$customSQL="AND DeviceID IN (SELECT DeviceID FROM fac_DeviceCustomValue $customSQL)";
 		}
 		$sql="SELECT * FROM fac_Device $sqlextend $customSQL ORDER BY Label ASC;";
 
