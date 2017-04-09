@@ -62,7 +62,9 @@
 				UNION SELECT DISTINCT PortNotes AS Notes FROM fac_Ports	WHERE PortNotes LIKE '%$searchTerm%' 
 				UNION SELECT DISTINCT Notes FROM fac_PowerPorts	WHERE Notes LIKE '%$searchTerm%';";
 		}elseif($field=="Custom"){
-			$sql="SELECT DISTINCT Value FROM fac_DeviceCustomValue WHERE AttributeID=$custom AND Value LIKE '%$searchTerm%';";
+			$sql="SELECT DISTINCT Value FROM fac_DeviceCustomValue WHERE 
+				AttributeID=$custom AND Value LIKE '%$searchTerm%' AND Value !='' ORDER BY 
+				Value ASC;";
 		}else{
 			$sql="SELECT DISTINCT $field FROM fac_Device WHERE $field LIKE '%$searchTerm%' LIMIT 500;";
 		}
