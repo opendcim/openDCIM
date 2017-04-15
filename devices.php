@@ -2524,7 +2524,7 @@ $connectioncontrols.=($dev->DeviceID>0 && !empty($portList))?'
 
 		// Add a spacer for use when/if port removal options are triggered
 		$('.switch > div:first-child, .patchpanel > div:first-child').prepend($('<div>').addClass('delete').hide());
-		// Endable Mass Change Options
+		// Enable Mass Change Options
 		$('.switch.table, .patchpanel.table, .power.table').massedit();
 
 		<?php echo (class_exists('LogActions') && $dev->DeviceID>0)?'LameLogDisplay();':''; ?>

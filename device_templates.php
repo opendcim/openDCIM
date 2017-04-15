@@ -505,6 +505,9 @@
 				// Fill in the ports table
 				buildportstable();
 
+				// Add mass edit controls
+				$('#hiddenports > div.table > div:first-child > div:nth-child(2)').css('position','relative').append(generateportnames.css({'background-color':'transparent','border':'0 none','position':'absolute','width':'auto','top':0,'right':0}));
+
 				// Open the dialog
 				PortsPoopup();
 			});
@@ -1280,6 +1283,26 @@ Points = (function(_super) {
   return Points;
 
 })(Array);
+
+var generateportnames=$('<select>').append($('<option>'));
+$.get('devices.php',{spn:''}).done(function(data){
+	$.each(data, function(key,spn){
+		var option=$("<option>",({'value':spn.Pattern})).append(spn.Pattern.replace('(1)','x'));
+		generateportnames.append(option);
+	});
+});
+
+generateportnames.on('change',function(e){
+	$.get('scripts/ajax_portnames.php',{pattern:e.currentTarget.value,count:$('#NumPorts').val()}).done(function(data){
+		if(data.length > $('#NumPorts').val()){
+			for (i = 1; i < data.length; i++) {
+				$(e.currentTarget.parentElement.parentElement.parentElement).find('> div > div:nth-child(2) > input')[i-1].value=data[i];
+			} 
+		}
+		e.currentTarget.value='';
+	});
+});
+
 </script>
 </body>
 </html>
