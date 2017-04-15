@@ -148,7 +148,7 @@ echo '<div class="main">
 <div class="center"><div>
 <div class="centermargin" id="dcstats">
 <div class="table border">
-  <div class="title">',$dc->Name,'<span><a href="search_export.php?datacenterid=',$dc->DataCenterID,'">',__("Export"),'</a>&nbsp;,&nbsp;<a href="report_xml_CFD.php?datacenterid=',$dc->DataCenterID,'">',__("XML"),'</a></span></div>
+  <div class="title">',$dc->Name,'<span><a href="search_export.php?datacenterid=',$dc->DataCenterID,'">',__("Export"),'</a>&nbsp;,&nbsp;<a href="report_xml_CFD.php?datacenterid=',$dc->DataCenterID,'">',__("XML"),'</a></span><div class="hide" id="msg_show">',__("Click to show statistics"),'</div><div class="hide" id="msg_hide">',__("Click to hide statistics"),'</div></div>
   <div>
 	<div></div>
 	<div>',__("Infrastructure"),'</div>
@@ -286,6 +286,29 @@ echo '
 </div><!-- END div.main -->
 </div><!-- END div.page -->
 <script type="text/javascript">
+	// Turn the stats box at the top into a lampshade
+	$('#dcstats .title').css({'position':'relative'});
+	$('#dcstats .title > div').css({'border':'0 none','bottom':'-3px','font-size':'xx-small','position':'absolute','right':0}).hide().removeClass('hide');
+	$('#msg_hide').show();
+	$('#dcstats').outerWidth($('#dcstats').outerWidth());
+	$('#dcstats .title').on('click',function(e){
+		// this check just prevents the shade from opening / closing
+		// when you click the links in the box and it had a weird feel
+		if(e.target.nodeName != 'A'){
+			if($('#msg_hide').is(':visible')){
+				$('#msg_hide').hide();
+				$('#msg_show').show();
+				$('#dcstats > div:nth-child(n+2)').hide();
+				$('#dcstats > div:first-child > div:nth-child(n+2)').hide();
+			}else{
+				$('#msg_hide').show();
+				$('#msg_show').hide();
+				$('#dcstats > div:nth-child(n+2)').show();
+				$('#dcstats > div:first-child > div:nth-child(n+2)').show();
+			}
+		}
+	}).trigger('click');
+
 	$(document).ready(function() {
 		// Hard set widths to stop IE from being retarded
 		$('#mapCanvas').css('width', $('.canvas > img[alt="clearmap over canvas"]').width()+'px');
