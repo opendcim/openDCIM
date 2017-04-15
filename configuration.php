@@ -932,7 +932,7 @@
 		});
 
 		// device custom attribute rows
-		var blankdcarow=$('<div />').html('<div><img src="images/del.gif"></div><div><input type="text" name="dcalabel[]"></div><div><select name="dcatype[]" id="dcatype"></select></div></div><div><input type="checkbox" name="dcarequired[]"></div><div><input type="checkbox" name=dcaalldevices[]"></div><div><input type="text" name="dcavalue[]"></div>');
+		var blankdcarow=$('<div />').html('<div><img src="images/del.gif"></div><div><input type="text" name="dcalabel[]" class="validate[required,custom[onlyLetterNumberConfigurationPage]]"></div><div><select name="dcatype[]" id="dcatype"></select></div></div><div><input type="checkbox" name="dcarequired[]"></div><div><input type="checkbox" name=dcaalldevices[]"></div><div><input type="text" name="dcavalue[]"></div>');
 
 		// row is expected to be the row object and data to be a valid object
 		function updatecarow(row,data){
@@ -1063,7 +1063,7 @@
 						revertdefault(row,true);
 					} else {
 						// attempt to update
-						if((row.addrem.prop('id')=='newline' && row.Label.val()!='') || row.addrem.prop('id')!='newline' && $(".main form").validationEngine('validate')){
+						if(((row.addrem.prop('id')=='newline' && row.Label.val()!='') || row.addrem.prop('id')!='newline' ) && $(".main form").validationEngine('validate')){
 							$.post('',{dcal: dcal.val(), dcaid: dcal.attr('data'), dcat: dcat.val(), dcar: dcar.prop('checked'), dcaa: dcaa.prop('checked'), dcav: dcavtosend}).done(function(data){
 								if(data.trim()=='f'){ //fail
 									revertdefault(row,true);
@@ -1896,7 +1896,7 @@ echo '<div class="main">
 				',$customattrs,'
 				<div>
 					<div id="newline"><img title="',__("Add new row"),'" src="images/add.gif"></div>
-					<div><input type="text" name="dcalabel[]" class="validation[custom[onlyLetterNumberConfigurationPage]]"></div>
+					<div><input type="text" name="dcalabel[]" class="validate[optional,custom[onlyLetterNumberConfigurationPage]]"></div>
 					<div>',$dcaTypeSelector,'</div>
 					<div><input type="checkbox" name="dcarequired[]"></div>
 					<div><input type="checkbox" name="dcaalldevices[]"></div>

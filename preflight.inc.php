@@ -8,7 +8,7 @@
 		$tests['os']['state']="good";
 		$tests['os']['message']='OS Detected: '.PHP_OS;
 	}else{
-		$tests['os']['state']="fail";
+		$tests['os']['state']="good";
 		$tests['os']['message']='OS Detected: '.PHP_OS.' We strongly recommend against running this on anything other than Linux.';
 	}
 
