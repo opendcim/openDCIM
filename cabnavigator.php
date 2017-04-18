@@ -173,7 +173,6 @@ function renderUnassignedTemplateOwnership($noTemplFlag, $noOwnerFlag, $device) 
 
 	$totalWatts=$stats->Wattage;
 	$totalWeight=$stats->Weight;
-	$totalMoment=0;
 
 	if($config->ParameterArray["ReservedColor"] != "#FFFFFF" || $config->ParameterArray["FreeSpaceColor"] != "#FFFFFF"){
 		$head .= "		<style type=\"text/css\">
@@ -204,8 +203,6 @@ function renderUnassignedTemplateOwnership($noTemplFlag, $noOwnerFlag, $device) 
 	$body.=($backside)?BuildCabinet($cab->CabinetID,'rear'):'';
 
 	$legend.='<div class="legenditem hide"><span style="background-color:'.$config->ParameterArray['CriticalColor'].'; text-align:center" class="error colorbox border">*</span> - '.__("Above defined rack height").'</div>'."\n";
-
-	$CenterofGravity=@round($totalMoment/$totalWeight);
 
 	$used=$cab->CabinetOccupancy($cab->CabinetID);
 	@$SpacePercent=($cab->CabinetHeight>0)?number_format($used/$cab->CabinetHeight*100,0):0;
@@ -288,7 +285,7 @@ $body.='<div id="infopanel">
 			</td>
 		</tr>
 		</table>
-		<p>'.__("Approximate Center of Gravity").': <span id="tippingpoint">'.$CenterofGravity.'</span></p>
+		<p>'.__("Approximate Center of Gravity").': <span id="tippingpoint"></span></p>
 	</fieldset>
 	<fieldset id="keylock">
 		<legend>'.__("Key/Lock Information").'</legend>

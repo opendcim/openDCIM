@@ -18,13 +18,26 @@
 		if($dc!=''){
 			$dc=intval($dc);
 			$dclimit=($dc==0)?'':" and c.DataCenterID=$dc ";
+			$ca_sql="SELECT AttributeID, Label, AttributeType from fac_DeviceCustomAttribute ORDER BY AttributeID ASC;";
+			$custom_concat = '';
+			$ca_result=$dbh->query($ca_sql)->fetchAll();
+			foreach($ca_result as $ca_row){
+				$custom_concat .= ", GROUP_CONCAT(IF(d.AttributeID={$ca_row["AttributeID"]},value,NULL)) AS Attribute{$ca_row["AttributeID"]} ";
+			} 
+
 			$sql="SELECT a.Name AS DataCenter, b.DeviceID, c.Location, b.Position, 
-				b.Height, b.Label, b.DeviceType, b.AssetTag, b.SerialNo, b.InstallDate, b.WarrantyExpire, b.PrimaryIP,
-				b.TemplateID, b.Owner, c.CabinetID, c.DataCenterID FROM fac_DataCenter a, 
-				fac_Device b, fac_Cabinet c WHERE b.Cabinet=c.CabinetID AND 
-				c.DataCenterID=a.DataCenterID $dclimit ORDER BY DataCenter ASC, Location ASC, 
-				Position ASC;";
+				b.Height, b.Label, b.DeviceType, b.AssetTag, b.SerialNo, b.InstallDate, 
+				b.TemplateID, b.Owner, c.CabinetID, c.DataCenterID, f.Name as Manufacturer $custom_concat FROM fac_DataCenter a,
+				fac_Cabinet c, fac_DeviceTemplate e, fac_Manufacturer f, fac_Device b  LEFT OUTER JOIN fac_DeviceCustomValue d on
+				b.DeviceID=d.DeviceID WHERE b.Cabinet=c.CabinetID AND c.DataCenterID=a.DataCenterID AND b.TemplateID=e.TemplateID
+				AND e.ManufacturerID=f.ManufacturerID AND f.Name!='Virtual' $dclimit
+				GROUP BY DeviceID ORDER BY DataCenter ASC, Location ASC, Position ASC;";
 			$result=$dbh->query($sql);
+		
+			$ca_headers = '';
+			foreach($ca_result as $ca_row){
+				$ca_headers .= "\t<th>{$ca_row["Label"]}</th>";
+			}
 		}else{
 			$result=array();
 		}
@@ -45,6 +58,7 @@
 			\t<th>".__("Owner")."</th>
 			\t<th>".__("Installation Date")."</th>
 			\t<th>".__("Warranty Expiration")."</th>
+			{$ca_headers}
 			</tr>\n\t</thead>\n\t<tbody>\n";
 
 		// suppressing errors for when there is a fake data set in place
@@ -66,6 +80,18 @@
 				$dept->GetDeptByID();
 				$Department=$dept->Name;
 			}
+
+			$ca_cells = '';
+			foreach($ca_result as $ca_row){
+				$ca_num = "Attribute".$ca_row["AttributeID"];
+                                if($ca_row["AttributeType"] == "date" && is_null($row[$ca_num]) == FALSE){
+					$ca_date = date("d M Y",strtotime($row[$ca_num]));
+					$ca_cells .= "\t<td>{$ca_date}</td>";
+				}else{
+				$ca_cells .= "\t<td>{$row[$ca_num]}</td>";
+				}
+			}
+
 			$dev->DeviceID=$row["DeviceID"];
 			$tags=implode(",", $dev->GetTags());
 			$body.="\t\t<tr>
@@ -82,7 +108,8 @@
 			\t<td>$tags</td>
 			\t<td>$Department</td>
       \t<td>$warranty</td>
-			\t<td>$date</td>\n\t\t</tr>\n";
+			\t<td>$date</td>
+			{$ca_cells}\t\n\t\t</tr>\n";
 			
 			if($row["DeviceType"]=="Chassis"){
 				// Find all of the children!
