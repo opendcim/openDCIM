@@ -1246,17 +1246,17 @@ $(document).ready(function(){
 				}
 			}
 			var rackpositions=$('table#'+cabs[id]+' tr[id^=pos]');
-//console.log(rackpositions);
+// console.log(rackpositions);
 			var numu=rackpositions.length;
-//console.log('numu : '+numu);
+// console.log('numu : '+numu);
 			var tippingpoint=Math.round(totalmoment/totalweight);
 // console.log('tipping point : '+tippingpoint);
 			var tpobj={id:"0"};
-			tpobj=(typeof rackpositions[tippingpoint]=='undefined')?tpobj:rackpositions[tippingpoint];
+			tpobj=(typeof rackpositions[tippingpoint]=='undefined')?tpobj:rackpositions[rackpositions.length-tippingpoint];
 			$('#tippingpoint').text(tpobj.id.replace('pos','')+'U');
 			// $('#tippingpoint').text(tippingpoint+'U');
 // Debug info
-//			console.log(cabs[id]+' totalmoment: '+totalmoment+' totalweight: '+totalweight+' tipping point: '+tippingpoint);
+			// console.log(cabs[id]+' totalmoment: '+totalmoment+' totalweight: '+totalweight+' tipping point: '+tippingpoint);
 		}).then(initdrag);
 	}
 });
