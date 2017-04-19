@@ -261,7 +261,11 @@ CREATE TABLE fac_Device (
   v3PrivPassphrase varchar(80) NOT NULL,
   SNMPCommunity varchar(80) NOT NULL,
   SNMPFailureCount TINYINT(1) NOT NULL,
-  ESX tinyint(1) NOT NULL,
+  Hypervisor varchar(40) NOT NULL,
+  APIUsername varchar(80) NOT NULL,
+  APIPassword varchar(80) NOT NULL,
+  APIPort smallint(4) NOT NULL,
+  ProxMoxRealm varchar(80) NOT NULL,
   Owner int(11) NOT NULL,
   EscalationTimeID int(11) NOT NULL,
   EscalationID int(11) NOT NULL,
@@ -612,6 +616,7 @@ CREATE TABLE fac_VMInventory (
   Owner int(11) NOT NULL,
   PrimaryContact int(11) NOT NULL,
   PRIMARY KEY (VMIndex),
+  UNIQUE KEY `VMList` (`vmID`, `vmName`),
   KEY ValidDevice (DeviceID)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 

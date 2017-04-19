@@ -24,16 +24,16 @@ CREATE UNIQUE INDEX VMList on fac_VMInventory (vmID,vmName);
 --
 
 UPDATE fac_DeviceCustomAttribute SET Label = REPLACE (Label,' ','_');
---
--- Bump up the database version (uncomment below once released)
---
-
--- UPDATE fac_Config set Value="5.0" WHERE Parameter="Version";
 
 --
 -- Allow for longer template image names
 --
 
 ALTER TABLE fac_DeviceTemplate MODIFY COLUMN FrontPictureFile varchar(255) NOT NULL;
-ALTER TABLE fac_DeviceTemplate MODIFY COLUMN  RearPictureFile varchar(255) NOT NULL;
+ALTER TABLE fac_DeviceTemplate MODIFY COLUMN RearPictureFile varchar(255) NOT NULL;
 
+--
+-- Bump up the database version (uncomment below once released)
+--
+
+-- UPDATE fac_Config set Value="4.4" WHERE Parameter="Version";
