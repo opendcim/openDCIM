@@ -502,6 +502,9 @@ div.cabinet {
 #servercontainer .dept0, #servercontainer-rear .dept0, #servercontainer-side .dept0 {background-color: #fff;}
 
 .cabinet .pos { text-align: center; }
+/* stupid safari layout glitch */
+.cabinet table.cabinet { border-collapse: collapse; }
+.cabinet table.cabinet tr:nth-child(n+3) {height: 21px;}
 .cabinet #servercontainer, .cabinet #servercontainer-rear, .cabinet #servercontainer-side { background-image: url("../images/racku-background.png"); position: relative; padding: 0px; margin: 0px;}
 .genericdevice {display: flex;justify-content: center; align-items: center; height: 100%; border: 2px black solid; background-color: inherit; overflow: hidden; white-space: nowrap;}
 
