@@ -2251,6 +2251,11 @@ class Device {
 
 			$temp=($t->TemperatureOID)?floatval(self::OSS_SNMP_Lookup($dev,null,"$t->TemperatureOID")):0;
 			$humidity=($t->HumidityOID)?floatval(self::OSS_SNMP_Lookup($dev,null,"$t->HumidityOID")):0;
+
+			// Make the temp and humidity safe for sql
+			$temp=float_sqlsafe($temp);
+			$humidity=float_sqlsafe($humidity);
+
 			// Strip out everything but numbers
 			// not sure these are needed anymore thanks to the OSS_SNMP library
 			$temp=preg_replace("/[^0-9.,+]/","",$temp);

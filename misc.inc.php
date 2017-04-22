@@ -634,6 +634,18 @@ function generatePatterns($patSpecs, $count) {
     return $patternList;
 }
 
+// Deal with pesky international number formats that mysql doesn't like
+function float_sqlsafe($number){
+	$locale=localeconv();
+	if($locale['thousands_sep']=='.'){
+		$number=str_replace('.','',$number);
+	}
+	if($locale['decimal_point']==','){
+		$number=str_replace(',','.',$number);
+	}
+	return $number;
+}
+
 function locale_number( $number, $decimals=2 ) {
     $locale = localeconv();
     return number_format($number,$decimals,

@@ -62,7 +62,7 @@ class Cabinet {
 		$this->CabinetHeight=intval($this->CabinetHeight);
 		$this->Model=sanitize($this->Model);
 		$this->Keylock=sanitize($this->Keylock);
-		$this->MaxKW=floatval($this->MaxKW);
+		$this->MaxKW=float_sqlsafe(floatval($this->MaxKW));
 		$this->MaxWeight=intval($this->MaxWeight);
 		$this->InstallationDate=date("Y-m-d", strtotime($this->InstallationDate));
 		$this->MapX1=abs($this->MapX1);
