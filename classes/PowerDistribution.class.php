@@ -422,7 +422,7 @@ class PowerDistribution {
 
 			$sql="INSERT INTO fac_PDUStats SET PDUID={$row["PDUID"]}, Wattage=$watts, 
 				LastRead=now() ON DUPLICATE KEY UPDATE Wattage=$watts, LastRead=now();";
-error_log($sql);
+
 			if(!$dbh->query($sql)){
 				$info=$dbh->errorInfo();
 				error_log("PowerDistribution::UpdateStats::PDO Error: {$info[2]} SQL=$sql");
