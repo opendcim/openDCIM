@@ -505,6 +505,64 @@
 				// Fill in the ports table
 				buildportstable();
 
+				var generateportnames=$('<select>').append($('<option>'));
+				$.get('scripts/ajax_portnames.php').done(function(data){
+					$.each(data, function(key,spn){
+						var option=$("<option>",({'value':spn.Pattern})).append(spn.Pattern.replace('(1)','x'));
+						generateportnames.append(option);
+					});
+					generateportnames.append($("<option>",({'value':'custom'})).text("<?php echo __("Custom")?>"));
+					generateportnames.append($("<option>",({'value':'invert'})).text("<?php echo __("Invert Port Labels")?>"));
+				});
+
+				generateportnames.on('change',function(e){
+					var inputs=$(e.currentTarget.parentElement.parentElement.parentElement).find('> div > div:nth-child(2) > input');
+					var portnames=[];
+					if(e.currentTarget.value=='invert'){
+						inputs_rev=inputs.get().reverse();
+						portnames.push(null);
+						for (i = 0; i < inputs_rev.length; i++) {
+							portnames.push(inputs_rev[i].value);
+						}
+					}else if(e.currentTarget.value=='custom'){
+						var dialog=$('<div />', {id: 'modal', title: 'Custom port pattern'}).html('<div id="modaltext"></div><br><div id="modalstatus"></div>');
+						dialog.find('#modalstatus').prepend('<p>Custom pattern: <input></input></p><p><a href="http://opendcim.org/wiki/index.php?title=NetworkConnections#Custom_Port_Name_Generator_Example_Patterns" target=_blank>Pattern Examples</a></p>');
+						dialog.dialog({
+							resizable: false,
+							modal: true,
+							dialogClass: "no-close",
+							buttons: {
+								OK: function(){
+									// can't use .get because of the async
+									$.ajax({type:'get',url:'scripts/ajax_portnames.php',async:false,data: {pattern:$('#modalstatus input').val(),count:$('#NumPorts').val()}}).done(function(data){
+										portnames=data;
+										applynames(inputs,portnames,e);
+									});
+									$(this).dialog("destroy");
+								},
+								Cancel: function(){
+									$(this).dialog("destroy");
+								}
+							}
+						});
+					}else{
+						// can't use .get because of the async
+						$.ajax({type:'get',url:'scripts/ajax_portnames.php',async:false,data: {pattern:e.currentTarget.value,count:$('#NumPorts').val()}}).done(function(data){
+							portnames=data;
+						});
+					}
+					function applynames(inputs,portnames,e){
+						// Use the port names we came with above to apply to the screen
+						if(portnames.length > $('#NumPorts').val()){
+							for (i = 1; i < portnames.length; i++) {
+								inputs.trigger('change')[i-1].value=portnames[i];
+							} 
+						}
+						e.currentTarget.value='';
+					}
+					applynames(inputs,portnames,e);
+				});
+
 				// Add mass edit controls
 				$('#hiddenports > div.table > div:first-child > div:nth-child(2)').css('position','relative').append(generateportnames.css({'background-color':'transparent','border':'0 none','position':'absolute','width':'auto','top':0,'right':0}));
 
@@ -1283,25 +1341,6 @@ Points = (function(_super) {
   return Points;
 
 })(Array);
-
-var generateportnames=$('<select>').append($('<option>'));
-$.get('devices.php',{spn:''}).done(function(data){
-	$.each(data, function(key,spn){
-		var option=$("<option>",({'value':spn.Pattern})).append(spn.Pattern.replace('(1)','x'));
-		generateportnames.append(option);
-	});
-});
-
-generateportnames.on('change',function(e){
-	$.get('scripts/ajax_portnames.php',{pattern:e.currentTarget.value,count:$('#NumPorts').val()}).done(function(data){
-		if(data.length > $('#NumPorts').val()){
-			for (i = 1; i < data.length; i++) {
-				$(e.currentTarget.parentElement.parentElement.parentElement).find('> div > div:nth-child(2) > input')[i-1].value=data[i];
-			} 
-		}
-		e.currentTarget.value='';
-	});
-});
 
 </script>
 </body>
