@@ -919,6 +919,7 @@ function startmap(){
 		var y=(area[1]);
 		var w=(area[2]-area[0]);
 		var h=(area[3]-area[1]);
+		var altname=obj.prop('alt');
 
 		// if color isn't given then just outline the object
 		if(typeof c=='undefined'){
@@ -935,6 +936,12 @@ function startmap(){
 			context.save();
 			context.fillStyle="rgba("+c.r+", "+c.g+", "+c.b+", 0.35)";
 			context.fillRect(x,y,w,h);
+			context.strokeRect(x,y,w,h);
+			context.font="10px Georgia";
+			context.fillStyle="#000000";
+			var txtX=x+5;
+			var txtY=y+20;
+			context.fillText(altname, txtX, txtY);
 			context.restore();
 		}
 	}
