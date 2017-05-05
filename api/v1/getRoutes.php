@@ -625,6 +625,8 @@ $app->get( '/project/bydevice/:deviceid', function($deviceid) {
 //
 
 $app->get( '/powerport/:deviceid', function($deviceid) {
+        global $app;
+
 	$pp=new PowerPorts();
 	
 	$r['error']=false;
