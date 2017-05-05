@@ -2231,6 +2231,9 @@ class Device {
 		global $config;
 		global $dbh;
 
+		// Used for reformatting numbers
+		$LocaleInfo = localeconv();
+
 		// If CabinetID isn't specified try to update all sensors for the system
 		$cablimit=(is_null($CabinetID))?"":" AND Cabinet=$cab->CabinetID";
 		$sql="SELECT DeviceID FROM fac_Device WHERE DeviceType=\"Sensor\" AND 
@@ -2259,7 +2262,13 @@ class Device {
 			// Strip out everything but numbers
 			// not sure these are needed anymore thanks to the OSS_SNMP library
 			$temp=preg_replace("/[^0-9.,+]/","",$temp);
-			$humidity=preg_replace("/[^0-9.'+]/","",$humidity);
+			$humidity=preg_replace("/[^0-9,.'+]/","",$humidity);
+
+			//Switch local representation of numbers to US
+			$temp=str_replace($LocaleInfo["mon_thousands_sep"] , "", $temp);
+			$temp=str_replace($LocaleInfo["mon_decimal_point"] , ".", $temp);
+			$humidity=str_replace($LocaleInfo["mon_thousands_sep"] , "", $humidity);
+			$humidity=str_replace($LocaleInfo["mon_decimal_point"] , ".", $humidity);
 
 			// Apply multipliers
 			$temp*=$t->TempMultiplier;
