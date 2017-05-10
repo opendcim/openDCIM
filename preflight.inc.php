@@ -177,14 +177,8 @@
 	$all_paths_writable=true;
 	$wantedpaths=array('pictures','drawings','vendor'.DIRECTORY_SEPARATOR.'mpdf'.DIRECTORY_SEPARATOR.'mpdf'.DIRECTORY_SEPARATOR.'ttfontdata');
 
-	$directory=".";
-	$scanned_directory = array_diff(scandir($directory), array('..', '.'));
-	foreach($scanned_directory as $i => $file){
-		if(!is_dir($file)){
-			continue;
-		}
-
-		$all_paths_writable=(is_writable('.'.DIRECTORY_SEPARATOR.$uploadDir) && $all_paths_writable)?true:false;
+	foreach($wantedpaths as $i => $file){
+		$all_paths_writable=(is_writable('.'.DIRECTORY_SEPARATOR.$file) && $all_paths_writable)?true:false;
 	}
 
 	if($all_paths_writable) {
