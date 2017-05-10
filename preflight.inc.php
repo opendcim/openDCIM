@@ -65,12 +65,28 @@
 		$tests['snmp']['message']='PHP is missing the <a href="http://php.net/manual/book.snmp.php">snmp extension</a>. Please install it.';
 	}
 
+	if(extension_loaded('gd')) {
+		$tests['gd']['state']="good";
+		$tests['gd']['message']='';
+	}else{
+		$tests['gd']['state']="warning";
+		$tests['gd']['message']='PHP is missing the <a href="http://php.net/manual/en/book.image.php">gd extension</a>. Please install it. Some reports will fail if this isn\'t present';
+	}
+
 	if(function_exists('utf8_decode')){
 		$tests['php-xml']['state']="good";
 		$tests['php-xml']['message']='';
 	}else{
 		$tests['php-xml']['state']="fail";
 		$tests['php-xml']['message']='PHP is missing the <a href="http://us3.php.net/manual/en/book.xml.php">XML Parser</a>.  Please install it.<br><br>For CENT/RHEL yum -y intall php-xml';
+	}
+
+	if(extension_loaded('zip')) {
+		$tests['zip']['state']="good";
+		$tests['zip']['message']='';
+	}else{
+		$tests['zip']['state']="warning";
+		$tests['zip']['message']='PHP is missing the <a href="http://php.net/manual/en/book.zip.php">zip extension</a>. Please install it. This is necessary for the bulk import functions to operate correctly.';
 	}
 
 	$tests['pdo']['message']='';
@@ -156,6 +172,29 @@
 		$tests['authentication']['message']=($tests['db.inc']['state']=="good")?"You didn't read the upgrade notes. Jerk. There is no AUTHENTICATION defined in db.inc.php":"How can you expect to work this if you can't even copy the db.inc.php into the right place?";
 		$errors++;
 	}
+
+	// Do a quick check for file rights.
+	$all_paths_writable=true;
+	$wantedpaths=array('pictures','drawings','vendor'.DIRECTORY_SEPARATOR.'mpdf'.DIRECTORY_SEPARATOR.'mpdf'.DIRECTORY_SEPARATOR.'ttfontdata');
+
+	$directory=".";
+	$scanned_directory = array_diff(scandir($directory), array('..', '.'));
+	foreach($scanned_directory as $i => $file){
+		if(!is_dir($file)){
+			continue;
+		}
+
+		$all_paths_writable=(is_writable('.'.DIRECTORY_SEPARATOR.$uploadDir) && $all_paths_writable)?true:false;
+	}
+
+	if($all_paths_writable) {
+		$tests['directory_rights']['state']="good";
+		$tests['directory_rights']['message']='All required directories are writable';
+	}else{
+		$tests['directory_rights']['state']="fail";
+		$tests['directory_rights']['message']='Some paths are not writable please check <a href="rightscheck.php" target="_new">rightscheck.php</a> and correct any issues present.';
+	}
+
 
 	//Adding in some preliminary support for nginix
 	if(preg_match("/apache/i", $_SERVER['SERVER_SOFTWARE'])){
