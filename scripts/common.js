@@ -915,10 +915,10 @@ function startmap(){
 	function Hilight(obj,c){
 		//there has to be a better way to do this.  stupid js
 		area=obj.prop('coords').split(',');
-		var x=(area[0]);
-		var y=(area[1]);
-		var w=(area[2]-area[0]);
-		var h=(area[3]-area[1]);
+		var x=Number(area[0]);
+		var y=Number(area[1]);
+		var w=Number(area[2]-area[0]);
+		var h=Number(area[3]-area[1]);
 		var altname=obj.prop('alt');
 
 		// if color isn't given then just outline the object
@@ -944,12 +944,17 @@ function startmap(){
 				context.fillStyle="#000000";
 				// Check to see if this cabinet is tall or wide.  Rotate text accordingly.
 				if ( h > w ) {
-					context.translate( 0, 0 );
-					context.rotate(-Math.PI/2);
-					// In a rotated context, X and Y are now reversed
-					context.fillText(altname, Number(y)+5, Number(x)+20 );
+					var canvW = $('canvas').width();
+					context.translate( canvW - 1, 0 );
+					context.rotate(3*Math.PI/2);
+					context.textAlign="right";
+					// In a rotated context, X and Y are now reversed and all combobulated
+					var newX = 0 - y - 5;
+					var newY = -canvW + x + 15;
+					console.log( altname+'('+newX+','+newY+')');
+					context.fillText(altname, newX, newY );
 				} else {
-					context.fillText(altname, Number(x)+5, Number(y)+20 );
+					context.fillText(altname, x+5, y+20 );
 				}
 			}
 			context.restore();
