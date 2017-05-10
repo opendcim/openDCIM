@@ -951,7 +951,6 @@ function startmap(){
 					// In a rotated context, X and Y are now reversed and all combobulated
 					var newX = 0 - y - 5;
 					var newY = -canvW + x + 15;
-					console.log( altname+'('+newX+','+newY+')');
 					context.fillText(altname, newX, newY );
 				} else {
 					context.fillText(altname, x+5, y+20 );
