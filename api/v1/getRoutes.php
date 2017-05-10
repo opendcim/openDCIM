@@ -630,8 +630,17 @@ $app->get( '/powerport/:deviceid', function($deviceid) {
 	$r['error']=false;
 	$r['errorcode']=200;
 	$pp->DeviceID=$deviceid;
-	foreach($app->request->get() as $prop => $val){
-		$pp->$prop=$val;
+
+	$vars = getParsedBody();
+
+	foreach($vars as $prop => $val){
+		if ( strtoupper($prop) == "WILDCARDS" ) {
+			$loose = true;
+		} elseif (strtoupper($prop) == "ATTRIBUTES" ) {
+			$outputAttr = explode( ",", $val );
+		} elseif (property_exists( $pp, $prop )) {
+			$pp->$prop=$val;
+		}
 	}
 
 	if($pp->PortNumber){
