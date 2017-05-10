@@ -936,12 +936,22 @@ function startmap(){
 			context.save();
 			context.fillStyle="rgba("+c.r+", "+c.g+", "+c.b+", 0.35)";
 			context.fillRect(x,y,w,h);
-			context.strokeRect(x,y,w,h);
-			context.font="10px Georgia";
-			context.fillStyle="#000000";
-			var txtX=x+5;
-			var txtY=y+20;
-			context.fillText(altname, txtX, txtY);
+			if ( js_outlinecabinets == true ) {
+				context.strokeRect(x,y,w,h);
+			}
+			if ( js_labelcabinets == true ) {
+				context.font="10px Arial Black";
+				context.fillStyle="#000000";
+				// Check to see if this cabinet is tall or wide.  Rotate text accordingly.
+				if ( h > w ) {
+					context.translate( 0, 0 );
+					context.rotate(-Math.PI/2);
+					// In a rotated context, X and Y are now reversed
+					context.fillText(altname, Number(y)+5, Number(x)+20 );
+				} else {
+					context.fillText(altname, Number(x)+5, Number(y)+20 );
+				}
+			}
 			context.restore();
 		}
 	}

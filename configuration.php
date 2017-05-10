@@ -1600,6 +1600,25 @@ echo '<div class="main">
 					</div>
 				</div>
 			</div> <!-- end table -->
+			<h3>',__("Cabinets"),'</h3>
+			<div class="table">
+				<div>
+					<div><label for="OutlineCabinets">',__("Draw Cabinet Outlines"),'</label></div>
+					<div><select id="OutlineCabinets" name="OutlineCabinets" defaultvalue="',$config->defaults["OutlineCabinets"],'" data="',$config->ParameterArray["OutlineCabinets"],'">
+							<option value="disabled">',__("Disabled"),'</option>
+							<option value="enabled">',__("Enabled"),'</option>
+						</select>
+					</div>
+				</div>
+				<div>
+					<div><label for="LabelCabinets">',__("Add Cabinet Labels"),'</label></div>
+					<div><select id="LabelCabinets" name="LabelCabinets" defaultvalue="',$config->defaults["LabelCabinets"],'" data="',$config->ParameterArray["LabelCabinets"],'">
+							<option value="disabled">',__("Disabled"),'</option>
+							<option value="enabled">',__("Enabled"),'</option>
+						</select>
+					</div>
+				</div>
+			</div> <!-- end table -->
 			<h3>',__("Site"),'</h3>
 			<div class="table">
 				<div>

@@ -703,7 +703,7 @@ INSERT INTO fac_CabinetToolTip VALUES(NULL, 'DeviceID', 'Device ID', 0);
 INSERT INTO fac_CabinetToolTip VALUES(NULL, 'DeviceType', 'Device Type', 0);
 INSERT INTO fac_CabinetToolTip VALUES(NULL, 'EscalationID', 'Details', 0);
 INSERT INTO fac_CabinetToolTip VALUES(NULL, 'EscalationTimeID', 'Time Period', 0);
-INSERT INTO fac_CabinetToolTip VALUES(NULL, 'ESX', 'ESX Server?', 0);
+INSERT INTO fac_CabinetToolTip VALUES(NULL, 'VM Hypervisor', 'VM Hypervisor', 0);
 INSERT INTO fac_CabinetToolTip VALUES(NULL, 'InstallDate', 'Install Date', 0);
 INSERT INTO fac_CabinetToolTip VALUES(NULL, 'MfgDate', 'Manufacture Date', 0);
 INSERT INTO fac_CabinetToolTip VALUES(NULL, 'NominalWatts', 'Nominal Draw (Watts)', 0);
@@ -776,7 +776,9 @@ INSERT INTO fac_Config VALUES
 	('CriticalColor','#cc0000','HexColor','string','#cc0000'),
 	('CautionColor','#cccc00','HexColor','string','#cccc00'),
 	('GoodColor','#0a0','HexColor','string','#0a0'),
-	('MediaEnforce', 'Disabled', 'Enabled/Disabled', 'string', 'Disabled'),
+	('MediaEnforce', 'disabled', 'Enabled/Disabled', 'string', 'disabled'),
+  ('OutlineCabinets', 'disabled', 'Enabled/Disabled', 'string', 'disabled'),
+  ('LabelCabinets', 'disabled', 'Enabled/Disabled', 'string', 'disabled'),
 	('DefaultPanelVoltage','208','Volts','int','208'),
 	('annualCostPerUYear','200','Dollars','float','200'),
 	('Locale','en_US.utf8','TextLocale','string','en_US.utf8'),

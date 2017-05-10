@@ -149,6 +149,10 @@ $(document).ready(function() {
   <script type="text/javascript" src="scripts/jquery-ui.min.js"></script>
   <script type="text/javascript" src="scripts/common.js"></script>
   <script type="text/javascript" src="scripts/jquery.ui-contextmenu.js"></script>
+  <script type="text/javascript">
+  	var js_outlinecabinets = <?php print $config->ParameterArray["OutlineCabinets"] == 'enabled'?1:0; ?>;
+  	var js_labelcabinets = <?php print $config->ParameterArray["LabelCabinets"] == 'enabled'?1:0; ?>;
+  </script>
 </head>
 <body>
 <?php include( 'header.inc.php' ); ?>
