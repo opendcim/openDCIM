@@ -46,11 +46,6 @@
 				$cab->FrontEdge=$_POST["airflow"];
 				$cab->UpdateCabinet();
 			}
-			}else{
-				//update cabinet
-				$cab->FrontEdge=$_POST["airflow"];
-				$cab->UpdateCabinet();
-			}
 		}
 		exit;
 	}
@@ -304,6 +299,10 @@ echo '
 			<li><a href="#Right">',__("Right"),'</a></li>
 			<li><a href="#Bottom">',__("Bottom"),'</a></li>
 			<li><a href="#Left">',__("Left"),'</a></li>
+		</ul>
+	</li>
+	<li><a href="#alignment">',__("Alignment"),'</a>
+		<ul data-context="alignment">
 			<li><a href="#ATop">',__("Align Top"),'</a></li>
 			<li><a href="#ALeft">',__("Align Left"),'</a></li>
 			<li><a href="#ABottom">',__("Align Bottom"),'</a></li>
@@ -341,7 +340,7 @@ echo '
 			delegate: "area[name^=cab]",
 			menu: "#options",
 			select: function(event, ui) {
-				var row=(ui.item.context.parentElement.getAttribute('data-context')=='row')?true:false;
+				var row=(ui.item.context.parentElement.getAttribute('data-context')=='row'||ui.item.context.parentElement.getAttribute('data-context')=='alignment')?true:false;
 				var cabid=ui.target.context.attributes.name.value.substr(3);
 				$.post('',{cabinetid: cabid, airflow: ui.cmd, row: row}).done(function(){startmap()}); 
     		},
