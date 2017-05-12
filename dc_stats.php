@@ -16,7 +16,28 @@
 				//update all row
 				$cabinets=$cab->GetCabinetsByRow();
 				foreach($cabinets as $index => $cabinet){
-					$cabinet->FrontEdge=$_POST["airflow"];
+					if ( in_array( $_POST['airflow'], array( "Top", "Bottom", "Left", "Right"))) {
+						// This is an update to the airflow
+						$cabinet->FrontEdge=$_POST["airflow"];
+					} else {
+						// This is an alignment command
+						switch( $_POST['airflow'] ) {
+							case "ATop":
+								$cabinet->MapY1 = $cab->MapY1;
+								break;
+							case "ALeft":
+								$cabinet->MapX1 = $cab->MapX1;
+								break;
+							case "ABottom":
+								$cabinet->MapY2 = $cab->MapY2;
+								break;
+							case "ARight":
+								$cabinet->MapX2 = $cab->MapX2;
+								break;
+							default:
+								// Update nothing, because invalid input was supplied
+						}
+					}
 					$cabinet->UpdateCabinet();
 				}
 			}else{
@@ -278,10 +299,14 @@ echo '
 	</li>
 	<li><a href="#row">',__("Row"),'</a>
 		<ul data-context="row">
-			<li><a href="#Test">',__("Top"),'</a></li>
+			<li><a href="#Top">',__("Top"),'</a></li>
 			<li><a href="#Right">',__("Right"),'</a></li>
 			<li><a href="#Bottom">',__("Bottom"),'</a></li>
 			<li><a href="#Left">',__("Left"),'</a></li>
+			<li><a href="#ATop">',__("Align Top"),'</a></li>
+			<li><a href="#ALeft">',__("Align Left"),'</a></li>
+			<li><a href="#ABottom">',__("Align Bottom"),'</a></li>
+			<li><a href="#ARight">',__("Align Right"),'</a></li>
 		</ul>
 	</li>
 </ul>';
