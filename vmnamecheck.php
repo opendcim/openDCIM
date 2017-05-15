@@ -60,7 +60,7 @@
 </style>";
 
 	// Send email about Virtual Machines that don't have owners assigned
-	$vmeList=$vm->GetOrphanVMList();
+	$vmList=$vm->GetOrphanVMList();
 	if(count($vmList) >0){
 		$vmCount=count($vmList);
 
