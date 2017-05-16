@@ -134,6 +134,11 @@
 			$pnlList[$pnlCount]->GetPanel();
 		}
 	}
+
+	if ( sizeof( $pnlList ) == 0 ) {
+		echo '<meta http-equiv="refresh" content="0">';
+		exit;
+	}
     
     //
     // Now that we have a complete list of the panels, we need get the panel schedules for them
