@@ -11,20 +11,20 @@
 	}
 
 	$dept=new Department();
-	$esx=new ESX();
+	$vm=new VM();
 	$con = new People();
 	$dev=new Device();
 
 	if($_REQUEST['vmindex'] >0){
-		$esx->VMIndex = $_REQUEST['vmindex'];
-		$esx->GetVMbyIndex();
-		$dev->DeviceID=$esx->DeviceID;
+		$vm->VMIndex = $_REQUEST['vmindex'];
+		$vm->GetVMbyIndex();
+		$dev->DeviceID=$vm->DeviceID;
 		$dev->GetDevice();
 		if(isset($_REQUEST['action']) && $_REQUEST['action']=='Update'){
-			$esx->Owner=$_REQUEST['owner'];
-			$esx->PrimaryContact=$_REQUEST['contact'];
-			$esx->UpdateVMOwner();
-			header('Location: '.redirect("devices.php?DeviceID=$esx->DeviceID"));
+			$vm->Owner=$_REQUEST['owner'];
+			$vm->PrimaryContact=$_REQUEST['contact'];
+			$vm->UpdateVMOwner();
+			header('Location: '.redirect("devices.php?DeviceID=$vm->DeviceID"));
 		}
 	}else{
 		// How'd you get here without a valid vmindex?
@@ -68,7 +68,7 @@
 <?php
 	foreach($deptList as $deptRow){
 		print "			<option value=$deptRow->DeptID";
-		if($esx->Owner==$deptRow->DeptID){echo ' selected="selected"';}
+		if($vm->Owner==$deptRow->DeptID){echo ' selected="selected"';}
 		print ">$deptRow->Name</option>\n";
 	}
 ?>
@@ -81,7 +81,7 @@
 <?php
 	foreach( $contactList as $conRow ) {
 		print "			<option value=$conRow->PersonID";
-		if ( $esx->PrimaryContact == $conRow->PersonID ) {echo ' selected';}
+		if ( $vm->PrimaryContact == $conRow->PersonID ) {echo ' selected';}
 		print ">$conRow->LastName, $conRow->FirstName</option>\n";
 	}
 ?>
@@ -89,14 +89,14 @@
 	</div>
 	<div>
 	   <div>VM Name</div>
-	   <div><input type="text" size="50" name="vmname" value="<?php echo $esx->vmName; ?>" readonly></div>
+	   <div><input type="text" size="50" name="vmname" value="<?php echo $vm->vmName; ?>" readonly></div>
 	</div>
 	<div>
 	   <div>Current Server</div>
 	   <div><input type="text" size="50" name="currserver" value="<?php echo $dev->Label; ?>" readonly></div>
 	</div>
 	<div class="caption">
-	   <input type="hidden" name="vmindex" value="<?php echo $esx->VMIndex; ?>">
+	   <input type="hidden" name="vmindex" value="<?php echo $vm->VMIndex; ?>">
 	   <input type="submit" name="action" value="Update" default>
 	</div>
 </div>
