@@ -949,11 +949,11 @@ function startmap(){
 					context.rotate(3*Math.PI/2);
 					context.textAlign="right";
 					// In a rotated context, X and Y are now reversed and all combobulated
-					var newX = 0 - y - 5;
-					var newY = -canvW + x + 15;
+					var newX = 0 - y - 2;
+					var newY = -canvW + x + 10;
 					context.fillText(altname, newX, newY );
 				} else {
-					context.fillText(altname, x+5, y+20 );
+					context.fillText(altname, x+2, y+10 );
 				}
 			}
 			context.restore();
