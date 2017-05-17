@@ -2323,5 +2323,26 @@ class Device {
 
 		return $readings;
 	}	
+
+	static function resetCounter( $deviceID=false ) {
+		// Simple call to reset all counters
+		global $dbh;
+
+		$p = People::Current();
+		if ( ! $p->SiteAdmin ) {
+			return false;
+		}
+		
+		if ( $deviceID != false ) {
+			$clause = "WHERE DeviceID=" . intval( $deviceID );
+		}
+
+		$sql = "update fac_Device set SNMPFailureCount=0 $clause";
+		if ( !$dbh->query($sql)) {
+			return false;
+		} else {
+			return true;
+		}
+	}
 }
 ?>

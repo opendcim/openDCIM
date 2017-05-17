@@ -518,6 +518,17 @@
 	}
 	// END AJAX
 
+	// Not really AJAX calls since there's no return, but special actions
+	// Functions to Reset Counters (rc) for SNMP Failures
+	if( isset($_GET["rc"]) && isset($_GET['DeviceID']) ) {
+		$dev->DeviceID = $_GET['DeviceID'];
+		Device::resetCounter( $dev->DeviceID );
+		if ( $dev->DeviceID == "ALL" ) {
+			// Special case
+			header( 'Location: index.php' );
+			exit;
+		}
+	}
 
 	// These objects are used no matter what operation we're performing
 	$templ=new DeviceTemplate();

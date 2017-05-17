@@ -48,6 +48,8 @@
 	$lastCabinet = null;
 	$urlBase = $config->ParameterArray["InstallURL"];
 	
+	$exceptionRows = "";
+	
 	if ( sizeof( $devList ) == 0 ) {
 		$htmlMessage .= "<p>There are no devices that qualify for this report.</p>\n";
 	} else {
@@ -55,7 +57,6 @@
 		$dc = new DataCenter();
 		$port = new DevicePorts();
 		$dev = new Device();
-		$exceptionRows = "";
 		
 		foreach ( $devList as $devRow ) {
 			if ( $devRow->Cabinet != $lastCabinet ) {
@@ -72,12 +73,12 @@
 				$dataCenter = $dc->Name;
 			}
 			
-			$exceptionRows .= sprintf( "<tr><td><a href=\"%sresetdevices.php?DeviceID=%d\">%s</a></td><td>%s</td><td>%s</td></tr>\n", $urlBase, $devRow->DeviceID, $devRow->Label, $dc->Name, $cab->Location );
+			$exceptionRows .= sprintf( "<tr><td><a href=\"%sdevices.php?rc&DeviceID=%d\">%s</a></td><td>%s</td><td>%s</td></tr>\n", $urlBase, $devRow->DeviceID, $devRow->Label, $dc->Name, $cab->Location );
 		}
 	}
 
 	if ( $exceptionRows != "" ) {
-		$htmlMessage .= sprintf( "<p><a href=\"%sresetdevices.php?All\">Reset All Devices</a></p>\n", $urlBase );
+		$htmlMessage .= sprintf( "<p><a href=\"%sdevices.php?rcall\">Reset All Devices</a></p>\n", $urlBase );
 		$htmlMessage .= "<table border='1'>\n<tr><th>Device Name</th><th>Data Center</th><th>Cabinet</th></tr>\n";
 		$htmlMessage .= $exceptionRows;
 		$htmlMessage .= "</table>\n";
