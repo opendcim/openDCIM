@@ -494,7 +494,13 @@
 			}
 			echo json_encode(SwitchInfo::getPortAlias($_POST['refreshswitch']));
 		}else{
-			echo json_encode(SwitchInfo::getPortStatus($_POST['refreshswitch']));
+			$dev->DeviceID = $_POST['refreshswitch'];
+			$tagList = $dev->GetTags();
+			if( ! in_array( "NoPoll", $tagList )) {
+				echo json_encode(SwitchInfo::getPortStatus($_POST['refreshswitch']));
+			} else {
+				echo json_encode(array());
+			}
 		}
 		exit;
 	}
