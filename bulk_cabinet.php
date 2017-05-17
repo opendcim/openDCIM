@@ -144,7 +144,7 @@
     for ( $n = 2; $n <= $highestRow; $n++ ) {
       $rowError = false;
 
-      $devPort = new DevicePorts();
+      $cab = new Cabinet();
  
       // Load up the $row[] array with the values according to the mapping supplied by the user
       foreach( $fields as $fname ) {
@@ -154,40 +154,42 @@
 
       /*
        *
-       *  Section for looking up the SourceDeviceID and setting the true DeviceID in the devPort variable
+       *  Section for looking up the DataCenter and setting the true DataCenterID
        *
        */
-      $st = $dbh->prepare( "select count(DeviceID) as TotalMatches, DeviceID from fac_Device where ucase(" . $idField . ")=ucase(:SourceDeviceID)" );
-      $st->execute( array( ":SourceDeviceID"=>$row["SourceDeviceID"] ));
+      $st = $dbh->prepare( "select count(DataCenterID) as TotalMatches, DataCenterID from fac_DataCenter where ucase(Name)=ucase(:DataCenter)" );
+      $st->execute( array( ":DataCenter"=>$row["DataCenter"] ));
       if ( ! $val = $st->fetch() ) {
         $info = $dbh->errorInfo();
         error_log( "PDO Error: {$info[2]}");
       }
 
       if ( $val["TotalMatches"] == 1 ) {
-        $devPort->DeviceID = $val["DeviceID"];
+        $cab->DataCenterID = $val["DataCenterID"];
       } else {
         $errors = true;
-        $content .= "<li>Source Device: $idField = " . $row["SourceDeviceID"] . " is not unique or not found.";
+        $content .= "<li>Cabinet: DataCenter = " . $row["DataCenter"] . " is not unique or not found.";
       }
 
       /*
        *
-       *  Section for looking up the TargetDeviceID and setting the true DeviceID in the devPort variable
+       *  Section for looking up the ZoneID and setting the true ZoneID in the cab variable
        *
        */
-      $st = $dbh->prepare( "select count(DeviceID) as TotalMatches, DeviceID from fac_Device where ucase(" . $idField . ")=ucase(:TargetDeviceID)" );
-      $st->execute( array( ":TargetDeviceID"=>$row["TargetDeviceID"] ));
-      if ( ! $val = $st->fetch() ) {
-        $info = $dbh->errorInfo();
-        error_log( "PDO Error: {$info[2]}");
+      if ( $row["Zone"] != "" && $cab->DataCenterID > 0 ) {
+        $st = $dbh->prepare( "select count(ZoneID) as TotalMatches, ZoneID from fac_Zone where ucase(" . $idField . ")=ucase(:TargetDeviceID)" );
+        $st->execute( array( ":TargetDeviceID"=>$row["TargetDeviceID"] ));
+        if ( ! $val = $st->fetch() ) {
+          $info = $dbh->errorInfo();
+          error_log( "PDO Error: {$info[2]}");
+        }
       }
 
-      if ( $val["TotalMatches"] == 1 ) {
-        $devPort->ConnectedDeviceID = $val["DeviceID"];
-      } else {
+      if ( $row["Zone"]!="" && $val["TotalMatches"] == 1 ) {
+        $cab->ZoneID = $val["ZoneID"];
+      } elseif ($row["Zone"]!="" ) {
         $errors = true;
-        $content .= "<li>Target Device: $idField = " . $row["TargetDeviceID"] . " is not unique or not found.";
+        $content .= "<li>Cabinet: Data Center + Zone = " . $row["Zone"] . " is not unique or not found.";
       }
 
       /*

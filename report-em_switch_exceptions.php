@@ -1,7 +1,6 @@
 <?php
 	require_once( 'db.inc.php' );
 	require_once( 'facilities.inc.php' );
-	require_once( 'swiftmailer/swift_required.php' );
 
 	// If any port other than 25 is specified, assume encryption and authentication
 	if($config->ParameterArray['SMTPPort']!= 25){

@@ -1,7 +1,6 @@
 <?php
 	require_once( 'db.inc.php' );
 	require_once( 'facilities.inc.php' );
-	require_once( 'swiftmailer/swift_required.php' );
 
 	$device = new Device();
 	$devList = $device->GetDevicesbyAge($config->ParameterArray["NewInstallsPeriod"] );
