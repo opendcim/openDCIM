@@ -46,4 +46,4 @@ INSERT INTO fac_Config VALUES ('LabelCabinets', 'disabled', 'Enabled/Disabled', 
 -- Bump up the database version (uncomment below once released)
 --
 
--- UPDATE fac_Config set Value="4.4" WHERE Parameter="Version";
+UPDATE fac_Config set Value="4.4" WHERE Parameter="Version";

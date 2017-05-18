@@ -1,5 +1,5 @@
 <?php
-$codeversion="4.3.1";
+$codeversion="4.4";
 
 require_once( "preflight.inc.php" );
 
@@ -1103,6 +1103,11 @@ function upgrade(){
 	}
 	if($version=="4.3"){
 		$results[]=applyupdate("db-4.3-to-4.3.1.sql");
+
+		$config->rebuild();
+	}
+	if($version=="4.3.1"){
+		$results[]=applyupdate("db-4.3.1-to-4.4.sql");
 
 		$config->rebuild();
 	}
