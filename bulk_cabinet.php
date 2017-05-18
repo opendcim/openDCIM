@@ -78,7 +78,7 @@
 
     $fieldNum = 1;
 
-    foreach ( array( "DataCenter"=>"The unique name of the data center to add the cabinets to.", "Label"=>"The name that you wish to assign to the cabinet being imported.  Typically this is a location name.", "Owner"=>"The unique name of the Department to assign this cabinet to.  You may leave blank for General Use cabinets.", "Zone"=>"The name of an existing zone to place this cabinet within.  The combination of Data Center + Zone must be unique.  Optional.", "Row"=>"The name of an existing row to place this cabinet within.  The combination of Data Center + Row must be unique.  Optional.", "Height"=>"The height, in standard Rack Units (RU), of the cabinet.", "Model"=>"Optional, free form text to describe the model of the cabinet.", "U1Postion"=>"Field indicating the orientation of the cabinet by stating the location of the first U marker.  Valid values are Top, Bottom, or blank (defaults to Bottom).", "MaxkW"=>"A floating point number to indicate the maximum kW allowed to be placed within this cabinet, based upon site criteria.  Optional.", "MaxWeight"=>"An integer indicating the maximum weight (will assume site defined units) that may be placed within this cabinet.  Optional, but strongly encouraged to be set with correct numbers.", "MapX1"=>"Left edge (based on map orientation) of the cabinet zone on the drawing.  Optional.", "MapX2"=>"Right edge (based on map orientation) of the cabinet zone on the drawing.  Optional.", "MapY1"=>"Top edge (based on map orientation) of the cabinet zone on the drawing.  Optional.", "MapY2"=>"Bottom edge (based on map orientation) of the cabinet zone on the drawing.  Optional.", "FrontEdge"=>"Indicator of which edge air intake comes from, which is used to determine row orientation.  Valid values are Top, Bottom, Left, Right, or blank (will assume Top)." ) as $fieldName=>$helpText ) {
+    foreach ( array( "DataCenter"=>"The unique name of the data center to add the cabinets to.", "Label"=>"The name that you wish to assign to the cabinet being imported.  Typically this is a location name.", "Owner"=>"The unique name of the Department to assign this cabinet to.  You may leave blank for General Use cabinets.", "Zone"=>"The name of an existing zone to place this cabinet within.  The combination of Data Center + Zone must be unique.  Optional.", "Row"=>"The name of an existing row to place this cabinet within.  The combination of Data Center + Row must be unique.  Optional.", "Height"=>"The height, in standard Rack Units (RU), of the cabinet.", "Model"=>"Optional, free form text to describe the model of the cabinet.", "U1Position"=>"Field indicating the orientation of the cabinet by stating the location of the first U marker.  Valid values are Top, Bottom, or blank (defaults to Bottom).", "MaxkW"=>"A floating point number to indicate the maximum kW allowed to be placed within this cabinet, based upon site criteria.  Optional.", "MaxWeight"=>"An integer indicating the maximum weight (will assume site defined units) that may be placed within this cabinet.  Optional, but strongly encouraged to be set with correct numbers.", "MapX1"=>"Left edge (based on map orientation) of the cabinet zone on the drawing.  Optional.", "MapX2"=>"Right edge (based on map orientation) of the cabinet zone on the drawing.  Optional.", "MapY1"=>"Top edge (based on map orientation) of the cabinet zone on the drawing.  Optional.", "MapY2"=>"Bottom edge (based on map orientation) of the cabinet zone on the drawing.  Optional.", "FrontEdge"=>"Indicator of which edge air intake comes from, which is used to determine row orientation.  Valid values are Top, Bottom, Left, Right, or blank (will assume Top)." ) as $fieldName=>$helpText ) {
       $content .= '<div>
                     <div><span title="' . __($helpText) . '">' . __($fieldName) . '</span>: </div><div><select name="' . $fieldName . '">';
       for ( $n = 0; $n < sizeof( $fieldList ); $n++ ) {
@@ -122,21 +122,6 @@
     $sheet = $objXL->getSheet(0);
     $highestRow = $sheet->getHighestRow();
 
-    // Make some quick arrays of the MediaType and ColorCoding tables - they are small and can easily fit in memory
-    $st = $dbh->prepare( "select * from fac_ColorCoding" );
-    $st->execute();
-    $colors = array();
-    while ( $row = $st->fetch() ) {
-      $colors[strtoupper($row['Name'])] = $row['ColorID'];
-    }
-
-    $st = $dbh->prepare( "select * from fac_MediaTypes" );
-    $st->execute();
-    $media = array();
-    while ( $row = $st->fetch() ) {
-      $media[strtoupper($row['MediaType'])] = $row['MediaID'];
-    }
-
     // Also make sure we start with an empty string to display
     $content = "";
     $fields = array( "DataCenter", "Label", "Owner", "Zone", "Row", "Height", "Model", "U1Position", "MaxkW", "MaxWeight", "MapX1", "MapX2", "MapY1", "MapY2", "FrontEdge" );
@@ -151,6 +136,20 @@
         $addr = chr( 64 + $_REQUEST[$fname]);
         $row[$fname] = sanitize($sheet->getCell( $addr . $n )->getValue());
       }
+
+      // Pull in the raw data fields
+      $cab->Location = $row["Label"];
+      $cab->AssignedTo = $row["Owner"];
+      $cab->CabinetHeight = $row["Height"];
+      $cab->Model = $row["Model"];
+      $cab->U1Position = $row["U1Position"];
+      $cab->MaxKW = $row["MaxkW"];
+      $cab->MaxWeight = $row["MaxWeight"];
+      $cab->MapX1 = $row["MapX1"];
+      $cab->MapX2 = $row["MapX2"];
+      $cab->MapY1 = $row["MapY1"];
+      $cab->MapY2 = $row["MapY2"];
+      $cab->FrontEdge = $row["FrontEdge"];
 
       /*
        *
@@ -177,8 +176,8 @@
        *
        */
       if ( $row["Zone"] != "" && $cab->DataCenterID > 0 ) {
-        $st = $dbh->prepare( "select count(ZoneID) as TotalMatches, ZoneID from fac_Zone where ucase(" . $idField . ")=ucase(:TargetDeviceID)" );
-        $st->execute( array( ":TargetDeviceID"=>$row["TargetDeviceID"] ));
+        $st = $dbh->prepare( "select count(ZoneID) as TotalMatches, ZoneID from fac_Zone where DataCenterID=:DataCenterID and ucase(Description)=ucase(:Zone)" );
+        $st->execute( array( ":DataCenterID"=>$cab->DataCenterID, ":Zone"=>$row["Zone"] ));
         if ( ! $val = $st->fetch() ) {
           $info = $dbh->errorInfo();
           error_log( "PDO Error: {$info[2]}");
@@ -194,65 +193,39 @@
 
       /*
        *
-       *  Section for looking up the SourcePort by name and setting the true PortNumber in the devPort variable
+       *  Section for looking up the Row by DataCenterID + name and setting the true RowID
        *
        */
-      $st = $dbh->prepare( "select count(*) as TotalMatches, Label, PortNumber from fac_Ports where DeviceID=:DeviceID and PortNumber>0 and ucase(Label)=ucase(:SourcePort)" );
-      $st->execute( array( ":DeviceID"=>$devPort->DeviceID, ":SourcePort"=>$row["SourcePort"] ));
+      $st = $dbh->prepare( "select count(*) as TotalMatches, CabRowID from fac_CabRow where DataCenterID=:DataCenterID and ucase(Name)=ucase(:Row)" );
+      $st->execute( array( ":DataCenterID"=>$cab->DataCenterID, ":Row"=>$row["Row"] ));
       if ( ! $val = $st->fetch() ) {
         $info = $dbh->errorInfo();
         error_log( "PDO Error: {$info[2]}");
       }
 
       if ( $val["TotalMatches"] == 1 ) {
-        $devPort->PortNumber = $val["PortNumber"];
-        $devPort->Label = $val["Label"];
+        $cab->CabRowID = $val["CabRowID"];
       } else {
         $errors = true;
-        $content .= "<li>Source Port: " . $row["SourcePort"] . " is not unique or not found.";
+        $content .= "<li>Cabinet: Data Center + Row = " . $row["Row"] . " is not unique or not found.";
       }
 
-      /*
-       *
-       *  Section for looking up the TargetPort by name and setting the true PortNumber in the devPort variable
-       *  Limits to positive port numbers so that you can match Patch Panel frontside ports
-       *
-       */
-      $st = $dbh->prepare( "select count(*) as TotalMatches, Label, PortNumber from fac_Ports where DeviceID=:DeviceID and PortNumber>0 and ucase(Label)=ucase(:TargetPort)" );
-      $st->execute( array( ":DeviceID"=>$devPort->ConnectedDeviceID, ":TargetPort"=>$row["TargetPort"] ));
-      if ( ! $val = $st->fetch() ) {
-        $info = $dbh->errorInfo();
-        error_log( "PDO Error: {$info[2]}");
-      }
-
-      if ( $val["TotalMatches"] == 1 ) {
-        $devPort->ConnectedPort = $val["PortNumber"];
-      } else {
-        $errors = true;
-        $content .= "<li>Target Port: " . $row["TargetDeviceID"] . "::" . $row["TargetPort"] . " is not unique or not found.";
-      }
-
-      // Do not fail if the Color Code or Media Type are not defined for the site.
-      if ( $row["MediaType"] != "" ) {
-        $devPort->MediaID = @$media[strtoupper($row["MediaType"])];
-      }
-
-      if ( $row["ColorCode"] != "" ) {
-        $devPort->ColorID = @$colors[strtoupper($row["ColorCode"])];
-      }
-
-      $devPort->Notes = $row["Notes"];
-
-      if ( ! $rowError ) {
-        if ( ! $devPort->updatePort() ) {
-          $errors = true;
+      if ( $row["Owner"] != "" ) {
+        $st = $dbh->prepare( "select DeptID from fac_Department where ucase(Name)=ucase(:Name)" );
+        $st->execute( array( ":Name" => $row["Owner"] ));
+        if ( ! $val = $st->fetch()) {
+          $info = $dbh->errorInfo();
+          error_log( "PDO Error: {$info[2]} (Department search)");
         }
-      } else {
-        $errors = true;
+
+        $cab->AssignedTo = $val["DeptID"];
       }
 
-      if ( $rowError ) {
-        $content .= "<li><strong>Error making port connection on Row $n of the spreadsheet.</strong>";
+      if ( ! $errors && ! $cab->CreateCabinet() ) {
+        $errors = true;
+        $content .= "<li><strong>" . __("Error adding cabinet on Row $n of the spreadsheet.") . "</strong>";
+      } else {
+        $content .= "<li>Added cabinet " . $cab->Location . "(" . $cab->CabinetID . ")";
       }
     }
 
