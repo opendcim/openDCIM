@@ -26,7 +26,7 @@
 			} 
 
 			$sql="SELECT a.Name AS DataCenter, b.DeviceID, c.Location, b.Position, 
-				b.Height, b.Label, b.DeviceType, b.AssetTag, b.SerialNo, b.InstallDate, 
+				b.Height, b.Label, b.DeviceType, b.AssetTag, b.SerialNo, b.InstallDate, b.WarrantyExpire, b.PrimaryIP,
 				b.TemplateID, b.Owner, c.CabinetID, c.DataCenterID, f.Name as Manufacturer $custom_concat FROM fac_DataCenter a,
 				fac_Cabinet c, fac_DeviceTemplate e, fac_Manufacturer f, fac_Device b  LEFT OUTER JOIN fac_DeviceCustomValue d on
 				b.DeviceID=d.DeviceID WHERE b.Cabinet=c.CabinetID AND c.DataCenterID=a.DataCenterID AND b.TemplateID=e.TemplateID

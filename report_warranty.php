@@ -66,13 +66,13 @@ class DeviceWarranty extends Device
 
         if ($year >= 0) {
             $previous_year = $year - 1;
-            $selectSQL = sprintf("SELECT DeviceID, Label, Owner, WarrantyExpire, PrimaryContact FROM fac_Device WHERE (DATEDIFF(WarrantyExpire, NOW())/365)>=%d AND (DATEDIFF(WarrantyExpire, NOW())/365)<%d ORDER BY Owner, WarrantyExpire, Label;", $previous_year, $year);
+            $selectSQL = sprintf("SELECT * FROM fac_Device WHERE (DATEDIFF(WarrantyExpire, NOW())/365)>=%d AND (DATEDIFF(WarrantyExpire, NOW())/365)<%d ORDER BY Owner, WarrantyExpire, Label;", $previous_year, $year);
             foreach ($dbh->query($selectSQL) as $deviceRow) {
                 $deviceList[$deviceRow['DeviceID']] = Device::RowToObject($deviceRow);
             }
         }
         else {
-            $selectSQL = "SELECT DeviceID, Label, Owner, WarrantyExpire, PrimaryContact FROM fac_Device WHERE (DATEDIFF(NOW(), WarrantyExpire))>0 AND WarrantyExpire>'1969-12-31' ORDER BY Owner, WarrantyExpire, Label;";
+            $selectSQL = "SELECT * FROM fac_Device WHERE (DATEDIFF(NOW(), WarrantyExpire))>0 AND WarrantyExpire>'1969-12-31' ORDER BY Owner, WarrantyExpire, Label;";
             foreach ($dbh->query($selectSQL) as $deviceRow) {
                 $deviceList[$deviceRow['DeviceID']] = Device::RowToObject($deviceRow);
             }

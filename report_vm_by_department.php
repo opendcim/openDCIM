@@ -153,7 +153,7 @@ class PDF extends FPDF {
   $pdf->Bookmark( 'Departments' );
 	$deptList = $dept->GetDepartmentList();
 	
-	$VM = new ESX();
+	$VM = new VM();
 	$vmList = $VM->GetInventory();
 	
 	$vmCount = count( $vmList );
