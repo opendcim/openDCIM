@@ -733,7 +733,6 @@ div.cabinet {
 .device .table .table .table > div > div {padding: 3px;}
 .right .table + .table {margin-top: 1em;}
 
-
 .table.patchpanel > div:first-child > div > div,
 .table.switch > div:first-child > div > div,
 .table.power > div:first-child > div > div { position: relative; border: 0px none; margin: -3px; padding-right: 20px; }
@@ -794,7 +793,6 @@ div.cabinet {
 #connection-limiter .ui-button-text-only .ui-button-text { padding: 0.2em; }
 #devicetype-limiter label, #connection-limiter label { width: auto; }
 
-
 .device #tags { width: 95%; min-width: 250px;}
 
 #firstport.hide { display: none; }
@@ -841,6 +839,47 @@ div.cabinet {
 #preview { width: 340px; min-height: 130px; background-color: white; border: 1px solid grey; padding: 5px;}
 #preview img { display: block; border: 0px; max-width: 330px;}
 .jHtmlArea iframe { background-color: white; border: 1px inset; min-height: 100px;}
+
+/* hey I do something function */
+.wade{
+	position: relative;
+	width: 250px;
+	height: 120px;
+	padding: 0px;
+	background: #FFFFFF;
+	-webkit-border-radius: 17px;
+	-moz-border-radius: 17px;
+	border-radius: 17px;
+	border: #000000 solid 1px;
+}
+
+.wade:after{
+	content: '';
+	position: absolute;
+	border-style: solid;
+	border-width: 15px 16px 0;
+	border-color: #FFFFFF transparent;
+	display: block;
+	width: 0;
+	z-index: 1;
+	bottom: -15px;
+	left: 19px;
+}
+
+.wade:before{
+	content: '';
+	position: absolute;
+	border-style: solid;
+	border-width: 15px 16px 0;
+	border-color: #000000 transparent;
+	display: block;
+	width: 0;
+	z-index: 0;
+	bottom: -16px;
+	left: 19px;
+}
+
+
 
 /* Logging style */
 #logtable { width: 100%; width: calc(100% - 36px); border: 1px solid black; }
