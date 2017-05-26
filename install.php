@@ -1,5 +1,5 @@
 <?php
-$codeversion="4.4";
+$codeversion="4.4.1";
 
 require_once( "preflight.inc.php" );
 
@@ -143,7 +143,7 @@ function ArraySearchRecursive($Needle,$Haystack,$NeedleKey="",$Strict=false,$Pat
 	}
 	if(AUTHENTICATION=="Apache"){
 		$person->UserID=$_SERVER['REMOTE_USER'];
-	}elseif(AUTHENTICATION=="Oauth" || AUTHENTICATION=="LDAP"){
+	}elseif(AUTHENTICATION=="Oauth" || AUTHENTICATION=="LDAP" || AUTHENTICATION=="Saml"){
 		$person->UserID=$_SESSION['userid'];
 	}
 	/* Check the table to see if there are any users
@@ -1108,6 +1108,11 @@ function upgrade(){
 	}
 	if($version=="4.3.1"){
 		$results[]=applyupdate("db-4.3.1-to-4.4.sql");
+
+		$config->rebuild();
+	}
+	if($version=="4.4"){
+		$results[]=applyupdate("db-4.4-to-4.4.1.sql");
 
 		$config->rebuild();
 	}

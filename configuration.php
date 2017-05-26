@@ -1320,6 +1320,7 @@ echo '<div class="main">
 			<li><a href="#cc">',__("Cabling"),'</a></li>
 			<li><a href="#dca">',__("Custom Device Attributes"),'</a></li>
 			<li><a href="#ldap">',__("LDAP"),'</a></li>
+			<li><a href="#saml">',__("SAML"),'</a></li>
 			<li><a href="#preflight">',__("Pre-Flight Check"),'</a></li>
 		</ul>
 		<div id="general">
@@ -1996,6 +1997,96 @@ echo '<div class="main">
 				</div>
 			</div>
 
+		</div>
+			<div id="saml">
+			<h3>',__("SAML Authentication Configuration"),'</h3>
+			<div class="table">
+				<div>
+					<div><label for="SAMLStrict">',__("Strict"),'</label></div>
+					<div><select id="SAMLStrict" name="SAMLStrict" defaultValue="',$config->defaults["SAMLStrict"],'" data="', $config->ParameterArray["SAMLStrict"],'">
+							<option value="disabled">',__("Disabled"),'</option>
+							<option value="enabled">',__("Enabled"),'</option>
+						</select>
+					</div>
+				</div>
+				<div>
+					<div><label for="SAMLDebug">',__("Debug"),'</label></div>
+				<div><select id="SAMLDebug" name="SAMLDebug" defaultValue="',$config->defaults["SAMLDebug"],'" data="', $config->ParameterArray["SAMLDebug"],'">
+							<option value="disabled">',__("Disabled"),'</option>
+							<option value="enabled">',__("Enabled"),'</option>
+						</select>
+					</div>
+				</div>
+				<div>
+					<div><label for="SAMLBaseURL">',__("Base URL"),'</label></div>
+					<div><input type="text" size="60" defaultvalue="',$config->defaults["SAMLBaseURL"],'" name="SAMLBaseURL" value="',$config->ParameterArray["SAMLBaseURL"],'"></div>
+				</div>
+				<div>
+					<div><label for="SAMLShowSuccessPage">',__("Show Success Page"),'</label></div>
+					<div><select id="SAMLShowSuccessPage" name="SAMLShowSuccessPage" defaultValue="',$config->defaults["SAMLShowSuccessPage"],'" data="', $config->ParameterArray["SAMLShowSuccessPage"],'">
+							<option value="disabled">',__("Disabled"),'</option>
+							<option value="enabled">',__("Enabled"),'</option>
+						</select>
+					</div>
+				</div>
+			</div>
+			<h3>',__("SAML Service Provider Configuration"),'</h3>
+			<div class="table">
+				<div>
+					<div><label for="SAMLspentityId">',__("Entity ID"),'</label></div>
+					<div><input type="text" size="60" defaultvalue="',$config->defaults["SAMLspentityId"],'" name="SAMLspentityId" value="',$config->ParameterArray["SAMLspentityId"],'"></div>
+				</div>
+				<div>
+					<div><label for="SAMLspacsURL">',__("ACS URL"),'</label></div>
+					<div><input type="text" size="60" defaultvalue="',$config->defaults["SAMLspacsURL"],'" name="SAMLspacsURL" value="',$config->ParameterArray["SAMLspacsURL"],'"></div>
+				</div>
+				<div>
+					<div><label for="SAMLspslsURL">',__("SLS URL"),'</label></div>
+					<div><input type="text" size="60" defaultvalue="',$config->defaults["SAMLspslsURL"],'" name="SAMLspslsURL" value="',$config->ParameterArray["SAMLspslsURL"],'"></div>
+				</div>
+				<div>
+					<div><label for="SAMLspx509cert">',__("x509 Certificate"),'</label></div>
+					<div><input type="text" size="60" defaultvalue="',$config->defaults["SAMLspx509cert"],'" name="SAMLspx509cert" value="',$config->ParameterArray["SAMLspx509cert"],'"></div>
+				</div>
+				<div>
+					<div><label for="SAMLspprivateKey">',__("Private Key"),'</label></div>
+					<div><input type="text" size="60" defaultvalue="',$config->defaults["SAMLspprivateKey"],'" name="SAMLspprivateKey" value="',$config->ParameterArray["SAMLspprivateKey"],'"></div>
+				</div>
+			</div>
+			<h3>',__("SAML Identity Provider Configuration"),'</h3>
+			<div class="table">
+				<div>
+					<div><label for="SAMLidpentityId">',__("Entity ID"),'</label></div>
+					<div><input type="text" size="60" defaultvalue="',$config->defaults["SAMLidpentityId"],'" name="SAMLidpentityId" value="',$config->ParameterArray["SAMLidpentityId"],'"></div>
+				</div>
+				<div>
+					<div><label for="SAMLidpssoURL">',__("SSO URL"),'</label></div>
+					<div><input type="text" size="60" defaultvalue="',$config->defaults["SAMLidpssoURL"],'" name="SAMLidpssoURL" value="',$config->ParameterArray["SAMLidpssoURL"],'"></div>
+				</div>
+				<div>
+					<div><label for="SAMLidpslsURL">',__("SLS URL"),'</label></div>
+					<div><input type="text" size="60" defaultvalue="',$config->defaults["SAMLidpslsURL"],'" name="SAMLidpslsURL" value="',$config->ParameterArray["SAMLidpslsURL"],'"></div>
+				</div>
+				<div>
+					<div><label for="SAMLidpcertFingerprint">',__("Certificate Fingerprint"),'</label></div>
+					<div><input type="text" size="50" defaultvalue="',$config->defaults["SAMLidpcertFingerprint"],'" name="SAMLidpcertFingerprint" value="',$config->ParameterArray["SAMLidpcertFingerprint"],'"></div>
+				</div>
+				<div>
+					<div><label for="SAMLidpcertFingerprintAlgorithm">',__("Certificate Fingerprint Algorithm"),'</label></div>
+					<div><input type="text" size="20" defaultvalue="',$config->defaults["SAMLidpcertFingerprintAlgorithm"],'" name="SAMLidpcertFingerprintAlgorithm" value="',$config->ParameterArray["SAMLidpcertFingerprintAlgorithm"],'"></div>
+				</div>
+			</div>
+			<h3>',__("SAML Account Configuration"),'</h3>
+			<div class="table">
+				<div>
+					<div><label for="SAMLaccountPrefix">',__("Remove Account Prefix"),'</label></div>
+					<div><input type="text" size="60" defaultvalue="',$config->defaults["SAMLaccountPrefix"],'" name="SAMLaccountPrefix" value="',$config->ParameterArray["SAMLaccountPrefix"],'"></div>
+				</div>
+				<div>
+					<div><label for="SAMLaccountSuffix">',__("Remove Account Suffix"),'</label></div>
+					<div><input type="text" size="60" defaultvalue="',$config->defaults["SAMLaccountSuffix"],'" name="SAMLaccountSuffix" value="',$config->ParameterArray["SAMLaccountSuffix"],'"></div>
+				</div>
+			</div>
 		</div>
 		<div id="preflight">
 			<iframe src="preflight.inc.php"></iframe>
