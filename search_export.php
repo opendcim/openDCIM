@@ -148,7 +148,8 @@
 					\t<td>$ctags</td>
 					\t<td>$cDepartment</td>
           \t<td>$cwarranty</td>
-					\t<td>$cdate</td>\n\t\t</tr>\n";
+					\t<td>$cdate</td>
+					{$ca_cells}\t\n\t\t</tr>\n";
 				}
 			}
 		}
