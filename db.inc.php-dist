@@ -49,7 +49,4 @@
 		// define( "AUTHENTICATION", "LDAP" );
 	}
 
-	require_once( 'config.inc.php');
-	$config=new Config();
-	
 ?>
