@@ -1,14 +1,14 @@
 <?php
 $codeversion="4.4";
 
-require_once( "preflight.inc.php" );
+require_once( 'preflight.inc.php' );
 
 // Make sure that a db.inc.php has been created
-	if(!file_exists("db.inc.php")){
-		print "Please copy db.inc.php-dist to db.inc.php.<br>\nOpen db.inc.php with a text editor and fill in the blanks for user, pass, database, and server.";
+	if(!file_exists(CONFIG_FILE)){
+		print "Please copy db.inc.php-dist to " . CONFIG_FILE . ".<br>\nOpen db.inc.php with a text editor and fill in the blanks for user, pass, database, and server.";
 		exit;
 	}else{
-		require_once("db.inc.php");
+		require_once(CONFIG_FILE);
 	}
 
 // Functions for upgrade / installing db objects

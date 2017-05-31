@@ -1,6 +1,6 @@
 <?php
-	require_once('db.inc.php');
-	require_once('facilities.inc.php');
+	require_once( 'vendor_preset.inc.php' );
+	require_once( 'facilities.inc.php' );
 
 //	Uncomment these if you need/want to set a title in the header
 //	$header=__("");

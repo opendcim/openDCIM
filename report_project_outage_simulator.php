@@ -1,6 +1,6 @@
 <?php
 	// This was taken mostly from report_outage_simulator.php: the wheel
-	require_once( 'db.inc.php' );
+	require_once( 'vendor_preset.inc.php' );
 	require_once( 'facilities.inc.php' );
 
 	if(!$person->ReadAccess){

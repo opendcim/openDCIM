@@ -1,6 +1,6 @@
 <?php
-	require_once( "db.inc.php" );
-	require_once( "facilities.inc.php" );
+	require_once( 'vendor_preset.inc.php' );
+	require_once( 'facilities.inc.php' );
 
 	$ss = $dbh->prepare( "select * from fac_PowerSource" );
 	$ss->setFetchMode( PDO::FETCH_CLASS, "PowerSource" );

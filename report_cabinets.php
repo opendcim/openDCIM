@@ -3,8 +3,8 @@
        Prints the contents of selected cabinets
     */
 
-    require_once( "db.inc.php" );
-    require_once( "facilities.inc.php" );
+    require_once( 'vendor_preset.inc.php' );
+    require_once( 'facilities.inc.php' );
     
     if(!$person->ReadAccess){
         // No soup for you.

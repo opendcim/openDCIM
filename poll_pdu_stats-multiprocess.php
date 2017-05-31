@@ -7,8 +7,8 @@
 	 */
 	DEFINE("MAXPROCESS", 10);
 
-	require_once("db.inc.php");
-	require_once("facilities.inc.php");
+	require_once( 'vendor_preset.inc.php' );
+	require_once( 'facilities.inc.php' );
 
 	global $dbh;
 
@@ -120,7 +120,7 @@
 			// I am the parent
 		} else {
 			// I am the child
-			include( "db.inc.php" );
+			include( 'vendor_preset.inc.php' );
 			processPDUList( $pduList, $i, MAXPROCESS );
 			exit();
 		}

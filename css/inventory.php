@@ -1,5 +1,5 @@
 <?php
-	require_once( '../db.inc.php' );
+	require_once( '../vendor_preset.inc.php' );
 	header("Content-type: text/css");
 ?>
 

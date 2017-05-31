@@ -1,6 +1,6 @@
 <?php
 
-	require_once( "../../db.inc.php" );
+	require_once( '../../vendor_preset.inc.php' );
 
 	// Not really a loginPage, but this variable will keep us from getting redirected when
 	// using LDAP auth and there's no session (so true RESTful API capability)

@@ -96,10 +96,10 @@
 			$tests['pdodrivers']['message']='Available drivers: '.implode(", ",PDO::getAvailableDrivers());
 			$tests['pdodrivers']['state']="good";
 			// pdo is loaded check for the db.inc
-			if(file_exists("db.inc.php")){
+			if(file_exists(CONFIG_FILE)){
 				$tests['db.inc']['state']="good";
-				$tests['db.inc']['message']="db.inc.php has been detected and in the proper place";
-				require_once("db.inc.php");
+				$tests['db.inc']['message']=CONFIG_FILE . " has been detected and in the proper place";
+				require_once(CONFIG_FILE);
 				// check for strict_trans_tables
 				if(strpos(@end($dbh->query("select @@global.sql_mode;")->fetch()),'STRICT_TRANS_TABLES') === false){
 					$tests['strictdb']['state']="good";
@@ -114,12 +114,12 @@
 					$tests['utf8-db']['message']='';
 				}else{
 					$tests['utf8-db']['state']="fail";
-					$tests['utf8-db']['message']='Please copy over db.inc.php-dist to db.inc.php.  We found a problem with UTF8 support and MySQL that requires an additional parameter to work correctly.';
+					$tests['utf8-db']['message']='Please copy over db.inc.php-dist to " . CONFIG_FILE . ".  We found a problem with UTF8 support and MySQL that requires an additional parameter to work correctly.';
 					$errors++;
 				}
 			}else{
 				$tests['db.inc']['state']="fail";
-				$tests['db.inc']['message']="Please copy db.inc.php-dist to db.inc.php and edit appropriately";
+				$tests['db.inc']['message']="Please copy db.inc.php-dist to " . CONFIG_FILE . " and edit appropriately";
 				$errors++;
 			}
 
@@ -169,7 +169,7 @@
 		}
 	}else{
 		$tests['authentication']['state']="fail";
-		$tests['authentication']['message']=($tests['db.inc']['state']=="good")?"You didn't read the upgrade notes. Jerk. There is no AUTHENTICATION defined in db.inc.php":"How can you expect to work this if you can't even copy the db.inc.php into the right place?";
+		$tests['authentication']['message']=($tests['db.inc']['state']=="good")?"You didn't read the upgrade notes. Jerk. There is no AUTHENTICATION defined in " . CONFIG_FILE:"How can you expect to work this if you can't even copy the db.inc.php into the right place?";
 		$errors++;
 	}
 

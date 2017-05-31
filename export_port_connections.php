@@ -1,7 +1,7 @@
 <?php
-	require_once( "db.inc.php" );
-	require_once( "facilities.inc.php" );
-	require_once( "connections_spreadsheet.php" );
+	require_once( 'vendor_preset.inc.php' );
+	require_once( 'facilities.inc.php' );
+	require_once( 'connections_spreadsheet.php' );
 	
 	if((isset($_REQUEST["deviceid"]) && ($_REQUEST["deviceid"]=="" || $_REQUEST["deviceid"]==null)) || !isset($_REQUEST["deviceid"])){
 		// No soup for you.

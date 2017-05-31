@@ -3,8 +3,8 @@
 		Will print out all supply types, list the Min/Max/Current quantities along with current locations
 */
 
-	require_once( "db.inc.php" );
-	require_once( "facilities.inc.php" );
+	require_once( 'vendor_preset.inc.php' );
+	require_once( 'facilities.inc.php' );
 	
 	if(!$person->ReadAccess){
 	    // No soup for you.

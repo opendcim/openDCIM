@@ -3,8 +3,8 @@
   // Set a variable so that misc.inc.php knows not to throw us into an infinite redirect loop
   $loginPage = true;
 
-	require_once('db.inc.php');
-	require_once('facilities.inc.php');
+	require_once( 'vendor_config.inc.php' );
+	require_once( 'facilities.inc.php' );
 
 //	Uncomment these if you need/want to set a title in the header
 	$header=__("openDCIM Login");

@@ -1,6 +1,6 @@
 <?php
-	require_once( "../db.inc.php" );
-	require_once( "../facilities.inc.php" );
+	require_once( '../vendor_preset.inc.php' );
+	require_once( '../facilities.inc.php' );
 
 	// if user has read rights then return a search if not return blank
 	$cab=new Cabinet();
