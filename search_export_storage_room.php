@@ -2,7 +2,7 @@
 	require_once('db.inc.php');
 	require_once('facilities.inc.php');
 
-	$subheader=__("Data Center View/Export");
+	$subheader=__("Storage Room View/Export");
 
 	$datacenter=new DataCenter();
 	$dcList=$datacenter->GetDCList();
@@ -17,7 +17,7 @@
 		$dc=isset($_POST['datacenterid'])?$_POST['datacenterid']:$_GET['datacenterid'];
 		if($dc!=''){
 			$dc=intval($dc);
-			$dclimit=($dc==0)?'':" and c.DataCenterID=$dc ";
+			$dclimit=($dc==0)?'':" and b.Position=$dc ";
 			$ca_sql="SELECT AttributeID, Label, AttributeType from fac_DeviceCustomAttribute ORDER BY AttributeID ASC;";
 			$custom_concat = '';
 			$ca_result=$dbh->query($ca_sql)->fetchAll();
@@ -25,13 +25,15 @@
 				$custom_concat .= ", GROUP_CONCAT(IF(d.AttributeID={$ca_row["AttributeID"]},value,NULL)) AS Attribute{$ca_row["AttributeID"]} ";
 			} 
 
-			$sql="SELECT a.Name AS DataCenter, b.DeviceID, c.Location, b.Position, 
+			$sql="SELECT a.Name AS DataCenter, b.DeviceID, 'Storage Room' as Location, '' as Position,
 				b.Height, b.Label, b.DeviceType, b.AssetTag, b.SerialNo, b.InstallDate, b.WarrantyExpire, b.PrimaryIP,
-				b.TemplateID, b.Owner, c.CabinetID, c.DataCenterID, f.Name as Manufacturer $custom_concat FROM fac_DataCenter a,
-				fac_Cabinet c, fac_DeviceTemplate e, fac_Manufacturer f, fac_Device b  LEFT OUTER JOIN fac_DeviceCustomValue d on
-				b.DeviceID=d.DeviceID WHERE b.Cabinet=c.CabinetID AND c.DataCenterID=a.DataCenterID AND b.TemplateID=e.TemplateID
-				AND e.ManufacturerID=f.ManufacturerID AND f.Name!='Virtual' $dclimit
+				b.TemplateID, b.Owner, b.Cabinet, b.Position $custom_concat FROM fac_DataCenter a,
+				fac_Device b  LEFT JOIN fac_DeviceCustomValue d on
+				(b.DeviceID=d.DeviceID) LEFT JOIN fac_DeviceTemplate e on (b.TemplateID = e.TemplateID) WHERE b.Cabinet < 0 AND b.Position=a.DataCenterID 
+ 			 $dclimit
 				GROUP BY DeviceID ORDER BY DataCenter ASC, Location ASC, Position ASC;";
+//select b.Label from fac_Device b Left join fac_DeviceCustomValue d on (b.DeviceID = d.DeviceID ) LEFT JOIN fac_DeviceTemplate t on (b.TemplateID = t.TemplateID) where b.cabinet <0 and b.Position = 1
+
 			$result=$dbh->query($sql);
 		
 			$ca_headers = '';
@@ -97,7 +99,7 @@
 			$body.="\t\t<tr>
 			\t<td><a href=\"dc_stats.php?dc={$row["DataCenterID"]}\" target=\"datacenter\">{$row["DataCenter"]}</a></td>
 			\t<td><a href=\"cabnavigator.php?cabinetid={$row["CabinetID"]}\" target=\"cabinet\">{$row["Location"]}</a></td>
-			\t<td>{$row["Position"]}</td>
+			\t<td></td>
 			\t<td>{$row["Height"]}</td>
 			\t<td><a href=\"devices.php?DeviceID=$dev->DeviceID\" target=\"device\">{$row["Label"]}</a></td>
 			\t<td>{$row["SerialNo"]}</td>
@@ -137,7 +139,7 @@
 					$body .= "\t\t<tr>
 					\t<td><a href=\"dc_stats.php?dc={$row["DataCenterID"]}\" target=\"datacenter\">{$row["DataCenter"]}</a></td>
 					\t<td><a href=\"cabnavigator.php?cabinetid={$row["CabinetID"]}\" target=\"cabinet\">{$row["Location"]}</a></td>
-					\t<td>{$row["Position"]}</td>
+					\t<td>$child->Position</td>
 					\t<td>[-Child-]</td>
 					\t<td><a href=\"devices.php?DeviceID=$child->DeviceID\" target=\"device\">$child->Label</a></td>
 					\t<td>$child->SerialNo</td>
@@ -149,7 +151,7 @@
 					\t<td>$cDepartment</td>
           \t<td>$cwarranty</td>
 					\t<td>$cdate</td>
-					{$ca_cells}\t\n\t\t</tr>\n";
+					\t{$ca_cells}\t\n\t\t</tr>\n";
 				}
 			}
 		}
@@ -223,7 +225,7 @@ echo '		<div class="main">
 			<select name="datacenterid" id="datacenterid">
 				<option value="">',__("Select data center"),'</option>
 				<option value="0">',__("All Data Centers"),'</option>';
-foreach($dcList as $dc){print "\t\t\t\t<option value=\"$dc->DataCenterID\">$dc->Name</option>\n";} ?>
+foreach($dcList as $dc){print "\t\t\t\t<option value=\"$dc->DataCenterID\">$dc->Name - Storage Room</option>\n";} ?>
 			</select>
 			<br><br>
 			<div class="center">

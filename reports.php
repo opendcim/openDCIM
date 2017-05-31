@@ -35,6 +35,7 @@ echo '<div class="main">
 <fieldset>
 <legend>',__("Asset Reports"),'</legend>
 	<a href="search_export.php">',__("Search/Export by Data Center"),'</a>
+	<a href="search_export_storage_room.php">',__("Storage Room Search/Export by Data Center"),'</a>
 	<a href="report_xml_CFD.php">',__("Export Data Center for CFD (XML)"),'</a>
 	<a href="report_contact.php">',__("Asset Report by Owner"),'</a>
 	<a href="report_asset.php">',__("Data Center Asset Report"),'</a>
