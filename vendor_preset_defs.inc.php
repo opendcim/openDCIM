@@ -5,7 +5,7 @@
 	* It is not used directly in code, just a convenient
 	* define used further in this file.
 	*/
-	define('CONFIG_DIR', '/etc/opendcim/');
+	define('CONFIG_DIR', './');
 
 	/**
 	* Filename of a configuration file.
