@@ -677,7 +677,7 @@
 								dialog.dialog("destroy");
 								// seems like a good idea to direct them to the new template
 								// rather than just a new template
-								$('#TemplateID').val(TemplateID2.val()).trigger('change');
+								$('#TemplateID').val((typeof TemplateID2=='undefined')?0:TemplateID2.val()).trigger('change');
 							}else{
 								alert("something is broken");
 							}
