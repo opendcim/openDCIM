@@ -24,11 +24,13 @@
 */
 
 class PowerPanel {
-	/* PowerPanel:	PowerPanel(s) are the parents of PowerDistribution (power strips) and the children
-					each other.  Panels are arranged as either Odd/Even (odd numbers on the left,
-					even on the right) or Sequential (1 to N in a single column) numbering for the
-					purpose of building out a panel schedule.  If a PowerPanel has no ParentPanelID defined
-					then it is considered to be the PowerSource.  In other words, it's a reverse linked list.
+	/* PowerPanel:	PowerPanel(s) are the parents of PowerDistribution (power strips) and
+					the children each other.  Panels are arranged as either Odd/Even (odd
+					numbers on the left,even on the right), Busway, or Sequential (1 to N
+					in a single column) numbering for the purpose of building out a panel
+					schedule.  If a PowerPanel has no ParentPanelID defined	then it is
+					considered to be the PowerSource.  In other words, it's a reverse linked
+					list.
 	*/
 	
 	var $PanelID;
@@ -73,7 +75,7 @@ class PowerPanel {
 		$this->NumberOfPoles=intval($this->NumberOfPoles);
 		$this->MainBreakerSize=intval($this->MainBreakerSize);
 		$this->PanelVoltage=intval($this->PanelVoltage);
-		$this->NumberScheme=($this->NumberScheme=='Odd/Even')?'Odd/Even':'Sequential';
+		$this->NumberScheme=in_array($this->NumberScheme, array( "Odd/Even", "Sequential", "Busway"))?$this->NumberScheme:"Sequential";
 		$this->ParentPanelID=intval($this->ParentPanelID);
 		$this->ParentBreakerName=sanitize($this->ParentBreakerName);
 		$this->PanelIPAddress=sanitize($this->PanelIPAddress);
@@ -115,6 +117,45 @@ class PowerPanel {
 		}else{
 			return 0;
 		}
+	}
+
+	static function getInheritedLoad( $PanelID ) {
+		global $dbh;
+
+		// Get the combination of all direct branch circuit meters first, then recursively get all of the subpanels
+		// This gets the direct branch circuits with metered power strips (if any)
+		$watts = 0;
+
+		$sql = "select sum(Wattage) from fac_PDUStats where PDUID in (select PDUID from fac_PowerDistribution where PanelID=" . intval($PanelID) . ")";
+		// Use intval since an empty set will return a NULL for the sum
+		$watts = intval($dbh->query( $sql )->fetchColumn());
+		
+		// Ok, now repeat for the subpanels
+		$sql = "select PanelID from fac_PowerPanel where ParentPanelID=" . intval( $PanelID);
+		foreach ( $dbh->query( $sql ) as $pnl) {
+			$watts += PowerPanel::getInheritedLoad( $pnl["PanelID"] );
+		}
+
+		return $watts;
+	}
+
+	static function getEstimatedLoad( $PanelID ) {
+		global $dbh;
+		$watts = 0;
+
+		// Same as with the InheritedLoad - get all the power strips off of the requested panel, then all of the subpanels
+		$sql = "select PDUID from fac_PowerDistribution where PanelID=" . intval( $PanelID );
+		foreach( $dbh->query( $sql ) as $pdu ) {
+			$watts += PowerDistribution::calculateEstimatedLoad( $pdu["PDUID"] );
+		}
+
+		// Now get the subpanels
+		$sql = "select PanelID from fac_PowerPanel where ParentPanelID=" . intval( $PanelID );
+		foreach( $dbh->query( $sql ) as $pnl ) {
+			$watts += PowerPanel::getEstimatedLoad( $pnl["PanelID"] );
+		}
+
+		return $watts;
 	}
 
 	function getPanelList() {
@@ -310,7 +351,7 @@ class PowerPanel {
 			$scheduleItem->NoPrint=false;
 			$scheduleItem->Data=$currPdu;
 
-			if($poleId) {
+			if($this->NumberScheme!="Busway" && $poleId) {
 				$scheduleItem->Pole = $poleId;
 				$adder=1;
 				if($this->NumberScheme=="Odd/Even") {
@@ -350,9 +391,16 @@ class PowerPanel {
 						
 					}
 				}
-			} else {
+			} elseif ( $this->NumberScheme!="Busway" ) {
 				$scheduleItem->Pole=0;
 				$unscheduled[]=$scheduleItem;
+			} else {
+				$scheduleItem->Pole = $poleId;
+				$scheduleItem->Spanned = true;
+				$scheduleItem->SpanSize=1;
+				$nextItem = clone $scheduleItem;
+				$nextItem->Pole = $poleId;
+				$panelSchedule[$poleId][]=$nextItem;
 			}
 		}
 		// add first-level panels

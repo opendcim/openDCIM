@@ -437,6 +437,10 @@ div.error {margin-top: 2em;margin-bottom: 2em;border: 1px dotted gray;}
 .error span {display: block;margin-left: 1.5em;}
 #pdutest {display: none;}
 .panelmgr .main form, .panelmgr .main form ~ div { display: inline-block; vertical-align: top;}
+.panelmgr .main .center > div { margin-right: 200px; }
+.pwr_gauge { position: absolute; right: 50px; top: 0px; }
+.pwr_gauge + .pwr_gauge { top: 200px; }
+.pwr_gauge + .pwr_gauge + .pwr_gauge { top: 400px; }
 
 /* Department Administration */
 #groupadmin {
@@ -543,6 +547,7 @@ div.cabinet {
 	text-shadow: 1px 1px 0 #063, 1px 1px 0 #000, -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000;
 	filter: glow(color=#063,strength=2), alpha(opacity=90);
 } 
+.picture .label { height: 16px; }
 .picture .label > div {text-align: center;width: 100%;}
 .picture .label > div,
 .picture div > a > div > div { top: 10%; height: 80%; padding-left: 0.3em;}

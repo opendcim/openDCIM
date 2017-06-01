@@ -103,7 +103,7 @@
 			Please allow up to 2 business days for requests to be completed.'),$req->Label)."</p>
 
 			<p>".sprintf(__('Your Request ID is %1$d and you may view the request online at'),$req->RequestID)."
-			<a href=\"https://{$_SERVER['SERVER_NAME']}{$_SERVER['PHP_SELF']}?requestid=$req->RequestID\">
+			<a href=\"https://{$_SERVER['SERVER_NAME']}{$_SERVER['SCRIPT_NAME']}?requestid=$req->RequestID\">
 			".__("this link")."</a>.</p>
 			
 			</body></html>";
@@ -335,7 +335,7 @@ if($error!=""){echo '<fieldset class="exception border error"><legend>Errors</le
 
 echo '<div class="center"><div>
 <div id="positionselector"></div>
-<form name="deviceform" id="deviceform" action="',$_SERVER["PHP_SELF"],$formfix,'" method="POST">
+<form name="deviceform" id="deviceform" action="',$_SERVER["SCRIPT_NAME"],$formfix,'" method="POST">
 	<input type="hidden" name="requestid" value="',$req->RequestID,'">';
 
 echo '<div class="table">

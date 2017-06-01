@@ -1,7 +1,6 @@
 <?php
 	require_once('db.inc.php');
 	require_once('facilities.inc.php');
-  require_once('PHPExcel/PHPExcel/IOFactory.php');
 
   if(!$person->BulkOperations){
     header('Location: '.redirect());
@@ -36,7 +35,7 @@
 
     $_SESSION['inputfile'] = $targetFile;
 
-    echo "<meta http-equiv='refresh' content='0; url=" . $_SERVER['PHP_SELF'] . "?stage=headers'>";
+    echo "<meta http-equiv='refresh' content='0; url=" . $_SERVER['SCRIPT_NAME'] . "?stage=headers'>";
     exit;
   } elseif ( isset( $_REQUEST['stage'] ) && $_REQUEST['stage'] == 'headers' ) {
     //
@@ -61,7 +60,7 @@
     $content = "<h3>" . __("Pick the appropriate column header (line 1) for each field name listed below." ) . "</h3>";
     $content .= "<h3>" . __("Mouse over each field for help text.") . "</h3>";
 
-    $content .= '<form action="' . $_SERVER['PHP_SELF'] . '" method="POST">
+    $content .= '<form method="POST">
                     <input type="hidden" name="stage" value="validate">
                     <div class="table">';
 
@@ -160,7 +159,7 @@
       foreach( $fields as $fname ) {
         if ( $_REQUEST[$fname] != 0 ) {
           $addr = chr( 64 + $_REQUEST[$fname]);
-          $row[$fname] = $sheet->getCell( $addr . $n )->getValue();
+          $row[$fname] = sanitize($sheet->getCell( $addr . $n )->getValue());
         } else {
           $row[$fname] = "";
         }
@@ -227,7 +226,7 @@
       $st = $dbh->prepare( "select DeviceID, Label from fac_Device where ParentDevice=0 and Cabinet=:CabinetID and (Position between :StartPos and :EndPos or Position+Height between :StartPos2 and :EndPos2)" );
 
       if ( $tmpDev->DeviceID > 0 ) {
-        $endPos = $row["Position"] + $tmpDev->Height;
+        $endPos = $row["Position"] + $tmpDev->Height - 1;
 
         if ( ! $st->execute( array( ":CabinetID"=>$CabinetID,
           ":StartPos"=>$row["Position"],
@@ -248,7 +247,7 @@
     if ( $rowError ) {
       $content .= $tmpCon . "</ul>";
     } else {
-      $content = '<form action="' . $_SERVER['PHP_SELF']. '" method="POST">';
+      $content = '<form method="POST">';
       $content .= "<h3>" . __( "The file has passed validation.  Press the Process button to import." ) . "</h3>";
       $content .= "<input type=\"hidden\" name=\"stage\" value=\"process\">\n";
       foreach( array( "DeviceID", "DataCenterID", "Cabinet", "Position", "ProcessDate", "KeyField" ) as $mapVar ) {
@@ -292,7 +291,7 @@
       // Load up the $row[] array with the values according to the mapping supplied by the user
       foreach( $fields as $fname ) {
         $addr = chr( 64 + $_REQUEST[$fname]);
-        $row[$fname] = $sheet->getCell( $addr . $n )->getValue();
+        $row[$fname] = sanitize($sheet->getCell( $addr . $n )->getValue());
       }
 
       switch( $_REQUEST["KeyField"] ) {
@@ -382,7 +381,7 @@
     //  No parameters were passed with the URL, so this is the top level, where
     //  we need to ask for the user to specify a file to upload.
     //
-    $content = '<form action="' . $_SERVER['PHP_SELF']. '" method="POST" ENCTYPE="multipart/form-data">';
+    $content = '<form method="POST" ENCTYPE="multipart/form-data">';
     $content .= '<div class="table">
                   <div>
                     <div>' . __("Select file to upload:") . '

@@ -7,6 +7,8 @@
 	$dev=new Device();
 	$cab=new Cabinet();
 
+	$validHypervisors=array( "ESX", "ProxMox", "None" );
+
 	$taginsert="";
 
 	// Ajax functions
@@ -437,12 +439,16 @@
 		echo json_encode($list);
 		exit;
 	}
-	if(isset($_POST['ESXrefresh'])){
-		$dev->DeviceID=$_POST['ESXrefresh'];
+	if(isset($_POST['VMrefresh'])){
+		$dev->DeviceID=$_POST['VMrefresh'];
 		$dev->GetDevice();
 		if($dev->Rights=="Write"){
-			ESX::RefreshInventory($_POST['ESXrefresh']);
-			buildESXtable($_POST['ESXrefresh']);
+			if ( $dev->Hypervisor == "ESX" ) {
+				ESX::RefreshInventory($_POST['VMrefresh']);
+			} elseif ( $dev->Hypervisor == "ProxMox" ) {
+				PMox::RefreshInventory( $_POST['VMrefresh']);
+			}
+			buildVMtable($_POST['VMrefresh']);
 		}
 		exit;
 	}
@@ -580,15 +586,40 @@
 				if($_POST['action']!='Child'){
 					// Preserve this as a special variable to keep an injection from being possible
 					$devrights=$dev->Rights;
+					// Add in the "all devices" custom attributes 
+					$dcaList=DeviceCustomAttribute::GetDeviceCustomAttributeList();
+					if(isset($dcaList)) {
+						foreach($dcaList as $dca) {
+							if($dca->AllDevices==1) {
+								// this will add in the attribute if it is empty
+								$label=$dca->Label;
+								if(!isset($dev->$label)){
+									$dev->{$dca->Label}='';
+								}
+							}
+						}
+					}
+					// Add in the template specific attributes
+					$tmpl=new DeviceTemplate($dev->TemplateID);
+					$tmpl->GetTemplateByID();
+					if(isset($tmpl->CustomValues)) {
+						foreach($tmpl->CustomValues as $index => $value) {
+							// this will add in the attribute if it is empty
+							if(!isset($dev->{$dcaList[$index]->Label})){
+								$dev->{$dcaList[$index]->Label}='';
+							}
+						}
+					}
+
 					foreach($dev as $prop => $val){
 						$dev->$prop=(isset($_POST[$prop]))?$_POST[$prop]:$val;
 					}
+
 					// Put the device rights back just in case we had someone try to inject them
 					$dev->Rights=$devrights;
 					// Stupid Cabinet vs CabinetID
 					$dev->Cabinet=$_POST['CabinetID'];
 					// Checkboxes don't work quite like normal inputs
-					$dev->ESX=(isset($_POST['ESX']))?$_POST['ESX']:0;
 					$dev->BackSide=(isset($_POST['BackSide']))?($_POST['BackSide']=="on")?1:0:0;
 					$dev->HalfDepth=(isset($_POST['HalfDepth']))?($_POST['HalfDepth']=="on")?1:0:0;
 					$dev->Reservation=(isset($_POST['Reservation']))?($_POST['Reservation']=="on")?1:0:0;
@@ -625,7 +656,6 @@
 								$dev->MoveToStorage();
 							}else{
 								$dev->UpdateDevice();
-								updateCustomValues($dev);
 							}
 							break;
 						case 'Delete':
@@ -645,7 +675,7 @@
 						case 'Copy':
 							$copy=true;
 							$parent=($dev->ParentDevice)?$dev->ParentDevice:null;
-							if(!$dev->CopyDevice($parent)){
+							if(!$dev->CopyDevice($parent,null,false)){
 								$copyerr=__("Device did not copy.  Error.");
 							}
 							break;
@@ -679,7 +709,6 @@
 					}
 					$dev->CreateDevice();
 					$dev->SetTags($tagarray);
-					updateCustomValues($dev);
 
 					// We've, hopefully, successfully created a new device. Force them to the new device page.
 					header('Location: '.redirect("devices.php?DeviceID=$dev->DeviceID"));
@@ -707,7 +736,7 @@
 				// clearing errors for now
 				$LastWattage=$LastRead=$upTime=0;
 
-				$pwrConnection->DeviceID=($dev->ParentDevice>0)?$dev->GetRootDeviceID():$dev->DeviceID;
+				$pwrConnection->DeviceID=($dev->ParentDevice>0&&$dev->PowerSupplyCount==0)?$dev->GetRootDeviceID():$dev->DeviceID;
 				$pwrCords=$pwrConnection->getPorts();
 
 				if($dev->DeviceType=='CDU'){
@@ -814,10 +843,10 @@
 	
 	$title=($dev->Label!='')?"$dev->Label :: $dev->DeviceID":__("openDCIM Device Maintenance");
 
-	function buildESXtable($DeviceID){
-		$ESX=new ESX();
-		$ESX->DeviceID=$DeviceID;
-		$vmList=$ESX->GetDeviceInventory();
+	function buildVMtable($DeviceID){
+		$Hyper=new VM();
+		$Hyper->DeviceID=$DeviceID;
+		$vmList=$Hyper->GetDeviceInventory();
 
 		print "\n<div class=\"table border\"><div><div>".__("VM Name")."</div><div>".__("Status")."</div><div>".__("Owner")."</div><div>".__("Primary Contact")."</div><div>".__("Last Updated")."</div></div>\n";
 		foreach($vmList as $vmRow){
@@ -845,7 +874,6 @@
 	function buildCustomAttributes($template, $device) {
 		$dcaList=DeviceCustomAttribute::GetDeviceCustomAttributeList();
 		$tdcaList=$template->CustomValues;
-		$dcvList=$device->CustomValues;
 
 		$customvalues = array();
 
@@ -868,19 +896,13 @@
 
 			}
 		}
-		if(isset($dcvList)) {
-			// pull the values set at this device level if any exist, the assumption being that one of the 2 loops above has already populated the type and required fields
-			foreach($dcvList as $AttributeID=>$dcv) {
-				if(array_key_exists($AttributeID, $customvalues)) {
-					$customvalues[$AttributeID]["value"]=$dcv;
-				} else {
-					// this is probably an  error, what do?
-				}
-			}
+		foreach($customvalues as $customkey=>$customdata) {
+			$prop=$dcaList[$customkey]->Label;
+				$customvalues[$customkey]['value']=$device->$prop;
 		}
 		echo '<div class="table">';	
 		foreach($customvalues as $customkey=>$customdata) {
-			$inputname = "customvalue[$customkey]";
+			$inputname = $dcaList[$customkey]->Label;
 			$validation="";
 			$cvtype = $customvalues[$customkey]["type"];
 			if($customvalues[$customkey]["required"]==1 || $cvtype!="string"){
@@ -898,10 +920,7 @@
 			echo '<div>
 				<div><label for="',$inputname,'">',$dcaList[$customkey]->Label,'</label></div>';
 			if($cvtype=="checkbox"){
-				$checked = "";
-				if($customdata["value"] == "1" || $customdata["value"]=="on"){
-					$checked = " checked";
-				}
+				$checked=($customdata["value"] == "1" || $customdata["value"]=="on")?" checked":"";
 				echo '<div><input type="checkbox" name="',$inputname,'" id="',$inputname,'"',$checked,'></div>';
 			} else if ($cvtype=="set") {
 				echo '<div><select name="',$inputname,'" id="',$inputname,'">';
@@ -920,40 +939,6 @@
 		    echo '</div>';
 		}
 		echo '</div>';
-	}
-	function updateCustomValues($device) {
-		$template=new DeviceTemplate();
-		$template->TemplateID=$device->TemplateID;
-		$template->GetTemplateByID();
-		
-		$dcaList=DeviceCustomAttribute::GetDeviceCustomAttributeList();
-		$tdcaList=$template->CustomValues;
-		$defaultvalues = array();
-		if(isset($dcaList)) {
-			foreach($dcaList as $dca) {
-				if($dca->AllDevices==1) {
-					$defaultvalues[$dca->AttributeID]["value"]=$dca->DefaultValue;
-					$defaultvalues[$dca->AttributeID]["required"]=$dca->Required;
-				}
-			}
-		}
-		if(isset($tdcaList)) {
-			foreach($tdcaList as $AttributeID=>$tdca) {
-				$defaultvalues[$AttributeID]["value"]=$tdca["value"];
-				$defaultvalues[$AttributeID]["required"]=$tdca["required"];
-			}
-		}
-
-		$device->DeleteCustomValues();
-
-		if(isset($_POST["customvalue"])){
-			foreach($_POST["customvalue"] as $AttributeID=>$value) {
-				if(trim($value) != trim($defaultvalues[$AttributeID]["value"])) {
-					$device->InsertCustomValue($AttributeID, $value);	
-				}
-			}
-		}
-		
 	}
 // In the case of a child device we might define this above and in that case we
 // need to preserve the flag
@@ -1179,7 +1164,7 @@ $(document).ready(function() {
 	}).trigger('change');
 
 	// Make SNMP community visible
-	$('#SNMPCommunity,#v3AuthPassphrase,#v3PrivPassphrase')
+	$('#SNMPCommunity,#v3AuthPassphrase,#v3PrivPassphrase,#APIPassword')
 		.focus(function(){$(this).attr('type','text');})
 		.blur(function(){$(this).attr('type','password');});
 
@@ -1211,15 +1196,15 @@ $(document).ready(function() {
 	});
 
 	// Add in refresh functions for virtual machines
-	var ESXtable=$('<div>').addClass('table border').append('<div><div>VM Name</div><div>Status</div><div>Owner</div><div>Last Updated</div></div>');
-	var ESXbutton=$('<button>',{'type':'button'}).css({'position':'absolute','top':'10px','right':'2px'}).text('Refresh');
-	ESXbutton.click(ESXrefresh);
-	if($('#ESX').val()==1){
-		$('#ESXframe').css('position','relative').append(ESXbutton);
+	var VMtable=$('<div>').addClass('table border').append('<div><div>VM Name</div><div>Status</div><div>Owner</div><div>Last Updated</div></div>');
+	var VMbutton=$('<button>',{'type':'button'}).css({'position':'absolute','top':'10px','right':'2px'}).text('Refresh');
+	VMbutton.click(VMrefresh);
+	if($('#Hypervisor').val()!="None"){
+		$('#VMframe').css('position','relative').append(VMbutton);
 	}
-	function ESXrefresh(){
-		$.post('',{ESXrefresh: $('#DeviceID').val()}).done(function(data){
-			$('#ESXframe .table ~ .table').replaceWith(data);
+	function VMrefresh(){
+		$.post('',{VMrefresh: $('#DeviceID').val()}).done(function(data){
+			$('#VMframe .table ~ .table').replaceWith(data);
 		});
 	}
 
@@ -1316,9 +1301,9 @@ $(document).ready(function() {
 			$('.switch div[id^="st"]').hide();
 		}
 		if($(this).val()=='Server'){
-			$('#ESXframe').show();
+			$('#VMframe').show();
 		}else{
-			$('#ESXframe').hide();
+			$('#VMframe').hide();
 		}
 		if($(this).val()=='CDU'){
 			$('#cdu').show().removeClass('hide');
@@ -1329,6 +1314,18 @@ $(document).ready(function() {
 		}
 		resize();
 	}).change();
+
+	$('select#Hypervisor').change(function(){
+		if($(this).val()=='ProxMox'){
+			$('#proxmoxblock').removeClass('hide');
+			$('#snmpblock').addClass('hide');
+		}else{
+			// Put back any hidden / renamed fields
+			$('#proxmoxblock').addClass('hide');
+			$('#snmpblock').removeClass('hide');
+		}
+	}).change();
+
 	$('#firstport button[name=firstport]').click(function(){
 		// S.U.T. Update the IP and snmp community then click on the switch controls.
 		// we'll combat that with a limited device update.
@@ -1564,7 +1561,7 @@ print "		var dialog=$('<div>').prop('title',\"".__("Verify Delete Device")."\").
 			var rack=$('#datacenters a[href$="cabinetid='+hdn_cabinetid.val()+'"]');
 			// Update the hidden cabinet id field to match the new parent device and show the name
 			hdn_cabinetid.parent('div').text(rack.text()).append(hdn_cabinetid);
-		});
+		}).trigger('change');
 
 		$('#Reservation').change(function(){
 			if(!$(this).prop("checked")){
@@ -1574,7 +1571,7 @@ print "		var dialog=$('<div>').prop('title',\"".__("Verify Delete Device")."\").
 		});
 		// Delete device confirmation dialog
 		$('button[value="Delete"]').click(function(e){
-			var form=$(this).parents('form');
+					var form=$(this).parents('form');
 			var btn=$(this);
 <?php echo '				dialog.find(\'span + span\').text("',__("This device will be deleted and there is no undo. Are you sure?"),'");'; ?>
 			dialog.dialog({
@@ -1852,7 +1849,7 @@ echo '			</select>
 		</div>
 		<div>
 		   <div><label for="Position">',__("Position"),'</label></div>
-		   <div><input type="number" class="required,validate[custom[onlyNumberSp],min[1],max[',$cab->CabinetHeight,']]" name="Position" id="Position" value="',$dev->Position,'"></div>
+		   <div><input type="number" class="required,validate[custom[onlyNumberSp],min[0],max[',$cab->CabinetHeight,']]" name="Position" id="Position" value="',$dev->Position,'"></div>
 		</div>
 		';
 
@@ -1881,12 +1878,12 @@ echo '		<div>
 		</div>';
 
 		// Blade devices don't have power supplies
-		if($dev->ParentDevice==0){
+		// if($dev->ParentDevice==0){
 			echo '		<div>
 		   <div><label for="PowerSupplyCount">',__("Power Connections"),'</label></div>
 		   <div><input type="number" class="optional,validate[custom[onlyNumberSp]]" name="PowerSupplyCount" id="PowerSupplyCount" value="',$dev->PowerSupplyCount,'"></div>
 		</div>';
-		}
+		// }
 
 		// Show extra info for chassis devices
 		if($dev->DeviceType=="Chassis"){
@@ -1922,6 +1919,27 @@ echo '
 echo '
 		<img id="devicefront" src="pictures/'.$templ->FrontPictureFile.'" alt="front of device">
 		<img id="devicerear" src="pictures/'.$templ->RearPictureFile.'" alt="rear of device">
+	</div>
+</fieldset>
+<fieldset id="proxmoxblock" class="hide">
+	<legend>'.__("ProxMox Configuration").'</legend>
+	<div class="table">
+		<div>
+		  <div><label for="APIUsername">'.__("API Username").'</label></div>
+		  <div><input type="text" name="APIUsername" id="APIUsername" value="'.$dev->APIUsername.'"></div>
+		</div>
+		<div>
+		  <div><label for="APIPassword">'.__("API Password").'</label></div>
+		  <div><input type="password" name="APIPassword" id="APIPassword" value="'.$dev->APIPassword.'"></div>
+		</div>
+		<div>
+		  <div><label for="APIPort">'.__("API Port").'</label></div>
+		  <div><input type="number" name="APIPort" id="APIPort" value="'.$dev->APIPort.'"></div>
+		</div>
+		<div>
+		  <div><label for="ProxMoxRealm">'.__("ProxMox Realm").'</label></div>
+		  <div><input type="text" name="ProxMoxRealm" id="ProxMoxRealm" value="'.$dev->ProxMoxRealm.'"></div>
+		</div>
 	</div>
 </fieldset>
 <fieldset id="snmpblock">
@@ -2175,22 +2193,29 @@ echo '		<div class="caption">
 <?php
 	}
 
-	// Do not display ESX block if device isn't a virtual server and the user doesn't have write access
-	if(($write || $dev->ESX) && ($dev->DeviceType=="Server" || $dev->DeviceType=="")){
-		echo '<fieldset id="ESXframe">	<legend>',__("VMWare ESX Server Information"),'</legend>';
+	// Do not display VM block if device isn't a virtual server and the user doesn't have write access
+	if($write && ($dev->DeviceType=="Server" || $dev->DeviceType=="")){
+		echo '<fieldset id="VMframe">	<legend>',__("Hypervisor Server Information"),'</legend>';
 	// If the user doesn't have write access display the list of VMs but not the configuration information.
 		if($write){
 
 echo '	<div class="table">
 		<div>
-		   <div><label for="ESX">'.__("ESX Server?").'</label></div>
-		   <div><select name="ESX" id="ESX"><option value="1"'.(($dev->ESX==1)?" selected":"").'>'.__("True").'</option><option value="0"'.(($dev->ESX==0)?" selected":"").'>'.__("False").'</option></select></div>
+			<div><label for="Hypervisor">'.__("Hypervisor").'</label></div>
+			<div><select name="Hypervisor" id="Hypervisor">
+';
+   foreach ($validHypervisors as $h ) {
+		if($dev->Hypervisor==$h){$selected=" selected";}else{$selected="";}
+   		print "\t\t\t\t<option value=\"$h\" $selected>$h</option>\n";
+   	}
+
+echo '			</select></div>
 		</div>
 	</div><!-- END div.table -->';
 
 		}
-		if($dev->ESX){
-			buildESXtable($dev->DeviceID);
+		if($dev->Hypervisor!="None"){
+			buildVMtable($dev->DeviceID);
 		}
 		print "</fieldset>\n";
 	}
@@ -2603,6 +2628,15 @@ $connectioncontrols.=($dev->DeviceID>0 && !empty($portList))?'
 		}else{
 			$('#connection-limiter input[value=global]').select().click();
 		}
+
+		// Grab the custom attributes blanks and make them use the update button on pressing enter
+		$(':input[id^=customvalue], div.left :input').keypress(function(event){
+			if(event.keyCode==10 || event.keyCode==13){
+				event.preventDefault();
+				$('.caption > button[value=Update]').trigger('click');
+			}
+		});
+
 	});
 </script>
 

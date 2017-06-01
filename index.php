@@ -19,7 +19,7 @@
 		(SELECT COUNT(*) FROM fac_Device WHERE DeviceType="Server" LIMIT 1) AS Servers,
 		(SELECT SUM(Height) FROM fac_Device LIMIT 1) AS Size,
 		(SELECT COUNT(*) FROM fac_VMInventory LIMIT 1) AS VMcount,
-		(select count(*) from fac_Device where ESX=1) as VMhosts,
+		(select count(*) from fac_Device where Hypervisor!="None") as VMhosts,
 		(select count(*) from fac_Cabinet) as CabinetCount
 		FROM fac_Device LIMIT 1;';
 
@@ -136,7 +136,7 @@ echo '
 </div>
 <div>
 	<div>',__("Virtualization Ratio"),'</div>
-	<div>',intval($StatsVM/$StatsHost),':1</div>
+	<div>',intval($StatsVM/(($StatsHost==0)?1:$StatsHost)),':1</div>
 </div>
 <div>
 	<div>',__("Total Cabinets"),'</div>

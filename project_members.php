@@ -75,7 +75,7 @@
 <body id="projectgroup">
 <div class="centermargin">
 <?php
-echo '<form id="projectform" action="',$_SERVER["PHP_SELF"],'" method="POST">
+echo '<form id="projectform" method="POST">
 <input type="hidden" name="projectid" id="projectid" value="',$proj->ProjectID,'">
 <h3>',__("Project to Administer"),': ',$proj->ProjectName,'</h3>
 <select name="datacenterid" id="datacenterid" width="200px"><option value="0">Choose a Data Center</option>';

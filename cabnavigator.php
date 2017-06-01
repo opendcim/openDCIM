@@ -65,9 +65,6 @@ function renderCabinetProps($cab, $audit, $AuditorName){
 	}
 	$renderedHTML.="\t\t\t<tr><td>".__("Tags").":</td><td>".renderTagsToString($cab)."</td></tr>\n";
 
-	//   This is out of context here and makes the information confusing.
-	//    $renderedHTML .= '			<tr><td class="left">' . __('Front Edge') . ':</td>';
-	//    $renderedHTML .= "<td class=\"right\">$cab->FrontEdge </td></tr>\n";
 	$renderedHTML.="\t\t</table>\n";
 
 	return $renderedHTML;

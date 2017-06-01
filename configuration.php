@@ -319,7 +319,7 @@
 		foreach($dcaList as $dca) {
 			$customattrs.='<div>
 					<div><img src="images/del.gif"></div>
-					<div><input type="text" name="dcalabel[]" data='.$dca->AttributeID.' value="'.$dca->Label.'"></div>
+					<div><input type="text" name="dcalabel[]" data='.$dca->AttributeID.' value="'.$dca->Label.'" class="validate[required,custom[onlyLetterNumberConfigurationPage]]"></div>
 					<div><select name="dcatype[]" id="dcatype">';
 			foreach($dcaTypeList as $dcatype){
 				$selected=($dca->AttributeType==$dcatype)?' selected':'';
@@ -391,6 +391,7 @@
   <link rel="stylesheet" href="css/jquery-ui.css" type="text/css">
   <link rel="stylesheet" href="css/jquery.ui.multiselect.css" type="text/css">
   <link rel="stylesheet" href="css/uploadifive.css" type="text/css">
+  <link rel="stylesheet" href="css/validationEngine.jquery.css" type="text/css">
   <!--[if lt IE 9]>
   <link rel="stylesheet"  href="css/ie.css" type="text/css">
   <![endif]-->
@@ -400,6 +401,8 @@
   <script type="text/javascript" src="scripts/jquery.uploadifive.js"></script>
   <script type="text/javascript" src="scripts/jquery.miniColors.js"></script>
   <script type="text/javascript" src="scripts/jquery.ui.multiselect.js"></script>
+  <script type="text/javascript" src="scripts/jquery.validationEngine-en.js"></script>
+  <script type="text/javascript" src="scripts/jquery.validationEngine.js"></script>
   <script type="text/javascript">
 	$(document).ready(function(){
 		// ToolTips
@@ -634,6 +637,8 @@
 					});
 				}
 			});
+
+			$('.main form').validationEngine();
 
 		}
 
@@ -1058,7 +1063,7 @@
 						revertdefault(row,true);
 					} else {
 						// attempt to update
-						if((row.addrem.prop('id')=='newline' && row.Label.val()!='') || row.addrem.prop('id')!='newline'){
+						if((row.addrem.prop('id')=='newline' && row.Label.val()!='') || row.addrem.prop('id')!='newline' && $(".main form").validationEngine('validate')){
 							$.post('',{dcal: dcal.val(), dcaid: dcal.attr('data'), dcat: dcat.val(), dcar: dcar.prop('checked'), dcaa: dcaa.prop('checked'), dcav: dcavtosend}).done(function(data){
 								if(data.trim()=='f'){ //fail
 									revertdefault(row,true);
@@ -1301,7 +1306,7 @@
 echo '<div class="main">
 <div class="center"><div>
 <h3></h3><h3 id="messages"></h3>
-<form enctype="multipart/form-data" action="',$_SERVER["PHP_SELF"],'" method="POST">
+<form enctype="multipart/form-data" method="POST">
    <input type="hidden" name="Version" value="',$config->ParameterArray["Version"],'">
 
 	<div id="configtabs">
@@ -1891,7 +1896,7 @@ echo '<div class="main">
 				',$customattrs,'
 				<div>
 					<div id="newline"><img title="',__("Add new row"),'" src="images/add.gif"></div>
-					<div><input type="text" name="dcalabel[]"></div>
+					<div><input type="text" name="dcalabel[]" class="validation[custom[onlyLetterNumberConfigurationPage]]"></div>
 					<div>',$dcaTypeSelector,'</div>
 					<div><input type="checkbox" name="dcarequired[]"></div>
 					<div><input type="checkbox" name="dcaalldevices[]"></div>

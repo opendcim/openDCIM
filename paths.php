@@ -581,7 +581,7 @@ echo '<div class="main">
 <tr><td>
 <fieldset class="crit_busc">
 		<legend>'.__("Search by path identifier").'</legend>
-<form action="',$_SERVER["PHP_SELF"],'" method="POST">
+<form method="POST">
 <div class="table">
 <br>
 <div>

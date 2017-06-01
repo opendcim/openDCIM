@@ -20,7 +20,7 @@ global $dbh;
 $object=(isset($_POST['tooltip']))?intval($_POST['tooltip']):0;
 
 // Default tooltip 
-$tooltip=__('Error');
+$tooltip=__("Error");
 
 // Init Objects
 $cab=new Cabinet();
@@ -205,13 +205,13 @@ if($object>0){
 					if(isset($pdu->SNMPCommunity)){
 						$tooltip.=__($row["Label"]).": ".$pdu->$row["Field"]."<br>\n";
 					}else{
-						if($dev->ESX){
+						if($dev->Hypervisor){
 							$tooltip.=__($row["Label"]).": ".$dev->$row["Field"]."<br>\n";
 						}
 					}
 					break;
-				case "ESX":
-					if($dev->ESX){
+				case "Hypervisor":
+					if($dev->Hypervisor){
 						$tooltip.=__($row["Label"]).": ".$dev->$row["Field"]."<br>\n";
 					}
 					break;
@@ -310,9 +310,9 @@ if($object>0){
 				end:
 				default:
 					if(isset($_POST['cdu'])){
-						$tooltip.=__($row["Label"]).": ".$pdu->$row["Field"]."<br>\n";
+						@$tooltip.=__($row["Label"]).": ".$pdu->$row["Field"]."<br>\n";
 					}else{
-						$tooltip.=__($row["Label"]).": ".$dev->$row["Field"]."<br>\n";
+						@$tooltip.=__($row["Label"]).": ".$dev->$row["Field"]."<br>\n";
 					}
 			}
 		}

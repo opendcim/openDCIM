@@ -90,11 +90,17 @@ class DevicePorts {
 		}
 	}
 
-	function getPorts(){
+	function getPorts( $empty = false ){
 		global $dbh;
 		$this->MakeSafe();
 
-		$sql="SELECT * FROM fac_Ports WHERE DeviceID=$this->DeviceID ORDER BY PortNumber ASC;";
+		if ( $empty ) {
+			$clause = "AND (ConnectedDeviceID=0 or ConnectedDeviceID is null)";
+		} else {
+			$clause = "";
+		}
+
+		$sql="SELECT * FROM fac_Ports WHERE DeviceID=$this->DeviceID $clause ORDER BY PortNumber ASC;";
 
 		$ports=array();
 		foreach($dbh->query($sql) as $row){
@@ -102,7 +108,7 @@ class DevicePorts {
 		}	
 		return $ports;
 	}
-	
+
 	function getActivePortCount() {
 		global $dbh;
 		$this->MakeSafe();

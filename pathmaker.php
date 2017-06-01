@@ -66,7 +66,7 @@
 		$dev=new Device();
 		$dev->DeviceID=$dp->DeviceID;
 		$dev->GetDevice();
-		$ports=($dev->Rights=="Write")?$dp->getPorts():array();
+		$ports=($dev->Rights=="Write")?$dp->getPorts( true ):array();
 		displayjson($ports);
 	}
 
@@ -380,7 +380,7 @@
 			$path.="\t<tr>\n\t\t<td colspan=6>&nbsp;</td>\n\t</tr></table>";
 			
 			//Implement Form
-			$path.= "<form action=\"{$_SERVER["PHP_SELF"]}\" method=\"POST\">\n";
+			$path.= "<form method=\"POST\">\n";
 			$path.= "<br>\n"; 
 			$path.= "<div>\n";
 			//PATH INFO
@@ -485,7 +485,7 @@
 echo '<div class="main">
 <h3>',$status,'</h3>
 <div class="center"><div><div>
-<form action="',$_SERVER["PHP_SELF"],'" method="POST">
+<form method="POST">
 <table id=crit_busc>
 <tr><td>
 <fieldset class=crit_busc>

@@ -156,12 +156,13 @@ function convertImgToBase64(url, imgobj) {
 	};
 }
 
+	var arr_localmanf=new Array();
+	var arr_localmodified=new Array();
+
 	$(document).ready(function(){
 		var select_manufacturerid=$('<select>').prop({'id':'slct_ManufacturerID'});
 		var div_results=$('<div>').prop({'id':'results'});
 		var tbl_results=$('<div>').addClass('table');
-		var arr_localmanf=new Array();
-		var arr_localmodified=new Array();
 
 		$.post('',{'getModifiedTimes':''},function(data){
 			arr_localmodified=data;
@@ -372,7 +373,13 @@ function convertImgToBase64(url, imgobj) {
 		function pulltoapi(row){
 			var postorput=(typeof row.data('localdev')=='undefined')?'put':'post';
 			var nameorid=(typeof row.data('localdev')=='undefined')?row.data('globaldev').Model:row.data('localdev').TemplateID;
-
+<?php
+		// This code is ONLY added to the javascript if the local site is set for metric
+		// otherwise there is no mangling to worry about
+		if ( $config->ParameterArray["mUnits"] != "english" ) {
+			echo "row.data('globaldev').Weight = row.data('globaldev').Weight / 2.2;";
+		}
+?>
 			// Move data off the globaldev object into something we can parse easier
 			var ports=row.data("globaldev").ports;
 			var powerports=row.data("globaldev").powerports;
@@ -434,6 +441,8 @@ function convertImgToBase64(url, imgobj) {
 			for(var key in arr_localmanf){
 				if(arr_localmanf[key] === row.data("globaldev").ManufacturerID){
 					row.data("globaldev").ManufacturerID=key;
+					// Prevent further matches
+					break;
 				}
 			}
 
@@ -500,6 +509,12 @@ function convertImgToBase64(url, imgobj) {
 
 		// Function to send current template to the repository
 		function pushtorepo(row){
+<?php
+		// Do the Metric->English conversion if the local site is configured for Metric
+		if ( $config->ParameterArray["mUnits"] != "english" ) {
+			echo "row.data('localdev').Weight=row.data('localdev').Weight*2.2;";
+		}
+?>
 			$.ajax({
 				type: 'put',
 				url: 'https://repository.opendcim.org/api/templatealt',
@@ -534,6 +549,9 @@ function convertImgToBase64(url, imgobj) {
 						request.setRequestHeader("APIKey",window.APIKey );
 						request.setRequestHeader("UserID",window.UserID );
 						request.send(filedata);
+
+						var btn_command=row.data('object').command.find('button');
+						btn_command.hide();
 					}
 				},
 				error: function(data){
@@ -843,6 +861,9 @@ function convertImgToBase64(url, imgobj) {
 					if(data.errorcode==200 && !data.error){
 						var nameorid=(row.local.ManufacturerID==0)?row.local.Name:row.local.ManufacturerID;
 						var postorput=(row.local.ManufacturerID==0)?'put':'post';
+
+						// S.U.T. #4831 - Submit a manufacturer with a / to the api name
+						nameorid=encodeURIComponent(nameorid);
 
 						// Update local record with data from master
 						$.ajax({

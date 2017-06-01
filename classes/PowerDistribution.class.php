@@ -156,6 +156,18 @@ class PowerDistribution {
 		return $snmpresult;
 	}
 
+	static function calculateEstimatedLoad( $devID ) {
+		global $dbh;
+
+		$sql = "select sum(NominalWatts) as TotalWatts from fac_Device where DeviceID in (select ConnectedDeviceID from fac_PowerPorts where DeviceID=" . intval($devID) . ")";
+
+		if ( $row = $dbh->query( $sql, PDO::FETCH_ASSOC )->fetch() ) {
+			return $row["TotalWatts"];
+		} else {
+			return 0;
+		}
+	}
+
 	function CreatePDU($pduid=null){
 		global $dbh;
 

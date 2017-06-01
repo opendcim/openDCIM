@@ -46,7 +46,11 @@ class Device {
 	var $v3PrivPassphrase;
 	var $SNMPCommunity;
 	var $SNMPFailureCount;
-	var $ESX;
+	var $Hypervisor;
+	var $APIUsername;
+	var $APIPassword;
+	var $APIPort;
+	var $ProxMoxRealm;
 	var $Owner;
 	var $EscalationTimeID;
 	var $EscalationID;
@@ -94,6 +98,7 @@ class Device {
 
 		//Keep weird values out of DeviceType
 		$validdevicetypes=array('Server','Appliance','Storage Array','Switch','Chassis','Patch Panel','Physical Infrastructure','CDU','Sensor');
+		$validHypervisors=array('ESX', 'ProxMox', 'None' );
 		$validSNMPVersions=array(1,'2c',3);
 		$validv3SecurityLevels=array('noAuthNoPriv','authNoPriv','authPriv');
 		$validv3AuthProtocols=array('MD5','SHA');
@@ -112,7 +117,11 @@ class Device {
 		$this->v3PrivProtocol=(in_array($this->v3PrivProtocol,$validv3PrivProtocols))?$this->v3PrivProtocol:'DES';
 		$this->v3PrivPassphrase=sanitize($this->v3PrivPassphrase);
 		$this->SNMPFailureCount=intval($this->SNMPFailureCount);
-		$this->ESX=intval($this->ESX);
+		$this->Hypervisor=(in_array($this->Hypervisor, $validHypervisors))?$this->Hypervisor:'None';
+		$this->APIUserName=sanitize($this->APIUsername);
+		$this->APIPassword=sanitize($this->APIPassword);
+		$this->APIPort = intval($this->APIPort);
+		$this->ProxMoxRealm=sanitize($this->ProxMoxRealm);
 		$this->Owner=intval($this->Owner);
 		$this->EscalationTimeID=intval($this->EscalationTimeID);
 		$this->EscalationID=intval($this->EscalationID);
@@ -176,7 +185,11 @@ class Device {
 		$dev->SNMPVersion=$dbRow["SNMPVersion"];
 		$dev->SNMPCommunity=$dbRow["SNMPCommunity"];
 		$dev->SNMPFailureCount=$dbRow["SNMPFailureCount"];
-		$dev->ESX=$dbRow["ESX"];
+		$dev->Hypervisor=$dbRow["Hypervisor"];
+		$dev->APIUsername=$dbRow["APIUsername"];
+		$dev->APIPassword=$dbRow["APIPassword"];
+		$dev->APIPort=$dbRow["APIPort"];
+		$dev->ProxMoxRealm=$dbRow["ProxMoxRealm"];
 		$dev->Owner=$dbRow["Owner"];
 		// Suppressing errors on the following two because they can be null and that generates an apache error
 		@$dev->EscalationTimeID=$dbRow["EscalationTimeID"];
@@ -218,17 +231,28 @@ class Device {
 					$dev->$prop=$val;
 				}
 			}
-			// This will extend the device model but isn't currently being used anywhere
-			if(count($dev->CustomValues)){
-				$dcaList=DeviceCustomAttribute::GetDeviceCustomAttributeList();
-				foreach($dev->CustomValues as $dcaid => $val){
-					$label=$dcaList[$dcaid]->Label;
-					// Keep users from attempting to overwrite shit like devicetype
-					if(!isset($dev->$label)){
-						$dev->$label=$val;
+			// Add in the "all devices" custom attributes 
+			$dcaList=DeviceCustomAttribute::GetDeviceCustomAttributeList();
+			if(isset($dcaList)) {
+				foreach($dcaList as $dca) {
+					if($dca->AllDevices==1) {
+						// this will add in the attribute if it is empty
+						if(!isset($dev->{$dca->Label})){
+							$dev->{$dca->Label}='';
+						}
 					}
 				}
-		//		unset($dev->CustomValues);
+			}
+			// Add in the template specific attributes
+			$tmpl=new DeviceTemplate($dev->TemplateID);
+			$tmpl->GetTemplateByID();
+			if(isset($tmpl->CustomValues)) {
+				foreach($tmpl->CustomValues as $index => $value) {
+					// this will add in the attribute if it is empty
+					if(!isset($dev->{$dcaList[$index]->Label})){
+						$dev->{$dcaList[$index]->Label}='';
+					}
+				}
 			}
 		}
 		if($filterrights){
@@ -346,7 +370,7 @@ class Device {
 		$this->Label=transform($this->Label);
 		$this->SerialNo=transform($this->SerialNo);
 		$this->AssetTag=transform($this->AssetTag);
-		
+
 		// SNMPFailureCount isn't in this list, because it should always start at zero 
 		// (default) on new devices
 		$sql="INSERT INTO fac_Device SET Label=\"$this->Label\",  
@@ -357,10 +381,12 @@ class Device {
 			v3AuthPassphrase=\"$this->v3AuthPassphrase\", DeviceType=\"$this->DeviceType\",
 			v3PrivProtocol=\"$this->v3PrivProtocol\", NominalWatts=$this->NominalWatts, 
 			v3PrivPassphrase=\"$this->v3PrivPassphrase\", Weight=$this->Weight,
-			SNMPFailureCount=$this->SNMPFailureCount, ESX=$this->ESX, Owner=$this->Owner, 
-			EscalationTimeID=$this->EscalationTimeID, PrimaryContact=$this->PrimaryContact, 
-			Cabinet=$this->Cabinet, Height=$this->Height, Ports=$this->Ports, 
-			FirstPortNum=$this->FirstPortNum, TemplateID=$this->TemplateID, 
+			SNMPFailureCount=$this->SNMPFailureCount, Hypervisor=\"$this->Hypervisor\", 
+			APIUsername=\"$this->APIUsername\", APIPassword=\"$this->APIPassword\",
+			APIPort=$this->APIPort, ProxMoxRealm=\"$this->ProxMoxRealm\",
+			Owner=$this->Owner, EscalationTimeID=$this->EscalationTimeID, 
+			PrimaryContact=$this->PrimaryContact, Cabinet=$this->Cabinet, Height=$this->Height, 
+			Ports=$this->Ports, FirstPortNum=$this->FirstPortNum, TemplateID=$this->TemplateID, 
 			PowerSupplyCount=$this->PowerSupplyCount, ChassisSlots=$this->ChassisSlots, 
 			RearChassisSlots=$this->RearChassisSlots,ParentDevice=$this->ParentDevice,
 			MfgDate=\"".date("Y-m-d", strtotime($this->MfgDate))."\", 
@@ -398,12 +424,20 @@ class Device {
 		DevicePorts::createPorts($this->DeviceID);
 		PowerPorts::createPorts($this->DeviceID);
 
+		// Deal with any custom attributes
+		$dcaList=DeviceCustomAttribute::GetDeviceCustomAttributeList(true);
+		// There shouldn't be any to delete, but just in case
+		$this->DeleteCustomValues();
+		foreach(array_intersect_key((array) $this, $dcaList) as $label=>$value){
+			$this->InsertCustomValue($dcaList[$label]->AttributeID, $this->$label);
+		}
+
 		(class_exists('LogActions'))?LogActions::LogThis($this):'';
 
 		return $this->DeviceID;
 	}
 
-	function CopyDevice($clonedparent=null,$newPosition=null) {
+	function CopyDevice($clonedparent=null,$newPosition=null,$smartName=true) {
 		/*
 		 * Need to make a copy of a device for the purpose of assigning a reservation during a move
 		 *
@@ -419,7 +453,7 @@ class Device {
 		// If this is a chassis device then check for children to cloned BEFORE we change the deviceid
 		if($this->DeviceType=="Chassis"){
 			// Examine the name to try to make a smart decision about the naming
-			if ( preg_match("/(.+?[\[?\(]?)(\d+)-(\d+)([\)\]])?/", $this->Label, $tmpName ) ) {
+			if ( $smartName == true && preg_match("/(.+?[\[?\(]?)(\d+)-(\d+)([\)\]])?/", $this->Label, $tmpName ) ) {
 				$numLen = strlen($tmpName[3]);
 				$this->Label = sprintf( "%s%0".$numLen."d-%0".$numLen."d%s", $tmpName[1], $tmpName[3]+1, $tmpName[3]+($tmpName[3]-$tmpName[2]+1), @$tmpName[4]);
 			} else {
@@ -477,7 +511,7 @@ class Device {
 					$olddev=new Device();
 					$olddev->DeviceID=$this->DeviceID;
 					$olddev->GetDevice();
-					if ( preg_match("/(.*)(.\d)+(\ *[\]|\)])?/", $olddev->Label, $tmpChild ) ) {
+					if ( $smartName == true && preg_match("/(.*)(.\d)+(\ *[\]|\)])?/", $olddev->Label, $tmpChild ) ) {
 						$numLen = strlen($tmpChild[2]);
 						$this->Label = sprintf( "%s%0".$numLen."d%s", $tmpChild[1], $tmpChild[2]+sizeof($children), @$tmpChild[3]);
 					}
@@ -505,7 +539,7 @@ class Device {
 			$olddev->GetDevice();
 
 			// Try to do some intelligent naming (sequence) if ending in a number
-			if ( preg_match("/(.*)(.\d)+(\ *[\]|\)])?/", $olddev->Label, $tmpName ) ) {
+			if ( $smartName == true && preg_match("/(.*)(.\d)+(\ *[\]|\)])?/", $olddev->Label, $tmpName ) ) {
 				$numLen = strlen($tmpName[2]);
 				$this->Label = sprintf( "%s%0".$numLen."d%s", $tmpName[1], $tmpName[2]+1, @$tmpName[3]);
 			}
@@ -519,7 +553,7 @@ class Device {
 		// If this is a chassis device and children are present clone them
 		if(isset($childList)){
 			foreach($childList as $child){
-				$child->CopyDevice($this->DeviceID);
+				$child->CopyDevice($this->DeviceID,null,$smartName);
 			}
 		}
 
@@ -620,6 +654,8 @@ class Device {
 		$pc=new PowerConnection();
 		$pc->DeviceID=$this->DeviceID;
 		$pc->DeleteConnections();
+
+		return true;
 	}
   
 	function UpdateDevice() {
@@ -655,7 +691,7 @@ class Device {
 			$cab->CabinetID=$this->Cabinet;
 			$cab->GetCabinet();
 			// Make sure the user has rights to save a device into the new cabinet
-			if($cab->Rights!="Write" && $this->Cabinet!='-1'){return false;}
+			if($this->Cabinet!='-1' && $cab->Rights!="Write" ){return false;}
 
 			// Clear the power connections
 			PowerPorts::removeConnections($this->DeviceID);
@@ -695,7 +731,9 @@ class Device {
 			v3AuthPassphrase=\"$this->v3AuthPassphrase\", DeviceType=\"$this->DeviceType\",
 			v3PrivProtocol=\"$this->v3PrivProtocol\", NominalWatts=$this->NominalWatts, 
 			v3PrivPassphrase=\"$this->v3PrivPassphrase\", Weight=$this->Weight,
-			SNMPFailureCount=$this->SNMPFailureCount, ESX=$this->ESX, Owner=$this->Owner, 
+			SNMPFailureCount=$this->SNMPFailureCount, Hypervisor=\"$this->Hypervisor\", 
+			APIUsername=\"$this->APIUsername\", APIPassword=\"$this->APIPassword\",
+			APIPort=$this->APIPort, ProxMoxRealm=\"$this->ProxMoxRealm\", Owner=$this->Owner, 
 			EscalationTimeID=$this->EscalationTimeID, PrimaryContact=$this->PrimaryContact, 
 			Cabinet=$this->Cabinet, Height=$this->Height, Ports=$this->Ports, 
 			FirstPortNum=$this->FirstPortNum, TemplateID=$this->TemplateID, 
@@ -822,6 +860,13 @@ class Device {
 			$pdu->CabinetID=$this->Cabinet;
 			$pdu->IPAddress=$this->PrimaryIP;
 			$pdu->UpdatePDU();
+		}
+
+		// Deal with any custom attributes
+		$dcaList=DeviceCustomAttribute::GetDeviceCustomAttributeList(true);
+		$this->DeleteCustomValues();
+		foreach(array_intersect_key((array) $this, $dcaList) as $label=>$value){
+			$this->InsertCustomValue($dcaList[$label]->AttributeID, $value);
 		}
 
 		//Update children, if necesary
@@ -1169,7 +1214,7 @@ class Device {
 		}
 
 		(class_exists('LogActions'))?LogActions::LogThis($this):'';
-		return;
+		return true;
 	}
 
 	function SearchDevicebyLabel(){
@@ -1223,7 +1268,7 @@ class Device {
   function GetESXDevices() {
 		global $dbh;
 		
-		$sql="SELECT * FROM fac_Device WHERE ESX=TRUE ORDER BY DeviceID;";
+		$sql="SELECT * FROM fac_Device WHERE Hypervisor='ESX' ORDER BY DeviceID;";
 
 		$deviceList = array();
 
@@ -1871,7 +1916,7 @@ class Device {
 						$slot->H=$ymax-$ymin;
 					}else{
 						// Last slot isn't defined so just error out
-						break;
+						return;
 					}
 				}
 				$slotOK=true;
@@ -2097,13 +2142,12 @@ class Device {
 
 		$this->MakeSafe();
 		$dcv = array();
-		$sql = "SELECT DeviceID, AttributeID, Value
-			FROM fac_DeviceCustomValue
-			WHERE DeviceID = $this->DeviceID;";
+		$sql = "SELECT v.DeviceID, v.AttributeID, a.Label, v.Value
+				FROM fac_DeviceCustomValue AS v, fac_DeviceCustomAttribute AS a
+				WHERE DeviceID = $this->DeviceID AND v.AttributeID = a.AttributeID";
 		foreach($dbh->query($sql) as $dcvrow){
-			$dcv[$dcvrow["AttributeID"]]=$dcvrow["Value"];
+			$this->{$dcvrow["Label"]}=$dcvrow["Value"];
 		}
-		$this->CustomValues=$dcv;
 	}	
 
 	function DeleteCustomValues() {
@@ -2130,16 +2174,13 @@ class Device {
 		$AttributeID = intval($AttributeID);
 		$Value=sanitize(trim($Value));
 
-		$sql = "INSERT INTO fac_DeviceCustomValue 
-			SET DeviceID = $this->DeviceID,
-			AttributeID = $AttributeID,
-			Value = \"$Value\";";
+		$sql = "INSERT INTO fac_DeviceCustomValue SET DeviceID = $this->DeviceID,
+			AttributeID = $AttributeID, Value = \"$Value\";";
 		if($dbh->query($sql)) {
-			$this->GetCustomValues();
-			(class_exists('LogActions'))?LogActions::LogThis($this):'';
 			return true;
+		}else{
+			return false;
 		}
-		return false;
 	}
 	function SetChildDevicesCabinet(){
 		global $dbh;

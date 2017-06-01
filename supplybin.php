@@ -141,7 +141,7 @@
 echo '<div class="main">
 <h3>',$status,'</h3>
 <div class="center"><div>
-<form action="',$_SERVER["PHP_SELF"].$formpatch,'" method="POST">
+<form action="',$_SERVER["SCRIPT_NAME"].$formpatch,'" method="POST">
 <div class="table">
 <div>
    <div><label for="binid">',__("Bin Location"),'</label></div>

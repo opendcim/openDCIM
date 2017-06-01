@@ -1,11 +1,12 @@
 <?php 
-    require_once( "mpdf/mpdf.php" );
+    include "vendor/mpdf/mpdf/mpdf.php";
 
     $header=(!isset($header))?$config->ParameterArray["OrgName"]:$header;
     $subheader=(!isset($subheader))?"":$subheader;
     $reportHTML=(!isset($reportHTML))?__("No Data to Display"):$reportHTML;
 
-    $mpdf=new mPDF('','',0,'',20,15,48,25,10,10); 
+    // $mpdf=new \Mpdf\Mpdf('','',0,'',20,15,48,25,10,10);
+    $mpdf=new Mpdf();
     $mpdf->useOnlyCoreFonts = true;    // false is default
     //$mpdf->SetProtection(array('print'));
     $mpdf->SetTitle($header . " " . $subheader);

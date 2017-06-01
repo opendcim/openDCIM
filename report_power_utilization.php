@@ -23,11 +23,13 @@ class PDF extends FPDF {
   
 	function Header() {
 		$this->pdfconfig = new Config();
-    	$this->Image( 'images/' . $this->pdfconfig->ParameterArray['PDFLogoFile'],10,8,100);
-    	$this->SetFont($this->pdfconfig->ParameterArray['PDFfont'],'B',12);
-    	$this->Cell(120);
-    	$this->Cell(30,20,__("Information Technology Services"),0,0,'C');
-    	$this->Ln(25);
+    if ( file_exists( 'images/' . $this->pdfconfig->ParameterArray['PDFLogoFile'] )) {
+        $this->Image( 'images/' . $this->pdfconfig->ParameterArray['PDFLogoFile'],10,8,100);
+    }
+  	$this->SetFont($this->pdfconfig->ParameterArray['PDFfont'],'B',12);
+  	$this->Cell(120);
+  	$this->Cell(30,20,__("Information Technology Services"),0,0,'C');
+  	$this->Ln(25);
 		$this->SetFont( $this->pdfconfig->ParameterArray['PDFfont'],'',10 );
 		$this->Cell( 50, 6, __("Devices Without Diverse (Tier III) Power"), 0, 1, 'L' );
 		$this->Cell( 50, 6, __("Date").': ' . date('d F Y'), 0, 1, 'L' );

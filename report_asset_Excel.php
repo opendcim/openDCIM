@@ -16,6 +16,8 @@
 require_once 'db.inc.php';
 require_once 'facilities.inc.php';
 
+$ReportOutputFolder = "/tmp/";
+
 if(!$person->ReadAccess){
     // No soup for you.
     header('Location: '.redirect());
@@ -31,7 +33,7 @@ if(session_id()==""){
 $sessID = session_id();
 session_write_close();
 
-if (!isset($_GET["stage"])) {
+if (php_sapi_name()!="cli" && !isset($_GET["stage"])) {
     // This is the top leve/first call to the file, so set up the progress bar, etc.
 
     JobQueue::startJob( $sessID );
@@ -139,10 +141,6 @@ $(document).ready( function() {
 error_reporting(E_ALL);
 ini_set('memory_limit', '840M');
 ini_set('max_execution_time', '0');
-
-set_include_path(get_include_path().PATH_SEPARATOR.__DIR__.'/PHPExcel');
-require 'PHPExcel.php';
-require 'PHPExcel/Writer/Excel2007.php';
 
 // Configuration variables.
 // Properties of the document and worksheets.
@@ -1260,7 +1258,7 @@ function computeSheetBodyDCInventory($DProps)
                                 $dcStats['Rk_UtE'] += $height;
                                 $devSpec = makeEmptySpec($sheetColumns,
                                 $dcContainerList);
-                                $$devSpec['Zone'] = $zoneName;
+                                $devSpec['Zone'] = $zoneName;
                                 $devSpec['Row'] = $rowName;
                                 $devSpec['DC Name'] = $dc->Name;
                                 $devSpec['Cabinet'] = $cab->Location;
@@ -1344,7 +1342,9 @@ function computeSheetBodyDCInventory($DProps)
         assignStatsVal($Stats, $dc, $dcStats);
 
         $percentDone += $incrementalPercent;
-        JobQueue::updatePercentage( $sessID, $percentDone );
+        if ( php_sapi_name()!="cli" ) {
+            JobQueue::updatePercentage( $sessID, $percentDone );
+        }
     }
 
     return array($Stats, $invData, $invCab, $limitedUser);
@@ -1413,12 +1413,16 @@ function writeRackInventoryContent($worksheet, $sheetProps, $Rack_Inv)
             }
             $row++;
             $percentDone += $subIncrement;
-            JobQueue::updatePercentage( $sessID, $percentDone );
+            if ( php_sapi_name()!="cli" ) {
+                JobQueue::updatePercentage( $sessID, $percentDone );
+            }
         }
     }
 
     // Round up the math
-    JobQueue::updatePercentage( $sessID, 90 );
+    if ( php_sapi_name()!="cli" ) {
+        JobQueue::updatePercentage( $sessID, 90 );
+    }
 }
 
 /**
@@ -1661,7 +1665,9 @@ function writeDCInventory($DProps, $objPHPExcel, $thisDate)
     $worksheet = $objPHPExcel->getActiveSheet();
     $objPHPExcel->setActiveSheetIndex(0);
 
-    JobQueue::updateStatus( $sessID, __("Computing DC Inventory" ));
+    if ( php_sapi_name()!="cli" ) {
+        JobQueue::updateStatus( $sessID, __("Computing DC Inventory" ));
+    }
 
     setWorksheetProperties($worksheet, $wsKind, $DProps, $thisDate);
     writeWSHeader($worksheet, $wsKind, $DProps[$wsKind]);
@@ -1670,13 +1676,17 @@ function writeDCInventory($DProps, $objPHPExcel, $thisDate)
         computeSheetBodyDCInventory($DProps);
     ReportStats::get()->report('Info', $wsKind . ' - computed body');
 
-    JobQueue::updateStatus( $sessID, __("Writing Inventory to Spreadsheet" ));
-    JobQueue::updatePercentage( $sessID, 50 );
+    if ( php_sapi_name()!="cli" ) {
+        JobQueue::updateStatus( $sessID, __("Writing Inventory to Spreadsheet" ));
+        JobQueue::updatePercentage( $sessID, 50 );
+    }
 
     writeDCInvContent($worksheet, $DProps[$wsKind], $invData);
     ReportStats::get()->report('Info', $wsKind . ' - write body');
 
-    JobQueue::updateStatus( $sessID, __("Formatting Spreadsheet" ));
+    if ( php_sapi_name()!="cli" ) {
+        JobQueue::updateStatus( $sessID, __("Formatting Spreadsheet" ));
+    }
 
     formatWSColumns($worksheet, $DProps[$wsKind]['Columns']);
     $worksheet->setAutoFilter($worksheet->calculateWorksheetDimension());
@@ -1759,7 +1769,9 @@ function writeExcelReport(&$DProps, $objPHPExcel, $thisDate)
     writeFrontPage($DProps, $config, $objPHPExcel, $thisDate);
     ReportStats::get()->report('Info', 'Front Page');
 
-    JobQueue::updateStatus( session_id(), "Preparing to transmit file" );
+    if ( php_sapi_name()!="cli" ) {
+        JobQueue::updateStatus( session_id(), "Preparing to transmit file" );
+    }
 }
 
 /*
@@ -1788,18 +1800,17 @@ if (PHP_SAPI != 'cli') {
      . ".xlsx");
     header('Cache-Control: max-age=0');
 
-    // save the file to the system temp directory for use as a download link
-//    $realfile = tempnam(sys_get_temp_dir(),'openDCIM');
-//    $objWriter->save($realfile);
-
     // write file to the browser
     $objWriter->save('php://output');
 } else {
-    // print_r(DCStats_Sum);
+    $fname = $ReportOutputFolder."openDCIM-Asset_Report-".date("Y-m-d").".xlsx";
+    $objWriter->save( $fname );
 }
 
 ReportStats::get()->report('Totals');
 $objPHPExcel->disconnectWorksheets();
 unset($objPHPExcel);
 
-JobQueue::updatePercentage( $sessID, 100 );
+if ( php_sapi_name()!="cli" ) {
+    JobQueue::updatePercentage( $sessID, 100 );
+}

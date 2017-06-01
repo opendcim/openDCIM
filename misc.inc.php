@@ -2,7 +2,7 @@
 /* All functions contained herein will be general use functions */
 
 /* Create a quick reference for datacenter data */
-$_SESSION['datacenters']=Datacenter::GetDCList(true);
+$_SESSION['datacenters']=DataCenter::GetDCList(true);
 
 /* Generic html sanitization routine */
 
@@ -168,7 +168,7 @@ if(!function_exists("objArraySearch")){
     {
         foreach($array as $arrayInf) {
             if($arrayInf->{$index} == $value) {
-                return $false;
+                return true;
             }
         }
         return false;
@@ -317,6 +317,7 @@ if(extension_loaded('gettext')){
 			}
 		}
 		putenv("LC_ALL=$locale");
+		putenv("LANGUAGE=$locale");
 		bindtextdomain("openDCIM","./locale");
 
 		$codeset='utf8';
@@ -785,7 +786,7 @@ if(!function_exists("buildNavTreeHTML")){
 if(isset($devMode)&&$devMode){
 	// Development mode, so don't apply the upgrades
 }else{
-	if(file_exists("install.php") && basename($_SERVER['PHP_SELF'])!="install.php" ){
+	if(file_exists("install.php") && basename($_SERVER['SCRIPT_NAME'])!="install.php" ){
 		// new installs need to run the install first.
 		header("Location: ".redirect('install.php'));
 		exit;
@@ -812,7 +813,7 @@ if( AUTHENTICATION=="LDAP" && $config->ParameterArray["LDAPSessionExpiration"] >
 }
 
 if( AUTHENTICATION=="LDAP" && !isset($_SESSION['userid']) && php_sapi_name()!="cli" && !isset($loginPage)) {
-	$savedurl = $_SERVER['PHP_SELF'] . "?" . $_SERVER['QUERY_STRING'];
+	$savedurl = $_SERVER['SCRIPT_NAME'] . "?" . $_SERVER['QUERY_STRING'];
 	setcookie( 'targeturl', $savedurl, time()+60 );
 	header("Location: ".redirect('login_ldap.php'));
 	exit;
@@ -884,6 +885,7 @@ if ( $person->WriteAccess ) {
 if ($person->BulkOperations) {
 	$wamenu[__("Bulk Importer")][]='<a href="bulk_importer.php"><span>'.__("Import New Devices").'</span></a>';
 	$wamenu[__("Bulk Importer")][]='<a href="bulk_network.php"><span>'.__("Import Network Connections").'</span></a>';
+	$wamenu[__("Bulk Importer")][]='<a href="bulk_power.php"><span>'.__("Import Power Connections").'</span></a>';
 	$wamenu[__("Bulk Importer")][]='<a href="bulk_moves.php"><span>'.__("Process Bulk Moves").'</span></a>';
 }
 if ( $person->SiteAdmin ) {

@@ -12,7 +12,7 @@
 	$dcList=$dc->GetDCList();
 	
 	$dev=new Device();
-	$esx=new ESX();
+	$vm=new VM();
 	$cab=new Cabinet();
 	$pdu=new PowerDistribution();
 	$dept=new Department();
@@ -35,8 +35,8 @@
 		$dev->Label=$searchTerm;
 		$devList=$dev->SearchDevicebyLabel();
 		//Virtual machines will never be search via asset tags or serial numbers
-		$esx->vmName=$dev->Label;
-		$vmList=$esx->SearchByVMName();
+		$vm->vmName=$dev->Label;
+		$vmList=$vm->SearchByVMName();
 		$cab->Location=$searchTerm;
 		$cabList=$cab->LooseSearch(true);
 		$resultcount=count($devList)+count($cabList)+count($vmList);
@@ -51,8 +51,8 @@
 		}
 		$dev->Owner=$dept->DeptID;
 		$devList=$dev->GetDevicesbyOwner();
-		$esx->Owner=$dept->DeptID;
-		$vmList=$esx->GetVMListbyOwner();
+		$vm->Owner=$dept->DeptID;
+		$vmList=$vm->GetVMListbyOwner();
 		$cab->AssignedTo=$dept->DeptID;
 		$cabList=$cab->Search(true);
 		//PDUs have no ownership information so don't search them
@@ -74,20 +74,20 @@
 		$projList = $proj->Search();
 		$devList = array();
 		foreach( $projList as $p ) {
-			$tmpList = ProjectMembership::getProjectMembership( $p->ProjectID );
-			$devList = array_merge( $devList, $tmpList );
+			$tmpList = ProjectMembership::getProjectMembership( $p->ProjectID, true );
+			$devList = $devList + $tmpList;
 		}
 		$resultcount=count($devList);
 		$title=__("Project Catalog search results for")." &quot;$searchTerm&quot;";
-	}elseif($searchKey="model"){
+	}elseif($searchKey=="model"){
 		$tmpl->Model = $searchTerm;
-		$tmpList = $tmpl->Search( false, true );
+		$tmpList = $tmpl->Search(true,true);
 		$devList = array();
 		foreach( $tmpList as $t ) {
 			$dev = new Device();
 			$dev->TemplateID = $t->TemplateID;
-			$tList = $dev->Search( false, false );
-			$devList = array_merge( $devList, $tList );
+			$tList = $dev->Search(true,false);
+			$devList = $devList + $tList;
 		}
 		$resultcount=count($devList);
 		$title=__("Device Model search results for")." &quot;$searchTerm&quot;";
@@ -118,7 +118,7 @@
 		}
 		$resultcount=count($devList)+count($cabList); 
 		$title=__("Notes search results for")." &quot;$searchTerm&quot;";
-	}elseif($searchKey="dev"){
+	}elseif($searchKey=="dev"){
 		// This is gonna be a generic catch all
 		foreach($dev as $prop => $val){
 			$dev->$prop=(isset($_GET[$prop]))?$_GET[$prop]:$val;

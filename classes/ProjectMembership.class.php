@@ -32,7 +32,7 @@ class ProjectMembership {
 	//
 	//	Returns:	Array of Device objects for all members of the given ProjectID
 	//
-	static function getProjectMembership( $ProjectID ) {
+	static function getProjectMembership( $ProjectID, $IndexByID=false ) {
 		global $dbh;
 
 		$st = $dbh->prepare( "select * from fac_ProjectMembership where ProjectID=:ProjectID order by DeviceID ASC" );
@@ -45,7 +45,11 @@ class ProjectMembership {
 			$d = new Device();
 			$d->DeviceID = $row->DeviceID;
 			$d->GetDevice();
-			$result[] = $d;
+			if ( $IndexByID == true ) {
+				$result[$row->DeviceID] = $d;
+			} else {
+				$result[] = $d;
+			}
 		}
 
 		return $result;
