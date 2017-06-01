@@ -26,7 +26,7 @@
 			} 
 
 			$sql="SELECT a.Name AS DataCenter, b.DeviceID, c.Location, b.Position, 
-				b.Height, b.Label, b.DeviceType, b.AssetTag, b.SerialNo, b.InstallDate, b.WarrantyExpire, b.PrimaryIP,
+				b.Height, b.Label, b.DeviceType, b.AssetTag, b.SerialNo, b.InstallDate, b.WarrantyExpire, b.PrimaryIP, b.ParentDevice,
 				b.TemplateID, b.Owner, c.CabinetID, c.DataCenterID, f.Name as Manufacturer $custom_concat FROM fac_DataCenter a,
 				fac_Cabinet c, fac_DeviceTemplate e, fac_Manufacturer f, fac_Device b  LEFT OUTER JOIN fac_DeviceCustomValue d on
 				b.DeviceID=d.DeviceID WHERE b.Cabinet=c.CabinetID AND c.DataCenterID=a.DataCenterID AND b.TemplateID=e.TemplateID
@@ -51,7 +51,7 @@
 			\t<th>".__("Name")."</th>
 			\t<th>".__("Serial Number")."</th>
 			\t<th>".__("Asset Tag")."</th>
-      \t<th>".__("Primary IP / Host Name")."</th>
+      			\t<th>".__("Primary IP / Host Name")."</th>
 			\t<th>".__("Device Type")."</th>
 			\t<th>".__("Template")."</th>
 			\t<th>".__("Tags")."</th>
@@ -63,9 +63,11 @@
 
 		// suppressing errors for when there is a fake data set in place
 		foreach($result as $row){
+			// Dont show devices in chassis, they are shown under each chassiss as a child device
+			if($row["ParentDevice"]=="0"){
 			// insert date formating later for regionalization settings
 			$date=date("Y-m-d",strtotime($row["InstallDate"]));
-      $warranty=date("Y-m-d",strtotime($row["WarrantyExpire"]));
+      			$warranty=date("Y-m-d",strtotime($row["WarrantyExpire"]));
 			$Model="";
 			$Department="";
 			
@@ -152,6 +154,7 @@
 					{$ca_cells}\t\n\t\t</tr>\n";
 				}
 			}
+		}
 		}
 		$body.="\t\t</tbody>\n\t</table>\n";
 		if(isset($_REQUEST['ajax'])){
