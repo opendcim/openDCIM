@@ -1,6 +1,8 @@
 <?php
 
 // Pre-Flight check
+	require_once( 'vendor_preset_defs.inc.php' );
+
 	$tests=array();
 	$errors=0;
 
