@@ -148,6 +148,8 @@ class PDF extends FPDF {
 	$pdf->SetTextColor( 0 );
 
 	$pdf->Bookmark( 'Departments' );
+	$pdf->AddPage();
+
 	$deptList = $dept->GetDepartmentList();
 
 	foreach( $deptList as $deptRow ) {
@@ -155,7 +157,6 @@ class PDF extends FPDF {
 		// if ( $deptRow->Name == 'ITS' )
 		// 	continue;
 
-		$pdf->AddPage();
 		$pdf->Bookmark( $deptRow->Name, 1, 0 );
 		$pdf->SetFont( $config->ParameterArray['PDFfont'], 'B', 12 );
 		$pdf->Cell( 80, 5, __("Department").":" );
