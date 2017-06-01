@@ -8,7 +8,7 @@ require_once( 'preflight.inc.php' );
 		print "Please copy db.inc.php-dist to " . CONFIG_FILE . ".<br>\nOpen db.inc.php with a text editor and fill in the blanks for user, pass, database, and server.";
 		exit;
 	}else{
-		require_once(CONFIG_FILE);
+		require_once( 'vendor_preset.inc.php' );
 	}
 
 // Functions for upgrade / installing db objects
