@@ -178,20 +178,20 @@ class PDF extends FPDF {
 	$pdf->Ln();
 
 	$fill = 0;
-  $lastDevice = 0;
+        $lastDevice = 0;
   
-	foreach( $vmList as $esxRow ) {
-		if ( $esxRow->DeviceID != $lastDevice ) {
-			$dev->DeviceID = $esxRow->DeviceID;
+	foreach( $vmList as $vmRow ) {
+		if ( $vmRow->DeviceID != $lastDevice ) {
+			$dev->DeviceID = $vmRow->DeviceID;
 			$dev->GetDevice();
 		}
 		
 		$pdf->Cell( $cellWidths[0], 6, ++$vmCount, 'LBRT', 0, 'L', $fill );
-		$pdf->Cell( $cellWidths[1], 6, $esxRow->vmName, 'LBRT', 0, 'L', $fill );
+		$pdf->Cell( $cellWidths[1], 6, $vmRow->vmName, 'LBRT', 0, 'L', $fill );
 		$pdf->Cell( $cellWidths[2], 6, $dev->Label, 'LBRT', 1, 'L', $fill );
   
-    $fill != $fill;
-  }
+                $fill != $fill;
+        }
 
 	foreach( $deptList as $deptRow ) {
 	 $VM->Owner = $deptRow->DeptID; 
@@ -259,14 +259,14 @@ class PDF extends FPDF {
 		$fill = 0;
     $lastDevice = 0;
     
-		foreach( $vmList as $esxRow ) {
-			if ( $esxRow->DeviceID != $lastDevice ) {
-				$dev->DeviceID = $esxRow->DeviceID;
+		foreach( $vmList as $vmRow ) {
+			if ( $vmRow->DeviceID != $lastDevice ) {
+				$dev->DeviceID = $vmRow->DeviceID;
 				$dev->GetDevice();
 			}
 			
 			$pdf->Cell( $cellWidths[0], 6, ++$vmCount, 'LBRT', 0, 'L', $fill );
-			$pdf->Cell( $cellWidths[1], 6, $esxRow->vmName, 'LBRT', 0, 'L', $fill );
+			$pdf->Cell( $cellWidths[1], 6, $vmRow->vmName, 'LBRT', 0, 'L', $fill );
 			$pdf->Cell( $cellWidths[2], 6, $dev->Label, 'LBRT', 1, 'L', $fill );
     
       $fill != $fill;

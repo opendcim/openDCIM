@@ -39,7 +39,7 @@ class RackRequest {
   var $Label;
   var $SerialNo;
   var $AssetTag;
-  var $ESX;
+  var $Hypervisor;
   var $Owner;
   var $DeviceHeight;
   var $EthernetCount;
@@ -65,7 +65,7 @@ class RackRequest {
 		$this->Label=sanitize(transform($this->Label));
 		$this->SerialNo=sanitize(transform($this->SerialNo));
 		$this->AssetTag=sanitize($this->AssetTag);
-		$this->ESX=intval($this->ESX);
+		$this->Hypervisor=sanitize($this->Hypervisor);
 		$this->Owner=intval($this->Owner);
 		$this->DeviceHeight=intval($this->DeviceHeight);
 		$this->EthernetCount=intval($this->EthernetCount);
@@ -99,7 +99,7 @@ class RackRequest {
 
     $sql="INSERT INTO fac_RackRequest SET RequestTime=now(), RequestorID=$this->RequestorID,
 		Label=\"$this->Label\", SerialNo=\"$this->SerialNo\", MfgDate=\"$this->MfgDate\", 
-		AssetTag=\"$this->AssetTag\", ESX=$this->ESX, Owner=$this->Owner, 
+		AssetTag=\"$this->AssetTag\", Hypervisor=$this->Hypervisor, Owner=$this->Owner, 
 		DeviceHeight=\"$this->DeviceHeight\", EthernetCount=$this->EthernetCount, 
 		VLANList=\"$this->VLANList\", SANCount=$this->SANCount, SANList=\"$this->SANList\",
 		DeviceClass=\"$this->DeviceClass\", DeviceType=\"$this->DeviceType\",
@@ -134,7 +134,7 @@ class RackRequest {
 		$requestList[$requestNum]->Label=$row["Label"];
 		$requestList[$requestNum]->SerialNo=$row["SerialNo"];
 		$requestList[$requestNum]->AssetTag=$row["AssetTag"];
-		$requestList[$requestNum]->ESX=$row["ESX"];
+		$requestList[$requestNum]->Hypervisor=$row["Hypervisor"];
 		$requestList[$requestNum]->Owner=$row["Owner"];
 		$requestList[$requestNum]->DeviceHeight=$row["DeviceHeight"];
 		$requestList[$requestNum]->EthernetCount=$row["EthernetCount"];
@@ -164,7 +164,7 @@ class RackRequest {
 		$this->SerialNo=$row["SerialNo"];
 		$this->MfgDate=$row["MfgDate"];
 		$this->AssetTag=$row["AssetTag"];
-		$this->ESX=$row["ESX"];
+		$this->Hypervisor=$row["Hypervisor"];
 		$this->Owner=$row["Owner"];
 		$this->DeviceHeight=$row["DeviceHeight"];
 		$this->EthernetCount=$row["EthernetCount"];
@@ -221,7 +221,7 @@ class RackRequest {
 
     $sql="UPDATE fac_RackRequest SET RequestTime=now(), RequestorID=$this->RequestorID,
 		Label=\"$this->Label\", SerialNo=\"$this->SerialNo\", MfgDate=\"$this->MfgDate\", 
-		AssetTag=\"$this->AssetTag\", ESX=$this->ESX, Owner=$this->Owner, 
+		AssetTag=\"$this->AssetTag\", Hypervisor=$this->Hypervisor, Owner=$this->Owner, 
 		DeviceHeight=\"$this->DeviceHeight\", EthernetCount=$this->EthernetCount, 
 		VLANList=\"$this->VLANList\", SANCount=$this->SANCount, SANList=\"$this->SANList\",
 		DeviceClass=\"$this->DeviceClass\", DeviceType=\"$this->DeviceType\",
