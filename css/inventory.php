@@ -553,7 +553,7 @@ div.cabinet {
 .picture .label { height: 16px; }
 .picture .label > div {text-align: center;width: 100%;}
 .picture .label > div,
-.picture div > a > div > div { top: 10%; height: 80%; padding-left: 0.3em;}
+.picture div > a > div > div { top: -6%; height: 80%; padding-left: 0.3em;}
 .picture div > a > div > div {overflow: hidden;}
 .picture div .label {overflow: hidden;}
 .label.noimage { margin: -2px; border: 2px solid black; }
