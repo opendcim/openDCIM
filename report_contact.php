@@ -537,10 +537,10 @@ class PDF_Diag extends PDF_Sector {
 		$pdf->Cell( 0, 5, __("Total Rack Units for All Data Centers").': ' . $TotalRU, '', 1, 'L', '' );
     $pdf->Cell( 0, 5, __("Total BTU Output for All Data Centers").': ' . sprintf( '%d (%.2f Tons)', $TotalBTU, $TotalBTU/12000 ), '', 1, 'L', '' );
     
-    $esx = new ESX();
+    $vm = new VM();
     
-    $esx->Owner = $deptRow->DeptID;
-    $esxList = $esx->GetVMListbyOwner();
+    $vm->Owner = $deptRow->DeptID;
+    $vmList = $vm->GetVMListbyOwner();
     
 		$headerTags = array( __("Virtual Machine Image Name"), __("Current Host Server"), __("State"), __("Last Polled") );
 		$cellWidths = array( 60, 40, 30, 40 );
@@ -554,16 +554,16 @@ class PDF_Diag extends PDF_Sector {
 		$fill = 0;
     $lastDevice = 0;
     
-		foreach( $esxList as $esxRow ) {
-			if ( $esxRow->DeviceID != $lastDevice ) {
-				$dev->DeviceID = $esxRow->DeviceID;
+		foreach( $vmList as $Row ) {
+			if ( $vmRow->DeviceID != $lastDevice ) {
+				$dev->DeviceID = $vmRow->DeviceID;
 				$dev->GetDevice();
 			}
 			
-			$pdf->Cell( $cellWidths[0], 6, $esxRow->vmName, 'LBRT', 0, 'L', $fill );
+			$pdf->Cell( $cellWidths[0], 6, $vmRow->vmName, 'LBRT', 0, 'L', $fill );
 			$pdf->Cell( $cellWidths[1], 6, $dev->Label, 'LBRT', 0, 'L', $fill );
-			$pdf->Cell( $cellWidths[2], 6, $esxRow->vmState, 'LBRT', 0, 'L', $fill );
-			$pdf->Cell( $cellWidths[3], 6, date( "d M Y H:i:s", strtotime( $esxRow->LastUpdated )), 'LBRT', 1, 'L', $fill );
+			$pdf->Cell( $cellWidths[2], 6, $vmRow->vmState, 'LBRT', 0, 'L', $fill );
+			$pdf->Cell( $cellWidths[3], 6, date( "d M Y H:i:s", strtotime( $vmRow->LastUpdated )), 'LBRT', 1, 'L', $fill );
     
       $fill != $fill;
     }

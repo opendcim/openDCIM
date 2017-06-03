@@ -1265,7 +1265,7 @@ class Device {
 		return $deviceList;
 	}
 
-  function GetESXDevices() {
+        function GetESXDevices() {
 		global $dbh;
 		
 		$sql="SELECT * FROM fac_Device WHERE Hypervisor='ESX' ORDER BY DeviceID;";

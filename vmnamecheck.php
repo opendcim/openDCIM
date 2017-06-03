@@ -67,7 +67,7 @@
 		$htmlMessage = sprintf( "<!doctype html><html><head><meta http-equiv=\"Content-Type\" content=\"text/html; charset=UTF-8\"><title>%s</title>%s</head><body><div id=\"header\" style=\"padding: 5px 0;background: %s;\"><center><img src=\"%s\"></center></div><div class=\"page\"><p>\n", __("Virtual Machine Inventory Exception Report"), $style, $config->ParameterArray["HeaderColor"], $logo  );
 		$htmlMessage.="<p>".__("This is an automated message from the")." {$config->ParameterArray["OrgName"]} ".__("Inventory
 			Process.  This process is scheduled to run once each business day.</p>
-			<p>The following")." $esxCount ".__("Virtual Machines were detected in the environment
+			<p>The following")." $vmCount ".__("Virtual Machines were detected in the environment
 			and do not have an associated owner record.  It is assumed that
 			these are new Virtual Machines.  Please click on the links below to update
 			ownership information.")."</p>

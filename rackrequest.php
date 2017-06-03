@@ -81,7 +81,7 @@
 			$req->SerialNo=$_POST['serialno'];
 			$req->MfgDate=$_POST['mfgdate'];
 			$req->AssetTag=$_POST['assettag'];
-			$req->ESX=$_POST['esx'];
+			$req->Hypervisor=$_POST['hypervisor'];
 			$req->Owner=$_POST['owner'];
 			$req->DeviceHeight=$_POST['deviceheight'];
 			$req->EthernetCount=$_POST['ethernetcount'];
@@ -121,7 +121,7 @@
 			$req->SerialNo=$_POST['serialno'];
 			$req->MfgDate=date('Y-m-d',strtotime($_POST["mfgdate"]));
 			$req->AssetTag=$_POST['assettag'];
-			$req->ESX=$_POST['esx'];
+			$req->Hypervisor=$_POST['hypervisor'];
 			$req->Owner=$_POST['owner'];
 			$req->DeviceHeight=$_POST['deviceheight'];
 			$req->EthernetCount=$_POST['ethernetcount'];
@@ -144,7 +144,7 @@
 				$dev->MfgDate=$req->MfgDate;
 				$dev->InstallDate=date('Y-m-d');
 				$dev->AssetTag=$req->AssetTag;
-				$dev->ESX=$req->ESX;
+				$dev->Hypervisor=$req->Hypervisor;
 				$dev->Owner=$req->Owner;
 				$dev->Cabinet=$_POST['CabinetID'];
 				$dev->Position=$_POST['position'];
@@ -383,8 +383,8 @@ echo '			</select>
 	<div>
 		<div><label for="esx">',__("ESX Server?"),'</label></div>
 		<div><select name="esx" id="esx">
-			<option value="1"'.(($req->ESX)?' selected':'').'>',__("True"),'</option>
-			<option value="0"'.((!$req->ESX)?' selected':'').'>',__("False"),'</option>
+			<option value="1"'.(($req->Hypervisor)?' selected':'').'>',__("True"),'</option>
+			<option value="0"'.((!$req->Hypervisor)?' selected':'').'>',__("False"),'</option>
 		</select></div>
 	</div>
 	<div>
