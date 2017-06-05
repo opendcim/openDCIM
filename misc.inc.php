@@ -802,6 +802,16 @@ if(!function_exists("buildNavTreeHTML")){
 	to the db.inc.php file.
 */
 
+/*
+	If we are using Saml authentication, go ahead and figure out who
+	we are.  It may be needed for the installation.
+*/
+
+if( AUTHENTICATION=="Saml" && !isset($_SESSION['userid']) ){
+	header("Location: ".redirect('saml/login.php'));
+	exit;
+}
+
 if(isset($devMode)&&$devMode){
 	// Development mode, so don't apply the upgrades
 }else{
@@ -821,6 +831,7 @@ if( AUTHENTICATION=="Oauth" && !isset($_SESSION['userid']) && php_sapi_name()!="
 	header("Location: ".redirect('oauth/login.php'));
 	exit;
 }
+
 
 // Just to keep things from getting extremely wonky and complicated, even though this COULD be in one giant
 // if/then/else stanza, I'm breaking it into two
@@ -842,6 +853,9 @@ if( AUTHENTICATION=="LDAP" && !isset($_SESSION['userid']) && php_sapi_name()!="c
 if(!People::Current()){
 	if(AUTHENTICATION=="Oauth"){
 		header("Location: ".redirect('oauth/login.php'));
+		exit;
+	} elseif ( AUTHENTICATION=="Saml"){
+		header("Location: ".redirect('saml/login.php'));
 		exit;
 	} elseif ( AUTHENTICATION=="LDAP" && !isset($loginPage) ) {
 		header("Location: ".redirect($config->ParameterArray['InstallURL'].'login_ldap.php'));

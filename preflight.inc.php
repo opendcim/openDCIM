@@ -154,6 +154,13 @@
 			}else{
 				$tests['Remote User']['message']='Click <a href="oauth/login.php">here</a> to authenticate via Oauth';
 			}
+		}elseif(AUTHENTICATION=="Saml"){
+			if(isset($_SESSION['userid'])){
+				$tests['Remote User']['state']="good";
+				$tests['Remote User']['message']='Authenticated as UserID='.$_SESSION['userid'];
+			}else{
+				$tests['Remote User']['message']='Click <a href="saml/login.php">here</a> to authenticate via Saml';
+			}
 		}elseif(AUTHENTICATION=="LDAP") {
 			if(isset($_SESSION['userid'])){
 				$tests['Remote User']['state']="good";
