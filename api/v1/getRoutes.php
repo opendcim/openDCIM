@@ -127,7 +127,7 @@ $app->get('/datacenter', function() {
 	$r = array();
 	$r['error'] = false;
 	$r['errorcode'] = 200;
-	$r['department'] = specifyAttributes( $outputAttr, $dc->Search( false, $loose ));
+	$r['datacenter'] = specifyAttributes( $outputAttr, $dc->Search( false, $loose ));
 
 	echoResponse( $r );
 });
