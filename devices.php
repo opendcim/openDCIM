@@ -671,7 +671,16 @@
 
 							$dev->SetTags($tagarray);
 							if($dev->Cabinet <0){
-								$dev->MoveToStorage();
+								$tmpDev=new Device();
+								$tmpDev->DeviceID=$dev->DeviceID;
+								$tmpDev->GetDevice();
+								if($tmpDev->Cabinet <0) {
+									// Device is currently in a storage room
+									$dev->UpdateDevice();
+								} else {
+									// Device is not currently in a storage room
+									$dev->MoveToStorage();
+								}
 							}else{
 								$dev->UpdateDevice();
 							}
@@ -1278,12 +1287,26 @@ $(document).ready(function() {
 
 	// Need to make some changes to the UI for the storage room
 	$('#CabinetID').change(function(){
-		var Positionrow=$('#Position').parent('div').parent('div');
 		if($(this).val()==-1){
-			Positionrow.hide();
+			document.getElementById('lblPosition').innerHTML = 'Storage Room';
+			$("#Position").remove();
+			$("#StorageRoom").remove();
+			$("#posdiv").append('<select name="Position" id="StorageRoom" class="required, validate[custom[onlyNumberSp],min[0],max[16]]">');
+			$("#StorageRoom").append('<option value=""><?php echo __("General"); ?></option>');
+			<?php
+				foreach(DataCenter::GetDCList() as $dc){
+					$selected=($dc->DataCenterID==$dev->Position)?' selected':'';
+					print '$("#StorageRoom").append(\'<option value=' . $dc->DataCenterID . $selected . '>' . $dc->Name . '</option>\n\')' ;
+					print "\n";
+				}
+			?>
 		}else{
-			Positionrow.show();
+			$("#StorageRoom").remove();
+			$("#Position").remove();
+			$("#posdiv").append('<input type="number" class="required, validate[custom[onlyNumberSp],min[0],max[<?php echo $cab->CabinetHeight; ?>]]" name="Position" id="Position" value="<?php echo $dev->Position; ?>">');
+			document.getElementById('lblPosition').innerHTML = 'Position';
 		}
+
 	}).trigger('change');
 
 	// Auto-Populate fields based on device templates
@@ -1482,7 +1505,8 @@ print "		var dialog=$('<div>').prop('title',\"".__("Verify Delete Device")."\").
 				tmpheight.remove();
 			}
 		}).trigger('change');
-		$('#Position').focus(function()	{
+
+		$("#posdiv").on("focus", "input", function()	{
 			var cab=$("select#CabinetID").val();
 			var hd=$('#HalfDepth').is(':checked');
 			var bs=$('#BackSide').is(':checked');
@@ -1865,11 +1889,25 @@ echo '			</select>
 		   <div><label for="Height">',($dev->ParentDevice==0)?__("Height"):__("Number of slots"),'</label></div>
 		   <div><input type="number" class="required,validate[custom[onlyNumberSp]]" name="Height" id="Height" value="',$dev->Height,'"></div>
 		</div>
-		<div>
-		   <div><label for="Position">',__("Position"),'</label></div>
-		   <div><input type="number" class="required,validate[custom[onlyNumberSp],min[0],max[',$cab->CabinetHeight,']]" name="Position" id="Position" value="',$dev->Position,'"></div>
-		</div>
-		';
+		<div><div><label id="lblPosition" for="Position">',__("Position"),'</label></div>';
+                if($dev->Cabinet >=0) {
+                   echo '
+                   <div id="posdiv"><input type="number" class="required, validate[custom[onlyNumberSp],min[0],max[',$cab->CabinetHeight,']]" name="Position" id="Position" value="'.$dev->Position .'"></div>';
+                }
+                else {
+                   echo '
+                   <div id="posdiv">
+				<select name="Position" id="StorageRoom" class="required, validate[custom[onlyNumberSp],min[0],max[',16,']]">
+					<option value="">'.__("General").'</option>';
+
+					foreach(DataCenter::GetDCList() as $dc){
+						$selected=($dc->DataCenterID==$dev->Position)?' selected':'';
+						print '\t\t\t<option value=' . $dc->DataCenterID .'' . $selected .'>' . $dc->Name . '</option>\n';
+					}
+		}
+echo '				</select>
+                   </div>
+                   </div>';
 
 		//JMGA: child devices not use HalfDepth
 		if($dev->ParentDevice==0){
