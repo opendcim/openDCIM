@@ -23,4 +23,4 @@ INSERT INTO fac_Config set Parameter="SAMLaccountSuffix", Value="", UnitOfMeasur
 -- Bump up the database version (uncomment below once released)
 --
 
-UPDATE fac_Config set Value="4.4.1" WHERE Parameter="Version";
+UPDATE fac_Config set Value="4.5" WHERE Parameter="Version";
