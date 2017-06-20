@@ -52,22 +52,24 @@ class PMox {
 			exit;
 		}
 
-		foreach( $pveList["data"] as $pve ) { 
-			$tmpVM = new VM;
+		if ( sizeof( $pveList ) > 0 ) {
+			foreach( $pveList["data"] as $pve ) { 
+				$tmpVM = new VM;
 
-			$tmpVM->DeviceID = $d->DeviceID;
-			$tmpVM->LastUpdated = date( "Y-m-d H:i:s" );
-			$tmpVM->vmID = $pve["vmid"];
-			$tmpVM->vmName = $pve["name"];
-			$tmpVM->vmState = $pve["status"];
+				$tmpVM->DeviceID = $d->DeviceID;
+				$tmpVM->LastUpdated = date( "Y-m-d H:i:s" );
+				$tmpVM->vmID = $pve["vmid"];
+				$tmpVM->vmName = $pve["name"];
+				$tmpVM->vmState = $pve["status"];
 
-			if ( $debug ) {
-				error_log( "VM: " . $tmpVM->vmName . " added to device " . $d->DeviceID );
+				if ( $debug ) {
+					error_log( "VM: " . $tmpVM->vmName . " added to device " . $d->DeviceID );
+				}
+
+				$vmList[] = $tmpVM;
 			}
-
-			$vmList[] = $tmpVM;
 		}
-
+		
 		return $vmList;
 	}
   
@@ -96,6 +98,7 @@ class PMox {
   
 	static function RefreshInventory( $pveDevice, $debug = false ) {
 		global $dbh;
+		global $config;
 
 		$dev = new Device();
 		if ( is_object( $pveDevice ) ) {
