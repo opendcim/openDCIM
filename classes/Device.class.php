@@ -72,7 +72,7 @@ class Device {
 	var $WarrantyCo;
 	var $WarrantyExpire;
 	var $Notes;
-	var $Reservation;
+	var $Status;
 	var $Rights;
 	var $HalfDepth;
 	var $BackSide;
@@ -143,7 +143,7 @@ class Device {
 		$this->WarrantyCo=sanitize($this->WarrantyCo);
 		$this->WarrantyExpire=sanitize($this->WarrantyExpire);
 		$this->Notes=sanitize($this->Notes,false);
-		$this->Reservation=intval($this->Reservation);
+		$this->Status=in_array( $this->Status, array( "Reserved", "Testing", "Development", "Production", "Spare", "Salvage"))?$this->Status:"Reserved";
 		$this->HalfDepth=intval($this->HalfDepth);
 		$this->BackSide=intval($this->BackSide);
 		$this->Weight=intval($this->Weight);
@@ -212,7 +212,7 @@ class Device {
 		$dev->WarrantyCo=$dbRow["WarrantyCo"];
 		@$dev->WarrantyExpire=$dbRow["WarrantyExpire"];
 		$dev->Notes=$dbRow["Notes"];
-		$dev->Reservation=$dbRow["Reservation"];
+		$dev->Status = $dbRow["Status"];
 		$dev->HalfDepth=$dbRow["HalfDepth"];
 		$dev->BackSide=$dbRow["BackSide"];
 		$dev->AuditStamp=$dbRow["AuditStamp"];
@@ -286,7 +286,7 @@ class Device {
 
 		// Remove information that this user isn't allowed to see
 		if($this->Rights=='None'){
-			$publicfields=array('DeviceID','Label','Cabinet','Position','Height','Reservation','DeviceType','Rights');
+			$publicfields=array('DeviceID','Label','Cabinet','Position','Height','Status','DeviceType','Rights');
 			foreach($this as $prop => $value){
 				if(!in_array($prop,$publicfields)){
 					$this->$prop=null;
@@ -393,7 +393,7 @@ class Device {
 			InstallDate=\"".date("Y-m-d", strtotime($this->InstallDate))."\", 
 			WarrantyCo=\"$this->WarrantyCo\", Notes=\"$this->Notes\", 
 			WarrantyExpire=\"".date("Y-m-d", strtotime($this->WarrantyExpire))."\", 
-			Reservation=$this->Reservation, HalfDepth=$this->HalfDepth, 
+			Status=\"$this->Status\", HalfDepth=$this->HalfDepth, 
 			BackSide=$this->BackSide, SerialNo=\"$this->SerialNo\";";
 
 		if(!$dbh->exec($sql)){
@@ -743,7 +743,7 @@ class Device {
 			InstallDate=\"".date("Y-m-d", strtotime($this->InstallDate))."\", 
 			WarrantyCo=\"$this->WarrantyCo\", Notes=\"$this->Notes\", 
 			WarrantyExpire=\"".date("Y-m-d", strtotime($this->WarrantyExpire))."\", 
-			Reservation=$this->Reservation, HalfDepth=$this->HalfDepth, 
+			Status=\"$this->Status\", HalfDepth=$this->HalfDepth, 
 			BackSide=$this->BackSide WHERE DeviceID=$this->DeviceID;";
 
 		// If the device won't update for some reason there is no cause to touch 
@@ -1077,9 +1077,9 @@ class Device {
 
 		// Since we are only concerned with physical space being occupied in terms of capacity, don't worry about child devices
 		if ( $Days == null ) {
-			$sql = "select * from fac_Device where Reservation=true order by InstallDate ASC";
+			$sql = "select * from fac_Device where Status='Reserved' order by InstallDate ASC";
 		} else {
-			$sql = sprintf( "select * from fac_Device where Reservation=true and InstallDate<=(CURDATE()+%d) ORDER BY InstallDate ASC", $Days );
+			$sql = sprintf( "select * from fac_Device where Status='Reserved' and InstallDate<=(CURDATE()+%d) ORDER BY InstallDate ASC", $Days );
 		}
 		
 		$devList = array();
@@ -1095,7 +1095,7 @@ class Device {
 		global $dbh;
 
 		// Since we are only concerned with physical space being occupied in terms of capacity, don't worry about child devices
-		$sql = sprintf( "select a.* from fac_Device a, fac_Cabinet b where a.Cabinet=b.CabinetID and b.DataCenterID=%d and Reservation=true order by a.InstallDate ASC, a.Cabinet ASC", $dc );
+		$sql = sprintf( "select a.* from fac_Device a, fac_Cabinet b where a.Cabinet=b.CabinetID and b.DataCenterID=%d and Status='Reserved' order by a.InstallDate ASC, a.Cabinet ASC", $dc );
 		
 		$devList = array();
 
@@ -1110,7 +1110,7 @@ class Device {
 		global $dbh;
 
 		// Since we are only concerned with physical space being occupied in terms of capacity, don't worry about child devices
-		$sql = sprintf( "select * from fac_Device where Owner=%d and Reservation=true order by InstallDate ASC, Cabinet ASC", $Owner );
+		$sql = sprintf( "select * from fac_Device where Owner=%d and Status='Reserved' order by InstallDate ASC, Cabinet ASC", $Owner );
 		
 		$devList = array();
 
@@ -1222,7 +1222,7 @@ class Device {
 
 		$this->MakeSafe();
 		
-		$sql="SELECT * FROM fac_Device WHERE Label LIKE \"%$this->Label%\" ORDER BY Label;";
+		$sql="SELECT * FROM fac_Device WHERE Status<>'Salvage' AND Label LIKE \"%$this->Label%\" ORDER BY Label;";
 
 		$deviceList = array();
 
@@ -1236,7 +1236,7 @@ class Device {
 	function SearchDevicebyIP(){
 		$this->MakeSafe();
 		
-		$sql="SELECT * FROM fac_Device WHERE PrimaryIP LIKE \"%$this->PrimaryIP%\" ORDER BY Label;";
+		$sql="SELECT * FROM fac_Device WHERE Status<>'Salvage' AND PrimaryIP LIKE \"%$this->PrimaryIP%\" ORDER BY Label;";
 
 		$deviceList = array();
 		foreach($this->query($sql) as $deviceRow){
@@ -1254,7 +1254,7 @@ class Device {
 		$sql="SELECT *, (SELECT b.DataCenterID FROM fac_Device a, fac_Cabinet b 
 			WHERE a.Cabinet=b.CabinetID AND a.DeviceID=search.DeviceID ORDER BY 
 			b.DataCenterID, a.Label) DataCenterID FROM fac_Device search WHERE 
-			Owner=$this->Owner ORDER BY Label;";
+			Status<>'Salvage' AND Owner=$this->Owner ORDER BY Label;";
 
 		$deviceList=array();
 
@@ -1268,7 +1268,7 @@ class Device {
         function GetESXDevices() {
 		global $dbh;
 		
-		$sql="SELECT * FROM fac_Device WHERE Hypervisor='ESX' ORDER BY DeviceID;";
+		$sql="SELECT * FROM fac_Device WHERE Status<>'Salvage' AND Hypervisor='ESX' ORDER BY DeviceID;";
 
 		$deviceList = array();
 
@@ -1341,7 +1341,7 @@ class Device {
 
 		$this->MakeSafe();
 
-		$sql="SELECT * FROM fac_Device WHERE SerialNo LIKE \"%$this->SerialNo%\" ORDER BY Label;";
+		$sql="SELECT * FROM fac_Device WHERE Status<>'Salvage' AND SerialNo LIKE \"%$this->SerialNo%\" ORDER BY Label;";
 
 		$deviceList=array();
 
@@ -1357,7 +1357,7 @@ class Device {
 
 		$this->MakeSafe();
 		
-		$sql="SELECT * FROM fac_Device WHERE AssetTag LIKE \"%$this->AssetTag%\" ORDER BY Label;";
+		$sql="SELECT * FROM fac_Device WHERE Status<>'Salvage' AND AssetTag LIKE \"%$this->AssetTag%\" ORDER BY Label;";
 
 		$deviceList=array();
 
@@ -1544,7 +1544,7 @@ class Device {
 		global $dbh;
 		
 		$sql="SELECT SUM(Height) AS RackUnits,fac_Department.Name AS OwnerName FROM 
-			fac_Device,fac_Department WHERE Owner IS NOT NULL AND 
+			fac_Device,fac_Department WHERE Owner IS NOT NULL AND fac_Device.Status<>'Salvage' AND
 			fac_Device.Owner=fac_Department.DeptID GROUP BY Owner ORDER BY RackUnits 
 			DESC LIMIT 0,10";
 
@@ -1562,7 +1562,7 @@ class Device {
 		global $dbh;
 		
 		$sql="SELECT SUM(NominalWatts) AS TotalPower,fac_Department.Name AS OwnerName 
-			FROM fac_Device,fac_Department WHERE Owner IS NOT NULL AND 
+			FROM fac_Device,fac_Department WHERE Owner IS NOT NULL AND fac_Device.Status<>'Salvage' AND
 			fac_Device.Owner=fac_Department.DeptID GROUP BY Owner ORDER BY TotalPower 
 			DESC LIMIT 0,10";
 

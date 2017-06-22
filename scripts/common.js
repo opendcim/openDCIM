@@ -1557,7 +1557,7 @@ function InsertDevice(obj){
 		}
 
 		for(var i=0;obj.Height-1>=i;i++){
-			if(obj.Reservation){
+			if(obj.Status=="Reserved"){
 				StartingU.find('.pos').addClass('reserved');
 				$('#legend > .legenditem > span.reserved').parent('div').removeClass('hide');
 			}

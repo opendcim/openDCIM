@@ -447,7 +447,7 @@
 			if ( $dev->Hypervisor == "ESX" ) {
 				ESX::RefreshInventory($_POST['VMrefresh']);
 			} elseif ( $dev->Hypervisor == "ProxMox" ) {
-				PMox::RefreshInventory( $_POST['VMrefresh']);
+				PMox::RefreshInventory( $_POST['VMrefresh'], true);
 			}
 			buildVMtable($_POST['VMrefresh']);
 		}
@@ -916,7 +916,9 @@
 		}
 		foreach($customvalues as $customkey=>$customdata) {
 			$prop=$dcaList[$customkey]->Label;
+			if ( property_exists( $device, $prop )) {
 				$customvalues[$customkey]['value']=$device->$prop;
+			}
 		}
 		echo '<div class="table">';	
 		foreach($customvalues as $customkey=>$customdata) {
@@ -1691,8 +1693,16 @@ echo '<div class="center"><div>
 		   <div><input type="text" name="DeviceID" id="DeviceID" value="'.$dev->DeviceID.'" size="6" readonly></div>
 		</div>
 		<div>
-			<div><label for="Reservation">'.__("Reservation?").'</label></div>
-			<div><input type="checkbox" name="Reservation" id="Reservation"'.((($dev->Reservation) || $copy )?" checked":"").'></div>
+			<div><label for="Status">'.__("Status").'</label></div>
+			<div>
+				<select name="Status" id="Status">';
+					foreach(array( "Reserved", "Testing", "Development", "Production", "Spare", "Salvage" ) as $statRow){
+						$selected=($dev->Status==$statRow)?" selected":"";
+						print "\t\t\t\t<option value=\"$statRow\"$selected>" . __($statRow) . "</option>\n";
+					}
+echo '			</select>
+			</div>
+
 		</div>
 		<div>
 		   <div><label for="Label">'.__("Label").'</label></div>

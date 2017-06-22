@@ -539,12 +539,12 @@ class DataCenter {
  
 		$sql="SELECT SUM(a.Height) as TotalU FROM fac_Device a,fac_Cabinet b WHERE 
 			a.Cabinet=b.CabinetID AND b.DataCenterID=$this->DataCenterID AND ParentDevice=0 AND
-			a.Reservation=false AND a.DeviceType IN ('Server', 'Storage Array') and a.Cabinet>0;";
+			a.Status not in ('Reserved', 'Salvage') AND a.DeviceType IN ('Server', 'Storage Array') and a.Cabinet>0;";
 		$dcStats["Occupied"]=($test=$this->query($sql)->fetchColumn())?$test:0;
 
 		// There should never be a case where a device marked as reserved ends up in the Storage Room, but S.U.T. #44
 		$sql="SELECT SUM(a.Height) FROM fac_Device a,fac_Cabinet b WHERE ParentDevice=0 AND
-			a.Cabinet=b.CabinetID AND a.Reservation=true AND b.DataCenterID=$this->DataCenterID and a.Cabinet>0;";
+			a.Cabinet=b.CabinetID AND a.Status='Reserved' AND b.DataCenterID=$this->DataCenterID and a.Cabinet>0;";
 		$dcStats["Allocated"]=($test=$this->query($sql)->fetchColumn())?$test:0;
 		
         $dcStats["Available"]=$dcStats["TotalU"] - $dcStats["Occupied"] - $dcStats["Infrastructure"] - $dcStats["Allocated"];

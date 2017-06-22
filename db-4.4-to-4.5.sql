@@ -20,6 +20,14 @@ INSERT INTO fac_Config set Parameter="SAMLaccountPrefix", Value="", UnitOfMeasur
 INSERT INTO fac_Config set Parameter="SAMLaccountSuffix", Value="", UnitOfMeasure="string", ValType="string", DefaultVal="@example.org";
 
 --
+-- Change the Reservation field to Status
+--
+
+ALTER TABLE fac_Device ADD COLUMN Status varchar(20) NOT NULL DEFAULT 'Production' AFTER Reservation;
+UPDATE fac_Device set Status='Reserved' WHERE Reservation=true;
+ALTER TABLE fac_Device DROP COLUMN Reservation;
+
+--
 -- Bump up the database version (uncomment below once released)
 --
 
