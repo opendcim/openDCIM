@@ -52,6 +52,7 @@ echo '<div class="main">
     <a href="report_warranty.php">',__("Warranty Expiration Report"),'</a>
 	<a href="report_vm_by_department.php">',__("Virtual Machines by Department"),'</a>
 	<a href="report_network_map.php">',__("Network Map"),'</a>
+	<a href="report_vendor_model.php">', __("Vendor/Model Report"),'</a>
 </fieldset>
 </div>
 

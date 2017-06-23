@@ -81,17 +81,11 @@
             exit;
         }
 
-        $manID = intval( $_REQUEST['manufacturerid'] );
-        $dType = in_array( $_REQUEST['devicetype'], array( "Server", "Appliance", "Storage Array", "Switch", "Chassis", "Patch Panel", "Physical Infrastructure", "CDU", "Sensor", "All"))?$_REQUEST['devicetype']:"All";
+        $cacheMethod = PHPExcel_CachedObjectStorageFactory::cache_in_memory_serialized;
+        $retcode = PHPExcel_Settings::setCacheStorageMethod($cacheMethod);
 
-        $dev = new Device();
-        $cab = new Cabinet();
-        $man = new Manufacturer();
-        $dc = new DataCenter();
-        
+        $workBook = new PHPExcel();
 
-    	$workBook = new PHPExcel();
-    	
     	$workBook->getProperties()->setCreator("openDCIM");
     	$workBook->getProperties()->setLastModifiedBy("openDCIM");
     	$workBook->getProperties()->setTitle("Data Center Inventory Export");
@@ -168,13 +162,108 @@
 
         // Now the real data for the report
 
-    	$sheet = $workBook->createSheet();
-    	$sheet->setTitle( "My Worksheet" );
+        $manID = intval( $_REQUEST['manufacturerid'] );
+        $dType = in_array( $_REQUEST['devicetype'], array( "Server", "Appliance", "Storage Array", "Switch", "Chassis", "Patch Panel", "Physical Infrastructure", "CDU", "Sensor", "All"))?$_REQUEST['devicetype']:"All";
 
-    	// Put in the relevant data and add more worksheets as needed
+        $dev = new Device();
+        $cab = new Cabinet();
+        $man = new Manufacturer();
+        $dc = new DataCenter();
+        $dep = new Department();
 
-    	
+        $dcList = $dc->Search( true );
+        $cabList = $cab->Search( true );
+        $depList = $dep->Search( true );
+
+        if ( $manID == 0 ) {
+            $manList = $man->GetManufacturerList();
+        } else {
+            $man->ManufacturerID = $manID;
+            $man->GetManufacturerByID();
+            $manList = array( $man );
+        }
+
+        // Build out the column mapping
+        $columnList = array( "Label"=>"A", "Model"=>"B", "DeviceType"=>"C", "DataCenter"=>"D", "Cabinet"=>"E", "Position"=>"F", "Height"=>"G", "Department"=>"H", "SerialNo"=>"I", "AssetTag"=>"J", "Status"=>"K", "InstallDate"=>"L", "Hypervisor"=>"M" );
+        $DCAList = DeviceCustomAttribute::GetDeviceCustomAttributeList();
+
+        // In case we tweak the number of base columns before the Custom Attributes, this keeps us from having to update the math
+        $columnNum = count($columnList);
+        foreach( $DCAList as $dca ) {
+            $colName = getNameFromNumber(++$columnNum);
+            $labelName = $dca->Label;
+            $columnList[$labelName] = $colName;
+        }
+
+        foreach( $manList as $mfg ) {
+            $dt = new DeviceTemplate();
+            $dt->ManufacturerID = $mfg->ManufacturerID;
+            $templateList = $dt->Search();
+
+            if ( sizeof($templateList) > 0 ) {
+            	$sheet = $workBook->createSheet();
+            	$sheet->setTitle( $mfg->Name );
+
+                foreach( $columnList as $fieldName=>$columnName ) {
+                    $cellAddr = $columnName."1";
+      
+                    $sheet->setCellValue( $cellAddr, $fieldName );
+                }
+                
+                $currRow = 2;
+
+
+                foreach ( $templateList as $t ) {
+                    $dev = new Device();
+                    $dev->TemplateID = $t->TemplateID;
+
+                    if ( $dType != "All" ) {
+                        $dev->DeviceType = $dType;
+                    }
+
+                    $devList = $dev->Search();
+
+                    foreach ( $devList as $d ) {
+                        foreach( $d as $prop=>$val ) {
+                            if ( array_key_exists( $prop, $columnList )) {
+                                $sheet->setCellValue( $columnList[$prop].$currRow, $val );
+                            }
+                        }
+
+                        $sheet->setCellValue( $columnList["Model"].$currRow, $t->Model );
+
+                        if ( $d->Cabinet == -1 ) {
+                            $sheet->setCellValue( $columnList["Cabinet"].$currRow, "Storage" );
+                            $sheet->setCellValue( $columnList["DataCenter"].$currRow, $dcList[$d->Position]->Name);
+                        } else {
+                            $thisCab = $cabList[$d->Cabinet];
+                            $sheet->setCellValue( $columnList["Cabinet"].$currRow, $thisCab->Location);
+                            $sheet->setCellValue( $columnList["DataCenter"].$currRow, $dcList[$thisCab->DataCenterID]->Name);
+                        }
+                        $sheet->setCellValue( $columnList["Department"].$currRow, $depList[$d->Owner]->Name );
+
+                        $currRow++;
+                    }
+                }
+
+                foreach( $columnList as $i => $v ) {
+                    $sheet->getColumnDimension($v)->setAutoSize(true);
+                }
+
+                if ( $currRow == 2 ) {
+                    // Nothing got added, so delete this sheet
+                    $workBook->removeSheetByIndex(
+                        $workBook->getIndex(
+                            $workBook->getSheetByName($mfg->Name)));
+                }
+            }
+        }
+
     	// Now finalize it and send to the client
+
+
+
+        $workBook->setActiveSheetIndex(0);
 
     	header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
     	header( sprintf( "Content-Disposition: attachment;filename=\"opendcim-%s.xlsx\"", date( "YmdHis" ) ) );

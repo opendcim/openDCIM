@@ -270,18 +270,15 @@ class DeviceTemplate {
 		$this->MakeSafe();
 
 		// This will store all our extended sql
-		$sqlextend="";
-		function findit($prop,$val,&$sql,$loose){
-			$method=($loose)?" LIKE \"%$val%\"":"=\"$val\"";
-			$sql.=" AND a.$prop$method";
-		}
+		$sqlextend="WHERE a.ManufacturerID=b.ManufacturerID";
+
 		foreach($o as $prop => $val){
-			findit($prop,$this->$prop,$sqlextend,$loose);
+			extendsql('a.'.$prop,$this->$prop,$sqlextend,$loose);
 		}
 
 		// The join is purely to sort the templates by the manufacturer's name
-		$sql="SELECT a.* FROM fac_DeviceTemplate a, fac_Manufacturer b WHERE
-			a.ManufacturerID=b.ManufacturerID$sqlextend ORDER BY Name ASC, Model ASC;";
+		$sql="SELECT a.* FROM fac_DeviceTemplate a, fac_Manufacturer b 
+			$sqlextend ORDER BY Name ASC, Model ASC;";
 
 		$templateList=array();
 
