@@ -81,6 +81,18 @@
             exit;
         }
 
+        $man = new Manufacturer();
+        $manID = intval( $_REQUEST['manufacturerid'] );
+        $dType = in_array( $_REQUEST['devicetype'], array( "Server", "Appliance", "Storage Array", "Switch", "Chassis", "Patch Panel", "Physical Infrastructure", "CDU", "Sensor", "All"))?$_REQUEST['devicetype']:"All";
+
+        if ( $manID > 0 ) {
+            $man->ManufacturerID = $manID;
+            $man->GetManufacturerByID();
+            $mfgName = $man->Name;
+        } else {
+            $mfgName = "All";
+        }
+
         $cacheMethod = PHPExcel_CachedObjectStorageFactory::cache_in_memory_serialized;
         $retcode = PHPExcel_Settings::setCacheStorageMethod($cacheMethod);
 
@@ -143,9 +155,12 @@
             ->getFont()
             ->setBold(true);
 
-        $remarks = array( "You can add in additional notes about the report, here.",
-        		"Simply place each line of data as a separate element of the array.",
-        		"Each element will be placed on a new line of the front sheet within the workbook." );
+        $remarks = array( __("This is the Vendor(Manufacturer)/Model report from openDCIM."),
+        		__("Each manufacturer is listed in a separate worksheet, with devices listed lexicographically by Label."),
+        		__("The criteria given for this report is:"),
+                __("Manufacturer:") . $mfgName,
+                __("Device Type:") . $dType );
+
         $max_remarks = count($remarks);
         $offset = 8;
         for ($idx = 0; $idx < $max_remarks; $idx ++) {
@@ -162,12 +177,9 @@
 
         // Now the real data for the report
 
-        $manID = intval( $_REQUEST['manufacturerid'] );
-        $dType = in_array( $_REQUEST['devicetype'], array( "Server", "Appliance", "Storage Array", "Switch", "Chassis", "Patch Panel", "Physical Infrastructure", "CDU", "Sensor", "All"))?$_REQUEST['devicetype']:"All";
 
         $dev = new Device();
         $cab = new Cabinet();
-        $man = new Manufacturer();
         $dc = new DataCenter();
         $dep = new Department();
 
