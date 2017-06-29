@@ -28,6 +28,7 @@
       error_log( "Unable to connect to LDAP Server: " . $config->ParameterArray['LDAPServer']);
     } else {
       ldap_set_option( $ldapConn, LDAP_OPT_PROTOCOL_VERSION, 3 );
+      ldap_set_option( $ldapConn, LDAP_OPT_REFERRALS, 0 );
 
       $ldapUser = htmlspecialchars($_POST['username']);
       $ldapDN = str_replace( "%userid%", $ldapUser, $config->ParameterArray['LDAPBindDN']);
