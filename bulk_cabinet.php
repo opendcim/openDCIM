@@ -78,7 +78,7 @@
 
     $fieldNum = 1;
 
-    foreach ( array( "DataCenter"=>"The unique name of the data center to add the cabinets to.", "Label"=>"The name that you wish to assign to the cabinet being imported.  Typically this is a location name.", "Owner"=>"The unique name of the Department to assign this cabinet to.  You may leave blank for General Use cabinets.", "Zone"=>"The name of an existing zone to place this cabinet within.  The combination of Data Center + Zone must be unique.  Optional.", "Row"=>"The name of an existing row to place this cabinet within.  The combination of Data Center + Row must be unique.  Optional.", "Height"=>"The height, in standard Rack Units (RU), of the cabinet.", "Model"=>"Optional, free form text to describe the model of the cabinet.", "U1Position"=>"Field indicating the orientation of the cabinet by stating the location of the first U marker.  Valid values are Top, Bottom, or blank (defaults to Bottom).", "MaxkW"=>"A floating point number to indicate the maximum kW allowed to be placed within this cabinet, based upon site criteria.  Optional.", "MaxWeight"=>"An integer indicating the maximum weight (will assume site defined units) that may be placed within this cabinet.  Optional, but strongly encouraged to be set with correct numbers.", "MapX1"=>"Left edge (based on map orientation) of the cabinet zone on the drawing.  Optional.", "MapX2"=>"Right edge (based on map orientation) of the cabinet zone on the drawing.  Optional.", "MapY1"=>"Top edge (based on map orientation) of the cabinet zone on the drawing.  Optional.", "MapY2"=>"Bottom edge (based on map orientation) of the cabinet zone on the drawing.  Optional.", "FrontEdge"=>"Indicator of which edge air intake comes from, which is used to determine row orientation.  Valid values are Top, Bottom, Left, Right, or blank (will assume Top)." ) as $fieldName=>$helpText ) {
+    foreach ( array( "DataCenter"=>"The unique name of the data center to add the cabinets to.", "Label"=>"The name that you wish to assign to the cabinet being imported.  Typically this is a location name.", "Owner"=>"The unique name of the Department to assign this cabinet to.  You may leave blank for General Use cabinets.", "Zone"=>"The name of an existing zone to place this cabinet within.  The combination of Data Center + Zone must be unique.  Optional.", "Row"=>"The name of an existing row to place this cabinet within.  The combination of Data Center + Row must be unique.  Optional.", "Height"=>"The height, in standard Rack Units (RU), of the cabinet.", "Model"=>"Optional, free form text to describe the model of the cabinet.", "U1Position"=>"Field indicating the orientation of the cabinet by stating the location of the first U marker.  Valid values are Top, Bottom, or blank (defaults to Bottom).", "MaxkW"=>"A floating point number to indicate the maximum kW allowed to be placed within this cabinet, based upon site criteria.  Optional.", "MaxWeight"=>"An integer indicating the maximum weight (will assume site defined units) that may be placed within this cabinet.  Optional, but strongly encouraged to be set with correct numbers.", "MapX1"=>"Left edge (based on map orientation) of the cabinet zone on the drawing.  Optional.", "MapX2"=>"Right edge (based on map orientation) of the cabinet zone on the drawing.  Optional.", "MapY1"=>"Top edge (based on map orientation) of the cabinet zone on the drawing.  Optional.", "MapY2"=>"Bottom edge (based on map orientation) of the cabinet zone on the drawing.  Optional.", "FrontEdge"=>"Indicator of which edge air intake comes from, which is used to determine row orientation.  Valid values are Top, Bottom, Left, Right, or blank (will assume Top).", "Notes"=>"Text input field that contains any notes you may want associated with the cabinet.  Optional." ) as $fieldName=>$helpText ) {
       $content .= '<div>
                     <div><span title="' . __($helpText) . '">' . __($fieldName) . '</span>: </div><div><select name="' . $fieldName . '">';
       for ( $n = 0; $n < sizeof( $fieldList ); $n++ ) {
@@ -124,9 +124,9 @@
 
     // Also make sure we start with an empty string to display
     $content = "";
-    $fields = array( "DataCenter", "Label", "Owner", "Zone", "Row", "Height", "Model", "U1Position", "MaxkW", "MaxWeight", "MapX1", "MapX2", "MapY1", "MapY2", "FrontEdge" );
+    $fields = array( "DataCenter", "Label", "Owner", "Zone", "Row", "Height", "Model", "U1Position", "MaxkW", "MaxWeight", "MapX1", "MapX2", "MapY1", "MapY2", "FrontEdge", "Notes" );
 
-    for ( $n = 2; $n <= $highestRow; $n++ ) {
+    for ( $n = 2; $n <= $highestRow; $n++ ) { 
       $rowError = false;
 
       $cab = new Cabinet();
@@ -135,6 +135,11 @@
       foreach( $fields as $fname ) {
         $addr = chr( 64 + $_REQUEST[$fname]);
         $row[$fname] = sanitize($sheet->getCell( $addr . $n )->getValue());
+      }
+
+      // Stop processing once you hit the first blank cell for 'Location' - some Excel files will return $sheet->getHighestRow() way past the end of any meaningful data
+      if ( $row["Label"] == "" ) {
+        break;
       }
 
       // Pull in the raw data fields
@@ -149,7 +154,8 @@
       $cab->MapX2 = $row["MapX2"];
       $cab->MapY1 = $row["MapY1"];
       $cab->MapY2 = $row["MapY2"];
-      $cab->FrontEdge = $row["FrontEdge"];
+      $cab->FrontEdge = ucwords($row["FrontEdge"]);
+      $cab->Notes = $row["Notes"];
 
       /*
        *
