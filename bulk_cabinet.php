@@ -154,7 +154,7 @@
       $cab->MapX2 = $row["MapX2"];
       $cab->MapY1 = $row["MapY1"];
       $cab->MapY2 = $row["MapY2"];
-      $cab->FrontEdge = ucwords($row["FrontEdge"]);
+      $cab->FrontEdge = ucfirst(strtolower($row["FrontEdge"]));
       $cab->Notes = $row["Notes"];
 
       /*
