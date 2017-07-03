@@ -168,9 +168,11 @@ if($object>0){
 				$maxDraw*=0.8;
 
 				// Only keep the highest percentage of any single CDU in a cabinet
-				$pp=intval($rp / $maxDraw * 100);
-				if($pp>$RealPowerRed){$rpcolor=$rs;}elseif($pp>$RealPowerYellow){$rpcolor=$ys;}else{$rpcolor=$gs;}
-				$tooltip.="<li class=\"$rpcolor\">$label: $pp%</li>\n";
+				if ($maxDraw > 0) {
+					$pp=intval($rp / $maxDraw * 100);
+					if($pp>$RealPowerRed){$rpcolor=$rs;}elseif($pp>$RealPowerYellow){$rpcolor=$ys;}else{$rpcolor=$gs;}
+					$tooltip.="<li class=\"$rpcolor\">$label: $pp%</li>\n";
+				}
 			}
 
 
