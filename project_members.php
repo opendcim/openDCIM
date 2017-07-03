@@ -29,7 +29,7 @@
 			$ProjectID = $_REQUEST['projectid'];
 			ProjectMembership::clearMembership( $ProjectID );
 			foreach ( $grpMembers as $devID ) {
-				ProjectMembership::addMember( $ProjectID, $devID );
+				ProjectMembership::addMember( $ProjectID, $devID, 'Device' );
 			}
 		}
 	}

@@ -24,7 +24,9 @@
 */
 class ProjectMembership {
 	var $ProjectID;
-	var $DeviceID;
+	var $MemberType;
+	var $MemberID;
+
 
 	// 	function getProjectMembership
 	//
@@ -35,7 +37,7 @@ class ProjectMembership {
 	static function getProjectMembership( $ProjectID, $IndexByID=false ) {
 		global $dbh;
 
-		$st = $dbh->prepare( "select * from fac_ProjectMembership where ProjectID=:ProjectID order by DeviceID ASC" );
+		$st = $dbh->prepare( "select * from fac_ProjectMembership where ProjectID=:ProjectID and MemberType='Device' order by MemberID ASC" );
 		$st->setFetchMode( PDO::FETCH_CLASS, "ProjectMembership" );
 		
 		// Since we are using PDO, it is safe to send this blindly to the query.
@@ -43,18 +45,56 @@ class ProjectMembership {
 		$result = array();
 		while ( $row = $st->fetch() ) {
 			$d = new Device();
-			$d->DeviceID = $row->DeviceID;
+			$d->DeviceID = $row->MemberID;
 			$d->GetDevice();
 			if ( $IndexByID == true ) {
-				$result[$row->DeviceID] = $d;
+				$result[$d->DeviceID] = $d;
 			} else {
 				$result[] = $d;
 			}
 		}
 
+		// Now get all of the cabinets that are members of the project, and snag the devices that are in those cabinets 
+		$st = $dbh->prepare( "select DeviceID from fac_Device where Cabinet in (select MemberID from fac_ProjectMembership where MemberType='Cabinet' and ProjectID=:ProjectID)" );
+		$st->setFetchMode( PDO::FETCH_NUM );
+
+		$st->execute( array( ":ProjectID"=>$ProjectID ));
+		while ( $row = $st->fetch() ) {
+			$d = new Device();
+			$d->DeviceID = $row[0];
+			$d->GetDevice();
+			if ( $IndexByID == true ) {
+				$result[$d->DeviceID] = $d;
+			} else {
+				$result[] = $d;
+			}
+		}
+
+
 		return $result;
 	}
 
+	//	function getCabinetMembership
+	//	
+	//	Parameters:	CabinetID
+	//	
+	//	Returns:	Array of Project objects for all projects the CabinetID is a member of
+	//	
+	static function getCabinetMembership( $CabinetID ) {
+		global $dbh;
+
+		$st = $dbh->prepare( "select * from fac_ProjectMembership where MemberType='Cabinet' and MemberID=:CabinetID order by ProjectID ASC" );
+		$st->setFetchMode( PDO::FETCH_CLASS, "ProjectMembership" );
+
+		$st->execute( array( ":CabinetID"=>$CabinetID ));
+		$result = array();
+		while ( $row = $st->fetch() ) {
+			$result[] = Projects::getProject( $row->ProjectID );
+		}
+
+		return $result;
+
+	}
 	//	function getDeviceMembership
 	//
 	//	Parameters:	DeviceID
@@ -64,7 +104,7 @@ class ProjectMembership {
 	static function getDeviceMembership( $DeviceID ) {
 		global $dbh;
 
-		$st = $dbh->prepare( "select * from fac_ProjectMembership where DeviceID=:DeviceID order by ProjectID ASC" );
+		$st = $dbh->prepare( "select * from fac_ProjectMembership where (MemberType='Device' and MemberID=:DeviceID) or (MemberType='Cabinet' and MemberID in (select Cabinet from fac_Device where DeviceID=:DeviceID)) order by ProjectID ASC" );
 		$st->setFetchMode( PDO::FETCH_CLASS, "ProjectMembership" );
 
 		$st->execute( array( ":DeviceID"=>$DeviceID ));
@@ -99,12 +139,14 @@ class ProjectMembership {
 	//
 	//	Returns:	true if success, false if not
 	//
-	static function addMember( $ProjectID, $DeviceID ) {
+	static function addMember( $ProjectID, $MemberID, $MemberType = 'Device' ) {
 		global $dbh;
 
+		$MemberType = in_array( $MemberType, array( "Device", "Cabinet" ))?$MemberType:"Device";
+
 		// Just like above - since we are using prepared statements, it is safe to send blind values
-		$st = $dbh->prepare( "insert into fac_ProjectMembership set ProjectID=:ProjectID, DeviceID=:DeviceID on duplicate key update DeviceID=DeviceID" );
-		return $st->execute( array( ":ProjectID"=>$ProjectID, ":DeviceID"=>$DeviceID ));
+		$st = $dbh->prepare( "insert into fac_ProjectMembership set ProjectID=:ProjectID, MemberType=:MemberType, MemberID=:MemberID on duplicate key update MemberID=MemberID" );
+		return $st->execute( array( ":ProjectID"=>$ProjectID, ":MemberType"=>$MemberType, ":MemberID"=>$MemberID ));
 	}
 }
 ?>

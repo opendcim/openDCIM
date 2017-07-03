@@ -602,6 +602,21 @@ $app->get( '/project', function() {
 });
 
 //
+//	URL:	/api/v1/project/bycabinet/:cabinetid
+//	Method:	GET
+//	Params:	CabinetID
+//	Returns:  All project metadata for projects the cabinetid is a member of
+//
+
+$app->get( '/project/bycabinet/:cabinetid', function($cabinetid) {
+	$r['error']=false;
+	$r['errorcode']=200;
+	$r['project']=ProjectMembership::getCabinetMembership( $cabinetid );
+
+	echoResponse( $r );
+});
+
+//
 //	URL:	/api/v1/project/bydevice/:deviceid
 //	Method:	GET
 //	Params:	DeviceID

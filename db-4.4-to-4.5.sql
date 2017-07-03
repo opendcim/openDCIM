@@ -28,6 +28,14 @@ UPDATE fac_Device set Status='Reserved' WHERE Reservation=true;
 ALTER TABLE fac_Device DROP COLUMN Reservation;
 
 --
+-- Change the Project Membership table
+--
+
+ALTER TABLE fac_ProjectMembership ADD COLUMN MemberType varchar(7) NOT NULL DEFAULT 'Device' AFTER ProjectID;
+ALTER TABLE fac_ProjectMembership CHANGE COLUMN DeviceID MemberID int(11) NOT NULL;
+ALTER TABLE fac_ProjectMembership DROP PRIMARY KEY, ADD PRIMARY KEY (`ProjectID`, `MemberType`, `MemberID`);
+
+--
 -- Bump up the database version (uncomment below once released)
 --
 
