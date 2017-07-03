@@ -20,6 +20,12 @@
 		$DataCenterID = $_REQUEST['datacenterid'];
 	}
 
+	if ( ! isset( $_REQUEST['membertype'] )) {
+		$memberType = "Device";
+	} else {
+		$memberType = in_array( $_REQUEST['membertype'], array( "Device", "Cabinet" ))?$_REQUEST['membertype']:"Device";
+	}
+
 	$proj = Projects::getProject( $_REQUEST['projectid'] );
 
 	// Update if form was submitted and action is set
@@ -35,14 +41,29 @@
 	}
 
 	$dcList = DataCenter::GetDCList();
-	$memberList = ProjectMembership::getProjectMembership( $proj->ProjectID );
-	$devList = Device::getDevicesByDC( $DataCenterID );
 
-	// Build an array of DeviceIDs that are in the memberList
-	$dev = new Device();
-	$memberKeys = array();
-	foreach ( $memberList as $mem ) {
-		$memberKeys[$mem->DeviceID] = $mem->Label;
+	// Here we diverge between devices and cabinets
+	
+	if ( $memberType == "Device" ) {
+		$memberList = ProjectMembership::getProjectMembership( $proj->ProjectID, false, false );
+		$devList = Device::getDevicesByDC( $DataCenterID );
+
+		// Build an array of DeviceIDs that are in the memberList
+		$dev = new Device();
+		$memberKeys = array();
+		foreach ( $memberList as $mem ) {
+			$memberKeys[$mem->DeviceID] = $mem->Label;
+		}
+	} elseif ( $memberType == "Cabinet" ) {
+		$c = new Cabinet();
+		$c->DataCenterID = $DataCenterID;
+		$memberList = ProjectMembership::getProjectCabinets( $proj->ProjectID, false );
+		$cabList = $c->ListCabinetsByDC();
+
+		$memberKeys = array();
+		foreach ( $memberList as $mem ) {
+			$memberKeys[$mem->CabinetID] = $mem->Location;
+		}
 	}
 
 	natsort( $memberKeys );
@@ -66,7 +87,7 @@
 		$('#chosenList').multiselect();
 
 		$('#datacenterid').change(function(e){
-			document.location.href='project_members.php?projectid='+$('#projectid').val()+'&datacenterid='+this.value;
+			document.location.href='project_members.php?membertype=<?php echo $memberType; ?>&projectid='+$('#projectid').val()+'&datacenterid='+this.value;
 		});
 	});
   </script>
@@ -88,6 +109,7 @@ foreach ( $dcList as $dc ) {
 	print "<option value=\"$dc->DataCenterID\" $selected>$dc->Name</option>";
 }
 
+if ( $memberType == "Device" ) {
 echo '</select>
 <div>
 	<select name="chosen[]" id="chosenList" size="15" multiple="multiple">';
@@ -99,6 +121,20 @@ echo '</select>
 			print "\t\t<option value=\"$devRow->DeviceID\">$devRow->Label</option>\n";
 		}
 	}
+} elseif ( $memberType == "Cabinet" ) {
+echo '</select>
+<div>
+	<select name="chosen[]" id="chosenList" size="15" multiple="multiple">';
+	foreach($memberKeys as $CabinetID=>$Location ) {
+		print "<option value='$CabinetID' selected>$Location</option>";
+	}
+	foreach($cabList as $cabRow){
+		if ( ! array_key_exists( $cabRow->CabinetID, $memberKeys )) {
+			print "\t\t<option value=\"$cabRow->CabinetID\">$cabRow->Location</option>\n";
+		}
+	}
+
+}
 echo '</select>
 	<button type="submit" value="Submit" name="action">',__("Submit"),'</button>';
 ?>

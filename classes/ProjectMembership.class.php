@@ -27,6 +27,34 @@ class ProjectMembership {
 	var $MemberType;
 	var $MemberID;
 
+	// 	function getProjectCabinets
+	//
+	//	Parameters:  ProjectID
+	//
+	//	Returns:	Array of Cabinet objects for all members of the given ProjectID
+	//
+	static function getProjectCabinets( $ProjectID, $IndexByID=false ) {
+		global $dbh;
+
+		$st = $dbh->prepare( "select * from fac_ProjectMembership where ProjectID=:ProjectID and MemberType='Cabinet' order by MemberID ASC" );
+		$st->setFetchMode( PDO::FETCH_CLASS, "ProjectMembership" );
+		
+		// Since we are using PDO, it is safe to send this blindly to the query.
+		$st->execute( array( ":ProjectID"=>$ProjectID ));
+		$result = array();
+		while ( $row = $st->fetch() ) {
+			$c = new Cabinet();
+			$c->CabinetID = $row->MemberID;
+			$c->GetCabinet();
+			if ( $IndexByID == true ) {
+				$result[$c->CabinetID] = $c;
+			} else {
+				$result[] = $c;
+			}
+		}
+
+		return $result;
+	}
 
 	// 	function getProjectMembership
 	//
@@ -34,7 +62,7 @@ class ProjectMembership {
 	//
 	//	Returns:	Array of Device objects for all members of the given ProjectID
 	//
-	static function getProjectMembership( $ProjectID, $IndexByID=false ) {
+	static function getProjectMembership( $ProjectID, $IndexByID=false, $Inherited = true ) {
 		global $dbh;
 
 		$st = $dbh->prepare( "select * from fac_ProjectMembership where ProjectID=:ProjectID and MemberType='Device' order by MemberID ASC" );
@@ -54,22 +82,23 @@ class ProjectMembership {
 			}
 		}
 
-		// Now get all of the cabinets that are members of the project, and snag the devices that are in those cabinets 
-		$st = $dbh->prepare( "select DeviceID from fac_Device where Cabinet in (select MemberID from fac_ProjectMembership where MemberType='Cabinet' and ProjectID=:ProjectID)" );
-		$st->setFetchMode( PDO::FETCH_NUM );
+		//	Now get all of the devices that are Project Members, but only if we're not asking for direct membership only
+		if ( $Inherited ) {
+			$st = $dbh->prepare( "select DeviceID from fac_Device where Cabinet in (select MemberID from fac_ProjectMembership where MemberType='Cabinet' and ProjectID=:ProjectID)" );
+			$st->setFetchMode( PDO::FETCH_NUM );
 
-		$st->execute( array( ":ProjectID"=>$ProjectID ));
-		while ( $row = $st->fetch() ) {
-			$d = new Device();
-			$d->DeviceID = $row[0];
-			$d->GetDevice();
-			if ( $IndexByID == true ) {
-				$result[$d->DeviceID] = $d;
-			} else {
-				$result[] = $d;
+			$st->execute( array( ":ProjectID"=>$ProjectID ));
+			while ( $row = $st->fetch() ) {
+				$d = new Device();
+				$d->DeviceID = $row[0];
+				$d->GetDevice();
+				if ( $IndexByID == true ) {
+					$result[$d->DeviceID] = $d;
+				} else {
+					$result[] = $d;
+				}
 			}
 		}
-
 
 		return $result;
 	}

@@ -571,6 +571,21 @@ $app->get( '/device/bydatacenter/:datacenterid', function($datacenterid) {
 });
 
 //
+//	URL:	/api/v1/cabinet/byproject/:projectid
+//	Method:	GET
+//	Params:	projectid (passed in URL)
+//	Returns:  All cabinets for which the user's rights have access to view
+//
+
+$app->get( '/cabinet/byproject/:projectid', function($projectid) {
+	$r['error']=false;
+	$r['errorcode']=200;
+	$r['cabinet']=ProjectMembership::getProjectCabinets( $projectid );
+
+	echoResponse( $r );
+});
+
+//
 //	URL:	/api/v1/device/byproject/:projectid
 //	Method:	GET
 //	Params:	projectid (passed in URL)

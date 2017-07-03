@@ -76,13 +76,21 @@
   <script type="text/javascript" src="scripts/jquery.validationEngine-en.js"></script>
   <script type="text/javascript" src="scripts/jquery.validationEngine.js"></script>
 <script type="text/javascript">
-	function showgroup(obj){
-		self.frames['projectadmin'].location.href='project_members.php?projectid='+obj;
+	function showdevs(obj){
+		self.frames['projectadmin'].location.href='project_members.php?membertype=Device&projectid='+obj;
 		document.getElementById('projectadmin').style.display = "block";
 		document.getElementById('controls').id = "displaynone";
 		$('.main .center form :input:not([name="projectid"])').attr({readonly:'readonly',disabled:'disabled'})
 		$('.color-picker').minicolors('destroy');
 		$('.main .center form').validationEngine('hide');
+	}
+	function showcabs(obj){
+		self.frames['projectadmin'].location.href='project_members.php?membertype=Cabinet&projectid='+obj;
+		document.getElementById('projectadmin').style.display = "block";
+		document.getElementById('controls').id = "displaynone";
+		$('.main .center form :input:not([name="projectid"])').attr({readonly:'readonly',disabled:'disabled'})
+		$('.color-picker').minicolors('destroy');
+		$('.main .center form').validationEngine('hide');		
 	}
 	$(document).ready(function(){
 		$('#projectid').change(function(e){
@@ -163,7 +171,7 @@
 <div class="caption" id="controls">
 <?php
 	if($project->ProjectID > 0){
-		echo '<button type="submit" name="action" value="Update">',__("Update"),'</button><button type="button" name="action" value="Delete">',__("Delete"),'</button><button type="button" onClick="showgroup(',$project->ProjectID,')">',__("Assign Devices"),'</button>';
+		echo '<button type="submit" name="action" value="Update">',__("Update"),'</button><button type="button" name="action" value="Delete">',__("Delete"),'</button><button type="button" onClick="showdevs(',$project->ProjectID,')">',__("Assign Devices"),'</button><button type="button" onClick="showcabs(',$project->ProjectID,')">',__("Assign Cabinets"),'</button>';
 	}else{
     	echo '<button type="submit" name="action" value="Create">',__("Create"),'</button>';
 	}
