@@ -132,7 +132,7 @@ $app->add(function($request, $response, $next) use($person) {
 
 //	Slim Framework 2 middleware
 $app->hook( 'slim.before.dispatch', function() use($person) {
-	if ( AUTHENTICATION == "LDAP" || "AD" ) {
+	if ( AUTHENTICATION == "LDAP" || AUTHENTICATION == "AD" ) {
 		// Getting request headers
 		$headers = apache_request_headers();
 		$response = array();
