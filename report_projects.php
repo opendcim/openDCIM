@@ -140,11 +140,17 @@
                 $sheet->setCellValue( 'A5', __("Actual End:"));
                 $sheet->setCellValue( 'B5', mangleDate( $p->ProjectActualEndDate ));
 
-                if ( sizeof( $prCabList > 0 )){
-                    $sheet->setCellValue( 'A7', __("Cabinet"));
-                    $sheet->setCellValue( 'B7', __("Data Center"));
+                $currRow = 7;
 
-                    $currRow = 8;
+                if ( count( $prCabList > 0 )){
+                    $sheet->setCellValue( 'A'.$currRow, __("Total Assigned Cabinets:"));
+                    $sheet->setCellValue( 'B'.$currRow, count( $prCabList ));
+                    $currRow++;
+                    
+                    $sheet->setCellValue( 'A'.$currRow, __("Cabinet"));
+                    $sheet->setCellValue( 'B'.$currRow, __("Data Center"));
+
+                    $currRow++;
 
                     foreach( $prCabList as $cab ) {
                         $sheet->setCellValue( 'A'.$currRow, $cab->Location );
@@ -154,7 +160,7 @@
                     }
                 }
 
-                if ( sizeof( $prDevList > 0 )) {
+                if ( count( $prDevList > 0 )) {
                     $currRow += 2;
 
                     foreach( $columnList as $fieldName=>$columnName ) {
