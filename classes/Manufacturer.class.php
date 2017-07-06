@@ -111,11 +111,13 @@ class Manufacturer {
 		}
 	}
 	
-	function GetManufacturerList($indexbyid=false){
+	static function GetManufacturerList($indexbyid=false){
+		global $dbh;
+
 		$sql="SELECT * FROM fac_Manufacturer ORDER BY Name ASC;";
 
 		$ManufacturerList=array();
-		foreach($this->query($sql) as $row){
+		foreach($dbh->query($sql) as $row){
 			if($indexbyid){
 				$ManufacturerList[$row['ManufacturerID']]=Manufacturer::RowToObject($row);
 			}else{

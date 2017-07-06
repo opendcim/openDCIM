@@ -1108,6 +1108,19 @@ function getNameFromNumber($num){
 	}
 }
 
+function mangleDate($dateString) {
+	// Take various formats of the date that may have been stored in the db and present them in a nice manner according to ISO8601 Format
+	if ( $dateString == null ) {
+		return "";
+	}
+
+	if ( date( "Y-m-d", $dateString ) == "1969-12-31" ) {
+		return "";
+	} else {
+		return date( "Y-m-d", $dateString );
+	}
+}
+
 class JobQueue {
 	var $SessionID;
 	var $Percentage;

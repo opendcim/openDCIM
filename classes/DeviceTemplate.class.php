@@ -336,13 +336,19 @@ class DeviceTemplate {
 		}
 	}
   
-	function GetTemplateList(){
+	static function GetTemplateList( $indexed=false ){
+		global $dbh;
+
 		$sql="SELECT * FROM fac_DeviceTemplate a, fac_Manufacturer b WHERE 
 			a.ManufacturerID=b.ManufacturerID ORDER BY Name ASC, Model ASC;";
 
 		$templateList=array();
-		foreach($this->query($sql) as $row){
-			$templateList[]=DeviceTemplate::RowToObject($row);
+		foreach($dbh->query($sql) as $row){
+			if ( $indexed ) {
+				$templateList[$row["TemplateID"]]=DeviceTemplate::RowToObject($row);
+			} else {
+				$templateList[]=DeviceTemplate::RowToObject($row);
+			}
 		}
 
 		return $templateList;
