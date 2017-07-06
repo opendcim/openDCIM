@@ -161,10 +161,10 @@ class ProjectMembership {
 	}
 
 	//	function addMember
-	//		Adds the given DeviceID to the membership of the given ProjectID.  In the event that the DeviceID
+	//		Adds the given MemberID to the membership of the given ProjectID.  In the event that the DeviceID
 	//		is already a member, the function will still return success.
 	//
-	//	Parameters:	ProjectID, DeviceID
+	//	Parameters:	ProjectID, MemberID, MemberType
 	//
 	//	Returns:	true if success, false if not
 	//
@@ -176,6 +176,28 @@ class ProjectMembership {
 		// Just like above - since we are using prepared statements, it is safe to send blind values
 		$st = $dbh->prepare( "insert into fac_ProjectMembership set ProjectID=:ProjectID, MemberType=:MemberType, MemberID=:MemberID on duplicate key update MemberID=MemberID" );
 		return $st->execute( array( ":ProjectID"=>$ProjectID, ":MemberType"=>$MemberType, ":MemberID"=>$MemberID ));
+	}
+
+	//	function removeMember
+	//		Removes the specified member from the specified ProjectID.
+	//
+	//	Parameters:	ProjectID, MemberID, MemberType
+	//
+	//	Returns:  	true if success, false if now
+	//
+	static function removeMember( $MemberID, $MemberType, $ProjectID = 0 ) {
+		global $dbh;
+
+		$MemberType = in_array( $MemberType, array( "Device", "Cabinet" ))?$MemberType:"Device";
+
+		if ( $ProjectID > 0 ) {
+			// Just like above - since we are using prepared statements, it is safe to send blind values
+			$st = $dbh->prepare( "delete from fac_ProjectMembership where ProjectID=:ProjectID and MemberType=:MemberType and MemberID=:MemberID" );
+			return $st->execute( array( ":ProjectID"=>$ProjectID, ":MemberType"=>$MemberType, ":MemberID"=>$MemberID ));
+		} else {
+			$st = $dbh->prepare( "delete from fac_ProjectMembership where MemberType=:MemberType and MemberID=:MemberID" );
+			return $st->execute( array( ":MemberType"=>$MemberType, ":MemberID"=>$MemberID ));
+		}
 	}
 }
 ?>

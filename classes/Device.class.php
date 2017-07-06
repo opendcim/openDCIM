@@ -1193,6 +1193,9 @@ class Device {
 			$pdu->PDUID=$this->DeviceID;
 			$pdu->DeletePDU();
 		}
+
+		// Delete any project membership
+		ProjectMembership::removeMember( $this->DeviceID, 'Device' );
 	
 		// Delete all network connections first
 		DevicePorts::removePorts($this->DeviceID);

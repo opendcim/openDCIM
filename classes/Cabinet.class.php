@@ -468,6 +468,9 @@ class Cabinet {
 		foreach($cduList as &$delCDU){
 			$delCDU->DeletePDU();
 		}
+
+		// Remove from any projects
+		ProjectMembership::removeMember( $this->CabinetID, 'Cabinet' );
 		
 		$sql="DELETE FROM fac_Cabinet WHERE CabinetID=$this->CabinetID;";
 
