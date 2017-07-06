@@ -373,7 +373,7 @@ class LogActions {
 			$sqlextend.=" LIMIT $start_from, $num_rec_per_page";
 		}
 
-		$sql="SELECT * FROM fac_GenericLog$sqlextend;";
+		$sql="SELECT * FROM fac_GenericLog $sqlextend;";
 
 		$events=array();		
 		foreach($this->query($sql) as $dbRow){
