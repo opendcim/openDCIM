@@ -142,11 +142,11 @@
 
                 $currRow = 7;
 
-                if ( count( $prCabList > 0 )){
+                if ( count( $prCabList ) > 0 ){
                     $sheet->setCellValue( 'A'.$currRow, __("Total Assigned Cabinets:"));
                     $sheet->setCellValue( 'B'.$currRow, count( $prCabList ));
                     $currRow++;
-                    
+
                     $sheet->setCellValue( 'A'.$currRow, __("Cabinet"));
                     $sheet->setCellValue( 'B'.$currRow, __("Data Center"));
 
@@ -160,7 +160,7 @@
                     }
                 }
 
-                if ( count( $prDevList > 0 )) {
+                if ( count( $prDevList ) > 0 ) {
                     $currRow += 2;
 
                     foreach( $columnList as $fieldName=>$columnName ) {
