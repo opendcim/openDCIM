@@ -615,6 +615,9 @@
 									$dev->{$dca->Label}='';
 								}
 							}
+							if($dca->AttributeType=="checkbox"){
+								$dev->{$dca->Label}='off';
+							}
 						}
 					}
 					// Add in the template specific attributes
