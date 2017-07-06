@@ -173,8 +173,18 @@
                         }
 
                         $sheet->setCellValue( $columnList["DataCenter"].$currRow, $dcList[$cabList[$dev->Cabinet]->DataCenterID]->Name );
-                        $sheet->setCellValue( $columnList["Location"].$currRow, $cabList[$dev->Cabinet]->Location );
-                        $sheet->setCellValue( $columnList["Template"].$currRow, $manList[$tmpList[$dev->TemplateID]->ManufacturerID]->Name . " - " . $tmpList[$dev->TemplateID]->Model );
+                        if ( $dev->Cabinet > 0 ) {
+                            $sheet->setCellValue( $columnList["Location"].$currRow, $cabList[$dev->Cabinet]->Location );
+                        } else {
+                            $sheet->setCellValue( $columnList["Location"].$currRow, __("Storage Room"));
+                        }
+                        
+                        if ( $dev->TemplateID > 0 ) {
+                            $sheet->setCellValue( $columnList["Template"].$currRow, $manList[$tmpList[$dev->TemplateID]->ManufacturerID]->Name . " - " . $tmpList[$dev->TemplateID]->Model );
+                        } else {
+                            $sheet->setCellValue( $columnList["Template"].$currRow, __("Unspecified"));
+                        }
+
                         $sheet->setCellValue( $columnList["Owner"].$currRow, $deptList[$dev->Owner]->Name );
                         $sheet->setCellValue( $columnList["Tags"].$currRow, implode(",", $dev->GetTags()) );
 
