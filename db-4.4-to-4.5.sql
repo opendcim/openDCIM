@@ -36,6 +36,27 @@ ALTER TABLE fac_ProjectMembership CHANGE COLUMN DeviceID MemberID int(11) NOT NU
 ALTER TABLE fac_ProjectMembership DROP PRIMARY KEY, ADD PRIMARY KEY (`ProjectID`, `MemberType`, `MemberID`);
 
 --
+-- New tables for the disposition process to replace the old salvage stuff
+--
+
+CREATE TABLE fac_Disposition (
+DispositionID INT(11) NOT NULL AUTO_INCREMENT,
+Name VARCHAR(80) NOT NULL,
+Description VARCHAR(255) NOT NULL,
+ReferenceNumber VARCHAR(80) NOT NULL,
+Status VARCHAR(10) NOT NULL DEFAULT 'Active',
+PRIMARY KEY (DispositionID)
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
+
+CREATE TABLE fac_DispositionMembership (
+DispositionID INT(11) NOT NULL,
+DeviceID INT(11) NOT NULL,
+DispositionDate DATE NOT NULL,
+DisposedBy VARCHAR(80) NOT NULL,
+PRIMARY KEY (DeviceID)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+--
 -- Bump up the database version (uncomment below once released)
 --
 
