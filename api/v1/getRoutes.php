@@ -571,6 +571,36 @@ $app->get( '/device/bydatacenter/:datacenterid', function($datacenterid) {
 });
 
 //
+//	URL:	/api/v1/disposition
+//	Method:	GET
+//	Params:	None
+//	Returns;	All disposition methods within the database
+//
+
+$app->get( '/disposition', function() {
+	$r['error'] = false;
+	$r['errorcode'] = 200;
+	$r['disposition'] = Disposition::getDisposition();
+
+	echoResponse( $r );
+});
+
+//
+//	URL:	/api/v1/disposition/:dispositionid
+//	Method:	GET
+//	Params:	DispositionID
+//	Returns;	All disposition methods within the database, along with all devices disposed via this method
+//
+
+$app->get( '/disposition/:dispositionid', function($dispositionid) {
+	$r['error'] = false;
+	$r['errorcode'] = 200;
+	$r['disposition'] = Disposition::getDisposition( $dispositionid );
+	$r['devices'] = DispositionMembership::getDevices( $dispositionid );
+	echoResponse( $r );
+});
+
+//
 //	URL:	/api/v1/cabinet/byproject/:projectid
 //	Method:	GET
 //	Params:	projectid (passed in URL)

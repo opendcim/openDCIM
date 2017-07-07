@@ -30,6 +30,8 @@ return array(
     'DeviceCustomAttribute' => $baseDir . '/classes/DeviceCustomAttribute.class.php',
     'DevicePorts' => $baseDir . '/classes/DevicePorts.class.php',
     'DeviceTemplate' => $baseDir . '/classes/DeviceTemplate.class.php',
+    'Disposition' => $baseDir . '/classes/Disposition.class.php',
+    'DispositionMembership' => $baseDir . '/classes/DispositionMembership.class.php',
     'ESX' => $baseDir . '/classes/ESX.class.php',
     'EscalationTimes' => $baseDir . '/classes/EscalationTimes.class.php',
     'Escalations' => $baseDir . '/classes/Escalations.class.php',

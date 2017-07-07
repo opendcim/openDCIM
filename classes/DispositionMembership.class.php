@@ -23,7 +23,7 @@
 	For further details on the license, see http://www.gnu.org/licenses
 */
 
-class DispositionMembership() {
+class DispositionMembership {
 	var $DispositionID;
 	var $DeviceID;
 	var $DispositionDate;

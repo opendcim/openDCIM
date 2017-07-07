@@ -57,11 +57,11 @@ class Disposition {
 		return $this->DispositionID;
 	}
 
-	static function getDisposition( $DispositionID=null, $Indexed = false ) {
+	static function getDisposition( $DispositionID = null, $Indexed = false ) {
 		global $dbh;
 
 		if ( $DispositionID != null ) {
-			$st = $dbh->prepare( "select * from fac_Disposition where Disposition=:DispositionID" );
+			$st = $dbh->prepare( "select * from fac_Disposition where DispositionID=:DispositionID" );
 			$args = array( ":DispositionID"=>$DispositionID );
 		} else {
 			$st = $dbh->prepare( "select * from fac_Disposition order by Name ASC" );

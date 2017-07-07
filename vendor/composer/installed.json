@@ -1,5 +1,112 @@
 [
     {
+        "name": "zzantares/proxmoxve",
+        "version": "v2.1.1",
+        "version_normalized": "2.1.1.0",
+        "source": {
+            "type": "git",
+            "url": "https://github.com/ZzAntares/ProxmoxVE.git",
+            "reference": "852e216df460adca33e1701e4136e8c17d407490"
+        },
+        "dist": {
+            "type": "zip",
+            "url": "https://api.github.com/repos/ZzAntares/ProxmoxVE/zipball/852e216df460adca33e1701e4136e8c17d407490",
+            "reference": "852e216df460adca33e1701e4136e8c17d407490",
+            "shasum": ""
+        },
+        "require": {
+            "lib-curl": "*",
+            "php": ">=5.3.0"
+        },
+        "require-dev": {
+            "phpunit/phpunit": "~4.1",
+            "squizlabs/php_codesniffer": "1.*"
+        },
+        "time": "2014-07-13 21:28:06",
+        "type": "library",
+        "installation-source": "dist",
+        "autoload": {
+            "psr-4": {
+                "ProxmoxVE\\": "src/"
+            }
+        },
+        "notification-url": "https://packagist.org/downloads/",
+        "license": [
+            "MIT"
+        ],
+        "authors": [
+            {
+                "name": "César Muñoz",
+                "email": "zzantares@gmail.com",
+                "role": "Developer"
+            }
+        ],
+        "description": "A simple PHP 5.3+ Proxmox API client.",
+        "homepage": "https://github.com/ZzAntares/ProxmoxVE",
+        "keywords": [
+            "KVM",
+            "OpenVZ",
+            "Proxmox",
+            "Virtualization",
+            "api"
+        ]
+    },
+    {
+        "name": "swiftmailer/swiftmailer",
+        "version": "v5.4.4",
+        "version_normalized": "5.4.4.0",
+        "source": {
+            "type": "git",
+            "url": "https://github.com/swiftmailer/swiftmailer.git",
+            "reference": "545ce9136690cea74f98f86fbb9c92dd9ab1a756"
+        },
+        "dist": {
+            "type": "zip",
+            "url": "https://api.github.com/repos/swiftmailer/swiftmailer/zipball/545ce9136690cea74f98f86fbb9c92dd9ab1a756",
+            "reference": "545ce9136690cea74f98f86fbb9c92dd9ab1a756",
+            "shasum": ""
+        },
+        "require": {
+            "php": ">=5.3.3"
+        },
+        "require-dev": {
+            "mockery/mockery": "~0.9.1"
+        },
+        "time": "2016-11-24 01:01:23",
+        "type": "library",
+        "extra": {
+            "branch-alias": {
+                "dev-master": "5.4-dev"
+            }
+        },
+        "installation-source": "dist",
+        "autoload": {
+            "files": [
+                "lib/swift_required.php"
+            ]
+        },
+        "notification-url": "https://packagist.org/downloads/",
+        "license": [
+            "MIT"
+        ],
+        "authors": [
+            {
+                "name": "Chris Corbyn"
+            },
+            {
+                "name": "Fabien Potencier",
+                "email": "fabien@symfony.com"
+            }
+        ],
+        "description": "Swiftmailer, free feature-rich PHP mailer",
+        "homepage": "http://swiftmailer.org",
+        "keywords": [
+            "email",
+            "mail",
+            "mailer"
+        ]
+    },
+    {
         "name": "phpoffice/phpexcel",
         "version": "1.8.1",
         "version_normalized": "1.8.1.0",
@@ -60,17 +167,17 @@
     },
     {
         "name": "setasign/fpdi",
-        "version": "1.6.1",
-        "version_normalized": "1.6.1.0",
+        "version": "1.6.2",
+        "version_normalized": "1.6.2.0",
         "source": {
             "type": "git",
             "url": "https://github.com/Setasign/FPDI.git",
-            "reference": "5b899b2b41463bf261aa69840fd30b50950a500c"
+            "reference": "a6ad58897a6d97cc2d2cd2adaeda343b25a368ea"
         },
         "dist": {
             "type": "zip",
-            "url": "https://api.github.com/repos/Setasign/FPDI/zipball/5b899b2b41463bf261aa69840fd30b50950a500c",
-            "reference": "5b899b2b41463bf261aa69840fd30b50950a500c",
+            "url": "https://api.github.com/repos/Setasign/FPDI/zipball/a6ad58897a6d97cc2d2cd2adaeda343b25a368ea",
+            "reference": "a6ad58897a6d97cc2d2cd2adaeda343b25a368ea",
             "shasum": ""
         },
         "suggest": {
@@ -78,7 +185,7 @@
             "setasign/fpdi-fpdf": "Use this package to automatically evaluate dependencies to FPDF.",
             "setasign/fpdi-tcpdf": "Use this package to automatically evaluate dependencies to TCPDF."
         },
-        "time": "2015-11-30 10:53:14",
+        "time": "2017-05-11 14:25:49",
         "type": "library",
         "installation-source": "dist",
         "autoload": {
@@ -107,61 +214,6 @@
             "fpdf",
             "fpdi",
             "pdf"
-        ]
-    },
-    {
-        "name": "swiftmailer/swiftmailer",
-        "version": "v5.4.4",
-        "version_normalized": "5.4.4.0",
-        "source": {
-            "type": "git",
-            "url": "https://github.com/swiftmailer/swiftmailer.git",
-            "reference": "545ce9136690cea74f98f86fbb9c92dd9ab1a756"
-        },
-        "dist": {
-            "type": "zip",
-            "url": "https://api.github.com/repos/swiftmailer/swiftmailer/zipball/545ce9136690cea74f98f86fbb9c92dd9ab1a756",
-            "reference": "545ce9136690cea74f98f86fbb9c92dd9ab1a756",
-            "shasum": ""
-        },
-        "require": {
-            "php": ">=5.3.3"
-        },
-        "require-dev": {
-            "mockery/mockery": "~0.9.1"
-        },
-        "time": "2016-11-24 01:01:23",
-        "type": "library",
-        "extra": {
-            "branch-alias": {
-                "dev-master": "5.4-dev"
-            }
-        },
-        "installation-source": "dist",
-        "autoload": {
-            "files": [
-                "lib/swift_required.php"
-            ]
-        },
-        "notification-url": "https://packagist.org/downloads/",
-        "license": [
-            "MIT"
-        ],
-        "authors": [
-            {
-                "name": "Chris Corbyn"
-            },
-            {
-                "name": "Fabien Potencier",
-                "email": "fabien@symfony.com"
-            }
-        ],
-        "description": "Swiftmailer, free feature-rich PHP mailer",
-        "homepage": "http://swiftmailer.org",
-        "keywords": [
-            "email",
-            "mail",
-            "mailer"
         ]
     },
     {
@@ -219,26 +271,27 @@
     },
     {
         "name": "slim/slim",
-        "version": "2.6.2",
-        "version_normalized": "2.6.2.0",
+        "version": "2.6.3",
+        "version_normalized": "2.6.3.0",
         "source": {
             "type": "git",
             "url": "https://github.com/slimphp/Slim.git",
-            "reference": "20a02782f76830b67ae56a5c08eb1f563c351a37"
+            "reference": "9224ed81ac1c412881e8d762755e3d76ebf580c0"
         },
         "dist": {
             "type": "zip",
-            "url": "https://api.github.com/repos/slimphp/Slim/zipball/20a02782f76830b67ae56a5c08eb1f563c351a37",
-            "reference": "20a02782f76830b67ae56a5c08eb1f563c351a37",
+            "url": "https://api.github.com/repos/slimphp/Slim/zipball/9224ed81ac1c412881e8d762755e3d76ebf580c0",
+            "reference": "9224ed81ac1c412881e8d762755e3d76ebf580c0",
             "shasum": ""
         },
         "require": {
             "php": ">=5.3.0"
         },
         "suggest": {
-            "ext-mcrypt": "Required for HTTP cookie encryption"
+            "ext-mcrypt": "Required for HTTP cookie encryption",
+            "phpseclib/mcrypt_compat": "Polyfil for mcrypt extension"
         },
-        "time": "2015-03-08 18:41:17",
+        "time": "2017-01-07 12:21:41",
         "type": "library",
         "installation-source": "dist",
         "autoload": {
@@ -263,58 +316,6 @@
             "microframework",
             "rest",
             "router"
-        ]
-    },
-    {
-        "name": "zzantares/proxmoxve",
-        "version": "v2.1.1",
-        "version_normalized": "2.1.1.0",
-        "source": {
-            "type": "git",
-            "url": "https://github.com/ZzAntares/ProxmoxVE.git",
-            "reference": "852e216df460adca33e1701e4136e8c17d407490"
-        },
-        "dist": {
-            "type": "zip",
-            "url": "https://api.github.com/repos/ZzAntares/ProxmoxVE/zipball/852e216df460adca33e1701e4136e8c17d407490",
-            "reference": "852e216df460adca33e1701e4136e8c17d407490",
-            "shasum": ""
-        },
-        "require": {
-            "lib-curl": "*",
-            "php": ">=5.3.0"
-        },
-        "require-dev": {
-            "phpunit/phpunit": "~4.1",
-            "squizlabs/php_codesniffer": "1.*"
-        },
-        "time": "2014-07-13 21:28:06",
-        "type": "library",
-        "installation-source": "dist",
-        "autoload": {
-            "psr-4": {
-                "ProxmoxVE\\": "src/"
-            }
-        },
-        "notification-url": "https://packagist.org/downloads/",
-        "license": [
-            "MIT"
-        ],
-        "authors": [
-            {
-                "name": "César Muñoz",
-                "email": "zzantares@gmail.com",
-                "role": "Developer"
-            }
-        ],
-        "description": "A simple PHP 5.3+ Proxmox API client.",
-        "homepage": "https://github.com/ZzAntares/ProxmoxVE",
-        "keywords": [
-            "KVM",
-            "OpenVZ",
-            "Proxmox",
-            "Virtualization",
-            "api"
         ]
     }
 ]
