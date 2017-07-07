@@ -26,7 +26,7 @@
         }
 
         $columnList = array( "DataCenter"=>"A", "Location"=>"B", "Position"=>"C", "Height"=>"D", "Label"=>"E", 
-            "SerialNo"=>"F", "AssetTag"=>"G", "DeviceType"=>"H", "Template"=>"I", "Owner"=>"J", "Tags"=>"K" );
+            "SerialNo"=>"F", "AssetTag"=>"G", "DeviceType"=>"H", "Template"=>"I", "Owner"=>"J", "Status"=>"K", "Tags"=>"L" );
         $DCAList = DeviceCustomAttribute::GetDeviceCustomAttributeList();
 
         // In case we tweak the number of base columns before the Custom Attributes, this keeps us from having to update the math
