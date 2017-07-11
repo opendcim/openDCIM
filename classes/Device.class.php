@@ -1242,7 +1242,7 @@ class Device {
 
 		$this->MakeSafe();
 		
-		$sql="SELECT * FROM fac_Device WHERE Status<>'Disposed' AND Label LIKE \"%$this->Label%\" ORDER BY Label;";
+		$sql="SELECT * FROM fac_Device WHERE Label LIKE \"%$this->Label%\" ORDER BY Label;";
 
 		$deviceList = array();
 
@@ -1361,7 +1361,7 @@ class Device {
 
 		$this->MakeSafe();
 
-		$sql="SELECT * FROM fac_Device WHERE Status<>'Disposed' AND SerialNo LIKE \"%$this->SerialNo%\" ORDER BY Label;";
+		$sql="SELECT * FROM fac_Device WHERE SerialNo LIKE \"%$this->SerialNo%\" ORDER BY Label;";
 
 		$deviceList=array();
 
@@ -1377,7 +1377,7 @@ class Device {
 
 		$this->MakeSafe();
 		
-		$sql="SELECT * FROM fac_Device WHERE Status<>'Disposed' AND AssetTag LIKE \"%$this->AssetTag%\" ORDER BY Label;";
+		$sql="SELECT * FROM fac_Device WHERE AssetTag LIKE \"%$this->AssetTag%\" ORDER BY Label;";
 
 		$deviceList=array();
 

@@ -229,7 +229,7 @@
 
 	// Add Rack Names To Temp Cabinet Array
 	foreach($cabtemp as $key => $row){
-		if($key!=-1){
+		if($key>0){
 			$cab->Location='dc lookup error';
 			$cab->DataCenterID='0';
 			$cab->CabinetID=$key;
@@ -240,10 +240,14 @@
 			}else{
 				unset($cabtemp[$key]);
 			}
-		}else{
+		} elseif( $key=="-1" ) {
 			$cabtemp[$key]['name']="Storage Room";
 			$cabtemp[$key]['dc']=0;
 			$dctemp[0]='Storage Room'; // Add datacenter id to list for loop
+		} else {
+			$cabtemp[$key]['name']="Disposed";
+			$cabtemp[$key]['dc']=0;
+			$dctemp[0]="Disposed";
 		}
 	}
 	// Add Datacenter names to temp array
