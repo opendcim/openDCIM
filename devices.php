@@ -1699,7 +1699,7 @@ echo '<div class="center"><div>
 			<div><label for="Status">'.__("Status").'</label></div>
 			<div>
 				<select name="Status" id="Status">';
-					foreach(array( "Reserved", "Testing", "Development", "Production", "Spare", "Salvage" ) as $statRow){
+					foreach(array( "Reserved", "Testing", "Development", "Production", "Spare", "Disposed" ) as $statRow){
 						$selected=($dev->Status==$statRow)?" selected":"";
 						print "\t\t\t\t<option value=\"$statRow\"$selected>" . __($statRow) . "</option>\n";
 					}

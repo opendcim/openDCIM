@@ -36,7 +36,7 @@ class DispositionMembership {
 	}
 
 	function addDevice() {
-		$st = $this->prepare( "insert into fac_DispositionMembership set DispositionID=:DispositionID, DeviceID=:DeviceID, DispositionDate=today(), DisposedBy=:DisposedBy" );
+		$st = $this->prepare( "insert into fac_DispositionMembership set DispositionID=:DispositionID, DeviceID=:DeviceID, DispositionDate=NOW(), DisposedBy=:DisposedBy" );
 		return $st->execute( array( ":DispositionID"=>$this->DispositionID, ":DeviceID"=>$this->DeviceID, ":DisposedBy"=>$this->DisposedBy ));
 	}
 

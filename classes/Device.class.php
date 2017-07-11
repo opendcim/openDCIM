@@ -143,7 +143,8 @@ class Device {
 		$this->WarrantyCo=sanitize($this->WarrantyCo);
 		$this->WarrantyExpire=sanitize($this->WarrantyExpire);
 		$this->Notes=sanitize($this->Notes,false);
-		$this->Status=in_array( $this->Status, array( "Reserved", "Testing", "Development", "Production", "Spare", "Salvage"))?$this->Status:"Reserved";
+		$this->Status=in_array( $this->Status, array( "Reserved", "Testing", "Development", "Production", "Spare",
+			"Disposed"))?$this->Status:"Reserved";
 		$this->HalfDepth=intval($this->HalfDepth);
 		$this->BackSide=intval($this->BackSide);
 		$this->Weight=intval($this->Weight);
@@ -610,27 +611,42 @@ class Device {
 		}
 	}
 
-	
-	function Surplus() {
-		global $dbh;
-		
-		// Make sure we're not trying to decommission a device that doesn't exist
-		if(!$this->GetDevice()){
-			die( "Can't find device $this->DeviceID to decommission!" );
-		}
-
-		$sql="INSERT INTO fac_Decommission VALUES ( NOW(), \"$this->Label\", 
-			\"$this->SerialNo\", \"$this->AssetTag\", \"{$_SERVER['REMOTE_USER']}\" )";
-
-		if(!$dbh->exec($sql)){
-			$info=$dbh->errorInfo();
-
-			error_log("Surplus::PDO Error: {$info[2]} SQL=$sql");
+	function Dispose( $DispositionID ) {
+		//	Make sure the DispositionID is valid, otherwise just return false
+		$dList = Disposition::getDisposition( $DispositionID );
+		if ( count($dList) != 1 ) {
 			return false;
 		}
-		
-		// Ok, we have the transaction of decommissioning, now tidy up the database.
-		$this->DeleteDevice();
+
+		//	Add the device to the Disposition
+		$person = People::Current();
+		$dm = new DispositionMembership();
+
+		$dm->DispositionID = $DispositionID;
+		$dm->DeviceID = $this->DeviceID;
+		$dm->DisposedBy = $person->UserID;
+
+		$dm->addDevice();
+
+		//	If this was a chassis device, do the same to all children
+		if ($this->ChassisSlots>0 || $this->RearChassisSlots>0){
+			$descList=$this->GetDeviceDescendants();
+			foreach($descList as $child){
+				$child->Dispose();
+			}
+		}
+
+		//	Now sever network and power connections (which should have already been done, but just in case)
+		DevicePorts::removeConnections($this->DeviceID);
+		$pc=new PowerConnection();
+		$pc->DeviceID=$this->DeviceID;
+		$pc->DeleteConnections();
+
+		$this->Status = "Disposed";
+		$this->Cabinet = 0;
+		$this->UpdateDevice();
+
+		return true;
 	}
   
 	function MoveToStorage() {
@@ -691,7 +707,8 @@ class Device {
 			$cab->CabinetID=$this->Cabinet;
 			$cab->GetCabinet();
 			// Make sure the user has rights to save a device into the new cabinet
-			if($this->Cabinet!='-1' && $cab->Rights!="Write" ){return false;}
+			// Cabinet 0 is for disposed devices, Cabinet -1 is storage rooms
+			if($this->Cabinet!='-1' && $this->Cabinet!=0 && $cab->Rights!="Write" ){return false;}
 
 			// Clear the power connections
 			PowerPorts::removeConnections($this->DeviceID);
@@ -1225,7 +1242,7 @@ class Device {
 
 		$this->MakeSafe();
 		
-		$sql="SELECT * FROM fac_Device WHERE Status<>'Salvage' AND Label LIKE \"%$this->Label%\" ORDER BY Label;";
+		$sql="SELECT * FROM fac_Device WHERE Status<>'Disposed' AND Label LIKE \"%$this->Label%\" ORDER BY Label;";
 
 		$deviceList = array();
 
@@ -1239,7 +1256,7 @@ class Device {
 	function SearchDevicebyIP(){
 		$this->MakeSafe();
 		
-		$sql="SELECT * FROM fac_Device WHERE Status<>'Salvage' AND PrimaryIP LIKE \"%$this->PrimaryIP%\" ORDER BY Label;";
+		$sql="SELECT * FROM fac_Device WHERE Status<>'Disposed' AND PrimaryIP LIKE \"%$this->PrimaryIP%\" ORDER BY Label;";
 
 		$deviceList = array();
 		foreach($this->query($sql) as $deviceRow){
@@ -1257,7 +1274,7 @@ class Device {
 		$sql="SELECT *, (SELECT b.DataCenterID FROM fac_Device a, fac_Cabinet b 
 			WHERE a.Cabinet=b.CabinetID AND a.DeviceID=search.DeviceID ORDER BY 
 			b.DataCenterID, a.Label) DataCenterID FROM fac_Device search WHERE 
-			Status<>'Salvage' AND Owner=$this->Owner ORDER BY Label;";
+			Status<>'Disposed' AND Owner=$this->Owner ORDER BY Label;";
 
 		$deviceList=array();
 
@@ -1271,7 +1288,7 @@ class Device {
         function GetESXDevices() {
 		global $dbh;
 		
-		$sql="SELECT * FROM fac_Device WHERE Status<>'Salvage' AND Hypervisor='ESX' ORDER BY DeviceID;";
+		$sql="SELECT * FROM fac_Device WHERE Status<>'Disposed' AND Hypervisor='ESX' ORDER BY DeviceID;";
 
 		$deviceList = array();
 
@@ -1344,7 +1361,7 @@ class Device {
 
 		$this->MakeSafe();
 
-		$sql="SELECT * FROM fac_Device WHERE Status<>'Salvage' AND SerialNo LIKE \"%$this->SerialNo%\" ORDER BY Label;";
+		$sql="SELECT * FROM fac_Device WHERE Status<>'Disposed' AND SerialNo LIKE \"%$this->SerialNo%\" ORDER BY Label;";
 
 		$deviceList=array();
 
@@ -1360,7 +1377,7 @@ class Device {
 
 		$this->MakeSafe();
 		
-		$sql="SELECT * FROM fac_Device WHERE Status<>'Salvage' AND AssetTag LIKE \"%$this->AssetTag%\" ORDER BY Label;";
+		$sql="SELECT * FROM fac_Device WHERE Status<>'Disposed' AND AssetTag LIKE \"%$this->AssetTag%\" ORDER BY Label;";
 
 		$deviceList=array();
 
@@ -1547,7 +1564,7 @@ class Device {
 		global $dbh;
 		
 		$sql="SELECT SUM(Height) AS RackUnits,fac_Department.Name AS OwnerName FROM 
-			fac_Device,fac_Department WHERE Owner IS NOT NULL AND fac_Device.Status<>'Salvage' AND
+			fac_Device,fac_Department WHERE Owner IS NOT NULL AND fac_Device.Status<>'Disposed' AND
 			fac_Device.Owner=fac_Department.DeptID GROUP BY Owner ORDER BY RackUnits 
 			DESC LIMIT 0,10";
 
@@ -1565,7 +1582,7 @@ class Device {
 		global $dbh;
 		
 		$sql="SELECT SUM(NominalWatts) AS TotalPower,fac_Department.Name AS OwnerName 
-			FROM fac_Device,fac_Department WHERE Owner IS NOT NULL AND fac_Device.Status<>'Salvage' AND
+			FROM fac_Device,fac_Department WHERE Owner IS NOT NULL AND fac_Device.Status<>'Disposed' AND
 			fac_Device.Owner=fac_Department.DeptID GROUP BY Owner ORDER BY TotalPower 
 			DESC LIMIT 0,10";
 

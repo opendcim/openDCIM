@@ -11,7 +11,24 @@
 	}
 
 	$dev=new Device();
+
+	if ( isset( $_POST["submit"]) && isset( $_POST["deviceid"]) ) {
+		$dispID = $_POST["dispositionid"];
+		$dList = Disposition::getDisposition( $dispID );
+		if ( count( $dList ) == 1 ) {
+			$devList = $_POST["deviceid"];
+
+			foreach( $devList as $d ) {
+				$dev->DeviceID = $d;
+				$dev->GetDevice();
+				$dev->Dispose( $dispID );
+			}
+		}
+	}
+
 	$dc=new DataCenter();
+
+	$dList = Disposition::getDisposition();
 
 	// Cabinet -1 is the Storage Area
 	$dev->Cabinet=-1;
@@ -52,6 +69,7 @@
 <div class="main">
 <?php echo '
 <div class="center"><div>
+<form method="POST">
 <div class="table">
 	<div class="title" id="title">',$srname,'</div>
 	<div>
@@ -63,10 +81,20 @@
 	while(list($devID,$device)=each($devList)){
 		// filter the list of devices in storage rooms to only show the devices for this room
 		if($device->Position==$dc->DataCenterID){
-			echo "<div><div><a href=\"devices.php?DeviceID=$device->DeviceID\">$device->Label</a></div><div>$device->AssetTag</div><div>$device->SerialNo</div><div><a href=\"surplus.php?deviceid=$device->DeviceID\">Surplus</a></div></div>\n";
+			echo "<div><div><a href=\"devices.php?DeviceID=$device->DeviceID\">$device->Label</a></div><div>$device->AssetTag</div><div>$device->SerialNo</div><div><input type=\"checkbox\" name=\"deviceid[]\" value=\"$device->DeviceID\"></div></div>\n";
 		}
 	}
+
+	print "<div><div>";
+	print __("Dispose of selected devices to:");
+	print "</div><div><select name=\"dispositionid\">";
+	foreach( $dList as $disp ) {
+		print "<option value=$disp->DispositionID>$disp->Name</option>";
+	}
+	print "</select></div><div><input type=\"submit\" name=\"submit\" value=\"Go\"></div>";
+	print "</div></div>";
 ?>
+</form>
 </div> <!-- END div.table -->
 </div></div>
 </div><!-- END div.main -->
