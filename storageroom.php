@@ -89,7 +89,9 @@
 	print __("Dispose of selected devices to:");
 	print "</div><div><select name=\"dispositionid\">";
 	foreach( $dList as $disp ) {
-		print "<option value=$disp->DispositionID>$disp->Name</option>";
+		if ( $disp->Status == "Active" ) {
+			print "<option value=$disp->DispositionID>$disp->Name</option>";
+		}
 	}
 	print "</select></div><div><input type=\"submit\" name=\"submit\" value=\"Go\"></div>";
 	print "</div></div>";
