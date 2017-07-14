@@ -240,12 +240,19 @@ $(document).ready(function(){
 			}
 		});
 	});
+<?php
+	// No navigation menu if you're not logged in, yet
+	if ( ! strpos( $_SERVER['SCRIPT_NAME'], "login" ) ) {
+?>
 	$.get('scripts/ajax_navmenu.php').done(function(data){
 		$('#nav_placeholder').replaceWith(data);
 		if(document.readyState==="complete" && $('#datacenters .bullet').length==0){
 			window.convertTrees();
 		}
 	});
+<?php
+	}
+?>
 });
 
 </script>

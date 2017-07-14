@@ -890,6 +890,18 @@ class Device {
 		if ($this->ChassisSlots>0 || $this->RearChassisSlots>0){
 				$this->SetChildDevicesCabinet();
 		}
+
+		// See if this device had been previously marked as disposed - if so, remove from that listing and do some
+		// sanity checks (also done in the UI, but this could be an API update)
+		if ( $tmpDev->Status == "Disposed" && $this->Status != "Disposed" ) {
+			DispositionMembership::removeDevice( $this->DeviceID );
+		}
+
+		if ( $this->Status == "Disposed" ) {
+			// Don't allow items still marked as disposed to be placed in a cabinet at all
+			$this->Cabinet = 0;
+			$this->Position = 0;
+		}
 		
 		(class_exists('LogActions'))?LogActions::LogThis($this,$tmpDev):'';
 		return true;

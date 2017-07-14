@@ -858,7 +858,7 @@ if(!People::Current()){
 		header("Location: ".redirect('saml/login.php'));
 		exit;
 	} elseif ( AUTHENTICATION=="LDAP" && !isset($loginPage) ) {
-		header("Location: ".redirect($config->ParameterArray['InstallURL'].'login_ldap.php'));
+		header("Location: ".redirect('login_ldap.php'));
 		exit;
 	} elseif(AUTHENTICATION=="Apache"){
 		print "<h1>You must have some form of Authentication enabled to use openDCIM.</h1>";
