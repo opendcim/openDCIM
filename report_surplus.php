@@ -1,145 +1,198 @@
 <?php
-	require_once( 'db.inc.php' );
-	require_once( 'facilities.inc.php' );
-
-if(!$person->ReadAccess){
-    // No soup for you.
-    header('Location: '.redirect());
-    exit;
-}
-
-	$subheader=__("Surplus/Salvage Device Reporting");
-
-	define('FPDF_FONTPATH','font/');
-	require('fpdf.php');
-
-class PDF extends FPDF {
-  var $outlines=array();
-  var $OutlineRoot;
-  var $pdfconfig;
-  var $pdfDB;
-  
-	function PDF(){
-		parent::FPDF();
-	}
-  
-	function Header() {
-		if ( $_REQUEST["startdate"] > "" )
-			$startDate = date( "Y-m-d", strtotime( $_REQUEST["startdate"] ));
-		else
-			$startDate = date( "Y-m-d", strtotime( "2010-01-01"));
-			
-		if ( $_REQUEST["enddate"] > "" )
-			$endDate = date( "Y-m-d", strtotime( $_REQUEST["enddate"] ));
-		else
-			$endDate = date( "Y-m-d" );
-		
-		$this->pdfconfig = new Config();
-		$this->Link( 10, 8, 100, 20, 'https://' . $_SERVER['SERVER_NAME'] . $_SERVER['SCRIPT_NAME'] );
-		if ( file_exists( 'images/' . $this->pdfconfig->ParameterArray['PDFLogoFile'] )) {
-	    	$this->Image( 'images/' . $this->pdfconfig->ParameterArray['PDFLogoFile'],10,8,100);
-		}
-    	$this->SetFont($this->pdfconfig->ParameterArray['PDFfont'],'B',12);
-    	$this->Cell(120);
-    	$this->Cell(30,20,__("Information Technology Services"),0,0,'C');
-    	$this->Ln(25);
-		$this->SetFont( $this->pdfconfig->ParameterArray['PDFfont'],'',10 );
-		$this->Cell( 50, 6, __("Surplus/Salvage Audit Report"), 0, 1, 'L' );
-		$this->Cell( 50, 6, __("Dates").': ' . $startDate . ' - ' . $endDate, 0, 1, 'L' );
-		$this->Ln(10);
-	}
-
-	function Footer() {
-	    	$this->SetY(-15);
-    		$this->SetFont($this->pdfconfig->ParameterArray['PDFfont'],'I',8);
-    		$this->Cell(0,10,__("Page").' '.$this->PageNo().'/{nb}',0,0,'C');
-	}
+/*	Template file for creating Excel based reports
 	
-  function Bookmark($txt,$level=0,$y=0) {
-    if($y==-1)
-        $y=$this->GetY();
-    $this->outlines[]=array('t'=>$txt,'l'=>$level,'y'=>$y,'p'=>$this->PageNo());
-  }
+	Basically just the setup of the front page for consistency
+*/
 
-  function _putbookmarks() {
-    $nb=count($this->outlines);
-    if($nb==0)
-        return;
-    $lru=array();
-    $level=0;
-    foreach($this->outlines as $i=>$o)
-    {
-        if($o['l']>0)
-        {
-            $parent=$lru[$o['l']-1];
-            //Set parent and last pointers
-            $this->outlines[$i]['parent']=$parent;
-            $this->outlines[$parent]['last']=$i;
-            if($o['l']>$level)
-            {
-                //Level increasing: set first pointer
-                $this->outlines[$parent]['first']=$i;
+	require_once "db.inc.php";
+	require_once "facilities.inc.php";
+	require_once "vendor/autoload.php";
+
+	$person = People::Current();
+
+
+	if ( isset( $_REQUEST['action'])) {
+		$disp = $_REQUEST['dispositionid'];
+		if ( $disp == 0 ) {
+			$dispList = Disposition::getDisposition( null, true );
+			$dispDesc = __("All Mechanisms");
+		} else {
+			$dispList = Disposition::getDisposition( $disp, true );
+			$dispDesc = $dispList[0]->Name;
+		}
+
+		if ( isset( $_REQUEST['startdate'] ) && $_REQUEST['startdate'] != "" ) { 
+			$startDate = date( "Y-m-d", strtotime( $_REQUEST['startdate'] ));
+			$startDesc = $startDate;
+		} else {
+			$startDate = "";
+			$startDesc = __("Beginning of epoch");
+		}
+
+		if ( isset( $_REQUEST['enddate']) && $_REQUEST['enddate'] != "" ) {
+			$endDate = date( "Y-m-d", strtotime( $_REQUEST['enddate'] ));
+			$endDesc = $endDate;
+		} else {
+			$endDate = "";
+			$endDesc = __("Now");
+		}
+
+        $dep = new Department();
+        $depList = $dep->Search( true );
+
+        $man = new Manufacturer();
+        $manList = $man->GetManufacturerList( true );
+
+        $dev = new Device();
+        $dt = new DeviceTemplate();
+
+		$workBook = new PHPExcel();
+		
+		$workBook->getProperties()->setCreator("openDCIM");
+		$workBook->getProperties()->setLastModifiedBy("openDCIM");
+		$workBook->getProperties()->setTitle("Data Center Inventory Export");
+		$workBook->getProperties()->setSubject("Data Center Inventory Export");
+		$workBook->getProperties()->setDescription("Export of the openDCIM database based upon user filtered criteria.");
+		
+		// Start off with the TPS Cover Page
+
+		$workBook->setActiveSheetIndex(0);
+		$sheet = $workBook->getActiveSheet();
+
+	    $sheet->SetTitle('Front Page');
+	    // add logo
+	    $objDrawing = new PHPExcel_Worksheet_Drawing();
+	    $objDrawing->setWorksheet($sheet);
+	    $objDrawing->setName("Logo");
+	    $objDrawing->setDescription("Logo");
+	    $apath = __DIR__ . DIRECTORY_SEPARATOR . 'images' . DIRECTORY_SEPARATOR;
+	    $objDrawing->setPath($apath . $config->ParameterArray['PDFLogoFile']);
+	    $objDrawing->setCoordinates('A1');
+	    $objDrawing->setOffsetX(5);
+	    $objDrawing->setOffsetY(5);
+
+	    $logoHeight = getimagesize( $apath . $config->ParameterArray['PDFLogoFile']);
+	    $sheet->getRowDimension('1')->setRowHeight($logoHeight[1]);
+
+	    // set the header of the print out
+	    $header_range = "A1:B2";
+	    $fillcolor = $config->ParameterArray['HeaderColor'];
+	    $fillcolor = (strpos($fillcolor, '#') == 0) ? substr($fillcolor, 1) : $fillcolor;
+	    $sheet->getStyle($header_range)
+	        ->getFill()
+	        ->getStartColor()
+	        ->setRGB($fillcolor);
+
+	    $org_font_size = 20;
+	    $sheet->setCellValue('A2', $config->ParameterArray['OrgName']);
+	    $sheet->getStyle('A2')
+	        ->getFont()
+	        ->setSize($org_font_size);
+	    $sheet->getStyle('A2')
+	        ->getFont()
+	        ->setBold(true);
+	    $sheet->getRowDimension('2')->setRowHeight($org_font_size + 2);
+	    $sheet->setCellValue('A4', 'Report generated by \''
+	        . $person->UserID
+	        . '\' on ' . date('Y-m-d H:i:s'));
+
+	    // Add text about the report itself
+	    $sheet->setCellValue('A7', 'Notes');
+	    $sheet->getStyle('A7')
+	        ->getFont()
+	        ->setSize(14);
+	    $sheet->getStyle('A7')
+	        ->getFont()
+	        ->setBold(true);
+
+	    $remarks = array( __("This report contains information about items that have been disposed/removed from the data center."),
+	    		__("Each item is disosed through a specific mechanism or contract vehicle."),
+	    		__("Criteria for this report:"), $dispDesc
+	    		, __("Date Range:") . " $startDesc to $endDesc" );
+	    $max_remarks = count($remarks);
+	    $offset = 8;
+	    for ($idx = 0; $idx < $max_remarks; $idx ++) {
+	        $row = $offset + $idx;
+	        $sheet->setCellValueExplicit('B' . ($row),
+	            $remarks[$idx],
+	            PHPExcel_Cell_DataType::TYPE_STRING);
+	    }
+	    $sheet->getStyle('B' . $offset . ':B' . ($offset + $max_remarks - 1))
+	        ->getAlignment()
+	        ->setWrapText(true);
+	    $sheet->getColumnDimension('B')->setWidth(120);
+	    $sheet->getTabColor()->setRGB($fillcolor);
+
+	    // Now the real data for the report
+	    $columnList = array( "Label"=>"A", "SerialNumber"=>"B", "AssetTag"=>"C", "Manufacturer"=>"D", "Model"=>"E", "Disposal Date"=>"F", "Disposed By"=>"G" );
+
+	    foreach ( $dispList as $disp ) {
+			$sheet = $workBook->createSheet();
+			$sheet->setTitle( $disp->Name );
+
+			$sheet->setCellValue( "B1", __("Disposition Mechanism"));
+			$sheet->setCellValue( "A2", __("Name"));
+			$sheet->setCellValue( "B2", $disp->Name );
+			$sheet->setCellValue( "A3", __("Description"));
+			$sheet->mergeCells( "B3:G3");
+			$sheet->getStyle( "B3" )->getAlignment()->setWrapText(true);
+			$sheet->setCellValue( "B3", $disp->Description );
+			$sheet->setCellValue( "A4", __("Reference Number"));
+			$sheet->setCellValue( "B4", $disp->ReferenceNumber );
+			$sheet->setCellValue( "A5", __("Status"));
+			$sheet->setCellValue( "B5", $disp->Status );
+
+
+            foreach( $columnList as $fieldName=>$columnName ) {
+                $cellAddr = $columnName."7";
+  
+                $sheet->setCellValue( $cellAddr, $fieldName );
             }
-        }
-        else
-            $this->outlines[$i]['parent']=$nb;
-        if($o['l']<=$level and $i>0)
-        {
-            //Set prev and next pointers
-            $prev=$lru[$o['l']];
-            $this->outlines[$prev]['next']=$i;
-            $this->outlines[$i]['prev']=$prev;
-        }
-        $lru[$o['l']]=$i;
-        $level=$o['l'];
-    }
-    //Outline items
-    $n=$this->n+1;
-    foreach($this->outlines as $i=>$o)
-    {
-        $this->_newobj();
-        $this->_out('<</Title '.$this->_textstring($o['t']));
-        $this->_out('/Parent '.($n+$o['parent']).' 0 R');
-        if(isset($o['prev']))
-            $this->_out('/Prev '.($n+$o['prev']).' 0 R');
-        if(isset($o['next']))
-            $this->_out('/Next '.($n+$o['next']).' 0 R');
-        if(isset($o['first']))
-            $this->_out('/First '.($n+$o['first']).' 0 R');
-        if(isset($o['last']))
-            $this->_out('/Last '.($n+$o['last']).' 0 R');
-        $this->_out(sprintf('/Dest [%d 0 R /XYZ 0 %.2f null]',1+2*$o['p'],($this->h-$o['y'])*$this->k));
-        $this->_out('/Count 0>>');
-        $this->_out('endobj');
-    }
-    //Outline root
-    $this->_newobj();
-    $this->OutlineRoot=$this->n;
-    $this->_out('<</Type /Outlines /First '.$n.' 0 R');
-    $this->_out('/Last '.($n+$lru[0]).' 0 R>>');
-    $this->_out('endobj');
-  }
+        
+        	$currRow = 8;
 
-  function _putresources()
-  {
-    parent::_putresources();
-    $this->_putbookmarks();
-  }
+        	$dispDevList = DispositionMembership::getDevices( $disp->DispositionID );
+        	foreach( $dispDevList as $d ) {
+        		if (( $startDate == "" || strtotime($startDate)<=strtotime($d->DispositionDate)) && ( $endDate == "" || strtotime($endDate)>=strtotime($d->DispositionDate))) {
+	        		$dev->DeviceID = $d->DeviceID;
+	        		$dev->GetDevice();
 
-  function _putcatalog()
-  {
-    parent::_putcatalog();
-    if(count($this->outlines)>0)
-    {
-        $this->_out('/Outlines '.$this->OutlineRoot.' 0 R');
-        $this->_out('/PageMode /UseOutlines');
-    }
-  }
-}
+	                $sheet->setCellValue( $columnList["Label"].$currRow, $dev->Label );
+	                $sheet->setCellValue( $columnList["SerialNumber"].$currRow, $dev->SerialNo );
+	                $sheet->setCellValue( $columnList["AssetTag"].$currRow, $dev->AssetTag );
 
-if(!isset($_REQUEST['action'])){
-	$dc = new DataCenter();
-	$dcList = $dc->GetDCList();
+	                if ( $dev->TemplateID > 0 ) {
+		                $dt->TemplateID = $dev->TemplateID;
+		                $dt->GetTemplateByID();
+
+		                $sheet->setCellValue( $columnList["Manufacturer"].$currRow, $manList[$dt->ManufacturerID]->Name );
+		                $sheet->setCellValue( $columnList["Model"].$currRow, $dt->Model );
+		            }
+
+	                $sheet->setCellValue( $columnList["Disposal Date"].$currRow, $d->DispositionDate );
+	                $sheet->setCellValue( $columnList["Disposed By"].$currRow, $d->DisposedBy );
+
+	                $currRow++;
+	            }
+        	}
+
+			// Autosize the columns
+            foreach( $columnList as $i => $v ) {
+                $sheet->getColumnDimension($v)->setAutoSize(true);
+            }
+		}			
+		// Now finalize it and send to the client
+
+		$workBook->setActiveSheetIndex(0);
+
+		header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+		header( sprintf( "Content-Disposition: attachment;filename=\"opendcim-%s.xlsx\"", date( "YmdHis" ) ) );
+		
+		$writer = new PHPExcel_Writer_Excel2007($workBook);
+		$writer->save('php://output');
+
+	} else {
+		$dispList = Disposition::getDisposition();
 ?>
 <!doctype html>
 <html>
@@ -174,11 +227,22 @@ $(function(){
 <div class="page">
 <?php
 	include( 'sidebar.inc.php' );
-?>
-<div class="main">
+echo '<div class="main">
 <div class="center"><div>
+<h2>',__("Device Disposition Report"),'</h2>
 <form method="post" id="auditform">
 <div class="table">
+	<div>
+		<div><label for="dispositionid">',__("Disposal Mechanism"),':</div>
+		<div><select name="dispositionid" id="dispositionid"><option value="0">All Mechanisms</option>';
+
+	foreach( $dispList as $disp ) {
+		print "<option value=\"$disp->DispositionID\">$disp->Name</option>\n";
+	}
+
+	echo '</select>
+		</div>
+	</div>
 	<div>
 		<div><label for="startdate">Start Date:</label></div>
 		<div><input type="text" id="startdate" name="startdate"></div>
@@ -197,93 +261,6 @@ $(function(){
 </div><!-- END div.main -->
 </div><!-- END div.page -->
 </body>
-</html>
-<?php
-}else{
-
-	//
-	//
-	//	Begin Report Generation
-	//
-	//
-
-
-	
-	$pdf=new PDF();
-	$pdf->AliasNbPages();
-	include_once("loadfonts.php");
-	$pdf->SetFont($config->ParameterArray['PDFfont'],'',8);
-
-	$pdf->SetFillColor( 0, 0, 0 );
-	$pdf->SetTextColor( 255 );
-	$pdf->SetDrawColor( 128, 0, 0 );
-	$pdf->SetLineWidth( .3 );
-
-	$pdf->SetfillColor( 224, 235, 255 );
-	$pdf->SetTextColor( 0 );
-	
-	$column = 0;
-	
-	$pdf->SetLeftMargin( 10 );
-	$pdf->AddPage();
-	$pdf->Bookmark( "Surplus/Salvage by Date" );
-	
-	$pdf->Cell( 80, 5, __("Surplus/Salvage by Date") );
-	$pdf->Ln();
-	
-	$headerTags = array( __("Surplus Date"), __("Name"), __("Serial Number"), __("Asset Tag"), __("UserName") );
-	$cellWidths = array( 30, 40, 40, 30, 30 );
-	
-	$fill = 0;
-	
-	$maxval = count( $headerTags );
-
-	for ( $col = 0; $col < $maxval; $col++ )
-		$pdf->Cell( $cellWidths[$col], 7, $headerTags[$col], 1, 0, 'C', 1 );
-	
-	$pdf->Ln();
-
-	if ( $_REQUEST["startdate"] > "" )
-		$startDate = date( "Y-m-d", strtotime( $_REQUEST["startdate"] ));
-	else
-		$startDate = "2010-01-01";
-	
-	if ( $_REQUEST["enddate"] > "" )
-		$endDate = date( "Y-m-d", strtotime( $_REQUEST["enddate"] ));
-	else
-		$endDate = date( "Y-m-d" );
-	
-	$sql="SELECT a.*, b.Name FROM fac_Decommission a, fac_User b WHERE 
-		a.UserID=b.UserID AND SurplusDate>='$startDate' AND SurplusDate<='$endDate' 
-		ORDER BY SurplusDate DESC;";
-
-	$currDate = "";
-	$borders = "LR";
-
-	foreach($dbh->query($sql) as $resRow){	
-		if($currDate!=$resRow["SurplusDate"]){
-			$pdf->Cell( $cellWidths[0], 6, date( "Y-m-d", strtotime( $resRow["SurplusDate"] ) ), $borders, 0, 'L', $fill );
-		}else{
-			$pdf->Cell( $cellWidths[0], 6, "", $borders, 0, 'L', $fill );
-		}
-		
-		$currDate = $resRow["SurplusDate"];
-		
-		$pdf->Cell( $cellWidths[1], 6, $resRow["Label"], $borders, 0, 'L', $fill );
-		$pdf->Cell( $cellWidths[2], 6, $resRow["SerialNo"], $borders, 0, 'L', $fill );
-		$pdf->Cell( $cellWidths[3], 6, $resRow["AssetTag"], $borders, 0, 'L', $fill );
-		$pdf->Cell( $cellWidths[4], 6, $resRow["Name"], $borders, 0, 'L', $fill );
-	
-		$pdf->Ln();
-		
-		$fill =! $fill;
-	}
-
-	$pdf->Cell( array_sum( $cellWidths ), 0, '', 'T' );
-	$pdf->Ln();
-	
-	$pdf->Output();
-	
+</html>';
 }
 ?>
-
