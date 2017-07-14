@@ -129,9 +129,9 @@ function redirect($target = null) {
 		}
 	}
 	if(array_key_exists('HTTPS', $_SERVER) && $_SERVER["HTTPS"]=='on') {
-		$url = "https://".$_SERVER['HTTP_HOST'].$target;
+		$url = "https://".$_SERVER['SERVER_NAME'].$target;
 	} else {
-		$url = "http://".@$_SERVER['HTTP_HOST'].$target;
+		$url = "http://".@$_SERVER['SERVER_NAME'].$target;
 	}
 	return $url;
 }
