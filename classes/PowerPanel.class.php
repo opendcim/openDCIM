@@ -43,6 +43,11 @@ class PowerPanel {
 	var $ParentBreakerName;	// For switchgear, this usually won't be numbered, so we're accepting text
 	var $PanelIPAddress;
 	var $TemplateID;
+	var $MapDataCenterID;
+	var $MapDataCenterX1;
+	var $MapDataCenterX2;
+	var $MapDataCenterY1;
+	var $MapDataCenterY2;
 	
 	function prepare( $sql ) {
 		global $dbh;
@@ -80,6 +85,11 @@ class PowerPanel {
 		$this->ParentBreakerName=sanitize($this->ParentBreakerName);
 		$this->PanelIPAddress=sanitize($this->PanelIPAddress);
 		$this->TemplateID=intval($this->TemplateID);
+		$this->MapDataCenterID=intval($this->MapDataCenterID);
+		$this->MapDataCenterX1=intval($this->MapDataCenterX1);
+		$this->MapDataCenterX2=intval($this->MapDataCenterX2);
+		$this->MapDataCenterY1=intval($this->MapDataCenterY1);
+		$this->MapDataCenterY2=intval($this->MapDataCenterY2);
 	}
 
 	function MakeDisplay(){
@@ -100,6 +110,11 @@ class PowerPanel {
 		$panel->ParentBreakerName=$row["ParentBreakerName"];
 		$panel->TemplateID=$row["TemplateID"];
 		$panel->PanelIPAddress=$row["PanelIPAddress"];
+		$panel->MapDataCenterID=$row["MapDataCenterID"];
+		$panel->MapDataCenterX1=$row["MapDataCenterX1"];
+		$panel->MapDataCenterX2=$row["MapDataCenterX2"];
+		$panel->MapDataCenterY1=$row["MapDataCenterY1"];
+		$panel->MapDataCenterY2=$row["MapDataCenterY2"];
 
 		$panel->MakeDisplay();
 
@@ -296,7 +311,9 @@ class PowerPanel {
 			PanelLabel=\"$this->PanelLabel\", NumberOfPoles=$this->NumberOfPoles, 
 			MainBreakerSize=$this->MainBreakerSize, PanelVoltage=$this->PanelVoltage, 
 			NumberScheme=\"$this->NumberScheme\", ParentPanelID=$this->ParentPanelID,
-			ParentBreakerName=\"$this->ParentBreakerName\", TemplateID=$this->TemplateID;";
+			ParentBreakerName=\"$this->ParentBreakerName\", TemplateID=$this->TemplateID,
+			MapDataCenterID=$this->MapDataCenterID, MapDataCenterX1=$this->MapDataCenterX1,
+			MapDataCenterY1=$this->MapDataCenterY1,MapDataCenterY2=$this->MapDataCenterY2;";
 
 		if(!$this->exec($sql)){
 			$info=$this->errorInfo();
@@ -543,7 +560,9 @@ class PowerPanel {
 			PanelLabel=\"$this->PanelLabel\", NumberOfPoles=$this->NumberOfPoles, 
 			MainBreakerSize=$this->MainBreakerSize, PanelVoltage=$this->PanelVoltage, 
 			NumberScheme=\"$this->NumberScheme\", ParentPanelID=$this->ParentPanelID,
-			ParentBreakerName=\"$this->ParentBreakerName\", TemplateID=$this->TemplateID
+			ParentBreakerName=\"$this->ParentBreakerName\", TemplateID=$this->TemplateID,
+			MapDataCenterID=$this->MapDataCenterID, MapDataCenterX1=$this->MapDataCenterX1,
+			MapDataCenterY1=$this->MapDataCenterY1,MapDataCenterY2=$this->MapDataCenterY2
 			WHERE PanelID=$this->PanelID;";
 
 		if(!$this->query($sql)){

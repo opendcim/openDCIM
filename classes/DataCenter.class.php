@@ -416,7 +416,7 @@ class DataCenter {
 					$maxDraw*=0.8;
 
 					// Only keep the highest percentage of any single CDU in a cabinet
-					if ( $$maxDraw > 0 ) {
+					if ( $maxDraw > 0 ) {
 						$pp=intval($rp / $maxDraw * 100);
 					} else {
 						$pp = 0;

@@ -57,6 +57,16 @@ PRIMARY KEY (DeviceID)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 --
+-- Add some new fields to the Power Panel table
+--
+
+ALTER TABLE fac_PowerPanel ADD COLUMN MapDataCenterID INT(11) NOT NULL;
+ALTER TABLE fac_PowerPanel ADD COLUMN MapDataCenterX1 INT(11) NOT NULL;
+ALTER TABLE fac_PowerPanel ADD COLUMN MapDataCenterX2 INT(11) NOT NULL;
+ALTER TABLE fac_PowerPanel ADD COLUMN MapDataCenterY1 INT(11) NOT NULL;
+ALTER TABLE fac_PowerPanel ADD COLUMN MapDataCenterY2 INT(11) NOT NULL;
+
+--
 -- Bump up the database version (uncomment below once released)
 --
 
