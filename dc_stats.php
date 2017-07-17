@@ -55,7 +55,7 @@
 			$cab->DataCenterID=$_POST['dc'];
 			$zone=new Zone();
 			$zone->DataCenterID=$cab->DataCenterID;
-			$payload=array('cab'=>$cab->ListCabinetsByDC(true),'zone'=>$zone->GetZonesByDC(true),'powerpanel'=>PowerPanel::getPanelsForMap($_POST['dc']));
+			$payload=array('cab'=>$cab->ListCabinetsByDC(true),'panel'=>PowerPanel::getPanelsForMap($_POST['dc']),'zone'=>$zone->GetZonesByDC(true));
 		}else{
 			$dc->DataCenterID=$_POST['dc'];
 			$dc->GetDataCenterByID();

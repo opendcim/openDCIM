@@ -559,7 +559,7 @@ class PowerPanel {
 
 		$st->execute( array( ":DataCenterID"=>$DataCenterID ));
 		while ( $row = $st->fetch() ) {
-			$pnlList[] = $row;
+			$pnlList[$row->PanelID] = $row;
 		}
 
 		return $pnlList;

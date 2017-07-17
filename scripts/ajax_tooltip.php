@@ -38,7 +38,7 @@ if($config->ParameterArray["mUnits"]=="english"){
 // If the object id isn't set then don't bother with anything else.
 if($object>0){
 	// Cabinet
-	if(isset($_POST['cab'])){
+	if(isset($_POST['type']) && $_POST['type']=='cabinetid'){
 		$cab->CabinetID=$object;
 		$cab->GetCabinet();
 		if($cab->Rights!="None"){
@@ -181,6 +181,12 @@ if($object>0){
 		}else{
 			$tooltip=__("Quit that! You don't have rights to view this.");
 		}
+	} elseif ( isset( $_POST['type'] ) && $_POST['type']=='panelid' ) {
+		$pan = new PowerPanel();
+		$pan->PanelID = $_POST['panelid'];
+		$pan->getPanel();
+
+		$tooltip="<span>$pan->PanelLabel</span><ul>\n";
 	}elseif(isset($_POST['cdu']) || isset($_POST['dev'])){
 		if(isset($_POST['cdu']) && $config->ParameterArray["CDUToolTips"]=='enabled'){
 			$pdu=new PowerDistribution();

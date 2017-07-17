@@ -805,9 +805,9 @@ function startmap(){
 
 	// arrays used for tracking states
 	var stat;
-	var areas={'cabs':[],'zones':[],'powerpanel':[]};
-	var defaultstate={'cabs':[],'zones':[],'powerpanel':[]};
-	var currentstate={'cabs':[],'zones':[],'powerpanel':[]};
+	var areas={'cabs':[],'zones':[],'panels':[]};
+	var defaultstate={'cabs':[],'zones':[],'panels':[]};
+	var currentstate={'cabs':[],'zones':[],'panels':[]};
 
 	context.globalCompositeOperation='destination-over';
 	context.save();
@@ -827,8 +827,8 @@ function startmap(){
 		async: false,
 		data: {dc: $('map[name=datacenter]').data('dc'), getobjects: ''}, 
 		success: function(data){
-			var temp={'cabs':[],'zones':[]}; // array of areas we're using
-			var temphilight={'cabs':[],'zones':[]}; // array of areas and their outline state
+			var temp={'cabs':[],'zones':[],'panels':[] }; // array of areas we're using
+			var temphilight={'cabs':[],'zones':[],'panels':[] }; // array of areas and their outline state
 
 			var map=$('.canvas > map');
 			for(var i in data.cab){
@@ -845,9 +845,11 @@ function startmap(){
 				temp.zones.push({'ZoneID':thiszone.ZoneID,'MapX1':thiszone.MapX1,'MapX2':thiszone.MapX2,'MapY1':thiszone.MapY1,'MapY2':thiszone.MapY2});
 				temphilight.zones[thiszone.ZoneID]=false;
 			};
-			for(var i in data.powerpanel){
-				var thispanel=data.powerpanel[i];
+			for(var i in data.panel){
+				var thispanel=data.panel[i];
 				map.append(buildarea(thispanel));
+				temp.panels.push({'PanelID':thispanel.PanelID, 'MapX1':thispanel.MapX1,'MapX2':thispanel.MapX2,'MapY1':thispanel.MapY1,'MapY2':thispanel.MapY2});
+				temphilight.panels[thispanel.PanelID]=false;
 			};
 
 			// Move these arrays out to where they can be used.
@@ -907,7 +909,7 @@ function startmap(){
 						tempstate.cabs[obj.CabinetID]=true;
 					} else {
 						var id='PanelID';
-						tempstate.powerpanels[obj.PanelID].PanelID=true;
+						tempstate.panels[obj.PanelID]=true;
 					}
 				}
 			});
@@ -978,13 +980,14 @@ function startmap(){
 		if ( zone ) {
 			var label=obj.Description;
 			var name='zone'+obj.ZoneID;
-			var href='zone_stats.php?zone='+obj.zoneid;
+			var href='zone_stats.php?zone='+obj.ZoneID;
 			var row=false;
 		} else if ( panel ) {
 			var label=obj.PanelLabel;
 			var name='panel'+obj.PanelID;
 			var href='power_panel.php?PanelID='+obj.PanelID;
 			var row=false;
+			obj.ZoneID=0;
 		} else {
 			var label=obj.Location;
 			var name='cab'+obj.CabinetID;
@@ -1034,7 +1037,7 @@ function bindmaptooltips(){
 		}).addClass('arrow_left border cabnavigator tooltip').attr('id','tt').append('<span class="ui-icon ui-icon-refresh rotate"></span>');
 		var id=$(this).attr('href');
 		id=id.substring(id.lastIndexOf('=')+1,id.length);
-		$.post('scripts/ajax_tooltip.php',{tooltip: id, cab: 1}, function(data){
+		$.post('scripts/ajax_tooltip.php',{tooltip: id, type: 'cabinetid'}, function(data){
 			tooltip.html(data);
 		});
 		$('body').append(tooltip);
@@ -1057,6 +1060,30 @@ function bindmaptooltips(){
 			cx1=0;
 		});
 	});
+	$('map[name="datacenter"]').on('mouseenter','area[name^="panel"]',function(){
+		var pos=$('.canvas').offset();
+		var coor=$(this).attr('coords').split(',');
+		var tx=pos.left+parseInt(coor[2])+17;
+		var ty=pos.top+(parseInt(coor[1])+parseInt(coor[3]))/2-17;
+		var cx1=parseInt(coor[0])+parseInt(pos.left);
+		var cx2=parseInt(coor[2])+parseInt(pos.left)
+		var cy1=parseInt(coor[1])+parseInt(pos.top);
+		var cy2=parseInt(coor[3])+parseInt(pos.top);
+		var tooltip=$('<div />').css({
+			'left':tx+'px',
+			'top':ty+'px'
+		}).addClass('arrow_left border cabnavigator tooltip').attr('id','tt').append('<span class="ui-icon ui-icon-refresh rotate"></span>');
+		var id=$(this).attr('href');
+		id=id.substring(id.lastIndexOf('=')+1,id.length);
+		$.post('scripts/ajax_tooltip.php',{tooltip: id, type: 'panelid'}, function(data){
+			tooltip.html(data);
+		});
+		$('body').append(tooltip);
+		$(this).mouseleave(function(e){
+			tooltip.remove();
+		});
+	});
+
 }
 // END - DataCenter map / cabinet information
 
