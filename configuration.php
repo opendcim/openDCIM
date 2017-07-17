@@ -22,8 +22,8 @@
 		$dir=scandir($path);
 		foreach($dir as $i => $f){
 			if(is_file($path.DIRECTORY_SEPARATOR.$f) && round(filesize($path.DIRECTORY_SEPARATOR.$f) / 1024, 2)>=4 && $f!="serverrack.png" && $f!="gradient.png"){
-				$imageinfo=getimagesize($path.DIRECTORY_SEPARATOR.$f);
-				if(preg_match('/^image/i', $imageinfo['mime'])){
+				$mimeType=mime_content_type($path.DIRECTORY_SEPARATOR.$f);
+				if(preg_match('/^image/i', $mimeType)){
 					$imageselect.="<span>$f</span>\n";
 					$filesonly[]=$f;
 				}
