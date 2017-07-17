@@ -805,9 +805,9 @@ function startmap(){
 
 	// arrays used for tracking states
 	var stat;
-	var areas={'cabs':[],'zones':[],'panels':[]};
-	var defaultstate={'cabs':[],'zones':[],'panels':[]};
-	var currentstate={'cabs':[],'zones':[],'panels':[]};
+	var areas={'cabs':[],'panels':[],'zones':[]};
+	var defaultstate={'cabs':[],'panels':[],'zones':[]};
+	var currentstate={'cabs':[],'panels':[],'zones':[]};
 
 	context.globalCompositeOperation='destination-over';
 	context.save();
@@ -827,8 +827,8 @@ function startmap(){
 		async: false,
 		data: {dc: $('map[name=datacenter]').data('dc'), getobjects: ''}, 
 		success: function(data){
-			var temp={'cabs':[],'zones':[],'panels':[] }; // array of areas we're using
-			var temphilight={'cabs':[],'zones':[],'panels':[] }; // array of areas and their outline state
+			var temp={'cabs':[],'panels':[],'zones':[] }; // array of areas we're using
+			var temphilight={'cabs':[],'panels':[],'zones':[] }; // array of areas and their outline state
 
 			var map=$('.canvas > map');
 			for(var i in data.cab){
@@ -875,12 +875,12 @@ function startmap(){
 		$.each(currentstate,function(i,cabszones){
 			$.each(cabszones,function(x,obj){
 				if(obj){
-					if(i=='zones'){
-						Hilight($('.canvas > map > area[name=zone'+x+']'));
+					if(i=='panels'){
+						Hilight($('.canvas > map > area[name=panel'+x+']'));
 					}else if(i=='cabs'){
 						Hilight($('.canvas > map > area[name=cab'+x+']'));
 					} else {
-						Hilight($('.canvas > map > area[name=panel'+x+']'));
+						Hilight($('.canvas > map > area[name=zone'+x+']'));
 					}
 				}	
 			});
@@ -940,6 +940,26 @@ function startmap(){
 			context.lineWidth='4';
 			context.strokeStyle="rgba(255,0,0,1)";
 			context.strokeRect(x,y,w,h);
+			if ( js_outlinecabinets == true ) {
+				context.strokeRect(x,y,w,h);
+			}
+			if ( js_labelcabinets == true ) {
+				context.font="10px Arial Black";
+				context.fillStyle="#000000";
+				// Check to see if this cabinet is tall or wide.  Rotate text accordingly.
+				if ( h > w ) {
+					var canvW = $('canvas').width();
+					context.translate( canvW - 1, 0 );
+					context.rotate(3*Math.PI/2);
+					context.textAlign="right";
+					// In a rotated context, X and Y are now reversed and all combobulated
+					var newX = 0 - y - 2;
+					var newY = -canvW + x + 10;
+					context.fillText(altname, newX, newY );
+				} else {
+					context.fillText(altname, x+2, y+10 );
+				}
+			}
 			context.restore();
 		}else if(typeof c=='string'){
 			// draw arrow
@@ -1036,8 +1056,11 @@ function bindmaptooltips(){
 			'top':ty+'px'
 		}).addClass('arrow_left border cabnavigator tooltip').attr('id','tt').append('<span class="ui-icon ui-icon-refresh rotate"></span>');
 		var id=$(this).attr('href');
+		var startType=id.lastIndexOf('?')+1;
+		var endType=id.lastIndexOf('=');
+		var tipType=id.substring(startType,endType);
 		id=id.substring(id.lastIndexOf('=')+1,id.length);
-		$.post('scripts/ajax_tooltip.php',{tooltip: id, type: 'cabinetid'}, function(data){
+		$.post('scripts/ajax_tooltip.php',{tooltip: id, type: tipType}, function(data){
 			tooltip.html(data);
 		});
 		$('body').append(tooltip);
