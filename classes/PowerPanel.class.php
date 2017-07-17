@@ -44,10 +44,10 @@ class PowerPanel {
 	var $PanelIPAddress;
 	var $TemplateID;
 	var $MapDataCenterID;
-	var $MapDataCenterX1;
-	var $MapDataCenterX2;
-	var $MapDataCenterY1;
-	var $MapDataCenterY2;
+	var $MapX1;
+	var $MapX2;
+	var $MapY1;
+	var $MapY2;
 	
 	function prepare( $sql ) {
 		global $dbh;
@@ -86,10 +86,10 @@ class PowerPanel {
 		$this->PanelIPAddress=sanitize($this->PanelIPAddress);
 		$this->TemplateID=intval($this->TemplateID);
 		$this->MapDataCenterID=intval($this->MapDataCenterID);
-		$this->MapDataCenterX1=intval($this->MapDataCenterX1);
-		$this->MapDataCenterX2=intval($this->MapDataCenterX2);
-		$this->MapDataCenterY1=intval($this->MapDataCenterY1);
-		$this->MapDataCenterY2=intval($this->MapDataCenterY2);
+		$this->MapX1=intval($this->MapX1);
+		$this->MapX2=intval($this->MapX2);
+		$this->MapY1=intval($this->MapY1);
+		$this->MapY2=intval($this->MapY2);
 	}
 
 	function MakeDisplay(){
@@ -111,10 +111,10 @@ class PowerPanel {
 		$panel->TemplateID=$row["TemplateID"];
 		$panel->PanelIPAddress=$row["PanelIPAddress"];
 		$panel->MapDataCenterID=$row["MapDataCenterID"];
-		$panel->MapDataCenterX1=$row["MapDataCenterX1"];
-		$panel->MapDataCenterX2=$row["MapDataCenterX2"];
-		$panel->MapDataCenterY1=$row["MapDataCenterY1"];
-		$panel->MapDataCenterY2=$row["MapDataCenterY2"];
+		$panel->MapX1=$row["MapX1"];
+		$panel->MapX2=$row["MapX2"];
+		$panel->MapY1=$row["MapY1"];
+		$panel->MapY2=$row["MapY2"];
 
 		$panel->MakeDisplay();
 
@@ -312,8 +312,8 @@ class PowerPanel {
 			MainBreakerSize=$this->MainBreakerSize, PanelVoltage=$this->PanelVoltage, 
 			NumberScheme=\"$this->NumberScheme\", ParentPanelID=$this->ParentPanelID,
 			ParentBreakerName=\"$this->ParentBreakerName\", TemplateID=$this->TemplateID,
-			MapDataCenterID=$this->MapDataCenterID, MapDataCenterX1=$this->MapDataCenterX1,
-			MapDataCenterY1=$this->MapDataCenterY1,MapDataCenterY2=$this->MapDataCenterY2;";
+			MapDataCenterID=$this->MapDataCenterID, MapX1=$this->MapX1,
+			MapY1=$this->MapY1,MapY2=$this->MapY2;";
 
 		if(!$this->exec($sql)){
 			$info=$this->errorInfo();
@@ -548,6 +548,22 @@ class PowerPanel {
 		(class_exists('LogActions'))?LogActions::LogThis($this):'';
 		return true;
 	}
+
+	static function getPanelsForMap( $DataCenterID ) {
+		global $dbh;
+
+		$pnlList = array();
+
+		$st = $dbh->prepare( "select * from fac_PowerPanel where MapDataCenterID=:DataCenterID" );
+		$st->setFetchMode( PDO::FETCH_CLASS, "PowerPanel" );
+
+		$st->execute( array( ":DataCenterID"=>$DataCenterID ));
+		while ( $row = $st->fetch() ) {
+			$pnlList[] = $row;
+		}
+
+		return $pnlList;
+	}
 		
 	function updatePanel(){
 		$this->MakeSafe();
@@ -561,8 +577,8 @@ class PowerPanel {
 			MainBreakerSize=$this->MainBreakerSize, PanelVoltage=$this->PanelVoltage, 
 			NumberScheme=\"$this->NumberScheme\", ParentPanelID=$this->ParentPanelID,
 			ParentBreakerName=\"$this->ParentBreakerName\", TemplateID=$this->TemplateID,
-			MapDataCenterID=$this->MapDataCenterID, MapDataCenterX1=$this->MapDataCenterX1,
-			MapDataCenterY1=$this->MapDataCenterY1,MapDataCenterY2=$this->MapDataCenterY2
+			MapDataCenterID=$this->MapDataCenterID, MapX1=$this->MapX1, MapX2=$this->MapX2,
+			MapY1=$this->MapY1,MapY2=$this->MapY2
 			WHERE PanelID=$this->PanelID;";
 
 		if(!$this->query($sql)){

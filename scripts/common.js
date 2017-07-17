@@ -805,9 +805,9 @@ function startmap(){
 
 	// arrays used for tracking states
 	var stat;
-	var areas={'cabs':[],'zones':[]};
-	var defaultstate={'cabs':[],'zones':[]};
-	var currentstate={'cabs':[],'zones':[]};
+	var areas={'cabs':[],'zones':[],'powerpanel':[]};
+	var defaultstate={'cabs':[],'zones':[],'powerpanel':[]};
+	var currentstate={'cabs':[],'zones':[],'powerpanel':[]};
 
 	context.globalCompositeOperation='destination-over';
 	context.save();
@@ -845,6 +845,10 @@ function startmap(){
 				temp.zones.push({'ZoneID':thiszone.ZoneID,'MapX1':thiszone.MapX1,'MapX2':thiszone.MapX2,'MapY1':thiszone.MapY1,'MapY2':thiszone.MapY2});
 				temphilight.zones[thiszone.ZoneID]=false;
 			};
+			for(var i in data.powerpanel){
+				var thispanel=data.powerpanel[i];
+				map.append(buildarea(thispanel));
+			};
 
 			// Move these arrays out to where they can be used.
 			areas=$.extend(true,{},temp);
@@ -871,8 +875,10 @@ function startmap(){
 				if(obj){
 					if(i=='zones'){
 						Hilight($('.canvas > map > area[name=zone'+x+']'));
-					}else{
+					}else if(i=='cabs'){
 						Hilight($('.canvas > map > area[name=cab'+x+']'));
+					} else {
+						Hilight($('.canvas > map > area[name=panel'+x+']'));
 					}
 				}	
 			});
@@ -893,11 +899,15 @@ function startmap(){
 				var y2=parseInt(obj.MapY2-zy1)*zoom;
 				// Check to see if we're over any of the objects we defined.
 				if(e.pageX>(cpos.left+x1) && e.pageX<(cpos.left+x2) && e.pageY>(cpos.top+y1) && e.pageY<(cpos.top+y2)){
-					var id=(i=='zones')?'ZoneID':'CabinetID';
-					if(i=='zones'){
+					if ( i=='zones' ) {
+						var id='ZoneID';
 						tempstate.zones[obj.ZoneID]=true;
-					}else{
+					} else if ( i=='cabs' ) {
+						var id='CabinetID';
 						tempstate.cabs[obj.CabinetID]=true;
+					} else {
+						var id='PanelID';
+						tempstate.powerpanels[obj.PanelID].PanelID=true;
 					}
 				}
 			});
@@ -962,11 +972,26 @@ function startmap(){
 
 	// Build the area objects
 	function buildarea(obj){
-		var zone=typeof obj.Location=='undefined';
-		var label=(zone)?obj.Description:obj.Location;
-		var name=(zone)?'zone'+obj.ZoneID:'cab'+obj.CabinetID;
-		var href=(zone)?'zone_stats.php?zone='+obj.ZoneID:'cabnavigator.php?cabinetid='+obj.CabinetID;
-		var row=(zone)?false:(obj.CabRowID==0)?false:true;
+		var panel=typeof(obj.PanelID)!=='undefined';
+		var zone=typeof(obj.Location)=='undefined' && (!panel);
+
+		if ( zone ) {
+			var label=obj.Description;
+			var name='zone'+obj.ZoneID;
+			var href='zone_stats.php?zone='+obj.zoneid;
+			var row=false;
+		} else if ( panel ) {
+			var label=obj.PanelLabel;
+			var name='panel'+obj.PanelID;
+			var href='power_panel.php?PanelID='+obj.PanelID;
+			var row=false;
+		} else {
+			var label=obj.Location;
+			var name='cab'+obj.CabinetID;
+			var href='cabnavigator.php?cabinetid='+obj.CabinetID;
+			var row=obj.CabRowID==0?false:true;
+			obj.ZoneID=0;
+		}
 		var x1=(obj.MapX1-zx1)*zoom;
 		var x2=(obj.MapX2-zx1)*zoom;
 		var y1=(obj.MapY1-zy1)*zoom;

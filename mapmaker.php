@@ -4,32 +4,68 @@
 
 	$subheader=__("Map Selector");
 
-	if(!$person->SiteAdmin){
-		// No soup for you.
-		header("Location: ".redirect());
+	if ( !$person->SiteAdmin && !isset( $_REQUEST['cabinetid']) && !isset($_REQUEST['panelid'])) {
+		header("Location: ".reirect());
 		exit;
 	}
 
 	$dc=new DataCenter();
-	$cab=new Cabinet();
 
-	$cab->CabinetID=$_REQUEST["cabinetid"];
-	$cab->GetCabinet();
+	if ( isset( $_REQUEST['cabinetid'] )) {
+		$cab=new Cabinet();
 
-	$dc->DataCenterID=$cab->DataCenterID;
+		$cab->CabinetID=$_REQUEST["cabinetid"];
+		$cab->GetCabinet();
+
+		$MapX1 = $cab->MapX1;
+		$MapX2 = $cab->MapX2;
+		$MapY1 = $cab->MapY1;
+		$MapY2 = $cab->MapY2;
+
+		$name = $cab->Location;
+
+		$dc->DataCenterID=$cab->DataCenterID;
+	} else {
+		$pan = new PowerPanel();
+		$pan->PanelID = $_REQUEST['panelid'];
+		$pan->getPanel();
+
+		$MapX1 = $pan->MapX1;
+		$MapX2 = $pan->MapX2;
+		$MapY1 = $pan->MapY1;
+		$MapY2 = $pan->MapY2;
+
+		$name = $pan->PanelLabel;
+
+		$dc->DataCenterID = $pan->MapDataCenterID;
+	}
+
 	$dc->GetDataCenter();
 
 	if(isset($_REQUEST["action"])&&($_REQUEST["action"]=="Submit")){
-		$cab->MapX1=intval($_REQUEST["x1"]);
-		$cab->MapX2=intval($_REQUEST["x2"]);
-		$cab->MapY1=intval($_REQUEST["y1"]);
-		$cab->MapY2=intval($_REQUEST["y2"]);
-		$cab->FrontEdge=$_REQUEST["frontedge"];
-		$cab->UpdateCabinet();
+		if ( isset( $_REQUEST['cabinetid'] )) {
+			$cab->MapX1=intval($_REQUEST["x1"]);
+			$cab->MapX2=intval($_REQUEST["x2"]);
+			$cab->MapY1=intval($_REQUEST["y1"]);
+			$cab->MapY2=intval($_REQUEST["y2"]);
+			$cab->FrontEdge=$_REQUEST["frontedge"];
+			$cab->UpdateCabinet();
 
-		$url=redirect("cabnavigator.php?cabinetid=$cab->CabinetID");
+			$url=redirect("cabnavigator.php?cabinetid=$cab->CabinetID");
+		} else {
+			$pan->MapX1=intval($_REQUEST["x1"]);
+			$pan->MapX2=intval($_REQUEST["x2"]);
+			$pan->MapY1=intval($_REQUEST["y1"]);
+			$pan->MapY2=intval($_REQUEST["y2"]);
+			$pan->updatePanel();
+
+			$url=redirect("power_panel.php?PanelID=$pan->PanelID");
+
+		}
 		header("Location: $url");
 	}
+
+
 	$height=0;
 	$width=0;
 	if(strlen($dc->DrawingFileName) >0){
@@ -90,27 +126,36 @@
         <div class="title"><?php echo __("Coordinates"); ?></div> 
 	<form method="POST">
     <div class="table"> 
-	<input type="hidden" name="cabinetid" value="<?php printf( "%d", $cab->CabinetID ); ?>">
+<?php
+	if ( isset($_REQUEST['cabinetid']) )  {
+		echo '<input type="hidden" name="cabinetid" value="$cab->CabinetID">';
+	} else {
+		echo '<input type="hidden" name="panelid" value="$pan->PanelID">';
+	}
+?>
         <div> 
           <div><b>X<sub>1</sub>:</b></div> 
- 		      <div><input type="text" name="x1" id="x1" value="<?php echo $cab->MapX1; ?>"></div> 
+ 		      <div><input type="text" name="x1" id="x1" value="<?php echo $MapX1; ?>"></div> 
         </div> 
         <div> 
           <div><b>Y<sub>1</sub>:</b></div> 
-          <div><input type="text" name="y1" id="y1" value="<?php echo $cab->MapY1; ?>"></div> 
+          <div><input type="text" name="y1" id="y1" value="<?php echo $MapY1; ?>"></div> 
         </div> 
         <div> 
           <div><b>X<sub>2</sub>:</b></div> 
-          <div><input type="text" name="x2" id="x2" value="<?php echo $cab->MapX2; ?>"></div> 
+          <div><input type="text" name="x2" id="x2" value="<?php echo $MapX2; ?>"></div> 
           <div></div> 
           <div></div> 
         </div> 
         <div> 
           <div><b>Y<sub>2</sub>:</b></div> 
-          <div><input type="text" name="y2" id="y2" value="<?php echo $cab->MapY2; ?>"></div> 
+          <div><input type="text" name="y2" id="y2" value="<?php echo $MapY2; ?>"></div> 
           <div></div> 
           <div></div> 
         </div>
+<?php
+	if ( isset( $_REQUEST['cabinetid'])) {
+?>
 		<div>
 			<div><b><?php print __("Front Edge"); ?></b></div>
 			<div><select name="frontedge">
@@ -131,6 +176,16 @@
 	  <input type="submit" name="action" value="Submit">
 	  <button type="reset" onclick="document.location.href='cabnavigator.php?cabinetid=<?php echo $cab->CabinetID; ?>'; return false;">Cancel</button>
 	</div>
+<?php
+	} else {
+?>
+	<div class="caption">
+	  <input type="submit" name="action" value="Submit">
+	  <button type="reset" onclick="document.location.href='power_panel.php?PanelID=<?php echo $pan->PanelID; ?>'; return false;">Cancel</button>
+	</div>
+<?php
+	}
+?>
     </div> <!-- END div.table --> 
 	</form>
 	</div>
@@ -140,7 +195,7 @@
 <?php echo "<img src=\"css/blank.gif\" height=$height width=$width>"; ?>
 <div class="container demo"> 
   <div style="float: left; width: 70%;"> 
-    <p class="instructions"><?php echo __("Click and drag on the image to select an area for cabinet"),' ',$cab->Location; ?>.</p> 
+    <p class="instructions"><?php echo __("Click and drag on the image to select an area for "),' ',$name; ?>.</p> 
  
     <div class="frame" style="margin: 0 0.3em; width: 300px; height: 300px;">
 		<?php
@@ -178,10 +233,10 @@
 		}
 		$('#map').imgAreaSelect( {
 	<?php
-		print "\t\tx1: $cab->MapX1,
-			x2: $cab->MapX2,
-			y1: $cab->MapY1,
-			y2: $cab->MapY2,\n";
+		print "\t\tx1: $MapX1,
+			x2: $MapX2,
+			y1: $MapY1,
+			y2: $MapY2,\n";
 	?>
 			handles: true,
 			onSelectChange: preview

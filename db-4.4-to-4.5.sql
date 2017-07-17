@@ -61,10 +61,10 @@ PRIMARY KEY (DeviceID)
 --
 
 ALTER TABLE fac_PowerPanel ADD COLUMN MapDataCenterID INT(11) NOT NULL;
-ALTER TABLE fac_PowerPanel ADD COLUMN MapDataCenterX1 INT(11) NOT NULL;
-ALTER TABLE fac_PowerPanel ADD COLUMN MapDataCenterX2 INT(11) NOT NULL;
-ALTER TABLE fac_PowerPanel ADD COLUMN MapDataCenterY1 INT(11) NOT NULL;
-ALTER TABLE fac_PowerPanel ADD COLUMN MapDataCenterY2 INT(11) NOT NULL;
+ALTER TABLE fac_PowerPanel ADD COLUMN MapX1 INT(11) NOT NULL;
+ALTER TABLE fac_PowerPanel ADD COLUMN MapX2 INT(11) NOT NULL;
+ALTER TABLE fac_PowerPanel ADD COLUMN MapY1 INT(11) NOT NULL;
+ALTER TABLE fac_PowerPanel ADD COLUMN MapY2 INT(11) NOT NULL;
 
 --
 -- Bump up the database version (uncomment below once released)
