@@ -1022,7 +1022,7 @@ function startmap(){
 }
 
 function bindmaptooltips(){
-	$('map[name="datacenter"]').on('mouseenter','area[name^="cab"]',function(){
+	$('map[name="datacenter"]').on('mouseenter','area[name^="cab"],area[name^="pan"]',function(){
 		var pos=$('.canvas').offset();
 		var coor=$(this).attr('coords').split(',');
 		var tx=pos.left+parseInt(coor[2])+17;
@@ -1060,30 +1060,6 @@ function bindmaptooltips(){
 			cx1=0;
 		});
 	});
-	$('map[name="datacenter"]').on('mouseenter','area[name^="panel"]',function(){
-		var pos=$('.canvas').offset();
-		var coor=$(this).attr('coords').split(',');
-		var tx=pos.left+parseInt(coor[2])+17;
-		var ty=pos.top+(parseInt(coor[1])+parseInt(coor[3]))/2-17;
-		var cx1=parseInt(coor[0])+parseInt(pos.left);
-		var cx2=parseInt(coor[2])+parseInt(pos.left)
-		var cy1=parseInt(coor[1])+parseInt(pos.top);
-		var cy2=parseInt(coor[3])+parseInt(pos.top);
-		var tooltip=$('<div />').css({
-			'left':tx+'px',
-			'top':ty+'px'
-		}).addClass('arrow_left border cabnavigator tooltip').attr('id','tt').append('<span class="ui-icon ui-icon-refresh rotate"></span>');
-		var id=$(this).attr('href');
-		id=id.substring(id.lastIndexOf('=')+1,id.length);
-		$.post('scripts/ajax_tooltip.php',{tooltip: id, type: 'panelid'}, function(data){
-			tooltip.html(data);
-		});
-		$('body').append(tooltip);
-		$(this).mouseleave(function(e){
-			tooltip.remove();
-		});
-	});
-
 }
 // END - DataCenter map / cabinet information
 

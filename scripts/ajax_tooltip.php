@@ -181,12 +181,12 @@ if($object>0){
 		}else{
 			$tooltip=__("Quit that! You don't have rights to view this.");
 		}
-	} elseif ( isset( $_POST['type'] ) && $_POST['type']=='panelid' ) {
+	} elseif ( isset($_POST['type']) && $_POST['type']=='panelid' ) {
 		$pan = new PowerPanel();
-		$pan->PanelID = $_POST['panelid'];
+		$pan->PanelID = $object;
 		$pan->getPanel();
 
-		$tooltip="<span>$pan->PanelLabel</span><ul>\n";
+		$tooltip="<span>$pan->PanelLabel</span>\n";
 	}elseif(isset($_POST['cdu']) || isset($_POST['dev'])){
 		if(isset($_POST['cdu']) && $config->ParameterArray["CDUToolTips"]=='enabled'){
 			$pdu=new PowerDistribution();
