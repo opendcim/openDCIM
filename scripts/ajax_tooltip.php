@@ -181,7 +181,7 @@ if($object>0){
 		}else{
 			$tooltip=__("Quit that! You don't have rights to view this.");
 		}
-	} elseif ( isset($_POST['type']) && $_POST['type']=='panelid' ) {
+	} elseif ( isset($_POST['type']) && strtolower($_POST['type'])=='panelid' ) {
 		$pan = new PowerPanel();
 		$pan->PanelID = $object;
 		$pan->getPanel();

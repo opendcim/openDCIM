@@ -839,17 +839,17 @@ function startmap(){
 					temphilight.cabs[thiscab.CabinetID]=false;
 				}
 			};
-			for(var i in data.zone){
-				var thiszone=data.zone[i];
-				map.append(buildarea(thiszone));
-				temp.zones.push({'ZoneID':thiszone.ZoneID,'MapX1':thiszone.MapX1,'MapX2':thiszone.MapX2,'MapY1':thiszone.MapY1,'MapY2':thiszone.MapY2});
-				temphilight.zones[thiszone.ZoneID]=false;
-			};
 			for(var i in data.panel){
 				var thispanel=data.panel[i];
 				map.append(buildarea(thispanel));
 				temp.panels.push({'PanelID':thispanel.PanelID, 'MapX1':thispanel.MapX1,'MapX2':thispanel.MapX2,'MapY1':thispanel.MapY1,'MapY2':thispanel.MapY2});
 				temphilight.panels[thispanel.PanelID]=false;
+			};
+			for(var i in data.zone){
+				var thiszone=data.zone[i];
+				map.append(buildarea(thiszone));
+				temp.zones.push({'ZoneID':thiszone.ZoneID,'MapX1':thiszone.MapX1,'MapX2':thiszone.MapX2,'MapY1':thiszone.MapY1,'MapY2':thiszone.MapY2});
+				temphilight.zones[thiszone.ZoneID]=false;
 			};
 
 			// Move these arrays out to where they can be used.
@@ -940,26 +940,6 @@ function startmap(){
 			context.lineWidth='4';
 			context.strokeStyle="rgba(255,0,0,1)";
 			context.strokeRect(x,y,w,h);
-			if ( js_outlinecabinets == true ) {
-				context.strokeRect(x,y,w,h);
-			}
-			if ( js_labelcabinets == true ) {
-				context.font="10px Arial Black";
-				context.fillStyle="#000000";
-				// Check to see if this cabinet is tall or wide.  Rotate text accordingly.
-				if ( h > w ) {
-					var canvW = $('canvas').width();
-					context.translate( canvW - 1, 0 );
-					context.rotate(3*Math.PI/2);
-					context.textAlign="right";
-					// In a rotated context, X and Y are now reversed and all combobulated
-					var newX = 0 - y - 2;
-					var newY = -canvW + x + 10;
-					context.fillText(altname, newX, newY );
-				} else {
-					context.fillText(altname, x+2, y+10 );
-				}
-			}
 			context.restore();
 		}else if(typeof c=='string'){
 			// draw arrow
@@ -1031,8 +1011,12 @@ function startmap(){
 				Hilight($('.canvas > map > area[name=cab'+i+']'),p);
 			}
 		});
-		maptitle.text(eval("stat."+state+"['title']"));
 
+		// This is what sets the base state of each map area, so add the power panel outlines and labels here
+		var c = {r:204, g:0, b:0 };
+
+		Hilight($('.canvas > map > area[name^=pan]'), c);
+		maptitle.text(eval("stat."+state+"['title']"));
 	}
 
 	// Draw the map and bind the change action to the menu
