@@ -25,7 +25,7 @@ if($uploadDir=='' || !is_writable('..'.DIRECTORY_SEPARATOR.$uploadDir)){
 	exit;
 }
 // Set the allowed file extensions
-$fileTypes = array('jpg', 'jpeg', 'gif', 'png'); // Allowed file extensions
+$fileTypes = array('jpg', 'jpeg', 'gif', 'png', 'svg'); // Allowed file extensions
 
 $verifyToken = md5('unique_salt' . $_POST['timestamp']);
 

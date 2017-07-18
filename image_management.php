@@ -14,8 +14,8 @@
 			$dir=scandir($path);
 			foreach($dir as $i => $f){
 				if(is_file($path.DIRECTORY_SEPARATOR.$f) && ($f!='.' && $f!='..' && $f!='P_ERROR.png')){
-					@$imageinfo=getimagesize($path.DIRECTORY_SEPARATOR.$f);
-					if(preg_match('/^image/i', $imageinfo['mime'])){
+					$mimeType=mime_content_type($path.DIRECTORY_SEPARATOR.$f);
+					if(preg_match('/^image/i', $mimeType)){
 						$array[$path][]=$f;
 					}
 				}

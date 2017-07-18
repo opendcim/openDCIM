@@ -59,7 +59,13 @@
 	if(strlen($dc_zone->DrawingFileName) >0){
 		$mapfile="drawings/$dc_zone->DrawingFileName";
 		if(file_exists($mapfile)){
-			list($width, $height, $type, $attr)=getimagesize($mapfile);
+			if(mime_content_type($mapfile)=='image/svg+xml'){
+				$svgfile = simplexml_load_file($mapfile);
+				$width = substr($svgfile['width'],0,4);
+				$height = substr($svgfile['height'],0,4);
+			}
+			else					
+				list($width, $height, $type, $attr)=getimagesize($mapfile);	
 			// There is a bug in the excanvas shim that can set the width of the canvas to 10x the width of the image
 			$ie8fix='
 <script type="text/javascript">

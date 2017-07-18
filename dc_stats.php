@@ -87,7 +87,13 @@
 			$mapfile="drawings".DIRECTORY_SEPARATOR.$dc->DrawingFileName;
 		   
 			if(file_exists($mapfile)){
-				list($width, $height, $type, $attr)=getimagesize($mapfile);
+				if(mime_content_type($mapfile)=='image/svg+xml'){
+					$svgfile = simplexml_load_file($mapfile);
+					$width = substr($svgfile['width'],0,4);
+					$height = substr($svgfile['height'],0,4);
+				}
+				else					
+					list($width, $height, $type, $attr)=getimagesize($mapfile);
 				$mapHTML="<div class=\"canvas\" style=\"background-image: url('drawings/$dc->DrawingFileName')\">
 	<img src=\"css/blank.gif\" usemap=\"#datacenter\" width=\"$width\" height=\"$height\" alt=\"clearmap over canvas\">
 	<map name=\"datacenter\" data-dc=$dc->DataCenterID data-zoom=1 data-x1=0 data-y1=0>
@@ -105,8 +111,14 @@
 	if(strlen($dc->DrawingFileName) >0){
 		$mapfile="drawings/$dc->DrawingFileName";
 		if(file_exists($mapfile)){
-			list($width, $height, $type, $attr)=getimagesize($mapfile);
-			// There is a bug in the excanvas shim that can set the width of the canvas to 10x the width of the image
+			if(mime_content_type($mapfile)=='image/svg+xml'){
+				$svgfile = simplexml_load_file($mapfile);
+				$width = substr($svgfile['width'],0,4);
+				$height = substr($svgfile['height'],0,4);
+			}
+			else					
+				list($width, $height, $type, $attr)=getimagesize($mapfile);
+// There is a bug in the excanvas shim that can set the width of the canvas to 10x the width of the image
 			$ie8fix="
 <script type=\"text/javascript\">
 	function uselessie(){
