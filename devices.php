@@ -2464,7 +2464,7 @@ $connectioncontrols.=($dev->DeviceID>0 && !empty($portList))?'
 		}
 	}
 	// Delete rights are seperate from write rights
-	if(($write || $person->DeleteAccess) && $dev->DeviceID >0){
+	if(($write && $person->DeleteAccess) && $dev->DeviceID >0){
 		echo '		<button type="button" name="action" value="Delete">',__("Delete"),'</button>';
 	}
 	if($dev->DeviceID >0){
