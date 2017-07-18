@@ -57,6 +57,13 @@ PRIMARY KEY (DeviceID)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 --
+-- See the db with two default dispositions
+--
+
+INSERT INTO fac_Disposition VALUES ( 1, 'Legacy Salvage', 'Items marked as disposed in openDCIM prior to the version 4.5 upgrade.', '', 'Active');
+INSERT INTO fac_Disposition VALUES ( 2, 'Returned to Customer', 'Item has been removed from the data center and returned to the customer.', '', 'Active');
+
+--
 -- Add some new fields to the Power Panel table
 --
 

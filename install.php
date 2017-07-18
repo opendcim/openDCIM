@@ -1112,7 +1112,31 @@ function upgrade(){
 		$config->rebuild();
 	}
 	if($version=="4.4"){
-		$results[]=applyupdate("db-4.4-to-4.4.1.sql");
+		$results[]=applyupdate("db-4.4-to-4.5.sql");
+
+		$st = $dbh->prepare( "select * from fac_Decommission order by SurplusDate ASC" );
+		$dt = $dbh->prepare( "insert into fac_Device set Label=:Label, SerialNo=:SerialNo, AssetTag=:AssetTag, Status='Disposed'" );
+		$lt = $dbh->prepare( "insert into fac_DispositionMembership values (1, :DeviceID, :DispositionDate, :DisposedBy )");
+
+		// Fetch from the legacy surplus table
+		$st->execute( array() );
+		while ( $row = $st->fetch() ) {
+			// Insert a new device for this one
+			$dt->execute( array( ":Label"=>$row["Label"],
+					":SerialNo"=>$row["SerialNo"],
+					":AssetTag"=>$row["AssetTag"] ));
+
+			// Get the new DeviceID (yes, I know, these all were originally in the fac_Device table)
+			$devID = $dbh->lastInsertId();
+
+			// Now add the logging / membership record
+			$lt->execute( array( ":DeviceID"=>$devID,
+				":DispositionDate"=>$row["SurplusDate"],
+				":DisposedBy"=>$row["UserID"]));
+		}
+
+		// Now shit can the old table
+		$dbh->query( "DROP TABLE fac_Decommission" );
 
 		$config->rebuild();
 	}
