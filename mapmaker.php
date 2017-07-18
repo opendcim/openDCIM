@@ -135,9 +135,9 @@
     <div class="table"> 
 <?php
 	if ( isset($_REQUEST['cabinetid']) )  {
-		echo '<input type="hidden" name="cabinetid" value="$cab->CabinetID">';
+		print '<input type="hidden" name="cabinetid" value="'.$cab->CabinetID.'">';
 	} else {
-		echo '<input type="hidden" name="panelid" value="$pan->PanelID">';
+		print '<input type="hidden" name="panelid" value="'.$pan->PanelID.'">';
 	}
 ?>
         <div> 

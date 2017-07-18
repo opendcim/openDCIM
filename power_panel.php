@@ -15,6 +15,7 @@
 	$cab=new Cabinet();
 	$tmpl = new CDUTemplate();
 	$tmpList = $tmpl->GetTemplateList();
+	$dcList = DataCenter::GetDCList();
 	$script="";
 
 	// AJAX
@@ -304,16 +305,30 @@ echo '	</select></div>
 				$selected=($panel->TemplateID==$tmp->TemplateID)?' selected':'';
 				print "\n\t\t\t<option value=$tmp->TemplateID$selected>$tmp->Model</option>";
 			}
-?>
+echo '
 
 		</select>
 	</div>
 </div>
-<div class="caption">
-<?php
+<div>
+	<div><label for="MapDataCenterID">',__("Data Center (for Mapping)"),'</label></div>
+	<div>
+		<select name="MapDataCenterID" id="MapDataCenterID">
+			<option value=0>Do not map</option>';
+
+			foreach( $dcList as $dc) {
+				$selected=($panel->MapDataCenterID==$dc->DataCenterID)?'selected':'';
+				print "\n\t\t\t<option value=$dc->DataCenterID $selected>$dc->Name</option>";
+			}
+echo '		</select>
+	</div>
+</div>
+<div class="caption">';
+
 	if($panel->PanelID >0){
 		echo '	<button type="submit" name="action" value="Update">',__("Update"),'</button>
-	<button type="button" name="action" value="Delete">',__("Delete"),'</button>';
+	<button type="button" name="action" value="Delete">',__("Delete"),'</button>
+	<button type="button" name="action" value="Map">',__("Map Coordinates"),'</button>';
 	}else{
 		echo '	<button type="submit" name="action" value="Create">',__("Create"),'</button>';
 	}
@@ -429,6 +444,9 @@ $('button[value=Delete]').click(function(){
 		width: 'auto',
 		buttons: $.extend({}, defaultbutton, cancelbutton)
 	});
+});
+$('button[value=Map]').click(function(){
+	location = 'mapmaker.php?panelid='+$('#PanelID').val();
 });
 <?php
 if( $config->ParameterArray["ToolTips"]=='enabled' ){
