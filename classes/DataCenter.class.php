@@ -391,9 +391,9 @@ class DataCenter {
 					$svgfile = simplexml_load_file($mapfile);
 					$width = substr($svgfile['width'],0,4);
 					$height = substr($svgfile['height'],0,4);
-				}
-				else					
+				}else{
 					list($width, $height, $type, $attr)=getimagesize($mapfile);
+				}
 				$cdus=array();
 					
 				$sql = "select c.CabinetID, P.RealPower, P.BreakerSize, P.InputAmperage*PP.PanelVoltage as VoltAmp from 

@@ -276,9 +276,9 @@ class Container {
 				$svgfile = simplexml_load_file($mapfile);
 				$width = substr($svgfile['width'],0,4);
 				$height = substr($svgfile['height'],0,4);
-			}
-			else					
+			}else{					
 				list($width, $height, $type, $attr)=getimagesize($mapfile);
+			}
 			$mapHTML.="<div style='position:relative;'>\n";
 			$mapHTML.="<img src=\"$mapfile\" width=\"$width\" height=\"$height\" alt=\"Container Image\">\n";
 			
@@ -346,9 +346,9 @@ class Container {
 				$svgfile = simplexml_load_file($mapfile);
 				$width = substr($svgfile['width'],0,4);
 				$height = substr($svgfile['height'],0,4);
-			}
-			else					
+			}else{
 				list($width, $height, $type, $attr)=getimagesize($mapfile);
+			}
 			$mapHTML.="<div style='position:relative;'>\n";
 			$mapHTML.="<img id='containerimg' src=\"".$mapfile."\" width=\"".($width*$red)."\" height=\"".($height*$red)."\" 
 					 onclick='coords(event)' alt=\"Container Image\">\n";
