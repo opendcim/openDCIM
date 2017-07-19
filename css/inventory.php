@@ -143,7 +143,7 @@ div#imageselection { display: none;}
 
 
 
-/* Datacenter Stats */
+/* Data Center Stats */
 .dcstats .heading > div{width: 89%;display: inline-block;vertical-align: middle;}
 .dcstats .heading > div + div {width: 10%;}
 .dcstats .heading > div + div button {display: block;width: 100%;}
