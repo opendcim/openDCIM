@@ -1865,7 +1865,7 @@ msgstr ""
 
 #: openDCIM/mapmaker.php:123
 msgid ""
-"You must configure an image for this datacenter before attempting to place a "
+"You must configure an image for this data center before attempting to place a "
 "cabinet on its map."
 msgstr ""
 
@@ -2594,7 +2594,7 @@ msgid "Device Label"
 msgstr ""
 
 #: openDCIM/report_tags.php:25
-msgid "Datacenter"
+msgid "Data Center"
 msgstr ""
 
 #: openDCIM/report_tags.php:26
