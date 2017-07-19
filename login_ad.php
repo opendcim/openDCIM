@@ -66,6 +66,7 @@
       $content = "<h3>Fatal error.  The LDAP server is not reachable.  Please try again later, or contact your system administrator to check the configuration.</h3>";
       error_log( "Unable to connect to LDAP Server: " . $config->ParameterArray['LDAPServer']);
     } else {
+      ldap_set_option( $ldapConn, LDAP_OPT_REFERRALS, 0 );
       ldap_set_option( $ldapConn, LDAP_OPT_PROTOCOL_VERSION, 3 );
 
       $ldapUser = htmlspecialchars($_POST['username']);
