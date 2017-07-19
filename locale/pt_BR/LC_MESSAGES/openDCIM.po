@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: openDCIM.po\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-07-19 10:55-0500\n"
+"POT-Creation-Date: 2017-07-19 12:27-0500\n"
 "PO-Revision-Date: 2014-03-24 08:48-0500\n"
 "Last-Translator: Wilbur Longwisch <wilbur@wilpig.org>\n"
 "Language-Team: openDCIM <discussion@list.opendcim.org>\n"
@@ -53,9 +53,9 @@ msgstr ""
 #: openDCIM/report_power_utilization.php:163
 #: openDCIM/report_project_outage_simulator.php:46
 #: openDCIM/report_project_outage_simulator.php:277
-#: openDCIM/report_projects.php:151 openDCIM/report_xml_CFD.php:59
-#: openDCIM/search_export.php:47 openDCIM/search_export_storage_room.php:49
-#: openDCIM/zone.php:134
+#: openDCIM/report_projects.php:151 openDCIM/report_tags.php:33
+#: openDCIM/report_xml_CFD.php:59 openDCIM/search_export.php:47
+#: openDCIM/search_export_storage_room.php:49 openDCIM/zone.php:134
 msgid "Data Center"
 msgstr "Data center"
 
@@ -1677,6 +1677,7 @@ msgid "Target Cabinet"
 msgstr "ArmárioDestino"
 
 #: openDCIM/connections_spreadsheet.php:120
+#: openDCIM/classes/PowerPorts.class.php:151
 msgid "Power Connection"
 msgstr "Conexão de Energia"
 
@@ -1718,6 +1719,8 @@ msgid "Parent Container"
 msgstr "Container principal"
 
 #: openDCIM/container.php:246 openDCIM/datacenter.php:279
+#: openDCIM/classes/Cabinet.class.php:349
+#: openDCIM/classes/Cabinet.class.php:417
 msgid "None"
 msgstr "Nenhum"
 
@@ -1971,6 +1974,7 @@ msgid "Humidity"
 msgstr "Umidade"
 
 #: openDCIM/dc_stats.php:290 openDCIM/zone_stats.php:287
+#: openDCIM/classes/DataCenter.class.php:514
 msgid "Air Flow"
 msgstr "Fluxo de Ar"
 
@@ -2061,7 +2065,7 @@ msgid "Group to Administer"
 msgstr "Grupo para Administrar"
 
 #: openDCIM/dept_groups.php:66 openDCIM/devices.php:2129
-#: openDCIM/login_ad.php:229 openDCIM/login_ldap.php:193
+#: openDCIM/login_ad.php:230 openDCIM/login_ldap.php:193
 #: openDCIM/people_depts.php:66 openDCIM/project_members.php:139
 #: openDCIM/supplybin.php:207
 msgid "Submit"
@@ -2126,7 +2130,12 @@ msgstr "ERRO: Nenhuma porta encontrada"
 #: openDCIM/devices.php:2448 openDCIM/device_templates.php:930
 #: openDCIM/misc.inc.php:1033 openDCIM/report_cabinets.php:179
 #: openDCIM/report_cabinets.php:251 openDCIM/report_cabinets.php:292
-#: openDCIM/rowview.php:87
+#: openDCIM/rowview.php:87 openDCIM/classes/Device.class.php:2030
+#: openDCIM/classes/Device.class.php:2034
+#: openDCIM/classes/Device.class.php:2133
+#: openDCIM/classes/Device.class.php:2136
+#: openDCIM/classes/DeviceTemplate.class.php:663
+#: openDCIM/classes/DeviceTemplate.class.php:667
 msgid "Rear"
 msgstr "Traseira"
 
@@ -2532,6 +2541,8 @@ msgstr "Conteúdo do chassi"
 
 #: openDCIM/devices.php:2184 openDCIM/devices.php:2415
 #: openDCIM/device_templates.php:925
+#: openDCIM/classes/DeviceTemplate.class.php:663
+#: openDCIM/classes/DeviceTemplate.class.php:667
 msgid "Front"
 msgstr "Frente"
 
@@ -2607,7 +2618,7 @@ msgstr "Porta de conexão"
 msgid "Back"
 msgstr "Voltar"
 
-#: openDCIM/devices.php:2473
+#: openDCIM/devices.php:2473 openDCIM/classes/Device.class.php:461
 msgid "Copy"
 msgstr "Copiar"
 
@@ -2681,6 +2692,7 @@ msgstr "Erro atualizando equipamentos"
 
 #: openDCIM/device_templates.php:283 openDCIM/device_templates.php:295
 #: openDCIM/paths.php:173 openDCIM/scripts/ajax_tooltip.php:23
+#: openDCIM/classes/Device.class.php:2347
 msgid "Error"
 msgstr "Erro"
 
@@ -2976,11 +2988,11 @@ msgstr "Taxa de Virtualização"
 msgid "openDCIM Login"
 msgstr "Login do openDCIM"
 
-#: openDCIM/login_ad.php:220 openDCIM/login_ldap.php:184
+#: openDCIM/login_ad.php:221 openDCIM/login_ldap.php:184
 msgid "Username:"
 msgstr "Usuário"
 
-#: openDCIM/login_ad.php:224 openDCIM/login_ldap.php:188
+#: openDCIM/login_ad.php:225 openDCIM/login_ldap.php:188
 msgid "Password:"
 msgstr "Senha"
 
@@ -3026,6 +3038,7 @@ msgid "Selection Preview"
 msgstr "Prévia de seleção"
 
 #: openDCIM/misc.inc.php:791 openDCIM/storageroom.php:44
+#: openDCIM/classes/Container.class.php:199
 msgid "General Storage Room"
 msgstr "Área de armazenamento geral"
 
@@ -3259,6 +3272,8 @@ msgstr "Erro Desconhecido"
 #: openDCIM/pathmaker.php:247 openDCIM/pathmaker.php:324
 #: openDCIM/pathmaker.php:459 openDCIM/paths.php:76 openDCIM/paths.php:137
 #: openDCIM/paths.php:255 openDCIM/paths.php:329 openDCIM/paths.php:414
+#: openDCIM/classes/DevicePorts.class.php:189
+#: openDCIM/classes/DevicePorts.class.php:207
 msgid "Port"
 msgstr "Porta"
 
@@ -4499,7 +4514,7 @@ msgstr ""
 msgid "Total Assigned Cabinets:"
 msgstr "Total de Racks"
 
-#: openDCIM/report_projects.php:185
+#: openDCIM/report_projects.php:185 openDCIM/classes/DataCenter.class.php:645
 #, fuzzy
 msgid "Storage Room"
 msgstr "%s Sala de Armazenamento"
@@ -4702,10 +4717,6 @@ msgstr "Relatório de classificação Tier"
 #: openDCIM/report_tags.php:11
 msgid "Inventory Reporting By Tag"
 msgstr "Relatórios de inventário por marcação"
-
-#: openDCIM/report_tags.php:33
-msgid "Datacenter"
-msgstr "Data Center"
 
 #: openDCIM/report_tags.php:36
 msgid "Tag"
@@ -5444,6 +5455,9 @@ msgstr ""
 
 #: openDCIM/scripts/ajax_tooltip.php:131 openDCIM/scripts/ajax_tooltip.php:132
 #: openDCIM/scripts/ajax_tooltip.php:133
+#: openDCIM/classes/DataCenter.class.php:511
+#: openDCIM/classes/DataCenter.class.php:512
+#: openDCIM/classes/DataCenter.class.php:513
 msgid "no data"
 msgstr "sem dados"
 
@@ -5524,6 +5538,104 @@ msgstr "Token incompatível"
 msgid "God help us something has gone horribly wrong"
 msgstr "Que Deus nos ajude, alguma coisa está terrivelmente errada."
 
+#: openDCIM/classes/DataCenter.class.php:507
+#, fuzzy
+msgid "Composite View of Cabinets"
+msgstr "Editar Fileiras de Armários"
+
+#: openDCIM/classes/DataCenter.class.php:508
+#, fuzzy
+msgid "Occupied Space"
+msgstr "Ocupado"
+
+#: openDCIM/classes/DataCenter.class.php:509
+#, fuzzy
+msgid "Calculated Weight"
+msgstr "Potência calculada"
+
+#: openDCIM/classes/DataCenter.class.php:510
+#, fuzzy
+msgid "Calculated Power Usage"
+msgstr "Potência calculada"
+
+#: openDCIM/classes/DataCenter.class.php:511
+#: openDCIM/classes/DataCenter.class.php:512
+#: openDCIM/classes/DataCenter.class.php:513
+#, fuzzy
+msgid "Measured on"
+msgstr "Potência Medida"
+
+#: openDCIM/classes/DataCenter.class.php:609
+#, fuzzy
+msgid "Row "
+msgstr "Fila"
+
+#: openDCIM/classes/DeviceTemplate.class.php:591
+#, fuzzy
+msgid "No valid file"
+msgstr "Tipo de arquivo inválido"
+
+#: openDCIM/classes/DeviceTemplate.class.php:629
+#: openDCIM/classes/DeviceTemplate.class.php:634
+#: openDCIM/classes/DeviceTemplate.class.php:641
+#, fuzzy
+msgid "Import Error"
+msgstr "Registos de importação"
+
+#: openDCIM/classes/DeviceTemplate.class.php:630
+#, fuzzy
+msgid "Front picture file already exists"
+msgstr "Arquivo de imagem frontal"
+
+#: openDCIM/classes/DeviceTemplate.class.php:635
+#, fuzzy
+msgid "Rear picture file already exists"
+msgstr "Arquivo de imagem traseira"
+
+#: openDCIM/classes/DeviceTemplate.class.php:642
+msgid ""
+"An error has occurred creating the template.<br>Possibly there is already a "
+"template of the same manufacturer and model"
+msgstr ""
+
+#: openDCIM/classes/DeviceTemplate.class.php:662
+#: openDCIM/classes/DeviceTemplate.class.php:666
+#: openDCIM/classes/DeviceTemplate.class.php:698
+#: openDCIM/classes/DeviceTemplate.class.php:702
+#, fuzzy
+msgid "Import Warning"
+msgstr "Alerta de Energia"
+
+#: openDCIM/classes/DeviceTemplate.class.php:663
+#, fuzzy, php-format
+msgid "An error has occurred creating the slot %s"
+msgstr "Ocorreu um erro, Modelo não foi criado"
+
+#: openDCIM/classes/DeviceTemplate.class.php:667
+#, php-format
+msgid "Ignored slot %s"
+msgstr ""
+
+#: openDCIM/classes/DeviceTemplate.class.php:699
+#, fuzzy, php-format
+msgid "An error has occurred creating the port %s"
+msgstr "Ocorreu um erro, Modelo não foi criado"
+
+#: openDCIM/classes/DeviceTemplate.class.php:703
+#, fuzzy, php-format
+msgid "Ignored port %s"
+msgstr "Relatórios de inventário"
+
+#: openDCIM/classes/SwitchInfo.class.php:103
+msgid ""
+"I don't know what type of device this is but it did not return any ports "
+"whatsoever.  Do not try to report this as an error."
+msgstr ""
+
+#: openDCIM/classes/SwitchInfo.class.php:105
+msgid "First port detection failed, please report to openDCIM developers"
+msgstr ""
+
 #~ msgid "Reservation?"
 #~ msgstr "Reserva?"
 
@@ -5541,3 +5653,6 @@ msgstr "Que Deus nos ajude, alguma coisa está terrivelmente errada."
 
 #~ msgid "Surplus Date"
 #~ msgstr "Data do Excedente"
+
+#~ msgid "Datacenter"
+#~ msgstr "Data Center"
