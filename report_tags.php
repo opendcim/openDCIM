@@ -22,7 +22,7 @@
 		// Left these expanded in case we need to add or remove columns.  Otherwise I would have just collapsed entirely.
 		$body="<table id=\"export\" class=\"display\">\n\t<thead>\n\t\t<tr>\n
 			\t<th>".__("Device Label")."</th>
-			\t<th>".__("Datacenter")."</th>
+			\t<th>".__("Data Center")."</th>
 			\t<th>".__("Rack")."</th>
 			\t<th>".__("Owner")."</th>
 			\t<th>".__("Tag")."</th>
