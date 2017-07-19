@@ -2,6 +2,12 @@
 	require_once( 'db.inc.php' );
 	require_once( 'facilities.inc.php' );
 
+if(!$person->ContactAdmin){
+    // No soup for you.
+    header('Location: '.redirect());
+    exit;
+}
+
 	define('FPDF_FONTPATH','font/');
 	require('fpdf.php');
 
@@ -17,22 +23,24 @@ class PDF extends FPDF {
   
 	function Header() {
 		$this->pdfconfig = new Config();
-		$this->Link( 10, 8, 100, 20, 'https://' . $_SERVER['SERVER_NAME'] . $_SERVER['PHP_SELF'] );
-    	$this->Image( 'images/' . $this->pdfconfig->ParameterArray['PDFLogoFile'],10,8,100);
+		$this->Link( 10, 8, 100, 20, 'https://' . $_SERVER['SERVER_NAME'] . $_SERVER['SCRIPT_NAME'] );
+        if ( file_exists( 'images/' . $this->pdfconfig->ParameterArray['PDFLogoFile'] )) {
+            $this->Image( 'images/' . $this->pdfconfig->ParameterArray['PDFLogoFile'],10,8,100);
+        }
     	$this->SetFont($this->pdfconfig->ParameterArray['PDFfont'],'B',12);
     	$this->Cell(120);
-    	$this->Cell(30,20,__('Information Technology Services'),0,0,'C');
-    	$this->Ln(20);
+    	$this->Cell(30,20,__("Information Technology Services"),0,0,'C');
+    	$this->Ln(25);
 		$this->SetFont( $this->pdfconfig->ParameterArray['PDFfont'],'',10 );
-		$this->Cell( 50, 6, __('Departmental Contacts Report'), 0, 1, 'L' );
-		$this->Cell( 50, 6, __('Date').': ' . date( "M d, Y" ), 0, 1, 'L' );
+		$this->Cell( 50, 6, __("Departmental Contacts Report"), 0, 1, 'L' );
+		$this->Cell( 50, 6, __("Date").': ' . date('d F Y'), 0, 1, 'L' );
 		$this->Ln(10);
 	}
 
 	function Footer() {
 	    	$this->SetY(-15);
     		$this->SetFont($this->pdfconfig->ParameterArray['PDFfont'],'I',8);
-    		$this->Cell(0,10,__('Page').' '.$this->PageNo().'/{nb}',0,0,'C');
+    		$this->Cell(0,10,__("Page").' '.$this->PageNo().'/{nb}',0,0,'C');
 	}
 	
   function Bookmark($txt,$level=0,$y=0) {
@@ -124,11 +132,11 @@ class PDF extends FPDF {
 	//
 	
 	$dept = new Department();
-	$con = new Contact();
+	$con = new People();
 	
 	$pdf=new PDF();
 	$pdf->AliasNbPages();
-	  
+	include_once("loadfonts.php");
 	$pdf->SetFont($config->ParameterArray['PDFfont'],'',8);
 
 	$pdf->SetFillColor( 0, 0, 0 );
@@ -140,6 +148,7 @@ class PDF extends FPDF {
 	$pdf->SetTextColor( 0 );
 
 	$pdf->Bookmark( 'Departments' );
+	$pdf->AddPage();
 	$deptList = $dept->GetDepartmentList();
 
 	foreach( $deptList as $deptRow ) {
@@ -147,7 +156,6 @@ class PDF extends FPDF {
 		// if ( $deptRow->Name == 'ITS' )
 		// 	continue;
 
-		$pdf->AddPage();
 		$pdf->Bookmark( $deptRow->Name, 1, 0 );
 		$pdf->SetFont( $config->ParameterArray['PDFfont'], 'B', 12 );
 		$pdf->Cell( 80, 5, __("Department").":" );
@@ -155,12 +163,12 @@ class PDF extends FPDF {
 		$pdf->Cell( 0, 5, $deptRow->Name );
 		$pdf->Ln();
 		$pdf->SetFont( $config->ParameterArray['PDFfont'], 'B', 12 );
-		$pdf->Cell( 80, 5, __('Executive Sponsor'),':' );
+		$pdf->Cell( 80, 5, __("Executive Sponsor").":" );
 		$pdf->SetFont( $config->ParameterArray['PDFfont'], '', 12 );
 		$pdf->Cell( 0, 5, $deptRow->ExecSponsor );
 		$pdf->Ln();
 		$pdf->SetFont( $config->ParameterArray['PDFfont'], 'B', 12 );
-		$pdf->Cell( 80, 5, __('Service Delivery Manager'),':' );
+		$pdf->Cell( 80, 5, __("Service Delivery Manager").":" );
 		$pdf->SetFont( $config->ParameterArray['PDFfont'], '', 12 );
 		$pdf->Cell( 0, 5, $deptRow->SDM );
 		$pdf->Ln();
@@ -168,7 +176,7 @@ class PDF extends FPDF {
 
 		$pdf->SetFont( $config->ParameterArray['PDFfont'], '', 8 );
 
-		$headerTags = array( __('Name'), __('UserID'), __('Phone1'), __('Phone2'), __('Phone3'), __('Email') );
+		$headerTags = array( __("UserName"), __("UserID"), __("Phone1"), __("Phone2"), __("Phone3"), __("Email") );
 		$cellWidths = array( 50, 20, 25, 25, 25, 50 );
 		$maxval = count( $headerTags );
 		for ( $col = 0; $col < $maxval; $col++ )
@@ -176,7 +184,7 @@ class PDF extends FPDF {
 
 		$pdf->Ln();
 
-		$contactList=$con->GetContactsForDepartment($deptRow->DeptID);
+		$contactList=$con->GetPeopleByDepartment($deptRow->DeptID);
 
 		$fill = 0;
 

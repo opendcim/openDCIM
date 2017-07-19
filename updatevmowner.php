@@ -2,25 +2,29 @@
 	require_once( 'db.inc.php' );
 	require_once( 'facilities.inc.php' );
 
-	if(!$user->WriteAccess || !isset($_REQUEST['vmindex'])){
+	$subheader=__("Data Center Virtual Machine Detail");
+
+	if(!$person->WriteAccess || !isset($_REQUEST['vmindex'])){
 		// No soup for you.
 		header('Location: '.redirect());
 		exit;
 	}
 
 	$dept=new Department();
-	$esx=new ESX();
+	$vm=new VM();
+	$con = new People();
 	$dev=new Device();
 
 	if($_REQUEST['vmindex'] >0){
-		$esx->VMIndex = $_REQUEST['vmindex'];
-		$esx->GetVMbyIndex();
-		$dev->DeviceID=$esx->DeviceID;
+		$vm->VMIndex = $_REQUEST['vmindex'];
+		$vm->GetVMbyIndex();
+		$dev->DeviceID=$vm->DeviceID;
 		$dev->GetDevice();
 		if(isset($_REQUEST['action']) && $_REQUEST['action']=='Update'){
-			$esx->Owner=$_REQUEST['owner'];
-			$esx->UpdateVMOwner();
-			header('Location: '.redirect("devices.php?deviceid=$esx->DeviceID"));
+			$vm->Owner=$_REQUEST['owner'];
+			$vm->PrimaryContact=$_REQUEST['contact'];
+			$vm->UpdateVMOwner();
+			header('Location: '.redirect("devices.php?DeviceID=$vm->DeviceID"));
 		}
 	}else{
 		// How'd you get here without a valid vmindex?
@@ -28,6 +32,7 @@
 		exit;
 	}
 
+	$contactList = $con->GetUserList();
 	$deptList=$dept->GetDepartmentList();
 ?>
 <!doctype html>
@@ -46,17 +51,15 @@
   <script type="text/javascript" src="scripts/jquery-ui.min.js"></script>
 </head>
 <body>
-<div id="header"></div>
+<?php include( 'header.inc.php' ); ?>
 <div class="page">
 <?php
 	include( 'sidebar.inc.php' );
 ?>
 <div class="main">
-<h2><?php print $config->ParameterArray["OrgName"]; ?></h2>
-<h3>Data Center Virtual Machine Detail</h3>
 <div class="center"><div>
 
-<form action="<?php echo $_SERVER['PHP_SELF']; ?>" method="POST">
+<form method="POST">
 <div class="table">
 	<div>
 		<div>Owner (Department)</div>
@@ -65,29 +68,42 @@
 <?php
 	foreach($deptList as $deptRow){
 		print "			<option value=$deptRow->DeptID";
-		if($esx->Owner==$deptRow->DeptID){echo ' selected="selected"';}
+		if($vm->Owner==$deptRow->DeptID){echo ' selected="selected"';}
 		print ">$deptRow->Name</option>\n";
 	}
 ?>
 		</select></div>
 	</div>
 	<div>
+		<div>Primary Contact</div>
+		<div><select name="contact">
+			<option value=0>Select Primary Contact</option>
+<?php
+	foreach( $contactList as $conRow ) {
+		print "			<option value=$conRow->PersonID";
+		if ( $vm->PrimaryContact == $conRow->PersonID ) {echo ' selected';}
+		print ">$conRow->LastName, $conRow->FirstName</option>\n";
+	}
+?>
+		</select></div>
+	</div>
+	<div>
 	   <div>VM Name</div>
-	   <div><input type="text" size="50" name="vmname" value="<?php echo $esx->vmName; ?>" readonly></div>
+	   <div><input type="text" size="50" name="vmname" value="<?php echo $vm->vmName; ?>" readonly></div>
 	</div>
 	<div>
 	   <div>Current Server</div>
 	   <div><input type="text" size="50" name="currserver" value="<?php echo $dev->Label; ?>" readonly></div>
 	</div>
 	<div class="caption">
-	   <input type="hidden" name="vmindex" value="<?php echo $esx->VMIndex; ?>">
+	   <input type="hidden" name="vmindex" value="<?php echo $vm->VMIndex; ?>">
 	   <input type="submit" name="action" value="Update" default>
 	</div>
 </div>
 </form>
 
 </div></div>
-<a href="devices.php?deviceid=<?php echo $dev->DeviceID; ?>">Return to Parent Device</a>
+<a href="devices.php?DeviceID=<?php echo $dev->DeviceID; ?>">Return to Parent Device</a>
 </div><!-- END div.main -->
 </div><!-- END div.page -->
 </body>

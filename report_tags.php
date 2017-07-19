@@ -2,6 +2,14 @@
 	require_once('db.inc.php');
 	require_once('facilities.inc.php');
 
+if(!$person->ReadAccess){
+    // No soup for you.
+    header('Location: '.redirect());
+    exit;
+}
+
+	$subheader=__("Inventory Reporting By Tag");
+
 	$tagsList=Tags::FindAll();
 	$body="";
 
@@ -22,7 +30,7 @@
 		// Left these expanded in case we need to add or remove columns.  Otherwise I would have just collapsed entirely.
 		$body="<table id=\"export\" class=\"display\">\n\t<thead>\n\t\t<tr>\n
 			\t<th>".__("Device Label")."</th>
-			\t<th>".__("Datacenter")."</th>
+			\t<th>".__("Data Center")."</th>
 			\t<th>".__("Rack")."</th>
 			\t<th>".__("Owner")."</th>
 			\t<th>".__("Tag")."</th>
@@ -101,13 +109,11 @@
   </script>
 </head>
 <body>
-	<div id="header"></div>
+<?php include( 'header.inc.php' ); ?>
 	<div class="page">
 <?php
 	include('sidebar.inc.php');
 echo '		<div class="main">
-			<h2>',$config->ParameterArray['OrgName'],'</h2>
-			<h3>',__("Inventory Reporting By Tag"),'</h3>
 			<label for="tagid">',__("Tag:"),'</label>
 			<select name="tagid" id="tagid">
 				<option value="">',__("Select Tag"),'</option>

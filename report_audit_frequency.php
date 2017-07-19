@@ -2,6 +2,14 @@
 	require_once( 'db.inc.php' );
 	require_once( 'facilities.inc.php' );
 
+if(!$person->ReadAccess){
+    // No soup for you.
+    header('Location: '.redirect());
+    exit;
+}
+
+	$subheader=__("Cabinet Audit Frequency Report");
+
 	define('FPDF_FONTPATH','font/');
 	require('fpdf.php');
 
@@ -12,22 +20,24 @@ class PDF extends FPDF {
   
 	function Header() {
 		$this->pdfconfig = new Config();
-		$this->Link( 10, 8, 100, 20, 'https://' . $_SERVER['SERVER_NAME'] . $_SERVER['PHP_SELF'] );
-    	$this->Image( 'images/' . $this->pdfconfig->ParameterArray['PDFLogoFile'],10,8,100);
+		$this->Link( 10, 8, 100, 20, 'https://' . $_SERVER['SERVER_NAME'] . $_SERVER['SCRIPT_NAME'] );
+		if ( file_exists( 'images/' . $this->pdfconfig->ParameterArray['PDFLogoFile'] )) {
+	    	$this->Image( 'images/' . $this->pdfconfig->ParameterArray['PDFLogoFile'],10,8,100);
+		}
     	$this->SetFont($this->pdfconfig->ParameterArray['PDFfont'],'B',12);
     	$this->Cell(120);
-    	$this->Cell(30,20,'Information Technology Services',0,0,'C');
-    	$this->Ln(20);
+    	$this->Cell(30,20,__("Information Technology Services"),0,0,'C');
+    	$this->Ln(25);
 		$this->SetFont( $this->pdfconfig->ParameterArray['PDFfont'],'',10 );
-		$this->Cell( 50, 6, 'Cabinet Audit Frequency Report', 0, 1, 'L' );
-		$this->Cell( 50, 6, 'Date: ' . date( "l, M d, Y" ), 0, 1, 'L' );
+		$this->Cell( 50, 6, __("Cabinet Audit Frequency Report"), 0, 1, 'L' );
+		$this->Cell( 50, 6, __("Date").': ' . date('d F Y'), 0, 1, 'L' );
 		$this->Ln(10);
 	}
 
 	function Footer() {
 	    	$this->SetY(-15);
     		$this->SetFont($this->pdfconfig->ParameterArray['PDFfont'],'I',8);
-    		$this->Cell(0,10,'Page '.$this->PageNo().'/{nb}',0,0,'C');
+    		$this->Cell(0,10,__("Page").' '.$this->PageNo().'/{nb}',0,0,'C');
 	}
 	
   function Bookmark($txt,$level=0,$y=0) {
@@ -138,23 +148,21 @@ if(!isset($_REQUEST['action'])){
 <script type="text/javascript">
 $(function(){
 	$('#auditform').validationEngine({});
-	$('#startdate').datepicker({});
-	$('#enddate').datepicker({});
+	$('#startdate').datepicker({dateFormat: "yy-mm-dd"});
+	$('#enddate').datepicker({dateFormat: "yy-mm-dd"});
 });
 </script>
 
 </head>
 <body>
-<div id="header"></div>
+<?php include( 'header.inc.php' ); ?>
 <div class="page">
 <?php
 	include( 'sidebar.inc.php' );
 ?>
 <div class="main">
-<h2><?php echo $config->ParameterArray['OrgName']; ?></h2>
-<h3>Cabinet Audit Frequency Report</h3>
 <div class="center"><div>
-<form action="<?php echo $_SERVER['PHP_SELF']; ?>" method="post" id="auditform">
+<form method="post" id="auditform">
 <div class="table">
 	<div>
 		<div><label for="datacenterid">Data Center:</label></div>
@@ -211,7 +219,7 @@ $(function(){
 	
 	$pdf=new PDF();
 	$pdf->AliasNbPages();
-
+	include_once("loadfonts.php");
 	$pdf->SetFont($config->ParameterArray['PDFfont'],'',8);
 
 	$pdf->SetFillColor( 0, 0, 0 );
@@ -228,10 +236,10 @@ $(function(){
 	$pdf->AddPage();
 	$pdf->Bookmark( "Activity by Location" );
 	
-	$pdf->Cell( 80, 5, "Activity by Location" );
+	$pdf->Cell( 80, 5, __("Activity by Location") );
 	$pdf->Ln();
 	
-	$headerTags = array( "Location", "Last Audit", "Times Audited", "Installation Date", "Days Since Last Audit" );
+	$headerTags = array( __("Cabinet Location"), __("Last Audit"), __("Times Audited"), __("Installation Date"), __("Days Since Last Audit") );
 	$cellWidths = array( 40, 30, 30, 30, 60 );
 	
 	$fill = 0;
@@ -249,12 +257,12 @@ $(function(){
 	$borders = "TLR";
 	
 	foreach ( $cabList as $tmpCab ) {
-		$sql="select a.AuditStamp as AuditDate, b.Name as Auditor, c.Location, c.InstallationDate from fac_CabinetAudit a, fac_User b, fac_Cabinet c where a.UserID=b.UserID and a.CabinetID=c.CabinetID and c.CabinetID=$tmpCab->CabinetID order by a.AuditStamp DESC limit 1;";
+		$sql="select a.Time as AuditDate, b.Name as Auditor, c.Location, c.InstallationDate from fac_GenericLog a, fac_User b, fac_Cabinet c where a.Action=\"CertifyAudit\" and a.UserID=b.UserID and a.ObjectID=c.CabinetID and c.CabinetID=$tmpCab->CabinetID order by a.Time DESC limit 1;";
 
 		foreach($dbh->query($sql) as $resRow){
 			$pdf->Cell( $cellWidths[0], 6, $tmpCab->Location, $borders, 0, 'L', $fill );
 			
-			$sql="SELECT COUNT(AuditStamp) AS Frequency FROM fac_CabinetAudit WHERE CabinetID=$tmpCab->CabinetID;";
+			$sql="SELECT COUNT(Time) AS Frequency FROM fac_GenericLog WHERE Action=\"CertifyAudit\" and ObjectID=$tmpCab->CabinetID;";
 			$frequency=$dbh->query($sql)->fetchColumn();
 			
 			if ( $frequency == 0 ) {
@@ -304,10 +312,10 @@ $(function(){
 	
 	$pdf->Bookmark( "Summary by Period" );
 	
-	$pdf->Cell( 80, 5, "Summary by Period" );
+	$pdf->Cell( 80, 5, __("Summary by Period") );
 	$pdf->Ln();
 	
-	$headerTags = array( "Days Since Last Audit", "Number of Cabinets", "Percentage" );
+	$headerTags = array( __("Days Since Last Audit"), __("Number of Cabinets"), __("Percentage") );
 	$cellWidths = array( 40, 40, 40 );
 	
 	$fill = 0;

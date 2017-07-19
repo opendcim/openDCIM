@@ -7,6 +7,7 @@ CREATE TABLE fac_Cabinet (
   CabinetID int(11) NOT NULL AUTO_INCREMENT,
   DataCenterID int(11) NOT NULL,
   Location varchar(20) NOT NULL,
+  LocationSortable varchar(20) NOT NULL,
   AssignedTo int(11) NOT NULL,
   ZoneID int(11) NOT NULL,
   CabRowID int(11) NOT NULL,
@@ -16,14 +17,13 @@ CREATE TABLE fac_Cabinet (
   MaxKW float(11) NOT NULL,
   MaxWeight int(11) NOT NULL,
   InstallationDate date NOT NULL,
-  SensorIPAddress varchar(20) NOT NULL,
-  SensorCommunity varchar(40) NOT NULL,
-  SensorTemplateID int(11) NOT NULL,
   MapX1 int(11) NOT NULL,
   MapX2 int(11) NOT NULL,
+  FrontEdge varchar(7) NOT NULL DEFAULT "Top",
   MapY1 int(11) NOT NULL,
   MapY2 int(11) NOT NULL,
   Notes text NULL,
+  U1Position varchar(7) NOT NULL DEFAULT "Default",
   PRIMARY KEY (CabinetID)
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
 
@@ -35,8 +35,8 @@ DROP TABLE IF EXISTS fac_CabRow;
 CREATE TABLE fac_CabRow (
   CabRowID int(11) NOT NULL AUTO_INCREMENT,
   Name varchar(120) NOT NULL,
+  DataCenterID int(11) NOT NULL,
   ZoneID int(11) NOT NULL,
-  CabOrder ENUM( 'ASC', 'DESC' ) NOT NULL DEFAULT 'ASC',
   PRIMARY KEY (CabRowID)
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
@@ -67,28 +67,18 @@ CREATE TABLE fac_CabinetTags (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 --
--- Table structure for table `fac_CabinetTemps`
+-- Table structure for table `fac_SensorReadings`
 --
 
-DROP TABLE IF EXISTS fac_CabinetTemps;
-CREATE TABLE fac_CabinetTemps (
-  CabinetID int(11) NOT NULL,
+DROP TABLE IF EXISTS fac_SensorReadings;
+CREATE TABLE fac_SensorReadings (
+  DeviceID int(11) NOT NULL,
+  Temperature float NOT NULL,
+  Humidity float NOT NULL,
   LastRead datetime NOT NULL,
-  Temp float(8) NOT NULL,
-  Humidity float(8) NOT NULL,
-  PRIMARY KEY (CabinetID)
-) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
-
---
--- Table structure for table `fac_CabinetAudit`
---
-
-DROP TABLE IF EXISTS `fac_CabinetAudit`;
-CREATE TABLE `fac_CabinetAudit` (
-  CabinetID int(11) NOT NULL,
-  UserID varchar(80) NOT NULL,
-  AuditStamp datetime NOT NULL
+  PRIMARY KEY (DeviceID)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
 
 --
 -- Add a new table for sensor probe templates
@@ -98,14 +88,58 @@ DROP TABLE IF EXISTS fac_SensorTemplate;
 CREATE TABLE fac_SensorTemplate (
 	TemplateID INT(11) NOT NULL AUTO_INCREMENT,
 	ManufacturerID INT(11) NOT NULL,
-	Name VARCHAR(80) NOT NULL,
-	SNMPVersion ENUM ('1','2c') NOT NULL DEFAULT '2c',
+	Model VARCHAR(80) NOT NULL,
 	TemperatureOID VARCHAR(256) NOT NULL,
 	HumidityOID VARCHAR(256) NOT NULL,
 	TempMultiplier FLOAT(8) NOT NULL DEFAULT 1,
 	HumidityMultiplier FLOAT(8) NOT NULL DEFAULT 1,
+	mUnits VARCHAR(7) NOT NULL DEFAULT "english",
 	PRIMARY KEY(TemplateID)
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
+
+--
+-- Table structure for fac_Slots
+--
+DROP TABLE IF EXISTS fac_Slots;
+CREATE TABLE fac_Slots (
+	TemplateID INT(11) NOT NULL,
+	Position INT(11) NOT NULL,
+	BackSide TINYINT(1) NOT NULL,
+	X INT(11) NULL,
+	Y INT(11) NULL,
+	W INT(11) NULL,
+	H INT(11) NULL,
+	PRIMARY KEY (TemplateID, Position, BackSide)
+) ENGINE = InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+
+--
+-- Table structure for fac_TemplatePorts
+--
+DROP TABLE IF EXISTS fac_TemplatePorts;
+CREATE TABLE IF NOT EXISTS fac_TemplatePorts (
+  TemplateID int(11) NOT NULL,
+  PortNumber int(11) NOT NULL,
+  Label varchar(40) NOT NULL,
+  MediaID int(11) NOT NULL DEFAULT '0',
+  ColorID int(11) NOT NULL DEFAULT '0',
+  PortNotes varchar(80) NOT NULL,
+  PRIMARY KEY (TemplateID,PortNumber),
+  UNIQUE KEY LabeledPort (TemplateID,PortNumber,Label)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+--
+-- TemplatePowerPorts table content the power connections of a device template
+--
+
+DROP TABLE IF EXISTS fac_TemplatePowerPorts;
+CREATE TABLE fac_TemplatePowerPorts (
+  TemplateID int(11) NOT NULL,
+  PortNumber int(11) NOT NULL,
+  Label varchar(40) NOT NULL,
+  PortNotes varchar(80) NOT NULL,
+  PRIMARY KEY (TemplateID,PortNumber),
+  UNIQUE KEY LabeledPort (TemplateID,PortNumber,Label)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 --
 -- Table structure for table `fac_CDUTemplate`
@@ -118,38 +152,21 @@ CREATE TABLE fac_CDUTemplate (
   Model varchar(80) NOT NULL,
   Managed int(1) NOT NULL,
   ATS int(1) NOT NULL,
-  SNMPVersion enum('1','2c'),
+  SNMPVersion varchar(2) NOT NULL DEFAULT '2c',
   VersionOID varchar(80) NOT NULL,
-  Multiplier enum( '0.1', '1', '10', '100' ),
+  Multiplier varchar(6) NULL DEFAULT NULL,
   OID1 varchar(80) NOT NULL,
   OID2 varchar(80) NOT NULL,
   OID3 varchar(80) NOT NULL,
   ATSStatusOID varchar(80) NOT NULL,
   ATSDesiredResult varchar(80) NOT NULL,
-  ProcessingProfile enum('SingleOIDWatts','SingleOIDAmperes','Combine3OIDWatts','Combine3OIDAmperes','Convert3PhAmperes'),
+  ProcessingProfile varchar(20) NOT NULL DEFAULT "SingleOIDWatts", 
   Voltage int(11) NOT NULL,
   Amperage int(11) NOT NULL,
   NumOutlets int(11) NOT NULL,
   PRIMARY KEY (TemplateID),
   KEY ManufacturerID (ManufacturerID),
   UNIQUE KEY (ManufacturerID, Model)
-) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
-
---
--- Table structure for table `fac_Contact`
---
-
-DROP TABLE IF EXISTS fac_Contact;
-CREATE TABLE fac_Contact (
-  ContactID int(11) NOT NULL AUTO_INCREMENT,
-  UserID varchar(80) NOT NULL,
-  LastName varchar(40) NOT NULL,
-  FirstName varchar(40) NOT NULL,
-  Phone1 varchar(20) NOT NULL,
-  Phone2 varchar(20) NOT NULL,
-  Phone3 varchar(20) NOT NULL,
-  Email varchar(80) NOT NULL,
-  PRIMARY KEY (ContactID)
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
 
 --
@@ -182,6 +199,7 @@ CREATE TABLE fac_DataCenter (
   ContainerID INT(11) NOT NULL,
   MapX int(11) NOT NULL,
   MapY int(11) NOT NULL,
+  U1Position varchar(7) NOT NULL DEFAULT "Default",
   PRIMARY KEY (DataCenterID)
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
 
@@ -234,9 +252,20 @@ CREATE TABLE fac_Device (
   Label varchar(80) NOT NULL,
   SerialNo varchar(40) NOT NULL,
   AssetTag varchar(20) NOT NULL,
-  PrimaryIP varchar(20) NOT NULL,
+  PrimaryIP varchar(254) NOT NULL,
+  SNMPVersion varchar(2) NOT NULL,
+  v3SecurityLevel varchar(12) NOT NULL,
+  v3AuthProtocol varchar(3) NOT NULL,
+  v3AuthPassphrase varchar(80) NOT NULL,
+  v3PrivProtocol varchar(3) NOT NULL,
+  v3PrivPassphrase varchar(80) NOT NULL,
   SNMPCommunity varchar(80) NOT NULL,
-  ESX tinyint(1) NOT NULL,
+  SNMPFailureCount TINYINT(1) NOT NULL,
+  Hypervisor varchar(40) NOT NULL,
+  APIUsername varchar(80) NOT NULL,
+  APIPassword varchar(80) NOT NULL,
+  APIPort smallint(4) NOT NULL,
+  ProxMoxRealm varchar(80) NOT NULL,
   Owner int(11) NOT NULL,
   EscalationTimeID int(11) NOT NULL,
   EscalationID int(11) NOT NULL,
@@ -249,7 +278,7 @@ CREATE TABLE fac_Device (
   TemplateID int(11) NOT NULL,
   NominalWatts int(11) NOT NULL,
   PowerSupplyCount int(11) NOT NULL,
-  DeviceType enum('Server','Appliance','Storage Array','Switch','Chassis','Patch Panel','Physical Infrastructure') NOT NULL,
+  DeviceType varchar(23) NOT NULL DEFAULT "Server",
   ChassisSlots smallint(6) NOT NULL,
   RearChassisSlots smallint(6) NOT NULL,
   ParentDevice int(11) NOT NULL,
@@ -261,25 +290,13 @@ CREATE TABLE fac_Device (
   Reservation tinyint(1) NOT NULL,
   HalfDepth tinyint(1) NOT NULL DEFAULT '0',
   BackSide tinyint(1) NOT NULL DEFAULT '0',
+  AuditStamp DATETIME NOT NULL,
+  Weight int(11) NOT NULL DEFAULT '0',
   PRIMARY KEY (DeviceID),
-  KEY SerialNo (SerialNo,`AssetTag`,`PrimaryIP`)
-) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
-
---
--- Table structure for table fac_DevicePorts
---
-
-DROP TABLE IF EXISTS fac_DevicePorts;
-CREATE TABLE fac_DevicePorts (
-  ConnectionID int(11) NOT NULL AUTO_INCREMENT,
-  DeviceID int(11),
-  DevicePort int(11),
-  MediaID int(11),
-  PortDescriptor varchar(30),
-  ColorID int(11),
-  Notes text NULL,
-  PRIMARY KEY (ConnectionID),
-  KEY DeviceID (DeviceID,DevicePort)
+  KEY SerialNo (SerialNo,`AssetTag`,`PrimaryIP`),
+  KEY AssetTag (AssetTag),
+  KEY Cabinet (Cabinet),
+  KEY TemplateID (TemplateID)
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
 
 --
@@ -305,14 +322,18 @@ CREATE TABLE fac_DeviceTemplate (
   Height int(11) NOT NULL,
   Weight int(11) NOT NULL,
   Wattage int(11) NOT NULL,
-  DeviceType enum('Server','Appliance','Storage Array','Switch','Chassis','Patch Panel','Physical Infrastructure') NOT NULL default 'Server',
+  DeviceType varchar(23) NOT NULL DEFAULT "Server",
   PSCount int(11) NOT NULL,
   NumPorts int(11) NOT NULL,
   Notes text NOT NULL,
-  FrontPictureFile VARCHAR(45) NOT NULL,
-  RearPictureFile VARCHAR(45) NOT NULL,
+  FrontPictureFile VARCHAR(255) NOT NULL,
+  RearPictureFile VARCHAR(255) NOT NULL,
   ChassisSlots SMALLINT(6) NOT NULL,
   RearChassisSlots SMALLINT(6) NOT NULL,
+  SNMPVersion VARCHAR(2) NOT NULL DEFAULT '2c',
+  GlobalID int(11) NOT NULL DEFAULT 0,
+  ShareToRepo tinyint(1) NOT NULL DEFAULT 0,
+  KeepLocal tinyint(1) NOT NULL DEFAULT 0,
   PRIMARY KEY (TemplateID),
   UNIQUE KEY ManufacturerID (ManufacturerID,Model)
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
@@ -340,6 +361,23 @@ CREATE TABLE fac_Escalations (
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
 
 --
+-- Table structure for table `fac_GenericLog`
+--
+
+DROP TABLE IF EXISTS fac_GenericLog;
+CREATE TABLE `fac_GenericLog` (
+  UserID varchar(80) NOT NULL,
+  Class varchar(40) NOT NULL,
+  ObjectID varchar(80) NOT NULL,
+  ChildID int(11) DEFAULT NULL,
+  Action varchar(40) NOT NULL,
+  Property varchar(40) NOT NULL,
+  OldVal varchar(255) NOT NULL,
+  NewVal varchar(255) NOT NULL,
+  Time timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+--
 -- Table structure for table fac_Manufacturer
 --
 
@@ -347,6 +385,8 @@ DROP TABLE IF EXISTS fac_Manufacturer;
 CREATE TABLE fac_Manufacturer (
   ManufacturerID int(11) NOT NULL AUTO_INCREMENT,
   Name varchar(80) NOT NULL,
+  GlobalID int(11) NOT NULL DEFAULT 0,
+  SubscribeToUpdates int(1) NOT NULL DEFAULT 0,
   PRIMARY KEY (ManufacturerID),
   UNIQUE KEY Name (Name)
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
@@ -368,7 +408,8 @@ CREATE TABLE fac_Ports (
   Notes varchar(80) NOT NULL,
   PRIMARY KEY (DeviceID,PortNumber),
   UNIQUE KEY LabeledPort (DeviceID,PortNumber,Label),
-  UNIQUE KEY ConnectedDevice (ConnectedDeviceID,ConnectedPort)
+  UNIQUE KEY ConnectedDevice (ConnectedDeviceID,ConnectedPort),
+  KEY Notes (Notes)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 --
@@ -398,24 +439,6 @@ CREATE TABLE fac_PanelSchedule (
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
 
 --
--- Table structure for table fac_PatchConnection
---
-
-DROP TABLE IF EXISTS fac_PatchConnection;
-CREATE TABLE fac_PatchConnection (
-  PanelDeviceID int(11) NOT NULL,
-  PanelPortNumber int(11) NOT NULL,
-  FrontEndpointDeviceID int(11) DEFAULT NULL,
-  FrontEndpointPort int(11) DEFAULT NULL,
-  RearEndpointDeviceID int(11) DEFAULT NULL,
-  RearEndpointPort int(11) DEFAULT NULL,
-  FrontNotes varchar(80) DEFAULT NULL,
-  RearNotes varchar(80) DEFAULT NULL,
-  PRIMARY KEY (PanelDeviceID,PanelPortNumber)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-
-
---
 -- Table structure for table fac_PDUStats
 --
 
@@ -428,13 +451,43 @@ create table fac_PDUStats(
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 --
+-- Table structure for table fac_People
+--
+
+DROP TABLE IF EXISTS fac_People;
+CREATE TABLE fac_People (
+  PersonID int(11) NOT NULL AUTO_INCREMENT,
+  UserID varchar(255) NOT NULL,
+  LastName varchar(40) NOT NULL,
+  FirstName varchar(40) NOT NULL,
+  Phone1 varchar(20) NOT NULL,
+  Phone2 varchar(20) NOT NULL,
+  Phone3 varchar(20) NOT NULL,
+  Email varchar(80) NOT NULL,
+  APIKey varchar(80) NOT NULL,
+  AdminOwnDevices tinyint(1) NOT NULL,
+  ReadAccess tinyint(1) NOT NULL,
+  WriteAccess tinyint(1) NOT NULL,
+  DeleteAccess tinyint(1) NOT NULL,
+  ContactAdmin tinyint(1) NOT NULL,
+  RackRequest tinyint(1) NOT NULL,
+  RackAdmin tinyint(1) NOT NULL,
+  BulkOperations tinyint(1) NOT NULL,
+  SiteAdmin tinyint(1) NOT NULL,
+  APIToken varchar(80) NOT NULL,
+  Disabled tinyint(1) NOT NULL,
+  PRIMARY KEY(PersonID),
+  UNIQUE KEY UserID (UserID)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+--
 -- Table structure for table fac_PowerConnection
 --
 
 DROP TABLE IF EXISTS fac_PowerConnection;
 CREATE TABLE fac_PowerConnection (
   PDUID int(11) NOT NULL,
-  PDUPosition int(11) NOT NULL,
+  PDUPosition VARCHAR(11) NOT NULL,
   DeviceID int(11) NOT NULL,
   DeviceConnNumber int(11) NOT NULL,
   UNIQUE KEY PDUID (PDUID,PDUPosition),
@@ -451,7 +504,7 @@ CREATE TABLE fac_PowerDistribution (
   Label varchar(40) NOT NULL,
   CabinetID int(11) NOT NULL,
   TemplateID int(11) NOT NULL,
-  IPAddress varchar(16) NOT NULL,
+  IPAddress varchar(254) NOT NULL,
   SNMPCommunity varchar(50) NOT NULL,
   FirmwareVersion varchar(40) NOT NULL,
   PanelID int(11) NOT NULL,
@@ -461,7 +514,9 @@ CREATE TABLE fac_PowerDistribution (
   FailSafe tinyint(1) NOT NULL,
   PanelID2 int(11) NOT NULL,
   PanelPole2 int(11) NOT NULL,
-  PRIMARY KEY (PDUID)
+  PRIMARY KEY (PDUID),
+  KEY CabinetID (CabinetID),
+  KEY PanelID (PanelID)
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
 
 --
@@ -471,31 +526,35 @@ CREATE TABLE fac_PowerDistribution (
 DROP TABLE IF EXISTS fac_PowerPanel;
 CREATE TABLE fac_PowerPanel (
   PanelID int(11) NOT NULL AUTO_INCREMENT,
-  PowerSourceID int(11) NOT NULL,
-  PanelLabel varchar(20) NOT NULL,
+  PanelLabel varchar(80) NOT NULL,
   NumberOfPoles int(11) NOT NULL,
   MainBreakerSize int(11) NOT NULL,
   PanelVoltage int(11) NOT NULL,
-  NumberScheme enum('Odd/Even','Sequential') NOT NULL,
+  NumberScheme varchar(10) NOT NULL DEFAULT "Sequential",
+  ParentPanelID int(11) NOT NULL,
+  ParentBreakerName varchar(80) NOT NULL,
+  PanelIPAddress varchar(30) NOT NULL,
+  TemplateID int(11) NOT NULL,
   PRIMARY KEY (PanelID)
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
 
 --
--- Table structure for table fac_PowerSource
+-- Create new table for power ports
 --
 
-DROP TABLE IF EXISTS fac_PowerSource;
-CREATE TABLE fac_PowerSource (
-  PowerSourceID int(11) NOT NULL AUTO_INCREMENT,
-  SourceName varchar(80) NOT NULL,
-  DataCenterID int(11) NOT NULL,
-  IPAddress varchar(20) NOT NULL,
-  Community varchar(40) NOT NULL,
-  LoadOID varchar(80) NOT NULL,
-  Capacity int(11) NOT NULL,
-  PRIMARY KEY (PowerSourceID),
-  KEY DataCenterID (DataCenterID)
-) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
+DROP TABLE IF EXISTS fac_PowerPorts;
+CREATE TABLE fac_PowerPorts (
+  DeviceID int(11) NOT NULL,
+  PortNumber int(11) NOT NULL,
+  Label varchar(40) NOT NULL,
+  ConnectedDeviceID int(11) DEFAULT NULL,
+  ConnectedPort int(11) DEFAULT NULL,
+  Notes varchar(80) NOT NULL,
+  PRIMARY KEY (DeviceID,PortNumber),
+  UNIQUE KEY LabeledPort (DeviceID,PortNumber,Label),
+  UNIQUE KEY ConnectedDevice (ConnectedDeviceID,ConnectedPort),
+  KEY Notes (Notes)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 --
 -- Table structure for table fac_RackRequest
@@ -519,29 +578,13 @@ CREATE TABLE fac_RackRequest (
   SANCount int(11) NOT NULL,
   SANList varchar(80) NOT NULL,
   DeviceClass varchar(80) NOT NULL,
-  DeviceType enum('Server','Appliance','Storage Array','Switch','Chassis','Patch Panel','Physical Infrastructure') NOT NULL,
+  DeviceType varchar(23) NOT NULL DEFAULT "Server",
   LabelColor varchar(80) NOT NULL,
   CurrentLocation varchar(120) NOT NULL,
   SpecialInstructions text NOT NULL,
   PRIMARY KEY (RequestID),
   KEY RequestorID (RequestorID)
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
-
---
--- Table structure for table fac_SwitchConnection
---
-
-DROP TABLE IF EXISTS fac_SwitchConnection;
-CREATE TABLE fac_SwitchConnection (
-  SwitchDeviceID int(11) NOT NULL,
-  SwitchPortNumber int(11) NOT NULL,
-  EndpointDeviceID int(11) NOT NULL,
-  EndpointPort int(11) NOT NULL,
-  Notes varchar(80) NOT NULL,
-  PRIMARY KEY (SwitchDeviceID,SwitchPortNumber),
-  UNIQUE KEY EndpointDeviceID (EndpointDeviceID,EndpointPort),
-  UNIQUE KEY SwitchDeviceID (SwitchDeviceID,SwitchPortNumber)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 --
 -- Table structure for table fac_Tags
@@ -557,25 +600,6 @@ CREATE TABLE fac_Tags (
 
 INSERT INTO fac_Tags VALUES (NULL, 'Report');
 INSERT INTO fac_Tags VALUES (NULL , 'NoReport');
---
--- Table structure for table fac_User
---
-
-DROP TABLE IF EXISTS fac_User;
-CREATE TABLE fac_User (
-  UserID varchar(80) NOT NULL,
-  Name varchar(80) NOT NULL,
-  AdminOwnDevices tinyint(1) NOT NULL,
-  ReadAccess tinyint(1) NOT NULL,
-  WriteAccess tinyint(1) NOT NULL,
-  DeleteAccess tinyint(1) NOT NULL,
-  ContactAdmin tinyint(1) NOT NULL,
-  RackRequest tinyint(1) NOT NULL,
-  RackAdmin tinyint(1) NOT NULL,
-  SiteAdmin tinyint(1) NOT NULL,
-  Disabled tinyint(1) NOT NULL,
-  PRIMARY KEY (UserID)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 --
 -- Table structure for table fac_VMInventory
@@ -590,7 +614,9 @@ CREATE TABLE fac_VMInventory (
   vmName varchar(80) NOT NULL,
   vmState varchar(80) NOT NULL,
   Owner int(11) NOT NULL,
+  PrimaryContact int(11) NOT NULL,
   PRIMARY KEY (VMIndex),
+  UNIQUE KEY `VMList` (`vmID`, `vmName`),
   KEY ValidDevice (DeviceID)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
@@ -677,7 +703,7 @@ INSERT INTO fac_CabinetToolTip VALUES(NULL, 'DeviceID', 'Device ID', 0);
 INSERT INTO fac_CabinetToolTip VALUES(NULL, 'DeviceType', 'Device Type', 0);
 INSERT INTO fac_CabinetToolTip VALUES(NULL, 'EscalationID', 'Details', 0);
 INSERT INTO fac_CabinetToolTip VALUES(NULL, 'EscalationTimeID', 'Time Period', 0);
-INSERT INTO fac_CabinetToolTip VALUES(NULL, 'ESX', 'ESX Server?', 0);
+INSERT INTO fac_CabinetToolTip VALUES(NULL, 'VM Hypervisor', 'VM Hypervisor', 0);
 INSERT INTO fac_CabinetToolTip VALUES(NULL, 'InstallDate', 'Install Date', 0);
 INSERT INTO fac_CabinetToolTip VALUES(NULL, 'MfgDate', 'Manufacture Date', 0);
 INSERT INTO fac_CabinetToolTip VALUES(NULL, 'NominalWatts', 'Nominal Draw (Watts)', 0);
@@ -736,6 +762,7 @@ CREATE TABLE fac_Config (
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
 
 INSERT INTO fac_Config VALUES
+  ('Version','4.4','','',''),
 	('OrgName','openDCIM Computer Facilities','Name','string','openDCIM Computer Facilities'),
 	('ClassList','ITS, Internal, Customer','List','string','ITS, Internal, Customer'),
 	('SpaceRed','80','percentage','float','80'),
@@ -749,10 +776,11 @@ INSERT INTO fac_Config VALUES
 	('CriticalColor','#cc0000','HexColor','string','#cc0000'),
 	('CautionColor','#cccc00','HexColor','string','#cccc00'),
 	('GoodColor','#0a0','HexColor','string','#0a0'),
-	('MediaEnforce', 'Disabled', 'Enabled/Disabled', 'string', 'Disabled'),
+	('MediaEnforce', 'disabled', 'Enabled/Disabled', 'string', 'disabled'),
+  ('OutlineCabinets', 'disabled', 'Enabled/Disabled', 'string', 'disabled'),
+  ('LabelCabinets', 'disabled', 'Enabled/Disabled', 'string', 'disabled'),
 	('DefaultPanelVoltage','208','Volts','int','208'),
 	('annualCostPerUYear','200','Dollars','float','200'),
-	('annualCostPerWattYear','0.7884','Dollars','float','0.7884'),
 	('Locale','en_US.utf8','TextLocale','string','en_US.utf8'),
 	('timezone', 'America/Chicago', 'string', 'string', 'America/Chicago'),
 	('PDFLogoFile','logo.png','Filename','string','logo.png'),
@@ -770,7 +798,6 @@ INSERT INTO fac_Config VALUES
 	('NetworkThreshold', '75', 'Percentage', 'integer', '75' ),
 	('FacMgrMail','DataCenterMgr@your.domain','Email','string','DataCenterMgr@your.domain'),
 	('InstallURL','','URL','string','https://dcim.your.domain'),
-	('Version','3.1','','',''),
 	('UserLookupURL','https://','URL','string','https://'),
 	('ReservedColor','#00FFFF','HexColor','string','#FFFFFF'),
 	('FreeSpaceColor','#FFFFFF','HexColor','string','#FFFFFF'),
@@ -791,56 +818,122 @@ INSERT INTO fac_Config VALUES
  	('ToolTips', 'Disabled', 'Enabled/Disabled', 'string', 'Disabled'),
 	('CDUToolTips', 'Disabled', 'Enabled/Disabled', 'string', 'Disabled'),
 	('PageSize', 'Letter', 'string', 'string', 'Letter'),
+	('path_weight_cabinet', '1', '', 'int', '1'),
+	('path_weight_rear', '1', '', 'int', '1'),
+	('path_weight_row', '4', '', 'int', '4'),
 	('TemperatureRed', '30', 'degrees', 'float', '30'),
 	('TemperatureYellow', '25', 'degrees', 'float', '25'),
 	('HumidityRedHigh', '75', 'percentage', 'float', '75'),
 	('HumidityRedLow', '35', 'percentage', 'float', '35'),
 	('HumidityYellowHigh', '55', 'percentage', 'float', '55'),
-	('HumidityYellowLow', '45', 'percentage', 'float', '45')	
+	('HumidityYellowLow', '45', 'percentage', 'float', '45'),
+	('WorkOrderBuilder', 'disabled', 'Enabled/Disabled', 'string', 'Disabled'),
+	('RackRequests', 'enabled', 'Enabled/Disabled', 'string', 'Enabled'),
+	('dot', '/usr/bin/dot', 'path', 'string', '/usr/bin/dot'),
+	('AppendCabDC', 'disabled', 'Enabled/Disabled', 'string', 'Disabled'),
+	('ShareToRepo', 'disabled', 'Enabled/Disabled', 'string', 'Disabled'),
+	('APIUserID', '', 'Email', 'string', ''),
+	('APIKey', '', 'Key', 'string', ''),
+	('RequireDefinedUser', 'disabled', 'Enabled/Disabled', 'string', 'Disabled'),
+	('KeepLocal', 'enabled', 'Enabled/Disabled', 'string', 'Enabled'),
+	('SNMPVersion', '2c', 'Version', 'string', '2c'),
+	('U1Position', 'Bottom', 'Top/Bottom', 'string', 'Bottom'),
+	('RCIHigh', '80', 'degrees', 'float', '80'),
+	('RCILow', '65', 'degress', 'float', '65'),
+	('FilterCabinetList', 'disabled', 'Enabled/Disabled', 'string', 'Disabled'),
+	('CostPerKwHr', '.25', 'Currency', 'float', '.25'),
+	('v3SecurityLevel', '', 'noAuthNoPriv/authNoPriv/authPriv', 'string', 'noAuthNoPriv'),
+	('v3AuthProtocol', '', 'SHA/MD5', 'string', 'SHA'),
+	('v3AuthPassphrase', '', 'Password', 'string', ''),
+	('v3PrivProtocol', '', 'SHA/MD5', 'string', 'SHA'),
+	('v3PrivPassphrase', '', 'Password', 'string', ''),
+  ('PatchPanelsOnly','enabled', 'Enabled/Disabled', 'string', 'enabled'),
+  ('LDAPServer', 'localhost', 'URI', 'string', 'localhost'),
+  ('LDAPBaseDN', 'dc=opendcim,dc=org', 'DN', 'string', 'dc=opendcim,dc=org'),
+  ('LDAPBindDN', 'cn=%userid%,ou=users,dc=opendcim,dc=org', 'DN', 'string', 'cn=%userid%,ou=users,dc=opendcim,dc=org'),
+  ('LDAPBaseSearch', '(&(objectClass=posixGroup)(memberUid=%userid%))', 'DN', 'string', '(&(objectClass=posixGroup)(memberUid=%userid%))'),
+  ('LDAPUserSearch', '(|(uid=%userid%))', 'DN', 'string', '(|(uid=%userid%))'),
+  ('LDAPSessionExpiration', '0', 'Seconds', 'int', '0'),
+  ('LDAPSiteAccess', 'cn=openDCIM,ou=groups,dc=opendcim,dc=org', 'DN', 'string', 'cn=openDCIM,ou=groups,dc=opendcim,dc=org'),
+  ('LDAPReadAccess', 'cn=ReadAccess,cn=openDCIM,ou=groups,dc=opendcim,dc=org', 'DN', 'string', 'cn=ReadAccess,cn=openDCIM,ou=groups,dc=opendcim,dc=org'),
+  ('LDAPWriteAccess', 'cn=WriteAccess,cn=openDCIM,ou=groups,dc=opendcim,dc=org', 'DN', 'string', 'cn=WriteAccess,cn=openDCIM,ou=groups,dc=opendcim,dc=org'),
+  ('LDAPDeleteAccess', 'cn=DeleteAccess,cn=openDCIM,ou=groups,dc=opendcim,dc=org', 'DN', 'string', 'cn=DeleteAccess,cn=openDCIM,ou=groups,dc=opendcim,dc=org'),
+  ('LDAPAdminOwnDevices', 'cn=AdminOwnDevices,cn=openDCIM,ou=groups,dc=opendcim,dc=org', 'DN', 'string', 'cn=AdminOwnDevices,cn=openDCIM,ou=groups,dc=opendcim,dc=org'),
+  ('LDAPRackRequest', 'cn=RackRequest,cn=openDCIM,ou=groups,dc=opendcim,dc=org', 'DN', 'string', 'cn=RackRequest,cn=openDCIM,ou=groups,dc=opendcim,dc=org'),
+  ('LDAPRackAdmin', 'cn=RackAdmin,cn=openDCIM,ou=groups,dc=opendcim,dc=org', 'DN', 'string', 'cn=RackAdmin,cn=openDCIM,ou=groups,dc=opendcim,dc=org'),
+  ('LDAPBulkOperations', 'cn=BulkOperations,cn=openDCIM,ou=groups,dc=opendcim,dc=org', 'DN', 'string', 'cn=BulkOperations,cn=openDCIM,ou=groups,dc=opendcim,dc=org'),
+  ('LDAPContactAdmin', 'cn=ContactAdmin,cn=openDCIM,ou=groups,dc=opendcim,dc=org', 'DN', 'string', 'cn=ContactAdmin,cn=openDCIM,ou=groups,dc=opendcim,dc=org'),
+  ('LDAPSiteAdmin', 'cn=SiteAdmin,cn=openDCIM,ou=groups,dc=opendcim,dc=org', 'DN', 'string', 'cn=SiteAdmin,cn=openDCIM,ou=groups,dc=opendcim,dc=org')
 ;
 
 --
--- Pre-fill some of the templates
+-- Table structure for fac_DeviceCustomAttribute
 --
-
-INSERT INTO fac_Manufacturer set Name="Generic" ON DUPLICATE KEY UPDATE Name="Generic";
-INSERT INTO fac_Manufacturer set Name="APC" ON DUPLICATE KEY UPDATE Name="APC";
-INSERT INTO fac_Manufacturer set Name="Geist" ON DUPLICATE KEY UPDATE Name="Geist";
-INSERT INTO fac_Manufacturer set Name="ServerTech" ON DUPLICATE KEY UPDATE Name="ServerTech";
-
-INSERT INTO fac_CDUTemplate set ManufacturerID=(select ManufacturerID from fac_Manufacturer where Name='Generic'), Model="Unmanaged CDU", Managed=FALSE, VersionOID="", Multiplier=1, OID1="", OID2="", OID3="", ProcessingProfile="SingleOIDAmperes", Voltage="", Amperage="", NumOutlets="";
-INSERT INTO fac_CDUTemplate set ManufacturerID=(select ManufacturerID from fac_Manufacturer where Name='APC'), Model="Generic Single-Phase CDU", Managed=TRUE, VersionOID=".1.3.6.1.4.1.318.1.1.4.1.2.0", Multiplier=10, OID1=".1.3.6.1.4.1.318.1.1.12.2.3.1.1.2.1", OID2="", OID3="", ProcessingProfile="SingleOIDAmperes", Voltage="", Amperage="", NumOutlets="";
-INSERT INTO fac_CDUTemplate set ManufacturerID=(select ManufacturerID from fac_Manufacturer where Name='Geist'), Model="Generic Delta/Single-Phase CDU", Managed=TRUE, VersionOID=".1.3.6.1.4.1.21239.2.1.2.0", Multiplier=10, OID1=".1.3.6.1.4.1.21239.2.25.1.10.1", OID2="", OID3="", ProcessingProfile="SingleOIDWatts", Voltage="", Amperage="", NumOutlets="";
-INSERT INTO fac_CDUTemplate set ManufacturerID=(select ManufacturerID from fac_Manufacturer where Name='Geist'), Model="Generic Wye 3-Phase CDU", Managed=TRUE, VersionOID=".1.3.6.1.4.1.21239.2.1.2.0", Multiplier=10, OID1=".1.3.6.1.4.1.21239.2.6.1.10.1", OID2="", OID3="", ProcessingProfile="SingleOIDWatts", Voltage="", Amperage="", NumOutlets="";
-INSERT INTO fac_CDUTemplate set ManufacturerID=(select ManufacturerID from fac_Manufacturer where Name='ServerTech'), Model="Generic Single-Phase CDU", Managed=TRUE, VersionOID=".1.3.6.1.4.1.1718.3.1.1.0", Multiplier=100, OID1=".1.3.6.1.4.1.1718.3.2.2.1.7.1.1", OID2="", OID3="", ProcessingProfile="SingleOIDAmperes", Voltage="", Amperage="", NumOutlets="";
-INSERT INTO fac_CDUTemplate set ManufacturerID=(select ManufacturerID from fac_Manufacturer where Name='ServerTech'), Model="Generic 3-Phase CDU", Managed=TRUE, VersionOID=".1.3.6.1.4.1.1718.3.1.1.0", Multiplier=100, OID1=".1.3.6.1.4.1.1718.3.2.2.1.7.1.1", OID2=".1.3.6.1.4.1.1718.3.2.2.1.7.1.2", OID3=".1.3.6.1.4.1.1718.3.2.2.1.7.1.3", ProcessingProfile="Convert3PhAmperes", Voltage="", Amperage="", NumOutlets="";
-
---
--- Table structure for fac_Slots
---
-DROP TABLE IF EXISTS fac_Slots;
-CREATE TABLE fac_Slots (
-	TemplateID INT(11) NOT NULL,
-	Position INT(11) NOT NULL,
-	BackSide TINYINT(1) NOT NULL,
-	X INT(11) NULL,
-	Y INT(11) NULL,
-	W INT(11) NULL,
-	H INT(11) NULL,
-	PRIMARY KEY (TemplateID, Position, BackSide)
-) ENGINE = InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+DROP TABLE IF EXISTS fac_DeviceCustomAttribute;
+CREATE TABLE fac_DeviceCustomAttribute(
+  AttributeID int(11) NOT NULL AUTO_INCREMENT,
+  Label varchar(80) NOT NULL,
+  AttributeType varchar(8) NOT NULL DEFAULT "string",
+  Required tinyint(1) NOT NULL DEFAULT 0,
+  AllDevices tinyint(1) NOT NULL DEFAULT 0,
+  DefaultValue varchar(65000),
+  PRIMARY KEY (AttributeID),
+  UNIQUE (Label)
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 --
--- Table structure for fac_TemplatePorts
+-- Table structure for fac_DeviceTemplateCustomValue
 --
-DROP TABLE IF EXISTS fac_TemplatePorts;
-CREATE TABLE IF NOT EXISTS `fac_TemplatePorts` (
-  `TemplateID` int(11) NOT NULL,
-  `PortNumber` int(11) NOT NULL,
-  `Label` varchar(40) NOT NULL,
-  `MediaID` int(11) NOT NULL DEFAULT '0',
-  `ColorID` int(11) NOT NULL DEFAULT '0',
-  `PortNotes` varchar(80) NOT NULL,
-  PRIMARY KEY (`TemplateID`,`PortNumber`),
-  UNIQUE KEY `LabeledPort` (`TemplateID`,`PortNumber`,`Label`)
+DROP TABLE IF EXISTS fac_DeviceTemplateCustomValue;
+CREATE TABLE fac_DeviceTemplateCustomValue (
+  TemplateID int(11) NOT NULL,
+  AttributeID int(11) NOT NULL,
+  Required tinyint(1) NOT NULL DEFAULT 0,
+  Value varchar(65000),
+  PRIMARY KEY (TemplateID, AttributeID)
+) ENGINE=InnoDB CHARSET=utf8 COLLATE=utf8_unicode_ci;
+
+--
+-- Table structure for fac_DeviceCustomValue
+--
+DROP TABLE IF EXISTS fac_DeviceCustomValue;
+CREATE TABLE fac_DeviceCustomValue (
+  DeviceID int(11) NOT NULL,
+  AttributeID int(11) NOT NULL,
+  Value varchar(65000),
+  PRIMARY KEY (DeviceID, AttributeID)
+) ENGINE=InnoDB CHARSET=utf8 COLLATE=utf8_unicode_ci;
+
+--
+-- Table for monitoring long running jobs
+--
+
+CREATE TABLE IF NOT EXISTS fac_Jobs (
+  SessionID varchar(80) NOT NULL,
+  Percentage int(11) NOT NULL DEFAULT "0",
+  Status varchar(255) NOT NULL,
+  PRIMARY KEY(SessionID)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+--
+-- Tables for tracking Projects/ Services
+--
+
+DROP TABLE IF EXISTS fac_Projects;
+CREATE TABLE fac_Projects (
+  ProjectID int(11) NOT NULL AUTO_INCREMENT,
+  ProjectName varchar(80) NOT NULL,
+  ProjectSponsor varchar(80) NOT NULL,
+  ProjectStartDate date NOT NULL,
+  ProjectExpirationDate date NOT NULL,
+  ProjectActualEndDate date NOT NULL,
+  PRIMARY KEY (ProjectID)
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
+
+
+DROP TABLE IF EXISTS fac_ProjectMembership;
+CREATE TABLE fac_ProjectMembership (
+  ProjectID int(11) NOT NULL,
+  DeviceID int(11) NOT NULL,
+  PRIMARY KEY (ProjectID,DeviceID)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;

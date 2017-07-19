@@ -2,39 +2,14 @@
 	require_once( "db.inc.php" );
 	require_once( "facilities.inc.php" );
 
+	$subheader=__("Data Center Cabinet Inventory");
+
 	if((isset($_REQUEST["cabinetid"]) && (intval($_REQUEST["cabinetid"])==0)) || !isset($_REQUEST["cabinetid"])){
 		// No soup for you.
 		header('Location: '.redirect());
 		exit;
 	}
 
-
-/**
- * Determines ownership of the cabinet and returns the CSS class in case a
- * color unequal white is assigned to the owner.
- *
- * @param Cabinet $cabinet
- * @param array $deptswithcolor
- * @return (string|array)[] CSS class or empty string
- */
-function getColorofCabinetOwner($cabinet, $deptswithcolor)
-{
-	$cab_color = '';
-	if ($cabinet->AssignedTo != 0) {
-		$tempDept = new Department();
-		$tempDept->DeptID = $cabinet->AssignedTo;
-		$deptid = $tempDept->DeptID;
-		if ($tempDept->GetDeptByID()) {
-			if (strtoupper($tempDept->DeptColor) != '#FFFFFF') {
-				$deptswithcolor[$cabinet->AssignedTo]['color'] =
-				    $tempDept->DeptColor;
-				$deptswithcolor[$cabinet->AssignedTo]['name'] = $tempDept->Name;
-				$cab_color = "class=\"dept$deptid\"";
-			}
-		}
-  	}
-	return array($cab_color, $deptswithcolor);
-}
 
 /**
  * Merge the tags into one HTML string
@@ -64,91 +39,78 @@ function renderTagsToString($obj)
  * @param CabinetAudit $audit
  * @param string $AuditorName
  */
-function renderCabinetProps($cab, $audit, $AuditorName)
-{
-    $renderedHTML = "\t\t<table id=\"cabprop\">\n"
-        . '			<tr><td class="left">' . __('Last Audit') . ':</td>'
-	    . '<td class="right">' . $audit->AuditStamp . '';
-    	    if ($AuditorName != '') {
-    	        $renderedHTML .= "<br>$AuditorName";
-    	    }
-    $renderedHTML .= "</td></tr>\n";
-    $renderedHTML .= "\t\t\t<tr><td class=\"left\">" . __('Model') . ":</td>"
-        . "<td class=\"right\">".$cab->Model."</td></tr>\n";
+function renderCabinetProps($cab, $audit, $AuditorName){
+	$tmpDC=new DataCenter();
+	$tmpDC->DataCenterID=$cab->DataCenterID;
+	$tmpDC->GetDataCenter();
+	$AuditorName=($AuditorName!='')?"<br>$AuditorName":"";
 
-    $renderedHTML .= '			<tr><td class="left">' . __('Data Center');
-    $tmpDC = new DataCenter();
-    $tmpDC->DataCenterID = $cab->DataCenterID;
-    $tmpDC->GetDataCenter();
-    $renderedHTML.=":</td><td class=\"right\">$tmpDC->Name</td></tr>\n";
-    $renderedHTML.="\t\t\t<tr><td class=\"left\">".__('Install Date')
-        . ":</td><td class=\"right\">$cab->InstallationDate</td></tr>\n";
-	if ($cab->ZoneID) {
-        $zone = new Zone();
-        $zone->ZoneID = $cab->ZoneID;
-        $zone->GetZone();
-        $renderedHTML .= '			<tr><td class="left">' . __('Zone') . ':</td>'
-            . '<td class="right">' . $zone->Description . "</td></tr>\n";
-    }
-    if ($cab->CabRowID) {
-        $cabrow = new CabRow();
-        $cabrow->CabRowID = $cab->CabRowID;
-        $cabrow->GetCabRow();
-        $renderedHTML .= '			<tr><td class="left">' . __('Row') . ':</td>'
-            . '<td class="right">' . $cabrow->Name . "</td></tr>\n";
-    }
-    $renderedHTML .= '			<tr><td class="left">' . __('Tags') . ':</td>';
-    $renderedHTML .= '<td class="right">' . renderTagsToString($cab)
-        . "</td></tr>\n";
-    $renderedHTML .= "\t\t</table>\n";
+	$renderedHTML="\t\t<table id=\"cabprop\">
+	\t\t<tr><td>".__("Last Audit").":</td><td id=\"lastaudit\">$audit->AuditStamp$AuditorName</td></tr>
+	\t\t<tr><td>".__("Model").":</td><td>$cab->Model</td></tr>
+	\t\t<tr><td>".__("Data Center").":</td><td>$tmpDC->Name</td></tr>
+	\t\t<tr><td>".__("Install Date").":</td><td>$cab->InstallationDate</td></tr>\n";
 
-    return $renderedHTML;
+	if($cab->ZoneID){
+		$zone=new Zone();
+		$zone->ZoneID=$cab->ZoneID;
+		$zone->GetZone();
+		$renderedHTML.="\t\t\t<tr><td>".__("Zone").":</td><td>$zone->Description</td></tr>\n";
+	}
+	if($cab->CabRowID){
+		$cabrow=new CabRow();
+		$cabrow->CabRowID=$cab->CabRowID;
+		$cabrow->GetCabRow();
+		$renderedHTML.="\t\t\t<tr><td>".__("Row").":</td><td>$cabrow->Name</td></tr>\n";
+	}
+	$renderedHTML.="\t\t\t<tr><td>".__("Tags").":</td><td>".renderTagsToString($cab)."</td></tr>\n";
+
+	$renderedHTML.="\t\t</table>\n";
+
+	return $renderedHTML;
 }
 
 /**
  * Render the indicator that a device has no ownership or template assigned.
  *
+ * @param boolean $noTemplFlag flag indicating no template is assigned to device
+ * @param boolean $noOwnerFlag flag indicating no ownership is assigned to device
  * @param Device $device
  * @return (boolean|boolean|string)[] CSS class or empty stringtype
  */
-function renderUnassignedTemplateOwnership($device) {
-    $retstr = '';
-    if ($device->TemplateID == 0) {
-        $noTemplate = '(T)';
-        $template_unassigned = true;
-    }
-    if ($device->Owner == 0) {
-        $noOwnership = '(O)';
-        $ownership_unassigned = true;
-    }
-    if ($template_unassigned or $ownership_unassigned) {
-        // most modern browsers don't display anymore the blinking text therefore
-        // it is dropped. 
-        # $retstr = '<span class="hlight blink">' . $noTemplate . $noOwnership . '</span>';
-        $retstr = '<span class="hlight">' . $noTemplate . $noOwnership . '</span>';
-    }
-    return array($template_unassigned, $ownership_unassigned, $retstr);
+function renderUnassignedTemplateOwnership($noTemplFlag, $noOwnerFlag, $device) {
+	$retstr=$noTemplate=$noOwnership='';
+	if ($device->TemplateID == 0) {
+		$noTemplate = '(T)';
+		$noTemplFlag = true;
+	}
+	if ($device->Owner == 0) {
+		$noOwnership = '(O)';
+		$noOwnerFlag = true;
+	}
+	if ($noTemplFlag or $noOwnerFlag) {
+		$retstr = '<span class="hlight">' . $noTemplate . $noOwnership . '</span>';
+	}
+	return array($noTemplFlag, $noOwnerFlag, $retstr);
 }
 
 	$cab=new Cabinet();
 	$cab->CabinetID=$_REQUEST["cabinetid"];
 	$cab->GetCabinet();
 
-	if($cab->AssignedTo >0){
-		// Check to see if this user is allowed to see anything in here
-		if( ! $user->canRead($cab->AssignedTo) ){
-			// This cabinet belongs to a department you don't have affiliation with, so no viewing at all
-			header('Location: '.redirect());
-			exit;
-		}
+	// Check to see if this user is allowed to see anything in ihere
+	if(!$person->SiteAdmin && !$person->ReadAccess && $cab->Rights=='None' && !array_intersect($person->isMemberOf(),Cabinet::GetOccupants($cab->CabinetID))){
+		// This cabinet belongs to a department you don't have affiliation with, so no viewing at all
+		header('Location: '.redirect());
+		exit;
 	}
 
 	// If you're deleting the cabinet, no need to pull in the rest of the information, so get it out of the way
 	// Only a site administrator can create or delete a cabinet
-	if(isset($_POST["delete"]) && $_POST["delete"]=="yes" && $user->SiteAdmin ) {
+	if(isset($_POST["delete"]) && $_POST["delete"]=="yes" && $person->SiteAdmin ) {
 		$cab->DeleteCabinet();
-		$url=redirect("dc_stats.php?dc=$dcID");
-		header("Location: $url");
+		header('Content-Type: application/json');
+		echo json_encode(array('url' => redirect("dc_stats.php?dc=$cab->DataCenterID")));
 		exit;
 	}
 
@@ -169,18 +131,31 @@ function renderUnassignedTemplateOwnership($device) {
 	$audit->CabinetID=$cab->CabinetID;
 
 	// You just have WriteAccess in order to perform/certify a rack audit
-	if(isset($_REQUEST["audit"]) && $_REQUEST["audit"]=="yes" && $user->CanWrite($cab->AssignedTo)){
-		$audit->UserID=$user->UserID;
+	if(isset($_POST["audit"]) && $_POST["audit"]=="yes" && $person->CanWrite($cab->AssignedTo)){
+		$audit->Comments=sanitize($_POST["comments"]);
+		// Log the response
 		$audit->CertifyAudit();
+
+		// I'm lazy as fuck so retrieve what we just wrong
+		$audit->GetLastAudit();
+
+		$tmpUser=new People();
+		$tmpUser->UserID=$audit->UserID;
+		$tmpUser->GetUserRights();
+		$audit->UserID=($tmpUser->FirstName=="" && $tmpUser->LastName=="")?$audit->UserID:$tmpUser->FirstName." ".$tmpUser->LastName;
+		// Give it back to the user to update the page
+		header('Content-Type: application/json');
+		echo json_encode($audit);
+		exit;
 	}
 
 	$audit->AuditStamp=__("Never");
 	$audit->GetLastAudit();
 	if($audit->UserID!=""){
-		$tmpUser=new User();
+		$tmpUser=new People();
 		$tmpUser->UserID=$audit->UserID;
 		$tmpUser->GetUserRights();
-		$AuditorName=$tmpUser->Name;
+		$AuditorName=$tmpUser->FirstName." ".$tmpUser->LastName;
 	}
 
 	$pdu->CabinetID=$cab->CabinetID;
@@ -189,140 +164,45 @@ function renderUnassignedTemplateOwnership($device) {
 	$dev->Cabinet=$cab->CabinetID;
 	$devList=$dev->ViewDevicesByCabinet();
 
-	$totalWatts=0;
-	$totalWeight=0;
-	$totalMoment=0;
+	$search=new Device();
+	$search->Cabinet=$cab->CabinetID;
+	$search->DeviceType="Sensor";
+	$SensorList=$search->Search();
 
-	$deptswithcolor=array();
-	list($cab_color, $deptswithcolor) = getColorofCabinetOwner($cab, $deptswithcolor);
+	$stats=$cab->getStats($cab->CabinetID);
+
+	$totalWatts=$stats->Wattage;
+	$totalWeight=$stats->Weight;
 
 	if($config->ParameterArray["ReservedColor"] != "#FFFFFF" || $config->ParameterArray["FreeSpaceColor"] != "#FFFFFF"){
 		$head .= "		<style type=\"text/css\">
-			.reserved {background-color: {$config->ParameterArray['ReservedColor']};}
+			.reserved {background-color: {$config->ParameterArray['ReservedColor']} !important;}
 			.freespace {background-color: {$config->ParameterArray['FreeSpaceColor']};}\n";
 
+		// Only show reserved in the legend if the color is something other than white 
 		if($config->ParameterArray["ReservedColor"] != "#FFFFFF"){
-			$legend.='<div class="legenditem"><span class="reserved colorbox border"></span> - '.__("Reservation").'</div>';
+			$legend.="\t\t<div class=\"legenditem hide\"><span class=\"reserved colorbox border\"></span> - ".__("Reservation")."</div>\n";
 		}
+
 		if($config->ParameterArray["FreeSpaceColor"] != "#FFFFFF"){
-			$legend.='<div class="legenditem"><span class="freespace color border"></span> - '.__("Free Space").'</div>';
+			$legend.='<div class="legenditem"><span class="freespace colorbox border"></span> - '.__("Free Space").'</div>'."\n";
 		}
 	}
 
-	$ownership_unassigned = false;
-	$template_unassigned = false;
-	$backside=false;
+	$noOwnerFlag=false;
+	$noTemplFlag=false;
+	$noReservationFlag=false;
+	$backside=true;
 
 	// This function with no argument will build the front cabinet face. Specify
-	// rear and it will build that back.
-	function BuildCabinet($rear=false){
-		// This is fucking horrible, there has to be a better way to accomplish this.
-		global $cab_color, $cab, $device, $body, $highlight, $currentHeight, $heighterr, 
-				$devList, $templ, $tempDept, $backside, $deptswithcolor, $tempDept,
-				$totalWeight, $totalWatts, $totalMoment, $zeroheight,
-                $template_unassigned, $ownership_unassigned;
+	// rear and it will build the back.
 
-		$currentHeight=$cab->CabinetHeight;
+	// Generate rack view
+	$body.=BuildCabinet($cab->CabinetID);
+	// Generate rear rack view if needed
+	$body.=($backside)?BuildCabinet($cab->CabinetID,'rear'):'';
 
-		$body.="<div class=\"cabinet\">\n\t<table>
-		<tr><th id=\"cabid\" data-cabinetid=$cab->CabinetID colspan=2 $cab_color>".__("Cabinet")." $cab->Location".($rear?" (".__("Rear").")":"")."</th></tr>
-		<tr><td class=\"cabpos\">".__("Pos")."</td><td class=\"cabdev_t\">".__("Device")."</td></tr>\n";
-
-		$heighterr="";
-		while(list($dev_index,$device)=each($devList)){
-			if($device->Height<1 && !$rear){
-                list($template_unassigned, $ownership_unassigned, $highlight) =
-                    renderUnassignedTemplateOwnership($device);
-				if($device->Rights!="None"){
-					$zeroheight.="\t\t\t<a href=\"devices.php?deviceid=$device->DeviceID\" data-deviceid=$device->DeviceID>$highlight $device->Label</a>\n";
-				}else{
-					// empty html anchor for a line break
-					$zeroheight.="\t\t\t$highlight $device->Label\n<a></a>";
-				}
-			}
-
-			if ((!$device->HalfDepth || !$device->BackSide)&&!$rear || (!$device->HalfDepth || $device->BackSide)&&$rear){
-				$backside=($device->HalfDepth)?true:$backside;
-				$devTop=$device->Position + $device->Height - 1;
-
-				$templ->TemplateID=$device->TemplateID;
-				$templ->GetTemplateByID();
-
-				$tempDept->DeptID=$device->Owner;
-				$tempDept->GetDeptByID();
-
-				// If a dept has been changed from white then it needs to be added to the stylesheet, legend, and device
-				if(!$device->Reservation && strtoupper($tempDept->DeptColor)!="#FFFFFF"){
-					// Fill array with deptid and color so we can process the list once for the legend and style information
-					$deptswithcolor[$device->Owner]["color"]=$tempDept->DeptColor;
-					$deptswithcolor[$device->Owner]["name"]=$tempDept->Name;
-				}
-				list($template_unassigned, $ownership_unassigned, $highlight) =
-                    renderUnassignedTemplateOwnership($device);
-
-				$totalWatts+=$device->GetDeviceTotalPower();
-				$DeviceTotalWeight=$device->GetDeviceTotalWeight();
-				$totalWeight+=$DeviceTotalWeight;
-				$totalMoment+=($DeviceTotalWeight*($device->Position+($device->Height/2)));
-
-				$reserved=($device->Reservation==false)?"":" reserved";
-				if($devTop<$currentHeight && $currentHeight>0){
-					for($i=$currentHeight;($i>$devTop);$i--){
-						$errclass=($i>$cab->CabinetHeight)?' error':'';
-						if($errclass!=''){$heighterr="yup";}
-						if($i==$currentHeight){
-							$blankHeight=$currentHeight-$devTop;
-							if($devTop==-1){--$blankHeight;}
-							$body.="<tr><td class=\"cabpos freespace$errclass\">$i</td><td class=\"cabdev_t freespace\" rowspan=$blankHeight>&nbsp;</td></tr>\n";
-						} else {
-							$body.="<tr><td class=\"cabpos freespace$errclass\">$i</td></tr>\n";
-							if($i==1){break;}
-						}
-					}
-				}
-				for($i=$devTop;$i>=$device->Position;$i--){
-					$errclass=($i>$cab->CabinetHeight)?' error':'';
-					if($errclass!=''){$heighterr="yup";}
-					if($i==$devTop){
-						// Create the filler for the rack either text or a picture
-						// if rear and half depth get a front picture file
-						$picture=(!$rear)?$device->GetDevicePicture():($rear && $device->HalfDepth)?$device->GetDevicePicture():$device->GetDevicePicture($rear);
-						$text=($device->Rights!="None")?"<a href=\"devices.php?deviceid=$device->DeviceID\">$highlight $device->Label</a>":$device->Label;
-
-						// Put the device in the rack
-						$body.="<tr><td class=\"cabpos$reserved dept$device->Owner$errclass\">$i</td><td class=\"dept$device->Owner$reserved\" rowspan=$device->Height data-deviceid=$device->DeviceID>";
-						$body.=($picture)?$picture:$text;
-						$body.="</td></tr>\n";
-					}else{
-						$body.="<tr><td class=\"cabpos$reserved dept$device->Owner$errclass\">$i</td></tr>\n";
-					}
-				}
-				$currentHeight=$device->Position - 1;
-			}elseif(!$rear){
-				$backside=true;
-			}
-		}
-
-		// Fill in to the bottom
-		for($i=$currentHeight;$i>0;$i--){
-			if($i==$currentHeight){
-				$blankHeight=$currentHeight;
-
-				$body.="<tr><td class=\"cabpos freespace\">$i</td><td class=\"cabdev_t freespace\" rowspan=$blankHeight>&nbsp;</td></tr>\n";
-			}else{
-				$body.="<tr><td class=\"cabpos freespace\">$i</td></tr>\n";
-			}
-		}
-		$body.="</table></div>";
-		reset($devList);
-	}
-
-	BuildCabinet();
-	($backside)?BuildCabinet('rear'):'';
-
-	if($heighterr!=''){$legend.='<div class="legenditem">* - '.__("Above defined rack height").'</div>';}
-
-	$CenterofGravity=@round($totalMoment/$totalWeight);
+	$legend.='<div class="legenditem hide"><span style="background-color:'.$config->ParameterArray['CriticalColor'].'; text-align:center" class="error colorbox border">*</span> - '.__("Above defined rack height").'</div>'."\n";
 
 	$used=$cab->CabinetOccupancy($cab->CabinetID);
 	@$SpacePercent=($cab->CabinetHeight>0)?number_format($used/$cab->CabinetHeight*100,0):0;
@@ -344,42 +224,25 @@ function renderUnassignedTemplateOwnership($device) {
 	$PowerColor=($PowerPercent>intval($config->ParameterArray["PowerRed"])?$CriticalColor:($PowerPercent>intval($config->ParameterArray["PowerYellow"])?$CautionColor:$GoodColor));
 	$MeasuredColor=($MeasuredPercent>intval($config->ParameterArray["PowerRed"])?$CriticalColor:($MeasuredPercent>intval($config->ParameterArray["PowerYellow"])?$CautionColor:$GoodColor));
 
-	// I don't feel like fixing the check properly to not add in a dept with id of 0 so just remove it at the last second
-	// 0 is when a dept owner hasn't been assigned, just for the record
-	if(isset($deptswithcolor[0])){unset($deptswithcolor[0]);}
-	if(isset($deptswithcolor[""])){unset($deptswithcolor[""]);}
+	if($cab->MaxWeight==0){
+		$cab->MaxWeight=$WeightPercent=__("Maximum Weight Not Set");
+		$WeightColor=$CriticalColor;
+	}
 
-	// We're done processing devices so build the legend and style blocks
-    if (!empty($deptswithcolor)) {
-        foreach ($deptswithcolor as $deptid => $row) {
-            // If head is empty then we don't have any custom colors defined above so add a style container for these
-            if ($head == "") {
-                $head .= "        <style type=\"text/css\">\n";
-            }
-            $head .= "			.dept$deptid {background-color: {$row['color']};}\n";
-            $legend .= "<div class=\"legenditem\"><span class=\"border colorbox dept$deptid\"></span> - <span>{$row['name']}</span></div>\n";
-        }
-    }
+	foreach(Department::GetDepartmentListIndexedbyID() as $deptid => $d){
+        // Add a style container for these
+        $head=($head=="")?"\t\t<style type=\"text/css\">\n":$head;
+		$head.="\t\t\t.dept$deptid {background-color:$d->DeptColor;}\n";
+        $legend.="\t\t<div class=\"legenditem hide\"><span class=\"border colorbox dept$deptid\"></span> - <span>$d->Name</span></div>\n";
+	}
 
-// This will add an item to the legend for a white box. If we ever get a good name for it.
-if ($legend != "") {
-//		$legend.='<div class="legenditem"><span class="colorbox border"></span> - Custom Color Not Assigned</div>';
-}
-// add legend for the flags which actually are used in the cabinet
-$legend_flags = '';
-if ($ownership_unassigned) {
-    $legend_flags .= '		<div class="legenditem"><span class="hlight">(O)</span> - '
-        . __("Owner Unassigned") . '</div>';
-}
-if ($template_unassigned) {
-    $legend_flags .= '		<div class="legenditem"><span class="hlight">(T)</span> - '
-        . __("Template Unassigned") . '</div>';
-}
-
+	// add legend for the flags which actually are used in the cabinet
+	$legend.="\t\t<div class=\"legenditem hide\"><span class=\"hlight owner\">(O)</span> - ".__("Owner Unassigned")."</div>\n";
+	$legend.="\t\t<div class=\"legenditem hide\"><span class=\"hlight template\">(T)</span> - ".__("Template Unassigned")."</div>\n";
 
 $body.='<div id="infopanel">
 	<fieldset id="legend">
-		<legend>'.__("Markup Key")."</legend>\n".$legend_flags."\n"
+		<legend>'.__("Markup Key")."</legend>\n"
 .$legend.'
 	</fieldset>
 	<fieldset id="metrics">
@@ -422,7 +285,7 @@ $body.='<div id="infopanel">
 			</td>
 		</tr>
 		</table>
-		<p>'.__("Approximate Center of Gravity").': '.$CenterofGravity.' U</p>
+		<p>'.__("Approximate Center of Gravity").': <span id="tippingpoint"></span></p>
 	</fieldset>
 	<fieldset id="keylock">
 		<legend>'.__("Key/Lock Information").'</legend>
@@ -430,29 +293,21 @@ $body.='<div id="infopanel">
 			'.$cab->Keylock.'
 		</div>
 	</fieldset>
-';
-
-	if($zeroheight!=""){
-		$body.='	<fieldset id="zerou">
+	<fieldset id="zerou" class="hide">
 		<legend>'.__("Zero-U Devices").'</legend>
 		<div>
-'.$zeroheight.'
 		</div>
 	</fieldset>
-';
-	}
-	$body.='	<fieldset name="pdu">
-		<legend>'.__("Power Distribution").'</legend>';
+	<fieldset name="pdu">
+		<legend>'.__("Power Distribution").'</legend>
+		<div>';
 
 	foreach($PDUList as $PDUdev){
-		if($PDUdev->IPAddress<>""){
-			$pduDraw=$PDUdev->GetWattage();
-		}else{
-			$pduDraw=0;
-		}
+		$lastreading=$PDUdev->GetLastReading();
+		$pduDraw=($lastreading)?$lastreading->Wattage:0;
 
 		$pan->PanelID=$PDUdev->PanelID;
-		$pan->GetPanel();
+		$pan->getPanel();
 
 		if($PDUdev->BreakerSize==1){
 			$maxDraw=$PDUdev->InputAmperage * $pan->PanelVoltage / 1.732;
@@ -470,19 +325,19 @@ $body.='<div id="infopanel">
 		}else{
 			$PDUPercent=0;
 		}
-		
+
 		$PDUColor=($PDUPercent>intval($config->ParameterArray["PowerRed"])?$CriticalColor:($PDUPercent>intval($config->ParameterArray["PowerYellow"])?$CautionColor:$GoodColor));
 
-		$body.=sprintf("\n\t\t\t<a href=\"power_pdu.php?pduid=%d\">CDU %s</a><br>(%.2f kW) / (%.2f kW Max)<br>\n", $PDUdev->PDUID, $PDUdev->Label, $pduDraw / 1000, $maxDraw / 1000 );
+		$body.=sprintf("\n\t\t\t<a href=\"devices.php?DeviceID=%d\">CDU %s</a><br>(%.2f kW) / (%.2f kW Max)<br>\n", $PDUdev->PDUID, $PDUdev->Label, $pduDraw / 1000, $maxDraw / 1000 );
 		$body.="\t\t\t\t<div class=\"meter-wrap\">\n\t\t\t\t\t<div class=\"meter-value\" style=\"background-color: $PDUColor; width: $PDUPercent%;\">\n\t\t\t\t\t\t<div class=\"meter-text\">$PDUPercent%</div>\n\t\t\t\t\t</div>\n\t\t\t\t</div>\n\t\t\t<br>\n";
 
 		if ( $PDUdev->FailSafe ) {
 			$tmpl = new CDUTemplate();
 			$tmpl->TemplateID = $PDUdev->TemplateID;
 			$tmpl->GetTemplate();
-			
+
 			$ATSStatus = $PDUdev->getATSStatus();
-			
+
 			if ( $ATSStatus == "" ) {
 				$ATSColor = "rs.png";
 				$ATSStatus = __("Unknown Status");
@@ -493,36 +348,59 @@ $body.='<div id="infopanel">
 				$ATSColor = "ys.png";
 				$ATSStatus = __("ATS Feeds Abnormal");
 			}
-			
+
 			$body.="<div><img src=\"images/$ATSColor\">$ATSStatus</div>\n";
 		}
 	}
 
-	if($user->CanWrite($cab->AssignedTo)){
-		$body.="			<ul class=\"nav\"><a href=\"power_pdu.php?pduid=0&cabinetid=$cab->CabinetID\"><li>".__("Add CDU")."</li></a></ul>\n";
+	if($person->CanWrite($cab->AssignedTo)){
+		$body.="\n\t\t<ul class=\"nav\"><a href=\"devices.php?action=new&CabinetID=$cab->CabinetID&DeviceType=CDU\"><li>".__("Add CDU")."</li></a></ul>\n";
 	}
 
-	$body.="\t</fieldset>\n";
-	if ($user->CanWrite($cab->AssignedTo) || $user->SiteAdmin) {
+	$body.="\t\t</div>\n\t</fieldset>\n";
+
+	$body.='	<fieldset id="sensors">
+		<legend>'.__("Environmental Sensors").'</legend>
+		<div>';
+
+	foreach($SensorList as $Sensor){
+		$body.="\t\t<a href=\"devices.php?DeviceID=$Sensor->DeviceID\">$Sensor->Label</a><br>\n";
+	}
+
+	if($person->CanWrite($cab->AssignedTo)){
+		$body.="\n\t\t<ul class=\"nav\"><a href=\"devices.php?action=new&CabinetID=$cab->CabinetID&DeviceType=Sensor\"><li>".__("Add Sensor")."</li></a></ul>\n";
+	}
+
+	$body.="\t\t</div>\n\t</fieldset>\n";
+
+
+	if ($person->CanWrite($cab->AssignedTo) || $person->SiteAdmin) {
 	    $body.="\t<fieldset>\n";
-        if ($user->CanWrite($cab->AssignedTo) ) {
+        if ($person->CanWrite($cab->AssignedTo) ) {
             $body .= renderCabinetProps($cab, $audit, $AuditorName);
         }
 	    $body.="\t\t<ul class=\"nav\">";
-        if($user->CanWrite($cab->AssignedTo)){
+        if($person->CanWrite($cab->AssignedTo)){
             $body.="
-			<a href=\"#\" onclick=\"javascript:verifyAudit(this.form)\"><li>".__("Certify Audit")."</li></a>
-			<a href=\"devices.php?action=new&cabinet=$cab->CabinetID\"><li>".__("Add Device")."</li></a>
+			<a href=\"#\" id=\"verifyaudit\"><li>".__("Certify Audit")."</li></a>
+			<a href=\"devices.php?action=new&CabinetID=$cab->CabinetID\"><li>".__("Add Device")."</li></a>
 			<a href=\"cabaudit.php?cabinetid=$cab->CabinetID\"><li>".__("Audit Report")."</li></a>
 			<a href=\"mapmaker.php?cabinetid=$cab->CabinetID\"><li>".__("Map Coordinates")."</li></a>
 			<a href=\"cabinets.php?cabinetid=$cab->CabinetID\"><li>".__("Edit Cabinet")."</li></a>\n";
         }
-		if($user->SiteAdmin){
-		    $body.="\t\t\t<a href=\"#\" onclick=\"javascript:verifyDelete(this.form)\"><li>".__("Delete Cabinet")."</li></a>";
+		if($person->SiteAdmin){
+		    $body.="\t\t\t<a href=\"#\" id=\"verifydelete\"><li>".__("Delete Cabinet")."</li></a>";
 		}
 	    $body.="\n\t\t</ul>\n    </fieldset>";
 	}
 	$body.='
+	<fieldset id="cabnotes">
+		<legend>'.__("Cabinet Notes").'</legend>
+		<div>
+			'.$cab->Notes.'
+		</div>
+	</fieldset>
+
 </div> <!-- END div#infopanel -->';
 
 	// If $head isn't empty then we must have added some style information so close the tag up.
@@ -531,6 +409,7 @@ $body.='<div id="infopanel">
 	}
 
 	$title=($cab->Location!='')?"$cab->Location :: $dc->Name":__("Facilities Cabinet Maintenance");
+
 ?>
 <!doctype html>
 <html>
@@ -550,32 +429,135 @@ $body.='<div id="infopanel">
 
 echo $head,'  <script type="text/javascript" src="scripts/jquery.min.js"></script>
   <script type="text/javascript" src="scripts/jquery-ui.min.js"></script>
+  <script type="text/javascript" src="scripts/jquery.cookie.js"></script>
+  <script type="text/javascript" src="scripts/jquery-json.min.js"></script>
+  <script type="text/javascript" src="scripts/common.js"></script>
+  <script type="text/javascript" src="scripts/masonry.pkgd.min.js"></script>
   <script type="text/javascript">
+	window.weight=',$totalWeight,';
 	var form=$("<form>").attr({ method: "post", action: "cabnavigator.php" });
 	$("<input>").attr({ type: "hidden", name: "cabinetid", value: "',$cab->CabinetID,'"}).appendTo(form);
-	function verifyAudit(formname){
-		if(confirm("',__("Do you certify that you have completed an audit of the selected cabinet?"),'")){
-			$("<input>").attr({ type: "hidden", name: "audit", value: "yes"}).appendTo(form);
-			form.appendTo("body");
-			form.submit();
-		}
-	}
 
-	function verifyDelete(formname){
-		if(confirm("',__("Are you sure that you want to delete this cabinet, including all devices, power strips, and connections?"),'\n',__("THIS ACTION CAN NOT BE UNDONE!"),'")){
-			$("<input>").attr({ type: "hidden", name: "delete", value: "yes"}).appendTo(form);
-			form.appendTo("body");
-			form.submit();
-		}
-	}
+	(function ($) {
+		$.fn.extend({
+			cookieList: function (cookieName, expireTime) {
+				var cookie = $.cookie(cookieName);
+				var items = cookie ? $.secureEvalJSON(cookie) : [];
+				
+				return {
+					add: function (val) {
+						var index = items.indexOf(val);
+						if ( index == -1) {
+							items.push(val);
+							$.cookie(cookieName, $.toJSON(items), {expires: expireTime });
+						}
+					},
+					remove: function (val) {
+						var index = items.indexOf(val);
+						if ( index != -1 ) {
+							items.splice(index, 1);
+							$.cookie(cookieName, $.toJSON(items), {expires: expireTime });
+						}
+					},
+					indexOf: function(val) {
+						return items.indexOf(val);
+					},
+					clear: function() {
+						items = null;
+						$.cookie(cookieName, null, { expires: expireTime });
+					},
+					items: function() {
+						return items;
+					},
+					length: function() {
+						return items.length;
+					},
+					join: function( separator ) {
+						return items.join(separator);
+					}
+				};
+			}
+		});
+	})(jQuery);
+	
 	$(document).ready(function() {
 		$(".cabinet .error").append("*");
 		if($("#legend *").length==1){$("#legend").hide();}
 		if($("#keylock div").text().trim()==""){$("#keylock").hide();}
+		if($("#cabnotes div").text().trim()==""){$("#cabnotes").hide();}
+		if($("#sensors div").text().trim()==""){$("#sensors").hide();}
+		if($("fieldset[name=pdu] div").text().trim()==""){$("fieldset[name=pdu]").hide();}
+
+		$("#verifyaudit").click(function(e){
+			e.preventDefault();
+			$("#auditmodal").dialog({
+				width: 600,
+				modal: true,
+				buttons: {
+					Yes: function(e){
+						$.post("",{audit: "yes", cabinetid: ',$cab->CabinetID,', comments: $("#comments").val()}).done(function(data){
+							$("#lastaudit").html(data.AuditStamp+"<br>"+data.UserID).effect("highlight", {color: "lightgreen"}, 2500);
+							$("#auditmodal").dialog("destroy");
+						});
+					},
+					No: function(e){
+						$("#auditmodal").dialog("destroy");
+					}
+				},
+				close: function(){
+					$(this).dialog("destroy");
+				}
+			});
+		});
+
+		$("#verifydelete").click(function(e){
+			e.preventDefault();
+			$("#deletemodal").dialog({
+				width: 600,
+				modal: true,
+				draggable: false,
+				buttons: {
+					Yes: function(e){
+						$("#doublecheck").dialog({
+							width: 600,
+							modal: true,
+							draggable: false,
+							buttons: {
+								Yes: function(e){
+									// they are really sure they want to delete so do it
+									$.post("",{delete: "yes", cabinetid: ',$cab->CabinetID,'}).done(function(data){
+										location.href=data.url;
+									});
+								},
+								No: function(e){
+									$("#doublecheck").dialog("destroy");
+									$("#deletemodal").dialog("destroy");
+								}
+							},
+							close: function(){
+								$(this).dialog("destroy");
+								$("#deletemodal").dialog("destroy");
+							}
+						});
+					},
+					No: function(e){
+						$(this).dialog("destroy");
+					}
+				},
+				close: function(){
+					$(this).dialog("destroy");
+				}
+			});
+		});
 ';
-if($config->ParameterArray["ToolTips"]=='enabled'){
+if( $config->ParameterArray["ToolTips"]=='enabled' ){
 ?>
-		$('.cabinet td.cabdev_t:has(a), #zerou div > a, .cabinet .picture a img, .cabinet .picture a div').mouseenter(function(){
+		$('.cabinet div[id^="servercontainer"], #infopanel').on('mouseenter', 'div > div.genericdevice, div > div a > img, #zerou div > a', function(){
+			var lblbtn=$('.cabinet tr:first-child button + button');
+			var srctest=(typeof $(this).attr('src')==="undefined")?'css/blank.gif':$(this).attr('src');
+			if(srctest!='css/blank.gif'){
+				$(this).parents('div').children('div.label').hide();
+			}
 			var pos=$(this).offset();
 			var tooltip=$('<div />').css({
 				'left':pos.left+this.getBoundingClientRect().width+15+'px',
@@ -586,15 +568,20 @@ if($config->ParameterArray["ToolTips"]=='enabled'){
 			});
 			$('body').append(tooltip);
 			$(this).mouseleave(function(){
+				if(!lblbtn.data('show')){
+					$(this).parents('div').children('div.label').show();
+				}
 				tooltip.remove();
 			});
 		});
 
 <?php
 }
+
+
 if($config->ParameterArray["CDUToolTips"]=='enabled'){
 ?>
-		$('fieldset[name="pdu"] legend ~ a').mouseenter(function(){
+		$('fieldset[name="pdu"] div > a').mouseenter(function(){
 			var pos=$(this).offset();
 			var tooltip=$('<div />').css({
 				'left':pos.left+$(this).outerWidth()+15+'px',
@@ -613,19 +600,41 @@ if($config->ParameterArray["CDUToolTips"]=='enabled'){
 <?php
 }
 ?>
+		// This is gonna confuse the fuck out of me when I see this again
+		$('fieldset').wrap($('<div>').addClass('item').css('width','235px'));
+		$('#cabnotes').parent('div').css('width','470px');
+		$('#infopanel').css({'max-width':'480px','width':'480px'}).masonry();
+		$('#infopanel').masonry('option', { columnWidth: 240, itemSelector: '.item'});
+		$('#infopanel').masonry('layout');
+		$('#cabnotes > div').html($('#cabnotes > div').text());
+
+		// Add sensor data to the page
+		$('#sensors a:not([href$=Sensor])').each(function(){
+			var link=this;
+			$.get('api/v1/device/'+link.href.split('=').pop()+'/getsensorreadings',function(data){
+				if(!data.error){
+					$(link).after('<br>Temp:&nbsp;'+data.sensor.Temperature+'&deg;&nbsp;&nbsp;Humidity:&nbsp;'+data.sensor.Humidity+'<br>');
+				}else{
+					$(link).after('<br>'+data.message+'<br>');
+				}
+				// When we add data to the box it grows so we need to adjust the bricks
+				$('#infopanel').masonry('layout');
+			});
+		});
 	});
   </script>
+  <style type="text/css">
+	@page{size: <?php echo $config->ParameterArray['PageSize']; ?> portrait}
+  </style>
 </head>
 
 <body>
-<div id="header"></div>
+<?php include( 'header.inc.php' ); ?>
 <div class="page">
 <?php
 	include( "sidebar.inc.php" );
 ?>
 <div class="main cabnavigator">
-<h2><?php print $config->ParameterArray["OrgName"]; ?></h2>
-<h3><?php print __("Data Center Cabinet Inventory"); ?></h3>
 <div class="center"><div>
 <div id="centeriehack">
 <?php
@@ -633,17 +642,41 @@ if($config->ParameterArray["CDUToolTips"]=='enabled'){
 ?>
 </div> <!-- END div#centeriehack -->
 </div></div>
-<?php
-	if($dcID>0){
-		print "	<a href=\"dc_stats.php?dc=$dcID\">[ ".__('Return to')." $dc->Name ]</a>";
-	}
-?>
+<?php echo '<a href="dc_stats.php?dc=',$dcID,'">[ ',sprintf(__("Return to %s"),$dc->Name),' ]</a>
+<!-- hiding modal dialogs here so they can be translated easily -->
+<div class="hide">
+	<div title="',__("Audit Confirmation"),'" id="auditmodal">
+		<div id="modaltext"><span style="float:left; margin:0 7px 20px 0;" class="ui-icon ui-icon-alert"></span>',__("Do you certify that you have completed an audit of this cabinet?"),'
+		<br><br><br>
+		<label for="comments">Comments:</label>
+		<br><br>
+		<textarea name="comments" id="comments" rows=8 cols=80></textarea>
+		</div>
+	</div>
+	<div title="',__("Cabinet delete confirmation"),'" id="deletemodal">
+		<div id="modaltext"><span style="float:left; margin:0 7px 20px 0;" class="ui-icon ui-icon-alert"></span>',__("Are you sure that you want to delete this cabinet and all the devices in it?"),'
+		<br><br>
+		</div>
+	</div>
+	<div title="',__("Are you REALLY sure?"),'" id="doublecheck">
+		<div id="modaltext" class="warning"><span style="float:left; margin:0 7px 20px 0;" class="ui-icon ui-icon-alert"></span>',__("Are you sure REALLY sure?  There is no undo!!"),'
+		<br><br>
+		</div>
+	</div>
+</div>'; ?>
 </div>  <!-- END div.main -->
 
 <div class="clear"></div>
 </div>
 <script type="text/javascript">
 	$(document).ready(function() {
+		// Move the cabinet labels around
+		$('.cabnavigator div.picture > div.label > div').each(function(){
+			var offset=this.getBoundingClientRect().height;
+			var container=$(this).parents('.picture')[0].getBoundingClientRect().height;
+			$(this).parent('.label').css('top', (container-offset)/2/2);
+		});
+
 		// Don't attempt to open the datacenter tree until it is loaded
 		function opentree(){
 			if($('#datacenters .bullet').length==0){
@@ -669,7 +702,92 @@ if($config->ParameterArray["CDUToolTips"]=='enabled'){
 			$('#centeriehack > .cabinet:first-child').remove();
 			$('.cabinet').width(width*2).css('max-width',width*2+'px');
 		}
+		// Add controls to the rack
+		cabinetimagecontrols();
+
+		// Damn translators not using abreviations
+		// This will lock the cabinet into the correct size
+		$('.cabinet #cabid').parent('tr').next('tr').find('.cabpos').css('padding','0px').wrapInner($('<div>').css({'overflow':'hidden','width':'30px'}));
 	});
+
+<?php
+if ( $config->ParameterArray["WorkOrderBuilder"]=='enabled' ) {
+?>
+
+	var workOrder = $.fn.cookieList("workOrder");
+
+	// This is a shitty hack and we should do something better
+	if(!$.cookie('workOrder')){
+		workOrder.add(0);
+	}
+
+	function bindworkorder(obj){
+        obj.find('div.genericdevice, div a > img, .picture a > div').each(function(){
+			var devid=$(this).data('deviceid');
+			var target=(this.nodeName=="IMG"||this.parentNode.parentNode.parentNode.nodeName=="DIV")?this.parentElement.parentElement:this;
+			var clickpos=(this.parentNode.parentNode.className=="rotar_d")?' left: 0;':' right: 0;';
+			var style=(this.nodeName=="IMG")?'position: absolute; top: 0; background-color: white; z-index: 99;'+clickpos:'position: absolute; top: 2px; right: -4px; background-color: white; z-index: 99;';
+			// nested children needed a slight nudge for positions
+			if($('.picture').find('div[data-deviceid='+devid+']').length>0){
+				style=style.replace('2px','0px').replace('-4px','2px');
+			}
+			// move the chassis position to the opposite side, this looks dumb
+			if($(target).find('div:not(.label):not(.label > div)').length>0){
+				style=style.replace('right','left');
+			}
+
+			// Make a point for us to click to add to this nonsense
+			var span=$('<span>').attr('style',style).addClass('ui-icon');
+			span.addClass(($.parseJSON($.cookie('workOrder')).indexOf(devid)==-1)?'ui-icon-circle-plus':'ui-icon-circle-check');
+
+			// Bind the click action
+			span.on('click', function(){
+				sneaky.sneak();
+				flippyfloppy();
+				// reload the page to show the workorder button if it isn't showing
+				if(workOrder.items().length>1){
+					$('a[href="workorder.php"]').removeClass('hide');
+				}else{
+					$('a[href="workorder.php"]').addClass('hide');
+				}
+			});
+
+			function findall(devid){
+				var objects=[];
+				$('*[data-deviceid='+devid+']').each(function(){
+					if(this.nodeName=="IMG" || this.classList.contains('noimage')){
+						objects.push($(this).parent().parent().find('> span'));
+					}else{
+						objects.push($(this).find('span:not(.hlight)'));
+					}
+				});
+				return objects;
+			}
+
+			// Set the sign on the element according to if it is in the array or not
+			function flippyfloppy(){
+				if($.parseJSON($.cookie('workOrder')).indexOf(devid)==-1){
+					workOrder.add(devid);
+					var objects=findall(devid);
+					for(var i in objects){
+						objects[i].addClass('ui-icon-circle-check').removeClass('ui-icon-circle-plus');
+					}
+				}else{
+					workOrder.remove(devid);
+					var objects=findall(devid);
+					for(var i in objects){
+						objects[i].removeClass('ui-icon-circle-check').addClass('ui-icon-circle-plus');
+					}
+				}
+			}
+
+			// Add the click target to the page
+			$(target).append(span);
+		});
+	}
+<?php
+}
+?>
 </script>
 </body>
 </html>

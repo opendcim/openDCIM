@@ -1,5 +1,4 @@
 <?php
-
 /**
  * This is a library to create an Excel file with the information on all devices
  * and cabinets in all data centers serialized.
@@ -17,6 +16,124 @@
 require_once 'db.inc.php';
 require_once 'facilities.inc.php';
 
+$ReportOutputFolder = "/tmp/";
+
+if(!$person->ReadAccess){
+    // No soup for you.
+    header('Location: '.redirect());
+    exit;
+}
+
+global $sessID;
+
+// everyone hates error_log spam
+if(session_id()==""){
+	session_start();
+}
+$sessID = session_id();
+session_write_close();
+
+if (php_sapi_name()!="cli" && !isset($_GET["stage"])) {
+    // This is the top leve/first call to the file, so set up the progress bar, etc.
+
+    JobQueue::startJob( $sessID );
+
+    $title = __("Asset Report (Excel)");
+
+?>
+<!doctype html>
+<html>
+<head>
+  <meta http-equiv="X-UA-Compatible" content="IE=Edge">
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+
+  <title><?php echo $title; ?></title>
+  <link rel="stylesheet" href="css/inventory.php" type="text/css">
+  <link rel="stylesheet" href="css/jquery-ui.css" type="text/css">
+  <style type="text/css"></style>
+  <!--[if lt IE 9]>
+  <link rel="stylesheet"  href="css/ie.css" type="text/css" />
+  <![endif]-->
+  <script type="text/javascript" src="scripts/jquery.min.js"></script>
+  <script type="text/javascript" src="scripts/jquery-ui.min.js"></script>
+  <script type="text/javascript" src="scripts/common.js"></script>
+  <script type="text/javascript" src="scripts/gauge.min.js"></script>
+
+<SCRIPT type="text/javascript" >
+var timer;
+var gauge;
+
+$(document).ready( function() {
+	gauge=new Gauge({
+		renderTo: 'power-gauge',
+		type: 'canv-gauge',
+		title: '% Complete',
+		minValue: '0',
+		maxValue: '100',
+		majorTicks: [ 0,10,20,30,40,50,60,70,80,90,100 ],
+		minorTicks: '2',
+		strokeTicks: false,
+		units: '%',
+		valueFormat: { int : 3, dec : 0 },
+		glow: false,
+		animation: {
+			delay: 10,
+			duration: 200,
+			fn: 'bounce'
+			},
+		colors: {
+			needle: {start: '#000', end: '#000' },
+			title: '#00f',
+			},
+		highlights: [ {from: 0, to: 50, color: '#eaa'}, {from: 50, to: 80, color: '#fffacd'}, {from: 80, to: 100, color: '#0a0'} ],
+		});
+	gauge.draw().setValue(0);
+    timer = setInterval( function() {
+        $.ajax({
+            type: 'GET',
+            url: 'scripts/ajax_progress.php',
+            dataType: 'json',
+            success: function(data) {
+                $("#status").text(data.Status);
+				gauge.draw().setValue(data.Percentage);
+                if ( data.Percentage >= 100 ) {
+                    clearInterval(timer);
+                    // Reload with Stage 3 to send the file to the user
+                }
+            }
+        })
+    }, 1500 );
+
+    init=$('<iframe/>', {'src':location.href+'?stage=2', height:'100px',width:'100px'}).appendTo('body');
+});
+</script>
+</head>
+<body>
+<?php include( 'header.inc.php' ); ?>
+<div class="page index">
+<?php
+	include( 'sidebar.inc.php' );
+?>
+<div class="main">
+<div class="center"><div>
+<h3 id="status">Starting</h3>
+<div><canvas id="power-gauge" width="200" height="200"></canvas></div>
+
+
+</div></div>
+<?php echo '<a href="reports.php">[ ',__("Return to Reports"),' ]</a>'; ?>
+</div><!-- END div.main -->
+</div><!-- END div.page -->
+</body>
+</html>
+
+
+<?php
+    exit;
+}
+
+
+
 // TODO: Potentially sorting of rack inventory might need to be done not
 // according to the data center ID but to the names
 
@@ -25,32 +142,28 @@ error_reporting(E_ALL);
 ini_set('memory_limit', '840M');
 ini_set('max_execution_time', '0');
 
-set_include_path(get_include_path().PATH_SEPARATOR.__DIR__.'/PHPExcel');
-require 'PHPExcel.php';
-require 'PHPExcel/Writer/Excel2007.php';
-
 // Configuration variables.
 // Properties of the document and worksheets.
 $DProps = array(
     'Doc' => array(
         'version' => 1.0,
-        'Subject' => __('Asset Report'),
-        'Description' => __('Data Center Statistics on all data centers assets.'),
-        'Title' => __('Data Center Statistics'),
-        'Keywords' => __('datacenter report assets statistic'),
+        'Subject' => __("Asset Report"),
+        'Description' => __("Data Center Statistics on all data centers assets."),
+        'Title' => __("Data Center Statistics"),
+        'Keywords' => __("datacenter report assets statistic"),
         'PageSize' => $config->ParameterArray['PageSize'],
-        'User' => $user->Name,
-        'UserID' => $user->UserID
+        'User' => $person->LastName . ", " . $person->FirstName,
+        'UserID' => $person->UserID
     ),
     'Front Page' => array(
-        'Title' => '&L&B' . __('Notes on DC Statistics') . '&R&A',
+        'Title' => '&L&B' . __("Notes on DC Statistics") . '&R&A',
         'FillColor' => 'DCE6F1',
         'HeadingFontColor' => '000000',
         'HeaderRange' => 'A1:B2',
         'HeaderHeight' => 60,
         'Border color' => '95B3D7',
-        'Logo Name' => __('Logo Name'),
-        'Logo Description' => __('Logo Description'),
+        'Logo Name' => __("Logo Name"),
+        'Logo Description' => __("Logo Description"),
         'PageSize' => $config->ParameterArray['PageSize'],
         'Orientation' => PHPExcel_Worksheet_PageSetup::ORIENTATION_PORTRAIT,
         'Columns' => array(
@@ -58,48 +171,48 @@ $DProps = array(
             array('', '', null, null)
         ),
         'remarks' => array(
-            __('● This is the combined report on all data center assets. It '
-                . 'contains the list of all devices and a list of all cabinets.'),
-            __('● Using Excel\'s pivot capabilities many different anaylsis and '
-                . 'statistics can be performed.'),
-            __('● The terms \'cabinet\' and  \'rack\' are used interchangeable.'),
-            __('● For user who have only the \'Admin Own Devices\' right the report '
-                . 'is limited to the cabinets which are owned by this department.'),
-            __('● The \'DC Statistics\' page is only generated for users who are '
-                . 'not limited to \'Admin Own Devices\'.'),
-            __('● For a child device the column \'Parent Device\' shows the parent '
-                . 'device otherwise it is empty. A child devices is e.g. a '
-                . 'blade server.'),
-            __('● The \'Position\' for a child device is the slot position within '
-                . 'in the parent device.'),
-            __('● \'Half Depth\' contains a value \'front\' or \'rear\' only if the '
-                . 'device is of half depth in which case this indicates the '
-                . 'location.'),
-            __('● Consecutive free rack space is indicated in worksheet \'DC Inventory'
-                . '\' with the string \'__EMPTY \' in column \'Device\'. '
-                . '\'Position\' gives the start of the range and \'Height\' '
-                . 'specifies the size of the range of free rack space.'),
-            __('● A range of consecutive free slots in a chassis is indicacted in '
-                . 'worksheet \'DC Inventory\' with the string \'__EMPTYSLOT \' in '
-                . 'the column \'Device\'. \'Position\' gives the start of the '
-                . 'range and \'Height\' specifies the number of free slots.'),
-            __('● All free rack units (RU) within the racks sum up to the total '
-                . 'amount of free rack units. It is possible that devices of '
-                . 'different height are mounted at the same position within a '
-                . 'cabinet. Only the non occupied rack units are free RUs.'),
-            __('● Cabinets of \'Model\' equal \'RESERVED\' are placeholders on the '
-                . 'floor space in the DC for racks to come. Their number is '
-                . 'counted in the column \'No. Reserved Racks\'. Nevertheless, '
-                . 'the rack units are taken into account in all other statistics.'),
-            '',
-            __('This file is confidential and shall not be used without permission of '
-                . 'the owner.'),
-            '',
-            __('Generate by openDCIM')
+            __("● This is the combined report on all data center assets. It "
+                . "contains the list of all devices and a list of all cabinets."),
+            __("● Using Excel\"s pivot capabilities many different analysis and "
+                . "statistics can be performed."),
+            __("● The terms \"cabinet\" and  \"rack\" are used interchangeable."),
+            __("● For user who have only the \"Admin Own Devices\" right the report "
+                . "is limited to the cabinets which are owned by this department."),
+            __("● The \"DC Statistics\" page is only generated for users who are "
+                . "not limited to \"Admin Own Devices\"."),
+            __("● For a child device the column \"Parent Device\" shows the parent "
+                . "device otherwise it is empty. A child devices is e.g. a "
+                . "blade server."),
+            __("● The \"Position\" for a child device is the slot position within "
+                . "in the parent device."),
+            __("● \"Half Depth\" contains a value \"front\" or \"rear\" only if the "
+                . "device is of half depth in which case this indicates the "
+                . "location."),
+            __("● Consecutive free rack space is indicated in worksheet \"DC Inventory"
+                . "\" with the string \"__EMPTY \" in column \"Device\". "
+                . "\"Position\" gives the start of the range and \"Height\" "
+                . "specifies the size of the range of free rack space."),
+            __("● A range of consecutive free slots in a chassis is indicated in "
+                . "worksheet \"DC Inventory\" with the string \"__EMPTYSLOT \" in "
+                . "the column \"Device\". \"Position\" gives the start of the "
+                . "range and \"Height\" specifies the number of free slots."),
+            __("● All free rack units (RU) within the racks sum up to the total "
+                . "amount of free rack units. It is possible that devices of "
+                . "different height are mounted at the same position within a "
+                . "cabinet. Only the non occupied rack units are free RUs."),
+            __("● Cabinets of \"Model\" equal \"RESERVED\" are placeholders on the "
+                . "floor space in the DC for racks to come. Their number is "
+                . "counted in the column \"No. Reserved Racks\". Nevertheless, "
+                . "the rack units are taken into account in all other statistics."),
+            "",
+            __("This file is confidential and shall not be used without permission of "
+                . "the owner."),
+            "",
+            __("Generate by openDCIM")
         )
     ),
 	'DC Stats' => array(
-		'Title' => '&L&DC ' . __('Summary Statistics') . '&R&A',
+		'Title' => '&L&DC ' . __("Summary Statistics") . '&R&A',
 		'FillColor' => 'DCE6F1',
 		'HeadingFontColor' => '000000',
 		'HeaderRange' => null,
@@ -203,6 +316,7 @@ $DProps = array(
             array('Install Date', 'D', 10, null),
             array('Auditor', '', 10, null),
             array('Timestamp', 'D', 18, null),
+            array('Front Edge', '', null, null),
             array('Notes', '', 40, 'wrap')),
         'ColIdx' => array(),
         'ExpStr' => array()
@@ -662,6 +776,13 @@ function getDeviceTemplateName($devTemplates, $device)
     $retval = array('_NoDevModel', '_NoManufDefined');
     $templID = $device->TemplateID;
     if ($templID != 0) {
+        // Data validation error
+        if(!isset($devTemplates[$templID])){
+            $devTemplates[$templID]=new DeviceTemplate();
+            $devTemplates[$templID]->TemplateID=$templID;
+            $devTemplates[$templID]->ManufacturerID=0;
+            $devTemplates[$templID]->Model=__("Template Missing");
+        }
         $manufacturer = new Manufacturer();
         $manufacturer->ManufacturerID = $devTemplates[$templID]->ManufacturerID;
         $retcode = $manufacturer->GetManufacturerByID();
@@ -707,10 +828,10 @@ function getAuditorName($cab, $emptyVal = null)
     $cab_audit->CabinetID = $cab->CabinetID;
     $cab_audit->GetLastAudit();
     if ($cab_audit->UserID) {
-        $tmpUser=new User();
+        $tmpUser=new People();
         $tmpUser->UserID = $cab_audit->UserID;
         $tmpUser->GetUserRights();
-		$auditorName = $tmpUser->Name;
+		$auditorName = $tmpUser->LastName . ", " . $tmpUser->FirstName;
     }
 
     return $auditorName;
@@ -825,7 +946,7 @@ function getContactName($contactList, $contactID)
 {
     $contactName = null;
     if ($contactID) {
-        $contactName = implode(', ', array($contactList[$contactID]->LastName,
+        $contactName = implode(', ', array(@$contactList[$contactID]->LastName,
             $contactList[$contactID]->FirstName));
     }
 
@@ -964,7 +1085,7 @@ function computeDeviceChildren($sheetColumns, $invData, $parentDev, $DCName,
             $devSpec['Asset Number'] = $child->AssetTag;
             $devSpec['Serial No.'] = $child->SerialNo;
             $devSpec['Install Date'] = $child->InstallDate;
-            $devSpec['Warranty Expire'] = $child->WarrantyExpire;
+            $devSpec['Warranty End'] = $child->WarrantyExpire;
             $devSpec['Owner'] = getOwnerName($child, $deptList);
             $devSpec['Power (W)'] = $child->NominalWatts;
             $devSpec['Reservation'] = $reserved;
@@ -1029,6 +1150,7 @@ function addRackStat(&$invCab, $cab, $cabinetColumns, $dc, $dcContainerList)
     $rack['MaxWeight'] = $cab->MaxWeight;
     $rack['Install Date'] = $cab->InstallationDate;
     $rack['Auditor'] = getAuditorName($cab);
+    $rack['Front Edge'] = $cab->FrontEdge;
     $rack['Timestamp'] = getAuditTimestamp($cab);
     $rack['Notes'] = html_entity_decode(strip_tags($cab->Notes), ENT_COMPAT,
         'UTF-8');
@@ -1046,7 +1168,8 @@ function addRackStat(&$invCab, $cab, $cabinetColumns, $dc, $dcContainerList)
  */
 function computeSheetBodyDCInventory($DProps)
 {
-    global $user;
+    global $person;
+    global $sessID;
     $dc = new DataCenter();
     $cab = new Cabinet();
     $device = new Device();
@@ -1056,11 +1179,18 @@ function computeSheetBodyDCInventory($DProps)
     $cabinetColumns = $DProps['Rack Inventory']['Columns'];
     $devTemplates = DeviceTemplate::getTemplateListIndexedbyID();
     $deptList = Department::GetDepartmentListIndexedbyID();
-    $contactList = Contact::GetContactListIndexedbyID();
+    $contactList = $person->GetUserList('indexed');
 
     $limitedUser = false;
     $dcList = $dc->GetDCList();
     $Stats = array();
+
+    // A little code to update the counter
+
+    $percentDone = 0;
+    $sectionMaxPercent = 40;
+    $incrementalPercent = 1 / sizeof( $dcList ) * $sectionMaxPercent;
+
     foreach ($dcList as $dc) {
         $dcContainerList = $dc->getContainerList();
         $dcStats = array();
@@ -1082,9 +1212,9 @@ function computeSheetBodyDCInventory($DProps)
             $invData[] = $devSpec;
         } else {
             foreach ($cabList as $cab) {
-                if (((! $user->ReadAccess) and ($cab->AssignedTo == 0))
+                if (((! $person->ReadAccess) and ($cab->AssignedTo == 0))
                     or (($cab->AssignedTo > 0)
-                        and (! $user->canRead($cab->AssignedTo)))) {
+                        and (! $person->canRead($cab->AssignedTo)))) {
                     // User is not allowed to see anything in here
                     $limitedUser = true;
                     continue;
@@ -1128,7 +1258,7 @@ function computeSheetBodyDCInventory($DProps)
                                 $dcStats['Rk_UtE'] += $height;
                                 $devSpec = makeEmptySpec($sheetColumns,
                                 $dcContainerList);
-                                $$devSpec['Zone'] = $zoneName;
+                                $devSpec['Zone'] = $zoneName;
                                 $devSpec['Row'] = $rowName;
                                 $devSpec['DC Name'] = $dc->Name;
                                 $devSpec['Cabinet'] = $cab->Location;
@@ -1160,7 +1290,7 @@ function computeSheetBodyDCInventory($DProps)
                         $devSpec['Asset Number'] = $dev->AssetTag;
                         $devSpec['Serial No.'] = $dev->SerialNo;
                         $devSpec['Install Date'] = $dev->InstallDate;
-                        $devSpec['Warranty Expire'] = $dev->WarrantyExpire;
+                        $devSpec['Warranty End'] = $dev->WarrantyExpire;
                         $devSpec['Owner'] = getOwnerName($dev, $deptList);
                         $devSpec['Power (W)'] = $dev->NominalWatts;
                         $devSpec['Reservation'] = $reserved;
@@ -1210,6 +1340,11 @@ function computeSheetBodyDCInventory($DProps)
             }
         }
         assignStatsVal($Stats, $dc, $dcStats);
+
+        $percentDone += $incrementalPercent;
+        if ( php_sapi_name()!="cli" ) {
+            JobQueue::updatePercentage( $sessID, $percentDone );
+        }
     }
 
     return array($Stats, $invData, $invCab, $limitedUser);
@@ -1250,11 +1385,24 @@ function computeDCStatsSummary(&$DCStats, $KPIS)
  */
 function writeRackInventoryContent($worksheet, $sheetProps, $Rack_Inv)
 {
+    global $sessID;
+
+
+    // A little code to update the counter
+
+    $percentDone = 50;
+    $sectionMaxPercent = 40;
+    $incrementalPercent = 1 / sizeof( $Rack_Inv) * $sectionMaxPercent;
+
     $row = 2;
     ksort($Rack_Inv);
     foreach ($Rack_Inv as $DCRoom => $rack) {
         $dc_racks = $Rack_Inv[$DCRoom];
         ksort($dc_racks);
+
+        $subSectionMax = $incrementalPercent;
+        $subIncrement = 1 / sizeof($dc_racks) * $subSectionMax;
+
         foreach ($dc_racks as $name => $rack) {
             $worksheet->fromArray($rack, null, 'A' . $row);
             foreach ($sheetProps['ExpStr'] as $colName) {
@@ -1264,7 +1412,16 @@ function writeRackInventoryContent($worksheet, $sheetProps, $Rack_Inv)
                     PHPExcel_Cell_DataType::TYPE_STRING);
             }
             $row++;
+            $percentDone += $subIncrement;
+            if ( php_sapi_name()!="cli" ) {
+                JobQueue::updatePercentage( $sessID, $percentDone );
+            }
         }
+    }
+
+    // Round up the math
+    if ( php_sapi_name()!="cli" ) {
+        JobQueue::updatePercentage( $sessID, 90 );
     }
 }
 
@@ -1481,6 +1638,7 @@ function writeDCInvContent($worksheet, $sheetProps, $invData)
     $worksheet->fromArray($invData, null, 'A2');
     ReportStats::get()->report('Info', 'Number of Inventory entries '.count($invData));
     $highestRow = count($invData);
+
     foreach ($sheetProps['ExpStr'] as $colName) {
         $colLetter = $colIdx[$colName][1];
         for ($row = 0; $row < $highestRow; $row++) {
@@ -1501,9 +1659,15 @@ function writeDCInvContent($worksheet, $sheetProps, $invData)
  */
 function writeDCInventory($DProps, $objPHPExcel, $thisDate)
 {
+    global $sessID;
+
     $wsKind = 'DC Inventory';
     $worksheet = $objPHPExcel->getActiveSheet();
     $objPHPExcel->setActiveSheetIndex(0);
+
+    if ( php_sapi_name()!="cli" ) {
+        JobQueue::updateStatus( $sessID, __("Computing DC Inventory" ));
+    }
 
     setWorksheetProperties($worksheet, $wsKind, $DProps, $thisDate);
     writeWSHeader($worksheet, $wsKind, $DProps[$wsKind]);
@@ -1511,8 +1675,19 @@ function writeDCInventory($DProps, $objPHPExcel, $thisDate)
     list($DCStats, $invData, $Rack_Inv, $limitedUser) =
         computeSheetBodyDCInventory($DProps);
     ReportStats::get()->report('Info', $wsKind . ' - computed body');
+
+    if ( php_sapi_name()!="cli" ) {
+        JobQueue::updateStatus( $sessID, __("Writing Inventory to Spreadsheet" ));
+        JobQueue::updatePercentage( $sessID, 50 );
+    }
+
     writeDCInvContent($worksheet, $DProps[$wsKind], $invData);
     ReportStats::get()->report('Info', $wsKind . ' - write body');
+
+    if ( php_sapi_name()!="cli" ) {
+        JobQueue::updateStatus( $sessID, __("Formatting Spreadsheet" ));
+    }
+
     formatWSColumns($worksheet, $DProps[$wsKind]['Columns']);
     $worksheet->setAutoFilter($worksheet->calculateWorksheetDimension());
 
@@ -1569,6 +1744,8 @@ function writeExcelReport(&$DProps, $objPHPExcel, $thisDate)
     ReportStats::get()->report('Info', 'User: ' . $DProps['Doc']['User']
         . ' Version: ' . $DProps['Doc']['version']);
 
+    // Crude status reporting
+
     $config = new Config();
     $config->Config();
     addColumnIndices($DProps);
@@ -1591,6 +1768,10 @@ function writeExcelReport(&$DProps, $objPHPExcel, $thisDate)
 
     writeFrontPage($DProps, $config, $objPHPExcel, $thisDate);
     ReportStats::get()->report('Info', 'Front Page');
+
+    if ( php_sapi_name()!="cli" ) {
+        JobQueue::updateStatus( session_id(), "Preparing to transmit file" );
+    }
 }
 
 /*
@@ -1618,12 +1799,18 @@ if (PHP_SAPI != 'cli') {
     header("Content-Disposition: attachment; filename=DC_Statistics_" . $thisDate
      . ".xlsx");
     header('Cache-Control: max-age=0');
+
     // write file to the browser
     $objWriter->save('php://output');
 } else {
-    // print_r(DCStats_Sum);
+    $fname = $ReportOutputFolder."openDCIM-Asset_Report-".date("Y-m-d").".xlsx";
+    $objWriter->save( $fname );
 }
 
 ReportStats::get()->report('Totals');
 $objPHPExcel->disconnectWorksheets();
 unset($objPHPExcel);
+
+if ( php_sapi_name()!="cli" ) {
+    JobQueue::updatePercentage( $sessID, 100 );
+}

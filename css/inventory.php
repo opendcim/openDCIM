@@ -23,6 +23,11 @@ textarea {white-space: pre;word-wrap: break-word;}
 .right {text-align: right;}
 .left {text-align: left;}
 .custom-combobox {position: relative;display: inline-block;}
+.monospace {font-family: monospace !important;}
+.noborder {border: 0px !important;}
+
+.floatleft { float: left; margin-right: 5px; }
+.floatright { float: right; margin-left: 5px; }
 
 [readonly],[disabled] {
 	background-color: #dcdcdc;
@@ -88,9 +93,17 @@ textarea {white-space: pre;word-wrap: break-word;}
 /*  Header/logo */
 #header{
 	padding:5px 0;
-	background:<?php echo $config->ParameterArray['HeaderColor']; ?> url(../images/<?php echo $config->ParameterArray['PDFLogoFile']; ?>) no-repeat center center;
+	background:<?php echo $config->ParameterArray['HeaderColor']; ?> url(../images/<?php echo $config->ParameterArray['PDFLogoFile']; ?>) no-repeat left center;
 	height:66px;
 	position: relative;
+}
+#header > span {color: white;display: block;margin-top: 5px;text-align: center;
+	text-shadow: 1px 1px 0 #063, 1px 1px 0 #000, -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000;
+}
+#header1 {font-size: xx-large;}
+#header2 {font-size: x-large;}
+#header > #version {bottom: 2px;position: absolute;right: 4px;font-size:small;
+	text-shadow: 1px 1px 0 #063, 1px 1px 0 #000, -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000;
 }
 
 /* Configuration Page */
@@ -111,13 +124,16 @@ div.cp { position: relative;}
 
 div#imageselection { display: none;}
 #imageselection span { display: block; padding: 0.25em 0 0.5em 0.5em; cursor: pointer; text-decoration: underline; border: 1px solid white;}
-#imageselection #preview { position: absolute; top: 0; right: 0; height: 180px; width: 180px; margin: 0.1em 0 0 0; padding: 0; border: 0px solid black;}
-#imageselection #filelist { position: absolute; top: 0; left: 1em; height: 210px; width: 175px; overflow-y: scroll; overflow-x: hidden; }
+#imageselection #preview { position: absolute; top: 0; right: 0; height: 340px; width: 340px; margin: 0.1em 0 0 0; padding: 0; border: 0px solid black;}
+#imageselection #filelist { position: absolute; top: 0; left: 1em; height: 380px; width: 245px; overflow-y: scroll; overflow-x: hidden; white-space: nowrap;}
 
-.ui-menu-item ul { max-height: 200px; overflow: auto; }
+#configtabs .ui-menu-item ul { max-height: 200px; overflow: auto; }
 #tzmenu {display: none;}
 
 #tooltip, #cdutooltip { min-height: 300px; min-width: 550px; }
+
+.customattrsheader { padding-right: 10px; }
+#customattrs input, #customattrs select { background-color: transparent; border-style: ridge; }
 
 /* index */
 .index .table, .index .table .title {background-color: white;}
@@ -138,12 +154,10 @@ div#imageselection { display: none;}
 .request legend {border: 1px <?php echo $config->ParameterArray['HeaderColor']; ?> solid;background-color: white; padding: .15em;}
 .errmsg {display:block;font-style:italic;margin-left:2em;}
 .hlight {color: red;}
-.legenditem {padding: 0.2em; }
-.colorbox {width: 1em; display: inline-block; vertical-align: sub;height: 1.2em; margin: 0px; padding: 0px;}
 
 
 
-/* Datacenter Stats */
+/* Data Center Stats */
 .dcstats .heading > div{width: 89%;display: inline-block;vertical-align: middle;}
 .dcstats .heading > div + div {width: 10%;}
 .dcstats .heading > div + div button {display: block;width: 100%;}
@@ -157,7 +171,7 @@ div#dcstats { display: table;}
 div#dcstats > div{ width: 100%;}
 div#dcstats .table + .table > div > div + div{white-space: pre; text-align: right;}
 .canvas {position: relative; background-repeat: no-repeat;}
-.canvas img {position: absolute; top: 0; left: 0;}
+.canvas img {position: absolute; top: 0; left: 0; z-index: 10;}
 .dcstats ~ #tt span {font-size: 1.5em; text-align: center; font-weight: bold;}
 .dcstats ~ #tt ul {list-style-type: none;}
 .dcstats ~ #tt ul li.red {background: url('../images/rs.png') left center no-repeat; line-height: 20px; padding-left: 20px;}
@@ -166,6 +180,8 @@ div#dcstats .table + .table > div > div + div{white-space: pre; text-align: righ
 .dcstats ~ #tt ul li.wtf {background: url('../images/us.png') left center no-repeat; line-height: 20px; padding-left: 20px;}
 #maptitle {padding: 8px; font-size: 120%; font-weight: bold;} 
 #maptitle .nav {float: right;}
+#mapCanvas { margin-bottom: 50px; position: relative;}
+canvas#background { position: absolute; }
 
 /* Storage Room */
 .storage .table, .storage .table #title { background: white; }
@@ -279,14 +295,35 @@ div#dcstats .table + .table > div > div + div{white-space: pre; text-align: righ
 .zonemaker + .center > div > div.container {position: absolute;top: 0px;left: 0px;}
 
 /* templatemaker */
+#regulartemplateattributes, #hiddencdudata, #hiddensensordata {display:inline-block;vertical-align:top;}
 .templatemaker > div{width: 100%;display: inline-block;vertical-align: middle;}
 .templatemaker .table .table {margin-left: auto;}
 .templatemaker + .center div{position: relative;width: 100%;}
 .templatemaker + .center > div > div.container {position: absolute; top: 0px; left: 0px;}
+.templatemaker input + button, #btn_override, #btn_snmptest { line-height: 1em; vertical-align: middle; height: 1.5em; margin-top: -1px; }
+.templatemaker #hiddencoords { position: absolute; left: -10000px; top: -10000px;}
+.templatemaker #previewimage { width: 400px;}
+.templatemaker fieldset label {padding-right: 1em;padding-left:0.25em;}
+.templatemaker #atsbox {border: 1px solid black;padding:0.25em;margin-top: 1em;}
+.templatemaker .ui-button { margin: 0; }
+.table.front #previewimage, .table.rear #previewimage { position: relative; }
+.table.front #coordstable, .table.rear #coordstable { width: 320px; padding-left: 10px;}
+#coordstable input { width: 40px; }
+#coordstable > .table > div:first-child { text-align: center; }
 table.coordinates th {background-color: #CCC; text-align: center; vertical-align: middle; padding-left: .5em; padding-right: .5em; padding-top: .2em;padding-bottom: .2em;}
 table.coordinates td {text-align: center; padding-left: .5em; padding-right: .5em; padding-top: 0.1em;padding-bottom: 0.1em;}
 table.coordinates input {text-align: center; border: 0px;}
 table.coordinates select {text-align: center; border: 0px;}
+span.cdudisclaimer {color:red;font-weight:bold;}
+
+#hiddenports,#hiddenpowerports { position: absolute; left: -10000px; top: -10000px;}
+.hiddenports .table { border: 1px solid black; }
+.hiddenports .table > div:first-child { text-align: center; background-color: lightgray; border: 1px solid black;}
+.hiddenports .table > div { background-color: white; }
+.hiddenports .table > div > div { padding: 3px; }
+
+#rightside { vertical-align: top; }
+#img_FrontPictureFile, #img_RearPictureFile { max-width: 125px; max-height: 200px; padding-right: 5px;}
 
 /* Basic Page Layout */
 .page {position: relative;width: 100%;}
@@ -295,6 +332,8 @@ p, h2, h3, h1 {margin-top: 1em;margin-bottom: 1em;}
 h2 {font-size: 1.5em;text-align: center;}
 h3 {font-size: 1.16em;text-align: center;}
 h3 + h3 {color: red;font-weight: bold;}
+h4 {font-size: 1.1em;text-align: center;}
+h3 + h5 {margin-bottom: 0.5em;}
 a:link, a:hover, a:visited:hover {color:<?php echo $config->ParameterArray['LinkColor']; ?>;}
 a:visited {color: <?php echo $config->ParameterArray['VisitedLinkColor']; ?>;}
 
@@ -305,13 +344,17 @@ div.main {
 	padding: 5px;
 	background-color: <?php echo $config->ParameterArray['BodyColor']; ?>;
 	border: 1px dotted #333;
+	margin-bottom: 2em;
+}
+.main > div {
+	margin-bottom: 2em;
 }
 div.center > div {display: inline-block;text-align: left;}
 .center {text-align: center;min-height: 400px;}
 .centermargin {margin-left: auto;margin-right: auto;}
 
 .table {display: table;text-align: left;border-collapse: collapse;}
-.caption {caption-side: bottom; text-align: center; display: table-caption !important;}
+.caption {caption-side: bottom; text-align: center; display: table-caption !important; white-space: nowrap;}
 .title {caption-side: top; text-align: center; display: table-caption !important;}
 div.table > div {display: table-row;}
 div.table > div > div {display: table-cell;vertical-align: middle; /* padding-bottom: .75em; */}
@@ -335,6 +378,11 @@ div.table > div > div {display: table-cell;vertical-align: middle; /* padding-bo
 /* User Rights */
 .rights > div:nth-last-child(2) div {text-align: center;padding-top: .75em;padding-bottom: .75em;}
 div.table > div + div + div + div > div + div label {float: none;}
+#primarycontact {cursor:pointer;}
+#deptgroup .ui-multiselect ul.available li { overflow-x: hidden; }
+
+/* Project Catalog */
+#projectgroup .ui-multiselect ul.available li { padding: 0.5em 0.5em 0.5em 20px; height: auto; line-height: inherit;}
 
 /* Contact Editor */
 #deletedialog {display: none;}
@@ -350,6 +398,7 @@ div.table > div + div + div + div > div + div label {float: none;}
 
 /* PDU Info */
 .pdu .center > div + div > .table > div > div{padding: 3px;}
+.pdu #btn_override { height: 1.2em; line-height: 1em; margin: 3px 0 3px 10px; vertical-align: middle; }
 
 /* Power Panels */
 div.center > div + div {vertical-align: top;padding-left: 1em;}
@@ -359,7 +408,7 @@ div.center div table {
 	border-collapse: collapse;
 	margin-left: auto;
 	margin-right: auto;
-	max-width: 400px;
+/*	max-width: 400px; */
 }
 div.center div table table{min-width: 150px;}
 div.center div table, div.center div tr, div.center div td {border: 1px solid gray;}
@@ -369,6 +418,10 @@ div.center div table, div.center div tr, div.center div td {border: 1px solid gr
 	max-width: 400px;
 	padding: 0.25em 0.5em 0.25em 1em;
 	vertical-align: middle;
+}
+.panelmgr .main form input, .panelmgr .main form select {
+	padding-right: 0px;
+	width: 100%;
 }
 .polelabel a {display: block;margin-bottom: 0.35em;}
 .polelabel a span {display: block;margin-left: 1.5em;}
@@ -381,8 +434,13 @@ div.error {margin-top: 2em;margin-bottom: 2em;border: 1px dotted gray;}
 .error legend {color: red;font-weight: bold;}
 .error > div > div {width: 200px;vertical-align: top !important;}
 .error > div > div + div {font-style: italic;}
+.error span {display: block;margin-left: 1.5em;}
 #pdutest {display: none;}
-
+.panelmgr .main form, .panelmgr .main form ~ div { display: inline-block; vertical-align: top;}
+.panelmgr .main .center > div { margin-right: 200px; }
+.pwr_gauge { position: absolute; right: 50px; top: 0px; }
+.pwr_gauge + .pwr_gauge { top: 200px; }
+.pwr_gauge + .pwr_gauge + .pwr_gauge { top: 400px; }
 
 /* Department Administration */
 #groupadmin {
@@ -400,12 +458,30 @@ div.error {margin-top: 2em;margin-bottom: 2em;border: 1px dotted gray;}
 #deptgroup h3 + div {margin-left: 42.5px;}
 #deptgroup select {width: 440px;}
 #displaynone {display: none !important;}
+#cnt_cabinets, #cnt_devices, #cnt_users { cursor: pointer; text-decoration: underline; }
+
+#projectadmin {
+	overflow: hidden;
+	min-width: 700px;
+	min-height: 150px;
+	display: none;
+	margin-top: 20px;
+	border: 1px solid gray;
+}
+#projectgroup {background-color: <?php echo $config->ParameterArray['BodyColor']; ?>;}
+#projectgroup > div {padding:5px 10px;width:580px;min-height:300px;}
+#projectgroup > div h3 {margin-top: 0;margin-bottom: 5px;}
+#projectgroup > div h3 button {margin-left:10px;vertical-align:middle;}
+#projectgroup h3 + div {margin-left: 42.5px;}
+#projectgroup select {width: 600px;}
 
 /* Rack Content */
+.legenditem {padding: 0.2em;height: 1.1em;line-height: 1.2em;overflow: hidden;padding: 0.2em;white-space: nowrap;width: 210px;}
+.colorbox {width: 1.1em; display: inline-block; vertical-align: text-bottom;height: 1.1em; margin: 0px; padding: 0px;}
 #infopanel {
 		position: relative;
 		display: inline-block;
-		min-width: 200px;
+		max-width: 240px;
 }
 #infopanel fieldset, .reports fieldset {
 		background-color: white;
@@ -415,14 +491,6 @@ div.error {margin-top: 2em;margin-bottom: 2em;border: 1px dotted gray;}
 }
 #infopanel fieldset button, #infopanel fieldset input[type=submit], #infopanel fieldset input[type=button],.reports fieldset button, .reports fieldset input[type=submit], .reports fieldset input[type=button] {width: 100%;}
 #infopanel legend, .device legend, .reports legend {border: 1px <?php echo $config->ParameterArray['HeaderColor']; ?> solid;background-color: white;}
-#infopanel fieldset > p > span + span {
-	display: inline-block;
-	vertical-align: middle;
-	height: 1.1em;
-	line-height: 1.2em;
-	width: 150px;
-	overflow: hidden;
-}
 div.cabinet {
 	display: inline-block;
 	vertical-align: top;
@@ -431,7 +499,16 @@ div.cabinet {
 	margin-right: 20px;
 }
 
-.cabinet td + td {vertical-align: middle;padding: 0.25em 0.5em;width: 90%;}
+#servercontainer .dept0, #servercontainer-rear .dept0, #servercontainer-side .dept0 {background-color: #fff;}
+
+.cabinet .pos { text-align: center; }
+/* stupid safari layout glitch */
+.cabinet table.cabinet { border-collapse: collapse; }
+.cabinet table.cabinet tr:nth-child(n+3) {height: 21px;}
+.cabinet #servercontainer, .cabinet #servercontainer-rear, .cabinet #servercontainer-side { background-image: url("../images/racku-background.png"); position: relative; padding: 0px; margin: 0px;}
+.genericdevice {display: flex;justify-content: center; align-items: center; height: 100%; border: 2px black solid; background-color: inherit; overflow: hidden; white-space: nowrap;}
+
+.cabinet td + td {vertical-align: middle;width: 220px; }
 .cabinet td.cabpos {text-align: center; vertical-align: middle;padding: 0.25em 0.5em;width: 10%;}
 .cabinet th{font-size: 1.5em;padding: 0.25em;text-align: center;}
 #zerou a{display: block;}
@@ -439,6 +516,8 @@ div.cabinet {
 .cabnavigator .nav { text-align: center; }
 .cabnavigator .nav li { margin-top: 0.1em; border: 1px solid darkGray;}
 .cabnavigator .nav a:hover li { border-color: black; }
+
+.cabnavigator th a { color: black; text-decoration: none; pointer-events: none; }
 
 .cabnavigator.tooltip {
 	min-height: 30px;
@@ -453,71 +532,121 @@ div.cabinet {
 	margin: 5px;
 	padding: 3px;
 }
+.blackout { background-color: black; }
+.rowview .noprint span:last-child {display: none;}
+.rowview div.cabinet { vertical-align: bottom; }
 .cabinet .error { background-color: <?php echo $config->ParameterArray['CriticalColor']; ?>; }
 
 /* PICTURES */
-.cabnavigator div.picture {position:relative; left:0px; top:0px; margin: -0.25em -0.5em -0.4em; z-index: 5;}
-.cabnavigator div.picture div {position:absolute; z-index: 10;}
-.cabnavigator .picture div img:hover, .cabnavigator .picture div div:hover { border: 2px solid red; margin: -2px; }
-.cabnavigator .picture div span {overflow: hidden; vertical-align: sub; padding-left: 0.3em;}
+.disabled {pointer-events: none;cursor: default;}
+.cabnavigator div.picture {position:relative; left:0px; top:0px; z-index: 5;}
+.picture div {position:absolute; z-index: 10; padding: 0 !important;}
+.picture .label {
+	z-index: 11;
+	text-align: center;
+	vertical-align: middle;
+	color: white;
+	font-family: arial;
+	text-shadow: 1px 1px 0 #063, 1px 1px 0 #000, -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000;
+	filter: glow(color=#063,strength=2), alpha(opacity=90);
+} 
+.picture .label { height: 16px; }
+.picture .label > div {text-align: center;width: 100%;}
+.picture .label > div,
+.picture div > a > div > div { top: 10%; height: 80%; padding-left: 0.3em;}
+.picture div > a > div > div {overflow: hidden;}
+.picture div .label {overflow: hidden;}
+.label.noimage { margin: -2px; border: 2px solid black; }
+.cabnavigator .picture div img:hover, .cabnavigator .picture a > div:hover { border: 2px solid red; margin: -2px;}
+.cabnavigator .picture div img.rlt:hover { margin: -2px 0 0 2px;}
 
-.cabinet .picture img {min-height: 1px;}
+.picture {
+	left: 0;
+	position: relative;
+	top: 0;
+	z-index: 5;
+	display: inline-block;
+	padding: 0 !important;
+}
+.picture div {
+	position: absolute;
+}
+.picture img {
+	height: 100%;
+	width: 100%;
+	position: absolute;
+}
+.picture div > a ~ .label {
+	pointer-events: none;
+}
+.picture > .label {
+	text-align: center;
+	pointer-events: none;
+}
+.picture > div > .label {
+	pointer-events: none;
+}
+.picture > div .label {
+	top: 0;
+}
+.label {
+	display: block;
+	z-index: 5;
+	top: 25%;
+	width: 90%;
+	height: 13px;
+	left: 5%;
+	overflow: hidden;
+	word-break: break-all;
+}
 .rotar_d{
 	transform:rotate(90deg);
 	-webkit-transform:rotate(90deg);
 	-moz-transform:rotate(90deg);
 	-ms-transform:rotate(90deg);
 	-o-transform:rotate(90deg);}
-.rotar_i{
-	transform:rotate(-90deg);
-	-webkit-transform:rotate(-90deg);
-	-moz-transform:rotate(-90deg);
-	-ms-transform:rotate(-90deg);
-	-o-transform:rotate(-90deg);}
-
+.rlt {
+	transform-origin: left top;
+	-webkit-transform-origin: left top;
+	-moz-transform-origin: left top;
+	-ms-transform-origin: left top;
+	-o-transform-origin: left top;
+}
 
 /* Cabinet Properties */
 
-#infopanel table#cabprop {
-    margin: 0px 0px 2px 0px;
+#infopanel #cabprop {
+	margin: 0px 0px 2px 0px;
 	border-collapse: separate;
-    border: 0px none;
+	border: 0px none;
 	border-spacing: 3px;
 	width: 100%;
 	min-width: 200px; max-width: 350px;
 }
-table#cabprop tr {
-    width: 100%;
-    padding: 2px;
-    margin: 1px 0px 1px 1px;
+#infopanel #cabprop td:first-child{
+	padding: 3px 2px 3px 2px;
+	font-weight: bold;
+	border: 0px none;
+	border-bottom: 1px solid gray;
+	margin: 2px 2px 2px 0px;
 }
-#infopanel fieldset table#cabprop td.left {
-    padding: 3px 2px 3px 2px;
-    font-weight: bold;
-    border: 0px none;
-    border-bottom: 1px solid gray;
-    margin: 2px 2px 2px 0px;
+#infopanel #cabprop td:nth-child(2){
+	text-align: left;
+	padding: 3px 2px 3px 4px;
+	border-style: none solid solid none;
+	border-width: 0 2px 1px 0;
+	margin: 2px 0px 2px 2px;
 }
-#infopanel fieldset table#cabprop td.right {
-    text-align: left;
-    padding: 3px 2px 3px 4px;
-    border: 0px none;
-    border-bottom: 1px solid gray;
-    border-right: 2px solid gray;
-    margin: 2px 0px 2px 2px;
-    max-width: 175px;
-}
-table#cabprop span.text-label {
-     -webkit-border-radius: 2px;
-     border-radius: 2px;
-     box-sizing: border-box;
-     border: 1px solid #9daccc;
-     background: #e2e6f0;
-     color: #000;
-     padding: 0px 3px 0px 3px;
-     margin: 0 2px 2px 0;
-     font: 11px "lucida grande",tahoma,verdana,arial,sans-serif;
-     display: inline-block;
+#infopanel #cabprop td:nth-child(2) > span {
+	-webkit-border-radius: 2px;
+	border-radius: 2px;
+	box-sizing: border-box;
+	border: 1px solid #9daccc;
+	background: #e2e6f0;
+	padding: 0px 3px 0px 3px;
+	margin: 0 2px 2px 0;
+	font: 11px "lucida grande",tahoma,verdana,arial,sans-serif;
+	display: inline-block;
 }
 
 /* image_management */
@@ -562,9 +691,12 @@ table#cabprop span.text-label {
 .preview .filename { max-width: 100px; word-break: break-all; }
 .imagem .heading { border-bottom: 1px solid; font-size: 2em; margin-bottom: 5px; text-align: right; }
 
+.uploadifive-queue-item .close { cursor: pointer; }
+
+
 /* devices.php  Device Detail */
 .device fieldset {
-	display: inline-block;
+	display: block;
 	vertical-align: top;
 	margin-bottom: 1.5em;
 	margin-top: 1em;
@@ -572,16 +704,26 @@ table#cabprop span.text-label {
 	border: 1px dotted gray;
 	padding: 0.25em;
 }
-.device fieldset .custom-combobox a {
-	padding: 1px 0;
-}
+//.device fieldset .custom-combobox{margin: 0;padding: 0 0 0 2px;}
+.device fieldset .custom-combobox{margin: 0;padding: 0;}
+.device fieldset .custom-combobox input{margin: 0;}
+.device fieldset .custom-combobox a {padding: 1px 0;position: absolute;}
+.device div.right { max-width: 495px; }
 .device div.left, .device div.right {
-	max-width: 485px;
 	margin-bottom: 1.5em;
 	display: inline-block;
 	vertical-align: top;
 	text-align: left;
 }
+
+.on { color: green; }
+.off { color: red; }
+
+.device #deviceimages > div { width: 355px; margin-left: auto; margin-right: auto; }
+.device #deviceimages > div > img { width: 175px; }
+
+.device #auditdate { line-height: 2em; }
+
 .device .table {width: 100%;}
 .device .table.style > div:nth-child(2n+1) > div {border-top: 1px solid grey;vertical-align: top;}
 .device .table.style > div:nth-child(2n+1) > div:first-child {background-color: lightGray;border-left: 1px solid grey;}
@@ -591,11 +733,14 @@ table#cabprop span.text-label {
 .device .table .table .table > div > div {padding: 3px;}
 .right .table + .table {margin-top: 1em;}
 
-
 .table.patchpanel > div:first-child > div > div,
-.table.switch > div:first-child > div > div { position: relative; border: 0px none; margin: -3px; padding-right: 20px; }
+.table.switch > div:first-child > div > div,
+.table.power > div:first-child > div > div { position: relative; border: 0px none; margin: -3px; padding-right: 20px; }
 .table.patchpanel > div:first-child > div select,
-.table.switch > div:first-child > div select { position: absolute; top: -3px; right: 0px; }
+.table.switch > div:first-child > div select,
+.table.power > div:first-child > div select { position: absolute; top: -3px; right: 0px; }
+
+.table.patchpanel > div:first-child, .table.switch > div:first-child { white-space: nowrap; }
 
 .device div[id^="controls"] { border: 0 none; white-space: nowrap; }
 
@@ -609,32 +754,65 @@ table#cabprop span.text-label {
 .device .table.patchpanel div[id^="pp"],
 .device .table.patchpanel div[id^="mt"] { background-color: rgba(211, 211, 211, 0.5);}
 .device .table.patchpanel > div > div {min-width: auto;}
-.device .table.patchpanel > div:first-child select, .device .table.switch > div:first-child select { position: absolute; background-color: transparent; border: 0px none; width: auto;}
+.device .table.patchpanel > div:first-child select,
+.device .table.switch > div:first-child select,
+.device .table.power > div:first-child select { position: absolute; background-color: transparent; border: 0px none; width: auto;}
 .device .table.patchpanel > div:first-child select::-moz-focus-inner, 
 .device .table.patchpanel > div:first-child select:focus::-moz-focus-inner, 
 .device .table.switch > div:first-child select::-moz-focus-inner, 
 .device .table.switch > div:first-child select:focus::-moz-focus-inner {border: none;}
 
+.device .path div { border: 0px none; }
+.device .path > div > div { position: relative; height: 1em; }
+.device .path > div > div > div { position: absolute; top: 0.15em; min-width: 550px; padding-left: 25px; white-space: nowrap; font-weight: 100; font-size: 0.85em;}
+.device .path span:after{ content: "\2192";}
+.device .path span:last-child:after{ content: "";}
+
+#pandn.table span.custom-combobox { width: 100%;}
 #pandn.table .custom-combobox input, #pandn.table .custom-combobox a {border-top: 2px; border-bottom: 2px; border-style: inset;  width: auto; height: 18px;}
+#pandn.table .custom-combobox input {width: calc(100% - 18px);}
 #pandn.table .custom-combobox input {background-image: none; border-left: 2px; border-right: 0px; padding-left: 4px; font-size: inherit;} 
-#pandn.table .custom-combobox a {margin: 0; vertical-align: top; width: 18px; border-left: 0px; border-right: 2px; position: absolute; top: 0; right: 0;} 
+#pandn.table .custom-combobox a {margin: 0; vertical-align: top; border-left: 0px; border-right: 2px; position: absolute;} 
+
+#olog > div:first-child { border-bottom: 2px solid black; }
+#olog > div > div:first-child { width: 100px; padding-right: 5px; white-space: nowrap; }
+#olog > div:first-child > div:first-child { border-right: 0 none; }
+#olog > div:first-child > div:first-child ~ div { border-left: 0 none; }
+
+#olog > div:nth-child(2) > div { padding: 0px; }
+#olog > div:nth-child(2) > div > div { max-height: 9em; overflow-y: scroll; overflow-x: hidden; border: 0;}
+
+#olog > div:last-child > div > button { float: right; line-height: 1em; height: 1.75em;}
+#olog > div:last-child > div > button ~ div { overflow: hidden; padding-right: 1em; border: 0 none; }
+#olog > div:last-child > div > button ~ div > input { width: 100%; } 
+
+#olog .table > div > div ~ div {white-space: pre-wrap; max-width: 800px; word-wrap: break-word;}
+
+#devicetype-limiter, #connection-limiter { display: inline-block; margin-top: 10px; margin-bottom: 2px; vertical-align: super; }
+#devicetype-limiter .ui-button-text-only .ui-button-text,
+#connection-limiter .ui-button-text-only .ui-button-text { padding: 0.2em; }
+#devicetype-limiter label, #connection-limiter label { width: auto; }
+
 .device #tags { width: 95%; min-width: 250px;}
 
 #firstport.hide { display: none; }
 
+.device fieldset .table label { white-space: nowrap;}
+
 .device .delete .ui-icon.status.down {cursor: pointer;}
 .switch .delete, .patchpanel .delete { border: 0 none; }
 .switch.table > div > div,
+.power.table > div > div,
 .patchpanel.table > div > div { min-width: 0px; }
 .switch.table > div > div:first-child,
 .patchpanel.table > div > div:first-child { min-width: 15px; }
 /* can't explain where the 2px is coming from */
 .switch.table input, .patchpanel.table input { height: 18px; }
 .switch.table input, .switch.table select, 
-.patchpanel.table input, .patchpanel.table select { width: 99%; padding: 0; background-color: transparent;}
+.patchpanel.table input, .patchpanel.table select { padding: 0; background-color: transparent;}
 .switch.table div[id^=n] input { width:98%; }
 
-.switch .status, .patchpanel .down { background-image: url("../images/portstatus.png");}
+.switch .status, .power .status, .patchpanel .down { background-image: url("../images/portstatus.png");}
 .switch .down, .patchpanel .down { background-position: left; }
 .switch .up { background-position: right; }
 
@@ -654,14 +832,65 @@ table#cabprop span.text-label {
 .positionselector > div > div + div > div{ border-top: 0px; border-right: 0px;}
 .positionselector > div { border-width: 1px;}
 .positionselector, .positionselector > div > div {border-width: 0px;}
-#positionselector .positionselector > div > div {min-width: 0;}
-#positionselector {padding: 10px; position: absolute; left: -1000px; background-color: white; border: 1px solid black; z-index: 99;}
+#Positionselector .positionselector > div > div {min-width: 0;}
+#Positionselector {padding: 10px; position: absolute; left: -1000px; background-color: white; border: 1px solid black; z-index: 99;}
 
 #editbtn { display: block; margin-bottom: 5px;}
 #preview { width: 340px; min-height: 130px; background-color: white; border: 1px solid grey; padding: 5px;}
 #preview img { display: block; border: 0px; max-width: 330px;}
 .jHtmlArea iframe { background-color: white; border: 1px inset; min-height: 100px;}
 
+/* hey I do something function */
+.wade{
+	position: relative;
+	width: 250px;
+	height: 120px;
+	padding: 0px;
+	background: #FFFFFF;
+	-webkit-border-radius: 17px;
+	-moz-border-radius: 17px;
+	border-radius: 17px;
+	border: #000000 solid 1px;
+}
+
+.wade:after{
+	content: '';
+	position: absolute;
+	border-style: solid;
+	border-width: 15px 16px 0;
+	border-color: #FFFFFF transparent;
+	display: block;
+	width: 0;
+	z-index: 1;
+	bottom: -15px;
+	left: 19px;
+}
+
+.wade:before{
+	content: '';
+	position: absolute;
+	border-style: solid;
+	border-width: 15px 16px 0;
+	border-color: #000000 transparent;
+	display: block;
+	width: 0;
+	z-index: 0;
+	bottom: -16px;
+	left: 19px;
+}
+
+
+
+/* Logging style */
+#logtable { width: 100%; width: calc(100% - 36px); border: 1px solid black; }
+#logtable > div:first-child { border-bottom: 1px solid black; font-size: large;}
+#logtable > div:nth-child(2n) { background-color: lightgray; border-bottom: 1px dotted black; }
+#logtable > div ~ div > div:first-child{ padding: 3px; white-space: nowrap;}
+#logtable > div ~ div > div:nth-child(4){ border-left: 2px dotted black; padding-left: 3px; white-space: nowrap;}
+#logtable > div ~ div > div:nth-child(5){ text-align: right; }
+#logtable > div ~ div > div:nth-child(5):before{ content:"'"; }
+#logtable > div ~ div > div:nth-child(5):after{ content:"' => "; }
+.logtable > div.ui-dialog-content { overflow-y: auto; overflow-x: hidden; }
 
 /* Button code primarily from http://somadesign.ca */
 /* Button */
@@ -759,20 +988,28 @@ table#cabprop span.text-label {
 	ul.mktree  a.ZONE { color: #330066; }
 	ul.mktree  a.CABROW { color: #AA3300; }
 	ul.mktree  a.RACK { color: #660000; }
-	ul.mktree  a { text-decoration: none; }
+	ul.mktree  a { text-decoration: none; white-space: pre;}
 	ul.mktree  a:hover { color: red; }
 	ul.mktree  li ul li { font-family: arial, helvetica; font-size: 11pt; font-weight: normal;}
 }
-.meter-wrap{position: relative;background-color: lightgrey;}
-.meter-wrap, .meter-value, .meter-text {width: 155px; height: 1em;}
-.meter-text {
-    position: absolute;
-    top:0; left:0;
-    padding-top: 0px;
-    color: #000;
-    text-align: center;
-    width: 100%;
+@media print {
+	.noprint { display: none; }
+	.page {
+		page-break-after: always;
+	}
 }
+.meter-wrap{position: relative;background-color: lightgrey;overflow:hidden;}
+.meter-wrap, .meter-value, .meter-text {width: 210px; height: 1.1em;}
+.meter-text {
+	position: absolute;
+	top:0; left:0;
+	padding-top: 0px;
+	color: #000;
+	text-align: center;
+	width: 100%;
+}
+fieldset[name=pdu] > div > img { vertical-align: text-bottom; }
+
 /* Supplies */
 .supply .table > div:first-child > div {padding-bottom:0.5em;font-weight: bold;}
 .supply .table > div > div {padding-right: 0.25em;}
@@ -783,6 +1020,10 @@ table#cabprop span.text-label {
 .supply .table:first-child { margin-left: 25px; width: auto;}
 .supply .table:first-child > div > div:first-child {width: auto;}
 .supply #location {width: 97%;}
+
+.supply .table ~ .table { background-color: white; }
+.supply .table ~ .table > div > div:first-child { width: auto; }
+.supply .table ~ .table > div > div { padding: 3px; }
 
 
 /* Installer */
@@ -799,7 +1040,6 @@ table#cabprop span.text-label {
 .installer a.active span:first-child, .nav a.active span:first-child {background-position: -144px 0;}
 .installer div.table > div > div + div {width: 300px;}
 .installer .rights > div:nth-last-child(2) div {padding-top: 0;padding-bottom: 2em;text-align: left;}
-.installer .center input {width: 97%;}
 .installer #configtabs div.table > div > div + div {width: auto;}
 .installer .center #configtabs ~ div input {width: auto;}
 div.page.installer {min-width: 1100px;}

@@ -2,7 +2,9 @@
 	require_once("db.inc.php");
 	require_once("facilities.inc.php");
 
-	if(!$user->SiteAdmin){
+	$subheader=__("Data Center Zones");
+
+	if(!$person->SiteAdmin){
 		// No soup for you.
 		header('Location: '.redirect());
 		exit;
@@ -15,7 +17,14 @@
 	$DCList=$dc->GetDCList();
 	$formpatch="";
 	$status="";
-
+	
+	if(isset($_POST['action']) && $_POST['action']=='Delete'){
+		$zone->ZoneID=$_POST['zoneid'];
+		$zone->DeleteZone();
+		header('Location: '.redirect('zone.php'));
+		exit;
+	}
+	
 	if(isset($_REQUEST["zoneid"])) {
 		$zone->ZoneID=(isset($_POST['zoneid'])?$_POST['zoneid']:$_GET['zoneid']);
 		$zone->GetZone();
@@ -36,8 +45,11 @@
 				$zone->UpdateZone();
 			}
 		}
-		$formpatch="?zoneid={$_REQUEST['zoneid']}";
+		$formpatch="?zoneid=$zone->ZoneID";
 	}
+
+	$zone->MapZoom=($zone->ZoneID==0)?100:$zone->MapZoom;
+
 	$dc_zone->DataCenterID=$zone->DataCenterID;
 	$dc_zone->GetDataCenterbyID();
 	
@@ -47,7 +59,13 @@
 	if(strlen($dc_zone->DrawingFileName) >0){
 		$mapfile="drawings/$dc_zone->DrawingFileName";
 		if(file_exists($mapfile)){
-			list($width, $height, $type, $attr)=getimagesize($mapfile);
+			if(mime_content_type($mapfile)=='image/svg+xml'){
+				$svgfile = simplexml_load_file($mapfile);
+				$width = substr($svgfile['width'],0,4);
+				$height = substr($svgfile['height'],0,4);
+			}else{
+				list($width, $height, $type, $attr)=getimagesize($mapfile);
+			}
 			// There is a bug in the excanvas shim that can set the width of the canvas to 10x the width of the image
 			$ie8fix='
 <script type="text/javascript">
@@ -79,7 +97,7 @@
   
 </head>
 <body>
-<div id="header"></div>
+<?php include( 'header.inc.php' ); ?>
 <div class="page" id="mapadjust">
 <?php
 	include( "sidebar.inc.php" );
@@ -87,11 +105,9 @@
 echo '
 <div class="main">
 	<div class="zonemaker">
-		<h2>',$config->ParameterArray["OrgName"],'</h2>
-		<h3>',__("Data Center Zones"),'</h3>
 		<h3>',$status,'</h3>
 		<div class="center" style="min-height: 0px;"><div>
-			<form action="',$_SERVER["PHP_SELF"].$formpatch,'" method="POST">
+			<form action="',$_SERVER["SCRIPT_NAME"].$formpatch,'" method="POST">
 				<div class="table">
 					<div>
 						<div><label for="zoneid">',__("Zone"),'</label></div>
@@ -103,8 +119,7 @@ echo '
 		if($zone->ZoneID==$zoneRow->ZoneID){$selected=" selected";}else{$selected="";}
 		$dc->DataCenterID=$zoneRow->DataCenterID;
 		$dc->GetDataCenter();
-		print "
-							<option value=\"$zoneRow->ZoneID\"$selected>[".$dc->Name."] ".$zoneRow->Description."</option>\n";
+		print "\t\t\t\t\t\t\t<option value=\"$zoneRow->ZoneID\"$selected>[".$dc->Name."] ".$zoneRow->Description."</option>\n";
 	}
 
 echo '
@@ -122,36 +137,29 @@ echo '
 
 foreach($DCList as $DCRow){
 		if($zone->DataCenterID==$DCRow->DataCenterID){$selected=" selected";}else{$selected="";}
-		print "
-							<option value=\"$DCRow->DataCenterID\"$selected>$DCRow->Name</option>\n";
+		print "\t\t\t\t\t\t\t<option value=\"$DCRow->DataCenterID\"$selected>$DCRow->Name</option>\n";
 	}
 
 echo '
 							</select>
 						</div>
-					</div>';
-
-echo '
+					</div>
 					<div>
 						<div><label for="x1">X1</label></div>
 						<div><input type="text" name="x1" id="x1" value="',$zone->MapX1,'"></div>
-						</div>';
-echo '
+						</div>
 					<div>
 						<div><label for="y1">Y1</label></div>
 						<div><input type="text" name="y1" id="y1" value="',$zone->MapY1,'"></div>
-					</div>';
-echo '
+					</div>
 					<div>
 						<div><label for="x2">X2</label></div>
 						<div><input type="text" name="x2" id="x2" value="',$zone->MapX2,'"></div>
-					</div>';
-echo '
+					</div>
 					<div>
 						<div><label for="y2">Y2</label></div>
 						<div><input type="text" name="y2" id="y2" value="',$zone->MapY2,'"></div>
-					</div>';
-echo '
+					</div>
 					<div>
 						<div><label for="zoom">',__("Zoom"),' (%)</label></div>
 						<div><input type="text" name="mapzoom" id="mapzoom" value="',$zone->MapZoom,'"></div>
@@ -165,7 +173,8 @@ echo '
 	else{
 		echo '
 					<div><div>&nbsp;</div><div></div></div>
-					<div class="caption"><button type="submit" name="action" value="Update">',__("Update"),'</button></div>';
+					<div class="caption"><button type="submit" name="action" value="Update">',__("Update"),'</button>
+					<button type="button" name="action" value="Delete">',__("Delete"),'</button></div>';
 	}
 
 echo '
@@ -190,6 +199,7 @@ if(strlen($dc_zone->DrawingFileName) >0){
 }
 
 echo '
+<a href="index.php">[ ',__("Return to Main Menu"),' ]</a>
 </div><!-- END div.main -->'; 
 
  ?>
@@ -208,15 +218,39 @@ echo '
 		}
 		$('#map').imgAreaSelect( {
 	<?php
-		print "\t\tx1: $zone->MapX1,
-			x2: $zone->MapX2,
-			y1: $zone->MapY1,
-			y2: $zone->MapY2,\n";
+		printf( "\t\tx1: %d,\n\tx2: %d,\n\ty1: %d,\n\ty2: %d,\n", $zone->MapX1, $zone->MapX2, $zone->MapY1, $zone->MapY2 );
 	?>
 			handles: true,
 			onSelectChange: preview
+		});
+		
+		// Delete container confirmation dialog
+		$('button[value="Delete"]').click(function(e){
+			var form=$(this).parents('form');
+			var btn=$(this);
+<?php
+print "		var dialog=$('<div>').prop('title','".__("Verify Delete Zone")."').html('<p><span class=\"ui-icon ui-icon-alert\" style=\"float:left; margin:0 7px 20px 0;\"></span><span></span></p>');";
+print "		dialog.find('span + span').html('".__("This Zone will be deleted and there is no undo.  Assets within the zone will remain as members of the Data Center.")."<br><br>".__("Are you sure?")."');"; 
+?>
+			dialog.dialog({
+				resizable: false,
+				modal: true,
+				width: 'auto',
+				dialogClass: "no-close",
+				buttons: {
+<?php echo '				',__("Yes"),': function(){'; ?>
+						$(this).dialog("destroy");
+						form.append('<input type="hidden" name="'+btn.attr("name")+'" value="'+btn.val()+'">');
+						form.submit();
+					},
+<?php echo '				',__("No"),': function(){'; ?>
+						$(this).dialog("destroy");
+					}
+				}
+			});
 		});
 	});
 </script>
 </body>
 </html>
+

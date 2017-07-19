@@ -2,7 +2,9 @@
 	require_once('db.inc.php');
 	require_once('facilities.inc.php');
 
-	if(!$user->SiteAdmin){
+	$subheader=__("Data Center Detail");
+
+	if(!$person->SiteAdmin){
 		// No soup for you.
 		header('Location: '.redirect());
 		exit;
@@ -11,6 +13,20 @@
 	$status="";
 
 	$dc=new DataCenter();
+	
+	// AJAX Action
+	if(isset($_POST['confirmdelete']) && isset($_POST['datacenterid'])){
+		// About the nuke this place from orbit
+		$junkremoval=($_POST['junkremoval']=='delete')?true:false;
+		$dc->DataCenterID=$_POST['datacenterid'];
+		if($dc->DeleteDataCenter($junkremoval)){
+			echo 'ok';
+		}else{
+			echo 'no';
+		}
+		exit;
+	}
+	
 	if(isset($_POST['action'])&&(($_POST['action']=='Create')||($_POST['action']=='Update'))){
 		$dc->DataCenterID=$_POST['datacenterid'];
 		$dc->Name=trim($_POST['name']);
@@ -67,8 +83,8 @@
 	$dir=scandir($path);
 	foreach($dir as $i => $f){
 		if(is_file($path.DIRECTORY_SEPARATOR.$f)){
-			$imageinfo=getimagesize($path.DIRECTORY_SEPARATOR.$f);
-			if(preg_match('/^image/i', $imageinfo['mime'])){
+			$mimeType=mime_content_type($path.DIRECTORY_SEPARATOR.$f);
+			if(preg_match('/^image/i', $mimeType)){
 				$imageselect.="<span>$f</span>\n";
 			}
 		}
@@ -93,6 +109,7 @@
   <script type="text/javascript" src="scripts/jquery-ui.min.js"></script>
   <script type="text/javascript" src="scripts/jquery.validationEngine-en.js"></script>
   <script type="text/javascript" src="scripts/jquery.validationEngine.js"></script>
+  <script type="text/javascript" src="scripts/common.js"></script>
 
   <script type="text/javascript">
 	$(document).ready(function() {
@@ -141,6 +158,31 @@
 				}
 			});
 		});
+		$('#delete-btn').click(function(){
+				var defaultbutton={
+				"<?php echo __("Yes"); ?>": function(){
+					$.post('', {datacenterid: $('#datacenterid').val(),confirmdelete: '',junkremoval: $('#deletemodal select').val()}, function(data){
+						if(data.trim()=='ok'){
+							self.location=$('.main > a').last().attr('href');
+							$(this).dialog("destroy");
+						}else{
+							alert("Danger, Will Robinson! DANGER!  Something didn't go as planned.");
+						}
+					});
+				}
+			}
+			var cancelbutton={
+				"<?php echo __("No"); ?>": function(){
+					$(this).dialog("destroy");
+				}
+			}
+			var modal=$('#deletemodal').dialog({
+				dialogClass: 'no-close',
+				modal: true,
+				width: 'auto',
+				buttons: $.extend({}, defaultbutton, cancelbutton)
+			});
+		});
 	});
 	function coords(evento){
 		mievento = evento || window.event;
@@ -182,20 +224,17 @@
 		document.getElementById("datacenterform").submit();
 	}
   </script>
-
 </head>
 <body>
-<div id="header"></div>
+<?php include( 'header.inc.php' ); ?>
 <div class="page">
 <?php
 	include( 'sidebar.inc.php' );
 
 echo '<div class="main">
-<h2>',$config->ParameterArray["OrgName"],'</h2>
-<h3>',__("Data Center Detail"),'</h3>
 <h3>',$status,'</h3>
 <div class="center"><div>
-<form id="datacenterform" action="',$_SERVER["PHP_SELF"],'" method="POST">
+<form id="datacenterform" method="POST">
 <div class="table">
 <div>
    <div><label for="datacenterid">',__("Data Center ID"),'</label></div>
@@ -275,6 +314,10 @@ echo '<div class="caption">';
 	}else{
 		echo '   <button type="submit" name="action" value="Create">',__("Create"),'</button>';
 	}
+	
+	if ( $person->SiteAdmin && $dc->DataCenterID > 0 ) {
+		echo '    <button type="button" id="delete-btn" name="action" value="Delete">',__("Delete"),'</button>';
+	}
 ?>
 </div>
 </div> <!-- END div.table -->
@@ -284,6 +327,15 @@ echo '<div class="caption">';
 				',$imageselect,'
 			</div>
 </div></div>
+<!-- hiding modal dialogs here so they can be translated easily -->
+<div class="hide">
+	<div title="',__("Data Center Deletion Confirmation"),'" id="deletemodal">
+		<div id="modaltext"><img src="images/mushroom_cloud.jpg" class="floatleft">',__("Are you sure that you want to delete this data center and all contents within it?"),'
+			<p><b>',__("Move the contents of this datacenter's storage room to the general storage or delete them?"),'</b> &nbsp;&nbsp;<select><option value="delete">',__("Delete"),'</option><option value="move">',__("Move"),'</option></select></p>
+		</div>
+	</div>
+</div>
+
 <a href="index.php">[ ',__("Return to Main Menu"),' ]</a>'; ?>
 </div><!-- END div.main -->
 </div><!-- END div.page -->

@@ -2,6 +2,8 @@
 	require_once("db.inc.php");
 	require_once("facilities.inc.php");
 
+	$subheader=__("Data Center Statistics");
+
 	$cab=new Cabinet();
 	$dc=new DataCenter();
 
@@ -14,7 +16,13 @@
 	if(strlen($dc->DrawingFileName) >0){
 		$mapfile="drawings/$dc->DrawingFileName";
 		if(file_exists($mapfile)){
-			list($width, $height, $type, $attr)=getimagesize($mapfile);
+			if(mime_content_type($mapfile)=='image/svg+xml'){
+				$svgfile = simplexml_load_file($mapfile);
+				$width = substr($svgfile['width'],0,4);
+				$height = substr($svgfile['height'],0,4);
+			}else{
+				list($width, $height, $type, $attr)=getimagesize($mapfile);
+			}
 			// There is a bug in the excanvas shim that can set the width of the canvas to 10x the width of the image
 			$ie8fix="
 <script type=\"text/javascript\">
@@ -63,15 +71,13 @@
   <script type="text/javascript" src="scripts/jquery-ui.min.js"></script>
 </head>
 <body onload="loadCanvas(),uselessie()">
-<div id="header"></div>
+<?php include( 'header.inc.php' ); ?>
 <div class="page dcstats" id="mapadjust">
 <?php
 
 echo '<div class="main">
 <div class="heading">
   <div>
-	<h2>',$config->ParameterArray["OrgName"],'</h2>
-	<h3>',__("Data Center Statistics"),'</h3>
   </div>
   <div>
 	<button onclick="loadCanvas()">',__("Overview"),'</button>

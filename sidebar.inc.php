@@ -2,7 +2,9 @@
 <br>
 <form action="search.php" method="post">
 <input type="hidden" name="key" value="label">
-<?php echo'
+<?php
+	$attrList=DeviceCustomAttribute::GetDeviceCustomAttributeList(true);
+	echo'
 <label for="searchname">',__("Search by Name:"),'</label><br>
 <input class="search" id="searchname" name="search"><button class="iebug" type="submit"><img src="css/searchbutton.png" alt="search"></button>
 </form>
@@ -18,9 +20,16 @@
 	<option value="serial">',__("Serial Number"),'</option>
 	<option value="asset">',__("Asset Tag"),'</option>
 	<option value="owner">',__("Owner"),'</option>
+	<option value="project">',__("Project"),'</option>
+	<option value="model">',__("Device Model"),'</option>
 	<option value="ip">',__("PrimaryIP"),'</option>
-</select>';
+	<option value="notes">',__("Notes"),'</option>';
+
+	foreach($attrList as $ca){
+		print "\t<option value=\"$ca->Label\">CustomAttr: $ca->Label</option>\n";
+	}
 ?>
+</select>
 <div class="ui-icon ui-icon-close"></div>
 </form>
   <script type="text/javascript">
@@ -38,6 +47,7 @@
 		// add the autocomplete
 		inputobj.autocomplete({
 			minLength: 0,
+			delay: 600,
 			autoFocus: true,
 			source: function(req, add){
 				$.getJSON('scripts/ajax_search.php?'+lookuptype, {q: req.term}, function(data){
@@ -83,11 +93,12 @@
 		}
 		return $level;
 	}
-
-	$menu=buildmenu(array_merge_recursive($rmenu,$rrmenu,$camenu,$wamenu,$samenu));
+	
+	$menu=buildmenu(array_merge_recursive($rmenu,$rrmenu,$camenu,$wamenu,$samenu,$lmenu));
 	
 	print "<ul class=\"nav\">$menu</ul>
 	<hr>
+	<div>
 	<a href=\"index.php\">".__("Home")."</a>\n";
 
 	$lang=GetValidTranslations();
@@ -104,12 +115,12 @@
 			print "\t\t\t<option value=\"$cc\"$selected>$translatedname</option>";
 		}
 	echo '		</select>
-	</div>';
+	</div>
 
-	$container = new Container();
-	echo $container->BuildMenuTree();
-	
+	<div id="nav_placeholder"></div>';
+	// Moved the navigation menu to an ajax load item	
 ?>
+	</div>
 <script type="text/javascript">
 if (typeof jQuery == 'undefined') {
 	alert('jQuery is not loaded');
@@ -122,7 +133,7 @@ if (typeof jQuery.ui == 'undefined') {
 
 $("#sidebar .nav a").each(function(){
 	var loc=window.location;
-	if($(this).attr("href")=="<?php echo basename($_SERVER['PHP_SELF']);?>" || $(this).attr("href")==loc.href.substr(loc.href.indexOf(loc.host)+loc.host.length+1)){
+	if($(this).attr("href")=="<?php echo basename($_SERVER['SCRIPT_NAME']);?>" || $(this).attr("href")==loc.href.substr(loc.href.indexOf(loc.host)+loc.host.length+1)){
 		$(this).addClass("active");
 		$(this).parentsUntil("#ui-id-1","li").children('a:first-child').addClass("active");
 	}
@@ -133,9 +144,15 @@ $('#searchname').width($('#sidebar').innerWidth() - $('#searchname ~ button').ou
 addlookup($('#searchname'),'name');
 $('#searchadv ~ select[name="key"]').change(function(){
 	addlookup($('#searchadv'),$(this).val())
-}).height($('#searchadv').outerHeight());
+}).outerHeight($('#searchadv').outerHeight()).outerWidth(157);
+
+// Really long cabinet / zone / dc combinations are making the screen jump around.
+// If they make this thing so big it's unusable, fuck em.
+$('#sidebar > hr ~ div').css({'width':$('#sidebar > hr ~ ul').width()+'px','overflow':'hidden'});
 
 function resize(){
+	// Reset widths to make shrinking screens work better
+	$('#header,div.main,div.page').css('width','auto');
 	// This function will run each 500ms for 2.5s to account for slow loading content
 	var count=0;
 	subresize();
@@ -159,19 +176,35 @@ function resize(){
 		$('#configtabs > ul ~ div').each(function(){
 			$(this).width(widesttab);
 		});
+
+		if(typeof getCookie=='function' && getCookie("layout")=="Landscape"){
+			// edge case where a ridiculously long device type can expand the field selector out too far
+			var rdivwidth=$('div.right').outerWidth();
+			$('div.right fieldset').each(function(){
+				rdivwidth=($(this).outerWidth()>rdivwidth)?$(this).outerWidth():rdivwidth;
+			});
+			// offset for being centered
+			rdivwidth=(rdivwidth>495)?(rdivwidth-495)+rdivwidth:rdivwidth;
+		}else{
+			rdivwidth=0;
+		}
+
 		var pnw=$('#pandn').outerWidth(),hw=$('#header').outerWidth(),maindiv=$('div.main').outerWidth(),
-			sbw=$('#sidebar').outerWidth(),width,mw=$('div.left').outerWidth()+$('div.right').outerWidth(),
+			sbw=$('#sidebar').outerWidth(),width,mw=$('div.left').outerWidth()+rdivwidth+20,
 			main,cw=$('.main > .center').outerWidth();
 		widesttab+=58;
+
 		// find widths
-		width=(cw>pnw)?cw:pnw;
-		main=(mw>width)?mw:width; // Find the largest width of possible content in maindiv
+		width=(cw>mw)?cw:mw;
+		main=(pnw>width)?pnw:width; // Find the largest width of possible content in maindiv
 		main+=12; // add in padding and borders
 		width=((main+sbw)>hw)?main+sbw:hw; // find the widest point of the page
 
 		// The math just isn't adding up across browsers and FUCK IE
 		if((main+sbw)<width){ // page is larger than content expand main to fit
-			$('div.main').width(width-sbw-12); 
+			$('#header').outerWidth(width);
+			$('div.main').outerWidth(width-sbw-4); 
+			$('div.page').outerWidth(width);
 		}else{ // page is smaller than content expand the page to fit
 			$('div.main').width(width-sbw-12); 
 			$('#header').width(width+4);
@@ -194,8 +227,8 @@ $(document).ready(function(){
 		}, 500);
 	});
 	$('#header').append($('.langselect'));
-	var top = (($("#header").height() / 2)-($(".langselect").height() / 2));
-	$(".langselect").css({"top": top+"px", "right": "40px", "z-index": "99", "position": "absolute"}).removeClass('hide').appendTo("#header");
+	$(".langselect").css({"right": "3px", "z-index": "99", "position": "absolute"}).removeClass('hide').appendTo("#header");
+	$(".langselect").css({"bottom": $(".langselect").height()+"px"});
 	$("#language").change(function(){
 		$.ajax({
 			type: 'POST',
@@ -206,8 +239,20 @@ $(document).ready(function(){
 				location.reload();
 			}
 		});
-
 	});
+<?php
+	// No navigation menu if you're not logged in, yet
+	if ( ! strpos( $_SERVER['SCRIPT_NAME'], "login" ) ) {
+?>
+	$.get('scripts/ajax_navmenu.php').done(function(data){
+		$('#nav_placeholder').replaceWith(data);
+		if(document.readyState==="complete" && $('#datacenters .bullet').length==0){
+			window.convertTrees();
+		}
+	});
+<?php
+	}
+?>
 });
 
 </script>

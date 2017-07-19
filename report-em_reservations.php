@@ -1,7 +1,6 @@
 <?php
 	require_once( 'db.inc.php' );
 	require_once( 'facilities.inc.php' );
-	require_once( 'swiftmailer/swift_required.php' );
 
 	// If any port other than 25 is specified, assume encryption and authentication
 	if($config->ParameterArray['SMTPPort']!= 25){
@@ -34,7 +33,7 @@
 		$error.=__("Facility Manager email address").": <span class=\"errmsg\">".$e->getMessage()."</span><br>\n";
 	}
 
-	$logo='images/'.$config->ParameterArray["PDFLogoFile"];
+	$logo=getcwd().'/images/'.$config->ParameterArray["PDFLogoFile"];
 	$logo=$message->embed(Swift_Image::fromPath($logo)->setFilename('logo.png'));
 	
 	$style = "
@@ -86,7 +85,7 @@
 				
 				$deptU += $devRow->Height;
 				
-				$htmlMessage .= sprintf( "<tr><td>%s</td><td>%d</td><td>%s</td><td><a href=\"%s/cabnavigator.php?cabinetid=%d\">%s</a></td><td><a href=\"%s/devices.php?deviceid=%d\">%s</a></td></tr>\n", date( "d M Y", strtotime( $devRow->InstallDate ) ), $devRow->Height, $dc->Name, $config->ParameterArray["InstallURL"], $cab->CabinetID, $cab->Location, $config->ParameterArray["InstallURL"], $devRow->DeviceID, $devRow->Label );
+				$htmlMessage .= sprintf( "<tr><td>%s</td><td>%d</td><td>%s</td><td><a href=\"%s/cabnavigator.php?cabinetid=%d\">%s</a></td><td><a href=\"%s/devices.php?DeviceID=%d\">%s</a></td></tr>\n", date( "d F Y", strtotime( $devRow->InstallDate ) ), $devRow->Height, $dc->Name, $config->ParameterArray["InstallURL"], $cab->CabinetID, $cab->Location, $config->ParameterArray["InstallURL"], $devRow->DeviceID, $devRow->Label );
 			}
 			
 			$totalU += $deptU;

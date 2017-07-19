@@ -2,6 +2,8 @@
 	require_once( 'db.inc.php' );
 	require_once( 'facilities.inc.php' );
 
+	$subheader=__("End to end connection path");
+
 	$status="";
 	$path="";
 	$pathid="";
@@ -30,20 +32,34 @@
 		return $dcpicklist;
 	}
 
-	if(isset($_POST['bot_eliminar'])){
+	if(isset($_POST['action']) && $_POST['action']=='delete'){
 		$port=new DevicePorts();
-		for ($i=1;$i<$_POST['elem_path'];$i++){
+		$ports=array();// list of ports we want to remove
+		$rights="None";
+		for ($i=1;$i<count($_POST["PortNumber"]);$i++){
 			if ($_POST["PortNumber"][$i]>0){
 				$port->DeviceID=$_POST["DeviceID"][$i];
 				$port->PortNumber=$_POST["PortNumber"][$i];
 				$port->getPort();
+				$dev=new Device();
+				$dev->DeviceID=$port->DeviceID;
+				$dev->GetDevice();
+				$rights=($dev->Rights=="Write")?"Write":$rights;
 				//only remove connections between front ports
 				if ($port->ConnectedPort>0){
-					$port->removeConnection();
+					// Add to the list
+					$ports[]=$port;
 				}
 			}
 		}
-		$status.=__("Front connections Deleted");
+		if($rights=="Write"){
+			foreach($ports as $p){
+				$p->removeConnection();
+			}
+			$status.=__("Front connections deleted");
+		}else{
+			$status.=__("Come back when you have device rights");
+		}
 	}
 	
 	if(isset($_POST['action']) || isset($_REQUEST['pathid']) || (isset($_REQUEST['deviceid']) && isset($_REQUEST['portnumber']))){
@@ -130,7 +146,9 @@
 			}else{ 
 				$pathid=$_POST['pathid'];
 			}
-			
+
+			// No SQL injection for joo
+			$pathid=sanitize($pathid);
 			
 			$sql="SELECT DeviceID, PortNumber FROM fac_Ports WHERE Notes=\"$pathid\"";
 
@@ -194,8 +212,7 @@
 					//Can the path continue?
 					if ($dev->DeviceType=="Patch Panel"){
 						$path.="\n\t\t<td class=\"connection-$tipo_con-1\">";
-					}
-					else{
+					}else{
 						$path.="\n\t\t<td>";
 					}
 				
@@ -221,7 +238,7 @@
 						$path.=str_repeat("\t",$t++)."<table>\n";
 						$path.=str_repeat("\t",$t++)."<tr>\n";
 						$path.=str_repeat("\t",$t--)."<th colspan=2>";
-						$path.="<a href=\"devices.php?deviceid={$devList[$i]->DeviceID}\">{$devList[$i]->Label}</a>";
+						$path.="<a href=\"devices.php?DeviceID={$devList[$i]->DeviceID}\">{$devList[$i]->Label}</a>";
 						$path.="</th>\n";
 						$path.=str_repeat("\t",$t)."</tr>\n";
 						$path.=str_repeat("\t",$t++)."<tr>\n";
@@ -234,15 +251,15 @@
 					$dp->getPort();
 					$label=($dp->Label!='')?$dp->Label:abs($cp->PortNumber);
 					$path.=str_repeat("\t",$t--)."<td>".
-							"<a href=\"devices.php?deviceid=$dev->DeviceID\">$dev->Label</a>
+							"<a href=\"devices.php?DeviceID=$dev->DeviceID\">$dev->Label</a>
 							<br>".__("Port").": $label</td>\n";
 					$path.=str_repeat("\t",$t--)."</tr>\n";
 					
 					//Ending device table
-					for ($i=sizeof($devList); $i>2; $i--){
+					for ($i=sizeof($devList); $i>1; $i--){
+						$path.=str_repeat("\t",$t--)."</table>\n";
 						$path.=str_repeat("\t",$t--)."</td>\n";
 						$path.=str_repeat("\t",$t--)."</tr>\n";
-						$path.=str_repeat("\t",$t--)."</table>\n";
 					}
 					if ($cp->PortNumber>0){
 						$t++;
@@ -295,7 +312,7 @@
 						$path.=str_repeat("\t",$t++)."<table>\n";
 						$path.=str_repeat("\t",$t++)."<tr>\n";
 						$path.=str_repeat("\t",$t--)."<th colspan=2>";
-						$path.="<a href=\"devices.php?deviceid={$devList[$i]->DeviceID}\">{$devList[$i]->Label}</a>";
+						$path.="<a href=\"devices.php?DeviceID={$devList[$i]->DeviceID}\">{$devList[$i]->Label}</a>";
 						$path.="</th>\n";
 						$path.=str_repeat("\t",$t)."</tr>\n";
 						$path.=str_repeat("\t",$t++)."<tr>\n";
@@ -308,7 +325,7 @@
 					$dp->getPort();
 					$label=($dp->Label!='')?$dp->Label:abs($cp->PortNumber);
 					$path.=str_repeat("\t",$t--)."<td>".
-							"<a href=\"devices.php?deviceid=$dev->DeviceID\">$dev->Label".
+							"<a href=\"devices.php?DeviceID=$dev->DeviceID\">$dev->Label".
 							"</a><br>".__("Port").": $label</td>\n";
 					$path.=str_repeat("\t",$t--)."</tr>\n";
 					$path.=str_repeat("\t",$t--)."</table>\n";
@@ -380,7 +397,7 @@
 							$path.=str_repeat("\t",$t++)."<table>\n";
 							$path.=str_repeat("\t",$t++)."<tr>\n";
 							$path.=str_repeat("\t",$t--)."<th colspan=2>";
-							$path.="<a href=\"devices.php?deviceid={$devList[$i]->DeviceID}\">".$devList[$i]->Label."</a>";
+							$path.="<a href=\"devices.php?DeviceID={$devList[$i]->DeviceID}\">".$devList[$i]->Label."</a>";
 							$path.="</th>\n";
 							$path.=str_repeat("\t",$t)."</tr>\n";
 							$path.=str_repeat("\t",$t++)."<tr>\n";
@@ -393,7 +410,7 @@
 						$dp->getPort();
 						$label=($dp->Label!='')?$dp->Label:abs($cp->PortNumber);
 						$path.=str_repeat("\t",$t--)."<td>".
-								"<a href=\"devices.php?deviceid=$dev->DeviceID\">$dev->Label".
+								"<a href=\"devices.php?DeviceID=$dev->DeviceID\">$dev->Label".
 								"</a><br>".__("Port").": $label</td>\n";
 						$path.=str_repeat("\t",$t--)."</tr>\n";
 						
@@ -455,13 +472,12 @@
 			// need to add an additional check for permission here if they can write
 			if(!isset($_GET['pathonly'])){
 				//Delete Form
-				$path.= "<form action=\"{$_SERVER["PHP_SELF"]}\" method=\"POST\">\n";
+				$path.= "<form method=\"POST\">\n";
 				$path.= "<br>\n"; 
 				$path.= "<div>\n";
 				//PATH INFO
-				$path.= "<input type=\"hidden\" name=\"elem_path\" value=\"$elem_path\">\n";
 				$path.=$form_eliminar;	
-				$path.= "	<button type=\"submit\" name=\"bot_eliminar\" value=\"delete\">".__("Delete front connections in DataBase")."</button>\n";
+				$path.= "	<button type=\"submit\" name=\"action\" value=\"delete\">".__("Delete front connections in DataBase")."</button>\n";
 				$path.= "</div>\n";
 				$path.= "</form>\n";
 			}
@@ -530,7 +546,8 @@ if(isset($_GET['pathonly'])){
 								select.children().detach();
 								select.append(opt.clone()).attr('name','portnumber');
 								$.each(data, function(i,por){
-									var o=opt.clone().val(por.PortNumber).text(por.PortNumber);
+									por.Label=(por.Label=='')?Math.abs(por.PortNumber):por.Label;
+									var o=opt.clone().val(por.PortNumber).text(por.Label);
 									select.append(o);
 								});
 								porl.text('Port');
@@ -552,21 +569,19 @@ if(isset($_GET['pathonly'])){
   </script>
 </head>
 <body>
-<div id="header"></div>
+<?php include( 'header.inc.php' ); ?>
 <div class="page">
 <?php
 	include( 'sidebar.inc.php' );
 
 echo '<div class="main">
-<h2>',$config->ParameterArray["OrgName"],'</h2>
-<h3>',__("End to end connection path"),'</h3>
 <h3>',$status,'</h3>
 <div class="center"><div><div>
 <table id="crit_busc">
 <tr><td>
 <fieldset class="crit_busc">
 		<legend>'.__("Search by path identifier").'</legend>
-<form action="',$_SERVER["PHP_SELF"],'" method="POST">
+<form method="POST">
 <div class="table">
 <br>
 <div>
@@ -582,7 +597,7 @@ echo '<div class="main">
 
 <td><fieldset class=crit_busc>
 		<legend>'.__("Search by label/port").'</legend>
-		<form action="',$_SERVER["PHP_SELF"],'" method="POST">
+		<form method="POST">
 <div class="table">
 	<div>
 		<div><label for="dc-rear">',__("Data Center"),'</label></div>

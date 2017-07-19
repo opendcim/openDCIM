@@ -1,6 +1,50 @@
 <?php
 /* All functions contained herein will be general use functions */
 
+/* Create a quick reference for datacenter data */
+$_SESSION['datacenters']=DataCenter::GetDCList(true);
+
+/* Generic html sanitization routine */
+
+if(!function_exists("sanitize")){
+	function sanitize($string,$stripall=true){
+		// Convert null to empty string
+		if ( is_null($string) ) {
+			$string = "";
+		}
+		
+		// Trim any leading or trailing whitespace
+		$clean=trim($string);
+
+		// Convert any special characters to their normal parts
+		$clean=html_entity_decode($clean,ENT_COMPAT,"UTF-8");
+
+		// By default strip all html
+		$allowedtags=($stripall)?'':'<a><b><i><img><u><br>';
+
+		// Strip out the shit we don't allow
+		$clean=strip_tags($clean, $allowedtags);
+		// If we decide to strip double quotes instead of encoding them uncomment the 
+		//	next line
+	//	$clean=($stripall)?str_replace('"','',$clean):$clean;
+		// What is this gonna do ?
+		$clean=filter_var($clean, FILTER_SANITIZE_SPECIAL_CHARS);
+
+		// There shoudln't be anything left to escape but wtf do it anyway
+		$clean=addslashes($clean);
+
+		return $clean;
+	}
+}
+
+if (!function_exists('curl_file_create')) {
+    function curl_file_create($filename, $mimetype = '', $postname = '') {
+        return "@$filename;filename="
+            . ($postname ?: basename($filename))
+            . ($mimetype ? ";type=$mimetype" : '');
+    }
+}
+
 /* 
 Regex to make sure a valid URL is in the config before offering options for contact lookups
 http://www.php.net/manual/en/function.preg-match.php#93824
@@ -17,7 +61,9 @@ function isValidURL($url){
 	$urlregex.="(\/([a-z0-9+\$_-]\.?)+)*\/?"; // Path
 	$urlregex.="(\?[a-z+&\$_.-][a-z0-9;:@&%=+\/\$_.-]*)?"; // GET Query
 	$urlregex.="(#[a-z_.-][a-z0-9+\$_.-]*)?"; // Anchor 
-	if(preg_match("/^$urlregex$/",$url)){return true;}
+// Testing out the php url validation, leaving the regex for now
+//	if(preg_match("/^$urlregex$/",$url)){return true;}
+	return filter_var($url, FILTER_VALIDATE_URL);
 }
 
 //Convert hex color codes to rgb values
@@ -83,9 +129,9 @@ function redirect($target = null) {
 		}
 	}
 	if(array_key_exists('HTTPS', $_SERVER) && $_SERVER["HTTPS"]=='on') {
-		$url = "https://".$_SERVER['HTTP_HOST'].$target;
+		$url = "https://".$_SERVER['SERVER_NAME'].$target;
 	} else {
-		$url = "http://".$_SERVER['HTTP_HOST'].$target;
+		$url = "http://".@$_SERVER['SERVER_NAME'].$target;
 	}
 	return $url;
 }
@@ -95,23 +141,41 @@ function redirect($target = null) {
 // if NeedleKey is given, return only for this key
 // mixed ArraySearchRecursive(mixed Needle,array Haystack[,NeedleKey[,bool Strict[,array Path]]])
 
-function ArraySearchRecursive($Needle,$Haystack,$NeedleKey="",$Strict=false,$Path=array()) {
-	if(!is_array($Haystack))
-		return false;
-	foreach($Haystack as $Key => $Val) {
-		if(is_array($Val)&&$SubPath=ArraySearchRecursive($Needle,$Val,$NeedleKey,$Strict,$Path)) {
-			$Path=array_merge($Path,Array($Key),$SubPath);
-			return $Path;
-		}elseif((!$Strict&&$Val==$Needle&&$Key==(strlen($NeedleKey)>0?$NeedleKey:$Key))||($Strict&&$Val===$Needle&&$Key==(strlen($NeedleKey)>0?$NeedleKey:$Key))) {
-			$Path[]=$Key;
-			return $Path;
+if(!function_exists("ArraySearchRecursive")){
+	function ArraySearchRecursive($Needle,$Haystack,$NeedleKey="",$Strict=false,$Path=array()) {
+		if(is_object($Haystack)){
+			$Haystack=(array) $Haystack;
+		}elseif(!is_array($Haystack)){
+			return false;
 		}
+		foreach($Haystack as $Key => $Val) {
+			if((is_array($Val)||is_object($Val))&&$SubPath=ArraySearchRecursive($Needle,$Val,$NeedleKey,$Strict,$Path)) {
+				$Path=array_merge($Path,Array($Key),$SubPath);
+				return $Path;
+			}elseif((!$Strict&&$Val==$Needle&&$Key==(strlen($NeedleKey)>0?$NeedleKey:$Key))||($Strict&&$Val===$Needle&&$Key==(strlen($NeedleKey)>0?$NeedleKey:$Key))) {
+				$Path[]=$Key;
+				return $Path;
+			}
+		}
+		return false;
 	}
-	return false;
 }
 
+// Search an array of objects for a specific value on given index parameter
+// Returns true if found, false if not
+if(!function_exists("objArraySearch")){
+    function objArraySearch($array, $index, $value)
+    {
+        foreach($array as $arrayInf) {
+            if($arrayInf->{$index} == $value) {
+                return true;
+            }
+        }
+        return false;
+    }
+}
 /*
- * Sort multidimentional array
+ * Sort multidimentional array in natural order
  *
  * $array = sort2d ( $array, 'key to sort on')
  */
@@ -124,6 +188,42 @@ function sort2d ($array, $index){
 	foreach(array_keys($temp) as $key){$sorted[$key]=$array[$key];}
 	return $sorted;
 }  
+/*
+ * Sort multidimentional array in reverse order
+ *
+ * $array = sort2d ( $array, 'key to sort on')
+ */
+function arsort2d ($array, $index){
+	//Create array of key and label to sort on.
+	foreach(array_keys($array) as $key){$temp[$key]=$array[$key][$index];}
+	//Case insensative natural sorting of temp array.
+	arsort($temp);
+	//Rebuild original array using the newly sorted order.
+	foreach(array_keys($temp) as $key){$sorted[$key]=$array[$key];}
+	return $sorted;
+}  
+
+/*
+ * Extend sql queries
+ *
+ */
+function extendsql($prop,$val,&$sql,$loose){
+	$method=($loose)?" LIKE \"%$val%\"":"=\"$val\"";
+	if($sql){
+		$sql.=" AND $prop$method";
+	}else{
+		$sql.="WHERE $prop$method";
+	}
+}
+
+function attribsql($attrib,$val,&$sql,$loose){
+	$method=($loose)?"AttributeID=$attrib AND Value LIKE \"%$val%\"":"AttributeID=$attrib AND Value=\"$val\"";
+	if($sql){
+		$sql .= " AND DeviceID IN (SELECT DeviceID FROM fac_DeviceCustomValue WHERE $method)";
+	} else {
+		$sql = "WHERE $method";
+	}
+}
 
 /*
  * Define multibyte string functions in case they aren't present
@@ -177,6 +277,35 @@ function transform($string,$method=null){
 	return $string;
 }
 
+
+/*
+ * Convert ticks given back as uptime from devices into a human readable format
+ */
+function ticksToTime($ticks) {
+	$seconds=floor($ticks/100);
+	$dtF=new DateTime("@0");
+	$dtT=new DateTime("@$seconds");
+	$a=$dtF->diff($dtT)->format('%a');
+	$h=$dtF->diff($dtT)->format('%h');
+	$i=$dtF->diff($dtT)->format('%i');
+	$s=$dtF->diff($dtT)->format('%s');
+	if($a>0){
+		return $dtF->diff($dtT)->format('%a days, %h hours, %i minutes and %s seconds');
+	}else if($h>0){
+		return $dtF->diff($dtT)->format('%h hours, %i minutes and %s seconds');
+	}else if($i>0){
+		return $dtF->diff($dtT)->format(' %i minutes and %s seconds');
+	}else{
+		return $dtF->diff($dtT)->format('%s seconds');
+	}
+}
+
+
+
+
+
+
+
 /*
  * Language internationalization slated for v2.0
  *
@@ -189,8 +318,13 @@ if(isset($_COOKIE["lang"])){
 
 if(extension_loaded('gettext')){
 	if(isset($locale)){
-		setlocale(LC_ALL,$locale);
+		if ( ! setlocale(LC_ALL,$locale) ) {
+			if ( ! setlocale( LC_ALL, $locale . ".UTF8" ) ) {
+				error_log( "Gettext error loading locale $locale." );
+			}
+		}
 		putenv("LC_ALL=$locale");
+		putenv("LANGUAGE=$locale");
 		bindtextdomain("openDCIM","./locale");
 
 		$codeset='utf8';
@@ -500,12 +634,164 @@ function generatePatterns($patSpecs, $count) {
     return $patternList;
 }
 
+// Deal with pesky international number formats that mysql doesn't like
+function float_sqlsafe($number){
+	$locale=localeconv();
+	if($locale['thousands_sep']=='.'){
+		$number=str_replace('.','',$number);
+	}
+	if($locale['decimal_point']==','){
+		$number=str_replace(',','.',$number);
+	}
+	return $number;
+}
+
 function locale_number( $number, $decimals=2 ) {
     $locale = localeconv();
     return number_format($number,$decimals,
                $locale['decimal_point'],
                $locale['thousands_sep']);
 }
+
+// This will build an array that can be json encoded to represent the makeup of
+// the installations containers, zones, rows, etc.  It didn't seem appropriate
+// to be on any single class
+if(!function_exists("buildNavTreeArray")){
+	function buildNavTreeArray(){
+		$con=new Container();
+		$cabs=Cabinet::ListCabinets();
+
+		$menu=array();
+
+		function processcontainer($container,$cabs){
+			$menu=array($container);
+			foreach($container->GetChildren() as $child){
+				if(get_class($child)=='Container'){
+					$menu[]=processcontainer($child,$cabs);
+				}elseif(get_class($child)=='DataCenter'){
+					$menu[]=processdatacenter($child,$cabs);
+				}
+			}
+			return $menu;
+		}
+		function processdatacenter($dc,$cabs){
+			$menu=array($dc);
+			foreach($dc->GetChildren() as $child){
+				if(get_class($child)=='Zone'){
+					$menu[]=processzone($child,$cabs);
+				}elseif(get_class($child)=='CabRow'){
+					$menu[]=processcabrow($child,$cabs);
+				}else{
+					$menu[]=processcab($child,$cabs);
+				}
+			}
+			return $menu;
+		}
+		function processzone($zone,$cabs){
+			$menu=array($zone);
+			foreach($zone->GetChildren() as $child){
+				if(get_class($child)=='CabRow'){
+					$menu[]=processcabrow($child,$cabs);
+				}else{
+					$menu[]=processcab($child,$cabs);
+				}
+			}
+			return $menu;
+		}
+		function processcabrow($row,$cabs){
+			$menu=array($row);
+			foreach($cabs as $cab){
+				if($cab->CabRowID==$row->CabRowID){
+					$menu[]=processcab($cab,$cabs);
+				}
+			}
+			return $menu;
+		}
+		function processcab($cab,$cabs){
+			return $cab;
+		}
+
+		foreach($con->GetChildren() as $child){
+			if(get_class($child)=='Container'){
+				$menu[]=processcontainer($child,$cabs);
+			}elseif(get_class($child)=='DataCenter'){
+				$menu[]=processdatacenter($child,$cabs);
+			}
+		}
+
+		return $menu;
+	}
+}
+
+// This will format the array above into the format needed for the side bar navigation
+// menu. 
+if(!function_exists("buildNavTreeHTML")){
+	function buildNavTreeHTML($menu=null){
+		$tl=1; //tree level
+
+		$menu=(is_null($menu))?buildNavTreeArray():$menu;
+
+		function buildnavmenu($ma,&$tl){
+			foreach($ma as $i => $level){
+				if(is_object($level)){
+					if(isset($level->Name)){
+						$name=$level->Name;
+					}elseif(isset($level->Location)){
+						$name=$level->Location;
+					}else{
+						$name=$level->Description;
+					}
+					if($i==0){--$tl;}
+					foreach($level as $prop => $value){
+						if(preg_match("/id/i", $prop)){
+							$ObjectID=$value;
+							break;
+						}
+					}
+					$class=get_class($level);
+					$cabclose='';
+					if($class=="Container"){
+						$href="container_stats.php?container=";
+						$id="c$ObjectID";
+					}elseif($class=="Cabinet"){
+						$href="cabnavigator.php?cabinetid=";
+						$id="cab$ObjectID";
+						$cabclose="</li>";
+					}elseif($class=="Zone"){
+						$href="zone_stats.php?zone=";
+						$id="zone$ObjectID";
+					}elseif($class=="DataCenter"){
+						$href="dc_stats.php?dc=";
+						$id="dc$ObjectID";
+					}elseif($class=="CabRow"){
+						$href="rowview.php?row=";
+						$id="cr$ObjectID";
+					}
+
+					print str_repeat("\t",$tl).'<li class="liClosed" id="'.$id.'"><a class="'.$class.'" href="'.$href.$ObjectID."\">$name</a>$cabclose\n";
+					if($i==0){
+						++$tl;
+						print str_repeat("\t",$tl)."<ul>\n";
+					}
+				}else{
+					$tl++;
+					buildnavmenu($level,$tl);
+					if(get_class($level[0])=="DataCenter"){
+						print str_repeat("\t",$tl).'<li id="dc-'.$level[0]->DataCenterID.'"><a href="storageroom.php?dc='.$level[0]->DataCenterID.'">Storage Room</a></li>'."\n";
+					}
+					print str_repeat("\t",$tl)."</ul>\n";
+					$tl--;
+					print str_repeat("\t",$tl)."</li>\n";
+				}
+			}
+		}
+
+		print '<ul class="mktree" id="datacenters">'."\n";
+		buildnavmenu($menu,$tl);
+		print '<li id="dc-1"><a href="storageroom.php">'.__("General Storage Room")."</a></li>\n</ul>";
+	}
+}
+
 
 /*
 	Check if we are doing a new install or an upgrade has been applied.  
@@ -516,21 +802,84 @@ function locale_number( $number, $decimals=2 ) {
 	to the db.inc.php file.
 */
 
+/*
+	If we are using Saml authentication, go ahead and figure out who
+	we are.  It may be needed for the installation.
+*/
+
+if( AUTHENTICATION=="Saml" && !isset($_SESSION['userid']) ){
+	header("Location: ".redirect('saml/login.php'));
+	exit;
+}
+
 if(isset($devMode)&&$devMode){
 	// Development mode, so don't apply the upgrades
 }else{
-	if(file_exists("install.php") && basename($_SERVER['PHP_SELF'])!="install.php" ){
+	if(file_exists("install.php") && basename($_SERVER['SCRIPT_NAME'])!="install.php" ){
 		// new installs need to run the install first.
 		header("Location: ".redirect('install.php'));
+		exit;
 	}
 }
 
+/*
+	If we are using Oauth authentication, go ahead and figure out who
+	we are.  It may be needed for the installation.
+*/
+
+if( AUTHENTICATION=="Oauth" && !isset($_SESSION['userid']) && php_sapi_name()!="cli" ){
+	header("Location: ".redirect('oauth/login.php'));
+	exit;
+}
+
+
+// Just to keep things from getting extremely wonky and complicated, even though this COULD be in one giant
+// if/then/else stanza, I'm breaking it into two
+
+if( AUTHENTICATION=="LDAP" && $config->ParameterArray["LDAPSessionExpiration"] > 0 && isset($_SESSION['userid']) && ((time() - $_SESSION['LoginTime']) > $config->ParameterArray['LDAPSessionExpiration'])) {
+	session_unset();
+	session_destroy();
+	session_start();
+}
+
+if( AUTHENTICATION=="LDAP" && !isset($_SESSION['userid']) && php_sapi_name()!="cli" && !isset($loginPage)) {
+	$savedurl = $_SERVER['SCRIPT_NAME'] . "?" . $_SERVER['QUERY_STRING'];
+	setcookie( 'targeturl', $savedurl, time()+60 );
+	header("Location: ".redirect('login_ldap.php'));
+	exit;
+}
+
+// And just because you're logged in, it doesn't mean that we have your People record...
+if(!People::Current()){
+	if(AUTHENTICATION=="Oauth"){
+		header("Location: ".redirect('oauth/login.php'));
+		exit;
+	} elseif ( AUTHENTICATION=="Saml"){
+		header("Location: ".redirect('saml/login.php'));
+		exit;
+	} elseif ( AUTHENTICATION=="LDAP" && !isset($loginPage) ) {
+		header("Location: ".redirect('login_ldap.php'));
+		exit;
+	} elseif(AUTHENTICATION=="Apache"){
+		print "<h1>You must have some form of Authentication enabled to use openDCIM.</h1>";
+		exit;
+	}
+}
+
+
 /* This is used on every page so we might as well just init it once */
-$user=new User();
-// this condition should only happen when running from the console
-$user->UserID=isset($_SERVER['REMOTE_USER'])?$_SERVER['REMOTE_USER']:'';
-$user->GetUserRights();
-	
+$person=People::Current();
+// If we're in the process of logging in, just to get us through this, create an instance with all rights revoked
+if ( isset( $loginPage ) ) {
+	$person = new People();
+	$person->revokeAll();
+}
+
+if(($person->Disabled || ($person->PersonID==0 && $person->UserID!="cli_admin")) && $config->ParameterArray["RequireDefinedUser"]=="enabled" && !isset($loginPage)){
+	header("Location: ".redirect('unauthorized.php'));
+	exit;
+}
+
 /* 
  * This is an attempt to be sane about the rights management and the menu.
  * The menu will be built off a master array that is a merger of what options
@@ -542,42 +891,59 @@ $user->GetUserRights();
  *
  */
 
-$menu=$rmenu=$rrmenu=$camenu=$wamenu=$samenu=array();
+$menu=$rmenu=$rrmenu=$camenu=$wamenu=$samenu=$lmenu=array();
 
 $rmenu[]='<a href="reports.php"><span>'.__("Reports").'</span></a>';
 
-if ( $user->RackRequest ) {
+if($config->ParameterArray["WorkOrderBuilder"]){
+	$class=(isset($_COOKIE['workOrder']) && $_COOKIE['workOrder']!='[0]')?'':'hide';
+	array_unshift($rmenu , '<a class="'.$class.'" href="workorder.php"><span>'.__("Work Order").'</span></a>');
+}
+
+if ( $config->ParameterArray["RackRequests"] == "enabled" && $person->RackRequest ) {
 	$rrmenu[]='<a href="rackrequest.php"><span>'.__("Rack Request Form").'</span></a>';
 }
-if ( $user->ContactAdmin ) {
-	$camenu[__("User Administration")][]='<a href="contacts.php"><span>'.__("Contact Administration").'</span></a>';
+if ( $person->ContactAdmin ) {
+	$camenu[__("User Administration")][]='<a href="usermgr.php"><span>'.__("User Administration").'</span></a>';
 	$camenu[__("User Administration")][]='<a href="departments.php"><span>'.__("Dept. Administration").'</span></a>';
 	$camenu[__("Issue Escalation")][]='<a href="timeperiods.php"><span>'.__("Time Periods").'</span></a>';
 	$camenu[__("Issue Escalation")][]='<a href="escalations.php"><span>'.__("Escalation Rules").'</span></a>';
+	$camenu[]='<a href="project_mgr.php"><span>'.__("Project Catalog").'</span></a>';
 }
-if ( $user->WriteAccess ) {
+if ( $person->WriteAccess ) {
 	$wamenu[__("Template Management")][]='<a href="device_templates.php"><span>'.__("Edit Device Templates").'</span></a>';
 	$wamenu[__("Infrastructure Management")][]='<a href="cabinets.php"><span>'.__("Edit Cabinets").'</span></a>';
 	$wamenu[__("Template Management")][]='<a href="image_management.php#pictures"><span>'.__("Device Image Management").'</span></a>';
 }
-if ( $user->SiteAdmin ) {
-	$samenu[__("User Administration")][]='<a href="usermgr.php"><span>'.__("Manage Users").'</span></a>';
+if ($person->BulkOperations) {
+	$wamenu[__("Bulk Importer")][]='<a href="bulk_cabinet.php"><span>'.__("Import New Cabinets").'</span></a>';
+	$wamenu[__("Bulk Importer")][]='<a href="bulk_importer.php"><span>'.__("Import New Devices").'</span></a>';
+	$wamenu[__("Bulk Importer")][]='<a href="bulk_network.php"><span>'.__("Import Network Connections").'</span></a>';
+	$wamenu[__("Bulk Importer")][]='<a href="bulk_power.php"><span>'.__("Import Power Connections").'</span></a>';
+	$wamenu[__("Bulk Importer")][]='<a href="bulk_moves.php"><span>'.__("Process Bulk Moves").'</span></a>';
+}
+if ( $person->SiteAdmin ) {
 	$samenu[__("Template Management")][]='<a href="device_manufacturers.php"><span>'.__("Edit Manufacturers").'</span></a>';
-	$samenu[__("Template Management")][]='<a href="cdu_templates.php"><span>'.__("Edit CDU Templates").'</span></a>';
-	$samenu[__("Template Management")][]='<a href="sensor_templates.php"><span>'.__("Edit Sensor Templates").'</span></a>';
-	$samenu[__("Supplies Management")][]='<a href="supplybin.php"><span>'.__("Manage Supply Bins").'</span></a>';
-	$samenu[__("Supplies Management")][]='<a href="supplies.php"><span>'.__("Manage Supplies").'</span></a>';
+	$samenu[__("Template Management")][]='<a href="repository_sync_ui.php"><span>'.__("Repository Sync").'</span></a>';
+	$samenu[__("Materiel Management")][]='<a href="supplybin.php"><span>'.__("Manage Supply Bins").'</span></a>';
+	$samenu[__("Materiel Management")][]='<a href="supplies.php"><span>'.__("Manage Supplies").'</span></a>';
+	$samenu[__("Materiel Management")][]='<a href="disposition.php"><span>'.__("Manage Disposal Methods").'</span></a>';
 	$samenu[__("Infrastructure Management")][]='<a href="datacenter.php"><span>'.__("Edit Data Centers").'</span></a>';
 	$samenu[__("Infrastructure Management")][]='<a href="container.php"><span>'.__("Edit Containers").'</span></a>';
 	$samenu[__("Infrastructure Management")][]='<a href="zone.php"><span>'.__("Edit Zones").'</span></a>';
 	$samenu[__("Infrastructure Management")][]='<a href="cabrow.php"><span>'.__("Edit Rows of Cabinets").'</span></a>';
 	$samenu[__("Infrastructure Management")][]='<a href="image_management.php#drawings"><span>'.__("Facilities Image Management").'</span></a>';
-	$samenu[__("Power Management")][]='<a href="power_source.php"><span>'.__("Edit Power Sources").'</span></a>';
 	$samenu[__("Power Management")][]='<a href="power_panel.php"><span>'.__("Edit Power Panels").'</span></a>';
-	$samenu[__("Power Management")][]='<a href="cdu_templates.php"><span>'.__("Edit CDU Templates").'</span></a>';
 	$samenu[__("Path Connections")][]='<a href="paths.php"><span>'.__("View Path Connection").'</span></a>';
 	$samenu[__("Path Connections")][]='<a href="pathmaker.php"><span>'.__("Make Path Connection").'</span></a>';
 	$samenu[]='<a href="configuration.php"><span>'.__("Edit Configuration").'</span></a>';
+}
+if( AUTHENTICATION == "LDAP" ) {
+	// Clear out the Reports menu button and create the Login menu button when not logged in
+	if ( isset($loginPage) ) {
+		$rmenu = array();
+	}
+	$lmenu[]='<a href="login_ldap.php?logout"><span>'.__("Logout").'</span></a>';
 }
 
 function download_file($archivo, $downloadfilename = null) {
@@ -610,4 +976,206 @@ function download_file_from_string($string, $downloadfilename) {
 	echo $string;
 }
 
+/*
+ * In an attempt to keep html generation out of the primary class definitions 
+ * this function is being put here to make a quick convenient method of drawing
+ * racks.  This will NOT put the devices in the rack.
+ *
+ * Example usage:  echo BuildCabinet(123);
+ *
+ * @param int $cabid
+ * @param string $face (front,rear,side)
+ * @return html table
+ *
+ */
+
+if(!function_exists("BuildCabinet")){
+function BuildCabinet($cabid,$face="front"){
+	$cab=new Cabinet($cabid);
+	$cab->GetCabinet();
+	$order=($cab->U1Position=="Top")?false:true;
+	$dev=new Device();
+	$dev->Cabinet=$cab->CabinetID;
+	$dev->ParentDevice=0;
+	$bounds=array(
+		'max'=>array('position'=>0,'height'=>0),
+		'min'=>array('position'=>0,'height'=>0),
+	);
+
+	// Read in all the devices and make sure they fit the cabinet.  If not expand it
+	foreach($dev->Search() as $device){
+		if($device->Position==0){
+			continue;
+		}
+		$pos=($order)?$device->Position:$device->Position-$device->Height;
+
+		if($device->Position>$bounds['max']['position']){
+			$bounds['max']['position']=$device->Position;
+			$bounds['max']['height']=$device->Height;
+		}
+		if($pos<$bounds['min']['position']){
+			$bounds['min']['position']=$pos;
+			$bounds['min']['height']=1;
+		}
+	}
+	if($order){
+		$top=max($cab->CabinetHeight,$bounds['max']['position']+$bounds['max']['height']-1);
+		$bottom=min(0,$bounds['min']['position']);
+	}else{
+		// Reverse order
+		$top=min(1,$bounds['min']['position']-$bounds['min']['height']);
+		$bottom=max($cab->CabinetHeight,$bounds['max']['position']);
+	}
+
+	// Build cabinet HTML
+	switch ($face) {
+		case "rear":
+			$cab->Location="$cab->Location (".__("Rear").")";
+			break;
+		case "side":
+			$cab->Location="$cab->Location (".__("Side").")";
+			break;
+		default:
+			// Leave the location alone
+	}
+
+	// helper function to print the rows of the cabinet table
+	if(!function_exists("printrow")){
+		function printrow($i,$top,$bottom,$order,$face,&$htmlcab,$cabobject){
+			$error=($i>$cabobject->CabinetHeight || ($i<=0 && $order)  || ($i<0 && !$order))?' error':'';
+			if($order){
+				$x=($i<=0)?$i-1:$i;
+			}else{
+				$x=($i>=0)?$i+1:$i;
+			}
+			if($i==$top){
+				if($face=="rear"){
+					$rs="-rear";
+				}elseif($face=="side"){
+					$rs="-side";
+				}else{
+					$rs="";
+				}
+				$rowspan=abs($top)+abs($bottom);
+				$height=(((abs($top)+abs($bottom))*ceil(220*(1.75/19))))."px";
+				$htmlcab.="\t<tr id=\"pos$x\"><td class=\"pos$error\">$x</td><td rowspan=$rowspan><div id=\"servercontainer$rs\" class=\"freespace\" style=\"width: 220px; height: $height\" data-face=\"$face\"></div></td></tr>\n";
+			}else{
+				$htmlcab.="\t<tr id=\"pos$x\"><td class=\"pos$error\">$x</td></tr>\n";
+			}
+		}
+	}
+
+	// If they have rights to the device then make the picture clickable
+	$clickable=($cab->Rights!="None")?"\t\t<a href=\"cabnavigator.php?cabinetid=$cab->CabinetID\">\n\t":"";
+	$clickableend=($cab->Rights!="None")?"\n\t\t</a>\n":"";
+
+	$htmlcab="<table class=\"cabinet\" id=\"cabinet$cab->CabinetID\">
+	<tr><th colspan=2>$clickable$cab->Location$clickableend</th></tr>
+	<tr><td>Pos</td><td>Device</td></tr>\n";
+
+	// loop here for the height
+	// numbered high to low, top to bottom
+	if($order){
+		for($i=$top;$i>$bottom;$i--){
+			printrow($i,$top,$bottom,$order,$face,$htmlcab,$cab);
+		}
+	}else{ // numbered low to high, top to bottom
+		for($i=$top;$bottom>$i;$i++){
+			printrow($i,$top,$bottom,$order,$face,$htmlcab,$cab);
+		}
+	}
+
+	$htmlcab.="</table>\n";
+
+	// Wrap it in a nice div
+	$htmlcab='<div class="cabinet">'.$htmlcab.'</div>';
+
+	// debug information
+	// print "Cabinet:  $cab->CabinetID   Top: $top   Bottom: $bottom<br>\n";
+
+	return $htmlcab;
+}
+}
+
+function getNameFromNumber($num){
+	// Used to figure out what the Excel column name would be for a given 0-indexed array of data
+	$numeric = ($num-1)%26;
+	$letter = chr(65+$numeric);
+	$num2 = intval(($num-1) / 26);
+	if ( $num2 > 0 ) {
+		return getNameFromNumber($num2) . $letter;
+	} else {
+		return $letter;
+	}
+}
+
+function mangleDate($dateString) {
+	// Take various formats of the date that may have been stored in the db and present them in a nice manner according to ISO8601 Format
+	if ( $dateString == null ) {
+		return "";
+	}
+
+	if ( date( "Y-m-d", $dateString ) == "1969-12-31" ) {
+		return "";
+	} else {
+		return date( "Y-m-d", $dateString );
+	}
+}
+
+class JobQueue {
+	var $SessionID;
+	var $Percentage;
+	var $Status;
+
+	static function startJob( $SessionID ) {
+		global $dbh;
+
+		$sql = "insert into fac_Jobs set SessionID=:SessionID, Percentage=0 on duplicate key update Percentage=0";
+		$st = $dbh->prepare( $sql );
+		$st->execute( array( ":SessionID"=>$SessionID ));
+
+		return;
+	}
+
+	static function updatePercentage( $SessionID, $Percentage ) {
+		global $dbh;
+
+		if ( $Percentage < 100 ) {
+			$sql = "update fac_Jobs set Percentage=:Percentage where SessionID=:SessionID";
+			$st = $dbh->prepare( $sql );
+			$result = $st->execute( array( ":Percentage"=>$Percentage, ":SessionID"=>$SessionID ));
+		} else {
+			$sql = "delete from fac_Jobs where SessionID=:SessionID";
+			$st = $dbh->prepare( $sql );
+			$st->execute( array( ":SessionID"=>$SessionID ));
+		}
+
+		return;
+	}
+
+	static function updateStatus( $SessionID, $StatusMessage ) {
+		global $dbh;
+
+		// Since using prepared statements, PHP will auto sanitize the input
+		$sql = "update fac_Jobs set Status=:Status where SessionID=:SessionID";
+		$st = $dbh->prepare( $sql );
+		$st->execute( array( ":Status"=>$StatusMessage, ":SessionID"=>$SessionID ));
+
+		return;
+	}
+
+	static function getStatus( $SessionID ) {
+		global $dbh;
+
+		$sql = "select * from fac_Jobs where SessionID=:SessionID";
+		$st = $dbh->prepare( $sql );
+		$st->execute( array( ":SessionID"=>$SessionID ));
+		if ( $row = $st->fetch() ) {
+			return $row;
+		} else {
+			// If a job has already cleared out (or was never initialized) then tell the monitor to stop waiting
+			return array( "SessionID"=>$SessionID, "Percentage"=>100, "Status"=>"Completed");
+		}
+	}
+}
 ?>

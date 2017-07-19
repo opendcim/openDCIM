@@ -2,7 +2,7 @@
 	require_once( "db.inc.php" );
 	require_once( "facilities.inc.php" );
 
-	if(!$user->ContactAdmin){
+	if(!$person->ContactAdmin){
 		// No soup for you.
 		header('Location: '.redirect());
 		exit;
@@ -14,7 +14,7 @@
 		exit;
 	}
 	$dept=new Department();
-	$contact=new Contact();
+	$person=new People();
 
 	$dept->DeptID=(isset($_POST['deptid']) ? $_POST['deptid'] : $_GET['deptid']);
 	$dept->GetDeptByID();
@@ -25,8 +25,8 @@
 		$dept->AssignContacts($grpMembers);
 	}
 
-	$deptList=$contact->GetContactsForDepartment($dept->DeptID);
-	$contactList=$contact->GetContactList();
+	$deptList=$person->GetPeopleByDepartment($dept->DeptID);
+	$contactList=$person->GetUserList();
 	$possibleList=array_obj_diff($contactList,$deptList);
 
 	function array_obj_diff($array1,$array2){
@@ -43,7 +43,7 @@
   <meta http-equiv="X-UA-Compatible" content="IE=Edge">
   <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
   
-  <title>openDCIM Department Contact Maintenance</title>
+  <title><?php __("openDCIM Department Contact Maintenance"); ?></title>
   <link rel="stylesheet" href="css/inventory.php" type="text/css">
   <link rel="stylesheet" href="css/jquery-ui.css" type="text/css">
   <link rel="stylesheet" href="css/jquery.ui.multiselect.css" type="text/css">
@@ -61,16 +61,16 @@
 <body id="deptgroup">
 <div class="centermargin">
 <?php
-echo '<form action="',$_SERVER["PHP_SELF"],'" method="POST">
+echo '<form method="POST">
 <input type="hidden" name="deptid" value="',$dept->DeptID,'">
 <h3>',__("Group to Administer"),': ',$dept->Name,'<button type="submit" value="Submit" name="action">',__("Submit"),'</button></h3>
 <div>
-	<select name="chosen[]" id="chosenList" size="6" multiple="multiple">';
-	foreach($deptList as $contactRow){
-		print "\t\t<option value=\"$contactRow->ContactID\" selected=\"selected\">$contactRow->LastName, $contactRow->FirstName</option>\n";
+	<select name="chosen[]" id="chosenList" size="15" multiple="multiple">';
+	foreach($deptList as $personRow){
+		print "\t\t<option value=\"$personRow->PersonID\" selected=\"selected\">$personRow->LastName, $personRow->FirstName</option>\n";
 	}
-	foreach($possibleList as $contactRow){
-		print "\t\t<option value=\"$contactRow->ContactID\">$contactRow->LastName, $contactRow->FirstName</option>\n";
+	foreach($possibleList as $personRow){
+		print "\t\t<option value=\"$personRow->PersonID\">$personRow->LastName, $personRow->FirstName</option>\n";
 	}
 ?>
 	</select>

@@ -2,8 +2,9 @@
 	require_once( 'db.inc.php' );
 	require_once( 'facilities.inc.php' );
 	
+	$header=__("Department Contact Listing");
+
 	$dept=new Department();
-	$contact=new Contact();
 	
 	if(!isset($_REQUEST['deptid'])){
 		// No soup for you.
@@ -12,7 +13,7 @@
 	}
 
 	$deptID=intval($_REQUEST['deptid']);
-	$contactList=$contact->GetContactsForDepartment($deptID);
+	$contactList=$person->GetPeopleByDepartment($deptID);
 	$dept->DeptID=$deptID;
 	$dept->GetDeptByID();
 
@@ -22,6 +23,7 @@
 		$el=0; //default to not showing lookup options
 	}
 
+	$subheader=$dept->Name;
 ?>
 <!doctype html>
 <html>
@@ -34,12 +36,13 @@
   <!--[if lt IE 9]>
   <link rel="stylesheet"  href="css/ie.css" type="text/css" />
   <![endif]-->
+  <style type="text/css">
+	div.main { padding: 5px 0; border: 0px; width: 100%; }
+  </style>
 </head>
 <body>
-<div id="header"></div>
+<?php include( 'header.inc.php' ); ?>
 <div class="main">
-<h3>Department Contact Listing</h3>
-<h3><?php echo $dept->Name; ?></h3>
 <div class="table border centermargin">
 	<div>
 		<div>Last Name</div>

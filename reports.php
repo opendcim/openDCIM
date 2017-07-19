@@ -1,13 +1,21 @@
 <?php
 	require_once( "db.inc.php" );
 	require_once( "facilities.inc.php" );
+
+	$subheader=__("Inventory Reports");
+	
+	if(!$person->ReadAccess){
+		// No soup for you.
+		header('Location: '.redirect());
+		exit;
+	}
 ?>
 <!doctype html>
 <html>
 <head>
   <meta http-equiv="X-UA-Compatible" content="IE=Edge">
   <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-  
+
   <title>openDCIM Inventory Reporting</title>
   <link rel="stylesheet" href="css/inventory.php" type="text/css">
   <link rel="stylesheet" href="css/jquery-ui.css" type="text/css">
@@ -18,14 +26,12 @@
   <script type="text/javascript" src="scripts/jquery-ui.min.js"></script>
 </head>
 <body>
-<div id="header"></div>
+<?php include( 'header.inc.php' ); ?>
 <div class="page reports">
 <?php
 	include( "sidebar.inc.php" );
 
 echo '<div class="main">
-<h2>',$config->ParameterArray["OrgName"],'</h2>
-<h3>',__("Inventory Reports"),'</h3>
 <div class="center"><div id="reports">
 <div>
 <fieldset>
@@ -35,13 +41,18 @@ echo '<div class="main">
 <fieldset>
 <legend>',__("Asset Reports"),'</legend>
 	<a href="search_export.php">',__("Search/Export by Data Center"),'</a>
+	<a href="search_export_storage_room.php">',__("Storage Room Search/Export by Data Center"),'</a>
 	<a href="report_xml_CFD.php">',__("Export Data Center for CFD (XML)"),'</a>
 	<a href="report_contact.php">',__("Asset Report by Owner"),'</a>
 	<a href="report_asset.php">',__("Data Center Asset Report"),'</a>
     <a href="report_asset_Excel.php">',__("Data Center Asset Report [Excel]"),'</a>
 	<a href="report_cost.php">',__("Data Center Asset Costing Report"),'</a>
 	<a href="report_aging.php">',__("Asset Aging Report"),'</a>
+	<a href="report_projects.php">',__("Project Asset Report"),'</a>
+    <a href="report_warranty.php">',__("Warranty Expiration Report"),'</a>
 	<a href="report_vm_by_department.php">',__("Virtual Machines by Department"),'</a>
+	<a href="report_network_map.php">',__("Network Map"),'</a>
+	<a href="report_vendor_model.php">', __("Vendor/Model Report"),'</a>
 </fieldset>
 </div>
 
@@ -51,14 +62,19 @@ echo '<div class="main">
 	<a href="report_exception.php">',__("Data Exceptions Report"),'</a>
 	<a href="report_diverse_power_exceptions.php">',__("Diverse Power Exceptions Report"),'</a>
 	<a href="report_outage_simulator.php">',__("Simulated Power Outage Report"),'</a>
+	<a href="report_project_outage_simulator.php">',__("Project Power Outage Report"),'</a>
 	<a href="report_power_distribution.php">',__("Power Distribution by Data Center"),'</a>
 	<a href="report_power_utilization.php">',__("Server Tier Classification Report"),'</a>
+    <a href="report_panel_schedule.php">',__("Power Panel Schedule Report"),'</a>
+    <a href="report_cabinets.php">',__("Cabinet List"),'</a>
 </fieldset>
 <fieldset>
 	<legend>',__("Auditing Reports"),'</legend>
 		<a href="report_audit.php">',__("Cabinet Audit Logs"),'</a>
 		<a href="report_audit_frequency.php">',__("Cabinet Audit Frequency"),'</a>
 		<a href="report_surplus.php">',__("Surplus/Salvage Audit Report"),'</a>
+		<a href="report_supply_status.php">',__("Supplies Status Report"),'</a>
+		<a href="report_logging.php">',__("Actions Log"),'</a>
 </fieldset>
 </div>';
 
@@ -66,7 +82,7 @@ echo '<div class="main">
 
 
 </div></div>
-
+<?php echo '<a href="index.php">[ ',__("Return to Main Menu"),' ]</a>'; ?>
 </div>
 <div class="clear"></div>
 </div>

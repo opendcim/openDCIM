@@ -2,6 +2,14 @@
 	require_once( 'db.inc.php' );
 	require_once( 'facilities.inc.php' );
 
+if(!$person->ReadAccess){
+    // No soup for you.
+    header('Location: '.redirect());
+    exit;
+}
+
+	$subheader=__("Cabinet Audit Reporting");
+
 	define('FPDF_FONTPATH','font/');
 	require('fpdf.php');
 
@@ -17,32 +25,34 @@ class PDF extends FPDF {
   
 	function Header() {
 		if ( $_REQUEST["startdate"] > "" )
-			$startDate = date( "M d, Y", strtotime( $_REQUEST["startdate"] ));
+			$startDate = date( "Y-m-d", strtotime( $_REQUEST["startdate"] ));
 		else
-			$startDate = date( "M d, Y", strtotime( "1/1/2010"));
+			$startDate = date( "Y-m-d", strtotime( "1/1/2010"));
 			
 		if ( $_REQUEST["enddate"] > "" )
-			$endDate = date( "M d, Y", strtotime( $_REQUEST["enddate"] ));
+			$endDate = date( "Y-m-d", strtotime( $_REQUEST["enddate"] ));
 		else
-			$endDate = date( "M d, Y" );
+			$endDate = date( "Y-m-d" );
 		
 		$this->pdfconfig = new Config();
-		$this->Link( 10, 8, 100, 20, 'https://' . $_SERVER['SERVER_NAME'] . $_SERVER['PHP_SELF'] );
-    	$this->Image( 'images/' . $this->pdfconfig->ParameterArray['PDFLogoFile'],10,8,100);
+		$this->Link( 10, 8, 100, 20, 'https://' . $_SERVER['SERVER_NAME'] . $_SERVER['SCRIPT_NAME'] );
+		if ( file_exists( 'images/' . $this->pdfconfig->ParameterArray['PDFLogoFile'] )) {
+	    	$this->Image( 'images/' . $this->pdfconfig->ParameterArray['PDFLogoFile'],10,8,100);
+		}
     	$this->SetFont($this->pdfconfig->ParameterArray['PDFfont'],'B',12);
     	$this->Cell(120);
-    	$this->Cell(30,20,'Information Technology Services',0,0,'C');
-    	$this->Ln(20);
+    	$this->Cell(30,20,__("Information Technology Services"),0,0,'C');
+    	$this->Ln(25);
 		$this->SetFont( $this->pdfconfig->ParameterArray['PDFfont'],'',10 );
-		$this->Cell( 50, 6, 'Cabinet Audits Report', 0, 1, 'L' );
-		$this->Cell( 50, 6, 'Dates: ' . $startDate . ' - ' . $endDate, 0, 1, 'L' );
+		$this->Cell( 50, 6, __("Cabinet Audits Report"), 0, 1, 'L' );
+		$this->Cell( 50, 6, __("Dates").': ' . $startDate . ' - ' . $endDate, 0, 1, 'L' );
 		$this->Ln(10);
 	}
 
 	function Footer() {
 	    	$this->SetY(-15);
     		$this->SetFont($this->pdfconfig->ParameterArray['PDFfont'],'I',8);
-    		$this->Cell(0,10,'Page '.$this->PageNo().'/{nb}',0,0,'C');
+    		$this->Cell(0,10,__("Page").' '.$this->PageNo().'/{nb}',0,0,'C');
 	}
 	
   function Bookmark($txt,$level=0,$y=0) {
@@ -153,23 +163,21 @@ if(!isset($_REQUEST['action'])){
 <script type="text/javascript">
 $(function(){
 	$('#auditform').validationEngine({});
-	$('#startdate').datepicker({});
-	$('#enddate').datepicker({});
+	$('#startdate').datepicker({dateFormat: "yy-mm-dd"});
+	$('#enddate').datepicker({dateFormat: "yy-mm-dd"});
 });
 </script>
 
 </head>
 <body>
-<div id="header"></div>
+<?php include( 'header.inc.php' ); ?>
 <div class="page">
 <?php
 	include( 'sidebar.inc.php' );
 ?>
 <div class="main">
-<h2><?php echo $config->ParameterArray['OrgName']; ?></h2>
-<h3>Cabinet Audit Reporting</h3>
 <div class="center"><div>
-<form action="<?php echo $_SERVER['PHP_SELF']; ?>" method="post" id="auditform">
+<form method="post" id="auditform">
 <div class="table">
 	<div>
 		<div><label for="datacenterid">Data Center:</label></div>
@@ -230,7 +238,7 @@ $(function(){
 	// If no data center was selected, then show all data centers, otherwise, add in a SQL clause
 		
 	if ( @intval($_REQUEST["datacenterid"]) > 0 ) {
-		$dcLimit = sprintf( "CabinetID in (select CabinetID from fac_Cabinet where DataCenterID=%d) and", intval( $_REQUEST["datacenterid"] ));
+		$dcLimit = sprintf( "ObjectID in (select CabinetID from fac_Cabinet where DataCenterID=%d) and", intval( $_REQUEST["datacenterid"] ));
 		$dc->DataCenterID = $_REQUEST["datacenterid"];
 		$dc->GetDataCenter();
 		
@@ -245,17 +253,17 @@ $(function(){
 	
 	// First query - Summary of all auditors, including the total within the selected period and the date of the last audit
 	
-	$sql = sprintf( "select count(*) as TotalCabinets, a.*, b.Name from fac_CabinetAudit a, fac_User b where a.UserID=b.UserID and %s date(AuditStamp)>='%s' and date(AuditStamp)<='%s' group by UserID order by count(*) ASC", $dcLimit, $startDate, $endDate );
+	$sql = sprintf( "select count(*) as TotalCabinets, a.*, CONCAT(b.LastName,', ',b.FirstName) as Name from fac_GenericLog a, fac_People b where a.Action=\"CertifyAudit\" and a.UserID=b.UserID and %s date(Time)>='%s' and date(Time)<='%s' group by UserID order by count(*) ASC", $dcLimit, $startDate, $endDate );
 	$summaryResult=$dbh->query($sql);
 	
 	// Second query - List of all cabinets audits in the time period, sorted and grouped by date
 	
-	$sql = sprintf( "select count(*) as TotalCabinets, date(a.AuditStamp) as AuditDate from fac_CabinetAudit a where %s date(AuditStamp)>='%s' and date(AuditStamp)<='%s' group by date(a.AuditStamp) order by a.AuditStamp ASC", $dcLimit, $startDate, $endDate );
+	$sql = sprintf( "select count(*) as TotalCabinets, date(a.Time) as AuditDate from fac_GenericLog a where a.Action=\"CertifyAudit\" and %s date(Time)>='%s' and date(Time)<='%s' group by date(a.Time) order by a.Time ASC", $dcLimit, $startDate, $endDate );
 	$dateSumResult=$dbh->query($sql);
 	
 	$pdf=new PDF();
 	$pdf->AliasNbPages();
-
+	include_once("loadfonts.php");
 	$pdf->SetFont($config->ParameterArray['PDFfont'],'',8);
 
 	$pdf->SetFillColor( 0, 0, 0 );
@@ -272,10 +280,10 @@ $(function(){
 	$pdf->AddPage();
 	$pdf->Bookmark( "Auditor Summary" );
 	
-	$pdf->Cell( 80, 5, "Auditor Summary" );
+	$pdf->Cell( 80, 5, __("Auditor Summary") );
 	$pdf->Ln();
 	
-	$headerTags = array( 'User ID', 'Name', 'Count', 'Last Audit' );
+	$headerTags = array( __("UserID"), __("UserName"), __("Count"), __("Last Audit") );
 	$cellWidths = array( 20, 50, 20, 40 );
 
 	$fill = 0;
@@ -288,13 +296,14 @@ $(function(){
 	$pdf->Ln();
 
 	foreach($summaryResult as $row){
-		$cabAudit->UserID = $row["UserID"];
-		$cabAudit->GetLastAuditByUser();
+		$sql = "select date(Time) as LastAudit from fac_GenericLog where Action='CertifyAudit' and UserID='" . $row["UserID"] . "' and $dcLimit date(Time)>='$startDate' and date(Time)<='$endDate' order by Time desc limit 1";
+		$res = $dbh->query( $sql );
+		$lastRow = $res->fetch();
 		
 		$pdf->Cell( $cellWidths[0], 6, $row["UserID"], 'LR', 0, 'L', $fill );
 		$pdf->Cell( $cellWidths[1], 6, $row["Name"], 'LR', 0, 'L', $fill );
 		$pdf->Cell( $cellWidths[2], 6, $row["TotalCabinets"], 'LR', 0, 'L', $fill );
-		$pdf->Cell( $cellWidths[3], 6, $cabAudit->AuditStamp, 'LR', 0, 'L', $fill );
+		$pdf->Cell( $cellWidths[3], 6, $lastRow["LastAudit"], 'LR', 0, 'L', $fill );
 		
 		$pdf->Ln();
 		
@@ -306,11 +315,11 @@ $(function(){
 	$pdf->AddPage();
 	$pdf->Bookmark( "Activity by Date" );
 	
-	$pdf->Cell( 80, 5, "Activity by Date" );
+	$pdf->Cell( 80, 5, __("Activity by Date") );
 	$pdf->Ln();
 	
-	$headerTags = array( "Date", "Location", "Auditor" );
-	$cellWidths = array( 40, 40, 50 );
+	$headerTags = array( __("Date"), __("Cabinet Location"), __("UserName"), __("Comments") );
+	$cellWidths = array( 30, 30, 40, 70 );
 	
 	$fill = 0;
 	
@@ -321,15 +330,20 @@ $(function(){
 		
 	$pdf->Ln();
 	
-	$dowCount = array( "Sun"=>0, "Mon"=>0, "Tue"=>0, "Wed"=>0, "Thu"=>0, "Fri"=>0, "Sat"=>0 );
-
+	//Check for locale
+	if(sprintf('%.1f',1.0)!='1.0') {
+		$dowCount = array( __("Mon")=>0, __("Tue")=>0, __("Wed")=>0, __("Thu")=>0, __("Fri")=>0, __("Sat")=>0, __("Sun")=>0 );
+	} else {
+		$dowCount = array( __("Sun")=>0, __("Mon")=>0, __("Tue")=>0, __("Wed")=>0, __("Thu")=>0, __("Fri")=>0, __("Sat")=>0 );
+	}
+	
 	foreach($dateSumResult as $row){
-		$auditDate = date( "D, M d, Y", strtotime( $row["AuditDate"] ) );
+		$auditDate = date( "Y-m-d", strtotime( $row["AuditDate"] ) );
 		$dow = date( "D", strtotime( $row["AuditDate"] ) );
 		$showDate = true;
 		$pdf->Bookmark( $auditDate, 1, 0 );
 		
-		$sql = sprintf( "select b.Location, c.Name as Auditor from fac_CabinetAudit a, fac_Cabinet b, fac_User c where a.UserID=c.UserID and a.CabinetID=b.CabinetID and date(a.AuditStamp)=\"%s\"", $row["AuditDate"] );
+		$sql = sprintf( "select b.Location as 'Cabinet Location', CONCAT(c.LastName,', ',c.FirstName) as Auditor, a.NewVal as Comments from fac_GenericLog a, fac_Cabinet b, fac_People c where a.Action=\"CertifyAudit\" and a.UserID=c.UserID and a.ObjectID=b.CabinetID and date(a.Time)=\"%s\"", $row["AuditDate"] );
 
 		foreach($dbh->query($sql) as $resRow){		
 			if ( $showDate ) {
@@ -346,8 +360,9 @@ $(function(){
 			// Only show the date on the first row of consecutive audits
 			$showDate = false;
 			
-			$pdf->Cell( $cellWidths[1], 6, $resRow["Location"], $borders, 0, 'L', $fill );
+			$pdf->Cell( $cellWidths[1], 6, $resRow["Cabinet Location"], $borders, 0, 'L', $fill );
 			$pdf->Cell( $cellWidths[2], 6, $resRow["Auditor"], $borders, 0, 'L', $fill );
+			$pdf->Cell( $cellWidths[3], 6, $resRow["Comments"], $borders, 0, 'L', $fill );
 		
 			$pdf->Ln();
 			
@@ -366,11 +381,11 @@ $(function(){
 		$totalAudits = 1;
 	
 	$pdf->AddPage();
-	$pdf->Cell( 80, 5, "Day of Week Frequency" );
+	$pdf->Cell( 80, 5, __("Day of Week Frequency") );
 	$pdf->Ln();
 	$pdf->Bookmark( "Day of Week Frequency" );
 	
-	$headerTags = array( "Day of Week", "Audits", "Percentage" );
+	$headerTags = array( __("Day of Week"), __("Audits"), __("Percentage") );
 	$cellWidths = array( 50, 30, 30 );
 	
 	$fill = 0;
@@ -396,11 +411,11 @@ $(function(){
 	$pdf->AddPage();
 	$pdf->Bookmark( "Activity by Location" );
 	
-	$pdf->Cell( 80, 5, "Activity by Location" );
+	$pdf->Cell( 80, 5, __("Activity by Location") );
 	$pdf->Ln();
 	
-	$headerTags = array( "Location", "Date", "Auditor" );
-	$cellWidths = array( 40, 40, 50 );
+	$headerTags = array( __("Cabinet Location"), __("Date"), __("UserName"), __("Comments") );
+	$cellWidths = array( 30, 30, 40, 70 );
 	
 	$fill = 0;
 	
@@ -412,7 +427,7 @@ $(function(){
 	$pdf->Ln();
 	
 	foreach ( $cabList as $tmpCab ) {
-		$sql = sprintf( "select a.AuditStamp as AuditDate, b.Name as Auditor from fac_CabinetAudit a, fac_User b where a.UserID=b.UserID and CabinetID='%d' and date(AuditStamp)>='%s' and date(AuditStamp)<='%s' order by AuditStamp DESC", $tmpCab->CabinetID, $startDate, $endDate );
+		$sql = sprintf( "select a.Time as AuditDate, CONCAT(b.LastName,', ',b.FirstName) as Auditor, a.NewVal as Comments from fac_GenericLog a, fac_People b where a.Action=\"CertifyAudit\" and a.UserID=b.UserID and ObjectID='%d' and date(Time)>='%s' and date(Time)<='%s' order by Time DESC", $tmpCab->CabinetID, $startDate, $endDate );
 
 		$showCab = true;
 
@@ -432,6 +447,7 @@ $(function(){
 			
 			$pdf->Cell( $cellWidths[1], 6, $resRow["AuditDate"], $borders, 0, 'L', $fill );
 			$pdf->Cell( $cellWidths[2], 6, $resRow["Auditor"], $borders, 0, 'L', $fill );
+			$pdf->Cell( $cellWidths[3], 6, $resRow["Comments"], $borders, 0, 'L', $fill );
 		
 			$pdf->Ln();
 			

@@ -6,6 +6,138 @@ GitHub, at http://github.com/samilliken/openDCIM/issues, where you can also down
 the latest development version.  However, it is not advised to pull from GitHub unless you
 are simply testing, as some functionality can break between releases.
 
+Changes in 4.4
+--------------
+* Fixed collision detection in the bulk importer
+* Corrected issues where parent power panels didn't roll up inherited meter values
+* Make Path now only shows available ports instead of all ports
+* Allow PowerSupplyCount to be overridden for children of a Chassis Device.  This is helpful for the VTRAY and HTRAY hacks (shelves).
+* Switched the whole dependency system over to PHP Composer and implemented AutoLoad.  This will only load the class files into the server that are actually being used by a page, thereby decreasing the overall load on the server and memory footprint.
+* Updated all libraries to latest version supported by PHP 5.5, which also allows us to be compatible with PHP 7.0 (previously it threw fatal errors)
+* Added some buttons on the work order screen to do some mass updates, like clearing the reservation flag on a bunch of devices at once
+* Fixed the search box so that it doesn't send the whole db if you accidentally hit the down arrow with an empty search string
+* Automagic conversion to/from English/Metric when talking to the Repository.
+* Fixed the Repo Sync screen to acknowledge when you send a template to the repository
+* Fixed an error that caused the Port Notes field to clear out when a color code wasn't chosen
+* Added ability to search on Custom Attributes/Values, in both the UI and the API
+* Allow for the creation of a Default Rights template, applied to any new user that authenticates past Apache, but doesn't exist in openDCIM database
+* Fixed the Center of Gravity calculation.  It was a huge fan of Stranger Things, and calculated everything in the Upside Down.
+* The port naming pattern maker from the devices.php screen has been copied over to the Template Maker screen.
+* New option in Configuration to draw rectangles around the defined cabinet coordinates, as well as apply the label to the map.  Handy for users who simply want to upload a blank floor plan and draw with openDCIM.
+* New option in the right click context menu - can align all cabinets in the selected row with a given edge of the current cabinet.  Strictly for OCD folks.
+* Expanded some of the fields to larger containers.
+* Fixed the Available RU calculation in the data center stats.  It was counting items in the Storage Room.
+* Power Outage Simulation Report has been completely reworked and now outputs an Excel spreadsheet that is much easier to follow.
+* Added an email report (must be added to crontab) that will notify you of devices disabled from SNMP Polling due to 3 consecutive failures.  Includes a button to reset all counters back to 0.
+* If you add a tag of "NoPoll" to a switch device, it won't try to poll the status of it, even if you have a hostname/IP defined.
+* Support for a BusWay type of power panel.  You still need to give each circuit a name, but it doesn't try to make it fit within the scope of a 42 pole panel - can be alphanumeric.
+* Created a bulk importer for cabinets
+
+Changes in 4.3.1
+----------------
+* Bug fixes (No DB changes or new functionality)
+
+Changes in 4.3
+--------------
+* Removed support for repository_sync.php job - all synchronization to be done through the UI at this point.
+* Addition of Bulk Upload operations (import, move, delete).  I hate you people.
+* Added some more fields in the LDAP config so that it will play nice with Active Directory (see the WIKI for what to change)
+* Expanded the rights so that you can give someone the ability to do Bulk Operations without being a Site Admin
+* Ability to search by model name in the quick search bar
+* Added a few statistics to the main home page
+* Classes have been moved to the classes/ folder and broken into a single class per file.  Hopefully this will make it simpler for new contributors to find what they're looking for.
+* Updated the main API searches (datacenter, people, cabinet, device) to support wildcards and also specify which attributes are returned.  See the WIKI.
+* Major, major performance improvements, especially for installations with 10,000+ cabinets spread across multiple data centers.  Less of an improvement for large sites built out as very few data centers, but still some improvement.
+* Added in a Project / Service Catalog capability.  Can now limit some reports based on the project.  (ie - These 35 servers make up my Exchange environment)
+* Some more bug fixes, because bugs always pop up
+
+Changes in 4.2
+--------------
+* Rollup of bug fixes since 4.1.1
+* Added support for use of LDAP server for not only Authentication, but also Authorization
+
+Changes in 4.1.1
+----------------
+* Rollup of bug fixes since 4.1
+* Added a progress meter for the Excel Asset Report, since it takes a while to run
+
+Changes in 4.1
+--------------
+* Drag and Drop Support!  Move a device by dragging and dropping.  Copy by holding down Shift+Click.
+* "Smart Naming" on device copies.  name[nn-NN] and nameNN are special patterns that get incremented, including children.
+* Copy of a device now copies the tags as well
+* Support for reverse cabinet ordering for people who like to stand on their head
+* Data Center/Zone now shows the RCI Low/High index values
+* Support for SNMPv3
+* Primary Contact added for Virtual Machines
+* Sidebar is now loaded asymetrically (better performance)
+* Devices loaded into cabinet asymetrically (better performance)
+* Ability to turn off filtering of cabinet tree based on rights (major performance boost for large installations)
+* Corrected the Audit reports
+* Fix where Epoch date was different depending on timezone
+* Fixed the Power Outage Simulation report
+* Slot devices added to a chassis with only rear slots automatically selects the Rear attribute
+* Fixed tooltip for Contact (was showing ID rather than name)
+* More API expansions (yes, we need to document it much, much more)
+* When transferring devices to another contact, only non-disabled ones are in the selection box
+* Correction of labeling (Rear) shows up on the correct side
+* Pre-flight check is now available as a tab on the Configuration screen, has been moved to be separate from installer
+* More bug fixes
+
+Changes in 4.0
+--------------
+* New online repository for templates and images (requires internet connection, requires an API key if you wish to contribute)
+* New reports
+* CDUs and Sensors are now simply devices.  That means you can have ports and power connections just like anything else.
+* Improvement to image uploads
+* Ability to nest chassis devices
+* Ability to limit scope when making port connections (major performance boost for large installations)
+* Upgraded PDF library to mPDF for better feature support
+* Update to operational log.  No longer runs out of memory.
+* Support for nested power panels (Power Sources are now simply Power Panels with no defined parent)
+* There are no more contacts.  Users and contacts have been merged.  Many improvements in the management of such.
+* RESTful API - there is a basic set of API calls available today and it will be expanded based upon user requests
+* SNMP Calls have been converted to use the OSS_SNMP class.  Command line SNMP tools are no longer supported.
+* Support for SNMPv3
+* Ability to poll power sources (using same templates as CDUs) for real time data
+* OAuth2 Support for login
+* More language translations from English source (Currently Azerbaijani, Chinese, French, Galician, German, Italian, Portuguese/Brazil, Russian, Slovenian, Spanish, Ukrainian)
+* Bug fixes
+
+Changes in 3.3
+--------------
+* Primarily bug fixes
+* Upgraded PHPExcel to 1.8.0
+* Improvements to device template import/export functions
+* More streamlined upgrade procedure
+* SQL Optimizations for some of the roll-up statistics screens
+* Chassis devices within a chassis now supported
+* Ability to mass edit port names via patterns
+* Ability to delete device templates, and assign any devices using that template to another
+* Creation of a Shopping-Cart like feature for building work orders, exports to Excel (for label printers)
+* Improvements to the UI for device images
+* Ability to turn Rack Requests on/off at a site level
+
+Changes in 3.2
+--------------
+* Ability to track spare/consumable parts supplies in a basic bin system with min/max quantities
+* Full audit log of every transaction
+* Per-device auditing
+* Storage Room view per Data Center
+* Auto-Transfer Switches will poll SNMP for redundancy status
+* XML Export for Computational Fluid Dynamic Analysis software
+* Per-device running operational log of notes
+* Allow for customized port names
+* Allow templates for devices to pre-define ports and names
+* Ability to upload images for devices (similar to designing cabinet elevations in Visio)
+* Added Primary IP as a searchable field
+* Complete redesign of the menu - functions grouped together
+* When looking at a port connected to a patch panel, full path to endpoint is displayed automatically
+* Ability to specify front edge of a cabinet to indicate airflow
+* Ability to manually enter values for power strip load
+* Ability to make patch panels a chassis device
+* Ability to delete Containers, Zones, Rows, Data Centers, Power Panels, and Power Sources
+
 Changes in 3.1
 --------------
 * Expanded UserID field (80 characters)

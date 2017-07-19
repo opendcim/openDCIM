@@ -9,28 +9,25 @@
 	$status="";
 
 	// AJAX Requests
-		//Zone Lists
-		if(isset($_POST['zonelist'])){
-			$cab->DataCenterID=$_POST['zonelist'];
-			echo $cab->GetZoneSelectList();
-			exit;
-		}
-		if(isset($_POST['rowlist'])){
-			$cab->ZoneID=$_POST['rowlist'];
-			echo $cab->GetCabRowSelectList();
-			exit;
-		}
-	
-		//Row Lists
-
 	// END - AJAX Requests
 
-	$write=($user->WriteAccess)?true:false;
+	$write=($person->WriteAccess)?true:false;
 
 	if(isset($_REQUEST['cabinetid'])){
 		$cab->CabinetID=(isset($_POST['cabinetid'])?$_POST['cabinetid']:$_GET['cabinetid']);
 		$cab->GetCabinet();
-		$write=($user->canWrite($cab->AssignedTo))?true:$write;
+		$write=($person->canWrite($cab->AssignedTo))?true:$write;
+	}
+
+	// If you're deleting the cabinet, no need to pull in the rest of the information, so get it out of the way
+	// Only a site administrator can create or delete a cabinet
+	if(isset($_POST["delete"]) && $_POST["delete"]=="yes" && $person->SiteAdmin ) {
+		$cab->DeleteCabinet();
+		$status['code']=200;
+		$status['msg']=redirect("dc_stats.php?dc=$cab->DataCenterID");
+		header('Content-Type: application/json');
+		echo json_encode($status);
+		exit;
 	}
 
 	// this will allow a user to modify a rack but not create a new one
@@ -57,19 +54,33 @@
 		$cab->MaxKW=$_POST['maxkw'];
 		$cab->MaxWeight=$_POST['maxweight'];
 		$cab->InstallationDate=$_POST['installationdate'];
-		$cab->SensorIPAddress=$_POST['sensoripaddress'];
-		$cab->SensorCommunity=$_POST['sensorcommunity'];
-		$cab->SensorTemplateID=$_POST['sensortemplateid'];
 		$cab->Notes=trim($_POST['notes']);
 		$cab->Notes=($cab->Notes=="<br>")?"":$cab->Notes;
-		$cab->SetTags($tagarray);
+		$cab->U1Position=$_POST['u1position'];
 
+		if ( $cab->U1Position == "Default" ) {
+			$dc = new DataCenter();
+			$dc->DataCenterID = $cab->DataCenterID;
+			$dc->GetDataCenter();
+			if ( $dc->U1Position == "Top" ) {
+				$cab->U1Position = "Top";
+			} elseif ( $dc->U1Position == "Default" ) {
+				$cab->U1Position = $config->ParameterArray["U1Position"];
+			} else {
+				$cab->U1Position = "Bottom";
+			}
+		}
+		
 		if($cab->Location!=""){
 			if(($cab->CabinetID >0)&&($_POST['action']=='Update')){
 				$status=__("Updated");
 				$cab->UpdateCabinet();
 			}elseif($_POST['action']=='Create'){
 				$cab->CreateCabinet();
+			}
+
+			if($cab->CabinetID > 0) {
+				$cab->SetTags($tagarray);
 			}
 		}
 	}elseif($cab->CabinetID >0){
@@ -80,22 +91,21 @@
 		$dc=new DataCenter();
 		$dcList=$dc->GetDCList();
 		$keys=array_keys($dcList);
-		$cab->DataCenterID=$keys[0];
+		$cab->DataCenterID=(isset($_GET['dcid']))?intval($_GET['dcid']):$keys[0];
 		$cab->Location=null;
-		$cab->ZoneID=null;
-		$cab->CabRowID=null;
+		$cab->ZoneID=(isset($_GET['zoneid']))?intval($_GET['zoneid']):null;
+		$cab->CabRowID=(isset($_GET['cabrowid']))?intval($_GET['cabrowid']):null;
 		$cab->CabinetHeight=null;
 		$cab->Model=null;
 		$cab->Keylock=null;
 		$cab->MaxKW=null;
 		$cab->MaxWeight=null;
-		$cab->InstallationDate=date('m/d/Y');
+		$cab->InstallationDate=date('Y-m-d');
 	}
-
 
 	$deptList=$dept->GetDepartmentList();
 	$cabList=$cab->ListCabinets();
-	$sensorList = SensorTemplate::getTemplate();
+	$sensorList = SensorTemplate::getTemplates();
 
 	if($cab->CabinetID > 0) {
 		// Get any tags associated with this device
@@ -131,28 +141,69 @@
 
   <script type="text/javascript">
 	$(document).ready(function() {
+		$('select[name=cabinetid]').change(function(e){
+			location.href='cabinets.php?cabinetid='+this.value;
+		});
+
 		$('#datacenterid').change(function(){
-			$.post('',{zonelist: $(this).val()}).done(function(data){
-				$('#zoneid').html('');
-				$(data).find('option').each(function(){
-					$('#zoneid').append($(this));	
-				});
-				$('#zoneid').val(0);
+			//store the value of the zone id prior to changing the list, we might need it
+			var ov=$('#zoneid').val();
+			$('#zoneid').html('');
+			// Add the option for no zone
+			$.get('api/v1/zone?DataCenterID='+$('#datacenterid').val()).done(function(data){
+				$('#zoneid').append($('<option>').val(0).text('None'));
+				if(!data.error){
+					for(var x in data.zone){
+						var opt=$('<option>').val(data.zone[x].ZoneID).text(data.zone[x].Description);
+						$('#zoneid').append(opt);
+					}
+				}
+			}).then(function(e){
+				// Attempt to set the original value of zoneid back after we've updated the options
+				$('#zoneid').val(ov);
+				// if the original value is no longer valid this will reset it to none
+				if($.isEmptyObject($('#zoneid').val())){
+					$('#zoneid').val(0);
+				}
 				$('#zoneid').change();
 			});
 		});
-		$('#datacenterid').trigger('change');
 		$('#zoneid').change(function(){
-			$.post('',{rowlist: $(this).val()}).done(function(data){
-				$('#cabrowid').html('');
-				$(data).find('option').each(function(){
-					$('#cabrowid').append($(this));	
-				});
-				$('#cabrowid').val(0);
+			//store the value of the zone id prior to changing the list, we might need it
+			var ov=$('#cabrowid').val();
+			$('#cabrowid').html('');
+			// Add the option for no row
+			$('#cabrowid').append($('<option>').val(0).text('None'));
+			var zonelimit=($('#zoneid').val()!=0)?'&ZoneID='+$('#zoneid').val():'';
+			$.get('api/v1/cabrow?DataCenterID='+$('#datacenterid').val()+zonelimit).done(function(data){
+				if(!data.error){
+					$('#cabrowid').data('cabrow',data.cabrow);
+					for(var x in data.cabrow){
+						var opt=$('<option>').val(data.cabrow[x].CabRowID).text(data.cabrow[x].Name);
+						$('#cabrowid').append(opt);
+					}
+				}
+			}).then(function(e){
+				// Attempt to set the original value of zoneid back after we've updated the options
+				$('#cabrowid').val(ov);
+				// if the original value is no longer valid this will reset it to none
+				if($.isEmptyObject($('#cabrowid').val())){
+					$('#cabrowid').val(0);
+				}
 			});
 		});
+		$('#cabrowid').change(function(e){
+			if($('#cabrowid').val()!=0){
+				$('#zoneid').val($('#cabrowid').data('cabrow')[$('#cabrowid').val()].ZoneID);
+				$('#zoneid').trigger('change');
+			}
+		});
+
+		// Init form
+		$('#datacenterid').trigger('change');
+
 		$('#rackform').validationEngine({});
-		$('input[name="installationdate"]').datepicker({});
+		$('input[name="installationdate"]').datepicker({dateFormat: "yy-mm-dd"});
 		$('#tags').width($('#tags').parent('div').parent('div').innerWidth()-$('#tags').parent('div').prev('div').outerWidth()-5);
 		
 		$('#tags').textext({
@@ -167,7 +218,7 @@
   </script>
 </head>
 <body>
-<div id="header"></div>
+<?php include( 'header.inc.php' ); ?>
 <div class="page">
 <?php
 	include( 'sidebar.inc.php' );
@@ -177,15 +228,15 @@ echo '<div class="main">
 <h3>',__("Data Center Cabinet Inventory"),'</h3>
 <h3>',$status,'</h3>
 <div class="center"><div>
-<form id="rackform" action="',$_SERVER["PHP_SELF"],'" method="POST">
+<form id="rackform" method="POST">
 <div class="table">
 <div>
    <div>',__("Cabinet"),'</div>
-   <div><select name="cabinetid" onChange="form.submit()">
+   <div><select name="cabinetid">
    <option value=0>',__("New Cabinet"),'</option>';
 
 	foreach($cabList as $cabRow){
-		if($cabRow->CabinetID == $cab->CabinetID){$selected=' selected';}else{$selected="";}
+		$selected=($cabRow->CabinetID==$cab->CabinetID)?' selected':'';
 		print "<option value=\"$cabRow->CabinetID\"$selected>$cabRow->Location</option>\n";
 	}
 
@@ -193,7 +244,17 @@ echo '   </select></div>
 </div>
 <div>
    <div>',__("Data Center"),'</div>
-   <div>',$cab->GetDCSelectList(),'</div>
+   <div>
+		<select name="datacenterid" id="datacenterid">
+';
+
+	foreach(DataCenter::GetDCList() as $dc){
+		$selected=($dc->DataCenterID==$cab->DataCenterID)?' selected':'';
+		print "\t\t\t<option value=\"$dc->DataCenterID\"$selected>$dc->Name</option>\n";
+	}
+
+echo '		</select>
+	</div>
 </div>
 <div>
    <div>',__("Location"),'</div>
@@ -225,6 +286,18 @@ echo '  </select>
    <div><input type="text" class="validate[optional,custom[onlyNumberSp]]" name="cabinetheight" size=4 maxlength=4 value="',$cab->CabinetHeight,'"></div>
 </div>
 <div>
+   <div>',__("U1 Position"),'</div>
+   <div><select name="u1position">';
+
+$posarray=array('Bottom' => __("Bottom"),'Top' => __("Top"),'Default' => __("Default"));
+foreach($posarray as $pos => $translation){
+	$selected=($cab->U1Position==$pos)?' selected':'';
+	print "      <option value=\"$pos\"$selected>$translation</option>\n";
+}
+   
+echo '</select></div>
+</div>
+<div>
    <div>',__("Model"),'</div>
    <div><input type="text" name="model" size=30 maxlength=80 value="',$cab->Model,'"></div>
 </div>
@@ -242,30 +315,7 @@ echo '  </select>
 </div>
 <div>
    <div>',__("Date of Installation"),'</div>
-   <div><input type="text" name="installationdate" size=15 value="',date('m/d/Y', strtotime($cab->InstallationDate)),'"></div>
-</div>
-<div>
-	<div>',__("Sensor IP Address"),'</div>
-	<div><input type="text" name="sensoripaddress" size=15 value="',$cab->SensorIPAddress,'"></div>
-</div>
-<div>
-	<div>',__("Sensor SNMP Community"),'</div>
-	<div><input type="text" name="sensorcommunity" size=30 value="',$cab->SensorCommunity,'"></div>
-</div>
-<div>
-	<div>',__("Sensor Template"),':</div>
-	<div><select name=sensortemplateid>
-		<option value=0>Select a template</option>';
-	foreach ( $sensorList as $template ) {
-		if ( $template->TemplateID == $cab->SensorTemplateID ) {
-			$selected = "selected";
-		} else {
-			$selected = "";
-		}
-		printf( "<option value=%d %s>%s</option>\n", $template->TemplateID, $selected, $template->Name );
-	}
-	
-	echo '</select></div>
+   <div><input type="text" name="installationdate" size=15 value="',date('Y-m-d', strtotime($cab->InstallationDate)),'"></div>
 </div>
 <div>
 	<div><label for="tags">',__("Tags"),'</label></div>
@@ -280,7 +330,10 @@ echo '  </select>
 <div class="caption">';
 
 	if($cab->CabinetID >0){
-		echo '   <button type="submit" name="action" value="Update">',__("Update"),'</button>';
+		echo '   <button type="submit" name="action" value="Update">',__("Update"),'</button>
+	<button type="button" name="action" value="Delete">',__("Delete"),'</button>
+	<button type="button" value="AuditReport">',__("Audit Report"),'</button>
+	<button type="button" value="MapCoordinates">',__("Map Coordinates"),'</button>';
 	}else{
 		echo '   <button type="submit" name="action" value="Create">',__("Create"),'</button>';
 	}
@@ -294,8 +347,49 @@ echo '  </select>
 	}else{ 
 		echo '<a href="index.php">[ ',__("Return to Main Menu"),' ]</a>';
 	}
-?>
+
+echo '
+<!-- hiding modal dialogs here so they can be translated easily -->
+<div class="hide">
+	<div title="',__("Cabinet delete confirmation"),'" id="deletemodal">
+		<div id="modaltext"><span style="float:left; margin:0 7px 20px 0;" class="ui-icon ui-icon-alert"></span>',__("Are you sure that you want to delete this cabinet and all the devices in it?<br><br><b>THERE IS NO UNDO</b>"),'
+		</div>
+	</div>
+</div>'; ?>
 </div><!-- END div.main -->
 </div><!-- END div.page -->
+<script type="text/javascript">
+$('button[value=AuditReport]').click(function(){
+	window.location.assign('cabaudit.php?cabinetid='+$('select[name=cabinetid]').val());
+});
+$('button[value=MapCoordinates]').click(function(){
+	window.location.assign('mapmaker.php?cabinetid='+$('select[name=cabinetid]').val());
+});
+$('button[value=Delete]').click(function(){
+	var defaultbutton={
+		"<?php echo __("Yes"); ?>": function(){
+			$.post('', {cabinetid: $('select[name=cabinetid]').val(),delete: 'yes' }, function(data){
+				if(data.code==200){
+					window.location.assign(data.msg);
+				}else{
+					alert("Danger, Will Robinson! DANGER!  Something didn't go as planned.");
+				}
+			});
+		}
+	}
+	var cancelbutton={
+		"<?php echo __("No"); ?>": function(){
+			$(this).dialog("destroy");
+		}
+	}
+	var modal=$('#deletemodal').dialog({
+		dialogClass: 'no-close',
+		modal: true,
+		width: 'auto',
+		buttons: $.extend({}, defaultbutton, cancelbutton)
+	});
+});
+
+</script>
 </body>
 </html>

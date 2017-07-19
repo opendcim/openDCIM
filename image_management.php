@@ -2,6 +2,8 @@
 	require_once('db.inc.php');
 	require_once('facilities.inc.php');
 
+	$subheader=__("OpenDCIM Image File Management");
+
 	$timestamp=time();
 	$salt=md5('unique_salt' . $timestamp);
 
@@ -11,9 +13,9 @@
 		if(is_dir($path)){
 			$dir=scandir($path);
 			foreach($dir as $i => $f){
-				if(is_file($path.DIRECTORY_SEPARATOR.$f) && ($f!='.' && $f!='..')){
-					@$imageinfo=getimagesize($path.DIRECTORY_SEPARATOR.$f);
-					if(preg_match('/^image/i', $imageinfo['mime'])){
+				if(is_file($path.DIRECTORY_SEPARATOR.$f) && ($f!='.' && $f!='..' && $f!='P_ERROR.png')){
+					$mimeType=mime_content_type($path.DIRECTORY_SEPARATOR.$f);
+					if(preg_match('/^image/i', $mimeType)){
 						$array[$path][]=$f;
 					}
 				}
@@ -41,26 +43,24 @@
   
   <script type="text/javascript" src="scripts/jquery.min.js"></script>
   <script type="text/javascript" src="scripts/jquery-ui.min.js"></script>
-  <script type="text/javascript" src="scripts/jquery.uploadifive.min.js"></script>
+  <script type="text/javascript" src="scripts/jquery.uploadifive.js"></script>
   <script type="text/javascript" src="scripts/common.js"></script>
 </head>
 <body>
-<div id="header"></div>
+<?php include( 'header.inc.php' ); ?>
 <div class="page imagem">
 <?php
 	include( 'sidebar.inc.php' );
 ?>
 <div class="main">
-<h2><?php echo $config->ParameterArray['OrgName']; ?></h2>
-<h2><?php echo __("OpenDCIM Image File Management");?></h2>
 
 <?php
 // Only show the device pictures if they have global write access or site admin.
-if($user->SiteAdmin || $user->WriteAccess){
+if($person->SiteAdmin || $person->WriteAccess){
 ?>
 
 <div class="center"><div>
-<div class="heading"><?php print __("Device Type Pictures");?></div>
+<div class="heading"><?php print __("Device Pictures");?></div>
 <input type="file" name="dev_file_upload" data-dir="pictures" id="dev_file_upload" />
 
 <script type="text/javascript">
@@ -75,8 +75,17 @@ $(function() {
 		'checkScript' : 'scripts/check-exists.php',
 		'uploadScript' : 'scripts/uploadifive.php',
 		'onUploadComplete'	: function(file, data) {
-			if(data!='1'){
+			data=$.parseJSON(data);
+			if(data.status=='1'){
 				// something broke, deal with it
+				var toast=$('<div>').addClass('uploadifive-queue-item complete');
+				var close=$('<a>').addClass('close').text('X').click(function(){$(this).parent('div').remove();});
+				var span=$('<span>');
+				var error=$('<div>').addClass('border').css({'margin-top': '2px', 'padding': '3px'}).text(data.msg);
+				toast.append(close);
+				toast.append($('<div>').append(span.clone().addClass('filename').text(file.name)).append(span.clone().addClass('fileinfo').text(' - Error')));
+				toast.append(error);
+				$('#uploadifive-'+this[0].id+'-queue').append(toast);
 			}else{
 				// fuck yeah, reload the thumbnails
 				reload($(this).data('dir'));
@@ -96,11 +105,11 @@ $(function() {
 }
 
 // Only show the site drawings if they have site admin rights.
-if($user->SiteAdmin){
+if($person->SiteAdmin){
 ?>
 
 <div class="center"><div>
-<div class="heading"><?php print __("Datacenter / Container Drawings");?></div>
+<div class="heading"><?php print __("Infrastructure Drawings");?></div>
 <input type="file" name="drawing_file_upload" data-dir="drawings" id="drawing_file_upload" />
 
 </div><div>
@@ -119,8 +128,17 @@ $(function() {
 		'checkScript'		: 'scripts/check-exists.php',
 		'uploadScript'		: 'scripts/uploadifive.php',
 		'onUploadComplete'	: function(file, data) {
-			if(data!='1'){
+			data=$.parseJSON(data);
+			if(data.status=='1'){
 				// something broke, deal with it
+				var toast=$('<div>').addClass('uploadifive-queue-item complete');
+				var close=$('<a>').addClass('close').text('X').click(function(){$(this).parent('div').remove();});
+				var span=$('<span>');
+				var error=$('<div>').addClass('border').css({'margin-top': '2px', 'padding': '3px'}).text(data.msg);
+				toast.append(close);
+				toast.append($('<div>').append(span.clone().addClass('filename').text(file.name)).append(span.clone().addClass('fileinfo').text(' - Error')));
+				toast.append(error);
+				$('#uploadifive-'+this[0].id+'-queue').append(toast);
 			}else{
 				// fuck yeah, reload the thumbnails
 				reload($(this).data('dir'));
@@ -130,16 +148,25 @@ $(function() {
 });
 </script>
 </div></div><!-- END div.center -->
-
+<?php echo '<a href="index.php">[ ',__("Return to Main Menu"),' ]</a>'; ?>
 <?php } ?>
 
 
 </div><!-- END div.main -->
 </div><!-- END div.page -->
+
+<?php 
+echo '<div id="delete-confirm" title="'.__("Delete image file?").'" class="hide">
+	<p><span class="ui-icon ui-icon-alert" style="float:left; margin:0 7px 20px 0;"></span>'.__("This image will be permanently deleted and cannot be recovered. Are you sure?").'</p>
+</div>';
+?>
+
 <script type="text/javascript">
 	$('.center input').each(function(){
 		reload($(this).data('dir'));
 	});
+	timestamp="<?php echo $timestamp; ?>";
+	token="<?php echo $salt; ?>";
 </script>
 </body>
 </html>

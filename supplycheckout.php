@@ -2,11 +2,9 @@
 	require_once("db.inc.php");
 	require_once("facilities.inc.php");
 
-	$user=new User();
-	$user->UserID=$_SERVER["REMOTE_USER"];
-	$user->GetUserRights();
+	$subheader=__("Data Center Stockroom Supplies");
 
-	if(!$user->WriteAccess){
+	if(!$person->WriteAccess){
 		// No soup for you.
 		header('Location: '.redirect());
 		exit;
@@ -63,16 +61,14 @@
   </script>
 </head>
 <body>
-<div id="header"></div>
+<?php include( 'header.inc.php' ); ?>
 <div class="page supply">
 <?php
 	include( "sidebar.inc.php" );
 ?>
 <div class="main">
-<h2><?php echo $config->ParameterArray["OrgName"]; ?></h2>
-<h3>Data Center Stockroom Supplies</h3>
 <div class="center"><div>
-<form action="<?php echo $_SERVER["PHP_SELF"]; ?>" method="POST">
+<form method="POST">
 <div class="table">
 	<div>
 		<div></div>

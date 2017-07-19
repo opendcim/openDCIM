@@ -2,7 +2,9 @@
 	require_once('db.inc.php');
 	require_once('facilities.inc.php');
 
-	if(!$user->SiteAdmin){
+	$subheader=__("Container Detail");
+
+	if(!$person->SiteAdmin){
 		// No soup for you.
 		header('Location: '.redirect());
 		exit;
@@ -28,7 +30,14 @@
 			}
 		}
 	}
-
+	
+	if(isset($_POST['action']) && $_POST['action']=='Delete'){
+		$c->ContainerID=$_POST['containerid'];
+		$c->DeleteContainer();
+		header('Location: container.php');
+		exit;
+	}
+	
 	if(isset($_POST['cambio_cont'])&& $_POST['cambio_cont']=='SI'){
 		$c->ContainerID=$_POST['containerid'];
 		$c->Name=trim($_POST['name']);
@@ -48,16 +57,14 @@
 	}
 	$cList=$c->GetContainerList();
 
-
-
 	$imageselect='<div id="preview"></div><div id="filelist">';
 
 	$path='./drawings';
 	$dir=scandir($path);
 	foreach($dir as $i => $f){
 		if(is_file($path.DIRECTORY_SEPARATOR.$f)){
-			$imageinfo=getimagesize($path.DIRECTORY_SEPARATOR.$f);
-			if(preg_match('/^image/i', $imageinfo['mime'])){
+			$mimeType=mime_content_type($path.DIRECTORY_SEPARATOR.$f);
+			if(preg_match('/^image/i', $mimeType)){
 				$imageselect.="<span>$f</span>\n";
 			}
 		}
@@ -82,9 +89,13 @@
   <script type="text/javascript" src="scripts/jquery-ui.min.js"></script>
   <script type="text/javascript" src="scripts/jquery.validationEngine-en.js"></script>
   <script type="text/javascript" src="scripts/jquery.validationEngine.js"></script>
+  <script type="text/javascript" src="scripts/common.js"></script>
 
   <script type="text/javascript">
 	$(document).ready(function() {
+		$('#containerid').change(function(e){
+			location.href='container.php?containerid='+this.value;
+		});
 		$('#datacenterform').validationEngine({});
 		$('#drawingfilename').click(function(){
 			$("#imageselection").dialog({
@@ -130,6 +141,31 @@
 				}
 			});
 		});
+		
+		// Delete container confirmation dialog
+		$('button[value="Delete"]').click(function(e){
+			var form=$(this).parents('form');
+			var btn=$(this);
+<?php
+print '		var dialog=$("<div>").prop("title","'.__("Verify Delete Container").'").html("<p><span class=\"ui-icon ui-icon-alert\" style=\"float:left; margin:0 7px 20px 0;\"></span><span></span></p>");';
+print '		dialog.find("span + span").html("'.__("This container will be deleted and there is no undo. Their direct descendants will be moved to \'home\'.").'<br>'.__("Are you sure?").'");'; 
+?>
+			dialog.dialog({
+				resizable: false,
+				modal: true,
+				dialogClass: "no-close",
+				buttons: {
+<?php echo '				',__("Yes"),': function(){'; ?>
+						$(this).dialog("destroy");
+						form.append('<input type="hidden" name="'+btn.attr("name")+'" value="'+btn.val()+'">');
+						form.submit();
+					},
+<?php echo '				',__("No"),': function(){'; ?>
+						$(this).dialog("destroy");
+					}
+				}
+			});
+		});
 	});
 	function coords(evento){
 		mievento = evento || window.event;
@@ -165,7 +201,7 @@
 		else
 			yo.hidden=false;
 	}
-  	function cambio_container(){
+	function cambio_container(){
 		document.getElementById("cambio_cont").value="SI";
 		document.getElementById("containerform").submit();
 	}
@@ -173,21 +209,19 @@
 
 </head>
 <body>
-<div id="header"></div>
+<?php include( 'header.inc.php' ); ?>
 <div class="page">
 <?php
 	include( 'sidebar.inc.php' );
 
 echo '<div class="main">
-<h2>',$config->ParameterArray["OrgName"],'</h2>
-<h3>',__("Container Detail"),'</h3>
 <h3>',$status,'</h3>
 <div class="center"><div>
-<form id="containerform" action="',$_SERVER["PHP_SELF"],'" method="POST">
+<form id="containerform" method="POST">
 <div class="table">
 <div>
    <div><label for="containerid">',__("Container"),'</label></div>
-   <div><select name="containerid" id="containerid" onChange="form.submit()">
+   <div><select name="containerid" id="containerid">
       <option value="0">',__("New Container"),'</option>';
 
 	foreach($cList as $cRow){
@@ -211,8 +245,6 @@ echo '	</select></div>
   	<div><select name="parentid" id="parentid" onChange="cambio_container()">
       <option value="0">',__("None"),'</option>';
 
-//	$container=new Container();
-//	$cList=$container->GetContainerList();
 	foreach($cList as $cRow){
 		if ($cRow->ContainerID<>$c->ContainerID){
 			if($cRow->ContainerID == $c->ParentID){$selected=" selected";}else{$selected="";}
@@ -232,20 +264,22 @@ echo '	</select></div>
 </div>'; 
 
 if ($c->ParentID>0){
-	print "<div>\n  <div><b>".__("Click on the image to select container coordinates")."</b></div>"; 
+	$container=new Container();
 	$container->ContainerID=$c->ParentID;
 	$container->GetContainer();
-	print "<div>";
-	print $container->MakeContainerMiniImage("container",$c->ContainerID);
-	print "</div></div>"; 
+	print '<div>
+	<div><b>'.__("Click on the image to select container coordinates").'</b></div>
+	<div>'.$container->MakeContainerMiniImage("container",$c->ContainerID).'</div>
+</div>'; 
 }
 
 echo '<div class="caption">';
 
 	if($c->ContainerID >0){
-		echo '   <button type="submit" name="action" value="Update">',__("Update"),'</button>';
+		print "\t<button type=\"submit\" name=\"action\" value=\"Update\">".__("Update")."</button>\n";
+		print "\t<button type=\"button\" name=\"action\" value=\"Delete\">".__("Delete")."</button>\n";
 	}else{
-		echo '   <button type="submit" name="action" value="Create">',__("Create"),'</button>';
+		print "\t<button type=\"submit\" name=\"action\" value=\"Create\">".__("Create")."</button>\n";
 	}
 ?>
 </div>

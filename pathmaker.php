@@ -2,11 +2,7 @@
 	require_once( 'db.inc.php' );
 	require_once( 'facilities.inc.php' );
 
-	if(!$user->SiteAdmin){
-		// No soup for you.
-		header('Location: '.redirect());
-		exit;
-	}
+	$subheader=__("Creating an end to end connection");
 
 	$status="";
 	$path="";
@@ -53,19 +49,35 @@
 	if(isset($_POST['cab'])){
 		$dev=new Device();
 		$dev->Cabinet=$_POST['cab'];
-		
-		displayjson($dev->ViewDevicesByCabinet(true));
+
+		// Filter devices by rights
+		$devs=array();
+		foreach($dev->ViewDevicesByCabinet(true) as $d){
+			if($d->Rights=="Write"){
+				$devs[]=$d;
+			}
+		}
+		displayjson($devs);
 	}
 
 	if(isset($_POST['dev'])){
 		$dp=new DevicePorts();
 		$dp->DeviceID=$_POST['dev'];
-		
-		displayjson($dp->getPorts());
+		$dev=new Device();
+		$dev->DeviceID=$dp->DeviceID;
+		$dev->GetDevice();
+		$ports=($dev->Rights=="Write")?$dp->getPorts( true ):array();
+		displayjson($ports);
 	}
 
 	// AJAX - End
 	
+	if(!$person->SiteAdmin){
+		// No soup for you.
+		header('Location: '.redirect());
+		exit;
+	}
+
 	if(isset($_POST['bot_implementar'])){
 		for ($i=1;$i<$_POST['elem_path'];$i++){
 			if ($_POST["PortNumber"][$i]>0 && $_POST["PortNumber"][$i+1]<0) {
@@ -222,7 +234,7 @@
 					$path.=str_repeat("\t",$t++)."<table>\n";
 					$path.=str_repeat("\t",$t++)."<tr>\n";
 					$path.=str_repeat("\t",$t--)."<th colspan=2>";
-					$path.="<a href=\"devices.php?deviceid={$devList[$i]->DeviceID}\">{$devList[$i]->Label}</a>";
+					$path.="<a href=\"devices.php?DeviceID={$devList[$i]->DeviceID}\">{$devList[$i]->Label}</a>";
 					$path.="</th>\n";
 					$path.=str_repeat("\t",$t)."</tr>\n";
 					$path.=str_repeat("\t",$t++)."<tr>\n";
@@ -231,7 +243,7 @@
 				
 				//Device
 				$path.=str_repeat("\t",$t--)."<td>".
-						"<a href=\"devices.php?deviceid=$dev->DeviceID\">$dev->Label".
+						"<a href=\"devices.php?DeviceID=$dev->DeviceID\">$dev->Label".
 						"</a><br>".__("Port").": ".abs($pp->PortNumber)."</td>\n";
 				$path.=str_repeat("\t",$t--)."</tr>\n";
 				$path.=str_repeat("\t",$t--)."</table>\n";
@@ -299,7 +311,7 @@
 						$path.=str_repeat("\t",$t++)."<table>\n";
 						$path.=str_repeat("\t",$t++)."<tr>\n";
 						$path.=str_repeat("\t",$t--)."<th colspan=2>";
-						$path.="<a href=\"devices.php?deviceid={$devList[$i]->DeviceID}\">{$devList[$i]->Label}</a>";
+						$path.="<a href=\"devices.php?DeviceID={$devList[$i]->DeviceID}\">{$devList[$i]->Label}</a>";
 						$path.="</th>\n";
 						$path.=str_repeat("\t",$t)."</tr>\n";
 						$path.=str_repeat("\t",$t++)."<tr>\n";
@@ -308,7 +320,7 @@
 					
 					//device
 					$path.=str_repeat("\t",$t--)."<td>".
-							"<a href=\"devices.php?deviceid=$dev->DeviceID\">$dev->Label".
+							"<a href=\"devices.php?DeviceID=$dev->DeviceID\">$dev->Label".
 							"</a><br>".__("Port").": ".abs($pp->PortNumber)."</td>\n";
 					$path.=str_repeat("\t",$t--)."</tr>\n";
 					
@@ -368,7 +380,7 @@
 			$path.="\t<tr>\n\t\t<td colspan=6>&nbsp;</td>\n\t</tr></table>";
 			
 			//Implement Form
-			$path.= "<form action=\"{$_SERVER["PHP_SELF"]}\" method=\"POST\">\n";
+			$path.= "<form method=\"POST\">\n";
 			$path.= "<br>\n"; 
 			$path.= "<div>\n";
 			//PATH INFO
@@ -444,17 +456,17 @@
 										var o=opt.clone().val(por.PortNumber).text(por.Label);
 										select.append(o);
 									});
-									porl.text('Port');
+									porl.text('<?php echo __("Port");?>');
 									pors.html(select.change());
 									porr.insertAfter($(e.target).parent('div').parent('div'));
 								});
 							});
-							devl.text('Device');
+							devl.text('<?php echo __("Device");?>');
 							devs.html(ds.change());
 							devr.insertAfter($(e.target).parent('div').parent('div'));
 						});
 					});
-					cabl.text('Cabinet');
+					cabl.text('<?php echo __("Cabinet");?>');
 					cabs.html(s.change());
 					cabr.insertAfter($(e.target).parent('div').parent('div'));
 				});
@@ -465,17 +477,15 @@
 
 </head>
 <body>
-<div id="header"></div>
+<?php include( 'header.inc.php' ); ?>
 <div class="page">
 <?php
 	include( 'sidebar.inc.php' );
 
 echo '<div class="main">
-<h2>',$config->ParameterArray["OrgName"],'</h2>
-<h3>',__("Creating an end to end connection"),'</h3>
 <h3>',$status,'</h3>
 <div class="center"><div><div>
-<form action="',$_SERVER["PHP_SELF"],'" method="POST">
+<form method="POST">
 <table id=crit_busc>
 <tr><td>
 <fieldset class=crit_busc>

@@ -4,7 +4,7 @@
 	require_once('db.inc.php');
 	require_once('facilities.inc.php');
 
-	if(!$user->SiteAdmin){
+	if(!$person->SiteAdmin){
 		// No soup for you.
 		header('Location: '.redirect());
 		exit;
@@ -572,7 +572,7 @@ class SwitchConnection {
 			$pwrConnection->DeviceID=($dev->ParentDevice>0)?$dev->ParentDevice:$dev->DeviceID;
 			$pwrCords=$pwrConnection->GetConnectionsByDevice();
 
-			print "<span>Server Name: $dev->Label</span><span># Power Supplies: $dev->PowerSupplyCount</span><div class=\"table border\">\n			<div><div>".__('Power Strip')."</div><div>".__('Plug #')."</div><div>".__('Power Supply')."</div></div>";
+			print "<span>Server Name: $dev->Label</span><span># Power Supplies: $dev->PowerSupplyCount</span><div class=\"table border\">\n			<div><div>".__("Power Strip")."</div><div>".__("Plug #")."</div><div>".__("Power Supply")."</div></div>";
 			foreach($pwrCords as $cord){
 				$pdu->PDUID=$cord->PDUID;
 				$pdu->GetPDU();
@@ -605,12 +605,12 @@ class SwitchConnection {
 			$tmpDev->DeviceID=$networkPatches->EndpointDeviceID;
 			$tmpDev->GetDevice();
 
-			print "<span>Server Name: <a href=\"devices.php?deviceid=$tmpDev->DeviceID\">$tmpDev->Label</a></span><span># Data Ports: $tmpDev->Ports</span><div class=\"table border\">\n				<div><div>".__('Switch')."</div><div>".__('Switch Port')."</div><div>".__('Device Port')."</div><div>".__('Notes')."</div></div>\n";
+			print "<span>Server Name: <a href=\"devices.php?DeviceID=$tmpDev->DeviceID\">$tmpDev->Label</a></span><span># Data Ports: $tmpDev->Ports</span><div class=\"table border\">\n				<div><div>".__("Switch")."</div><div>".__("Switch Port")."</div><div>".__("Device Port")."</div><div>".__("Notes")."</div></div>\n";
 
 				foreach($patchList as $patchConn){
 					$tmpDev->DeviceID=$patchConn->SwitchDeviceID;
 					$tmpDev->GetDevice();
-					print "\t\t\t\t<div><div data=\"$patchConn->SwitchDeviceID\"><a href=\"devices.php?deviceid=$patchConn->SwitchDeviceID\">$tmpDev->Label</a></div><div><a href=\"changepatch.php?switchid=$patchConn->SwitchDeviceID&portid=$patchConn->SwitchPortNumber\">$patchConn->SwitchPortNumber</a></div><div>$patchConn->EndpointPort</div><div>$patchConn->Notes</div></div>\n";
+					print "\t\t\t\t<div><div data=\"$patchConn->SwitchDeviceID\"><a href=\"devices.php?DeviceID=$patchConn->SwitchDeviceID\">$tmpDev->Label</a></div><div><a href=\"changepatch.php?switchid=$patchConn->SwitchDeviceID&portid=$patchConn->SwitchPortNumber\">$patchConn->SwitchPortNumber</a></div><div>$patchConn->EndpointPort</div><div>$patchConn->Notes</div></div>\n";
 				}
 			print "</div><!-- END div.table -->\n";
 		}
@@ -853,13 +853,12 @@ div.table > div > div {vertical-align: top;}
 
 </head>
 <body>
-<div id="header"></div>
+<?php include( 'header.inc.php' ); ?>
 <div class="page index">
 <?php
 	include( 'sidebar.inc.php' );
 ?>
 <div class="main">
-<h2><?php echo $config->ParameterArray['OrgName']; ?></h2>
 <div class="center"><div>
 <p>The tables below show devices that are currently sharing resources and will need to be resolved before the new database update can be applied.</p>
 <p>The Key in each table is made up of the DeviceID and the ID of resource that is currently being shared incorrectly.</p>

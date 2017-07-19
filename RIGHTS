@@ -11,8 +11,8 @@ Read:
 Write:
 
 No Rights Management:
-	Display a map and basic stats for any datacenter (no menu):	dc_dashboard.php
-	Display a map and basic stats for any datacenter:			dc_stats.php
+	Display a map and basic stats for any data center (no menu):	dc_dashboard.php
+	Display a map and basic stats for any data center:				dc_stats.php
 		* need to check rights before adding the links to the racks
 
 Global Read:

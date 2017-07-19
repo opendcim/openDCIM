@@ -3,9 +3,16 @@ db.inc.php
 
 #we don't want to accidentally send this out populated, again
 install.log
+install.err
 
 #logbook extension that might be in the dev directory
 elogs/
 
 #poedit temp files used in merge operations
 locale/*/LC_MESSAGES/openDCIM.po*
+
+#ignore pictures
+pictures/
+drawings/
+/composer.json
+/composer.lock

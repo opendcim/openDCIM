@@ -2,7 +2,9 @@
 	require_once( "db.inc.php" );
 	require_once( "facilities.inc.php" );
 
-	if(!$user->ContactAdmin){
+	$subheader=__("Data Center Escalation Rules");
+
+	if(!$person->ContactAdmin){
 		// No soup for you.
 		header('Location: '.redirect());
 		exit;
@@ -22,7 +24,7 @@
 						break;
 					case 'Update':
 						$esc->Details=$_POST['details'];
-						$status=__('Updated');
+						$status=__("Updated");
 						$esc->UpdateEscalation();
 						break;
 					case 'Delete':
@@ -52,17 +54,15 @@
   <script type="text/javascript" src="scripts/jquery-ui.min.js"></script>
 </head>
 <body>
-<div id="header"></div>
+<?php include( 'header.inc.php' ); ?>
 <div class="page">
 <?php
 	include( "sidebar.inc.php" );
 
 echo '<div class="main">
-<h2>',$config->ParameterArray["OrgName"],'</h2>
-<h3>',__("Data Center Escalation Rules"),'</h3>
 <h3>',$status,'</h3>
 <div class="center"><div>
-<form action="',$_SERVER["PHP_SELF"],'" method="POST">
+<form method="POST">
 <div class="table">
 <div>
    <div><label for="escalationid">',__("Escalation Rule"),'</label></div>

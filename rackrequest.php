@@ -1,9 +1,10 @@
 <?php
 	require_once( 'db.inc.php' );
 	require_once( 'facilities.inc.php' );
-	require_once( 'swiftmailer/swift_required.php' );
+
+	$subheader=__("Data Center Rack Request");
 	
-	if(!$user->RackRequest){
+	if($config->ParameterArray["RackRequests"] != "enabled" || !$person->RackRequest){
 		// No soup for you.
 		header('Location: '.redirect());
 		exit;
@@ -13,12 +14,10 @@
 	$cab=new Cabinet();
 	$dev=new Device();
 	$req=new RackRequest();
-	$contact=new Contact();
-	$tmpContact=new Contact();
+	$contact=new People();
+	$tmpContact=new People();
 	$formfix=$error='';	
-	$contactList=$contact->GetContactList();
-	$contact->UserID=$user->UserID;
-	$contact->GetContactByUserID();
+	$contactList=$person->GetUserList();
 
 	//We only need to worry about sending email in the event this is a new submission and no other time.
 	if(isset($_POST["action"])){
@@ -26,12 +25,12 @@
 			$req->RequestID=$_REQUEST['requestid'];
 			$req->GetRequest();
 
-			$contact->ContactID=$req->RequestorID;
-			$contact->GetContactByID();
+			$contact->PersonID=$req->RequestorID;
+			$contact->GetPerson();
 		}
 
-		$tmpContact->ContactID=$_POST["requestorid"];
-		$tmpContact->GetContactByID();
+		$tmpContact->PersonID=$_POST["requestorid"];
+		$tmpContact->GetPerson();
 
 		// If any port other than 25 is specified, assume encryption and authentication
 		if($config->ParameterArray['SMTPPort']!= 25){
@@ -61,7 +60,7 @@
 		try{		
 			$message->addTo($tmpContact->Email);
 		}catch(Swift_RfcComplianceException $e){
-			$error.=__("Check contact details for")." <a href=\"contacts.php?contactid=$tmpContact->ContactID\">$tmpContact->LastName, $tmpContact->FirstName</a>: <span class=\"errmsg\">".$e->getMessage()."</span><br>\n";
+			$error.=__("Check contact details for")." <a href=\"usermgr.php?PersonID=$tmpContact->PersonID\">$tmpContact->LastName, $tmpContact->FirstName</a>: <span class=\"errmsg\">".$e->getMessage()."</span><br>\n";
 		}
 
 		// Add data center team to the list of recipients
@@ -82,7 +81,7 @@
 			$req->SerialNo=$_POST['serialno'];
 			$req->MfgDate=$_POST['mfgdate'];
 			$req->AssetTag=$_POST['assettag'];
-			$req->ESX=$_POST['esx'];
+			$req->Hypervisor=$_POST['hypervisor'];
 			$req->Owner=$_POST['owner'];
 			$req->DeviceHeight=$_POST['deviceheight'];
 			$req->EthernetCount=$_POST['ethernetcount'];
@@ -103,7 +102,7 @@
 			Please allow up to 2 business days for requests to be completed.'),$req->Label)."</p>
 
 			<p>".sprintf(__('Your Request ID is %1$d and you may view the request online at'),$req->RequestID)."
-			<a href=\"https://{$_SERVER['SERVER_NAME']}{$_SERVER['PHP_SELF']}?requestid=$req->RequestID\">
+			<a href=\"https://{$_SERVER['SERVER_NAME']}{$_SERVER['SCRIPT_NAME']}?requestid=$req->RequestID\">
 			".__("this link")."</a>.</p>
 			
 			</body></html>";
@@ -116,13 +115,13 @@
 			}catch(Swift_TransportException $e){
 				$error.="Server: <span class=\"errmsg\">".$e->getMessage()."</span><br>\n";
 			}
-		}elseif(($_POST['action']=='Update Request'||$_POST['action']=='Move to Rack') && (($user->RackRequest && $user->UserID==$contact->UserID)||$user->RackAdmin)){
+		}elseif(($_POST['action']=='Update Request'||$_POST['action']=='Move to Rack') && (($person->RackRequest && $person->UserID==$contact->UserID)||$person->RackAdmin)){
 			$req->RequestorID=$_POST['requestorid'];
 			$req->Label=$_POST['label'];
 			$req->SerialNo=$_POST['serialno'];
 			$req->MfgDate=date('Y-m-d',strtotime($_POST["mfgdate"]));
 			$req->AssetTag=$_POST['assettag'];
-			$req->ESX=$_POST['esx'];
+			$req->Hypervisor=$_POST['hypervisor'];
 			$req->Owner=$_POST['owner'];
 			$req->DeviceHeight=$_POST['deviceheight'];
 			$req->EthernetCount=$_POST['ethernetcount'];
@@ -137,7 +136,7 @@
 
 			$req->UpdateRequest();
 
-			if($user->RackAdmin && $_POST['action']=='Move to Rack'){
+			if($person->RackAdmin && $_POST['action']=='Move to Rack'){
 				$req->CompleteRequest();
 				
 				$dev->Label=$req->Label;
@@ -145,9 +144,9 @@
 				$dev->MfgDate=$req->MfgDate;
 				$dev->InstallDate=date('Y-m-d');
 				$dev->AssetTag=$req->AssetTag;
-				$dev->ESX=$req->ESX;
+				$dev->Hypervisor=$req->Hypervisor;
 				$dev->Owner=$req->Owner;
-				$dev->Cabinet=$_POST['cabinetid'];
+				$dev->Cabinet=$_POST['CabinetID'];
 				$dev->Position=$_POST['position'];
 				$dev->Height=$req->DeviceHeight;
 				$dev->Ports=$req->EthernetCount;
@@ -158,7 +157,7 @@
 		
 				$htmlMessage.="<p>".sprintf(__('Your request for racking up the device labeled %1$s has been completed.'),$req->Label)."</p>";
 				$htmlMessage.="<p>".sprintf(__('To view your device in its final location click %1$s'),
-				"<a href=\"".redirect("devices.php?deviceid=$dev->DeviceID")."\"> ".__("this link")."</a>.</p>
+				"<a href=\"".redirect("devices.php?DeviceID=$dev->DeviceID")."\"> ".__("this link")."</a>.</p>
 				</body></html>");
 
 				$message->setBody($htmlMessage,'text/html');
@@ -170,11 +169,11 @@
 					$error.="Server: <span class=\"errmsg\">".$e->getMessage()."</span><br>\n";
 				}
 			
-				header('Location: '.redirect("devices.php?deviceid=$dev->DeviceID"));
+				header('Location: '.redirect("devices.php?DeviceID=$dev->DeviceID"));
 				exit;
 			}
 	  }elseif($_POST['action']=='Delete Request'){
-		  if($user->RackAdmin||$user->UserID==$contact->UserID){
+		  if($person->RackAdmin||$person->UserID==$contact->UserID){
 			$req->DeleteRequest();
 			header('Location: '.redirect('index.php'));
 			exit;
@@ -190,8 +189,8 @@
 		$req->GetRequest();
 		$formfix="?requestid=$req->RequestID";
 
-		$contact->ContactID=$req->RequestorID;
-		$contact->GetContactByID();
+		$contact->PersonID=$req->RequestorID;
+		$contact->GetPerson();
 	}
 ?>
 <!doctype html>
@@ -237,7 +236,7 @@ print "			$('#deviceform').validationEngine({'custom_error_messages' : {
 				}	
 			});";
 ?>
-			$('#mfgdate').datepicker({});
+			$('#mfgdate').datepicker({dateFormat: "yy-mm-dd"});
 			$('#deviceclass').change( function(){
 				$.get('scripts/ajax_template.php?q='+$(this).val(), function(data) {
 					$('#deviceheight').val(data['Height']);
@@ -250,10 +249,10 @@ print "			$('#deviceform').validationEngine({'custom_error_messages' : {
 			$('#deviceform').validationEngine('detach');
 		});
 <?php
-	if($user->RackAdmin && ($req->RequestID>0)){
+	if($person->RackAdmin && ($req->RequestID>0)){
 ?>
 		$('#position').focus(function()	{
-			var cab=$("select#cabinetid").val();
+			var cab=$("select#CabinetID").val();
 			$.get('scripts/ajax_cabinetuse.php?cabinet='+cab, function(data) {
 				var ucount=0;
 				$.each(data, function(i,inuse){
@@ -271,7 +270,7 @@ print "			$('#deviceform').validationEngine({'custom_error_messages' : {
 				setTimeout(function(){
 					var divwidth=$('.positionselector').width();
 					$('#positionselector').width(divwidth);
-					$('#cabinetid').focus(function(){$('#positionselector').css({'left': '-1000px'});});
+					$('#CabinetID').focus(function(){$('#positionselector').css({'left': '-1000px'});});
 					$('#specialinstructions').focus(function(){$('#positionselector').css({'left': '-1000px'});});
 					$('#positionselector').css({'left':(($('#position').position().left)+(divwidth+20))});
 					$('#positionselector').mouseleave(function(){
@@ -324,20 +323,18 @@ print "			$('#deviceform').validationEngine({'custom_error_messages' : {
 
 </head>
 <body>
-<div id="header"></div>
+<?php include( 'header.inc.php' ); ?>
 <div class="page request">
 <?php
     include('sidebar.inc.php');
 
-echo '<div class="main">
-<h2>',$config->ParameterArray['OrgName'],'</h2>
-<h3>',__("Data Center Rack Request"),'</h3>';
+echo '<div class="main">';
 
 if($error!=""){echo '<fieldset class="exception border error"><legend>Errors</legend>'.$error.'</fieldset>';}
 
 echo '<div class="center"><div>
 <div id="positionselector"></div>
-<form name="deviceform" id="deviceform" action="',$_SERVER["PHP_SELF"],$formfix,'" method="POST">
+<form name="deviceform" id="deviceform" action="',$_SERVER["SCRIPT_NAME"],$formfix,'" method="POST">
 	<input type="hidden" name="requestid" value="',$req->RequestID,'">';
 
 echo '<div class="table">
@@ -348,7 +345,7 @@ echo '<div class="table">
 
 	foreach($contactList as $tmpContact){
 		if($tmpContact->UserID==$contact->UserID){$selected=" selected";}else{$selected="";}
-		print "				<option value=\"$tmpContact->ContactID\"$selected>$tmpContact->LastName, $tmpContact->FirstName</option>";
+		print "				<option value=\"$tmpContact->PersonID\"$selected>$tmpContact->LastName, $tmpContact->FirstName</option>";
 	}
 
 echo '			</select>
@@ -377,7 +374,7 @@ echo '			</select>
 	</div>
 	<div>
 		<div><label for="mfgdate">',__("Manufacture Date"),'</label></div>
-		<div><input type="text" name="mfgdate" id="mfgdate" size="20" value="',date('m/d/Y',strtotime($req->MfgDate)),'"></div>
+		<div><input type="text" name="mfgdate" id="mfgdate" size="20" value="',date('Y-m-d',strtotime($req->MfgDate)),'"></div>
 	</div>
 	<div>
 		<div><label for="assettag">',__("Asset Tag"),'</label></div>
@@ -386,8 +383,8 @@ echo '			</select>
 	<div>
 		<div><label for="esx">',__("ESX Server?"),'</label></div>
 		<div><select name="esx" id="esx">
-			<option value="1"'.(($req->ESX)?' selected':'').'>',__("True"),'</option>
-			<option value="0"'.((!$req->ESX)?' selected':'').'>',__("False"),'</option>
+			<option value="1"'.(($req->Hypervisor)?' selected':'').'>',__("True"),'</option>
+			<option value="0"'.((!$req->Hypervisor)?' selected':'').'>',__("False"),'</option>
 		</select></div>
 	</div>
 	<div>
@@ -471,19 +468,19 @@ echo '			</select>
 		<div><textarea name="specialinstructions" id="specialinstructions" cols=50 rows=5>',$req->SpecialInstructions,'</textarea></div>
 	</div>';
 
-	if($user->RackAdmin && ($req->RequestID>0)){
-		echo '<div><div><label for="cabinetid">',__("Select Rack Location"),':</label></div><div>'.$cab->GetCabinetSelectList().'&nbsp;&nbsp;<label for="position">',__("Position"),':</label> <input type="text" name="position" id="position" size=5></div></div>';
+	if($person->RackAdmin && ($req->RequestID>0)){
+		echo '<div><div><label for="CabinetID">',__("Select Rack Location"),':</label></div><div>'.$cab->GetCabinetSelectList().'&nbsp;&nbsp;<label for="position">',__("Position"),':</label> <input type="text" name="position" id="position" size=5></div></div>';
 	}
 ?>
 	<div class="caption">
 <?php
-	if($user->RackRequest||$user->RackAdmin){
+	if($person->RackRequest||$person->RackAdmin){
 		if($req->RequestID >0){
-			if($user->RackAdmin||($user->UserID==$contact->UserID)){
+			if($person->RackAdmin||($person->UserID==$contact->UserID)){
 				echo '<button type="submit" name="action" value="Update Request">',__("Update Request"),'</button>';
 				echo '<button type="submit" name="action" value="Delete Request">',__("Delete Request"),'</button>';
 			}
-			if($user->RackAdmin){
+			if($person->RackAdmin){
 				echo '<button type="submit" name="action" value="Move to Rack">',__("Move to Rack"),'</button>';
 			}
 		}else{

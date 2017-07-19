@@ -2,6 +2,12 @@
 	require_once( "db.inc.php" );
 	require_once( "facilities.inc.php" );
 
+if(!$person->ReadAccess){
+    // No soup for you.
+    header('Location: '.redirect());
+    exit;
+}
+
 	define('FPDF_FONTPATH','font/');
 	require('fpdf.php');
 
@@ -17,21 +23,23 @@ class PDF extends FPDF {
   
 	function Header() {
 		$this->pdfconfig = new Config();
-    	$this->Image( 'images/' . $this->pdfconfig->ParameterArray["PDFLogoFile"],10,8,100);
-    	$this->SetFont($this->pdfconfig->ParameterArray["PDFfont"],'B',12);
-    	$this->Cell(120);
-    	$this->Cell(30,20,'Information Technology Services',0,0,'C');
-    	$this->Ln(20);
+    if ( file_exists( 'images/' . $this->pdfconfig->ParameterArray['PDFLogoFile'] )) {
+        $this->Image( 'images/' . $this->pdfconfig->ParameterArray['PDFLogoFile'],10,8,100);
+    }
+  	$this->SetFont($this->pdfconfig->ParameterArray["PDFfont"],'B',12);
+  	$this->Cell(120);
+  	$this->Cell(30,20,__("Information Technology Services"),0,0,'C');
+  	$this->Ln(25);
 		$this->SetFont( $this->pdfconfig->ParameterArray["PDFfont"],'',10 );
-		$this->Cell( 50, 6, "Devices Without Diverse (Tier III) Power", 0, 1, "L" );
-		$this->Cell( 50, 6, "Date: " . date( "m/d/y" ), 0, 1, "L" );
+		$this->Cell( 50, 6, __("Devices Without Diverse (Tier III) Power"), 0, 1, "L" );
+		$this->Cell( 50, 6, __("Date").': ' . date('d F Y'), 0, 1, 'L' );
 		$this->Ln(10);
 	}
 
 	function Footer() {
 	    	$this->SetY(-15);
     		$this->SetFont($this->pdfconfig->ParameterArray["PDFfont"],'I',8);
-    		$this->Cell(0,10,'Page '.$this->PageNo().'/{nb}',0,0,'C');
+    		$this->Cell(0,10,__("Page").' '.$this->PageNo().'/{nb}',0,0,'C');
 	}
 	
   function Bookmark($txt,$level=0,$y=0) {
@@ -126,7 +134,6 @@ class PDF extends FPDF {
 
   $pan = new PowerPanel();
   $pdu = new PowerDistribution();
-  $source = new PowerSource();
 	$dev = new Device();
 	$cab = new Cabinet();
 	$dept = new Department();
@@ -134,7 +141,7 @@ class PDF extends FPDF {
 
 	$pdf=new PDF();
 	$pdf->AliasNbPages();
-	  
+	include_once("loadfonts.php");
 	$pdf->SetFont($config->ParameterArray["PDFfont"],'',8);
 
 	$pdf->SetFillColor( 0, 0, 0 );
@@ -153,11 +160,11 @@ class PDF extends FPDF {
     $pdf->AddPage();
     $pdf->BookMark( $dcRow->Name, 1 );
     $pdf->SetFont( $config->ParameterArray["PDFfont"], "B", 12 );
-    $pdf->Cell( 80, 5, "Data Center: " . $dcRow->Name );
+    $pdf->Cell( 80, 5, __("Data Center").': ' . $dcRow->Name );
     $pdf->SetFont( $config->ParameterArray["PDFfont"], "", 8 );
     $pdf->Ln();
 
-  	$headerTags = array( "Cabinet", "Device Name", "Dependency", "Position", "Owner" );
+  	$headerTags = array( __("Cabinet Location"), __("Device Name"), __("Dependency"), __("Position"), __("Owner") );
   	$cellWidths = array( 15, 50, 30, 15, 60 );
 
   	for ( $col = 0; $col < count( $headerTags ); $col++ )
@@ -187,30 +194,16 @@ class PDF extends FPDF {
       } else {
         foreach ( $devList as $devRow ) {
           $sourceList=$devRow->GetDeviceDiversity();
-          @$source->PowerSourceID = $sourceList[0];
-          if ( $source->PowerSourceID > 0 ) {
-            $source->GetSource();
-          } else {
-            $source->SourceName = "Unknown";
+          @$pan->PanelID = $sourceList[0];
+          if ( $pan->PanelID == 0 ) {
+			$pan->getPanel();
+		  } else {
+            $pan->PanelLabel = "Unknown";
           }
-
-/*
-
-WTF was this supposed to be doing?
-
-          foreach ( $sourceList as $sourceID ) {
-            $source->PowerSourceID = $sourceID;
-            if ( $sourceID < 1 ) {
-              $sources .= "Unknown ";
-            } else {
-              $source->GetSource();
-              $sources .= $source->SourceName . " ";
-            }
-          }
-*/            
+          
           $pdf->Cell( $cellWidths[0], 6, $cabRow->Location, "LBRT", 0, "L", $fill );
           $pdf->Cell( $cellWidths[1], 6, $devRow->Label, "LBRT", 0, "L", $fill );
-          $pdf->Cell( $cellWidths[2], 6, $source->SourceName, "LBRT", 0, "L", $fill ); 
+          $pdf->Cell( $cellWidths[2], 6, $pan->PanelID, "LBRT", 0, "L", $fill ); 
       		$pdf->Cell( $cellWidths[3], 6, $devRow->Position, "LBRT", 0, "L", $fill );
       		
       		$dept->DeptID = $devRow->Owner;

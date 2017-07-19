@@ -1,7 +1,6 @@
 <?php
 	require_once( 'db.inc.php' );
 	require_once( 'facilities.inc.php' );
-	require_once( 'swiftmailer/swift_required.php' );
 
 	$device = new Device();
 	$devList = $device->GetDevicesbyAge($config->ParameterArray["NewInstallsPeriod"] );
@@ -37,7 +36,7 @@
 		$error.=__("Facility Manager email address").": <span class=\"errmsg\">".$e->getMessage()."</span><br>\n";
 	}
 
-	$logo='images/'.$config->ParameterArray["PDFLogoFile"];
+	$logo=getcwd().'/images/'.$config->ParameterArray["PDFLogoFile"];
 	$logo=$message->embed(Swift_Image::fromPath($logo)->setFilename('logo.png'));
 
 	$htmlMessage = sprintf( "<!doctype html><html><head><meta http-equiv=\"Content-Type\" content=\"text/html; charset=UTF-8\"><title>ITS Data Center Inventory</title></head><body><div id=\"header\" style=\"padding: 5px 0;background: %s;\"><center><img src=\"%s\"></center></div><div class=\"page\"><p><h3>Installations in the Past 7 Days</h3>\n", $config->ParameterArray["HeaderColor"], $logo );
@@ -64,7 +63,7 @@
 			$dept->DeptID = $devRow->Owner;
 			$dept->GetDeptByID();
 			
-			$htmlMessage .= sprintf( "<tr><td>%s</td><td>%s</td><td>%s</td><td><a href=\"%s/cabnavigator.php?cabinetid=%d\">%s</a></td><td><a href=\"%s/devices.php?deviceid=%d\">%s</a></td><td>%s</td></tr>\n", date( "d M Y", strtotime( $devRow->InstallDate ) ), $devRow->Reservation == 1 ? "Y" : "N", $dc->Name, $config->ParameterArray["InstallURL"], $cab->CabinetID, $cab->Location, $config->ParameterArray["InstallURL"], $devRow->DeviceID, $devRow->Label, $dept->Name );
+			$htmlMessage .= sprintf( "<tr><td>%s</td><td>%s</td><td>%s</td><td><a href=\"%s/cabnavigator.php?cabinetid=%d\">%s</a></td><td><a href=\"%s/devices.php?DeviceID=%d\">%s</a></td><td>%s</td></tr>\n", date( "d F Y", strtotime( $devRow->InstallDate ) ), $devRow->Reservation == 1 ? "Y" : "N", $dc->Name, $config->ParameterArray["InstallURL"], $cab->CabinetID, $cab->Location, $config->ParameterArray["InstallURL"], $devRow->DeviceID, $devRow->Label, $dept->Name );
 		}
 		
 		$htmlMessage .= "</table>\n";

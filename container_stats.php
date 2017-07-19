@@ -2,6 +2,8 @@
 	require_once("db.inc.php");
 	require_once("facilities.inc.php");
 
+	$subheader=__("Data Center Statistics");
+
 	if(!isset($_GET["container"])){
 		// No soup for you.
 		header('Location: '.redirect());
@@ -32,7 +34,7 @@
   <script type="text/javascript" src="scripts/jquery-ui.min.js"></script>
 </head>
 <body>
-<div id="header"></div>
+<?php include( 'header.inc.php' ); ?>
 <div class="page dcstats" id="mapadjust">
 <?php
 include( "sidebar.inc.php" );
@@ -46,12 +48,6 @@ if ( $config->ParameterArray["mUnits"] == "english" ) {
 }
 
 echo '<div class="main">
-<div class="heading">
-  <div>
-	<h2>',$config->ParameterArray["OrgName"],'</h2>
-	<h3>',__("Data Centers Statistics"),'</h3>
-  </div>
-</div>
 <div class="center"><div>
 <div class="centermargin" id="dcstats">
 <div class="table border">
@@ -111,11 +107,15 @@ echo '<div class="main">
         <div>',__("Minimum Cooling Tonnage Required"),'</div>
         <div>',sprintf("%s ".__("Tons"),number_format($cStats["ComputedWatts"]*3.412*1.15/12000,0, ",", ".")),'</div>
   </div>
+  <div>
+    <div>',__("Total Cabinets"),'</div>
+    <div>',sprintf( "%s", number_format($cStats["TotalCabinets"],0,",",".")),'</div>
+  </div>
 </div> <!-- END div.table -->
 </div>
 
 <br>
-<div class="JMGA" style="center width: 1200px; overflow: auto">';
+<div class="JMGA" style="center width: 1200px; overflow: hidden">';
 
   print $c->MakeContainerImage();
 ?>
@@ -123,5 +123,27 @@ echo '<div class="main">
 </div><!-- END div.JMGA -->
 </div><!-- END div.main -->
 </div><!-- END div.page -->
+<script type="text/javascript">
+	$(document).ready(function() {
+		// Hard set widths to stop IE from being retarded
+		$('#mapCanvas').css('width', $('.canvas > img[alt="clearmap over canvas"]').width()+'px');
+		$('#mapCanvas').parent('.canvas').css('width', $('.canvas > img[alt="clearmap over canvas"]').width()+'px');
+
+		// Don't attempt to open the datacenter tree until it is loaded
+		function opentree(){
+			if($('#datacenters .bullet').length==0){
+				setTimeout(function(){
+					opentree();
+				},500);
+			}else{
+				var firstcabinet=$('#c<?php echo $c->ContainerID;?> > ul > li:first-child').attr('id');
+				expandToItem('datacenters',firstcabinet);
+			}
+		}
+
+		// Bind tooltips, highlight functions to the map
+		opentree();
+	});
+</script>
 </body>
 </html>

@@ -2,7 +2,9 @@
 	require_once('db.inc.php');
 	require_once('facilities.inc.php');
 
-	if(!$user->SiteAdmin){
+	$subheader=__("Data Center Cabinet Distribution Unit Templates");
+
+	if(!$person->SiteAdmin){
 		// No soup for you.
 		header('Location: '.redirect());
 		exit;
@@ -38,7 +40,7 @@
 		if ( $_REQUEST['action']=='Create' ) {
 			$template->CreateTemplate();
 		} else {
-			$status=__('Updated');
+			$status=__("Updated");
 			$template->UpdateTemplate();
 		}
 	}
@@ -66,17 +68,15 @@
   <script type="text/javascript" src="scripts/jquery-ui.min.js"></script>
 </head>
 <body>
-<div id="header"></div>
+<?php include( 'header.inc.php' ); ?>
 <div class="page">
 <?php
 	include( 'sidebar.inc.php' );
 
 echo '<div class="main">
-<h2>',$config->ParameterArray["OrgName"],'</h2>
-<h3>',__("Data Center Cabinet Distribution Unit Templates"),'</h3>
 <h3>',$status,'</h3>
 <div class="center"><div>
-<form action="',$_SERVER["PHP_SELF"],'" method="POST">
+<form method="POST">
 <div class="table">
 	<div>
 		<div><label for="templateid">',__("Template"),'</label></div>
@@ -141,7 +141,7 @@ echo '</select>
    <div><label for="multiplier">',__("Multiplier"),'</label></div>
    <div><select name="multiplier" id="multiplier">';
    
-	$Multi=array("0.1", "1","10","100");
+	$Multi=array("0.01","0.1","1","10","100");
         $mult = 1;
 
         // Loop to find the template default multiplier, if any
