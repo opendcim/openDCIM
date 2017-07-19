@@ -2,46 +2,42 @@ msgid ""
 msgstr ""
 "Project-Id-Version: openDCIM.po\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-05-16 19:44-0500\n"
+"POT-Creation-Date: 2017-07-19 10:55-0500\n"
 "PO-Revision-Date: 2014-03-24 08:48-0500\n"
 "Last-Translator: Wilbur Longwisch <wilbur@wilpig.org>\n"
 "Language-Team: openDCIM <discussion@list.opendcim.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-""
 
 #: openDCIM/bulk_importer.php:12
 msgid "Bulk Device Importer"
 msgstr ""
 
-
 #: openDCIM/bulk_importer.php:60 openDCIM/bulk_moves.php:60
 #: openDCIM/bulk_network.php:60 openDCIM/bulk_power.php:60
-msgid "Pick the appropriate column header (line 1) for each field name listed below."
+msgid ""
+"Pick the appropriate column header (line 1) for each field name listed below."
 msgstr ""
-
 
 #: openDCIM/bulk_importer.php:61 openDCIM/bulk_moves.php:61
 #: openDCIM/bulk_network.php:61 openDCIM/bulk_power.php:61
 msgid "Mouse over each field for help text."
 msgstr ""
 
-
 #: openDCIM/bulk_importer.php:100 openDCIM/bulk_moves.php:107
 msgid "Validate"
 msgstr ""
-
 
 #: openDCIM/bulk_importer.php:137
 msgid "The following required fields are not mapped"
 msgstr ""
 
-
 #: openDCIM/bulk_importer.php:191
-msgid "The following values in the import file require entries in openDCIM before you may proceed."
+msgid ""
+"The following values in the import file require entries in openDCIM before "
+"you may proceed."
 msgstr ""
-
 
 #: openDCIM/bulk_importer.php:199 openDCIM/cabinets.php:246
 #: openDCIM/cabnavigator.php:51 openDCIM/cabrow.php:155
@@ -55,32 +51,32 @@ msgstr ""
 #: openDCIM/report_power_utilization.php:163
 #: openDCIM/report_project_outage_simulator.php:46
 #: openDCIM/report_project_outage_simulator.php:277
-#: openDCIM/report-projects.php:38 openDCIM/report_xml_CFD.php:59
-#: openDCIM/search_export.php:47 openDCIM/zone.php:128
+#: openDCIM/report_projects.php:151 openDCIM/report_xml_CFD.php:59
+#: openDCIM/search_export.php:47 openDCIM/search_export_storage_room.php:49
+#: openDCIM/zone.php:134
 msgid "Data Center"
 msgstr "数据中心"
 
-
 #: openDCIM/bulk_importer.php:209 openDCIM/bulk_moves.php:220
-#: openDCIM/cabinets.php:234 openDCIM/dc_stats.php:292
-#: openDCIM/devices.php:1810 openDCIM/pathmaker.php:227
+#: openDCIM/cabinets.php:234 openDCIM/dc_stats.php:304
+#: openDCIM/devices.php:1840 openDCIM/pathmaker.php:227
 #: openDCIM/pathmaker.php:304 openDCIM/pathmaker.php:469
 #: openDCIM/paths.php:230 openDCIM/paths.php:305 openDCIM/paths.php:390
 #: openDCIM/report_cabinets.php:186 openDCIM/report_contact.php:485
 #: openDCIM/report_cost.php:469 openDCIM/report_exception.php:165
 #: openDCIM/report_exception.php:235 openDCIM/report_network_map.php:616
-#: openDCIM/report_project_outage_simulator.php:346 openDCIM/workorder.php:192
-#: openDCIM/zone_stats.php:288
+#: openDCIM/report_project_outage_simulator.php:346
+#: openDCIM/report_projects.php:150 openDCIM/workorder.php:192
+#: openDCIM/zone_stats.php:300
 msgid "Cabinet"
 msgstr "机柜"
-
 
 #: openDCIM/bulk_importer.php:220 openDCIM/cdu_templates.php:96
 #: openDCIM/connections_spreadsheet.php:48
 #: openDCIM/device_manufacturers.php:177 openDCIM/device_templates.php:726
+#: openDCIM/report_vendor_model.php:50
 msgid "Manufacturer"
 msgstr "设备生产商"
-
 
 #: openDCIM/bulk_importer.php:231 openDCIM/cabaudit.php:510
 #: openDCIM/cabinets.php:301 openDCIM/cabnavigator.php:50
@@ -88,7 +84,6 @@ msgstr "设备生产商"
 #: openDCIM/device_templates.php:738
 msgid "Model"
 msgstr "型号"
-
 
 #: openDCIM/bulk_importer.php:242 openDCIM/departments.php:172
 #: openDCIM/index.php:43 openDCIM/report_contact.php:432
@@ -98,91 +93,80 @@ msgstr "型号"
 msgid "Department"
 msgstr "部门"
 
-
-#: openDCIM/bulk_importer.php:255 openDCIM/devices.php:852
-#: openDCIM/devices.php:1768 openDCIM/report_aging.php:425
+#: openDCIM/bulk_importer.php:255 openDCIM/devices.php:872
+#: openDCIM/devices.php:1798 openDCIM/report_aging.php:425
 #: openDCIM/report_aging.php:460
 #: openDCIM/report_project_outage_simulator.php:354
 #: openDCIM/report_warranty.php:439 openDCIM/report_warranty.php:472
 msgid "Primary Contact"
 msgstr "主要联系人"
 
-
 #: openDCIM/bulk_importer.php:297 openDCIM/bulk_moves.php:241
 msgid "Collision Detected"
 msgstr ""
 
-
 #: openDCIM/bulk_importer.php:308 openDCIM/bulk_moves.php:251
 msgid "The file has passed validation.  Press the Process button to import."
 msgstr ""
-
 
 #: openDCIM/bulk_importer.php:315 openDCIM/bulk_moves.php:258
 #: openDCIM/bulk_network.php:107 openDCIM/bulk_power.php:107
 msgid "Process"
 msgstr ""
 
-
 #: openDCIM/bulk_importer.php:384
 msgid "Parent device does not exist at specified location."
 msgstr ""
-
 
 #: openDCIM/bulk_importer.php:460 openDCIM/bulk_network.php:280
 #: openDCIM/bulk_power.php:256
 msgid "All records imported successfully."
 msgstr ""
 
-
 #: openDCIM/bulk_importer.php:462 openDCIM/bulk_moves.php:377
 #: openDCIM/bulk_network.php:282 openDCIM/bulk_power.php:258
-msgid "At least one error was encountered processing the file.  Please see below."
+msgid ""
+"At least one error was encountered processing the file.  Please see below."
 msgstr ""
-
 
 #: openDCIM/bulk_importer.php:472 openDCIM/bulk_moves.php:387
 #: openDCIM/bulk_network.php:292 openDCIM/bulk_power.php:268
 msgid "Select file to upload:"
 msgstr ""
 
-
 #: openDCIM/bulk_moves.php:12
 msgid "Bulk Device Moves/Deletes"
 msgstr ""
 
-
 #: openDCIM/bulk_moves.php:100 openDCIM/bulk_network.php:100
 #: openDCIM/bulk_power.php:100
-msgid "The type of key field that is being used to match devices in openDCIM.  Only one type may be specified per file."
+msgid ""
+"The type of key field that is being used to match devices in openDCIM.  Only "
+"one type may be specified per file."
 msgstr ""
-
 
 #: openDCIM/bulk_moves.php:100 openDCIM/bulk_network.php:100
 #: openDCIM/bulk_power.php:100
 msgid "KeyField"
 msgstr ""
 
-
 #: openDCIM/bulk_moves.php:152
-msgid "The following values in the bulk move/delete file require entries in openDCIM before you may proceed."
+msgid ""
+"The following values in the bulk move/delete file require entries in "
+"openDCIM before you may proceed."
 msgstr ""
-
 
 #: openDCIM/bulk_moves.php:375
 msgid "All records processed successfully."
 msgstr ""
 
-
 #: openDCIM/bulk_network.php:12
 msgid "Bulk Network Importer"
 msgstr ""
 
-
 #: openDCIM/bulk_power.php:12
 msgid "Bulk Power Importer"
 msgstr ""
-
 
 #: openDCIM/cabaudit.php:49 openDCIM/report_aging.php:91
 #: openDCIM/report_asset.php:25 openDCIM/report_audit_frequency.php:29
@@ -190,18 +174,16 @@ msgstr ""
 #: openDCIM/report_cost.php:42 openDCIM/report_department.php:32
 #: openDCIM/report_diverse_power_exceptions.php:31
 #: openDCIM/report_exception.php:36 openDCIM/report_power_distribution.php:32
-#: openDCIM/report_power_utilization.php:31 openDCIM/report_surplus.php:44
+#: openDCIM/report_power_utilization.php:31
 #: openDCIM/report_vm_by_department.php:38 openDCIM/report_warranty.php:106
 msgid "Information Technology Services"
 msgstr "信息技术服务"
-
 
 #: openDCIM/cabaudit.php:52
 msgid "Cabinet Audit Report"
 msgstr "机柜审核报告"
 
-
-#: openDCIM/cabaudit.php:53 openDCIM/devices.php:2260
+#: openDCIM/cabaudit.php:53 openDCIM/devices.php:2290
 #: openDCIM/report_aging.php:95 openDCIM/report_asset.php:29
 #: openDCIM/report_audit_frequency.php:33 openDCIM/report_audit.php:321
 #: openDCIM/report_audit.php:417 openDCIM/report_contact.php:41
@@ -215,12 +197,10 @@ msgstr "机柜审核报告"
 msgid "Date"
 msgstr "日期"
 
-
 #: openDCIM/cabaudit.php:54 openDCIM/cabnavigator.php:49
 #: openDCIM/report_audit_frequency.php:242 openDCIM/report_audit.php:286
 msgid "Last Audit"
 msgstr "最后审核"
-
 
 #: openDCIM/cabaudit.php:62 openDCIM/report_aging.php:102
 #: openDCIM/report_asset.php:36 openDCIM/report_audit_frequency.php:40
@@ -228,11 +208,10 @@ msgstr "最后审核"
 #: openDCIM/report_cost.php:53 openDCIM/report_department.php:43
 #: openDCIM/report_diverse_power_exceptions.php:42
 #: openDCIM/report_exception.php:47 openDCIM/report_power_distribution.php:43
-#: openDCIM/report_power_utilization.php:42 openDCIM/report_surplus.php:55
+#: openDCIM/report_power_utilization.php:42
 #: openDCIM/report_vm_by_department.php:49 openDCIM/report_warranty.php:117
 msgid "Page"
 msgstr "页"
-
 
 #: openDCIM/cabaudit.php:399 openDCIM/report_audit_frequency.php:242
 #: openDCIM/report_audit.php:321 openDCIM/report_audit.php:417
@@ -241,40 +220,35 @@ msgstr "页"
 msgid "Cabinet Location"
 msgstr "机柜位置"
 
-
 #: openDCIM/cabaudit.php:404 openDCIM/cabaudit.php:510
-#: openDCIM/configuration.php:1909 openDCIM/devices.php:1681
-#: openDCIM/rackrequest.php:356 openDCIM/report_aging.php:425
+#: openDCIM/configuration.php:1910 openDCIM/devices.php:1711
+#: openDCIM/rackrequest.php:355 openDCIM/report_aging.php:425
 #: openDCIM/report_aging.php:460 openDCIM/report_asset.php:54
 #: openDCIM/report_warranty.php:439 openDCIM/report_warranty.php:472
 #: openDCIM/sidebar.inc.php:18 openDCIM/workorder.php:192
 msgid "Label"
 msgstr "标签"
 
-
 #: openDCIM/cabaudit.php:404
 msgid "SerialNo"
 msgstr "序列号"
-
 
 #: openDCIM/cabaudit.php:404
 msgid "AssetTag"
 msgstr "资产标签"
 
-
 #: openDCIM/cabaudit.php:404 openDCIM/connections_spreadsheet.php:58
-#: openDCIM/devices.php:1852 openDCIM/rackrequest.php:473
+#: openDCIM/devices.php:1882 openDCIM/rackrequest.php:472
 #: openDCIM/report_asset.php:54 openDCIM/report_contact.php:485
 #: openDCIM/report_cost.php:469
 #: openDCIM/report_diverse_power_exceptions.php:167
 #: openDCIM/report_exception.php:165 openDCIM/report_exception.php:235
 #: openDCIM/report_power_utilization.php:167
 #: openDCIM/report_project_outage_simulator.php:352
-#: openDCIM/report-projects.php:40 openDCIM/search_export.php:49
+#: openDCIM/search_export.php:49 openDCIM/search_export_storage_room.php:51
 #: openDCIM/workorder.php:192
 msgid "Position"
 msgstr "位置"
-
 
 #: openDCIM/cabaudit.php:404 openDCIM/report_contact.php:485
 #: openDCIM/report_cost.php:469 openDCIM/report_exception.php:165
@@ -282,51 +256,41 @@ msgstr "位置"
 msgid "Rack Units"
 msgstr "机位"
 
-
 #: openDCIM/cabaudit.php:404
 msgid "#Ports"
 msgstr "#Ports"
-
 
 #: openDCIM/cabaudit.php:404
 msgid "#PS"
 msgstr "#PS"
 
-
 #: openDCIM/cabaudit.php:404
 msgid "PowerConnection1"
 msgstr "电源连接1"
-
 
 #: openDCIM/cabaudit.php:404
 msgid "PowerConnection2"
 msgstr "电源连接2"
 
-
 #: openDCIM/cabaudit.php:404
 msgid "DeviceType"
 msgstr "设备类型"
-
 
 #: openDCIM/cabaudit.php:504
 msgid "PDUs at"
 msgstr "PDU位于"
 
-
 #: openDCIM/cabaudit.php:510
 msgid "NumOutputs"
 msgstr "输出编号"
-
 
 #: openDCIM/cabaudit.php:510
 msgid "PanelLabel"
 msgstr "面板标签"
 
-
 #: openDCIM/cabaudit.php:510
 msgid "PanelPole"
 msgstr "磁性面板"
-
 
 #: openDCIM/cabinets.php:76 openDCIM/cabrow.php:41
 #: openDCIM/cdu_templates.php:43 openDCIM/container.php:28
@@ -338,547 +302,463 @@ msgstr "磁性面板"
 #: openDCIM/device_templates.php:277 openDCIM/device_templates.php:278
 #: openDCIM/device_templates.php:283 openDCIM/device_templates.php:284
 #: openDCIM/device_templates.php:287 openDCIM/device_templates.php:290
-#: openDCIM/device_templates.php:294 openDCIM/escalations.php:27
-#: openDCIM/supplybin.php:36 openDCIM/timeperiods.php:27
-#: openDCIM/usermgr.php:55 openDCIM/zone.php:44
+#: openDCIM/device_templates.php:294 openDCIM/disposition.php:28
+#: openDCIM/escalations.php:27 openDCIM/supplybin.php:36
+#: openDCIM/timeperiods.php:27 openDCIM/usermgr.php:55 openDCIM/zone.php:44
 msgid "Updated"
 msgstr "更新"
-
 
 #: openDCIM/cabinets.php:228 openDCIM/cabnavigator.php:5
 #: openDCIM/rowview.php:5
 msgid "Data Center Cabinet Inventory"
 msgstr "数据中心机柜库存"
 
-
 #: openDCIM/cabinets.php:236
 msgid "New Cabinet"
 msgstr "新机柜"
 
-
-#: openDCIM/cabinets.php:260 openDCIM/report-projects.php:39
-#: openDCIM/report_supply_status.php:105 openDCIM/search_export.php:48
+#: openDCIM/cabinets.php:260 openDCIM/report_supply_status.php:105
+#: openDCIM/search_export.php:48 openDCIM/search_export_storage_room.php:50
 #: openDCIM/supplybin.php:159
 msgid "Location"
 msgstr "位置"
-
 
 #: openDCIM/cabinets.php:264
 msgid "Assigned To"
 msgstr "分配给"
 
-
 #: openDCIM/cabinets.php:266 openDCIM/scripts/ajax_tooltip.php:67
 msgid "General Use"
 msgstr "常规用途"
 
-
 #: openDCIM/cabinets.php:277 openDCIM/cabnavigator.php:58
-#: openDCIM/report_network_map.php:622 openDCIM/zone.php:107
+#: openDCIM/report_network_map.php:622 openDCIM/zone.php:113
 msgid "Zone"
 msgstr "区域"
-
 
 #: openDCIM/cabinets.php:281 openDCIM/report_network_map.php:617
 msgid "Cabinet Row"
 msgstr "一排机柜"
 
-
 #: openDCIM/cabinets.php:285
 msgid "Cabinet Height"
 msgstr "机柜高度"
-
 
 #: openDCIM/cabinets.php:289
 msgid "U1 Position"
 msgstr ""
 
-
-#: openDCIM/cabinets.php:292 openDCIM/configuration.php:1577
-#: openDCIM/dc_stats.php:296 openDCIM/dc_stats.php:304
-#: openDCIM/mapmaker.php:120 openDCIM/zone_stats.php:292
-#: openDCIM/zone_stats.php:300
+#: openDCIM/cabinets.php:292 openDCIM/configuration.php:1578
+#: openDCIM/dc_stats.php:308 openDCIM/dc_stats.php:316
+#: openDCIM/mapmaker.php:172 openDCIM/zone_stats.php:304
+#: openDCIM/zone_stats.php:312
 msgid "Bottom"
 msgstr "底部"
 
-
-#: openDCIM/cabinets.php:292 openDCIM/configuration.php:1578
-#: openDCIM/dc_stats.php:294 openDCIM/dc_stats.php:302
-#: openDCIM/mapmaker.php:118 openDCIM/zone_stats.php:290
-#: openDCIM/zone_stats.php:298
+#: openDCIM/cabinets.php:292 openDCIM/configuration.php:1579
+#: openDCIM/dc_stats.php:306 openDCIM/dc_stats.php:314
+#: openDCIM/mapmaker.php:170 openDCIM/zone_stats.php:302
+#: openDCIM/zone_stats.php:310
 msgid "Top"
 msgstr "顶部"
-
 
 #: openDCIM/cabinets.php:292
 msgid "Default"
 msgstr ""
 
-
 #: openDCIM/cabinets.php:305 openDCIM/cabnavigator.php:291
 msgid "Key/Lock Information"
 msgstr "钥匙/锁相关信息"
-
 
 #: openDCIM/cabinets.php:309
 msgid "Maximum"
 msgstr "最大"
 
-
 #: openDCIM/cabinets.php:313
 msgid "Maximum Weight"
 msgstr "最高承重"
-
 
 #: openDCIM/cabinets.php:317
 msgid "Date of Installation"
 msgstr "开通日期"
 
-
 #: openDCIM/cabinets.php:321 openDCIM/cabnavigator.php:66
-#: openDCIM/devices.php:1788 openDCIM/report-projects.php:47
-#: openDCIM/search_export.php:57
+#: openDCIM/devices.php:1818 openDCIM/search_export.php:57
+#: openDCIM/search_export_storage_room.php:59
 msgid "Tags"
 msgstr "标签"
 
-
 #: openDCIM/cabinets.php:327 openDCIM/conflicts.php:608
-#: openDCIM/connections_spreadsheet.php:23 openDCIM/devices.php:1078
-#: openDCIM/devices.php:1800 openDCIM/devices.php:2294
-#: openDCIM/devices.php:2336 openDCIM/devices.php:2385
+#: openDCIM/connections_spreadsheet.php:23 openDCIM/devices.php:1100
+#: openDCIM/devices.php:1830 openDCIM/devices.php:2324
+#: openDCIM/devices.php:2366 openDCIM/devices.php:2415
 #: openDCIM/device_templates.php:901 openDCIM/pathmaker.php:393
 #: openDCIM/report_tags.php:37 openDCIM/sidebar.inc.php:26
 msgid "Notes"
 msgstr "备注"
 
-
 #: openDCIM/cabinets.php:333 openDCIM/cabrow.php:185
-#: openDCIM/cdu_templates.php:211 openDCIM/configuration.php:2012
+#: openDCIM/cdu_templates.php:211 openDCIM/configuration.php:2103
 #: openDCIM/container.php:279 openDCIM/datacenter.php:313
 #: openDCIM/departments.php:214 openDCIM/device_manufacturers.php:203
-#: openDCIM/devices.php:2442 openDCIM/escalations.php:86
-#: openDCIM/power_panel.php:315 openDCIM/project_mgr.php:166
-#: openDCIM/report_logging.php:73 openDCIM/timeperiods.php:86
-#: openDCIM/usermgr.php:288 openDCIM/zone.php:170
+#: openDCIM/devices.php:2472 openDCIM/disposition.php:115
+#: openDCIM/escalations.php:86 openDCIM/power_panel.php:329
+#: openDCIM/project_mgr.php:174 openDCIM/report_logging.php:73
+#: openDCIM/timeperiods.php:86 openDCIM/usermgr.php:288 openDCIM/zone.php:176
 msgid "Update"
 msgstr "更新内容"
-
 
 #: openDCIM/cabinets.php:334 openDCIM/cabrow.php:186
 #: openDCIM/container.php:280 openDCIM/datacenter.php:319
 #: openDCIM/datacenter.php:334 openDCIM/departments.php:214
-#: openDCIM/device_manufacturers.php:204 openDCIM/devices.php:2451
-#: openDCIM/escalations.php:87 openDCIM/power_panel.php:316
-#: openDCIM/project_mgr.php:166 openDCIM/report_logging.php:70
-#: openDCIM/timeperiods.php:87 openDCIM/zone.php:171
+#: openDCIM/device_manufacturers.php:204 openDCIM/devices.php:2481
+#: openDCIM/escalations.php:87 openDCIM/power_panel.php:330
+#: openDCIM/project_mgr.php:174 openDCIM/report_logging.php:70
+#: openDCIM/timeperiods.php:87 openDCIM/zone.php:177
 msgid "Delete"
 msgstr "删除"
-
 
 #: openDCIM/cabinets.php:335 openDCIM/cabnavigator.php:387
 msgid "Audit Report"
 msgstr "审核报表"
 
-
 #: openDCIM/cabinets.php:336 openDCIM/cabnavigator.php:388
+#: openDCIM/power_panel.php:331
 msgid "Map Coordinates"
 msgstr "地图坐标"
-
 
 #: openDCIM/cabinets.php:338 openDCIM/cabrow.php:181
 #: openDCIM/cdu_templates.php:213 openDCIM/container.php:282
 #: openDCIM/datacenter.php:315 openDCIM/departments.php:216
-#: openDCIM/device_manufacturers.php:206 openDCIM/devices.php:2446
+#: openDCIM/device_manufacturers.php:206 openDCIM/devices.php:2476
 #: openDCIM/device_templates.php:385 openDCIM/device_templates.php:909
-#: openDCIM/escalations.php:89 openDCIM/power_panel.php:318
-#: openDCIM/project_mgr.php:168 openDCIM/rackrequest.php:488
-#: openDCIM/report_logging.php:67 openDCIM/supplybin.php:165
-#: openDCIM/timeperiods.php:89 openDCIM/usermgr.php:290 openDCIM/zone.php:165
+#: openDCIM/disposition.php:117 openDCIM/escalations.php:89
+#: openDCIM/power_panel.php:333 openDCIM/project_mgr.php:176
+#: openDCIM/rackrequest.php:487 openDCIM/report_logging.php:67
+#: openDCIM/supplybin.php:165 openDCIM/timeperiods.php:89
+#: openDCIM/usermgr.php:290 openDCIM/zone.php:171
 msgid "Create"
 msgstr "创建"
 
-
-#: openDCIM/cabinets.php:346 openDCIM/devices.php:2467
-#: openDCIM/devices.php:2469
+#: openDCIM/cabinets.php:346 openDCIM/devices.php:2497
+#: openDCIM/devices.php:2499
 msgid "Return to Navigator"
 msgstr "返回导航页面"
 
-
 #: openDCIM/cabinets.php:348 openDCIM/cabrow.php:193
-#: openDCIM/cdu_templates.php:220 openDCIM/configuration.php:2017
+#: openDCIM/cdu_templates.php:220 openDCIM/configuration.php:2108
 #: openDCIM/container.php:293 openDCIM/datacenter.php:339
 #: openDCIM/departments.php:225 openDCIM/device_manufacturers.php:218
-#: openDCIM/device_templates.php:1094 openDCIM/escalations.php:96
-#: openDCIM/image_management.php:151 openDCIM/pathmaker.php:522
-#: openDCIM/paths.php:615 openDCIM/power_panel.php:397
-#: openDCIM/project_mgr.php:177 openDCIM/rackrequest.php:496
-#: openDCIM/reports.php:77 openDCIM/supplies.php:128
-#: openDCIM/supplybin.php:214 openDCIM/timeperiods.php:96
-#: openDCIM/usermgr.php:299 openDCIM/zone.php:196
+#: openDCIM/device_templates.php:1094 openDCIM/disposition.php:121
+#: openDCIM/escalations.php:96 openDCIM/image_management.php:151
+#: openDCIM/pathmaker.php:522 openDCIM/paths.php:615
+#: openDCIM/power_panel.php:412 openDCIM/project_mgr.php:185
+#: openDCIM/rackrequest.php:495 openDCIM/reports.php:85
+#: openDCIM/supplies.php:128 openDCIM/supplybin.php:214
+#: openDCIM/timeperiods.php:96 openDCIM/usermgr.php:299 openDCIM/zone.php:202
 msgid "Return to Main Menu"
 msgstr "返回主菜单"
-
 
 #: openDCIM/cabinets.php:354 openDCIM/cabnavigator.php:656
 msgid "Cabinet delete confirmation"
 msgstr "机柜删除确认"
 
-
 #: openDCIM/cabinets.php:355
-msgid "Are you sure that you want to delete this cabinet and all the devices in it?<br><br><b>THERE IS NO UNDO</b>"
-msgstr "您确定要删除这个机柜以及机柜内的所有设备吗?<br><br><b>这个操作是不可逆的!</b>"
-
+msgid ""
+"Are you sure that you want to delete this cabinet and all the devices in it?"
+"<br><br><b>THERE IS NO UNDO</b>"
+msgstr ""
+"您确定要删除这个机柜以及机柜内的所有设备吗?<br><br><b>这个操作是不可逆的!</b>"
 
 #: openDCIM/cabinets.php:370 openDCIM/cabrow.php:111
 #: openDCIM/container.php:158 openDCIM/datacenter.php:163
-#: openDCIM/devices.php:1429 openDCIM/devices.php:1582
-#: openDCIM/power_panel.php:410 openDCIM/project_mgr.php:95
-#: openDCIM/report_exception.php:261 openDCIM/zone.php:235
+#: openDCIM/devices.php:1451 openDCIM/devices.php:1604
+#: openDCIM/power_panel.php:425 openDCIM/project_mgr.php:103
+#: openDCIM/report_exception.php:261 openDCIM/zone.php:241
 msgid "Yes"
 msgstr "是"
 
-
 #: openDCIM/cabinets.php:381 openDCIM/cabrow.php:116
 #: openDCIM/container.php:163 openDCIM/datacenter.php:175
-#: openDCIM/devices.php:1433 openDCIM/devices.php:1588
-#: openDCIM/power_panel.php:422 openDCIM/project_mgr.php:106
-#: openDCIM/report_exception.php:263 openDCIM/zone.php:240
+#: openDCIM/devices.php:1455 openDCIM/devices.php:1610
+#: openDCIM/power_panel.php:437 openDCIM/project_mgr.php:114
+#: openDCIM/report_exception.php:263 openDCIM/zone.php:246
 msgid "No"
 msgstr "否"
 
-
-#: openDCIM/cabnavigator.php:52 openDCIM/devices.php:1705
+#: openDCIM/cabnavigator.php:52 openDCIM/devices.php:1735
 msgid "Install Date"
 msgstr "安装日期"
 
-
 #: openDCIM/cabnavigator.php:64 openDCIM/cabrow.php:137
-#: openDCIM/dc_stats.php:300 openDCIM/rowview.php:87
-#: openDCIM/zone_stats.php:296
+#: openDCIM/dc_stats.php:312 openDCIM/rowview.php:87
+#: openDCIM/zone_stats.php:308
 msgid "Row"
 msgstr "排"
-
 
 #: openDCIM/cabnavigator.php:152
 msgid "Never"
 msgstr "从未"
 
-
 #: openDCIM/cabnavigator.php:184
 msgid "Reservation"
 msgstr "预留"
-
 
 #: openDCIM/cabnavigator.php:188
 msgid "Free Space"
 msgstr "可用空间"
 
-
 #: openDCIM/cabnavigator.php:205
 msgid "Above defined rack height"
 msgstr "机架高度上限设置"
-
 
 #: openDCIM/cabnavigator.php:228
 msgid "Maximum Weight Not Set"
 msgstr ""
 
-
 #: openDCIM/cabnavigator.php:240
 msgid "Owner Unassigned"
 msgstr "未分配所有人"
-
 
 #: openDCIM/cabnavigator.php:241
 msgid "Template Unassigned"
 msgstr "未分配模板"
 
-
 #: openDCIM/cabnavigator.php:245
 msgid "Markup Key"
 msgstr "关键标记"
-
 
 #: openDCIM/cabnavigator.php:249
 msgid "Cabinet Metrics"
 msgstr "机柜计量标准"
 
-
-#: openDCIM/cabnavigator.php:252 openDCIM/dc_dashboard.php:78
-#: openDCIM/dc_stats.php:272 openDCIM/index.php:118
-#: openDCIM/zone_stats.php:269 openDCIM/scripts/ajax_tooltip.php:137
+#: openDCIM/cabnavigator.php:252 openDCIM/dc_dashboard.php:84
+#: openDCIM/dc_stats.php:284 openDCIM/index.php:118
+#: openDCIM/zone_stats.php:281 openDCIM/scripts/ajax_tooltip.php:137
 msgid "Space"
 msgstr "空间"
 
-
-#: openDCIM/cabnavigator.php:261 openDCIM/dc_dashboard.php:79
-#: openDCIM/dc_stats.php:273 openDCIM/devices.php:1877
-#: openDCIM/device_templates.php:746 openDCIM/zone_stats.php:270
+#: openDCIM/cabnavigator.php:261 openDCIM/dc_dashboard.php:85
+#: openDCIM/dc_stats.php:285 openDCIM/devices.php:1907
+#: openDCIM/device_templates.php:746 openDCIM/zone_stats.php:282
 #: openDCIM/scripts/ajax_tooltip.php:138
 msgid "Weight"
 msgstr "重量"
-
 
 #: openDCIM/cabnavigator.php:270
 msgid "Computed Watts"
 msgstr "计算电量(wt)"
 
-
 #: openDCIM/cabnavigator.php:279
 msgid "Measured Watts"
 msgstr "实测电量(wt)"
-
 
 #: openDCIM/cabnavigator.php:288
 msgid "Approximate Center of Gravity"
 msgstr "估算中心承重"
 
-
 #: openDCIM/cabnavigator.php:297
 msgid "Zero-U Devices"
 msgstr "0U设备"
-
 
 #: openDCIM/cabnavigator.php:302
 msgid "Power Distribution"
 msgstr "电源分配"
 
-
 #: openDCIM/cabnavigator.php:343
 msgid "Unknown Status"
 msgstr "未知状态"
-
 
 #: openDCIM/cabnavigator.php:346
 msgid "ATS Feeds OK"
 msgstr "ATS送电正常"
 
-
 #: openDCIM/cabnavigator.php:349
 msgid "ATS Feeds Abnormal"
 msgstr "ATS送电异常"
-
 
 #: openDCIM/cabnavigator.php:357
 msgid "Add CDU"
 msgstr "添加CDU"
 
-
 #: openDCIM/cabnavigator.php:363
 msgid "Environmental Sensors"
 msgstr ""
-
 
 #: openDCIM/cabnavigator.php:371
 msgid "Add Sensor"
 msgstr ""
 
-
-#: openDCIM/cabnavigator.php:385 openDCIM/devices.php:2444
+#: openDCIM/cabnavigator.php:385 openDCIM/devices.php:2474
 msgid "Certify Audit"
 msgstr "验证审核"
 
-
-#: openDCIM/cabnavigator.php:386 openDCIM/devices.php:2183
+#: openDCIM/cabnavigator.php:386 openDCIM/devices.php:2213
 msgid "Add Device"
 msgstr "添加设备"
-
 
 #: openDCIM/cabnavigator.php:389
 msgid "Edit Cabinet"
 msgstr "编辑机柜"
 
-
 #: openDCIM/cabnavigator.php:392
 msgid "Delete Cabinet"
 msgstr "删除机柜"
-
 
 #: openDCIM/cabnavigator.php:398
 msgid "Cabinet Notes"
 msgstr ""
 
-
 #: openDCIM/cabnavigator.php:411 openDCIM/rowview.php:87
 msgid "Facilities Cabinet Maintenance"
 msgstr "机柜设备维护"
-
 
 #: openDCIM/cabnavigator.php:645
 #, php-format
 msgid "Return to %s"
 msgstr ""
 
-
 #: openDCIM/cabnavigator.php:648
 msgid "Audit Confirmation"
 msgstr ""
-
 
 #: openDCIM/cabnavigator.php:649
 msgid "Do you certify that you have completed an audit of this cabinet?"
 msgstr "您是否已经完成了选中机柜的审核?"
 
-
 #: openDCIM/cabnavigator.php:657
-msgid "Are you sure that you want to delete this cabinet and all the devices in it?"
+msgid ""
+"Are you sure that you want to delete this cabinet and all the devices in it?"
 msgstr ""
-
 
 #: openDCIM/cabnavigator.php:661 openDCIM/departments.php:236
 #: openDCIM/device_manufacturers.php:227 openDCIM/usermgr.php:314
 msgid "Are you REALLY sure?"
 msgstr ""
 
-
 #: openDCIM/cabnavigator.php:662 openDCIM/departments.php:237
 #: openDCIM/device_manufacturers.php:228 openDCIM/usermgr.php:315
 msgid "Are you sure REALLY sure?  There is no undo!!"
 msgstr ""
 
-
 #: openDCIM/cabrow.php:5
 msgid "Rows of Cabinets"
 msgstr "整排机柜"
-
 
 #: openDCIM/cabrow.php:103
 msgid "Verify Delete Row"
 msgstr "验证是否删除这排机柜"
 
-
 #: openDCIM/cabrow.php:104
-msgid "This Row will be deleted and there is no undo.  Assets within the row will remain as members of the Data Center."
-msgstr "这排机柜会被删除并且不可恢复. 机柜内的资产将继续作为数据中心的设备成员."
+msgid ""
+"This Row will be deleted and there is no undo.  Assets within the row will "
+"remain as members of the Data Center."
+msgstr ""
+"这排机柜会被删除并且不可恢复. 机柜内的资产将继续作为数据中心的设备成员."
 
-
-#: openDCIM/cabrow.php:104 openDCIM/container.php:151 openDCIM/zone.php:227
+#: openDCIM/cabrow.php:104 openDCIM/container.php:151 openDCIM/zone.php:233
 msgid "Are you sure?"
 msgstr "您确定吗?"
-
 
 #: openDCIM/cabrow.php:140
 msgid "New Row"
 msgstr "新的一排"
 
-
 #: openDCIM/cabrow.php:151 openDCIM/container.php:235
 #: openDCIM/datacenter.php:252 openDCIM/device_manufacturers.php:193
-#: openDCIM/report-projects.php:42 openDCIM/report_surplus.php:234
-#: openDCIM/search_export.php:51 openDCIM/scripts/ajax_tooltip.php:188
-#: openDCIM/scripts/ajax_tooltip.php:199
+#: openDCIM/disposition.php:90 openDCIM/report_surplus.php:134
+#: openDCIM/search_export.php:51 openDCIM/search_export_storage_room.php:53
+#: openDCIM/scripts/ajax_tooltip.php:196 openDCIM/scripts/ajax_tooltip.php:207
 msgid "Name"
 msgstr "名称"
-
 
 #: openDCIM/cabrow.php:167
 msgid "Data Center Zone"
 msgstr "数据中心区域"
 
-
 #: openDCIM/cdu_templates.php:5
 msgid "Data Center Cabinet Distribution Unit Templates"
 msgstr "数据中心机柜配电部分模板"
 
-
 #: openDCIM/cdu_templates.php:82 openDCIM/device_templates.php:714
-#: openDCIM/report-projects.php:46 openDCIM/search_export.php:56
+#: openDCIM/search_export.php:56 openDCIM/search_export_storage_room.php:58
 msgid "Template"
 msgstr "模板"
-
 
 #: openDCIM/cdu_templates.php:84 openDCIM/device_templates.php:716
 msgid "New Template"
 msgstr "新的模板"
 
-
 #: openDCIM/cdu_templates.php:112 openDCIM/device_templates.php:967
 msgid "Managed"
 msgstr "管理"
 
-
-#: openDCIM/cdu_templates.php:118 openDCIM/devices.php:2109
+#: openDCIM/cdu_templates.php:118 openDCIM/devices.php:2139
 msgid "Automatic Transfer Switch"
 msgstr "自动切换开关"
 
-
-#: openDCIM/cdu_templates.php:124 openDCIM/configuration.php:1727
-#: openDCIM/devices.php:1950 openDCIM/device_templates.php:774
+#: openDCIM/cdu_templates.php:124 openDCIM/configuration.php:1728
+#: openDCIM/devices.php:1980 openDCIM/device_templates.php:774
 msgid "SNMP Version"
 msgstr "SNMP版本"
-
 
 #: openDCIM/cdu_templates.php:137 openDCIM/device_templates.php:973
 msgid "Firmware Version OID"
 msgstr "OID固件版本"
 
-
 #: openDCIM/cdu_templates.php:141 openDCIM/device_templates.php:977
 msgid "Multiplier"
 msgstr "倍数"
-
 
 #: openDCIM/cdu_templates.php:165
 msgid "OID1"
 msgstr "OID1"
 
-
 #: openDCIM/cdu_templates.php:169
 msgid "OID2"
 msgstr "OID2"
-
 
 #: openDCIM/cdu_templates.php:173
 msgid "OID3"
 msgstr "OID3"
 
-
 #: openDCIM/cdu_templates.php:177 openDCIM/device_templates.php:1024
 msgid "ATS Status OID"
 msgstr "ATS状态OID"
-
 
 #: openDCIM/cdu_templates.php:181 openDCIM/device_templates.php:1028
 msgid "ATS Desired Result"
 msgstr "ATS预期效果"
 
-
 #: openDCIM/cdu_templates.php:185 openDCIM/device_templates.php:1001
 msgid "Processing Scheme"
 msgstr "处理方案"
-
 
 #: openDCIM/cdu_templates.php:197 openDCIM/device_templates.php:1012
 msgid "Voltage"
 msgstr "电压"
 
-
 #: openDCIM/cdu_templates.php:201 openDCIM/device_templates.php:1016
 msgid "Amperage"
 msgstr "安培"
-
 
 #: openDCIM/cdu_templates.php:205
 msgid "No. of Outlets"
 msgstr "出口编号"
 
-
 #: openDCIM/configuration.php:7
 msgid "Data Center Configuration"
 msgstr "数据中心配置"
 
-
 #: openDCIM/configuration.php:483 openDCIM/container.php:107
 #: openDCIM/datacenter.php:124 openDCIM/device_templates.php:402
-#: openDCIM/rackrequest.php:452
+#: openDCIM/rackrequest.php:451
 msgid "Select"
 msgstr "选择"
-
 
 #: openDCIM/configuration.php:581 openDCIM/configuration.php:766
 msgid "Clear all"
 msgstr "全部清除"
-
 
 #: openDCIM/configuration.php:589 openDCIM/configuration.php:605
 #: openDCIM/configuration.php:776 openDCIM/configuration.php:797
@@ -887,11 +767,9 @@ msgstr "全部清除"
 msgid "Something just went horribly wrong."
 msgstr "有设备发生了严重错误."
 
-
 #: openDCIM/configuration.php:596 openDCIM/configuration.php:783
 msgid "Replace"
 msgstr "更换"
-
 
 #: openDCIM/configuration.php:612 openDCIM/configuration.php:804
 #: openDCIM/configuration.php:1015 openDCIM/configuration.php:1042
@@ -900,81 +778,77 @@ msgstr "更换"
 msgid "Cancel"
 msgstr "取消"
 
-
 #: openDCIM/configuration.php:616
 msgid "Media Type Delete Override"
 msgstr "介质类型强制删除"
 
-
 #: openDCIM/configuration.php:616
-msgid "This media type is in use somewhere. Select an alternate type to assign to all the records to or choose clear all."
-msgstr "这种介质类型正在某个地方被使用中. 选择一个替代的类型分配到所有记录或者选择全部清除."
-
+msgid ""
+"This media type is in use somewhere. Select an alternate type to assign to "
+"all the records to or choose clear all."
+msgstr ""
+"这种介质类型正在某个地方被使用中. 选择一个替代的类型分配到所有记录或者选择全"
+"部清除."
 
 #: openDCIM/configuration.php:808
 msgid "Code Delete Override"
 msgstr "代码强制删除"
 
-
 #: openDCIM/configuration.php:808
-msgid "This code is in use somewhere. You can either choose to clear all instances of this color being used or choose to have them replaced with another color."
-msgstr "这段代码在某些地方正被使用. 您可以选择清除所有实用这种颜色的实例, 或者选择其它的颜色进行替代."
-
+msgid ""
+"This code is in use somewhere. You can either choose to clear all instances "
+"of this color being used or choose to have them replaced with another color."
+msgstr ""
+"这段代码在某些地方正被使用. 您可以选择清除所有实用这种颜色的实例, 或者选择其"
+"它的颜色进行替代."
 
 #: openDCIM/configuration.php:1020
 msgid "Custom Device Attribute Type Change Error"
 msgstr ""
 
-
 #: openDCIM/configuration.php:1028
 msgid "Change Type and Clear all uses"
 msgstr ""
-
 
 #: openDCIM/configuration.php:1047
 msgid "Custom Device Attribute Type Change Override"
 msgstr ""
 
-
 #: openDCIM/configuration.php:1047
-msgid "This custom device attribute is in use somewhere. If you choose to change the attribute type, it will be cleared from all devices and device templates."
+msgid ""
+"This custom device attribute is in use somewhere. If you choose to change "
+"the attribute type, it will be cleared from all devices and device templates."
 msgstr ""
-
 
 #: openDCIM/configuration.php:1133
 msgid "Custom Device Attribute Delete Error"
 msgstr ""
 
-
 #: openDCIM/configuration.php:1142
 msgid "Delete from All Devices/Templates"
 msgstr ""
-
 
 #: openDCIM/configuration.php:1161
 msgid "Custom Device Attribute Delete Override"
 msgstr ""
 
-
 #: openDCIM/configuration.php:1161
-msgid "This custom device attribute is in use somewhere. If you choose to delete the attribute, it will be removed from all devices and device templates."
+msgid ""
+"This custom device attribute is in use somewhere. If you choose to delete "
+"the attribute, it will be removed from all devices and device templates."
 msgstr ""
-
 
 #: openDCIM/configuration.php:1314
 msgid "General"
 msgstr "常规"
 
-
 #: openDCIM/configuration.php:1315
 msgid "Workflow"
 msgstr "工作流程"
 
-
 #: openDCIM/configuration.php:1316
 msgid "Style"
 msgstr "样式"
-
 
 #: openDCIM/configuration.php:1317 openDCIM/report_contact.php:450
 #: openDCIM/report_cost.php:435 openDCIM/report_department.php:179
@@ -982,1304 +856,1150 @@ msgstr "样式"
 msgid "Email"
 msgstr "Email"
 
-
 #: openDCIM/configuration.php:1318
 msgid "Reporting"
 msgstr "报告"
-
 
 #: openDCIM/configuration.php:1319
 msgid "ToolTips"
 msgstr "工具栏"
 
-
 #: openDCIM/configuration.php:1320
 msgid "Cabling"
 msgstr "线缆"
 
-
-#: openDCIM/configuration.php:1321 openDCIM/configuration.php:1905
+#: openDCIM/configuration.php:1321 openDCIM/configuration.php:1906
 msgid "Custom Device Attributes"
 msgstr ""
-
 
 #: openDCIM/configuration.php:1322
 msgid "LDAP"
 msgstr ""
 
-
 #: openDCIM/configuration.php:1323
+msgid "SAML"
+msgstr ""
+
+#: openDCIM/configuration.php:1324
 msgid "Pre-Flight Check"
 msgstr ""
 
-
-#: openDCIM/configuration.php:1328
+#: openDCIM/configuration.php:1329
 msgid "Organization Name"
 msgstr "组织名称"
 
-
-#: openDCIM/configuration.php:1332
+#: openDCIM/configuration.php:1333
 msgid "Locale"
 msgstr "位置"
 
-
-#: openDCIM/configuration.php:1336
+#: openDCIM/configuration.php:1337
 msgid "Default Panel Voltage"
 msgstr "默认排插电压"
 
-
-#: openDCIM/configuration.php:1340
+#: openDCIM/configuration.php:1341
 msgid "Time and Measurements"
 msgstr "生命周期与测量结果"
 
-
-#: openDCIM/configuration.php:1343
+#: openDCIM/configuration.php:1344
 msgid "Time Zone"
 msgstr "时区"
 
-
-#: openDCIM/configuration.php:1347 openDCIM/devices.php:1700
-#: openDCIM/rackrequest.php:377
+#: openDCIM/configuration.php:1348 openDCIM/devices.php:1730
+#: openDCIM/rackrequest.php:376
 msgid "Manufacture Date"
 msgstr "制造日期"
 
-
-#: openDCIM/configuration.php:1349 openDCIM/configuration.php:1357
+#: openDCIM/configuration.php:1350 openDCIM/configuration.php:1358
 msgid "Blank"
 msgstr "空"
 
-
-#: openDCIM/configuration.php:1350 openDCIM/configuration.php:1358
+#: openDCIM/configuration.php:1351 openDCIM/configuration.php:1359
+#: openDCIM/report_surplus.php:37
 msgid "Now"
 msgstr "现在"
 
-
-#: openDCIM/configuration.php:1355
+#: openDCIM/configuration.php:1356
 msgid "Warranty Date"
 msgstr "质保期"
 
-
-#: openDCIM/configuration.php:1363
+#: openDCIM/configuration.php:1364
 msgid "Measurement Units"
 msgstr "计量单位"
 
-
-#: openDCIM/configuration.php:1365
+#: openDCIM/configuration.php:1366
 msgid "English"
 msgstr "英语"
 
-
-#: openDCIM/configuration.php:1366
+#: openDCIM/configuration.php:1367
 msgid "Metric"
 msgstr "度量单位"
 
-
-#: openDCIM/configuration.php:1371
+#: openDCIM/configuration.php:1372
 msgid "Page Size"
 msgstr "页面尺寸"
 
-
-#: openDCIM/configuration.php:1373
+#: openDCIM/configuration.php:1374
 msgid "A4"
 msgstr "A4"
 
-
-#: openDCIM/configuration.php:1374
+#: openDCIM/configuration.php:1375
 msgid "A3"
 msgstr "A3"
 
-
-#: openDCIM/configuration.php:1375
+#: openDCIM/configuration.php:1376
 msgid "Letter"
 msgstr "信纸"
 
-
-#: openDCIM/configuration.php:1376
+#: openDCIM/configuration.php:1377
 msgid "Legal"
 msgstr "合法"
 
-
-#: openDCIM/configuration.php:1381 openDCIM/departments.php:231
+#: openDCIM/configuration.php:1382 openDCIM/departments.php:231
 msgid "Users"
 msgstr "用户"
 
-
-#: openDCIM/configuration.php:1384
+#: openDCIM/configuration.php:1385
 msgid "Department Types"
 msgstr "部门类型"
 
-
-#: openDCIM/configuration.php:1388
+#: openDCIM/configuration.php:1389
 msgid "User Lookup URL"
 msgstr "用户查询的URL"
 
-
-#: openDCIM/configuration.php:1392
+#: openDCIM/configuration.php:1393
 msgid "Block Undefined Users"
 msgstr ""
-
-
-#: openDCIM/configuration.php:1394 openDCIM/configuration.php:1466
-#: openDCIM/configuration.php:1477 openDCIM/configuration.php:1488
-#: openDCIM/configuration.php:1512 openDCIM/configuration.php:1520
-#: openDCIM/configuration.php:1608 openDCIM/configuration.php:1616
-#: openDCIM/configuration.php:1814 openDCIM/configuration.php:1827
-#: openDCIM/configuration.php:1842 openDCIM/configuration.php:1882
-#: openDCIM/usermgr.php:282
-msgid "Disabled"
-msgstr "禁用"
-
 
 #: openDCIM/configuration.php:1395 openDCIM/configuration.php:1467
 #: openDCIM/configuration.php:1478 openDCIM/configuration.php:1489
 #: openDCIM/configuration.php:1513 openDCIM/configuration.php:1521
 #: openDCIM/configuration.php:1609 openDCIM/configuration.php:1617
 #: openDCIM/configuration.php:1815 openDCIM/configuration.php:1828
+#: openDCIM/configuration.php:1843 openDCIM/configuration.php:1883
+#: openDCIM/configuration.php:2007 openDCIM/configuration.php:2015
+#: openDCIM/configuration.php:2027 openDCIM/usermgr.php:282
+msgid "Disabled"
+msgstr "禁用"
+
+#: openDCIM/configuration.php:1396 openDCIM/configuration.php:1468
+#: openDCIM/configuration.php:1479 openDCIM/configuration.php:1490
+#: openDCIM/configuration.php:1514 openDCIM/configuration.php:1522
+#: openDCIM/configuration.php:1610 openDCIM/configuration.php:1618
+#: openDCIM/configuration.php:1816 openDCIM/configuration.php:1829
+#: openDCIM/configuration.php:2008 openDCIM/configuration.php:2016
+#: openDCIM/configuration.php:2028
 msgid "Enabled"
 msgstr "启用"
 
-
-#: openDCIM/configuration.php:1400
+#: openDCIM/configuration.php:1401
 msgid "Rack Usage"
 msgstr "机架使用"
 
-
-#: openDCIM/configuration.php:1403
+#: openDCIM/configuration.php:1404
 msgid "Space Critical"
 msgstr "空间峰值"
 
-
-#: openDCIM/configuration.php:1406
+#: openDCIM/configuration.php:1407
 msgid "Temperature Critical"
 msgstr "温度峰值"
 
-
-#: openDCIM/configuration.php:1410
+#: openDCIM/configuration.php:1411
 msgid "Space Warning"
 msgstr "空间报警"
 
-
-#: openDCIM/configuration.php:1413
+#: openDCIM/configuration.php:1414
 msgid "Temperature Warning"
 msgstr "温度报警"
 
-
-#: openDCIM/configuration.php:1417
+#: openDCIM/configuration.php:1418
 msgid "Weight Critical"
 msgstr "承重峰值"
 
-
-#: openDCIM/configuration.php:1420
+#: openDCIM/configuration.php:1421
 msgid "High Humidity Critical"
 msgstr "最高湿度峰值"
 
-
-#: openDCIM/configuration.php:1424
+#: openDCIM/configuration.php:1425
 msgid "Weight Warning"
 msgstr "承重报警"
 
-
-#: openDCIM/configuration.php:1427
+#: openDCIM/configuration.php:1428
 msgid "Low Humidity Critical"
 msgstr "最小湿度限定"
 
-
-#: openDCIM/configuration.php:1431
+#: openDCIM/configuration.php:1432
 msgid "Power Critical"
 msgstr "电力峰值"
 
-
-#: openDCIM/configuration.php:1434
+#: openDCIM/configuration.php:1435
 msgid "High Humidity Caution"
 msgstr "最大湿度报警"
 
-
-#: openDCIM/configuration.php:1438
+#: openDCIM/configuration.php:1439
 msgid "Power Warning"
 msgstr "电力警告"
 
-
-#: openDCIM/configuration.php:1441
+#: openDCIM/configuration.php:1442
 msgid "Low Humidity Caution"
 msgstr "最低湿度警告"
 
-
-#: openDCIM/configuration.php:1445
+#: openDCIM/configuration.php:1446
 msgid "RCI (Rack Cooling Index) High"
 msgstr ""
 
-
-#: openDCIM/configuration.php:1448
+#: openDCIM/configuration.php:1449
 msgid "RCI (Rack Cooling Index) Low"
 msgstr ""
 
-
-#: openDCIM/configuration.php:1452 openDCIM/index.php:130
+#: openDCIM/configuration.php:1453 openDCIM/index.php:130
 msgid "Virtual Machines"
 msgstr "虚拟机"
 
-
-#: openDCIM/configuration.php:1455
+#: openDCIM/configuration.php:1456
 msgid "Expiration Time (Days)"
 msgstr "到期时间(天)"
 
-
-#: openDCIM/configuration.php:1464
+#: openDCIM/configuration.php:1465
 msgid "Work Order Builder"
 msgstr "工单生成器"
 
-
-#: openDCIM/configuration.php:1472
+#: openDCIM/configuration.php:1473
 msgid "Site Level Security Options"
 msgstr ""
 
-
-#: openDCIM/configuration.php:1475
+#: openDCIM/configuration.php:1476
 msgid "Filter Cabinet List"
 msgstr ""
 
-
-#: openDCIM/configuration.php:1483 openDCIM/configuration.php:1486
+#: openDCIM/configuration.php:1484 openDCIM/configuration.php:1487
 msgid "Rack Requests"
 msgstr "机位需求单"
 
-
-#: openDCIM/configuration.php:1494
+#: openDCIM/configuration.php:1495
 msgid "Mail Subject"
 msgstr "邮件主题"
 
-
-#: openDCIM/configuration.php:1498
+#: openDCIM/configuration.php:1499
 msgid "Warning (Hours)"
 msgstr "警报(小时)"
 
-
-#: openDCIM/configuration.php:1502
+#: openDCIM/configuration.php:1503
 msgid "Critical (Hours)"
 msgstr "峰值(小时)"
 
-
-#: openDCIM/configuration.php:1506
+#: openDCIM/configuration.php:1507
 msgid "Online Repository"
 msgstr ""
 
-
-#: openDCIM/configuration.php:1507
+#: openDCIM/configuration.php:1508
 msgid "Default Behavior for Site (Can Override Per Template)"
 msgstr ""
 
-
-#: openDCIM/configuration.php:1510
+#: openDCIM/configuration.php:1511
 msgid "Share your templates to the repository"
 msgstr ""
 
-
-#: openDCIM/configuration.php:1518
+#: openDCIM/configuration.php:1519
 msgid "Keep local values when synchronizing"
 msgstr ""
 
-
-#: openDCIM/configuration.php:1526
+#: openDCIM/configuration.php:1527
 msgid "API UserID"
 msgstr ""
 
-
-#: openDCIM/configuration.php:1530 openDCIM/usermgr.php:263
+#: openDCIM/configuration.php:1531 openDCIM/usermgr.php:263
 msgid "API Key"
 msgstr ""
 
-
-#: openDCIM/configuration.php:1536
+#: openDCIM/configuration.php:1537
 msgid "Racks & Maps"
 msgstr "服务器机柜与网络拓扑"
 
-
-#: openDCIM/configuration.php:1539
+#: openDCIM/configuration.php:1540
 msgid "Critical Color"
 msgstr "峰值颜色"
 
-
-#: openDCIM/configuration.php:1545
+#: openDCIM/configuration.php:1546
 msgid "Caution Color"
 msgstr "警告颜色"
 
-
-#: openDCIM/configuration.php:1551
+#: openDCIM/configuration.php:1552
 msgid "Good Color"
 msgstr "正常颜色"
 
-
-#: openDCIM/configuration.php:1563
+#: openDCIM/configuration.php:1564
 msgid "Reserved Devices"
 msgstr "保留中的设备"
 
-
-#: openDCIM/configuration.php:1569
+#: openDCIM/configuration.php:1570
 msgid "Unused Spaces"
 msgstr "闲置空间"
 
-
-#: openDCIM/configuration.php:1575
+#: openDCIM/configuration.php:1576
 msgid "Default U1 Position"
 msgstr ""
 
-
-#: openDCIM/configuration.php:1582 openDCIM/departments.php:231
+#: openDCIM/configuration.php:1583 openDCIM/departments.php:231
 msgid "Devices"
 msgstr "设备"
 
-
-#: openDCIM/configuration.php:1585
+#: openDCIM/configuration.php:1586
 msgid "Device Labels"
 msgstr "设备标签"
 
-
-#: openDCIM/configuration.php:1587
+#: openDCIM/configuration.php:1588
 msgid "Uppercase"
 msgstr "大写"
 
-
-#: openDCIM/configuration.php:1588
+#: openDCIM/configuration.php:1589
 msgid "Lowercase"
 msgstr "小写"
 
-
-#: openDCIM/configuration.php:1589
+#: openDCIM/configuration.php:1590
 msgid "Initial caps"
 msgstr "首字母大写"
 
-
-#: openDCIM/configuration.php:1590
+#: openDCIM/configuration.php:1591
 msgid "Don't touch my labels"
 msgstr "不要碰我的标签"
 
-
-#: openDCIM/configuration.php:1595
+#: openDCIM/configuration.php:1596
 msgid "Device Lists"
 msgstr ""
 
-
-#: openDCIM/configuration.php:1597
+#: openDCIM/configuration.php:1598
 msgid "Just Devices"
 msgstr ""
 
-
-#: openDCIM/configuration.php:1598
+#: openDCIM/configuration.php:1599
 msgid "Show Datacenter and Cabinet"
 msgstr ""
 
-
-#: openDCIM/configuration.php:1603 openDCIM/departments.php:231
+#: openDCIM/configuration.php:1604 openDCIM/departments.php:231
 #: openDCIM/rowview.php:87
 msgid "Cabinets"
 msgstr "机柜"
 
-
-#: openDCIM/configuration.php:1606
+#: openDCIM/configuration.php:1607
 msgid "Draw Cabinet Outlines"
 msgstr ""
 
-
-#: openDCIM/configuration.php:1614
+#: openDCIM/configuration.php:1615
 msgid "Add Cabinet Labels"
 msgstr ""
 
-
-#: openDCIM/configuration.php:1622
+#: openDCIM/configuration.php:1623
 msgid "Site"
 msgstr "站点"
 
-
-#: openDCIM/configuration.php:1625
+#: openDCIM/configuration.php:1626
 msgid "Header Color"
 msgstr "标题颜色"
 
-
-#: openDCIM/configuration.php:1631
+#: openDCIM/configuration.php:1632
 msgid "Body Color"
 msgstr "主体颜色"
 
-
-#: openDCIM/configuration.php:1637
+#: openDCIM/configuration.php:1638
 msgid "Link Color"
 msgstr "链接颜色"
 
-
-#: openDCIM/configuration.php:1643
+#: openDCIM/configuration.php:1644
 msgid "Viewed Link Color"
 msgstr "浏览过的链接颜色"
 
-
-#: openDCIM/configuration.php:1653
+#: openDCIM/configuration.php:1654
 msgid "SMTP Server"
 msgstr "SMTP服务器"
 
-
-#: openDCIM/configuration.php:1657
+#: openDCIM/configuration.php:1658
 msgid "SMTP Port"
 msgstr "SMTP端口"
 
-
-#: openDCIM/configuration.php:1661
+#: openDCIM/configuration.php:1662
 msgid "SMTP Helo"
 msgstr "SMTP Helo"
 
-
-#: openDCIM/configuration.php:1665
+#: openDCIM/configuration.php:1666
 msgid "SMTP Username"
 msgstr "SMTP用户名"
 
-
-#: openDCIM/configuration.php:1669
+#: openDCIM/configuration.php:1670
 msgid "SMTP Password"
 msgstr "SMTP密码"
 
-
-#: openDCIM/configuration.php:1673
+#: openDCIM/configuration.php:1674
 msgid "Mail To"
 msgstr "发送邮件至"
 
-
-#: openDCIM/configuration.php:1677
+#: openDCIM/configuration.php:1678
 msgid "Mail From"
 msgstr "收到邮件来自"
 
-
-#: openDCIM/configuration.php:1681
+#: openDCIM/configuration.php:1682
 msgid "Facility Manager"
 msgstr "设备管理员"
 
-
-#: openDCIM/configuration.php:1685
+#: openDCIM/configuration.php:1686
 msgid "Facility Manager Email"
 msgstr "设备管理员电子邮件"
 
-
-#: openDCIM/configuration.php:1696 openDCIM/report_cost.php:397
+#: openDCIM/configuration.php:1697 openDCIM/report_cost.php:397
 #: openDCIM/report_cost.php:400
 msgid "Annual Cost Per Rack Unit (Year)"
 msgstr "每个机架单元的费用(年)"
 
-
-#: openDCIM/configuration.php:1700
+#: openDCIM/configuration.php:1701
 msgid "Cost Per KwHr"
 msgstr ""
 
-
-#: openDCIM/configuration.php:1704
+#: openDCIM/configuration.php:1705
 msgid "Logo file for headers"
 msgstr "标题上的商标文件"
 
-
-#: openDCIM/configuration.php:1708
+#: openDCIM/configuration.php:1709
 msgid "Font"
 msgstr "字体"
 
-
-#: openDCIM/configuration.php:1712
+#: openDCIM/configuration.php:1713
 msgid "New Installs Period"
 msgstr "新的安装周期"
 
-
-#: openDCIM/configuration.php:1716
+#: openDCIM/configuration.php:1717
 msgid "Base URL for install"
 msgstr "基础安装URL"
 
-
-#: openDCIM/configuration.php:1720
+#: openDCIM/configuration.php:1721
 msgid "SNMP Options"
 msgstr ""
 
-
-#: openDCIM/configuration.php:1723
+#: openDCIM/configuration.php:1724
 msgid "Default SNMP Community"
 msgstr "默认SNMP Community"
 
-
-#: openDCIM/configuration.php:1737 openDCIM/devices.php:1967
+#: openDCIM/configuration.php:1738 openDCIM/devices.php:1997
 msgid "SNMPv3 Security Level"
 msgstr ""
 
-
-#: openDCIM/configuration.php:1747 openDCIM/devices.php:1980
+#: openDCIM/configuration.php:1748 openDCIM/devices.php:2010
 msgid "SNMPv3 AuthProtocol"
 msgstr ""
 
-
-#: openDCIM/configuration.php:1756 openDCIM/devices.php:1993
+#: openDCIM/configuration.php:1757 openDCIM/devices.php:2023
 msgid "SNMPv3 Passphrase"
 msgstr ""
 
-
-#: openDCIM/configuration.php:1760 openDCIM/devices.php:1997
+#: openDCIM/configuration.php:1761 openDCIM/devices.php:2027
 msgid "SNMPv3 PrivProtocol"
 msgstr ""
 
-
-#: openDCIM/configuration.php:1769 openDCIM/devices.php:2010
+#: openDCIM/configuration.php:1770 openDCIM/devices.php:2040
 msgid "SNMPv3 PrivPassphrase"
 msgstr ""
 
-
-#: openDCIM/configuration.php:1773
+#: openDCIM/configuration.php:1774
 msgid "Capacity Reporting"
 msgstr "容量报告"
 
-
-#: openDCIM/configuration.php:1776
+#: openDCIM/configuration.php:1777
 msgid "Switches"
 msgstr "交换机"
 
-
-#: openDCIM/configuration.php:1779
+#: openDCIM/configuration.php:1780
 msgid "OptIn"
 msgstr "选择启用"
 
-
-#: openDCIM/configuration.php:1780
+#: openDCIM/configuration.php:1781
 msgid "OptOut"
 msgstr "选择禁用"
 
-
-#: openDCIM/configuration.php:1785
+#: openDCIM/configuration.php:1786
 msgid "Switch Capacity Threshold"
 msgstr "交换机流量阈值"
 
-
-#: openDCIM/configuration.php:1789
+#: openDCIM/configuration.php:1790
 msgid "Utilities"
 msgstr "实用工具"
 
-
-#: openDCIM/configuration.php:1792
+#: openDCIM/configuration.php:1793
 msgid "snmpget"
 msgstr "snmpget"
 
-
-#: openDCIM/configuration.php:1796
+#: openDCIM/configuration.php:1797
 msgid "snmpwalk"
 msgstr "snmpwalk"
 
-
-#: openDCIM/configuration.php:1800
+#: openDCIM/configuration.php:1801
 msgid "cut"
 msgstr "切断"
 
-
-#: openDCIM/configuration.php:1804
+#: openDCIM/configuration.php:1805
 msgid "dot"
 msgstr "点"
 
-
-#: openDCIM/configuration.php:1812
+#: openDCIM/configuration.php:1813
 msgid "Cabinet ToolTips"
 msgstr "机柜工具栏"
 
-
-#: openDCIM/configuration.php:1825
+#: openDCIM/configuration.php:1826
 msgid "CDU ToolTips"
 msgstr "CDU工具栏"
 
-
-#: openDCIM/configuration.php:1837
+#: openDCIM/configuration.php:1838
 msgid "Media Types"
 msgstr "介质类型"
 
-
-#: openDCIM/configuration.php:1840
+#: openDCIM/configuration.php:1841
 msgid "Media Type Matching"
 msgstr "匹配介质类型"
 
-
-#: openDCIM/configuration.php:1843 openDCIM/configuration.php:1883
+#: openDCIM/configuration.php:1844 openDCIM/configuration.php:1884
 msgid "Enforce"
 msgstr "强制"
 
-
-#: openDCIM/configuration.php:1853 openDCIM/devices.php:2338
-#: openDCIM/devices.php:2385
+#: openDCIM/configuration.php:1854 openDCIM/devices.php:2368
+#: openDCIM/devices.php:2415
 msgid "Media Type"
 msgstr "介质类型"
 
-
-#: openDCIM/configuration.php:1854
+#: openDCIM/configuration.php:1855
 msgid "Default Color"
 msgstr "默认颜色"
 
-
-#: openDCIM/configuration.php:1858 openDCIM/configuration.php:1872
-#: openDCIM/configuration.php:1917
+#: openDCIM/configuration.php:1859 openDCIM/configuration.php:1873
+#: openDCIM/configuration.php:1918
 msgid "Add new row"
 msgstr "添加新的一排"
 
-
-#: openDCIM/configuration.php:1863
+#: openDCIM/configuration.php:1864
 msgid "Cable Colors"
 msgstr "线缆颜色"
 
-
-#: openDCIM/configuration.php:1867 openDCIM/connections_spreadsheet.php:25
+#: openDCIM/configuration.php:1868 openDCIM/connections_spreadsheet.php:25
 msgid "Color"
 msgstr "颜色"
 
-
-#: openDCIM/configuration.php:1868
+#: openDCIM/configuration.php:1869
 msgid "Default Note"
 msgstr "默认注释"
 
-
-#: openDCIM/configuration.php:1877
+#: openDCIM/configuration.php:1878
 msgid "Connection Filtering"
 msgstr ""
 
-
-#: openDCIM/configuration.php:1880
+#: openDCIM/configuration.php:1881
 msgid "Patch panel rear connection filtering"
 msgstr ""
 
-
-#: openDCIM/configuration.php:1888
+#: openDCIM/configuration.php:1889
 msgid "Connection Pathing"
 msgstr "接口路径"
 
-
-#: openDCIM/configuration.php:1891
+#: openDCIM/configuration.php:1892
 msgid "Cabinet Weight"
 msgstr "机柜重量"
 
-
-#: openDCIM/configuration.php:1895
+#: openDCIM/configuration.php:1896
 msgid "Weight for rear connections between panels"
 msgstr "后置连接面板的重量"
 
-
-#: openDCIM/configuration.php:1899
+#: openDCIM/configuration.php:1900
 msgid "Weight for patches in the same row"
 msgstr "同排机柜中的材料重量"
 
-
-#: openDCIM/configuration.php:1910
+#: openDCIM/configuration.php:1911
 msgid "Type"
 msgstr ""
 
-
-#: openDCIM/configuration.php:1911
+#: openDCIM/configuration.php:1912
 msgid "Required"
 msgstr ""
 
-
-#: openDCIM/configuration.php:1912
+#: openDCIM/configuration.php:1913
 msgid "Apply to<br>All Devices"
 msgstr ""
 
-
-#: openDCIM/configuration.php:1913
+#: openDCIM/configuration.php:1914
 msgid "Default Value"
 msgstr ""
 
-
-#: openDCIM/configuration.php:1928 openDCIM/install.php:1625
+#: openDCIM/configuration.php:1929 openDCIM/install.php:1659
 msgid "LDAP Authentication and Authorization Configuration"
 msgstr ""
 
-
-#: openDCIM/configuration.php:1931 openDCIM/install.php:1628
+#: openDCIM/configuration.php:1932 openDCIM/install.php:1662
 msgid "LDAP Server URI"
 msgstr ""
 
-
-#: openDCIM/configuration.php:1935 openDCIM/install.php:1632
+#: openDCIM/configuration.php:1936 openDCIM/install.php:1666
 msgid "Base DN"
 msgstr ""
 
-
-#: openDCIM/configuration.php:1939
+#: openDCIM/configuration.php:1940
 msgid "Base Search"
 msgstr ""
 
-
-#: openDCIM/configuration.php:1943 openDCIM/install.php:1636
+#: openDCIM/configuration.php:1944 openDCIM/install.php:1670
 msgid "Bind DN"
 msgstr ""
 
-
-#: openDCIM/configuration.php:1947
+#: openDCIM/configuration.php:1948
 msgid "User Search"
 msgstr ""
 
-
-#: openDCIM/configuration.php:1951 openDCIM/install.php:1640
+#: openDCIM/configuration.php:1952 openDCIM/install.php:1674
 msgid "LDAP Session Expiration (Seconds)"
 msgstr ""
 
-
-#: openDCIM/configuration.php:1955 openDCIM/install.php:1644
+#: openDCIM/configuration.php:1956 openDCIM/install.php:1678
 msgid "Group Distinguished Names"
 msgstr ""
 
-
-#: openDCIM/configuration.php:1958 openDCIM/install.php:1647
+#: openDCIM/configuration.php:1959 openDCIM/install.php:1681
 msgid "Site Access"
 msgstr ""
 
-
-#: openDCIM/configuration.php:1962 openDCIM/install.php:1651
+#: openDCIM/configuration.php:1963 openDCIM/install.php:1685
 msgid "Global Read"
 msgstr ""
 
-
-#: openDCIM/configuration.php:1966 openDCIM/install.php:1655
+#: openDCIM/configuration.php:1967 openDCIM/install.php:1689
 msgid "Global Write"
 msgstr ""
 
-
-#: openDCIM/configuration.php:1970 openDCIM/install.php:1659
+#: openDCIM/configuration.php:1971 openDCIM/install.php:1693
 msgid "Global Delete"
 msgstr ""
 
-
-#: openDCIM/configuration.php:1974 openDCIM/install.php:1663
+#: openDCIM/configuration.php:1975 openDCIM/install.php:1697
 msgid "Admin Owned Devices"
 msgstr ""
 
-
-#: openDCIM/configuration.php:1978 openDCIM/install.php:1667
+#: openDCIM/configuration.php:1979 openDCIM/install.php:1701
 msgid "Enter Rack Request"
 msgstr ""
 
-
-#: openDCIM/configuration.php:1982 openDCIM/install.php:1671
+#: openDCIM/configuration.php:1983 openDCIM/install.php:1705
 msgid "Complete Rack Request"
 msgstr ""
 
-
-#: openDCIM/configuration.php:1986 openDCIM/install.php:1675
+#: openDCIM/configuration.php:1987 openDCIM/install.php:1709
 msgid "Contact Admin"
 msgstr ""
 
-
-#: openDCIM/configuration.php:1990
+#: openDCIM/configuration.php:1991
 msgid "Bulk Operations"
 msgstr ""
 
-
-#: openDCIM/configuration.php:1994 openDCIM/install.php:1679
+#: openDCIM/configuration.php:1995 openDCIM/install.php:1713
 msgid "Site Admin"
 msgstr ""
 
+#: openDCIM/configuration.php:2002
+#, fuzzy
+msgid "SAML Authentication Configuration"
+msgstr "编辑配置"
+
+#: openDCIM/configuration.php:2005
+#, fuzzy
+msgid "Strict"
+msgstr "度量单位"
+
+#: openDCIM/configuration.php:2013
+msgid "Debug"
+msgstr ""
+
+#: openDCIM/configuration.php:2021
+msgid "Base URL"
+msgstr ""
+
+#: openDCIM/configuration.php:2025
+#, fuzzy
+msgid "Show Success Page"
+msgstr "电源面板"
+
+#: openDCIM/configuration.php:2033
+#, fuzzy
+msgid "SAML Service Provider Configuration"
+msgstr "数据中心配置"
+
+#: openDCIM/configuration.php:2036 openDCIM/configuration.php:2059
+msgid "Entity ID"
+msgstr ""
+
+#: openDCIM/configuration.php:2040
+msgid "ACS URL"
+msgstr ""
+
+#: openDCIM/configuration.php:2044 openDCIM/configuration.php:2067
+msgid "SLS URL"
+msgstr ""
+
+#: openDCIM/configuration.php:2048
+msgid "x509 Certificate"
+msgstr ""
+
+#: openDCIM/configuration.php:2052
+msgid "Private Key"
+msgstr ""
+
+#: openDCIM/configuration.php:2056
+#, fuzzy
+msgid "SAML Identity Provider Configuration"
+msgstr "数据中心配置"
+
+#: openDCIM/configuration.php:2063
+msgid "SSO URL"
+msgstr ""
+
+#: openDCIM/configuration.php:2071
+msgid "Certificate Fingerprint"
+msgstr ""
+
+#: openDCIM/configuration.php:2075
+msgid "Certificate Fingerprint Algorithm"
+msgstr ""
+
+#: openDCIM/configuration.php:2079
+#, fuzzy
+msgid "SAML Account Configuration"
+msgstr "编辑配置"
+
+#: openDCIM/configuration.php:2082
+msgid "Remove Account Prefix"
+msgstr ""
+
+#: openDCIM/configuration.php:2086
+msgid "Remove Account Suffix"
+msgstr ""
 
 #: openDCIM/conflicts.php:575
 msgid "Power Strip"
 msgstr "电源插座"
 
-
 #: openDCIM/conflicts.php:575
 msgid "Plug #"
 msgstr "Plug #"
-
 
 #: openDCIM/conflicts.php:575
 msgid "Power Supply"
 msgstr "供电"
 
-
-#: openDCIM/conflicts.php:608 openDCIM/devices.php:797
-#: openDCIM/devices.php:811 openDCIM/rackrequest.php:456
+#: openDCIM/conflicts.php:608 openDCIM/devices.php:817
+#: openDCIM/devices.php:831 openDCIM/rackrequest.php:455
 msgid "Switch"
 msgstr "开关"
-
 
 #: openDCIM/conflicts.php:608
 msgid "Switch Port"
 msgstr "交换机端口"
 
-
-#: openDCIM/conflicts.php:608 openDCIM/devices.php:2293
-#: openDCIM/devices.php:2335 openDCIM/devices.php:2385
+#: openDCIM/conflicts.php:608 openDCIM/devices.php:2323
+#: openDCIM/devices.php:2365 openDCIM/devices.php:2415
 msgid "Device Port"
 msgstr "设备端口"
-
 
 #: openDCIM/connections_spreadsheet.php:15
 msgid "Device Port Connections"
 msgstr "设备端口连接"
 
-
 #: openDCIM/connections_spreadsheet.php:16
 msgid "Device Port Detail"
 msgstr "设备端口详细信息"
-
 
 #: openDCIM/connections_spreadsheet.php:19
 msgid "SourceDevice"
 msgstr "来源设备"
 
-
 #: openDCIM/connections_spreadsheet.php:20
 msgid "SourcePort"
 msgstr "来源端口"
-
 
 #: openDCIM/connections_spreadsheet.php:21
 msgid "TargetDevice"
 msgstr "目标设备"
 
-
 #: openDCIM/connections_spreadsheet.php:22
 msgid "TargetPort"
 msgstr "目标端口"
-
 
 #: openDCIM/connections_spreadsheet.php:24
 msgid "MediaType"
 msgstr "介质类型"
 
-
-#: openDCIM/connections_spreadsheet.php:28 openDCIM/devices.php:2331
-#: openDCIM/devices.php:2385 openDCIM/pathmaker.php:199
+#: openDCIM/connections_spreadsheet.php:28 openDCIM/devices.php:2361
+#: openDCIM/devices.php:2415 openDCIM/pathmaker.php:199
 msgid "Connections"
 msgstr "连接"
-
 
 #: openDCIM/connections_spreadsheet.php:46 openDCIM/report_tags.php:32
 msgid "Device Label"
 msgstr "设备标签"
 
-
-#: openDCIM/connections_spreadsheet.php:52 openDCIM/devices.php:1685
-#: openDCIM/rackrequest.php:373 openDCIM/report_asset.php:54
+#: openDCIM/connections_spreadsheet.php:52 openDCIM/devices.php:1715
+#: openDCIM/rackrequest.php:372 openDCIM/report_asset.php:54
 #: openDCIM/report_contact.php:485 openDCIM/report_cost.php:469
 #: openDCIM/report_exception.php:165 openDCIM/report_exception.php:235
-#: openDCIM/report-projects.php:43 openDCIM/report_surplus.php:234
-#: openDCIM/search_export.php:52 openDCIM/sidebar.inc.php:20
+#: openDCIM/search_export.php:52 openDCIM/search_export_storage_room.php:54
+#: openDCIM/sidebar.inc.php:20
 msgid "Serial Number"
 msgstr "序列号"
 
-
-#: openDCIM/connections_spreadsheet.php:54 openDCIM/devices.php:1690
-#: openDCIM/rackrequest.php:381 openDCIM/report_asset.php:54
+#: openDCIM/connections_spreadsheet.php:54 openDCIM/devices.php:1720
+#: openDCIM/rackrequest.php:380 openDCIM/report_asset.php:54
 #: openDCIM/report_contact.php:485 openDCIM/report_cost.php:469
-#: openDCIM/report-projects.php:44 openDCIM/report_surplus.php:234
-#: openDCIM/search_export.php:53 openDCIM/sidebar.inc.php:21
-#: openDCIM/storageroom.php:59
+#: openDCIM/search_export.php:53 openDCIM/search_export_storage_room.php:55
+#: openDCIM/sidebar.inc.php:21 openDCIM/storageroom.php:77
 msgid "Asset Tag"
 msgstr "资产标签"
-
 
 #: openDCIM/connections_spreadsheet.php:56
 msgid "Target Cabinet"
 msgstr "目标机柜"
 
-
 #: openDCIM/connections_spreadsheet.php:120
 msgid "Power Connection"
 msgstr ""
-
 
 #: openDCIM/contactpopup.php:5
 msgid "Department Contact Listing"
 msgstr "部门联系人列表"
 
-
 #: openDCIM/container.php:5
 msgid "Container Detail"
 msgstr "机柜详细信息"
-
 
 #: openDCIM/container.php:150
 msgid "Verify Delete Container"
 msgstr "机柜删除验证"
 
-
 #: openDCIM/container.php:151
-msgid "This container will be deleted and there is no undo. Their direct descendants will be moved to \\'home\\'."
+msgid ""
+"This container will be deleted and there is no undo. Their direct "
+"descendants will be moved to \\'home\\'."
 msgstr "该机柜将被删除并且无法恢复. 机柜中的设备将被转移至\\'home\\'."
-
 
 #: openDCIM/container.php:223 openDCIM/datacenter.php:277
 #: openDCIM/report_network_map.php:618
 msgid "Container"
 msgstr "机柜"
 
-
 #: openDCIM/container.php:225
 msgid "New Container"
 msgstr "新的机柜"
-
 
 #: openDCIM/container.php:239 openDCIM/datacenter.php:268
 msgid "Drawing URL"
 msgstr "制图URL"
 
-
 #: openDCIM/container.php:244
 msgid "Parent Container"
 msgstr "刀片机柜"
-
 
 #: openDCIM/container.php:246 openDCIM/datacenter.php:279
 msgid "None"
 msgstr "无"
 
-
 #: openDCIM/container.php:271
 msgid "Click on the image to select container coordinates"
 msgstr "点击图片选择机柜的坐标"
-
 
 #: openDCIM/container_stats.php:5 openDCIM/dc_dashboard.php:5
 #: openDCIM/dc_stats.php:5 openDCIM/report_asset_Excel.php:152
 msgid "Data Center Statistics"
 msgstr "数据中心统计"
 
-
 #: openDCIM/container_stats.php:43 openDCIM/datacenter.php:76
-#: openDCIM/dc_dashboard.php:40 openDCIM/dc_stats.php:132
-#: openDCIM/install.php:1455 openDCIM/zone_stats.php:141
+#: openDCIM/dc_dashboard.php:46 openDCIM/dc_stats.php:144
+#: openDCIM/install.php:1489 openDCIM/zone_stats.php:153
 msgid "Square Feet"
 msgstr "平方英尺"
 
-
-#: openDCIM/container_stats.php:44 openDCIM/dc_dashboard.php:41
-#: openDCIM/dc_stats.php:134 openDCIM/zone_stats.php:143
+#: openDCIM/container_stats.php:44 openDCIM/dc_dashboard.php:47
+#: openDCIM/dc_stats.php:146 openDCIM/zone_stats.php:155
 msgid "Watts per Square Foot"
 msgstr "每平方英尺电力(wt)"
 
-
 #: openDCIM/container_stats.php:46 openDCIM/datacenter.php:78
-#: openDCIM/dc_dashboard.php:43 openDCIM/dc_stats.php:136
-#: openDCIM/install.php:1457 openDCIM/zone_stats.php:145
+#: openDCIM/dc_dashboard.php:49 openDCIM/dc_stats.php:148
+#: openDCIM/install.php:1491 openDCIM/zone_stats.php:157
 msgid "Square Meters"
 msgstr "平方米"
 
-
-#: openDCIM/container_stats.php:47 openDCIM/dc_dashboard.php:44
-#: openDCIM/dc_stats.php:138 openDCIM/zone_stats.php:147
+#: openDCIM/container_stats.php:47 openDCIM/dc_dashboard.php:50
+#: openDCIM/dc_stats.php:150 openDCIM/zone_stats.php:159
 msgid "Watts per Square Meter"
 msgstr "每平方米电力(wt)"
 
-
-#: openDCIM/container_stats.php:57 openDCIM/dc_dashboard.php:89
-#: openDCIM/dc_stats.php:179 openDCIM/zone_stats.php:191
+#: openDCIM/container_stats.php:57 openDCIM/dc_dashboard.php:95
+#: openDCIM/dc_stats.php:191 openDCIM/zone_stats.php:203
 msgid "Infrastructure"
 msgstr "基础设施"
 
-
-#: openDCIM/container_stats.php:58 openDCIM/dc_dashboard.php:90
-#: openDCIM/dc_stats.php:180 openDCIM/zone_stats.php:192
+#: openDCIM/container_stats.php:58 openDCIM/dc_dashboard.php:96
+#: openDCIM/dc_stats.php:192 openDCIM/zone_stats.php:204
 msgid "Occupied"
 msgstr "占用"
 
-
-#: openDCIM/container_stats.php:59 openDCIM/dc_dashboard.php:91
-#: openDCIM/dc_stats.php:181 openDCIM/zone_stats.php:193
+#: openDCIM/container_stats.php:59 openDCIM/dc_dashboard.php:97
+#: openDCIM/dc_stats.php:193 openDCIM/zone_stats.php:205
 msgid "Allocated"
 msgstr "分配"
 
-
-#: openDCIM/container_stats.php:60 openDCIM/dc_dashboard.php:92
-#: openDCIM/dc_stats.php:182 openDCIM/zone_stats.php:194
+#: openDCIM/container_stats.php:60 openDCIM/dc_dashboard.php:98
+#: openDCIM/dc_stats.php:194 openDCIM/zone_stats.php:206
 msgid "Available"
 msgstr "可用"
 
-
-#: openDCIM/container_stats.php:63 openDCIM/dc_dashboard.php:95
-#: openDCIM/dc_stats.php:185 openDCIM/zone_stats.php:197
+#: openDCIM/container_stats.php:63 openDCIM/dc_dashboard.php:101
+#: openDCIM/dc_stats.php:197 openDCIM/zone_stats.php:209
 msgid "Total U"
 msgstr "合计U数"
 
-
-#: openDCIM/container_stats.php:70 openDCIM/dc_dashboard.php:102
-#: openDCIM/dc_stats.php:192 openDCIM/report_audit_frequency.php:318
-#: openDCIM/report_audit.php:388 openDCIM/zone_stats.php:204
+#: openDCIM/container_stats.php:70 openDCIM/dc_dashboard.php:108
+#: openDCIM/dc_stats.php:204 openDCIM/report_audit_frequency.php:318
+#: openDCIM/report_audit.php:388 openDCIM/zone_stats.php:216
 msgid "Percentage"
 msgstr "比例"
-
 
 #: openDCIM/container_stats.php:79
 msgid "Data Centers"
 msgstr "数据中心"
 
-
-#: openDCIM/container_stats.php:83 openDCIM/dc_dashboard.php:111
-#: openDCIM/dc_stats.php:211 openDCIM/zone_stats.php:213
+#: openDCIM/container_stats.php:83 openDCIM/dc_dashboard.php:117
+#: openDCIM/dc_stats.php:223 openDCIM/zone_stats.php:225
 msgid "Computed Wattage"
 msgstr "功率计算"
 
-
 #: openDCIM/container_stats.php:84 openDCIM/container_stats.php:88
-#: openDCIM/container_stats.php:104 openDCIM/dc_dashboard.php:112
-#: openDCIM/dc_dashboard.php:116 openDCIM/dc_dashboard.php:132
-#: openDCIM/dc_stats.php:212 openDCIM/dc_stats.php:216
-#: openDCIM/dc_stats.php:232 openDCIM/report_cost.php:469
-#: openDCIM/zone_stats.php:214 openDCIM/zone_stats.php:218
-#: openDCIM/zone_stats.php:230
+#: openDCIM/container_stats.php:104 openDCIM/dc_dashboard.php:118
+#: openDCIM/dc_dashboard.php:122 openDCIM/dc_dashboard.php:138
+#: openDCIM/dc_stats.php:224 openDCIM/dc_stats.php:228
+#: openDCIM/dc_stats.php:244 openDCIM/report_cost.php:469
+#: openDCIM/zone_stats.php:226 openDCIM/zone_stats.php:230
+#: openDCIM/zone_stats.php:242
 msgid "Watts"
 msgstr "(wt)"
 
-
-#: openDCIM/container_stats.php:87 openDCIM/dc_dashboard.php:115
-#: openDCIM/dc_stats.php:215 openDCIM/zone_stats.php:217
+#: openDCIM/container_stats.php:87 openDCIM/dc_dashboard.php:121
+#: openDCIM/dc_stats.php:227 openDCIM/zone_stats.php:229
 msgid "Measured Wattage"
 msgstr "测量功率"
 
-
 #: openDCIM/container_stats.php:91 openDCIM/datacenter.php:272
-#: openDCIM/dc_dashboard.php:119 openDCIM/dc_stats.php:219
+#: openDCIM/dc_dashboard.php:125 openDCIM/dc_stats.php:231
 msgid "Design Maximum (kW)"
 msgstr "最大设计(kW)"
-
 
 #: openDCIM/container_stats.php:95
 msgid "BTU Computation from Watts"
 msgstr "BTU计算(wt)"
 
-
-#: openDCIM/container_stats.php:96 openDCIM/dc_dashboard.php:124
-#: openDCIM/dc_stats.php:224 openDCIM/zone_stats.php:222
+#: openDCIM/container_stats.php:96 openDCIM/dc_dashboard.php:130
+#: openDCIM/dc_stats.php:236 openDCIM/zone_stats.php:234
 msgid "BTU"
 msgstr "BTU"
 
-
-#: openDCIM/container_stats.php:99 openDCIM/dc_dashboard.php:127
-#: openDCIM/dc_stats.php:227
+#: openDCIM/container_stats.php:99 openDCIM/dc_dashboard.php:133
+#: openDCIM/dc_stats.php:239
 msgid "Data Center Size"
 msgstr "数据中心面积"
-
 
 #: openDCIM/container_stats.php:107
 msgid "Minimum Cooling Tonnage Required"
 msgstr "最小化制冷量需求"
 
-
-#: openDCIM/container_stats.php:108 openDCIM/dc_dashboard.php:136
-#: openDCIM/dc_stats.php:240 openDCIM/zone_stats.php:238
+#: openDCIM/container_stats.php:108 openDCIM/dc_dashboard.php:142
+#: openDCIM/dc_stats.php:252 openDCIM/zone_stats.php:250
 msgid "Tons"
 msgstr "吨"
 
-
-#: openDCIM/container_stats.php:111 openDCIM/dc_stats.php:235
-#: openDCIM/index.php:142 openDCIM/zone_stats.php:233
+#: openDCIM/container_stats.php:111 openDCIM/dc_stats.php:247
+#: openDCIM/index.php:142 openDCIM/zone_stats.php:245
 msgid "Total Cabinets"
 msgstr ""
-
 
 #: openDCIM/datacenter.php:5 openDCIM/power_panel.php:5
 msgid "Data Center Detail"
 msgstr "数据中心详细信息"
 
-
 #: openDCIM/datacenter.php:240
 msgid "Data Center ID"
 msgstr "数据中心编号"
-
 
 #: openDCIM/datacenter.php:242
 msgid "New Data Center"
 msgstr "新的数据中心"
 
-
-#: openDCIM/datacenter.php:260 openDCIM/dc_stats.php:201
+#: openDCIM/datacenter.php:260 openDCIM/dc_stats.php:213
 msgid "Delivery Address"
 msgstr "配送地址"
 
-
-#: openDCIM/datacenter.php:264 openDCIM/dc_stats.php:205
+#: openDCIM/datacenter.php:264 openDCIM/dc_stats.php:217
 msgid "Administrator"
 msgstr "管理员"
-
 
 #: openDCIM/datacenter.php:301
 msgid "Click on the image to select DC coordinates"
 msgstr "点击图片选择数据中心的位置"
 
-
 #: openDCIM/datacenter.php:332
 msgid "Data Center Deletion Confirmation"
 msgstr "数据中心删除确认"
 
-
 #: openDCIM/datacenter.php:333
-msgid "Are you sure that you want to delete this data center and all contents within it?"
+msgid ""
+"Are you sure that you want to delete this data center and all contents "
+"within it?"
 msgstr "您确定需要删除该数据中心(包含所有设备与数据内容)吗?"
 
-
 #: openDCIM/datacenter.php:334
-msgid "Move the contents of this datacenter's storage room to the general storage or delete them?"
-msgstr "将该数据中心内存储设备中的数据内容迁移到新的存储设备中或者将这些数据内容直接删除?"
-
+msgid ""
+"Move the contents of this datacenter's storage room to the general storage "
+"or delete them?"
+msgstr ""
+"将该数据中心内存储设备中的数据内容迁移到新的存储设备中或者将这些数据内容直接"
+"删除?"
 
 #: openDCIM/datacenter.php:334
 msgid "Move"
 msgstr "移动"
 
-
-#: openDCIM/dc_dashboard.php:77 openDCIM/dc_stats.php:271
-#: openDCIM/zone_stats.php:268
+#: openDCIM/dc_dashboard.php:83 openDCIM/dc_stats.php:283
+#: openDCIM/zone_stats.php:280
 msgid "Overview"
 msgstr "概述"
 
-
-#: openDCIM/dc_dashboard.php:80
+#: openDCIM/dc_dashboard.php:86
 msgid "Power"
 msgstr "电源"
 
-
-#: openDCIM/dc_dashboard.php:123 openDCIM/dc_stats.php:223
-#: openDCIM/zone_stats.php:221
+#: openDCIM/dc_dashboard.php:129 openDCIM/dc_stats.php:235
+#: openDCIM/zone_stats.php:233
 msgid "BTU Computation from Computed Watts"
 msgstr "基于(wt)计算BTU值"
 
-
-#: openDCIM/dc_dashboard.php:135 openDCIM/dc_stats.php:239
-#: openDCIM/zone_stats.php:237
+#: openDCIM/dc_dashboard.php:141 openDCIM/dc_stats.php:251
+#: openDCIM/zone_stats.php:249
 msgid "Minimum Cooling Tonnage (Based on Computed Watts)"
 msgstr "最小冷却吨位（基于计算瓦特）"
 
-
-#: openDCIM/dc_stats.php:148
+#: openDCIM/dc_stats.php:160
 msgid "openDCIM Data Center Information Management"
 msgstr "openDCIM数据中心信息管理"
 
-
-#: openDCIM/dc_stats.php:176 openDCIM/device_templates.php:907
+#: openDCIM/dc_stats.php:188 openDCIM/device_templates.php:907
 msgid "Export"
 msgstr "输出"
 
-
-#: openDCIM/dc_stats.php:176
+#: openDCIM/dc_stats.php:188
 msgid "XML"
 msgstr "XML"
 
-
-#: openDCIM/dc_stats.php:176
+#: openDCIM/dc_stats.php:188
 msgid "Click to show statistics"
 msgstr ""
 
-
-#: openDCIM/dc_stats.php:176
+#: openDCIM/dc_stats.php:188
 msgid "Click to hide statistics"
 msgstr ""
 
-
-#: openDCIM/dc_stats.php:243 openDCIM/zone_stats.php:241
+#: openDCIM/dc_stats.php:255 openDCIM/zone_stats.php:253
 msgid "Average Temperature"
 msgstr "平均温度"
 
-
-#: openDCIM/dc_stats.php:244 openDCIM/zone_stats.php:242
+#: openDCIM/dc_stats.php:256 openDCIM/zone_stats.php:254
 msgid "°"
 msgstr "°"
 
-
-#: openDCIM/dc_stats.php:247 openDCIM/zone_stats.php:245
+#: openDCIM/dc_stats.php:259 openDCIM/zone_stats.php:257
 msgid "Average Humidity"
 msgstr "平均湿度"
 
-
-#: openDCIM/dc_stats.php:248 openDCIM/dc_stats.php:254
-#: openDCIM/dc_stats.php:261 openDCIM/zone_stats.php:246
-#: openDCIM/zone_stats.php:252 openDCIM/zone_stats.php:259
+#: openDCIM/dc_stats.php:260 openDCIM/dc_stats.php:266
+#: openDCIM/dc_stats.php:273 openDCIM/zone_stats.php:258
+#: openDCIM/zone_stats.php:264 openDCIM/zone_stats.php:271
 msgid "%"
 msgstr "%"
 
-
-#: openDCIM/dc_stats.php:251 openDCIM/zone_stats.php:249
+#: openDCIM/dc_stats.php:263 openDCIM/zone_stats.php:261
 msgid "RCI Low Percentage (Overcooling)"
 msgstr ""
 
-
-#: openDCIM/dc_stats.php:258 openDCIM/zone_stats.php:256
+#: openDCIM/dc_stats.php:270 openDCIM/zone_stats.php:268
 msgid "RCI High Percentage (Cabinets Satisfied)"
 msgstr ""
 
-
-#: openDCIM/dc_stats.php:274 openDCIM/zone_stats.php:271
+#: openDCIM/dc_stats.php:286 openDCIM/zone_stats.php:283
 #: openDCIM/scripts/ajax_tooltip.php:139
 msgid "Calculated Power"
 msgstr "计算功率消耗"
 
-
-#: openDCIM/dc_stats.php:275 openDCIM/zone_stats.php:272
+#: openDCIM/dc_stats.php:287 openDCIM/zone_stats.php:284
 msgid "Measured Power"
 msgstr "测量功率消耗"
 
-
-#: openDCIM/dc_stats.php:276 openDCIM/zone_stats.php:273
-#: openDCIM/scripts/ajax_tooltip.php:177
+#: openDCIM/dc_stats.php:288 openDCIM/zone_stats.php:285
+#: openDCIM/scripts/ajax_tooltip.php:179
 msgid "Temperature"
 msgstr "温度"
 
-
-#: openDCIM/dc_stats.php:277 openDCIM/zone_stats.php:274
-#: openDCIM/scripts/ajax_tooltip.php:178
+#: openDCIM/dc_stats.php:289 openDCIM/zone_stats.php:286
+#: openDCIM/scripts/ajax_tooltip.php:180
 msgid "Humidity"
 msgstr "湿度"
 
-
-#: openDCIM/dc_stats.php:278 openDCIM/zone_stats.php:275
+#: openDCIM/dc_stats.php:290 openDCIM/zone_stats.php:287
 msgid "Air Flow"
 msgstr "风量"
 
-
-#: openDCIM/dc_stats.php:290 openDCIM/zone_stats.php:286
+#: openDCIM/dc_stats.php:302 openDCIM/zone_stats.php:298
 msgid "Set the air intake direction"
 msgstr "设置送风方向"
 
-
-#: openDCIM/dc_stats.php:295 openDCIM/dc_stats.php:303
-#: openDCIM/mapmaker.php:119 openDCIM/zone_stats.php:291
-#: openDCIM/zone_stats.php:299
+#: openDCIM/dc_stats.php:307 openDCIM/dc_stats.php:315
+#: openDCIM/mapmaker.php:171 openDCIM/zone_stats.php:303
+#: openDCIM/zone_stats.php:311
 msgid "Right"
 msgstr "右"
 
-
-#: openDCIM/dc_stats.php:297 openDCIM/dc_stats.php:305
-#: openDCIM/mapmaker.php:121 openDCIM/zone_stats.php:293
-#: openDCIM/zone_stats.php:301
+#: openDCIM/dc_stats.php:309 openDCIM/dc_stats.php:317
+#: openDCIM/mapmaker.php:173 openDCIM/zone_stats.php:305
+#: openDCIM/zone_stats.php:313
 msgid "Left"
 msgstr "左"
 
-
-#: openDCIM/dc_stats.php:308 openDCIM/zone_stats.php:304
+#: openDCIM/dc_stats.php:320 openDCIM/zone_stats.php:316
 msgid "Alignment"
 msgstr ""
 
-
-#: openDCIM/dc_stats.php:310 openDCIM/zone_stats.php:306
+#: openDCIM/dc_stats.php:322 openDCIM/zone_stats.php:318
 msgid "Align Top"
 msgstr ""
 
-
-#: openDCIM/dc_stats.php:311 openDCIM/zone_stats.php:307
+#: openDCIM/dc_stats.php:323 openDCIM/zone_stats.php:319
 msgid "Align Left"
 msgstr ""
 
-
-#: openDCIM/dc_stats.php:312 openDCIM/zone_stats.php:308
+#: openDCIM/dc_stats.php:324 openDCIM/zone_stats.php:320
 msgid "Align Bottom"
 msgstr ""
 
-
-#: openDCIM/dc_stats.php:313 openDCIM/zone_stats.php:309
+#: openDCIM/dc_stats.php:325 openDCIM/zone_stats.php:321
 msgid "Align Right"
 msgstr ""
-
 
 #: openDCIM/departments.php:5
 msgid "Data Center Department Detail"
 msgstr "数据中心部门详细信息"
 
-
 #: openDCIM/departments.php:174
 msgid "New Department"
 msgstr "新部门"
 
-
 #: openDCIM/departments.php:184
 msgid "Department Name"
 msgstr "部门名称"
-
 
 #: openDCIM/departments.php:188 openDCIM/report_contact.php:437
 #: openDCIM/report_cost.php:422 openDCIM/report_department.php:166
@@ -2287,103 +2007,84 @@ msgstr "部门名称"
 msgid "Executive Sponsor"
 msgstr "主办单位主管"
 
-
 #: openDCIM/departments.php:192
 msgid "Account Manager"
 msgstr "客户经理"
-
 
 #: openDCIM/departments.php:196
 msgid "Department Color"
 msgstr "部门代表色"
 
-
 #: openDCIM/departments.php:200
 msgid "Classification"
 msgstr "类别"
-
 
 #: openDCIM/departments.php:214
 msgid "Assign Contacts"
 msgstr "指定联系人"
 
-
 #: openDCIM/departments.php:228
 msgid "Department delete confirmation"
 msgstr ""
-
 
 #: openDCIM/departments.php:229
 msgid "Are you sure that you want to delete this Department?"
 msgstr ""
 
-
 #: openDCIM/dept_groups.php:46
 msgid "openDCIM Department Contact Maintenance"
 msgstr ""
-
 
 #: openDCIM/dept_groups.php:66
 msgid "Group to Administer"
 msgstr "网站管理小组"
 
-
-#: openDCIM/dept_groups.php:66 openDCIM/devices.php:2099
-#: openDCIM/login_ldap.php:192 openDCIM/people_depts.php:66
-#: openDCIM/project_members.php:103 openDCIM/supplybin.php:207
+#: openDCIM/dept_groups.php:66 openDCIM/devices.php:2129
+#: openDCIM/login_ad.php:229 openDCIM/login_ldap.php:193
+#: openDCIM/people_depts.php:66 openDCIM/project_members.php:139
+#: openDCIM/supplybin.php:207
 msgid "Submit"
 msgstr "提交"
-
 
 #: openDCIM/device_manufacturers.php:5
 msgid "Data Center Manufacturer Listing"
 msgstr "数据中心设备供应商列表"
 
-
 #: openDCIM/device_manufacturers.php:55
 msgid "Error adding new manufacturer"
 msgstr ""
-
 
 #: openDCIM/device_manufacturers.php:179
 msgid "New Manufacturer"
 msgstr "新的设备供应商"
 
-
 #: openDCIM/device_manufacturers.php:189
 msgid "Global ID"
 msgstr ""
-
 
 #: openDCIM/device_manufacturers.php:197
 msgid "Subscribe to Repository"
 msgstr ""
 
-
 #: openDCIM/device_manufacturers.php:213
 msgid "Templates using this Manufacturer"
 msgstr ""
-
 
 #: openDCIM/device_manufacturers.php:221
 msgid "Manufacturer delete confirmation"
 msgstr ""
 
-
 #: openDCIM/device_manufacturers.php:222
 msgid "Are you sure that you want to delete this Manufacturer?"
 msgstr ""
-
 
 #: openDCIM/devices.php:5
 msgid "Data Center Device Detail"
 msgstr "数据中心设备详细信息"
 
-
 #: openDCIM/devices.php:52
 msgid "Something isn't working correctly"
 msgstr ""
-
 
 #: openDCIM/devices.php:95 openDCIM/devices.php:99 openDCIM/devices.php:152
 #: openDCIM/devices.php:155 openDCIM/report_exception.php:165
@@ -2391,516 +2092,431 @@ msgstr ""
 msgid "From Template"
 msgstr "从模板"
 
-
 #: openDCIM/devices.php:95 openDCIM/devices.php:99 openDCIM/devices.php:152
 #: openDCIM/device_templates.php:515
 msgid "Invert Port Labels"
 msgstr ""
 
-
 #: openDCIM/devices.php:235
 msgid "ERROR: No ports found"
 msgstr "错误: 未找到端口"
 
-
-#: openDCIM/devices.php:380 openDCIM/devices.php:2155
-#: openDCIM/devices.php:2418 openDCIM/device_templates.php:930
-#: openDCIM/misc.inc.php:1018 openDCIM/report_cabinets.php:179
+#: openDCIM/devices.php:380 openDCIM/devices.php:2185
+#: openDCIM/devices.php:2448 openDCIM/device_templates.php:930
+#: openDCIM/misc.inc.php:1033 openDCIM/report_cabinets.php:179
 #: openDCIM/report_cabinets.php:251 openDCIM/report_cabinets.php:292
 #: openDCIM/rowview.php:87
 msgid "Rear"
 msgstr "后置"
 
-
-#: openDCIM/devices.php:535
-msgid "This device is a copy of an existing device.  Remember to set the new location before saving."
+#: openDCIM/devices.php:552
+msgid ""
+"This device is a copy of an existing device.  Remember to set the new "
+"location before saving."
 msgstr "该设备是一个现有设备的副本. 请切记在保存之前设定新的位置."
 
-
-#: openDCIM/devices.php:680
+#: openDCIM/devices.php:700
 msgid "Device did not copy.  Error."
 msgstr "未复制设备. 错误."
 
-
-#: openDCIM/devices.php:794 openDCIM/devices.php:808
-#: openDCIM/rackrequest.php:453
+#: openDCIM/devices.php:814 openDCIM/devices.php:828
+#: openDCIM/rackrequest.php:452
 msgid "Server"
 msgstr "服务器"
 
-
-#: openDCIM/devices.php:795 openDCIM/devices.php:809
-#: openDCIM/rackrequest.php:454
+#: openDCIM/devices.php:815 openDCIM/devices.php:829
+#: openDCIM/rackrequest.php:453
 msgid "Appliance"
 msgstr "设备"
 
-
-#: openDCIM/devices.php:796 openDCIM/devices.php:810
-#: openDCIM/rackrequest.php:455
+#: openDCIM/devices.php:816 openDCIM/devices.php:830
+#: openDCIM/rackrequest.php:454
 msgid "Storage Array"
 msgstr "存储阵列"
 
-
-#: openDCIM/devices.php:798 openDCIM/devices.php:812
-#: openDCIM/rackrequest.php:457
+#: openDCIM/devices.php:818 openDCIM/devices.php:832
+#: openDCIM/rackrequest.php:456
 msgid "Chassis"
 msgstr "服务器机箱"
 
-
-#: openDCIM/devices.php:799 openDCIM/devices.php:813
-#: openDCIM/rackrequest.php:458
+#: openDCIM/devices.php:819 openDCIM/devices.php:833
+#: openDCIM/rackrequest.php:457
 msgid "Patch Panel"
 msgstr "配线架"
 
-
-#: openDCIM/devices.php:800 openDCIM/devices.php:816
+#: openDCIM/devices.php:820 openDCIM/devices.php:836
 msgid "Sensor"
 msgstr ""
 
-
-#: openDCIM/devices.php:814 openDCIM/devices.php:1807
-#: openDCIM/rackrequest.php:459
+#: openDCIM/devices.php:834 openDCIM/devices.php:1837
+#: openDCIM/rackrequest.php:458
 msgid "Physical Infrastructure"
 msgstr "物理层的基础设备"
 
-
-#: openDCIM/devices.php:815
+#: openDCIM/devices.php:835
 msgid "CDU"
 msgstr ""
 
-
-#: openDCIM/devices.php:845
+#: openDCIM/devices.php:865
 msgid "openDCIM Device Maintenance"
 msgstr "openDCIM设备维护"
 
-
-#: openDCIM/devices.php:852 openDCIM/vmnamecheck.php:78
+#: openDCIM/devices.php:872 openDCIM/vmnamecheck.php:78
 #: openDCIM/vmnamecheck.php:118
 msgid "VM Name"
 msgstr "虚拟机名称"
 
-
-#: openDCIM/devices.php:852 openDCIM/devices.php:2337
+#: openDCIM/devices.php:872 openDCIM/devices.php:1699
+#: openDCIM/devices.php:2367 openDCIM/disposition.php:102
 #: openDCIM/report_project_outage_simulator.php:350
-#: openDCIM/vmnamecheck.php:78 openDCIM/vmnamecheck.php:118
+#: openDCIM/report_surplus.php:142 openDCIM/vmnamecheck.php:78
+#: openDCIM/vmnamecheck.php:118
 msgid "Status"
 msgstr "状态"
 
-
-#: openDCIM/devices.php:852 openDCIM/report_aging.php:425
+#: openDCIM/devices.php:872 openDCIM/report_aging.php:425
 #: openDCIM/report_aging.php:460
 #: openDCIM/report_diverse_power_exceptions.php:167
 #: openDCIM/report_power_utilization.php:167
 #: openDCIM/report_project_outage_simulator.php:356
-#: openDCIM/report-projects.php:48 openDCIM/report_tags.php:35
-#: openDCIM/report_warranty.php:439 openDCIM/report_warranty.php:472
-#: openDCIM/search_export.php:58 openDCIM/sidebar.inc.php:22
+#: openDCIM/report_tags.php:35 openDCIM/report_warranty.php:439
+#: openDCIM/report_warranty.php:472 openDCIM/search_export.php:58
+#: openDCIM/search_export_storage_room.php:60 openDCIM/sidebar.inc.php:22
 #: openDCIM/scripts/ajax_tooltip.php:136
 msgid "Owner"
 msgstr "所有人"
 
-
-#: openDCIM/devices.php:852 openDCIM/vmnamecheck.php:78
+#: openDCIM/devices.php:872 openDCIM/vmnamecheck.php:78
 #: openDCIM/vmnamecheck.php:118
 msgid "Last Updated"
 msgstr "最后更新"
 
-
-#: openDCIM/devices.php:860 openDCIM/devices.php:868
+#: openDCIM/devices.php:880 openDCIM/devices.php:888
 #: openDCIM/report_exception.php:158 openDCIM/vmnamecheck.php:88
 #: openDCIM/vmnamecheck.php:128
 msgid "Unknown"
 msgstr "未知"
 
-
-#: openDCIM/devices.php:936
+#: openDCIM/devices.php:958
 msgid "Open"
 msgstr ""
 
-
-#: openDCIM/devices.php:1026
+#: openDCIM/devices.php:1048
 msgid "Landscape"
 msgstr "外观"
 
-
-#: openDCIM/devices.php:1036 openDCIM/devices.php:1662
+#: openDCIM/devices.php:1058 openDCIM/devices.php:1684
 msgid "Portrait"
 msgstr "纵向"
 
-
-#: openDCIM/devices.php:1081
+#: openDCIM/devices.php:1103
 msgid "Network & Power"
 msgstr "网络与电力"
 
-
-#: openDCIM/devices.php:1414
+#: openDCIM/devices.php:1436
 msgid "Verify Delete Device"
 msgstr "确认删除设备"
 
+#: openDCIM/devices.php:1445
+msgid ""
+"If this device has blades installed they will be deleted and there is no "
+"undo. Are you sure?"
+msgstr ""
+"如果该设备安装了刀片服务器, 这样它们将会被删除并且不可恢复. 您是否确定?"
 
-#: openDCIM/devices.php:1423
-msgid "If this device has blades installed they will be deleted and there is no undo. Are you sure?"
-msgstr "如果该设备安装了刀片服务器, 这样它们将会被删除并且不可恢复. 您是否确定?"
-
-
-#: openDCIM/devices.php:1577
+#: openDCIM/devices.php:1599
 msgid "This device will be deleted and there is no undo. Are you sure?"
 msgstr "该设备将被删除并且无法恢复. 您是否确定?"
 
-
-#: openDCIM/devices.php:1670
+#: openDCIM/devices.php:1692
 msgid "Asset Tracking"
 msgstr "资产跟踪"
 
-
-#: openDCIM/devices.php:1673
+#: openDCIM/devices.php:1695
 msgid "Device ID"
 msgstr "设备ID"
 
-
-#: openDCIM/devices.php:1677
-msgid "Reservation?"
-msgstr "预留?"
-
-
-#: openDCIM/devices.php:1687 openDCIM/devices.php:1692
+#: openDCIM/devices.php:1717 openDCIM/devices.php:1722
 msgid "Scan Barcode"
 msgstr "扫描条形码"
 
-
-#: openDCIM/devices.php:1695 openDCIM/search_export.php:54
+#: openDCIM/devices.php:1725 openDCIM/search_export.php:54
+#: openDCIM/search_export_storage_room.php:56
 msgid "Primary IP / Host Name"
 msgstr "主IP/主机名"
 
-
-#: openDCIM/devices.php:1709
+#: openDCIM/devices.php:1739
 msgid "Warranty Company"
 msgstr "维保公司"
 
-
-#: openDCIM/devices.php:1713 openDCIM/search_export.php:60
+#: openDCIM/devices.php:1743 openDCIM/search_export.php:60
+#: openDCIM/search_export_storage_room.php:62
 msgid "Warranty Expiration"
 msgstr "保修到期"
 
-
-#: openDCIM/devices.php:1717
+#: openDCIM/devices.php:1747
 msgid "Last Audit Completed"
 msgstr "完成最终审核"
 
-
-#: openDCIM/devices.php:1718
+#: openDCIM/devices.php:1748
 msgid "Audit not yet completed"
 msgstr "审核尚未完成"
 
-
-#: openDCIM/devices.php:1721 openDCIM/rackrequest.php:392
+#: openDCIM/devices.php:1751 openDCIM/rackrequest.php:391
 msgid "Departmental Owner"
 msgstr "部门主管"
 
-
-#: openDCIM/devices.php:1724 openDCIM/devices.php:1770
-#: openDCIM/rackrequest.php:395 openDCIM/scripts/ajax_tooltip.php:299
+#: openDCIM/devices.php:1754 openDCIM/devices.php:1800
+#: openDCIM/rackrequest.php:394 openDCIM/scripts/ajax_tooltip.php:307
 msgid "Unassigned"
 msgstr "未分配"
 
-
-#: openDCIM/devices.php:1732
+#: openDCIM/devices.php:1762
 msgid "Show Contacts"
 msgstr "查看联系方式"
 
-
-#: openDCIM/devices.php:1738
+#: openDCIM/devices.php:1768
 msgid "Escalation Information"
 msgstr "升级信息"
 
-
-#: openDCIM/devices.php:1741
+#: openDCIM/devices.php:1771
 msgid "Time Period"
 msgstr "时间段"
 
-
-#: openDCIM/devices.php:1743 openDCIM/devices.php:1755
-#: openDCIM/devices.php:1904
+#: openDCIM/devices.php:1773 openDCIM/devices.php:1785
+#: openDCIM/devices.php:1934
 msgid "Select..."
 msgstr "选择..."
 
-
-#: openDCIM/devices.php:1753 openDCIM/escalations.php:80
+#: openDCIM/devices.php:1783 openDCIM/escalations.php:80
 msgid "Details"
 msgstr "详细信息"
 
-
-#: openDCIM/devices.php:1782
+#: openDCIM/devices.php:1812
 msgid "Contact Lookup"
 msgstr "查找联系人"
 
-
-#: openDCIM/devices.php:1794
+#: openDCIM/devices.php:1824
 msgid "Custom Attributes"
 msgstr ""
 
-
-#: openDCIM/devices.php:1818
+#: openDCIM/devices.php:1848
 msgid "Parent Device"
 msgstr "刀片柜"
 
-
-#: openDCIM/devices.php:1830 openDCIM/rackrequest.php:408
+#: openDCIM/devices.php:1860 openDCIM/rackrequest.php:407
 msgid "Device Class"
 msgstr "设备分类"
 
-
-#: openDCIM/devices.php:1832
+#: openDCIM/devices.php:1862
 msgid "Select a template..."
 msgstr "选择模板..."
 
-
-#: openDCIM/devices.php:1848 openDCIM/devices.php:2169
-#: openDCIM/device_templates.php:742 openDCIM/rackrequest.php:428
-#: openDCIM/report-projects.php:41 openDCIM/search_export.php:50
+#: openDCIM/devices.php:1878 openDCIM/devices.php:2199
+#: openDCIM/device_templates.php:742 openDCIM/rackrequest.php:427
+#: openDCIM/search_export.php:50 openDCIM/search_export_storage_room.php:52
 msgid "Height"
 msgstr "高度"
 
-
-#: openDCIM/devices.php:1848
+#: openDCIM/devices.php:1878
 msgid "Number of slots"
 msgstr "插槽数量"
 
-
-#: openDCIM/devices.php:1860
+#: openDCIM/devices.php:1890
 msgid "Half Depth"
 msgstr "一半长度"
 
-
-#: openDCIM/devices.php:1865
+#: openDCIM/devices.php:1895
 msgid "Back Side"
 msgstr "背面"
 
-
-#: openDCIM/devices.php:1869
+#: openDCIM/devices.php:1899
 msgid "Number of Data Ports"
 msgstr "数据端口数量"
 
-
-#: openDCIM/devices.php:1873
+#: openDCIM/devices.php:1903
 msgid "Nominal Draw (Watts)"
 msgstr "额定电量(wt)"
 
-
-#: openDCIM/devices.php:1884 openDCIM/devices.php:2286
+#: openDCIM/devices.php:1914 openDCIM/devices.php:2316
 msgid "Power Connections"
 msgstr "电源连接"
 
-
-#: openDCIM/devices.php:1892
+#: openDCIM/devices.php:1922
 msgid "Chassis Total Draw"
 msgstr "机箱综合视图"
 
-
-#: openDCIM/devices.php:1896
+#: openDCIM/devices.php:1926
 msgid "Chassis Total Weight"
 msgstr "机箱总重量"
 
-
-#: openDCIM/devices.php:1902 openDCIM/devices.php:2171
-#: openDCIM/device_templates.php:754 openDCIM/rackrequest.php:449
-#: openDCIM/report-projects.php:45 openDCIM/search_export.php:55
+#: openDCIM/devices.php:1932 openDCIM/devices.php:2201
+#: openDCIM/device_templates.php:754 openDCIM/rackrequest.php:448
+#: openDCIM/report_vendor_model.php:59 openDCIM/search_export.php:55
+#: openDCIM/search_export_storage_room.php:57
 msgid "Device Type"
 msgstr "设备类型"
 
-
-#: openDCIM/devices.php:1916
+#: openDCIM/devices.php:1946
 msgid "Device Images"
 msgstr ""
 
-
-#: openDCIM/devices.php:1926
+#: openDCIM/devices.php:1956
 msgid "ProxMox Configuration"
 msgstr ""
 
-
-#: openDCIM/devices.php:1929
+#: openDCIM/devices.php:1959
 msgid "API Username"
 msgstr ""
 
-
-#: openDCIM/devices.php:1933
+#: openDCIM/devices.php:1963
 msgid "API Password"
 msgstr ""
 
-
-#: openDCIM/devices.php:1937
+#: openDCIM/devices.php:1967
 msgid "API Port"
 msgstr ""
 
-
-#: openDCIM/devices.php:1941
+#: openDCIM/devices.php:1971
 msgid "ProxMox Realm"
 msgstr ""
 
-
-#: openDCIM/devices.php:1947
+#: openDCIM/devices.php:1977
 msgid "SNMP Configuration"
 msgstr ""
 
-
-#: openDCIM/devices.php:1953 openDCIM/devices.php:1970
 #: openDCIM/devices.php:1983 openDCIM/devices.php:2000
+#: openDCIM/devices.php:2013 openDCIM/devices.php:2030
 msgid "Configuration Default"
 msgstr ""
 
-
-#: openDCIM/devices.php:1963
+#: openDCIM/devices.php:1993
 msgid "SNMP Read Only Community"
 msgstr "只读SNMP Community"
 
-
-#: openDCIM/devices.php:1964
+#: openDCIM/devices.php:1994
 msgid "Test SNMP"
 msgstr ""
 
-
-#: openDCIM/devices.php:2014
+#: openDCIM/devices.php:2044
 msgid "Consecutive SNMP Failures"
 msgstr ""
 
-
-#: openDCIM/devices.php:2018
+#: openDCIM/devices.php:2048
 msgid "Polling is disabled after three consecutive failures."
 msgstr ""
 
-
-#: openDCIM/devices.php:2021
+#: openDCIM/devices.php:2051
 msgid "Power Specifications"
 msgstr ""
 
-
-#: openDCIM/devices.php:2024
+#: openDCIM/devices.php:2054
 msgid "Source Panel"
 msgstr "电源面板"
 
-
-#: openDCIM/devices.php:2027 openDCIM/devices.php:2119
+#: openDCIM/devices.php:2057 openDCIM/devices.php:2149
 msgid "Select Panel"
 msgstr "选择面板"
 
-
-#: openDCIM/devices.php:2041
+#: openDCIM/devices.php:2071
 msgid "Voltages:"
 msgstr "电压:"
 
-
-#: openDCIM/devices.php:2055
+#: openDCIM/devices.php:2085
 msgid "Breaker Size (# of Poles)"
 msgstr "开关规格(# 插头)"
 
-
-#: openDCIM/devices.php:2069
+#: openDCIM/devices.php:2099
 msgid "Panel Pole Number"
 msgstr "排插插座数量"
 
-
-#: openDCIM/devices.php:2076
+#: openDCIM/devices.php:2106
 msgid "All Breaker Poles"
 msgstr "所有断路器插座"
 
-
-#: openDCIM/devices.php:2082
+#: openDCIM/devices.php:2112
 msgid "Input Amperage"
 msgstr "输入安培数"
 
-
-#: openDCIM/devices.php:2090
+#: openDCIM/devices.php:2120
 msgid "Uptime"
 msgstr "正常运行时间"
 
-
-#: openDCIM/devices.php:2094
+#: openDCIM/devices.php:2124
 msgid "Firmware Version"
 msgstr "固件版本"
 
-
-#: openDCIM/devices.php:2098 openDCIM/device_templates.php:750
+#: openDCIM/devices.php:2128 openDCIM/device_templates.php:750
 msgid "Wattage"
 msgstr "额定功率"
 
-
-#: openDCIM/devices.php:2099
+#: openDCIM/devices.php:2129
 msgid "Manual Entry"
 msgstr "手动输入"
 
-
-#: openDCIM/devices.php:2102
+#: openDCIM/devices.php:2132
 msgid "Last Update"
 msgstr "最后更新"
 
-
-#: openDCIM/devices.php:2112
+#: openDCIM/devices.php:2142
 msgid "Fail Safe Switch?"
 msgstr "故障切换保护?"
 
-
-#: openDCIM/devices.php:2116
+#: openDCIM/devices.php:2146
 msgid "Source Panel (Secondary Source)"
 msgstr "电源面板(第二路市电)"
 
-
-#: openDCIM/devices.php:2131
+#: openDCIM/devices.php:2161
 msgid "Panel Pole Number (Secondary Source)"
 msgstr "排插插座数量(第二路市电)"
 
-
-#: openDCIM/devices.php:2140
+#: openDCIM/devices.php:2170
 msgid "Switch SNMP"
 msgstr "交换机SNMP"
 
+#: openDCIM/devices.php:2171
+msgid ""
+"Use these buttons to set the first port for the switch, check the status of "
+"the ports again, or attempt to load the Port Name Labels from the switch "
+"device."
+msgstr ""
+"使用这些按钮来设置交换机的第一个端口. 再次检查端口的状态, 或者尝试从交换机设"
+"备读取端口标签的名称."
 
-#: openDCIM/devices.php:2141
-msgid "Use these buttons to set the first port for the switch, check the status of the ports again, or attempt to load the Port Name Labels from the switch device."
-msgstr "使用这些按钮来设置交换机的第一个端口. 再次检查端口的状态, 或者尝试从交换机设备读取端口标签的名称."
-
-
-#: openDCIM/devices.php:2141
+#: openDCIM/devices.php:2171
 msgid "Set First Port"
 msgstr "设置第一个端口"
 
-
-#: openDCIM/devices.php:2141
+#: openDCIM/devices.php:2171
 msgid "Refresh Status"
 msgstr "刷新状态"
 
-
-#: openDCIM/devices.php:2141
+#: openDCIM/devices.php:2171
 msgid "Refresh Port Names"
 msgstr "刷新端口名称"
 
-
-#: openDCIM/devices.php:2141
+#: openDCIM/devices.php:2171
 msgid "Refresh Port Notes"
 msgstr "刷新端口标注"
 
-
-#: openDCIM/devices.php:2150
+#: openDCIM/devices.php:2180
 msgid "Chassis Contents"
 msgstr "服务器机箱内部"
 
-
-#: openDCIM/devices.php:2154 openDCIM/devices.php:2385
+#: openDCIM/devices.php:2184 openDCIM/devices.php:2415
 #: openDCIM/device_templates.php:925
 msgid "Front"
 msgstr "前置"
 
-
-#: openDCIM/devices.php:2158
+#: openDCIM/devices.php:2188
 msgid "Number of Slots in Chassis:"
 msgstr "机箱内插槽数量:"
 
-
-#: openDCIM/devices.php:2168
+#: openDCIM/devices.php:2198
 msgid "Slot #"
 msgstr "插槽#"
 
-
-#: openDCIM/devices.php:2170 openDCIM/report_contact.php:485
+#: openDCIM/devices.php:2200 openDCIM/report_contact.php:485
 #: openDCIM/report_cost.php:469
 #: openDCIM/report_diverse_power_exceptions.php:167
 #: openDCIM/report_exception.php:165 openDCIM/report_exception.php:235
@@ -2909,813 +2525,701 @@ msgstr "插槽#"
 msgid "Device Name"
 msgstr "设备名称"
 
-
-#: openDCIM/devices.php:2188
-msgid "You must first define how many slots are in the chassis before you can add devices."
+#: openDCIM/devices.php:2218
+msgid ""
+"You must first define how many slots are in the chassis before you can add "
+"devices."
 msgstr "您必须先定义机箱内有多少个插槽, 然后才能添加设备."
 
-
-#: openDCIM/devices.php:2199
+#: openDCIM/devices.php:2229
 msgid "Hypervisor Server Information"
 msgstr ""
 
-
-#: openDCIM/devices.php:2205
+#: openDCIM/devices.php:2235
 msgid "Hypervisor"
 msgstr ""
 
-
-#: openDCIM/devices.php:2231
+#: openDCIM/devices.php:2261
 msgid "Limit device type selection to"
 msgstr ""
 
-
-#: openDCIM/devices.php:2245
+#: openDCIM/devices.php:2275
 msgid "Limit device selection to"
 msgstr ""
 
-
-#: openDCIM/devices.php:2260
+#: openDCIM/devices.php:2290
 msgid "Operational Log"
 msgstr "操作日志"
 
-
-#: openDCIM/devices.php:2291 openDCIM/devices.php:2333
+#: openDCIM/devices.php:2321 openDCIM/devices.php:2363
 msgid "Port Name"
 msgstr "端口名称"
 
-
-#: openDCIM/devices.php:2292 openDCIM/devices.php:2334
+#: openDCIM/devices.php:2322 openDCIM/devices.php:2364
 #: openDCIM/pathmaker.php:464 openDCIM/report_cabinets.php:187
-#: openDCIM/storageroom.php:58
+#: openDCIM/storageroom.php:76
 msgid "Device"
 msgstr "设备"
 
-
-#: openDCIM/devices.php:2295 openDCIM/report_power_distribution.php:186
+#: openDCIM/devices.php:2325 openDCIM/report_power_distribution.php:186
 #: openDCIM/report_power_distribution.php:202
 msgid "Panel"
 msgstr "面板"
 
-
-#: openDCIM/devices.php:2339
+#: openDCIM/devices.php:2369
 msgid "Color Code"
 msgstr "颜色代码"
 
-
-#: openDCIM/devices.php:2385
+#: openDCIM/devices.php:2415
 msgid "Patch Port"
 msgstr "配线架端口"
 
-
-#: openDCIM/devices.php:2385
+#: openDCIM/devices.php:2415
 msgid "Back"
 msgstr "返回"
 
-
-#: openDCIM/devices.php:2443
+#: openDCIM/devices.php:2473
 msgid "Copy"
 msgstr "复制"
 
-
-#: openDCIM/devices.php:2454 openDCIM/workorder.php:229
+#: openDCIM/devices.php:2484 openDCIM/workorder.php:229
 msgid "Export Connections"
 msgstr "出口连接"
 
-
-#: openDCIM/devices.php:2466
+#: openDCIM/devices.php:2496
 msgid "Return to Parent Device"
 msgstr "返回刀片机箱"
 
-
-#: openDCIM/devices.php:2472
+#: openDCIM/devices.php:2502
 msgid "Return to Storage Room"
 msgstr "返回仓库"
 
-
-#: openDCIM/devices.php:2474
+#: openDCIM/devices.php:2504
 msgid "Return to General Storage Room"
 msgstr "返回主仓库"
 
-
-#: openDCIM/devices.php:2479
+#: openDCIM/devices.php:2509
 msgid "Do you certify that you have completed an audit of this device?"
 msgstr "您是否确认您已完成该设备的审核?"
-
 
 #: openDCIM/device_templates.php:5
 msgid "Data Center Device Templates"
 msgstr "数据中心设备模板"
 
-
 #: openDCIM/device_templates.php:77
 msgid "Template File Imported"
 msgstr "模板文件导入"
-
 
 #: openDCIM/device_templates.php:77
 msgid "View errors"
 msgstr "查看错误"
 
-
 #: openDCIM/device_templates.php:118
 msgid "Error updating front slots"
 msgstr "更新正面插槽错误"
-
 
 #: openDCIM/device_templates.php:129
 msgid "Error updating rear slots"
 msgstr "更新背面插槽错误"
 
-
 #: openDCIM/device_templates.php:141
 msgid "Error updating template ports"
 msgstr "更新端口模板错误"
-
 
 #: openDCIM/device_templates.php:151
 msgid "Error updating template power connections"
 msgstr ""
 
-
 #: openDCIM/device_templates.php:173 openDCIM/device_templates.php:188
 msgid "Error updating device template custom values"
 msgstr ""
-
 
 #: openDCIM/device_templates.php:206 openDCIM/device_templates.php:228
 msgid "Error updating cdu attributes"
 msgstr ""
 
-
 #: openDCIM/device_templates.php:246
 msgid "An error has occured, template not created"
 msgstr "发生错误, 无法创建的模板"
-
 
 #: openDCIM/device_templates.php:250 openDCIM/device_templates.php:266
 msgid "Error updating template"
 msgstr "更新模板错误"
 
-
 #: openDCIM/device_templates.php:278
 msgid "Error updating devices"
 msgstr "更新设备错误"
-
 
 #: openDCIM/device_templates.php:283 openDCIM/device_templates.php:295
 #: openDCIM/paths.php:173 openDCIM/scripts/ajax_tooltip.php:23
 msgid "Error"
 msgstr "错误"
 
-
 #: openDCIM/device_templates.php:295
 msgid "Exported"
 msgstr "出口"
-
 
 #: openDCIM/device_templates.php:372
 msgid "This value must be different than"
 msgstr "该值必须不同于"
 
-
 #: openDCIM/device_templates.php:458 openDCIM/device_templates.php:911
 msgid "Import"
 msgstr "Internet入口"
-
 
 #: openDCIM/device_templates.php:476
 msgid "Close"
 msgstr "关闭"
 
-
 #: openDCIM/device_templates.php:514
 msgid "Custom"
 msgstr ""
-
 
 #: openDCIM/device_templates.php:743
 msgid "0 for a vertical mounting"
 msgstr ""
 
-
 #: openDCIM/device_templates.php:766
 msgid "No. Power Connections"
 msgstr ""
-
 
 #: openDCIM/device_templates.php:767 openDCIM/device_templates.php:771
 msgid "Edit Ports"
 msgstr "编辑端口"
 
-
 #: openDCIM/device_templates.php:770
 msgid "No. Ports"
 msgstr "端口编号"
-
 
 #: openDCIM/device_templates.php:792
 msgid "Share to Repository"
 msgstr ""
 
-
 #: openDCIM/device_templates.php:796
 msgid "Keep Local (Ignore Repository)"
 msgstr ""
-
 
 #: openDCIM/device_templates.php:800
 msgid "Front Picture File"
 msgstr "前置图片文件"
 
-
 #: openDCIM/device_templates.php:804
 msgid "Rear Picture File"
 msgstr "后置图片文件"
-
 
 #: openDCIM/device_templates.php:808
 msgid "Chassis Slots"
 msgstr "服务器机箱插槽"
 
-
 #: openDCIM/device_templates.php:809 openDCIM/device_templates.php:813
 msgid "Edit Coordinates"
 msgstr "编辑坐标"
-
 
 #: openDCIM/device_templates.php:812
 msgid "Rear Chassis Slots"
 msgstr "服务器机箱后置插槽"
 
-
 #: openDCIM/device_templates.php:845
 msgid "Default:"
 msgstr ""
-
 
 #: openDCIM/device_templates.php:859
 msgid "Revert to default value from configuration page"
 msgstr ""
 
-
 #: openDCIM/device_templates.php:859
 msgid "Revert"
 msgstr ""
-
 
 #: openDCIM/device_templates.php:869
 msgid "Enabled?"
 msgstr ""
 
-
 #: openDCIM/device_templates.php:870
 msgid "Required?"
 msgstr ""
-
 
 #: openDCIM/device_templates.php:896
 msgid "Number of Devices Using This Template:"
 msgstr "设备使用该模板的数量:"
 
-
 #: openDCIM/device_templates.php:907
 msgid "Update Template"
 msgstr "更新模板"
-
 
 #: openDCIM/device_templates.php:907
 msgid "Clone Template"
 msgstr "复制模板"
 
-
 #: openDCIM/device_templates.php:907
 msgid "Delete Template"
 msgstr ""
-
 
 #: openDCIM/device_templates.php:907
 msgid "Update Devices"
 msgstr "更新设备"
 
-
 #: openDCIM/device_templates.php:989
 msgid "OID for Phase1"
 msgstr ""
-
 
 #: openDCIM/device_templates.php:993
 msgid "OID for Phase2"
 msgstr ""
 
-
 #: openDCIM/device_templates.php:997
 msgid "OID for Phase3"
 msgstr ""
-
 
 #: openDCIM/device_templates.php:1040
 msgid "Temperature OID"
 msgstr "OID温度"
 
-
 #: openDCIM/device_templates.php:1044
 msgid "Humidity OID"
 msgstr "OID湿度"
-
 
 #: openDCIM/device_templates.php:1048
 msgid "Temperature Multiplier"
 msgstr "温差"
 
-
 #: openDCIM/device_templates.php:1059
 msgid "Humidity Multiplier"
 msgstr "湿度系数"
-
 
 #: openDCIM/device_templates.php:1070
 msgid "Temperature Units"
 msgstr "温度单位"
 
-
 #: openDCIM/device_templates.php:1096
 msgid "Image file selector"
 msgstr "图像文件选择"
-
 
 #: openDCIM/device_templates.php:1105
 msgid "Import Template From File"
 msgstr "从文件导入模板"
 
-
 #: openDCIM/device_templates.php:1113
 msgid "Import log"
 msgstr "Internet入口日志"
 
+#: openDCIM/disposition.php:5
+#, fuzzy
+msgid "Disposal Method Management"
+msgstr "模板管理"
+
+#: openDCIM/disposition.php:25
+#, fuzzy
+msgid "Created"
+msgstr "创建"
+
+#: openDCIM/disposition.php:75 openDCIM/report_surplus.php:236
+msgid "Disposal Mechanism"
+msgstr ""
+
+#: openDCIM/disposition.php:78
+#, fuzzy
+msgid "Disposition ID"
+msgstr "位置"
+
+#: openDCIM/disposition.php:80
+msgid "New Disposal Method"
+msgstr ""
+
+#: openDCIM/disposition.php:94 openDCIM/report_surplus.php:136
+#: openDCIM/timeperiods.php:80 openDCIM/zone.php:130
+msgid "Description"
+msgstr "说明"
+
+#: openDCIM/disposition.php:98
+msgid "Reference Number (Contract)"
+msgstr ""
+
+#: openDCIM/disposition.php:112
+msgid "You must always have at least one Active disposal method."
+msgstr ""
 
 #: openDCIM/escalations.php:5
 msgid "Data Center Escalation Rules"
 msgstr "数据中心升级规则"
 
-
 #: openDCIM/escalations.php:68
 msgid "Escalation Rule"
 msgstr "升级规则"
-
 
 #: openDCIM/escalations.php:70
 msgid "New Escalation Rule"
 msgstr "新的扩容方案"
 
-
 #: openDCIM/image_management.php:5
 msgid "OpenDCIM Image File Management"
 msgstr "OpenDCIM图像文件管理"
-
 
 #: openDCIM/image_management.php:36
 msgid "openDCIM Data Center Inventory"
 msgstr "openDCIM数据中心库存"
 
-
 #: openDCIM/image_management.php:63
 msgid "Device Pictures"
 msgstr "设备图片"
-
 
 #: openDCIM/image_management.php:112
 msgid "Infrastructure Drawings"
 msgstr "基础设施图纸"
 
-
 #: openDCIM/image_management.php:159
 msgid "Delete image file?"
 msgstr "删除图像文件?"
 
-
 #: openDCIM/image_management.php:160
-msgid "This image will be permanently deleted and cannot be recovered. Are you sure?"
+msgid ""
+"This image will be permanently deleted and cannot be recovered. Are you sure?"
 msgstr "该图片将被永久删除且无法恢复. 您是否确定?"
-
 
 #: openDCIM/index.php:10 openDCIM/repository_sync_ui.php:7 openDCIM/sync.php:7
 #: openDCIM/template.php:7
 msgid "Data Center Operations Metrics"
 msgstr "数据中心运营标准"
 
-
 #: openDCIM/index.php:43
 msgid "Pending Rack Requests"
 msgstr "正在申请机架的请求"
-
 
 #: openDCIM/index.php:43
 msgid "Submit Time"
 msgstr "提交时间"
 
-
-#: openDCIM/index.php:43 openDCIM/rackrequest.php:343
+#: openDCIM/index.php:43 openDCIM/rackrequest.php:342
 msgid "Requestor"
 msgstr "请求人"
-
 
 #: openDCIM/index.php:43
 msgid "System Name"
 msgstr "系统名称"
 
-
 #: openDCIM/index.php:43
 msgid "Due By"
 msgstr "因由"
-
 
 #: openDCIM/index.php:98
 msgid "Data Center Inventory"
 msgstr "数据中心库存"
 
-
 #: openDCIM/index.php:98
 msgid "Export Inventory"
 msgstr "导出库存清单"
-
 
 #: openDCIM/index.php:101
 msgid "Hosted Systems"
 msgstr "托管系统"
 
-
 #: openDCIM/index.php:105
 msgid "DC Count"
 msgstr "配电计算"
-
 
 #: openDCIM/index.php:110
 msgid "Physical Server Count"
 msgstr ""
 
-
 #: openDCIM/index.php:114
 msgid "Other Device Count"
 msgstr "其它设备数量"
-
 
 #: openDCIM/index.php:122
 msgid "Power Consumption"
 msgstr "功耗"
 
-
 #: openDCIM/index.php:126
 msgid "Heat Produced"
 msgstr "发热量"
-
 
 #: openDCIM/index.php:134
 msgid "VM Hosts"
 msgstr ""
 
-
 #: openDCIM/index.php:138
 msgid "Virtualization Ratio"
 msgstr ""
 
-
-#: openDCIM/login_ldap.php:10
+#: openDCIM/login_ad.php:49 openDCIM/login_ldap.php:10
 msgid "openDCIM Login"
 msgstr ""
 
-
-#: openDCIM/login_ldap.php:183
+#: openDCIM/login_ad.php:220 openDCIM/login_ldap.php:184
 msgid "Username:"
 msgstr ""
 
-
-#: openDCIM/login_ldap.php:187
+#: openDCIM/login_ad.php:224 openDCIM/login_ldap.php:188
 msgid "Password:"
 msgstr ""
-
 
 #: openDCIM/mapmaker.php:5
 msgid "Map Selector"
 msgstr "拓扑选择"
 
-
-#: openDCIM/mapmaker.php:90
+#: openDCIM/mapmaker.php:133
 msgid "Coordinates"
 msgstr "坐标"
 
-
-#: openDCIM/mapmaker.php:115
+#: openDCIM/mapmaker.php:167
 msgid "Front Edge"
 msgstr "前置适配器"
 
-
-#: openDCIM/mapmaker.php:143
-msgid "Click and drag on the image to select an area for cabinet"
+#: openDCIM/mapmaker.php:205
+#, fuzzy
+msgid "Click and drag on the image to select an area for "
 msgstr "单击并拖动图像上选择一个机柜区域"
 
-
-#: openDCIM/mapmaker.php:149
-msgid "You must configure an image for this datacenter before attempting to place a cabinet on its map."
+#: openDCIM/mapmaker.php:211
+msgid ""
+"You must configure an image for this datacenter before attempting to place a "
+"cabinet on its map."
 msgstr "准备将一个机柜放到当前的拓扑之前您必须为这个数据中心配置对应的图片."
 
-
-#: openDCIM/mapmaker.php:150
+#: openDCIM/mapmaker.php:212
 #, php-format
 msgid "Please check that &quot;%s&quot; is actually a file."
 msgstr "请核实\"%s\"是一个存在的文件."
 
-
-#: openDCIM/mapmaker.php:151
+#: openDCIM/mapmaker.php:213
 #, php-format
 msgid "Please check the permissions on %s and make sure it is readable."
 msgstr "请检查%s的权限并确保它是可被读取的."
 
-
-#: openDCIM/mapmaker.php:164
+#: openDCIM/mapmaker.php:226
 msgid "Selection Preview"
 msgstr "选择预览"
 
-
-#: openDCIM/misc.inc.php:791 openDCIM/storageroom.php:27
+#: openDCIM/misc.inc.php:791 openDCIM/storageroom.php:44
 msgid "General Storage Room"
 msgstr "总仓库"
 
-
-#: openDCIM/misc.inc.php:882
+#: openDCIM/misc.inc.php:896
 msgid "Reports"
 msgstr "报告"
 
-
-#: openDCIM/misc.inc.php:886
+#: openDCIM/misc.inc.php:900
 msgid "Work Order"
 msgstr "工单"
 
-
-#: openDCIM/misc.inc.php:890
+#: openDCIM/misc.inc.php:904
 msgid "Rack Request Form"
 msgstr "机架申请表"
 
-
-#: openDCIM/misc.inc.php:893 openDCIM/misc.inc.php:894
+#: openDCIM/misc.inc.php:907 openDCIM/misc.inc.php:908
 msgid "User Administration"
 msgstr "用户管理员"
 
-
-#: openDCIM/misc.inc.php:894
+#: openDCIM/misc.inc.php:908
 msgid "Dept. Administration"
 msgstr "部门管理"
 
-
-#: openDCIM/misc.inc.php:895 openDCIM/misc.inc.php:896
+#: openDCIM/misc.inc.php:909 openDCIM/misc.inc.php:910
 msgid "Issue Escalation"
 msgstr "故障上报"
 
-
-#: openDCIM/misc.inc.php:895
+#: openDCIM/misc.inc.php:909
 msgid "Time Periods"
 msgstr "时间段"
 
-
-#: openDCIM/misc.inc.php:896
+#: openDCIM/misc.inc.php:910
 msgid "Escalation Rules"
 msgstr "扩容方案"
 
-
-#: openDCIM/misc.inc.php:897
+#: openDCIM/misc.inc.php:911
 msgid "Project Catalog"
 msgstr ""
 
-
-#: openDCIM/misc.inc.php:900 openDCIM/misc.inc.php:902
-#: openDCIM/misc.inc.php:912 openDCIM/misc.inc.php:913
+#: openDCIM/misc.inc.php:914 openDCIM/misc.inc.php:916
+#: openDCIM/misc.inc.php:926 openDCIM/misc.inc.php:927
 msgid "Template Management"
 msgstr "模板管理"
 
-
-#: openDCIM/misc.inc.php:900
+#: openDCIM/misc.inc.php:914
 msgid "Edit Device Templates"
 msgstr "编辑设备模板"
 
-
-#: openDCIM/misc.inc.php:901 openDCIM/misc.inc.php:916
-#: openDCIM/misc.inc.php:917 openDCIM/misc.inc.php:918
-#: openDCIM/misc.inc.php:919 openDCIM/misc.inc.php:920
+#: openDCIM/misc.inc.php:915 openDCIM/misc.inc.php:931
+#: openDCIM/misc.inc.php:932 openDCIM/misc.inc.php:933
+#: openDCIM/misc.inc.php:934 openDCIM/misc.inc.php:935
 msgid "Infrastructure Management"
 msgstr "基础设施管理"
 
-
-#: openDCIM/misc.inc.php:901
+#: openDCIM/misc.inc.php:915
 msgid "Edit Cabinets"
 msgstr "编辑机柜"
 
-
-#: openDCIM/misc.inc.php:902
+#: openDCIM/misc.inc.php:916
 msgid "Device Image Management"
 msgstr "设备图像管理"
 
-
-#: openDCIM/misc.inc.php:905 openDCIM/misc.inc.php:906
-#: openDCIM/misc.inc.php:907 openDCIM/misc.inc.php:908
-#: openDCIM/misc.inc.php:909
+#: openDCIM/misc.inc.php:919 openDCIM/misc.inc.php:920
+#: openDCIM/misc.inc.php:921 openDCIM/misc.inc.php:922
+#: openDCIM/misc.inc.php:923
 msgid "Bulk Importer"
 msgstr ""
 
-
-#: openDCIM/misc.inc.php:905
+#: openDCIM/misc.inc.php:919
 msgid "Import New Cabinets"
 msgstr ""
 
-
-#: openDCIM/misc.inc.php:906
+#: openDCIM/misc.inc.php:920
 msgid "Import New Devices"
 msgstr ""
 
-
-#: openDCIM/misc.inc.php:907
+#: openDCIM/misc.inc.php:921
 msgid "Import Network Connections"
 msgstr ""
 
-
-#: openDCIM/misc.inc.php:908
+#: openDCIM/misc.inc.php:922
 msgid "Import Power Connections"
 msgstr ""
 
-
-#: openDCIM/misc.inc.php:909
+#: openDCIM/misc.inc.php:923
 msgid "Process Bulk Moves"
 msgstr ""
 
-
-#: openDCIM/misc.inc.php:912
+#: openDCIM/misc.inc.php:926
 msgid "Edit Manufacturers"
 msgstr "编辑设备厂商"
 
-
-#: openDCIM/misc.inc.php:913
+#: openDCIM/misc.inc.php:927
 msgid "Repository Sync"
 msgstr ""
 
+#: openDCIM/misc.inc.php:928 openDCIM/misc.inc.php:929
+#: openDCIM/misc.inc.php:930
+#, fuzzy
+msgid "Materiel Management"
+msgstr "电力管理"
 
-#: openDCIM/misc.inc.php:914 openDCIM/misc.inc.php:915
-msgid "Supplies Management"
-msgstr "物品管理"
-
-
-#: openDCIM/misc.inc.php:914
+#: openDCIM/misc.inc.php:928
 msgid "Manage Supply Bins"
 msgstr "管理配电柜"
 
-
-#: openDCIM/misc.inc.php:915
+#: openDCIM/misc.inc.php:929
 msgid "Manage Supplies"
 msgstr "管理物品"
 
+#: openDCIM/misc.inc.php:930
+msgid "Manage Disposal Methods"
+msgstr ""
 
-#: openDCIM/misc.inc.php:916
+#: openDCIM/misc.inc.php:931
 msgid "Edit Data Centers"
 msgstr "编辑数据中心"
 
-
-#: openDCIM/misc.inc.php:917
+#: openDCIM/misc.inc.php:932
 msgid "Edit Containers"
 msgstr "编辑机柜"
 
-
-#: openDCIM/misc.inc.php:918
+#: openDCIM/misc.inc.php:933
 msgid "Edit Zones"
 msgstr "编辑区域"
 
-
-#: openDCIM/misc.inc.php:919
+#: openDCIM/misc.inc.php:934
 msgid "Edit Rows of Cabinets"
 msgstr "编辑整排机柜"
 
-
-#: openDCIM/misc.inc.php:920
+#: openDCIM/misc.inc.php:935
 msgid "Facilities Image Management"
 msgstr "设备图像管理"
 
-
-#: openDCIM/misc.inc.php:921
+#: openDCIM/misc.inc.php:936
 msgid "Power Management"
 msgstr "电力管理"
 
-
-#: openDCIM/misc.inc.php:921
+#: openDCIM/misc.inc.php:936
 msgid "Edit Power Panels"
 msgstr "编辑电源排插"
 
-
-#: openDCIM/misc.inc.php:922 openDCIM/misc.inc.php:923
+#: openDCIM/misc.inc.php:937 openDCIM/misc.inc.php:938
 msgid "Path Connections"
 msgstr "连接通道"
 
-
-#: openDCIM/misc.inc.php:922
+#: openDCIM/misc.inc.php:937
 msgid "View Path Connection"
 msgstr "查看连接路径"
 
-
-#: openDCIM/misc.inc.php:923
+#: openDCIM/misc.inc.php:938
 msgid "Make Path Connection"
 msgstr "建立连接通道"
 
-
-#: openDCIM/misc.inc.php:924
+#: openDCIM/misc.inc.php:939
 msgid "Edit Configuration"
 msgstr "编辑配置"
 
-
-#: openDCIM/misc.inc.php:931
+#: openDCIM/misc.inc.php:946
 msgid "Logout"
 msgstr ""
 
-
-#: openDCIM/misc.inc.php:1021 openDCIM/report_cabinets.php:182
+#: openDCIM/misc.inc.php:1036 openDCIM/report_cabinets.php:182
 msgid "Side"
 msgstr "一侧"
-
 
 #: openDCIM/pathmaker.php:5
 msgid "Creating an end to end connection"
 msgstr "建立一个末端P2P的连接"
 
-
 #: openDCIM/pathmaker.php:96 openDCIM/pathmaker.php:98
 msgid "Connection implemented"
 msgstr "连线实施"
-
 
 #: openDCIM/pathmaker.php:148
 msgid "Path not initialized"
 msgstr "路径未初始化"
 
-
 #: openDCIM/pathmaker.php:153
 msgid "Error getting initial device data"
 msgstr "获取设备初始化数据错误"
-
 
 #: openDCIM/pathmaker.php:156
 msgid "Error: initial device is a panel"
 msgstr "错误: 初始化的设备是一个面板"
 
-
 #: openDCIM/pathmaker.php:159
 msgid "Error getting initial device port data"
 msgstr "获取设备端口初始化数据错误"
-
 
 #: openDCIM/pathmaker.php:162
 msgid "Error: initial device port is already connected"
 msgstr "错误: 初始化的设备端口已连接"
 
-
 #: openDCIM/pathmaker.php:165
 msgid "Error getting final device data"
 msgstr "读取设备最终数据错误"
-
 
 #: openDCIM/pathmaker.php:168
 msgid "Error: final device is a panel"
 msgstr "错误: 最终设备是一个面板"
 
-
 #: openDCIM/pathmaker.php:171
 msgid "Error getting final device port data"
 msgstr "获取最终设备端口数据错误"
-
 
 #: openDCIM/pathmaker.php:174
 msgid "Error: final device port is already connected"
 msgstr "错误: 最终设备端口已连接"
 
-
 #: openDCIM/pathmaker.php:177
 msgid "Path not found"
 msgstr "路径未找到"
-
 
 #: openDCIM/pathmaker.php:184
 msgid "Initial device unspecified"
 msgstr "未指定初始设备"
 
-
 #: openDCIM/pathmaker.php:186
 msgid "Initial device port unspecified"
 msgstr "初始设备端口未指定"
-
 
 #: openDCIM/pathmaker.php:188 openDCIM/pathmaker.php:190
 msgid "Final device unspecified"
 msgstr "未指定最终设备"
 
-
 #: openDCIM/pathmaker.php:192 openDCIM/scripts/uploadifive.php:89
 msgid "Unknown Error"
 msgstr "未知错误"
-
 
 #: openDCIM/pathmaker.php:247 openDCIM/pathmaker.php:324
 #: openDCIM/pathmaker.php:459 openDCIM/paths.php:76 openDCIM/paths.php:137
@@ -3723,57 +3227,46 @@ msgstr "未知错误"
 msgid "Port"
 msgstr "端口"
 
-
 #: openDCIM/pathmaker.php:372 openDCIM/paths.php:462
 msgid "Front Connection"
 msgstr "前置连接"
-
 
 #: openDCIM/pathmaker.php:376 openDCIM/paths.php:466
 msgid "Rear Connection"
 msgstr "后置连接"
 
-
 #: openDCIM/pathmaker.php:396
 msgid "Implement in DataBase"
 msgstr "在数据库中实施"
-
 
 #: openDCIM/pathmaker.php:492
 msgid "Initial device"
 msgstr "初始设备"
 
-
 #: openDCIM/pathmaker.php:504
 msgid "Final device"
 msgstr "最终设备"
-
 
 #: openDCIM/pathmaker.php:514
 msgid "Make Path"
 msgstr "建立路径"
 
-
 #: openDCIM/paths.php:5
 msgid "End to end connection path"
 msgstr "末端P2P连接路径"
-
 
 #: openDCIM/paths.php:59
 msgid "Front connections deleted"
 msgstr "删除前面板连接"
 
-
 #: openDCIM/paths.php:61
 msgid "Come back when you have device rights"
 msgstr ""
-
 
 #: openDCIM/paths.php:84 openDCIM/paths.php:111 openDCIM/paths.php:132
 #: openDCIM/paths.php:168
 msgid "There is a loop in this port"
 msgstr "该端口中存在环路"
-
 
 #: openDCIM/paths.php:116 openDCIM/api/v1/getRoutes.php:420
 #: openDCIM/api/v1/getRoutes.php:441 openDCIM/api/v1/index2.php:467
@@ -3781,554 +3274,518 @@ msgstr "该端口中存在环路"
 msgid "Device not found"
 msgstr "未找到设备"
 
-
 #: openDCIM/paths.php:120
 msgid "There are several devices with this label"
 msgstr "有此标签的多个设备"
-
 
 #: openDCIM/paths.php:120
 msgid "Please, select a device from list"
 msgstr "请从列表中选择一个设备"
 
-
 #: openDCIM/paths.php:159
 msgid "Not found"
 msgstr "未找到"
-
 
 #: openDCIM/paths.php:179
 msgid "Path of"
 msgstr "通道"
 
-
 #: openDCIM/paths.php:480
 msgid "Delete front connections in DataBase"
 msgstr "删除数据库前端连接"
-
 
 #: openDCIM/paths.php:583
 msgid "Search by path identifier"
 msgstr "以通道标识进行搜索"
 
-
 #: openDCIM/paths.php:588
 msgid "Identifier"
 msgstr "标识"
-
 
 #: openDCIM/paths.php:592 openDCIM/paths.php:608
 msgid "Search"
 msgstr "搜索"
 
-
 #: openDCIM/paths.php:599
 msgid "Search by label/port"
 msgstr "通过标签/端口方式查找"
-
 
 #: openDCIM/people_depts.php:46
 msgid "openDCIM Department Membership Maintenance"
 msgstr ""
 
-
 #: openDCIM/people_depts.php:66 openDCIM/usermgr.php:288
 msgid "Department Membership"
 msgstr ""
 
-
-#: openDCIM/power_panel.php:89
+#: openDCIM/power_panel.php:90
 msgid "Inherited Meter Load"
 msgstr ""
 
-
-#: openDCIM/power_panel.php:90
+#: openDCIM/power_panel.php:91
 msgid "Estimated Load"
 msgstr ""
 
-
-#: openDCIM/power_panel.php:91
+#: openDCIM/power_panel.php:92
 msgid "Panel Meter Load"
 msgstr ""
 
-
-#: openDCIM/power_panel.php:225
+#: openDCIM/power_panel.php:226
 msgid "Power Panel ID"
 msgstr "电源排插ID"
 
-
-#: openDCIM/power_panel.php:227
+#: openDCIM/power_panel.php:228
 msgid "New Panel"
 msgstr "新的排插"
 
-
-#: openDCIM/power_panel.php:238
+#: openDCIM/power_panel.php:239
 msgid "Panel Name"
 msgstr "排插名称"
 
-
-#: openDCIM/power_panel.php:242
+#: openDCIM/power_panel.php:243
 msgid "Number of Poles"
 msgstr "插座数量"
 
-
-#: openDCIM/power_panel.php:246
+#: openDCIM/power_panel.php:247
 msgid "Main Breaker Amperage"
 msgstr "主开关电流"
 
-
-#: openDCIM/power_panel.php:250
+#: openDCIM/power_panel.php:251
 msgid "Panel Voltage"
 msgstr "电压面板"
 
-
-#: openDCIM/power_panel.php:254
+#: openDCIM/power_panel.php:255
 msgid "Numbering Scheme"
 msgstr "编号配置"
 
-
-#: openDCIM/power_panel.php:275
+#: openDCIM/power_panel.php:276
 msgid "Parent Panel"
 msgstr ""
 
-
-#: openDCIM/power_panel.php:290
+#: openDCIM/power_panel.php:291
 msgid "Parent Breaker Name"
 msgstr ""
 
-
-#: openDCIM/power_panel.php:294
+#: openDCIM/power_panel.php:295
 msgid "Panel Meter IP Address"
 msgstr ""
 
-
-#: openDCIM/power_panel.php:298
+#: openDCIM/power_panel.php:299
 msgid "CDU/Meter Template"
 msgstr ""
 
+#: openDCIM/power_panel.php:314
+#, fuzzy
+msgid "Data Center (for Mapping)"
+msgstr "数据中心区域"
 
-#: openDCIM/power_panel.php:336
+#: openDCIM/power_panel.php:351
 msgid "Panel Schedule"
 msgstr "计划时间表面板"
 
-
-#: openDCIM/power_panel.php:373
+#: openDCIM/power_panel.php:388
 msgid "Unknown Pole"
 msgstr ""
 
+#: openDCIM/power_panel.php:395
+msgid ""
+"PDUs and Panels displayed here could not be drawn on the panel because no "
+"circuit ID was defined. Please check the pole positions on the panels again."
+msgstr ""
+"由于重叠回路ID分配, PDU的状态无法在面板上显示. 请再次检查面板上的正负极设置."
 
-#: openDCIM/power_panel.php:380
-msgid "PDUs and Panels displayed here could not be drawn on the panel because no circuit ID was defined. Please check the pole positions on the panels again."
-msgstr "由于重叠回路ID分配, PDU的状态无法在面板上显示. 请再次检查面板上的正负极设置."
-
-
-#: openDCIM/power_panel.php:385
+#: openDCIM/power_panel.php:400
 msgid "Errors"
 msgstr "错误"
 
-
-#: openDCIM/power_panel.php:392
-msgid "PDUs and Panels displayed here could not be drawn on the panel because of an overlapping circuit ID assignment. Please check the pole positions on the panels again."
+#: openDCIM/power_panel.php:407
+msgid ""
+"PDUs and Panels displayed here could not be drawn on the panel because of an "
+"overlapping circuit ID assignment. Please check the pole positions on the "
+"panels again."
 msgstr ""
 
-
-#: openDCIM/power_panel.php:400
+#: openDCIM/power_panel.php:415
 msgid "Power panel delete confirmation"
 msgstr "电源面板删除确认"
 
-
-#: openDCIM/power_panel.php:401
+#: openDCIM/power_panel.php:416
 msgid "Are you sure that you want to delete this power panel?"
 msgstr "您确定想删除该电源排插?"
 
-
-#: openDCIM/project_members.php:56
+#: openDCIM/project_members.php:77
 msgid "openDCIM Project Membership Maintenance"
 msgstr ""
 
-
-#: openDCIM/project_members.php:80
+#: openDCIM/project_members.php:101
 msgid "Project to Administer"
 msgstr ""
-
 
 #: openDCIM/project_mgr.php:5
 msgid "Project Detail"
 msgstr ""
 
-
 #: openDCIM/project_mgr.php:56
 msgid "openDCIM Project Information"
 msgstr ""
 
-
-#: openDCIM/project_mgr.php:130 openDCIM/report_network_map.php:621
+#: openDCIM/project_mgr.php:138 openDCIM/report_network_map.php:621
 #: openDCIM/report_project_outage_simulator.php:342
 #: openDCIM/sidebar.inc.php:23
 msgid "Project"
 msgstr ""
 
-
-#: openDCIM/project_mgr.php:132
+#: openDCIM/project_mgr.php:140
 msgid "New Project"
 msgstr ""
 
-
-#: openDCIM/project_mgr.php:142 openDCIM/report_network_map.php:173
+#: openDCIM/project_mgr.php:150 openDCIM/report_network_map.php:173
 #: openDCIM/report_project_outage_simulator.php:298
-#: openDCIM/report-projects.php:37
 msgid "Project Name"
 msgstr ""
 
-
-#: openDCIM/project_mgr.php:146
+#: openDCIM/project_mgr.php:154
 #: openDCIM/report_project_outage_simulator.php:299
 msgid "Project Sponsor"
 msgstr ""
 
-
-#: openDCIM/project_mgr.php:150
+#: openDCIM/project_mgr.php:158
 msgid "Project Start Date"
 msgstr ""
 
-
-#: openDCIM/project_mgr.php:154
+#: openDCIM/project_mgr.php:162
 msgid "Project Expiration Date"
 msgstr ""
 
-
-#: openDCIM/project_mgr.php:158
+#: openDCIM/project_mgr.php:166
 msgid "Project Actual End Date"
 msgstr ""
 
-
-#: openDCIM/project_mgr.php:166
+#: openDCIM/project_mgr.php:174
 msgid "Assign Devices"
 msgstr ""
 
+#: openDCIM/project_mgr.php:174
+#, fuzzy
+msgid "Assign Cabinets"
+msgstr "指定联系人"
 
-#: openDCIM/project_mgr.php:180
+#: openDCIM/project_mgr.php:188
 msgid "Project delete confirmation"
 msgstr ""
 
-
-#: openDCIM/project_mgr.php:181
-msgid "Are you sure that you want to delete this project? (Devices will be unassociated, but will not be deleted)."
+#: openDCIM/project_mgr.php:189
+msgid ""
+"Are you sure that you want to delete this project? (Devices will be "
+"unassociated, but will not be deleted)."
 msgstr ""
 
-
-#: openDCIM/project_mgr.php:181
+#: openDCIM/project_mgr.php:189
 msgid "THERE IS NO UNDO"
 msgstr ""
 
-
-#: openDCIM/rackrequest.php:6
+#: openDCIM/rackrequest.php:5
 msgid "Data Center Rack Request"
 msgstr "数据中心机位需求单"
 
-
-#: openDCIM/rackrequest.php:57 openDCIM/report-em_new_installs.php:30
-#: openDCIM/report-em_reservations.php:27
-#: openDCIM/report-em_switch_exceptions.php:27 openDCIM/vmnamecheck.php:34
+#: openDCIM/rackrequest.php:56 openDCIM/report-em_disabled_snmp.php:26
+#: openDCIM/report-em_new_installs.php:29
+#: openDCIM/report-em_reservations.php:26
+#: openDCIM/report-em_switch_exceptions.php:26 openDCIM/vmnamecheck.php:34
 #: openDCIM/workorder.php:65
 msgid "MailFrom"
 msgstr "邮件来自"
 
-
-#: openDCIM/rackrequest.php:64
+#: openDCIM/rackrequest.php:63
 msgid "Check contact details for"
 msgstr "检查联系人详情"
 
-
-#: openDCIM/rackrequest.php:71 openDCIM/vmnamecheck.php:47
+#: openDCIM/rackrequest.php:70 openDCIM/vmnamecheck.php:47
 msgid "Data center team address"
 msgstr "数据中心运维团队联系地址"
 
-
-#: openDCIM/rackrequest.php:77
+#: openDCIM/rackrequest.php:76
 msgid "ITS Facilities Rack Request"
 msgstr "IT设备机架使用需求"
 
-
-#: openDCIM/rackrequest.php:100
+#: openDCIM/rackrequest.php:99
 #, php-format
-msgid "Your request for racking up the device labeled %1$s has been received.\n"
-"\t\t\tThe Network Operations Center will examine the request and contact you if more information is needed\n"
-"\t\t\tbefore the request can be processed.  You will receive a notice when this request has been completed.\n"
+msgid ""
+"Your request for racking up the device labeled %1$s has been received.\n"
+"\t\t\tThe Network Operations Center will examine the request and contact you "
+"if more information is needed\n"
+"\t\t\tbefore the request can be processed.  You will receive a notice when "
+"this request has been completed.\n"
 "\t\t\tPlease allow up to 2 business days for requests to be completed."
-msgstr "已经收到您对标签为%1$s的机柜上架请求.\n"
-"\t\t\t网络运营支撑中心将审核该请求, 在需求被正式受理之前如果还需要额外的信息\n"
-"\t\t\t, 运营支撑中心的工程师会联系您询问. 如果最终该需求通过审核则我们将会发送一份通知给您. \n"
+msgstr ""
+"已经收到您对标签为%1$s的机柜上架请求.\n"
+"\t\t\t网络运营支撑中心将审核该请求, 在需求被正式受理之前如果还需要额外的信"
+"息\n"
+"\t\t\t, 运营支撑中心的工程师会联系您询问. 如果最终该需求通过审核则我们将会发"
+"送一份通知给您. \n"
 "\t\t\t请耐心等待整个审核过程最长时间为2天."
 
-
-#: openDCIM/rackrequest.php:105
+#: openDCIM/rackrequest.php:104
 #, php-format
 msgid "Your Request ID is %1$d and you may view the request online at"
 msgstr "您的需求ID编号为%1$d, 您可以在网上查看该请求的处理状态."
 
-
-#: openDCIM/rackrequest.php:107 openDCIM/rackrequest.php:161
+#: openDCIM/rackrequest.php:106 openDCIM/rackrequest.php:160
 msgid "this link"
 msgstr "该链接"
 
-
-#: openDCIM/rackrequest.php:159
+#: openDCIM/rackrequest.php:158
 #, php-format
 msgid "Your request for racking up the device labeled %1$s has been completed."
 msgstr "您提交的标签为%1$s的设备上架请求已经审核完成."
 
-
-#: openDCIM/rackrequest.php:160
+#: openDCIM/rackrequest.php:159
 #, php-format
 msgid "To view your device in its final location click %1$s"
 msgstr "需要查看您设备所在的最终位置单击%1$s"
 
-
-#: openDCIM/rackrequest.php:183
+#: openDCIM/rackrequest.php:182
 msgid "You do not have permission to delete this request"
 msgstr "您没有权限删除这个需求单"
 
-
-#: openDCIM/rackrequest.php:224
+#: openDCIM/rackrequest.php:223
 msgid "You must specify the VLAN information for the ethernet connections"
 msgstr "您必须指定该以太网连接的VLAN信息"
 
-
-#: openDCIM/rackrequest.php:229
+#: openDCIM/rackrequest.php:228
 msgid "You must specify the SAN port information to continue"
 msgstr "您必须指定SAN的端口信息才能继续"
 
-
-#: openDCIM/rackrequest.php:234
+#: openDCIM/rackrequest.php:233
 msgid "You must specify the current location of the equipment"
 msgstr "必须指定该设备的当前所在位置"
 
-
-#: openDCIM/rackrequest.php:360
+#: openDCIM/rackrequest.php:359
 msgid "Label Color"
 msgstr "标签颜色"
 
-
-#: openDCIM/rackrequest.php:364
+#: openDCIM/rackrequest.php:363
 msgid "White"
 msgstr "白色"
 
-
-#: openDCIM/rackrequest.php:364
+#: openDCIM/rackrequest.php:363
 msgid "Yellow"
 msgstr "黄色"
 
-
-#: openDCIM/rackrequest.php:364
+#: openDCIM/rackrequest.php:363
 msgid "Red"
 msgstr "红色"
 
-
-#: openDCIM/rackrequest.php:385
+#: openDCIM/rackrequest.php:384
 msgid "ESX Server?"
 msgstr "ESX/ESXi服务器?"
 
-
-#: openDCIM/rackrequest.php:387
+#: openDCIM/rackrequest.php:386
 msgid "True"
 msgstr "真"
 
-
-#: openDCIM/rackrequest.php:388
+#: openDCIM/rackrequest.php:387
 msgid "False"
 msgstr "假"
 
-
-#: openDCIM/rackrequest.php:411
+#: openDCIM/rackrequest.php:410
 msgid "Select a template"
 msgstr "选择模板"
 
-
-#: openDCIM/rackrequest.php:432
+#: openDCIM/rackrequest.php:431
 msgid "Number of Ethernet Connections"
 msgstr "以太网连接数量"
 
-
-#: openDCIM/rackrequest.php:436
+#: openDCIM/rackrequest.php:435
 msgid "VLAN Settings"
 msgstr "VLAN设置"
 
-
-#: openDCIM/rackrequest.php:440
+#: openDCIM/rackrequest.php:439
 msgid "Number of SAN Connections"
 msgstr "SAN连接数量"
 
-
-#: openDCIM/rackrequest.php:444
+#: openDCIM/rackrequest.php:443
 msgid "SAN Port Assignments"
 msgstr "SAN的端口分配"
 
-
-#: openDCIM/rackrequest.php:464
+#: openDCIM/rackrequest.php:463
 msgid "Current Location"
 msgstr "当前位置"
 
-
-#: openDCIM/rackrequest.php:468
+#: openDCIM/rackrequest.php:467
 msgid "Special Instructions"
 msgstr "特别说明"
 
-
-#: openDCIM/rackrequest.php:473
+#: openDCIM/rackrequest.php:472
 msgid "Select Rack Location"
 msgstr "选择机架位置"
 
-
-#: openDCIM/rackrequest.php:481
+#: openDCIM/rackrequest.php:480
 msgid "Update Request"
 msgstr "更新请求"
 
-
-#: openDCIM/rackrequest.php:482
+#: openDCIM/rackrequest.php:481
 msgid "Delete Request"
 msgstr "删除请求"
 
-
-#: openDCIM/rackrequest.php:485
+#: openDCIM/rackrequest.php:484
 msgid "Move to Rack"
 msgstr "移至机架"
-
 
 #: openDCIM/report_aging.php:94
 msgid "Data Center Asset Aging Report"
 msgstr "数据中心资产生命周期报告"
 
-
 #: openDCIM/report_aging.php:409
 msgid "Device Ages by Count"
 msgstr "统计老化设备"
-
 
 #: openDCIM/report_aging.php:425 openDCIM/report_aging.php:460
 msgid "Age"
 msgstr "使用年份"
 
-
 #: openDCIM/report_aging.php:458
 msgid "Devices more than 5 years old"
 msgstr ""
-
 
 #: openDCIM/report_asset_Excel.php:41
 msgid "Asset Report (Excel)"
 msgstr ""
 
-
 #: openDCIM/report_asset_Excel.php:124
 msgid "Return to Reports"
 msgstr ""
-
 
 #: openDCIM/report_asset_Excel.php:150
 msgid "Asset Report"
 msgstr "资产报告"
 
-
 #: openDCIM/report_asset_Excel.php:151
 msgid "Data Center Statistics on all data centers assets."
 msgstr "数据中心统计的数据中心内所有的资产."
-
 
 #: openDCIM/report_asset_Excel.php:153
 msgid "datacenter report assets statistic"
 msgstr "数据中心资产统计报告"
 
-
 #: openDCIM/report_asset_Excel.php:159
 msgid "Notes on DC Statistics"
 msgstr "数据中心统计标注"
-
 
 #: openDCIM/report_asset_Excel.php:165
 msgid "Logo Name"
 msgstr "商标名称"
 
-
 #: openDCIM/report_asset_Excel.php:166
 msgid "Logo Description"
 msgstr "标志说明"
 
-
 #: openDCIM/report_asset_Excel.php:174
-msgid "● This is the combined report on all data center assets. It contains the list of all devices and a list of all cabinets."
-msgstr "●这是所有数据中心资产的综合报告. 它包含了所有设备的列表和所有机柜的列表."
-
+msgid ""
+"● This is the combined report on all data center assets. It contains the "
+"list of all devices and a list of all cabinets."
+msgstr ""
+"●这是所有数据中心资产的综合报告. 它包含了所有设备的列表和所有机柜的列表."
 
 #: openDCIM/report_asset_Excel.php:176
-msgid "● Using Excel\"s pivot capabilities many different analysis and statistics can be performed."
+msgid ""
+"● Using Excel\"s pivot capabilities many different analysis and statistics "
+"can be performed."
 msgstr "●使用Excel的枢纽功能可以实现很多不同的分析和统计报表."
-
 
 #: openDCIM/report_asset_Excel.php:178
 msgid "● The terms \"cabinet\" and  \"rack\" are used interchangeable."
 msgstr "●相关术语“机柜”和“机架”可互换使用."
 
-
 #: openDCIM/report_asset_Excel.php:179
-msgid "● For user who have only the \"Admin Own Devices\" right the report is limited to the cabinets which are owned by this department."
-msgstr "●对于用户所有唯一的\"管理员所有设备\"权限的报告仅限于由该部门所有的机柜."
-
+msgid ""
+"● For user who have only the \"Admin Own Devices\" right the report is "
+"limited to the cabinets which are owned by this department."
+msgstr ""
+"●对于用户所有唯一的\"管理员所有设备\"权限的报告仅限于由该部门所有的机柜."
 
 #: openDCIM/report_asset_Excel.php:181
-msgid "● The \"DC Statistics\" page is only generated for users who are not limited to \"Admin Own Devices\"."
+msgid ""
+"● The \"DC Statistics\" page is only generated for users who are not limited "
+"to \"Admin Own Devices\"."
 msgstr "● 相关\"数据中心统计\"页面仅适用与被限制为\"管理员专用设备\"的用户."
 
-
 #: openDCIM/report_asset_Excel.php:183
-msgid "● For a child device the column \"Parent Device\" shows the parent device otherwise it is empty. A child devices is e.g. a blade server."
-msgstr "● 对于从属设备显示会列出\"主体设备\", 除非主体设备是空的. 从属设备例如刀片服务器."
-
+msgid ""
+"● For a child device the column \"Parent Device\" shows the parent device "
+"otherwise it is empty. A child devices is e.g. a blade server."
+msgstr ""
+"● 对于从属设备显示会列出\"主体设备\", 除非主体设备是空的. 从属设备例如刀片服"
+"务器."
 
 #: openDCIM/report_asset_Excel.php:186
-msgid "● The \"Position\" for a child device is the slot position within in the parent device."
+msgid ""
+"● The \"Position\" for a child device is the slot position within in the "
+"parent device."
 msgstr "●从属设备的\"位置\"含义是位于主设备中的插槽位置编号."
 
-
 #: openDCIM/report_asset_Excel.php:188
-msgid "● \"Half Depth\" contains a value \"front\" or \"rear\" only if the device is of half depth in which case this indicates the location."
-msgstr "●\"一半长度\"含义为距离机柜\"前面\"或\"后面\"有超过一半的距离, 在这种情况下来表示该位置."
-
+msgid ""
+"● \"Half Depth\" contains a value \"front\" or \"rear\" only if the device "
+"is of half depth in which case this indicates the location."
+msgstr ""
+"●\"一半长度\"含义为距离机柜\"前面\"或\"后面\"有超过一半的距离, 在这种情况下来"
+"表示该位置."
 
 #: openDCIM/report_asset_Excel.php:191
-msgid "● Consecutive free rack space is indicated in worksheet \"DC Inventory\" with the string \"__EMPTY \" in column \"Device\". \"Position\" gives the start of the range and \"Height\" specifies the size of the range of free rack space."
-msgstr "●连续可用机架空间表示在工作表中\"数据中心库存\"中的\"设备\"列字符串为\"__EMPTY\". \"位置\"给出的范围的开始和\"高度\"指定的可用机架空间的范围的大小."
-
+msgid ""
+"● Consecutive free rack space is indicated in worksheet \"DC Inventory\" "
+"with the string \"__EMPTY \" in column \"Device\". \"Position\" gives the "
+"start of the range and \"Height\" specifies the size of the range of free "
+"rack space."
+msgstr ""
+"●连续可用机架空间表示在工作表中\"数据中心库存\"中的\"设备\"列字符串为"
+"\"__EMPTY\". \"位置\"给出的范围的开始和\"高度\"指定的可用机架空间的范围的大"
+"小."
 
 #: openDCIM/report_asset_Excel.php:195
-msgid "● A range of consecutive free slots in a chassis is indicated in worksheet \"DC Inventory\" with the string \"__EMPTYSLOT \" in the column \"Device\". \"Position\" gives the start of the range and \"Height\" specifies the number of free slots."
-msgstr "●在一个机箱中的一系列连续的空闲插槽显示在工作表\"数据中心库存\"与列\"设备\"字符串\"__EMPTYSLOT\". \"位置\"给出的范围的开始和“高度”指定的空闲时隙的数值."
-
+msgid ""
+"● A range of consecutive free slots in a chassis is indicated in worksheet "
+"\"DC Inventory\" with the string \"__EMPTYSLOT \" in the column \"Device\". "
+"\"Position\" gives the start of the range and \"Height\" specifies the "
+"number of free slots."
+msgstr ""
+"●在一个机箱中的一系列连续的空闲插槽显示在工作表\"数据中心库存\"与列\"设备\"字"
+"符串\"__EMPTYSLOT\". \"位置\"给出的范围的开始和“高度”指定的空闲时隙的数值."
 
 #: openDCIM/report_asset_Excel.php:199
-msgid "● All free rack units (RU) within the racks sum up to the total amount of free rack units. It is possible that devices of different height are mounted at the same position within a cabinet. Only the non occupied rack units are free RUs."
-msgstr "● 所有闲置机位(RU)将会被统计到总闲置机位空间数中. 这可能导致将不同高度的设备同时存放在一个相同的机柜位置上. 仅对不占用机位的设备定义为闲置RUs."
-
+msgid ""
+"● All free rack units (RU) within the racks sum up to the total amount of "
+"free rack units. It is possible that devices of different height are mounted "
+"at the same position within a cabinet. Only the non occupied rack units are "
+"free RUs."
+msgstr ""
+"● 所有闲置机位(RU)将会被统计到总闲置机位空间数中. 这可能导致将不同高度的设备"
+"同时存放在一个相同的机柜位置上. 仅对不占用机位的设备定义为闲置RUs."
 
 #: openDCIM/report_asset_Excel.php:203
-msgid "● Cabinets of \"Model\" equal \"RESERVED\" are placeholders on the floor space in the DC for racks to come. Their number is counted in the column \"No. Reserved Racks\". Nevertheless, the rack units are taken into account in all other statistics."
-msgstr "●机柜的\"模式\"等于\"保留的\"是在数据中机柜中的占位符. 它们的数量计算在\"机柜保留的编号\"列中. 然而所有其它统计信息均被考虑在机架单元内."
-
+msgid ""
+"● Cabinets of \"Model\" equal \"RESERVED\" are placeholders on the floor "
+"space in the DC for racks to come. Their number is counted in the column "
+"\"No. Reserved Racks\". Nevertheless, the rack units are taken into account "
+"in all other statistics."
+msgstr ""
+"●机柜的\"模式\"等于\"保留的\"是在数据中机柜中的占位符. 它们的数量计算在\"机柜"
+"保留的编号\"列中. 然而所有其它统计信息均被考虑在机架单元内."
 
 #: openDCIM/report_asset_Excel.php:208
-msgid "This file is confidential and shall not be used without permission of the owner."
+msgid ""
+"This file is confidential and shall not be used without permission of the "
+"owner."
 msgstr "该文件是保密文件, 未经授权不可使用."
-
 
 #: openDCIM/report_asset_Excel.php:211
 msgid "Generate by openDCIM"
 msgstr "基于openDCIM生成"
 
-
 #: openDCIM/report_asset_Excel.php:215
 msgid "Summary Statistics"
 msgstr "统计摘要"
-
 
 #: openDCIM/report_asset_Excel.php:235 openDCIM/report_asset.php:54
 #: openDCIM/report_contact.php:485 openDCIM/report_cost.php:469
@@ -4336,192 +3793,183 @@ msgstr "统计摘要"
 msgid "DC Room"
 msgstr "配电间"
 
-
 #: openDCIM/report_asset_Excel.php:236
-msgid "Floor\n"
+msgid ""
+"Floor\n"
 "Space\n"
 "(sqm)"
-msgstr "楼层\n"
+msgstr ""
+"楼层\n"
 "面积\n"
 "(平方米)"
 
-
 #: openDCIM/report_asset_Excel.php:237
-msgid "No.\n"
-"Racks\n"
-""
+#, fuzzy
+msgid ""
+"No.\n"
+"Racks"
 msgstr "机架编号\n"
-""
-
 
 #: openDCIM/report_asset_Excel.php:238
-msgid "No.\n"
+msgid ""
+"No.\n"
 "Reserved\n"
 "Racks"
-msgstr "编号\n"
+msgstr ""
+"编号\n"
 "保留中\n"
 "机架"
 
-
 #: openDCIM/report_asset_Excel.php:239
-msgid "Sum of\n"
+msgid ""
+"Sum of\n"
 "Rack\n"
 "Units (RU)"
-msgstr "合计\n"
+msgstr ""
+"合计\n"
 "机架\n"
 "单元(RU)"
-
 
 #: openDCIM/report_asset_Excel.php:240
-msgid "Sum of\n"
+msgid ""
+"Sum of\n"
 "Used\n"
 "Rack\n"
 "Units (RU)"
-msgstr "合计\n"
+msgstr ""
+"合计\n"
 "已用\n"
 "机架\n"
 "单元(RU)"
-
 
 #: openDCIM/report_asset_Excel.php:241
-msgid "Percentage\n"
+msgid ""
+"Percentage\n"
 "Used\n"
 "Rack\n"
 "Units"
-msgstr "比例\n"
+msgstr ""
+"比例\n"
 "已用\n"
 "机架\n"
 "单元"
 
-
 #: openDCIM/report_asset_Excel.php:242
-msgid "Sum of\n"
+msgid ""
+"Sum of\n"
 "Empty\n"
 "Rack\n"
 "Units (RU)"
-msgstr "合计\n"
+msgstr ""
+"合计\n"
 "空闲\n"
 "机架\n"
 "单元(RU)"
 
-
 #: openDCIM/report_asset_Excel.php:243
-msgid "Percentage\n"
+msgid ""
+"Percentage\n"
 "Empty\n"
 "Rack\n"
 "Units"
-msgstr "比例\n"
+msgstr ""
+"比例\n"
 "空闲\n"
 "机架\n"
 "单元"
 
-
 #: openDCIM/report_asset_Excel.php:244
-msgid "Sum of\n"
+msgid ""
+"Sum of\n"
 "Power\n"
 "(kW)"
-msgstr "合计\n"
+msgstr ""
+"合计\n"
 "电力\n"
 "(kW)"
 
-
 #: openDCIM/report_asset_Excel.php:245
-msgid "Sum of\n"
+msgid ""
+"Sum of\n"
 "Design\n"
 "Power\n"
 "(kW)"
-msgstr "合计\n"
+msgstr ""
+"合计\n"
 "设计\n"
 "电力\n"
 "(kW)"
-
 
 #: openDCIM/report_asset_Excel.php:784
 msgid "Template Missing"
 msgstr ""
 
-
 #: openDCIM/report_asset_Excel.php:1669
 msgid "Computing DC Inventory"
 msgstr ""
-
 
 #: openDCIM/report_asset_Excel.php:1680
 msgid "Writing Inventory to Spreadsheet"
 msgstr ""
 
-
 #: openDCIM/report_asset_Excel.php:1688
 msgid "Formatting Spreadsheet"
 msgstr ""
 
-
-#: openDCIM/report_asset.php:28 openDCIM/reports.php:40
+#: openDCIM/report_asset.php:28 openDCIM/reports.php:47
 msgid "Data Center Asset Report"
 msgstr "数据中心资产报告"
-
 
 #: openDCIM/report_asset.php:54 openDCIM/report_tags.php:34
 msgid "Rack"
 msgstr "机位"
-
 
 #: openDCIM/report_audit_frequency.php:11
 #: openDCIM/report_audit_frequency.php:32
 msgid "Cabinet Audit Frequency Report"
 msgstr "机柜审核频率报告"
 
-
 #: openDCIM/report_audit_frequency.php:239 openDCIM/report_audit.php:414
 msgid "Activity by Location"
 msgstr ""
-
 
 #: openDCIM/report_audit_frequency.php:242
 msgid "Times Audited"
 msgstr ""
 
-
 #: openDCIM/report_audit_frequency.php:242 openDCIM/search_export.php:59
+#: openDCIM/search_export_storage_room.php:61
 msgid "Installation Date"
 msgstr "启用日期"
-
 
 #: openDCIM/report_audit_frequency.php:242
 #: openDCIM/report_audit_frequency.php:318
 msgid "Days Since Last Audit"
 msgstr ""
 
-
 #: openDCIM/report_audit_frequency.php:315
 msgid "Summary by Period"
 msgstr ""
-
 
 #: openDCIM/report_audit_frequency.php:318
 msgid "Number of Cabinets"
 msgstr ""
 
-
 #: openDCIM/report_audit.php:11
 msgid "Cabinet Audit Reporting"
 msgstr "机柜审核报告"
-
 
 #: openDCIM/report_audit.php:47
 msgid "Cabinet Audits Report"
 msgstr ""
 
-
-#: openDCIM/report_audit.php:48 openDCIM/report_surplus.php:48
+#: openDCIM/report_audit.php:48
 msgid "Dates"
 msgstr ""
-
 
 #: openDCIM/report_audit.php:283
 msgid "Auditor Summary"
 msgstr ""
-
 
 #: openDCIM/report_audit.php:286 openDCIM/report_contact.php:450
 #: openDCIM/report_cost.php:435 openDCIM/report_department.php:179
@@ -4530,98 +3978,80 @@ msgstr ""
 msgid "UserID"
 msgstr "用户ID"
 
-
 #: openDCIM/report_audit.php:286 openDCIM/report_audit.php:321
 #: openDCIM/report_audit.php:417 openDCIM/report_contact.php:450
 #: openDCIM/report_cost.php:435 openDCIM/report_department.php:179
-#: openDCIM/report_surplus.php:234 openDCIM/report_vm_by_department.php:223
+#: openDCIM/report_vm_by_department.php:223
 msgid "UserName"
 msgstr ""
-
 
 #: openDCIM/report_audit.php:286 openDCIM/supplies.php:52
 #: openDCIM/supplybin.php:177
 msgid "Count"
 msgstr "计数"
 
-
 #: openDCIM/report_audit.php:318
 msgid "Activity by Date"
 msgstr ""
-
 
 #: openDCIM/report_audit.php:321 openDCIM/report_audit.php:417
 msgid "Comments"
 msgstr ""
 
-
 #: openDCIM/report_audit.php:335 openDCIM/report_audit.php:337
 msgid "Mon"
 msgstr ""
-
 
 #: openDCIM/report_audit.php:335 openDCIM/report_audit.php:337
 msgid "Tue"
 msgstr ""
 
-
 #: openDCIM/report_audit.php:335 openDCIM/report_audit.php:337
 msgid "Wed"
 msgstr ""
-
 
 #: openDCIM/report_audit.php:335 openDCIM/report_audit.php:337
 msgid "Thu"
 msgstr ""
 
-
 #: openDCIM/report_audit.php:335 openDCIM/report_audit.php:337
 msgid "Fri"
 msgstr ""
-
 
 #: openDCIM/report_audit.php:335 openDCIM/report_audit.php:337
 msgid "Sat"
 msgstr ""
 
-
 #: openDCIM/report_audit.php:335 openDCIM/report_audit.php:337
 msgid "Sun"
 msgstr ""
-
 
 #: openDCIM/report_audit.php:384
 msgid "Day of Week Frequency"
 msgstr ""
 
-
 #: openDCIM/report_audit.php:388
 msgid "Day of Week"
 msgstr ""
-
 
 #: openDCIM/report_audit.php:388
 msgid "Audits"
 msgstr ""
 
-
 #: openDCIM/report_cabinets.php:15
 msgid "Cabinet Report"
 msgstr ""
 
-
 #: openDCIM/report_cabinets.php:73 openDCIM/report_outage_simulator.php:47
 #: openDCIM/report_panel_schedule.php:54
 #: openDCIM/report_project_outage_simulator.php:48
-#: openDCIM/search_export.php:223
+#: openDCIM/search_export.php:227 openDCIM/search_export_storage_room.php:229
 msgid "Select data center"
 msgstr "选择数据中心"
-
 
 #: openDCIM/report_cabinets.php:99
 msgid "Choose cabinets to print in Data Center"
 msgstr ""
-
 
 #: openDCIM/report_cabinets.php:100 openDCIM/report_outage_simulator.php:68
 #: openDCIM/report_panel_schedule.php:69
@@ -4630,31 +4060,25 @@ msgstr ""
 msgid "Generate"
 msgstr "生成"
 
-
 #: openDCIM/report_cabinets.php:105
 msgid "Cabinet ID"
 msgstr ""
-
 
 #: openDCIM/report_cabinets.php:187
 msgid "Pos"
 msgstr "机位位置"
 
-
 #: openDCIM/report_contact.php:40
 msgid "Data Center Asset and Contact Report"
 msgstr ""
-
 
 #: openDCIM/report_contact.php:399
 msgid "Top 10 Data Center Occupancy Rates"
 msgstr ""
 
-
 #: openDCIM/report_contact.php:407
 msgid "Top 10 Data Center Power Users"
 msgstr ""
-
 
 #: openDCIM/report_contact.php:442 openDCIM/report_cost.php:427
 #: openDCIM/report_department.php:171 openDCIM/report_exception.php:223
@@ -4662,238 +4086,199 @@ msgstr ""
 msgid "Service Delivery Manager"
 msgstr "服务交付管理员"
 
-
 #: openDCIM/report_contact.php:450 openDCIM/report_cost.php:435
 #: openDCIM/report_department.php:179 openDCIM/report_vm_by_department.php:223
 msgid "Phone1"
 msgstr "电话1"
-
 
 #: openDCIM/report_contact.php:450 openDCIM/report_cost.php:435
 #: openDCIM/report_department.php:179 openDCIM/report_vm_by_department.php:223
 msgid "Phone2"
 msgstr "电话2"
 
-
 #: openDCIM/report_contact.php:450 openDCIM/report_cost.php:435
 #: openDCIM/report_department.php:179 openDCIM/report_vm_by_department.php:223
 msgid "Phone3"
 msgstr "电话3"
 
-
 #: openDCIM/report_contact.php:504 openDCIM/report_cost.php:489
 msgid "Total Rack Units for "
 msgstr ""
-
 
 #: openDCIM/report_contact.php:505 openDCIM/report_cost.php:490
 msgid "Total BTU Output for "
 msgstr ""
 
-
 #: openDCIM/report_contact.php:537 openDCIM/report_cost.php:528
 msgid "Total Rack Units for All Data Centers"
 msgstr ""
 
-
 #: openDCIM/report_contact.php:538 openDCIM/report_cost.php:529
 msgid "Total BTU Output for All Data Centers"
 msgstr ""
-
 
 #: openDCIM/report_contact.php:545 openDCIM/report_vm_by_department.php:171
 #: openDCIM/report_vm_by_department.php:249
 msgid "Virtual Machine Image Name"
 msgstr ""
 
-
 #: openDCIM/report_contact.php:545 openDCIM/report_vm_by_department.php:171
 #: openDCIM/report_vm_by_department.php:249
 msgid "Current Host Server"
 msgstr ""
 
-
 #: openDCIM/report_contact.php:545
 msgid "State"
 msgstr ""
-
 
 #: openDCIM/report_contact.php:545
 msgid "Last Polled"
 msgstr ""
 
-
-#: openDCIM/report_cost.php:45 openDCIM/reports.php:42
+#: openDCIM/report_cost.php:45 openDCIM/reports.php:49
 msgid "Data Center Asset Costing Report"
 msgstr "数据中心资产的成本核算报告"
-
 
 #: openDCIM/report_cost.php:398 openDCIM/report_cost.php:401
 msgid "Annual Cost Per Watt (Year)"
 msgstr "每瓦电费成本(年)"
 
-
 #: openDCIM/report_cost.php:469
 msgid "Rack Cost"
 msgstr ""
-
 
 #: openDCIM/report_cost.php:531 openDCIM/report_cost.php:534
 msgid "Annual Electrical Cost for Department"
 msgstr ""
 
-
 #: openDCIM/report_cost.php:532 openDCIM/report_cost.php:535
 msgid "Annual Infrastructure Cost for Department"
 msgstr ""
 
-
 #: openDCIM/report_department.php:35
 msgid "Departmental Contacts Report"
 msgstr "部门联系人报告"
-
 
 #: openDCIM/report_diverse_power_exceptions.php:34
 #: openDCIM/report_power_utilization.php:34
 msgid "Devices Without Diverse (Tier III) Power"
 msgstr ""
 
-
 #: openDCIM/report_diverse_power_exceptions.php:167
 #: openDCIM/report_power_utilization.php:167
 msgid "Dependency"
 msgstr ""
 
+#: openDCIM/report-em_disabled_snmp.php:20
+#, fuzzy
+msgid "Data Center Disabled SNMP Devices Report"
+msgstr "数据中心预留空间报告"
 
-#: openDCIM/report-em_new_installs.php:24
-msgid "Recent Data Center Installations Report"
-msgstr "最近的数据中心设备报告"
-
-
-#: openDCIM/report-em_new_installs.php:37
-#: openDCIM/report-em_reservations.php:34
-#: openDCIM/report-em_switch_exceptions.php:34 openDCIM/workorder.php:72
+#: openDCIM/report-em_disabled_snmp.php:33
+#: openDCIM/report-em_new_installs.php:36
+#: openDCIM/report-em_reservations.php:33
+#: openDCIM/report-em_switch_exceptions.php:33 openDCIM/workorder.php:72
 msgid "Facility Manager email address"
 msgstr "设备管理员的邮件地址"
 
+#: openDCIM/report-em_new_installs.php:23
+msgid "Recent Data Center Installations Report"
+msgstr "最近的数据中心设备报告"
 
-#: openDCIM/report-em_reservations.php:21
+#: openDCIM/report-em_reservations.php:20
 msgid "Data Center Reserved Space Report"
 msgstr "数据中心预留空间报告"
 
-
-#: openDCIM/report-em_reservations.php:49
+#: openDCIM/report-em_reservations.php:48
 msgid "Data Center Inventory Reservations"
 msgstr "数据中心预留清单"
 
-
-#: openDCIM/report-em_reservations.php:61
+#: openDCIM/report-em_reservations.php:60
 msgid "There are no reserved installations within the date range specified"
 msgstr "指定的日期范围内没有任何保留中的设备"
 
-
-#: openDCIM/report-em_reservations.php:76
+#: openDCIM/report-em_reservations.php:75
 msgid "Scheduled Installations for Department"
 msgstr "预订设备给部门"
 
-
-#: openDCIM/report-em_reservations.php:94
+#: openDCIM/report-em_reservations.php:93
 msgid "Total U Reserved for Department"
 msgstr "合计为部门保留的U数"
 
-
-#: openDCIM/report-em_reservations.php:98
+#: openDCIM/report-em_reservations.php:97
 msgid "Total U Reserved in DCIM"
 msgstr "合计在DCIM中保留的U数"
 
-
-#: openDCIM/report-em_switch_exceptions.php:21
+#: openDCIM/report-em_switch_exceptions.php:20
 msgid "Data Center Switch Capacity Exceptions Report"
 msgstr "数据中心交换机流量异常报告"
 
-
-#: openDCIM/report_exception.php:39 openDCIM/reports.php:54
+#: openDCIM/report_exception.php:39 openDCIM/reports.php:62
 msgid "Data Exceptions Report"
 msgstr "数据异常报告"
-
 
 #: openDCIM/report_exception.php:165 openDCIM/report_exception.php:235
 msgid "Power Cords"
 msgstr ""
 
-
 #: openDCIM/report_logging.php:36
 msgid "Logging View/Export"
 msgstr "日志查看/导出"
-
 
 #: openDCIM/report_logging.php:52
 msgid "Time"
 msgstr "时间"
 
-
 #: openDCIM/report_logging.php:54
 msgid "Class"
 msgstr "类型"
-
 
 #: openDCIM/report_logging.php:55
 msgid "ObjectID"
 msgstr "对象ID"
 
-
 #: openDCIM/report_logging.php:56
 msgid "ChildID"
 msgstr "子ID"
-
 
 #: openDCIM/report_logging.php:57
 msgid "Action"
 msgstr "操作"
 
-
 #: openDCIM/report_logging.php:58
 msgid "Property"
 msgstr "资产"
-
 
 #: openDCIM/report_logging.php:59
 msgid "Old Value"
 msgstr "原值"
 
-
 #: openDCIM/report_logging.php:60
 msgid "New Value"
 msgstr "新值"
-
 
 #: openDCIM/report_network_map.php:5
 msgid "Network Map Viewer"
 msgstr "网络拓扑查看"
 
-
 #: openDCIM/report_network_map.php:613
 msgid "Filter type:"
 msgstr "过滤类型:"
-
 
 #: openDCIM/report_network_map.php:615
 msgid "Select filter type"
 msgstr "选择过滤类型"
 
-
 #: openDCIM/report_network_map.php:619 openDCIM/sidebar.inc.php:19
 msgid "Custom Tag"
 msgstr "自定义标签"
 
-
 #: openDCIM/report_outage_simulator.php:48
 #: openDCIM/report_project_outage_simulator.php:49
 #: openDCIM/report_project_outage_simulator.php:278
-#: openDCIM/search_export.php:224
+#: openDCIM/search_export.php:228 openDCIM/search_export_storage_room.php:230
 msgid "All Data Centers"
 msgstr "所有数据中心"
-
 
 #: openDCIM/report_outage_simulator.php:66
 #: openDCIM/report_panel_schedule.php:67
@@ -4901,12 +4286,10 @@ msgstr "所有数据中心"
 msgid "Choose either power sources or panels to simulate for Data Center"
 msgstr "选择包括电源或电源面板以模拟数据中心现场情况"
 
-
 #: openDCIM/report_outage_simulator.php:70
 #: openDCIM/report_project_outage_simulator.php:71
 msgid "Only show down/unknown devices"
 msgstr "仅显示宕机/未知设备"
-
 
 #: openDCIM/report_outage_simulator.php:73
 #: openDCIM/report_panel_schedule.php:72
@@ -4917,7 +4300,6 @@ msgstr "仅显示宕机/未知设备"
 msgid "Power Source"
 msgstr "电源"
 
-
 #: openDCIM/report_outage_simulator.php:73
 #: openDCIM/report_panel_schedule.php:72
 #: openDCIM/report_panel_schedule.php:172
@@ -4925,22 +4307,18 @@ msgstr "电源"
 msgid "Power Panel"
 msgstr "电源排插"
 
-
 #: openDCIM/report_outage_simulator.php:89
 #: openDCIM/report_project_outage_simulator.php:90
 msgid "Tags (example: +Linux -Development)"
 msgstr ""
 
-
-#: openDCIM/report_panel_schedule.php:15 openDCIM/reports.php:60
+#: openDCIM/report_panel_schedule.php:15 openDCIM/reports.php:68
 msgid "Power Panel Schedule Report"
 msgstr ""
-
 
 #: openDCIM/report_panel_schedule.php:169
 msgid "Panel Schedule for"
 msgstr ""
-
 
 #: openDCIM/report_panel_schedule.php:175
 #: openDCIM/report_panel_schedule.php:177
@@ -4948,882 +4326,854 @@ msgstr ""
 msgid "Pole"
 msgstr ""
 
-
 #: openDCIM/report_panel_schedule.php:176
 #: openDCIM/report_panel_schedule.php:178
 #: openDCIM/report_panel_schedule.php:193
 msgid "Circuit"
 msgstr ""
 
-
-#: openDCIM/report_power_distribution.php:35 openDCIM/reports.php:58
+#: openDCIM/report_power_distribution.php:35 openDCIM/reports.php:66
 msgid "Power Distribution by Data Center"
 msgstr "数据中心电源分布"
-
 
 #: openDCIM/report_power_distribution.php:196
 #: openDCIM/report_power_distribution.php:202
 msgid "PDU"
 msgstr ""
 
-
 #: openDCIM/report_project_outage_simulator.php:149
 msgid "Simulated Outage Report"
 msgstr ""
-
 
 #: openDCIM/report_project_outage_simulator.php:150
 msgid "Simulated Power Outage by Project"
 msgstr ""
 
-
 #: openDCIM/report_project_outage_simulator.php:153
 msgid "Summary"
 msgstr ""
-
 
 #: openDCIM/report_project_outage_simulator.php:274
 msgid "Power Outage Simulation report"
 msgstr ""
 
-
 #: openDCIM/report_project_outage_simulator.php:300
 msgid "Project Status"
 msgstr ""
-
 
 #: openDCIM/report_project_outage_simulator.php:336
 msgid "Only listing systems which are down or unknown."
 msgstr "仅列出其中宕机或未知的系统."
 
-
 #: openDCIM/report_project_outage_simulator.php:348
 msgid "DeviceName"
 msgstr ""
-
 
 #: openDCIM/report_project_outage_simulator.php:520
 msgid "Child"
 msgstr ""
 
-
 #: openDCIM/report_project_outage_simulator.php:559
 msgid "Compromised"
 msgstr ""
-
 
 #: openDCIM/report_project_outage_simulator.php:559
 msgid "Normal"
 msgstr "普通"
 
-
 #: openDCIM/report_project_outage_simulator.php:584
 msgid "No Devices Were Affected"
 msgstr ""
-
 
 #: openDCIM/report_project_outage_simulator.php:595
 msgid "Included Tags"
 msgstr ""
 
-
 #: openDCIM/report_project_outage_simulator.php:604
 msgid "Excluded Tags"
 msgstr ""
 
-
-#: openDCIM/report-projects.php:5
-msgid "Project View/Export"
+#: openDCIM/report_projects.php:20
+msgid "All Projects/Services"
 msgstr ""
 
+#: openDCIM/report_projects.php:25
+msgid "Specified Project/Service"
+msgstr ""
 
-#: openDCIM/report-projects.php:200
+#: openDCIM/report_projects.php:106
+msgid "Report of all cabinets and devices associated with Projects/Services."
+msgstr ""
+
+#: openDCIM/report_projects.php:107
+msgid "Criteria for Report:"
+msgstr ""
+
+#: openDCIM/report_projects.php:132 openDCIM/report_projects.php:240
 msgid "Project Name:"
 msgstr ""
 
+#: openDCIM/report_projects.php:134
+#, fuzzy
+msgid "Project Sponsor:"
+msgstr "主办单位主管"
 
-#: openDCIM/report-projects.php:202
+#: openDCIM/report_projects.php:136
+#, fuzzy
+msgid "Start Date:"
+msgstr "质保期"
+
+#: openDCIM/report_projects.php:138
+#, fuzzy
+msgid "Expiration Date:"
+msgstr "到期时间(天)"
+
+#: openDCIM/report_projects.php:140
+msgid "Actual End:"
+msgstr ""
+
+#: openDCIM/report_projects.php:146
+#, fuzzy
+msgid "Total Assigned Cabinets:"
+msgstr "目标机柜"
+
+#: openDCIM/report_projects.php:185
+#, fuzzy
+msgid "Storage Room"
+msgstr "%s仓库"
+
+#: openDCIM/report_projects.php:191
+msgid "Unspecified"
+msgstr ""
+
+#: openDCIM/report_projects.php:242
 msgid "Select Project"
 msgstr ""
 
-
-#: openDCIM/report-projects.php:203
+#: openDCIM/report_projects.php:243
 msgid "All Projects"
 msgstr ""
 
+#: openDCIM/report_projects.php:249
+msgid ""
+"Choose a specific project to report on, or all projects.  Output will be "
+"sent in Excel 2007 format."
+msgstr ""
 
 #: openDCIM/reports.php:5
 msgid "Inventory Reports"
 msgstr "库存报告"
 
-
-#: openDCIM/reports.php:32
+#: openDCIM/reports.php:38
 msgid "Contact Reports"
 msgstr "联系人报告"
 
-
-#: openDCIM/reports.php:33
+#: openDCIM/reports.php:39
 msgid "Department/Contact Report"
 msgstr "部门/联系人报告"
 
-
-#: openDCIM/reports.php:36
+#: openDCIM/reports.php:42
 msgid "Asset Reports"
 msgstr "资产报告"
 
-
-#: openDCIM/reports.php:37
+#: openDCIM/reports.php:43
 msgid "Search/Export by Data Center"
 msgstr "数据中心搜索/导出"
 
+#: openDCIM/reports.php:44
+#, fuzzy
+msgid "Storage Room Search/Export by Data Center"
+msgstr "数据中心搜索/导出"
 
-#: openDCIM/reports.php:38
+#: openDCIM/reports.php:45
 msgid "Export Data Center for CFD (XML)"
 msgstr "导出数据中心的CFD (XML)"
 
-
-#: openDCIM/reports.php:39
+#: openDCIM/reports.php:46
 msgid "Asset Report by Owner"
 msgstr "所有人资产报告"
 
-
-#: openDCIM/reports.php:41
+#: openDCIM/reports.php:48
 msgid "Data Center Asset Report [Excel]"
 msgstr "数据中心资产报告[EXCEL]"
 
-
-#: openDCIM/reports.php:43
+#: openDCIM/reports.php:50
 msgid "Asset Aging Report"
 msgstr "资产折旧分析报告"
 
-
-#: openDCIM/reports.php:44
+#: openDCIM/reports.php:51
 msgid "Project Asset Report"
 msgstr ""
 
-
-#: openDCIM/reports.php:45
+#: openDCIM/reports.php:52
 msgid "Warranty Expiration Report"
 msgstr ""
 
-
-#: openDCIM/reports.php:46 openDCIM/report_vm_by_department.php:41
+#: openDCIM/reports.php:53 openDCIM/report_vm_by_department.php:41
 msgid "Virtual Machines by Department"
 msgstr "部门的虚拟机"
 
-
-#: openDCIM/reports.php:47
+#: openDCIM/reports.php:54
 msgid "Network Map"
 msgstr "网络拓扑"
 
+#: openDCIM/reports.php:55
+#, fuzzy
+msgid "Vendor/Model Report"
+msgstr "库存报告"
 
-#: openDCIM/reports.php:53
+#: openDCIM/reports.php:61
 msgid "Operational Reports"
 msgstr "操作报告"
 
-
-#: openDCIM/reports.php:55
+#: openDCIM/reports.php:63
 msgid "Diverse Power Exceptions Report"
 msgstr "多样化的电源异常报告"
 
-
-#: openDCIM/reports.php:56
+#: openDCIM/reports.php:64
 msgid "Simulated Power Outage Report"
 msgstr "模拟断电报告"
 
-
-#: openDCIM/reports.php:57
+#: openDCIM/reports.php:65
 msgid "Project Power Outage Report"
 msgstr ""
 
-
-#: openDCIM/reports.php:59
+#: openDCIM/reports.php:67
 msgid "Server Tier Classification Report"
 msgstr "服务器层分类报告"
 
-
-#: openDCIM/reports.php:61
+#: openDCIM/reports.php:69
 msgid "Cabinet List"
 msgstr ""
 
-
-#: openDCIM/reports.php:64
+#: openDCIM/reports.php:72
 msgid "Auditing Reports"
 msgstr "审核报告"
 
-
-#: openDCIM/reports.php:65
+#: openDCIM/reports.php:73
 msgid "Cabinet Audit Logs"
 msgstr "机柜审核日志"
 
-
-#: openDCIM/reports.php:66
+#: openDCIM/reports.php:74
 msgid "Cabinet Audit Frequency"
 msgstr "机柜审核频率"
 
-
-#: openDCIM/reports.php:67 openDCIM/report_surplus.php:47
+#: openDCIM/reports.php:75
 msgid "Surplus/Salvage Audit Report"
 msgstr "冗余/灾难恢复审核报告"
 
-
-#: openDCIM/reports.php:68 openDCIM/report_supply_status.php:80
+#: openDCIM/reports.php:76 openDCIM/report_supply_status.php:80
 msgid "Supplies Status Report"
 msgstr "耗材状态报告"
 
-
-#: openDCIM/reports.php:69
+#: openDCIM/reports.php:77
 msgid "Actions Log"
 msgstr "操作日志"
-
 
 #: openDCIM/report_supply_status.php:20
 msgid "Supply Status Report"
 msgstr "供电状态报告"
-
 
 #: openDCIM/report_supply_status.php:84 openDCIM/supplies.php:89
 #: openDCIM/supplies.php:101 openDCIM/supplybin.php:176
 msgid "Part Number"
 msgstr "零件编号"
 
-
 #: openDCIM/report_supply_status.php:85 openDCIM/supplies.php:105
 msgid "Part Name"
 msgstr "零件名称"
-
 
 #: openDCIM/report_supply_status.php:86 openDCIM/supplies.php:109
 msgid "Min Qty"
 msgstr "最小数量"
 
-
 #: openDCIM/report_supply_status.php:87 openDCIM/supplies.php:113
 msgid "Max Qty"
 msgstr "最大数量"
-
 
 #: openDCIM/report_supply_status.php:88
 msgid "On Hand"
 msgstr "手动"
 
-
-#: openDCIM/report_surplus.php:11
-msgid "Surplus/Salvage Device Reporting"
-msgstr "冗余/灾难恢复设备报告"
-
-
-#: openDCIM/report_surplus.php:231
-msgid "Surplus/Salvage by Date"
+#: openDCIM/report_surplus.php:18
+msgid "All Mechanisms"
 msgstr ""
 
-
-#: openDCIM/report_surplus.php:234
-msgid "Surplus Date"
+#: openDCIM/report_surplus.php:29
+msgid "Beginning of epoch"
 msgstr ""
 
+#: openDCIM/report_surplus.php:108
+msgid ""
+"This report contains information about items that have been disposed/removed "
+"from the data center."
+msgstr ""
+
+#: openDCIM/report_surplus.php:109
+msgid "Each item is disosed through a specific mechanism or contract vehicle."
+msgstr ""
+
+#: openDCIM/report_surplus.php:110
+#, fuzzy
+msgid "Criteria for this report:"
+msgstr "该端口中存在环路"
+
+#: openDCIM/report_surplus.php:111
+#, fuzzy
+msgid "Date Range:"
+msgstr "数据中心:"
+
+#: openDCIM/report_surplus.php:133
+msgid "Disposition Mechanism"
+msgstr ""
+
+#: openDCIM/report_surplus.php:140
+#, fuzzy
+msgid "Reference Number"
+msgstr "序列号"
+
+#: openDCIM/report_surplus.php:232
+#, fuzzy
+msgid "Device Disposition Report"
+msgstr "服务器层分类报告"
 
 #: openDCIM/report_tags.php:11
 msgid "Inventory Reporting By Tag"
 msgstr "标签库存报告"
 
-
 #: openDCIM/report_tags.php:33
 msgid "Datacenter"
 msgstr "数据中心"
-
 
 #: openDCIM/report_tags.php:36
 msgid "Tag"
 msgstr "标签"
 
-
 #: openDCIM/report_tags.php:117
 msgid "Tag:"
 msgstr "标签"
-
 
 #: openDCIM/report_tags.php:119
 msgid "Select Tag"
 msgstr "选择标签"
 
-
 #: openDCIM/report_tags.php:120
 msgid "All Tags"
 msgstr "所有标签"
 
+#: openDCIM/report_vendor_model.php:48
+msgid "Please select the values to limit the report scope as indicated below."
+msgstr ""
+
+#: openDCIM/report_vendor_model.php:158
+msgid "This is the Vendor(Manufacturer)/Model report from openDCIM."
+msgstr ""
+
+#: openDCIM/report_vendor_model.php:159
+msgid ""
+"Each manufacturer is listed in a separate worksheet, with devices listed "
+"lexicographically by Label."
+msgstr ""
+
+#: openDCIM/report_vendor_model.php:160
+#, fuzzy
+msgid "The criteria given for this report is:"
+msgstr "该端口中存在环路"
+
+#: openDCIM/report_vendor_model.php:161
+#, fuzzy
+msgid "Manufacturer:"
+msgstr "设备生产商"
+
+#: openDCIM/report_vendor_model.php:162
+#, fuzzy
+msgid "Device Type:"
+msgstr "设备类型"
 
 #: openDCIM/report_vm_by_department.php:161
 msgid "Total Number of VMs"
 msgstr ""
 
-
 #: openDCIM/report_vm_by_department.php:168
 msgid "Virtual Machines Unassigned to a Department"
 msgstr ""
-
 
 #: openDCIM/report_vm_by_department.php:171
 #: openDCIM/report_vm_by_department.php:249
 msgid "Index"
 msgstr ""
 
-
 #: openDCIM/report_warranty.php:109
 msgid "Data Center Warranty Expiration Report"
 msgstr ""
-
 
 #: openDCIM/report_warranty.php:422
 msgid "Warranty Status"
 msgstr ""
 
-
 #: openDCIM/report_warranty.php:439
 msgid "Remaining"
 msgstr ""
-
 
 #: openDCIM/report_warranty.php:470
 msgid "Devices with expired warranty"
 msgstr ""
 
-
 #: openDCIM/report_warranty.php:472
 msgid "Expired"
 msgstr ""
-
 
 #: openDCIM/report_xml_CFD.php:11
 msgid "XML Output for CFD Simulation"
 msgstr "XML输出​​CFD模拟"
 
-
 #: openDCIM/report_xml_CFD.php:62
 msgid "Select Data Center"
 msgstr "选择数据中心"
-
 
 #: openDCIM/rowview.php:112
 msgid "Add new cabinet"
 msgstr ""
 
-
 #: openDCIM/rowview.php:115
 msgid "Front View"
 msgstr "前置视图"
-
 
 #: openDCIM/rowview.php:115
 msgid "Rear View"
 msgstr "后置视图"
 
-
 #: openDCIM/rowview.php:166
 msgid "Return to"
 msgstr "返回至"
-
 
 #: openDCIM/search_export.php:5
 msgid "Data Center View/Export"
 msgstr "数据中心查看/导出"
 
-
-#: openDCIM/search_export.php:221
+#: openDCIM/search_export.php:225 openDCIM/search_export_storage_room.php:227
 msgid "Data Center:"
 msgstr "数据中心:"
 
+#: openDCIM/search_export_storage_room.php:5
+#, fuzzy
+msgid "Storage Room View/Export"
+msgstr "日志查看/导出"
 
 #: openDCIM/search.php:22
 msgid "Search Results"
 msgstr "搜索结果"
 
-
 #: openDCIM/search.php:28
 msgid "Serial number search results for"
 msgstr "序列号搜索结果"
-
 
 #: openDCIM/search.php:33
 msgid "PrimaryIP search results for"
 msgstr "主IP搜索结果"
 
-
 #: openDCIM/search.php:43
 msgid "Name search results for"
 msgstr "名称搜索结果"
-
 
 #: openDCIM/search.php:60
 msgid "Owner search results for"
 msgstr "所有人搜索结果"
 
-
 #: openDCIM/search.php:65
 msgid "Asset tag search results for"
 msgstr "资产标签搜索结果"
-
 
 #: openDCIM/search.php:71
 msgid "Custom tag search results for"
 msgstr "自定义标签搜索结果"
 
-
 #: openDCIM/search.php:81
 msgid "Project Catalog search results for"
 msgstr ""
-
 
 #: openDCIM/search.php:93
 msgid "Device Model search results for"
 msgstr ""
 
-
 #: openDCIM/search.php:116
 msgid "Notes search results for"
 msgstr ""
-
 
 #: openDCIM/search.php:129
 msgid "Search results for"
 msgstr ""
 
-
-#: openDCIM/search.php:275
+#: openDCIM/search.php:279
 #, php-format
 msgid "Search complete. (%s) results."
 msgstr "搜索完成. (%s) 条结果."
 
-
-#: openDCIM/search.php:277
+#: openDCIM/search.php:281
 msgid "No matching devices found."
 msgstr "没有找到匹配的设备."
 
-
-#: openDCIM/search.php:393
+#: openDCIM/search.php:397
 #, php-format
 msgid "Only one result, will autoforward in %s seconds."
 msgstr "只搜索到一个结果, 将在%s秒内自动跳转."
 
-
-#: openDCIM/search.php:428
+#: openDCIM/search.php:432
 msgid "Show All"
 msgstr "显示所有"
 
-
-#: openDCIM/search.php:428
+#: openDCIM/search.php:432
 msgid "Racks Only"
 msgstr "仅机架"
 
-
-#: openDCIM/search.php:445
+#: openDCIM/search.php:449
 msgid "No label"
 msgstr ""
-
 
 #: openDCIM/sidebar.inc.php:8
 msgid "Search by Name:"
 msgstr "按名称搜索:"
 
-
 #: openDCIM/sidebar.inc.php:11 openDCIM/sidebar.inc.php:72
 msgid "Advanced"
 msgstr "高级"
-
 
 #: openDCIM/sidebar.inc.php:15
 msgid "Advanced Search:"
 msgstr "高级搜素:"
 
-
 #: openDCIM/sidebar.inc.php:24
 msgid "Device Model"
 msgstr ""
-
 
 #: openDCIM/sidebar.inc.php:25
 msgid "PrimaryIP"
 msgstr "主IP"
 
-
 #: openDCIM/sidebar.inc.php:72
 msgid "Basic"
 msgstr "基础"
-
 
 #: openDCIM/sidebar.inc.php:102
 msgid "Home"
 msgstr "首页"
 
-
-#: openDCIM/storageroom.php:5 openDCIM/storageroom.php:37
+#: openDCIM/storageroom.php:5 openDCIM/storageroom.php:54
 msgid "Storage Room Maintenance"
 msgstr "仓库维护"
 
-
-#: openDCIM/storageroom.php:24
+#: openDCIM/storageroom.php:41
 #, php-format
 msgid "%s Storage Room"
 msgstr "%s仓库"
 
-
-#: openDCIM/storageroom.php:60
+#: openDCIM/storageroom.php:78
 msgid "Serial No."
 msgstr "序列号"
 
+#: openDCIM/storageroom.php:89
+msgid "Dispose of selected devices to:"
+msgstr ""
 
 #: openDCIM/supplies.php:5 openDCIM/supplycheckout.php:5
 msgid "Data Center Stockroom Supplies"
 msgstr "数据中心仓库物品"
 
-
 #: openDCIM/supplies.php:51
 msgid "Bin ID"
 msgstr "Bin编号"
-
 
 #: openDCIM/supplies.php:91
 msgid "New Supplies"
 msgstr "新的物品"
 
-
 #: openDCIM/supplybin.php:5
 msgid "Data Center Stockroom Supply Bins"
 msgstr "数据中心仓库配电柜"
-
 
 #: openDCIM/supplybin.php:147
 msgid "Bin Location"
 msgstr "Bin位置"
 
-
 #: openDCIM/supplybin.php:149
 msgid "New Bin"
 msgstr "新建BIN"
-
 
 #: openDCIM/supplybin.php:192
 msgid "Select parts to add..."
 msgstr "选择部件来增加..."
 
-
 #: openDCIM/template_mpdf_reports.inc.php:6
 msgid "No Data to Display"
 msgstr ""
-
 
 #: openDCIM/timeperiods.php:5
 msgid "Data Center Time Periods Listing"
 msgstr "数据中心的时间周期清单"
 
-
 #: openDCIM/timeperiods.php:68
 msgid "Escalation Time Period"
 msgstr "升级时间段"
-
 
 #: openDCIM/timeperiods.php:70
 msgid "New Time Period"
 msgstr "新建时间周期"
 
-
-#: openDCIM/timeperiods.php:80 openDCIM/zone.php:124
-msgid "Description"
-msgstr "说明"
-
-
 #: openDCIM/updatevmowner.php:5
 msgid "Data Center Virtual Machine Detail"
 msgstr "数据中心虚拟机详细信息"
-
 
 #: openDCIM/usermgr.php:5
 msgid "Data Center Contact Detail"
 msgstr "数据中心联系人详细信息"
 
-
 #: openDCIM/usermgr.php:223
 msgid "User"
 msgstr "用户"
-
 
 #: openDCIM/usermgr.php:225
 msgid "New User"
 msgstr "新的用户"
 
-
 #: openDCIM/usermgr.php:232
 msgid "This user is the primary contact for this many devices"
 msgstr ""
-
 
 #: openDCIM/usermgr.php:239
 msgid "Last Name"
 msgstr "姓"
 
-
 #: openDCIM/usermgr.php:243
 msgid "First Name"
 msgstr "名"
-
 
 #: openDCIM/usermgr.php:247
 msgid "Phone 1"
 msgstr "电话1"
 
-
 #: openDCIM/usermgr.php:251
 msgid "Phone 2"
 msgstr "电话2"
-
 
 #: openDCIM/usermgr.php:255
 msgid "Phone 3"
 msgstr "电话3"
 
-
 #: openDCIM/usermgr.php:259
 msgid "Email Address"
 msgstr ""
-
 
 #: openDCIM/usermgr.php:267
 msgid "Generate New Key"
 msgstr ""
 
-
 #: openDCIM/usermgr.php:271
 msgid "Rights"
 msgstr "权利"
-
 
 #: openDCIM/usermgr.php:273
 msgid "Admin Own Devices"
 msgstr "管理员所属设备"
 
-
 #: openDCIM/usermgr.php:274
 msgid "Read/Report Access (Global)"
 msgstr "读取/报告数据(全局)"
-
 
 #: openDCIM/usermgr.php:275
 msgid "Modify/Enter Devices (Global)"
 msgstr "修改/输入设备(全局)"
 
-
 #: openDCIM/usermgr.php:276
 msgid "Delete Devices (Global)"
 msgstr "删除设备(全局)"
-
 
 #: openDCIM/usermgr.php:277
 msgid "Enter/Modify Contacts and Departments"
 msgstr "输入/修改联系人与部门"
 
-
 #: openDCIM/usermgr.php:278
 msgid "Enter Rack Requests"
 msgstr "进去机柜需求单"
-
 
 #: openDCIM/usermgr.php:279
 msgid "Complete Rack Requests"
 msgstr "完成机架需求内容"
 
-
 #: openDCIM/usermgr.php:280
 msgid "Perform Bulk Operations"
 msgstr ""
-
 
 #: openDCIM/usermgr.php:281
 msgid "Manage Site and Users"
 msgstr "管理站点和用户"
 
-
 #: openDCIM/usermgr.php:288
 msgid "Transfer Devices"
 msgstr ""
-
 
 #: openDCIM/usermgr.php:311
 msgid "Transfer all devices to another primary contact"
 msgstr ""
 
-
 #: openDCIM/vmnamecheck.php:27 openDCIM/vmnamecheck.php:67
 msgid "Virtual Machine Inventory Exception Report"
 msgstr "虚拟机状态异常清查报告"
-
 
 #: openDCIM/vmnamecheck.php:68 openDCIM/vmnamecheck.php:112
 msgid "This is an automated message from the"
 msgstr "这是一条发给我的系统自动提醒"
 
-
 #: openDCIM/vmnamecheck.php:68
-msgid "Inventory\n"
-"\t\t\tProcess.  This process is scheduled to run once each business day.</p>\n"
+msgid ""
+"Inventory\n"
+"\t\t\tProcess.  This process is scheduled to run once each business day.</"
+"p>\n"
 "\t\t\t<p>The following"
-msgstr "库存\n"
+msgstr ""
+"库存\n"
 "\t\t\t计算. 每个工作日都会计算一次库存.</p>\n"
 "\t\t\t<p>下列"
 
-
 #: openDCIM/vmnamecheck.php:70
-msgid "Virtual Machines were detected in the environment\n"
+msgid ""
+"Virtual Machines were detected in the environment\n"
 "\t\t\tand do not have an associated owner record.  It is assumed that\n"
-"\t\t\tthese are new Virtual Machines.  Please click on the links below to update\n"
+"\t\t\tthese are new Virtual Machines.  Please click on the links below to "
+"update\n"
 "\t\t\townership information."
-msgstr "运行环境中检测到虚拟设备\n"
+msgstr ""
+"运行环境中检测到虚拟设备\n"
 "\t\t\t并且未关联任何用户. 如果\n"
 "\t\t\t这些是新开通的虚拟设备. 请点击更新下面的链接\n"
 "\t\t\t设置用户信息."
 
-
 #: openDCIM/vmnamecheck.php:74
-msgid "If the appropriate department is not listed as an option for ownership, please\n"
+msgid ""
+"If the appropriate department is not listed as an option for ownership, "
+"please\n"
 "\t\t\tsend an email to"
-msgstr "如果对应部门没有统计出使用者选项列表, 请\n"
+msgstr ""
+"如果对应部门没有统计出使用者选项列表, 请\n"
 "\t\t\t发送一份电子邮件至"
-
 
 #: openDCIM/vmnamecheck.php:75
 msgid "to have it added."
 msgstr "对其增加."
 
-
 #: openDCIM/vmnamecheck.php:78 openDCIM/vmnamecheck.php:118
 msgid "Server Name"
 msgstr "服务器名"
-
 
 #: openDCIM/vmnamecheck.php:111
 msgid "Virtual Machine Inventory Expiration Report"
 msgstr "到期虚拟设备清查报告"
 
-
 #: openDCIM/vmnamecheck.php:112
-msgid "Virtual Machine Inventory\n"
+msgid ""
+"Virtual Machine Inventory\n"
 "\t\t\tProcess.  This process is scheduled to run once each business day."
-msgstr "虚拟机列表\n"
+msgstr ""
+"虚拟机列表\n"
 "\t\t\t处理. 该过程被安排为每个工作日运行一次."
-
 
 #: openDCIM/vmnamecheck.php:114
 msgid "The following"
 msgstr "下列"
 
-
 #: openDCIM/vmnamecheck.php:114
-msgid "Virtual Machines have not been detected within the\n"
+msgid ""
+"Virtual Machines have not been detected within the\n"
 "\t\t\tpast"
-msgstr "虚拟机\n"
+msgstr ""
+"虚拟机\n"
 "\t\t\t从未被检测过"
 
-
 #: openDCIM/vmnamecheck.php:115
-msgid "days and are assumed to be expired.  They are being removed from the\n"
+msgid ""
+"days and are assumed to be expired.  They are being removed from the\n"
 "\t\t\tinventory system."
-msgstr "天如果同时被设置为过期. 这样他们就会被从\n"
+msgstr ""
+"天如果同时被设置为过期. 这样他们就会被从\n"
 "\t\t\t列表系统中删除."
-
 
 #: openDCIM/workorder.php:5
 msgid "Data Center Operations Work Order Builder"
 msgstr "数据中心运营工单生成"
 
-
 #: openDCIM/workorder.php:59
 msgid "openDCIM-workorder-"
 msgstr ""
-
 
 #: openDCIM/workorder.php:190
 msgid "Work Order Contents"
 msgstr "工单内容"
 
-
 #: openDCIM/workorder.php:192
 msgid "Image"
 msgstr "图像"
-
 
 #: openDCIM/workorder.php:226
 msgid "Select All"
 msgstr ""
 
-
 #: openDCIM/workorder.php:230
 msgid "Email to DC Team Address"
 msgstr ""
-
 
 #: openDCIM/workorder.php:232
 msgid "Clear Reservation Flag"
 msgstr ""
 
-
 #: openDCIM/workorder.php:233
 msgid "Move Items to Storage"
 msgstr ""
-
 
 #: openDCIM/workorder.php:234
 msgid "Clear"
 msgstr "清除"
 
-
 #: openDCIM/zone.php:5
 msgid "Data Center Zones"
 msgstr "数据中心区域"
 
-
-#: openDCIM/zone.php:79
+#: openDCIM/zone.php:85
 msgid "openDCIM Data Center Zones"
 msgstr "openDCIM数据中心区域"
 
-
-#: openDCIM/zone.php:110
+#: openDCIM/zone.php:116
 msgid "New Zone"
 msgstr "新的区域"
 
-
-#: openDCIM/zone.php:158
+#: openDCIM/zone.php:164
 msgid "Zoom"
 msgstr "放大"
 
-
-#: openDCIM/zone.php:186
+#: openDCIM/zone.php:192
 msgid "Click and drag on the image to select an area for this zone"
 msgstr "单击并在图像上拖动选择区块来对该区域范围进行定义"
 
-
-#: openDCIM/zone.php:226
+#: openDCIM/zone.php:232
 msgid "Verify Delete Zone"
 msgstr "验证删除区域"
 
-
-#: openDCIM/zone.php:227
-msgid "This Zone will be deleted and there is no undo.  Assets within the zone will remain as members of the Data Center."
-msgstr "该区域将被删除且无法撤销操作. 在区域内的IT资产将继续作为数据中心中的成员."
-
+#: openDCIM/zone.php:233
+msgid ""
+"This Zone will be deleted and there is no undo.  Assets within the zone will "
+"remain as members of the Data Center."
+msgstr ""
+"该区域将被删除且无法撤销操作. 在区域内的IT资产将继续作为数据中心中的成员."
 
 #: openDCIM/zone_stats.php:5
 msgid "Zone Statistics"
 msgstr "区域统计数据"
 
-
-#: openDCIM/zone_stats.php:225
+#: openDCIM/zone_stats.php:237
 msgid "Zone Size (approximate)"
 msgstr "区域面积(近似值)"
 
-
-#: openDCIM/zone_stats.php:229
+#: openDCIM/zone_stats.php:241
 msgid "approximate"
 msgstr "近似"
-
 
 #: openDCIM/api/v1/deleteRoutes.php:94 openDCIM/api/v1/getRoutes.php:36
 #: openDCIM/api/v1/getRoutes.php:74 openDCIM/api/v1/index.php:162
@@ -5840,16 +5190,13 @@ msgstr "近似"
 msgid "Access Denied"
 msgstr ""
 
-
 #: openDCIM/api/v1/deleteRoutes.php:102 openDCIM/api/v1/index2.php:1756
 msgid "Failed to delete color with ColorID"
 msgstr ""
 
-
 #: openDCIM/api/v1/deleteRoutes.php:126 openDCIM/api/v1/index2.php:1778
 msgid "Device doesn't exist"
 msgstr ""
-
 
 #: openDCIM/api/v1/deleteRoutes.php:131 openDCIM/api/v1/index2.php:1119
 #: openDCIM/api/v1/index2.php:1154 openDCIM/api/v1/index2.php:1194
@@ -5861,11 +5208,9 @@ msgstr ""
 msgid "Unauthorized"
 msgstr ""
 
-
 #: openDCIM/api/v1/deleteRoutes.php:136 openDCIM/api/v1/index2.php:1788
 msgid "An unknown error has occured"
 msgstr ""
-
 
 #: openDCIM/api/v1/getRoutes.php:391 openDCIM/api/v1/index2.php:429
 #: openDCIM/api/v1/index2.php:1114 openDCIM/api/v1/postRoutes.php:238
@@ -5873,297 +5218,248 @@ msgstr ""
 msgid "No device found with DeviceID"
 msgstr ""
 
-
 #: openDCIM/api/v1/getRoutes.php:417 openDCIM/api/v1/index2.php:464
 msgid "Unknown error"
 msgstr ""
-
 
 #: openDCIM/api/v1/getRoutes.php:447 openDCIM/api/v1/index2.php:494
 msgid "Device is not a sensor or is missing a template"
 msgstr ""
 
-
-#: openDCIM/api/v1/getRoutes.php:700 openDCIM/api/v1/index2.php:690
+#: openDCIM/api/v1/getRoutes.php:760 openDCIM/api/v1/index2.php:690
 msgid "No color code found with ColorID"
 msgstr ""
 
-
-#: openDCIM/api/v1/getRoutes.php:781 openDCIM/api/v1/index2.php:758
+#: openDCIM/api/v1/getRoutes.php:841 openDCIM/api/v1/index2.php:758
 msgid "No template found with TemplateID: "
 msgstr ""
 
-
-#: openDCIM/api/v1/getRoutes.php:804 openDCIM/api/v1/getRoutes.php:851
+#: openDCIM/api/v1/getRoutes.php:864 openDCIM/api/v1/getRoutes.php:911
 #: openDCIM/api/v1/index2.php:781 openDCIM/api/v1/index2.php:828
 msgid "No ports found for TemplateID: "
 msgstr ""
 
-
-#: openDCIM/api/v1/getRoutes.php:828 openDCIM/api/v1/index2.php:805
+#: openDCIM/api/v1/getRoutes.php:888 openDCIM/api/v1/index2.php:805
 msgid "Port not found for TemplateID: "
 msgstr ""
 
-
-#: openDCIM/api/v1/getRoutes.php:872 openDCIM/api/v1/index2.php:849
+#: openDCIM/api/v1/getRoutes.php:932 openDCIM/api/v1/index2.php:849
 msgid "No slots found for TemplateID: "
 msgstr ""
-
 
 #: openDCIM/api/v1/index2.php:963
 msgid "Insufficient privilege level"
 msgstr ""
 
-
 #: openDCIM/api/v1/index2.php:974
 msgid "User not found in database."
 msgstr ""
 
-
 #: openDCIM/api/v1/index2.php:986 openDCIM/api/v1/postRoutes.php:58
 msgid "Unable to update People resource with the given parameters."
 msgstr ""
-
 
 #: openDCIM/api/v1/index2.php:991
 #, php-format
 msgid "People resource for UserID=%1$s updated successfully."
 msgstr ""
 
-
 #: openDCIM/api/v1/index2.php:1032 openDCIM/api/v1/postRoutes.php:112
 msgid "Device update has failed"
 msgstr ""
-
 
 #: openDCIM/api/v1/index2.php:1127 openDCIM/api/v1/postRoutes.php:254
 #: openDCIM/api/v1/postRoutes.php:285
 msgid "Update failed"
 msgstr ""
 
-
 #: openDCIM/api/v1/index2.php:1159 openDCIM/api/v1/postRoutes.php:315
 msgid "No device template found with TemplateID: "
 msgstr ""
-
 
 #: openDCIM/api/v1/index2.php:1167 openDCIM/api/v1/postRoutes.php:326
 msgid "Device template update failed"
 msgstr ""
 
-
 #: openDCIM/api/v1/index2.php:1199 openDCIM/api/v1/postRoutes.php:358
 msgid "Template port not found with id: "
 msgstr ""
-
 
 #: openDCIM/api/v1/index2.php:1207 openDCIM/api/v1/postRoutes.php:369
 msgid "Template port update failed"
 msgstr ""
 
-
 #: openDCIM/api/v1/index2.php:1241 openDCIM/api/v1/postRoutes.php:403
 msgid "Template slot not found with id: "
 msgstr ""
-
 
 #: openDCIM/api/v1/index2.php:1252 openDCIM/api/v1/postRoutes.php:417
 msgid "Template slot update failed"
 msgstr ""
 
-
 #: openDCIM/api/v1/index2.php:1283 openDCIM/api/v1/postRoutes.php:449
 msgid "Manufacturer not found with id: "
 msgstr ""
-
 
 #: openDCIM/api/v1/index2.php:1289 openDCIM/api/v1/postRoutes.php:458
 msgid "Manufacturer update failed"
 msgstr ""
 
-
 #: openDCIM/api/v1/index2.php:1339 openDCIM/api/v1/putRoutes.php:48
 msgid "UserID already in database.  Use the update API to modify record."
 msgstr ""
-
 
 #: openDCIM/api/v1/index2.php:1359 openDCIM/api/v1/putRoutes.php:62
 msgid "Unable to create People resource with the given parameters."
 msgstr ""
 
-
 #: openDCIM/api/v1/index2.php:1364 openDCIM/api/v1/putRoutes.php:66
 msgid "People resource created successfully."
 msgstr ""
-
 
 #: openDCIM/api/v1/index2.php:1390 openDCIM/api/v1/putRoutes.php:102
 msgid "Error creating new color."
 msgstr ""
 
-
 #: openDCIM/api/v1/index2.php:1394 openDCIM/api/v1/putRoutes.php:106
 msgid "New color created successfully."
 msgstr ""
-
 
 #: openDCIM/api/v1/index2.php:1424 openDCIM/api/v1/index2.php:1469
 #: openDCIM/api/v1/putRoutes.php:160 openDCIM/api/v1/putRoutes.php:205
 msgid "Cabinet not found"
 msgstr ""
 
-
 #: openDCIM/api/v1/index2.php:1434 openDCIM/api/v1/index2.php:1479
 #: openDCIM/api/v1/putRoutes.php:170 openDCIM/api/v1/putRoutes.php:215
 msgid "Device creation failed"
 msgstr ""
 
-
 #: openDCIM/api/v1/index2.php:1521 openDCIM/api/v1/putRoutes.php:261
 msgid "Device template creation failed"
 msgstr ""
-
 
 #: openDCIM/api/v1/index2.php:1561 openDCIM/api/v1/index2.php:1598
 #: openDCIM/api/v1/putRoutes.php:307 openDCIM/api/v1/putRoutes.php:350
 msgid "Device template port creation failed"
 msgstr ""
 
-
 #: openDCIM/api/v1/index2.php:1635 openDCIM/api/v1/putRoutes.php:391
 msgid "Device template slot creation failed"
 msgstr ""
-
 
 #: openDCIM/api/v1/index2.php:1668 openDCIM/api/v1/putRoutes.php:430
 msgid "Manufacturer not created: "
 msgstr ""
 
-
 #: openDCIM/api/v1/postRoutes.php:44
 msgid "UserID="
 msgstr ""
-
 
 #: openDCIM/api/v1/postRoutes.php:62
 #, php-format
 msgid "People resource for UserID=%s updated successfully."
 msgstr ""
 
-
 #: openDCIM/api/v1/postRoutes.php:120
 msgid "devices updated"
 msgstr ""
-
 
 #: openDCIM/api/v1/postRoutes.php:188
 msgid "Error updating color code."
 msgstr ""
 
-
 #: openDCIM/api/v1/postRoutes.php:216
 msgid "Invalid operation"
 msgstr ""
-
 
 #: openDCIM/scripts/ajax_tooltip.php:131 openDCIM/scripts/ajax_tooltip.php:132
 #: openDCIM/scripts/ajax_tooltip.php:133
 msgid "no data"
 msgstr "没有数据"
 
-
 #: openDCIM/scripts/ajax_tooltip.php:140
 msgid "Measured Power Combined"
 msgstr ""
 
-
-#: openDCIM/scripts/ajax_tooltip.php:180
+#: openDCIM/scripts/ajax_tooltip.php:182
 msgid "Quit that! You don't have rights to view this."
 msgstr ""
 
-
-#: openDCIM/scripts/ajax_tooltip.php:195
+#: openDCIM/scripts/ajax_tooltip.php:203
 msgid "Details Restricted"
 msgstr ""
 
-
-#: openDCIM/scripts/ajax_tooltip.php:319
+#: openDCIM/scripts/ajax_tooltip.php:327
 msgid "Tooltips are enabled with no options selected."
 msgstr ""
-
 
 #: openDCIM/scripts/uploadifive.php:23
 #, php-format
 msgid "Upload directory '%s' is not writable"
 msgstr ""
 
-
 #: openDCIM/scripts/uploadifive.php:43
 msgid "File was not deleted"
 msgstr ""
-
 
 #: openDCIM/scripts/uploadifive.php:62
 msgid "Couldn't complete file move"
 msgstr ""
 
-
 #: openDCIM/scripts/uploadifive.php:68
 msgid "The file is bigger than this PHP installation allows"
 msgstr ""
-
 
 #: openDCIM/scripts/uploadifive.php:71
 msgid "The file is bigger than this form allows"
 msgstr ""
 
-
 #: openDCIM/scripts/uploadifive.php:74
 msgid "Only part of the file was uploaded"
 msgstr ""
-
 
 #: openDCIM/scripts/uploadifive.php:77
 msgid "No file was uploaded"
 msgstr ""
 
-
 #: openDCIM/scripts/uploadifive.php:80
 msgid "Missing a temporary folder"
 msgstr ""
-
 
 #: openDCIM/scripts/uploadifive.php:83
 msgid "Failed to write file to disk"
 msgstr ""
 
-
 #: openDCIM/scripts/uploadifive.php:86
 msgid "File upload stopped by extension"
 msgstr ""
-
 
 #: openDCIM/scripts/uploadifive.php:96
 msgid "Invalid file type."
 msgstr ""
 
-
 #: openDCIM/scripts/uploadifive.php:103
 msgid "No files uploaded"
 msgstr ""
-
 
 #: openDCIM/scripts/uploadifive.php:104
 msgid "You must be a site admin to add images"
 msgstr ""
 
-
 #: openDCIM/scripts/uploadifive.php:105
 msgid "Token mismatch"
 msgstr ""
-
 
 #: openDCIM/scripts/uploadifive.php:106
 msgid "God help us something has gone horribly wrong"
 msgstr ""
 
+#~ msgid "Reservation?"
+#~ msgstr "预留?"
+
+#~ msgid "Supplies Management"
+#~ msgstr "物品管理"
+
+#~ msgid "Surplus/Salvage Device Reporting"
+#~ msgstr "冗余/灾难恢复设备报告"
