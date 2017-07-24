@@ -67,7 +67,15 @@ elementFormDefault="qualified">
 								</xs:restriction>
 							</xs:simpleType>
 						</xs:element>
-								
+						
+						<xs:element name="SNMPVersion">
+							<xs:simpleType>
+								<xs:restriction base="xs:string">
+								<xs:maxLength value="2"/>
+								</xs:restriction>
+							</xs:simpleType>
+						</xs:element> 
+
 						<xs:element name="ChassisSlots" type="xs:nonNegativeInteger"/>
 				 
 						<xs:element name="RearChassisSlots" type="xs:nonNegativeInteger"/>
