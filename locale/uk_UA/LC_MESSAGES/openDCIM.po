@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: openDCIM.po\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-07-19 10:55-0500\n"
+"POT-Creation-Date: 2017-07-19 12:27-0500\n"
 "PO-Revision-Date: 2014-03-24 08:48-0500\n"
 "Last-Translator: Wilbur Longwisch <wilbur@wilpig.org>\n"
 "Language-Team: openDCIM <discussion@list.opendcim.org>\n"
@@ -56,9 +56,9 @@ msgstr ""
 #: openDCIM/report_power_utilization.php:163
 #: openDCIM/report_project_outage_simulator.php:46
 #: openDCIM/report_project_outage_simulator.php:277
-#: openDCIM/report_projects.php:151 openDCIM/report_xml_CFD.php:59
-#: openDCIM/search_export.php:47 openDCIM/search_export_storage_room.php:49
-#: openDCIM/zone.php:134
+#: openDCIM/report_projects.php:151 openDCIM/report_tags.php:33
+#: openDCIM/report_xml_CFD.php:59 openDCIM/search_export.php:47
+#: openDCIM/search_export_storage_room.php:49 openDCIM/zone.php:134
 msgid "Data Center"
 msgstr "ЦОД/площадка"
 
@@ -1683,6 +1683,7 @@ msgid "Target Cabinet"
 msgstr "Кінцева шафа"
 
 #: openDCIM/connections_spreadsheet.php:120
+#: openDCIM/classes/PowerPorts.class.php:151
 msgid "Power Connection"
 msgstr "Таблиця електроживлення"
 
@@ -1724,6 +1725,8 @@ msgid "Parent Container"
 msgstr "Батьківський контейнер"
 
 #: openDCIM/container.php:246 openDCIM/datacenter.php:279
+#: openDCIM/classes/Cabinet.class.php:349
+#: openDCIM/classes/Cabinet.class.php:417
 msgid "None"
 msgstr "немає"
 
@@ -1975,6 +1978,7 @@ msgid "Humidity"
 msgstr "Вологість"
 
 #: openDCIM/dc_stats.php:290 openDCIM/zone_stats.php:287
+#: openDCIM/classes/DataCenter.class.php:514
 msgid "Air Flow"
 msgstr "Повітряний потік"
 
@@ -2065,7 +2069,7 @@ msgid "Group to Administer"
 msgstr "Додавання людей в"
 
 #: openDCIM/dept_groups.php:66 openDCIM/devices.php:2129
-#: openDCIM/login_ad.php:229 openDCIM/login_ldap.php:193
+#: openDCIM/login_ad.php:230 openDCIM/login_ldap.php:193
 #: openDCIM/people_depts.php:66 openDCIM/project_members.php:139
 #: openDCIM/supplybin.php:207
 msgid "Submit"
@@ -2130,7 +2134,12 @@ msgstr "ПОМИЛКА: Не знайдено портів"
 #: openDCIM/devices.php:2448 openDCIM/device_templates.php:930
 #: openDCIM/misc.inc.php:1033 openDCIM/report_cabinets.php:179
 #: openDCIM/report_cabinets.php:251 openDCIM/report_cabinets.php:292
-#: openDCIM/rowview.php:87
+#: openDCIM/rowview.php:87 openDCIM/classes/Device.class.php:2030
+#: openDCIM/classes/Device.class.php:2034
+#: openDCIM/classes/Device.class.php:2133
+#: openDCIM/classes/Device.class.php:2136
+#: openDCIM/classes/DeviceTemplate.class.php:663
+#: openDCIM/classes/DeviceTemplate.class.php:667
 msgid "Rear"
 msgstr "ззаду"
 
@@ -2534,6 +2543,8 @@ msgstr "Вміст шасі"
 
 #: openDCIM/devices.php:2184 openDCIM/devices.php:2415
 #: openDCIM/device_templates.php:925
+#: openDCIM/classes/DeviceTemplate.class.php:663
+#: openDCIM/classes/DeviceTemplate.class.php:667
 msgid "Front"
 msgstr "Пристрій зпереду"
 
@@ -2609,7 +2620,7 @@ msgstr "Порт патчпанелі"
 msgid "Back"
 msgstr "Пристрій ззаду"
 
-#: openDCIM/devices.php:2473
+#: openDCIM/devices.php:2473 openDCIM/classes/Device.class.php:461
 msgid "Copy"
 msgstr "Копіювати"
 
@@ -2683,6 +2694,7 @@ msgstr "Помилка оновлення пристрою"
 
 #: openDCIM/device_templates.php:283 openDCIM/device_templates.php:295
 #: openDCIM/paths.php:173 openDCIM/scripts/ajax_tooltip.php:23
+#: openDCIM/classes/Device.class.php:2347
 msgid "Error"
 msgstr "Помилка"
 
@@ -2977,11 +2989,11 @@ msgstr "Ступінь віртуалізації"
 msgid "openDCIM Login"
 msgstr "openDCIM Login"
 
-#: openDCIM/login_ad.php:220 openDCIM/login_ldap.php:184
+#: openDCIM/login_ad.php:221 openDCIM/login_ldap.php:184
 msgid "Username:"
 msgstr "Username:"
 
-#: openDCIM/login_ad.php:224 openDCIM/login_ldap.php:188
+#: openDCIM/login_ad.php:225 openDCIM/login_ldap.php:188
 msgid "Password:"
 msgstr "Password:"
 
@@ -3027,6 +3039,7 @@ msgid "Selection Preview"
 msgstr "Розташування на мапі"
 
 #: openDCIM/misc.inc.php:791 openDCIM/storageroom.php:44
+#: openDCIM/classes/Container.class.php:199
 msgid "General Storage Room"
 msgstr "Головний склад"
 
@@ -3260,6 +3273,8 @@ msgstr "Невідома помилка"
 #: openDCIM/pathmaker.php:247 openDCIM/pathmaker.php:324
 #: openDCIM/pathmaker.php:459 openDCIM/paths.php:76 openDCIM/paths.php:137
 #: openDCIM/paths.php:255 openDCIM/paths.php:329 openDCIM/paths.php:414
+#: openDCIM/classes/DevicePorts.class.php:189
+#: openDCIM/classes/DevicePorts.class.php:207
 msgid "Port"
 msgstr "Порт"
 
@@ -4498,7 +4513,7 @@ msgstr ""
 msgid "Total Assigned Cabinets:"
 msgstr "Всього шаф"
 
-#: openDCIM/report_projects.php:185
+#: openDCIM/report_projects.php:185 openDCIM/classes/DataCenter.class.php:645
 #, fuzzy
 msgid "Storage Room"
 msgstr "Склад: %s"
@@ -4701,10 +4716,6 @@ msgstr "Друк обладнання з електроживленням по �
 #: openDCIM/report_tags.php:11
 msgid "Inventory Reporting By Tag"
 msgstr "Інвентаризація в розрізі міток"
-
-#: openDCIM/report_tags.php:33
-msgid "Datacenter"
-msgstr "ЦОД"
 
 #: openDCIM/report_tags.php:36
 msgid "Tag"
@@ -5442,6 +5453,9 @@ msgstr "Недопустима дія"
 
 #: openDCIM/scripts/ajax_tooltip.php:131 openDCIM/scripts/ajax_tooltip.php:132
 #: openDCIM/scripts/ajax_tooltip.php:133
+#: openDCIM/classes/DataCenter.class.php:511
+#: openDCIM/classes/DataCenter.class.php:512
+#: openDCIM/classes/DataCenter.class.php:513
 msgid "no data"
 msgstr "немає даних"
 
@@ -5522,6 +5536,104 @@ msgstr "Не співпадає маркер"
 msgid "God help us something has gone horribly wrong"
 msgstr "От халепа! Знову щось пішло не так :-/."
 
+#: openDCIM/classes/DataCenter.class.php:507
+#, fuzzy
+msgid "Composite View of Cabinets"
+msgstr "Груповий імпорт нових шаф"
+
+#: openDCIM/classes/DataCenter.class.php:508
+#, fuzzy
+msgid "Occupied Space"
+msgstr "Зайнято"
+
+#: openDCIM/classes/DataCenter.class.php:509
+#, fuzzy
+msgid "Calculated Weight"
+msgstr "Обчислена активна потужність"
+
+#: openDCIM/classes/DataCenter.class.php:510
+#, fuzzy
+msgid "Calculated Power Usage"
+msgstr "Обчислена активна потужність"
+
+#: openDCIM/classes/DataCenter.class.php:511
+#: openDCIM/classes/DataCenter.class.php:512
+#: openDCIM/classes/DataCenter.class.php:513
+#, fuzzy
+msgid "Measured on"
+msgstr "Виміряна активна потужність"
+
+#: openDCIM/classes/DataCenter.class.php:609
+#, fuzzy
+msgid "Row "
+msgstr "Ряд"
+
+#: openDCIM/classes/DeviceTemplate.class.php:591
+#, fuzzy
+msgid "No valid file"
+msgstr "Неправильний формат файлу."
+
+#: openDCIM/classes/DeviceTemplate.class.php:629
+#: openDCIM/classes/DeviceTemplate.class.php:634
+#: openDCIM/classes/DeviceTemplate.class.php:641
+#, fuzzy
+msgid "Import Error"
+msgstr "Журнал імпорту"
+
+#: openDCIM/classes/DeviceTemplate.class.php:630
+#, fuzzy
+msgid "Front picture file already exists"
+msgstr "Файл зображення зпереду"
+
+#: openDCIM/classes/DeviceTemplate.class.php:635
+#, fuzzy
+msgid "Rear picture file already exists"
+msgstr "Файл зображення ззаду"
+
+#: openDCIM/classes/DeviceTemplate.class.php:642
+msgid ""
+"An error has occurred creating the template.<br>Possibly there is already a "
+"template of the same manufacturer and model"
+msgstr ""
+
+#: openDCIM/classes/DeviceTemplate.class.php:662
+#: openDCIM/classes/DeviceTemplate.class.php:666
+#: openDCIM/classes/DeviceTemplate.class.php:698
+#: openDCIM/classes/DeviceTemplate.class.php:702
+#, fuzzy
+msgid "Import Warning"
+msgstr "Активна потужність (попередження)"
+
+#: openDCIM/classes/DeviceTemplate.class.php:663
+#, fuzzy, php-format
+msgid "An error has occurred creating the slot %s"
+msgstr "Під час створення шаблону сталася помилка"
+
+#: openDCIM/classes/DeviceTemplate.class.php:667
+#, php-format
+msgid "Ignored slot %s"
+msgstr ""
+
+#: openDCIM/classes/DeviceTemplate.class.php:699
+#, fuzzy, php-format
+msgid "An error has occurred creating the port %s"
+msgstr "Під час створення шаблону сталася помилка"
+
+#: openDCIM/classes/DeviceTemplate.class.php:703
+#, fuzzy, php-format
+msgid "Ignored port %s"
+msgstr "Звітність"
+
+#: openDCIM/classes/SwitchInfo.class.php:103
+msgid ""
+"I don't know what type of device this is but it did not return any ports "
+"whatsoever.  Do not try to report this as an error."
+msgstr ""
+
+#: openDCIM/classes/SwitchInfo.class.php:105
+msgid "First port detection failed, please report to openDCIM developers"
+msgstr ""
+
 #~ msgid "Reservation?"
 #~ msgstr "Зарезервовано"
 
@@ -5539,3 +5651,6 @@ msgstr "От халепа! Знову щось пішло не так :-/."
 
 #~ msgid "Surplus Date"
 #~ msgstr "Дата надходження/вибуття"
+
+#~ msgid "Datacenter"
+#~ msgstr "ЦОД"
