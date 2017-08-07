@@ -74,6 +74,13 @@ ALTER TABLE fac_PowerPanel ADD COLUMN MapY1 INT(11) NOT NULL;
 ALTER TABLE fac_PowerPanel ADD COLUMN MapY2 INT(11) NOT NULL;
 
 --
+-- Change the PowerDistribution table to allow for alphanumeric breaker identifiers
+--
+
+ALTER TABLE fac_PowerDistribution CHANGE COLUMN PanelPole PanelPole varchar(10) NOT NULL;
+ALTER TABLE fac_PowerDistribution CHANGE COLUMN PanelPole2 PanelPole varchar(10) NOT NULL;
+
+--
 -- Bump up the database version (uncomment below once released)
 --
 
