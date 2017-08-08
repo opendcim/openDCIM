@@ -1015,7 +1015,7 @@ function startmap(){
 		// This is what sets the base state of each map area, so add the power panel outlines and labels here
 		var c = {r:204, g:0, b:0 };
 
-		Hilight($('.canvas > map > area[name^=pan]'), c);
+		// Hilight($('.canvas > map > area[name^=pan]'), c);
 		maptitle.text(eval("stat."+state+"['title']"));
 	}
 

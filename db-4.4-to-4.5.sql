@@ -78,7 +78,7 @@ ALTER TABLE fac_PowerPanel ADD COLUMN MapY2 INT(11) NOT NULL;
 --
 
 ALTER TABLE fac_PowerDistribution CHANGE COLUMN PanelPole PanelPole varchar(10) NOT NULL;
-ALTER TABLE fac_PowerDistribution CHANGE COLUMN PanelPole2 PanelPole varchar(10) NOT NULL;
+ALTER TABLE fac_PowerDistribution CHANGE COLUMN PanelPole2 PanelPole2 varchar(10) NOT NULL;
 
 --
 -- Bump up the database version (uncomment below once released)
