@@ -1016,7 +1016,9 @@ function startmap(){
 		var panels=$('.canvas > map > area[name^=pan]');
 		if(panels.length > 0){
 			var c = {r:220, g:220, b:220 };
-			Hilight(panels, c);
+			panels.each(function(){
+				Hilight($(this), c);
+			});
 		}
 
 		maptitle.text(eval("stat."+state+"['title']"));
