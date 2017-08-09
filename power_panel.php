@@ -38,6 +38,18 @@
 		foreach($panel as $prop => $val){
 			$panel->$prop=trim($_POST[$prop]);
 		}
+		// Coordinates aren't displayed on this page and the loop above is looking 
+		// for every attribute on the panel model.  This will load the original object 
+		// and pull over the coordinates so they don't get wiped. 
+		if($_POST["action"]!="Create"){
+			$pan=new PowerPanel();
+			$pan->PanelID=$panel->PanelID;
+			$pan->getPanel();
+			$panel->MapX1=$pan->MapX1;
+			$panel->MapX2=$pan->MapX2;
+			$panel->MapY1=$pan->MapY1;
+			$panel->MapY2=$pan->MapY2;
+		}
 		
 		if($_POST["action"]=="Create"){
 			if($panel->createPanel()){
