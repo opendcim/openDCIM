@@ -160,7 +160,7 @@ CREATE TABLE fac_CDUTemplate (
   OID3 varchar(80) NOT NULL,
   ATSStatusOID varchar(80) NOT NULL,
   ATSDesiredResult varchar(80) NOT NULL,
-  ProcessingProfile varchar(20) NOT NULL DEFAULT "SingleOIDWatts", 
+  ProcessingProfile varchar(20) NOT NULL DEFAULT "SingleOIDWatts",
   Voltage int(11) NOT NULL,
   Amperage int(11) NOT NULL,
   NumOutlets int(11) NOT NULL,
@@ -876,7 +876,7 @@ CREATE TABLE fac_DeviceCustomAttribute(
   AttributeType varchar(8) NOT NULL DEFAULT "string",
   Required tinyint(1) NOT NULL DEFAULT 0,
   AllDevices tinyint(1) NOT NULL DEFAULT 0,
-  DefaultValue varchar(65000),
+  DefaultValue TEXT(65000),
   PRIMARY KEY (AttributeID),
   UNIQUE (Label)
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
@@ -889,7 +889,7 @@ CREATE TABLE fac_DeviceTemplateCustomValue (
   TemplateID int(11) NOT NULL,
   AttributeID int(11) NOT NULL,
   Required tinyint(1) NOT NULL DEFAULT 0,
-  Value varchar(65000),
+  Value TEXT(65000),
   PRIMARY KEY (TemplateID, AttributeID)
 ) ENGINE=InnoDB CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
@@ -900,7 +900,7 @@ DROP TABLE IF EXISTS fac_DeviceCustomValue;
 CREATE TABLE fac_DeviceCustomValue (
   DeviceID int(11) NOT NULL,
   AttributeID int(11) NOT NULL,
-  Value varchar(65000),
+  Value TEXT(65000),
   PRIMARY KEY (DeviceID, AttributeID)
 ) ENGINE=InnoDB CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
@@ -937,3 +937,5 @@ CREATE TABLE fac_ProjectMembership (
   DeviceID int(11) NOT NULL,
   PRIMARY KEY (ProjectID,DeviceID)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+SET GLOBAL sql_mode="ONLY_FULL_GROUP_BY,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION";

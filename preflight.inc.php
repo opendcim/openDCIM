@@ -226,7 +226,7 @@
         rewrite ^(.*) /opendcim/api/test/index.php last;
     }</pre>";
 		$tests['api_test']['state']="fail";
-		$tests['api_test']['message']="Apache does not appear to be rewriting URLs correctly. Check your AllowOverride directive and change to 'AllowOverride All'";
+		$tests['api_test']['message']="Nginx does not appear to be rewriting URLs correctly. Check your AllowOverride directive and change to 'AllowOverride All'";
 
 	}else{
 		$tests['web_server']['state']="fail";
