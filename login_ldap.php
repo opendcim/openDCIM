@@ -46,7 +46,7 @@
         }
 
         $ldapSearchDN = str_replace( "%userid%", $ldapUser, html_entity_decode($config->ParameterArray['LDAPBaseSearch']));
-        $ldapSearch = ldap_search( $ldapConn, $config->ParameterArray['LDAPBaseDN'], $ldapSearchDN );
+        $ldapSearch = ldap_search($ldapConn, $config->ParameterArray['LDAPBaseDN'], $ldapSearchDN);
         $ldapResults = ldap_get_entries( $ldapConn, $ldapSearch );
 
         // Because we have audit logs to maintain, we need to make a local copy of the User's record
@@ -64,7 +64,7 @@
           //
           // So, here we are with a ton of if/then statements.
 
-          if ( $config->ParameterArray['LDAPSiteAccess'] == "" || $ldapResults[$i]['dn'] == $config->ParameterArray['LDAPSiteAccess'] ) {
+          if ( $config->ParameterArray['LDAPSiteAccess'] == "" || substr($ldapResults[$i]['dn'], -strlen($config->ParameterArray['LDAPSiteAccess'])) == $config->ParameterArray['LDAPSiteAccess'] ) {
             // No specific group membership required to access openDCIM or they have a match to the group required
             $_SESSION['userid'] = $ldapUser;
             $_SESSION['LoginTime'] = time();
@@ -74,7 +74,7 @@
           if ( $ldapResults[$i]['dn'] == $config->ParameterArray['LDAPReadAccess'] ) {
               $person->ReadAccess = true;
           }
-          
+
           if ( $ldapResults[$i]['dn'] == $config->ParameterArray['LDAPWriteAccess'] ) {
               $person->WriteAccess = true;
           }
@@ -82,23 +82,23 @@
           if ( $ldapResults[$i]['dn'] == $config->ParameterArray['LDAPDeleteAccess'] ) {
               $person->DeleteAccess = true;
           }
-          
+
           if ( $ldapResults[$i]['dn'] == $config->ParameterArray['LDAPAdminOwnDevices'] ) {
               $person->AdminOwnDevices = true;
           }
-          
+
           if ( $ldapResults[$i]['dn'] == $config->ParameterArray['LDAPRackRequest'] ) {
               $person->RackRequest = true;
           }
-          
+
           if ( $ldapResults[$i]['dn'] == $config->ParameterArray['LDAPRackAdmin'] ) {
               $person->RackAdmin = true;
           }
-          
+
           if ( $ldapResults[$i]['dn'] == $config->ParameterArray['LDAPContactAdmin'] ) {
               $person->ContactAdmin = true;
           }
-          
+
           if ( $ldapResults[$i]['dn'] == $config->ParameterArray['LDAPBulkOperations'] ) {
               $person->BulkOperations = true;
           }
@@ -151,14 +151,14 @@
 <head>
   <meta http-equiv="X-UA-Compatible" content="IE=Edge">
   <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-  
+
   <title>openDCIM Data Center Inventory</title>
   <link rel="stylesheet" href="css/inventory.php" type="text/css">
   <link rel="stylesheet" href="css/jquery-ui.css" type="text/css">
   <!--[if lt IE 9]>
   <link rel="stylesheet"  href="css/ie.css" type="text/css" />
   <![endif]-->
-  
+
   <script type="text/javascript" src="scripts/jquery.min.js"></script>
   <script type="text/javascript" src="scripts/jquery-ui.min.js"></script>
 <script type="text/javascript">
