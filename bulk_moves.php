@@ -223,23 +223,26 @@
         }
       }
 
-      $st = $dbh->prepare( "select DeviceID, Label from fac_Device where ParentDevice=0 and Cabinet=:CabinetID and (Position between :StartPos and :EndPos or Position+Height between :StartPos2 and :EndPos2)" );
+      // Do not check for collision on a delete
+      if ( $DataCenterID>0 ) {
+        $st = $dbh->prepare( "select DeviceID, Label from fac_Device where ParentDevice=0 and Cabinet=:CabinetID and (Position between :StartPos and :EndPos or Position+Height between :StartPos2 and :EndPos2)" );
 
-      if ( $tmpDev->DeviceID > 0 ) {
-        $endPos = $row["Position"] + $tmpDev->Height - 1;
+        if ( $tmpDev->DeviceID > 0 ) {
+          $endPos = $row["Position"] + $tmpDev->Height - 1;
 
-        if ( ! $st->execute( array( ":CabinetID"=>$CabinetID,
-          ":StartPos"=>$row["Position"],
-          ":EndPos"=>$endPos,
-          ":StartPos2"=>$row["Position"],
-          ":EndPos2"=>$endPos )) ) {
-          $info = $dbh->errorInfo();
-          error_log( "PDO Error on Collision Detection: {$info[2]}" );
-        }
+          if ( ! $st->execute( array( ":CabinetID"=>$CabinetID,
+            ":StartPos"=>$row["Position"],
+            ":EndPos"=>$endPos,
+            ":StartPos2"=>$row["Position"],
+            ":EndPos2"=>$endPos )) ) {
+            $info = $dbh->errorInfo();
+            error_log( "PDO Error on Collision Detection: {$info[2]}" );
+          }
 
-        if ( $collisionRow = $st->fetch() ) {
-          $tmpCon .= "<li>" . __("Collision Detected") . ": " . $row["DataCenterID"] . ":" . $row["Cabinet"] . " - " . $row["Position"] . " :: " . $row["DeviceID"];
-          $rowError = true;
+          if ( $collisionRow = $st->fetch() ) {
+            $tmpCon .= "<li>" . __("Collision Detected") . ": " . $row["DataCenterID"] . ":" . $row["Cabinet"] . " - " . $row["Position"] . " :: " . $row["DeviceID"];
+            $rowError = true;
+          }
         }
       }
     }
