@@ -484,7 +484,7 @@
 							if($('#imageselection #preview').attr('image')!=""){
 								$('#PDFLogoFile').val($('#imageselection #preview').attr('image'));
 							}
-							$(this).dialog("close");
+							$(this).dialog("destroy");
 						}
 					},
 					close: function(){
