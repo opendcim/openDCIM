@@ -81,6 +81,20 @@ ALTER TABLE fac_PowerDistribution CHANGE COLUMN PanelPole PanelPole varchar(10) 
 ALTER TABLE fac_PowerDistribution CHANGE COLUMN PanelPole2 PanelPole2 varchar(10) NOT NULL;
 
 --
+-- Add a table of Status Field values to allow
+--
+
+CREATE TABLE fac_DeviceStatus (
+	StatusID INT(11) NOT NULL AUTO_INCREMENT,
+	Status varchar(40) NOT NULL,
+	ColorCode VARCHAR(6) NOT NULL,
+	PRIMARY KEY(StatusID)
+) ENGINE=InnoDB DEFAULT CHARSET=UTF8;
+
+INSERT INTO fac_DeviceStatus (Status) VALUES ('Reserved');
+INSERT INTO fac_DeviceStatus (Status) VALUES ('Disposed');
+
+--
 -- Bump up the database version (uncomment below once released)
 --
 

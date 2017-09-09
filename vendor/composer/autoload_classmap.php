@@ -29,6 +29,7 @@ return array(
     'Device' => $baseDir . '/classes/Device.class.php',
     'DeviceCustomAttribute' => $baseDir . '/classes/DeviceCustomAttribute.class.php',
     'DevicePorts' => $baseDir . '/classes/DevicePorts.class.php',
+    'DeviceStatus' => $baseDir . '/classes/DeviceStatus.inc.php',
     'DeviceTemplate' => $baseDir . '/classes/DeviceTemplate.class.php',
     'Disposition' => $baseDir . '/classes/Disposition.class.php',
     'DispositionMembership' => $baseDir . '/classes/DispositionMembership.class.php',

@@ -104,6 +104,8 @@ class Device {
 		$validv3AuthProtocols=array('MD5','SHA');
 		$validv3PrivProtocols=array('DES','AES');
 
+		$validStatus = DeviceStatus::getStatusNames();
+
 		$this->DeviceID=intval($this->DeviceID);
 		$this->Label=sanitize($this->Label);
 		$this->SerialNo=sanitize($this->SerialNo);
@@ -143,8 +145,7 @@ class Device {
 		$this->WarrantyCo=sanitize($this->WarrantyCo);
 		$this->WarrantyExpire=sanitize($this->WarrantyExpire);
 		$this->Notes=sanitize($this->Notes,false);
-		$this->Status=in_array( $this->Status, array( "Reserved", "Testing", "Development", "Production", "Spare",
-			"Disposed"))?$this->Status:"Reserved";
+		$this->Status=in_array( $this->Status, $validStatus )?$this->Status:"Reserved";
 		$this->HalfDepth=intval($this->HalfDepth);
 		$this->BackSide=intval($this->BackSide);
 		$this->Weight=intval($this->Weight);

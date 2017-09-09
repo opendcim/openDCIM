@@ -745,6 +745,10 @@
 			});
 		}
 
+		
+
+
+
 		// Cabling - Cable Colors
 
 		function removecolor(rowobject,lookup){
@@ -1923,7 +1927,22 @@ echo '<div class="main">
 					<div><input type="text" name="dcavalue[]"></div>
 				</div>
 			</div>
-
+			<h3>',__("Device Status (Reserved and Disposed are fixed and can not be removed)"),'</h3>
+			<div class="table" id="devstatus">
+				<div>
+					<div></div>
+					<div>',__("Reserved"),'</div>
+				</div>
+				',$devstatusList,'
+				<div>
+					<div id="newline"><img title="',__("Add new row"),'" src="images/add.gif"></div>
+					<div><input type="text" name="devstatus[]"></div>
+				</div>
+				<div>
+					<div></div>
+					<div>',__("Disposed"),'</div>
+				</div>
+			</div>
 		</div>
 		<div id="ldap">
 			<h3>',__("LDAP Authentication and Authorization Configuration"),'</h3>
