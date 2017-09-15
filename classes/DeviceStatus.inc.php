@@ -107,13 +107,19 @@ class DeviceStatus {
 		// StatusID = Disposed
 		// Both of which are reserved, so they can't be removed unless you go to the db directly, in which case, you deserve a broken system
 
+		// Also, don't go trying to remove a status that doesn't exist
+		$statCheck = DeviceStatus::getStatus( $StatusID );
+		if ( sizeof($statCheck) != 1 || $statCheck[0]->Status == "Reserved" || $statCheck[0]=Status == "Disposed" ) {
+			return false;
+		}
+
 		// Need to search for any devices that have been assigned the given status - if so, don't allow the delete
 		$srchStat = DeviceStatus::getStatus( $StatusID );
 		$srchDev = new Device();
 		$srchDev->Status = $srchStat->Status;
 		$dList = $srchDev->Search();
 
-		if ( $StatusID > 2 && count($dList) == 0 ) {
+		if ( count($dList) == 0 ) {
 			global $dbh;
 
 			$st = $dbh->prepare( "delete from fac_DeviceStatus where StatusID=:StatusID" );

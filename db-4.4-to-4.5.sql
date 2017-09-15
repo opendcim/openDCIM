@@ -92,6 +92,11 @@ CREATE TABLE fac_DeviceStatus (
 ) ENGINE=InnoDB DEFAULT CHARSET=UTF8;
 
 INSERT INTO fac_DeviceStatus (Status) VALUES ('Reserved');
+INSERT INTO fac_DeviceStatus (Status) VALUES ('Test');
+INSERT INTO fac_DeviceStatus (Status) VALUES ('Development');
+INSERT INTO fac_DeviceStatus (Status) VALUES ('QA');
+INSERT INTO fac_DeviceStatus (Status) VALUES ('Production');
+INSERT INTO fac_DeviceStatus (Status) VALUES ('Spare');
 INSERT INTO fac_DeviceStatus (Status) VALUES ('Disposed');
 
 --
