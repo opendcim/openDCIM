@@ -57,7 +57,7 @@ PRIMARY KEY (DeviceID)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 --
--- See the db with two default dispositions
+-- Seed the db with two default dispositions
 --
 
 INSERT INTO fac_Disposition VALUES ( 1, 'Legacy Salvage', 'Items marked as disposed in openDCIM prior to the version 4.5 upgrade.', '', 'Active');
@@ -77,8 +77,8 @@ ALTER TABLE fac_PowerPanel ADD COLUMN MapY2 INT(11) NOT NULL;
 -- Change the PowerDistribution table to allow for alphanumeric breaker identifiers
 --
 
-ALTER TABLE fac_PowerDistribution CHANGE COLUMN PanelPole PanelPole varchar(10) NOT NULL;
-ALTER TABLE fac_PowerDistribution CHANGE COLUMN PanelPole2 PanelPole2 varchar(10) NOT NULL;
+ALTER TABLE fac_PowerDistribution CHANGE COLUMN PanelPole PanelPole varchar(20) NOT NULL;
+ALTER TABLE fac_PowerDistribution CHANGE COLUMN PanelPole2 PanelPole2 varchar(20) NOT NULL;
 
 --
 -- Add a table of Status Field values to allow
