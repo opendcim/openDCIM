@@ -345,15 +345,28 @@
 		}
 	}
 
-        $dcaTypeSelector='<select name="dcatype[]" id="dcatype">';
-        if(count($dcaTypeList)>0){
-                foreach($dcaTypeList as $dcatype){
+	$dcaTypeSelector='<select name="dcatype[]" id="dcatype">';
+	if(count($dcaTypeList)>0){
+		foreach($dcaTypeList as $dcatype){
 			$selected=($dcatype=='string')?' selected':'';
-                        $dcaTypeSelector.="<option value=\"$dcatype\"$selected>$dcatype</option>";
-                }
-        }
-        $dcaTypeSelector.="</select>";
+			$dcaTypeSelector.="<option value=\"$dcatype\"$selected>$dcatype</option>";
+		}
+	}
+	$dcaTypeSelector.="</select>";
 
+	// Make our list of device statuses
+	$devstatusList='';
+	foreach(DeviceStatus::getStatus(null,true) as $status){
+		$disabled=($status->Status == 'Reserved' || $status->Status == 'Disposed')?' readonly="readonly"':'';
+		$adddel=($disabled)?'../css/blank.gif':'del.gif';
+		$devstatusList.='
+				<div data-StatusID='.$status->StatusID.'>
+					<div class="addrem"><img src="images/'.$adddel.'" height=20 width=20></div>
+					<div><input type="text" class="validate[required,custom[onlyLetterNumberConfigurationPage]]" value="'.$status->Status.'"'.$disabled.'></div>
+					<div><div class="cp"><input type="text" class="color-picker" name="CriticalColor" value="'.$status->ColorCode.'"></div></div>
+				</div>
+		';
+	}
 
 	// Figure out what the URL to this page
 	$href="";
@@ -1929,18 +1942,10 @@ echo '<div class="main">
 			</div>
 			<h3>',__("Device Status (Reserved and Disposed are fixed and can not be removed)"),'</h3>
 			<div class="table" id="devstatus">
-				<div>
-					<div></div>
-					<div>',__("Reserved"),'</div>
-				</div>
 				',$devstatusList,'
 				<div>
 					<div id="newline"><img title="',__("Add new row"),'" src="images/add.gif"></div>
 					<div><input type="text" name="devstatus[]"></div>
-				</div>
-				<div>
-					<div></div>
-					<div>',__("Disposed"),'</div>
 				</div>
 			</div>
 		</div>
