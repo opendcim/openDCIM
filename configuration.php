@@ -356,14 +356,15 @@
 
 	// Make our list of device statuses
 	$devstatusList='';
-	foreach(DeviceStatus::getStatus(null,true) as $status){
+	foreach(DeviceStatus::getStatusList(true) as $status){
 		$disabled=($status->Status == 'Reserved' || $status->Status == 'Disposed')?' readonly="readonly"':'';
 		$adddel=($disabled)?'../css/blank.gif':'del.gif';
+		$reserved=($disabled)?' reserved':'';
 		$devstatusList.='
 				<div data-StatusID='.$status->StatusID.'>
-					<div class="addrem"><img src="images/'.$adddel.'" height=20 width=20></div>
+					<div class="addrem'.$reserved.'"><img src="images/'.$adddel.'" height=20 width=20></div>
 					<div><input type="text" class="validate[required,custom[onlyLetterNumberConfigurationPage]]" value="'.$status->Status.'"'.$disabled.'></div>
-					<div><div class="cp"><input type="text" class="color-picker" name="CriticalColor" value="'.$status->ColorCode.'"></div></div>
+					<div><div class="cp"><input type="text" class="color-picker" name="StatusColor" value="'.$status->ColorCode.'"></div></div>
 				</div>
 		';
 	}
@@ -1186,6 +1187,142 @@
 		  }
                 }
 
+		function bindstatusrow(div) {
+			var row=$(div);
+			var addrem=row.find('div:first-child:not(.cp)');
+			var dsl=row.find('div:nth-child(2) input');
+			var dsc=row.find('div:nth-child(3) input');
+			row.addrem=addrem;
+			row.Label=dsl;
+			row.Color=dsc;
+			row.ID=div.dataset['statusid'];
+			// save the row object back to the div for quick access later
+			div.row=row;
+
+			// Create click target for add / remove row
+			if(!addrem.hasClass('newstatus') && !addrem.hasClass('reserved')){
+				addrem.click(function(e){
+					removestatus(e);
+				});
+			}else if(addrem.hasClass('newstatus')){
+				addrem.click(function(e){
+					addstatus(e);
+				});
+			}
+
+			// Bind update event to the color change selection
+			dsc.blur(updatestatus);
+
+			// This is to keep an enter from submitting the form
+			row.find(':input').change(updatestatus).keypress(function(e){
+				if(e.keyCode==10 || e.keyCode==13){
+					e.preventDefault();
+					updatestatus(e);
+				}
+			});
+		}
+
+		$('#devstatus > div ~ div > div:first-child').each(function(){
+			bindstatusrow(this.parentElement);
+		});
+
+		function StatusFlashGreen(row){
+			row.effect('highlight', {color: 'lightgreen'}, 2500);
+			row.Label.effect('highlight', {color: 'lightgreen'}, 2500);
+		}
+		function StatusFlashRed(row){
+			row.effect('highlight', {color: 'salmon'}, 1500);
+			row.Label.effect('highlight', {color: 'salmon'}, 1500);
+		}
+
+		function addstatus(e){
+			var row=e.currentTarget.parentElement.row;
+			if(row.Label.val()!=''){
+				$.ajax({
+					type: 'PUT',
+					url: 'api/v1/devicestatus/'+row.Label.val(),
+					async: false,
+					dataType: "JSON",
+					data: null,
+					success: function(data){
+						if(!data.error){
+							StatusFlashGreen(row);
+						}else{
+							StatusFlashRed(row);
+						}
+					}
+				});
+				console.log('clicked add send event to create: '+row.Label.val());
+			}else{
+				console.log('clicked add label is blank, do nothing');
+			}
+		}
+
+		function removestatus(e){
+			var row=e.currentTarget.parentElement.row;
+			$.ajax({
+				type: 'DELETE',
+				url: 'api/v1/devicestatus/'+row.ID,
+				async: false,
+				dataType: "JSON",
+				data: null,
+				success: function(data){
+					if(!data.error){
+						StatusFlashGreen(row);
+						// remove row from dom
+						row.effect('explode', {}, 500, function(){
+							row.remove();
+						});
+					}else{
+						StatusFlashRed(row);
+					}
+				},
+				error: function(data){
+					if(!data.error){
+						StatusFlashRed(row);
+					}else{
+						StatusFlashRed(row);
+					}
+				}
+			});
+			console.log('clicked remove');
+		}
+
+		function updatestatus(e){
+			if(e.currentTarget.classList.contains('color-picker')){
+				var row=e.currentTarget.parentElement.parentElement.parentElement.parentElement.row;
+			}else{
+				console.log(e.currentTarget.parentElement);
+				var row=e.currentTarget.parentElement.parentElement.row;
+			}
+			if(row.Label.val()!=''){
+				$.ajax({
+					type: 'POST',
+					url: 'api/v1/devicestatus/'+row.ID,
+					async: false,
+					dataType: "JSON",
+					data: {'StatusID':row.ID,'Status':row.Label.val(),'ColorCode':row.Color.val()},
+					success: function(data){
+						if(!data.error){
+							StatusFlashGreen(row);
+						}else{
+							StatusFlashRed(row);
+						}
+					},
+					error: function(data){
+						if(!data.error){
+							StatusFlashRed(row);
+						}else{
+							StatusFlashRed(row);
+						}
+					}
+				});
+				console.log('update event: '+row.Label.val());
+			}else{
+				console.log('tried to change label to be blank, do nothing');
+			}
+		}
+
 		// Reporting - Utilities
 
 		$('input[id^="snmp"],input[id="cut"],input[id="dot"]').each(function(){
@@ -1940,12 +2077,17 @@ echo '<div class="main">
 					<div><input type="text" name="dcavalue[]"></div>
 				</div>
 			</div>
-			<h3>',__("Device Status (Reserved and Disposed are fixed and can not be removed)"),'</h3>
+			<h3>',__("Device Status"),'</h3>
 			<div class="table" id="devstatus">
+				<div>
+					<div></div>
+					<div>Status</div>
+					<div>Color</div>
+				</div>
 				',$devstatusList,'
 				<div>
-					<div id="newline"><img title="',__("Add new row"),'" src="images/add.gif"></div>
-					<div><input type="text" name="devstatus[]"></div>
+					<div class="newstatus"><img title="',__("Add new row"),'" src="images/add.gif"></div>
+					<div class="newstatus"><input type="text" name="devstatus[]"></div>
 				</div>
 			</div>
 		</div>

@@ -427,6 +427,46 @@ $app->post( '/devicetemplate/:templateid/slot/:slotnum', function($templateid, $
 });
 
 //
+//	URL:	/api/v1/devicestatus/:statusid
+//	Method:	POST
+//	Params: 
+//		Required: StatusID
+//		Optional: Status, ColorCode
+//	Returns: true/false on update operations 
+//
+
+$app->post( '/devicestatus/:statusid', function($statusid) use ($person) {
+	if ( ! $person->SiteAdmin ) {
+		$r['error'] = true;
+		$r['errorcode'] = 401;
+		$r['message'] = __("Access Denied");
+	} else {
+		$ds=new DeviceStatus($statusid);
+		$vars = getParsedBody();
+
+		foreach( $vars as $prop=>$val ) {
+			if ( property_exists( $ds, $prop )) {
+				$ds->$prop = $val;
+			}
+		}
+		$ds->StatusID=$statusid;
+
+		if(!$ds->updateStatus()){
+			$r['error']=true;
+			$r['errorcode']=400;
+			$r['message']=__("Error creating new status.");
+		}else{
+			$r['error']=false;
+			$r['errorcode']=200;
+			$r['message']=__("Status updated successfully.");
+			$r['devicestatus']=$ds;
+		}
+	}
+
+	echoResponse( $r );
+});
+
+//
 //	URL:	/api/v1/manufacturer
 //	Method:	POST
 //	Params:	none

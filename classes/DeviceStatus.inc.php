@@ -28,6 +28,40 @@ class DeviceStatus {
 	var $Status;
 	var $ColorCode;
 
+	public function __construct($statusid=false){
+		if($statusid){
+			$this->StatusID=$statusid;
+		}
+		return $this;
+	}
+
+	function MakeSafe(){
+		$this->StatusID=intval($this->StatusID);
+		$this->Status=sanitize($this->Status);
+		$this->ColorCode=sanitize($this->ColorCode);
+		if($this->ColorCode==""){
+			$this->ColorCode="#FFFFFF"; // New color picker was allowing for an empty value
+		}
+	}
+
+	static function RowToObject($row){
+		$ds=new DeviceStatus();
+		$ds->StatusID=$row["StatusID"];
+		$ds->Status=$row["Status"];
+		$ds->ColorCode=$row["ColorCode"];
+
+		return $ds;
+	}
+	function exec($sql){
+		global $dbh;
+		return $dbh->exec($sql);
+	}
+
+	function query($sql){
+		global $dbh;
+		return $dbh->query($sql);
+	}
+	
 	function prepare($sql){
 		global $dbh;
 		return $dbh->prepare($sql);
@@ -39,28 +73,53 @@ class DeviceStatus {
 	}
 
 	function createStatus() {
-		$sql = "insert into fac_DeviceStatus set Status=:Status, ColorCode=:ColorCode";
-		$st = $this->prepare( $sql );
-
-		$this->makeSafe();
-
-		$result = $st->execute( array( ":Status"=>$this->Status, ":ColorCode"=>$this->ColorCode ));
-
-		$this->StatusID = $this->lastID();
-
-		return $this-StatusID;
-	}
-
-	static function getStatus( $StatusID = null, $Indexed = false ) {
 		global $dbh;
 
-		if ( $StatusID != null ) {
-			$st = $dbh->prepare( "select * from fac_DeviceStatus where StatusID=:StatusID" );
-			$args = array( ":StatusID"=>$StatusID );
-		} else {
-			$st = $dbh->prepare( "select * from fac_DeviceStatus order by Status ASC" );
-			$args = array();
+		$this->MakeSafe();
+
+		$sql="INSERT INTO fac_DeviceStatus SET Status=\"$this->Status\", 
+			ColorCode=\"$this->ColorCode\"";
+	
+		if($this->exec($sql)){
+			$this->StatusID=$dbh->lastInsertId();
+		}else{
+			$info=$dbh->errorInfo();
+
+			error_log("PDO Error::createStatus {$info[2]}");
+			return false;
 		}
+		
+		return $this->StatusID;
+	}
+
+	function getStatus() {
+		$this->MakeSafe();
+
+		$sql="SELECT * FROM fac_DeviceStatus WHERE StatusID=$this->StatusID;";
+
+        if($row=$this->query($sql)->fetch()){
+            foreach(DeviceStatus::RowToObject($row) as $prop=>$value){
+                $this->$prop=$value;
+            }
+
+            return true;
+        }else{
+            // Kick back a blank record if the StatusID was not found
+            foreach($this as $prop=>$value){
+                if($prop!='StatusID'){
+                    $this->$prop = '';
+                }
+            }
+
+            return false;
+        }
+	}
+
+	static function getStatusList($Indexed = false ) {
+		global $dbh;
+
+		$st = $dbh->prepare( "SELECT * FROM fac_DeviceStatus ORDER BY Status ASC;" );
+		$args = array();
 
 		$st->setFetchMode( PDO::FETCH_CLASS, "DeviceStatus" );
 		$st->execute( $args );
@@ -94,37 +153,43 @@ class DeviceStatus {
 	}
 
 	function updateStatus() {
-		$sql = "update fac_DeviceStatus set Status=:Status, ColorCode=:ColorCode where StatusID=:StatusID";
-		$st = $this->prepare( $sql );
+		$this->MakeSafe();
 
-		$this->makeSafe();
+		$oldstatus=new DeviceStatus($this->StatusID);
+		$oldstatus->getStatus();
 
-		return $st->execute( array( ":Status"=>$this->Status, ":ColorCode"=>$this->ColorCode, ":StatusID"=>$this->StatusID ));
+		$sql="UPDATE fac_DeviceStatus SET Status=\"$this->Status\", 
+			ColorCode=\"$this->ColorCode\" WHERE StatusID=\"$this->StatusID\";";
+
+		if($this->StatusID==0){
+			return false;
+		}else{
+			(class_exists('LogActions'))?LogActions::LogThis($this,$oldstatus):'';
+			$this->query($sql);
+
+			return true;
+		} 
 	}
 
-	static function removeStatus( $StatusID ) {
-		// StatusID = Reserved
-		// StatusID = Disposed
+	function removeStatus() {
+		// Status = Reserved
+		// Status = Disposed
 		// Both of which are reserved, so they can't be removed unless you go to the db directly, in which case, you deserve a broken system
 
 		// Also, don't go trying to remove a status that doesn't exist
-		$statCheck = DeviceStatus::getStatus( $StatusID );
-		if ( sizeof($statCheck) != 1 || $statCheck[0]->Status == "Reserved" || $statCheck[0]=Status == "Disposed" ) {
+		$ds=new DeviceStatus($this->StatusID);
+		if(!$ds->getStatus() || $ds->Status == "Reserved" || $ds->Status == "Disposed" ) {
 			return false;
 		}
 
 		// Need to search for any devices that have been assigned the given status - if so, don't allow the delete
-		$srchStat = DeviceStatus::getStatus( $StatusID );
-		$srchDev = new Device();
-		$srchDev->Status = $srchStat->Status;
-		$dList = $srchDev->Search();
+		$srchDev=new Device();
+		$srchDev->Status=$ds->Status;
+		$dList=$srchDev->Search();
 
-		if ( count($dList) == 0 ) {
-			global $dbh;
-
-			$st = $dbh->prepare( "delete from fac_DeviceStatus where StatusID=:StatusID" );
-
-			return $st->execute( array( ":StatusID"=>$StatusID ));
+		if(count($dList)==0){
+			$st=$this->prepare( "delete from fac_DeviceStatus where StatusID=:StatusID" );
+			return $st->execute( array( ":StatusID"=>$this->StatusID ));
 		}
 
 		return false;

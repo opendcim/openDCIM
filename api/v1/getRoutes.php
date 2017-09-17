@@ -610,7 +610,7 @@ $app->get( '/disposition/:dispositionid', function($dispositionid) {
 $app->get( '/devicestatus', function() {
 	$r['error'] = false;
 	$r['errorcode'] = 200;
-	$r['disposition'] = DeviceStatus::getStatus();
+	$r['devicestatus'] = DeviceStatus::getStatusList();
 
 	echoResponse( $r );
 });
@@ -625,7 +625,16 @@ $app->get( '/devicestatus', function() {
 $app->get( '/devicestatus/:statusid', function($statusid) {
 	$r['error'] = false;
 	$r['errorcode'] = 200;
-	$r['disposition'] = DeviceStatus::getStatus( $statusid );
+	$ds=new DeviceStatus($statisid);
+	if(!$ds->getStatus()){
+		$r['error']=true;
+		$r['errorcode']=404;
+		$r['message']=__("No status found with StatusID")." $ds->StatusID";
+	}else{
+		$r['error']=false;
+		$r['errorcode']=200;
+		$r['devicestatus'][$ds->StatusID]=$ds;
+	}
 	echoResponse( $r );
 });
 
