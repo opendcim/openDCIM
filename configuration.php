@@ -363,7 +363,7 @@
 		$devstatusList.='
 				<div data-StatusID='.$status->StatusID.'>
 					<div class="addrem'.$reserved.'"><img src="images/'.$adddel.'" height=20 width=20></div>
-					<div><input type="text" class="validate[required,custom[onlyLetterNumberConfigurationPage]]" value="'.$status->Status.'"'.$disabled.'></div>
+					<div><input type="text" class="validate[required,custom[onlyLetterNumberSpacesConfigurationPage]]" value="'.$status->Status.'"'.$disabled.'></div>
 					<div><div class="cp"><input type="text" class="color-picker" name="StatusColor" value="'.$status->ColorCode.'"></div></div>
 				</div>
 		';
@@ -1214,12 +1214,27 @@
 			dsc.blur(updatestatus);
 
 			// This is to keep an enter from submitting the form
-			row.find(':input').change(updatestatus).keypress(function(e){
+			row.find(':input:not(.newstatus >)').change(updatestatus).keypress(function(e){
 				if(e.keyCode==10 || e.keyCode==13){
 					e.preventDefault();
 					updatestatus(e);
 				}
 			});
+			row.find('.newstatus > :input').keypress(function(e){
+				if(e.keyCode==10 || e.keyCode==13){
+					e.preventDefault();
+					addrem.trigger('click');
+				}
+			});
+		}
+
+		function createstatusrow(statusobject){
+			var newrow=$('<div>').attr('data-StatusID',statusobject.StatusID);
+			newrow.append($('<div>').addClass('addrem').append($('<img>').attr({'src':'images/del.gif','height':20,'width':20})));
+			newrow.append($('<div>').append($('<input>').addClass('validate[required,custom[onlyLetterNumberSpacesConfigurationPage]]').val(statusobject.Status)));
+			newrow.append($('<div>').append($('<div>').addClass('cp').append($('<input>').attr({'type':'text','name':'StatusColor'}).val(statusobject.ColorCode).addClass('color-picker'))));
+
+			return newrow;
 		}
 
 		$('#devstatus > div ~ div > div:first-child').each(function(){
@@ -1237,7 +1252,7 @@
 
 		function addstatus(e){
 			var row=e.currentTarget.parentElement.row;
-			if(row.Label.val()!=''){
+			if(row.Label.val()!='' && $(".main form").validationEngine('validate')){
 				$.ajax({
 					type: 'PUT',
 					url: 'api/v1/devicestatus/'+row.Label.val(),
@@ -1246,15 +1261,27 @@
 					data: null,
 					success: function(data){
 						if(!data.error){
-							StatusFlashGreen(row);
+							for(var x in data.devicestatus){
+								row.Label.val('');
+								var newrow=createstatusrow(data.devicestatus[x]);
+								bindstatusrow(newrow[0]);
+								newrow.insertBefore(row);
+								newrow.find(".color-picker").minicolors({
+									letterCase: 'uppercase',
+									change: function(hex, rgb){
+										colorchange($(this).val(),$(this).attr('id'));
+									}
+								});
+								// Had to reference the row inside the row because I don't know
+								StatusFlashGreen(newrow[0].row);
+							}
 						}else{
 							StatusFlashRed(row);
 						}
 					}
 				});
-				console.log('clicked add send event to create: '+row.Label.val());
 			}else{
-				console.log('clicked add label is blank, do nothing');
+				console.log('clicked add, label is blank, do nothing');
 			}
 		}
 
@@ -1268,7 +1295,6 @@
 				data: null,
 				success: function(data){
 					if(!data.error){
-						StatusFlashGreen(row);
 						// remove row from dom
 						row.effect('explode', {}, 500, function(){
 							row.remove();
@@ -1285,17 +1311,15 @@
 					}
 				}
 			});
-			console.log('clicked remove');
 		}
 
 		function updatestatus(e){
 			if(e.currentTarget.classList.contains('color-picker')){
 				var row=e.currentTarget.parentElement.parentElement.parentElement.parentElement.row;
 			}else{
-				console.log(e.currentTarget.parentElement);
 				var row=e.currentTarget.parentElement.parentElement.row;
 			}
-			if(row.Label.val()!=''){
+			if(row.Label.val()!='' && $(".main form").validationEngine('validate')){
 				$.ajax({
 					type: 'POST',
 					url: 'api/v1/devicestatus/'+row.ID,
@@ -1317,7 +1341,6 @@
 						}
 					}
 				});
-				console.log('update event: '+row.Label.val());
 			}else{
 				console.log('tried to change label to be blank, do nothing');
 			}
@@ -2087,7 +2110,7 @@ echo '<div class="main">
 				',$devstatusList,'
 				<div>
 					<div class="newstatus"><img title="',__("Add new row"),'" src="images/add.gif"></div>
-					<div class="newstatus"><input type="text" name="devstatus[]"></div>
+					<div class="newstatus"><input type="text" name="devstatus[]" class="validate[optional,custom[onlyLetterNumberSpacesConfigurationPage]]"></div>
 				</div>
 			</div>
 		</div>
