@@ -992,7 +992,7 @@ INSERT INTO fac_Disposition VALUES ( 2, 'Returned to Customer', 'Item has been r
 CREATE TABLE fac_DeviceStatus (
   StatusID INT(11) NOT NULL AUTO_INCREMENT,
   Status varchar(40) NOT NULL,
-  ColorCode VARCHAR(6) NOT NULL,
+  ColorCode VARCHAR(7) NOT NULL,
   PRIMARY KEY(StatusID)
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=UTF8;
 
