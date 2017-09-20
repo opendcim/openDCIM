@@ -492,6 +492,7 @@ $path.="<script type=\"text/javascript\">
 
 if(isset($_GET['pathonly'])){
 	echo $path;
+	echo $status;
 	exit;
 }
 		
