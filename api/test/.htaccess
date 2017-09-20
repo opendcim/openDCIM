@@ -1,3 +1,6 @@
 RewriteEngine On 
+# change this line to match the directory you installed to
+# if you aren't using a root url like http://my.opendcim.install/
+RewriteBase /api/test/
 RewriteCond %{REQUEST_FILENAME} !-f 
 RewriteRule ^(.*)$ %{ENV:BASE}index.php [QSA,L]
