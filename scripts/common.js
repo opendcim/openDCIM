@@ -2739,6 +2739,7 @@ function LameLogDisplay(){
 					$(this).unbind('click');
 					$(this).click(function(e){
 						e.preventDefault();
+						var pathlink=$(e.target).attr('href');
 						$.get($(e.target).attr('href'),{pathonly: ''}).done(function(data){
 							var modal=$('<div />', {id: 'modal'}).html('<div id="modaltext">'+data+'</div><br><div id="modalstatus"></div>').dialog({
 								appendTo: 'body',
@@ -2747,6 +2748,10 @@ function LameLogDisplay(){
 								close: function(){$(this).dialog('destroy');}
 							});
 							$('#modal').dialog("option", "width", $('#parcheos').width()+75);
+							$('#modal').parent().children(".ui-dialog-titlebar").append('<button class="ui-button ui-widget ui-state-default ui-corner-all ui-button-icon-only ui-dialog-titlebar-close" role="button" aria-disabled="false" title="print" style="right: 25px;" id="printpath"><span class="ui-button-icon-primary ui-icon ui-icon-print"></span><span class="ui-button-text">print</span></button>');
+							$('#printpath').on('click',function(e){
+								window.open(pathlink+"&pathonly&print",'_blank');
+							});
 						});
 					});
 				});
