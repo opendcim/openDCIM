@@ -57,7 +57,7 @@ class ConnectionPath {
 		for ($i=0; $i<count($this->PathAux); $i++){
 			if ($this->PathAux[$i]["DeviceID"]==$this->DeviceID && $this->PathAux[$i]["PortNumber"]=$this->PortNumber) {
 				++$crossovercount;
-				if($crossovercount>=2){
+				if($crossovercount>=200){
 					$ret=true;
 					break;
 				}
