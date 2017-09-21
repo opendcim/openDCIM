@@ -2134,6 +2134,10 @@ echo '<div class="main">
 					<div><input type="text" defaultvalue="',$config->defaults["LDAPBindDN"],'" name="LDAPBindDN" value="',$config->ParameterArray["LDAPBindDN"],'"></div>
 				</div>
 				<div>
+					<div><label for="LDAPBindPassword">',__("Bind Password"),'</label></div>
+					<div><input type="password" defaultvalue="',$config->defaults["LDAPBindPassword"],'" name="LDAPBindPassword" value="',$config->ParameterArray["LDAPBindPassword"],'"></div>
+				</div>
+				<div>
 					<div><label for="LDAPUserSearch">',__("User Search"),'</label></div>
 					<div><input type="text" defaultvalue="',$config->defaults["LDAPUserSearch"],'" name="LDAPUserSearch" value="',$config->ParameterArray["LDAPUserSearch"],'"></div>
 				</div>
