@@ -78,7 +78,7 @@
 		$tests['php-xml']['message']='';
 	}else{
 		$tests['php-xml']['state']="fail";
-		$tests['php-xml']['message']='PHP is missing the <a href="http://us3.php.net/manual/en/book.xml.php">XML Parser</a>.  Please install it.<br><br>For CENT/RHEL yum -y intall php-xml';
+		$tests['php-xml']['message']='PHP is missing the <a href="http://us3.php.net/manual/en/book.xml.php">XML Parser</a>.  Please install it.<br><br>For CENT/RHEL yum -y install php-xml';
 	}
 
 	if(extension_loaded('zip')) {
