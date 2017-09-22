@@ -6,6 +6,16 @@ GitHub, at http://github.com/samilliken/openDCIM/issues, where you can also down
 the latest development version.  However, it is not advised to pull from GitHub unless you
 are simply testing, as some functionality can break between releases.
 
+Changes in 4.5
+--------------
+* Reservation is no longer a yes/no field.  Has been replaced with a user customizable list of Device Status values.
+* The PathDrawing image for connections now has a print screen option.
+* Fixtures, such as power panels, can now be mapped onto a data center drawing.
+* Salvage process has been completely redone - now you can create Disposition Methods and when something leaves your custody, you can attach the device to that disposition method.  (Such as e-cycler, or returned to customer)
+* New report added that will allow you to see all devices from a specific vendor and/or by a device type.
+* Improvements to the API in terms of custom device attributes - they now work the same as native device attributes
+* BUGS!  Several of them were fixed.
+
 Changes in 4.4
 --------------
 * Fixed collision detection in the bulk importer
