@@ -174,18 +174,18 @@ function renderUnassignedTemplateOwnership($noTemplFlag, $noOwnerFlag, $device) 
 	$totalWatts=$stats->Wattage;
 	$totalWeight=$stats->Weight;
 
-	if($config->ParameterArray["ReservedColor"] != "#FFFFFF" || $config->ParameterArray["FreeSpaceColor"] != "#FFFFFF"){
-		$head .= "		<style type=\"text/css\">
-			.reserved {background-color: {$config->ParameterArray['ReservedColor']} !important;}
-			.freespace {background-color: {$config->ParameterArray['FreeSpaceColor']};}\n";
+	// Set up the classes for color coding based upon status
 
-		// Only show reserved in the legend if the color is something other than white 
-		if($config->ParameterArray["ReservedColor"] != "#FFFFFF"){
-			$legend.="\t\t<div class=\"legenditem hide\"><span class=\"reserved colorbox border\"></span> - ".__("Reservation")."</div>\n";
-		}
+	$dsList = DeviceStatus::getStatusList();
 
-		if($config->ParameterArray["FreeSpaceColor"] != "#FFFFFF"){
-			$legend.='<div class="legenditem"><span class="freespace colorbox border"></span> - '.__("Free Space").'</div>'."\n";
+	$head .= "        <style type=\"text/css\">\n";
+
+	foreach( $dsList as $stat ) {
+		if ( $stat->ColorCode != "#FFFFFF" ) {
+			$stName = str_replace( ' ', '_', $stat->Status );
+
+			$head .= "	.$stName {background-color: {$stat->ColorCode} !important;}\n";
+			$legend.="\t\t<div class=\"legenditem\"><span class=\"$stName colorbox border\"></span> - $stat->Status</div>\n";
 		}
 	}
 

@@ -1738,12 +1738,6 @@ echo '<div class="main">
 					<div></div>
 				</div>
 				<div>
-					<div><label for="ReservedColor">',__("Reserved Devices"),'</label></div>
-					<div><div class="cp"><input type="text" class="color-picker" name="ReservedColor" value="',$config->ParameterArray["ReservedColor"],'"></div></div>
-					<div><button type="button">&lt;--</button></div>
-					<div><span>',strtoupper($config->defaults["ReservedColor"]),'</span></div>
-				</div>
-				<div>
 					<div><label for="FreeSpaceColor">',__("Unused Spaces"),'</label></div>
 					<div><div class="cp"><input type="text" class="color-picker" name="FreeSpaceColor" value="',$config->ParameterArray["FreeSpaceColor"],'"></div></div>
 					<div><button type="button">&lt;--</button></div>

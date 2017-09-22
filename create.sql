@@ -717,7 +717,7 @@ INSERT INTO fac_CabinetToolTip VALUES(NULL, 'Ports', 'Number of Data Ports', 0);
 INSERT INTO fac_CabinetToolTip VALUES(NULL, 'PowerSupplyCount', 'Number of Power Supplies', 0);
 INSERT INTO fac_CabinetToolTip VALUES(NULL, 'PrimaryContact', 'Primary Contact', 0);
 INSERT INTO fac_CabinetToolTip VALUES(NULL, 'PrimaryIP', 'Primary IP', 0);
-INSERT INTO fac_CabinetToolTip VALUES(NULL, 'Reservation', 'Reservation?', 0);
+INSERT INTO fac_CabinetToolTip VALUES(NULL, 'Status', 'Device Status', 0);
 INSERT INTO fac_CabinetToolTip VALUES(NULL, 'SerialNo', 'Serial Number', 0);
 INSERT INTO fac_CabinetToolTip VALUES(NULL, 'SNMPCommunity', 'SNMP Read Only Community', 0);
 INSERT INTO fac_CabinetToolTip VALUES(NULL, 'TemplateID', 'Device Class', 0);
@@ -996,10 +996,10 @@ CREATE TABLE fac_DeviceStatus (
   PRIMARY KEY(StatusID)
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=UTF8;
 
-INSERT INTO fac_DeviceStatus (Status) VALUES ('Reserved');
-INSERT INTO fac_DeviceStatus (Status) VALUES ('Test');
-INSERT INTO fac_DeviceStatus (Status) VALUES ('Development');
-INSERT INTO fac_DeviceStatus (Status) VALUES ('QA');
-INSERT INTO fac_DeviceStatus (Status) VALUES ('Production');
-INSERT INTO fac_DeviceStatus (Status) VALUES ('Spare');
-INSERT INTO fac_DeviceStatus (Status) VALUES ('Disposed');
+INSERT INTO fac_DeviceStatus (Status, ColorCode) VALUES ('Reserved', '#00FFFF');
+INSERT INTO fac_DeviceStatus (Status, ColorCode) VALUES ('Test', '#FFFFFF');
+INSERT INTO fac_DeviceStatus (Status, ColorCode) VALUES ('Development', '#FFFFFF');
+INSERT INTO fac_DeviceStatus (Status, ColorCode) VALUES ('QA', '#FFFFFF');
+INSERT INTO fac_DeviceStatus (Status, ColorCode) VALUES ('Production', '#FFFFFF');
+INSERT INTO fac_DeviceStatus (Status, ColorCode) VALUES ('Spare', '#FFFFFF');
+INSERT INTO fac_DeviceStatus (Status, ColorCode) VALUES ('Disposed', '#FFFFFF');

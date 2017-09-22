@@ -91,13 +91,16 @@ CREATE TABLE fac_DeviceStatus (
 	PRIMARY KEY(StatusID)
 ) ENGINE=InnoDB DEFAULT CHARSET=UTF8;
 
-INSERT INTO fac_DeviceStatus (Status) VALUES ('Reserved');
-INSERT INTO fac_DeviceStatus (Status) VALUES ('Test');
-INSERT INTO fac_DeviceStatus (Status) VALUES ('Development');
-INSERT INTO fac_DeviceStatus (Status) VALUES ('QA');
-INSERT INTO fac_DeviceStatus (Status) VALUES ('Production');
-INSERT INTO fac_DeviceStatus (Status) VALUES ('Spare');
-INSERT INTO fac_DeviceStatus (Status) VALUES ('Disposed');
+INSERT INTO fac_DeviceStatus (Status, ColorCode) VALUES ('Reserved', '#00FFFF');
+INSERT INTO fac_DeviceStatus (Status, ColorCode) VALUES ('Test', '#FFFFFF');
+INSERT INTO fac_DeviceStatus (Status, ColorCode) VALUES ('Development', '#FFFFFF');
+INSERT INTO fac_DeviceStatus (Status, ColorCode) VALUES ('QA', '#FFFFFF');
+INSERT INTO fac_DeviceStatus (Status, ColorCode) VALUES ('Production', '#FFFFFF');
+INSERT INTO fac_DeviceStatus (Status, ColorCode) VALUES ('Spare', '#FFFFFF');
+INSERT INTO fac_DeviceStatus (Status, ColorCode) VALUES ('Disposed', '#FFFFFF');
+
+INSERT INTO fac_CabinetToolTip (SortOrder, Field, Label, Enabled) VALUES (NULL, 'Status', 'Device Status', 0);
+DELETE from fac_CabinetToolTip WHERE Field='Reservation';
 
 --
 -- Bump up the database version (uncomment below once released)
