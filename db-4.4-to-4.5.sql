@@ -98,6 +98,7 @@ INSERT INTO fac_DeviceStatus (Status, ColorCode) VALUES ('QA', '#FFFFFF');
 INSERT INTO fac_DeviceStatus (Status, ColorCode) VALUES ('Production', '#FFFFFF');
 INSERT INTO fac_DeviceStatus (Status, ColorCode) VALUES ('Spare', '#FFFFFF');
 INSERT INTO fac_DeviceStatus (Status, ColorCode) VALUES ('Disposed', '#FFFFFF');
+DELETE FROM fac_Config where Parameter='ReservedColor';
 
 INSERT INTO fac_CabinetToolTip (SortOrder, Field, Label, Enabled) VALUES (NULL, 'Status', 'Device Status', 0);
 DELETE from fac_CabinetToolTip WHERE Field='Reservation';
