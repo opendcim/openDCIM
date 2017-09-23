@@ -1592,7 +1592,7 @@ function InsertDevice(obj){
 		// Color the rack for the department
 		var StartingU=$('#cabinet'+obj.Cabinet+' #pos'+obj.Position);
 
-		if(StartingU.hasClass('error')){
+		if(StartingU.find('td.error').length){
 			$('#legend > .legenditem > span.error').parent('div').removeClass('hide');
 		}
 

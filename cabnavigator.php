@@ -174,8 +174,9 @@ function renderUnassignedTemplateOwnership($noTemplFlag, $noOwnerFlag, $device) 
 	$totalWatts=$stats->Wattage;
 	$totalWeight=$stats->Weight;
 
-	// Set up the classes for color coding based upon status
+	$legend.='<div class="legenditem hide"><span style="background-color:'.$config->ParameterArray['CriticalColor'].'; text-align:center" class="error colorbox border">*</span> - '.__("Above defined rack height").'</div>'."\n";
 
+	// Set up the classes for color coding based upon status
 	$dsList=DeviceStatus::getStatusList();
 
 	$head.="        <style type=\"text/css\">
@@ -206,8 +207,6 @@ function renderUnassignedTemplateOwnership($noTemplFlag, $noOwnerFlag, $device) 
 	$body.=BuildCabinet($cab->CabinetID);
 	// Generate rear rack view if needed
 	$body.=($backside)?BuildCabinet($cab->CabinetID,'rear'):'';
-
-	$legend.='<div class="legenditem hide"><span style="background-color:'.$config->ParameterArray['CriticalColor'].'; text-align:center" class="error colorbox border">*</span> - '.__("Above defined rack height").'</div>'."\n";
 
 	$used=$cab->CabinetOccupancy($cab->CabinetID);
 	@$SpacePercent=($cab->CabinetHeight>0)?number_format($used/$cab->CabinetHeight*100,0):0;
