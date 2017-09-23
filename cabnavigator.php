@@ -176,16 +176,21 @@ function renderUnassignedTemplateOwnership($noTemplFlag, $noOwnerFlag, $device) 
 
 	// Set up the classes for color coding based upon status
 
-	$dsList = DeviceStatus::getStatusList();
+	$dsList=DeviceStatus::getStatusList();
 
-	$head .= "        <style type=\"text/css\">\n";
+	$head.="        <style type=\"text/css\">
+			.freespace {background-color: {$config->ParameterArray['FreeSpaceColor']};}\n";
 
-	foreach( $dsList as $stat ) {
-		if ( $stat->ColorCode != "#FFFFFF" ) {
-			$stName = str_replace( ' ', '_', $stat->Status );
+	if($config->ParameterArray["FreeSpaceColor"] != "#FFFFFF"){
+		$legend.='<div class="legenditem"><span class="freespace colorbox border"></span> - '.__("Free Space").'</div>'."\n";
+	}
 
-			$head .= "	.$stName {background-color: {$stat->ColorCode} !important;}\n";
-			$legend.="\t\t<div class=\"legenditem\"><span class=\"$stName colorbox border\"></span> - $stat->Status</div>\n";
+	foreach($dsList as $stat){
+		if($stat->ColorCode != "#FFFFFF"){
+			$stName=str_replace(' ','_',$stat->Status);
+
+			$head.="\t\t\t.$stName {background-color: {$stat->ColorCode} !important;}\n";
+			$legend.="\t\t<div class=\"legenditem hide\"><span class=\"$stName colorbox border\"></span> - $stat->Status</div>\n";
 		}
 	}
 
