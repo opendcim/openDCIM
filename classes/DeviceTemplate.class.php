@@ -720,9 +720,11 @@ xsi:noNamespaceSchemaLocation="openDCIMdevicetemplate.xsd">
 		$this->MakeSafe();
 
 		$tdca = array();
-		$sql = "SELECT TemplateID, AttributeID, Required, Value
-			FROM fac_DeviceTemplateCustomValue
-			WHERE TemplateID=$this->TemplateID;";
+		//Table join to make it where we can half ass sort the custom attributes based on the label data
+		$sql="SELECT a.Label, v.TemplateID, v.AttributeID, v.Required, v.Value FROM 
+			fac_DeviceTemplateCustomValue v, fac_DeviceCustomAttribute a WHERE 
+			a.AttributeID=v.AttributeID AND TemplateID=$this->TemplateID ORDER BY Label, 
+			AttributeID;";
 		foreach($this->query($sql) as $tdcrow) {
 			$tdca[$tdcrow["AttributeID"]]["value"]=$tdcrow["Value"];
 			$tdca[$tdcrow["AttributeID"]]["required"]=$tdcrow["Required"];
