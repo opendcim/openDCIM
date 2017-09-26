@@ -1,0 +1,16 @@
+stages:
+  - release
+
+release:docker:
+  stage: release
+  image: docker:latest
+  services:
+    - docker:dind
+  dependencies:
+    - build:linux
+  variables:
+    IMAGE_NAME: $CI_REGISTRY_IMAGE:$CI_BUILD_REF_NAME
+  script:
+    - docker login -u gitlab-ci-token -p $CI_BUILD_TOKEN $CI_REGISTRY
+    - docker build --pull -t $IMAGE_NAME .
+    - docker push $IMAGE_NAME
