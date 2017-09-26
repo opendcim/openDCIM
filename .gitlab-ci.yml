@@ -6,8 +6,6 @@ release:docker:
   image: docker:latest
   services:
     - docker:dind
-  dependencies:
-    - build:linux
   variables:
     IMAGE_NAME: $CI_REGISTRY_IMAGE:$CI_BUILD_REF_NAME
   script:
