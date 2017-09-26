@@ -9,8 +9,6 @@ release:docker:
   variables:
     IMAGE_NAME: $CI_REGISTRY_IMAGE:$CI_BUILD_REF_NAME
   script:
-    - pwd
-    - ls -alh docker
     - docker login -u gitlab-ci-token -p $CI_BUILD_TOKEN $CI_REGISTRY
     - docker build --pull -t $IMAGE_NAME .
     - docker push $IMAGE_NAME
