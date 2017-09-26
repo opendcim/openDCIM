@@ -114,7 +114,7 @@
           $config->ParameterArray['LDAPUserSearch'] = "(|(uid=%userid%))";
         }
         $userSearch = str_replace( "%userid%", $ldapUser, html_entity_decode($config->ParameterArray['LDAPUserSearch']));
-        $ldapSearch = ldap_search( $ldapConn, $config->ParameterArray['LDAPBaseDN'], $userSearch );
+        $ldapSearch = ldap_search( $ldapConn, $config->ParameterArray['LDAPBaseDN'], $userSearch, ['*', 'entryUUID'] );
         $ldapResults = ldap_get_entries( $ldapConn, $ldapSearch );
 
         // These are standard schema items, so they aren't configurable
@@ -122,6 +122,11 @@
         $person->FirstName = @$ldapResults[0]['givenname'][0];
         $person->LastName = @$ldapResults[0]['sn'][0];
         $person->Email = @$ldapResults[0]['mail'][0];
+
+        // Generate API Key
+				if (0 == strlen(trim((string)($person->APIKey)))) {
+					$person->APIKey = md5($person->UserID . date('Y-m-d H:i:s') . @$ldapResults[0]['entryuuid'][0]);
+				}
 
         if ( isset($_SESSION['userid']) ) {
           if ( $person->PersonID > 0 ) {

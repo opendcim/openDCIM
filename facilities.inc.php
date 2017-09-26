@@ -40,5 +40,18 @@ if(extension_loaded('snmp')){
 	require_once('OSS_SNMP/SNMP.php');
 }
 
+if (!function_exists('apache_request_headers')) {
+	function apache_request_headers() {
+		foreach($_SERVER as $key => $value) {
+			if ("HTTP_" == substr($key, 0, 5)) {
+				$key = str_replace(" ", "-", ucwords(strtolower(str_replace("_", " ", substr($key, 5)))));
+				$out[$key] = $value;
+			}else{
+				$out[$key] = $value;
+			}
+		}
+		return $out;
+	}
+}
 
 ?>

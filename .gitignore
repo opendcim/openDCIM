@@ -16,3 +16,6 @@ pictures/
 drawings/
 /composer.json
 /composer.lock
+
+#IDE files
+*.iml

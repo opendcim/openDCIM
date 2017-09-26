@@ -40,9 +40,19 @@
 		}
 
 		$locales=array();
-		foreach(explode("\n",trim(shell_exec('locale -a | grep -i utf'))) as $line){
-			$locales[]=substr($line, 0, strpos($line, '.'));
+		if (class_exists(ResourceBundle)) {
+			$avLocales = ResourceBundle::getLocales('');
+			if ($avLocales) {
+				$locales = $avLocales;
+			}
 		}
+
+		if (0 == count($locales)) {
+			foreach(explode("\n",trim(shell_exec('locale -a | grep -i utf'))) as $line){
+				$locales[]=substr($line, 0, strpos($line, '.'));
+			}
+		}
+
 		if(count($locales)>1){
 			$tests['gettext']['message'].="Locales detected: ";
 			foreach(array_intersect($locales,$lang) as $locale){
@@ -265,7 +275,25 @@
 	}
 
 	var xmlhttp=new XMLHttpRequest();
+	
 	xmlhttp.open("GET","api/test/test",false);
+	xmlhttp.send();
+	if(xmlhttp.status==200){
+		var response=JSON.parse(xmlhttp.responseText);
+		if(!response.error){
+			var row=document.getElementById("api_test");
+			row.className="";
+			row.childNodes[1].textContent="";
+			row.childNodes[2].textContent="GOOD";
+			// only attempt to auto forward if we are in the installer and there are no errors
+			if(parseInt(document.getElementById("errors").textContent)==0 && location.href.search("install")!=-1){
+				document.getElementById("continue").className=document.getElementById("continue").className.replace(/\bhide\b/,"");
+				location.href="?preflight-ok";
+			}
+		}
+	}
+	
+	xmlhttp.open("GET","_/test/test",false);
 	xmlhttp.send();
 	if(xmlhttp.status==200){
 		var response=JSON.parse(xmlhttp.responseText);
