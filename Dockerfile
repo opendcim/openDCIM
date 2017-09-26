@@ -62,7 +62,11 @@ RUN apk add --no-cache supervisor && \
 # Add Supervisor Configurations
 ADD docker/supervisord.conf /etc/supervisord.conf
 
-ENTRYPOINT ["supervisord", "--nodaemon", "--configuration", "/etc/supervisord.conf"]
+# Scripts
+ADD docker/start.sh /
+RUN chmod a+x /start.sh
+
+ENTRYPOINT /start.sh
 
 # Add Source
 ADD . /var/www/html/
