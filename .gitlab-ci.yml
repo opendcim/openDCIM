@@ -7,7 +7,7 @@ release:docker:
   services:
     - docker:dind
   variables:
-    IMAGE_NAME: $CI_REGISTRY_IMAGE:$CI_BUILD_REF_NAME
+    IMAGE_NAME: $CI_REGISTRY_IMAGE:latest
   script:
     - docker login -u gitlab-ci-token -p $CI_BUILD_TOKEN $CI_REGISTRY
     - docker build --pull -t $IMAGE_NAME .
