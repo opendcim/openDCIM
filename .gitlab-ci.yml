@@ -7,10 +7,10 @@ release:docker:
   services:
     - docker:dind
   script:
-    - pwd
+    - git branch
     - git tag --list
-    - ls -alh .*
-    - git status
+    - git fetch --tags
+    - git tag --list
     - git describe
     - git describe --tags --abbrev=0
 
