@@ -8,7 +8,7 @@ release:docker:
     - docker:dind
   script:
     - git describe && LATEST_TAG=`git describe --tags --abbrev=0` || LATEST_TAG="1.0.0"
-    - IFS='.-' read TAG_MAJOR TAG_MINOR TAG_MICRO <<< "$LATEST_TAG"
+    - OLD_IFS=$IFS; IFS=".-"; set -- $LATEST_TAG; IFS=$OLD_IFS; TAG_MAJOR=$1; TAG_MINOR=$2; TAG_MICRO=$3
     - function join_by { local IFS="$1"; shift; echo "$*"; }
 
     - LATEST_IMAGE="$CI_REGISTRY_IMAGE:latest"
