@@ -12,8 +12,8 @@ release:docker:
     - function join_by { local IFS="$1"; shift; echo "$*"; }
 
     - LATEST_IMAGE="$CI_REGISTRY_IMAGE:latest"
-    - images=("$CI_REGISTRY_IMAGE:$LATEST_TAG" "$CI_REGISTRY_IMAGE:$(join_by . $TAG_MAJOR $TAG_MINOR $TAG_MICRO)" "$CI_REGISTRY_IMAGE:$(join_by . $TAG_MAJOR $TAG_MINOR)" "$CI_REGISTRY_IMAGE:$TAG_MAJOR")
-    - unique_images=($(echo "${images[@]}" | tr ' ' '\n' | sort -u | tr '\n' ' '))
+    - set -a images "$CI_REGISTRY_IMAGE:$LATEST_TAG" "$CI_REGISTRY_IMAGE:$(join_by . $TAG_MAJOR $TAG_MINOR $TAG_MICRO)" "$CI_REGISTRY_IMAGE:$(join_by . $TAG_MAJOR $TAG_MINOR)" "$CI_REGISTRY_IMAGE:$TAG_MAJOR"
+    - set -a unique_images $(echo "${images[@]}" | tr ' ' '\n' | sort -u | tr '\n' ' ')
 
     - echo $images
     - echo $unique_images
