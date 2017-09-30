@@ -7,6 +7,11 @@ release:docker:
   services:
     - docker:dind
   script:
+    - pwd
+    - git tag --list
+    - git describe
+    - ls -alh .*
+
     - git describe && LATEST_TAG=`git describe --tags --abbrev=0` || LATEST_TAG="1.0.0"
     - OLD_IFS=$IFS; IFS=".-"; set -- $LATEST_TAG; IFS=$OLD_IFS; TAG_MAJOR=$1; TAG_MINOR=$2; TAG_MICRO=$3
     - function join_by { local IFS="$1"; shift; echo "$*"; }
