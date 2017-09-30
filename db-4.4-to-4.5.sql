@@ -57,7 +57,7 @@ PRIMARY KEY (DeviceID)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 --
--- See the db with two default dispositions
+-- Seed the db with two default dispositions
 --
 
 INSERT INTO fac_Disposition VALUES ( 1, 'Legacy Salvage', 'Items marked as disposed in openDCIM prior to the version 4.5 upgrade.', '', 'Active');
@@ -77,8 +77,31 @@ ALTER TABLE fac_PowerPanel ADD COLUMN MapY2 INT(11) NOT NULL;
 -- Change the PowerDistribution table to allow for alphanumeric breaker identifiers
 --
 
-ALTER TABLE fac_PowerDistribution CHANGE COLUMN PanelPole PanelPole varchar(10) NOT NULL;
-ALTER TABLE fac_PowerDistribution CHANGE COLUMN PanelPole2 PanelPole2 varchar(10) NOT NULL;
+ALTER TABLE fac_PowerDistribution CHANGE COLUMN PanelPole PanelPole varchar(20) NOT NULL;
+ALTER TABLE fac_PowerDistribution CHANGE COLUMN PanelPole2 PanelPole2 varchar(20) NOT NULL;
+
+--
+-- Add a table of Status Field values to allow
+--
+
+CREATE TABLE fac_DeviceStatus (
+	StatusID INT(11) NOT NULL AUTO_INCREMENT,
+	Status varchar(40) NOT NULL,
+	ColorCode VARCHAR(7) NOT NULL,
+	PRIMARY KEY(StatusID)
+) ENGINE=InnoDB DEFAULT CHARSET=UTF8;
+
+INSERT INTO fac_DeviceStatus (Status, ColorCode) VALUES ('Reserved', '#00FFFF');
+INSERT INTO fac_DeviceStatus (Status, ColorCode) VALUES ('Test', '#FFFFFF');
+INSERT INTO fac_DeviceStatus (Status, ColorCode) VALUES ('Development', '#FFFFFF');
+INSERT INTO fac_DeviceStatus (Status, ColorCode) VALUES ('QA', '#FFFFFF');
+INSERT INTO fac_DeviceStatus (Status, ColorCode) VALUES ('Production', '#FFFFFF');
+INSERT INTO fac_DeviceStatus (Status, ColorCode) VALUES ('Spare', '#FFFFFF');
+INSERT INTO fac_DeviceStatus (Status, ColorCode) VALUES ('Disposed', '#FFFFFF');
+DELETE FROM fac_Config where Parameter='ReservedColor';
+
+INSERT INTO fac_CabinetToolTip (SortOrder, Field, Label, Enabled) VALUES (NULL, 'Status', 'Device Status', 0);
+DELETE from fac_CabinetToolTip WHERE Field='Reservation';
 
 --
 -- Bump up the database version (uncomment below once released)

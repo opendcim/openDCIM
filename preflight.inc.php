@@ -88,7 +88,7 @@
 		$tests['php-xml']['message']='';
 	}else{
 		$tests['php-xml']['state']="fail";
-		$tests['php-xml']['message']='PHP is missing the <a href="http://us3.php.net/manual/en/book.xml.php">XML Parser</a>.  Please install it.<br><br>For CENT/RHEL yum -y intall php-xml';
+		$tests['php-xml']['message']='PHP is missing the <a href="http://us3.php.net/manual/en/book.xml.php">XML Parser</a>.  Please install it.<br><br>For CENT/RHEL yum -y install php-xml';
 	}
 
 	if(extension_loaded('zip')) {
@@ -214,7 +214,7 @@
 				$tests['mod_rewrite']['state']="good";
 				$tests['mod_rewrite']['message']='mod_rewrite detected';
 				$tests['api_test']['state']="fail";
-				$tests['api_test']['message']="Apache does not appear to be rewriting URLs correctly. Check your AllowOverride directive and change to 'AllowOverride All'";
+				$tests['api_test']['message']="Apache does not appear to be rewriting URLs correctly. Check your AllowOverride directive and change to 'AllowOverride All' or check the RewriteBase parameter in api/v1/.htaccess and api/test/.htaccess";
 			}else{
 				$tests['mod_rewrite']['state']="fail";
 				$tests['mod_rewrite']['message']='Apache is missing the <a href="http://httpd.apache.org/docs/current/mod/mod_rewrite.html">mod_rewrite</a> module and it is required for the API to function correctly.  Please install it.';

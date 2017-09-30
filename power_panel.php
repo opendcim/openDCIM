@@ -34,9 +34,21 @@
 	// Set a default panel voltage based upon the configuration screen
 	$panel->PanelVoltage=$config->ParameterArray["DefaultPanelVoltage"];
   
-	if(isset($_POST["action"])&&(($_POST["action"]=="Create")||($_POST["action"]=="Update"))){
+	if(isset($_POST["action"])&&(($_POST["action"]=="Create")||($_POST["action"]=="Update")||($_POST["action"]=="Map"))){
 		foreach($panel as $prop => $val){
 			$panel->$prop=trim($_POST[$prop]);
+		}
+		// Coordinates aren't displayed on this page and the loop above is looking 
+		// for every attribute on the panel model.  This will load the original object 
+		// and pull over the coordinates so they don't get wiped. 
+		if($_POST["action"]!="Create"){
+			$pan=new PowerPanel();
+			$pan->PanelID=$panel->PanelID;
+			$pan->getPanel();
+			$panel->MapX1=$pan->MapX1;
+			$panel->MapX2=$pan->MapX2;
+			$panel->MapY1=$pan->MapY1;
+			$panel->MapY2=$pan->MapY2;
 		}
 		
 		if($_POST["action"]=="Create"){
@@ -45,6 +57,9 @@
 			}
 		} else {
 			$panel->updatePanel();
+			if($_POST["action"]=="Map" && $panel->MapDataCenterID>0){
+				header('Location: '.redirect("mapmaker.php?panelid=$panel->PanelID"));
+			}
 		}
 	}
 
@@ -328,7 +343,7 @@ echo '		</select>
 	if($panel->PanelID >0){
 		echo '	<button type="submit" name="action" value="Update">',__("Update"),'</button>
 	<button type="button" name="action" value="Delete">',__("Delete"),'</button>
-	<button type="button" name="action" value="Map">',__("Map Coordinates"),'</button>';
+	<button type="submit" name="action" value="Map">',__("Map Coordinates"),'</button>';
 	}else{
 		echo '	<button type="submit" name="action" value="Create">',__("Create"),'</button>';
 	}
@@ -444,9 +459,6 @@ $('button[value=Delete]').click(function(){
 		width: 'auto',
 		buttons: $.extend({}, defaultbutton, cancelbutton)
 	});
-});
-$('button[value=Map]').click(function(){
-	location = 'mapmaker.php?panelid='+$('#PanelID').val();
 });
 <?php
 if( $config->ParameterArray["ToolTips"]=='enabled' ){

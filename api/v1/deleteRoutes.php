@@ -143,5 +143,35 @@ $app->delete( '/device/:deviceid', function( $deviceid ) {
 	echoResponse( $r );
 });
 
+//
+//	URL:	/api/v1/devicestatus/:statusid
+//	Method:	DELETE
+//	Params: 
+//		Required: StatusID
+//	Returns: true/false on update operations 
+//
+
+$app->delete( '/devicestatus/:statusid', function($statusid) use ($person) {
+	if ( ! $person->SiteAdmin ) {
+		$r['error'] = true;
+		$r['errorcode'] = 401;
+		$r['message'] = __("Access Denied");
+	} else {
+		$ds=new DeviceStatus($statusid);
+
+		if(!$ds->removeStatus()){
+			$r['error']=true;
+			$r['errorcode']=400;
+			$r['message']=__("Error removing status, check to make sure it isn't in use on any devices.");
+		}else{
+			$r['error']=false;
+			$r['errorcode']=200;
+			$r['message']=__("Status removed successfully.");
+			$r['devicestatus'][$ds->StatusID]=$ds;
+		}
+	}
+
+	echoResponse( $r );
+});
 
 ?>

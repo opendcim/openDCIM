@@ -53,10 +53,14 @@ class ConnectionPath {
 	
 	private function IsDeviceInPathAux () {
 		$ret=false;
+		$crossovercount=0;
 		for ($i=0; $i<count($this->PathAux); $i++){
 			if ($this->PathAux[$i]["DeviceID"]==$this->DeviceID && $this->PathAux[$i]["PortNumber"]=$this->PortNumber) {
-				$ret=true;
-				break;
+				++$crossovercount;
+				if($crossovercount>=200){
+					$ret=true;
+					break;
+				}
 			}
 		}
 		return $ret;

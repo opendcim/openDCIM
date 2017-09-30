@@ -601,6 +601,45 @@ $app->get( '/disposition/:dispositionid', function($dispositionid) {
 });
 
 //
+//	URL:	/api/v1/devicestatus
+//	Method:	GET
+//	Params:	None
+//	Returns;	All DeviceStatus values within the database
+//
+
+$app->get( '/devicestatus', function() {
+	$r['error'] = false;
+	$r['errorcode'] = 200;
+	$r['devicestatus'] = DeviceStatus::getStatusList();
+
+	echoResponse( $r );
+});
+
+//
+//	URL:	/api/v1/devicestatus/:statusid
+//	Method:	GET
+//	Params:	StatusID
+//	Returns;	All device status values within the database
+//
+
+$app->get( '/devicestatus/:statusid', function($statusid) {
+	$r['error'] = false;
+	$r['errorcode'] = 200;
+	$ds=new DeviceStatus($statisid);
+	if(!$ds->getStatus()){
+		$r['error']=true;
+		$r['errorcode']=404;
+		$r['message']=__("No status found with StatusID")." $ds->StatusID";
+	}else{
+		$r['error']=false;
+		$r['errorcode']=200;
+		$r['devicestatus'][$ds->StatusID]=$ds;
+	}
+	echoResponse( $r );
+});
+
+
+//
 //	URL:	/api/v1/cabinet/byproject/:projectid
 //	Method:	GET
 //	Params:	projectid (passed in URL)

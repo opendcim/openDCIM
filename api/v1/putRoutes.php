@@ -228,6 +228,46 @@ $app->put( '/device/:deviceid/copyto/:newposition', function($deviceid, $newposi
 });
 
 //
+//	URL:	/api/v1/devicestatus/:status
+//	Method:	PUT
+//	Params: 
+//		Required: Status
+//		Optional: ColorCode
+//	Returns: record as created
+//
+
+$app->put( '/devicestatus/:status', function($status) use ($person) {
+	if ( ! $person->SiteAdmin ) {
+		$r['error'] = true;
+		$r['errorcode'] = 401;
+		$r['message'] = __("Access Denied");
+	} else {
+		$ds=new DeviceStatus();
+		$vars = getParsedBody();
+
+		foreach( $vars as $prop=>$val ) {
+			if ( property_exists( $ds, $prop )) {
+				$ds->$prop = $val;
+			}
+		}
+		$ds->Status=$status;
+
+		if(!$ds->createStatus()){
+			$r['error']=true;
+			$r['errorcode']=400;
+			$r['message']=__("Error creating new status.");
+		}else{
+			$r['error']=false;
+			$r['errorcode']=200;
+			$r['message']=__("New status created successfully.");
+			$r['devicestatus'][$ds->StatusID]=$ds;
+		}
+	}
+
+	echoResponse( $r );
+});
+
+//
 //	URL:	/api/v1/devicetemplate/:model
 //	Method:	PUT
 //	Params:	

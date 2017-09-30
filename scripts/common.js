@@ -1013,9 +1013,14 @@ function startmap(){
 		});
 
 		// This is what sets the base state of each map area, so add the power panel outlines and labels here
-		var c = {r:204, g:0, b:0 };
+		var panels=$('.canvas > map > area[name^=pan]');
+		if(panels.length > 0){
+			var c = {r:220, g:220, b:220 };
+			panels.each(function(){
+				Hilight($(this), c);
+			});
+		}
 
-		// Hilight($('.canvas > map > area[name^=pan]'), c);
 		maptitle.text(eval("stat."+state+"['title']"));
 	}
 
@@ -1587,15 +1592,14 @@ function InsertDevice(obj){
 		// Color the rack for the department
 		var StartingU=$('#cabinet'+obj.Cabinet+' #pos'+obj.Position);
 
-		if(StartingU.hasClass('error')){
+		if(StartingU.find('td.error').length){
 			$('#legend > .legenditem > span.error').parent('div').removeClass('hide');
 		}
 
 		for(var i=0;obj.Height-1>=i;i++){
-			if(obj.Status=="Reserved"){
-				StartingU.find('.pos').addClass('reserved');
-				$('#legend > .legenditem > span.reserved').parent('div').removeClass('hide');
-			}
+			var stName=obj.Status.split(' ').join('_');
+			StartingU.find('.pos').addClass(stName);
+			$('#legend > .legenditem > span.'+stName).parent('div').removeClass('hide');
 			StartingU.find('.pos').addClass('dept'+obj.Owner);
 			StartingU=StartingU.prev(); // move our pointer up a u
 		}
@@ -2734,6 +2738,7 @@ function LameLogDisplay(){
 					$(this).unbind('click');
 					$(this).click(function(e){
 						e.preventDefault();
+						var pathlink=$(e.target).attr('href');
 						$.get($(e.target).attr('href'),{pathonly: ''}).done(function(data){
 							var modal=$('<div />', {id: 'modal'}).html('<div id="modaltext">'+data+'</div><br><div id="modalstatus"></div>').dialog({
 								appendTo: 'body',
@@ -2742,6 +2747,10 @@ function LameLogDisplay(){
 								close: function(){$(this).dialog('destroy');}
 							});
 							$('#modal').dialog("option", "width", $('#parcheos').width()+75);
+							$('#modal').parent().children(".ui-dialog-titlebar").append('<button class="ui-button ui-widget ui-state-default ui-corner-all ui-button-icon-only ui-dialog-titlebar-close" role="button" aria-disabled="false" title="print" style="right: 25px;" id="printpath"><span class="ui-button-icon-primary ui-icon ui-icon-print"></span><span class="ui-button-text">print</span></button>');
+							$('#printpath').on('click',function(e){
+								window.open(pathlink+"&pathonly&print",'_blank');
+							});
 						});
 					});
 				});

@@ -287,7 +287,7 @@ CREATE TABLE fac_Device (
   WarrantyCo VARCHAR(80) NOT NULL,
   WarrantyExpire date NULL,
   Notes text NULL,
-  Reservation tinyint(1) NOT NULL,
+  Status varchar(20) NOT NULL DEFAULT 'Production',
   HalfDepth tinyint(1) NOT NULL DEFAULT '0',
   BackSide tinyint(1) NOT NULL DEFAULT '0',
   AuditStamp DATETIME NOT NULL,
@@ -509,11 +509,11 @@ CREATE TABLE fac_PowerDistribution (
   FirmwareVersion varchar(40) NOT NULL,
   PanelID int(11) NOT NULL,
   BreakerSize int(11) NOT NULL,
-  PanelPole int(11) NOT NULL,
+  PanelPole varchar(20) NOT NULL,
   InputAmperage int(11) NOT NULL,
   FailSafe tinyint(1) NOT NULL,
   PanelID2 int(11) NOT NULL,
-  PanelPole2 int(11) NOT NULL,
+  PanelPole2 varchar(20) NOT NULL,
   PRIMARY KEY (PDUID),
   KEY CabinetID (CabinetID),
   KEY PanelID (PanelID)
@@ -535,6 +535,11 @@ CREATE TABLE fac_PowerPanel (
   ParentBreakerName varchar(80) NOT NULL,
   PanelIPAddress varchar(30) NOT NULL,
   TemplateID int(11) NOT NULL,
+  MapDataCenterID INT(11) NOT NULL,
+  MapX1 INT(11) NOT NULL,
+  MapX2 INT(11) NOT NULL,
+  MapY1 INT(11) NOT NULL,
+  MapY2 INT(11) NOT NULL,
   PRIMARY KEY (PanelID)
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
 
@@ -712,7 +717,7 @@ INSERT INTO fac_CabinetToolTip VALUES(NULL, 'Ports', 'Number of Data Ports', 0);
 INSERT INTO fac_CabinetToolTip VALUES(NULL, 'PowerSupplyCount', 'Number of Power Supplies', 0);
 INSERT INTO fac_CabinetToolTip VALUES(NULL, 'PrimaryContact', 'Primary Contact', 0);
 INSERT INTO fac_CabinetToolTip VALUES(NULL, 'PrimaryIP', 'Primary IP', 0);
-INSERT INTO fac_CabinetToolTip VALUES(NULL, 'Reservation', 'Reservation?', 0);
+INSERT INTO fac_CabinetToolTip VALUES(NULL, 'Status', 'Device Status', 0);
 INSERT INTO fac_CabinetToolTip VALUES(NULL, 'SerialNo', 'Serial Number', 0);
 INSERT INTO fac_CabinetToolTip VALUES(NULL, 'SNMPCommunity', 'SNMP Read Only Community', 0);
 INSERT INTO fac_CabinetToolTip VALUES(NULL, 'TemplateID', 'Device Class', 0);
@@ -762,7 +767,7 @@ CREATE TABLE fac_Config (
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
 
 INSERT INTO fac_Config VALUES
-  ('Version','4.4','','',''),
+  ('Version','4.5','','',''),
 	('OrgName','openDCIM Computer Facilities','Name','string','openDCIM Computer Facilities'),
 	('ClassList','ITS, Internal, Customer','List','string','ITS, Internal, Customer'),
 	('SpaceRed','80','percentage','float','80'),
@@ -863,7 +868,23 @@ INSERT INTO fac_Config VALUES
   ('LDAPRackAdmin', 'cn=RackAdmin,cn=openDCIM,ou=groups,dc=opendcim,dc=org', 'DN', 'string', 'cn=RackAdmin,cn=openDCIM,ou=groups,dc=opendcim,dc=org'),
   ('LDAPBulkOperations', 'cn=BulkOperations,cn=openDCIM,ou=groups,dc=opendcim,dc=org', 'DN', 'string', 'cn=BulkOperations,cn=openDCIM,ou=groups,dc=opendcim,dc=org'),
   ('LDAPContactAdmin', 'cn=ContactAdmin,cn=openDCIM,ou=groups,dc=opendcim,dc=org', 'DN', 'string', 'cn=ContactAdmin,cn=openDCIM,ou=groups,dc=opendcim,dc=org'),
-  ('LDAPSiteAdmin', 'cn=SiteAdmin,cn=openDCIM,ou=groups,dc=opendcim,dc=org', 'DN', 'string', 'cn=SiteAdmin,cn=openDCIM,ou=groups,dc=opendcim,dc=org')
+  ('LDAPSiteAdmin', 'cn=SiteAdmin,cn=openDCIM,ou=groups,dc=opendcim,dc=org', 'DN', 'string', 'cn=SiteAdmin,cn=openDCIM,ou=groups,dc=opendcim,dc=org'),
+  ('SAMLStrict', 'enabled', 'string', 'Enabled/Disabled', 'enabled'),
+  ('SAMLDebug', 'disabled', 'string', 'Enabled/Disabled', 'disabled'),
+  ('SAMLBaseURL', '', 'URL', 'string', 'https://opendcim.local'),
+  ('SAMLShowSuccessPage', 'enabled', 'string', 'Enabled/Disabled', 'enabled'),
+  ('SAMLspentityId', '', 'URL', 'string', 'https://opendcim.local'),
+  ('SAMLspacsURL', '', 'URL', 'string', 'https://opendcim.local/saml/acs.php'),
+  ('SAMLspslsURL', '', 'URL', 'string', 'https://opendcim.local'),
+  ('SAMLspx509cert', '', 'string', 'string', ''),
+  ('SAMLspprivateKey', '', 'string', 'string', ''),
+  ('SAMLidpentityId', '', 'URL', 'string', 'https://accounts.google.com/o/saml2?idpid=XXXXXXXXX'),
+  ('SAMLidpssoURL', '', 'URL', 'string', 'https://accounts.google.com/o/saml2/idp?idpid=XXXXXXXXX'),
+  ('SAMLidpslsURL', '', 'URL', 'string', ''),
+  ('SAMLidpcertFingerprint', '', 'string', 'string', 'FF:FF:FF:FF:FF:FF:FF:FF:FF:FF:FF:FF:FF:FF:FF:FF:FF:FF:FF:FF'),
+  ('SAMLidpcertFingerprintAlgorithm', '', 'string', 'string', 'sha1'),
+  ('SAMLaccountPrefix', '', 'string', 'string', 'DOMAIN\\'),
+  ('SAMLaccountSuffix', '', 'string', 'string', '@example.org')
 ;
 
 --
@@ -934,8 +955,52 @@ CREATE TABLE fac_Projects (
 DROP TABLE IF EXISTS fac_ProjectMembership;
 CREATE TABLE fac_ProjectMembership (
   ProjectID int(11) NOT NULL,
-  DeviceID int(11) NOT NULL,
-  PRIMARY KEY (ProjectID,DeviceID)
+  MemberType varchar(7) NOT NULL DEFAULT 'Device',
+  MemberID int(11) NOT NULL,
+  PRIMARY KEY (`ProjectID`, `MemberType`, `MemberID`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+--
+-- Tables for tracking how things leave
+--
+
+CREATE TABLE fac_Disposition (
+DispositionID INT(11) NOT NULL AUTO_INCREMENT,
+Name VARCHAR(80) NOT NULL,
+Description VARCHAR(255) NOT NULL,
+ReferenceNumber VARCHAR(80) NOT NULL,
+Status VARCHAR(10) NOT NULL DEFAULT 'Active',
+PRIMARY KEY (DispositionID)
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
+
+CREATE TABLE fac_DispositionMembership (
+DispositionID INT(11) NOT NULL,
+DeviceID INT(11) NOT NULL,
+DispositionDate DATE NOT NULL,
+DisposedBy VARCHAR(80) NOT NULL,
+PRIMARY KEY (DeviceID)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+INSERT INTO fac_Disposition VALUES ( 1, 'Salvage', 'Items sent to a qualified e-waste disposal provider.', '', 'Active');
+INSERT INTO fac_Disposition VALUES ( 2, 'Returned to Customer', 'Item has been removed from the data center and returned to the customer.', '', 'Active');
+
+--
+-- Add a table of Status Field values to allow
+--
+
+CREATE TABLE fac_DeviceStatus (
+  StatusID INT(11) NOT NULL AUTO_INCREMENT,
+  Status varchar(40) NOT NULL,
+  ColorCode VARCHAR(7) NOT NULL,
+  PRIMARY KEY(StatusID)
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=UTF8;
+
+INSERT INTO fac_DeviceStatus (Status, ColorCode) VALUES ('Reserved', '#00FFFF');
+INSERT INTO fac_DeviceStatus (Status, ColorCode) VALUES ('Test', '#FFFFFF');
+INSERT INTO fac_DeviceStatus (Status, ColorCode) VALUES ('Development', '#FFFFFF');
+INSERT INTO fac_DeviceStatus (Status, ColorCode) VALUES ('QA', '#FFFFFF');
+INSERT INTO fac_DeviceStatus (Status, ColorCode) VALUES ('Production', '#FFFFFF');
+INSERT INTO fac_DeviceStatus (Status, ColorCode) VALUES ('Spare', '#FFFFFF');
+INSERT INTO fac_DeviceStatus (Status, ColorCode) VALUES ('Disposed', '#FFFFFF');
 
 SET GLOBAL sql_mode="ONLY_FULL_GROUP_BY,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION";

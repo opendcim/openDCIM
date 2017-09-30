@@ -491,7 +491,18 @@ $path.="<script type=\"text/javascript\">
 </script>";
 
 if(isset($_GET['pathonly'])){
+	if(isset($_GET['print'])){
+		echo '<!doctype html>
+<html>
+<head>
+  <meta http-equiv="X-UA-Compatible" content="IE=Edge">
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <link rel="stylesheet" href="css/inventory.php" type="text/css">
+</head>
+<body>';
+	}
 	echo $path;
+	echo $status;
 	exit;
 }
 		

@@ -66,7 +66,7 @@
 		$dev=new Device();
 		$dev->DeviceID=$dp->DeviceID;
 		$dev->GetDevice();
-		$ports=($dev->Rights=="Write")?$dp->getPorts( true ):array();
+		$ports=($dev->Rights=="Write")?$dp->getPorts():array();
 		displayjson($ports);
 	}
 

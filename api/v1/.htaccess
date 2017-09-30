@@ -1,3 +1,15 @@
 RewriteEngine On 
-RewriteCond %{REQUEST_FILENAME} !-f 
-RewriteRule ^(.*)$ %{ENV:BASE}index.php [QSA,L]
+# change this line to match the directory you installed to
+# if you aren't using a root url like http://my.opendcim.install/
+#RewriteBase /api/v1/
+#RewriteCond %{REQUEST_FILENAME} !-f 
+#RewriteRule ^(.*)$ %{ENV:BASE}index.php [QSA,L]
+RewriteBase /
+ 
+# Store the current location in an environment variable CWD
+RewriteCond $0#%{REQUEST_URI} ([^#]*)#(.*)\1$
+RewriteRule ^.*$ - [E=CWD:%2]
+ 
+# Just by prefixing the environment variable, we can safely rewrite anything now
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteRule ^.*$ %{ENV:CWD}index.php [QSA,L]
