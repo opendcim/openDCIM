@@ -3,12 +3,25 @@ stages:
 
 release:docker:
   stage: release
-  image: docker:latest
+  image: docker:git
   services:
     - docker:dind
-  variables:
-    IMAGE_NAME: $CI_REGISTRY_IMAGE:latest
   script:
+    - git describe && LATEST_TAG=`git describe --tags --abbrev=0` || LATEST_TAG="1.0.0"
+    - IFS='.-' read TAG_MAJOR TAG_MINOR TAG_MICRO <<< "$LATEST_TAG"
+    - function join_by { local IFS="$1"; shift; echo "$*"; }
+
+    - LATEST_IMAGE="$CI_REGISTRY_IMAGE:latest"
+    - images=("$CI_REGISTRY_IMAGE:$LATEST_TAG" "$CI_REGISTRY_IMAGE:$(join_by . $TAG_MAJOR $TAG_MINOR $TAG_MICRO)" "$CI_REGISTRY_IMAGE:$(join_by . $TAG_MAJOR $TAG_MINOR)" "$CI_REGISTRY_IMAGE:$TAG_MAJOR")
+    - unique_images=($(echo "${images[@]}" | tr ' ' '\n' | sort -u | tr '\n' ' '))
+
+    - echo $images
+    - echo $unique_images
+
     - docker login -u gitlab-ci-token -p $CI_JOB_TOKEN $CI_REGISTRY
-    - docker build --pull -t $IMAGE_NAME .
-    - docker push $IMAGE_NAME
+
+    - docker build --pull -t $LATEST_IMAGE .
+    - for image in $unique_images; do docker tag $LATEST_IMAGE $TAG_IMAGE; done
+
+    - docker push $LATEST_IMAGE
+    - for image in $unique_images; do docker push; done
