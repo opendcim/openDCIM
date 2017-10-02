@@ -559,7 +559,7 @@ function buildportstable(){
 		var label=(rrow.data('change'))?rrow.find('input[name^=label]').val():(typeof TemplatePortObj.Label=='undefined')?'':TemplatePortObj.Label;
 		var mt=(rrow.data('change'))?rrow.find('select[name^=mt]').val():(typeof TemplatePortObj.MediaID=='undefined')?'0':TemplatePortObj.MediaID;
 		var c=(rrow.data('change'))?rrow.find('select[name^=cc]').val():(typeof TemplatePortObj.ColorID=='undefined')?'0':TemplatePortObj.ColorID;
-		var n=(rrow.data('change'))?rrow.find('input[name^=portnotes]').val():(typeof TemplatePortObj.PortNotes=='undefined')?'':TemplatePortObj.PortNotes;
+		var n=(rrow.data('change'))?rrow.find('input[name^=notes]').val():(typeof TemplatePortObj.Notes=='undefined')?'':TemplatePortObj.Notes;
 
 		var row=$('<div>').
 			append($('<div>').html(pn)).

@@ -545,7 +545,7 @@ xsi:noNamespaceSchemaLocation="openDCIMdevicetemplate.xsd">
 		<Label>'.$tport->Label.'</Label>
 		<PortMedia>'.$mt->MediaType.'</PortMedia>
 		<PortColor>'.$cc->Name.'</PortColor>
-		<PortNotes>'.$tport->PortNotes.'</PortNotes>
+		<Notes>'.$tport->Notes.'</Notes>
 	</PortReg>';
 		}
 		//Pictures
@@ -692,7 +692,7 @@ xsi:noNamespaceSchemaLocation="openDCIMdevicetemplate.xsd">
 			$tport->Label=$xmlport->Label;
 			$tport->MediaID=$mt->MediaID; 
 			$tport->ColorID=$cc->ColorID;
-			$tport->PortNotes=$xmlport->PortNotes;
+			$tport->Notes=$xmlport->Notes;
 			if ($tport->PortNumber<=$this->NumPorts){
 				if(!$tport->CreatePort()){
 					$result["status"]=__("Import Warning");

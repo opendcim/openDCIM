@@ -28,7 +28,7 @@ class TemplatePorts {
 	var $Label;
 	var $MediaID;
 	var $ColorID;
-	var $PortNotes;
+	var $Notes;
 	
 	function MakeSafe() {
 		$this->TemplateID=intval($this->TemplateID);
@@ -36,12 +36,12 @@ class TemplatePorts {
 		$this->Label=sanitize($this->Label);
 		$this->MediaID=intval($this->MediaID);
 		$this->ColorID=intval($this->ColorID);
-		$this->PortNotes=sanitize($this->PortNotes);
+		$this->Notes=sanitize($this->Notes);
 	}
 
 	function MakeDisplay(){
 		$this->Label=stripslashes(trim($this->Label));
-		$this->PortNotes=stripslashes(trim($this->PortNotes));
+		$this->Notes=stripslashes(trim($this->Notes));
 	}
 
 	static function RowToObject($dbRow){
@@ -51,7 +51,7 @@ class TemplatePorts {
 		$tp->Label=$dbRow['Label'];
 		$tp->MediaID=$dbRow['MediaID'];
 		$tp->ColorID=$dbRow['ColorID'];
-		$tp->PortNotes=$dbRow['PortNotes'];
+		$tp->Notes=$dbRow['Notes'];
 
 		$tp->MakeDisplay();
 
@@ -104,7 +104,7 @@ class TemplatePorts {
 
 		$sql="INSERT INTO fac_TemplatePorts SET TemplateID=$this->TemplateID, PortNumber=$this->PortNumber, 
 			Label=\"$this->Label\", MediaID=$this->MediaID, ColorID=$this->ColorID, 
-			PortNotes=\"$this->PortNotes\";";
+			Notes=\"$this->Notes\";";
 			
 		if(!$dbh->query($sql)){
 			$info=$dbh->errorInfo();
@@ -129,7 +129,7 @@ class TemplatePorts {
 
 		// update port
 		$sql="UPDATE fac_TemplatePorts SET Label=\"$this->Label\", MediaID=$this->MediaID, 
-			ColorID=$this->ColorID,	PortNotes=\"$this->PortNotes\", 
+			ColorID=$this->ColorID,	Notes=\"$this->Notes\", 
 			WHERE TemplateID=$this->TemplateID AND PortNumber=$this->PortNumber;";
 
 		if(!$dbh->query($sql)){

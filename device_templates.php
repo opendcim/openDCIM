@@ -137,7 +137,7 @@
 				$tport->Label=isset($_POST["label".$i])?$_POST["label".$i]:"";
 				$tport->MediaID=(isset($_POST["mt".$i]) && $_POST["mt".$i]>0)?$_POST["mt".$i]:0;
 				$tport->ColorID=(isset($_POST["cc".$i]) && $_POST["cc".$i]>0)?$_POST["cc".$i]:0;
-				$tport->PortNotes=isset($_POST["portnotes".$i])?$_POST["portnotes".$i]:"";
+				$tport->Notes=isset($_POST["portnotes".$i])?$_POST["portnotes".$i]:"";
 				$status=($tport->CreatePort())?$status:__("Error updating template ports");
 			}
 			$template->DeletePowerPorts();
@@ -147,7 +147,7 @@
 				$tport->TemplateID=$template->TemplateID;
 				$tport->PortNumber=$i;
 				$tport->Label=isset($_POST["powerlabel".$i])?$_POST["powerlabel".$i]:"";
-				$tport->PortNotes=isset($_POST["powerportnotes".$i])?$_POST["powerportnotes".$i]:"";
+				$tport->Notes=isset($_POST["powerportnotes".$i])?$_POST["powerportnotes".$i]:"";
 				$status=($tport->CreatePort())?$status:__("Error updating template power connections");
 			}
 			return $status;
