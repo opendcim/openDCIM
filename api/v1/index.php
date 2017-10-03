@@ -25,7 +25,7 @@
 	];
 
 	$c = new \Slim\Container($configuration);
-	
+
 	$app = new \Slim\App($c);
 */
 
@@ -48,7 +48,7 @@
  *	environment.
  *
  */
- 
+
 	$user_id = NULL;
 
 function specifyAttributes( $attrList, $objList ) {
@@ -97,7 +97,7 @@ $app->add(function($request, $response, $next) use($person) {
 	    $headers = $request->getServerParams();
 
 	    $valid = false;
-	 
+
 	 	if ( isset( $_SESSION['userid'] ) ) {
 	 		$valid = true;
 
@@ -134,7 +134,7 @@ $app->add(function($request, $response, $next) use($person) {
 $app->hook( 'slim.before.dispatch', function() use($person) {
 	if ( AUTHENTICATION == "LDAP" || AUTHENTICATION == "AD" ) {
 		// Getting request headers
-		$headers = apache_request_headers();
+		$headers = array_change_key_case(apache_request_headers(), CASE_LOWER);
 		$response = array();
 		$app = \Slim\Slim::getInstance();
 
@@ -145,13 +145,13 @@ $app->hook( 'slim.before.dispatch', function() use($person) {
 
 			$person->UserID = $_SESSION['userid'];
 			$person->GetPersonByUserID();
-		} elseif ( isset( $headers['UserID']) && isset( $headers['APIKey'])) {
+		} elseif ( isset( $headers['userid']) && isset( $headers['apikey'])) {
 			// Load up the $person variable
-			$person->UserID = $headers['UserID'];
+			$person->UserID = $headers['userid'];
 			$person->GetPersonByUserID();
 
 			// Now verify that their key matches
-			if ( $person->APIKey == $headers['APIKey'] ) {
+			if ( $person->APIKey == $headers['apikey'] ) {
 				$valid = true;
 			}
 		}
@@ -172,7 +172,7 @@ function getParsedBody() {
 	$app = \Slim\Slim::getInstance();
 
 	if ( ! $vars = json_decode( $app->request->getBody(), true )) {
-		$vars = $app->request->params();		
+		$vars = $app->request->params();
 	}
 
 	return $vars;

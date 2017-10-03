@@ -33,13 +33,6 @@ date_default_timezone_set($config->ParameterArray['timezone']);
 // Pull in the Composer autoloader
 require_once( __DIR__ . "/vendor/autoload.php" );
 
-require_once( "misc.inc.php" );
-
-// SNMP Library, don't attempt to load without php-snmp extensions
-if(extension_loaded('snmp')){
-	require_once('OSS_SNMP/SNMP.php');
-}
-
 if (!function_exists('apache_request_headers')) {
 	function apache_request_headers() {
 		foreach($_SERVER as $key => $value) {
@@ -52,6 +45,13 @@ if (!function_exists('apache_request_headers')) {
 		}
 		return $out;
 	}
+}
+
+require_once( "misc.inc.php" );
+
+// SNMP Library, don't attempt to load without php-snmp extensions
+if(extension_loaded('snmp')){
+	require_once('OSS_SNMP/SNMP.php');
 }
 
 ?>
