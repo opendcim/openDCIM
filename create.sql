@@ -122,7 +122,7 @@ CREATE TABLE IF NOT EXISTS fac_TemplatePorts (
   Label varchar(40) NOT NULL,
   MediaID int(11) NOT NULL DEFAULT '0',
   ColorID int(11) NOT NULL DEFAULT '0',
-  PortNotes varchar(80) NOT NULL,
+  Notes varchar(80) NOT NULL,
   PRIMARY KEY (TemplateID,PortNumber),
   UNIQUE KEY LabeledPort (TemplateID,PortNumber,Label)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
@@ -402,7 +402,7 @@ CREATE TABLE fac_Ports (
   Label varchar(40) NOT NULL,
   MediaID int(11) NOT NULL DEFAULT '0',
   ColorID int(11) NOT NULL DEFAULT '0',
-  PortNotes varchar(80) NOT NULL,
+  Notes varchar(80) NOT NULL,
   ConnectedDeviceID int(11) DEFAULT NULL,
   ConnectedPort int(11) DEFAULT NULL,
   Notes varchar(80) NOT NULL,

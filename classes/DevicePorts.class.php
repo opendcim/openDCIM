@@ -29,7 +29,6 @@ class DevicePorts {
 	var $Label;
 	var $MediaID;
 	var $ColorID;
-	var $PortNotes;
 	var $ConnectedDeviceID;
 	var $ConnectedPort;
 	var $Notes;
@@ -40,7 +39,6 @@ class DevicePorts {
 		$this->Label=sanitize($this->Label);
 		$this->MediaID=intval($this->MediaID);
 		$this->ColorID=intval($this->ColorID);
-		$this->PortNotes=sanitize($this->PortNotes);
 		$this->ConnectedDeviceID=intval($this->ConnectedDeviceID);
 		$this->ConnectedPort=intval($this->ConnectedPort);
 		$this->Notes=sanitize($this->Notes);
@@ -53,7 +51,6 @@ class DevicePorts {
 
 	function MakeDisplay(){
 		$this->Label=stripslashes(trim($this->Label));
-		$this->PortNotes=stripslashes(trim($this->PortNotes));
 		$this->Notes=stripslashes(trim($this->Notes));
 	}
 
@@ -64,7 +61,6 @@ class DevicePorts {
 		$dp->Label=$dbRow['Label'];
 		$dp->MediaID=$dbRow['MediaID'];
 		$dp->ColorID=$dbRow['ColorID'];
-		$dp->PortNotes=$dbRow['PortNotes'];
 		$dp->ConnectedDeviceID=$dbRow['ConnectedDeviceID'];
 		$dp->ConnectedPort=$dbRow['ConnectedPort'];
 		$dp->Notes=$dbRow['Notes'];
@@ -127,8 +123,8 @@ class DevicePorts {
 
 		$sql="INSERT INTO fac_Ports SET DeviceID=$this->DeviceID, PortNumber=$this->PortNumber, 
 			Label=\"$this->Label\", MediaID=$this->MediaID, ColorID=$this->ColorID, 
-			PortNotes=\"$this->PortNotes\", ConnectedDeviceID=$this->ConnectedDeviceID, 
-			ConnectedPort=$this->ConnectedPort, Notes=\"$this->Notes\";";
+			ConnectedDeviceID=$this->ConnectedDeviceID, ConnectedPort=$this->ConnectedPort, 
+			Notes=\"$this->Notes\";";
 			
 		if(!$dbh->query($sql) && !$ignore_errors){
 			$info=$dbh->errorInfo();
@@ -305,10 +301,9 @@ class DevicePorts {
 		}
 		// update port
 		$sql="UPDATE fac_Ports SET MediaID=$this->MediaID, ColorID=$this->ColorID, 
-			PortNotes=\"$this->PortNotes\", ConnectedDeviceID=$this->ConnectedDeviceID, 
-			Label=\"$this->Label\", ConnectedPort=$this->ConnectedPort, 
-			Notes=\"$this->Notes\" WHERE DeviceID=$this->DeviceID AND 
-			PortNumber=$this->PortNumber;";
+			ConnectedDeviceID=$this->ConnectedDeviceID, Label=\"$this->Label\", 
+			ConnectedPort=$this->ConnectedPort, Notes=\"$this->Notes\" 
+			WHERE DeviceID=$this->DeviceID AND PortNumber=$this->PortNumber;";
 
 		if(!$dbh->query($sql)){
 			$info=$dbh->errorInfo();
