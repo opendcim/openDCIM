@@ -292,23 +292,6 @@
 			}
 		}
 	}
-	
-	xmlhttp.open("GET","_/test/test",false);
-	xmlhttp.send();
-	if(xmlhttp.status==200){
-		var response=JSON.parse(xmlhttp.responseText);
-		if(!response.error){
-			var row=document.getElementById("api_test");
-			row.className="";
-			row.childNodes[1].textContent="";
-			row.childNodes[2].textContent="GOOD";
-			// only attempt to auto forward if we are in the installer and there are no errors
-			if(parseInt(document.getElementById("errors").textContent)==0 && location.href.search("install")!=-1){
-				document.getElementById("continue").className=document.getElementById("continue").className.replace(/\bhide\b/,"");
-				location.href="?preflight-ok";
-			}
-		}
-	}
 })();
 </script>
 		</body></html>';
