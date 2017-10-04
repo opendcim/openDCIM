@@ -133,6 +133,35 @@ $app->get('/container', function() {
 });
 
 //
+//	URL:	/api/v1/container/:id
+//  Method: GET
+//	Params:  ContainerID (passed in URL as :id)
+//	Returns: Details of specified containre
+//
+
+$app->get('/container/:id', function($id) {
+	$c = new Container();
+	$r = array();
+	$c->ContainerID = $id;
+	if (!$c->GetContainer()) {
+		$r['error'] = true;
+		$r['errorcode'] = 404;
+		$r['message'] = 'The requested resource does not exist.';
+	} else {
+		$r['error'] = false;
+		$r['errorcode'] = 200;
+		$r['container'] = array();
+		$tmp = array();
+		foreach($c as $prop=>$value) {
+			$tmp[$prop] = $value;
+		}
+		array_push($r['container'], $tmp);
+	}
+
+	echoResponse($r);
+});
+
+//
 //	URL:	/api/v1/datacenter
 //	Method: GET
 //	Params:  none
