@@ -32,7 +32,7 @@ class Device {
 					for NominalWatts is used.  The Height is pulled from the template when selected,
 					but any value set after that point is used.
 	*/
-	
+
 	var $DeviceID;
 	var $Label;
 	var $SerialNo;
@@ -150,7 +150,7 @@ class Device {
 		$this->BackSide=intval($this->BackSide);
 		$this->Weight=intval($this->Weight);
 	}
-	
+
 	function MakeDisplay() {
 		$this->Label=stripslashes($this->Label);
 		$this->SerialNo=stripslashes($this->SerialNo);
@@ -169,7 +169,7 @@ class Device {
 		 * Generic function that will take any row returned from the fac_Devices
 		 * table and convert it to an object for use in array or other
 		 *
-		 * Pass false to filterrights when you don't need to check for rights for 
+		 * Pass false to filterrights when you don't need to check for rights for
 		 * whatever reason.
 		 */
 
@@ -220,7 +220,7 @@ class Device {
 		$dev->AuditStamp=$dbRow["AuditStamp"];
 		$dev->Weight=$dbRow["Weight"];
 		$dev->GetCustomValues();
-		
+
 		$dev->MakeDisplay();
 
 		if($extendmodel){
@@ -233,7 +233,7 @@ class Device {
 					$dev->$prop=$val;
 				}
 			}
-			// Add in the "all devices" custom attributes 
+			// Add in the "all devices" custom attributes
 			$dcaList=DeviceCustomAttribute::GetDeviceCustomAttributeList();
 			if(isset($dcaList)) {
 				foreach($dcaList as $dca) {
@@ -269,7 +269,7 @@ class Device {
 
 	private function FilterRights(){
 		global $person;
-		
+
 		$cab=new Cabinet();
 		$cab->CabinetID=$this->Cabinet;
 
@@ -296,12 +296,12 @@ class Device {
 			}
 		}
 	}
-	
+
 	function query($sql){
 		global $dbh;
 		return $dbh->query($sql);
 	}
-	
+
 	function exec($sql){
 		global $dbh;
 		return $dbh->exec($sql);
@@ -338,7 +338,7 @@ class Device {
 	 * description - alpha numeric return of the system description can include line breaks
 	 * location - alpha numeric return of the location if set
 	 * name - alpha numeric return of the name of the system
-	 * services - int 
+	 * services - int
 	 * uptime - int - uptime of the device returned as ticks.  tick defined as 1/1000'th of a second
 	 */
 	static function OSS_SNMP_Lookup($dev,$snmplookup,$oid=null,$walk=false){
@@ -366,14 +366,14 @@ class Device {
 
 	function CreateDevice(){
 		global $dbh;
-		
+
 		$this->MakeSafe();
-		
+
 		$this->Label=transform($this->Label);
 		$this->SerialNo=transform($this->SerialNo);
 		$this->AssetTag=transform($this->AssetTag);
 
-		// SNMPFailureCount isn't in this list, because it should always start at zero 
+		// SNMPFailureCount isn't in this list, because it should always start at zero
 		// (default) on new devices
 		$sql="INSERT INTO fac_Device SET Label=\"$this->Label\",  
 			AssetTag=\"$this->AssetTag\", PrimaryIP=\"$this->PrimaryIP\", 
@@ -394,7 +394,8 @@ class Device {
 			MfgDate=\"".date("Y-m-d", strtotime($this->MfgDate))."\", 
 			InstallDate=\"".date("Y-m-d", strtotime($this->InstallDate))."\", 
 			WarrantyCo=\"$this->WarrantyCo\", Notes=\"$this->Notes\", 
-			WarrantyExpire=\"".date("Y-m-d", strtotime($this->WarrantyExpire))."\", 
+			WarrantyExpire=\"".date("Y-m-d", strtotime($this->WarrantyExpire))."\",
+			AuditStamp=NOW(),
 			Status=\"$this->Status\", HalfDepth=$this->HalfDepth, 
 			BackSide=$this->BackSide, SerialNo=\"$this->SerialNo\";";
 
@@ -448,10 +449,10 @@ class Device {
 		 *
 		 * Also do not copy any power or network connections!
 		 */
-		
+
 		// Get the device being copied
 		$this->GetDevice();
-		
+
 		// If this is a chassis device then check for children to cloned BEFORE we change the deviceid
 		if($this->DeviceType=="Chassis"){
 			// Examine the name to try to make a smart decision about the naming
@@ -462,13 +463,13 @@ class Device {
 				$this->Label = $this->Label . " (" . __("Copy") . ")";
 			}
 			$childList=$this->GetDeviceChildren();
-		}	
+		}
 
 		if($this->ParentDevice >0){
 			/*
 			 * Child devices will need to be constrained to the chassis. Check for open slots
 			 * on whichever side of the chassis the blade is currently.  If a slot is available
-			 * clone into the next available slot or return false and display an appropriate 
+			 * clone into the next available slot or return false and display an appropriate
 			 * errror message
 			 */
 			$tmpdev=new Device();
@@ -583,13 +584,13 @@ class Device {
 
 		$dbh->exec( "insert ignore into fac_DeviceTags (DeviceID, TagID) select '" . $this->DeviceID . "', TagID from fac_DeviceTags where DeviceID='" . $sourceDeviceID . "'");
 	}
-	
+
 	function IncrementFailures(){
 		$this->MakeSafe();
 		if($this->DeviceID==0){return false;}
-		
+
 		$sql="UPDATE fac_Device SET SNMPFailureCount=SNMPFailureCount+1 WHERE DeviceID=$this->DeviceID";
-		
+
 		if(!$this->query($sql)){
 			error_log( "Device::IncrementFailures::PDO Error: {$info[2]} SQL=$sql");
 			return false;
@@ -597,13 +598,13 @@ class Device {
 			return true;
 		}
 	}
-	
+
 	function ResetFailures(){
 		$this->MakeSafe();
 		if($this->DeviceID==0){return false;}
 
 		$sql="UPDATE fac_Device SET SNMPFailureCount=0 WHERE DeviceID=$this->DeviceID";
-		
+
 		if(!$this->query($sql)){
 			error_log( "Device::ResetFailures::PDO Error: {$info[2]} SQL=$sql");
 			return false;
@@ -649,13 +650,13 @@ class Device {
 
 		return true;
 	}
-  
+
 	function MoveToStorage() {
 		// Cabinet ID of -1 means that the device is in the storage area
 		$this->Cabinet=-1;
 		$this->Position=$this->GetDeviceDCID();
 		$this->UpdateDevice();
-		
+
 		// While the child devices will automatically get moved to storage as part of the UpdateDevice() call above, it won't sever their network connections
 		// Multilevel chassis
 		if ($this->ChassisSlots>0 || $this->RearChassisSlots>0){
@@ -674,34 +675,34 @@ class Device {
 
 		return true;
 	}
-  
+
 	function UpdateDevice() {
 		global $dbh;
 		/*
-		 * Stupid User Tricks #417 - A user could change a device that has connections 
+		 * Stupid User Tricks #417 - A user could change a device that has connections
 		 *   (switch or patch panel) to one that doesn't
-		 * Stupid User Tricks #148 - A user could change a device that has children 
+		 * Stupid User Tricks #148 - A user could change a device that has children
 		 *   (chassis) to one that doesn't
 		 *
-		 * As a "safety mechanism" we simply won't allow updates if you try to change 
+		 * As a "safety mechanism" we simply won't allow updates if you try to change
 		 *   a chassis IF it has children
 		 * For the switch and panel connections, though, we drop any defined connections
 		 *
 		 */
-		
+
 		$tmpDev=new Device();
 		$tmpDev->DeviceID=$this->DeviceID;
-		// You can't update what doesn't exist, so check for existing record first and 
+		// You can't update what doesn't exist, so check for existing record first and
 		// retrieve the current location
 		if(!$tmpDev->GetDevice()){
 			return false;
 		}
 
-		// Check the user's permissions to modify this device, but only if it's not a 
+		// Check the user's permissions to modify this device, but only if it's not a
 		// CLI call
 		if( php_sapi_name() != "cli" && $tmpDev->Rights!='Write'){return false;}
-	
-		$this->MakeSafe();	
+
+		$this->MakeSafe();
 
 		if($tmpDev->Cabinet!=$this->Cabinet){
 			$cab=new Cabinet();
@@ -715,7 +716,7 @@ class Device {
 			PowerPorts::removeConnections($this->DeviceID);
 		}
 
-		// Everything after this point you already know that the Person has rights 
+		// Everything after this point you already know that the Person has rights
 		// to make changes
 
 		// A child device's cabinet must always match the parent so force it here
@@ -764,15 +765,15 @@ class Device {
 			Status=\"$this->Status\", HalfDepth=$this->HalfDepth, 
 			BackSide=$this->BackSide WHERE DeviceID=$this->DeviceID;";
 
-		// If the device won't update for some reason there is no cause to touch 
+		// If the device won't update for some reason there is no cause to touch
 		// anything else about it so just return false
 		if(!$dbh->query($sql)){
 			$info=$dbh->errorInfo();
 			error_log("UpdateDevice::PDO Error: {$info[2]} SQL=$sql");
 			return false;
 		}
-		
-		// Device has been changed to be a CDU from something else so we need to 
+
+		// Device has been changed to be a CDU from something else so we need to
 		// create the extra records
 		if($this->DeviceType=="CDU" && $tmpDev->DeviceType!=$this->DeviceType){
 			$pdu=new PowerDistribution();
@@ -784,7 +785,7 @@ class Device {
 			$pdu->DeletePDU();
 		}
 
-		// If we made it to a device update and the number of ports available don't 
+		// If we made it to a device update and the number of ports available don't
 		// match the device, just fix it.
 		if($tmpDev->Ports!=$this->Ports){
 			if($tmpDev->Ports>$this->Ports){ // old device has more ports
@@ -803,7 +804,7 @@ class Device {
 			}
 		}
 
-		// If we made it to a device update and the number of power ports available 
+		// If we made it to a device update and the number of power ports available
 		// don't match the device, just fix it.
 		if($tmpDev->PowerSupplyCount!=$this->PowerSupplyCount){
 			if($tmpDev->PowerSupplyCount>$this->PowerSupplyCount){
@@ -814,14 +815,14 @@ class Device {
 					$p->PortNumber=$n+1;
 					$p->removePort();
 				}
-			}else{ 
+			}else{
 				// new device has more ports
 				PowerPorts::createPorts($this->DeviceID,true);
 			}
 		}
-		
+
 		if(($tmpDev->DeviceType=="Switch" || $tmpDev->DeviceType=="Patch Panel") && $tmpDev->DeviceType!=$this->DeviceType){
-			// SUT #417 - Changed a Switch or Patch Panel to something else (even if you 
+			// SUT #417 - Changed a Switch or Patch Panel to something else (even if you
 			// change a switch to a Patch Panel, the connections are different)
 			if($tmpDev->DeviceType=="Switch"){
 				DevicePorts::removeConnections($this->DeviceID);
@@ -840,12 +841,12 @@ class Device {
 		}
 
 		if($this->DeviceType == "Patch Panel" && $tmpDev->DeviceType != $this->DeviceType){
-			// This asshole just changed a switch or something into a patch panel. Make 
+			// This asshole just changed a switch or something into a patch panel. Make
 			// the rear ports.
 			$p=new DevicePorts();
 			$p->DeviceID=$this->DeviceID;
 			if($tmpDev->Ports!=$this->Ports && $tmpDev->Ports<$this->Ports){
-				// since we just made the new rear ports up there only make the first few, 
+				// since we just made the new rear ports up there only make the first few,
 				// hopefully.
 				for($n=1;$n<=$tmpDev->Ports;$n++){
 					$i=$n*-1;
@@ -862,7 +863,7 @@ class Device {
 			}
 		}
 
-		// Check and see if we extended the model to include any of the attributes for 
+		// Check and see if we extended the model to include any of the attributes for
 		// a CDU
 		if($this->DeviceType=="CDU"){
 			$pdu=new PowerDistribution();
@@ -903,7 +904,7 @@ class Device {
 			$this->Cabinet = 0;
 			$this->Position = 0;
 		}
-		
+
 		(class_exists('LogActions'))?LogActions::LogThis($this,$tmpDev):'';
 		return true;
 	}
@@ -928,7 +929,7 @@ class Device {
 			error_log("Device:Audit::PDO Error: {$info[2]} SQL=$sql");
 			return false;
 		}
-		
+
 		$this->GetDevice();
 
 		(class_exists('LogActions'))?LogActions::LogThis($this,$tmpDev):'';
@@ -937,13 +938,13 @@ class Device {
 
 	function GetDevice($filterrights=true){
 		global $dbh;
-	
+
 		$this->MakeSafe();
-	
+
 		if($this->DeviceID==0 || $this->DeviceID == null){
 			return false;
 		}
-		
+
 		$sql="SELECT * FROM fac_Device WHERE DeviceID=$this->DeviceID;";
 
 		if($devRow=$dbh->query($sql)->fetch()){
@@ -956,23 +957,23 @@ class Device {
 			return false;
 		}
 	}
-	
+
 	function GetDeviceList( $datacenterid=null ) {
 		if ( $datacenterid == null ) {
 			$dcLimit = "";
 		} else {
 			$dcLimit = "and b.DataCenterID=" . $datacenterid;
 		}
-		
+
 		$sql = "select a.* from fac_Device a, fac_Cabinet b where a.Cabinet=b.CabinetID $dcLimit order by b.DataCenterID ASC, Label ASC";
-		
+
 		$deviceList = array();
 		foreach ( $this->query( $sql ) as $deviceRow ) {
 			$deviceList[]=Device::RowToObject( $deviceRow );
 		}
-		
+
 		return $deviceList;
-	}	
+	}
 
 	static function getDevicesByDC( $DataCenterID ) {
 		global $dbh;
@@ -991,21 +992,21 @@ class Device {
 
 	static function GetDevicesByTemplate($templateID) {
 		global $dbh;
-		
+
 		$sql = "select * from fac_Device where TemplateID='" . intval( $templateID ) . "' order by Label ASC";
-		
+
 		$deviceList = array();
 		foreach ( $dbh->query( $sql ) as $deviceRow ) {
 			$deviceList[]=Device::RowToObject( $deviceRow );
 		}
-		
+
 		return $deviceList;
 	}
-	
+
 	static function GetSwitchesToReport() {
 		global $dbh;
 		global $config;
-		
+
 		// No, Wilbur, these are not identical SQL statement except for the tag.  Please don't combine them, again.
 		if ( $config->ParameterArray["NetworkCapacityReportOptIn"] == "OptIn") {
 			$sql="SELECT * FROM fac_Device a, fac_Cabinet b WHERE a.Cabinet=b.CabinetID 
@@ -1023,29 +1024,29 @@ class Device {
 		foreach($dbh->query($sql) as $deviceRow){
 			$deviceList[]=Device::RowToObject($deviceRow);
 		}
-		
+
 		return $deviceList;
 	}
-	
+
 	function GetDevicesbyAge($days=7){
 		global $dbh;
-		
+
 		$sql="SELECT * FROM fac_Device WHERE DATEDIFF(CURDATE(),InstallDate)<=".
 			intval($days)." ORDER BY InstallDate ASC;";
-		
+
 		$deviceList=array();
 		foreach($dbh->query($sql) as $deviceRow){
 			$deviceList[]=Device::RowToObject($deviceRow);
 		}
-		
+
 		return $deviceList;
 	}
-		
+
 	function GetDeviceChildren() {
 		global $dbh;
-	
+
 		$this->MakeSafe();
-	
+
 
 		// $sql="SELECT * FROM fac_Device WHERE ParentDevice=$this->DeviceID ORDER BY ChassisSlots, Position ASC;";
 		// JMGA
@@ -1056,17 +1057,17 @@ class Device {
 		foreach($dbh->query($sql) as $row){
 			$childList[]=Device::RowToObject($row);
 		}
-		
+
 		return $childList;
 	}
-	
+
   function GetDeviceDescendants() {
 		global $dbh;
-		
+
 		$dev=New Device();
-	
+
 		$this->MakeSafe();
-	
+
 
 		$sql="SELECT * FROM fac_Device WHERE ParentDevice=$this->DeviceID ORDER BY BackSide, Position ASC;";
 
@@ -1081,13 +1082,13 @@ class Device {
 				$descList=array_merge($descList,$descList2);
 			}
 		}
-		
+
 		return $descList;
 	}
-	
+
 	function GetParentDevices(){
 		global $dbh;
-		
+
 		$sql="SELECT * FROM fac_Device WHERE ChassisSlots>0 OR RearChassisSlots>0 ORDER BY Label ASC;";
 
 		$parentList=array();
@@ -1098,10 +1099,10 @@ class Device {
 				$parentList[]=$temp;
 			}
 		}
-		
+
 		return $parentList;
 	}
-	
+
 	static function GetReservationsByDate( $Days = null ) {
 		global $dbh;
 
@@ -1111,7 +1112,7 @@ class Device {
 		} else {
 			$sql = sprintf( "select * from fac_Device where Status='Reserved' and InstallDate<=(CURDATE()+%d) ORDER BY InstallDate ASC", $Days );
 		}
-		
+
 		$devList = array();
 
 		foreach($dbh->query($sql) as $row){
@@ -1120,13 +1121,13 @@ class Device {
 
 		return $devList;
 	}
-	
+
 	static function GetReservationsByDC( $dc ) {
 		global $dbh;
 
 		// Since we are only concerned with physical space being occupied in terms of capacity, don't worry about child devices
 		$sql = sprintf( "select a.* from fac_Device a, fac_Cabinet b where a.Cabinet=b.CabinetID and b.DataCenterID=%d and Status='Reserved' order by a.InstallDate ASC, a.Cabinet ASC", $dc );
-		
+
 		$devList = array();
 
 		foreach($dbh->query($sql) as $row){
@@ -1135,13 +1136,13 @@ class Device {
 
 		return $devList;
 	}
-	
+
 	static function GetReservationsByOwner( $Owner ) {
 		global $dbh;
 
 		// Since we are only concerned with physical space being occupied in terms of capacity, don't worry about child devices
 		$sql = sprintf( "select * from fac_Device where Owner=%d and Status='Reserved' order by InstallDate ASC, Cabinet ASC", $Owner );
-		
+
 		$devList = array();
 
 		foreach($dbh->query($sql) as $row){
@@ -1150,10 +1151,10 @@ class Device {
 
 		return $devList;
 	}
-	
+
 	function WhosYourDaddy(){
 		$dev=new Device();
-		
+
 		if($this->ParentDevice==0){
 			return $dev;
 		}else{
@@ -1164,16 +1165,16 @@ class Device {
 	}
 
 	function ViewDevicesByCabinet($includechildren=false){
-	//this function should be a method of class "cabinet", not "device"	
+	//this function should be a method of class "cabinet", not "device"
 		global $dbh;
 
 		$this->MakeSafe();
-		
+
 		$cab=new Cabinet();
 		$cab->CabinetID=$this->Cabinet;
 		$cab->GetCabinet();
 
-		// leaving the u1 check here for later		
+		// leaving the u1 check here for later
 		$order=" ORDER BY Position".((isset($cab->U1Position) && $cab->U1Position=="Top")?" ASC":" DESC");
 
 		if($includechildren){
@@ -1190,7 +1191,7 @@ class Device {
 			$sql="SELECT * FROM fac_Device WHERE Cabinet=$this->Cabinet AND 
 				ParentDevice=0$order;";
 		}
-		
+
 		$deviceList = array();
 
 		foreach($dbh->query($sql) as $deviceRow){
@@ -1199,7 +1200,7 @@ class Device {
 
 		return $deviceList;
 	}
-	
+
 	function DeleteDevice(){
 		global $dbh;
 
@@ -1207,11 +1208,11 @@ class Device {
 		if(!$this->GetDevice()){
 			return false;
 		}
-	
+
 		// First, see if this is a chassis that has children, if so, delete all of the children first
 		if($this->ChassisSlots >0){
 			$childList=$this->GetDeviceChildren();
-			
+
 			foreach($childList as $tmpDev){
 				$tmpDev->DeleteDevice();
 			}
@@ -1226,10 +1227,10 @@ class Device {
 
 		// Delete any project membership
 		ProjectMembership::removeMember( $this->DeviceID, 'Device' );
-	
+
 		// Delete all network connections first
 		DevicePorts::removePorts($this->DeviceID);
-		
+
 		// Delete power connections next
 		PowerPorts::removePorts($this->DeviceID);
 
@@ -1254,7 +1255,7 @@ class Device {
 		global $dbh;
 
 		$this->MakeSafe();
-		
+
 		$sql="SELECT * FROM fac_Device WHERE Label LIKE \"%$this->Label%\" ORDER BY Label;";
 
 		$deviceList = array();
@@ -1268,7 +1269,7 @@ class Device {
 
 	function SearchDevicebyIP(){
 		$this->MakeSafe();
-		
+
 		$sql="SELECT * FROM fac_Device WHERE Status<>'Disposed' AND PrimaryIP LIKE \"%$this->PrimaryIP%\" ORDER BY Label;";
 
 		$deviceList = array();
@@ -1283,7 +1284,7 @@ class Device {
 		global $dbh;
 
 		$this->MakeSafe();
-		
+
 		$sql="SELECT *, (SELECT b.DataCenterID FROM fac_Device a, fac_Cabinet b 
 			WHERE a.Cabinet=b.CabinetID AND a.DeviceID=search.DeviceID ORDER BY 
 			b.DataCenterID, a.Label) DataCenterID FROM fac_Device search WHERE 
@@ -1300,12 +1301,12 @@ class Device {
 
         function GetESXDevices() {
 		global $dbh;
-		
+
 		$sql="SELECT * FROM fac_Device WHERE Status<>'Disposed' AND Hypervisor='ESX' ORDER BY DeviceID;";
 
 		$deviceList = array();
 
-		foreach($dbh->query($sql) as $deviceRow){ 
+		foreach($dbh->query($sql) as $deviceRow){
 			$deviceList[$deviceRow["DeviceID"]]=Device::RowToObject($deviceRow);
 		}
 
@@ -1315,7 +1316,7 @@ class Device {
 	function Search($indexedbyid=false,$loose=false){
 		global $dbh;
 		$o=array();
-		// Store any values that have been added before we make them safe 
+		// Store any values that have been added before we make them safe
 		foreach($this as $prop => $val){
 			if(isset($val)){
 				$o[$prop]=$val;
@@ -1389,7 +1390,7 @@ class Device {
 		global $dbh;
 
 		$this->MakeSafe();
-		
+
 		$sql="SELECT * FROM fac_Device WHERE AssetTag LIKE \"%$this->AssetTag%\" ORDER BY Label;";
 
 		$deviceList=array();
@@ -1401,16 +1402,16 @@ class Device {
 		return $deviceList;
 
 	}
-  
+
 	function SearchByCustomTag($tag=null){
 		global $dbh;
-		
+
 		//
-		//Build a somewhat ugly SQL expression in order to do 
+		//Build a somewhat ugly SQL expression in order to do
 		//semi-complicated tag searches.  All tags are
 		//logically AND'ed togther.  Thus, if you search for tags
-		//'foo' and 'bar' and '!quux', the results should be only 
-		//those systems with both 'foo' and 'bar' tags while 
+		//'foo' and 'bar' and '!quux', the results should be only
+		//those systems with both 'foo' and 'bar' tags while
 		//excluding those with 'quux'.
 		//
 
@@ -1428,7 +1429,7 @@ class Device {
 		$not_want_tags = array();
 
 		foreach ( $tags as $t ) {
-			//If the tag starts with a "!" character, we want to 
+			//If the tag starts with a "!" character, we want to
 			//specifically exclude it from the search.
 			if (strpos($t, '!') !== false ) {
 				$t=preg_replace('/^!/', '', $t,1);	//remove the leading "!" from the tag
@@ -1483,19 +1484,19 @@ class Device {
 		foreach($dbh->query($sql) as $deviceRow){
 			$deviceList[$deviceRow["DeviceID"]]=Device::RowToObject($deviceRow);
 		}
-		
+
 		return $deviceList;
 	}
 
 	function SearchByCustomAttribute($searchTerm=null){
 		global $dbh;
-		
+
 		//
-		//Build a somewhat ugly SQL expression in order to do 
+		//Build a somewhat ugly SQL expression in order to do
 		//semi-complicated attribute searches.  All attributes are
-		//logically AND'ed togther.  Thus, if you search for attributes 
-		//'foo' and 'bar' and '!quux', the results should be only 
-		//those systems with both 'foo' and 'bar' attributes while 
+		//logically AND'ed togther.  Thus, if you search for attributes
+		//'foo' and 'bar' and '!quux', the results should be only
+		//those systems with both 'foo' and 'bar' attributes while
 		//excluding those with 'quux'.
 		//
 
@@ -1513,7 +1514,7 @@ class Device {
 		$not_want_terms = array();
 
 		foreach ( $terms as $t ) {
-			//If the term starts with a "!" character, we want to 
+			//If the term starts with a "!" character, we want to
 			//specifically exclude it from the search.
 			if (strpos($t, '!') !== false ) {
 				$t=preg_replace('/^!/', '', $t,1);	//remove the leading "!" from the term
@@ -1561,10 +1562,10 @@ class Device {
 		foreach($dbh->query($sql) as $deviceRow){
 			$deviceList[$deviceRow["DeviceID"]]=Device::RowToObject($deviceRow);
 		}
-		
+
 		return $deviceList;
 	}
-	
+
 	function UpdateWattageFromTemplate() {
 		$tmpl=new DeviceTemplate();
 		$tmpl->TemplateID=$this->TemplateID;
@@ -1572,28 +1573,28 @@ class Device {
 
 		$this->NominalWatts=$tmpl->Wattage;
 	}
-	
+
 	function GetTop10Tenants(){
 		global $dbh;
-		
+
 		$sql="SELECT SUM(Height) AS RackUnits,fac_Department.Name AS OwnerName FROM 
 			fac_Device,fac_Department WHERE Owner IS NOT NULL AND fac_Device.Status<>'Disposed' AND
 			fac_Device.Owner=fac_Department.DeptID GROUP BY Owner ORDER BY RackUnits 
 			DESC LIMIT 0,10";
 
 		$deptList = array();
-		
+
 		foreach($dbh->query($sql) as $row){
 			$deptList[$row["OwnerName"]]=$row["RackUnits"];
 		}
-		  
+
 		return $deptList;
 	}
-  
-  
+
+
 	function GetTop10Power(){
 		global $dbh;
-		
+
 		$sql="SELECT SUM(NominalWatts) AS TotalPower,fac_Department.Name AS OwnerName 
 			FROM fac_Device,fac_Department WHERE Owner IS NOT NULL AND fac_Device.Status<>'Disposed' AND
 			fac_Device.Owner=fac_Department.DeptID GROUP BY Owner ORDER BY TotalPower 
@@ -1604,30 +1605,30 @@ class Device {
 		foreach($dbh->query($sql) as $row){
 			$deptList[$row["OwnerName"]]=$row["TotalPower"];
 		}
-		  
+
 		return $deptList;
 	}
-  
-  
+
+
   function GetDeviceDiversity(){
 	global $dbh;
-	
+
     $pc=new PowerConnection();
     $PDU=new PowerDistribution();
-	
+
 	// If this is a child (card slot) device, then only the parent will have power connections defined
 	if($this->ParentDevice >0){
 		$tmpDev=new Device();
 		$tmpDev->DeviceID=$this->ParentDevice;
-		
+
 		$sourceList=$tmpDev->GetDeviceDiversity();
 	}else{
 		$pc->DeviceID=$this->DeviceID;
 		$pcList=$pc->GetConnectionsByDevice();
-		
+
 		$sourceList=array();
 		$sourceCount=0;
-		
+
 		foreach($pcList as $pcRow){
 			$PDU->PDUID=$pcRow->PDUID;
 			$powerSource=$PDU->GetSourceForPDU();
@@ -1637,43 +1638,43 @@ class Device {
 			}
 		}
 	}
-	
+
     return $sourceList;
   }
 
   function GetSinglePowerByCabinet(){
 	global $dbh;
-	
+
     // Return an array of objects for devices that
     // do not have diverse (spread across 2 or more sources)
     // connections to power
     $pc = new PowerConnection();
     $PDU = new PowerDistribution();
-    
+
     $sourceList = $this->ViewDevicesByCabinet();
 
     $devList = array();
-    
-    foreach ( $sourceList as $devRow ) {    
+
+    foreach ( $sourceList as $devRow ) {
       if ( ( $devRow->DeviceType == 'Patch Panel' || $devRow->DeviceType == 'Physical Infrastructure' || $devRow->ParentDevice > 0 ) && ( $devRow->PowerSupplyCount == 0 ) )
         continue;
 
       $pc->DeviceID = $devRow->DeviceID;
-      
+
       $diversityList = $devRow->GetDeviceDiversity();
-      
-		if(sizeof($diversityList) <2){      
+
+		if(sizeof($diversityList) <2){
 			$currSize=sizeof($devList);
 			$devList[$currSize]=$devRow;
 		}
     }
-    
+
     return $devList;
   }
 
 	function GetTags() {
 		global $dbh;
-		
+
 		$sql="SELECT TagID FROM fac_DeviceTags WHERE DeviceID=".intval($this->DeviceID).";";
 
 		$tags=array();
@@ -1684,11 +1685,11 @@ class Device {
 
 		return $tags;
 	}
-	
+
 	function SetTags($tags=array()) {
 		global $dbh;
 
-		$this->MakeSafe();		
+		$this->MakeSafe();
 		if(count($tags)>0){
 			//Clear existing tags
 			$this->SetTags();
@@ -1703,7 +1704,7 @@ class Device {
 
 					error_log("PDO Error: {$info[2]} SQL=$sql");
 					return false;
-				}				
+				}
 			}
 		}else{
 			//If no array is passed then clear all the tags
@@ -1714,14 +1715,14 @@ class Device {
 		}
 		return;
 	}
-	
+
 	function GetDeviceCabinetID(){
 		$tmpDev = new Device();
 		$tmpDev->DeviceID = $this->GetRootDeviceID();
 		$tmpDev->GetDevice();
-		return $tmpDev->Cabinet;	
+		return $tmpDev->Cabinet;
 	}
-	
+
 	function GetDeviceDCID(){
 		$rootDev = new Device();
 		$rootDev->DeviceID = $this->GetRootDeviceID();
@@ -1736,33 +1737,33 @@ class Device {
 			return $rootDev->Position;
 		}
 	}
-	
+
 	function GetDeviceLineage() {
 		$devList=array();
 		$num=1;
 		$devList[$num]=new Device($this->DeviceID);
 		$devList[$num]->GetDevice();
-		
+
 		while($devList[$num]->ParentDevice>0){
 			$num++;
 			$devList[$num]=new Device($devList[$num-1]->ParentDevice);
 			$devList[$num]->GetDevice();
 		}
-		return $devList;	
+		return $devList;
 	}
 
 	function GetRootDeviceID(){
 		$tmpDev = new Device();
 		$tmpDev->DeviceID = $this->DeviceID;
 		$tmpDev->GetDevice();
-		
+
 		while ( $tmpDev->ParentDevice <> 0) {
 			$tmpDev->DeviceID = $tmpDev->ParentDevice;
 			$tmpDev->GetDevice();
 		}
-		return $tmpDev->DeviceID;	
+		return $tmpDev->DeviceID;
 	}
-	
+
 	function GetDeviceTotalPower(){
 		// Make sure we read the device from the db and didn't just get the device ID
 		if(!isset($this->Rights)){
@@ -1790,7 +1791,7 @@ class Device {
 				$TotalPower+=$tmpDev->GetDeviceTotalPower();
 			}
 		}
-		return $TotalPower;	
+		return $TotalPower;
 	}
 
 	function GetDeviceTotalWeight(){
@@ -1801,9 +1802,9 @@ class Device {
 			}
 		}
 		//calculate device weight including child devices weight
-		
+
 		$TotalWeight=0;
-		
+
 		//own device weight
 		if ($this->TemplateID>0){
 			$templ=new DeviceTemplate();
@@ -1811,7 +1812,7 @@ class Device {
 			$templ->GetTemplateByID();
 			$TotalWeight=$templ->Weight;
 		}
-		
+
 		//child device weight
 		if($this->ChassisSlots >0 || $this->RearChassisSlots >0){
 			$childList = $this->GetDeviceChildren();
@@ -1819,7 +1820,7 @@ class Device {
 				$TotalWeight+=$tmpDev->GetDeviceTotalWeight();
 			}
 		}
-		return $TotalWeight;	
+		return $TotalWeight;
 	}
 
 
@@ -1835,15 +1836,15 @@ class Device {
 		 * -- Child devices defined with rear slots will have the rear slots ignored
 		 * --- This logic needs to be applied to the functions that figure power usage and weight
 		 *		so we don't end up with phantom sources
-		 * - Child devices shouldn't need to conform to the 1.75:19 ratio we use for devices 
+		 * - Child devices shouldn't need to conform to the 1.75:19 ratio we use for devices
 		 *		directly in a cabinet they will target the slot that they are inside
 		 */
 		$resp="";
-		
+
 		$templ=new DeviceTemplate();
 		$templ->TemplateID=$this->TemplateID;
 		$templ->GetTemplateByID();
-		
+
 		$parentDev=$parentDetails->parentDev;
 		$parentTempl=$parentDetails->parentTempl;
 
@@ -1987,7 +1988,7 @@ class Device {
 			$slot->Y=$slot->Y*$zoomY;
 			$slot->W=$slot->W*$zoomX;
 			$slot->H=$slot->H*$zoomY;
-			
+
 			if($rotar){
 				$left=$slot->X-abs($slot->W-$slot->H)/2;
 				$top=$slot->Y+abs($slot->W-$slot->H)/2;
@@ -2005,7 +2006,7 @@ class Device {
 			// If they have rights to the device then make the picture clickable
 			$clickable=($this->Rights!="None")?"\t\t\t<a href=\"devices.php?DeviceID=$this->DeviceID\">\n":"";
 			$clickableend=($this->Rights!="None")?"\t\t\t</a>\n":"";
-			
+
 			// Add in flags for missing ownership
 			// Device pictures are set on the template so always assume template has been set
 			$flags=($this->Owner==0)?'(O)&nbsp;':'';
@@ -2020,7 +2021,7 @@ class Device {
 				// this rotate should only happen for a horizontal slot with a vertical image
 				$rotateimage=($hor_slot && !$hor_blade)?" class=\"rotar_d rlt\"  style=\"height: ".number_format(round($width/$height*100,2),2,'.','')."%; left: 100%; width: ".number_format(round($height/$width*100,2),2,'.','')."%; top: 0; position: absolute;\"":"";
 				$resp.="\t\t\t\t<img data-deviceid=$this->DeviceID src=\"$picturefile\"$rotateimage alt=\"$this->Label\">\n";
-				
+
 				// LABEL FOR IMAGE
 				if($hor_slot || $rotar && !$hor_slot){
 					$label="\t\t\t<div class=\"label\" style=\"line-height:".$height."px; height:".$height."px;".(($height*0.8<13)?" font-size: ".intval($height*0.8)."px;":"")."\">";
@@ -2092,7 +2093,7 @@ class Device {
 			// We need integers for the height and width because browsers act funny with decimals
 			$targetHeight=intval($targetHeight);
 			$targetWidth=intval($targetWidth);
-			
+
 			// URLEncode the image file name just to be compliant.
 			$picturefile=str_replace(' ',"%20",$picturefile);
 
@@ -2112,16 +2113,16 @@ class Device {
 			$resp.="$clickable\t\t<img data-deviceid=$this->DeviceID src=\"$picturefile\" alt=\"$this->Label\">$clickableend\n";
 
 			/*
-			 * Labels on chassis devices were getting silly with smaller devices.  For aesthetic 
+			 * Labels on chassis devices were getting silly with smaller devices.  For aesthetic
 			 * reasons we are going to hide the label for the chassis devices that are less than 3U
-			 * in height and have slots defined.  If it is just a chassis with nothing defined then 
+			 * in height and have slots defined.  If it is just a chassis with nothing defined then
 			 * go ahead and show the chassis label.
 			 */
 			if(($this->Height<3 && $this->DeviceType=='Chassis' && (($rear && $this->RearChassisSlots > 0) || (!$rear && $this->ChassisSlots > 0))) || ($templ->Model=='HTRAY' || $templ->Model=='VTRAY') ){
 
 			}else{
 				$toneloc="";
-				/* 
+				/*
 				 * We're going to assume that anytime we have a half-depth device it will always
 				 * be mounted with its face showing.  If you email the list for help with showing
 				 * the back of one, even with a valid reason, I will mock and belittle you, asshole.
@@ -2172,7 +2173,7 @@ class Device {
 		}else{
 			// We don't have an image on file for this device so return a generic lump of crap
 			$resp="\t<div class=\"genericdevice\" data-deviceid=$this->DeviceID style=\"width: ".($targetWidth-4)."px;\">\n";
-			
+
 			// Add in flags for missing ownership
 			$flags=($this->Owner==0)?'(O)':'';
 			$flags.=($this->TemplateID==0)?'(T)':'';
@@ -2200,7 +2201,7 @@ class Device {
 		foreach($dbh->query($sql) as $dcvrow){
 			$this->{$dcvrow["Label"]}=$dcvrow["Value"];
 		}
-	}	
+	}
 
 	function DeleteCustomValues() {
 		global $dbh;
@@ -2220,7 +2221,7 @@ class Device {
 
 	function InsertCustomValue($AttributeID, $Value) {
 		global $dbh;
-	
+
 		$this->MakeSafe();
 		// make the custom attribute stuff safe
 		$AttributeID = intval($AttributeID);
@@ -2236,7 +2237,7 @@ class Device {
 	}
 	function SetChildDevicesCabinet(){
 		global $dbh;
-		
+
 		$sql="SELECT * FROM fac_Device WHERE ParentDevice=$this->DeviceID;";
 
 		foreach($dbh->query($sql) as $row){
@@ -2256,7 +2257,7 @@ class Device {
 		}
 
 		return Device::UpdateSensors($this->Cabinet);
-	}	
+	}
 
 	// This is a train wreck to have it in here, but everything is lumped into Devices, now...
 	// this should now be functional however I question the positioning.  if we move this, update the function above
@@ -2324,7 +2325,7 @@ class Device {
 			}
 		}
 
-		return true;			
+		return true;
 	}
 
 	function GetSensorReading($filterrights=true){
@@ -2355,7 +2356,7 @@ class Device {
 		}
 
 		return $readings;
-	}	
+	}
 
 	static function resetCounter( $deviceID=false ) {
 		// Simple call to reset all counters
@@ -2365,7 +2366,7 @@ class Device {
 		if ( ! $p->SiteAdmin ) {
 			return false;
 		}
-		
+
 		if ( $deviceID != false ) {
 			$clause = "WHERE DeviceID=" . intval( $deviceID );
 		}
