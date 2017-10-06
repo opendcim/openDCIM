@@ -405,7 +405,6 @@ CREATE TABLE fac_Ports (
   Notes varchar(80) NOT NULL,
   ConnectedDeviceID int(11) DEFAULT NULL,
   ConnectedPort int(11) DEFAULT NULL,
-  Notes varchar(80) NOT NULL,
   PRIMARY KEY (DeviceID,PortNumber),
   UNIQUE KEY LabeledPort (DeviceID,PortNumber,Label),
   UNIQUE KEY ConnectedDevice (ConnectedDeviceID,ConnectedPort),
