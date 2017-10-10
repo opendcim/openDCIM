@@ -78,7 +78,7 @@
 
     $fieldNum = 1;
 
-    foreach ( array( "DataCenter"=>"The unique name of the data center to be added to the openDCIM database.  If it does not already exist, a basic record will be added.", "Container"=>"Optionally, the unique name of the Container that the Data Center is a member of.  If it does not exist, it will be created.",  "Zone"=>"The name of an Zone for this record.  If it does not exist, it will be created with no coordinates, but attached to the given Data Center.  The combination of Data Center + Zone must be unique.  Optional.", "Row"=>"The name of a row to add to the database.  The combination of Data Center + Row must be unique.  Optional." ) as $fieldName=>$helpText ) {
+    foreach ( array( "DataCenter"=>"The unique name of the data center to be added to the openDCIM database.  If it does not already exist, a basic record will be added.", "Container"=>"Optionally, the unique name of the Container that the Data Center is a member of.  If it does not exist, it will be created.",  "Zone"=>"The name of an Zone for this record.  If it does not exist, it will be created with no coordinates, but attached to the given Data Center.  The combination of Data Center + Zone must be unique.  Optional.", "Row"=>"The name of a row to add to the database.  The combination of Data Center + Zone + Row (or Data Center + Row) must be unique.  Optional." ) as $fieldName=>$helpText ) {
       $content .= '<div>
                     <div><span title="' . __($helpText) . '">' . __($fieldName) . '</span>: </div><div><select name="' . $fieldName . '">';
       for ( $n = 0; $n < sizeof( $fieldList ); $n++ ) {
@@ -184,9 +184,13 @@
 
       /*
        *
-       *  Section for looking up the ZoneID and setting the true ZoneID in the cab variable
+       *  Section for looking up the ZoneID and setting the true ZoneID
        *
        */
+      
+      $ZoneID = 0;
+
+      // Zone is optional, so only do this if we have a non-empty cell
       if ( $row["Zone"] != "" && $DataCenterID > 0 ) {
         $st = $dbh->prepare( "select count(ZoneID) as TotalMatches, ZoneID from fac_Zone where DataCenterID=:DataCenterID and ucase(Description)=ucase(:Zone)" );
         $st->execute( array( ":DataCenterID"=>$DataCenterID, ":Zone"=>$row["Zone"] ));
@@ -202,8 +206,35 @@
         $st = $dbh->prepare( "insert into fac_Zone set DataCenterID=:DataCenterID, Description=:Description" );
         $st->execute( array( ":DataCenterID"=>$DataCenterID, ":Description"=>$row["Zone"] ));
         $ZoneID = $dbh->lastInsertID();
-        $content .= "<li>Data Center + Zone added:  $ZoneID -  " . $row["Zone"] . "</li>\n";
+        $content .= "<li>Data Center + Zone added:  $ZoneID -  " . $row["DataCenter"] . " - " . $row["Zone"] . "</li>\n";
       }
+
+      /*
+       *
+       *  Section for looking up the RowID and adding, if not exists
+       *
+       */
+      
+      // Rows are also optional
+      if ( $row["Row"] != "" && $DataCenterID > 0 ) {
+        $st = $dbh->prepare( "select count(RowID) as TotalMatches, CabRowID from fac_CabRow where DataCenterID=:DataCenterID and ZoneID=:ZoneID and ucase(Name)=ucase(:Name)" );
+        $st->execute( array( ":DataCenterID"=>$DataCenterID, ":ZoneID"=>$ZoneID, ":Name"=>$row["Row"] ));
+        if ( ! $val = $st->fetch() ) {
+          $info = $dbh->errorInfo();
+          error_log( "PDO Error: {$info[2]}");
+        }
+      }
+
+      if ( $row["Row"]!="" && $val["TotalMatches"] == 1 ) {
+        $ZoneID = $val["CabRowID"];
+      } elseif ($row["Zone"]!="" ) {
+        $st = $dbh->prepare( "insert into fac_CabRow set DataCenterID=:DataCenterID, ZoneID=:ZoneID, Name=:Name" );
+        $st->execute( array( ":DataCenterID"=>$DataCenterID, ":ZoneID"=>$ZoneID, ":Name"=>$row["Row"] ));
+        $CabRowID = $dbh->lastInsertID();
+        $content .= "<li>Data Center + Zone + Row added:  $CabRowID -  " . $row["DataCenter"] . " - " . $row["Zone"] . " - " . $row["Row"] . "</li>\n";
+      }
+
+
     }
 
     if ( ! $errors ) {
