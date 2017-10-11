@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: openDCIM.po\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-09-19 21:44-0500\n"
+"POT-Creation-Date: 2017-10-11 10:44-0500\n"
 "PO-Revision-Date: 2014-03-24 08:48-0500\n"
 "Last-Translator: Wilbur Longwisch <wilbur@wilpig.org>\n"
 "Language-Team: openDCIM <discussion@list.opendcim.org>\n"
@@ -232,7 +232,7 @@ msgid "Cabinet Location"
 msgstr "Шафа"
 
 #: openDCIM/cabaudit.php:404 openDCIM/cabaudit.php:510
-#: openDCIM/configuration.php:2087 openDCIM/devices.php:1711
+#: openDCIM/configuration.php:2081 openDCIM/devices.php:1711
 #: openDCIM/rackrequest.php:355 openDCIM/report_aging.php:425
 #: openDCIM/report_aging.php:460 openDCIM/report_asset.php:54
 #: openDCIM/report_warranty.php:439 openDCIM/report_warranty.php:472
@@ -358,14 +358,14 @@ msgstr "Висота шафи"
 msgid "U1 Position"
 msgstr "Нумерація в шафі"
 
-#: openDCIM/cabinets.php:292 openDCIM/configuration.php:1755
+#: openDCIM/cabinets.php:292 openDCIM/configuration.php:1749
 #: openDCIM/dc_stats.php:308 openDCIM/dc_stats.php:316
 #: openDCIM/mapmaker.php:172 openDCIM/zone_stats.php:304
 #: openDCIM/zone_stats.php:312
 msgid "Bottom"
 msgstr "Знизу"
 
-#: openDCIM/cabinets.php:292 openDCIM/configuration.php:1756
+#: openDCIM/cabinets.php:292 openDCIM/configuration.php:1750
 #: openDCIM/dc_stats.php:306 openDCIM/dc_stats.php:314
 #: openDCIM/mapmaker.php:170 openDCIM/zone_stats.php:302
 #: openDCIM/zone_stats.php:310
@@ -376,7 +376,7 @@ msgstr "Зверху"
 msgid "Default"
 msgstr "Стандартна"
 
-#: openDCIM/cabinets.php:305 openDCIM/cabnavigator.php:291
+#: openDCIM/cabinets.php:305 openDCIM/cabnavigator.php:295
 msgid "Key/Lock Information"
 msgstr "Інформація про ключ/замок"
 
@@ -408,7 +408,7 @@ msgid "Notes"
 msgstr "Примітки"
 
 #: openDCIM/cabinets.php:333 openDCIM/cabrow.php:185
-#: openDCIM/cdu_templates.php:211 openDCIM/configuration.php:2292
+#: openDCIM/cdu_templates.php:211 openDCIM/configuration.php:2286
 #: openDCIM/container.php:279 openDCIM/datacenter.php:313
 #: openDCIM/departments.php:214 openDCIM/device_manufacturers.php:203
 #: openDCIM/devices.php:2472 openDCIM/disposition.php:115
@@ -428,11 +428,11 @@ msgstr "Оновити"
 msgid "Delete"
 msgstr "Видалити"
 
-#: openDCIM/cabinets.php:335 openDCIM/cabnavigator.php:387
+#: openDCIM/cabinets.php:335 openDCIM/cabnavigator.php:391
 msgid "Audit Report"
 msgstr "Звіт з аудиту"
 
-#: openDCIM/cabinets.php:336 openDCIM/cabnavigator.php:388
+#: openDCIM/cabinets.php:336 openDCIM/cabnavigator.php:392
 #: openDCIM/power_panel.php:346
 msgid "Map Coordinates"
 msgstr "Розташування на мапі"
@@ -456,7 +456,7 @@ msgid "Return to Navigator"
 msgstr "Назад до шафи"
 
 #: openDCIM/cabinets.php:348 openDCIM/cabrow.php:193
-#: openDCIM/cdu_templates.php:220 openDCIM/configuration.php:2297
+#: openDCIM/cdu_templates.php:220 openDCIM/configuration.php:2291
 #: openDCIM/container.php:293 openDCIM/datacenter.php:339
 #: openDCIM/departments.php:225 openDCIM/device_manufacturers.php:218
 #: openDCIM/device_templates.php:1094 openDCIM/disposition.php:121
@@ -469,7 +469,7 @@ msgstr "Назад до шафи"
 msgid "Return to Main Menu"
 msgstr "Назад до головного меню"
 
-#: openDCIM/cabinets.php:354 openDCIM/cabnavigator.php:656
+#: openDCIM/cabinets.php:354 openDCIM/cabnavigator.php:660
 msgid "Cabinet delete confirmation"
 msgstr "Підтвердження видалення шафи"
 
@@ -511,143 +511,139 @@ msgstr "Ряд"
 msgid "Never"
 msgstr "Ніколи"
 
-#: openDCIM/cabnavigator.php:184
-msgid "Reservation"
-msgstr "Зарезервовано"
-
-#: openDCIM/cabnavigator.php:188
-msgid "Free Space"
-msgstr "Вільний U-простір"
-
-#: openDCIM/cabnavigator.php:205
+#: openDCIM/cabnavigator.php:177
 msgid "Above defined rack height"
 msgstr "Недостатньо вільного U-простору"
 
-#: openDCIM/cabnavigator.php:228
+#: openDCIM/cabnavigator.php:186
+msgid "Free Space"
+msgstr "Вільний U-простір"
+
+#: openDCIM/cabnavigator.php:232
 msgid "Maximum Weight Not Set"
 msgstr "Максимальну вагу не задано"
 
-#: openDCIM/cabnavigator.php:240
+#: openDCIM/cabnavigator.php:244
 msgid "Owner Unassigned"
 msgstr "Власника не визначено"
 
-#: openDCIM/cabnavigator.php:241
+#: openDCIM/cabnavigator.php:245
 msgid "Template Unassigned"
 msgstr "Шаблон не визначено"
 
-#: openDCIM/cabnavigator.php:245
+#: openDCIM/cabnavigator.php:249
 msgid "Markup Key"
 msgstr "Легенда"
 
-#: openDCIM/cabnavigator.php:249
+#: openDCIM/cabnavigator.php:253
 msgid "Cabinet Metrics"
 msgstr "Утилізація шафи"
 
-#: openDCIM/cabnavigator.php:252 openDCIM/dc_dashboard.php:84
+#: openDCIM/cabnavigator.php:256 openDCIM/dc_dashboard.php:84
 #: openDCIM/dc_stats.php:284 openDCIM/index.php:123 openDCIM/zone_stats.php:281
 #: openDCIM/scripts/ajax_tooltip.php:137
 msgid "Space"
 msgstr "U-простір"
 
-#: openDCIM/cabnavigator.php:261 openDCIM/dc_dashboard.php:85
+#: openDCIM/cabnavigator.php:265 openDCIM/dc_dashboard.php:85
 #: openDCIM/dc_stats.php:285 openDCIM/devices.php:1907
 #: openDCIM/device_templates.php:746 openDCIM/zone_stats.php:282
 #: openDCIM/scripts/ajax_tooltip.php:138
 msgid "Weight"
 msgstr "Вага"
 
-#: openDCIM/cabnavigator.php:270
+#: openDCIM/cabnavigator.php:274
 msgid "Computed Watts"
 msgstr "Обчислена активна потужність"
 
-#: openDCIM/cabnavigator.php:279
+#: openDCIM/cabnavigator.php:283
 msgid "Measured Watts"
 msgstr "Виміряна активна потужність"
 
-#: openDCIM/cabnavigator.php:288
+#: openDCIM/cabnavigator.php:292
 msgid "Approximate Center of Gravity"
 msgstr "Наближене розташування центру ваги"
 
-#: openDCIM/cabnavigator.php:297
+#: openDCIM/cabnavigator.php:301
 msgid "Zero-U Devices"
 msgstr "Zero U обладнання"
 
-#: openDCIM/cabnavigator.php:302
+#: openDCIM/cabnavigator.php:306
 msgid "Power Distribution"
 msgstr "Електроживлення шафи"
 
-#: openDCIM/cabnavigator.php:343
+#: openDCIM/cabnavigator.php:347
 msgid "Unknown Status"
 msgstr "Стан БРЖ невідомий"
 
-#: openDCIM/cabnavigator.php:346
+#: openDCIM/cabnavigator.php:350
 msgid "ATS Feeds OK"
 msgstr "Стан БРЖ нормальний"
 
-#: openDCIM/cabnavigator.php:349
+#: openDCIM/cabnavigator.php:353
 msgid "ATS Feeds Abnormal"
 msgstr "БРЖ в аварійному режимі"
 
-#: openDCIM/cabnavigator.php:357
+#: openDCIM/cabnavigator.php:361
 msgid "Add CDU"
 msgstr "Додати БРЖ у шафу"
 
-#: openDCIM/cabnavigator.php:363
+#: openDCIM/cabnavigator.php:367
 msgid "Environmental Sensors"
 msgstr "Кліматичні датчики"
 
-#: openDCIM/cabnavigator.php:371
+#: openDCIM/cabnavigator.php:375
 msgid "Add Sensor"
 msgstr "Додати датчик у шафу"
 
-#: openDCIM/cabnavigator.php:385 openDCIM/devices.php:2474
+#: openDCIM/cabnavigator.php:389 openDCIM/devices.php:2474
 msgid "Certify Audit"
 msgstr "Підтвердити аудит"
 
-#: openDCIM/cabnavigator.php:386 openDCIM/devices.php:2213
+#: openDCIM/cabnavigator.php:390 openDCIM/devices.php:2213
 msgid "Add Device"
 msgstr "Додати пристрій"
 
-#: openDCIM/cabnavigator.php:389
+#: openDCIM/cabnavigator.php:393
 msgid "Edit Cabinet"
 msgstr "Редагувати шафу"
 
-#: openDCIM/cabnavigator.php:392
+#: openDCIM/cabnavigator.php:396
 msgid "Delete Cabinet"
 msgstr "Видалити шафу"
 
-#: openDCIM/cabnavigator.php:398
+#: openDCIM/cabnavigator.php:402
 msgid "Cabinet Notes"
 msgstr "Примітки до шафи"
 
-#: openDCIM/cabnavigator.php:411 openDCIM/rowview.php:87
+#: openDCIM/cabnavigator.php:415 openDCIM/rowview.php:87
 msgid "Facilities Cabinet Maintenance"
 msgstr "Засоби обслуговування шафи"
 
-#: openDCIM/cabnavigator.php:645
+#: openDCIM/cabnavigator.php:649
 #, php-format
 msgid "Return to %s"
 msgstr "Назад до %s"
 
-#: openDCIM/cabnavigator.php:648
+#: openDCIM/cabnavigator.php:652
 msgid "Audit Confirmation"
 msgstr "Підтвердження аудиту"
 
-#: openDCIM/cabnavigator.php:649
+#: openDCIM/cabnavigator.php:653
 msgid "Do you certify that you have completed an audit of this cabinet?"
 msgstr "Ви підтверджуєте закінчення аудиту обраної шафи?"
 
-#: openDCIM/cabnavigator.php:657
+#: openDCIM/cabnavigator.php:661
 msgid ""
 "Are you sure that you want to delete this cabinet and all the devices in it?"
 msgstr "Ви дійсно підтверджуєте видалення цієї шафи та всіх пристроїв у ній?"
 
-#: openDCIM/cabnavigator.php:661 openDCIM/departments.php:236
+#: openDCIM/cabnavigator.php:665 openDCIM/departments.php:236
 #: openDCIM/device_manufacturers.php:227 openDCIM/usermgr.php:314
 msgid "Are you REALLY sure?"
 msgstr "Ви дійсно впевнені?"
 
-#: openDCIM/cabnavigator.php:662 openDCIM/departments.php:237
+#: openDCIM/cabnavigator.php:666 openDCIM/departments.php:237
 #: openDCIM/device_manufacturers.php:228 openDCIM/usermgr.php:315
 msgid "Are you sure REALLY sure?  There is no undo!!"
 msgstr "Ви дійсно впевнені? Відновлення буде неможливе!!"
@@ -709,7 +705,7 @@ msgstr "Керований"
 msgid "Automatic Transfer Switch"
 msgstr "Автомат вводу резерва"
 
-#: openDCIM/cdu_templates.php:124 openDCIM/configuration.php:1905
+#: openDCIM/cdu_templates.php:124 openDCIM/configuration.php:1899
 #: openDCIM/devices.php:1980 openDCIM/device_templates.php:774
 msgid "SNMP Version"
 msgstr "Версія SNMP"
@@ -887,7 +883,7 @@ msgstr "Спливаючі підказки"
 msgid "Cabling"
 msgstr "Комутація"
 
-#: openDCIM/configuration.php:1498 openDCIM/configuration.php:2083
+#: openDCIM/configuration.php:1498 openDCIM/configuration.php:2077
 msgid "Custom Device Attributes"
 msgstr "Користувальницькі атрибути пристроїв"
 
@@ -993,21 +989,21 @@ msgstr ""
 #: openDCIM/configuration.php:1572 openDCIM/configuration.php:1644
 #: openDCIM/configuration.php:1655 openDCIM/configuration.php:1666
 #: openDCIM/configuration.php:1690 openDCIM/configuration.php:1698
-#: openDCIM/configuration.php:1786 openDCIM/configuration.php:1794
-#: openDCIM/configuration.php:1992 openDCIM/configuration.php:2005
-#: openDCIM/configuration.php:2020 openDCIM/configuration.php:2060
-#: openDCIM/configuration.php:2196 openDCIM/configuration.php:2204
-#: openDCIM/configuration.php:2216 openDCIM/usermgr.php:282
+#: openDCIM/configuration.php:1780 openDCIM/configuration.php:1788
+#: openDCIM/configuration.php:1986 openDCIM/configuration.php:1999
+#: openDCIM/configuration.php:2014 openDCIM/configuration.php:2054
+#: openDCIM/configuration.php:2190 openDCIM/configuration.php:2198
+#: openDCIM/configuration.php:2210 openDCIM/usermgr.php:282
 msgid "Disabled"
 msgstr "вимкнено"
 
 #: openDCIM/configuration.php:1573 openDCIM/configuration.php:1645
 #: openDCIM/configuration.php:1656 openDCIM/configuration.php:1667
 #: openDCIM/configuration.php:1691 openDCIM/configuration.php:1699
-#: openDCIM/configuration.php:1787 openDCIM/configuration.php:1795
-#: openDCIM/configuration.php:1993 openDCIM/configuration.php:2006
-#: openDCIM/configuration.php:2197 openDCIM/configuration.php:2205
-#: openDCIM/configuration.php:2217
+#: openDCIM/configuration.php:1781 openDCIM/configuration.php:1789
+#: openDCIM/configuration.php:1987 openDCIM/configuration.php:2000
+#: openDCIM/configuration.php:2191 openDCIM/configuration.php:2199
+#: openDCIM/configuration.php:2211
 msgid "Enabled"
 msgstr "ввімкнено"
 
@@ -1150,453 +1146,449 @@ msgid "Good Color"
 msgstr "Колір нормального стану"
 
 #: openDCIM/configuration.php:1741
-msgid "Reserved Devices"
-msgstr "Зарезервовані пристрої"
-
-#: openDCIM/configuration.php:1747
 msgid "Unused Spaces"
 msgstr "Вільний U-простір"
 
-#: openDCIM/configuration.php:1753
+#: openDCIM/configuration.php:1747
 msgid "Default U1 Position"
 msgstr "Нумерація в шафі"
 
-#: openDCIM/configuration.php:1760 openDCIM/departments.php:231
+#: openDCIM/configuration.php:1754 openDCIM/departments.php:231
 msgid "Devices"
 msgstr "Пристрої"
 
-#: openDCIM/configuration.php:1763
+#: openDCIM/configuration.php:1757
 msgid "Device Labels"
 msgstr "Маркування пристроїв"
 
-#: openDCIM/configuration.php:1765
+#: openDCIM/configuration.php:1759
 msgid "Uppercase"
 msgstr "Всі букви заголовні"
 
-#: openDCIM/configuration.php:1766
+#: openDCIM/configuration.php:1760
 msgid "Lowercase"
 msgstr "Всі букви прописні"
 
-#: openDCIM/configuration.php:1767
+#: openDCIM/configuration.php:1761
 msgid "Initial caps"
 msgstr "Починати з заголовної букви"
 
-#: openDCIM/configuration.php:1768
+#: openDCIM/configuration.php:1762
 msgid "Don't touch my labels"
 msgstr "Не виправляти"
 
-#: openDCIM/configuration.php:1773
+#: openDCIM/configuration.php:1767
 msgid "Device Lists"
 msgstr "Список обладнання"
 
-#: openDCIM/configuration.php:1775
+#: openDCIM/configuration.php:1769
 msgid "Just Devices"
 msgstr "тільки пристрої"
 
-#: openDCIM/configuration.php:1776
+#: openDCIM/configuration.php:1770
 msgid "Show Datacenter and Cabinet"
 msgstr "показувати ЦОДи та шафи"
 
-#: openDCIM/configuration.php:1781 openDCIM/departments.php:231
+#: openDCIM/configuration.php:1775 openDCIM/departments.php:231
 #: openDCIM/rowview.php:87
 msgid "Cabinets"
 msgstr "Шафи"
 
-#: openDCIM/configuration.php:1784
+#: openDCIM/configuration.php:1778
 msgid "Draw Cabinet Outlines"
 msgstr "Креслити контури шаф"
 
-#: openDCIM/configuration.php:1792
+#: openDCIM/configuration.php:1786
 msgid "Add Cabinet Labels"
 msgstr "Відображати маркування шаф"
 
-#: openDCIM/configuration.php:1800
+#: openDCIM/configuration.php:1794
 msgid "Site"
 msgstr "Сайт"
 
-#: openDCIM/configuration.php:1803
+#: openDCIM/configuration.php:1797
 msgid "Header Color"
 msgstr "Колір шапки"
 
-#: openDCIM/configuration.php:1809
+#: openDCIM/configuration.php:1803
 msgid "Body Color"
 msgstr "Основний колір"
 
-#: openDCIM/configuration.php:1815
+#: openDCIM/configuration.php:1809
 msgid "Link Color"
 msgstr "Колір посилань"
 
-#: openDCIM/configuration.php:1821
+#: openDCIM/configuration.php:1815
 msgid "Viewed Link Color"
 msgstr "Колір відвіданих посилань"
 
-#: openDCIM/configuration.php:1831
+#: openDCIM/configuration.php:1825
 msgid "SMTP Server"
 msgstr "SMTP сервер"
 
-#: openDCIM/configuration.php:1835
+#: openDCIM/configuration.php:1829
 msgid "SMTP Port"
 msgstr "SMTP порт"
 
-#: openDCIM/configuration.php:1839
+#: openDCIM/configuration.php:1833
 msgid "SMTP Helo"
 msgstr "SMTP привітання"
 
-#: openDCIM/configuration.php:1843
+#: openDCIM/configuration.php:1837
 msgid "SMTP Username"
 msgstr "SMTP користувач"
 
-#: openDCIM/configuration.php:1847
+#: openDCIM/configuration.php:1841
 msgid "SMTP Password"
 msgstr "SMTP пароль"
 
-#: openDCIM/configuration.php:1851
+#: openDCIM/configuration.php:1845
 msgid "Mail To"
 msgstr "Отримувач"
 
-#: openDCIM/configuration.php:1855
+#: openDCIM/configuration.php:1849
 msgid "Mail From"
 msgstr "Відправник"
 
-#: openDCIM/configuration.php:1859
+#: openDCIM/configuration.php:1853
 msgid "Facility Manager"
 msgstr "Менеджер"
 
-#: openDCIM/configuration.php:1863
+#: openDCIM/configuration.php:1857
 msgid "Facility Manager Email"
 msgstr "Пошта менеджера"
 
-#: openDCIM/configuration.php:1874 openDCIM/report_cost.php:397
+#: openDCIM/configuration.php:1868 openDCIM/report_cost.php:397
 #: openDCIM/report_cost.php:400
 msgid "Annual Cost Per Rack Unit (Year)"
 msgstr "Річна вартість одного юніта в шафі"
 
-#: openDCIM/configuration.php:1878
+#: openDCIM/configuration.php:1872
 msgid "Cost Per KwHr"
 msgstr "Вартість кВт*год"
 
-#: openDCIM/configuration.php:1882
+#: openDCIM/configuration.php:1876
 msgid "Logo file for headers"
 msgstr "Файл логотипу організації"
 
-#: openDCIM/configuration.php:1886
+#: openDCIM/configuration.php:1880
 msgid "Font"
 msgstr "Шрифт"
 
-#: openDCIM/configuration.php:1890
+#: openDCIM/configuration.php:1884
 msgid "New Installs Period"
 msgstr "Формувати листи по інсталяціям за період (днів)"
 
-#: openDCIM/configuration.php:1894
+#: openDCIM/configuration.php:1888
 msgid "Base URL for install"
 msgstr "URL в листах"
 
-#: openDCIM/configuration.php:1898
+#: openDCIM/configuration.php:1892
 msgid "SNMP Options"
 msgstr "Налаштовки SNMP"
 
-#: openDCIM/configuration.php:1901
+#: openDCIM/configuration.php:1895
 msgid "Default SNMP Community"
 msgstr "SNMP community за промовчанням"
 
-#: openDCIM/configuration.php:1915 openDCIM/devices.php:1997
+#: openDCIM/configuration.php:1909 openDCIM/devices.php:1997
 msgid "SNMPv3 Security Level"
 msgstr "SNMPv3 Security Level"
 
-#: openDCIM/configuration.php:1925 openDCIM/devices.php:2010
+#: openDCIM/configuration.php:1919 openDCIM/devices.php:2010
 msgid "SNMPv3 AuthProtocol"
 msgstr "SNMPv3 AuthProtocol"
 
-#: openDCIM/configuration.php:1934 openDCIM/devices.php:2023
+#: openDCIM/configuration.php:1928 openDCIM/devices.php:2023
 msgid "SNMPv3 Passphrase"
 msgstr "SNMPv3 Passphrase"
 
-#: openDCIM/configuration.php:1938 openDCIM/devices.php:2027
+#: openDCIM/configuration.php:1932 openDCIM/devices.php:2027
 msgid "SNMPv3 PrivProtocol"
 msgstr "SNMPv3 PrivProtocol"
 
-#: openDCIM/configuration.php:1947 openDCIM/devices.php:2040
+#: openDCIM/configuration.php:1941 openDCIM/devices.php:2040
 msgid "SNMPv3 PrivPassphrase"
 msgstr "SNMPv3 PrivPassphrase"
 
-#: openDCIM/configuration.php:1951
+#: openDCIM/configuration.php:1945
 msgid "Capacity Reporting"
 msgstr "Звітність по утилізації портів"
 
-#: openDCIM/configuration.php:1954
+#: openDCIM/configuration.php:1948
 msgid "Switches"
 msgstr "Комутатори"
 
-#: openDCIM/configuration.php:1957
+#: openDCIM/configuration.php:1951
 msgid "OptIn"
 msgstr "вибіркове включення до звіту"
 
-#: openDCIM/configuration.php:1958
+#: openDCIM/configuration.php:1952
 msgid "OptOut"
 msgstr "вибіркове виключення зі звіту"
 
-#: openDCIM/configuration.php:1963
+#: openDCIM/configuration.php:1957
 msgid "Switch Capacity Threshold"
 msgstr "Ліміт ємкості комутатора"
 
-#: openDCIM/configuration.php:1967
+#: openDCIM/configuration.php:1961
 msgid "Utilities"
 msgstr "Утиліти"
 
-#: openDCIM/configuration.php:1970
+#: openDCIM/configuration.php:1964
 msgid "snmpget"
 msgstr "Шлях до snmpget"
 
-#: openDCIM/configuration.php:1974
+#: openDCIM/configuration.php:1968
 msgid "snmpwalk"
 msgstr "Шлях до snmpwalk"
 
-#: openDCIM/configuration.php:1978
+#: openDCIM/configuration.php:1972
 msgid "cut"
 msgstr "Шлях до cut"
 
-#: openDCIM/configuration.php:1982
+#: openDCIM/configuration.php:1976
 msgid "dot"
 msgstr "Шлях до dot"
 
-#: openDCIM/configuration.php:1990
+#: openDCIM/configuration.php:1984
 msgid "Cabinet ToolTips"
 msgstr "Спливаючі підказки для шаф"
 
-#: openDCIM/configuration.php:2003
+#: openDCIM/configuration.php:1997
 msgid "CDU ToolTips"
 msgstr "Спливаючі підказки для шафних БРЖ"
 
-#: openDCIM/configuration.php:2015
+#: openDCIM/configuration.php:2009
 msgid "Media Types"
 msgstr "Кабелі"
 
-#: openDCIM/configuration.php:2018
+#: openDCIM/configuration.php:2012
 msgid "Media Type Matching"
 msgstr "Сумісність типів кабелів"
 
-#: openDCIM/configuration.php:2021 openDCIM/configuration.php:2061
+#: openDCIM/configuration.php:2015 openDCIM/configuration.php:2055
 msgid "Enforce"
 msgstr "Примусово"
 
-#: openDCIM/configuration.php:2031 openDCIM/devices.php:2368
+#: openDCIM/configuration.php:2025 openDCIM/devices.php:2368
 #: openDCIM/devices.php:2415
 msgid "Media Type"
 msgstr "Тип кабеля"
 
-#: openDCIM/configuration.php:2032
+#: openDCIM/configuration.php:2026
 msgid "Default Color"
 msgstr "Інтерфейс за промовчанням"
 
-#: openDCIM/configuration.php:2036 openDCIM/configuration.php:2050
-#: openDCIM/configuration.php:2095 openDCIM/configuration.php:2112
+#: openDCIM/configuration.php:2030 openDCIM/configuration.php:2044
+#: openDCIM/configuration.php:2089 openDCIM/configuration.php:2106
 msgid "Add new row"
 msgstr "Додати новий рядок"
 
-#: openDCIM/configuration.php:2041
+#: openDCIM/configuration.php:2035
 msgid "Cable Colors"
 msgstr "Інтерфейси"
 
-#: openDCIM/configuration.php:2045 openDCIM/connections_spreadsheet.php:25
+#: openDCIM/configuration.php:2039 openDCIM/connections_spreadsheet.php:25
 msgid "Color"
 msgstr "Інтерфейс"
 
-#: openDCIM/configuration.php:2046
+#: openDCIM/configuration.php:2040
 msgid "Default Note"
 msgstr "Маркування за промовчанням"
 
-#: openDCIM/configuration.php:2055
+#: openDCIM/configuration.php:2049
 msgid "Connection Filtering"
 msgstr "Фільтри по комутації"
 
-#: openDCIM/configuration.php:2058
+#: openDCIM/configuration.php:2052
 msgid "Patch panel rear connection filtering"
 msgstr "Фільтр по міжпанельній комутації"
 
-#: openDCIM/configuration.php:2066
+#: openDCIM/configuration.php:2060
 msgid "Connection Pathing"
 msgstr "Вагові коефіцієнти для автоматичної комутації"
 
-#: openDCIM/configuration.php:2069
+#: openDCIM/configuration.php:2063
 msgid "Cabinet Weight"
 msgstr "Для з'єднань в межах шафи (чим менше, тим вагоміше)"
 
-#: openDCIM/configuration.php:2073
+#: openDCIM/configuration.php:2067
 msgid "Weight for rear connections between panels"
 msgstr "Для міжпанельних з'єднань (чим менше, тим вагоміше)"
 
-#: openDCIM/configuration.php:2077
+#: openDCIM/configuration.php:2071
 msgid "Weight for patches in the same row"
 msgstr "Для з'єднань в межах ряда шаф (чим менше, тим вагоміше)"
 
-#: openDCIM/configuration.php:2088
+#: openDCIM/configuration.php:2082
 msgid "Type"
 msgstr "Тип"
 
-#: openDCIM/configuration.php:2089
+#: openDCIM/configuration.php:2083
 msgid "Required"
 msgstr "Обов'язковий<br>до заповнення"
 
-#: openDCIM/configuration.php:2090
+#: openDCIM/configuration.php:2084
 msgid "Apply to<br>All Devices"
 msgstr "Застосувати до<br>всіх пристроїв"
 
-#: openDCIM/configuration.php:2091
+#: openDCIM/configuration.php:2085
 msgid "Default Value"
 msgstr "Значення за промовчанням"
 
-#: openDCIM/configuration.php:2103
+#: openDCIM/configuration.php:2097
 #, fuzzy
 msgid "Device Status"
 msgstr "Список обладнання"
 
-#: openDCIM/configuration.php:2118 openDCIM/install.php:1659
+#: openDCIM/configuration.php:2112 openDCIM/install.php:1659
 msgid "LDAP Authentication and Authorization Configuration"
 msgstr "Налаштовки автентифікації та авторизації в LDAP"
 
-#: openDCIM/configuration.php:2121 openDCIM/install.php:1662
+#: openDCIM/configuration.php:2115 openDCIM/install.php:1662
 msgid "LDAP Server URI"
 msgstr "URI сервера LDAP"
 
-#: openDCIM/configuration.php:2125 openDCIM/install.php:1666
+#: openDCIM/configuration.php:2119 openDCIM/install.php:1666
 msgid "Base DN"
 msgstr "Base DN"
 
-#: openDCIM/configuration.php:2129
+#: openDCIM/configuration.php:2123
 msgid "Base Search"
 msgstr "Base Search"
 
-#: openDCIM/configuration.php:2133 openDCIM/install.php:1670
+#: openDCIM/configuration.php:2127 openDCIM/install.php:1670
 msgid "Bind DN"
 msgstr "Bind DN"
 
-#: openDCIM/configuration.php:2137
+#: openDCIM/configuration.php:2131
 msgid "User Search"
 msgstr "User Search"
 
-#: openDCIM/configuration.php:2141 openDCIM/install.php:1674
+#: openDCIM/configuration.php:2135 openDCIM/install.php:1674
 msgid "LDAP Session Expiration (Seconds)"
 msgstr "Тайм-аут сесії LDAP (секунд)"
 
-#: openDCIM/configuration.php:2145 openDCIM/install.php:1678
+#: openDCIM/configuration.php:2139 openDCIM/install.php:1678
 msgid "Group Distinguished Names"
 msgstr "Налаштовка LDAP груп доступу з правами"
 
-#: openDCIM/configuration.php:2148 openDCIM/install.php:1681
+#: openDCIM/configuration.php:2142 openDCIM/install.php:1681
 msgid "Site Access"
 msgstr "На доступ до сайту"
 
-#: openDCIM/configuration.php:2152 openDCIM/install.php:1685
+#: openDCIM/configuration.php:2146 openDCIM/install.php:1685
 msgid "Global Read"
 msgstr "На перегляд (глобально)"
 
-#: openDCIM/configuration.php:2156 openDCIM/install.php:1689
+#: openDCIM/configuration.php:2150 openDCIM/install.php:1689
 msgid "Global Write"
 msgstr "На модифікацію (глобально)"
 
-#: openDCIM/configuration.php:2160 openDCIM/install.php:1693
+#: openDCIM/configuration.php:2154 openDCIM/install.php:1693
 msgid "Global Delete"
 msgstr "На видалення (глобально)"
 
-#: openDCIM/configuration.php:2164 openDCIM/install.php:1697
+#: openDCIM/configuration.php:2158 openDCIM/install.php:1697
 msgid "Admin Owned Devices"
 msgstr "Тільки на свої пристрої"
 
-#: openDCIM/configuration.php:2168 openDCIM/install.php:1701
+#: openDCIM/configuration.php:2162 openDCIM/install.php:1701
 msgid "Enter Rack Request"
 msgstr "На створення заявок"
 
-#: openDCIM/configuration.php:2172 openDCIM/install.php:1705
+#: openDCIM/configuration.php:2166 openDCIM/install.php:1705
 msgid "Complete Rack Request"
 msgstr "На закриття заявок"
 
-#: openDCIM/configuration.php:2176 openDCIM/install.php:1709
+#: openDCIM/configuration.php:2170 openDCIM/install.php:1709
 msgid "Contact Admin"
 msgstr "Contact Admin"
 
-#: openDCIM/configuration.php:2180
+#: openDCIM/configuration.php:2174
 msgid "Bulk Operations"
 msgstr "На груповий імпорт"
 
-#: openDCIM/configuration.php:2184 openDCIM/install.php:1713
+#: openDCIM/configuration.php:2178 openDCIM/install.php:1713
 msgid "Site Admin"
 msgstr "Site Admin"
 
-#: openDCIM/configuration.php:2191
+#: openDCIM/configuration.php:2185
 #, fuzzy
 msgid "SAML Authentication Configuration"
 msgstr "Налаштовки автентифікації та авторизації в LDAP"
 
-#: openDCIM/configuration.php:2194
+#: openDCIM/configuration.php:2188
 #, fuzzy
 msgid "Strict"
 msgstr "метрична"
 
-#: openDCIM/configuration.php:2202
+#: openDCIM/configuration.php:2196
 msgid "Debug"
 msgstr ""
 
-#: openDCIM/configuration.php:2210
+#: openDCIM/configuration.php:2204
 #, fuzzy
 msgid "Base URL"
 msgstr "Base DN"
 
-#: openDCIM/configuration.php:2214
+#: openDCIM/configuration.php:2208
 msgid "Show Success Page"
 msgstr ""
 
-#: openDCIM/configuration.php:2222
+#: openDCIM/configuration.php:2216
 #, fuzzy
 msgid "SAML Service Provider Configuration"
 msgstr "Конфігурація SNMP"
 
-#: openDCIM/configuration.php:2225 openDCIM/configuration.php:2248
+#: openDCIM/configuration.php:2219 openDCIM/configuration.php:2242
 msgid "Entity ID"
 msgstr ""
 
-#: openDCIM/configuration.php:2229
+#: openDCIM/configuration.php:2223
 msgid "ACS URL"
 msgstr ""
 
-#: openDCIM/configuration.php:2233 openDCIM/configuration.php:2256
+#: openDCIM/configuration.php:2227 openDCIM/configuration.php:2250
 msgid "SLS URL"
 msgstr ""
 
-#: openDCIM/configuration.php:2237
+#: openDCIM/configuration.php:2231
 msgid "x509 Certificate"
 msgstr ""
 
-#: openDCIM/configuration.php:2241
+#: openDCIM/configuration.php:2235
 msgid "Private Key"
 msgstr ""
 
-#: openDCIM/configuration.php:2245
+#: openDCIM/configuration.php:2239
 #, fuzzy
 msgid "SAML Identity Provider Configuration"
 msgstr "Налаштовки openDCIM"
 
-#: openDCIM/configuration.php:2252
+#: openDCIM/configuration.php:2246
 msgid "SSO URL"
 msgstr ""
 
-#: openDCIM/configuration.php:2260
+#: openDCIM/configuration.php:2254
 msgid "Certificate Fingerprint"
 msgstr ""
 
-#: openDCIM/configuration.php:2264
+#: openDCIM/configuration.php:2258
 msgid "Certificate Fingerprint Algorithm"
 msgstr ""
 
-#: openDCIM/configuration.php:2268
+#: openDCIM/configuration.php:2262
 #, fuzzy
 msgid "SAML Account Configuration"
 msgstr "Конфігурація SNMP"
 
-#: openDCIM/configuration.php:2271
+#: openDCIM/configuration.php:2265
 msgid "Remove Account Prefix"
 msgstr ""
 
-#: openDCIM/configuration.php:2275
+#: openDCIM/configuration.php:2269
 msgid "Remove Account Suffix"
 msgstr ""
 
@@ -3274,8 +3266,8 @@ msgstr "Невідома помилка"
 #: openDCIM/pathmaker.php:247 openDCIM/pathmaker.php:324
 #: openDCIM/pathmaker.php:459 openDCIM/paths.php:76 openDCIM/paths.php:137
 #: openDCIM/paths.php:255 openDCIM/paths.php:329 openDCIM/paths.php:414
-#: openDCIM/classes/DevicePorts.class.php:189
-#: openDCIM/classes/DevicePorts.class.php:207
+#: openDCIM/classes/DevicePorts.class.php:185
+#: openDCIM/classes/DevicePorts.class.php:203
 msgid "Port"
 msgstr "Порт"
 
@@ -5661,6 +5653,12 @@ msgstr ""
 #: openDCIM/classes/SwitchInfo.class.php:105
 msgid "First port detection failed, please report to openDCIM developers"
 msgstr ""
+
+#~ msgid "Reservation"
+#~ msgstr "Зарезервовано"
+
+#~ msgid "Reserved Devices"
+#~ msgstr "Зарезервовані пристрої"
 
 #~ msgid "Reservation?"
 #~ msgstr "Зарезервовано"
