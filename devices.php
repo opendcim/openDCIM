@@ -860,8 +860,10 @@
 	$templ->TemplateID=$dev->TemplateID;
 	$templ->GetTemplateByID();
 
-	$dev->Status="Reserved";
-
+	if ( $dev->DeviceID == 0 ) {
+		$dev->Status="Reserved";
+	}
+	
 	$title=($dev->Label!='')?"$dev->Label :: $dev->DeviceID":__("openDCIM Device Maintenance");
 
 	function buildVMtable($DeviceID){
