@@ -40,9 +40,19 @@
 		}
 
 		$locales=array();
-		foreach(explode("\n",trim(shell_exec('locale -a | grep -i utf'))) as $line){
-			$locales[]=substr($line, 0, strpos($line, '.'));
+		if (class_exists(ResourceBundle)) {
+			$avLocales = ResourceBundle::getLocales('');
+			if ($avLocales) {
+				$locales = $avLocales;
+			}
 		}
+
+		if (0 == count($locales)) {
+			foreach(explode("\n",trim(shell_exec('locale -a | grep -i utf'))) as $line){
+				$locales[]=substr($line, 0, strpos($line, '.'));
+			}
+		}
+
 		if(count($locales)>1){
 			$tests['gettext']['message'].="Locales detected: ";
 			foreach(array_intersect($locales,$lang) as $locale){
@@ -226,7 +236,7 @@
         rewrite ^(.*) /opendcim/api/test/index.php last;
     }</pre>";
 		$tests['api_test']['state']="fail";
-		$tests['api_test']['message']="Apache does not appear to be rewriting URLs correctly. Check your AllowOverride directive and change to 'AllowOverride All'";
+		$tests['api_test']['message']="Nginx does not appear to be rewriting URLs correctly. Check your AllowOverride directive and change to 'AllowOverride All'";
 
 	}else{
 		$tests['web_server']['state']="fail";
@@ -265,6 +275,7 @@
 	}
 
 	var xmlhttp=new XMLHttpRequest();
+	
 	xmlhttp.open("GET","api/test/test",false);
 	xmlhttp.send();
 	if(xmlhttp.status==200){

@@ -9,7 +9,7 @@
 		header('Location: '.redirect());
 		exit;
 	}
-	
+
 	$c=new Container();
 	$status="";
 
@@ -20,7 +20,7 @@
 		$c->ParentID=$_POST['parentid'];
 		$c->MapX=$_POST['x'];
 		$c->MapY=$_POST['y'];
-		
+
 		if($c->Name!=""){
 			if($_POST['action']=='Create'){
 				$c->CreateContainer();
@@ -30,14 +30,14 @@
 			}
 		}
 	}
-	
+
 	if(isset($_POST['action']) && $_POST['action']=='Delete'){
 		$c->ContainerID=$_POST['containerid'];
 		$c->DeleteContainer();
 		header('Location: container.php');
 		exit;
 	}
-	
+
 	if(isset($_POST['cambio_cont'])&& $_POST['cambio_cont']=='SI'){
 		$c->ContainerID=$_POST['containerid'];
 		$c->Name=trim($_POST['name']);
@@ -78,7 +78,7 @@
   <meta http-equiv="X-UA-Compatible" content="IE=Edge">
   <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
   <title>openDCIM Data Center Inventory</title>
-  
+
   <link rel="stylesheet" href="css/inventory.php" type="text/css">
   <link rel="stylesheet" href="css/jquery-ui.css" type="text/css">
   <link rel="stylesheet" href="css/validationEngine.jquery.css" type="text/css">
@@ -141,14 +141,14 @@
 				}
 			});
 		});
-		
+
 		// Delete container confirmation dialog
 		$('button[value="Delete"]').click(function(e){
 			var form=$(this).parents('form');
 			var btn=$(this);
 <?php
 print '		var dialog=$("<div>").prop("title","'.__("Verify Delete Container").'").html("<p><span class=\"ui-icon ui-icon-alert\" style=\"float:left; margin:0 7px 20px 0;\"></span><span></span></p>");';
-print '		dialog.find("span + span").html("'.__("This container will be deleted and there is no undo. Their direct descendants will be moved to \'home\'.").'<br>'.__("Are you sure?").'");'; 
+print '		dialog.find("span + span").html("'.__("This container will be deleted and there is no undo. Their direct descendants will be moved to \'home\'.").'<br>'.__("Are you sure?").'");';
 ?>
 			dialog.dialog({
 				resizable: false,
@@ -261,7 +261,7 @@ echo '	</select></div>
 <div> 
     <div><b>Y</b></div> 
     <div><input type="text" name="y" id="y" value="',$c->MapY,'" onblur="mueve()"></div> 
-</div>'; 
+</div>';
 
 if ($c->ParentID>0){
 	$container=new Container();
@@ -270,7 +270,7 @@ if ($c->ParentID>0){
 	print '<div>
 	<div><b>'.__("Click on the image to select container coordinates").'</b></div>
 	<div>'.$container->MakeContainerMiniImage("container",$c->ContainerID).'</div>
-</div>'; 
+</div>';
 }
 
 echo '<div class="caption">';

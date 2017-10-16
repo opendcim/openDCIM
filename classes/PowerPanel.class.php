@@ -32,7 +32,7 @@ class PowerPanel {
 					considered to be the PowerSource.  In other words, it's a reverse linked
 					list.
 	*/
-	
+
 	var $PanelID;
 	var $PanelLabel;
 	var $NumberOfPoles;
@@ -48,12 +48,12 @@ class PowerPanel {
 	var $MapX2;
 	var $MapY1;
 	var $MapY2;
-	
+
 	function prepare( $sql ) {
 		global $dbh;
 		return $dbh->prepare( $sql );
 	}
-	
+
 	function query($sql){
 		global $dbh;
 		return $dbh->query($sql);
@@ -63,17 +63,17 @@ class PowerPanel {
 		global $dbh;
 		return $dbh->exec($sql);
 	}
-	
+
 	function lastInsertId() {
 		global $dbh;
 		return $dbh->lastInsertId();
 	}
-	
+
 	function errorInfo() {
 		global $dbh;
 		return $dbh->errorInfo();
 	}
-	
+
 	function MakeSafe() {
 		$this->PanelID=intval($this->PanelID);
 		$this->PanelLabel=sanitize($this->PanelLabel);
@@ -144,7 +144,7 @@ class PowerPanel {
 		$sql = "select sum(Wattage) from fac_PDUStats where PDUID in (select PDUID from fac_PowerDistribution where PanelID=" . intval($PanelID) . ")";
 		// Use intval since an empty set will return a NULL for the sum
 		$watts = intval($dbh->query( $sql )->fetchColumn());
-		
+
 		// Ok, now repeat for the subpanels
 		$sql = "select PanelID from fac_PowerPanel where ParentPanelID=" . intval( $PanelID);
 		foreach ( $dbh->query( $sql ) as $pnl) {
@@ -178,20 +178,20 @@ class PowerPanel {
 		$clean=new PowerPanel();
 		return $clean->Search();
 	}
-	
+
 	function getPowerSource() {
 		$sql = "select * from fac_PowerPanel where PanelID=:PanelID";
-		
+
 		$st = $this->prepare( $sql );
 		$st->setFetchMode( PDO::FETCH_CLASS, "PowerPanel" );
-		
+
 		$currParent = $this->ParentPanelID;
 		while ( $currParent != 0 ) {
 			$st->execute( array( ":PanelID"=>$currParent ) );
 			$row = $st->fetch();
 			$currParent = $row->ParentPanelID;
 		}
-		
+
 		if ( ! @is_object( $row ) ) {
 			// Someone called this on a PowerSource
 			$row = new PowerPanel();
@@ -199,18 +199,18 @@ class PowerPanel {
 				$row->$prop = $val;
 			}
 		}
-		
+
 		return $row;
 	}
-	
+
 	function getPanelListBySource( $onlyFirstGen = false ) {
 		/* If you supply $this->ParentPanelID then you will get a list of all sources */
 		$sql = "select * from fac_PowerPanel where ParentPanelID=:ParentPanelID order by PanelLabel ASC";
-		
+
 		$st = $this->prepare( $sql );
 		$st->setFetchMode( PDO::FETCH_CLASS, "PowerPanel" );
 		$st->execute( array( ":ParentPanelID"=>$this->ParentPanelID ) );
-		
+
 		$pList = array();
 		while ( $row = $st->fetch() ) {
 			$pList[] = $row;
@@ -221,7 +221,7 @@ class PowerPanel {
 				$pList = array_merge($pList, $this->getPanelListBySource());
 			}
 		}
-		
+
 		return $pList;
 	}
 
@@ -239,7 +239,7 @@ class PowerPanel {
 		return $pList;
 
 	}
-	
+
 	function getSources() {
 		// The $this->Search() function doesn't work for this because it doesn't recognize that we're looking for 0 or null
 		$st = $this->prepare( "select * from fac_PowerPanel where ParentPanelID=0 or ParentPanelID=null" );
@@ -259,21 +259,21 @@ class PowerPanel {
 		$st = $this->prepare( $sql );
 		$st->execute( array( ":DataCenterID"=>$DataCenterID ) );
 		$st->setFetchMode( PDO::FETCH_CLASS, "PowerPanel" );
-		
+
 		$sList = array();
 		while ( $row = $st->fetch() ) {
 			$sList[] = $row;
 		}
-		
+
 		return $sList;
 	}
-	
+
 	function getSourcesByDataCenter( $DataCenterID ) {
 		$pList = $this->getPanelsByDataCenter( $DataCenterID );
-		
+
 		$tmpList = array();
-		
-		foreach ( $pList as $p ) { 
+
+		foreach ( $pList as $p ) {
 			$tmpList[] = $p->getPowerSource()->PanelID;
 		}
 
@@ -283,13 +283,13 @@ class PowerPanel {
 			$row = new PowerPanel();
 			$row->PanelID = $pID;
 			$row->getPanel();
-			
+
 			$psList[] = $row;
 		}
-		
+
 		return $psList;
 	}
-	
+
 	function getPanel() {
 		$this->MakeSafe();
 
@@ -312,7 +312,7 @@ class PowerPanel {
 			MainBreakerSize=$this->MainBreakerSize, PanelVoltage=$this->PanelVoltage, 
 			NumberScheme=\"$this->NumberScheme\", ParentPanelID=$this->ParentPanelID,
 			ParentBreakerName=\"$this->ParentBreakerName\", TemplateID=$this->TemplateID,
-			MapDataCenterID=$this->MapDataCenterID, MapX1=$this->MapX1,
+			MapDataCenterID=$this->MapDataCenterID, MapX1=$this->MapX1, MapX2=$this->MapX2,
 			MapY1=$this->MapY1,MapY2=$this->MapY2;";
 
 		if(!$this->exec($sql)){
@@ -350,7 +350,7 @@ class PowerPanel {
 		$pdu = new PowerDistribution();
 		$pdu->PanelID = $this->PanelID;
 		$pduList = $pdu->GetPDUByPanel();
-	
+
 		$panelSchedule = array();
 		$unscheduled = array();
 		$errors = array();
@@ -374,7 +374,7 @@ class PowerPanel {
 				if($this->NumberScheme=="Odd/Even") {
 					$adder=2;
 				}
-				$addError=false;	
+				$addError=false;
 				$endCount=$scheduleItem->Pole+($currPdu->BreakerSize*$adder);
 
 				// check if this item would conflict with any others (so far)
@@ -392,7 +392,7 @@ class PowerPanel {
 					}
 				}
 				if($addError) {
-					$errors[]=$scheduleItem;	
+					$errors[]=$scheduleItem;
 				} else {
 					if($currPdu->BreakerSize>1) {
 						$scheduleItem->Spanned=true;
@@ -405,7 +405,7 @@ class PowerPanel {
 							$nextItem->NoPrint=true;
 						}
 						$panelSchedule[$count][]=$nextItem;
-						
+
 					}
 				}
 			} elseif ( $this->NumberScheme!="Busway" ) {
@@ -532,7 +532,7 @@ class PowerPanel {
 		}
 		return $html;
 	}
-	
+
 	function deletePanel() {
 		// First, set any CDUs attached to this panel to simply not have an assigned panel
 		$sql="UPDATE fac_PowerDistribution SET PanelID=0 WHERE PanelID=$this->PanelID;";
@@ -564,10 +564,10 @@ class PowerPanel {
 
 		return $pnlList;
 	}
-		
+
 	function updatePanel(){
 		$this->MakeSafe();
-		
+
 		$oldpanel=new PowerPanel();
 		$oldpanel->PanelID=$this->PanelID;
 		$oldpanel->getPanel();

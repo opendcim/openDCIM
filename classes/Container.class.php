@@ -38,7 +38,7 @@ class Container {
 		$this->MapX=abs($this->MapX);
 		$this->MapY=abs($this->MapY);
 	}
-	
+
 	function MakeDisplay(){
 		$this->Name=stripslashes($this->Name);
 		$this->DrawingFileName=stripslashes($this->DrawingFileName);
@@ -61,15 +61,50 @@ class Container {
 		global $dbh;
 		return $dbh->query($sql);
 	}
-	
+
 	function exec($sql){
 		global $dbh;
 		return $dbh->exec($sql);
 	}
-	
+
+	function Search($indexedbyid = false, $loose = false) {
+		$o = new stdClass();
+		// Store any values that have been added before we make them safe
+		foreach ($this as $prop => $val) {
+			if (isset($val)) {
+				$o->$prop = $val;
+			}
+		}
+
+		// Make everything safe for us to search with
+		$this->MakeSafe();
+
+		// This will store all our extended sql
+		$sqlextend = "";
+		foreach ($this as $prop => $val) {
+			if ($val) {
+				extendsql($prop, $val, $sqlextend, $loose);
+			}
+		}
+
+		$sql = "SELECT * FROM `fac_Container` $sqlextend ORDER BY Name ASC;";
+
+		$cList = array();
+
+		foreach ($this->query($sql) as $row) {
+			if ($indexedbyid) {
+				$cList[$row["ContainerID"]] = Container::RowToObject($row);
+			} else {
+				$cList[] = Container::RowToObject($row);
+			}
+		}
+
+		return $cList;
+	}
+
 	function CreateContainer() {
 		global $dbh;
-		
+
 		$this->MakeSafe();
 		$sql="INSERT INTO fac_Container set Name=\"$this->Name\", ParentID=$this->ParentID, 
 				DrawingFileName=\"$this->DrawingFileName\", MapX=$this->MapX, MapY=$this->MapY;";
@@ -96,7 +131,7 @@ class Container {
 		$sql="UPDATE fac_Container SET Name=\"$this->Name\", ParentID=$this->ParentID, 
 			DrawingFileName=\"$this->DrawingFileName\", MapX=$this->MapX, MapY=$this->MapY 
 			WHERE ContainerID=$this->ContainerID;";
-		
+
 		if(!$this->query($sql)){
 			return false;
 		}else{
@@ -108,7 +143,7 @@ class Container {
 	function DeleteContainer(){
 		global $dbh;
 		$this->MakeSafe();
-		
+
 		$ChildContainerList=$this->GetChildContainerList();
 		foreach($ChildContainerList as $cRow){
 			$cRow->ParentID=0;
@@ -133,7 +168,7 @@ class Container {
 		(class_exists('LogActions'))?LogActions::LogThis($this):'';
 		return;
 	}
-	
+
 	function GetContainer(){
 		$this->MakeSafe();
 
@@ -189,7 +224,7 @@ class Container {
 
 		return $datacenterList;
 	}
-		
+
 	function BuildMenuTree() {
 		$c=new Container();
 		//begin the tree
@@ -205,7 +240,7 @@ class Container {
 	private function AddContainerToTree($lev=0) {
 		$tree="";
 		$container_opened=false;
-		
+
 		if($this->GetContainer()){
 			$lev++;
 			$tree.=str_repeat(" ",$lev)."<li class=\"liOpen\" id=\"c$this->ContainerID\">"
@@ -215,7 +250,7 @@ class Container {
 			$tree.=str_repeat(" ",$lev)."<ul>\n";
 			$container_opened=true;
 		}
-		
+
 		$cList=$this->GetChildContainerList();
 		$lev++;
 		if(count($cList) >0){
@@ -223,7 +258,7 @@ class Container {
 				$tree.=$container->AddContainerToTree($lev);
 			}
 		}
-		
+
 		$dcList=$this->GetChildDCList();
 
 		if(count($dcList) >0){
@@ -233,17 +268,17 @@ class Container {
 		}
 
 		if ($container_opened){
-			
+
 			$tree.=str_repeat(" ",$lev-1)."</ul>\n";
 			$tree.=str_repeat(" ",$lev-2)."</li>\n";
 		}
-		
+
 		return $tree;
 	}
 
     /**
      * Returns the maximum level of containers.
-     * 
+     *
      * @param int $level
      * @return int
      */
@@ -266,26 +301,26 @@ class Container {
 		$mapHTML="";
 		$mapfile="";
 		$tam=50;
-	 
+
 		if ( strlen($this->DrawingFileName) > 0 ) {
 			$mapfile = "drawings/" . $this->DrawingFileName;
 		}
-	   
+
 		if ( file_exists( $mapfile ) ) {
 			if(mime_content_type($mapfile)=='image/svg+xml'){
 				$svgfile = simplexml_load_file($mapfile);
 				$width = substr($svgfile['width'],0,4);
 				$height = substr($svgfile['height'],0,4);
-			}else{					
+			}else{
 				list($width, $height, $type, $attr)=getimagesize($mapfile);
 			}
 			$mapHTML.="<div style='position:relative;'>\n";
 			$mapHTML.="<img src=\"$mapfile\" width=\"$width\" height=\"$height\" alt=\"Container Image\">\n";
-			
+
 			$cList=$this->GetChildContainerList();
 			if ( count( $cList ) > 0 ) {
 				while ( list( $cID, $container ) = each( $cList ) ) {
-					if (is_null($container->MapX) || $container->MapX==0 
+					if (is_null($container->MapX) || $container->MapX==0
 						|| is_null($container->MapY) || $container->MapY==0 ){
 						$mapHTML.="<div>\n";
 						$mapHTML.="<a title=\"$container->Name\" href=\"container_stats.php?container=$container->ContainerID\">";
@@ -302,11 +337,11 @@ class Container {
 					}
 				}
 			}
-			
+
 			$dcList=$this->GetChildDCList();
 			if ( count( $dcList ) > 0 ) {
 				while ( list( $dcID, $dc ) = each( $dcList ) ) {
-					if (is_null($dc->MapX) || $dc->MapX==0 
+					if (is_null($dc->MapX) || $dc->MapX==0
 						|| is_null($dc->MapY) || $dc->MapY==0 ){
 						$mapHTML.="<div>\n";
 						$mapHTML.="<a title=\"".$dc->Name."\" href=\"dc_stats.php?dc=".$dcID."\">";
@@ -323,7 +358,7 @@ class Container {
 					}
 				}
 			}
-			
+
 			$mapHTML .= "</div>\n";
 	    }
 	    return $mapHTML;
@@ -336,11 +371,11 @@ class Container {
 		$red=.5;
 		$tam*=$red;
 		$yo_ok=false;
-	 
+
 		if ( strlen($this->DrawingFileName) > 0 ) {
 			$mapfile = "drawings/" . $this->DrawingFileName;
 		}
-	   
+
 		if ( file_exists( $mapfile ) ) {
 			if(mime_content_type($mapfile)=='image/svg+xml'){
 				$svgfile = simplexml_load_file($mapfile);
@@ -352,11 +387,11 @@ class Container {
 			$mapHTML.="<div style='position:relative;'>\n";
 			$mapHTML.="<img id='containerimg' src=\"".$mapfile."\" width=\"".($width*$red)."\" height=\"".($height*$red)."\" 
 					 onclick='coords(event)' alt=\"Container Image\">\n";
-			
+
 			$cList=$this->GetChildContainerList();
 			if ( count( $cList ) > 0 ) {
 				while ( list( $cID, $container ) = each( $cList ) ) {
-					if ((is_null($container->MapX) || $container->MapX<0 || $container->MapX>$width 
+					if ((is_null($container->MapX) || $container->MapX<0 || $container->MapX>$width
 						|| is_null($container->MapY) || $container->MapY<0 || $container->MapY>$height)
 						&& $tipo=="container" && $id==$container->ContainerID ){
 							$mapHTML.="<div id='yo' hidden style='position:absolute;'>\n";
@@ -364,7 +399,7 @@ class Container {
 							$yo_ok=true;
 						}
 					else {
-						
+
 						if ($tipo=="container" && $id==$container->ContainerID) {
 							$mapHTML.="<div id='yo' style='position:absolute; top:".($container->MapY*$red-$tam/2)."px; left:".($container->MapX*$red-$tam/2)."px;'>\n";
 							$mapHTML.="<img src=\"images/Container.png\" width=$tam height=$tam alt=\"Container\">\n</div>\n";
@@ -377,7 +412,7 @@ class Container {
 					}
 				}
 			}
-			
+
 			$dcList=$this->GetChildDCList();
 			if ( count( $dcList ) > 0 ) {
 				while ( list( $dcID, $dc ) = each( $dcList ) ) {
@@ -408,12 +443,12 @@ class Container {
 				else
 					$mapHTML.="<img src=\"images/DC.png\" width=$tam height=$tam alt=\"Datacenter\">\n</div>\n";
 			}
-			
+
 			$mapHTML .= "</div>\n";
 	    }
 	    return $mapHTML;
 	}
-	
+
 	function GetContainerStatistics(){
 		$this->GetContainer();
 
@@ -428,7 +463,7 @@ class Container {
 		$cStats["ComputedWatts"] = 0;
 		$cStats["MeasuredWatts"] = 0;
 		$cStats["TotalCabinets"] = 0;
-		
+
 		$dcList=$this->GetChildDCList();
 		if(count($dcList) >0){
 			while(list($dcID,$datacenter)=each($dcList)){
@@ -444,9 +479,9 @@ class Container {
 				$cStats["MeasuredWatts"]+=$dcStats["MeasuredWatts"];
 				$cStats["TotalCabinets"]+=$dcStats["TotalCabinets"];
 				$cStats["MaxkW"]+=$datacenter->MaxkW;
-			} 
+			}
 		}
-		
+
 		$cList=$this->GetChildContainerList();
 		if(count($cList) >0){
 			while(list($cID,$container)=each($cList)){
@@ -466,7 +501,7 @@ class Container {
 		}
 		return $cStats;
 	}
-	
+
 	static function GetContainerList($indexedbyid=false){
 		global $dbh;
 
@@ -483,6 +518,6 @@ class Container {
 
 		return $containerList;
 	}
-	
+
 }
 ?>
