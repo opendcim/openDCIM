@@ -971,7 +971,6 @@ $write=(isset($write))?$write:false;
 $write=($person->canWrite($cab->AssignedTo))?true:$write;
 $write=($dev->Rights=="Write")?true:$write;
 
-
 ?>
 <!doctype html>
 <html>
@@ -2247,7 +2246,7 @@ echo '			</select></div>
 	</div><!-- END div.table -->';
 
 		}
-		if($dev->Hypervisor!="None"){
+		if($dev->Hypervisor!="None" && $dev->Hypervisor!=""){
 			buildVMtable($dev->DeviceID);
 		}
 		print "</fieldset>\n";
