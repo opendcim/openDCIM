@@ -134,7 +134,9 @@
       // Load up the $row[] array with the values according to the mapping supplied by the user
       foreach( $fields as $fname ) {
         $addr = chr( 64 + $_REQUEST[$fname]);
-        $row[$fname] = sanitize($sheet->getCell( $addr . $n )->getValue());
+        if ( $_REQUEST[$fname] != 0 ) {
+          $row[$fname] = sanitize($sheet->getCell( $addr . $n )->getValue());
+        }
       }
 
       // Stop processing once you hit the first blank cell for 'Location' - some Excel files will return $sheet->getHighestRow() way past the end of any meaningful data
@@ -202,18 +204,20 @@
        *  Section for looking up the Row by DataCenterID + name and setting the true RowID
        *
        */
-      $st = $dbh->prepare( "select count(*) as TotalMatches, CabRowID from fac_CabRow where DataCenterID=:DataCenterID and ucase(Name)=ucase(:Row)" );
-      $st->execute( array( ":DataCenterID"=>$cab->DataCenterID, ":Row"=>$row["Row"] ));
-      if ( ! $val = $st->fetch() ) {
-        $info = $dbh->errorInfo();
-        error_log( "PDO Error: {$info[2]}");
-      }
+      if ( $row["Row"] !- "" ) {
+        $st = $dbh->prepare( "select count(*) as TotalMatches, CabRowID from fac_CabRow where DataCenterID=:DataCenterID and ucase(Name)=ucase(:Row)" );
+        $st->execute( array( ":DataCenterID"=>$cab->DataCenterID, ":Row"=>$row["Row"] ));
+        if ( ! $val = $st->fetch() ) {
+          $info = $dbh->errorInfo();
+          error_log( "PDO Error: {$info[2]}");
+        }
 
-      if ( $val["TotalMatches"] == 1 ) {
-        $cab->CabRowID = $val["CabRowID"];
-      } else {
-        $errors = true;
-        $content .= "<li>Cabinet: Data Center + Row = " . $row["Row"] . " is not unique or not found.";
+        if ( $val["TotalMatches"] == 1 ) {
+          $cab->CabRowID = $val["CabRowID"];
+        } else {
+          $errors = true;
+          $content .= "<li>Cabinet: Data Center + Row = " . $row["Row"] . " is not unique or not found.";
+        }
       }
 
       if ( $row["Owner"] != "" ) {
