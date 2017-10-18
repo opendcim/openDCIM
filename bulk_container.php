@@ -132,7 +132,9 @@
       // Load up the $row[] array with the values according to the mapping supplied by the user
       foreach( $fields as $fname ) {
         $addr = chr( 64 + $_REQUEST[$fname]);
-        $row[$fname] = sanitize($sheet->getCell( $addr . $n )->getValue());
+        if ( $_REQUEST[$fname] != 0 ) {
+          $row[$fname] = sanitize($sheet->getCell( $addr . $n )->getValue());
+        }
       }
 
       // Stop processing once you hit the first blank cell for 'Location' - some Excel files will return $sheet->getHighestRow() way past the end of any meaningful data

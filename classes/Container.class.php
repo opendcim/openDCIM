@@ -166,7 +166,7 @@ class Container {
 		$this->MakeSafe();
 
 		$sql="SELECT * FROM fac_Container WHERE ParentID=$this->ContainerID 
-			ORDER BY LENGTH(Name), Name ASC;";
+			ORDER BY Name ASC, LENGTH(Name);";
 
 		$containerList=array();
 		foreach($this->query($sql) as $row){
