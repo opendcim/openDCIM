@@ -1598,7 +1598,15 @@ function InsertDevice(obj){
 
 		for(var i=0;obj.Height-1>=i;i++){
 			var stName=obj.Status.split(' ').join('_');
-			StartingU.find('.pos').addClass(stName);
+			var faceClass='.pos';
+			if(obj.HalfDepth==1) {
+				if(obj.BackSide==0) {
+					faceClass='.pos-front';
+				} else {
+					faceClass='.pos-rear';
+				}
+			} 
+			StartingU.find($faceClass).addClass(stName);
 			$('#legend > .legenditem > span.'+stName).parent('div').removeClass('hide');
 			StartingU.find('.pos').addClass('dept'+obj.Owner);
 			StartingU=StartingU.prev(); // move our pointer up a u
