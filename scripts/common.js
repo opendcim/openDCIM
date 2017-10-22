@@ -1606,7 +1606,7 @@ function InsertDevice(obj){
 					faceClass='.pos-rear';
 				}
 			} 
-			StartingU.find($faceClass).addClass(stName);
+			StartingU.find(faceClass).addClass(stName);
 			$('#legend > .legenditem > span.'+stName).parent('div').removeClass('hide');
 			StartingU.find('.pos').addClass('dept'+obj.Owner);
 			StartingU=StartingU.prev(); // move our pointer up a u
