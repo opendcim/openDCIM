@@ -95,7 +95,7 @@ ALTER TABLE fac_CabinetTemps ADD COLUMN Humidity INT(11) NOT NULL AFTER Temp;
 
 --
 -- Changes to improve the cabinet tree
--- Modify fac_datacenter to link to containers 
+-- Modify fac_datacenter to link to containers
 -- Modify fac_cabinet to link to Cabinet Rows
 -- Adding Containers (fac_Container) and Cabinet Rows (fac_CabRow). Using Zones (fac_Zone)
 --

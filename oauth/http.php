@@ -1911,7 +1911,7 @@ class http_class
 		}
 		return("");
 	}
-	
+
 	Function ReadReplyHeaders(&$headers)
 	{
 		if(strlen($error=$this->ReadReplyHeadersResponse($headers)))

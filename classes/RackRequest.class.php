@@ -28,7 +28,7 @@ class RackRequest {
 						need to be racked within a data center.  Will gather the pertinent information required
 						for placement, and can then be reserved within a cabinet and a work order generated from
 						that point.
-						
+
 						SMTP configuration is required for this to work properly, as an email confirmation is sent
 						to the user after entering a request.
 	*/
@@ -91,16 +91,16 @@ class RackRequest {
 		$this->CurrentLocation=stripslashes($this->CurrentLocation);
 		$this->SpecialInstructions=stripslashes($this->SpecialInstructions);
 	}
- 
+
   function CreateRequest(){
 	global $dbh;
 
 	$this->MakeSafe();
 
     $sql="INSERT INTO fac_RackRequest SET RequestTime=now(), RequestorID=$this->RequestorID,
-		Label=\"$this->Label\", SerialNo=\"$this->SerialNo\", MfgDate=\"$this->MfgDate\", 
-		AssetTag=\"$this->AssetTag\", Hypervisor=$this->Hypervisor, Owner=$this->Owner, 
-		DeviceHeight=\"$this->DeviceHeight\", EthernetCount=$this->EthernetCount, 
+		Label=\"$this->Label\", SerialNo=\"$this->SerialNo\", MfgDate=\"$this->MfgDate\",
+		AssetTag=\"$this->AssetTag\", Hypervisor=$this->Hypervisor, Owner=$this->Owner,
+		DeviceHeight=\"$this->DeviceHeight\", EthernetCount=$this->EthernetCount,
 		VLANList=\"$this->VLANList\", SANCount=$this->SANCount, SANList=\"$this->SANList\",
 		DeviceClass=\"$this->DeviceClass\", DeviceType=\"$this->DeviceType\",
 		LabelColor=\"$this->LabelColor\", CurrentLocation=\"$this->CurrentLocation\",
@@ -110,20 +110,20 @@ class RackRequest {
 		$info=$dbh->errorInfo();
 		error_log("PDO Error: {$info[2]}");
 		return false;
-	}else{		
+	}else{
 		$this->RequestID=$dbh->lastInsertId();
 		(class_exists('LogActions'))?LogActions::LogThis($this):'';
 		$this->MakeDisplay();
         return $this->RequestID;
 	}
   }
-  
+
   function GetOpenRequests() {
 	global $dbh;
     $sql="SELECT * FROM fac_RackRequest WHERE CompleteTime='0000-00-00 00:00:00'";
-    
+
     $requestList=array();
-	foreach($dbh->query($sql) as $row){ 
+	foreach($dbh->query($sql) as $row){
 		$requestNum=sizeof($requestList);
 
 		$requestList[$requestNum]=new RackRequest();
@@ -148,10 +148,10 @@ class RackRequest {
 		$requestList[$requestNum]->SpecialInstructions=$row["SpecialInstructions"];
 		$requestList[$requestNum]->MakeDisplay();
     }
-    
+
     return $requestList;
   }
-  
+
   function GetRequest(){
 	global $dbh;
     $sql="SELECT * FROM fac_RackRequest WHERE RequestID=\"".intval($this->RequestID)."\";";
@@ -181,7 +181,7 @@ class RackRequest {
 		//something bad happened maybe tell someone
 	}
   }
-  
+
   function CompleteRequest(){
 	global $dbh;
 
@@ -198,7 +198,7 @@ class RackRequest {
 		return false;
 	}
   }
-  
+
   function DeleteRequest(){
 	global $dbh;
     $sql="DELETE FROM fac_RackRequest WHERE RequestID=\"".intval($this->RequestID)."\";";
@@ -220,15 +220,15 @@ class RackRequest {
 	$old->GetRequest();
 
     $sql="UPDATE fac_RackRequest SET RequestTime=now(), RequestorID=$this->RequestorID,
-		Label=\"$this->Label\", SerialNo=\"$this->SerialNo\", MfgDate=\"$this->MfgDate\", 
-		AssetTag=\"$this->AssetTag\", Hypervisor=$this->Hypervisor, Owner=$this->Owner, 
-		DeviceHeight=\"$this->DeviceHeight\", EthernetCount=$this->EthernetCount, 
+		Label=\"$this->Label\", SerialNo=\"$this->SerialNo\", MfgDate=\"$this->MfgDate\",
+		AssetTag=\"$this->AssetTag\", Hypervisor=$this->Hypervisor, Owner=$this->Owner,
+		DeviceHeight=\"$this->DeviceHeight\", EthernetCount=$this->EthernetCount,
 		VLANList=\"$this->VLANList\", SANCount=$this->SANCount, SANList=\"$this->SANList\",
 		DeviceClass=\"$this->DeviceClass\", DeviceType=\"$this->DeviceType\",
 		LabelColor=\"$this->LabelColor\", CurrentLocation=\"$this->CurrentLocation\",
 		SpecialInstructions=\"$this->SpecialInstructions\"
 		WHERE RequestID=$this->RequestID;";
-    
+
 	if($dbh->query($sql)){
 		(class_exists('LogActions'))?LogActions::LogThis($this,$old):'';
 		$this->MakeDisplay();
@@ -236,6 +236,6 @@ class RackRequest {
 	}else{
 		return false;
 	}
-  }  
+  }
 }
 ?>

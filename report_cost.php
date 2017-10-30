@@ -10,9 +10,9 @@ if(!$person->ReadAccess){
 
 	define('FPDF_FONTPATH','font/');
 	require('fpdf.php');
-	
+
 	setLocale( LC_ALL, $config->ParameterArray["Locale"] );
-	
+
 	$annualCostPerUYear = intval($config->ParameterArray["annualCostPerUYear"]);
 	$powerRate = floatval($config->ParameterArray["CostPerKwHr"]);
 
@@ -27,11 +27,11 @@ class PDF extends FPDF {
   var $OutlineRoot;
   var $pdfconfig;
   var $pdfDB;
-  
+
 	function PDF(){
 		parent::FPDF();
 	}
-  
+
 	function Header() {
 		$this->pdfconfig = new Config();
         if ( file_exists( 'images/' . $this->pdfconfig->ParameterArray['PDFLogoFile'] )) {
@@ -52,7 +52,7 @@ class PDF extends FPDF {
     		$this->SetFont($this->pdfconfig->ParameterArray["PDFfont"],'I',8);
     		$this->Cell(0,10,__("Page").' '.$this->PageNo().'/{nb}',0,0,'C');
 	}
-	
+
 
   function Bookmark($txt,$level=0,$y=0) {
     if($y==-1)
@@ -368,8 +368,8 @@ class PDF_Diag extends PDF_Sector {
 
   $tenantList=$dev->GetTop10Tenants();
   $powerList=$dev->GetTop10Power();
-  
-  
+
+
 
 
 //
@@ -391,7 +391,7 @@ class PDF_Diag extends PDF_Sector {
 
 	$pdf->SetfillColor( 224, 235, 255 );
 	$pdf->SetTextColor( 0 );
-	
+
 	$pdf->SetFont( $config->ParameterArray["PDFfont"], "", 12 );
 	if(function_exists('money_format')){
 		$pdf->Cell( 300, 5, __("Annual Cost Per Rack Unit (Year)").': ' . money_format( "%.2n", $annualCostPerUYear ), "", 1, "L", "" );
@@ -401,7 +401,7 @@ class PDF_Diag extends PDF_Sector {
 		$pdf->Cell( 300, 5, __("Annual Cost Per Watt (Year)").': ' . sprintf( $powerRate * 8.760, "%.4n" ), "", 1, "L", "" );
 	}
 	$pdf->Ln();
-  $pdf->Ln(); 
+  $pdf->Ln();
 
   $pdf->Bookmark( "Departments" );
 	$deptList = $dept->GetDepartmentList();
@@ -463,7 +463,7 @@ class PDF_Diag extends PDF_Sector {
 		$TotalBTU = 0;
 		$DCRU = 0;
 		$DCBTU = 0;
-		
+
 		$dc->DataCenterID = 0;
 
 		$headerTags = array( __("Device Name"), __("Serial Number"), __("Asset Tag"), __("DC Room"), __("Cabinet"), __("Position"), __("Rack Units"), __("Watts"), __("Rack Cost") );
@@ -477,7 +477,7 @@ class PDF_Diag extends PDF_Sector {
 		$fill = 0;
     $totalHostingCost = 0;
     $totalElectricalCost = 0;
-    
+
 		foreach( $devList as $devRow ) {
 			if ( $devRow->Cabinet != $cab->CabinetID ) {
 				$cab->CabinetID = $devRow->Cabinet;
@@ -489,10 +489,10 @@ class PDF_Diag extends PDF_Sector {
 			     $pdf->Cell( 0, 5, __("Total Rack Units for ") . $dc->Name . ": " . $DCRU, "", 1, "L", "" );
 			     $pdf->Cell( 0, 5, __("Total BTU Output for ") . $dc->Name . ": " . sprintf( "%d (%.2f Tons)", $DCBTU, $DCBTU/12000 ), "", 1, "L", "" );
 			  }
-			  
+
 				$dc->DataCenterID = $cab->DataCenterID;
 				$dc->GetDataCenterbyID();
-				
+
 				$DCRU = 0;
 				$DCBTU = 0;
 			}
@@ -501,7 +501,7 @@ class PDF_Diag extends PDF_Sector {
       $electricalCost = ( $devRow->NominalWatts * $powerRate * 8.760 );
       $totalElectricalCost += $electricalCost;
       $totalHostingCost += $hostingCost;
-      
+
 			$pdf->Cell( $cellWidths[0], 6, $devRow->Label, "LBRT", 0, "L", $fill );
 			$pdf->Cell( $cellWidths[1], 6, $devRow->SerialNo, "LBRT", 0, "L", $fill );
 			$pdf->Cell( $cellWidths[2], 6, $devRow->AssetTag, "LBRT", 0, "L", $fill );
@@ -518,7 +518,7 @@ class PDF_Diag extends PDF_Sector {
 
 			$TotalRU += $devRow->Height;
 			$TotalBTU += $devRow->NominalWatts * 3.412;
-			
+
 			$DCRU += $devRow->Height;
 			$DCBTU += $devRow->NominalWatts * 3.412;
 

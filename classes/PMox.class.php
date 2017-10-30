@@ -46,14 +46,14 @@ class PMox {
 		try {
 			$proxmox = new Proxmox($credentials);
 			$pveList = $proxmox->get('/nodes/' . $d->Label . '/qemu' );
-		} 
+		}
 		catch( Exception $e ) {
 			error_log( "Unable to poll ProxMox for inventory.  DeviceID=" . $d->DeviceID );
 			exit;
 		}
 
 		if ( sizeof( $pveList ) > 0 ) {
-			foreach( $pveList["data"] as $pve ) { 
+			foreach( $pveList["data"] as $pve ) {
 				$tmpVM = new VM;
 
 				$tmpVM->DeviceID = $d->DeviceID;
@@ -69,10 +69,10 @@ class PMox {
 				$vmList[] = $tmpVM;
 			}
 		}
-		
+
 		return $vmList;
 	}
-  
+
 	function UpdateInventory($debug=false){
 		$dev=new Device();
 
@@ -95,7 +95,7 @@ class PMox {
 			}
 		}
 	}
-  
+
 	static function RefreshInventory( $pveDevice, $debug = false ) {
 		global $dbh;
 		global $config;
@@ -107,16 +107,16 @@ class PMox {
 			$dev->DeviceID = $pveDevice;
 		}
 		$dev->GetDevice();
-		
+
 		$search = $dbh->prepare( "select * from fac_VMInventory where vmName=:vmName" );
 		$update = $dbh->prepare( "update fac_VMInventory set DeviceID=:DeviceID, LastUpdated=:LastUpdated, vmID=:vmID, vmState=:vmState where vmName=:vmName" );
 		$insert = $dbh->prepare( "insert into fac_VMInventory set DeviceID=:DeviceID, LastUpdated=:LastUpdated, vmID=:vmID, vmState=:vmState, vmName=:vmName" );
-		
+
 		$vmList = PMox::EnumerateVMs( $dev, $debug );
 		if ( count( $vmList ) > 0 ) {
 			foreach( $vmList as $vm ) {
 				$search->execute( array( ":vmName"=>$vm->vmName ) );
-				
+
 				$parameters = array( ":DeviceID"=>$vm->DeviceID, ":LastUpdated"=>$vm->LastUpdated, ":vmID"=>$vm->vmID, ":vmState"=>$vm->vmState, ":vmName"=>$vm->vmName );
 
 				if ( $search->rowCount() > 0 ) {
@@ -125,7 +125,7 @@ class PMox {
 						error_log( "Updating existing VM '" . $vm->vmName . "'in inventory." );
 				} else {
 					$insert->execute( $parameters );
-					if ( $debug ) 
+					if ( $debug )
 						error_log( "Adding new VM '" . $vm->vmName . "'to inventory." );
 				}
 			}
@@ -133,7 +133,7 @@ class PMox {
 
 		$expire = "delete from fac_VMInventory where to_days(now())-to_days(LastUpdated)>" . intval( $config->ParameterArray['VMExpirationTime']);
 		$dbh->query( $expire );
-		
+
 		return $vmList;
 	}
 

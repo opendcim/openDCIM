@@ -8,7 +8,7 @@
 	$zone=new Zone();
 	$dc=new DataCenter();
 	$dev=new Device();
-	
+
 	//setting airflow
 	if(isset($_POST["cabinetid"]) && isset($_POST["airflow"]) && $person->SiteAdmin){
 		$cab->CabinetID=$_POST["cabinetid"];
@@ -69,7 +69,7 @@
 		echo json_encode($payload);
 		exit;
 	}
-	
+
 	if(!isset($_GET["zone"])){
 		// No soup for you.
 		header('Location: '.redirect());
@@ -84,7 +84,7 @@
 	$zoneStats=$zone->GetZoneStatistics();
 	$dc->DataCenterID=$zone->DataCenterID;
 	$dc->GetDataCenterbyID();
-	
+
 	$rciStats = RCI::GetStatistics( "zone", $zone->ZoneID );
 
 	function MakeImageMap($dc,$zone) {
@@ -113,7 +113,7 @@
 		}
 		return $mapHTML;
 	}
-	
+
 	$height=1;
 	$width=1;
 	$ie8fix="";
@@ -148,7 +148,7 @@ $(document).ready(function() {
 	if(strlen($dc->DrawingFileName) <1 || !file_exists("drawings/$dc->DrawingFileName")){
 		$screenadjustment="<style type=\"text/css\">.dcstats .heading > div { width: 100% !important;} .dcstats .heading > div + div { display: none; }</style>";
 	}
-		
+
 	if ( $config->ParameterArray["mUnits"] == "english" ) {
 		$vol = __("Square Feet");
 		$tempUnits = "F";
@@ -158,7 +158,7 @@ $(document).ready(function() {
 		$tempUnits = "C";
 		$density = __("Watts per Square Meter" );
 	}
-	//aproximate proportion between zone/DC 
+	//aproximate proportion between zone/DC
 	$prop_zone_dc=($zone->MapX2-$zone->MapX1)*($zone->MapY2-$zone->MapY1)/$width/$height;
 	$prop_zone_dc=($prop_zone_dc>0)?$prop_zone_dc:1;
 
@@ -168,7 +168,7 @@ $(document).ready(function() {
 <head>
   <meta http-equiv="X-UA-Compatible" content="IE=Edge">
   <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-  
+
   <title>openDCIM Data Center Information Management</title>
   <link rel="stylesheet" href="css/inventory.php" type="text/css">
   <link rel="stylesheet" href="css/print.css" type="text/css" media="print">
@@ -294,7 +294,7 @@ echo $select.'</div></div>'.MakeImageMap($dc,$zone);
 
 echo '
 </div></div>
-<ul id="options" class="hide"> 
+<ul id="options" class="hide">
 	<li class="ui-state-disabled">',__("Set the air intake direction"),'</li>
 	<li>----</li>
 	<li><a>',__("Cabinet"),'</a>
@@ -354,7 +354,7 @@ echo '
 			select: function(event, ui) {
 				var row=(ui.item.context.parentElement.getAttribute('data-context')=='row'||ui.item.context.parentElement.getAttribute('data-context')=='alignment')?true:false;
 				var cabid=ui.target.context.attributes.name.value.substr(3);
-				$.post('',{cabinetid: cabid, airflow: ui.cmd, row: row}).done(function(){startmap()}); 
+				$.post('',{cabinetid: cabid, airflow: ui.cmd, row: row}).done(function(){startmap()});
     		},
 			beforeOpen: function(event, ui) {
 				$('#options').removeClass('hide');

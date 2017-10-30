@@ -37,7 +37,7 @@
 			if(strlen($client->access_token))
 			{
 				$success = $client->CallAPI(
-					'https://api.fitbit.com/1/user/-/profile.json', 
+					'https://api.fitbit.com/1/user/-/profile.json',
 					'GET', array(), array('FailOnAccessError'=>true), $user);
 			}
 		}
@@ -55,7 +55,7 @@
 </head>
 <body>
 <?php
-		echo '<h1>', HtmlSpecialChars($user->user->displayName), 
+		echo '<h1>', HtmlSpecialChars($user->user->displayName),
 			' you have logged in successfully with Fitbit!</h1>';
 		echo '<pre>', HtmlSpecialChars(print_r($user, 1)), '</pre>';
 ?>

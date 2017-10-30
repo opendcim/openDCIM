@@ -35,7 +35,7 @@
 			if(strlen($client->access_token))
 			{
 				$success = $client->CallAPI(
-					'https://api.xing.com/v1/users/me', 
+					'https://api.xing.com/v1/users/me',
 					'GET', array(), array('FailOnAccessError'=>true), $user);
 			}
 		}
@@ -53,7 +53,7 @@
 </head>
 <body>
 <?php
-		echo '<h1>', HtmlSpecialChars($user->users[0]->display_name), 
+		echo '<h1>', HtmlSpecialChars($user->users[0]->display_name),
 			' you have logged in successfully with XING!</h1>';
 		echo '<pre>', HtmlSpecialChars(print_r($user, 1)), '</pre>';
 ?>

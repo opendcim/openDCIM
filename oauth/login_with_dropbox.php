@@ -37,7 +37,7 @@
 			if(strlen($client->access_token))
 			{
 				$success = $client->CallAPI(
-					'https://api.dropbox.com/1/account/info', 
+					'https://api.dropbox.com/1/account/info',
 					'GET', array(), array('FailOnAccessError'=>true), $user);
 			}
 		}
@@ -55,7 +55,7 @@
 </head>
 <body>
 <?php
-		echo '<h1>', HtmlSpecialChars($user->display_name), 
+		echo '<h1>', HtmlSpecialChars($user->display_name),
 			' you have logged in successfully with Dropbox!</h1>';
 		echo '<pre>', HtmlSpecialChars(print_r($user, 1)), '</pre>';
 ?>

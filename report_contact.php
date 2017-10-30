@@ -22,11 +22,11 @@ class PDF extends FPDF {
   var $OutlineRoot;
   var $pdfconfig;
   var $pdfDB;
-  
+
 	function PDF(){
 		parent::FPDF();
 	}
-	
+
 	function Header() {
 		$this->pdfconfig = new Config();
         if ( file_exists( 'images/' . $this->pdfconfig->ParameterArray['PDFLogoFile'] )) {
@@ -47,7 +47,7 @@ class PDF extends FPDF {
     		$this->SetFont($this->pdfconfig->ParameterArray['PDFfont'],'I',8);
     		$this->Cell(0,10,__("Page").' '.$this->PageNo().'/{nb}',0,0,'C');
 	}
-	
+
 
   function Bookmark($txt,$level=0,$y=0) {
     if($y==-1)
@@ -368,8 +368,8 @@ class PDF_Diag extends PDF_Sector {
 
   $tenantList=$dev->GetTop10Tenants();
   $powerList=$dev->GetTop10Power();
-  
-  
+
+
 
 
 //
@@ -392,14 +392,14 @@ class PDF_Diag extends PDF_Sector {
   $colors[7]=array(0,0,255);
   $colors[8]=array(100,175,255);
   $colors[9]=array(255,175,100);
-  
+
 	$pdf->Bookmark( 'Graphs' );
 	$pdf->Bookmark( 'Occupancy' ,1 ,0 );
 	$pdf->SetFont( $config->ParameterArray['PDFfont'],'B', 16 );
 	$pdf->Cell( 0, 18, __("Top 10 Data Center Occupancy Rates"), '', 1, 'C', 0 );
 	$pdf->SetXY( 10, 70 );
 	$pdf->PieChart(250, 80, $tenantList, '%l: %v RU (%p)', $colors);
-  
+
 	$pdf->AddPage();
 
 	$pdf->Bookmark( 'Power Usage' , 1 ,0 );
@@ -407,7 +407,7 @@ class PDF_Diag extends PDF_Sector {
 	$pdf->Cell( 0, 18, __("Top 10 Data Center Power Users"), '', 1, 'C', 0 );
 	$pdf->SetXY( 10, 70 );
 	$pdf->PieChart( 250, 80, $powerList, '%l: %v Watts (%p)', $colors);
-  
+
 	$pdf->SetFont($config->ParameterArray['PDFfont'],'',8);
 
 	$pdf->SetFillColor( 0, 0, 0 );
@@ -479,7 +479,7 @@ class PDF_Diag extends PDF_Sector {
 		$TotalBTU = 0;
 		$DCRU = 0;
 		$DCBTU = 0;
-		
+
 		$dc->DataCenterID = 0;
 
 		$headerTags = array( __("Device Name"), __("Serial Number"), __("Asset Tag"), __("DC Room"), __("Cabinet"), __("Position"), __("Rack Units") );
@@ -504,19 +504,19 @@ class PDF_Diag extends PDF_Sector {
 			     $pdf->Cell( 0, 5, __("Total Rack Units for ") . $dc->Name . ': ' . $DCRU, '', 1, 'L', '' );
 			     $pdf->Cell( 0, 5, __("Total BTU Output for ") . $dc->Name . ': ' . sprintf( '%d (%.2f Tons)', $DCBTU, $DCBTU/12000 ), '', 1, 'L', '' );
 			  }
-			  
+
 				$dc->DataCenterID = $cab->DataCenterID;
 				$dc->GetDataCenterbyID();
-				
+
 				$DCRU = 0;
 				$DCBTU = 0;
 			}
-			
+
 			if ( $devRow->Height > 1 )
 				$Position = sprintf( "[%d-%d]", $devRow->Position, $devRow->Position + $devRow->Height - 1 );
 			else
 				$Position = $devRow->Position;
-    
+
 			$pdf->Cell( $cellWidths[0], 6, $devRow->Label, 'LBRT', 0, 'L', $fill );
 			$pdf->Cell( $cellWidths[1], 6, $devRow->SerialNo, 'LBRT', 0, 'L', $fill );
 			$pdf->Cell( $cellWidths[2], 6, $devRow->AssetTag, 'LBRT', 0, 'L', $fill );
@@ -527,7 +527,7 @@ class PDF_Diag extends PDF_Sector {
 
 			$TotalRU += $devRow->Height;
 			$TotalBTU += $devRow->NominalWatts * 3.412;
-			
+
 			$DCRU += $devRow->Height;
 			$DCBTU += $devRow->NominalWatts * 3.412;
 
@@ -536,12 +536,12 @@ class PDF_Diag extends PDF_Sector {
 
 		$pdf->Cell( 0, 5, __("Total Rack Units for All Data Centers").': ' . $TotalRU, '', 1, 'L', '' );
     $pdf->Cell( 0, 5, __("Total BTU Output for All Data Centers").': ' . sprintf( '%d (%.2f Tons)', $TotalBTU, $TotalBTU/12000 ), '', 1, 'L', '' );
-    
+
     $vm = new VM();
-    
+
     $vm->Owner = $deptRow->DeptID;
     $vmList = $vm->GetVMListbyOwner();
-    
+
 		$headerTags = array( __("Virtual Machine Image Name"), __("Current Host Server"), __("State"), __("Last Polled") );
 		$cellWidths = array( 60, 40, 30, 40 );
 		$maxval = count( $headerTags );
@@ -553,18 +553,18 @@ class PDF_Diag extends PDF_Sector {
 
 		$fill = 0;
     $lastDevice = 0;
-    
+
 		foreach( $vmList as $Row ) {
 			if ( $vmRow->DeviceID != $lastDevice ) {
 				$dev->DeviceID = $vmRow->DeviceID;
 				$dev->GetDevice();
 			}
-			
+
 			$pdf->Cell( $cellWidths[0], 6, $vmRow->vmName, 'LBRT', 0, 'L', $fill );
 			$pdf->Cell( $cellWidths[1], 6, $dev->Label, 'LBRT', 0, 'L', $fill );
 			$pdf->Cell( $cellWidths[2], 6, $vmRow->vmState, 'LBRT', 0, 'L', $fill );
 			$pdf->Cell( $cellWidths[3], 6, date( "d M Y H:i:s", strtotime( $vmRow->LastUpdated )), 'LBRT', 1, 'L', $fill );
-    
+
       $fill != $fill;
     }
 	}

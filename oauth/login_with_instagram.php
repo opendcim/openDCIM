@@ -38,7 +38,7 @@
 			if(strlen($client->access_token))
 			{
 				$success = $client->CallAPI(
-					'https://api.instagram.com/v1/users/self/', 
+					'https://api.instagram.com/v1/users/self/',
 					'GET', array(), array('FailOnAccessError'=>true), $user);
 			}
 		}
@@ -56,7 +56,7 @@
 </head>
 <body>
 <?php
-		echo '<h1>', HtmlSpecialChars($user->data->full_name), 
+		echo '<h1>', HtmlSpecialChars($user->data->full_name),
 			' you have logged in successfully with Instagram!</h1>';
 		echo '<pre>', HtmlSpecialChars(print_r($user, 1)), '</pre>';
 ?>

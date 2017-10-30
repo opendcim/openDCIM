@@ -26,7 +26,7 @@
 
 class CabinetTemps {
 	/* CabinetTemps:	Temperature sensor readings from intelligent, SNMP readable temperature sensors */
-	
+
 	var $CabinetID;
 	var $LastRead;
 	var $Temp;
@@ -34,9 +34,9 @@ class CabinetTemps {
 
 	function GetReading() {
 		global $dbh;
-		
+
 		$sql = sprintf( "select * from fac_CabinetTemps where CabinetID=%d", $this->CabinetID );
-		
+
 		if ( $row = $dbh->query( $sql )->fetch() ) {
 			$this->LastRead = date( "m-d-Y H:i:s", strtotime($row["LastRead"]) );
 			$Temp = $row["Temp"];
@@ -47,8 +47,8 @@ class CabinetTemps {
 			error_log( "PDO Error: " . $info[2] . " SQL=" . $sql );
 			return false;
 		}
-		
+
 		return;
-	}	
+	}
 }
 ?>

@@ -60,7 +60,7 @@
 		if($dept->Name!=''){
 			if($_POST['action']=='Create'){
 				$dept->CreateDepartment();
-				
+
 				header('Location: '.redirect("departments.php?deptid=$dept->DeptID"));
 				exit;
 			}else{
@@ -77,7 +77,7 @@
 <head>
   <meta http-equiv="X-UA-Compatible" content="IE=Edge">
   <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-  
+
   <title>openDCIM Department Information</title>
   <link rel="stylesheet" href="css/inventory.php" type="text/css">
   <link rel="stylesheet" href="css/jquery-ui.css" type="text/css">
@@ -86,7 +86,7 @@
   <!--[if lt IE 9]>
   <link rel="stylesheet"  href="css/ie.css" type="text/css">
   <![endif]-->
-  
+
   <script type="text/javascript" src="scripts/jquery.min.js"></script>
   <script type="text/javascript" src="scripts/jquery-ui.min.js"></script>
   <script type="text/javascript" src="scripts/jquery.miniColors.js"></script>

@@ -27,7 +27,7 @@ class TemplatePowerPorts {
 	var $PortNumber;
 	var $Label;
 	var $PortNotes;
-	
+
 	function MakeSafe() {
 		$this->TemplateID=intval($this->TemplateID);
 		$this->PortNumber=intval($this->PortNumber);
@@ -51,12 +51,12 @@ class TemplatePowerPorts {
 
 		return $tp;
 	}
-	
+
 	function prepare( $sql ) {
 		global $dbh;
 		return $dbh->prepare( $sql );
 	}
-	
+
 	function flushPorts( $templateid ) {
 		$st = $this->prepare( "delete from fac_TemplatePowerPorts where TemplateID=:TemplateID" );
 		return $st->execute( array( ":TemplateID"=>$templateid ) );
@@ -87,19 +87,19 @@ class TemplatePowerPorts {
 		$ports=array();
 		foreach($dbh->query($sql) as $row){
 			$ports[$row['PortNumber']]=TemplatePowerPorts::RowToObject($row);
-		}	
+		}
 		return $ports;
 	}
-	
+
 	function createPort() {
 		global $dbh;
-		
+
 		$this->MakeSafe();
 
-		$sql="INSERT INTO fac_TemplatePowerPorts SET TemplateID=$this->TemplateID, 
-			PortNumber=$this->PortNumber, Label=\"$this->Label\", 
+		$sql="INSERT INTO fac_TemplatePowerPorts SET TemplateID=$this->TemplateID,
+			PortNumber=$this->PortNumber, Label=\"$this->Label\",
 			PortNotes=\"$this->PortNotes\";";
-			
+
 		if(!$dbh->query($sql)){
 			$info=$dbh->errorInfo();
 
@@ -122,15 +122,15 @@ class TemplatePowerPorts {
 		$oldport->getPort();
 
 		// update port
-		$sql="UPDATE fac_TemplatePowerPorts SET Label=\"$this->Label\", 
-			PortNotes=\"$this->PortNotes\", WHERE TemplateID=$this->TemplateID AND 
+		$sql="UPDATE fac_TemplatePowerPorts SET Label=\"$this->Label\",
+			PortNotes=\"$this->PortNotes\", WHERE TemplateID=$this->TemplateID AND
 			PortNumber=$this->PortNumber;";
 
 		if(!$dbh->query($sql)){
 			$info=$dbh->errorInfo();
 
 			error_log("updatePort::PDO Error: {$info[2]} SQL=$sql");
-			
+
 			return false;
 		}
 
@@ -154,7 +154,7 @@ class TemplatePowerPorts {
 		}else{
 			(class_exists('LogActions'))?LogActions::LogThis($this):'';
 			return true;
-		}		
+		}
 	}
 }
 ?>

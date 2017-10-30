@@ -37,10 +37,10 @@ class CabinetMetrics {
 
 	static function getMetrics( $CabinetID ) {
 		global $dbh;
-		
+
 		$m = new CabinetMetrics();
 		$m->CabinetID = $CabinetID;
-		
+
 		$params = array( ":CabinetID"=>$CabinetID );
 		// Get the intake side
 		$sql = "select max(Temperature) as Temp, max(Humidity) as Humid, LastRead from fac_SensorReadings where DeviceID in (select DeviceID from fac_Device where DeviceType='Sensor' and BackSide=0 and Cabinet=:CabinetID)";
@@ -53,7 +53,7 @@ class CabinetMetrics {
 		} else {
 			error_log( "SQL Error CabinetMetrics::getMetrics" );
 		}
-		
+
 		// Now the exhaust side
 		$sql = "select max(Temperature) as Temp, max(Humidity) as Humid, LastRead from fac_SensorReadings where DeviceID in (select DeviceID from fac_Device where DeviceType='Sensor' and BackSide=1 and Cabinet=:CabinetID)";
 		$st = $dbh->prepare( $sql );
@@ -81,7 +81,7 @@ class CabinetMetrics {
 					$m->SpaceUsed = $row["SpaceUsed"];
 		}
 
-		
+
 		// And finally the power readings
 		$sql = "select sum(Wattage) as Power from fac_PDUStats where PDUID in (select DeviceID from fac_Device where DeviceType='CDU' and Cabinet=:CabinetID)";
 		$st = $dbh->prepare( $sql );
@@ -89,7 +89,7 @@ class CabinetMetrics {
 		if ( $row = $st->fetch() ) {
 			$m->MeasuredPower = $row["Power"];
 		}
-		
+
 		return $m;
 	}
 }

@@ -3,7 +3,7 @@
 	require_once( 'facilities.inc.php' );
 
 	$subheader=__("Data Center Rack Request");
-	
+
 	if($config->ParameterArray["RackRequests"] != "enabled" || !$person->RackRequest){
 		// No soup for you.
 		header('Location: '.redirect());
@@ -16,7 +16,7 @@
 	$req=new RackRequest();
 	$contact=new People();
 	$tmpContact=new People();
-	$formfix=$error='';	
+	$formfix=$error='';
 	$contactList=$person->GetUserList();
 
 	//We only need to worry about sending email in the event this is a new submission and no other time.
@@ -50,21 +50,21 @@
 		$message=Swift_Message::NewInstance()->setSubject($config->ParameterArray['MailSubject']);
 
 		// Set from address
-		try{		
+		try{
 			$message->setFrom($config->ParameterArray['MailFromAddr']);
 		}catch(Swift_RfcComplianceException $e){
 			$error.=__("MailFrom").": <span class=\"errmsg\">".$e->getMessage()."</span><br>\n";
 		}
 
 		// Add rack requestor to the list of recipients
-		try{		
+		try{
 			$message->addTo($tmpContact->Email);
 		}catch(Swift_RfcComplianceException $e){
 			$error.=__("Check contact details for")." <a href=\"usermgr.php?PersonID=$tmpContact->PersonID\">$tmpContact->LastName, $tmpContact->FirstName</a>: <span class=\"errmsg\">".$e->getMessage()."</span><br>\n";
 		}
 
 		// Add data center team to the list of recipients
-		try{		
+		try{
 			$message->addTo($config->ParameterArray['MailToAddr']);
 		}catch(Swift_RfcComplianceException $e){
 			$error.=__("Data center team address").": <span class=\"errmsg\">".$e->getMessage()."</span><br>\n";
@@ -104,7 +104,7 @@
 			<p>".sprintf(__('Your Request ID is %1$d and you may view the request online at'),$req->RequestID)."
 			<a href=\"https://{$_SERVER['SERVER_NAME']}{$_SERVER['SCRIPT_NAME']}?requestid=$req->RequestID\">
 			".__("this link")."</a>.</p>
-			
+
 			</body></html>";
 
 			$message->setBody($htmlMessage,'text/html');
@@ -138,7 +138,7 @@
 
 			if($person->RackAdmin && $_POST['action']=='Move to Rack'){
 				$req->CompleteRequest();
-				
+
 				$dev->Label=$req->Label;
 				$dev->SerialNo=$req->SerialNo;
 				$dev->MfgDate=$req->MfgDate;
@@ -154,7 +154,7 @@
 				$dev->TemplateID=$req->DeviceClass;
 
 				$dev->CreateDevice();
-		
+
 				$htmlMessage.="<p>".sprintf(__('Your request for racking up the device labeled %1$s has been completed.'),$req->Label)."</p>";
 				$htmlMessage.="<p>".sprintf(__('To view your device in its final location click %1$s'),
 				"<a href=\"".redirect("devices.php?DeviceID=$dev->DeviceID")."\"> ".__("this link")."</a>.</p>
@@ -168,7 +168,7 @@
 				}catch(Swift_TransportException $e){
 					$error.="Server: <span class=\"errmsg\">".$e->getMessage()."</span><br>\n";
 				}
-			
+
 				header('Location: '.redirect("devices.php?DeviceID=$dev->DeviceID"));
 				exit;
 			}
@@ -198,7 +198,7 @@
 <head>
   <meta http-equiv="X-UA-Compatible" content="IE=Edge">
   <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-  
+
   <title>openDCIM Facilities Cabinet Maintenance</title>
   <link rel="stylesheet" href="css/inventory.php" type="text/css">
   <link rel="stylesheet" href="css/jquery-ui.css" type="text/css">
@@ -207,7 +207,7 @@
   <!--[if lt IE 9]>
   <link rel="stylesheet"  href="css/ie.css" type="text/css">
   <![endif]-->
-  
+
   <script type="text/javascript" src="scripts/jquery.min.js"></script>
   <script type="text/javascript" src="scripts/jquery-ui.min.js"></script>
   <script type="text/javascript" src="scripts/jquery.validationEngine-en.js"></script>
@@ -216,7 +216,7 @@
   <script type="text/javascript">
   	$(document).ready(function() {
 		$(function(){
-<?php			
+<?php
 print "			$('#deviceform').validationEngine({'custom_error_messages' : {
 					'#vlanlist' : {
 						'condRequired': {
@@ -233,7 +233,7 @@ print "			$('#deviceform').validationEngine({'custom_error_messages' : {
 							'message': '".__("You must specify the current location of the equipment").".'
 						}
 					}
-				}	
+				}
 			});";
 ?>
 			$('#mfgdate').datepicker({dateFormat: "yy-mm-dd"});
@@ -412,7 +412,7 @@ echo '			</select>
 	$templ=new DeviceTemplate();
 	$templateList=$templ->GetTemplateList();
 	$mfg=new Manufacturer();
-  
+
 	foreach($templateList as $tempRow){
 		if($req->DeviceClass==$tempRow->TemplateID){$selected = ' selected';}else{$selected = '';}
 		$mfg->ManufacturerID=$tempRow->ManufacturerID;

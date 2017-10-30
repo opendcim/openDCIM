@@ -38,7 +38,7 @@
 			if(strlen($client->access_token))
 			{
 				$success = $client->CallAPI(
-					'https://graph.facebook.com/me', 
+					'https://graph.facebook.com/me',
 					'GET', array(), array('FailOnAccessError'=>true), $user);
 			}
 		}
@@ -56,7 +56,7 @@
 </head>
 <body>
 <?php
-		echo '<h1>', HtmlSpecialChars($user->name), 
+		echo '<h1>', HtmlSpecialChars($user->name),
 			' you have logged in successfully with Facebook!</h1>';
 		echo '<pre>', HtmlSpecialChars(print_r($user, 1)), '</pre>';
 ?>

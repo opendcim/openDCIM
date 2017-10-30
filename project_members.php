@@ -43,7 +43,7 @@
 	$dcList = DataCenter::GetDCList();
 
 	// Here we diverge between devices and cabinets
-	
+
 	if ( $memberType == "Device" ) {
 		$memberList = ProjectMembership::getProjectMembership( $proj->ProjectID, false, false );
 		$devList = Device::getDevicesByDC( $DataCenterID );
@@ -73,7 +73,7 @@
 <head>
   <meta http-equiv="X-UA-Compatible" content="IE=Edge">
   <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-  
+
   <title><?php __("openDCIM Project Membership Maintenance"); ?></title>
   <link rel="stylesheet" href="css/inventory.php" type="text/css">
   <link rel="stylesheet" href="css/jquery-ui.css" type="text/css">

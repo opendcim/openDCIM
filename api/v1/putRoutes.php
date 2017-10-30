@@ -3,7 +3,7 @@
 	/*	Even though we're including these files in to an upstream index.php that already declares
 		the namespaces, PHP treats it as a difference context, so we have to redeclare in each
 		included file.
-	
+
 	Framework v3 Specific
 
 	use Psr\Http\Message\ServerRequestInterface as Request;
@@ -14,7 +14,7 @@
   *
   *		API PUT Methods go here
   *
-  *		PUT Methods are for creating new records 
+  *		PUT Methods are for creating new records
   *
   **/
 
@@ -23,12 +23,12 @@
 //	URL:	/api/v1/people/:userid
 //	Method: PUT
 //	Params: userid (required, passed as :userid in URL)
-//			lastname, firstname, phone1, phone2, phone3, email, adminowndevices, 
-//			readaccess, writeaccess, deleteaccess, contactadmin, rackrequest, 
+//			lastname, firstname, phone1, phone2, phone3, email, adminowndevices,
+//			readaccess, writeaccess, deleteaccess, contactadmin, rackrequest,
 //			rackadmin, siteadmin
 //	Returns: record as created
 //
-  
+
 $app->put('/people/:userid', function($userid) use ($person) {
 	$r = array();
 
@@ -37,7 +37,7 @@ $app->put('/people/:userid', function($userid) use ($person) {
 		$r['errorcode'] = 401;
 		$r['message'] = __("Access Denied");
 	}
-	
+
 	$p = new People();
 	$vars = getParsedBody();
 	$p->UserID = $userid;
@@ -46,16 +46,16 @@ $app->put('/people/:userid', function($userid) use ($person) {
 		$r['error']=true;
 		$r['errorcode']=403;
 		$r['message']=__("UserID already in database.  Use the update API to modify record.");
-	} else {	
+	} else {
 		foreach ( $vars as $prop=>$val ) {
 			if ( property_exists( $p, $prop ) ) {
 				$p->$prop = $val;
 			}
 		}
 		$p->Disabled = false;
-		
+
 		$p->CreatePerson();
-		
+
 		if($p->PersonID==false){
 			$r['error']=true;
 			$r['errorcode']=400;
@@ -75,7 +75,7 @@ $app->put('/people/:userid', function($userid) use ($person) {
 //
 //	URL:	/api/v1/colorcode/:name
 //	Method:	PUT
-//	Params: 
+//	Params:
 //		Required: Name
 //		Optional: DefaultNote
 //	Returns: record as created
@@ -117,7 +117,7 @@ $app->put( '/colorcode/:colorname', function($colorname) use ($person) {
 //	Params:	deviceid (passed in URL)
 //		Required: Label, cabinetid
 //		Optional: everything else
-//	Returns: record as created 
+//	Returns: record as created
 //
 
 $app->put( '/device/:devicelabel', function($devicelabel) {
@@ -189,7 +189,7 @@ $app->put( '/device/:devicelabel', function($devicelabel) {
 //	Params:	deviceid (passed in URL)
 //		Required: Label, cabinetid
 //		Optional: everything else
-//	Returns: record as created 
+//	Returns: record as created
 //
 
 $app->put( '/device/:deviceid/copyto/:newposition', function($deviceid, $newposition) {
@@ -230,7 +230,7 @@ $app->put( '/device/:deviceid/copyto/:newposition', function($deviceid, $newposi
 //
 //	URL:	/api/v1/devicestatus/:status
 //	Method:	PUT
-//	Params: 
+//	Params:
 //		Required: Status
 //		Optional: ColorCode
 //	Returns: record as created
@@ -270,10 +270,10 @@ $app->put( '/devicestatus/:status', function($status) use ($person) {
 //
 //	URL:	/api/v1/devicetemplate/:model
 //	Method:	PUT
-//	Params:	
+//	Params:
 //		Required: Label
 //		Optional: everything else
-//	Returns: record as created 
+//	Returns: record as created
 //
 
 $app->put( '/devicetemplate/:model', function($model) use ($person) {
@@ -315,15 +315,15 @@ $app->put( '/devicetemplate/:model', function($model) use ($person) {
 //
 //	URL:	/api/v1/devicetemplate/:templateid/dataport/:portnum
 //	Method:	PUT
-//	Params:	
+//	Params:
 //		Required: templateid, portnum, portlabel
 //		Optional: everything else
-//	Returns: record as created 
+//	Returns: record as created
 //
 
 $app->put( '/devicetemplate/:templateid/dataport/:portnum', function($templateid, $portnum) use($person) {
 	$tp=new TemplatePorts();
-	
+
 	$vars = getParsedBody();
 
 	foreach( $vars as $prop=>$val ) {
@@ -358,10 +358,10 @@ $app->put( '/devicetemplate/:templateid/dataport/:portnum', function($templateid
 //
 //	URL:	/api/v1/devicetemplate/:templateid/powerport/:portnum
 //	Method:	PUT
-//	Params:	
+//	Params:
 //		Required: templateid, portnum, portlabel
 //		Optional: everything else
-//	Returns: record as created 
+//	Returns: record as created
 //
 
 $app->put( '/devicetemplate/:templateid/powerport/:portnum', function($templateid, $portnum) use ($person) {
@@ -401,10 +401,10 @@ $app->put( '/devicetemplate/:templateid/powerport/:portnum', function($templatei
 //
 //	URL:	/api/v1/devicetemplate/:templateid/slot/:slotnum
 //	Method:	PUT
-//	Params:	
+//	Params:
 //		Required: templateid, slotnum
 //		Optional: everything else
-//	Returns: record as created 
+//	Returns: record as created
 //
 
 $app->put( '/devicetemplate/:templateid/slot/:slotnum', function($templateid, $slotnum) use($person) {
@@ -443,7 +443,7 @@ $app->put( '/devicetemplate/:templateid/slot/:slotnum', function($templateid, $s
 //	URL:	/api/v1/manufacturer/:name
 //	Method:	PUT
 //	Params:	none
-//	Returns: Record as created 
+//	Returns: Record as created
 //
 
 $app->put( '/manufacturer/:name', function($name) use($person) {
@@ -458,7 +458,7 @@ $app->put( '/manufacturer/:name', function($name) use($person) {
 	}
 
 	$man->Name=$name;
-	
+
 	$r['error']=true;
 	$r['errorcode']=400;
 

@@ -11,7 +11,7 @@
 
 	require_once( 'db.inc.php' );
 	require_once( 'facilities.inc.php' );
-	
+
 	$subheader=__("Data Center Operations Metrics");
 
 	$sql = 'select count(*) as DCs from fac_DataCenter';
@@ -20,7 +20,7 @@
 
 	// Overall Statistics
 	$sql='SELECT SUM(NominalWatts) AS Power,
-		(SELECT COUNT(*) FROM fac_Device WHERE DeviceType!="Server" LIMIT 1) AS Devices, 
+		(SELECT COUNT(*) FROM fac_Device WHERE DeviceType!="Server" LIMIT 1) AS Devices,
 		(SELECT COUNT(*) FROM fac_Device WHERE DeviceType="Server" LIMIT 1) AS Servers,
 		(SELECT SUM(Height) FROM fac_Device LIMIT 1) AS Size,
 		(SELECT COUNT(*) FROM fac_VMInventory LIMIT 1) AS VMcount,
@@ -38,7 +38,7 @@
 	$StatsCabinet=$row["CabinetCount"];
 	$StatsPower=$row['Power'];
 	$StatsHeat=$StatsPower * 3.412 / 12000;
-  
+
 	$dc = new DataCenter();
 	$dcList = $dc->GetDCList();
 
@@ -50,19 +50,19 @@
 		$rack=new RackRequest();
 		$tmpContact=new People();
 		$dept=new Department();
-  
+
 		$rackList=$rack->GetOpenRequests();
-  
+
 		foreach($rackList as $request){
 			$tmpContact->PersonID=$request->RequestorID;
 			$tmpContact->GetPerson();
-    
+
 			$dept->DeptID=$request->Owner;
 			$dept->GetDeptByID();
-    
+
 			$reqDate=getdate(strtotime($request->RequestTime));
 			$dueDate=date('M j Y H:i:s',mktime($reqDate['hours'],$reqDate['minutes'],$reqDate['seconds'],$reqDate['mon'],$reqDate['mday']+1,$reqDate['year']));
-    
+
 			if((strtotime($dueDate) - strtotime('now'))< intval( $config->ParameterArray['RackOverdueHours'] * 3600 ) ) {
 				$colorCode='overdue';
 			}elseif((strtotime($dueDate) - strtotime('now'))< intval( $config->ParameterArray['RackWarningHours'] * 3600 ) ) {
@@ -80,14 +80,14 @@
 <head>
   <meta http-equiv="X-UA-Compatible" content="IE=Edge">
   <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-  
+
   <title>openDCIM Data Center Inventory</title>
   <link rel="stylesheet" href="css/inventory.php" type="text/css">
   <link rel="stylesheet" href="css/jquery-ui.css" type="text/css">
   <!--[if lt IE 9]>
   <link rel="stylesheet"  href="css/ie.css" type="text/css" />
   <![endif]-->
-  
+
   <script type="text/javascript" src="scripts/jquery.min.js"></script>
   <script type="text/javascript" src="scripts/jquery-ui.min.js"></script>
 </head>

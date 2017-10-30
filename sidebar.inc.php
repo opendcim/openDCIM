@@ -72,8 +72,8 @@
 		if($(this).text()=='<?php echo __("Advanced");?>'){$(this).text('<?php echo __("Basic");?>');$('#searchadv ~ select[name="key"]').trigger('change');}else{$(this).text('<?php echo __("Advanced");?>');}
 	});
   </script>
-  <script type="text/javascript" src="scripts/mktree.js"></script> 
-  <script type="text/javascript" src="scripts/konami.js"></script> 
+  <script type="text/javascript" src="scripts/mktree.js"></script>
+  <script type="text/javascript" src="scripts/konami.js"></script>
 	<hr>
 <?php
 
@@ -93,9 +93,9 @@
 		}
 		return $level;
 	}
-	
+
 	$menu=buildmenu(array_merge_recursive($rmenu,$rrmenu,$camenu,$wamenu,$samenu,$lmenu));
-	
+
 	print "<ul class=\"nav\">$menu</ul>
 	<hr>
 	<div>
@@ -118,7 +118,7 @@
 	</div>
 
 	<div id="nav_placeholder"></div>';
-	// Moved the navigation menu to an ajax load item	
+	// Moved the navigation menu to an ajax load item
 ?>
 	</div>
 <script type="text/javascript">
@@ -203,10 +203,10 @@ function resize(){
 		// The math just isn't adding up across browsers and FUCK IE
 		if((main+sbw)<width){ // page is larger than content expand main to fit
 			$('#header').outerWidth(width);
-			$('div.main').outerWidth(width-sbw-4); 
+			$('div.main').outerWidth(width-sbw-4);
 			$('div.page').outerWidth(width);
 		}else{ // page is smaller than content expand the page to fit
-			$('div.main').width(width-sbw-12); 
+			$('div.main').width(width-sbw-12);
 			$('#header').width(width+4);
 			$('div.page').width(width+6);
 		}

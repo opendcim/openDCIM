@@ -36,7 +36,7 @@
 			if(strlen($client->access_token))
 			{
 				$success = $client->CallAPI(
-					'http://api.discogs.com/oauth/identity', 
+					'http://api.discogs.com/oauth/identity',
 					'GET', array(), array('FailOnAccessError'=>true), $user);
 			}
 		}
@@ -54,7 +54,7 @@
 </head>
 <body>
 <?php
-		echo '<h1>', HtmlSpecialChars($user->username), 
+		echo '<h1>', HtmlSpecialChars($user->username),
 			' you have logged in successfully with Discogs!</h1>';
 		echo '<pre>', HtmlSpecialChars(print_r($user, 1)), '</pre>';
 ?>

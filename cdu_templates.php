@@ -56,14 +56,14 @@
 <head>
   <meta http-equiv="X-UA-Compatible" content="IE=Edge">
   <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-  
+
   <title>openDCIM Cabinet Distribution Unit Templates</title>
   <link rel="stylesheet" href="css/inventory.php" type="text/css">
   <link rel="stylesheet" href="css/jquery-ui.css" type="text/css">
   <!--[if lt IE 9]>
   <link rel="stylesheet"  href="css/ie.css" type="text/css">
   <![endif]-->
-  
+
   <script type="text/javascript" src="scripts/jquery.min.js"></script>
   <script type="text/javascript" src="scripts/jquery-ui.min.js"></script>
 </head>
@@ -101,7 +101,7 @@ echo '	</select></div>
 		print "		<option value=\"$ManufacturerRow->ManufacturerID\"$selected>$ManufacturerRow->Name</option>\n";
 	}
 
-echo '    </select>    
+echo '    </select>
    </div>
 </div>
 <div>
@@ -129,8 +129,8 @@ echo '    </select>
 		$selected = ( $unit == $template->SNMPVersion ) ? 'selected':'';
 		print "\t\t<option value=\"$unit\" $selected>$unit</option>\n";
 	}
-	
-echo '</select>	
+
+echo '</select>
 	</div>
 </div>
 <div>
@@ -140,7 +140,7 @@ echo '</select>
 <div>
    <div><label for="multiplier">',__("Multiplier"),'</label></div>
    <div><select name="multiplier" id="multiplier">';
-   
+
 	$Multi=array("0.01","0.1","1","10","100");
         $mult = 1;
 
@@ -157,7 +157,7 @@ echo '</select>
             $selected = ( $unit == $mult ) ? ' selected' : '';
             print "\t\t<option value=\"$unit\"$selected>$unit</option>\n";
         }
-	
+
 echo '   </select>
    </div>
 </div>
@@ -190,7 +190,7 @@ echo '   </select>
 		$selected=($prof == $template->ProcessingProfile)?' selected':'';
 		print "<option value=\"$prof\"$selected>$prof</option>";
 	}
-	
+
 echo '   </select></div>
 </div>
 <div>

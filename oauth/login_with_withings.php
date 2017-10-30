@@ -36,7 +36,7 @@
 			if(strlen($client->access_token))
 			{
 				$success = $client->CallAPI(
-					'http://wbsapi.withings.net/user?action=getbyuserid&userid=0', 
+					'http://wbsapi.withings.net/user?action=getbyuserid&userid=0',
 					'GET', array(), array('FailOnAccessError'=>true, 'ResponseContentType'=>'application/json'), $user);
 			}
 		}
@@ -54,7 +54,7 @@
 </head>
 <body>
 <?php
-		echo '<h1>', HtmlSpecialChars($user->body->users[0]->firstname), 
+		echo '<h1>', HtmlSpecialChars($user->body->users[0]->firstname),
 			' you have logged in successfully with Withings!</h1>';
 		echo '<pre>', HtmlSpecialChars(print_r($user, 1)), '</pre>';
 ?>

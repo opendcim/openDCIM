@@ -126,7 +126,7 @@
     $content = "";
     $fields = array( "DataCenter", "Container", "Zone", "Row" );
 
-    for ( $n = 2; $n <= $highestRow; $n++ ) { 
+    for ( $n = 2; $n <= $highestRow; $n++ ) {
       $rowError = false;
 
       // Load up the $row[] array with the values according to the mapping supplied by the user
@@ -152,7 +152,7 @@
           $info = $dbh->errorInfo();
           error_log( "PDO Error: {$info[2]}");
         }
-        
+
         if ( $val["TotalHits"] != 1 ) {
           $st = $dbh->prepare("insert into fac_Container set Name=:Name");
           $st->execute( array( ":Name"=>$row["Container"]));
@@ -189,7 +189,7 @@
        *  Section for looking up the ZoneID and setting the true ZoneID
        *
        */
-      
+
       $ZoneID = 0;
 
       // Zone is optional, so only do this if we have a non-empty cell
@@ -216,7 +216,7 @@
        *  Section for looking up the RowID and adding, if not exists
        *
        */
-      
+
       // Rows are also optional
       if ( $row["Row"] != "" && $DataCenterID > 0 ) {
         $st = $dbh->prepare( "select count(RowID) as TotalMatches, CabRowID from fac_CabRow where DataCenterID=:DataCenterID and ZoneID=:ZoneID and ucase(Name)=ucase(:Name)" );
@@ -278,14 +278,14 @@
 <head>
   <meta http-equiv="X-UA-Compatible" content="IE=Edge">
   <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-  
+
   <title>openDCIM</title>
   <link rel="stylesheet" href="css/inventory.php" type="text/css">
   <link rel="stylesheet" href="css/jquery-ui.css" type="text/css">
   <!--[if lt IE 9]>
   <link rel="stylesheet"  href="css/ie.css" type="text/css" />
   <![endif]-->
-  
+
   <script type="text/javascript" src="scripts/jquery.min.js"></script>
   <script type="text/javascript" src="scripts/jquery-ui.min.js"></script>
 </head>

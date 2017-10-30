@@ -10,7 +10,7 @@
 
 	$dc=new DataCenter();
 	$dcList=$dc->GetDCList();
-	
+
 	$dev=new Device();
 	$vm=new VM();
 	$cab=new Cabinet();
@@ -96,8 +96,8 @@
 		$devList=$dev->LooseSearch(true);
 		$cab->Notes=$searchTerm;
 		$cabList=$cab->LooseSearch(true);
-		// DevicePorts and PowerPorts use the same structures and functions so 
-		// we're just looping the search to not repeat code 
+		// DevicePorts and PowerPorts use the same structures and functions so
+		// we're just looping the search to not repeat code
 		foreach(array('DevicePorts','PowerPorts') as $pt){
 			$p=new $pt();
 			$p->Notes=$searchTerm;
@@ -112,7 +112,7 @@
 				}
 			}
 		}
-		$resultcount=count($devList)+count($cabList); 
+		$resultcount=count($devList)+count($cabList);
 		$title=__("Notes search results for")." &quot;$searchTerm&quot;";
 	}elseif($searchKey=="dev"){
 		// This is gonna be a generic catch all
@@ -270,7 +270,7 @@
 	// Sort array based on device label
 	if(!empty($temp)){
 		$devList=sort2d($temp,'label');
-	}else{ 
+	}else{
 		// it's possible to have cdu's and cabinets in the search results and no devices
 		// this will clear the devList in case it contained special devices
 		$devList=array();
@@ -349,21 +349,21 @@
 		}
 	}
 
-	$subheader=(isset($title))?$title:"";				
+	$subheader=(isset($title))?$title:"";
 ?>
 <!doctype html>
 <html>
 <head>
   <meta http-equiv="X-UA-Compatible" content="IE=Edge">
   <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-  
+
   <title>openDCIM Search Results</title>
   <link rel="stylesheet" href="css/inventory.php" type="text/css">
   <link rel="stylesheet" href="css/jquery-ui.css" type="text/css">
   <!--[if lt IE 9]>
   <link rel="stylesheet"  href="css/ie.css" type="text/css" />
   <![endif]-->
-  
+
   <script type="text/javascript" src="scripts/jquery.min.js"></script>
   <script type="text/javascript" src="scripts/jquery-ui.min.js"></script>
   <script type="text/javascript" src="scripts/jquery.timer.js"></script>
@@ -455,7 +455,7 @@ $(document).ready(function() {
 					foreach($devList as $key => $row){
 						if($cabID==$row['cabinet'] && $row['parent']==0){
 							printDevice($row);
-						} 
+						}
 					}
 				}
 				print "\t\t\t\t</ol>\n\t\t\t</li>\n";

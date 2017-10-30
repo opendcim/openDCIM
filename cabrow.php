@@ -13,7 +13,7 @@
 	$cabrow=new CabRow();
 	$zone=new Zone();
 	$DC=new DataCenter();
-	
+
 	$zoneList=$zone->GetZoneList();
 	$formpatch="";
 	$status="";
@@ -28,12 +28,12 @@
 	if(isset($_REQUEST["cabrowid"])) {
 		$cabrow->CabRowID=(isset($_POST['cabrowid'])?$_POST['cabrowid']:$_GET['cabrowid']);
 		$cabrow->GetCabRow();
-		
+
 		if(isset($_POST["action"]) && (($_POST["action"]=="Create") || ($_POST["action"]=="Update"))){
 			$cabrow->Name=$_POST["name"];
 			$cabrow->DataCenterID=$_POST["datacenterid"];
 			$cabrow->ZoneID=$_POST["zoneid"];
-			
+
 			if($_POST["action"]=="Create"){
 				$cabrow->CreateCabRow();
 			}else{
@@ -55,7 +55,7 @@
 <head>
   <meta http-equiv="X-UA-Compatible" content="IE=Edge">
   <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-  
+
   <title>openDCIM Rows of Cabinets</title>
 
   <link rel="stylesheet" href="css/inventory.php" type="text/css">
@@ -110,7 +110,7 @@
 			var btn=$(this);
 <?php
 print "		var dialog=$('<div>').prop('title','".__("Verify Delete Row")."').html('<p><span class=\"ui-icon ui-icon-alert\" style=\"float:left; margin:0 7px 20px 0;\"></span><span></span></p>');";
-print "		dialog.find('span + span').html('".__("This Row will be deleted and there is no undo.  Assets within the row will remain as members of the Data Center.")."<br>".__("Are you sure?")."');"; 
+print "		dialog.find('span + span').html('".__("This Row will be deleted and there is no undo.  Assets within the row will remain as members of the Data Center.")."<br>".__("Are you sure?")."');";
 ?>
 			dialog.dialog({
 				resizable: false,

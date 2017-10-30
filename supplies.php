@@ -13,11 +13,11 @@
 	$sup=new Supplies();
 	$bc=new BinContents();
 
-	$inventory=array();	
+	$inventory=array();
 	if(isset($_REQUEST["supplyid"]) && $_REQUEST["supplyid"]>0) {
 		$sup->SupplyID=$_REQUEST["supplyid"];
 		$sup->GetSupplies();
-		
+
 		$bc->SupplyID = $sup->SupplyID;
 		$inventory = $bc->FindSupplies();
 	}
@@ -39,7 +39,7 @@
 			$sup->UpdateSupplies();
 		}
 	}
-	
+
 	$supplyList=$sup->GetSuppliesList();
 
 	$supplytable='';
@@ -64,7 +64,7 @@
 <head>
   <meta http-equiv="X-UA-Compatible" content="IE=Edge">
   <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-  
+
   <title>openDCIM Stockroom Supplies</title>
   <link rel="stylesheet" href="css/inventory.php" type="text/css">
   <link rel="stylesheet" href="css/jquery-ui.css" type="text/css">

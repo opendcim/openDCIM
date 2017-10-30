@@ -41,7 +41,7 @@
 			if(strlen($client->access_token))
 			{
 				$success = $client->CallAPI(
-					'http://api.rdio.com/1/', 
+					'http://api.rdio.com/1/',
 					'POST', array('method'=>'currentUser'), array('FailOnAccessError'=>true), $user);
 			}
 		}
@@ -59,7 +59,7 @@
 </head>
 <body>
 <?php
-		echo '<h1>', HtmlSpecialChars($user->firstName), 
+		echo '<h1>', HtmlSpecialChars($user->firstName),
 			' you have logged in successfully with Rdio!</h1>';
 		echo '<pre>', HtmlSpecialChars(print_r($user, 1)), '</pre>';
 ?>

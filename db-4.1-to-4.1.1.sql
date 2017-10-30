@@ -11,7 +11,7 @@ CREATE TABLE IF NOT EXISTS fac_Jobs (
 
 --
 -- Make custom attributes unique, need to add a test for this
--- 
+--
 ALTER TABLE fac_DeviceCustomAttribute ADD UNIQUE (Label);
 
 --

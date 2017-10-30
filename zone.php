@@ -13,22 +13,22 @@
 	$zone=new Zone();
 	$dc_zone=new DataCenter();
 	$dc=new DataCenter();
-	
+
 	$DCList=$dc->GetDCList();
 	$formpatch="";
 	$status="";
-	
+
 	if(isset($_POST['action']) && $_POST['action']=='Delete'){
 		$zone->ZoneID=$_POST['zoneid'];
 		$zone->DeleteZone();
 		header('Location: '.redirect('zone.php'));
 		exit;
 	}
-	
+
 	if(isset($_REQUEST["zoneid"])) {
 		$zone->ZoneID=(isset($_POST['zoneid'])?$_POST['zoneid']:$_GET['zoneid']);
 		$zone->GetZone();
-		
+
 		if(isset($_POST["action"]) && (($_POST["action"]=="Create") || ($_POST["action"]=="Update"))){
 			$zone->Description=$_POST["description"];
 			$zone->DataCenterID=$_POST["datacenterid"];
@@ -37,7 +37,7 @@
 			$zone->MapX2=$_POST["x2"];
 			$zone->MapY2=$_POST["y2"];
 			$zone->MapZoom=$_POST["mapzoom"];
-			
+
 			if($_POST["action"]=="Create"){
 				$zone->CreateZone();
 			}else{
@@ -52,7 +52,7 @@
 
 	$dc_zone->DataCenterID=$zone->DataCenterID;
 	$dc_zone->GetDataCenterbyID();
-	
+
 	$zoneList=$zone->GetZoneList();
 	$height=0;
 	$width=0;
@@ -81,7 +81,7 @@
 <head>
   <meta http-equiv="X-UA-Compatible" content="IE=Edge">
   <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-  
+
   <title><?php echo __("openDCIM Data Center Zones"); ?></title>
 
   <link rel="stylesheet" href="css/inventory.php" type="text/css">
@@ -98,7 +98,7 @@
   <link rel="stylesheet"  href="css/ie.css" type="text/css">
     <?php if(isset($ie8fix)){echo $ie8fix;} ?>
   <![endif]-->
-  
+
 </head>
 <body>
 <?php include( 'header.inc.php' ); ?>
@@ -194,8 +194,8 @@ if(strlen($dc_zone->DrawingFileName) >0){
 		<div class="container demo">
 			<div style="float: left; ">
 				<p class="instructions">',__("Click and drag on the image to select an area for this zone"),'</p>
-				<div class="frame" style="margin: 0 0.3em; width: 300px; height: 300px;"> 
-			  	    <img id="map" height=',$height,' width=',$width,' src="drawings/',$dc_zone->DrawingFileName,'"> 
+				<div class="frame" style="margin: 0 0.3em; width: 300px; height: 300px;">
+			  	    <img id="map" height=',$height,' width=',$width,' src="drawings/',$dc_zone->DrawingFileName,'">
 		 		</div>
 		 	</div>
 		</div>
@@ -204,7 +204,7 @@ if(strlen($dc_zone->DrawingFileName) >0){
 
 echo '
 <a href="index.php">[ ',__("Return to Main Menu"),' ]</a>
-</div><!-- END div.main -->'; 
+</div><!-- END div.main -->';
 
  ?>
 
@@ -227,14 +227,14 @@ echo '
 			handles: true,
 			onSelectChange: preview
 		});
-		
+
 		// Delete container confirmation dialog
 		$('button[value="Delete"]').click(function(e){
 			var form=$(this).parents('form');
 			var btn=$(this);
 <?php
 print "		var dialog=$('<div>').prop('title','".__("Verify Delete Zone")."').html('<p><span class=\"ui-icon ui-icon-alert\" style=\"float:left; margin:0 7px 20px 0;\"></span><span></span></p>');";
-print "		dialog.find('span + span').html('".__("This Zone will be deleted and there is no undo.  Assets within the zone will remain as members of the Data Center.")."<br><br>".__("Are you sure?")."');"; 
+print "		dialog.find('span + span').html('".__("This Zone will be deleted and there is no undo.  Assets within the zone will remain as members of the Data Center.")."<br><br>".__("Are you sure?")."');";
 ?>
 			dialog.dialog({
 				resizable: false,

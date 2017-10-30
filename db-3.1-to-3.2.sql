@@ -4,7 +4,7 @@
 ALTER TABLE fac_CabRow ADD COLUMN CabOrder ENUM( 'ASC', 'DESC' ) NOT NULL DEFAULT 'ASC';
 
 --
--- Add the picture fields for front/rear views, and front/rear slots in device template 
+-- Add the picture fields for front/rear views, and front/rear slots in device template
 --
 ALTER TABLE fac_DeviceTemplate ADD COLUMN FrontPictureFile VARCHAR(45) NOT NULL AFTER Notes;
 ALTER TABLE fac_DeviceTemplate ADD COLUMN RearPictureFile VARCHAR(45) NOT NULL AFTER FrontPictureFile;
@@ -12,7 +12,7 @@ ALTER TABLE fac_DeviceTemplate ADD COLUMN ChassisSlots SMALLINT(6) NOT NULL AFTE
 ALTER TABLE fac_DeviceTemplate ADD COLUMN RearChassisSlots SMALLINT(6) NOT NULL AFTER ChassisSlots;
 
 --
--- Slots table content the coodinates os slots in a picture of a chassis device template 
+-- Slots table content the coodinates os slots in a picture of a chassis device template
 --
 CREATE TABLE IF NOT EXISTS fac_Slots (
 	TemplateID INT(11) NOT NULL,
@@ -32,7 +32,7 @@ CREATE TABLE IF NOT EXISTS fac_Slots (
 ALTER TABLE fac_Cabinet ADD COLUMN FrontEdge ENUM("Top","Right","Bottom","Left") NOT NULL DEFAULT "Top" AFTER MapX2;
 
 --
--- TempaltePorts table content the ports of a device template 
+-- TempaltePorts table content the ports of a device template
 --
 CREATE TABLE IF NOT EXISTS `fac_TemplatePorts` (
   `TemplateID` int(11) NOT NULL,
@@ -69,7 +69,7 @@ CREATE TABLE IF NOT EXISTS `fac_GenericLog` (
 
 --
 -- Add configuration items for path weights
--- I honestly don't understand this so I didn't fill in what the UnitOfMeasure is 
+-- I honestly don't understand this so I didn't fill in what the UnitOfMeasure is
 --
 
 INSERT INTO fac_Config VALUES ('path_weight_cabinet', '1', '', 'int', '1'),

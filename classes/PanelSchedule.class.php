@@ -27,7 +27,7 @@ class PanelSchedule {
 	/* PanelSchedule:	Create a panel schedule based upon all of the known connections.  In
 						other words - if you take down Panel A4, what cabinets will be affected?
 	*/
-	
+
 	var $PanelID;
 	var $PolePosition;
 	var $NumPoles;
@@ -49,9 +49,9 @@ class PanelSchedule {
 
 		$this->MakeSafe();
 
-		$sql="INSERT INTO fac_PanelSchedule SET PanelID=$this->PanelID, 
-			PolePosition=$this->PolePosition, NumPoles=$this->NumPoles, 
-			Label=\"$this->Label\" ON DUPLICATE KEY UPDATE Label=\"$this->Label\", 
+		$sql="INSERT INTO fac_PanelSchedule SET PanelID=$this->PanelID,
+			PolePosition=$this->PolePosition, NumPoles=$this->NumPoles,
+			Label=\"$this->Label\" ON DUPLICATE KEY UPDATE Label=\"$this->Label\",
 			NumPoles=$this->NumPoles;";
 
 		(class_exists('LogActions'))?LogActions::LogThis($this):'';
@@ -62,22 +62,22 @@ class PanelSchedule {
 		global $dbh;
 
 		$html="<table border=1>\n";
-		  
+
 		$pan=new PowerPanel();
 		$pan->PanelID=$this->PanelID;
 		$pan->getPanel();
-		 
+
 		$sched=array_fill( 1, $pan->NumberOfPoles, "<td>&nbsp;</td>" );
 
 		$sql="SELECT * FROM fac_PanelSchedule WHERE PanelID=$this->PanelID ORDER BY PolePosition ASC;";
 
 		foreach($dbh->query($sql) as $row){
 			$sched[$row["PolePosition"]]="<td rowspan={$row["NumPoles"]}>{$row["Label"]}</td>";
-		  
+
 			if($row["NumPoles"] >1){
 				$sched[$row["PolePosition"] + 2] = "";
 			}
-		  
+
 			if($row["NumPoles"] >2){
 				$sched[$row["PolePosition"] + 4] = "";
 			}

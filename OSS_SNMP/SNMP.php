@@ -73,7 +73,7 @@ class SNMP
     protected $_version;
 
     /**
-     * Essentially the same thing as the community for v1 and v2 
+     * Essentially the same thing as the community for v1 and v2
      */
     protected $_secName;
 
@@ -84,26 +84,26 @@ class SNMP
     protected $_secLevel;
 
     /**
-     * The authentication encryption picked on the device. 
+     * The authentication encryption picked on the device.
      * Defaults to MD5 by the constructor.
      * valid strings: (MD5|SHA)
      */
     protected $_authProtocol;
 
     /**
-     * The password for the secName. Defaults to None by the constructor. 
+     * The password for the secName. Defaults to None by the constructor.
      */
     protected $_authPassphrase;
 
     /**
-     * The communication encryption picked on the device. 
+     * The communication encryption picked on the device.
      * Defaults to DES by the constructor.
      * valid strings: (DES|AES)
      */
     protected $_privProtocol;
 
     /**
-     * The password for the secName. Defaults to None by the constructor. 
+     * The password for the secName. Defaults to None by the constructor.
      */
     protected $_privPassphrase;
 

@@ -29,7 +29,7 @@
 <head>
   <meta http-equiv="X-UA-Compatible" content="IE=Edge">
   <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-  
+
   <title>openDCIM Data Center Inventory</title>
   <link rel="stylesheet" href="css/inventory.php" type="text/css">
   <link rel="stylesheet" href="css/jquery-ui.css" type="text/css">
@@ -106,7 +106,7 @@
   <!--[if lt IE 9]>
   <link rel="stylesheet"  href="css/ie.css" type="text/css" />
   <![endif]-->
-  
+
   <script type="text/javascript" src="scripts/jquery.min.js"></script>
   <script type="text/javascript" src="scripts/jquery-ui.min.js"></script>
 
@@ -151,7 +151,7 @@ function convertImgToBase64(url, imgobj) {
 		blob.name = url.split('/').pop();
 		// Store the newly created file object in the data structure
 		imgobj.data('file',blob);
-		// Clean up 
+		// Clean up
 		canvas = null;
 	};
 }
@@ -525,8 +525,8 @@ function convertImgToBase64(url, imgobj) {
 					'UserID':window.UserID
 				},
 				data: {
-					template: row.data("localdev"), 
-					templateports: row.data("localdataports"), 
+					template: row.data("localdev"),
+					templateports: row.data("localdataports"),
 					templatepowerports: row.data("localpowerports"),
 					slots: row.data("localslots")
 				},
@@ -569,7 +569,7 @@ function convertImgToBase64(url, imgobj) {
 		 */
 
 		function MakePortsTable(ports,insertTarget,label,type){
-			// Make a table to embed in the dialog we established above 
+			// Make a table to embed in the dialog we established above
 			var tbl_dataports=$('<div>').addClass('table');
 			var porttype=(type=='data')?'DataPorts':'PowerPorts';
 			insertTarget[porttype].append(tbl_dataports);
@@ -581,7 +581,7 @@ function convertImgToBase64(url, imgobj) {
 			tbl_dataports.append(portheader);
 			$('<div>').text(label).addClass('caption').appendTo(tbl_dataports);
 			if(typeof ports!='undefined'){
-				for(var i in ports){	
+				for(var i in ports){
 					var portrow=$('<div>');
 					$('<div>').text(ports[i].PortNumber).appendTo(portrow);
 					$('<div>').text(ports[i].Label).appendTo(portrow);
@@ -601,7 +601,7 @@ function convertImgToBase64(url, imgobj) {
 		 */
 
 		function MakeSlotsTable(slots,insertTarget,label,type){
-			// Make a table to embed in the dialog we established above 
+			// Make a table to embed in the dialog we established above
 			var tbl_slots=$('<div>').addClass('table');
 			var slottype=(type=='front')?'Front':'Rear';
 			insertTarget[slottype].append(tbl_slots);
@@ -656,7 +656,7 @@ function convertImgToBase64(url, imgobj) {
 							// check and see if we need to hide the button because the templates are in sync
 							if(!row.hasClass('change')){
 								row['command'].find('button').hide();
-							}	
+							}
 							// Store the template at the row level so we have easy access later
 							row.data('localdev',data.devicetemplate[i]);
 							$.ajax({url:'api/v1/devicetemplate/'+data.devicetemplate[i].TemplateID+'/dataport',type:'get',async:false}).done(function(data){
@@ -816,7 +816,7 @@ function convertImgToBase64(url, imgobj) {
 			this.gid.text(manf.GlobalID);
 		},
 		ButtonPress: function(e){
-			// We're not gonna bind a specific function to the button but check it at 
+			// We're not gonna bind a specific function to the button but check it at
 			// the time it is clicked to see what it should do
 			var pushpull=this.button.data('action');
 			if(pushpull=='pull'){
@@ -872,7 +872,7 @@ function convertImgToBase64(url, imgobj) {
 							async: false,
 							data: {ManufacturerID:row.local.ManufacturerID,GlobalID:data.manufacturers[0].ManufacturerID,Name:data.manufacturers[0].Name},
 							success: function(data){
-								// Update the screen with the new data 
+								// Update the screen with the new data
 								row.local.ManufacturerID=data.ManufacturerID;
 								row.local.GlobalID=data.GlobalID;
 								row.local.Name=data.Name;
@@ -942,7 +942,7 @@ function convertImgToBase64(url, imgobj) {
 								pl.manufacturersqueue.splice(i, 1);
 								break;
 							}
-						}	
+						}
 					}
 				// ELSE we have a GlobalID already set so we need to pull that specific record and compare all the fields
 				}else{

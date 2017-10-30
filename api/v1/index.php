@@ -25,7 +25,7 @@
 	];
 
 	$c = new \Slim\Container($configuration);
-	
+
 	$app = new \Slim\App($c);
 */
 
@@ -48,7 +48,7 @@
  *	environment.
  *
  */
- 
+
 	$user_id = NULL;
 
 function specifyAttributes( $attrList, $objList ) {
@@ -97,7 +97,7 @@ $app->add(function($request, $response, $next) use($person) {
 	    $headers = $request->getServerParams();
 
 	    $valid = false;
-	 
+
 	 	if ( isset( $_SESSION['userid'] ) ) {
 	 		$valid = true;
 
@@ -172,7 +172,7 @@ function getParsedBody() {
 	$app = \Slim\Slim::getInstance();
 
 	if ( ! $vars = json_decode( $app->request->getBody(), true )) {
-		$vars = $app->request->params();		
+		$vars = $app->request->params();
 	}
 
 	return $vars;

@@ -10,11 +10,11 @@ class PDF extends FPDF {
   var $OutlineRoot;
   var $pdfconfig;
   var $pdfDB;
-  
+
 	function PDF(){
 		parent::FPDF();
 	}
-  
+
 	function Header() {
 		$this->pdfconfig = new Config();
 		if ( file_exists( 'images/' . $this->pdfconfig->ParameterArray['PDFLogoFile'] )) {
@@ -39,7 +39,7 @@ class PDF extends FPDF {
 
     $Owner = @$_REQUEST['owner'];
 	$DataCenterID = @$_REQUEST['datacenterid'];
-  
+
 	$pdf=new PDF();
 	include_once("loadfonts.php");
 	$pdf->AliasNbPages();
@@ -66,12 +66,12 @@ class PDF extends FPDF {
 	$fill = 0;
 
 	$Criteria = '';
-	
+
 	if ( $Owner > 0 )
 		$Criteria .= 'c.Owner=\'' . intval( $Owner ) . '\' and ';
 	if ( $DataCenterID > 0 )
 		$Criteria .= 'b.DataCenterID=\'' . intval( $DataCenterID ) . '\' and ';
-		
+
     $searchSQL = 'select a.Name,b.Location,c.Position,c.Height,c.Label,c.SerialNo,c.AssetTag,c.DeviceID,c.DeviceType from fac_DataCenter a, fac_Cabinet b, fac_Device c where ' . $Criteria . 'c.ParentDevice=0 and c.Cabinet=b.CabinetID and b.DataCenterID=a.DataCenterID and c.Reservation=false order by a.Name,b.Location,c.Position';
 
 	$lastDC = '';
@@ -84,7 +84,7 @@ class PDF extends FPDF {
 			$Position = '[' . $reportRow['Position'] . '-' . intval($reportRow['Position']+$reportRow['Height']-1) . ']';
 		else
 			$Position = $reportRow['Position'];
-			
+
 		$Label = $reportRow['Label'];
 		$SerialNo = $reportRow['SerialNo'];
 		$AssetTag = $reportRow['AssetTag'];
@@ -106,12 +106,12 @@ class PDF extends FPDF {
 		$pdf->Ln();
 
 		$fill =! $fill;
-		
+
 		if ( $reportRow["DeviceType"] == "Chassis" ) {
 			$chDev = new Device();
 			$chDev->DeviceID = $reportRow["DeviceID"];
 			$chList = $chDev->GetDeviceChildren();
-			
+
 			foreach ( $chList as $chRow ) {
 				$pdf->Cell( $cellWidths[0], 6, '', 'LR', 0, 'L', $fill );
 				$pdf->Cell( $cellWidths[1], 6, '', 'LR', 0, 'L', $fill );
@@ -121,7 +121,7 @@ class PDF extends FPDF {
 				$pdf->Cell( $cellWidths[5], 6, $chRow->AssetTag, 'LR', 0, 'L', $fill );
 				$pdf->Ln();
 
-				$fill =! $fill;				
+				$fill =! $fill;
 			}
 		}
 

@@ -27,13 +27,13 @@ class MediaTypes {
 	var $MediaID;
 	var $MediaType;
 	var $ColorID;
-	
+
 	function CreateType() {
 		global $dbh;
-		
-		$sql="INSERT INTO fac_MediaTypes SET MediaType=\"".sanitize($this->MediaType)."\", 
+
+		$sql="INSERT INTO fac_MediaTypes SET MediaType=\"".sanitize($this->MediaType)."\",
 			ColorID=".intval($this->ColorID);
-			
+
 		if($dbh->exec($sql)){
 			$this->MediaID=$dbh->lastInsertId();
 		}else{
@@ -42,72 +42,72 @@ class MediaTypes {
 			error_log("PDO Error: {$info[2]}");
 			return false;
 		}
-		
+
 		return $this->MediaID;
 	}
-	
+
 	function UpdateType() {
 		global $dbh;
-		
-		$sql="UPDATE fac_MediaTypes SET MediaType=\"".sanitize($this->MediaType)."\", 
+
+		$sql="UPDATE fac_MediaTypes SET MediaType=\"".sanitize($this->MediaType)."\",
 			ColorID=".intval($this->ColorID)." WHERE MediaID=".intval($this->MediaID);
-			
+
 		if(!$dbh->query($sql)){
 			$info=$dbh->errorInfo();
 			error_log("PDO Error: {$info[2]}");
 			return false;
-		}else{		
+		}else{
 			return true;
 		}
 	}
-	
+
 	function DeleteType() {
 		/* It is up to the calling application to check to make sure that orphans are not being created! */
-		
+
 		global $dbh;
-		
+
 		$sql="DELETE FROM fac_MediaTypes WHERE MediaID=".intval($this->MediaID);
-		
+
 		return $dbh->exec( $sql );
 	}
-	
+
 	function GetType() {
 		global $dbh;
-		
+
 		$sql="SELECT * FROM fac_MediaTypes WHERE MediaID=".intval($this->MediaID);
-		
+
 		if(!$row=$dbh->query($sql)->fetch()){
 			return false;
 		}else{
 			$this->MediaType = $row["MediaType"];
 			$this->ColorID = $row["ColorID"];
-			
+
 			return true;
 		}
 	}
-	
+
 	function GetTypeByName() {
 		global $dbh;
-		
+
 		$sql="SELECT * FROM fac_MediaTypes WHERE MediaType='".sanitize($this->MediaType)."';";
-		
+
 		if(!$row=$dbh->query($sql)->fetch()){
 			return false;
 		}else{
 			$this->MediaID = $row["MediaID"];
 			$this->ColorID = $row["ColorID"];
-			
+
 			return true;
 		}
 	}
-	
+
 	static function GetMediaTypeList() {
 		global $dbh;
-		
+
 		$sql = "SELECT * FROM fac_MediaTypes ORDER BY MediaType ASC";
-		
+
 		$mediaList = array();
-	
+
 		foreach ( $dbh->query( $sql ) as $row ) {
 			$n=$row["MediaID"];
 			$mediaList[$n] = new MediaTypes();
@@ -115,7 +115,7 @@ class MediaTypes {
 			$mediaList[$n]->MediaType = $row["MediaType"];
 			$mediaList[$n]->ColorID = $row["ColorID"];
 		}
-		
+
 		return $mediaList;
 	}
 
@@ -136,7 +136,7 @@ class MediaTypes {
 			$info=$dbh->errorInfo();
 			error_log("PDO Error: {$info[2]}");
 			return false;
-		}else{		
+		}else{
 			return true;
 		}
 	}

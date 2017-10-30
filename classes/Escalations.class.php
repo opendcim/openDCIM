@@ -60,7 +60,7 @@ class Escalations {
 			return false;
 		}
 	}
-	
+
 	function DeleteEscalation(){
 		$this->MakeSafe();
 
@@ -69,12 +69,12 @@ class Escalations {
 		(class_exists('LogActions'))?LogActions::LogThis($this):'';
 		return $this->exec($sql);
 	}
-	
+
 	function GetEscalation(){
 		$this->MakeSafe();
 
 		$sql="SELECT * FROM fac_Escalations WHERE EscalationID=$this->EscalationID;";
-		
+
 		if($row=$this->query($sql)->fetch()){
 			$this->EscalationID=$row["EscalationID"];
 			$this->Details=$row["Details"];
@@ -84,10 +84,10 @@ class Escalations {
 			return false;
 		}
 	}
-	
+
 	function GetEscalationList() {
 		$sql="SELECT * FROM fac_Escalations ORDER BY Details ASC;";
-		
+
 		$escList=array();
 		foreach($this->query($sql) as $row){
 			$escList[$row["EscalationID"]]=new Escalations();
@@ -95,10 +95,10 @@ class Escalations {
 			$escList[$row["EscalationID"]]->Details=$row["Details"];
 			$escList[$row["EscalationID"]]->MakeDisplay();
 		}
-		
+
 		return $escList;
 	}
-	
+
 	function UpdateEscalation(){
 		$this->MakeSafe();
 
@@ -106,11 +106,11 @@ class Escalations {
 		$oldesc->EscalationID=$this->EscalationID;
 		$oldesc->GetEscalation();
 
-		$sql="UPDATE fac_Escalations SET Details=\"$this->Details\" WHERE 
+		$sql="UPDATE fac_Escalations SET Details=\"$this->Details\" WHERE
 			EscalationID=$this->EscalationID;";
 
 		$this->MakeDisplay();
-			
+
 		(class_exists('LogActions'))?LogActions::LogThis($this,$oldesc):'';
 		return $this->query($sql);
 	}

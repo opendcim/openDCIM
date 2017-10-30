@@ -84,7 +84,7 @@
 			}else{
 				echo 'f';
 			}
-			
+
 		}
 		exit;
 	}
@@ -105,7 +105,7 @@
 			$output.="<option value=\"$mt->MediaID\">$mt->MediaType</option>";
 		}
 		echo $output;
-		exit;		
+		exit;
 	}
 
 	if(isset($_POST['dcal'])){
@@ -154,7 +154,7 @@
 					echo 'f';
 				}
 				exit;
-			} 
+			}
 			if($dca->UpdateDeviceCustomAttribute()){
 				echo 'u';
 			}else{
@@ -248,7 +248,7 @@
 			if ($hour == 0 AND $minutes == 0) {
 				$sign = ' ';
 			}
-			return 'GMT' . $sign . str_pad($hour, 2, '0', STR_PAD_LEFT) 
+			return 'GMT' . $sign . str_pad($hour, 2, '0', STR_PAD_LEFT)
 					.':'. str_pad($minutes,2, '0');
 
 	}
@@ -333,8 +333,8 @@
 			if($dca->AllDevices) { $customattrs.=' checked'; }
 			$currinputtype="text";
 			$currchecked="";
-			if($dca->AttributeType=="checkbox") { 
-				$currinputtype="checkbox"; 
+			if($dca->AttributeType=="checkbox") {
+				$currinputtype="checkbox";
 				if($dca->DefaultValue) {
 					$currchecked=" checked";
 				}
@@ -398,7 +398,7 @@
 <head>
   <meta http-equiv="X-UA-Compatible" content="IE=Edge">
   <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-  
+
   <title>openDCIM Data Center Inventory</title>
   <link rel="stylesheet" href="css/inventory.php" type="text/css">
   <link rel="stylesheet" href="css/jquery.miniColors.css" type="text/css">
@@ -409,7 +409,7 @@
   <!--[if lt IE 9]>
   <link rel="stylesheet"  href="css/ie.css" type="text/css">
   <![endif]-->
-  
+
   <script type="text/javascript" src="scripts/jquery.min.js"></script>
   <script type="text/javascript" src="scripts/jquery-ui.min.js"></script>
   <script type="text/javascript" src="scripts/jquery.uploadifive.js"></script>
@@ -647,7 +647,7 @@
 							}
 						});
 						modal.find($('#replaceme')).replaceWith(choices);
-						
+
 					});
 				}
 			});
@@ -759,7 +759,7 @@
 			});
 		}
 
-		
+
 
 
 
@@ -808,7 +808,7 @@
 										rowobject.effect('explode', {}, 500, function(){
 											$(this).remove();
 										});
-										// Need to trigger a reload of any of the media types that had this 
+										// Need to trigger a reload of any of the media types that had this
 										// color so they will display the new color
 										$('#mediatypes > div ~ div:not(:last-child) input').val('').change();
 									}else{ // failed to delete
@@ -1005,7 +1005,7 @@
 
 			function update(e){
 				if(e.currentTarget.tagName=="SELECT"){
-					function processChange() { 
+					function processChange() {
 						if(e.currentTarget.value == "checkbox") {
 							row.DefaultValue.attr('type', 'checkbox');
 							row.DefaultValue.prop('checked', false);
@@ -1020,8 +1020,8 @@
 							row.DefaultValue.change();
 						}
 					}
-					
-					if(row.addrem.attr('id')=='newline') { 
+
+					if(row.addrem.attr('id')=='newline') {
 						processChange();
 					} else {
 						$.post('',{dcaused: row.Label.attr('data')}).done(function(data){
@@ -1075,7 +1075,7 @@
 					var dcavtosend=row.DefaultValue.val();
 					if(row.AttributeType.val()=='checkbox'){
 						dcavtosend=row.DefaultValue.prop('checked');
-					}	
+					}
 					if(row.Label.val().trim()=='' && row.addrem.prop('id')!='newline'){
 						//reset to previous value
 						revertdefault(row,true);
@@ -1109,7 +1109,7 @@
 										dcav.val('');
 									} else {
 										row.remove();
-									}	
+									}
 								}
 							});
 						}
@@ -1657,7 +1657,7 @@ echo '<div class="main">
 						</select>
 					</div>
 				</div>
-			</div> <!-- end table -->			
+			</div> <!-- end table -->
 			<h3>',__("Rack Requests"),'</h3>
 			<div class="table">
 				<div>

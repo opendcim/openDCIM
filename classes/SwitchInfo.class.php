@@ -89,7 +89,7 @@ class SwitchInfo {
 		if(!$dev=SwitchInfo::BasicTests($DeviceID)){
 			return false;
 		}
-		
+
 		$x=array();
 		$portlist=self::OSS_SNMP_Lookup($dev,"names");
 		foreach($portlist as $index => $portdesc ) {
@@ -117,7 +117,7 @@ class SwitchInfo {
 
 		// We never did finish the discussion of if we should use the mib vs the oid
 		$baseOID = ".1.3.6.1.2.1.31.1.1.1.1";
-		$baseOID = "IF-MIB::ifName"; 
+		$baseOID = "IF-MIB::ifName";
 
 		$nameList=self::OSS_SNMP_Lookup($dev,"descriptions",$portid,$baseOID);
 
@@ -134,7 +134,7 @@ class SwitchInfo {
 
 		return $nameList;
 	}
-	
+
 	static function getPortStatus($DeviceID,$portid=null){
 		if(!$dev=SwitchInfo::BasicTests($DeviceID)){
 			return false;
@@ -158,7 +158,7 @@ class SwitchInfo {
 
 		return $statusList;
 	}
-	
+
 	static function getPortAlias($DeviceID,$portid=null){
 		if(!$dev=SwitchInfo::BasicTests($DeviceID)){
 			return false;
@@ -168,7 +168,7 @@ class SwitchInfo {
 		$baseOID="IF-MIB::ifAlias";
 
 		$aliasList=self::OSS_SNMP_Lookup($dev,"aliases",$portid,$baseOID);
-		
+
 		if(is_array($aliasList)){
 			$saving=false;
 			$newList=array();
@@ -179,8 +179,8 @@ class SwitchInfo {
 			}
 			$aliasList=$newList;
 		}
-		
-		return $aliasList;	
+
+		return $aliasList;
 	}
 }
 ?>

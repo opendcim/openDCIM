@@ -39,7 +39,7 @@ class VM {
 	var $vmState;
 	var $Owner;
 	var $PrimaryContact;
-  
+
 	static function RowToObject($dbRow){
 		/*
 		 * Generic function that will take any row returned from the fac_VMInventory
@@ -72,7 +72,7 @@ class VM {
 
 		return $vmList;
 	}
- 
+
 	function GetVMbyIndex() {
 		global $dbh;
 
@@ -87,45 +87,45 @@ class VM {
 			return true;
 		}
 	}
-  
+
 	function UpdateVMOwner() {
 		global $dbh;
 
 		$sql="UPDATE fac_VMInventory SET Owner=$this->Owner, PrimaryContact=$this->PrimaryContact WHERE VMIndex=$this->VMIndex;";
 		$dbh->query($sql);
-	} 
-  
+	}
+
 	function GetInventory() {
 		$sql="SELECT * FROM fac_VMInventory ORDER BY DeviceID, vmName;";
 		return $this->search($sql);
 	}
-  
+
 	function GetDeviceInventory() {
 		$sql="SELECT * FROM fac_VMInventory WHERE DeviceID=$this->DeviceID ORDER BY vmName;";
 		return $this->search($sql);
 	}
-  
+
 	function GetVMListbyOwner() {
 		$sql="SELECT * FROM fac_VMInventory WHERE Owner=$this->Owner ORDER BY DeviceID, vmName;";
 		return $this->search($sql);
 	}
-  
+
 	function SearchByVMName() {
 		$sql="SELECT * FROM fac_VMInventory WHERE vmName like \"%$this->vmName%\";";
 		return $this->search($sql);
 	}
-  
+
 	function GetOrphanVMList(){
-		$sql="SELECT * FROM fac_VMInventory WHERE Owner=0;"; 
+		$sql="SELECT * FROM fac_VMInventory WHERE Owner=0;";
 		return $this->search($sql);
 	}
 
 	function GetExpiredVMList($numDays){
 		// I don't think this is standard SQL and will need to be looked at closer
-		$sql="SELECT * FROM fac_VMInventory WHERE to_days(now())-to_days(LastUpdated)>$numDays;"; 
+		$sql="SELECT * FROM fac_VMInventory WHERE to_days(now())-to_days(LastUpdated)>$numDays;";
 		return $this->search($sql);
 	}
-  
+
 	function ExpireVMs($numDays){
 		global $dbh;
 

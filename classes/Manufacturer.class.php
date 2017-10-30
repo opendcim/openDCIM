@@ -54,33 +54,33 @@ class Manufacturer {
 		global $dbh;
 		return $dbh->prepare( $sql );
 	}
-	
+
 	function query($sql){
 		global $dbh;
 		return $dbh->query($sql);
 	}
-	
+
 	function exec($sql){
 		global $dbh;
 		return $dbh->exec($sql);
 	}
-	
+
 	function getManufacturerByGlobalID() {
 		$st = $this->prepare( "select * from fac_Manufacturer where GlobalID=:GlobalID" );
 		$st->execute( array( ":GlobalID"=>$this->GlobalID ) );
 		$st->setFetchMode( PDO::FETCH_CLASS, "Manufacturer" );
-		
+
 		if ( $row = $st->fetch() ) {
 			foreach( $row as $prop=>$val ) {
 				$this->$prop = $val;
 			}
-			
+
 			return true;
 		} else {
 			return false;
 		}
 	}
-	
+
 	function GetManufacturerByID(){
 		$this->MakeSafe();
 
@@ -89,13 +89,13 @@ class Manufacturer {
 		if($row=$this->query($sql)->fetch()){
 			foreach(Manufacturer::RowToObject($row) as $prop => $value){
 				$this->$prop=$value;
-			}	
+			}
 			return true;
 		}else{
 			return false;
 		}
 	}
-	
+
 	function GetManufacturerByName(){
 		$this->MakeSafe();
 
@@ -104,13 +104,13 @@ class Manufacturer {
 		if($row=$this->query($sql)->fetch()){
 			foreach(Manufacturer::RowToObject($row) as $prop => $value){
 				$this->$prop=$value;
-			}	
+			}
 			return true;
 		}else{
 			return false;
 		}
 	}
-	
+
 	static function GetManufacturerList($indexbyid=false){
 		global $dbh;
 
@@ -127,23 +127,23 @@ class Manufacturer {
 
 		return $ManufacturerList;
 	}
-	
+
 	function getSubscriptionList() {
 		$st = $this->prepare( "select * from fac_Manufacturer where GlobalID>0 and SubscribeToUpdates=true order by GlobalID ASC" );
 		$st->execute();
 		$st->setFetchMode( PDO::FETCH_CLASS, "Manufacturer" );
-		
+
 		$mList = array();
 		while ( $row = $st->fetch() ) {
 			$mList[] = $row;
 		}
-		
+
 		return $mList;
 	}
 
 	function CreateManufacturer(){
 		global $dbh;
-		
+
 		$this->MakeSafe();
 
 		$sql="INSERT INTO fac_Manufacturer SET Name=\"$this->Name\", GlobalID=$this->GlobalID,

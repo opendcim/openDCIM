@@ -27,5 +27,5 @@ update fac_Config set DefaultVal="logo.png" where Parameter="PDFLogoFile";
 
 insert into fac_Config values ('SMTPUser','','Username','string',''),
 	('SMTPPassword','','Password','string','');
-	
+
 
