@@ -37,7 +37,7 @@
 			if(strlen($client->access_token))
 			{
 				$success = $client->CallAPI(
-					'https://openapi.etsy.com/v2/users/__SELF__', 
+					'https://openapi.etsy.com/v2/users/__SELF__',
 					'GET', array(), array('FailOnAccessError'=>true), $user);
 			}
 		}
@@ -55,7 +55,7 @@
 </head>
 <body>
 <?php
-		echo '<h1>', HtmlSpecialChars($user->results[0]->login_name), 
+		echo '<h1>', HtmlSpecialChars($user->results[0]->login_name),
 			' you have logged in successfully with Etsy!</h1>';
 		echo '<pre>', HtmlSpecialChars(print_r($user, 1)), '</pre>';
 ?>

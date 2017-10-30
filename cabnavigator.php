@@ -447,7 +447,7 @@ echo $head,'  <script type="text/javascript" src="scripts/jquery.min.js"></scrip
 			cookieList: function (cookieName, expireTime) {
 				var cookie = $.cookie(cookieName);
 				var items = cookie ? $.secureEvalJSON(cookie) : [];
-				
+
 				return {
 					add: function (val) {
 						var index = items.indexOf(val);
@@ -483,7 +483,7 @@ echo $head,'  <script type="text/javascript" src="scripts/jquery.min.js"></scrip
 			}
 		});
 	})(jQuery);
-	
+
 	$(document).ready(function() {
 		$(".cabinet .error").append("*");
 		if($("#legend *").length==1){$("#legend").hide();}

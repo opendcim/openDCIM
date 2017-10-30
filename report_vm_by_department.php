@@ -22,11 +22,11 @@ class PDF extends FPDF {
   var $OutlineRoot;
   var $pdfconfig;
   var $pdfDB;
-  
+
 	function PDF(){
 		parent::FPDF();
 	}
-  
+
 	function Header() {
 		$this->pdfconfig = new Config();
 		if ( file_exists( 'images/' . $this->pdfconfig->ParameterArray['PDFLogoFile'] )) {
@@ -48,7 +48,7 @@ class PDF extends FPDF {
     		$this->SetFont($this->pdfconfig->ParameterArray['PDFfont'],'I',8);
     		$this->Cell(0,10,__("Page").' '.$this->PageNo().'/{nb}',0,0,'C');
 	}
-	
+
 
   function Bookmark($txt,$level=0,$y=0) {
     if($y==-1)
@@ -152,22 +152,22 @@ class PDF extends FPDF {
 
   $pdf->Bookmark( 'Departments' );
 	$deptList = $dept->GetDepartmentList();
-	
+
 	$VM = new VM();
 	$vmList = $VM->GetInventory();
-	
+
 	$vmCount = count( $vmList );
-	
+
 	$pdf->Cell( 80, 5, __("Total Number of VMs") );
 	$pdf->Cell( 0, 5, $vmCount );
 	$pdf->Ln();
-	
+
 	$vmList = $VM->GetOrphanVMList();
 	$vmCount = 0;
-	
+
 	$pdf->Cell( 80, 12, __("Virtual Machines Unassigned to a Department") );
 	$pdf->Ln();
-	
+
 	$headerTags = array( __("Index"), __("Virtual Machine Image Name"), __("Current Host Server") );
 	$cellWidths = array( 10, 80, 80 );
 	$maxval = count( $headerTags );
@@ -179,25 +179,25 @@ class PDF extends FPDF {
 
 	$fill = 0;
         $lastDevice = 0;
-  
+
 	foreach( $vmList as $vmRow ) {
 		if ( $vmRow->DeviceID != $lastDevice ) {
 			$dev->DeviceID = $vmRow->DeviceID;
 			$dev->GetDevice();
 		}
-		
+
 		$pdf->Cell( $cellWidths[0], 6, ++$vmCount, 'LBRT', 0, 'L', $fill );
 		$pdf->Cell( $cellWidths[1], 6, $vmRow->vmName, 'LBRT', 0, 'L', $fill );
 		$pdf->Cell( $cellWidths[2], 6, $dev->Label, 'LBRT', 1, 'L', $fill );
-  
+
                 $fill != $fill;
         }
 
 	foreach( $deptList as $deptRow ) {
-	 $VM->Owner = $deptRow->DeptID; 
+	 $VM->Owner = $deptRow->DeptID;
 	 $vmList = $VM->GetVMListByOwner();
 	 $vmCount = 0;
-	 
+
 	 if ( count( $vmList ) > 0 ) {
 		$pdf->AddPage();
 		$pdf->Bookmark( $deptRow->Name, 1, 0 );
@@ -245,7 +245,7 @@ class PDF extends FPDF {
 		}
 
 		$pdf->Ln();
-    
+
 		$headerTags = array( __("Index"), __("Virtual Machine Image Name"), __("Current Host Server") );
 		$cellWidths = array( 10, 80, 80 );
 
@@ -258,17 +258,17 @@ class PDF extends FPDF {
 
 		$fill = 0;
     $lastDevice = 0;
-    
+
 		foreach( $vmList as $vmRow ) {
 			if ( $vmRow->DeviceID != $lastDevice ) {
 				$dev->DeviceID = $vmRow->DeviceID;
 				$dev->GetDevice();
 			}
-			
+
 			$pdf->Cell( $cellWidths[0], 6, ++$vmCount, 'LBRT', 0, 'L', $fill );
 			$pdf->Cell( $cellWidths[1], 6, $vmRow->vmName, 'LBRT', 0, 'L', $fill );
 			$pdf->Cell( $cellWidths[2], 6, $dev->Label, 'LBRT', 1, 'L', $fill );
-    
+
       $fill != $fill;
     }
    }

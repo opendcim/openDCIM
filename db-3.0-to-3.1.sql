@@ -1,6 +1,6 @@
 --
 -- Extend power multiplier enum
--- An add/copy/drop has to be done to make sure that the enum 
+-- An add/copy/drop has to be done to make sure that the enum
 -- values are migrated "by value" instead of "by order"
 --
 
@@ -53,8 +53,8 @@ INSERT INTO fac_Config VALUES ('TemperatureRed', '30', 'degrees', 'float', '30')
 	('HumidityRedHigh', '75', 'percentage', 'float', '75'),
 	('HumidityRedLow', '35', 'percentage', 'float', '35'),
 	('HumidityYellowHigh', '55', 'percentage', 'float', '55'),
-	('HumidityYellowLow', '45', 'percentage', 'float', '45');	
-	
+	('HumidityYellowLow', '45', 'percentage', 'float', '45');
+
 --
 -- Add LastRead field in PDUStats
 --

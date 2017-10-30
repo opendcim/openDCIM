@@ -1,4 +1,4 @@
-<?php 
+<?php
     include "vendor/mpdf/mpdf/mpdf.php";
 
     $header=(!isset($header))?$config->ParameterArray["OrgName"]:$header;
@@ -14,12 +14,12 @@
     $mpdf->SetDisplayMode('fullpage');
     $mpdf->useActiveForms = true;
 
-    /* Note: typically you would do zebra-striping in the report using an 
+    /* Note: typically you would do zebra-striping in the report using an
        nth-child(even) type of css selector on tr (if you know for sure
        your report doesn't use rowspans) or on tbody (if your report uses
        rowspans) - but mpdf doesn't support css classes for the tbody
-       tag, so if we want to do reliable zebra-striping, you have to 
-       put code into the report generation to do it and use the 
+       tag, so if we want to do reliable zebra-striping, you have to
+       put code into the report generation to do it and use the
        tr.altcolor selector.
        see report_panel_schedule.php
     */

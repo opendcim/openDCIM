@@ -17,7 +17,7 @@ UPDATE fac_GenericLog SET Action="CertifyAudit", Property="" WHERE Property="Cer
 
 --
 -- fac_Config parameters
--- 
+--
 INSERT INTO fac_Config set Parameter='SNMPVersion', Value='2c', UnitOfMeasure='Version', ValType='string', DefaultVal='2c';
 
 --

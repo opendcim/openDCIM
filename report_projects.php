@@ -1,6 +1,6 @@
 <?php
 /*	Template file for creating Excel based reports
-	
+
 	Basically just the setup of the front page for consistency
 */
 
@@ -25,7 +25,7 @@
             $criteriaRemark = " ".__("Specified Project/Service");
         }
 
-        $columnList = array( "DataCenter"=>"A", "Location"=>"B", "Position"=>"C", "Height"=>"D", "Label"=>"E", 
+        $columnList = array( "DataCenter"=>"A", "Location"=>"B", "Position"=>"C", "Height"=>"D", "Label"=>"E",
             "SerialNo"=>"F", "AssetTag"=>"G", "DeviceType"=>"H", "Template"=>"I", "Owner"=>"J", "Status"=>"K", "Tags"=>"L" );
         $DCAList = DeviceCustomAttribute::GetDeviceCustomAttributeList();
 
@@ -45,13 +45,13 @@
         $tmpList = DeviceTemplate::GetTemplateList( true );
 
     	$workBook = new PHPExcel();
-    	
+
     	$workBook->getProperties()->setCreator("openDCIM");
     	$workBook->getProperties()->setLastModifiedBy("openDCIM");
     	$workBook->getProperties()->setTitle("Data Center Inventory Export");
     	$workBook->getProperties()->setSubject("Data Center Inventory Export");
     	$workBook->getProperties()->setDescription("Export of the openDCIM database based upon user filtered criteria.");
-    	
+
     	// Start off with the TPS Cover Page
 
     	$workBook->setActiveSheetIndex(0);
@@ -165,10 +165,10 @@
 
                     foreach( $columnList as $fieldName=>$columnName ) {
                         $cellAddr = $columnName.$currRow;
-          
+
                         $sheet->setCellValue( $cellAddr, $fieldName );
                     }
-                    
+          
                     $currRow++;
 
                     foreach( $prDevList as $dev ) {
@@ -184,7 +184,7 @@
                         } else {
                             $sheet->setCellValue( $columnList["Location"].$currRow, __("Storage Room"));
                         }
-                        
+              
                         if ( $dev->TemplateID > 0 ) {
                             $sheet->setCellValue( $columnList["Template"].$currRow, $manList[$tmpList[$dev->TemplateID]->ManufacturerID]->Name . " - " . $tmpList[$dev->TemplateID]->Model );
                         } else {
@@ -204,12 +204,12 @@
                 }
             }
         }
-    	
+
     	// Now finalize it and send to the client
 
     	header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
     	header( sprintf( "Content-Disposition: attachment;filename=\"opendcim-%s.xlsx\"", date( "YmdHis" ) ) );
-    	
+
     	$writer = new PHPExcel_Writer_Excel2007($workBook);
     	$writer->save('php://output');
     } else {

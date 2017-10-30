@@ -37,7 +37,7 @@
 			if(strlen($client->access_token))
 			{
 				$success = $client->CallAPI(
-					'https://appcenter.intuit.com/api/v1/user/current?format=json', 
+					'https://appcenter.intuit.com/api/v1/user/current?format=json',
 					'GET', array(), array('FailOnAccessError'=>true), $user);
 			}
 		}
@@ -55,7 +55,7 @@
 </head>
 <body>
 <?php
-		echo '<h1>', HtmlSpecialChars($user->User->FirstName), 
+		echo '<h1>', HtmlSpecialChars($user->User->FirstName),
 			' you have logged in successfully with Intuit!</h1>';
 		echo '<pre>', HtmlSpecialChars(print_r($user, 1)), '</pre>';
 ?>

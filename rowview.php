@@ -44,7 +44,7 @@
 		}
 
 		// Here we have a decision, for now I am just making it front and rear,
-		// in the future we can eval for the left and right as well to make the view 
+		// in the future we can eval for the left and right as well to make the view
 		// more realistic
 		if($side){
 			$side='side';
@@ -92,7 +92,7 @@
 <head>
   <meta http-equiv="X-UA-Compatible" content="IE=Edge">
   <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-  
+
   <title><?php echo $title; ?></title>
   <link rel="stylesheet" href="css/inventory.php" type="text/css">
   <link rel="stylesheet" href="css/print.css" type="text/css" media="print">
@@ -100,8 +100,8 @@
   <!--[if lt IE 9]>
   <link rel="stylesheet"  href="css/ie.css" type="text/css" />
   <![endif]-->
- 
-<?php 
+
+<?php
 echo $head,'  <script type="text/javascript" src="scripts/jquery.min.js"></script>
   <script type="text/javascript" src="scripts/jquery-ui.min.js"></script>
   <script type="text/javascript" src="scripts/jquery.cookie.js"></script>

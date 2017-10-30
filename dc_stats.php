@@ -7,7 +7,7 @@
 	$cab=new Cabinet();
 	$dc=new DataCenter();
 	$dev=new Device();
-	
+
 	//setting airflow
 	if(isset($_POST["cabinetid"]) && isset($_POST["airflow"]) && $person->SiteAdmin){
 		$cab->CabinetID=$_POST["cabinetid"];
@@ -48,7 +48,7 @@
 		}
 		exit;
 	}
-	
+
 	if(isset($_POST['dc']) && (isset($_POST['getobjects']) || isset($_POST['getoverview']))){
 		$payload=array();
 		if(isset($_POST['getobjects'])){
@@ -73,19 +73,19 @@
 		header('Location: '.redirect());
 		exit;
 	}
-	
+
 	$dc->DataCenterID=$_GET["dc"];
 	$dc->GetDataCenterbyID();
 	$dcStats=$dc->GetDCStatistics();
 
 	$rciStats = RCI::GetStatistics( "dc", $dc->DataCenterID );
-	
+
 	function MakeImageMap($dc){
 		$mapHTML="";
-	 
+
 		if(strlen($dc->DrawingFileName)>0){
 			$mapfile="drawings".DIRECTORY_SEPARATOR.$dc->DrawingFileName;
-		   
+
 			if(file_exists($mapfile)){
 				if(mime_content_type($mapfile)=='image/svg+xml'){
 					$svgfile = simplexml_load_file($mapfile);
@@ -139,7 +139,7 @@ $(document).ready(function() {
 	if(strlen($dc->DrawingFileName) <1 || !file_exists("drawings/$dc->DrawingFileName")){
 		$screenadjustment="<style type=\"text/css\">.dcstats .heading > div { width: 100% !important;} .dcstats .heading > div + div { display: none; }</style>";
 	}
-		
+
 	if ( $config->ParameterArray["mUnits"] == "english" ) {
 		$vol = __("Square Feet");
 		$tempUnits = "F";
@@ -149,14 +149,14 @@ $(document).ready(function() {
 		$tempUnits = "C";
 		$density = __("Watts per Square Meter" );
 	}
-	
+
 ?>
 <!doctype html>
 <html>
 <head>
   <meta http-equiv="X-UA-Compatible" content="IE=Edge">
   <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-  
+
   <title><?php echo __("openDCIM Data Center Information Management");?></title>
   <link rel="stylesheet" href="css/inventory.php" type="text/css">
   <link rel="stylesheet" href="css/print.css" type="text/css" media="print">
@@ -298,7 +298,7 @@ echo $select."</div></div>\n".MakeImageMap($dc);
 echo '
 </div></div>
 
-<ul id="options" class="hide"> 
+<ul id="options" class="hide">
 	<li class="ui-state-disabled">',__("Set the air intake direction"),'</li>
 	<li>----</li>
 	<li><a>',__("Cabinet"),'</a>
@@ -381,7 +381,7 @@ echo '
 			select: function(event, ui) {
 				var row=(ui.item.context.parentElement.getAttribute('data-context')=='row'||ui.item.context.parentElement.getAttribute('data-context')=='alignment')?true:false;
 				var cabid=ui.target.context.attributes.name.value.substr(3);
-				$.post('',{cabinetid: cabid, airflow: ui.cmd, row: row}).done(function(){startmap()}); 
+				$.post('',{cabinetid: cabid, airflow: ui.cmd, row: row}).done(function(){startmap()});
     		},
 			beforeOpen: function(event, ui) {
 				$('#options').removeClass('hide');

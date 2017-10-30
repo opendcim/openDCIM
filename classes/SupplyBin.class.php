@@ -25,7 +25,7 @@
 class SupplyBin {
 	var $BinID;
 	var $Location;
-	
+
 	function MakeSafe(){
 		$this->BinID=intval($this->BinID);
 		$this->Location=sanitize($this->Location);
@@ -48,12 +48,12 @@ class SupplyBin {
 		global $dbh;
 		return $dbh->query($sql);
 	}
-	
+
 	function exec($sql){
 		global $dbh;
 		return $dbh->exec($sql);
 	}
-	
+
 	function GetBin(){
 		$this->MakeSafe();
 
@@ -68,13 +68,13 @@ class SupplyBin {
 			return false;
 		}
 	}
-	
+
 	function CreateBin(){
 		global $dbh;
 		$this->MakeSafe();
 
 		$sql="INSERT INTO fac_SupplyBin SET Location=\"$this->Location\";";
-		
+
 		if(!$this->exec($sql)){
 			return false;
 		}else{
@@ -83,35 +83,35 @@ class SupplyBin {
 			return true;
 		}
 	}
-	
+
 	function UpdateBin(){
 		$this->MakeSafe();
 
-		$sql="UPDATE fac_SupplyBin SET Location=\"$this->Location\" WHERE 
+		$sql="UPDATE fac_SupplyBin SET Location=\"$this->Location\" WHERE
 			BinID=$this->BinID;";
 
 		return $this->query($sql);
 	}
-	
+
 	function DeleteBin(){
 		// needs testing, not currently implemented
 		$this->MakeSafe();
 
-		$sql="DELETE FROM fac_SupplyBin WHERE BinID=$this->BinID; 
-			DELETE FROM fac_BinContents WHERE BinID=$this->BinID; 
+		$sql="DELETE FROM fac_SupplyBin WHERE BinID=$this->BinID;
+			DELETE FROM fac_BinContents WHERE BinID=$this->BinID;
 			DELETE FROM fac_BinAudits WHERE BinID=$this->BinID;";
 
 		return $this->exec($sql);
 	}
-	
+
 	function GetBinList(){
 		$sql="SELECT * FROM fac_SupplyBin ORDER BY Location ASC;";
-		
+
 		$binList=array();
 		foreach($this->query($sql) as $row){
 			$binList[]=SupplyBin::RowToObject($row);
 		}
-		
+
 		return $binList;
 	}
 }

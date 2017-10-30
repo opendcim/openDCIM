@@ -8,7 +8,7 @@ class DB {
 		self::$sql=$sql;
 		return $dbh->query($sql);
 	}
-	
+
 	function exec($sql){
 		global $dbh;
 		self::$sql=$sql;
@@ -25,7 +25,7 @@ class DB {
 		global $dbh;
 		return $dbh->lastInsertId();
 	}
-	
+
 	function errorInfo() {
 		global $dbh;
 		return $dbh->errorInfo();

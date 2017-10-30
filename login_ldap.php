@@ -74,7 +74,7 @@
           if ( $ldapResults[$i]['dn'] == $config->ParameterArray['LDAPReadAccess'] ) {
               $person->ReadAccess = true;
           }
-          
+
           if ( $ldapResults[$i]['dn'] == $config->ParameterArray['LDAPWriteAccess'] ) {
               $person->WriteAccess = true;
           }
@@ -82,23 +82,23 @@
           if ( $ldapResults[$i]['dn'] == $config->ParameterArray['LDAPDeleteAccess'] ) {
               $person->DeleteAccess = true;
           }
-          
+
           if ( $ldapResults[$i]['dn'] == $config->ParameterArray['LDAPAdminOwnDevices'] ) {
               $person->AdminOwnDevices = true;
           }
-          
+
           if ( $ldapResults[$i]['dn'] == $config->ParameterArray['LDAPRackRequest'] ) {
               $person->RackRequest = true;
           }
-          
+
           if ( $ldapResults[$i]['dn'] == $config->ParameterArray['LDAPRackAdmin'] ) {
               $person->RackAdmin = true;
           }
-          
+
           if ( $ldapResults[$i]['dn'] == $config->ParameterArray['LDAPContactAdmin'] ) {
               $person->ContactAdmin = true;
           }
-          
+
           if ( $ldapResults[$i]['dn'] == $config->ParameterArray['LDAPBulkOperations'] ) {
               $person->BulkOperations = true;
           }
@@ -151,14 +151,14 @@
 <head>
   <meta http-equiv="X-UA-Compatible" content="IE=Edge">
   <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-  
+
   <title>openDCIM Data Center Inventory</title>
   <link rel="stylesheet" href="css/inventory.php" type="text/css">
   <link rel="stylesheet" href="css/jquery-ui.css" type="text/css">
   <!--[if lt IE 9]>
   <link rel="stylesheet"  href="css/ie.css" type="text/css" />
   <![endif]-->
-  
+
   <script type="text/javascript" src="scripts/jquery.min.js"></script>
   <script type="text/javascript" src="scripts/jquery-ui.min.js"></script>
 <script type="text/javascript">

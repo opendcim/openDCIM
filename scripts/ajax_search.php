@@ -36,16 +36,16 @@
 			}
 		}
 	}
-		
+
 	//This will ensure that an empty json record set is returned if this is called directly or in some strange manner
 	if($field!=""){
 		// Remove extra % since we are already doing a wildcard search
 		$searchTerm=addslashes(str_replace('_','\_',str_replace('%','',$searchTerm)));
 		if($field=="Label"){
-			$sql="SELECT DISTINCT Label FROM fac_Device WHERE Label LIKE '%$searchTerm%' 
-				UNION SELECT DISTINCT Location AS Label FROM fac_Cabinet WHERE Location 
-				LIKE '%$searchTerm%' UNION SELECT DISTINCT Label FROM fac_PowerDistribution 
-				WHERE Label LIKE '%$searchTerm%' UNION SELECT DISTINCT vmName AS Label 
+			$sql="SELECT DISTINCT Label FROM fac_Device WHERE Label LIKE '%$searchTerm%'
+				UNION SELECT DISTINCT Location AS Label FROM fac_Cabinet WHERE Location
+				LIKE '%$searchTerm%' UNION SELECT DISTINCT Label FROM fac_PowerDistribution
+				WHERE Label LIKE '%$searchTerm%' UNION SELECT DISTINCT vmName AS Label
 				FROM fac_VMInventory WHERE vmName LIKE '%$searchTerm%';";
 		}elseif($field=="CustomTag"){
 			$sql="SELECT DISTINCT Name FROM fac_Tags WHERE Name LIKE '%$searchTerm%'";
@@ -56,14 +56,14 @@
 		}elseif($field=="Owner"){
 			$sql="SELECT DISTINCT Name FROM fac_Department WHERE Name LIKE '%$searchTerm%'";
 		}elseif($field=="Notes"){
-			$sql="SELECT DISTINCT Notes FROM fac_Device WHERE Notes LIKE '%$searchTerm%' 
-				UNION SELECT DISTINCT Notes FROM fac_Cabinet WHERE Notes LIKE '%$searchTerm%' 
-				UNION SELECT DISTINCT Notes FROM fac_Ports WHERE Notes LIKE '%$searchTerm%' 
-				UNION SELECT DISTINCT PortNotes AS Notes FROM fac_Ports	WHERE PortNotes LIKE '%$searchTerm%' 
+			$sql="SELECT DISTINCT Notes FROM fac_Device WHERE Notes LIKE '%$searchTerm%'
+				UNION SELECT DISTINCT Notes FROM fac_Cabinet WHERE Notes LIKE '%$searchTerm%'
+				UNION SELECT DISTINCT Notes FROM fac_Ports WHERE Notes LIKE '%$searchTerm%'
+				UNION SELECT DISTINCT PortNotes AS Notes FROM fac_Ports	WHERE PortNotes LIKE '%$searchTerm%'
 				UNION SELECT DISTINCT Notes FROM fac_PowerPorts	WHERE Notes LIKE '%$searchTerm%';";
 		}elseif($field=="Custom"){
-			$sql="SELECT DISTINCT Value FROM fac_DeviceCustomValue WHERE 
-				AttributeID=$custom AND Value LIKE '%$searchTerm%' AND Value !='' ORDER BY 
+			$sql="SELECT DISTINCT Value FROM fac_DeviceCustomValue WHERE
+				AttributeID=$custom AND Value LIKE '%$searchTerm%' AND Value !='' ORDER BY
 				Value ASC;";
 		}else{
 			$sql="SELECT DISTINCT $field FROM fac_Device WHERE $field LIKE '%$searchTerm%' LIMIT 500;";
@@ -76,5 +76,5 @@
 	}
 
 	header('Content-Type: application/json');
-	echo json_encode($deviceList);  
+	echo json_encode($deviceList);
 ?>

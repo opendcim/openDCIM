@@ -53,21 +53,21 @@ class Supplies {
 
 		return $supply;
 	}
-	
+
 	function query($sql){
 		global $dbh;
 		return $dbh->query($sql);
 	}
-	
+
 	function exec($sql){
 		global $dbh;
 		return $dbh->exec($sql);
 	}
-	
+
 	function CreateSupplies(){
 		global $dbh;
 
-		$sql="INSERT INTO fac_Supplies SET PartNum=\"$this->PartNum\", 
+		$sql="INSERT INTO fac_Supplies SET PartNum=\"$this->PartNum\",
 			PartName=\"$this->PartName\", MinQty=$this->MinQty, MaxQty=$this->MaxQty;";
 
 		if(!$this->exec($sql)){
@@ -78,7 +78,7 @@ class Supplies {
 			return true;
 		}
 	}
-	
+
 	function GetSupplies(){
 		$this->MakeSafe();
 
@@ -92,41 +92,41 @@ class Supplies {
 			return false;
 		}
 	}
-	
+
 	static function GetSupplyCount( $SupplyID ) {
 		global $dbh;
-		
+
 		$sql = "select sum(Count) as TotalQty from fac_BinContents where SupplyID=" . intval( $SupplyID );
-		
+
 		if ( $row=$dbh->query($sql)->fetch()) {
 			return $row["TotalQty"];
 		} else {
 			return 0;
 		}
 	}
-	
+
 	function GetSuppliesList($indexbyid=false){
 		$sql="SELECT * FROM fac_Supplies ORDER BY PartNum ASC;";
-		
+
 		$supplyList=array();
 		foreach($this->query($sql) as $row){
 			$index=($indexbyid)?$row['SupplyID']:$row['PartNum'];
 			$supplyList[$index]=Supplies::RowToObject($row);
 		}
-		
+
 		return $supplyList;
 	}
-	
+
 	function UpdateSupplies(){
 		$this->MakeSafe();
 
-		$sql="UPDATE fac_Supplies SET PartNum=\"$this->PartNum\", 
-			PartName=\"$this->PartName\", MinQty=$this->MinQty, MaxQty=$this->MaxQty WHERE 
+		$sql="UPDATE fac_Supplies SET PartNum=\"$this->PartNum\",
+			PartName=\"$this->PartName\", MinQty=$this->MinQty, MaxQty=$this->MaxQty WHERE
 			SupplyID=$this->SupplyID;";
 
 		return $this->query($sql);
 	}
-	
+
 	function DeleteSupplies(){
 		$this->MakeSafe();
 

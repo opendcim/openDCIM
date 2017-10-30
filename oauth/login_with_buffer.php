@@ -21,7 +21,7 @@
 
 	$client->client_id = ''; $application_line = __LINE__;
 	$client->client_secret = '';
-	
+
 	if(strlen($client->client_id) == 0
 	|| strlen($client->client_secret) == 0)
 		die('Please create an application in Buffer Apps page '.
@@ -40,7 +40,7 @@
 			if(strlen($client->access_token))
 			{
 				$success = $client->CallAPI(
-					'https://api.bufferapp.com/1/user.json', 
+					'https://api.bufferapp.com/1/user.json',
 					'GET', array(), array('FailOnAccessError'=>true), $user);
 			}
 		}
@@ -58,7 +58,7 @@
 </head>
 <body>
 <?php
-		echo '<h1>', HtmlSpecialChars($user->name), 
+		echo '<h1>', HtmlSpecialChars($user->name),
 			' you have logged in successfully with Buffer!</h1>';
 		echo '<pre>', HtmlSpecialChars(print_r($user, 1)), '</pre>';
 ?>

@@ -3,7 +3,7 @@
 	require_once( "facilities.inc.php" );
 
 	$subheader=__("Inventory Reports");
-	
+
 	if(!$person->ReadAccess){
 		// No soup for you.
 		header('Location: '.redirect());

@@ -61,12 +61,12 @@ class DeviceStatus {
 		global $dbh;
 		return $dbh->query($sql);
 	}
-	
+
 	function prepare($sql){
 		global $dbh;
 		return $dbh->prepare($sql);
 	}
-	
+
 	function lastID() {
 		global $dbh;
 		return $dbh->lastInsertID();
@@ -77,9 +77,9 @@ class DeviceStatus {
 
 		$this->MakeSafe();
 
-		$sql="INSERT INTO fac_DeviceStatus SET Status=\"$this->Status\", 
+		$sql="INSERT INTO fac_DeviceStatus SET Status=\"$this->Status\",
 			ColorCode=\"$this->ColorCode\"";
-	
+
 		if($this->exec($sql)){
 			$this->StatusID=$dbh->lastInsertId();
 		}else{
@@ -88,7 +88,7 @@ class DeviceStatus {
 			error_log("PDO Error::createStatus {$info[2]}");
 			return false;
 		}
-		
+
 		return $this->StatusID;
 	}
 
@@ -132,9 +132,9 @@ class DeviceStatus {
 			} else {
 				$sList[] = $row;
 			}
-		}	
+		}
 
-		return $sList;	
+		return $sList;
 	}
 
 	static function getStatusNames() {
@@ -158,7 +158,7 @@ class DeviceStatus {
 		$oldstatus=new DeviceStatus($this->StatusID);
 		$oldstatus->getStatus();
 
-		$sql="UPDATE fac_DeviceStatus SET Status=\"$this->Status\", 
+		$sql="UPDATE fac_DeviceStatus SET Status=\"$this->Status\",
 			ColorCode=\"$this->ColorCode\" WHERE StatusID=\"$this->StatusID\";";
 
 		if($this->StatusID==0){
@@ -168,7 +168,7 @@ class DeviceStatus {
 			$this->query($sql);
 
 			return true;
-		} 
+		}
 	}
 
 	function removeStatus() {

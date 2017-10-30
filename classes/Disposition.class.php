@@ -34,7 +34,7 @@ class Disposition {
 		global $dbh;
 		return $dbh->prepare($sql);
 	}
-	
+
 	function lastID() {
 		global $dbh;
 		return $dbh->lastInsertID();
@@ -79,9 +79,9 @@ class Disposition {
 			} else {
 				$dList[] = $row;
 			}
-		}	
+		}
 
-		return $dList;	
+		return $dList;
 	}
 
 	function updateDisposition() {

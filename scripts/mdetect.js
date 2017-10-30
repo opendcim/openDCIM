@@ -4,46 +4,46 @@
 //
 // File version date: April 23, 2012
 //		Update:
-//		- Updated DetectAmazonSilk(): Fixed an issue in the detection logic.  
+//		- Updated DetectAmazonSilk(): Fixed an issue in the detection logic.
 //
 // File version date: April 22, 2012 - Second update
 //		Update: To address additional Kindle issues...
-//		- Updated DetectRichCSS(): Excluded e-Ink Kindle devices. 
-//		- Created DetectAmazonSilk(): Created to detect Kindle Fire devices in Silk mode. 
-//		- Updated DetectMobileQuick(): Updated to include e-Ink Kindle devices and the Kindle Fire in Silk mode.  
+//		- Updated DetectRichCSS(): Excluded e-Ink Kindle devices.
+//		- Created DetectAmazonSilk(): Created to detect Kindle Fire devices in Silk mode.
+//		- Updated DetectMobileQuick(): Updated to include e-Ink Kindle devices and the Kindle Fire in Silk mode.
 //
 // File version date: April 11, 2012
-//		Update: 
-//		- Added a new variable for the new BlackBerry Curve Touch (9380): deviceBBCurveTouch. 
-//		- Updated DetectBlackBerryTouch() to support the new BlackBerry Curve Touch (9380). 
+//		Update:
+//		- Added a new variable for the new BlackBerry Curve Touch (9380): deviceBBCurveTouch.
+//		- Updated DetectBlackBerryTouch() to support the new BlackBerry Curve Touch (9380).
 //
 // File version date: January 21, 2012
-//		Update: 
-//		- Moved Windows Phone 7 to the iPhone Tier. WP7.5's IE 9-based browser is good enough now.  
-//		- Added a new variable for 2 versions of the new BlackBerry Bold Touch (9900 and 9930): deviceBBBoldTouch. 
-//		- Updated DetectBlackBerryTouch() to support the 2 versions of the new BlackBerry Bold Touch (9900 and 9930). 
+//		Update:
+//		- Moved Windows Phone 7 to the iPhone Tier. WP7.5's IE 9-based browser is good enough now.
+//		- Added a new variable for 2 versions of the new BlackBerry Bold Touch (9900 and 9930): deviceBBBoldTouch.
+//		- Updated DetectBlackBerryTouch() to support the 2 versions of the new BlackBerry Bold Touch (9900 and 9930).
 //		- Updated DetectKindle() to focus on eInk devices only. The Kindle Fire should be detected as a regular Android device.
 //
 // File version date: August 22, 2011
-//		Update: 
-//		- Updated DetectAndroidTablet() to fix a bug introduced in the last fix! The true/false returns were mixed up. 
+//		Update:
+//		- Updated DetectAndroidTablet() to fix a bug introduced in the last fix! The true/false returns were mixed up.
 //
 // File version date: August 16, 2011
-//		Update: 
+//		Update:
 //		- Updated DetectAndroidTablet() to exclude Opera Mini, which was falsely reporting as running on a tablet device when on a phone.
 //		- Updated the user agent (uagent) init technique to handle spiders and such with null values.
 //
 //
 // LICENSE INFORMATION
-// Licensed under the Apache License, Version 2.0 (the "License"); 
-// you may not use this file except in compliance with the License. 
-// You may obtain a copy of the License at 
-//        http://www.apache.org/licenses/LICENSE-2.0 
-// Unless required by applicable law or agreed to in writing, 
-// software distributed under the License is distributed on an 
-// "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, 
-// either express or implied. See the License for the specific 
-// language governing permissions and limitations under the License. 
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//        http://www.apache.org/licenses/LICENSE-2.0
+// Unless required by applicable law or agreed to in writing,
+// software distributed under the License is distributed on an
+// "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND,
+// either express or implied. See the License for the specific
+// language governing permissions and limitations under the License.
 //
 //
 // ABOUT THIS PROJECT
@@ -51,21 +51,21 @@
 //   Email: anthony.hand@gmail.com
 //   Web Site: http://www.mobileesp.com
 //   Source Files: http://code.google.com/p/mobileesp/
-//   
+//
 //   Versions of this code are available for:
 //      PHP, JavaScript, Java, ASP.NET (C#), and Ruby
 //
 //
-// WARNING: 
-//   These JavaScript-based device detection features may ONLY work 
-//   for the newest generation of smartphones, such as the iPhone, 
+// WARNING:
+//   These JavaScript-based device detection features may ONLY work
+//   for the newest generation of smartphones, such as the iPhone,
 //   Android and Palm WebOS devices.
-//   These device detection features may NOT work for older smartphones 
-//   which had poor support for JavaScript, including 
-//   older BlackBerry, PalmOS, and Windows Mobile devices. 
-//   Additionally, because JavaScript support is extremely poor among 
+//   These device detection features may NOT work for older smartphones
+//   which had poor support for JavaScript, including
+//   older BlackBerry, PalmOS, and Windows Mobile devices.
+//   Additionally, because JavaScript support is extremely poor among
 //   'feature phones', these features may not work at all on such devices.
-//   For better results, consider using a server-based version of this code, 
+//   For better results, consider using a server-based version of this code,
 //   such as Java, APS.NET, PHP, or Ruby.
 //
 // *******************************************
@@ -74,17 +74,17 @@
 //Optional: Store values for quickly accessing same info multiple times.
 //Note: These values are not set automatically.
 //Stores whether the device is an iPhone or iPod Touch.
-var isIphone = false; 
+var isIphone = false;
 //Stores whether the device is an Android phone or multi-media player.
-var isAndroidPhone = false; 
+var isAndroidPhone = false;
 //Stores whether is the Tablet (HTML5-capable, larger screen) tier of devices.
-var isTierTablet = false; 
+var isTierTablet = false;
 //Stores whether is the iPhone tier of devices.
-var isTierIphone = false; 
+var isTierIphone = false;
 //Stores whether the device can probably support Rich CSS, but JavaScript support is not assumed. (e.g., newer BlackBerry, Windows Mobile)
-var isTierRichCss = false; 
+var isTierRichCss = false;
 //Stores whether it is another mobile device, which cannot be assumed to support CSS or JS (eg, older BlackBerry, RAZR)
-var isTierGenericMobile = false; 
+var isTierGenericMobile = false;
 
 //Initialize some initial string variables we'll look for later.
 var engineWebKit = "webkit";
@@ -106,7 +106,7 @@ var deviceS70 = "series70";
 var deviceS80 = "series80";
 var deviceS90 = "series90";
 
-var deviceWinPhone7 = "windows phone os 7"; 
+var deviceWinPhone7 = "windows phone os 7";
 var deviceWinMob = "windows ce";
 var deviceWindows = "windows";
 var deviceIeMob = "iemobile";
@@ -203,7 +203,7 @@ function DetectIphone()
       if (DetectIpad() || DetectIpod())
          return false;
       //Yay! It's an iPhone!
-      else 
+      else
          return true;
    }
    else
@@ -234,7 +234,7 @@ function DetectIpad()
 // Detects if the current device is an iPhone or iPod Touch.
 function DetectIphoneOrIpod()
 {
-   //We repeat the searches here because some iPods 
+   //We repeat the searches here because some iPods
    //  may report themselves as an iPhone, which is ok.
    if (uagent.search(deviceIphone) > -1 ||
        uagent.search(deviceIpod) > -1)
@@ -301,7 +301,7 @@ function DetectAndroidTablet()
    //Special check for the HTC Flyer 7" tablet. It should NOT report here.
    if (uagent.search(deviceHtcFlyer) > -1)
       return false;
-         
+
    //Otherwise, if it's Android and does NOT have 'mobile' in it, Google says it's a tablet.
    if (uagent.search(mobile) > -1)
       return false;
@@ -349,7 +349,7 @@ function DetectS60OssBrowser()
 {
    if (DetectWebkit())
    {
-     if ((uagent.search(deviceS60) > -1 || 
+     if ((uagent.search(deviceS60) > -1 ||
           uagent.search(deviceSymbian) > -1))
         return true;
      else
@@ -361,7 +361,7 @@ function DetectS60OssBrowser()
 
 //**************************
 // Detects if the current device is any Symbian OS-based device,
-//   including older S60, Series 70, Series 80, Series 90, and UIQ, 
+//   including older S60, Series 70, Series 80, Series 90, and UIQ,
 //   or other browsers running on these devices.
 function DetectSymbianOS()
 {
@@ -376,7 +376,7 @@ function DetectSymbianOS()
 }
 
 //**************************
-// Detects if the current browser is a 
+// Detects if the current browser is a
 // Windows Phone 7 device.
 function DetectWindowsPhone7()
 {
@@ -388,21 +388,21 @@ function DetectWindowsPhone7()
 
 //**************************
 // Detects if the current browser is a Windows Mobile device.
-// Excludes Windows Phone 7 devices. 
+// Excludes Windows Phone 7 devices.
 // Focuses on Windows Mobile 6.xx and earlier.
 function DetectWindowsMobile()
 {
    //Exclude new Windows Phone 7.
    if (DetectWindowsPhone7())
       return false;
-   //Most devices use 'Windows CE', but some report 'iemobile' 
-   //  and some older ones report as 'PIE' for Pocket IE. 
+   //Most devices use 'Windows CE', but some report 'iemobile'
+   //  and some older ones report as 'PIE' for Pocket IE.
    if (uagent.search(deviceWinMob) > -1 ||
        uagent.search(deviceIeMob) > -1 ||
        uagent.search(enginePie) > -1)
       return true;
    //Test for Windows Mobile PPC but not old Macintosh PowerPC.
-   if ((uagent.search(devicePpc) > -1) && 
+   if ((uagent.search(devicePpc) > -1) &&
        !(uagent.search(deviceMacPpc) > -1))
       return true;
    //Test for Windwos Mobile-based HTC devices.
@@ -478,8 +478,8 @@ function DetectBlackBerryHigh()
    if (DetectBlackBerry())
    {
      if (DetectBlackBerryTouch() ||
-        uagent.search(deviceBBBold) > -1 || 
-        uagent.search(deviceBBTour) > -1 || 
+        uagent.search(deviceBBBold) > -1 ||
+        uagent.search(deviceBBTour) > -1 ||
         uagent.search(deviceBBCurve) > -1)
         return true;
      else
@@ -491,7 +491,7 @@ function DetectBlackBerryHigh()
 
 //**************************
 // Detects if the current browser is a BlackBerry device AND
-//    has an older, less capable browser. 
+//    has an older, less capable browser.
 //    Examples: Pearl, 8800, Curve1.
 function DetectBlackBerryLow()
 {
@@ -512,7 +512,7 @@ function DetectBlackBerryLow()
 // Detects if the current browser is on a PalmOS device.
 function DetectPalmOS()
 {
-   //Most devices nowadays report as 'Palm', 
+   //Most devices nowadays report as 'Palm',
    //  but some older ones reported as Blazer or Xiino.
    if (uagent.search(devicePalm) > -1 ||
        uagent.search(engineBlazer) > -1 ||
@@ -565,10 +565,10 @@ function DetectGarminNuvifone()
 //**************************
 // Check to see whether the device is a 'smartphone'.
 //   You might wish to send smartphones to a more capable web page
-//   than a dumbed down WAP page. 
+//   than a dumbed down WAP page.
 function DetectSmartphone()
 {
-   if (DetectIphoneOrIpod() 
+   if (DetectIphoneOrIpod()
       || DetectAndroidPhone()
       || DetectS60OssBrowser()
       || DetectSymbianOS()
@@ -616,14 +616,14 @@ function DetectDangerHiptop()
 }
 
 //**************************
-// Detects if the current device is on one of 
+// Detects if the current device is on one of
 // the Maemo-based Nokia Internet Tablets.
 function DetectMaemoTablet()
 {
    if (uagent.search(maemo) > -1)
       return true;
    //For Nokia N810, must be Linux + Tablet, or else it could be something else.
-   if ((uagent.search(linux) > -1) 
+   if ((uagent.search(linux) > -1)
        && (uagent.search(deviceTablet) > -1)
        && !DetectWebOSTablet()
        && !DetectAndroid())
@@ -665,7 +665,7 @@ function DetectOperaMobile()
 }
 
 //**************************
-// Detects if the current browser is Opera Mobile 
+// Detects if the current browser is Opera Mobile
 // running on an Android phone.
 function DetectOperaAndroidPhone()
 {
@@ -678,7 +678,7 @@ function DetectOperaAndroidPhone()
 }
 
 //**************************
-// Detects if the current browser is Opera Mobile 
+// Detects if the current browser is Opera Mobile
 // running on an Android tablet.
 function DetectOperaAndroidTablet()
 {
@@ -704,7 +704,7 @@ function DetectSonyPlaystation()
 // Detects if the current device is a Nintendo game device.
 function DetectNintendo()
 {
-   if (uagent.search(deviceNintendo) > -1   || 
+   if (uagent.search(deviceNintendo) > -1   ||
 	uagent.search(deviceWii) > -1 ||
 	uagent.search(deviceNintendoDs) > -1)
       return true;
@@ -789,14 +789,14 @@ function DetectMobileQuick()
 
    if (DetectDangerHiptop())
       return true;
-      
+
    if (DetectMaemoTablet())
       return true;
    if (DetectArchos())
       return true;
 
    if ((uagent.search(devicePda) > -1) &&
-        !(uagent.search(disUpdate) > -1)) 
+        !(uagent.search(disUpdate) > -1))
       return true;
    if (uagent.search(mobile) > -1)
       return true;
@@ -804,7 +804,7 @@ function DetectMobileQuick()
    if (DetectKindle() ||
        DetectAmazonSilk())
       return true;
-      
+
    return false;
 };
 
@@ -822,7 +822,7 @@ function DetectMobileLong()
 
    //Detect for certain very old devices with stupid useragent strings.
    if (uagent.search(manuSamsung1) > -1 ||
-	uagent.search(manuSonyEricsson) > -1 || 
+	uagent.search(manuSonyEricsson) > -1 ||
 	uagent.search(manuericsson) > -1)
       return true;
 
@@ -849,7 +849,7 @@ function DetectMobileLong()
 //   Includes iPad, Android (e.g., Xoom), BB Playbook, WebOS, etc.
 function DetectTierTablet()
 {
-   if (DetectIpad() 
+   if (DetectIpad()
         || DetectAndroidTablet()
         || DetectBlackBerryTablet()
         || DetectWebOSTablet())
@@ -860,7 +860,7 @@ function DetectTierTablet()
 
 //**************************
 // The quick way to detect for a tier of devices.
-//   This method detects for devices which can 
+//   This method detects for devices which can
 //   display iPhone-optimized web content.
 //   Includes iPhone, iPod Touch, Android, Windows Phone 7, WebOS, etc.
 function DetectTierIphone()
@@ -883,8 +883,8 @@ function DetectTierIphone()
 
 //**************************
 // The quick way to detect for a tier of devices.
-//   This method detects for devices which are likely to be 
-//   capable of viewing CSS content optimized for the iPhone, 
+//   This method detects for devices which are likely to be
+//   capable of viewing CSS content optimized for the iPhone,
 //   but may not necessarily support JavaScript.
 //   Excludes all iPhone Tier devices.
 function DetectTierRichCss()
@@ -894,7 +894,7 @@ function DetectTierRichCss()
        //Exclude iPhone Tier and e-Ink Kindle devices
        if (DetectTierIphone() || DetectKindle())
           return false;
-          
+ 
        //The following devices are explicitly ok.
        if (DetectWebkit())
           return true;
@@ -904,14 +904,14 @@ function DetectTierRichCss()
        //Note: 'High' BlackBerry devices ONLY
        if (DetectBlackBerryHigh())
           return true;
-          
+ 
        //Older Windows 'Mobile' isn't good enough for iPhone Tier.
        if (DetectWindowsMobile())
           return true;
-          
+ 
        if (uagent.search(engineTelecaQ) > -1)
           return true;
-          
+ 
        else
           return false;
     }
@@ -924,7 +924,7 @@ function DetectTierRichCss()
 //   This method detects for all other types of phones,
 //   but excludes the iPhone and RichCSS Tier devices.
 // NOTE: This method probably won't work due to poor
-//  support for JavaScript among other devices. 
+//  support for JavaScript among other devices.
 function DetectTierOtherPhones()
 {
     if (DetectMobileLong())

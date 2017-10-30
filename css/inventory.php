@@ -35,11 +35,11 @@ textarea {white-space: pre;word-wrap: break-word;}
 	padding: 1px;
 	color: #000000;
 	cursor: default;
-} 
+}
 
-.arrow_left { position: relative; background: #ffffff; border: 1px solid #000000; } 
-.arrow_left:after, .arrow_left:before { right: 100%; border: solid transparent; content: " "; height: 0; width: 0; position: absolute; pointer-events: none; } 
-.arrow_left:after { border-color: rgba(255, 255, 255, 0); border-right-color: #ffffff; border-width: 15px; top: 15px; margin-top: -15px; } 
+.arrow_left { position: relative; background: #ffffff; border: 1px solid #000000; }
+.arrow_left:after, .arrow_left:before { right: 100%; border: solid transparent; content: " "; height: 0; width: 0; position: absolute; pointer-events: none; }
+.arrow_left:after { border-color: rgba(255, 255, 255, 0); border-right-color: #ffffff; border-width: 15px; top: 15px; margin-top: -15px; }
 .arrow_left:before { border-color: rgba(0, 0, 0, 0); border-right-color: #000000; border-width: 16px; top: 15px; margin-top: -16px; }
 
 .no-close .ui-dialog-titlebar-close {display: none;}
@@ -79,7 +79,7 @@ textarea {white-space: pre;word-wrap: break-word;}
 	-webkit-animation-iteration-count: infinite; /*Safari and Chrome*/
 
 	overflow:hidden;
-}   
+}
 
 
 /* css for timepicker */
@@ -178,7 +178,7 @@ div#dcstats .table + .table > div > div + div{white-space: pre; text-align: righ
 .dcstats ~ #tt ul li.green {background: url('../images/gs.png') left center no-repeat; line-height: 20px; padding-left: 20px;}
 .dcstats ~ #tt ul li.yellow {background: url('../images/ys.png') left center no-repeat; line-height: 20px; padding-left: 20px;}
 .dcstats ~ #tt ul li.wtf {background: url('../images/us.png') left center no-repeat; line-height: 20px; padding-left: 20px;}
-#maptitle {padding: 8px; font-size: 120%; font-weight: bold;} 
+#maptitle {padding: 8px; font-size: 120%; font-weight: bold;}
 #maptitle .nav {float: right; height: 21px;}
 #mapCanvas { margin-bottom: 50px; position: relative;}
 canvas#background { position: absolute; }
@@ -549,7 +549,7 @@ div.cabinet {
 	font-family: arial;
 	text-shadow: 1px 1px 0 #063, 1px 1px 0 #000, -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000;
 	filter: glow(color=#063,strength=2), alpha(opacity=90);
-} 
+}
 .picture .label { height: 16px; }
 .picture .label > div {text-align: center;width: 100%;}
 .picture .label > div,
@@ -679,11 +679,11 @@ div.cabinet {
 	opacity: .4;
 	z-index: 5;
 }
-.imagem .preview > div > div:first-child { 
+.imagem .preview > div > div:first-child {
 	background-size: contain;
 	height: 100px;
 	width: 100px;
-	background-repeat: no-repeat; 
+	background-repeat: no-repeat;
 	background-position: center center;
 	margin: -1px auto 5px;
 	padding: 2px;
@@ -757,9 +757,9 @@ div.cabinet {
 .device .table.patchpanel > div:first-child select,
 .device .table.switch > div:first-child select,
 .device .table.power > div:first-child select { position: absolute; background-color: transparent; border: 0px none; width: auto;}
-.device .table.patchpanel > div:first-child select::-moz-focus-inner, 
-.device .table.patchpanel > div:first-child select:focus::-moz-focus-inner, 
-.device .table.switch > div:first-child select::-moz-focus-inner, 
+.device .table.patchpanel > div:first-child select::-moz-focus-inner,
+.device .table.patchpanel > div:first-child select:focus::-moz-focus-inner,
+.device .table.switch > div:first-child select::-moz-focus-inner,
 .device .table.switch > div:first-child select:focus::-moz-focus-inner {border: none;}
 
 .device .path div { border: 0px none; }
@@ -771,8 +771,8 @@ div.cabinet {
 #pandn.table span.custom-combobox { width: 100%;}
 #pandn.table .custom-combobox input, #pandn.table .custom-combobox a {border-top: 2px; border-bottom: 2px; border-style: inset;  width: auto; height: 18px;}
 #pandn.table .custom-combobox input {width: calc(100% - 18px);}
-#pandn.table .custom-combobox input {background-image: none; border-left: 2px; border-right: 0px; padding-left: 4px; font-size: inherit;} 
-#pandn.table .custom-combobox a {margin: 0; vertical-align: top; border-left: 0px; border-right: 2px; position: absolute;} 
+#pandn.table .custom-combobox input {background-image: none; border-left: 2px; border-right: 0px; padding-left: 4px; font-size: inherit;}
+#pandn.table .custom-combobox a {margin: 0; vertical-align: top; border-left: 0px; border-right: 2px; position: absolute;}
 
 #olog > div:first-child { border-bottom: 2px solid black; }
 #olog > div > div:first-child { width: 100px; padding-right: 5px; white-space: nowrap; }
@@ -784,7 +784,7 @@ div.cabinet {
 
 #olog > div:last-child > div > button { float: right; line-height: 1em; height: 1.75em;}
 #olog > div:last-child > div > button ~ div { overflow: hidden; padding-right: 1em; border: 0 none; }
-#olog > div:last-child > div > button ~ div > input { width: 100%; } 
+#olog > div:last-child > div > button ~ div > input { width: 100%; }
 
 #olog .table > div > div ~ div {white-space: pre-wrap; max-width: 800px; word-wrap: break-word;}
 
@@ -808,7 +808,7 @@ div.cabinet {
 .patchpanel.table > div > div:first-child { min-width: 15px; }
 /* can't explain where the 2px is coming from */
 .switch.table input, .patchpanel.table input { height: 18px; }
-.switch.table input, .switch.table select, 
+.switch.table input, .switch.table select,
 .patchpanel.table input, .patchpanel.table select { padding: 0; background-color: transparent;}
 .switch.table div[id^=n] input { width:98%; }
 
@@ -913,7 +913,7 @@ div.cabinet {
 	background-image: -webkit-gradient(linear, 0% 0%, 0% 100%, from(rgba(255,255,255,.75)), to(rgba(255,255,255,0)));
 	background-image: linear-gradient(top, rgba(255,255,255,.75), rgba(255,255,255,0));
 	background-repeat:repeat-x;
-	text-shadow:1px 1px 0 rgba(255,255,255,.67); 
+	text-shadow:1px 1px 0 rgba(255,255,255,.67);
 	line-height:2;
 	height:2em;
 	-moz-box-shadow:1px 1px 0 rgba(255,255,255,.5) inset, -1px -1px 0 rgba(255,255,255,.5) inset;
@@ -964,12 +964,12 @@ div.cabinet {
 }
 
 /* Put this inside a @media qualifier so Netscape 4 ignores it */
-@media screen, print { 
+@media screen, print {
 	/* Set printouts to landscape */
 	@page {size: landscape}
 
 	/* Turn off list bullets */
-	ul.mktree  li { list-style: none; } 
+	ul.mktree  li { list-style: none; }
 	/* Control how "spaced out" the tree is */
 	ul.mktree, ul.mktree ul , ul.mktree li { margin-left:5px; padding:0px; }
 	/* Provide space for our own "bullet" inside the LI */
@@ -1072,7 +1072,7 @@ table#crit_busc tr {border: 0px; background: transparent; padding:0.5em;}
 table#crit_busc td {border: 0px; background: transparent; padding:0.5em;}
 
 table#parcheos {border: 3px outset; text-align: center; text-valign: center; max-width: 800px; margin-left: auto; margin-right: auto;}
-table#parcheos tr {border: 0px;}	
+table#parcheos tr {border: 0px;}
 table#parcheos td {padding: 0px; border: 0px; vertical-align: top;}
 
 #parcheos .f-right {background: url("../images/a2f.png") no-repeat #FFF; width:25px;}

@@ -42,7 +42,7 @@ class DeviceTemplate {
 	var $GlobalID;
 	var $ShareToRepo;
 	var $KeepLocal;
-    
+
 	public function __construct($dtid=false){
 		if($dtid){
 			$this->TemplateID=intval($dtid);
@@ -128,36 +128,36 @@ class DeviceTemplate {
 		}
 		return $Template;
 	}
-  
+
 	function query($sql){
 		global $dbh;
 		return $dbh->query($sql);
 	}
-	
+
 	function exec($sql){
 		global $dbh;
 		return $dbh->exec($sql);
 	}
-	
+
 	function prepare( $sql ) {
 		global $dbh;
 		return $dbh->prepare( $sql );
 	}
-	
+
 	function clearShareFlag() {
 		$st = $this->prepare( "update fac_DeviceTemplate set ShareToRepo=0 where TemplateID=:TemplateID" );
 		$st->execute( array( ":TemplateID"=>$this->TemplateID ) );
 	}
-	
+
 	function CreateTemplate(){
 		global $dbh;
-		
+
 		$this->MakeSafe();
 
-		$sql="INSERT INTO fac_DeviceTemplate SET ManufacturerID=$this->ManufacturerID, 
-			Model=\"$this->Model\", Height=$this->Height, Weight=$this->Weight, 
-			Wattage=$this->Wattage, DeviceType=\"$this->DeviceType\", 
-			PSCount=$this->PSCount, NumPorts=$this->NumPorts, Notes=\"$this->Notes\", 
+		$sql="INSERT INTO fac_DeviceTemplate SET ManufacturerID=$this->ManufacturerID,
+			Model=\"$this->Model\", Height=$this->Height, Weight=$this->Weight,
+			Wattage=$this->Wattage, DeviceType=\"$this->DeviceType\",
+			PSCount=$this->PSCount, NumPorts=$this->NumPorts, Notes=\"$this->Notes\",
 			FrontPictureFile=\"$this->FrontPictureFile\", RearPictureFile=\"$this->RearPictureFile\",
 			ChassisSlots=$this->ChassisSlots, RearChassisSlots=$this->RearChassisSlots, SNMPVersion=\"$this->SNMPVersion\",
 			GlobalID=$this->GlobalID, ShareToRepo=$this->ShareToRepo, KeepLocal=$this->KeepLocal;";
@@ -194,13 +194,13 @@ class DeviceTemplate {
 			return true;
 		}
 	}
-  
+
 	function UpdateTemplate(){
 		$this->MakeSafe();
         $sql="UPDATE fac_DeviceTemplate SET ManufacturerID=$this->ManufacturerID,
-			Model=\"$this->Model\", Height=$this->Height, Weight=$this->Weight, 
-			Wattage=$this->Wattage, DeviceType=\"$this->DeviceType\", 
-			PSCount=$this->PSCount, NumPorts=$this->NumPorts, Notes=\"$this->Notes\", 
+			Model=\"$this->Model\", Height=$this->Height, Weight=$this->Weight,
+			Wattage=$this->Wattage, DeviceType=\"$this->DeviceType\",
+			PSCount=$this->PSCount, NumPorts=$this->NumPorts, Notes=\"$this->Notes\",
 			FrontPictureFile=\"$this->FrontPictureFile\", RearPictureFile=\"$this->RearPictureFile\",
 			ChassisSlots=$this->ChassisSlots, RearChassisSlots=$this->RearChassisSlots, SNMPVersion=\"$this->SNMPVersion\",
 			GlobalID=$this->GlobalID, ShareToRepo=$this->ShareToRepo, KeepLocal=$this->KeepLocal
@@ -244,7 +244,7 @@ class DeviceTemplate {
 			return true;
 		}
 	}
-  
+
 	function DeleteTemplate(){
 		$this->MakeSafe();
 
@@ -259,7 +259,7 @@ class DeviceTemplate {
 
 	function Search($indexedbyid=false,$loose=false){
 		$o=new stdClass();
-		// Store any values that have been added before we make them safe 
+		// Store any values that have been added before we make them safe
 		foreach($this as $prop => $val){
 			if(isset($val)){
 				$o->$prop=$val;
@@ -277,7 +277,7 @@ class DeviceTemplate {
 		}
 
 		// The join is purely to sort the templates by the manufacturer's name
-		$sql="SELECT a.* FROM fac_DeviceTemplate a, fac_Manufacturer b 
+		$sql="SELECT a.* FROM fac_DeviceTemplate a, fac_Manufacturer b
 			$sqlextend ORDER BY Name ASC, Model ASC;";
 
 		$templateList=array();
@@ -325,7 +325,7 @@ class DeviceTemplate {
 		//foreach($this as $prop => $value){
 		//	$value=($prop!='TemplateID')?null:$value;
 		//}
-		
+
 		if($row=$this->query($sql)->fetch()){
 			foreach(DeviceTemplate::RowToObject($row) as $prop => $value){
 				$this->$prop=$value;
@@ -335,11 +335,11 @@ class DeviceTemplate {
 			return false;
 		}
 	}
-  
+
 	static function GetTemplateList( $indexed=false ){
 		global $dbh;
 
-		$sql="SELECT * FROM fac_DeviceTemplate a, fac_Manufacturer b WHERE 
+		$sql="SELECT * FROM fac_DeviceTemplate a, fac_Manufacturer b WHERE
 			a.ManufacturerID=b.ManufacturerID ORDER BY Name ASC, Model ASC;";
 
 		$templateList=array();
@@ -353,12 +353,12 @@ class DeviceTemplate {
 
 		return $templateList;
 	}
-	
+
 	function GetTemplateListByManufacturer(){
 		$this->MakeSafe();
 
-		$sql="SELECT * FROM fac_DeviceTemplate a, fac_Manufacturer b WHERE 
-			a.ManufacturerID=b.ManufacturerID AND a.ManufacturerID=$this->ManufacturerID 
+		$sql="SELECT * FROM fac_DeviceTemplate a, fac_Manufacturer b WHERE
+			a.ManufacturerID=b.ManufacturerID AND a.ManufacturerID=$this->ManufacturerID
 			ORDER BY Name ASC, Model ASC;";
 
 		$templateList=array();
@@ -371,12 +371,12 @@ class DeviceTemplate {
 
 	function GetTemplateShareList() {
 		$sql = "select * from fac_DeviceTemplate where ManufacturerID in (select ManufacturerID from fac_Manufacturer where GlobalID>0) and ShareToRepo=true order by ManufacturerID ASC";
-		
+
 		$templateList = array();
 		foreach( $this->query($sql) as $row ) {
 			$templateList[]=DeviceTemplate::RowToObject($row);
 		}
-		
+
 		return $templateList;
 	}
 
@@ -401,7 +401,7 @@ class DeviceTemplate {
 		$this->MakeSafe();
 
 		$sql="SELECT a.* FROM fac_Device a, fac_DeviceTemplate b WHERE
-			a.TemplateID=b.TemplateID AND b.ManufacturerID=$this->ManufacturerID AND 
+			a.TemplateID=b.TemplateID AND b.ManufacturerID=$this->ManufacturerID AND
 			a.MfgDate<'1970-01-01'";
 
 		$devList=array();
@@ -421,26 +421,26 @@ class DeviceTemplate {
 		*/
 		$this->MakeSafe();
 
-		$sql="UPDATE fac_Device SET Height=$this->Height, NominalWatts=$this->Wattage, 
+		$sql="UPDATE fac_Device SET Height=$this->Height, NominalWatts=$this->Wattage,
 			PowerSupplyCount=$this->PSCount, ChassisSlots=$this->ChassisSlots, Weight=$this->Weight,
 			RearChassisSlots=$this->RearChassisSlots, SNMPVersion=\"$this->SNMPVersion\" WHERE TemplateID=$this->TemplateID;";
 
 		return $this->query($sql);
 	}
-	
+
 	function DeleteSlots(){
 		$this->MakeSafe();
-		
+
 		$sql="DELETE FROM fac_Slots WHERE TemplateID=$this->TemplateID";
 		if(!$this->query($sql)){
 			return false;
 		}
 		return true;
 	}
-	
+
 	function DeletePorts(){
 		$this->MakeSafe();
-		
+
 		$sql="DELETE FROM fac_TemplatePorts WHERE TemplateID=$this->TemplateID";
 		if(!$this->query($sql)){
 			return false;
@@ -450,7 +450,7 @@ class DeviceTemplate {
 
 	function DeletePowerPorts(){
 		$this->MakeSafe();
-		
+
 		$sql="DELETE FROM fac_TemplatePowerPorts WHERE TemplateID=$this->TemplateID";
 		if(!$this->query($sql)){
 			return false;
@@ -459,11 +459,11 @@ class DeviceTemplate {
 	}
 
 	// This was a double of the DeletePorts function need to come back later
-	// and see if this thing is even being used.	
+	// and see if this thing is even being used.
 	function removePorts(){
 		return $this->DeletePorts();
 	}
-	
+
 	function ExportTemplate(){
 		$this->MakeSafe();
 
@@ -471,25 +471,25 @@ class DeviceTemplate {
 		$manufacturer=new Manufacturer();
 		$manufacturer->ManufacturerID=$this->ManufacturerID;
 		$manufacturer->GetManufacturerByID();
-		
+
 		$fileContent='<?xml version="1.0" encoding="UTF-8"?>
 <Template xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 xsi:noNamespaceSchemaLocation="openDCIMdevicetemplate.xsd">
 	<ManufacturerName>'.$manufacturer->Name.'</ManufacturerName>
 	<TemplateReg>
-		<Model>'.$this->Model.'</Model> 
-	  <Height>'.$this->Height.'</Height> 
-	  <Weight>'.$this->Weight.'</Weight> 
-	  <Wattage>'.$this->Wattage.'</Wattage> 
-	  <DeviceType>'.$this->DeviceType.'</DeviceType> 
-	  <PSCount>'.$this->PSCount.'</PSCount> 
-	  <NumPorts>'.$this->NumPorts.'</NumPorts> 
-	  <Notes>'.$this->Notes.'</Notes> 
-	  <FrontPictureFile>'.$this->FrontPictureFile.'</FrontPictureFile> 
-	  <RearPictureFile>'.$this->RearPictureFile.'</RearPictureFile> 
+		<Model>'.$this->Model.'</Model>
+	  <Height>'.$this->Height.'</Height>
+	  <Weight>'.$this->Weight.'</Weight>
+	  <Wattage>'.$this->Wattage.'</Wattage>
+	  <DeviceType>'.$this->DeviceType.'</DeviceType>
+	  <PSCount>'.$this->PSCount.'</PSCount>
+	  <NumPorts>'.$this->NumPorts.'</NumPorts>
+	  <Notes>'.$this->Notes.'</Notes>
+	  <FrontPictureFile>'.$this->FrontPictureFile.'</FrontPictureFile>
+	  <RearPictureFile>'.$this->RearPictureFile.'</RearPictureFile>
 	  <SNMPVersion>'.$this->SNMPVersion.'</SNMPVersion>
-	  <ChassisSlots>'.$this->ChassisSlots.'</ChassisSlots> 
-	  <RearChassisSlots>'.$this->RearChassisSlots.'</RearChassisSlots> 
+	  <ChassisSlots>'.$this->ChassisSlots.'</ChassisSlots>
+	  <RearChassisSlots>'.$this->RearChassisSlots.'</RearChassisSlots>
 	</TemplateReg>';
 
 		//Slots
@@ -563,14 +563,14 @@ xsi:noNamespaceSchemaLocation="openDCIMdevicetemplate.xsd">
 '.base64_encode($im).'
 	</RearPicture>';
 		}
-		
+
 		//End of template
 		$fileContent.='
 </Template>';
-		
+
 		//download file
 		download_file_from_string($fileContent, str_replace(' ', '', $manufacturer->Name."-".$this->Model).".xml");
-		
+
 		return true;
 	}
 
@@ -579,7 +579,7 @@ xsi:noNamespaceSchemaLocation="openDCIMdevicetemplate.xsd">
 		$result["status"]="";
 		$result["log"]=array();
 		$ierror=0;
-		
+
 		//validate xml template file with openDCIMdevicetemplate.xsd
 		libxml_use_internal_errors(true);
 		$xml=new XMLReader();
@@ -596,10 +596,10 @@ xsi:noNamespaceSchemaLocation="openDCIMdevicetemplate.xsd">
 		}
     libxml_clear_errors();
 		$xml->close();
-		
+
 		//read xml template file
 		$xmltemplate=simplexml_load_file($file);
-		
+
 		//manufacturer
 		$manufacturer=new Manufacturer();
 		$manufacturer->Name=transform($xmltemplate->ManufacturerName);
@@ -623,7 +623,7 @@ xsi:noNamespaceSchemaLocation="openDCIMdevicetemplate.xsd">
 		$template->SNMPVersion=$xmltemplate->TemplateReg->SNMPVersion;
 		$template->ChassisSlots=($template->DeviceType=="Chassis")?$xmltemplate->TemplateReg->ChassisSlots:0;
 		$template->RearChassisSlots=($template->DeviceType=="Chassis")?$xmltemplate->TemplateReg->RearChassisSlots:0;
-		
+
 		//Check if picture files exist
 		if ($template->FrontPictureFile!="" && file_exists("pictures/".$template->FrontPictureFile)){
 			$result["status"]=__("Import Error");
@@ -635,18 +635,18 @@ xsi:noNamespaceSchemaLocation="openDCIMdevicetemplate.xsd">
 			$result["log"][0]= __("Rear picture file already exists");
 			return $result;
 		}
-		
+
 		//create the template
 		if (!$template->CreateTemplate()){
 			$result["status"]=__("Import Error");
 			$result["log"][0]=__("An error has occurred creating the template.<br>Possibly there is already a template of the same manufacturer and model");
 			return $result;
 		}
-		
+
 		//get template to this object
 		$this->TemplateID=$template->TemplateID;
 		$this->GetTemplateByID();
-		
+
 		//slots
 		foreach ($xmltemplate->SlotReg as $xmlslot){
 			$slot=new Slot();
@@ -667,7 +667,7 @@ xsi:noNamespaceSchemaLocation="openDCIMdevicetemplate.xsd">
 				$result["log"][$ierror++]=sprintf(__("Ignored slot %s"),$slot->Position."-".($slot->BackSide)?__("Rear"):__("Front"));
 			}
 		}
-		
+
 		//ports
 		foreach ($xmltemplate->PortReg as $xmlport){
 			//media type
@@ -677,7 +677,7 @@ xsi:noNamespaceSchemaLocation="openDCIMdevicetemplate.xsd">
 				//New media type
 				$mt->CreateType();
 			}
-			
+
 			//color
 			$cc=new ColorCoding();
 			$cc->Name=transform($xmlport->PortColor);
@@ -685,12 +685,12 @@ xsi:noNamespaceSchemaLocation="openDCIMdevicetemplate.xsd">
 				//New color
 				$cc->CreateCode();
 			}
-			
+
 			$tport=new TemplatePorts();
 			$tport->TemplateID=$this->TemplateID;
 			$tport->PortNumber=intval($xmlport->PortNumber);
 			$tport->Label=$xmlport->Label;
-			$tport->MediaID=$mt->MediaID; 
+			$tport->MediaID=$mt->MediaID;
 			$tport->ColorID=$cc->ColorID;
 			$tport->Notes=$xmlport->Notes;
 			if ($tport->PortNumber<=$this->NumPorts){
@@ -715,26 +715,26 @@ xsi:noNamespaceSchemaLocation="openDCIMdevicetemplate.xsd">
 		}
 		return $result;
 	}
-	
+
 	function GetCustomValues() {
 		$this->MakeSafe();
 
 		$tdca = array();
 		//Table join to make it where we can half ass sort the custom attributes based on the label data
-		$sql="SELECT a.Label, v.TemplateID, v.AttributeID, v.Required, v.Value FROM 
-			fac_DeviceTemplateCustomValue v, fac_DeviceCustomAttribute a WHERE 
-			a.AttributeID=v.AttributeID AND TemplateID=$this->TemplateID ORDER BY Label, 
+		$sql="SELECT a.Label, v.TemplateID, v.AttributeID, v.Required, v.Value FROM
+			fac_DeviceTemplateCustomValue v, fac_DeviceCustomAttribute a WHERE
+			a.AttributeID=v.AttributeID AND TemplateID=$this->TemplateID ORDER BY Label,
 			AttributeID;";
 		foreach($this->query($sql) as $tdcrow) {
 			$tdca[$tdcrow["AttributeID"]]["value"]=$tdcrow["Value"];
 			$tdca[$tdcrow["AttributeID"]]["required"]=$tdcrow["Required"];
-		}	
+		}
 		$this->CustomValues = $tdca;
-	}	
+	}
 
 	function DeleteCustomValues() {
 		$this->MakeSafe();
-		
+
 		$sql="DELETE FROM fac_DeviceTemplateCustomValue WHERE TemplateID=$this->TemplateID;";
 		if($this->query($sql)){
 			$this->GetCustomValues();

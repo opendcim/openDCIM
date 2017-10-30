@@ -40,7 +40,7 @@
 		if($project->ProjectName!=''){
 			if($_POST['action']=='Create'){
 				$project->createProject();
-				
+
 				header('Location: '.redirect("project_mgr.php?projectid=$project->ProjectID"));
 				exit;
 			}else{
@@ -60,7 +60,7 @@
 <head>
   <meta http-equiv="X-UA-Compatible" content="IE=Edge">
   <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-  
+
   <title><?php echo $title; ?></title>
   <link rel="stylesheet" href="css/inventory.php" type="text/css">
   <link rel="stylesheet" href="css/jquery-ui.css" type="text/css">
@@ -69,7 +69,7 @@
   <!--[if lt IE 9]>
   <link rel="stylesheet"  href="css/ie.css" type="text/css">
   <![endif]-->
-  
+
   <script type="text/javascript" src="scripts/jquery.min.js"></script>
   <script type="text/javascript" src="scripts/jquery-ui.min.js"></script>
   <script type="text/javascript" src="scripts/jquery.miniColors.js"></script>
@@ -90,7 +90,7 @@
 		document.getElementById('controls').id = "displaynone";
 		$('.main .center form :input:not([name="projectid"])').attr({readonly:'readonly',disabled:'disabled'})
 		$('.color-picker').minicolors('destroy');
-		$('.main .center form').validationEngine('hide');		
+		$('.main .center form').validationEngine('hide');
 	}
 	$(document).ready(function(){
 		$('#projectid').change(function(e){

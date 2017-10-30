@@ -49,7 +49,7 @@ class LogActions {
 		global $dbh;
 		return $dbh->query($sql);
 	}
-	
+
 	function exec($sql){
 		global $dbh;
 		return $dbh->exec($sql);
@@ -129,7 +129,7 @@ class LogActions {
 						continue;
 					}
 				}
-				// Suppressing errors here because if a new value exists on the object there won't be one in the 
+				// Suppressing errors here because if a new value exists on the object there won't be one in the
 				// original and it will throw an error on the web server
 				@$diff[$key]=$key.": ".$originalobject->$key." => ".$object->$key;
 			}
@@ -207,14 +207,14 @@ class LogActions {
 			if(count($diff)){
 				foreach($diff as $key => $value){
 					$log->Property=$key;
-					// Suppressing errors here because if a new value exists on the object there won't be one in the 
+					// Suppressing errors here because if a new value exists on the object there won't be one in the
 					// original and it will throw an error on the web server
 					@$log->OldVal=$originalobject->$key;
 					$log->NewVal=$object->$key;
 					$return=($log->WriteToDB())?$return:false;
 				}
 			}
-			// in the event that two objects were passed but no changes found, 
+			// in the event that two objects were passed but no changes found,
 			// we just wrote the same info back to the db, nothing to log
 		}else{
 			// if we're creating a new object make a note of all the values
@@ -239,7 +239,7 @@ class LogActions {
 		// the display end of it to make sure we don't allow something crazy out.
 		global $dbh;
 
-		$stmt=$dbh->prepare('INSERT INTO fac_GenericLog (UserID, Class, ObjectID, ChildID, Property, Action, OldVal, NewVal, Time) 
+		$stmt=$dbh->prepare('INSERT INTO fac_GenericLog (UserID, Class, ObjectID, ChildID, Property, Action, OldVal, NewVal, Time)
 			VALUES (:UserID, :Class, :ObjectID, :ChildID, :Property, :Action, :OldVal, :NewVal, CURRENT_TIMESTAMP)');
 		$stmt->bindParam(':UserID', $this->UserID);
 		$stmt->bindParam(':Class', $this->Class);
@@ -297,7 +297,7 @@ class LogActions {
 		$add=($log->ObjectID!='')?sql($add,'ObjectID',$log->ObjectID):$add;
 
 		$sql.=$add.' ORDER BY Time ASC;';
-		$events=array();		
+		$events=array();
 		foreach($log->query($sql) as $dbRow){
 			$events[]=LogActions::RowToObject($dbRow);
 		}
@@ -375,7 +375,7 @@ class LogActions {
 
 		$sql="SELECT * FROM fac_GenericLog$sqlextend;";
 
-		$events=array();		
+		$events=array();
 		foreach($this->query($sql) as $dbRow){
 			$events[]=LogActions::RowToObject($dbRow);
 		}

@@ -107,7 +107,7 @@ CREATE TABLE fac_PowerPorts (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 --
--- TemplatePowerPorts table content the power connections of a device template 
+-- TemplatePowerPorts table content the power connections of a device template
 --
 
 DROP TABLE IF EXISTS fac_TemplatePowerPorts;
@@ -121,7 +121,7 @@ CREATE TABLE fac_TemplatePowerPorts (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 --
--- Add Config item for appending the datacenter / cabinet to device lists 
+-- Add Config item for appending the datacenter / cabinet to device lists
 --
 
 INSERT INTO fac_Config set Parameter='AppendCabDC', Value='disabled', UnitOfMeasure='Enabled/Disabled', ValType='string', DefaultVal='disabled';
@@ -182,7 +182,7 @@ ALTER TABLE fac_DeviceCustomAttribute CHANGE AttributeType AttributeType VARCHAR
 
 --
 -- We added in GlobalIDs make sure they are all set to 0
--- 
+--
 UPDATE fac_Manufacturer SET GlobalID=0;
 
 --

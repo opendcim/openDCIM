@@ -102,7 +102,7 @@
     $content .= '</form>
         </div>';
   } elseif ( isset($_REQUEST['stage']) && $_REQUEST['stage'] == 'validate' ) {
-    
+
     // Certain fields we are going to require that the values exist in the db already (if a value is specified)
     //
     // Data Center
@@ -183,7 +183,7 @@
       foreach( $values as $key => $val ) {
         $values[$key] = array_unique( $values[$key], SORT_REGULAR );
       }
-      
+
       if ( $valid ) {
         // This could probably be economized in some fashion, but I can just crank this out faster one at a time and worry about efficiency later
         //
@@ -223,7 +223,7 @@
         }
 
         // Check the Model for validity, which is like cabinets - it requires the Manufacturer paired with the Model to check.
-        $st = $dbh->prepare( "select * from fac_DeviceTemplate where ucase(Model)=ucase(:Model) and ManufacturerID in (select ManufacturerID from fac_Manufacturer where ucase(Name)=ucase(:Manufacturer))" );        
+        $st = $dbh->prepare( "select * from fac_DeviceTemplate where ucase(Model)=ucase(:Model) and ManufacturerID in (select ManufacturerID from fac_Manufacturer where ucase(Name)=ucase(:Manufacturer))" );
         foreach( $values["Model"] as $row ) {
           $st->execute( array( ":Model"=>$row["Model"], ":Manufacturer"=>$row["Manufacturer"] ));
           if ( ! $st->fetch() ) {
@@ -495,14 +495,14 @@
 <head>
   <meta http-equiv="X-UA-Compatible" content="IE=Edge">
   <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-  
+
   <title>openDCIM</title>
   <link rel="stylesheet" href="css/inventory.php" type="text/css">
   <link rel="stylesheet" href="css/jquery-ui.css" type="text/css">
   <!--[if lt IE 9]>
   <link rel="stylesheet"  href="css/ie.css" type="text/css" />
   <![endif]-->
-  
+
   <script type="text/javascript" src="scripts/jquery.min.js"></script>
   <script type="text/javascript" src="scripts/jquery-ui.min.js"></script>
 </head>

@@ -13,7 +13,7 @@
 	$bin=new SupplyBin();
 	$bc=new BinContents();
 	$sup=new Supplies();
-	
+
 	$supList=$sup->GetSuppliesList(true);
 	$formpatch="";
 	$status="";
@@ -21,7 +21,7 @@
 	if(isset($_REQUEST["binid"])) {
 		$bin->BinID=(isset($_POST['binid'])?$_POST['binid']:$_GET['binid']);
 		$bin->GetBin();
-		
+
 		$bc->BinID=$bin->BinID;
 
 		if(isset($_POST["action"])&&(($_POST["action"]=="Create")||($_POST["action"]=="Update"))&&($_POST["location"]!=null&&$_POST["location"]!="")){
@@ -87,7 +87,7 @@
 
 		$formpatch="?binid={$_REQUEST['binid']}";
 	}
-	
+
 	$binList=$bin->GetBinList();
 
 ?>
@@ -96,7 +96,7 @@
 <head>
   <meta http-equiv="X-UA-Compatible" content="IE=Edge">
   <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-  
+
   <title>openDCIM Stockroom Supplies</title>
 
   <link rel="stylesheet" href="css/inventory.php" type="text/css">

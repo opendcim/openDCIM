@@ -1,6 +1,6 @@
 <?php
 /*	Template file for creating Excel based reports
-	
+
 	Basically just the setup of the front page for consistency
 */
 
@@ -33,7 +33,7 @@
 
     $m = new Manufacturer();
     $manList = $m->GetManufacturerList();
-        
+
  ?>
     </div>
     <div class="main">
@@ -103,7 +103,7 @@
     	$workBook->getProperties()->setTitle("Data Center Inventory Export");
     	$workBook->getProperties()->setSubject("Vendor Model Export");
     	$workBook->getProperties()->setDescription("Export of the openDCIM database based upon user filtered criteria.");
-    	
+
     	// Start off with the TPS Cover Page
 
     	$workBook->setActiveSheetIndex(0);
@@ -218,10 +218,10 @@
 
                 foreach( $columnList as $fieldName=>$columnName ) {
                     $cellAddr = $columnName."1";
-      
+
                     $sheet->setCellValue( $cellAddr, $fieldName );
                 }
-                
+      
                 $currRow = 2;
 
 
@@ -279,7 +279,7 @@
 
     	header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
     	header( sprintf( "Content-Disposition: attachment;filename=\"opendcim-%s.xlsx\"", date( "YmdHis" ) ) );
-    	
+
     	$writer = new PHPExcel_Writer_Excel2007($workBook);
     	$writer->save('php://output');
     }

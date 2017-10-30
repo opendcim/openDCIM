@@ -29,7 +29,7 @@ class TemplatePorts {
 	var $MediaID;
 	var $ColorID;
 	var $Notes;
-	
+
 	function MakeSafe() {
 		$this->TemplateID=intval($this->TemplateID);
 		$this->PortNumber=intval($this->PortNumber);
@@ -62,12 +62,12 @@ class TemplatePorts {
 		global $dbh;
 		return $dbh->prepare( $sql );
 	}
-	
+
 	function flushPorts( $templateid ) {
 		$st = $this->prepare( "delete from fac_TemplatePorts where TemplateID=:TemplateID" );
 		return $st->execute( array( ":TemplateID"=>$templateid ) );
 	}
-	
+
 	function getPort(){
 		global $dbh;
 		$this->MakeSafe();
@@ -93,19 +93,19 @@ class TemplatePorts {
 		$ports=array();
 		foreach($dbh->query($sql) as $row){
 			$ports[$row['PortNumber']]=TemplatePorts::RowToObject($row);
-		}	
+		}
 		return $ports;
 	}
-	
+
 	function createPort() {
 		global $dbh;
-		
+
 		$this->MakeSafe();
 
-		$sql="INSERT INTO fac_TemplatePorts SET TemplateID=$this->TemplateID, PortNumber=$this->PortNumber, 
-			Label=\"$this->Label\", MediaID=$this->MediaID, ColorID=$this->ColorID, 
+		$sql="INSERT INTO fac_TemplatePorts SET TemplateID=$this->TemplateID, PortNumber=$this->PortNumber,
+			Label=\"$this->Label\", MediaID=$this->MediaID, ColorID=$this->ColorID,
 			Notes=\"$this->Notes\";";
-			
+
 		if(!$dbh->query($sql)){
 			$info=$dbh->errorInfo();
 
@@ -128,15 +128,15 @@ class TemplatePorts {
 		$oldport->getPort();
 
 		// update port
-		$sql="UPDATE fac_TemplatePorts SET Label=\"$this->Label\", MediaID=$this->MediaID, 
-			ColorID=$this->ColorID,	Notes=\"$this->Notes\", 
+		$sql="UPDATE fac_TemplatePorts SET Label=\"$this->Label\", MediaID=$this->MediaID,
+			ColorID=$this->ColorID,	Notes=\"$this->Notes\",
 			WHERE TemplateID=$this->TemplateID AND PortNumber=$this->PortNumber;";
 
 		if(!$dbh->query($sql)){
 			$info=$dbh->errorInfo();
 
 			error_log("updatePort::PDO Error: {$info[2]} SQL=$sql");
-			
+
 			return false;
 		}
 
@@ -160,8 +160,8 @@ class TemplatePorts {
 		}else{
 			(class_exists('LogActions'))?LogActions::LogThis($this):'';
 			return true;
-		}		
+		}
 	} //END of Class TemplatePorts
-	
+
 }
 ?>

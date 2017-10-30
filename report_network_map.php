@@ -128,7 +128,7 @@
                 $datacenter = new DataCenter();
                 $datacenter->DataCenterID = $cabinetList[0]->DataCenterID;
                 $datacenter->GetDataCenter();
-                $graphname .= "Row " . $cabrow->Name 
+                $graphname .= "Row " . $cabrow->Name
                         . " in Data Center " . $datacenter->Name;
                 foreach($cabinetList as $cab) {
                     $device = new Device();
@@ -149,7 +149,7 @@
             $datacenter = new DataCenter();
             $datacenter->DataCenterID = $cabinet->DataCenterID;
             $datacenter->GetDataCenter();
-            $graphname .= "Cabinet " . $cabinet->Location 
+            $graphname .= "Cabinet " . $cabinet->Location
                     . " in Data Center " . $datacenter->Name;
             $device = new Device();
             $device->Cabinet = $cabid;
@@ -174,7 +174,7 @@
             $dList = ProjectMembership::getProjectMembership($p->ProjectID);
             foreach( $dList as $dev ) {
                 if ( !isset($devList[$dev->DeviceType])) {
-                    $devList[$dev->DeviceType] = array();    
+                    $devList[$dev->DeviceType] = array();
                 }
                 $devList[$dev->DeviceType][$dev->DeviceID]=array();
             }
@@ -199,7 +199,7 @@ overlap = scale;
                 foreach($ports as $port) {
                     if(($mediaID == -1) || ($port->MediaID == $mediaID)) {
                         if(isset($port->ConnectedDeviceID) && ($port->ConnectedDeviceID>0)) {
-                            # if the connected device isn't in our list of devices, add it so we 
+                            # if the connected device isn't in our list of devices, add it so we
                             # at least get nice names for the devices outside the selected scope
                             $tdev = new Device();
                             $tdev->DeviceID = $port->ConnectedDeviceID;
@@ -327,7 +327,7 @@ overlap = scale;
             # otherwise uses a random color from the list above.
             # 1: randomizes the colors by colorid
             # 2: randomizes the colors by mediaid
-            # 3: randomizes the colors by both 1 and 2. 
+            # 3: randomizes the colors by both 1 and 2.
             if(($colorType == 0)||($colorType == 1)){
                 $portColorKey = $port['ColorID'];
             }elseif($colorType == 2){
@@ -483,7 +483,7 @@ overlap = scale;
                 $options = array();
                 if($containmentType == "container" ){
                     # filtering by container
-                    $cList = new Container();    
+                    $cList = new Container();
                     $cList = $cList->GetContainerList();
                     $body .= "<select name=containerid id=containerid>";
                     foreach($cList as $c){
@@ -491,7 +491,7 @@ overlap = scale;
                     }
                 } elseif($containmentType == "datacenter" ){
                     # filtering by dc
-                    $dcList = new DataCenter();    
+                    $dcList = new DataCenter();
                     $dcList = $dcList->GetDCList();
                     $body .= "<select name=datacenterid id=datacenterid>";
                     foreach($dcList as $dc){
@@ -499,7 +499,7 @@ overlap = scale;
                     }
                 } elseif($containmentType == "zone" ){
                     #filtering by zone
-                    $zList = new Zone();    
+                    $zList = new Zone();
                     $zList = $zList->GetZoneList();
                     $body .= "<select name=zoneid id=zoneid>";
                     foreach($zList as $zone){
@@ -510,7 +510,7 @@ overlap = scale;
                     }
                 } elseif($containmentType == "cabinetrow" ){
                     # filter by cabrow
-                    $crList = new CabRow();    
+                    $crList = new CabRow();
                     $crList = $crList->GetCabRowList();
                     $body .= "<select name=cabrowid id=cabrowid>";
                     foreach($crList as $cabrow){
@@ -518,7 +518,7 @@ overlap = scale;
                     }
                 } elseif($containmentType == "cabinet" ){
                     # filter by cabinet
-                    $cList = new Cabinet();    
+                    $cList = new Cabinet();
                     $cList = $cList->ListCabinets();
                     $body .= "<select name=cabid id=cabid>";
                     foreach($cList as $cabinet){

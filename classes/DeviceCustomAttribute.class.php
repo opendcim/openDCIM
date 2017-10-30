@@ -39,10 +39,10 @@ class DeviceCustomAttribute {
 		$this->AllDevices=(intval($this->AllDevices)>=1)?1:0;
 		$this->DefaultValue=sanitize($this->DefaultValue);
 	}
-	
+
 	function CheckInput() {
 		$this->MakeSafe();
-		
+
 		if(!in_array($this->AttributeType, DeviceCustomAttribute::GetDeviceCustomAttributeTypeList())){
 			return false;
 		}
@@ -73,7 +73,7 @@ class DeviceCustomAttribute {
 					break;
 				case "checkbox":
 					$acceptable = array("0", "1", "true", "false", "on", "off");
-					if(!in_array($this->DefaultValue, $acceptable)) { return false; }		
+					if(!in_array($this->DefaultValue, $acceptable)) { return false; }
 					break;
 				case "set":
 					// Attempt to stem S.U.T. here
@@ -130,7 +130,7 @@ class DeviceCustomAttribute {
 		}
 
 		// If something is marked "AllDevices", we don't actually add it to all devices
-		// in the database, we just check when displaying devices/templates and 
+		// in the database, we just check when displaying devices/templates and
 		// display any that are AllDevices to help reduce db size/complexity
 
 		(class_exists('LogActions'))?LogActions::LogThis($this):'';
@@ -143,7 +143,7 @@ class DeviceCustomAttribute {
 		global $dbh;
 		$this->MakeSafe();
 
-		// Prevent custom attributes from being renamed to somethign that already exists 
+		// Prevent custom attributes from being renamed to somethign that already exists
 		$dev=new Device();
 		if (in_array(strtolower($this->Label),array_map('strtolower', array_keys((array) $dev)))){
 			return false;
@@ -174,7 +174,7 @@ class DeviceCustomAttribute {
 	function GetDeviceCustomAttribute() {
 		global $dbh;
 		$this->MakeSafe();
-		$sql="SELECT AttributeID, Label, AttributeType, Required, AllDevices, DefaultValue 
+		$sql="SELECT AttributeID, Label, AttributeType, Required, AllDevices, DefaultValue
 			FROM fac_DeviceCustomAttribute
 			WHERE AttributeID=$this->AttributeID;";
 
@@ -187,11 +187,11 @@ class DeviceCustomAttribute {
 			return false;
 		}
 	}
-	
+
 	function RemoveDeviceCustomAttribute() {
 		global $dbh;
 		$this->AttributeID=intval($this->AttributeID);
-	
+
 		$sql="DELETE FROM fac_DeviceTemplateCustomValue WHERE AttributeID=$this->AttributeID;";
 		if(!$dbh->query($sql)){
 			$info=$dbh->errorInfo();
@@ -205,14 +205,14 @@ class DeviceCustomAttribute {
 			error_log("RemoveDeviceCustomAttribute::PDO Error: {$info[2]} SQL=$sql" );
 			return false;
 		}
-		
+
 		$sql="DELETE FROM fac_DeviceCustomAttribute WHERE AttributeID=$this->AttributeID;";
 		if(!$dbh->query($sql)){
 			$info=$dbh->errorInfo();
 			error_log("RemoveDeviceCustomAttribute::PDO Error: {$info[2]} SQL=$sql" );
 			return false;
 		}
-		
+
 		(class_exists('LogActions'))?LogActions::LogThis($this):'';
 		return true;
 
@@ -221,7 +221,7 @@ class DeviceCustomAttribute {
 	function RemoveFromTemplatesAndDevices() {
 		global $dbh;
 		$this->AttributeID=intval($this->AttributeID);
-	
+
 		$sql="DELETE FROM fac_DeviceTemplateCustomValue WHERE AttributeID=$this->AttributeID;";
 		if(!$dbh->query($sql)){
 			$info=$dbh->errorInfo();
@@ -235,7 +235,7 @@ class DeviceCustomAttribute {
 			error_log("RemoveDeviceCustomAttribute::PDO Error: {$info[2]} SQL=$sql" );
 			return false;
 		}
-		
+
 		(class_exists('LogActions'))?LogActions::LogThis($this):'';
 		return true;
 	}
@@ -243,7 +243,7 @@ class DeviceCustomAttribute {
 	static function GetDeviceCustomAttributeList($indexbyname=false) {
 		global $dbh;
 		$dcaList=array();
-		
+
 		$sql="SELECT AttributeID, Label, AttributeType, Required, AllDevices, DefaultValue
 			FROM fac_DeviceCustomAttribute
 			ORDER BY Label, AttributeID;";
@@ -263,20 +263,20 @@ class DeviceCustomAttribute {
 		$validtypes=array("string","number","integer","date","phone","email","ipv4","url","checkbox","set");
 
 		return $validtypes;
-	}	
+	}
 
 	static function TimesUsed($AttributeID) {
 		global $dbh;
 		$AttributeID=intval($AttributeID);
 
 		// get a count of the number of times this attribute is in templates or devices
-		$sql="SELECT COUNT(*) + (SELECT COUNT(*) FROM fac_DeviceCustomValue WHERE 
-		AttributeID=$AttributeID) AS Result FROM fac_DeviceTemplateCustomValue WHERE 
+		$sql="SELECT COUNT(*) + (SELECT COUNT(*) FROM fac_DeviceCustomValue WHERE
+		AttributeID=$AttributeID) AS Result FROM fac_DeviceTemplateCustomValue WHERE
 		AttributeID=$AttributeID";
 
 		$count=$dbh->prepare($sql);
 		$count->execute();
-		
+
 		return $count->fetchColumn();
 	}
 }

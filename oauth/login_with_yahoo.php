@@ -37,7 +37,7 @@
 			if(strlen($client->access_token))
 			{
 				$success = $client->CallAPI(
-					'https://query.yahooapis.com/v1/yql', 
+					'https://query.yahooapis.com/v1/yql',
 					'GET', array(
 						'q'=>'select * from social.profile where guid=me',
 						'format'=>'json'
@@ -63,7 +63,7 @@
 </head>
 <body>
 <?php
-		echo '<h1>', HtmlSpecialChars($user->query->results->profile->nickname), 
+		echo '<h1>', HtmlSpecialChars($user->query->results->profile->nickname),
 			' you have logged in successfully with Yahoo!</h1>';
 		echo '<pre>', HtmlSpecialChars(print_r($user, 1)), '</pre>';
 ?>

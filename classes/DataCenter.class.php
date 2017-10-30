@@ -89,7 +89,7 @@ class DataCenter {
 		global $dbh;
 		return $dbh->query($sql);
 	}
-	
+
 	function exec($sql){
 		global $dbh;
 		return $dbh->exec($sql);
@@ -97,7 +97,7 @@ class DataCenter {
 
 	function Search($indexedbyid=false,$loose=false){
 		$o=new stdClass();
-		// Store any values that have been added before we make them safe 
+		// Store any values that have been added before we make them safe
 		foreach($this as $prop => $val){
 			if(isset($val)){
 				$o->$prop=$val;
@@ -138,12 +138,12 @@ class DataCenter {
 	function CreateDataCenter(){
 		global $dbh;
 		$this->MakeSafe();
-		
-		$sql="INSERT INTO fac_DataCenter SET Name=\"$this->Name\", 
-			SquareFootage=$this->SquareFootage, DeliveryAddress=\"$this->DeliveryAddress\", 
-			Administrator=\"$this->Administrator\", MaxkW=$this->MaxkW, 
-			DrawingFileName=\"$this->DrawingFileName\", EntryLogging=0,	
-			ContainerID=$this->ContainerID,	MapX=$this->MapX, MapY=$this->MapY, 
+
+		$sql="INSERT INTO fac_DataCenter SET Name=\"$this->Name\",
+			SquareFootage=$this->SquareFootage, DeliveryAddress=\"$this->DeliveryAddress\",
+			Administrator=\"$this->Administrator\", MaxkW=$this->MaxkW,
+			DrawingFileName=\"$this->DrawingFileName\", EntryLogging=0,
+			ContainerID=$this->ContainerID,	MapX=$this->MapX, MapY=$this->MapY,
 			U1Position=\"$this->U1Position\";";
 
 		if(!$dbh->exec($sql)){
@@ -155,19 +155,19 @@ class DataCenter {
 
 		$this->DataCenterID=$dbh->lastInsertId();
 		(class_exists('LogActions'))?LogActions::LogThis($this):'';
-		return true; 
+		return true;
 	}
 
 	function DeleteDataCenter($junkremoval=true) {
 		$this->MakeSafe();
-		
+
 		// Have to make sure that we delete EVERYTHING and not create orphans
 		// Also, if we are down to the last data center, refuse to delete it
 		$sql = "SELECT COUNT(*) AS Total FROM fac_DataCenter;";
 		if ( ! $row = $this->query($sql)->fetch() ) {
 			return false;
 		}
-		
+
 		if ( $row["Total"] < 2 ) {
 			return false;
 		}
@@ -176,21 +176,21 @@ class DataCenter {
 		$cab = new Cabinet();
 		$cab->DataCenterID = $this->DataCenterID;
 		$cabList = $cab->ListCabinetsByDC();
-		
+
 		foreach( $cabList as $c ) {
 			$c->DeleteCabinet();
 		}
-		
+
 		// Now delete any Zones or Rows that are attached to this data center
 		$zn = new Zone();
 		$zn->DataCenterID = $this->DataCenterID;
 		$zoneList = $zn->GetZonesByDC();
-		
+
 		foreach ( $zoneList as $z ) {
 			// This function already deletes any rows within the zone
 			$z->DeleteZone();
 		}
-		
+
 		// Time to deal with the crap in storage
 
 		// Get a list of all the devices that are in this data center's storage room
@@ -212,33 +212,33 @@ class DataCenter {
 				$dev->UpdateDevice();
 			}
 		}
-	
+
 		// Finally, delete the data center itself
 		$sql="DELETE FROM fac_DataCenter WHERE DataCenterID=$this->DataCenterID;";
 		$this->exec($sql);
-		
+
 		(class_exists('LogActions'))?LogActions::LogThis($this):'';
 		return true;
 	}
-	
+
 	function UpdateDataCenter(){
 		$this->MakeSafe();
 
-		$sql="UPDATE fac_DataCenter SET Name=\"$this->Name\", 
-			SquareFootage=$this->SquareFootage, DeliveryAddress=\"$this->DeliveryAddress\", 
-			Administrator=\"$this->Administrator\", MaxkW=$this->MaxkW, 
-			DrawingFileName=\"$this->DrawingFileName\", EntryLogging=0,	
-			ContainerID=$this->ContainerID,	MapX=$this->MapX, MapY=$this->MapY, 
+		$sql="UPDATE fac_DataCenter SET Name=\"$this->Name\",
+			SquareFootage=$this->SquareFootage, DeliveryAddress=\"$this->DeliveryAddress\",
+			Administrator=\"$this->Administrator\", MaxkW=$this->MaxkW,
+			DrawingFileName=\"$this->DrawingFileName\", EntryLogging=0,
+			ContainerID=$this->ContainerID,	MapX=$this->MapX, MapY=$this->MapY,
 			U1Position=\"$this->U1Position\" WHERE DataCenterID=$this->DataCenterID;";
 
 		$this->MakeDisplay();
-	
+
 		$old=new DataCenter();
 		$old->DataCenterID=$this->DataCenterID;
 		$old->GetDataCenter();
 
 		(class_exists('LogActions'))?LogActions::LogThis($this,$old):'';
-		return $this->query($sql);		
+		return $this->query($sql);
 	}
 
 	function GetDataCenter(){
@@ -254,7 +254,7 @@ class DataCenter {
 			return false;
 		}
 	}
-		
+
 	static function GetDCList($indexedbyid=false){
 		global $dbh;
 
@@ -327,7 +327,7 @@ class DataCenter {
 
 	function GetOverview(){
 		$this->MakeSafe();
-		$statusarray=array();	
+		$statusarray=array();
 		// check to see if map was set
 		if(strlen($this->DrawingFileName)){
 			$mapfile="drawings".DIRECTORY_SEPARATOR.$this->DrawingFileName;
@@ -346,7 +346,7 @@ class DataCenter {
 				$dev=new Device();
 				$templ=new DeviceTemplate();
 				$cab=new Cabinet();
-				
+
 				// get all color codes and limits for use with loop below
 				$CriticalColor=html2rgb($this->dcconfig->ParameterArray["CriticalColor"]);
 				$CautionColor=html2rgb($this->dcconfig->ParameterArray["CautionColor"]);
@@ -366,7 +366,7 @@ class DataCenter {
 				$color['low']=array('r' => $GoodColor[0], 'g' => $GoodColor[1], 'b' => $GoodColor[2]);
 				$colors=$color;
 
-				// Assign color variables 
+				// Assign color variables
 				$CriticalColor='bad';
 				$CautionColor='med';
 				$GoodColor='low';
@@ -375,17 +375,17 @@ class DataCenter {
 				// Temperature
 				$TemperatureYellow=intval($this->dcconfig->ParameterArray["TemperatureYellow"]);
 				$TemperatureRed=intval($this->dcconfig->ParameterArray["TemperatureRed"]);
-				
+
 				// Humidity
 				$HumidityMin=intval($this->dcconfig->ParameterArray["HumidityRedLow"]);
-				$HumidityMedMin=intval($this->dcconfig->ParameterArray["HumidityYellowLow"]);			
-				$HumidityMedMax=intval($this->dcconfig->ParameterArray["HumidityYellowHigh"]);				
+				$HumidityMedMin=intval($this->dcconfig->ParameterArray["HumidityYellowLow"]);
+				$HumidityMedMax=intval($this->dcconfig->ParameterArray["HumidityYellowHigh"]);
 				$HumidityMax=intval($this->dcconfig->ParameterArray["HumidityRedHigh"]);
-				
+
 				//Real Power
 				$RealPowerRed=intval($this->dcconfig->ParameterArray["PowerRed"]);
 				$RealPowerYellow=intval($this->dcconfig->ParameterArray["PowerYellow"]);
-				
+
 				// get image file attributes and type
 				if(mime_content_type($mapfile)=='image/svg+xml'){
 					$svgfile = simplexml_load_file($mapfile);
@@ -395,11 +395,11 @@ class DataCenter {
 					list($width, $height, $type, $attr)=getimagesize($mapfile);
 				}
 				$cdus=array();
-					
-				$sql = "select c.CabinetID, P.RealPower, P.BreakerSize, P.InputAmperage*PP.PanelVoltage as VoltAmp from 
-					(fac_Cabinet c left join (select CabinetID, Wattage as RealPower, BreakerSize, InputAmperage, PanelID from fac_PowerDistribution PD 
-					left join fac_PDUStats PS on PD.PDUID=PS.PDUID) P on c.CabinetID=P.CabinetID) 
-					left join (select PanelVoltage, PanelID from fac_PowerPanel) PP on PP.PanelID=P.PanelID 
+
+				$sql = "select c.CabinetID, P.RealPower, P.BreakerSize, P.InputAmperage*PP.PanelVoltage as VoltAmp from
+					(fac_Cabinet c left join (select CabinetID, Wattage as RealPower, BreakerSize, InputAmperage, PanelID from fac_PowerDistribution PD
+					left join fac_PDUStats PS on PD.PDUID=PS.PDUID) P on c.CabinetID=P.CabinetID)
+					left join (select PanelVoltage, PanelID from fac_PowerPanel) PP on PP.PanelID=P.PanelID
 					where PanelVoltage is not null and RealPower is not null and c.DataCenterID=".intval($this->DataCenterID);
 
 				$rpvalues=$this->query($sql);
@@ -430,7 +430,7 @@ class DataCenter {
 				}
 				$cab->DataCenterID = $this->DataCenterID;
 				$cabList = $cab->ListCabinetsByDC();
-				
+
 				$titletemp=0;
 				$titlerp=0;
 				// read all cabinets and calculate the color to display on the cabinet
@@ -439,9 +439,9 @@ class DataCenter {
 						continue;
 					}
 					$currentHeight=$cabRow->CabinetHeight;
-					
+
 					$metrics = CabinetMetrics::getMetrics( $cabRow->CabinetID );
-					
+
 					$currentTemperature=$metrics->IntakeTemperature;
 					$currentHumidity=$metrics->IntakeHumidity;
 					$currentRealPower=$metrics->MeasuredPower;
@@ -457,23 +457,23 @@ class DataCenter {
 
 					// check for individual cdu's being weird
 					if(isset($cdus[$cab->CabinetID])){$RealPowerPercent=($RealPowerPercent>$cdus[$cab->CabinetID])?$RealPowerPercent:$cdus[$cab->CabinetID];}
-				
+
 					//Decide which color to paint on the canvas depending on the thresholds
 					if($SpacePercent>$SpaceRed){$scolor=$CriticalColor;}elseif($SpacePercent>$SpaceYellow){$scolor=$CautionColor;}else{$scolor=$GoodColor;}
 					if($WeightPercent>$WeightRed){$wcolor=$CriticalColor;}elseif($WeightPercent>$WeightYellow){$wcolor=$CautionColor;}else{$wcolor=$GoodColor;}
 					if($PowerPercent>$PowerRed){$pcolor=$CriticalColor;}elseif($PowerPercent>$PowerYellow){$pcolor=$CautionColor;}else{$pcolor=$GoodColor;}
 					if($RealPowerPercent>$RealPowerRed){$rpcolor=$CriticalColor;}elseif($RealPowerPercent>$RealPowerYellow){$rpcolor=$CautionColor;}else{$rpcolor=$GoodColor;}
-					
+
 					if($currentTemperature==0){$tcolor=$unknownColor;}
 						elseif($currentTemperature>$TemperatureRed){$tcolor=$CriticalColor;}
 						elseif($currentTemperature>$TemperatureYellow){$tcolor=$CautionColor;}
 						else{$tcolor=$GoodColor;}
-					
+
 					if($currentHumidity==0){$hcolor=$unknownColor;}
 						elseif($currentHumidity>$HumidityMax || $currentHumidity<$HumidityMin){$hcolor=$CriticalColor;}
 						elseif($currentHumidity>$HumidityMedMax || $currentHumidity<$HumidityMedMin) {$hcolor=$CautionColor;}
 						else{$hcolor=$GoodColor;}
-										
+
 					foreach(array($scolor,$wcolor,$pcolor,$tcolor,$hcolor,$rpcolor) as $cc){
 						if($cc=='bad'){
 							$color='bad';break;
@@ -483,7 +483,7 @@ class DataCenter {
 							$color='low';
 						}
 					}
-					
+
 					$overview[$cabRow->CabinetID]=$color;
 					$space[$cabRow->CabinetID]=$scolor;
 					$weight[$cabRow->CabinetID]=$wcolor;
@@ -494,15 +494,15 @@ class DataCenter {
 					$airflow[$cabRow->CabinetID]=$cabRow->FrontEdge;
 				}
 			}
-			
+
 			$tempSQL = "select max(LastRead) as ReadingTime from fac_SensorReadings where DeviceID in (select DeviceID from fac_Device where DeviceType='Sensor' and Cabinet in (select CabinetID from fac_Cabinet where DataCenterID=" . $this->DataCenterID . "))";
 			$tempRes = $this->query( $tempSQL );
 			$tempRow = $tempRes->fetch();
-			
+
 			$pwrSQL = "select max(LastRead) as ReadingTime from fac_PDUStats where PDUID in (select DeviceID from fac_Device where DeviceType='CDU' and Cabinet in (select CabinetID from fac_Cabinet where DataCenterID=" . $this->DataCenterID . "))";
 			$pwrRes = $this->query( $pwrSQL );
 			$pwrRow = $pwrRes->fetch();
-			
+
 			//Key
 			$overview['title']=__("Composite View of Cabinets");
 			$space['title']=__("Occupied Space");
@@ -532,17 +532,17 @@ class DataCenter {
 	function GetDCStatistics(){
 		$this->GetDataCenter();
 
-		$sql="SELECT SUM(CabinetHeight) as TotalU FROM fac_Cabinet WHERE 
+		$sql="SELECT SUM(CabinetHeight) as TotalU FROM fac_Cabinet WHERE
 			DataCenterID=$this->DataCenterID;";
 		$dcStats["TotalU"]=($test=$this->query($sql)->fetchColumn())?$test:0;
 
 		// Count the U used up by devices that are (a) not chassis cards; (b) in a cabinet in the data center; (c) not a server or array; and (d) not in the Storage Room (Cabinet=-1)
-		$sql="SELECT SUM(a.Height) as TotalU FROM fac_Device a,fac_Cabinet b WHERE 
+		$sql="SELECT SUM(a.Height) as TotalU FROM fac_Device a,fac_Cabinet b WHERE
 			a.Cabinet=b.CabinetID AND b.DataCenterID=$this->DataCenterID AND ParentDevice=0 AND
 			a.DeviceType NOT IN ('Server','Storage Array') and a.Cabinet>0;";
 		$dcStats["Infrastructure"]=($test=$this->query($sql)->fetchColumn())?$test:0;
- 
-		$sql="SELECT SUM(a.Height) as TotalU FROM fac_Device a,fac_Cabinet b WHERE 
+
+		$sql="SELECT SUM(a.Height) as TotalU FROM fac_Device a,fac_Cabinet b WHERE
 			a.Cabinet=b.CabinetID AND b.DataCenterID=$this->DataCenterID AND ParentDevice=0 AND
 			a.Status not in ('Reserved', 'Salvage') AND a.DeviceType IN ('Server', 'Storage Array') and a.Cabinet>0;";
 		$dcStats["Occupied"]=($test=$this->query($sql)->fetchColumn())?$test:0;
@@ -551,18 +551,18 @@ class DataCenter {
 		$sql="SELECT SUM(a.Height) FROM fac_Device a,fac_Cabinet b WHERE ParentDevice=0 AND
 			a.Cabinet=b.CabinetID AND a.Status='Reserved' AND b.DataCenterID=$this->DataCenterID and a.Cabinet>0;";
 		$dcStats["Allocated"]=($test=$this->query($sql)->fetchColumn())?$test:0;
-		
+
         $dcStats["Available"]=$dcStats["TotalU"] - $dcStats["Occupied"] - $dcStats["Infrastructure"] - $dcStats["Allocated"];
 
 		// Perform two queries - one is for the wattage overrides (where NominalWatts > 0) and one for the template (default) values
-		$sql="SELECT SUM(NominalWatts) as TotalWatts FROM fac_Device a,fac_Cabinet b WHERE 
+		$sql="SELECT SUM(NominalWatts) as TotalWatts FROM fac_Device a,fac_Cabinet b WHERE
 			a.Cabinet=b.CabinetID AND a.NominalWatts>0 AND a.Cabinet>0 AND
 			b.DataCenterID=$this->DataCenterID;";
 		$dcStats["ComputedWatts"]=($test=$this->query($sql)->fetchColumn())?$test:0;
-		
-		$sql="SELECT SUM(c.Wattage) as TotalWatts FROM fac_Device a, fac_Cabinet b, 
+
+		$sql="SELECT SUM(c.Wattage) as TotalWatts FROM fac_Device a, fac_Cabinet b,
 			fac_DeviceTemplate c WHERE a.Cabinet=b.CabinetID AND a.Cabinet>0 AND
-			a.TemplateID=c.TemplateID AND a.NominalWatts=0 AND 
+			a.TemplateID=c.TemplateID AND a.NominalWatts=0 AND
 			b.DataCenterID=$this->DataCenterID;";
 		$dcStats["ComputedWatts"]+=($test=$this->query($sql)->fetchColumn())?$test:0;
 
@@ -570,50 +570,50 @@ class DataCenter {
 			WHERE a.DeviceID=c.DeviceID and c.Cabinet=b.CabinetID AND c.BackSide=0 AND
 			b.DataCenterID=$this->DataCenterID;";
 		$dcStats["AvgTemp"]=($test=round($this->query($sql)->fetchColumn()))?$test:0;
-		
+
 		$sql="SELECT AVG(NULLIF(a.Humidity, 0)) as AvgHumidity FROM fac_SensorReadings a, fac_Cabinet b, fac_Device c
 			WHERE a.DeviceID=c.DeviceID and c.BackSide=0 and c.Cabinet=b.CabinetID AND
 			b.DataCenterID=$this->DataCenterID;";
 		$dcStats["AvgHumidity"]=($test=round($this->query($sql)->fetchColumn()))?$test:0;
-		
+
 		$pdu=new PowerDistribution();
 		$dcStats["MeasuredWatts"]=$pdu->GetWattageByDC($this->DataCenterID);
 
 		$sql = "select count(*) from fac_Cabinet where DataCenterID=" . intval($this->DataCenterID);
 		$dcStats["TotalCabinets"] = ($test=$this->query($sql)->fetchColumn())?$test:0;
-		
+
 		return $dcStats;
 	}
-	
+
 	function AddDCToTree($lev=0) {
 		$dept=new Department();
 		$zone=new Zone();
-		
+
 		$classType = "liClosed";
-		$tree=str_repeat(" ",$lev+1)."<li class=\"$classType\" id=\"dc$this->DataCenterID\"><a class=\"DC\" href=\"dc_stats.php?dc=" 
+		$tree=str_repeat(" ",$lev+1)."<li class=\"$classType\" id=\"dc$this->DataCenterID\"><a class=\"DC\" href=\"dc_stats.php?dc="
 			."$this->DataCenterID\">$this->Name</a>\n";
 		$tree.=str_repeat(" ",$lev+2)."<ul>\n";
 
 		$zone->DataCenterID=$this->DataCenterID;
-		$zoneList=$zone->GetZonesByDC(); 
+		$zoneList=$zone->GetZonesByDC();
 		while(list($zoneNum,$myzone)=each($zoneList)){
 			$tree.=str_repeat(" ",$lev+3)."<li class=\"liClosed\" id=\"zone$myzone->ZoneID\"><a class=\"ZONE\" href=\"zone_stats.php?zone="
 				."$myzone->ZoneID\">$myzone->Description</a>\n";
 			$tree.=str_repeat(" ",$lev+4)."<ul>\n";
 			//Rows
-			$sql="SELECT CabRowID, Name AS Fila FROM fac_CabRow WHERE 
+			$sql="SELECT CabRowID, Name AS Fila FROM fac_CabRow WHERE
 				ZoneID=$myzone->ZoneID ORDER BY Fila;";
-			
+
 			foreach($this->query($sql) as $filaRow){
 				$tree.=str_repeat(" ",$lev+5)."<li class=\"liClosed\">".
 			  		"<a class=\"CABROW\" href=\"rowview.php?row={$filaRow['CabRowID']}\">".__("Row ")."{$filaRow['Fila']}</a>\n";
 				$tree.=str_repeat(" ",$lev+6)."<ul>\n";
 				// DataCenterID and ZoneID are redundant if fac_cabrow is defined and is CabrowID set in fac_cabinet
-				$cabsql="SELECT * FROM fac_Cabinet WHERE DataCenterID=$this->DataCenterID 
-					AND ZoneID=$myzone->ZoneID AND CabRowID={$filaRow['CabRowID']} ORDER 
+				$cabsql="SELECT * FROM fac_Cabinet WHERE DataCenterID=$this->DataCenterID
+					AND ZoneID=$myzone->ZoneID AND CabRowID={$filaRow['CabRowID']} ORDER
 					BY Location REGEXP '^[A-Za-z]+$', CAST(Location as SIGNED INTEGER),
 					Location;";
-			  
+
 				foreach($this->query($cabsql) as $cabRow){
 					$tree.=str_repeat(" ",$lev+7)."<li id=\"cab{$cabRow['CabinetID']}\"><a class=\"RACK\" href=\"cabnavigator.php?cabinetid={$cabRow['CabinetID']}\">{$cabRow['Location']}</a></li>\n";
 				}
@@ -622,33 +622,33 @@ class DataCenter {
 			}
 
 			//Cabinets without CabRowID
-			$cabsql="SELECT * FROM fac_Cabinet WHERE DataCenterID=$this->DataCenterID AND 
+			$cabsql="SELECT * FROM fac_Cabinet WHERE DataCenterID=$this->DataCenterID AND
 				ZoneID=$myzone->ZoneID AND CabRowID=0 ORDER BY Location ASC;";
-			
+
 			foreach($this->query($cabsql) as $cabRow){
 				$tree.=str_repeat(" ",$lev+5)."<li id=\"cab{$cabRow['CabinetID']}\"><a class=\"RACK\" href=\"cabnavigator.php?cabinetid={$cabRow['CabinetID']}\">{$cabRow['Location']}</a></li>\n";
 			}
-			
+
 			$tree.=str_repeat(" ",$lev+4)."</ul>\n";
 			$tree.=str_repeat(" ",$lev+3)."</li>\n";
 		} //zone
-		
+
 		//Cabinets without ZoneID
-		$cabsql="SELECT * FROM fac_Cabinet WHERE DataCenterID=$this->DataCenterID AND 
+		$cabsql="SELECT * FROM fac_Cabinet WHERE DataCenterID=$this->DataCenterID AND
 			ZoneID=0 ORDER BY Location ASC;";
 
 		foreach($this->query($cabsql) as $cabRow){
 			$tree.=str_repeat(" ",$lev+3)."<li id=\"cab{$cabRow['CabinetID']}\"><a class=\"RACK\" href=\"cabnavigator.php?cabinetid={$cabRow['CabinetID']}\">{$cabRow['Location']}</a></li>\n";
 		}
-		
+
 		//StorageRoom for this DC
 		$tree.=str_repeat(" ",$lev+3)."<li id=\"sr-$this->DataCenterID\"><a href=\"storageroom.php?dc=$this->DataCenterID\">".__("Storage Room")."</a></li>\n";
-		
+
 		$tree.=str_repeat(" ",$lev+2)."</ul>\n";
 		$tree.=str_repeat(" ",$lev+1)."</li>\n";
-		
+
 		return $tree;
 	}
-	
+
 }
 ?>

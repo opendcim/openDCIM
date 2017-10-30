@@ -22,7 +22,7 @@
 
 	$client->client_id = ''; $application_line = __LINE__;
 	$client->client_secret = '';
-	
+
 	if(strlen($client->client_id) == 0
 	|| strlen($client->client_secret) == 0)
 		die('Please go to mail.ru sites page '.

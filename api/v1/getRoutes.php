@@ -3,7 +3,7 @@
 	/*	Even though we're including these files in to an upstream index.php that already declares
 		the namespaces, PHP treats it as a difference context, so we have to redeclare in each
 		included file.
-	
+
 	Framework v3 Specific
 
 	use Psr\Http\Message\ServerRequestInterface as Request;
@@ -28,7 +28,7 @@
 //
 $app->get('/people', function() {
 	global $person;
-	
+
 	$person->GetUserRights();
 	if(!$person->ContactAdmin){
 		$r['error'] = true;
@@ -86,7 +86,7 @@ $app->get('/department', function() use($person) {
 			} elseif( property_exists( $dept, $prop )) {
 				$dept->$prop=$val;
 			}
-		}		
+		}
 
 		$r['error'] = false;
 		$r['errorcode'] = 200;
@@ -105,7 +105,7 @@ $app->get('/department', function() use($person) {
 
 $app->get('/datacenter', function() {
 	// Don't have to worry about rights, other than basic connection, to get data center list
-	
+
 	$dc = new DataCenter();
 	$dcList = $dc->GetDCList();
 
@@ -187,11 +187,11 @@ $app->get( '/cabinet', function() {
 	}
 
 	$cList = specifyAttributes( $outputAttr, $cab->Search(false, $loose));
-	
+
 	$r['error'] = false;
 	$r['errorcode'] = 200;
 	$r['cabinet'] = array();
-	
+
 	foreach( $cList as $c ) {
 		$tmp = array();
 		foreach( $c as $prop=>$value ) {
@@ -202,13 +202,13 @@ $app->get( '/cabinet', function() {
 				$dc->DataCenterID = $c->DataCenterID;
 				$dc->GetDataCenter();
 			}
-		
+
 			$tmp['DataCenterName'] = $dc->Name;
 		}
-		
+
 		array_push( $r['cabinet'], $tmp );
 	}
-	
+
 	echoResponse( $r );
 });
 
@@ -232,16 +232,16 @@ $app->get( '/cabinet/:cabinetid', function( $cabinetid ) {
 		$r['cabinet'] = array();
 
 		$cab->GetCabinet();
-		
+
 		$tmp = array();
 		foreach( $cab as $prop=>$value ) {
 			$tmp[$prop] = $value;
 		}
 		$dc->DataCenterID = $cab->DataCenterID;
 		$dc->GetDataCenter();
-		
+
 		$tmp['DataCenterName'] = $dc->Name;
-		
+
 		array_push( $r['cabinet'], $tmp );
 	}
 
@@ -260,11 +260,11 @@ $app->get( '/cabinet/bydc/:datacenterid', function( $datacenterid ) {
 	$dc = new DataCenter();
 	$cab->DataCenterID = intval($datacenterid);
 	$cList = $cab->ListCabinetsByDC();
-	
+
 	$r['error'] = false;
 	$r['errorcode'] = 200;
 	$r['cabinet'] = array();
-	
+
 	foreach( $cList as $c ) {
 		$tmp = array();
 		foreach( $c as $prop=>$value ) {
@@ -274,12 +274,12 @@ $app->get( '/cabinet/bydc/:datacenterid', function( $datacenterid ) {
 			$dc->DataCenterID = $c->DataCenterID;
 			$dc->GetDataCenter();
 		}
-		
+
 		$tmp['DataCenterName'] = $dc->Name;
-		
+
 		array_push( $r['cabinet'], $tmp );
 	}
-	
+
 	echoResponse( $r );
 });
 
@@ -292,7 +292,7 @@ $app->get( '/cabinet/bydc/:datacenterid', function( $datacenterid ) {
 
 $app->get( '/cabinet/:cabinetid/sensor', function( $cabinetid ) {
 	global $config;
-	
+
 	$r['error'] = false;
 	$r['errorcode'] = 200;
 	$r['sensors'] = array();
@@ -300,7 +300,7 @@ $app->get( '/cabinet/:cabinetid/sensor', function( $cabinetid ) {
 	if ( $m = CabinetMetrics::getMetrics($cabinetid) ) {
 		$m->mUnits = $config->ParameterArray["mUnits"];
 		$r['sensors'] = $m;
-	}	
+	}
 
 	echoResponse( $r );
 });
@@ -317,11 +317,11 @@ $app->get( '/cabinet/bydept/:deptid', function( $deptid ) {
 	$dc = new DataCenter();
 	$cab->DeptID=intval($deptid);
 	$cList = $cab->GetCabinetsByDept();
-	
+
 	$r['error'] = false;
 	$r['errorcode'] = 200;
 	$r['cabinet'] = array();
-	
+
 	foreach( $cList as $c ) {
 		$tmp = array();
 		foreach( $c as $prop=>$value ) {
@@ -331,12 +331,12 @@ $app->get( '/cabinet/bydept/:deptid', function( $deptid ) {
 			$dc->DataCenterID = $c->DataCenterID;
 			$dc->GetDataCenter();
 		}
-		
+
 		$tmp['DataCenterName'] = $dc->Name;
-		
+
 		array_push( $r['cabinet'], $tmp );
 	}
-	
+
 	echoResponse( $r );
 });
 
@@ -349,7 +349,7 @@ $app->get( '/cabinet/bydept/:deptid', function( $deptid ) {
 
 $app->get( '/device', function() {
 	$dev=new Device();
-	
+
 	$r['error']=false;
 	$r['errorcode']=200;
 	$loose = false;
@@ -366,7 +366,7 @@ $app->get( '/device', function() {
 			$dev->$prop=$val;
 		}
 	}
-	
+
 	$devList = $dev->Search( false, $loose );
 
 	$r['device']=specifyAttributes( $outputAttr, $devList );
@@ -384,7 +384,7 @@ $app->get( '/device', function() {
 $app->get( '/device/:deviceid', function( $deviceid ) {
 	$dev=new Device();
 	$dev->DeviceID=intval($deviceid);
-	
+
 	if(!$dev->GetDevice()){
 		$r['error']=true;
 		$r['errorcode']=404;
@@ -403,15 +403,15 @@ $app->get( '/device/:deviceid', function( $deviceid ) {
 //
 //	URL:	/api/v1/device/:deviceid/getpicture
 //	Method:	GET
-//	Params:	
+//	Params:
 //		required: deviceid (passed in URL)
-//		optional: rear (will return the rear face of the device) 
+//		optional: rear (will return the rear face of the device)
 //	Returns:  HTML representation of a device
 //
 
 $app->get( '/device/:deviceid/getpicture', function( $deviceid ) {
 	$dev=new Device($deviceid);
-	
+
 	$r['error']=true;
 	$r['errorcode']=404;
 	$r['message']=__("Unknown error");
@@ -419,8 +419,8 @@ $app->get( '/device/:deviceid/getpicture', function( $deviceid ) {
 	if(!$dev->GetDevice()){
 		$r['message']=__("Device not found");
 	}else{
-		// we filter out most of the details if you don't have rights in the 
-		// GetDevicePicture function so this might lead to some probing but 
+		// we filter out most of the details if you don't have rights in the
+		// GetDevicePicture function so this might lead to some probing but
 		// should be minimal
 		$r['error']=false;
 		$r['errorcode']=200;
@@ -434,7 +434,7 @@ $app->get( '/device/:deviceid/getpicture', function( $deviceid ) {
 $app->get( '/device/:deviceid/getsensorreadings', function($deviceid) {
 	$dev=new Device();
 	$dev->DeviceID=intval($deviceid);
-	
+
 	if(!$dev->GetDevice(false)){
 		$r['error']=true;
 		$r['errorcode']=404;
@@ -467,7 +467,7 @@ $app->get( '/device/:deviceid/getsensorreadings', function($deviceid) {
 
 $app->get('/deviceport/:deviceid', function($deviceid) {
 	$dp = new DevicePorts();
-	
+
 	$r['error'] = false;
 	$r['errorcode'] = 200;
 	$dp->DeviceID = $deviceid;
@@ -500,7 +500,7 @@ $app->get( '/deviceport/:deviceid/patchcandidates', function($deviceid) {
 
 	$r['error']=false;
 	$r['errorcode']=200;
-	
+
 	// I like nulls and wrote this function originally around them
 	foreach($s as $prop => $val){
 		$s->$prop=(!$val)?null:$val;
@@ -562,7 +562,7 @@ $app->get( '/deviceport/:deviceid/patchcandidates', function($deviceid) {
 
 $app->get( '/device/bydatacenter/:datacenterid', function($datacenterid) {
 	$dev=new Device();
-	
+
 	$r['error']=false;
 	$r['errorcode']=200;
 	$r['device']=$dev->GetDeviceList(intval($datacenterid));
@@ -725,7 +725,7 @@ $app->get( '/project/bydevice/:deviceid', function($deviceid) {
 
 $app->get( '/powerport/:deviceid', function($deviceid) {
 	$pp=new PowerPorts();
-	
+
 	$r['error']=false;
 	$r['errorcode']=200;
 	$pp->DeviceID=$deviceid;
@@ -771,14 +771,14 @@ $app->get( '/powerport/:deviceid', function($deviceid) {
 //	URL:	/api/v1/colorcode
 //	Method:	GET
 //	Params:	none
-//	Returns:  All defined color codes 
+//	Returns:  All defined color codes
 //
 
 $app->get( '/colorcode', function() {
 	$r['error']=false;
 	$r['errorcode']=200;
 	$r['colorcode']=ColorCoding::GetCodeList();;
-		
+
 	echoResponse( $r );
 });
 
@@ -786,13 +786,13 @@ $app->get( '/colorcode', function() {
 //	URL:	/api/v1/colorcode/:colorid
 //	Method:	GET
 //	Params:	colorid (passed in URL)
-//	Returns:  All defined color codes matching :colorid 
+//	Returns:  All defined color codes matching :colorid
 //
 
 $app->get( '/colorcode/:colorid', function($colorid) {
 	$cc=new ColorCoding();
 	$cc->ColorID=$colorid;
-	
+
 	if(!$cc->GetCode()){
 		$r['error']=true;
 		$r['errorcode']=404;
@@ -810,14 +810,14 @@ $app->get( '/colorcode/:colorid', function($colorid) {
 //	URL:	/api/v1/colorcode/:colorid/timesused
 //	Method:	GET
 //	Params:	colorid (passed in URL)
-//	Returns:  Number of objects using :colorid 
+//	Returns:  Number of objects using :colorid
 //
 
 $app->get( '/colorcode/:colorid/timesused', function($colorid) {
 	$r['error']=false;
 	$r['errorcode']=200;
 	$r['colorcode']=ColorCoding::TimesUsed($colorid);
-	
+
 	echoResponse( $r );
 });
 
@@ -825,7 +825,7 @@ $app->get( '/colorcode/:colorid/timesused', function($colorid) {
 //
 //	URL:	/api/v1/devicetemplate
 //	Method:	GET
-//	Params: none	
+//	Params: none
 //	Returns: All available device templates
 //
 
@@ -847,7 +847,7 @@ $app->get( '/devicetemplate', function() {
 			$dt->$prop=$val;
 		}
 	}
-	
+
 	$tmpList = $dt->Search( false, $loose );
 
 	$r['devicetemplate']=specifyAttributes( $outputAttr, $tmpList );
@@ -982,12 +982,12 @@ $app->get( '/devicetemplate/:templateid/slot', function($templateid) {
 //	URL:	/api/v1/manufacturer
 //	Method:	GET
 //	Params:	none
-//	Returns:  All defined manufacturers 
+//	Returns:  All defined manufacturers
 //
 
 $app->get( '/manufacturer', function() {
 	$man=new Manufacturer();
-	
+
 	$r['error']=false;
 	$r['errorcode']=200;
 	$vars = getParsedBody();
@@ -1008,7 +1008,7 @@ $app->get( '/manufacturer', function() {
 
 $app->get( '/zone', function() {
 	$zone=new Zone();
-	
+
 	$r['error']=false;
 	$r['errorcode']=200;
 	$vars = getParsedBody();
@@ -1024,13 +1024,13 @@ $app->get( '/zone', function() {
 //	URL:	/api/v1/zone/:zoneid
 //	Method:	GET
 //	Params:	none
-//	Returns: Zone identified by :zoneid 
+//	Returns: Zone identified by :zoneid
 //
 
 $app->get( '/zone/:zoneid', function($zoneid) {
 	$zone=new Zone();
 	$zone->ZoneID=$zoneid;
-	
+
 	$r['error']=false;
 	$r['errorcode']=200;
 	$vars = getParsedBody();
@@ -1051,7 +1051,7 @@ $app->get( '/zone/:zoneid', function($zoneid) {
 
 $app->get( '/cabrow', function() {
 	$cabrow=new CabRow();
-	
+
 	$r['error']=false;
 	$r['errorcode']=200;
 

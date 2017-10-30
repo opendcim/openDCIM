@@ -37,7 +37,7 @@
 			if(strlen($client->access_token))
 			{
 				$success = $client->CallAPI(
-					'http://www.scoop.it/api/1/profile', 
+					'http://www.scoop.it/api/1/profile',
 					'GET', array(), array('FailOnAccessError'=>true), $user);
 			}
 		}
@@ -55,7 +55,7 @@
 </head>
 <body>
 <?php
-		echo '<h1>', HtmlSpecialChars($user->user->name), 
+		echo '<h1>', HtmlSpecialChars($user->user->name),
 			' you have logged in successfully with Scoop.it!</h1>';
 		echo '<pre>', HtmlSpecialChars(print_r($user, 1)), '</pre>';
 ?>

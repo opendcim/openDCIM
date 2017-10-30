@@ -37,7 +37,7 @@
 			if(strlen($client->access_token))
 			{
 				$success = $client->CallAPI(
-					'https://api.copy.com/rest/user', 
+					'https://api.copy.com/rest/user',
 					'GET', array(), array('FailOnAccessError'=>true,
 					'RequestHeaders'=>array('X-Api-Version'=>'1')), $user);
 			}
@@ -56,7 +56,7 @@
 </head>
 <body>
 <?php
-		echo '<h1>', HtmlSpecialChars($user->first_name), 
+		echo '<h1>', HtmlSpecialChars($user->first_name),
 			' you have logged in successfully with Copy!</h1>';
 		echo '<pre>', HtmlSpecialChars(print_r($user, 1)), '</pre>';
 ?>

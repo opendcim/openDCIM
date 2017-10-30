@@ -53,23 +53,23 @@ class Slot {
 
 		return $slot;
 	}
- 
+
 	function query($sql){
 		global $dbh;
 		return $dbh->query($sql);
 	}
-	
+
 	function exec($sql){
 		global $dbh;
 		return $dbh->exec($sql);
 	}
-	
+
 	function CreateSlot(){
 		global $dbh;
-			
+
 		$this->MakeSafe();
-			
-		$sql="INSERT INTO fac_Slots SET TemplateID=$this->TemplateID, 
+
+		$sql="INSERT INTO fac_Slots SET TemplateID=$this->TemplateID,
 			Position=$this->Position,
 			BackSide=$this->BackSide,
 			X=$this->X,
@@ -86,7 +86,7 @@ class Slot {
 			return true;
 		}
 	}
-	
+
 	function UpdateSlot(){
 		$this->MakeSafe();
 
@@ -95,9 +95,9 @@ class Slot {
 		$oldslot->Position=$this->Position;
 		$oldslot->BackSide=$this->BackSide;
 		$oldslot->GetSlot();
-			
-		$sql="UPDATE fac_Slots SET X=$this->X, Y=$this->Y, W=$this->W, H=$this->H 
-			WHERE TemplateID=$this->TemplateID AND Position=$this->Position AND 
+
+		$sql="UPDATE fac_Slots SET X=$this->X, Y=$this->Y, W=$this->W, H=$this->H
+			WHERE TemplateID=$this->TemplateID AND Position=$this->Position AND
 			BackSide=$this->BackSide;";
 
 		if(!$this->query($sql)){
@@ -107,10 +107,10 @@ class Slot {
 		(class_exists('LogActions'))?LogActions::LogThis($this,$oldslot):'';
 		return true;
 	}
-	
+
 	function DeleteSlot(){
 		$this->MakeSafe();
-		
+
 		//delete slot
 		$sql="DELETE FROM fac_Slots WHERE TemplateID=$this->TemplateID AND Position=$this->Position AND BackSide=$this->BackSide;";
 		if(!$this->query($sql)){
@@ -120,10 +120,10 @@ class Slot {
 		(class_exists('LogActions'))?LogActions::LogThis($this):'';
 		return true;
 	}
-  
+
 	function GetSlot(){
 		$this->MakeSafe();
-		
+
 		$sql="SELECT * FROM fac_Slots WHERE TemplateID=$this->TemplateID AND Position=$this->Position AND BackSide=$this->BackSide;";
 		if($row=$this->query($sql)->fetch()){
 			foreach(Slot::RowToObject($row) as $prop => $value){
@@ -134,10 +134,10 @@ class Slot {
 			return false;
 		}
 	}
-	
+
 	static function getSlots( $TemplateID ) {
 		global $dbh;
-		
+
 		$st = $dbh->prepare( "select * from fac_Slots where TemplateID=:TemplateID order by BackSide ASC, Position ASC" );
 		$st->execute( array( ":TemplateID"=>$TemplateID ) );
 		$st->setFetchMode( PDO::FETCH_CLASS, "Slot" );
@@ -145,26 +145,26 @@ class Slot {
 		while ( $row = $st->fetch() ) {
 			$sList[] = $row;
 		}
-		
+
 		return $sList;
 	}
 
 	// Return all the slots for a single template in one object
 	static function GetAll($templateid){
 		global $dbh;
-		
-		$sql="SELECT * FROM fac_Slots WHERE TemplateID=".intval($templateid)." ORDER 
+
+		$sql="SELECT * FROM fac_Slots WHERE TemplateID=".intval($templateid)." ORDER
 			BY BackSide ASC, Position ASC;";
 		$slots=array();
 		foreach($dbh->query($sql) as $row){
 			$slots[$row['BackSide']][$row['Position']]=Slot::RowToObject($row);
-		}	
+		}
 		return $slots;
 	}
 
 	function GetFirstSlot(){
 		$this->MakeSafe();
-		
+
 		$sql="SELECT * FROM fac_Slots WHERE TemplateID=$this->TemplateID ORDER BY BackSide,Position;";
 		if($row=$this->query($sql)->fetch()){
 			foreach(Slot::RowToObject($row) as $prop => $value){
@@ -174,6 +174,6 @@ class Slot {
 		}else{
 			return false;
 		}
-	} 
+	}
 }
 ?>

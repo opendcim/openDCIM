@@ -16,7 +16,7 @@
 		$userRights->PersonID=$_REQUEST['PersonID'];
 		$userRights->GetPerson();
 	}
-	
+
 	if(isset($_POST['action'])&&isset($_POST['UserID'])){
 		if((($_POST['action']=='Create')||($_POST['action']=='Update'))&&(isset($_POST['LastName'])&&$_POST['LastName']!=null&&$_POST['LastName']!='')){
 			$userRights->UserID=$_POST['UserID'];
@@ -80,7 +80,7 @@
 <head>
   <meta http-equiv="X-UA-Compatible" content="IE=Edge">
   <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-  
+
   <title>openDCIM User Manager</title>
   <link rel="stylesheet" href="css/inventory.php" type="text/css">
   <link rel="stylesheet" href="css/jquery-ui.css" type="text/css">
@@ -88,7 +88,7 @@
   <!--[if lt IE 9]>
   <link rel="stylesheet"  href="css/ie.css" type="text/css">
   <![endif]-->
-  
+
   <script type="text/javascript" src="scripts/jquery.min.js"></script>
   <script type="text/javascript" src="scripts/jquery-ui.min.js"></script>
   <script type="text/javascript" src="scripts/jquery.validationEngine-en.js"></script>
@@ -279,7 +279,7 @@ echo '	</select>&nbsp;&nbsp;<span title="',__("This user is the primary contact 
 	<input name="RackAdmin" id="RackAdmin" type="checkbox" ',$RackAdmin,'><label for="RackAdmin">',__("Complete Rack Requests"),'</label><br>
 	<input name="BulkOperations" id="BulkOperations" type="checkbox" ',$BulkOperations,'><label for="BulkOperations">',__("Perform Bulk Operations"),'</label><br>
 	<input name="SiteAdmin" id="SiteAdmin" type="checkbox" ',$admin,'><label for="SiteAdmin">',__("Manage Site and Users"),'</label><br>
-	<input name="Disabled" id="Disabled" type="checkbox" ',$Disabled,'><label for="Disabled">',__("Disabled"),'</label><br>	
+	<input name="Disabled" id="Disabled" type="checkbox" ',$Disabled,'><label for="Disabled">',__("Disabled"),'</label><br>
    </div>
 </div>
 <div class="caption" id="controls">';

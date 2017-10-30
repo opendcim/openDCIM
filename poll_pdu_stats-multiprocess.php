@@ -59,9 +59,9 @@
 		global $dbh;
 
 		if($DeviceID==0){return false;}
-		
+
 		$sql="UPDATE fac_Device SET SNMPFailureCount=SNMPFailureCount+1 WHERE DeviceID=$DeviceID";
-		
+
 		if(!$dbh->query($sql)){
 			error_log( "Device::IncrementFailures::PDO Error: {$info[2]} SQL=$sql");
 			return false;
@@ -69,14 +69,14 @@
 			return true;
 		}
 	}
-	
+
 	function ResetFailures( $DeviceID ){
 		global $dbh;
 
 		if($DeviceID==0){return false;}
 
 		$sql="UPDATE fac_Device SET SNMPFailureCount=0 WHERE DeviceID=$DeviceID";
-		
+
 		if(!$dbh->query($sql)){
 			error_log( "Device::ResetFailures::PDO Error: {$info[2]} SQL=$sql");
 			return false;
@@ -84,13 +84,13 @@
 			return true;
 		}
 	}
-	
+
 	/*
 	Get a result set of all PDUs that meet the criteria for polling
 	 */
-	$sql="SELECT a.PDUID, d.SNMPVersion, b.Multiplier, b.OID1, 
-			b.OID2, b.OID3, b.ProcessingProfile, b.Voltage, c.SNMPFailureCount FROM fac_PowerDistribution a, 
-			fac_CDUTemplate b, fac_Device c, fac_DeviceTemplate d WHERE a.PDUID=c.DeviceID and a.TemplateID=b.TemplateID 
+	$sql="SELECT a.PDUID, d.SNMPVersion, b.Multiplier, b.OID1,
+			b.OID2, b.OID3, b.ProcessingProfile, b.Voltage, c.SNMPFailureCount FROM fac_PowerDistribution a,
+			fac_CDUTemplate b, fac_Device c, fac_DeviceTemplate d WHERE a.PDUID=c.DeviceID and a.TemplateID=b.TemplateID
 			AND a.TemplateID=d.TemplateID AND b.Managed=true AND c.PrimaryIP>'' and c.SNMPFailureCount<3";
 	$st = $dbh->prepare($sql);
 	$st->execute();
@@ -149,7 +149,7 @@
 				$dev->GetDevice();
 
 				// If the device doesn't have an SNMP community set, check and see if we have a global one
-				$dev->SNMPCommunity=($dev->SNMPCommunity=="")?$config->ParameterArray["SNMPCommunity"]:$dev->SNMPCommunity;	
+				$dev->SNMPCommunity=($dev->SNMPCommunity=="")?$config->ParameterArray["SNMPCommunity"]:$dev->SNMPCommunity;
 
 				$pollValue1=floatval(OSS_SNMP_Lookup($dev,null,$row["OID1"]));
 				// We won't use OID2 or 3 without the other so make sure both are set or just ignore them
@@ -160,12 +160,12 @@
 					if ($pollValue2<0) $pollValue2=0;
 					if ($pollValue3<0) $pollValue3=0;
 				}
-					
+
 				// Have to reset this every time, otherwise the exec() will append
 				unset($statsOutput);
 				$amps=0;
 				$watts=0;
-					
+
 				$threeOIDs = array("Combine3OIDAmperes","Convert3PhAmperes","Combine3OIDWatts");
 				if((in_array($row["ProcessingProfile"], $threeOIDs) && ($pollValue1 || $pollValue2 || $pollValue3)) || $pollValue1){
 					// The multiplier should be an int but no telling what voodoo the db might cause
@@ -194,8 +194,8 @@
 							break;
 					}
 				}
-					
-				$sql="INSERT INTO fac_PDUStats SET PDUID={$row["PDUID"]}, Wattage=$watts, 
+
+				$sql="INSERT INTO fac_PDUStats SET PDUID={$row["PDUID"]}, Wattage=$watts,
 					LastRead=now() ON DUPLICATE KEY UPDATE Wattage=$watts, LastRead=now();";
 				if(!$dbh->query($sql)){
 					$info=$dbh->errorInfo();
